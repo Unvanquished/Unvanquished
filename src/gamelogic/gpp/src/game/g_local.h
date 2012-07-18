@@ -268,6 +268,21 @@ typedef struct
 	clientList_t     ignoreList;
 } clientSession_t;
 
+/*
+ * some player stats kept for all level
+ * (used for automated server actions)
+ *
+ * cleared on each level change
+ */
+typedef struct
+{
+	short kills;
+	short deaths;
+	short suicides;
+	short teamkills;
+	short killingSpree;
+} damageStats_t;
+
 // namelog
 #define MAX_NAMELOG_NAMES 5
 #define MAX_NAMELOG_ADDRS 5
@@ -291,6 +306,9 @@ typedef struct namelog_s
 
 	qboolean         muted;
 	qboolean         denyBuild;
+	qboolean          strip;
+
+	damageStats_t           damageStats;
 
 	int              score;
 	int              credits;
@@ -324,6 +342,7 @@ typedef struct
 	int               teamChangeTime; // level.time of last team change
 	namelog_t         *namelog;
 	g_admin_admin_t   *admin;
+	g_admin_longstrip_t *longstrip;
 
 	int               aliveSeconds; // time player has been alive in seconds
 	qboolean          hasHealed; // has healed a player (basi regen aura) in the last 10sec (for score use)
@@ -1240,6 +1259,24 @@ extern  vmCvar_t g_censorship;
 
 extern  vmCvar_t g_showKillerHP;
 extern  vmCvar_t g_combatCooldown;
+
+extern  vmCvar_t  g_strip_structDmgPrcnt;
+extern  vmCvar_t  g_strip_playerDmgPrcnt;
+
+// cicho-sza add-on:
+extern  vmCvar_t  g_AutoStrip;
+extern  vmCvar_t  g_AutoStrip_MinKillToFeed;
+extern  vmCvar_t  g_AutoStrip_MinKills;
+extern  vmCvar_t  g_AutoStrip_KillsPerStage;
+extern  vmCvar_t  g_AutoStrip_BetterThanTeam;
+extern  vmCvar_t  g_AutoStrip_BetterThanEnemy;
+extern  vmCvar_t  g_AutoStrip_DebugMsg;
+extern  vmCvar_t  g_AutoStrip_KillingSpreeLvl;
+extern  vmCvar_t  g_AutoStrip_KillingSpreePerStage;
+extern  vmCvar_t  g_AutoStrip_KillingSpreeStageDif;
+extern  vmCvar_t  g_AutoStrip_kpmAllowed;
+extern  vmCvar_t  g_AutoStrip_kpmTreshold;
+
 
 void             trap_Print( const char *fmt );
 void             trap_Error( const char *string ) NORETURN;

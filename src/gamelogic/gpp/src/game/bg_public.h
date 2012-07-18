@@ -919,6 +919,7 @@ typedef struct
 	const char *info;
 
 	int      stages;
+	int      strippedStages;
 
 	int      health;
 	float    fallDamage;
@@ -1045,6 +1046,7 @@ typedef struct
 
 	int      price;
 	int      stages;
+	int      strippedStages;
 
 	int      slots;
 
@@ -1082,6 +1084,7 @@ typedef struct
 
 	int       price;
 	int       stages;
+	int       strippedStages;
 
 	int       slots;
 
@@ -1151,6 +1154,7 @@ int                         BG_ClassCanEvolveFromTo( class_t fclass,
     class_t tclass,
     int credits, int alienStage, int num );
 
+qboolean                  BG_Strip_ClassAllowedInStage( class_t pclass, stage_t stage );
 qboolean                  BG_AlienCanEvolve( class_t class, int credits, int alienStage );
 
 void                      BG_InitClassConfigs( void );
@@ -1159,11 +1163,13 @@ const weaponAttributes_t  *BG_WeaponByName( const char *name );
 const weaponAttributes_t  *BG_Weapon( weapon_t weapon );
 qboolean                  BG_WeaponAllowedInStage( weapon_t weapon,
     stage_t stage );
+qboolean                    BG_Strip_WeaponAllowedInStage( weapon_t weapon, stage_t stage );
 
 const upgradeAttributes_t *BG_UpgradeByName( const char *name );
 const upgradeAttributes_t *BG_Upgrade( upgrade_t upgrade );
 qboolean                  BG_UpgradeAllowedInStage( upgrade_t upgrade,
     stage_t stage );
+qboolean                  BG_Strip_UpgradeAllowedInStage( upgrade_t upgrade, stage_t stage );
 
 // content masks
 #define MASK_ALL         ( -1 )

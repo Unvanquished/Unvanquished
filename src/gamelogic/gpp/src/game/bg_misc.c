@@ -897,6 +897,7 @@ static const classAttributes_t bg_classList[] =
 		"spectator", //char    *name;
 		"",
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		0, //int     health;
 		0.0f, //float   fallDamage;
 		0.0f, //float   regenRate;
@@ -924,6 +925,7 @@ static const classAttributes_t bg_classList[] =
 		"Responsible for building and maintaining all the alien structures. "
 		"Has a weak melee slash attack.",
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		ABUILDER_HEALTH, //int     health;
 		0.2f, //float   fallDamage;
 		ABUILDER_REGEN, //float   regenRate;
@@ -952,6 +954,7 @@ static const classAttributes_t bg_classList[] =
 		"being able to build structures it has a spit attack "
 		"that slows victims and the ability to crawl on walls.",
 		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		ABUILDER_UPG_HEALTH, //int     health;
 		0.2f, //float   fallDamage;
 		ABUILDER_UPG_REGEN, //float   regenRate;
@@ -979,6 +982,7 @@ static const classAttributes_t bg_classList[] =
 		"Has a lethal reflexive bite and the ability to crawl on "
 		"walls and ceilings.",
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		LEVEL0_HEALTH, //int     health;
 		0.0f, //float   fallDamage;
 		LEVEL0_REGEN, //float   regenRate;
@@ -1008,6 +1012,7 @@ static const classAttributes_t bg_classList[] =
 		"and hold its victims in place. Provides a weak healing aura "
 		"that accelerates the healing rate of nearby aliens.",
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		LEVEL1_HEALTH, //int     health;
 		0.0f, //float   fallDamage;
 		LEVEL1_REGEN, //float   regenRate;
@@ -1037,6 +1042,7 @@ static const classAttributes_t bg_classList[] =
 		"nearby humans. Has a strong healing aura that "
 		"that accelerates the healing rate of nearby aliens.",
 		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		LEVEL1_UPG_HEALTH, //int     health;
 		0.0f, //float   fallDamage;
 		LEVEL1_UPG_REGEN, //float   regenRate;
@@ -1064,6 +1070,7 @@ static const classAttributes_t bg_classList[] =
 		"Has a melee attack and the ability to jump off walls. This "
 		"allows the Marauder to gather great speed in enclosed areas.",
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		LEVEL2_HEALTH, //int     health;
 		0.0f, //float   fallDamage;
 		LEVEL2_REGEN, //float   regenRate;
@@ -1091,6 +1098,7 @@ static const classAttributes_t bg_classList[] =
 		"The Advanced Marauder has all the abilities of the basic Marauder "
 		"with the addition of an area effect electric shock attack.",
 		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		0, //int  strippedStages;
 		LEVEL2_UPG_HEALTH, //int     health;
 		0.0f, //float   fallDamage;
 		LEVEL2_UPG_REGEN, //float   regenRate;
@@ -1119,6 +1127,7 @@ static const classAttributes_t bg_classList[] =
 		"be used as both an attack and a means to reach remote "
 		"locations inaccessible from the ground.",
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		LEVEL3_HEALTH, //int     health;
 		0.0f, //float   fallDamage;
 		LEVEL3_REGEN, //float   regenRate;
@@ -1147,6 +1156,7 @@ static const classAttributes_t bg_classList[] =
 		"Dragoon has 3 barbs which may be used to attack humans "
 		"from a distance.",
 		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		0, //int  strippedStages;
 		LEVEL3_UPG_HEALTH, //int     health;
 		0.0f, //float   fallDamage;
 		LEVEL3_UPG_REGEN, //float   regenRate;
@@ -1176,6 +1186,7 @@ static const classAttributes_t bg_classList[] =
 		"great damage. Any humans or their structures caught under "
 		"a falling Tyrant will be crushed by its weight.",
 		( 1 << S3 ), //int  stages;
+		0, //int  strippedStages;
 		LEVEL4_HEALTH, //int     health;
 		0.0f, //float   fallDamage;
 		LEVEL4_REGEN, //float   regenRate;
@@ -1202,6 +1213,7 @@ static const classAttributes_t bg_classList[] =
 		"human_base", //char    *name;
 		"",
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		100, //int     health;
 		1.0f, //float   fallDamage;
 		0.0f, //float   regenRate;
@@ -1228,6 +1240,7 @@ static const classAttributes_t bg_classList[] =
 		"human_bsuit", //char    *name;
 		"",
 		( 1 << S3 ), //int  stages;
+		0, //int  strippedStages;
 		100, //int     health;
 		1.0f, //float   fallDamage;
 		0.0f, //float   regenRate;
@@ -1422,6 +1435,23 @@ int BG_ClassCanEvolveFromTo( class_t fclass,
 
 	Com_Printf( S_COLOR_YELLOW "WARNING: fallthrough in BG_ClassCanEvolveFromTo\n" );
 	return -1;
+}
+
+/*
+==============
+BG_Strip_ClassAllowedInStage
+==============
+*/
+qboolean BG_Strip_ClassAllowedInStage( class_t pclass, stage_t stage )
+{
+	int strippedStages = BG_Class( pclass )->strippedStages;
+
+	if( strippedStages & ( 1 << stage ) )
+	{
+		return BG_ClassAllowedInStage( pclass, stage );
+	}
+
+	return qfalse;
 }
 
 /*
@@ -1824,6 +1854,7 @@ static const weaponAttributes_t bg_weapons[] =
 		WP_ALEVEL0, //int       number;
 		0, //int       price;
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"level0", //char      *name;
 		"Bite", //char      *humanName;
@@ -1849,6 +1880,7 @@ static const weaponAttributes_t bg_weapons[] =
 		WP_ALEVEL1, //int       number;
 		0, //int       price;
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"level1", //char      *name;
 		"Claws", //char      *humanName;
@@ -1874,6 +1906,7 @@ static const weaponAttributes_t bg_weapons[] =
 		WP_ALEVEL1_UPG, //int       number;
 		0, //int       price;
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"level1upg", //char      *name;
 		"Claws Upgrade", //char      *humanName;
@@ -1899,6 +1932,7 @@ static const weaponAttributes_t bg_weapons[] =
 		WP_ALEVEL2, //int       number;
 		0, //int       price;
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"level2", //char      *name;
 		"Bite", //char      *humanName;
@@ -1924,6 +1958,7 @@ static const weaponAttributes_t bg_weapons[] =
 		WP_ALEVEL2_UPG, //int       number;
 		0, //int       price;
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"level2upg", //char      *name;
 		"Zap", //char      *humanName;
@@ -1949,6 +1984,7 @@ static const weaponAttributes_t bg_weapons[] =
 		WP_ALEVEL3, //int       number;
 		0, //int       price;
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"level3", //char      *name;
 		"Pounce", //char      *humanName;
@@ -1974,6 +2010,7 @@ static const weaponAttributes_t bg_weapons[] =
 		WP_ALEVEL3_UPG, //int       number;
 		0, //int       price;
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"level3upg", //char      *name;
 		"Pounce (upgrade)", //char      *humanName;
@@ -1999,6 +2036,7 @@ static const weaponAttributes_t bg_weapons[] =
 		WP_ALEVEL4, //int       number;
 		0, //int       price;
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"level4", //char      *name;
 		"Charge", //char      *humanName;
@@ -2024,6 +2062,7 @@ static const weaponAttributes_t bg_weapons[] =
 		WP_BLASTER, //int       number;
 		0, //int       price;
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		0, //int       slots;
 		"blaster", //char      *name;
 		"Blaster", //char      *humanName;
@@ -2049,6 +2088,7 @@ static const weaponAttributes_t bg_weapons[] =
 		WP_MACHINEGUN, //int       number;
 		RIFLE_PRICE, //int       price;
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"rifle", //char      *name;
 		"Rifle", //char      *humanName;
@@ -2075,6 +2115,7 @@ static const weaponAttributes_t bg_weapons[] =
 		WP_PAIN_SAW, //int       number;
 		PAINSAW_PRICE, //int       price;
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		0, //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"psaw", //char      *name;
 		"Pain Saw", //char      *humanName;
@@ -2102,6 +2143,7 @@ static const weaponAttributes_t bg_weapons[] =
 		WP_SHOTGUN, //int       number;
 		SHOTGUN_PRICE, //int       price;
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"shotgun", //char      *name;
 		"Shotgun", //char      *humanName;
@@ -2129,6 +2171,7 @@ static const weaponAttributes_t bg_weapons[] =
 		WP_LAS_GUN, //int       number;
 		LASGUN_PRICE, //int       price;
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		0, //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"lgun", //char      *name;
 		"Las Gun", //char      *humanName;
@@ -2155,6 +2198,7 @@ static const weaponAttributes_t bg_weapons[] =
 		WP_MASS_DRIVER, //int       number;
 		MDRIVER_PRICE, //int       price;
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		0, //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"mdriver", //char      *name;
 		"Mass Driver", //char      *humanName;
@@ -2182,6 +2226,7 @@ static const weaponAttributes_t bg_weapons[] =
 		WP_CHAINGUN, //int       number;
 		CHAINGUN_PRICE, //int       price;
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		0, //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"chaingun", //char      *name;
 		"Chaingun", //char      *humanName;
@@ -2209,6 +2254,7 @@ static const weaponAttributes_t bg_weapons[] =
 		WP_FLAMER, //int       number;
 		FLAMER_PRICE, //int       price;
 		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		0, //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"flamer", //char      *name;
 		"Flame Thrower", //char      *humanName;
@@ -2236,6 +2282,7 @@ static const weaponAttributes_t bg_weapons[] =
 		WP_PULSE_RIFLE, //int       number;
 		PRIFLE_PRICE, //int       price;
 		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		0, //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"prifle", //char      *name;
 		"Pulse Rifle", //char      *humanName;
@@ -2261,6 +2308,7 @@ static const weaponAttributes_t bg_weapons[] =
 		WP_LUCIFER_CANNON, //int       number;
 		LCANNON_PRICE, //int       price;
 		( 1 << S3 ), //int  stages;
+		0, //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"lcannon", //char      *name;
 		"Lucifer Cannon", //char      *humanName;
@@ -2288,6 +2336,7 @@ static const weaponAttributes_t bg_weapons[] =
 		WP_GRENADE, //int       number;
 		GRENADE_PRICE, //int       price;
 		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		0, //int  strippedStages;
 		SLOT_NONE, //int       slots;
 		"grenade", //char      *name;
 		"Grenade", //char      *humanName;
@@ -2313,6 +2362,7 @@ static const weaponAttributes_t bg_weapons[] =
 		WP_LOCKBLOB_LAUNCHER, //int       number;
 		0, //int       price;
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"lockblob", //char      *name;
 		"Lock Blob", //char      *humanName;
@@ -2338,6 +2388,7 @@ static const weaponAttributes_t bg_weapons[] =
 		WP_HIVE, //int       number;
 		0, //int       price;
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		0, //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"hive", //char      *name;
 		"Hive", //char      *humanName;
@@ -2363,6 +2414,7 @@ static const weaponAttributes_t bg_weapons[] =
 		WP_TESLAGEN, //int       number;
 		0, //int       price;
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		0, //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"teslagen", //char      *name;
 		"Tesla Generator", //char      *humanName;
@@ -2388,6 +2440,7 @@ static const weaponAttributes_t bg_weapons[] =
 		WP_MGTURRET, //int       number;
 		0, //int       price;
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		0, //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"mgturret", //char      *name;
 		"Machinegun Turret", //char      *humanName;
@@ -2413,6 +2466,7 @@ static const weaponAttributes_t bg_weapons[] =
 		WP_ABUILD, //int       number;
 		0, //int       price;
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"abuild", //char      *name;
 		"Alien build weapon", //char      *humanName;
@@ -2438,6 +2492,7 @@ static const weaponAttributes_t bg_weapons[] =
 		WP_ABUILD2, //int       number;
 		0, //int       price;
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"abuildupg", //char      *name;
 		"Alien build weapon2", //char      *humanName;
@@ -2463,6 +2518,7 @@ static const weaponAttributes_t bg_weapons[] =
 		WP_HBUILD, //int       number;
 		HBUILD_PRICE, //int       price;
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"ckit", //char      *name;
 		"Construction Kit", //char      *humanName;
@@ -2535,6 +2591,23 @@ qboolean BG_WeaponAllowedInStage( weapon_t weapon, stage_t stage )
 	return stages & ( 1 << stage );
 }
 
+/*
+===============
+BG_Strip_WeaponAllowedInStage
+===============
+*/
+qboolean BG_Strip_WeaponAllowedInStage( weapon_t weapon, stage_t stage )
+{
+	int strippedStages = BG_Weapon( weapon )->strippedStages;
+
+	if( strippedStages & ( 1 << stage ) )
+	{
+		return BG_WeaponAllowedInStage( weapon, stage );
+	}
+
+	return qfalse;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 static const upgradeAttributes_t bg_upgrades[] =
@@ -2543,6 +2616,7 @@ static const upgradeAttributes_t bg_upgrades[] =
 		UP_LIGHTARMOUR, //int   number;
 		LIGHTARMOUR_PRICE, //int   price;
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		SLOT_TORSO | SLOT_ARMS | SLOT_LEGS, //int   slots;
 		"larmour", //char  *name;
 		"Light Armour", //char  *humanName;
@@ -2557,6 +2631,7 @@ static const upgradeAttributes_t bg_upgrades[] =
 		UP_HELMET, //int   number;
 		HELMET_PRICE, //int   price;
 		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		SLOT_HEAD, //int   slots;
 		"helmet", //char  *name;
 		"Helmet", //char  *humanName;
@@ -2572,6 +2647,7 @@ static const upgradeAttributes_t bg_upgrades[] =
 		UP_MEDKIT, //int   number;
 		MEDKIT_PRICE, //int   price;
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		SLOT_NONE, //int   slots;
 		"medkit", //char  *name;
 		"Medkit", //char  *humanName;
@@ -2585,6 +2661,7 @@ static const upgradeAttributes_t bg_upgrades[] =
 		UP_BATTPACK, //int   number;
 		BATTPACK_PRICE, //int   price;
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		0, //int  strippedStages;
 		SLOT_BACKPACK, //int   slots;
 		"battpack", //char  *name;
 		"Battery Pack", //char  *humanName;
@@ -2599,6 +2676,7 @@ static const upgradeAttributes_t bg_upgrades[] =
 		UP_JETPACK, //int   number;
 		JETPACK_PRICE, //int   price;
 		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		0, //int  strippedStages;
 		SLOT_BACKPACK, //int   slots;
 		"jetpack", //char  *name;
 		"Jet Pack", //char  *humanName;
@@ -2614,6 +2692,7 @@ static const upgradeAttributes_t bg_upgrades[] =
 		UP_BATTLESUIT, //int   number;
 		BSUIT_PRICE, //int   price;
 		( 1 << S3 ), //int  stages;
+		0, //int  strippedStages;
 		SLOT_HEAD | SLOT_TORSO | SLOT_ARMS | SLOT_LEGS | SLOT_BACKPACK, //int   slots;
 		"bsuit", //char  *name;
 		"Battlesuit", //char  *humanName;
@@ -2629,6 +2708,7 @@ static const upgradeAttributes_t bg_upgrades[] =
 		UP_GRENADE, //int   number;
 		GRENADE_PRICE, //int   price;
 		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		0, //int  strippedStages;
 		SLOT_NONE, //int   slots;
 		"gren", //char  *name;
 		"Grenade", //char  *humanName;
@@ -2643,6 +2723,7 @@ static const upgradeAttributes_t bg_upgrades[] =
 		UP_AMMO, //int   number;
 		0, //int   price;
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		SLOT_NONE, //int   slots;
 		"ammo", //char  *name;
 		"Ammunition", //char  *humanName;
@@ -2699,6 +2780,23 @@ qboolean BG_UpgradeAllowedInStage( upgrade_t upgrade, stage_t stage )
 	int stages = BG_Upgrade( upgrade )->stages;
 
 	return stages & ( 1 << stage );
+}
+
+/*
+===============
+BG_Strip_UpgradeAllowedInStage
+===============
+*/
+qboolean BG_Strip_UpgradeAllowedInStage( upgrade_t upgrade, stage_t stage )
+{
+	int strippedStages = BG_Upgrade( upgrade )->strippedStages;
+
+	if( strippedStages & ( 1 << stage ) )
+	{
+		return BG_UpgradeAllowedInStage( upgrade, stage );
+	}
+
+	return qfalse;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

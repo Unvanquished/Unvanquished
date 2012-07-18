@@ -2388,6 +2388,14 @@ void Cmd_Class_f( gentity_t *ent )
 				return;
 			}
 
+			if( ent->client->pers.namelog->strip &&
+						!BG_Strip_ClassAllowedInStage( newClass, g_alienStage.integer ) )
+			{
+				trap_SendServerCommand( ent-g_entities,
+					"print \"^3This class is currently denied to stripped players.\n\"" );
+				return;
+			}
+
 			cost = BG_ClassCanEvolveFromTo( currentClass, newClass,
 			                                ent->client->pers.credit,
 			                                g_alienStage.integer, 0 );
@@ -2776,6 +2784,14 @@ void Cmd_Buy_f( gentity_t *ent )
 			return;
 		}
 
+		if( ent->client->pers.namelog->strip &&
+					!BG_Strip_WeaponAllowedInStage( weapon, g_humanStage.integer ) )
+		{
+			trap_SendServerCommand( ent-g_entities,
+				"print \"^3This weapon is currently denied to stripped players.\n\"" );
+			return;
+		}
+
 		//can afford this?
 		if ( BG_Weapon( weapon )->price > ( short ) ent->client->pers.credit )
 		{
@@ -2855,6 +2871,14 @@ void Cmd_Buy_f( gentity_t *ent )
 		if ( !BG_UpgradeAllowedInStage( upgrade, g_humanStage.integer ) || !BG_UpgradeIsAllowed( upgrade ) )
 		{
 			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't buy this item\n") "\"" );
+			return;
+		}
+
+		if ( ent->client->pers.namelog->strip &&
+		     !BG_Strip_UpgradeAllowedInStage( upgrade, g_humanStage.integer ) )
+		{
+			trap_SendServerCommand( ent - g_entities,
+				"print_tr \"" N_("^3This upgrade is currently denied to stripped players.\n") "\"" );
 			return;
 		}
 

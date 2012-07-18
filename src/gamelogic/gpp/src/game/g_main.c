@@ -176,6 +176,22 @@ vmCvar_t           g_tag;
 vmCvar_t           g_showKillerHP;
 vmCvar_t           g_combatCooldown;
 
+vmCvar_t           g_strip_structDmgPrcnt;
+vmCvar_t           g_strip_playerDmgPrcnt;
+
+vmCvar_t           g_AutoStrip;
+vmCvar_t           g_AutoStrip_MinKillToFeed;
+vmCvar_t           g_AutoStrip_MinKills;
+vmCvar_t           g_AutoStrip_KillsPerStage;
+vmCvar_t           g_AutoStrip_BetterThanTeam;
+vmCvar_t           g_AutoStrip_BetterThanEnemy;
+vmCvar_t           g_AutoStrip_DebugMsg;
+vmCvar_t           g_AutoStrip_KillingSpreeLvl;
+vmCvar_t           g_AutoStrip_KillingSpreePerStage;
+vmCvar_t           g_AutoStrip_KillingSpreeStageDif;
+vmCvar_t           g_AutoStrip_kpmAllowed;
+vmCvar_t           g_AutoStrip_kpmTreshold;
+
 // copy cvars that can be set in worldspawn so they can be restored later
 static char        cv_gravity[ MAX_CVAR_VALUE_STRING ];
 static char        cv_humanMaxStage[ MAX_CVAR_VALUE_STRING ];
@@ -334,7 +350,24 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_tag,                         "g_tag",                         "gpp",                              CVAR_INIT,                                       0, qfalse           },
 
 	{ &g_showKillerHP,                "g_showKillerHP",                "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_combatCooldown,              "g_combatCooldown",              "15",                               CVAR_ARCHIVE,                                    0, qfalse           }
+	{ &g_combatCooldown,              "g_combatCooldown",              "15",                               CVAR_ARCHIVE,                                    0, qfalse           },
+
+	{ &g_strip_structDmgPrcnt,        "g_strip_structDmgPrcnt",        "100",                              CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_strip_playerDmgPrcnt,        "g_strip_playerDmgPrcnt",        "100",                              CVAR_ARCHIVE,                                    0, qfalse           },
+
+	// cicho-sza add-on:
+	{ &g_AutoStrip,                      "g_AutoStrip",                      "0",                          CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qtrue            },
+	{ &g_AutoStrip_DebugMsg,             "g_AutoStrip_DebugMsg",             "0",                          CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_AutoStrip_MinKillToFeed,        "g_AutoStrip_MinKillToFeed",        "1.0",                        CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_AutoStrip_MinKills,             "g_AutoStrip_MinKills",             "5",                          CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_AutoStrip_KillsPerStage,        "g_AutoStrip_KillsPerStage",        "4",                          CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_AutoStrip_BetterThanTeam,       "g_AutoStrip_BetterThanTeam",       "100",                        CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_AutoStrip_BetterThanEnemy,      "g_AutoStrip_BetterThanEnemy",      "100",                        CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_AutoStrip_KillingSpreeLvl,      "g_AutoStrip_KillingSpreeLvl",      "6",                          CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_AutoStrip_KillingSpreePerStage, "g_AutoStrip_KillingSpreePerStage", "2",                          CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_AutoStrip_KillingSpreeStageDif, "g_AutoStrip_KillingSpreeStageDif", "1",                          CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_AutoStrip_kpmTreshold,          "g_AutoStrip_kpmTreshold",          "0",                          CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_AutoStrip_kpmAllowed,           "g_AutoStrip_kpmAllowed",           "0",                          CVAR_ARCHIVE,                                    0, qfalse           },
 };
 
 static int         gameCvarTableSize = ARRAY_LEN( gameCvarTable );

@@ -69,6 +69,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define ADMF_INCOGNITO       "INCOGNITO"
 #define ADMF_ALLFLAGS        "ALLFLAGS"
 #define ADMF_ADMINCHAT       "ADMINCHAT"
+#define ADMF_STRIPPEDPLAYER  "STRIPPEDPLAYER"
 
 #define MAX_ADMIN_LISTITEMS  20
 #define MAX_ADMIN_SHOWBANS   10
@@ -157,6 +158,18 @@ typedef struct g_admin_spec
 
 g_admin_spec_t;
 
+// cicho-sza add-on
+typedef struct g_admin_longstrip
+{
+	struct   g_admin_longstrip *next;
+	char     name[ MAX_NAME_LENGTH ];
+	char     guid[ 33 ];
+	addr_t   ip;
+	char     stripper[ MAX_NAME_LENGTH ]; // :D
+	qboolean active;
+}
+g_admin_longstrip_t;
+
 typedef struct g_admin_command
 {
 	struct g_admin_command *next;
@@ -215,6 +228,7 @@ qboolean        G_admin_timelimit( gentity_t *ent );
 qboolean        G_admin_nextmap( gentity_t *ent );
 qboolean        G_admin_namelog( gentity_t *ent );
 qboolean        G_admin_lock( gentity_t *ent );
+qboolean        G_admin_stripped( gentity_t *ent );
 qboolean        G_admin_pause( gentity_t *ent );
 qboolean        G_admin_builder( gentity_t *ent );
 qboolean        G_admin_buildlog( gentity_t *ent );
@@ -231,5 +245,11 @@ void            G_admin_buffer_end( gentity_t *ent );
 
 void            G_admin_duration( int secs, char *time, int timesize, char *duration, int dursize );
 void            G_admin_cleanup( void );
+
+// Strip addons
+qboolean G_admin_longstrip_check( gentity_t *ent );
+qboolean G_admin_longstrip( gentity_t *ent );
+qboolean G_admin_unlongstrip( gentity_t *ent );
+qboolean G_admin_showlongstrips( gentity_t *ent );
 
 #endif /* ifndef _G_ADMIN_H */

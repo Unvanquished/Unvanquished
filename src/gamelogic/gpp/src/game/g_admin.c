@@ -111,6 +111,7 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 		N_("[^3name|slot#^7]")
 	},
 
+
 	{
 		"gametimelimit", G_admin_timelimit,  qfalse, NULL, // but setting requires "gametimelimit"
 		N_("change the time limit for the current game"),
@@ -169,6 +170,12 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 		"lock",         G_admin_lock,        qfalse, "lock",
 		N_("lock a team to prevent anyone from joining it"),
 		"[^3a|h^7]"
+	},
+
+	{
+		"longstrip",    G_admin_longstrip,   qfalse, "longstrip",
+		N_("add a player by IP and GUID to list of stripped players"),
+		N_("[^3name|slot#|IP(/mask)^7]")
 	},
 
 	{
@@ -250,6 +257,12 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 	},
 
 	{
+		"showlongstrips", G_admin_showlongstrips, qtrue, "longstrip",
+		N_("display a (partial) list of longbans"),
+		N_("(^5start at strip#^7) (^5name|IP(/mask)^7)")
+	},
+
+	{
 		"spec999",      G_admin_spec999,     qfalse, "spec999",
 		N_("move 999 pingers to the spectator team"),
 		""
@@ -266,6 +279,12 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 	{
 		"specunlock",    G_admin_specunlock, qfalse, "ban",
 		N_("allow a player to join any team again"),
+		N_("[^3name|slot#^7]")
+	},
+
+	{
+		"strip",         G_admin_stripped,   qfalse, "strip",
+		N_("take away a player's ability to evolve or buy weapons"),
 		N_("[^3name|slot#^7]")
 	},
 
@@ -288,6 +307,12 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 	},
 
 	{
+		"unlongstrip",  G_admin_unlongstrip, qfalse, "longstrip",
+		N_("removes longstrip entry from admin config file"),
+		N_("[^3longstrip#^7]")
+	},
+
+	{
 		"unmute",       G_admin_mute,        qfalse, "mute",
 		N_("unmute a muted player"),
 		N_("[^3name|slot#^7]")
@@ -297,6 +322,12 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 		"unregister",   G_admin_unregister,  qfalse, "unregister",
 		N_("unregister your name so that it can be used by other players."),
 		""
+	},
+
+	{
+		"unstrip",       G_admin_stripped,    qfalse, "unstrip",
+		N_("restore a player's ability to evolve or buy weapons"),
+		N_("[^3name|slot#^7]")
 	},
 
 	{
@@ -312,6 +343,7 @@ static int        admin_level_maxname = 0;
 g_admin_level_t   *g_admin_levels = NULL;
 g_admin_admin_t   *g_admin_admins = NULL;
 g_admin_ban_t     *g_admin_bans = NULL;
+g_admin_longstrip_t *g_admin_longstrips = NULL;
 g_admin_spec_t    *g_admin_specs = NULL;
 g_admin_command_t *g_admin_commands = NULL;
 
@@ -687,6 +719,7 @@ void G_admin_writeconfig( void )
 	g_admin_admin_t   *a;
 	g_admin_level_t   *l;
 	g_admin_ban_t     *b;
+	g_admin_longstrip_t *s;
 	g_admin_command_t *c;
 
 	if ( !g_admin.string[ 0 ] )
@@ -768,6 +801,20 @@ void G_admin_writeconfig( void )
 		admin_writeconfig_int( b->expires, f );
 		trap_FS_Write( "banner  = ", 10, f );
 		admin_writeconfig_string( b->banner, f );
+		trap_FS_Write( "\n", 1, f );
+	}
+
+	for ( s = g_admin_longstrips; s; s = s->next )
+	{
+		trap_FS_Write( "[strip]\n", 8, f );
+		trap_FS_Write( "name    = ", 10, f );
+		admin_writeconfig_string( s->name, f );
+		trap_FS_Write( "guid    = ", 10, f );
+		admin_writeconfig_string( s->guid, f );
+		trap_FS_Write( "ip      = ", 10, f );
+		admin_writeconfig_string( s->ip.str, f );
+		trap_FS_Write( "stripper = ", 11, f );
+		admin_writeconfig_string( s->stripper, f );
 		trap_FS_Write( "\n", 1, f );
 	}
 
@@ -1455,6 +1502,28 @@ g_admin_spec_t *G_admin_match_spec( gentity_t *ent )
 	return NULL;
 }
 
+qboolean G_admin_longstrip_check( gentity_t *ent )
+{
+	int i;
+	g_admin_longstrip_t *strip;
+
+	for( strip = g_admin_longstrips, i = 0; strip; strip = strip->next, i++ )
+	{
+		if( !strip->active )
+		{
+			continue;
+		}
+
+		if( !Q_stricmp( strip->guid, ent->client->pers.guid ) ||
+				G_AddressCompare( &strip->ip, &ent->client->pers.ip ) )
+		{
+			ent->client->pers.longstrip = strip;
+			return qtrue;
+		}
+	}
+	return qfalse;
+}
+
 qboolean G_admin_cmd_check( gentity_t *ent )
 {
 	char              command[ MAX_ADMIN_CMD_LEN ];
@@ -1685,13 +1754,14 @@ qboolean G_admin_readconfig( gentity_t *ent )
 	g_admin_level_t   *l = NULL;
 	g_admin_admin_t   *a = NULL;
 	g_admin_ban_t     *b = NULL;
+	g_admin_longstrip_t *s = NULL;
 	g_admin_command_t *c = NULL;
-	int               lc = 0, ac = 0, bc = 0, cc = 0;
+	int lc = 0, ac = 0, bc = 0, stripc = 0, cc = 0;
 	fileHandle_t      f;
 	int               len;
 	char              *cnf, *cnf2;
 	char              *t;
-	qboolean          level_open, admin_open, ban_open, command_open;
+	qboolean level_open, admin_open, ban_open, strip_open, command_open;
 	int               i;
 	char              ip[ 44 ];
 
@@ -1722,7 +1792,7 @@ qboolean G_admin_readconfig( gentity_t *ent )
 
 	admin_level_maxname = 0;
 
-	level_open = admin_open = ban_open = command_open = qfalse;
+	level_open = admin_open = ban_open = strip_open = command_open = qfalse;
 	COM_BeginParseSession( g_admin.string );
 
 	while ( 1 )
@@ -1746,7 +1816,7 @@ qboolean G_admin_readconfig( gentity_t *ent )
 			}
 
 			level_open = qtrue;
-			admin_open = ban_open = command_open = qfalse;
+			admin_open = ban_open = strip_open = command_open = qfalse;
 			lc++;
 		}
 		else if ( !Q_stricmp( t, "[admin]" ) )
@@ -1761,7 +1831,7 @@ qboolean G_admin_readconfig( gentity_t *ent )
 			}
 
 			admin_open = qtrue;
-			level_open = ban_open = command_open = qfalse;
+			level_open = ban_open = strip_open = command_open = qfalse;
 			ac++;
 		}
 		else if ( !Q_stricmp( t, "[ban]" ) )
@@ -1779,8 +1849,24 @@ qboolean G_admin_readconfig( gentity_t *ent )
 			}
 
 			ban_open = qtrue;
-			level_open = admin_open = command_open = qfalse;
+			level_open = admin_open = strip_open = command_open = qfalse;
 			bc++;
+		}
+		else if( !Q_stricmp( t, "[strip]" ) )
+		{
+			if ( s )
+			{
+				s = s->next = BG_Alloc( sizeof( g_admin_longstrip_t ) );
+			}
+			else
+			{
+				s = g_admin_longstrips = BG_Alloc( sizeof( g_admin_longstrip_t ) );
+			}
+
+			s->active = qtrue;
+			strip_open = qtrue;
+			level_open = admin_open = ban_open = command_open = qfalse;
+			++stripc;
 		}
 		else if ( !Q_stricmp( t, "[command]" ) )
 		{
@@ -1794,7 +1880,7 @@ qboolean G_admin_readconfig( gentity_t *ent )
 			}
 
 			command_open = qtrue;
-			level_open = admin_open = ban_open = qfalse;
+			level_open = admin_open = ban_open = strip_open = qfalse;
 			cc++;
 		}
 		else if ( level_open )
@@ -1898,6 +1984,30 @@ qboolean G_admin_readconfig( gentity_t *ent )
 				COM_ParseError( "[ban] unrecognized token \"%s\"", t );
 			}
 		}
+		else if ( strip_open )
+		{
+			if ( !Q_stricmp( t, "name" ) )
+			{
+				admin_readconfig_string( &cnf, s->name, sizeof( s->name ) );
+			}
+			else if ( !Q_stricmp( t, "guid" ) )
+			{
+				admin_readconfig_string( &cnf, s->guid, sizeof( s->guid ) );
+			}
+			else if ( !Q_stricmp( t, "ip" ) )
+			{
+				admin_readconfig_string( &cnf, ip, sizeof( ip ) );
+				G_AddressParse( ip, &s->ip );
+			}
+			else if (  !Q_stricmp( t, "stripper" ) )
+			{
+				admin_readconfig_string( &cnf, s->stripper, sizeof( s->stripper ) );
+			}
+			else
+			{
+				COM_ParseError( "[strip] unrecognised token \"%s\"", t );
+			}
+		}
 		else if ( command_open )
 		{
 			if ( !Q_stricmp( t, "command" ) )
@@ -1928,8 +2038,8 @@ qboolean G_admin_readconfig( gentity_t *ent )
 	}
 
 	BG_Free( cnf2 );
-	ADMP( va( "%s %d %d %d %d", QQ( N_("^3readconfig: ^7loaded $1$ levels, $2$ admins, $3$ bans, $4$ commands\n") ),
-	          lc, ac, bc, cc ) );
+	ADMP( va( "%s %d %d %d %d %d", QQ( N_("^3readconfig: ^7loaded $1$ levels, $2$ admins, $3$ bans, $4$ longstrips, $5$ commands\n") ),
+	          lc, ac, bc, stripc, cc ) );
 
 	if ( lc == 0 )
 	{
@@ -1955,6 +2065,8 @@ qboolean G_admin_readconfig( gentity_t *ent )
 			}
 
 			G_admin_cmdlist( &g_entities[ i ] );
+
+			G_admin_longstrip_check( &g_entities[ i ] );
 		}
 	}
 
@@ -2309,6 +2421,61 @@ static void admin_create_ban( gentity_t *ent,
 			                        b->banner, b->reason ), 0 );
 		}
 	}
+}
+
+static qboolean admin_create_longstrip( gentity_t *ent,
+	char *netname,
+	char *guid,
+	addr_t *ip )
+{
+	g_admin_longstrip_t *strip = NULL;
+	int           i;
+	char          *name;
+
+	for ( strip = g_admin_longstrips; strip; strip = strip->next )
+	{
+		if( !strip->next )
+			break;
+	}
+
+	if ( strip )
+	{
+		if( !strip->next )
+		{
+			strip = strip->next = BG_Alloc( sizeof( g_admin_longstrip_t ) );
+		}
+	}
+	else
+	{
+		strip = g_admin_longstrips = BG_Alloc( sizeof( g_admin_longstrip_t ) );
+	}
+
+	Q_strncpyz( strip->name, netname, sizeof( strip->name ) );
+	Q_strncpyz( strip->guid, guid, sizeof( strip->guid ) );
+	memcpy( &strip->ip, ip, sizeof( strip->ip ) );
+
+	if ( ent && ent->client->pers.admin )
+	{
+		name = ent->client->pers.admin->name;
+	}
+	else if( ent )
+	{
+		name = ent->client->pers.netname;
+	}
+	else
+	{
+		name = "console";
+	}
+
+	Q_strncpyz( strip->stripper, name, sizeof( strip->stripper ) );
+	strip->active = qtrue;
+
+	for ( i = 0; i < level.maxclients; i++ )
+	{
+		G_admin_longstrip_check( &g_entities[ i ] );
+	}
+
+	return qtrue;
 }
 
 int G_admin_parse_time( const char *time )
@@ -3368,7 +3535,7 @@ qboolean G_admin_listplayers( gentity_t *ent )
 	char            c, t; // color and team letter
 	char            *registeredname;
 	char            lname[ MAX_NAME_LENGTH ];
-	char            muted, denied;
+	char            muted, denied, stripped;
 	int             colorlen;
 	int             authed = 1;
 	char            namecleaned[ MAX_NAME_LENGTH ];
@@ -3417,6 +3584,7 @@ qboolean G_admin_listplayers( gentity_t *ent )
 
 		muted = p->pers.namelog->muted ? 'M' : ' ';
 		denied = p->pers.namelog->denyBuild ? 'B' : ' ';
+		stripped = p->pers.namelog->strip ? 'S' : ' ';
 
 		l = d;
 		registeredname = NULL;
@@ -3463,7 +3631,7 @@ qboolean G_admin_listplayers( gentity_t *ent )
 			}
 		}
 
-		ADMBP( va( "%2i ^%c%c^7 %-2i^2%c^7 %*s^7 ^1%c%c^7 %s^7 %s%s%s %s\n",
+		ADMBP( va( "%2i ^%c%c^7 %-2i^2%c^7 %*s^7 ^1%c%c%c^7 %s^7 %s%s%s %s\n",
 		           i,
 		           c,
 		           t,
@@ -3473,6 +3641,7 @@ qboolean G_admin_listplayers( gentity_t *ent )
 		           lname,
 		           muted,
 		           denied,
+		           stripped,
 		           p->pers.netname,
 		           ( registeredname ) ? "(a.k.a. " : "",
 		           ( registeredname ) ? registeredname : "",
@@ -4876,6 +5045,7 @@ void G_admin_cleanup( void )
 	g_admin_admin_t   *a;
 	g_admin_ban_t     *b;
 	g_admin_spec_t    *s;
+	g_admin_longstrip_t *ls;
 	g_admin_command_t *c;
 	void              *n;
 
@@ -4911,6 +5081,14 @@ void G_admin_cleanup( void )
 
 	g_admin_specs = NULL;
 
+	for ( ls = g_admin_longstrips; ls; ls = n )
+	{
+		n = ls->next;
+		BG_Free( ls );
+	}
+
+	g_admin_longstrips = NULL;
+
 	for ( c = g_admin_commands; c; c = n )
 	{
 		n = c->next;
@@ -4920,3 +5098,460 @@ void G_admin_cleanup( void )
 	g_admin_commands = NULL;
 	BG_DefragmentMemory();
 }
+
+qboolean G_admin_stripped( gentity_t *ent )
+{
+	int       pids[ MAX_CLIENTS ], found = 0;
+	char      name[ MAX_NAME_LENGTH ], err[ MAX_STRING_CHARS ];
+	char      cmd[ MAX_ADMIN_CMD_LEN ];
+	gentity_t *vic;
+
+	trap_Argv( 0, cmd, sizeof( cmd ) );
+
+	if ( trap_Argc() < 2 )
+	{
+		ADMP( va( N_("^3%s: ^7usage: !%s [name|slot#]\n"), cmd, cmd ) );
+		return qfalse;
+	}
+
+	trap_Argv( 1, name, sizeof( name ) );
+	if ( ( found = G_ClientNumbersFromString( name, pids, MAX_CLIENTS ) ) != 1 )
+	{
+		G_MatchOnePlayer( pids, found, err, sizeof( err ) );
+		ADMP( va( QQ("^3%s: ^7%s\n"), cmd, err ) );
+		return qfalse;
+	}
+
+	vic = &g_entities[ pids[ 0 ] ];
+
+	if ( !admin_higher( ent, vic ) )
+	{
+		ADMP( va( "%s %s", QQ( N_("^3%s: ^7sorry, but your intended victim has a higher admin level than you\n") ), cmd ) );
+		return qfalse;
+	}
+
+	if ( vic->client->pers.namelog->strip == qtrue )
+	{
+		if ( !Q_stricmp( cmd, "strip" ) )
+		{
+			ADMP( N_("^3strip: ^7player has been stripped already\n") );
+			return qtrue;
+		}
+		vic->client->pers.namelog->strip = qfalse;
+		CPx( pids[ 0 ], "cp \"^1You have been unstripped\"" );
+		AP( va( "print \"" N_("^3dress: ^7%s^7 unstripped %s\n") "\"",
+			 ( ent ) ? ent->client->pers.netname : "console",
+			 vic->client->pers.netname ) );
+	}
+	else
+	{
+		if( !Q_stricmp( cmd, "unstrip" ) )
+		{
+			ADMP( N_("^3unstrip: ^7player is not stripped\n") );
+			return qtrue;
+		}
+		vic->client->pers.namelog->strip = qtrue;
+		CPx( pids[ 0 ], "cp \"^1You have been stripped\"" );
+		AP( va( "print \"" N_("^3strip: ^7%s^7 stripped ^7%s\n") "\"",
+			( ent ) ? ent->client->pers.netname : "console",
+			vic->client->pers.netname ) );
+	}
+	return qtrue;
+}
+
+qboolean G_admin_longstrip( gentity_t *ent )
+{
+	char     search[ MAX_NAME_LENGTH ];
+	int      logmatches = 0;
+	int      i;
+	qboolean exactmatch = qfalse;
+	char     n2[ MAX_NAME_LENGTH ];
+	char     s2[ MAX_NAME_LENGTH ];
+	char     *name;
+	int      netmask = -1;
+	addr_t   ip;
+	qboolean ipmatch = qfalse;
+	namelog_t *namelog, *match = NULL;
+
+	if( trap_Argc() < 2 )
+	{
+		ADMP( QQ( N_("^3longstrip: ^7usage: longstrip [name|slot|IP(/mask)]\n") ) );
+		return qfalse;
+	}
+
+	trap_Argv( 1, search, sizeof( search ) );
+	G_SanitiseString( search, s2, sizeof( s2 ) );
+
+	// ban by clientnum
+	for( i = 0; search[ i ] && isdigit( search[ i ] ); i++ );
+	if( !search[ i ] )
+	{
+		i = atoi( search );
+		if( i < MAX_CLIENTS &&
+			level.clients[ i ].pers.connected != CON_DISCONNECTED )
+		{
+			logmatches = 1;
+			exactmatch = qtrue;
+			for( match = level.namelogs; match->slot != i; match = match->next );
+		}
+	}
+	else if( G_AddressParse( search, &ip ) )
+	{
+		int max = ip.type == IPv4 ? 32 : 64;
+		int min = ent ? max / 2 : 1;
+		if( ip.mask < min || ip.mask > max )
+		{
+			ADMP( va( "%s %d %d %d", QQ( N_("^3longstrip: ^7invalid netmask ($1$ is not one of $2$-$3$)\n") ),
+				  netmask, min, max ) );
+			return qfalse;
+		}
+		ipmatch = qtrue;
+	}
+
+	for( namelog = level.namelogs; namelog && !exactmatch; namelog = namelog->next )
+	{
+		if( ipmatch )
+		{
+			for( i = 0; i < MAX_NAMELOG_ADDRS && namelog->ip[ i ].str[ 0 ]; i++ )
+			{
+				if( G_AddressCompare( &ip, &namelog->ip[ i ] ) )
+				{
+					match = namelog;
+					if( ( ip.type == IPv4 && ip.mask == 32 ) ||
+						( ip.type == IPv6 && ip.mask == 64 ) )
+					{
+						exactmatch = qtrue;
+						break;
+					}
+				}
+			}
+			if( match )
+				logmatches++;
+			if( exactmatch )
+				break;
+		}
+		else
+		{
+			for( i = 0; i < MAX_NAMELOG_NAMES && namelog->name[ i ][ 0 ]; i++ )
+			{
+				G_SanitiseString( namelog->name[ i ], n2, sizeof( n2 ) );
+				if( strstr( n2, s2 ) )
+				{
+					match = namelog;
+					logmatches++;
+					break;
+				}
+			}
+		}
+	}
+
+	if( !logmatches )
+	{
+		ADMP( QQ( N_("^3longstrip: ^7no player found by that name, IP, or slot number\n") ) );
+		return qfalse;
+	}
+
+	if( !ipmatch && logmatches > 1 )
+	{
+		ADMBP_begin();
+		ADMBP( QQ( N_("^3longstrip: ^7multiple recent clients match name, use IP or slot#:\n") ) );
+		for( namelog = level.namelogs; namelog; namelog = namelog->next )
+		{
+			for( i = 0; i < MAX_NAMELOG_NAMES && namelog->name[ i ][ 0 ]; i++ )
+			{
+				G_SanitiseString( namelog->name[ i ], n2, sizeof( n2 ) );
+				if( strstr( n2, s2 ) )
+					break;
+			}
+			if( i < MAX_NAMELOG_NAMES && namelog->name[ i ][ 0 ] )
+			{
+				ADMBP( namelog->slot > -1 ?
+					va( S_COLOR_YELLOW "%-2d" S_COLOR_WHITE, namelog->slot ) : "- " );
+				for( i = 0; i < MAX_NAMELOG_NAMES && namelog->name[ i ][ 0 ]; i++ )
+					ADMBP( va( " %s" S_COLOR_WHITE, namelog->name[ i ] ) );
+				for( i = 0; i < MAX_NAMELOG_ADDRS && namelog->ip[ i ].str[ 0 ]; i++ )
+					ADMBP( va( " %s", namelog->ip[ i ].str ) );
+				ADMBP( "\n" );
+			}
+		}
+		ADMBP_end();
+		return qfalse;
+	}
+
+	if( ent && ent->client->pers.admin )
+	{
+		name = ent->client->pers.admin->name;
+	}
+	else if( ent )
+	{
+		name = ent->client->pers.netname;
+	}
+	else
+	{
+		name = "console";
+	}
+
+	if( ipmatch )
+	{
+		admin_create_longstrip( ent,
+		                        match->slot == -1 ?
+		                          match->name[ match->nameChanges % MAX_NAMELOG_NAMES ] :
+		                          level.clients[ match->slot ].pers.netname,
+		                        match->guid,
+		                        &ip );
+		G_AdminMessage( NULL,
+		                va( "^3longstrip: ^7%s ^7longstripped %s ^7at %s",
+		                    name,
+		                    match->name[ match->nameChanges % MAX_NAMELOG_NAMES ],
+		                    ip.str ) );
+	}
+	else
+	{
+		// TODO: strip all IP addresses used by this player. Do we want this?
+		for( i = 0; i < MAX_NAMELOG_ADDRS && match->ip[ i ].str[ 0 ]; i++ )
+		{
+			admin_create_longstrip( ent,
+			                        match->slot == -1 ?
+			                          match->name[ match->nameChanges % MAX_NAMELOG_NAMES ] :
+			                          level.clients[ match->slot ].pers.netname,
+			                        match->guid,
+			                        &match->ip[ i ] );
+			G_AdminMessage( NULL,
+			                va( "^3longstrip: ^7%s ^7longstripped %s ^7at %s",
+			                    name,
+			                    match->name[ match->nameChanges % MAX_NAMELOG_NAMES ],
+			                    match->ip[ i ].str ) );
+		}
+	}
+
+	if( !g_admin.string[ 0 ] )
+	{
+		ADMP( QQ( "^3longstrip: ^7WARNING g_admin not set, not saving ban to a file\n" ) );
+	}
+	else
+	{
+		G_admin_writeconfig();
+	}
+
+	return qtrue;
+}
+
+qboolean G_admin_unlongstrip( gentity_t *ent )
+{
+	int  snum;
+	char bs[ 5 ];
+	int  i;
+	g_admin_longstrip_t *strip, *p;
+
+	if( trap_Argc() < 2 )
+	{
+		ADMP( QQ( N_("^3unlongstrip: ^7usage: unlongstrip [strip#]\n") ) );
+		return qfalse;
+	}
+
+	trap_Argv( 1, bs, sizeof( bs ) );
+	snum = atoi( bs );
+
+	for ( strip = p = g_admin_longstrips, i = 1;
+	      strip && i < snum;
+	      p = strip, strip = strip->next, i++ );
+
+	if( i != snum || !strip )
+	{
+		ADMP( QQ( N_("^3unlongstrip: ^7invalid strip#\n") ) );
+		return qfalse;
+	}
+
+	G_AdminMessage( NULL,
+	                va( "^3unlongstrip: ^7strip #%d for %s^7 has been removed by %s\n",
+	                    snum, strip->name,
+	                    ( ent ) ? ent->client->pers.netname : "console" ) );
+
+	if( p == strip )
+	{
+		g_admin_longstrips = strip->next;
+	}
+	else
+	{
+		p->next = strip->next;
+	}
+
+	BG_Free( strip );
+	G_admin_writeconfig();
+	return qtrue;
+}
+
+qboolean G_admin_showlongstrips( gentity_t *ent )
+{
+	int      i, j;
+	int      found = 0;
+	int      count;
+	int      max_name = 1, max_stripper = 1;
+	int      colorlen1, colorlen2;
+	int      len;
+	int      start = 0;
+	char     filter[ MAX_NAME_LENGTH ] = {""};
+	char     n1[ MAX_NAME_LENGTH ] = {""};
+	qboolean ipmatch = qfalse;
+	addr_t   ip;
+	char     name_match[ MAX_NAME_LENGTH ] = {""};
+	g_admin_longstrip_t *strip, *p = NULL;
+
+	for( strip = g_admin_longstrips; strip; p = strip, strip = strip->next )
+	{
+		if ( !strip->active )
+			continue;
+
+		++found;
+	}
+
+	if( !found )
+	{
+		ADMP( QQ( N_("^3showlongstrips: ^7no strips to display\n") ) );
+		return qfalse;
+	}
+
+	if( trap_Argc() >= 2 )
+	{
+		trap_Argv( 1, filter, sizeof( filter ) );
+		if( trap_Argc() >= 3 )
+		{
+			start = atoi( filter );
+			trap_Argv( 2, filter, sizeof( filter ) );
+		}
+		else
+		{
+			i = filter[ 0 ] == '-' && filter[ 1 ] ? 1 : 0;
+			for ( ; filter[ i ] && isdigit( filter[ i ] ); i++ );
+
+			if ( filter[ i ] )
+			{
+				G_SanitiseString( filter, name_match, sizeof( name_match ) );
+			}
+			else
+			{
+				start = atoi( filter );
+			}
+		}
+
+		// showlongstrips 1 means start with ban 0
+		if ( start > 0 )
+		{
+			--start;
+		}
+		else if ( start < 0 )
+		{
+			start = found + start;
+			if ( start < 0 )
+				start = 0;
+		}
+		else
+		{
+			ipmatch = G_AddressParse( filter, &ip );
+		}
+	}
+
+	if ( start > found )
+	{
+		ADMP( va( "%s %d", QQ( N_("^3showlongstrips: ^7$1$ is the last valid strip\n") ), found ) );
+		return qfalse;
+	}
+
+	for( i = 0, strip = g_admin_longstrips; i < start && strip; i++, strip = strip->next );
+	for( count = 0; count < MAX_ADMIN_SHOWBANS && strip; strip = strip->next )
+	{
+		if( !strip->active )
+			continue;
+
+		if( ipmatch )
+		{
+			if( !G_AddressCompare( &ip, &strip->ip ) &&
+					!G_AddressCompare( &strip->ip, &ip ) )
+				continue;
+		}
+		else if( name_match[ 0 ] )
+		{
+			G_SanitiseString( strip->name, n1, sizeof( n1 ) );
+			if( !strstr( n1, name_match) )
+				continue;
+		}
+
+		++count;
+
+		len = Q_PrintStrlen( strip->name );
+		if( len > max_name )
+			max_name = len;
+
+		len = Q_PrintStrlen( strip->stripper );
+		if( len > max_stripper )
+			max_stripper = len;
+	}
+
+	ADMBP_begin();
+	for( i = 0, strip = g_admin_longstrips; i < start && strip; i++, strip = strip->next );
+	for( count = 0; count < MAX_ADMIN_SHOWBANS && strip; strip = strip->next )
+	{
+		if( !strip->active )
+			continue;
+
+		if( ipmatch )
+		{
+			if( !G_AddressCompare( &ip, &strip->ip ) && !G_AddressCompare( &strip->ip, &ip ) )
+				continue;
+		}
+		else if( name_match[ 0 ] )
+		{
+			G_SanitiseString( strip->name, n1, sizeof( n1 ) );
+			if( !strstr( n1, name_match) )
+				continue;
+		}
+
+		++count;
+
+		for( colorlen1 = j = 0; strip->name[ j ]; j++ )
+		{
+			if( Q_IsColorString( &strip->name[ j ] ) )
+				colorlen1 += 2;
+		}
+
+
+		for( colorlen2 = j = 0; strip->stripper[ j ]; j++ )
+		{
+			if( Q_IsColorString( &strip->stripper[ j ] ) )
+				colorlen2 += 2;
+		}
+
+
+		ADMBP( va( "%4i %*s^7 %-15s %*s^7\n",
+		           ( count + start ),
+		           max_name + colorlen1,
+		           strip->name,
+		           strip->ip.str,
+		           max_stripper + colorlen2,
+		           strip->stripper ) );
+	}
+
+	if( name_match[ 0 ] || ipmatch )
+	{
+		ADMBP( va( "%s %d", ipmatch ? QQ( N_("^3showlongstrips:^7 found $1$ matching strips by IP.  ") )
+			                    : QQ( N_("^3showlongstrips:^7 found $1$ matching strips by name.  ") ),
+			   count ) );
+	}
+	else
+	{
+		ADMBP( va( "%s %d %d %d", QQ( N_("^3showlongstrips:^7 showing strips $1$ - $2$ of $3$.") ),
+		           ( found ) ? ( start + 1 ) : 0,
+		           start + count,
+		           found ) );
+	}
+
+	if( count + start < found )
+		ADMBP( va( N_("  run showlongstrips %d%s%s to see more"),
+		           start + count + 1,
+		           ( name_match[ 0 ] ) ? " " : "",
+		           ( name_match[ 0 ] ) ? filter : "" ) );
+	ADMBP( "\n" );
+	ADMBP_end();
+	return qtrue;
+}
+

@@ -1391,6 +1391,27 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 		                                Quote( client->pers.netname ) ) );
 	}
 
+	if( G_admin_permission( ent, ADMF_STRIPPEDPLAYER ) )
+	{
+		if( !ent->client->pers.namelog->strip )
+		{
+			ent->client->pers.namelog->strip = qtrue;
+			trap_SendServerCommand( ent-g_entities,
+				"print_tr \"" N_("^3You are a stripped player here.\n") "\"" );
+		}
+	}
+	else if( G_admin_longstrip_check( ent ) )
+	{
+		ent->client->pers.namelog->strip = qtrue;
+		G_AdminMessage( NULL,
+			va( "^7%s^7 is stripped as %s\n",
+				ent->client->pers.netname[ 0 ] ? ent->client->pers.netname :
+					ent->client->pers.longstrip->name,
+				ent->client->pers.longstrip->name ) );
+		trap_SendServerCommand( ent-g_entities,
+			"print_tr \"" N_("^3You are a stripped player here.\n") "\"" );
+	}
+
 	// count current clients and rank for scoreboard
 	CalculateRanks();
 
