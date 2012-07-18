@@ -5488,6 +5488,8 @@ qboolean G_admin_showlongstrips( gentity_t *ent )
 	}
 
 	ADMBP_begin();
+	ADMBP( "\"" );
+
 	for( i = 0, strip = g_admin_longstrips; i < start && strip; i++, strip = strip->next );
 	for( count = 0; count < MAX_ADMIN_SHOWBANS && strip; strip = strip->next )
 	{
@@ -5522,7 +5524,7 @@ qboolean G_admin_showlongstrips( gentity_t *ent )
 		}
 
 
-		ADMBP( va( QQ("%4i %*s^7 %-15s %*s^7\n"),
+		ADMBP( va( "%4i %*s^7 %-15s %*s^7\n",
 		           ( count + start ),
 		           max_name + colorlen1,
 		           strip->name,
@@ -5533,24 +5535,27 @@ qboolean G_admin_showlongstrips( gentity_t *ent )
 
 	if( name_match[ 0 ] || ipmatch )
 	{
-		ADMBP( va( "%s %d", ipmatch ? QQ( N_("^3showlongstrips:^7 found $1$ matching strips by IP.  ") )
-			                    : QQ( N_("^3showlongstrips:^7 found $1$ matching strips by name.  ") ),
+		ADMBP( va( ipmatch ? "^3showlongstrips:^7 found %d matching strips by IP."
+		                   : "^3showlongstrips:^7 found %d matching strips by name.",
 			   count ) );
 	}
 	else
 	{
-		ADMBP( va( "%s %d %d %d", QQ( N_("^3showlongstrips:^7 showing strips $1$ - $2$ of $3$.") ),
+		ADMBP( va( "^3showlongstrips:^7 showing strips %d - %d of %d.",
 		           ( found ) ? ( start + 1 ) : 0,
 		           start + count,
 		           found ) );
 	}
 
 	if( count + start < found )
-		ADMBP( va( N_("  run showlongstrips %d%s%s to see more"),
+	{
+		ADMBP( va( " Run showlongstrips %d%s%s to see more.",
 		           start + count + 1,
 		           ( name_match[ 0 ] ) ? " " : "",
 		           ( name_match[ 0 ] ) ? filter : "" ) );
-	ADMBP( "\n" );
+	}
+
+	ADMBP( "\n\"" );
 	ADMBP_end();
 	return qtrue;
 }
