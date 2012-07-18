@@ -5522,7 +5522,7 @@ qboolean G_admin_showlongstrips( gentity_t *ent )
 		}
 
 
-		ADMBP( va( "%4i %*s^7 %-15s %*s^7\n",
+		ADMBP( va( QQ("%4i %*s^7 %-15s %*s^7\n"),
 		           ( count + start ),
 		           max_name + colorlen1,
 		           strip->name,
