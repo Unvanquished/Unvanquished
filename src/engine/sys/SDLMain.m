@@ -187,9 +187,14 @@ static void CustomApplicationMain( int argc, char **argv )
 {
 	int _gArgc = gArgc;
 
+	if ( gCalledAppMainline )
+	{
+		return FALSE;
+	}
+
 	[self addArgc:filename];
 
-	return _gArgc != gArgc ? YES : NO;
+	return _gArgc != gArgc ? TRUE : FALSE;
 }
 
 - (void) addArgc: (NSString *) argc
@@ -242,6 +247,8 @@ void Cbuf_AddText( const char *text );
 {
 	NSString *uri = [[event paramDescriptorForKeyword:keyDirectObject] stringValue];
 	char     buffer[ MAXPATHLEN ];
+
+	[NSApp unhide: NSApp];
 
 	if ( gCalledAppMainline )
 	{
