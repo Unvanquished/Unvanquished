@@ -1551,7 +1551,7 @@ static void CG_SetPlayerLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, i
 	oldSkeleton = skeleton;
 
 	//Com_Printf(_("new: %i old %i\n"), newAnimation,lf->old_animationNumber);
-	if ( lf->old_animation != NULL && skeleton.numBones == oldSkeleton.numBones )
+	if ( lf->old_animation && lf->old_animation->handle && skeleton.numBones == oldSkeleton.numBones )
 	{
 		if ( !trap_R_BuildSkeleton( &oldSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
 		{
@@ -1826,7 +1826,7 @@ static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 		// blend old and current animation
 		CG_BlendPlayerLerpFrame( lf );
 
-		if ( lf->animation && ci->team != TEAM_NONE )
+		if ( lf->animation && lf->animation->handle && ci->team != TEAM_NONE )
 		{
 			if ( !trap_R_BuildSkeleton( skel, lf->animation->handle, lf->oldFrame, lf->frame, lf->backlerp, lf->animation->clearOrigin ) )
 			{
