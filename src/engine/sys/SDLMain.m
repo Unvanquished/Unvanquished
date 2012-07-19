@@ -248,7 +248,8 @@ void Cbuf_AddText( const char *text );
 	NSString *uri = [[event paramDescriptorForKeyword:keyDirectObject] stringValue];
 	char     buffer[ MAXPATHLEN ];
 
-	[NSApp unhide: NSApp];
+	[NSApp unhideWithoutActivation];
+	[NSApp updateWindows];
 
 	if ( gCalledAppMainline )
 	{
