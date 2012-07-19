@@ -2227,7 +2227,7 @@ void CL_Connect_f( void )
 {
 	char         *server, password[ 64 ];
 	const char   *serverString, *tmp, *scheme = APP_URI_SCHEME;
-	int          argc = Cmd_Argc(), passwordLength;
+	int          argc = Cmd_Argc();
 	netadrtype_t family = NA_UNSPEC;
 
 	if ( argc != 2 && argc != 3 )
