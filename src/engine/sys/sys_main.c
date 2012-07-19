@@ -848,28 +848,13 @@ int main( int argc, char **argv )
 	for ( i = 1; i < argc; i++ )
 	{
 #ifdef USE_CURSES
-
 		if ( !strcmp( "+nocurses", argv[ i ] ) )
 		{
 			nocurses = qtrue;
 			continue;
 		}
-
 #endif
-		const qboolean containsSpaces = strchr( argv[ i ], ' ' ) != NULL;
-
-		if ( containsSpaces )
-		{
-			Q_strcat( commandLine, sizeof( commandLine ), "\"" );
-		}
-
-		Q_strcat( commandLine, sizeof( commandLine ), argv[ i ] );
-
-		if ( containsSpaces )
-		{
-			Q_strcat( commandLine, sizeof( commandLine ), "\"" );
-		}
-
+		Q_strcat( commandLine, sizeof( commandLine ), Cmd_QuoteString( argv[ i ] ) );
 		Q_strcat( commandLine, sizeof( commandLine ), " " );
 	}
 
