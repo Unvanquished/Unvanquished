@@ -3797,7 +3797,7 @@ void Com_Frame( void )
 
 		Com_EventLoop();
 		Cbuf_Execute();
-
+		Cdelay_Frame();
 		//
 		// client side
 		//

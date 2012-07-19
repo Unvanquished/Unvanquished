@@ -475,6 +475,10 @@ void Cbuf_Execute( void );
 // Called on a per-frame basis, but may also be explicitly invoked.
 // Do not call inside a command function, or current args will be destroyed.
 
+void Cdelay_Frame (void);
+//Check if a delayed command have to be executed and decreases the remaining
+//delay time for all of them
+
 //===========================================================================
 
 /*
