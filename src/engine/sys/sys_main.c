@@ -844,6 +844,13 @@ int main( int argc, char **argv )
 	Sys_SetBinaryPath( Sys_Dirname( argv[ 0 ] ) );
 	Sys_SetDefaultInstallPath( DEFAULT_BASEDIR );
 
+	// If the first parameter begins with "unv://", assume that it's a URI
+	// This covers e.g. launching via xdg-open
+	if ( argc > 1 && !Q_strnicmp( argv[ 1 ], APP_URI_SCHEME, sizeof( APP_URI_SCHEME ) - 1 ) )
+	{
+		strcpy( commandLine, "connect " );
+	}
+
 	// Concatenate the command line for passing to Com_Init
 	for ( i = 1; i < argc; i++ )
 	{

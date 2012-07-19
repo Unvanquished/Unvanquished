@@ -7,3 +7,4 @@ Terminal=false
 Type=Application
 Exec=/usr/games/unvanquished
 Categories=Game;ActionGame;StrategyGame;
+MimeType=x-scheme-handler/unv
