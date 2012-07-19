@@ -38,7 +38,7 @@ Maryland 20850 USA.
 #include "../qcommon/qcommon.h"
 #include "../renderer/tr_public.h"
 #include "keys.h"
-#include "../../gamelogic/gpp/src/game/bg_public.h" // FIXME
+#include "../../gamelogic/game/bg_public.h" // FIXME
 #include "snd_public.h"
 
 #include "../client/ui_api.h"

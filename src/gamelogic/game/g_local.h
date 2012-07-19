@@ -23,9 +23,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // g_local.h -- local definitions for game module
 
-#include "../../../../engine/qcommon/q_shared.h"
+#include "../../engine/qcommon/q_shared.h"
 #include "bg_public.h"
-#include "../../../../engine/server/g_api.h"
+#include "../../engine/server/g_api.h"
 
 typedef struct gentity_s gentity_t;
 typedef struct gclient_s gclient_t;

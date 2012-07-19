@@ -144,7 +144,7 @@ extern "C" {
 
 #ifdef Q3_VM
 
-#include "../../gamelogic/gpp/src/game/bg_lib.h"
+#include "../../gamelogic/game/bg_lib.h"
 
 	typedef int intptr_t;
 

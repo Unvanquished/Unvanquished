@@ -24,9 +24,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef UI_LOCAL_H
 #define UI_LOCAL_H
 
-#include "../../../../engine/qcommon/q_shared.h"
-#include "../../../../engine/renderer/tr_types.h"
-#include "../../../../engine/client/ui_api.h"
+#include "../../engine/qcommon/q_shared.h"
+#include "../../engine/renderer/tr_types.h"
+#include "../../engine/client/ui_api.h"
 #include "keycodes.h"
 #include "../game/bg_public.h"
 #include "ui_shared.h"

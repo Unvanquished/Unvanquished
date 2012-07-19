@@ -24,11 +24,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef __UI_SHARED_H
 #define __UI_SHARED_H
 
-#include "../../../../engine/qcommon/q_shared.h"
-#include "../../../../engine/renderer/tr_types.h"
+#include "../../engine/qcommon/q_shared.h"
+#include "../../engine/renderer/tr_types.h"
 #include "keycodes.h"
 
-#include "../../ui/menudef.h"
+#include "../../../../main/ui/menudef.h"
 
 #define MAX_MENUNAME               32
 #define MAX_ITEMTEXT               64
