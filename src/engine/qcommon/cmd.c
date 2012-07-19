@@ -354,6 +354,42 @@ void Cbuf_Execute( void )
 }
 
 /*
+===============
+Cdelay_Frame
+===============
+*/
+
+void Cdelay_Frame( void ) {
+	int i;
+	int sys_time = Sys_Milliseconds();
+	qboolean run_it;
+	
+	for(i=0; (i<MAX_DELAYED_COMMANDS); i++)
+	{
+		run_it = qfalse;
+		
+		if(delayed_cmd[i].delay == CMD_DELAY_UNUSED)
+			continue;
+		
+		//check if we should run the command (both type)
+		if(delayed_cmd[i].type == CMD_DELAY_MSEC && delayed_cmd[i].delay < sys_time)
+		{			
+			run_it = qtrue;
+		} else if(delayed_cmd[i].type == CMD_DELAY_FRAME)
+		{
+			delayed_cmd[i].delay --;
+			if(delayed_cmd[i].delay == CMD_DELAY_FRAME_FIRE)
+				run_it = qtrue;
+		}
+		
+		if(run_it)
+		{
+			delayed_cmd[i].delay = CMD_DELAY_UNUSED;
+			Cbuf_ExecuteText(EXEC_NOW, delayed_cmd[i].text);
+		}
+	}
+}
+/*
 ==============================================================================
 
                                                 SCRIPT COMMANDS
@@ -1115,7 +1151,7 @@ void Cmd_Delay_f( void )
 	qboolean availiable_cmd = qfalse;
 
 	// Check if the call is valid
-	if ( Cmd_Argc() < 2 )
+	if ( Cmd_Argc() < 3 || Cmd_Argc() > 4)
 	{
 		Com_Printf(_( "delay (name) <delay in milliseconds> <command>\ndelay <delay in frames>f <command>\nexecutes <command> after the delay\n" ));
 		return;
@@ -1139,7 +1175,7 @@ void Cmd_Delay_f( void )
 
 	if ( delay < 1 )
 	{
-		Com_Printf(_( "delay: the delay must be a positive integer" ));
+		Com_Printf(_( "delay: the delay must be a positive integer\n" ));
 		return;
 	}
 
@@ -1155,7 +1191,7 @@ void Cmd_Delay_f( void )
 
 	if ( !availiable_cmd )
 	{
-		Com_Printf(_( "WARNING: Maximum amount of delayed commands reached." ));
+		Com_Printf(_( "WARNING: Maximum amount of delayed commands reached\n" ));
 		return;
 	}
 

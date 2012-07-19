@@ -308,7 +308,8 @@ static void CG_EntityEffects( centity_t *cent )
 		g = ( cl >> 8 ) & 255;
 		b = ( cl >> 16 ) & 255;
 		i = ( ( cl >> 24 ) & 255 ) * 4;
-		trap_R_AddLightToScene( cent->lerpOrigin, i, i, r, g, b, 0, 0 );
+
+		trap_R_AddAdditiveLightToScene( cent->lerpOrigin, i, r, g, b );
 	}
 
 	if ( CG_IsTrailSystemValid( &cent->muzzleTS ) )
@@ -1111,17 +1112,13 @@ CG_RangeMarker
 */
 void CG_RangeMarker( centity_t *cent )
 {
-	qboolean drawS, drawI, drawF;
-	float    so, lo, th;
-	int      rmType;
+	rangeMarkerType_t  rmType;
 	float    range;
 	vec3_t   rgb;
 
-	if ( CG_GetRangeMarkerPreferences( &drawS, &drawI, &drawF, &so, &lo, &th ) &&
-	     CG_GetBuildableRangeMarkerProperties( cent->currentState.modelindex, &rmType, &range, rgb ) )
+	if ( CG_GetBuildableRangeMarkerProperties( cent->currentState.modelindex, &rmType, &range, rgb ) )
 	{
-		CG_DrawRangeMarker( rmType, cent->lerpOrigin, ( rmType > 0 ? cent->lerpAngles : NULL ),
-		                    range, drawS, drawI, drawF, rgb, so, lo, th );
+		CG_DrawRangeMarker( rmType, cent->lerpOrigin, range, cent->lerpAngles, rgb );
 	}
 }
 

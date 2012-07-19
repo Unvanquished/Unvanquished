@@ -475,6 +475,10 @@ void Cbuf_Execute( void );
 // Called on a per-frame basis, but may also be explicitly invoked.
 // Do not call inside a command function, or current args will be destroyed.
 
+void Cdelay_Frame (void);
+//Check if a delayed command have to be executed and decreases the remaining
+//delay time for all of them
+
 //===========================================================================
 
 /*
@@ -729,6 +733,7 @@ int          FS_GetFileList( const char *path, const char *extension, char *list
 int          FS_GetModList( char *listbuf, int bufsize );
 
 fileHandle_t FS_FOpenFileWrite( const char *qpath );
+fileHandle_t FS_FOpenFileAppend( const char *filename );
 
 // will properly create any needed paths and deal with separator character issues
 

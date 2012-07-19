@@ -328,7 +328,7 @@ Tess_ClipSkyPolygons
 void Tess_ClipSkyPolygons()
 {
 	vec3_t p[ 5 ]; // need one extra point for clipping
-	int    i, j;
+	unsigned int i, j;
 
 	ClearSkyBox();
 

@@ -474,6 +474,11 @@ void RE_AddRefEntityToScene( const refEntity_t *ent )
 	R_AddModelShadow( ( refEntity_t * ) ent );
 }
 
+void RE_AddLightToSceneQ3A( const vec3_t org, float radius, float r, float g, float b )
+{
+	RE_AddLightToScene( org, radius, r_lightScale->value, r, g, b, 0, 0 );
+}
+
 /*
 RE_AddLightToScene()
 ydnar: modified dlight system to support separate radius and intensity

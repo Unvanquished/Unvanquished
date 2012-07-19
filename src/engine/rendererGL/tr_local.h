@@ -3146,8 +3146,6 @@ extern "C" {
 		// leaf specific
 		int          cluster;
 		int          area;
-		qboolean     sameAABBAsParent;
-		qboolean     shrinkedAABB;
 
 		int          numMarkSurfaces;
 		bspSurface_t **markSurfaces;
@@ -3231,10 +3229,12 @@ extern "C" {
 
 		int           numVerts;
 		srfVert_t     *verts;
+#if CALC_REDUNDANT_SHADOWVERTS
 		int           redundantVertsCalculationNeeded;
 		int           *redundantLightVerts; // util to optimize IBOs
 		int           *redundantShadowVerts;
 		int           *redundantShadowAlphaTestVerts;
+#endif
 		VBO_t         *vbo;
 		IBO_t         *ibo;
 

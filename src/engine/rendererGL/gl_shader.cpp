@@ -210,19 +210,13 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 	GLchar      *mainBuffer = NULL;
 	int         mainSize;
 	char        *token;
-
-	int         libsSize;
-	char        *libsBuffer; // all libs concatenated
+	std::string libsBuffer; // all libs concatenated
 
 	char        **libs = ( char ** ) &libShaderNames;
 
 	std::string shaderText;
 
 	GL_CheckErrors();
-
-	// load libs
-	libsSize = 0;
-	libsBuffer = NULL;
 
 	while ( 1 )
 	{
@@ -255,13 +249,7 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 		}
 
 		// append it to the libsBuffer
-		libsBuffer = ( char * ) realloc( libsBuffer, libsSize + libSize );
-
-		memset( libsBuffer + libsSize, 0, libSize );
-		libsSize += libSize;
-
-		Q_strcat( libsBuffer, libsSize, libBuffer );
-		//Q_strncpyz(libsBuffer + libsSize, libBuffer, libSize -1);
+		libsBuffer.append(libBuffer);
 
 		ri.FS_FreeFile( libBuffer );
 	}
@@ -691,7 +679,7 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 		Q_strcat( bufferExtra, sizeof( bufferExtra ), "#line 0\n" );
 
 		sizeExtra = strlen( bufferExtra );
-		sizeFinal = sizeExtra + mainSize + libsSize;
+		sizeFinal = sizeExtra + mainSize + libsBuffer.size();
 
 		//ri.Printf(PRINT_ALL, "GLSL extra: %s\n", bufferExtra);
 
@@ -699,9 +687,9 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 
 		strcpy( bufferFinal, bufferExtra );
 
-		if ( libsSize > 0 )
+		if ( libsBuffer.size() > 0 )
 		{
-			Q_strcat( bufferFinal, sizeFinal, libsBuffer );
+			Q_strcat( bufferFinal, sizeFinal, libsBuffer.c_str() );
 		}
 
 		Q_strcat( bufferFinal, sizeFinal, mainBuffer );
@@ -798,7 +786,6 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 	}
 
 	ri.FS_FreeFile( mainBuffer );
-	free( libsBuffer );
 
 	return shaderText;
 }
@@ -810,7 +797,7 @@ void GLShader::SaveShaderProgram( GLuint program, const char *pname, int i ) con
 	GLvoid  *binary;
 
 	// Don't even try if the necessary functions aren't available
-	if( !GLEW_ARB_get_program_binary )
+	if( !glConfig2.getProgramBinaryAvailable )
 	{
 		return;
 	}
@@ -835,7 +822,7 @@ bool GLShader::LoadShaderProgram( GLuint program, const char *pname, int i ) con
 	GLenum binaryFormat;
 
 	// Don't even try if the necessary functions aren't available
-	if( !GLEW_ARB_get_program_binary )
+	if( !glConfig2.getProgramBinaryAvailable )
 	{
 		return false;
 	}
@@ -1155,7 +1142,7 @@ void GLShader::LinkProgram( GLuint program ) const
 
 #ifdef GLEW_ARB_get_program_binary
 	// Apparently, this is necessary to get the binary program via glGetProgramBinary
-	if( GLEW_ARB_get_program_binary )
+	if( glConfig2.getProgramBinaryAvailable )
 	{
 		glProgramParameteri( program, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE );
 	}

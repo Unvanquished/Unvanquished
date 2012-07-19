@@ -23,6 +23,7 @@ if( MSVC )
 #  set( CMAKE_C_FLAGS_DEBUG "" CACHE STRING "" )
 #  set( CMAKE_C_FLAGS_RELEASE "" CACHE STRING "" )
   set( CMAKE_CONFIGURATION_TYPES Release;Debug CACHE STRING "Available build configurations" FORCE )
+  set( CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /arch:SSE /fp:fast /Oy" )
 else()
   set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse2 -pipe" )
   set( CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g" )
@@ -74,6 +75,7 @@ cmake_dependent_option( USE_INTERNAL_JPEG    "Use JPEG files included with Unvan
                                                                         "BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER OR BUILD_DAEMONMAP" 0 )
 
 cmake_dependent_option( USE_GLSL_OPTIMIZER   "Compile with GLSL Optimizer"                           1 BUILD_NEW_RENDERER             0 )
+cmake_dependent_option( USE_SDL_ICONV        "Compile with SDL's iconv implementation"               1 BUILD_CLIENT                   0 )
 
 cmake_dependent_option( HAVE_BZIP2           "Compile with BZip2 support"                            0 "HAVE_BZIP2"                   0 )
 
@@ -1463,7 +1465,7 @@ if( BUILD_CLIENT )
   add_dependencies( client rendererGL )
   include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )
   target_link_libraries( client ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
-  set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER COMPAT_ET USE_REFENTITY_ANIMATIONSYSTEM USE_CRYPTO  )
+  set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER COMPAT_ET USE_REFENTITY_ANIMATIONSYSTEM USE_CRYPTO HAVE_SDL )
   set_target_properties( client PROPERTIES OUTPUT_NAME "daemon.${BUILD_ARCH}" PREFIX "" LINKER_LANGUAGE CXX )
 
   # Setup CPack for target client
@@ -1651,10 +1653,8 @@ if( BUILD_SERVER )
   endif()
 
   # The following section finds the REQUIRED dependencies and makes them available to the target
-  find_package( SDL REQUIRED )
   find_package( GMP REQUIRED )
   find_package( ZLIB REQUIRED )
-  find_package( CURL REQUIRED )
 
   if( USE_INTERNAL_CRYPTO )
     # BEFORE is required to prevent system headers from being used
@@ -1665,8 +1665,8 @@ if( BUILD_SERVER )
     target_link_libraries( server ${NETTLE_LIBRARIES} )
   endif()
 
-  include_directories( ${SDL_INCLUDE_DIR} ${GMP_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${CURL_INCLUDE_DIRS} )
-  target_link_libraries( server ${SDL_LIBRARY} ${GMP_LIBRARIES} ${ZLIB_LIBRARIES} ${CURL_LIBRARIES} )
+  include_directories( ${GMP_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} )
+  target_link_libraries( server ${GMP_LIBRARIES} ${ZLIB_LIBRARIES} )
 
   # The following section finds the OPTIONAL dependencies and makes them available to the target
 
@@ -1692,6 +1692,13 @@ if( BUILD_SERVER )
     set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS HAVE_BZIP2 )
     include_directories( ${BZIP2_INCLUDE_DIR} )
     target_link_libraries( server ${BZIP2_LIBRARY} )
+  endif()
+
+  if( USE_SDL_ICONV )
+    find_package( SDL REQUIRED )
+    set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS HAVE_SDL )
+    include_directories( ${SDL_INCLUDE_DIR} )
+    target_link_libraries( server ${SDL_LIBRARY} )
   endif()
 
   if( GAME_LIB_LLVM )
@@ -1726,10 +1733,9 @@ if( BUILD_DAEMONMAP )
   find_package( SDL REQUIRED )
   find_package( JPEG REQUIRED )
   find_package( PNG REQUIRED )
-  find_package( ZLIB REQUIRED )
   find_package( GLib2 REQUIRED )
-  target_link_libraries( daemonMap ${OPENGL_LIBRARIES} ${SDL_LIBRARY} ${JPEG_LIBRARIES} ${PNG_LIBRARIES} ${ZLIB_LIBRARIES} ${GLIB_LIBRARIES} )
-  include_directories( ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${GLIB_INCLUDE_DIRS} )
+  target_link_libraries( daemonMap ${OPENGL_LIBRARIES} ${SDL_LIBRARY} ${JPEG_LIBRARIES} ${PNG_LIBRARIES} ${GLIB_LIBRARIES} )
+  include_directories( ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${GLIB_INCLUDE_DIRS} )
 endif()
 
 #####################

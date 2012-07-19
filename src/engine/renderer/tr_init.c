@@ -180,6 +180,7 @@ cvar_t *r_simpleMipMaps;
 cvar_t *r_showImages;
 
 cvar_t *r_ambientScale;
+cvar_t *r_lightScale;
 cvar_t *r_directedScale;
 cvar_t *r_debugLight;
 cvar_t *r_debugSort;
@@ -1220,6 +1221,7 @@ void R_Register( void )
 	r_primitives = ri.Cvar_Get( "r_primitives", "0", CVAR_ARCHIVE );
 
 	r_ambientScale = ri.Cvar_Get( "r_ambientScale", "0.5", CVAR_CHEAT );
+	r_lightScale = ri.Cvar_Get( "r_lightScale", "2", CVAR_CHEAT );
 	r_directedScale = ri.Cvar_Get( "r_directedScale", "1", CVAR_CHEAT );
 
 	//
@@ -1597,7 +1599,7 @@ extern "C" {
 		re.AddPolysToScene = RE_AddPolysToScene;
 		// done.
 		re.AddLightToScene = RE_AddLightToScene;
-		re.AddAdditiveLightToScene = NULL;
+		re.AddAdditiveLightToScene = RE_AddLightToSceneQ3A;
 //----(SA)
 		re.AddCoronaToScene = RE_AddCoronaToScene;
 		re.SetFog = R_SetFog;
