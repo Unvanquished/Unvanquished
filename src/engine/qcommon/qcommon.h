@@ -296,6 +296,8 @@ You or the server may be running older versions of the game. Press the auto-upda
 #define GAMENAME_STRING "unv"
 #define PROTOCOL_VERSION 85
 
+#define APP_URI_SCHEME GAMENAME_STRING "://"
+
 // maintain a list of compatible protocols for demo playing
 // NOTE: that stuff only works with two digits protocols
 extern int demo_protocols[];
