@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../engine/renderer/tr_types.h"
 #include "keycodes.h"
 
-#include "../../../../main/ui/menudef.h"
+#include "../../../main/ui/menudef.h"
 
 #define MAX_MENUNAME               32
 #define MAX_ITEMTEXT               64
