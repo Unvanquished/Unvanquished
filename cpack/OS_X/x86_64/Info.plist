@@ -16,5 +16,16 @@
 	<string>6.0</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>Unvanquished Server Link</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>unv</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>
