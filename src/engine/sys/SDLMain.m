@@ -19,6 +19,17 @@
 - (void) setAppleMenu: (NSMenu *) menu;
 @end
 
+/* Portions of CPS.h */
+typedef struct CPSProcessSerNum
+{
+	UInt32 lo;
+	UInt32 hi;
+} CPSProcessSerNum;
+
+extern OSErr CPSGetCurrentProcess( CPSProcessSerNum *psn );
+extern OSErr CPSEnableForegroundOperation( CPSProcessSerNum *psn, UInt32 _arg2, UInt32 _arg3, UInt32 _arg4, UInt32 _arg5 );
+extern OSErr CPSSetFrontProcess( CPSProcessSerNum *psn );
+
 static int  gArgc;
 static char **gArgv;
 static BOOL gFinderLaunch;
@@ -45,32 +56,13 @@ static NSString *getApplicationName( void )
 	return appName;
 }
 
-@interface SDLApplication : NSApplication
-@end
-
-@implementation SDLApplication
-
-- (BOOL) acceptsFirstResponder
-{
-	return YES;
-}
-
-- (BOOL) becomeFirstResponder
-{
-	return YES;
-}
-
-/* Invoked from the Quit menu item */
-- (void) terminate: (id) sender
-{
-	/* Post a SDL_QUIT event */
-	SDL_Event event;
-	event.type = SDL_QUIT;
-	SDL_PushEvent( &event );
-}
+@interface NSApplication ( SDLApplication )
 @end
 
 /* The main class of the application, the application's delegate */
+@implementation NSApplication ( SDLApplication )
+@end
+
 @implementation SDLMain
 
 static void setApplicationMenu( void )
@@ -148,9 +140,16 @@ static void CustomApplicationMain( int argc, char **argv )
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	SDLMain           *sdlMain;
+	CPSProcessSerNum  PSN;
 
 	/* Ensure the application object is initialised */
-	[SDLApplication sharedApplication];
+	[NSApplication sharedApplication];
+
+	/* Tell the dock about us */
+	if ( !CPSGetCurrentProcess( &PSN ) )
+		if ( !CPSEnableForegroundOperation( &PSN, 0x03, 0x3C, 0x2C, 0x1103 ) )
+			if ( !CPSSetFrontProcess( &PSN ) )
+				[NSApplication sharedApplication];
 
 	/* Set up the menubar */
 	[NSApp setMainMenu:[[NSMenu alloc] init]];
