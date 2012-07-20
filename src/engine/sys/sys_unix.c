@@ -1338,6 +1338,6 @@ qboolean Sys_IsNumLockDown( void )
 
 	return (x.led_mask & 2) ? qtrue : qfalse;
 #else
-	return qfalse; // Macs don't have Numlock.
+	return qtrue; // Macs don't have Numlock.
 #endif
 }
