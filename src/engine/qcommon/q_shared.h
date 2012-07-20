@@ -144,7 +144,7 @@ extern "C" {
 
 #ifdef Q3_VM
 
-#include "../../gamelogic/gpp/src/game/bg_lib.h"
+#include "../../gamelogic/game/bg_lib.h"
 
 	typedef int intptr_t;
 
@@ -347,9 +347,7 @@ extern int memcmp( void *, void *, size_t );
 	  ERR_VID_FATAL, // exit the entire game with a popup window and doesn't delete profile.pid
 	  ERR_DROP, // print to console and disconnect from game
 	  ERR_SERVERDISCONNECT, // don't kill server
-	  ERR_DISCONNECT, // client disconnected from the server
-	  ERR_NEED_CD, // pop up the need-cd dialog
-	  ERR_AUTOUPDATE
+	  ERR_DISCONNECT // client disconnected from the server
 	} errorParm_t;
 
 // font rendering values used by ui and cgame
@@ -465,10 +463,6 @@ extern int memcmp( void *, void *, size_t );
 #endif
 
 #define ARRAY_LEN(x) ( sizeof( x ) / sizeof( *( x ) ) )
-
-#if defined ( IPHONE )
-#define UNIMPL()     Com_Printf_(("%s(): Unimplemented\n"), __FUNCTION__)
-#endif
 
 // angle indexes
 #define PITCH 0 // up / down
@@ -2118,8 +2112,6 @@ char *Q_UTF8Unstore( int e );
 	  DT_MOVERIGHT,
 	  DT_FORWARD,
 	  DT_BACK,
-	  DT_LEANLEFT,   // etmain
-	  DT_LEANRIGHT,
 	  DT_UP,
 	  DT_NUM
 	} dtType_t;
@@ -2415,7 +2407,6 @@ char *Q_UTF8Unstore( int e );
 	{
 	  CA_UNINITIALIZED,
 	  CA_DISCONNECTED, // not talking to a server
-	  CA_AUTHORIZING, // not used any more, was checking cd key
 	  CA_CONNECTING, // sending request packets to the server
 	  CA_CHALLENGING, // sending challenge packets to the server
 	  CA_CONNECTED, // netchan_t established, getting gamestate
@@ -2541,9 +2532,6 @@ typedef struct
 #define MAX_PINGREQUESTS         16
 #define MAX_SERVERSTATUSREQUESTS 16
 
-#define CDKEY_LEN                16
-#define CDCHKSUM_LEN             2
-
 // NERVE - SMF - localization
 	typedef enum
 	{
@@ -2599,17 +2587,6 @@ typedef struct
 	void     Com_ClientListRemove( clientList_t *list, int clientNum );
 	char     *Com_ClientListString( const clientList_t *list );
 	void     Com_ClientListParse( clientList_t *list, const char *s );
-
-	enum
-	{
-	  AUTHORIZE_BAD,
-	  AUTHORIZE_OK,
-	  AUTHORIZE_NOTVERIFIED,
-	  AUTHORIZE_CREATECHARACTER,
-	  AUTHORIZE_DELETECHARACTER,
-	  AUTHORIZE_ACCOUNTINFO,
-	  AUTHORIZE_UNAVAILABLE,
-	};
 
 	/* This should not be changed because this value is
 	* expected to be the same on the client and on the server */

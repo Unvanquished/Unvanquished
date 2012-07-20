@@ -952,7 +952,13 @@ void SV_Init( void )
 	//bani - added cvar_t for sv_cheats so server engine can reference it
 	sv_cheats = Cvar_Get( "sv_cheats", "1", CVAR_SYSTEMINFO | CVAR_ROM );
 	sv_serverid = Cvar_Get( "sv_serverid", "0", CVAR_SYSTEMINFO | CVAR_ROM );
+#ifdef DEDICATED
 	sv_pure = Cvar_Get( "sv_pure", "1", CVAR_SYSTEMINFO );
+#else
+	// Use OS shared libs for the client at startup. This prevents crashes due to mismatching syscall ABIs
+	// from loading outdated vms pk3s. The correct vms pk3 will be loaded upon connecting to a pure server.
+	sv_pure = Cvar_Get( "sv_pure", "0", CVAR_SYSTEMINFO ); 
+#endif
 #ifdef USE_VOIP
 	sv_voip = Cvar_Get( "sv_voip", "1", CVAR_SYSTEMINFO | CVAR_LATCH );
 	Cvar_CheckRange( sv_voip, 0, 1, qtrue );

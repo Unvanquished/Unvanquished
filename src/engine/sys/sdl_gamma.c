@@ -93,9 +93,6 @@ GLimp_SetGamma
 */
 void GLimp_SetGamma( unsigned char red[ 256 ], unsigned char green[ 256 ], unsigned char blue[ 256 ] )
 {
-#if defined( IPHONE )
-	UNIMPL();
-#else
 #if 1
 	Uint16 table[ 256 ];
 	int    i, value, lastvalue = 0;
@@ -151,5 +148,3 @@ void GLimp_RestoreGamma( void )
 		}
 	}
 }
-
-#endif //IPHONE

@@ -94,7 +94,7 @@ cvar_t *com_maxfps;
 cvar_t *com_timedemo;
 cvar_t *com_sv_running;
 cvar_t *com_cl_running;
-cvar_t *com_logfile; // 1 = buffer log, 2 = flush after each print
+cvar_t *com_logfile; // 1 = buffer log, 2 = flush after each print, 3 = append + flush
 cvar_t *com_showtrace;
 cvar_t *com_version;
 
@@ -249,7 +249,15 @@ int QDECL VPRINTF_LIKE(1) Com_VPrintf( const char *fmt, va_list argptr )
 			time( &aclock );
 			newtime = localtime( &aclock );
 
-			logfile = FS_FOpenFileWrite( "etconsole.log" );
+			if ( com_logfile->integer != 3 )
+			{
+				logfile = FS_FOpenFileWrite( "etconsole.log" );
+			}
+			else
+			{
+				logfile = FS_FOpenFileAppend( "etconsole.log" );
+			}
+
 			Com_Printf(_( "logfile opened on %s\n"), asctime( newtime ) );
 
 			if ( com_logfile->integer > 1 )
@@ -399,27 +407,6 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 		com_errorEntered = qfalse;
 		longjmp( abortframe, -1 );
 	}
-
-#ifndef DEDICATED
-	else if ( code == ERR_AUTOUPDATE )
-	{
-		VM_Forced_Unload_Start();
-		CL_Disconnect( qtrue );
-		CL_FlushMemory();
-		VM_Forced_Unload_Done();
-		com_errorEntered = qfalse;
-
-		if ( !Q_stricmpn( com_errorMessage, "Server is full", 14 ) && CL_NextUpdateServer() )
-		{
-			CL_GetAutoUpdate();
-		}
-		else
-		{
-			longjmp( abortframe, -1 );
-		}
-	}
-
-#endif
 	else
 	{
 		VM_Forced_Unload_Start();
@@ -2823,12 +2810,6 @@ int Com_EventLoop( void )
 			case SE_JOYSTICK_AXIS:
 				CL_JoystickEvent( ev.evValue, ev.evValue2, ev.evTime );
 				break;
-#ifdef IPHONE
-
-			case SE_ACCEL:
-				CL_AccelEvent( ev.evValue, ev.evValue2, ev.evValue3 );
-				break;
-#endif
 
 			case SE_CONSOLE:
 				Cbuf_AddText( ( char * ) ev.evPtr );
@@ -2979,14 +2960,6 @@ static void NORETURN Com_Crash_f( void )
 	* ( volatile int * ) 0 = 0x12345678;
 	exit( 1 ); // silence warning
 }
-
-// TTimo: centralizing the cl_cdkey stuff after I discovered a buffer overflow problem with the dedicated server version
-//   not sure it's necessary to have different defaults for regular and dedicated, but I don't want to take the risk
-#ifndef DEDICATED
-char cl_cdkey[ 34 ] = "                                ";
-#else
-char cl_cdkey[ 34 ] = "123456789";
-#endif
 
 void Com_SetRecommended()
 {
@@ -3326,7 +3299,7 @@ void Com_Init( char *commandLine )
 				// bani - check existing pid file and make sure it's ok
 				if ( !Com_CheckProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
 				{
-#ifndef _DEBUG
+#if 0
 					Com_Printf(_( "^3WARNING: profile.pid found for profile '%s' – system settings will revert to defaults\n"),
 					            cl_profileStr );
 					// ydnar: set crashed state
@@ -3789,7 +3762,7 @@ void Com_Frame( void )
 
 		Com_EventLoop();
 		Cbuf_Execute();
-
+		Cdelay_Frame();
 		//
 		// client side
 		//

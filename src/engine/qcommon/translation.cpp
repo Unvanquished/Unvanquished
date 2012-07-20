@@ -41,8 +41,11 @@ extern "C"
 
 #include "../../libs/tinygettext/tinygettext.hpp"
 #include <sstream>
+#include <iostream>
 
 using namespace tinygettext;
+// Ugly char buffer
+static char gettextbuffer[ MAX_STRING_CHARS ];
 
 DictionaryManager trans_manager;
 DictionaryManager trans_managergame;
@@ -121,7 +124,7 @@ Trans_Init
 */
 extern "C" void Trans_Init( void )
 {
-	char                **poFiles, langList[ MAX_TOKEN_CHARS ], encList[ MAX_TOKEN_CHARS ];
+	char                **poFiles, langList[ MAX_TOKEN_CHARS ] = "", encList[ MAX_TOKEN_CHARS ] = "";
 	int                 numPoFiles, i;
 	FL_Locale           *locale;
 	std::set<Language>  langs;
@@ -156,13 +159,10 @@ extern "C" void Trans_Init( void )
 	for( i = 0; i < numPoFiles; i++ )
 	{
 		int ret;
-		Dictionary *dict1;
-		Dictionary *dict2;
 		char *buffer, language[ 6 ];
 		
 		if( FS_ReadFile( va( "translation/client/%s", poFiles[ i ] ), ( void ** ) &buffer ) > 0 )
 		{
-			dict1 = new Dictionary();
 			COM_StripExtension2( poFiles[ i ], language, sizeof( language ) );
 			std::stringstream ss( buffer );
 			trans_manager.add_po( poFiles[ i ], ss, Language::from_env( std::string( language ) ) );
@@ -175,7 +175,6 @@ extern "C" void Trans_Init( void )
 		
 		if( FS_ReadFile( va( "translation/game/%s", poFiles[ i ] ), ( void ** ) &buffer ) > 0 )
 		{
-			dict2 = new Dictionary();
 			COM_StripExtension2( poFiles[ i ], language, sizeof( language ) );
 			std::stringstream ss( buffer );
 			trans_managergame.add_po( poFiles[ i ], ss, Language::from_env( std::string( language ) ) );
@@ -211,19 +210,22 @@ extern "C" void Trans_Init( void )
 extern "C" const char* Trans_Gettext( const char *msgid )
 {
 	if( !enabled ) { return msgid; }
-	return trans_dict.translate( std::string( msgid ) ).c_str();
+	Q_strncpyz( gettextbuffer, trans_dict.translate( msgid ).c_str(), sizeof( gettextbuffer ) );
+	return gettextbuffer;
 }
 
 extern "C" const char* Trans_Pgettext( const char *ctxt, const char *msgid )
 {
 	if ( !enabled ) { return msgid; }
-	return trans_dict.translate_ctxt( std::string( ctxt ), std::string( msgid ) ).c_str();
+	Q_strncpyz( gettextbuffer, trans_dict.translate_ctxt( ctxt, msgid ).c_str(), sizeof( gettextbuffer ) );
+	return gettextbuffer;
 }
 
 extern "C" const char* Trans_GettextGame( const char *msgid )
 {
 	if( !enabled ) { return msgid; }
-	return trans_dictgame.translate( std::string( msgid ) ).c_str();
+	Q_strncpyz( gettextbuffer, trans_dictgame.translate( msgid ).c_str(), sizeof( gettextbuffer ) );
+	return gettextbuffer;
 }
 
 extern "C" const char* Trans_PgettextGame( const char *ctxt, const char *msgid )
@@ -235,11 +237,13 @@ extern "C" const char* Trans_PgettextGame( const char *ctxt, const char *msgid )
 extern "C" const char* Trans_GettextPlural( const char *msgid, const char *msgid_plural, int num )
 {
 	if( !enabled ) { return num == 1 ? msgid : msgid_plural; }
-	return trans_dict.translate_plural( std::string( msgid ), std::string( msgid_plural ), num ).c_str();
+	Q_strncpyz( gettextbuffer, trans_dict.translate_plural( msgid, msgid_plural, num ).c_str(), sizeof( gettextbuffer ) );
+	return gettextbuffer;
 }
 
 extern "C" const char* Trans_GettextGamePlural( const char *msgid, const char *msgid_plural, int num )
 {
 	if( !enabled ) { return num == 1 ? msgid : msgid_plural; }
-	return trans_dictgame.translate_plural( std::string( msgid ), std::string( msgid_plural ), num ).c_str();
+	Q_strncpyz( gettextbuffer, trans_dictgame.translate_plural( msgid, msgid_plural, num ).c_str(), sizeof( gettextbuffer ) );
+	return gettextbuffer;
 }

@@ -614,11 +614,13 @@ void LoadRGBEToFloats( const char *name, float **pic, int *width, int *height, q
 
 	if ( !formatFound )
 	{
+		ri.FS_FreeFile( buffer );
 		ri.Error( ERR_DROP, "LoadRGBE: %s has no format", name );
 	}
 
 	if ( !w || !h )
 	{
+		ri.FS_FreeFile( buffer );
 		ri.Error( ERR_DROP, "LoadRGBE: %s has an invalid image size", name );
 	}
 
@@ -912,6 +914,7 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 
 					if ( !image )
 					{
+						Com_Dealloc( hdrImage );
 						break;
 					}
 
@@ -6038,54 +6041,8 @@ static void R_LoadNodesAndLeafs( lump_t *nodeLump, lump_t *leafLump )
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;
 
-#if 0
-		out->shrinkedAABB = qfalse;
-
-		if ( out->contents != CONTENTS_NODE && out->numMarkSurfaces )
-		{
-			// BSP leaves don't have an optimal size so shrink them if possible by their surfaces
-#if 1
-			mins[ 0 ] = Q_min( Q_max( out->mins[ 0 ], out->surfMins[ 0 ] ), out->maxs[ 0 ] );
-			mins[ 1 ] = Q_min( Q_max( out->mins[ 1 ], out->surfMins[ 1 ] ), out->maxs[ 1 ] );
-			mins[ 2 ] = Q_min( Q_max( out->mins[ 2 ], out->surfMins[ 2 ] ), out->maxs[ 2 ] );
-
-			maxs[ 0 ] = Q_max( Q_min( out->maxs[ 0 ], out->surfMaxs[ 0 ] ), out->mins[ 0 ] );
-			maxs[ 1 ] = Q_max( Q_min( out->maxs[ 1 ], out->surfMaxs[ 1 ] ), out->mins[ 1 ] );
-			maxs[ 2 ] = Q_max( Q_min( out->maxs[ 2 ], out->surfMaxs[ 2 ] ), out->mins[ 2 ] );
-#else
-			mins[ 0 ] = Q_max( out->mins[ 0 ], out->surfMins[ 0 ] );
-			mins[ 1 ] = Q_max( out->mins[ 1 ], out->surfMins[ 1 ] );
-			mins[ 2 ] = Q_max( out->mins[ 2 ], out->surfMins[ 2 ] );
-
-			maxs[ 0 ] = Q_min( out->maxs[ 0 ], out->surfMaxs[ 0 ] );
-			maxs[ 1 ] = Q_min( out->maxs[ 1 ], out->surfMaxs[ 1 ] );
-			maxs[ 2 ] = Q_min( out->maxs[ 2 ], out->surfMaxs[ 2 ] );
-#endif
-
-			for ( i = 0; i < 3; i++ )
-			{
-				if ( mins[ i ] > maxs[ i ] )
-				{
-					float tmp = mins[ i ];
-					mins[ i ] = maxs[ i ];
-					maxs[ i ] = tmp;
-				}
-			}
-
-			VectorCopy( out->surfMins, mins );
-			VectorCopy( out->surfMaxs, maxs );
-
-			if ( !VectorCompareEpsilon( out->mins, mins, 1.0 ) || !VectorCompareEpsilon( out->maxs, maxs, 1.0 ) )
-			{
-				out->shrinkedAABB = qtrue;
-			}
-		}
-		else
-#endif
-		{
-			VectorCopy( out->mins, mins );
-			VectorCopy( out->maxs, maxs );
-		}
+		VectorCopy( out->mins, mins );
+		VectorCopy( out->maxs, maxs );
 
 		for ( i = 0; i < 3; i++ )
 		{
@@ -10295,6 +10252,7 @@ void RE_LoadWorldMap( const char *name )
 
 	if ( i != BSP_VERSION && i != BSP_VERSION_Q3 )
 	{
+		ri.FS_FreeFile( buffer );
 		ri.Error( ERR_DROP, "RE_LoadWorldMap: %s has wrong version number (%i should be %i for ET or %i for Q3)",
 		          name, i, BSP_VERSION, BSP_VERSION_Q3 );
 	}

@@ -23,6 +23,7 @@ if( MSVC )
 #  set( CMAKE_C_FLAGS_DEBUG "" CACHE STRING "" )
 #  set( CMAKE_C_FLAGS_RELEASE "" CACHE STRING "" )
   set( CMAKE_CONFIGURATION_TYPES Release;Debug CACHE STRING "Available build configurations" FORCE )
+  set( CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /arch:SSE /fp:fast /Oy" )
 else()
   set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse2 -pipe" )
   set( CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g" )
@@ -51,7 +52,7 @@ option( BUILD_MASTER         "Build master server"                         1 )
 option( BUILD_DAEMONMAP      "Build Mapping tool"                          0 )
 
 option( ENABLE_W_ALL         "Use -Wall"                                   0 )
-option( ENABLE_WARNINGS      "Enable various compiler warning options"     1 )
+option( ENABLE_WARNINGS      "Enable security & code-checking warning options" 1 )
 option( ENABLE_HARDENING     "Enable security hardening options"            1 )
 
 cmake_dependent_option( BUILD_OLD_RENDERER   "Build old renderer library"                            1 BUILD_CLIENT                   0 )
@@ -74,6 +75,7 @@ cmake_dependent_option( USE_INTERNAL_JPEG    "Use JPEG files included with Unvan
                                                                         "BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER OR BUILD_DAEMONMAP" 0 )
 
 cmake_dependent_option( USE_GLSL_OPTIMIZER   "Compile with GLSL Optimizer"                           1 BUILD_NEW_RENDERER             0 )
+cmake_dependent_option( USE_SDL_ICONV        "Compile with SDL's iconv implementation"               1 BUILD_CLIENT                   0 )
 
 cmake_dependent_option( HAVE_BZIP2           "Compile with BZip2 support"                            0 "HAVE_BZIP2"                   0 )
 
@@ -84,6 +86,8 @@ cmake_dependent_option( GAME_LIB_LLVM        "Use LLVM, not shared libs, for gam
 cmake_dependent_option( USE_OPENAL_DLOPEN    "Use dlopen to load OpenAL"                   1 USE_OPENAL       0 )
 cmake_dependent_option( USE_CIN_THEORA       "Compile with support for Theora"             1 USE_CODEC_VORBIS 0 )
 cmake_dependent_option( USE_INTERNAL_SPEEX   "Use internal speex"                          0 USE_VOIP         0 )
+
+cmake_dependent_option( ENABLE_W_EXTRA       "Use -Wextra"                                 0 ENABLE_W_ALL     0 )
 
 cmake_dependent_option( ENABLE_FSTACKPROT    "Enable stack protection if available"        1 ENABLE_HARDENING 0 )
 cmake_dependent_option( ENABLE_RELRO         "Enable relro & bindnow if available"         1 ENABLE_HARDENING 0 )
@@ -109,7 +113,7 @@ if( GAME_LIB_LLVM )
 endif()
 
 set( MOUNT_DIR ${CMAKE_SOURCE_DIR}/src )
-set( GPP_DIR ${CMAKE_SOURCE_DIR}/src/gamelogic/gpp )
+set( GPP_DIR ${CMAKE_SOURCE_DIR}/src/gamelogic )
 set( LIB_DIR ${CMAKE_SOURCE_DIR}/src/libs ) # LIB_DIR is also defined in Visual_Studio32/64.cmake
 set( SDL_DIR ${LIB_DIR}/libsdl )
 set( JPEG_DIR ${LIB_DIR}/jpeg )
@@ -219,7 +223,7 @@ endif()
 
 # Setup CPack
 set( CPACK_PACKAGE_FILE_NAME "Unvanquished" )
-set( CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/cpack/OS_X/Unvanquished.icns" )
+set( CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cpack/OS_X/Unvanquished.icns" )
 set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "Daemon Unvanquished client" )
 set( CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.txt" )
 set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/GPL.txt" )
@@ -227,9 +231,9 @@ set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/GPL.txt" )
 set( CPACK_BUNDLE_NAME ${CPACK_PACKAGE_FILE_NAME} )
 set( CPACK_BUNDLE_ICON ${CPACK_PACKAGE_ICON} )
 if( ${BUILD_ARCH} STREQUAL "i386" )
-  set( CPACK_BUNDLE_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cpack/OS_X/x86/info.plist")
+  set( CPACK_BUNDLE_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cpack/OS_X/x86/info.plist")
 else()
-  set( CPACK_BUNDLE_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cpack/OS_X/x86_64/info.plist")
+  set( CPACK_BUNDLE_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cpack/OS_X/x86_64/info.plist")
 endif()
 
 #################
@@ -291,6 +295,9 @@ endmacro()
 
 # Various warnings
 if( ENABLE_W_ALL )
+  try_c_cxx_llvm_flag( HAVE_W_ALL              -Wall )
+endif()
+if( ENABLE_W_EXTRA )
   try_c_cxx_llvm_flag( HAVE_W_ALL              -Wall )
 endif()
 if( ENABLE_WARNINGS )
@@ -497,7 +504,7 @@ if( MSVC )
   if( ${BUILD_ARCH} STREQUAL "i386" )
     set( ASM_APP ml )
   else()
-    set( ASM_APP ml64 )
+    set( ASM_APP ml64 -D idx64=1 )
   endif()
   set( QCOMMONLIST ${QCOMMONLIST} ftola.obj snapvector.obj )
   # Work around - bugs in cmake prevent adding asm files to target in VS projects
@@ -605,112 +612,112 @@ set( GAME_VM_COMMON
 
 # Any .def files must come at the end of the file list otherwise they will be ignored
 set( CGAMEGPP_BASE
-  ${GPP_DIR}/src/cgame/cg_main.c
-  ${GPP_DIR}/src/game/bg_misc.c
-  ${GPP_DIR}/src/game/bg_pmove.c
-  ${GPP_DIR}/src/game/bg_slidemove.c
-  ${GPP_DIR}/src/game/bg_lib.c
-  ${GPP_DIR}/src/game/bg_alloc.c
-  ${GPP_DIR}/src/game/bg_voice.c
-  ${GPP_DIR}/src/cgame/cg_consolecmds.c
-  ${GPP_DIR}/src/cgame/cg_buildable.c
-  ${GPP_DIR}/src/cgame/cg_animation.c
-  ${GPP_DIR}/src/cgame/cg_animmapobj.c
-  ${GPP_DIR}/src/cgame/cg_draw.c
-  ${GPP_DIR}/src/cgame/cg_drawtools.c
-  ${GPP_DIR}/src/cgame/cg_ents.c
-  ${GPP_DIR}/src/cgame/cg_event.c
-  ${GPP_DIR}/src/cgame/cg_marks.c
-  ${GPP_DIR}/src/cgame/cg_players.c
-  ${GPP_DIR}/src/cgame/cg_playerstate.c
-  ${GPP_DIR}/src/cgame/cg_predict.c
-  ${GPP_DIR}/src/cgame/cg_servercmds.c
-  ${GPP_DIR}/src/cgame/cg_snapshot.c
-  ${GPP_DIR}/src/cgame/cg_view.c
-  ${GPP_DIR}/src/cgame/cg_weapons.c
-  ${GPP_DIR}/src/cgame/cg_scanner.c
-  ${GPP_DIR}/src/cgame/cg_attachment.c
-  ${GPP_DIR}/src/cgame/cg_trails.c
-  ${GPP_DIR}/src/cgame/cg_particles.c
-  ${GPP_DIR}/src/cgame/cg_tutorial.c
-  ${GPP_DIR}/src/ui/ui_shared.c
-  ${GPP_DIR}/src/ui/ui_utf8.c
+  ${GPP_DIR}/cgame/cg_main.c
+  ${GPP_DIR}/game/bg_misc.c
+  ${GPP_DIR}/game/bg_pmove.c
+  ${GPP_DIR}/game/bg_slidemove.c
+  ${GPP_DIR}/game/bg_lib.c
+  ${GPP_DIR}/game/bg_alloc.c
+  ${GPP_DIR}/game/bg_voice.c
+  ${GPP_DIR}/cgame/cg_consolecmds.c
+  ${GPP_DIR}/cgame/cg_buildable.c
+  ${GPP_DIR}/cgame/cg_animation.c
+  ${GPP_DIR}/cgame/cg_animmapobj.c
+  ${GPP_DIR}/cgame/cg_draw.c
+  ${GPP_DIR}/cgame/cg_drawtools.c
+  ${GPP_DIR}/cgame/cg_ents.c
+  ${GPP_DIR}/cgame/cg_event.c
+  ${GPP_DIR}/cgame/cg_marks.c
+  ${GPP_DIR}/cgame/cg_players.c
+  ${GPP_DIR}/cgame/cg_playerstate.c
+  ${GPP_DIR}/cgame/cg_predict.c
+  ${GPP_DIR}/cgame/cg_servercmds.c
+  ${GPP_DIR}/cgame/cg_snapshot.c
+  ${GPP_DIR}/cgame/cg_view.c
+  ${GPP_DIR}/cgame/cg_weapons.c
+  ${GPP_DIR}/cgame/cg_scanner.c
+  ${GPP_DIR}/cgame/cg_attachment.c
+  ${GPP_DIR}/cgame/cg_trails.c
+  ${GPP_DIR}/cgame/cg_particles.c
+  ${GPP_DIR}/cgame/cg_tutorial.c
+  ${GPP_DIR}/ui/ui_shared.c
+  ${GPP_DIR}/ui/ui_utf8.c
   ${MOUNT_DIR}/engine/qcommon/./q_math.c
   ${MOUNT_DIR}/engine/qcommon/./q_shared.c
 )
 
 set( CGAMEGPP_SO
   ${CGAMEGPP_BASE}
-  ${GPP_DIR}/src/cgame/cg_api.c
-  ${GPP_DIR}/src/cgame/cgame.def
+  ${GPP_DIR}/cgame/cg_api.c
+  ${GPP_DIR}/cgame/cgame.def
 )
 
 set( CGAMEGPP_QVM
-  ${GPP_DIR}/src/cgame/cg_api.asm
+  ${GPP_DIR}/cgame/cg_api.asm
 )
 
 set( GAMEGPP_BASE
-  ${GPP_DIR}/src/game/g_main.c
-  ${GPP_DIR}/src/game/bg_misc.c
-  ${GPP_DIR}/src/game/bg_pmove.c
-  ${GPP_DIR}/src/game/bg_slidemove.c
-  ${GPP_DIR}/src/game/bg_lib.c
-  ${GPP_DIR}/src/game/bg_alloc.c
-  ${GPP_DIR}/src/game/bg_voice.c
-  ${GPP_DIR}/src/game/g_active.c
-  ${GPP_DIR}/src/game/g_client.c
-  ${GPP_DIR}/src/game/g_cmds.c
-  ${GPP_DIR}/src/game/g_combat.c
-  ${GPP_DIR}/src/game/g_physics.c
-  ${GPP_DIR}/src/game/g_buildable.c
-  ${GPP_DIR}/src/game/g_misc.c
-  ${GPP_DIR}/src/game/g_missile.c
-  ${GPP_DIR}/src/game/g_mover.c
-  ${GPP_DIR}/src/game/g_session.c
-  ${GPP_DIR}/src/game/g_spawn.c
-  ${GPP_DIR}/src/game/g_svcmds.c
-  ${GPP_DIR}/src/game/g_target.c
-  ${GPP_DIR}/src/game/g_team.c
-  ${GPP_DIR}/src/game/g_trigger.c
-  ${GPP_DIR}/src/game/g_utils.c
-  ${GPP_DIR}/src/game/g_maprotation.c
-  ${GPP_DIR}/src/game/g_weapon.c
-  ${GPP_DIR}/src/game/g_admin.c
-  ${GPP_DIR}/src/game/g_namelog.c
+  ${GPP_DIR}/game/g_main.c
+  ${GPP_DIR}/game/bg_misc.c
+  ${GPP_DIR}/game/bg_pmove.c
+  ${GPP_DIR}/game/bg_slidemove.c
+  ${GPP_DIR}/game/bg_lib.c
+  ${GPP_DIR}/game/bg_alloc.c
+  ${GPP_DIR}/game/bg_voice.c
+  ${GPP_DIR}/game/g_active.c
+  ${GPP_DIR}/game/g_client.c
+  ${GPP_DIR}/game/g_cmds.c
+  ${GPP_DIR}/game/g_combat.c
+  ${GPP_DIR}/game/g_physics.c
+  ${GPP_DIR}/game/g_buildable.c
+  ${GPP_DIR}/game/g_misc.c
+  ${GPP_DIR}/game/g_missile.c
+  ${GPP_DIR}/game/g_mover.c
+  ${GPP_DIR}/game/g_session.c
+  ${GPP_DIR}/game/g_spawn.c
+  ${GPP_DIR}/game/g_svcmds.c
+  ${GPP_DIR}/game/g_target.c
+  ${GPP_DIR}/game/g_team.c
+  ${GPP_DIR}/game/g_trigger.c
+  ${GPP_DIR}/game/g_utils.c
+  ${GPP_DIR}/game/g_maprotation.c
+  ${GPP_DIR}/game/g_weapon.c
+  ${GPP_DIR}/game/g_admin.c
+  ${GPP_DIR}/game/g_namelog.c
   ${MOUNT_DIR}/engine/qcommon/./q_math.c
   ${MOUNT_DIR}/engine/qcommon/./q_shared.c
 )
 
 set( GAMEGPP_SO
   ${GAMEGPP_BASE}
-  ${GPP_DIR}/src/game/g_api.c
-  ${GPP_DIR}/src/game/game.def
+  ${GPP_DIR}/game/g_api.c
+  ${GPP_DIR}/game/game.def
 )
 
 set( GAMEGPP_QVM
-  ${GPP_DIR}/src/game/g_api.asm
+  ${GPP_DIR}/game/g_api.asm
 )
 
 set( UIGPP_BASE
-  ${GPP_DIR}/src/ui/ui_main.c
-  ${GPP_DIR}/src/ui/ui_atoms.c
-  ${GPP_DIR}/src/ui/ui_shared.c
-  ${GPP_DIR}/src/ui/ui_gameinfo.c
-  ${GPP_DIR}/src/game/bg_misc.c
-  ${GPP_DIR}/src/game/bg_lib.c
+  ${GPP_DIR}/ui/ui_main.c
+  ${GPP_DIR}/ui/ui_atoms.c
+  ${GPP_DIR}/ui/ui_shared.c
+  ${GPP_DIR}/ui/ui_gameinfo.c
+  ${GPP_DIR}/game/bg_misc.c
+  ${GPP_DIR}/game/bg_lib.c
   ${MOUNT_DIR}/engine/qcommon/./q_math.c
   ${MOUNT_DIR}/engine/qcommon/./q_shared.c
-  ${GPP_DIR}/src/ui/ui_utf8.c
+  ${GPP_DIR}/ui/ui_utf8.c
 )
 
 set( UIGPP_SO
   ${UIGPP_BASE}
-  ${GPP_DIR}/src/ui/ui_api.c
-  ${GPP_DIR}/src/ui/ui.def
+  ${GPP_DIR}/ui/ui_api.c
+  ${GPP_DIR}/ui/ui.def
 )
 
 set( UIGPP_QVM
-  ${GPP_DIR}/src/ui/ui_api.asm
+  ${GPP_DIR}/ui/ui_api.asm
 )
 
 set( DAEMONMAPLIST
@@ -1132,12 +1139,12 @@ function( GAMELIB )
     if( GAME_LIB_LLVM )
       file( MAKE_DIRECTORY "${Daemon_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/vm" )
 
-      set( GAMELIB_SOURCE_NAME "src/gamelogic/${GAMELIB_OUTPUT_DIR}" )
+      set( GAMELIB_SOURCE_NAME "gamelogic/${GAMELIB_OUTPUT_DIR}" )
       if( GAMELIB_OUTPUT_DIR STREQUAL "main" )
-        set( GAMELIB_SOURCE_NAME "src/gamelogic/gpp" )
+        set( GAMELIB_SOURCE_NAME "gamelogic/" )
       endif()
 
-      set( GAMELIB_LLVM_FLAGS "-w -emit-llvm -DQ3_VM -nostdinc -I${GAMELIB_SOURCE_NAME} -Isrc/engine/qcommon -I${GAMELIB_SOURCE_NAME}/src/game -I${GAMELIB_SOURCE_NAME}/src/cgame -I${GAMELIB_SOURCE_NAME}/src/ui" )
+      set( GAMELIB_LLVM_FLAGS "-w -emit-llvm -DQ3_VM -nostdinc -I${GAMELIB_SOURCE_NAME} -Isrc/engine/qcommon -I${GAMELIB_SOURCE_NAME}/game -I${GAMELIB_SOURCE_NAME}/src/cgame -I${GAMELIB_SOURCE_NAME}/ui" )
 
       set( GAMELIB_LIB_CXX )
       foreach( FILE ${GAMELIB_LIB_FILES} )
@@ -1185,7 +1192,7 @@ function( GAMELIB )
   if( GAME_QVM AND GAMELIB_QVM_FILES )
     set( QVM_DIR ${CMAKE_BINARY_DIR}/CMakeFiles/${GAMELIB_LIB_NAME}-qvm.dir )
     set( QVM_CPP_OPTIONS
-      -I"${MOUNT_DIR}/gamelogic/gpp/src/game"
+      -I"${MOUNT_DIR}/gamelogic/game"
       -I"${MOUNT_DIR}/engine/qcommon"
       -D__inline=
       -DQ3_VM
@@ -1294,11 +1301,8 @@ if( BUILD_OLD_RENDERER )
   # Setup target renderer
   add_library( renderer SHARED ${RENDERERLIST} ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c ${SHAREDLIST} ${MOUNT_DIR}/engine/rendererGL/rendererGL.def )
   set_property( TARGET renderer PROPERTY COMPILE_DEFINITIONS BUILD_FREETYPE USE_REFENTITY_ANIMATIONSYSTEM )
-  if( NOT (WIN32 AND (${BUILD_ARCH} STREQUAL "i386")) )
-    set_target_properties( renderer PROPERTIES OUTPUT_NAME "rendererGL${BUILD_ARCH}" )
-  else()
-    set_target_properties( renderer PROPERTIES OUTPUT_NAME "rendererGLx86" )
-  endif()
+  set_target_properties( renderer PROPERTIES OUTPUT_NAME "rendererGL${BUILD_ARCH}" )
+  
   if( NOT MSVC )
     target_link_libraries( renderer m )
   endif()
@@ -1337,11 +1341,8 @@ if( BUILD_NEW_RENDERER )
   # Setup target rendererGL
   add_library( rendererGL SHARED ${SHAREDLIST} ${OPENEXRLIST} ${RENDERERGLLIST} ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c ${MOUNT_DIR}/engine/rendererGL/rendererGL.def )
   set_property( TARGET rendererGL PROPERTY COMPILE_DEFINITIONS BUILD_FREETYPE FT_FREETYPE USE_XREAL_RENDERER USE_REFENTITY_ANIMATIONSYSTEM )
-  if( NOT (WIN32 AND (${BUILD_ARCH} STREQUAL "i386")) )
-    set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "rendererGL3${BUILD_ARCH}" )
-  else()
-    set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "rendererGL3x86" )
-  endif()
+  set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "rendererGL3${BUILD_ARCH}" )
+
   target_link_libraries( rendererGL ${OS_LIBRARIES} )
 
   # Setup CPack for target rendererGL
@@ -1429,7 +1430,7 @@ if( BUILD_CLIENT )
   add_dependencies( client rendererGL )
   include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )
   target_link_libraries( client ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
-  set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER COMPAT_ET USE_REFENTITY_ANIMATIONSYSTEM USE_CRYPTO  )
+  set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER COMPAT_ET USE_REFENTITY_ANIMATIONSYSTEM USE_CRYPTO HAVE_SDL )
   set_target_properties( client PROPERTIES OUTPUT_NAME "daemon.${BUILD_ARCH}" PREFIX "" LINKER_LANGUAGE CXX )
 
   # Setup CPack for target client
@@ -1617,10 +1618,8 @@ if( BUILD_SERVER )
   endif()
 
   # The following section finds the REQUIRED dependencies and makes them available to the target
-  find_package( SDL REQUIRED )
   find_package( GMP REQUIRED )
   find_package( ZLIB REQUIRED )
-  find_package( CURL REQUIRED )
 
   if( USE_INTERNAL_CRYPTO )
     # BEFORE is required to prevent system headers from being used
@@ -1631,8 +1630,8 @@ if( BUILD_SERVER )
     target_link_libraries( server ${NETTLE_LIBRARIES} )
   endif()
 
-  include_directories( ${SDL_INCLUDE_DIR} ${GMP_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${CURL_INCLUDE_DIRS} )
-  target_link_libraries( server ${SDL_LIBRARY} ${GMP_LIBRARIES} ${ZLIB_LIBRARIES} ${CURL_LIBRARIES} )
+  include_directories( ${GMP_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} )
+  target_link_libraries( server ${GMP_LIBRARIES} ${ZLIB_LIBRARIES} )
 
   # The following section finds the OPTIONAL dependencies and makes them available to the target
 
@@ -1658,6 +1657,13 @@ if( BUILD_SERVER )
     set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS HAVE_BZIP2 )
     include_directories( ${BZIP2_INCLUDE_DIR} )
     target_link_libraries( server ${BZIP2_LIBRARY} )
+  endif()
+
+  if( USE_SDL_ICONV )
+    find_package( SDL REQUIRED )
+    set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS HAVE_SDL )
+    include_directories( ${SDL_INCLUDE_DIR} )
+    target_link_libraries( server ${SDL_LIBRARY} )
   endif()
 
   if( GAME_LIB_LLVM )
@@ -1692,10 +1698,9 @@ if( BUILD_DAEMONMAP )
   find_package( SDL REQUIRED )
   find_package( JPEG REQUIRED )
   find_package( PNG REQUIRED )
-  find_package( ZLIB REQUIRED )
   find_package( GLib2 REQUIRED )
-  target_link_libraries( daemonMap ${OPENGL_LIBRARIES} ${SDL_LIBRARY} ${JPEG_LIBRARIES} ${PNG_LIBRARIES} ${ZLIB_LIBRARIES} ${GLIB_LIBRARIES} )
-  include_directories( ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} ${GLIB_INCLUDE_DIRS} )
+  target_link_libraries( daemonMap ${OPENGL_LIBRARIES} ${SDL_LIBRARY} ${JPEG_LIBRARIES} ${PNG_LIBRARIES} ${GLIB_LIBRARIES} )
+  include_directories( ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${GLIB_INCLUDE_DIRS} )
 endif()
 
 #####################

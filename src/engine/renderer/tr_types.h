@@ -84,13 +84,8 @@ Maryland 20850 USA.
 #define RDF_NOBLOOM      ( 1 << 8 ) // RB: disable bloom. useful for hud models
 // XreaL END
 
-#ifdef IPHONE
-#define GL_INDEX_TYPE GL_UNSIGNED_SHORT
-typedef unsigned short glIndex_t;
-#else
 #define GL_INDEX_TYPE GL_UNSIGNED_INT
 typedef unsigned int   glIndex_t;
-#endif // IPHONE
 
 typedef struct
 {
@@ -519,6 +514,7 @@ typedef struct
 	qboolean framebufferBlitAvailable;
 
 	qboolean generateMipmapAvailable;
+	qboolean getProgramBinaryAvailable;
 } glconfig2_t;
 // XreaL END
 

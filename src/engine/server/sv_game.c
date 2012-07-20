@@ -105,7 +105,7 @@ void SV_GameSendServerCommand( int clientNum, const char *text )
 	}
 	else if ( clientNum == -2 )
 	{
-		SV_PrintTranslatedText( text );
+		SV_PrintTranslatedText( text, qfalse );
 	}
 	else
 	{

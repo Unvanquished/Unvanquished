@@ -67,25 +67,6 @@ extern void GLimp_RestoreGamma( void );
 
 //static qboolean SDL_VIDEODRIVER_externallySet = qfalse;
 
-#if defined ( IPHONE )
-#include <OpenGLES/ES1/gl.h>
-#include "ipad_local.h"
-
-#include "OWApplication.h"
-#include "OWScreenView.h"
-
-static OWScreenView *_screenView;
-static EAGLContext  *_context;
-static GLenum       _GLimp_beginmode;
-static float        _GLimp_texcoords[ MAX_ARRAY_SIZE ][ 2 ];
-static float        _GLimp_vertexes[ MAX_ARRAY_SIZE ][ 3 ];
-static float        _GLimp_colors[ MAX_ARRAY_SIZE ][ 4 ];
-static GLuint       _GLimp_numInputVerts, _GLimp_numOutputVerts;
-static qboolean     _GLimp_texcoordbuffer;
-static qboolean     _GLimp_colorbuffer;
-
-#endif // IPHONE
-
 /* Just hack it for now. */
 #ifdef MACOS_X
 #include <OpenGL/OpenGL.h>
@@ -810,55 +791,6 @@ GLimp_SetMode
 */
 static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 {
-#if defined ( IPHONE )
-	UIView *superview = _screenView.superview;
-	CGRect superviewBounds = superview.bounds, frame;
-
-	if ( rotation == 0 || rotation == 180 )
-	{
-		frame.size.width = superviewBounds.size.width;
-		frame.size.height = frame.size.width * ( 3 / 4.0 );
-		frame.origin.x = superviewBounds.origin.x;
-		frame.origin.y = ( superviewBounds.size.height - frame.size.height ) / 2;
-	}
-	else
-	{
-		frame = superviewBounds;
-	}
-
-	_screenView.frame = frame;
-
-	glConfig.isFullscreen = qtrue;
-
-	/*if (rotation == 0 || rotation == 180)
-	{
-	        glConfig.vidWidth = frame.size.width;
-	        glConfig.vidHeight = frame.size.height;
-	}
-	else
-	{*/
-	glConfig.vidWidth = frame.size.height;
-	glConfig.vidHeight = frame.size.width;
-	//}
-	glConfig.windowAspect = ( float ) glConfig.vidWidth / glConfig.vidHeight;
-	glConfig.colorBits = [ _screenView numColorBits ];
-	glConfig.depthBits = [ _screenView numDepthBits ];
-	glConfig.stencilBits = 0;
-	glConfig.vidRotation = rotation;
-
-	if ( cls.uiStarted )
-	{
-		cls.glconfig = glConfig;
-		VM_Call( uivm, UI_UPDATE_GLCONFIG );
-	}
-
-	if ( cls.state == CA_ACTIVE )
-	{
-		cls.glconfig = glConfig;
-		VM_Call( cgvm, CG_UPDATE_GLCONFIG );
-	}
-
-#else
 	const char  *glstring;
 	int         sdlcolorbits;
 	int         colorbits, depthbits, stencilbits;
@@ -1137,7 +1069,6 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 	ri.Printf( PRINT_ALL, "GL_RENDERER: %s\n", glstring );
 
 	return RSERR_OK;
-#endif
 }
 
 /*
@@ -1741,6 +1672,19 @@ static void GLimp_XreaLInitExtensions( void )
 	{
 		ri.Printf( PRINT_ALL, "...GL_GREMEDY_string_marker not found\n" );
 	}
+
+
+	if( GLEW_ARB_get_program_binary )
+	{
+		ri.Printf( PRINT_ALL, "...using GL_ARB_get_program_binary\n");
+		glConfig2.getProgramBinaryAvailable = qtrue;
+	} 
+	else
+	{
+		ri.Printf( PRINT_ALL, "...GL_ARB_get_program_binary not found\n");
+		glConfig2.getProgramBinaryAvailable = qfalse;
+	}
+	
 }
 
 #endif
@@ -1882,7 +1826,7 @@ static void reportHardwareType( qboolean force )
 		"generic", "Voodoo", "Riva 128", "Rage Pro", "Permedia 2",
 		"ATI Radeon", "AMD Radeon DX10-class", "nVidia DX10-class"
 	};
-	if (glConfig.hardwareType > GLDRV_UNKNOWN && glConfig.driverType < ARRAY_LEN( hardware ) )
+	if (glConfig.hardwareType > GLHW_UNKNOWN && glConfig.driverType < ARRAY_LEN( hardware ) )
 	{
 		ri.Printf( PRINT_ALL, "%s graphics hardware class '%s'\n",
 		           force ? "User has forced" : "Detected",
@@ -1900,33 +1844,6 @@ of OpenGL
 */
 qboolean GLimp_Init( void )
 {
-#if defined( IPHONE )
-	OWApplication *application = ( OWApplication * ) [ OWApplication sharedApplication ];
-
-	ri.Printf( PRINT_ALL, "Initializing OpenGL subsystem\n" );
-
-	bzero( &glConfig, sizeof( glConfig ) );
-
-	_screenView = application.screenView;
-	_context = _screenView.context;
-
-	//GLimp_SetMode(application.deviceRotation);
-	GLimp_SetMode( 90.00 );
-
-	ri.Printf( PRINT_ALL, "------------------\n" );
-
-	Q_strncpyz( glConfig.vendor_string, ( const char * ) qglGetString( GL_VENDOR ), sizeof( glConfig.vendor_string ) );
-	Q_strncpyz( glConfig.renderer_string, ( const char * ) qglGetString( GL_RENDERER ), sizeof( glConfig.renderer_string ) );
-	Q_strncpyz( glConfig.version_string, ( const char * ) qglGetString( GL_VERSION ), sizeof( glConfig.version_string ) );
-	Q_strncpyz( glConfig.extensions_string,
-	            ( const char * ) qglGetString( GL_EXTENSIONS ),
-	            sizeof( glConfig.extensions_string ) );
-
-	qglLockArraysEXT = qglLockArrays;
-	qglUnlockArraysEXT = qglUnlockArrays;
-
-	glConfig.textureCompression = TC_NONE;
-#else
 	//qboolean        success = qtrue;
 
 	glConfig.driverType = GLDRV_ICD;
@@ -2209,16 +2126,12 @@ success:
 
 	// This depends on SDL_INIT_VIDEO, hence having it here
 	ri.IN_Init();
-#endif
 
 	return qtrue;
 }
 
 void GLimp_ReleaseGL( void )
 {
-#ifdef IPHONE_USE_THREADS
-[ EAGLContext setCurrentContext : nil ];
-#endif // IPHONE_USE_THREADS
 }
 
 /*
@@ -2230,11 +2143,6 @@ Responsible for doing a swapbuffers
 */
 void GLimp_EndFrame( void )
 {
-#if defined ( IPHONE )
-	GLimp_ReleaseGL();
-	[ _screenView swapBuffers ];
-#else
-
 	// don't flip if drawing to front buffer
 	if ( Q_stricmp( r_drawBuffer->string, "GL_FRONT" ) != 0 )
 	{
@@ -2307,15 +2215,10 @@ void GLimp_EndFrame( void )
 
 		r_fullscreen->modified = qfalse;
 	}
-
-#endif
 }
 
 void GLimp_AcquireGL( void )
 {
-#ifdef IPHONE_USE_THREADS
-[ EAGLContext setCurrentContext : _context ];
-#endif // IPHONE_USE_THREADS
 }
 
 void GLimp_LogComment( const char *comment )

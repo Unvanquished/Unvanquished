@@ -363,7 +363,7 @@ Set up argc/argv for the given command
 */
 qboolean CL_GetServerCommand( int serverCommandNumber )
 {
-	char        *s;
+	const char  *s;
 	char        *cmd;
 	static char bigConfigString[ BIG_INFO_STRING ];
 	int         argc;
@@ -946,13 +946,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_R_REGISTERMODEL:
-#ifdef IPHONE
-			GLimp_AcquireGL();
 			return re.RegisterModel( VMA( 1 ) );
-			GLimp_ReleaseGL();
-#else
-			return re.RegisterModel( VMA( 1 ) );
-#endif // IPHONE
 
 		case CG_R_REGISTERSKIN:
 			return re.RegisterSkin( VMA( 1 ) );
@@ -966,28 +960,16 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			//----(SA)  end
 
 		case CG_R_REGISTERSHADER:
-#ifdef IPHONE_NOTYET
-			GLimp_AcquireGL();
 			return re.RegisterShader( VMA( 1 ) );
-			GLimp_ReleaseGL();
-#else
-			return re.RegisterShader( VMA( 1 ) );
-#endif // IPHONE
 
 		case CG_R_REGISTERFONT:
 			re.RegisterFontVM( VMA( 1 ), VMA( 2 ), args[ 3 ], VMA( 4 ) );
 			return 0;
 
 		case CG_R_REGISTERSHADERNOMIP:
-#ifdef IPHONE_NOTYET
-			GLimp_AcquireGL();
 			return re.RegisterShaderNoMip( VMA( 1 ) );
-			GLimp_ReleaseGL();
-#else
-			return re.RegisterShaderNoMip( VMA( 1 ) );
-#endif // IPHONE
-#if defined( USE_REFLIGHT )
 
+#if defined( USE_REFLIGHT )
 		case CG_R_REGISTERSHADERLIGHTATTENUATION:
 			return re.RegisterShaderLightAttenuation( VMA( 1 ) );
 #endif
@@ -999,8 +981,8 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_R_ADDREFENTITYTOSCENE:
 			re.AddRefEntityToScene( VMA( 1 ) );
 			return 0;
-#if defined( USE_REFLIGHT )
 
+#if defined( USE_REFLIGHT )
 		case CG_R_ADDREFLIGHTSTOSCENE:
 			re.AddRefLightToScene( VMA( 1 ) );
 			return 0;
@@ -1301,8 +1283,8 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_S_SOUNDDURATION:
 			return S_SoundDuration( args[ 1 ] );
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 
+#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 		case CG_R_REGISTERANIMATION:
 			return re.RegisterAnimation( VMA( 1 ) );
 
@@ -1733,11 +1715,6 @@ void CL_FirstSnapshot( void )
 	}
 
 	cls.state = CA_ACTIVE;
-
-#ifdef IPHONE
-	// Force the device into right landscape mode:
-	GLimp_SetMode( 90 );
-#endif // IPHONE
 
 	// set the timedelta so we are exactly on this first frame
 	cl.serverTimeDelta = cl.snap.serverTime - cls.realtime;

@@ -131,7 +131,7 @@ cvar_t *r_ext_multisample;
 cvar_t *r_drawBuffer;
 cvar_t *r_glDriver;
 cvar_t *r_glIgnoreWicked3D;
-cvar_t *r_lightmap;
+cvar_t *r_showLightMaps;
 cvar_t *r_uiFullScreen;
 cvar_t *r_shadows;
 cvar_t *r_portalsky; //----(SA)  added
@@ -180,6 +180,7 @@ cvar_t *r_simpleMipMaps;
 cvar_t *r_showImages;
 
 cvar_t *r_ambientScale;
+cvar_t *r_lightScale;
 cvar_t *r_directedScale;
 cvar_t *r_debugLight;
 cvar_t *r_debugSort;
@@ -1220,6 +1221,7 @@ void R_Register( void )
 	r_primitives = ri.Cvar_Get( "r_primitives", "0", CVAR_ARCHIVE );
 
 	r_ambientScale = ri.Cvar_Get( "r_ambientScale", "0.5", CVAR_CHEAT );
+	r_lightScale = ri.Cvar_Get( "r_lightScale", "2", CVAR_CHEAT );
 	r_directedScale = ri.Cvar_Get( "r_directedScale", "1", CVAR_CHEAT );
 
 	//
@@ -1257,7 +1259,7 @@ void R_Register( void )
 	r_nocurves = ri.Cvar_Get( "r_nocurves", "0", CVAR_CHEAT );
 	r_drawworld = ri.Cvar_Get( "r_drawworld", "1", CVAR_CHEAT );
 	r_drawfoliage = ri.Cvar_Get( "r_drawfoliage", "1", CVAR_CHEAT );  // ydnar
-	r_lightmap = ri.Cvar_Get( "r_lightmap", "0", CVAR_CHEAT );  // DHM - NERVE :: cheat protect
+	r_showLightMaps = ri.Cvar_Get( "r_showLightMaps", "0", CVAR_CHEAT );  // DHM - NERVE :: cheat protect
 	r_portalOnly = ri.Cvar_Get( "r_portalOnly", "0", CVAR_CHEAT );
 
 	r_flareSize = ri.Cvar_Get( "r_flareSize", "40", CVAR_CHEAT );
@@ -1597,7 +1599,7 @@ extern "C" {
 		re.AddPolysToScene = RE_AddPolysToScene;
 		// done.
 		re.AddLightToScene = RE_AddLightToScene;
-		re.AddAdditiveLightToScene = NULL;
+		re.AddAdditiveLightToScene = RE_AddLightToSceneQ3A;
 //----(SA)
 		re.AddCoronaToScene = RE_AddCoronaToScene;
 		re.SetFog = R_SetFog;
