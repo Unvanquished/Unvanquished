@@ -265,18 +265,6 @@ void CL_AddCgameCommand( const char *cmdName )
 	Cmd_SetCommandCompletionFunc( cmdName, CL_CompleteCgameCommand );
 }
 
-qboolean CL_CGameCheckKeyExec( int key )
-{
-	if ( cgvm )
-	{
-		return VM_Call( cgvm, CG_CHECKEXECKEY, key );
-	}
-	else
-	{
-		return qfalse;
-	}
-}
-
 /*
 =====================
 CL_ConfigstringModified
@@ -571,54 +559,6 @@ void CL_SetExpectedHunkUsage( const char *mapname )
 
 	// just set it to a negative number,so the cgame knows not to draw the percent bar
 	com_expectedhunkusage = -1;
-}
-
-// dhm - nerve
-
-/*
-====================
-CL_SendBinaryMessage
-====================
-*/
-static void CL_SendBinaryMessage( const char *buf, int buflen )
-{
-	if ( buflen < 0 || buflen > MAX_BINARY_MESSAGE )
-	{
-		Com_Error( ERR_DROP, "CL_SendBinaryMessage: bad length %i", buflen );
-	}
-
-	clc.binaryMessageLength = buflen;
-	memcpy( clc.binaryMessage, buf, buflen );
-}
-
-/*
-====================
-CL_BinaryMessageStatus
-====================
-*/
-static int CL_BinaryMessageStatus( void )
-{
-	if ( clc.binaryMessageLength == 0 )
-	{
-		return MESSAGE_EMPTY;
-	}
-
-	if ( clc.binaryMessageOverflowed )
-	{
-		return MESSAGE_WAITING_OVERFLOW;
-	}
-
-	return MESSAGE_WAITING;
-}
-
-/*
-====================
-CL_CGameBinaryMessageReceived
-====================
-*/
-void CL_CGameBinaryMessageReceived( const char *buf, int buflen, int serverTime )
-{
-	VM_Call( cgvm, CG_MESSAGERECEIVED, buf, buflen, serverTime );
 }
 
 /*
@@ -1244,15 +1184,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 //      Com_EventLoop();
 //      CL_WritePacket();
 			return 0;
-
-			//zinx - binary channel
-		case CG_SENDMESSAGE:
-			VM_CheckBlock( args[1], args[2], "SENDM" );
- 			CL_SendBinaryMessage( VMA( 1 ), args[ 2 ] );
-			return 0;
-
-		case CG_MESSAGESTATUS:
-			return CL_BinaryMessageStatus();
 
 			//bani - dynamic shaders
 		case CG_R_LOADDYNAMICSHADER:

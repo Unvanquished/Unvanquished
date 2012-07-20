@@ -292,17 +292,6 @@ typedef enum
   CG_EVENT_HANDLING,
 //  void (*CG_EventHandling)(int type, qboolean fForced);
 
-  CG_GET_TAG,
-//  qboolean CG_GetTag( int clientNum, const char *tagname, orientation_t *or );
-
-  CG_CHECKEXECKEY,
-
-  CG_WANTSBINDKEYS,
-
-  // zinx
-  CG_MESSAGERECEIVED,
-//  void (*CG_MessageReceived)( const char *buf, int buflen, int serverTime );
-  // -zinx
   CG_VOIP_STRING,
 // char *(*CG_VoIPString)( void );
 // returns a string of comma-delimited clientnums based on cl_voipSendTarget

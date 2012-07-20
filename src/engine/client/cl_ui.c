@@ -1474,18 +1474,6 @@ void CL_InitUI( void )
 	VM_Call( uivm, UI_INIT, ( cls.state >= CA_CONNECTING && cls.state < CA_ACTIVE ) );
 }
 
-qboolean UI_checkKeyExec( int key )
-{
-	if ( uivm )
-	{
-		return ( VM_Call( uivm, UI_CHECKEXECKEY, key ) );
-	}
-	else
-	{
-		return qfalse;
-	}
-}
-
 /*
 ====================
 UI_GameCommand

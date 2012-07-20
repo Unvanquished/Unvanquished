@@ -219,9 +219,6 @@ typedef enum
   UI_SET_ACTIVE_MENU,
 //  void    UI_SetActiveMenu( uiMenuCommand_t menu );
 
-  UI_GET_ACTIVE_MENU,
-//  void    UI_GetActiveMenu( void );
-
   UI_CONSOLE_COMMAND,
 //  qboolean UI_ConsoleCommand( void );
 
@@ -231,14 +228,8 @@ typedef enum
 // if !overlay, the background will be drawn, otherwise it will be
 // overlayed over whatever the cgame has drawn.
 // a GetClientState syscall will be made to get the current strings
-  UI_CHECKEXECKEY, // NERVE - SMF
 
-  UI_WANTSBINDKEYS,
-
-// void UI_ReportHighScoreResponse( void );
-  UI_REPORT_HIGHSCORE_RESPONSE,
-
-// when the client gets an error message from the server
+  // when the client gets an error message from the server
   UI_SERVER_ERRORMESSAGE,
 
   UI_MOUSE_POSITION,

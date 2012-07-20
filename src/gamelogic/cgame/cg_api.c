@@ -1130,20 +1130,6 @@ void trap_PumpEventLoop( void )
 	syscall(CG_PUMPEVENTLOOP);*/
 }
 
-//155.
-//CL_SendBinaryMessage(VMA(1), args[2]);
-void trap_SendMessage( char *buf, int buflen )
-{
-	syscall( CG_SENDMESSAGE, buf, buflen );
-}
-
-//156.
-//return CL_BinaryMessageStatus();
-messageStatus_t trap_MessageStatus( void )
-{
-	return syscall( CG_MESSAGESTATUS );
-}
-
 //157.
 //return re.LoadDynamicShader(VMA(1), VMA(2));
 qboolean trap_R_LoadDynamicShader( const char *shadername, const char *shadertext )
