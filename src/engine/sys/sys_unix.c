@@ -1329,6 +1329,15 @@ Sys_IsNumLockDown
 */
 qboolean Sys_IsNumLockDown( void )
 {
-	// FIXME for Linux
-	return qfalse;
+#if !defined(MACOS_X) && !defined(DEDICATED)
+	Display        *dpy = XOpenDisplay(":0");
+	XKeyboardState x;
+
+	XGetKeyboardControl(dpy, &x);
+	XCloseDisplay(dpy);
+
+	return (x.led_mask & 2) ? qtrue : qfalse;
+#else
+	return qtrue; // Macs don't have Numlock.
+#endif
 }

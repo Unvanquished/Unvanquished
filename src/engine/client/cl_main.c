@@ -79,7 +79,6 @@ cvar_t *cl_debugMove;
 
 cvar_t *cl_noprint;
 cvar_t *cl_motd;
-cvar_t *cl_autoupdate; // DHM - Nerve
 
 cvar_t *rcon_client_password;
 cvar_t *rconAddress;
@@ -140,11 +139,6 @@ cvar_t *cl_serverStatusResendTime;
 cvar_t *cl_trn;
 cvar_t *cl_missionStats;
 cvar_t *cl_waitForFire;
-
-// -NERVE - SMF
-// DHM - Nerve :: Auto-Update
-cvar_t *cl_updateavailable;
-cvar_t *cl_updatefiles;
 
 cvar_t *cl_pubkeyID;
 
@@ -214,17 +208,6 @@ typedef struct serverStatus_s
 
 serverStatus_t cl_serverStatusList[ MAX_SERVERSTATUSREQUESTS ];
 int            serverStatusCount;
-
-// DHM - Nerve :: Have we heard from the auto-update server this session?
-qboolean       autoupdateChecked;
-qboolean       autoupdateStarted;
-
-// TTimo : moved from char* to array (was getting the char* from va(), broke on big downloads)
-char           autoupdateFilename[ MAX_QPATH ];
-
-// "updates" shifted from -7
-#define AUTOUPDATE_DIR       "ni]Zm^l"
-#define AUTOUPDATE_DIR_SHIFT 7
 
 extern void SV_BotFrame( int time );
 void        CL_CheckForResend( void );
@@ -1703,9 +1686,6 @@ void CL_Disconnect( qboolean showMainMenu )
 
 		*cls.downloadTempName = *cls.downloadName = 0;
 		Cvar_Set( "cl_downloadName", "" );
-
-		autoupdateStarted = qfalse;
-		autoupdateFilename[ 0 ] = '\0';
 	}
 
 #ifdef USE_MUMBLE
@@ -2012,107 +1992,6 @@ void CL_RequestMotd( void )
 	NET_OutOfBandPrint( NS_CLIENT, cls.updateServer, "getmotd%s", info );
 }
 
-#ifdef AUTHORIZE_SUPPORT
-
-/*
-===================
-CL_RequestAuthorization
-
-Authorization server protocol
------------------------------
-
-All commands are text in Q3 out of band packets (leading 0xff 0xff 0xff 0xff).
-
-Whenever the client tries to get a challenge from the server it wants to
-connect to, it also blindly fires off a packet to the authorize server:
-
-getKeyAuthorize <challenge> <cdkey>
-
-cdkey may be "demo"
-
-
-#OLD The authorize server returns a:
-#OLD
-#OLD keyAthorize <challenge> <accept | deny>
-#OLD
-#OLD A client will be accepted if the cdkey is valid and it has not been used by any other IP
-#OLD address in the last 15 minutes.
-
-
-The server sends a:
-
-getIpAuthorize <challenge> <ip>
-
-The authorize server returns a:
-
-ipAuthorize <challenge> <accept | deny | demo | unknown >
-
-A client will be accepted if a valid cdkey was sent by that ip (only) in the last 15 minutes.
-If no response is received from the authorize server after two tries, the client will be let
-in anyway.
-===================
-*/
-void CL_RequestAuthorization( void )
-{
-	char   nums[ 64 ];
-	int    i, j, l;
-	cvar_t *fs;
-
-	if ( !cls.authorizeServer.port )
-	{
-		Com_Printf(_( "Resolving %s\n"), AUTHORIZE_SERVER_NAME );
-
-		if ( !NET_StringToAdr( AUTHORIZE_SERVER_NAME, &cls.authorizeServer, NA_IP ) )
-		{
-			Com_Printf("%s", _( "Couldn't resolve address\n" ));
-			return;
-		}
-
-		cls.authorizeServer.port = BigShort( PORT_AUTHORIZE );
-		Com_Printf(_( "%s resolved to %i.%i.%i.%i:%i\n"), AUTHORIZE_SERVER_NAME,
-		            cls.authorizeServer.ip[ 0 ], cls.authorizeServer.ip[ 1 ],
-		            cls.authorizeServer.ip[ 2 ], cls.authorizeServer.ip[ 3 ], BigShort( cls.authorizeServer.port ) );
-	}
-
-	if ( cls.authorizeServer.type == NA_BAD )
-	{
-		return;
-	}
-
-	if ( Cvar_VariableValue( "fs_restrict" ) )
-	{
-		Q_strncpyz( nums, "ettest", sizeof( nums ) );
-	}
-	else
-	{
-		// only grab the alphanumeric values from the cdkey, to avoid any dashes or spaces
-		j = 0;
-		l = strlen( cl_cdkey );
-
-		if ( l > 32 )
-		{
-			l = 32;
-		}
-
-		for ( i = 0; i < l; i++ )
-		{
-			if ( ( cl_cdkey[ i ] >= '0' && cl_cdkey[ i ] <= '9' )
-			     || ( cl_cdkey[ i ] >= 'a' && cl_cdkey[ i ] <= 'z' ) || ( cl_cdkey[ i ] >= 'A' && cl_cdkey[ i ] <= 'Z' ) )
-			{
-				nums[ j ] = cl_cdkey[ i ];
-				j++;
-			}
-		}
-
-		nums[ j ] = 0;
-	}
-
-	fs = Cvar_Get( "cl_anonymous", "0", CVAR_INIT | CVAR_SYSTEMINFO );
-	NET_OutOfBandPrint( NS_CLIENT, cls.authorizeServer, va( "getKeyAuthorize %i %s", fs->integer, nums ) );
-}
-
-#endif // AUTHORIZE_SUPPORT
-
 /*
 ======================================================================
 
@@ -2225,8 +2104,8 @@ CL_Connect_f
 */
 void CL_Connect_f( void )
 {
-	char         *server;
-	const char   *serverString;
+	char         *server, password[ 64 ];
+	const char   *serverString, *tmp, *scheme = APP_URI_SCHEME;
 	int          argc = Cmd_Argc();
 	netadrtype_t family = NA_UNSPEC;
 
@@ -2256,6 +2135,20 @@ void CL_Connect_f( void )
 		}
 
 		server = Cmd_Argv( 2 );
+	}
+
+	// Skip the URI scheme.
+	if ( !Q_strnicmp( server, scheme, strlen( scheme ) ) )
+	{
+		server += strlen( scheme );
+	}
+
+	// Set and skip the password.
+	if ( ( tmp = strchr( server, '@' ) ) != NULL )
+	{
+		Q_strncpyz( password, server, Q_min( sizeof( password ), ( tmp - server + 1 ) ) );
+		Cvar_Set( "password", password );
+		server = server + ( tmp - server ) + 1;
 	}
 
 	S_StopAllSounds(); // NERVE - SMF
@@ -2634,7 +2527,6 @@ void CL_Vid_Restart_f( void )
 	cls.uiStarted = qfalse;
 	cls.cgameStarted = qfalse;
 	cls.soundRegistered = qfalse;
-	autoupdateChecked = qfalse;
 
 	// unpause so the cgame definitely gets a snapshot and renders a frame
 	Cvar_Set( "cl_paused", "0" );
@@ -2694,8 +2586,6 @@ void CL_UI_Restart_f( void )
 	// NERVE - SMF
 	// shutdown the UI
 	CL_ShutdownUI();
-
-	autoupdateChecked = qfalse;
 
 	// init the UI
 	CL_InitUI();
@@ -2918,41 +2808,6 @@ void CL_DownloadsComplete( void )
 	char *fs_write_path;
 	char *fn;
 
-	// DHM - Nerve :: Auto-update (not finished yet)
-	if ( autoupdateStarted )
-	{
-		if ( strlen( autoupdateFilename ) > 4 )
-		{
-			fs_write_path = Cvar_VariableString( "fs_homepath" );
-			fn = FS_BuildOSPath( fs_write_path, FS_ShiftStr( AUTOUPDATE_DIR, AUTOUPDATE_DIR_SHIFT ), autoupdateFilename );
-
-			// will either exit with a successful process spawn, or will Com_Error ERR_DROP
-			// so we need to clear the disconnected download data if needed
-			if ( cls.bWWWDlDisconnected )
-			{
-				cls.bWWWDlDisconnected = qfalse;
-				CL_ClearStaticDownload();
-			}
-
-			Sys_StartProcess( fn, qtrue );
-		}
-
-		// NOTE - TTimo: that code is never supposed to be reached?
-
-		autoupdateStarted = qfalse;
-
-		if ( !cls.bWWWDlDisconnected )
-		{
-			CL_Disconnect( qtrue );
-		}
-
-		// we can reset that now
-		cls.bWWWDlDisconnected = qfalse;
-		CL_ClearStaticDownload();
-
-		return;
-	}
-
 	// if we downloaded files we need to restart the file system
 	if ( cls.downloadRestart )
 	{
@@ -3112,9 +2967,7 @@ and determine if we need to download them
 */
 void CL_InitDownloads( void )
 {
-#ifndef PRE_RELEASE_DEMO
 	char missingfiles[ 1024 ];
-	char *dir = FS_ShiftStr( AUTOUPDATE_DIR, AUTOUPDATE_DIR_SHIFT );
 
 	// TTimo
 	// init some of the www dl data
@@ -3123,49 +2976,32 @@ void CL_InitDownloads( void )
 	cls.bWWWDlDisconnected = qfalse;
 	CL_ClearStaticDownload();
 
-	if ( autoupdateStarted && NET_CompareAdr( cls.autoupdateServer, clc.serverAddress ) )
+	// whatever autodownlad configuration, store missing files in a cvar, use later in the ui maybe
+	if ( FS_ComparePaks( missingfiles, sizeof( missingfiles ), qfalse ) )
 	{
-		if ( strlen( cl_updatefiles->string ) > 4 )
+		Cvar_Set( "com_missingFiles", missingfiles );
+	}
+	else
+	{
+		Cvar_Set( "com_missingFiles", "" );
+	}
+
+	// reset the redirect checksum tracking
+	clc.redirectedList[ 0 ] = '\0';
+
+	if ( cl_allowDownload->integer && FS_ComparePaks( clc.downloadList, sizeof( clc.downloadList ), qtrue ) )
+	{
+		// this gets printed to UI, i18n
+		Com_Printf(_( "Need paks: %s\n"), clc.downloadList );
+
+		if ( *clc.downloadList )
 		{
-			Q_strncpyz( autoupdateFilename, cl_updatefiles->string, sizeof( autoupdateFilename ) );
-			Q_strncpyz( clc.downloadList, va( "@%s/%s@%s/%s", dir, cl_updatefiles->string, dir, cl_updatefiles->string ),
-			            MAX_INFO_STRING );
+			// if autodownloading is not enabled on the server
 			cls.state = CA_CONNECTED;
 			CL_NextDownload();
 			return;
 		}
 	}
-	else
-	{
-		// whatever autodownlad configuration, store missing files in a cvar, use later in the ui maybe
-		if ( FS_ComparePaks( missingfiles, sizeof( missingfiles ), qfalse ) )
-		{
-			Cvar_Set( "com_missingFiles", missingfiles );
-		}
-		else
-		{
-			Cvar_Set( "com_missingFiles", "" );
-		}
-
-		// reset the redirect checksum tracking
-		clc.redirectedList[ 0 ] = '\0';
-
-		if ( cl_allowDownload->integer && FS_ComparePaks( clc.downloadList, sizeof( clc.downloadList ), qtrue ) )
-		{
-			// this gets printed to UI, i18n
-			Com_Printf(_( "Need paks: %s\n"), clc.downloadList );
-
-			if ( *clc.downloadList )
-			{
-				// if autodownloading is not enabled on the server
-				cls.state = CA_CONNECTED;
-				CL_NextDownload();
-				return;
-			}
-		}
-	}
-
-#endif
 
 	CL_DownloadsComplete();
 }
@@ -3208,15 +3044,6 @@ void CL_CheckForResend( void )
 	switch ( cls.state )
 	{
 		case CA_CONNECTING:
-			// requesting a challenge
-#ifdef AUTHORIZE_SUPPORT
-			if ( !Sys_IsLANAddress( clc.serverAddress ) )
-			{
-				CL_RequestAuthorization();
-			}
-
-#endif // AUTHORIZE_SUPPORT
-
 			// EVEN BALANCE - T.RAY
 			strcpy( pkt, "getchallenge" );
 			pktlen = strlen( pkt );
@@ -3263,7 +3090,7 @@ void CL_DisconnectPacket( netadr_t from )
 {
 	const char *message;
 
-	if ( cls.state < CA_AUTHORIZING )
+	if ( cls.state < CA_CONNECTING )
 	{
 		return;
 	}
@@ -3382,11 +3209,6 @@ void CL_PrintPacket( netadr_t from, msg_t *msg )
 	{
 		Q_strncpyz( clc.serverMessage, s + 10, sizeof( clc.serverMessage ) );
 		Com_Error( ERR_DROP, "%s", PROTOCOL_MISMATCH_ERROR_LONG );
-	}
-	else if ( !Q_stricmpn( s, "[err_update]", 12 ) )
-	{
-		Q_strncpyz( clc.serverMessage, s + 12, sizeof( clc.serverMessage ) );
-		Com_Error( ERR_AUTOUPDATE, "%s", clc.serverMessage );
 	}
 	else if ( !Q_stricmpn( s, "ET://", 5 ) )
 	{
@@ -3767,16 +3589,6 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 			return;
 		}
 
-		// DHM - Nerve :: If we have completed a connection to the Auto-Update server...
-		if ( autoupdateChecked && NET_CompareAdr( cls.autoupdateServer, clc.serverAddress ) )
-		{
-			// Mark the client as being in the process of getting an update
-			if ( cl_updateavailable->integer )
-			{
-				autoupdateStarted = qtrue;
-			}
-		}
-
 		Netchan_Setup( NS_CLIENT, &clc.netchan, from, Cvar_VariableValue( "net_qport" ) );
 		cls.state = CA_CONNECTED;
 		clc.lastPacketSentTime = -9999; // send first packet immediately
@@ -3812,13 +3624,6 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 		return;
 	}
 
-	// cd check
-	if ( !Q_stricmp( c, "keyAuthorize" ) )
-	{
-		// we don't use these now, so dump them on the floor
-		return;
-	}
-
 	// global MOTD from id
 	if ( !Q_stricmp( c, "motd" ) )
 	{
@@ -3832,15 +3637,6 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 		CL_PrintPacket( from, msg );
 		return;
 	}
-
-	// DHM - Nerve :: Auto-update server response message
-	if ( !Q_stricmp( c, "updateResponse" ) )
-	{
-		CL_UpdateInfoPacket( from );
-		return;
-	}
-
-	// DHM - Nerve
 
 	// NERVE - SMF - bugfix, make this compare first n chars so it doesn't bail if token is parsed incorrectly
 	// echo request from server
@@ -4037,16 +3833,7 @@ void CL_WWWDownload( void )
 		*cls.downloadTempName = *cls.downloadName = 0;
 		Cvar_Set( "cl_downloadName", "" );
 
-		if ( cls.bWWWDlDisconnected )
-		{
-			// for an auto-update in disconnected mode, we'll be spawning the setup in CL_DownloadsComplete
-			if ( !autoupdateStarted )
-			{
-				// reconnect to the server, which might send us to a new disconnected download
-				Cbuf_ExecuteText( EXEC_APPEND, "reconnect\n" );
-			}
-		}
-		else
+		if ( !cls.bWWWDlDisconnected )
 		{
 			CL_AddReliableCommand( "wwwdl done" );
 
@@ -4545,177 +4332,6 @@ void CL_StartHunkUsers( void )
 	}
 }
 
-// DHM - Nerve
-void CL_CheckAutoUpdate( void )
-{
-#ifndef PRE_RELEASE_DEMO
-
-	if ( !cl_autoupdate->integer )
-	{
-		return;
-	}
-
-	// Only check once per session
-	if ( autoupdateChecked )
-	{
-		return;
-	}
-
-	srand( Com_Milliseconds() );
-
-	// Resolve update server
-	if ( !NET_StringToAdr( cls.autoupdateServerNames[ 0 ], &cls.autoupdateServer, NA_IP ) )
-	{
-		Com_DPrintf("%s", _( "Failed to resolve any auto-update servers.\n" ));
-
-		cls.autoUpdateServerChecked[ 0 ] = qtrue;
-
-		autoupdateChecked = qtrue;
-		return;
-	}
-
-	cls.autoupdatServerIndex = 0;
-
-	cls.autoupdatServerFirstIndex = cls.autoupdatServerIndex;
-
-	cls.autoUpdateServerChecked[ cls.autoupdatServerIndex ] = qtrue;
-
-	cls.autoupdateServer.port = BigShort( PORT_SERVER );
-	Com_DPrintf( "autoupdate server at: %i.%i.%i.%i:%i\n", cls.autoupdateServer.ip[ 0 ], cls.autoupdateServer.ip[ 1 ],
-	             cls.autoupdateServer.ip[ 2 ], cls.autoupdateServer.ip[ 3 ],
-	             BigShort( cls.autoupdateServer.port ) );
-
-	NET_OutOfBandPrint( NS_CLIENT, cls.autoupdateServer, "getUpdateInfo %s %s\n", Cmd_QuoteString( Q3_VERSION ), Cmd_QuoteString( ARCH_STRING ) );
-
-#endif // !PRE_RELEASE_DEMO
-
-	CL_RequestMotd();
-
-	autoupdateChecked = qtrue;
-}
-
-qboolean CL_NextUpdateServer( void )
-{
-	char *servername;
-
-#ifdef PRE_RELEASE_DEMO
-	return qfalse;
-#endif // PRE_RELEASE_DEMO
-
-	if ( !cl_autoupdate->integer )
-	{
-		return qfalse;
-	}
-
-	while ( cls.autoUpdateServerChecked[ cls.autoupdatServerFirstIndex ] )
-	{
-		cls.autoupdatServerIndex++;
-
-		if ( cls.autoupdatServerIndex >= MAX_AUTOUPDATE_SERVERS )
-		{
-			cls.autoupdatServerIndex = 0;
-		}
-
-		if ( cls.autoupdatServerIndex == cls.autoupdatServerFirstIndex )
-		{
-			// went through all of them already
-			return qfalse;
-		}
-	}
-
-	servername = cls.autoupdateServerNames[ cls.autoupdatServerIndex ];
-
-	Com_DPrintf("%s", _( "Resolving auto-update server… " ));
-
-	if ( !NET_StringToAdr( servername, &cls.autoupdateServer, NA_IP ) )
-	{
-		Com_DPrintf("%s", _( "Couldn't resolve address, trying next one…" ));
-
-		cls.autoUpdateServerChecked[ cls.autoupdatServerIndex ] = qtrue;
-
-		return CL_NextUpdateServer();
-	}
-
-	cls.autoUpdateServerChecked[ cls.autoupdatServerIndex ] = qtrue;
-
-	cls.autoupdateServer.port = BigShort( PORT_SERVER );
-	Com_DPrintf( "%i.%i.%i.%i:%i\n", cls.autoupdateServer.ip[ 0 ], cls.autoupdateServer.ip[ 1 ],
-	             cls.autoupdateServer.ip[ 2 ], cls.autoupdateServer.ip[ 3 ],
-	             BigShort( cls.autoupdateServer.port ) );
-
-	return qtrue;
-}
-
-void CL_GetAutoUpdate( void )
-{
-	// Don't try and get an update if we haven't checked for one
-	if ( !autoupdateChecked )
-	{
-		return;
-	}
-
-	// Make sure there's a valid update file to request
-	if ( strlen( cl_updatefiles->string ) < 5 )
-	{
-		return;
-	}
-
-	Com_DPrintf("%s", _( "Connecting to auto-update server…\n" ));
-
-	S_StopAllSounds(); // NERVE - SMF
-
-	// starting to load a map so we get out of full screen ui mode
-	Cvar_Set( "r_uiFullScreen", "0" );
-
-	// toggle on all the download related cvars
-	Cvar_Set( "cl_allowDownload", "1" );  // general flag
-	Cvar_Set( "cl_wwwDownload", "1" );  // ftp/http support
-
-	// clear any previous "server full" type messages
-	clc.serverMessage[ 0 ] = 0;
-
-	if ( com_sv_running->integer )
-	{
-		// if running a local server, kill it
-		SV_Shutdown( "Server quit\n" );
-	}
-
-	// make sure a local server is killed
-	Cvar_Set( "sv_killserver", "1" );
-	SV_Frame( 0 );
-
-	CL_Disconnect( qtrue );
-	Con_Close();
-
-	Q_strncpyz( cls.servername, "Auto-Updater", sizeof( cls.servername ) );
-
-	if ( cls.autoupdateServer.type == NA_BAD )
-	{
-		Com_Printf("%s", _( "Bad server address\n" ));
-		cls.state = CA_DISCONNECTED;
-		Cvar_Set( "ui_connecting", "0" );
-		return;
-	}
-
-	// Copy auto-update server address to Server connect address
-	memcpy( &clc.serverAddress, &cls.autoupdateServer, sizeof( netadr_t ) );
-
-	Com_DPrintf( "%s resolved to %i.%i.%i.%i:%i\n", cls.servername,
-	             clc.serverAddress.ip[ 0 ], clc.serverAddress.ip[ 1 ],
-	             clc.serverAddress.ip[ 2 ], clc.serverAddress.ip[ 3 ], BigShort( clc.serverAddress.port ) );
-
-	cls.state = CA_CONNECTING;
-
-	cls.keyCatchers = 0;
-	clc.connectTime = -99999; // CL_CheckForResend() will fire immediately
-	clc.connectPacketCount = 0;
-
-	// server connection string
-	Cvar_Set( "cl_currentServerAddress", "Auto-Updater" );
-}
-
-// DHM - Nerve
-
 /*
 ============
 CL_RefMalloc
@@ -4987,7 +4603,6 @@ void CL_Init( void )
 
 	cl_noprint = Cvar_Get( "cl_noprint", "0", 0 );
 	cl_motd = Cvar_Get( "cl_motd", "1", 0 );
-	cl_autoupdate = Cvar_Get( "cl_autoupdate", "1", CVAR_ARCHIVE );
 
 	cl_timeout = Cvar_Get( "cl_timeout", "200", 0 );
 
@@ -5161,17 +4776,6 @@ void CL_Init( void )
 	cl_missionStats = Cvar_Get( "g_missionStats", "0", CVAR_ROM );
 	cl_waitForFire = Cvar_Get( "cl_waitForFire", "0", CVAR_ROM );
 
-	// DHM - Nerve :: Auto-update
-	cl_updateavailable = Cvar_Get( "cl_updateavailable", "0", CVAR_ROM );
-	cl_updatefiles = Cvar_Get( "cl_updatefiles", "", CVAR_ROM );
-
-	Q_strncpyz( cls.autoupdateServerNames[ 0 ], AUTOUPDATE_SERVER1_NAME, MAX_QPATH );
-	Q_strncpyz( cls.autoupdateServerNames[ 1 ], AUTOUPDATE_SERVER2_NAME, MAX_QPATH );
-	Q_strncpyz( cls.autoupdateServerNames[ 2 ], AUTOUPDATE_SERVER3_NAME, MAX_QPATH );
-	Q_strncpyz( cls.autoupdateServerNames[ 3 ], AUTOUPDATE_SERVER4_NAME, MAX_QPATH );
-	Q_strncpyz( cls.autoupdateServerNames[ 4 ], AUTOUPDATE_SERVER5_NAME, MAX_QPATH );
-	// DHM - Nerve
-
 	cl_allowPaste = Cvar_Get( "cl_allowPaste", "1", 0 );
 
 	//
@@ -5252,10 +4856,6 @@ void CL_Init( void )
 
 	Cvar_Get( "cl_guid", Com_MD5File( cl_profile->string[ 0 ] ? va( "profiles/%s/%s", cl_profile->string, GUIDKEY_FILE ) :
 	                                                           GUIDKEY_FILE, 0 ), CVAR_USERINFO | CVAR_ROM );
-
-	// DHM - Nerve
-	autoupdateChecked = qfalse;
-	autoupdateStarted = qfalse;
 
 	Com_Printf("%s", _( "----- Client Initialization Complete -----\n" ));
 }
@@ -5544,43 +5144,6 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg )
 			Com_Printf( "%s: %s\n", NET_AdrToStringwPort( from ), info );
 	}
 }
-
-/*
-===================
-CL_UpdateInfoPacket
-===================
-*/
-void CL_UpdateInfoPacket( netadr_t from )
-{
-	if ( cls.autoupdateServer.type == NA_BAD )
-	{
-		Com_DPrintf( "CL_UpdateInfoPacket:  Auto-Updater has bad address\n" );
-		return;
-	}
-
-	Com_DPrintf( "Auto-Updater resolved to %i.%i.%i.%i:%i\n",
-	             cls.autoupdateServer.ip[ 0 ], cls.autoupdateServer.ip[ 1 ],
-	             cls.autoupdateServer.ip[ 2 ], cls.autoupdateServer.ip[ 3 ],
-	             BigShort( cls.autoupdateServer.port ) );
-
-	if ( !NET_CompareAdr( from, cls.autoupdateServer ) )
-	{
-		Com_DPrintf( "CL_UpdateInfoPacket:  Received packet from %i.%i.%i.%i:%i\n",
-		             from.ip[ 0 ], from.ip[ 1 ], from.ip[ 2 ], from.ip[ 3 ],
-		             BigShort( from.port ) );
-		return;
-	}
-
-	Cvar_Set( "cl_updateavailable", Cmd_Argv( 1 ) );
-
-	if ( !Q_stricmp( cl_updateavailable->string, "1" ) )
-	{
-		Cvar_Set( "cl_updatefiles", Cmd_Argv( 2 ) );
-		VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_WM_AUTOUPDATE );
-	}
-}
-
-// DHM - Nerve
 
 /*
 ===================

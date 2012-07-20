@@ -115,12 +115,6 @@ void CL_ShutdownAll( void )
 {
 }
 
-// bk001208 - added new dummy (RC4)
-qboolean CL_CDKeyValidate( const char *key, const char *checksum )
-{
-	return qtrue;
-}
-
 // TTimo added for win32 dedicated
 void Key_ClearStates( void )
 {

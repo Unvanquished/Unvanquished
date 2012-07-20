@@ -57,11 +57,6 @@ Maryland 20850 USA.
 #define __attribute__(x)
 #endif
 
-//#define PRE_RELEASE_DEMO
-#ifdef PRE_RELEASE_DEMO
-#define PRE_RELEASE_DEMO_NODEVMAP
-#endif
-
 //============================================================================
 
 //
@@ -296,6 +291,8 @@ You or the server may be running older versions of the game. Press the auto-upda
 #define GAMENAME_STRING "unv"
 #define PROTOCOL_VERSION 85
 
+#define APP_URI_SCHEME GAMENAME_STRING "://"
+
 // maintain a list of compatible protocols for demo playing
 // NOTE: that stuff only works with two digits protocols
 extern int demo_protocols[];
@@ -309,39 +306,8 @@ extern int demo_protocols[];
 # define MOTD_SERVER_NAME      "unvanquished.net"
 #endif
 
-#ifdef AUTHORIZE_SUPPORT
-#define AUTHORIZE_SERVER_NAME "wolfauthorize.idsoftware.com"
-#endif // AUTHORIZE_SUPPORT
-
-// TTimo: override autoupdate server for testing
-#ifndef AUTOUPDATE_SERVER_NAME
-#define AUTOUPDATE_SERVER_NAME "127.0.0.1"
-//#define AUTOUPDATE_SERVER_NAME "au2rtcw2.activision.com"
-#endif
-
-// TTimo: allow override for easy dev/testing..
-// FIXME: not planning to support more than 1 auto update server
-// see cons -- update_server=myhost
-#define MAX_AUTOUPDATE_SERVERS  5
-#if !defined( AUTOUPDATE_SERVER_NAME )
-#define AUTOUPDATE_SERVER1_NAME "au2rtcw1.activision.com" // DHM - Nerve
-#define AUTOUPDATE_SERVER2_NAME "au2rtcw2.activision.com" // DHM - Nerve
-#define AUTOUPDATE_SERVER3_NAME "au2rtcw3.activision.com" // DHM - Nerve
-#define AUTOUPDATE_SERVER4_NAME "au2rtcw4.activision.com" // DHM - Nerve
-#define AUTOUPDATE_SERVER5_NAME "au2rtcw5.activision.com" // DHM - Nerve
-#else
-#define AUTOUPDATE_SERVER1_NAME AUTOUPDATE_SERVER_NAME
-#define AUTOUPDATE_SERVER2_NAME AUTOUPDATE_SERVER_NAME
-#define AUTOUPDATE_SERVER3_NAME AUTOUPDATE_SERVER_NAME
-#define AUTOUPDATE_SERVER4_NAME AUTOUPDATE_SERVER_NAME
-#define AUTOUPDATE_SERVER5_NAME AUTOUPDATE_SERVER_NAME
-#endif
-
 #define PORT_MASTER             27950
 #define PORT_MOTD               27950
-#ifdef AUTHORIZE_SUPPORT
-#define PORT_AUTHORIZE          27952
-#endif // AUTHORIZE_SUPPORT
 #define PORT_SERVER             27960
 #define NUM_SERVER_PORTS        4 // broadcast scan this many ports after
 // PORT_SERVER so a single machine can
@@ -474,6 +440,10 @@ void Cbuf_Execute( void );
 // them through Cmd_ExecuteString.  Stops when the buffer is empty.
 // Called on a per-frame basis, but may also be explicitly invoked.
 // Do not call inside a command function, or current args will be destroyed.
+
+void Cdelay_Frame (void);
+//Check if a delayed command have to be executed and decreases the remaining
+//delay time for all of them
 
 //===========================================================================
 
@@ -679,11 +649,7 @@ issues.
 ==============================================================
 */
 
-#ifndef PRE_RELEASE_DEMO
-# define BASEGAME "main"
-#else
-# define BASEGAME "test"
-#endif
+#define BASEGAME "main"
 
 // referenced flags
 // these are in loop specific order so don't change the order
@@ -950,12 +916,6 @@ MISC
 ==============================================================
 */
 
-// centralizing the declarations for cl_cdkey
-// (old code causing buffer overflows)
-extern char cl_cdkey[ 34 ];
-void        Com_AppendCDKey( const char *filename );
-void        Com_ReadCDKey( const char *filename );
-
 typedef struct gameInfo_s
 {
 	qboolean spEnabled;
@@ -1188,9 +1148,6 @@ void CL_MouseEvent( int dx, int dy, int time );
 
 void CL_JoystickEvent( int axis, int value, int time );
 
-// Iphone
-void CL_AccelEvent( int xa, int ya, int za );
-
 void CL_PacketEvent( netadr_t from, msg_t *msg );
 
 void CL_ConsolePrint( char *text );
@@ -1224,11 +1181,7 @@ void CL_StartHunkUsers( void );
 
 // start all the client stuff using the hunk
 
-void     CL_CheckAutoUpdate( void );
-qboolean CL_NextUpdateServer( void );
-void     CL_GetAutoUpdate( void );
-
-void     Key_KeynameCompletion( void ( *callback )( const char *s ) );
+void Key_KeynameCompletion( void ( *callback )( const char *s ) );
 
 // for keyname autocompletion
 
@@ -1262,7 +1215,6 @@ qboolean SV_GameCommand( void );
 // UI interface
 //
 qboolean UI_GameCommand( void );
-qboolean UI_usesUniqueCDKey();
 
 /*
 ==============================================================
@@ -1291,9 +1243,6 @@ typedef enum
   SE_CHAR, // evValue is an ascii char
   SE_MOUSE, // evValue and evValue2 are relative, signed x / y moves
   SE_JOYSTICK_AXIS, // evValue is an axis number and evValue2 is the current state (-127 to 127)
-#if IPHONE
-  SE_ACCEL, // iPhone accelerometer
-#endif // IPHONE
   SE_CONSOLE, // evPtr is a char*
   SE_PACKET // evPtr is a netadr_t followed by data bytes to evPtrLength
 } sysEventType_t;
