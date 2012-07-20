@@ -1194,9 +1194,6 @@ void CL_MouseEvent( int dx, int dy, int time );
 
 void CL_JoystickEvent( int axis, int value, int time );
 
-// Iphone
-void CL_AccelEvent( int xa, int ya, int za );
-
 void CL_PacketEvent( netadr_t from, msg_t *msg );
 
 void CL_ConsolePrint( char *text );
@@ -1297,9 +1294,6 @@ typedef enum
   SE_CHAR, // evValue is an ascii char
   SE_MOUSE, // evValue and evValue2 are relative, signed x / y moves
   SE_JOYSTICK_AXIS, // evValue is an axis number and evValue2 is the current state (-127 to 127)
-#if IPHONE
-  SE_ACCEL, // iPhone accelerometer
-#endif // IPHONE
   SE_CONSOLE, // evPtr is a char*
   SE_PACKET // evPtr is a netadr_t followed by data bytes to evPtrLength
 } sysEventType_t;
