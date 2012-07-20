@@ -1180,11 +1180,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Com_GetHunkInfo( VMA( 1 ), VMA( 2 ) );
 			return 0;
 
-		case CG_PUMPEVENTLOOP:
-//      Com_EventLoop();
-//      CL_WritePacket();
-			return 0;
-
 			//bani - dynamic shaders
 		case CG_R_LOADDYNAMICSHADER:
 			return re.LoadDynamicShader( VMA( 1 ), VMA( 2 ) );

@@ -217,9 +217,6 @@ typedef enum cgameImport_s
   CG_S_FADEALLSOUNDS,
   CG_R_INPVS,
   CG_GETHUNKDATA,
-  CG_PUMPEVENTLOOP,
-  CG_SENDMESSAGE,
-  CG_MESSAGESTATUS,
   CG_R_LOADDYNAMICSHADER,
   CG_R_RENDERTOTEXTURE,
   CG_R_GETTEXTUREID,
@@ -458,9 +455,6 @@ void            trap_CG_TranslateString( const char *string, char *buf );
 void            trap_S_FadeAllSound( float targetvol, int time, qboolean stopsounds );
 qboolean        trap_R_inPVS( const vec3_t p1, const vec3_t p2 );
 void            trap_GetHunkData( int *hunkused, int *hunkexpected );
-void            trap_PumpEventLoop( void );
-void            trap_SendMessage( char *buf, int buflen );
-messageStatus_t trap_MessageStatus( void );
 qboolean        trap_R_LoadDynamicShader( const char *shadername, const char *shadertext );
 void            trap_R_RenderToTexture( int textureid, int x, int y, int w, int h );
 int             trap_R_GetTextureId( const char *name );

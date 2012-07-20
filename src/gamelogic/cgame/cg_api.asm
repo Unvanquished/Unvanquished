@@ -158,7 +158,6 @@ equ trap_Key_KeysForBinding               -394
 equ trap_S_FadeAllSound                   -396
 equ trap_R_inPVS                          -397
 equ trap_GetHunkData                      -398
-equ trap_PumpEventLoop                    -399
 equ trap_R_LoadDynamicShader              -402
 equ trap_R_RenderToTexture                -403
 equ trap_R_GetTextureId                   -404
