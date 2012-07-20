@@ -38,7 +38,7 @@ Maryland 20850 USA.
 #include "../qcommon/qcommon.h"
 #include "../renderer/tr_public.h"
 #include "keys.h"
-#include "../../gamelogic/gpp/src/game/bg_public.h" // FIXME
+#include "../../gamelogic/game/bg_public.h" // FIXME
 #include "snd_public.h"
 
 #include "../client/ui_api.h"
@@ -397,15 +397,6 @@ typedef struct
 	char     updateChallenge[ MAX_TOKEN_CHARS ];
 	char     updateInfoString[ MAX_INFO_STRING ];
 
-	netadr_t authorizeServer;
-
-	// DHM - Nerve :: Auto-update Info
-	char     autoupdateServerNames[ MAX_AUTOUPDATE_SERVERS ][ MAX_QPATH ];
-	netadr_t autoupdateServer;
-	qboolean autoUpdateServerChecked[ MAX_AUTOUPDATE_SERVERS ];
-	int      autoupdatServerFirstIndex; // to know when we went through all of them
-	int      autoupdatServerIndex; // to cycle through them
-
 	// rendering info
 	glconfig_t  glconfig;
 	glconfig2_t glconfig2;
@@ -574,10 +565,6 @@ void        CL_RegisterButtonCommands( const char *cmdList );
 
 void        CL_StartHunkUsers( void );
 
-void        CL_CheckAutoUpdate( void );
-qboolean    CL_NextUpdateServer( void );
-void        CL_GetAutoUpdate( void );
-
 void        CL_Disconnect_f( void );
 void        CL_GetChallengePacket( void );
 void        CL_Vid_Restart_f( void );
@@ -681,8 +668,6 @@ void CL_SystemInfoChanged( void );
 void CL_ParseServerMessage( msg_t *msg );
 
 //====================================================================
-
-void     CL_UpdateInfoPacket( netadr_t from );  // DHM - Nerve
 
 void     CL_ServerInfoPacket( netadr_t from, msg_t *msg );
 void     CL_LocalServers_f( void );

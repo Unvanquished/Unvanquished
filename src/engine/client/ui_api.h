@@ -109,8 +109,6 @@ typedef enum uiImport_s
   UI_GETNEWS,
   UI_LAN_COMPARESERVERS,
   UI_MEMORY_REMAINING,
-  UI_GET_CDKEY,
-  UI_SET_CDKEY,
   UI_R_REGISTERFONT,
   UI_PARSE_ADD_GLOBAL_DEFINE,
   UI_PARSE_LOAD_SOURCE,
@@ -135,8 +133,6 @@ typedef enum uiImport_s
   UI_R_REMAP_SHADER,
   UI_CL_GETLIMBOSTRING,
   UI_CL_TRANSLATE_STRING,
-  UI_CHECKAUTOUPDATE,
-  UI_GET_AUTOUPDATE,
   UI_OPENURL,
   UI_GETHUNKDATA,
   UI_QUOTESTRING,
@@ -183,8 +179,6 @@ typedef enum
 
   UIMENU_WM_TAPOUT,
   UIMENU_WM_TAPOUT_LMS,
-
-  UIMENU_WM_AUTOUPDATE,
 
   UIMENU_INGAME_OMNIBOTMENU,
 } uiMenuCommand_t;
@@ -233,7 +227,7 @@ typedef enum
 
   UI_DRAW_CONNECT_SCREEN,
 //  void    UI_DrawConnectScreen( qboolean overlay );
-  UI_HASUNIQUECDKEY,
+
 // if !overlay, the background will be drawn, otherwise it will be
 // overlayed over whatever the cgame has drawn.
 // a GetClientState syscall will be made to get the current strings
@@ -243,10 +237,6 @@ typedef enum
 
 // void UI_ReportHighScoreResponse( void );
   UI_REPORT_HIGHSCORE_RESPONSE,
-
-//When the client has been authorized, send a response, and the token
-// void UI_Authorized( int response )
-  UI_AUTHORIZED,
 
 // when the client gets an error message from the server
   UI_SERVER_ERRORMESSAGE,
@@ -339,8 +329,6 @@ qboolean    trap_LAN_ServerIsInFavoriteList( int source, int n );
 qboolean    trap_GetNews( qboolean force );
 int         trap_LAN_CompareServers( int source, int sortKey, int sortDir, int s1, int s2 );
 int         trap_MemoryRemaining( void );
-void        trap_GetCDKey( char *buf, int buflen );
-void        trap_SetCDKey( char *buf );
 void        trap_R_RegisterFont( const char *fontName, const char *fallbackFont, int pointSize, fontMetrics_t * );
 void        trap_R_Glyph( fontHandle_t, const char *str, glyphInfo_t *glyph );
 void        trap_R_GlyphChar( fontHandle_t, int ch, glyphInfo_t *glyph );
@@ -368,8 +356,6 @@ void        trap_CIN_SetExtents( int handle, int x, int y, int w, int h );
 void        trap_R_RemapShader( const char *oldShader, const char *newShader, const char *timeOffset );
 qboolean    trap_GetLimboString( int index, char *buf );
 void        trap_TranslateString( const char *string, char *buf );
-void        trap_CheckAutoUpdate( void );
-void        trap_GetAutoUpdate( void );
 void        trap_openURL( const char *s );
 void        trap_GetHunkData( int *hunkused, int *hunkexpected );
 void        trap_QuoteString( const char *str, char *buffer, int size );
