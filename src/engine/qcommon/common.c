@@ -2831,12 +2831,6 @@ int Com_EventLoop( void )
 			case SE_JOYSTICK_AXIS:
 				CL_JoystickEvent( ev.evValue, ev.evValue2, ev.evTime );
 				break;
-#ifdef IPHONE
-
-			case SE_ACCEL:
-				CL_AccelEvent( ev.evValue, ev.evValue2, ev.evValue3 );
-				break;
-#endif
 
 			case SE_CONSOLE:
 				Cbuf_AddText( ( char * ) ev.evPtr );

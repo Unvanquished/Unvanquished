@@ -1926,9 +1926,7 @@ qboolean RE_BeginRegistration( glconfig_t *glconfigOut, glconfig2_t *glconfigOut
 	R_SyncRenderThread();
 
 	tr.viewCluster = -1; // force markleafs to regenerate
-#ifndef IPHONE
 	R_ClearFlares();
-#endif
 	RE_ClearScene();
 
 	tr.registered = qtrue;
