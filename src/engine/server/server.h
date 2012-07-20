@@ -275,8 +275,6 @@ typedef struct
 // out before legitimate users connected
 #define MAX_CHALLENGES    1024
 
-#define AUTHORIZE_TIMEOUT 5000
-
 typedef struct
 {
 	netadr_t adr;
@@ -328,10 +326,6 @@ typedef struct
 	receipt_t     infoReceipts[ MAX_INFO_RECEIPTS ];
 	netadr_t      redirectAddress; // for rcon return messages
 	tempBan_t     tempBanAddresses[ MAX_TEMPBAN_ADDRESSES ];
-
-#ifdef AUTHORIZE_SUPPORT
-	netadr_t authorizeAddress;
-#endif // AUTHORIZE_SUPPORT
 
 	int       sampleTimes[ SERVER_PERFORMANCECOUNTER_SAMPLES ];
 	int       currentSampleIndex;
@@ -474,8 +468,6 @@ void SV_SpawnServer( char *server, qboolean killBots );
 void SV_GetChallenge( netadr_t from );
 
 void SV_DirectConnect( netadr_t from );
-
-void SV_AuthorizeIpPacket( netadr_t from );
 
 void SV_ExecuteClientMessage( client_t *cl, msg_t *msg );
 void SV_UserinfoChanged( client_t *cl );

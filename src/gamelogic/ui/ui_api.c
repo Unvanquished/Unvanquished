@@ -627,20 +627,6 @@ int trap_MemoryRemaining( void )
 	return syscall( UI_MEMORY_REMAINING );
 }
 
-//81.
-//CLUI_GetCDKey(VMA(1), args[2]);
-void trap_GetCDKey( char *buf, int buflen )
-{
-	syscall( UI_GET_CDKEY, buf, buflen );
-}
-
-//82.
-//CLUI_SetCDKey(VMA(1));
-void trap_SetCDKey( char *buf )
-{
-	syscall( UI_SET_CDKEY, buf );
-}
-
 //83.
 //re.RegisterFont(VMA(1), args[2], VMA(3));
 void trap_R_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontMetrics_t *font )
@@ -800,20 +786,6 @@ void trap_R_RemapShader( const char *oldShader, const char *newShader, const cha
 qboolean trap_GetLimboString( int index, char *buf )
 {
 	return syscall( UI_CL_GETLIMBOSTRING, index, buf );
-}
-
-//116.
-//CL_CheckAutoUpdate();
-void trap_CheckAutoUpdate( void )
-{
-	syscall( UI_CHECKAUTOUPDATE );
-}
-
-//117.
-//CL_GetAutoUpdate();
-void trap_GetAutoUpdate( void )
-{
-	syscall( UI_GET_AUTOUPDATE );
 }
 
 //118.

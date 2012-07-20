@@ -97,8 +97,6 @@ equ trap_LAN_ServerIsInFavoriteList       -334
 equ trap_GetNews                          -335
 equ trap_LAN_CompareServers               -336
 equ trap_MemoryRemaining                  -337
-equ trap_GetCDKey                         -338
-equ trap_SetCDKey                         -339
 equ trap_R_RegisterFont                   -340
 equ trap_Parse_AddGlobalDefine            -341
 equ trap_Parse_LoadSource                 -342
@@ -122,8 +120,6 @@ equ trap_CIN_DrawCinematic                -359
 equ trap_CIN_SetExtents                   -360
 equ trap_R_RemapShader                    -361
 equ trap_GetLimboString                   -362
-equ trap_CheckAutoUpdate                  -364
-equ trap_GetAutoUpdate                    -365
 equ trap_openURL                          -366
 equ trap_GetHunkData                      -367
 equ trap_QuoteString                      -368
