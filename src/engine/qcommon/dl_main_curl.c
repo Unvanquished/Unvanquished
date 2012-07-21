@@ -146,7 +146,7 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 	DL_InitDownload();
 
 	strcpy( referer, APP_URI_SCHEME );
-	Q_strncpyz( referer + 5, Cvar_VariableString( "cl_currentServerIP" ), MAX_STRING_CHARS );
+	Q_strncpyz( referer + strlen( APP_URI_SCHEME ), Cvar_VariableString( "cl_currentServerIP" ), MAX_STRING_CHARS );
 
 	dl_request = curl_easy_init();
 	curl_easy_setopt( dl_request, CURLOPT_USERAGENT, va( "%s %s", APP_NAME "/" APP_VERSION, curl_version() ) );
