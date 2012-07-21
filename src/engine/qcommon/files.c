@@ -1472,16 +1472,6 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 						pak->referenced |= FS_UI_REF;
 					}
 
-//#if !defined(PRE_RELEASE_DEMO) && !defined(DO_LIGHT_DEDICATED)
-//					// DHM -- Nerve :: Don't allow maps to be loaded from pak0 (singleplayer)
-//					if ( Q_stricmp(filename + l - 4, ".bsp") == 0 &&
-//						Q_stricmp( pak->pakBasename, "pak0" ) == 0 ) {
-//
-//						*file = 0;
-//						return -1;
-//					}
-//#endif
-
 					if ( uniqueFILE )
 					{
 						// open a new file on the pakfile
@@ -4207,8 +4197,6 @@ static void FS_Startup( const char *gameName )
 		FS_AddGameDirectory( fs_homepath->string, gameName );
 	}
 
-#ifndef PRE_RELEASE_DEMO
-
 	// check for additional base game so mods can be based upon other mods
 	if ( fs_basegame->string[ 0 ] && !Q_stricmp( gameName, BASEGAME ) && Q_stricmp( fs_basegame->string, gameName ) )
 	{
@@ -4236,8 +4224,6 @@ static void FS_Startup( const char *gameName )
 			FS_AddGameDirectory( fs_homepath->string, fs_gamedirvar->string );
 		}
 	}
-
-#endif // PRE_RELEASE_DEMO
 
 	// add our commands
 	Cmd_AddCommand( "path", FS_Path_f );

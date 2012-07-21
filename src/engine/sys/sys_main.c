@@ -392,22 +392,6 @@ Sys_Error
 */
 void PRINTF_LIKE(1) NORETURN Sys_Error( const char *error, ... )
 {
-#if defined ( IPHONE )
-	NSString *errorString;
-	va_list  ap;
-
-	va_start( ap, error );
-errorString = [[[ NSString alloc ] initWithFormat: [ NSString stringWithCString: error encoding: NSUTF8StringEncoding ]
-                arguments: ap ] autorelease ];
-	va_end( ap );
-#ifdef IPHONE_USE_THREADS
-[[ OWApplication sharedApplication ] performSelectorOnMainThread : @selector( presentErrorMessage: )
- withObject : errorString
- waitUntilDone : YES ];
-#else
-[( OWApplication * ) [ OWApplication sharedApplication ] presentErrorMessage : errorString ];
-#endif // IPHONE_USE_THREADS
-#else
 	va_list argptr;
 	char    string[ 1024 ];
 
@@ -423,7 +407,6 @@ errorString = [[[ NSString alloc ] initWithFormat: [ NSString stringWithCString:
 	Sys_ErrorDialog( string );
 
 	Sys_Exit( 3 );
-#endif
 }
 
 /*
@@ -433,22 +416,6 @@ Sys_Warn
 */
 void PRINTF_LIKE(1) Sys_Warn( char *warning, ... )
 {
-#if defined ( IPHONE )
-	NSString *warningString;
-	va_list  ap;
-
-	va_start( ap, warning );
-warningString = [[[ NSString alloc ] initWithFormat: [ NSString stringWithCString: warning encoding: NSUTF8StringEncoding ]
-                  arguments: ap ] autorelease ];
-	va_end( ap );
-#ifdef IPHONE_USE_THREADS
-[[ OWApplication sharedApplication ] performSelectorOnMainThread : @selector( presentWarningMessage: )
- withObject : warningString
- waitUntilDone : YES ];
-#else
-[( OWApplication * ) [ OWApplication sharedApplication ] presentWarningMessage : warningString ];
-#endif // IPHONE_USE_THREADS
-#else
 	va_list argptr;
 	char    string[ 1024 ];
 
@@ -457,16 +424,7 @@ warningString = [[[ NSString alloc ] initWithFormat: [ NSString stringWithCStrin
 	va_end( argptr );
 
 	CON_Print( va( "Warning: %s", string ) );
-#endif
 }
-
-#if defined ( IPHONE )
-void applicationDidFinishLaunching( id unused )
-{
-[[ UIApplication sharedApplication ] setStatusBarOrientation : UIInterfaceOrientationLandscapeLeft ];
-}
-
-#endif
 
 /*
 ============
@@ -746,16 +704,6 @@ main
 */
 int main( int argc, char **argv )
 {
-#if defined ( IPHONE )
-	NSAutoreleasePool *pool = [ NSAutoreleasePool new ];
-
-	[[ OWApplication sharedApplication ] setPriority : 1.0 ];
-
-	UIApplicationMain( ac, av, nil, nil );
-
-	[ pool release ];
-	return 0;
-#else
 	int  i;
 	char commandLine[ MAX_STRING_CHARS ] = { 0 };
 
@@ -844,32 +792,24 @@ int main( int argc, char **argv )
 	Sys_SetBinaryPath( Sys_Dirname( argv[ 0 ] ) );
 	Sys_SetDefaultInstallPath( DEFAULT_BASEDIR );
 
+	// If the first parameter begins with "unv://", assume that it's a URI
+	// This covers e.g. launching via xdg-open
+	if ( argc > 1 && !Q_strnicmp( argv[ 1 ], APP_URI_SCHEME, sizeof( APP_URI_SCHEME ) - 1 ) )
+	{
+		strcpy( commandLine, "connect " );
+	}
+
 	// Concatenate the command line for passing to Com_Init
 	for ( i = 1; i < argc; i++ )
 	{
 #ifdef USE_CURSES
-
 		if ( !strcmp( "+nocurses", argv[ i ] ) )
 		{
 			nocurses = qtrue;
 			continue;
 		}
-
 #endif
-		const qboolean containsSpaces = strchr( argv[ i ], ' ' ) != NULL;
-
-		if ( containsSpaces )
-		{
-			Q_strcat( commandLine, sizeof( commandLine ), "\"" );
-		}
-
-		Q_strcat( commandLine, sizeof( commandLine ), argv[ i ] );
-
-		if ( containsSpaces )
-		{
-			Q_strcat( commandLine, sizeof( commandLine ), "\"" );
-		}
-
+		Q_strcat( commandLine, sizeof( commandLine ), Cmd_QuoteString( argv[ i ] ) );
 		Q_strcat( commandLine, sizeof( commandLine ), " " );
 	}
 
@@ -905,5 +845,4 @@ int main( int argc, char **argv )
 		IN_Frame();
 		Com_Frame();
 	}
-#endif
 }

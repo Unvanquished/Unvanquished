@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleName</key>
+	<string>Unvanquished</string>
+	<key>CFBundleDisplayName</key>
+	<string>Unvanquished</string>
+	<key>CFBundleExecutable</key>
+	<string>../Resources/Unvanquished/daemon.i386</string>
+	<key>CFBundleIconFile</key>
+	<string>Unvanquished.icns</string>
+	<key>CFBundleIdentifier</key>
+	<string>net.Unvanquished</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>Unvanquished Server Link</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>unv</string>
+			</array>
+		</dict>
+	</array>
+</dict>
+</plist>

@@ -498,23 +498,6 @@ void CL_JoystickEvent( int axis, int value, int time )
 
 /*
 =================
-CL_AccelEvent
-
-iPhone Accelerometer event
-=================
-*/
-#if defined ( IPHONE )
-void CL_AccelEvent( int pitch, int roll, int yaw )
-{
-	cl.accelAngles[ PITCH ] = pitch;
-	cl.accelAngles[ ROLL ] = roll;
-	cl.accelAngles[ YAW ] = yaw;
-}
-
-#endif
-
-/*
-=================
 CL_JoystickMove
 =================
 */
