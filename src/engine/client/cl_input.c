@@ -307,8 +307,6 @@ cvar_t *cl_anglespeedkey;
 
 cvar_t *cl_recoilPitch;
 
-cvar_t *cl_bypassMouseInput; // NERVE - SMF
-
 cvar_t *cl_doubletapdelay;
 
 /*
@@ -449,28 +447,11 @@ void CL_MouseEvent( int dx, int dy, int time )
 {
 	if ( cls.keyCatchers & KEYCATCH_UI )
 	{
-		// NERVE - SMF - if we just want to pass it along to game
-		if ( cl_bypassMouseInput->integer == 1 )
-		{
-			cl.mouseDx[ cl.mouseIndex ] += dx;
-			cl.mouseDy[ cl.mouseIndex ] += dy;
-		}
-		else
-		{
-			VM_Call( uivm, UI_MOUSE_EVENT, dx, dy );
-		}
+		VM_Call( uivm, UI_MOUSE_EVENT, dx, dy );
 	}
 	else if ( cls.keyCatchers & KEYCATCH_CGAME )
 	{
-		if ( cl_bypassMouseInput->integer == 1 )
-		{
-			cl.mouseDx[ cl.mouseIndex ] += dx;
-			cl.mouseDy[ cl.mouseIndex ] += dy;
-		}
-		else
-		{
-			VM_Call( cgvm, CG_MOUSE_EVENT, dx, dy );
-		}
+		VM_Call( cgvm, CG_MOUSE_EVENT, dx, dy );
 	}
 	else
 	{
@@ -719,14 +700,14 @@ void CL_CmdButtons( usercmd_t *cmd )
 		kb[ KB_BUTTONS + i ].wasPressed = qfalse;
 	}
 
-	if ( cls.keyCatchers && !cl_bypassMouseInput->integer )
+	if ( cls.keyCatchers )
 	{
 		usercmdPressButton( cmd->buttons, BUTTON_TALK );
 	}
 
 	// allow the game to know if any key at all is
 	// currently pressed, even if it isn't bound to anything
-	if ( anykeydown && ( !cls.keyCatchers || cl_bypassMouseInput->integer ) )
+	if ( anykeydown && ( !cls.keyCatchers ) )
 	{
 		usercmdPressButton( cmd->buttons, BUTTON_ANY );
 	}
