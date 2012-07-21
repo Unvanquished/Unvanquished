@@ -1476,6 +1476,7 @@ if( BUILD_CLIENT )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_OPENAL )
     if( USE_OPENAL_DLOPEN )
       set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_OPENAL_DLOPEN )
+	  target_link_libraries( client ${OPENAL_LIBRARY} )
     endif()
   endif()
 
