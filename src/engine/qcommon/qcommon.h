@@ -279,19 +279,20 @@ PROTOCOL
 
 // sent by the server, printed on connection screen, works for all clients
 // (restrictions: does not handle \n, no more than 256 chars)
-#define PROTOCOL_MISMATCH_ERROR      "ERROR: Protocol Mismatch Between Client and Server.\
+#define PROTOCOL_MISMATCH_ERROR      "ERROR: Protocol Mismatch Between Client and Server. \
 The server you are attempting to join is running an incompatible version of the game."
 
 // long version used by the client in diagnostic window
 #define PROTOCOL_MISMATCH_ERROR_LONG "ERROR: Protocol Mismatch Between Client and Server.\n\n\
 The server you attempted to join is running an incompatible version of the game.\n\
-You or the server may be running older versions of the game. Press the auto-update\
- button if it appears on the Main Menu screen."
+You or the server may be running older versions of the game."
 
-#define GAMENAME_STRING "unv"
-#define PROTOCOL_VERSION 85
+#define GAMENAME_STRING        "unv"
 
-#define APP_URI_SCHEME GAMENAME_STRING "://"
+#define PROTOCOL_VERSION       85
+
+#define URI_SCHEME             GAMENAME_STRING "://"
+#define URI_SCHEME_LENGTH      6
 
 // maintain a list of compatible protocols for demo playing
 // NOTE: that stuff only works with two digits protocols

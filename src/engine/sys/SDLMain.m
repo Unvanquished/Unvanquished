@@ -258,7 +258,6 @@ void Cbuf_AddText( const char *text );
 	}
 	else
 	{
-		[self addArgc:@"+connect"];
 		[self addArgc:uri];
 	}
 }

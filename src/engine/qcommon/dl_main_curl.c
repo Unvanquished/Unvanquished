@@ -117,7 +117,7 @@ setup the download, return once we have a connection
 */
 int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 {
-	char referer[ MAX_STRING_CHARS + strlen( APP_URI_SCHEME ) ];
+	char referer[ MAX_STRING_CHARS + URI_SCHEME_LENGTH ];
 
 	if ( dl_request )
 	{
@@ -142,8 +142,8 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 
 	DL_InitDownload();
 
-	strcpy( referer, APP_URI_SCHEME );
-	Q_strncpyz( referer + strlen( APP_URI_SCHEME ), Cvar_VariableString( "cl_currentServerIP" ), MAX_STRING_CHARS );
+	strcpy( referer, URI_SCHEME );
+	Q_strncpyz( referer + URI_SCHEME_LENGTH, Cvar_VariableString( "cl_currentServerIP" ), MAX_STRING_CHARS );
 
 	dl_request = curl_easy_init();
 	curl_easy_setopt( dl_request, CURLOPT_USERAGENT, va( "%s %s", PRODUCT_NAME "/" PRODUCT_VERSION, curl_version() ) );
