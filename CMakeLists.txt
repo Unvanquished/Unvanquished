@@ -648,9 +648,9 @@ set( CGAMEGPP_BASE
 
 set( CGAMEGPP_SO
   ${CGAMEGPP_BASE}
-  ${GPP_DIR}/src/cgame/cg_api.c
-#   ${GPP_DIR}/src/cgame/cg_nav.c
-  ${GPP_DIR}/src/cgame/cgame.def
+  ${GPP_DIR}/cgame/cg_api.c
+#   ${GPP_DIR}/cgame/cg_nav.c
+  ${GPP_DIR}/cgame/cgame.def
 )
 
 set( CGAMEGPP_QVM
@@ -691,12 +691,12 @@ set( GAMEGPP_BASE
 
 set( GAMEGPP_SO
   ${GAMEGPP_BASE}
-  ${GPP_DIR}/src/game/g_api.c
-  ${GPP_DIR}/src/game/g_bot.cpp
-  ${GPP_DIR}/src/game/g_alienbot.cpp
-  ${GPP_DIR}/src/game/g_humanbot.cpp
-  ${GPP_DIR}/src/game/g_nav.cpp
-  ${GPP_DIR}/src/game/game.def
+  ${GPP_DIR}/game/g_api.c
+  ${GPP_DIR}/game/g_bot.cpp
+  ${GPP_DIR}/game/g_alienbot.cpp
+  ${GPP_DIR}/game/g_humanbot.cpp
+  ${GPP_DIR}/game/g_nav.cpp
+  ${GPP_DIR}/game/game.def
 )
 
 set( GAMEGPP_QVM
