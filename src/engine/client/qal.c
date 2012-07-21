@@ -171,7 +171,7 @@ qboolean QAL_Init( const char *libname )
 	if ( ( OpenALLib = OBJLOAD( libname ) ) == 0 )
 	{
 #ifdef _WIN32
-		si.Printf( PRINT_ALL, " Can't load %s\n", libname );
+		Com_Printf( " Can't load %s\n", libname );
 		return qfalse;
 #else
 		char fn[ 1024 ];
