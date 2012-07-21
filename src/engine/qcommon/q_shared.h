@@ -2283,7 +2283,6 @@ char *Q_UTF8Unstore( int e );
 		int          groundEntityNum; // ENTITYNUM_NONE = in air
 
 		int          constantLight; // r + (g<<8) + (b<<16) + (intensity<<24)
-		int          dl_intensity; // used for coronas
 		int          loopSound; // constantly loop this sound
 
 		int          modelindex;
@@ -2302,25 +2301,9 @@ char *Q_UTF8Unstore( int e );
 		int eventParms[ MAX_EVENTS ];
 
 		// for players
-		int powerups; // bit flags  // Arnout: used to store entState_t for non-player entities (so we know to draw them translucent clientsided)
 		int weapon; // determines weapon and flash model, etc
 		int legsAnim; // mask off ANIM_TOGGLEBIT
 		int torsoAnim; // mask off ANIM_TOGGLEBIT
-
-		int density; // for particle effects
-
-		int dmgFlags; // to pass along additional information for damage effects for players/ Also used for cursorhints for non-player entities
-
-		// Ridah
-		int           onFireStart, onFireEnd;
-
-		int           nextWeapon;
-		int           teamNum;
-
-		int           effect1Time, effect2Time, effect3Time;
-
-		aistateEnum_t aiState; // xkan, 1/10/2003
-		int           animMovetype; // clients can't derive movetype of other clients for anim scripting system
 
 		int           misc; // bit flags
 		int           generic1;

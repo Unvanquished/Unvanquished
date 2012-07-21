@@ -93,14 +93,8 @@ qboolean isEntVisible( entityState_t *ent )
 	VectorScale( right, 18, right );
 
 	// Set viewheight
-	if ( ent->animMovetype )
-	{
-		view_height = 16;
-	}
-	else
-	{
-		view_height = 40;
-	}
+	view_height = 40;
+	
 
 	// First, viewpoint to viewpoint
 	end[ 2 ] += view_height;
@@ -144,14 +138,7 @@ qboolean isEntVisible( entityState_t *ent )
 	// Fourth, to ent's right shoulder
 	VectorAdd( end, right2, temp );
 
-	if ( ent->animMovetype )
-	{
-		temp[ 2 ] += 28;
-	}
-	else
-	{
-		temp[ 2 ] += 52;
-	}
+	temp[ 2 ] += 52;
 
 	CM_BoxTrace( &tr, start, temp, NULL, NULL, 0, CONTENTS_SOLID, TT_AABB );
 
@@ -175,14 +162,7 @@ qboolean isEntVisible( entityState_t *ent )
 	// Sixth, to ent's left shoulder
 	VectorAdd( end, right, temp );
 
-	if ( ent->animMovetype )
-	{
-		temp[ 2 ] += 16;
-	}
-	else
-	{
-		temp[ 2 ] += 36;
-	}
+	temp[ 2 ] += 36;
 
 	CM_BoxTrace( &tr, start, temp, NULL, NULL, 0, CONTENTS_SOLID, TT_AABB );
 
