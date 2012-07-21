@@ -81,16 +81,6 @@ qboolean isEntVisible( entityState_t *ent )
 	VectorCopy( cl.cgameClientLerpOrigin, start );
 	start[ 2 ] += ( cl.snap.ps.viewheight - 1 );
 
-	if ( cl.snap.ps.leanf != 0 )
-	{
-		vec3_t lright, v3ViewAngles;
-
-		VectorCopy( cl.snap.ps.viewangles, v3ViewAngles );
-		v3ViewAngles[ 2 ] += cl.snap.ps.leanf / 2.0f;
-		AngleVectors( v3ViewAngles, NULL, lright, NULL );
-		VectorMA( start, cl.snap.ps.leanf, lright, start );
-	}
-
 	VectorCopy( ent->pos.trBase, end );
 
 	// Compute vector perpindicular to view to ent

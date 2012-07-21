@@ -1924,13 +1924,7 @@ char *Q_UTF8Unstore( int e );
 		vec3_t velocity;
 		int    weaponTime;
 		int    weaponDelay; // for weapons that don't fire immediately when 'fire' is hit (grenades, venom, ...)
-		int    grenadeTimeLeft; // for delayed grenade throwing.  this is set to a #define for grenade
-		// lifetime when the attack button goes down, then when attack is released
-		// this is the amount of time left before the grenade goes off (or if it
-		// gets to 0 while in players hand, it explodes)
-
-		int   gravity;
-		float leanf; // amount of 'lean' when player is looking around corner //----(SA) added
+		int    gravity;
 
 		int   speed;
 		int   delta_angles[ 3 ]; // add to command angles to get view direction
@@ -1966,9 +1960,6 @@ char *Q_UTF8Unstore( int e );
 		int weapon; // copied to entityState_t->weapon
 		int weaponstate;
 
-		// item info
-		int    item;
-
 		vec3_t viewangles; // for fixed views
 		int    viewheight;
 
@@ -1980,40 +1971,6 @@ char *Q_UTF8Unstore( int e );
 
 		int stats[ MAX_STATS ];
 		int persistant[ MAX_PERSISTANT ]; // stats that aren't cleared on death
-		int powerups[ MAX_POWERUPS ]; // level.time that the powerup runs out
-		int ammo[ MAX_WEAPONS ]; // total amount of ammo
-		int ammoclip[ MAX_WEAPONS ]; // ammo in clip
-		int holdable[ 16 ];
-		int holding; // the current item in holdable[] that is selected (held)
-		int weapons[ MAX_WEAPONS / ( sizeof( int ) * 8 ) ];  // 64 bits for weapons held
-
-		// Ridah, allow for individual bounding boxes
-		vec3_t mins, maxs;
-		float  crouchMaxZ;
-		float  crouchViewHeight, standViewHeight, deadViewHeight;
-		// variable movement speed
-		float  runSpeedScale, sprintSpeedScale, crouchSpeedScale;
-		// done.
-
-		// Ridah, view locking for mg42
-		int   viewlocked;
-		int   viewlocked_entNum;
-
-		float friction;
-
-		int   nextWeapon;
-		int   teamNum; // Arnout: doesn't seem to be communicated over the net
-
-		// Rafael
-		//int     gunfx;
-
-		// RF, burning effect is required for view blending effect
-		int     onFireStart;
-
-		int     serverCursorHint; // what type of cursor hint the server is dictating
-		int     serverCursorHintVal; // a value (0-255) associated with the above
-
-		trace_t serverCursorHintTrace; // not communicated over net, but used to store the current server-side cursorhint trace
 
 		// ----------------------------------------------------------------------
 		// So to use persistent variables here, which don't need to come from the server,
@@ -2027,37 +1984,6 @@ char *Q_UTF8Unstore( int e );
 		int pmove_framecount;
 		int entityEventSequence;
 
-		int sprintExertTime;
-
-		// JPW NERVE -- value for all multiplayer classes with regenerating "class weapons" -- ie LT artillery, medic medpack, engineer build points, etc
-		int classWeaponTime; // Arnout : DOES get send over the network
-		int jumpTime; // used in MP to prevent jump accel
-		// jpw
-
-		int      weapAnim; // mask off ANIM_TOGGLEBIT                    //----(SA)  added   // Arnout: does get sent over the network
-
-		qboolean releasedFire;
-
-		float    aimSpreadScaleFloat; // (SA) the server-side aimspreadscale that lets it track finer changes but still only
-		// transmit the 8bit int to the client
-		int      aimSpreadScale; // 0 - 255 increases with angular movement    // Arnout : DOES get send over the network
-		int      lastFireTime; // used by server to hold last firing frame briefly when randomly releasing trigger (AI)
-
-		int      quickGrenTime;
-
-		int      leanStopDebounceTime;
-
-//----(SA)  added
-
-		// seems like heat and aimspread could be tied together somehow, however, they (appear to) change at different rates and
-		// I can't currently see how to optimize this to one server->client transmission "weapstatus" value.
-		int           weapHeat[ MAX_WEAPONS ]; // some weapons can overheat.  this tracks (server-side) how hot each weapon currently is.
-		int           curWeapHeat; // value for the currently selected weapon (for transmission to client)    // Arnout : DOES get send over the network
-		int           identifyClient; // NERVE - SMF
-		int           identifyClientHealth;
-
-		aistateEnum_t aiState; // xkan, 1/10/2003
-
 		int           generic1;
 		int           loopSound;
 		int           otherEntityNum;
@@ -2067,8 +1993,6 @@ char *Q_UTF8Unstore( int e );
 		int           clips; // clips held
 		int           tauntTimer; // don't allow another taunt until this runs out
 		int           misc[ MAX_MISC ]; // misc data
-		int           jumppad_frame;
-		int           jumppad_ent; // jumppad entity hit this frame
 	} playerState_t;
 
 //====================================================================
