@@ -2162,101 +2162,35 @@ char *Q_UTF8Unstore( int e );
 
 	typedef enum
 	{
-	  ET_GENERAL,
-	  ET_PLAYER,
-	  ET_ITEM,
-	  ET_MISSILE,
-	  ET_MOVER,
-	  ET_BEAM,
-	  ET_PORTAL,
-	  ET_SPEAKER,
-	  ET_PUSH_TRIGGER,
-	  ET_TELEPORT_TRIGGER,
-	  ET_INVISIBLE,
-	  ET_CONCUSSIVE_TRIGGER, // JPW NERVE trigger for concussive dust particles
-	  ET_OID_TRIGGER, // DHM - Nerve :: Objective Info Display
-	  ET_EXPLOSIVE_INDICATOR, // NERVE - SMF
+		ET_GENERAL,
+		ET_PLAYER,
+		ET_ITEM,
 
-	  //---- (SA) Wolf
-	  ET_EXPLOSIVE, // brush that will break into smaller bits when damaged
-	  ET_EF_SPOTLIGHT,
-	  ET_ALARMBOX,
-	  ET_CORONA,
-	  ET_TRAP,
-
-	  ET_GAMEMODEL, // misc_gamemodel.  similar to misc_model, but it's a dynamic model so we have LOD
-	  ET_FOOTLOCKER, //----(SA)  added
-	  //---- end
-
-	  ET_FLAMEBARREL,
-	  ET_FP_PARTS,
-
-	  // FIRE PROPS
-	  ET_FIRE_COLUMN,
-	  ET_FIRE_COLUMN_SMOKE,
-	  ET_RAMJET,
-
-	  ET_FLAMETHROWER_CHUNK, // DHM - NERVE :: Used in server side collision detection for flamethrower
-
-	  ET_EXPLO_PART,
-
-	  ET_PROP,
-
-	  ET_AI_EFFECT,
-
-	  ET_CAMERA,
-	  ET_MOVERSCALED,
-
-	  ET_CONSTRUCTIBLE_INDICATOR,
-	  ET_CONSTRUCTIBLE,
-	  ET_CONSTRUCTIBLE_MARKER,
-	  ET_BOMB,
-	  ET_WAYPOINT,
-	  ET_BEAM_2,
-	  ET_TANK_INDICATOR,
-	  ET_TANK_INDICATOR_DEAD,
-	  // Start - TAT - 8/29/2002
-	  // An indicator object created by the bot code to show where the bots are moving to
-	  ET_BOTGOAL_INDICATOR,
-	  // End - TA - 8/29/2002
-	  ET_CORPSE, // Arnout: dead player
-	  ET_SMOKER, // Arnout: target_smoke entity
-
-	  ET_TEMPHEAD, // Gordon: temporary head for clients for bullet traces
-	  ET_MG42_BARREL, // Arnout: MG42 barrel
-	  ET_TEMPLEGS, // Arnout: temporary leg for clients for bullet traces
-	  ET_TRIGGER_MULTIPLE,
-	  ET_TRIGGER_FLAGONLY,
-	  ET_TRIGGER_FLAGONLY_MULTIPLE,
-	  ET_GAMEMANAGER,
-	  ET_AAGUN,
-	  ET_CABINET_H,
-	  ET_CABINET_A,
-	  ET_HEALER,
-	  ET_SUPPLIER,
-
-	  ET_LANDMINE_HINT, // Gordon: landmine hint for botsetgoalstate filter
-	  ET_ATTRACTOR_HINT, // Gordon: attractor hint for botsetgoalstate filter
-	  ET_SNIPER_HINT, // Gordon: sniper hint for botsetgoalstate filter
-	  ET_LANDMINESPOT_HINT, // Gordon: landminespot hint for botsetgoalstate filter
-
-	  ET_COMMANDMAP_MARKER,
-
-	  ET_WOLF_OBJECTIVE,
-
-	  ET_RANGE_MARKER,
-	  ET_BUILDABLE,
-	  ET_PARTICLE_SYSTEM,
-	  ET_LOCATION,
-	  ET_LIGHTFLARE,
-	  ET_LEV2_ZAP_CHAIN,
-	  ET_ANIMMAPOBJ,
-	  ET_MODELDOOR,
-	  ET_GRAPPLE,
-
-	  ET_EVENTS // any of the EV_* events can be added freestanding
-	  // by setting eType to ET_EVENTS + eventNum
-	  // this avoids having to set eFlags and eventNum
+		ET_RANGE_MARKER,
+		ET_BUILDABLE,       // buildable type
+		
+		ET_LOCATION,
+		
+		ET_MISSILE,
+		ET_MOVER,
+		ET_BEAM,
+		ET_PORTAL,
+		ET_SPEAKER,
+		ET_PUSH_TRIGGER,
+		ET_TELEPORT_TRIGGER,
+		ET_INVISIBLE,
+		ET_GRAPPLE,       // grapple hooked on wall
+		
+		ET_CORPSE,
+		ET_PARTICLE_SYSTEM,
+		ET_ANIMMAPOBJ,
+		ET_MODELDOOR,
+		ET_LIGHTFLARE,
+		ET_LEV2_ZAP_CHAIN,
+		
+		ET_EVENTS       // any of the EV_* events can be added freestanding
+		// by setting eType to ET_EVENTS + eventNum
+		// this avoids having to set eFlags and eventNum
 	} entityType_t;
 
 	typedef struct entityState_s
@@ -2438,16 +2372,6 @@ typedef struct
 #define MAX_OTHER_SERVERS        128
 #define MAX_PINGREQUESTS         16
 #define MAX_SERVERSTATUSREQUESTS 16
-
-// NERVE - SMF - localization
-	typedef enum
-	{
-	  LANGUAGE_FRENCH = 0,
-	  LANGUAGE_GERMAN,
-	  LANGUAGE_ITALIAN,
-	  LANGUAGE_SPANISH,
-	  MAX_LANGUAGES
-	} languages_t;
 
 // NERVE - SMF - wolf server/game states
 	typedef enum
