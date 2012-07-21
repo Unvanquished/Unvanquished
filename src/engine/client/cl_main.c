@@ -2015,7 +2015,7 @@ CL_Connect_f
 void CL_Connect_f( void )
 {
 	char         *server, password[ 64 ];
-	const char   *serverString, *tmp, *scheme = APP_URI_SCHEME;
+	const char   *serverString, *passwordOffset;
 	int          argc = Cmd_Argc();
 	netadrtype_t family = NA_UNSPEC;
 
@@ -2048,17 +2048,17 @@ void CL_Connect_f( void )
 	}
 
 	// Skip the URI scheme.
-	if ( !Q_strnicmp( server, scheme, strlen( scheme ) ) )
+	if ( !Q_strnicmp( server, URI_SCHEME, URI_SCHEME_LENGTH ) )
 	{
-		server += strlen( scheme );
+		server += URI_SCHEME_LENGTH;
 	}
 
 	// Set and skip the password.
-	if ( ( tmp = strchr( server, '@' ) ) != NULL )
+	if ( ( passwordOffset = strchr( server, '@' ) ) != NULL )
 	{
-		Q_strncpyz( password, server, Q_min( sizeof( password ), ( tmp - server + 1 ) ) );
+		Q_strncpyz( password, server, Q_min( sizeof( password ), ( passwordOffset - server + 1 ) ) );
 		Cvar_Set( "password", password );
-		server = server + ( tmp - server ) + 1;
+		server = server + ( passwordOffset - server ) + 1;
 	}
 
 	S_StopAllSounds(); // NERVE - SMF
