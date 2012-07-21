@@ -804,11 +804,6 @@ int main( int argc, char **argv )
 		}
 #endif
 
-		if ( !Q_strnicmp( argv[ i ], URI_SCHEME, URI_SCHEME_LENGTH ) )
-		{
-			strcpy( commandLine, "connect " );
-		}
-
 		Q_strcat( commandLine, sizeof( commandLine ), Cmd_QuoteString( argv[ i ] ) );
 		Q_strcat( commandLine, sizeof( commandLine ), " " );
 	}
