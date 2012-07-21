@@ -792,7 +792,16 @@ int main( int argc, char **argv )
 	Sys_SetBinaryPath( Sys_Dirname( argv[ 0 ] ) );
 	Sys_SetDefaultInstallPath( DEFAULT_BASEDIR );
 
-	// Concatenate the command line for passing to Com_Init
+#ifndef __MACOS__
+	// If the first parameter begins with "unv://", assume that it's a URI
+	// This covers e.g. launching via xdg-open
+	if ( argc > 1 && !Q_strnicmp( argv[ 1 ], URI_SCHEME, URI_SCHEME_LENGTH ) )
+	{
+		strcpy( commandLine, "connect " );
+	}
+#endif
+
+ 	// Concatenate the command line for passing to Com_Init
 	for ( i = 1; i < argc; i++ )
 	{
 
