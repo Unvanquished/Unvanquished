@@ -41,56 +41,6 @@ Maryland 20850 USA.
 
 #include "server.h"
 
-#ifdef USE_HUB_SERVER
-
-/*
-==================
-SV_ResolveowHubHost
-
-Resolve the host/port in sv_owHubHost to the netadr_t
-svs.owHubAddress which we can use to send packets; if
-we fail to resolve, svs.owHubAddress.type == NA_BAD.
-==================
-*/
-
-void SV_ResolveowHubHost( void )
-{
-	char     *host = sv_owHubHost->string;
-	netadr_t *address = &svs.owHubAddress;
-	int      result = -1;
-
-	if ( host && host[ 0 ] )
-	{
-		Com_Printf(_( "Resolving |ET:XReaL| Hub %s.\n"), host );
-		result = NET_StringToAdr( host, address, NA_UNSPEC );
-
-		switch ( result )
-		{
-			case 0:
-				Com_Printf(_( "Completely failed to resolve %s.\n"), host );
-				break;
-
-			case 1:
-				Com_Printf(_( "Resolved %s to %s.\n"), host, NET_AdrToStringwPort( *address ) );
-				break;
-
-			case 2:
-				Com_Printf(_( "Failed to resolve a port for %s.\n"), host );
-				address->type = NA_BAD;
-				break;
-
-			default:
-				Com_Printf(_( "Unknown error %d from NET_StringToAdr()!\n"), result );
-				break;
-		}
-	}
-
-	// We had to add this to avoid a double-call to SV_ResolveAlphaHubHost(), not sure why yet...
-	sv_owHubHost->modified = qfalse;
-}
-
-#endif
-
 /*
 ===============
 SV_SetConfigstring
@@ -411,14 +361,6 @@ void SV_Startup( void )
 
 	svs.initialized = qtrue;
 
-#ifdef USE_HUB_SERVER
-	// Try to resolve the hub once when the first ever
-	// map is started on the server; we'll only try again if
-	// sv_owHubHost was modified and the server was (soft)
-	// restarted using SpawnServer()
-	SV_ResolveowHubHost();
-#endif
-
 	Cvar_Set( "sv_running", "1" );
 
 	// Join the ipv6 multicast group now that a map is running so clients can scan for us on the local network.
@@ -679,17 +621,6 @@ void SV_SpawnServer( char *server, qboolean killBots )
 		{
 			SV_ChangeMaxClients();
 		}
-
-#ifdef USE_HUB_SERVER
-
-		// if sv_owHubHost was changed, resolve the address again
-		if ( sv_owHubHost->modified )
-		{
-			sv_owHubHost->modified = qfalse;
-			SV_ResolveowHubHost();
-		}
-
-#endif
 	}
 
 	// clear pak references
@@ -920,32 +851,19 @@ void SV_Init( void )
 
 	// serverinfo vars
 	Cvar_Get( "dmflags", "0", /*CVAR_SERVERINFO */ 0 );
-	Cvar_Get( "fraglimit", "0", /*CVAR_SERVERINFO */ 0 );
 	Cvar_Get( "timelimit", "0", CVAR_SERVERINFO );
-
-	// Rafael gameskill
-//  sv_gameskill = Cvar_Get ("g_gameskill", "3", CVAR_SERVERINFO | CVAR_LATCH );
-	// done
 
 	Cvar_Get( "sv_keywords", "", CVAR_SERVERINFO );
 	Cvar_Get( "protocol", va( "%i", PROTOCOL_VERSION ), CVAR_SERVERINFO | CVAR_ARCHIVE );
 	sv_mapname = Cvar_Get( "mapname", "nomap", CVAR_SERVERINFO | CVAR_ROM );
 	sv_privateClients = Cvar_Get( "sv_privateClients", "0", CVAR_SERVERINFO );
 	sv_hostname = Cvar_Get( "sv_hostname", "Unnamed Unvanquished Server", CVAR_SERVERINFO | CVAR_ARCHIVE );
-	//
-#ifdef __MACOS__
-	sv_maxclients = Cvar_Get( "sv_maxclients", "16", CVAR_SERVERINFO | CVAR_LATCH );  //DAJ HOG
-#else
 	sv_maxclients = Cvar_Get( "sv_maxclients", "20", CVAR_SERVERINFO | CVAR_LATCH );  // NERVE - SMF - changed to 20 from 8
-#endif
-
 	sv_maxRate = Cvar_Get( "sv_maxRate", "0", CVAR_ARCHIVE | CVAR_SERVERINFO );
 	sv_minPing = Cvar_Get( "sv_minPing", "0", CVAR_ARCHIVE | CVAR_SERVERINFO );
 	sv_maxPing = Cvar_Get( "sv_maxPing", "0", CVAR_ARCHIVE | CVAR_SERVERINFO );
 	sv_floodProtect = Cvar_Get( "sv_floodProtect", "0", CVAR_ARCHIVE | CVAR_SERVERINFO );
-	sv_allowAnonymous = Cvar_Get( "sv_allowAnonymous", "0", CVAR_SERVERINFO );
 	sv_friendlyFire = Cvar_Get( "g_friendlyFire", "1", CVAR_SERVERINFO | CVAR_ARCHIVE );  // NERVE - SMF
-	sv_maxlives = Cvar_Get( "g_maxlives", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_SERVERINFO );  // NERVE - SMF
 	sv_needpass = Cvar_Get( "g_needpass", "0", CVAR_SERVERINFO | CVAR_ROM );
 
 	// systeminfo
@@ -983,8 +901,7 @@ void SV_Init( void )
 	sv_master[ 3 ] = Cvar_Get( "sv_master4", "", CVAR_ARCHIVE );
 	sv_master[ 4 ] = Cvar_Get( "sv_master5", "", CVAR_ARCHIVE );
 	sv_reconnectlimit = Cvar_Get( "sv_reconnectlimit", "3", 0 );
-	sv_tempbanmessage =
-	  Cvar_Get( "sv_tempbanmessage", "You have been kicked and are temporarily banned from joining this server.", 0 );
+	sv_tempbanmessage = Cvar_Get( "sv_tempbanmessage", "You have been kicked and are temporarily banned from joining this server.", 0 );
 	sv_showloss = Cvar_Get( "sv_showloss", "0", 0 );
 	sv_padPackets = Cvar_Get( "sv_padPackets", "0", 0 );
 	sv_killserver = Cvar_Get( "sv_killserver", "0", 0 );
@@ -997,28 +914,6 @@ void SV_Init( void )
 	sv_onlyVisibleClients = Cvar_Get( "sv_onlyVisibleClients", "0", 0 );  // DHM - Nerve
 
 	sv_showAverageBPS = Cvar_Get( "sv_showAverageBPS", "0", 0 );  // NERVE - SMF - net debugging
-
-	// NERVE - SMF - create user set cvars
-	Cvar_Get( "g_userTimeLimit", "0", 0 );
-	Cvar_Get( "g_userAlliedRespawnTime", "0", 0 );
-	Cvar_Get( "g_userAxisRespawnTime", "0", 0 );
-	Cvar_Get( "g_maxlives", "0", 0 );
-	Cvar_Get( "g_altStopwatchMode", "0", CVAR_ARCHIVE );
-	Cvar_Get( "g_minGameClients", "8", CVAR_SERVERINFO );
-	Cvar_Get( "g_complaintlimit", "6", CVAR_ARCHIVE );
-
-	// TTimo - some UI additions
-	// NOTE: sucks to have this hardcoded really, I suppose this should be in UI
-	Cvar_Get( "g_axismaxlives", "0", 0 );
-	Cvar_Get( "g_alliedmaxlives", "0", 0 );
-	Cvar_Get( "g_fastres", "0", CVAR_ARCHIVE );
-	Cvar_Get( "g_fastResMsec", "1000", CVAR_ARCHIVE );
-
-	// ATVI Tracker Wolfenstein Misc #273
-	Cvar_Get( "g_voteFlags", "0", CVAR_ROM | CVAR_SERVERINFO );
-
-	// ATVI Tracker Wolfenstein Misc #263
-	Cvar_Get( "g_antilag", "1", CVAR_ARCHIVE | CVAR_SERVERINFO );
 
 	Cvar_Get( "g_needpass", "0", CVAR_SERVERINFO );
 
@@ -1041,11 +936,6 @@ void SV_Init( void )
 	sv_fullmsg = Cvar_Get( "sv_fullmsg", "Server is full.", CVAR_ARCHIVE );
 
 	sv_requireValidGuid = Cvar_Get( "sv_requireValidGuid", "0", CVAR_ARCHIVE );
-
-#ifdef USE_HUB_SERVER
-	sv_owHubHost = Cvar_Get( "sv_owHubHost", "", CVAR_LATCH );
-	sv_owHubKey = Cvar_Get( "sv_owHubKey", "defaultkey123456", CVAR_ARCHIVE );
-#endif
 
 	svs.serverLoad = -1;
 }

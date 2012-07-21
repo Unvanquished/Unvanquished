@@ -113,7 +113,7 @@ if( GAME_LIB_LLVM )
 endif()
 
 set( MOUNT_DIR ${CMAKE_SOURCE_DIR}/src )
-set( GPP_DIR ${CMAKE_SOURCE_DIR}/src/gamelogic/gpp )
+set( GPP_DIR ${CMAKE_SOURCE_DIR}/src/gamelogic )
 set( LIB_DIR ${CMAKE_SOURCE_DIR}/src/libs ) # LIB_DIR is also defined in Visual_Studio32/64.cmake
 set( SDL_DIR ${LIB_DIR}/libsdl )
 set( JPEG_DIR ${LIB_DIR}/jpeg )
@@ -223,7 +223,7 @@ endif()
 
 # Setup CPack
 set( CPACK_PACKAGE_FILE_NAME "Unvanquished" )
-set( CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/cpack/OS_X/Unvanquished.icns" )
+set( CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cpack/OS_X/Unvanquished.icns" )
 set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "Daemon Unvanquished client" )
 set( CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.txt" )
 set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/GPL.txt" )
@@ -231,9 +231,9 @@ set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/GPL.txt" )
 set( CPACK_BUNDLE_NAME ${CPACK_PACKAGE_FILE_NAME} )
 set( CPACK_BUNDLE_ICON ${CPACK_PACKAGE_ICON} )
 if( ${BUILD_ARCH} STREQUAL "i386" )
-  set( CPACK_BUNDLE_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cpack/OS_X/x86/info.plist")
+  set( CPACK_BUNDLE_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cpack/OS_X/x86/info.plist")
 else()
-  set( CPACK_BUNDLE_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cpack/OS_X/x86_64/info.plist")
+  set( CPACK_BUNDLE_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cpack/OS_X/x86_64/info.plist")
 endif()
 
 #################
@@ -605,112 +605,112 @@ set( GAME_VM_COMMON
 
 # Any .def files must come at the end of the file list otherwise they will be ignored
 set( CGAMEGPP_BASE
-  ${GPP_DIR}/src/cgame/cg_main.c
-  ${GPP_DIR}/src/game/bg_misc.c
-  ${GPP_DIR}/src/game/bg_pmove.c
-  ${GPP_DIR}/src/game/bg_slidemove.c
-  ${GPP_DIR}/src/game/bg_lib.c
-  ${GPP_DIR}/src/game/bg_alloc.c
-  ${GPP_DIR}/src/game/bg_voice.c
-  ${GPP_DIR}/src/cgame/cg_consolecmds.c
-  ${GPP_DIR}/src/cgame/cg_buildable.c
-  ${GPP_DIR}/src/cgame/cg_animation.c
-  ${GPP_DIR}/src/cgame/cg_animmapobj.c
-  ${GPP_DIR}/src/cgame/cg_draw.c
-  ${GPP_DIR}/src/cgame/cg_drawtools.c
-  ${GPP_DIR}/src/cgame/cg_ents.c
-  ${GPP_DIR}/src/cgame/cg_event.c
-  ${GPP_DIR}/src/cgame/cg_marks.c
-  ${GPP_DIR}/src/cgame/cg_players.c
-  ${GPP_DIR}/src/cgame/cg_playerstate.c
-  ${GPP_DIR}/src/cgame/cg_predict.c
-  ${GPP_DIR}/src/cgame/cg_servercmds.c
-  ${GPP_DIR}/src/cgame/cg_snapshot.c
-  ${GPP_DIR}/src/cgame/cg_view.c
-  ${GPP_DIR}/src/cgame/cg_weapons.c
-  ${GPP_DIR}/src/cgame/cg_scanner.c
-  ${GPP_DIR}/src/cgame/cg_attachment.c
-  ${GPP_DIR}/src/cgame/cg_trails.c
-  ${GPP_DIR}/src/cgame/cg_particles.c
-  ${GPP_DIR}/src/cgame/cg_tutorial.c
-  ${GPP_DIR}/src/ui/ui_shared.c
-  ${GPP_DIR}/src/ui/ui_utf8.c
+  ${GPP_DIR}/cgame/cg_main.c
+  ${GPP_DIR}/game/bg_misc.c
+  ${GPP_DIR}/game/bg_pmove.c
+  ${GPP_DIR}/game/bg_slidemove.c
+  ${GPP_DIR}/game/bg_lib.c
+  ${GPP_DIR}/game/bg_alloc.c
+  ${GPP_DIR}/game/bg_voice.c
+  ${GPP_DIR}/cgame/cg_consolecmds.c
+  ${GPP_DIR}/cgame/cg_buildable.c
+  ${GPP_DIR}/cgame/cg_animation.c
+  ${GPP_DIR}/cgame/cg_animmapobj.c
+  ${GPP_DIR}/cgame/cg_draw.c
+  ${GPP_DIR}/cgame/cg_drawtools.c
+  ${GPP_DIR}/cgame/cg_ents.c
+  ${GPP_DIR}/cgame/cg_event.c
+  ${GPP_DIR}/cgame/cg_marks.c
+  ${GPP_DIR}/cgame/cg_players.c
+  ${GPP_DIR}/cgame/cg_playerstate.c
+  ${GPP_DIR}/cgame/cg_predict.c
+  ${GPP_DIR}/cgame/cg_servercmds.c
+  ${GPP_DIR}/cgame/cg_snapshot.c
+  ${GPP_DIR}/cgame/cg_view.c
+  ${GPP_DIR}/cgame/cg_weapons.c
+  ${GPP_DIR}/cgame/cg_scanner.c
+  ${GPP_DIR}/cgame/cg_attachment.c
+  ${GPP_DIR}/cgame/cg_trails.c
+  ${GPP_DIR}/cgame/cg_particles.c
+  ${GPP_DIR}/cgame/cg_tutorial.c
+  ${GPP_DIR}/ui/ui_shared.c
+  ${GPP_DIR}/ui/ui_utf8.c
   ${MOUNT_DIR}/engine/qcommon/./q_math.c
   ${MOUNT_DIR}/engine/qcommon/./q_shared.c
 )
 
 set( CGAMEGPP_SO
   ${CGAMEGPP_BASE}
-  ${GPP_DIR}/src/cgame/cg_api.c
-  ${GPP_DIR}/src/cgame/cgame.def
+  ${GPP_DIR}/cgame/cg_api.c
+  ${GPP_DIR}/cgame/cgame.def
 )
 
 set( CGAMEGPP_QVM
-  ${GPP_DIR}/src/cgame/cg_api.asm
+  ${GPP_DIR}/cgame/cg_api.asm
 )
 
 set( GAMEGPP_BASE
-  ${GPP_DIR}/src/game/g_main.c
-  ${GPP_DIR}/src/game/bg_misc.c
-  ${GPP_DIR}/src/game/bg_pmove.c
-  ${GPP_DIR}/src/game/bg_slidemove.c
-  ${GPP_DIR}/src/game/bg_lib.c
-  ${GPP_DIR}/src/game/bg_alloc.c
-  ${GPP_DIR}/src/game/bg_voice.c
-  ${GPP_DIR}/src/game/g_active.c
-  ${GPP_DIR}/src/game/g_client.c
-  ${GPP_DIR}/src/game/g_cmds.c
-  ${GPP_DIR}/src/game/g_combat.c
-  ${GPP_DIR}/src/game/g_physics.c
-  ${GPP_DIR}/src/game/g_buildable.c
-  ${GPP_DIR}/src/game/g_misc.c
-  ${GPP_DIR}/src/game/g_missile.c
-  ${GPP_DIR}/src/game/g_mover.c
-  ${GPP_DIR}/src/game/g_session.c
-  ${GPP_DIR}/src/game/g_spawn.c
-  ${GPP_DIR}/src/game/g_svcmds.c
-  ${GPP_DIR}/src/game/g_target.c
-  ${GPP_DIR}/src/game/g_team.c
-  ${GPP_DIR}/src/game/g_trigger.c
-  ${GPP_DIR}/src/game/g_utils.c
-  ${GPP_DIR}/src/game/g_maprotation.c
-  ${GPP_DIR}/src/game/g_weapon.c
-  ${GPP_DIR}/src/game/g_admin.c
-  ${GPP_DIR}/src/game/g_namelog.c
+  ${GPP_DIR}/game/g_main.c
+  ${GPP_DIR}/game/bg_misc.c
+  ${GPP_DIR}/game/bg_pmove.c
+  ${GPP_DIR}/game/bg_slidemove.c
+  ${GPP_DIR}/game/bg_lib.c
+  ${GPP_DIR}/game/bg_alloc.c
+  ${GPP_DIR}/game/bg_voice.c
+  ${GPP_DIR}/game/g_active.c
+  ${GPP_DIR}/game/g_client.c
+  ${GPP_DIR}/game/g_cmds.c
+  ${GPP_DIR}/game/g_combat.c
+  ${GPP_DIR}/game/g_physics.c
+  ${GPP_DIR}/game/g_buildable.c
+  ${GPP_DIR}/game/g_misc.c
+  ${GPP_DIR}/game/g_missile.c
+  ${GPP_DIR}/game/g_mover.c
+  ${GPP_DIR}/game/g_session.c
+  ${GPP_DIR}/game/g_spawn.c
+  ${GPP_DIR}/game/g_svcmds.c
+  ${GPP_DIR}/game/g_target.c
+  ${GPP_DIR}/game/g_team.c
+  ${GPP_DIR}/game/g_trigger.c
+  ${GPP_DIR}/game/g_utils.c
+  ${GPP_DIR}/game/g_maprotation.c
+  ${GPP_DIR}/game/g_weapon.c
+  ${GPP_DIR}/game/g_admin.c
+  ${GPP_DIR}/game/g_namelog.c
   ${MOUNT_DIR}/engine/qcommon/./q_math.c
   ${MOUNT_DIR}/engine/qcommon/./q_shared.c
 )
 
 set( GAMEGPP_SO
   ${GAMEGPP_BASE}
-  ${GPP_DIR}/src/game/g_api.c
-  ${GPP_DIR}/src/game/game.def
+  ${GPP_DIR}/game/g_api.c
+  ${GPP_DIR}/game/game.def
 )
 
 set( GAMEGPP_QVM
-  ${GPP_DIR}/src/game/g_api.asm
+  ${GPP_DIR}/game/g_api.asm
 )
 
 set( UIGPP_BASE
-  ${GPP_DIR}/src/ui/ui_main.c
-  ${GPP_DIR}/src/ui/ui_atoms.c
-  ${GPP_DIR}/src/ui/ui_shared.c
-  ${GPP_DIR}/src/ui/ui_gameinfo.c
-  ${GPP_DIR}/src/game/bg_misc.c
-  ${GPP_DIR}/src/game/bg_lib.c
+  ${GPP_DIR}/ui/ui_main.c
+  ${GPP_DIR}/ui/ui_atoms.c
+  ${GPP_DIR}/ui/ui_shared.c
+  ${GPP_DIR}/ui/ui_gameinfo.c
+  ${GPP_DIR}/game/bg_misc.c
+  ${GPP_DIR}/game/bg_lib.c
   ${MOUNT_DIR}/engine/qcommon/./q_math.c
   ${MOUNT_DIR}/engine/qcommon/./q_shared.c
-  ${GPP_DIR}/src/ui/ui_utf8.c
+  ${GPP_DIR}/ui/ui_utf8.c
 )
 
 set( UIGPP_SO
   ${UIGPP_BASE}
-  ${GPP_DIR}/src/ui/ui_api.c
-  ${GPP_DIR}/src/ui/ui.def
+  ${GPP_DIR}/ui/ui_api.c
+  ${GPP_DIR}/ui/ui.def
 )
 
 set( UIGPP_QVM
-  ${GPP_DIR}/src/ui/ui_api.asm
+  ${GPP_DIR}/ui/ui_api.asm
 )
 
 set( DAEMONMAPLIST
@@ -1132,12 +1132,12 @@ function( GAMELIB )
     if( GAME_LIB_LLVM )
       file( MAKE_DIRECTORY "${Daemon_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/vm" )
 
-      set( GAMELIB_SOURCE_NAME "src/gamelogic/${GAMELIB_OUTPUT_DIR}" )
+      set( GAMELIB_SOURCE_NAME "gamelogic/${GAMELIB_OUTPUT_DIR}" )
       if( GAMELIB_OUTPUT_DIR STREQUAL "main" )
-        set( GAMELIB_SOURCE_NAME "src/gamelogic/gpp" )
+        set( GAMELIB_SOURCE_NAME "gamelogic/" )
       endif()
 
-      set( GAMELIB_LLVM_FLAGS "-w -emit-llvm -DQ3_VM -nostdinc -I${GAMELIB_SOURCE_NAME} -Isrc/engine/qcommon -I${GAMELIB_SOURCE_NAME}/src/game -I${GAMELIB_SOURCE_NAME}/src/cgame -I${GAMELIB_SOURCE_NAME}/src/ui" )
+      set( GAMELIB_LLVM_FLAGS "-w -emit-llvm -DQ3_VM -nostdinc -I${GAMELIB_SOURCE_NAME} -Isrc/engine/qcommon -I${GAMELIB_SOURCE_NAME}/game -I${GAMELIB_SOURCE_NAME}/src/cgame -I${GAMELIB_SOURCE_NAME}/ui" )
 
       set( GAMELIB_LIB_CXX )
       foreach( FILE ${GAMELIB_LIB_FILES} )
@@ -1185,7 +1185,7 @@ function( GAMELIB )
   if( GAME_QVM AND GAMELIB_QVM_FILES )
     set( QVM_DIR ${CMAKE_BINARY_DIR}/CMakeFiles/${GAMELIB_LIB_NAME}-qvm.dir )
     set( QVM_CPP_OPTIONS
-      -I"${MOUNT_DIR}/gamelogic/gpp/src/game"
+      -I"${MOUNT_DIR}/gamelogic/game"
       -I"${MOUNT_DIR}/engine/qcommon"
       -D__inline=
       -DQ3_VM

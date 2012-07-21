@@ -1050,57 +1050,15 @@ void R_SetupProjection( void )
 	height = ymax - ymin;
 	depth = zFar - zNear;
 
-#ifdef IPHONE
+	tr.viewParms.projectionMatrix[ 0 ] = 2 * zNear / width;
+	tr.viewParms.projectionMatrix[ 4 ] = 0;
+	tr.viewParms.projectionMatrix[ 8 ] = ( xmax + xmin ) / width; // ie., 0
+	tr.viewParms.projectionMatrix[ 12 ] = 0;
 
-	if ( glConfig.vidRotation == 90 )
-	{
-		tr.viewParms.projectionMatrix[ 0 ] = 0;
-		tr.viewParms.projectionMatrix[ 4 ] = -2 * zNear / height;
-		tr.viewParms.projectionMatrix[ 8 ] = ( ymax + ymin ) / height; // ie., 0
-		tr.viewParms.projectionMatrix[ 12 ] = 0;
-
-		tr.viewParms.projectionMatrix[ 1 ] = 2 * zNear / width;
-		tr.viewParms.projectionMatrix[ 5 ] = 0;
-		tr.viewParms.projectionMatrix[ 9 ] = ( xmax + xmin ) / width; // ie., 0
-		tr.viewParms.projectionMatrix[ 13 ] = 0;
-	}
-	else if ( glConfig.vidRotation == 180 )
-	{
-		tr.viewParms.projectionMatrix[ 0 ] = -2 * zNear / width;
-		tr.viewParms.projectionMatrix[ 4 ] = 0;
-		tr.viewParms.projectionMatrix[ 8 ] = ( xmax + xmin ) / width; // ie., 0
-		tr.viewParms.projectionMatrix[ 12 ] = 0;
-
-		tr.viewParms.projectionMatrix[ 1 ] = 0;
-		tr.viewParms.projectionMatrix[ 5 ] = -2 * zNear / height;
-		tr.viewParms.projectionMatrix[ 9 ] = ( ymax + ymin ) / height; // ie., 0
-		tr.viewParms.projectionMatrix[ 13 ] = 0;
-	}
-	else if ( glConfig.vidRotation == 270 )
-	{
-		tr.viewParms.projectionMatrix[ 0 ] = 0;
-		tr.viewParms.projectionMatrix[ 4 ] = 2 * zNear / height;
-		tr.viewParms.projectionMatrix[ 8 ] = ( ymax + ymin ) / height; // ie., 0
-		tr.viewParms.projectionMatrix[ 12 ] = 0;
-
-		tr.viewParms.projectionMatrix[ 1 ] = -2 * zNear / width;
-		tr.viewParms.projectionMatrix[ 5 ] = 0;
-		tr.viewParms.projectionMatrix[ 9 ] = ( xmax + xmin ) / width; // ie., 0
-		tr.viewParms.projectionMatrix[ 13 ] = 0;
-	}
-	else
-#endif // IPHONE
-	{
-		tr.viewParms.projectionMatrix[ 0 ] = 2 * zNear / width;
-		tr.viewParms.projectionMatrix[ 4 ] = 0;
-		tr.viewParms.projectionMatrix[ 8 ] = ( xmax + xmin ) / width; // ie., 0
-		tr.viewParms.projectionMatrix[ 12 ] = 0;
-
-		tr.viewParms.projectionMatrix[ 1 ] = 0;
-		tr.viewParms.projectionMatrix[ 5 ] = 2 * zNear / height;
-		tr.viewParms.projectionMatrix[ 9 ] = ( ymax + ymin ) / height; // ie., 0
-		tr.viewParms.projectionMatrix[ 13 ] = 0;
-	}
+	tr.viewParms.projectionMatrix[ 1 ] = 0;
+	tr.viewParms.projectionMatrix[ 5 ] = 2 * zNear / height;
+	tr.viewParms.projectionMatrix[ 9 ] = ( ymax + ymin ) / height; // ie., 0
+	tr.viewParms.projectionMatrix[ 13 ] = 0;
 
 	tr.viewParms.projectionMatrix[ 2 ] = 0;
 	tr.viewParms.projectionMatrix[ 6 ] = 0;

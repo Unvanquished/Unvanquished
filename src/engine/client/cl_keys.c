@@ -1867,14 +1867,14 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 
 		if ( cls.keyCatchers & KEYCATCH_UI && uivm )
 		{
-			if ( !onlybinds || VM_Call( uivm, UI_WANTSBINDKEYS ) )
+			if ( !onlybinds )
 			{
 				VM_Call( uivm, UI_KEY_EVENT, key, down );
 			}
 		}
 		else if ( cls.keyCatchers & KEYCATCH_CGAME && cgvm )
 		{
-			if ( !onlybinds || VM_Call( cgvm, CG_WANTSBINDKEYS ) )
+			if ( !onlybinds )
 			{
 				VM_Call( cgvm, CG_KEY_EVENT, key, down );
 			}
@@ -1909,7 +1909,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	}
 	else if ( cls.keyCatchers & KEYCATCH_UI && !bypassMenu )
 	{
-		if ( !onlybinds || VM_Call( uivm, UI_WANTSBINDKEYS ) )
+		if ( !onlybinds )
 		{
 			VM_Call( uivm, UI_KEY_EVENT, key, down );
 		}
@@ -1918,7 +1918,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	{
 		if ( cgvm )
 		{
-			if ( !onlybinds || VM_Call( cgvm, CG_WANTSBINDKEYS ) )
+			if ( !onlybinds )
 			{
 				VM_Call( cgvm, CG_KEY_EVENT, key, down );
 			}

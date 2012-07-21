@@ -32,7 +32,7 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "../../gamelogic/gpp/src/ui/keycodes.h"
+#include "../../gamelogic/ui/keycodes.h"
 
 typedef struct
 {

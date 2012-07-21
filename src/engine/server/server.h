@@ -275,8 +275,6 @@ typedef struct
 // out before legitimate users connected
 #define MAX_CHALLENGES    1024
 
-#define AUTHORIZE_TIMEOUT 5000
-
 typedef struct
 {
 	netadr_t adr;
@@ -329,18 +327,11 @@ typedef struct
 	netadr_t      redirectAddress; // for rcon return messages
 	tempBan_t     tempBanAddresses[ MAX_TEMPBAN_ADDRESSES ];
 
-#ifdef AUTHORIZE_SUPPORT
-	netadr_t authorizeAddress;
-#endif // AUTHORIZE_SUPPORT
-
 	int       sampleTimes[ SERVER_PERFORMANCECOUNTER_SAMPLES ];
 	int       currentSampleIndex;
 	int       totalFrameTime;
 	int       currentFrameIndex;
 	int       serverLoad;
-#ifdef USE_HUB_SERVER
-	netadr_t  owHubAddress; // address of hub we're using
-#endif
 	svstats_t stats;
 } serverStatic_t;
 
@@ -357,7 +348,6 @@ extern cvar_t         *sv_rconPassword;
 extern cvar_t         *sv_privatePassword;
 extern cvar_t         *sv_allowDownload;
 extern cvar_t         *sv_friendlyFire; // NERVE - SMF
-extern cvar_t         *sv_maxlives; // NERVE - SMF
 extern cvar_t         *sv_maxclients;
 extern cvar_t         *sv_needpass;
 
@@ -382,7 +372,6 @@ extern cvar_t *sv_newGameShlib;
 
 extern cvar_t *sv_pure;
 extern cvar_t *sv_floodProtect;
-extern cvar_t *sv_allowAnonymous;
 extern cvar_t *sv_lanForceRate;
 extern cvar_t *sv_onlyVisibleClients;
 
@@ -390,18 +379,9 @@ extern cvar_t *sv_showAverageBPS; // NERVE - SMF - net debugging
 
 extern cvar_t *sv_requireValidGuid;
 
-#ifdef USE_HUB_SERVER
-extern cvar_t *sv_owHubHost;
-extern cvar_t *sv_owHubKey;
-#endif
-
 extern cvar_t *sv_ircchannel;
 
 extern cvar_t *g_gameType;
-
-// Rafael gameskill
-//extern    cvar_t  *sv_gameskill;
-// done
 
 extern cvar_t *sv_reloading;
 
@@ -474,8 +454,6 @@ void SV_SpawnServer( char *server, qboolean killBots );
 void SV_GetChallenge( netadr_t from );
 
 void SV_DirectConnect( netadr_t from );
-
-void SV_AuthorizeIpPacket( netadr_t from );
 
 void SV_ExecuteClientMessage( client_t *cl, msg_t *msg );
 void SV_UserinfoChanged( client_t *cl );

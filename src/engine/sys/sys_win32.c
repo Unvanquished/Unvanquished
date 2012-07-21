@@ -274,13 +274,9 @@ Sys_LowPhysicalMemory
 */
 qboolean Sys_LowPhysicalMemory( void )
 {
-#if defined ( IPHONE )
-	return qtrue;
-#else
 	MEMORYSTATUS stat;
 	GlobalMemoryStatus( &stat );
 	return ( stat.dwTotalPhys <= MEM_THRESHOLD ) ? qtrue : qfalse;
-#endif
 }
 
 /*
