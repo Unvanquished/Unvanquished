@@ -69,11 +69,9 @@ cvar_t         *sv_maxPing;
 cvar_t         *sv_pure;
 cvar_t         *sv_newGameShlib;
 cvar_t         *sv_floodProtect;
-cvar_t         *sv_allowAnonymous;
 cvar_t         *sv_lanForceRate; // TTimo - dedicated 1 (LAN) server forces local client rates to 99999 (bug #491)
 cvar_t         *sv_onlyVisibleClients; // DHM - Nerve
 cvar_t         *sv_friendlyFire; // NERVE - SMF
-cvar_t         *sv_maxlives; // NERVE - SMF
 cvar_t         *sv_needpass;
 
 cvar_t         *sv_dl_maxRate;
@@ -81,15 +79,7 @@ cvar_t         *sv_dl_maxRate;
 cvar_t         *g_gameType;
 
 cvar_t         *sv_requireValidGuid; // whether client userinfo must contain a cl_guid, string of length 32 consisting
-// of characters '0' through '9' and 'A' through 'F', default 0 don't require
-#ifdef USE_HUB_SERVER
-cvar_t         *sv_owHubHost; // hostname/port of hub we are using, default "" (disabled)
-cvar_t         *sv_owHubKey; // encryption key of hub we are using, default "defaultkey123456"
-#endif
-
-// Rafael gameskill
-//cvar_t    *sv_gameskill;
-// done
+                                     // of characters '0' through '9' and 'A' through 'F', default 0 don't require
 
 cvar_t *sv_reloading;
 
@@ -719,7 +709,6 @@ void SVC_Info( netadr_t from )
 	int  i, count;
 	char *gamedir;
 	char infostring[ MAX_INFO_STRING ];
-	char *antilag;
 	char *weaprestrict;
 	char *balancedteams;
 
@@ -797,24 +786,9 @@ void SVC_Info( netadr_t from )
 		Info_SetValueForKey( infostring, "game", gamedir );
 	}
 
-	Info_SetValueForKey( infostring, "sv_allowAnonymous", va( "%i", sv_allowAnonymous->integer ) );
-
-	// Rafael gameskill
-//  Info_SetValueForKey (infostring, "gameskill", va ("%i", sv_gameskill->integer));
-	// done
-
 	Info_SetValueForKey( infostring, "friendlyFire", va( "%i", sv_friendlyFire->integer ) );   // NERVE - SMF
-	Info_SetValueForKey( infostring, "maxlives", va( "%i", sv_maxlives->integer ? 1 : 0 ) );   // NERVE - SMF
 	Info_SetValueForKey( infostring, "needpass", va( "%i", sv_needpass->integer ? 1 : 0 ) );
 	Info_SetValueForKey( infostring, "gamename", GAMENAME_STRING );  // Arnout: to be able to filter out Quake servers
-
-	// TTimo
-	antilag = Cvar_VariableString( "g_antilag" );
-
-	if ( antilag )
-	{
-		Info_SetValueForKey( infostring, "g_antilag", antilag );
-	}
 
 	weaprestrict = Cvar_VariableString( "g_heavyWeaponRestriction" );
 

@@ -646,11 +646,6 @@ void SP_worldspawn( void )
 	g_entities[ ENTITYNUM_NONE ].r.ownerNum = ENTITYNUM_NONE;
 	g_entities[ ENTITYNUM_NONE ].classname = "nothing";
 
-	if ( g_restarted.integer )
-	{
-		trap_Cvar_Set( "g_restarted", "0" );
-	}
-
 	// see if we want a warmup time
 	trap_SetConfigstring( CS_WARMUP, "-1" );
 

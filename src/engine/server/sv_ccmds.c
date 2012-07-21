@@ -323,10 +323,6 @@ static void SV_Map_f( void )
 		Cvar_Set( "bot_enable", "1" );
 	}
 
-	// Rafael gameskill
-//  Cvar_Get ("g_gameskill", "3", CVAR_SERVERINFO | CVAR_LATCH);
-	// done
-
 	cmd = Cmd_Argv( 0 );
 
 	if ( !Q_stricmp( cmd, "devmap" ) )

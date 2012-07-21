@@ -336,12 +336,8 @@ typedef struct
 	int      maxPing;
 	int      ping;
 	qboolean visible;
-	int      allowAnonymous;
 	int      friendlyFire; // NERVE - SMF
-	int      maxlives; // NERVE - SMF
 	int      needpass;
-	int      punkbuster; // DHM - Nerve
-	int      antilag; // TTimo
 	int      weaprestrict;
 	int      balancedteams;
 	char     gameName[ MAX_NAME_LENGTH ]; // Arnout
@@ -441,7 +437,6 @@ extern cvar_t *cl_maxpackets;
 extern cvar_t *cl_packetdup;
 extern cvar_t *cl_shownet;
 extern cvar_t *cl_shownuments; // DHM - Nerve
-extern cvar_t *cl_visibleClients; // DHM - Nerve
 extern cvar_t *cl_showSend;
 extern cvar_t *cl_showServerCommands; // NERVE - SMF
 extern cvar_t *cl_timeNudge;
@@ -501,10 +496,7 @@ extern cvar_t *cl_autorecord;
 extern cvar_t *cl_allowDownload;
 extern cvar_t *cl_conXOffset;
 extern cvar_t *cl_inGameVideo;
-extern cvar_t *cl_authserver;
 
-extern cvar_t *cl_missionStats;
-extern cvar_t *cl_waitForFire;
 extern cvar_t *cl_altTab;
 
 // -NERVE - SMF

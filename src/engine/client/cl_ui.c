@@ -426,13 +426,9 @@ static void LAN_GetServerInfo( int source, int n, char *buf, int buflen )
 		Info_SetValueForKey( info, "gametype", va( "%i", server->gameType ) );
 		Info_SetValueForKey( info, "nettype", va( "%i", server->netType ) );
 		Info_SetValueForKey( info, "addr", NET_AdrToStringwPort( server->adr ) );
-		Info_SetValueForKey( info, "sv_allowAnonymous", va( "%i", server->allowAnonymous ) );
 		Info_SetValueForKey( info, "friendlyFire", va( "%i", server->friendlyFire ) );   // NERVE - SMF
-		Info_SetValueForKey( info, "maxlives", va( "%i", server->maxlives ) );   // NERVE - SMF
 		Info_SetValueForKey( info, "needpass", va( "%i", server->needpass ) );   // NERVE - SMF
-		Info_SetValueForKey( info, "punkbuster", va( "%i", server->punkbuster ) );   // DHM - Nerve
 		Info_SetValueForKey( info, "gamename", server->gameName );  // Arnout
-		Info_SetValueForKey( info, "g_antilag", va( "%i", server->antilag ) );   // TTimo
 		Info_SetValueForKey( info, "weaprestrict", va( "%i", server->weaprestrict ) );
 		Info_SetValueForKey( info, "balancedteams", va( "%i", server->balancedteams ) );
 		Q_strncpyz( buf, info, buflen );

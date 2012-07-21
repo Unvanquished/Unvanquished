@@ -332,9 +332,6 @@ typedef struct
 	int       totalFrameTime;
 	int       currentFrameIndex;
 	int       serverLoad;
-#ifdef USE_HUB_SERVER
-	netadr_t  owHubAddress; // address of hub we're using
-#endif
 	svstats_t stats;
 } serverStatic_t;
 
@@ -351,7 +348,6 @@ extern cvar_t         *sv_rconPassword;
 extern cvar_t         *sv_privatePassword;
 extern cvar_t         *sv_allowDownload;
 extern cvar_t         *sv_friendlyFire; // NERVE - SMF
-extern cvar_t         *sv_maxlives; // NERVE - SMF
 extern cvar_t         *sv_maxclients;
 extern cvar_t         *sv_needpass;
 
@@ -376,7 +372,6 @@ extern cvar_t *sv_newGameShlib;
 
 extern cvar_t *sv_pure;
 extern cvar_t *sv_floodProtect;
-extern cvar_t *sv_allowAnonymous;
 extern cvar_t *sv_lanForceRate;
 extern cvar_t *sv_onlyVisibleClients;
 
@@ -384,18 +379,9 @@ extern cvar_t *sv_showAverageBPS; // NERVE - SMF - net debugging
 
 extern cvar_t *sv_requireValidGuid;
 
-#ifdef USE_HUB_SERVER
-extern cvar_t *sv_owHubHost;
-extern cvar_t *sv_owHubKey;
-#endif
-
 extern cvar_t *sv_ircchannel;
 
 extern cvar_t *g_gameType;
-
-// Rafael gameskill
-//extern    cvar_t  *sv_gameskill;
-// done
 
 extern cvar_t *sv_reloading;
 
