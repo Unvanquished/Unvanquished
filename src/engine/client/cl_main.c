@@ -2015,7 +2015,8 @@ CL_Connect_f
 void CL_Connect_f( void )
 {
 	char         *server, password[ 64 ];
-	const char   *serverString, *passwordOffset;
+	const char   *serverString;
+	char         *offset;
 	int          argc = Cmd_Argc();
 	netadrtype_t family = NA_UNSPEC;
 
@@ -2054,11 +2055,17 @@ void CL_Connect_f( void )
 	}
 
 	// Set and skip the password.
-	if ( ( passwordOffset = strchr( server, '@' ) ) != NULL )
+	if ( ( offset = strchr( server, '@' ) ) != NULL )
 	{
-		Q_strncpyz( password, server, Q_min( sizeof( password ), ( passwordOffset - server + 1 ) ) );
+		Q_strncpyz( password, server, Q_min( sizeof( password ), ( offset - server + 1 ) ) );
 		Cvar_Set( "password", password );
-		server = server + ( passwordOffset - server ) + 1;
+		server = offset + 1;
+	}
+
+	if ( ( offset = strchr( server, '/' ) ) != NULL )
+	{
+		// trailing slash, or path supplied - chop it off since we don't use it
+		*offset = 0;
 	}
 
 	S_StopAllSounds(); // NERVE - SMF
