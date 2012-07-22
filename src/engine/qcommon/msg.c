@@ -1665,9 +1665,6 @@ netField_t playerStateFields[] =
 	{ PSF( otherEntityNum ),       10              }
 	,
 	{ PSF( weaponAnim ),           ANIM_BITS       }
-	,
-	{ PSF( clips ),                4               }
-	,
 };
 
 static int QDECL qsort_playerstatefields( const void *a, const void *b )
