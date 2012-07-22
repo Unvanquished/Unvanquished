@@ -500,7 +500,6 @@ void CG_InitConsoleCommands( void )
 	trap_AddCommand( "reload" );
 	trap_AddCommand( "destroy" );
 	trap_AddCommand( "deconstruct" );
-	trap_AddCommand( "deconstruct" );
 
 	trap_RegisterButtonCommands(
 	    // 0      12       3     45      6        78       9ABCDEF      <- bit nos.
