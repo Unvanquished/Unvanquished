@@ -47,14 +47,15 @@ Maryland 20850 USA.
 #include <sys/types.h>
 #endif
 
-#ifndef _WIN32
 #include <sys/mman.h> // for PROT_ stuff
-#endif
 
 /* need this on NX enabled systems (i386 with PAE kernel or
  * noexec32=on x86_64) */
-#if defined( __linux__ ) || defined( __FreeBSD__ )
 #define VM_X86_MMAP
+
+ // workaround for systems that use the old MAP_ANON macro
+#ifndef MAP_ANONYMOUS
+#define MAP_ANONYMOUS MAP_ANON
 #endif
 
 static void VM_Destroy_Compiled( vm_t *self );
