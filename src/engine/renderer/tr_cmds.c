@@ -744,8 +744,15 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 	{
 		r_gamma->modified = qfalse;
 
-		R_SyncRenderThread();
-		R_SetColorMappings();
+		if( !glConfig.deviceSupportsGamma )
+		{
+			Com_Printf( "r_gamma will be changed upon restarting.\n" );
+		}
+		else
+		{
+			R_SyncRenderThread();
+			R_SetColorMappings();
+		}
 	}
 
 	// check for errors

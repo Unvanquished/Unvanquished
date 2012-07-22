@@ -62,9 +62,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #       include <GL/glxew.h>
 #endif
 
-extern void GLimp_InitGamma( void );
-extern void GLimp_RestoreGamma( void );
-
 //static qboolean SDL_VIDEODRIVER_externallySet = qfalse;
 
 /* Just hack it for now. */
@@ -469,9 +466,6 @@ GLimp_Shutdown
 void GLimp_Shutdown( void )
 {
 	ri.Printf( PRINT_ALL, "Shutting down OpenGL subsystem\n" );
-
-	// restore gamma.
-	GLimp_RestoreGamma();
 
 	ri.IN_Shutdown();
 
@@ -1938,11 +1932,7 @@ success:
 	// http://bugzilla.icculus.org/show_bug.cgi?id=4316
 	glConfig.deviceSupportsGamma = SDL_SetGamma( 1.0f, 1.0f, 1.0f ) >= 0;
 
-	if ( r_ignorehwgamma->integer == -1 )
-	{
-		glConfig.deviceSupportsGamma = 1;
-	}
-	if ( r_ignorehwgamma->integer == 1 )
+	if ( r_ignorehwgamma->integer )
 	{
 		glConfig.deviceSupportsGamma = 0;
 	}
@@ -2128,8 +2118,6 @@ success:
 #if !defined USE_XREAL_RENDERER
 	GLimp_InitExtensions();
 #endif
-
-	GLimp_InitGamma();
 
 	ri.Cvar_Get( "r_availableModes", "", CVAR_ROM );
 
