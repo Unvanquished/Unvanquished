@@ -246,22 +246,6 @@ void SV_DirectConnect( netadr_t from )
 		return;
 	}
 
-	// See comment made in SV_UserinfoChanged() regarding handicap.
-
-	while ( qtrue )
-	{
-		// Unfortunately the string functions such as strlen() and Info_RemoveKey()
-		// are quite expensive for large userinfo strings.  Imagine if someone
-		// bombarded the server with connect packets.  That would result in very bad
-		// server hitches.  We need to fix that.
-		Info_RemoveKey( userinfo, "handicap" );
-		newInfoLen2 = strlen( userinfo );
-
-		if ( oldInfoLen2 == newInfoLen2 ) { break; } // userinfo wasn't modified.
-
-		oldInfoLen2 = newInfoLen2;
-	}
-
 	if ( NET_IsLocalAddress( from ) )
 	{
 		ip = "localhost";
@@ -1556,28 +1540,7 @@ into a more C friendly form.
 void SV_UserinfoChanged( client_t *cl )
 {
 	char *val;
-//	char           *ip;
 	int  i;
-//	int        len;
-
-	// In the ugly [commented out] code below, handicap is supposed to be
-	// either missing or a valid int between 1 and 100.
-	// It's safe therefore to stick with that policy and just remove it.
-	// ET never uses handicap anyways.  Unfortunately it's possible
-	// to have a key such as handicap appear more than once in the userinfo.
-	// So we remove every instance of it.
-	int oldInfoLen = strlen( cl->userinfo );
-	int newInfoLen;
-
-	while ( qtrue )
-	{
-		Info_RemoveKey( cl->userinfo, "handicap" );
-		newInfoLen = strlen( cl->userinfo );
-
-		if ( oldInfoLen == newInfoLen ) { break; } // userinfo wasn't modified.
-
-		oldInfoLen = newInfoLen;
-	}
 
 	// name for C code
 	Q_strncpyz( cl->name, Info_ValueForKey( cl->userinfo, "name" ), sizeof( cl->name ) );
@@ -1613,20 +1576,6 @@ void SV_UserinfoChanged( client_t *cl )
 			cl->rate = 5000;
 		}
 	}
-
-	//donmichelangelo: This code isn't used in ET and may cause an overflow in the userinfo string
-
-	/*
-	val = Info_ValueForKey(cl->userinfo, "handicap");
-	if(strlen(val))
-	{
-	        i = atoi(val);
-	        if(i <= -100 || i > 100 || strlen(val) > 4)
-	        {
-	                Info_SetValueForKey(cl->userinfo, "handicap", "0");
-	        }
-	}
-	*/
 
 	// snaps command
 	val = Info_ValueForKey( cl->userinfo, "snaps" );
