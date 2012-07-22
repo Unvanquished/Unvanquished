@@ -1708,20 +1708,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		}
 	}
 
-	if ( key == K_ENTER )
-	{
-		if ( down )
-		{
-			if ( keys[ K_ALT ].down )
-			{
-				Cvar_SetValue( "r_fullscreen", !Cvar_VariableIntegerValue( "r_fullscreen" ) );
-				return;
-			}
-		}
-	}
-
 #ifdef MACOS_X
-
 	if ( down && keys[ K_COMMAND ].down )
 	{
 		if ( key == 'f' )
@@ -1743,8 +1730,18 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 			return;
 		}
 	}
-
-#endif
+#else
+	if ( key == K_ENTER )
+	{
+		if ( down )
+		{
+			if ( keys[ K_ALT ].down )
+			{
+				Cvar_SetValue( "r_fullscreen", !Cvar_VariableIntegerValue( "r_fullscreen" ) );
+				return;
+			}
+		}
+	}
 
 	if ( cl_altTab->integer && keys[ K_ALT ].down && key == K_TAB )
 	{
@@ -1752,6 +1749,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		Cvar_SetValue( "r_minimize", 1 );
 		return;
 	}
+#endif
 
 	// console key is hardcoded, so the user can never unbind it
 	if ( key == K_CONSOLE || ( keys[ K_SHIFT ].down && key == K_ESCAPE ) )
