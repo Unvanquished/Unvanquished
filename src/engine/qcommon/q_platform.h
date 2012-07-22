@@ -128,7 +128,7 @@ Maryland 20850 USA.
 #define PATH_SEP    '\\'
 
 #if defined( __WIN64__ )
-#define ARCH_STRING "x86_64"
+#define ARCH_STRING "x64"
 #elif defined _M_ALPHA
 #define ARCH_STRING "AXP"
 #endif

@@ -490,12 +490,16 @@ void CG_InitConsoleCommands( void )
 	trap_AddCommand( "god" );
 	trap_AddCommand( "notarget" );
 	trap_AddCommand( "noclip" );
+	trap_AddCommand( "where" );
 	trap_AddCommand( "team" );
+	trap_AddCommand( "follownext" );
+	trap_AddCommand( "followprev" );
 	trap_AddCommand( "setviewpos" );
 	trap_AddCommand( "vote" );
 	trap_AddCommand( "teamvote" );
 	trap_AddCommand( "reload" );
 	trap_AddCommand( "destroy" );
+	trap_AddCommand( "deconstruct" );
 	trap_AddCommand( "deconstruct" );
 
 	trap_RegisterButtonCommands(

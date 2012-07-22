@@ -1167,6 +1167,9 @@ void WriteTGA(const char *filename, byte * data, int width, int height)
 	byte           *buffer;
 	int             i;
 	int             c;
+	int             row;
+	unsigned char  *flip;
+	unsigned char  *src, *dst;
 	FILE           *f;
 
 	buffer = safe_malloc(width * height * 4 + 18);
@@ -1187,6 +1190,19 @@ void WriteTGA(const char *filename, byte * data, int width, int height)
 		buffer[i + 2] = data[i - 18 + 0];	// red
 		buffer[i + 3] = data[i - 18 + 3];	// alpha
 	}
+
+   // flip upside down
+	flip = (unsigned char *) ri.Malloc( width * 4 );
+	for( row = 0; row < height / 2; row++ )
+	{
+		src = buffer + 18 + row * 4 * width;
+		dst = buffer + 18 + ( height - row - 1 ) * 4 * width;
+
+		Com_Memcpy( flip, src, width * 4 );
+		Com_Memcpy( src, dst, width * 4 );
+		Com_Memcpy( dst, flip, width * 4 );
+	}
+	ri.Free( flip );
 
 	f = fopen(filename, "wb");
 	fwrite(buffer, 1, c, f);

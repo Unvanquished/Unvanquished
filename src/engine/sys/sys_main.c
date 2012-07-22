@@ -662,13 +662,13 @@ void NORETURN Sys_SigHandler( int signal )
 
 	if ( signalcaught )
 	{
-		VM_Forced_Unload_Start();
 		fprintf( stderr, "DOUBLE SIGNAL FAULT: Received signal %d, exiting...\n",
 		         signal );
 	}
 	else
 	{
 		signalcaught = qtrue;
+		VM_Forced_Unload_Start();
 #ifndef DEDICATED
 		CL_Shutdown();
 #endif

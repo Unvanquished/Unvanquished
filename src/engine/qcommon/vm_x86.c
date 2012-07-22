@@ -526,7 +526,7 @@ static void DoSyscall( void )
 		}
 		else
 		{
-			opStackBase[ opStackOfs + 1 ] = savedVM->systemCall( data ); // VM-specific
+			opStackBase[ opStackOfs + 1 ] = savedVM->systemCall( (intptr_t *) data ); // VM-specific
 		}
 #endif
 		VM_CheckSanity( savedVM, ~syscallNum );

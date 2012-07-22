@@ -1332,6 +1332,14 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 		return "Invalid password";
 	}
 
+	// if a player reconnects quickly after a disconnect, the client disconnect may never be called, thus flag can get lost in the ether
+	if ( ent->inuse )
+	{
+		G_LogPrintf("Forcing disconnect on active client: %i\n", ent-g_entities);
+		// so lets just fix up anything that should happen on a disconnect
+		ClientDisconnect(ent-g_entities);
+	}
+
 	// add guid to session so we don't have to keep parsing userinfo everywhere
 	for ( i = 0; i < sizeof( client->pers.guid ) - 1 &&
 	      isxdigit( client->pers.guid[ i ] ); i++ ) {; }

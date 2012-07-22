@@ -1439,25 +1439,11 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 						     Q_stricmp( filename + l - 4, ".bot" ) != 0 &&
 						     Q_stricmp( filename + l - 6, ".arena" ) != 0 &&
 						     Q_stricmp( filename + l - 5, ".menu" ) != 0 &&
-						     Q_stricmp( filename + l - 3, ".po" ) != 0 )
+						     Q_stricmp( filename + l - 3, ".po" ) != 0 &&
+							 Q_stricmp( filename, "qagame.qvm" ) != 0 )
 						{
 							pak->referenced |= FS_GENERAL_REF;
 						}
-					}
-
-					// for OS client/server interoperability, we expect binaries for .so and .dll to be in the same pk3
-					// so that when we reference the DLL files on any platform, this covers everyone else
-
-// #if 0 // TTimo: use that stuff for shifted strings
-// 					Com_Printf(_( "SYS_DLLNAME_QAGAME + %d: '%s'\n", SYS_DLLNAME_QAGAME_SHIFT, FS_ShiftStr( "qagame_mp_x86.dll" /*"qagame.mp.i386.so"*)/, SYS_DLLNAME_QAGAME_SHIFT ) );
-// 					Com_Printf(_( "SYS_DLLNAME_CGAME + %d: '%s'\n", SYS_DLLNAME_CGAME_SHIFT, FS_ShiftStr( "cgame_mp_x86.dll" /*"cgame.mp.i386.so"*)/, SYS_DLLNAME_CGAME_SHIFT ) );
-// 					Com_Printf(_( "SYS_DLLNAME_UI + %d: '%s'\n", SYS_DLLNAME_UI_SHIFT, FS_ShiftStr( "ui_mp_x86.dll" /*"ui.mp.i386.so"*)/, SYS_DLLNAME_UI_SHIFT ) );
-// #endif
-
-					// qagame dll
-					if ( !( pak->referenced & FS_QAGAME_REF ) && !Q_stricmp( filename, "vm/qagame.qvm" ) )
-					{
-						pak->referenced |= FS_QAGAME_REF;
 					}
 
 					// cgame dll
@@ -3427,7 +3413,7 @@ void FS_Path_f( void )
 		}
 		else
 		{
-			Com_Printf( "%s/%s\n", s->dir->path, s->dir->gamedir );
+			Com_Printf( "%s%c%s\n", s->dir->path, PATH_SEP, s->dir->gamedir );
 		}
 	}
 
@@ -4252,35 +4238,6 @@ static void FS_Startup( const char *gameName )
 
 #endif
 	Com_Printf(_( "%d files in pk3 files\n"), fs_packFiles );
-}
-
-/*
-=====================
-FS_GamePureChecksum
-Returns the checksum of the pk3 from which the server loaded the qagame.qvm
-NOTE TTimo: this is not used in RTCW so far
-=====================
-*/
-const char *FS_GamePureChecksum( void )
-{
-	static char  info[ MAX_STRING_TOKENS ];
-	searchpath_t *search;
-
-	info[ 0 ] = 0;
-
-	for ( search = fs_searchpaths; search; search = search->next )
-	{
-		// is the element a pak file?
-		if ( search->pack )
-		{
-			if ( search->pack->referenced & FS_QAGAME_REF )
-			{
-				Com_sprintf( info, sizeof( info ), "%d", search->pack->checksum );
-			}
-		}
-	}
-
-	return info;
 }
 
 #if !defined( DO_LIGHT_DEDICATED )
