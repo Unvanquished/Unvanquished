@@ -1191,7 +1191,7 @@ void WriteTGA(const char *filename, byte * data, int width, int height)
 		buffer[i + 3] = data[i - 18 + 3];	// alpha
 	}
 
-   // flip upside down
+	// flip upside down
 	flip = (unsigned char *) ri.Malloc( width * 4 );
 	for( row = 0; row < height / 2; row++ )
 	{

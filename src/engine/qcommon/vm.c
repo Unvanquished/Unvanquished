@@ -656,7 +656,7 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 		vm->numJumpTableTargets = header.h->jtrgLength >> 2;
 		Com_Printf( "Loading %d jump table targets\n", vm->numJumpTableTargets );
 
-		if( alloc )
+		if ( alloc )
 		{
 			vm->jumpTableTargets = Hunk_Alloc( header.h->jtrgLength, h_high );
 		}
