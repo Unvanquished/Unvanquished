@@ -1192,17 +1192,17 @@ void WriteTGA(const char *filename, byte * data, int width, int height)
 	}
 
 	// flip upside down
-	flip = (unsigned char *) ri.Malloc( width * 4 );
+	flip = (unsigned char *) safe_malloc( width * 4 );
 	for( row = 0; row < height / 2; row++ )
 	{
 		src = buffer + 18 + row * 4 * width;
 		dst = buffer + 18 + ( height - row - 1 ) * 4 * width;
 
-		Com_Memcpy( flip, src, width * 4 );
-		Com_Memcpy( src, dst, width * 4 );
-		Com_Memcpy( dst, flip, width * 4 );
+		memcpy( flip, src, width * 4 );
+		memcpy( src, dst, width * 4 );
+		memcpy( dst, flip, width * 4 );
 	}
-	ri.Free( flip );
+	free( flip );
 
 	f = fopen(filename, "wb");
 	fwrite(buffer, 1, c, f);
