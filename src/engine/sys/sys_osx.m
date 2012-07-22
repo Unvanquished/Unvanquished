@@ -48,28 +48,6 @@ Maryland 20850 USA.
 #import <Cocoa/Cocoa.h>
 
 /*
-================
-Sys_TempPath
-================
-*/
-const char *Sys_TempPath( void )
-{
-	static UInt8 posixPath[ MAX_OSPATH ];
-	FSRef ref;
-	if( FSFindFolder( kOnAppropriateDisk,
-				kTemporaryFolderType, kCreateFolder, &ref ) == noErr )
-	{
-		if( FSRefMakePath( &ref, posixPath,
-					sizeof( posixPath ) - 1 ) == noErr )
-		{
-			return (const char *)posixPath;
-		}
-	}
-
-	return "/tmp";
-}
-
-/*
 ==================
 Sys_GetClipboardData
 ==================

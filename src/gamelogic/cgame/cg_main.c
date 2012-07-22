@@ -387,15 +387,15 @@ static const cvarTable_t cvarTable[] =
 
 	{ &cg_paused,                      "cl_paused",                      "0",            CVAR_ROM                     },
 	{ &cg_blood,                       "com_blood",                      "1",            CVAR_ARCHIVE                 },
-	{ &cg_synchronousClients,          "g_synchronousClients",           "0",            0                            }, // communicated by systeminfo
+	{ &cg_synchronousClients,          "g_synchronousClients",           "0",            CVAR_SYSTEMINFO              }, // communicated by systeminfo
 	{ &cg_timescaleFadeEnd,            "cg_timescaleFadeEnd",            "1",            CVAR_CHEAT                   },
 	{ &cg_timescaleFadeSpeed,          "cg_timescaleFadeSpeed",          "0",            CVAR_CHEAT                   },
 	{ &cg_timescale,                   "timescale",                      "1",            0                            },
 	{ &cg_smoothClients,               "cg_smoothClients",               "0",            CVAR_USERINFO | CVAR_ARCHIVE },
 	{ &cg_cameraMode,                  "com_cameraMode",                 "0",            CVAR_CHEAT                   },
 
-	{ &pmove_fixed,                    "pmove_fixed",                    "0",            0                            },
-	{ &pmove_msec,                     "pmove_msec",                     "8",            0                            },
+	{ &pmove_fixed,                    "pmove_fixed",                    "0",            CVAR_SYSTEMINFO              },
+	{ &pmove_msec,                     "pmove_msec",                     "8",            CVAR_SYSTEMINFO              },
 	{ &cg_noTaunt,                     "cg_noTaunt",                     "0",            CVAR_ARCHIVE                 },
 
 	{ &cg_voice,                       "voice",                          "default",      CVAR_USERINFO | CVAR_ARCHIVE },

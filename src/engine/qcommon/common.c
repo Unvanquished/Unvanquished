@@ -1204,12 +1204,16 @@ void           *Z_TagMalloc( int size, int tag )
 	{
 		if ( rover == start )
 		{
+			// scaned all the way around the list
 #ifdef ZONE_DEBUG
 			Z_LogHeap();
-#endif
-			// scaned all the way around the list
+
+			Com_Error( ERR_FATAL, "Z_Malloc: failed on allocation of %i bytes from the %s zone: %s, line: %d (%s)",
+			           size, zone == smallzone ? "small" : "main", file, line, label );
+#else
 			Com_Error( ERR_FATAL, "Z_Malloc: failed on allocation of %i bytes from the %s zone",
 			           size, zone == smallzone ? "small" : "main" );
+#endif
 			return NULL;
 		}
 
@@ -2180,8 +2184,11 @@ void           *Hunk_Alloc( int size, ha_pref preference )
 #ifdef HUNK_DEBUG
 		Hunk_Log();
 		Hunk_SmallLog();
-#endif
+
+		Com_Error( ERR_DROP, "Hunk_Alloc failed on %i: %s, line: %d (%s)", size, file, line, label );
+#else
 		Com_Error( ERR_DROP, "Hunk_Alloc failed on %i", size );
+#endif
 	}
 
 	if ( hunk_permanent == &hunk_low )

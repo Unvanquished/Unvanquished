@@ -1463,6 +1463,10 @@ void CL_InitUI( void )
 
 	if ( v != UI_API_VERSION )
 	{
+		// Free uivm now, so UI_SHUTDOWN doesn't get called later.
+		VM_Free( uivm );
+		uivm = NULL;
+
 		Com_Error( ERR_FATAL, "User Interface is version %d, expected %d", v, UI_API_VERSION );
 	}
 

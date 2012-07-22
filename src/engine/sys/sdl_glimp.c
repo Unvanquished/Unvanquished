@@ -1938,6 +1938,15 @@ success:
 	// http://bugzilla.icculus.org/show_bug.cgi?id=4316
 	glConfig.deviceSupportsGamma = SDL_SetGamma( 1.0f, 1.0f, 1.0f ) >= 0;
 
+	if ( r_ignorehwgamma->integer == -1 )
+	{
+		glConfig.deviceSupportsGamma = 1;
+	}
+	if ( r_ignorehwgamma->integer == 1 )
+	{
+		glConfig.deviceSupportsGamma = 0;
+	}
+
 	// get our config strings
 	Q_strncpyz( glConfig.vendor_string, ( char * ) glGetString( GL_VENDOR ), sizeof( glConfig.vendor_string ) );
 	Q_strncpyz( glConfig.renderer_string, ( char * ) glGetString( GL_RENDERER ), sizeof( glConfig.renderer_string ) );
@@ -2151,9 +2160,6 @@ void GLimp_EndFrame( void )
 
 	if ( r_minimize && r_minimize->integer )
 	{
-		//SDL_Surface *s         = SDL_GetVideoSurface();
-		//qboolean    fullscreen = ( s && ( s->flags & SDL_FULLSCREEN ) );
-
 #ifdef MACOS_X
 		SDL_Surface *s = SDL_GetVideoSurface();
 		qboolean    fullscreen = ( s && ( s->flags & SDL_FULLSCREEN ) );
@@ -2167,7 +2173,6 @@ void GLimp_EndFrame( void )
 		{
 			ri.Cvar_Set( "r_fullscreen", "0" );
 		}
-
 #else
 		SDL_WM_IconifyWindow();
 		ri.Cvar_Set( "r_minimize", "0" );

@@ -1764,7 +1764,7 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 			{
 				stage->bundle[ 0 ].isLightmap = qtrue;
 
-				if ( shader.lightmapIndex < 0 )
+				if ( shader.lightmapIndex < 0 || !tr.lightmaps )
 				{
 					stage->bundle[ 0 ].image[ 0 ] = tr.whiteImage;
 				}

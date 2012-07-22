@@ -767,7 +767,7 @@ CG_RegisterClientModelname
 */
 static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName, const char *skinName )
 {
-	char filename[ MAX_QPATH * 2 ];
+	char filename[ MAX_QPATH ];
 
 	if ( cg_highPolyPlayerModels.integer )
 	{
@@ -4116,7 +4116,7 @@ void CG_ResetPlayerEntity( centity_t *cent )
 	cent->pe.legs.pitchAngle = 0;
 	cent->pe.legs.pitching = qfalse;
 
-	memset( &cent->pe.torso, 0, sizeof( cent->pe.legs ) );
+	memset( &cent->pe.torso, 0, sizeof( cent->pe.torso ) );
 	cent->pe.torso.yawAngle = cent->rawAngles[ YAW ];
 	cent->pe.torso.yawing = qfalse;
 	cent->pe.torso.pitchAngle = cent->rawAngles[ PITCH ];

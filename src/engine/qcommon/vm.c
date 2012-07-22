@@ -623,7 +623,17 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 	}
 	else
 	{
-		// clear the data (and only the data - need to keep the sanity check)
+		// clear the data, but make sure we're not clearing more than allocated
+		if ( vm->dataMask + 1 != dataLength )
+		{
+			VM_Free(vm);
+			FS_FreeFile(header.v);
+
+			Com_Printf( S_COLOR_YELLOW "Warning: Data region size of %s not matching after"
+						"VM_Restart()\n", filename );
+			return NULL;
+		}
+
 		Com_Memset( vm->dataBase, 0, dataLength );
 	}
 
@@ -639,8 +649,12 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 
 	if ( header.h->vmMagic == VM_MAGIC_VER2 )
 	{
+		int previousNumJumpTableTargets = vm->numJumpTableTargets;
+
+		header.h->jtrgLength &= ~0x03;
+
 		vm->numJumpTableTargets = header.h->jtrgLength >> 2;
-		Com_Printf(_( "Loading %d jump table targets\n"), vm->numJumpTableTargets );
+		Com_Printf( "Loading %d jump table targets\n", vm->numJumpTableTargets );
 
 		if ( alloc )
 		{
@@ -648,6 +662,16 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 		}
 		else
 		{
+			if( vm->numJumpTableTargets != previousNumJumpTableTargets )
+			{
+				VM_Free( vm );
+				FS_FreeFile( header.v );
+
+				Com_Printf( S_COLOR_YELLOW "Warning: Jump table size of %s not matching after"
+				            "VM_Restart()\n", filename );
+				return NULL;
+			}
+
 			Com_Memset( vm->jumpTableTargets, 0, header.h->jtrgLength );
 		}
 
@@ -1003,7 +1027,7 @@ intptr_t        QDECL VM_Call( vm_t *vm, int callnum, ... )
 	intptr_t r;
 	int      i;
 
-	if ( !vm )
+	if ( !vm || !vm->name[ 0 ] )
 	{
 		Com_Error( ERR_FATAL, "VM_Call with NULL vm" );
 	}
