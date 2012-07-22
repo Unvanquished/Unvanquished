@@ -1545,67 +1545,6 @@ static void SV_ResetPureClient_f( client_t *cl )
 	cl->gotCP = qfalse;
 }
 
-#ifdef USE_HUB_SERVER
-
-/*
-==================
-SV_SendUserinfoToowHub
-
-Send userinfo string to hub server if we were able to resolve it.
-Hub messages are authenticated using a secret key and MD4 digests
-(mostly because MD4 was available in ET:XreaL already).
-==================
-*/
-void SV_SendUserinfoToowHub( const char *userinfo )
-{
-	int length;
-
-	// we use this buffer for both computing the MD4 and then the final
-	// message we send; the MD4 hexdigest is 32 chars long, less than
-	// MAX_CVAR_VALUE_STRING, so we're good (but still add safety); the
-	// contents are "key-or-MD4\nuserinfo\nthelonguserinfodata" which
-	// should explain the length calculation
-	char buffer[ MAX_CVAR_VALUE_STRING + 1 + 8 + 1 + MAX_INFO_STRING + 4 ];
-
-	// these buffers are for the actual MD4 and its hexdigest, each with
-	// a small safety margin
-	char md4[ 16 + 2 ];
-	char digest[ 32 + 2 ];
-
-	if ( svs.owHubAddress.type != NA_BAD )
-	{
-		// initialize the buffers (paranoid!)
-		memset( buffer, 0, sizeof( buffer ) );
-		memset( md4, 0, sizeof( md4 ) );
-		memset( digest, 0, sizeof( digest ) );
-
-		// key + payload to authenticate
-		length = _snprintf( buffer, sizeof( buffer ) - 2, "%s\nuserinfo\n%s",
-		                    sv_owHubKey->string, userinfo );
-		assert( length != -1 );
-		assert( length <= sizeof( buffer ) - 2 );
-		assert( length == strlen( buffer ) );
-
-		// silly (byte*) casts to avoid silly warnings;
-		mdfour( ( byte * ) md4, ( byte * ) buffer, length );
-		mdfour_hex( ( byte * ) md4, digest );
-		assert( strlen( digest ) == 32 );
-
-		// MD4 hexdigest + payload to send
-		length = _snprintf( buffer, sizeof( buffer ) - 2, "%s\nuserinfo\n%s",
-		                    digest, userinfo );
-		assert( length != -1 );
-		assert( length <= sizeof( buffer ) - 2 );
-
-		NET_OutOfBandPrint( NS_SERVER, svs.owHubAddress,
-		                    "%s", buffer );
-
-		Com_DPrintf( "Sent userinfo to |ALPHA| Hub.\n" );
-	}
-}
-
-#endif
-
 /*
 =================
 SV_UserinfoChanged

@@ -548,24 +548,17 @@ set( CLIENTLIST
   ${MOUNT_DIR}/engine/client/snd_codec_ogg.c
   ${MOUNT_DIR}/engine/client/snd_codec_wav.c
   ${MOUNT_DIR}/engine/client/snd_dma.c
-  ${MOUNT_DIR}/engine/client/snd_load.c
+  ${MOUNT_DIR}/engine/client/snd_openal.c
+  ${MOUNT_DIR}/engine/client/snd_main.c
   ${MOUNT_DIR}/engine/client/snd_mem.c
   ${MOUNT_DIR}/engine/client/snd_mix.c
   ${MOUNT_DIR}/engine/client/snd_wavelet.c
+  ${MOUNT_DIR}/engine/client/qal.c
 )
 
 if( USE_MUMBLE )
   set( CLIENTLIST ${CLIENTLIST} ${MOUNT_DIR}/engine/client/libmumblelink.c )
 endif()
-
-set( ALLIST
-  ${MOUNT_DIR}/engine/snd_openal/qal.c
-  ${MOUNT_DIR}/engine/snd_openal/snd_al_buffers.c
-  ${MOUNT_DIR}/engine/snd_openal/snd_al_main.c
-  ${MOUNT_DIR}/engine/snd_openal/snd_al_music.c
-  ${MOUNT_DIR}/engine/snd_openal/snd_al_sources.c
-  ${MOUNT_DIR}/engine/snd_openal/snd_al_stream.c
-)
 
 if( USE_CPUINFO )
   set( CPUINFOLIST
@@ -1483,7 +1476,9 @@ if( BUILD_CLIENT )
     set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_OPENAL )
     if( USE_OPENAL_DLOPEN )
       set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_OPENAL_DLOPEN )
-    endif()
+    else()
+		target_link_libraries( client ${OPENAL_LIBRARY} )
+	endif()
   endif()
 
   if( USE_CURSES )
@@ -1563,26 +1558,7 @@ endif()
 
 if( USE_OPENAL )
   find_package( OpenAL REQUIRED )
-  add_library( al SHARED ${ALLIST} )
   include_directories( ${OPENAL_INCLUDE_DIR} )
-  target_link_libraries( al ${OPENAL_LIBRARY} )
-  set_property( TARGET al PROPERTY COMPILE_DEFINITIONS )
-  set_target_properties( al PROPERTIES OUTPUT_NAME "snd_openal" PREFIX "" )
-
-  # Setup CPack for target al
-  install( TARGETS al DESTINATION "Unvanquished")
-  get_target_property( LOCATION al LOCATION )
-  get_filename_component( OUTPUT_NAME ${LOCATION} NAME )
-  set( PLUGINS ${PLUGINS} "\${CMAKE_INSTALL_PREFIX}/Unvanquished/${OUTPUT_NAME}" )
-
-  if( USE_OPENAL_DLOPEN )
-    set_property( TARGET al APPEND PROPERTY COMPILE_DEFINITIONS USE_OPENAL_DLOPEN )
-    target_link_libraries( al ${CMAKE_DL_LIBS} )
-  endif()
-
-  if( USE_VOIP )
-    set_property( TARGET al APPEND PROPERTY COMPILE_DEFINITIONS USE_VOIP FLOATING_POINT )
-  endif()
 endif()
 
 ################

@@ -20,6 +20,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef __QAL_H__
 #define __QAL_H__
 
+#include "../qcommon/q_shared.h"
+#include "../qcommon/qcommon.h"
+
+#define ALC_ALL_DEVICES_SPECIFIER 0x1013
+
 #ifndef USE_OPENAL_DLOPEN
 
 #if _WIN32

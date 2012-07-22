@@ -986,7 +986,6 @@ typedef struct
 	int      physicsTime; // either cg.snap->time or cg.nextSnap->time
 
 	int      timelimitWarnings; // 5 min, 1 min, overtime
-	int      fraglimitWarnings;
 
 	qboolean mapRestart; // set on a map restart to set back the weapon
 

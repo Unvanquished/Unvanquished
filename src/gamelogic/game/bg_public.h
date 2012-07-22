@@ -77,7 +77,7 @@ enum
 
   CS_GAME_VERSION = CS_VOTE_CALLER + NUM_TEAMS,
   CS_LEVEL_START_TIME, // so the timer only shows the current level
-  CS_INTERMISSION, // when 1, fraglimit/timelimit has been hit and intermission will start in a second or two
+  CS_INTERMISSION, // when 1, timelimit has been hit and intermission will start in a second or two
   CS_WINNER, // string indicating round winner
   CS_SHADERSTATE,
   CS_BOTINFO,

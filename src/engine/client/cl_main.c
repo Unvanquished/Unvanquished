@@ -92,7 +92,6 @@ cvar_t *cl_freezeDemo;
 
 cvar_t *cl_shownet = NULL; // NERVE - SMF - This is referenced in msg.c and we need to make sure it is NULL
 cvar_t *cl_shownuments; // DHM - Nerve
-cvar_t *cl_visibleClients; // DHM - Nerve
 cvar_t *cl_showSend;
 cvar_t *cl_showServerCommands; // NERVE - SMF
 cvar_t *cl_timedemo;
@@ -136,15 +135,8 @@ cvar_t *cl_conXOffset;
 cvar_t *cl_inGameVideo;
 
 cvar_t *cl_serverStatusResendTime;
-cvar_t *cl_trn;
-cvar_t *cl_missionStats;
-cvar_t *cl_waitForFire;
 
 cvar_t *cl_pubkeyID;
-
-// DHM - Nerve
-
-cvar_t                 *cl_authserver;
 
 cvar_t                 *cl_profile;
 cvar_t                 *cl_defaultProfile;
@@ -1858,88 +1850,6 @@ void CL_OpenUrl_f( void )
 
 	url = Cmd_Argv( 1 );
 
-	{
-		/*
-		        FixMe: URL sanity checks.
-
-		        Random sanity checks. Scott: if you've got some magic URL
-		        parsing and validating functions USE THEM HERE, this code
-		        is a placeholder!!!
-		*/
-		int        i;
-		const char *u;
-
-		const char *allowPrefixes[] = { "http://", "https://", "" };
-		const char *allowDomains[ 2 ] = { "www.unvanquished.net", 0 };
-
-		u = url;
-
-		for ( i = 0; i < ARRAY_LEN( allowPrefixes ); i++ )
-		{
-			const char *p = allowPrefixes[ i ];
-			size_t     len = strlen( p );
-
-			if ( Q_strncmp( u, p, len ) == 0 )
-			{
-				u += len;
-				break;
-			}
-		}
-
-		if ( i == ARRAY_LEN( allowPrefixes ) )
-		{
-			/*
-			        This really won't ever hit because of the "" at the end
-			        of the allowedPrefixes array. As I said above, placeholder
-			        code: fix it later!
-			*/
-			Com_Printf("%s", _( "Invalid URL prefix.\n" ));
-			return;
-		}
-
-		for ( i = 0; i < ARRAY_LEN( allowDomains ); i++ )
-		{
-			size_t     len;
-			const char *d = allowDomains[ i ];
-
-			if ( !d )
-			{
-				break;
-			}
-
-			len = strlen( d );
-
-			if ( Q_strncmp( u, d, len ) == 0 )
-			{
-				u += len;
-				break;
-			}
-		}
-
-		if ( i == ARRAY_LEN( allowDomains ) )
-		{
-			Com_Printf("%s", _( "Invalid domain.\n" ));
-			return;
-		}
-
-		/* my kingdom for a regex */
-		for ( i = 0; i < strlen( url ); i++ )
-		{
-			if ( !(
-			       ( url[ i ] >= 'a' && url[ i ] <= 'z' ) || // lower case alpha
-			       ( url[ i ] >= 'A' && url[ i ] <= 'Z' ) || // upper case alpha
-			       ( url[ i ] >= '0' && url[ i ] <= '9' ) || //numeric
-			       ( url[ i ] == '/' ) || ( url[ i ] == ':' ) || // / and : chars
-			       ( url[ i ] == '.' ) || ( url[ i ] == '&' ) || // . and & chars
-			       ( url[ i ] == ';' ) // ; char
-			     ) )
-			{
-				Com_Printf("%s", _( "Invalid URL\n" ));
-				return;
-			}
-		}
-	}
-
 	if ( !Sys_OpenUrl( url ) )
 	{
 		Com_Printf("%s", _( "System error opening URL\n" ));
@@ -2105,7 +2015,8 @@ CL_Connect_f
 void CL_Connect_f( void )
 {
 	char         *server, password[ 64 ];
-	const char   *serverString, *tmp, *scheme = APP_URI_SCHEME;
+	const char   *serverString;
+	char         *offset;
 	int          argc = Cmd_Argc();
 	netadrtype_t family = NA_UNSPEC;
 
@@ -2138,17 +2049,23 @@ void CL_Connect_f( void )
 	}
 
 	// Skip the URI scheme.
-	if ( !Q_strnicmp( server, scheme, strlen( scheme ) ) )
+	if ( !Q_strnicmp( server, URI_SCHEME, URI_SCHEME_LENGTH ) )
 	{
-		server += strlen( scheme );
+		server += URI_SCHEME_LENGTH;
 	}
 
 	// Set and skip the password.
-	if ( ( tmp = strchr( server, '@' ) ) != NULL )
+	if ( ( offset = strchr( server, '@' ) ) != NULL )
 	{
-		Q_strncpyz( password, server, Q_min( sizeof( password ), ( tmp - server + 1 ) ) );
+		Q_strncpyz( password, server, Q_min( sizeof( password ), ( offset - server + 1 ) ) );
 		Cvar_Set( "password", password );
-		server = server + ( tmp - server ) + 1;
+		server = offset + 1;
+	}
+
+	if ( ( offset = strchr( server, '/' ) ) != NULL )
+	{
+		// trailing slash, or path supplied - chop it off since we don't use it
+		*offset = 0;
 	}
 
 	S_StopAllSounds(); // NERVE - SMF
@@ -2222,14 +2139,6 @@ void CL_Connect_f( void )
 	// server connection string
 	Cvar_Set( "cl_currentServerAddress", server );
 	Cvar_Set( "cl_currentServerIP", serverString );
-
-	// Gordon: um, couldn't this be handled?
-	// NERVE - SMF - reset some cvars
-	Cvar_Set( "mp_playerType", "0" );
-	Cvar_Set( "mp_currentPlayerType", "0" );
-	Cvar_Set( "mp_weapon", "0" );
-	Cvar_Set( "mp_team", "0" );
-	Cvar_Set( "mp_currentTeam", "0" );
 }
 
 /*
@@ -3244,7 +3153,6 @@ void CL_InitServerInfo( serverInfo_t *server, netadr_t *address )
 	server->game[ 0 ] = '\0';
 	server->gameType = 0;
 	server->netType = 0;
-	server->allowAnonymous = 0;
 }
 
 /*
@@ -4611,7 +4519,6 @@ void CL_Init( void )
 	cl_timeNudge = Cvar_Get( "cl_timeNudge", "0", CVAR_TEMP );
 	cl_shownet = Cvar_Get( "cl_shownet", "0", CVAR_TEMP );
 	cl_shownuments = Cvar_Get( "cl_shownuments", "0", CVAR_TEMP );
-	cl_visibleClients = Cvar_Get( "cl_visibleClients", "0", CVAR_TEMP );
 	cl_showServerCommands = Cvar_Get( "cl_showServerCommands", "0", 0 );
 	cl_showSend = Cvar_Get( "cl_showSend", "0", CVAR_TEMP );
 	cl_showTimeDelta = Cvar_Get( "cl_showTimeDelta", "0", CVAR_TEMP );
@@ -4714,18 +4621,11 @@ void CL_Init( void )
 	Cvar_Get( "name", UNNAMED_PLAYER, CVAR_USERINFO | CVAR_ARCHIVE );
 	Cvar_Get( "rate", "25000", CVAR_USERINFO | CVAR_ARCHIVE );
 	Cvar_Get( "snaps", "120", CVAR_USERINFO | CVAR_ARCHIVE );
-//  Cvar_Get ("model", "american", CVAR_USERINFO | CVAR_ARCHIVE );  // temp until we have a skeletal american model
-//  Arnout - no need // Cvar_Get ("model", "multi", CVAR_USERINFO | CVAR_ARCHIVE );
-//  Arnout - no need // Cvar_Get ("head", "default", CVAR_USERINFO | CVAR_ARCHIVE );
-//  Arnout - no need // Cvar_Get ("color", "4", CVAR_USERINFO | CVAR_ARCHIVE );
-//  Arnout - no need // Cvar_Get ("handicap", "0", CVAR_USERINFO | CVAR_ARCHIVE );
 //  Cvar_Get ("sex", "male", CVAR_USERINFO | CVAR_ARCHIVE );
-	Cvar_Get( "cl_anonymous", "0", CVAR_USERINFO | CVAR_ARCHIVE );
 
 	cl_pubkeyID = Cvar_Get( "cl_pubkeyID", "1", CVAR_ARCHIVE | CVAR_USERINFO );
 
 	Cvar_Get( "password", "", CVAR_USERINFO );
-	Cvar_Get( "cg_predictItems", "1", CVAR_ARCHIVE );
 
 #ifdef USE_MUMBLE
 	cl_useMumble = Cvar_Get( "cl_useMumble", "0", CVAR_ARCHIVE | CVAR_LATCH );
@@ -4763,17 +4663,8 @@ void CL_Init( void )
 
 #endif
 
-//----(SA) added
-	Cvar_Get( "cg_autoactivate", "1", CVAR_ARCHIVE );
-//----(SA) end
-
 	// cgame might not be initialized before menu is used
 	Cvar_Get( "cg_viewsize", "100", CVAR_ARCHIVE );
-
-	Cvar_Get( "cg_autoReload", "1", CVAR_ARCHIVE );
-
-	cl_missionStats = Cvar_Get( "g_missionStats", "0", CVAR_ROM );
-	cl_waitForFire = Cvar_Get( "cl_waitForFire", "0", CVAR_ROM );
 
 	cl_allowPaste = Cvar_Get( "cl_allowPaste", "1", 0 );
 
@@ -4965,13 +4856,9 @@ static void CL_SetServerInfo( serverInfo_t *server, const char *info, int ping )
 			server->netType = atoi( Info_ValueForKey( info, "nettype" ) );
 			server->minPing = atoi( Info_ValueForKey( info, "minping" ) );
 			server->maxPing = atoi( Info_ValueForKey( info, "maxping" ) );
-			server->allowAnonymous = atoi( Info_ValueForKey( info, "sv_allowAnonymous" ) );
 			server->friendlyFire = atoi( Info_ValueForKey( info, "friendlyFire" ) );   // NERVE - SMF
-			server->maxlives = atoi( Info_ValueForKey( info, "maxlives" ) );   // NERVE - SMF
 			server->needpass = atoi( Info_ValueForKey( info, "needpass" ) );   // NERVE - SMF
-			server->punkbuster = atoi( Info_ValueForKey( info, "punkbuster" ) );   // DHM - Nerve
 			Q_strncpyz( server->gameName, Info_ValueForKey( info, "gamename" ), MAX_NAME_LENGTH );   // Arnout
-			server->antilag = atoi( Info_ValueForKey( info, "g_antilag" ) );
 			server->weaprestrict = atoi( Info_ValueForKey( info, "weaprestrict" ) );
 			server->balancedteams = atoi( Info_ValueForKey( info, "balancedteams" ) );
 		}
@@ -5123,12 +5010,8 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg )
 	cls.localServers[ i ].game[ 0 ] = '\0';
 	cls.localServers[ i ].gameType = 0;
 	cls.localServers[ i ].netType = from.type;
-	cls.localServers[ i ].allowAnonymous = 0;
 	cls.localServers[ i ].friendlyFire = 0; // NERVE - SMF
-	cls.localServers[ i ].maxlives = 0; // NERVE - SMF
 	cls.localServers[ i ].needpass = 0;
-	cls.localServers[ i ].punkbuster = 0; // DHM - Nerve
-	cls.localServers[ i ].antilag = 0;
 	cls.localServers[ i ].weaprestrict = 0;
 	cls.localServers[ i ].balancedteams = 0;
 	cls.localServers[ i ].gameName[ 0 ] = '\0'; // Arnout

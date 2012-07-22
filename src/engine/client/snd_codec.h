@@ -45,8 +45,29 @@ Maryland 20850 USA.
 #ifndef _SND_CODEC_H_
 #define _SND_CODEC_H_
 
-#include "snd_api.h"
 #include "../qcommon/q_shared.h"
+
+typedef struct snd_codec_s snd_codec_t;
+
+typedef struct snd_info_s
+{
+	int rate;
+	int width;
+	int channels;
+	int samples;
+	int size;
+	int dataofs;
+} snd_info_t;
+
+typedef struct snd_stream_s
+{
+	snd_codec_t  *codec;
+	fileHandle_t file;
+	snd_info_t   info;
+	int          pos;
+	void         *ptr;
+	int          length;
+} snd_stream_t;
 
 // Codec functions
 typedef void *( *CODEC_LOAD )( const char *filename, snd_info_t *info );
@@ -55,6 +76,7 @@ typedef int ( *CODEC_READ )( snd_stream_t *stream, int bytes, void *buffer );
 typedef void ( *CODEC_CLOSE )( snd_stream_t *stream );
 
 // Codec data structure
+
 struct snd_codec_s
 {
 	char        *ext;

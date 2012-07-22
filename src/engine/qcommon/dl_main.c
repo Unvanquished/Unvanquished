@@ -53,9 +53,6 @@ indent -kr -ut -ts2 -i2 <file>
 #include "dl_public.h"
 #include "dl_local.h"
 
-#define APP_NAME    "ID_DOWNLOAD"
-#define APP_VERSION "1.0"
-
 // initialize once
 // NOTE: anything planned for shutdown? an HTLibTerminate call?
 static int dl_initialized = 0;
@@ -160,7 +157,7 @@ void DL_InitDownload()
 	}
 
 	/* Initiate W3C Reference Library with a client profile */
-	HTProfile_newNoCacheClient( APP_NAME, APP_VERSION );
+	HTProfile_newNoCacheClient( PRODUCT_NAME, PRODUCT_VERSION );
 
 	// if you leave the default (interactive)
 	// then prompts can happen:
