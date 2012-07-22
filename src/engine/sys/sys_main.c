@@ -804,7 +804,7 @@ int main( int argc, char **argv )
 		}
 #endif
 
-		// Allow URIs to be passed without +connect for inferior Linux.
+		// Allow URIs to be passed without +connect
 		if ( !Q_strnicmp( argv[ i ], URI_SCHEME, URI_SCHEME_LENGTH ) && Q_strnicmp( argv[ i - 1 ], "+connect", 8 ) )
 		{
 			Q_strcat( commandLine, sizeof( commandLine ), "+connect " );
