@@ -29,9 +29,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "../renderer/tr_local.h"
 #include "../qcommon/qcommon.h"
+
 #ifdef _WIN32
-#include <Windows.h>
+#	include <Windows.h>
 #endif
+
 /*
 =================
 GLimp_SetGamma
@@ -44,6 +46,7 @@ void GLimp_SetGamma( unsigned char red[ 256 ], unsigned char green[ 256 ], unsig
 #ifdef _WIN32
 	OSVERSIONINFO	vinfo;
 #endif
+
 	if ( !glConfig.deviceSupportsGamma || r_ignorehwgamma->integer )
 	{
 		return;
