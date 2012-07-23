@@ -1580,8 +1580,6 @@ netField_t playerStateFields[] =
 	,
 	{ PSF( weaponTime ),           -16             }
 	,
-	{ PSF( weaponDelay ),          -16             }
-	,
 	{ PSF( gravity ),              16              }
 	,
 	{ PSF( speed ),                16              }

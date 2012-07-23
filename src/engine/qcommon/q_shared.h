@@ -1873,17 +1873,6 @@ char *Q_UTF8Unstore( int e );
 		int  dataCount;
 	} gameState_t;
 
-// xkan, 1/10/2003 - adapted from original SP
-	typedef enum
-	{
-	  AISTATE_RELAXED,
-	  AISTATE_QUERY,
-	  AISTATE_ALERT,
-	  AISTATE_COMBAT,
-
-	  MAX_AISTATES
-	} aistateEnum_t;
-
 #define REF_FORCE_DLIGHT       ( 1 << 31 ) // RF, passed in through overdraw parameter, force this dlight under all conditions
 #define REF_JUNIOR_DLIGHT      ( 1 << 30 ) // (SA) this dlight does not light surfaces.  it only affects dynamic light grid
 #define REF_DIRECTED_DLIGHT    ( 1 << 29 ) // ydnar: global directional light, origin should be interpreted as a normal vector
@@ -1892,8 +1881,6 @@ char *Q_UTF8Unstore( int e );
 #define MAX_STATS              16
 #define MAX_PERSISTANT         16
 #define MAX_MISC               16
-#define MAX_POWERUPS           16
-#define MAX_WEAPONS            64 // (SA) and yet more!
 
 #define MAX_EVENTS             4 // max events per frame before we drop events
 
@@ -1923,7 +1910,6 @@ char *Q_UTF8Unstore( int e );
 		vec3_t origin;
 		vec3_t velocity;
 		int    weaponTime;
-		int    weaponDelay; // for weapons that don't fire immediately when 'fire' is hit (grenades, venom, ...)
 		int    gravity;
 
 		int   speed;
