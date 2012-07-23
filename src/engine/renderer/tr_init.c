@@ -1150,7 +1150,7 @@ void R_Register( void )
 	r_ext_multisample = ri.Cvar_Get( "r_ext_multisample", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );
 	r_overBrightBits = ri.Cvar_Get( "r_overBrightBits", "0", CVAR_ARCHIVE | CVAR_LATCH );  // Arnout: disable overbrightbits by default
 	AssertCvarRange( r_overBrightBits, 0, 1, qtrue );  // ydnar: limit to overbrightbits 1 (sorry 1337 players)
-	r_ignorehwgamma = ri.Cvar_Get( "r_ignorehwgamma", "1", CVAR_ARCHIVE | CVAR_LATCH );  // ydnar: use hw gamma by default
+	r_ignorehwgamma = ri.Cvar_Get( "r_ignorehwgamma", "1", CVAR_ARCHIVE | CVAR_LATCH );  // use software gamma by default
 	r_mode = ri.Cvar_Get( "r_mode", "6", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );
 	r_oldMode = ri.Cvar_Get( "r_oldMode", "", CVAR_ARCHIVE );  // ydnar: previous "good" video mode
 	r_fullscreen = ri.Cvar_Get( "r_fullscreen", "0", CVAR_ARCHIVE | CVAR_LATCH );

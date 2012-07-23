@@ -111,9 +111,7 @@ extern "C" void Trans_UpdateLanguage_f( void )
 	// update the default console keys string
 	extern cvar_t *cl_consoleKeys; // should really #include client.h
 	Z_Free( cl_consoleKeys->resetString );
-	const char *default_consoleKeys = _("~ ` 0x7e 0x60");
-	cl_consoleKeys->resetString = (char *) Z_Malloc( strlen( default_consoleKeys ) + 1 );
-	strcpy( cl_consoleKeys->resetString, default_consoleKeys );
+	cl_consoleKeys->resetString = CopyString( _("~ ` 0x7e 0x60") );
 #endif
 }
 
