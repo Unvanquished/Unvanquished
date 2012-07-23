@@ -1459,9 +1459,18 @@ static void CG_DrawPlayerBuildTimerBar( rectDef_t *rect, vec4_t foreColor, qhand
 	playerState_t *ps = &cg.snap->ps;
 	float         progress;
 	int           failedAttempt;
+	weapon_t      weapon;
 	static int    misc = 0;
 	static int    max;
 
+	weapon = BG_GetPlayerWeapon( ps );
+
+	// Check if player is a builder
+	if( weapon != WP_HBUILD || weapon != WP_ABUILD || weapon != WP_ABUILD2 )
+	{
+		return;
+	}
+	
 	// Not building anything
 	if( ps->stats[ STAT_MISC ] <= 0 )
 	{
