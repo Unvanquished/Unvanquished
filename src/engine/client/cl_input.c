@@ -402,6 +402,36 @@ void CL_KeyMove( usercmd_t *cmd )
 		int      i;
 		qboolean key_down;
 
+		int          lastKey = 0;
+		unsigned int lastKeyTime = 0;
+
+		// Which was last pressed or released?
+		for ( i = 1; i < DT_NUM; i++ )
+		{
+			if ( cl.doubleTap.pressedTime[ i ] > lastKeyTime )
+			{
+				lastKeyTime = cl.doubleTap.pressedTime[ i ];
+				lastKey = i;
+			}
+			if ( cl.doubleTap.releasedTime[ i ] > lastKeyTime )
+			{
+				lastKeyTime = cl.doubleTap.releasedTime[ i ];
+				lastKey = i;
+			}
+		}
+
+		// Clear the others; don't want e.g. left-right-left causing dodge left
+		if ( lastKey )
+		{
+			for ( i = 1; i < DT_NUM; i++ )
+			{
+				if ( i != lastKey )
+				{
+					cl.doubleTap.pressedTime[ i ] = cl.doubleTap.releasedTime[ i ] = 0;
+				}
+			}
+		}
+
 		for ( i = 1; i < DT_NUM; i++ )
 		{
 			key_down = dtmapping[ i ] == -1 || kb[ dtmapping[ i ] ].active || kb[ dtmapping[ i ] ].wasPressed;
