@@ -56,11 +56,7 @@ Maryland 20850 USA.
 #endif
 
 #ifndef DEDICATED
-#ifdef USE_LOCAL_HEADERS
-#include "SDL.h"
-#else
 #include <SDL.h>
-#endif
 #endif
 
 #include "sys_local.h"

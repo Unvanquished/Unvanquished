@@ -32,15 +32,11 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#ifdef USE_LOCAL_HEADERS
-#       include "SDL.h"
-#else
-#       include <SDL.h>
-#endif
-
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
+
+#include <SDL.h>
 
 #include "../client/client.h"
 #include "../sys/sys_local.h"
