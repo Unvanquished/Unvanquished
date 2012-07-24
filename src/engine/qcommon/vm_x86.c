@@ -41,7 +41,7 @@ Maryland 20850 USA.
 
 #ifdef _WIN32
 #include <windows.h>
-#endif
+#else
 
 #ifdef __FreeBSD__
 #include <sys/types.h>
@@ -57,7 +57,7 @@ Maryland 20850 USA.
 #ifndef MAP_ANONYMOUS
 #define MAP_ANONYMOUS MAP_ANON
 #endif
-
+#endif
 static void VM_Destroy_Compiled( vm_t *self );
 
 /*
