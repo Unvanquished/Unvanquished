@@ -1104,27 +1104,6 @@ void CL_ParseCommandString( msg_t *msg )
 
 /*
 =====================
-CL_ParseBinaryMessage
-=====================
-*/
-void CL_ParseBinaryMessage( msg_t *msg )
-{
-	int size;
-
-	MSG_BeginReadingUncompressed( msg );
-
-	size = msg->cursize - msg->readcount;
-
-	if ( size <= 0 || size > MAX_BINARY_MESSAGE )
-	{
-		return;
-	}
-
-	CL_CGameBinaryMessageReceived( ( char * ) &msg->data[ msg->readcount ], size, cl.snap.serverTime );
-}
-
-/*
-=====================
 CL_ParseServerMessage
 =====================
 */
@@ -1234,5 +1213,4 @@ void CL_ParseServerMessage( msg_t *msg )
 		}
 	}
 
-	CL_ParseBinaryMessage( msg );
 }

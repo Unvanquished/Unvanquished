@@ -445,8 +445,6 @@ extern cvar_t *cl_anglespeedkey;
 
 extern cvar_t *cl_recoilPitch; // RF
 
-extern cvar_t *cl_bypassMouseInput; // NERVE - SMF
-
 extern cvar_t *cl_doubletapdelay;
 
 extern cvar_t *cl_sensitivity;

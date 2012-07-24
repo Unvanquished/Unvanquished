@@ -56,9 +56,6 @@ typedef struct
 	int  keynum;
 } keyname_t;
 
-qboolean  UI_checkKeyExec( int key );  // NERVE - SMF
-qboolean  CL_CGameCheckKeyExec( int key );
-
 // names not in this list can either be lowercase ascii, or '0xnn' hex sequences
 keyname_t keynames[] =
 {
@@ -1879,22 +1876,6 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		}
 
 		return;
-	}
-
-	// NERVE - SMF - if we just want to pass it along to game
-	if ( cl_bypassMouseInput && cl_bypassMouseInput->integer )
-	{
-		if ( ( key == K_MOUSE1 || key == K_MOUSE2 || key == K_MOUSE3 || key == K_MOUSE4 || key == K_MOUSE5 ) )
-		{
-			if ( cl_bypassMouseInput->integer == 1 )
-			{
-				bypassMenu = qtrue;
-			}
-		}
-		else if ( ( cls.keyCatchers & KEYCATCH_UI && !UI_checkKeyExec( key ) ) || ( cls.keyCatchers & KEYCATCH_CGAME && !CL_CGameCheckKeyExec( key ) ) )
-		{
-			bypassMenu = qtrue;
-		}
 	}
 
 	// distribute the key down event to the appropriate handler

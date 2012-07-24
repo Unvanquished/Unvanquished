@@ -443,7 +443,6 @@ sfxHandle_t trap_S_RegisterSound( const char *sample, qboolean compressed )
 {
 	//CG_DrawInformation(qtrue);
 
-	trap_PumpEventLoop();
 	return syscall( CG_S_REGISTERSOUND, sample, qfalse /* compressed */ );
 }
 
@@ -475,7 +474,6 @@ void trap_R_LoadWorldMap( const char *mapname )
 {
 	//CG_DrawInformation(qtrue);
 
-	trap_PumpEventLoop();
 	syscall( CG_R_LOADWORLDMAP, mapname );
 }
 
@@ -485,7 +483,6 @@ qhandle_t trap_R_RegisterModel( const char *name )
 {
 	//CG_DrawInformation(qtrue);
 
-	trap_PumpEventLoop();
 	return syscall( CG_R_REGISTERMODEL, name );
 }
 
@@ -495,7 +492,6 @@ qhandle_t trap_R_RegisterSkin( const char *name )
 {
 	//CG_DrawInformation(qtrue);
 
-	trap_PumpEventLoop();
 	return syscall( CG_R_REGISTERSKIN, name );
 }
 
@@ -519,7 +515,6 @@ qhandle_t trap_R_RegisterShader( const char *name )
 {
 	//CG_DrawInformation(qtrue);
 
-	trap_PumpEventLoop();
 	return syscall( CG_R_REGISTERSHADER, name );
 }
 
@@ -529,7 +524,7 @@ void trap_R_RegisterFont( const char *fontName, const char *fallbackName, int po
 {
 	//CG_DrawInformation(qtrue);
 
-	trap_PumpEventLoop();
+	/**/
 	syscall( CG_R_REGISTERFONT, fontName, fallbackName, pointSize, font );
 }
 
@@ -539,7 +534,7 @@ qhandle_t trap_R_RegisterShaderNoMip( const char *name )
 {
 	//CG_DrawInformation(qtrue);
 
-	trap_PumpEventLoop();
+
 	return syscall( CG_R_REGISTERSHADERNOMIP, name );
 }
 
@@ -1119,29 +1114,6 @@ qboolean trap_R_inPVS( const vec3_t p1, const vec3_t p2 )
 void trap_GetHunkData( int *hunkused, int *hunkexpected )
 {
 	syscall( CG_GETHUNKDATA, hunkused, hunkexpected );
-}
-
-//154.
-void trap_PumpEventLoop( void )
-{
-	/*if(!cgs.initing) {
-	        return;
-	}
-	syscall(CG_PUMPEVENTLOOP);*/
-}
-
-//155.
-//CL_SendBinaryMessage(VMA(1), args[2]);
-void trap_SendMessage( char *buf, int buflen )
-{
-	syscall( CG_SENDMESSAGE, buf, buflen );
-}
-
-//156.
-//return CL_BinaryMessageStatus();
-messageStatus_t trap_MessageStatus( void )
-{
-	return syscall( CG_MESSAGESTATUS );
 }
 
 //157.

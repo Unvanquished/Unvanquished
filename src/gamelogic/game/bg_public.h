@@ -315,16 +315,6 @@ typedef enum
 
 typedef enum
 {
-  HI_NONE,
-
-  HI_TELEPORTER,
-  HI_MEDKIT,
-
-  HI_NUM_HOLDABLE
-} holdable_t;
-
-typedef enum
-{
   WPM_NONE,
 
   WPM_PRIMARY,
