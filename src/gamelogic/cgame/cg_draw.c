@@ -1466,7 +1466,7 @@ static void CG_DrawPlayerBuildTimerBar( rectDef_t *rect, vec4_t foreColor, qhand
 	weapon = BG_GetPlayerWeapon( ps );
 
 	// Check if player is a builder
-	if( weapon != WP_HBUILD || weapon != WP_ABUILD || weapon != WP_ABUILD2 )
+	if( weapon != WP_HBUILD && weapon != WP_ABUILD && weapon != WP_ABUILD2 )
 	{
 		return;
 	}
