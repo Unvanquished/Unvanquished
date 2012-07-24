@@ -99,16 +99,16 @@ equ trap_LAN_CompareServers               -336
 equ trap_MemoryRemaining                  -337
 equ trap_R_RegisterFont                   -338
 equ trap_Parse_AddGlobalDefine            -339
+equ trap_PC_AddGlobalDefine               -339
 equ trap_Parse_LoadSource                 -340
+equ trap_PC_LoadSource                    -340
 equ trap_Parse_FreeSource                 -341
+equ trap_PC_FreeSource                    -341
 equ trap_Parse_ReadToken                  -342
+equ trap_PC_ReadToken                     -342
 equ trap_Parse_SourceFileAndLine          -343
-equ trap_PC_AddGlobalDefine               -344
+equ trap_PC_SourceFileAndLine             -343
 equ trap_PC_RemoveAllGlobalDefines        -345
-equ trap_PC_LoadSource                    -346
-equ trap_PC_FreeSource                    -347
-equ trap_PC_ReadToken                     -348
-equ trap_PC_SourceFileAndLine             -349
 equ trap_PC_UnReadToken                   -350
 equ trap_S_StopBackgroundTrack            -351
 equ trap_S_StartBackgroundTrack           -352
@@ -133,3 +133,4 @@ equ trap_Gettext                          -370
 equ trap_R_Glyph                          -371
 equ trap_R_GlyphChar                      -372
 equ trap_R_UnregisterFont                 -373
+equ trap_Pgettext                         -374

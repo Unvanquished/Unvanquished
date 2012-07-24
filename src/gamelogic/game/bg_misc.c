@@ -4344,3 +4344,28 @@ char *Substring( const char *in, int start, int count )
 
 	return buf;
 }
+
+/*
+=================
+Trans_GenderContext
+=================
+*/
+
+const char *Trans_GenderContext( gender_t gender )
+{
+	switch ( gender )
+	{
+		case GENDER_MALE:
+			return "male";
+			break;
+		case GENDER_FEMALE:
+			return "female";
+			break;
+		case GENDER_NEUTER:
+			return "neuter";
+			break;
+		default:
+			return "unknown";
+			break;
+	}
+}
