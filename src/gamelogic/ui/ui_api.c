@@ -781,13 +781,6 @@ void trap_R_RemapShader( const char *oldShader, const char *newShader, const cha
 	syscall( UI_R_REMAP_SHADER, oldShader, newShader, timeOffset );
 }
 
-//114.
-//return CL_GetLimboString(args[1], VMA(2));
-qboolean trap_GetLimboString( int index, char *buf )
-{
-	return syscall( UI_CL_GETLIMBOSTRING, index, buf );
-}
-
 //118.
 //CL_OpenURL((const char *)VMA(1));
 void trap_openURL( const char *s )

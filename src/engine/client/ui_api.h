@@ -109,8 +109,6 @@ typedef enum uiImport_s
   UI_GETNEWS,
   UI_LAN_COMPARESERVERS,
   UI_MEMORY_REMAINING,
-  UI_GET_CDKEY, // obsolete
-  UI_SET_CDKEY, // obsolete
   UI_R_REGISTERFONT,
   UI_PARSE_ADD_GLOBAL_DEFINE,
   UI_PARSE_LOAD_SOURCE,
@@ -133,10 +131,6 @@ typedef enum uiImport_s
   UI_CIN_DRAWCINEMATIC,
   UI_CIN_SETEXTENTS,
   UI_R_REMAP_SHADER,
-  UI_CL_GETLIMBOSTRING,
-  UI_CL_TRANSLATE_STRING, // obsolete
-  UI_CHECKAUTOUPDATE, // obsolete
-  UI_GET_AUTOUPDATE, // obsolete
   UI_OPENURL,
   UI_GETHUNKDATA,
   UI_QUOTESTRING,
@@ -350,8 +344,6 @@ e_status    trap_CIN_RunCinematic( int handle );
 void        trap_CIN_DrawCinematic( int handle );
 void        trap_CIN_SetExtents( int handle, int x, int y, int w, int h );
 void        trap_R_RemapShader( const char *oldShader, const char *newShader, const char *timeOffset );
-qboolean    trap_GetLimboString( int index, char *buf );
-void        trap_TranslateString( const char *string, char *buf );
 void        trap_openURL( const char *s );
 void        trap_GetHunkData( int *hunkused, int *hunkexpected );
 void        trap_QuoteString( const char *str, char *buffer, int size );
