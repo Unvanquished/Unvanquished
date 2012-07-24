@@ -397,13 +397,14 @@ FILE *Sys_Mkfifo( const char *ospath )
 	if( result != 0 )
 		return NULL;
 	
-	fifo = fopen( ospath, "w+" );
-	if( fifo )
-	{
-		fn = fileno( fifo );
-		fcntl( fn, F_SETFL, O_NONBLOCK );
-	}
-	
+	fn = open( ospath, O_RDWR | O_NONBLOCK );
+	if( fn == -1 )
+		return NULL;
+
+	fifo = fdopen( fn, "w+" );
+	if( fifo == NULL )
+		close( fn );
+
 	return fifo;
 }
 
