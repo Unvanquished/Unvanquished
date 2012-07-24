@@ -823,6 +823,11 @@ void CG_AddNotifyText( void )
 	char buffer[ BIG_INFO_STRING ];
 	int  bufferLen, textLen;
 
+	if ( cg.loading )
+	{
+		return;
+	}
+
 	trap_LiteralArgs( buffer, BIG_INFO_STRING );
 
 	if ( !buffer[ 0 ] )
@@ -2217,6 +2222,8 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	memset( &cg, 0, sizeof( cg ) );
 	memset( cg_entities, 0, sizeof( cg_entities ) );
 
+	cg.loading = qtrue;
+
 	cg.clientNum = clientNum;
 
 	cgs.processedSnapshotNum = serverMessageNum;
@@ -2282,8 +2289,6 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	// load the new map
 	trap_CM_LoadMap( cgs.mapname );
 
-	cg.loading = qtrue; // force players to load instead of defer
-
 	CG_LoadTrailSystems();
 	CG_UpdateMediaFraction( 0.05f );
 
@@ -2309,8 +2314,6 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 
 	CG_RegisterClients(); // if low on memory, some clients will be deferred
 
-	cg.loading = qfalse; // future players will be deferred
-
 	CG_InitMarkPolys();
 
 	// remove the last loading update
@@ -2325,6 +2328,8 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 
 	trap_S_ClearLoopingSounds( qtrue );
 	trap_Cvar_Set( "ui_winner", "" ); // Clear the previous round's winner.
+
+	cg.loading = qfalse;
 }
 
 /*
