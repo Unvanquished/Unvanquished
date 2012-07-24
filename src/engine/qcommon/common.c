@@ -1756,7 +1756,7 @@ void Com_TouchMemory( void )
 
 	end = Sys_Milliseconds();
 
-	Com_Printf(_( "Com_TouchMemory: %i msec\n"), end - start );
+	Com_DPrintf(_( "Com_TouchMemory: %i msec\n"), end - start );
 }
 
 /*
