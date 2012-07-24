@@ -32,10 +32,7 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#ifdef USING_CMAKE
 #include "git_version.h"
-#endif
-
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "sys_local.h"

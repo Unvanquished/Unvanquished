@@ -32,9 +32,7 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#ifdef USING_CMAKE
 #include "git_version.h"
-#endif
 
 #include <CPUInfo.h>
 
