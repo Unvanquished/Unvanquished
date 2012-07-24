@@ -289,7 +289,7 @@ You or the server may be running older versions of the game."
 
 #define GAMENAME_STRING        "unv"
 
-#define PROTOCOL_VERSION       85
+#define PROTOCOL_VERSION       86
 
 #define URI_SCHEME             GAMENAME_STRING "://"
 #define URI_SCHEME_LENGTH      6
