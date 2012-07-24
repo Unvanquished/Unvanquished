@@ -183,7 +183,7 @@ void DL_InitDownload()
 	HTAlert_add( HTAlertCallback_confirm, HT_A_CONFIRM );
 	HTAlert_add( HTAlertCallback_prompt, HT_A_PROMPT | HT_A_SECRET | HT_A_USER_PW );
 
-	Com_Printf(_( "Client download subsystem initialized\n" ));
+	Com_DPrintf(_( "Client download subsystem initialized\n" ));
 	dl_initialized = 1;
 }
 

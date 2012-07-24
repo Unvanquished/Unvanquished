@@ -6152,7 +6152,7 @@ void R_InitShaders( void )
 {
 	glfogNum = FOG_NONE;
 
-	ri.Printf( PRINT_ALL, "Initializing Shaders\n" );
+	ri.Printf( PRINT_DEVELOPER, "Initializing Shaders\n" );
 
 	memset( hashTable, 0, sizeof( hashTable ) );
 	deferLoad = qfalse;

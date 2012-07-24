@@ -486,13 +486,13 @@ static void *Sys_TryLibraryLoad( const char *base, const char *gamedir, const ch
 	*fqpath = 0;
 
 	fn = FS_BuildOSPath( base, gamedir, fname );
-	Com_Printf( "Sys_LoadDll(%s)... \n", fn );
+	Com_DPrintf( "Sys_LoadDll(%s)... \n", fn );
 
 	libHandle = Sys_LoadLibrary( fn );
 
 	if ( !libHandle )
 	{
-		Com_Printf( "Sys_LoadDll(%s) failed:\n\"%s\"\n", fn, Sys_LibraryError() );
+		Com_DPrintf( "Sys_LoadDll(%s) failed:\n\"%s\"\n", fn, Sys_LibraryError() );
 		return NULL;
 	}
 
@@ -560,7 +560,7 @@ void *QDECL Sys_LoadDll( const char *name, char *fqpath,
 
 	if ( !libHandle )
 	{
-		Com_Printf( "Sys_LoadDll(%s) could not find it\n", fname );
+		Com_DPrintf( "Sys_LoadDll(%s) could not find it\n", fname );
 		return NULL;
 	}
 

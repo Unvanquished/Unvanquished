@@ -2118,7 +2118,7 @@ void Hunk_Clear( void )
 	Cvar_Set( "com_hunkused", va( "%i", hunk_low.permanent + hunk_high.permanent ) );
 	com_hunkusedvalue = hunk_low.permanent + hunk_high.permanent;
 
-	Com_Printf(_( "Hunk_Clear: reset the hunk ok\n" ));
+	Com_DPrintf(_( "Hunk_Clear: reset the hunk ok\n" ));
 	VM_Clear(); // (SA) FIXME:TODO: was commented out in wolf
 #ifdef HUNK_DEBUG
 	hunkblocks = NULL;

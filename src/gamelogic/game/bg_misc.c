@@ -4255,8 +4255,9 @@ int BG_LoadEmoticons( emoticon_t *emoticons, int num )
 		count++;
 	}
 
-	Com_Printf( "Loaded %d of %d emoticons (MAX_EMOTICONS is %d)\n", // FIXME PLURAL
-	            count, numFiles, MAX_EMOTICONS );
+	// Com_Printf( "Loaded %d of %d emoticons (MAX_EMOTICONS is %d)\n", // FIXME PLURAL
+	//             count, numFiles, MAX_EMOTICONS );
+
 	return count;
 }
 

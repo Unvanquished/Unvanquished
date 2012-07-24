@@ -523,7 +523,7 @@ void BG_PrintVoices( voice_t *voices, int debugLevel )
 			voiceCmd = voiceCmd->next;
 		}
 
-		if ( !debugLevel )
+		if ( debugLevel )
 		{
 			Com_Printf( "voice \"%s\": %d commands, %d tracks\n",
 			            voice->name, cmdCount, trackCount );

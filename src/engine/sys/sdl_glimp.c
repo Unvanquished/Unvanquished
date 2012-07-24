@@ -461,7 +461,7 @@ GLimp_Shutdown
 */
 void GLimp_Shutdown( void )
 {
-	ri.Printf( PRINT_ALL, "Shutting down OpenGL subsystem\n" );
+	ri.Printf( PRINT_DEVELOPER, "Shutting down OpenGL subsystem\n" );
 
 	ri.IN_Shutdown();
 

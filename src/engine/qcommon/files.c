@@ -3390,40 +3390,40 @@ void FS_Path_f( void )
 	searchpath_t *s;
 	int          i;
 
-	Com_Printf(_( "Current search path:\n" ));
+	Com_DPrintf(_( "Current search path:\n" ));
 
 	for ( s = fs_searchpaths; s; s = s->next )
 	{
 		if ( s->pack )
 		{
 			//      Com_Printf(_( "%s %X (%i files)\n"), s->pack->pakFilename, s->pack->checksum, s->pack->numfiles );
-			Com_Printf(_( "%s (%i files)\n"), s->pack->pakFilename, s->pack->numfiles );
+			Com_DPrintf(_( "%s (%i files)\n"), s->pack->pakFilename, s->pack->numfiles );
 
 			if ( fs_numServerPaks )
 			{
 				if ( !FS_PakIsPure( s->pack ) )
 				{
-					Com_Printf(_( "    not on the pure list\n" ));
+					Com_DPrintf(_( "    not on the pure list\n" ));
 				}
 				else
 				{
-					Com_Printf(_( "    on the pure list\n" ));
+					Com_DPrintf(_( "    on the pure list\n" ));
 				}
 			}
 		}
 		else
 		{
-			Com_Printf( "%s%c%s\n", s->dir->path, PATH_SEP, s->dir->gamedir );
+			Com_DPrintf( "%s%c%s\n", s->dir->path, PATH_SEP, s->dir->gamedir );
 		}
 	}
 
-	Com_Printf( "\n" );
+	Com_DPrintf( "\n" );
 
 	for ( i = 1; i < MAX_FILE_HANDLES; i++ )
 	{
 		if ( fsh[ i ].handleFiles.file.o )
 		{
-			Com_Printf( "handle %i: %s\n", i, fsh[ i ].name );
+			Com_DPrintf( "handle %i: %s\n", i, fsh[ i ].name );
 		}
 	}
 }
@@ -4007,7 +4007,7 @@ qboolean FS_ComparePaks( char *neededpaks, int len, qboolean dlstring )
 
 	if ( *neededpaks )
 	{
-		Com_Printf(_( "Need paks: %s\n"), neededpaks );
+		Com_DPrintf(_( "Need paks: %s\n"), neededpaks );
 		return qtrue;
 	}
 
@@ -4129,7 +4129,7 @@ static void FS_Startup( const char *gameName )
 {
 	const char *homePath;
 
-	Com_Printf( "----- FS_Startup -----\n" );
+	Com_DPrintf( "----- FS_Startup -----\n" );
 
 	fs_debug = Cvar_Get( "fs_debug", "0", 0 );
 	fs_copyfiles = Cvar_Get( "fs_copyfiles", "0", CVAR_INIT );
@@ -4227,7 +4227,7 @@ static void FS_Startup( const char *gameName )
 
 	fs_gamedirvar->modified = qfalse; // We just loaded, it's not modified
 
-	Com_Printf( "----------------------\n" );
+	Com_DPrintf( "----------------------\n" );
 
 #ifdef FS_MISSING
 
@@ -4237,7 +4237,7 @@ static void FS_Startup( const char *gameName )
 	}
 
 #endif
-	Com_Printf(_( "%d files in pk3 files\n"), fs_packFiles );
+	Com_DPrintf(_( "%d files in pk3 files\n"), fs_packFiles );
 }
 
 #if !defined( DO_LIGHT_DEDICATED )

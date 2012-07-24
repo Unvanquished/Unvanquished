@@ -3839,7 +3839,7 @@ void R_InitImages( void )
 	const char *grainImage = "gfx/2d/camera/grain.png";
 	const char *vignetteImage = "gfx/2d/camera/vignette.png";
 
-	ri.Printf( PRINT_ALL, "------- R_InitImages -------\n" );
+	ri.Printf( PRINT_DEVELOPER, "------- R_InitImages -------\n" );
 
 	Com_Memset( r_imageHashTable, 0, sizeof( r_imageHashTable ) );
 	Com_InitGrowList( &tr.images, 4096 );
@@ -3884,7 +3884,7 @@ void R_ShutdownImages( void )
 	int     i;
 	image_t *image;
 
-	ri.Printf( PRINT_ALL, "------- R_ShutdownImages -------\n" );
+	ri.Printf( PRINT_DEVELOPER, "------- R_ShutdownImages -------\n" );
 
 	for ( i = 0; i < tr.images.currentElements; i++ )
 	{

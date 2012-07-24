@@ -665,7 +665,7 @@ extern "C" {
 			qglFinish();
 #endif
 			end = ri.Milliseconds();
-			ri.Printf( PRINT_ALL, "qglTexSubImage2D %i, %i: %i msec\n", cols, rows, end - start );
+			ri.Printf( PRINT_DEVELOPER, "qglTexSubImage2D %i, %i: %i msec\n", cols, rows, end - start );
 		}
 
 		tess.numVertexes = 0;
@@ -1046,7 +1046,7 @@ extern "C" {
 		qglFinish();
 
 		end = ri.Milliseconds();
-		ri.Printf( PRINT_ALL, "%i msec to draw all images\n", end - start );
+		ri.Printf( PRINT_DEVELOPER, "%i msec to draw all images\n", end - start );
 
 		GL_CheckErrors();
 	}

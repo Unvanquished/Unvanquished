@@ -233,12 +233,12 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 		if ( shaderType == GL_VERTEX_SHADER )
 		{
 			Com_sprintf( filename, sizeof( filename ), "glsl/%s_vp.glsl", token );
-			ri.Printf( PRINT_ALL, "...loading vertex shader '%s'\n", filename );
+			ri.Printf( PRINT_DEVELOPER, "...loading vertex shader '%s'\n", filename );
 		}
 		else
 		{
 			Com_sprintf( filename, sizeof( filename ), "glsl/%s_fp.glsl", token );
-			ri.Printf( PRINT_ALL, "...loading vertex shader '%s'\n", filename );
+			ri.Printf( PRINT_DEVELOPER, "...loading vertex shader '%s'\n", filename );
 		}
 
 		libSize = ri.FS_ReadFile( filename, ( void ** ) &libBuffer );
@@ -258,12 +258,12 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 	if ( shaderType == GL_VERTEX_SHADER )
 	{
 		Com_sprintf( filename, sizeof( filename ), "glsl/%s_vp.glsl", mainShaderName );
-		ri.Printf( PRINT_ALL, "...loading vertex main() shader '%s'\n", filename );
+		ri.Printf( PRINT_DEVELOPER, "...loading vertex main() shader '%s'\n", filename );
 	}
 	else
 	{
 		Com_sprintf( filename, sizeof( filename ), "glsl/%s_fp.glsl", mainShaderName );
-		ri.Printf( PRINT_ALL, "...loading fragment main() shader '%s'\n", filename );
+		ri.Printf( PRINT_DEVELOPER, "...loading fragment main() shader '%s'\n", filename );
 	}
 
 	mainSize = ri.FS_ReadFile( filename, ( void ** ) &mainBuffer );

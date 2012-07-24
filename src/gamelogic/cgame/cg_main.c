@@ -1796,7 +1796,7 @@ void CG_LoadMenus( const char *menuFile )
 		}
 	}
 
-	Com_Printf(_( "UI menu load time = %dms\n"), trap_Milliseconds() - start );
+	// Com_Printf(_( "UI menu load time = %dms\n"), trap_Milliseconds() - start );
 }
 
 static qboolean CG_OwnerDrawHandleKey( int ownerDraw, int key )

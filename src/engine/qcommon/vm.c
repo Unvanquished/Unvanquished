@@ -541,7 +541,7 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 
 	// load the image
 	Com_sprintf( filename, sizeof( filename ), "vm/%s.qvm", vm->name );
-	Com_Printf(_( "Loading vm file %s…\n"), filename );
+	Com_DPrintf(_( "Loading vm file %s…\n"), filename );
 
 	i = FS_ReadFileCheck( filename, &header.v );
 
@@ -555,11 +555,14 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 	vm->clean = i >= 0;
 
 	// show where the qvm was loaded from
-	Cmd_ExecuteString( va( "which %s\n", filename ) );
+	if ( com_developer->integer )
+	{
+		Cmd_ExecuteString( va( "which %s\n", filename ) );
+	}
 
 	if ( LittleLong( header.h->vmMagic ) == VM_MAGIC_VER2 )
 	{
-		Com_Printf(_( "…which has vmMagic VM_MAGIC_VER2\n" ));
+		Com_DPrintf(_( "…which has vmMagic VM_MAGIC_VER2\n" ));
 
 		// byte swap the header
 		for ( i = 0; i < sizeof( vmHeader_t ) / 4; i++ )
@@ -629,7 +632,7 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 			VM_Free(vm);
 			FS_FreeFile(header.v);
 
-			Com_Printf( S_COLOR_YELLOW "Warning: Data region size of %s not matching after"
+			Com_DPrintf( S_COLOR_YELLOW "Warning: Data region size of %s not matching after"
 						"VM_Restart()\n", filename );
 			return NULL;
 		}
@@ -654,7 +657,7 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 		header.h->jtrgLength &= ~0x03;
 
 		vm->numJumpTableTargets = header.h->jtrgLength >> 2;
-		Com_Printf( "Loading %d jump table targets\n", vm->numJumpTableTargets );
+		Com_DPrintf( "Loading %d jump table targets\n", vm->numJumpTableTargets );
 
 		if ( alloc )
 		{
@@ -667,7 +670,7 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 				VM_Free( vm );
 				FS_FreeFile( header.v );
 
-				Com_Printf( S_COLOR_YELLOW "Warning: Jump table size of %s not matching after"
+				Com_DPrintf( S_COLOR_YELLOW "Warning: Jump table size of %s not matching after"
 				            "VM_Restart()\n", filename );
 				return NULL;
 			}
@@ -803,7 +806,7 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 			return vm;
 		}
 
-		Com_Printf(_( "Failed loading dll, trying next\n" ));
+		Com_DPrintf(_( "Failed loading dll, trying next\n" ));
 #if USE_LLVM
 		interpret = VMI_BYTECODE;
 #endif
@@ -813,7 +816,7 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 	if ( !onlyQVM )
 	{
 		// try to load the LLVM
-		Com_Printf(_( "Loading llvm file %s.\n"), vm->name );
+		Com_DPrintf(_( "Loading llvm file %s.\n"), vm->name );
 		vm->llvmModuleProvider = VM_LoadLLVM( vm, VM_DllSyscall );
 
 		if ( vm->llvmModuleProvider )
@@ -821,7 +824,7 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 			return vm;
 		}
 
-		Com_Printf(_( "Failed to load llvm, looking for qvm.\n" ));
+		Com_DPrintf(_( "Failed to load llvm, looking for qvm.\n" ));
 	}
 #endif // USE_LLVM
 
@@ -846,7 +849,7 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 
 	if ( interpret >= VMI_COMPILED )
 	{
-		Com_Printf(_( "Architecture doesn't have a bytecode compiler, using interpreter\n" ));
+		Com_DPrintf(_( "Architecture doesn't have a bytecode compiler, using interpreter\n" ));
 		interpret = VMI_BYTECODE;
 	}
 
@@ -876,7 +879,7 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 	vm->programStack = vm->dataMask + 1;
 	vm->stackBottom = vm->programStack - PROGRAM_STACK_SIZE;
 
-	Com_Printf(_( "%s loaded in %d bytes on the hunk\n"), module, remaining - Hunk_MemoryRemaining() );
+	Com_DPrintf(_( "%s loaded in %d bytes on the hunk\n"), module, remaining - Hunk_MemoryRemaining() );
 
 	VM_InitSanity( vm );
 

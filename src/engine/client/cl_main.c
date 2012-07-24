@@ -2106,7 +2106,7 @@ void CL_Connect_f( void )
 
 	serverString = NET_AdrToStringwPort( clc.serverAddress );
 
-	Com_Printf(_( "%s resolved to %s\n"), cls.servername, serverString );
+	Com_DPrintf(_( "%s resolved to %s\n"), cls.servername, serverString );
 
 	// if we aren't playing on a lan, we needto authenticate
 	// with the cd key
@@ -2901,7 +2901,7 @@ void CL_InitDownloads( void )
 	if ( cl_allowDownload->integer && FS_ComparePaks( clc.downloadList, sizeof( clc.downloadList ), qtrue ) )
 	{
 		// this gets printed to UI, i18n
-		Com_Printf(_( "Need paks: %s\n"), clc.downloadList );
+		Com_DPrintf(_( "Need paks: %s\n"), clc.downloadList );
 
 		if ( *clc.downloadList )
 		{
@@ -3261,7 +3261,7 @@ void CL_ServersResponsePacket( const netadr_t *from, msg_t *msg, qboolean extend
 	byte      *buffend;
 	char     label[ MAX_FEATLABEL_CHARS ] = "";
 
-	Com_Printf( "CL_ServersResponsePacket\n" );
+	Com_DPrintf( "CL_ServersResponsePacket\n" );
 
 	if ( cls.numglobalservers == -1 )
 	{
@@ -3413,7 +3413,7 @@ void CL_ServersResponsePacket( const netadr_t *from, msg_t *msg, qboolean extend
 	cls.numglobalservers = count;
 	total = count + cls.numGlobalServerAddresses;
 
-	Com_Printf(_( "%d servers parsed (total %d)\n"), numservers, total );
+	Com_DPrintf(_( "%d servers parsed (total %d)\n"), numservers, total );
 }
 
 /*
@@ -4714,7 +4714,7 @@ void CL_Shutdown( void )
 		return;
 	}
 
-	Com_Printf("%s", _( "----- CL_Shutdown -----\n" ));
+	Com_DPrintf("%s", _( "----- CL_Shutdown -----\n" ));
 
 	if ( recursive )
 	{
@@ -4784,7 +4784,7 @@ void CL_Shutdown( void )
 
 	memset( &cls, 0, sizeof( cls ) );
 
-	Com_Printf("%s", _( "-----------------------\n" ));
+	Com_DPrintf("%s", _( "-----------------------\n" ));
 
 }
 
@@ -5238,7 +5238,7 @@ void CL_LocalServers_f( void )
 	int      i, j;
 	netadr_t to;
 
-	Com_Printf("%s", _( "Scanning for servers on the local network…\n" ));
+	Com_DPrintf("%s", _( "Scanning for servers on the local network…\n" ));
 
 	// reset the list, waiting for response
 	cls.numlocalservers = 0;
@@ -5319,7 +5319,7 @@ void CL_GlobalServers_f( void )
 		to.port = BigShort( PORT_MASTER );
 	}
 
-	Com_Printf(_( "Requesting servers from master %s…\n"), masteraddress );
+	Com_DPrintf(_( "Requesting servers from master %s…\n"), masteraddress );
 
 	cls.numglobalservers = -1;
 	cls.pingUpdateSource = AS_GLOBAL;

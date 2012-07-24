@@ -892,7 +892,7 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 				return;
 			}
 
-			ri.Printf( PRINT_ALL, "...loading %i HDR lightmaps\n", numLightmaps );
+			ri.Printf( PRINT_DEVELOPER, "...loading %i HDR lightmaps\n", numLightmaps );
 
 			if ( r_hdrRendering->integer && r_hdrLightmap->integer && glConfig2.framebufferObjectAvailable &&
 			     glConfig2.framebufferBlitAvailable && glConfig2.textureFloatAvailable && glConfig2.textureHalfFloatAvailable )
@@ -902,7 +902,7 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 
 				for ( i = 0; i < numLightmaps; i++ )
 				{
-					ri.Printf( PRINT_ALL, "...loading external lightmap as RGB 16 bit half HDR '%s/%s'\n", mapName, lightmapFiles[ i ] );
+					ri.Printf( PRINT_DEVELOPER, "...loading external lightmap as RGB 16 bit half HDR '%s/%s'\n", mapName, lightmapFiles[ i ] );
 
 					width = height = 0;
 					//LoadRGBEToFloats(va("%s/%s", mapName, lightmapFiles[i]), &hdrImage, &width, &height, qtrue, qfalse, qtrue);
@@ -976,7 +976,7 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 
 				for ( i = 0; i < numLightmaps; i++ )
 				{
-					ri.Printf( PRINT_ALL, "...loading external lightmap as RGB8 LDR '%s/%s'\n", mapName, lightmapFiles[ i ] );
+					ri.Printf( PRINT_DEVELOPER, "...loading external lightmap as RGB8 LDR '%s/%s'\n", mapName, lightmapFiles[ i ] );
 
 					width = height = 0;
 					LoadRGBEToBytes( va( "%s/%s", mapName, lightmapFiles[ i ] ), &ldrImage, &width, &height );
@@ -1008,11 +1008,11 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 
 				qsort( lightmapFiles, numLightmaps, sizeof( char * ), LightmapNameCompare );
 
-				ri.Printf( PRINT_ALL, "...loading %i deluxemaps\n", numLightmaps );
+				ri.Printf( PRINT_DEVELOPER, "...loading %i deluxemaps\n", numLightmaps );
 
 				for ( i = 0; i < numLightmaps; i++ )
 				{
-					ri.Printf( PRINT_ALL, "...loading external lightmap '%s/%s'\n", mapName, lightmapFiles[ i ] );
+					ri.Printf( PRINT_DEVELOPER, "...loading external lightmap '%s/%s'\n", mapName, lightmapFiles[ i ] );
 
 					image = R_FindImageFile( va( "%s/%s", mapName, lightmapFiles[ i ] ), IF_NORMALMAP | IF_NOCOMPRESSION, FT_DEFAULT, WT_CLAMP, NULL );
 					Com_AddToGrowList( &tr.deluxemaps, image );
@@ -1036,14 +1036,14 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 
 			qsort( lightmapFiles, numLightmaps, sizeof( char * ), LightmapNameCompare );
 
-			ri.Printf( PRINT_ALL, "...loading %i lightmaps\n", numLightmaps );
+			ri.Printf( PRINT_DEVELOPER, "...loading %i lightmaps\n", numLightmaps );
 
 			// we are about to upload textures
 			R_SyncRenderThread();
 
 			for ( i = 0; i < numLightmaps; i++ )
 			{
-				ri.Printf( PRINT_ALL, "...loading external lightmap '%s/%s'\n", mapName, lightmapFiles[ i ] );
+				ri.Printf( PRINT_DEVELOPER, "...loading external lightmap '%s/%s'\n", mapName, lightmapFiles[ i ] );
 
 				if ( tr.worldDeluxeMapping )
 				{
@@ -1080,7 +1080,7 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 		// create all the lightmaps
 		tr.numLightmaps = len / ( LIGHTMAP_SIZE * LIGHTMAP_SIZE * 3 );
 
-		ri.Printf( PRINT_ALL, "...loading %i lightmaps\n", tr.numLightmaps );
+		ri.Printf( PRINT_DEVELOPER, "...loading %i lightmaps\n", tr.numLightmaps );
 
 		for ( i = 0; i < tr.numLightmaps; i++ )
 		{
@@ -1290,7 +1290,7 @@ static void R_LoadVisibility( lump_t *l )
 	int  len;
 	byte *buf;
 
-	ri.Printf( PRINT_ALL, "...loading visibility\n" );
+	ri.Printf( PRINT_DEVELOPER, "...loading visibility\n" );
 
 	len = ( s_worldData.numClusters + 63 ) & ~63;
 	s_worldData.novis = ri.Hunk_Alloc( len, h_low );
@@ -3286,7 +3286,7 @@ void R_StitchAllPatches( void )
 	int           i, stitched, numstitches;
 	srfGridMesh_t *grid1;
 
-	ri.Printf( PRINT_ALL, "...stitching LoD cracks\n" );
+	ri.Printf( PRINT_DEVELOPER, "...stitching LoD cracks\n" );
 
 	numstitches = 0;
 
@@ -3320,7 +3320,7 @@ void R_StitchAllPatches( void )
 	}
 	while ( stitched );
 
-	ri.Printf( PRINT_ALL, "stitched %d LoD cracks\n", numstitches );
+	ri.Printf( PRINT_DEVELOPER, "stitched %d LoD cracks\n", numstitches );
 }
 
 /*
@@ -4041,7 +4041,7 @@ static void R_LoadAreaPortals(const char *bspName)
         token = COM_ParseExt2(&buf_p, qtrue);
         numAreaPortals = atoi(token);
 
-        ri.Printf(PRINT_ALL, "...loading %i area portals\n", numAreaPortals);
+        ri.Printf(PRINT_DEVELOPER, "...loading %i area portals\n", numAreaPortals);
 
         s_worldData.numAreaPortals = numAreaPortals;
         s_worldData.areaPortals = ri.Hunk_Alloc(numAreaPortals * sizeof(*s_worldData.areaPortals), h_low);
@@ -5020,7 +5020,7 @@ static void R_CreateWorldVBO()
 		return;
 	}
 
-	ri.Printf( PRINT_ALL, "...calculating world VBO ( %i verts %i tris )\n", numVerts, numTriangles );
+	ri.Printf( PRINT_DEVELOPER, "...calculating world VBO ( %i verts %i tris )\n", numVerts, numTriangles );
 
 	// create arrays
 
@@ -5198,7 +5198,7 @@ static void R_CreateWorldVBO()
 	s_worldData.ibo = R_CreateIBO2( va( "staticBspModel0_IBO %i", 0 ), numTriangles, triangles, VBO_USAGE_STATIC );
 
 	endTime = ri.Milliseconds();
-	ri.Printf( PRINT_ALL, "world VBO calculation time = %5.2f seconds\n", ( endTime - startTime ) / 1000.0 );
+	ri.Printf( PRINT_DEVELOPER, "world VBO calculation time = %5.2f seconds\n", ( endTime - startTime ) / 1000.0 );
 
 	// point triangle surfaces to world VBO
 	for ( k = 0, surface = &s_worldData.surfaces[ 0 ]; k < s_worldData.numWorldSurfaces; k++, surface++ )
@@ -5671,7 +5671,7 @@ static void R_CreateSubModelVBOs()
 
 		Com_DestroyGrowList( &vboSurfaces );
 
-		ri.Printf( PRINT_ALL, "%i VBO surfaces created for BSP submodel %i\n", model->numVBOSurfaces, m );
+		ri.Printf( PRINT_DEVELOPER, "%i VBO surfaces created for BSP submodel %i\n", model->numVBOSurfaces, m );
 	}
 }
 
@@ -5690,7 +5690,7 @@ static void R_LoadSurfaces( lump_t *surfs, lump_t *verts, lump_t *indexLump )
 	int          numFaces, numMeshes, numTriSurfs, numFlares, numFoliages;
 	int          i;
 
-	ri.Printf( PRINT_ALL, "...loading surfaces\n" );
+	ri.Printf( PRINT_DEVELOPER, "...loading surfaces\n" );
 
 	numFaces = 0;
 	numMeshes = 0;
@@ -5761,7 +5761,7 @@ static void R_LoadSurfaces( lump_t *surfs, lump_t *verts, lump_t *indexLump )
 		}
 	}
 
-	ri.Printf( PRINT_ALL, "...loaded %d faces, %i meshes, %i trisurfs, %i flares %i foliages\n", numFaces, numMeshes, numTriSurfs,
+	ri.Printf( PRINT_DEVELOPER, "...loaded %d faces, %i meshes, %i trisurfs, %i flares %i foliages\n", numFaces, numMeshes, numTriSurfs,
 	           numFlares, numFoliages );
 
 	if ( r_stitchCurves->integer )
@@ -5788,7 +5788,7 @@ static void R_LoadSubmodels( lump_t *l )
 	bspModel_t *out;
 	int        i, j, count;
 
-	ri.Printf( PRINT_ALL, "...loading submodels\n" );
+	ri.Printf( PRINT_DEVELOPER, "...loading submodels\n" );
 
 	in = ( void * )( fileBase + l->fileofs );
 
@@ -5936,7 +5936,7 @@ static void R_LoadNodesAndLeafs( lump_t *nodeLump, lump_t *leafLump )
 	vec3_t        mins, maxs;
 //	vec3_t     offset = {0.01, 0.01, 0.01};
 
-	ri.Printf( PRINT_ALL, "...loading nodes and leaves\n" );
+	ri.Printf( PRINT_DEVELOPER, "...loading nodes and leaves\n" );
 
 	in = ( void * )( fileBase + nodeLump->fileofs );
 
@@ -6111,7 +6111,7 @@ static void R_LoadShaders( lump_t *l )
 	int       i, count;
 	dshader_t *in, *out;
 
-	ri.Printf( PRINT_ALL, "...loading shaders\n" );
+	ri.Printf( PRINT_DEVELOPER, "...loading shaders\n" );
 
 	in = ( void * )( fileBase + l->fileofs );
 
@@ -6130,7 +6130,7 @@ static void R_LoadShaders( lump_t *l )
 
 	for ( i = 0; i < count; i++ )
 	{
-		ri.Printf( PRINT_ALL, "shader: '%s'\n", out[ i ].shader );
+		ri.Printf( PRINT_DEVELOPER, "shader: '%s'\n", out[ i ].shader );
 
 		out[ i ].surfaceFlags = LittleLong( out[ i ].surfaceFlags );
 		out[ i ].contentFlags = LittleLong( out[ i ].contentFlags );
@@ -6148,7 +6148,7 @@ static void R_LoadMarksurfaces( lump_t *l )
 	int          *in;
 	bspSurface_t **out;
 
-	ri.Printf( PRINT_ALL, "...loading mark surfaces\n" );
+	ri.Printf( PRINT_DEVELOPER, "...loading mark surfaces\n" );
 
 	in = ( void * )( fileBase + l->fileofs );
 
@@ -6183,7 +6183,7 @@ static void R_LoadPlanes( lump_t *l )
 	int      count;
 	int      bits;
 
-	ri.Printf( PRINT_ALL, "...loading planes\n" );
+	ri.Printf( PRINT_DEVELOPER, "...loading planes\n" );
 
 	in = ( void * )( fileBase + l->fileofs );
 
@@ -6237,7 +6237,7 @@ static void R_LoadFogs( lump_t *l, lump_t *brushesLump, lump_t *sidesLump )
 	float        d;
 	int          firstSide = 0;
 
-	ri.Printf( PRINT_ALL, "...loading fogs\n" );
+	ri.Printf( PRINT_DEVELOPER, "...loading fogs\n" );
 
 	fogs = ( void * )( fileBase + l->fileofs );
 
@@ -6258,7 +6258,7 @@ static void R_LoadFogs( lump_t *l, lump_t *brushesLump, lump_t *sidesLump )
 
 	if ( !count )
 	{
-		ri.Printf( PRINT_ALL, "no fog volumes loaded\n" );
+		ri.Printf( PRINT_DEVELOPER, "no fog volumes loaded\n" );
 		return;
 	}
 
@@ -6372,7 +6372,7 @@ static void R_LoadFogs( lump_t *l, lump_t *brushesLump, lump_t *sidesLump )
 		out++;
 	}
 
-	ri.Printf( PRINT_ALL, "%i fog volumes loaded\n", s_worldData.numFogs );
+	ri.Printf( PRINT_DEVELOPER, "%i fog volumes loaded\n", s_worldData.numFogs );
 }
 
 /*
@@ -6393,7 +6393,7 @@ void R_LoadLightGrid( lump_t *l )
 	int            pos[ 3 ];
 	float          posFloat[ 3 ];
 
-	ri.Printf( PRINT_ALL, "...loading light grid\n" );
+	ri.Printf( PRINT_DEVELOPER, "...loading light grid\n" );
 
 	w = &s_worldData;
 
@@ -6413,9 +6413,9 @@ void R_LoadLightGrid( lump_t *l )
 
 	w->numLightGridPoints = w->lightGridBounds[ 0 ] * w->lightGridBounds[ 1 ] * w->lightGridBounds[ 2 ];
 
-	ri.Printf( PRINT_ALL, "grid size (%i %i %i)\n", ( int ) w->lightGridSize[ 0 ], ( int ) w->lightGridSize[ 1 ],
+	ri.Printf( PRINT_DEVELOPER, "grid size (%i %i %i)\n", ( int ) w->lightGridSize[ 0 ], ( int ) w->lightGridSize[ 1 ],
 	           ( int ) w->lightGridSize[ 2 ] );
-	ri.Printf( PRINT_ALL, "grid bounds (%i %i %i)\n", ( int ) w->lightGridBounds[ 0 ], ( int ) w->lightGridBounds[ 1 ],
+	ri.Printf( PRINT_DEVELOPER, "grid bounds (%i %i %i)\n", ( int ) w->lightGridBounds[ 0 ], ( int ) w->lightGridBounds[ 1 ],
 	           ( int ) w->lightGridBounds[ 2 ] );
 
 	if ( l->filelen != w->numLightGridPoints * sizeof( dgridPoint_t ) )
@@ -6532,7 +6532,7 @@ void R_LoadLightGrid( lump_t *l )
 		}
 	}
 
-	ri.Printf( PRINT_ALL, "%i light grid points created\n", w->numLightGridPoints );
+	ri.Printf( PRINT_DEVELOPER, "%i light grid points created\n", w->numLightGridPoints );
 }
 
 /*
@@ -6555,7 +6555,7 @@ void R_LoadEntities( lump_t *l )
 	int          numParallelLights = 0;
 	trRefLight_t *light;
 
-	ri.Printf( PRINT_ALL, "...loading entities\n" );
+	ri.Printf( PRINT_DEVELOPER, "...loading entities\n" );
 
 	w = &s_worldData;
 	w->lightGridSize[ 0 ] = 64;
@@ -6678,7 +6678,7 @@ void R_LoadEntities( lump_t *l )
 		// check for deluxe mapping support
 		if ( !Q_stricmp( keyname, "deluxeMapping" ) && !Q_stricmp( value, "1" ) )
 		{
-			ri.Printf( PRINT_ALL, "map features directional light mapping\n" );
+			ri.Printf( PRINT_DEVELOPER, "map features directional light mapping\n" );
 			tr.worldDeluxeMapping = qtrue;
 			continue;
 		}
@@ -6696,7 +6696,7 @@ void R_LoadEntities( lump_t *l )
 
 			if ( s )
 			{
-				ri.Printf( PRINT_ALL, "map features directional light mapping\n" );
+				ri.Printf( PRINT_DEVELOPER, "map features directional light mapping\n" );
 				tr.worldDeluxeMapping = qtrue;
 			}
 
@@ -6706,7 +6706,7 @@ void R_LoadEntities( lump_t *l )
 		// check for HDR light mapping support
 		if ( !Q_stricmp( keyname, "hdrRGBE" ) && !Q_stricmp( value, "1" ) )
 		{
-			ri.Printf( PRINT_ALL, "map features HDR light mapping\n" );
+			ri.Printf( PRINT_DEVELOPER, "map features HDR light mapping\n" );
 			tr.worldHDR_RGBE = qtrue;
 			continue;
 		}
@@ -6795,8 +6795,8 @@ void R_LoadEntities( lump_t *l )
 		numEntities++;
 	}
 
-	ri.Printf( PRINT_ALL, "%i total entities counted\n", numEntities );
-	ri.Printf( PRINT_ALL, "%i total lights counted\n", numLights );
+	ri.Printf( PRINT_DEVELOPER, "%i total entities counted\n", numEntities );
+	ri.Printf( PRINT_DEVELOPER, "%i total lights counted\n", numLights );
 
 	s_worldData.numLights = numLights;
 
@@ -7062,11 +7062,11 @@ void R_LoadEntities( lump_t *l )
 		ri.Error( ERR_DROP, "counted %i lights and parsed %i lights", s_worldData.numLights, ( numOmniLights + numProjLights + numParallelLights ) );
 	}
 
-	ri.Printf( PRINT_ALL, "%i total entities parsed\n", numEntities );
-	ri.Printf( PRINT_ALL, "%i total lights parsed\n", numOmniLights + numProjLights );
-	ri.Printf( PRINT_ALL, "%i omni-directional lights parsed\n", numOmniLights );
-	ri.Printf( PRINT_ALL, "%i projective lights parsed\n", numProjLights );
-	ri.Printf( PRINT_ALL, "%i directional lights parsed\n", numParallelLights );
+	ri.Printf( PRINT_DEVELOPER, "%i total entities parsed\n", numEntities );
+	ri.Printf( PRINT_DEVELOPER, "%i total lights parsed\n", numOmniLights + numProjLights );
+	ri.Printf( PRINT_DEVELOPER, "%i omni-directional lights parsed\n", numOmniLights );
+	ri.Printf( PRINT_DEVELOPER, "%i projective lights parsed\n", numProjLights );
+	ri.Printf( PRINT_DEVELOPER, "%i directional lights parsed\n", numParallelLights );
 }
 
 /*
@@ -9186,7 +9186,7 @@ void R_PrecacheInteractions()
 	c_vboLightSurfaces = 0;
 	c_vboShadowSurfaces = 0;
 
-	ri.Printf( PRINT_ALL, "...precaching %i lights\n", s_worldData.numLights );
+	ri.Printf( PRINT_DEVELOPER, "...precaching %i lights\n", s_worldData.numLights );
 
 	for ( i = 0; i < s_worldData.numLights; i++ )
 	{
@@ -9274,21 +9274,21 @@ void R_PrecacheInteractions()
 
 	Com_DestroyGrowList( &s_interactions );
 
-	ri.Printf( PRINT_ALL, "%i interactions precached\n", s_worldData.numInteractions );
-	ri.Printf( PRINT_ALL, "%i interactions were hidden in shadows\n", c_redundantInteractions );
+	ri.Printf( PRINT_DEVELOPER, "%i interactions precached\n", s_worldData.numInteractions );
+	ri.Printf( PRINT_DEVELOPER, "%i interactions were hidden in shadows\n", c_redundantInteractions );
 
 	if ( r_shadows->integer >= SHADOWING_ESM16 )
 	{
 		// only interesting for omni-directional shadow mapping
-		ri.Printf( PRINT_ALL, "%i omni pyramid tests\n", tr.pc.c_pyramidTests );
-		ri.Printf( PRINT_ALL, "%i omni pyramid surfaces visible\n", tr.pc.c_pyramid_cull_ent_in );
-		ri.Printf( PRINT_ALL, "%i omni pyramid surfaces clipped\n", tr.pc.c_pyramid_cull_ent_clip );
-		ri.Printf( PRINT_ALL, "%i omni pyramid surfaces culled\n", tr.pc.c_pyramid_cull_ent_out );
+		ri.Printf( PRINT_DEVELOPER, "%i omni pyramid tests\n", tr.pc.c_pyramidTests );
+		ri.Printf( PRINT_DEVELOPER, "%i omni pyramid surfaces visible\n", tr.pc.c_pyramid_cull_ent_in );
+		ri.Printf( PRINT_DEVELOPER, "%i omni pyramid surfaces clipped\n", tr.pc.c_pyramid_cull_ent_clip );
+		ri.Printf( PRINT_DEVELOPER, "%i omni pyramid surfaces culled\n", tr.pc.c_pyramid_cull_ent_out );
 	}
 
 	endTime = ri.Milliseconds();
 
-	ri.Printf( PRINT_ALL, "lights precaching time = %5.2f seconds\n", ( endTime - startTime ) / 1000.0 );
+	ri.Printf( PRINT_DEVELOPER, "lights precaching time = %5.2f seconds\n", ( endTime - startTime ) / 1000.0 );
 }
 
 #define HASHTABLE_SIZE 7919 // 32749 // 2039    /* prime, use % */
@@ -10183,7 +10183,7 @@ void RE_LoadWorldMap( const char *name )
 		ri.Error( ERR_DROP, "ERROR: attempted to redundantly load world map" );
 	}
 
-	ri.Printf( PRINT_ALL, "----- RE_LoadWorldMap( %s ) -----\n", name );
+	ri.Printf( PRINT_DEVELOPER, "----- RE_LoadWorldMap( %s ) -----\n", name );
 
 	// set default sun direction to be used if it isn't
 	// overridden by a shader
