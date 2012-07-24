@@ -577,7 +577,6 @@ void *QDECL Sys_LoadDll( const char *name, char *fqpath,
 	if ( !*entryPoint || !dllEntry )
 	{
 #ifndef NDEBUG
-
 		if ( !dllEntry )
 		{
 			Com_Error( ERR_FATAL, "Sys_LoadDll(%s) failed SDL_LoadFunction(dllEntry):\n\"%s\" !", name, Sys_LibraryError() );
@@ -586,9 +585,7 @@ void *QDECL Sys_LoadDll( const char *name, char *fqpath,
 		{
 			Com_Error( ERR_FATAL, "Sys_LoadDll(%s) failed SDL_LoadFunction(vmMain):\n\"%s\" !", name, Sys_LibraryError() );
 		}
-
 #else
-
 		if ( !dllEntry )
 		{
 			Com_Printf( "Sys_LoadDll(%s) failed SDL_LoadFunction(dllEntry):\n\"%p\" !\n", name, Sys_LibraryError() );
@@ -597,7 +594,6 @@ void *QDECL Sys_LoadDll( const char *name, char *fqpath,
 		{
 			Com_Printf( "Sys_LoadDll(%s) failed SDL_LoadFunction(vmMain):\n\"%p\" !\n", name, Sys_LibraryError() );
 		}
-
 #endif
 		Sys_UnloadLibrary( libHandle );
 		return NULL;
@@ -606,7 +602,7 @@ void *QDECL Sys_LoadDll( const char *name, char *fqpath,
 	Com_Printf( "Sys_LoadDll(%s) found vmMain function at %p\n", name, *entryPoint );
 	dllEntry( systemcalls );
 
-	Com_Printf( "Sys_LoadDll(%s) succeeded!\n", name );
+	Com_DPrintf( "Sys_LoadDll(%s) succeeded!\n", name );
 
 	// Copy the fname to fqpath.
 	Q_strncpyz( fqpath, fname, MAX_QPATH );

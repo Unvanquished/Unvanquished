@@ -3625,9 +3625,12 @@ void FS_AddGameDirectory( const char *path, const char *dir )
 	qsort( pakdirs, numdirs, sizeof( char * ), paksort );
 
 	// Log may not be initialized at this point, but it will still show in the console.
-	Com_DPrintf( "FS_AddGameDirectory(\"%s\", \"%s\") found %d .pk3 and %d .pk3dir\n", path, dir, numfiles, numdirs );
-#if 0
+	if ( !com_fullyInitialized )
+	{
+		Com_Printf( "FS_AddGameDirectory(\"%s\", \"%s\") found %d .pk3 and %d .pk3dir\n", path, dir, numfiles, numdirs );
+	}
 
+#if 0
 	for ( ; ( pakfilesi + pakdirsi ) < ( numfiles + numdirs ); )
 	{
 		// Check if a pakfile or pakdir comes next
@@ -3704,14 +3707,17 @@ void FS_AddGameDirectory( const char *path, const char *dir )
 			pakdirsi++;
 		}
 	}
-
 #endif
 
 	while ( pakfilesi < numfiles )
 	{
 		// The next .pk3 file is before the next .pk3dir
 		pakfile = FS_BuildOSPath( path, dir, pakfiles[ pakfilesi ] );
-		Com_DPrintf( "    pk3: %s\n", pakfile );
+
+		if ( !com_fullyInitialized )
+		{
+			Com_Printf( "    pk3: %s\n", pakfile );
+		}
 
 		if ( ( pak = FS_LoadZipFile( pakfile, pakfiles[ pakfilesi ] ) ) == 0 )
 		{
@@ -3744,7 +3750,11 @@ void FS_AddGameDirectory( const char *path, const char *dir )
 		}
 
 		pakfile = FS_BuildOSPath( path, dir, pakdirs[ pakdirsi ] );
-		Com_Printf( " pk3dir: %s\n", pakfile );
+
+		if ( !com_fullyInitialized )
+		{
+			Com_Printf( " pk3dir: %s\n", pakfile );
+		}
 
 		// add the directory to the search path
 		search = Z_Malloc( sizeof( searchpath_t ) );
