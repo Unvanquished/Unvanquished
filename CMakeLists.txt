@@ -19,10 +19,6 @@ set( CMAKE_BUILD_TYPE Release CACHE STRING "Build configuration (Debug, Release,
 project( Daemon C CXX ASM )
 
 if( MSVC )
-#  set( CMAKE_C_FLAGS "" CACHE STRING "" )
-#  set( CMAKE_C_FLAGS_DEBUG "" CACHE STRING "" )
-#  set( CMAKE_C_FLAGS_RELEASE "" CACHE STRING "" )
-  set( CMAKE_CONFIGURATION_TYPES Release;Debug CACHE STRING "Available build configurations" FORCE )
   set( CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /arch:SSE /fp:fast /Oy" )
 else()
   set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse2 -pipe" )
