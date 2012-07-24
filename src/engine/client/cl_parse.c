@@ -67,114 +67,6 @@ MESSAGE PARSING
 
 =========================================================================
 */
-#if 1
-
-int entLastVisible[ MAX_CLIENTS ];
-
-qboolean isEntVisible( entityState_t *ent )
-{
-	trace_t tr;
-	vec3_t  start, end, temp;
-	vec3_t  forward, up, right, right2;
-	float   view_height;
-
-	VectorCopy( cl.cgameClientLerpOrigin, start );
-	start[ 2 ] += ( cl.snap.ps.viewheight - 1 );
-
-	VectorCopy( ent->pos.trBase, end );
-
-	// Compute vector perpindicular to view to ent
-	VectorSubtract( end, start, forward );
-	VectorNormalizeFast( forward );
-	VectorSet( up, 0, 0, 1 );
-	CrossProduct( forward, up, right );
-	VectorNormalizeFast( right );
-	VectorScale( right, 10, right2 );
-	VectorScale( right, 18, right );
-
-	// Set viewheight
-	view_height = 40;
-	
-
-	// First, viewpoint to viewpoint
-	end[ 2 ] += view_height;
-	CM_BoxTrace( &tr, start, end, NULL, NULL, 0, CONTENTS_SOLID, TT_AABB );
-
-	if ( tr.fraction == 1.f )
-	{
-		return qtrue;
-	}
-
-	// First-b, viewpoint to top of head
-	end[ 2 ] += 16;
-	CM_BoxTrace( &tr, start, end, NULL, NULL, 0, CONTENTS_SOLID, TT_AABB );
-
-	if ( tr.fraction == 1.f )
-	{
-		return qtrue;
-	}
-
-	end[ 2 ] -= 16;
-
-	// Second, viewpoint to ent's origin
-	end[ 2 ] -= view_height;
-	CM_BoxTrace( &tr, start, end, NULL, NULL, 0, CONTENTS_SOLID, TT_AABB );
-
-	if ( tr.fraction == 1.f )
-	{
-		return qtrue;
-	}
-
-	// Third, to ent's right knee
-	VectorAdd( end, right, temp );
-	temp[ 2 ] += 8;
-	CM_BoxTrace( &tr, start, temp, NULL, NULL, 0, CONTENTS_SOLID, TT_AABB );
-
-	if ( tr.fraction == 1.f )
-	{
-		return qtrue;
-	}
-
-	// Fourth, to ent's right shoulder
-	VectorAdd( end, right2, temp );
-
-	temp[ 2 ] += 52;
-
-	CM_BoxTrace( &tr, start, temp, NULL, NULL, 0, CONTENTS_SOLID, TT_AABB );
-
-	if ( tr.fraction == 1.f )
-	{
-		return qtrue;
-	}
-
-	// Fifth, to ent's left knee
-	VectorScale( right, -1, right );
-	VectorScale( right2, -1, right2 );
-	VectorAdd( end, right2, temp );
-	temp[ 2 ] += 2;
-	CM_BoxTrace( &tr, start, temp, NULL, NULL, 0, CONTENTS_SOLID, TT_AABB );
-
-	if ( tr.fraction == 1.f )
-	{
-		return qtrue;
-	}
-
-	// Sixth, to ent's left shoulder
-	VectorAdd( end, right, temp );
-
-	temp[ 2 ] += 36;
-
-	CM_BoxTrace( &tr, start, temp, NULL, NULL, 0, CONTENTS_SOLID, TT_AABB );
-
-	if ( tr.fraction == 1.f )
-	{
-		return qtrue;
-	}
-
-	return qfalse;
-}
-
-#endif
 
 /*
 ==================
@@ -205,30 +97,6 @@ void CL_DeltaEntity( msg_t *msg, clSnapshot_t *frame, int newnum, entityState_t 
 	{
 		return; // entity was delta removed
 	}
-
-#if 1
-
-	// DHM - Nerve :: Only draw clients if visible
-	if ( clc.onlyVisibleClients )
-	{
-		if ( state->number < MAX_CLIENTS )
-		{
-			if ( isEntVisible( state ) )
-			{
-				entLastVisible[ state->number ] = frame->serverTime;
-				state->eFlags &= ~EF_NODRAW;
-			}
-			else
-			{
-				if ( entLastVisible[ state->number ] < ( frame->serverTime - 600 ) )
-				{
-					state->eFlags |= EF_NODRAW;
-				}
-			}
-		}
-	}
-
-#endif
 
 	cl.parseEntitiesNum++;
 	frame->numEntities++;
@@ -620,8 +488,6 @@ void CL_SystemInfoChanged( void )
 	// show_bug.cgi?id=475
 	// in some cases, outdated cp commands might get sent with this news serverId
 	cl.serverId = atoi( Info_ValueForKey( systemInfo, "sv_serverid" ) );
-
-	memset( &entLastVisible, 0, sizeof( entLastVisible ) );
 
 	// don't set any vars when playing a demo
 	if ( clc.demoplaying )

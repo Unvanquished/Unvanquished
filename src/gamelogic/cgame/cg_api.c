@@ -1263,3 +1263,9 @@ void trap_Gettext( char *buffer, const char *msgid, int bufferLength )
 {
 	syscall( CG_GETTEXT, buffer, msgid, bufferLength );
 }
+
+//180.
+void trap_Pgettext( char *buffer, const char *ctxt, const char *msgid, int bufferLength )
+{
+	syscall( CG_PGETTEXT, buffer, ctxt, msgid, bufferLength );
+}

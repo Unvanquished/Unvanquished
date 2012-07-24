@@ -647,7 +647,7 @@ qboolean ClientInactivityTimer( gentity_t *ent )
 			}
 			else
 			{
-				trap_DropClient( client - level.clients, "Dropped due to inactivity", 0 );
+				trap_DropClient( client - level.clients, "Dropped due to inactivity" );
 				return qfalse;
 			}
 		}

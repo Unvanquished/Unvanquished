@@ -1259,7 +1259,7 @@ int              trap_FS_Rename( const char *from, const char *to );
 void             trap_FS_FCloseFile( fileHandle_t f );
 int              trap_FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize );
 void             trap_LocateGameData( gentity_t *gEnts, int numGEntities, int sizeofGEntity_t, playerState_t *clients, int sizeofGClient );
-void             trap_DropClient( int clientNum, const char *reason, int length );
+void             trap_DropClient( int clientNum, const char *reason );
 void             trap_SendServerCommand( int clientNum, const char *text );
 void             trap_SetConfigstring( int num, const char *string );
 void             trap_LinkEntity( gentity_t *ent );

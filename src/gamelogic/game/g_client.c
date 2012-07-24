@@ -1023,7 +1023,7 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 		trap_SendServerCommand( ent - g_entities,
 		                        "disconnect \"illegal or malformed userinfo\n\"" );
 		trap_DropClient( ent - g_entities,
-		                 "dropped: illegal or malformed userinfo", 0 );
+		                 "dropped: illegal or malformed userinfo" );
 		return "Illegal or malformed userinfo";
 	}
 	// If their userinfo overflowed, tremded is in the process of disconnecting them.
@@ -1364,7 +1364,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 				return "Duplicate GUID";
 			}
 
-			trap_DropClient( i, "Ghost", 0 );
+			trap_DropClient( i, "Ghost" );
 		}
 	}
 

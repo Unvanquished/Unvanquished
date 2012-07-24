@@ -54,8 +54,6 @@ cvar_t         *sv_privateClients; // number of clients reserved for password
 cvar_t         *sv_hostname;
 cvar_t         *sv_master[ MAX_MASTER_SERVERS ]; // master server ip address
 cvar_t         *sv_reconnectlimit; // minimum seconds between connect messages
-cvar_t         *sv_tempbanmessage;
-cvar_t         *sv_showloss; // report when usercmds are lost
 cvar_t         *sv_padPackets; // add nop bytes to messages
 cvar_t         *sv_killserver; // menu system can set to 1 to shut server down
 cvar_t         *sv_mapname;
@@ -65,18 +63,12 @@ cvar_t         *sv_maxRate;
 cvar_t         *sv_minPing;
 cvar_t         *sv_maxPing;
 
-//cvar_t    *sv_gametype;
 cvar_t         *sv_pure;
 cvar_t         *sv_newGameShlib;
 cvar_t         *sv_floodProtect;
 cvar_t         *sv_lanForceRate; // TTimo - dedicated 1 (LAN) server forces local client rates to 99999 (bug #491)
-cvar_t         *sv_onlyVisibleClients; // DHM - Nerve
-cvar_t         *sv_friendlyFire; // NERVE - SMF
-cvar_t         *sv_needpass;
 
 cvar_t         *sv_dl_maxRate;
-
-cvar_t         *g_gameType;
 
 cvar_t         *sv_requireValidGuid; // whether client userinfo must contain a cl_guid, string of length 32 consisting
                                      // of characters '0' through '9' and 'A' through 'F', default 0 don't require
@@ -95,7 +87,6 @@ cvar_t *sv_wwwFallbackURL; // URL to send to if an http/ftp fails or is refused 
 
 //bani
 cvar_t *sv_cheats;
-cvar_t *sv_packetloss;
 cvar_t *sv_packetdelay;
 
 // fretn
@@ -287,11 +278,6 @@ void SV_MasterHeartbeat( const char *hbname )
 	int             netenabled;
 
 	netenabled = Cvar_VariableIntegerValue( "net_enabled" );
-
-	if ( SV_GameIsSinglePlayer() )
-	{
-		return; // no heartbeats for SP
-	}
 
 	// "dedicated 1" is for lan play, "dedicated 2" is for inet public play
 	if ( !com_dedicated || com_dedicated->integer != 2 || !( netenabled & ( NET_ENABLEV4 | NET_ENABLEV6 ) ) )
@@ -571,12 +557,6 @@ void SVC_Status( netadr_t from )
 	int           playerLength;
 	char          infostring[ MAX_INFO_STRING ];
 
-	// ignore if we are in single player
-	if ( SV_GameIsSinglePlayer() )
-	{
-		return;
-	}
-
 	//bani - bugtraq 12534
 	if ( !SV_VerifyChallenge( Cmd_Argv( 1 ) ) )
 	{
@@ -588,15 +568,6 @@ void SVC_Status( netadr_t from )
 	// echo back the parameter to status. so master servers can use it as a challenge
 	// to prevent timed spoofed reply packets that add ghost servers
 	Info_SetValueForKey( infostring, "challenge", Cmd_Argv( 1 ) );
-
-	// add "demo" to the sv_keywords if restricted
-	if ( Cvar_VariableValue( "fs_restrict" ) )
-	{
-		char keywords[ MAX_INFO_STRING ];
-
-		Com_sprintf( keywords, sizeof( keywords ), "ettest %s", Info_ValueForKey( infostring, "sv_keywords" ) );
-		Info_SetValueForKey( infostring, "sv_keywords", keywords );
-	}
 
 	status[ 0 ] = 0;
 	statusLength = 0;
@@ -643,12 +614,6 @@ void SVC_GameCompleteStatus( netadr_t from )
 	int           playerLength;
 	char          infostring[ MAX_INFO_STRING ];
 
-	// ignore if we are in single player
-	if ( SV_GameIsSinglePlayer() )
-	{
-		return;
-	}
-
 	//bani - bugtraq 12534
 	if ( !SV_VerifyChallenge( Cmd_Argv( 1 ) ) )
 	{
@@ -660,15 +625,6 @@ void SVC_GameCompleteStatus( netadr_t from )
 	// echo back the parameter to status. so master servers can use it as a challenge
 	// to prevent timed spoofed reply packets that add ghost servers
 	Info_SetValueForKey( infostring, "challenge", Cmd_Argv( 1 ) );
-
-	// add "demo" to the sv_keywords if restricted
-	if ( Cvar_VariableValue( "fs_restrict" ) )
-	{
-		char keywords[ MAX_INFO_STRING ];
-
-		Com_sprintf( keywords, sizeof( keywords ), "ettest %s", Info_ValueForKey( infostring, "sv_keywords" ) );
-		Info_SetValueForKey( infostring, "sv_keywords", keywords );
-	}
 
 	status[ 0 ] = 0;
 	statusLength = 0;
@@ -709,14 +665,6 @@ void SVC_Info( netadr_t from )
 	int  i, count;
 	char *gamedir;
 	char infostring[ MAX_INFO_STRING ];
-	char *weaprestrict;
-	char *balancedteams;
-
-	// ignore if we are in single player
-	if ( SV_GameIsSinglePlayer() )
-	{
-		return;
-	}
 
 	//bani - bugtraq 12534
 	if ( !SV_VerifyChallenge( Cmd_Argv( 1 ) ) )
@@ -756,8 +704,6 @@ void SVC_Info( netadr_t from )
 	Info_SetValueForKey( infostring, "mapname", sv_mapname->string );
 	Info_SetValueForKey( infostring, "clients", va( "%i", count ) );
 	Info_SetValueForKey( infostring, "sv_maxclients", va( "%i", sv_maxclients->integer - sv_privateClients->integer ) );
-	//Info_SetValueForKey( infostring, "gametype", va("%i", sv_gametype->integer ) );
-	Info_SetValueForKey( infostring, "gametype", Cvar_VariableString( "g_gametype" ) );
 	Info_SetValueForKey( infostring, "pure", va( "%i", sv_pure->integer ) );
 
 #ifdef USE_VOIP
@@ -786,23 +732,7 @@ void SVC_Info( netadr_t from )
 		Info_SetValueForKey( infostring, "game", gamedir );
 	}
 
-	Info_SetValueForKey( infostring, "friendlyFire", va( "%i", sv_friendlyFire->integer ) );   // NERVE - SMF
-	Info_SetValueForKey( infostring, "needpass", va( "%i", sv_needpass->integer ? 1 : 0 ) );
 	Info_SetValueForKey( infostring, "gamename", GAMENAME_STRING );  // Arnout: to be able to filter out Quake servers
-
-	weaprestrict = Cvar_VariableString( "g_heavyWeaponRestriction" );
-
-	if ( weaprestrict )
-	{
-		Info_SetValueForKey( infostring, "weaprestrict", weaprestrict );
-	}
-
-	balancedteams = Cvar_VariableString( "g_balancedteams" );
-
-	if ( balancedteams )
-	{
-		Info_SetValueForKey( infostring, "balancedteams", balancedteams );
-	}
 
 	NET_OutOfBandPrint( NS_SERVER, from, "infoResponse\n%s", infostring );
 }

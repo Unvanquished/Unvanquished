@@ -151,7 +151,8 @@ typedef enum uiImport_s
   UI_GETTEXT,
   UI_R_GLYPH,
   UI_R_GLYPHCHAR,
-  UI_R_UREGISTERFONT
+  UI_R_UREGISTERFONT,
+  UI_PGETTEXT
 } uiImport_t;
 
 typedef struct
@@ -355,3 +356,4 @@ void        trap_openURL( const char *s );
 void        trap_GetHunkData( int *hunkused, int *hunkexpected );
 void        trap_QuoteString( const char *str, char *buffer, int size );
 void        trap_Gettext( char *buffer, const char *msgid, int bufferLength );
+void        trap_Pgettext( char *buffer, const char *ctxt, const char *msgid, int bufferLength );

@@ -125,7 +125,7 @@ SV_GameDropClient
 Disconnects the client with a message
 ===============
 */
-void SV_GameDropClient( int clientNum, const char *reason, int length )
+void SV_GameDropClient( int clientNum, const char *reason )
 {
 	if ( clientNum < 0 || clientNum >= sv_maxclients->integer )
 	{
@@ -133,11 +133,6 @@ void SV_GameDropClient( int clientNum, const char *reason, int length )
 	}
 
 	SV_DropClient( svs.clients + clientNum, reason );
-
-	if ( length )
-	{
-		SV_TempBanNetAddress( svs.clients[ clientNum ].netchan.remoteAddress, length );
-	}
 }
 
 /*
@@ -546,7 +541,7 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return 0;
 
 		case G_DROP_CLIENT:
-			SV_GameDropClient( args[ 1 ], VMA( 2 ), args[ 3 ] );
+			SV_GameDropClient( args[ 1 ], VMA( 2 ) );
 			return 0;
 
 		case G_SEND_SERVER_COMMAND:
@@ -870,28 +865,6 @@ qboolean SV_GameCommand( void )
 	}
 
 	return VM_Call( gvm, GAME_CONSOLE_COMMAND );
-}
-
-/*
-====================
-SV_GameIsSinglePlayer
-====================
-*/
-qboolean SV_GameIsSinglePlayer( void )
-{
-	return ( com_gameInfo.spGameTypes & ( 1 << g_gameType->integer ) );
-}
-
-/*
-====================
-SV_GameIsCoop
-
-        This is a modified SinglePlayer, no savegame capability for example
-====================
-*/
-qboolean SV_GameIsCoop( void )
-{
-	return ( com_gameInfo.coopGameTypes & ( 1 << g_gameType->integer ) );
 }
 
 /*

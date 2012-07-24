@@ -1980,7 +1980,6 @@ CL_Disconnect_f
 void CL_Disconnect_f( void )
 {
 	SCR_StopCinematic();
-	Cvar_Set( "savegame_loading", "0" );
 	Cvar_Set( "g_reloading", "0" );
 
 	if ( cls.state != CA_DISCONNECTED && cls.state != CA_CINEMATIC )
@@ -2247,7 +2246,7 @@ static void CL_GenerateGUIDKey( void )
 {
 	int           len = 0;
 	unsigned char buff[ 2048 ];
-	
+
 	if( cl_profile->string[ 0 ] )
 	{
 		len = FS_ReadFile( va( "profiles/%s/%s", cl_profile->string, GUIDKEY_FILE ), NULL );
@@ -2256,6 +2255,7 @@ static void CL_GenerateGUIDKey( void )
 	{
 		len = FS_ReadFile( GUIDKEY_FILE, NULL );
 	}
+
 	if ( len >= ( int ) sizeof( buff ) )
 	{
 		Com_Printf( "%s", _( "Daemon GUID public-key found.\n" ) );
@@ -2273,6 +2273,7 @@ static void CL_GenerateGUIDKey( void )
 		
 		buff[ i ] = 0;
 		Com_Printf( "%s", _( "Daemon GUID public-key generated\n" ) );
+
 		if( cl_profile->string[ 0 ] )
 		{
 			FS_WriteFile( va( "profiles/%s/%s", cl_profile->string, GUIDKEY_FILE ), buff, sizeof( buff ) );
@@ -2294,7 +2295,7 @@ If not then generate a new keypair
 */
 static void CL_GenerateRSAKey( void )
 {
-	#ifdef USE_CRYPTO
+#ifdef USE_CRYPTO
 	int                  len;
 	fileHandle_t         f;
 	void                 *buf;
@@ -2313,6 +2314,7 @@ static void CL_GenerateRSAKey( void )
 	{
 		len = FS_FOpenFileRead( RSAKEY_FILE, &f, qtrue );
 	}
+
 	if ( !f || len < 1 )
 	{
 		Com_Printf( "%s", _( "Daemon RSA public-key file not found, regenerating\n" ) );
@@ -2348,6 +2350,7 @@ static void CL_GenerateRSAKey( void )
 	{
 		goto keygen_error;
 	}
+
 	if( cl_profile->string[ 0 ] )
 	{
 		f = FS_FOpenFileWrite( va( "profiles/%s/%s", cl_profile->string, RSAKEY_FILE ) );
@@ -2375,10 +2378,10 @@ static void CL_GenerateRSAKey( void )
 	Com_Printf( "%s", _( "Error generating RSA keypair, RSA support will be disabled\n" ) );
 	Cvar_Set( "cl_pubkeyID", "0" );
 	Crypto_Shutdown();
-	#else
+#else
 	Com_DPrintf( "%s", _( "RSA support is disabled\n" ) );
 	return;
-	#endif
+#endif
 }
 
 
@@ -3151,7 +3154,6 @@ void CL_InitServerInfo( serverInfo_t *server, netadr_t *address )
 	server->minPing = 0;
 	server->ping = -1;
 	server->game[ 0 ] = '\0';
-	server->gameType = 0;
 	server->netType = 0;
 }
 
@@ -3451,16 +3453,6 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 		{
 			// start sending challenge repsonse instead of challenge request packets
 			clc.challenge = atoi( Cmd_Argv( 1 ) );
-
-			if ( Cmd_Argc() > 2 )
-			{
-				clc.onlyVisibleClients = atoi( Cmd_Argv( 2 ) );   // DHM - Nerve
-			}
-			else
-			{
-				clc.onlyVisibleClients = 0;
-			}
-
 			cls.state = CA_CHALLENGING;
 			clc.connectPacketCount = 0;
 			clc.connectTime = -99999;
@@ -4447,38 +4439,6 @@ void CL_ShutdownRef( void )
 	}
 }
 
-// RF, trap manual client damage commands so users can't issue them manually
-void CL_ClientDamageCommand( void )
-{
-	// do nothing
-}
-
-// NERVE - SMF
-
-/*void CL_startSingleplayer_f( void ) {
-#if defined(__linux__)
-        Sys_StartProcess( "./wolfsp.x86", qtrue );
-#else
-        Sys_StartProcess( "WolfSP.exe", qtrue );
-#endif
-}*/
-
-// NERVE - SMF
-// fretn unused
-#if 0
-void CL_buyNow_f( void )
-{
-	Sys_OpenURL( "http://www.activision.com/games/wolfenstein/purchase.html", qtrue );
-}
-
-// NERVE - SMF
-void CL_singlePlayLink_f( void )
-{
-	Sys_OpenURL( "http://www.activision.com/games/wolfenstein/home.html", qtrue );
-}
-
-#endif
-
 //===========================================================================================
 
 /*
@@ -4713,15 +4673,6 @@ void CL_Init( void )
 	Cmd_AddCommand( "updatescreen", SCR_UpdateScreen );
 	// done.
 
-	// NERVE - SMF - don't do this in multiplayer
-	// RF, add this command so clients can't bind a key to send client damage commands to the server
-//  Cmd_AddCommand ("cld", CL_ClientDamageCommand );
-
-//  Cmd_AddCommand ( "startSingleplayer", CL_startSingleplayer_f );     // NERVE - SMF
-//  fretn - unused
-//  Cmd_AddCommand ( "buyNow", CL_buyNow_f );                           // NERVE - SMF
-//  Cmd_AddCommand ( "singlePlayLink", CL_singlePlayLink_f );           // NERVE - SMF
-
 	Cmd_AddCommand( "setRecommended", CL_SetRecommended_f );
 
 	Cmd_AddCommand( "wav_record", CL_WavRecord_f );
@@ -4852,15 +4803,12 @@ static void CL_SetServerInfo( serverInfo_t *server, const char *info, int ping )
 			Q_strncpyz( server->mapName, Info_ValueForKey( info, "mapname" ), MAX_NAME_LENGTH );
 			server->maxClients = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
 			Q_strncpyz( server->game, Info_ValueForKey( info, "game" ), MAX_NAME_LENGTH );
-			server->gameType = atoi( Info_ValueForKey( info, "gametype" ) );
 			server->netType = atoi( Info_ValueForKey( info, "nettype" ) );
 			server->minPing = atoi( Info_ValueForKey( info, "minping" ) );
 			server->maxPing = atoi( Info_ValueForKey( info, "maxping" ) );
-			server->friendlyFire = atoi( Info_ValueForKey( info, "friendlyFire" ) );   // NERVE - SMF
-			server->needpass = atoi( Info_ValueForKey( info, "needpass" ) );   // NERVE - SMF
+			server->friendlyFire = atoi( Info_ValueForKey( info, "g_friendlyFire" ) );   // NERVE - SMF
+			server->needpass = atoi( Info_ValueForKey( info, "g_needpass" ) );   // NERVE - SMF
 			Q_strncpyz( server->gameName, Info_ValueForKey( info, "gamename" ), MAX_NAME_LENGTH );   // Arnout
-			server->weaprestrict = atoi( Info_ValueForKey( info, "weaprestrict" ) );
-			server->balancedteams = atoi( Info_ValueForKey( info, "balancedteams" ) );
 		}
 
 		server->ping = ping;
@@ -5008,12 +4956,9 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg )
 	cls.localServers[ i ].minPing = 0;
 	cls.localServers[ i ].ping = -1;
 	cls.localServers[ i ].game[ 0 ] = '\0';
-	cls.localServers[ i ].gameType = 0;
 	cls.localServers[ i ].netType = from.type;
 	cls.localServers[ i ].friendlyFire = 0; // NERVE - SMF
 	cls.localServers[ i ].needpass = 0;
-	cls.localServers[ i ].weaprestrict = 0;
-	cls.localServers[ i ].balancedteams = 0;
 	cls.localServers[ i ].gameName[ 0 ] = '\0'; // Arnout
 
 	Q_strncpyz( info, MSG_ReadString( msg ), MAX_INFO_STRING );

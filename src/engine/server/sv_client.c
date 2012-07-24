@@ -64,18 +64,6 @@ void SV_GetChallenge( netadr_t from )
 	int         oldestTime;
 	challenge_t *challenge;
 
-	// ignore if we are in single player
-	if ( SV_GameIsSinglePlayer() )
-	{
-		return;
-	}
-
-	if ( SV_TempBanIsBanned( from ) )
-	{
-		NET_OutOfBandPrint( NS_SERVER, from, "print\n%s", sv_tempbanmessage->string );
-		return;
-	}
-
 	oldest = 0;
 	oldestTime = 0x7fffffff;
 
@@ -112,14 +100,7 @@ void SV_GetChallenge( netadr_t from )
 
 	challenge->pingTime = svs.time;
 
-	if ( sv_onlyVisibleClients->integer )
-	{
-		NET_OutOfBandPrint( NS_SERVER, from, "challengeResponse %i %i", challenge->challenge, sv_onlyVisibleClients->integer );
-	}
-	else
-	{
-		NET_OutOfBandPrint( NS_SERVER, from, "challengeResponse %i", challenge->challenge );
-	}
+	NET_OutOfBandPrint( NS_SERVER, from, "challengeResponse %i", challenge->challenge );
 
 	return;
 }
@@ -209,12 +190,6 @@ void SV_DirectConnect( netadr_t from )
 
 	challenge = atoi( Info_ValueForKey( userinfo, "challenge" ) );
 	qport = atoi( Info_ValueForKey( userinfo, "qport" ) );
-
-	if ( SV_TempBanIsBanned( from ) )
-	{
-		NET_OutOfBandPrint( NS_SERVER, from, "print\n%s", sv_tempbanmessage->string );
-		return;
-	}
 
 	// quick reject
 	for ( i = 0, cl = svs.clients; i < sv_maxclients->integer; i++, cl++ )
@@ -579,7 +554,7 @@ void SV_DropClient( client_t *drop, const char *reason )
 	// Free all allocated data on the client structure
 	SV_FreeClient( drop );
 
-	if ( ( !SV_GameIsSinglePlayer() ) || ( !isBot ) )
+	if ( !isBot )
 	{
 		// tell everyone why they got dropped
 
@@ -1794,96 +1769,6 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK, qb
 		// pass unknown strings to the game
 		if ( !u->name && sv.state == SS_GAME )
 		{
-#if 0 // There are checks in the game code. This exploit test seems superfluous.
-			argsFromOneMaxlen = -1;
-
-			if ( Q_stricmp( "say", Cmd_Argv( 0 ) ) == 0 ||
-			     Q_stricmp( "say_team", Cmd_Argv( 0 ) ) == 0 ||
-			     Q_stricmp( "say_fireteam", Cmd_Argv( 0 ) ) == 0 )
-			{
-				argsFromOneMaxlen = MAX_SAY_STRLEN;
-			}
-			else if ( Q_stricmp( "tell", Cmd_Argv( 0 ) ) == 0 )
-			{
-				// A command will look like "tell 12 hi" or "tell foo hi".  The "12"
-				// and "foo" in the examples will be counted towards MAX_SAY_STRLEN,
-				// plus the space.
-				argsFromOneMaxlen = MAX_SAY_STRLEN;
-			}
-
-			/*else if (Q_stricmp("ut_radio", Cmd_Argv(0)) == 0) {
-			        // We add 4 to this value because in a command such as
-			        // "ut_radio 1 1 affirmative", the args at indices 1 and 2 each
-			        // have length 1 and there is a space after them.
-			        argsFromOneMaxlen = MAX_RADIO_STRLEN + 4;
-			}*/
-			if ( argsFromOneMaxlen >= 0 )
-			{
-				exploitDetected = qfalse;
-				charCount = 0;
-				dollarCount = 0;
-
-				for ( i = Cmd_Argc() - 1; i >= 1; i-- )
-				{
-					arg = Cmd_Argv( i );
-
-					while ( *arg )
-					{
-						if ( ++charCount > argsFromOneMaxlen )
-						{
-							exploitDetected = qtrue;
-							break;
-						}
-
-						if ( *arg == '$' )
-						{
-							if ( ++dollarCount > MAX_DOLLAR_VARS )
-							{
-								exploitDetected = qtrue;
-								break;
-							}
-
-							charCount += STRLEN_INCREMENT_PER_DOLLAR_VAR;
-
-							if ( charCount > argsFromOneMaxlen )
-							{
-								exploitDetected = qtrue;
-								break;
-							}
-						}
-
-						arg++;
-					}
-
-					if ( exploitDetected ) { break; }
-
-					if ( i != 1 ) // Cmd_ArgsFrom() will add space
-					{
-						if ( ++charCount > argsFromOneMaxlen )
-						{
-							exploitDetected = qtrue;
-							break;
-						}
-					}
-				}
-
-				if ( exploitDetected )
-				{
-					Com_Printf(_( "Buffer overflow exploit radio/say, possible attempt from %s\n"),
-					            NET_AdrToString( cl->netchan.remoteAddress ) );
-					SV_SendServerCommand( cl, "print \"Chat dropped due to message length constraints.\n\"" );
-					return;
-				}
-			}
-			else
-#endif
-			if ( Q_stricmp( "callvote", Cmd_Argv( 0 ) ) == 0 )
-			{
-				Com_Printf(_( "Callvote from %s (client #%i, %s): %s\n"),
-				            cl->name, ( int )( cl - svs.clients ),
-				            NET_AdrToString( cl->netchan.remoteAddress ), Cmd_Args() );
-			}
-
 			VM_Call( gvm, GAME_CLIENT_COMMAND, cl - svs.clients );
 		}
 	}
@@ -2095,20 +1980,9 @@ static void SV_UserMove( client_t *cl, msg_t *msg, qboolean delta )
 		}
 
 		// extremely lagged or cmd from before a map_restart
-		//if ( cmds[i].serverTime > svs.time + 3000 ) {
-		//  continue;
-		//}
-		if ( !SV_GameIsSinglePlayer() )
+		if ( cmds[ i ].serverTime <= cl->lastUsercmd.serverTime )
 		{
-			// We need to allow this in single player, where loadgames can cause the player to freeze after reloading if we do this check
-			// don't execute if this is an old cmd which is already executed
-			// these old cmds are included when cl_packetdup > 0
-			if ( cmds[ i ].serverTime <= cl->lastUsercmd.serverTime )
-			{
-				// Q3_MISSIONPACK
-//          if ( cmds[i].serverTime > cmds[cmdCount-1].serverTime ) {
-				continue; // from just before a map_restart
-			}
+			continue;
 		}
 
 		SV_ClientThink( cl, &cmds[ i ] );

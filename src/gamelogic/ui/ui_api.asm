@@ -133,3 +133,4 @@ equ trap_Gettext                          -375
 equ trap_R_Glyph                          -376
 equ trap_R_GlyphChar                      -377
 equ trap_R_UnregisterFont                 -378
+equ trap_Pgettext                         -379

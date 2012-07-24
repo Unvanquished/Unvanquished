@@ -206,8 +206,6 @@ typedef struct
 	int      challenge; // from the server to use for connecting
 	int      checksumFeed; // from the server for checksum calculations
 
-	int      onlyVisibleClients; // DHM - Nerve
-
 	// these are our reliable messages that go to the server
 	int  reliableSequence;
 	int  reliableAcknowledge; // the last one the server has executed
@@ -329,7 +327,6 @@ typedef struct
 	char     game[ MAX_NAME_LENGTH ];
 	char     label[ MAX_FEATLABEL_CHARS ]; // for featured servers, NULL otherwise
 	int      netType;
-	int      gameType;
 	int      clients;
 	int      maxClients;
 	int      minPing;
@@ -338,8 +335,6 @@ typedef struct
 	qboolean visible;
 	int      friendlyFire; // NERVE - SMF
 	int      needpass;
-	int      weaprestrict;
-	int      balancedteams;
 	char     gameName[ MAX_NAME_LENGTH ]; // Arnout
 } serverInfo_t;
 

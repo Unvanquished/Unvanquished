@@ -2845,7 +2845,7 @@ char **FS_ListFilteredFiles( const char *path, const char *extension, char *filt
 				continue;
 			}
 			else if ( fs_restrict->integer &&
-			          ( !com_gameInfo.usesProfiles || ( com_gameInfo.usesProfiles && Q_stricmpn( path, "profiles", 8 ) ) ) &&
+			          Q_stricmpn( path, "profiles", 8 ) &&
 			          Q_stricmpn( path, "demos", 5 ) )
 			{
 				continue;
@@ -5088,7 +5088,7 @@ void FS_Restart( int checksumFeed )
 		{
 			char *cl_profileStr = Cvar_VariableString( "cl_profile" );
 
-			if ( com_gameInfo.usesProfiles && cl_profileStr[ 0 ] )
+			if ( cl_profileStr[ 0 ] )
 			{
 				// bani - check existing pid file and make sure it's ok
 				if ( !Com_CheckProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )

@@ -126,16 +126,6 @@ void SV_UpdateConfigStrings( void )
 					continue;
 				}
 
-				// RF, don't send to bot/AI
-				// Gordon: Note: might want to re-enable later for bot support
-				// RF, re-enabled
-				// Arnout: removed hardcoded gametype
-				// Arnout: added coop
-				if ( ( SV_GameIsSinglePlayer() || SV_GameIsCoop() ) && client->gentity && ( client->gentity->r.svFlags & SVF_BOT ) )
-				{
-					continue;
-				}
-
 				len = strlen( sv.configstrings[ index ] );
 
 				if ( len >= maxChunkSize )
@@ -289,26 +279,7 @@ SV_BoundMaxClients
 void SV_BoundMaxClients( int minimum )
 {
 	// get the current maxclients value
-#ifdef __MACOS__
-	Cvar_Get( "sv_maxclients", "16", 0 );  //DAJ HOG
-#else
-	Cvar_Get( "sv_maxclients", "20", 0 );  // NERVE - SMF - changed to 20 from 8
-#endif
-
-	// START    xkan, 10/03/2002
-	// allow many bots in single player. note that this pretty much means all previous
-	// settings will be ignored (including the one set through "seta sv_maxclients <num>"
-	// in user profile's wolfconfig_mp.cfg). also that if the user subsequently start
-	// the server in multiplayer mode, the number of clients will still be the number
-	// set here, which may be wrong - we can certainly just set it to a sensible number
-	// when it is not in single player mode in the else part of the if statement when
-	// necessary
-	if ( SV_GameIsSinglePlayer() || SV_GameIsCoop() )
-	{
-		Cvar_Set( "sv_maxclients", "64" );
-	}
-
-	// END      xkan, 10/03/2002
+	Cvar_Get( "sv_maxclients", "20", 0 ); // NERVE - SMF - changed to 20 from 8
 
 	sv_maxclients->modified = qfalse;
 
@@ -569,7 +540,7 @@ clients along with it.
 This is NOT called for map_restart
 ================
 */
-void SV_SpawnServer( char *server, qboolean killBots )
+void SV_SpawnServer( char *server )
 {
 	int        i;
 	int        checksum;
@@ -639,15 +610,7 @@ void SV_SpawnServer( char *server, qboolean killBots )
 	Cvar_Set( "nextmap", "map_restart 0" );
 //  Cvar_Set( "nextmap", va("map %s", server) );
 
-	// Ridah
-	// DHM - Nerve :: We want to use the completion bar in multiplayer as well
-	// Arnout: just always use it
-//  if( !SV_GameIsSinglePlayer() ) {
 	SV_SetExpectedHunkUsage( va( "maps/%s.bsp", server ) );
-//  } else {
-	// just set it to a negative number,so the cgame knows not to draw the percent bar
-//      Cvar_Set( "com_expectedhunkusage", "-1" );
-//  }
 
 	// make sure we are not paused
 	Cvar_Set( "cl_paused", "0" );
@@ -698,10 +661,6 @@ void SV_SpawnServer( char *server, qboolean killBots )
 	// load and spawn all other entities
 	SV_InitGameProgs();
 
-	// don't allow a map_restart if game is modified
-	// Arnout: there isn't any check done against this, obsolete
-//  sv_gametype->modified = qfalse;
-
 	// run a few frames to allow everything to settle
 	for ( i = 0; i < GAME_INIT_FRAMES; i++ )
 	{
@@ -722,11 +681,6 @@ void SV_SpawnServer( char *server, qboolean killBots )
 
 			if ( svs.clients[ i ].netchan.remoteAddress.type == NA_BOT )
 			{
-				if ( killBots || SV_GameIsSinglePlayer() || SV_GameIsCoop() )
-				{
-					SV_DropClient( &svs.clients[ i ], "" );
-					continue;
-				}
 
 				isBot = qtrue;
 			}
@@ -850,10 +804,8 @@ void SV_Init( void )
 	SV_AddOperatorCommands();
 
 	// serverinfo vars
-	Cvar_Get( "dmflags", "0", /*CVAR_SERVERINFO */ 0 );
 	Cvar_Get( "timelimit", "0", CVAR_SERVERINFO );
 
-	Cvar_Get( "sv_keywords", "", CVAR_SERVERINFO );
 	Cvar_Get( "protocol", va( "%i", PROTOCOL_VERSION ), CVAR_SERVERINFO | CVAR_ARCHIVE );
 	sv_mapname = Cvar_Get( "mapname", "nomap", CVAR_SERVERINFO | CVAR_ROM );
 	sv_privateClients = Cvar_Get( "sv_privateClients", "0", CVAR_SERVERINFO );
@@ -863,8 +815,6 @@ void SV_Init( void )
 	sv_minPing = Cvar_Get( "sv_minPing", "0", CVAR_ARCHIVE | CVAR_SERVERINFO );
 	sv_maxPing = Cvar_Get( "sv_maxPing", "0", CVAR_ARCHIVE | CVAR_SERVERINFO );
 	sv_floodProtect = Cvar_Get( "sv_floodProtect", "0", CVAR_ARCHIVE | CVAR_SERVERINFO );
-	sv_friendlyFire = Cvar_Get( "g_friendlyFire", "1", CVAR_SERVERINFO | CVAR_ARCHIVE );  // NERVE - SMF
-	sv_needpass = Cvar_Get( "g_needpass", "0", CVAR_SERVERINFO | CVAR_ROM );
 
 	// systeminfo
 	//bani - added cvar_t for sv_cheats so server engine can reference it
@@ -901,8 +851,6 @@ void SV_Init( void )
 	sv_master[ 3 ] = Cvar_Get( "sv_master4", "", CVAR_ARCHIVE );
 	sv_master[ 4 ] = Cvar_Get( "sv_master5", "", CVAR_ARCHIVE );
 	sv_reconnectlimit = Cvar_Get( "sv_reconnectlimit", "3", 0 );
-	sv_tempbanmessage = Cvar_Get( "sv_tempbanmessage", "You have been kicked and are temporarily banned from joining this server.", 0 );
-	sv_showloss = Cvar_Get( "sv_showloss", "0", 0 );
 	sv_padPackets = Cvar_Get( "sv_padPackets", "0", 0 );
 	sv_killserver = Cvar_Get( "sv_killserver", "0", 0 );
 	sv_mapChecksum = Cvar_Get( "sv_mapChecksum", "", CVAR_ROM );
@@ -911,13 +859,7 @@ void SV_Init( void )
 
 	sv_lanForceRate = Cvar_Get( "sv_lanForceRate", "1", CVAR_ARCHIVE );
 
-	sv_onlyVisibleClients = Cvar_Get( "sv_onlyVisibleClients", "0", 0 );  // DHM - Nerve
-
 	sv_showAverageBPS = Cvar_Get( "sv_showAverageBPS", "0", 0 );  // NERVE - SMF - net debugging
-
-	Cvar_Get( "g_needpass", "0", CVAR_SERVERINFO );
-
-	g_gameType = Cvar_Get( "g_gametype", va( "%i", com_gameInfo.defaultGameType ), CVAR_SERVERINFO | CVAR_LATCH );
 
 	// the download netcode tops at 18/20 kb/s, no need to make you think you can go above
 	sv_dl_maxRate = Cvar_Get( "sv_dl_maxRate", "42000", CVAR_ARCHIVE );
@@ -928,7 +870,6 @@ void SV_Init( void )
 	sv_wwwFallbackURL = Cvar_Get( "sv_wwwFallbackURL", "", CVAR_ARCHIVE );
 
 	//bani
-	sv_packetloss = Cvar_Get( "sv_packetloss", "0", CVAR_CHEAT );
 	sv_packetdelay = Cvar_Get( "sv_packetdelay", "0", CVAR_CHEAT );
 
 	// fretn - note: redirecting of clients to other servers relies on this,
