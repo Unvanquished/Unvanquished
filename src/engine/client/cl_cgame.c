@@ -1832,7 +1832,6 @@ void CL_SetCGameTime( void )
 		Com_Error( ERR_DROP, "CL_SetCGameTime: !cl.snap.valid" );
 	}
 
-	// allow pause in single player
 	if ( sv_paused->integer && cl_paused->integer && com_sv_running->integer )
 	{
 		// paused

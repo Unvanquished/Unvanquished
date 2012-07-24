@@ -112,7 +112,6 @@ cvar_t *cl_paused;
 cvar_t *sv_paused;
 cvar_t *cl_packetdelay;
 cvar_t *sv_packetdelay;
-cvar_t *com_cameraMode;
 
 #if defined( _WIN32 ) && defined( _DEBUG )
 cvar_t *com_noErrorInterrupt;
@@ -2992,102 +2991,6 @@ void Com_SetRecommended()
 	}
 }
 
-// Arnout: gameinfo, to let the engine know which gametypes are SP and if we should use profiles.
-// This can't be dependent on the game code as we sometimes need to know about it when no game modules
-// are loaded
-gameInfo_t com_gameInfo;
-
-void Com_GetGameInfo()
-{
-	char *f, *buf;
-	char *token;
-
-	memset( &com_gameInfo, 0, sizeof( com_gameInfo ) );
-
-	if ( FS_ReadFile( "gameinfo.dat", ( void ** ) &f ) > 0 )
-	{
-		buf = f;
-
-		while ( ( token = COM_Parse( &buf ) ) != NULL && token[ 0 ] )
-		{
-			if ( !Q_stricmp( token, "spEnabled" ) )
-			{
-				com_gameInfo.spEnabled = qtrue;
-			}
-			else if ( !Q_stricmp( token, "spGameTypes" ) )
-			{
-				while ( ( token = COM_ParseExt( &buf, qfalse ) ) != NULL && token[ 0 ] )
-				{
-					com_gameInfo.spGameTypes |= ( 1 << atoi( token ) );
-				}
-			}
-			else if ( !Q_stricmp( token, "defaultSPGameType" ) )
-			{
-				if ( ( token = COM_ParseExt( &buf, qfalse ) ) != NULL && token[ 0 ] )
-				{
-					com_gameInfo.defaultSPGameType = atoi( token );
-				}
-				else
-				{
-					FS_FreeFile( f );
-					Com_Error( ERR_FATAL, "Com_GetGameInfo: bad syntax." );
-				}
-			}
-			else if ( !Q_stricmp( token, "coopGameTypes" ) )
-			{
-				while ( ( token = COM_ParseExt( &buf, qfalse ) ) != NULL && token[ 0 ] )
-				{
-					com_gameInfo.coopGameTypes |= ( 1 << atoi( token ) );
-				}
-			}
-			else if ( !Q_stricmp( token, "defaultCoopGameType" ) )
-			{
-				if ( ( token = COM_ParseExt( &buf, qfalse ) ) != NULL && token[ 0 ] )
-				{
-					com_gameInfo.defaultCoopGameType = atoi( token );
-				}
-				else
-				{
-					FS_FreeFile( f );
-					Com_Error( ERR_FATAL, "Com_GetGameInfo: bad syntax." );
-				}
-			}
-			else if ( !Q_stricmp( token, "defaultGameType" ) )
-			{
-				if ( ( token = COM_ParseExt( &buf, qfalse ) ) != NULL && token[ 0 ] )
-				{
-					com_gameInfo.defaultGameType = atoi( token );
-				}
-				else
-				{
-					FS_FreeFile( f );
-					Com_Error( ERR_FATAL, "Com_GetGameInfo: bad syntax." );
-				}
-			}
-			else if ( !Q_stricmp( token, "usesProfiles" ) )
-			{
-				if ( ( token = COM_ParseExt( &buf, qfalse ) ) != NULL && token[ 0 ] )
-				{
-					com_gameInfo.usesProfiles = atoi( token );
-				}
-				else
-				{
-					FS_FreeFile( f );
-					Com_Error( ERR_FATAL, "Com_GetGameInfo: bad syntax." );
-				}
-			}
-			else
-			{
-				FS_FreeFile( f );
-				Com_Error( ERR_FATAL, "Com_GetGameInfo: bad syntax." );
-			}
-		}
-
-		// all is good
-		FS_FreeFile( f );
-	}
-}
-
 // bani - checks if profile.pid is valid
 // return qtrue if it is
 // return qfalse if it isn't(!)
@@ -3267,8 +3170,6 @@ void Com_Init( char *commandLine )
 	FS_InitFilesystem();
 	Com_InitJournaling();
 
-	Com_GetGameInfo();
-
 	Cbuf_AddText( "exec default.cfg\n" );
 
 	// skip the q3config.cfg if "safe" is on the command line
@@ -3276,62 +3177,54 @@ void Com_Init( char *commandLine )
 	{
 		char *cl_profileStr = Cvar_VariableString( "cl_profile" );
 
-		safeMode = qfalse;
-
-		if ( com_gameInfo.usesProfiles )
+		if ( !cl_profileStr[ 0 ] )
 		{
-			if ( !cl_profileStr[ 0 ] )
+			char *defaultProfile = NULL;
+
+			if( FS_ReadFile( "profiles/defaultprofile.dat", ( void ** ) &defaultProfile ) > 0 )
 			{
-				char *defaultProfile = NULL;
+				Q_CleanStr( defaultProfile );
+				Q_CleanDirName( defaultProfile );
 
-				if( FS_ReadFile( "profiles/defaultprofile.dat", ( void ** ) &defaultProfile ) > 0 )
+				if ( defaultProfile )
 				{
-					Q_CleanStr( defaultProfile );
-					Q_CleanDirName( defaultProfile );
+					Cvar_Set( "cl_defaultProfile", defaultProfile );
+					Cvar_Set( "cl_profile", defaultProfile );
 
-					if ( defaultProfile )
-					{
-						Cvar_Set( "cl_defaultProfile", defaultProfile );
-						Cvar_Set( "cl_profile", defaultProfile );
+					FS_FreeFile( defaultProfile );
 
-						FS_FreeFile( defaultProfile );
-
-						cl_profileStr = Cvar_VariableString( "cl_defaultProfile" );
-					}
+					cl_profileStr = Cvar_VariableString( "cl_defaultProfile" );
 				}
 			}
+		}
 
-			if ( cl_profileStr[ 0 ] )
+		if ( cl_profileStr[ 0 ] )
+		{
+			// bani - check existing pid file and make sure it's ok
+			if ( !Com_CheckProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
 			{
-				// bani - check existing pid file and make sure it's ok
-				if ( !Com_CheckProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
-				{
 #if 0
-					Com_Printf(_( "^3WARNING: profile.pid found for profile '%s' – system settings will revert to defaults\n"),
-					            cl_profileStr );
-					// ydnar: set crashed state
-					Cbuf_AddText( "set com_crashed 1\n" );
+				Com_Printf(_( "^3WARNING: profile.pid found for profile '%s' – system settings will revert to defaults\n"),
+				            cl_profileStr );
+				// ydnar: set crashed state
+				Cbuf_AddText( "set com_crashed 1\n" );
 #endif
-				}
-
-				// bani - write a new one
-				if ( !Com_WriteProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
-				{
-					Com_Printf(_( "^3WARNING: couldn't write profiles/%s/profile.pid\n"), cl_profileStr );
-				}
-
-				// exec the config
-				Cbuf_AddText( va( "exec profiles/%s/%s\n", cl_profileStr, CONFIG_NAME ) );
-				Cbuf_AddText( va( "exec profiles/%s/autoexec.cfg\n", cl_profileStr ) );
 			}
+
+			// bani - write a new one
+			if ( !Com_WriteProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
+			{
+				Com_Printf(_( "^3WARNING: couldn't write profiles/%s/profile.pid\n"), cl_profileStr );
+			}
+
+			// exec the config
+			Cbuf_AddText( va( "exec profiles/%s/%s\n", cl_profileStr, CONFIG_NAME ) );
 		}
 		else
 		{
 			Cbuf_AddText( va( "exec %s\n", CONFIG_NAME ) );
 		}
 	}
-
-	
 
 	// ydnar: reset crashed state
 	Cbuf_AddText( "set com_crashed 0\n" );
@@ -3375,7 +3268,6 @@ void Com_Init( char *commandLine )
 	com_viewlog = Cvar_Get( "viewlog", "0", CVAR_CHEAT );
 	com_speeds = Cvar_Get( "com_speeds", "0", 0 );
 	com_timedemo = Cvar_Get( "timedemo", "0", CVAR_CHEAT );
-	com_cameraMode = Cvar_Get( "com_cameraMode", "0", CVAR_CHEAT );
 
 	com_watchdog = Cvar_Get( "com_watchdog", "60", CVAR_ARCHIVE );
 	com_watchdog_cmd = Cvar_Get( "com_watchdog_cmd", "", CVAR_ARCHIVE );
@@ -3395,8 +3287,6 @@ void Com_Init( char *commandLine )
 
 	com_unfocused = Cvar_Get( "com_unfocused", "0", CVAR_ROM );
 	com_minimized = Cvar_Get( "com_minimized", "0", CVAR_ROM );
-
-	Cvar_Get( "savegame_loading", "0", CVAR_ROM );
 
 #if defined( _WIN32 ) && defined( _DEBUG )
 	com_noErrorInterrupt = Cvar_Get( "com_noErrorInterrupt", "0", 0 );
@@ -3478,7 +3368,7 @@ void Com_Init( char *commandLine )
 	if ( !com_dedicated->integer )
 	{
 		//Cvar_Set( "com_logosPlaying", "1" );
-		Cbuf_AddText( "cinematic etintro.roq\n" );
+		//Cbuf_AddText( "cinematic etintro.roq\n" );
 
 		/*Cvar_Set( "nextmap", "cinematic avlogo.roq" );
 		   if( !com_introPlayed->integer ) {
@@ -3536,7 +3426,7 @@ void Com_WriteConfiguration( void )
 
 	cvar_modifiedFlags &= ~CVAR_ARCHIVE;
 
-	if ( com_gameInfo.usesProfiles && cl_profileStr[ 0 ] )
+	if ( cl_profileStr[ 0 ] )
 	{
 		Com_WriteConfigToFile( va( "profiles/%s/%s", cl_profileStr, CONFIG_NAME ) );
 	}
@@ -3588,8 +3478,6 @@ int Com_ModifyMsec( int msec )
 	else if ( com_timescale->value )
 	{
 		msec *= com_timescale->value;
-//  } else if (com_cameraMode->integer) {
-//      msec *= com_timescale->value;
 	}
 
 	// don't let it scale below 1 msec
@@ -3876,7 +3764,7 @@ void Com_Shutdown( qboolean badProfile )
 	char *cl_profileStr = Cvar_VariableString( "cl_profile" );
 
 	// delete pid file
-	if ( com_gameInfo.usesProfiles && cl_profileStr[ 0 ] && !badProfile )
+	if ( cl_profileStr[ 0 ] && !badProfile )
 	{
 		if ( FS_FileExists( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
 		{
