@@ -379,6 +379,37 @@ qboolean Sys_Mkdir( const char *path )
 
 /*
 ==================
+Sys_Mkfifo
+==================
+*/
+FILE *Sys_Mkfifo( const char *ospath )
+{
+	FILE	*fifo;
+	int	result;
+	int	fn;
+	struct	stat buf;
+	
+	// if file already exists AND is a pipefile, remove it
+	if( !stat( ospath, &buf ) && S_ISFIFO( buf.st_mode ) )
+		FS_Remove( ospath );
+	
+	result = mkfifo( ospath, 0600 );
+	if( result != 0 )
+		return NULL;
+	
+	fifo = fopen( ospath, "w+" );
+	if( fifo )
+	{
+		fn = fileno( fifo );
+		fcntl( fn, F_SETFL, O_NONBLOCK );
+	}
+	
+	return fifo;
+}
+
+
+/*
+==================
 Sys_Cwd
 ==================
 */

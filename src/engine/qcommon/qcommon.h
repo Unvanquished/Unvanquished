@@ -696,6 +696,7 @@ int          FS_GetModList( char *listbuf, int bufsize );
 
 fileHandle_t FS_FOpenFileWrite( const char *qpath );
 fileHandle_t FS_FOpenFileAppend( const char *filename );
+fileHandle_t  FS_FCreateOpenPipeFile( const char *filename );
 
 // will properly create any needed paths and deal with separator character issues
 
@@ -845,6 +846,8 @@ int          FS_CreatePath( const char *OSPath );
 qboolean     FS_VerifyPak( const char *pak );
 
 qboolean     FS_IsPure( void );
+
+void         FS_Remove( const char *ospath );
 
 unsigned int FS_ChecksumOSPath( char *OSPath );
 
@@ -1305,6 +1308,7 @@ qboolean Sys_IsLANAddress( netadr_t adr );
 void     Sys_ShowIP( void );
 
 qboolean Sys_Mkdir( const char *path );
+FILE     *Sys_Mkfifo( const char *ospath );
 char     *Sys_Cwd( void );
 char     *Sys_DefaultBasePath( void );
 char     *Sys_DefaultInstallPath( void );

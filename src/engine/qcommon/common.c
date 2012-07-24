@@ -71,6 +71,7 @@ jmp_buf             abortframe; // an ERR_DROP has occurred, exit the entire fra
 
 FILE                *debuglogfile;
 static fileHandle_t logfile;
+static fileHandle_t pipefile;
 fileHandle_t        com_journalFile; // events are written here
 fileHandle_t        com_journalDataFile; // config files are written here
 
@@ -92,6 +93,7 @@ cvar_t *com_timedemo;
 cvar_t *com_sv_running;
 cvar_t *com_cl_running;
 cvar_t *com_logfile; // 1 = buffer log, 2 = flush after each print, 3 = append + flush
+cvar_t *com_pipefile;
 cvar_t *com_showtrace;
 cvar_t *com_version;
 
@@ -3373,9 +3375,34 @@ void Com_Init( char *commandLine )
 		   //Cvar_Set( "nextmap", "cinematic avlogo.roq" );
 		   } */
 	}
-	
+	com_pipefile = Cvar_Get( "com_pipefile", "", CVAR_ARCHIVE | CVAR_LATCH );
+	if ( com_pipefile->string[0] )
+	{
+		pipefile = FS_FCreateOpenPipeFile( com_pipefile->string );
+	}
 	com_fullyInitialized = qtrue;
 	Com_Printf( "%s", _("--- Common Initialization Complete ---\n"));
+}
+
+/*
+===============
+Com_ReadFromPipe
+
+Read whatever is in com_pipefile, if anything, and execute it
+===============
+*/
+void Com_ReadFromPipe( void )
+{
+	char     buffer[MAX_STRING_CHARS] = {""};
+	qboolean read;
+	
+	if( !pipefile ) { return; }
+	
+	read = FS_Read( buffer, sizeof( buffer ), pipefile );
+	if( read )
+	{
+		Cbuf_ExecuteText( EXEC_APPEND, buffer );
+	}
 }
 
 //==================================================================
@@ -3748,6 +3775,8 @@ void Com_Frame( void )
 	// old net chan encryption key
 	//key = lastTime * 0x87243987;
 
+	Com_ReadFromPipe();
+	
 	com_frameNumber++;
 }
 
@@ -3779,6 +3808,12 @@ void Com_Shutdown( qboolean badProfile )
 	{
 		FS_FCloseFile( com_journalFile );
 		com_journalFile = 0;
+	}
+
+	if ( pipefile )
+	{
+		FS_FCloseFile( pipefile );
+		FS_HomeRemove( com_pipefile->string );
 	}
 }
 

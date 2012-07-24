@@ -660,12 +660,31 @@ void FS_CopyFile( char *fromOSPath, char *toOSPath )
 }
 
 /*
+=================
+FS_CheckFilenameIsNotExecutable
+
+ERR_FATAL if trying to maniuplate a file with the platform library extension
+=================
+*/
+static void FS_CheckFilenameIsNotExecutable( const char *filename,
+											 const char *function )
+{
+	// Check if the filename ends with the library extension
+	if( !Q_stricmp( COM_GetExtension( filename ), DLL_EXT ) )
+	{
+		Com_Error( ERR_FATAL, "%s: Not allowed to manipulate '%s' due "
+		"to %s extension\n", function, filename, DLL_EXT );
+	}
+}
+
+
+/*
 ===========
 FS_Remove
 
 ===========
 */
-static void FS_Remove( const char *osPath )
+void FS_Remove( const char *osPath )
 {
 	remove( osPath );
 }
@@ -1166,6 +1185,56 @@ fileHandle_t FS_FOpenFileUpdate( const char *filename, int *length )
 
 	return f;
 }
+
+/*
+===========
+FS_FCreateOpenPipeFile
+
+===========
+*/
+fileHandle_t FS_FCreateOpenPipeFile( const char *filename ) {
+	char         *ospath;
+	FILE         *fifo;
+	fileHandle_t  f;
+	
+	if ( !fs_searchpaths )
+	{
+		Com_Error( ERR_FATAL, "Filesystem call made without initialization\n" );
+	}
+	
+	f = FS_HandleForFile();
+	fsh[f].zipFile = qfalse;
+	
+	Q_strncpyz( fsh[f].name, filename, sizeof( fsh[f].name ) );
+	
+	// don't let sound stutter
+	S_ClearSoundBuffer();
+	
+	ospath = FS_BuildOSPath( fs_homepath->string, fs_gamedir, filename );
+	
+	if ( fs_debug->integer )
+	{
+		Com_Printf( "FS_FCreateOpenPipeFile: %s\n", ospath );
+	}
+	
+	FS_CheckFilenameIsNotExecutable( ospath, __func__ );
+	
+	fifo = Sys_Mkfifo( ospath );
+	if( fifo )
+	{
+		fsh[f].handleFiles.file.o = fifo;
+		fsh[f].handleSync = qfalse;
+	}
+	else
+	{
+		Com_Printf( S_COLOR_YELLOW "WARNING: Could not create new com_pipefile at %s. "
+		"com_pipefile will not be used.\n", ospath );
+		f = 0;
+	}
+	
+	return f;
+}
+
 
 /*
 ===========
