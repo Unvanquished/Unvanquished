@@ -3218,10 +3218,12 @@ void Com_Init( char *commandLine )
 
 			// exec the config
 			Cbuf_AddText( va( "exec profiles/%s/%s\n", cl_profileStr, CONFIG_NAME ) );
+			Cbuf_AddText( va( "exec profiles/%s/autoexec.cfg\n", cl_profileStr ) );
 		}
 		else
 		{
 			Cbuf_AddText( va( "exec %s\n", CONFIG_NAME ) );
+			Cbuf_AddText( "exec autoexec.cfg" );
 		}
 	}
 
