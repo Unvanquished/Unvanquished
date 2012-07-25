@@ -623,13 +623,13 @@ static void SV_Serverinfo_f( void )
 ===========
 SV_Systeminfo_f
 
-Examine or change the serverinfo string
+Examine the systeminfo string
 ===========
 */
 static void SV_Systeminfo_f( void )
 {
 	Com_Printf(_( "System info settings:\n" ));
-	Info_Print( Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE ) );
+	Info_Print( Cvar_InfoString( CVAR_SYSTEMINFO | CVAR_SERVERINFO_NOUPDATE ) );
 }
 
 /*
@@ -679,18 +679,6 @@ static void SV_KillServer_f( void )
 	SV_Shutdown( "killserver" );
 }
 
-/*
-=================
-SV_GameCompleteStatus_f
-
-NERVE - SMF
-=================
-*/
-void SV_GameCompleteStatus_f( void )
-{
-	SV_MasterGameCompleteStatus();
-}
-
 //===========================================================
 
 /*
@@ -715,31 +703,30 @@ void SV_AddOperatorCommands( void )
 {
 	static qboolean initialized;
 
-	if ( initialized )
+	if ( !initialized )
 	{
-		return;
+		// These commands should always be available.
+		Cmd_AddCommand( "map", SV_Map_f );
+		Cmd_SetCommandCompletionFunc( "map", SV_CompleteMapName );
+		Cmd_AddCommand( "devmap", SV_Map_f );
+		Cmd_SetCommandCompletionFunc( "devmap", SV_CompleteMapName );
 	}
 
 	initialized = qtrue;
 
-	Cmd_AddCommand( "heartbeat", SV_Heartbeat_f );
-	Cmd_AddCommand( "status", SV_Status_f );
-	Cmd_AddCommand( "serverinfo", SV_Serverinfo_f );
-	Cmd_AddCommand( "systeminfo", SV_Systeminfo_f );
-	Cmd_AddCommand( "dumpuser", SV_DumpUser_f );
-	Cmd_AddCommand( "map_restart", SV_MapRestart_f );
-	Cmd_AddCommand( "fieldinfo", SV_FieldInfo_f );
-	Cmd_AddCommand( "sectorlist", SV_SectorList_f );
-	Cmd_AddCommand( "map", SV_Map_f );
-	Cmd_SetCommandCompletionFunc( "map", SV_CompleteMapName );
-	Cmd_AddCommand( "gameCompleteStatus", SV_GameCompleteStatus_f );  // NERVE - SMF
-	Cmd_AddCommand( "devmap", SV_Map_f );
-	Cmd_SetCommandCompletionFunc( "devmap", SV_CompleteMapName );
-	Cmd_AddCommand( "killserver", SV_KillServer_f );
-
-	if ( com_dedicated->integer )
+	if ( com_sv_running->integer )
 	{
-		Cmd_AddCommand( "say", SV_ConSay_f );
+		// These commands should only be available while the server is running.
+		Cmd_AddCommand( "dumpuser",    SV_DumpUser_f );
+		Cmd_AddCommand( "fieldinfo",   SV_FieldInfo_f );
+		Cmd_AddCommand( "heartbeat",   SV_Heartbeat_f );
+		Cmd_AddCommand( "killserver",  SV_KillServer_f );
+		Cmd_AddCommand( "map_restart", SV_MapRestart_f );
+		Cmd_AddCommand( "say",         SV_ConSay_f );
+		Cmd_AddCommand( "sectorlist",  SV_SectorList_f );
+		Cmd_AddCommand( "serverinfo",  SV_Serverinfo_f );
+		Cmd_AddCommand( "status",      SV_Status_f );
+		Cmd_AddCommand( "systeminfo",  SV_Systeminfo_f );
 	}
 }
 
@@ -750,17 +737,14 @@ SV_RemoveOperatorCommands
 */
 void SV_RemoveOperatorCommands( void )
 {
-	Cmd_RemoveCommand( "heartbeat" );
-	Cmd_RemoveCommand( "status" );
-	Cmd_RemoveCommand( "serverinfo" );
-	Cmd_RemoveCommand( "systeminfo" );
 	Cmd_RemoveCommand( "dumpuser" );
-	Cmd_RemoveCommand( "map_restart" );
 	Cmd_RemoveCommand( "fieldinfo" );
-	Cmd_RemoveCommand( "sectorlist" );
-	Cmd_RemoveCommand( "map" );
-	Cmd_RemoveCommand( "gameCompleteStatus" );
-	Cmd_RemoveCommand( "devmap" );
+	Cmd_RemoveCommand( "heartbeat" );
 	Cmd_RemoveCommand( "killserver" );
+	Cmd_RemoveCommand( "map_restart" );
 	Cmd_RemoveCommand( "say" );
+	Cmd_RemoveCommand( "sectorlist" );
+	Cmd_RemoveCommand( "serverinfo" );
+	Cmd_RemoveCommand( "status" );
+	Cmd_RemoveCommand( "systeminfo" );
 }

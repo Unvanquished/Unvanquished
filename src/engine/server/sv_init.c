@@ -789,6 +789,8 @@ void SV_SpawnServer( char *server )
 
 	Cvar_Set( "sv_serverRestarting", "0" );
 
+	SV_AddOperatorCommands();
+
 	Com_Printf(_( "-----------------------------------\n" ));
 }
 
