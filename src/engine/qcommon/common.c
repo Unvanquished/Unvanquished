@@ -3377,7 +3377,11 @@ void Com_Init( char *commandLine )
 		   //Cvar_Set( "nextmap", "cinematic avlogo.roq" );
 		   } */
 	}
+#ifndef _WIN32
+	com_pipefile = Cvar_Get( "com_pipefile", "pipe", CVAR_ARCHIVE | CVAR_LATCH );
+#else
 	com_pipefile = Cvar_Get( "com_pipefile", "", CVAR_ARCHIVE | CVAR_LATCH );
+#endif
 	if ( com_pipefile->string[0] )
 	{
 		pipefile = FS_FCreateOpenPipeFile( com_pipefile->string );
