@@ -172,7 +172,6 @@ static void SV_Map_f( void )
 {
 	char     *cmd;
 	char     *map;
-	char     smapname[ MAX_QPATH ];
 	char     mapname[ MAX_QPATH ];
 	qboolean cheat, buildScript;
 	char     expanded[ MAX_QPATH ];

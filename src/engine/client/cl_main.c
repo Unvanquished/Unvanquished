@@ -2714,8 +2714,6 @@ Called when all downloading has been completed
 */
 void CL_DownloadsComplete( void )
 {
-	char *fs_write_path;
-	char *fn;
 
 	// if we downloaded files we need to restart the file system
 	if ( cls.downloadRestart )

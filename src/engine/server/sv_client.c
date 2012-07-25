@@ -169,12 +169,9 @@ void SV_DirectConnect( netadr_t from )
 	char                *denied;
 	int                 count;
 	char                *ip;
-	int                 oldInfoLen2 = strlen( userinfo );
-	int                 newInfoLen2;
 
 	Com_DPrintf( "SVC_DirectConnect ()\n" );
 
-	//Q_strncpyz( userinfo, Cmd_Argv( 1 ), sizeof( userinfo ) );
 	Q_strncpyz( userinfo, Cmd_Argv( 1 ), sizeof( userinfo ) );
 
 	// DHM - Nerve :: Update Server allows any protocol to connect

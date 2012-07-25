@@ -2394,9 +2394,10 @@ int S_AL_GetSoundLength( sfxHandle_t sfxHandle )
 	qalGetBufferi( id, AL_BITS, &bits);
 
 	length = ( int ) ( ( float ) size/ ( freq *channels * ( bits / 8 ) ) );
+	return length;
 }
 
-int S_AL_GetCurrentSoundtime( )
+int S_AL_GetCurrentSoundtime( void )
 {
 	//fixme to be like snd_dma.c?
 	return Sys_Milliseconds( );

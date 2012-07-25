@@ -827,7 +827,6 @@ void Sys_PlatformInit( void )
 {
 #ifndef DEDICATED
 	TIMECAPS ptc;
-	UINT res;
 	const char *SDL_VIDEODRIVER = getenv( "SDL_VIDEODRIVER" );
 #endif
 

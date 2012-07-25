@@ -1717,7 +1717,7 @@ MSG_WriteDeltaPlayerstate
 */
 void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct playerState_s *to )
 {
-	int           i, j, lc;
+	int           i, lc;
 	playerState_t dummy;
 	int           statsbits;
 	int           persistantbits;
@@ -1959,7 +1959,7 @@ MSG_ReadDeltaPlayerstate
 */
 void MSG_ReadDeltaPlayerstate( msg_t *msg, playerState_t *from, playerState_t *to )
 {
-	int           i, j, lc;
+	int           i, lc;
 	int           bits;
 	netField_t    *field;
 	int           numFields;
