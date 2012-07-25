@@ -15,16 +15,22 @@ set -e
 # Download from here
 BASE_URL='http://downloads.sourceforge.net/project/unvanquished/Assets/'
 
+# Default destination directory
+case "$(uname -s)" in
+  *) DEFAULT_DEST_DIR=~/.Unvanquished/main
+esac
+
 case "$1" in
   --help|-h|-\?)
     echo "$0: download Unvanquished game files"
-    echo "Usage: $0 DESTINATION_DIR [CACHE_DIR]"
+    echo "Usage: $0 [DESTINATION_DIR [CACHE_DIR]]"
+    echo "Default destination directory is $DEFAULT_DEST_DIR"
     exit 0
     ;;
 esac
 
 # Paths passed to script
-DEST_DIR="${1:-.}"
+DEST_DIR="${1:-$DEFAULT_DEST_DIR}"
 CACHE="${2:-${DEST_DIR}}"
 
 # Set up for clean-up on exit
