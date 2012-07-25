@@ -226,6 +226,7 @@ extern int memcmp( void *, void *, size_t );
 #define ALIGNED(a)
 #define ALWAYS_INLINE
 #define __attribute__(x)
+#define __func__ __FUNCTION__
 #endif
 
 //bani
