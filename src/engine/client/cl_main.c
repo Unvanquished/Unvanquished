@@ -49,9 +49,7 @@ cvar_t *cl_wavefilerecord;
 #include "libmumblelink.h"
 #endif
 
-#ifdef USE_CRYPTO
 #include "../qcommon/crypto.h"
-#endif
 
 #ifdef USE_MUMBLE
 cvar_t *cl_useMumble;
@@ -133,8 +131,6 @@ cvar_t *cl_inGameVideo;
 
 cvar_t *cl_serverStatusResendTime;
 
-cvar_t *cl_pubkeyID;
-
 cvar_t                 *cl_profile;
 cvar_t                 *cl_defaultProfile;
 
@@ -156,12 +152,8 @@ cvar_t                 *cl_consoleFontSize;
 cvar_t                 *cl_consoleFontKerning;
 cvar_t                 *cl_consolePrompt;
 
-#ifdef USE_CRYPTO
 struct rsa_public_key  public_key;
-
 struct rsa_private_key private_key;
-
-#endif
 
 cvar_t             *cl_gamename;
 cvar_t             *cl_altTab;
@@ -2235,54 +2227,6 @@ void CL_ResetPureClientAtServer( void )
 }
 
 /*
-============
-CL_GenerateGUIDKey
-============
-*/
-static void CL_GenerateGUIDKey( void )
-{
-	int           len = 0;
-	unsigned char buff[ 2048 ];
-
-	if( cl_profile->string[ 0 ] )
-	{
-		len = FS_ReadFile( va( "profiles/%s/%s", cl_profile->string, GUIDKEY_FILE ), NULL );
-	}
-	else
-	{
-		len = FS_ReadFile( GUIDKEY_FILE, NULL );
-	}
-
-	if ( len >= ( int ) sizeof( buff ) )
-	{
-		Com_Printf( "%s", _( "Daemon GUID public-key found.\n" ) );
-		return;
-	}
-	else
-	{
-		int i;
-		srand( time( 0 ) );
-		
-		for ( i = 0; i < sizeof( buff ) - 1; i++ )
-		{
-			buff[ i ] = ( unsigned char )( rand() % 255 );
-		}
-		
-		buff[ i ] = 0;
-		Com_Printf( "%s", _( "Daemon GUID public-key generated\n" ) );
-
-		if( cl_profile->string[ 0 ] )
-		{
-			FS_WriteFile( va( "profiles/%s/%s", cl_profile->string, GUIDKEY_FILE ), buff, sizeof( buff ) );
-		}
-		else
-		{
-			FS_WriteFile( GUIDKEY_FILE, buff, sizeof( buff ) );
-		}
-	}
-}
-
-/*
 ===============
 CL_GenerateRSAKey
 
@@ -2292,7 +2236,6 @@ If not then generate a new keypair
 */
 static void CL_GenerateRSAKey( void )
 {
-#ifdef USE_CRYPTO
 	int                  len;
 	fileHandle_t         f;
 	void                 *buf;
@@ -2359,9 +2302,7 @@ static void CL_GenerateRSAKey( void )
 	
 	if ( !f )
 	{
-		Com_Printf( _( "Daemon RSA public-key could not open %s for write, RSA support will be disabled\n" ), RSAKEY_FILE );
-		Cvar_Set( "cl_pubkeyID", "0" );
-		Crypto_Shutdown();
+		Com_Error( ERR_FATAL, _( "Daemon RSA public-key could not open %s for write, RSA support will be disabled\n" ), RSAKEY_FILE );
 		return;
 	}
 	
@@ -2372,13 +2313,8 @@ static void CL_GenerateRSAKey( void )
 	return;
 	
 	keygen_error:
-	Com_Printf( "%s", _( "Error generating RSA keypair, RSA support will be disabled\n" ) );
-	Cvar_Set( "cl_pubkeyID", "0" );
+	Com_Error( ERR_FATAL, _( "Error generating RSA keypair, RSA support will be disabled\n" ) );
 	Crypto_Shutdown();
-#else
-	Com_DPrintf( "%s", _( "RSA support is disabled\n" ) );
-	return;
-#endif
 }
 
 
@@ -2457,16 +2393,7 @@ void CL_Vid_Restart_f( void )
 
 	if( Cvar_VariableIntegerValue( "cl_newProfile" ) )
 	{
-		CL_GenerateGUIDKey();
-		
-		if ( cl_pubkeyID->integer )
-		{
-			CL_GenerateRSAKey();
-		}
-		
-		Cvar_Set( "cl_guid", Com_MD5File( cl_profile->string[ 0 ] ? va( "profiles/%s/%s", cl_profile->string, GUIDKEY_FILE ) :
-		GUIDKEY_FILE, 0 ) );
-
+		CL_GenerateRSAKey();		
 		Cvar_Set( "cl_newProfile", "0" );
 	}
 #ifdef _WIN32
@@ -4578,8 +4505,6 @@ void CL_Init( void )
 	Cvar_Get( "snaps", "120", CVAR_USERINFO | CVAR_ARCHIVE );
 //  Cvar_Get ("sex", "male", CVAR_USERINFO | CVAR_ARCHIVE );
 
-	cl_pubkeyID = Cvar_Get( "cl_pubkeyID", "1", CVAR_ARCHIVE | CVAR_USERINFO );
-
 	Cvar_Get( "password", "", CVAR_USERINFO );
 
 #ifdef USE_MUMBLE
@@ -4683,15 +4608,7 @@ void CL_Init( void )
 	Cbuf_Execute();
 
 	Cvar_Set( "cl_running", "1" );
-	CL_GenerateGUIDKey();
-
-	if ( cl_pubkeyID->integer )
-	{
-		CL_GenerateRSAKey();
-	}
-
-	Cvar_Get( "cl_guid", Com_MD5File( cl_profile->string[ 0 ] ? va( "profiles/%s/%s", cl_profile->string, GUIDKEY_FILE ) :
-	                                                           GUIDKEY_FILE, 0 ), CVAR_USERINFO | CVAR_ROM );
+	CL_GenerateRSAKey();
 
 	Com_Printf("%s", _( "----- Client Initialization Complete -----\n" ));
 }

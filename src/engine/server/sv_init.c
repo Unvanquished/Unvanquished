@@ -878,8 +878,6 @@ void SV_Init( void )
 	// ET://someserver.com
 	sv_fullmsg = Cvar_Get( "sv_fullmsg", "Server is full.", CVAR_ARCHIVE );
 
-	sv_requireValidGuid = Cvar_Get( "sv_requireValidGuid", "0", CVAR_ARCHIVE );
-
 	svs.serverLoad = -1;
 }
 

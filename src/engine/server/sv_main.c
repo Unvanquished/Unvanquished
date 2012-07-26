@@ -70,9 +70,6 @@ cvar_t         *sv_lanForceRate; // TTimo - dedicated 1 (LAN) server forces loca
 
 cvar_t         *sv_dl_maxRate;
 
-cvar_t         *sv_requireValidGuid; // whether client userinfo must contain a cl_guid, string of length 32 consisting
-                                     // of characters '0' through '9' and 'A' through 'F', default 0 don't require
-
 cvar_t *sv_reloading;
 
 cvar_t *sv_showAverageBPS; // NERVE - SMF - net debugging

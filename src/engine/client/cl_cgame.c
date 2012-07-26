@@ -40,9 +40,7 @@ Maryland 20850 USA.
 #include "libmumblelink.h"
 #endif
 
-#ifdef USE_CRYPTO
 #include "../qcommon/crypto.h"
-#endif
 
 #define __(x) Trans_GettextGame(x)
 #define C__(x, y) Trans_PgettextGame(x, y)
@@ -466,9 +464,7 @@ rescan:
 		return qfalse;
 	}
 
-#ifdef USE_CRYPTO
-
-	if ( cl_pubkeyID->integer && !strcmp( cmd, "pubkey_request" ) )
+	if ( !strcmp( cmd, "pubkey_request" ) )
 	{
 		char buffer[ MAX_STRING_CHARS ] = "pubkey ";
 		mpz_get_str( buffer + 7, 16, public_key.n );
@@ -476,7 +472,7 @@ rescan:
 		return qfalse;
 	}
 
-	if ( cl_pubkeyID->integer && !strcmp( cmd, "pubkey_decrypt" ) )
+	if ( !strcmp( cmd, "pubkey_decrypt" ) )
 	{
 		char         buffer[ MAX_STRING_CHARS ] = "pubkey_identify ";
 		unsigned int msg_len = MAX_STRING_CHARS - 16;
@@ -500,8 +496,6 @@ rescan:
 		mpz_clear( message );
 		return qfalse;
 	}
-
-#endif
 
 	// we may want to put a "connect to other server" command here
 
