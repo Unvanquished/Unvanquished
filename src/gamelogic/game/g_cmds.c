@@ -4090,51 +4090,29 @@ int G_FloodLimited( gentity_t *ent )
 	return ms;
 }
 
-static void Cmd_Pubkey_f( gentity_t *ent )
-{
-	char            buffer[ RSA_STRING_LENGTH ];
-	g_admin_admin_t *admin = ent->client->pers.admin;
-
-	if ( !g_adminPubkeyID.integer || trap_Argc() != 2 )
-	{
-		return;
-	}
-
-	if ( admin->pubkey[ 0 ] )
-	{
-		return;
-	}
-
-	trap_Argv( 1, buffer, sizeof( buffer ) );
-	Q_strncpyz( admin->pubkey, buffer, sizeof( admin->pubkey ) );
-	admin->counter = -1;
-	G_admin_writeconfig();
-}
-
 static void Cmd_Pubkey_Identify_f( gentity_t *ent )
 {
 	char            buffer[ MAX_STRING_CHARS ];
+	char            pubkey[ RSA_STRING_LENGTH ];
 	g_admin_admin_t *admin = ent->client->pers.admin;
 
-	if ( !g_adminPubkeyID.integer || trap_Argc() != 2 )
+	if ( trap_Argc() != 2 )
 	{
 		return;
 	}
 
-	if ( ent->client->pers.pubkey_authenticated != 0 || !admin->pubkey[ 0 ] || admin->counter == -1 || !ent->client->pers.pubkey_msg[ 0 ] )
+	if ( ent->client->pers.pubkey_authenticated != 0 || !admin->pubkey[ 0 ] || admin->counter == -1 )
 	{
 		return;
 	}
 
 	trap_Argv( 1, buffer, sizeof( buffer ) );
-
-	if ( Q_strncmp( buffer, ent->client->pers.pubkey_msg, MAX_STRING_CHARS ) )
+	if ( Q_strncmp( buffer, admin->msg, MAX_STRING_CHARS ) )
 	{
 		return;
 	}
 
 	ent->client->pers.pubkey_authenticated = 1;
-	ent->client->pers.pubkey_msg[ 0 ] = '\0';
 	G_admin_authlog( ent );
 	G_admin_cmdlist( ent );
 	CP( "cp \"^2Pubkey authenticated\"\n" );
@@ -4168,7 +4146,6 @@ static const commands_t cmds[] =
 	{ "mt",              CMD_MESSAGE | CMD_INTERMISSION,      Cmd_PrivateMessage_f   },
 	{ "noclip",          CMD_CHEAT_TEAM,                      Cmd_Noclip_f           },
 	{ "notarget",        CMD_CHEAT | CMD_TEAM | CMD_ALIVE,    Cmd_Notarget_f         },
-	{ "pubkey",          CMD_INTERMISSION,                    Cmd_Pubkey_f           },
 	{ "pubkey_identify", CMD_INTERMISSION,                    Cmd_Pubkey_Identify_f  },
 	{ "reload",          CMD_HUMAN | CMD_ALIVE,               Cmd_Reload_f           },
 	{ "say",             CMD_MESSAGE | CMD_INTERMISSION,      Cmd_Say_f              },

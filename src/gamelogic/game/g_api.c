@@ -562,3 +562,15 @@ void trap_QuoteString( const char *str, char *buffer, int size )
 {
 	syscall( G_QUOTESTRING, str, buffer, size );
 }
+
+// 88.
+void trap_GenFingerprint( const char *pubkey, int size, char *buffer, int bufsize )
+{
+	syscall( G_GENFINGERPRINT, pubkey, size, buffer, bufsize );
+}
+
+// 89.
+void trap_GetPlayerPubkey( int clientNum, char *pubkey, int size )
+{
+	syscall( G_GETPLAYERPUBKEY, clientNum, pubkey, size );
+}

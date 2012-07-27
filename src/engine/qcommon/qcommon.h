@@ -956,6 +956,7 @@ int        Com_EventLoop( void );
 int        Com_Milliseconds( void );  // will be journaled properly
 unsigned   Com_BlockChecksum( const void *buffer, int length );
 char       *Com_MD5File( const char *filename, int length );
+void       Com_MD5Buffer( const char *pubkey, int size, char *buffer, int bufsize ); 
 int        Com_Filter( char *filter, char *name, int casesensitive );
 int        Com_FilterPath( char *filter, char *name, int casesensitive );
 int        Com_RealTime( qtime_t *qtime );

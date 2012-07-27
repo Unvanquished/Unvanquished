@@ -344,10 +344,6 @@ typedef struct
 	char     voice[ MAX_VOICE_NAME_LEN ];
 	qboolean useUnlagged;
 	int      pubkey_authenticated; // -1 = does not have pubkey, 0 = not authenticated, 1 = authenticated
-	int      cl_pubkeyID;
-	char     pubkey_msg[ RSA_STRING_LENGTH ];
-	char     connect_name[ MAX_NAME_LENGTH ]; // Name of client before admin was removed with pubkey
-
 	// keep track of other players' info for tinfo
 	char cinfo[ MAX_CLIENTS ][ 16 ];
 } clientPersistant_t;
@@ -1228,7 +1224,6 @@ extern  vmCvar_t g_admin;
 extern  vmCvar_t g_adminTempBan;
 extern  vmCvar_t g_adminMaxBan;
 extern  vmCvar_t g_adminRetainExpiredBans;
-extern  vmCvar_t g_adminPubkeyID;
 
 extern  vmCvar_t g_privateMessages;
 extern  vmCvar_t g_specChat;
@@ -1316,3 +1311,5 @@ messageStatus_t  trap_MessageStatus( int clientNum );
 int              trap_RSA_GenerateMessage( const char *public_key, const char *cleartext, char *encrypted );
 
 void             trap_QuoteString( const char *str, char *buf, int size );
+void             trap_GenFingerprint( const char *pubkey, int size, char *buffer, int bufsize );
+void             trap_GetPlayerPubkey( int clientNum, char *pubkey, int size );

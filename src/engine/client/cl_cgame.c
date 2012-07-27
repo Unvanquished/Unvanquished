@@ -464,14 +464,6 @@ rescan:
 		return qfalse;
 	}
 
-	if ( !strcmp( cmd, "pubkey_request" ) )
-	{
-		char buffer[ MAX_STRING_CHARS ] = "pubkey ";
-		mpz_get_str( buffer + 7, 16, public_key.n );
-		CL_AddReliableCommand( buffer );
-		return qfalse;
-	}
-
 	if ( !strcmp( cmd, "pubkey_decrypt" ) )
 	{
 		char         buffer[ MAX_STRING_CHARS ] = "pubkey_identify ";

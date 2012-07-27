@@ -2885,6 +2885,10 @@ void CL_CheckForResend( void )
 			break;
 
 		case CA_CHALLENGING:
+		{
+			char key[ RSA_STRING_LENGTH ];
+
+			mpz_get_str( key, 16, public_key.n);
 			// sending back the challenge
 			port = Cvar_VariableValue( "net_qport" );
 
@@ -2892,6 +2896,7 @@ void CL_CheckForResend( void )
 			Info_SetValueForKey( info, "protocol", va( "%i", com_protocol->integer ) );
 			Info_SetValueForKey( info, "qport", va( "%i", port ) );
 			Info_SetValueForKey( info, "challenge", va( "%i", clc.challenge ) );
+			Info_SetValueForKey( info, "pubkey", key );
 
 			sprintf( data, "connect %s", Cmd_QuoteString( info ) );
 
@@ -2904,7 +2909,7 @@ void CL_CheckForResend( void )
 			// newer changes to userinfo variables
 			cvar_modifiedFlags &= ~CVAR_USERINFO;
 			break;
-
+		}
 		default:
 			Com_Error( ERR_FATAL, "CL_CheckForResend: bad cls.state" );
 	}

@@ -369,6 +369,9 @@ gotnewcl:
 	Netchan_Setup( NS_SERVER, &newcl->netchan, from, qport );
 	// init the netchan queue
 
+	// Save the pubkey
+	Q_strncpyz( newcl->pubkey, Info_ValueForKey( userinfo, "pubkey" ), sizeof( newcl->pubkey ) );
+	Info_RemoveKey( userinfo, "pubkey" );
 	// save the userinfo
 	Q_strncpyz( newcl->userinfo, userinfo, sizeof( newcl->userinfo ) );
 

@@ -242,6 +242,8 @@ typedef struct client_s
 	//% netchan_buffer_t **netchan_end_queue;
 	netchan_buffer_t *netchan_end_queue;
 
+	char             pubkey[ RSA_STRING_LENGTH ];
+
 #ifdef USE_VOIP
 	qboolean           hasVoip;
 	qboolean           muteAllVoip;
@@ -424,6 +426,7 @@ void SV_SetConfigstringRestrictions( int index, const clientList_t *clientList )
 
 void SV_SetUserinfo( int index, const char *val );
 void SV_GetUserinfo( int index, char *buffer, int bufferSize );
+void SV_GetPlayerPubkey( int clientNum, char *pubkey, int size );
 
 void SV_CreateBaseline( void );
 

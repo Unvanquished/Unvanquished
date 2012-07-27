@@ -239,6 +239,29 @@ void SV_GetUserinfo( int index, char *buffer, int bufferSize )
 }
 
 /*
+==================
+SV_GetPlayerPubkey
+
+==================
+*/
+
+void SV_GetPlayerPubkey( int clientNum, char *pubkey, int size )
+{
+	if ( size < 1 )
+	{
+		Com_Error( ERR_DROP, "SV_GetPlayerPubkey: size == %i", size );
+	}
+
+	if ( clientNum < 0 || clientNum >= sv_maxclients->integer )
+	{
+		Com_Error( ERR_DROP, "SV_GetPlayerPubkey: bad clientNum %i", clientNum );
+	}
+
+	Q_strncpyz( pubkey, svs.clients[ clientNum ].pubkey, size );
+}
+
+
+/*
 ================
 SV_CreateBaseline
 
