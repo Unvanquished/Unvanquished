@@ -559,42 +559,6 @@ static void SV_Status_f( void )
 
 /*
 ==================
-SV_ConSay_f
-==================
-*/
-static void SV_ConSay_f( void )
-{
-	char *p;
-	char text[ 1024 ];
-
-	// make sure server is running
-	if ( !com_sv_running->integer )
-	{
-		Com_Printf(_( "Server is not running.\n" ));
-		return;
-	}
-
-	if ( Cmd_Argc() < 2 )
-	{
-		return;
-	}
-
-	strcpy( text, "console: " );
-	p = Cmd_Args();
-
-	if ( *p == '"' )
-	{
-		p++;
-		p[ strlen( p ) - 1 ] = 0;
-	}
-
-	strcat( text, p );
-
-	SV_SendServerCommand( NULL, "chat %s", Cmd_QuoteString( text ) );
-}
-
-/*
-==================
 SV_Heartbeat_f
 
 Also called by SV_DropClient, SV_DirectConnect, and SV_SpawnServer
@@ -721,7 +685,6 @@ void SV_AddOperatorCommands( void )
 		Cmd_AddCommand( "heartbeat",   SV_Heartbeat_f );
 		Cmd_AddCommand( "killserver",  SV_KillServer_f );
 		Cmd_AddCommand( "map_restart", SV_MapRestart_f );
-		Cmd_AddCommand( "say",         SV_ConSay_f );
 		Cmd_AddCommand( "sectorlist",  SV_SectorList_f );
 		Cmd_AddCommand( "serverinfo",  SV_Serverinfo_f );
 		Cmd_AddCommand( "status",      SV_Status_f );
