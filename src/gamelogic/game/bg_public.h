@@ -907,6 +907,7 @@ typedef struct
 
 	const char *name;
 	const char *info;
+	const char *fovCvar;
 
 	int      stages;
 
