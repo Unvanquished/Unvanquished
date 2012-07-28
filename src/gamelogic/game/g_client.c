@@ -1300,6 +1300,12 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	G_AddressParse( value, &client->pers.ip );
 
 	trap_GetPlayerPubkey( clientNum, pubkey, sizeof( pubkey ) );
+
+	if ( strlen( pubkey ) != RSA_STRING_LENGTH - 1 )
+	{
+		return "Invalid pubkey key";
+	}
+	
 	trap_GenFingerprint( pubkey, sizeof( pubkey ), client->pers.guid, sizeof( client->pers.guid ) );
 
 	client->pers.admin = G_admin_admin( client->pers.guid );
