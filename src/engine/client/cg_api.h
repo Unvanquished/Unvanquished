@@ -79,6 +79,7 @@ typedef enum cgameImport_s
   CG_CVAR_SET,
   CG_CVAR_VARIABLESTRINGBUFFER,
   CG_CVAR_LATCHEDVARIABLESTRINGBUFFER,
+  CG_CVAR_VARIABLEINTEGERVALUE,
   CG_ARGC,
   CG_ARGV,
   CG_ARGS,
@@ -308,6 +309,7 @@ void            trap_Cvar_Update( vmCvar_t *vmCvar );
 void            trap_Cvar_Set( const char *var_name, const char *value );
 void            trap_Cvar_VariableStringBuffer( const char *var_name, char *buffer, int bufsize );
 void            trap_Cvar_LatchedVariableStringBuffer( const char *var_name, char *buffer, int bufsize );
+int             trap_Cvar_VariableIntegerValue( const char *var_name );
 int             trap_Argc( void );
 void            trap_Argv( int n, char *buffer, int bufferLength );
 void            trap_Args( char *buffer, int bufferLength );

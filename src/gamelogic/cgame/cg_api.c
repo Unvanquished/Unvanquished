@@ -101,6 +101,11 @@ void trap_Cvar_LatchedVariableStringBuffer( const char *var_name, char *buffer, 
 	syscall( CG_CVAR_LATCHEDVARIABLESTRINGBUFFER, var_name, buffer, bufsize );
 }
 
+// Cvar_VariableIntegerValue( VMA(1) );
+int trap_Cvar_VariableIntegerValue( const char *var_name )
+{
+	return syscall( CG_CVAR_VARIABLEINTEGERVALUE, var_name );
+}
 //08.
 //return Cmd_Argc();
 int trap_Argc( void )

@@ -651,6 +651,9 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Cvar_LatchedVariableStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 			return 0;
 
+		case CG_CVAR_VARIABLEINTEGERVALUE:
+			return Cvar_VariableIntegerValue( VMA( 1 ) );
+
 		case CG_ARGC:
 			return Cmd_Argc();
 
