@@ -896,6 +896,7 @@ static const classAttributes_t bg_classList[] =
 		PCL_NONE, //int     number;
 		"spectator", //char    *name;
 		"",
+		"", // const char* fovCvar
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		0, //int     health;
 		0.0f, //float   fallDamage;
@@ -923,7 +924,7 @@ static const classAttributes_t bg_classList[] =
 		"builder", //char    *name;
 		"Responsible for building and maintaining all the alien structures. "
 		"Has a weak melee slash attack.",
-		"cg_fov_builder",
+		"cg_fov_builder",  // const char* fovCvar
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		ABUILDER_HEALTH, //int     health;
 		0.2f, //float   fallDamage;
@@ -952,7 +953,7 @@ static const classAttributes_t bg_classList[] =
 		"Similar to the base Granger, except that in addition to "
 		"being able to build structures it has a spit attack "
 		"that slows victims and the ability to crawl on walls.",
-		"cg_fov_builder",
+		"cg_fov_builder",  // const char* fovCvar
 		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		ABUILDER_UPG_HEALTH, //int     health;
 		0.2f, //float   fallDamage;
@@ -980,7 +981,7 @@ static const classAttributes_t bg_classList[] =
 		"level0", //char    *name;
 		"Has a lethal reflexive bite and the ability to crawl on "
 		"walls and ceilings.",
-		"cg_fov_level0",
+		"cg_fov_level0",  // const char* fovCvar
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		LEVEL0_HEALTH, //int     health;
 		0.0f, //float   fallDamage;
@@ -1010,7 +1011,7 @@ static const classAttributes_t bg_classList[] =
 		"attack is most effective when combined with the ability to grab "
 		"and hold its victims in place. Provides a weak healing aura "
 		"that accelerates the healing rate of nearby aliens.",
-		"cg_fov_level1",
+		"cg_fov_level1",  // const char* fovCvar
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		LEVEL1_HEALTH, //int     health;
 		0.0f, //float   fallDamage;
@@ -1040,7 +1041,7 @@ static const classAttributes_t bg_classList[] =
 		"Basilisk sprays a poisonous gas which disorients any "
 		"nearby humans. Has a strong healing aura that "
 		"that accelerates the healing rate of nearby aliens.",
-		"cg_fov_level1",
+		"cg_fov_level1",  // const char* fovCvar
 		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		LEVEL1_UPG_HEALTH, //int     health;
 		0.0f, //float   fallDamage;
@@ -1068,7 +1069,7 @@ static const classAttributes_t bg_classList[] =
 		"level2", //char    *name;
 		"Has a melee attack and the ability to jump off walls. This "
 		"allows the Marauder to gather great speed in enclosed areas.",
-		"cg_fov_level2",
+		"cg_fov_level2",  // const char* fovCvar
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		LEVEL2_HEALTH, //int     health;
 		0.0f, //float   fallDamage;
@@ -1096,7 +1097,7 @@ static const classAttributes_t bg_classList[] =
 		"level2upg", //char    *name;
 		"The Advanced Marauder has all the abilities of the basic Marauder "
 		"with the addition of an area effect electric shock attack.",
-		"cg_fov_level2",
+		"cg_fov_level2",  // const char* fovCvar
 		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		LEVEL2_UPG_HEALTH, //int     health;
 		0.0f, //float   fallDamage;
@@ -1125,7 +1126,7 @@ static const classAttributes_t bg_classList[] =
 		"Possesses a melee attack and the pounce ability, which may "
 		"be used as both an attack and a means to reach remote "
 		"locations inaccessible from the ground.",
-		"cg_fov_level3",
+		"cg_fov_level3",  // const char* fovCvar
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		LEVEL3_HEALTH, //int     health;
 		0.0f, //float   fallDamage;
@@ -1154,7 +1155,7 @@ static const classAttributes_t bg_classList[] =
 		"In addition to the basic Dragoon abilities, the Advanced "
 		"Dragoon has 3 barbs which may be used to attack humans "
 		"from a distance.",
-		"cg_fov_level3",
+		"cg_fov_level3",  // const char* fovCvar
 		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		LEVEL3_UPG_HEALTH, //int     health;
 		0.0f, //float   fallDamage;
@@ -1184,7 +1185,7 @@ static const classAttributes_t bg_classList[] =
 		"also charge at enemy humans and structures, inflicting "
 		"great damage. Any humans or their structures caught under "
 		"a falling Tyrant will be crushed by its weight.",
-		"cg_fov_level4",
+		"cg_fov_level4",  // const char* fovCvar
 		( 1 << S3 ), //int  stages;
 		LEVEL4_HEALTH, //int     health;
 		0.0f, //float   fallDamage;
@@ -1211,7 +1212,7 @@ static const classAttributes_t bg_classList[] =
 		PCL_HUMAN, //int     number;
 		"human_base", //char    *name;
 		"",
-		"cg_fov_human",
+		"cg_fov_human",  // const char* fovCvar
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
 		100, //int     health;
 		1.0f, //float   fallDamage;
@@ -1238,7 +1239,7 @@ static const classAttributes_t bg_classList[] =
 		PCL_HUMAN_BSUIT, //int     number;
 		"human_bsuit", //char    *name;
 		"",
-		"cg_fov_human",
+		"cg_fov_human",  // const char* fovCvar
 		( 1 << S3 ), //int  stages;
 		100, //int     health;
 		1.0f, //float   fallDamage;
