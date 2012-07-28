@@ -1027,6 +1027,8 @@ typedef struct
 	vec3_t mins;
 	vec3_t maxs;
 	float  zOffset;
+	float  oldScale;
+	float  oldOffset;
 } buildableConfig_t;
 
 // weapon record
