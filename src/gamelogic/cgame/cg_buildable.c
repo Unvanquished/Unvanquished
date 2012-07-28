@@ -1949,6 +1949,24 @@ void CG_Buildable( centity_t *cent )
 		Scale[0] = Scale[1] = Scale[2] = spawned ? scale :
 		       scale * (float) sin ( 0.5f * (cg.time - es->time) / BG_Buildable( es->modelindex )->buildTime * M_PI );
 		ent.skeleton = bSkeleton;
+
+		if( es->modelindex == BA_H_MGTURRET )
+		{
+			quat_t rotation;
+
+			//FIXME: Don't hard code bones to specific assets. Soon, I should put bone names in
+			// .cfg so we can change it should the rig change.
+
+			QuatFromAngles( rotation, es->angles2[ YAW ] - es->angles[ YAW ] + 90, 0, 0 );
+			QuatMultiply0( ent.skeleton.bones[ 1 ].rotation, rotation );
+
+			QuatFromAngles( rotation, es->angles2[ PITCH ], 0, 0 );
+			QuatMultiply0( ent.skeleton.bones[ 6 ].rotation, rotation );
+		}
+			
+
+			
+		
 		CG_TransformSkeleton( &ent.skeleton, Scale );
 		VectorCopy(mins, ent.skeleton.bounds[ 0 ]);
 		VectorCopy(maxs, ent.skeleton.bounds[ 1 ]);
