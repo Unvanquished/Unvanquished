@@ -697,7 +697,9 @@ static qboolean BG_ParseBuildableFile( const char *filename, buildableConfig_t *
 	  MODELSCALE = 1 << 1,
 	  MINS = 1 << 2,
 	  MAXS = 1 << 3,
-	  ZOFFSET = 1 << 4
+	  ZOFFSET = 1 << 4,
+	  OLDSCALE = 1 << 5,
+	  OLDOFFSET = 1 << 6
 	};
 
 	// load the file
@@ -844,6 +846,42 @@ static qboolean BG_ParseBuildableFile( const char *filename, buildableConfig_t *
 			bc->zOffset = offset;
 
 			defined |= ZOFFSET;
+			continue;
+		}
+		else if ( !Q_stricmp( token, "oldScale" ) )
+		{
+			float scale;
+			
+			token = COM_Parse( &text_p );
+			
+			if ( !token )
+			{
+				break;
+			}
+			
+			scale = atof( token );
+			
+			bc->oldScale = scale;
+			
+			defined |= OLDSCALE;
+			continue;
+		}
+		else if ( !Q_stricmp( token, "oldOffset" ) )
+		{
+			float offset;
+			
+			token = COM_Parse( &text_p );
+			
+			if ( !token )
+			{
+				break;
+			}
+			
+			offset = atof( token );
+			
+			bc->oldOffset = offset;
+			
+			defined |= OLDOFFSET;
 			continue;
 		}
 

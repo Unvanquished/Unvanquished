@@ -1054,7 +1054,7 @@ void CG_GhostBuildable( buildable_t buildable )
 	                                  mins, maxs, ent.axis, ent.origin );
 
 	//offset on the Z axis if required
-	VectorMA( ent.origin, BG_BuildableConfig( buildable )->zOffset, tr.plane.normal, ent.origin );
+	VectorMA( ent.origin, cg_highPolyBuildableModels.integer ? BG_BuildableConfig( buildable )->zOffset : BG_BuildableConfig( buildable )->oldOffset, tr.plane.normal, ent.origin );
 
 	VectorCopy( ent.origin, ent.lightingOrigin );
 	VectorCopy( ent.origin, ent.oldorigin );  // don't positionally lerp at all
@@ -1894,7 +1894,7 @@ void CG_Buildable( centity_t *cent )
 	}
 
 	//offset on the Z axis if required
-	VectorMA( ent.origin, BG_BuildableConfig( es->modelindex )->zOffset, surfNormal, ent.origin );
+	VectorMA( ent.origin, cg_highPolyBuildableModels.integer ? BG_BuildableConfig( es->modelindex )->zOffset : BG_BuildableConfig( es->modelindex )->oldOffset, surfNormal, ent.origin );
 
 	VectorCopy( ent.origin, ent.oldorigin );  // don't positionally lerp at all
 	VectorCopy( ent.origin, ent.lightingOrigin );
@@ -1921,7 +1921,7 @@ void CG_Buildable( centity_t *cent )
 	CG_BuildableAnimation( cent, &ent.oldframe, &ent.frame, &ent.backlerp );
 
 	//rescale the model
-	scale = BG_BuildableConfig( es->modelindex )->modelScale;
+	scale = cg_highPolyBuildableModels.integer ? BG_BuildableConfig( es->modelindex )->modelScale : BG_BuildableConfig( es->modelindex )->oldScale;
 
 	if ( scale != 1.0f )
 	{
