@@ -49,8 +49,6 @@ Maryland 20850 USA.
 #include <speex/speex_preprocess.h>
 #endif
 
-#define GUIDKEY_FILE       "guid"
-
 // file containing our RSA public and private keys
 #define RSAKEY_FILE        "pubkey"
 
@@ -508,8 +506,6 @@ extern cvar_t  *cl_aviMotionJpeg;
 // XreaL END
 
 extern cvar_t  *cl_allowPaste;
-
-extern cvar_t  *cl_pubkeyID;
 
 #ifdef USE_MUMBLE
 extern cvar_t  *cl_useMumble;

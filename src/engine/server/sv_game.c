@@ -35,10 +35,7 @@ Maryland 20850 USA.
 // sv_game.c -- interface to the game dll
 
 #include "server.h"
-
-#ifdef USE_CRYPTO
 #include "../qcommon/crypto.h"
-#endif
 
 void            CMod_PhysicsAddEntity( sharedEntity_t *gEnt );
 void            CMod_PhysicsAddStatic( const sharedEntity_t *gEnt );
@@ -144,7 +141,6 @@ Generate an encrypted RSA message
 */
 int SV_RSAGenMsg( const char *pubkey, char *cleartext, char *encrypted )
 {
-#ifdef USE_CRYPTO
 	struct rsa_public_key public_key;
 
 	mpz_t                 message;
@@ -167,9 +163,6 @@ int SV_RSAGenMsg( const char *pubkey, char *cleartext, char *encrypted )
 	mpz_get_str( encrypted, 16, message );
 	mpz_clear( message );
 	return retval;
-#else
-	return 0;
-#endif
 }
 
 /*
@@ -735,10 +728,18 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 		case G_RSA_GENMSG:
 			return SV_RSAGenMsg( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
 
-                case G_QUOTESTRING:
+		case G_QUOTESTRING:
 			Cmd_QuoteStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 			return 0;
 
+		case G_GENFINGERPRINT:
+			Com_MD5Buffer( VMA( 1 ), args[ 2 ], VMA( 3 ), args [ 4 ] );
+			return 0;
+
+		case G_GETPLAYERPUBKEY:
+			SV_GetPlayerPubkey( args[ 1 ], VMA( 2 ), args[ 3 ] );
+			return 0;
+			
 		default:
 			Com_Error( ERR_DROP, "Bad game system trap: %ld", ( long int ) args[ 0 ] );
 	}

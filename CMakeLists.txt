@@ -1418,7 +1418,7 @@ if( BUILD_CLIENT )
   add_dependencies( client rendererGL )
   include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )
   target_link_libraries( client ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
-  set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER COMPAT_ET USE_REFENTITY_ANIMATIONSYSTEM USE_CRYPTO HAVE_SDL )
+  set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER COMPAT_ET USE_REFENTITY_ANIMATIONSYSTEM HAVE_SDL )
   set_target_properties( client PROPERTIES OUTPUT_NAME "daemon.${BUILD_ARCH}" PREFIX "" LINKER_LANGUAGE CXX )
 
   # Setup CPack for target client
@@ -1569,7 +1569,7 @@ if( BUILD_SERVER )
     ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c ${WIN_RC} )
   include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )
   target_link_libraries( server ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
-  set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS DEDICATED COMPAT_ET USE_CRYPTO )
+  set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS DEDICATED COMPAT_ET )
   set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded.${BUILD_ARCH}" PREFIX "" LINKER_LANGUAGE CXX )
 
   # Setup CPack for target server

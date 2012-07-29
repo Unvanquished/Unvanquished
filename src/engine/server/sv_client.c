@@ -107,47 +107,6 @@ void SV_GetChallenge( netadr_t from )
 
 /*
 ==================
-SV_ApproveGuid
-
-Returns a false value if and only if the client with this cl_guid
-should not be allowed to enter the server.
-
-A cl_guid string must have length 32 and consist of characters
-'0' through '9' and 'A' through 'F'.
-==================
-*/
-qboolean SV_ApproveGuid( const char *guid )
-{
-	int  i;
-	char c;
-	int  length;
-
-	if ( sv_requireValidGuid->integer > 0 )
-	{
-		length = strlen( guid );  // could avoid this extra linear-time computation
-
-		if ( length != 32 )
-		{
-			return qfalse;
-		}
-
-		for ( i = 31; i >= 0; )
-		{
-			c = guid[ i-- ];
-
-			if ( !( ( '0' <= c && c <= '9' ) ||
-			        ( 'A' <= c && c <= 'F' ) ) )
-			{
-				return qfalse;
-			}
-		}
-	}
-
-	return qtrue;
-}
-
-/*
-==================
 SV_DirectConnect
 
 A "connect" OOB command has been received
@@ -208,14 +167,6 @@ void SV_DirectConnect( netadr_t from )
 
 			break;
 		}
-	}
-
-	// block connections for invalid GUIDs
-	if ( !SV_ApproveGuid( Info_ValueForKey( userinfo, "cl_guid" ) ) )
-	{
-		NET_OutOfBandPrint( NS_SERVER, from, "print\nGet legit, bro." );
-		Com_DPrintf( "Invalid cl_guid, rejected connect from %s\n", NET_AdrToString( from ) );
-		return;
 	}
 
 	if ( NET_IsLocalAddress( from ) )
@@ -418,6 +369,9 @@ gotnewcl:
 	Netchan_Setup( NS_SERVER, &newcl->netchan, from, qport );
 	// init the netchan queue
 
+	// Save the pubkey
+	Q_strncpyz( newcl->pubkey, Info_ValueForKey( userinfo, "pubkey" ), sizeof( newcl->pubkey ) );
+	Info_RemoveKey( userinfo, "pubkey" );
 	// save the userinfo
 	Q_strncpyz( newcl->userinfo, userinfo, sizeof( newcl->userinfo ) );
 
