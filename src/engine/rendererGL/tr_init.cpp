@@ -2345,9 +2345,7 @@ extern "C" {
 #else
 		re.AddPolyToScene = RE_AddPolyToSceneQ3A;
 #endif
-#if !defined( COMPAT_ET )
 		re.LightForPoint = R_LightForPoint;
-#endif
 
 #if defined( COMPAT_ET )
 		re.AddLightToScene = RE_AddDynamicLightToSceneET;
