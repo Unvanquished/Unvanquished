@@ -2052,7 +2052,7 @@ void CL_IRCSay()
 	}
 
 	memset( m_sendstring, 0, sizeof( m_sendstring ) );
-	strncpy( m_sendstring, Cmd_Args(), 479 );
+	strncpy( m_sendstring, Cmd_UnquoteString(Cmd_Args()), 479 );
 
 	if ( m_sendstring[ 0 ] == 0 )
 	{
