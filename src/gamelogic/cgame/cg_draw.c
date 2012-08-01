@@ -1509,32 +1509,6 @@ static void CG_DrawPlayerHealthBar( rectDef_t *rect, vec4_t foreColor, qhandle_t
 	CG_DrawPlayerProgressBar( rect, foreColor, progress, -0.3, shader );
 }
 
-static void CG_DrawPlayerBoostedBar( rectDef_t *rect, vec4_t foreColor, qhandle_t shader )
-{
-	static int time = -1;
-	
-	if( cg.snap->ps.stats[ STAT_STATE ] & SS_BOOSTED )
-	{
-		float      progress;
-
-		if( time == -1 )
-		{
-			time = cg.time;
-		}
-
-		progress = ( (float)cg.time - time ) / (ALIEN_POISON_TIME * 2);
-
-		CG_DrawPlayerProgressBar( rect, foreColor, 1-progress, 0.25, shader );
-
-	}
-	else
-	{
-		time = -1;
-		return;
-	}
-
-}
-
 static void CG_DrawPlayerMeter( rectDef_t *rect, float fraction, vec4_t color, qhandle_t shader )
 {
 
@@ -1603,7 +1577,33 @@ static void CG_DrawPlayerHealthMeter( rectDef_t *rect, vec4_t color, qhandle_t s
 	fraction = (float)cg.snap->ps.stats[ STAT_HEALTH ] / (float)BG_Class( cg.snap->ps.stats[ STAT_CLASS ] )->health;
 	
 	CG_DrawPlayerMeter( rect, fraction, color, shader );
-}	
+}
+
+static void CG_DrawPlayerBoostedMeter( rectDef_t *rect, vec4_t foreColor, qhandle_t shader )
+{
+	static int time = -1;
+	
+	if( cg.snap->ps.stats[ STAT_STATE ] & SS_BOOSTED )
+	{
+		float      progress;
+		
+		if( time == -1 || cg.snap->ps.stats[ STAT_STATE ] & SS_BOOSTEDNEW )
+		{
+			time = cg.time;
+		}
+		
+		progress = ( (float)cg.time - time ) / BOOST_TIME;
+		
+		CG_DrawPlayerMeter( rect, 1-progress, foreColor, shader );
+		
+	}
+	else
+	{
+		time = -1;
+		return;
+	}
+	
+}
 
 static void CG_DrawProgressLabel( rectDef_t *rect, float text_x, float text_y, vec4_t color,
                                   float scale, int textalign, int textvalign,
@@ -3943,8 +3943,8 @@ void CG_OwnerDraw( float x, float y, float w, float h, float text_x,
 			CG_DrawPlayerBoosterBolt( &rect, backColor, foreColor, shader );
 			break;
 
-		case CG_PLAYER_BOOSTED_BAR:
-			CG_DrawPlayerBoostedBar( &rect, foreColor, shader );
+		case CG_PLAYER_BOOSTED_METER:
+			CG_DrawPlayerBoostedMeter( &rect, foreColor, shader );
 			break;
 
 		case CG_PLAYER_POISON_BARBS:

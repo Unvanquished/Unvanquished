@@ -1656,6 +1656,10 @@ void ClientThink_real( gentity_t *ent )
 
 	if ( client->ps.stats[ STAT_STATE ] & SS_BOOSTED )
 	{
+		if ( level.time - client->boostedTime != BOOST_TIME )
+		{
+			client->ps.stats[ STAT_STATE ] &= ~SS_BOOSTEDNEW;
+		}
 		if ( level.time - client->boostedTime >= BOOST_TIME )
 		{
 			client->ps.stats[ STAT_STATE ] &= ~SS_BOOSTED;
