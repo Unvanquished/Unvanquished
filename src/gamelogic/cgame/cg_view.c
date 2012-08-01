@@ -1489,6 +1489,68 @@ static void CG_PlayBufferedSounds( void )
 
 //=========================================================================
 
+static cplane_t  frustum[4];
+
+/*
+=================
+CG_SetupFrustum
+=================
+*/
+void CG_SetupFrustum(void)
+{
+	int             i;
+	float           xs, xc;
+	float           ang;
+
+	ang = cg.refdef.fov_x / 180 * M_PI * 0.5f;
+	xs = sin(ang);
+	xc = cos(ang);
+
+	VectorScale(cg.refdef.viewaxis[0], xs, frustum[0].normal);
+	VectorMA(frustum[0].normal, xc, cg.refdef.viewaxis[1], frustum[0].normal);
+
+	VectorScale(cg.refdef.viewaxis[0], xs, frustum[1].normal);
+	VectorMA(frustum[1].normal, -xc, cg.refdef.viewaxis[1], frustum[1].normal);
+
+	ang = cg.refdef.fov_y / 180 * M_PI * 0.5f;
+	xs = sin(ang);
+	xc = cos(ang);
+
+	VectorScale(cg.refdef.viewaxis[0], xs, frustum[2].normal);
+	VectorMA(frustum[2].normal, xc, cg.refdef.viewaxis[2], frustum[2].normal);
+
+	VectorScale(cg.refdef.viewaxis[0], xs, frustum[3].normal);
+	VectorMA(frustum[3].normal, -xc, cg.refdef.viewaxis[2], frustum[3].normal);
+
+	for(i = 0; i < 4; i++)
+	{
+		frustum[i].dist = DotProduct(cg.refdef.vieworg, frustum[i].normal);
+		frustum[i].type = PLANE_NON_AXIAL;
+		SetPlaneSignbits(&frustum[i]);
+	}
+}
+/*
+=================
+CG_CullBox
+
+returns true if culled
+=================
+*/
+qboolean CG_CullBox(vec3_t mins, vec3_t maxs)
+{
+	int              i;
+	cplane_t         *frust;
+
+	//check against frustum planes
+	for(i = 0; i < 4; i++) 
+	{
+		frust = &frustum[i];
+
+		if( BoxOnPlaneSide(mins, maxs, frust ) == 2 )
+			return qtrue;
+	}
+	return qfalse;
+}
 /*
 =================
 CG_DrawActiveFrame
@@ -1550,6 +1612,9 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 
 	// build cg.refdef
 	inwater = CG_CalcViewValues();
+
+	//build culling planes
+	CG_SetupFrustum();
 
 	// build the render lists
 	if ( !cg.hyperspace )

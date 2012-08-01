@@ -1383,6 +1383,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 	vec3_t        right;
 	qboolean      visible = qfalse;
 	vec3_t        mins, maxs;
+	vec3_t        cullMins, cullMaxs;
 	entityState_t *hit;
 	int           anim;
 
@@ -1411,6 +1412,13 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 
 	// trace for center point
 	BG_BuildableBoundingBox( es->modelindex, mins, maxs );
+
+	//cull buildings outside the view frustum
+	VectorAdd(cent->lerpOrigin, mins, cullMins);
+	VectorAdd(cent->lerpOrigin, maxs, cullMaxs);
+
+	if(CG_CullBox(cullMins, cullMaxs))
+		return;
 
 	// hack for shrunken barricades
 	anim = es->torsoAnim & ~( ANIM_FORCEBIT | ANIM_TOGGLEBIT );
