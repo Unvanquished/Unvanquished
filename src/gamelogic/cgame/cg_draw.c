@@ -1535,6 +1535,68 @@ static void CG_DrawPlayerBoostedBar( rectDef_t *rect, vec4_t foreColor, qhandle_
 
 }
 
+static void CG_DrawPlayerMeter( rectDef_t *rect, float fraction, vec4_t color, qhandle_t shader )
+{
+
+	CG_AdjustFrom640( &rect->x, &rect->y, &rect->w, &rect->h );
+
+	// Vertical meter
+	if( rect->h >= rect->w )
+	{
+		float height;
+		
+		height = rect->h * fraction;
+
+		trap_R_SetColor( color );
+		trap_R_DrawStretchPic( rect->x, rect->y - height + rect->h, rect->w,
+							height, 0.0f, 1.0f - fraction, 1.0f, 1.0f, shader );
+		trap_R_SetColor( NULL );
+	}
+
+	// Horizontal meter
+	else
+	{
+		float width;
+
+		width = rect->w * fraction;
+
+		trap_R_SetColor( color );
+		trap_R_DrawStretchPic( rect->x - width + rect->w, rect->y, width,
+							   rect->h, 1.0f - fraction, 0.0f, 1.0f, 1.0f, shader );
+		trap_R_SetColor( NULL );
+	}	
+}
+
+static void CG_DrawPlayerClipMeter( rectDef_t *rect, vec4_t color, qhandle_t shader )
+{
+	float fraction;
+	float height;
+	
+	if ( cg.predictedPlayerState.stats[ STAT_TEAM ] != TEAM_HUMANS )
+	{
+		return;
+	}
+	
+	fraction = (float)cg.snap->ps.Ammo /(float)BG_Weapon( cg.snap->ps.weapon )->maxAmmo;
+
+	CG_DrawPlayerMeter( rect, fraction, color, shader );
+}
+
+static void CG_DrawPlayerHealthMeter( rectDef_t *rect, vec4_t color, qhandle_t shader )
+{
+	float fraction;
+	float height;
+	
+	if ( cg.predictedPlayerState.stats[ STAT_TEAM ] != TEAM_HUMANS )
+	{
+		return;
+	}
+	
+	fraction = (float)cg.snap->ps.stats[ STAT_HEALTH ] / (float)BG_Class( cg.snap->ps.stats[ STAT_CLASS ] )->health;
+	
+	CG_DrawPlayerMeter( rect, fraction, color, shader );
+}	
+
 static void CG_DrawProgressLabel( rectDef_t *rect, float text_x, float text_y, vec4_t color,
                                   float scale, int textalign, int textvalign,
                                   const char *s, float fraction )
@@ -3810,6 +3872,10 @@ void CG_OwnerDraw( float x, float y, float w, float h, float text_x,
 			CG_DrawPlayerClipsValue( &rect, foreColor );
 			break;
 
+		case CG_PLAYER_CLIPS_METER:
+			CG_DrawPlayerClipMeter( &rect, foreColor, shader );
+			break;
+
 		case CG_PLAYER_AMMO_STACK:
 			CG_DrawPlayerAmmoStack( &rect, backColor, foreColor, textalign,
 			                        textvalign );
@@ -3835,6 +3901,10 @@ void CG_OwnerDraw( float x, float y, float w, float h, float text_x,
 			break;
 		case CG_PLAYER_HEALTH_CROSS:
 			CG_DrawPlayerHealthCross( &rect, foreColor );
+			break;
+
+		case CG_PLAYER_HEALTH_METER:
+			CG_DrawPlayerHealthMeter( &rect, foreColor, shader );
 			break;
 
 		case CG_PLAYER_CHARGE_BAR_BG:
