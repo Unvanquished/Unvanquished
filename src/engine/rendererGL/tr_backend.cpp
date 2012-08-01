@@ -426,7 +426,6 @@ void GL_Cull( int cullType )
 	}
 
 #if 1
-	glState.faceCulling = cullType;
 
 	if ( cullType == CT_TWO_SIDED )
 	{
@@ -434,7 +433,8 @@ void GL_Cull( int cullType )
 	}
 	else
 	{
-		glEnable( GL_CULL_FACE );
+		if( glState.faceCulling == CT_TWO_SIDED )
+			glEnable( GL_CULL_FACE );
 
 		if ( cullType == CT_BACK_SIDED )
 		{
@@ -463,7 +463,7 @@ void GL_Cull( int cullType )
 			}
 		}
 	}
-
+	glState.faceCulling = cullType;
 #else
 	glState.faceCulling = CT_TWO_SIDED;
 	glDisable( GL_CULL_FACE );
