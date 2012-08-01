@@ -1569,15 +1569,28 @@ static void CG_DrawPlayerMeter( rectDef_t *rect, float fraction, vec4_t color, q
 
 static void CG_DrawPlayerClipMeter( rectDef_t *rect, vec4_t color, qhandle_t shader )
 {
-	float fraction;
-	float height;
+	float    fraction;
+	int      maxAmmo;
+	weapon_t weapon;
 	
 	if ( cg.predictedPlayerState.stats[ STAT_TEAM ] != TEAM_HUMANS )
 	{
 		return;
 	}
+
+	weapon = BG_PrimaryWeapon( cg.snap->ps.stats );
+	maxAmmo = BG_Weapon( weapon )->maxAmmo;
+
+	if ( maxAmmo <= 0 ) { return; }
+
+	if ( BG_Weapon( weapon )->usesEnergy &&
+		BG_InventoryContainsUpgrade( UP_BATTPACK, cg.snap->ps.stats ) )
+	{
+		maxAmmo *= BATTPACK_MODIFIER;
+	}
+		
 	
-	fraction = (float)cg.snap->ps.Ammo /(float)BG_Weapon( cg.snap->ps.weapon )->maxAmmo;
+	fraction = (float)cg.snap->ps.Ammo / (float)maxAmmo;
 
 	CG_DrawPlayerMeter( rect, fraction, color, shader );
 }
