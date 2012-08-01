@@ -1600,11 +1600,6 @@ static void CG_DrawPlayerHealthMeter( rectDef_t *rect, vec4_t color, qhandle_t s
 	float fraction;
 	float height;
 	
-	if ( cg.predictedPlayerState.stats[ STAT_TEAM ] != TEAM_HUMANS )
-	{
-		return;
-	}
-	
 	fraction = (float)cg.snap->ps.stats[ STAT_HEALTH ] / (float)BG_Class( cg.snap->ps.stats[ STAT_CLASS ] )->health;
 	
 	CG_DrawPlayerMeter( rect, fraction, color, shader );
