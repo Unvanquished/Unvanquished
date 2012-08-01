@@ -1962,13 +1962,6 @@ void CG_Buildable( centity_t *cent )
 
 			QuatFromAngles( rotation, es->angles2[ PITCH ], 0, 0 );
 			QuatMultiply0( ent.skeleton.bones[ 6 ].rotation, rotation );
-
-			if( cg_weapons[ WP_MGTURRET ].wim[ WPM_PRIMARY ].muzzleParticleSystem && cent->lerpFrame.animationNumber == BANIM_ATTACK1 )
-			{
-				cent->muzzlePS = CG_SpawnNewParticleSystem( cg_weapons[ WP_MGTURRET ].wim[ WPM_PRIMARY ].muzzleParticleSystem );
-				CG_SetAttachmentCent( &cent->muzzlePS->attachment, cent );
-				CG_AttachToCent( &cent->muzzlePS->attachment );
-			}			
 		}
 			
 
@@ -2097,6 +2090,12 @@ void CG_Buildable( centity_t *cent )
 				                        weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 0 ],
 				                        weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 1 ],
 				                        weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 2 ], 0, 0 );
+				if( weapon->wim[ WPM_PRIMARY ].muzzleParticleSystem )
+				{
+					cent->muzzlePS = CG_SpawnNewParticleSystem( weapon->wim[ WPM_PRIMARY ].muzzleParticleSystem );
+					CG_SetAttachmentTag( &cent->muzzlePS->attachment, ent, ent.hModel, "tag_flash" );
+					CG_AttachToTag( &cent->muzzlePS->attachment );
+				}
 			}
 		}
 
