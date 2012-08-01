@@ -1430,7 +1430,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 	entNum = cg.predictedPlayerState.clientNum;
 
 	// if first try fails, step left, step right
-	for ( j = 0; j < 3; j++ )
+	for ( j = 0; j < 3 && !visible; j++ )
 	{
 		VectorCopy( cg.refdef.vieworg, trOrigin );
 
