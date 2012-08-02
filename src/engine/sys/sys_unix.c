@@ -52,8 +52,11 @@ Maryland 20850 USA.
 #include <fcntl.h>
 #include <fenv.h>
 
+
+#ifndef DEDICATED
 #include <SDL.h>
 #include <SDL_syswm.h>
+#endif
 
 qboolean    stdinIsATTY;
 
@@ -87,29 +90,6 @@ char *Sys_DefaultHomePath( void )
 
 	return homePath;
 }
-
-#ifndef MACOS_X
-
-/*
-================
-Sys_TempPath
-================
-*/
-const char *Sys_TempPath( void )
-{
-	const char *TMPDIR = getenv( "TMPDIR" );
-
-	if ( TMPDIR == NULL || TMPDIR[ 0 ] == '\0' )
-	{
-		return "/tmp";
-	}
-	else
-	{
-		return TMPDIR;
-	}
-}
-
-#endif
 
 /*
 ==================
@@ -396,6 +376,38 @@ qboolean Sys_Mkdir( const char *path )
 
 	return qtrue;
 }
+
+/*
+==================
+Sys_Mkfifo
+==================
+*/
+FILE *Sys_Mkfifo( const char *ospath )
+{
+	FILE	*fifo;
+	int	result;
+	int	fn;
+	struct	stat buf;
+	
+	// if file already exists AND is a pipefile, remove it
+	if( !stat( ospath, &buf ) && S_ISFIFO( buf.st_mode ) )
+		FS_Remove( ospath );
+	
+	result = mkfifo( ospath, 0600 );
+	if( result != 0 )
+		return NULL;
+	
+	fn = open( ospath, O_RDWR | O_NONBLOCK );
+	if( fn == -1 )
+		return NULL;
+
+	fifo = fdopen( fn, "w+" );
+	if( fifo == NULL )
+		close( fn );
+
+	return fifo;
+}
+
 
 /*
 ==================
@@ -1326,6 +1338,15 @@ Sys_IsNumLockDown
 */
 qboolean Sys_IsNumLockDown( void )
 {
-	// FIXME for Linux
-	return qfalse;
+#if !defined(MACOS_X) && !defined(DEDICATED)
+	Display        *dpy = XOpenDisplay(":0");
+	XKeyboardState x;
+
+	XGetKeyboardControl(dpy, &x);
+	XCloseDisplay(dpy);
+
+	return (x.led_mask & 2) ? qtrue : qfalse;
+#else
+	return qtrue; // Macs don't have Numlock.
+#endif
 }

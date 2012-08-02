@@ -350,7 +350,6 @@ void R_ImageList_f( void )
 			case 4:
 				ri.Printf( PRINT_ALL, "RGBA " );
 				break;
-#ifndef IPHONE
 
 			case GL_RGBA8:
 				ri.Printf( PRINT_ALL, "RGBA8" );
@@ -359,7 +358,6 @@ void R_ImageList_f( void )
 			case GL_RGB8:
 				ri.Printf( PRINT_ALL, "RGB8 " );
 				break;
-#endif // !IPHONE
 
 			case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
 				ri.Printf( PRINT_ALL, "DXT3 " );
@@ -372,7 +370,6 @@ void R_ImageList_f( void )
 			case GL_RGB4_S3TC:
 				ri.Printf( PRINT_ALL, "S3TC4" );
 				break;
-#ifndef IPHONE
 
 			case GL_RGBA4:
 				ri.Printf( PRINT_ALL, "RGBA4" );
@@ -381,7 +378,6 @@ void R_ImageList_f( void )
 			case GL_RGB5:
 				ri.Printf( PRINT_ALL, "RGB5 " );
 				break;
-#endif // !IPHONE
 
 			default:
 				ri.Printf( PRINT_ALL, "???? " );
@@ -896,10 +892,6 @@ static void Upload32( unsigned *data,
 		// select proper internal format
 		if ( samples == 3 )
 		{
-#ifdef IPHONE
-			internalFormat = GL_RGBA;
-#else
-
 			if ( !noCompress && glConfig.textureCompression == TC_EXT_COMP_S3TC )
 			{
 				// TODO: which format is best for which textures?
@@ -922,15 +914,9 @@ static void Upload32( unsigned *data,
 			{
 				internalFormat = 3;
 			}
-
-#endif // IPHONE
 		}
 		else if ( samples == 4 )
 		{
-#ifdef IPHONE
-			internalFormat = GL_RGBA;
-#else
-
 			if ( !noCompress && glConfig.textureCompression == TC_EXT_COMP_S3TC )
 			{
 				// TODO: which format is best for which textures?
@@ -949,17 +935,11 @@ static void Upload32( unsigned *data,
 			{
 				internalFormat = 4;
 			}
-
-#endif // IPHONE
 		}
 	}
 	else
 	{
-#ifdef IPHONE
-		internalFormat = GL_RGBA;
-#else
 		internalFormat = 3;
-#endif // IPHONE
 	}
 
 	// copy or resample data as appropriate for first MIP level
@@ -1564,6 +1544,7 @@ static void LoadPCX( const char *filename, byte **pic, byte **palette, int *widt
 	if ( pcx->manufacturer != 0x0a
 	     || pcx->version != 5 || pcx->encoding != 1 || pcx->bits_per_pixel != 8 || xmax >= 1024 || ymax >= 1024 )
 	{
+		ri.FS_FreeFile( pcx );
 		ri.Printf( PRINT_ALL, "Bad pcx file %s (%i x %i) (%i x %i)\n", filename, xmax + 1, ymax + 1, pcx->xmax, pcx->ymax );
 		return;
 	}
@@ -1749,16 +1730,19 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height )
 
 	if ( targa_header.image_type != 2 && targa_header.image_type != 10 && targa_header.image_type != 3 )
 	{
+		ri.FS_FreeFile( buffer );
 		ri.Error( ERR_DROP, "LoadTGA: Only type 2 (RGB), 3 (gray), and 10 (RGB) TGA images supported" );
 	}
 
 	if ( targa_header.colormap_type != 0 )
 	{
+		ri.FS_FreeFile( buffer );
 		ri.Error( ERR_DROP, "LoadTGA: colormaps not supported" );
 	}
 
 	if ( ( targa_header.pixel_size != 32 && targa_header.pixel_size != 24 ) && targa_header.image_type != 3 )
 	{
+		ri.FS_FreeFile( buffer );
 		ri.Error( ERR_DROP, "LoadTGA: Only 32 or 24 bit images supported (no colormaps)" );
 	}
 
@@ -1829,6 +1813,7 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height )
 						break;
 
 					default:
+						ri.FS_FreeFile( buffer );
 						ri.Error( ERR_DROP, "LoadTGA: illegal pixel_size '%d' in file '%s'", targa_header.pixel_size, name );
 				}
 			}
@@ -1873,6 +1858,7 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height )
 							break;
 
 						default:
+							ri.FS_FreeFile( buffer );
 							ri.Error( ERR_DROP, "LoadTGA: illegal pixel_size '%d' in file '%s'", targa_header.pixel_size, name );
 					}
 
@@ -1931,6 +1917,7 @@ void LoadTGA( const char *name, byte **pic, int *width, int *height )
 								break;
 
 							default:
+								ri.FS_FreeFile( buffer );
 								ri.Error( ERR_DROP, "LoadTGA: illegal pixel_size '%d' in file '%s'", targa_header.pixel_size,
 								          name );
 						}
@@ -2762,9 +2749,7 @@ static void R_CreateFogImage( void )
 	byte *data;
 
 	//float d;
-#ifndef IPHONE
 	float borderColor[ 4 ];
-#endif //IPHONE
 
 	// allocate table for image
 	data = ri.Hunk_AllocateTempMemory( FOG_S * FOG_T * 4 );
@@ -2828,14 +2813,12 @@ static void R_CreateFogImage( void )
 	ri.Hunk_FreeTempMemory( data );
 
 	// ydnar: the following lines are unnecessary for new GL_CLAMP_TO_EDGE fog
-#ifndef IPHONE
 	borderColor[ 0 ] = 1.0;
 	borderColor[ 1 ] = 1.0;
 	borderColor[ 2 ] = 1.0;
 	borderColor[ 3 ] = 1;
 
 	glTexParameterfv( GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor );
-#endif // !IPHONE
 }
 
 /*
@@ -3042,10 +3025,7 @@ void R_SetColorMappings( void )
 		s_intensitytable[ i ] = j;
 	}
 
-	if ( glConfig.deviceSupportsGamma )
-	{
-		GLimp_SetGamma( s_gammatable, s_gammatable, s_gammatable );
-	}
+	GLimp_SetGamma( s_gammatable, s_gammatable, s_gammatable );
 }
 
 /*
@@ -4421,12 +4401,14 @@ static void LoadDDS( const char *name, byte **pic, int *width, int *height )
 	// get dds info
 	if ( DDSGetInfo( ( ddsBuffer_t * ) buffer, &w, &h, &pf ) )
 	{
+		ri.FS_FreeFile( buffer );
 		ri.Error( ERR_DROP, "LoadDDS: Invalid DDS texture '%s'", name );
 	}
 
 	// only certain types of dds textures are supported
 	if ( pf != DDS_PF_ARGB8888 && pf != DDS_PF_DXT1 && pf != DDS_PF_DXT3 && pf != DDS_PF_DXT5 )
 	{
+		ri.FS_FreeFile( buffer );
 		ri.Error( ERR_DROP, "LoadDDS: Only DDS texture formats ARGB8888, DXT1, DXT3, and DXT5 are supported (%d) '%s'", pf,
 		          name );
 	}
@@ -4871,7 +4853,6 @@ void R_LoadCacheImages( void )
 		return;
 	}
 
-	buf = ri.Hunk_AllocateTempMemory( len );
 	ri.FS_ReadFile( "image.cache", &buf );
 	pString = buf;
 
@@ -4888,7 +4869,7 @@ void R_LoadCacheImages( void )
 		R_FindImageFile( name, parms[ 0 ], parms[ 1 ], parms[ 2 ], parms[ 3 ] );
 	}
 
-	ri.Hunk_FreeTempMemory( buf );
+	ri.FS_FreeFile( buf );
 }
 
 // done.

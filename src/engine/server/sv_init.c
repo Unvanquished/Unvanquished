@@ -41,56 +41,6 @@ Maryland 20850 USA.
 
 #include "server.h"
 
-#ifdef USE_HUB_SERVER
-
-/*
-==================
-SV_ResolveowHubHost
-
-Resolve the host/port in sv_owHubHost to the netadr_t
-svs.owHubAddress which we can use to send packets; if
-we fail to resolve, svs.owHubAddress.type == NA_BAD.
-==================
-*/
-
-void SV_ResolveowHubHost( void )
-{
-	char     *host = sv_owHubHost->string;
-	netadr_t *address = &svs.owHubAddress;
-	int      result = -1;
-
-	if ( host && host[ 0 ] )
-	{
-		Com_Printf(_( "Resolving |ET:XReaL| Hub %s.\n"), host );
-		result = NET_StringToAdr( host, address, NA_UNSPEC );
-
-		switch ( result )
-		{
-			case 0:
-				Com_Printf(_( "Completely failed to resolve %s.\n"), host );
-				break;
-
-			case 1:
-				Com_Printf(_( "Resolved %s to %s.\n"), host, NET_AdrToStringwPort( *address ) );
-				break;
-
-			case 2:
-				Com_Printf(_( "Failed to resolve a port for %s.\n"), host );
-				address->type = NA_BAD;
-				break;
-
-			default:
-				Com_Printf(_( "Unknown error %d from NET_StringToAdr()!\n"), result );
-				break;
-		}
-	}
-
-	// We had to add this to avoid a double-call to SV_ResolveAlphaHubHost(), not sure why yet...
-	sv_owHubHost->modified = qfalse;
-}
-
-#endif
-
 /*
 ===============
 SV_SetConfigstring
@@ -172,16 +122,6 @@ void SV_UpdateConfigStrings( void )
 
 				// do not always send server info to all clients
 				if ( index == CS_SERVERINFO && client->gentity && ( client->gentity->r.svFlags & SVF_NOSERVERINFO ) )
-				{
-					continue;
-				}
-
-				// RF, don't send to bot/AI
-				// Gordon: Note: might want to re-enable later for bot support
-				// RF, re-enabled
-				// Arnout: removed hardcoded gametype
-				// Arnout: added coop
-				if ( ( SV_GameIsSinglePlayer() || SV_GameIsCoop() ) && client->gentity && ( client->gentity->r.svFlags & SVF_BOT ) )
 				{
 					continue;
 				}
@@ -299,6 +239,29 @@ void SV_GetUserinfo( int index, char *buffer, int bufferSize )
 }
 
 /*
+==================
+SV_GetPlayerPubkey
+
+==================
+*/
+
+void SV_GetPlayerPubkey( int clientNum, char *pubkey, int size )
+{
+	if ( size < 1 )
+	{
+		Com_Error( ERR_DROP, "SV_GetPlayerPubkey: size == %i", size );
+	}
+
+	if ( clientNum < 0 || clientNum >= sv_maxclients->integer )
+	{
+		Com_Error( ERR_DROP, "SV_GetPlayerPubkey: bad clientNum %i", clientNum );
+	}
+
+	Q_strncpyz( pubkey, svs.clients[ clientNum ].pubkey, size );
+}
+
+
+/*
 ================
 SV_CreateBaseline
 
@@ -339,26 +302,7 @@ SV_BoundMaxClients
 void SV_BoundMaxClients( int minimum )
 {
 	// get the current maxclients value
-#ifdef __MACOS__
-	Cvar_Get( "sv_maxclients", "16", 0 );  //DAJ HOG
-#else
-	Cvar_Get( "sv_maxclients", "20", 0 );  // NERVE - SMF - changed to 20 from 8
-#endif
-
-	// START    xkan, 10/03/2002
-	// allow many bots in single player. note that this pretty much means all previous
-	// settings will be ignored (including the one set through "seta sv_maxclients <num>"
-	// in user profile's wolfconfig_mp.cfg). also that if the user subsequently start
-	// the server in multiplayer mode, the number of clients will still be the number
-	// set here, which may be wrong - we can certainly just set it to a sensible number
-	// when it is not in single player mode in the else part of the if statement when
-	// necessary
-	if ( SV_GameIsSinglePlayer() || SV_GameIsCoop() )
-	{
-		Cvar_Set( "sv_maxclients", "64" );
-	}
-
-	// END      xkan, 10/03/2002
+	Cvar_Get( "sv_maxclients", "20", 0 ); // NERVE - SMF - changed to 20 from 8
 
 	sv_maxclients->modified = qfalse;
 
@@ -410,14 +354,6 @@ void SV_Startup( void )
 	}
 
 	svs.initialized = qtrue;
-
-#ifdef USE_HUB_SERVER
-	// Try to resolve the hub once when the first ever
-	// map is started on the server; we'll only try again if
-	// sv_owHubHost was modified and the server was (soft)
-	// restarted using SpawnServer()
-	SV_ResolveowHubHost();
-#endif
 
 	Cvar_Set( "sv_running", "1" );
 
@@ -627,7 +563,7 @@ clients along with it.
 This is NOT called for map_restart
 ================
 */
-void SV_SpawnServer( char *server, qboolean killBots )
+void SV_SpawnServer( char *server )
 {
 	int        i;
 	int        checksum;
@@ -679,17 +615,6 @@ void SV_SpawnServer( char *server, qboolean killBots )
 		{
 			SV_ChangeMaxClients();
 		}
-
-#ifdef USE_HUB_SERVER
-
-		// if sv_owHubHost was changed, resolve the address again
-		if ( sv_owHubHost->modified )
-		{
-			sv_owHubHost->modified = qfalse;
-			SV_ResolveowHubHost();
-		}
-
-#endif
 	}
 
 	// clear pak references
@@ -708,15 +633,7 @@ void SV_SpawnServer( char *server, qboolean killBots )
 	Cvar_Set( "nextmap", "map_restart 0" );
 //  Cvar_Set( "nextmap", va("map %s", server) );
 
-	// Ridah
-	// DHM - Nerve :: We want to use the completion bar in multiplayer as well
-	// Arnout: just always use it
-//  if( !SV_GameIsSinglePlayer() ) {
 	SV_SetExpectedHunkUsage( va( "maps/%s.bsp", server ) );
-//  } else {
-	// just set it to a negative number,so the cgame knows not to draw the percent bar
-//      Cvar_Set( "com_expectedhunkusage", "-1" );
-//  }
 
 	// make sure we are not paused
 	Cvar_Set( "cl_paused", "0" );
@@ -767,10 +684,6 @@ void SV_SpawnServer( char *server, qboolean killBots )
 	// load and spawn all other entities
 	SV_InitGameProgs();
 
-	// don't allow a map_restart if game is modified
-	// Arnout: there isn't any check done against this, obsolete
-//  sv_gametype->modified = qfalse;
-
 	// run a few frames to allow everything to settle
 	for ( i = 0; i < GAME_INIT_FRAMES; i++ )
 	{
@@ -791,11 +704,6 @@ void SV_SpawnServer( char *server, qboolean killBots )
 
 			if ( svs.clients[ i ].netchan.remoteAddress.type == NA_BOT )
 			{
-				if ( killBots || SV_GameIsSinglePlayer() || SV_GameIsCoop() )
-				{
-					SV_DropClient( &svs.clients[ i ], "" );
-					continue;
-				}
 
 				isBot = qtrue;
 			}
@@ -904,6 +812,8 @@ void SV_SpawnServer( char *server, qboolean killBots )
 
 	Cvar_Set( "sv_serverRestarting", "0" );
 
+	SV_AddOperatorCommands();
+
 	Com_Printf(_( "-----------------------------------\n" ));
 }
 
@@ -919,40 +829,29 @@ void SV_Init( void )
 	SV_AddOperatorCommands();
 
 	// serverinfo vars
-	Cvar_Get( "dmflags", "0", /*CVAR_SERVERINFO */ 0 );
-	Cvar_Get( "fraglimit", "0", /*CVAR_SERVERINFO */ 0 );
 	Cvar_Get( "timelimit", "0", CVAR_SERVERINFO );
 
-	// Rafael gameskill
-//  sv_gameskill = Cvar_Get ("g_gameskill", "3", CVAR_SERVERINFO | CVAR_LATCH );
-	// done
-
-	Cvar_Get( "sv_keywords", "", CVAR_SERVERINFO );
 	Cvar_Get( "protocol", va( "%i", PROTOCOL_VERSION ), CVAR_SERVERINFO | CVAR_ARCHIVE );
 	sv_mapname = Cvar_Get( "mapname", "nomap", CVAR_SERVERINFO | CVAR_ROM );
 	sv_privateClients = Cvar_Get( "sv_privateClients", "0", CVAR_SERVERINFO );
 	sv_hostname = Cvar_Get( "sv_hostname", "Unnamed Unvanquished Server", CVAR_SERVERINFO | CVAR_ARCHIVE );
-	//
-#ifdef __MACOS__
-	sv_maxclients = Cvar_Get( "sv_maxclients", "16", CVAR_SERVERINFO | CVAR_LATCH );  //DAJ HOG
-#else
 	sv_maxclients = Cvar_Get( "sv_maxclients", "20", CVAR_SERVERINFO | CVAR_LATCH );  // NERVE - SMF - changed to 20 from 8
-#endif
-
 	sv_maxRate = Cvar_Get( "sv_maxRate", "0", CVAR_ARCHIVE | CVAR_SERVERINFO );
 	sv_minPing = Cvar_Get( "sv_minPing", "0", CVAR_ARCHIVE | CVAR_SERVERINFO );
 	sv_maxPing = Cvar_Get( "sv_maxPing", "0", CVAR_ARCHIVE | CVAR_SERVERINFO );
 	sv_floodProtect = Cvar_Get( "sv_floodProtect", "0", CVAR_ARCHIVE | CVAR_SERVERINFO );
-	sv_allowAnonymous = Cvar_Get( "sv_allowAnonymous", "0", CVAR_SERVERINFO );
-	sv_friendlyFire = Cvar_Get( "g_friendlyFire", "1", CVAR_SERVERINFO | CVAR_ARCHIVE );  // NERVE - SMF
-	sv_maxlives = Cvar_Get( "g_maxlives", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_SERVERINFO );  // NERVE - SMF
-	sv_needpass = Cvar_Get( "g_needpass", "0", CVAR_SERVERINFO | CVAR_ROM );
 
 	// systeminfo
 	//bani - added cvar_t for sv_cheats so server engine can reference it
 	sv_cheats = Cvar_Get( "sv_cheats", "1", CVAR_SYSTEMINFO | CVAR_ROM );
 	sv_serverid = Cvar_Get( "sv_serverid", "0", CVAR_SYSTEMINFO | CVAR_ROM );
+#ifdef DEDICATED
 	sv_pure = Cvar_Get( "sv_pure", "1", CVAR_SYSTEMINFO );
+#else
+	// Use OS shared libs for the client at startup. This prevents crashes due to mismatching syscall ABIs
+	// from loading outdated vms pk3s. The correct vms pk3 will be loaded upon connecting to a pure server.
+	sv_pure = Cvar_Get( "sv_pure", "0", CVAR_SYSTEMINFO ); 
+#endif
 #ifdef USE_VOIP
 	sv_voip = Cvar_Get( "sv_voip", "1", CVAR_SYSTEMINFO | CVAR_LATCH );
 	Cvar_CheckRange( sv_voip, 0, 1, qtrue );
@@ -977,9 +876,6 @@ void SV_Init( void )
 	sv_master[ 3 ] = Cvar_Get( "sv_master4", "", CVAR_ARCHIVE );
 	sv_master[ 4 ] = Cvar_Get( "sv_master5", "", CVAR_ARCHIVE );
 	sv_reconnectlimit = Cvar_Get( "sv_reconnectlimit", "3", 0 );
-	sv_tempbanmessage =
-	  Cvar_Get( "sv_tempbanmessage", "You have been kicked and are temporarily banned from joining this server.", 0 );
-	sv_showloss = Cvar_Get( "sv_showloss", "0", 0 );
 	sv_padPackets = Cvar_Get( "sv_padPackets", "0", 0 );
 	sv_killserver = Cvar_Get( "sv_killserver", "0", 0 );
 	sv_mapChecksum = Cvar_Get( "sv_mapChecksum", "", CVAR_ROM );
@@ -988,35 +884,7 @@ void SV_Init( void )
 
 	sv_lanForceRate = Cvar_Get( "sv_lanForceRate", "1", CVAR_ARCHIVE );
 
-	sv_onlyVisibleClients = Cvar_Get( "sv_onlyVisibleClients", "0", 0 );  // DHM - Nerve
-
 	sv_showAverageBPS = Cvar_Get( "sv_showAverageBPS", "0", 0 );  // NERVE - SMF - net debugging
-
-	// NERVE - SMF - create user set cvars
-	Cvar_Get( "g_userTimeLimit", "0", 0 );
-	Cvar_Get( "g_userAlliedRespawnTime", "0", 0 );
-	Cvar_Get( "g_userAxisRespawnTime", "0", 0 );
-	Cvar_Get( "g_maxlives", "0", 0 );
-	Cvar_Get( "g_altStopwatchMode", "0", CVAR_ARCHIVE );
-	Cvar_Get( "g_minGameClients", "8", CVAR_SERVERINFO );
-	Cvar_Get( "g_complaintlimit", "6", CVAR_ARCHIVE );
-
-	// TTimo - some UI additions
-	// NOTE: sucks to have this hardcoded really, I suppose this should be in UI
-	Cvar_Get( "g_axismaxlives", "0", 0 );
-	Cvar_Get( "g_alliedmaxlives", "0", 0 );
-	Cvar_Get( "g_fastres", "0", CVAR_ARCHIVE );
-	Cvar_Get( "g_fastResMsec", "1000", CVAR_ARCHIVE );
-
-	// ATVI Tracker Wolfenstein Misc #273
-	Cvar_Get( "g_voteFlags", "0", CVAR_ROM | CVAR_SERVERINFO );
-
-	// ATVI Tracker Wolfenstein Misc #263
-	Cvar_Get( "g_antilag", "1", CVAR_ARCHIVE | CVAR_SERVERINFO );
-
-	Cvar_Get( "g_needpass", "0", CVAR_SERVERINFO );
-
-	g_gameType = Cvar_Get( "g_gametype", va( "%i", com_gameInfo.defaultGameType ), CVAR_SERVERINFO | CVAR_LATCH );
 
 	// the download netcode tops at 18/20 kb/s, no need to make you think you can go above
 	sv_dl_maxRate = Cvar_Get( "sv_dl_maxRate", "42000", CVAR_ARCHIVE );
@@ -1027,19 +895,11 @@ void SV_Init( void )
 	sv_wwwFallbackURL = Cvar_Get( "sv_wwwFallbackURL", "", CVAR_ARCHIVE );
 
 	//bani
-	sv_packetloss = Cvar_Get( "sv_packetloss", "0", CVAR_CHEAT );
 	sv_packetdelay = Cvar_Get( "sv_packetdelay", "0", CVAR_CHEAT );
 
 	// fretn - note: redirecting of clients to other servers relies on this,
 	// ET://someserver.com
 	sv_fullmsg = Cvar_Get( "sv_fullmsg", "Server is full.", CVAR_ARCHIVE );
-
-	sv_requireValidGuid = Cvar_Get( "sv_requireValidGuid", "0", CVAR_ARCHIVE );
-
-#ifdef USE_HUB_SERVER
-	sv_owHubHost = Cvar_Get( "sv_owHubHost", "", CVAR_LATCH );
-	sv_owHubKey = Cvar_Get( "sv_owHubKey", "defaultkey123456", CVAR_ARCHIVE );
-#endif
 
 	svs.serverLoad = -1;
 }

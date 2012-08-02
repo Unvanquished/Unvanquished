@@ -249,12 +249,6 @@ void SV_LinkEntity( sharedEntity_t *gEnt )
 
 	ent = SV_SvEntityForGentity( gEnt );
 
-	// Ridah, sanity check for possible currentOrigin being reset bug
-	if ( !gEnt->r.bmodel && VectorCompare( gEnt->r.currentOrigin, vec3_origin ) )
-	{
-		Com_DPrintf( "WARNING: BBOX entity is being linked at world origin, this is probably a bug\n" );
-	}
-
 	if ( ent->worldSector )
 	{
 		SV_UnlinkEntity( gEnt );  // unlink from old position
@@ -833,8 +827,6 @@ int SV_PointContents( const vec3_t p, int passEntityNum )
 		*/
 
 		c2 = CM_TransformedPointContents( p, clipHandle, hit->r.currentOrigin, hit->r.currentAngles );
-		// Gordon: s.origin/angles is base origin/angles, need to use the current origin/angles for moving entity based water, or water locks in movement start position.
-//      c2 = CM_TransformedPointContents (p, clipHandle, hit->s.origin, hit->s.angles);
 
 		contents |= c2;
 	}

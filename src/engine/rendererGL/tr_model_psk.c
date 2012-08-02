@@ -990,7 +990,7 @@ qboolean R_LoadPSK( model_t *mod, void *buffer, int bufferSize, const char *modN
 	Com_Dealloc( triangles );
 	Com_Dealloc( materials );
 
-	ri.Printf( PRINT_ALL, "%i VBO surfaces created for PSK model '%s'\n", md5->numVBOSurfaces, modName );
+	ri.Printf( PRINT_DEVELOPER, "%i VBO surfaces created for PSK model '%s'\n", md5->numVBOSurfaces, modName );
 
 	return qtrue;
 }

@@ -265,10 +265,6 @@ SV_BotFrame
 */
 void SV_BotFrame( int time )
 {
-#ifdef PRE_RELEASE_DEMO
-	return;
-#endif
-
 	if ( !bot_enable )
 	{
 		return;

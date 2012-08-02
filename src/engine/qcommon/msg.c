@@ -1120,7 +1120,6 @@ netField_t entityStateFields[] =
 	{ NETF( groundEntityNum ),   GENTITYNUM_BITS },
 	{ NETF( loopSound ),         8               },
 	{ NETF( constantLight ),     32              },
-	{ NETF( dl_intensity ),      32              },
 	{ NETF( modelindex ),        9               },
 	{ NETF( modelindex2 ),       9               },
 	{ NETF( frame ),             16              },
@@ -1137,21 +1136,9 @@ netField_t entityStateFields[] =
 	{ NETF( eventParms[ 1 ] ),   8               },
 	{ NETF( eventParms[ 2 ] ),   8               },
 	{ NETF( eventParms[ 3 ] ),   8               },
-	{ NETF( powerups ),          16              },
 	{ NETF( weapon ),            8               },
 	{ NETF( legsAnim ),          ANIM_BITS       },
 	{ NETF( torsoAnim ),         ANIM_BITS       },
-	{ NETF( density ),           10              },
-	{ NETF( dmgFlags ),          32              },
-	{ NETF( onFireStart ),       32              },
-	{ NETF( onFireEnd ),         32              },
-	{ NETF( nextWeapon ),        8               },
-	{ NETF( teamNum ),           8               },
-	{ NETF( effect1Time ),       32              },
-	{ NETF( effect2Time ),       32              },
-	{ NETF( effect3Time ),       32              },
-	{ NETF( animMovetype ),      4               },
-	{ NETF( aiState ),           2               },
 	{ NETF( generic1 ),          10              },
 	{ NETF( misc ),              MAX_MISC        },
 	{ NETF( weaponAnim ),        ANIM_BITS       },
@@ -1593,13 +1580,7 @@ netField_t playerStateFields[] =
 	,
 	{ PSF( weaponTime ),           -16             }
 	,
-	{ PSF( weaponDelay ),          -16             }
-	,
-	{ PSF( grenadeTimeLeft ),      -16             }
-	,
 	{ PSF( gravity ),              16              }
-	,
-	{ PSF( leanf ),                0               }
 	,
 	{ PSF( speed ),                16              }
 	,
@@ -1643,15 +1624,9 @@ netField_t playerStateFields[] =
 	,
 	{ PSF( clientNum ),            8               }
 	,
-	{ PSF( weapons[ 0 ] ),         32              }
-	,
-	{ PSF( weapons[ 1 ] ),         32              }
-	,
 	{ PSF( weapon ),               7               }
-	, // (SA) yup, even more
-	{ PSF( weaponstate ),          4               }
 	,
-	{ PSF( weapAnim ),             10              }
+	{ PSF( weaponstate ),          4               }
 	,
 	{ PSF( viewangles[ 0 ] ),      0               }
 	,
@@ -1668,61 +1643,6 @@ netField_t playerStateFields[] =
 	{ PSF( damagePitch ),          8               }
 	,
 	{ PSF( damageCount ),          8               }
-	,
-	{ PSF( mins[ 0 ] ),            0               }
-	,
-	{ PSF( mins[ 1 ] ),            0               }
-	,
-	{ PSF( mins[ 2 ] ),            0               }
-	,
-	{ PSF( maxs[ 0 ] ),            0               }
-	,
-	{ PSF( maxs[ 1 ] ),            0               }
-	,
-	{ PSF( maxs[ 2 ] ),            0               }
-	,
-	{ PSF( crouchMaxZ ),           0               }
-	,
-	{ PSF( crouchViewHeight ),     0               }
-	,
-	{ PSF( standViewHeight ),      0               }
-	,
-	{ PSF( deadViewHeight ),       0               }
-	,
-	{ PSF( runSpeedScale ),        0               }
-	,
-	{ PSF( sprintSpeedScale ),     0               }
-	,
-	{ PSF( crouchSpeedScale ),     0               }
-	,
-	{ PSF( friction ),             0               }
-	,
-	{ PSF( viewlocked ),           8               }
-	,
-	{ PSF( viewlocked_entNum ),    16              }
-	,
-	{ PSF( nextWeapon ),           8               }
-	,
-	{ PSF( teamNum ),              8               }
-	,
-//{ PSF(gunfx), 8},
-	{ PSF( onFireStart ),          32              }
-	,
-	{ PSF( curWeapHeat ),          8               }
-	,
-	{ PSF( aimSpreadScale ),       8               }
-	,
-	{ PSF( serverCursorHint ),     8               }
-	, //----(SA)   added
-	{ PSF( serverCursorHintVal ),  8               }
-	, //----(SA)    added
-	{ PSF( classWeaponTime ),      32              }
-	, // JPW NERVE
-	{ PSF( identifyClient ),       8               }
-	,
-	{ PSF( identifyClientHealth ), 8               }
-	,
-	{ PSF( aiState ),              2               }
 	,
 	{ PSF( generic1 ),             10              }
 	,
@@ -1743,9 +1663,6 @@ netField_t playerStateFields[] =
 	{ PSF( otherEntityNum ),       10              }
 	,
 	{ PSF( weaponAnim ),           ANIM_BITS       }
-	,
-	{ PSF( clips ),                4               }
-	,
 };
 
 static int QDECL qsort_playerstatefields( const void *a, const void *b )
@@ -1800,14 +1717,10 @@ MSG_WriteDeltaPlayerstate
 */
 void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct playerState_s *to )
 {
-	int           i, j, lc;
+	int           i, lc;
 	playerState_t dummy;
 	int           statsbits;
 	int           persistantbits;
-	int           ammobits[ 4 ]; //----(SA)  modified
-	int           clipbits; //----(SA)  added
-	int           powerupbits;
-	int           holdablebits;
 	int           numFields;
 
 //bani - appears to have been debugging left in
@@ -1958,27 +1871,7 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 		}
 	}
 
-	holdablebits = 0;
-
-	for ( i = 0; i < 16; i++ )
-	{
-		if ( to->holdable[ i ] != from->holdable[ i ] )
-		{
-			holdablebits |= 1 << i;
-		}
-	}
-
-	powerupbits = 0;
-
-	for ( i = 0; i < 16; i++ )
-	{
-		if ( to->powerups[ i ] != from->powerups[ i ] )
-		{
-			powerupbits |= 1 << i;
-		}
-	}
-
-	if ( statsbits || persistantbits || holdablebits || powerupbits )
+	if ( statsbits || persistantbits )
 	{
 		MSG_WriteBits( msg, 1, 1 );  // something changed
 
@@ -2037,239 +1930,12 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 		{
 			MSG_WriteBits( msg, 0, 1 );  // no change
 		}
-
-		if ( holdablebits )
-		{
-			MSG_WriteBits( msg, 1, 1 );  // changed
-			MSG_WriteShort( msg, holdablebits );
-
-			for ( i = 0; i < 16; i++ )
-			{
-				if ( holdablebits & ( 1 << i ) )
-				{
-					MSG_WriteShort( msg, to->holdable[ i ] );
-				}
-			}
-		}
-		else
-		{
-			MSG_WriteBits( msg, 0, 1 );  // no change to holdables
-		}
-
-		if ( powerupbits )
-		{
-			MSG_WriteBits( msg, 1, 1 );  // changed
-			MSG_WriteShort( msg, powerupbits );
-
-			for ( i = 0; i < 16; i++ )
-			{
-				if ( powerupbits & ( 1 << i ) )
-				{
-					MSG_WriteLong( msg, to->powerups[ i ] );
-				}
-			}
-		}
-		else
-		{
-			MSG_WriteBits( msg, 0, 1 );  // no change to powerups
-		}
 	}
 	else
 	{
 		MSG_WriteBits( msg, 0, 1 );  // no change to any
 		oldsize += 4;
 	}
-
-#if 0
-// RF, optimization
-//      Send a single bit to signify whether or not the ammo/clip info changed.
-//      If it did, send individual segments specifying offset values for each item.
-	{
-		int ammo_ofs;
-		int clip_ofs;
-
-		ammobits = 0;
-
-		// ammo
-		for ( i = 0; i < 32; i++ )
-		{
-			if ( to->ammo[ i ] != from->ammo[ i ] )
-			{
-				ammobits |= 1 << i;
-			}
-		}
-
-		// ammoclip (just add these changes to the ammo changes. if either changes, we should send both, since they are likely to both change at once anyway)
-		for ( i = 0; i < 32; i++ )
-		{
-			if ( to->ammoclip[ i ] != from->ammoclip[ i ] )
-			{
-				ammobits |= 1 << i;
-			}
-		}
-
-		if ( ammobits )
-		{
-			MSG_WriteBits( msg, 1, 1 );  // changed
-
-			// send each changed item
-			for ( i = 0; i < 32; i++ )
-			{
-				if ( ammobits & ( 1 << i ) )
-				{
-					ammo_ofs = to->ammo[ i ] - from->ammo[ i ];
-					clip_ofs = to->ammoclip[ i ] - from->ammoclip[ i ];
-
-					while ( ammo_ofs || clip_ofs )
-					{
-						MSG_WriteBits( msg, 1, 1 );  // signify that another index is present
-						MSG_WriteBits( msg, i, 5 );  // index number
-
-						// ammo
-						if ( abs( ammo_ofs ) > 127 )
-						{
-							if ( ammo_ofs > 0 )
-							{
-								MSG_WriteChar( msg, 127 );
-								ammo_ofs -= 127;
-							}
-							else
-							{
-								MSG_WriteChar( msg, -127 );
-								ammo_ofs += 127;
-							}
-						}
-						else
-						{
-							MSG_WriteChar( msg, ammo_ofs );
-							ammo_ofs = 0;
-						}
-
-						// clip
-						if ( abs( clip_ofs ) > 127 )
-						{
-							if ( clip_ofs > 0 )
-							{
-								MSG_WriteChar( msg, 127 );
-								clip_ofs -= 127;
-							}
-							else
-							{
-								MSG_WriteChar( msg, -127 );
-								clip_ofs += 127;
-							}
-						}
-						else
-						{
-							MSG_WriteChar( msg, clip_ofs );
-							clip_ofs = 0;
-						}
-					}
-				}
-			}
-
-			// signify the end of changes
-			MSG_WriteBits( msg, 0, 1 );
-		}
-		else
-		{
-			MSG_WriteBits( msg, 0, 1 );  // no change
-		}
-	}
-
-#else
-//----(SA)  I split this into two groups using shorts so it wouldn't have
-//          to use a long every time ammo changed for any weap.
-//          this seemed like a much friendlier option than making it
-//          read/write a long for any ammo change.
-
-	// j == 0 : weaps 0-15
-	// j == 1 : weaps 16-31
-	// j == 2 : weaps 32-47 //----(SA)  now up to 64 (but still pretty net-friendly)
-	// j == 3 : weaps 48-63
-
-	// ammo stored
-	for ( j = 0; j < 4; j++ )
-	{
-		//----(SA) modified for 64 weaps
-		ammobits[ j ] = 0;
-
-		for ( i = 0; i < 16; i++ )
-		{
-			if ( to->ammo[ i + ( j * 16 ) ] != from->ammo[ i + ( j * 16 ) ] )
-			{
-				ammobits[ j ] |= 1 << i;
-			}
-		}
-	}
-
-//----(SA)  also encapsulated ammo changes into one check.  clip values will change frequently,
-	// but ammo will not.  (only when you get ammo/reload rather than each shot)
-	if ( ammobits[ 0 ] || ammobits[ 1 ] || ammobits[ 2 ] || ammobits[ 3 ] )
-	{
-		// if any were set...
-		MSG_WriteBits( msg, 1, 1 );  // changed
-
-		for ( j = 0; j < 4; j++ )
-		{
-			if ( ammobits[ j ] )
-			{
-				MSG_WriteBits( msg, 1, 1 );  // changed
-				MSG_WriteShort( msg, ammobits[ j ] );
-
-				for ( i = 0; i < 16; i++ )
-				{
-					if ( ammobits[ j ] & ( 1 << i ) )
-					{
-						MSG_WriteShort( msg, to->ammo[ i + ( j * 16 ) ] );
-					}
-				}
-			}
-			else
-			{
-				MSG_WriteBits( msg, 0, 1 );  // no change
-			}
-		}
-	}
-	else
-	{
-		MSG_WriteBits( msg, 0, 1 );  // no change
-	}
-
-	// ammo in clip
-	for ( j = 0; j < 4; j++ )
-	{
-		//----(SA) modified for 64 weaps
-		clipbits = 0;
-
-		for ( i = 0; i < 16; i++ )
-		{
-			if ( to->ammoclip[ i + ( j * 16 ) ] != from->ammoclip[ i + ( j * 16 ) ] )
-			{
-				clipbits |= 1 << i;
-			}
-		}
-
-		if ( clipbits )
-		{
-			MSG_WriteBits( msg, 1, 1 );  // changed
-			MSG_WriteShort( msg, clipbits );
-
-			for ( i = 0; i < 16; i++ )
-			{
-				if ( clipbits & ( 1 << i ) )
-				{
-					MSG_WriteShort( msg, to->ammoclip[ i + ( j * 16 ) ] );
-				}
-			}
-		}
-		else
-		{
-			MSG_WriteBits( msg, 0, 1 );  // no change
-		}
-	}
-
-#endif
 
 	if ( print )
 	{
@@ -2293,7 +1959,7 @@ MSG_ReadDeltaPlayerstate
 */
 void MSG_ReadDeltaPlayerstate( msg_t *msg, playerState_t *from, playerState_t *to )
 {
-	int           i, j, lc;
+	int           i, lc;
 	int           bits;
 	netField_t    *field;
 	int           numFields;
@@ -2450,109 +2116,7 @@ void MSG_ReadDeltaPlayerstate( msg_t *msg, playerState_t *from, playerState_t *t
 				}
 			}
 		}
-
-		// parse holdable stats
-		if ( MSG_ReadBits( msg, 1 ) )
-		{
-			LOG( "PS_HOLDABLE" );
-			bits = MSG_ReadShort( msg );
-
-			for ( i = 0; i < 16; i++ )
-			{
-				if ( bits & ( 1 << i ) )
-				{
-					to->holdable[ i ] = MSG_ReadShort( msg );
-				}
-			}
-		}
-
-		// parse powerups
-		if ( MSG_ReadBits( msg, 1 ) )
-		{
-			LOG( "PS_POWERUPS" );
-			bits = MSG_ReadShort( msg );
-
-			for ( i = 0; i < 16; i++ )
-			{
-				if ( bits & ( 1 << i ) )
-				{
-					to->powerups[ i ] = MSG_ReadLong( msg );
-				}
-			}
-		}
 	}
-
-#if 0
-// RF, optimization
-//      Send a single bit to signify whether or not the ammo/clip info changed.
-//      If it did, send individual segments specifying offset values for each item.
-
-	if ( MSG_ReadBits( msg, 1 ) )
-	{
-		// it changed
-		while ( MSG_ReadBits( msg, 1 ) )
-		{
-			i = MSG_ReadBits( msg, 5 );  // read the index number
-			// now read the offsets
-			to->ammo[ i ] += MSG_ReadChar( msg );
-			to->ammoclip[ i ] += MSG_ReadChar( msg );
-		}
-	}
-
-#else
-//----(SA)  I split this into two groups using shorts so it wouldn't have
-//          to use a long every time ammo changed for any weap.
-//          this seemed like a much friendlier option than making it
-//          read/write a long for any ammo change.
-
-	// parse ammo
-
-	// j == 0 : weaps 0-15
-	// j == 1 : weaps 16-31
-	// j == 2 : weaps 32-47 //----(SA)  now up to 64 (but still pretty net-friendly)
-	// j == 3 : weaps 48-63
-
-	// ammo stored
-	if ( MSG_ReadBits( msg, 1 ) )
-	{
-		// check for any ammo change (0-63)
-		for ( j = 0; j < 4; j++ )
-		{
-			if ( MSG_ReadBits( msg, 1 ) )
-			{
-				LOG( "PS_AMMO" );
-				bits = MSG_ReadShort( msg );
-
-				for ( i = 0; i < 16; i++ )
-				{
-					if ( bits & ( 1 << i ) )
-					{
-						to->ammo[ i + ( j * 16 ) ] = MSG_ReadShort( msg );
-					}
-				}
-			}
-		}
-	}
-
-	// ammo in clip
-	for ( j = 0; j < 4; j++ )
-	{
-		if ( MSG_ReadBits( msg, 1 ) )
-		{
-			LOG( "PS_AMMOCLIP" );
-			bits = MSG_ReadShort( msg );
-
-			for ( i = 0; i < 16; i++ )
-			{
-				if ( bits & ( 1 << i ) )
-				{
-					to->ammoclip[ i + ( j * 16 ) ] = MSG_ReadShort( msg );
-				}
-			}
-		}
-	}
-
-#endif
 
 	if ( print )
 	{

@@ -577,10 +577,10 @@ extern "C" {
 
 		for ( i = 0; i < s_numVidModes; i++ )
 		{
-			ri.Printf( PRINT_ALL, "Mode %-2d: %s\n", i, r_vidModes[ i ].description );
+			ri.Printf( PRINT_DEVELOPER, "Mode %-2d: %s\n", i, r_vidModes[ i ].description );
 		}
 
-		ri.Printf( PRINT_ALL, "\n" );
+		ri.Printf( PRINT_DEVELOPER, "\n" );
 	}
 
 	/*
@@ -1205,15 +1205,15 @@ extern "C" {
 			"fullscreen"
 		};
 
-		ri.Printf( PRINT_ALL, "\nGL_VENDOR: %s\n", glConfig.vendor_string );
-		ri.Printf( PRINT_ALL, "GL_RENDERER: %s\n", glConfig.renderer_string );
-		ri.Printf( PRINT_ALL, "GL_VERSION: %s\n", glConfig.version_string );
-		ri.Printf( PRINT_ALL, "GL_EXTENSIONS: %s\n", glConfig.extensions_string );
-		ri.Printf( PRINT_ALL, "GL_MAX_TEXTURE_SIZE: %d\n", glConfig.maxTextureSize );
+		ri.Printf( PRINT_DEVELOPER, "\nGL_VENDOR: %s\n", glConfig.vendor_string );
+		ri.Printf( PRINT_DEVELOPER, "GL_RENDERER: %s\n", glConfig.renderer_string );
+		ri.Printf( PRINT_DEVELOPER, "GL_VERSION: %s\n", glConfig.version_string );
+		ri.Printf( PRINT_DEVELOPER, "GL_EXTENSIONS: %s\n", glConfig.extensions_string );
+		ri.Printf( PRINT_DEVELOPER, "GL_MAX_TEXTURE_SIZE: %d\n", glConfig.maxTextureSize );
 
 		if ( glConfig.driverType != GLDRV_OPENGL3 )
 		{
-			ri.Printf( PRINT_ALL, "GL_MAX_TEXTURE_UNITS_ARB: %d\n", glConfig.maxActiveTextures );
+			ri.Printf( PRINT_DEVELOPER, "GL_MAX_TEXTURE_UNITS_ARB: %d\n", glConfig.maxActiveTextures );
 		}
 
 		/*
@@ -1223,75 +1223,75 @@ extern "C" {
 		   }
 		 */
 
-		ri.Printf( PRINT_ALL, "GL_SHADING_LANGUAGE_VERSION_ARB: %s\n", glConfig2.shadingLanguageVersion );
+		ri.Printf( PRINT_DEVELOPER, "GL_SHADING_LANGUAGE_VERSION_ARB: %s\n", glConfig2.shadingLanguageVersion );
 
-		ri.Printf( PRINT_ALL, "GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB %d\n", glConfig2.maxVertexUniforms );
+		ri.Printf( PRINT_DEVELOPER, "GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB %d\n", glConfig2.maxVertexUniforms );
 //	ri.Printf(PRINT_ALL, "GL_MAX_VARYING_FLOATS_ARB %d\n", glConfig2.maxVaryingFloats);
-		ri.Printf( PRINT_ALL, "GL_MAX_VERTEX_ATTRIBS_ARB %d\n", glConfig2.maxVertexAttribs );
+		ri.Printf( PRINT_DEVELOPER, "GL_MAX_VERTEX_ATTRIBS_ARB %d\n", glConfig2.maxVertexAttribs );
 
 		if ( glConfig2.occlusionQueryAvailable )
 		{
-			ri.Printf( PRINT_ALL, "%d occlusion query bits\n", glConfig2.occlusionQueryBits );
+			ri.Printf( PRINT_DEVELOPER, "%d occlusion query bits\n", glConfig2.occlusionQueryBits );
 		}
 
 		if ( glConfig2.drawBuffersAvailable )
 		{
-			ri.Printf( PRINT_ALL, "GL_MAX_DRAW_BUFFERS_ARB: %d\n", glConfig2.maxDrawBuffers );
+			ri.Printf( PRINT_DEVELOPER, "GL_MAX_DRAW_BUFFERS_ARB: %d\n", glConfig2.maxDrawBuffers );
 		}
 
 		if ( glConfig2.textureAnisotropyAvailable )
 		{
-			ri.Printf( PRINT_ALL, "GL_TEXTURE_MAX_ANISOTROPY_EXT: %f\n", glConfig2.maxTextureAnisotropy );
+			ri.Printf( PRINT_DEVELOPER, "GL_TEXTURE_MAX_ANISOTROPY_EXT: %f\n", glConfig2.maxTextureAnisotropy );
 		}
 
 		if ( glConfig2.framebufferObjectAvailable )
 		{
-			ri.Printf( PRINT_ALL, "GL_MAX_RENDERBUFFER_SIZE_EXT: %d\n", glConfig2.maxRenderbufferSize );
-			ri.Printf( PRINT_ALL, "GL_MAX_COLOR_ATTACHMENTS_EXT: %d\n", glConfig2.maxColorAttachments );
+			ri.Printf( PRINT_DEVELOPER, "GL_MAX_RENDERBUFFER_SIZE_EXT: %d\n", glConfig2.maxRenderbufferSize );
+			ri.Printf( PRINT_DEVELOPER, "GL_MAX_COLOR_ATTACHMENTS_EXT: %d\n", glConfig2.maxColorAttachments );
 		}
 
-		ri.Printf( PRINT_ALL, "\nPIXELFORMAT: color(%d-bits) Z(%d-bit) stencil(%d-bits)\n", glConfig.colorBits,
+		ri.Printf( PRINT_DEVELOPER, "\nPIXELFORMAT: color(%d-bits) Z(%d-bit) stencil(%d-bits)\n", glConfig.colorBits,
 		           glConfig.depthBits, glConfig.stencilBits );
-		ri.Printf( PRINT_ALL, "MODE: %d, %d x %d %s hz:", r_mode->integer, glConfig.vidWidth, glConfig.vidHeight,
+		ri.Printf( PRINT_DEVELOPER, "MODE: %d, %d x %d %s hz:", r_mode->integer, glConfig.vidWidth, glConfig.vidHeight,
 		           fsstrings[ r_fullscreen->integer == 1 ] );
 
 		if ( glConfig.displayFrequency )
 		{
-			ri.Printf( PRINT_ALL, "%d\n", glConfig.displayFrequency );
+			ri.Printf( PRINT_DEVELOPER, "%d\n", glConfig.displayFrequency );
 		}
 		else
 		{
-			ri.Printf( PRINT_ALL, "N/A\n" );
+			ri.Printf( PRINT_DEVELOPER, "N/A\n" );
 		}
 
 		if ( glConfig.deviceSupportsGamma )
 		{
-			ri.Printf( PRINT_ALL, "GAMMA: hardware w/ %d overbright bits\n", tr.overbrightBits );
+			ri.Printf( PRINT_DEVELOPER, "GAMMA: hardware w/ %d overbright bits\n", tr.overbrightBits );
 		}
 		else
 		{
-			ri.Printf( PRINT_ALL, "GAMMA: software w/ %d overbright bits\n", tr.overbrightBits );
+			ri.Printf( PRINT_DEVELOPER, "GAMMA: software w/ %d overbright bits\n", tr.overbrightBits );
 		}
 
-		ri.Printf( PRINT_ALL, "texturemode: %s\n", r_textureMode->string );
-		ri.Printf( PRINT_ALL, "picmip: %d\n", r_picmip->integer );
+		ri.Printf( PRINT_DEVELOPER, "texturemode: %s\n", r_textureMode->string );
+		ri.Printf( PRINT_DEVELOPER, "picmip: %d\n", r_picmip->integer );
 
 		if ( glConfig.driverType == GLDRV_OPENGL3 )
 		{
 			int contextFlags, profile;
 
-			ri.Printf( PRINT_ALL, S_COLOR_GREEN "Using OpenGL 3.x context\n" );
+			ri.Printf( PRINT_DEVELOPER, S_COLOR_GREEN "Using OpenGL 3.x context\n" );
 
 			// check if we have a core-profile
 			glGetIntegerv( GL_CONTEXT_PROFILE_MASK, &profile );
 
 			if ( profile == GL_CONTEXT_CORE_PROFILE_BIT )
 			{
-				ri.Printf( PRINT_ALL, S_COLOR_GREEN "Having a core profile\n" );
+				ri.Printf( PRINT_DEVELOPER, S_COLOR_GREEN "Having a core profile\n" );
 			}
 			else
 			{
-				ri.Printf( PRINT_ALL, S_COLOR_RED "Having a compatibility profile\n" );
+				ri.Printf( PRINT_DEVELOPER, S_COLOR_RED "Having a compatibility profile\n" );
 			}
 
 			// check if context is forward compatible
@@ -1299,47 +1299,53 @@ extern "C" {
 
 			if ( contextFlags & GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT )
 			{
-				ri.Printf( PRINT_ALL, S_COLOR_GREEN "Context is forward compatible\n" );
+				ri.Printf( PRINT_DEVELOPER, S_COLOR_GREEN "Context is forward compatible\n" );
 			}
 			else
 			{
-				ri.Printf( PRINT_ALL, S_COLOR_RED "Context is NOT forward compatible\n" );
+				ri.Printf( PRINT_DEVELOPER, S_COLOR_RED "Context is NOT forward compatible\n" );
 			}
 		}
 
 		if ( glConfig.hardwareType == GLHW_ATI )
 		{
-			ri.Printf( PRINT_ALL, "HACK: ATI approximations\n" );
+			ri.Printf( PRINT_DEVELOPER, "HACK: ATI approximations\n" );
 		}
 
 		if ( glConfig.textureCompression != TC_NONE )
 		{
-			ri.Printf( PRINT_ALL, "Using S3TC (DXTC) texture compression\n" );
+			ri.Printf( PRINT_DEVELOPER, "Using S3TC (DXTC) texture compression\n" );
 		}
 
 		if ( glConfig.hardwareType == GLHW_ATI_DX10 )
 		{
-			ri.Printf( PRINT_ALL, "Using ATI DirectX 10 hardware features\n" );
+			ri.Printf( PRINT_DEVELOPER, "Using ATI DirectX 10 hardware features\n" );
+
+			if ( glConfig.driverType == GLDRV_MESA )
+			{
+				ri.Printf( PRINT_DEVELOPER, "^3NOT using GPU vertex skinning – known to be broken with Radeon HD and Mesa\n" );
+				glConfig2.vboVertexSkinningAvailable = qfalse;
+			}
 		}
 
 		if ( glConfig.hardwareType == GLHW_NV_DX10 )
 		{
-			ri.Printf( PRINT_ALL, "Using NVIDIA DirectX 10 hardware features\n" );
+			ri.Printf( PRINT_DEVELOPER, "Using NVIDIA DirectX 10 hardware features\n" );
 		}
 
 		if ( glConfig2.vboVertexSkinningAvailable )
 		{
-			ri.Printf( PRINT_ALL, "Using GPU vertex skinning with max %i bones in a single pass\n", glConfig2.maxVertexSkinningBones );
+			ri.Printf( PRINT_DEVELOPER, "Using GPU vertex skinning with max %i bones in a single pass\n", glConfig2.maxVertexSkinningBones );
 		}
 
 		if ( glConfig.smpActive )
 		{
-			ri.Printf( PRINT_ALL, "Using dual processor acceleration\n" );
+			ri.Printf( PRINT_DEVELOPER, "Using dual processor acceleration\n" );
 		}
 
 		if ( r_finish->integer )
 		{
-			ri.Printf( PRINT_ALL, "Forcing glFinish\n" );
+			ri.Printf( PRINT_DEVELOPER, "Forcing glFinish\n" );
 		}
 	}
 
@@ -1482,7 +1488,7 @@ extern "C" {
 		r_finish = ri.Cvar_Get( "r_finish", "0", CVAR_CHEAT );
 		r_textureMode = ri.Cvar_Get( "r_textureMode", "GL_LINEAR_MIPMAP_NEAREST", CVAR_ARCHIVE );
 		r_swapInterval = ri.Cvar_Get( "r_swapInterval", "0", CVAR_ARCHIVE );
-		r_gamma = ri.Cvar_Get( "r_gamma", "1", CVAR_ARCHIVE );
+		r_gamma = ri.Cvar_Get( "r_gamma", "1.3", CVAR_ARCHIVE );
 		r_facePlaneCull = ri.Cvar_Get( "r_facePlaneCull", "1", CVAR_ARCHIVE );
 
 		r_railWidth = ri.Cvar_Get( "r_railWidth", "96", CVAR_ARCHIVE );
@@ -1753,7 +1759,7 @@ extern "C" {
 //	int             err;
 		int i;
 
-		ri.Printf( PRINT_ALL, "----- R_Init -----\n" );
+		ri.Printf( PRINT_DEVELOPER, "----- R_Init -----\n" );
 
 		// clear all our internal state
 		Com_Memset( &tr, 0, sizeof( tr ) );
@@ -1762,7 +1768,7 @@ extern "C" {
 
 		if ( ( intptr_t ) tess.xyz & 15 )
 		{
-			Com_Printf( "WARNING: tess.xyz not 16 byte aligned\n" );
+			Com_DPrintf( "WARNING: tess.xyz not 16 byte aligned\n" );
 		}
 
 		// init function tables
@@ -2117,7 +2123,7 @@ extern "C" {
 
 		GL_CheckErrors();
 
-		ri.Printf( PRINT_ALL, "----- finished R_Init -----\n" );
+		ri.Printf( PRINT_DEVELOPER, "----- finished R_Init -----\n" );
 
 		return qtrue;
 	}
@@ -2129,7 +2135,7 @@ extern "C" {
 	*/
 	void RE_Shutdown( qboolean destroyWindow )
 	{
-		ri.Printf( PRINT_ALL, "RE_Shutdown( destroyWindow = %i )\n", destroyWindow );
+		ri.Printf( PRINT_DEVELOPER, "RE_Shutdown( destroyWindow = %i )\n", destroyWindow );
 
 		ri.Cmd_RemoveCommand( "modellist" );
 		ri.Cmd_RemoveCommand( "screenshotPNG" );
@@ -2219,7 +2225,7 @@ extern "C" {
 #endif
 
 			GLimp_Shutdown();
-
+			ri.Tag_Free();
 #if defined( USE_D3D10 )
 
 			if ( dx.d3dDevice )
@@ -2269,7 +2275,7 @@ extern "C" {
 
 	static void RE_PurgeCache( void )
 	{
-		ri.Printf( PRINT_ALL, S_COLOR_RED "TODO RE_PurgeCache\n" );
+		ri.Printf( PRINT_DEVELOPER, S_COLOR_RED "TODO RE_PurgeCache\n" );
 
 		/*
 		R_PurgeShaders(9999999);
@@ -2292,7 +2298,7 @@ extern "C" {
 
 		ri = *rimp;
 
-		ri.Printf( PRINT_ALL, "GetRefAPI()\n" );
+		ri.Printf( PRINT_DEVELOPER, "GetRefAPI()\n" );
 
 		Com_Memset( &re, 0, sizeof( re ) );
 
@@ -2339,9 +2345,7 @@ extern "C" {
 #else
 		re.AddPolyToScene = RE_AddPolyToSceneQ3A;
 #endif
-#if !defined( COMPAT_ET )
 		re.LightForPoint = R_LightForPoint;
-#endif
 
 #if defined( COMPAT_ET )
 		re.AddLightToScene = RE_AddDynamicLightToSceneET;

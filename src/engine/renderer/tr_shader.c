@@ -1764,7 +1764,7 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 			{
 				stage->bundle[ 0 ].isLightmap = qtrue;
 
-				if ( shader.lightmapIndex < 0 )
+				if ( shader.lightmapIndex < 0 || !tr.lightmaps )
 				{
 					stage->bundle[ 0 ].image[ 0 ] = tr.whiteImage;
 				}
@@ -6128,7 +6128,6 @@ void R_LoadCacheShaders( void )
 		return;
 	}
 
-	buf = ri.Hunk_AllocateTempMemory( len );
 	ri.FS_ReadFile( "shader.cache", &buf );
 	pString = buf;
 
@@ -6138,7 +6137,7 @@ void R_LoadCacheShaders( void )
 		RE_RegisterModel( name );
 	}
 
-	ri.Hunk_FreeTempMemory( buf );
+	ri.FS_FreeFile( buf );
 }
 
 // done.
@@ -6153,7 +6152,7 @@ void R_InitShaders( void )
 {
 	glfogNum = FOG_NONE;
 
-	ri.Printf( PRINT_ALL, "Initializing Shaders\n" );
+	ri.Printf( PRINT_DEVELOPER, "Initializing Shaders\n" );
 
 	memset( hashTable, 0, sizeof( hashTable ) );
 	deferLoad = qfalse;

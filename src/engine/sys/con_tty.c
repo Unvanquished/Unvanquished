@@ -324,8 +324,8 @@ char *CON_Input( void )
 					Hist_Add( text );
 					Field_Clear( &TTY_con );
 					key = '\n';
-					write( 1, &key, 1 );
-					write( 1, "]", 1 );
+					write( STDOUT_FILENO, &key, 1 );
+					write( STDOUT_FILENO, "]", 1 );
 					return text + 1;
 				}
 

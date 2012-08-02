@@ -702,10 +702,6 @@ Sys_GetPacket
 Never called by the game logic, just the system event queing
 ==================
 */
-#ifdef _DEBUG
-int recvfromCount;
-#endif
-
 qboolean Sys_GetPacket( netadr_t *net_from, msg_t *net_message )
 {
 	int                     ret;
@@ -713,10 +709,6 @@ qboolean Sys_GetPacket( netadr_t *net_from, msg_t *net_message )
 
 	socklen_t               fromlen;
 	int                     err;
-
-#ifdef _DEBUG
-	recvfromCount++; // performance check
-#endif
 
 	if ( ip_socket != INVALID_SOCKET )
 	{
@@ -2043,5 +2035,5 @@ NET_Restart_f
 */
 void NET_Restart_f( void )
 {
-	NET_Config( networkingEnabled );
+	NET_Config( qtrue );
 }

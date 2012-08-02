@@ -242,6 +242,8 @@ typedef struct client_s
 	//% netchan_buffer_t **netchan_end_queue;
 	netchan_buffer_t *netchan_end_queue;
 
+	char             pubkey[ RSA_STRING_LENGTH ];
+
 #ifdef USE_VOIP
 	qboolean           hasVoip;
 	qboolean           muteAllVoip;
@@ -275,8 +277,6 @@ typedef struct
 // out before legitimate users connected
 #define MAX_CHALLENGES    1024
 
-#define AUTHORIZE_TIMEOUT 5000
-
 typedef struct
 {
 	netadr_t adr;
@@ -298,14 +298,7 @@ typedef struct
 // in a two second time period.
 #define MAX_INFO_RECEIPTS 48
 
-typedef struct tempBan_s
-{
-	netadr_t adr;
-	int      endtime;
-} tempBan_t;
-
 #define MAX_MASTERS                       8 // max recipients for heartbeat packets
-#define MAX_TEMPBAN_ADDRESSES             MAX_CLIENTS
 
 #define SERVER_PERFORMANCECOUNTER_FRAMES  600
 #define SERVER_PERFORMANCECOUNTER_SAMPLES 6
@@ -327,20 +320,12 @@ typedef struct
 	challenge_t   challenges[ MAX_CHALLENGES ]; // to prevent invalid IPs from connecting
 	receipt_t     infoReceipts[ MAX_INFO_RECEIPTS ];
 	netadr_t      redirectAddress; // for rcon return messages
-	tempBan_t     tempBanAddresses[ MAX_TEMPBAN_ADDRESSES ];
-
-#ifdef AUTHORIZE_SUPPORT
-	netadr_t authorizeAddress;
-#endif // AUTHORIZE_SUPPORT
 
 	int       sampleTimes[ SERVER_PERFORMANCECOUNTER_SAMPLES ];
 	int       currentSampleIndex;
 	int       totalFrameTime;
 	int       currentFrameIndex;
 	int       serverLoad;
-#ifdef USE_HUB_SERVER
-	netadr_t  owHubAddress; // address of hub we're using
-#endif
 	svstats_t stats;
 } serverStatic_t;
 
@@ -356,17 +341,12 @@ extern cvar_t         *sv_zombietime;
 extern cvar_t         *sv_rconPassword;
 extern cvar_t         *sv_privatePassword;
 extern cvar_t         *sv_allowDownload;
-extern cvar_t         *sv_friendlyFire; // NERVE - SMF
-extern cvar_t         *sv_maxlives; // NERVE - SMF
 extern cvar_t         *sv_maxclients;
-extern cvar_t         *sv_needpass;
 
 extern cvar_t         *sv_privateClients;
 extern cvar_t         *sv_hostname;
 extern cvar_t         *sv_master[ MAX_MASTER_SERVERS ];
 extern cvar_t         *sv_reconnectlimit;
-extern cvar_t         *sv_tempbanmessage;
-extern cvar_t         *sv_showloss;
 extern cvar_t         *sv_padPackets;
 extern cvar_t         *sv_killserver;
 extern cvar_t         *sv_mapname;
@@ -376,32 +356,17 @@ extern cvar_t         *sv_maxRate;
 extern cvar_t         *sv_minPing;
 extern cvar_t         *sv_maxPing;
 
-//extern    cvar_t  *sv_gametype;
-
 extern cvar_t *sv_newGameShlib;
 
 extern cvar_t *sv_pure;
 extern cvar_t *sv_floodProtect;
-extern cvar_t *sv_allowAnonymous;
 extern cvar_t *sv_lanForceRate;
-extern cvar_t *sv_onlyVisibleClients;
 
 extern cvar_t *sv_showAverageBPS; // NERVE - SMF - net debugging
 
 extern cvar_t *sv_requireValidGuid;
 
-#ifdef USE_HUB_SERVER
-extern cvar_t *sv_owHubHost;
-extern cvar_t *sv_owHubKey;
-#endif
-
 extern cvar_t *sv_ircchannel;
-
-extern cvar_t *g_gameType;
-
-// Rafael gameskill
-//extern    cvar_t  *sv_gameskill;
-// done
 
 extern cvar_t *sv_reloading;
 
@@ -419,7 +384,6 @@ extern cvar_t *sv_wwwFallbackURL;
 
 //bani
 extern cvar_t *sv_cheats;
-extern cvar_t *sv_packetloss;
 extern cvar_t *sv_packetdelay;
 
 //fretn
@@ -436,7 +400,7 @@ extern cvar_t *sv_voip;
 //
 void       SV_FinalCommand( char *cmd, qboolean disconnect );  // ydnar: added disconnect flag so map changes can use this function as well
 void QDECL SV_SendServerCommand( client_t *cl, const char *fmt, ... ) PRINTF_LIKE(2);
-void       SV_PrintTranslatedText( const char *text );
+void       SV_PrintTranslatedText( const char *text, qboolean broadcast );
 
 void       SV_AddOperatorCommands( void );
 void       SV_RemoveOperatorCommands( void );
@@ -462,11 +426,12 @@ void SV_SetConfigstringRestrictions( int index, const clientList_t *clientList )
 
 void SV_SetUserinfo( int index, const char *val );
 void SV_GetUserinfo( int index, char *buffer, int bufferSize );
+void SV_GetPlayerPubkey( int clientNum, char *pubkey, int size );
 
 void SV_CreateBaseline( void );
 
 void SV_ChangeMaxClients( void );
-void SV_SpawnServer( char *server, qboolean killBots );
+void SV_SpawnServer( char *server );
 
 //
 // sv_client.c
@@ -474,8 +439,6 @@ void SV_SpawnServer( char *server, qboolean killBots );
 void SV_GetChallenge( netadr_t from );
 
 void SV_DirectConnect( netadr_t from );
-
-void SV_AuthorizeIpPacket( netadr_t from );
 
 void SV_ExecuteClientMessage( client_t *cl, msg_t *msg );
 void SV_UserinfoChanged( client_t *cl );
@@ -499,15 +462,11 @@ void SV_WriteVoipToClient( client_t *cl, msg_t *msg );
 //
 void     SV_Heartbeat_f( void );
 
-qboolean SV_TempBanIsBanned( netadr_t address );
-void     SV_TempBanNetAddress( netadr_t address, int length );
-
 //
 // sv_snapshot.c
 //
 void SV_AddServerCommand( client_t *client, const char *cmd );
 void SV_UpdateServerCommandsToClient( client_t *client, msg_t *msg );
-void SV_WriteFrameToClient( client_t *client, msg_t *msg );
 void SV_SendMessageToClient( msg_t *msg, client_t *client );
 void SV_SendClientMessages( void );
 void SV_SendClientSnapshot( client_t *client );
@@ -534,8 +493,6 @@ void           SV_RestartGameProgs( void );
 qboolean       SV_inPVS( const vec3_t p1, const vec3_t p2 );
 qboolean       SV_GetTag( int clientNum, int tagFileNumber, const char *tagname, orientation_t *ort );
 int            SV_LoadTag( const char *mod_name );
-qboolean       SV_GameIsSinglePlayer( void );
-qboolean       SV_GameIsCoop( void );
 void           SV_GameBinaryMessageReceived( int cno, const char *buf, int buflen, int commandTime );
 
 //
@@ -545,14 +502,8 @@ void SV_BotFrame( int time );
 int  SV_BotAllocateClient( int clientNum );
 void SV_BotFreeClient( int clientNum );
 
-void SV_BotInitCvars( void );
-int  SV_BotLibSetup( void );
-int  SV_BotLibShutdown( void );
 int  SV_BotGetSnapshotEntity( int client, int ent );
 int  SV_BotGetConsoleMessage( int client, char *buf, int size );
-
-int  BotImport_DebugPolygonCreate( int color, int numPoints, vec3_t *points );
-void BotImport_DebugPolygonDelete( int id );
 
 //============================================================
 //

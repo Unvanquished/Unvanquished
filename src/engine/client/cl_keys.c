@@ -56,9 +56,6 @@ typedef struct
 	int  keynum;
 } keyname_t;
 
-qboolean  UI_checkKeyExec( int key );  // NERVE - SMF
-qboolean  CL_CGameCheckKeyExec( int key );
-
 // names not in this list can either be lowercase ascii, or '0xnn' hex sequences
 keyname_t keynames[] =
 {
@@ -1708,20 +1705,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		}
 	}
 
-	if ( key == K_ENTER )
-	{
-		if ( down )
-		{
-			if ( keys[ K_ALT ].down )
-			{
-				Cvar_SetValue( "r_fullscreen", !Cvar_VariableIntegerValue( "r_fullscreen" ) );
-				return;
-			}
-		}
-	}
-
 #ifdef MACOS_X
-
 	if ( down && keys[ K_COMMAND ].down )
 	{
 		if ( key == 'f' )
@@ -1743,8 +1727,18 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 			return;
 		}
 	}
-
-#endif
+#else
+	if ( key == K_ENTER )
+	{
+		if ( down )
+		{
+			if ( keys[ K_ALT ].down )
+			{
+				Cvar_SetValue( "r_fullscreen", !Cvar_VariableIntegerValue( "r_fullscreen" ) );
+				return;
+			}
+		}
+	}
 
 	if ( cl_altTab->integer && keys[ K_ALT ].down && key == K_TAB )
 	{
@@ -1752,6 +1746,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		Cvar_SetValue( "r_minimize", 1 );
 		return;
 	}
+#endif
 
 	// console key is hardcoded, so the user can never unbind it
 	if ( key == K_CONSOLE || ( keys[ K_SHIFT ].down && key == K_ESCAPE ) )
@@ -1867,36 +1862,20 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 
 		if ( cls.keyCatchers & KEYCATCH_UI && uivm )
 		{
-			if ( !onlybinds || VM_Call( uivm, UI_WANTSBINDKEYS ) )
+			if ( !onlybinds )
 			{
 				VM_Call( uivm, UI_KEY_EVENT, key, down );
 			}
 		}
 		else if ( cls.keyCatchers & KEYCATCH_CGAME && cgvm )
 		{
-			if ( !onlybinds || VM_Call( cgvm, CG_WANTSBINDKEYS ) )
+			if ( !onlybinds )
 			{
 				VM_Call( cgvm, CG_KEY_EVENT, key, down );
 			}
 		}
 
 		return;
-	}
-
-	// NERVE - SMF - if we just want to pass it along to game
-	if ( cl_bypassMouseInput && cl_bypassMouseInput->integer )
-	{
-		if ( ( key == K_MOUSE1 || key == K_MOUSE2 || key == K_MOUSE3 || key == K_MOUSE4 || key == K_MOUSE5 ) )
-		{
-			if ( cl_bypassMouseInput->integer == 1 )
-			{
-				bypassMenu = qtrue;
-			}
-		}
-		else if ( ( cls.keyCatchers & KEYCATCH_UI && !UI_checkKeyExec( key ) ) || ( cls.keyCatchers & KEYCATCH_CGAME && !CL_CGameCheckKeyExec( key ) ) )
-		{
-			bypassMenu = qtrue;
-		}
 	}
 
 	// distribute the key down event to the appropriate handler
@@ -1909,7 +1888,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	}
 	else if ( cls.keyCatchers & KEYCATCH_UI && !bypassMenu )
 	{
-		if ( !onlybinds || VM_Call( uivm, UI_WANTSBINDKEYS ) )
+		if ( !onlybinds )
 		{
 			VM_Call( uivm, UI_KEY_EVENT, key, down );
 		}
@@ -1918,7 +1897,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	{
 		if ( cgvm )
 		{
-			if ( !onlybinds || VM_Call( cgvm, CG_WANTSBINDKEYS ) )
+			if ( !onlybinds )
 			{
 				VM_Call( cgvm, CG_KEY_EVENT, key, down );
 			}

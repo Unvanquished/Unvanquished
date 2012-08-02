@@ -75,7 +75,6 @@ typedef struct
 	int         ambientLightInt; // 32 bit rgba packed
 	vec3_t      directedLight;
 	int         entityLightInt[ ENTITY_LIGHT_STEPS ];
-	float       brightness;
 } trRefEntity_t;
 
 typedef struct
@@ -1626,6 +1625,8 @@ extern cvar_t *r_measureOverdraw; // enables stencil buffer overdraw measurement
 extern cvar_t *r_lodbias; // push/pull LOD transitions
 extern cvar_t *r_lodscale;
 
+extern cvar_t *r_lightScale; // Dynamic light intensity for Q3A compatibility
+
 extern cvar_t *r_primitives; // "0" = based on compiled vertex array existance
 
 // "1" = glDrawElemet tristrips
@@ -1693,7 +1694,7 @@ extern cvar_t *r_textureAnisotropy;
 extern cvar_t *r_offsetFactor;
 extern cvar_t *r_offsetUnits;
 
-extern cvar_t *r_lightmap; // render lightmaps only
+extern cvar_t *r_showLightMaps; // render lightmaps only
 extern cvar_t *r_uiFullScreen; // ui is running fullscreen
 
 extern cvar_t *r_logFile; // number of frames to emit GL logs
@@ -1944,17 +1945,8 @@ extern int gl_NormalFontBase;
 
 qboolean   GLimp_Init( void );
 
-#ifdef IPHONE
-void       GLimp_SetMode( float rotation );
-
-#endif // IPHONE
 void       GLimp_Shutdown( void );
 void       GLimp_AcquireGL( void );
-
-#ifdef IPHONE
-void       GLimp_ReleaseGL( void );
-
-#endif // IPHONE
 
 void     GLimp_EndFrame( void );
 
@@ -2052,8 +2044,6 @@ WORLD MAP
 void R_AddBrushModelSurfaces( trRefEntity_t *e );
 void R_AddWorldSurfaces( void );
 
-#ifndef IPHONE
-
 /*
 ============================================================
 
@@ -2067,8 +2057,6 @@ void R_ClearFlares( void );
 void RB_AddFlare( void *surface, int fogNum, vec3_t point, vec3_t color, float scale, vec3_t normal, int id, qboolean visible );  //----(SA)  added scale.  added id.  added visible
 void RB_AddDlightFlares( void );
 void RB_RenderFlares( void );
-
-#endif // IPHONE
 
 /*
 ============================================================
@@ -2184,7 +2172,8 @@ void RE_AddPolyBufferToScene( polyBuffer_t *pPolyBuffer );
 // void RE_AddLightToScene( const vec3_t org, float intensity, float r, float g, float b, int overdraw );
 void RE_AddLightToScene( const vec3_t org, float radius, float intensity, float r, float g, float b, qhandle_t hShader,
                          int flags );
-
+// Compatibility function
+void RE_AddLightToSceneQ3A( const vec3_t org, float radius, float r, float g, float b );
 //----(SA)
 void RE_AddCoronaToScene( const vec3_t org, float r, float g, float b, float scale, int id, qboolean visible );
 

@@ -162,7 +162,7 @@ Maryland 20850 USA.
 #define PATH_SEP    '\\'
 
 #if defined( _M_IX86 ) || defined( __i386__ )
-#define ARCH_STRING "x86"
+#define ARCH_STRING "i386"
 #elif defined _M_ALPHA
 #define ARCH_STRING "AXP"
 #endif

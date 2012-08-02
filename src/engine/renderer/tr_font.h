@@ -80,11 +80,11 @@ Maryland 20850 USA.
 #include "tr_local.h"
 
 #include <ft2build.h>
-#include <freetype/fterrors.h>
-#include <freetype/ftsystem.h>
-#include <freetype/ftimage.h>
-#include <freetype/freetype.h>
-#include <freetype/ftoutln.h>
+#include FT_ERRORS_H
+#include FT_SYSTEM_H
+#include FT_IMAGE_H
+#include FT_FREETYPE_H
+#include FT_OUTLINE_H
 
 #define _FLOOR( x ) ( ( x ) & - 64 )
 #define _CEIL( x )  ( ( ( x ) + 63 ) & - 64 )
@@ -160,7 +160,7 @@ FT_Bitmap      *R_RenderGlyph( FT_GlyphSlot glyph, glyphInfo_t *glyphOut )
 	}
 	else
 	{
-		ri.Printf( PRINT_ALL, "Non-outline fonts are not supported\n" );
+		ri.Printf( PRINT_WARNING, "Non-outline fonts are not supported\n" );
 	}
 
 	return NULL;
@@ -237,7 +237,6 @@ static glyphInfo_t *RE_ConstructGlyphInfo( unsigned char *imageOut, int *xOut, i
 
 		if ( *yOut + *maxHeight + 1 >= ( FONT_SIZE - 1 ) )
 		{
-			//ri.Printf(PRINT_WARNING, "RE_ConstructGlyphInfo: character %c does not fit height\n", c);
 			*xOut = -1;
 			ri.Free( bitmap->buffer );
 			ri.Free( bitmap );
@@ -507,6 +506,7 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 	// no glyphs? just return
 	if ( !rendered )
 	{
+		ri.Free( out );
 		font->glyphBlock[ chunk ] = nullGlyphs;
 		return;
 	}
@@ -548,6 +548,7 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 	{
 		RE_StoreImage( font, chunk, page, lastStart, 256, out, yOut + maxHeight + 1 );
 	}
+	ri.Free( out );
 }
 
 static int RE_LoadFontFile( const char *name, void **buffer )
@@ -585,6 +586,7 @@ static int RE_LoadFontFile( const char *name, void **buffer )
 
 			if ( !fontData[ i ].data )
 			{
+				ri.FS_FreeFile( tmp );
 				return 0;
 			}
 
@@ -727,8 +729,8 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 			glyphs[ i ].s2 = readFloat();
 			glyphs[ i ].t2 = readFloat();
 			glyphs[ i ].glyph = readInt();
-			Com_Memcpy( glyphs[ i ].shaderName, &fdFile[ fdOffset ], 32 );
-			fdOffset += 32;
+			Q_strncpyz( glyphs[ i ].shaderName, (const char *) &fdFile[ fdOffset ], sizeof( glyphs[ i ].shaderName ) );
+			fdOffset += sizeof( glyphs[ i ].shaderName );
 		}
 
 		font->pointSize = pointSize;
@@ -764,7 +766,7 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 
 	if ( len <= 0 )
 	{
-		ri.Printf( PRINT_ALL, "RE_RegisterFont: Unable to read font file %s\n", fileName );
+		ri.Printf( PRINT_WARNING, "RE_RegisterFont: Unable to read font file %s\n", fileName );
 		RE_FreeFontFile( faceData );
 		return -1;
 	}
@@ -796,7 +798,7 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 
 		if ( len <= 0 )
 		{
-			ri.Printf( PRINT_ALL, "RE_RegisterFont: Unable to read font file %s\n", fileName );
+			ri.Printf( PRINT_WARNING, "RE_RegisterFont: Unable to read font file %s\n", fileName );
 			RE_FreeFontFile( fallbackData );
 			FT_Done_Face( face );
 			RE_FreeFontFile( faceData );
@@ -868,7 +870,7 @@ void R_InitFreeType( void )
 {
 	if ( FT_Init_FreeType( &ftLibrary ) )
 	{
-		ri.Printf( PRINT_ALL, "R_InitFreeType: Unable to initialize FreeType.\n" );
+		ri.Printf( PRINT_WARNING, "R_InitFreeType: Unable to initialize FreeType.\n" );
 	}
 }
 

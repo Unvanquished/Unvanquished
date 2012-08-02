@@ -27,8 +27,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "qcommon.h"
 #include "crypto.h"
 
-#ifdef USE_CRYPTO
-
 void *gmp_alloc( size_t size )
 {
 	return Z_TagMalloc( size, TAG_CRYPTO );
@@ -85,5 +83,3 @@ void Crypto_Shutdown( void )
 {
 	Z_FreeTags( TAG_CRYPTO );
 }
-
-#endif /* USE_CRYPTO */

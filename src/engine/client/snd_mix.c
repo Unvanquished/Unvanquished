@@ -774,7 +774,7 @@ void S_PaintChannels( int endtime )
 S_GetVoiceAmplitude
 ===================
 */
-int SOrig_GetVoiceAmplitude( int entityNum )
+int S_Base_GetVoiceAmplitude( int entityNum )
 {
 	return 0;
 }

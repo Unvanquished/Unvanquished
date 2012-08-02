@@ -57,11 +57,6 @@ Maryland 20850 USA.
 #define __attribute__(x)
 #endif
 
-//#define PRE_RELEASE_DEMO
-#ifdef PRE_RELEASE_DEMO
-#define PRE_RELEASE_DEMO_NODEVMAP
-#endif
-
 //============================================================================
 
 //
@@ -284,17 +279,20 @@ PROTOCOL
 
 // sent by the server, printed on connection screen, works for all clients
 // (restrictions: does not handle \n, no more than 256 chars)
-#define PROTOCOL_MISMATCH_ERROR      "ERROR: Protocol Mismatch Between Client and Server.\
+#define PROTOCOL_MISMATCH_ERROR      "ERROR: Protocol Mismatch Between Client and Server. \
 The server you are attempting to join is running an incompatible version of the game."
 
 // long version used by the client in diagnostic window
 #define PROTOCOL_MISMATCH_ERROR_LONG "ERROR: Protocol Mismatch Between Client and Server.\n\n\
 The server you attempted to join is running an incompatible version of the game.\n\
-You or the server may be running older versions of the game. Press the auto-update\
- button if it appears on the Main Menu screen."
+You or the server may be running older versions of the game."
 
-#define GAMENAME_STRING "unv"
-#define PROTOCOL_VERSION 85
+#define GAMENAME_STRING        "unv"
+
+#define PROTOCOL_VERSION       86
+
+#define URI_SCHEME             GAMENAME_STRING "://"
+#define URI_SCHEME_LENGTH      6
 
 // maintain a list of compatible protocols for demo playing
 // NOTE: that stuff only works with two digits protocols
@@ -309,39 +307,8 @@ extern int demo_protocols[];
 # define MOTD_SERVER_NAME      "unvanquished.net"
 #endif
 
-#ifdef AUTHORIZE_SUPPORT
-#define AUTHORIZE_SERVER_NAME "wolfauthorize.idsoftware.com"
-#endif // AUTHORIZE_SUPPORT
-
-// TTimo: override autoupdate server for testing
-#ifndef AUTOUPDATE_SERVER_NAME
-#define AUTOUPDATE_SERVER_NAME "127.0.0.1"
-//#define AUTOUPDATE_SERVER_NAME "au2rtcw2.activision.com"
-#endif
-
-// TTimo: allow override for easy dev/testing..
-// FIXME: not planning to support more than 1 auto update server
-// see cons -- update_server=myhost
-#define MAX_AUTOUPDATE_SERVERS  5
-#if !defined( AUTOUPDATE_SERVER_NAME )
-#define AUTOUPDATE_SERVER1_NAME "au2rtcw1.activision.com" // DHM - Nerve
-#define AUTOUPDATE_SERVER2_NAME "au2rtcw2.activision.com" // DHM - Nerve
-#define AUTOUPDATE_SERVER3_NAME "au2rtcw3.activision.com" // DHM - Nerve
-#define AUTOUPDATE_SERVER4_NAME "au2rtcw4.activision.com" // DHM - Nerve
-#define AUTOUPDATE_SERVER5_NAME "au2rtcw5.activision.com" // DHM - Nerve
-#else
-#define AUTOUPDATE_SERVER1_NAME AUTOUPDATE_SERVER_NAME
-#define AUTOUPDATE_SERVER2_NAME AUTOUPDATE_SERVER_NAME
-#define AUTOUPDATE_SERVER3_NAME AUTOUPDATE_SERVER_NAME
-#define AUTOUPDATE_SERVER4_NAME AUTOUPDATE_SERVER_NAME
-#define AUTOUPDATE_SERVER5_NAME AUTOUPDATE_SERVER_NAME
-#endif
-
 #define PORT_MASTER             27950
 #define PORT_MOTD               27950
-#ifdef AUTHORIZE_SUPPORT
-#define PORT_AUTHORIZE          27952
-#endif // AUTHORIZE_SUPPORT
 #define PORT_SERVER             27960
 #define NUM_SERVER_PORTS        4 // broadcast scan this many ports after
 // PORT_SERVER so a single machine can
@@ -474,6 +441,10 @@ void Cbuf_Execute( void );
 // them through Cmd_ExecuteString.  Stops when the buffer is empty.
 // Called on a per-frame basis, but may also be explicitly invoked.
 // Do not call inside a command function, or current args will be destroyed.
+
+void Cdelay_Frame (void);
+//Check if a delayed command have to be executed and decreases the remaining
+//delay time for all of them
 
 //===========================================================================
 
@@ -679,18 +650,13 @@ issues.
 ==============================================================
 */
 
-#ifndef PRE_RELEASE_DEMO
-# define BASEGAME "main"
-#else
-# define BASEGAME "test"
-#endif
+#define BASEGAME "main"
 
 // referenced flags
 // these are in loop specific order so don't change the order
 #define FS_GENERAL_REF   0x01
 #define FS_UI_REF        0x02
 #define FS_CGAME_REF     0x04
-#define FS_QAGAME_REF    0x08
 // number of id paks that will never be autodownloaded from baseq3
 #define NUM_ID_PAKS      9
 
@@ -729,6 +695,8 @@ int          FS_GetFileList( const char *path, const char *extension, char *list
 int          FS_GetModList( char *listbuf, int bufsize );
 
 fileHandle_t FS_FOpenFileWrite( const char *qpath );
+fileHandle_t FS_FOpenFileAppend( const char *filename );
+fileHandle_t  FS_FCreateOpenPipeFile( const char *filename );
 
 // will properly create any needed paths and deal with separator character issues
 
@@ -820,10 +788,6 @@ int FS_Seek( fileHandle_t f, long offset, int origin );
 
 qboolean   FS_FilenameCompare( const char *s1, const char *s2 );
 
-const char *FS_GamePureChecksum( void );
-
-// Returns the checksum of the pk3 from which the server loaded the qagame.qvm
-
 const char *FS_LoadedPakNames( void );
 const char *FS_LoadedPakChecksums( void );
 const char *FS_LoadedPakPureChecksums( void );
@@ -882,6 +846,8 @@ int          FS_CreatePath( const char *OSPath );
 qboolean     FS_VerifyPak( const char *pak );
 
 qboolean     FS_IsPure( void );
+
+void         FS_Remove( const char *ospath );
 
 unsigned int FS_ChecksumOSPath( char *OSPath );
 
@@ -949,25 +915,6 @@ MISC
 ==============================================================
 */
 
-// centralizing the declarations for cl_cdkey
-// (old code causing buffer overflows)
-extern char cl_cdkey[ 34 ];
-void        Com_AppendCDKey( const char *filename );
-void        Com_ReadCDKey( const char *filename );
-
-typedef struct gameInfo_s
-{
-	qboolean spEnabled;
-	int      spGameTypes;
-	int      defaultSPGameType;
-	int      coopGameTypes;
-	int      defaultCoopGameType;
-	int      defaultGameType;
-	qboolean usesProfiles;
-} gameInfo_t;
-
-extern gameInfo_t com_gameInfo;
-
 // returned by Sys_GetProcessorFeatures
 typedef enum
 {
@@ -1009,6 +956,7 @@ int        Com_EventLoop( void );
 int        Com_Milliseconds( void );  // will be journaled properly
 unsigned   Com_BlockChecksum( const void *buffer, int length );
 char       *Com_MD5File( const char *filename, int length );
+void       Com_MD5Buffer( const char *pubkey, int size, char *buffer, int bufsize ); 
 int        Com_Filter( char *filter, char *name, int casesensitive );
 int        Com_FilterPath( char *filter, char *name, int casesensitive );
 int        Com_RealTime( qtime_t *qtime );
@@ -1047,7 +995,6 @@ extern cvar_t       *com_version;
 //extern    cvar_t  *com_blood;
 extern cvar_t       *com_buildScript; // for building release pak files
 extern cvar_t       *com_journal;
-extern cvar_t       *com_cameraMode;
 extern cvar_t       *com_ansiColor;
 extern cvar_t       *com_logosPlaying;
 
@@ -1110,7 +1057,7 @@ temp file loading
 
 */
 
-#if defined( _DEBUG ) && !defined( BSPC )
+#if !defined( NDEBUG ) && !defined( BSPC )
 #define ZONE_DEBUG
 #endif
 
@@ -1187,9 +1134,6 @@ void CL_MouseEvent( int dx, int dy, int time );
 
 void CL_JoystickEvent( int axis, int value, int time );
 
-// Iphone
-void CL_AccelEvent( int xa, int ya, int za );
-
 void CL_PacketEvent( netadr_t from, msg_t *msg );
 
 void CL_ConsolePrint( char *text );
@@ -1223,11 +1167,7 @@ void CL_StartHunkUsers( void );
 
 // start all the client stuff using the hunk
 
-void     CL_CheckAutoUpdate( void );
-qboolean CL_NextUpdateServer( void );
-void     CL_GetAutoUpdate( void );
-
-void     Key_KeynameCompletion( void ( *callback )( const char *s ) );
+void Key_KeynameCompletion( void ( *callback )( const char *s ) );
 
 // for keyname autocompletion
 
@@ -1261,7 +1201,6 @@ qboolean SV_GameCommand( void );
 // UI interface
 //
 qboolean UI_GameCommand( void );
-qboolean UI_usesUniqueCDKey();
 
 /*
 ==============================================================
@@ -1290,9 +1229,6 @@ typedef enum
   SE_CHAR, // evValue is an ascii char
   SE_MOUSE, // evValue and evValue2 are relative, signed x / y moves
   SE_JOYSTICK_AXIS, // evValue is an axis number and evValue2 is the current state (-127 to 127)
-#if IPHONE
-  SE_ACCEL, // iPhone accelerometer
-#endif // IPHONE
   SE_CONSOLE, // evPtr is a char*
   SE_PACKET // evPtr is a netadr_t followed by data bytes to evPtrLength
 } sysEventType_t;
@@ -1373,6 +1309,7 @@ qboolean Sys_IsLANAddress( netadr_t adr );
 void     Sys_ShowIP( void );
 
 qboolean Sys_Mkdir( const char *path );
+FILE     *Sys_Mkfifo( const char *ospath );
 char     *Sys_Cwd( void );
 char     *Sys_DefaultBasePath( void );
 char     *Sys_DefaultInstallPath( void );
@@ -1387,7 +1324,6 @@ char *Sys_DefaultLibPath( void );
 
 char         *Sys_DefaultHomePath( void );
 qboolean     Sys_Fork( const char *path, const char *cmdLine );
-const char   *Sys_TempPath( void );
 const char   *Sys_Dirname( char *path );
 const char   *Sys_Basename( char *path );
 char         *Sys_ConsoleInput( void );
@@ -1521,7 +1457,8 @@ void Com_RandomBytes( byte *string, int len );
 
 void Trans_Init( void );
 const char* Trans_Gettext( const char *msgid ) __attribute__((format_arg(1)));
-const char* Trans_Pgettext( const char *msgctxt, const char *msgid ) __attribute__((format_arg(1)));
+const char* Trans_Pgettext( const char *ctxt, const char *msgid ) __attribute__((format_arg(2)));
 const char* Trans_GettextGame( const char *msgid ) __attribute__((format_arg(1)));
+const char* Trans_PgettextGame( const char *ctxt, const char *msgid ) __attribute__((format_arg(2)));
 
 #endif // _QCOMMON_H_

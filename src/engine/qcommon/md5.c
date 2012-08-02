@@ -290,6 +290,7 @@ static void MD5Final( struct MD5Context *ctx, unsigned char *digest )
 
 #endif /* USE_OPENSSL */
 
+
 char *Com_MD5File( const char *fn, int length )
 {
 	static char   final[ 33 ] = { "unknown" };
@@ -349,4 +350,20 @@ char *Com_MD5File( const char *fn, int length )
 	}
 
 	return final;
+}
+
+void Com_MD5Buffer( const char *pubkey, int size, char *buffer, int bufsize )
+{
+	MD5_CTX       md5;
+	unsigned char digest[ 16 ];
+	int           i;
+
+	MD5Init( &md5 );
+	MD5Update( &md5, ( unsigned char * ) pubkey, size );
+	MD5Final( &md5, digest );
+
+	for ( i = 0; i < 16; i++ )
+	{
+		Q_strcat( buffer, bufsize, va( "%02X", digest[ i ] ) );
+	}
 }

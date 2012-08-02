@@ -70,8 +70,6 @@ static kbuttons_t dtmapping[] =
 	KB_MOVERIGHT, // DT_MOVERIGHT
 	KB_FORWARD, // DT_FORWARD
 	KB_BACK, // DT_BACK
-	-1, // DT_LEANLEFT
-	-1, // DT_LEANRIGHT
 	KB_UP // DT_UP
 };
 
@@ -309,8 +307,6 @@ cvar_t *cl_anglespeedkey;
 
 cvar_t *cl_recoilPitch;
 
-cvar_t *cl_bypassMouseInput; // NERVE - SMF
-
 cvar_t *cl_doubletapdelay;
 
 /*
@@ -406,6 +402,36 @@ void CL_KeyMove( usercmd_t *cmd )
 		int      i;
 		qboolean key_down;
 
+		int          lastKey = 0;
+		unsigned int lastKeyTime = 0;
+
+		// Which was last pressed or released?
+		for ( i = 1; i < DT_NUM; i++ )
+		{
+			if ( cl.doubleTap.pressedTime[ i ] > lastKeyTime )
+			{
+				lastKeyTime = cl.doubleTap.pressedTime[ i ];
+				lastKey = i;
+			}
+			if ( cl.doubleTap.releasedTime[ i ] > lastKeyTime )
+			{
+				lastKeyTime = cl.doubleTap.releasedTime[ i ];
+				lastKey = i;
+			}
+		}
+
+		// Clear the others; don't want e.g. left-right-left causing dodge left
+		if ( lastKey )
+		{
+			for ( i = 1; i < DT_NUM; i++ )
+			{
+				if ( i != lastKey )
+				{
+					cl.doubleTap.pressedTime[ i ] = cl.doubleTap.releasedTime[ i ] = 0;
+				}
+			}
+		}
+
 		for ( i = 1; i < DT_NUM; i++ )
 		{
 			key_down = dtmapping[ i ] == -1 || kb[ dtmapping[ i ] ].active || kb[ dtmapping[ i ] ].wasPressed;
@@ -414,13 +440,18 @@ void CL_KeyMove( usercmd_t *cmd )
 			{
 				cl.doubleTap.pressedTime[ i ] = com_frameTime;
 			}
-			else if ( !key_down && !cl.doubleTap.releasedTime[ i ]
-			          && ( com_frameTime - cl.doubleTap.pressedTime[ i ] ) < ( cl_doubletapdelay->integer + cls.frametime ) )
+			else if ( !key_down &&
+			          cl.doubleTap.pressedTime[ i ] &&
+			          !cl.doubleTap.releasedTime[ i ] &&
+			          com_frameTime - cl.doubleTap.pressedTime[ i ] < cl_doubletapdelay->integer + cls.frametime )
 			{
 				cl.doubleTap.releasedTime[ i ] = com_frameTime;
 			}
-			else if ( key_down && ( com_frameTime - cl.doubleTap.pressedTime[ i ] ) < ( cl_doubletapdelay->integer + cls.frametime )
-			          && ( com_frameTime - cl.doubleTap.releasedTime[ i ] ) < ( cl_doubletapdelay->integer + cls.frametime ) )
+			else if ( key_down &&
+			          cl.doubleTap.pressedTime[ i ] &&
+			          cl.doubleTap.releasedTime[ i ] &&
+			          com_frameTime - cl.doubleTap.pressedTime[ i ] < cl_doubletapdelay->integer + cls.frametime &&
+			          com_frameTime - cl.doubleTap.releasedTime[ i ] < cl_doubletapdelay->integer + cls.frametime )
 			{
 				cl.doubleTap.pressedTime[ i ] = cl.doubleTap.releasedTime[ i ] = 0;
 				cmd->doubleTap = i;
@@ -446,28 +477,11 @@ void CL_MouseEvent( int dx, int dy, int time )
 {
 	if ( cls.keyCatchers & KEYCATCH_UI )
 	{
-		// NERVE - SMF - if we just want to pass it along to game
-		if ( cl_bypassMouseInput->integer == 1 )
-		{
-			cl.mouseDx[ cl.mouseIndex ] += dx;
-			cl.mouseDy[ cl.mouseIndex ] += dy;
-		}
-		else
-		{
-			VM_Call( uivm, UI_MOUSE_EVENT, dx, dy );
-		}
+		VM_Call( uivm, UI_MOUSE_EVENT, dx, dy );
 	}
 	else if ( cls.keyCatchers & KEYCATCH_CGAME )
 	{
-		if ( cl_bypassMouseInput->integer == 1 )
-		{
-			cl.mouseDx[ cl.mouseIndex ] += dx;
-			cl.mouseDy[ cl.mouseIndex ] += dy;
-		}
-		else
-		{
-			VM_Call( cgvm, CG_MOUSE_EVENT, dx, dy );
-		}
+		VM_Call( cgvm, CG_MOUSE_EVENT, dx, dy );
 	}
 	else
 	{
@@ -492,23 +506,6 @@ void CL_JoystickEvent( int axis, int value, int time )
 
 	cl.joystickAxis[ axis ] = value;
 }
-
-/*
-=================
-CL_AccelEvent
-
-iPhone Accelerometer event
-=================
-*/
-#if defined ( IPHONE )
-void CL_AccelEvent( int pitch, int roll, int yaw )
-{
-	cl.accelAngles[ PITCH ] = pitch;
-	cl.accelAngles[ ROLL ] = roll;
-	cl.accelAngles[ YAW ] = yaw;
-}
-
-#endif
 
 /*
 =================
@@ -733,14 +730,14 @@ void CL_CmdButtons( usercmd_t *cmd )
 		kb[ KB_BUTTONS + i ].wasPressed = qfalse;
 	}
 
-	if ( cls.keyCatchers && !cl_bypassMouseInput->integer )
+	if ( cls.keyCatchers )
 	{
 		usercmdPressButton( cmd->buttons, BUTTON_TALK );
 	}
 
 	// allow the game to know if any key at all is
 	// currently pressed, even if it isn't bound to anything
-	if ( anykeydown && ( !cls.keyCatchers || cl_bypassMouseInput->integer ) )
+	if ( anykeydown && ( !cls.keyCatchers ) )
 	{
 		usercmdPressButton( cmd->buttons, BUTTON_ANY );
 	}

@@ -180,7 +180,7 @@ extern cvar_t                 *s_nosound;
 extern cvar_t                 *s_khz;
 extern cvar_t                 *s_show;
 extern cvar_t                 *s_mixahead;
-
+extern cvar_t                 *s_mixPreStep;
 extern cvar_t                 *s_testsound;
 extern cvar_t                 *s_separation;
 
@@ -225,37 +225,96 @@ extern short *sfxScratchBuffer;
 extern sfx_t *sfxScratchPointer;
 extern int   sfxScratchIndex;
 
-void         SOrig_Init( void );
-void         SOrig_Shutdown( void );
-void         SOrig_StartSound( vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx );
-void         SOrig_StartLocalSound( sfxHandle_t sfx, int channelNum );
-void         SOrig_StartBackgroundTrack( const char *intro, const char *loop );
-void         SOrig_StopBackgroundTrack( void );
-void         SOrig_RawSamples( int stream, int samples, int rate, int width, int s_channels, const byte *data, float volume, int entityNum );
-void         SOrig_StopAllSounds( void );
-void         SOrig_ClearLoopingSounds( qboolean killall );
-void         SOrig_AddLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx );
-void         SOrig_AddRealLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx );
-void         SOrig_StopLoopingSound( int entityNum );
+void         S_Base_Shutdown( void );
+void         S_Base_StartSound( vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx );
+void         S_Base_StartLocalSound( sfxHandle_t sfx, int channelNum );
+void         S_Base_StartBackgroundTrack( const char *intro, const char *loop );
+void         S_Base_StopBackgroundTrack( void );
+void         S_Base_RawSamples( int stream, int samples, int rate, int width, int s_channels, const byte *data, float volume, int entityNum );
+void         S_Base_StopAllSounds( void );
+void         S_Base_ClearLoopingSounds( qboolean killall );
+void         S_Base_AddLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx );
+void         S_Base_AddRealLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx );
+void         S_Base_StopLoopingSound( int entityNum );
 
-void         SOrig_Respatialize( int entityNum, const vec3_t origin, vec3_t axis[ 3 ], int inwater );
-void         SOrig_UpdateEntityPosition( int entityNum, const vec3_t origin );
-void         SOrig_Update( void );
-void         SOrig_DisableSounds( void );
-void         SOrig_BeginRegistration( void );
-sfxHandle_t  SOrig_RegisterSound( const char *sample, qboolean compressed );
-void         SOrig_ClearSoundBuffer( void );
-int          SOrig_SoundDuration( sfxHandle_t handle );
-int          SOrig_GetVoiceAmplitude( int entnum );
-int          SOrig_GetSoundLength( sfxHandle_t sfxHandle );
+void         S_Base_Respatialize( int entityNum, const vec3_t origin, vec3_t axis[ 3 ], int inwater );
+void         S_Base_UpdateEntityPosition( int entityNum, const vec3_t origin );
+void         S_Base_Update( void );
+void         S_Base_DisableSounds( void );
+void         S_Base_BeginRegistration( void );
+sfxHandle_t  S_Base_RegisterSound( const char *sample, qboolean compressed );
+void         S_Base_ClearSoundBuffer( void );
+int          S_Base_SoundDuration( sfxHandle_t handle );
+int          S_Base_GetVoiceAmplitude( int entnum );
+int          S_Base_GetSoundLength( sfxHandle_t sfxHandle );
 
 #if defined( USE_VOIP )
-void         SOrig_StartCapture( void );
-int          SOrig_AvailableCaptureSamples( void );
-void         SOrig_Capture( int samples, byte *data );
-void         SOrig_StopCapture( void );
-void         SOrig_MasterGain( float gain );
+void         S_Base_StartCapture( void );
+int          S_Base_AvailableCaptureSamples( void );
+void         S_Base_Capture( int samples, byte *data );
+void         S_Base_StopCapture( void );
+void         S_Base_MasterGain( float gain );
 
 #endif
 
-int SOrig_GetCurrentSoundTime( void );
+int S_Base_GetCurrentSoundTime( void );
+
+
+
+// Interface between daemon sound "api" and the sound backend
+typedef struct
+{
+	void (*Shutdown)(void);
+	void (*StartSound)( vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx );
+	void (*StartSoundEx)( vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx );
+	void (*StartLocalSound)( sfxHandle_t sfx, int channelNum );
+	void (*StartBackgroundTrack)( const char *intro, const char *loop );
+	void (*StopBackgroundTrack)( void );
+	void (*RawSamples)(int stream, int samples, int rate, int width, int channels, const byte *data, float volume, int entityNum);
+	void (*ClearLoopingSounds)( qboolean killall );
+	void (*AddLoopingSound)( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx );
+	void (*AddRealLoopingSound)( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx );
+	void (*StopLoopingSound)(int entityNum );
+	void (*Respatialize)( int entityNum, const vec3_t origin, vec3_t axis[3], int inwater );
+	void (*UpdateEntityPosition)( int entityNum, const vec3_t origin );
+	void (*Update)( void );
+	void (*DisableSounds)( void );
+	void (*BeginRegistration)( void );
+	sfxHandle_t (*RegisterSound)( const char *sample, qboolean compressed );
+	void (*ClearSoundBuffer)( void );
+#ifdef USE_VOIP
+	void (*StartCapture)( void );
+	int (*AvailableCaptureSamples)( void );
+	void (*Capture)( int samples, byte *data );
+	void (*StopCapture)( void );
+	void (*MasterGain)( float gain );
+#endif
+	int (*SoundDuration) ( sfxHandle_t handle );
+	int (*GetVoiceAmplitude) ( int entnum );
+	int (*GetSoundLength)( sfxHandle_t sfxHandle );
+	int (*GetCurrentSoundTime) ( void );
+
+	//commands
+	void (*SoundList_f) ( void );
+	void (*SoundInfo_f) ( void );
+	void (*StopAllSounds) ( void );
+} soundInterface_t;
+
+qboolean S_AL_Init( soundInterface_t *si );
+void     S_Base_Init( soundInterface_t *si );
+
+typedef enum
+{
+	SRCPRI_AMBIENT = 0,	// Ambient sound effects
+	SRCPRI_ENTITY,			// Entity sound effects
+	SRCPRI_ONESHOT,			// One-shot sounds
+	SRCPRI_LOCAL,				// Local sounds
+	SRCPRI_STREAM				// Streams (music, cutscenes)
+} alSrcPriority_t;
+
+typedef int srcHandle_t;
+
+extern cvar_t *s_musicVolume;
+extern cvar_t *s_doppler;
+
+#define MAX_RAW_STREAMS (MAX_CLIENTS * 2 + 1)

@@ -34,10 +34,7 @@ Maryland 20850 USA.
 
 // console.c
 
-#ifdef USING_CMAKE
 #include "git_version.h"
-#endif
-
 #include "client.h"
 
 int g_console_field_width = 78;
@@ -380,17 +377,18 @@ void Con_Grep_f( void )
 				// allocate in 16K chunks - more than adequate
 				pbAlloc = ( pbLength + i + 1 + 16383) & ~16383;
 				nb = Z_Malloc( pbAlloc );
-				strcpy( nb, printbuf );
-				Z_Free( printbuf );
+				if( printbuf ) 
+				{
+					strcpy( nb, printbuf );
+					Z_Free( printbuf );
+				}
 				printbuf = nb;
 			}
-
-			strcpy( printbuf + pbLength, buffer );
-			pbLength += strlen( buffer );
+			Q_strcat( printbuf, pbAlloc, buffer );
+			pbLength += i;
 		}
 	}
-
-	if ( printbuf )
+	if( printbuf ) 
 	{
 		Com_Printf( "%s", printbuf );
 		Z_Free( printbuf );
@@ -518,7 +516,7 @@ void Con_Init( void )
 	scr_conColorBlue = Cvar_Get( "scr_conColorBlue", "0.3", CVAR_ARCHIVE );
 	scr_conColorGreen = Cvar_Get( "scr_conColorGreen", "0.23", CVAR_ARCHIVE );
 
-	scr_conUseOld = Cvar_Get( "scr_conUseOld", "0", CVAR_ARCHIVE | CVAR_LATCH );
+	scr_conUseOld = Cvar_Get( "scr_conUseOld", "0", CVAR_ARCHIVE );
 
 	scr_conBarHeight = Cvar_Get( "scr_conBarHeight", "2", CVAR_ARCHIVE );
 
@@ -908,6 +906,10 @@ void Con_DrawSolidConsole( float frac )
 	if (!scr_conUseOld->integer)
 	{
 		con.xadjust = 15;
+	}
+	else
+	{
+		con.xadjust = 0;
 	}
 
 	SCR_AdjustFrom640 (&con.xadjust, NULL, NULL, NULL);

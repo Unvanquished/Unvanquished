@@ -64,18 +64,6 @@ void SV_GetChallenge( netadr_t from )
 	int         oldestTime;
 	challenge_t *challenge;
 
-	// ignore if we are in single player
-	if ( SV_GameIsSinglePlayer() )
-	{
-		return;
-	}
-
-	if ( SV_TempBanIsBanned( from ) )
-	{
-		NET_OutOfBandPrint( NS_SERVER, from, "print\n%s", sv_tempbanmessage->string );
-		return;
-	}
-
 	oldest = 0;
 	oldestTime = 0x7fffffff;
 
@@ -110,252 +98,11 @@ void SV_GetChallenge( netadr_t from )
 		i = oldest;
 	}
 
-#if !defined( AUTHORIZE_SUPPORT )
+	challenge->pingTime = svs.time;
 
-	// FIXME: deal with restricted filesystem
-	if ( 1 )
-	{
-#else
+	NET_OutOfBandPrint( NS_SERVER, from, "challengeResponse %i", challenge->challenge );
 
-	// if they are on a lan address, send the challengeResponse immediately
-	if ( Sys_IsLANAddress( from ) )
-	{
-#endif
-		challenge->pingTime = svs.time;
-
-		if ( sv_onlyVisibleClients->integer )
-		{
-			NET_OutOfBandPrint( NS_SERVER, from, "challengeResponse %i %i", challenge->challenge, sv_onlyVisibleClients->integer );
-		}
-		else
-		{
-			NET_OutOfBandPrint( NS_SERVER, from, "challengeResponse %i", challenge->challenge );
-		}
-
-		return;
-	}
-
-#ifdef AUTHORIZE_SUPPORT
-
-	// look up the authorize server's IP
-	if ( !svs.authorizeAddress.ip[ 0 ] && svs.authorizeAddress.type != NA_BAD )
-	{
-		Com_Printf(_( "Resolving %s\n"), AUTHORIZE_SERVER_NAME );
-
-		if ( !NET_StringToAdr( AUTHORIZE_SERVER_NAME, &svs.authorizeAddress, NA_UNSPEC ) )
-		{
-			Com_Printf(_( "Couldn't resolve address\n" ));
-			return;
-		}
-
-		svs.authorizeAddress.port = BigShort( PORT_AUTHORIZE );
-		Com_Printf(_( "%s resolved to %i.%i.%i.%i:%i\n"), AUTHORIZE_SERVER_NAME,
-		            svs.authorizeAddress.ip[ 0 ], svs.authorizeAddress.ip[ 1 ],
-		            svs.authorizeAddress.ip[ 2 ], svs.authorizeAddress.ip[ 3 ],
-		            BigShort( svs.authorizeAddress.port ) );
-	}
-
-	// if they have been challenging for a long time and we
-	// haven't heard anything from the authoirze server, go ahead and
-	// let them in, assuming the id server is down
-	if ( svs.time - challenge->firstTime > AUTHORIZE_TIMEOUT )
-	{
-		Com_DPrintf( "authorize server timed out\n" );
-
-		challenge->pingTime = svs.time;
-
-		if ( sv_onlyVisibleClients->integer )
-		{
-			NET_OutOfBandPrint( NS_SERVER, challenge->adr,
-			                    "challengeResponse %i %i", challenge->challenge, sv_onlyVisibleClients->integer );
-		}
-		else
-		{
-			NET_OutOfBandPrint( NS_SERVER, challenge->adr,
-			                    "challengeResponse %i", challenge->challenge );
-		}
-
-		return;
-	}
-
-	// otherwise send their ip to the authorize server
-	if ( svs.authorizeAddress.type != NA_BAD )
-	{
-		cvar_t *fs;
-		char   game[ 1024 ];
-
-		game[ 0 ] = 0;
-		fs = Cvar_Get( "fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO );
-
-		if ( fs && fs->string[ 0 ] != 0 )
-		{
-			strcpy( game, fs->string );
-		}
-
-		Com_DPrintf( "sending getIpAuthorize for %s\n", NET_AdrToString( from ) );
-		fs = Cvar_Get( "sv_allowAnonymous", "0", CVAR_SERVERINFO );
-
-		// NERVE - SMF - fixed parsing on sv_allowAnonymous
-		NET_OutOfBandPrint( NS_SERVER, svs.authorizeAddress,
-		                    "getIpAuthorize %i %i.%i.%i.%i %s %i",  svs.challenges[ i ].challenge,
-		                    from.ip[ 0 ], from.ip[ 1 ], from.ip[ 2 ], from.ip[ 3 ], game, fs->integer );
-	}
-
-#endif // AUTHORIZE_SUPPORT
-}
-
-#ifdef AUTHORIZE_SUPPORT
-
-/*
-====================
-SV_AuthorizeIpPacket
-
-A packet has been returned from the authorize server.
-If we have a challenge adr for that ip, send the
-challengeResponse to it
-====================
-*/
-void SV_AuthorizeIpPacket( netadr_t from )
-{
-	int  challenge;
-	int  i;
-	char *s;
-	char *r;
-	char ret[ 1024 ];
-
-	if ( !NET_CompareBaseAdr( from, svs.authorizeAddress ) )
-	{
-		Com_Printf(_( "SV_AuthorizeIpPacket: not from authorize server\n" ));
-		return;
-	}
-
-	challenge = atoi( Cmd_Argv( 1 ) );
-
-	for ( i = 0; i < MAX_CHALLENGES; i++ )
-	{
-		if ( svs.challenges[ i ].challenge == challenge )
-		{
-			break;
-		}
-	}
-
-	if ( i == MAX_CHALLENGES )
-	{
-		Com_Printf(_( "SV_AuthorizeIpPacket: challenge not found\n" ));
-		return;
-	}
-
-	// send a packet back to the original client
-	svs.challenges[ i ].pingTime = svs.time;
-	s = Cmd_Argv( 2 );
-	r = Cmd_Argv( 3 );  // reason
-
-	if ( !Q_stricmp( s, "ettest" ) )
-	{
-		if ( Cvar_VariableValue( "fs_restrict" ) )
-		{
-			// a demo client connecting to a demo server
-			NET_OutOfBandPrint( NS_SERVER, svs.challenges[ i ].adr,
-			                    "challengeResponse %i", svs.challenges[ i ].challenge );
-			return;
-		}
-
-		// they are a demo client trying to connect to a real server
-		NET_OutOfBandPrint( NS_SERVER, svs.challenges[ i ].adr, "print\nServer is not a demo server" );
-		// clear the challenge record so it won't timeout and let them through
-		memset( &svs.challenges[ i ], 0, sizeof( svs.challenges[ i ] ) );
-		return;
-	}
-
-	if ( !Q_stricmp( s, "accept" ) )
-	{
-		if ( sv_onlyVisibleClients->integer )
-		{
-			NET_OutOfBandPrint( NS_SERVER, svs.challenges[ i ].adr,
-			                    "challengeResponse %i %i", svs.challenges[ i ].challenge, sv_onlyVisibleClients->integer );
-		}
-		else
-		{
-			NET_OutOfBandPrint( NS_SERVER, svs.challenges[ i ].adr,
-			                    "challengeResponse %i", svs.challenges[ i ].challenge );
-		}
-
-		return;
-	}
-
-	if ( !Q_stricmp( s, "unknown" ) )
-	{
-		if ( !r )
-		{
-			NET_OutOfBandPrint( NS_SERVER, svs.challenges[ i ].adr, "print\nAwaiting CD key authorization" );
-		}
-		else
-		{
-			sprintf( ret, "print\n%s", r );
-			NET_OutOfBandPrint( NS_SERVER, svs.challenges[ i ].adr, ret );
-		}
-
-		// clear the challenge record so it won't timeout and let them through
-		memset( &svs.challenges[ i ], 0, sizeof( svs.challenges[ i ] ) );
-		return;
-	}
-
-	// authorization failed
-	if ( !r )
-	{
-		NET_OutOfBandPrint( NS_SERVER, svs.challenges[ i ].adr, "print\nSomeone is using this CD Key" );
-	}
-	else
-	{
-		sprintf( ret, "print\n%s", r );
-		NET_OutOfBandPrint( NS_SERVER, svs.challenges[ i ].adr, ret );
-	}
-
-	// clear the challenge record so it won't timeout and let them through
-	memset( &svs.challenges[ i ], 0, sizeof( svs.challenges[ i ] ) );
-}
-
-#endif // AUTHORIZE_SUPPORT
-
-/*
-==================
-SV_ApproveGuid
-
-Returns a false value if and only if the client with this cl_guid
-should not be allowed to enter the server.
-
-A cl_guid string must have length 32 and consist of characters
-'0' through '9' and 'A' through 'F'.
-==================
-*/
-qboolean SV_ApproveGuid( const char *guid )
-{
-	int  i;
-	char c;
-	int  length;
-
-	if ( sv_requireValidGuid->integer > 0 )
-	{
-		length = strlen( guid );  // could avoid this extra linear-time computation
-
-		if ( length != 32 )
-		{
-			return qfalse;
-		}
-
-		for ( i = 31; i >= 0; )
-		{
-			c = guid[ i-- ];
-
-			if ( !( ( '0' <= c && c <= '9' ) ||
-			        ( 'A' <= c && c <= 'F' ) ) )
-			{
-				return qfalse;
-			}
-		}
-	}
-
-	return qtrue;
+	return;
 }
 
 /*
@@ -381,12 +128,9 @@ void SV_DirectConnect( netadr_t from )
 	char                *denied;
 	int                 count;
 	char                *ip;
-	int                 oldInfoLen2 = strlen( userinfo );
-	int                 newInfoLen2;
 
 	Com_DPrintf( "SVC_DirectConnect ()\n" );
 
-	//Q_strncpyz( userinfo, Cmd_Argv( 1 ), sizeof( userinfo ) );
 	Q_strncpyz( userinfo, Cmd_Argv( 1 ), sizeof( userinfo ) );
 
 	// DHM - Nerve :: Update Server allows any protocol to connect
@@ -402,12 +146,6 @@ void SV_DirectConnect( netadr_t from )
 
 	challenge = atoi( Info_ValueForKey( userinfo, "challenge" ) );
 	qport = atoi( Info_ValueForKey( userinfo, "qport" ) );
-
-	if ( SV_TempBanIsBanned( from ) )
-	{
-		NET_OutOfBandPrint( NS_SERVER, from, "print\n%s", sv_tempbanmessage->string );
-		return;
-	}
 
 	// quick reject
 	for ( i = 0, cl = svs.clients; i < sv_maxclients->integer; i++, cl++ )
@@ -429,30 +167,6 @@ void SV_DirectConnect( netadr_t from )
 
 			break;
 		}
-	}
-
-	// block connections for invalid GUIDs
-	if ( !SV_ApproveGuid( Info_ValueForKey( userinfo, "cl_guid" ) ) )
-	{
-		NET_OutOfBandPrint( NS_SERVER, from, "print\nGet legit, bro." );
-		Com_DPrintf( "Invalid cl_guid, rejected connect from %s\n", NET_AdrToString( from ) );
-		return;
-	}
-
-	// See comment made in SV_UserinfoChanged() regarding handicap.
-
-	while ( qtrue )
-	{
-		// Unfortunately the string functions such as strlen() and Info_RemoveKey()
-		// are quite expensive for large userinfo strings.  Imagine if someone
-		// bombarded the server with connect packets.  That would result in very bad
-		// server hitches.  We need to fix that.
-		Info_RemoveKey( userinfo, "handicap" );
-		newInfoLen2 = strlen( userinfo );
-
-		if ( oldInfoLen2 == newInfoLen2 ) { break; } // userinfo wasn't modified.
-
-		oldInfoLen2 = newInfoLen2;
 	}
 
 	if ( NET_IsLocalAddress( from ) )
@@ -655,6 +369,9 @@ gotnewcl:
 	Netchan_Setup( NS_SERVER, &newcl->netchan, from, qport );
 	// init the netchan queue
 
+	// Save the pubkey
+	Q_strncpyz( newcl->pubkey, Info_ValueForKey( userinfo, "pubkey" ), sizeof( newcl->pubkey ) );
+	Info_RemoveKey( userinfo, "pubkey" );
 	// save the userinfo
 	Q_strncpyz( newcl->userinfo, userinfo, sizeof( newcl->userinfo ) );
 
@@ -788,7 +505,7 @@ void SV_DropClient( client_t *drop, const char *reason )
 	// Free all allocated data on the client structure
 	SV_FreeClient( drop );
 
-	if ( ( !SV_GameIsSinglePlayer() ) || ( !isBot ) )
+	if ( !isBot )
 	{
 		// tell everyone why they got dropped
 
@@ -1738,67 +1455,6 @@ static void SV_ResetPureClient_f( client_t *cl )
 	cl->gotCP = qfalse;
 }
 
-#ifdef USE_HUB_SERVER
-
-/*
-==================
-SV_SendUserinfoToowHub
-
-Send userinfo string to hub server if we were able to resolve it.
-Hub messages are authenticated using a secret key and MD4 digests
-(mostly because MD4 was available in ET:XreaL already).
-==================
-*/
-void SV_SendUserinfoToowHub( const char *userinfo )
-{
-	int length;
-
-	// we use this buffer for both computing the MD4 and then the final
-	// message we send; the MD4 hexdigest is 32 chars long, less than
-	// MAX_CVAR_VALUE_STRING, so we're good (but still add safety); the
-	// contents are "key-or-MD4\nuserinfo\nthelonguserinfodata" which
-	// should explain the length calculation
-	char buffer[ MAX_CVAR_VALUE_STRING + 1 + 8 + 1 + MAX_INFO_STRING + 4 ];
-
-	// these buffers are for the actual MD4 and its hexdigest, each with
-	// a small safety margin
-	char md4[ 16 + 2 ];
-	char digest[ 32 + 2 ];
-
-	if ( svs.owHubAddress.type != NA_BAD )
-	{
-		// initialize the buffers (paranoid!)
-		memset( buffer, 0, sizeof( buffer ) );
-		memset( md4, 0, sizeof( md4 ) );
-		memset( digest, 0, sizeof( digest ) );
-
-		// key + payload to authenticate
-		length = _snprintf( buffer, sizeof( buffer ) - 2, "%s\nuserinfo\n%s",
-		                    sv_owHubKey->string, userinfo );
-		assert( length != -1 );
-		assert( length <= sizeof( buffer ) - 2 );
-		assert( length == strlen( buffer ) );
-
-		// silly (byte*) casts to avoid silly warnings;
-		mdfour( ( byte * ) md4, ( byte * ) buffer, length );
-		mdfour_hex( ( byte * ) md4, digest );
-		assert( strlen( digest ) == 32 );
-
-		// MD4 hexdigest + payload to send
-		length = _snprintf( buffer, sizeof( buffer ) - 2, "%s\nuserinfo\n%s",
-		                    digest, userinfo );
-		assert( length != -1 );
-		assert( length <= sizeof( buffer ) - 2 );
-
-		NET_OutOfBandPrint( NS_SERVER, svs.owHubAddress,
-		                    "%s", buffer );
-
-		Com_DPrintf( "Sent userinfo to |ALPHA| Hub.\n" );
-	}
-}
-
-#endif
-
 /*
 =================
 SV_UserinfoChanged
@@ -1810,28 +1466,7 @@ into a more C friendly form.
 void SV_UserinfoChanged( client_t *cl )
 {
 	char *val;
-//	char           *ip;
 	int  i;
-//	int        len;
-
-	// In the ugly [commented out] code below, handicap is supposed to be
-	// either missing or a valid int between 1 and 100.
-	// It's safe therefore to stick with that policy and just remove it.
-	// ET never uses handicap anyways.  Unfortunately it's possible
-	// to have a key such as handicap appear more than once in the userinfo.
-	// So we remove every instance of it.
-	int oldInfoLen = strlen( cl->userinfo );
-	int newInfoLen;
-
-	while ( qtrue )
-	{
-		Info_RemoveKey( cl->userinfo, "handicap" );
-		newInfoLen = strlen( cl->userinfo );
-
-		if ( oldInfoLen == newInfoLen ) { break; } // userinfo wasn't modified.
-
-		oldInfoLen = newInfoLen;
-	}
 
 	// name for C code
 	Q_strncpyz( cl->name, Info_ValueForKey( cl->userinfo, "name" ), sizeof( cl->name ) );
@@ -1867,20 +1502,6 @@ void SV_UserinfoChanged( client_t *cl )
 			cl->rate = 5000;
 		}
 	}
-
-	//donmichelangelo: This code isn't used in ET and may cause an overflow in the userinfo string
-
-	/*
-	val = Info_ValueForKey(cl->userinfo, "handicap");
-	if(strlen(val))
-	{
-	        i = atoi(val);
-	        if(i <= -100 || i > 100 || strlen(val) > 4)
-	        {
-	                Info_SetValueForKey(cl->userinfo, "handicap", "0");
-	        }
-	}
-	*/
 
 	// snaps command
 	val = Info_ValueForKey( cl->userinfo, "snaps" );
@@ -2099,96 +1720,6 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK, qb
 		// pass unknown strings to the game
 		if ( !u->name && sv.state == SS_GAME )
 		{
-#if 0 // There are checks in the game code. This exploit test seems superfluous.
-			argsFromOneMaxlen = -1;
-
-			if ( Q_stricmp( "say", Cmd_Argv( 0 ) ) == 0 ||
-			     Q_stricmp( "say_team", Cmd_Argv( 0 ) ) == 0 ||
-			     Q_stricmp( "say_fireteam", Cmd_Argv( 0 ) ) == 0 )
-			{
-				argsFromOneMaxlen = MAX_SAY_STRLEN;
-			}
-			else if ( Q_stricmp( "tell", Cmd_Argv( 0 ) ) == 0 )
-			{
-				// A command will look like "tell 12 hi" or "tell foo hi".  The "12"
-				// and "foo" in the examples will be counted towards MAX_SAY_STRLEN,
-				// plus the space.
-				argsFromOneMaxlen = MAX_SAY_STRLEN;
-			}
-
-			/*else if (Q_stricmp("ut_radio", Cmd_Argv(0)) == 0) {
-			        // We add 4 to this value because in a command such as
-			        // "ut_radio 1 1 affirmative", the args at indices 1 and 2 each
-			        // have length 1 and there is a space after them.
-			        argsFromOneMaxlen = MAX_RADIO_STRLEN + 4;
-			}*/
-			if ( argsFromOneMaxlen >= 0 )
-			{
-				exploitDetected = qfalse;
-				charCount = 0;
-				dollarCount = 0;
-
-				for ( i = Cmd_Argc() - 1; i >= 1; i-- )
-				{
-					arg = Cmd_Argv( i );
-
-					while ( *arg )
-					{
-						if ( ++charCount > argsFromOneMaxlen )
-						{
-							exploitDetected = qtrue;
-							break;
-						}
-
-						if ( *arg == '$' )
-						{
-							if ( ++dollarCount > MAX_DOLLAR_VARS )
-							{
-								exploitDetected = qtrue;
-								break;
-							}
-
-							charCount += STRLEN_INCREMENT_PER_DOLLAR_VAR;
-
-							if ( charCount > argsFromOneMaxlen )
-							{
-								exploitDetected = qtrue;
-								break;
-							}
-						}
-
-						arg++;
-					}
-
-					if ( exploitDetected ) { break; }
-
-					if ( i != 1 ) // Cmd_ArgsFrom() will add space
-					{
-						if ( ++charCount > argsFromOneMaxlen )
-						{
-							exploitDetected = qtrue;
-							break;
-						}
-					}
-				}
-
-				if ( exploitDetected )
-				{
-					Com_Printf(_( "Buffer overflow exploit radio/say, possible attempt from %s\n"),
-					            NET_AdrToString( cl->netchan.remoteAddress ) );
-					SV_SendServerCommand( cl, "print \"Chat dropped due to message length constraints.\n\"" );
-					return;
-				}
-			}
-			else
-#endif
-			if ( Q_stricmp( "callvote", Cmd_Argv( 0 ) ) == 0 )
-			{
-				Com_Printf(_( "Callvote from %s (client #%i, %s): %s\n"),
-				            cl->name, ( int )( cl - svs.clients ),
-				            NET_AdrToString( cl->netchan.remoteAddress ), Cmd_Args() );
-			}
-
 			VM_Call( gvm, GAME_CLIENT_COMMAND, cl - svs.clients );
 		}
 	}
@@ -2400,20 +1931,9 @@ static void SV_UserMove( client_t *cl, msg_t *msg, qboolean delta )
 		}
 
 		// extremely lagged or cmd from before a map_restart
-		//if ( cmds[i].serverTime > svs.time + 3000 ) {
-		//  continue;
-		//}
-		if ( !SV_GameIsSinglePlayer() )
+		if ( cmds[ i ].serverTime <= cl->lastUsercmd.serverTime )
 		{
-			// We need to allow this in single player, where loadgames can cause the player to freeze after reloading if we do this check
-			// don't execute if this is an old cmd which is already executed
-			// these old cmds are included when cl_packetdup > 0
-			if ( cmds[ i ].serverTime <= cl->lastUsercmd.serverTime )
-			{
-				// Q3_MISSIONPACK
-//          if ( cmds[i].serverTime > cmds[cmdCount-1].serverTime ) {
-				continue; // from just before a map_restart
-			}
+			continue;
 		}
 
 		SV_ClientThink( cl, &cmds[ i ] );

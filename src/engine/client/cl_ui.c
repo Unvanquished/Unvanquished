@@ -35,6 +35,7 @@ Maryland 20850 USA.
 #include "client.h"
 
 #define __(x) Trans_GettextGame(x)
+#define C__(x, y) Trans_PgettextGame(x, y)
 
 
 vm_t                   *uivm;
@@ -71,7 +72,7 @@ void LAN_LoadCachedServers()
 	cls.numglobalservers = cls.numfavoriteservers = 0;
 	cls.numGlobalServerAddresses = 0;
 
-	if ( com_gameInfo.usesProfiles && cl_profile->string[ 0 ] )
+	if ( cl_profile->string[ 0 ] )
 	{
 		Com_sprintf( filename, sizeof( filename ), "profiles/%s/servercache.dat", cl_profile->string );
 	}
@@ -114,7 +115,7 @@ void LAN_SaveServersToCache()
 	fileHandle_t fileOut;
 	char         filename[ MAX_QPATH ];
 
-	if ( com_gameInfo.usesProfiles && cl_profile->string[ 0 ] )
+	if ( cl_profile->string[ 0 ] )
 	{
 		Com_sprintf( filename, sizeof( filename ), "profiles/%s/servercache.dat", cl_profile->string );
 	}
@@ -423,18 +424,11 @@ static void LAN_GetServerInfo( int source, int n, char *buf, int buflen )
 		Info_SetValueForKey( info, "minping", va( "%i", server->minPing ) );
 		Info_SetValueForKey( info, "maxping", va( "%i", server->maxPing ) );
 		Info_SetValueForKey( info, "game", server->game );
-		Info_SetValueForKey( info, "gametype", va( "%i", server->gameType ) );
 		Info_SetValueForKey( info, "nettype", va( "%i", server->netType ) );
 		Info_SetValueForKey( info, "addr", NET_AdrToStringwPort( server->adr ) );
-		Info_SetValueForKey( info, "sv_allowAnonymous", va( "%i", server->allowAnonymous ) );
 		Info_SetValueForKey( info, "friendlyFire", va( "%i", server->friendlyFire ) );   // NERVE - SMF
-		Info_SetValueForKey( info, "maxlives", va( "%i", server->maxlives ) );   // NERVE - SMF
 		Info_SetValueForKey( info, "needpass", va( "%i", server->needpass ) );   // NERVE - SMF
-		Info_SetValueForKey( info, "punkbuster", va( "%i", server->punkbuster ) );   // DHM - Nerve
 		Info_SetValueForKey( info, "gamename", server->gameName );  // Arnout
-		Info_SetValueForKey( info, "g_antilag", va( "%i", server->antilag ) );   // TTimo
-		Info_SetValueForKey( info, "weaprestrict", va( "%i", server->weaprestrict ) );
-		Info_SetValueForKey( info, "balancedteams", va( "%i", server->balancedteams ) );
 		Q_strncpyz( buf, info, buflen );
 	}
 	else
@@ -594,11 +588,11 @@ static int LAN_CompareServers( int source, int sortKey, int sortDir, int s1, int
 			break;
 
 		case SORT_GAME:
-			if ( server1->gameType < server2->gameType )
+			if ( server1->gameName < server2->gameName )
 			{
 				res = -1;
 			}
-			else if ( server1->gameType > server2->gameType )
+			else if ( server1->gameName > server2->gameName )
 			{
 				res = 1;
 			}
@@ -932,55 +926,6 @@ void Key_SetCatcher( int catcher )
 
 /*
 ====================
-CLUI_GetCDKey
-====================
-*/
-static void CLUI_GetCDKey( char *buf, int buflen )
-{
-	cvar_t *fs;
-
-	fs = Cvar_Get( "fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO );
-
-	if ( UI_usesUniqueCDKey() && fs && fs->string[ 0 ] != 0 )
-	{
-		memcpy( buf, &cl_cdkey[ 16 ], 16 );
-		buf[ 16 ] = 0;
-	}
-	else
-	{
-		memcpy( buf, cl_cdkey, 16 );
-		buf[ 16 ] = 0;
-	}
-}
-
-/*
-====================
-CLUI_SetCDKey
-====================
-*/
-static void CLUI_SetCDKey( char *buf )
-{
-	cvar_t *fs;
-
-	fs = Cvar_Get( "fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO );
-
-	if ( UI_usesUniqueCDKey() && fs && fs->string[ 0 ] != 0 )
-	{
-		memcpy( &cl_cdkey[ 16 ], buf, 16 );
-		cl_cdkey[ 32 ] = 0;
-		// set the flag so the fle will be written at the next opportunity
-		cvar_modifiedFlags |= CVAR_ARCHIVE;
-	}
-	else
-	{
-		memcpy( cl_cdkey, buf, 16 );
-		// set the flag so the fle will be written at the next opportunity
-		cvar_modifiedFlags |= CVAR_ARCHIVE;
-	}
-}
-
-/*
-====================
 GetConfigString
 ====================
 */
@@ -1130,31 +1075,13 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return FS_Seek( args[ 1 ], args[ 2 ], args[ 3 ] );
 
 		case UI_R_REGISTERMODEL:
-#ifdef IPHONE_NOTYET
-			GLimp_AcquireGL();
 			return re.RegisterModel( VMA( 1 ) );
-			GLimp_ReleaseGL();
-#else
-			return re.RegisterModel( VMA( 1 ) );
-#endif // IPHONE
 
 		case UI_R_REGISTERSKIN:
-#ifdef IPHONE_NOTYET
-			GLimp_AcquireGL();
 			return re.RegisterSkin( VMA( 1 ) );
-			GLimp_ReleaseGL();
-#else
-			return re.RegisterSkin( VMA( 1 ) );
-#endif // IPHONE
 
 		case UI_R_REGISTERSHADERNOMIP:
-#ifdef IPHONE_NOTYET
-			GLimp_AcquireGL();
 			return re.RegisterShaderNoMip( VMA( 1 ) );
-			GLimp_ReleaseGL();
-#else
-			return re.RegisterShaderNoMip( VMA( 1 ) );
-#endif // IPHONE
 
 		case UI_R_CLEARSCENE:
 			re.ClearScene();
@@ -1384,15 +1311,6 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 		case UI_MEMORY_REMAINING:
 			return Hunk_MemoryRemaining();
 
-		case UI_GET_CDKEY:
-			VM_CheckBlock( args[2], args[3], "UIGCDK" ); // hmm...
-			CLUI_GetCDKey( VMA( 1 ), args[ 2 ] );
-			return 0;
-
-		case UI_SET_CDKEY:
-			CLUI_SetCDKey( VMA( 1 ) );
-			return 0;
-
 		case UI_R_REGISTERFONT:
 			re.RegisterFontVM( VMA( 1 ), VMA( 2 ), args[ 3 ], VMA( 4 ) );
 			return 0;
@@ -1446,16 +1364,6 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			re.RemapShader( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
 			return 0;
 
-			// DHM - Nerve
-		case UI_CHECKAUTOUPDATE:
-			CL_CheckAutoUpdate();
-			return 0;
-
-		case UI_GET_AUTOUPDATE:
-			CL_GetAutoUpdate();
-			return 0;
-			// DHM - Nerve
-
 		case UI_OPENURL:
 			CL_OpenURL( ( const char * ) VMA( 1 ) );
 			return 0;
@@ -1503,6 +1411,11 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 
 		case UI_R_UREGISTERFONT:
 			re.UnregisterFontVM( args[1] );
+			return 0;
+
+		case UI_PGETTEXT:
+			VM_CheckBlock( args[ 1 ], args[ 4 ], "UIPGETTEXT" );
+			Q_strncpyz( VMA( 1 ), C__( VMA( 2 ), VMA( 3 ) ), args[ 4 ] );
 			return 0;
 
 		default:
@@ -1553,35 +1466,15 @@ void CL_InitUI( void )
 
 	if ( v != UI_API_VERSION )
 	{
+		// Free uivm now, so UI_SHUTDOWN doesn't get called later.
+		VM_Free( uivm );
+		uivm = NULL;
+
 		Com_Error( ERR_FATAL, "User Interface is version %d, expected %d", v, UI_API_VERSION );
 	}
 
 	// init for this gamestate
-	VM_Call( uivm, UI_INIT, ( cls.state >= CA_AUTHORIZING && cls.state < CA_ACTIVE ) );
-}
-
-qboolean UI_usesUniqueCDKey()
-{
-	if ( uivm )
-	{
-		return ( VM_Call( uivm, UI_HASUNIQUECDKEY ) == qtrue );
-	}
-	else
-	{
-		return qfalse;
-	}
-}
-
-qboolean UI_checkKeyExec( int key )
-{
-	if ( uivm )
-	{
-		return ( VM_Call( uivm, UI_CHECKEXECKEY, key ) );
-	}
-	else
-	{
-		return qfalse;
-	}
+	VM_Call( uivm, UI_INIT, ( cls.state >= CA_CONNECTING && cls.state < CA_ACTIVE ) );
 }
 
 /*

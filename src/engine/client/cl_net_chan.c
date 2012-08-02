@@ -167,8 +167,6 @@ void CL_Netchan_TransmitNextFragment( netchan_t *chan )
 	Netchan_TransmitNextFragment( chan );
 }
 
-extern qboolean SV_GameIsSinglePlayer( void );
-
 /*
 ================
 CL_WriteBinaryMessage
@@ -203,11 +201,7 @@ void CL_Netchan_Transmit( netchan_t *chan, msg_t *msg )
 {
 	MSG_WriteByte( msg, clc_EOF );
 	CL_WriteBinaryMessage( msg );
-
-	if ( !SV_GameIsSinglePlayer() )
-	{
-		CL_Netchan_Encode( msg );
-	}
+	CL_Netchan_Encode( msg );
 
 	Netchan_Transmit( chan, msg->cursize, msg->data );
 }
@@ -231,10 +225,7 @@ qboolean CL_Netchan_Process( netchan_t *chan, msg_t *msg )
 		return qfalse;
 	}
 
-	if ( !SV_GameIsSinglePlayer() )
-	{
-		CL_Netchan_Decode( msg );
-	}
+	CL_Netchan_Decode( msg );
 
 	newsize += msg->cursize;
 	return qtrue;

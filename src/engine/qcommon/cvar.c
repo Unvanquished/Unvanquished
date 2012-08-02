@@ -42,6 +42,7 @@ cvar_t        *cvar_cheats;
 int           cvar_modifiedFlags;
 
 #define _(x) Trans_Gettext(x)
+#define C_(x, y) Trans_Pgettext(x, y)
 
 #define MAX_CVARS 2048
 cvar_t        cvar_indexes[ MAX_CVARS ];
@@ -1084,11 +1085,6 @@ void Cvar_WriteVariables( fileHandle_t f )
 
 	for ( var = cvar_vars; var; var = var->next )
 	{
-		if ( Q_stricmp( var->name, "cl_cdkey" ) == 0 )
-		{
-			continue;
-		}
-
 		if ( var->flags & CVAR_ARCHIVE )
 		{
 			// write the latched value, even if it hasn't taken effect yet

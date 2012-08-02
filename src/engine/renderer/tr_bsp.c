@@ -160,7 +160,7 @@ float R_ProcessLightmap( byte **pic, int in_padding, int width, int height, byte
 	float  maxIntensity = 0;
 	double sumIntensity = 0;
 
-	if ( r_lightmap->integer > 1 )
+	if ( r_showLightMaps->integer > 1 )
 	{
 		// color code by intensity as development tool (FIXME: check range)
 		for ( j = 0; j < width * height; j++ )
@@ -189,7 +189,7 @@ float R_ProcessLightmap( byte **pic, int in_padding, int width, int height, byte
 
 			HSVtoRGB( intensity, 1.00, 0.50, out );
 
-			if ( r_lightmap->integer == 3 )
+			if ( r_showLightMaps->integer == 3 )
 			{
 				// Arnout: artists wanted the colours to be inversed
 				( *pic_out ) [ j * 4 + 0 ] = out[ 2 ] * 255;
@@ -285,9 +285,9 @@ static void R_LoadLightmaps( lump_t *l )
 		tr.lightmaps[ i ] = R_CreateImage( va( "*lightmap%d", i ), image, LIGHTMAP_SIZE, LIGHTMAP_SIZE, qfalse, qfalse, GL_CLAMP );
 	}
 
-	if ( r_lightmap->integer > 1 )
+	if ( r_showLightMaps->integer > 1 )
 	{
-		ri.Printf( PRINT_ALL, "Brightest lightmap value: %d\n", ( int )( maxIntensity * 255 ) );
+		ri.Printf( PRINT_DEVELOPER, "Brightest lightmap value: %d\n", ( int )( maxIntensity * 255 ) );
 	}
 }
 
@@ -2292,7 +2292,7 @@ void R_StitchAllPatches( void )
 	}
 	while ( stitched );
 
-	ri.Printf( PRINT_ALL, "stitched %d LoD cracks\n", numstitches );
+	ri.Printf( PRINT_DEVELOPER, "stitched %d LoD cracks\n", numstitches );
 }
 
 /*
@@ -2434,7 +2434,7 @@ static void R_LoadSurfaces( lump_t *surfs, lump_t *verts, lump_t *indexLump )
 	R_MovePatchSurfacesToHunk();
 #endif
 
-	ri.Printf( PRINT_ALL, "...loaded %d faces, %i meshes, %i trisurfs, %i flares %i foliage\n",
+	ri.Printf( PRINT_DEVELOPER, "...loaded %d faces, %i meshes, %i trisurfs, %i flares %i foliage\n",
 	           numFaces, numMeshes, numTriSurfs, numFlares, numFoliage );
 }
 
@@ -3263,6 +3263,7 @@ void RE_LoadWorldMap( const char *name )
 
 	if ( i != BSP_VERSION && i != BSP_VERSION_Q3 )
 	{
+		ri.FS_FreeFile( buffer );
 		ri.Error( ERR_DROP, "RE_LoadWorldMap: %s has wrong version number (%i should be %i for ET or %i for Q3)",
 		          name, i, BSP_VERSION, BSP_VERSION_Q3 );
 	}
