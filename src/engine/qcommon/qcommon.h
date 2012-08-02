@@ -980,7 +980,6 @@ extern cvar_t       *com_crashed;
 
 extern cvar_t       *com_ignorecrash; //bani
 
-extern cvar_t       *com_protocol;
 extern cvar_t       *com_pid; //bani
 
 extern cvar_t       *com_developer;

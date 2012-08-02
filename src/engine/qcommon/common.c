@@ -124,7 +124,6 @@ cvar_t *com_watchdog_cmd;
 cvar_t *cl_notebook;
 
 cvar_t *com_hunkused; // Ridah
-cvar_t *com_protocol;
 
 #if idx64
 int ( *Q_VMftol )( void );
@@ -3317,7 +3316,6 @@ void Com_Init( char *commandLine )
 
 	s = va( "%s %s %s", Q3_VERSION, ARCH_STRING, __DATE__ );
 	com_version = Cvar_Get( "version", s, CVAR_ROM | CVAR_SERVERINFO );
-	com_protocol = Cvar_Get( "protocol", va( "%i", PROTOCOL_VERSION ), CVAR_SERVERINFO | CVAR_ROM );
 
 	Sys_Init();
 	Netchan_Init( Com_Milliseconds() & 0xffff );  // pick a port value that should be nice and random

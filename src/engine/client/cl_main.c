@@ -887,7 +887,7 @@ void CL_Record_f( void )
 	{
 		s = Cmd_Argv( 1 );
 		Q_strncpyz( demoName, s, sizeof( demoName ) );
-		Com_sprintf( name, sizeof( name ), "demos/%s.dm_%d", demoName, com_protocol->integer );
+		Com_sprintf( name, sizeof( name ), "demos/%s.dm_%d", demoName, PROTOCOL_VERSION );
 	}
 	else
 	{
@@ -897,7 +897,7 @@ void CL_Record_f( void )
 		for ( number = 0; number <= 9999; number++ )
 		{
 			CL_DemoFilename( number, demoName );
-			Com_sprintf( name, sizeof( name ), "demos/%s.dm_%d", demoName, com_protocol->integer );
+			Com_sprintf( name, sizeof( name ), "demos/%s.dm_%d", demoName, PROTOCOL_VERSION );
 
 			len = FS_ReadFile( name, NULL );
 
@@ -1290,7 +1290,7 @@ static void CL_CompleteDemoName( char *args, int argNum )
 	{
 		char demoExt[ 16 ];
 
-		Com_sprintf( demoExt, sizeof( demoExt ), ".dm_%d", com_protocol->integer );
+		Com_sprintf( demoExt, sizeof( demoExt ), ".dm_%d", PROTOCOL_VERSION );
 		Field_CompleteFilename( "demos", demoExt, qtrue );
 	}
 }
@@ -1324,9 +1324,9 @@ void CL_PlayDemo_f( void )
 
 	// open the demo file
 	arg = Cmd_Argv( 1 );
-	prot_ver = com_protocol->integer - 1;
+	prot_ver = PROTOCOL_VERSION - 1;
 
-	while ( prot_ver <= com_protocol->integer && !clc.demofile )
+	while ( prot_ver <= PROTOCOL_VERSION && !clc.demofile )
 	{
 		Com_sprintf( extension, sizeof( extension ), ".dm_%d", prot_ver );
 
@@ -2893,7 +2893,7 @@ void CL_CheckForResend( void )
 			port = Cvar_VariableValue( "net_qport" );
 
 			Q_strncpyz( info, Cvar_InfoString( CVAR_USERINFO ), sizeof( info ) );
-			Info_SetValueForKey( info, "protocol", va( "%i", com_protocol->integer ) );
+			Info_SetValueForKey( info, "protocol", va( "%i", PROTOCOL_VERSION ) );
 			Info_SetValueForKey( info, "qport", va( "%i", port ) );
 			Info_SetValueForKey( info, "challenge", va( "%i", clc.challenge ) );
 			Info_SetValueForKey( info, "pubkey", key );
@@ -4780,7 +4780,7 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg )
 	// if this isn't the correct protocol version, ignore it
 	prot = atoi( Info_ValueForKey( infoString, "protocol" ) );
 
-	if ( prot != com_protocol->integer )
+	if ( prot != PROTOCOL_VERSION )
 	{
 		Com_DPrintf( "Different protocol info packet: %s\n", infoString );
 		return;
