@@ -1,3 +1,10 @@
+unvanquished (0.6.0-1) unstable; urgency=low
+
+  * Release of alpha 6.
+  * Handle unv:// URIs.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Wed, 01 Aug 2012 22:56:26 +0100
+
 unvanquished (0.5.1-1) unstable; urgency=low
 
   * Bug-fix release.
