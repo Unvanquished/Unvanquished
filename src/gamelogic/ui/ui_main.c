@@ -1233,9 +1233,9 @@ static void UI_StartServerRefresh( qboolean full )
 	{
 		qboolean global = ui_netSource.integer == AS_GLOBAL;
 
-		trap_Cmd_ExecuteText( EXEC_APPEND, va( "globalservers %d %d full empty\n",
-		                                       global ? 0 : 1,
-		                                       (int) trap_Cvar_VariableValue( "protocol" ) ) );
+		trap_Cmd_ExecuteText( EXEC_APPEND, va( "globalservers %d 86 full empty\n",
+		                                       global ? 0 : 1 ) );
+		                                       
 	}
 }
 
