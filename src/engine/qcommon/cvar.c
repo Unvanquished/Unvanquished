@@ -42,6 +42,7 @@ cvar_t        *cvar_cheats;
 int           cvar_modifiedFlags;
 
 #define _(x) Trans_Gettext(x)
+#define C_(x, y) Trans_Pgettext(x, y)
 
 #define MAX_CVARS 2048
 cvar_t        cvar_indexes[ MAX_CVARS ];

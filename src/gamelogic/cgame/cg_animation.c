@@ -48,7 +48,7 @@ void CG_RunLerpFrame( lerpFrame_t *lf, float scale )
 	if ( cg.time >= lf->frameTime )
 	{
 		lf->oldFrame = lf->frame;
-		lf->oldFrameTime = lf->frameTime;
+		lf->oldFrameTime = cg.time;
 
 		// get the next frame based on the animation
 		anim = lf->animation;

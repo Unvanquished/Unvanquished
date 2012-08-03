@@ -91,29 +91,6 @@ char *Sys_DefaultHomePath( void )
 	return homePath;
 }
 
-#ifndef MACOS_X
-
-/*
-================
-Sys_TempPath
-================
-*/
-const char *Sys_TempPath( void )
-{
-	const char *TMPDIR = getenv( "TMPDIR" );
-
-	if ( TMPDIR == NULL || TMPDIR[ 0 ] == '\0' )
-	{
-		return "/tmp";
-	}
-	else
-	{
-		return TMPDIR;
-	}
-}
-
-#endif
-
 /*
 ==================
 chmod OR on a file
@@ -399,6 +376,38 @@ qboolean Sys_Mkdir( const char *path )
 
 	return qtrue;
 }
+
+/*
+==================
+Sys_Mkfifo
+==================
+*/
+FILE *Sys_Mkfifo( const char *ospath )
+{
+	FILE	*fifo;
+	int	result;
+	int	fn;
+	struct	stat buf;
+	
+	// if file already exists AND is a pipefile, remove it
+	if( !stat( ospath, &buf ) && S_ISFIFO( buf.st_mode ) )
+		FS_Remove( ospath );
+	
+	result = mkfifo( ospath, 0600 );
+	if( result != 0 )
+		return NULL;
+	
+	fn = open( ospath, O_RDWR | O_NONBLOCK );
+	if( fn == -1 )
+		return NULL;
+
+	fifo = fdopen( fn, "w+" );
+	if( fifo == NULL )
+		close( fn );
+
+	return fifo;
+}
+
 
 /*
 ==================

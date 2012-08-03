@@ -27,7 +27,7 @@ extern "C" {
 #endif
 #include "../../engine/qcommon/q_shared.h"
 #include "bg_public.h"
-#include "../../engine/server/g_api.h"=======
+#include "../../engine/server/g_api.h"
 
 typedef struct gentity_s gentity_t;
 typedef struct gclient_s gclient_t;
@@ -504,10 +504,6 @@ typedef struct
 	char     voice[ MAX_VOICE_NAME_LEN ];
 	qboolean useUnlagged;
 	int      pubkey_authenticated; // -1 = does not have pubkey, 0 = not authenticated, 1 = authenticated
-	int      cl_pubkeyID;
-	char     pubkey_msg[ RSA_STRING_LENGTH ];
-	char     connect_name[ MAX_NAME_LENGTH ]; // Name of client before admin was removed with pubkey
-
 	// keep track of other players' info for tinfo
 	char cinfo[ MAX_CLIENTS ][ 16 ];
 } clientPersistant_t;
@@ -1296,7 +1292,6 @@ extern  vmCvar_t g_dedicated;
 extern  vmCvar_t g_cheats;
 extern  vmCvar_t g_maxclients; // allow this many total, including spectators
 extern  vmCvar_t g_maxGameClients; // allow this many active
-extern  vmCvar_t g_restarted;
 extern  vmCvar_t g_lockTeamsAtStart;
 extern  vmCvar_t g_minNameChangePeriod;
 extern  vmCvar_t g_maxNameChanges;
@@ -1405,7 +1400,6 @@ extern  vmCvar_t g_admin;
 extern  vmCvar_t g_adminTempBan;
 extern  vmCvar_t g_adminMaxBan;
 extern  vmCvar_t g_adminRetainExpiredBans;
-extern  vmCvar_t g_adminPubkeyID;
 
 extern  vmCvar_t g_privateMessages;
 extern  vmCvar_t g_specChat;
@@ -1472,7 +1466,7 @@ int              trap_FS_Rename( const char *from, const char *to );
 void             trap_FS_FCloseFile( fileHandle_t f );
 int              trap_FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize );
 void             trap_LocateGameData( gentity_t *gEnts, int numGEntities, int sizeofGEntity_t, playerState_t *clients, int sizeofGClient );
-void             trap_DropClient( int clientNum, const char *reason, int length );
+void             trap_DropClient( int clientNum, const char *reason );
 void             trap_SendServerCommand( int clientNum, const char *text );
 void             trap_SetConfigstring( int num, const char *string );
 void             trap_LinkEntity( gentity_t *ent );
@@ -1529,6 +1523,10 @@ messageStatus_t  trap_MessageStatus( int clientNum );
 int              trap_RSA_GenerateMessage( const char *public_key, const char *cleartext, char *encrypted );
 
 void             trap_QuoteString( const char *str, char *buf, int size );
+
+void             trap_GenFingerprint( const char *pubkey, int size, char *buffer, int bufsize );
+void             trap_GetPlayerPubkey( int clientNum, char *pubkey, int size );
+
 #ifdef __cplusplus
 }
 #endif

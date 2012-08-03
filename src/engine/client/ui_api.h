@@ -131,8 +131,6 @@ typedef enum uiImport_s
   UI_CIN_DRAWCINEMATIC,
   UI_CIN_SETEXTENTS,
   UI_R_REMAP_SHADER,
-  UI_CL_GETLIMBOSTRING,
-  UI_CL_TRANSLATE_STRING,
   UI_OPENURL,
   UI_GETHUNKDATA,
   UI_QUOTESTRING,
@@ -147,7 +145,8 @@ typedef enum uiImport_s
   UI_GETTEXT,
   UI_R_GLYPH,
   UI_R_GLYPHCHAR,
-  UI_R_UREGISTERFONT
+  UI_R_UREGISTERFONT,
+  UI_PGETTEXT
 } uiImport_t;
 
 typedef struct
@@ -219,9 +218,6 @@ typedef enum
   UI_SET_ACTIVE_MENU,
 //  void    UI_SetActiveMenu( uiMenuCommand_t menu );
 
-  UI_GET_ACTIVE_MENU,
-//  void    UI_GetActiveMenu( void );
-
   UI_CONSOLE_COMMAND,
 //  qboolean UI_ConsoleCommand( void );
 
@@ -231,14 +227,8 @@ typedef enum
 // if !overlay, the background will be drawn, otherwise it will be
 // overlayed over whatever the cgame has drawn.
 // a GetClientState syscall will be made to get the current strings
-  UI_CHECKEXECKEY, // NERVE - SMF
 
-  UI_WANTSBINDKEYS,
-
-// void UI_ReportHighScoreResponse( void );
-  UI_REPORT_HIGHSCORE_RESPONSE,
-
-// when the client gets an error message from the server
+  // when the client gets an error message from the server
   UI_SERVER_ERRORMESSAGE,
 
   UI_MOUSE_POSITION,
@@ -354,9 +344,8 @@ e_status    trap_CIN_RunCinematic( int handle );
 void        trap_CIN_DrawCinematic( int handle );
 void        trap_CIN_SetExtents( int handle, int x, int y, int w, int h );
 void        trap_R_RemapShader( const char *oldShader, const char *newShader, const char *timeOffset );
-qboolean    trap_GetLimboString( int index, char *buf );
-void        trap_TranslateString( const char *string, char *buf );
 void        trap_openURL( const char *s );
 void        trap_GetHunkData( int *hunkused, int *hunkexpected );
 void        trap_QuoteString( const char *str, char *buffer, int size );
 void        trap_Gettext( char *buffer, const char *msgid, int bufferLength );
+void        trap_Pgettext( char *buffer, const char *ctxt, const char *msgid, int bufferLength );

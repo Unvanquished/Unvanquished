@@ -84,3 +84,5 @@ equ trap_SendMessage                      -319
 equ trap_MessageStatus                    -320
 equ trap_RSA_GenerateMessage              -321
 equ trap_QuoteString                      -322
+equ trap_GenFingerprint                   -323
+equ trap_GetPlayerPubkey                  -324

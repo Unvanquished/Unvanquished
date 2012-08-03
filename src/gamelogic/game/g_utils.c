@@ -64,14 +64,14 @@ void AddRemap( const char *oldShader, const char *newShader, float timeOffset )
 const char *BuildShaderStateConfig( void )
 {
 	static char buff[ MAX_STRING_CHARS * 4 ];
-	char        out[( MAX_QPATH * 2 ) + 5 ];
+	char        out[( MAX_QPATH ) + 5 ];
 	int         i;
 
 	memset( buff, 0, MAX_STRING_CHARS );
 
 	for ( i = 0; i < remapCount; i++ )
 	{
-		Com_sprintf( out, ( MAX_QPATH * 2 ) + 5, "%s=%s:%5.2f@", remappedShaders[ i ].oldShader,
+		Com_sprintf( out, ( MAX_QPATH ) + 5, "%s=%s:%5.2f@", remappedShaders[ i ].oldShader,
 		             remappedShaders[ i ].newShader, remappedShaders[ i ].timeOffset );
 		Q_strcat( buff, sizeof( buff ), out );
 	}

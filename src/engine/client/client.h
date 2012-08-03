@@ -49,8 +49,6 @@ Maryland 20850 USA.
 #include <speex/speex_preprocess.h>
 #endif
 
-#define GUIDKEY_FILE       "guid"
-
 // file containing our RSA public and private keys
 #define RSAKEY_FILE        "pubkey"
 
@@ -206,8 +204,6 @@ typedef struct
 	int      challenge; // from the server to use for connecting
 	int      checksumFeed; // from the server for checksum calculations
 
-	int      onlyVisibleClients; // DHM - Nerve
-
 	// these are our reliable messages that go to the server
 	int  reliableSequence;
 	int  reliableAcknowledge; // the last one the server has executed
@@ -329,21 +325,14 @@ typedef struct
 	char     game[ MAX_NAME_LENGTH ];
 	char     label[ MAX_FEATLABEL_CHARS ]; // for featured servers, NULL otherwise
 	int      netType;
-	int      gameType;
 	int      clients;
 	int      maxClients;
 	int      minPing;
 	int      maxPing;
 	int      ping;
 	qboolean visible;
-	int      allowAnonymous;
 	int      friendlyFire; // NERVE - SMF
-	int      maxlives; // NERVE - SMF
 	int      needpass;
-	int      punkbuster; // DHM - Nerve
-	int      antilag; // TTimo
-	int      weaprestrict;
-	int      balancedteams;
 	char     gameName[ MAX_NAME_LENGTH ]; // Arnout
 } serverInfo_t;
 
@@ -441,7 +430,6 @@ extern cvar_t *cl_maxpackets;
 extern cvar_t *cl_packetdup;
 extern cvar_t *cl_shownet;
 extern cvar_t *cl_shownuments; // DHM - Nerve
-extern cvar_t *cl_visibleClients; // DHM - Nerve
 extern cvar_t *cl_showSend;
 extern cvar_t *cl_showServerCommands; // NERVE - SMF
 extern cvar_t *cl_timeNudge;
@@ -454,8 +442,6 @@ extern cvar_t *cl_run;
 extern cvar_t *cl_anglespeedkey;
 
 extern cvar_t *cl_recoilPitch; // RF
-
-extern cvar_t *cl_bypassMouseInput; // NERVE - SMF
 
 extern cvar_t *cl_doubletapdelay;
 
@@ -501,10 +487,7 @@ extern cvar_t *cl_autorecord;
 extern cvar_t *cl_allowDownload;
 extern cvar_t *cl_conXOffset;
 extern cvar_t *cl_inGameVideo;
-extern cvar_t *cl_authserver;
 
-extern cvar_t *cl_missionStats;
-extern cvar_t *cl_waitForFire;
 extern cvar_t *cl_altTab;
 
 // -NERVE - SMF
@@ -523,8 +506,6 @@ extern cvar_t  *cl_aviMotionJpeg;
 // XreaL END
 
 extern cvar_t  *cl_allowPaste;
-
-extern cvar_t  *cl_pubkeyID;
 
 #ifdef USE_MUMBLE
 extern cvar_t  *cl_useMumble;

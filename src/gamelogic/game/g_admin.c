@@ -2150,9 +2150,9 @@ qboolean G_admin_setlevel( gentity_t *ent )
 	{
 		Q_strncpyz( a->name, vic->client->pers.netname, sizeof( a->name ) );
 
-		if ( l && l->level >= g_adminPubkeyID.integer && !a->pubkey[ 0 ] && vic->client->pers.cl_pubkeyID )
+		if ( l && !a->pubkey[ 0 ] )
 		{
-			trap_SendServerCommand( vic - g_entities, "pubkey_request" );
+			trap_GetPlayerPubkey( vic - g_entities, a->pubkey, sizeof( a->pubkey ) );
 		}
 
 		vic->client->pers.pubkey_authenticated = 1;
@@ -2310,7 +2310,7 @@ static void admin_create_ban( gentity_t *ent,
 			trap_SendServerCommand( i, va( "disconnect %s", Quote( disconnect ) ) );
 
 			trap_DropClient( i, va( "has been kicked by %s^7. reason: %s",
-			                        b->banner, b->reason ), 0 );
+			                        b->banner, b->reason ) );
 		}
 	}
 }

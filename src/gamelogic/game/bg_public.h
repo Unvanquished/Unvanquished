@@ -77,7 +77,7 @@ enum
 
   CS_GAME_VERSION = CS_VOTE_CALLER + NUM_TEAMS,
   CS_LEVEL_START_TIME, // so the timer only shows the current level
-  CS_INTERMISSION, // when 1, fraglimit/timelimit has been hit and intermission will start in a second or two
+  CS_INTERMISSION, // when 1, timelimit has been hit and intermission will start in a second or two
   CS_WINNER, // string indicating round winner
   CS_SHADERSTATE,
   CS_BOTINFO,
@@ -222,7 +222,7 @@ typedef enum
   STAT_ITEMS,
   STAT_ACTIVEITEMS,
   STAT_WEAPON, // current primary weapon
-  STAT_MAX_HEALTH, // health / armor limit, changable by handicap
+  STAT_MAX_HEALTH, // health / armor limit
   STAT_CLASS, // player class (for aliens AND humans)
   STAT_TEAM, // player team
   STAT_STAMINA, // stamina (human only)
@@ -242,19 +242,20 @@ typedef enum
 #define SCA_CANUSELADDERS   0x00000020
 #define SCA_WALLJUMPER      0x00000040
 
-#define SS_WALLCLIMBING     0x00000001
-#define SS_CREEPSLOWED      0x00000002
-#define SS_SPEEDBOOST       0x00000004
-#define SS_GRABBED          0x00000008
-#define SS_BLOBLOCKED       0x00000010
-#define SS_POISONED         0x00000020
-#define SS_BOOSTED          0x00000040
-#define SS_BOOSTEDWARNING   0x00000080 // booster poison is running out
-#define SS_SLOWLOCKED       0x00000100
-#define SS_CHARGING         0x00000200
-#define SS_HEALING_ACTIVE   0x00000400 // medistat for humans, creep for aliens
-#define SS_HEALING_2X       0x00000800 // medkit or double healing rate
-#define SS_HEALING_3X       0x00001000 // triple healing rate
+#define SS_WALLCLIMBING     BIT(0)
+#define SS_CREEPSLOWED      BIT(1)
+#define SS_SPEEDBOOST       BIT(2)
+#define SS_GRABBED          BIT(3)
+#define SS_BLOBLOCKED       BIT(4)
+#define SS_POISONED         BIT(5)
+#define SS_BOOSTED          BIT(6)
+#define SS_BOOSTEDNEW       BIT(7) // booster recharged
+#define SS_BOOSTEDWARNING   BIT(8) // booster poison is running out
+#define SS_SLOWLOCKED       BIT(9)
+#define SS_CHARGING         BIT(10)
+#define SS_HEALING_ACTIVE   BIT(11) // medistat for humans, creep for aliens
+#define SS_HEALING_2X       BIT(12) // medkit or double healing rate
+#define SS_HEALING_3X       BIT(13) // triple healing rate
 
 #define SB_VALID_TOGGLEBIT  0x00002000
 
@@ -312,16 +313,6 @@ typedef enum
 #define EF_POISONCLOUDED    0x2000 // player hit with basilisk gas
 #define EF_CONNECTION       0x4000 // draw a connection trouble sprite
 #define EF_BLOBLOCKED       0x8000 // caught by a trapper
-
-typedef enum
-{
-  HI_NONE,
-
-  HI_TELEPORTER,
-  HI_MEDKIT,
-
-  HI_NUM_HOLDABLE
-} holdable_t;
 
 typedef enum
 {
@@ -917,6 +908,7 @@ typedef struct
 
 	const char *name;
 	const char *info;
+	const char *fovCvar;
 
 	int      stages;
 
@@ -1036,6 +1028,8 @@ typedef struct
 	vec3_t mins;
 	vec3_t maxs;
 	float  zOffset;
+	float  oldScale;
+	float  oldOffset;
 } buildableConfig_t;
 
 // weapon record
@@ -1286,3 +1280,5 @@ int cmdcmp( const void *a, const void *b );
 
 char *Quote( const char *str );
 char *Substring( const char *in, int start, int count );
+
+const char *Trans_GenderContext( gender_t gender );

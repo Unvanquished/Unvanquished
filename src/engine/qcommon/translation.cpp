@@ -111,9 +111,7 @@ extern "C" void Trans_UpdateLanguage_f( void )
 	// update the default console keys string
 	extern cvar_t *cl_consoleKeys; // should really #include client.h
 	Z_Free( cl_consoleKeys->resetString );
-	const char *default_consoleKeys = _("~ ` 0x7e 0x60");
-	cl_consoleKeys->resetString = (char *) Z_Malloc( strlen( default_consoleKeys ) + 1 );
-	strcpy( cl_consoleKeys->resetString, default_consoleKeys );
+	cl_consoleKeys->resetString = CopyString( _("~ ` 0x7e 0x60") );
 #endif
 }
 
@@ -214,10 +212,10 @@ extern "C" const char* Trans_Gettext( const char *msgid )
 	return gettextbuffer;
 }
 
-extern "C" const char* Trans_Pgettext( const char *msgctxt, const char *msgid )
+extern "C" const char* Trans_Pgettext( const char *ctxt, const char *msgid )
 {
 	if ( !enabled ) { return msgid; }
-	Q_strncpyz( gettextbuffer, trans_dict.translate_ctxt( msgctxt, msgid ).c_str(), sizeof( gettextbuffer ) );
+	Q_strncpyz( gettextbuffer, trans_dict.translate_ctxt( ctxt, msgid ).c_str(), sizeof( gettextbuffer ) );
 	return gettextbuffer;
 }
 
@@ -226,6 +224,12 @@ extern "C" const char* Trans_GettextGame( const char *msgid )
 	if( !enabled ) { return msgid; }
 	Q_strncpyz( gettextbuffer, trans_dictgame.translate( msgid ).c_str(), sizeof( gettextbuffer ) );
 	return gettextbuffer;
+}
+
+extern "C" const char* Trans_PgettextGame( const char *ctxt, const char *msgid )
+{
+	if( !enabled ) { return msgid; }
+	return trans_dictgame.translate_ctxt( std::string( ctxt ), std::string( msgid ) ).c_str();
 }
 
 extern "C" const char* Trans_GettextPlural( const char *msgid, const char *msgid_plural, int num )

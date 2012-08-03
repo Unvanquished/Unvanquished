@@ -14,3 +14,5 @@ debian/scripts/unvanquished		usr/games/
 
 debian/unvanquished.desktop		usr/share/applications/
 debian/unvanquished.png			usr/share/icons/hicolor/128x128/apps/
+
+debian/scripts/unvanquished-migrate-profile	usr/games/

@@ -1,3 +1,28 @@
 #! /bin/sh
 cd /usr/lib/games/unvanquished
-exec ./unvanquished +set fs_libpath "$PWD" +set fs_basepath /var/games/unvanquished "$@"
+unvanquished-migrate-profile
+
+# Assumptions:
+# - if there's a URI, it's the first parameter
+# - pipe file presence == Unvanquished is running
+# - the pipe file's name hasn't been changed
+
+echo "$1" | LANG=C grep -q '^unv://\(\[[0-9A-Fa-f:]\+\]\|[-.A-Za-z0-9]\+\)\(:[0-9]\+\)\?/\?$'
+NOT_URI=$?
+
+if test -p ~/.Unvanquished/main/pipe; then
+  if test $NOT_URI != 0; then
+    echo "$0: invalid URI: $1" >&2
+    exit 2
+  fi
+  # Just pass on the URI; drop the rest
+  echo "connect $1" >~/.Unvanquished/main/pipe
+  exit
+fi
+
+PRECMD=
+if test $NOT_URI = 0; then
+  PRECMD='connect '
+fi
+
+exec ./unvanquished +set fs_libpath "$PWD" +set fs_basepath /var/games/unvanquished +$PRECMD"$@"

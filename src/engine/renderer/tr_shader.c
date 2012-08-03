@@ -1764,7 +1764,7 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 			{
 				stage->bundle[ 0 ].isLightmap = qtrue;
 
-				if ( shader.lightmapIndex < 0 )
+				if ( shader.lightmapIndex < 0 || !tr.lightmaps )
 				{
 					stage->bundle[ 0 ].image[ 0 ] = tr.whiteImage;
 				}
@@ -6152,7 +6152,7 @@ void R_InitShaders( void )
 {
 	glfogNum = FOG_NONE;
 
-	ri.Printf( PRINT_ALL, "Initializing Shaders\n" );
+	ri.Printf( PRINT_DEVELOPER, "Initializing Shaders\n" );
 
 	memset( hashTable, 0, sizeof( hashTable ) );
 	deferLoad = qfalse;

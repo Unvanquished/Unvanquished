@@ -455,7 +455,7 @@ static qboolean R_LoadDAE(model_t * mod, void *buffer, int bufferLen, const char
         xmlInitParser();
         xmlSetGenericErrorFunc(NULL, R_XMLError);
 
-        ri.Printf(PRINT_ALL, "...loading DAE '%s'\n", modName);
+        ri.Printf(PRINT_DEVELOPER, "...loading DAE '%s'\n", modName);
 
         doc = xmlParseMemory(buffer, bufferLen);
         if(doc == NULL)

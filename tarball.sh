@@ -91,7 +91,7 @@ test "$STRIP_BINARIES" = '' || {
 
 # purge (most) assets
 test "$STRIP_ASSETS" = '' || {
-  rm -rf $PACKAGE/main $PACKAGE/main/ui/*[^h]
+  rm -rf $PACKAGE/main/[^u]* $PACKAGE/main/ui/*[^h]
 }
 
 # remove some disabled-by-default code

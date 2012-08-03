@@ -316,8 +316,6 @@ void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 	int    i;
 	vec3_t origin;
 	vec3_t relOrigin;
-	vec4_t hIabove;
-	vec4_t hIbelow;
 	vec4_t  color_human = { 0.04f, 0.71f, 0.88f, 1.0f };
 	vec4_t  color_alien = { 0.75f, 0.00f, 0.00f, 1.0f };
 

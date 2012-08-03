@@ -68,7 +68,6 @@ vmCvar_t           g_motd;
 vmCvar_t           g_synchronousClients;
 vmCvar_t           g_warmup;
 vmCvar_t           g_doWarmup;
-vmCvar_t           g_restarted;
 vmCvar_t           g_lockTeamsAtStart;
 vmCvar_t           g_logFile;
 vmCvar_t           g_logFileSync;
@@ -162,7 +161,6 @@ vmCvar_t           g_admin;
 vmCvar_t           g_adminTempBan;
 vmCvar_t           g_adminMaxBan;
 vmCvar_t           g_adminRetainExpiredBans;
-vmCvar_t           g_adminPubkeyID;
 
 vmCvar_t           g_privateMessages;
 vmCvar_t           g_specChat;
@@ -231,7 +229,6 @@ static cvarTable_t gameCvarTable[] =
 	// noset vars
 	{ NULL,                           "gamename",                      GAME_VERSION,                       CVAR_SERVERINFO | CVAR_ROM,                      0, qfalse           },
 	{ NULL,                           "gamedate",                      __DATE__,                           CVAR_ROM,                                        0, qfalse           },
-	{ &g_restarted,                   "g_restarted",                   "0",                                CVAR_ROM,                                        0, qfalse           },
 	{ &g_lockTeamsAtStart,            "g_lockTeamsAtStart",            "0",                                CVAR_ROM,                                        0, qfalse           },
 	{ NULL,                           "sv_mapname",                    "",                                 CVAR_SERVERINFO | CVAR_ROM,                      0, qfalse           },
 	{ NULL,                           "P",                             "",                                 CVAR_SERVERINFO | CVAR_ROM,                      0, qfalse           },
@@ -361,7 +358,6 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_adminTempBan,                "g_adminTempBan",                "2m",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_adminMaxBan,                 "g_adminMaxBan",                 "2w",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_adminRetainExpiredBans,      "g_adminRetainExpiredBans",      "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_adminPubkeyID,               "g_adminPubkeyID",               "2",                                CVAR_ARCHIVE | CVAR_SERVERINFO,                  0, qfalse           },
 
 	{ &g_privateMessages,             "g_privateMessages",             "1",                                CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_specChat,                    "g_specChat",                    "1",                                CVAR_ARCHIVE,                                    0, qfalse           },
@@ -2850,10 +2846,8 @@ void G_RunFrame( int levelTime )
 	msec = level.time - level.previousTime;
 
 	// generate public-key messages
-	if ( g_adminPubkeyID.integer )
-	{
-		G_admin_pubkey();
-	}
+	G_admin_pubkey();
+	
 
 	// get any cvar changes
 	G_UpdateCvars();

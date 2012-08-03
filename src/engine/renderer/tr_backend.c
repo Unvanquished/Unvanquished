@@ -1027,7 +1027,7 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 	if ( r_speeds->integer )
 	{
 		end = ri.Milliseconds();
-		ri.Printf( PRINT_ALL, "glTexSubImage2D %i, %i: %i msec\n", cols, rows, end - start );
+		ri.Printf( PRINT_DEVELOPER, "glTexSubImage2D %i, %i: %i msec\n", cols, rows, end - start );
 	}
 
 	RB_SetGL2D();
@@ -1517,7 +1517,7 @@ void RB_ShowImages( void )
 	glFinish();
 
 	end = ri.Milliseconds();
-	ri.Printf( PRINT_ALL, "%i msec to draw all images\n", end - start );
+	ri.Printf( PRINT_DEVELOPER, "%i msec to draw all images\n", end - start );
 }
 
 /*

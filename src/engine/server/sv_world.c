@@ -827,8 +827,6 @@ int SV_PointContents( const vec3_t p, int passEntityNum )
 		*/
 
 		c2 = CM_TransformedPointContents( p, clipHandle, hit->r.currentOrigin, hit->r.currentAngles );
-		// Gordon: s.origin/angles is base origin/angles, need to use the current origin/angles for moving entity based water, or water locks in movement start position.
-//      c2 = CM_TransformedPointContents (p, clipHandle, hit->s.origin, hit->s.angles);
 
 		contents |= c2;
 	}

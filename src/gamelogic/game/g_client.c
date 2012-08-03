@@ -1023,7 +1023,7 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 		trap_SendServerCommand( ent - g_entities,
 		                        "disconnect \"illegal or malformed userinfo\n\"" );
 		trap_DropClient( ent - g_entities,
-		                 "dropped: illegal or malformed userinfo", 0 );
+		                 "dropped: illegal or malformed userinfo" );
 		return "Illegal or malformed userinfo";
 	}
 	// If their userinfo overflowed, tremded is in the process of disconnecting them.
@@ -1270,6 +1270,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	char            *userInfoError;
 	gclient_t       *client;
 	char            userinfo[ MAX_INFO_STRING ];
+	char            pubkey[ RSA_STRING_LENGTH ];
 	gentity_t       *ent;
 	char            reason[ MAX_STRING_CHARS ] = { "" };
 	int             i;
@@ -1291,9 +1292,6 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 
 	trap_GetUserinfo( clientNum, userinfo, sizeof( userinfo ) );
 
-	value = Info_ValueForKey( userinfo, "cl_guid" );
-	Q_strncpyz( client->pers.guid, value, sizeof( client->pers.guid ) );
-
 	value = Info_ValueForKey( userinfo, "ip" );
 
 	// check for local client
@@ -1304,20 +1302,17 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 
 	G_AddressParse( value, &client->pers.ip );
 
-	admin = G_admin_admin( client->pers.guid );
-	client->pers.admin = admin;
+	trap_GetPlayerPubkey( clientNum, pubkey, sizeof( pubkey ) );
 
-	client->pers.pubkey_authenticated = -1;
-	client->pers.cl_pubkeyID = atoi( Info_ValueForKey( userinfo, "cl_pubkeyID" ) );
-
-	if ( g_adminPubkeyID.integer && admin )
+	if ( strlen( pubkey ) != RSA_STRING_LENGTH - 1 && !isBot )
 	{
-		if ( admin->pubkey[ 0 ] && admin->counter != -1 && admin->level >= g_adminPubkeyID.integer )
-		{
-			// remove admin from client
-			client->pers.pubkey_authenticated = 0;
-		}
+		return "Invalid pubkey key";
 	}
+	
+	trap_GenFingerprint( pubkey, sizeof( pubkey ), client->pers.guid, sizeof( client->pers.guid ) );
+
+	client->pers.admin = G_admin_admin( client->pers.guid );
+	client->pers.pubkey_authenticated = 0;
 
 	// check for admin ban
 	if ( G_admin_ban_check( ent, reason, sizeof( reason ) ) && !isBot )
@@ -1334,13 +1329,12 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 		return "Invalid password";
 	}
 
-	// add guid to session so we don't have to keep parsing userinfo everywhere
-	for ( i = 0; i < sizeof( client->pers.guid ) - 1 &&
-	      isxdigit( client->pers.guid[ i ] ); i++ ) {; }
-
-	if ( i < sizeof( client->pers.guid ) - 1  && !isBot)
+	// if a player reconnects quickly after a disconnect, the client disconnect may never be called, thus flag can get lost in the ether
+	if ( ent->inuse && !isBot)
 	{
-		return "Invalid GUID";
+		G_LogPrintf( "Forcing disconnect on active client: %i\n", ent-g_entities );
+		// so lets just fix up anything that should happen on a disconnect
+		ClientDisconnect( ent-g_entities );
 	}
 
 	for ( i = 0; i < level.maxclients; i++ )
@@ -1357,11 +1351,11 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 				trap_SendServerCommand( i, "cp \"Your GUID is not secure\"" );
 				return "Duplicate GUID";
 			}
-
-			trap_DropClient( i, "Ghost", 0 );
+			
+			trap_DropClient( i, "Ghost" );
 		}
 	}
-
+	
 	client->pers.connected = CON_CONNECTING;
 
 	// read or initialize the session data
@@ -1451,8 +1445,6 @@ void ClientBegin( int clientNum )
 	{
 		trap_SendServerCommand( ent - g_entities, va( "pubkey_decrypt %s", admin->msg2 ) );
 		// copy the decrypted message because generating a new message will overwrite it
-		admin->counter++;
-		Q_strncpyz( client->pers.pubkey_msg, admin->msg, sizeof( client->pers.pubkey_msg ) );
 		G_admin_writeconfig();
 	}
 

@@ -692,7 +692,7 @@ qboolean ClientInactivityTimer( gentity_t *ent )
 			}
 			else
 			{
-				trap_DropClient( client - level.clients, "Dropped due to inactivity", 0 );
+				trap_DropClient( client - level.clients, "Dropped due to inactivity" );
 				return qfalse;
 			}
 		}
@@ -1707,6 +1707,10 @@ void ClientThink_real( gentity_t *ent )
 
 	if ( client->ps.stats[ STAT_STATE ] & SS_BOOSTED )
 	{
+		if ( level.time - client->boostedTime != BOOST_TIME )
+		{
+			client->ps.stats[ STAT_STATE ] &= ~SS_BOOSTEDNEW;
+		}
 		if ( level.time - client->boostedTime >= BOOST_TIME )
 		{
 			client->ps.stats[ STAT_STATE ] &= ~SS_BOOSTED;
@@ -2281,13 +2285,13 @@ void ClientEndFrame( gentity_t *ent )
 	P_DamageFeedback( ent );
 
 	// add the EF_CONNECTION flag if we haven't gotten commands recently
-	if ( level.time - ent->client->lastCmdTime > 1000 )
+	if ( level.time - ent->client->lastCmdTime > 1000 && !( ent->r.svFlags & SVF_BOT ) )
 	{
-		ent->s.eFlags |= EF_CONNECTION;
+		ent->client->ps.eFlags |= EF_CONNECTION;
 	}
 	else
 	{
-		ent->s.eFlags &= ~EF_CONNECTION;
+		ent->client->ps.eFlags &= ~EF_CONNECTION;
 	}
 
 	ent->client->ps.stats[ STAT_HEALTH ] = ent->health; // FIXME: get rid of ent->health...

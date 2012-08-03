@@ -660,12 +660,31 @@ void FS_CopyFile( char *fromOSPath, char *toOSPath )
 }
 
 /*
+=================
+FS_CheckFilenameIsNotExecutable
+
+ERR_FATAL if trying to maniuplate a file with the platform library extension
+=================
+*/
+static void FS_CheckFilenameIsNotExecutable( const char *filename,
+											 const char *function )
+{
+	// Check if the filename ends with the library extension
+	if( !Q_stricmp( COM_GetExtension( filename ), DLL_EXT ) )
+	{
+		Com_Error( ERR_FATAL, "%s: Not allowed to manipulate '%s' due "
+		"to %s extension\n", function, filename, DLL_EXT );
+	}
+}
+
+
+/*
 ===========
 FS_Remove
 
 ===========
 */
-static void FS_Remove( const char *osPath )
+void FS_Remove( const char *osPath )
 {
 	remove( osPath );
 }
@@ -1169,6 +1188,56 @@ fileHandle_t FS_FOpenFileUpdate( const char *filename, int *length )
 
 /*
 ===========
+FS_FCreateOpenPipeFile
+
+===========
+*/
+fileHandle_t FS_FCreateOpenPipeFile( const char *filename ) {
+	char         *ospath;
+	FILE         *fifo;
+	fileHandle_t  f;
+	
+	if ( !fs_searchpaths )
+	{
+		Com_Error( ERR_FATAL, "Filesystem call made without initialization\n" );
+	}
+	
+	f = FS_HandleForFile();
+	fsh[f].zipFile = qfalse;
+	
+	Q_strncpyz( fsh[f].name, filename, sizeof( fsh[f].name ) );
+	
+	// don't let sound stutter
+	S_ClearSoundBuffer();
+	
+	ospath = FS_BuildOSPath( fs_homepath->string, fs_gamedir, filename );
+	
+	if ( fs_debug->integer )
+	{
+		Com_Printf( "FS_FCreateOpenPipeFile: %s\n", ospath );
+	}
+	
+	FS_CheckFilenameIsNotExecutable( ospath, __func__ );
+	
+	fifo = Sys_Mkfifo( ospath );
+	if( fifo )
+	{
+		fsh[f].handleFiles.file.o = fifo;
+		fsh[f].handleSync = qfalse;
+	}
+	else
+	{
+		Com_Printf( S_COLOR_YELLOW "WARNING: Could not create new com_pipefile at %s. "
+		"com_pipefile will not be used.\n", ospath );
+		f = 0;
+	}
+	
+	return f;
+}
+
+
+/*
+===========
 FS_FilenameCompare
 
 Ignore case and separator char distinctions
@@ -1439,25 +1508,11 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 						     Q_stricmp( filename + l - 4, ".bot" ) != 0 &&
 						     Q_stricmp( filename + l - 6, ".arena" ) != 0 &&
 						     Q_stricmp( filename + l - 5, ".menu" ) != 0 &&
-						     Q_stricmp( filename + l - 3, ".po" ) != 0 )
+						     Q_stricmp( filename + l - 3, ".po" ) != 0 &&
+						     Q_stricmp( filename, "qagame.qvm" ) != 0 )
 						{
 							pak->referenced |= FS_GENERAL_REF;
 						}
-					}
-
-					// for OS client/server interoperability, we expect binaries for .so and .dll to be in the same pk3
-					// so that when we reference the DLL files on any platform, this covers everyone else
-
-// #if 0 // TTimo: use that stuff for shifted strings
-// 					Com_Printf(_( "SYS_DLLNAME_QAGAME + %d: '%s'\n", SYS_DLLNAME_QAGAME_SHIFT, FS_ShiftStr( "qagame_mp_x86.dll" /*"qagame.mp.i386.so"*)/, SYS_DLLNAME_QAGAME_SHIFT ) );
-// 					Com_Printf(_( "SYS_DLLNAME_CGAME + %d: '%s'\n", SYS_DLLNAME_CGAME_SHIFT, FS_ShiftStr( "cgame_mp_x86.dll" /*"cgame.mp.i386.so"*)/, SYS_DLLNAME_CGAME_SHIFT ) );
-// 					Com_Printf(_( "SYS_DLLNAME_UI + %d: '%s'\n", SYS_DLLNAME_UI_SHIFT, FS_ShiftStr( "ui_mp_x86.dll" /*"ui.mp.i386.so"*)/, SYS_DLLNAME_UI_SHIFT ) );
-// #endif
-
-					// qagame dll
-					if ( !( pak->referenced & FS_QAGAME_REF ) && !Q_stricmp( filename, "vm/qagame.qvm" ) )
-					{
-						pak->referenced |= FS_QAGAME_REF;
 					}
 
 					// cgame dll
@@ -2859,7 +2914,7 @@ char **FS_ListFilteredFiles( const char *path, const char *extension, char *filt
 				continue;
 			}
 			else if ( fs_restrict->integer &&
-			          ( !com_gameInfo.usesProfiles || ( com_gameInfo.usesProfiles && Q_stricmpn( path, "profiles", 8 ) ) ) &&
+			          Q_stricmpn( path, "profiles", 8 ) &&
 			          Q_stricmpn( path, "demos", 5 ) )
 			{
 				continue;
@@ -3404,40 +3459,40 @@ void FS_Path_f( void )
 	searchpath_t *s;
 	int          i;
 
-	Com_Printf(_( "Current search path:\n" ));
+	Com_DPrintf(_( "Current search path:\n" ));
 
 	for ( s = fs_searchpaths; s; s = s->next )
 	{
 		if ( s->pack )
 		{
 			//      Com_Printf(_( "%s %X (%i files)\n"), s->pack->pakFilename, s->pack->checksum, s->pack->numfiles );
-			Com_Printf(_( "%s (%i files)\n"), s->pack->pakFilename, s->pack->numfiles );
+			Com_DPrintf(_( "%s (%i files)\n"), s->pack->pakFilename, s->pack->numfiles );
 
 			if ( fs_numServerPaks )
 			{
 				if ( !FS_PakIsPure( s->pack ) )
 				{
-					Com_Printf(_( "    not on the pure list\n" ));
+					Com_DPrintf(_( "    not on the pure list\n" ));
 				}
 				else
 				{
-					Com_Printf(_( "    on the pure list\n" ));
+					Com_DPrintf(_( "    on the pure list\n" ));
 				}
 			}
 		}
 		else
 		{
-			Com_Printf( "%s/%s\n", s->dir->path, s->dir->gamedir );
+			Com_DPrintf( "%s%c%s\n", s->dir->path, PATH_SEP, s->dir->gamedir );
 		}
 	}
 
-	Com_Printf( "\n" );
+	Com_DPrintf( "\n" );
 
 	for ( i = 1; i < MAX_FILE_HANDLES; i++ )
 	{
 		if ( fsh[ i ].handleFiles.file.o )
 		{
-			Com_Printf( "handle %i: %s\n", i, fsh[ i ].name );
+			Com_DPrintf( "handle %i: %s\n", i, fsh[ i ].name );
 		}
 	}
 }
@@ -3639,9 +3694,12 @@ void FS_AddGameDirectory( const char *path, const char *dir )
 	qsort( pakdirs, numdirs, sizeof( char * ), paksort );
 
 	// Log may not be initialized at this point, but it will still show in the console.
-	Com_DPrintf( "FS_AddGameDirectory(\"%s\", \"%s\") found %d .pk3 and %d .pk3dir\n", path, dir, numfiles, numdirs );
-#if 0
+	if ( !com_fullyInitialized )
+	{
+		Com_Printf( "FS_AddGameDirectory(\"%s\", \"%s\") found %d .pk3 and %d .pk3dir\n", path, dir, numfiles, numdirs );
+	}
 
+#if 0
 	for ( ; ( pakfilesi + pakdirsi ) < ( numfiles + numdirs ); )
 	{
 		// Check if a pakfile or pakdir comes next
@@ -3718,14 +3776,17 @@ void FS_AddGameDirectory( const char *path, const char *dir )
 			pakdirsi++;
 		}
 	}
-
 #endif
 
 	while ( pakfilesi < numfiles )
 	{
 		// The next .pk3 file is before the next .pk3dir
 		pakfile = FS_BuildOSPath( path, dir, pakfiles[ pakfilesi ] );
-		Com_DPrintf( "    pk3: %s\n", pakfile );
+
+		if ( !com_fullyInitialized )
+		{
+			Com_Printf( "    pk3: %s\n", pakfile );
+		}
 
 		if ( ( pak = FS_LoadZipFile( pakfile, pakfiles[ pakfilesi ] ) ) == 0 )
 		{
@@ -3758,7 +3819,11 @@ void FS_AddGameDirectory( const char *path, const char *dir )
 		}
 
 		pakfile = FS_BuildOSPath( path, dir, pakdirs[ pakdirsi ] );
-		Com_Printf( " pk3dir: %s\n", pakfile );
+
+		if ( !com_fullyInitialized )
+		{
+			Com_Printf( " pk3dir: %s\n", pakfile );
+		}
 
 		// add the directory to the search path
 		search = Z_Malloc( sizeof( searchpath_t ) );
@@ -4021,7 +4086,7 @@ qboolean FS_ComparePaks( char *neededpaks, int len, qboolean dlstring )
 
 	if ( *neededpaks )
 	{
-		Com_Printf(_( "Need paks: %s\n"), neededpaks );
+		Com_DPrintf(_( "Need paks: %s\n"), neededpaks );
 		return qtrue;
 	}
 
@@ -4143,7 +4208,7 @@ static void FS_Startup( const char *gameName )
 {
 	const char *homePath;
 
-	Com_Printf( "----- FS_Startup -----\n" );
+	Com_DPrintf( "----- FS_Startup -----\n" );
 
 	fs_debug = Cvar_Get( "fs_debug", "0", 0 );
 	fs_copyfiles = Cvar_Get( "fs_copyfiles", "0", CVAR_INIT );
@@ -4241,7 +4306,7 @@ static void FS_Startup( const char *gameName )
 
 	fs_gamedirvar->modified = qfalse; // We just loaded, it's not modified
 
-	Com_Printf( "----------------------\n" );
+	Com_DPrintf( "----------------------\n" );
 
 #ifdef FS_MISSING
 
@@ -4251,36 +4316,7 @@ static void FS_Startup( const char *gameName )
 	}
 
 #endif
-	Com_Printf(_( "%d files in pk3 files\n"), fs_packFiles );
-}
-
-/*
-=====================
-FS_GamePureChecksum
-Returns the checksum of the pk3 from which the server loaded the qagame.qvm
-NOTE TTimo: this is not used in RTCW so far
-=====================
-*/
-const char *FS_GamePureChecksum( void )
-{
-	static char  info[ MAX_STRING_TOKENS ];
-	searchpath_t *search;
-
-	info[ 0 ] = 0;
-
-	for ( search = fs_searchpaths; search; search = search->next )
-	{
-		// is the element a pak file?
-		if ( search->pack )
-		{
-			if ( search->pack->referenced & FS_QAGAME_REF )
-			{
-				Com_sprintf( info, sizeof( info ), "%d", search->pack->checksum );
-			}
-		}
-	}
-
-	return info;
+	Com_DPrintf(_( "%d files in pk3 files\n"), fs_packFiles );
 }
 
 #if !defined( DO_LIGHT_DEDICATED )
@@ -5131,7 +5167,7 @@ void FS_Restart( int checksumFeed )
 		{
 			char *cl_profileStr = Cvar_VariableString( "cl_profile" );
 
-			if ( com_gameInfo.usesProfiles && cl_profileStr[ 0 ] )
+			if ( cl_profileStr[ 0 ] )
 			{
 				// bani - check existing pid file and make sure it's ok
 				if ( !Com_CheckProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )

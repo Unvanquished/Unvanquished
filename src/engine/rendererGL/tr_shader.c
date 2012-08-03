@@ -5938,7 +5938,7 @@ shader_t       *R_FindShader( const char *name, shaderType_t type, qboolean mipR
 		// of all explicit shaders
 		if ( r_printShaders->integer )
 		{
-			ri.Printf( PRINT_ALL, "...loading explicit shader '%s'\n", strippedName );
+			ri.Printf( PRINT_DEVELOPER, "...loading explicit shader '%s'\n", strippedName );
 		}
 
 		if ( !ParseShader( shaderText ) )
@@ -6504,7 +6504,7 @@ static void ScanAndLoadGuideFiles( void )
 	char filename[ MAX_QPATH ];
 	long sum = 0;
 
-	ri.Printf( PRINT_ALL, "----- ScanAndLoadGuideFiles -----\n" );
+	ri.Printf( PRINT_DEVELOPER, "----- ScanAndLoadGuideFiles -----\n" );
 
 	s_guideText = NULL;
 	Com_Memset( guideTextHashTableSizes, 0, sizeof( guideTextHashTableSizes ) );
@@ -6515,7 +6515,7 @@ static void ScanAndLoadGuideFiles( void )
 
 	if ( !guideFiles || !numGuides )
 	{
-		ri.Printf( PRINT_WARNING, "WARNING: no shader guide files found\n" );
+		ri.Printf( PRINT_DEVELOPER, "WARNING: no shader guide files found\n" );
 		return;
 	}
 
@@ -6752,7 +6752,7 @@ static void ScanAndLoadShaderFiles( void )
 	char filename[ MAX_QPATH ];
 	long sum = 0, summand;
 
-	ri.Printf( PRINT_ALL, "----- ScanAndLoadShaderFiles -----\n" );
+	ri.Printf( PRINT_DEVELOPER, "----- ScanAndLoadShaderFiles -----\n" );
 
 	// scan for shader files
 #if defined( COMPAT_Q3A ) || defined( COMPAT_ET )
@@ -7097,7 +7097,7 @@ CreateInternalShaders
 */
 static void CreateInternalShaders( void )
 {
-	ri.Printf( PRINT_ALL, "----- CreateInternalShaders -----\n" );
+	ri.Printf( PRINT_DEVELOPER, "----- CreateInternalShaders -----\n" );
 
 	tr.numShaders = 0;
 
@@ -7133,7 +7133,7 @@ static void CreateInternalShaders( void )
 
 static void CreateExternalShaders( void )
 {
-	ri.Printf( PRINT_ALL, "----- CreateExternalShaders -----\n" );
+	ri.Printf( PRINT_DEVELOPER, "----- CreateExternalShaders -----\n" );
 
 	tr.flareShader = R_FindShader( "flareShader", SHADER_3D_DYNAMIC, qtrue );
 	tr.sunShader = R_FindShader( "sun", SHADER_3D_DYNAMIC, qtrue );

@@ -1745,7 +1745,7 @@ void G_BotDel( int clientNum ) {
 		trap_Print( va("'^7%s^7' is not a bot\n", bot->client->pers.netname) );
 		return;
 	}
-	trap_DropClient(clientNum, "disconnected", 0);
+	trap_DropClient(clientNum, "disconnected");
 }
 
 void G_BotCmd( gentity_t *master, int clientNum, char *command) {

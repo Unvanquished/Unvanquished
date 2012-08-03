@@ -21,70 +21,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-#ifdef USE_LOCAL_HEADERS
-#       include "SDL.h"
-#else
-#       include <SDL.h>
-#endif
+#include <SDL.h>
 
 #include "../renderer/tr_local.h"
 #include "../qcommon/qcommon.h"
 
 #ifdef _WIN32
-#include <windows.h>
+#	include <Windows.h>
 #endif
-
-static Uint16 OldGammaRamp[ 3 ][ 256 ];
-
-/*
-===========
-GLimp_InitGamma
-
-Saves old gamma ramp and checks if gamma is supportet by the hardware.
-===========
-*/
-void GLimp_InitGamma( void )
-{
-	// Get original gamma ramp
-	if ( SDL_GetGammaRamp( OldGammaRamp[ 0 ], OldGammaRamp[ 1 ], OldGammaRamp[ 2 ] ) == -1 )
-	{
-		glConfig.deviceSupportsGamma = qfalse;
-		return;
-	}
-
-	glConfig.deviceSupportsGamma = qtrue;
-#ifdef WIN32
-
-	if ( !r_ignorehwgamma->integer )
-	{
-		// do a sanity check on the gamma values
-		if ( ( HIBYTE( OldGammaRamp[ 0 ][ 255 ] ) <= HIBYTE( OldGammaRamp[ 0 ][ 0 ] ) ) ||
-		     ( HIBYTE( OldGammaRamp[ 1 ][ 255 ] ) <= HIBYTE( OldGammaRamp[ 1 ][ 0 ] ) ) ||
-		     ( HIBYTE( OldGammaRamp[ 2 ][ 255 ] ) <= HIBYTE( OldGammaRamp[ 2 ][ 0 ] ) ) )
-		{
-			glConfig.deviceSupportsGamma = qfalse;
-			ri.Printf( PRINT_WARNING, "WARNING: device has broken gamma support, generated gamma.dat\n" );
-		}
-
-		// make sure that we didn't have a prior crash in the game
-		// and if so we need to restore the gamma values to at least a linear value
-		if ( ( HIBYTE( OldGammaRamp[ 0 ][ 181 ] ) == 255 ) )
-		{
-			int g;
-
-			ri.Printf( PRINT_WARNING, "WARNING: suspicious gamma tables, using linear ramp for restoration\n" );
-
-			for ( g = 0; g < 255; g++ )
-			{
-				OldGammaRamp[ 0 ][ g ] = g << 8;
-				OldGammaRamp[ 1 ][ g ] = g << 8;
-				OldGammaRamp[ 2 ][ g ] = g << 8;
-			}
-		}
-	}
-
-#endif
-}
 
 /*
 =================
@@ -93,58 +37,62 @@ GLimp_SetGamma
 */
 void GLimp_SetGamma( unsigned char red[ 256 ], unsigned char green[ 256 ], unsigned char blue[ 256 ] )
 {
-#if 1
-	Uint16 table[ 256 ];
-	int    i, value, lastvalue = 0;
+	Uint16 table[ 3 ][ 256 ];
+	int i, j;
+#ifdef _WIN32
+	OSVERSIONINFO	vinfo;
+#endif
+
+	if ( !glConfig.deviceSupportsGamma || r_ignorehwgamma->integer )
+	{
+		return;
+	}
 
 	for ( i = 0; i < 256; i++ )
 	{
-		value = ( ( ( Uint16 ) red[ i ] ) << 8 ) | red[ i ];
-
-		if ( i < 128 && ( value > ( ( 128 + i ) << 8 ) ) )
-		{
-			value = ( 128 + i ) << 8;
-		}
-
-		if ( i && ( value < lastvalue ) )
-		{
-			value = lastvalue;
-		}
-
-		lastvalue = table[ i ] = value;
+		table[ 0 ][ i ] = ( ( ( Uint16 ) red[ i ] ) << 8 ) | red[ i ];
+		table[ 1 ][ i ] = ( ( ( Uint16 ) green[ i ] ) << 8 ) | green[ i ];
+		table[ 2 ][ i ] = ( ( ( Uint16 ) blue[ i ] ) << 8 ) | blue[ i ];
 	}
 
-	if ( SDL_SetGammaRamp( table, table, table ) == -1 )
+#ifdef _WIN32
+	// Win2K and newer put this odd restriction on gamma ramps...
+	vinfo.dwOSVersionInfoSize = sizeof( vinfo );
+	GetVersionEx( &vinfo );
+
+	if ( vinfo.dwMajorVersion >= 5 && vinfo.dwPlatformId == VER_PLATFORM_WIN32_NT )
 	{
-		Com_Printf( "SDL_SetGammaRamp failed.\n" );
+		ri.Printf( PRINT_DEVELOPER, "performing gamma clamp.\n" );
+
+		for ( j = 0; j < 3; j++ )
+		{
+			for ( i = 0; i < 128; i++ )
+			{
+				if( table[ j ][ i ] > ( ( 128 + i ) << 8 ) )
+				{
+					table[ j ][ i ] = ( 128 + i ) << 8;
+				}
+			}
+
+			if ( table[ j ] [127 ] > 254 << 8 )
+			{
+				table[ j ][ 127 ] = 254 << 8;
+			}
+		}
 	}
-
-#else
-	float g = Cvar_Get( "r_gamma", "1.0", 0 )->value;
-
-	if ( SDL_SetGamma( g, g, g ) == -1 )
-	{
-		Com_Printf( "SDL_SetGamma failed.\n" );
-	}
-
 #endif
-}
 
-/*
-===========
-GLimp_RestoreGamma
-
-Restores original gamma ramp
-===========
-*/
-void GLimp_RestoreGamma( void )
-{
-	if ( glConfig.deviceSupportsGamma )
+	// enforce constantly increasing
+	for ( j = 0; j < 3; j++ )
 	{
-		// Restore original gamma
-		if ( SDL_SetGammaRamp( OldGammaRamp[ 0 ], OldGammaRamp[ 1 ], OldGammaRamp[ 2 ] ) == -1 )
+		for ( i = 1; i < 256; i++ )
 		{
-			Com_Printf( "SDL_SetGammaRamp failed.\n" );
+			if ( table[ j ][ i ] < table[ j ][ i - 1 ] )
+			{
+				table[ j ][ i ] = table[ j ][ i - 1 ];
+			}
 		}
 	}
+
+	SDL_SetGammaRamp( table[ 0 ], table[ 1 ], table[ 2 ] );
 }

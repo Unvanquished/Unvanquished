@@ -1459,9 +1459,18 @@ static void CG_DrawPlayerBuildTimerBar( rectDef_t *rect, vec4_t foreColor, qhand
 	playerState_t *ps = &cg.snap->ps;
 	float         progress;
 	int           failedAttempt;
+	weapon_t      weapon;
 	static int    misc = 0;
 	static int    max;
 
+	weapon = BG_GetPlayerWeapon( ps );
+
+	// Check if player is a builder
+	if( weapon != WP_HBUILD && weapon != WP_ABUILD && weapon != WP_ABUILD2 )
+	{
+		return;
+	}
+	
 	// Not building anything
 	if( ps->stats[ STAT_MISC ] <= 0 )
 	{
@@ -1500,7 +1509,101 @@ static void CG_DrawPlayerHealthBar( rectDef_t *rect, vec4_t foreColor, qhandle_t
 	CG_DrawPlayerProgressBar( rect, foreColor, progress, -0.3, shader );
 }
 
+static void CG_DrawPlayerMeter( rectDef_t *rect, float fraction, vec4_t color, qhandle_t shader )
+{
 
+	CG_AdjustFrom640( &rect->x, &rect->y, &rect->w, &rect->h );
+
+	// Vertical meter
+	if( rect->h >= rect->w )
+	{
+		float height;
+		
+		height = rect->h * fraction;
+
+		trap_R_SetColor( color );
+		trap_R_DrawStretchPic( rect->x, rect->y - height + rect->h, rect->w,
+							height, 0.0f, 1.0f - fraction, 1.0f, 1.0f, shader );
+		trap_R_SetColor( NULL );
+	}
+
+	// Horizontal meter
+	else
+	{
+		float width;
+
+		width = rect->w * fraction;
+
+		trap_R_SetColor( color );
+		trap_R_DrawStretchPic( rect->x - width + rect->w, rect->y, width,
+							   rect->h, 1.0f - fraction, 0.0f, 1.0f, 1.0f, shader );
+		trap_R_SetColor( NULL );
+	}	
+}
+
+static void CG_DrawPlayerClipMeter( rectDef_t *rect, vec4_t color, qhandle_t shader )
+{
+	float    fraction;
+	int      maxAmmo;
+	weapon_t weapon;
+	
+	if ( cg.predictedPlayerState.stats[ STAT_TEAM ] != TEAM_HUMANS )
+	{
+		return;
+	}
+
+	weapon = BG_PrimaryWeapon( cg.snap->ps.stats );
+	maxAmmo = BG_Weapon( weapon )->maxAmmo;
+
+	if ( maxAmmo <= 0 ) { return; }
+
+	if ( BG_Weapon( weapon )->usesEnergy &&
+		BG_InventoryContainsUpgrade( UP_BATTPACK, cg.snap->ps.stats ) )
+	{
+		maxAmmo *= BATTPACK_MODIFIER;
+	}
+		
+	
+	fraction = (float)cg.snap->ps.Ammo / (float)maxAmmo;
+
+	CG_DrawPlayerMeter( rect, fraction, color, shader );
+}
+
+static void CG_DrawPlayerHealthMeter( rectDef_t *rect, vec4_t color, qhandle_t shader )
+{
+	float fraction;
+	float height;
+	
+	fraction = (float)cg.snap->ps.stats[ STAT_HEALTH ] / (float)BG_Class( cg.snap->ps.stats[ STAT_CLASS ] )->health;
+	
+	CG_DrawPlayerMeter( rect, fraction, color, shader );
+}
+
+static void CG_DrawPlayerBoostedMeter( rectDef_t *rect, vec4_t foreColor, qhandle_t shader )
+{
+	static int time = -1;
+	
+	if( cg.snap->ps.stats[ STAT_STATE ] & SS_BOOSTED )
+	{
+		float      progress;
+		
+		if( time == -1 || cg.snap->ps.stats[ STAT_STATE ] & SS_BOOSTEDNEW )
+		{
+			time = cg.time;
+		}
+		
+		progress = ( (float)cg.time - time ) / BOOST_TIME;
+		
+		CG_DrawPlayerMeter( rect, 1-progress, foreColor, shader );
+		
+	}
+	else
+	{
+		time = -1;
+		return;
+	}
+	
+}
 
 static void CG_DrawProgressLabel( rectDef_t *rect, float text_x, float text_y, vec4_t color,
                                   float scale, int textalign, int textvalign,
@@ -3777,6 +3880,10 @@ void CG_OwnerDraw( float x, float y, float w, float h, float text_x,
 			CG_DrawPlayerClipsValue( &rect, foreColor );
 			break;
 
+		case CG_PLAYER_CLIPS_METER:
+			CG_DrawPlayerClipMeter( &rect, foreColor, shader );
+			break;
+
 		case CG_PLAYER_AMMO_STACK:
 			CG_DrawPlayerAmmoStack( &rect, backColor, foreColor, textalign,
 			                        textvalign );
@@ -3802,6 +3909,10 @@ void CG_OwnerDraw( float x, float y, float w, float h, float text_x,
 			break;
 		case CG_PLAYER_HEALTH_CROSS:
 			CG_DrawPlayerHealthCross( &rect, foreColor );
+			break;
+
+		case CG_PLAYER_HEALTH_METER:
+			CG_DrawPlayerHealthMeter( &rect, foreColor, shader );
 			break;
 
 		case CG_PLAYER_CHARGE_BAR_BG:
@@ -3830,6 +3941,10 @@ void CG_OwnerDraw( float x, float y, float w, float h, float text_x,
 
 		case CG_PLAYER_BOOST_BOLT:
 			CG_DrawPlayerBoosterBolt( &rect, backColor, foreColor, shader );
+			break;
+
+		case CG_PLAYER_BOOSTED_METER:
+			CG_DrawPlayerBoostedMeter( &rect, foreColor, shader );
 			break;
 
 		case CG_PLAYER_POISON_BARBS:

@@ -45,10 +45,10 @@ extern "C" {
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPPER     "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.5.1"
+#define PRODUCT_VERSION         "0.6.0"
 
 #define ENGINE_NAME             "Daemon Engine"
-#define ENGINE_VERSION          "0.5.1"
+#define ENGINE_VERSION          "0.6.0"
 
 #ifdef GIT_VERSION
 # define Q3_VERSION             PRODUCT_NAME " " PRODUCT_VERSION" " GIT_VERSION
@@ -226,6 +226,7 @@ extern int memcmp( void *, void *, size_t );
 #define ALIGNED(a)
 #define ALWAYS_INLINE
 #define __attribute__(x)
+#define __func__ __FUNCTION__
 #endif
 
 //bani
@@ -384,7 +385,7 @@ extern int memcmp( void *, void *, size_t );
 
 #define UI_SMALLFONT75        0x00100000
 
-#if defined( _DEBUG ) && !defined( BSPC )
+#if !defined( NDEBUG ) && !defined( BSPC )
 #define HUNK_DEBUG
 #endif
 
@@ -1877,17 +1878,6 @@ char *Q_UTF8Unstore( int e );
 		int  dataCount;
 	} gameState_t;
 
-// xkan, 1/10/2003 - adapted from original SP
-	typedef enum
-	{
-	  AISTATE_RELAXED,
-	  AISTATE_QUERY,
-	  AISTATE_ALERT,
-	  AISTATE_COMBAT,
-
-	  MAX_AISTATES
-	} aistateEnum_t;
-
 #define REF_FORCE_DLIGHT       ( 1 << 31 ) // RF, passed in through overdraw parameter, force this dlight under all conditions
 #define REF_JUNIOR_DLIGHT      ( 1 << 30 ) // (SA) this dlight does not light surfaces.  it only affects dynamic light grid
 #define REF_DIRECTED_DLIGHT    ( 1 << 29 ) // ydnar: global directional light, origin should be interpreted as a normal vector
@@ -1896,8 +1886,6 @@ char *Q_UTF8Unstore( int e );
 #define MAX_STATS              16
 #define MAX_PERSISTANT         16
 #define MAX_MISC               16
-#define MAX_POWERUPS           16
-#define MAX_WEAPONS            64 // (SA) and yet more!
 
 #define MAX_EVENTS             4 // max events per frame before we drop events
 
@@ -1927,14 +1915,7 @@ char *Q_UTF8Unstore( int e );
 		vec3_t origin;
 		vec3_t velocity;
 		int    weaponTime;
-		int    weaponDelay; // for weapons that don't fire immediately when 'fire' is hit (grenades, venom, ...)
-		int    grenadeTimeLeft; // for delayed grenade throwing.  this is set to a #define for grenade
-		// lifetime when the attack button goes down, then when attack is released
-		// this is the amount of time left before the grenade goes off (or if it
-		// gets to 0 while in players hand, it explodes)
-
-		int   gravity;
-		float leanf; // amount of 'lean' when player is looking around corner //----(SA) added
+		int    gravity;
 
 		int   speed;
 		int   delta_angles[ 3 ]; // add to command angles to get view direction
@@ -1970,9 +1951,6 @@ char *Q_UTF8Unstore( int e );
 		int weapon; // copied to entityState_t->weapon
 		int weaponstate;
 
-		// item info
-		int    item;
-
 		vec3_t viewangles; // for fixed views
 		int    viewheight;
 
@@ -1984,40 +1962,6 @@ char *Q_UTF8Unstore( int e );
 
 		int stats[ MAX_STATS ];
 		int persistant[ MAX_PERSISTANT ]; // stats that aren't cleared on death
-		int powerups[ MAX_POWERUPS ]; // level.time that the powerup runs out
-		int ammo[ MAX_WEAPONS ]; // total amount of ammo
-		int ammoclip[ MAX_WEAPONS ]; // ammo in clip
-		int holdable[ 16 ];
-		int holding; // the current item in holdable[] that is selected (held)
-		int weapons[ MAX_WEAPONS / ( sizeof( int ) * 8 ) ];  // 64 bits for weapons held
-
-		// Ridah, allow for individual bounding boxes
-		vec3_t mins, maxs;
-		float  crouchMaxZ;
-		float  crouchViewHeight, standViewHeight, deadViewHeight;
-		// variable movement speed
-		float  runSpeedScale, sprintSpeedScale, crouchSpeedScale;
-		// done.
-
-		// Ridah, view locking for mg42
-		int   viewlocked;
-		int   viewlocked_entNum;
-
-		float friction;
-
-		int   nextWeapon;
-		int   teamNum; // Arnout: doesn't seem to be communicated over the net
-
-		// Rafael
-		//int     gunfx;
-
-		// RF, burning effect is required for view blending effect
-		int     onFireStart;
-
-		int     serverCursorHint; // what type of cursor hint the server is dictating
-		int     serverCursorHintVal; // a value (0-255) associated with the above
-
-		trace_t serverCursorHintTrace; // not communicated over net, but used to store the current server-side cursorhint trace
 
 		// ----------------------------------------------------------------------
 		// So to use persistent variables here, which don't need to come from the server,
@@ -2031,37 +1975,6 @@ char *Q_UTF8Unstore( int e );
 		int pmove_framecount;
 		int entityEventSequence;
 
-		int sprintExertTime;
-
-		// JPW NERVE -- value for all multiplayer classes with regenerating "class weapons" -- ie LT artillery, medic medpack, engineer build points, etc
-		int classWeaponTime; // Arnout : DOES get send over the network
-		int jumpTime; // used in MP to prevent jump accel
-		// jpw
-
-		int      weapAnim; // mask off ANIM_TOGGLEBIT                    //----(SA)  added   // Arnout: does get sent over the network
-
-		qboolean releasedFire;
-
-		float    aimSpreadScaleFloat; // (SA) the server-side aimspreadscale that lets it track finer changes but still only
-		// transmit the 8bit int to the client
-		int      aimSpreadScale; // 0 - 255 increases with angular movement    // Arnout : DOES get send over the network
-		int      lastFireTime; // used by server to hold last firing frame briefly when randomly releasing trigger (AI)
-
-		int      quickGrenTime;
-
-		int      leanStopDebounceTime;
-
-//----(SA)  added
-
-		// seems like heat and aimspread could be tied together somehow, however, they (appear to) change at different rates and
-		// I can't currently see how to optimize this to one server->client transmission "weapstatus" value.
-		int           weapHeat[ MAX_WEAPONS ]; // some weapons can overheat.  this tracks (server-side) how hot each weapon currently is.
-		int           curWeapHeat; // value for the currently selected weapon (for transmission to client)    // Arnout : DOES get send over the network
-		int           identifyClient; // NERVE - SMF
-		int           identifyClientHealth;
-
-		aistateEnum_t aiState; // xkan, 1/10/2003
-
 		int           generic1;
 		int           loopSound;
 		int           otherEntityNum;
@@ -2071,8 +1984,6 @@ char *Q_UTF8Unstore( int e );
 		int           clips; // clips held
 		int           tauntTimer; // don't allow another taunt until this runs out
 		int           misc[ MAX_MISC ]; // misc data
-		int           jumppad_frame;
-		int           jumppad_ent; // jumppad entity hit this frame
 	} playerState_t;
 
 //====================================================================
@@ -2242,101 +2153,35 @@ char *Q_UTF8Unstore( int e );
 
 	typedef enum
 	{
-	  ET_GENERAL,
-	  ET_PLAYER,
-	  ET_ITEM,
-	  ET_MISSILE,
-	  ET_MOVER,
-	  ET_BEAM,
-	  ET_PORTAL,
-	  ET_SPEAKER,
-	  ET_PUSH_TRIGGER,
-	  ET_TELEPORT_TRIGGER,
-	  ET_INVISIBLE,
-	  ET_CONCUSSIVE_TRIGGER, // JPW NERVE trigger for concussive dust particles
-	  ET_OID_TRIGGER, // DHM - Nerve :: Objective Info Display
-	  ET_EXPLOSIVE_INDICATOR, // NERVE - SMF
+		ET_GENERAL,
+		ET_PLAYER,
+		ET_ITEM,
 
-	  //---- (SA) Wolf
-	  ET_EXPLOSIVE, // brush that will break into smaller bits when damaged
-	  ET_EF_SPOTLIGHT,
-	  ET_ALARMBOX,
-	  ET_CORONA,
-	  ET_TRAP,
-
-	  ET_GAMEMODEL, // misc_gamemodel.  similar to misc_model, but it's a dynamic model so we have LOD
-	  ET_FOOTLOCKER, //----(SA)  added
-	  //---- end
-
-	  ET_FLAMEBARREL,
-	  ET_FP_PARTS,
-
-	  // FIRE PROPS
-	  ET_FIRE_COLUMN,
-	  ET_FIRE_COLUMN_SMOKE,
-	  ET_RAMJET,
-
-	  ET_FLAMETHROWER_CHUNK, // DHM - NERVE :: Used in server side collision detection for flamethrower
-
-	  ET_EXPLO_PART,
-
-	  ET_PROP,
-
-	  ET_AI_EFFECT,
-
-	  ET_CAMERA,
-	  ET_MOVERSCALED,
-
-	  ET_CONSTRUCTIBLE_INDICATOR,
-	  ET_CONSTRUCTIBLE,
-	  ET_CONSTRUCTIBLE_MARKER,
-	  ET_BOMB,
-	  ET_WAYPOINT,
-	  ET_BEAM_2,
-	  ET_TANK_INDICATOR,
-	  ET_TANK_INDICATOR_DEAD,
-	  // Start - TAT - 8/29/2002
-	  // An indicator object created by the bot code to show where the bots are moving to
-	  ET_BOTGOAL_INDICATOR,
-	  // End - TA - 8/29/2002
-	  ET_CORPSE, // Arnout: dead player
-	  ET_SMOKER, // Arnout: target_smoke entity
-
-	  ET_TEMPHEAD, // Gordon: temporary head for clients for bullet traces
-	  ET_MG42_BARREL, // Arnout: MG42 barrel
-	  ET_TEMPLEGS, // Arnout: temporary leg for clients for bullet traces
-	  ET_TRIGGER_MULTIPLE,
-	  ET_TRIGGER_FLAGONLY,
-	  ET_TRIGGER_FLAGONLY_MULTIPLE,
-	  ET_GAMEMANAGER,
-	  ET_AAGUN,
-	  ET_CABINET_H,
-	  ET_CABINET_A,
-	  ET_HEALER,
-	  ET_SUPPLIER,
-
-	  ET_LANDMINE_HINT, // Gordon: landmine hint for botsetgoalstate filter
-	  ET_ATTRACTOR_HINT, // Gordon: attractor hint for botsetgoalstate filter
-	  ET_SNIPER_HINT, // Gordon: sniper hint for botsetgoalstate filter
-	  ET_LANDMINESPOT_HINT, // Gordon: landminespot hint for botsetgoalstate filter
-
-	  ET_COMMANDMAP_MARKER,
-
-	  ET_WOLF_OBJECTIVE,
-
-	  ET_RANGE_MARKER,
-	  ET_BUILDABLE,
-	  ET_PARTICLE_SYSTEM,
-	  ET_LOCATION,
-	  ET_LIGHTFLARE,
-	  ET_LEV2_ZAP_CHAIN,
-	  ET_ANIMMAPOBJ,
-	  ET_MODELDOOR,
-	  ET_GRAPPLE,
-
-	  ET_EVENTS // any of the EV_* events can be added freestanding
-	  // by setting eType to ET_EVENTS + eventNum
-	  // this avoids having to set eFlags and eventNum
+		ET_RANGE_MARKER,
+		ET_BUILDABLE,       // buildable type
+		
+		ET_LOCATION,
+		
+		ET_MISSILE,
+		ET_MOVER,
+		ET_BEAM,
+		ET_PORTAL,
+		ET_SPEAKER,
+		ET_PUSH_TRIGGER,
+		ET_TELEPORT_TRIGGER,
+		ET_INVISIBLE,
+		ET_GRAPPLE,       // grapple hooked on wall
+		
+		ET_CORPSE,
+		ET_PARTICLE_SYSTEM,
+		ET_ANIMMAPOBJ,
+		ET_MODELDOOR,
+		ET_LIGHTFLARE,
+		ET_LEV2_ZAP_CHAIN,
+		
+		ET_EVENTS       // any of the EV_* events can be added freestanding
+		// by setting eType to ET_EVENTS + eventNum
+		// this avoids having to set eFlags and eventNum
 	} entityType_t;
 
 	typedef struct entityState_s
@@ -2363,7 +2208,6 @@ char *Q_UTF8Unstore( int e );
 		int          groundEntityNum; // ENTITYNUM_NONE = in air
 
 		int          constantLight; // r + (g<<8) + (b<<16) + (intensity<<24)
-		int          dl_intensity; // used for coronas
 		int          loopSound; // constantly loop this sound
 
 		int          modelindex;
@@ -2382,25 +2226,9 @@ char *Q_UTF8Unstore( int e );
 		int eventParms[ MAX_EVENTS ];
 
 		// for players
-		int powerups; // bit flags  // Arnout: used to store entState_t for non-player entities (so we know to draw them translucent clientsided)
 		int weapon; // determines weapon and flash model, etc
 		int legsAnim; // mask off ANIM_TOGGLEBIT
 		int torsoAnim; // mask off ANIM_TOGGLEBIT
-
-		int density; // for particle effects
-
-		int dmgFlags; // to pass along additional information for damage effects for players/ Also used for cursorhints for non-player entities
-
-		// Ridah
-		int           onFireStart, onFireEnd;
-
-		int           nextWeapon;
-		int           teamNum;
-
-		int           effect1Time, effect2Time, effect3Time;
-
-		aistateEnum_t aiState; // xkan, 1/10/2003
-		int           animMovetype; // clients can't derive movetype of other clients for anim scripting system
 
 		int           misc; // bit flags
 		int           generic1;
@@ -2535,16 +2363,6 @@ typedef struct
 #define MAX_OTHER_SERVERS        128
 #define MAX_PINGREQUESTS         16
 #define MAX_SERVERSTATUSREQUESTS 16
-
-// NERVE - SMF - localization
-	typedef enum
-	{
-	  LANGUAGE_FRENCH = 0,
-	  LANGUAGE_GERMAN,
-	  LANGUAGE_ITALIAN,
-	  LANGUAGE_SPANISH,
-	  MAX_LANGUAGES
-	} languages_t;
 
 // NERVE - SMF - wolf server/game states
 	typedef enum

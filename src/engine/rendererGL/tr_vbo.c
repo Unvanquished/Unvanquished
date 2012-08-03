@@ -549,7 +549,7 @@ void R_InitVBOs( void )
 {
 	int  dataSize;
 
-	ri.Printf( PRINT_ALL, "------- R_InitVBOs -------\n" );
+	ri.Printf( PRINT_DEVELOPER, "------- R_InitVBOs -------\n" );
 
 	Com_InitGrowList( &tr.vbos, 100 );
 	Com_InitGrowList( &tr.ibos, 100 );
@@ -598,7 +598,7 @@ void R_ShutdownVBOs( void )
 	VBO_t *vbo;
 	IBO_t *ibo;
 
-	ri.Printf( PRINT_ALL, "------- R_ShutdownVBOs -------\n" );
+	ri.Printf( PRINT_DEVELOPER, "------- R_ShutdownVBOs -------\n" );
 
 	R_BindNullVBO();
 	R_BindNullIBO();
