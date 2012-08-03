@@ -25,8 +25,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef __BOT_HEADER
 #define __BOT_HEADER
 #ifdef __cplusplus
-#include "../../../../libs/detour/DetourNavMeshQuery.h"
-#include "../../../../libs/detour/DetourPathCorridor.h"
+#include "../../libs/detour/DetourNavMeshQuery.h"
+#include "../../libs/detour/DetourPathCorridor.h"
 
 typedef enum {
 	TASK_STOPPED = 0,

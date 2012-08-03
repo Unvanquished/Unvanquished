@@ -22,8 +22,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "g_local.h"
 #include "g_bot.h"
-#include "../../../../engine/botlib/nav.h"
-#include "../../../../libs/detour/DetourNavMeshBuilder.h"
+#include "../../engine/botlib/nav.h"
+#include "../../libs/detour/DetourNavMeshBuilder.h"
 
 dtPathCorridor pathCorridor[MAX_CLIENTS];
 dtNavMeshQuery* navQuerys[PCL_NUM_CLASSES];
