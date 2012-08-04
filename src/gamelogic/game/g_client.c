@@ -1308,8 +1308,15 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	{
 		return "Invalid pubkey key";
 	}
-	
-	trap_GenFingerprint( pubkey, sizeof( pubkey ), client->pers.guid, sizeof( client->pers.guid ) );
+
+	if ( !isBot )
+	{
+		trap_GenFingerprint( pubkey, sizeof( pubkey ), client->pers.guid, sizeof( client->pers.guid ) );
+	}
+	else
+	{
+		Q_strncpyz( client->pers.guid, "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", sizeof( client->pers.guid ) );
+	}
 
 	client->pers.admin = G_admin_admin( client->pers.guid );
 	client->pers.pubkey_authenticated = 0;

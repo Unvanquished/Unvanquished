@@ -1718,7 +1718,6 @@ qboolean G_BotAdd( char *name, team_t team, int skill ) {
 	Info_SetValueForKey( userinfo, "name", name );
 	Info_SetValueForKey( userinfo, "rate", "25000" );
 	Info_SetValueForKey( userinfo, "snaps", "20" );
-	Info_SetValueForKey(userinfo, "cl_guid", "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 
 	//so we can connect if server is password protected
 	if(g_needpass.integer == 1)
