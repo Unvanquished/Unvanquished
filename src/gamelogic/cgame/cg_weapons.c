@@ -1769,7 +1769,7 @@ void CG_AddViewWeapon( playerState_t *ps )
 	}
 
 	hand.hModel = wi->handsModel;
-	hand.renderfx = RF_FIRST_PERSON | RF_MINLIGHT;
+	hand.renderfx = RF_DEPTHHACK | RF_FIRST_PERSON | RF_MINLIGHT;
 
 	// add everything onto the hand
 	if ( weapon )
