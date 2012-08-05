@@ -4550,6 +4550,8 @@ static void R_CreateClusters()
 	bspSurface_t *surface;
 	bspNode_t    *node;
 #if defined( USE_BSP_CLUSTERSURFACE_MERGING )
+	bspNode_t    *parent;
+	bspSurface_t **mark;
 	int          numClusters;
 	bspCluster_t *cluster;
 	growList_t   clusterSurfaces;
