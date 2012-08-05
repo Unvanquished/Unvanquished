@@ -2015,6 +2015,8 @@ void R_DebugGraphics( void )
 	GL_Bind( tr.whiteImage );
 	GL_Cull( CT_FRONT_SIDED );
 	ri.CM_DrawDebugSurface( R_DebugPolygon );
+	
+	R_FogOn();
 }
 
 /*
@@ -2075,7 +2077,5 @@ void R_RenderView( viewParms_t *parms )
 	R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
 
 	// draw main system development information (surface outlines, etc)
-	R_FogOff();
 	R_DebugGraphics();
-	R_FogOn();
 }
