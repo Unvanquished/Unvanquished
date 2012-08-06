@@ -3785,11 +3785,13 @@ void FS_AddGameDirectory( const char *path, const char *dir )
 
 		if ( !com_fullyInitialized )
 		{
-			Com_Printf( "    pk3: %s\n", pakfile );
+			Com_Printf( "    pk3: %s", pakfile );
 		}
 
-		if ( ( pak = FS_LoadZipFile( pakfile, pakfiles[ pakfilesi ] ) ) == 0 )
+		if ( !( pak = FS_LoadZipFile( pakfile, pakfiles[ pakfilesi ] ) ) )
 		{
+			Com_Printf( " ( ^1INVALID PK3 )\n" );
+			pakfilesi++;
 			continue;
 		}
 
@@ -3798,6 +3800,8 @@ void FS_AddGameDirectory( const char *path, const char *dir )
 		Q_strncpyz( pak->pakGamename, dir, sizeof( pak->pakGamename ) );
 
 		fs_packFiles += pak->numfiles;
+
+		Com_Printf( " ( %d files )\n", pak->numfiles );
 
 		search = Z_Malloc( sizeof( searchpath_t ) );
 		search->pack = pak;
