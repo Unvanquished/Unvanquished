@@ -44,7 +44,6 @@ option( BUILD_CLIENT         "Build Daemon client"                         1 )
 option( BUILD_SERVER         "Build Daemonded server"                      1 )
 option( GAME_LIB             "Build game logic libraries"                  1 )
 option( GAME_QVM             "Build game logic QVM files"                  1 )
-option( BUILD_MASTER         "Build master server"                         1 )
 option( BUILD_DAEMONMAP      "Build Mapping tool"                          0 )
 
 option( ENABLE_W_ALL         "Use -Wall"                                   0 )
