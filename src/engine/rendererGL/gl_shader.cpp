@@ -938,7 +938,7 @@ void GLShader::CompileAndLinkGPUShaderProgram( shaderProgram_t *program,
 			vertexShaderTextWithMacros = version + glslopt_get_output( shaderOptimized );
 
 			ri.Printf( PRINT_DEVELOPER, "----------------------------------------------------------\n" );
-			ri.Printf( PRINT_DEVELOPER, "OPTIMIZED VERTEX shader '%s' ----------\n", programName );
+			ri.Printf( PRINT_DEVELOPER, "OPTIMIZED VERTEX shader '%s' ----------\n", program->name );
 			ri.Printf( PRINT_DEVELOPER, " BEGIN ---------------------------------------------------\n" );
 
 			length = strlen( vertexShaderTextWithMacros.c_str() );
@@ -963,7 +963,7 @@ void GLShader::CompileAndLinkGPUShaderProgram( shaderProgram_t *program,
 				ri.Printf( PRINT_WARNING, "%s\n", msgPart );
 			}
 
-			ri.Printf( PRINT_WARNING, "^1Couldn't optimize VERTEX shader %s\n", programName );
+			ri.Printf( PRINT_WARNING, "^1Couldn't optimize VERTEX shader %s\n", program->name );
 		}
 		glslopt_shader_delete( shaderOptimized );
 
@@ -974,7 +974,7 @@ void GLShader::CompileAndLinkGPUShaderProgram( shaderProgram_t *program,
 			fragmentShaderTextWithMacros = version + glslopt_get_output( shaderOptimized1 );
 
 			ri.Printf( PRINT_DEVELOPER, "----------------------------------------------------------\n" );
-			ri.Printf( PRINT_DEVELOPER, "OPTIMIZED FRAGMENT shader '%s' ----------\n", programName );
+			ri.Printf( PRINT_DEVELOPER, "OPTIMIZED FRAGMENT shader '%s' ----------\n", program->name );
 			ri.Printf( PRINT_DEVELOPER, " BEGIN ---------------------------------------------------\n" );
 
 			length = strlen( fragmentShaderTextWithMacros.c_str() );
@@ -999,7 +999,7 @@ void GLShader::CompileAndLinkGPUShaderProgram( shaderProgram_t *program,
 				ri.Printf( PRINT_WARNING, "%s\n", msgPart );
 			}
 
-			ri.Printf( PRINT_WARNING, "^1Couldn't optimize FRAGMENT shader %s\n", programName );
+			ri.Printf( PRINT_WARNING, "^1Couldn't optimize FRAGMENT shader %s\n", program->name );
 		}
 		glslopt_shader_delete( shaderOptimized1 );
 	}
