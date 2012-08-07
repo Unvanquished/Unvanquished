@@ -1024,6 +1024,7 @@ typedef struct
 	// view rendering
 	refdef_t refdef;
 	vec3_t   refdefViewAngles; // will be converted to refdef.viewaxis
+	int      fov; // custom fov
 
 	// zoom key
 	qboolean zoomed;
