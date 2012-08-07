@@ -143,7 +143,6 @@ protected:
 	                                GLenum shaderType ) const;
 
 	void CompileAndLinkGPUShaderProgram( shaderProgram_t *program,
-	                                     const char *programName,
 	                                     const std::string &vertexShaderText,
 	                                     const std::string &fragmentShaderText,
 	                                     const std::string &compileMacros, int iteration ) const;

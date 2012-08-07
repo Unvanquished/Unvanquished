@@ -821,6 +821,12 @@ bool GLShader::LoadShaderProgram( GLuint program, const char *pname, int i ) con
 	GLvoid *binary;
 	GLenum binaryFormat;
 
+	//we need to recompile the shaders
+	if( r_recompileShaders->integer )
+	{
+		return false;
+	}
+
 	// Don't even try if the necessary functions aren't available
 	if( !glConfig2.getProgramBinaryAvailable )
 	{
@@ -855,7 +861,6 @@ bool GLShader::LoadShaderProgram( GLuint program, const char *pname, int i ) con
 }
 
 void GLShader::CompileAndLinkGPUShaderProgram( shaderProgram_t *program,
-    const char *programName,
     const std::string &vertexShaderText,
     const std::string &fragmentShaderText,
     const std::string &compileMacros, int iteration ) const
@@ -865,167 +870,144 @@ void GLShader::CompileAndLinkGPUShaderProgram( shaderProgram_t *program,
 #endif
 
 	//ri.Printf(PRINT_DEVELOPER, "------- GPU shader -------\n");
+	// header of the glsl shader
+	std::string vertexHeader;
+	std::string fragmentHeader;
 
-	Q_strncpyz( program->name, programName, sizeof( program->name ) );
+	if ( glConfig.driverType == GLDRV_OPENGL3 )
+	{
+		// HACK: abuse the GLSL preprocessor to turn GLSL 1.20 shaders into 1.30 ones
 
-#if 0
+		vertexHeader += "#version 130\n";
+		fragmentHeader += "#version 130\n";
+
+		vertexHeader += "#define attribute in\n";
+		vertexHeader += "#define varying out\n";
+
+		fragmentHeader += "#define varying in\n";
+
+		fragmentHeader += "out vec4 out_Color;\n";
+		fragmentHeader += "#define gl_FragColor out_Color\n";
+
+		vertexHeader += "#define textureCube texture\n";
+		fragmentHeader += "#define textureCube texture\n";
+	}
+	else
+	{
+		vertexHeader += "#version 120\n";
+		fragmentHeader += "#version 120\n";
+	}
+
+	// permutation macros
+	std::string macrosString;
 
 	if ( !compileMacros.empty() )
 	{
-		program->compileMacros = ( char * ) ri.Hunk_Alloc( sizeof( char ) * compileMacros.length() + 1, h_low );
-		Q_strncpyz( program->compileMacros, compileMacros.c_str(), compileMacros.length() + 1 );
-	}
-	else
-#endif
-	{
-		program->compileMacros = NULL;
-	}
+		const char *compileMacros_ = compileMacros.c_str();
+		char       **compileMacrosP = ( char ** ) &compileMacros_;
+		char       *token;
 
-	program->program = glCreateProgram();
-	program->attribs = _vertexAttribsRequired; // | _vertexAttribsOptional;
-
-	if( r_recompileShaders->integer || !LoadShaderProgram( program->program, programName, iteration ) )
-	{
-		// header of the glsl shader
-		std::string vertexHeader;
-		std::string fragmentHeader;
-
-		if ( glConfig.driverType == GLDRV_OPENGL3 )
+		while ( 1 )
 		{
-			// HACK: abuse the GLSL preprocessor to turn GLSL 1.20 shaders into 1.30 ones
+			token = COM_ParseExt2( compileMacrosP, qfalse );
 
-			vertexHeader += "#version 130\n";
-			fragmentHeader += "#version 130\n";
+			if ( !token[ 0 ] )
+			{
+				break;
+			}
 
-			vertexHeader += "#define attribute in\n";
-			vertexHeader += "#define varying out\n";
+			macrosString += va( "#ifndef %s\n#define %s 1\n#endif\n", token, token );
+		}
+	}
 
-			fragmentHeader += "#define varying in\n";
+	// add them
+	std::string vertexShaderTextWithMacros = vertexHeader + macrosString + vertexShaderText;
+	std::string fragmentShaderTextWithMacros = fragmentHeader + macrosString + fragmentShaderText;
+#ifdef USE_GLSL_OPTIMIZER
+	if( optimize )
+	{
+		static char         msgPart[ 1024 ];
+		int                 length = 0;
+		int                 i;
 
-			fragmentHeader += "out vec4 out_Color;\n";
-			fragmentHeader += "#define gl_FragColor out_Color\n";
+		const std::string version = ( glConfig.driverType == GLDRV_OPENGL3 ) ? "#version 130\n" : "#version 120\n";
 
-			vertexHeader += "#define textureCube texture\n";
-			fragmentHeader += "#define textureCube texture\n";
+		glslopt_shader *shaderOptimized = glslopt_optimize( s_glslOptimizer, kGlslOptShaderVertex, vertexShaderTextWithMacros.c_str(), 0 );
+		if( glslopt_get_status( shaderOptimized ) )
+		{
+			vertexShaderTextWithMacros = version + glslopt_get_output( shaderOptimized );
+
+			ri.Printf( PRINT_DEVELOPER, "----------------------------------------------------------\n" );
+			ri.Printf( PRINT_DEVELOPER, "OPTIMIZED VERTEX shader '%s' ----------\n", programName );
+			ri.Printf( PRINT_DEVELOPER, " BEGIN ---------------------------------------------------\n" );
+
+			length = strlen( vertexShaderTextWithMacros.c_str() );
+
+			for ( i = 0; i < length; i += 1024 )
+			{
+				Q_strncpyz( msgPart, vertexShaderTextWithMacros.c_str() + i, sizeof( msgPart ) );
+				ri.Printf( PRINT_DEVELOPER, "%s\n", msgPart );
+			}
+
+			ri.Printf( PRINT_DEVELOPER, " END-- ---------------------------------------------------\n" );
 		}
 		else
 		{
-			vertexHeader += "#version 120\n";
-			fragmentHeader += "#version 120\n";
+			const char *errorLog = glslopt_get_log( shaderOptimized );
+
+			length = strlen( errorLog );
+
+			for ( i = 0; i < length; i += 1024 )
+			{
+				Q_strncpyz( msgPart, errorLog + i, sizeof( msgPart ) );
+				ri.Printf( PRINT_WARNING, "%s\n", msgPart );
+			}
+
+			ri.Printf( PRINT_WARNING, "^1Couldn't optimize VERTEX shader %s\n", programName );
 		}
+		glslopt_shader_delete( shaderOptimized );
 
-		// permutation macros
-		std::string macrosString;
 
-		if ( !compileMacros.empty() )
+		glslopt_shader *shaderOptimized1 = glslopt_optimize( s_glslOptimizer, kGlslOptShaderFragment, fragmentShaderTextWithMacros.c_str(), 0 );
+		if( glslopt_get_status( shaderOptimized1 ) )
 		{
-			const char *compileMacros_ = compileMacros.c_str();
-			char       **compileMacrosP = ( char ** ) &compileMacros_;
-			char       *token;
+			fragmentShaderTextWithMacros = version + glslopt_get_output( shaderOptimized1 );
 
-			while ( 1 )
+			ri.Printf( PRINT_DEVELOPER, "----------------------------------------------------------\n" );
+			ri.Printf( PRINT_DEVELOPER, "OPTIMIZED FRAGMENT shader '%s' ----------\n", programName );
+			ri.Printf( PRINT_DEVELOPER, " BEGIN ---------------------------------------------------\n" );
+
+			length = strlen( fragmentShaderTextWithMacros.c_str() );
+
+			for ( i = 0; i < length; i += 1024 )
 			{
-				token = COM_ParseExt2( compileMacrosP, qfalse );
-
-				if ( !token[ 0 ] )
-				{
-					break;
-				}
-
-				macrosString += va( "#ifndef %s\n#define %s 1\n#endif\n", token, token );
+				Q_strncpyz( msgPart, fragmentShaderTextWithMacros.c_str() + i, sizeof( msgPart ) );
+				ri.Printf( PRINT_DEVELOPER, "%s\n", msgPart );
 			}
-		}
 
-		// add them
-		std::string vertexShaderTextWithMacros = vertexHeader + macrosString + vertexShaderText;
-		std::string fragmentShaderTextWithMacros = fragmentHeader + macrosString + fragmentShaderText;
-#ifdef USE_GLSL_OPTIMIZER
-		if( optimize )
+			ri.Printf( PRINT_DEVELOPER, " END-- ---------------------------------------------------\n" );
+		}
+		else
 		{
-			static char         msgPart[ 1024 ];
-			int                 length = 0;
-			int                 i;
+			const char *errorLog = glslopt_get_log( shaderOptimized1 );
 
-			const std::string version = ( glConfig.driverType == GLDRV_OPENGL3 ) ? "#version 130\n" : "#version 120\n";
+			length = strlen( errorLog );
 
-			glslopt_shader *shaderOptimized = glslopt_optimize( s_glslOptimizer, kGlslOptShaderVertex, vertexShaderTextWithMacros.c_str(), 0 );
-			if( glslopt_get_status( shaderOptimized ) )
+			for ( i = 0; i < length; i += 1024 )
 			{
-				vertexShaderTextWithMacros = version + glslopt_get_output( shaderOptimized );
-
-				ri.Printf( PRINT_DEVELOPER, "----------------------------------------------------------\n" );
-				ri.Printf( PRINT_DEVELOPER, "OPTIMIZED VERTEX shader '%s' ----------\n", programName );
-				ri.Printf( PRINT_DEVELOPER, " BEGIN ---------------------------------------------------\n" );
-
-				length = strlen( vertexShaderTextWithMacros.c_str() );
-
-				for ( i = 0; i < length; i += 1024 )
-				{
-					Q_strncpyz( msgPart, vertexShaderTextWithMacros.c_str() + i, sizeof( msgPart ) );
-					ri.Printf( PRINT_DEVELOPER, "%s\n", msgPart );
-				}
-
-				ri.Printf( PRINT_DEVELOPER, " END-- ---------------------------------------------------\n" );
+				Q_strncpyz( msgPart, errorLog + i, sizeof( msgPart ) );
+				ri.Printf( PRINT_WARNING, "%s\n", msgPart );
 			}
-			else
-			{
-				const char *errorLog = glslopt_get_log( shaderOptimized );
 
-				length = strlen( errorLog );
-
-				for ( i = 0; i < length; i += 1024 )
-				{
-					Q_strncpyz( msgPart, errorLog + i, sizeof( msgPart ) );
-					ri.Printf( PRINT_WARNING, "%s\n", msgPart );
-				}
-
-				ri.Printf( PRINT_WARNING, "^1Couldn't optimize VERTEX shader %s\n", programName );
-			}
-			glslopt_shader_delete( shaderOptimized );
-
-
-			glslopt_shader *shaderOptimized1 = glslopt_optimize( s_glslOptimizer, kGlslOptShaderFragment, fragmentShaderTextWithMacros.c_str(), 0 );
-			if( glslopt_get_status( shaderOptimized1 ) )
-			{
-				fragmentShaderTextWithMacros = version + glslopt_get_output( shaderOptimized1 );
-
-				ri.Printf( PRINT_DEVELOPER, "----------------------------------------------------------\n" );
-				ri.Printf( PRINT_DEVELOPER, "OPTIMIZED FRAGMENT shader '%s' ----------\n", programName );
-				ri.Printf( PRINT_DEVELOPER, " BEGIN ---------------------------------------------------\n" );
-
-				length = strlen( fragmentShaderTextWithMacros.c_str() );
-
-				for ( i = 0; i < length; i += 1024 )
-				{
-					Q_strncpyz( msgPart, fragmentShaderTextWithMacros.c_str() + i, sizeof( msgPart ) );
-					ri.Printf( PRINT_DEVELOPER, "%s\n", msgPart );
-				}
-
-				ri.Printf( PRINT_DEVELOPER, " END-- ---------------------------------------------------\n" );
-			}
-			else
-			{
-				const char *errorLog = glslopt_get_log( shaderOptimized1 );
-
-				length = strlen( errorLog );
-
-				for ( i = 0; i < length; i += 1024 )
-				{
-					Q_strncpyz( msgPart, errorLog + i, sizeof( msgPart ) );
-					ri.Printf( PRINT_WARNING, "%s\n", msgPart );
-				}
-
-				ri.Printf( PRINT_WARNING, "^1Couldn't optimize FRAGMENT shader %s\n", programName );
-			}
-			glslopt_shader_delete( shaderOptimized1 );
+			ri.Printf( PRINT_WARNING, "^1Couldn't optimize FRAGMENT shader %s\n", programName );
 		}
-#endif
-		CompileGPUShader( program->program, programName, vertexShaderTextWithMacros.c_str(), strlen( vertexShaderTextWithMacros.c_str() ), GL_VERTEX_SHADER );
-		CompileGPUShader( program->program, programName, fragmentShaderTextWithMacros.c_str(), strlen( fragmentShaderTextWithMacros.c_str() ), GL_FRAGMENT_SHADER );
-		BindAttribLocations( program->program );  //, _vertexAttribsRequired | _vertexAttribsOptional);
-		LinkProgram( program->program );
+		glslopt_shader_delete( shaderOptimized1 );
 	}
-
+#endif
+	CompileGPUShader( program->program, program->name, vertexShaderTextWithMacros.c_str(), strlen( vertexShaderTextWithMacros.c_str() ), GL_VERTEX_SHADER );
+	CompileGPUShader( program->program, program->name, fragmentShaderTextWithMacros.c_str(), strlen( fragmentShaderTextWithMacros.c_str() ), GL_FRAGMENT_SHADER );
+	BindAttribLocations( program->program );  //, _vertexAttribsRequired | _vertexAttribsOptional);
+	LinkProgram( program->program );
 }
 void GLShader::CompilePermutations() 
 {
@@ -1086,12 +1068,29 @@ void GLShader::CompilePermutations()
 			//ri.Printf(PRINT_ALL, "Compile macros: '%s'\n", compileMacros.c_str());
 
 			shaderProgram_t *shaderProgram = &_shaderPrograms[i];
+			
+			Q_strncpyz( shaderProgram->name, this->GetName().c_str(), sizeof( shaderProgram->name ) );
 
-			CompileAndLinkGPUShaderProgram(	shaderProgram,
-											this->GetName().c_str(),
-											vertexShaderText,
-											fragmentShaderText,
-											compileMacros, i);
+			#if 0
+			if ( !compileMacros.empty() )
+			{
+				program->compileMacros = ( char * ) ri.Hunk_Alloc( sizeof( char ) * compileMacros.length() + 1, h_low );
+				Q_strncpyz( program->compileMacros, compileMacros.c_str(), compileMacros.length() + 1 );
+			}
+			else
+			#endif
+			{
+				shaderProgram->compileMacros = NULL;
+			}
+
+			shaderProgram->program = glCreateProgram();
+			shaderProgram->attribs = _vertexAttribsRequired; // | _vertexAttribsOptional;
+
+			if( !LoadShaderProgram( shaderProgram->program, shaderProgram->name, i ) )
+			{
+				CompileAndLinkGPUShaderProgram(	shaderProgram, vertexShaderText, fragmentShaderText, compileMacros, i);
+				SaveShaderProgram( shaderProgram->program, shaderProgram->name, i );
+			}
 
 			UpdateShaderProgramUniformLocations(shaderProgram);
 
@@ -1105,7 +1104,6 @@ void GLShader::CompilePermutations()
 			GL_CheckErrors();
 
 			numCompiled++;
-			SaveShaderProgram( shaderProgram->program, shaderProgram->name, i );
 		}
 	}
 
