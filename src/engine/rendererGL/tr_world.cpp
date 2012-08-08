@@ -1168,7 +1168,7 @@ static void R_UpdateClusterSurfaces()
 				/*
 				   if(ibo->indexesVBO)
 				   {
-				   glDeleteBuffersARB(1, &ibo->indexesVBO);
+				   glDeleteBuffers(1, &ibo->indexesVBO);
 				   ibo->indexesVBO = 0;
 				   }
 				 */
@@ -1187,7 +1187,7 @@ static void R_UpdateClusterSurfaces()
 #if defined( USE_D3D10 )
 				// TODO
 #else
-				glGenBuffersARB( 1, &ibo->indexesVBO );
+				glGenBuffers( 1, &ibo->indexesVBO );
 #endif
 
 				Com_AddToGrowList( &tr.world->clusterVBOSurfaces[ tr.visIndex ], vboSurf );
@@ -1218,7 +1218,7 @@ static void R_UpdateClusterSurfaces()
 #if defined( USE_D3D10 )
 			// TODO
 #else
-			glBufferDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB, indexesSize, indexes, GL_DYNAMIC_DRAW_ARB );
+			glBufferData( GL_ELEMENT_ARRAY_BUFFER, indexesSize, indexes, GL_DYNAMIC_DRAW_ARB );
 #endif
 			R_BindNullIBO();
 
@@ -1593,7 +1593,7 @@ static void IssueOcclusionQuery( link_t *queue, bspNode_t *node, qboolean resetM
 
 #if 0
 
-	if ( glIsQueryARB( node->occlusionQueryObjects[ tr.viewCount ] ) )
+	if ( glIsQuery( node->occlusionQueryObjects[ tr.viewCount ] ) )
 	{
 		ri.Error( ERR_FATAL, "IssueOcclusionQuery: node %i has already an occlusion query object in slot %i: %i", node - tr.world->nodes, tr.viewCount, node->occlusionQueryObjects[ tr.viewCount ] );
 	}
@@ -1601,7 +1601,7 @@ static void IssueOcclusionQuery( link_t *queue, bspNode_t *node, qboolean resetM
 #endif
 
 	// begin the occlusion query
-	glBeginQueryARB( GL_SAMPLES_PASSED, node->occlusionQueryObjects[ tr.viewCount ] );
+	glBeginQuery( GL_SAMPLES_PASSED, node->occlusionQueryObjects[ tr.viewCount ] );
 
 	GL_CheckErrors();
 
@@ -1616,11 +1616,11 @@ static void IssueOcclusionQuery( link_t *queue, bspNode_t *node, qboolean resetM
 	Tess_DrawElements();
 
 	// end the query
-	glEndQueryARB( GL_SAMPLES_PASSED );
+	glEndQuery( GL_SAMPLES_PASSED );
 
 #if 1
 
-	if ( !glIsQueryARB( node->occlusionQueryObjects[ tr.viewCount ] ) )
+	if ( !glIsQuery( node->occlusionQueryObjects[ tr.viewCount ] ) )
 	{
 		ri.Error( ERR_FATAL, "IssueOcclusionQuery: node %li has no occlusion query object in slot %i: %i", (long)( node - tr.world->nodes ), tr.viewCount, node->occlusionQueryObjects[ tr.viewCount ] );
 	}
@@ -1671,14 +1671,14 @@ static void IssueMultiOcclusionQueries( link_t *multiQueue, link_t *individualQu
 
 #if 0
 
-	if ( !glIsQueryARB( multiQueryNode->occlusionQueryObjects[ tr.viewCount ] ) )
+	if ( !glIsQuery( multiQueryNode->occlusionQueryObjects[ tr.viewCount ] ) )
 	{
 		ri.Error( ERR_FATAL, "IssueMultiOcclusionQueries: node %i has already occlusion query object in slot %i: %i", multiQueryNode - tr.world->nodes, tr.viewCount, multiQueryNode->occlusionQueryObjects[ tr.viewCount ] );
 	}
 
 #endif
 
-	glBeginQueryARB( GL_SAMPLES_PASSED, multiQueryNode->occlusionQueryObjects[ tr.viewCount ] );
+	glBeginQuery( GL_SAMPLES_PASSED, multiQueryNode->occlusionQueryObjects[ tr.viewCount ] );
 
 	GL_CheckErrors();
 
@@ -1725,13 +1725,13 @@ static void IssueMultiOcclusionQueries( link_t *multiQueue, link_t *individualQu
 	tr.pc.c_occlusionQueriesMulti++;
 
 	// end the query
-	glEndQueryARB( GL_SAMPLES_PASSED );
+	glEndQuery( GL_SAMPLES_PASSED );
 
 	GL_CheckErrors();
 
 #if 0
 
-	if ( !glIsQueryARB( multiQueryNode->occlusionQueryObjects[ tr.viewCount ] ) )
+	if ( !glIsQuery( multiQueryNode->occlusionQueryObjects[ tr.viewCount ] ) )
 	{
 		ri.Error( ERR_FATAL, "IssueMultiOcclusionQueries: node %i has no occlusion query object in slot %i: %i", multiQueryNode - tr.world->nodes, tr.viewCount, multiQueryNode->occlusionQueryObjects[ tr.viewCount ] );
 	}
@@ -1760,9 +1760,9 @@ static qboolean ResultAvailable( bspNode_t *node )
 	//glFinish();
 
 	available = 0;
-	//if(glIsQueryARB(node->occlusionQueryObjects[tr.viewCount]))
+	//if(glIsQuery(node->occlusionQueryObjects[tr.viewCount]))
 	{
-		glGetQueryObjectivARB( node->occlusionQueryObjects[ tr.viewCount ], GL_QUERY_RESULT_AVAILABLE_ARB, &available );
+		glGetQueryObjectiv( node->occlusionQueryObjects[ tr.viewCount ], GL_QUERY_RESULT_AVAILABLE, &available );
 		GL_CheckErrors();
 	}
 
@@ -1782,7 +1782,7 @@ static void GetOcclusionQueryResult( bspNode_t *node )
 
 #if 0
 
-	if ( !glIsQueryARB( node->occlusionQueryObjects[ tr.viewCount ] ) )
+	if ( !glIsQuery( node->occlusionQueryObjects[ tr.viewCount ] ) )
 	{
 		ri.Error( ERR_FATAL, "GetOcclusionQueryResult: node %i has no occlusion query object in slot %i: %i", node - tr.world->nodes, tr.viewCount, node->occlusionQueryObjects[ tr.viewCount ] );
 	}
@@ -1793,14 +1793,14 @@ static void GetOcclusionQueryResult( bspNode_t *node )
 
 	while ( !available )
 	{
-		//if(glIsQueryARB(node->occlusionQueryObjects[tr.viewCount]))
+		//if(glIsQuery(node->occlusionQueryObjects[tr.viewCount]))
 		{
-			glGetQueryObjectivARB( node->occlusionQueryObjects[ tr.viewCount ], GL_QUERY_RESULT_AVAILABLE_ARB, &available );
+			glGetQueryObjectiv( node->occlusionQueryObjects[ tr.viewCount ], GL_QUERY_RESULT_AVAILABLE, &available );
 			//GL_CheckErrors();
 		}
 	}
 
-	glGetQueryObjectivARB( node->occlusionQueryObjects[ tr.viewCount ], GL_QUERY_RESULT, &ocSamples );
+	glGetQueryObjectiv( node->occlusionQueryObjects[ tr.viewCount ], GL_QUERY_RESULT, &ocSamples );
 
 	if ( r_logFile->integer )
 	{

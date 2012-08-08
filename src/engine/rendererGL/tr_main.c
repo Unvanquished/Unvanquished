@@ -3409,7 +3409,7 @@ void R_DebugBoundingBox( const vec3_t origin, const vec3_t mins, const vec3_t ma
 
 	// draw bounding box
 	glBegin( GL_LINES );
-	glVertexAttrib4fvARB( ATTR_INDEX_COLOR, color );
+	glVertexAttrib4fv( ATTR_INDEX_COLOR, color );
 
 	for ( i = 0; i < 4; i++ )
 	{

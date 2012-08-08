@@ -1086,7 +1086,7 @@ extern "C" {
 
 		GL_CheckErrors();
 
-		glVertexAttrib4fARB( ATTR_INDEX_COLOR, 1, 1, 1, 1 );
+		glVertexAttrib4f( ATTR_INDEX_COLOR, 1, 1, 1, 1 );
 
 		GL_CheckErrors();
 
@@ -1129,10 +1129,10 @@ extern "C" {
 		glState.vertexAttribPointersSet = 0;
 
 		glState.currentProgram = 0;
-		glUseProgramObjectARB( 0 );
+		glUseProgram( 0 );
 
-		glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
-		glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0 );
+		glBindBuffer( GL_ARRAY_BUFFER, 0 );
+		glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 		glState.currentVBO = NULL;
 		glState.currentIBO = NULL;
 
@@ -1140,7 +1140,7 @@ extern "C" {
 
 		// the vertex array is always enabled, but the color and texture
 		// arrays are enabled and disabled around the compiled vertex array call
-		glEnableVertexAttribArrayARB( ATTR_INDEX_POSITION );
+		glEnableVertexAttribArray( ATTR_INDEX_POSITION );
 
 		/*
 		   OpenGL 3.0 spec: E.1. PROFILES AND DEPRECATED FEATURES OF OPENGL 3.0 405
@@ -1161,12 +1161,12 @@ extern "C" {
 		   if(glConfig2.drawBuffersAvailable && glConfig2.maxDrawBuffers >= 4)
 		   {
 		   // enable all attachments as draw buffers
-		   GLenum drawbuffers[] = {GL_DRAW_BUFFER0_ARB,
-		   GL_DRAW_BUFFER1_ARB,
-		   GL_DRAW_BUFFER2_ARB,
-		   GL_DRAW_BUFFER3_ARB};
+		   GLenum drawbuffers[] = {GL_DRAW_BUFFER0,
+		   GL_DRAW_BUFFER1,
+		   GL_DRAW_BUFFER2,
+		   GL_DRAW_BUFFER3};
 
-		   glDrawBuffersARB(4, drawbuffers);
+		   glDrawBuffers(4, drawbuffers);
 		   }
 		 */
 
@@ -1213,21 +1213,21 @@ extern "C" {
 
 		if ( glConfig.driverType != GLDRV_OPENGL3 )
 		{
-			ri.Printf( PRINT_DEVELOPER, "GL_MAX_TEXTURE_UNITS_ARB: %d\n", glConfig.maxActiveTextures );
+			ri.Printf( PRINT_DEVELOPER, "GL_MAX_TEXTURE_UNITS: %d\n", glConfig.maxActiveTextures );
 		}
 
 		/*
 		   if(glConfig.fragmentProgramAvailable)
 		   {
-		   ri.Printf(PRINT_ALL, "GL_MAX_TEXTURE_IMAGE_UNITS_ARB: %d\n", glConfig.maxTextureImageUnits);
+		   ri.Printf(PRINT_ALL, "GL_MAX_TEXTURE_IMAGE_UNITS: %d\n", glConfig.maxTextureImageUnits);
 		   }
 		 */
 
-		ri.Printf( PRINT_DEVELOPER, "GL_SHADING_LANGUAGE_VERSION_ARB: %s\n", glConfig2.shadingLanguageVersion );
+		ri.Printf( PRINT_DEVELOPER, "GL_SHADING_LANGUAGE_VERSION: %s\n", glConfig2.shadingLanguageVersion );
 
-		ri.Printf( PRINT_DEVELOPER, "GL_MAX_VERTEX_UNIFORM_COMPONENTS_ARB %d\n", glConfig2.maxVertexUniforms );
-//	ri.Printf(PRINT_ALL, "GL_MAX_VARYING_FLOATS_ARB %d\n", glConfig2.maxVaryingFloats);
-		ri.Printf( PRINT_DEVELOPER, "GL_MAX_VERTEX_ATTRIBS_ARB %d\n", glConfig2.maxVertexAttribs );
+		ri.Printf( PRINT_DEVELOPER, "GL_MAX_VERTEX_UNIFORM_COMPONENTS %d\n", glConfig2.maxVertexUniforms );
+//	ri.Printf(PRINT_ALL, "GL_MAX_VARYING_FLOATS %d\n", glConfig2.maxVaryingFloats);
+		ri.Printf( PRINT_DEVELOPER, "GL_MAX_VERTEX_ATTRIBS %d\n", glConfig2.maxVertexAttribs );
 
 		if ( glConfig2.occlusionQueryAvailable )
 		{
@@ -1236,7 +1236,7 @@ extern "C" {
 
 		if ( glConfig2.drawBuffersAvailable )
 		{
-			ri.Printf( PRINT_DEVELOPER, "GL_MAX_DRAW_BUFFERS_ARB: %d\n", glConfig2.maxDrawBuffers );
+			ri.Printf( PRINT_DEVELOPER, "GL_MAX_DRAW_BUFFERS: %d\n", glConfig2.maxDrawBuffers );
 		}
 
 		if ( glConfig2.textureAnisotropyAvailable )
@@ -2118,7 +2118,7 @@ extern "C" {
 
 		if ( glConfig2.occlusionQueryBits && glConfig.driverType != GLDRV_MESA )
 		{
-			glGenQueriesARB( MAX_OCCLUSION_QUERIES, tr.occlusionQueryObjects );
+			glGenQueries( MAX_OCCLUSION_QUERIES, tr.occlusionQueryObjects );
 		}
 
 		GL_CheckErrors();
@@ -2173,7 +2173,7 @@ extern "C" {
 
 			if ( glConfig2.occlusionQueryBits && glConfig.driverType != GLDRV_MESA )
 			{
-				glDeleteQueriesARB( MAX_OCCLUSION_QUERIES, tr.occlusionQueryObjects );
+				glDeleteQueries( MAX_OCCLUSION_QUERIES, tr.occlusionQueryObjects );
 
 				if ( tr.world )
 				{
@@ -2185,7 +2185,7 @@ extern "C" {
 					{
 						node = &tr.world->nodes[ j ];
 
-						glDeleteQueriesARB( MAX_VIEWS, node->occlusionQueryObjects );
+						glDeleteQueries( MAX_VIEWS, node->occlusionQueryObjects );
 					}
 
 					/*
@@ -2193,7 +2193,7 @@ extern "C" {
 					{
 					        light = &tr.world->lights[j];
 
-					        glDeleteQueriesARB(MAX_VIEWS, light->occlusionQueryObjects);
+					        glDeleteQueries(MAX_VIEWS, light->occlusionQueryObjects);
 					}
 					*/
 				}

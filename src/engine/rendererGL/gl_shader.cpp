@@ -639,8 +639,8 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 		/*
 		   if(glConfig.drawBuffersAvailable && glConfig.maxDrawBuffers >= 4)
 		   {
-		   //Q_strcat(bufferExtra, sizeof(bufferExtra), "#ifndef GL_ARB_draw_buffers\n#define GL_ARB_draw_buffers 1\n#endif\n");
-		   Q_strcat(bufferExtra, sizeof(bufferExtra), "#extension GL_ARB_draw_buffers : enable\n");
+		   //Q_strcat(bufferExtra, sizeof(bufferExtra), "#ifndef GL_draw_buffers\n#define GL__draw_buffers 1\n#endif\n");
+		   Q_strcat(bufferExtra, sizeof(bufferExtra), "#extension GL_draw_buffers : enable\n");
 		   }
 		 */
 
@@ -792,7 +792,7 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 
 void GLShader::SaveShaderProgram( GLuint program, const char *pname, int i ) const
 {
-#ifdef GLEW_ARB_get_program_binary
+
 	GLint   binaryLength;
 	GLvoid  *binary;
 
@@ -811,12 +811,10 @@ void GLShader::SaveShaderProgram( GLuint program, const char *pname, int i ) con
 	ri.FS_WriteFile( va( "glsl/%s_%d.bin", pname, i ), binary, binaryLength + sizeof( GLenum ) );
 
 	ri.Hunk_FreeTempMemory( binary );
-#endif
 }
 
 bool GLShader::LoadShaderProgram( GLuint program, const char *pname, int i ) const
 {
-#ifdef GLEW_ARB_get_program_binary
 	GLint  binaryLength, success;
 	GLvoid *binary;
 	GLenum binaryFormat;
@@ -855,9 +853,6 @@ bool GLShader::LoadShaderProgram( GLuint program, const char *pname, int i ) con
 		return false;
 	}
 	return true;
-#else
-        return false;
-#endif
 }
 
 void GLShader::CompileAndLinkGPUShaderProgram( shaderProgram_t *program,
@@ -1224,7 +1219,7 @@ void GLShader::LinkProgram( GLuint program ) const
 {
 	GLint linked;
 
-#ifdef GLEW_ARB_get_program_binary
+#ifdef GLEW_get_program_binary
 	// Apparently, this is necessary to get the binary program via glGetProgramBinary
 	if( glConfig2.getProgramBinaryAvailable )
 	{
