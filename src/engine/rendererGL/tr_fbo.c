@@ -170,7 +170,7 @@ void R_CreateFBOColorBuffer( FBO_t *fbo, int format, int index )
 
 	if ( format != GL_RGB &&
 	     format != GL_RGBA &&
-	     format != GL_RGB16F && format != GL_RGBA16F_ && format != GL_RGB32F_ARB && format != GL_RGBA32F_ARB )
+	     format != GL_RGB16F && format != GL_RGBA16F && format != GL_RGB32F_ARB && format != GL_RGBA32F_ARB )
 	{
 		ri.Printf( PRINT_WARNING, "R_CreateFBOColorBuffer: format %i is not color-renderable\n", format );
 		//return;
