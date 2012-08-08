@@ -314,7 +314,7 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_thirdPersonRange,            "cg_thirdPersonRange",            "75",           CVAR_ARCHIVE                 },
 	{ &cg_thirdPerson,                 "cg_thirdPerson",                 "0",            CVAR_CHEAT                   },
 	{ &cg_thirdPersonAngle,            "cg_thirdPersonAngle",            "0",            CVAR_CHEAT                   },
-	{ &cg_thirdPersonPitchFollow,      "cg_thirdPersonPitchFollow",      "0",            0                            },
+	{ &cg_thirdPersonPitchFollow,      "cg_thirdPersonPitchFollow",      "0",            CVAR_ARCHIVE                             },
 	{ &cg_thirdPersonShoulderViewMode, "cg_thirdPersonShoulderViewMode", "1",            CVAR_ARCHIVE                 },
 	{ &cg_staticDeathCam,              "cg_staticDeathCam",              "0",            CVAR_ARCHIVE                 },
 	{ &cg_stats,                       "cg_stats",                       "0",            0                            },
