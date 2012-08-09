@@ -152,6 +152,14 @@ void CG_ImpactMark( qhandle_t markShader, const vec3_t origin, const vec3_t dir,
 		return;
 	}
 
+	if( temporary )
+	{
+		if( CG_CullPointAndRadius( origin, M_SQRT2 * radius ) )
+		{
+			return;
+		}
+	}
+
 	if ( radius <= 0 )
 	{
 		CG_Error( "CG_ImpactMark called with <= 0 radius" );
@@ -295,7 +303,6 @@ void CG_AddMarks( void )
 				}
 			}
 		}
-
 		trap_R_AddPolyToScene( mp->markShader, mp->poly.numVerts, mp->verts );
 	}
 }

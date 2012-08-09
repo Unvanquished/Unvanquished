@@ -1527,6 +1527,7 @@ void CG_SetupFrustum(void)
 		SetPlaneSignbits(&frustum[i]);
 	}
 }
+
 /*
 =================
 CG_CullBox
@@ -1540,7 +1541,7 @@ qboolean CG_CullBox(vec3_t mins, vec3_t maxs)
 	cplane_t         *frust;
 
 	//check against frustum planes
-	for(i = 0; i < 4; i++) 
+	for( i = 0; i < 4; i++ ) 
 	{
 		frust = &frustum[i];
 
@@ -1549,6 +1550,33 @@ qboolean CG_CullBox(vec3_t mins, vec3_t maxs)
 	}
 	return qfalse;
 }
+
+/*
+=================
+CG_PointAndRadius
+
+returns true if culled
+=================
+*/
+qboolean CG_CullPointAndRadius(const vec3_t pt, vec_t radius)
+{
+	int             i;
+	cplane_t        *frust;
+
+	// check against frustum planes
+	for( i = 0; i < 4; i++)
+	{
+		frust = &frustum[i];
+
+		if( ( DotProduct(pt, frust->normal) - frust->dist ) < -radius )
+		{
+			return qtrue;
+		}
+	}
+
+	return qfalse;
+}
+
 /*
 =================
 CG_DrawActiveFrame
