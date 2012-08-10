@@ -930,11 +930,11 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 
 					GL_Bind( image );
 
-					image->internalFormat = GL_RGBA16F_ARB;
+					image->internalFormat = GL_RGBA16F;
 					image->uploadWidth = width;
 					image->uploadHeight = height;
 
-					glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F_ARB, width, height, 0, GL_RGB, GL_HALF_FLOAT_ARB, hdrImage );
+					glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_HALF_FLOAT, hdrImage );
 
 					if ( glConfig2.generateMipmapAvailable )
 					{
@@ -6037,7 +6037,7 @@ static void R_LoadNodesAndLeafs( lump_t *nodeLump, lump_t *leafLump )
 		InitLink( &out->occlusionQuery2, out );
 		//QueueInit(&node->multiQuery);
 
-		glGenQueriesARB( MAX_VIEWS, out->occlusionQueryObjects );
+		glGenQueries( MAX_VIEWS, out->occlusionQueryObjects );
 
 		tess.multiDrawPrimitives = 0;
 		tess.numIndexes = 0;
@@ -10061,7 +10061,7 @@ void R_BuildCubeMaps( void )
 			return;
 		}
 
-		cubeProbe->cubemap->type = GL_TEXTURE_CUBE_MAP_ARB;
+		cubeProbe->cubemap->type = GL_TEXTURE_CUBE_MAP;
 
 		cubeProbe->cubemap->width = REF_CUBEMAP_SIZE;
 		cubeProbe->cubemap->height = REF_CUBEMAP_SIZE;
