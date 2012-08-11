@@ -877,7 +877,7 @@ static void admin_default_levels( void )
 	Q_strncpyz( l->name, "^2Junior Admin", sizeof( l->name ) );
 	Q_strncpyz( l->flags,
 	            "listplayers admintest adminhelp time putteam spec999 warn kick mute ADMINCHAT "
-	            "register unregister l0 l1",
+	            "buildlog register unregister l0 l1",
 	            sizeof( l->flags ) );
 
 	l = l->next = BG_Alloc( sizeof( g_admin_level_t ) );
@@ -885,7 +885,7 @@ static void admin_default_levels( void )
 	Q_strncpyz( l->name, "^3Senior Admin", sizeof( l->name ) );
 	Q_strncpyz( l->flags,
 	            "listplayers admintest adminhelp time putteam spec999 warn kick mute showbans ban "
-	            "namelog ADMINCHAT register unregister l0 l1",
+	            "namelog buildlog ADMINCHAT register unregister l0 l1",
 	            sizeof( l->flags ) );
 
 	l = l->next = BG_Alloc( sizeof( g_admin_level_t ) );
