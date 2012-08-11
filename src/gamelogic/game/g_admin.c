@@ -4473,12 +4473,23 @@ qboolean G_admin_buildlog( gentity_t *ent )
 	int        time;
 	int        start = MAX_CLIENTS + level.buildId - level.numBuildLogs;
 	int        i = 0, j;
+	int        team;
+	qboolean   admin;
 	buildLog_t *log;
 
 	if ( !level.buildId )
 	{
 		ADMP( QQ( N_("^3buildlog: ^7log is empty\n") ) );
 		return qtrue;
+	}
+
+	admin = !ent || G_admin_permission( ent, "buildlog_admin" );
+	team = admin ? TEAM_NONE : ent->client->pers.teamSelection;
+
+	if ( !admin && team == TEAM_NONE )
+	{
+		ADMP( QQ( N_("^3buildlog: ^7spectators have no buildings\n") ) );
+		return qfalse;
 	}
 
 	if ( trap_Argc() == 3 )
@@ -4575,6 +4586,10 @@ qboolean G_admin_buildlog( gentity_t *ent )
 			{
 				continue;
 			}
+		}
+		else if ( !admin && BG_Buildable( log->modelindex )->team != team )
+		{
+			continue;
 		}
 
 		printed++;
