@@ -3142,16 +3142,15 @@ void CG_Player( centity_t *cent )
 	if ( ci->bodyModel )
 	{
 		vec3_t legsAngles, torsoAngles, headAngles;
-
-#if 1
+#if 0
 		quat_t torsoQuat;
 		quat_t headQuat;
 		quat_t legsQuat;
-		int    i;
 		int    boneIndex;
+#endif
+		int    i;
 		int    firstTorsoBone;
 		int    lastTorsoBone;
-#endif
 		vec3_t playerOrigin, mins, maxs;
 
 		if ( ci->gender != GENDER_NEUTER )

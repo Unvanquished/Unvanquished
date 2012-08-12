@@ -4093,7 +4093,6 @@ int G_FloodLimited( gentity_t *ent )
 static void Cmd_Pubkey_Identify_f( gentity_t *ent )
 {
 	char            buffer[ MAX_STRING_CHARS ];
-	char            pubkey[ RSA_STRING_LENGTH ];
 	g_admin_admin_t *admin = ent->client->pers.admin;
 
 	if ( trap_Argc() != 2 )

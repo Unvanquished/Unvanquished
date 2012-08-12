@@ -156,7 +156,6 @@ extern "C" void Trans_Init( void )
 	// This assumes that the filenames in both folders are the same
 	for( i = 0; i < numPoFiles; i++ )
 	{
-		int ret;
 		char *buffer, language[ 6 ];
 		
 		if( FS_ReadFile( va( "translation/client/%s", poFiles[ i ] ), ( void ** ) &buffer ) > 0 )
