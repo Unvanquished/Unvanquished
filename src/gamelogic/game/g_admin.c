@@ -4477,12 +4477,6 @@ qboolean G_admin_buildlog( gentity_t *ent )
 	qboolean   admin;
 	buildLog_t *log;
 
-	if ( !level.buildId )
-	{
-		ADMP( QQ( N_("^3buildlog: ^7log is empty\n") ) );
-		return qtrue;
-	}
-
 	admin = !ent || G_admin_permission( ent, "buildlog_admin" );
 	team = admin ? TEAM_NONE : ent->client->pers.teamSelection;
 
@@ -4490,6 +4484,12 @@ qboolean G_admin_buildlog( gentity_t *ent )
 	{
 		ADMP( QQ( N_("^3buildlog: ^7spectators have no buildings\n") ) );
 		return qfalse;
+	}
+
+	if ( !level.buildId )
+	{
+		ADMP( QQ( N_("^3buildlog: ^7log is empty\n") ) );
+		return qtrue;
 	}
 
 	if ( trap_Argc() == 3 )
