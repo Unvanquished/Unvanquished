@@ -4547,9 +4547,19 @@ qboolean G_admin_buildlog( gentity_t *ent )
 
 	if ( ent && ent->client->pers.teamSelection != TEAM_NONE )
 	{
-		trap_SendServerCommand( -1,
-		                        va( "print_tr %s %s", QQ( N_("^3buildlog: ^7$1$^7 requested a log of recent building activity\n") ),
-		                            Quote( ent->client->pers.netname ) ) );
+		if ( team == TEAM_NONE )
+		{
+			trap_SendServerCommand( -1,
+			                        va( "print_tr %s %s", QQ( N_("^3buildlog: ^7$1$^7 requested a log of recent building activity\n") ),
+			                            Quote( ent->client->pers.netname ) ) );
+		}
+		else
+		{
+			// FIXME? Send only to team-mates
+			trap_SendServerCommand( -1,
+			                        va( "print_tr %s %s %s", QQ( N_("^3buildlog: ^7$1$^7 requested a log of recent $2$ building activity\n") ),
+			                            Quote( ent->client->pers.netname ), Quote( BG_TeamName( team ) ) ) );
+		}
 	}
 
 	ADMBP_begin();
