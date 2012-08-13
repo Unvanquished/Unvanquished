@@ -3415,7 +3415,9 @@ static void CopyVert( const srfVert_t *in, srfVert_t *out )
 		out->tangent[ j ] = in->tangent[ j ];
 		out->binormal[ j ] = in->binormal[ j ];
 		out->normal[ j ] = in->normal[ j ];
+#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
 		out->lightDirection[ j ] = in->lightDirection[ j ];
+#endif
 	}
 
 	for ( j = 0; j < 2; j++ )
@@ -3426,7 +3428,9 @@ static void CopyVert( const srfVert_t *in, srfVert_t *out )
 
 	for ( j = 0; j < 4; j++ )
 	{
+#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
 		out->paintColor[ j ] = in->paintColor[ j ];
+#endif
 		out->lightColor[ j ] = in->lightColor[ j ];
 	}
 

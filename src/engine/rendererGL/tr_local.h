@@ -2857,9 +2857,12 @@ extern "C" {
 		vec3_t tangent;
 		vec3_t binormal;
 		vec3_t normal;
-		vec4_t paintColor;
 		vec4_t lightColor;
+
+#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
+		vec4_t paintColor;
 		vec3_t lightDirection;
+#endif
 
 #if DEBUG_OPTIMIZEVERTICES
 		unsigned int id;
@@ -4142,6 +4145,7 @@ extern "C" {
 	extern cvar_t *r_forceAmbient;
 	extern cvar_t *r_ambientScale;
 	extern cvar_t *r_lightScale;
+	extern cvar_t *r_lightRadiusScale;
 	extern cvar_t *r_debugLight;
 
 	extern cvar_t *r_inGameVideo; // controls whether in game video should be draw
