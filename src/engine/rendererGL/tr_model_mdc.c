@@ -564,8 +564,6 @@ qboolean R_LoadMDC( model_t *mod, int lod, void *buffer, int bufferSize, const c
 			tri->indexes[ 2 ] = LittleLong( mdcTri->indexes[ 2 ] );
 		}
 
-		R_CalcSurfaceTriangleNeighbors( surf->numTriangles, surf->triangles );
-
 		// swap all the XyzNormals
 		mdcxyz = ( md3XyzNormal_t * )( ( byte * ) mdcSurf + mdcSurf->ofsXyzNormals );
 

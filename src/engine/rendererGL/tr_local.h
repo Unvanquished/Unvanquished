@@ -2869,7 +2869,6 @@ extern "C" {
 	typedef struct
 	{
 		int      indexes[ 3 ];
-		int      neighbors[ 3 ];
 		vec4_t   plane;
 		qboolean facingLight;
 		qboolean degenerated;
@@ -4470,7 +4469,6 @@ extern "C" {
 
 	qboolean R_CalcTangentVectors( srfVert_t *dv[ 3 ] );
 
-	void     R_CalcSurfaceTriangleNeighbors( int numTriangles, srfTriangle_t *triangles );
 	void     R_CalcSurfaceTrianglePlanes( int numTriangles, srfTriangle_t *triangles, srfVert_t *verts );
 
 	float    R_CalcFov( float fovX, float width, float height );
