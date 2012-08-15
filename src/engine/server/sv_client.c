@@ -900,9 +900,9 @@ static qboolean SV_CheckFallbackURL( client_t *cl, msg_t *msg )
 
 	MSG_WriteByte( msg, svc_download );
 	MSG_WriteShort( msg, -1 );  // block -1 means ftp/http download
-	MSG_WriteString( msg, sv_wwwFallbackURL->string );
+	MSG_WriteString( msg, va( "%s/%s", sv_wwwFallbackURL->string, cl->downloadName ) );
 	MSG_WriteLong( msg, 0 );
-	MSG_WriteLong( msg, 2 );  // DL_FLAG_URL
+	MSG_WriteLong( msg, 0 );
 
 	return qtrue;
 }
@@ -1047,6 +1047,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 				else
 				{
 					cl->bFallback = qfalse;
+					cl->bWWWDl = qtrue;
 
 					if ( SV_CheckFallbackURL( cl, msg ) )
 					{

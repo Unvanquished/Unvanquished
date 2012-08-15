@@ -974,9 +974,7 @@ static int CG_CalcFov( void )
 	else
 	{
 		// don't lock the fov globally - we need to be able to change it
-		attribFov = 0.75 * ( trap_Cvar_VariableIntegerValue( BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->fovCvar ) ?
-			trap_Cvar_VariableIntegerValue( BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->fovCvar ) :
-			BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->fov );
+		attribFov = 0.75 * cg.fov;
 		fov_y = attribFov;
 
 		if ( fov_y < 1.0f )
@@ -1529,6 +1527,7 @@ void CG_SetupFrustum(void)
 		SetPlaneSignbits(&frustum[i]);
 	}
 }
+
 /*
 =================
 CG_CullBox
@@ -1542,7 +1541,7 @@ qboolean CG_CullBox(vec3_t mins, vec3_t maxs)
 	cplane_t         *frust;
 
 	//check against frustum planes
-	for(i = 0; i < 4; i++) 
+	for( i = 0; i < 4; i++ ) 
 	{
 		frust = &frustum[i];
 
@@ -1551,6 +1550,33 @@ qboolean CG_CullBox(vec3_t mins, vec3_t maxs)
 	}
 	return qfalse;
 }
+
+/*
+=================
+CG_PointAndRadius
+
+returns true if culled
+=================
+*/
+qboolean CG_CullPointAndRadius(const vec3_t pt, vec_t radius)
+{
+	int             i;
+	cplane_t        *frust;
+
+	// check against frustum planes
+	for( i = 0; i < 4; i++)
+	{
+		frust = &frustum[i];
+
+		if( ( DotProduct(pt, frust->normal) - frust->dist ) < -radius )
+		{
+			return qtrue;
+		}
+	}
+
+	return qfalse;
+}
+
 /*
 =================
 CG_DrawActiveFrame

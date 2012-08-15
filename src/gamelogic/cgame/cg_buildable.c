@@ -432,7 +432,7 @@ void CG_InitBuildables( void )
 		{
 			bi->md5 = qfalse;
 
-			for ( j = 0; j <= 3; j++ )
+			for ( j = 0; j < MAX_BUILDABLE_MODELS; j++ )
 			{
 				modelFile = BG_BuildableConfig( i )->models[ j ];
 

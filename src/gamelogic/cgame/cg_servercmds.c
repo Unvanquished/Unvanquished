@@ -1324,68 +1324,70 @@ static void CG_PrintTR_f( void )
 		if( *in == '$' )
 		{
 			in++;
-			while( *in )
+
+			if( *in == '$' )
 			{
-				if( *in == '$' )
+				str[ i++ ] = *in;
+				in++;
+			}
+			else if( isdigit( *in ) )
+			{
+				number[ j++ ] = *in;
+				in++;
+
+				if( *in == 't' && *(in+1) == '$' )
 				{
-					str[ i++ ] = *in;
-					in++;
-					break;
-				}
-				
-				if( isdigit( *in ) )
-				{
-					number[ j++ ] = *in;
-					in++;
-					
-					if( *in == 't' && *(in+1) == '$' )
+					int num = atoi( number );
+					if( num <= 0 || num > 99 )
 					{
-						int num = atoi( number );
-						if( num <= 0 || num > 99 )
-						{
-							in += 2;
-							break;
-						}
-
-						i += strlen( _( CG_Argv( num + 1 ) ) );
-
-						if( i >= MAX_STRING_CHARS )
-						{
-							Com_Printf( "%s", str );
-							memset( &str, 0, sizeof( str ) );
-							i = strlen( _( CG_Argv( num + 1 ) ) );
-						}
-						
-						Q_strcat( str, sizeof( str ), _( CG_Argv( num + 1 ) ) );
 						in += 2;
-						j = 0;
-						
 						break;
 					}
-					else if( *in == '$' )
+
+					i += strlen( _( CG_Argv( num + 1 ) ) );
+
+					if( i >= MAX_STRING_CHARS )
 					{
-						int num = atoi( number );
-						if( num <= 0 || num > 99 )
-						{
-							in++;
-							break;
-						}
-						i += strlen( CG_Argv( num + 1 ) );
-						
-						if( i >= MAX_STRING_CHARS )
-						{
-							Com_Printf( "%s", str );
-							memset( &str, 0, sizeof( str ) );
-							i = strlen( _( CG_Argv( num + 1 ) ) );
-						}
-						
-						Q_strcat( str, sizeof( str ), CG_Argv( num + 1 ) );
+						Com_Printf( "%s", str );
+						memset( &str, 0, sizeof( str ) );
+						i = strlen( _( CG_Argv( num + 1 ) ) );
+					}
+
+					Q_strcat( str, sizeof( str ), _( CG_Argv( num + 1 ) ) );
+					in += 2;
+					j = 0;
+				}
+				else if( *in == '$' )
+				{
+					int num = atoi( number );
+					if( num <= 0 || num > 99 )
+					{
 						in++;
-						j = 0;
-						
 						break;
 					}
+					i += strlen( CG_Argv( num + 1 ) );
+
+					if( i >= MAX_STRING_CHARS )
+					{
+						Com_Printf( "%s", str );
+						memset( &str, 0, sizeof( str ) );
+						i = strlen( _( CG_Argv( num + 1 ) ) );
+					}
+
+					Q_strcat( str, sizeof( str ), CG_Argv( num + 1 ) );
+					in++;
+					j = 0;
 				}
+				else
+                                {
+                                        // invalid sequence
+                                        str[ i++ ] = '$';
+                                }
+                        }
+                        else
+                        {
+                                // invalid sequence
+                                str[ i++ ] = '$';
 			}
 		}
 		else

@@ -257,7 +257,6 @@ static const struct uicmd
 	{ "messagemode3", UI_MessageMode_f },
 	{ "messagemode4", UI_MessageMode_f },
 	{ "ui_cache",     UI_Cache_f       },
-	{ "ui_load",      UI_Load          },
 	{ "ui_report",    UI_Report        }
 };
 

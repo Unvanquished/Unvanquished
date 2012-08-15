@@ -678,7 +678,7 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 				fontNo = i;
 			}
 		}
-		else if ( pointSize == registeredFont[ i ].pointSize && Q_stricmp( registeredName, registeredFont[ i ].name ) == 0 )
+		else if ( pointSize == registeredFont[ i ].pointSize && Q_stricmp( strippedName, registeredFont[ i ].name ) == 0 )
 		{
 			Com_Memcpy( font, &registeredFont[ i ], sizeof( fontInfo_t ) );
 			++fontUsage[ i ];

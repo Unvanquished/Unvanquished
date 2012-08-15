@@ -30,7 +30,8 @@ int   debug_anim_current;
 int   debug_anim_old;
 float debug_anim_blend;
 
-static refSkeleton_t skeleton;
+static refSkeleton_t legsSkeleton;
+static refSkeleton_t torsoSkeleton;
 static refSkeleton_t oldSkeleton;
 
 static const char *const cg_customSoundNames[ MAX_CUSTOM_SOUNDS ] =
@@ -825,12 +826,17 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 				ci->animations[ TORSO_ATTACK ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_ATTACK2, "idle", qfalse, qfalse, qfalse ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_ATTACK2, "attack2", qfalse, qfalse, qfalse ) )
 			{
 				ci->animations[ TORSO_ATTACK2 ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_STAND2, "idle", qfalse, qfalse, qfalse ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_STAND, "stand", qtrue, qfalse, qfalse ) )
+			{
+				ci->animations[ TORSO_STAND ] = ci->animations[ LEGS_IDLE ];
+			}
+
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_STAND2, "stand2", qtrue, qfalse, qfalse ) )
 			{
 				ci->animations[ TORSO_STAND2 ] = ci->animations[ LEGS_IDLE ];
 			}
@@ -1499,68 +1505,6 @@ PLAYER ANIMATION
 =============================================================================
 */
 
-/*
-===============
-CG_SetLerpFrameAnimation
-
-may include ANIM_TOGGLEBIT
-===============
-*/
-static void CG_SetPlayerLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation )
-{
-	animation_t *anim;
-
-	// save old animation
-	lf->old_animationNumber = lf->animationNumber;
-	lf->old_animation = lf->animation;
-
-	lf->animationNumber = newAnimation;
-	newAnimation &= ~ANIM_TOGGLEBIT;
-
-	if ( ( newAnimation < 0 || newAnimation >= MAX_PLAYER_ANIMATIONS ) && !ci->bodyModel )
-	{
-		CG_Error( "bad player animation number: %i", newAnimation );
-	}
-
-	anim = &ci->animations[ newAnimation ];
-
-	lf->animation = anim;
-	lf->animationStartTime = lf->frameTime + anim->initialLerp;
-
-	debug_anim_current = lf->animationNumber;
-	debug_anim_old = lf->old_animationNumber;
-
-	if ( lf->old_animationNumber <= 0 )
-	{
-		// skip initial / invalid blending
-		lf->blendlerp = 0.0f;
-		return;
-	}
-
-	// TODO: blend through two blendings!
-
-	if ( ( lf->blendlerp <= 0.0f ) )
-	{
-		lf->blendlerp = 1.0f;
-	}
-	else
-	{
-		lf->blendlerp = 1.0f - lf->blendlerp; // use old blending for smooth blending between two blended animations
-	}
-
-	oldSkeleton = skeleton;
-
-	//Com_Printf(_("new: %i old %i\n"), newAnimation,lf->old_animationNumber);
-	if ( lf->old_animation && lf->old_animation->handle && skeleton.numBones == oldSkeleton.numBones )
-	{
-		if ( !trap_R_BuildSkeleton( &oldSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
-		{
-			CG_Printf( "%s", _( "Can't build old player skeleton\n" ));
-			return;
-		}
-	}
-}
-
 // TODO: choose proper values and use blending speed from character.cfg
 // blending is slow for testing issues
 static void CG_BlendPlayerLerpFrame( lerpFrame_t *lf )
@@ -1604,7 +1548,7 @@ CG_SetLerpFrameAnimation
 may include ANIM_TOGGLEBIT
 ===============
 */
-static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation )
+static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation, refSkeleton_t *skel )
 {
 	animation_t *anim;
 	lf->old_animationNumber = lf->animationNumber;
@@ -1658,11 +1602,11 @@ static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int new
 			lf->blendlerp = 1.0f - lf->blendlerp; // use old blending for smooth blending between two blended animations
 		}
 
-		oldSkeleton = skeleton;
+		oldSkeleton = *skel;
 
 		//Com_Printf(_("new: %i old %i\n"), newAnimation,lf->old_animationNumber);
 
-		if ( lf->old_animation != NULL && oldSkeleton.numBones == skeleton.numBones )
+		if ( lf->old_animation != NULL && oldSkeleton.numBones == skel->numBones )
 		{
 			if ( !trap_R_BuildSkeleton( &oldSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
 			{
@@ -1683,146 +1627,16 @@ cg.time should be between oldFrameTime and frameTime after exit
 */
 static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation, refSkeleton_t *skel, float speedScale )
 {
-	if ( !ci->bodyModel )
+    // see if the animation sequence is switching
+	if ( newAnimation != lf->animationNumber || !lf->animation )
 	{
-//     // see if the animation sequence is switching
-		if ( newAnimation != lf->animationNumber || !lf->animation )
-		{
-			CG_SetLerpFrameAnimation( ci, lf, newAnimation );
-		}
-
-		CG_RunLerpFrame( lf, speedScale );
+		CG_SetLerpFrameAnimation( ci, lf, newAnimation, skel );
 	}
-	else
+
+	CG_RunLerpFrame( lf, speedScale );
+
+	if ( ci->bodyModel )
 	{
-		int         f, numFrames;
-		animation_t *anim;
-		qboolean    animChanged;
-
-		// debugging tool to get no animations
-		if ( cg_animSpeed.integer == 0 )
-		{
-			lf->oldFrame = lf->frame = lf->backlerp = 0;
-			return;
-		}
-
-		// see if the animation sequence is switching
-		if ( newAnimation != lf->animationNumber || !lf->animation )
-		{
-			CG_SetPlayerLerpFrameAnimation( ci, lf, newAnimation );
-
-			if ( !lf->animation )
-			{
-				oldSkeleton = skeleton;
-			}
-
-			animChanged = qtrue;
-		}
-		else
-		{
-			animChanged = qfalse;
-		}
-
-		// if we have passed the current frame, move it to
-		// oldFrame and calculate a new frame
-		if ( cg.time >= lf->frameTime || animChanged )
-		{
-			if ( animChanged )
-			{
-				lf->oldFrame = 0;
-				lf->oldFrameTime = cg.time;
-			}
-			else
-
-			{
-				lf->oldFrame = lf->frame;
-				lf->oldFrameTime = lf->frameTime;
-			}
-
-			// get the next frame based on the animation
-			anim = lf->animation;
-
-			if ( !anim->frameLerp )
-			{
-				return; // shouldn't happen
-			}
-
-			if ( cg.time < lf->animationStartTime )
-			{
-				lf->frameTime = lf->animationStartTime; // initial lerp
-			}
-			else
-			{
-				lf->frameTime = lf->oldFrameTime + anim->frameLerp;
-			}
-
-			f = ( lf->frameTime - lf->animationStartTime ) / anim->frameLerp;
-			f *= speedScale; // adjust for haste, etc
-
-			numFrames = anim->numFrames;
-
-			if ( anim->flipflop )
-			{
-				numFrames *= 2;
-			}
-
-			if ( f >= numFrames )
-			{
-				f -= numFrames;
-
-				if ( anim->loopFrames )
-				{
-					f %= anim->loopFrames;
-					f += anim->numFrames - anim->loopFrames;
-				}
-				else
-				{
-					f = numFrames - 1;
-					// the animation is stuck at the end, so it
-					// can immediately transition to another sequence
-					lf->frameTime = cg.time;
-				}
-			}
-
-			if ( anim->reversed )
-			{
-				lf->frame = anim->firstFrame + anim->numFrames - 1 - f;
-			}
-			else if ( anim->flipflop && f >= anim->numFrames )
-			{
-				lf->frame = anim->firstFrame + anim->numFrames - 1 - ( f % anim->numFrames );
-			}
-			else
-			{
-				lf->frame = anim->firstFrame + f;
-			}
-
-			if ( cg.time > lf->frameTime )
-			{
-				lf->frameTime = cg.time;
-			}
-		}
-
-		if ( lf->frameTime > cg.time + 200 )
-		{
-			lf->frameTime = cg.time;
-		}
-
-		if ( lf->oldFrameTime > cg.time )
-		{
-			lf->oldFrameTime = cg.time;
-		}
-
-		// calculate current lerp value
-		if ( lf->frameTime == lf->oldFrameTime )
-		{
-			lf->backlerp = 0;
-		}
-		else
-		{
-			lf->backlerp = 1.0 - ( float )( cg.time - lf->oldFrameTime ) / ( lf->frameTime - lf->oldFrameTime );
-		}
-
 		// blend old and current animation
 		CG_BlendPlayerLerpFrame( lf );
 
@@ -1836,7 +1650,7 @@ static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 			// lerp between old and new animation if possible
 			if ( lf->blendlerp >= 0.0f )
 			{
-				if ( skeleton.type != SK_INVALID && oldSkeleton.type != SK_INVALID && skeleton.numBones == oldSkeleton.numBones )
+				if ( skel->type != SK_INVALID && oldSkeleton.type != SK_INVALID && skel->numBones == oldSkeleton.numBones )
 				{
 					if ( !trap_R_BlendSkeleton( skel, &oldSkeleton, lf->blendlerp ) )
 					{
@@ -1864,11 +1678,11 @@ static void CG_RunCorpseLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 	// see if the animation sequence is switching
 	if ( newAnimation != lf->animationNumber || !lf->animation )
 	{
-		CG_SetPlayerLerpFrameAnimation( ci, lf, newAnimation );
+		CG_SetLerpFrameAnimation( ci, lf, newAnimation, NULL );
 
 		if ( !lf->animation )
 		{
-			oldSkeleton = skeleton;
+			oldSkeleton = legsSkeleton;
 		}
 
 		animChanged = qtrue;
@@ -1893,7 +1707,7 @@ static void CG_RunCorpseLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 
 	if ( lf->animation )
 	{
-		if ( !trap_R_BuildSkeleton( &skeleton, lf->animation->handle, anim->numFrames, anim->numFrames, 0, lf->animation->clearOrigin ) )
+		if ( !trap_R_BuildSkeleton( &legsSkeleton, lf->animation->handle, anim->numFrames, anim->numFrames, 0, lf->animation->clearOrigin ) )
 		{
 			CG_Printf( "%s", _( "Can't build lf->skeleton\n" ));
 		}
@@ -1910,7 +1724,7 @@ CG_ClearLerpFrame
 static void CG_ClearLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int animationNumber )
 {
 	lf->frameTime = lf->oldFrameTime = cg.time;
-	CG_SetLerpFrameAnimation( ci, lf, animationNumber );
+	CG_SetLerpFrameAnimation( ci, lf, animationNumber, NULL );
 	lf->oldFrame = lf->frame = lf->animation->firstFrame;
 }
 
@@ -2020,14 +1834,14 @@ static void CG_PlayerMD5Animation( centity_t *cent )
 	// do the shuffle turn frames locally
 	if ( cent->pe.legs.yawing && ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) == LEGS_IDLE )
 	{
-		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, LEGS_TURN, &skeleton, speedScale );
+		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, LEGS_TURN, &legsSkeleton, speedScale );
 	}
 	else
 	{
-		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, cent->currentState.legsAnim, &skeleton, speedScale );
+		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, cent->currentState.legsAnim, &legsSkeleton, speedScale );
 	}
 
-	CG_RunPlayerLerpFrame( ci, &cent->pe.torso, cent->currentState.torsoAnim, &skeleton, speedScale );
+	CG_RunPlayerLerpFrame( ci, &cent->pe.torso, cent->currentState.torsoAnim, &torsoSkeleton, speedScale );
 }
 
 /*
@@ -2075,17 +1889,17 @@ static void CG_PlayerMD5AlienAnimation( centity_t *cent )
 	// do the shuffle turn frames locally
 	if ( cent->pe.nonseg.yawing && ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) == NSPA_STAND )
 	{
-		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, NSPA_TURN, &skeleton, speedScale );
+		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, NSPA_TURN, &legsSkeleton, speedScale );
 	}
 	else
 	{
-		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, cent->currentState.legsAnim, &skeleton, speedScale );
+		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, cent->currentState.legsAnim, &legsSkeleton, speedScale );
 	}
 
 	if ( blend.type == SK_RELATIVE )
 	{
 		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, cent->pe.legs.animationNumber, &blend, speedScale );
-		trap_R_BlendSkeleton( &skeleton, &blend, 0.5 );
+		trap_R_BlendSkeleton( &legsSkeleton, &blend, 0.5 );
 	}
 }
 
@@ -3328,16 +3142,15 @@ void CG_Player( centity_t *cent )
 	if ( ci->bodyModel )
 	{
 		vec3_t legsAngles, torsoAngles, headAngles;
-
 #if 0
 		quat_t torsoQuat;
 		quat_t headQuat;
 		quat_t legsQuat;
-		int    i;
 		int    boneIndex;
+#endif
+		int    i;
 		int    firstTorsoBone;
 		int    lastTorsoBone;
-#endif
 		vec3_t playerOrigin, mins, maxs;
 
 		if ( ci->gender != GENDER_NEUTER )
@@ -3406,11 +3219,15 @@ void CG_Player( centity_t *cent )
 //              body.shaderTime = 0.0f;
 //      }
 
-			// add the talk baloon or disconnect icon
-			CG_PlayerSprites( cent );
+		// add the talk baloon or disconnect icon
+		CG_PlayerSprites( cent );
 
 		// add the shadow
-		shadow = CG_PlayerShadow( cent, &shadowPlane, class );
+		if ( ( es->number == cg.snap->ps.clientNum && cg.renderingThirdPerson ) ||
+			 es->number != cg.snap->ps.clientNum )
+		{
+			shadow = CG_PlayerShadow( cent, &shadowPlane, class );
+		}
 
 		// add a water splash if partially in and out of water
 		CG_PlayerSplash( cent, class );
@@ -3495,41 +3312,41 @@ void CG_Player( centity_t *cent )
 		if ( ci->gender != GENDER_NEUTER )
 		{
 			// copy legs skeleton to have a base
-			body.skeleton = skeleton;
-			if ( skeleton.numBones != skeleton.numBones )
+			body.skeleton = legsSkeleton;
+			if ( torsoSkeleton.numBones != legsSkeleton.numBones )
 			{
 				CG_Error( "cent->pe.legs.skeleton.numBones != cent->pe.torso.skeleton.numBones" );
 			}
 
 			// combine legs and torso skeletons
-#if 0
+#if 1
 			firstTorsoBone = ci->firstTorsoBone;
 
-			if ( firstTorsoBone >= 0 && firstTorsoBone < cent->pe.torso.skeleton.numBones )
+			if ( firstTorsoBone >= 0 && firstTorsoBone < torsoSkeleton.numBones )
 			{
 				lastTorsoBone = ci->lastTorsoBone;
 
-				if ( lastTorsoBone >= 0 && lastTorsoBone < cent->pe.torso.skeleton.numBones )
+				if ( lastTorsoBone >= 0 && lastTorsoBone < torsoSkeleton.numBones )
 				{
 					// copy torso bones
 					for ( i = firstTorsoBone; i < lastTorsoBone; i++ )
 					{
-						memcpy( &body.skeleton.bones[ i ], &cent->pe.torso.skeleton.bones[ i ], sizeof( refBone_t ) );
+						memcpy( &body.skeleton.bones[ i ], &torsoSkeleton.bones[ i ], sizeof( refBone_t ) );
 					}
 				}
 
 				body.skeleton.type = SK_RELATIVE;
 
-				// update AABB
-				for ( i = 0; i < 3; i++ )
-				{
-					body.skeleton.bounds[ 0 ][ i ] =
-					  cent->pe.torso.skeleton.bounds[ 0 ][ i ] <
-					  cent->pe.legs.skeleton.bounds[ 0 ][ i ] ? cent->pe.torso.skeleton.bounds[ 0 ][ i ] : cent->pe.legs.skeleton.bounds[ 0 ][ i ];
-					body.skeleton.bounds[ 1 ][ i ] =
-					  cent->pe.torso.skeleton.bounds[ 1 ][ i ] >
-					  cent->pe.legs.skeleton.bounds[ 1 ][ i ] ? cent->pe.torso.skeleton.bounds[ 1 ][ i ] : cent->pe.legs.skeleton.bounds[ 1 ][ i ];
-				}
+// 				// update AABB
+// 				for ( i = 0; i < 3; i++ )
+// 				{
+// 					body.skeleton.bounds[ 0 ][ i ] =
+// 					  cent->pe.torso.skeleton.bounds[ 0 ][ i ] <
+// 					  cent->pe.legs.skeleton.bounds[ 0 ][ i ] ? cent->pe.torso.skeleton.bounds[ 0 ][ i ] : cent->pe.legs.skeleton.bounds[ 0 ][ i ];
+// 					body.skeleton.bounds[ 1 ][ i ] =
+// 					  cent->pe.torso.skeleton.bounds[ 1 ][ i ] >
+// 					  cent->pe.legs.skeleton.bounds[ 1 ][ i ] ? cent->pe.torso.skeleton.bounds[ 1 ][ i ] : cent->pe.legs.skeleton.bounds[ 1 ][ i ];
+// 				}
 			}
 			else
 			{
@@ -3580,7 +3397,7 @@ void CG_Player( centity_t *cent )
 		}
 		else
 		{
-			body.skeleton = skeleton;
+			body.skeleton = legsSkeleton;
 		}
 
 		// transform relative bones to absolute ones required for vertex skinning and tag attachments
@@ -3989,7 +3806,7 @@ void CG_Corpse( centity_t *cent )
 	{
 		legs.hModel = ci->bodyModel;
 		legs.customSkin = ci->bodySkin;
-		legs.skeleton = skeleton;
+		legs.skeleton = legsSkeleton;
 		CG_TransformSkeleton( &legs.skeleton, ci->modelScale );
 		VectorCopy( deadZ, legs.skeleton.bounds[ 0 ]);
 		VectorCopy( deadMax, legs.skeleton.bounds[ 1 ]);

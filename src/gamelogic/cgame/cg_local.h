@@ -1024,6 +1024,7 @@ typedef struct
 	// view rendering
 	refdef_t refdef;
 	vec3_t   refdefViewAngles; // will be converted to refdef.viewaxis
+	int      fov; // custom fov
 
 	// zoom key
 	qboolean zoomed;
@@ -1678,19 +1679,20 @@ void       CG_UpdateBuildableRangeMarkerMask( void );
 //
 // cg_view.c
 //
-void CG_addSmoothOp( vec3_t rotAxis, float rotAngle, float timeMod );
-void CG_TestModel_f( void );
-void CG_TestGun_f( void );
-void CG_TestModelNextFrame_f( void );
-void CG_TestModelPrevFrame_f( void );
-void CG_TestModelNextSkin_f( void );
-void CG_TestModelPrevSkin_f( void );
-void CG_AddBufferedSound( sfxHandle_t sfx );
+void     CG_addSmoothOp( vec3_t rotAxis, float rotAngle, float timeMod );
+void     CG_TestModel_f( void );
+void     CG_TestGun_f( void );
+void     CG_TestModelNextFrame_f( void );
+void     CG_TestModelPrevFrame_f( void );
+void     CG_TestModelNextSkin_f( void );
+void     CG_TestModelPrevSkin_f( void );
+void     CG_AddBufferedSound( sfxHandle_t sfx );
 qboolean CG_CullBox(vec3_t mins, vec3_t maxs);
-void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demoPlayback );
-void CG_OffsetFirstPersonView( void );
-void CG_OffsetThirdPersonView( void );
-void CG_OffsetShoulderView( void );
+qboolean CG_CullPointAndRadius(const vec3_t pt, vec_t radius);
+void     CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demoPlayback );
+void     CG_OffsetFirstPersonView( void );
+void     CG_OffsetThirdPersonView( void );
+void     CG_OffsetShoulderView( void );
 
 //
 // cg_drawtools.c
