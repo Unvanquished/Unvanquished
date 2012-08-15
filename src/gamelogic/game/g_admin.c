@@ -315,14 +315,17 @@ g_admin_ban_t     *g_admin_bans = NULL;
 g_admin_spec_t    *g_admin_specs = NULL;
 g_admin_command_t *g_admin_commands = NULL;
 
+/* ent must be non-NULL */
+#define G_ADMIN_NAME( ent ) ( ent->client->pers.admin ? ent->client->pers.admin->name : ent->client->pers.netname )
+
 static const char *G_admin_name( gentity_t *ent )
 {
-	return ( ent ) ? ent->client->pers.netname : "console";
+	return ( ent ) ? G_ADMIN_NAME( ent ) : "console";
 }
 
 static const char *G_quoted_admin_name( gentity_t *ent )
 {
-	return ( ent ) ? Quote( ent->client->pers.netname ) : "console";
+	return ( ent ) ? Quote( G_ADMIN_NAME( ent ) ) : "console";
 }
 
 static const char *G_user_name( gentity_t *ent, const char *fallback )
@@ -2184,7 +2187,6 @@ static void admin_create_ban( gentity_t *ent,
 	qtime_t       qt;
 	int           t;
 	int           i;
-	char          *name;
 	char          disconnect[ MAX_STRING_CHARS ];
 	int           id = 1;
 	int           expired = 0;
@@ -2259,20 +2261,8 @@ static void admin_create_ban( gentity_t *ent,
 	             1900 + qt.tm_year, qt.tm_mon + 1, qt.tm_mday,
 	             qt.tm_hour, qt.tm_min, qt.tm_sec );
 
-	if ( ent && ent->client->pers.admin )
-	{
-		name = ent->client->pers.admin->name;
-	}
-	else if ( ent )
-	{
-		name = ent->client->pers.netname;
-	}
-	else
-	{
-		name = "console";
-	}
 
-	Q_strncpyz( b->banner, name, sizeof( b->banner ) );
+	Q_strncpyz( b->banner, G_admin_name( ent ), sizeof( b->banner ) );
 
 	if ( !seconds )
 	{
@@ -4043,8 +4033,7 @@ qboolean G_admin_nextmap( gentity_t *ent )
 	        G_quoted_admin_name( ent ) ) );
 	level.lastWin = TEAM_NONE;
 	trap_SetConfigstring( CS_WINNER, "Evacuation" );
-	LogExit( va( "nextmap was run by %s",
-	             ( ent ) ? ent->client->pers.netname : "console" ) );
+	LogExit( va( "nextmap was run by %s", G_admin_name( ent ) ) );
 	G_MapLog_Result( 'N' );
 	return qtrue;
 }
