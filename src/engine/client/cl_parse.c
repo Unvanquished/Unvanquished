@@ -67,144 +67,6 @@ MESSAGE PARSING
 
 =========================================================================
 */
-#if 1
-
-int entLastVisible[ MAX_CLIENTS ];
-
-qboolean isEntVisible( entityState_t *ent )
-{
-	trace_t tr;
-	vec3_t  start, end, temp;
-	vec3_t  forward, up, right, right2;
-	float   view_height;
-
-	VectorCopy( cl.cgameClientLerpOrigin, start );
-	start[ 2 ] += ( cl.snap.ps.viewheight - 1 );
-
-	if ( cl.snap.ps.leanf != 0 )
-	{
-		vec3_t lright, v3ViewAngles;
-
-		VectorCopy( cl.snap.ps.viewangles, v3ViewAngles );
-		v3ViewAngles[ 2 ] += cl.snap.ps.leanf / 2.0f;
-		AngleVectors( v3ViewAngles, NULL, lright, NULL );
-		VectorMA( start, cl.snap.ps.leanf, lright, start );
-	}
-
-	VectorCopy( ent->pos.trBase, end );
-
-	// Compute vector perpindicular to view to ent
-	VectorSubtract( end, start, forward );
-	VectorNormalizeFast( forward );
-	VectorSet( up, 0, 0, 1 );
-	CrossProduct( forward, up, right );
-	VectorNormalizeFast( right );
-	VectorScale( right, 10, right2 );
-	VectorScale( right, 18, right );
-
-	// Set viewheight
-	if ( ent->animMovetype )
-	{
-		view_height = 16;
-	}
-	else
-	{
-		view_height = 40;
-	}
-
-	// First, viewpoint to viewpoint
-	end[ 2 ] += view_height;
-	CM_BoxTrace( &tr, start, end, NULL, NULL, 0, CONTENTS_SOLID, TT_AABB );
-
-	if ( tr.fraction == 1.f )
-	{
-		return qtrue;
-	}
-
-	// First-b, viewpoint to top of head
-	end[ 2 ] += 16;
-	CM_BoxTrace( &tr, start, end, NULL, NULL, 0, CONTENTS_SOLID, TT_AABB );
-
-	if ( tr.fraction == 1.f )
-	{
-		return qtrue;
-	}
-
-	end[ 2 ] -= 16;
-
-	// Second, viewpoint to ent's origin
-	end[ 2 ] -= view_height;
-	CM_BoxTrace( &tr, start, end, NULL, NULL, 0, CONTENTS_SOLID, TT_AABB );
-
-	if ( tr.fraction == 1.f )
-	{
-		return qtrue;
-	}
-
-	// Third, to ent's right knee
-	VectorAdd( end, right, temp );
-	temp[ 2 ] += 8;
-	CM_BoxTrace( &tr, start, temp, NULL, NULL, 0, CONTENTS_SOLID, TT_AABB );
-
-	if ( tr.fraction == 1.f )
-	{
-		return qtrue;
-	}
-
-	// Fourth, to ent's right shoulder
-	VectorAdd( end, right2, temp );
-
-	if ( ent->animMovetype )
-	{
-		temp[ 2 ] += 28;
-	}
-	else
-	{
-		temp[ 2 ] += 52;
-	}
-
-	CM_BoxTrace( &tr, start, temp, NULL, NULL, 0, CONTENTS_SOLID, TT_AABB );
-
-	if ( tr.fraction == 1.f )
-	{
-		return qtrue;
-	}
-
-	// Fifth, to ent's left knee
-	VectorScale( right, -1, right );
-	VectorScale( right2, -1, right2 );
-	VectorAdd( end, right2, temp );
-	temp[ 2 ] += 2;
-	CM_BoxTrace( &tr, start, temp, NULL, NULL, 0, CONTENTS_SOLID, TT_AABB );
-
-	if ( tr.fraction == 1.f )
-	{
-		return qtrue;
-	}
-
-	// Sixth, to ent's left shoulder
-	VectorAdd( end, right, temp );
-
-	if ( ent->animMovetype )
-	{
-		temp[ 2 ] += 16;
-	}
-	else
-	{
-		temp[ 2 ] += 36;
-	}
-
-	CM_BoxTrace( &tr, start, temp, NULL, NULL, 0, CONTENTS_SOLID, TT_AABB );
-
-	if ( tr.fraction == 1.f )
-	{
-		return qtrue;
-	}
-
-	return qfalse;
-}
-
-#endif
 
 /*
 ==================
@@ -235,30 +97,6 @@ void CL_DeltaEntity( msg_t *msg, clSnapshot_t *frame, int newnum, entityState_t 
 	{
 		return; // entity was delta removed
 	}
-
-#if 1
-
-	// DHM - Nerve :: Only draw clients if visible
-	if ( clc.onlyVisibleClients )
-	{
-		if ( state->number < MAX_CLIENTS )
-		{
-			if ( isEntVisible( state ) )
-			{
-				entLastVisible[ state->number ] = frame->serverTime;
-				state->eFlags &= ~EF_NODRAW;
-			}
-			else
-			{
-				if ( entLastVisible[ state->number ] < ( frame->serverTime - 600 ) )
-				{
-					state->eFlags |= EF_NODRAW;
-				}
-			}
-		}
-	}
-
-#endif
 
 	cl.parseEntitiesNum++;
 	frame->numEntities++;
@@ -515,7 +353,7 @@ void CL_ParseSnapshot( msg_t *msg )
 				Com_sprintf( name, sizeof( name ), "demos/%s_%04i-%02i-%02i_%02i%02i%02i.dm_%d", period,
 				             1900 + time.tm_year, time.tm_mon + 1, time.tm_mday,
 				             time.tm_hour, time.tm_min, time.tm_sec,
-				             com_protocol->integer );
+				             PROTOCOL_VERSION );
 
 				CL_Record( name );
 			}
@@ -650,8 +488,6 @@ void CL_SystemInfoChanged( void )
 	// show_bug.cgi?id=475
 	// in some cases, outdated cp commands might get sent with this news serverId
 	cl.serverId = atoi( Info_ValueForKey( systemInfo, "sv_serverid" ) );
-
-	memset( &entLastVisible, 0, sizeof( entLastVisible ) );
 
 	// don't set any vars when playing a demo
 	if ( clc.demoplaying )
@@ -1268,27 +1104,6 @@ void CL_ParseCommandString( msg_t *msg )
 
 /*
 =====================
-CL_ParseBinaryMessage
-=====================
-*/
-void CL_ParseBinaryMessage( msg_t *msg )
-{
-	int size;
-
-	MSG_BeginReadingUncompressed( msg );
-
-	size = msg->cursize - msg->readcount;
-
-	if ( size <= 0 || size > MAX_BINARY_MESSAGE )
-	{
-		return;
-	}
-
-	CL_CGameBinaryMessageReceived( ( char * ) &msg->data[ msg->readcount ], size, cl.snap.serverTime );
-}
-
-/*
-=====================
 CL_ParseServerMessage
 =====================
 */
@@ -1398,5 +1213,4 @@ void CL_ParseServerMessage( msg_t *msg )
 		}
 	}
 
-	CL_ParseBinaryMessage( msg );
 }

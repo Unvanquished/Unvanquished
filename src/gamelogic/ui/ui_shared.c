@@ -6836,7 +6836,7 @@ void Item_Update( itemDef_t *item )
 void Item_Paint( itemDef_t *item )
 {
 	vec4_t    red;
-	menuDef_t *parent = ( menuDef_t * ) item->parent;
+	menuDef_t *parent;
 	red[ 0 ] = red[ 3 ] = 1;
 	red[ 1 ] = red[ 2 ] = 0;
 
@@ -6844,6 +6844,8 @@ void Item_Paint( itemDef_t *item )
 	{
 		return;
 	}
+
+	parent = ( menuDef_t * ) item->parent;
 
 	if ( item->window.flags & WINDOW_ORBITING )
 	{
@@ -9636,5 +9638,13 @@ const char *Gettext( const char *msgid )
 	index = ( index + 1 ) & 3;
 	buf = buffer[ index ];
 	trap_Gettext( buf, msgid, sizeof( buffer[ 0 ] ) );
+	return buf;
+}
+
+const char *Pgettext( const char *ctxt, const char *msgid )
+{
+	static char buffer[ 32000 ];
+	char *buf = buffer;
+	trap_Pgettext( buf, ctxt, msgid, sizeof( buffer ) );
 	return buf;
 }

@@ -432,7 +432,7 @@ void CG_InitBuildables( void )
 		{
 			bi->md5 = qfalse;
 
-			for ( j = 0; j <= 3; j++ )
+			for ( j = 0; j < MAX_BUILDABLE_MODELS; j++ )
 			{
 				modelFile = BG_BuildableConfig( i )->models[ j ];
 
@@ -1054,7 +1054,7 @@ void CG_GhostBuildable( buildable_t buildable )
 	                                  mins, maxs, ent.axis, ent.origin );
 
 	//offset on the Z axis if required
-	VectorMA( ent.origin, BG_BuildableConfig( buildable )->zOffset, tr.plane.normal, ent.origin );
+	VectorMA( ent.origin, cg_highPolyBuildableModels.integer ? BG_BuildableConfig( buildable )->zOffset : BG_BuildableConfig( buildable )->oldOffset, tr.plane.normal, ent.origin );
 
 	VectorCopy( ent.origin, ent.lightingOrigin );
 	VectorCopy( ent.origin, ent.oldorigin );  // don't positionally lerp at all
@@ -1383,6 +1383,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 	vec3_t        right;
 	qboolean      visible = qfalse;
 	vec3_t        mins, maxs;
+	vec3_t        cullMins, cullMaxs;
 	entityState_t *hit;
 	int           anim;
 
@@ -1412,6 +1413,13 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 	// trace for center point
 	BG_BuildableBoundingBox( es->modelindex, mins, maxs );
 
+	//cull buildings outside the view frustum
+	VectorAdd(cent->lerpOrigin, mins, cullMins);
+	VectorAdd(cent->lerpOrigin, maxs, cullMaxs);
+
+	if(CG_CullBox(cullMins, cullMaxs))
+		return;
+
 	// hack for shrunken barricades
 	anim = es->torsoAnim & ~( ANIM_FORCEBIT | ANIM_TOGGLEBIT );
 
@@ -1430,7 +1438,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 	entNum = cg.predictedPlayerState.clientNum;
 
 	// if first try fails, step left, step right
-	for ( j = 0; j < 3; j++ )
+	for ( j = 0; j < 3 && !visible; j++ )
 	{
 		VectorCopy( cg.refdef.vieworg, trOrigin );
 
@@ -1894,7 +1902,7 @@ void CG_Buildable( centity_t *cent )
 	}
 
 	//offset on the Z axis if required
-	VectorMA( ent.origin, BG_BuildableConfig( es->modelindex )->zOffset, surfNormal, ent.origin );
+	VectorMA( ent.origin, cg_highPolyBuildableModels.integer ? BG_BuildableConfig( es->modelindex )->zOffset : BG_BuildableConfig( es->modelindex )->oldOffset, surfNormal, ent.origin );
 
 	VectorCopy( ent.origin, ent.oldorigin );  // don't positionally lerp at all
 	VectorCopy( ent.origin, ent.lightingOrigin );
@@ -1921,7 +1929,7 @@ void CG_Buildable( centity_t *cent )
 	CG_BuildableAnimation( cent, &ent.oldframe, &ent.frame, &ent.backlerp );
 
 	//rescale the model
-	scale = BG_BuildableConfig( es->modelindex )->modelScale;
+	scale = cg_highPolyBuildableModels.integer ? BG_BuildableConfig( es->modelindex )->modelScale : BG_BuildableConfig( es->modelindex )->oldScale;
 
 	if ( scale != 1.0f )
 	{
@@ -1949,6 +1957,24 @@ void CG_Buildable( centity_t *cent )
 		Scale[0] = Scale[1] = Scale[2] = spawned ? scale :
 		       scale * (float) sin ( 0.5f * (cg.time - es->time) / BG_Buildable( es->modelindex )->buildTime * M_PI );
 		ent.skeleton = bSkeleton;
+
+		if( es->modelindex == BA_H_MGTURRET )
+		{
+			quat_t rotation;
+
+			//FIXME: Don't hard code bones to specific assets. Soon, I should put bone names in
+			// .cfg so we can change it should the rig change.
+
+			QuatFromAngles( rotation, es->angles2[ YAW ] - es->angles[ YAW ] + 90, 0, 0 );
+			QuatMultiply0( ent.skeleton.bones[ 1 ].rotation, rotation );
+
+			QuatFromAngles( rotation, es->angles2[ PITCH ], 0, 0 );
+			QuatMultiply0( ent.skeleton.bones[ 6 ].rotation, rotation );
+		}
+			
+
+			
+		
 		CG_TransformSkeleton( &ent.skeleton, Scale );
 		VectorCopy(mins, ent.skeleton.bounds[ 0 ]);
 		VectorCopy(maxs, ent.skeleton.bounds[ 1 ]);
@@ -2072,6 +2098,12 @@ void CG_Buildable( centity_t *cent )
 				                        weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 0 ],
 				                        weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 1 ],
 				                        weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 2 ], 0, 0 );
+				if( weapon->wim[ WPM_PRIMARY ].muzzleParticleSystem )
+				{
+					cent->muzzlePS = CG_SpawnNewParticleSystem( weapon->wim[ WPM_PRIMARY ].muzzleParticleSystem );
+					CG_SetAttachmentTag( &cent->muzzlePS->attachment, ent, ent.hModel, "tag_flash" );
+					CG_AttachToTag( &cent->muzzlePS->attachment );
+				}
 			}
 		}
 

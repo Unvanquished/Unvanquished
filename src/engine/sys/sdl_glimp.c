@@ -20,11 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-#ifdef USE_LOCAL_HEADERS
-#       include "SDL.h"
-#else
-#       include <SDL.h>
-#endif
+#include <SDL.h>
 
 #if !SDL_VERSION_ATLEAST(1, 2, 10)
 #       define SDL_GL_ACCELERATED_VISUAL 15
@@ -61,9 +57,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #else
 #       include <GL/glxew.h>
 #endif
-
-extern void GLimp_InitGamma( void );
-extern void GLimp_RestoreGamma( void );
 
 //static qboolean SDL_VIDEODRIVER_externallySet = qfalse;
 
@@ -468,10 +461,7 @@ GLimp_Shutdown
 */
 void GLimp_Shutdown( void )
 {
-	ri.Printf( PRINT_ALL, "Shutting down OpenGL subsystem\n" );
-
-	// restore gamma.
-	GLimp_RestoreGamma();
+	ri.Printf( PRINT_DEVELOPER, "Shutting down OpenGL subsystem\n" );
 
 	ri.IN_Shutdown();
 
@@ -1674,12 +1664,14 @@ static void GLimp_XreaLInitExtensions( void )
 	}
 
 
+#ifdef GLEW_ARB_get_program_binary
 	if( GLEW_ARB_get_program_binary )
 	{
 		ri.Printf( PRINT_ALL, "...using GL_ARB_get_program_binary\n");
 		glConfig2.getProgramBinaryAvailable = qtrue;
 	} 
 	else
+#endif
 	{
 		ri.Printf( PRINT_ALL, "...GL_ARB_get_program_binary not found\n");
 		glConfig2.getProgramBinaryAvailable = qfalse;
@@ -1938,6 +1930,11 @@ success:
 	// http://bugzilla.icculus.org/show_bug.cgi?id=4316
 	glConfig.deviceSupportsGamma = SDL_SetGamma( 1.0f, 1.0f, 1.0f ) >= 0;
 
+	if ( r_ignorehwgamma->integer )
+	{
+		glConfig.deviceSupportsGamma = 0;
+	}
+
 	// get our config strings
 	Q_strncpyz( glConfig.vendor_string, ( char * ) glGetString( GL_VENDOR ), sizeof( glConfig.vendor_string ) );
 	Q_strncpyz( glConfig.renderer_string, ( char * ) glGetString( GL_RENDERER ), sizeof( glConfig.renderer_string ) );
@@ -2120,8 +2117,6 @@ success:
 	GLimp_InitExtensions();
 #endif
 
-	GLimp_InitGamma();
-
 	ri.Cvar_Get( "r_availableModes", "", CVAR_ROM );
 
 	// This depends on SDL_INIT_VIDEO, hence having it here
@@ -2151,9 +2146,6 @@ void GLimp_EndFrame( void )
 
 	if ( r_minimize && r_minimize->integer )
 	{
-		//SDL_Surface *s         = SDL_GetVideoSurface();
-		//qboolean    fullscreen = ( s && ( s->flags & SDL_FULLSCREEN ) );
-
 #ifdef MACOS_X
 		SDL_Surface *s = SDL_GetVideoSurface();
 		qboolean    fullscreen = ( s && ( s->flags & SDL_FULLSCREEN ) );
@@ -2167,7 +2159,6 @@ void GLimp_EndFrame( void )
 		{
 			ri.Cvar_Set( "r_fullscreen", "0" );
 		}
-
 #else
 		SDL_WM_IconifyWindow();
 		ri.Cvar_Set( "r_minimize", "0" );

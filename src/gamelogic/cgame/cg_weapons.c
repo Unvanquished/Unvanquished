@@ -1092,7 +1092,7 @@ static void CG_SetWeaponLerpFrameAnimation( weapon_t weapon, lerpFrame_t *lf, in
 
 	lf->animation = anim;
 	lf->animationTime = lf->frameTime + anim->initialLerp;
-
+	lf->frame = lf->oldFrame = 0;
 	if ( cg_debugAnim.integer )
 	{
 		CG_Printf( "Anim: %i\n", newAnimation );

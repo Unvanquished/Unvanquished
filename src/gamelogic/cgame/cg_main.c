@@ -253,6 +253,14 @@ vmCvar_t        cg_highPolyPlayerModels;
 vmCvar_t        cg_highPolyBuildableModels;
 vmCvar_t        cg_highPolyWeaponModels;
 
+vmCvar_t        cg_fov_builder;
+vmCvar_t        cg_fov_level0;
+vmCvar_t        cg_fov_level1;
+vmCvar_t        cg_fov_level2;
+vmCvar_t        cg_fov_level3;
+vmCvar_t        cg_fov_level4;
+vmCvar_t        cg_fov_human;
+
 typedef struct
 {
 	vmCvar_t   *vmCvar;
@@ -387,15 +395,14 @@ static const cvarTable_t cvarTable[] =
 
 	{ &cg_paused,                      "cl_paused",                      "0",            CVAR_ROM                     },
 	{ &cg_blood,                       "com_blood",                      "1",            CVAR_ARCHIVE                 },
-	{ &cg_synchronousClients,          "g_synchronousClients",           "0",            0                            }, // communicated by systeminfo
+	{ &cg_synchronousClients,          "g_synchronousClients",           "0",            CVAR_SYSTEMINFO              }, // communicated by systeminfo
 	{ &cg_timescaleFadeEnd,            "cg_timescaleFadeEnd",            "1",            CVAR_CHEAT                   },
 	{ &cg_timescaleFadeSpeed,          "cg_timescaleFadeSpeed",          "0",            CVAR_CHEAT                   },
 	{ &cg_timescale,                   "timescale",                      "1",            0                            },
 	{ &cg_smoothClients,               "cg_smoothClients",               "0",            CVAR_USERINFO | CVAR_ARCHIVE },
-	{ &cg_cameraMode,                  "com_cameraMode",                 "0",            CVAR_CHEAT                   },
 
-	{ &pmove_fixed,                    "pmove_fixed",                    "0",            0                            },
-	{ &pmove_msec,                     "pmove_msec",                     "8",            0                            },
+	{ &pmove_fixed,                    "pmove_fixed",                    "0",            CVAR_SYSTEMINFO              },
+	{ &pmove_msec,                     "pmove_msec",                     "8",            CVAR_SYSTEMINFO              },
 	{ &cg_noTaunt,                     "cg_noTaunt",                     "0",            CVAR_ARCHIVE                 },
 
 	{ &cg_voice,                       "voice",                          "default",      CVAR_USERINFO | CVAR_ARCHIVE },
@@ -410,6 +417,14 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_highPolyPlayerModels,        "cg_highPolyPlayerModels",        "1",            CVAR_ARCHIVE | CVAR_LATCH    },
 	{ &cg_highPolyBuildableModels,     "cg_highPolyBuildableModels",     "1",            CVAR_ARCHIVE | CVAR_LATCH    },
 	{ &cg_highPolyWeaponModels,        "cg_highPolyWeaponModels",        "1",            CVAR_ARCHIVE | CVAR_LATCH    },
+
+	{ &cg_fov_builder,                 "cg_fov_builder",                 "0",            CVAR_ARCHIVE                 },
+	{ &cg_fov_level0,                  "cg_fov_level0",                  "0",            CVAR_ARCHIVE                 },
+	{ &cg_fov_level1,                  "cg_fov_level1",                  "0",            CVAR_ARCHIVE                 },
+	{ &cg_fov_level2,                  "cg_fov_level2",                  "0",            CVAR_ARCHIVE                 },
+	{ &cg_fov_level3,                  "cg_fov_level3",                  "0",            CVAR_ARCHIVE                 },
+	{ &cg_fov_level4,                  "cg_fov_level4",                  "0",            CVAR_ARCHIVE                 },
+	{ &cg_fov_human,                   "cg_fov_human",                   "0",            CVAR_ARCHIVE                 },
 };
 
 static int         cvarTableSize = ARRAY_LEN( cvarTable );
@@ -823,6 +838,11 @@ void CG_AddNotifyText( void )
 {
 	char buffer[ BIG_INFO_STRING ];
 	int  bufferLen, textLen;
+
+	if ( cg.loading )
+	{
+		return;
+	}
 
 	trap_LiteralArgs( buffer, BIG_INFO_STRING );
 
@@ -1792,7 +1812,7 @@ void CG_LoadMenus( const char *menuFile )
 		}
 	}
 
-	Com_Printf(_( "UI menu load time = %dms\n"), trap_Milliseconds() - start );
+	// Com_Printf(_( "UI menu load time = %dms\n"), trap_Milliseconds() - start );
 }
 
 static qboolean CG_OwnerDrawHandleKey( int ownerDraw, int key )
@@ -2218,6 +2238,8 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	memset( &cg, 0, sizeof( cg ) );
 	memset( cg_entities, 0, sizeof( cg_entities ) );
 
+	cg.loading = qtrue;
+
 	cg.clientNum = clientNum;
 
 	cgs.processedSnapshotNum = serverMessageNum;
@@ -2283,8 +2305,6 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	// load the new map
 	trap_CM_LoadMap( cgs.mapname );
 
-	cg.loading = qtrue; // force players to load instead of defer
-
 	CG_LoadTrailSystems();
 	CG_UpdateMediaFraction( 0.05f );
 
@@ -2310,8 +2330,6 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 
 	CG_RegisterClients(); // if low on memory, some clients will be deferred
 
-	cg.loading = qfalse; // future players will be deferred
-
 	CG_InitMarkPolys();
 
 	// remove the last loading update
@@ -2326,6 +2344,8 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 
 	trap_S_ClearLoopingSounds( qtrue );
 	trap_Cvar_Set( "ui_winner", "" ); // Clear the previous round's winner.
+
+	cg.loading = qfalse;
 }
 
 /*

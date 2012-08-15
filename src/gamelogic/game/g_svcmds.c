@@ -462,7 +462,7 @@ static void Svcmd_EjectClient_f( void )
 				continue;
 			}
 
-			trap_DropClient( i, reason, 0 );
+			trap_DropClient( i, reason );
 		}
 	}
 	else
@@ -480,7 +480,7 @@ static void Svcmd_EjectClient_f( void )
 			return;
 		}
 
-		trap_DropClient( cl - level.clients, reason, 0 );
+		trap_DropClient( cl - level.clients, reason );
 	}
 }
 

@@ -347,14 +347,17 @@ g_admin_longstrip_t *g_admin_longstrips = NULL;
 g_admin_spec_t    *g_admin_specs = NULL;
 g_admin_command_t *g_admin_commands = NULL;
 
+/* ent must be non-NULL */
+#define G_ADMIN_NAME( ent ) ( ent->client->pers.admin ? ent->client->pers.admin->name : ent->client->pers.netname )
+
 static const char *G_admin_name( gentity_t *ent )
 {
-	return ( ent ) ? ent->client->pers.netname : "console";
+	return ( ent ) ? G_ADMIN_NAME( ent ) : "console";
 }
 
 static const char *G_quoted_admin_name( gentity_t *ent )
 {
-	return ( ent ) ? Quote( ent->client->pers.netname ) : "console";
+	return ( ent ) ? Quote( G_ADMIN_NAME( ent ) ) : "console";
 }
 
 static const char *G_user_name( gentity_t *ent, const char *fallback )
@@ -924,7 +927,7 @@ static void admin_default_levels( void )
 	Q_strncpyz( l->name, "^2Junior Admin", sizeof( l->name ) );
 	Q_strncpyz( l->flags,
 	            "listplayers admintest adminhelp time putteam spec999 warn kick mute ADMINCHAT "
-	            "register unregister l0 l1",
+	            "buildlog register unregister l0 l1",
 	            sizeof( l->flags ) );
 
 	l = l->next = BG_Alloc( sizeof( g_admin_level_t ) );
@@ -932,7 +935,7 @@ static void admin_default_levels( void )
 	Q_strncpyz( l->name, "^3Senior Admin", sizeof( l->name ) );
 	Q_strncpyz( l->flags,
 	            "listplayers admintest adminhelp time putteam spec999 warn kick mute showbans ban "
-	            "namelog ADMINCHAT register unregister l0 l1",
+	            "namelog buildlog ADMINCHAT register unregister l0 l1",
 	            sizeof( l->flags ) );
 
 	l = l->next = BG_Alloc( sizeof( g_admin_level_t ) );
@@ -2258,9 +2261,9 @@ qboolean G_admin_setlevel( gentity_t *ent )
 	{
 		Q_strncpyz( a->name, vic->client->pers.netname, sizeof( a->name ) );
 
-		if ( l && l->level >= g_adminPubkeyID.integer && !a->pubkey[ 0 ] && vic->client->pers.cl_pubkeyID )
+		if ( l && !a->pubkey[ 0 ] )
 		{
-			trap_SendServerCommand( vic - g_entities, "pubkey_request" );
+			trap_GetPlayerPubkey( vic - g_entities, a->pubkey, sizeof( a->pubkey ) );
 		}
 
 		vic->client->pers.pubkey_authenticated = 1;
@@ -2296,7 +2299,6 @@ static void admin_create_ban( gentity_t *ent,
 	qtime_t       qt;
 	int           t;
 	int           i;
-	char          *name;
 	char          disconnect[ MAX_STRING_CHARS ];
 	int           id = 1;
 	int           expired = 0;
@@ -2371,20 +2373,8 @@ static void admin_create_ban( gentity_t *ent,
 	             1900 + qt.tm_year, qt.tm_mon + 1, qt.tm_mday,
 	             qt.tm_hour, qt.tm_min, qt.tm_sec );
 
-	if ( ent && ent->client->pers.admin )
-	{
-		name = ent->client->pers.admin->name;
-	}
-	else if ( ent )
-	{
-		name = ent->client->pers.netname;
-	}
-	else
-	{
-		name = "console";
-	}
 
-	Q_strncpyz( b->banner, name, sizeof( b->banner ) );
+	Q_strncpyz( b->banner, G_admin_name( ent ), sizeof( b->banner ) );
 
 	if ( !seconds )
 	{
@@ -2418,7 +2408,7 @@ static void admin_create_ban( gentity_t *ent,
 			trap_SendServerCommand( i, va( "disconnect %s", Quote( disconnect ) ) );
 
 			trap_DropClient( i, va( "has been kicked by %s^7. reason: %s",
-			                        b->banner, b->reason ), 0 );
+			                        b->banner, b->reason ) );
 		}
 	}
 }
@@ -3715,6 +3705,7 @@ static int ban_out( void *ban, char *str )
 	}
 	else
 	{
+		*time = 0;
 		Q_strncpyz( duration, "expired", sizeof( duration ) );
 		d_color = S_COLOR_CYAN;
 	}
@@ -4212,8 +4203,7 @@ qboolean G_admin_nextmap( gentity_t *ent )
 	        G_quoted_admin_name( ent ) ) );
 	level.lastWin = TEAM_NONE;
 	trap_SetConfigstring( CS_WINNER, "Evacuation" );
-	LogExit( va( "nextmap was run by %s",
-	             ( ent ) ? ent->client->pers.netname : "console" ) );
+	LogExit( va( "nextmap was run by %s", G_admin_name( ent ) ) );
 	G_MapLog_Result( 'N' );
 	return qtrue;
 }
@@ -4642,7 +4632,18 @@ qboolean G_admin_buildlog( gentity_t *ent )
 	int        time;
 	int        start = MAX_CLIENTS + level.buildId - level.numBuildLogs;
 	int        i = 0, j;
+	int        team;
+	qboolean   admin;
 	buildLog_t *log;
+
+	admin = !ent || G_admin_permission( ent, "buildlog_admin" );
+	team = admin ? TEAM_NONE : ent->client->pers.teamSelection;
+
+	if ( !admin && team == TEAM_NONE )
+	{
+		ADMP( QQ( N_("^3buildlog: ^7spectators have no buildings\n") ) );
+		return qfalse;
+	}
 
 	if ( !level.buildId )
 	{
@@ -4705,9 +4706,19 @@ qboolean G_admin_buildlog( gentity_t *ent )
 
 	if ( ent && ent->client->pers.teamSelection != TEAM_NONE )
 	{
-		trap_SendServerCommand( -1,
-		                        va( "print_tr %s %s", QQ( N_("^3buildlog: ^7$1$^7 requested a log of recent building activity\n") ),
-		                            Quote( ent->client->pers.netname ) ) );
+		if ( team == TEAM_NONE )
+		{
+			trap_SendServerCommand( -1,
+			                        va( "print_tr %s %s", QQ( N_("^3buildlog: ^7$1$^7 requested a log of recent building activity\n") ),
+			                            Quote( ent->client->pers.netname ) ) );
+		}
+		else
+		{
+			// FIXME? Send only to team-mates
+			trap_SendServerCommand( -1,
+			                        va( "print_tr %s %s %s", QQ( N_("^3buildlog: ^7$1$^7 requested a log of recent $2$ building activity\n") ),
+			                            Quote( ent->client->pers.netname ), Quote( BG_TeamName( team ) ) ) );
+		}
 	}
 
 	ADMBP_begin();
@@ -4744,6 +4755,10 @@ qboolean G_admin_buildlog( gentity_t *ent )
 			{
 				continue;
 			}
+		}
+		else if ( !admin && BG_Buildable( log->modelindex )->team != team )
+		{
+			continue;
 		}
 
 		printed++;

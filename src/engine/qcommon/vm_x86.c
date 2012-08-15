@@ -41,22 +41,23 @@ Maryland 20850 USA.
 
 #ifdef _WIN32
 #include <windows.h>
-#endif
+#else
 
 #ifdef __FreeBSD__
 #include <sys/types.h>
 #endif
 
-#ifndef _WIN32
 #include <sys/mman.h> // for PROT_ stuff
-#endif
 
 /* need this on NX enabled systems (i386 with PAE kernel or
  * noexec32=on x86_64) */
-#if defined( __linux__ ) || defined( __FreeBSD__ )
 #define VM_X86_MMAP
-#endif
 
+ // workaround for systems that use the old MAP_ANON macro
+#ifndef MAP_ANONYMOUS
+#define MAP_ANONYMOUS MAP_ANON
+#endif
+#endif
 static void VM_Destroy_Compiled( vm_t *self );
 
 /*
@@ -525,7 +526,7 @@ static void DoSyscall( void )
 		}
 		else
 		{
-			opStackBase[ opStackOfs + 1 ] = savedVM->systemCall( data ); // VM-specific
+			opStackBase[ opStackOfs + 1 ] = savedVM->systemCall( (intptr_t *) data ); // VM-specific
 		}
 #endif
 		VM_CheckSanity( savedVM, ~syscallNum );
@@ -1890,7 +1891,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 	Z_Free( code );
 	Z_Free( buf );
 	Z_Free( jused );
-	Com_Printf(_( "VM file %s compiled to %i bytes of code\n"), vm->name, compiledOfs );
+	Com_DPrintf(_( "VM file %s compiled to %i bytes of code\n"), vm->name, compiledOfs );
 
 	vm->destroy = VM_Destroy_Compiled;
 

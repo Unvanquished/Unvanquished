@@ -32,10 +32,7 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#ifdef USING_CMAKE
 #include "git_version.h"
-#endif
-
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "sys_local.h"
@@ -139,28 +136,6 @@ char *Sys_DefaultHomePath( void )
 	}
 
 	return homePath;
-}
-
-/*
-================
-Sys_TempPath
-================
-*/
-const char *Sys_TempPath( void )
-{
-	static TCHAR path[ MAX_PATH ];
-	DWORD        length;
-
-	length = GetTempPath( sizeof( path ), path );
-
-	if ( length > sizeof( path ) || length == 0 )
-	{
-		return Sys_DefaultHomePath();
-	}
-	else
-	{
-		return path;
-	}
 }
 
 /*
@@ -355,6 +330,18 @@ qboolean Sys_Mkdir( const char *path )
 
 	return qtrue;
 }
+
+/*
+==================
+Sys_Mkfifo
+Noop on windows because named pipes do not function the same way
+==================
+*/
+FILE *Sys_Mkfifo( const char *ospath )
+{
+	return NULL;
+}
+
 
 /*
 ==============
@@ -840,7 +827,6 @@ void Sys_PlatformInit( void )
 {
 #ifndef DEDICATED
 	TIMECAPS ptc;
-	UINT res;
 	const char *SDL_VIDEODRIVER = getenv( "SDL_VIDEODRIVER" );
 #endif
 

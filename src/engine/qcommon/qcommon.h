@@ -279,19 +279,20 @@ PROTOCOL
 
 // sent by the server, printed on connection screen, works for all clients
 // (restrictions: does not handle \n, no more than 256 chars)
-#define PROTOCOL_MISMATCH_ERROR      "ERROR: Protocol Mismatch Between Client and Server.\
+#define PROTOCOL_MISMATCH_ERROR      "ERROR: Protocol Mismatch Between Client and Server. \
 The server you are attempting to join is running an incompatible version of the game."
 
 // long version used by the client in diagnostic window
 #define PROTOCOL_MISMATCH_ERROR_LONG "ERROR: Protocol Mismatch Between Client and Server.\n\n\
 The server you attempted to join is running an incompatible version of the game.\n\
-You or the server may be running older versions of the game. Press the auto-update\
- button if it appears on the Main Menu screen."
+You or the server may be running older versions of the game."
 
-#define GAMENAME_STRING "unv"
-#define PROTOCOL_VERSION 85
+#define GAMENAME_STRING        "unv"
 
-#define APP_URI_SCHEME GAMENAME_STRING "://"
+#define PROTOCOL_VERSION       86
+
+#define URI_SCHEME             GAMENAME_STRING "://"
+#define URI_SCHEME_LENGTH      6
 
 // maintain a list of compatible protocols for demo playing
 // NOTE: that stuff only works with two digits protocols
@@ -656,7 +657,6 @@ issues.
 #define FS_GENERAL_REF   0x01
 #define FS_UI_REF        0x02
 #define FS_CGAME_REF     0x04
-#define FS_QAGAME_REF    0x08
 // number of id paks that will never be autodownloaded from baseq3
 #define NUM_ID_PAKS      9
 
@@ -696,6 +696,7 @@ int          FS_GetModList( char *listbuf, int bufsize );
 
 fileHandle_t FS_FOpenFileWrite( const char *qpath );
 fileHandle_t FS_FOpenFileAppend( const char *filename );
+fileHandle_t  FS_FCreateOpenPipeFile( const char *filename );
 
 // will properly create any needed paths and deal with separator character issues
 
@@ -787,10 +788,6 @@ int FS_Seek( fileHandle_t f, long offset, int origin );
 
 qboolean   FS_FilenameCompare( const char *s1, const char *s2 );
 
-const char *FS_GamePureChecksum( void );
-
-// Returns the checksum of the pk3 from which the server loaded the qagame.qvm
-
 const char *FS_LoadedPakNames( void );
 const char *FS_LoadedPakChecksums( void );
 const char *FS_LoadedPakPureChecksums( void );
@@ -849,6 +846,8 @@ int          FS_CreatePath( const char *OSPath );
 qboolean     FS_VerifyPak( const char *pak );
 
 qboolean     FS_IsPure( void );
+
+void         FS_Remove( const char *ospath );
 
 unsigned int FS_ChecksumOSPath( char *OSPath );
 
@@ -916,19 +915,6 @@ MISC
 ==============================================================
 */
 
-typedef struct gameInfo_s
-{
-	qboolean spEnabled;
-	int      spGameTypes;
-	int      defaultSPGameType;
-	int      coopGameTypes;
-	int      defaultCoopGameType;
-	int      defaultGameType;
-	qboolean usesProfiles;
-} gameInfo_t;
-
-extern gameInfo_t com_gameInfo;
-
 // returned by Sys_GetProcessorFeatures
 typedef enum
 {
@@ -970,6 +956,7 @@ int        Com_EventLoop( void );
 int        Com_Milliseconds( void );  // will be journaled properly
 unsigned   Com_BlockChecksum( const void *buffer, int length );
 char       *Com_MD5File( const char *filename, int length );
+void       Com_MD5Buffer( const char *pubkey, int size, char *buffer, int bufsize ); 
 int        Com_Filter( char *filter, char *name, int casesensitive );
 int        Com_FilterPath( char *filter, char *name, int casesensitive );
 int        Com_RealTime( qtime_t *qtime );
@@ -993,7 +980,6 @@ extern cvar_t       *com_crashed;
 
 extern cvar_t       *com_ignorecrash; //bani
 
-extern cvar_t       *com_protocol;
 extern cvar_t       *com_pid; //bani
 
 extern cvar_t       *com_developer;
@@ -1008,7 +994,6 @@ extern cvar_t       *com_version;
 //extern    cvar_t  *com_blood;
 extern cvar_t       *com_buildScript; // for building release pak files
 extern cvar_t       *com_journal;
-extern cvar_t       *com_cameraMode;
 extern cvar_t       *com_ansiColor;
 extern cvar_t       *com_logosPlaying;
 
@@ -1071,7 +1056,7 @@ temp file loading
 
 */
 
-#if defined( _DEBUG ) && !defined( BSPC )
+#if !defined( NDEBUG ) && !defined( BSPC )
 #define ZONE_DEBUG
 #endif
 
@@ -1323,6 +1308,7 @@ qboolean Sys_IsLANAddress( netadr_t adr );
 void     Sys_ShowIP( void );
 
 qboolean Sys_Mkdir( const char *path );
+FILE     *Sys_Mkfifo( const char *ospath );
 char     *Sys_Cwd( void );
 char     *Sys_DefaultBasePath( void );
 char     *Sys_DefaultInstallPath( void );
@@ -1337,7 +1323,6 @@ char *Sys_DefaultLibPath( void );
 
 char         *Sys_DefaultHomePath( void );
 qboolean     Sys_Fork( const char *path, const char *cmdLine );
-const char   *Sys_TempPath( void );
 const char   *Sys_Dirname( char *path );
 const char   *Sys_Basename( char *path );
 char         *Sys_ConsoleInput( void );
@@ -1471,7 +1456,8 @@ void Com_RandomBytes( byte *string, int len );
 
 void Trans_Init( void );
 const char* Trans_Gettext( const char *msgid ) __attribute__((format_arg(1)));
-const char* Trans_Pgettext( const char *msgctxt, const char *msgid ) __attribute__((format_arg(1)));
+const char* Trans_Pgettext( const char *ctxt, const char *msgid ) __attribute__((format_arg(2)));
 const char* Trans_GettextGame( const char *msgid ) __attribute__((format_arg(1)));
+const char* Trans_PgettextGame( const char *ctxt, const char *msgid ) __attribute__((format_arg(2)));
 
 #endif // _QCOMMON_H_

@@ -986,7 +986,6 @@ typedef struct
 	int      physicsTime; // either cg.snap->time or cg.nextSnap->time
 
 	int      timelimitWarnings; // 5 min, 1 min, overtime
-	int      fraglimitWarnings;
 
 	qboolean mapRestart; // set on a map restart to set back the weapon
 
@@ -1025,6 +1024,7 @@ typedef struct
 	// view rendering
 	refdef_t refdef;
 	vec3_t   refdefViewAngles; // will be converted to refdef.viewaxis
+	int      fov; // custom fov
 
 	// zoom key
 	qboolean zoomed;
@@ -1679,18 +1679,20 @@ void       CG_UpdateBuildableRangeMarkerMask( void );
 //
 // cg_view.c
 //
-void CG_addSmoothOp( vec3_t rotAxis, float rotAngle, float timeMod );
-void CG_TestModel_f( void );
-void CG_TestGun_f( void );
-void CG_TestModelNextFrame_f( void );
-void CG_TestModelPrevFrame_f( void );
-void CG_TestModelNextSkin_f( void );
-void CG_TestModelPrevSkin_f( void );
-void CG_AddBufferedSound( sfxHandle_t sfx );
-void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demoPlayback );
-void CG_OffsetFirstPersonView( void );
-void CG_OffsetThirdPersonView( void );
-void CG_OffsetShoulderView( void );
+void     CG_addSmoothOp( vec3_t rotAxis, float rotAngle, float timeMod );
+void     CG_TestModel_f( void );
+void     CG_TestGun_f( void );
+void     CG_TestModelNextFrame_f( void );
+void     CG_TestModelPrevFrame_f( void );
+void     CG_TestModelNextSkin_f( void );
+void     CG_TestModelPrevSkin_f( void );
+void     CG_AddBufferedSound( sfxHandle_t sfx );
+qboolean CG_CullBox(vec3_t mins, vec3_t maxs);
+qboolean CG_CullPointAndRadius(const vec3_t pt, vec_t radius);
+void     CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demoPlayback );
+void     CG_OffsetFirstPersonView( void );
+void     CG_OffsetThirdPersonView( void );
+void     CG_OffsetShoulderView( void );
 
 //
 // cg_drawtools.c
@@ -1813,7 +1815,7 @@ void CG_DrawBoundingBox( vec3_t origin, vec3_t mins, vec3_t maxs );
 void CG_SetEntitySoundPosition( centity_t *cent );
 void CG_AddPacketEntities( void );
 void CG_Beam( centity_t *cent );
-void CG_AdjustPositionForMover( const vec3_t in, int moverNum, int fromTime, int toTime, vec3_t out );
+void CG_AdjustPositionForMover( const vec3_t in, int moverNum, int fromTime, int toTime, vec3_t out, vec3_t angles_in, vec3_t angles_out );
 
 void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
                              qhandle_t parentModel, const char *tagName );

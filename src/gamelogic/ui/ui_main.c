@@ -1102,18 +1102,18 @@ static void UI_StopServerRefresh( void )
 	}
 
 	uiInfo.serverStatus.refreshActive = qfalse;
-	Com_Printf(_( "%d servers listed in browser with %d players.\n"),
-	            uiInfo.serverStatus.numDisplayServers,
-	            uiInfo.serverStatus.numPlayersOnServers );
-	count = trap_LAN_GetServerCount( ui_netSource.integer );
+	// Com_Printf(_( "%d servers listed in browser with %d players.\n"),
+	//             uiInfo.serverStatus.numDisplayServers,
+	//             uiInfo.serverStatus.numPlayersOnServers );
+	// count = trap_LAN_GetServerCount( ui_netSource.integer );
 
-	if ( count - uiInfo.serverStatus.numDisplayServers > 0 )
-	{
-		Com_Printf(_( "%d servers not listed due to packet loss, invalid info,"
-		            " or pings higher than %d\n"),
-		            count - uiInfo.serverStatus.numDisplayServers,
-		            ( int ) trap_Cvar_VariableValue( "cl_maxPing" ) );
-	}
+	// if ( count - uiInfo.serverStatus.numDisplayServers > 0 )
+	// {
+	// 	Com_Printf(_( "%d servers not listed due to packet loss, invalid info,"
+	// 	            " or pings higher than %d\n"),
+	// 	            count - uiInfo.serverStatus.numDisplayServers,
+	// 	            ( int ) trap_Cvar_VariableValue( "cl_maxPing" ) );
+	// }
 }
 
 /*
@@ -1233,9 +1233,9 @@ static void UI_StartServerRefresh( qboolean full )
 	{
 		qboolean global = ui_netSource.integer == AS_GLOBAL;
 
-		trap_Cmd_ExecuteText( EXEC_APPEND, va( "globalservers %d %d full empty\n",
-		                                       global ? 0 : 1,
-		                                       (int) trap_Cvar_VariableValue( "protocol" ) ) );
+		trap_Cmd_ExecuteText( EXEC_APPEND, va( "globalservers %d 86 full empty\n",
+		                                       global ? 0 : 1 ) );
+		                                       
 	}
 }
 
@@ -1736,7 +1736,7 @@ void UI_LoadMenus( const char *menuFile, qboolean reset )
 		}
 	}
 
-	Com_Printf(_( "UI menu file '%s' loaded in %d msec\n"), menuFile, trap_Milliseconds() - start );
+	// Com_Printf(_( "UI menu file '%s' loaded in %d msec\n"), menuFile, trap_Milliseconds() - start );
 
 	trap_Parse_FreeSource( handle );
 }
@@ -1803,28 +1803,8 @@ void UI_LoadHelp( const char *helpFile )
 
 	trap_Parse_FreeSource( handle );
 
-	Com_Printf(_( "UI help file '%s' loaded in %d msec (%d infopanes)\n"),
-	            helpFile, trap_Milliseconds() - start, uiInfo.helpCount );
-}
-
-void UI_Load( void )
-{
-	char      lastName[ 1024 ];
-	menuDef_t *menu = Menu_GetFocused();
-
-	if ( menu && menu->window.name )
-	{
-		strcpy( lastName, menu->window.name );
-	}
-
-	String_Init();
-
-	UI_LoadMenus( ui_menuFiles.string, qtrue );
-	UI_LoadMenus( ui_ingameFiles.string, qfalse );
-	UI_LoadMenus( ui_teamFiles.string, qfalse );
-	UI_LoadHelp( ui_helpFiles.string );
-	Menus_CloseAll();
-	Menus_ActivateByName( lastName );
+	// Com_Printf(_( "UI help file '%s' loaded in %d msec (%d infopanes)\n"),
+	//             helpFile, trap_Milliseconds() - start, uiInfo.helpCount );
 }
 
 /*
@@ -5703,3 +5683,13 @@ const char *gettext( const char *msgid )
 	trap_Gettext( buf, msgid, sizeof( buffer ) );
 	return buf;
 }
+
+// TMP
+const char *pgettext( const char *ctxt, const char *msgid )
+{
+	QVM_STATIC char buffer[ 32000 ];
+	char *buf = buffer;
+	trap_Pgettext( buf, ctxt, msgid, sizeof( buffer ) );
+	return buf;
+}
+

@@ -34,10 +34,7 @@ Maryland 20850 USA.
 
 // cl_main.c  -- client main loop
 
-#ifdef USING_CMAKE
 #include "git_version.h"
-#endif
-
 #include "client.h"
 #include <limits.h>
 
@@ -52,9 +49,7 @@ cvar_t *cl_wavefilerecord;
 #include "libmumblelink.h"
 #endif
 
-#ifdef USE_CRYPTO
 #include "../qcommon/crypto.h"
-#endif
 
 #ifdef USE_MUMBLE
 cvar_t *cl_useMumble;
@@ -92,7 +87,6 @@ cvar_t *cl_freezeDemo;
 
 cvar_t *cl_shownet = NULL; // NERVE - SMF - This is referenced in msg.c and we need to make sure it is NULL
 cvar_t *cl_shownuments; // DHM - Nerve
-cvar_t *cl_visibleClients; // DHM - Nerve
 cvar_t *cl_showSend;
 cvar_t *cl_showServerCommands; // NERVE - SMF
 cvar_t *cl_timedemo;
@@ -136,15 +130,6 @@ cvar_t *cl_conXOffset;
 cvar_t *cl_inGameVideo;
 
 cvar_t *cl_serverStatusResendTime;
-cvar_t *cl_trn;
-cvar_t *cl_missionStats;
-cvar_t *cl_waitForFire;
-
-cvar_t *cl_pubkeyID;
-
-// DHM - Nerve
-
-cvar_t                 *cl_authserver;
 
 cvar_t                 *cl_profile;
 cvar_t                 *cl_defaultProfile;
@@ -167,12 +152,8 @@ cvar_t                 *cl_consoleFontSize;
 cvar_t                 *cl_consoleFontKerning;
 cvar_t                 *cl_consolePrompt;
 
-#ifdef USE_CRYPTO
 struct rsa_public_key  public_key;
-
 struct rsa_private_key private_key;
-
-#endif
 
 cvar_t             *cl_gamename;
 cvar_t             *cl_altTab;
@@ -906,7 +887,7 @@ void CL_Record_f( void )
 	{
 		s = Cmd_Argv( 1 );
 		Q_strncpyz( demoName, s, sizeof( demoName ) );
-		Com_sprintf( name, sizeof( name ), "demos/%s.dm_%d", demoName, com_protocol->integer );
+		Com_sprintf( name, sizeof( name ), "demos/%s.dm_%d", demoName, PROTOCOL_VERSION );
 	}
 	else
 	{
@@ -916,7 +897,7 @@ void CL_Record_f( void )
 		for ( number = 0; number <= 9999; number++ )
 		{
 			CL_DemoFilename( number, demoName );
-			Com_sprintf( name, sizeof( name ), "demos/%s.dm_%d", demoName, com_protocol->integer );
+			Com_sprintf( name, sizeof( name ), "demos/%s.dm_%d", demoName, PROTOCOL_VERSION );
 
 			len = FS_ReadFile( name, NULL );
 
@@ -1309,7 +1290,7 @@ static void CL_CompleteDemoName( char *args, int argNum )
 	{
 		char demoExt[ 16 ];
 
-		Com_sprintf( demoExt, sizeof( demoExt ), ".dm_%d", com_protocol->integer );
+		Com_sprintf( demoExt, sizeof( demoExt ), ".dm_%d", PROTOCOL_VERSION );
 		Field_CompleteFilename( "demos", demoExt, qtrue );
 	}
 }
@@ -1343,9 +1324,9 @@ void CL_PlayDemo_f( void )
 
 	// open the demo file
 	arg = Cmd_Argv( 1 );
-	prot_ver = com_protocol->integer - 1;
+	prot_ver = PROTOCOL_VERSION - 1;
 
-	while ( prot_ver <= com_protocol->integer && !clc.demofile )
+	while ( prot_ver <= PROTOCOL_VERSION && !clc.demofile )
 	{
 		Com_sprintf( extension, sizeof( extension ), ".dm_%d", prot_ver );
 
@@ -1858,88 +1839,6 @@ void CL_OpenUrl_f( void )
 
 	url = Cmd_Argv( 1 );
 
-	{
-		/*
-		        FixMe: URL sanity checks.
-
-		        Random sanity checks. Scott: if you've got some magic URL
-		        parsing and validating functions USE THEM HERE, this code
-		        is a placeholder!!!
-		*/
-		int        i;
-		const char *u;
-
-		const char *allowPrefixes[] = { "http://", "https://", "" };
-		const char *allowDomains[ 2 ] = { "www.unvanquished.net", 0 };
-
-		u = url;
-
-		for ( i = 0; i < ARRAY_LEN( allowPrefixes ); i++ )
-		{
-			const char *p = allowPrefixes[ i ];
-			size_t     len = strlen( p );
-
-			if ( Q_strncmp( u, p, len ) == 0 )
-			{
-				u += len;
-				break;
-			}
-		}
-
-		if ( i == ARRAY_LEN( allowPrefixes ) )
-		{
-			/*
-			        This really won't ever hit because of the "" at the end
-			        of the allowedPrefixes array. As I said above, placeholder
-			        code: fix it later!
-			*/
-			Com_Printf("%s", _( "Invalid URL prefix.\n" ));
-			return;
-		}
-
-		for ( i = 0; i < ARRAY_LEN( allowDomains ); i++ )
-		{
-			size_t     len;
-			const char *d = allowDomains[ i ];
-
-			if ( !d )
-			{
-				break;
-			}
-
-			len = strlen( d );
-
-			if ( Q_strncmp( u, d, len ) == 0 )
-			{
-				u += len;
-				break;
-			}
-		}
-
-		if ( i == ARRAY_LEN( allowDomains ) )
-		{
-			Com_Printf("%s", _( "Invalid domain.\n" ));
-			return;
-		}
-
-		/* my kingdom for a regex */
-		for ( i = 0; i < strlen( url ); i++ )
-		{
-			if ( !(
-			       ( url[ i ] >= 'a' && url[ i ] <= 'z' ) || // lower case alpha
-			       ( url[ i ] >= 'A' && url[ i ] <= 'Z' ) || // upper case alpha
-			       ( url[ i ] >= '0' && url[ i ] <= '9' ) || //numeric
-			       ( url[ i ] == '/' ) || ( url[ i ] == ':' ) || // / and : chars
-			       ( url[ i ] == '.' ) || ( url[ i ] == '&' ) || // . and & chars
-			       ( url[ i ] == ';' ) // ; char
-			     ) )
-			{
-				Com_Printf("%s", _( "Invalid URL\n" ));
-				return;
-			}
-		}
-	}
-
 	if ( !Sys_OpenUrl( url ) )
 	{
 		Com_Printf("%s", _( "System error opening URL\n" ));
@@ -2070,7 +1969,6 @@ CL_Disconnect_f
 void CL_Disconnect_f( void )
 {
 	SCR_StopCinematic();
-	Cvar_Set( "savegame_loading", "0" );
 	Cvar_Set( "g_reloading", "0" );
 
 	if ( cls.state != CA_DISCONNECTED && cls.state != CA_CINEMATIC )
@@ -2105,7 +2003,8 @@ CL_Connect_f
 void CL_Connect_f( void )
 {
 	char         *server, password[ 64 ];
-	const char   *serverString, *tmp, *scheme = APP_URI_SCHEME;
+	const char   *serverString;
+	char         *offset;
 	int          argc = Cmd_Argc();
 	netadrtype_t family = NA_UNSPEC;
 
@@ -2138,17 +2037,23 @@ void CL_Connect_f( void )
 	}
 
 	// Skip the URI scheme.
-	if ( !Q_strnicmp( server, scheme, strlen( scheme ) ) )
+	if ( !Q_strnicmp( server, URI_SCHEME, URI_SCHEME_LENGTH ) )
 	{
-		server += strlen( scheme );
+		server += URI_SCHEME_LENGTH;
 	}
 
 	// Set and skip the password.
-	if ( ( tmp = strchr( server, '@' ) ) != NULL )
+	if ( ( offset = strchr( server, '@' ) ) != NULL )
 	{
-		Q_strncpyz( password, server, Q_min( sizeof( password ), ( tmp - server + 1 ) ) );
+		Q_strncpyz( password, server, Q_min( sizeof( password ), ( offset - server + 1 ) ) );
 		Cvar_Set( "password", password );
-		server = server + ( tmp - server ) + 1;
+		server = offset + 1;
+	}
+
+	if ( ( offset = strchr( server, '/' ) ) != NULL )
+	{
+		// trailing slash, or path supplied - chop it off since we don't use it
+		*offset = 0;
 	}
 
 	S_StopAllSounds(); // NERVE - SMF
@@ -2193,7 +2098,7 @@ void CL_Connect_f( void )
 
 	serverString = NET_AdrToStringwPort( clc.serverAddress );
 
-	Com_Printf(_( "%s resolved to %s\n"), cls.servername, serverString );
+	Com_DPrintf(_( "%s resolved to %s\n"), cls.servername, serverString );
 
 	// if we aren't playing on a lan, we needto authenticate
 	// with the cd key
@@ -2222,14 +2127,6 @@ void CL_Connect_f( void )
 	// server connection string
 	Cvar_Set( "cl_currentServerAddress", server );
 	Cvar_Set( "cl_currentServerIP", serverString );
-
-	// Gordon: um, couldn't this be handled?
-	// NERVE - SMF - reset some cvars
-	Cvar_Set( "mp_playerType", "0" );
-	Cvar_Set( "mp_currentPlayerType", "0" );
-	Cvar_Set( "mp_weapon", "0" );
-	Cvar_Set( "mp_team", "0" );
-	Cvar_Set( "mp_currentTeam", "0" );
 }
 
 /*
@@ -2330,52 +2227,6 @@ void CL_ResetPureClientAtServer( void )
 }
 
 /*
-============
-CL_GenerateGUIDKey
-============
-*/
-static void CL_GenerateGUIDKey( void )
-{
-	int           len = 0;
-	unsigned char buff[ 2048 ];
-	
-	if( cl_profile->string[ 0 ] )
-	{
-		len = FS_ReadFile( va( "profiles/%s/%s", cl_profile->string, GUIDKEY_FILE ), NULL );
-	}
-	else
-	{
-		len = FS_ReadFile( GUIDKEY_FILE, NULL );
-	}
-	if ( len >= ( int ) sizeof( buff ) )
-	{
-		Com_Printf( "%s", _( "Daemon GUID public-key found.\n" ) );
-		return;
-	}
-	else
-	{
-		int i;
-		srand( time( 0 ) );
-		
-		for ( i = 0; i < sizeof( buff ) - 1; i++ )
-		{
-			buff[ i ] = ( unsigned char )( rand() % 255 );
-		}
-		
-		buff[ i ] = 0;
-		Com_Printf( "%s", _( "Daemon GUID public-key generated\n" ) );
-		if( cl_profile->string[ 0 ] )
-		{
-			FS_WriteFile( va( "profiles/%s/%s", cl_profile->string, GUIDKEY_FILE ), buff, sizeof( buff ) );
-		}
-		else
-		{
-			FS_WriteFile( GUIDKEY_FILE, buff, sizeof( buff ) );
-		}
-	}
-}
-
-/*
 ===============
 CL_GenerateRSAKey
 
@@ -2385,7 +2236,6 @@ If not then generate a new keypair
 */
 static void CL_GenerateRSAKey( void )
 {
-	#ifdef USE_CRYPTO
 	int                  len;
 	fileHandle_t         f;
 	void                 *buf;
@@ -2404,6 +2254,7 @@ static void CL_GenerateRSAKey( void )
 	{
 		len = FS_FOpenFileRead( RSAKEY_FILE, &f, qtrue );
 	}
+
 	if ( !f || len < 1 )
 	{
 		Com_Printf( "%s", _( "Daemon RSA public-key file not found, regenerating\n" ) );
@@ -2439,6 +2290,7 @@ static void CL_GenerateRSAKey( void )
 	{
 		goto keygen_error;
 	}
+
 	if( cl_profile->string[ 0 ] )
 	{
 		f = FS_FOpenFileWrite( va( "profiles/%s/%s", cl_profile->string, RSAKEY_FILE ) );
@@ -2450,9 +2302,7 @@ static void CL_GenerateRSAKey( void )
 	
 	if ( !f )
 	{
-		Com_Printf( _( "Daemon RSA public-key could not open %s for write, RSA support will be disabled\n" ), RSAKEY_FILE );
-		Cvar_Set( "cl_pubkeyID", "0" );
-		Crypto_Shutdown();
+		Com_Error( ERR_FATAL, _( "Daemon RSA public-key could not open %s for write, RSA support will be disabled\n" ), RSAKEY_FILE );
 		return;
 	}
 	
@@ -2463,13 +2313,8 @@ static void CL_GenerateRSAKey( void )
 	return;
 	
 	keygen_error:
-	Com_Printf( "%s", _( "Error generating RSA keypair, RSA support will be disabled\n" ) );
-	Cvar_Set( "cl_pubkeyID", "0" );
+	Com_Error( ERR_FATAL, _( "Error generating RSA keypair, RSA support will be disabled\n" ) );
 	Crypto_Shutdown();
-	#else
-	Com_DPrintf( "%s", _( "RSA support is disabled\n" ) );
-	return;
-	#endif
 }
 
 
@@ -2548,16 +2393,7 @@ void CL_Vid_Restart_f( void )
 
 	if( Cvar_VariableIntegerValue( "cl_newProfile" ) )
 	{
-		CL_GenerateGUIDKey();
-		
-		if ( cl_pubkeyID->integer )
-		{
-			CL_GenerateRSAKey();
-		}
-		
-		Cvar_Set( "cl_guid", Com_MD5File( cl_profile->string[ 0 ] ? va( "profiles/%s/%s", cl_profile->string, GUIDKEY_FILE ) :
-		GUIDKEY_FILE, 0 ) );
-
+		CL_GenerateRSAKey();		
 		Cvar_Set( "cl_newProfile", "0" );
 	}
 #ifdef _WIN32
@@ -2805,8 +2641,6 @@ Called when all downloading has been completed
 */
 void CL_DownloadsComplete( void )
 {
-	char *fs_write_path;
-	char *fn;
 
 	// if we downloaded files we need to restart the file system
 	if ( cls.downloadRestart )
@@ -2992,7 +2826,7 @@ void CL_InitDownloads( void )
 	if ( cl_allowDownload->integer && FS_ComparePaks( clc.downloadList, sizeof( clc.downloadList ), qtrue ) )
 	{
 		// this gets printed to UI, i18n
-		Com_Printf(_( "Need paks: %s\n"), clc.downloadList );
+		Com_DPrintf(_( "Need paks: %s\n"), clc.downloadList );
 
 		if ( *clc.downloadList )
 		{
@@ -3051,13 +2885,18 @@ void CL_CheckForResend( void )
 			break;
 
 		case CA_CHALLENGING:
+		{
+			char key[ RSA_STRING_LENGTH ];
+
+			mpz_get_str( key, 16, public_key.n);
 			// sending back the challenge
 			port = Cvar_VariableValue( "net_qport" );
 
 			Q_strncpyz( info, Cvar_InfoString( CVAR_USERINFO ), sizeof( info ) );
-			Info_SetValueForKey( info, "protocol", va( "%i", com_protocol->integer ) );
+			Info_SetValueForKey( info, "protocol", va( "%i", PROTOCOL_VERSION ) );
 			Info_SetValueForKey( info, "qport", va( "%i", port ) );
 			Info_SetValueForKey( info, "challenge", va( "%i", clc.challenge ) );
+			Info_SetValueForKey( info, "pubkey", key );
 
 			sprintf( data, "connect %s", Cmd_QuoteString( info ) );
 
@@ -3070,7 +2909,7 @@ void CL_CheckForResend( void )
 			// newer changes to userinfo variables
 			cvar_modifiedFlags &= ~CVAR_USERINFO;
 			break;
-
+		}
 		default:
 			Com_Error( ERR_FATAL, "CL_CheckForResend: bad cls.state" );
 	}
@@ -3242,9 +3081,7 @@ void CL_InitServerInfo( serverInfo_t *server, netadr_t *address )
 	server->minPing = 0;
 	server->ping = -1;
 	server->game[ 0 ] = '\0';
-	server->gameType = 0;
 	server->netType = 0;
-	server->allowAnonymous = 0;
 }
 
 /*
@@ -3354,7 +3191,7 @@ void CL_ServersResponsePacket( const netadr_t *from, msg_t *msg, qboolean extend
 	byte      *buffend;
 	char     label[ MAX_FEATLABEL_CHARS ] = "";
 
-	Com_Printf( "CL_ServersResponsePacket\n" );
+	Com_DPrintf( "CL_ServersResponsePacket\n" );
 
 	if ( cls.numglobalservers == -1 )
 	{
@@ -3506,7 +3343,7 @@ void CL_ServersResponsePacket( const netadr_t *from, msg_t *msg, qboolean extend
 	cls.numglobalservers = count;
 	total = count + cls.numGlobalServerAddresses;
 
-	Com_Printf(_( "%d servers parsed (total %d)\n"), numservers, total );
+	Com_DPrintf(_( "%d servers parsed (total %d)\n"), numservers, total );
 }
 
 /*
@@ -3543,16 +3380,6 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 		{
 			// start sending challenge repsonse instead of challenge request packets
 			clc.challenge = atoi( Cmd_Argv( 1 ) );
-
-			if ( Cmd_Argc() > 2 )
-			{
-				clc.onlyVisibleClients = atoi( Cmd_Argv( 2 ) );   // DHM - Nerve
-			}
-			else
-			{
-				clc.onlyVisibleClients = 0;
-			}
-
 			cls.state = CA_CHALLENGING;
 			clc.connectPacketCount = 0;
 			clc.connectTime = -99999;
@@ -4539,38 +4366,6 @@ void CL_ShutdownRef( void )
 	}
 }
 
-// RF, trap manual client damage commands so users can't issue them manually
-void CL_ClientDamageCommand( void )
-{
-	// do nothing
-}
-
-// NERVE - SMF
-
-/*void CL_startSingleplayer_f( void ) {
-#if defined(__linux__)
-        Sys_StartProcess( "./wolfsp.x86", qtrue );
-#else
-        Sys_StartProcess( "WolfSP.exe", qtrue );
-#endif
-}*/
-
-// NERVE - SMF
-// fretn unused
-#if 0
-void CL_buyNow_f( void )
-{
-	Sys_OpenURL( "http://www.activision.com/games/wolfenstein/purchase.html", qtrue );
-}
-
-// NERVE - SMF
-void CL_singlePlayLink_f( void )
-{
-	Sys_OpenURL( "http://www.activision.com/games/wolfenstein/home.html", qtrue );
-}
-
-#endif
-
 //===========================================================================================
 
 /*
@@ -4611,7 +4406,6 @@ void CL_Init( void )
 	cl_timeNudge = Cvar_Get( "cl_timeNudge", "0", CVAR_TEMP );
 	cl_shownet = Cvar_Get( "cl_shownet", "0", CVAR_TEMP );
 	cl_shownuments = Cvar_Get( "cl_shownuments", "0", CVAR_TEMP );
-	cl_visibleClients = Cvar_Get( "cl_visibleClients", "0", CVAR_TEMP );
 	cl_showServerCommands = Cvar_Get( "cl_showServerCommands", "0", 0 );
 	cl_showSend = Cvar_Get( "cl_showSend", "0", CVAR_TEMP );
 	cl_showTimeDelta = Cvar_Get( "cl_showTimeDelta", "0", CVAR_TEMP );
@@ -4668,7 +4462,6 @@ void CL_Init( void )
 	// RF
 	cl_recoilPitch = Cvar_Get( "cg_recoilPitch", "0", CVAR_ROM );
 
-	cl_bypassMouseInput = Cvar_Get( "cl_bypassMouseInput", "0", 0 );  //CVAR_ROM );          // NERVE - SMF
 	cl_doubletapdelay = Cvar_Get( "cl_doubletapdelay", "250", CVAR_ARCHIVE );  // Arnout: double tap
 	m_pitch = Cvar_Get( "m_pitch", "0.022", CVAR_ARCHIVE );
 	m_yaw = Cvar_Get( "m_yaw", "0.022", CVAR_ARCHIVE );
@@ -4715,18 +4508,9 @@ void CL_Init( void )
 	Cvar_Get( "name", UNNAMED_PLAYER, CVAR_USERINFO | CVAR_ARCHIVE );
 	Cvar_Get( "rate", "25000", CVAR_USERINFO | CVAR_ARCHIVE );
 	Cvar_Get( "snaps", "120", CVAR_USERINFO | CVAR_ARCHIVE );
-//  Cvar_Get ("model", "american", CVAR_USERINFO | CVAR_ARCHIVE );  // temp until we have a skeletal american model
-//  Arnout - no need // Cvar_Get ("model", "multi", CVAR_USERINFO | CVAR_ARCHIVE );
-//  Arnout - no need // Cvar_Get ("head", "default", CVAR_USERINFO | CVAR_ARCHIVE );
-//  Arnout - no need // Cvar_Get ("color", "4", CVAR_USERINFO | CVAR_ARCHIVE );
-//  Arnout - no need // Cvar_Get ("handicap", "0", CVAR_USERINFO | CVAR_ARCHIVE );
 //  Cvar_Get ("sex", "male", CVAR_USERINFO | CVAR_ARCHIVE );
-	Cvar_Get( "cl_anonymous", "0", CVAR_USERINFO | CVAR_ARCHIVE );
-
-	cl_pubkeyID = Cvar_Get( "cl_pubkeyID", "1", CVAR_ARCHIVE | CVAR_USERINFO );
 
 	Cvar_Get( "password", "", CVAR_USERINFO );
-	Cvar_Get( "cg_predictItems", "1", CVAR_ARCHIVE );
 
 #ifdef USE_MUMBLE
 	cl_useMumble = Cvar_Get( "cl_useMumble", "0", CVAR_ARCHIVE | CVAR_LATCH );
@@ -4764,17 +4548,8 @@ void CL_Init( void )
 
 #endif
 
-//----(SA) added
-	Cvar_Get( "cg_autoactivate", "1", CVAR_ARCHIVE );
-//----(SA) end
-
 	// cgame might not be initialized before menu is used
 	Cvar_Get( "cg_viewsize", "100", CVAR_ARCHIVE );
-
-	Cvar_Get( "cg_autoReload", "1", CVAR_ARCHIVE );
-
-	cl_missionStats = Cvar_Get( "g_missionStats", "0", CVAR_ROM );
-	cl_waitForFire = Cvar_Get( "cl_waitForFire", "0", CVAR_ROM );
 
 	cl_allowPaste = Cvar_Get( "cl_allowPaste", "1", 0 );
 
@@ -4823,15 +4598,6 @@ void CL_Init( void )
 	Cmd_AddCommand( "updatescreen", SCR_UpdateScreen );
 	// done.
 
-	// NERVE - SMF - don't do this in multiplayer
-	// RF, add this command so clients can't bind a key to send client damage commands to the server
-//  Cmd_AddCommand ("cld", CL_ClientDamageCommand );
-
-//  Cmd_AddCommand ( "startSingleplayer", CL_startSingleplayer_f );     // NERVE - SMF
-//  fretn - unused
-//  Cmd_AddCommand ( "buyNow", CL_buyNow_f );                           // NERVE - SMF
-//  Cmd_AddCommand ( "singlePlayLink", CL_singlePlayLink_f );           // NERVE - SMF
-
 	Cmd_AddCommand( "setRecommended", CL_SetRecommended_f );
 
 	Cmd_AddCommand( "wav_record", CL_WavRecord_f );
@@ -4847,15 +4613,7 @@ void CL_Init( void )
 	Cbuf_Execute();
 
 	Cvar_Set( "cl_running", "1" );
-	CL_GenerateGUIDKey();
-
-	if ( cl_pubkeyID->integer )
-	{
-		CL_GenerateRSAKey();
-	}
-
-	Cvar_Get( "cl_guid", Com_MD5File( cl_profile->string[ 0 ] ? va( "profiles/%s/%s", cl_profile->string, GUIDKEY_FILE ) :
-	                                                           GUIDKEY_FILE, 0 ), CVAR_USERINFO | CVAR_ROM );
+	CL_GenerateRSAKey();
 
 	Com_Printf("%s", _( "----- Client Initialization Complete -----\n" ));
 }
@@ -4876,7 +4634,7 @@ void CL_Shutdown( void )
 		return;
 	}
 
-	Com_Printf("%s", _( "----- CL_Shutdown -----\n" ));
+	Com_DPrintf("%s", _( "----- CL_Shutdown -----\n" ));
 
 	if ( recursive )
 	{
@@ -4946,7 +4704,7 @@ void CL_Shutdown( void )
 
 	memset( &cls, 0, sizeof( cls ) );
 
-	Com_Printf("%s", _( "-----------------------\n" ));
+	Com_DPrintf("%s", _( "-----------------------\n" ));
 
 }
 
@@ -4962,19 +4720,12 @@ static void CL_SetServerInfo( serverInfo_t *server, const char *info, int ping )
 			Q_strncpyz( server->mapName, Info_ValueForKey( info, "mapname" ), MAX_NAME_LENGTH );
 			server->maxClients = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
 			Q_strncpyz( server->game, Info_ValueForKey( info, "game" ), MAX_NAME_LENGTH );
-			server->gameType = atoi( Info_ValueForKey( info, "gametype" ) );
 			server->netType = atoi( Info_ValueForKey( info, "nettype" ) );
 			server->minPing = atoi( Info_ValueForKey( info, "minping" ) );
 			server->maxPing = atoi( Info_ValueForKey( info, "maxping" ) );
-			server->allowAnonymous = atoi( Info_ValueForKey( info, "sv_allowAnonymous" ) );
-			server->friendlyFire = atoi( Info_ValueForKey( info, "friendlyFire" ) );   // NERVE - SMF
-			server->maxlives = atoi( Info_ValueForKey( info, "maxlives" ) );   // NERVE - SMF
-			server->needpass = atoi( Info_ValueForKey( info, "needpass" ) );   // NERVE - SMF
-			server->punkbuster = atoi( Info_ValueForKey( info, "punkbuster" ) );   // DHM - Nerve
+			server->friendlyFire = atoi( Info_ValueForKey( info, "g_friendlyFire" ) );   // NERVE - SMF
+			server->needpass = atoi( Info_ValueForKey( info, "g_needpass" ) );   // NERVE - SMF
 			Q_strncpyz( server->gameName, Info_ValueForKey( info, "gamename" ), MAX_NAME_LENGTH );   // Arnout
-			server->antilag = atoi( Info_ValueForKey( info, "g_antilag" ) );
-			server->weaprestrict = atoi( Info_ValueForKey( info, "weaprestrict" ) );
-			server->balancedteams = atoi( Info_ValueForKey( info, "balancedteams" ) );
 		}
 
 		server->ping = ping;
@@ -5029,7 +4780,7 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg )
 	// if this isn't the correct protocol version, ignore it
 	prot = atoi( Info_ValueForKey( infoString, "protocol" ) );
 
-	if ( prot != com_protocol->integer )
+	if ( prot != PROTOCOL_VERSION )
 	{
 		Com_DPrintf( "Different protocol info packet: %s\n", infoString );
 		return;
@@ -5122,16 +4873,9 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg )
 	cls.localServers[ i ].minPing = 0;
 	cls.localServers[ i ].ping = -1;
 	cls.localServers[ i ].game[ 0 ] = '\0';
-	cls.localServers[ i ].gameType = 0;
 	cls.localServers[ i ].netType = from.type;
-	cls.localServers[ i ].allowAnonymous = 0;
 	cls.localServers[ i ].friendlyFire = 0; // NERVE - SMF
-	cls.localServers[ i ].maxlives = 0; // NERVE - SMF
 	cls.localServers[ i ].needpass = 0;
-	cls.localServers[ i ].punkbuster = 0; // DHM - Nerve
-	cls.localServers[ i ].antilag = 0;
-	cls.localServers[ i ].weaprestrict = 0;
-	cls.localServers[ i ].balancedteams = 0;
 	cls.localServers[ i ].gameName[ 0 ] = '\0'; // Arnout
 
 	Q_strncpyz( info, MSG_ReadString( msg ), MAX_INFO_STRING );
@@ -5414,7 +5158,7 @@ void CL_LocalServers_f( void )
 	int      i, j;
 	netadr_t to;
 
-	Com_Printf("%s", _( "Scanning for servers on the local network…\n" ));
+	Com_DPrintf("%s", _( "Scanning for servers on the local network…\n" ));
 
 	// reset the list, waiting for response
 	cls.numlocalservers = 0;
@@ -5495,7 +5239,7 @@ void CL_GlobalServers_f( void )
 		to.port = BigShort( PORT_MASTER );
 	}
 
-	Com_Printf(_( "Requesting servers from master %s…\n"), masteraddress );
+	Com_DPrintf(_( "Requesting servers from master %s…\n"), masteraddress );
 
 	cls.numglobalservers = -1;
 	cls.pingUpdateSource = AS_GLOBAL;

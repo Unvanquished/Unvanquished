@@ -34,10 +34,7 @@ Maryland 20850 USA.
 
 // console.c
 
-#ifdef USING_CMAKE
 #include "git_version.h"
-#endif
-
 #include "client.h"
 
 int g_console_field_width = 78;

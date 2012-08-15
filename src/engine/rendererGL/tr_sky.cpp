@@ -447,11 +447,11 @@ static void DrawSkySide(struct image_s *image, const int mins[2], const int maxs
 
                 for(s = mins[0] + HALF_SKY_SUBDIVISIONS; s <= maxs[0] + HALF_SKY_SUBDIVISIONS; s++)
                 {
-                        glVertexAttrib4fvARB(ATTR_INDEX_TEXCOORD0, s_skyTexCoords[t][s]);
-                        glVertexAttrib4fvARB(ATTR_INDEX_POSITION, s_skyPoints[t][s]);
+                        glVertexAttrib4fv(ATTR_INDEX_TEXCOORD0, s_skyTexCoords[t][s]);
+                        glVertexAttrib4fv(ATTR_INDEX_POSITION, s_skyPoints[t][s]);
 
-                        glVertexAttrib4fvARB(ATTR_INDEX_TEXCOORD0, s_skyTexCoords[t + 1][s]);
-                        glVertexAttrib4fvARB(ATTR_INDEX_POSITION, s_skyPoints[t + 1][s]);
+                        glVertexAttrib4fv(ATTR_INDEX_TEXCOORD0, s_skyTexCoords[t + 1][s]);
+                        glVertexAttrib4fv(ATTR_INDEX_POSITION, s_skyPoints[t + 1][s]);
                 }
 
                 glEnd();

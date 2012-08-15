@@ -287,7 +287,7 @@ static void R_LoadLightmaps( lump_t *l )
 
 	if ( r_showLightMaps->integer > 1 )
 	{
-		ri.Printf( PRINT_ALL, "Brightest lightmap value: %d\n", ( int )( maxIntensity * 255 ) );
+		ri.Printf( PRINT_DEVELOPER, "Brightest lightmap value: %d\n", ( int )( maxIntensity * 255 ) );
 	}
 }
 
@@ -2292,7 +2292,7 @@ void R_StitchAllPatches( void )
 	}
 	while ( stitched );
 
-	ri.Printf( PRINT_ALL, "stitched %d LoD cracks\n", numstitches );
+	ri.Printf( PRINT_DEVELOPER, "stitched %d LoD cracks\n", numstitches );
 }
 
 /*
@@ -2434,7 +2434,7 @@ static void R_LoadSurfaces( lump_t *surfs, lump_t *verts, lump_t *indexLump )
 	R_MovePatchSurfacesToHunk();
 #endif
 
-	ri.Printf( PRINT_ALL, "...loaded %d faces, %i meshes, %i trisurfs, %i flares %i foliage\n",
+	ri.Printf( PRINT_DEVELOPER, "...loaded %d faces, %i meshes, %i trisurfs, %i flares %i foliage\n",
 	           numFaces, numMeshes, numTriSurfs, numFlares, numFoliage );
 }
 

@@ -28,10 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 // #include "config.h"
 #endif
 
-#ifdef USING_CMAKE
 #include "git_version.h"
-#endif
-
 #include "client.h"
 #include "../qcommon/htable.h"
 
@@ -2055,7 +2052,7 @@ void CL_IRCSay()
 	}
 
 	memset( m_sendstring, 0, sizeof( m_sendstring ) );
-	strncpy( m_sendstring, Cmd_Args(), 479 );
+	strncpy( m_sendstring, Cmd_UnquoteString(Cmd_Args()), 479 );
 
 	if ( m_sendstring[ 0 ] == 0 )
 	{

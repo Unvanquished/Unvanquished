@@ -179,9 +179,9 @@ void trap_LocateGameData( gentity_t *gEnts, int numGEntities, int sizeofGEntity_
 
 //19.
 //SV_GameDropClient(args[1], VMA(2), args[3]);
-void trap_DropClient( int clientNum, const char *reason, int length )
+void trap_DropClient( int clientNum, const char *reason )
 {
-	syscall( G_DROP_CLIENT, clientNum, reason, length );
+	syscall( G_DROP_CLIENT, clientNum, reason );
 }
 
 //20.
@@ -561,4 +561,16 @@ int trap_RSA_GenerateMessage( const char *public_key, const char *cleartext, cha
 void trap_QuoteString( const char *str, char *buffer, int size )
 {
 	syscall( G_QUOTESTRING, str, buffer, size );
+}
+
+// 88.
+void trap_GenFingerprint( const char *pubkey, int size, char *buffer, int bufsize )
+{
+	syscall( G_GENFINGERPRINT, pubkey, size, buffer, bufsize );
+}
+
+// 89.
+void trap_GetPlayerPubkey( int clientNum, char *pubkey, int size )
+{
+	syscall( G_GETPLAYERPUBKEY, clientNum, pubkey, size );
 }

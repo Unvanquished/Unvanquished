@@ -712,20 +712,6 @@ static void SV_BuildClientSnapshot( client_t *client )
 
 	org[ 2 ] += ps->viewheight;
 
-//----(SA)  added for 'lean'
-	// need to account for lean, so areaportal doors draw properly
-	if ( frame->ps.leanf != 0 )
-	{
-		vec3_t right, v3ViewAngles;
-
-		VectorCopy( ps->viewangles, v3ViewAngles );
-		v3ViewAngles[ 2 ] += frame->ps.leanf / 2.0f;
-		AngleVectors( v3ViewAngles, NULL, right, NULL );
-		VectorMA( org, frame->ps.leanf, right, org );
-	}
-
-//----(SA)  end
-
 	// add all the entities directly visible to the eye, which
 	// may include portal entities that merge other viewpoints
 	SV_AddEntitiesVisibleFromPoint( org, frame, &entityNumbers /*, qfalse, client->netchan.remoteAddress.type == NA_LOOPBACK */ );

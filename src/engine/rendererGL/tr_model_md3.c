@@ -256,8 +256,6 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 			tri->indexes[ 2 ] = LittleLong( md3Tri->indexes[ 2 ] );
 		}
 
-		R_CalcSurfaceTriangleNeighbors( surf->numTriangles, surf->triangles );
-
 		// swap all the XyzNormals
 		surf->numVerts = md3Surf->numVerts;
 		surf->verts = v = ri.Hunk_Alloc( sizeof( *v ) * ( md3Surf->numVerts * md3Surf->numFrames ), h_low );

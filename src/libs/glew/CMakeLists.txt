@@ -1,9 +1,5 @@
 # Create Glew for VS projects.
 
-if( NOT WIN32 )
-  message( FATAL_ERROR "USE_INTERNAL_SDL is only support for Windows" )
-endif()
-
 find_package( OpenGL REQUIRED )
 
 include_directories( ${GLEW_DIR}/include )

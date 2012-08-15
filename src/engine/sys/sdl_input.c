@@ -32,17 +32,12 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#ifdef USE_LOCAL_HEADERS
-#       include "SDL.h"
-#else
-#       include <SDL.h>
-#endif
-
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../renderer/tr_local.h"
+#include <SDL.h>
+
 #include "../client/client.h"
 #include "../sys/sys_local.h"
 
@@ -1748,7 +1743,7 @@ void IN_Frame( void )
 	IN_ProcessEvents();
 
 	// If not DISCONNECTED (main menu) or ACTIVE (in game), we're loading
-	loading = !!( cls.state != CA_DISCONNECTED && cls.state != CA_ACTIVE );
+	loading = ( cls.state != CA_DISCONNECTED && cls.state != CA_ACTIVE );
 
 	if ( !Cvar_VariableIntegerValue( "r_fullscreen" ) && ( cls.keyCatchers & KEYCATCH_CONSOLE ) )
 	{
@@ -1814,16 +1809,8 @@ void IN_Init( void )
 	SDL_EnableKeyRepeat( SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL );
 	keyRepeatEnabled = qtrue;
 
-	if ( in_mouse->value )
-	{
-		mouseAvailable = qtrue;
-		IN_ActivateMouse();
-	}
-	else
-	{
-		IN_DeactivateMouse();
-		mouseAvailable = qfalse;
-	}
+	mouseAvailable = ( in_mouse->value != 0 );
+	IN_DeactivateMouse();
 
 	appState = SDL_GetAppState();
 	Cvar_SetValue( "com_unfocused", !( appState & SDL_APPINPUTFOCUS ) );

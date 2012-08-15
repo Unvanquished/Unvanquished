@@ -32,9 +32,7 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#ifdef USING_CMAKE
 #include "git_version.h"
-#endif
 
 #include <CPUInfo.h>
 
@@ -56,11 +54,7 @@ Maryland 20850 USA.
 #endif
 
 #ifndef DEDICATED
-#ifdef USE_LOCAL_HEADERS
-#include "SDL.h"
-#else
 #include <SDL.h>
-#endif
 #endif
 
 #include "sys_local.h"
@@ -492,13 +486,13 @@ static void *Sys_TryLibraryLoad( const char *base, const char *gamedir, const ch
 	*fqpath = 0;
 
 	fn = FS_BuildOSPath( base, gamedir, fname );
-	Com_Printf( "Sys_LoadDll(%s)... \n", fn );
+	Com_DPrintf( "Sys_LoadDll(%s)... \n", fn );
 
 	libHandle = Sys_LoadLibrary( fn );
 
 	if ( !libHandle )
 	{
-		Com_Printf( "Sys_LoadDll(%s) failed:\n\"%s\"\n", fn, Sys_LibraryError() );
+		Com_DPrintf( "Sys_LoadDll(%s) failed:\n\"%s\"\n", fn, Sys_LibraryError() );
 		return NULL;
 	}
 
@@ -566,7 +560,7 @@ void *QDECL Sys_LoadDll( const char *name, char *fqpath,
 
 	if ( !libHandle )
 	{
-		Com_Printf( "Sys_LoadDll(%s) could not find it\n", fname );
+		Com_DPrintf( "Sys_LoadDll(%s) could not find it\n", fname );
 		return NULL;
 	}
 
@@ -583,7 +577,6 @@ void *QDECL Sys_LoadDll( const char *name, char *fqpath,
 	if ( !*entryPoint || !dllEntry )
 	{
 #ifndef NDEBUG
-
 		if ( !dllEntry )
 		{
 			Com_Error( ERR_FATAL, "Sys_LoadDll(%s) failed SDL_LoadFunction(dllEntry):\n\"%s\" !", name, Sys_LibraryError() );
@@ -592,9 +585,7 @@ void *QDECL Sys_LoadDll( const char *name, char *fqpath,
 		{
 			Com_Error( ERR_FATAL, "Sys_LoadDll(%s) failed SDL_LoadFunction(vmMain):\n\"%s\" !", name, Sys_LibraryError() );
 		}
-
 #else
-
 		if ( !dllEntry )
 		{
 			Com_Printf( "Sys_LoadDll(%s) failed SDL_LoadFunction(dllEntry):\n\"%p\" !\n", name, Sys_LibraryError() );
@@ -603,7 +594,6 @@ void *QDECL Sys_LoadDll( const char *name, char *fqpath,
 		{
 			Com_Printf( "Sys_LoadDll(%s) failed SDL_LoadFunction(vmMain):\n\"%p\" !\n", name, Sys_LibraryError() );
 		}
-
 #endif
 		Sys_UnloadLibrary( libHandle );
 		return NULL;
@@ -612,7 +602,7 @@ void *QDECL Sys_LoadDll( const char *name, char *fqpath,
 	Com_Printf( "Sys_LoadDll(%s) found vmMain function at %p\n", name, *entryPoint );
 	dllEntry( systemcalls );
 
-	Com_Printf( "Sys_LoadDll(%s) succeeded!\n", name );
+	Com_DPrintf( "Sys_LoadDll(%s) succeeded!\n", name );
 
 	// Copy the fname to fqpath.
 	Q_strncpyz( fqpath, fname, MAX_QPATH );
@@ -662,13 +652,13 @@ void NORETURN Sys_SigHandler( int signal )
 
 	if ( signalcaught )
 	{
-		VM_Forced_Unload_Start();
 		fprintf( stderr, "DOUBLE SIGNAL FAULT: Received signal %d, exiting...\n",
 		         signal );
 	}
 	else
 	{
 		signalcaught = qtrue;
+		VM_Forced_Unload_Start();
 #ifndef DEDICATED
 		CL_Shutdown();
 #endif
@@ -792,16 +782,10 @@ int main( int argc, char **argv )
 	Sys_SetBinaryPath( Sys_Dirname( argv[ 0 ] ) );
 	Sys_SetDefaultInstallPath( DEFAULT_BASEDIR );
 
-	// If the first parameter begins with "unv://", assume that it's a URI
-	// This covers e.g. launching via xdg-open
-	if ( argc > 1 && !Q_strnicmp( argv[ 1 ], APP_URI_SCHEME, sizeof( APP_URI_SCHEME ) - 1 ) )
-	{
-		strcpy( commandLine, "connect " );
-	}
-
-	// Concatenate the command line for passing to Com_Init
+ 	// Concatenate the command line for passing to Com_Init
 	for ( i = 1; i < argc; i++ )
 	{
+
 #ifdef USE_CURSES
 		if ( !strcmp( "+nocurses", argv[ i ] ) )
 		{
@@ -809,6 +793,13 @@ int main( int argc, char **argv )
 			continue;
 		}
 #endif
+
+		// Allow URIs to be passed without +connect
+		if ( !Q_strnicmp( argv[ i ], URI_SCHEME, URI_SCHEME_LENGTH ) && Q_strnicmp( argv[ i - 1 ], "+connect", 8 ) )
+		{
+			Q_strcat( commandLine, sizeof( commandLine ), "+connect " );
+		}
+
 		Q_strcat( commandLine, sizeof( commandLine ), Cmd_QuoteString( argv[ i ] ) );
 		Q_strcat( commandLine, sizeof( commandLine ), " " );
 	}

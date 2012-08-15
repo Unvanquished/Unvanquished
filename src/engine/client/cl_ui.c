@@ -35,6 +35,7 @@ Maryland 20850 USA.
 #include "client.h"
 
 #define __(x) Trans_GettextGame(x)
+#define C__(x, y) Trans_PgettextGame(x, y)
 
 
 vm_t                   *uivm;
@@ -71,7 +72,7 @@ void LAN_LoadCachedServers()
 	cls.numglobalservers = cls.numfavoriteservers = 0;
 	cls.numGlobalServerAddresses = 0;
 
-	if ( com_gameInfo.usesProfiles && cl_profile->string[ 0 ] )
+	if ( cl_profile->string[ 0 ] )
 	{
 		Com_sprintf( filename, sizeof( filename ), "profiles/%s/servercache.dat", cl_profile->string );
 	}
@@ -114,7 +115,7 @@ void LAN_SaveServersToCache()
 	fileHandle_t fileOut;
 	char         filename[ MAX_QPATH ];
 
-	if ( com_gameInfo.usesProfiles && cl_profile->string[ 0 ] )
+	if ( cl_profile->string[ 0 ] )
 	{
 		Com_sprintf( filename, sizeof( filename ), "profiles/%s/servercache.dat", cl_profile->string );
 	}
@@ -423,18 +424,11 @@ static void LAN_GetServerInfo( int source, int n, char *buf, int buflen )
 		Info_SetValueForKey( info, "minping", va( "%i", server->minPing ) );
 		Info_SetValueForKey( info, "maxping", va( "%i", server->maxPing ) );
 		Info_SetValueForKey( info, "game", server->game );
-		Info_SetValueForKey( info, "gametype", va( "%i", server->gameType ) );
 		Info_SetValueForKey( info, "nettype", va( "%i", server->netType ) );
 		Info_SetValueForKey( info, "addr", NET_AdrToStringwPort( server->adr ) );
-		Info_SetValueForKey( info, "sv_allowAnonymous", va( "%i", server->allowAnonymous ) );
 		Info_SetValueForKey( info, "friendlyFire", va( "%i", server->friendlyFire ) );   // NERVE - SMF
-		Info_SetValueForKey( info, "maxlives", va( "%i", server->maxlives ) );   // NERVE - SMF
 		Info_SetValueForKey( info, "needpass", va( "%i", server->needpass ) );   // NERVE - SMF
-		Info_SetValueForKey( info, "punkbuster", va( "%i", server->punkbuster ) );   // DHM - Nerve
 		Info_SetValueForKey( info, "gamename", server->gameName );  // Arnout
-		Info_SetValueForKey( info, "g_antilag", va( "%i", server->antilag ) );   // TTimo
-		Info_SetValueForKey( info, "weaprestrict", va( "%i", server->weaprestrict ) );
-		Info_SetValueForKey( info, "balancedteams", va( "%i", server->balancedteams ) );
 		Q_strncpyz( buf, info, buflen );
 	}
 	else
@@ -594,11 +588,11 @@ static int LAN_CompareServers( int source, int sortKey, int sortDir, int s1, int
 			break;
 
 		case SORT_GAME:
-			if ( server1->gameType < server2->gameType )
+			if ( server1->gameName < server2->gameName )
 			{
 				res = -1;
 			}
-			else if ( server1->gameType > server2->gameType )
+			else if ( server1->gameName > server2->gameName )
 			{
 				res = 1;
 			}
@@ -1419,6 +1413,11 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			re.UnregisterFontVM( args[1] );
 			return 0;
 
+		case UI_PGETTEXT:
+			VM_CheckBlock( args[ 1 ], args[ 4 ], "UIPGETTEXT" );
+			Q_strncpyz( VMA( 1 ), C__( VMA( 2 ), VMA( 3 ) ), args[ 4 ] );
+			return 0;
+
 		default:
 			Com_Error( ERR_DROP, "Bad UI system trap: %ld", ( long int ) args[ 0 ] );
 	}
@@ -1467,23 +1466,15 @@ void CL_InitUI( void )
 
 	if ( v != UI_API_VERSION )
 	{
+		// Free uivm now, so UI_SHUTDOWN doesn't get called later.
+		VM_Free( uivm );
+		uivm = NULL;
+
 		Com_Error( ERR_FATAL, "User Interface is version %d, expected %d", v, UI_API_VERSION );
 	}
 
 	// init for this gamestate
 	VM_Call( uivm, UI_INIT, ( cls.state >= CA_CONNECTING && cls.state < CA_ACTIVE ) );
-}
-
-qboolean UI_checkKeyExec( int key )
-{
-	if ( uivm )
-	{
-		return ( VM_Call( uivm, UI_CHECKEXECKEY, key ) );
-	}
-	else
-	{
-		return qfalse;
-	}
 }
 
 /*

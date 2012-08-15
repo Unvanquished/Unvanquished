@@ -8,16 +8,14 @@
 */
 
 #import <Cocoa/Cocoa.h>
+#import <sys/param.h>
 
 #import "SDL/SDL.h"
 #import "SDLMain.h"
 
-/* For some reason, Apple removed setAppleMenu from the headers in 10.4,
- but the method still is there and works. To avoid warnings, we declare
- it ourselves here. */
-@interface NSApplication( SDL_Missing_Methods )
-- (void) setAppleMenu: (NSMenu *) menu;
-@end
+#define SDL_USE_CPS 1
+
+#ifdef SDL_USE_CPS
 
 /* Portions of CPS.h */
 typedef struct CPSProcessSerNum
@@ -29,6 +27,8 @@ typedef struct CPSProcessSerNum
 extern OSErr CPSGetCurrentProcess( CPSProcessSerNum *psn );
 extern OSErr CPSEnableForegroundOperation( CPSProcessSerNum *psn, UInt32 _arg2, UInt32 _arg3, UInt32 _arg4, UInt32 _arg5 );
 extern OSErr CPSSetFrontProcess( CPSProcessSerNum *psn );
+
+#endif
 
 static int  gArgc;
 static char **gArgv;
@@ -55,13 +55,6 @@ static NSString *getApplicationName( void )
 
 	return appName;
 }
-
-@interface NSApplication ( SDLApplication )
-@end
-
-/* The main class of the application, the application's delegate */
-@implementation NSApplication ( SDLApplication )
-@end
 
 @implementation SDLMain
 
@@ -101,7 +94,7 @@ static void setApplicationMenu( void )
 	[[NSApp mainMenu] addItem:menuItem];
 
 	/* Tell the application object that this is now the application menu */
-	[NSApp setAppleMenu:appleMenu];
+	[NSApp performSelector:NSSelectorFromString(@"setAppleMenu:") withObject:appleMenu];
 
 	/* Finally give up our references to the objects */
 	[appleMenu release];
@@ -140,16 +133,9 @@ static void CustomApplicationMain( int argc, char **argv )
 {
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 	SDLMain           *sdlMain;
-	CPSProcessSerNum  PSN;
 
 	/* Ensure the application object is initialised */
 	[NSApplication sharedApplication];
-
-	/* Tell the dock about us */
-	if ( !CPSGetCurrentProcess( &PSN ) )
-		if ( !CPSEnableForegroundOperation( &PSN, 0x03, 0x3C, 0x2C, 0x1103 ) )
-			if ( !CPSSetFrontProcess( &PSN ) )
-				[NSApplication sharedApplication];
 
 	/* Set up the menubar */
 	[NSApp setMainMenu:[[NSMenu alloc] init]];
@@ -158,8 +144,19 @@ static void CustomApplicationMain( int argc, char **argv )
 
 	/* Create SDLMain and make it the app delegate */
 	sdlMain = [[SDLMain alloc] init];
-	[[NSAppleEventManager sharedAppleEventManager] setEventHandler:sdlMain andSelector:@selector(getUrl:withReplyEvent:) forEventClass:kInternetEventClass andEventID:kAEGetURL];
 	[NSApp setDelegate:sdlMain];
+
+#ifdef SDL_USE_CPS
+	/* Tell the dock about us */
+	CPSProcessSerNum PSN;
+	if ( !CPSGetCurrentProcess( &PSN ) )
+		if ( !CPSEnableForegroundOperation( &PSN, 0x03, 0x3C, 0x2C, 0x1103 ) )
+			if ( !CPSSetFrontProcess( &PSN ) )
+				[NSApplication sharedApplication];
+#endif
+
+	/* Handle URI events */
+	[[NSAppleEventManager sharedAppleEventManager] setEventHandler:sdlMain andSelector:@selector(getUrl:withReplyEvent:) forEventClass:kInternetEventClass andEventID:kAEGetURL];
 
 	/* Start the main event loop */
 	[NSApp run];
@@ -247,9 +244,6 @@ void Cbuf_AddText( const char *text );
 {
 	NSString *uri = [[event paramDescriptorForKeyword:keyDirectObject] stringValue];
 	char     buffer[ MAXPATHLEN ];
-
-	[NSApp unhideWithoutActivation];
-	[NSApp updateWindows];
 
 	if ( gCalledAppMainline )
 	{

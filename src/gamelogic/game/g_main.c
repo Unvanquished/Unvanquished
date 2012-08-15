@@ -68,7 +68,6 @@ vmCvar_t           g_motd;
 vmCvar_t           g_synchronousClients;
 vmCvar_t           g_warmup;
 vmCvar_t           g_doWarmup;
-vmCvar_t           g_restarted;
 vmCvar_t           g_lockTeamsAtStart;
 vmCvar_t           g_logFile;
 vmCvar_t           g_logFileSync;
@@ -162,7 +161,6 @@ vmCvar_t           g_admin;
 vmCvar_t           g_adminTempBan;
 vmCvar_t           g_adminMaxBan;
 vmCvar_t           g_adminRetainExpiredBans;
-vmCvar_t           g_adminPubkeyID;
 
 vmCvar_t           g_privateMessages;
 vmCvar_t           g_specChat;
@@ -208,7 +206,6 @@ static cvarTable_t gameCvarTable[] =
 	// noset vars
 	{ NULL,                           "gamename",                      GAME_VERSION,                       CVAR_SERVERINFO | CVAR_ROM,                      0, qfalse           },
 	{ NULL,                           "gamedate",                      __DATE__,                           CVAR_ROM,                                        0, qfalse           },
-	{ &g_restarted,                   "g_restarted",                   "0",                                CVAR_ROM,                                        0, qfalse           },
 	{ &g_lockTeamsAtStart,            "g_lockTeamsAtStart",            "0",                                CVAR_ROM,                                        0, qfalse           },
 	{ NULL,                           "sv_mapname",                    "",                                 CVAR_SERVERINFO | CVAR_ROM,                      0, qfalse           },
 	{ NULL,                           "P",                             "",                                 CVAR_SERVERINFO | CVAR_ROM,                      0, qfalse           },
@@ -257,15 +254,15 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_extendVotesPercent,          "g_extendVotesPercent",          "74",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_extendVotesTime,             "g_extendVotesTime",             "10",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_extendVotesCount,            "g_extendVotesCount",            "2",                                CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_kickVotesPercent,            "g_kickVotesPercent",            "50",                               CVAR_ARCHIVE,                                    0, qtrue            },
-	{ &g_denyVotesPercent,            "g_denyVotesPercent",            "50",                               CVAR_ARCHIVE,                                    0, qtrue            },
-	{ &g_mapVotesPercent,             "g_mapVotesPercent",             "50",                               CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_kickVotesPercent,            "g_kickVotesPercent",            "51",                               CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_denyVotesPercent,            "g_denyVotesPercent",            "51",                               CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_mapVotesPercent,             "g_mapVotesPercent",             "51",                               CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_mapVotesBefore,              "g_mapVotesBefore",              "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
-	{ &g_nextMapVotesPercent,         "g_nextMapVotesPercent",         "50",                               CVAR_ARCHIVE,                                    0, qtrue            },
-	{ &g_drawVotesPercent,            "g_drawVotesPercent",            "50",                               CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_nextMapVotesPercent,         "g_nextMapVotesPercent",         "51",                               CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_drawVotesPercent,            "g_drawVotesPercent",            "51",                               CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_drawVotesAfter,              "g_drawVotesAfter",              "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_drawVoteReasonRequired,      "g_drawVoteReasonRequired",      "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
-	{ &g_admitDefeatVotesPercent,     "g_admitDefeatVotesPercent",     "50",                               CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_admitDefeatVotesPercent,     "g_admitDefeatVotesPercent",     "74",                               CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_pollVotesPercent,            "g_pollVotesPercent",            "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_minNameChangePeriod,         "g_minNameChangePeriod",         "5",                                0,                                               0, qfalse           },
 	{ &g_maxNameChanges,              "g_maxNameChanges",              "5",                                0,                                               0, qfalse           },
@@ -338,7 +335,6 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_adminTempBan,                "g_adminTempBan",                "2m",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_adminMaxBan,                 "g_adminMaxBan",                 "2w",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_adminRetainExpiredBans,      "g_adminRetainExpiredBans",      "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_adminPubkeyID,               "g_adminPubkeyID",               "2",                                CVAR_ARCHIVE | CVAR_SERVERINFO,                  0, qfalse           },
 
 	{ &g_privateMessages,             "g_privateMessages",             "1",                                CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_specChat,                    "g_specChat",                    "1",                                CVAR_ARCHIVE,                                    0, qfalse           },
@@ -2775,10 +2771,8 @@ void G_RunFrame( int levelTime )
 	msec = level.time - level.previousTime;
 
 	// generate public-key messages
-	if ( g_adminPubkeyID.integer )
-	{
-		G_admin_pubkey();
-	}
+	G_admin_pubkey();
+	
 
 	// get any cvar changes
 	G_UpdateCvars();
