@@ -872,11 +872,11 @@ int FS_SV_FOpenFileRead( const char *filename, fileHandle_t *fp )
 
 			fsh[ f ].handleFiles.file.o = fopen( ospath, "rb" );
 			fsh[ f ].handleSync = qfalse;
+		}
 
-			if ( !fsh[ f ].handleFiles.file.o )
-			{
-				f = 0;
-			}
+		if ( !fsh[ f ].handleFiles.file.o )
+		{
+			f = 0;
 		}
 	}
 
