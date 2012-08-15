@@ -3536,6 +3536,7 @@ static int ban_out( void *ban, char *str )
 	}
 	else
 	{
+		*time = 0;
 		Q_strncpyz( duration, "expired", sizeof( duration ) );
 		d_color = S_COLOR_CYAN;
 	}
