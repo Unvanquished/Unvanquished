@@ -1,3 +1,11 @@
+unvanquished (0.6.0-3) unstable; urgency=medium
+
+  * Upstream changes since release:
+    - Expired bans aren't correctly displayed.
+    - Fix a possible hang in string token replacement.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Wed, 15 Aug 2012 21:10:40 +0100
+
 unvanquished (0.6.0-2) unstable; urgency=high
 
   * Fix a hole in the launcher script.
