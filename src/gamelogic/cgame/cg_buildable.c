@@ -109,7 +109,6 @@ static void CG_Creep( centity_t *cent )
 	float   size, frac;
 	trace_t tr;
 	vec3_t  temp, origin;
-	int     scaleUpTime = BG_Buildable( cent->currentState.modelindex )->buildTime;
 	int     time;
 
 	time = cent->currentState.time;
@@ -117,6 +116,8 @@ static void CG_Creep( centity_t *cent )
 	//should the creep be growing or receding?
 	if ( time >= 0 )
 	{
+		int scaleUpTime = BG_Buildable( cent->currentState.modelindex )->buildTime;
+
 		msec = cg.time - time;
 
 		if ( msec >= 0 && msec < scaleUpTime )
@@ -134,7 +135,7 @@ static void CG_Creep( centity_t *cent )
 
 		if ( msec >= 0 && msec < CREEP_SCALEDOWN_TIME )
 		{
-			frac = 1.0f - ( ( float ) msec / CREEP_SCALEDOWN_TIME );
+			frac = ( float ) cos ( 0.5f * msec / CREEP_SCALEDOWN_TIME * M_PI );
 		}
 		else
 		{
