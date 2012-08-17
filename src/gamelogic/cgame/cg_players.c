@@ -3174,39 +3174,6 @@ void CG_Player( centity_t *cent )
 			CG_PlayerMD5AlienAnimation( cent );
 		}
 
-		// WIP: death effect
-#if 0
-
-		if ( cent->currentState.eFlags & EF_DEAD )
-		{
-			int time;
-
-			if ( cent->pe.deathTime <= 0 )
-			{
-				cent->pe.deathTime = cg.time;
-				cent->pe.deathScale = 0.0f;
-			}
-
-			time = ( DEATHANIM_TIME - ( cg.time - cent->pe.deathTime ) );
-
-			cent->pe.deathScale = 1.0f - ( 1.0f / DEATHANIM_TIME * time );
-
-			if ( cent->pe.deathScale >= 1.0f )
-			{
-				return;
-			}
-
-			body.shaderTime = -cent->pe.deathScale;
-		}
-		else
-#endif
-//      {
-//              cent->pe.deathTime = 0;
-//              cent->pe.deathScale = 0.0f;
-//
-//              body.shaderTime = 0.0f;
-//      }
-
 		// add the talk baloon or disconnect icon
 		CG_PlayerSprites( cent );
 
