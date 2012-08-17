@@ -1537,6 +1537,20 @@ static void CG_BlendPlayerLerpFrame( lerpFrame_t *lf )
 	}
 }
 
+static void CG_CombineLegSkeleton( refSkeleton_t *dest, refSkeleton_t *legs, int *legBones, int numBones )
+{
+	int i;
+	
+	dest->type = SK_RELATIVE;
+	
+	for ( i = 0; i < numBones; i++ )
+	{
+		dest->bones[ legBones[ i ] ] = legs->bones[ legBones[ i ] ];
+	}
+}
+
+
+
 /*
 ===============
 CG_SetLerpFrameAnimation
@@ -3274,24 +3288,10 @@ void CG_Player( centity_t *cent )
 			}
 
 			// combine legs and torso skeletons
-#if 1
 			if ( ci->numLegBones )
 			{
-	
-				body.skeleton.type = SK_RELATIVE;
-
-				for ( i = 0; i < ci->numLegBones; i++ )
-				{
-					body.skeleton.bones[ ci->legBones[ i ] ] = legsSkeleton.bones[ ci->legBones[ i ] ];
-				}
+				CG_CombineLegSkeleton( &body.skeleton, &legsSkeleton, ci->legBones, ci->numLegBones );
 			}
-			else
-			{
-				// bad no hips found
-				body.skeleton.type = SK_INVALID;
-			}
-
-#endif
 
 			// rotate legs
 #if 0
