@@ -141,10 +141,7 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 	ci->gender = GENDER_MALE;
 	ci->fixedlegs = qfalse;
 	ci->fixedtorso = qfalse;
-	ci->firstTorsoBone = -1; // Set these to -1 since 0 is a valid value
-	ci->lastTorsoBone = -1;
-	ci->torsoControlBone = -1;
-	ci->neckControlBone = -1;
+	ci->numLegBones = 0;
 	ci->modelScale[ 0 ] = 1;
 	ci->modelScale[ 1 ] = 1;
 	ci->modelScale[ 2 ] = 1;
@@ -243,30 +240,6 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 			ci->fixedtorso = qtrue;
 			continue;
 		}
-		else if ( !Q_stricmp( token, "firstTorsoBoneName" ) )
-		{
-			token = COM_Parse2( &text_p );
-			ci->firstTorsoBone = trap_R_BoneIndex( ci->bodyModel, token );
-			continue;
-		}
-		else if ( !Q_stricmp( token, "lastTorsoBoneName" ) )
-		{
-			token = COM_Parse2( &text_p );
-			ci->lastTorsoBone = trap_R_BoneIndex( ci->bodyModel, token );
-			continue;
-		}
-		else if ( !Q_stricmp( token, "torsoControlBoneName" ) )
-		{
-			token = COM_Parse2( &text_p );
-			ci->torsoControlBone = trap_R_BoneIndex( ci->bodyModel, token );
-			continue;
-		}
-		else if ( !Q_stricmp( token, "neckControlBoneName" ) )
-		{
-			token = COM_Parse2( &text_p );
-			ci->neckControlBone = trap_R_BoneIndex( ci->bodyModel, token );
-			continue;
-		}
 		else if ( !Q_stricmp( token, "modelScale" ) )
 		{
 			for ( i = 0; i < 3; i++ )
@@ -279,6 +252,32 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 				}
 
 				ci->modelScale[ i ] = atof( token );
+			}
+
+			continue;
+		}
+		else if ( !Q_stricmp( token, "legBones" ) )
+		{
+			token = COM_Parse2( &text_p );
+
+			if ( token[0] != '{' )
+			{
+				Com_Printf( _( "^1ERROR^7: Expected '{' but found '%s' in character.cfg" ), token );
+			}
+
+			i = 0;
+			
+			while( 1 )
+			{
+				token = COM_Parse2( &text_p );
+
+				if ( !token || token[ 0 ] == '}' )
+				{
+					ci->numLegBones = i;
+					break;
+				}
+				
+				ci->legBones[ i++ ] = trap_R_BoneIndex( ci->bodyModel, token );
 			}
 
 			continue;
@@ -1229,12 +1228,8 @@ static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to )
 	to->footsteps = from->footsteps;
 	to->gender = from->gender;
 
-	to->firstTorsoBone = from->firstTorsoBone;
-	to->lastTorsoBone = from->lastTorsoBone;
-
-	to->torsoControlBone = from->torsoControlBone;
-	to->neckControlBone = from->neckControlBone;
-
+	to->numLegBones = from->numLegBones;
+	
 	to->legsModel = from->legsModel;
 	to->legsSkin = from->legsSkin;
 	to->torsoModel = from->torsoModel;
@@ -1252,6 +1247,7 @@ static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to )
 	memcpy( to->sounds, from->sounds, sizeof( to->sounds ) );
 	memcpy( to->customFootsteps, from->customFootsteps, sizeof( to->customFootsteps ) );
 	memcpy( to->customMetalFootsteps, from->customMetalFootsteps, sizeof( to->customMetalFootsteps ) );
+	memcpy( to->legBones, from->legBones, sizeof( to->legBones ) );
 }
 
 /*
@@ -3142,15 +3138,7 @@ void CG_Player( centity_t *cent )
 	if ( ci->bodyModel )
 	{
 		vec3_t legsAngles, torsoAngles, headAngles;
-#if 0
-		quat_t torsoQuat;
-		quat_t headQuat;
-		quat_t legsQuat;
-		int    boneIndex;
-#endif
 		int    i;
-		int    firstTorsoBone;
-		int    lastTorsoBone;
 		vec3_t playerOrigin, mins, maxs;
 
 		if ( ci->gender != GENDER_NEUTER )
@@ -3312,7 +3300,7 @@ void CG_Player( centity_t *cent )
 		if ( ci->gender != GENDER_NEUTER )
 		{
 			// copy legs skeleton to have a base
-			body.skeleton = legsSkeleton;
+			body.skeleton = torsoSkeleton;
 			if ( torsoSkeleton.numBones != legsSkeleton.numBones )
 			{
 				CG_Error( "cent->pe.legs.skeleton.numBones != cent->pe.torso.skeleton.numBones" );
@@ -3320,23 +3308,15 @@ void CG_Player( centity_t *cent )
 
 			// combine legs and torso skeletons
 #if 1
-			firstTorsoBone = ci->firstTorsoBone;
-
-			if ( firstTorsoBone >= 0 && firstTorsoBone < torsoSkeleton.numBones )
+			if ( ci->numLegBones )
 			{
-				lastTorsoBone = ci->lastTorsoBone;
-
-				if ( lastTorsoBone >= 0 && lastTorsoBone < torsoSkeleton.numBones )
-				{
-					// copy torso bones
-					for ( i = firstTorsoBone; i < lastTorsoBone; i++ )
-					{
-						memcpy( &body.skeleton.bones[ i ], &torsoSkeleton.bones[ i ], sizeof( refBone_t ) );
-					}
-				}
-
+	
 				body.skeleton.type = SK_RELATIVE;
 
+				for ( i = 0; i < ci->numLegBones; i++ )
+				{
+					body.skeleton.bones[ ci->legBones[ i ] ] = legsSkeleton.bones[ ci->legBones[ i ] ];
+				}
 // 				// update AABB
 // 				for ( i = 0; i < 3; i++ )
 // 				{
