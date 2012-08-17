@@ -463,83 +463,86 @@ void CG_InitBuildables( void )
 				bi->animations[ n ] = bi->animations[ BANIM_IDLE1 ];
 			}
 
-			//Register the rest of the buildable animations
-			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_CONSTRUCT1,
-			                                     "construct", qfalse, qfalse, qfalse ) )
+			switch ( i )
 			{
-				bi->animations[ BANIM_CONSTRUCT1 ] = bi->animations[ BANIM_IDLE1 ];
-			}
+				
+				case BA_A_SPAWN:
+				case BA_H_SPAWN:
+					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_SPAWN1,
+						"spawn", qfalse, qfalse, qfalse ) )
+					{
+						bi->animations[ BANIM_SPAWN1 ] = bi->animations[ BANIM_IDLE1 ];
+					}
+					
+				case BA_H_MEDISTAT:
+					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_CONSTRUCT2,
+					   "construct2", qfalse, qfalse, qfalse ) )
+					{
+						bi->animations[ BANIM_CONSTRUCT2 ] = bi->animations[ BANIM_IDLE1 ];
+					}
 
-			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_CONSTRUCT2,
-			                                     "construct2", qfalse, qfalse, qfalse ) )
-			{
-				bi->animations[ BANIM_CONSTRUCT2 ] = bi->animations[ BANIM_IDLE1 ];
-			}
+					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_IDLE2,
+						"idle2", qtrue, qfalse, qfalse ) )
+					{
+						bi->animations[ BANIM_IDLE2 ] = bi->animations[ BANIM_IDLE1 ];
+					}
 
-			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_IDLE2,
-			                                     "idle2", qtrue, qfalse, qfalse ) )
-			{
-				bi->animations[ BANIM_IDLE2 ] = bi->animations[ BANIM_IDLE1 ];
-			}
+				case BA_A_BARRICADE:
+					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_IDLE2,
+						"idle2", qtrue, qfalse, qfalse ) )
+					{
+						bi->animations[ BANIM_IDLE2 ] = bi->animations[ BANIM_IDLE1 ];
+					}
+					
+					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_IDLE2,
+						"idle2", qtrue, qfalse, qfalse ) )
+					{
+						bi->animations[ BANIM_IDLE2 ] = bi->animations[ BANIM_IDLE1 ];
+					}
 
-			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_IDLE3,
-			                                     "idle3", qtrue, qfalse, qfalse ) )
-			{
-				bi->animations[ BANIM_IDLE3 ] = bi->animations[ BANIM_IDLE1 ];
-			}
+					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_ATTACK2,
+						"attack2", qfalse, qfalse, qfalse ) )
+					{
+						bi->animations[ BANIM_ATTACK2 ] = bi->animations[ BANIM_IDLE1 ];
+					}
 
-			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_ATTACK1,
-			                                     "attack", qfalse, qfalse, qfalse ) )
-			{
-				bi->animations[ BANIM_ATTACK1 ] = bi->animations[ BANIM_IDLE1 ];
-			}
+					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_PAIN2,
+						"pain2", qtrue, qfalse, qfalse ) )
+					{
+						bi->animations[ BANIM_PAIN2 ] = bi->animations[ BANIM_IDLE1 ];
+					}
+					
+				default:
+					//Register the rest of the buildable animations
+					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_CONSTRUCT1,
+														"construct", qfalse, qfalse, qfalse ) )
+					{
+						bi->animations[ BANIM_CONSTRUCT1 ] = bi->animations[ BANIM_IDLE1 ];
+					}
 
-			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_ATTACK2,
-			                                     "attack2", qfalse, qfalse, qfalse ) )
-			{
-				bi->animations[ BANIM_ATTACK2 ] = bi->animations[ BANIM_IDLE1 ];
-			}
+					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_ATTACK1,
+														"attack", qfalse, qfalse, qfalse ) )
+					{
+						bi->animations[ BANIM_ATTACK1 ] = bi->animations[ BANIM_IDLE1 ];
+					}
 
-			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_SPAWN1,
-			                                     "spawn", qfalse, qfalse, qfalse ) )
-			{
-				bi->animations[ BANIM_SPAWN1 ] = bi->animations[ BANIM_IDLE1 ];
-			}
+					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_PAIN1,
+														"pain", qfalse, qfalse, qfalse ) )
+					{
+						bi->animations[ BANIM_PAIN1 ] = bi->animations[ BANIM_IDLE1 ];
+					}
 
-			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_SPAWN2,
-			                                     "spawn2", qtrue, qfalse, qfalse ) )
-			{
-				bi->animations[ BANIM_SPAWN2 ] = bi->animations[ BANIM_IDLE1 ];
-			}
+					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_DESTROY1,
+														"destroy", qfalse, qfalse, qfalse ) )
+					{
+						bi->animations[ BANIM_DESTROY1 ] = bi->animations[ BANIM_IDLE1 ];
+					}
 
-			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_PAIN1,
-			                                     "pain", qfalse, qfalse, qfalse ) )
-			{
-				bi->animations[ BANIM_PAIN1 ] = bi->animations[ BANIM_IDLE1 ];
-			}
-
-			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_PAIN2,
-			                                     "pain2", qtrue, qfalse, qfalse ) )
-			{
-				bi->animations[ BANIM_PAIN2 ] = bi->animations[ BANIM_IDLE1 ];
-			}
-
-			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_DESTROY1,
-			                                     "destroy", qfalse, qfalse, qfalse ) )
-			{
-				bi->animations[ BANIM_DESTROY1 ] = bi->animations[ BANIM_IDLE1 ];
-			}
-
-			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_DESTROY2,
-			                                     "destroy2", qfalse, qfalse, qfalse ) )
-			{
-				bi->animations[ BANIM_DESTROY2 ] = bi->animations[ BANIM_IDLE1 ];
-			}
-
-			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_DESTROYED,
-			                                     "destroyed", qtrue, qfalse, qfalse ) )
-			{
-				bi->animations[ BANIM_DESTROYED ] = bi->animations[ BANIM_IDLE1 ];
+					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_DESTROYED,
+														"destroyed", qtrue, qfalse, qfalse ) )
+					{
+						bi->animations[ BANIM_DESTROYED ] = bi->animations[ BANIM_IDLE1 ];
+					}
 			}
 		}
 		else // Not using md5s, fall back to md3s
