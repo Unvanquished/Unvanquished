@@ -493,12 +493,6 @@ void CG_InitBuildables( void )
 					{
 						bi->animations[ BANIM_IDLE2 ] = bi->animations[ BANIM_IDLE1 ];
 					}
-					
-					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_IDLE2,
-						"idle2", qtrue, qfalse, qfalse ) )
-					{
-						bi->animations[ BANIM_IDLE2 ] = bi->animations[ BANIM_IDLE1 ];
-					}
 
 					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_ATTACK2,
 						"attack2", qfalse, qfalse, qfalse ) )
