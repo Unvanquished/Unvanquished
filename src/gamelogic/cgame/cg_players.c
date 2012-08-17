@@ -840,7 +840,7 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 				ci->animations[ TORSO_STAND2 ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_IDLECR, "crouch", qtrue, qfalse, qfalse ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_IDLECR, "crouch", qfalse, qfalse, qfalse ) )
 			{
 				ci->animations[ LEGS_IDLECR ] = ci->animations[ LEGS_IDLE ];
 			}
