@@ -3284,16 +3284,6 @@ void CG_Player( centity_t *cent )
 				{
 					body.skeleton.bones[ ci->legBones[ i ] ] = legsSkeleton.bones[ ci->legBones[ i ] ];
 				}
-// 				// update AABB
-// 				for ( i = 0; i < 3; i++ )
-// 				{
-// 					body.skeleton.bounds[ 0 ][ i ] =
-// 					  cent->pe.torso.skeleton.bounds[ 0 ][ i ] <
-// 					  cent->pe.legs.skeleton.bounds[ 0 ][ i ] ? cent->pe.torso.skeleton.bounds[ 0 ][ i ] : cent->pe.legs.skeleton.bounds[ 0 ][ i ];
-// 					body.skeleton.bounds[ 1 ][ i ] =
-// 					  cent->pe.torso.skeleton.bounds[ 1 ][ i ] >
-// 					  cent->pe.legs.skeleton.bounds[ 1 ][ i ] ? cent->pe.torso.skeleton.bounds[ 1 ][ i ] : cent->pe.legs.skeleton.bounds[ 1 ][ i ];
-// 				}
 			}
 			else
 			{
