@@ -2191,32 +2191,32 @@ static void CG_PlayerAngles( centity_t *cent, vec3_t srcAngles,
 	AnglesToAxis( headAngles, head );
 }
 
-static void CG_PlayerMD5Angles( centity_t *cent, const vec3_t sourceAngles, vec3_t legsAngles, vec3_t torsoAngles, vec3_t headAngles )
+static void CG_PlayerMD5Angles( centity_t *cent, const vec3_t srcAngles, vec3_t legsAngles, vec3_t torsoAngles, vec3_t headAngles )
 {
 	float        dest;
 	static int   movementOffsets[ 8 ] = { 0, 22, 45, -22, 0, 22, -45, -22 };
-	//vec3_t          velocity;
-	//float           speed;
+	vec3_t       velocity;
+	float        speed;
 	int          dir, clientNum;
 	clientInfo_t *ci;
-
-	VectorCopy( sourceAngles, headAngles );
-	headAngles[ YAW ] = AngleNormalize360( headAngles[ YAW ] );
+	
+	VectorCopy( srcAngles, headAngles );
+	headAngles[ YAW ] = AngleMod( headAngles[ YAW ] );
 	VectorClear( legsAngles );
 	VectorClear( torsoAngles );
-
+	
 	// --------- yaw -------------
-
+	
 	// allow yaw to drift a bit
-	if ( ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) != LEGS_IDLE
-	     || ( cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT ) != TORSO_STAND )
+	if ( ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) != LEGS_IDLE ||
+		( cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT ) != TORSO_STAND )
 	{
 		// if not standing still, always point all in the same direction
 		cent->pe.torso.yawing = qtrue; // always center
 		cent->pe.torso.pitching = qtrue; // always center
 		cent->pe.legs.yawing = qtrue; // always center
 	}
-
+	
 	// adjust legs for movement dir
 	if ( cent->currentState.eFlags & EF_DEAD )
 	{
@@ -2225,27 +2225,39 @@ static void CG_PlayerMD5Angles( centity_t *cent, const vec3_t sourceAngles, vec3
 	}
 	else
 	{
-		// TA: did use angles2.. now uses time2.. looks a bit funny but time2 isn't used othwise
+		// did use angles2.. now uses time2.. looks a bit funny but time2 isn't used othwise
 		dir = cent->currentState.time2;
-
+		
 		if ( dir < 0 || dir > 7 )
 		{
 			CG_Error( "Bad player movement angle" );
 		}
 	}
-
+	
 	legsAngles[ YAW ] = headAngles[ YAW ] + movementOffsets[ dir ];
 	torsoAngles[ YAW ] = headAngles[ YAW ] + 0.25 * movementOffsets[ dir ];
-
+	
 	// torso
-	CG_SwingAngles( torsoAngles[ YAW ], 25, 90, cg_swingSpeed.value, &cent->pe.torso.yawAngle, &cent->pe.torso.yawing );
-	CG_SwingAngles( legsAngles[ YAW ], 40, 90, cg_swingSpeed.value, &cent->pe.legs.yawAngle, &cent->pe.legs.yawing );
-
+	if ( cent->currentState.eFlags & EF_DEAD )
+	{
+		CG_SwingAngles( torsoAngles[ YAW ], 0, 0, cg_swingSpeed.value,
+						&cent->pe.torso.yawAngle, &cent->pe.torso.yawing );
+		CG_SwingAngles( legsAngles[ YAW ], 0, 0, cg_swingSpeed.value,
+						&cent->pe.legs.yawAngle, &cent->pe.legs.yawing );
+	}
+	else
+	{
+		CG_SwingAngles( torsoAngles[ YAW ], 25, 90, cg_swingSpeed.value,
+						&cent->pe.torso.yawAngle, &cent->pe.torso.yawing );
+		CG_SwingAngles( legsAngles[ YAW ], 40, 90, cg_swingSpeed.value,
+						&cent->pe.legs.yawAngle, &cent->pe.legs.yawing );
+	}
+	
 	torsoAngles[ YAW ] = cent->pe.torso.yawAngle;
 	legsAngles[ YAW ] = cent->pe.legs.yawAngle;
-
+	
 	// --------- pitch -------------
-
+	
 	// only show a fraction of the pitch angle in the torso
 	if ( headAngles[ PITCH ] > 180 )
 	{
@@ -2255,51 +2267,51 @@ static void CG_PlayerMD5Angles( centity_t *cent, const vec3_t sourceAngles, vec3
 	{
 		dest = headAngles[ PITCH ] * 0.75f;
 	}
-
+	
 	CG_SwingAngles( dest, 15, 30, 0.1f, &cent->pe.torso.pitchAngle, &cent->pe.torso.pitching );
 	torsoAngles[ PITCH ] = cent->pe.torso.pitchAngle;
-
+	
 	//
 	clientNum = cent->currentState.clientNum;
-
+	
 	if ( clientNum >= 0 && clientNum < MAX_CLIENTS )
 	{
 		ci = &cgs.clientinfo[ clientNum ];
-
+		
 		if ( ci->fixedtorso )
 		{
 			torsoAngles[ PITCH ] = 0.0f;
 		}
 	}
-
+	
 	// --------- roll -------------
-
+	
 	// lean towards the direction of travel
-
-	/*  VectorCopy(cent->currentState.pos.trDelta, velocity);
-	        speed = VectorNormalize(velocity);
-	        if(speed)
-	        {
-	                vec3_t          axis[3];
-	                float           side;
-
-	                speed *= 0.02f;
-
-	                AnglesToAxis(legsAngles, axis);
-	                side = speed * DotProduct(velocity, axis[1]);
-	                legsAngles[ROLL] -= side;
-
-	                side = speed * DotProduct(velocity, axis[0]);
-	                legsAngles[PITCH] += side;
-	        }
-	*/
+	VectorCopy( cent->currentState.pos.trDelta, velocity );
+	speed = VectorNormalize( velocity );
+	
+	if ( speed )
+	{
+		vec3_t axis[ 3 ];
+		float  side;
+		
+		speed *= 0.05f;
+		
+		AnglesToAxis( legsAngles, axis );
+		side = speed * DotProduct( velocity, axis[ 1 ] );
+		legsAngles[ ROLL ] -= side;
+		
+		side = speed * DotProduct( velocity, axis[ 0 ] );
+		legsAngles[ PITCH ] += side;
+	}
+	
 	//
 	clientNum = cent->currentState.clientNum;
-
+	
 	if ( clientNum >= 0 && clientNum < MAX_CLIENTS )
 	{
 		ci = &cgs.clientinfo[ clientNum ];
-
+		
 		if ( ci->fixedlegs )
 		{
 			legsAngles[ YAW ] = torsoAngles[ YAW ];
@@ -2307,14 +2319,13 @@ static void CG_PlayerMD5Angles( centity_t *cent, const vec3_t sourceAngles, vec3
 			legsAngles[ ROLL ] = 0.0f;
 		}
 	}
-
+	
 	// pain twitch
 	CG_AddPainTwitch( cent, torsoAngles );
-
+	
 	// pull the angles back out of the hierarchial chain
 	AnglesSubtract( headAngles, torsoAngles, headAngles );
-	AnglesSubtract( torsoAngles, legsAngles, torsoAngles );
-}
+	AnglesSubtract( torsoAngles, legsAngles, torsoAngles );}
 
 #define MODEL_WWSMOOTHTIME 200
 
@@ -3152,13 +3163,14 @@ void CG_Player( centity_t *cent )
 	if ( ci->bodyModel )
 	{
 		vec3_t legsAngles, torsoAngles, headAngles;
-		int    i;
+		int    i, boneIndex;
 		vec3_t playerOrigin, mins, maxs;
+		quat_t rotation;
 
 		if ( ci->gender != GENDER_NEUTER )
 		{
 			CG_PlayerMD5Angles( cent, cent->lerpAngles, legsAngles, torsoAngles, headAngles );
-			AnglesToAxis( torsoAngles, body.axis );
+			AnglesToAxis( legsAngles, body.axis );
 		}
 		else
 		{
@@ -3297,11 +3309,11 @@ void CG_Player( centity_t *cent )
 #if 0
 			boneIndex = trap_R_BoneIndex( body.hModel, "origin" );
 
-			if ( boneIndex >= 0 && boneIndex < cent->pe.legs.skeleton.numBones )
+			if ( boneIndex >= 0 && boneIndex < legsSkeleton.numBones )
 			{
 				// HACK: convert angles to bone system
-				QuatFromAngles( legsQuat, legsAngles[ YAW ], -legsAngles[ ROLL ], legsAngles[ PITCH ] );
-				QuatMultiply0( body.skeleton.bones[ boneIndex ].rotation, legsQuat );
+				QuatFromAngles( rotation, legsAngles[ YAW ], -legsAngles[ ROLL ], legsAngles[ PITCH ] );
+				QuatMultiply0( body.skeleton.bones[ boneIndex ].rotation, rotation );
 			}
 
 #endif
