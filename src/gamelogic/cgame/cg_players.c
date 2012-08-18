@@ -1513,13 +1513,8 @@ static void CG_BlendPlayerLerpFrame( lerpFrame_t *lf )
 
 	if ( ( lf->blendlerp > 0.0f ) && ( cg.time > lf->blendtime ) )
 	{
-#if 0
-		//linear blending
-		lf->blendlerp -= 0.025f;
-#else
 		//exp blending
 		lf->blendlerp -= lf->blendlerp / cg_animBlend.value;
-#endif
 
 		if ( lf->blendlerp <= 0.0f )
 		{
@@ -3042,7 +3037,6 @@ int CG_AmbientLight( vec3_t point )
 }
 
 #define TRACE_DEPTH    32.0f
-#define DEATHANIM_TIME 1650
 
 /*
 ===============
@@ -3236,8 +3230,6 @@ void CG_Player( centity_t *cent )
 		BG_ClassBoundingBox( class, mins, maxs, NULL, NULL, NULL );
 
 		// move the origin closer into the wall with a CapTrace
-#if 1
-
 		if ( cent->currentState.eFlags & EF_WALLCLIMB && !( cent->currentState.eFlags & EF_DEAD ) && !( cg.intermissionStarted ) )
 		{
 			vec3_t  start, end;
@@ -3278,7 +3270,6 @@ void CG_Player( centity_t *cent )
 			VectorCopy( body.origin, body.oldorigin );  // don't positionally lerp at all
 		}
 		else
-#endif
 		{
 			VectorCopy( cent->lerpOrigin, playerOrigin );
 			VectorCopy( playerOrigin, body.origin );
@@ -3305,21 +3296,7 @@ void CG_Player( centity_t *cent )
 				CG_CombineLegSkeleton( &body.skeleton, &legsSkeleton, ci->legBones, ci->numLegBones );
 			}
 
-			// rotate legs
-#if 0
-			boneIndex = trap_R_BoneIndex( body.hModel, "origin" );
-
-			if ( boneIndex >= 0 && boneIndex < legsSkeleton.numBones )
-			{
-				// HACK: convert angles to bone system
-				QuatFromAngles( rotation, legsAngles[ YAW ], 0, 0 );
-				QuatMultiply0( body.skeleton.bones[ boneIndex ].rotation, rotation );
-			}
-
-#endif
-
 			// rotate torso
-#if 1
 			boneIndex = trap_R_BoneIndex( body.hModel, cg_drawBuildableHealth.string );;
 
 			if ( boneIndex >= 0 && boneIndex < torsoSkeleton.numBones )
@@ -3328,21 +3305,6 @@ void CG_Player( centity_t *cent )
 				QuatFromAngles( rotation, torsoAngles[ YAW ], 0, 0 );
 				QuatMultiply0( body.skeleton.bones[ boneIndex ].rotation, rotation );
 			}
-
-#endif
-
-			// rotate head
-#if 0
-			boneIndex = ci->neckControlBone;
-
-			if ( boneIndex >= 0 && boneIndex < cent->pe.legs.skeleton.numBones )
-			{
-				// HACK: convert angles to bone system
-				QuatFromAngles( headQuat, headAngles[ YAW ], headAngles[ ROLL ], -headAngles[ PITCH ] );
-				QuatMultiply0( body.skeleton.bones[ boneIndex ].rotation, headQuat );
-			}
-
-#endif
 		}
 		else
 		{
@@ -3354,18 +3316,6 @@ void CG_Player( centity_t *cent )
 
 		VectorCopy( mins, body.skeleton.bounds[ 0 ]);
 		VectorCopy( maxs, body.skeleton.bounds[ 1 ]);
-		// add body to renderer
-
-#if 0
-		// Tr3B: it might be better to have a tag_mouth bone joint
-		boneIndex = trap_R_BoneIndex( body.hModel, ci->neckControlBoneName );
-
-		if ( boneIndex >= 0 && boneIndex < cent->pe.legs.skeleton.numBones )
-		{
-			CG_BreathPuffs( cent, body.skeleton.bones[ boneIndex ] );
-		}
-
-#endif
 
 		// add the gun / barrel / flash
 		if ( es->weapon != WP_NONE )
@@ -3373,6 +3323,7 @@ void CG_Player( centity_t *cent )
 			CG_AddPlayerWeapon( &body, NULL, cent );
 		}
 
+		// add body to renderer
 		trap_R_AddRefEntityToScene( &body );
 		VectorCopy( surfNormal, cent->pe.lastNormal );
 		return;
