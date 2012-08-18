@@ -256,6 +256,11 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 
 			continue;
 		}
+		else if ( !Q_stricmp( token, "torsoControlBone" ) )
+		{
+			token = COM_Parse2( &text_p );
+			ci->torsoControlBone = trap_R_BoneIndex( ci->bodyModel, token );
+		}
 		else if ( !Q_stricmp( token, "legBones" ) )
 		{
 			token = COM_Parse2( &text_p );
@@ -3297,7 +3302,7 @@ void CG_Player( centity_t *cent )
 			}
 
 			// rotate torso
-			boneIndex = trap_R_BoneIndex( body.hModel, cg_drawBuildableHealth.string );;
+			boneIndex = ci->torsoControlBone;
 
 			if ( boneIndex >= 0 && boneIndex < torsoSkeleton.numBones )
 			{
