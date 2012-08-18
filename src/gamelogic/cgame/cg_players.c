@@ -3312,21 +3312,21 @@ void CG_Player( centity_t *cent )
 			if ( boneIndex >= 0 && boneIndex < legsSkeleton.numBones )
 			{
 				// HACK: convert angles to bone system
-				QuatFromAngles( rotation, legsAngles[ YAW ], -legsAngles[ ROLL ], legsAngles[ PITCH ] );
+				QuatFromAngles( rotation, legsAngles[ YAW ], 0, 0 );
 				QuatMultiply0( body.skeleton.bones[ boneIndex ].rotation, rotation );
 			}
 
 #endif
 
 			// rotate torso
-#if 0
-			boneIndex = ci->torsoControlBone;
+#if 1
+			boneIndex = trap_R_BoneIndex( body.hModel, cg_drawBuildableHealth.string );;
 
-			if ( boneIndex >= 0 && boneIndex < cent->pe.legs.skeleton.numBones )
+			if ( boneIndex >= 0 && boneIndex < torsoSkeleton.numBones )
 			{
 				// HACK: convert angles to bone system
-				QuatFromAngles( torsoQuat, torsoAngles[ YAW ], torsoAngles[ ROLL ], -torsoAngles[ PITCH ] );
-				QuatMultiply0( body.skeleton.bones[ boneIndex ].rotation, torsoQuat );
+				QuatFromAngles( rotation, torsoAngles[ YAW ], 0, 0 );
+				QuatMultiply0( body.skeleton.bones[ boneIndex ].rotation, rotation );
 			}
 
 #endif
