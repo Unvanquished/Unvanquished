@@ -1234,6 +1234,7 @@ static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to )
 	to->gender = from->gender;
 
 	to->numLegBones = from->numLegBones;
+	to->torsoControlBone = from->torsoControlBone;
 	
 	to->legsModel = from->legsModel;
 	to->legsSkin = from->legsSkin;
