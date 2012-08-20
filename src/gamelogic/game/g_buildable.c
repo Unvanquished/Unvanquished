@@ -932,7 +932,7 @@ void AGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 	self->s.eFlags &= ~EF_FIRING; //prevent any firing effects
 	self->powered = qfalse;
 
-	if ( self->spawned )
+	if ( self->spawned && damage < BG_Buildable( self->s.modelindex )->health )
 	{
 		self->nextthink = level.time + 5000;
 	}
