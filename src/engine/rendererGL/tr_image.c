@@ -2298,7 +2298,9 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 #if defined( USE_D3D10 )
 	// TODO
 #else
+#endif
 
+#if 0
 	if ( glConfig.textureCompression == TC_S3TC && !( bits & IF_NOCOMPRESSION ) && Q_stricmpn( imageName, "fonts", 5 ) )
 	{
 		Q_strncpyz( ddsName, imageName, sizeof( ddsName ) );
