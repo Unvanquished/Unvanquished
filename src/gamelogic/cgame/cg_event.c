@@ -787,6 +787,13 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			CG_FireWeapon( cent, WPM_TERTIARY );
 			break;
 
+		case EV_WEAPON_RELOAD:
+			if ( cg_weapons[ es->eventParm ].wim[ WPM_PRIMARY ].reloadSound )
+			{
+				trap_S_StartSound( NULL, es->number, CHAN_WEAPON, cg_weapons[ es->eventParm ].wim[ WPM_PRIMARY ].reloadSound );
+			}
+			break;
+
 			//=================================================================
 
 			//
