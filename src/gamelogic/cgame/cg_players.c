@@ -3222,7 +3222,22 @@ void CG_Player( centity_t *cent )
 
 		// add the body
 		body.hModel = ci->bodyModel;
-		body.customSkin = ci->bodySkin;
+		if ( ( held & ( 1 << UP_LIGHTARMOUR ) ) && !( held & ( 1 << UP_HELMET ) ) )
+		{
+			body.customSkin = cgs.media.larmourLegsSkin;
+		}
+		else if ( !( held & ( 1 << UP_LIGHTARMOUR ) ) && ( held & ( 1 << UP_HELMET ) ) )
+		{
+			body.customSkin = cgs.media.larmourHeadSkin;
+		}
+		else if ( ( held & ( 1 << UP_LIGHTARMOUR ) ) && ( held & ( 1 << UP_HELMET ) ) )
+		{
+			body.customSkin = cgs.media.larmourTorsoSkin;
+		}
+		else
+		{
+			body.customSkin = ci->bodySkin;
+		}
 
 		if ( !body.hModel )
 		{
@@ -3328,6 +3343,23 @@ void CG_Player( centity_t *cent )
 		{
 			CG_AddPlayerWeapon( &body, NULL, cent );
 		}
+
+		CG_PlayerUpgrades( cent, &body );
+
+		//sanity check that particle systems are stopped when dead
+		if ( es->eFlags & EF_DEAD )
+		{
+			if ( CG_IsParticleSystemValid( &cent->muzzlePS ) )
+			{
+				CG_DestroyParticleSystem( &cent->muzzlePS );
+			}
+			
+			if ( CG_IsParticleSystemValid( &cent->jetPackPS ) )
+			{
+				CG_DestroyParticleSystem( &cent->jetPackPS );
+			}
+		}
+		
 
 		// add body to renderer
 		trap_R_AddRefEntityToScene( &body );
