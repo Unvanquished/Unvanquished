@@ -451,7 +451,7 @@ static void CG_DrawPlayerAlienEvos( rectDef_t *rect, float text_x, float text_y,
 			value /= ( float ) ALIEN_CREDITS_PER_KILL;
 		}
 
-		s = va( "%0.1f", value );
+		s = va( "%0.1f", floor( value * 10 ) / 10 );
 		CG_AlignText( rect, s, scale, 0.0f, 0.0f, textalign, textvalign, &tx, &ty );
 
 		UI_Text_Paint( text_x + tx, text_y + ty, scale, color, s, 0, textStyle );
