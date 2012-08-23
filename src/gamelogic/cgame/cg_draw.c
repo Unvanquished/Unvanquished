@@ -889,6 +889,7 @@ static void CG_DrawPlayerTotalAmmoValue( rectDef_t *rect, vec4_t color )
 {
 	int      value;
 	int      valueMarked = -1;
+	int      maxAmmo;
 	qboolean bp = qfalse;
 	weapon_t weapon;
 
@@ -907,7 +908,15 @@ static void CG_DrawPlayerTotalAmmoValue( rectDef_t *rect, vec4_t color )
 			break;
 
 		default:
-			value = cg.snap->ps.Ammo + ( cg.snap->ps.clips * BG_Weapon( weapon )->maxAmmo );
+			maxAmmo = BG_Weapon( weapon )->maxAmmo;
+
+			if ( BG_Weapon( weapon )->usesEnergy &&
+				BG_InventoryContainsUpgrade( UP_BATTPACK, cg.snap->ps.stats ) )
+			{
+				maxAmmo *= BATTPACK_MODIFIER;
+			}
+			
+			value = cg.snap->ps.Ammo + ( cg.snap->ps.clips * maxAmmo );
 			break;
 	}
 
