@@ -1035,7 +1035,7 @@ static void CG_Say( int clientNum, saymode_t mode, const char *text )
 			break;
 
 		case SAY_TEAM:
-			CG_Printf( "%s%s(%s^7%s%s ^%c%s\n",
+			CG_Printf( "%s%s(%s^7)%s%s ^%c%s\n",
 			           ignore, prefix, name, location, maybeColon, color, text );
 			break;
 

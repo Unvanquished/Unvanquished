@@ -872,11 +872,11 @@ int FS_SV_FOpenFileRead( const char *filename, fileHandle_t *fp )
 
 			fsh[ f ].handleFiles.file.o = fopen( ospath, "rb" );
 			fsh[ f ].handleSync = qfalse;
+		}
 
-			if ( !fsh[ f ].handleFiles.file.o )
-			{
-				f = 0;
-			}
+		if ( !fsh[ f ].handleFiles.file.o )
+		{
+			f = 0;
 		}
 	}
 
@@ -1687,8 +1687,10 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 			return FS_filelength( *file );
 		}
 	}
-
-	Com_DPrintf( "Can't find %s\n", filename );
+	if( fs_debug->integer )
+	{
+		Com_Printf( "Can't find %s\n", filename );
+	}
 #ifdef FS_MISSING
 
 	if ( missingFiles )

@@ -848,6 +848,10 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 
 	ri.Printf( PRINT_ALL, " %d %d\n", glConfig.vidWidth, glConfig.vidHeight );
 
+retry:
+	// we come back here if we couldn't get a visual and there's
+	// something we can switch off
+
 	if ( fullscreen )
 	{
 		flags |= SDL_FULLSCREEN;
@@ -1022,6 +1026,13 @@ static int GLimp_SetMode( int mode, qboolean fullscreen, qboolean noborder )
 		glConfig.depthBits = tdepthbits;
 		glConfig.stencilBits = tstencilbits;
 		break;
+	}
+
+	if ( !vidscreen && r_ext_multisample->integer )
+	{
+		ri.Printf( PRINT_ALL, "Multisample is not supported by the video driver and/or hardware.\n");
+		r_ext_multisample->integer = 0;
+		goto retry;
 	}
 
 	glewResult = glewInit();

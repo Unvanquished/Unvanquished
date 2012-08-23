@@ -777,12 +777,12 @@ typedef struct
 
 	sfxHandle_t sounds[ MAX_CUSTOM_SOUNDS ];
 
-	int         firstTorsoBone;
-	int         lastTorsoBone;
+	vec3_t      modelScale;
 
 	int         torsoControlBone;
-	int         neckControlBone;
-	vec3_t      modelScale;
+
+	int         legBones[ MAX_BONES ];
+	int         numLegBones;
 
 	qhandle_t   bodyModel;
 	qhandle_t   bodySkin;
