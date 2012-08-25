@@ -1732,10 +1732,10 @@ static void CG_RunCorpseLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 CG_ClearLerpFrame
 ===============
 */
-static void CG_ClearLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int animationNumber )
+static void CG_ClearLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int animationNumber, refSkeleton_t *skel )
 {
 	lf->frameTime = lf->oldFrameTime = cg.time;
-	CG_SetLerpFrameAnimation( ci, lf, animationNumber, NULL );
+	CG_SetLerpFrameAnimation( ci, lf, animationNumber, skel );
 	lf->oldFrame = lf->frame = lf->animation->firstFrame;
 }
 
@@ -3853,11 +3853,11 @@ void CG_ResetPlayerEntity( centity_t *cent )
 	cent->extrapolated = qfalse;
 
 	CG_ClearLerpFrame( &cgs.clientinfo[ cent->currentState.clientNum ],
-	                   &cent->pe.legs, cent->currentState.legsAnim );
+	                   &cent->pe.legs, cent->currentState.legsAnim, &legsSkeleton );
 	CG_ClearLerpFrame( &cgs.clientinfo[ cent->currentState.clientNum ],
-	                   &cent->pe.torso, cent->currentState.torsoAnim );
+	                   &cent->pe.torso, cent->currentState.torsoAnim, &torsoSkeleton );
 	CG_ClearLerpFrame( &cgs.clientinfo[ cent->currentState.clientNum ],
-	                   &cent->pe.nonseg, cent->currentState.legsAnim );
+	                   &cent->pe.nonseg, cent->currentState.legsAnim, &legsSkeleton );
 
 	BG_EvaluateTrajectory( &cent->currentState.pos, cg.time, cent->lerpOrigin );
 	BG_EvaluateTrajectory( &cent->currentState.apos, cg.time, cent->lerpAngles );
