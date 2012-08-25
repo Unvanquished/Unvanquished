@@ -2622,12 +2622,12 @@ void G_CheckVote( team_t team )
 
 	if ( pass )
 	{
-		cmd = va( "print_tr %s %d %d", ( team == TEAM_NONE ) ? QQ( N_("Vote passed ($1$ - $2$)\n") ) : QQ( N_("Team vote passed ($1$ – $2$)\n") ),
+		cmd = va( "print_tr %s %d %d", ( team == TEAM_NONE ) ? QQ( N_("Vote passed ($1$ – $2$)\n") ) : QQ( N_("Team vote passed ($1$ – $2$)\n") ),
 		            level.voteYes[ team ], level.voteNo[ team ] );
 	}
 	else
 	{
-		cmd = va( "print_tr %s %d %d %.0f", ( team == TEAM_NONE ) ? QQ( N_("Vote failed ($1$ - $2$; $3$% needed)\n") ) : QQ( N_("Team vote failed ($1$ – $2$; $3$% needed)\n") ),
+		cmd = va( "print_tr %s %d %d %.0f", ( team == TEAM_NONE ) ? QQ( N_("Vote failed ($1$ – $2$; $3$% needed)\n") ) : QQ( N_("Team vote failed ($1$ – $2$; $3$% needed)\n") ),
 		            level.voteYes[ team ], level.voteNo[ team ], votePassThreshold * 100 );
 	}
 
