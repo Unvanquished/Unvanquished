@@ -3725,6 +3725,7 @@ static void PM_Weapon( void )
 		//drop the weapon
 		PM_StartTorsoAnim( TORSO_DROP );
 		PM_StartWeaponAnim( WANIM_RELOAD );
+		BG_AddPredictableEventToPlayerstate( EV_WEAPON_RELOAD, pm->ps->weapon, pm->ps );
 
 		pm->ps->weaponTime += BG_Weapon( pm->ps->weapon )->reloadTime;
 		return;
