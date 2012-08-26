@@ -90,33 +90,6 @@ char *Sys_DefaultHomePath( void )
 }
 
 /*
-==================
-chmod OR on a file
-==================
-*/
-void Sys_Chmod( char *file, int mode )
-{
-	struct stat s_buf;
-
-	int         perm;
-
-	if ( stat( file, &s_buf ) != 0 )
-	{
-		Com_Printf( "stat('%s')  failed: errno %d\n", file, errno );
-		return;
-	}
-
-	perm = s_buf.st_mode | mode;
-
-	if ( chmod( file, perm ) != 0 )
-	{
-		Com_Printf( "chmod('%s', %d) failed: errno %d\n", file, perm, errno );
-	}
-
-	Com_DPrintf( "chmod +%d '%s'\n", mode, file );
-}
-
-/*
 ================
 Sys_Milliseconds
 ================

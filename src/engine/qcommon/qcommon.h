@@ -1352,13 +1352,6 @@ dialogResult_t Sys_Dialog( dialogType_t type, const char *message, const char *t
 
 void           Sys_QueEvent( int time, sysEventType_t type, int value, int value2, int ptrLength, void *ptr );
 
-#ifdef __linux__
-// TTimo only on linux .. maybe on Mac too?
-// will OR with the existing mode (chmod ..+..)
-void Sys_Chmod( char *file, int mode );
-
-#endif
-
 void       Hist_Load( void );
 void       Hist_Add( const char *field );
 const char *Hist_Next( void );
