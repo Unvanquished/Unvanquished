@@ -141,10 +141,7 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 	ci->gender = GENDER_MALE;
 	ci->fixedlegs = qfalse;
 	ci->fixedtorso = qfalse;
-	ci->firstTorsoBone = -1; // Set these to -1 since 0 is a valid value
-	ci->lastTorsoBone = -1;
-	ci->torsoControlBone = -1;
-	ci->neckControlBone = -1;
+	ci->numLegBones = 0;
 	ci->modelScale[ 0 ] = 1;
 	ci->modelScale[ 1 ] = 1;
 	ci->modelScale[ 2 ] = 1;
@@ -243,30 +240,6 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 			ci->fixedtorso = qtrue;
 			continue;
 		}
-		else if ( !Q_stricmp( token, "firstTorsoBoneName" ) )
-		{
-			token = COM_Parse2( &text_p );
-			ci->firstTorsoBone = trap_R_BoneIndex( ci->bodyModel, token );
-			continue;
-		}
-		else if ( !Q_stricmp( token, "lastTorsoBoneName" ) )
-		{
-			token = COM_Parse2( &text_p );
-			ci->lastTorsoBone = trap_R_BoneIndex( ci->bodyModel, token );
-			continue;
-		}
-		else if ( !Q_stricmp( token, "torsoControlBoneName" ) )
-		{
-			token = COM_Parse2( &text_p );
-			ci->torsoControlBone = trap_R_BoneIndex( ci->bodyModel, token );
-			continue;
-		}
-		else if ( !Q_stricmp( token, "neckControlBoneName" ) )
-		{
-			token = COM_Parse2( &text_p );
-			ci->neckControlBone = trap_R_BoneIndex( ci->bodyModel, token );
-			continue;
-		}
 		else if ( !Q_stricmp( token, "modelScale" ) )
 		{
 			for ( i = 0; i < 3; i++ )
@@ -279,6 +252,37 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 				}
 
 				ci->modelScale[ i ] = atof( token );
+			}
+
+			continue;
+		}
+		else if ( !Q_stricmp( token, "torsoControlBone" ) )
+		{
+			token = COM_Parse2( &text_p );
+			ci->torsoControlBone = trap_R_BoneIndex( ci->bodyModel, token );
+		}
+		else if ( !Q_stricmp( token, "legBones" ) )
+		{
+			token = COM_Parse2( &text_p );
+
+			if ( token[0] != '{' )
+			{
+				Com_Printf( _( "^1ERROR^7: Expected '{' but found '%s' in character.cfg" ), token );
+			}
+
+			i = 0;
+			
+			while( 1 )
+			{
+				token = COM_Parse2( &text_p );
+
+				if ( !token || token[ 0 ] == '}' )
+				{
+					ci->numLegBones = i;
+					break;
+				}
+				
+				ci->legBones[ i++ ] = trap_R_BoneIndex( ci->bodyModel, token );
 			}
 
 			continue;
@@ -841,7 +845,7 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 				ci->animations[ TORSO_STAND2 ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_IDLECR, "crouch", qtrue, qfalse, qfalse ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_IDLECR, "crouch", qfalse, qfalse, qfalse ) )
 			{
 				ci->animations[ LEGS_IDLECR ] = ci->animations[ LEGS_IDLE ];
 			}
@@ -1229,12 +1233,9 @@ static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to )
 	to->footsteps = from->footsteps;
 	to->gender = from->gender;
 
-	to->firstTorsoBone = from->firstTorsoBone;
-	to->lastTorsoBone = from->lastTorsoBone;
-
+	to->numLegBones = from->numLegBones;
 	to->torsoControlBone = from->torsoControlBone;
-	to->neckControlBone = from->neckControlBone;
-
+	
 	to->legsModel = from->legsModel;
 	to->legsSkin = from->legsSkin;
 	to->torsoModel = from->torsoModel;
@@ -1252,6 +1253,7 @@ static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to )
 	memcpy( to->sounds, from->sounds, sizeof( to->sounds ) );
 	memcpy( to->customFootsteps, from->customFootsteps, sizeof( to->customFootsteps ) );
 	memcpy( to->customMetalFootsteps, from->customMetalFootsteps, sizeof( to->customMetalFootsteps ) );
+	memcpy( to->legBones, from->legBones, sizeof( to->legBones ) );
 }
 
 /*
@@ -1517,13 +1519,8 @@ static void CG_BlendPlayerLerpFrame( lerpFrame_t *lf )
 
 	if ( ( lf->blendlerp > 0.0f ) && ( cg.time > lf->blendtime ) )
 	{
-#if 0
-		//linear blending
-		lf->blendlerp -= 0.025f;
-#else
 		//exp blending
 		lf->blendlerp -= lf->blendlerp / cg_animBlend.value;
-#endif
 
 		if ( lf->blendlerp <= 0.0f )
 		{
@@ -1540,6 +1537,20 @@ static void CG_BlendPlayerLerpFrame( lerpFrame_t *lf )
 		debug_anim_blend = lf->blendlerp;
 	}
 }
+
+static void CG_CombineLegSkeleton( refSkeleton_t *dest, refSkeleton_t *legs, int *legBones, int numBones )
+{
+	int i;
+	
+	dest->type = SK_RELATIVE;
+	
+	for ( i = 0; i < numBones; i++ )
+	{
+		dest->bones[ legBones[ i ] ] = legs->bones[ legBones[ i ] ];
+	}
+}
+
+
 
 /*
 ===============
@@ -2181,32 +2192,32 @@ static void CG_PlayerAngles( centity_t *cent, vec3_t srcAngles,
 	AnglesToAxis( headAngles, head );
 }
 
-static void CG_PlayerMD5Angles( centity_t *cent, const vec3_t sourceAngles, vec3_t legsAngles, vec3_t torsoAngles, vec3_t headAngles )
+static void CG_PlayerMD5Angles( centity_t *cent, const vec3_t srcAngles, vec3_t legsAngles, vec3_t torsoAngles, vec3_t headAngles )
 {
 	float        dest;
 	static int   movementOffsets[ 8 ] = { 0, 22, 45, -22, 0, 22, -45, -22 };
-	//vec3_t          velocity;
-	//float           speed;
+	vec3_t       velocity;
+	float        speed;
 	int          dir, clientNum;
 	clientInfo_t *ci;
-
-	VectorCopy( sourceAngles, headAngles );
-	headAngles[ YAW ] = AngleNormalize360( headAngles[ YAW ] );
+	
+	VectorCopy( srcAngles, headAngles );
+	headAngles[ YAW ] = AngleMod( headAngles[ YAW ] );
 	VectorClear( legsAngles );
 	VectorClear( torsoAngles );
-
+	
 	// --------- yaw -------------
-
+	
 	// allow yaw to drift a bit
-	if ( ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) != LEGS_IDLE
-	     || ( cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT ) != TORSO_STAND )
+	if ( ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) != LEGS_IDLE ||
+		( cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT ) != TORSO_STAND )
 	{
 		// if not standing still, always point all in the same direction
 		cent->pe.torso.yawing = qtrue; // always center
 		cent->pe.torso.pitching = qtrue; // always center
 		cent->pe.legs.yawing = qtrue; // always center
 	}
-
+	
 	// adjust legs for movement dir
 	if ( cent->currentState.eFlags & EF_DEAD )
 	{
@@ -2215,27 +2226,39 @@ static void CG_PlayerMD5Angles( centity_t *cent, const vec3_t sourceAngles, vec3
 	}
 	else
 	{
-		// TA: did use angles2.. now uses time2.. looks a bit funny but time2 isn't used othwise
+		// did use angles2.. now uses time2.. looks a bit funny but time2 isn't used othwise
 		dir = cent->currentState.time2;
-
+		
 		if ( dir < 0 || dir > 7 )
 		{
 			CG_Error( "Bad player movement angle" );
 		}
 	}
-
+	
 	legsAngles[ YAW ] = headAngles[ YAW ] + movementOffsets[ dir ];
 	torsoAngles[ YAW ] = headAngles[ YAW ] + 0.25 * movementOffsets[ dir ];
-
+	
 	// torso
-	CG_SwingAngles( torsoAngles[ YAW ], 25, 90, cg_swingSpeed.value, &cent->pe.torso.yawAngle, &cent->pe.torso.yawing );
-	CG_SwingAngles( legsAngles[ YAW ], 40, 90, cg_swingSpeed.value, &cent->pe.legs.yawAngle, &cent->pe.legs.yawing );
-
+	if ( cent->currentState.eFlags & EF_DEAD )
+	{
+		CG_SwingAngles( torsoAngles[ YAW ], 0, 0, cg_swingSpeed.value,
+						&cent->pe.torso.yawAngle, &cent->pe.torso.yawing );
+		CG_SwingAngles( legsAngles[ YAW ], 0, 0, cg_swingSpeed.value,
+						&cent->pe.legs.yawAngle, &cent->pe.legs.yawing );
+	}
+	else
+	{
+		CG_SwingAngles( torsoAngles[ YAW ], 25, 90, cg_swingSpeed.value,
+						&cent->pe.torso.yawAngle, &cent->pe.torso.yawing );
+		CG_SwingAngles( legsAngles[ YAW ], 40, 90, cg_swingSpeed.value,
+						&cent->pe.legs.yawAngle, &cent->pe.legs.yawing );
+	}
+	
 	torsoAngles[ YAW ] = cent->pe.torso.yawAngle;
 	legsAngles[ YAW ] = cent->pe.legs.yawAngle;
-
+	
 	// --------- pitch -------------
-
+	
 	// only show a fraction of the pitch angle in the torso
 	if ( headAngles[ PITCH ] > 180 )
 	{
@@ -2245,51 +2268,51 @@ static void CG_PlayerMD5Angles( centity_t *cent, const vec3_t sourceAngles, vec3
 	{
 		dest = headAngles[ PITCH ] * 0.75f;
 	}
-
+	
 	CG_SwingAngles( dest, 15, 30, 0.1f, &cent->pe.torso.pitchAngle, &cent->pe.torso.pitching );
 	torsoAngles[ PITCH ] = cent->pe.torso.pitchAngle;
-
+	
 	//
 	clientNum = cent->currentState.clientNum;
-
+	
 	if ( clientNum >= 0 && clientNum < MAX_CLIENTS )
 	{
 		ci = &cgs.clientinfo[ clientNum ];
-
+		
 		if ( ci->fixedtorso )
 		{
 			torsoAngles[ PITCH ] = 0.0f;
 		}
 	}
-
+	
 	// --------- roll -------------
-
+	
 	// lean towards the direction of travel
-
-	/*  VectorCopy(cent->currentState.pos.trDelta, velocity);
-	        speed = VectorNormalize(velocity);
-	        if(speed)
-	        {
-	                vec3_t          axis[3];
-	                float           side;
-
-	                speed *= 0.02f;
-
-	                AnglesToAxis(legsAngles, axis);
-	                side = speed * DotProduct(velocity, axis[1]);
-	                legsAngles[ROLL] -= side;
-
-	                side = speed * DotProduct(velocity, axis[0]);
-	                legsAngles[PITCH] += side;
-	        }
-	*/
+	VectorCopy( cent->currentState.pos.trDelta, velocity );
+	speed = VectorNormalize( velocity );
+	
+	if ( speed )
+	{
+		vec3_t axis[ 3 ];
+		float  side;
+		
+		speed *= 0.05f;
+		
+		AnglesToAxis( legsAngles, axis );
+		side = speed * DotProduct( velocity, axis[ 1 ] );
+		legsAngles[ ROLL ] -= side;
+		
+		side = speed * DotProduct( velocity, axis[ 0 ] );
+		legsAngles[ PITCH ] += side;
+	}
+	
 	//
 	clientNum = cent->currentState.clientNum;
-
+	
 	if ( clientNum >= 0 && clientNum < MAX_CLIENTS )
 	{
 		ci = &cgs.clientinfo[ clientNum ];
-
+		
 		if ( ci->fixedlegs )
 		{
 			legsAngles[ YAW ] = torsoAngles[ YAW ];
@@ -2297,14 +2320,13 @@ static void CG_PlayerMD5Angles( centity_t *cent, const vec3_t sourceAngles, vec3
 			legsAngles[ ROLL ] = 0.0f;
 		}
 	}
-
+	
 	// pain twitch
 	CG_AddPainTwitch( cent, torsoAngles );
-
+	
 	// pull the angles back out of the hierarchial chain
 	AnglesSubtract( headAngles, torsoAngles, headAngles );
-	AnglesSubtract( torsoAngles, legsAngles, torsoAngles );
-}
+	AnglesSubtract( torsoAngles, legsAngles, torsoAngles );}
 
 #define MODEL_WWSMOOTHTIME 200
 
@@ -3021,7 +3043,6 @@ int CG_AmbientLight( vec3_t point )
 }
 
 #define TRACE_DEPTH    32.0f
-#define DEATHANIM_TIME 1650
 
 /*
 ===============
@@ -3142,21 +3163,14 @@ void CG_Player( centity_t *cent )
 	if ( ci->bodyModel )
 	{
 		vec3_t legsAngles, torsoAngles, headAngles;
-#if 0
-		quat_t torsoQuat;
-		quat_t headQuat;
-		quat_t legsQuat;
-		int    boneIndex;
-#endif
-		int    i;
-		int    firstTorsoBone;
-		int    lastTorsoBone;
+		int    i, boneIndex;
 		vec3_t playerOrigin, mins, maxs;
+		quat_t rotation;
 
 		if ( ci->gender != GENDER_NEUTER )
 		{
 			CG_PlayerMD5Angles( cent, cent->lerpAngles, legsAngles, torsoAngles, headAngles );
-			AnglesToAxis( torsoAngles, body.axis );
+			AnglesToAxis( legsAngles, body.axis );
 		}
 		else
 		{
@@ -3186,39 +3200,6 @@ void CG_Player( centity_t *cent )
 			CG_PlayerMD5AlienAnimation( cent );
 		}
 
-		// WIP: death effect
-#if 0
-
-		if ( cent->currentState.eFlags & EF_DEAD )
-		{
-			int time;
-
-			if ( cent->pe.deathTime <= 0 )
-			{
-				cent->pe.deathTime = cg.time;
-				cent->pe.deathScale = 0.0f;
-			}
-
-			time = ( DEATHANIM_TIME - ( cg.time - cent->pe.deathTime ) );
-
-			cent->pe.deathScale = 1.0f - ( 1.0f / DEATHANIM_TIME * time );
-
-			if ( cent->pe.deathScale >= 1.0f )
-			{
-				return;
-			}
-
-			body.shaderTime = -cent->pe.deathScale;
-		}
-		else
-#endif
-//      {
-//              cent->pe.deathTime = 0;
-//              cent->pe.deathScale = 0.0f;
-//
-//              body.shaderTime = 0.0f;
-//      }
-
 		// add the talk baloon or disconnect icon
 		CG_PlayerSprites( cent );
 
@@ -3241,7 +3222,22 @@ void CG_Player( centity_t *cent )
 
 		// add the body
 		body.hModel = ci->bodyModel;
-		body.customSkin = ci->bodySkin;
+		if ( ( held & ( 1 << UP_LIGHTARMOUR ) ) && !( held & ( 1 << UP_HELMET ) ) )
+		{
+			body.customSkin = cgs.media.larmourLegsSkin;
+		}
+		else if ( !( held & ( 1 << UP_LIGHTARMOUR ) ) && ( held & ( 1 << UP_HELMET ) ) )
+		{
+			body.customSkin = cgs.media.larmourHeadSkin;
+		}
+		else if ( ( held & ( 1 << UP_LIGHTARMOUR ) ) && ( held & ( 1 << UP_HELMET ) ) )
+		{
+			body.customSkin = cgs.media.larmourTorsoSkin;
+		}
+		else
+		{
+			body.customSkin = ci->bodySkin;
+		}
 
 		if ( !body.hModel )
 		{
@@ -3255,8 +3251,6 @@ void CG_Player( centity_t *cent )
 		BG_ClassBoundingBox( class, mins, maxs, NULL, NULL, NULL );
 
 		// move the origin closer into the wall with a CapTrace
-#if 1
-
 		if ( cent->currentState.eFlags & EF_WALLCLIMB && !( cent->currentState.eFlags & EF_DEAD ) && !( cg.intermissionStarted ) )
 		{
 			vec3_t  start, end;
@@ -3297,7 +3291,6 @@ void CG_Player( centity_t *cent )
 			VectorCopy( body.origin, body.oldorigin );  // don't positionally lerp at all
 		}
 		else
-#endif
 		{
 			VectorCopy( cent->lerpOrigin, playerOrigin );
 			VectorCopy( playerOrigin, body.origin );
@@ -3312,88 +3305,27 @@ void CG_Player( centity_t *cent )
 		if ( ci->gender != GENDER_NEUTER )
 		{
 			// copy legs skeleton to have a base
-			body.skeleton = legsSkeleton;
+			body.skeleton = torsoSkeleton;
 			if ( torsoSkeleton.numBones != legsSkeleton.numBones )
 			{
 				CG_Error( "cent->pe.legs.skeleton.numBones != cent->pe.torso.skeleton.numBones" );
 			}
 
 			// combine legs and torso skeletons
-#if 1
-			firstTorsoBone = ci->firstTorsoBone;
-
-			if ( firstTorsoBone >= 0 && firstTorsoBone < torsoSkeleton.numBones )
+			if ( ci->numLegBones )
 			{
-				lastTorsoBone = ci->lastTorsoBone;
-
-				if ( lastTorsoBone >= 0 && lastTorsoBone < torsoSkeleton.numBones )
-				{
-					// copy torso bones
-					for ( i = firstTorsoBone; i < lastTorsoBone; i++ )
-					{
-						memcpy( &body.skeleton.bones[ i ], &torsoSkeleton.bones[ i ], sizeof( refBone_t ) );
-					}
-				}
-
-				body.skeleton.type = SK_RELATIVE;
-
-// 				// update AABB
-// 				for ( i = 0; i < 3; i++ )
-// 				{
-// 					body.skeleton.bounds[ 0 ][ i ] =
-// 					  cent->pe.torso.skeleton.bounds[ 0 ][ i ] <
-// 					  cent->pe.legs.skeleton.bounds[ 0 ][ i ] ? cent->pe.torso.skeleton.bounds[ 0 ][ i ] : cent->pe.legs.skeleton.bounds[ 0 ][ i ];
-// 					body.skeleton.bounds[ 1 ][ i ] =
-// 					  cent->pe.torso.skeleton.bounds[ 1 ][ i ] >
-// 					  cent->pe.legs.skeleton.bounds[ 1 ][ i ] ? cent->pe.torso.skeleton.bounds[ 1 ][ i ] : cent->pe.legs.skeleton.bounds[ 1 ][ i ];
-// 				}
+				CG_CombineLegSkeleton( &body.skeleton, &legsSkeleton, ci->legBones, ci->numLegBones );
 			}
-			else
-			{
-				// bad no hips found
-				body.skeleton.type = SK_INVALID;
-			}
-
-#endif
-
-			// rotate legs
-#if 0
-			boneIndex = trap_R_BoneIndex( body.hModel, "origin" );
-
-			if ( boneIndex >= 0 && boneIndex < cent->pe.legs.skeleton.numBones )
-			{
-				// HACK: convert angles to bone system
-				QuatFromAngles( legsQuat, legsAngles[ YAW ], -legsAngles[ ROLL ], legsAngles[ PITCH ] );
-				QuatMultiply0( body.skeleton.bones[ boneIndex ].rotation, legsQuat );
-			}
-
-#endif
 
 			// rotate torso
-#if 0
 			boneIndex = ci->torsoControlBone;
 
-			if ( boneIndex >= 0 && boneIndex < cent->pe.legs.skeleton.numBones )
+			if ( boneIndex >= 0 && boneIndex < torsoSkeleton.numBones )
 			{
 				// HACK: convert angles to bone system
-				QuatFromAngles( torsoQuat, torsoAngles[ YAW ], torsoAngles[ ROLL ], -torsoAngles[ PITCH ] );
-				QuatMultiply0( body.skeleton.bones[ boneIndex ].rotation, torsoQuat );
+				QuatFromAngles( rotation, torsoAngles[ YAW ], 0, 0 );
+				QuatMultiply0( body.skeleton.bones[ boneIndex ].rotation, rotation );
 			}
-
-#endif
-
-			// rotate head
-#if 0
-			boneIndex = ci->neckControlBone;
-
-			if ( boneIndex >= 0 && boneIndex < cent->pe.legs.skeleton.numBones )
-			{
-				// HACK: convert angles to bone system
-				QuatFromAngles( headQuat, headAngles[ YAW ], headAngles[ ROLL ], -headAngles[ PITCH ] );
-				QuatMultiply0( body.skeleton.bones[ boneIndex ].rotation, headQuat );
-			}
-
-#endif
 		}
 		else
 		{
@@ -3405,18 +3337,6 @@ void CG_Player( centity_t *cent )
 
 		VectorCopy( mins, body.skeleton.bounds[ 0 ]);
 		VectorCopy( maxs, body.skeleton.bounds[ 1 ]);
-		// add body to renderer
-
-#if 0
-		// Tr3B: it might be better to have a tag_mouth bone joint
-		boneIndex = trap_R_BoneIndex( body.hModel, ci->neckControlBoneName );
-
-		if ( boneIndex >= 0 && boneIndex < cent->pe.legs.skeleton.numBones )
-		{
-			CG_BreathPuffs( cent, body.skeleton.bones[ boneIndex ] );
-		}
-
-#endif
 
 		// add the gun / barrel / flash
 		if ( es->weapon != WP_NONE )
@@ -3424,6 +3344,24 @@ void CG_Player( centity_t *cent )
 			CG_AddPlayerWeapon( &body, NULL, cent );
 		}
 
+		CG_PlayerUpgrades( cent, &body );
+
+		//sanity check that particle systems are stopped when dead
+		if ( es->eFlags & EF_DEAD )
+		{
+			if ( CG_IsParticleSystemValid( &cent->muzzlePS ) )
+			{
+				CG_DestroyParticleSystem( &cent->muzzlePS );
+			}
+			
+			if ( CG_IsParticleSystemValid( &cent->jetPackPS ) )
+			{
+				CG_DestroyParticleSystem( &cent->jetPackPS );
+			}
+		}
+		
+
+		// add body to renderer
 		trap_R_AddRefEntityToScene( &body );
 		VectorCopy( surfNormal, cent->pe.lastNormal );
 		return;
