@@ -583,6 +583,18 @@ static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p 
 
 			continue;
 		}
+		else if ( !Q_stricmp( token, "reloadSound" ) )
+		{
+			token = COM_Parse( text_p );
+
+			if ( !token )
+			{
+				break;
+			}
+
+			wim->reloadSound = trap_S_RegisterSound( token, qfalse );
+			continue;
+		}
 		else if ( !Q_stricmp( token, "}" ) )
 		{
 			return qtrue; //reached the end of this weapon section
