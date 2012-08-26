@@ -1402,9 +1402,13 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		return;
 	}
 
-	if( attacker->client->pers.namelog->strip &&
-	    targ->s.eType == ET_BUILDABLE &&
-	    attacker->client->ps.weapon != WP_HBUILD )
+	if( !attacker->client )
+	{
+		// nothing to do
+	}
+	else if( attacker->client->pers.namelog->strip &&
+	         targ->s.eType == ET_BUILDABLE &&
+	         attacker->client->ps.weapon != WP_HBUILD )
 	{ // cicho-sza add on:
 		if ( g_strip_structDmgPrcnt.integer <= 0 ) return;
 
