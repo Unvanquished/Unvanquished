@@ -15,6 +15,10 @@ Dependencies
     - Newton (provided)
     - libgmp
     - GLEW
+    - theora
+    - speex
+    - speexdsp
+    - nettle
 
 Build Instructions
 ------------------
