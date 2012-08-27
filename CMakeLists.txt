@@ -421,7 +421,7 @@ set( RENDERERGLLIST
   ${MOUNT_DIR}/engine/rendererGL/tr_fbo.c
   ${MOUNT_DIR}/engine/rendererGL/tr_flares.c
   ${MOUNT_DIR}/engine/rendererGL/tr_fog.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_font.c
+  ${MOUNT_DIR}/engine/renderer/tr_font.c
   ${MOUNT_DIR}/engine/rendererGL/tr_image.c
   ${MOUNT_DIR}/engine/rendererGL/tr_image_dds.c
   ${MOUNT_DIR}/engine/rendererGL/tr_image_exr.cpp
