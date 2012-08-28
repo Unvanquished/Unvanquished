@@ -1311,14 +1311,11 @@ qboolean Sys_Mkdir( const char *path );
 FILE     *Sys_Mkfifo( const char *ospath );
 char     *Sys_Cwd( void );
 char     *Sys_DefaultBasePath( void );
-char     *Sys_DefaultInstallPath( void );
 
 #ifdef MACOS_X
 char     *Sys_DefaultAppPath( void );
-
 #endif
 
-void Sys_SetDefaultLibPath( const char *path );
 char *Sys_DefaultLibPath( void );
 
 char         *Sys_DefaultHomePath( void );
