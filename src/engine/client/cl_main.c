@@ -1919,7 +1919,7 @@ void CL_RequestMotd( void )
 			break;
 	}
 
-	Com_DPrintf(_( "%s resolved to %s\n"), MASTER_SERVER_NAME,
+	Com_DPrintf( "%s resolved to %s\n", MASTER_SERVER_NAME,
 	             NET_AdrToStringwPort( cls.updateServer ) );
 
 	info[ 0 ] = 0;
@@ -2093,7 +2093,7 @@ void CL_Connect_f( void )
 
 	serverString = NET_AdrToStringwPort( clc.serverAddress );
 
-	Com_DPrintf(_( "%s resolved to %s\n"), cls.servername, serverString );
+	Com_DPrintf( "%s resolved to %s\n", cls.servername, serverString );
 
 	// if we aren't playing on a LAN, we need to authenticate
 	// with the cd key
@@ -3718,7 +3718,7 @@ qboolean CL_WWWBadChecksum( const char *pakname )
 
 		strcat( clc.badChecksumList, "@" );
 		strcat( clc.badChecksumList, pakname );
-		Com_DPrintf(_( "bad checksums: %s\n"), clc.badChecksumList );
+		Com_DPrintf( "bad checksums: %s\n", clc.badChecksumList );
 		return qtrue;
 	}
 
@@ -4620,7 +4620,7 @@ void CL_Shutdown( void )
 		return;
 	}
 
-	Com_DPrintf("%s", _( "----- CL_Shutdown -----\n" ));
+	Com_DPrintf( "----- CL_Shutdown -----\n" );
 
 	if ( recursive )
 	{
@@ -5147,7 +5147,7 @@ void CL_LocalServers_f( void )
 	int      i, j;
 	netadr_t to;
 
-	Com_DPrintf("%s", _( "Scanning for servers on the local network…\n" ));
+	Com_DPrintf( "Scanning for servers on the local network…\n" );
 
 	// reset the list, waiting for response
 	cls.numlocalservers = 0;
