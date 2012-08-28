@@ -3178,8 +3178,8 @@ void FS_NewDir_f( void )
 
 	if ( Cmd_Argc() < 2 )
 	{
-		Com_Printf(_( "usage: fdir <filter>\n" ));
-		Com_Printf(_( "example: fdir *q3dm*.bsp\n" ));
+		Com_Printf(_( "usage: fdir <filter>\n"
+		              "example: fdir *q3dm*.bsp\n" ));
 		return;
 	}
 
