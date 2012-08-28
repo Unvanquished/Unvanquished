@@ -93,6 +93,91 @@ void CG_InitUpgrades( void )
 	}
 }
 
+ /*
+============================
+CG_ParseWeaponAnimationFile
+
+Reads the animation.cfg for weapons
+============================
+*/
+
+static qboolean CG_ParseWeaponAnimationFile( const char *filename, weaponInfo_t *wi )
+{
+	char         *text_p, *prev;
+	int          len;
+	int          i;
+	char         *token;
+	float        fps;
+	int          skip;
+	char         text[ 20000 ];
+	fileHandle_t f;
+	animation_t  *animations;
+
+	animations = wi->animations;
+
+	// load the file
+	len = trap_FS_FOpenFile( filename, &f, FS_READ );
+
+	if ( len < 0 )
+	{
+		return qfalse;
+	}
+
+	if ( len == 0 || len >= sizeof( text ) - 1 )
+	{
+		CG_Printf( len == 0 ? _( "File %s is empty\n" ) : _( "File %s is too long\n" ) , filename );
+		trap_FS_FCloseFile( f );
+		return qfalse;
+	}
+
+	trap_FS_Read( text, len, f );
+	text[ len ] = 0;
+	trap_FS_FCloseFile( f );
+
+	// parse the text
+	text_p = text;
+	skip = 0; // quite the compiler warning
+
+	for ( i = 0; i < MAX_WEAPON_ANIMATIONS; i++ )
+	{
+		token = COM_Parse2( &text_p );
+		animations[ i ].firstFrame = atoi( token );
+
+		token = COM_Parse2( &text_p );
+		animations[ i ].numFrames = atoi( token );
+		animations[ i ].reversed = qfalse;
+		animations[ i ].flipflop = qfalse;
+
+		if ( animations[ i ].numFrames < 0 )
+		{
+			animations[ i ].numFrames *= -1;
+			animations[ i ].reversed = qtrue;
+		}
+
+		token = COM_Parse2( &text_p );
+		animations[ i ].loopFrames = atoi( token );
+
+		token = COM_Parse2( &text_p );
+		fps = atof( token );
+
+		if ( fps == 0 )
+		{
+			fps = 1;
+		}
+
+		animations[ i ].frameLerp = 1000 / fps;
+		animations[ i ].initialLerp = 1000 / fps;
+	}
+
+	if ( i != MAX_WEAPON_ANIMATIONS )
+	{
+		CG_Printf( _( "Error parsing weapon animation file: %s"), filename );
+		return qfalse;
+	}
+
+	return qtrue;
+}
+
 /*
 ===============
 CG_ParseWeaponModeSection
@@ -1043,6 +1128,12 @@ void CG_RegisterWeapon( int weaponNum )
 		Com_Printf( _( S_COLOR_RED  "ERROR: failed to parse %s\n"), path );
 	}
 
+	if( !weaponInfo->md5 )
+	{
+		CG_ParseWeaponAnimationFile( va( "models/weapons/%s/animation.cfg", BG_Weapon( weaponNum )->name ), weaponInfo );
+	}
+
+
 	// calc midpoint for rotation
 	trap_R_ModelBounds( weaponInfo->weaponModel, mins, maxs );
 
@@ -1131,7 +1222,7 @@ static void CG_WeaponAnimation( centity_t *cent, int *old, int *now, float *back
 	entityState_t *es = &cent->currentState;
 
 	// see if the animation sequence is switching
-	if ( es->weaponAnim != lf->animationNumber || !lf->animation || ( lf->animation && !lf->animation->handle ) )
+	if ( es->weaponAnim != lf->animationNumber || !lf->animation || ( cg_weapons[ cent->currentState.weapon ].md5 && !lf->animation->handle ) )
 	{
 		CG_SetWeaponLerpFrameAnimation( es->weapon, lf, es->weaponAnim );
 	}
