@@ -76,4 +76,3 @@ void     Sys_PrintCpuInfo( void );
 void     Sys_PrintMemoryInfo( void );
 
 int      Sys_PID( void );
-qboolean Sys_PIDIsRunning( int pid );

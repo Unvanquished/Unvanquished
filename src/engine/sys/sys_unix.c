@@ -1108,16 +1108,6 @@ int Sys_PID( void )
 
 /*
 ==============
-Sys_PIDIsRunning
-==============
-*/
-qboolean Sys_PIDIsRunning( int pid )
-{
-	return kill( pid, 0 ) == 0;
-}
-
-/*
-==============
 Sys_IsNumLockDown
 ==============
 */
