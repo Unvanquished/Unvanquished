@@ -880,7 +880,7 @@ static int Sys_KdialogCommand( dialogType_t type, const char *message, const cha
 			break;
 	}
 
-	return Sys_System( "kdialog", options, "--title", title, message, NULL );
+	return Sys_System( "kdialog", options, "--title", title, "--", message, NULL );
 }
 
 /*
