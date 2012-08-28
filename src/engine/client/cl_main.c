@@ -4100,7 +4100,7 @@ CL_RefMalloc
 ============
 */
 #ifdef ZONE_DEBUG
-void           *CL_RefMallocDebug( int size, char *label, char *file, int line )
+void           *CL_RefMallocDebug( int size, const char *label, const char *file, int line )
 {
 	return Z_TagMallocDebug( size, TAG_RENDERER, label, file, line );
 }

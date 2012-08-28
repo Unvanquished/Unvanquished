@@ -394,7 +394,7 @@ extern int memcmp( void *, void *, size_t );
 
 #ifdef HUNK_DEBUG
 #define Hunk_Alloc( size, preference ) Hunk_AllocDebug( size, preference, # size, __FILE__, __LINE__ )
-	void *Hunk_AllocDebug( int size, ha_pref preference, char *label, char *file, int line );
+	void *Hunk_AllocDebug( int size, ha_pref preference, const char *label, const char *file, int line );
 
 #else
 	void *Hunk_Alloc( int size, ha_pref preference );

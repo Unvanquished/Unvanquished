@@ -209,7 +209,7 @@ typedef struct
 	// won't be freed
 	void ( *Hunk_Clear )( void );
 #ifdef HUNK_DEBUG
-	void            *( *Hunk_AllocDebug )( int size, ha_pref pref, char *label, char *file, int line );
+	void            *( *Hunk_AllocDebug )( int size, ha_pref pref, const char *label, const char *file, int line );
 #else
 	void            *( *Hunk_Alloc )( int size, ha_pref pref );
 #endif
@@ -218,7 +218,7 @@ typedef struct
 
 	// dynamic memory allocator for things that need to be freed
 #ifdef ZONE_DEBUG
-	void            *( *Z_MallocDebug )( int bytes, char *label, char *file, int line );
+	void            *( *Z_MallocDebug )( int bytes, const char *label, const char *file, int line );
 #else
 	void            *( *Z_Malloc )( int bytes );
 #endif
