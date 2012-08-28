@@ -3166,7 +3166,7 @@ void CG_Player( centity_t *cent )
 	if ( ci->bodyModel )
 	{
 		vec3_t legsAngles, torsoAngles, headAngles;
-		int    i, boneIndex;
+		int    boneIndex;
 		vec3_t playerOrigin, mins, maxs;
 		quat_t rotation;
 
