@@ -344,7 +344,6 @@ e_status    trap_CIN_RunCinematic( int handle );
 void        trap_CIN_DrawCinematic( int handle );
 void        trap_CIN_SetExtents( int handle, int x, int y, int w, int h );
 void        trap_R_RemapShader( const char *oldShader, const char *newShader, const char *timeOffset );
-void        trap_openURL( const char *s );
 void        trap_GetHunkData( int *hunkused, int *hunkexpected );
 void        trap_QuoteString( const char *str, char *buffer, int size );
 void        trap_Gettext( char *buffer, const char *msgid, int bufferLength );

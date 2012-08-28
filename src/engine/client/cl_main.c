@@ -1823,29 +1823,6 @@ void CL_ForwardCommandToServer( const char *string )
 }
 
 /*
-==================
-CL_OpenUrl_f
-==================
-*/
-void CL_OpenUrl_f( void )
-{
-	const char *url;
-
-	if ( Cmd_Argc() != 2 )
-	{
-		Com_Printf("%s", _( "Usage: openurl <url>\n" ));
-		return;
-	}
-
-	url = Cmd_Argv( 1 );
-
-	if ( !Sys_OpenUrl( url ) )
-	{
-		Com_Printf("%s", _( "System error opening URL\n" ));
-	}
-}
-
-/*
 ===================
 CL_RequestMotd
 
@@ -1916,48 +1893,6 @@ void CL_ForwardToServer_f( void )
 	if ( Cmd_Argc() > 1 )
 	{
 		CL_AddReliableCommand( Cmd_Args() );
-	}
-}
-
-/*
-==================
-CL_Setenv_f
-
-Mostly for controlling voodoo environment variables
-==================
-*/
-void CL_Setenv_f( void )
-{
-	int argc = Cmd_Argc();
-
-	if ( argc > 2 )
-	{
-		char buffer[ 1024 ];
-		int  i;
-
-		strcpy( buffer, Cmd_Argv( 1 ) );
-		strcat( buffer, "=" );
-
-		for ( i = 2; i < argc; i++ )
-		{
-			strcat( buffer, Cmd_Argv( i ) );
-			strcat( buffer, " " );
-		}
-
-		Q_putenv( buffer );
-	}
-	else if ( argc == 2 )
-	{
-		char *env = getenv( Cmd_Argv( 1 ) );
-
-		if ( env )
-		{
-			Com_Printf( "%s=%s\n", Cmd_Argv( 1 ), env );
-		}
-		else
-		{
-			Com_Printf(_( "%s undefined\n"), Cmd_Argv( 1 ) );
-		}
 	}
 }
 
@@ -4574,9 +4509,7 @@ void CL_Init( void )
 	Cmd_AddCommand( "localservers", CL_LocalServers_f );
 	Cmd_AddCommand( "globalservers", CL_GlobalServers_f );
 
-	Cmd_AddCommand( "openurl", CL_OpenUrl_f );
 	Cmd_AddCommand( "rcon", CL_Rcon_f );
-	Cmd_AddCommand( "setenv", CL_Setenv_f );
 	Cmd_AddCommand( "ping", CL_Ping_f );
 	Cmd_AddCommand( "serverstatus", CL_ServerStatus_f );
 	Cmd_AddCommand( "showip", CL_ShowIP_f );
@@ -4678,7 +4611,6 @@ void CL_Shutdown( void )
 	Cmd_RemoveCommand( "localservers" );
 	Cmd_RemoveCommand( "globalservers" );
 	Cmd_RemoveCommand( "rcon" );
-	Cmd_RemoveCommand( "setenv" );
 	Cmd_RemoveCommand( "ping" );
 	Cmd_RemoveCommand( "serverstatus" );
 	Cmd_RemoveCommand( "showip" );
@@ -5800,22 +5732,6 @@ CL_ShowIP_f
 void CL_ShowIP_f( void )
 {
 	Sys_ShowIP();
-}
-
-/*
-=======================
-CL_OpenURLForCvar
-=======================
-*/
-void CL_OpenURL( const char *url )
-{
-	if ( !url || !strlen( url ) )
-	{
-		Com_Printf("%s", _( "invalid/empty URL\n" ));
-		return;
-	}
-
-	Sys_OpenURL( url, qtrue );
 }
 
 // Gordon: TEST TEST TEST

@@ -781,13 +781,6 @@ void trap_R_RemapShader( const char *oldShader, const char *newShader, const cha
 	syscall( UI_R_REMAP_SHADER, oldShader, newShader, timeOffset );
 }
 
-//118.
-//CL_OpenURL((const char *)VMA(1));
-void trap_openURL( const char *s )
-{
-	syscall( UI_OPENURL, s );
-}
-
 //119.
 //Com_GetHunkInfo(VMA(1), VMA(2));
 void trap_GetHunkData( int *hunkused, int *hunkexpected )

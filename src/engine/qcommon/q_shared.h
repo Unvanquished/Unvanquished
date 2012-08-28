@@ -1460,12 +1460,6 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 	char       *Q_strrchr( const char *string, int c );
 	const char *Q_stristr( const char *s, const char *find );
 
-#ifdef _WIN32
-#define Q_putenv _putenv
-#else
-#define Q_putenv putenv
-#endif
-
 #if defined(_WIN32) && !defined(__MINGW32__)
 double rint( double x );
 #endif

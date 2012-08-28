@@ -696,15 +696,6 @@ void CL_ParseDownload( msg_t *msg )
 			clc.downloadSize = MSG_ReadLong( msg );
 			clc.downloadFlags = MSG_ReadLong( msg );
 
-			if ( clc.downloadFlags & ( 1 << DL_FLAG_URL ) )
-			{
-				Sys_OpenURL( cls.downloadName, qtrue );
-				Cbuf_ExecuteText( EXEC_APPEND, "quit\n" );
-				CL_AddReliableCommand( "wwwdl bbl8r" );  // not sure if that's the right msg
-				clc.bWWWDlAborting = qtrue;
-				return;
-			}
-
 			Cvar_SetValue( "cl_downloadSize", clc.downloadSize );
 			Com_DPrintf(_( "Server redirected download: %s\n"), cls.downloadName );
 			clc.bWWWDl = qtrue; // activate wwwdl client loop

@@ -1365,7 +1365,6 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return 0;
 
 		case UI_OPENURL:
-			CL_OpenURL( ( const char * ) VMA( 1 ) );
 			return 0;
 
 		case UI_GETHUNKDATA:

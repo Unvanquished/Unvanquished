@@ -1322,7 +1322,6 @@ void Sys_SetDefaultLibPath( const char *path );
 char *Sys_DefaultLibPath( void );
 
 char         *Sys_DefaultHomePath( void );
-qboolean     Sys_Fork( const char *path, const char *cmdLine );
 const char   *Sys_Dirname( char *path );
 const char   *Sys_Basename( char *path );
 char         *Sys_ConsoleInput( void );
@@ -1332,12 +1331,8 @@ void         Sys_FreeFileList( char **list );
 
 void         Sys_Sleep( int msec );
 
-qboolean     Sys_OpenUrl( const char *url );
-
 qboolean     Sys_LowPhysicalMemory();
 unsigned int Sys_ProcessorCount();
-
-void         Sys_SetEnv( const char *name, const char *value );
 
 typedef enum
 {
@@ -1360,9 +1355,6 @@ dialogResult_t Sys_Dialog( dialogType_t type, const char *message, const char *t
 
 qboolean       Sys_WritePIDFile( void );
 
-// NOTE TTimo - on win32 the cwd is prepended .. non portable behaviour
-void           Sys_StartProcess( char *exeName, qboolean doexit );  // NERVE - SMF
-void           Sys_OpenURL( const char *url, qboolean doexit );  // NERVE - SMF
 void           Sys_QueEvent( int time, sysEventType_t type, int value, int value2, int ptrLength, void *ptr );
 
 #ifdef __linux__
