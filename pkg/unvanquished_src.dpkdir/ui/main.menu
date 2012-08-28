@@ -50,7 +50,8 @@
       name logo
       type ITEM_TYPE_TEXT
       style WINDOW_STYLE_SHADER
-      rect 200 60 237 150
+      //60
+      rect 200 45 237 150
       background "ui/assets/logo.png"
       visible MENU_TRUE
       decoration
@@ -59,8 +60,8 @@
 
 
 
-#define X      234
-#define Y      210
+#define X      234 
+#define Y      170 //190
 #define W      150
 #define ELEM_H 24
 #define ELEM_O 5
