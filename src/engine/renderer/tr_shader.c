@@ -4299,7 +4299,7 @@ static void SetImplicitShaderStages( image_t *image )
 			stages[ 0 ].active = qtrue;
 			stages[ 0 ].rgbGen = CGEN_VERTEX;
 			stages[ 0 ].alphaGen = AGEN_SKIP;
-			stages[ 0 ].stateBits = GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+			stages[ 0 ].stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 			break;
 
 			// fullbright is disabled per atvi request
@@ -4375,7 +4375,7 @@ static void SetImplicitShaderStages( image_t *image )
 		stages[ 0 ].active = qtrue;
 		stages[ 0 ].rgbGen = CGEN_VERTEX;
 		stages[ 0 ].alphaGen = AGEN_VERTEX;
-		stages[ 0 ].stateBits = GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+		stages[ 0 ].stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 	}
 	else if ( shader.lightmapIndex == LIGHTMAP_WHITEIMAGE )
 	{

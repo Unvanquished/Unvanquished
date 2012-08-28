@@ -6002,7 +6002,7 @@ shader_t       *R_FindShader( const char *name, shaderType_t type, qboolean mipR
 				stages[ 0 ].active = qtrue;
 				stages[ 0 ].rgbGen = CGEN_VERTEX;
 				stages[ 0 ].alphaGen = AGEN_VERTEX;
-				stages[ 0 ].stateBits = GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+				stages[ 0 ].stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 				break;
 			}
 
@@ -6098,7 +6098,7 @@ qhandle_t RE_RegisterShaderFromImage( const char *name, image_t *image, qboolean
 	stages[ 0 ].active = qtrue;
 	stages[ 0 ].rgbGen = CGEN_VERTEX;
 	stages[ 0 ].alphaGen = AGEN_VERTEX;
-	stages[ 0 ].stateBits = GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+	stages[ 0 ].stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 
 	sh = FinishShader();
 	return sh->index;
