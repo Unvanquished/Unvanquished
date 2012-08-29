@@ -138,7 +138,7 @@ static qboolean CG_ParseWeaponAnimationFile( const char *filename, weaponInfo_t 
 	text_p = text;
 	skip = 0; // quite the compiler warning
 
-	for ( i = 0; i < MAX_WEAPON_ANIMATIONS; i++ )
+	for ( i = 1; i < MAX_WEAPON_ANIMATIONS; i++ )
 	{
 		token = COM_Parse2( &text_p );
 		animations[ i ].firstFrame = atoi( token );
