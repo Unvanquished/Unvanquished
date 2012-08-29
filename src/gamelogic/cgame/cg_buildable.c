@@ -944,9 +944,9 @@ static void CG_PositionAndOrientateBuildable( const vec3_t angles, const vec3_t 
     const vec3_t mins, const vec3_t maxs,
     vec3_t outAxis[ 3 ], vec3_t outOrigin )
 {
-	vec3_t  forward, start, end;
-	trace_t tr, box_tr;
-	float   mag, fraction;
+	vec3_t  forward, end;
+	trace_t tr;
+	float   fraction;
 
 	AngleVectors( angles, forward, NULL, NULL );
 	VectorCopy( normal, outAxis[ 2 ] );
@@ -965,27 +965,20 @@ static void CG_PositionAndOrientateBuildable( const vec3_t angles, const vec3_t 
 	outAxis[ 1 ][ 2 ] = -outAxis[ 1 ][ 2 ];
 
 	VectorMA( inOrigin, -TRACE_DEPTH, normal, end );
-	VectorMA( inOrigin, 1.0f, normal, start );
 
-	// Take both capsule and box traces. If the capsule trace does not differ
-	//  significantly from the box trace use it. This may cause buildables to be
-	//  positioned *inside* the surface on which it is placed. This is intentional
-
-	CG_CapTrace( &tr, start, mins, maxs, end, skipNumber,
+	CG_CapTrace( &tr, inOrigin, mins, maxs, end, skipNumber,
 	             CONTENTS_SOLID | CONTENTS_PLAYERCLIP );
 
-	CG_Trace( &box_tr, start, mins, maxs, end, skipNumber,
-	          CONTENTS_SOLID | CONTENTS_PLAYERCLIP );
-
-	mag = Distance( tr.endpos, box_tr.endpos );
-
 	fraction = tr.fraction;
-
-	// this is either too far off of the bbox to be useful for gameplay purposes
-	//  or the model is positioned in thin air anyways.
-	if ( mag > 15.0f || tr.fraction == 1.0f )
+	if ( tr.startsolid )
 	{
-		fraction = box_tr.fraction;
+		fraction = 0;
+	}
+	else if ( tr.fraction == 1.0f )
+	{
+		// this is either too far off of the bbox to be useful for gameplay purposes
+		//  or the model is positioned in thin air anyways.
+		fraction = 0;
 	}
 
 	VectorMA( inOrigin, fraction * -TRACE_DEPTH, normal, outOrigin );
@@ -1854,10 +1847,6 @@ void CG_Buildable( centity_t *cent )
 
 	memset( &ent, 0, sizeof( ent ) );
 
-	VectorCopy( cent->lerpOrigin, ent.origin );
-	VectorCopy( cent->lerpOrigin, ent.oldorigin );
-	VectorCopy( cent->lerpOrigin, ent.lightingOrigin );
-
 	VectorCopy( es->origin2, surfNormal );
 
 	VectorCopy( es->angles, angles );
@@ -1865,7 +1854,6 @@ void CG_Buildable( centity_t *cent )
 
 	if ( es->pos.trType == TR_STATIONARY )
 	{
-		// Positioning a buildable involves potentially up to two traces, and
 		// seeing as buildables rarely move, we cache the results and recalculate
 		// only if the buildable moves or changes orientation
 		if ( VectorCompare( cent->buildableCache.cachedOrigin, cent->lerpOrigin ) &&
@@ -1880,7 +1868,7 @@ void CG_Buildable( centity_t *cent )
 		}
 		else
 		{
-			CG_PositionAndOrientateBuildable( angles, ent.origin, surfNormal,
+			CG_PositionAndOrientateBuildable( angles, cent->lerpOrigin, surfNormal,
 			                                  es->number, mins, maxs, ent.axis,
 			                                  ent.origin );
 			VectorCopy( ent.axis[ 0 ], cent->buildableCache.axis[ 0 ] );
@@ -1892,6 +1880,11 @@ void CG_Buildable( centity_t *cent )
 			VectorCopy( surfNormal, cent->buildableCache.cachedNormal );
 			cent->buildableCache.cachedType = es->modelindex;
 		}
+	}
+	else
+	{
+		VectorCopy( cent->lerpOrigin, ent.origin );
+		AnglesToAxis( cent->lerpAngles, ent.axis );
 	}
 
 	if( cg_drawBBOX.integer )
