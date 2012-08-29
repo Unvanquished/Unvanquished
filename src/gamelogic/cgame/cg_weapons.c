@@ -1740,6 +1740,7 @@ void CG_AddViewWeapon( playerState_t *ps )
 	weaponInfo_t *wi;
 	weapon_t     weapon = ps->weapon;
 	weaponMode_t weaponMode = ps->generic1;
+	qboolean     drawGun = qtrue;
 
 	// no weapon carried - can't draw it
 	if ( weapon == WP_NONE )
@@ -1753,6 +1754,21 @@ void CG_AddViewWeapon( playerState_t *ps )
 	}
 
 	wi = &cg_weapons[ weapon ];
+
+	switch ( cg_drawGun.integer )
+	{
+		case 0:
+			drawGun = qfalse;
+			break;
+
+		case 1:
+			if ( BG_Weapon( weapon )->team == TEAM_ALIENS )
+			{
+				drawGun = qfalse;
+			}
+			break;
+	}
+			
 
 	if ( !wi->registered )
 	{
@@ -1786,7 +1802,7 @@ void CG_AddViewWeapon( playerState_t *ps )
 	}
 
 	// allow the gun to be completely removed
-	if ( !cg_drawGun.integer )
+	if ( !drawGun )
 	{
 		vec3_t origin;
 
