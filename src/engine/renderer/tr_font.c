@@ -884,10 +884,12 @@ void RE_UnregisterFont_Internal( fontHandle_t handle )
 {
 	int i;
 
-	if ( !fontUsage[ handle ] || !--fontUsage[ handle ] )
+	if ( !fontUsage[ handle ] )
 	{
 		return;
 	}
+
+	fontUsage[ handle ]--;
 
 	if ( registeredFont[ handle ].face )
 	{
