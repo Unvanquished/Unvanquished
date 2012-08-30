@@ -1364,9 +1364,6 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			re.RemapShader( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
 			return 0;
 
-		case UI_OPENURL:
-			return 0;
-
 		case UI_GETHUNKDATA:
 			Com_GetHunkInfo( VMA( 1 ), VMA( 2 ) );
 			return 0;
