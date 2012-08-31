@@ -436,8 +436,6 @@ e_status        trap_CIN_RunCinematic( int handle );
 void            trap_CIN_DrawCinematic( int handle );
 void            trap_CIN_SetExtents( int handle, int x, int y, int w, int h );
 void            trap_R_RemapShader( const char *oldShader, const char *newShader, const char *timeOffset );
-void            testPrintInt( char *string, int i );
-void            testPrintFloat( char *string, float f );
 qboolean        trap_loadCamera( int camNum, const char *name );
 void            trap_startCamera( int camNum, int time );
 void            trap_stopCamera( int camNum );

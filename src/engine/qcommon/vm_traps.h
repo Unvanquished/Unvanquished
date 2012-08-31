@@ -66,9 +66,6 @@ typedef enum sharedImport_s
   TRAP_ANGLEVECTORS,         // unused
   TRAP_PERPENDICULARVECTOR,  // unused
 
-  TRAP_TESTPRINTINT = 224,   // = testPrintInt
-  TRAP_TESTPRINTFLOAT,       // = testPrintFloat
-
   TRAP_VERSION = 255
 } sharedTraps_t;
 
