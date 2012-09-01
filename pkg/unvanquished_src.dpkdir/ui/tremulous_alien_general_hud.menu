@@ -19,8 +19,8 @@
     itemDef
     {
       name "blob"
-      rect 497 419 52 18
-      aspectBias ALIGN_RIGHT
+      rect 313.4 248 13 40
+      aspectBias ALIGN_CENTER
       visible MENU_TRUE
       forecolor 1.0 0.0 0.0 0.5
       background "ui/assets/alien/tremublob.tga"
