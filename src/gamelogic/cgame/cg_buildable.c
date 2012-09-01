@@ -1956,7 +1956,7 @@ void CG_Buildable( centity_t *cent )
 			//FIXME: Don't hard code bones to specific assets. Soon, I should put bone names in
 			// .cfg so we can change it should the rig change.
 
-			QuatFromAngles( rotation, es->angles2[ YAW ] - es->angles[ YAW ] + 90, 0, 0 );
+			QuatFromAngles( rotation, es->angles2[ YAW ] - es->angles[ YAW ], 0, 0 );
 			QuatMultiply0( ent.skeleton.bones[ 1 ].rotation, rotation );
 
 			QuatFromAngles( rotation, es->angles2[ PITCH ], 0, 0 );
