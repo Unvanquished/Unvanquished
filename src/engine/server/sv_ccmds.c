@@ -175,7 +175,6 @@ static void SV_Map_f( void )
 	char     mapname[ MAX_QPATH ];
 	qboolean cheat, buildScript;
 	char     expanded[ MAX_QPATH ];
-	char     *cl_profileStr = Cvar_VariableString( "cl_profile" );
 
 	map = Cmd_Argv( 1 );
 

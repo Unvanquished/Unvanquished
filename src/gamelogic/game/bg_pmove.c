@@ -266,13 +266,8 @@ static void PM_Friction( void )
 
 	speed = VectorLength( vec );
 
-	if ( speed < 1 )
-	{
-		vel[ 0 ] = 0;
-		vel[ 1 ] = 0; // allow sinking underwater
-		// FIXME: still have z friction underwater?
+	if ( speed < 0.1f )
 		return;
-	}
 
 	drop = 0;
 
@@ -1310,21 +1305,13 @@ static void PM_WaterMove( void )
 	//
 	// user intentions
 	//
-	if ( !scale )
-	{
-		wishvel[ 0 ] = 0;
-		wishvel[ 1 ] = 0;
-		wishvel[ 2 ] = -60; // sink towards bottom
-	}
-	else
-	{
-		for ( i = 0; i < 3; i++ )
-		{
-			wishvel[ i ] = scale * pml.forward[ i ] * pm->cmd.forwardmove + scale * pml.right[ i ] * pm->cmd.rightmove;
-		}
 
-		wishvel[ 2 ] += scale * pm->cmd.upmove;
+	for ( i = 0; i < 3; i++ )
+	{
+		wishvel[ i ] = scale * pml.forward[ i ] * pm->cmd.forwardmove + scale * pml.right[ i ] * pm->cmd.rightmove;
 	}
+
+	wishvel[ 2 ] += scale * pm->cmd.upmove;
 
 	VectorCopy( wishvel, wishdir );
 	wishspeed = VectorNormalize( wishdir );
@@ -3967,6 +3954,7 @@ static void PM_Weapon( void )
 			case WP_ALEVEL4:
 				num /= RAND_MAX / 3 + 1;
 				PM_ForceLegsAnim( NSPA_ATTACK1 + num );
+				num = rand() / ( RAND_MAX / 6 + 1 );
 				PM_StartWeaponAnim( WANIM_ATTACK1 + num );
 				break;
 

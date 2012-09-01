@@ -64,8 +64,6 @@ Maryland 20850 USA.
 #include "../qcommon/qcommon.h"
 
 static char binaryPath[ MAX_OSPATH ] = { 0 };
-static char installPath[ MAX_OSPATH ] = { 0 };
-static char libPath[ MAX_OSPATH ] = { 0 };
 
 #ifdef USE_CURSES
 static qboolean nocurses = qfalse;
@@ -85,30 +83,10 @@ void Sys_SetBinaryPath( const char *path )
 
 /*
 =================
-Sys_BinaryPath
+Sys_DefaultBasePath
 =================
 */
-char *Sys_BinaryPath( void )
-{
-	return binaryPath;
-}
-
-/*
-=================
-Sys_SetDefaultInstallPath
-=================
-*/
-void Sys_SetDefaultInstallPath( const char *path )
-{
-	Q_strncpyz( installPath, path, sizeof( installPath ) );
-}
-
-/*
-=================
-Sys_DefaultInstallPath
-=================
-*/
-char *Sys_DefaultInstallPath( void )
+char *Sys_DefaultBasePath( void )
 {
 	static char installdir[ MAX_OSPATH ];
 
@@ -135,17 +113,6 @@ char *Sys_DefaultInstallPath( void )
 	return installdir;
 }
 
-
-/*
-=================
-Sys_SetDefaultLibPath
-=================
-*/
-void Sys_SetDefaultLibPath( const char *path )
-{
-	Q_strncpyz( libPath, path, sizeof( libPath ) );
-}
-
 /*
 =================
 Sys_DefaultLibPath
@@ -153,14 +120,7 @@ Sys_DefaultLibPath
 */
 char *Sys_DefaultLibPath( void )
 {
-	if ( *libPath )
-	{
-		return libPath;
-	}
-	else
-	{
-		return Sys_Cwd();
-	}
+	return Sys_Cwd();
 }
 
 
@@ -171,7 +131,7 @@ Sys_DefaultAppPath
 */
 char *Sys_DefaultAppPath( void )
 {
-	return Sys_BinaryPath();
+	return binaryPath;
 }
 
 /*
@@ -633,14 +593,6 @@ void Sys_ParseArgs( int argc, char **argv )
 	}
 }
 
-#ifndef DEFAULT_BASEDIR
-#       ifdef MACOS_X
-#               define DEFAULT_BASEDIR Sys_StripAppBundle(Sys_BinaryPath())
-#       else
-#               define DEFAULT_BASEDIR Sys_BinaryPath()
-#       endif
-#endif
-
 /*
 =================
 Sys_SigHandler
@@ -780,7 +732,6 @@ int main( int argc, char **argv )
 
 	Sys_ParseArgs( argc, argv );
 	Sys_SetBinaryPath( Sys_Dirname( argv[ 0 ] ) );
-	Sys_SetDefaultInstallPath( DEFAULT_BASEDIR );
 
  	// Concatenate the command line for passing to Com_Init
 	for ( i = 1; i < argc; i++ )

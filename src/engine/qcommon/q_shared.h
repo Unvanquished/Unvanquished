@@ -45,10 +45,10 @@ extern "C" {
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPPER     "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.6.0"
+#define PRODUCT_VERSION         "0.7.0"
 
 #define ENGINE_NAME             "Daemon Engine"
-#define ENGINE_VERSION          "0.6.0"
+#define ENGINE_VERSION          "0.7.0"
 
 #ifdef GIT_VERSION
 # define Q3_VERSION             PRODUCT_NAME " " PRODUCT_VERSION" " GIT_VERSION
@@ -398,7 +398,7 @@ extern int memcmp( void *, void *, size_t );
 
 #ifdef HUNK_DEBUG
 #define Hunk_Alloc( size, preference ) Hunk_AllocDebug( size, preference, # size, __FILE__, __LINE__ )
-	void *Hunk_AllocDebug( int size, ha_pref preference, char *label, char *file, int line );
+	void *Hunk_AllocDebug( int size, ha_pref preference, const char *label, const char *file, int line );
 
 #else
 	void *Hunk_Alloc( int size, ha_pref preference );
@@ -1463,12 +1463,6 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 	char       *Q_strupr( char *s1 );
 	char       *Q_strrchr( const char *string, int c );
 	const char *Q_stristr( const char *s, const char *find );
-
-#ifdef _WIN32
-#define Q_putenv _putenv
-#else
-#define Q_putenv putenv
-#endif
 
 #if defined(_WIN32) && !defined(__MINGW32__)
 double rint( double x );

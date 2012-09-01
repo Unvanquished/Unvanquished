@@ -5161,16 +5161,13 @@ void G_UpdateBuildableRangeMarkers( void )
 				weaponDisplays = ( BG_InventoryContainsWeapon( WP_HBUILD, client->ps.stats ) ||
 				                   client->ps.weapon == WP_ABUILD || client->ps.weapon == WP_ABUILD2 );
 			}
-			else
-			{
-			        weaponDisplays = 0; // bTeam != TEAM_NONE, but the compiler doesn't know that
-			}
 
 			wantsToSee = !!( client->pers.buildableRangeMarkerMask & ( 1 << bType ) );
+			if ( team == TEAM_NONE )
+				wantsToSee = wantsToSee && ( client->pers.buildableRangeMarkerMask & ( 1 << BA_NONE ) );
 
 			if ( wantsToSee &&
-			     ( ( team == TEAM_NONE && ( client->pers.buildableRangeMarkerMask & ( 1 << BA_NONE ) ) ) ||
-			       ( team == bTeam && weaponDisplays ) ) )
+			     ( team == TEAM_NONE || ( team == bTeam && weaponDisplays ) ) )
 			{
 				if ( i >= 32 )
 				{

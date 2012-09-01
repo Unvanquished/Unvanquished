@@ -15,7 +15,7 @@ Developer notes. Just anything odd, interesting etc out of the source goes in he
 	+ Need to compile them as x64 
 
 06-07-2011 Dusan Jocic <dusanjocic@msn.com> 
-	+ Sucessfuly loaded maps from Tremulous, Urban Terror, Q3 and RTCW
+	+ Successfully loaded maps from Tremulous, Urban Terror, Q3 and RTCW
 		- Some of them have texture and game logic function missing
 
 02-07-2011 Dusan Jocic <dusanjocic@msn.com> 

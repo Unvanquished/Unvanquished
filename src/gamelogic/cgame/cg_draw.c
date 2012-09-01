@@ -1581,7 +1581,6 @@ static void CG_DrawPlayerClipMeter( rectDef_t *rect, vec4_t color, qhandle_t sha
 static void CG_DrawPlayerHealthMeter( rectDef_t *rect, vec4_t color, qhandle_t shader )
 {
 	float fraction;
-	float height;
 	
 	fraction = (float)cg.snap->ps.stats[ STAT_HEALTH ] / (float)BG_Class( cg.snap->ps.stats[ STAT_CLASS ] )->health;
 	

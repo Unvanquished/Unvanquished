@@ -1193,7 +1193,7 @@ void Cvar_List_f( void )
 
 		if ( raw )
 		{
-			char *index;;
+			char *index;
 
 			Com_Printf( " %s \"", var->name );
 

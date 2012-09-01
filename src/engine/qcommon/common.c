@@ -962,8 +962,8 @@ all big things are allocated on the hunk.
 
 typedef struct zonedebug_s
 {
-	char *label;
-	char *file;
+	const char *label;
+	const char *file;
 	int  line;
 	int  allocSize;
 } zonedebug_t;
@@ -1159,7 +1159,7 @@ Z_TagMalloc
 memblock_t *debugblock; // RF, jusy so we can track a block to find out when it's getting trashed
 
 #ifdef ZONE_DEBUG
-void           *Z_TagMallocDebug( int size, int tag, char *label, char *file, int line )
+void           *Z_TagMallocDebug( int size, int tag, const char *label, const char *file, int line )
 {
 #else
 void           *Z_TagMalloc( int size, int tag )
@@ -1270,7 +1270,7 @@ Z_Malloc
 ========================
 */
 #ifdef ZONE_DEBUG
-void           *Z_MallocDebug( int size, char *label, char *file, int line )
+void           *Z_MallocDebug( int size, const char *label, const char *file, int line )
 {
 #else
 void           *Z_Malloc( int size )
@@ -1291,7 +1291,7 @@ void           *Z_Malloc( int size )
 }
 
 #ifdef ZONE_DEBUG
-void           *S_MallocDebug( int size, char *label, char *file, int line )
+void           *S_MallocDebug( int size, const char *label, const char *file, int line )
 {
 	return Z_TagMallocDebug( size, TAG_SMALL, label, file, line );
 }
@@ -1342,13 +1342,14 @@ void Z_CheckHeap( void )
 Z_LogZoneHeap
 ========================
 */
-void Z_LogZoneHeap( memzone_t *zone, char *name )
+void Z_LogZoneHeap( const memzone_t *zone, const char *name )
 {
 #ifdef ZONE_DEBUG
-	char       dump[ 32 ], *ptr;
+	char       dump[ 32 ];
+	const char *ptr;
 	int        i, j;
 #endif
-	memblock_t *block;
+	const memblock_t *block;
 	char       buf[ 4096 ];
 	int        size, allocSize, numBlocks;
 
@@ -1366,7 +1367,7 @@ void Z_LogZoneHeap( memzone_t *zone, char *name )
 		if ( block->tag )
 		{
 #ifdef ZONE_DEBUG
-			ptr = ( ( char * ) block ) + sizeof( memblock_t );
+			ptr = ( ( const char * ) block ) + sizeof( memblock_t );
 			j = 0;
 
 			for ( i = 0; i < 20 && i < block->d.allocSize; i++ )
@@ -1555,8 +1556,8 @@ typedef struct hunkblock_s
 	byte               printed;
 	struct hunkblock_s *next;
 
-	char               *label;
-	char               *file;
+	const char         *label;
+	const char         *file;
 	int                line;
 } hunkblock_t;
 
@@ -2154,7 +2155,7 @@ Allocate permanent (until the hunk is cleared) memory
 =================
 */
 #ifdef HUNK_DEBUG
-void           *Hunk_AllocDebug( int size, ha_pref preference, char *label, char *file, int line )
+void           *Hunk_AllocDebug( int size, ha_pref preference, const char *label, const char *file, int line )
 {
 #else
 void           *Hunk_Alloc( int size, ha_pref preference )

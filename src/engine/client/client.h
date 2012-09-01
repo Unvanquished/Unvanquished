@@ -570,8 +570,6 @@ void        CL_InitRef( const char *renderer );
 
 int         CL_ServerStatus( char *serverAddress, char *serverStatusString, int maxLen );
 
-void CL_OpenURL( const char *url );  // TTimo
-
 void CL_Record( const char *name );
 
 //

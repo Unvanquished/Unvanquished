@@ -168,7 +168,7 @@ static qboolean MakeTextureMatrix(decalProjector_t * dp, vec4_t projection, bspD
 		//% VectorSubtract( xyz, origin, vecs[ 1 ] );
 		VectorSubtract(xyz, pa, vecs[1]);
 
-		/* calcuate r vector */
+		/* calculate r vector */
 		VectorScale(projection, -1.0, vecs[2]);
 
 		/* calculate transform axis */

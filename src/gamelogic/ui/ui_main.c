@@ -1093,7 +1093,7 @@ UI_StopServerRefresh
 */
 static void UI_StopServerRefresh( void )
 {
-	int count;
+	//int count;
 
 	if ( !uiInfo.serverStatus.refreshActive )
 	{

@@ -2403,10 +2403,9 @@ void R_LoadImage( const char *name, byte **pic, int *width, int *height )
 	{
 		LoadWEBP( name, pic, width, height );
 	}
-
+	else
 #endif
-
-	else if ( !Q_stricmp( ext, "jpg" ) )
+	if ( !Q_stricmp( ext, "jpg" ) )
 	{
 		LoadJPG( name, pic, width, height );
 	}

@@ -1392,14 +1392,6 @@ intptr_t VM_SystemCall( intptr_t *args )
 			PerpendicularVector( VMA( 1 ), VMA( 2 ) );
 			return 0;
 
-		case TRAP_TESTPRINTINT:
-			Com_Printf( "%s%" PRIiPTR "\n", ( char * ) VMA( 1 ), args[ 2 ] );
-			return 0;
-
-		case TRAP_TESTPRINTFLOAT:
-			Com_Printf( "%s%f\n", ( char * ) VMA( 1 ), VMF( 2 ) );
-			return 0;
-
 		case TRAP_VERSION:
 			if ( args[ 1 ] != SYSCALL_ABI_VERSION_MAJOR || args[ 2 ] > SYSCALL_ABI_VERSION_MINOR )
 			{

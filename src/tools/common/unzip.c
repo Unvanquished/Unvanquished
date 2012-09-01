@@ -106,7 +106,7 @@ extern int      errno;
 /* ===========================================================================
      Read a byte from a gz_stream; update next_in and avail_in. Return EOF
    for end of file.
-   IN assertion: the stream s has been sucessfully opened for reading.
+   IN assertion: the stream s has been successfully opened for reading.
 */
 
 local int unzlocal_getByte OF((const zlib_filefunc_def * pzlib_filefunc_def, voidpf filestream, int *pi));

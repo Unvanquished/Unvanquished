@@ -1313,7 +1313,7 @@ static void CG_PrintTR_f( void )
 	char        buf[ MAX_STRING_CHARS ];
 	const char  *in;
 	char        number[2];
-	int         i=0, j=0, num=-1;
+	int         i=0, j=0;
 	
 	Q_strncpyz( buf, _( CG_Argv( 1 ) ), sizeof( buf ) );
 	in = buf;

@@ -1149,7 +1149,9 @@ public:
    {
       this->ir_type = ir_type_loop_jump;
       this->mode = mode;
-      this->loop = loop;
+      /* this->loop = loop; */
+      /* WRONG ! this is self-assignment. wtf? initializing this->loop to NULL... */
+      this->loop = NULL;
    }
 
    virtual ir_loop_jump *clone(void *mem_ctx, struct hash_table *) const;

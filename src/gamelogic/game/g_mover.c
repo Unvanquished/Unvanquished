@@ -943,7 +943,7 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
 	//ind
 	if ( ent->moverState == MOVER_POS1 )
 	{
-		// start moving 50 msec later, becase if this was player
+		// start moving 50 msec later, because if this was player-
 		// triggered, level.time hasn't been advanced yet
 		SetMoverState( ent, MOVER_1TO2, level.time + 50 );
 
@@ -972,7 +972,7 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
 	else if ( ent->moverState == MOVER_POS2 &&
 	          ( teamState == MOVER_1TO2 || other == master ) )
 	{
-		// start moving 50 msec later, becase if this was player
+		// start moving 50 msec later, because if this was player-
 		// triggered, level.time hasn't been advanced yet
 		SetMoverState( ent, MOVER_2TO1, level.time + 50 );
 
@@ -1025,7 +1025,7 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
 	}
 	else if ( ent->moverState == ROTATOR_POS1 )
 	{
-		// start moving 50 msec later, becase if this was player
+		// start moving 50 msec later, because if this was player-
 		// triggered, level.time hasn't been advanced yet
 		SetMoverState( ent, ROTATOR_1TO2, level.time + 50 );
 
@@ -1054,7 +1054,7 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
 	else if ( ent->moverState == ROTATOR_POS2 &&
 	          ( teamState == MOVER_1TO2 || other == master ) )
 	{
-		// start moving 50 msec later, becase if this was player
+		// start moving 50 msec later, because if this was player-
 		// triggered, level.time hasn't been advanced yet
 		SetMoverState( ent, ROTATOR_2TO1, level.time + 50 );
 

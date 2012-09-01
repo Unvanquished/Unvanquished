@@ -166,7 +166,7 @@ void IN_KeyUp( kbutton_t *b )
 	}
 	else
 	{
-		return; // key up without coresponding down (menu pass through)
+		return; // key up without corresponding down (menu pass-through)
 	}
 
 	if ( b->down[ 0 ] || b->down[ 1 ] )
