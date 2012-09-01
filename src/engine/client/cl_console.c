@@ -203,11 +203,6 @@ void Con_OpenConsole_f( void )
 	}
 }
 
-const char *Con_GetText( int console )
-{
-	return NULL;
-}
-
 /*
 ================
 Con_Clear

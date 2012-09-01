@@ -443,7 +443,7 @@ void Cbuf_Execute( void );
 // Do not call inside a command function, or current args will be destroyed.
 
 void Cdelay_Frame (void);
-//Check if a delayed command have to be executed and decreases the remaining
+//Checks if a delayed command has to be executed and decreases the remaining
 //delay time for all of them
 
 //===========================================================================
@@ -1064,9 +1064,9 @@ temp file loading
 #define Z_TagMalloc( size, tag ) Z_TagMallocDebug( size, tag, # size, __FILE__, __LINE__ )
 #define Z_Malloc( size )         Z_MallocDebug( size, # size, __FILE__, __LINE__ )
 #define S_Malloc( size )         S_MallocDebug( size, # size, __FILE__, __LINE__ )
-void     *Z_TagMallocDebug( int size, int tag, char *label, char *file, int line );  // NOT 0 filled memory
-void     *Z_MallocDebug( int size, char *label, char *file, int line );  // returns 0 filled memory
-void     *S_MallocDebug( int size, char *label, char *file, int line );  // returns 0 filled memory
+void     *Z_TagMallocDebug( int size, int tag, const char *label, const char *file, int line );  // NOT 0 filled memory
+void     *Z_MallocDebug( int size, const char *label, const char *file, int line );  // returns 0 filled memory
+void     *S_MallocDebug( int size, const char *label, const char *file, int line );  // NOT 0 filled memory
 
 #else
 void     *Z_TagMalloc( int size, int tag );  // NOT 0 filled memory
@@ -1311,18 +1311,14 @@ qboolean Sys_Mkdir( const char *path );
 FILE     *Sys_Mkfifo( const char *ospath );
 char     *Sys_Cwd( void );
 char     *Sys_DefaultBasePath( void );
-char     *Sys_DefaultInstallPath( void );
 
 #ifdef MACOS_X
 char     *Sys_DefaultAppPath( void );
-
 #endif
 
-void Sys_SetDefaultLibPath( const char *path );
 char *Sys_DefaultLibPath( void );
 
 char         *Sys_DefaultHomePath( void );
-qboolean     Sys_Fork( const char *path, const char *cmdLine );
 const char   *Sys_Dirname( char *path );
 const char   *Sys_Basename( char *path );
 char         *Sys_ConsoleInput( void );
@@ -1332,12 +1328,8 @@ void         Sys_FreeFileList( char **list );
 
 void         Sys_Sleep( int msec );
 
-qboolean     Sys_OpenUrl( const char *url );
-
 qboolean     Sys_LowPhysicalMemory();
 unsigned int Sys_ProcessorCount();
-
-void         Sys_SetEnv( const char *name, const char *value );
 
 typedef enum
 {
@@ -1358,19 +1350,7 @@ typedef enum
 
 dialogResult_t Sys_Dialog( dialogType_t type, const char *message, const char *title );
 
-qboolean       Sys_WritePIDFile( void );
-
-// NOTE TTimo - on win32 the cwd is prepended .. non portable behaviour
-void           Sys_StartProcess( char *exeName, qboolean doexit );  // NERVE - SMF
-void           Sys_OpenURL( const char *url, qboolean doexit );  // NERVE - SMF
 void           Sys_QueEvent( int time, sysEventType_t type, int value, int value2, int ptrLength, void *ptr );
-
-#ifdef __linux__
-// TTimo only on linux .. maybe on Mac too?
-// will OR with the existing mode (chmod ..+..)
-void Sys_Chmod( char *file, int mode );
-
-#endif
 
 void       Hist_Load( void );
 void       Hist_Add( const char *field );

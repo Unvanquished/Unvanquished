@@ -826,7 +826,7 @@ void R_SetFrameFog( void )
 	else
 	{
 		// probably usually not necessary to copy the whole thing.
-		// potential FIXME: since this is the most common occurance, diff first and only set changes
+		// potential FIXME: since this is the most common occurrence, diff first and only set changes
 		memcpy( &glfogsettings[ FOG_CURRENT ], &glfogsettings[ FOG_TARGET ], sizeof( glfog_t ) );
 	}
 
@@ -2015,6 +2015,8 @@ void R_DebugGraphics( void )
 	GL_Bind( tr.whiteImage );
 	GL_Cull( CT_FRONT_SIDED );
 	ri.CM_DrawDebugSurface( R_DebugPolygon );
+	
+	R_FogOn();
 }
 
 /*
@@ -2075,7 +2077,5 @@ void R_RenderView( viewParms_t *parms )
 	R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
 
 	// draw main system development information (surface outlines, etc)
-	R_FogOff();
 	R_DebugGraphics();
-	R_FogOn();
 }

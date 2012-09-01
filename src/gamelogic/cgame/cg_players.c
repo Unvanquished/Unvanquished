@@ -30,7 +30,8 @@ int   debug_anim_current;
 int   debug_anim_old;
 float debug_anim_blend;
 
-static refSkeleton_t skeleton;
+static refSkeleton_t legsSkeleton;
+static refSkeleton_t torsoSkeleton;
 static refSkeleton_t oldSkeleton;
 
 static const char *const cg_customSoundNames[ MAX_CUSTOM_SOUNDS ] =
@@ -140,10 +141,7 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 	ci->gender = GENDER_MALE;
 	ci->fixedlegs = qfalse;
 	ci->fixedtorso = qfalse;
-	ci->firstTorsoBone = -1; // Set these to -1 since 0 is a valid value
-	ci->lastTorsoBone = -1;
-	ci->torsoControlBone = -1;
-	ci->neckControlBone = -1;
+	ci->numLegBones = 0;
 	ci->modelScale[ 0 ] = 1;
 	ci->modelScale[ 1 ] = 1;
 	ci->modelScale[ 2 ] = 1;
@@ -242,30 +240,6 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 			ci->fixedtorso = qtrue;
 			continue;
 		}
-		else if ( !Q_stricmp( token, "firstTorsoBoneName" ) )
-		{
-			token = COM_Parse2( &text_p );
-			ci->firstTorsoBone = trap_R_BoneIndex( ci->bodyModel, token );
-			continue;
-		}
-		else if ( !Q_stricmp( token, "lastTorsoBoneName" ) )
-		{
-			token = COM_Parse2( &text_p );
-			ci->lastTorsoBone = trap_R_BoneIndex( ci->bodyModel, token );
-			continue;
-		}
-		else if ( !Q_stricmp( token, "torsoControlBoneName" ) )
-		{
-			token = COM_Parse2( &text_p );
-			ci->torsoControlBone = trap_R_BoneIndex( ci->bodyModel, token );
-			continue;
-		}
-		else if ( !Q_stricmp( token, "neckControlBoneName" ) )
-		{
-			token = COM_Parse2( &text_p );
-			ci->neckControlBone = trap_R_BoneIndex( ci->bodyModel, token );
-			continue;
-		}
 		else if ( !Q_stricmp( token, "modelScale" ) )
 		{
 			for ( i = 0; i < 3; i++ )
@@ -278,6 +252,37 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 				}
 
 				ci->modelScale[ i ] = atof( token );
+			}
+
+			continue;
+		}
+		else if ( !Q_stricmp( token, "torsoControlBone" ) )
+		{
+			token = COM_Parse2( &text_p );
+			ci->torsoControlBone = trap_R_BoneIndex( ci->bodyModel, token );
+		}
+		else if ( !Q_stricmp( token, "legBones" ) )
+		{
+			token = COM_Parse2( &text_p );
+
+			if ( token[0] != '{' )
+			{
+				Com_Printf( _( "^1ERROR^7: Expected '{' but found '%s' in character.cfg" ), token );
+			}
+
+			i = 0;
+			
+			while( 1 )
+			{
+				token = COM_Parse2( &text_p );
+
+				if ( !token || token[ 0 ] == '}' )
+				{
+					ci->numLegBones = i;
+					break;
+				}
+				
+				ci->legBones[ i++ ] = trap_R_BoneIndex( ci->bodyModel, token );
 			}
 
 			continue;
@@ -811,7 +816,10 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 
 			// FIXME add death animations
 
-			CG_RegisterPlayerAnimation( ci, modelName, BOTH_DEATH1, "die", qfalse, qfalse, qfalse );
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, BOTH_DEATH1, "die", qfalse, qfalse, qfalse ) )
+			{
+				ci->animations[ BOTH_DEATH1 ] = ci->animations[ LEGS_IDLE ];
+			}
 			//CG_RegisterPlayerAnimation(ci, modelName, BOTH_DEATH2, "death2", qfalse, qfalse, qfalse);
 			//CG_RegisterPlayerAnimation(ci, modelName, BOTH_DEATH3, "death3", qfalse, qfalse, qfalse);
 
@@ -825,27 +833,32 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 				ci->animations[ TORSO_ATTACK ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_ATTACK2, "idle", qfalse, qfalse, qfalse ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_ATTACK2, "attack2", qfalse, qfalse, qfalse ) )
 			{
 				ci->animations[ TORSO_ATTACK2 ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_STAND2, "idle", qfalse, qfalse, qfalse ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_STAND, "stand", qtrue, qfalse, qfalse ) )
+			{
+				ci->animations[ TORSO_STAND ] = ci->animations[ LEGS_IDLE ];
+			}
+
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_STAND2, "stand2", qtrue, qfalse, qfalse ) )
 			{
 				ci->animations[ TORSO_STAND2 ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_IDLECR, "crouch", qtrue, qfalse, qfalse ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_IDLECR, "crouch", qfalse, qfalse, qfalse ) )
 			{
 				ci->animations[ LEGS_IDLECR ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_WALKCR, "crouch_forward", qtrue, qfalse, qtrue ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_WALKCR, "crouch_forward", qtrue, qfalse, qfalse ) )
 			{
 				ci->animations[ LEGS_WALKCR ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_BACKCR, "crouch_forward", qtrue, qtrue, qtrue ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_BACKCR, "crouch_back", qtrue, qfalse, qfalse ) )
 			{
 				ci->animations[ LEGS_BACKCR ] = ci->animations[ LEGS_IDLE ];
 			}
@@ -855,7 +868,7 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 				ci->animations[ LEGS_WALK ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_BACKWALK, "walk", qtrue, qtrue, qfalse ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_BACKWALK, "walk_back", qtrue, qfalse, qfalse ) )
 			{
 				ci->animations[ LEGS_BACKWALK ] = ci->animations[ LEGS_IDLE ];
 			}
@@ -865,7 +878,7 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 				ci->animations[ LEGS_RUN ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_BACK, "run", qtrue, qtrue, qfalse ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_BACK, "run_back", qtrue, qfalse, qfalse ) )
 			{
 				ci->animations[ LEGS_BACK ] = ci->animations[ LEGS_IDLE ];
 			}
@@ -885,12 +898,12 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 				ci->animations[ LEGS_LAND ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_JUMPB, "jump", qfalse, qtrue, qfalse ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_JUMPB, "jump_back", qfalse, qfalse, qfalse ) )
 			{
 				ci->animations[ LEGS_JUMPB ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_LANDB, "land", qfalse, qtrue, qfalse ) )
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_LANDB, "land_back", qfalse, qfalse, qfalse ) )
 			{
 				ci->animations[ LEGS_LANDB ] = ci->animations[ LEGS_IDLE ];
 			}
@@ -1223,12 +1236,9 @@ static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to )
 	to->footsteps = from->footsteps;
 	to->gender = from->gender;
 
-	to->firstTorsoBone = from->firstTorsoBone;
-	to->lastTorsoBone = from->lastTorsoBone;
-
+	to->numLegBones = from->numLegBones;
 	to->torsoControlBone = from->torsoControlBone;
-	to->neckControlBone = from->neckControlBone;
-
+	
 	to->legsModel = from->legsModel;
 	to->legsSkin = from->legsSkin;
 	to->torsoModel = from->torsoModel;
@@ -1246,6 +1256,7 @@ static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to )
 	memcpy( to->sounds, from->sounds, sizeof( to->sounds ) );
 	memcpy( to->customFootsteps, from->customFootsteps, sizeof( to->customFootsteps ) );
 	memcpy( to->customMetalFootsteps, from->customMetalFootsteps, sizeof( to->customMetalFootsteps ) );
+	memcpy( to->legBones, from->legBones, sizeof( to->legBones ) );
 }
 
 /*
@@ -1499,68 +1510,6 @@ PLAYER ANIMATION
 =============================================================================
 */
 
-/*
-===============
-CG_SetLerpFrameAnimation
-
-may include ANIM_TOGGLEBIT
-===============
-*/
-static void CG_SetPlayerLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation )
-{
-	animation_t *anim;
-
-	// save old animation
-	lf->old_animationNumber = lf->animationNumber;
-	lf->old_animation = lf->animation;
-
-	lf->animationNumber = newAnimation;
-	newAnimation &= ~ANIM_TOGGLEBIT;
-
-	if ( ( newAnimation < 0 || newAnimation >= MAX_PLAYER_ANIMATIONS ) && !ci->bodyModel )
-	{
-		CG_Error( "bad player animation number: %i", newAnimation );
-	}
-
-	anim = &ci->animations[ newAnimation ];
-
-	lf->animation = anim;
-	lf->animationStartTime = lf->frameTime + anim->initialLerp;
-
-	debug_anim_current = lf->animationNumber;
-	debug_anim_old = lf->old_animationNumber;
-
-	if ( lf->old_animationNumber <= 0 )
-	{
-		// skip initial / invalid blending
-		lf->blendlerp = 0.0f;
-		return;
-	}
-
-	// TODO: blend through two blendings!
-
-	if ( ( lf->blendlerp <= 0.0f ) )
-	{
-		lf->blendlerp = 1.0f;
-	}
-	else
-	{
-		lf->blendlerp = 1.0f - lf->blendlerp; // use old blending for smooth blending between two blended animations
-	}
-
-	oldSkeleton = skeleton;
-
-	//Com_Printf(_("new: %i old %i\n"), newAnimation,lf->old_animationNumber);
-	if ( lf->old_animation && lf->old_animation->handle && skeleton.numBones == oldSkeleton.numBones )
-	{
-		if ( !trap_R_BuildSkeleton( &oldSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
-		{
-			CG_Printf( "%s", _( "Can't build old player skeleton\n" ));
-			return;
-		}
-	}
-}
-
 // TODO: choose proper values and use blending speed from character.cfg
 // blending is slow for testing issues
 static void CG_BlendPlayerLerpFrame( lerpFrame_t *lf )
@@ -1573,13 +1522,8 @@ static void CG_BlendPlayerLerpFrame( lerpFrame_t *lf )
 
 	if ( ( lf->blendlerp > 0.0f ) && ( cg.time > lf->blendtime ) )
 	{
-#if 0
-		//linear blending
-		lf->blendlerp -= 0.025f;
-#else
 		//exp blending
 		lf->blendlerp -= lf->blendlerp / cg_animBlend.value;
-#endif
 
 		if ( lf->blendlerp <= 0.0f )
 		{
@@ -1597,6 +1541,20 @@ static void CG_BlendPlayerLerpFrame( lerpFrame_t *lf )
 	}
 }
 
+static void CG_CombineLegSkeleton( refSkeleton_t *dest, refSkeleton_t *legs, int *legBones, int numBones )
+{
+	int i;
+	
+	dest->type = SK_RELATIVE;
+	
+	for ( i = 0; i < numBones; i++ )
+	{
+		dest->bones[ legBones[ i ] ] = legs->bones[ legBones[ i ] ];
+	}
+}
+
+
+
 /*
 ===============
 CG_SetLerpFrameAnimation
@@ -1604,7 +1562,7 @@ CG_SetLerpFrameAnimation
 may include ANIM_TOGGLEBIT
 ===============
 */
-static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation )
+static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation, refSkeleton_t *skel )
 {
 	animation_t *anim;
 	lf->old_animationNumber = lf->animationNumber;
@@ -1658,11 +1616,11 @@ static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int new
 			lf->blendlerp = 1.0f - lf->blendlerp; // use old blending for smooth blending between two blended animations
 		}
 
-		oldSkeleton = skeleton;
+		oldSkeleton = *skel;
 
 		//Com_Printf(_("new: %i old %i\n"), newAnimation,lf->old_animationNumber);
 
-		if ( lf->old_animation != NULL && oldSkeleton.numBones == skeleton.numBones )
+		if ( lf->old_animation != NULL && oldSkeleton.numBones == skel->numBones )
 		{
 			if ( !trap_R_BuildSkeleton( &oldSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
 			{
@@ -1683,146 +1641,16 @@ cg.time should be between oldFrameTime and frameTime after exit
 */
 static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation, refSkeleton_t *skel, float speedScale )
 {
-	if ( !ci->bodyModel )
+    // see if the animation sequence is switching
+	if ( newAnimation != lf->animationNumber || !lf->animation )
 	{
-//     // see if the animation sequence is switching
-		if ( newAnimation != lf->animationNumber || !lf->animation )
-		{
-			CG_SetLerpFrameAnimation( ci, lf, newAnimation );
-		}
-
-		CG_RunLerpFrame( lf, speedScale );
+		CG_SetLerpFrameAnimation( ci, lf, newAnimation, skel );
 	}
-	else
+
+	CG_RunLerpFrame( lf, speedScale );
+
+	if ( ci->bodyModel )
 	{
-		int         f, numFrames;
-		animation_t *anim;
-		qboolean    animChanged;
-
-		// debugging tool to get no animations
-		if ( cg_animSpeed.integer == 0 )
-		{
-			lf->oldFrame = lf->frame = lf->backlerp = 0;
-			return;
-		}
-
-		// see if the animation sequence is switching
-		if ( newAnimation != lf->animationNumber || !lf->animation )
-		{
-			CG_SetPlayerLerpFrameAnimation( ci, lf, newAnimation );
-
-			if ( !lf->animation )
-			{
-				oldSkeleton = skeleton;
-			}
-
-			animChanged = qtrue;
-		}
-		else
-		{
-			animChanged = qfalse;
-		}
-
-		// if we have passed the current frame, move it to
-		// oldFrame and calculate a new frame
-		if ( cg.time >= lf->frameTime || animChanged )
-		{
-			if ( animChanged )
-			{
-				lf->oldFrame = 0;
-				lf->oldFrameTime = cg.time;
-			}
-			else
-
-			{
-				lf->oldFrame = lf->frame;
-				lf->oldFrameTime = lf->frameTime;
-			}
-
-			// get the next frame based on the animation
-			anim = lf->animation;
-
-			if ( !anim->frameLerp )
-			{
-				return; // shouldn't happen
-			}
-
-			if ( cg.time < lf->animationStartTime )
-			{
-				lf->frameTime = lf->animationStartTime; // initial lerp
-			}
-			else
-			{
-				lf->frameTime = lf->oldFrameTime + anim->frameLerp;
-			}
-
-			f = ( lf->frameTime - lf->animationStartTime ) / anim->frameLerp;
-			f *= speedScale; // adjust for haste, etc
-
-			numFrames = anim->numFrames;
-
-			if ( anim->flipflop )
-			{
-				numFrames *= 2;
-			}
-
-			if ( f >= numFrames )
-			{
-				f -= numFrames;
-
-				if ( anim->loopFrames )
-				{
-					f %= anim->loopFrames;
-					f += anim->numFrames - anim->loopFrames;
-				}
-				else
-				{
-					f = numFrames - 1;
-					// the animation is stuck at the end, so it
-					// can immediately transition to another sequence
-					lf->frameTime = cg.time;
-				}
-			}
-
-			if ( anim->reversed )
-			{
-				lf->frame = anim->firstFrame + anim->numFrames - 1 - f;
-			}
-			else if ( anim->flipflop && f >= anim->numFrames )
-			{
-				lf->frame = anim->firstFrame + anim->numFrames - 1 - ( f % anim->numFrames );
-			}
-			else
-			{
-				lf->frame = anim->firstFrame + f;
-			}
-
-			if ( cg.time > lf->frameTime )
-			{
-				lf->frameTime = cg.time;
-			}
-		}
-
-		if ( lf->frameTime > cg.time + 200 )
-		{
-			lf->frameTime = cg.time;
-		}
-
-		if ( lf->oldFrameTime > cg.time )
-		{
-			lf->oldFrameTime = cg.time;
-		}
-
-		// calculate current lerp value
-		if ( lf->frameTime == lf->oldFrameTime )
-		{
-			lf->backlerp = 0;
-		}
-		else
-		{
-			lf->backlerp = 1.0 - ( float )( cg.time - lf->oldFrameTime ) / ( lf->frameTime - lf->oldFrameTime );
-		}
-
 		// blend old and current animation
 		CG_BlendPlayerLerpFrame( lf );
 
@@ -1836,7 +1664,7 @@ static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 			// lerp between old and new animation if possible
 			if ( lf->blendlerp >= 0.0f )
 			{
-				if ( skeleton.type != SK_INVALID && oldSkeleton.type != SK_INVALID && skeleton.numBones == oldSkeleton.numBones )
+				if ( skel->type != SK_INVALID && oldSkeleton.type != SK_INVALID && skel->numBones == oldSkeleton.numBones )
 				{
 					if ( !trap_R_BlendSkeleton( skel, &oldSkeleton, lf->blendlerp ) )
 					{
@@ -1864,11 +1692,11 @@ static void CG_RunCorpseLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 	// see if the animation sequence is switching
 	if ( newAnimation != lf->animationNumber || !lf->animation )
 	{
-		CG_SetPlayerLerpFrameAnimation( ci, lf, newAnimation );
+		CG_SetLerpFrameAnimation( ci, lf, newAnimation, NULL );
 
 		if ( !lf->animation )
 		{
-			oldSkeleton = skeleton;
+			oldSkeleton = legsSkeleton;
 		}
 
 		animChanged = qtrue;
@@ -1893,7 +1721,7 @@ static void CG_RunCorpseLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 
 	if ( lf->animation )
 	{
-		if ( !trap_R_BuildSkeleton( &skeleton, lf->animation->handle, anim->numFrames, anim->numFrames, 0, lf->animation->clearOrigin ) )
+		if ( !trap_R_BuildSkeleton( &legsSkeleton, lf->animation->handle, anim->numFrames, anim->numFrames, 0, lf->animation->clearOrigin ) )
 		{
 			CG_Printf( "%s", _( "Can't build lf->skeleton\n" ));
 		}
@@ -1907,10 +1735,10 @@ static void CG_RunCorpseLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 CG_ClearLerpFrame
 ===============
 */
-static void CG_ClearLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int animationNumber )
+static void CG_ClearLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int animationNumber, refSkeleton_t *skel )
 {
 	lf->frameTime = lf->oldFrameTime = cg.time;
-	CG_SetLerpFrameAnimation( ci, lf, animationNumber );
+	CG_SetLerpFrameAnimation( ci, lf, animationNumber, skel );
 	lf->oldFrame = lf->frame = lf->animation->firstFrame;
 }
 
@@ -2020,14 +1848,14 @@ static void CG_PlayerMD5Animation( centity_t *cent )
 	// do the shuffle turn frames locally
 	if ( cent->pe.legs.yawing && ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) == LEGS_IDLE )
 	{
-		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, LEGS_TURN, &skeleton, speedScale );
+		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, LEGS_TURN, &legsSkeleton, speedScale );
 	}
 	else
 	{
-		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, cent->currentState.legsAnim, &skeleton, speedScale );
+		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, cent->currentState.legsAnim, &legsSkeleton, speedScale );
 	}
 
-	CG_RunPlayerLerpFrame( ci, &cent->pe.torso, cent->currentState.torsoAnim, &skeleton, speedScale );
+	CG_RunPlayerLerpFrame( ci, &cent->pe.torso, cent->currentState.torsoAnim, &torsoSkeleton, speedScale );
 }
 
 /*
@@ -2075,17 +1903,17 @@ static void CG_PlayerMD5AlienAnimation( centity_t *cent )
 	// do the shuffle turn frames locally
 	if ( cent->pe.nonseg.yawing && ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) == NSPA_STAND )
 	{
-		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, NSPA_TURN, &skeleton, speedScale );
+		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, NSPA_TURN, &legsSkeleton, speedScale );
 	}
 	else
 	{
-		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, cent->currentState.legsAnim, &skeleton, speedScale );
+		CG_RunPlayerLerpFrame( ci, &cent->pe.nonseg, cent->currentState.legsAnim, &legsSkeleton, speedScale );
 	}
 
 	if ( blend.type == SK_RELATIVE )
 	{
 		CG_RunPlayerLerpFrame( ci, &cent->pe.legs, cent->pe.legs.animationNumber, &blend, speedScale );
-		trap_R_BlendSkeleton( &skeleton, &blend, 0.5 );
+		trap_R_BlendSkeleton( &legsSkeleton, &blend, 0.5 );
 	}
 }
 
@@ -2367,32 +2195,32 @@ static void CG_PlayerAngles( centity_t *cent, vec3_t srcAngles,
 	AnglesToAxis( headAngles, head );
 }
 
-static void CG_PlayerMD5Angles( centity_t *cent, const vec3_t sourceAngles, vec3_t legsAngles, vec3_t torsoAngles, vec3_t headAngles )
+static void CG_PlayerMD5Angles( centity_t *cent, const vec3_t srcAngles, vec3_t legsAngles, vec3_t torsoAngles, vec3_t headAngles )
 {
 	float        dest;
 	static int   movementOffsets[ 8 ] = { 0, 22, 45, -22, 0, 22, -45, -22 };
-	//vec3_t          velocity;
-	//float           speed;
+	vec3_t       velocity;
+	float        speed;
 	int          dir, clientNum;
 	clientInfo_t *ci;
-
-	VectorCopy( sourceAngles, headAngles );
-	headAngles[ YAW ] = AngleNormalize360( headAngles[ YAW ] );
+	
+	VectorCopy( srcAngles, headAngles );
+	headAngles[ YAW ] = AngleMod( headAngles[ YAW ] );
 	VectorClear( legsAngles );
 	VectorClear( torsoAngles );
-
+	
 	// --------- yaw -------------
-
+	
 	// allow yaw to drift a bit
-	if ( ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) != LEGS_IDLE
-	     || ( cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT ) != TORSO_STAND )
+	if ( ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) != LEGS_IDLE ||
+		( cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT ) != TORSO_STAND )
 	{
 		// if not standing still, always point all in the same direction
 		cent->pe.torso.yawing = qtrue; // always center
 		cent->pe.torso.pitching = qtrue; // always center
 		cent->pe.legs.yawing = qtrue; // always center
 	}
-
+	
 	// adjust legs for movement dir
 	if ( cent->currentState.eFlags & EF_DEAD )
 	{
@@ -2401,27 +2229,39 @@ static void CG_PlayerMD5Angles( centity_t *cent, const vec3_t sourceAngles, vec3
 	}
 	else
 	{
-		// TA: did use angles2.. now uses time2.. looks a bit funny but time2 isn't used othwise
+		// did use angles2.. now uses time2.. looks a bit funny but time2 isn't used othwise
 		dir = cent->currentState.time2;
-
+		
 		if ( dir < 0 || dir > 7 )
 		{
 			CG_Error( "Bad player movement angle" );
 		}
 	}
-
+	
 	legsAngles[ YAW ] = headAngles[ YAW ] + movementOffsets[ dir ];
 	torsoAngles[ YAW ] = headAngles[ YAW ] + 0.25 * movementOffsets[ dir ];
-
+	
 	// torso
-	CG_SwingAngles( torsoAngles[ YAW ], 25, 90, cg_swingSpeed.value, &cent->pe.torso.yawAngle, &cent->pe.torso.yawing );
-	CG_SwingAngles( legsAngles[ YAW ], 40, 90, cg_swingSpeed.value, &cent->pe.legs.yawAngle, &cent->pe.legs.yawing );
-
+	if ( cent->currentState.eFlags & EF_DEAD )
+	{
+		CG_SwingAngles( torsoAngles[ YAW ], 0, 0, cg_swingSpeed.value,
+						&cent->pe.torso.yawAngle, &cent->pe.torso.yawing );
+		CG_SwingAngles( legsAngles[ YAW ], 0, 0, cg_swingSpeed.value,
+						&cent->pe.legs.yawAngle, &cent->pe.legs.yawing );
+	}
+	else
+	{
+		CG_SwingAngles( torsoAngles[ YAW ], 25, 90, cg_swingSpeed.value,
+						&cent->pe.torso.yawAngle, &cent->pe.torso.yawing );
+		CG_SwingAngles( legsAngles[ YAW ], 40, 90, cg_swingSpeed.value,
+						&cent->pe.legs.yawAngle, &cent->pe.legs.yawing );
+	}
+	
 	torsoAngles[ YAW ] = cent->pe.torso.yawAngle;
 	legsAngles[ YAW ] = cent->pe.legs.yawAngle;
-
+	
 	// --------- pitch -------------
-
+	
 	// only show a fraction of the pitch angle in the torso
 	if ( headAngles[ PITCH ] > 180 )
 	{
@@ -2431,51 +2271,51 @@ static void CG_PlayerMD5Angles( centity_t *cent, const vec3_t sourceAngles, vec3
 	{
 		dest = headAngles[ PITCH ] * 0.75f;
 	}
-
+	
 	CG_SwingAngles( dest, 15, 30, 0.1f, &cent->pe.torso.pitchAngle, &cent->pe.torso.pitching );
 	torsoAngles[ PITCH ] = cent->pe.torso.pitchAngle;
-
+	
 	//
 	clientNum = cent->currentState.clientNum;
-
+	
 	if ( clientNum >= 0 && clientNum < MAX_CLIENTS )
 	{
 		ci = &cgs.clientinfo[ clientNum ];
-
+		
 		if ( ci->fixedtorso )
 		{
 			torsoAngles[ PITCH ] = 0.0f;
 		}
 	}
-
+	
 	// --------- roll -------------
-
+	
 	// lean towards the direction of travel
-
-	/*  VectorCopy(cent->currentState.pos.trDelta, velocity);
-	        speed = VectorNormalize(velocity);
-	        if(speed)
-	        {
-	                vec3_t          axis[3];
-	                float           side;
-
-	                speed *= 0.02f;
-
-	                AnglesToAxis(legsAngles, axis);
-	                side = speed * DotProduct(velocity, axis[1]);
-	                legsAngles[ROLL] -= side;
-
-	                side = speed * DotProduct(velocity, axis[0]);
-	                legsAngles[PITCH] += side;
-	        }
-	*/
+	VectorCopy( cent->currentState.pos.trDelta, velocity );
+	speed = VectorNormalize( velocity );
+	
+	if ( speed )
+	{
+		vec3_t axis[ 3 ];
+		float  side;
+		
+		speed *= 0.05f;
+		
+		AnglesToAxis( legsAngles, axis );
+		side = speed * DotProduct( velocity, axis[ 1 ] );
+		legsAngles[ ROLL ] -= side;
+		
+		side = speed * DotProduct( velocity, axis[ 0 ] );
+		legsAngles[ PITCH ] += side;
+	}
+	
 	//
 	clientNum = cent->currentState.clientNum;
-
+	
 	if ( clientNum >= 0 && clientNum < MAX_CLIENTS )
 	{
 		ci = &cgs.clientinfo[ clientNum ];
-
+		
 		if ( ci->fixedlegs )
 		{
 			legsAngles[ YAW ] = torsoAngles[ YAW ];
@@ -2483,14 +2323,13 @@ static void CG_PlayerMD5Angles( centity_t *cent, const vec3_t sourceAngles, vec3
 			legsAngles[ ROLL ] = 0.0f;
 		}
 	}
-
+	
 	// pain twitch
 	CG_AddPainTwitch( cent, torsoAngles );
-
+	
 	// pull the angles back out of the hierarchial chain
 	AnglesSubtract( headAngles, torsoAngles, headAngles );
-	AnglesSubtract( torsoAngles, legsAngles, torsoAngles );
-}
+	AnglesSubtract( torsoAngles, legsAngles, torsoAngles );}
 
 #define MODEL_WWSMOOTHTIME 200
 
@@ -3207,7 +3046,6 @@ int CG_AmbientLight( vec3_t point )
 }
 
 #define TRACE_DEPTH    32.0f
-#define DEATHANIM_TIME 1650
 
 /*
 ===============
@@ -3328,22 +3166,14 @@ void CG_Player( centity_t *cent )
 	if ( ci->bodyModel )
 	{
 		vec3_t legsAngles, torsoAngles, headAngles;
-
-#if 0
-		quat_t torsoQuat;
-		quat_t headQuat;
-		quat_t legsQuat;
-		int    i;
 		int    boneIndex;
-		int    firstTorsoBone;
-		int    lastTorsoBone;
-#endif
 		vec3_t playerOrigin, mins, maxs;
+		quat_t rotation;
 
 		if ( ci->gender != GENDER_NEUTER )
 		{
 			CG_PlayerMD5Angles( cent, cent->lerpAngles, legsAngles, torsoAngles, headAngles );
-			AnglesToAxis( torsoAngles, body.axis );
+			AnglesToAxis( legsAngles, body.axis );
 		}
 		else
 		{
@@ -3373,44 +3203,15 @@ void CG_Player( centity_t *cent )
 			CG_PlayerMD5AlienAnimation( cent );
 		}
 
-		// WIP: death effect
-#if 0
-
-		if ( cent->currentState.eFlags & EF_DEAD )
-		{
-			int time;
-
-			if ( cent->pe.deathTime <= 0 )
-			{
-				cent->pe.deathTime = cg.time;
-				cent->pe.deathScale = 0.0f;
-			}
-
-			time = ( DEATHANIM_TIME - ( cg.time - cent->pe.deathTime ) );
-
-			cent->pe.deathScale = 1.0f - ( 1.0f / DEATHANIM_TIME * time );
-
-			if ( cent->pe.deathScale >= 1.0f )
-			{
-				return;
-			}
-
-			body.shaderTime = -cent->pe.deathScale;
-		}
-		else
-#endif
-//      {
-//              cent->pe.deathTime = 0;
-//              cent->pe.deathScale = 0.0f;
-//
-//              body.shaderTime = 0.0f;
-//      }
-
-			// add the talk baloon or disconnect icon
-			CG_PlayerSprites( cent );
+		// add the talk baloon or disconnect icon
+		CG_PlayerSprites( cent );
 
 		// add the shadow
-		shadow = CG_PlayerShadow( cent, &shadowPlane, class );
+		if ( ( es->number == cg.snap->ps.clientNum && cg.renderingThirdPerson ) ||
+			 es->number != cg.snap->ps.clientNum )
+		{
+			shadow = CG_PlayerShadow( cent, &shadowPlane, class );
+		}
 
 		// add a water splash if partially in and out of water
 		CG_PlayerSplash( cent, class );
@@ -3424,7 +3225,22 @@ void CG_Player( centity_t *cent )
 
 		// add the body
 		body.hModel = ci->bodyModel;
-		body.customSkin = ci->bodySkin;
+		if ( ( held & ( 1 << UP_LIGHTARMOUR ) ) && !( held & ( 1 << UP_HELMET ) ) )
+		{
+			body.customSkin = cgs.media.larmourLegsSkin;
+		}
+		else if ( !( held & ( 1 << UP_LIGHTARMOUR ) ) && ( held & ( 1 << UP_HELMET ) ) )
+		{
+			body.customSkin = cgs.media.larmourHeadSkin;
+		}
+		else if ( ( held & ( 1 << UP_LIGHTARMOUR ) ) && ( held & ( 1 << UP_HELMET ) ) )
+		{
+			body.customSkin = cgs.media.larmourTorsoSkin;
+		}
+		else
+		{
+			body.customSkin = ci->bodySkin;
+		}
 
 		if ( !body.hModel )
 		{
@@ -3438,8 +3254,6 @@ void CG_Player( centity_t *cent )
 		BG_ClassBoundingBox( class, mins, maxs, NULL, NULL, NULL );
 
 		// move the origin closer into the wall with a CapTrace
-#if 1
-
 		if ( cent->currentState.eFlags & EF_WALLCLIMB && !( cent->currentState.eFlags & EF_DEAD ) && !( cg.intermissionStarted ) )
 		{
 			vec3_t  start, end;
@@ -3480,7 +3294,6 @@ void CG_Player( centity_t *cent )
 			VectorCopy( body.origin, body.oldorigin );  // don't positionally lerp at all
 		}
 		else
-#endif
 		{
 			VectorCopy( cent->lerpOrigin, playerOrigin );
 			VectorCopy( playerOrigin, body.origin );
@@ -3495,92 +3308,31 @@ void CG_Player( centity_t *cent )
 		if ( ci->gender != GENDER_NEUTER )
 		{
 			// copy legs skeleton to have a base
-			body.skeleton = skeleton;
-			if ( skeleton.numBones != skeleton.numBones )
+			body.skeleton = torsoSkeleton;
+			if ( torsoSkeleton.numBones != legsSkeleton.numBones )
 			{
 				CG_Error( "cent->pe.legs.skeleton.numBones != cent->pe.torso.skeleton.numBones" );
 			}
 
 			// combine legs and torso skeletons
-#if 0
-			firstTorsoBone = ci->firstTorsoBone;
-
-			if ( firstTorsoBone >= 0 && firstTorsoBone < cent->pe.torso.skeleton.numBones )
+			if ( ci->numLegBones )
 			{
-				lastTorsoBone = ci->lastTorsoBone;
-
-				if ( lastTorsoBone >= 0 && lastTorsoBone < cent->pe.torso.skeleton.numBones )
-				{
-					// copy torso bones
-					for ( i = firstTorsoBone; i < lastTorsoBone; i++ )
-					{
-						memcpy( &body.skeleton.bones[ i ], &cent->pe.torso.skeleton.bones[ i ], sizeof( refBone_t ) );
-					}
-				}
-
-				body.skeleton.type = SK_RELATIVE;
-
-				// update AABB
-				for ( i = 0; i < 3; i++ )
-				{
-					body.skeleton.bounds[ 0 ][ i ] =
-					  cent->pe.torso.skeleton.bounds[ 0 ][ i ] <
-					  cent->pe.legs.skeleton.bounds[ 0 ][ i ] ? cent->pe.torso.skeleton.bounds[ 0 ][ i ] : cent->pe.legs.skeleton.bounds[ 0 ][ i ];
-					body.skeleton.bounds[ 1 ][ i ] =
-					  cent->pe.torso.skeleton.bounds[ 1 ][ i ] >
-					  cent->pe.legs.skeleton.bounds[ 1 ][ i ] ? cent->pe.torso.skeleton.bounds[ 1 ][ i ] : cent->pe.legs.skeleton.bounds[ 1 ][ i ];
-				}
+				CG_CombineLegSkeleton( &body.skeleton, &legsSkeleton, ci->legBones, ci->numLegBones );
 			}
-			else
-			{
-				// bad no hips found
-				body.skeleton.type = SK_INVALID;
-			}
-
-#endif
-
-			// rotate legs
-#if 0
-			boneIndex = trap_R_BoneIndex( body.hModel, "origin" );
-
-			if ( boneIndex >= 0 && boneIndex < cent->pe.legs.skeleton.numBones )
-			{
-				// HACK: convert angles to bone system
-				QuatFromAngles( legsQuat, legsAngles[ YAW ], -legsAngles[ ROLL ], legsAngles[ PITCH ] );
-				QuatMultiply0( body.skeleton.bones[ boneIndex ].rotation, legsQuat );
-			}
-
-#endif
 
 			// rotate torso
-#if 0
 			boneIndex = ci->torsoControlBone;
 
-			if ( boneIndex >= 0 && boneIndex < cent->pe.legs.skeleton.numBones )
+			if ( boneIndex >= 0 && boneIndex < torsoSkeleton.numBones )
 			{
 				// HACK: convert angles to bone system
-				QuatFromAngles( torsoQuat, torsoAngles[ YAW ], torsoAngles[ ROLL ], -torsoAngles[ PITCH ] );
-				QuatMultiply0( body.skeleton.bones[ boneIndex ].rotation, torsoQuat );
+				QuatFromAngles( rotation, torsoAngles[ YAW ], 0, 0 );
+				QuatMultiply0( body.skeleton.bones[ boneIndex ].rotation, rotation );
 			}
-
-#endif
-
-			// rotate head
-#if 0
-			boneIndex = ci->neckControlBone;
-
-			if ( boneIndex >= 0 && boneIndex < cent->pe.legs.skeleton.numBones )
-			{
-				// HACK: convert angles to bone system
-				QuatFromAngles( headQuat, headAngles[ YAW ], headAngles[ ROLL ], -headAngles[ PITCH ] );
-				QuatMultiply0( body.skeleton.bones[ boneIndex ].rotation, headQuat );
-			}
-
-#endif
 		}
 		else
 		{
-			body.skeleton = skeleton;
+			body.skeleton = legsSkeleton;
 		}
 
 		// transform relative bones to absolute ones required for vertex skinning and tag attachments
@@ -3588,18 +3340,6 @@ void CG_Player( centity_t *cent )
 
 		VectorCopy( mins, body.skeleton.bounds[ 0 ]);
 		VectorCopy( maxs, body.skeleton.bounds[ 1 ]);
-		// add body to renderer
-
-#if 0
-		// Tr3B: it might be better to have a tag_mouth bone joint
-		boneIndex = trap_R_BoneIndex( body.hModel, ci->neckControlBoneName );
-
-		if ( boneIndex >= 0 && boneIndex < cent->pe.legs.skeleton.numBones )
-		{
-			CG_BreathPuffs( cent, body.skeleton.bones[ boneIndex ] );
-		}
-
-#endif
 
 		// add the gun / barrel / flash
 		if ( es->weapon != WP_NONE )
@@ -3607,6 +3347,24 @@ void CG_Player( centity_t *cent )
 			CG_AddPlayerWeapon( &body, NULL, cent );
 		}
 
+		CG_PlayerUpgrades( cent, &body );
+
+		//sanity check that particle systems are stopped when dead
+		if ( es->eFlags & EF_DEAD )
+		{
+			if ( CG_IsParticleSystemValid( &cent->muzzlePS ) )
+			{
+				CG_DestroyParticleSystem( &cent->muzzlePS );
+			}
+			
+			if ( CG_IsParticleSystemValid( &cent->jetPackPS ) )
+			{
+				CG_DestroyParticleSystem( &cent->jetPackPS );
+			}
+		}
+		
+
+		// add body to renderer
 		trap_R_AddRefEntityToScene( &body );
 		VectorCopy( surfNormal, cent->pe.lastNormal );
 		return;
@@ -3989,7 +3747,7 @@ void CG_Corpse( centity_t *cent )
 	{
 		legs.hModel = ci->bodyModel;
 		legs.customSkin = ci->bodySkin;
-		legs.skeleton = skeleton;
+		legs.skeleton = legsSkeleton;
 		CG_TransformSkeleton( &legs.skeleton, ci->modelScale );
 		VectorCopy( deadZ, legs.skeleton.bounds[ 0 ]);
 		VectorCopy( deadMax, legs.skeleton.bounds[ 1 ]);
@@ -4098,11 +3856,11 @@ void CG_ResetPlayerEntity( centity_t *cent )
 	cent->extrapolated = qfalse;
 
 	CG_ClearLerpFrame( &cgs.clientinfo[ cent->currentState.clientNum ],
-	                   &cent->pe.legs, cent->currentState.legsAnim );
+	                   &cent->pe.legs, cent->currentState.legsAnim, &legsSkeleton );
 	CG_ClearLerpFrame( &cgs.clientinfo[ cent->currentState.clientNum ],
-	                   &cent->pe.torso, cent->currentState.torsoAnim );
+	                   &cent->pe.torso, cent->currentState.torsoAnim, &torsoSkeleton );
 	CG_ClearLerpFrame( &cgs.clientinfo[ cent->currentState.clientNum ],
-	                   &cent->pe.nonseg, cent->currentState.legsAnim );
+	                   &cent->pe.nonseg, cent->currentState.legsAnim, &legsSkeleton );
 
 	BG_EvaluateTrajectory( &cent->currentState.pos, cg.time, cent->lerpOrigin );
 	BG_EvaluateTrajectory( &cent->currentState.apos, cg.time, cent->lerpAngles );

@@ -253,6 +253,14 @@ vmCvar_t        cg_highPolyPlayerModels;
 vmCvar_t        cg_highPolyBuildableModels;
 vmCvar_t        cg_highPolyWeaponModels;
 
+vmCvar_t        cg_fov_builder;
+vmCvar_t        cg_fov_level0;
+vmCvar_t        cg_fov_level1;
+vmCvar_t        cg_fov_level2;
+vmCvar_t        cg_fov_level3;
+vmCvar_t        cg_fov_level4;
+vmCvar_t        cg_fov_human;
+
 typedef struct
 {
 	vmCvar_t   *vmCvar;
@@ -409,6 +417,14 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_highPolyPlayerModels,        "cg_highPolyPlayerModels",        "1",            CVAR_ARCHIVE | CVAR_LATCH    },
 	{ &cg_highPolyBuildableModels,     "cg_highPolyBuildableModels",     "1",            CVAR_ARCHIVE | CVAR_LATCH    },
 	{ &cg_highPolyWeaponModels,        "cg_highPolyWeaponModels",        "1",            CVAR_ARCHIVE | CVAR_LATCH    },
+
+	{ &cg_fov_builder,                 "cg_fov_builder",                 "0",            CVAR_ARCHIVE                 },
+	{ &cg_fov_level0,                  "cg_fov_level0",                  "0",            CVAR_ARCHIVE                 },
+	{ &cg_fov_level1,                  "cg_fov_level1",                  "0",            CVAR_ARCHIVE                 },
+	{ &cg_fov_level2,                  "cg_fov_level2",                  "0",            CVAR_ARCHIVE                 },
+	{ &cg_fov_level3,                  "cg_fov_level3",                  "0",            CVAR_ARCHIVE                 },
+	{ &cg_fov_level4,                  "cg_fov_level4",                  "0",            CVAR_ARCHIVE                 },
+	{ &cg_fov_human,                   "cg_fov_human",                   "0",            CVAR_ARCHIVE                 },
 };
 
 static int         cvarTableSize = ARRAY_LEN( cvarTable );
@@ -1293,10 +1309,20 @@ static void CG_RegisterClients( void )
 		trap_UpdateScreen();
 	}
 
-	cgs.media.larmourHeadSkin = trap_R_RegisterSkin( "models/players/human_base/head_light.skin" );
-	cgs.media.larmourLegsSkin = trap_R_RegisterSkin( "models/players/human_base/lower_light.skin" );
-	cgs.media.larmourTorsoSkin = trap_R_RegisterSkin( "models/players/human_base/upper_light.skin" );
-
+	if ( !cg_highPolyPlayerModels.integer )
+	{
+		cgs.media.larmourHeadSkin = trap_R_RegisterSkin( "models/players/human_base/head_light.skin" );
+		cgs.media.larmourLegsSkin = trap_R_RegisterSkin( "models/players/human_base/lower_light.skin" );
+		cgs.media.larmourTorsoSkin = trap_R_RegisterSkin( "models/players/human_base/upper_light.skin" );
+	}
+	else
+	{
+		// Borrow these variables for MD5 models so we don't have to create new ones.
+		cgs.media.larmourHeadSkin = trap_R_RegisterSkin( "models/players/human_base/body_helmet.skin" );
+		cgs.media.larmourLegsSkin = trap_R_RegisterSkin( "models/players/human_base/body_larmour.skin" );
+		cgs.media.larmourTorsoSkin = trap_R_RegisterSkin( "models/players/human_base/body_helmetlarmour.skin" );
+	}
+	
 	cgs.media.jetpackModel = trap_R_RegisterModel( "models/players/human_base/jetpack.md3" );
 	cgs.media.jetpackFlashModel = trap_R_RegisterModel( "models/players/human_base/jetpack_flash.md3" );
 	cgs.media.battpackModel = trap_R_RegisterModel( "models/players/human_base/battpack.md3" );

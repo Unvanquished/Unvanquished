@@ -109,7 +109,6 @@ static void CG_Creep( centity_t *cent )
 	float   size, frac;
 	trace_t tr;
 	vec3_t  temp, origin;
-	int     scaleUpTime = BG_Buildable( cent->currentState.modelindex )->buildTime;
 	int     time;
 
 	time = cent->currentState.time;
@@ -117,6 +116,8 @@ static void CG_Creep( centity_t *cent )
 	//should the creep be growing or receding?
 	if ( time >= 0 )
 	{
+		int scaleUpTime = BG_Buildable( cent->currentState.modelindex )->buildTime;
+
 		msec = cg.time - time;
 
 		if ( msec >= 0 && msec < scaleUpTime )
@@ -134,7 +135,7 @@ static void CG_Creep( centity_t *cent )
 
 		if ( msec >= 0 && msec < CREEP_SCALEDOWN_TIME )
 		{
-			frac = 1.0f - ( ( float ) msec / CREEP_SCALEDOWN_TIME );
+			frac = ( float ) cos ( 0.5f * msec / CREEP_SCALEDOWN_TIME * M_PI );
 		}
 		else
 		{
@@ -432,7 +433,7 @@ void CG_InitBuildables( void )
 		{
 			bi->md5 = qfalse;
 
-			for ( j = 0; j <= 3; j++ )
+			for ( j = 0; j < MAX_BUILDABLE_MODELS; j++ )
 			{
 				modelFile = BG_BuildableConfig( i )->models[ j ];
 
@@ -462,83 +463,80 @@ void CG_InitBuildables( void )
 				bi->animations[ n ] = bi->animations[ BANIM_IDLE1 ];
 			}
 
-			//Register the rest of the buildable animations
-			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_CONSTRUCT1,
-			                                     "construct", qfalse, qfalse, qfalse ) )
+			switch ( i )
 			{
-				bi->animations[ BANIM_CONSTRUCT1 ] = bi->animations[ BANIM_IDLE1 ];
-			}
+				
+				case BA_A_SPAWN:
+				case BA_H_SPAWN:
+					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_SPAWN1,
+						"spawn", qfalse, qfalse, qfalse ) )
+					{
+						bi->animations[ BANIM_SPAWN1 ] = bi->animations[ BANIM_IDLE1 ];
+					}
+					
+				case BA_H_MEDISTAT:
+					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_CONSTRUCT2,
+					   "construct2", qfalse, qfalse, qfalse ) )
+					{
+						bi->animations[ BANIM_CONSTRUCT2 ] = bi->animations[ BANIM_IDLE1 ];
+					}
 
-			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_CONSTRUCT2,
-			                                     "construct2", qfalse, qfalse, qfalse ) )
-			{
-				bi->animations[ BANIM_CONSTRUCT2 ] = bi->animations[ BANIM_IDLE1 ];
-			}
+					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_IDLE2,
+						"idle2", qtrue, qfalse, qfalse ) )
+					{
+						bi->animations[ BANIM_IDLE2 ] = bi->animations[ BANIM_IDLE1 ];
+					}
 
-			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_IDLE2,
-			                                     "idle2", qtrue, qfalse, qfalse ) )
-			{
-				bi->animations[ BANIM_IDLE2 ] = bi->animations[ BANIM_IDLE1 ];
-			}
+				case BA_A_BARRICADE:
+					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_IDLE2,
+						"idle2", qtrue, qfalse, qfalse ) )
+					{
+						bi->animations[ BANIM_IDLE2 ] = bi->animations[ BANIM_IDLE1 ];
+					}
 
-			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_IDLE3,
-			                                     "idle3", qtrue, qfalse, qfalse ) )
-			{
-				bi->animations[ BANIM_IDLE3 ] = bi->animations[ BANIM_IDLE1 ];
-			}
+					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_ATTACK2,
+						"attack2", qfalse, qfalse, qfalse ) )
+					{
+						bi->animations[ BANIM_ATTACK2 ] = bi->animations[ BANIM_IDLE1 ];
+					}
 
-			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_ATTACK1,
-			                                     "attack", qfalse, qfalse, qfalse ) )
-			{
-				bi->animations[ BANIM_ATTACK1 ] = bi->animations[ BANIM_IDLE1 ];
-			}
+					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_PAIN2,
+						"pain2", qtrue, qfalse, qfalse ) )
+					{
+						bi->animations[ BANIM_PAIN2 ] = bi->animations[ BANIM_IDLE1 ];
+					}
+					
+				default:
+					//Register the rest of the buildable animations
+					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_CONSTRUCT1,
+														"construct", qfalse, qfalse, qfalse ) )
+					{
+						bi->animations[ BANIM_CONSTRUCT1 ] = bi->animations[ BANIM_IDLE1 ];
+					}
 
-			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_ATTACK2,
-			                                     "attack2", qfalse, qfalse, qfalse ) )
-			{
-				bi->animations[ BANIM_ATTACK2 ] = bi->animations[ BANIM_IDLE1 ];
-			}
+					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_ATTACK1,
+														"attack", qfalse, qfalse, qfalse ) )
+					{
+						bi->animations[ BANIM_ATTACK1 ] = bi->animations[ BANIM_IDLE1 ];
+					}
 
-			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_SPAWN1,
-			                                     "spawn", qfalse, qfalse, qfalse ) )
-			{
-				bi->animations[ BANIM_SPAWN1 ] = bi->animations[ BANIM_IDLE1 ];
-			}
+					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_PAIN1,
+														"pain", qfalse, qfalse, qfalse ) )
+					{
+						bi->animations[ BANIM_PAIN1 ] = bi->animations[ BANIM_IDLE1 ];
+					}
 
-			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_SPAWN2,
-			                                     "spawn2", qtrue, qfalse, qfalse ) )
-			{
-				bi->animations[ BANIM_SPAWN2 ] = bi->animations[ BANIM_IDLE1 ];
-			}
+					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_DESTROY1,
+														"destroy", qfalse, qfalse, qfalse ) )
+					{
+						bi->animations[ BANIM_DESTROY1 ] = bi->animations[ BANIM_IDLE1 ];
+					}
 
-			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_PAIN1,
-			                                     "pain", qfalse, qfalse, qfalse ) )
-			{
-				bi->animations[ BANIM_PAIN1 ] = bi->animations[ BANIM_IDLE1 ];
-			}
-
-			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_PAIN2,
-			                                     "pain2", qtrue, qfalse, qfalse ) )
-			{
-				bi->animations[ BANIM_PAIN2 ] = bi->animations[ BANIM_IDLE1 ];
-			}
-
-			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_DESTROY1,
-			                                     "destroy", qfalse, qfalse, qfalse ) )
-			{
-				bi->animations[ BANIM_DESTROY1 ] = bi->animations[ BANIM_IDLE1 ];
-			}
-
-			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_DESTROY2,
-			                                     "destroy2", qfalse, qfalse, qfalse ) )
-			{
-				bi->animations[ BANIM_DESTROY2 ] = bi->animations[ BANIM_IDLE1 ];
-			}
-
-			if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_DESTROYED,
-			                                     "destroyed", qtrue, qfalse, qfalse ) )
-			{
-				bi->animations[ BANIM_DESTROYED ] = bi->animations[ BANIM_IDLE1 ];
+					if ( !CG_RegisterBuildableAnimation( bi, buildableName, BANIM_DESTROYED,
+														"destroyed", qtrue, qfalse, qfalse ) )
+					{
+						bi->animations[ BANIM_DESTROYED ] = bi->animations[ BANIM_IDLE1 ];
+					}
 			}
 		}
 		else // Not using md5s, fall back to md3s
@@ -946,9 +944,9 @@ static void CG_PositionAndOrientateBuildable( const vec3_t angles, const vec3_t 
     const vec3_t mins, const vec3_t maxs,
     vec3_t outAxis[ 3 ], vec3_t outOrigin )
 {
-	vec3_t  forward, start, end;
-	trace_t tr, box_tr;
-	float   mag, fraction;
+	vec3_t  forward, end;
+	trace_t tr;
+	float   fraction;
 
 	AngleVectors( angles, forward, NULL, NULL );
 	VectorCopy( normal, outAxis[ 2 ] );
@@ -967,27 +965,20 @@ static void CG_PositionAndOrientateBuildable( const vec3_t angles, const vec3_t 
 	outAxis[ 1 ][ 2 ] = -outAxis[ 1 ][ 2 ];
 
 	VectorMA( inOrigin, -TRACE_DEPTH, normal, end );
-	VectorMA( inOrigin, 1.0f, normal, start );
 
-	// Take both capsule and box traces. If the capsule trace does not differ
-	//  significantly from the box trace use it. This may cause buildables to be
-	//  positioned *inside* the surface on which it is placed. This is intentional
-
-	CG_CapTrace( &tr, start, mins, maxs, end, skipNumber,
+	CG_CapTrace( &tr, inOrigin, mins, maxs, end, skipNumber,
 	             CONTENTS_SOLID | CONTENTS_PLAYERCLIP );
 
-	CG_Trace( &box_tr, start, mins, maxs, end, skipNumber,
-	          CONTENTS_SOLID | CONTENTS_PLAYERCLIP );
-
-	mag = Distance( tr.endpos, box_tr.endpos );
-
 	fraction = tr.fraction;
-
-	// this is either too far off of the bbox to be useful for gameplay purposes
-	//  or the model is positioned in thin air anyways.
-	if ( mag > 15.0f || tr.fraction == 1.0f )
+	if ( tr.startsolid )
 	{
-		fraction = box_tr.fraction;
+		fraction = 0;
+	}
+	else if ( tr.fraction == 1.0f )
+	{
+		// this is either too far off of the bbox to be useful for gameplay purposes
+		//  or the model is positioned in thin air anyways.
+		fraction = 0;
 	}
 
 	VectorMA( inOrigin, fraction * -TRACE_DEPTH, normal, outOrigin );
@@ -1856,10 +1847,6 @@ void CG_Buildable( centity_t *cent )
 
 	memset( &ent, 0, sizeof( ent ) );
 
-	VectorCopy( cent->lerpOrigin, ent.origin );
-	VectorCopy( cent->lerpOrigin, ent.oldorigin );
-	VectorCopy( cent->lerpOrigin, ent.lightingOrigin );
-
 	VectorCopy( es->origin2, surfNormal );
 
 	VectorCopy( es->angles, angles );
@@ -1867,7 +1854,6 @@ void CG_Buildable( centity_t *cent )
 
 	if ( es->pos.trType == TR_STATIONARY )
 	{
-		// Positioning a buildable involves potentially up to two traces, and
 		// seeing as buildables rarely move, we cache the results and recalculate
 		// only if the buildable moves or changes orientation
 		if ( VectorCompare( cent->buildableCache.cachedOrigin, cent->lerpOrigin ) &&
@@ -1882,7 +1868,7 @@ void CG_Buildable( centity_t *cent )
 		}
 		else
 		{
-			CG_PositionAndOrientateBuildable( angles, ent.origin, surfNormal,
+			CG_PositionAndOrientateBuildable( angles, cent->lerpOrigin, surfNormal,
 			                                  es->number, mins, maxs, ent.axis,
 			                                  ent.origin );
 			VectorCopy( ent.axis[ 0 ], cent->buildableCache.axis[ 0 ] );
@@ -1895,10 +1881,15 @@ void CG_Buildable( centity_t *cent )
 			cent->buildableCache.cachedType = es->modelindex;
 		}
 	}
+	else
+	{
+		VectorCopy( cent->lerpOrigin, ent.origin );
+		AnglesToAxis( cent->lerpAngles, ent.axis );
+	}
 
 	if( cg_drawBBOX.integer )
 	{
-		CG_DrawBoundingBox( ent.origin, mins, maxs );
+		CG_DrawBoundingBox( cent->lerpOrigin, mins, maxs );
 	}
 
 	//offset on the Z axis if required
@@ -1965,7 +1956,7 @@ void CG_Buildable( centity_t *cent )
 			//FIXME: Don't hard code bones to specific assets. Soon, I should put bone names in
 			// .cfg so we can change it should the rig change.
 
-			QuatFromAngles( rotation, es->angles2[ YAW ] - es->angles[ YAW ] + 90, 0, 0 );
+			QuatFromAngles( rotation, es->angles2[ YAW ] - es->angles[ YAW ], 0, 0 );
 			QuatMultiply0( ent.skeleton.bones[ 1 ].rotation, rotation );
 
 			QuatFromAngles( rotation, es->angles2[ PITCH ], 0, 0 );

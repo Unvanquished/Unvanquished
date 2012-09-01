@@ -930,11 +930,11 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 
 					GL_Bind( image );
 
-					image->internalFormat = GL_RGBA16F_ARB;
+					image->internalFormat = GL_RGBA16F;
 					image->uploadWidth = width;
 					image->uploadHeight = height;
 
-					glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F_ARB, width, height, 0, GL_RGB, GL_HALF_FLOAT_ARB, hdrImage );
+					glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_HALF_FLOAT, hdrImage );
 
 					if ( glConfig2.generateMipmapAvailable )
 					{
@@ -1539,7 +1539,6 @@ static void ParseFace( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, in
 		}
 	}
 
-	R_CalcSurfaceTriangleNeighbors( numTriangles, cv->triangles );
 	R_CalcSurfaceTrianglePlanes( numTriangles, cv->triangles, cv->verts );
 
 	// take the plane information from the lightmap vector
@@ -1907,7 +1906,6 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 		AddPointToBounds( cv->verts[ tri->indexes[ 2 ] ].xyz, cv->bounds[ 0 ], cv->bounds[ 1 ] );
 	}
 
-	R_CalcSurfaceTriangleNeighbors( numTriangles, cv->triangles );
 	R_CalcSurfaceTrianglePlanes( numTriangles, cv->triangles, cv->verts );
 
 	// Tr3B - calc tangent spaces
@@ -3417,7 +3415,9 @@ static void CopyVert( const srfVert_t *in, srfVert_t *out )
 		out->tangent[ j ] = in->tangent[ j ];
 		out->binormal[ j ] = in->binormal[ j ];
 		out->normal[ j ] = in->normal[ j ];
+#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
 		out->lightDirection[ j ] = in->lightDirection[ j ];
+#endif
 	}
 
 	for ( j = 0; j < 2; j++ )
@@ -3428,7 +3428,9 @@ static void CopyVert( const srfVert_t *in, srfVert_t *out )
 
 	for ( j = 0; j < 4; j++ )
 	{
+#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
 		out->paintColor[ j ] = in->paintColor[ j ];
+#endif
 		out->lightColor[ j ] = in->lightColor[ j ];
 	}
 
@@ -4550,6 +4552,8 @@ static void R_CreateClusters()
 	bspSurface_t *surface;
 	bspNode_t    *node;
 #if defined( USE_BSP_CLUSTERSURFACE_MERGING )
+	bspNode_t    *parent;
+	bspSurface_t **mark;
 	int          numClusters;
 	bspCluster_t *cluster;
 	growList_t   clusterSurfaces;
@@ -6035,7 +6039,7 @@ static void R_LoadNodesAndLeafs( lump_t *nodeLump, lump_t *leafLump )
 		InitLink( &out->occlusionQuery2, out );
 		//QueueInit(&node->multiQuery);
 
-		glGenQueriesARB( MAX_VIEWS, out->occlusionQueryObjects );
+		glGenQueries( MAX_VIEWS, out->occlusionQueryObjects );
 
 		tess.multiDrawPrimitives = 0;
 		tess.numIndexes = 0;
@@ -10059,7 +10063,7 @@ void R_BuildCubeMaps( void )
 			return;
 		}
 
-		cubeProbe->cubemap->type = GL_TEXTURE_CUBE_MAP_ARB;
+		cubeProbe->cubemap->type = GL_TEXTURE_CUBE_MAP;
 
 		cubeProbe->cubemap->width = REF_CUBEMAP_SIZE;
 		cubeProbe->cubemap->height = REF_CUBEMAP_SIZE;

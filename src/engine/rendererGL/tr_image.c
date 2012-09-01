@@ -230,7 +230,7 @@ void R_ImageList_f( void )
 				ri.Printf( PRINT_ALL, "2D   " );
 				break;
 
-			case GL_TEXTURE_CUBE_MAP_ARB:
+			case GL_TEXTURE_CUBE_MAP:
 				texels += image->uploadWidth * image->uploadHeight * 6;
 				imageDataSize = image->uploadWidth * image->uploadHeight * 6;
 
@@ -260,22 +260,22 @@ void R_ImageList_f( void )
 				imageDataSize *= 6;
 				break;
 
-			case GL_RGB16F_ARB:
+			case GL_RGB16F:
 				ri.Printf( PRINT_ALL, "RGB16F   " );
 				imageDataSize *= 6;
 				break;
 
-			case GL_RGB32F_ARB:
+			case GL_RGB32F:
 				ri.Printf( PRINT_ALL, "RGB32F   " );
 				imageDataSize *= 12;
 				break;
 
-			case GL_RGBA16F_ARB:
+			case GL_RGBA16F:
 				ri.Printf( PRINT_ALL, "RGBA16F  " );
 				imageDataSize *= 8;
 				break;
 
-			case GL_RGBA32F_ARB:
+			case GL_RGBA32F:
 				ri.Printf( PRINT_ALL, "RGBA32F  " );
 				imageDataSize *= 16;
 				break;
@@ -300,8 +300,8 @@ void R_ImageList_f( void )
 				imageDataSize *= 8;
 				break;
 
-			case GL_COMPRESSED_RGBA_ARB:
-				ri.Printf( PRINT_ALL, "ARB      " );
+			case GL_COMPRESSED_RGBA:
+				ri.Printf( PRINT_ALL, "      " );
 				imageDataSize *= 4; // FIXME
 				break;
 
@@ -325,17 +325,17 @@ void R_ImageList_f( void )
 				imageDataSize *= 4 / 4;
 				break;
 
-			case GL_DEPTH_COMPONENT16_ARB:
+			case GL_DEPTH_COMPONENT16:
 				ri.Printf( PRINT_ALL, "D16      " );
 				imageDataSize *= 2;
 				break;
 
-			case GL_DEPTH_COMPONENT24_ARB:
+			case GL_DEPTH_COMPONENT24:
 				ri.Printf( PRINT_ALL, "D24      " );
 				imageDataSize *= 3;
 				break;
 
-			case GL_DEPTH_COMPONENT32_ARB:
+			case GL_DEPTH_COMPONENT32:
 				ri.Printf( PRINT_ALL, "D32      " );
 				imageDataSize *= 4;
 				break;
@@ -1128,7 +1128,7 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 	// clamp to the current upper OpenGL limit
 	// scale both axis down equally so we don't have to
 	// deal with a half mip resampling
-	if ( image->type == GL_TEXTURE_CUBE_MAP_ARB )
+	if ( image->type == GL_TEXTURE_CUBE_MAP )
 	{
 		while ( scaledWidth > glConfig2.maxCubeMapTextureSize || scaledHeight > glConfig2.maxCubeMapTextureSize )
 		{
@@ -1150,8 +1150,8 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 	// set target
 	switch ( image->type )
 	{
-		case GL_TEXTURE_CUBE_MAP_ARB:
-			target = GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB;
+		case GL_TEXTURE_CUBE_MAP:
+			target = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
 			break;
 
 		default:
@@ -1170,15 +1170,15 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 
 		if ( image->bits & IF_DEPTH16 )
 		{
-			internalFormat = GL_DEPTH_COMPONENT16_ARB;
+			internalFormat = GL_DEPTH_COMPONENT16;
 		}
 		else if ( image->bits & IF_DEPTH24 )
 		{
-			internalFormat = GL_DEPTH_COMPONENT24_ARB;
+			internalFormat = GL_DEPTH_COMPONENT24;
 		}
 		else if ( image->bits & IF_DEPTH32 )
 		{
-			internalFormat = GL_DEPTH_COMPONENT32_ARB;
+			internalFormat = GL_DEPTH_COMPONENT32;
 		}
 	}
 	else if ( image->bits & ( IF_PACKED_DEPTH24_STENCIL8 ) )
@@ -1191,11 +1191,11 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 	{
 		if ( image->bits & IF_RGBA16F )
 		{
-			internalFormat = GL_RGBA16F_ARB;
+			internalFormat = GL_RGBA16F;
 		}
 		else if ( image->bits & IF_RGBA32F )
 		{
-			internalFormat = GL_RGBA32F_ARB;
+			internalFormat = GL_RGBA32F;
 		}
 		else if ( image->bits & IF_LA16F )
 		{
@@ -1341,7 +1341,7 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 
 		switch ( image->type )
 		{
-			case GL_TEXTURE_CUBE_MAP_ARB:
+			case GL_TEXTURE_CUBE_MAP:
 				glTexImage2D( target + i, 0, internalFormat, scaledWidth, scaledHeight, 0, format, GL_UNSIGNED_BYTE,
 				              scaledBuffer );
 				break;
@@ -1419,7 +1419,7 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 
 					switch ( image->type )
 					{
-						case GL_TEXTURE_CUBE_MAP_ARB:
+						case GL_TEXTURE_CUBE_MAP:
 							glTexImage2D( target + i, mipLevel, internalFormat, mipWidth, mipHeight, 0, format, GL_UNSIGNED_BYTE,
 							              scaledBuffer );
 							break;
@@ -1668,7 +1668,7 @@ image_t        *R_CreateCubeImage( const char *name,
 #if defined( USE_D3D10 )
 	// TODO
 #else
-	image->type = GL_TEXTURE_CUBE_MAP_ARB;
+	image->type = GL_TEXTURE_CUBE_MAP;
 #endif
 
 	image->width = width;
@@ -2249,7 +2249,7 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 	byte          *pic = NULL;
 	long          hash;
 	char          buffer[ 1024 ];
-	char          ddsName[ 1024 ];
+	//char          ddsName[ 1024 ];
 	char          *buffer_p;
 	unsigned long diff;
 
@@ -2298,7 +2298,9 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 #if defined( USE_D3D10 )
 	// TODO
 #else
+#endif
 
+#if 0
 	if ( glConfig.textureCompression == TC_S3TC && !( bits & IF_NOCOMPRESSION ) && Q_stricmpn( imageName, "fonts", 5 ) )
 	{
 		Q_strncpyz( ddsName, imageName, sizeof( ddsName ) );
@@ -3898,7 +3900,7 @@ void R_ShutdownImages( void )
 	/*
 	if(glBindTexture)
 	{
-	        if(glActiveTextureARB)
+	        if(glActiveTexture)
 	        {
 	                for(i = 8 - 1; i >= 0; i--)
 	                {

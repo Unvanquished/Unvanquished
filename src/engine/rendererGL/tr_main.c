@@ -534,68 +534,6 @@ qboolean R_CalcTangentVectors( srfVert_t *dv[ 3 ] )
 
 /*
 =================
-R_FindSurfaceTriangleWithEdge
-Tr3B - recoded from Q2E
-=================
-*/
-static int R_FindSurfaceTriangleWithEdge( int numTriangles, srfTriangle_t *triangles, int start, int end, int ignore )
-{
-	srfTriangle_t *tri;
-	int           count, match;
-	int           i;
-
-	count = 0;
-	match = -1;
-
-	for ( i = 0, tri = triangles; i < numTriangles; i++, tri++ )
-	{
-		if ( ( tri->indexes[ 0 ] == start && tri->indexes[ 1 ] == end ) ||
-		     ( tri->indexes[ 1 ] == start && tri->indexes[ 2 ] == end ) || ( tri->indexes[ 2 ] == start && tri->indexes[ 0 ] == end ) )
-		{
-			if ( i != ignore )
-			{
-				match = i;
-			}
-
-			count++;
-		}
-		else if ( ( tri->indexes[ 1 ] == start && tri->indexes[ 0 ] == end ) ||
-		          ( tri->indexes[ 2 ] == start && tri->indexes[ 1 ] == end ) || ( tri->indexes[ 0 ] == start && tri->indexes[ 2 ] == end ) )
-		{
-			count++;
-		}
-	}
-
-	// detect edges shared by three triangles and make them seams
-	if ( count > 2 )
-	{
-		match = -1;
-	}
-
-	return match;
-}
-
-/*
-=================
-R_CalcSurfaceTriangleNeighbors
-Tr3B - recoded from Q2E
-=================
-*/
-void R_CalcSurfaceTriangleNeighbors( int numTriangles, srfTriangle_t *triangles )
-{
-	int           i;
-	srfTriangle_t *tri;
-
-	for ( i = 0, tri = triangles; i < numTriangles; i++, tri++ )
-	{
-		tri->neighbors[ 0 ] = R_FindSurfaceTriangleWithEdge( numTriangles, triangles, tri->indexes[ 1 ], tri->indexes[ 0 ], i );
-		tri->neighbors[ 1 ] = R_FindSurfaceTriangleWithEdge( numTriangles, triangles, tri->indexes[ 2 ], tri->indexes[ 1 ], i );
-		tri->neighbors[ 2 ] = R_FindSurfaceTriangleWithEdge( numTriangles, triangles, tri->indexes[ 0 ], tri->indexes[ 2 ], i );
-	}
-}
-
-/*
-=================
 R_CalcSurfaceTrianglePlanes
 =================
 */
@@ -3409,7 +3347,7 @@ void R_DebugBoundingBox( const vec3_t origin, const vec3_t mins, const vec3_t ma
 
 	// draw bounding box
 	glBegin( GL_LINES );
-	glVertexAttrib4fvARB( ATTR_INDEX_COLOR, color );
+	glVertexAttrib4fv( ATTR_INDEX_COLOR, color );
 
 	for ( i = 0; i < 4; i++ )
 	{

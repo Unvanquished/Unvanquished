@@ -475,6 +475,7 @@ typedef enum
   EV_FIRE_WEAPON,
   EV_FIRE_WEAPON2,
   EV_FIRE_WEAPON3,
+  EV_WEAPON_RELOAD,
 
   EV_PLAYER_RESPAWN, // for fovwarp effects
   EV_PLAYER_TELEPORT_IN,

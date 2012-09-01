@@ -476,7 +476,7 @@ static void R_UploadCompressedImage2D( image_t *img, GLenum target, int level, G
 
 	if ( glConfig2.ARBTextureCompressionAvailable && glConfig.textureCompression == TC_S3TC )
 	{
-		glCompressedTexImage2DARB( target, level, format, width, height, 0, size, data );
+		glCompressedTexImage2D( target, level, format, width, height, 0, size, data );
 		return;
 	}
 
@@ -1007,14 +1007,14 @@ image_t        *R_LoadDDSImageData( void *pImageData, const char *name, int bits
 		size_t shift = mipOffsets[ mipLevels ] - mipOffsets[ 0 ];
 
 		/*
-		if(!GARB_texture_cube_map && !GLEW_EXT_texture_cube_map && !GLEW_VERSION_1_2)
+		if(!G_texture_cube_map && !GLEW_EXT_texture_cube_map && !GLEW_VERSION_1_2)
 		{
 		        ri.Printf(PRINT_WARNING, "R_LoadDDSImage: Tried to load Cube texture but missing hardware support \"%s\"\n", name);
 		        goto ret_error;
 		}
 		*/
 
-		ret->type = GL_TEXTURE_CUBE_MAP_ARB;
+		ret->type = GL_TEXTURE_CUBE_MAP;
 
 		GL_Bind( ret );
 
@@ -1052,37 +1052,37 @@ image_t        *R_LoadDDSImageData( void *pImageData, const char *name, int bits
 		//but there may be missing faces in the sequence which we cannot upload
 		if ( ddsd->ddsCaps.dwCaps2 & DDSCAPS2_CUBEMAP_POSITIVEX )
 		{
-			loadCubeFace( GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB );
+			loadCubeFace( GL_TEXTURE_CUBE_MAP_POSITIVE_X );
 			shiftMipOffsets();
 		}
 
 		if ( ddsd->ddsCaps.dwCaps2 & DDSCAPS2_CUBEMAP_NEGATIVEX )
 		{
-			loadCubeFace( GL_TEXTURE_CUBE_MAP_NEGATIVE_X_ARB );
+			loadCubeFace( GL_TEXTURE_CUBE_MAP_NEGATIVE_X );
 			shiftMipOffsets();
 		}
 
 		if ( ddsd->ddsCaps.dwCaps2 & DDSCAPS2_CUBEMAP_POSITIVEY )
 		{
-			loadCubeFace( GL_TEXTURE_CUBE_MAP_POSITIVE_Y_ARB );
+			loadCubeFace( GL_TEXTURE_CUBE_MAP_POSITIVE_Y );
 			shiftMipOffsets();
 		}
 
 		if ( ddsd->ddsCaps.dwCaps2 & DDSCAPS2_CUBEMAP_NEGATIVEY )
 		{
-			loadCubeFace( GL_TEXTURE_CUBE_MAP_NEGATIVE_Y_ARB );
+			loadCubeFace( GL_TEXTURE_CUBE_MAP_NEGATIVE_Y );
 			shiftMipOffsets();
 		}
 
 		if ( ddsd->ddsCaps.dwCaps2 & DDSCAPS2_CUBEMAP_POSITIVEZ )
 		{
-			loadCubeFace( GL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB );
+			loadCubeFace( GL_TEXTURE_CUBE_MAP_POSITIVE_Z );
 			shiftMipOffsets();
 		}
 
 		if ( ddsd->ddsCaps.dwCaps2 & DDSCAPS2_CUBEMAP_NEGATIVEZ )
 		{
-			loadCubeFace( GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB );
+			loadCubeFace( GL_TEXTURE_CUBE_MAP_NEGATIVE_Z );
 			shiftMipOffsets();
 		}
 	}

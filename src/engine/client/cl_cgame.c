@@ -579,8 +579,7 @@ void CL_CM_LoadMap( const char *mapname )
 
 /*
 ====================
-CL_ShutdonwCGame
-
+CL_ShutdownCGame
 ====================
 */
 void CL_ShutdownCGame( void )

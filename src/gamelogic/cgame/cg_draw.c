@@ -451,7 +451,7 @@ static void CG_DrawPlayerAlienEvos( rectDef_t *rect, float text_x, float text_y,
 			value /= ( float ) ALIEN_CREDITS_PER_KILL;
 		}
 
-		s = va( "%0.1f", value );
+		s = va( "%0.1f", floor( value * 10 ) / 10 );
 		CG_AlignText( rect, s, scale, 0.0f, 0.0f, textalign, textvalign, &tx, &ty );
 
 		UI_Text_Paint( text_x + tx, text_y + ty, scale, color, s, 0, textStyle );
@@ -889,6 +889,7 @@ static void CG_DrawPlayerTotalAmmoValue( rectDef_t *rect, vec4_t color )
 {
 	int      value;
 	int      valueMarked = -1;
+	int      maxAmmo;
 	qboolean bp = qfalse;
 	weapon_t weapon;
 
@@ -907,7 +908,15 @@ static void CG_DrawPlayerTotalAmmoValue( rectDef_t *rect, vec4_t color )
 			break;
 
 		default:
-			value = cg.snap->ps.Ammo + ( cg.snap->ps.clips * BG_Weapon( weapon )->maxAmmo );
+			maxAmmo = BG_Weapon( weapon )->maxAmmo;
+
+			if ( BG_Weapon( weapon )->usesEnergy &&
+				BG_InventoryContainsUpgrade( UP_BATTPACK, cg.snap->ps.stats ) )
+			{
+				maxAmmo *= BATTPACK_MODIFIER;
+			}
+			
+			value = cg.snap->ps.Ammo + ( cg.snap->ps.clips * maxAmmo );
 			break;
 	}
 
@@ -1572,7 +1581,6 @@ static void CG_DrawPlayerClipMeter( rectDef_t *rect, vec4_t color, qhandle_t sha
 static void CG_DrawPlayerHealthMeter( rectDef_t *rect, vec4_t color, qhandle_t shader )
 {
 	float fraction;
-	float height;
 	
 	fraction = (float)cg.snap->ps.stats[ STAT_HEALTH ] / (float)BG_Class( cg.snap->ps.stats[ STAT_CLASS ] )->health;
 	

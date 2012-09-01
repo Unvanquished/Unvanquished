@@ -1230,7 +1230,8 @@ static void G_UpdateZapEffect( zap_t *zap )
 	BG_PackEntityNumbers( &zap->effectChannel->s,
 	                      entityNums, zap->numTargets + 1 );
 
-	VectorCopy( zap->creator->s.origin, zap->effectChannel->r.currentOrigin );
+
+	G_SetOrigin( zap->effectChannel, muzzle );
 	trap_LinkEntity( zap->effectChannel );
 }
 

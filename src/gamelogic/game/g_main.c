@@ -238,15 +238,15 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_extendVotesPercent,          "g_extendVotesPercent",          "74",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_extendVotesTime,             "g_extendVotesTime",             "10",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_extendVotesCount,            "g_extendVotesCount",            "2",                                CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_kickVotesPercent,            "g_kickVotesPercent",            "50",                               CVAR_ARCHIVE,                                    0, qtrue            },
-	{ &g_denyVotesPercent,            "g_denyVotesPercent",            "50",                               CVAR_ARCHIVE,                                    0, qtrue            },
-	{ &g_mapVotesPercent,             "g_mapVotesPercent",             "50",                               CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_kickVotesPercent,            "g_kickVotesPercent",            "51",                               CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_denyVotesPercent,            "g_denyVotesPercent",            "51",                               CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_mapVotesPercent,             "g_mapVotesPercent",             "51",                               CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_mapVotesBefore,              "g_mapVotesBefore",              "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
-	{ &g_nextMapVotesPercent,         "g_nextMapVotesPercent",         "50",                               CVAR_ARCHIVE,                                    0, qtrue            },
-	{ &g_drawVotesPercent,            "g_drawVotesPercent",            "50",                               CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_nextMapVotesPercent,         "g_nextMapVotesPercent",         "51",                               CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_drawVotesPercent,            "g_drawVotesPercent",            "51",                               CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_drawVotesAfter,              "g_drawVotesAfter",              "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_drawVoteReasonRequired,      "g_drawVoteReasonRequired",      "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
-	{ &g_admitDefeatVotesPercent,     "g_admitDefeatVotesPercent",     "50",                               CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_admitDefeatVotesPercent,     "g_admitDefeatVotesPercent",     "74",                               CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_pollVotesPercent,            "g_pollVotesPercent",            "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_minNameChangePeriod,         "g_minNameChangePeriod",         "5",                                0,                                               0, qfalse           },
 	{ &g_maxNameChanges,              "g_maxNameChanges",              "5",                                0,                                               0, qfalse           },
@@ -2522,12 +2522,12 @@ void G_CheckVote( team_t team )
 
 	if ( pass )
 	{
-		cmd = va( "print_tr %s %d %d", ( team == TEAM_NONE ) ? QQ( N_("Vote passed ($1$ - $2$)\n") ) : QQ( N_("Team vote passed ($1$ – $2$)\n") ),
+		cmd = va( "print_tr %s %d %d", ( team == TEAM_NONE ) ? QQ( N_("Vote passed ($1$ – $2$)\n") ) : QQ( N_("Team vote passed ($1$ – $2$)\n") ),
 		            level.voteYes[ team ], level.voteNo[ team ] );
 	}
 	else
 	{
-		cmd = va( "print_tr %s %d %d %.0f", ( team == TEAM_NONE ) ? QQ( N_("Vote failed ($1$ - $2$; $3$% needed)\n") ) : QQ( N_("Team vote failed ($1$ – $2$; $3$% needed)\n") ),
+		cmd = va( "print_tr %s %d %d %.0f", ( team == TEAM_NONE ) ? QQ( N_("Vote failed ($1$ – $2$; $3$% needed)\n") ) : QQ( N_("Team vote failed ($1$ – $2$; $3$% needed)\n") ),
 		            level.voteYes[ team ], level.voteNo[ team ], votePassThreshold * 100 );
 	}
 

@@ -1823,29 +1823,6 @@ void CL_ForwardCommandToServer( const char *string )
 }
 
 /*
-==================
-CL_OpenUrl_f
-==================
-*/
-void CL_OpenUrl_f( void )
-{
-	const char *url;
-
-	if ( Cmd_Argc() != 2 )
-	{
-		Com_Printf("%s", _( "Usage: openurl <url>\n" ));
-		return;
-	}
-
-	url = Cmd_Argv( 1 );
-
-	if ( !Sys_OpenUrl( url ) )
-	{
-		Com_Printf("%s", _( "System error opening URL\n" ));
-	}
-}
-
-/*
 ===================
 CL_RequestMotd
 
@@ -1916,48 +1893,6 @@ void CL_ForwardToServer_f( void )
 	if ( Cmd_Argc() > 1 )
 	{
 		CL_AddReliableCommand( Cmd_Args() );
-	}
-}
-
-/*
-==================
-CL_Setenv_f
-
-Mostly for controlling voodoo environment variables
-==================
-*/
-void CL_Setenv_f( void )
-{
-	int argc = Cmd_Argc();
-
-	if ( argc > 2 )
-	{
-		char buffer[ 1024 ];
-		int  i;
-
-		strcpy( buffer, Cmd_Argv( 1 ) );
-		strcat( buffer, "=" );
-
-		for ( i = 2; i < argc; i++ )
-		{
-			strcat( buffer, Cmd_Argv( i ) );
-			strcat( buffer, " " );
-		}
-
-		Q_putenv( buffer );
-	}
-	else if ( argc == 2 )
-	{
-		char *env = getenv( Cmd_Argv( 1 ) );
-
-		if ( env )
-		{
-			Com_Printf( "%s=%s\n", Cmd_Argv( 1 ), env );
-		}
-		else
-		{
-			Com_Printf(_( "%s undefined\n"), Cmd_Argv( 1 ) );
-		}
 	}
 }
 
@@ -4165,7 +4100,7 @@ CL_RefMalloc
 ============
 */
 #ifdef ZONE_DEBUG
-void           *CL_RefMallocDebug( int size, char *label, char *file, int line )
+void           *CL_RefMallocDebug( int size, const char *label, const char *file, int line )
 {
 	return Z_TagMallocDebug( size, TAG_RENDERER, label, file, line );
 }
@@ -4323,7 +4258,6 @@ void CL_InitRef( const char *renderer )
 	ri.IN_Restart = IN_Restart;
 
 	ri.ftol = Q_ftol;
-	ri.Con_GetText = Con_GetText;
 
 	ri.Sys_GLimpSafeInit = Sys_GLimpSafeInit;
 	ri.Sys_GLimpInit = Sys_GLimpInit;
@@ -4507,7 +4441,7 @@ void CL_Init( void )
 	// userinfo
 	Cvar_Get( "name", UNNAMED_PLAYER, CVAR_USERINFO | CVAR_ARCHIVE );
 	Cvar_Get( "rate", "25000", CVAR_USERINFO | CVAR_ARCHIVE );
-	Cvar_Get( "snaps", "120", CVAR_USERINFO | CVAR_ARCHIVE );
+	Cvar_Get( "snaps", "40", CVAR_USERINFO | CVAR_ARCHIVE );
 //  Cvar_Get ("sex", "male", CVAR_USERINFO | CVAR_ARCHIVE );
 
 	Cvar_Get( "password", "", CVAR_USERINFO );
@@ -4574,9 +4508,7 @@ void CL_Init( void )
 	Cmd_AddCommand( "localservers", CL_LocalServers_f );
 	Cmd_AddCommand( "globalservers", CL_GlobalServers_f );
 
-	Cmd_AddCommand( "openurl", CL_OpenUrl_f );
 	Cmd_AddCommand( "rcon", CL_Rcon_f );
-	Cmd_AddCommand( "setenv", CL_Setenv_f );
 	Cmd_AddCommand( "ping", CL_Ping_f );
 	Cmd_AddCommand( "serverstatus", CL_ServerStatus_f );
 	Cmd_AddCommand( "showip", CL_ShowIP_f );
@@ -4678,7 +4610,6 @@ void CL_Shutdown( void )
 	Cmd_RemoveCommand( "localservers" );
 	Cmd_RemoveCommand( "globalservers" );
 	Cmd_RemoveCommand( "rcon" );
-	Cmd_RemoveCommand( "setenv" );
 	Cmd_RemoveCommand( "ping" );
 	Cmd_RemoveCommand( "serverstatus" );
 	Cmd_RemoveCommand( "showip" );
@@ -5800,22 +5731,6 @@ CL_ShowIP_f
 void CL_ShowIP_f( void )
 {
 	Sys_ShowIP();
-}
-
-/*
-=======================
-CL_OpenURLForCvar
-=======================
-*/
-void CL_OpenURL( const char *url )
-{
-	if ( !url || !strlen( url ) )
-	{
-		Com_Printf("%s", _( "invalid/empty URL\n" ));
-		return;
-	}
-
-	Sys_OpenURL( url, qtrue );
 }
 
 // Gordon: TEST TEST TEST

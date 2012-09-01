@@ -872,11 +872,11 @@ int FS_SV_FOpenFileRead( const char *filename, fileHandle_t *fp )
 
 			fsh[ f ].handleFiles.file.o = fopen( ospath, "rb" );
 			fsh[ f ].handleSync = qfalse;
+		}
 
-			if ( !fsh[ f ].handleFiles.file.o )
-			{
-				f = 0;
-			}
+		if ( !fsh[ f ].handleFiles.file.o )
+		{
+			f = 0;
 		}
 	}
 
@@ -1338,6 +1338,24 @@ extern qboolean com_fullyInitialized;
 // see FS_FOpenFileRead_Filtered
 static int      fs_filter_flag = 0;
 
+static qboolean FS_CheckUIImageFile( const char *filename )
+{
+	int l = 0;
+
+	if ( !Q_stricmpn( filename, "ui/assets/", 10 ) &&
+	   ( !Q_stricmp( filename + l - 4, ".tga" ) ||
+		 !Q_stricmp( filename + l - 4, ".png" ) ||
+		 !Q_stricmp( filename + l - 4, ".jpg" ) ||
+		 !Q_stricmp( filename + l - 5, ".jpeg" ) ||
+		 !Q_stricmp( filename + l - 5, ".webp" ) ) )
+	{
+		return qtrue;
+	}
+
+	return qfalse;
+}
+		
+
 int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueFILE )
 {
 	searchpath_t *search;
@@ -1509,7 +1527,8 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 						     Q_stricmp( filename + l - 6, ".arena" ) != 0 &&
 						     Q_stricmp( filename + l - 5, ".menu" ) != 0 &&
 						     Q_stricmp( filename + l - 3, ".po" ) != 0 &&
-						     Q_stricmp( filename, "qagame.qvm" ) != 0 )
+						     Q_stricmp( filename, "qagame.qvm" ) != 0  &&
+						     !FS_CheckUIImageFile( filename ) )
 						{
 							pak->referenced |= FS_GENERAL_REF;
 						}
@@ -1620,6 +1639,7 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 				     && Q_stricmp( filename + l - 8, "bots.txt" )
 				     && Q_stricmp( filename + l - 8, ".botents" )
 				     && Q_stricmp( filename + l - 3, ".po" )
+				     && !FS_CheckUIImageFile( filename )
 #ifdef __MACOS__
 				     // even when pure is on, let the server game be loaded
 				     && Q_stricmp( filename, "qagame_mac" )
@@ -1649,6 +1669,7 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 			     && Q_stricmp( filename + l - 4, ".dat" )
 			     && Q_stricmp( filename + l - 8, ".botents" )
 			     && Q_stricmp( filename + l - 3, ".po" )
+				 && !FS_CheckUIImageFile( filename )
 			     /*&& !strstr( filename, "botfiles" )*/ ) // RF, need this for dev
 			{
 				fs_fakeChkSum = random();
@@ -1666,8 +1687,10 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 			return FS_filelength( *file );
 		}
 	}
-
-	Com_DPrintf( "Can't find %s\n", filename );
+	if( fs_debug->integer )
+	{
+		Com_Printf( "Can't find %s\n", filename );
+	}
 #ifdef FS_MISSING
 
 	if ( missingFiles )
@@ -3785,11 +3808,16 @@ void FS_AddGameDirectory( const char *path, const char *dir )
 
 		if ( !com_fullyInitialized )
 		{
-			Com_Printf( "    pk3: %s\n", pakfile );
+			Com_Printf( "    pk3: %s", pakfile );
 		}
 
-		if ( ( pak = FS_LoadZipFile( pakfile, pakfiles[ pakfilesi ] ) ) == 0 )
+		if ( !( pak = FS_LoadZipFile( pakfile, pakfiles[ pakfilesi ] ) ) )
 		{
+			if ( !com_fullyInitialized )
+			{
+				Com_Printf( " ( ^1INVALID PK3 )\n" );
+			}
+			pakfilesi++;
 			continue;
 		}
 
@@ -3799,6 +3827,11 @@ void FS_AddGameDirectory( const char *path, const char *dir )
 
 		fs_packFiles += pak->numfiles;
 
+		if ( !com_fullyInitialized )
+		{
+			Com_Printf( " ( %d files )\n", pak->numfiles );
+		}
+		
 		search = Z_Malloc( sizeof( searchpath_t ) );
 		search->pack = pak;
 		search->next = fs_searchpaths;
@@ -4212,7 +4245,7 @@ static void FS_Startup( const char *gameName )
 
 	fs_debug = Cvar_Get( "fs_debug", "0", 0 );
 	fs_copyfiles = Cvar_Get( "fs_copyfiles", "0", CVAR_INIT );
-	fs_basepath = Cvar_Get( "fs_basepath", Sys_DefaultInstallPath(), CVAR_INIT );
+	fs_basepath = Cvar_Get( "fs_basepath", Sys_DefaultBasePath(), CVAR_INIT );
 	fs_buildpath = Cvar_Get( "fs_buildpath", "", CVAR_INIT );
 	fs_buildgame = Cvar_Get( "fs_buildgame", BASEGAME, CVAR_INIT );
 	fs_basegame = Cvar_Get( "fs_basegame", "", CVAR_INIT );

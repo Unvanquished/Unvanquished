@@ -93,6 +93,91 @@ void CG_InitUpgrades( void )
 	}
 }
 
+ /*
+============================
+CG_ParseWeaponAnimationFile
+
+Reads the animation.cfg for weapons
+============================
+*/
+
+static qboolean CG_ParseWeaponAnimationFile( const char *filename, weaponInfo_t *wi )
+{
+	char         *text_p, *prev;
+	int          len;
+	int          i;
+	char         *token;
+	float        fps;
+	int          skip;
+	char         text[ 20000 ];
+	fileHandle_t f;
+	animation_t  *animations;
+
+	animations = wi->animations;
+
+	// load the file
+	len = trap_FS_FOpenFile( filename, &f, FS_READ );
+
+	if ( len < 0 )
+	{
+		return qfalse;
+	}
+
+	if ( len == 0 || len >= sizeof( text ) - 1 )
+	{
+		CG_Printf( len == 0 ? _( "File %s is empty\n" ) : _( "File %s is too long\n" ) , filename );
+		trap_FS_FCloseFile( f );
+		return qfalse;
+	}
+
+	trap_FS_Read( text, len, f );
+	text[ len ] = 0;
+	trap_FS_FCloseFile( f );
+
+	// parse the text
+	text_p = text;
+	skip = 0; // quite the compiler warning
+
+	for ( i = WANIM_NONE + 1; i < MAX_WEAPON_ANIMATIONS; i++ )
+	{
+		token = COM_Parse2( &text_p );
+		animations[ i ].firstFrame = atoi( token );
+
+		token = COM_Parse2( &text_p );
+		animations[ i ].numFrames = atoi( token );
+		animations[ i ].reversed = qfalse;
+		animations[ i ].flipflop = qfalse;
+
+		if ( animations[ i ].numFrames < 0 )
+		{
+			animations[ i ].numFrames *= -1;
+			animations[ i ].reversed = qtrue;
+		}
+
+		token = COM_Parse2( &text_p );
+		animations[ i ].loopFrames = atoi( token );
+
+		token = COM_Parse2( &text_p );
+		fps = atof( token );
+
+		if ( fps == 0 )
+		{
+			fps = 1;
+		}
+
+		animations[ i ].frameLerp = 1000 / fps;
+		animations[ i ].initialLerp = 1000 / fps;
+	}
+
+	if ( i != MAX_WEAPON_ANIMATIONS )
+	{
+		CG_Printf( _( "Error parsing weapon animation file: %s"), filename );
+		return qfalse;
+	}
+
+	return qtrue;
+}
+
 /*
 ===============
 CG_ParseWeaponModeSection
@@ -583,6 +668,18 @@ static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p 
 
 			continue;
 		}
+		else if ( !Q_stricmp( token, "reloadSound" ) )
+		{
+			token = COM_Parse( text_p );
+
+			if ( !token )
+			{
+				break;
+			}
+
+			wim->reloadSound = trap_S_RegisterSound( token, qfalse );
+			continue;
+		}
 		else if ( !Q_stricmp( token, "}" ) )
 		{
 			return qtrue; //reached the end of this weapon section
@@ -644,7 +741,7 @@ CG_ParseWeaponFile
 Parses a configuration file describing a weapon
 ======================
 */
-static qboolean CG_ParseWeaponFile( const char *filename, weaponInfo_t *wi )
+static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo_t *wi )
 {
 	char         *text_p;
 	int          len;
@@ -764,14 +861,73 @@ static qboolean CG_ParseWeaponFile( const char *filename, weaponInfo_t *wi )
 					wi->animations[ i ] = wi->animations[ WANIM_IDLE ];
 				}
 
-				CG_RegisterWeaponAnimation( &wi->animations[ WANIM_RAISE ],
-				                            va( "%s_view_raise.md5anim", token2 ), qfalse, qfalse, qfalse );
-				CG_RegisterWeaponAnimation( &wi->animations[ WANIM_DROP ],
-				                            va( "%s_view_lower.md5anim", token2 ), qfalse, qfalse, qfalse );
-				CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
-				                            va( "%s_view_fire.md5anim", token2 ), qfalse, qfalse, qfalse );
-				CG_RegisterWeaponAnimation( &wi->animations[ WANIM_RELOAD ],
-				                            va( "%s_view_reload.md5anim", token2 ), qfalse, qfalse, qfalse );
+				switch( weapon )
+				{
+					case WP_MACHINEGUN:
+					case WP_SHOTGUN:
+					case WP_MASS_DRIVER:
+					case WP_PULSE_RIFLE:
+
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_RAISE ],
+													va( "%s_view_raise.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_DROP ],
+													va( "%s_view_lower.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_RELOAD ],
+													va( "%s_view_reload.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
+													va( "%s_view_fire.md5anim", token2 ), qfalse, qfalse, qfalse );
+						break;
+						
+					case WP_BLASTER:
+					case WP_PAIN_SAW:
+					case WP_LAS_GUN:
+					case WP_CHAINGUN:
+					case WP_FLAMER:
+					case WP_LUCIFER_CANNON:
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_RAISE ],
+													va( "%s_view_raise.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_DROP ],
+													va( "%s_view_lower.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_RELOAD ],
+													va( "%s_view_reload.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
+													va( "%s_view_fire.md5anim", token2 ), qfalse, qfalse, qfalse );
+						break;
+						
+					case WP_ALEVEL1:
+					case WP_ALEVEL1_UPG:
+					case WP_ALEVEL2:
+					case WP_ALEVEL4:
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
+													va( "%s_view_fire.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK2 ],
+													va( "%s_view_fire2.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK3 ],
+													va( "%s_view_fire3.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK4 ],
+													va( "%s_view_fire4.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK5 ],
+													va( "%s_view_fire5.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK6 ],
+													va( "%s_view_fire6.md5anim", token2 ), qfalse, qfalse, qfalse );
+						break;
+						
+					case WP_ALEVEL2_UPG:
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
+													va( "%s_view_fire.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK2 ],
+													va( "%s_view_fire2.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK3 ],
+													va( "%s_view_fire3.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK4 ],
+													va( "%s_view_fire4.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK5 ],
+													va( "%s_view_fire5.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK6 ],
+													va( "%s_view_fire6.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK7 ],
+													va( "%s_view_fire7.md5anim", token2 ), qfalse, qfalse, qfalse );
+				}
 			}
 			else
 			{
@@ -1026,10 +1182,16 @@ void CG_RegisterWeapon( int weaponNum )
 
 	weaponInfo->humanName = BG_Weapon( weaponNum )->humanName;
 
-	if ( !CG_ParseWeaponFile( path, weaponInfo ) )
+	if ( !CG_ParseWeaponFile( path, weaponNum, weaponInfo ) )
 	{
 		Com_Printf( _( S_COLOR_RED  "ERROR: failed to parse %s\n"), path );
 	}
+
+	if( !weaponInfo->md5 )
+	{
+		CG_ParseWeaponAnimationFile( va( "models/weapons/%s/animation.cfg", BG_Weapon( weaponNum )->name ), weaponInfo );
+	}
+
 
 	// calc midpoint for rotation
 	trap_R_ModelBounds( weaponInfo->weaponModel, mins, maxs );
@@ -1092,7 +1254,7 @@ static void CG_SetWeaponLerpFrameAnimation( weapon_t weapon, lerpFrame_t *lf, in
 
 	lf->animation = anim;
 	lf->animationTime = lf->frameTime + anim->initialLerp;
-
+	lf->frame = lf->oldFrame = 0;
 	if ( cg_debugAnim.integer )
 	{
 		CG_Printf( "Anim: %i\n", newAnimation );
@@ -1119,7 +1281,7 @@ static void CG_WeaponAnimation( centity_t *cent, int *old, int *now, float *back
 	entityState_t *es = &cent->currentState;
 
 	// see if the animation sequence is switching
-	if ( es->weaponAnim != lf->animationNumber || !lf->animation || ( lf->animation && !lf->animation->handle ) )
+	if ( es->weaponAnim != lf->animationNumber || !lf->animation || ( cg_weapons[ cent->currentState.weapon ].md5 && !lf->animation->handle ) )
 	{
 		CG_SetWeaponLerpFrameAnimation( es->weapon, lf, es->weaponAnim );
 	}
@@ -1637,6 +1799,7 @@ void CG_AddViewWeapon( playerState_t *ps )
 	weaponInfo_t *wi;
 	weapon_t     weapon = ps->weapon;
 	weaponMode_t weaponMode = ps->generic1;
+	qboolean     drawGun = qtrue;
 
 	// no weapon carried - can't draw it
 	if ( weapon == WP_NONE )
@@ -1650,6 +1813,21 @@ void CG_AddViewWeapon( playerState_t *ps )
 	}
 
 	wi = &cg_weapons[ weapon ];
+
+	switch ( cg_drawGun.integer )
+	{
+		case 0:
+			drawGun = qfalse;
+			break;
+
+		case 1:
+			if ( BG_Weapon( weapon )->team == TEAM_ALIENS )
+			{
+				drawGun = qfalse;
+			}
+			break;
+	}
+			
 
 	if ( !wi->registered )
 	{
@@ -1683,7 +1861,7 @@ void CG_AddViewWeapon( playerState_t *ps )
 	}
 
 	// allow the gun to be completely removed
-	if ( !cg_drawGun.integer )
+	if ( !drawGun )
 	{
 		vec3_t origin;
 

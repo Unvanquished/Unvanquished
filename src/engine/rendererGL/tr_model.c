@@ -230,12 +230,12 @@ qhandle_t RE_RegisterModel( const char *name )
 			strcat( filename, namebuf );
 		}
 
-		filename[ strlen( filename ) - 1 ] = 'c';  // try MDC first
+		filename[ strlen( filename ) - 1 ] = '3';  // try MD3 first
 		ri.FS_ReadFile( filename, ( void ** ) &buffer );
 
 		if ( !buffer )
 		{
-			filename[ strlen( filename ) - 1 ] = '3';  // try MD3 second
+			filename[ strlen( filename ) - 1 ] = 'c';  // try MDC second
 			ri.FS_ReadFile( filename, ( void ** ) &buffer );
 
 			if ( !buffer )

@@ -18,7 +18,7 @@ BASE_URL='http://downloads.sourceforge.net/project/unvanquished/Assets/'
 # Default destination directory
 case "$(uname -s)" in
   Darwin)
-    DEFAULT_DESTDIR=~/Library/Application\ Support/Unvanquished/main
+    DEFAULT_DEST_DIR=~/Library/Application\ Support/Unvanquished/main
     ;;
   *)
     DEFAULT_DEST_DIR=~/.Unvanquished/main

@@ -964,20 +964,6 @@ void trap_R_RemapShader( const char *oldShader, const char *newShader, const cha
 	syscall( CG_R_REMAP_SHADER, oldShader, newShader, timeOffset );
 }
 
-//132.
-//Com_Printf_(("%s%i\n"), (char *)VMA(1), args[2]);
-void testPrintInt( char *string, int i )
-{
-	syscall( TRAP_TESTPRINTINT, string, i );
-}
-
-//133.
-//Com_Printf_(("%s%f\n"), (char *)VMA(1), VMF(2));
-void testPrintFloat( char *string, float f )
-{
-	syscall( TRAP_TESTPRINTFLOAT, string, PASSFLOAT( f ) );
-}
-
 //134.
 //return loadCamera(args[1], VMA(2));
 qboolean trap_loadCamera( int camNum, const char *name )

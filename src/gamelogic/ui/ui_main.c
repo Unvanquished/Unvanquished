@@ -1093,7 +1093,7 @@ UI_StopServerRefresh
 */
 static void UI_StopServerRefresh( void )
 {
-	int count;
+	//int count;
 
 	if ( !uiInfo.serverStatus.refreshActive )
 	{
@@ -1805,26 +1805,6 @@ void UI_LoadHelp( const char *helpFile )
 
 	// Com_Printf(_( "UI help file '%s' loaded in %d msec (%d infopanes)\n"),
 	//             helpFile, trap_Milliseconds() - start, uiInfo.helpCount );
-}
-
-void UI_Load( void )
-{
-	char      lastName[ 1024 ];
-	menuDef_t *menu = Menu_GetFocused();
-
-	if ( menu && menu->window.name )
-	{
-		strcpy( lastName, menu->window.name );
-	}
-
-	String_Init();
-
-	UI_LoadMenus( ui_menuFiles.string, qtrue );
-	UI_LoadMenus( ui_ingameFiles.string, qfalse );
-	UI_LoadMenus( ui_teamFiles.string, qfalse );
-	UI_LoadHelp( ui_helpFiles.string );
-	Menus_CloseAll();
-	Menus_ActivateByName( lastName );
 }
 
 /*

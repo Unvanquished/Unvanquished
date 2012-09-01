@@ -7,178 +7,162 @@
 //STATIC OBJECTS//
 //////////////////
 
-//LEFT RING CIRCLE
+//BACKGROUND
 itemDef
 {
-	name "left-ring-circle"
-	rect 47.5 410 25 25
-	aspectBias ALIGN_LEFT
+	name "background"
+	rect 223 403 201 150
+	aspectBias ALIGN_CENTER
 	visible MENU_TRUE
 	decoration
-	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.25
+	forecolor .48 .02 .03 1
 	style WINDOW_STYLE_SHADER
-	background "ui/assets/neutral/circle.tga"
+	background "ui/assets/alien/background.tga"
 }
 
-//LEFT ARM
-itemDef
-{
-	name "left-arm"
-	rect 77 404.75 104 52.5
-	aspectBias ALIGN_LEFT
-	visible MENU_TRUE
-	decoration
-	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.25
-	style WINDOW_STYLE_SHADER
-	background "ui/assets/alien/left-arm.tga"
-}
 
-//LEFT ARM CIRCLE
-itemDef
-{
-	name "left-arm-circle"
-	rect 150 417.5 25 25
-	aspectBias ALIGN_LEFT
-	visible MENU_TRUE
-	decoration
-	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.25
-	style WINDOW_STYLE_SHADER
-	background "ui/assets/neutral/circle.tga"
-}
-
-//RIGHT RING CIRCLE
-itemDef
-{
-	name "right-ring-circle"
-	rect 567 410 25 25
-	aspectBias ALIGN_RIGHT
-	visible MENU_TRUE
-	decoration
-	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.25
-	style WINDOW_STYLE_SHADER
-	background "ui/assets/neutral/circle.tga"
-}
-
-//RIGHT ARM
-itemDef
-{
-	name "right-arm"
-	rect 459 404.75 104 52.5
-	aspectBias ALIGN_RIGHT
-	visible MENU_TRUE
-	decoration
-	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.25
-	style WINDOW_STYLE_SHADER
-	background "ui/assets/alien/right-arm.tga"
-}
 
 ///////////////////
 //DYNAMIC OBJECTS//
 ///////////////////
 
-//BOLT
-itemDef
-{
-	name "bolt"
-	rect 52.5 412.5 15 20
-	aspectBias ALIGN_LEFT
-	visible MENU_TRUE
-	decoration
-	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.8
-	backcolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.2
-	background "ui/assets/alien/bolt.tga"
-	ownerdraw CG_PLAYER_BOOST_BOLT
-}
 
-//CROSS
+//WALLCLIMB
 itemDef
 {
-	name "cross"
-	rect 150 417.5 25 25
-	aspectBias ALIGN_LEFT
+	name "wallclimb"
+	rect 222 411 194 66
+	aspectBias ALIGN_CENTER
 	visible MENU_TRUE
 	decoration
 	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.5
-	ownerdraw CG_PLAYER_HEALTH_CROSS
-}
-
-//LEFT RING
-itemDef
-{
-	name "left-ring"
-	rect 7.25 369.5 90.5 106
-	aspectBias ALIGN_LEFT
-	visible MENU_TRUE
-	decoration
-	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.8
-	backcolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.2
-	background "ui/assets/alien/left-ring.tga"
-	ownerdraw CG_PLAYER_BOOSTED
-}
-
-//LEFT SPIKES
-itemDef
-{
-	name "left-spikes"
-	rect 18.5 381 59 83
-	aspectBias ALIGN_LEFT
-	visible MENU_TRUE
-	decoration
-	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1.0
-	backcolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.2
-	background "ui/assets/alien/left-spikes.tga"
+	backcolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0
+	background "ui/assets/alien/wallclimb.tga"
 	ownerdraw CG_PLAYER_WALLCLIMBING
 }
 
-//RIGHT RING
+
+//BOOSTED BACKGROUND
 itemDef
 {
-	name "right-ring"
-	rect 542.25 369.5 90.5 106
-	aspectBias ALIGN_RIGHT
+	name "boostedbg"
+        rect 10 385 40 66
+	aspectBias ALIGN_LEFT
 	visible MENU_TRUE
 	decoration
-	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.8
-	backcolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.2
-	background "ui/assets/alien/right-ring.tga"
+	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B  0.4
+	backcolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0
+	background "ui/assets/alien/poisonbg.tga"
 	ownerdraw CG_PLAYER_BOOSTED
 }
 
-//RIGHT SPIKES
+//BOOSTED
 itemDef
 {
-	name "right-spikes"
-	rect 562.5 381 59 83
-	aspectBias ALIGN_RIGHT
+	name "boosted"
+    rect 10 385 40 66
+	aspectBias ALIGN_LEFT
 	visible MENU_TRUE
 	decoration
-	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1.0
-	backcolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.2
-	background "ui/assets/alien/right-spikes.tga"
-	ownerdraw CG_PLAYER_WALLCLIMBING
+	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B  0.1
+	backcolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0
+	background "ui/assets/alien/poison.tga"
+	ownerdraw CG_PLAYER_BOOSTED
+}
+
+itemDef
+{
+	name "boosted1"
+	rect 10 385 40 66
+	aspectBias ALIGN_LEFT
+	visible MENU_TRUE
+	decoration
+	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B  0.7
+	background "ui/assets/alien/poison.tga"
+	ownerdraw CG_PLAYER_BOOSTED_METER
+}
+
+
+
+//HEALTH BAR
+itemDef
+{
+	name "healthbar"
+	rect 266 445 104 13
+	aspectBias ALIGN_CENTER
+	visible MENU_TRUE
+	decoration
+	forecolor .48 .02 .03 1
+	backColor 0 0 0 0
+	background "ui/assets/human/buildstat/health.tga"
+	ownerdraw CG_PLAYER_HEALTH_BAR
 }
 
 //HEALTH
 itemDef
 {
 	name "health"
-	rect 78.5 421.5 60 15
-	aspectBias ALIGN_LEFT
+	rect 277 444 50 13
+	aspectBias ALIGN_CENTER
 	visible MENU_TRUE
+      textalign ALIGN_CENTER
 	decoration
-	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B .5
+	forecolor .75 .26 .25 1
 	ownerdraw CG_PLAYER_HEALTH
 }
+
+
+
+//CROSS
+itemDef
+{
+	name "cross"
+	rect 260 442 24 24
+	aspectBias ALIGN_CENTER
+	visible MENU_TRUE
+	decoration
+	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.5
+	ownerdraw CG_PLAYER_HEALTH_CROSS
+}
+
+// //SMALL LOWER CROSS 
+// itemDef
+// {
+// 	name "cross2"
+// 	rect 279 449 15 15
+// 	aspectBias ALIGN_CENTER
+// 	visible MENU_TRUE
+// 	decoration
+// 	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1
+// 	backColor 0 0 0 0
+// 	background "ui/assets/neutral/cross.tga"
+// 	style WINDOW_STYLE_SHADER
+// }
+// 
+// //SMALL UPPER CROSS
+// itemDef
+// {
+// 	name "cross3"
+// 	rect 283 437 15 15
+// 	aspectBias ALIGN_CENTER
+// 	visible MENU_TRUE
+// 	decoration
+// 	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1
+// 	backColor 0 0 0 0
+// 	background "ui/assets/neutral/cross.tga"
+// 	style WINDOW_STYLE_SHADER
+// }
+
 
 //ALIEN CLASS ICON
 itemDef
 {
 	name "alien-icon"
-	rect 465 417.5 25 25
-	aspectBias ALIGN_RIGHT
+	rect 299 402 40 40
+	aspectBias ALIGN_CENTER
 	visible MENU_TRUE
 	decoration
-	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.6
+	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.5
 	ownerdraw CG_PLAYER_WEAPONICON
 }
 
@@ -186,25 +170,29 @@ itemDef
 itemDef
 {
 	name "organs"
-	rect 570 416 15 15
-	aspectBias ALIGN_RIGHT
+	rect 256 460 15 15
+	aspectBias ALIGN_CENTER
 	visible MENU_TRUE
+	textScale 0.4
 	decoration
 	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1
-	ownerdraw CG_PLAYER_CREDITS_VALUE_NOPAD
+	ownerdraw CG_PLAYER_ALIEN_EVOS
 }
 
-//CREDITS FRACTION
 itemDef
-{
-	name "credits-background"
-	rect 567 410 25 25
-	aspectBias ALIGN_RIGHT
-	visible MENU_TRUE
-	decoration
-	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.25
-	background "ui/assets/neutral/circle.tga"
-	ownerdraw CG_PLAYER_CREDITS_FRACTION
+    {
+      name "creditstext"
+      type ITEM_TYPE_TEXT
+      text "evolution points"
+      style WINDOW_STYLE_EMPTY
+	aspectBias ALIGN_CENTER
+      textstyle ITEM_TEXTSTYLE_PLAIN
+      rect 283 458 101 15
+      textscale .35
+      textalign ALIGN_LEFT
+     forecolor .51 .51 .51 1       
+     visible MENU_TRUE
+      decoration
 }
 
 //ALIENSENSE
@@ -221,27 +209,27 @@ itemDef
 itemDef
 {
 	name "charge"
-	rect 292 426 56 8
+	rect 266 445 104 13
 	aspectBias ALIGN_CENTER
 	visible MENU_TRUE
 	decoration
 	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.5
 	ownerdraw CG_PLAYER_CHARGE_BAR
-	background "ui/assets/neutral/charge_cap_h.tga"
+	background "ui/assets/human/buildstat/health.tga"
 }
 
-//CHARGE BAR BG
-itemDef
-{
-	name "chargebg"
-	rect 288 422 64 16
-	aspectBias ALIGN_CENTER
-	visible MENU_TRUE
-	decoration
-	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.25
-	ownerdraw CG_PLAYER_CHARGE_BAR_BG
-	background "ui/assets/neutral/charge_bg_h.tga"
-}
+// //CHARGE BAR BG
+// itemDef
+// {
+// 	name "chargebg"
+// 	rect 288 422 64 16
+// 	aspectBias ALIGN_CENTER
+// 	visible MENU_TRUE
+// 	decoration
+// 	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.25
+// 	ownerdraw CG_PLAYER_CHARGE_BAR_BG
+// 	background "ui/assets/neutral/charge_bg_h.tga"
+// }
 
 //TEAM OVERLAY
 itemDef
@@ -251,7 +239,38 @@ itemDef
 	style WINDOW_STYLE_EMPTY
 	visible MENU_TRUE
 	decoration
-	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.75
+	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.5
 	textscale 0.85
 	ownerdraw CG_TEAMOVERLAY
 }
+//STAGE REPORT
+itemDef
+{
+	name stagereport
+	textalign ALIGN_LEFT
+	textvalign VALIGN_TOP
+    textscale .35
+    textalign ALIGN_LEFT
+    forecolor .37 .16 .17  1
+	rect 3 462 200 30
+    forecolor .51 .51 .51 1
+	decoration
+	visible MENU_TRUE
+	ownerdraw CG_STAGE_REPORT_TEXT
+}
+
+//CROSSHAIR HEALTH METER
+itemDef
+{
+	name "crosshairhealth"
+	rect 305 250 30 10
+	aspectBias ALIGN_CENTER
+	visible MENU_TRUE
+	decoration
+	forecolor .48 .02 .03 .3
+	cvarTest "hud_crosshairbars"
+	showCvar {1}
+	background "ui/assets/neutral/crescent_bottom.tga"
+	ownerdraw CG_PLAYER_HEALTH_METER
+}
+

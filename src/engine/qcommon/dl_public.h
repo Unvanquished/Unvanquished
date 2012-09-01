@@ -50,8 +50,7 @@ void       DL_Shutdown();
 // bitmask
 typedef enum
 {
-  DL_FLAG_DISCON = 0,
-  DL_FLAG_URL
+  DL_FLAG_DISCON = 0
 } dlFlags_t;
 
 int FS_CreatePath( const char *OSPath );

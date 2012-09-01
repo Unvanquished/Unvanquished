@@ -2403,27 +2403,9 @@ void R_LoadImage( const char *name, byte **pic, int *width, int *height )
 	{
 		LoadWEBP( name, pic, width, height );
 	}
-
+	else
 #endif
-
-	if ( !Q_stricmp( ext, "dds" ) )
-	{
-		LoadDDS( name, pic, width, height );
-	}
-
-	if ( !Q_stricmp( ext, "tga" ) )
-	{
-		LoadTGA( name, pic, width, height );  // try tga first
-	}
-	else if ( !Q_stricmp( ext, "pcx" ) )
-	{
-		LoadPCX32( name, pic, width, height );
-	}
-	else if ( !Q_stricmp( ext, "bmp" ) )
-	{
-		LoadBMP( name, pic, width, height );
-	}
-	else if ( !Q_stricmp( ext, "jpg" ) )
+	if ( !Q_stricmp( ext, "jpg" ) )
 	{
 		LoadJPG( name, pic, width, height );
 	}
@@ -2435,7 +2417,22 @@ void R_LoadImage( const char *name, byte **pic, int *width, int *height )
 	{
 		LoadPNG( name, pic, width, height, 0xff );
 	}
-
+	if ( !Q_stricmp( ext, "tga" ) )
+	{
+		LoadTGA( name, pic, width, height );  // try tga first
+	}
+	if ( !Q_stricmp( ext, "dds" ) )
+	{
+		LoadDDS( name, pic, width, height );
+	}
+	else if ( !Q_stricmp( ext, "pcx" ) )
+	{
+		LoadPCX32( name, pic, width, height );
+	}
+	else if ( !Q_stricmp( ext, "bmp" ) )
+	{
+		LoadBMP( name, pic, width, height );
+	}
 	if ( !*pic )
 	{
 		char filename[ MAX_QPATH ];
