@@ -3952,8 +3952,9 @@ static void PM_Weapon( void )
 				break;
 
 			case WP_ALEVEL4:
-				num /= RAND_MAX / 6 + 1;
+				num /= RAND_MAX / 3 + 1;
 				PM_ForceLegsAnim( NSPA_ATTACK1 + num );
+				num = rand() / ( RAND_MAX / 6 + 1 );
 				PM_StartWeaponAnim( WANIM_ATTACK1 + num );
 				break;
 
