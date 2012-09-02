@@ -3393,20 +3393,53 @@ void Com_Init( char *commandLine )
 ===============
 Com_ReadFromPipe
 
-Read whatever is in com_pipefile, if anything, and execute it
+Read whatever is in the pipe, and if a line gets accumulated, executed it
 ===============
 */
 void Com_ReadFromPipe( void )
 {
-	char     buffer[MAX_STRING_CHARS] = {""};
-	qboolean read;
+	static char buf[ MAX_STRING_CHARS ];
+	static int  numAccd = 0;
+	int         numNew;
 	
-	if( !pipefile ) { return; }
-	
-	read = FS_Read( buffer, sizeof( buffer ), pipefile );
-	if( read )
+	if ( !pipefile )
 	{
-		Cbuf_ExecuteText( EXEC_APPEND, buffer );
+		return;
+	}
+	
+	while ( ( numNew = FS_Read( buf + numAccd, sizeof( buf ) - 1 - numAccd, pipefile ) ) > 0 )
+	{
+		char *brk = NULL; // will point to after the last CR/LF character, if any
+		int i;
+
+		for ( i = numAccd; i < numAccd + numNew; ++i )
+		{
+			if( buf[ i ] == '\0' )
+				buf[ i ] = '\n';
+			if( buf[ i ] == '\n' || buf[ i ] == '\r' )
+				brk = &buf[ i + 1 ];
+		}
+
+		numAccd += numNew;
+
+		if ( brk )
+		{
+			char tmp = *brk;
+			*brk = '\0';
+			Cbuf_ExecuteText( EXEC_APPEND, buf );
+			*brk = tmp;
+
+			numAccd -= brk - buf;
+			memmove( buf, brk, numAccd );
+		}
+		else if ( numAccd >= sizeof( buf ) - 1 ) // there are no CR/LF characters, but the buffer is full
+		{
+			// unfortunately, this command line gets chopped
+			//  (but Cbuf_ExecuteText() chops long command lines at (MAX_STRING_CHARS - 1) anyway)
+			buf[ sizeof( buf ) - 1 ] = '\0';
+			Cbuf_ExecuteText( EXEC_APPEND, buf );
+			numAccd = 0;
+		}
 	}
 }
 
