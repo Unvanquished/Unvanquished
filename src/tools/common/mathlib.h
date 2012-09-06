@@ -106,7 +106,7 @@ void            NormalToLatLong(const vec3_t normal, byte bytes[2]);
 
 int             PlaneTypeForNormal(vec3_t normal);
 void            AxisMultiply(float in1[3][3], float in2[3][3], float out[3][3]);
-void            RotatePointAroundVector(vec3_t dst, const vec3_t dir, const vec3_t point, float degrees);
+void            RotatePointAroundVector(vec3_t dst, const vec3_t dir, const vec3_t point, vec_t degrees);
 
 void            MatrixIdentity(matrix_t m);
 void            MatrixClear(matrix_t m);

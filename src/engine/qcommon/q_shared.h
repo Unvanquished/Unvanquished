@@ -1011,7 +1011,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 
 	qboolean PlaneFromPoints( vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c );
 	qboolean PlaneFromPointsOrder( vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c, qboolean cw );
-	void     ProjectPointOnPlane( vec3_t dst, const vec3_t p, const vec3_t normal );
+	void     ProjectPointOnPlane( vec3_t dst, const vec3_t point, const vec3_t normal );
 	void     RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point, float degrees );
 	void     RotatePointAroundVertex( vec3_t pnt, float rot_x, float rot_y, float rot_z, const vec3_t origin );
 
