@@ -3980,9 +3980,6 @@ extern "C" {
 
 		// post process effects
 		shaderProgram_t rotoscopeShader;
-#ifdef EXPERIMENTAL
-		shaderProgram_t depthOfFieldShader;
-#endif
 
 #endif // GLSL_COMPILE_STARTUP_ONLY
 

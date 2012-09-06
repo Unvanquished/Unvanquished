@@ -6629,7 +6629,7 @@ void RB_RenderDepthOfField()
 	}
 
 	// enable shader, set arrays
-	GL_BindProgram( &tr.depthOfFieldShader );
+	gl_depthOfFieldShader->BindProgram();
 
 	GL_State( GLS_DEPTHTEST_DISABLE );  // | GLS_DEPTHMASK_TRUE);
 	GL_Cull( CT_TWO_SIDED );
@@ -6684,7 +6684,7 @@ void RB_RenderDepthOfField()
 	GL_LoadProjectionMatrix( ortho );
 	GL_LoadModelViewMatrix( matrixIdentity );
 
-	GLSL_SetUniform_ModelViewProjectionMatrix( &tr.depthOfFieldShader, glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+	gl_depthOfFieldShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 	// draw viewport
 	Tess_InstantQuad( backEnd.viewParms.viewportVerts );
@@ -8637,33 +8637,29 @@ void RB_RenderBspOcclusionQueries()
 		bspNode_t *node;
 		link_t    *l, *next, *sentinel;
 
-		GL_BindProgram( &tr.genericShader );
+		gl_genericShader->BindProgram();
+
 		GL_Cull( CT_TWO_SIDED );
 
 		GL_LoadProjectionMatrix( backEnd.viewParms.projectionMatrix );
 
 		// set uniforms
-		GLSL_SetUniform_TCGen_Environment( &tr.genericShader,  qfalse );
-		GLSL_SetUniform_ColorGen( &tr.genericShader, CGEN_VERTEX );
-		GLSL_SetUniform_AlphaGen( &tr.genericShader, AGEN_VERTEX );
+		gl_genericShader->SetTCGenEnvironment( qfalse );
+		gl_genericShader->SetUniform_ColorModulate( CGEN_VERTEX, AGEN_VERTEX );
+		gl_genericShader->SetVertexSkinning( qfalse );
 
-		if ( glConfig2.vboVertexSkinningAvailable )
-		{
-			GLSL_SetUniform_VertexSkinning( &tr.genericShader, qfalse );
-		}
-
-		GLSL_SetUniform_DeformGen( &tr.genericShader, DGEN_NONE );
-		GLSL_SetUniform_AlphaTest( &tr.genericShader, 0 );
+		gl_genericShader->SetUniform_AlphaTest( DGEN_NONE );
+		gl_genericShader->SetUniform_AlphaTest( 0 );
 
 		// set up the transformation matrix
 		backEnd.orientation = backEnd.viewParms.world;
 		GL_LoadModelViewMatrix( backEnd.orientation.modelViewMatrix );
-		GLSL_SetUniform_ModelViewProjectionMatrix( &tr.genericShader, glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+		gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 		// bind u_ColorMap
 		GL_SelectTexture( 0 );
 		GL_Bind( tr.whiteImage );
-		GLSL_SetUniform_ColorTextureMatrix( &tr.genericShader, matrixIdentity );
+		gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
 		// don't write to the color buffer or depth buffer
 		GL_State( GLS_COLORMASK_BITS );
@@ -11082,7 +11078,7 @@ static void RB_RenderView( void )
 		GL_CheckErrors();
 #ifdef EXPERIMENTAL
 		// render depth of field post process effect
-		RB_RenderDepthOfField( qfalse );
+		RB_RenderDepthOfField();
 #endif
 		// render bloom post process effect
 		RB_RenderBloom();

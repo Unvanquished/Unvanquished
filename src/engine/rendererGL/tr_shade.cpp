@@ -988,19 +988,7 @@ void GLSL_InitGPUShaders( void )
 	// screen space ambien occlusion post process effect
 	gl_screenSpaceAmbientOcclusionShader = new GLShader_screenSpaceAmbientOcclusion();
 
-	tr.depthOfFieldShader.u_CurrentMap = glGetUniformLocation( tr.depthOfFieldShader.program, "u_CurrentMap" );
-	tr.depthOfFieldShader.u_DepthMap = glGetUniformLocation( tr.depthOfFieldShader.program, "u_DepthMap" );
-	tr.depthOfFieldShader.u_ModelViewProjectionMatrix =
-	  glGetUniformLocation( tr.depthOfFieldShader.program, "u_ModelViewProjectionMatrix" );
-
-	glUseProgramObject( tr.depthOfFieldShader.program );
-	glUniform1i( tr.depthOfFieldShader.u_CurrentMap, 0 );
-	glUniform1i( tr.depthOfFieldShader.u_DepthMap, 1 );
-	glUseProgramObject( 0 );
-
-	GLSL_ValidateProgram( tr.depthOfFieldShader.program );
-	GLSL_ShowProgramUniforms( tr.depthOfFieldShader.program );
-	GL_CheckErrors();
+	gl_depthOfFieldShader = new GLShader_depthOfField();
 #endif
 
 #endif // #if !defined(GLSL_COMPILE_STARTUP_ONLY)
@@ -1227,13 +1215,10 @@ void GLSL_ShutdownGPUShaders( void )
 		gl_screenSpaceAmbientOcclusionShader = NULL;
 	}
 
-#endif
-#ifdef EXPERIMENTAL
-
-	if ( tr.depthOfFieldShader.program )
+	if ( gl_depthOfFieldShader )
 	{
-		glDeleteObject( tr.depthOfFieldShader.program );
-		Com_Memset( &tr.depthOfFieldShader, 0, sizeof( shaderProgram_t ) );
+		delete gl_depthOfFieldShader;
+		gl_depthOfFieldShader = NULL;
 	}
 
 #endif
