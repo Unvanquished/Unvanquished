@@ -3450,6 +3450,16 @@ public:
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
+class GLShader_screenSpaceAmbientOcclusion :
+	public GLShader,
+	public u_ModelViewProjectionMatrix
+{
+public:
+	GLShader_screenSpaceAmbientOcclusion();
+	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
+	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
+};
+
 extern GLShader_generic                         *gl_genericShader;
 extern GLShader_lightMapping                    *gl_lightMappingShader;
 extern GLShader_vertexLighting_DBS_entity       *gl_vertexLightingShader_DBS_entity;
@@ -3480,6 +3490,7 @@ extern GLShader_lightVolume_omni                *gl_lightVolumeShader_omni;
 extern GLShader_deferredShadowing_proj          *gl_deferredShadowingShader_proj;
 extern GLShader_liquid                          *gl_liquidShader;
 extern GLShader_volumetricFog                   *gl_volumetricFogShader;
+extern GLShader_screenSpaceAmbientOcclusion     *gl_screenSpaceAmbientOcclusionShader;
 
 #ifdef USE_GLSL_OPTIMIZER
 extern struct glslopt_ctx *s_glslOptimizer;

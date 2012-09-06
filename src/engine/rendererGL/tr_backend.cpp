@@ -6530,7 +6530,7 @@ void RB_RenderScreenSpaceAmbientOcclusion( qboolean deferred )
 	}
 
 	// enable shader, set arrays
-	GL_BindProgram( &tr.screenSpaceAmbientOcclusionShader );
+	gl_screenSpaceAmbientOcclusionShader->BindProgram();
 
 	GL_State( GLS_DEPTHTEST_DISABLE );  // | GLS_DEPTHMASK_TRUE);
 	GL_Cull( CT_TWO_SIDED );
@@ -6599,8 +6599,7 @@ void RB_RenderScreenSpaceAmbientOcclusion( qboolean deferred )
 	GL_LoadProjectionMatrix( ortho );
 	GL_LoadModelViewMatrix( matrixIdentity );
 
-	GLSL_SetUniform_ModelViewProjectionMatrix( &tr.screenSpaceAmbientOcclusionShader, glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-
+	gl_screenSpaceAmbientOcclusionShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 	// draw viewport
 	Tess_InstantQuad( backEnd.viewParms.viewportVerts );
 

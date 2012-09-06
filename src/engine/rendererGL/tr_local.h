@@ -3981,9 +3981,6 @@ extern "C" {
 		// post process effects
 		shaderProgram_t rotoscopeShader;
 #ifdef EXPERIMENTAL
-		shaderProgram_t screenSpaceAmbientOcclusionShader;
-#endif
-#ifdef EXPERIMENTAL
 		shaderProgram_t depthOfFieldShader;
 #endif
 

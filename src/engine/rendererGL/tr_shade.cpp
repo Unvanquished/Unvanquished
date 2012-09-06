@@ -986,32 +986,7 @@ void GLSL_InitGPUShaders( void )
 
 #ifdef EXPERIMENTAL
 	// screen space ambien occlusion post process effect
-	GLSL_InitGPUShader( &tr.screenSpaceAmbientOcclusionShader, "screenSpaceAmbientOcclusion", ATTR_POSITION, qtrue, qtrue );
-
-	tr.screenSpaceAmbientOcclusionShader.u_CurrentMap =
-	  glGetUniformLocation( tr.screenSpaceAmbientOcclusionShader.program, "u_CurrentMap" );
-	tr.screenSpaceAmbientOcclusionShader.u_DepthMap =
-	  glGetUniformLocation( tr.screenSpaceAmbientOcclusionShader.program, "u_DepthMap" );
-	tr.screenSpaceAmbientOcclusionShader.u_ModelViewProjectionMatrix =
-	  glGetUniformLocation( tr.screenSpaceAmbientOcclusionShader.program, "u_ModelViewProjectionMatrix" );
-	//tr.screenSpaceAmbientOcclusionShader.u_ViewOrigin = glGetUniformLocation(tr.screenSpaceAmbientOcclusionShader.program, "u_ViewOrigin");
-	//tr.screenSpaceAmbientOcclusionShader.u_SSAOJitter = glGetUniformLocation(tr.screenSpaceAmbientOcclusionShader.program, "u_SSAOJitter");
-	//tr.screenSpaceAmbientOcclusionShader.u_SSAORadius = glGetUniformLocation(tr.screenSpaceAmbientOcclusionShader.program, "u_SSAORadius");
-	//tr.screenSpaceAmbientOcclusionShader.u_UnprojectMatrix = glGetUniformLocation(tr.screenSpaceAmbientOcclusionShader.program, "u_UnprojectMatrix");
-	//tr.screenSpaceAmbientOcclusionShader.u_ProjectMatrix = glGetUniformLocation(tr.screenSpaceAmbientOcclusionShader.program, "u_ProjectMatrix");
-
-	glUseProgramObject( tr.screenSpaceAmbientOcclusionShader.program );
-	glUniform1i( tr.screenSpaceAmbientOcclusionShader.u_CurrentMap, 0 );
-	glUniform1i( tr.screenSpaceAmbientOcclusionShader.u_DepthMap, 1 );
-	glUseProgramObject( 0 );
-
-	GLSL_ValidateProgram( tr.screenSpaceAmbientOcclusionShader.program );
-	GLSL_ShowProgramUniforms( tr.screenSpaceAmbientOcclusionShader.program );
-	GL_CheckErrors();
-#endif
-#ifdef EXPERIMENTAL
-	// depth of field post process effect
-	GLSL_InitGPUShader( &tr.depthOfFieldShader, "depthOfField", ATTR_POSITION, qtrue, qtrue );
+	gl_screenSpaceAmbientOcclusionShader = new GLShader_screenSpaceAmbientOcclusion();
 
 	tr.depthOfFieldShader.u_CurrentMap = glGetUniformLocation( tr.depthOfFieldShader.program, "u_CurrentMap" );
 	tr.depthOfFieldShader.u_DepthMap = glGetUniformLocation( tr.depthOfFieldShader.program, "u_DepthMap" );
@@ -1246,10 +1221,10 @@ void GLSL_ShutdownGPUShaders( void )
 
 #ifdef EXPERIMENTAL
 
-	if ( tr.screenSpaceAmbientOcclusionShader.program )
+	if ( gl_screenSpaceAmbientOcclusionShader )
 	{
-		glDeleteObject( tr.screenSpaceAmbientOcclusionShader.program );
-		Com_Memset( &tr.screenSpaceAmbientOcclusionShader, 0, sizeof( shaderProgram_t ) );
+		delete gl_screenSpaceAmbientOcclusionShader;
+		gl_screenSpaceAmbientOcclusionShader = NULL;
 	}
 
 #endif

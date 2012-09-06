@@ -61,6 +61,7 @@ GLShader_lightVolume_omni                *gl_lightVolumeShader_omni = NULL;
 GLShader_deferredShadowing_proj          *gl_deferredShadowingShader_proj = NULL;
 GLShader_liquid                          *gl_liquidShader = NULL;
 GLShader_volumetricFog                   *gl_volumetricFogShader = NULL;
+GLShader_screenSpaceAmbientOcclusion     *gl_screenSpaceAmbientOcclusionShader = NULL;
 
 bool GLCompileMacro_USE_VERTEX_SKINNING::HasConflictingMacros( int permutation, const std::vector< GLCompileMacro * > &macros ) const
 {
@@ -2693,6 +2694,25 @@ void GLShader_volumetricFog::SetShaderProgramUniforms( shaderProgram_t *shaderPr
 	glUniform1i( shaderProgram->u_DepthMap, 0 );
 	glUniform1i( shaderProgram->u_DepthMapBack, 1 );
 	glUniform1i( shaderProgram->u_DepthMapFront, 2 );
+}
+
+GLShader_screenSpaceAmbientOcclusion::GLShader_screenSpaceAmbientOcclusion() :
+	GLShader( "screenSpaceAmbientOcclusion", ATTR_POSITION ),
+	u_ModelViewProjectionMatrix( this )
+{
+	CompilePermutations();
+}
+
+void GLShader_screenSpaceAmbientOcclusion::SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram )
+{
+	shaderProgram->u_CurrentMap = glGetUniformLocation( shaderProgram->program, "u_CurrentMap" );
+	shaderProgram->u_DepthMap = glGetUniformLocation( shaderProgram->program, "u_DepthMap" );
+}
+
+void GLShader_screenSpaceAmbientOcclusion::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
+{
+	glUniform1i( shaderProgram->u_CurrentMap, 0 );
+	glUniform1i( shaderProgram->u_DepthMap, 1 );
 }
 
 
