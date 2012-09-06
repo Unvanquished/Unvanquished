@@ -1058,7 +1058,7 @@ double acos( double x )
 		q = 1.0 + z * ( qS1 + z * ( qS2 + z * ( qS3 + z * qS4 ) ) );
 		r = p / q;
 		w = r * s + c;
-		return ( double )( 2.0 * ( df + w ) );
+		return 2.0 * ( df + w );
 	}
 }
 

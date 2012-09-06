@@ -244,7 +244,7 @@ void CG_AlienSense( rectDef_t *rect )
 	vec3_t relOrigin;
 	vec4_t  color_human = { 0.04f, 0.71f, 0.88f, 1.0f };
 	vec4_t  color_alien = { 0.75f, 0.00f, 0.00f, 1.0f };
-	double  length;
+	float  length;
 
 	VectorCopy( entityPositions.origin, origin );
 

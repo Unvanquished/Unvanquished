@@ -2800,9 +2800,9 @@ void MatrixMultiplyShear( matrix_t m, vec_t x, vec_t y )
 void MatrixToAngles( const matrix_t m, vec3_t angles )
 {
 #if 1
-	double theta;
-	double cp;
-	double sp;
+	float theta;
+	float cp;
+	float sp;
 
 	sp = m[ 2 ];
 
@@ -2833,8 +2833,8 @@ void MatrixToAngles( const matrix_t m, vec3_t angles )
 	}
 
 #else
-	double a;
-	double ca;
+	float a;
+	float ca;
 
 	a = asin( -m[ 2 ] );
 	ca = cos( a );
@@ -3991,7 +3991,7 @@ void QuatSlerp( const quat_t from, const quat_t to, float frac, quat_t out )
 {
 #if 0
 	quat_t to1;
-	double omega, cosom, sinom, scale0, scale1;
+	float omega, cosom, sinom, scale0, scale1;
 
 	cosom = from[ 0 ] * to[ 0 ] + from[ 1 ] * to[ 1 ] + from[ 2 ] * to[ 2 ] + from[ 3 ] * to[ 3 ];
 
