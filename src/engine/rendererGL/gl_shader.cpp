@@ -56,6 +56,7 @@ GLShader_cameraEffects                   *gl_cameraEffectsShader = NULL;
 GLShader_blurX                           *gl_blurXShader = NULL;
 GLShader_blurY                           *gl_blurYShader = NULL;
 GLShader_debugShadowMap                  *gl_debugShadowMapShader = NULL;
+GLShader_depthToColor                    *gl_depthToColorShader = NULL;
 
 bool GLCompileMacro_USE_VERTEX_SKINNING::HasConflictingMacros( int permutation, const std::vector< GLCompileMacro * > &macros ) const
 {
@@ -2545,4 +2546,18 @@ void GLShader_debugShadowMap::SetShaderProgramUniformLocations( shaderProgram_t 
 void GLShader_debugShadowMap::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
 {
 	glUniform1i( shaderProgram->u_CurrentMap, 0 );
+}
+
+GLShader_depthToColor::GLShader_depthToColor() :
+	GLShader( "depthToColor", ATTR_POSITION | ATTR_NORMAL ),
+	u_ModelViewProjectionMatrix( this ),
+	u_BoneMatrix( this ),
+	GLCompileMacro_USE_VERTEX_SKINNING( this )
+{
+	CompilePermutations();
+}
+
+void GLShader_depthToColor::BuildShaderVertexLibNames( std::string& vertexInlines )
+{
+	vertexInlines += "vertexSkinning ";
 }

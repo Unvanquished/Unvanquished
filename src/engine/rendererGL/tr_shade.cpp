@@ -921,25 +921,7 @@ void GLSL_InitGPUShaders( void )
 
 #if !defined( GLSL_COMPILE_STARTUP_ONLY )
 
-	// depth to color encoding
-	GLSL_InitGPUShader( &tr.depthToColorShader, "depthToColor", ATTR_POSITION, qtrue, qtrue );
-
-	tr.depthToColorShader.u_ModelViewProjectionMatrix =
-	  glGetUniformLocation( tr.depthToColorShader.program, "u_ModelViewProjectionMatrix" );
-
-	if ( glConfig2.vboVertexSkinningAvailable )
-	{
-		tr.depthToColorShader.u_VertexSkinning = glGetUniformLocation( tr.depthToColorShader.program, "u_VertexSkinning" );
-		tr.depthToColorShader.u_BoneMatrix = glGetUniformLocation( tr.depthToColorShader.program, "u_BoneMatrix" );
-	}
-
-	glUseProgramObject( tr.depthToColorShader.program );
-	//glUniform1i(tr.depthToColorShader.u_ColorMap, 0);
-	glUseProgramObject( 0 );
-
-	GLSL_ValidateProgram( tr.depthToColorShader.program );
-	GLSL_ShowProgramUniforms( tr.depthToColorShader.program );
-	GL_CheckErrors();
+	gl_depthToColorShader = new GLShader_depthToColor();
 
 #endif // #if !defined(GLSL_COMPILE_STARTUP_ONLY)
 
@@ -1245,10 +1227,10 @@ void GLSL_ShutdownGPUShaders( void )
 
 #if !defined( GLSL_COMPILE_STARTUP_ONLY )
 
-	if ( tr.depthToColorShader.program )
+	if ( gl_depthToColorShader )
 	{
-		glDeleteObject( tr.depthToColorShader.program );
-		Com_Memset( &tr.depthToColorShader, 0, sizeof( shaderProgram_t ) );
+		delete gl_depthToColorShader;
+		gl_depthToColorShader = NULL;
 	}
 
 #endif // #if !defined(GLSL_COMPILE_STARTUP_ONLY)
@@ -4219,23 +4201,22 @@ static void Render_volumetricFog()
 			                      GL_NEAREST );
 		}
 
-		// setup shader with uniforms
-		GL_BindProgram( &tr.depthToColorShader );
-		GL_VertexAttribsState( tr.depthToColorShader.attribs );
-		GL_State( 0 );  //GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE);
-
-		GLSL_SetUniform_ModelViewProjectionMatrix( &tr.depthToColorShader, glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-
+		// setup shader
+		gl_depthToColorShader->BindProgram();
 		// Tr3B: might be cool for ghost player effects
 		if ( glConfig2.vboVertexSkinningAvailable )
 		{
-			GLSL_SetUniform_VertexSkinning( &tr.depthToColorShader, tess.vboVertexSkinning );
+			gl_depthToColorShader->EnableVertexSkinning();
 
 			if ( tess.vboVertexSkinning )
 			{
-				glUniformMatrix4fv( tr.depthToColorShader.u_BoneMatrix, MAX_BONES, GL_FALSE, &tess.boneMatrices[ 0 ][ 0 ] );
+				gl_depthToColorShader->SetUniform_BoneMatrix( MAX_BONES, &tess.boneMatrices[ 0 ][ 0 ] );
 			}
 		}
+		gl_depthToColorShader->SetRequiredVertexPointers();
+		GL_State( 0 );  //GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE);
+
+		gl_depthToColorShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 		// render back faces
 		R_BindFBO( tr.occlusionRenderFBO );

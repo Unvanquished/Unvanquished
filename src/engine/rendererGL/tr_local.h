@@ -3977,8 +3977,6 @@ extern "C" {
 		//
 
 #if !defined( GLSL_COMPILE_STARTUP_ONLY )
-		// depth to color encoding
-		shaderProgram_t depthToColorShader;
 
 #ifdef VOLUMETRIC_LIGHTING
 		// volumetric lighting
