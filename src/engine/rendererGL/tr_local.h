@@ -3978,9 +3978,6 @@ extern "C" {
 
 #if !defined( GLSL_COMPILE_STARTUP_ONLY )
 
-		// UT3 style player shadowing
-		shaderProgram_t deferredShadowingShader_proj;
-
 		// post process effects
 		shaderProgram_t rotoscopeShader;
 		shaderProgram_t liquidShader;

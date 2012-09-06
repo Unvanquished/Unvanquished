@@ -936,47 +936,7 @@ void GLSL_InitGPUShaders( void )
 #endif
 
 	// UT3 style player shadowing
-	GLSL_InitGPUShader( &tr.deferredShadowingShader_proj, "deferredShadowing_proj", ATTR_POSITION, qtrue, qtrue );
-
-	tr.deferredShadowingShader_proj.u_DepthMap =
-	  glGetUniformLocation( tr.deferredShadowingShader_proj.program, "u_DepthMap" );
-	tr.deferredShadowingShader_proj.u_AttenuationMapXY =
-	  glGetUniformLocation( tr.deferredShadowingShader_proj.program, "u_AttenuationMapXY" );
-	tr.deferredShadowingShader_proj.u_AttenuationMapZ =
-	  glGetUniformLocation( tr.deferredShadowingShader_proj.program, "u_AttenuationMapZ" );
-	tr.deferredShadowingShader_proj.u_ShadowMap =
-	  glGetUniformLocation( tr.deferredShadowingShader_proj.program, "u_ShadowMap" );
-	tr.deferredShadowingShader_proj.u_LightOrigin =
-	  glGetUniformLocation( tr.deferredShadowingShader_proj.program, "u_LightOrigin" );
-	tr.deferredShadowingShader_proj.u_LightColor =
-	  glGetUniformLocation( tr.deferredShadowingShader_proj.program, "u_LightColor" );
-	tr.deferredShadowingShader_proj.u_LightRadius =
-	  glGetUniformLocation( tr.deferredShadowingShader_proj.program, "u_LightRadius" );
-	tr.deferredShadowingShader_proj.u_LightAttenuationMatrix =
-	  glGetUniformLocation( tr.deferredShadowingShader_proj.program, "u_LightAttenuationMatrix" );
-	tr.deferredShadowingShader_proj.u_ShadowMatrix =
-	  glGetUniformLocation( tr.deferredShadowingShader_proj.program, "u_ShadowMatrix" );
-	tr.deferredShadowingShader_proj.u_ShadowCompare =
-	  glGetUniformLocation( tr.deferredShadowingShader_proj.program, "u_ShadowCompare" );
-	tr.deferredShadowingShader_proj.u_PortalClipping =
-	  glGetUniformLocation( tr.deferredShadowingShader_proj.program, "u_PortalClipping" );
-	tr.deferredShadowingShader_proj.u_PortalPlane =
-	  glGetUniformLocation( tr.deferredShadowingShader_proj.program, "u_PortalPlane" );
-	tr.deferredShadowingShader_proj.u_ModelViewProjectionMatrix =
-	  glGetUniformLocation( tr.deferredShadowingShader_proj.program, "u_ModelViewProjectionMatrix" );
-	tr.deferredShadowingShader_proj.u_UnprojectMatrix =
-	  glGetUniformLocation( tr.deferredShadowingShader_proj.program, "u_UnprojectMatrix" );
-
-	glUseProgramObject( tr.deferredShadowingShader_proj.program );
-	glUniform1i( tr.deferredShadowingShader_proj.u_DepthMap, 0 );
-	glUniform1i( tr.deferredShadowingShader_proj.u_AttenuationMapXY, 1 );
-	glUniform1i( tr.deferredShadowingShader_proj.u_AttenuationMapZ, 2 );
-	glUniform1i( tr.deferredShadowingShader_proj.u_ShadowMap, 3 );
-	glUseProgramObject( 0 );
-
-	GLSL_ValidateProgram( tr.deferredShadowingShader_proj.program );
-	GLSL_ShowProgramUniforms( tr.deferredShadowingShader_proj.program );
-	GL_CheckErrors();
+	gl_deferredShadowingShader_proj = new GLShader_deferredShadowing_proj();
 
 #endif // #if !defined(GLSL_COMPILE_STARTUP_ONLY)
 
@@ -1241,10 +1201,10 @@ void GLSL_ShutdownGPUShaders( void )
 
 #endif
 
-	if ( tr.deferredShadowingShader_proj.program )
+	if ( gl_deferredShadowingShader_proj )
 	{
-		glDeleteObject( tr.deferredShadowingShader_proj.program );
-		Com_Memset( &tr.deferredShadowingShader_proj, 0, sizeof( shaderProgram_t ) );
+		delete gl_deferredShadowingShader_proj;
+		gl_deferredShadowingShader_proj = NULL;
 	}
 
 #endif // #if !defined(GLSL_COMPILE_STARTUP_ONLY)

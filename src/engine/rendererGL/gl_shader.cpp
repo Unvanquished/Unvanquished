@@ -58,6 +58,7 @@ GLShader_blurY                           *gl_blurYShader = NULL;
 GLShader_debugShadowMap                  *gl_debugShadowMapShader = NULL;
 GLShader_depthToColor                    *gl_depthToColorShader = NULL;
 GLShader_lightVolume_omni                *gl_lightVolumeShader_omni = NULL;
+GLShader_deferredShadowing_proj          *gl_deferredShadowingShader_proj = NULL;
 
 bool GLCompileMacro_USE_VERTEX_SKINNING::HasConflictingMacros( int permutation, const std::vector< GLCompileMacro * > &macros ) const
 {
@@ -2587,6 +2588,39 @@ void GLShader_lightVolume_omni::SetShaderProgramUniformLocations( shaderProgram_
 }
 
 void GLShader_lightVolume_omni::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
+{
+	glUniform1i( shaderProgram->u_DepthMap, 0 );
+	glUniform1i( shaderProgram->u_AttenuationMapXY, 1 );
+	glUniform1i( shaderProgram->u_AttenuationMapZ, 2 );
+	glUniform1i( shaderProgram->u_ShadowMap, 3 );
+}
+
+GLShader_deferredShadowing_proj::GLShader_deferredShadowing_proj() :
+	GLShader( "deferredShadowing_proj", ATTR_POSITION ),
+	u_LightOrigin( this ),
+	u_LightColor( this ),
+	u_LightRadius( this ),
+	u_LightScale( this ),
+	u_LightAttenuationMatrix( this ),
+	u_ShadowMatrix( this ),
+	u_PortalPlane( this ),
+	u_ModelViewProjectionMatrix( this ),
+	u_UnprojectMatrix( this ),
+	GLCompileMacro_USE_PORTAL_CLIPPING( this ),
+	GLCompileMacro_USE_SHADOWING( this )
+{
+	CompilePermutations();
+}
+
+void GLShader_deferredShadowing_proj::SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram )
+{
+	shaderProgram->u_DepthMap = glGetUniformLocation( shaderProgram->program, "u_DepthMap" );
+	shaderProgram->u_AttenuationMapXY = glGetUniformLocation( shaderProgram->program, "u_AttenuationMapXY" );
+	shaderProgram->u_AttenuationMapZ = glGetUniformLocation( shaderProgram->program, "u_AttenuationMapZ" );
+	shaderProgram->u_ShadowMap = glGetUniformLocation( shaderProgram->program, "u_ShadowMap" );
+}
+
+void GLShader_deferredShadowing_proj::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
 {
 	glUniform1i( shaderProgram->u_DepthMap, 0 );
 	glUniform1i( shaderProgram->u_AttenuationMapXY, 1 );

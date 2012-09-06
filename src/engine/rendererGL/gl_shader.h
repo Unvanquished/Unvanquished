@@ -3158,6 +3158,27 @@ public:
 	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
+
+class GLShader_deferredShadowing_proj :
+	public GLShader,
+	public u_LightOrigin,
+	public u_LightColor,
+	public u_LightRadius,
+	public u_LightScale,
+	public u_LightAttenuationMatrix,
+	public u_ShadowMatrix,
+	public u_PortalPlane,
+	public u_ModelViewProjectionMatrix,
+	public u_UnprojectMatrix,
+	public GLCompileMacro_USE_PORTAL_CLIPPING,
+	public GLCompileMacro_USE_SHADOWING
+{
+public:
+	GLShader_deferredShadowing_proj();
+	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
+	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
+};
+
 extern GLShader_generic                         *gl_genericShader;
 extern GLShader_lightMapping                    *gl_lightMappingShader;
 extern GLShader_vertexLighting_DBS_entity       *gl_vertexLightingShader_DBS_entity;
@@ -3185,6 +3206,7 @@ extern GLShader_blurY                           *gl_blurYShader;
 extern GLShader_debugShadowMap                  *gl_debugShadowMapShader;
 extern GLShader_depthToColor                    *gl_depthToColorShader;
 extern GLShader_lightVolume_omni                *gl_lightVolumeShader_omni;
+extern GLShader_deferredShadowing_proj          *gl_deferredShadowingShader_proj;
 
 #ifdef USE_GLSL_OPTIMIZER
 extern struct glslopt_ctx *s_glslOptimizer;
