@@ -158,7 +158,6 @@ float R_ProcessLightmap( byte **pic, int in_padding, int width, int height, byte
 {
 	int    j;
 	float  maxIntensity = 0;
-	double sumIntensity = 0;
 
 	if ( r_showLightMaps->integer > 1 )
 	{
@@ -204,8 +203,6 @@ float R_ProcessLightmap( byte **pic, int in_padding, int width, int height, byte
 			}
 
 			( *pic_out ) [ j * 4 + 3 ] = 255;
-
-			sumIntensity += intensity;
 		}
 	}
 	else
@@ -234,8 +231,6 @@ static void R_LoadLightmaps( lump_t *l )
 	MAC_STATIC byte image[ LIGHTMAP_SIZE * LIGHTMAP_SIZE * 4 ];
 	int             i /*, j */;
 	float           intensity, maxIntensity = 0;
-
-//  double sumIntensity = 0;
 
 	// ydnar: clear lightmaps first
 	tr.numLightmaps = 0;

@@ -306,7 +306,6 @@ float R_ProcessLightmap( byte **pic, int in_padding, int width, int height, byte
 {
 	int   j;
 	float maxIntensity = 0;
-//	double          sumIntensity = 0;
 
 	/*
 	if(r_lightmap->integer > 1)
@@ -352,8 +351,6 @@ float R_ProcessLightmap( byte **pic, int in_padding, int width, int height, byte
 	                        (*pic_out)[j * 4 + 2] = out[2] * 255;
 	                }
 	                (*pic_out)[j * 4 + 3] = 255;
-
-	                sumIntensity += intensity;
 	        }
 	}
 	else

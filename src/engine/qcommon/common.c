@@ -485,18 +485,11 @@ Break it up into multiple console lines
 */
 void Com_ParseCommandLine( char *commandLine )
 {
-	int inq = 0;
-
 	com_consoleLines[ 0 ] = commandLine;
 	com_numConsoleLines = 1;
 
 	while ( *commandLine )
 	{
-		if ( *commandLine == '"' )
-		{
-			inq = !inq;
-		}
-
 		// look for a + separating character
 		// if commandLine came from a file, we might have real line separators
 		if ( *commandLine == '+' || *commandLine == '\n' || *commandLine == '\r' )

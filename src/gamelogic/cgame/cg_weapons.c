@@ -103,7 +103,7 @@ Reads the animation.cfg for weapons
 
 static qboolean CG_ParseWeaponAnimationFile( const char *filename, weaponInfo_t *wi )
 {
-	char         *text_p, *prev;
+	char         *text_p;
 	int          len;
 	int          i;
 	char         *token;
