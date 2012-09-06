@@ -3141,6 +3141,23 @@ public:
 	void BuildShaderVertexLibNames( std::string& vertexInlines );
 };
 
+class GLShader_lightVolume_omni :
+	public GLShader,
+	public u_ViewOrigin,
+	public u_LightOrigin,
+	public u_LightColor,
+	public u_LightRadius,
+	public u_LightScale,
+	public u_LightAttenuationMatrix,
+	public u_ModelViewProjectionMatrix,
+	public u_UnprojectMatrix,
+	public GLCompileMacro_USE_SHADOWING
+{
+public:
+	GLShader_lightVolume_omni();
+	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
+	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
+};
 extern GLShader_generic                         *gl_genericShader;
 extern GLShader_lightMapping                    *gl_lightMappingShader;
 extern GLShader_vertexLighting_DBS_entity       *gl_vertexLightingShader_DBS_entity;
@@ -3167,6 +3184,7 @@ extern GLShader_blurX                           *gl_blurXShader;
 extern GLShader_blurY                           *gl_blurYShader;
 extern GLShader_debugShadowMap                  *gl_debugShadowMapShader;
 extern GLShader_depthToColor                    *gl_depthToColorShader;
+extern GLShader_lightVolume_omni                *gl_lightVolumeShader_omni;
 
 #ifdef USE_GLSL_OPTIMIZER
 extern struct glslopt_ctx *s_glslOptimizer;

@@ -932,37 +932,7 @@ void GLSL_InitGPUShaders( void )
 
 #ifdef VOLUMETRIC_LIGHTING
 	// volumetric lighting
-	GLSL_InitGPUShader( &tr.lightVolumeShader_omni, "lightVolume_omni", ATTR_POSITION, qtrue );
-
-	tr.lightVolumeShader_omni.u_DepthMap =
-	  glGetUniformLocation( tr.lightVolumeShader_omni.program, "u_DepthMap" );
-	tr.lightVolumeShader_omni.u_AttenuationMapXY =
-	  glGetUniformLocation( tr.lightVolumeShader_omni.program, "u_AttenuationMapXY" );
-	tr.lightVolumeShader_omni.u_AttenuationMapZ =
-	  glGetUniformLocation( tr.lightVolumeShader_omni.program, "u_AttenuationMapZ" );
-	tr.lightVolumeShader_omni.u_ShadowMap = glGetUniformLocation( tr.lightVolumeShader_omni.program, "u_ShadowMap" );
-	tr.lightVolumeShader_omni.u_ViewOrigin = glGetUniformLocation( tr.lightVolumeShader_omni.program, "u_ViewOrigin" );
-	tr.lightVolumeShader_omni.u_LightOrigin = glGetUniformLocation( tr.lightVolumeShader_omni.program, "u_LightOrigin" );
-	tr.lightVolumeShader_omni.u_LightColor = glGetUniformLocation( tr.lightVolumeShader_omni.program, "u_LightColor" );
-	tr.lightVolumeShader_omni.u_LightRadius = glGetUniformLocation( tr.lightVolumeShader_omni.program, "u_LightRadius" );
-	tr.lightVolumeShader_omni.u_LightScale = glGetUniformLocation( tr.lightVolumeShader_omni.program, "u_LightScale" );
-	tr.lightVolumeShader_omni.u_LightAttenuationMatrix =
-	  glGetUniformLocation( tr.lightVolumeShader_omni.program, "u_LightAttenuationMatrix" );
-	tr.lightVolumeShader_omni.u_ShadowCompare = glGetUniformLocation( tr.lightVolumeShader_omni.program, "u_ShadowCompare" );
-	tr.lightVolumeShader_omni.u_ModelViewProjectionMatrix =
-	  glGetUniformLocation( tr.lightVolumeShader_omni.program, "u_ModelViewProjectionMatrix" );
-	tr.lightVolumeShader_omni.u_UnprojectMatrix = glGetUniformLocation( tr.lightVolumeShader_omni.program, "u_UnprojectMatrix" );
-
-	glUseProgramObject( tr.lightVolumeShader_omni.program );
-	glUniform1i( tr.lightVolumeShader_omni.u_DepthMap, 0 );
-	glUniform1i( tr.lightVolumeShader_omni.u_AttenuationMapXY, 1 );
-	glUniform1i( tr.lightVolumeShader_omni.u_AttenuationMapZ, 2 );
-	glUniform1i( tr.lightVolumeShader_omni.u_ShadowMap, 3 );
-	glUseProgramObject( 0 );
-
-	GLSL_ValidateProgram( tr.lightVolumeShader_omni.program );
-	GLSL_ShowProgramUniforms( tr.lightVolumeShader_omni.program );
-	GL_CheckErrors();
+	gl_lightVolumeShader_omni = new GLShader_lightVolume_omni();
 #endif
 
 	// UT3 style player shadowing
@@ -1263,10 +1233,10 @@ void GLSL_ShutdownGPUShaders( void )
 
 #ifdef VOLUMETRIC_LIGHTING
 
-	if ( tr.lightVolumeShader_omni.program )
+	if ( gl_lightVolumeShader_omni )
 	{
-		glDeleteObject( tr.lightVolumeShader_omni.program );
-		Com_Memset( &tr.lightVolumeShader_omni, 0, sizeof( shaderProgram_t ) );
+		delete gl_lightVolumeShader_omni;
+		gl_lightVolumeShader_omni = NULL;
 	}
 
 #endif

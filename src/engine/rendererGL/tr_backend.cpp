@@ -1744,7 +1744,7 @@ static void Render_lightVolume( interaction_t *ia )
 			GLimp_LogComment( "--- Render_lightVolume_omni ---\n" );
 
 			// enable shader, set arrays
-			GL_BindProgram( &tr.lightVolumeShader_omni );
+			gl_lightVolumeShader_omni->BindProgram();
 			//GL_VertexAttribsState(tr.lightVolumeShader_omni.attribs);
 			GL_Cull( CT_TWO_SIDED );
 			GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
@@ -1757,22 +1757,22 @@ static void Render_lightVolume( interaction_t *ia )
 			VectorCopy( light->origin, lightOrigin );
 			VectorCopy( tess.svars.color, lightColor );
 
-			shadowCompare = r_shadows->integer >= SHADOWING_ESM16 && !light->l.noShadows && light->shadowLOD >= 0;
+			shadowCompare = (qboolean)((int)r_shadows->integer >= SHADOWING_ESM16 && !light->l.noShadows && light->shadowLOD >= 0);
 
-			GLSL_SetUniform_ViewOrigin( &tr.lightVolumeShader_omni, viewOrigin );
-			GLSL_SetUniform_LightOrigin( &tr.lightVolumeShader_omni, lightOrigin );
-			GLSL_SetUniform_LightColor( &tr.lightVolumeShader_omni, lightColor );
-			GLSL_SetUniform_LightRadius( &tr.lightVolumeShader_omni, light->sphereRadius );
-			GLSL_SetUniform_LightScale( &tr.lightVolumeShader_omni, light->l.scale );
-			GLSL_SetUniform_LightAttenuationMatrix( &tr.lightVolumeShader_omni, light->attenuationMatrix2 );
+			gl_lightVolumeShader_omni->SetUniform_ViewOrigin( viewOrigin );
+			gl_lightVolumeShader_omni->SetUniform_LightOrigin( lightOrigin );
+			gl_lightVolumeShader_omni->SetUniform_LightColor( lightColor );
+			gl_lightVolumeShader_omni->SetUniform_LightRadius( light->sphereRadius );
+			gl_lightVolumeShader_omni->SetUniform_LightScale( light->l.scale );
+			gl_lightVolumeShader_omni->SetUniform_LightAttenuationMatrix( light->attenuationMatrix2 );
 
-			// FIXME GLSL_SetUniform_ShadowMatrix(&tr.lightVolumeShader_omni, light->attenuationMatrix);
-			GLSL_SetUniform_ShadowCompare( &tr.lightVolumeShader_omni, shadowCompare );
+			// FIXME gl_lightVolumeShader_omni->SetUniform_ShadowMatrix( light->attenuationMatrix );
+			gl_lightVolumeShader_omni->SetShadowing( shadowCompare );
+			gl_lightVolumeShader_omni->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-			GLSL_SetUniform_ModelViewProjectionMatrix( &tr.lightVolumeShader_omni, glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-			GLSL_SetUniform_UnprojectMatrix( &tr.lightVolumeShader_omni, backEnd.viewParms.unprojectionMatrix );
+			gl_lightVolumeShader_omni->SetUniform_UnprojectMatrix( backEnd.viewParms.unprojectionMatrix );
 
-			//GLSL_SetUniform_PortalClipping(&tr.lightVolumeShader_omni, backEnd.viewParms.isPortal);
+			//gl_lightVolumeShader_omni->SetUniform_PortalClipping( backEnd.viewParms.isPortal );
 
 			// bind u_DepthMap
 			GL_SelectTexture( 0 );

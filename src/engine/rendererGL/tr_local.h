@@ -3978,11 +3978,6 @@ extern "C" {
 
 #if !defined( GLSL_COMPILE_STARTUP_ONLY )
 
-#ifdef VOLUMETRIC_LIGHTING
-		// volumetric lighting
-		shaderProgram_t lightVolumeShader_omni;
-#endif
-
 		// UT3 style player shadowing
 		shaderProgram_t deferredShadowingShader_proj;
 

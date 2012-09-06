@@ -57,6 +57,7 @@ GLShader_blurX                           *gl_blurXShader = NULL;
 GLShader_blurY                           *gl_blurYShader = NULL;
 GLShader_debugShadowMap                  *gl_debugShadowMapShader = NULL;
 GLShader_depthToColor                    *gl_depthToColorShader = NULL;
+GLShader_lightVolume_omni                *gl_lightVolumeShader_omni = NULL;
 
 bool GLCompileMacro_USE_VERTEX_SKINNING::HasConflictingMacros( int permutation, const std::vector< GLCompileMacro * > &macros ) const
 {
@@ -2561,3 +2562,36 @@ void GLShader_depthToColor::BuildShaderVertexLibNames( std::string& vertexInline
 {
 	vertexInlines += "vertexSkinning ";
 }
+
+GLShader_lightVolume_omni::GLShader_lightVolume_omni() :
+	GLShader( "lightVolume_omni", ATTR_POSITION ),
+	u_ViewOrigin( this ),
+	u_LightOrigin( this ),
+	u_LightColor( this ),
+	u_LightRadius( this ),
+	u_LightScale( this ),
+	u_LightAttenuationMatrix( this ),
+	u_ModelViewProjectionMatrix( this ),
+	u_UnprojectMatrix( this ),
+	GLCompileMacro_USE_SHADOWING( this )
+{
+	CompilePermutations();
+}
+
+void GLShader_lightVolume_omni::SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram )
+{
+	shaderProgram->u_DepthMap = glGetUniformLocation( shaderProgram->program, "u_DepthMap" );
+	shaderProgram->u_AttenuationMapXY = glGetUniformLocation( shaderProgram->program, "u_AttenuationMapXY" );
+	shaderProgram->u_AttenuationMapZ = glGetUniformLocation( shaderProgram->program, "u_AttenuationMapZ" );
+	shaderProgram->u_ShadowMap = glGetUniformLocation( shaderProgram->program, "u_ShadowMap" );
+}
+
+void GLShader_lightVolume_omni::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
+{
+	glUniform1i( shaderProgram->u_DepthMap, 0 );
+	glUniform1i( shaderProgram->u_AttenuationMapXY, 1 );
+	glUniform1i( shaderProgram->u_AttenuationMapZ, 2 );
+	glUniform1i( shaderProgram->u_ShadowMap, 3 );
+}
+
+
