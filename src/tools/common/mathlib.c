@@ -225,10 +225,12 @@ int VectorCompare(const vec3_t v1, const vec3_t v2)
 	return 1;
 }
 
-vec_t Q_rint(vec_t in)
+#if defined(_WIN32) && !defined(__MINGW32__)
+double rint(double x)
 {
-	return floor(in + 0.5);
+	return floor(x + 0.5);
 }
+#endif
 
 void CrossProduct(const vec3_t v1, const vec3_t v2, vec3_t cross)
 {

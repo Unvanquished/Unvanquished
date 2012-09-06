@@ -279,8 +279,8 @@ void SnapPlane(vec3_t normal, vec_t * dist)
 	// solve so that we can better engineer it (I'm not saying that SnapPlane()
 	// should be removed altogether).  Fix all this snapping code at some point!
 
-	if(fabs(*dist - Q_rint(*dist)) < distanceEpsilon)
-		*dist = Q_rint(*dist);
+	if(fabs(*dist - rint(*dist)) < distanceEpsilon)
+		*dist = rint(*dist);
 }
 
 /*
@@ -315,7 +315,7 @@ void SnapPlaneImproved(vec3_t normal, vec_t * dist, int numPoints, const vec3_t 
 	{
 		// Only snap distance if the normal is an axis.  Otherwise there
 		// is nothing "natural" about snapping the distance to an integer.
-		distNearestInt = Q_rint(*dist);
+		distNearestInt = rint(*dist);
 		if(-distanceEpsilon < *dist - distNearestInt && *dist - distNearestInt < distanceEpsilon)
 		{
 			*dist = distNearestInt;

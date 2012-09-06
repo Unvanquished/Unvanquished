@@ -1289,10 +1289,6 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 #define MIN(x,y) (( x ) < ( y ) ? ( x ) : ( y ))
 #endif
 
-#if defined( _MSC_VER ) || defined( Q3_VM )
-	float rintf( float v );
-#endif
-
 //=============================================
 
 	float      Com_Clamp( float min, float max, float value );

@@ -910,19 +910,7 @@ rint
 */
 double rint( double v )
 {
-	if ( v >= 0.5f )
-	{
-		return ceil( v );
-	}
-	else
-	{
-		return floor( v );
-	}
-}
-
-float rintf( float v )
-{
-        return (float) rint( v );
+	return floor( v + 0.5 );
 }
 
 float floorf( float v )
