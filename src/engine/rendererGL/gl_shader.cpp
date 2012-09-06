@@ -60,6 +60,7 @@ GLShader_depthToColor                    *gl_depthToColorShader = NULL;
 GLShader_lightVolume_omni                *gl_lightVolumeShader_omni = NULL;
 GLShader_deferredShadowing_proj          *gl_deferredShadowingShader_proj = NULL;
 GLShader_liquid                          *gl_liquidShader = NULL;
+GLShader_volumetricFog                   *gl_volumetricFogShader = NULL;
 
 bool GLCompileMacro_USE_VERTEX_SKINNING::HasConflictingMacros( int permutation, const std::vector< GLCompileMacro * > &macros ) const
 {
@@ -2666,6 +2667,32 @@ void GLShader_liquid::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
 	glUniform1i( shaderProgram->u_PortalMap, 1 );
 	glUniform1i( shaderProgram->u_DepthMap, 2 );
 	glUniform1i( shaderProgram->u_NormalMap, 3 );
+}
+
+GLShader_volumetricFog::GLShader_volumetricFog() :
+	GLShader( "volumetricFog", ATTR_POSITION ),
+	u_ViewOrigin( this ),
+	u_UnprojectMatrix( this ),
+	u_ModelViewMatrix( this ),
+	u_FogDensity( this ),
+	u_FogColor( this )
+{
+	CompilePermutations();
+}
+
+void GLShader_volumetricFog::SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram )
+{
+	
+	shaderProgram->u_DepthMap = glGetUniformLocation( shaderProgram->program, "u_DepthMap" );
+	shaderProgram->u_DepthMapBack = glGetUniformLocation( shaderProgram->program, "u_DepthMapBack" );
+	shaderProgram->u_DepthMapFront = glGetUniformLocation( shaderProgram->program, "u_DepthMapFront" );
+}
+
+void GLShader_volumetricFog::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
+{
+	glUniform1i( shaderProgram->u_DepthMap, 0 );
+	glUniform1i( shaderProgram->u_DepthMapBack, 1 );
+	glUniform1i( shaderProgram->u_DepthMapFront, 2 );
 }
 
 

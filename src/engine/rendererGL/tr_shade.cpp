@@ -982,28 +982,7 @@ void GLSL_InitGPUShaders( void )
 
 	gl_liquidShader = new GLShader_liquid();
 
-	// volumetric fog post process effect
-	GLSL_InitGPUShader( &tr.volumetricFogShader, "volumetricFog", ATTR_POSITION, qtrue, qtrue );
-
-	tr.volumetricFogShader.u_DepthMap = glGetUniformLocation( tr.volumetricFogShader.program, "u_DepthMap" );
-	tr.volumetricFogShader.u_DepthMapBack = glGetUniformLocation( tr.volumetricFogShader.program, "u_DepthMapBack" );
-	tr.volumetricFogShader.u_DepthMapFront = glGetUniformLocation( tr.volumetricFogShader.program, "u_DepthMapFront" );
-	tr.volumetricFogShader.u_ViewOrigin = glGetUniformLocation( tr.volumetricFogShader.program, "u_ViewOrigin" );
-	tr.volumetricFogShader.u_FogDensity = glGetUniformLocation( tr.volumetricFogShader.program, "u_FogDensity" );
-	tr.volumetricFogShader.u_FogColor = glGetUniformLocation( tr.volumetricFogShader.program, "u_FogColor" );
-	tr.volumetricFogShader.u_UnprojectMatrix = glGetUniformLocation( tr.volumetricFogShader.program, "u_UnprojectMatrix" );
-	tr.volumetricFogShader.u_ModelViewProjectionMatrix =
-	  glGetUniformLocation( tr.volumetricFogShader.program, "u_ModelViewProjectionMatrix" );
-
-	glUseProgramObject( tr.volumetricFogShader.program );
-	glUniform1i( tr.volumetricFogShader.u_DepthMap, 0 );
-	glUniform1i( tr.volumetricFogShader.u_DepthMapBack, 1 );
-	glUniform1i( tr.volumetricFogShader.u_DepthMapFront, 2 );
-	glUseProgramObject( 0 );
-
-	GLSL_ValidateProgram( tr.volumetricFogShader.program );
-	GLSL_ShowProgramUniforms( tr.volumetricFogShader.program );
-	GL_CheckErrors();
+	gl_volumetricFogShader = new GLShader_volumetricFog();
 
 #ifdef EXPERIMENTAL
 	// screen space ambien occlusion post process effect
@@ -1259,10 +1238,10 @@ void GLSL_ShutdownGPUShaders( void )
 		gl_liquidShader = NULL;
 	}
 
-	if ( tr.volumetricFogShader.program )
+	if ( gl_volumetricFogShader )
 	{
-		glDeleteObject( tr.volumetricFogShader.program );
-		Com_Memset( &tr.volumetricFogShader, 0, sizeof( shaderProgram_t ) );
+		delete gl_volumetricFogShader;
+		gl_volumetricFogShader = NULL;
 	}
 
 #ifdef EXPERIMENTAL
@@ -4056,7 +4035,7 @@ static void Render_volumetricFog()
 #if 0
 	vec3_t viewOrigin;
 	float  fogDensity;
-	vec3_t fogColor;
+	GLfloat fogColor[ 3 ];
 
 	GLimp_LogComment( "--- Render_volumetricFog---\n" );
 
@@ -4103,7 +4082,7 @@ static void Render_volumetricFog()
 		// Tr3B: might be cool for ghost player effects
 		if ( glConfig2.vboVertexSkinningAvailable )
 		{
-			gl_depthToColorShader->EnableVertexSkinning();
+			gl_depthToColorShader->SetVertexSkinning( tess.vboVertexSkinning );
 
 			if ( tess.vboVertexSkinning )
 			{
@@ -4134,8 +4113,8 @@ static void Render_volumetricFog()
 		R_BindFBO( previousFBO );
 
 		// enable shader, set arrays
-		GL_BindProgram( &tr.volumetricFogShader );
-		GL_VertexAttribsState( tr.volumetricFogShader.attribs );
+		gl_volumetricFogShader->BindProgram();
+		gl_volumetricFogShader->SetRequiredVertexPointers();
 
 		//GL_State(GLS_DEPTHTEST_DISABLE);  // | GLS_DEPTHMASK_TRUE);
 		//GL_State(GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ZERO | GLS_DSTBLEND_ONE_MINUS_SRC_COLOR);
@@ -4144,7 +4123,6 @@ static void Render_volumetricFog()
 
 		glVertexAttrib4fv( ATTR_INDEX_COLOR, colorWhite );
 
-		// set uniforms
 		VectorCopy( backEnd.viewParms.orientation.origin, viewOrigin );  // in world space
 
 		{
@@ -4152,12 +4130,11 @@ static void Render_volumetricFog()
 			VectorCopy( tess.surfaceShader->fogParms.color, fogColor );
 		}
 
-		GLSL_SetUniform_ModelViewProjectionMatrix( &tr.volumetricFogShader, glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-		GLSL_SetUniform_UnprojectMatrix( &tr.volumetricFogShader, backEnd.viewParms.unprojectionMatrix );
-
-		GLSL_SetUniform_ViewOrigin( &tr.volumetricFogShader, viewOrigin );
-		glUniform1f( tr.volumetricFogShader.u_FogDensity, fogDensity );
-		glUniform3f( tr.volumetricFogShader.u_FogColor, fogColor[ 0 ], fogColor[ 1 ], fogColor[ 2 ] );
+		gl_volumetricFogShader->SetUniform_ModelViewMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+		gl_volumetricFogShader->SetUniform_UnprojectMatrix( backEnd.viewParms.unprojectionMatrix );
+		gl_volumetricFogShader->SetUniform_ViewOrigin( viewOrigin );
+		gl_volumetricFogShader->SetUniform_FogDensity( fogDensity );
+		gl_volumetricFogShader->SetUniform_FogColor( fogColor[ 0 ], fogColor[ 1 ], fogColor[ 2 ] );
 
 		// bind u_DepthMap
 		GL_SelectTexture( 0 );
