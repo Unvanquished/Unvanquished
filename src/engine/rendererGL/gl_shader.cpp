@@ -59,6 +59,7 @@ GLShader_debugShadowMap                  *gl_debugShadowMapShader = NULL;
 GLShader_depthToColor                    *gl_depthToColorShader = NULL;
 GLShader_lightVolume_omni                *gl_lightVolumeShader_omni = NULL;
 GLShader_deferredShadowing_proj          *gl_deferredShadowingShader_proj = NULL;
+GLShader_liquid                          *gl_liquidShader = NULL;
 
 bool GLCompileMacro_USE_VERTEX_SKINNING::HasConflictingMacros( int permutation, const std::vector< GLCompileMacro * > &macros ) const
 {
@@ -2626,6 +2627,45 @@ void GLShader_deferredShadowing_proj::SetShaderProgramUniforms( shaderProgram_t 
 	glUniform1i( shaderProgram->u_AttenuationMapXY, 1 );
 	glUniform1i( shaderProgram->u_AttenuationMapZ, 2 );
 	glUniform1i( shaderProgram->u_ShadowMap, 3 );
+}
+
+GLShader_liquid::GLShader_liquid() :
+	GLShader( "liquid", ATTR_POSITION | ATTR_TEXCOORD | ATTR_TANGENT | ATTR_BINORMAL | ATTR_NORMAL | ATTR_COLOR 
+		#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
+	                    | ATTR_LIGHTDIRECTION
+		#endif
+		),
+	u_NormalTextureMatrix( this ),
+	u_ViewOrigin( this ),
+	u_RefractionIndex( this ),
+	u_ModelMatrix( this ),
+	u_ModelViewProjectionMatrix( this ),
+	u_UnprojectMatrix( this ),
+	u_FresnelPower( this ),
+	u_FresnelScale( this ),
+	u_FresnelBias( this ),
+	u_NormalScale( this ),
+	u_FogDensity( this ),
+	u_FogColor( this ),
+	GLCompileMacro_USE_PARALLAX_MAPPING( this )
+{
+	CompilePermutations();
+}
+
+void GLShader_liquid::SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram )
+{
+	shaderProgram->u_CurrentMap = glGetUniformLocation( shaderProgram->program, "u_CurrentMap" );
+	shaderProgram->u_PortalMap = glGetUniformLocation( shaderProgram->program, "u_PortalMap" );
+	shaderProgram->u_DepthMap = glGetUniformLocation( shaderProgram->program, "u_DepthMap" );
+	shaderProgram->u_NormalMap = glGetUniformLocation( shaderProgram->program, "u_NormalMap" );
+}
+
+void GLShader_liquid::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
+{
+	glUniform1i( shaderProgram->u_CurrentMap, 0 );
+	glUniform1i( shaderProgram->u_PortalMap, 1 );
+	glUniform1i( shaderProgram->u_DepthMap, 2 );
+	glUniform1i( shaderProgram->u_NormalMap, 3 );
 }
 
 

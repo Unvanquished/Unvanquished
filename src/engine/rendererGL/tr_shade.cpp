@@ -980,43 +980,7 @@ void GLSL_InitGPUShaders( void )
 
 #if !defined( GLSL_COMPILE_STARTUP_ONLY )
 
-	// liquid post process effect
-	GLSL_InitGPUShader( &tr.liquidShader, "liquid",
-	                    ATTR_POSITION | ATTR_TEXCOORD | ATTR_TANGENT | ATTR_BINORMAL | ATTR_NORMAL | ATTR_COLOR
-
-#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-	                    | ATTR_LIGHTDIRECTION
-#endif
-	                    , qtrue, qtrue );
-
-	tr.liquidShader.u_CurrentMap = glGetUniformLocation( tr.liquidShader.program, "u_CurrentMap" );
-	tr.liquidShader.u_PortalMap = glGetUniformLocation( tr.liquidShader.program, "u_PortalMap" );
-	tr.liquidShader.u_DepthMap = glGetUniformLocation( tr.liquidShader.program, "u_DepthMap" );
-	tr.liquidShader.u_NormalMap = glGetUniformLocation( tr.liquidShader.program, "u_NormalMap" );
-	tr.liquidShader.u_NormalTextureMatrix = glGetUniformLocation( tr.liquidShader.program, "u_NormalTextureMatrix" );
-	tr.liquidShader.u_ViewOrigin = glGetUniformLocation( tr.liquidShader.program, "u_ViewOrigin" );
-	tr.liquidShader.u_RefractionIndex = glGetUniformLocation( tr.liquidShader.program, "u_RefractionIndex" );
-	tr.liquidShader.u_FresnelPower = glGetUniformLocation( tr.liquidShader.program, "u_FresnelPower" );
-	tr.liquidShader.u_FresnelScale = glGetUniformLocation( tr.liquidShader.program, "u_FresnelScale" );
-	tr.liquidShader.u_FresnelBias = glGetUniformLocation( tr.liquidShader.program, "u_FresnelBias" );
-	tr.liquidShader.u_NormalScale = glGetUniformLocation( tr.liquidShader.program, "u_NormalScale" );
-	tr.liquidShader.u_FogDensity = glGetUniformLocation( tr.liquidShader.program, "u_FogDensity" );
-	tr.liquidShader.u_FogColor = glGetUniformLocation( tr.liquidShader.program, "u_FogColor" );
-	tr.liquidShader.u_ModelMatrix = glGetUniformLocation( tr.liquidShader.program, "u_ModelMatrix" );
-	tr.liquidShader.u_ModelViewProjectionMatrix =
-	  glGetUniformLocation( tr.liquidShader.program, "u_ModelViewProjectionMatrix" );
-	tr.liquidShader.u_UnprojectMatrix = glGetUniformLocation( tr.liquidShader.program, "u_UnprojectMatrix" );
-
-	glUseProgramObject( tr.liquidShader.program );
-	glUniform1i( tr.liquidShader.u_CurrentMap, 0 );
-	glUniform1i( tr.liquidShader.u_PortalMap, 1 );
-	glUniform1i( tr.liquidShader.u_DepthMap, 2 );
-	glUniform1i( tr.liquidShader.u_NormalMap, 3 );
-	glUseProgramObject( 0 );
-
-	GLSL_ValidateProgram( tr.liquidShader.program );
-	GLSL_ShowProgramUniforms( tr.liquidShader.program );
-	GL_CheckErrors();
+	gl_liquidShader = new GLShader_liquid();
 
 	// volumetric fog post process effect
 	GLSL_InitGPUShader( &tr.volumetricFogShader, "volumetricFog", ATTR_POSITION, qtrue, qtrue );
@@ -1289,10 +1253,10 @@ void GLSL_ShutdownGPUShaders( void )
 
 #if !defined( GLSL_COMPILE_STARTUP_ONLY )
 
-	if ( tr.liquidShader.program )
+	if ( gl_liquidShader )
 	{
-		glDeleteObject( tr.liquidShader.program );
-		Com_Memset( &tr.liquidShader, 0, sizeof( shaderProgram_t ) );
+		delete gl_liquidShader;
+		gl_liquidShader = NULL;
 	}
 
 	if ( tr.volumetricFogShader.program )
@@ -3835,7 +3799,7 @@ static void Render_liquid( int stage )
 #if !defined( GLSL_COMPILE_STARTUP_ONLY )
 	vec3_t        viewOrigin;
 	float         fogDensity;
-	vec3_t        fogColor;
+	GLfloat       fogColor[ 3 ];
 	shaderStage_t *pStage = tess.surfaceStages[ stage ];
 
 	GLimp_LogComment( "--- Render_liquid ---\n" );
@@ -3843,9 +3807,12 @@ static void Render_liquid( int stage )
 	// Tr3B: don't allow blend effects
 	GL_State( pStage->stateBits & ~( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS | GLS_DEPTHMASK_TRUE ) );
 
+	// choose right shader program
+	gl_liquidShader->SetParallaxMapping(r_parallaxMapping->integer && tess.surfaceShader->parallax);
+
 	// enable shader, set arrays
-	GL_BindProgram( &tr.liquidShader );
-	GL_VertexAttribsState( tr.liquidShader.attribs );
+	gl_liquidShader->BindProgram();
+	gl_liquidShader->SetRequiredVertexPointers();
 
 	// set uniforms
 	VectorCopy( backEnd.viewParms.orientation.origin, viewOrigin );  // in world space
@@ -3853,18 +3820,18 @@ static void Render_liquid( int stage )
 	fogDensity = RB_EvalExpression( &pStage->fogDensityExp, 0.001 );
 	VectorCopy( tess.svars.color, fogColor );
 
-	GLSL_SetUniform_ViewOrigin( &tr.liquidShader, viewOrigin );
-	GLSL_SetUniform_RefractionIndex( &tr.liquidShader, RB_EvalExpression( &pStage->refractionIndexExp, 1.0 ) );
-	glUniform1f( tr.liquidShader.u_FresnelPower, RB_EvalExpression( &pStage->fresnelPowerExp, 2.0 ) );
-	glUniform1f( tr.liquidShader.u_FresnelScale, RB_EvalExpression( &pStage->fresnelScaleExp, 1.0 ) );
-	glUniform1f( tr.liquidShader.u_FresnelBias, RB_EvalExpression( &pStage->fresnelBiasExp, 0.05 ) );
-	glUniform1f( tr.liquidShader.u_NormalScale, RB_EvalExpression( &pStage->normalScaleExp, 0.05 ) );
-	glUniform1f( tr.liquidShader.u_FogDensity, fogDensity );
-	glUniform3f( tr.liquidShader.u_FogColor, fogColor[ 0 ], fogColor[ 1 ], fogColor[ 2 ] );
+	gl_liquidShader->SetUniform_ViewOrigin( viewOrigin );
+	gl_liquidShader->SetUniform_RefractionIndex( RB_EvalExpression( &pStage->refractionIndexExp, 1.0 ) );
+	gl_liquidShader->SetUniform_FresnelPower( RB_EvalExpression( &pStage->fresnelPowerExp, 2.0 ) );
+	gl_liquidShader->SetUniform_FresnelScale( RB_EvalExpression( &pStage->fresnelScaleExp, 1.0 ) );
+	gl_liquidShader->SetUniform_FresnelBias( RB_EvalExpression( &pStage->fresnelBiasExp, 0.05 ) );
+	gl_liquidShader->SetUniform_NormalScale( RB_EvalExpression( &pStage->normalScaleExp, 0.05 ) );
+	gl_liquidShader->SetUniform_FogDensity( fogDensity );
+	gl_liquidShader->SetUniform_FogColor( fogColor[ 0 ], fogColor[ 1 ], fogColor[ 2 ] );
 
-	GLSL_SetUniform_UnprojectMatrix( &tr.liquidShader, backEnd.viewParms.unprojectionMatrix );
-	GLSL_SetUniform_ModelMatrix( &tr.liquidShader, backEnd.orientation.transformMatrix );
-	GLSL_SetUniform_ModelViewProjectionMatrix( &tr.liquidShader, glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+	gl_liquidShader->SetUniform_UnprojectMatrix( backEnd.viewParms.unprojectionMatrix );
+	gl_liquidShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
+	gl_liquidShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 	// capture current color buffer for u_CurrentMap
 	GL_SelectTexture( 0 );
@@ -3908,7 +3875,7 @@ static void Render_liquid( int stage )
 	// bind u_NormalMap
 	GL_SelectTexture( 3 );
 	GL_Bind( pStage->bundle[ TB_COLORMAP ].image[ 0 ] );
-	GLSL_SetUniform_NormalTextureMatrix( &tr.liquidShader, tess.svars.texMatrices[ TB_COLORMAP ] );
+	gl_liquidShader->SetUniform_NormalTextureMatrix( tess.svars.texMatrices[ TB_COLORMAP ] );
 
 	Tess_DrawElements();
 

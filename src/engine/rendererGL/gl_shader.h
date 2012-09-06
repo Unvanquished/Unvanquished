@@ -1652,6 +1652,241 @@ public:
 	}
 };
 
+class u_RefractionIndex :
+	GLUniform
+{
+public:
+	u_RefractionIndex( GLShader *shader ) :
+		GLUniform( shader )
+	{
+	}
+
+	const char *GetName() const
+	{
+		return "u_RefractionIndex";
+	}
+
+	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
+	{
+		shaderProgram->u_RefractionIndex = glGetUniformLocation( shaderProgram->program, GetName() );
+	}
+
+	void SetUniform_RefractionIndex( float value )
+	{
+		GLSL_SetUniform_RefractionIndex( _shader->GetProgram(), value );
+	}
+};
+
+class u_FresnelPower :
+	GLUniform
+{
+public:
+	u_FresnelPower( GLShader *shader ) :
+		GLUniform( shader )
+	{
+	}
+
+	const char *GetName() const
+	{
+		return "u_FresnelPower";
+	}
+
+	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
+	{
+		shaderProgram->u_FresnelPower = glGetUniformLocation( shaderProgram->program, GetName() );
+	}
+
+	void SetUniform_FresnelPower( float value )
+	{
+		shaderProgram_t *program = _shader->GetProgram();
+
+		#if defined( LOG_GLSL_UNIFORMS )
+
+			if ( r_logFile->integer )
+			{
+				GLimp_LogComment( va( "--- GLSL_SetUniform_FresnelPower( program = %s, value = %f ) ---\n", program->name, value ) );
+			}
+
+		#endif
+		glUniform1f( program->u_FresnelPower, value );
+	}
+};
+
+class u_FresnelScale :
+	GLUniform
+{
+public:
+	u_FresnelScale( GLShader *shader ) :
+		GLUniform( shader )
+	{
+	}
+
+	const char *GetName() const
+	{
+		return "u_FresnelScale";
+	}
+
+	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
+	{
+		shaderProgram->u_FresnelScale = glGetUniformLocation( shaderProgram->program, GetName() );
+	}
+
+	void SetUniform_FresnelScale( float value )
+	{
+		shaderProgram_t *program = _shader->GetProgram();
+
+		#if defined( LOG_GLSL_UNIFORMS )
+
+			if ( r_logFile->integer )
+			{
+				GLimp_LogComment( va( "--- GLSL_SetUniform_FresnelScale( program = %s, value = %f ) ---\n", program->name, value ) );
+			}
+
+		#endif
+		glUniform1f( program->u_FresnelScale, value );
+	}
+};
+
+class u_FresnelBias :
+	GLUniform
+{
+public:
+	u_FresnelBias( GLShader *shader ) :
+		GLUniform( shader )
+	{
+	}
+
+	const char *GetName() const
+	{
+		return "u_FresnelBias";
+	}
+
+	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
+	{
+		shaderProgram->u_FresnelBias = glGetUniformLocation( shaderProgram->program, GetName() );
+	}
+
+	void SetUniform_FresnelBias( float value )
+	{
+		shaderProgram_t *program = _shader->GetProgram();
+
+		#if defined( LOG_GLSL_UNIFORMS )
+
+			if ( r_logFile->integer )
+			{
+				GLimp_LogComment( va( "--- GLSL_SetUniform_FresnelBias( program = %s, value = %f ) ---\n", program->name, value ) );
+			}
+
+		#endif
+		glUniform1f( program->u_FresnelBias, value );
+	}
+};
+
+class u_NormalScale :
+	GLUniform
+{
+public:
+	u_NormalScale( GLShader *shader ) :
+		GLUniform( shader )
+	{
+	}
+
+	const char *GetName() const
+	{
+		return "u_NormalScale";
+	}
+
+	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
+	{
+		shaderProgram->u_NormalScale = glGetUniformLocation( shaderProgram->program, GetName() );
+	}
+
+	void SetUniform_NormalScale( float value )
+	{
+		shaderProgram_t *program = _shader->GetProgram();
+
+		#if defined( LOG_GLSL_UNIFORMS )
+
+			if ( r_logFile->integer )
+			{
+				GLimp_LogComment( va( "--- GLSL_SetUniform_NormalScale( program = %s, value = %f ) ---\n", program->name, value ) );
+			}
+
+		#endif
+		glUniform1f( program->u_NormalScale, value );
+	}
+};
+
+class u_FogDensity :
+	GLUniform
+{
+public:
+	u_FogDensity( GLShader *shader ) :
+		GLUniform( shader )
+	{
+	}
+
+	const char *GetName() const
+	{
+		return "u_FogDensity";
+	}
+
+	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
+	{
+		shaderProgram->u_FogDensity = glGetUniformLocation( shaderProgram->program, GetName() );
+	}
+
+	void SetUniform_FogDensity( float value )
+	{
+		shaderProgram_t *program = _shader->GetProgram();
+
+		#if defined( LOG_GLSL_UNIFORMS )
+
+			if ( r_logFile->integer )
+			{
+				GLimp_LogComment( va( "--- GLSL_SetUniform_FogDensity( program = %s, value = %f ) ---\n", program->name, value ) );
+			}
+
+		#endif
+		glUniform1f( program->u_FogDensity, value );
+	}
+};
+
+class u_FogColor :
+	GLUniform
+{
+public:
+	u_FogColor( GLShader *shader ) :
+		GLUniform( shader )
+	{
+	}
+
+	const char *GetName() const
+	{
+		return "u_FogColor";
+	}
+
+	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
+	{
+		shaderProgram->u_FogColor = glGetUniformLocation( shaderProgram->program, GetName() );
+	}
+
+	void SetUniform_FogColor( GLfloat v1, GLfloat v2, GLfloat v3 )
+	{
+		shaderProgram_t *program = _shader->GetProgram();
+
+		#if defined( LOG_GLSL_UNIFORMS )
+
+			if ( r_logFile->integer )
+			{
+				GLimp_LogComment( va( "--- GLSL_SetUniform_FogColor( program = %s, value = %f %f %f ) ---\n", program->name, v1, v2, v3 ) );
+			}
+
+		#endif
+		glUniform3f( program->u_FogColor, v1, v2, v3 );
+	}
+};
+
 class u_Color :
 	GLUniform
 {
@@ -3179,6 +3414,28 @@ public:
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
+class GLShader_liquid :
+	public GLShader,
+	public u_NormalTextureMatrix,
+	public u_ViewOrigin,
+	public u_RefractionIndex,
+	public u_ModelMatrix,
+	public u_ModelViewProjectionMatrix,
+	public u_UnprojectMatrix,
+	public u_FresnelPower,
+	public u_FresnelScale,
+	public u_FresnelBias,
+	public u_NormalScale,
+	public u_FogDensity,
+	public u_FogColor,
+	public GLCompileMacro_USE_PARALLAX_MAPPING
+{
+public:
+	GLShader_liquid();
+	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
+	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
+};
+
 extern GLShader_generic                         *gl_genericShader;
 extern GLShader_lightMapping                    *gl_lightMappingShader;
 extern GLShader_vertexLighting_DBS_entity       *gl_vertexLightingShader_DBS_entity;
@@ -3207,6 +3464,7 @@ extern GLShader_debugShadowMap                  *gl_debugShadowMapShader;
 extern GLShader_depthToColor                    *gl_depthToColorShader;
 extern GLShader_lightVolume_omni                *gl_lightVolumeShader_omni;
 extern GLShader_deferredShadowing_proj          *gl_deferredShadowingShader_proj;
+extern GLShader_liquid                          *gl_liquidShader;
 
 #ifdef USE_GLSL_OPTIMIZER
 extern struct glslopt_ctx *s_glslOptimizer;

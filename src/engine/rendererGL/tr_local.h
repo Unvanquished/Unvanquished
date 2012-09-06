@@ -3980,7 +3980,6 @@ extern "C" {
 
 		// post process effects
 		shaderProgram_t rotoscopeShader;
-		shaderProgram_t liquidShader;
 		shaderProgram_t volumetricFogShader;
 #ifdef EXPERIMENTAL
 		shaderProgram_t screenSpaceAmbientOcclusionShader;
