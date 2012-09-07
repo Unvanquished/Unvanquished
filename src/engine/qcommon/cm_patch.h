@@ -71,8 +71,8 @@ degenerate a few triangles.  Completely degenerate rows and columns are handled
 properly.
 */
 
-#define MAX_FACETS       1024
-#define MAX_PATCH_PLANES 2048
+#define MAX_FACETS       1536
+#define MAX_PATCH_PLANES 3072
 
 #define MAX_GRID_SIZE    129
 
