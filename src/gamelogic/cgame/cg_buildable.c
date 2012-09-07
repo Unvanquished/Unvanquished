@@ -1070,6 +1070,13 @@ void CG_GhostBuildable( buildable_t buildable )
 		Scale[0] = Scale[1] = Scale[2] = scale;
 		trap_R_BuildSkeleton( &ent.skeleton, cg_buildables[ buildable ].animations[ BANIM_IDLE1 ].handle, 0, 0, 0, qfalse );
 		CG_TransformSkeleton( &ent.skeleton, Scale );
+
+		VectorCopy( mins, ent.skeleton.bounds[ 0 ] );
+		VectorCopy( maxs, ent.skeleton.bounds[ 1 ] );
+
+		//skeleton bounds start at z = 0
+		ent.skeleton.bounds[ 0 ][ 2 ] = 0;
+		ent.skeleton.bounds[ 1 ][ 2 ] -= mins[ 2 ];
 	}
 
 	if ( scale != 1.0f )
@@ -1969,6 +1976,10 @@ void CG_Buildable( centity_t *cent )
 		CG_TransformSkeleton( &ent.skeleton, Scale );
 		VectorCopy(mins, ent.skeleton.bounds[ 0 ]);
 		VectorCopy(maxs, ent.skeleton.bounds[ 1 ]);
+		
+		//skeleton bounds start at z = 0
+		ent.skeleton.bounds[ 0 ][ 2 ] = 0;
+		ent.skeleton.bounds[ 1 ][ 2 ] -= mins[ 2 ];
 	}
 
 	//add to refresh list
