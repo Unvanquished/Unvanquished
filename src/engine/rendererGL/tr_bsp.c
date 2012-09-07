@@ -1159,7 +1159,7 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 		if ( numLightmaps == 1 )
 		{
 			//FIXME: HACK: maps with only one lightmap turn up fullbright for some reason.
-			//this avoids this, but isn't the correct solution.
+			//this hack avoids that scenario, but isn't the correct solution.
 			numLightmaps++;
 		}
 		else if ( numLightmaps >= MAX_LIGHTMAPS )

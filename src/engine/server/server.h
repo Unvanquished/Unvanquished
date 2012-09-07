@@ -301,7 +301,7 @@ typedef struct
 #define SERVER_PERFORMANCECOUNTER_FRAMES  600
 #define SERVER_PERFORMANCECOUNTER_SAMPLES 6
 
-// this structure will be cleared only when the game dll changes
+// this structure will be cleared only when the game module changes
 typedef struct
 {
 	qboolean      initialized; // sv_init has completed
@@ -315,7 +315,7 @@ typedef struct
 	int           nextSnapshotEntities; // next snapshotEntities to use
 	entityState_t *snapshotEntities; // [numSnapshotEntities]
 	int           nextHeartbeatTime;
-	challenge_t   challenges[ MAX_CHALLENGES ]; // to prevent invalid IPs from connecting
+	challenge_t   challenges[ MAX_CHALLENGES ]; // to prevent invalid IP addresses from connecting
 	receipt_t     infoReceipts[ MAX_INFO_RECEIPTS ];
 	netadr_t      redirectAddress; // for rcon return messages
 

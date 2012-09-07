@@ -56,7 +56,7 @@ Bugfixes:
 =========
 http download crashes should be fixed. libcurl is now used instead of libwww.
 Client now sends a UserAgent of ID_DOWNLOAD/2.0 libcurl/7.12.2 on downloads.
-Client now sends a Referer of ET://server.ip.address:port on downloads.
+Client now sends a Referer of ET://server.IP.address:port on downloads.
 
 Various server engine crashes fixed.
 
@@ -100,7 +100,7 @@ Timestamps in logs were fixed width and got truncated.
 Renderer could crash with too many stretchpics (eg topshots and weaponstats at the same time, if they were full).
 Falling bugfix - players would mysteriously sink into the ground and crater when bouncing off specific map geometry.
 Battery bunker now autoselects spawnpoint when captured.
-Engine improperly interpreted certain IP addresses as lan addresses when they were not.
+Engine improperly interpreted certain IP addresses as LAN addresses when they were not.
 Fixed sign extension bug in console code that caused high ascii characters in the console to be displayed in the wrong color.
 Artillery markers were not properly drawn on compass. Fixed.
 If hostname is exactly 21 chars long with a period in position 9, it was treated as IPX. Fixed.
@@ -108,7 +108,7 @@ Overflow when more than MAX_GLOBAL_SERVERS are returned from the master.
 Luger had greater spread than colt, and paused on last shot.
 Akimbo rapid fire exploit fixed (player could fire akimbos as fast as an mg42).
 Zoom exploit fixed (http://bani.anime.net/banimod/forums/viewtopic.php?t=1661&start=50).
-Security hole allowing clients to override ip.
+Security hole allowing clients to override their source IP address.
 Spectator/limbo cameras would slowly 'drift' and never reach 0 velocity.
 Download redirection notices would print repeatedly in server console.
 LMS sometimes didn't show who drew first blood.

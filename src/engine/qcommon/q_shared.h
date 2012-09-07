@@ -333,7 +333,7 @@ extern int memcmp( void *, void *, size_t );
 	} printParm_t;
 
 #ifdef ERR_FATAL
-#undef ERR_FATAL // this is be defined in malloc.h
+#undef ERR_FATAL // this is possibly defined in malloc.h
 #endif
 
 // parameters to the main Error routine
@@ -1725,7 +1725,7 @@ char *Q_UTF8Unstore( int e );
 
 // sound channels
 // channel 0 never willingly overrides
-// other channels will allways override a playing sound on that channel
+// other channels will always override a playing sound on that channel
 	typedef enum
 	{
 	  CHAN_AUTO,

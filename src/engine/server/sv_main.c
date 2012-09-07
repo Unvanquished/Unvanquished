@@ -52,7 +52,7 @@ cvar_t         *sv_maxclients;
 
 cvar_t         *sv_privateClients; // number of clients reserved for password
 cvar_t         *sv_hostname;
-cvar_t         *sv_master[ MAX_MASTER_SERVERS ]; // master server ip address
+cvar_t         *sv_master[ MAX_MASTER_SERVERS ]; // master server IP addresses
 cvar_t         *sv_reconnectlimit; // minimum seconds between connect messages
 cvar_t         *sv_padPackets; // add nop bytes to messages
 cvar_t         *sv_killserver; // menu system can set to 1 to shut server down
@@ -272,7 +272,7 @@ void SV_MasterHeartbeat( const char *hbname )
 
 	netenabled = Cvar_VariableIntegerValue( "net_enabled" );
 
-	// "dedicated 1" is for lan play, "dedicated 2" is for inet public play
+	// "dedicated 1" is for LAN play, "dedicated 2" is for Internet play
 	if ( !com_dedicated || com_dedicated->integer != 2 || !( netenabled & ( NET_ENABLEV4 | NET_ENABLEV6 ) ) )
 	{
 		return; // only dedicated servers send heartbeats
@@ -711,7 +711,7 @@ qboolean SV_CheckDRDoS( netadr_t from )
 		return qtrue;
 	}
 
-	if ( specificCount >= 3 ) // Already sent 3 to this IP in last 2 seconds.
+	if ( specificCount >= 3 ) // Already sent 3 to this IP address in last 2 seconds.
 	{
 		if ( lastSpecificLogTime + 1000 <= svs.time ) // Limit one log every second.
 		{
@@ -1035,7 +1035,7 @@ void SV_CalcPings( void )
 			}
 		}
 
-		// let the game dll know about the ping
+		// let the game module know about the ping
 		ps = SV_GameClientNum( i );
 		ps->ping = cl->ping;
 	}

@@ -2032,7 +2032,7 @@ void CL_Connect_f( void )
 
 	Com_DPrintf(_( "%s resolved to %s\n"), cls.servername, serverString );
 
-	// if we aren't playing on a lan, we needto authenticate
+	// if we aren't playing on a LAN, we need to authenticate
 	// with the cd key
 	if ( NET_IsLocalAddress( clc.serverAddress ) )
 	{
@@ -2742,7 +2742,7 @@ void CL_InitDownloads( void )
 	cls.bWWWDlDisconnected = qfalse;
 	CL_ClearStaticDownload();
 
-	// whatever autodownlad configuration, store missing files in a cvar, use later in the ui maybe
+	// whatever autodownload configuration, store missing files in a cvar, use later in the ui maybe
 	if ( FS_ComparePaks( missingfiles, sizeof( missingfiles ), qfalse ) )
 	{
 		Cvar_Set( "com_missingFiles", missingfiles );
@@ -5100,7 +5100,7 @@ void CL_LocalServers_f( void )
 
 	// The 'xxx' in the message is a challenge that will be echoed back
 	// by the server.  We don't care about that here, but master servers
-	// can use that to prevent spoofed server responses from invalid ip
+	// can use that to prevent spoofed server responses from invalid IP addresses
 	message = "\377\377\377\377getinfo xxx";
 
 	// send each message twice in case one is dropped
@@ -5280,7 +5280,7 @@ void CL_GetPing( int n, char *buf, int buflen, int *pingtime )
 
 	if ( n < 0 || n >= MAX_PINGREQUESTS || !cl_pinglist[ n ].adr.port )
 	{
-		// empty slot
+		// invalid or empty slot
 		buf[ 0 ] = '\0';
 		*pingtime = 0;
 		return;
@@ -5323,7 +5323,7 @@ void CL_GetPingInfo( int n, char *buf, int buflen )
 {
 	if ( n < 0 || n >= MAX_PINGREQUESTS || !cl_pinglist[ n ].adr.port )
 	{
-		// empty slot
+		// invalid or empty slot
 		if ( buflen )
 		{
 			buf[ 0 ] = '\0';

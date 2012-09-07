@@ -1762,7 +1762,7 @@ void MoveClientToIntermission( gentity_t *ent )
 	VectorCopy( level.intermission_angle, ent->client->ps.viewangles );
 	ent->client->ps.pm_type = PM_INTERMISSION;
 
-	// clean up powerup info
+	// clean up misc info
 	memset( ent->client->ps.misc, 0, sizeof( ent->client->ps.misc ) );
 
 	ent->client->ps.eFlags = 0;

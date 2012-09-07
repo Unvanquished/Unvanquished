@@ -225,7 +225,7 @@ static void CG_CalcVrect( void )
 {
 	int size;
 
-	// the intermission should allways be full screen
+	// the intermission should always be in fullscreen
 	if ( cg.snap->ps.pm_type == PM_INTERMISSION )
 	{
 		size = 100;
@@ -1372,7 +1372,7 @@ static int CG_CalcViewValues( void )
 		VectorCopy( ps->viewangles, cg.refdefViewAngles );
 	}
 
-	//clumsy logic, but it needs to be this way round because the CS propogation
+	//clumsy logic, but it needs to be this way around because the CS propagation
 	//delay screws things up otherwise
 	if ( !BG_ClassHasAbility( ps->stats[ STAT_CLASS ], SCA_WALLJUMPER ) )
 	{

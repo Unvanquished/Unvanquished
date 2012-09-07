@@ -148,9 +148,9 @@ NET
 
 #define NET_ENABLEV4        0x01
 #define NET_ENABLEV6        0x02
-// if this flag is set, always attempt ipv6 connections instead of ipv4 if a v6 address is found.
+// if this flag is set, always attempt IPv6 connections instead of IPv4 if a v6 address is found.
 #define NET_PRIOV6          0x04
-// disables ipv6 multicast support if set.
+// disables IPv6 multicast support if set.
 #define NET_DISABLEMCAST    0x08
 
 #define PACKET_BACKUP       32 // number of old messages that must be kept on client and
@@ -504,7 +504,7 @@ void Cmd_QuoteStringBuffer( const char *in, char *buffer, int size );
 
 // The functions that execute commands get their parameters with these
 // functions. Cmd_Argv () will return an empty string, not a NULL
-// if arg > argc, so string operations are allways safe.
+// if arg >= argc, so string operations are always safe.
 
 void Cmd_TokenizeString( const char *text );
 void Cmd_TokenizeStringIgnoreQuotes( const char *text_in );

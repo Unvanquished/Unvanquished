@@ -339,7 +339,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define ALIEN_POISON_TIME        10000
 #define ALIEN_POISON_DMG         5
-#define ALIEN_POISON_DIVIDER     ( 1.0f / 1.32f ) //about 1.0/(time`th root of damage)
+#define ALIEN_POISON_DIVIDER     ( 1.0f / 1.32f ) //about 1.0/((time)th root of damage)
 
 #define ALIEN_SPAWN_REPEAT_TIME  10000
 

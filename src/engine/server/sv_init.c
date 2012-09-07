@@ -357,7 +357,7 @@ void SV_Startup( void )
 
 	Cvar_Set( "sv_running", "1" );
 
-	// Join the ipv6 multicast group now that a map is running so clients can scan for us on the local network.
+	// Join the IPv6 multicast group now that a map is running, so clients can scan for us on the local network.
 	NET_JoinMulticast6();
 }
 
@@ -628,7 +628,7 @@ void SV_SpawnServer( char *server )
 	// server has changed
 	svs.snapFlagServerBit ^= SNAPFLAG_SERVERCOUNT;
 
-	// set nextmap to the same map, but it may be overriden
+	// set nextmap to the same map, but it may be overridden
 	// by the game startup or another console command
 	Cvar_Set( "nextmap", "map_restart 0" );
 //  Cvar_Set( "nextmap", va("map %s", server) );

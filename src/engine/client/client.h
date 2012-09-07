@@ -90,7 +90,7 @@ typedef struct
 =============================================================================
 
 the clientActive_t structure is wiped completely at every
-new gamestate_t, potentially several times during an established connection
+new gameState_t, potentially several times during an established connection
 
 =============================================================================
 */
@@ -411,9 +411,9 @@ extern clientStatic_t cls;
 
 //=============================================================================
 
-extern vm_t                   *cgvm; // interface to cgame dll or vm
-extern vm_t                   *uivm; // interface to ui dll or vm
-extern refexport_t            re; // interface to refresh .dll
+extern vm_t                   *cgvm; // interface to the cgame module
+extern vm_t                   *uivm; // interface to the ui module
+extern refexport_t            re; // interface to refresh library
 
 extern struct rsa_public_key  public_key;
 

@@ -43,7 +43,7 @@ typedef struct gclient_s gclient_t;
 #define FL_NO_KNOCKBACK            0x00000800
 #define FL_NO_BOTS                 0x00002000 // spawn point not for bot use
 #define FL_NO_HUMANS               0x00004000 // spawn point just for bots
-#define FL_FORCE_GESTURE           0x00008000 // spawn point just for bots
+#define FL_FORCE_GESTURE           0x00008000
 
 // localisation
 #if 0
@@ -249,7 +249,7 @@ typedef enum
   CON_CONNECTED
 } clientConnected_t;
 
-// client data that stays across multiple levels or tournament restarts
+// client data that stays across multiple levels or map restarts
 // this is achieved by writing all the data to cvar strings at game shutdown
 // time and reading them back at connection time.  Anything added here
 // MUST be dealt with in G_InitSessionData() / G_ReadSessionData() / G_WriteSessionData()

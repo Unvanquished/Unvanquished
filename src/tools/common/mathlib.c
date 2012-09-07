@@ -69,7 +69,7 @@ void NormalToLatLong(const vec3_t normal, byte bytes[2])
 		b &= 0xff;
 
 		bytes[0] = b;			// longitude
-		bytes[1] = a;			// lattitude
+		bytes[1] = a;			// latitude
 	}
 }
 

@@ -1123,7 +1123,7 @@ typedef struct
 // all of the model, shader, and sound references that are
 // loaded at gamestate time are stored in cgMedia_t
 // Other media that can be tied to clients, weapons, or items are
-// stored in the clientInfo_t, itemInfo_t, weaponInfo_t, and powerupInfo_t
+// stored in the clientInfo_t, itemInfo_t, and weaponInfo_t
 
 typedef struct
 {

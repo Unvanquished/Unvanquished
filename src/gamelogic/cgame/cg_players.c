@@ -2375,8 +2375,7 @@ static void CG_PlayerWWSmoothing( centity_t *cent, vec3_t in[ 3 ], vec3_t out[ 3
 
 	if ( !VectorCompare( surfNormal, cent->pe.lastNormal ) )
 	{
-		//if we moving from the ceiling to the floor special case
-		//( x product of colinear vectors is undefined)
+		// special case: moving from the ceiling to the floor
 		if ( VectorCompare( ceilingNormal, cent->pe.lastNormal ) &&
 		     VectorCompare( refNormal,     surfNormal ) )
 		{

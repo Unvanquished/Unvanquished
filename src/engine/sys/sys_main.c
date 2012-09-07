@@ -412,8 +412,6 @@ void Sys_UnloadDll( void *dllHandle )
 /*
 =================
 Sys_GetDLLName
-
-Used to load a development dll instead of a virtual machine
 =================
 */
 extern int cl_connectedToPureServer;
@@ -460,7 +458,7 @@ static void *Sys_TryLibraryLoad( const char *base, const char *gamedir, const ch
 =================
 Sys_LoadDll
 
-Used to load a development dll instead of a virtual machine
+Used to load a DLL instead of a virtual machine
 #1 look in fs_homepath
 #2 look in fs_basepath
 #4 look in fs_libpath (if not "")

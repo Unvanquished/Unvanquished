@@ -3227,7 +3227,7 @@ void Com_Init( char *commandLine )
 	Com_StartupVariable( NULL );
 
 #ifdef DEDICATED
-	// TTimo: default to internet dedicated, not LAN dedicated
+	// TTimo: default to Internet dedicated, not LAN dedicated
 	com_dedicated = Cvar_Get( "dedicated", "2", CVAR_ROM );
 	Cvar_CheckRange( com_dedicated, 1, 2, qtrue );
 #else

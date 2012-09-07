@@ -2127,7 +2127,7 @@ static void CG_DrawFPS( rectDef_t *rect, float text_x, float text_y,
 	}
 
 	// don't use serverTime, because that will be drifting to
-	// correct for internet lag changes, timescales, timedemos, etc
+	// correct for Internet lag changes, timescales, timedemos, etc.
 	t = trap_Milliseconds();
 	frameTime = t - previous;
 	previous = t;

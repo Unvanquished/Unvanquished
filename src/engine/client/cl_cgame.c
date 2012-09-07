@@ -1526,7 +1526,7 @@ Adjust the clients view of server time.
 
 We attempt to have cl.serverTime exactly equal the server's view
 of time plus the timeNudge, but with variable latencies over
-the internet it will often need to drift a bit to match conditions.
+the Internet, it will often need to drift a bit to match conditions.
 
 Our ideal time would be to have the adjusted time approach, but not pass,
 the very latest snapshot.

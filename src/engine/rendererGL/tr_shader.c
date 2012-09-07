@@ -6538,7 +6538,7 @@ static void ScanAndLoadGuideFiles( void )
 
 	s_guideText = ri.Hunk_Alloc( sum + numGuides * 2, h_low );
 
-	// load in reverse order, so doubled templates are overriden properly
+	// load in reverse order, so doubled templates are overridden properly
 	for ( i = numGuides - 1; i >= 0; i-- )
 	{
 		Com_sprintf( filename, sizeof( filename ), "guides/%s", guideFiles[ i ] );
