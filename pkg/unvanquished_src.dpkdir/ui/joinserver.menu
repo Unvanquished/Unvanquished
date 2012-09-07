@@ -73,7 +73,7 @@
 
     itemDef
     {
-      name gametypefield
+      name netSource
       text "Source:"
       style WINDOW_STYLE_EMPTY
       ownerdraw UI_NETSOURCE
