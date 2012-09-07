@@ -439,7 +439,7 @@ static int      numPlanes;
 static cPlane_t planes[ MAX_PATCH_PLANES ];
 
 static int      numFacets;
-static cFacet_t facets[ MAX_PATCH_PLANES ]; //maybe MAX_FACETS ??
+static cFacet_t facets[ MAX_FACETS ];
 
 #define NORMAL_EPSILON 0.0001
 #define DIST_EPSILON   0.02
