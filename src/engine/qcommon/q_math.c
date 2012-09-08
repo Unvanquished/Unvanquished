@@ -911,7 +911,7 @@ float AngleBetweenVectors( const vec3_t a, const vec3_t b )
 	// this results in:
 	//
 	// angle = acos( (a * b) / (|a| * |b|) )
-	return RAD2DEG( Q_acos( DotProduct( a, b ) / ( alen * blen ) ) );
+	return RAD2DEG( acos( DotProduct( a, b ) / ( alen * blen ) ) );
 }
 
 //============================================================
@@ -1682,40 +1682,6 @@ int Q_log2( int val )
 
 	return answer;
 }
-
-#ifndef Q3_VM
-
-/*
-=====================
-Q_acos
-
-the msvc acos doesn't always return a value between -PI and PI:
-
-int i;
-i = 1065353246;
-acos(*(float*) &i) == -1.#IND0
-=====================
-*/
-float Q_acos( float c )
-{
-	float angle;
-
-	angle = acos( c );
-
-	if ( angle > M_PI )
-	{
-		return ( float ) M_PI;
-	}
-
-	if ( angle < -M_PI )
-	{
-		return ( float ) M_PI;
-	}
-
-	return angle;
-}
-
-#endif
 
 /*
 =================

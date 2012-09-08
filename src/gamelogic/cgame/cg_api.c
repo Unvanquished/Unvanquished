@@ -857,7 +857,7 @@ void trap_Key_SetOverstrikeMode( qboolean state )
 //return FloatAsInt(ceil(VMF(1)));
 
 //116
-//return FloatAsInt(Q_acos(VMF(1)));
+//return FloatAsInt(acos(VMF(1)));
 
 //117
 //return botlib_export->PC_AddGlobalDefine(VMA(1));

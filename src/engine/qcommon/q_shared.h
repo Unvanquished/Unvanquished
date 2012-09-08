@@ -947,11 +947,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 
 	int   NearestPowerOfTwo( int val );
 	int   Q_log2( int val );
-#ifdef Q3_VM
-#define Q_acos(c) acos(c)
-#else
-	float Q_acos( float c );
-#endif
+
 	int   Q_isnan( float x );
 
 	int   Q_rand( int *seed );

@@ -1363,7 +1363,7 @@ intptr_t VM_SystemCall( intptr_t *args )
 			return FloatAsInt( asin( VMF( 1 ) ) );
 
 //		case TRAP_ACOS:
-//			return FloatAsInt( Q_acos( VMF( 1 ) ) );
+//			return FloatAsInt( acos( VMF( 1 ) ) );
 
 		case TRAP_ATAN:
 			return FloatAsInt( atan( VMF( 1 ) ) );
