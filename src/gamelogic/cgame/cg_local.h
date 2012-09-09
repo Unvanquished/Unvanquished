@@ -1779,6 +1779,7 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarkerTyp
 // cg_animation.c
 //
 void CG_RunLerpFrame( lerpFrame_t *lf, float scale );
+void CG_RunMD5LerpFrame( lerpFrame_t *lf, float scale );
 
 //
 // cg_animmapobj.c

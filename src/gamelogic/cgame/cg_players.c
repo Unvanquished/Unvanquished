@@ -1647,10 +1647,14 @@ static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 		CG_SetLerpFrameAnimation( ci, lf, newAnimation, skel );
 	}
 
-	CG_RunLerpFrame( lf, speedScale );
-
-	if ( ci->bodyModel )
+	if ( !ci->bodyModel )
 	{
+		CG_RunLerpFrame( lf, speedScale );
+	}
+	else
+	{
+		CG_RunMD5LerpFrame( lf, speedScale );
+
 		// blend old and current animation
 		CG_BlendPlayerLerpFrame( lf );
 
