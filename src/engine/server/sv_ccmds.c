@@ -595,43 +595,6 @@ static void SV_Systeminfo_f( void )
 }
 
 /*
-===========
-SV_DumpUser_f
-
-Examine a user's userinfo string
-FIXME: move to game
-===========
-*/
-static void SV_DumpUser_f( void )
-{
-	client_t *cl;
-
-	// make sure server is running
-	if ( !com_sv_running->integer )
-	{
-		Com_Printf(_( "Server is not running.\n" ));
-		return;
-	}
-
-	if ( Cmd_Argc() != 2 )
-	{
-		Com_Printf(_( "Usage: info <userid>\n" ));
-		return;
-	}
-
-	cl = SV_GetPlayerByName();
-
-	if ( !cl )
-	{
-		return;
-	}
-
-	Com_Printf(_( "userinfo\n" ));
-	Com_Printf(_( "--------\n" ));
-	Info_Print( cl->userinfo );
-}
-
-/*
 =================
 SV_KillServer
 =================
@@ -679,7 +642,6 @@ void SV_AddOperatorCommands( void )
 	if ( com_sv_running->integer )
 	{
 		// These commands should only be available while the server is running.
-		Cmd_AddCommand( "dumpuser",    SV_DumpUser_f );
 		Cmd_AddCommand( "fieldinfo",   SV_FieldInfo_f );
 		Cmd_AddCommand( "heartbeat",   SV_Heartbeat_f );
 		Cmd_AddCommand( "killserver",  SV_KillServer_f );
