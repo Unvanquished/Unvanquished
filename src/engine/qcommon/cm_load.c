@@ -286,6 +286,7 @@ void CMod_LoadBrushes( lump_t *l )
 	dbrush_t *in;
 	cbrush_t *out;
 	int      i, count;
+	int      shaderNum;
 
 	in = ( void * )( cmod_base + l->fileofs );
 
@@ -306,14 +307,14 @@ void CMod_LoadBrushes( lump_t *l )
 		out->sides = cm.brushsides + LittleLong( in->firstSide );
 		out->numsides = LittleLong( in->numSides );
 
-		out->shaderNum = LittleLong( in->shaderNum );
+		shaderNum = LittleLong( in->shaderNum );
 
-		if ( out->shaderNum < 0 || out->shaderNum >= cm.numShaders )
+		if ( shaderNum < 0 || shaderNum >= cm.numShaders )
 		{
-			Com_Error( ERR_DROP, "CMod_LoadBrushes: bad shaderNum: %i", out->shaderNum );
+			Com_Error( ERR_DROP, "CMod_LoadBrushes: bad shaderNum: %i", shaderNum );
 		}
 
-		out->contents = cm.shaders[ out->shaderNum ].contentFlags;
+		out->contents = cm.shaders[ shaderNum ].contentFlags;
 
 		CM_BoundBrush( out );
 	}
@@ -503,6 +504,7 @@ void CMod_LoadBrushSides( lump_t *l )
 	dbrushside_t *in;
 	int          count;
 	int          num;
+	int          shaderNum;
 
 	in = ( void * )( cmod_base + l->fileofs );
 
@@ -522,14 +524,14 @@ void CMod_LoadBrushSides( lump_t *l )
 	{
 		num = LittleLong( in->planeNum );
 		out->plane = &cm.planes[ num ];
-		out->shaderNum = LittleLong( in->shaderNum );
+		shaderNum = LittleLong( in->shaderNum );
 
-		if ( out->shaderNum < 0 || out->shaderNum >= cm.numShaders )
+		if ( shaderNum < 0 || shaderNum >= cm.numShaders )
 		{
-			Com_Error( ERR_DROP, "CMod_LoadBrushSides: bad shaderNum: %i", out->shaderNum );
+			Com_Error( ERR_DROP, "CMod_LoadBrushSides: bad shaderNum: %i", shaderNum );
 		}
 
-		out->surfaceFlags = cm.shaders[ out->shaderNum ].surfaceFlags;
+		out->surfaceFlags = cm.shaders[ shaderNum ].surfaceFlags;
 	}
 }
 

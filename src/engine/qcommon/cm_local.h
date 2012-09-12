@@ -81,13 +81,11 @@ typedef struct
 	cplane_t  *plane;
 	int       planeNum;
 	int       surfaceFlags;
-	int       shaderNum;
 	winding_t *winding;
 } cbrushside_t;
 
 typedef struct
 {
-	int          shaderNum; // the shader that determined the contents
 	int          contents;
 	vec3_t       bounds[ 2 ];
 	int          numsides;
