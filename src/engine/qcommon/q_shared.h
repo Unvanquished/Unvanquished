@@ -547,7 +547,7 @@ extern int memcmp( void *, void *, size_t );
 STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 #ifdef Q3_VM_INSTANTIATE
 {
-	return ( p && p[0] == Q_COLOR_ESCAPE &&
+	return ( p[0] == Q_COLOR_ESCAPE &&
 	         ( p[1] == COLOR_NULL || ( p[1] >= '0' && p[1] != Q_COLOR_ESCAPE && p[1] < 'p' ) )
 	       ) ? qtrue : qfalse;
 }
