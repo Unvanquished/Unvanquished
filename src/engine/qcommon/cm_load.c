@@ -780,7 +780,7 @@ void CMod_LoadVisibility( lump_t *l )
 	buf = cmod_base + l->fileofs;
 
 	cm.vised = qtrue;
-	cm.visibility = Hunk_Alloc( len, h_high );
+	cm.visibility = Hunk_Alloc( len - VIS_HEADER, h_high );
 	cm.numClusters = LittleLong( ( ( int * ) buf ) [ 0 ] );
 	cm.clusterBytes = LittleLong( ( ( int * ) buf ) [ 1 ] );
 	Com_Memcpy( cm.visibility, buf + VIS_HEADER, len - VIS_HEADER );

@@ -873,6 +873,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_R_LOADWORLDMAP:
+			re.SetWorldVisData( CM_ClusterPVS( -1 ) );
 			re.LoadWorld( VMA( 1 ) );
 			return 0;
 
