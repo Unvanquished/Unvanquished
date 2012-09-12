@@ -272,6 +272,24 @@ typedef struct
 
 cSurfaceCollide_t              *CM_GenerateTriangleSoupCollide( int numVertexes, vec3_t *vertexes, int numIndexes, int *indexes );
 
+// cm_plane.c
+
+extern int numPlanes;
+extern cPlane_t planes[];
+
+extern int numFacets;
+extern cFacet_t facets[];
+
+void     CM_ResetPlaneCounts( void );
+int      CM_FindPlane2( float plane[ 4 ], qboolean *flipped );
+int      CM_FindPlane( const float *p1, const float *p2, const float *p3 );
+int      CM_PointOnPlaneSide( float *p, int planeNum );
+qboolean CM_ValidateFacet( cFacet_t *facet );
+void     CM_AddFacetBevels( cFacet_t *facet );
+qboolean CM_GenerateFacetFor3Points( cFacet_t *facet, const vec3_t p1, const vec3_t p2, const vec3_t p3 );
+qboolean CM_GenerateFacetFor4Points( cFacet_t *facet, const vec3_t p1, const vec3_t p2, const vec3_t p3, const vec3_t p4 );
+
+
 // cm_test.c
 extern const cSurfaceCollide_t *debugSurfaceCollide;
 extern const cFacet_t          *debugFacet;

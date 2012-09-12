@@ -470,6 +470,7 @@ set( QCOMMONLIST
   ${MOUNT_DIR}/engine/qcommon/cm_load.c
   ${MOUNT_DIR}/engine/qcommon/cm_trisoup.c
   ${MOUNT_DIR}/engine/qcommon/cm_patch.c
+  ${MOUNT_DIR}/engine/qcommon/cm_plane.c
   ${MOUNT_DIR}/engine/qcommon/cm_polylib.c
   ${MOUNT_DIR}/engine/qcommon/cm_test.c
   ${MOUNT_DIR}/engine/qcommon/cm_trace.c
