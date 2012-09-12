@@ -371,14 +371,6 @@ extern int memcmp( void *, void *, size_t );
 
 #endif
 
-#ifdef __linux__
-// custom Snd_Memset implementation for glibc memset bug workaround
-	void Snd_Memset( void *dest, const int val, const size_t count );
-
-#else
-#define Snd_Memset   Com_Memset
-#endif
-
 #define Com_Memset   memset
 #define Com_Memcpy   memcpy
 
