@@ -139,27 +139,16 @@ void CG_RunLerpFrame( lerpFrame_t *lf, float scale )
 	}
 }
 
-void CG_RunMD5LerpFrame( lerpFrame_t *lf, float scale )
+void CG_RunMD5LerpFrame( lerpFrame_t *lf, float scale, qboolean animChanged )
 {
 	int         f, numFrames;
 	animation_t *anim;
-	qboolean    animChanged;
 
 	// debugging tool to get no animations
 	if ( cg_animSpeed.integer == 0 )
 	{
 		lf->oldFrame = lf->frame = lf->backlerp = 0;
 		return;
-	}
-
-	// see if the animation sequence is switching
-	if ( ( lf->old_animationNumber & ~ANIM_TOGGLEBIT ) != lf->animationNumber || !lf->animation )
-	{
-		animChanged = qtrue;
-	}
-	else
-	{
-		animChanged = qfalse;
 	}
 
 	// if we have passed the current frame, move it to
@@ -186,9 +175,9 @@ void CG_RunMD5LerpFrame( lerpFrame_t *lf, float scale )
 			return; // shouldn't happen
 		}
 
-		if ( cg.time < lf->animationStartTime )
+		if ( cg.time < lf->animationTime )
 		{
-			lf->frameTime = lf->animationStartTime; // initial lerp
+			lf->frameTime = lf->animationTime; // initial lerp
 		}
 		else
 		{

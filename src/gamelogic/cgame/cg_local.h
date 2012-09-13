@@ -127,7 +127,6 @@ typedef struct
 	int           animationNumber; // may include ANIM_TOGGLEBIT
 	animation_t   *animation;
 	int           animationTime; // time when the first frame of the animation will be exact
-	int           animationStartTime; // time when the first frame of the animation will be exact
 	float         animationScale;
 
 	// added for smooth blending between animations on change
@@ -1779,7 +1778,7 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarkerTyp
 // cg_animation.c
 //
 void CG_RunLerpFrame( lerpFrame_t *lf, float scale );
-void CG_RunMD5LerpFrame( lerpFrame_t *lf, float scale );
+void CG_RunMD5LerpFrame( lerpFrame_t *lf, float scale, qboolean animChanged );
 
 //
 // cg_animmapobj.c

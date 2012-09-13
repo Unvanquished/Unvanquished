@@ -1641,10 +1641,13 @@ cg.time should be between oldFrameTime and frameTime after exit
 */
 static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation, refSkeleton_t *skel, float speedScale )
 {
+	qboolean animChanged = qfalse;
+	
     // see if the animation sequence is switching
 	if ( newAnimation != lf->animationNumber || !lf->animation )
 	{
 		CG_SetLerpFrameAnimation( ci, lf, newAnimation, skel );
+		animChanged = qtrue;
 	}
 
 	if ( !ci->bodyModel )
@@ -1653,7 +1656,7 @@ static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 	}
 	else
 	{
-		CG_RunMD5LerpFrame( lf, speedScale );
+		CG_RunMD5LerpFrame( lf, speedScale, animChanged );
 
 		// blend old and current animation
 		CG_BlendPlayerLerpFrame( lf );
