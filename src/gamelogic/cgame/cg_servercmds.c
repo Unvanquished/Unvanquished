@@ -89,7 +89,7 @@ static void CG_ParseTeamInfo( void )
 
 	count = ( trap_Argc() - 1 ) / 5;
 
-	cgs.teaminfoReceievedTime = cg.time;
+	cgs.teamInfoReceived = qtrue;
 
 	for ( i = 0; i < count; i++ )
 	{

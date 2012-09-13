@@ -2359,7 +2359,7 @@ static void CG_DrawTeamOverlay( rectDef_t *rect, float scale, vec4_t color )
 		return;
 	}
 
-	if ( !cgs.teaminfoReceievedTime )
+	if ( !cgs.teamInfoReceived )
 	{
 		return;
 	}
@@ -3446,7 +3446,7 @@ static void CG_DrawCrosshairNames( rectDef_t *rect, float scale, int textStyle )
 
 	if ( cg_teamOverlayUserinfo.integer &&
 	     cg.snap->ps.stats[ STAT_TEAM ] != TEAM_NONE &&
-	     cgs.teaminfoReceievedTime &&
+	     cgs.teamInfoReceived &&
 	     cgs.clientinfo[ cg.crosshairClientNum ].health > 0 )
 	{
 		name = va( "%s ^7[^%c%d^7]", name,

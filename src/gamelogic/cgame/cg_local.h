@@ -1352,7 +1352,7 @@ typedef struct
 
 	clientInfo_t clientinfo[ MAX_CLIENTS ];
 
-	int          teaminfoReceievedTime;
+	qboolean     teamInfoReceived;
 
 	// corpse info
 	clientInfo_t corpseinfo[ MAX_CLIENTS ];
