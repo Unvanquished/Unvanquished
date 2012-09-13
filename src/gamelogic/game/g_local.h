@@ -34,8 +34,6 @@ typedef struct gclient_s gclient_t;
 
 //==================================================================
 
-#define INFINITE                   1000000
-
 #define FRAMETIME                  100 // msec
 
 #define INTERMISSION_DELAY_TIME    1000
