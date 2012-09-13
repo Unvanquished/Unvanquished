@@ -7816,7 +7816,6 @@ static int UpdateLightTriangles( const srfVert_t *verts, int numTriangles, srfTr
 
 		if ( PlaneFromPoints( tri->plane, pos[ 0 ], pos[ 1 ], pos[ 2 ] ) )
 		{
-			tri->degenerated = qfalse;
 
 			if ( light->l.rlType == RL_DIRECTIONAL )
 			{
@@ -7857,7 +7856,6 @@ static int UpdateLightTriangles( const srfVert_t *verts, int numTriangles, srfTr
 		}
 		else
 		{
-			tri->degenerated = qtrue;
 			tri->facingLight = qtrue; // FIXME ?
 		}
 

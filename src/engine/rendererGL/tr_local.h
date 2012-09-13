@@ -2874,7 +2874,6 @@ extern "C" {
 		int      indexes[ 3 ];
 		vec4_t   plane;
 		qboolean facingLight;
-		qboolean degenerated;
 	} srfTriangle_t;
 
 // ydnar: plain map drawsurfaces must match this header
