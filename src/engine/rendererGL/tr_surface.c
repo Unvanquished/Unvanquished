@@ -803,7 +803,7 @@ Tess_SurfacePolychain
 */
 static void Tess_SurfacePolychain( srfPoly_t *p )
 {
-	int i;
+	int i, j;
 	int numVertexes;
 	int numIndexes;
 
@@ -842,8 +842,6 @@ static void Tess_SurfacePolychain( srfPoly_t *p )
 		tess.indexes[ tess.numIndexes + i * 3 + 2 ] = tess.numVertexes + i + 2;
 		numIndexes += 3;
 	}
-
-#if 0
 
 	// calc tangent spaces
 	if ( tess.surfaceShader->interactLight && !tess.skipTangentSpaces )
@@ -891,8 +889,6 @@ static void Tess_SurfacePolychain( srfPoly_t *p )
 		VectorArrayNormalize( ( vec4_t * ) tess.binormals[ tess.numVertexes ], numVertexes );
 		VectorArrayNormalize( ( vec4_t * ) tess.normals[ tess.numVertexes ], numVertexes );
 	}
-
-#endif
 
 	tess.numIndexes += numIndexes;
 	tess.numVertexes += numVertexes;
