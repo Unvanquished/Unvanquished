@@ -621,7 +621,7 @@ void CM_AddFacetBevels( cFacet_t *facet )
 
 					if ( !w2 )
 					{
-						Com_DPrintf( "WARNING: CM_AddFacetBevels… invalid bevel\n" );
+						Com_DPrintf( "WARNING: CM_AddFacetBevels... invalid bevel\n" );
 						continue;
 					}
 					else
