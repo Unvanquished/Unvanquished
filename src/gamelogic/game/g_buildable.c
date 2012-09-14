@@ -1563,6 +1563,7 @@ void ABooster_Touch( gentity_t *self, gentity_t *other, trace_t *trace )
 
 //==================================================================================
 
+#define MISSILE_PRESTEP_TIME 50 // from g_missile.h
 #define TRAPPER_ACCURACY 10 // lower is better
 
 /*
@@ -1593,7 +1594,7 @@ void ATrapper_FireOnEnemy( gentity_t *self, int firespeed, float range )
 	{
 		int   partitionMsec = ( highMsec + lowMsec ) / 2;
 		float time = ( float ) partitionMsec / 1000.0f;
-		float projectileDistance = LOCKBLOB_SPEED * time;
+		float projectileDistance = LOCKBLOB_SPEED * ( time + MISSILE_PRESTEP_TIME / 1000.0f );
 
 		VectorMA( enemy->s.pos.trBase, time, enemy->s.pos.trDelta, dirToTarget );
 		VectorMA( dirToTarget, time * time, halfAcceleration, dirToTarget );
