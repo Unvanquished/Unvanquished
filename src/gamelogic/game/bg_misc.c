@@ -3001,7 +3001,7 @@ void trap_Cvar_VariableStringBuffer( const char *var_name, char *buffer, int buf
 
 void BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, playerState_t *ps )
 {
-#ifdef _DEBUG
+#ifndef NDEBUG
 	{
 		char buf[ 256 ];
 		trap_Cvar_VariableStringBuffer( "showevents", buf, sizeof( buf ) );

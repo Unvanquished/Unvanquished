@@ -75,7 +75,6 @@ cmake_dependent_option( USE_SDL_ICONV        "Compile with SDL's iconv implement
 cmake_dependent_option( HAVE_BZIP2           "Compile with BZip2 support"                            0 "HAVE_BZIP2"                   0 )
 
 cmake_dependent_option( BUILD_GAME_GPP       "Build Tremulous GPP game logic"              1 "GAME_LIB OR GAME_QVM" 0 )
-cmake_dependent_option( QVM_DEBUG            "Enable (some) QVM debugging"                 1 GAME_QVM         0 )
 cmake_dependent_option( GAME_LIB_LLVM        "Use LLVM, not shared libs, for game logic"   0 GAME_LIB         0 )
 
 cmake_dependent_option( USE_OPENAL_DLOPEN    "Use dlopen to load OpenAL"                   1 USE_OPENAL       0 )
@@ -1186,9 +1185,6 @@ function( GAMELIB )
       -D__inline=
       -DQ3_VM
     )
-    if( QVM_DEBUG )
-      set( QVM_CPP_OPTIONS ${QVM_CPP_OPTIONS} -D_DEBUG )
-    endif()
     foreach( DEF ${GAMELIB_COMPILE_DEF} )
       set( QVM_CPP_OPTIONS ${QVM_CPP_OPTIONS} -D${DEF} )
     endforeach()
