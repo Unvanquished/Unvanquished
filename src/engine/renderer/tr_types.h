@@ -136,7 +136,7 @@ typedef enum
 // in backEndData_t so only use it for debugging and development
 // enabling this will show the bone names with r_showSkeleton 1
 
-#ifdef _DEBUG
+#if 1 // #ifndef NDEBUG // FIXME - needs to be separately debuggable
 #define REFBONE_NAMES 1
 #endif
 
