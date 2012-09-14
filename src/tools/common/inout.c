@@ -385,7 +385,7 @@ void PRINTF_LIKE(1) NORETURN Error(const char *error, ...)
 
 	Broadcast_Shutdown();
 
-#if defined(_DEBUG)
+#ifndef NDEBUG
 	assert(0);
 #endif
 

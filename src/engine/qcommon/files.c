@@ -5205,7 +5205,7 @@ void FS_Restart( int checksumFeed )
 				// bani - check existing pid file and make sure it's ok
 				if ( !Com_CheckProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
 				{
-#ifndef _DEBUG
+#ifdef NDEBUG
 					Com_Printf(_( "^3WARNING: profile.pid found for profile '%s' – system settings will revert to defaults\n"), cl_profileStr );
 					// ydnar: set crashed state
 					Cbuf_AddText( "set com_crashed 1\n" );

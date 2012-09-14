@@ -315,7 +315,7 @@ qhandle_t RE_RegisterModel( const char *name )
 		return mod->index;
 	}
 
-#ifdef _DEBUG
+#ifndef NDEBUG
 	else
 	{
 		ri.Printf( PRINT_WARNING, "couldn't load '%s'\n", name );

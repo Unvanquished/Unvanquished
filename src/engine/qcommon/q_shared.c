@@ -2030,13 +2030,13 @@ Safe strncpy that ensures a trailing zero
 =============
 */
 
-#ifdef _DEBUG
+#ifndef NDEBUG
 void Q_strncpyzDebug( char *dest, const char *src, size_t destsize, const char *file, int line )
 #else
 void Q_strncpyz( char *dest, const char *src, int destsize )
 #endif
 {
-#ifdef _DEBUG
+#ifndef NDEBUG
 
 	if ( !dest )
 	{

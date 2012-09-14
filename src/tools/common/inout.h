@@ -44,7 +44,7 @@ void            xml_Select(char *msg, int entitynum, int brushnum, qboolean bErr
 void            xml_Winding(char *msg, vec3_t p[], int numpoints, qboolean die);
 void            xml_Point(char *msg, vec3_t pt);
 
-#ifdef _DEBUG
+#ifndef NDEBUG
 #define DBG_XML 1
 #endif
 

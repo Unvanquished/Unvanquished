@@ -167,7 +167,7 @@ void DL_InitDownload()
 	HTAlert_setInteractive( YES );
 
 	/* And the traces... */
-#ifdef _DEBUG
+#ifndef NDEBUG
 	// see HTHome.c, you can specify the flags - empty string gets you all traces
 	HTSetTraceMessageMask( "" );
 #endif

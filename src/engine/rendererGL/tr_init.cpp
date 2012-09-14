@@ -1836,7 +1836,7 @@ extern "C" {
 			//UINT width = rc.right - rc.left;
 			//UINT height = rc.bottom - rc.top;
 
-#ifdef _DEBUG
+#ifndef NDEBUG
 			createDeviceFlags |= D3D10_CREATE_DEVICE_DEBUG;
 #endif
 
@@ -1961,7 +1961,7 @@ extern "C" {
 #if 0
 			// create the effect
 			DWORD dwShaderFlags = D3D10_SHADER_ENABLE_STRICTNESS;
-#if defined( DEBUG ) || defined( _DEBUG )
+#if defined( DEBUG ) || !defined( NDEBUG )
 			// Set the D3D10_SHADER_DEBUG flag to embed debug information in the shaders.
 			// Setting this flag improves the shader debugging experience, but still allows
 			// the shaders to be optimized and to run exactly the way they will run in

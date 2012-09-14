@@ -393,7 +393,7 @@ static void VM_InitSanity( vm_t *vm )
 	vm->versionChecked = qfalse;
 }
 
-#ifdef _DEBUG
+#ifndef NDEBUG
 #define VM_Insanity(c,n) Com_Error( ERR_DROP, "And it's a good night from vm. [%ld %s]", (c), (n) );
 #else
 #define VM_Insanity(c,n) Com_Error( ERR_DROP, "And it's a good night from vm." );

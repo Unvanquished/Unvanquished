@@ -683,7 +683,7 @@ int main( int argc, char **argv )
 
 #endif
 
-#ifdef _DEBUG
+#if 0 // looks like broken on !Windows; remove?
 	Sys_PrintCpuInfo();
 	Sys_PrintMemoryInfo();
 #endif

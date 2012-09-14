@@ -112,7 +112,7 @@ cvar_t *sv_paused;
 cvar_t *cl_packetdelay;
 cvar_t *sv_packetdelay;
 
-#if defined( _WIN32 ) && defined( _DEBUG )
+#if defined( _WIN32 ) && !defined( NDEBUG )
 cvar_t *com_noErrorInterrupt;
 #endif
 cvar_t *com_recommendedSet;
@@ -3289,7 +3289,7 @@ void Com_Init( char *commandLine )
 	com_unfocused = Cvar_Get( "com_unfocused", "0", CVAR_ROM );
 	com_minimized = Cvar_Get( "com_minimized", "0", CVAR_ROM );
 
-#if defined( _WIN32 ) && defined( _DEBUG )
+#if defined( _WIN32 ) && !defined( NDEBUG )
 	com_noErrorInterrupt = Cvar_Get( "com_noErrorInterrupt", "0", 0 );
 #endif
 

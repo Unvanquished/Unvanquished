@@ -60,7 +60,7 @@ int             WINS_SetSocketPort(struct sockaddr_s *addr, int port);
 #define qtrue	1
 #define qfalse	0
 
-#ifdef _DEBUG
+#ifndef NDEBUG
 void PRINTF_LIKE(1) WinPrint(char *str, ...)
 {
 	va_list         argptr;
@@ -171,7 +171,7 @@ int Net_Receive(socket_t * sock, netmessage_t * msg)
 		return msg->size - 4;
 	}							//end if
 	//the message has not been completely read yet
-#ifdef _DEBUG
+#ifndef NDEBUG
 	printf("++timo TODO: debug the Net_Receive on big size messages\n");
 #endif
 	return 0;
@@ -606,7 +606,7 @@ ERROR_STRUCT    errlist[] = {
 	{-1, NULL}
 };
 
-#ifdef _DEBUG
+#ifndef NDEBUG
 void WinPrint(char *str, ...) PRINTF_LIKE(1);
 #else
 void WinPrint(char *str, ...) PRINTF_LIKE(1);

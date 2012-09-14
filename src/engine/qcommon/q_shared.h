@@ -1466,7 +1466,7 @@ double rint( double x );
 
 // buffer size safe library replacements
 // NOTE : had problem with loading QVM modules
-#ifndef _DEBUG
+#ifdef NDEBUG
 	void Q_strncpyz( char *dest, const char *src, int destsize );
 
 #else
