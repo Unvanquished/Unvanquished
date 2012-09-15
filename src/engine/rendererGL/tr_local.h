@@ -3324,10 +3324,14 @@ extern "C" {
 	typedef struct
 	{
 		vec3_t xyz;
+	} mdvXyz_t;
+
+	typedef struct
+	{
 		vec3_t normal;
 		vec3_t tangent;
 		vec3_t binormal;
-	} mdvVertex_t;
+	} mdvNormTanBi_t;
 
 	typedef struct
 	{
@@ -3343,7 +3347,7 @@ extern "C" {
 		shader_t          *shader;
 
 		int               numVerts;
-		mdvVertex_t       *verts;
+		mdvXyz_t          *verts;
 		mdvSt_t           *st;
 
 		int               numTriangles;
