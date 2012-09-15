@@ -2130,20 +2130,11 @@ void CL_SendPureChecksums( void )
 {
 	const char *pChecksums;
 	char       cMsg[ MAX_INFO_VALUE ];
-	int        i;
 
 	// if we are pure we need to send back a command with our referenced pk3 checksums
 	pChecksums = FS_ReferencedPakPureChecksums();
 
-	// "cp"
-	Com_sprintf( cMsg, sizeof( cMsg ), "Va " );
-	Q_strcat( cMsg, sizeof( cMsg ), va( "%d ", cl.serverId ) );
-	Q_strcat( cMsg, sizeof( cMsg ), pChecksums );
-
-	for ( i = 0; i < 2; i++ )
-	{
-		cMsg[ i ] += 13 + ( i * 2 );
-	}
+	Com_sprintf( cMsg, sizeof( cMsg ), "cp %d %s", cl.serverId, pChecksums );
 
 	CL_AddReliableCommand( cMsg );
 }
