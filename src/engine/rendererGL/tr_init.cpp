@@ -1907,7 +1907,7 @@ extern "C" {
 			if ( FAILED( hr ) )
 #endif
 			{
-				ri.Printf( PRINT_ALL, "R_Init: Failed to find PerfHUD" );
+				ri.Printf( PRINT_ALL, "R_Init: Failed to find PerfHUD\n" );
 
 				for ( i = 0; i < numDriverTypes; i++ )
 				{

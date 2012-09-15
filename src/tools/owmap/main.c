@@ -1159,7 +1159,7 @@ static void ExtrapolateTexcoords(const float *axyz, const float *ast, const floa
 	md = MatrixDet(solvematrix);
 	if(md * md < 1e-10)
 	{
-		Sys_Printf("Cannot invert some matrix, some texcoords aren't extrapolated!");
+		Sys_Printf("Cannot invert some matrix, some texcoords aren't extrapolated!\n");
 		return;
 	}
 

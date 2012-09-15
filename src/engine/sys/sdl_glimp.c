@@ -141,7 +141,7 @@ static void GLimp_GetCurrentContext( void )
 
 	if ( !SDL_GetWMInfo( &info ) )
 	{
-		ri.Printf( PRINT_WARNING, "Failed to obtain HWND from SDL (InputRegistry)" );
+		ri.Printf( PRINT_WARNING, "Failed to obtain HWND from SDL (InputRegistry)\n" );
 		return;
 	}
 
@@ -275,7 +275,7 @@ qboolean GLimp_SpawnRenderThread( void ( *function )( void ) )
 
 	if ( renderThread == NULL )
 	{
-		ri.Printf( PRINT_ALL, "SDL_CreateThread() returned %s", SDL_GetError() );
+		ri.Printf( PRINT_ALL, "SDL_CreateThread() returned %s\n", SDL_GetError() );
 		GLimp_ShutdownRenderThread();
 		return qfalse;
 	}

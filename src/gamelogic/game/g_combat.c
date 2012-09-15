@@ -992,7 +992,7 @@ void G_InitDamageLocations( void )
 
 		if ( len >= MAX_DAMAGE_REGION_TEXT )
 		{
-			G_Printf( S_COLOR_RED "file too large: %s is %i, max allowed is %i",
+			G_Printf( S_COLOR_RED "file too large: %s is %i, max allowed is %i\n",
 			          filename, len, MAX_DAMAGE_REGION_TEXT );
 			trap_FS_FCloseFile( fileHandle );
 			continue;
@@ -1022,7 +1022,7 @@ void G_InitDamageLocations( void )
 
 		if ( len >= MAX_DAMAGE_REGION_TEXT )
 		{
-			G_Printf( S_COLOR_RED "file too large: %s is %i, max allowed is %i",
+			G_Printf( S_COLOR_RED "file too large: %s is %i, max allowed is %i\n",
 			          filename, len, MAX_DAMAGE_REGION_TEXT );
 			trap_FS_FCloseFile( fileHandle );
 			continue;

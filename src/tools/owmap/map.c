@@ -673,7 +673,7 @@ void AddBrushBevels(void)
 #if defined(USE_XML)
 					xml_Select("MAX_BUILD_SIDES", buildBrush->entityNum, buildBrush->brushNum, qtrue);
 #else
-					Sys_Printf("Entity %i, Brush %i: MAX_BUILD_SIDES", buildBrush->entityNum, buildBrush->brushNum);
+					Sys_Printf("Entity %i, Brush %i: MAX_BUILD_SIDES\n", buildBrush->entityNum, buildBrush->brushNum);
 #endif
 				}
 				memset(s, 0, sizeof(*s));

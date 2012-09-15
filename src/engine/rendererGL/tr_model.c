@@ -474,7 +474,7 @@ static qboolean R_LoadDAE(model_t * mod, void *buffer, int bufferLen, const char
 
         if(xmlStrcmp(node->name, (const xmlChar *) "COLLADA"))
         {
-                ri.Printf(PRINT_WARNING, "R_LoadDAE: '%s' document of the wrong type, root node != COLLADA", modName);
+                ri.Printf(PRINT_WARNING, "R_LoadDAE: '%s' document of the wrong type, root node != COLLADA\n", modName);
                 xmlFreeDoc(doc);
                 return qfalse;
         }

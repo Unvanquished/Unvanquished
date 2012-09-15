@@ -171,7 +171,7 @@ static qboolean CG_ParseWeaponAnimationFile( const char *filename, weaponInfo_t 
 
 	if ( i != MAX_WEAPON_ANIMATIONS )
 	{
-		CG_Printf( _( "Error parsing weapon animation file: %s"), filename );
+		CG_Printf( _( "Error parsing weapon animation file: %s\n"), filename );
 		return qfalse;
 	}
 

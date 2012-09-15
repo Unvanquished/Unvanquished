@@ -2888,7 +2888,7 @@ void CL_DisconnectPacket( netadr_t from )
 	{
 		// drop the connection
 		message = "Server disconnected for unknown reason";
-		Com_Printf( "%s", message );
+		Com_Printf( "%s\n", message );
 		Cvar_Set( "com_errorMessage", message );
 		CL_Disconnect( qtrue );
 	}

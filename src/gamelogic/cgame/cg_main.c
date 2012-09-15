@@ -1389,7 +1389,7 @@ char *CG_GetMenuBuffer( const char *filename )
 
 	if ( len >= MAX_MENUFILE )
 	{
-		trap_Print( va( S_COLOR_RED "menu file too large: %s is %i, max allowed is %i",
+		trap_Print( va( S_COLOR_RED "menu file too large: %s is %i, max allowed is %i\n",
 		                filename, len, MAX_MENUFILE ) );
 		trap_FS_FCloseFile( f );
 		return NULL;

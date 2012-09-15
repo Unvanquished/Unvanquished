@@ -764,7 +764,7 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 			{
 				const char *errorLog = glslopt_get_log( shaderOptimized );
 
-				//ri.Printf(PRINT_WARNING, "Couldn't optimize '%s'", filename);
+				//ri.Printf(PRINT_WARNING, "Couldn't optimize '%s'\n", filename);
 
 				length = strlen( errorLog );
 

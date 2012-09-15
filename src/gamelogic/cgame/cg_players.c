@@ -267,7 +267,7 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 
 			if ( token[0] != '{' )
 			{
-				Com_Printf( _( "^1ERROR^7: Expected '{' but found '%s' in character.cfg" ), token );
+				Com_Printf( _( "^1ERROR^7: Expected '{' but found '%s' in character.cfg\n" ), token );
 			}
 
 			i = 0;
@@ -581,7 +581,7 @@ static qboolean CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 
 		if ( i != MAX_PLAYER_ANIMATIONS )
 		{
-			CG_Printf(_( "Error parsing animation file: %s"), filename );
+			CG_Printf(_( "Error parsing animation file: %s\n"), filename );
 			return qfalse;
 		}
 
@@ -674,7 +674,7 @@ static qboolean CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 
 		if ( i != MAX_NONSEG_PLAYER_ANIMATIONS )
 		{
-			CG_Printf(_( "Error parsing animation file: %s"), filename );
+			CG_Printf(_( "Error parsing animation file: %s\n"), filename );
 			return qfalse;
 		}
 

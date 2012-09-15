@@ -969,7 +969,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 			}
 			else
 			{
-				Com_Printf(_( "clientDownload: %d : \"%s\" download disabled"), ( int )( cl - svs.clients ), cl->downloadName );
+				Com_Printf(_( "clientDownload: %d : \"%s\" download disabled\n"), ( int )( cl - svs.clients ), cl->downloadName );
 
 				if ( sv_pure->integer )
 				{
