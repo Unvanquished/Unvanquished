@@ -2092,7 +2092,7 @@ int LightMain(int argc, char **argv)
 
 	lightAngleHL = game->lightAngleHL;
 	if(lightAngleHL)
-		Sys_Printf(" half lambert light angle attenuation enabled \n");
+		Sys_Printf(" half lambert light angle attenuation enabled\n");
 
 	noStyles = game->noStyles;
 	if(noStyles == qtrue)

@@ -661,7 +661,7 @@ static qboolean GLimp_InitOpenGL3xContext()
 		}
 		else
 		{
-			ri.Printf( PRINT_WARNING, "Could not initialize requested OpenGL profile\n" );
+			ri.Printf( PRINT_WARNING, " Could not initialize requested OpenGL profile\n" );
 		}
 	}
 
@@ -736,7 +736,7 @@ static qboolean GLimp_InitOpenGL3xContext()
 			opengl_context.ctx = NULL;
 		}
 
-		ri.Printf( PRINT_ALL, "...initializing new OpenGL context " );
+		ri.Printf( PRINT_ALL, "...initializing new OpenGL context" );
 
 		opengl_context.ctx = glXCreateContextAttribsARB( opengl_context.dpy,
 		                     FBConfig[ 0 ], NULL, GL_TRUE, attribs );
@@ -747,7 +747,7 @@ static qboolean GLimp_InitOpenGL3xContext()
 		}
 		else
 		{
-			ri.Printf( PRINT_WARNING, "Could not initialize requested OpenGL profile\n" );
+			ri.Printf( PRINT_WARNING, " Could not initialize requested OpenGL profile\n" );
 		}
 	}
 

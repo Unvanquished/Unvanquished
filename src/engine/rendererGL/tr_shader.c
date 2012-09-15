@@ -5271,7 +5271,7 @@ static void GeneratePermanentShaderTable( float *values, int numValues )
 	newTable->numValues = numValues;
 	newTable->values = ri.Hunk_Alloc( sizeof( float ) * numValues, h_low );
 
-//  ri.Printf(PRINT_ALL, "values: \n");
+//  ri.Printf(PRINT_ALL, "values:\n");
 	for ( i = 0; i < numValues; i++ )
 	{
 		newTable->values[ i ] = values[ i ];

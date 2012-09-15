@@ -440,7 +440,7 @@ static void *Sys_TryLibraryLoad( const char *base, const char *gamedir, const ch
 	*fqpath = 0;
 
 	fn = FS_BuildOSPath( base, gamedir, fname );
-	Com_DPrintf( "Sys_LoadDll(%s)... \n", fn );
+	Com_DPrintf( "Sys_LoadDll(%s)...\n", fn );
 
 	libHandle = Sys_LoadLibrary( fn );
 

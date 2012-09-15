@@ -1392,7 +1392,7 @@ void Cmd_VSay_f( gentity_t *ent )
 	if ( trap_Argc() < 2 )
 	{
 		trap_SendServerCommand( ent - g_entities, va(
-		                          "print_tr %s %s", QQ( N_("usage: $1$ command [text] \n") ),  arg ) );
+		                          "print_tr %s %s", QQ( N_("usage: $1$ command [text]\n") ),  arg ) );
 		return;
 	}
 

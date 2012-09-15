@@ -1989,7 +1989,7 @@ extern "C" {
 			for ( i = 0; i < MAX_SHADOWMAPS; i++ )
 			{
 				GLimp_LogComment( va( "--- GLSL_SetUniform_ShadowMatrix( program = %s, "
-				                      "matrix(%i) = \n"
+				                      "matrix(%i) =\n"
 				                      "( %5.3f, %5.3f, %5.3f, %5.3f )\n"
 				                      "( %5.3f, %5.3f, %5.3f, %5.3f )\n"
 				                      "( %5.3f, %5.3f, %5.3f, %5.3f )\n"
@@ -2289,7 +2289,7 @@ extern "C" {
 		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- GLSL_SetUniform_ModelMatrix( program = %s, "
-			                      "matrix = \n"
+			                      "matrix =\n"
 			                      "( %5.3f, %5.3f, %5.3f, %5.3f )\n"
 			                      "( %5.3f, %5.3f, %5.3f, %5.3f )\n"
 			                      "( %5.3f, %5.3f, %5.3f, %5.3f )\n"
@@ -2398,7 +2398,7 @@ extern "C" {
 		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- GLSL_SetUniform_ModelViewProjectionMatrix( program = %s, "
-			                      "matrix = \n"
+			                      "matrix =\n"
 			                      "( %5.3f, %5.3f, %5.3f, %5.3f )\n"
 			                      "( %5.3f, %5.3f, %5.3f, %5.3f )\n"
 			                      "( %5.3f, %5.3f, %5.3f, %5.3f )\n"
