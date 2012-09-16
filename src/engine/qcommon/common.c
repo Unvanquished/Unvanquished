@@ -3094,7 +3094,7 @@ Com_Init
 void Com_Init( char *commandLine )
 {
 	char              *s;
-	int               pid;
+	int               pid, qport;
 
 	pid = Sys_GetPID();
 
@@ -3293,7 +3293,14 @@ void Com_Init( char *commandLine )
 	com_version = Cvar_Get( "version", s, CVAR_ROM | CVAR_SERVERINFO );
 
 	Sys_Init();
-	Netchan_Init( Com_Milliseconds() & 0xffff );  // pick a port value that should be nice and random
+
+	// Pick a qport value that is nice and random.
+	// As machines get faster, Com_Milliseconds() can't be used
+	// anymore, as it results in a smaller and smaller range of
+	// qport values.
+	Com_RandomBytes( ( byte * )&qport, sizeof( int ) );
+	Netchan_Init( qport & 0xffff );
+
 	VM_Init();
 	SV_Init();
 	Hist_Load();
