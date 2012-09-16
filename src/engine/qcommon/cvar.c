@@ -322,6 +322,19 @@ cvar_t         *Cvar_Get( const char *var_name, const char *var_value, int flags
 			Z_Free( var->resetString );
 			var->resetString = CopyString( var_value );
 
+			if ( flags & CVAR_ROM )
+			{
+				// this variable was set by the user,
+				// so force it to value given by the engine.
+
+				if ( var->latchedString )
+				{
+					Z_Free( var->latchedString );
+				}
+
+				var->latchedString = CopyString( var_value );
+			}
+
 			// ZOID--needs to be set so that cvars the game sets as
 			// SERVERINFO get sent to clients
 			cvar_modifiedFlags |= flags;
