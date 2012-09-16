@@ -34,6 +34,8 @@ static refSkeleton_t legsSkeleton;
 static refSkeleton_t torsoSkeleton;
 static refSkeleton_t oldSkeleton;
 
+static refSkeleton_t psaw;
+
 static const char *const cg_customSoundNames[ MAX_CUSTOM_SOUNDS ] =
 {
 	"*death1.wav",
@@ -258,8 +260,34 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 		}
 		else if ( !Q_stricmp( token, "torsoControlBone" ) )
 		{
-			token = COM_Parse2( &text_p );
+			token = COM_Parse( &text_p );
 			ci->torsoControlBone = trap_R_BoneIndex( ci->bodyModel, token );
+		}
+		else if ( !Q_stricmp( token, "handBones" ) )
+		{
+			token = COM_Parse2( &text_p );
+			
+			if ( token[0] != '{' )
+			{
+				Com_Printf( _( "^1ERROR^7: Expected '{' but found '%s' in character.cfg" ), token );
+			}
+			
+			i = 0;
+			
+			while( 1 )
+			{
+				token = COM_Parse2( &text_p );
+				
+				if ( !token || token[ 0 ] == '}' )
+				{
+					ci->numHandBones = i;
+					break;
+				}
+				
+				ci->handBones[ i++ ] = trap_R_BoneIndex( ci->bodyModel, token );
+			}
+			
+			continue;
 		}
 		else if ( !Q_stricmp( token, "legBones" ) )
 		{
@@ -827,6 +855,11 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 			{
 				ci->animations[ TORSO_GESTURE ] = ci->animations[ LEGS_IDLE ];
 			}
+			
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_GESTURE1, "gesture1", qfalse, qfalse, qfalse ) )
+			{
+				ci->animations[ TORSO_GESTURE1 ] = ci->animations[ LEGS_IDLE ];
+			}
 
 			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_ATTACK, "attack", qfalse, qfalse, qfalse ) )
 			{
@@ -846,6 +879,61 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_STAND2, "stand2", qtrue, qfalse, qfalse ) )
 			{
 				ci->animations[ TORSO_STAND2 ] = ci->animations[ LEGS_IDLE ];
+			}
+
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_RUN, "run", qtrue, qfalse, qfalse ) )
+			{
+				ci->animations[ TORSO_RUN ] = ci->animations[ LEGS_IDLE ];
+			}
+
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_BACK, "run_back", qtrue, qfalse, qfalse ) )
+			{
+				ci->animations[ TORSO_BACK ] = ci->animations[ LEGS_IDLE ];
+			}
+
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_JUMP, "jump", qfalse, qfalse, qfalse ) )
+			{
+				ci->animations[ TORSO_JUMP ] = ci->animations[ LEGS_IDLE ];
+			}
+
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_JUMPB, "jump_back", qfalse, qfalse, qfalse ) )
+			{
+				ci->animations[ TORSO_JUMPB ] = ci->animations[ LEGS_IDLE ];
+			}
+
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_LAND, "land", qfalse, qfalse, qfalse ) )
+			{
+				ci->animations[ TORSO_LAND ] = ci->animations[ LEGS_IDLE ];
+			}
+
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_LANDB, "land_back", qfalse, qfalse, qfalse ) )
+			{
+				ci->animations[ TORSO_LANDB ] = ci->animations[ LEGS_IDLE ];
+			}
+
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_WALKCR, "crouch_forward", qtrue, qfalse, qfalse ) )
+			{
+				ci->animations[ TORSO_WALKCR ] = ci->animations[ LEGS_IDLE ];
+			}
+
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_BACKCR, "crouch_back", qtrue, qfalse, qfalse ) )
+			{
+				ci->animations[ TORSO_BACKCR ] = ci->animations[ LEGS_IDLE ];
+			}
+
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_WALK, "walk", qtrue, qfalse, qfalse ) )
+			{
+				ci->animations[ TORSO_WALK ] = ci->animations[ LEGS_IDLE ];
+			}
+
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_BACKWALK, "walk_back", qtrue, qfalse, qfalse ) )
+			{
+				ci->animations[ TORSO_BACKWALK ] = ci->animations[ LEGS_IDLE ];
+			}
+
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_IDLE1, "idle1", qtrue, qfalse, qfalse ) )
+			{
+				ci->animations[ LEGS_IDLE1 ] = ci->animations[ LEGS_IDLE ];
 			}
 
 			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_IDLECR, "crouch", qfalse, qfalse, qfalse ) )
@@ -912,6 +1000,10 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 			{
 				ci->animations[ LEGS_TURN ] = ci->animations[ LEGS_IDLE ];
 			}
+
+			i = 0;
+			i = trap_R_RegisterAnimation( va( "models/players/%s/painsaw_idle.md5anim", modelName ) );
+			trap_R_BuildSkeleton( &psaw, i, 1, 1, 0, qfalse );
 		}
 		else
 		{
@@ -1237,6 +1329,7 @@ static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to )
 	to->gender = from->gender;
 
 	to->numLegBones = from->numLegBones;
+	to->numHandBones = from->numHandBones;
 	to->torsoControlBone = from->torsoControlBone;
 	
 	to->legsModel = from->legsModel;
@@ -1257,6 +1350,7 @@ static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to )
 	memcpy( to->customFootsteps, from->customFootsteps, sizeof( to->customFootsteps ) );
 	memcpy( to->customMetalFootsteps, from->customMetalFootsteps, sizeof( to->customMetalFootsteps ) );
 	memcpy( to->legBones, from->legBones, sizeof( to->legBones ) );
+	memcpy( to->handBones, from->handBones, sizeof( to->handBones ) );
 }
 
 /*
@@ -1541,15 +1635,21 @@ static void CG_BlendPlayerLerpFrame( lerpFrame_t *lf )
 	}
 }
 
-static void CG_CombineLegSkeleton( refSkeleton_t *dest, refSkeleton_t *legs, int *legBones, int numBones )
+static void CG_CombineLegSkeleton( refSkeleton_t *dest, refSkeleton_t *legs, int *legBones, int numBones, float frac )
 {
 	int i;
+	vec3_t lerpedOrigin;
+	quat_t lerpedQuat;
 	
 	dest->type = SK_RELATIVE;
 	
 	for ( i = 0; i < numBones; i++ )
 	{
-		dest->bones[ legBones[ i ] ] = legs->bones[ legBones[ i ] ];
+		VectorLerp( legs->bones[ legBones[ i ] ].origin, dest->bones[ legBones[ i ] ].origin, frac, lerpedOrigin );
+		QuatSlerp( legs->bones[ legBones[ i ] ].rotation, dest->bones[ legBones[ i ] ].rotation, frac, lerpedQuat );
+
+		VectorCopy( lerpedOrigin, dest->bones[ legBones[ i ] ].origin );
+		QuatCopy( lerpedQuat, dest->bones[ legBones[ i ] ].rotation );
 	}
 }
 
@@ -3309,7 +3409,7 @@ void CG_Player( centity_t *cent )
 			// combine legs and torso skeletons
 			if ( ci->numLegBones )
 			{
-				CG_CombineLegSkeleton( &body.skeleton, &legsSkeleton, ci->legBones, ci->numLegBones );
+				CG_CombineLegSkeleton( &body.skeleton, &legsSkeleton, ci->legBones, ci->numLegBones, 0 );
 			}
 
 			// rotate torso
@@ -3320,6 +3420,18 @@ void CG_Player( centity_t *cent )
 				// HACK: convert angles to bone system
 				QuatFromAngles( rotation, torsoAngles[ YAW ], 0, 0 );
 				QuatMultiply0( body.skeleton.bones[ boneIndex ].rotation, rotation );
+			}
+
+			if ( es->weapon == WP_PAIN_SAW )
+			{
+// 				int j;
+// 
+// 				for( j = 0; j < psaw.numBones; ++j )
+// 				{
+// 					VectorAdd( body.skeleton.bones[ j ].origin, psaw.bones[ j ].origin, body.skeleton.bones[ j ].origin );
+// 					QuatMultiply0( body.skeleton.bones[ j ].rotation, psaw.bones[ j ].rotation );
+// 				}
+				CG_CombineLegSkeleton( &body.skeleton, &psaw, ci->handBones, ci->numHandBones, 0.2f );
 			}
 		}
 		else

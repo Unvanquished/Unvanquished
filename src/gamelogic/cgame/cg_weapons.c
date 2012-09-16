@@ -1616,27 +1616,30 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		CG_PositionEntityOnTag( &gun, parent, parent->hModel, "tag_weapon" );
 		CG_WeaponAnimation( cent, &gun.oldframe, &gun.frame, &gun.backlerp );
 
-		gun.skeleton = gunSkeleton;
-
-		if ( weapon->rotationBone[ 0 ] && ps )
+		if ( weapon->md5 )
 		{
-			int    boneIndex = trap_R_BoneIndex( gun.hModel, weapon->rotationBone );
-			quat_t rotation;
+			gun.skeleton = gunSkeleton;
 
-			if ( boneIndex < 0 )
+			if ( weapon->rotationBone[ 0 ] && ps )
 			{
-				Com_Printf( _( S_COLOR_YELLOW  "WARNING: Cannot find bone index %s, using root bone\n"),
-				            weapon->rotationBone );
-				weapon->rotationBone[ 0 ] = '\0'; // avoid repeated warnings
-				boneIndex = 0;
+				int    boneIndex = trap_R_BoneIndex( gun.hModel, weapon->rotationBone );
+				quat_t rotation;
+
+				if ( boneIndex < 0 )
+				{
+					Com_Printf( _( S_COLOR_YELLOW  "WARNING: Cannot find bone index %s, using root bone\n"),
+								weapon->rotationBone );
+					weapon->rotationBone[ 0 ] = '\0'; // avoid repeated warnings
+					boneIndex = 0;
+				}
+
+				QuatFromAngles( rotation, weapon->rotation[ 0 ], weapon->rotation[ 1 ], weapon->rotation[ 2 ] );
+				QuatMultiply0( gun.skeleton.bones[ boneIndex ].rotation, rotation );
 			}
 
-			QuatFromAngles( rotation, weapon->rotation[ 0 ], weapon->rotation[ 1 ], weapon->rotation[ 2 ] );
-			QuatMultiply0( gun.skeleton.bones[ boneIndex ].rotation, rotation );
+			CG_TransformSkeleton( &gun.skeleton, weapon->scale );
 		}
-
-		CG_TransformSkeleton( &gun.skeleton, weapon->scale );
-
+		
 		trap_R_AddRefEntityToScene( &gun );
 
 		if ( !ps )

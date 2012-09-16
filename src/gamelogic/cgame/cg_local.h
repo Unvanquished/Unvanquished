@@ -783,6 +783,9 @@ typedef struct
 	int         legBones[ MAX_BONES ];
 	int         numLegBones;
 
+	int         handBones[ MAX_BONES ];
+	int         numHandBones;
+	
 	qhandle_t   bodyModel;
 	qhandle_t   bodySkin;
 

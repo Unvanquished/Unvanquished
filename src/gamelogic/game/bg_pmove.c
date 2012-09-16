@@ -209,6 +209,18 @@ static void PM_ContinueWeaponAnim( int anim )
 
 /*
 ===================
+PM_ForceTorsoAnim
+===================
+*/
+static void PM_ForceTorsoAnim( int anim )
+{
+	pm->ps->torsoTimer = 0;
+
+	PM_StartTorsoAnim( anim );
+}
+
+/*
+===================
 PM_ForceLegsAnim
 ===================
 */
@@ -716,6 +728,7 @@ static qboolean PM_CheckPounce( void )
 		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 		{
 			PM_ForceLegsAnim( LEGS_JUMP );
+			PM_ForceTorsoAnim( TORSO_JUMP );
 		}
 		else
 		{
@@ -729,6 +742,7 @@ static qboolean PM_CheckPounce( void )
 		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 		{
 			PM_ForceLegsAnim( LEGS_JUMPB );
+			PM_ForceTorsoAnim( TORSO_JUMPB );
 		}
 		else
 		{
@@ -873,6 +887,7 @@ static qboolean PM_CheckWallJump( void )
 		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 		{
 			PM_ForceLegsAnim( LEGS_JUMP );
+			PM_ForceTorsoAnim( TORSO_JUMP );
 		}
 		else
 		{
@@ -886,6 +901,7 @@ static qboolean PM_CheckWallJump( void )
 		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 		{
 			PM_ForceLegsAnim( LEGS_JUMPB );
+			PM_ForceTorsoAnim( TORSO_JUMPB );
 		}
 		else
 		{
@@ -1001,6 +1017,7 @@ static qboolean PM_CheckJump( void )
 		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 		{
 			PM_ForceLegsAnim( LEGS_JUMP );
+			PM_ForceTorsoAnim( TORSO_JUMP );
 		}
 		else
 		{
@@ -1014,6 +1031,7 @@ static qboolean PM_CheckJump( void )
 		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 		{
 			PM_ForceLegsAnim( LEGS_JUMPB );
+			PM_ForceTorsoAnim( TORSO_JUMPB );
 		}
 		else
 		{
@@ -1221,6 +1239,8 @@ static qboolean PM_CheckDodge( void )
 	pm->ps->stats[ STAT_STAMINA ] -= STAMINA_DODGE_TAKE;
 	pm->ps->legsAnim = ( ( pm->ps->legsAnim & ANIM_TOGGLEBIT ) ^
 	                     ANIM_TOGGLEBIT ) | LEGS_JUMP;
+	pm->ps->torsoAnim = ( ( pm->ps->torsoAnim & ANIM_TOGGLEBIT ) ^
+						 ANIM_TOGGLEBIT ) | TORSO_JUMP;
 	PM_AddEvent( EV_JUMP );
 
 	return qtrue;
@@ -1384,6 +1404,7 @@ static void PM_JetPackMove( void )
 
 	if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 	{
+		PM_ContinueTorsoAnim( TORSO_LAND );
 		PM_ContinueLegsAnim( LEGS_LAND );
 	}
 	else
@@ -2000,6 +2021,7 @@ static void PM_CrashLand( void )
 	{
 		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 		{
+			PM_StartTorsoAnim( TORSO_LANDB );
 			PM_ForceLegsAnim( LEGS_LANDB );
 		}
 		else
@@ -2193,6 +2215,7 @@ static void PM_GroundTraceMissed( void )
 				if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 				{
 					PM_ForceLegsAnim( LEGS_JUMP );
+					PM_ForceTorsoAnim( TORSO_JUMP );
 				}
 				else
 				{
@@ -2206,6 +2229,7 @@ static void PM_GroundTraceMissed( void )
 				if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 				{
 					PM_ForceLegsAnim( LEGS_JUMPB );
+					PM_ForceTorsoAnim( TORSO_JUMPB );
 				}
 				else
 				{
@@ -2733,6 +2757,7 @@ static void PM_GroundTrace( void )
 			if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 			{
 				PM_ForceLegsAnim( LEGS_JUMP );
+				PM_ForceTorsoAnim( TORSO_JUMP );
 			}
 			else
 			{
@@ -2746,6 +2771,7 @@ static void PM_GroundTrace( void )
 			if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 			{
 				PM_ForceLegsAnim( LEGS_JUMPB );
+				PM_ForceTorsoAnim( TORSO_JUMPB );
 			}
 			else
 			{
@@ -3005,7 +3031,14 @@ static void PM_Footsteps( void )
 			{
 				if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 				{
-					PM_ContinueLegsAnim( LEGS_IDLE );
+					if ( rand() % 2 )
+					{
+						PM_ContinueLegsAnim( LEGS_IDLE );
+					}
+					else
+					{
+						PM_ContinueLegsAnim( LEGS_IDLE1 );
+					}
 				}
 				else
 				{
@@ -3027,6 +3060,7 @@ static void PM_Footsteps( void )
 		{
 			if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 			{
+				PM_ContinueTorsoAnim( TORSO_BACKCR );
 				PM_ContinueLegsAnim( LEGS_BACKCR );
 			}
 			else
@@ -3049,6 +3083,7 @@ static void PM_Footsteps( void )
 		{
 			if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 			{
+				PM_ContinueTorsoAnim( TORSO_WALKCR );
 				PM_ContinueLegsAnim( LEGS_WALKCR );
 			}
 			else
@@ -3084,6 +3119,7 @@ static void PM_Footsteps( void )
 			{
 				if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 				{
+					PM_ContinueTorsoAnim( TORSO_BACK );
 					PM_ContinueLegsAnim( LEGS_BACK );
 				}
 				else
@@ -3107,6 +3143,7 @@ static void PM_Footsteps( void )
 				if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 				{
 					PM_ContinueLegsAnim( LEGS_RUN );
+					PM_ContinueTorsoAnim( TORSO_RUN );
 				}
 				else
 				{
@@ -3135,6 +3172,7 @@ static void PM_Footsteps( void )
 			{
 				if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 				{
+					PM_ContinueTorsoAnim( TORSO_BACKWALK );
 					PM_ContinueLegsAnim( LEGS_BACKWALK );
 				}
 				else
@@ -3157,6 +3195,7 @@ static void PM_Footsteps( void )
 			{
 				if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
 				{
+					PM_ContinueTorsoAnim( TORSO_WALK );
 					PM_ContinueLegsAnim( LEGS_WALK );
 				}
 				else
@@ -4050,7 +4089,15 @@ static void PM_Animate( void )
 		{
 			if ( pm->ps->torsoTimer == 0 )
 			{
-				PM_StartTorsoAnim( TORSO_GESTURE );
+				if ( rand() % 2 )
+				{
+					PM_StartTorsoAnim( TORSO_GESTURE );
+				}
+				else
+				{
+					PM_StartTorsoAnim( TORSO_GESTURE1 );
+				}
+
 				pm->ps->torsoTimer = TIMER_GESTURE;
 				pm->ps->tauntTimer = TIMER_GESTURE;
 
