@@ -1153,6 +1153,15 @@ void Cvar_List_f( void )
 			Com_Printf( " " );
 		}
 
+		if ( var->flags & CVAR_SYSTEMINFO )
+		{
+			Com_Printf( "s" );
+		}
+		else
+		{
+			Com_Printf( " " );
+		}
+
 		if ( var->flags & CVAR_USERINFO )
 		{
 			Com_Printf( "U" );
@@ -1201,6 +1210,15 @@ void Cvar_List_f( void )
 		if ( var->flags & CVAR_CHEAT )
 		{
 			Com_Printf( "C" );
+		}
+		else
+		{
+			Com_Printf( " " );
+		}
+
+		if ( var->flags & CVAR_USER_CREATED )
+		{
+			Com_Printf( "?" );
 		}
 		else
 		{
