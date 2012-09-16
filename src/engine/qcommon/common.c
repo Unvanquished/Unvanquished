@@ -97,7 +97,9 @@ cvar_t *con_drawnotify;
 cvar_t *com_ansiColor;
 
 cvar_t *com_unfocused;
+cvar_t *com_maxfpsUnfocused;
 cvar_t *com_minimized;
+cvar_t *com_maxfpsMinimized;
 
 cvar_t *com_introPlayed;
 cvar_t *com_logosPlaying;
@@ -3258,7 +3260,9 @@ void Com_Init( char *commandLine )
 	com_recommendedSet = Cvar_Get( "com_recommendedSet", "0", CVAR_ARCHIVE );
 
 	com_unfocused = Cvar_Get( "com_unfocused", "0", CVAR_ROM );
+	com_maxfpsUnfocused = Cvar_Get( "com_maxfpsUnfocused", "0", CVAR_ARCHIVE );
 	com_minimized = Cvar_Get( "com_minimized", "0", CVAR_ROM );
+	com_maxfpsMinimized = Cvar_Get( "com_maxfpsMinimized", "0", CVAR_ARCHIVE );
 
 #if defined( _WIN32 ) && !defined( NDEBUG )
 	com_noErrorInterrupt = Cvar_Get( "com_noErrorInterrupt", "0", 0 );
@@ -3603,13 +3607,24 @@ void Com_Frame( void )
 	}
 
 	// we may want to spin here if things are going too fast
-	if ( !com_dedicated->integer && com_maxfps->integer > 0 && !com_timedemo->integer )
+	if ( !com_dedicated->integer && !com_timedemo->integer )
 	{
-		minMsec = 1000 / com_maxfps->integer;
-	}
-	else
-	{
-		minMsec = 1;
+		if ( com_minimized->integer && com_maxfpsMinimized->integer > 0 )
+		{
+			minMsec = 1000 / com_maxfpsMinimized->integer;
+		}
+		else if ( com_unfocused->integer && com_maxfpsUnfocused->integer > 0 )
+		{
+			minMsec = 1000 / com_maxfpsUnfocused->integer;
+		}
+		else if ( com_maxfps->integer > 0 )
+		{
+			minMsec = 1000 / com_maxfps->integer;
+		}
+		else
+		{
+			minMsec = 1;
+		}
 	}
 
 	com_frameTime = Com_EventLoop();
