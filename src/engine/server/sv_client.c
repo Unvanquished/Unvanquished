@@ -920,7 +920,6 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 	int      curindex;
 	int      rate;
 	int      blockspersnap;
-	int      idPack;
 	char     errorMessage[ 1024 ];
 	int      download_flag;
 
@@ -956,35 +955,23 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 			Com_Printf(_( "clientDownload: %d : beginning \"%s\"\n"), ( int )( cl - svs.clients ), cl->downloadName );
 		}
 
-		idPack = FS_idPak( cl->downloadName, BASEGAME );
-
-		// sv_allowDownload and idPack checks
-		if ( !sv_allowDownload->integer || idPack )
+		if ( !sv_allowDownload->integer )
 		{
-			// cannot auto-download file
-			if ( idPack )
+			Com_Printf(_( "clientDownload: %d : \"%s\" download disabled\n"), ( int )( cl - svs.clients ), cl->downloadName );
+
+			if ( sv_pure->integer )
 			{
-				Com_Printf(_( "clientDownload: %d : \"%s\" cannot download id pk3 files\n"), ( int )( cl - svs.clients ), cl->downloadName );
-				Com_sprintf( errorMessage, sizeof( errorMessage ), "Cannot autodownload official pk3 file \"%s\"", cl->downloadName );
+				Com_sprintf( errorMessage, sizeof( errorMessage ),
+							 "Could not download \"%s\" because autodownloading is disabled on the server.\n\n"
+							 "You will need to get this file elsewhere before you " "can connect to this pure server.\n",
+							 cl->downloadName );
 			}
 			else
 			{
-				Com_Printf(_( "clientDownload: %d : \"%s\" download disabled\n"), ( int )( cl - svs.clients ), cl->downloadName );
-
-				if ( sv_pure->integer )
-				{
-					Com_sprintf( errorMessage, sizeof( errorMessage ),
-					             "Could not download \"%s\" because autodownloading is disabled on the server.\n\n"
-					             "You will need to get this file elsewhere before you " "can connect to this pure server.\n",
-					             cl->downloadName );
-				}
-				else
-				{
-					Com_sprintf( errorMessage, sizeof( errorMessage ),
-					             "Could not download \"%s\" because autodownloading is disabled on the server.\n\n"
-					             "Set autodownload to No in your settings and you might be "
-					             "able to connect even if you don't have the file.\n", cl->downloadName );
-				}
+				Com_sprintf( errorMessage, sizeof( errorMessage ),
+							 "Could not download \"%s\" because autodownloading is disabled on the server.\n\n"
+							 "Set autodownload to No in your settings and you might be "
+							 "able to connect even if you don't have the file.\n", cl->downloadName );
 			}
 
 			SV_BadDownload( cl, msg );

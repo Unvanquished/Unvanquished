@@ -3715,127 +3715,6 @@ void FS_AddGameDirectory( const char *path, const char *dir )
 
 /*
 ================
-FS_idPak
-================
-*/
-qboolean FS_idPak( char *pak, char *base )
-{
-	int i;
-
-	if ( !FS_FilenameCompare( pak, va( "%s/mp_bin", base ) ) )
-	{
-		return qtrue;
-	}
-
-	for ( i = 0; i < NUM_ID_PAKS; i++ )
-	{
-		if ( !FS_FilenameCompare( pak, va( "%s/pak%d", base, i ) ) )
-		{
-			break;
-		}
-
-		/*
-		// JPW NERVE -- this fn prevents external sources from downloading/overwriting official files, so exclude both SP and MP files from this list as well
-		                if ( !FS_FilenameCompare(pak, va("%s/mp_pak%d",base,i)) ) {
-		                        break;
-		                }
-		                if ( !FS_FilenameCompare(pak, va("%s/sp_pak%d",base,i)) ) {
-		                        break;
-		                }
-		// jpw
-		*/
-	}
-
-	if ( i < NUM_ID_PAKS )
-	{
-		return qtrue;
-	}
-
-	return qfalse;
-}
-
-typedef struct
-{
-	char     pakname[ MAX_QPATH ];
-	qboolean ok;
-} officialpak_t;
-
-/*
-================
-FS_VerifyOfficialPaks
-================
-*/
-qboolean FS_VerifyOfficialPaks( void )
-{
-	int           i, j;
-	searchpath_t  *sp;
-	int           numOfficialPaksOnServer = 0;
-	int           numOfficialPaksLocal = 0;
-	officialpak_t officialpaks[ 64 ];
-
-	if ( !fs_numServerPaks )
-	{
-		return qtrue;
-	}
-
-	for ( i = 0; i < fs_numServerPaks; i++ )
-	{
-		if ( FS_idPak( fs_serverPakNames[ i ], BASEGAME ) )
-		{
-			Q_strncpyz( officialpaks[ numOfficialPaksOnServer ].pakname, fs_serverPakNames[ i ], sizeof( officialpaks[ 0 ].pakname ) );
-			officialpaks[ numOfficialPaksOnServer ].ok = qfalse;
-			numOfficialPaksOnServer++;
-		}
-	}
-
-	for ( i = 0; i < fs_numServerPaks; i++ )
-	{
-		for ( sp = fs_searchpaths; sp; sp = sp->next )
-		{
-			if ( sp->pack && sp->pack->checksum == fs_serverPaks[ i ] )
-			{
-				char packPath[ MAX_QPATH ];
-
-				Com_sprintf( packPath, sizeof( packPath ), "%s/%s", sp->pack->pakGamename, sp->pack->pakBasename );
-
-				if ( FS_idPak( packPath, BASEGAME ) )
-				{
-					for ( j = 0; j < numOfficialPaksOnServer; j++ )
-					{
-						if ( !Q_stricmp( packPath, officialpaks[ j ].pakname ) )
-						{
-							officialpaks[ j ].ok = qtrue;
-						}
-					}
-
-					numOfficialPaksLocal++;
-				}
-
-				break;
-			}
-		}
-	}
-
-	if ( numOfficialPaksOnServer != numOfficialPaksLocal )
-	{
-		for ( i = 0; i < numOfficialPaksOnServer; i++ )
-		{
-			if ( officialpaks[ i ].ok != qtrue )
-			{
-				Com_Printf(_( "ERROR: Missing/corrupt official pak file %s\n"), officialpaks[ i ].pakname );
-			}
-		}
-
-		return qfalse;
-	}
-	else
-	{
-		return qtrue;
-	}
-}
-
-/*
-================
 FS_ComparePaks
 
 ----------------
@@ -3878,12 +3757,6 @@ qboolean FS_ComparePaks( char *neededpaks, int len, qboolean dlstring )
 	for ( i = 0; i < fs_numServerReferencedPaks; i++ )
 	{
 		havepak = qfalse;
-
-		// never autodownload any of the id paks
-		if ( FS_idPak( fs_serverReferencedPakNames[ i ], BASEGAME ) )
-		{
-			continue;
-		}
 
 		for ( sp = fs_searchpaths; sp; sp = sp->next )
 		{
@@ -4675,7 +4548,6 @@ don't send the checksum of pak0 (even if it's referenced)
 
 NOTE:
 do we need to fake referenced paks too?
-those are Id paks, so you can't download them
 mp_pakmaps0 would be a worthy candidate for download though, but we don't have it anyway
 the only thing if we omit sending of some referenced stuff, you don't get the console message that says "you're missing this"
 =====================

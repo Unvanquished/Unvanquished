@@ -640,14 +640,6 @@ void CL_ParseGamestate( msg_t *msg )
 	// parse serverId and other cvars
 	CL_SystemInfoChanged();
 
-	// Arnout: verify if we have all official pakfiles. As we won't
-	// be downloading them, we should be kicked for not having them.
-	if ( cl_connectedToPureServer && !FS_VerifyOfficialPaks() )
-	{
-		Com_Error( ERR_DROP,
-		           "Couldn't load an official pak file; verify your installation and make sure it has been updated to the latest version." );
-	}
-
 	// reinitialize the filesystem if the game directory has changed
 	FS_ConditionalRestart( clc.checksumFeed );
 

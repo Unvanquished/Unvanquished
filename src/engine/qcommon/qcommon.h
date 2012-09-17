@@ -648,8 +648,6 @@ issues.
 #define FS_GENERAL_REF   0x01
 #define FS_UI_REF        0x02
 #define FS_CGAME_REF     0x04
-// number of id paks that will never be autodownloaded from baseq3
-#define NUM_ID_PAKS      9
 
 #define MAX_FILE_HANDLES 64
 
@@ -806,8 +804,6 @@ void FS_PureServerSetLoadedPaks( const char *pakSums, const char *pakNames );
 // separated checksums will be checked for files, with the
 // sole exception of .cfg files.
 
-qboolean   FS_idPak( char *pak, char *base );
-qboolean   FS_VerifyOfficialPaks( void );
 qboolean   FS_ComparePaks( char *neededpaks, int len, qboolean dlstring );
 
 void       FS_Rename( const char *from, const char *to );
