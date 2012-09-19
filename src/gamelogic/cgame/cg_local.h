@@ -875,9 +875,6 @@ typedef struct
 	qboolean md5;
 } buildableInfo_t;
 
-#define MAX_REWARDSTACK 10
-#define MAX_SOUNDBUFFER 20
-
 //======================================================================
 
 typedef struct
@@ -1035,19 +1032,6 @@ typedef struct
 
 	// attacking player
 	int attackerTime;
-
-	// reward medals
-	int       rewardStack;
-	int       rewardTime;
-	int       rewardCount[ MAX_REWARDSTACK ];
-	qhandle_t rewardShader[ MAX_REWARDSTACK ];
-	qhandle_t rewardSound[ MAX_REWARDSTACK ];
-
-	// sound buffer mainly for announcer sounds
-	int       soundBufferIn;
-	int       soundBufferOut;
-	int       soundTime;
-	qhandle_t soundBuffer[ MAX_SOUNDBUFFER ];
 
 	// warmup countdown
 	int warmupTime;

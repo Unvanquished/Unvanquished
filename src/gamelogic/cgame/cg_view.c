@@ -1443,46 +1443,6 @@ static int CG_CalcViewValues( void )
 	return CG_CalcFov();
 }
 
-/*
-=====================
-CG_AddBufferedSound
-=====================
-*/
-void CG_AddBufferedSound( sfxHandle_t sfx )
-{
-	if ( !sfx )
-	{
-		return;
-	}
-
-	cg.soundBuffer[ cg.soundBufferIn ] = sfx;
-	cg.soundBufferIn = ( cg.soundBufferIn + 1 ) % MAX_SOUNDBUFFER;
-
-	if ( cg.soundBufferIn == cg.soundBufferOut )
-	{
-		cg.soundBufferOut++;
-	}
-}
-
-/*
-=====================
-CG_PlayBufferedSounds
-=====================
-*/
-static void CG_PlayBufferedSounds( void )
-{
-	if ( cg.soundTime < cg.time )
-	{
-		if ( cg.soundBufferOut != cg.soundBufferIn && cg.soundBuffer[ cg.soundBufferOut ] )
-		{
-			trap_S_StartLocalSound( cg.soundBuffer[ cg.soundBufferOut ], CHAN_ANNOUNCER );
-			cg.soundBuffer[ cg.soundBufferOut ] = 0;
-			cg.soundBufferOut = ( cg.soundBufferOut + 1 ) % MAX_SOUNDBUFFER;
-			cg.soundTime = cg.time + 750;
-		}
-	}
-}
-
 //=========================================================================
 
 static cplane_t  frustum[4];
@@ -1647,9 +1607,6 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 		CG_AddParticles();
 		CG_AddTrails();
 	}
-
-	// add buffered sounds
-	CG_PlayBufferedSounds();
 
 	// finish up the rest of the refdef
 	if ( cg.testModelEntity.hModel )
