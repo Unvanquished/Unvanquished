@@ -9561,6 +9561,7 @@ int UI_GetChatColour( int which, int team )
 
 	case SAY_ADMINS:
 	case SAY_ADMINS_PUBLIC:
+	case SAY_ALL_ADMIN:
 		return ColorIndex( COLOR_MAGENTA );
 #ifdef UIGPP
 	case SAY_RAW:

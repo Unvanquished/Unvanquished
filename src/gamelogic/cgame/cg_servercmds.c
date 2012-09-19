@@ -929,10 +929,9 @@ void CG_Menu( int menu, int arg )
 CG_Say
 =================
 */
-static void CG_Say( int clientNum, saymode_t mode, const char *text )
+static void CG_Say( const char *name, int clientNum, saymode_t mode, const char *text )
 {
-	char *name;
-	char prefix[ 11 ] = "";
+	char prefix[ 21 ] = "";
 	char *ignore = "";
 	char *location = "";
 	char color;
@@ -1001,6 +1000,10 @@ static void CG_Say( int clientNum, saymode_t mode, const char *text )
 			}
 		}
 	}
+	else if ( name )
+	{
+		Q_strcat( prefix, sizeof( prefix ), "[ADMIN]" );
+	}
 	else
 	{
 		name = "console";
@@ -1023,13 +1026,13 @@ static void CG_Say( int clientNum, saymode_t mode, const char *text )
 	switch ( mode )
 	{
 		case SAY_ALL:
-
 			// might already be ignored but in that case no harm is done
 			if ( cg_teamChatsOnly.integer )
 			{
 				ignore = "[skipnotify]";
 			}
 
+		case SAY_ALL_ADMIN:
 			CG_Printf(  "%s%s%s^7%s ^%c%s\n",
 			           ignore, prefix, name, maybeColon, color, text );
 			break;
@@ -1078,8 +1081,9 @@ static void CG_Say( int clientNum, saymode_t mode, const char *text )
 			CG_Printf( "%s\n", text );
 			break;
 
-                case SAY_DEFAULT:
-                        break;
+		case SAY_DEFAULT:
+		default:
+			break;
 	}
 
 	switch ( mode )
@@ -1229,15 +1233,15 @@ static void CG_ParseVoice( void )
 		switch ( vChan )
 		{
 			case VOICE_CHAN_ALL:
-				CG_Say( clientNum, SAY_ALL, sayText );
+				CG_Say( NULL, clientNum, SAY_ALL, sayText );
 				break;
 
 			case VOICE_CHAN_TEAM:
-				CG_Say( clientNum, SAY_TEAM, sayText );
+				CG_Say( NULL, clientNum, SAY_TEAM, sayText );
 				break;
 
 			case VOICE_CHAN_LOCAL:
-				CG_Say( clientNum, SAY_AREA_TEAM, sayText );
+				CG_Say( NULL, clientNum, SAY_AREA_TEAM, sayText );
 				break;
 
 			default:
@@ -1422,7 +1426,23 @@ static void CG_Chat_f( void )
 	trap_Argv( 1, id, sizeof( id ) );
 	trap_Argv( 2, mode, sizeof( mode ) );
 
-	CG_Say( atoi( id ), atoi( mode ), CG_Argv( 3 ) );
+	CG_Say( NULL, atoi( id ), atoi( mode ), CG_Argv( 3 ) );
+}
+
+/*
+=================
+CG_AdminChat_f
+=================
+*/
+static void CG_AdminChat_f( void )
+{
+	char name[ MAX_NAME_LENGTH ];
+	char mode[ 3 ];
+
+	trap_Argv( 1, name, sizeof( name ) );
+	trap_Argv( 2, mode, sizeof( mode ) );
+
+	CG_Say( name, -1, atoi( mode ), CG_Argv( 3 ) );
 }
 
 /*
@@ -1491,6 +1511,7 @@ static void CG_GameCmds_f( void )
 
 static const consoleCommand_t svcommands[] =
 {
+	{ "achat",            CG_AdminChat_f          },
 	{ "chat",             CG_Chat_f               },
 	{ "cmds",             CG_GameCmds_f           },
 	{ "cp",               CG_CenterPrint_f        },

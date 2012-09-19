@@ -1104,6 +1104,12 @@ void G_namelog_update_score( gclient_t *client );
 void G_namelog_update_name( gclient_t *client );
 void G_namelog_cleanup( void );
 
+//
+// g_admin.c
+//
+const char *G_admin_name( gentity_t *ent );
+const char *G_quoted_admin_name( gentity_t *ent );
+
 //some maxs
 #define MAX_FILEPATH 144
 

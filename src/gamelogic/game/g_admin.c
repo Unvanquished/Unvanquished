@@ -318,12 +318,12 @@ g_admin_command_t *g_admin_commands = NULL;
 /* ent must be non-NULL */
 #define G_ADMIN_NAME( ent ) ( ent->client->pers.admin ? ent->client->pers.admin->name : ent->client->pers.netname )
 
-static const char *G_admin_name( gentity_t *ent )
+const char *G_admin_name( gentity_t *ent )
 {
 	return ( ent ) ? G_ADMIN_NAME( ent ) : "console";
 }
 
-static const char *G_quoted_admin_name( gentity_t *ent )
+const char *G_quoted_admin_name( gentity_t *ent )
 {
 	return ( ent ) ? Quote( G_ADMIN_NAME( ent ) ) : "console";
 }
