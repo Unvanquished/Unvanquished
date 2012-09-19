@@ -1209,7 +1209,7 @@ extern  vmCvar_t g_censorship;
 extern  vmCvar_t g_showKillerHP;
 extern  vmCvar_t g_combatCooldown;
 
-void             trap_Print( const char *fmt );
+void             trap_Print( const char *string );
 void             trap_Error( const char *string ) NORETURN;
 int              trap_Milliseconds( void );
 void             trap_Cvar_Register( vmCvar_t *cvar, const char *var_name, const char *value, int flags );

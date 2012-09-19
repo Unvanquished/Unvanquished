@@ -377,7 +377,7 @@ void Cdelay_Frame( void ) {
 			run_it = qtrue;
 		} else if(delayed_cmd[i].type == CMD_DELAY_FRAME)
 		{
-			delayed_cmd[i].delay --;
+			delayed_cmd[i].delay--;
 			if(delayed_cmd[i].delay == CMD_DELAY_FRAME_FIRE)
 				run_it = qtrue;
 		}

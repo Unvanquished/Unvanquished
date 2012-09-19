@@ -301,7 +301,7 @@ typedef enum
 // use Cmd_Argc() / Cmd_Argv() to read the command
 } cgameExport_t;
 
-void            trap_Print( const char *fmt );
+void            trap_Print( const char *string );
 void            trap_Error( const char *string ) NORETURN;
 int             trap_Milliseconds( void );
 void            trap_Cvar_Register( vmCvar_t *vmCvar, const char *varName, const char *defaultValue, int flags );
