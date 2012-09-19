@@ -2294,18 +2294,6 @@ typedef struct
 #define MAX_PINGREQUESTS         16
 #define MAX_SERVERSTATUSREQUESTS 16
 
-// NERVE - SMF - wolf server/game states
-	typedef enum
-	{
-	  GS_INITIALIZE = -1,
-	  GS_PLAYING,
-	  GS_WARMUP_COUNTDOWN,
-	  GS_WARMUP,
-	  GS_INTERMISSION,
-	  GS_WAITING_FOR_PLAYERS,
-	  GS_RESET
-	} gamestate_t;
-
 #define GENTITYNUM_MASK           ( MAX_GENTITIES - 1 )
 
 #define MAX_EMOTICON_NAME_LEN     16
