@@ -1363,9 +1363,6 @@ typedef struct
 
 	int          cursorX;
 	int          cursorY;
-	qboolean     eventHandling;
-	qboolean     mouseCaptured;
-	qboolean     sizingHud;
 	void         *capturedItem;
 	qhandle_t    activeCursor;
 
@@ -1578,7 +1575,6 @@ int        CG_LastAttacker( void );
 void       CG_LoadMenus( const char *menuFile );
 void       CG_KeyEvent( int key, int chr, int flags );
 void       CG_MouseEvent( int x, int y );
-void       CG_EventHandling( int type );
 void       CG_SetScoreSelection( void *menu );
 qboolean   CG_ClientIsReady( int clientNum );
 void       CG_BuildSpectatorString( void );

@@ -4208,48 +4208,6 @@ void CG_MouseEvent( int x, int y )
 	}
 }
 
-/*
-==================
-CG_HideTeamMenus
-==================
-
-*/
-void CG_HideTeamMenu( void )
-{
-	Menus_CloseByName( "teamMenu" );
-	Menus_CloseByName( "getMenu" );
-}
-
-/*
-==================
-CG_ShowTeamMenus
-==================
-
-*/
-void CG_ShowTeamMenu( void )
-{
-	Menus_ActivateByName( "teamMenu" );
-}
-
-/*
-==================
-CG_EventHandling
-
-type 0 - no event handling
-     1 - team menu
-     2 - hud editor
-==================
-*/
-void CG_EventHandling( int type )
-{
-	cgs.eventHandling = type;
-
-	if ( type == CGAME_EVENT_NONE )
-	{
-		CG_HideTeamMenu();
-	}
-}
-
 void CG_KeyEvent( int key, int chr, int flags )
 {
 	if ( !( flags & ( 1 << KEYEVSTATE_DOWN ) ) )
@@ -4261,7 +4219,6 @@ void CG_KeyEvent( int key, int chr, int flags )
 	     ( cg.predictedPlayerState.pm_type == PM_SPECTATOR &&
 	       cg.showScores == qfalse ) )
 	{
-		CG_EventHandling( CGAME_EVENT_NONE );
 		trap_Key_SetCatcher( 0 );
 		return;
 	}

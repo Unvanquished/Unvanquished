@@ -89,10 +89,6 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 			// cgame doesn't care where the cursor is
 			return 0;
 
-		case CG_EVENT_HANDLING:
-			CG_EventHandling( arg0 );
-			return 0;
-
 		case CG_VOIP_STRING:
 			return ( intptr_t ) CG_VoIPString();
 

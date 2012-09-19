@@ -1776,14 +1776,6 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	// escape is always handled special
 	if ( key == K_ESCAPE && down )
 	{
-		// escape always gets out of CGAME stuff
-		if ( cls.keyCatchers & KEYCATCH_CGAME )
-		{
-			cls.keyCatchers &= ~KEYCATCH_CGAME;
-			VM_Call( cgvm, CG_EVENT_HANDLING, CGAME_EVENT_NONE );
-			return;
-		}
-
 		if ( !( cls.keyCatchers & KEYCATCH_UI ) )
 		{
 			if ( cls.state == CA_ACTIVE && !clc.demoplaying )

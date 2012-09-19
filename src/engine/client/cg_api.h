@@ -57,17 +57,6 @@ typedef struct
 	int           serverCommandSequence; // snapshot becomes current
 } snapshot_t;
 
-typedef enum cgameEvent_e
-{
-  CGAME_EVENT_NONE,
-  CGAME_EVENT_GAMEVIEW,
-  CGAME_EVENT_SPEAKEREDITOR,
-  CGAME_EVENT_CAMPAIGNBREIFING,
-  CGAME_EVENT_DEMO,
-  CGAME_EVENT_FIRETEAMMSG,
-  CGAME_EVENT_MULTIVIEW
-} cgameEvent_t;
-
 typedef enum cgameImport_s
 {
   CG_PRINT = FIRST_VM_SYSCALL,
@@ -283,8 +272,6 @@ typedef enum
 
   CG_MOUSE_EVENT,
 //  void    (*CG_MouseEvent)( int dx, int dy );
-  CG_EVENT_HANDLING,
-//  void (*CG_EventHandling)(int type, qboolean fForced);
 
   CG_VOIP_STRING,
 // char *(*CG_VoIPString)( void );
