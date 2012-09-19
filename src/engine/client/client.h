@@ -441,8 +441,6 @@ extern cvar_t *cl_pitchspeed;
 extern cvar_t *cl_run;
 extern cvar_t *cl_anglespeedkey;
 
-extern cvar_t *cl_recoilPitch; // RF
-
 extern cvar_t *cl_doubletapdelay;
 
 extern cvar_t *cl_sensitivity;

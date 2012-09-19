@@ -4390,9 +4390,6 @@ void CL_Init( void )
 
 	cl_serverStatusResendTime = Cvar_Get( "cl_serverStatusResendTime", "750", 0 );
 
-	// RF
-	cl_recoilPitch = Cvar_Get( "cg_recoilPitch", "0", CVAR_ROM );
-
 	cl_doubletapdelay = Cvar_Get( "cl_doubletapdelay", "250", CVAR_ARCHIVE );  // Arnout: double tap
 	m_pitch = Cvar_Get( "m_pitch", "0.022", CVAR_ARCHIVE );
 	m_yaw = Cvar_Get( "m_yaw", "0.022", CVAR_ARCHIVE );
