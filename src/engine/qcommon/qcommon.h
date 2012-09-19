@@ -214,7 +214,6 @@ void QDECL NET_OutOfBandData( netsrc_t sock, netadr_t adr, byte *format, int len
 qboolean   NET_CompareAdr( netadr_t a, netadr_t b );
 qboolean   NET_CompareBaseAdr( netadr_t a, netadr_t b );
 qboolean   NET_IsLocalAddress( netadr_t adr );
-qboolean   NET_IsIPXAddress( const char *buf );
 const char *NET_AdrToString( netadr_t a );
 const char *NET_AdrToStringwPort( netadr_t a );
 int        NET_StringToAdr( const char *s, netadr_t *a, netadrtype_t family );

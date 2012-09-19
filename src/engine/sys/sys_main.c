@@ -158,12 +158,6 @@ char *Sys_ConsoleInput( void )
 	return CON_Input();
 }
 
-#ifdef DEDICATED
-#       define PID_FILENAME PRODUCT_NAME_UPPPER "_server.pid"
-#else
-#       define PID_FILENAME PRODUCT_NAME_UPPPER ".pid"
-#endif
-
 /*
 =================
 Sys_Exit

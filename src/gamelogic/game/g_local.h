@@ -45,7 +45,6 @@ typedef struct gclient_s gclient_t;
 #define FL_NOTARGET                0x00000020
 #define FL_TEAMSLAVE               0x00000400 // not the first on the team
 #define FL_NO_KNOCKBACK            0x00000800
-#define FL_DROPPED_ITEM            0x00001000
 #define FL_NO_BOTS                 0x00002000 // spawn point not for bot use
 #define FL_NO_HUMANS               0x00004000 // spawn point just for bots
 #define FL_FORCE_GESTURE           0x00008000 // spawn point just for bots
@@ -223,7 +222,6 @@ struct gentity_s
 
 	gentity_t   *targeted; // true if the player is currently a valid target of a turret
 	vec3_t      turretAim; // aim vector for turrets
-	vec3_t      turretAimRate; // track turn speed for norfenturrets
 	int         turretSpinupTime; // spinup delay for norfenturrets
 
 	vec4_t      animation; // animated map objects
@@ -403,22 +401,18 @@ struct gclient_s
 	int        respawnTime; // can respawn when time > this
 	int        inactivityTime; // kick players when time > this
 	qboolean   inactivityWarning; // qtrue if the five seoond warning has been given
-	int        rewardTime; // clear the EF_AWARD_IMPRESSIVE, etc when time > this
 	int        boostedTime; // last time we touched a booster
 
 	int        airOutTime;
 
 	qboolean   fireHeld; // used for hook
 	qboolean   fire2Held; // used for alt fire
-	gentity_t  *hook; // grapple hook if out
 
 	int        switchTeamTime; // time the player switched teams
 
 	int        time100; // timer for 100ms interval events
 	int        time1000; // timer for one second interval events
 	int        time10000; // timer for ten second interval events
-
-	char       *areabits;
 
 	int        lastPoisonTime;
 	int        poisonImmunityTime;
@@ -433,10 +427,6 @@ struct gclient_s
 	int        lastCreepSlowTime; // time until creep can be removed
 	int        lastCombatTime; // time of last damage received/dealt or held by basilisk
 
-	qboolean   charging;
-
-	int        lastFlameBall; // s.number of the last flame ball fired
-
 	unlagged_t unlaggedHist[ MAX_UNLAGGED_MARKERS ];
 	unlagged_t unlaggedBackup;
 	unlagged_t unlaggedCalc;
@@ -445,7 +435,6 @@ struct gclient_s
 	float      voiceEnthusiasm;
 	char       lastVoiceCmd[ MAX_VOICE_CMD_LEN ];
 
-	int        lcannonStartTime;
 	int        trampleBuildablesHitPos;
 	int        trampleBuildablesHit[ MAX_TRAMPLE_BUILDABLES_TRACKED ];
 
@@ -580,7 +569,6 @@ typedef struct
 
 	int      startTime; // level.time the map was started
 
-	int      teamScores[ NUM_TEAMS ];
 	int      lastTeamLocationTime; // last time of client team location update
 
 	qboolean newSession; // don't use any old session data, because
@@ -872,7 +860,6 @@ char       *G_CopyString( const char *str );
 
 void       G_TouchTriggers( gentity_t *ent );
 
-float      *tv( float x, float y, float z );
 char       *vtos( const vec3_t v );
 
 float      vectoyaw( const vec3_t vec );
@@ -928,7 +915,6 @@ gentity_t *fire_blaster( gentity_t *self, vec3_t start, vec3_t dir );
 gentity_t *fire_pulseRifle( gentity_t *self, vec3_t start, vec3_t dir );
 gentity_t *fire_luciferCannon( gentity_t *self, vec3_t start, vec3_t dir, int damage, int radius, int speed );
 gentity_t *fire_lockblob( gentity_t *self, vec3_t start, vec3_t dir );
-gentity_t *fire_paraLockBlob( gentity_t *self, vec3_t start, vec3_t dir );
 gentity_t *fire_slowBlob( gentity_t *self, vec3_t start, vec3_t dir );
 gentity_t *fire_bounceBall( gentity_t *self, vec3_t start, vec3_t dir );
 gentity_t *fire_hive( gentity_t *self, vec3_t start, vec3_t dir );
@@ -1109,9 +1095,6 @@ void G_namelog_cleanup( void );
 //
 const char *G_admin_name( gentity_t *ent );
 const char *G_quoted_admin_name( gentity_t *ent );
-
-//some maxs
-#define MAX_FILEPATH 144
 
 extern  level_locals_t level;
 extern  gentity_t      g_entities[ MAX_GENTITIES ];

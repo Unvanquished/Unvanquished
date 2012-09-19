@@ -120,9 +120,6 @@ cvar_t *com_recommendedSet;
 cvar_t *com_watchdog;
 cvar_t *com_watchdog_cmd;
 
-// Rafael Notebook
-cvar_t *cl_notebook;
-
 cvar_t *com_hunkused; // Ridah
 
 #if idx64
@@ -3319,11 +3316,6 @@ void Com_Init( char *commandLine )
 
 	if ( !Crypto_Init() )
 	{
-		// Disable all crypto functions
-		Cvar_Get( "g_adminPubkeyID", "0", CVAR_ROM );
-#ifndef DEDICATED
-		Cvar_Get( "cl_pubkeyID", "0", CVAR_ROM );
-#endif
 	}
 
 	com_dedicated->modified = qfalse;

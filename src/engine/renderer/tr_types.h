@@ -520,20 +520,6 @@ typedef struct
 } glconfig2_t;
 // XreaL END
 
-#if !defined _WIN32
-
-#define _3DFX_DRIVER_NAME  "libMesaVoodooGL.so.3.1"
-#define OPENGL_DRIVER_NAME "libGL.so.1"
-
-#else
-
-#define _3DFX_DRIVER_NAME       "3dfxvgl"
-#define OPENGL_DRIVER_NAME      "opengl32"
-#define WICKED3D_V5_DRIVER_NAME "gl/openglv5.dll"
-#define WICKED3D_V3_DRIVER_NAME "gl/openglv3.dll"
-
-#endif // !defined _WIN32
-
 // =========================================
 // Gordon, these MUST NOT exceed the values for SHADER_MAX_VERTEXES/SHADER_MAX_INDEXES
 #define MAX_PB_VERTS    1025

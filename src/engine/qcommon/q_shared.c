@@ -35,21 +35,6 @@ Maryland 20850 USA.
 // q_shared.c -- stateless support routines that are included in each code dll
 #include "q_shared.h"
 
-// os x game bundles have no standard library links, and the defines are not always defined!
-
-#ifdef MACOS_X
-int qmax( int x, int y )
-{
-	return ( ( ( x ) > ( y ) ) ? ( x ) : ( y ) );
-}
-
-int qmin( int x, int y )
-{
-	return ( ( ( x ) < ( y ) ) ? ( x ) : ( y ) );
-}
-
-#endif
-
 #ifndef Q3_VM
 /*
 ============================================================================
@@ -2844,34 +2829,6 @@ char     *QDECL PRINTF_LIKE(1) va( const char *format, ... )
 	index += len + 1;
 
 	return buf;
-}
-
-/*
-=============
-TempVector
-
-(SA) this is straight out of g_utils.c around line 210
-
-This is just a convenience function
-for making temporary vectors for function calls
-=============
-*/
-float   *tv( float x, float y, float z )
-{
-	static int    index;
-	static vec3_t vecs[ 8 ];
-	float         *v;
-
-	// use an array so that multiple tempvectors won't collide
-	// for a while
-	v = vecs[ index ];
-	index = ( index + 1 ) & 7;
-
-	v[ 0 ] = x;
-	v[ 1 ] = y;
-	v[ 2 ] = z;
-
-	return v;
 }
 
 /*

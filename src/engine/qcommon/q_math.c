@@ -37,7 +37,6 @@ Maryland 20850 USA.
 // doesn't understand static functions though, so we only want them in
 // one file. That's what this is about.
 #ifdef Q3_VM
-#define __Q3_VM_MATH
 #define FLT_EPSILON 1.19209290E-07F
 #define atanf(x) ( (float) atan( (x) ) )
 #define tanf(x) ( (float) tan( (x) ) )

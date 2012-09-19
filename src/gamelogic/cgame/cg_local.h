@@ -32,13 +32,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // If you absolutely need something stored, it can either be kept
 // by the server in the server stored userinfos, or stashed in a cvar.
 
-#define CG_FONT_THRESHOLD              0.1
-
-#define POWERUP_BLINKS                 5
-
-#define POWERUP_BLINK_TIME             1000
 #define FADE_TIME                      200
-#define PULSE_TIME                     200
 #define DAMAGE_DEFLECT_TIME            100
 #define DAMAGE_RETURN_TIME             400
 #define DAMAGE_TIME                    500
@@ -47,15 +41,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define DUCK_TIME                      100
 #define PAIN_TWITCH_TIME               200
 #define WEAPON_SELECT_TIME             1400
-#define ITEM_SCALEUP_TIME              1000
 #define ZOOM_TIME                      150
-#define ITEM_BLOB_TIME                 200
 #define MUZZLE_FLASH_TIME              20
-#define SINK_TIME                      1000 // time for fragments to sink into ground before going away
-#define ATTACKER_HEAD_TIME             10000
-#define REWARD_TIME                    3000
-
-#define PULSE_SCALE                    1.5 // amount to scale up the icons when activating
 
 #define MAX_STEP_CHANGE                32
 
@@ -64,19 +51,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define STAT_MINUS                     10 // num frame for '-' stats digit
 
-#define ICON_SIZE                      48
 #define CHAR_WIDTH                     32
 #define CHAR_HEIGHT                    48
-#define TEXT_ICON_SPACE                4
-
-// very large characters
-#define GIANT_WIDTH                    32
-#define GIANT_HEIGHT                   48
-
-#define NUM_CROSSHAIRS                 10
-
-#define TEAM_OVERLAY_MAXNAME_WIDTH     12
-#define TEAM_OVERLAY_MAXLOCATION_WIDTH 16
 
 typedef enum
 {
@@ -1055,9 +1031,6 @@ typedef struct
 	char centerPrint[ MAX_STRING_CHARS ];
 	int  centerPrintLines;
 
-	// low ammo warning state
-	int lowAmmoWarning; // 1 = low, 2 = empty
-
 	// kill timers for carnage reward
 	int lastKillTime;
 
@@ -1065,10 +1038,6 @@ typedef struct
 	int crosshairBuildable;
 	int crosshairClientNum;
 	int crosshairClientTime;
-
-	// powerup active flashing
-	int powerupActive;
-	int powerupTime;
 
 	// attacking player
 	int attackerTime;
@@ -1085,11 +1054,6 @@ typedef struct
 	int       soundBufferOut;
 	int       soundTime;
 	qhandle_t soundBuffer[ MAX_SOUNDBUFFER ];
-
-	// for voice chat buffer
-	int voiceChatTime;
-	int voiceChatBufferIn;
-	int voiceChatBufferOut;
 
 	// warmup countdown
 	int warmupTime;
@@ -1108,15 +1072,6 @@ typedef struct
 	float damageTime;
 	float damageX, damageY, damageValue;
 
-	// status bar head
-	float headYaw;
-	float headEndPitch;
-	float headEndYaw;
-	int   headEndTime;
-	float headStartPitch;
-	float headStartYaw;
-	int   headStartTime;
-
 	// view movement
 	float    v_dmg_time;
 	float    v_dmg_pitch;
@@ -1128,7 +1083,6 @@ typedef struct
 	float bobfracsin;
 	int   bobcycle;
 	float xyspeed;
-	int   nextOrbitTime;
 
 	// development tool
 	refEntity_t             testModelEntity;
@@ -1171,7 +1125,6 @@ typedef struct
 
 	float                   painBlendValue;
 	float                   painBlendTarget;
-	float                   healBlendValue;
 	int                     lastHealth;
 	qboolean                wasDeadLastFrame;
 
@@ -1270,10 +1223,6 @@ typedef struct
 	sfxHandle_t hardBounceSound1;
 	sfxHandle_t hardBounceSound2;
 
-	sfxHandle_t voteNow;
-	sfxHandle_t votePassed;
-	sfxHandle_t voteFailed;
-
 	sfxHandle_t watrInSound;
 	sfxHandle_t watrOutSound;
 	sfxHandle_t watrUnSound;
@@ -1353,9 +1302,6 @@ typedef struct
 	qhandle_t   healthCross3X;
 	qhandle_t   healthCrossMedkit;
 	qhandle_t   healthCrossPoisoned;
-//   qhandle_t   hudAlienDamagedView[11];
-//   qhandle_t   hudHumanDamagedView[11];
-//   qhandle_t   hudDamagedView[11];
 } cgMedia_t;
 
 typedef struct
@@ -1413,10 +1359,6 @@ typedef struct
 
 	int      levelStartTime;
 
-	int      scores1, scores2; // from configstrings
-
-	qboolean newHud;
-
 	int      alienStage;
 	int      humanStage;
 	int      alienCredits;
@@ -1459,7 +1401,6 @@ typedef struct
 
 	voice_t      *voices;
 	clientList_t ignoreList;
-	int          blood;
 } cgs_t;
 
 typedef struct
@@ -1490,9 +1431,6 @@ typedef enum
 	RMT_CONE_64,
 	RMT_CONE_240,
 } rangeMarkerType_t;
-
-#define BLOOD_VIEW 1
-#define CORE_HUD   1
 
 //==============================================================================
 
@@ -1641,7 +1579,6 @@ extern vmCvar_t             cg_chatTeamPrefix;
 
 extern vmCvar_t             cg_animSpeed;
 extern vmCvar_t             cg_animBlend;
-extern vmCvar_t             cg_core;
 
 extern vmCvar_t             cg_highPolyPlayerModels;
 extern vmCvar_t             cg_highPolyBuildableModels;
@@ -1657,7 +1594,6 @@ void QDECL CG_Printf( const char *msg, ... ) PRINTF_LIKE(1);
 void QDECL CG_Error( const char *msg, ... ) PRINTF_LIKE(1) NORETURN;
 
 void       CG_StartMusic( void );
-int        CG_PlayerCount( void );
 
 void       CG_UpdateCvars( void );
 
@@ -1958,12 +1894,6 @@ void          CG_AddTrails( void );
 
 void          CG_TestTS_f( void );
 void          CG_DestroyTestTS_f( void );
-
-//
-// cg_ptr.c
-//
-int  CG_ReadPTRCode( void );
-void CG_WritePTRCode( int code );
 
 //
 // cg_tutorial.c

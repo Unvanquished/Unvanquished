@@ -247,7 +247,6 @@ vmCvar_t        cg_chatTeamPrefix;
 
 vmCvar_t        cg_animSpeed;
 vmCvar_t        cg_animBlend;
-vmCvar_t        cg_core;
 
 vmCvar_t        cg_highPolyPlayerModels;
 vmCvar_t        cg_highPolyBuildableModels;
@@ -411,7 +410,6 @@ static const cvarTable_t cvarTable[] =
 
 	{ &cg_animSpeed,                   "cg_animspeed",                   "1",            CVAR_CHEAT                   },
 	{ &cg_animBlend,                   "cg_animblend",                   "5.0",          CVAR_ARCHIVE                 },
-	{ &cg_core,                        "cg_core",                        "3",            CVAR_ARCHIVE                 },
 
 	{ &cg_chatTeamPrefix,              "cg_chatTeamPrefix",              "1",            CVAR_ARCHIVE                 },
 	{ &cg_highPolyPlayerModels,        "cg_highPolyPlayerModels",        "1",            CVAR_ARCHIVE | CVAR_LATCH    },
@@ -1374,29 +1372,6 @@ void CG_StartMusic( void )
 	Q_strncpyz( parm2, COM_Parse( &s ), sizeof( parm2 ) );
 
 	trap_S_StartBackgroundTrack( parm1, parm2 );
-}
-
-/*
-======================
-CG_PlayerCount
-======================
-*/
-int CG_PlayerCount( void )
-{
-	int i, count = 0;
-
-	CG_RequestScores();
-
-	for ( i = 0; i < cg.numScores; i++ )
-	{
-		if ( cg.scores[ i ].team == TEAM_ALIENS ||
-		     cg.scores[ i ].team == TEAM_HUMANS )
-		{
-			count++;
-		}
-	}
-
-	return count;
 }
 
 //

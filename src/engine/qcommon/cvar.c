@@ -1480,7 +1480,4 @@ void Cvar_Init( void )
 	Cmd_SetCommandCompletionFunc( "reset", Cvar_CompleteCvarName );
 	Cmd_AddCommand( "cvarlist", Cvar_List_f );
 	Cmd_AddCommand( "cvar_restart", Cvar_Restart_f );
-
-	// NERVE - SMF - can't rely on autoexec to do this
-	Cvar_Get( "devdll", "1", CVAR_ROM );
 }

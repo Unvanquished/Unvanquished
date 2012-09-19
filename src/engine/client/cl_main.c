@@ -195,8 +195,6 @@ void        CL_CheckForResend( void );
 void        CL_ShowIP_f( void );
 void        CL_ServerStatus_f( void );
 void        CL_ServerStatusResponse( netadr_t from, msg_t *msg );
-void        CL_SaveTranslations_f( void );
-void        CL_LoadTranslations_f( void );
 
 // fretn
 void        CL_WriteWaveClose( void );
@@ -5318,21 +5316,6 @@ void CL_GetPing( int n, char *buf, int buflen, int *pingtime )
 	CL_SetServerInfoByAddress( cl_pinglist[ n ].adr, cl_pinglist[ n ].info, cl_pinglist[ n ].time );
 
 	*pingtime = time;
-}
-
-/*
-==================
-CL_UpdateServerInfo
-==================
-*/
-void CL_UpdateServerInfo( int n )
-{
-	if ( n < 0 || n >= MAX_PINGREQUESTS || !cl_pinglist[ n ].adr.port )
-	{
-		return;
-	}
-
-	CL_SetServerInfoByAddress( cl_pinglist[ n ].adr, cl_pinglist[ n ].info, cl_pinglist[ n ].time );
 }
 
 /*

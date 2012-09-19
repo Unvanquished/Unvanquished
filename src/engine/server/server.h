@@ -298,8 +298,6 @@ typedef struct
 // in a two second time period.
 #define MAX_INFO_RECEIPTS 48
 
-#define MAX_MASTERS                       8 // max recipients for heartbeat packets
-
 #define SERVER_PERFORMANCECOUNTER_FRAMES  600
 #define SERVER_PERFORMANCECOUNTER_SAMPLES 6
 
@@ -364,10 +362,6 @@ extern cvar_t *sv_lanForceRate;
 
 extern cvar_t *sv_showAverageBPS; // NERVE - SMF - net debugging
 
-extern cvar_t *sv_requireValidGuid;
-
-extern cvar_t *sv_ircchannel;
-
 extern cvar_t *sv_reloading;
 
 // TTimo - autodl
@@ -408,8 +402,6 @@ void       SV_RemoveOperatorCommands( void );
 void       SV_MasterHeartbeat( const char *hbname );
 void       SV_MasterShutdown( void );
 void       SV_MasterGameStat( const char *data );
-
-void       SV_MasterGameCompleteStatus(); // NERVE - SMF
 
 //bani - bugtraq 12534
 qboolean   SV_VerifyChallenge( char *challenge );
