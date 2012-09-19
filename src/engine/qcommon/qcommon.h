@@ -289,7 +289,7 @@ You or the server may be running older versions of the game."
 #define PROTOCOL_VERSION       86
 
 #define URI_SCHEME             GAMENAME_STRING "://"
-#define URI_SCHEME_LENGTH      6
+#define URI_SCHEME_LENGTH      ( ARRAY_LEN( URI_SCHEME ) - 1 )
 
 // maintain a list of compatible protocols for demo playing
 // NOTE: that stuff only works with two digits protocols
@@ -1432,9 +1432,9 @@ void Com_RandomBytes( byte *string, int len );
 #define N_(x) (x)
 
 void Trans_Init( void );
-const char* Trans_Gettext( const char *msgid ) __attribute__((format_arg(1)));
-const char* Trans_Pgettext( const char *ctxt, const char *msgid ) __attribute__((format_arg(2)));
-const char* Trans_GettextGame( const char *msgid ) __attribute__((format_arg(1)));
-const char* Trans_PgettextGame( const char *ctxt, const char *msgid ) __attribute__((format_arg(2)));
+const char* Trans_Gettext( const char *msgid ) __attribute__((__format_arg__(1)));
+const char* Trans_Pgettext( const char *ctxt, const char *msgid ) __attribute__((__format_arg__(2)));
+const char* Trans_GettextGame( const char *msgid ) __attribute__((__format_arg__(1)));
+const char* Trans_PgettextGame( const char *ctxt, const char *msgid ) __attribute__((__format_arg__(2)));
 
 #endif // _QCOMMON_H_

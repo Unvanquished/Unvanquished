@@ -43,7 +43,7 @@ extern "C" {
 // A user mod should never modify this file
 
 #define PRODUCT_NAME            "Unvanquished"
-#define PRODUCT_NAME_UPPPER     "UNVANQUISHED" // Case, No spaces
+#define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
 #define PRODUCT_VERSION         "0.7.0"
 
@@ -61,7 +61,7 @@ extern "C" {
 
 #define CLIENT_WINDOW_TITLE     PRODUCT_NAME
 #define CLIENT_WINDOW_MIN_TITLE PRODUCT_NAME_LOWER
-#define GAMENAME_FOR_MASTER     PRODUCT_NAME_UPPPER
+#define GAMENAME_FOR_MASTER     PRODUCT_NAME_UPPER
 
 #define CONFIG_NAME             "autogen.cfg"
 
@@ -585,7 +585,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 
 #define nanmask ( 255 << 23 )
 
-#define IS_NAN( x ) ( ( ( *(int *)&x ) & nanmask ) == nanmask )
+#define IS_NAN( x ) ( ( ( *(int *)&( x ) ) & nanmask ) == nanmask )
 
 #if idx64
 	extern long qftolsse( float f );

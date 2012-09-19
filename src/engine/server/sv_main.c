@@ -257,7 +257,7 @@ changes from empty to non-empty, and full to non-full,
 but not on every player enter or exit.
 ================
 */
-#define HEARTBEAT_MSEC 300 * 1000
+#define HEARTBEAT_MSEC (300 * 1000)
 //#define   HEARTBEAT_GAME  "Wolfenstein-1"
 //#define   HEARTBEAT_DEAD  "WolfFlatline-1"            // NERVE - SMF
 #define HEARTBEAT_GAME "EnemyTerritory-1"
