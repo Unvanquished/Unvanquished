@@ -2046,9 +2046,6 @@ void CG_DrawItemSelect( rectDef_t *rect, vec4_t color )
 		}
 	}
 
-	// showing weapon select clears pickup item display, but not the blend blob
-	cg.itemPickupTime = 0;
-
 	// put all weapons in the items list
 	for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
 	{

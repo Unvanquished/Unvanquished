@@ -3125,10 +3125,6 @@ void CG_Player( centity_t *cent )
 		{
 			renderfx = RF_THIRD_PERSON; // only draw in mirrors
 		}
-		else if ( cg_cameraMode.integer )
-		{
-			return;
-		}
 	}
 
 	if ( cg_drawBBOX.integer )

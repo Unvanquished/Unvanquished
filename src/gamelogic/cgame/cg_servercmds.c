@@ -441,8 +441,6 @@ static void CG_MapRestart( void )
 
 	CG_InitMarkPolys();
 
-	cg.timelimitWarnings = 0;
-
 	cg.intermissionStarted = qfalse;
 
 	cgs.voteTime[ TEAM_NONE ] = 0;

@@ -180,7 +180,6 @@ vmCvar_t        cg_hudFilesEnable;
 vmCvar_t        cg_smoothClients;
 vmCvar_t        pmove_fixed;
 vmCvar_t        pmove_msec;
-vmCvar_t        cg_cameraMode;
 vmCvar_t        cg_timescaleFadeEnd;
 vmCvar_t        cg_timescaleFadeSpeed;
 vmCvar_t        cg_timescale;
@@ -436,17 +435,12 @@ void CG_RegisterCvars( void )
 {
 	int         i;
 	const cvarTable_t *cv;
-	char        var[ MAX_TOKEN_CHARS ];
 
 	for ( i = 0, cv = cvarTable; i < cvarTableSize; i++, cv++ )
 	{
 		trap_Cvar_Register( cv->vmCvar, cv->cvarName,
 		                    cv->defaultString, cv->cvarFlags );
 	}
-
-	// see if we are also running the server on this machine
-	trap_Cvar_VariableStringBuffer( "sv_running", var, sizeof( var ) );
-	cgs.localServer = atoi( var );
 }
 
 /*
@@ -2306,9 +2300,6 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	CG_RegisterClients(); // if low on memory, some clients will be deferred
 
 	CG_InitMarkPolys();
-
-	// remove the last loading update
-	cg.infoScreenText[ 0 ] = 0;
 
 	// Make sure we have update values (scores)
 	CG_SetConfigValues();

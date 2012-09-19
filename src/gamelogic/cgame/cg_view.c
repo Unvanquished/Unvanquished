@@ -418,22 +418,20 @@ void CG_OffsetThirdPersonView( void )
 
 	// Ensure that the current camera position isn't out of bounds and that there
 	// is nothing between the camera and the player.
-	if ( !cg_cameraMode.integer )
+
+	// Trace a ray from the origin to the viewpoint to make sure the view isn't
+	// in a solid block.  Use an 8 by 8 block to prevent the view from near clipping anything
+	CG_Trace( &trace, cg.refdef.vieworg, mins, maxs, view, cg.predictedPlayerState.clientNum, MASK_SOLID );
+
+	if ( trace.fraction != 1.0f )
 	{
-		// Trace a ray from the origin to the viewpoint to make sure the view isn't
-		// in a solid block.  Use an 8 by 8 block to prevent the view from near clipping anything
+		VectorCopy( trace.endpos, view );
+		view[ 2 ] += ( 1.0f - trace.fraction ) * 32;
+		// Try another trace to this position, because a tunnel may have the ceiling
+		// close enogh that this is poking out.
+
 		CG_Trace( &trace, cg.refdef.vieworg, mins, maxs, view, cg.predictedPlayerState.clientNum, MASK_SOLID );
-
-		if ( trace.fraction != 1.0f )
-		{
-			VectorCopy( trace.endpos, view );
-			view[ 2 ] += ( 1.0f - trace.fraction ) * 32;
-			// Try another trace to this position, because a tunnel may have the ceiling
-			// close enogh that this is poking out.
-
-			CG_Trace( &trace, cg.refdef.vieworg, mins, maxs, view, cg.predictedPlayerState.clientNum, MASK_SOLID );
-			VectorCopy( trace.endpos, view );
-		}
+		VectorCopy( trace.endpos, view );
 	}
 
 	// Set the camera position to what we calculated.
@@ -1593,14 +1591,6 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 
 	// update cvars
 	CG_UpdateCvars();
-
-	// if we are only updating the screen as a loading
-	// pacifier, don't even try to read snapshots
-	if ( cg.infoScreenText[ 0 ] != 0 )
-	{
-		CG_DrawLoadingScreen();
-		return;
-	}
 
 	// any looped sounds will be respecified as entities
 	// are added to the render list

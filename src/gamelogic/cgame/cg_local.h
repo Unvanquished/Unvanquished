@@ -935,7 +935,6 @@ typedef struct
 	int      clientNum;
 
 	qboolean demoPlayback;
-	int      deferredPlayerLoading;
 	qboolean loading; // don't defer players at initial startup
 	qboolean intermissionStarted; // don't play voice rewards, because game will end shortly
 
@@ -960,8 +959,6 @@ typedef struct
 	int      oldTime; // time at last frame, used for missile trails and prediction checking
 
 	int      physicsTime; // either cg.snap->time or cg.nextSnap->time
-
-	int      timelimitWarnings; // 5 min, 1 min, overtime
 
 	qboolean mapRestart; // set on a map restart to set back the weapon
 
@@ -1006,9 +1003,6 @@ typedef struct
 	qboolean zoomed;
 	int      zoomTime;
 	float    zoomSensitivity;
-
-	// information screen text during loading
-	char infoScreenText[ MAX_STRING_CHARS ];
 
 	// scoreboard
 	int      scoresRequestTime;
@@ -1059,10 +1053,6 @@ typedef struct
 	int warmupTime;
 
 	//==========================
-
-	int itemPickup;
-	int itemPickupTime;
-	int itemPickupBlendTime; // the pulse around the crosshair is timed separately
 
 	int weaponSelectTime;
 	int weaponAnimation;
@@ -1342,8 +1332,6 @@ typedef struct
 	int         serverCommandSequence; // reliable command stream counter
 	int         processedSnapshotNum; // the number of snapshots cgame has requested
 
-	qboolean    localServer; // detected on startup by checking sv_running
-
 	// parsed from serverinfo
 	int      timelimit;
 	int      maxclients;
@@ -1512,7 +1500,6 @@ extern  vmCvar_t            cg_hudFilesEnable;
 extern  vmCvar_t            cg_smoothClients;
 extern  vmCvar_t            pmove_fixed;
 extern  vmCvar_t            pmove_msec;
-extern  vmCvar_t            cg_cameraMode;
 extern  vmCvar_t            cg_timescaleFadeEnd;
 extern  vmCvar_t            cg_timescaleFadeSpeed;
 extern  vmCvar_t            cg_timescale;

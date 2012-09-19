@@ -43,7 +43,6 @@ static char *s_shaderText;
 static shaderStage_t stages[ MAX_SHADER_STAGES ];
 static shader_t      shader;
 static texModInfo_t  texMods[ MAX_SHADER_STAGES ][ TR_MAX_TEXMODS ];
-static qboolean      deferLoad;
 
 // ydnar: these are here because they are only referenced while parsing a shader
 static char          implicitMap[ MAX_QPATH ];
@@ -6155,7 +6154,6 @@ void R_InitShaders( void )
 	ri.Printf( PRINT_DEVELOPER, "Initializing Shaders\n" );
 
 	memset( hashTable, 0, sizeof( hashTable ) );
-	deferLoad = qfalse;
 
 	CreateInternalShaders();
 

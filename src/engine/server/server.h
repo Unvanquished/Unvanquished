@@ -362,8 +362,6 @@ extern cvar_t *sv_lanForceRate;
 
 extern cvar_t *sv_showAverageBPS; // NERVE - SMF - net debugging
 
-extern cvar_t *sv_reloading;
-
 // TTimo - autodl
 extern cvar_t *sv_dl_maxRate;
 

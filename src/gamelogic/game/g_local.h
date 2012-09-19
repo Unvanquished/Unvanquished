@@ -392,11 +392,6 @@ struct gclient_s
 	vec3_t   damage_from; // origin for vector calculation
 	qboolean damage_fromWorld; // if true, don't use the damage_from vector
 
-	//
-	int lastkilled_client; // last client that this client killed
-	int lasthurt_client; // last client that damaged this client
-	int lasthurt_mod; // type of damage the client did
-
 	// timers
 	int        respawnTime; // can respawn when time > this
 	int        inactivityTime; // kick players when time > this
@@ -404,9 +399,6 @@ struct gclient_s
 	int        boostedTime; // last time we touched a booster
 
 	int        airOutTime;
-
-	qboolean   fireHeld; // used for hook
-	qboolean   fire2Held; // used for alt fire
 
 	int        switchTeamTime; // time the player switched teams
 
@@ -570,9 +562,6 @@ typedef struct
 	int      startTime; // level.time the map was started
 
 	int      lastTeamLocationTime; // last time of client team location update
-
-	qboolean newSession; // don't use any old session data, because
-	// we changed gametype
 
 	qboolean restarted; // waiting for a map_restart to fire
 

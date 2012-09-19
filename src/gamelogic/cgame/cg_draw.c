@@ -4498,7 +4498,6 @@ static qboolean CG_DrawScoreboard( void )
 
 	if ( cg_paused.integer )
 	{
-		cg.deferredPlayerLoading = 0;
 		firstTime = qtrue;
 		return qfalse;
 	}
@@ -4511,7 +4510,6 @@ static qboolean CG_DrawScoreboard( void )
 	}
 	else
 	{
-		cg.deferredPlayerLoading = 0;
 		cg.killerName[ 0 ] = 0;
 		firstTime = qtrue;
 		return qfalse;

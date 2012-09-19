@@ -1356,7 +1356,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	client->pers.connected = CON_CONNECTING;
 
 	// read or initialize the session data
-	if ( firstTime || level.newSession )
+	if ( firstTime )
 	{
 		G_InitSessionData( client, userinfo );
 	}
@@ -1609,7 +1609,6 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	client->ps.ping = savedPing;
 	client->noclip = savedNoclip;
 	client->cliprcontents = savedCliprcontents;
-	client->lastkilled_client = -1;
 
 	for ( i = 0; i < MAX_PERSISTANT; i++ )
 	{

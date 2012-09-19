@@ -329,8 +329,6 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 
 	if ( attacker && attacker->client )
 	{
-		attacker->client->lastkilled_client = self->s.number;
-
 		if ( ( attacker == self || OnSameTeam( self, attacker ) ) )
 		{
 			//punish team kills and suicides
@@ -1318,9 +1316,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			client->damage_fromWorld = qtrue;
 		}
 
-		// set the last client who damaged the target
-		targ->client->lasthurt_client = attacker->s.number;
-		targ->client->lasthurt_mod = mod;
 		take = ( int )( take * G_CalcDamageModifier( point, targ, attacker,
 		                client->ps.stats[ STAT_CLASS ],
 		                dflags ) + 0.5f );
