@@ -3098,18 +3098,18 @@ void CG_Player( centity_t *cent )
 
 		if ( ci->gender != GENDER_NEUTER )
 		{
-			CG_PlayerAngles( cent, cent->lerpAngles, legsAngles, torsoAngles, headAngles );
+			CG_PlayerAngles( cent, angles, legsAngles, torsoAngles, headAngles );
 			AnglesToAxis( legsAngles, body.axis );
 		}
 		else
 		{
-			CG_PlayerNonSegAxis( cent, cent->lerpAngles, body.axis );
+			CG_PlayerNonSegAxis( cent, angles, body.axis );
 		}
 
 		AxisCopy( body.axis, tempAxis );
 
 		// rotate the legs axis to back to the wall
-		if ( cent->currentState.eFlags & EF_WALLCLIMB && BG_RotateAxis( cent->currentState.angles2, body.axis, tempAxis, qfalse, cent->currentState.eFlags & EF_WALLCLIMBCEILING ) )
+		if ( es->eFlags & EF_WALLCLIMB && BG_RotateAxis( es->angles2, body.axis, tempAxis, qfalse, es->eFlags & EF_WALLCLIMBCEILING ) )
 		{
 			AxisCopy( tempAxis, body.axis );
 		}
@@ -3142,7 +3142,7 @@ void CG_Player( centity_t *cent )
 		// add a water splash if partially in and out of water
 		CG_PlayerSplash( cent, class );
 
-		if ( cg_shadows.integer == 2 && shadow )
+		if ( cg_shadows.integer == 3 && shadow )
 		{
 			renderfx |= RF_SHADOW_PLANE;
 		}
@@ -3165,24 +3165,24 @@ void CG_Player( centity_t *cent )
 		BG_ClassBoundingBox( class, mins, maxs, NULL, NULL, NULL );
 
 		// move the origin closer into the wall with a CapTrace
-		if ( cent->currentState.eFlags & EF_WALLCLIMB && !( cent->currentState.eFlags & EF_DEAD ) && !( cg.intermissionStarted ) )
+		if ( es->eFlags & EF_WALLCLIMB && !( es->eFlags & EF_DEAD ) && !( cg.intermissionStarted ) )
 		{
 			vec3_t  start, end;
 			trace_t tr;
 
-			if ( cent->currentState.eFlags & EF_WALLCLIMBCEILING )
+			if ( es->eFlags & EF_WALLCLIMBCEILING )
 			{
 				VectorSet( surfNormal, 0.0f, 0.0f, -1.0f );
 			}
 			else
 			{
-				VectorCopy( cent->currentState.angles2, surfNormal );
+				VectorCopy( es->angles2, surfNormal );
 			}
 
 
 			VectorMA( cent->lerpOrigin, -TRACE_DEPTH, surfNormal, end );
 			VectorMA( cent->lerpOrigin, 1.0f, surfNormal, start );
-			CG_CapTrace( &tr, start, mins, maxs, end, cent->currentState.number, MASK_PLAYERSOLID );
+			CG_CapTrace( &tr, start, mins, maxs, end, es->number, MASK_PLAYERSOLID );
 
 			// if the trace misses completely then just use body.origin
 			// apparently capsule traces are "smaller" than box traces
@@ -3276,6 +3276,21 @@ void CG_Player( centity_t *cent )
 
 		// add body to renderer
 		trap_R_AddRefEntityToScene( &body );
+
+		//sanity check that particle systems are stopped when dead
+		if ( es->eFlags & EF_DEAD )
+		{
+			if ( CG_IsParticleSystemValid( &cent->muzzlePS ) )
+			{
+				CG_DestroyParticleSystem( &cent->muzzlePS );
+			}
+
+			if ( CG_IsParticleSystemValid( &cent->jetPackPS ) )
+			{
+				CG_DestroyParticleSystem( &cent->jetPackPS );
+			}
+		}
+
 		VectorCopy( surfNormal, cent->pe.lastNormal );
 		return;
 	}
