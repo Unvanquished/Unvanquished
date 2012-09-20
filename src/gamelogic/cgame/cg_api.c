@@ -964,41 +964,6 @@ void trap_R_RemapShader( const char *oldShader, const char *newShader, const cha
 	syscall( CG_R_REMAP_SHADER, oldShader, newShader, timeOffset );
 }
 
-//134.
-//return loadCamera(args[1], VMA(2));
-qboolean trap_loadCamera( int camNum, const char *name )
-{
-	return syscall( CG_LOADCAMERA, camNum, name );
-}
-
-//135.
-//if(args[1] == 0)
-//{         // CAM_PRIMARY
-//	cl.cameraMode = qtrue;
-//}
-//startCamera(args[1], args[2]);
-void trap_startCamera( int camNum, int time )
-{
-	syscall( CG_STARTCAMERA, camNum, time );
-}
-
-//136.
-//if(args[1] == 0)
-//{         // CAM_PRIMARY
-//	cl.cameraMode = qfalse;
-//}
-void trap_stopCamera( int camNum )
-{
-	syscall( CG_STOPCAMERA, camNum );
-}
-
-//137.
-//return getCameraInfo(args[1], args[2], VMA(3), VMA(4), VMA(5));
-qboolean trap_getCameraInfo( int camNum, int time, vec3_t *origin, vec3_t *angles, float *fov )
-{
-	return syscall( CG_GETCAMERAINFO, camNum, time, origin, angles, fov );
-}
-
 //138.
 //return re.GetEntityToken(VMA(1), args[2]);
 qboolean trap_GetEntityToken( char *buffer, int bufferSize )
