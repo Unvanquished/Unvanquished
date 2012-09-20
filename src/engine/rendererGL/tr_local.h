@@ -97,7 +97,6 @@ extern "C" {
 	  RSPEEDS_FOG,
 	  RSPEEDS_FLARES,
 	  RSPEEDS_OCCLUSION_QUERIES,
-	  RSPEEDS_DEPTH_BOUNDS_TESTS,
 	  RSPEEDS_SHADING_TIMES,
 	  RSPEEDS_CHC,
 	  RSPEEDS_NEAR_FAR,
@@ -349,11 +348,6 @@ extern "C" {
 		float        sphereRadius; // calculated from localBounds
 
 		int8_t       shadowLOD; // Level of Detail for shadow mapping
-
-		// GL_EXT_depth_bounds_test
-		float                     depthNear;
-		float                     depthFar;
-		qboolean                  noDepthBoundsTest;
 
 		qboolean                  clipsNearPlane;
 
@@ -2781,10 +2775,6 @@ extern "C" {
 
 		int16_t              scissorX, scissorY, scissorWidth, scissorHeight;
 
-		float                depthNear; // for GL_EXT_depth_bounds_test
-		float                depthFar;
-		qboolean             noDepthBoundsTest;
-
 		uint32_t             occlusionQuerySamples; // visible fragment count
 		qboolean             noOcclusionQueries;
 
@@ -3683,8 +3673,6 @@ extern "C" {
 		int c_dlightSurfaces;
 		int c_dlightSurfacesCulled;
 		int c_dlightInteractions;
-
-		int c_depthBoundsTests, c_depthBoundsTestsRejected;
 
 		int c_occlusionQueries;
 		int c_occlusionQueriesMulti;
@@ -4819,7 +4807,6 @@ extern "C" {
 	void     R_SortInteractions( trRefLight_t *light );
 
 	void     R_SetupLightScissor( trRefLight_t *light );
-	void     R_SetupLightDepthBounds( trRefLight_t *light );
 	void     R_SetupLightLOD( trRefLight_t *light );
 
 	void     R_SetupLightShader( trRefLight_t *light );

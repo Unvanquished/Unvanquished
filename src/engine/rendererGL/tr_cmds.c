@@ -122,10 +122,6 @@ void R_PerformanceCounters( void )
 		           backEnd.pc.c_occlusionQueriesResponseTime,
 		           backEnd.pc.c_occlusionQueriesFetchTime );
 	}
-	else if ( r_speeds->integer == RSPEEDS_DEPTH_BOUNDS_TESTS )
-	{
-		ri.Printf( PRINT_ALL, "depth bounds tests:%i rejected:%i\n", tr.pc.c_depthBoundsTests, tr.pc.c_depthBoundsTestsRejected );
-	}
 	else if ( r_speeds->integer == RSPEEDS_SHADING_TIMES )
 	{
 		if ( DS_STANDARD_ENABLED() )
