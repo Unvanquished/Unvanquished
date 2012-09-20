@@ -161,7 +161,6 @@ void CG_RunMD5LerpFrame( lerpFrame_t *lf, float scale, qboolean animChanged )
 			lf->oldFrameTime = cg.time;
 		}
 		else
-
 		{
 			lf->oldFrame = lf->frame;
 			lf->oldFrameTime = lf->frameTime;
@@ -249,5 +248,75 @@ void CG_RunMD5LerpFrame( lerpFrame_t *lf, float scale, qboolean animChanged )
 	else
 	{
 		lf->backlerp = 1.0 - ( float )( cg.time - lf->oldFrameTime ) / ( lf->frameTime - lf->oldFrameTime );
+	}
+}
+
+/*
+===============
+CG_BlendLerpFrame
+
+Sets lf->blendlerp and lf->blendtime
+===============
+*/
+void CG_BlendLerpFrame( lerpFrame_t *lf )
+{
+	if ( cg_animBlend.value <= 0.0f )
+	{
+		lf->blendlerp = 0.0f;
+		return;
+	}
+
+	if ( ( lf->blendlerp > 0.0f ) && ( cg.time > lf->blendtime ) )
+	{
+		//exp blending
+		lf->blendlerp -= lf->blendlerp / cg_animBlend.value;
+
+		if ( lf->blendlerp <= 0.0f )
+		{
+			lf->blendlerp = 0.0f;
+		}
+
+		if ( lf->blendlerp >= 1.0f )
+		{
+			lf->blendlerp = 1.0f;
+		}
+
+		lf->blendtime = cg.time + 10;
+
+		debug_anim_blend = lf->blendlerp;
+	}
+}
+
+/*
+===============
+CG_BuildAnimSkeleton
+
+Builds the skeleton for the current animation
+Also blends between the old and new skeletons if necessary
+===============
+*/
+void CG_BuildAnimSkeleton( const lerpFrame_t *lf, refSkeleton_t *newSkeleton, const refSkeleton_t *oldSkeleton )
+{
+	if( !lf->animation || !lf->animation->handle )
+	{
+		return;
+	}
+
+	if ( !trap_R_BuildSkeleton( newSkeleton, lf->animation->handle, lf->oldFrame, lf->frame, lf->backlerp, lf->animation->clearOrigin ) )
+	{
+		CG_Printf( "%s", _( "CG_BuildAnimSkeleton: Can't build skeleton\n" ));
+	}
+
+	// lerp between old and new animation if possible
+	if ( lf->blendlerp >= 0.0f )
+	{
+		if ( newSkeleton->type != SK_INVALID && oldSkeleton->type != SK_INVALID && newSkeleton->numBones == oldSkeleton->numBones )
+		{
+			if ( !trap_R_BlendSkeleton( newSkeleton, oldSkeleton, lf->blendlerp ) )
+			{
+				CG_Printf( "%s", _( "CG_BuildAnimSkeleton: Can't blend skeletons\n" ));
+				return;
+			}
+		}
 	}
 }

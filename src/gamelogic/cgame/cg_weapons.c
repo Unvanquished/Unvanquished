@@ -1294,49 +1294,9 @@ static void CG_WeaponAnimation( centity_t *cent, int *old, int *now, float *back
 
 	if ( cg_weapons[ cent->currentState.weapon ].md5 )
 	{
-		// blend old and current animation
-		if ( cg_animBlend.value <= 0.0f )
-		{
-			lf->blendlerp = 0.0f;
-		}
+		CG_BlendLerpFrame( lf );
 
-		if ( ( lf->blendlerp > 0.0f ) && ( cg.time > lf->blendtime ) )
-		{
-#if 0
-			// linear blending
-			lf->blendlerp -= 0.025f;
-#else
-			// exp blending
-			lf->blendlerp -= lf->blendlerp / cg_animBlend.value;
-#endif
-
-			if ( lf->blendlerp <= 0.0f )
-			{
-				lf->blendlerp = 0.0f;
-			}
-
-			if ( lf->blendlerp >= 1.0f )
-			{
-				lf->blendlerp = 1.0f;
-			}
-
-			lf->blendtime = cg.time + 10;
-		}
-
-		if ( !trap_R_BuildSkeleton( &gunSkeleton, lf->animation->handle, lf->oldFrame, lf->frame, 1.0 - lf->backlerp, lf->animation->clearOrigin ) )
-		{
-			CG_Printf( "%s", _( "CG_RunWeaponLerpFrame: Can't build lf->gunSkeleton\n" ));
-		}
-
-		// lerp between old and new animation if possible
-		if ( lf->blendlerp > 0.0f && gunSkeleton.numBones == oldGunSkeleton.numBones )
-		{
-			if ( !trap_R_BlendSkeleton( &gunSkeleton, &oldGunSkeleton, lf->blendlerp ) )
-			{
-				CG_Printf( "%s", _( "CG_RunWeaponLerpFrame: Can't blend lf->gunSkeleton\n" ));
-				return;
-			}
-		}
+		CG_BuildAnimSkeleton( lf, &gunSkeleton, &oldGunSkeleton );
 	}
 }
 

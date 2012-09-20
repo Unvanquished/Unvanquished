@@ -1604,37 +1604,6 @@ PLAYER ANIMATION
 =============================================================================
 */
 
-// TODO: choose proper values and use blending speed from character.cfg
-// blending is slow for testing issues
-static void CG_BlendPlayerLerpFrame( lerpFrame_t *lf )
-{
-	if ( cg_animBlend.value <= 0.0f )
-	{
-		lf->blendlerp = 0.0f;
-		return;
-	}
-
-	if ( ( lf->blendlerp > 0.0f ) && ( cg.time > lf->blendtime ) )
-	{
-		//exp blending
-		lf->blendlerp -= lf->blendlerp / cg_animBlend.value;
-
-		if ( lf->blendlerp <= 0.0f )
-		{
-			lf->blendlerp = 0.0f;
-		}
-
-		if ( lf->blendlerp >= 1.0f )
-		{
-			lf->blendlerp = 1.0f;
-		}
-
-		lf->blendtime = cg.time + 10;
-
-		debug_anim_blend = lf->blendlerp;
-	}
-}
-
 static void CG_CombineLegSkeleton( refSkeleton_t *dest, refSkeleton_t *legs, int *legBones, int numBones, float frac )
 {
 	int i;
@@ -1759,30 +1728,12 @@ static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 		CG_RunMD5LerpFrame( lf, speedScale, animChanged );
 
 		// blend old and current animation
-		CG_BlendPlayerLerpFrame( lf );
+		CG_BlendLerpFrame( lf );
 
-		if ( lf->animation && lf->animation->handle && ci->team != TEAM_NONE )
-		{
-			if ( !trap_R_BuildSkeleton( skel, lf->animation->handle, lf->oldFrame, lf->frame, lf->backlerp, lf->animation->clearOrigin ) )
-			{
-				CG_Printf( "%s", _( "Can't build lf->skeleton\n" ));
+		if( ci->team != TEAM_NONE )
+			CG_BuildAnimSkeleton( lf, skel, &oldSkeleton );
 			}
-
-			// lerp between old and new animation if possible
-			if ( lf->blendlerp >= 0.0f )
-			{
-				if ( skel->type != SK_INVALID && oldSkeleton.type != SK_INVALID && skel->numBones == oldSkeleton.numBones )
-				{
-					if ( !trap_R_BlendSkeleton( skel, &oldSkeleton, lf->blendlerp ) )
-					{
-						CG_Printf( "%s", _( "Can't blend\n" ));
-						return;
 					}
-				}
-			}
-		}
-	}
-}
 
 static void CG_RunCorpseLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation, float speedScale )
 {
@@ -1821,10 +1772,8 @@ static void CG_RunCorpseLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 		return; // shouldn't happen
 	}
 
-
-
 	// blend old and current animation
-	CG_BlendPlayerLerpFrame( lf );
+	CG_BlendLerpFrame( lf );
 
 	if ( lf->animation )
 	{
