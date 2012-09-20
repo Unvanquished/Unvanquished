@@ -2109,10 +2109,9 @@ Handles separate torso motion
   if < 45 degrees, also show in torso
 ===============
 */
-static void CG_PlayerAngles( centity_t *cent, vec3_t srcAngles,
-                             vec3_t legs[ 3 ], vec3_t torso[ 3 ], vec3_t head[ 3 ] )
+static void CG_PlayerAngles( centity_t *cent, const vec3_t srcAngles,
+                             vec3_t legsAngles, vec3_t torsoAngles, vec3_t headAngles )
 {
-	vec3_t       legsAngles, torsoAngles, headAngles;
 	float        dest;
 	static int   movementOffsets[ 8 ] = { 0, 22, 45, -22, 0, 22, -45, -22 };
 	vec3_t       velocity;
@@ -2246,146 +2245,17 @@ static void CG_PlayerAngles( centity_t *cent, vec3_t srcAngles,
 	// pull the angles back out of the hierarchial chain
 	AnglesSubtract( headAngles, torsoAngles, headAngles );
 	AnglesSubtract( torsoAngles, legsAngles, torsoAngles );
+}
+
+static void CG_PlayerAxis( centity_t *cent, const vec3_t srcAngles,
+                           vec3_t legs[ 3 ], vec3_t torso[ 3 ], vec3_t head[ 3 ] )
+{
+	vec3_t legsAngles, torsoAngles, headAngles;
+	CG_PlayerAngles( cent, srcAngles, legsAngles, torsoAngles, headAngles );
 	AnglesToAxis( legsAngles, legs );
 	AnglesToAxis( torsoAngles, torso );
 	AnglesToAxis( headAngles, head );
 }
-
-static void CG_PlayerMD5Angles( centity_t *cent, const vec3_t srcAngles, vec3_t legsAngles, vec3_t torsoAngles, vec3_t headAngles )
-{
-	float        dest;
-	static int   movementOffsets[ 8 ] = { 0, 22, 45, -22, 0, 22, -45, -22 };
-	vec3_t       velocity;
-	float        speed;
-	int          dir, clientNum;
-	clientInfo_t *ci;
-	
-	VectorCopy( srcAngles, headAngles );
-	headAngles[ YAW ] = AngleMod( headAngles[ YAW ] );
-	VectorClear( legsAngles );
-	VectorClear( torsoAngles );
-	
-	// --------- yaw -------------
-	
-	// allow yaw to drift a bit
-	if ( ( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT ) != LEGS_IDLE ||
-		( cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT ) != TORSO_STAND )
-	{
-		// if not standing still, always point all in the same direction
-		cent->pe.torso.yawing = qtrue; // always center
-		cent->pe.torso.pitching = qtrue; // always center
-		cent->pe.legs.yawing = qtrue; // always center
-	}
-	
-	// adjust legs for movement dir
-	if ( cent->currentState.eFlags & EF_DEAD )
-	{
-		// don't let dead bodies twitch
-		dir = 0;
-	}
-	else
-	{
-		// did use angles2.. now uses time2.. looks a bit funny but time2 isn't used othwise
-		dir = cent->currentState.time2;
-		
-		if ( dir < 0 || dir > 7 )
-		{
-			CG_Error( "Bad player movement angle" );
-		}
-	}
-	
-	legsAngles[ YAW ] = headAngles[ YAW ] + movementOffsets[ dir ];
-	torsoAngles[ YAW ] = headAngles[ YAW ] + 0.25 * movementOffsets[ dir ];
-	
-	// torso
-	if ( cent->currentState.eFlags & EF_DEAD )
-	{
-		CG_SwingAngles( torsoAngles[ YAW ], 0, 0, cg_swingSpeed.value,
-						&cent->pe.torso.yawAngle, &cent->pe.torso.yawing );
-		CG_SwingAngles( legsAngles[ YAW ], 0, 0, cg_swingSpeed.value,
-						&cent->pe.legs.yawAngle, &cent->pe.legs.yawing );
-	}
-	else
-	{
-		CG_SwingAngles( torsoAngles[ YAW ], 25, 90, cg_swingSpeed.value,
-						&cent->pe.torso.yawAngle, &cent->pe.torso.yawing );
-		CG_SwingAngles( legsAngles[ YAW ], 40, 90, cg_swingSpeed.value,
-						&cent->pe.legs.yawAngle, &cent->pe.legs.yawing );
-	}
-	
-	torsoAngles[ YAW ] = cent->pe.torso.yawAngle;
-	legsAngles[ YAW ] = cent->pe.legs.yawAngle;
-	
-	// --------- pitch -------------
-	
-	// only show a fraction of the pitch angle in the torso
-	if ( headAngles[ PITCH ] > 180 )
-	{
-		dest = ( -360 + headAngles[ PITCH ] ) * 0.75f;
-	}
-	else
-	{
-		dest = headAngles[ PITCH ] * 0.75f;
-	}
-	
-	CG_SwingAngles( dest, 15, 30, 0.1f, &cent->pe.torso.pitchAngle, &cent->pe.torso.pitching );
-	torsoAngles[ PITCH ] = cent->pe.torso.pitchAngle;
-	
-	//
-	clientNum = cent->currentState.clientNum;
-	
-	if ( clientNum >= 0 && clientNum < MAX_CLIENTS )
-	{
-		ci = &cgs.clientinfo[ clientNum ];
-		
-		if ( ci->fixedtorso )
-		{
-			torsoAngles[ PITCH ] = 0.0f;
-		}
-	}
-	
-	// --------- roll -------------
-	
-	// lean towards the direction of travel
-	VectorCopy( cent->currentState.pos.trDelta, velocity );
-	speed = VectorNormalize( velocity );
-	
-	if ( speed )
-	{
-		vec3_t axis[ 3 ];
-		float  side;
-		
-		speed *= 0.05f;
-		
-		AnglesToAxis( legsAngles, axis );
-		side = speed * DotProduct( velocity, axis[ 1 ] );
-		legsAngles[ ROLL ] -= side;
-		
-		side = speed * DotProduct( velocity, axis[ 0 ] );
-		legsAngles[ PITCH ] += side;
-	}
-	
-	//
-	clientNum = cent->currentState.clientNum;
-	
-	if ( clientNum >= 0 && clientNum < MAX_CLIENTS )
-	{
-		ci = &cgs.clientinfo[ clientNum ];
-		
-		if ( ci->fixedlegs )
-		{
-			legsAngles[ YAW ] = torsoAngles[ YAW ];
-			legsAngles[ PITCH ] = 0.0f;
-			legsAngles[ ROLL ] = 0.0f;
-		}
-	}
-	
-	// pain twitch
-	CG_AddPainTwitch( cent, torsoAngles );
-	
-	// pull the angles back out of the hierarchial chain
-	AnglesSubtract( headAngles, torsoAngles, headAngles );
-	AnglesSubtract( torsoAngles, legsAngles, torsoAngles );}
 
 #define MODEL_WWSMOOTHTIME 200
 
@@ -2492,12 +2362,12 @@ static void CG_PlayerWWSmoothing( centity_t *cent, vec3_t in[ 3 ], vec3_t out[ 3
 
 /*
 ===============
-CG_PlayerNonSegAngles
+CG_PlayerNonSegAxis
 
-Resolve angles for non-segmented models
+Resolve Axis for non-segmented models
 ===============
 */
-static void CG_PlayerNonSegAngles( centity_t *cent, vec3_t srcAngles, vec3_t nonSegAxis[ 3 ] )
+static void CG_PlayerNonSegAxis( centity_t *cent, vec3_t srcAngles, vec3_t nonSegAxis[ 3 ] )
 {
 	vec3_t        localAngles;
 	vec3_t        velocity;
@@ -3228,12 +3098,12 @@ void CG_Player( centity_t *cent )
 
 		if ( ci->gender != GENDER_NEUTER )
 		{
-			CG_PlayerMD5Angles( cent, cent->lerpAngles, legsAngles, torsoAngles, headAngles );
+			CG_PlayerAngles( cent, cent->lerpAngles, legsAngles, torsoAngles, headAngles );
 			AnglesToAxis( legsAngles, body.axis );
 		}
 		else
 		{
-			CG_PlayerNonSegAngles( cent, cent->lerpAngles, body.axis );
+			CG_PlayerNonSegAxis( cent, cent->lerpAngles, body.axis );
 		}
 
 		AxisCopy( body.axis, tempAxis );
@@ -3413,11 +3283,11 @@ void CG_Player( centity_t *cent )
 	// get the rotation information
 	if ( !ci->nonsegmented )
 	{
-		CG_PlayerAngles( cent, angles, legs.axis, torso.axis, head.axis );
+		CG_PlayerAxis( cent, angles, legs.axis, torso.axis, head.axis );
 	}
 	else
 	{
-		CG_PlayerNonSegAngles( cent, angles, legs.axis );
+		CG_PlayerNonSegAxis( cent, angles, legs.axis );
 	}
 
 	AxisCopy( legs.axis, tempAxis );
@@ -3716,11 +3586,11 @@ void CG_Corpse( centity_t *cent )
 	// get the rotation information
 	if ( !ci->nonsegmented )
 	{
-		CG_PlayerAngles( cent, cent->lerpAngles, legs.axis, torso.axis, head.axis );
+		CG_PlayerAxis( cent, cent->lerpAngles, legs.axis, torso.axis, head.axis );
 	}
 	else
 	{
-		CG_PlayerNonSegAngles( cent, cent->lerpAngles, legs.axis );
+		CG_PlayerNonSegAxis( cent, cent->lerpAngles, legs.axis );
 	}
 
 	//set the correct frame (should always be dead)
