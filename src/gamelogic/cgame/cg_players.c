@@ -1732,8 +1732,8 @@ static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 
 		if( ci->team != TEAM_NONE )
 			CG_BuildAnimSkeleton( lf, skel, &oldSkeleton );
-			}
-					}
+	}
+}
 
 static void CG_RunCorpseLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation, float speedScale )
 {
