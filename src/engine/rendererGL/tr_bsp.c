@@ -1536,8 +1536,6 @@ static void ParseFace( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, in
 		}
 	}
 
-	R_CalcSurfaceTrianglePlanes( numTriangles, cv->triangles, cv->verts );
-
 	// take the plane information from the lightmap vector
 	for ( i = 0; i < 3; i++ )
 	{
@@ -1902,8 +1900,6 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 		AddPointToBounds( cv->verts[ tri->indexes[ 1 ] ].xyz, cv->bounds[ 0 ], cv->bounds[ 1 ] );
 		AddPointToBounds( cv->verts[ tri->indexes[ 2 ] ].xyz, cv->bounds[ 0 ], cv->bounds[ 1 ] );
 	}
-
-	R_CalcSurfaceTrianglePlanes( numTriangles, cv->triangles, cv->verts );
 
 	// Tr3B - calc tangent spaces
 #if 0
@@ -7805,13 +7801,14 @@ static int UpdateLightTriangles( const srfVert_t *verts, int numTriangles, srfTr
 	{
 #if 1
 		vec3_t pos[ 3 ];
+		vec4_t triPlane;
 		float  d;
 
 		VectorCopy( verts[ tri->indexes[ 0 ] ].xyz, pos[ 0 ] );
 		VectorCopy( verts[ tri->indexes[ 1 ] ].xyz, pos[ 1 ] );
 		VectorCopy( verts[ tri->indexes[ 2 ] ].xyz, pos[ 2 ] );
 
-		if ( PlaneFromPoints( tri->plane, pos[ 0 ], pos[ 1 ], pos[ 2 ] ) )
+		if ( PlaneFromPoints( triPlane, pos[ 0 ], pos[ 1 ], pos[ 2 ] ) )
 		{
 
 			if ( light->l.rlType == RL_DIRECTIONAL )
@@ -7825,7 +7822,7 @@ static int UpdateLightTriangles( const srfVert_t *verts, int numTriangles, srfTr
 				VectorCopy( light->direction, lightDirection );
 #endif
 
-				d = DotProduct( tri->plane, lightDirection );
+				d = DotProduct( triPlane, lightDirection );
 
 				if ( surfaceShader->cullType == CT_TWO_SIDED || ( d > 0 && surfaceShader->cullType != CT_BACK_SIDED ) )
 				{
@@ -7839,7 +7836,7 @@ static int UpdateLightTriangles( const srfVert_t *verts, int numTriangles, srfTr
 			else
 			{
 				// check if light origin is behind triangle
-				d = DotProduct( tri->plane, light->origin ) - tri->plane[ 3 ];
+				d = DotProduct( triPlane, light->origin ) - triPlane[ 3 ];
 
 				if ( surfaceShader->cullType == CT_TWO_SIDED || ( d > 0 && surfaceShader->cullType != CT_BACK_SIDED ) )
 				{

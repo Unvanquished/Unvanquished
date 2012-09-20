@@ -533,33 +533,6 @@ qboolean R_CalcTangentVectors( srfVert_t *dv[ 3 ] )
 }
 
 /*
-=================
-R_CalcSurfaceTrianglePlanes
-=================
-*/
-void R_CalcSurfaceTrianglePlanes( int numTriangles, srfTriangle_t *triangles, srfVert_t *verts )
-{
-	int           i;
-	srfTriangle_t *tri;
-
-	for ( i = 0, tri = triangles; i < numTriangles; i++, tri++ )
-	{
-		float  *v1, *v2, *v3;
-		vec3_t d1, d2;
-
-		v1 = verts[ tri->indexes[ 0 ] ].xyz;
-		v2 = verts[ tri->indexes[ 1 ] ].xyz;
-		v3 = verts[ tri->indexes[ 2 ] ].xyz;
-
-		VectorSubtract( v2, v1, d1 );
-		VectorSubtract( v3, v1, d2 );
-
-		CrossProduct( d2, d1, tri->plane );
-		tri->plane[ 3 ] = DotProduct( tri->plane, v1 );
-	}
-}
-
-/*
 Tr3B: this function breaks the VC9 compiler for some unknown reason ...
 
 float R_CalcFov(float fovX, float width, float height)
