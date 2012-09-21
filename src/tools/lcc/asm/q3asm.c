@@ -817,7 +817,7 @@ static void HackToSegment( segmentName_t seg ) {
 
 //#define STAT(L) report("STAT " L "\n");
 #define STAT(L)
-#define ASM(O) int TryAssemble##O ()
+#define ASM(O) int TryAssemble##O (void)
 
 
 /*
