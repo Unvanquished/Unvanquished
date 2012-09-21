@@ -45,41 +45,31 @@ IFDEF idx64
 
   qsnapvectorsse PROC
     sub rsp, 8
-	stmxcsr [rsp]				; save SSE control word
-	ldmxcsr ssecw				; set to round nearest
-
-    push rdi
-	mov rdi, rcx				; maskmovdqu uses rdi as implicit memory operand
-	movaps xmm1, ssemask		; initialize the mask register for maskmovdqu
-    movups xmm0, [rdi]			; here is stored our vector. Read 4 values in one go
+	movaps xmm1, ssemask		; initialize the mask register
+	movups xmm0, [rcx]			; here is stored our vector. Read 4 values in one go
+	movaps xmm2, xmm0			; keep a copy of the original data
+	andps xmm0, xmm1			; set the fourth value to zero in xmm0
+	andnps xmm1, xmm2			; copy fourth value to xmm1 and set rest to zero
 	cvtps2dq xmm0, xmm0			; convert 4 single fp to int
 	cvtdq2ps xmm0, xmm0			; convert 4 int to single fp
-	maskmovdqu xmm0, xmm1		; write 3 values back to memory
-	pop rdi
-
-	ldmxcsr [rsp]				; restore sse control word to old value
-	add rsp, 8
+	orps xmm0, xmm1				; combine all 4 values again
+	movups [rcx], xmm0			; write 3 rounded and 1 unchanged values back to memory
 	ret
   qsnapvectorsse ENDP
 
 ELSE
 
   qsnapvectorsse PROC
-	sub esp, 8
-	stmxcsr [esp]				; save SSE control word
-	ldmxcsr ssecw				; set to round nearest
-
-    push edi
-	mov edi, dword ptr 16[esp]	; maskmovdqu uses edi as implicit memory operand
-	movaps xmm1, ssemask		; initialize the mask register for maskmovdqu
-    movups xmm0, [edi]			; here is stored our vector. Read 4 values in one go
+	mov eax, dword ptr 4[esp]		; store address of vector in eax
+	movaps xmm1, ssemask			; initialize the mask register for maskmovdqu
+	movups xmm0, [eax]			; here is stored our vector. Read 4 values in one go
+	movaps xmm2, xmm0			; keep a copy of the original data
+	andps xmm0, xmm1			; set the fourth value to zero in xmm0
+	andnps xmm1, xmm2			; copy fourth value to xmm1 and set rest to zero
 	cvtps2dq xmm0, xmm0			; convert 4 single fp to int
 	cvtdq2ps xmm0, xmm0			; convert 4 int to single fp
-	maskmovdqu xmm0, xmm1		; write 3 values back to memory
-	pop edi
-
-	ldmxcsr [esp]				; restore sse control word to old value
-	add esp, 8
+	orps xmm0, xmm1				; combine all 4 values again
+	movups [eax], xmm0			; write 3 rounded and 1 unchanged values back to memory
 	ret
   qsnapvectorsse ENDP
 
@@ -92,14 +82,9 @@ ELSE
 
   qsnapvectorx87 PROC
 	mov eax, dword ptr 4[esp]
-	sub esp, 2
-	fnstcw word ptr [esp]
-	fldcw fpucw
 	qroundx87 [eax]
 	qroundx87 4[eax]
 	qroundx87 8[eax]
-	fldcw [esp]
-	add esp, 2
 	ret
   qsnapvectorx87 ENDP
 
