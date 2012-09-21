@@ -1372,7 +1372,7 @@ void CG_StartMusic( void )
 
 //
 // ==============================
-// new hud stuff ( mission pack )
+// HUD stuff (mission pack)
 // ==============================
 //
 char *CG_GetMenuBuffer( const char *filename )

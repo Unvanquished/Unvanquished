@@ -534,15 +534,13 @@ cvar_t variables are used to hold scalar or string variables that can be changed
 or displayed at the console or prog code as well as accessed directly
 in C code.
 
-The user can access cvars from the console in three ways:
-r_draworder     prints the current value
-r_draworder 0   sets the current value to 0
-set r_draworder 0 as above, but creates the cvar if not present
+The user can basically access cvars from the console in three ways:
+<name>             — prints the current value of the named cvar, or says that the cvar does not exist
+                      (unless the name is actually the name of a command, in which case the command is executed)
+<name> <value>     — sets the value of the cvar if the cvar exists (unless, see above)
+set <name> <value> — sets the value of the cvar, but creates the cvar if it does not exist yet
 
-Cvars are restricted from having the same names as commands to keep this
-interface from being ambiguous.
-
-The are also occasionally used to communicated information between different
+They are also occasionally used to communicate information between different
 modules of the program.
 
 */
@@ -743,8 +741,8 @@ int  FS_ReadFile( const char *qpath, void **buffer );
 int  FS_ReadFileCheck( const char *qpath, void **buffer );
 
 // returns the length of the file
-// a null buffer will just return the file length without loading
-// as a quick check for existance. -1 length == not present
+// a null buffer will just return the file length without loading,
+// as a quick check for existence. -1 length == not present
 // A 0 byte will always be appended at the end, so string ops are safe.
 // the buffer should be considered read-only, because it may be cached
 // for other uses.

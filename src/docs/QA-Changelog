@@ -76,7 +76,7 @@ Foreign keyboards would input garbage chars after opening console.
 Wounded covops could steal uniforms if they were close enough.
 Level 4 covops knife damage on wounded players was wrong.
 Translations would break if cl_language was -1 or 0.
-Powerups were laggy (eg objective powerup would take a few seconds to show on hud)
+Powerups were laggy (eg., objective powerups would take a few seconds to show up on the HUD)
 Silent landmines bug fixed (eg landmines sometimes exploded without hearing the trigger at all)
 Engine lowercased all binds, eg bind a "say You suck!" and then press a, it would say 'you suck!' in lowercase. Fixed.
 Revives snapped your view around.

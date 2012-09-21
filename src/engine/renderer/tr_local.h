@@ -1630,7 +1630,7 @@ extern cvar_t *r_lodscale;
 
 extern cvar_t *r_lightScale; // Dynamic light intensity for Q3A compatibility
 
-extern cvar_t *r_primitives; // "0" = based on compiled vertex array existance
+extern cvar_t *r_primitives; // "0" = based on compiled vertex array existence
 
 // "1" = glDrawElemet tristrips
 // "2" = glDrawElements triangles

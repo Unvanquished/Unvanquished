@@ -400,10 +400,10 @@ void R_CalcTBN2( vec3_t tangent, vec3_t binormal, vec3_t normal,
 	VectorSubtract( v3, v1, v3v1 );
 
 	// The equation presented in the article states that:
-	// c2c1_T = V2.texcoord.x – V1.texcoord.x
-	// c2c1_B = V2.texcoord.y – V1.texcoord.y
-	// c3c1_T = V3.texcoord.x – V1.texcoord.x
-	// c3c1_B = V3.texcoord.y – V1.texcoord.y
+	// c2c1_T = V2.texcoord.x − V1.texcoord.x
+	// c2c1_B = V2.texcoord.y − V1.texcoord.y
+	// c3c1_T = V3.texcoord.x − V1.texcoord.x
+	// c3c1_B = V3.texcoord.y − V1.texcoord.y
 
 	// Calculate c2c1_T and c2c1_B
 	c2c1_T = t2[ 0 ] - t1[ 0 ];

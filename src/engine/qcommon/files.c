@@ -70,12 +70,6 @@ command line to allow code debugging in a different directory.  Basepath cannot
 be modified at all after startup.  Any files that are created (demos, screenshots,
 etc) will be created relative to the base path, so base path should usually be writable.
 
-The "cd path" is the path to an alternate hierarchy that will be searched if a file
-is not located in the base path.  A user can do a partial install that copies some
-data to a base path created on their hard drive and leave the rest on the cd.  Files
-are never writen to the cd path.  It defaults to a value set by the installer, like
-"e:\quake3", but it can be overridden with "+set ds_cdpath g:\quake3".
-
 If a user runs the game directly from a CD, the base path would be on the CD.  This
 should still function correctly, but all file writes will fail (harmlessly).
 
@@ -83,8 +77,8 @@ The "home path" is the path used for all write access. On win32 systems we have 
 == "home path", but on *nix systems the base installation is usually readonly, and
 "home path" points to ~/.q3a or similar
 
-The user can also install custom mods and content in "home path", so it should be searched
-along with "home path" and "cd path" for game content.
+The user can also install custom mods and content in the home path,
+so that should be searched along with base path for game content.
 
 
 The "base game" is the directory under the paths where data comes from by default, and
@@ -107,22 +101,6 @@ zip files of the form "pak0.pk3", "pak1.pk3", etc.  Zip files are searched in de
 from the highest number to the lowest, and will always take precedence over the filesystem.
 This allows a pk3 distributed as a patch to override all existing data.
 
-Because we will have updated executables freely available online, there is no point to
-trying to restrict demo / oem versions of the game with code changes.  Demo / oem versions
-should be exactly the same executables as release versions, but with different data that
-automatically restricts where game media can come from to prevent add-ons from working.
-
-After the paths are initialized, quake will look for the product.txt file.  If not
-found and verified, the game will run in restricted mode.  In restricted mode, only
-files contained in demoq3/pak0.pk3 will be available for loading, and only if the zip header is
-verified to not have been modified.  A single exception is made for q3config.cfg.  Files
-can still be written out in restricted mode, so screenshots and demos are allowed.
-Restricted mode can be tested by setting "+set fs_restrict 1" on the command line, even
-if there is a valid product.txt under the basepath or cdpath.
-
-If not running in restricted mode, and a file is not found in any local filesystem,
-an attempt will be made to download it and save it under the base path.
-
 If the "fs_copyfiles" cvar is set to 1, then every time a file is sourced from the cd
 path, it will be copied over to the base path.  This is a development aid to help build
 test releases and to copy working sets over slow network links.
@@ -143,22 +121,16 @@ home path + current game's zip files
 home path + current game's directory
 base path + current game's zip files
 base path + current game's directory
-cd path + current game's zip files
-cd path + current game's directory
 
 home path + base game's zip file
 home path + base game's directory
 base path + base game's zip file
 base path + base game's directory
-cd path + base game's zip file
-cd path + base game's directory
 
 home path + BASEGAME's zip file
 home path + BASEGAME's directory
 base path + BASEGAME's zip file
 base path + BASEGAME's directory
-cd path + BASEGAME's zip file
-cd path + BASEGAME's directory
 
 server download, to be written to home path + current game's directory
 
@@ -201,7 +173,7 @@ Casing
 
 Read / write config to floppy option.
 
-Different version coexistance?
+Different version coexistence?
 
 When building a pak file, make sure a wolfconfig.cfg isn't present in it,
 or configs will never get loaded from disk!
@@ -821,7 +793,7 @@ fileHandle_t FS_SV_FOpenFileWrite( const char *filename )
 /*
 ===========
 FS_SV_FOpenFileRead
-search for a file somewhere below the home path, base path or cd path
+search for a file somewhere below the home path or base path
 we search in that order, matching FS_SV_FOpenFileRead order
 ===========
 */
@@ -3152,7 +3124,7 @@ FS_GetModList
 
 Returns a list of mod directory names
 A mod directory is a peer to baseq3 with a pk3 in it
-The directories are searched in base path, cd path and home path
+The directories are searched in home path and base path
 ================
 */
 int FS_GetModList( char *listbuf, int bufsize )
@@ -3213,7 +3185,7 @@ int FS_GetModList( char *listbuf, int bufsize )
 			// now we need to find some .pk3 files to validate the mod
 			// NOTE TTimo: (actually I'm not sure why .. what if it's a mod under developement with no .pk3?)
 			// we didn't keep the information when we merged the directory names, as to what OS Path it was found under
-			//   so it could be in base path, cd path or home path
+			//   so it could be in home path or base path
 			//   we will try each three of them here (yes, it's a bit messy)
 			// NOTE Arnout: what about dropping the current loaded mod as well?
 			path = FS_BuildOSPath( fs_basepath->string, name, "" );
