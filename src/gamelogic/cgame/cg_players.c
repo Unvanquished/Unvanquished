@@ -123,7 +123,7 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 
 	if ( len >= sizeof( text ) - 1 )
 	{
-		CG_Printf(_( "File %s too long\n"), filename );
+		CG_Printf(_( "File %s is too long\n"), filename );
 		trap_FS_FCloseFile( f );
 		return qfalse;
 	}

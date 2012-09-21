@@ -105,7 +105,7 @@ void S_Base_SoundInfo_f( void )
 
 	if ( !s_soundStarted )
 	{
-		Com_Printf("%s", _( "sound system not started\n" ));
+		Com_Printf("%s", _( "the sound system is not started\n" ));
 	}
 	else
 	{

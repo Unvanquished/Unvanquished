@@ -2103,9 +2103,9 @@ void CL_Rcon_f( void )
 	{
 		if ( !strlen( rconAddress->string ) )
 		{
-			Com_Printf( "%s", _( "You must either be connected,\n"
-			            "or set the 'rconAddress' cvar\n"
-			            "to issue rcon commands\n" ));
+			Com_Printf( "%s", _( "Connect to a server "
+			            "or set the 'rconAddress' cvar "
+			            "to issue rcon commands\n"));
 
 			return;
 		}

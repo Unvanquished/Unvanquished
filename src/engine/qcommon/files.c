@@ -603,7 +603,7 @@ void FS_CopyFile( char *fromOSPath, char *toOSPath )
 
 	if ( fread( buf, 1, len, f ) != len )
 	{
-		Com_Error( ERR_FATAL, "Short read in FS_Copyfiles()" );
+		Com_Error( ERR_FATAL, "Short read in FS_CopyFile()" );
 	}
 
 	fclose( f );
@@ -624,7 +624,7 @@ void FS_CopyFile( char *fromOSPath, char *toOSPath )
 
 	if ( fwrite( buf, 1, len, f ) != len )
 	{
-		Com_Error( ERR_FATAL, "Short write in FS_Copyfiles()" );
+		Com_Error( ERR_FATAL, "Short write in FS_CopyFile()" );
 	}
 
 	fclose( f );
