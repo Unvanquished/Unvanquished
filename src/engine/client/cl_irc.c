@@ -218,7 +218,7 @@ typedef int ( *ctcp_handler_func_t )( qboolean is_channel, const char *message )
 struct irc_handler_t
 {
 	char cmd_string[ 33 ];
-	void *handler;
+	void ( *handler )( void );
 };
 
 static hashtable_t IRC_Handlers;
@@ -328,7 +328,7 @@ static INLINE void IRC_AddHandler( const char *command, irc_handler_func_t handl
 
 	rv = HT_GetItem( IRC_Handlers, command, &created );
 	assert( created );
-	rv->handler = handler;
+	rv->handler = ( void (*)( void ) )handler;
 }
 
 /*
@@ -345,7 +345,7 @@ static void IRC_AddCTCPHandler( const char *command, ctcp_handler_func_t handler
 
 	rv = HT_GetItem( IRC_CTCPHandlers, command, &created );
 	assert( created );
-	rv->handler = handler;
+	rv->handler = ( void (*)( void ) )handler;
 }
 
 /*
