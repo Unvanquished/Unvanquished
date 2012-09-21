@@ -729,6 +729,7 @@ typedef struct
 	qboolean    fixedlegs; // true if legs yaw is always the same as torso yaw
 	qboolean    fixedtorso; // true if torso never changes yaw
 	qboolean    nonsegmented; // true if model is Q2 style nonsegmented
+	qboolean    md5; // true if model is in the md5 model format
 
 	vec3_t      headOffset; // move head in icon views
 	footstep_t  footsteps;
@@ -746,6 +747,9 @@ typedef struct
 	qhandle_t   nonSegModel; //non-segmented model system
 	qhandle_t   nonSegSkin; //non-segmented model system
 
+	qhandle_t   bodyModel; //md5 model format
+	qhandle_t   bodySkin; //md5 model format
+
 	qhandle_t   modelIcon;
 
 	animation_t animations[ MAX_PLAYER_TOTALANIMATIONS ];
@@ -761,9 +765,6 @@ typedef struct
 
 	int         handBones[ MAX_BONES ];
 	int         numHandBones;
-	
-	qhandle_t   bodyModel;
-	qhandle_t   bodySkin;
 
 	sfxHandle_t customFootsteps[ 4 ];
 	sfxHandle_t customMetalFootsteps[ 4 ];

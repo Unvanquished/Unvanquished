@@ -266,27 +266,27 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 		else if ( !Q_stricmp( token, "handBones" ) )
 		{
 			token = COM_Parse2( &text_p );
-			
+
 			if ( token[0] != '{' )
 			{
 				Com_Printf( _( "^1ERROR^7: Expected '{' but found '%s' in character.cfg" ), token );
 			}
-			
+
 			i = 0;
-			
+
 			while( 1 )
 			{
 				token = COM_Parse2( &text_p );
-				
+
 				if ( !token || token[ 0 ] == '}' )
 				{
 					ci->numHandBones = i;
 					break;
 				}
-				
+
 				ci->handBones[ i++ ] = trap_R_BoneIndex( ci->bodyModel, token );
 			}
-			
+
 			continue;
 		}
 		else if ( !Q_stricmp( token, "legBones" ) )
@@ -299,7 +299,7 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 			}
 
 			i = 0;
-			
+
 			while( 1 )
 			{
 				token = COM_Parse2( &text_p );
@@ -309,7 +309,7 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 					ci->numLegBones = i;
 					break;
 				}
-				
+
 				ci->legBones[ i++ ] = trap_R_BoneIndex( ci->bodyModel, token );
 			}
 
@@ -723,7 +723,7 @@ static qboolean CG_RegisterClientSkin( clientInfo_t *ci, const char *modelName, 
 {
 	char filename[ MAX_QPATH ];
 
-	if ( ci->bodyModel )
+	if ( ci->md5 )
 	{
 		Com_sprintf( filename, sizeof( filename ), "models/players/%s/body_%s.skin", modelName, skinName );
 		ci->bodySkin = trap_R_RegisterSkin( filename );
@@ -737,13 +737,8 @@ static qboolean CG_RegisterClientSkin( clientInfo_t *ci, const char *modelName, 
 		{
 			return qfalse;
 		}
-		else
-		{
-			return qtrue;
-		}
 	}
-
-	if ( !ci->nonsegmented )
+	else if ( !ci->nonsegmented )
 	{
 		Com_sprintf( filename, sizeof( filename ), "models/players/%s/lower_%s.skin", modelName, skinName );
 		ci->legsSkin = trap_R_RegisterSkin( filename );
@@ -806,9 +801,18 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 	{
 		Com_sprintf( filename, sizeof( filename ), "models/players/%s/body.md5mesh", modelName );
 		ci->bodyModel = trap_R_RegisterModel( filename );
+
+		if ( ci->bodyModel )
+		{
+			ci->md5 = qtrue;
+		}
+		else
+		{
+			ci->md5 = qfalse;
+		}
 	}
 
-	if ( ci->bodyModel )
+	if ( ci->md5 )
 	{
 		int i;
 		// load the animations
@@ -855,7 +859,7 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 			{
 				ci->animations[ TORSO_GESTURE ] = ci->animations[ LEGS_IDLE ];
 			}
-			
+
 			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_GESTURE1, "gesture1", qfalse, qfalse, qfalse ) )
 			{
 				ci->animations[ TORSO_GESTURE1 ] = ci->animations[ LEGS_IDLE ];
@@ -1331,7 +1335,7 @@ static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to )
 	to->numLegBones = from->numLegBones;
 	to->numHandBones = from->numHandBones;
 	to->torsoControlBone = from->torsoControlBone;
-	
+
 	to->legsModel = from->legsModel;
 	to->legsSkin = from->legsSkin;
 	to->torsoModel = from->torsoModel;
@@ -1344,6 +1348,7 @@ static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to )
 	to->modelIcon = from->modelIcon;
 	to->bodyModel = from->bodyModel;
 	to->bodySkin = from->bodySkin;
+	to->md5 = from->md5;
 
 	memcpy( to->animations, from->animations, sizeof( to->animations ) );
 	memcpy( to->sounds, from->sounds, sizeof( to->sounds ) );
@@ -1609,9 +1614,9 @@ static void CG_CombineLegSkeleton( refSkeleton_t *dest, refSkeleton_t *legs, int
 	int i;
 	vec3_t lerpedOrigin;
 	quat_t lerpedQuat;
-	
+
 	dest->type = SK_RELATIVE;
-	
+
 	for ( i = 0; i < numBones; i++ )
 	{
 		VectorLerp( legs->bones[ legBones[ i ] ].origin, dest->bones[ legBones[ i ] ].origin, frac, lerpedOrigin );
@@ -1655,7 +1660,7 @@ static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int new
 		CG_Printf( "Anim: %i\n", newAnimation );
 	}
 
-	if ( ci->bodyModel )
+	if ( ci->md5 )
 	{
 		debug_anim_current = lf->animationNumber;
 		debug_anim_old = lf->old_animationNumber;
@@ -1711,7 +1716,7 @@ cg.time should be between oldFrameTime and frameTime after exit
 static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation, refSkeleton_t *skel, float speedScale )
 {
 	qboolean animChanged = qfalse;
-	
+
     // see if the animation sequence is switching
 	if ( newAnimation != lf->animationNumber || !lf->animation )
 	{
@@ -1719,7 +1724,7 @@ static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 		animChanged = qtrue;
 	}
 
-	if ( !ci->bodyModel )
+	if ( !ci->md5 )
 	{
 		CG_RunLerpFrame( lf, speedScale );
 	}
@@ -2495,8 +2500,6 @@ static void CG_PlayerUpgrades( centity_t *cent, refEntity_t *torso )
 
 	if ( held & ( 1 << UP_JETPACK ) )
 	{
-
-
 		memset( &jetpack, 0, sizeof( jetpack ) );
 		VectorCopy( torso->lightingOrigin, jetpack.lightingOrigin );
 		jetpack.shadowPlane = torso->shadowPlane;
@@ -3053,7 +3056,7 @@ void CG_Player( centity_t *cent )
 		CG_DrawBoundingBox( cent->lerpOrigin, mins, maxs );
 	}
 
-	if ( ci->bodyModel )
+	if ( ci->md5 )
 	{
 		memset( &body,    0, sizeof( body ) );
 	}
@@ -3084,7 +3087,7 @@ void CG_Player( centity_t *cent )
 		angles[ PITCH ] += 360.0f;
 	}
 
-	if ( ci->bodyModel )
+	if ( ci->md5 )
 	{
 		vec3_t legsAngles, torsoAngles, headAngles;
 		int    boneIndex;
@@ -3239,7 +3242,7 @@ void CG_Player( centity_t *cent )
 			if ( es->weapon == WP_PAIN_SAW )
 			{
 // 				int j;
-// 
+//
 // 				for( j = 0; j < psaw.numBones; ++j )
 // 				{
 // 					VectorAdd( body.skeleton.bones[ j ].origin, psaw.bones[ j ].origin, body.skeleton.bones[ j ].origin );
@@ -3585,7 +3588,8 @@ void CG_Corpse( centity_t *cent )
 	VectorCopy( cent->lerpOrigin, origin );
 	BG_ClassBoundingBox( es->clientNum, liveZ, NULL, NULL, deadZ, deadMax );
 	origin[ 2 ] -= ( liveZ[ 2 ] - deadZ[ 2 ] );
-	if( ci->bodyModel )
+
+	if( ci->md5 )
 	{
 		origin[ 0 ] -= ci->headOffset[ 0 ];
 		origin[ 1 ] -= ci->headOffset[ 1 ];
@@ -3608,7 +3612,7 @@ void CG_Corpse( centity_t *cent )
 	{
 		legs.oldframe = legs.frame = torso.oldframe = torso.frame = 0;
 	}
-	else if ( ci->bodyModel )
+	else if ( ci->md5 )
 	{
 		if ( ci->gender == GENDER_NEUTER )
 		{
@@ -3663,7 +3667,10 @@ void CG_Corpse( centity_t *cent )
 
 	renderfx |= RF_LIGHTING_ORIGIN; // use the same origin for all
 
-	if ( ci->bodyModel )
+	//
+	// add the legs
+	//
+	if ( ci->md5 )
 	{
 		legs.hModel = ci->bodyModel;
 		legs.customSkin = ci->bodySkin;
@@ -3676,10 +3683,6 @@ void CG_Corpse( centity_t *cent )
 		legs.skeleton.bounds[ 0 ][ 2 ] = 0;
 		legs.skeleton.bounds[ 1 ][ 2 ] -= deadZ[ 2 ];
 	}
-
-	//
-	// add the legs
-	//
 	else if ( !ci->nonsegmented )
 	{
 		legs.hModel = ci->legsModel;
@@ -3702,7 +3705,7 @@ void CG_Corpse( centity_t *cent )
 	//rescale the model
 	scale = BG_ClassConfig( es->clientNum )->modelScale;
 
-	if ( scale != 1.0f && !ci->bodyModel )
+	if ( scale != 1.0f && !ci->md5 )
 	{
 		VectorScale( legs.axis[ 0 ], scale, legs.axis[ 0 ] );
 		VectorScale( legs.axis[ 1 ], scale, legs.axis[ 1 ] );
@@ -3714,7 +3717,7 @@ void CG_Corpse( centity_t *cent )
 	trap_R_AddRefEntityToScene( &legs );
 
 	// if the model failed, allow the default nullmodel to be displayed. Also, if MD5, no need to add other parts
-	if ( !legs.hModel || ci->bodyModel )
+	if ( !legs.hModel || ci->md5 )
 	{
 		return;
 	}
