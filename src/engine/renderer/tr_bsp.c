@@ -158,7 +158,6 @@ float R_ProcessLightmap( byte **pic, int in_padding, int width, int height, byte
 {
 	int    j;
 	float  maxIntensity = 0;
-	double sumIntensity = 0;
 
 	if ( r_showLightMaps->integer > 1 )
 	{
@@ -204,8 +203,6 @@ float R_ProcessLightmap( byte **pic, int in_padding, int width, int height, byte
 			}
 
 			( *pic_out ) [ j * 4 + 3 ] = 255;
-
-			sumIntensity += intensity;
 		}
 	}
 	else
@@ -235,8 +232,6 @@ static void R_LoadLightmaps( lump_t *l )
 	int             i /*, j */;
 	float           intensity, maxIntensity = 0;
 
-//  double sumIntensity = 0;
-
 	// ydnar: clear lightmaps first
 	tr.numLightmaps = 0;
 	memset( tr.lightmaps, 0, sizeof( *tr.lightmaps ) * MAX_LIGHTMAPS );
@@ -259,7 +254,7 @@ static void R_LoadLightmaps( lump_t *l )
 	if ( tr.numLightmaps == 1 )
 	{
 		//FIXME: HACK: maps with only one lightmap turn up fullbright for some reason.
-		//this avoids this, but isn't the correct solution.
+		//this hack avoids that scenario, but isn't the correct solution.
 		tr.numLightmaps++;
 	}
 

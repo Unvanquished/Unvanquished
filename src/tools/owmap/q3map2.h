@@ -390,7 +390,7 @@ typedef struct
 bspShader_t;
 
 
-/* planes x^1 is allways the opposite of plane x */
+/* planes x^1 is always the opposite of plane x */
 
 typedef struct
 {

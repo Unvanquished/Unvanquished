@@ -120,9 +120,6 @@ cvar_t *com_recommendedSet;
 cvar_t *com_watchdog;
 cvar_t *com_watchdog_cmd;
 
-// Rafael Notebook
-cvar_t *cl_notebook;
-
 cvar_t *com_hunkused; // Ridah
 
 #if idx64
@@ -485,18 +482,11 @@ Break it up into multiple console lines
 */
 void Com_ParseCommandLine( char *commandLine )
 {
-	int inq = 0;
-
 	com_consoleLines[ 0 ] = commandLine;
 	com_numConsoleLines = 1;
 
 	while ( *commandLine )
 	{
-		if ( *commandLine == '"' )
-		{
-			inq = !inq;
-		}
-
 		// look for a + separating character
 		// if commandLine came from a file, we might have real line separators
 		if ( *commandLine == '+' || *commandLine == '\n' || *commandLine == '\r' )
@@ -3237,7 +3227,7 @@ void Com_Init( char *commandLine )
 	Com_StartupVariable( NULL );
 
 #ifdef DEDICATED
-	// TTimo: default to internet dedicated, not LAN dedicated
+	// TTimo: default to Internet dedicated, not LAN dedicated
 	com_dedicated = Cvar_Get( "dedicated", "2", CVAR_ROM );
 	Cvar_CheckRange( com_dedicated, 1, 2, qtrue );
 #else
@@ -3312,7 +3302,6 @@ void Com_Init( char *commandLine )
 	}
 
 	Cmd_AddCommand( "quit", Com_Quit_f );
-	Cmd_AddCommand( "changeVectors", MSG_ReportChangeVectors_f );
 	Cmd_AddCommand( "writeconfig", Com_WriteConfig_f );
 
 	s = va( "%s %s %s", Q3_VERSION, ARCH_STRING, __DATE__ );
@@ -3326,11 +3315,6 @@ void Com_Init( char *commandLine )
 
 	if ( !Crypto_Init() )
 	{
-		// Disable all crypto functions
-		Cvar_Get( "g_adminPubkeyID", "0", CVAR_ROM );
-#ifndef DEDICATED
-		Cvar_Get( "cl_pubkeyID", "0", CVAR_ROM );
-#endif
 	}
 
 	com_dedicated->modified = qfalse;

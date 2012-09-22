@@ -1686,8 +1686,6 @@ extern cvar_t *r_colorMipLevels; // development aid to see texture mip usage
 extern cvar_t *r_picmip; // controls picmip values
 extern cvar_t *r_finish;
 extern cvar_t *r_drawBuffer;
-extern cvar_t *r_glDriver;
-extern cvar_t *r_glIgnoreWicked3D;
 extern cvar_t *r_swapInterval;
 extern cvar_t *r_textureMode;
 extern cvar_t *r_textureAnisotropy;
@@ -1734,7 +1732,6 @@ extern cvar_t *r_showImages;
 extern cvar_t *r_debugSort;
 
 extern cvar_t *r_printShaders;
-extern cvar_t *r_saveFontData;
 
 // Ridah
 extern cvar_t *r_cache;

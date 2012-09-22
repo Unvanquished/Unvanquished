@@ -548,6 +548,10 @@ static void Svcmd_MessageWrapper( void )
 	{
 		Cmd_AdminMessage_f( NULL );
 	}
+	else if ( !Q_stricmp( cmd, "asay" ) )
+	{
+		G_Say( NULL, SAY_ALL_ADMIN, ConcatArgs( 1 ) );
+	}
 	else if ( !Q_stricmp( cmd, "m" ) )
 	{
 		Cmd_PrivateMessage_f( NULL );
@@ -604,6 +608,7 @@ static const struct svcmd
 	{ "admitDefeat",        qfalse, Svcmd_AdmitDefeat_f          },
 	{ "advanceMapRotation", qfalse, Svcmd_G_AdvanceMapRotation_f },
 	{ "alienWin",           qfalse, Svcmd_TeamWin_f              },
+	{ "asay",               qtrue,  Svcmd_MessageWrapper         },
 	{ "chat",               qtrue,  Svcmd_MessageWrapper         },
 	{ "cp",                 qtrue,  Svcmd_CenterPrint_f          },
 	{ "dumpuser",           qfalse, Svcmd_DumpUser_f             },

@@ -74,7 +74,7 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 
 	{
 		"ban",          G_admin_ban,         qfalse, "ban",
-		N_("ban a player by IP and GUID with an optional expiration time and reason."
+		N_("ban a player by IP address and GUID with an optional expiration time and reason."
 		" duration is specified as numbers followed by units 'w' (weeks), 'd' "
 		"(days), 'h' (hours) or 'm' (minutes), or seconds if no units are "
 		"specified"),
@@ -318,12 +318,12 @@ g_admin_command_t *g_admin_commands = NULL;
 /* ent must be non-NULL */
 #define G_ADMIN_NAME( ent ) ( ent->client->pers.admin ? ent->client->pers.admin->name : ent->client->pers.netname )
 
-static const char *G_admin_name( gentity_t *ent )
+const char *G_admin_name( gentity_t *ent )
 {
 	return ( ent ) ? G_ADMIN_NAME( ent ) : "console";
 }
 
-static const char *G_quoted_admin_name( gentity_t *ent )
+const char *G_quoted_admin_name( gentity_t *ent )
 {
 	return ( ent ) ? Quote( G_ADMIN_NAME( ent ) ) : "console";
 }
@@ -2435,7 +2435,7 @@ qboolean G_admin_ban( gentity_t *ent )
 
 	if ( trap_Argc() < 2 )
 	{
-		ADMP( QQ( N_("^3ban: ^7usage: ban [name|slot|IP(/mask)] [duration] [reason]\n") ) );
+		ADMP( QQ( N_("^3ban: ^7usage: ban [name|slot|address(/mask)] [duration] [reason]\n") ) );
 		return qfalse;
 	}
 
@@ -4431,7 +4431,7 @@ qboolean G_admin_pause( gentity_t *ent )
 			return qfalse;
 		}
 
-		AP( va( "print_tr %s %s %d", QQ( N_("^3pause: ^7$1$^7 unpaused the game (Paused for $2$ sec) \n") ),
+		AP( va( "print_tr %s %s %d", QQ( N_("^3pause: ^7$1$^7 unpaused the game (paused for $2$ sec)\n") ),
 		        G_quoted_admin_name( ent ),
 		        ( int )( ( float ) level.pausedTime / 1000.0f ) ) );
 		trap_SendServerCommand( -1, "cp \"The game has been unpaused!\"" );

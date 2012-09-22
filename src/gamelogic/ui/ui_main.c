@@ -142,8 +142,6 @@ static const cvarTable_t   cvarTable[] =
 
 static const int           cvarTableSize = ARRAY_LEN( cvarTable );
 
-static char                translated_yes[ 4 ], translated_no[ 4 ];
-
 extern displayContextDef_t *DC;
 
 /*

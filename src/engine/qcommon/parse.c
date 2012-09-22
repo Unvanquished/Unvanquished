@@ -612,7 +612,7 @@ static int Parse_ReadEscapeCharacter( script_t *script, char *ch )
 	script->script_p++;
 	//store the escape character
 	*ch = c;
-	//succesfully read escape character
+	//successfully read escape character
 	return 1;
 }
 
@@ -1039,7 +1039,7 @@ static int Parse_ReadPrimitive( script_t *script, token_t *token )
 	//copy the token into the script structure
 	Com_Memcpy( &script->token, token, sizeof( token_t ) );
 
-	//primitive reading successfull
+	//primitive reading successful
 	return 1;
 }
 
@@ -1117,7 +1117,7 @@ static int Parse_ReadScriptToken( script_t *script, token_t *token )
 
 	//copy the token into the script structure
 	Com_Memcpy( &script->token, token, sizeof( token_t ) );
-	//succesfully read a token
+	//successfully read a token
 	return 1;
 }
 
@@ -4002,7 +4002,7 @@ static define_t *Parse_DefineFromString( const char *string )
 	//
 	Parse_FreeScript( script );
 
-	//if the define was created succesfully
+	//if the define was created successfully
 	if ( res > 0 ) { return def; }
 
 	//free the define is created

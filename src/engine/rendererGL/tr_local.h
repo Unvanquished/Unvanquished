@@ -97,7 +97,6 @@ extern "C" {
 	  RSPEEDS_FOG,
 	  RSPEEDS_FLARES,
 	  RSPEEDS_OCCLUSION_QUERIES,
-	  RSPEEDS_DEPTH_BOUNDS_TESTS,
 	  RSPEEDS_SHADING_TIMES,
 	  RSPEEDS_CHC,
 	  RSPEEDS_NEAR_FAR,
@@ -349,11 +348,6 @@ extern "C" {
 		float        sphereRadius; // calculated from localBounds
 
 		int8_t       shadowLOD; // Level of Detail for shadow mapping
-
-		// GL_EXT_depth_bounds_test
-		float                     depthNear;
-		float                     depthFar;
-		qboolean                  noDepthBoundsTest;
 
 		qboolean                  clipsNearPlane;
 
@@ -1989,7 +1983,7 @@ extern "C" {
 			for ( i = 0; i < MAX_SHADOWMAPS; i++ )
 			{
 				GLimp_LogComment( va( "--- GLSL_SetUniform_ShadowMatrix( program = %s, "
-				                      "matrix(%i) = \n"
+				                      "matrix(%i) =\n"
 				                      "( %5.3f, %5.3f, %5.3f, %5.3f )\n"
 				                      "( %5.3f, %5.3f, %5.3f, %5.3f )\n"
 				                      "( %5.3f, %5.3f, %5.3f, %5.3f )\n"
@@ -2289,7 +2283,7 @@ extern "C" {
 		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- GLSL_SetUniform_ModelMatrix( program = %s, "
-			                      "matrix = \n"
+			                      "matrix =\n"
 			                      "( %5.3f, %5.3f, %5.3f, %5.3f )\n"
 			                      "( %5.3f, %5.3f, %5.3f, %5.3f )\n"
 			                      "( %5.3f, %5.3f, %5.3f, %5.3f )\n"
@@ -2398,7 +2392,7 @@ extern "C" {
 		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- GLSL_SetUniform_ModelViewProjectionMatrix( program = %s, "
-			                      "matrix = \n"
+			                      "matrix =\n"
 			                      "( %5.3f, %5.3f, %5.3f, %5.3f )\n"
 			                      "( %5.3f, %5.3f, %5.3f, %5.3f )\n"
 			                      "( %5.3f, %5.3f, %5.3f, %5.3f )\n"
@@ -2781,10 +2775,6 @@ extern "C" {
 
 		int16_t              scissorX, scissorY, scissorWidth, scissorHeight;
 
-		float                depthNear; // for GL_EXT_depth_bounds_test
-		float                depthFar;
-		qboolean             noDepthBoundsTest;
-
 		uint32_t             occlusionQuerySamples; // visible fragment count
 		qboolean             noOcclusionQueries;
 
@@ -2872,7 +2862,6 @@ extern "C" {
 	typedef struct
 	{
 		int      indexes[ 3 ];
-		vec4_t   plane;
 		qboolean facingLight;
 	} srfTriangle_t;
 
@@ -3324,10 +3313,14 @@ extern "C" {
 	typedef struct
 	{
 		vec3_t xyz;
+	} mdvXyz_t;
+
+	typedef struct
+	{
 		vec3_t normal;
 		vec3_t tangent;
 		vec3_t binormal;
-	} mdvVertex_t;
+	} mdvNormTanBi_t;
 
 	typedef struct
 	{
@@ -3343,7 +3336,7 @@ extern "C" {
 		shader_t          *shader;
 
 		int               numVerts;
-		mdvVertex_t       *verts;
+		mdvXyz_t          *verts;
 		mdvSt_t           *st;
 
 		int               numTriangles;
@@ -3680,8 +3673,6 @@ extern "C" {
 		int c_dlightSurfaces;
 		int c_dlightSurfacesCulled;
 		int c_dlightInteractions;
-
-		int c_depthBoundsTests, c_depthBoundsTestsRejected;
 
 		int c_occlusionQueries;
 		int c_occlusionQueriesMulti;
@@ -4454,8 +4445,6 @@ extern "C" {
 
 	qboolean R_CalcTangentVectors( srfVert_t *dv[ 3 ] );
 
-	void     R_CalcSurfaceTrianglePlanes( int numTriangles, srfTriangle_t *triangles, srfVert_t *verts );
-
 	float    R_CalcFov( float fovX, float width, float height );
 
 // Tr3B - visualisation tools to help debugging the renderer frontend
@@ -4818,7 +4807,6 @@ extern "C" {
 	void     R_SortInteractions( trRefLight_t *light );
 
 	void     R_SetupLightScissor( trRefLight_t *light );
-	void     R_SetupLightDepthBounds( trRefLight_t *light );
 	void     R_SetupLightLOD( trRefLight_t *light );
 
 	void     R_SetupLightShader( trRefLight_t *light );

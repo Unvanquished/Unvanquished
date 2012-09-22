@@ -1787,7 +1787,7 @@ static void Tess_SurfaceMDV( mdvSurface_t *srf )
 	int           numIndexes = 0;
 	int           numVertexes;
 //	mdvModel_t     *model;
-	mdvVertex_t   *oldVert, *newVert;
+	mdvXyz_t      *oldVert, *newVert;
 	mdvSt_t       *st;
 	srfTriangle_t *tri;
 //	vec3_t          lightOrigin;

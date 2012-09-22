@@ -103,7 +103,7 @@ Reads the animation.cfg for weapons
 
 static qboolean CG_ParseWeaponAnimationFile( const char *filename, weaponInfo_t *wi )
 {
-	char         *text_p, *prev;
+	char         *text_p;
 	int          len;
 	int          i;
 	char         *token;
@@ -171,7 +171,7 @@ static qboolean CG_ParseWeaponAnimationFile( const char *filename, weaponInfo_t 
 
 	if ( i != MAX_WEAPON_ANIMATIONS )
 	{
-		CG_Printf( _( "Error parsing weapon animation file: %s"), filename );
+		CG_Printf( _( "Error parsing weapon animation file: %s\n"), filename );
 		return qfalse;
 	}
 
@@ -2008,9 +2008,6 @@ void CG_DrawItemSelect( rectDef_t *rect, vec4_t color )
 			}
 		}
 	}
-
-	// showing weapon select clears pickup item display, but not the blend blob
-	cg.itemPickupTime = 0;
 
 	// put all weapons in the items list
 	for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )

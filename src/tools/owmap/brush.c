@@ -235,7 +235,7 @@ qboolean BoundBrush(brush_t * brush)
 
 /*
 SnapWeldVector() - ydnar
-welds two vec3_t's into a third, taking into account nearest-to-integer
+welds two vec3_ts into a third, taking into account nearest-to-integer
 instead of averaging
 */
 

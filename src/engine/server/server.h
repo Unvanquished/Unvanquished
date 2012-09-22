@@ -298,12 +298,10 @@ typedef struct
 // in a two second time period.
 #define MAX_INFO_RECEIPTS 48
 
-#define MAX_MASTERS                       8 // max recipients for heartbeat packets
-
 #define SERVER_PERFORMANCECOUNTER_FRAMES  600
 #define SERVER_PERFORMANCECOUNTER_SAMPLES 6
 
-// this structure will be cleared only when the game dll changes
+// this structure will be cleared only when the game module changes
 typedef struct
 {
 	qboolean      initialized; // sv_init has completed
@@ -317,7 +315,7 @@ typedef struct
 	int           nextSnapshotEntities; // next snapshotEntities to use
 	entityState_t *snapshotEntities; // [numSnapshotEntities]
 	int           nextHeartbeatTime;
-	challenge_t   challenges[ MAX_CHALLENGES ]; // to prevent invalid IPs from connecting
+	challenge_t   challenges[ MAX_CHALLENGES ]; // to prevent invalid IP addresses from connecting
 	receipt_t     infoReceipts[ MAX_INFO_RECEIPTS ];
 	netadr_t      redirectAddress; // for rcon return messages
 
@@ -364,12 +362,6 @@ extern cvar_t *sv_lanForceRate;
 
 extern cvar_t *sv_showAverageBPS; // NERVE - SMF - net debugging
 
-extern cvar_t *sv_requireValidGuid;
-
-extern cvar_t *sv_ircchannel;
-
-extern cvar_t *sv_reloading;
-
 // TTimo - autodl
 extern cvar_t *sv_dl_maxRate;
 
@@ -408,8 +400,6 @@ void       SV_RemoveOperatorCommands( void );
 void       SV_MasterHeartbeat( const char *hbname );
 void       SV_MasterShutdown( void );
 void       SV_MasterGameStat( const char *data );
-
-void       SV_MasterGameCompleteStatus(); // NERVE - SMF
 
 //bani - bugtraq 12534
 qboolean   SV_VerifyChallenge( char *challenge );

@@ -136,7 +136,7 @@ void xml_SendNode(xmlNodePtr node)
 			//Error( "MAX_NETMESSAGE exceeded for XML feedback stream in FPrintf (%d)", xml_buf->use);
 			Sys_FPrintf(SYS_NOXML, "MAX_NETMESSAGE exceeded for XML feedback stream in FPrintf (%d)\n", xml_buf->use);
 			xml_buf->content[xml_buf->use] = '\0';	//++timo this corrupts the buffer but we don't care it's for printing
-			Sys_FPrintf(SYS_NOXML, xml_buf->content);
+			Sys_FPrintf(SYS_NOXML, "%s\n", xml_buf->content);
 
 		}
 
@@ -235,10 +235,7 @@ void xml_Winding(char *msg, vec3_t p[], int numpoints, qboolean die)
 	if(die)
 		Error(msg);
 	else
-	{
-		Sys_Printf(msg);
-		Sys_Printf("\n");
-	}
+		Sys_Printf("%s\n", msg);
 }
 #endif
 

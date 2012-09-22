@@ -760,7 +760,7 @@ int R_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projectio
 		                }
 		                // bestCenter is now the real center
 		                VectorCopy( bestCenter, center );
-		                Com_Printf("bestnormal: %1.1f %1.1f %1.1f \n", bestnormal[0], bestnormal[1], bestnormal[2] );
+		                Com_Printf("bestnormal: %1.1f %1.1f %1.1f\n", bestnormal[0], bestnormal[1], bestnormal[2] );
 		*/
 		VectorNegate( bestnormal, bestnormal );
 	}

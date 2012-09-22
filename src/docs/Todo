@@ -64,7 +64,7 @@ bani	xxx - (rain)players who connect after a vote is called get stuck with a vot
 bani	179 - (rain)spectator/limbo cameras slowly 'drift'
 bani	xxx - download redirection notices print repeatedly in engine
 bani	xxx - "//" bug?
-zinx	xxx - security hole allowing clients to override ip (eg setu IP localhost to bypass server passwords)
+zinx	xxx - security hole allowing clients to override their source IP address (eg., "setu ip localhost" to bypass server passwords)
 bani	xxx - zoom exploit (http://bani.anime.net/banimod/forums/viewtopic.php?t=1661&start=50)
 etmain	xxx - "noammo" click when dropping satchel/landmine/dynamite
 bani	xxx - (rain)luger has greater spread than colt

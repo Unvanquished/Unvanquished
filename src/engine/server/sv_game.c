@@ -32,7 +32,7 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-// sv_game.c -- interface to the game dll
+// sv_game.c -- interface to the game module
 
 #include "server.h"
 #include "../qcommon/crypto.h"
@@ -288,7 +288,7 @@ void SV_AdjustAreaPortalState( sharedEntity_t *ent, qboolean open )
 
 /*
 ==================
-SV_GameAreaEntities
+SV_EntityContact
 ==================
 */
 qboolean SV_EntityContact( vec3_t mins, vec3_t maxs, const sharedEntity_t *gEnt, traceType_t type )
@@ -840,7 +840,7 @@ void SV_InitGameProgs( void )
 	sv.num_tagheaders = 0;
 	sv.num_tags = 0;
 
-	// load the dll or bytecode
+	// load the game module
 	gvm = VM_Create( "qagame", SV_GameSystemCalls, Cvar_VariableValue( "vm_game" ) );
 
 	if ( !gvm )

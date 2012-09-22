@@ -196,8 +196,6 @@ static void SV_Map_f( void )
 		return;
 	}
 
-	Cvar_Set( "gamestate", va( "%i", GS_INITIALIZE ) );   // NERVE - SMF - reset gamestate on map/devmap
-
 	cmd = Cmd_Argv( 0 );
 
 	if ( !Q_stricmp( cmd, "devmap" ) )
@@ -230,75 +228,6 @@ static void SV_Map_f( void )
 	}
 }
 
-/*
-================
-SV_CheckTransitionGameState
-
-NERVE - SMF
-================
-*/
-static qboolean SV_CheckTransitionGameState( gamestate_t new_gs, gamestate_t old_gs )
-{
-	if ( old_gs == new_gs && new_gs != GS_PLAYING )
-	{
-		return qfalse;
-	}
-
-//  if ( old_gs == GS_WARMUP && new_gs != GS_WARMUP_COUNTDOWN )
-//      return qfalse;
-
-//  if ( old_gs == GS_WARMUP_COUNTDOWN && new_gs != GS_PLAYING )
-//      return qfalse;
-
-	if ( old_gs == GS_WAITING_FOR_PLAYERS && new_gs != GS_WARMUP )
-	{
-		return qfalse;
-	}
-
-	if ( old_gs == GS_INTERMISSION && new_gs != GS_WARMUP )
-	{
-		return qfalse;
-	}
-
-	if ( old_gs == GS_RESET && ( new_gs != GS_WAITING_FOR_PLAYERS && new_gs != GS_WARMUP ) )
-	{
-		return qfalse;
-	}
-
-	return qtrue;
-}
-
-/*
-================
-SV_TransitionGameState
-
-NERVE - SMF
-================
-*/
-static qboolean SV_TransitionGameState( gamestate_t new_gs, gamestate_t old_gs, int delay )
-{
-	// we always do a warmup before starting match
-	if ( old_gs == GS_INTERMISSION && new_gs == GS_PLAYING )
-	{
-		new_gs = GS_WARMUP;
-	}
-
-	// check if it's a valid state transition
-	if ( !SV_CheckTransitionGameState( new_gs, old_gs ) )
-	{
-		return qfalse;
-	}
-
-	if ( new_gs == GS_RESET )
-	{
-		new_gs = GS_WARMUP;
-	}
-
-	Cvar_Set( "gamestate", va( "%i", new_gs ) );
-
-	return qtrue;
-}
-
 void MSG_PrioritiseEntitystateFields( void );
 void MSG_PrioritisePlayerStateFields( void );
 
@@ -323,7 +252,6 @@ static void SV_MapRestart_f( void )
 	char        *denied;
 	qboolean    isBot;
 	int         delay = 0;
-	gamestate_t new_gs, old_gs; // NERVE - SMF
 
 	// make sure we aren't restarting twice in the same frame
 	if ( com_frameTime == sv.serverId )
@@ -346,23 +274,6 @@ static void SV_MapRestart_f( void )
 	if ( Cmd_Argc() > 1 )
 	{
 		delay = atoi( Cmd_Argv( 1 ) );
-	}
-
-	// NERVE - SMF - read in gamestate or just default to GS_PLAYING
-	old_gs = atoi( Cvar_VariableString( "gamestate" ) );
-
-	if ( Cmd_Argc() > 2 )
-	{
-		new_gs = atoi( Cmd_Argv( 2 ) );
-	}
-	else
-	{
-		new_gs = GS_PLAYING;
-	}
-
-	if ( !SV_TransitionGameState( new_gs, old_gs, delay ) )
-	{
-		return;
 	}
 
 	// check for changes in variables that can't just be restarted

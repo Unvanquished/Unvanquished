@@ -853,7 +853,9 @@ typedef enum
   SAY_ADMINS,
   SAY_ADMINS_PUBLIC,
   SAY_RAW,
-  SAY_DEFAULT
+  SAY_DEFAULT_DEPRECATED, // old - do not use
+  SAY_ALL_ADMIN,
+  SAY_DEFAULT = 99
 } saymode_t;
 
 // means of death

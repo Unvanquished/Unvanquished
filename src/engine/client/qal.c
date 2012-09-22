@@ -153,7 +153,7 @@ static void *GPA( char *str )
 	else
 	{
 #ifndef NDEBUG
-		Com_Printf( " Loaded symbol %s (0x%08X)\n", str, rv );
+		Com_Printf( " Loaded symbol %s (%p)\n", str, rv );
 #endif
 		return rv;
 	}

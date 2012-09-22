@@ -43,7 +43,7 @@ extern "C" {
 // A user mod should never modify this file
 
 #define PRODUCT_NAME            "Unvanquished"
-#define PRODUCT_NAME_UPPPER     "UNVANQUISHED" // Case, No spaces
+#define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
 #define PRODUCT_VERSION         "0.7.0"
 
@@ -61,7 +61,7 @@ extern "C" {
 
 #define CLIENT_WINDOW_TITLE     PRODUCT_NAME
 #define CLIENT_WINDOW_MIN_TITLE PRODUCT_NAME_LOWER
-#define GAMENAME_FOR_MASTER     PRODUCT_NAME_UPPPER
+#define GAMENAME_FOR_MASTER     PRODUCT_NAME_UPPER
 
 #define CONFIG_NAME             "autogen.cfg"
 
@@ -79,8 +79,6 @@ extern "C" {
 #endif
 #endif
 
-#define NEW_ANIMS
-#define MAX_TEAMNAME 32
 #define UNNAMED_PLAYER "UnnamedPlayer"
 
 #if defined _WIN32 && !defined __GNUC__
@@ -278,9 +276,6 @@ extern int memcmp( void *, void *, size_t );
 #define BIT(x) ( 1 << ( x ) )
 #endif
 
-// RF, this is just here so different elements of the engine can be aware of this setting as it changes
-#define MAX_SP_CLIENTS 64 // increasing this will increase memory usage significantly
-
 // the game guarantees that no string from the network will ever
 // exceed MAX_STRING_CHARS
 #define MAX_STRING_CHARS  1024 // max length of a string passed to Cmd_TokenizeString
@@ -338,7 +333,7 @@ extern int memcmp( void *, void *, size_t );
 	} printParm_t;
 
 #ifdef ERR_FATAL
-#undef ERR_FATAL // this is be defined in malloc.h
+#undef ERR_FATAL // this is possibly defined in malloc.h
 #endif
 
 // parameters to the main Error routine
@@ -353,33 +348,8 @@ extern int memcmp( void *, void *, size_t );
 
 // font rendering values used by ui and cgame
 
-#define PROP_GAP_WIDTH        3
-#define PROP_SPACE_WIDTH      8
-#define PROP_HEIGHT           27
-#define PROP_SMALL_SIZE_SCALE 0.75
-
 #define BLINK_DIVISOR         200
 #define PULSE_DIVISOR         75
-
-#define UI_LEFT               0x00000000 // default
-#define UI_CENTER             0x00000001
-#define UI_RIGHT              0x00000002
-#define UI_FORMATMASK         0x00000007
-#define UI_SMALLFONT          0x00000010
-#define UI_BIGFONT            0x00000020 // default
-#define UI_GIANTFONT          0x00000040
-#define UI_DROPSHADOW         0x00000800
-#define UI_BLINK              0x00001000
-#define UI_INVERSE            0x00002000
-#define UI_PULSE              0x00004000
-// JOSEPH 10-24-99
-#define UI_MENULEFT           0x00008000
-#define UI_MENURIGHT          0x00010000
-#define UI_EXSMALLFONT        0x00020000
-#define UI_MENUFULL           0x00080000
-// END JOSEPH
-
-#define UI_SMALLFONT75        0x00100000
 
 #if !defined( NDEBUG ) && !defined( BSPC )
 #define HUNK_DEBUG
@@ -399,14 +369,6 @@ extern int memcmp( void *, void *, size_t );
 #else
 	void *Hunk_Alloc( int size, ha_pref preference );
 
-#endif
-
-#ifdef __linux__
-// custom Snd_Memset implementation for glibc memset bug workaround
-	void Snd_Memset( void *dest, const int val, const size_t count );
-
-#else
-#define Snd_Memset   Com_Memset
 #endif
 
 #define Com_Memset   memset
@@ -585,7 +547,7 @@ extern int memcmp( void *, void *, size_t );
 STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 #ifdef Q3_VM_INSTANTIATE
 {
-	return ( p && p[0] == Q_COLOR_ESCAPE &&
+	return ( p[0] == Q_COLOR_ESCAPE &&
 	         ( p[1] == COLOR_NULL || ( p[1] >= '0' && p[1] != Q_COLOR_ESCAPE && p[1] < 'p' ) )
 	       ) ? qtrue : qfalse;
 }
@@ -623,7 +585,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 
 #define nanmask ( 255 << 23 )
 
-#define IS_NAN( x ) ( ( ( *(int *)&x ) & nanmask ) == nanmask )
+#define IS_NAN( x ) ( ( ( *(int *)&( x ) ) & nanmask ) == nanmask )
 
 #if idx64
 	extern long qftolsse( float f );
@@ -1049,7 +1011,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 
 	qboolean PlaneFromPoints( vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c );
 	qboolean PlaneFromPointsOrder( vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c, qboolean cw );
-	void     ProjectPointOnPlane( vec3_t dst, const vec3_t p, const vec3_t normal );
+	void     ProjectPointOnPlane( vec3_t dst, const vec3_t point, const vec3_t normal );
 	void     RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point, float degrees );
 	void     RotatePointAroundVertex( vec3_t pnt, float rot_x, float rot_y, float rot_z, const vec3_t origin );
 
@@ -1537,7 +1499,6 @@ char *Q_UTF8Unstore( int e );
 
 	void            Swap_Init(void);
 	*/
-	float           *tv( float x, float y, float z );
 
 	char     *QDECL va( const char *format, ... ) PRINTF_LIKE(1);
 
@@ -1558,20 +1519,6 @@ char *Q_UTF8Unstore( int e );
 	void QDECL Com_Error( int level, const char *error, ... ) PRINTF_LIKE(2) NORETURN;
 	void QDECL Com_Printf( const char *msg, ... ) PRINTF_LIKE(1);
 	void QDECL Com_DPrintf( const char *msg, ... ) PRINTF_LIKE(1);
-
-	/*
-	==========================================================
-
-	  RELOAD STATES
-
-	==========================================================
-	*/
-
-#define RELOAD_SAVEGAME        0x01
-#define RELOAD_NEXTMAP         0x02
-#define RELOAD_NEXTMAP_WAITING 0x04
-#define RELOAD_FAILED          0x08
-#define RELOAD_ENDGAME         0x10
 
 	/*
 	==========================================================
@@ -1778,7 +1725,7 @@ char *Q_UTF8Unstore( int e );
 
 // sound channels
 // channel 0 never willingly overrides
-// other channels will allways override a playing sound on that channel
+// other channels will always override a playing sound on that channel
 	typedef enum
 	{
 	  CHAN_AUTO,
@@ -1836,22 +1783,7 @@ char *Q_UTF8Unstore( int e );
 #define MAX_SERVER_TAGS          256
 #define MAX_TAG_FILES            64
 
-#define MAX_MULTI_SPAWNTARGETS   16 // JPW NERVE
-
 #define MAX_CONFIGSTRINGS        1024
-
-#define MAX_DLIGHT_CONFIGSTRINGS 16
-#define MAX_SPLINE_CONFIGSTRINGS 8
-
-#define PARTICLE_SNOW128         1
-#define PARTICLE_SNOW64          2
-#define PARTICLE_SNOW32          3
-#define PARTICLE_SNOW256         0
-
-#define PARTICLE_BUBBLE8         4
-#define PARTICLE_BUBBLE16        5
-#define PARTICLE_BUBBLE32        6
-#define PARTICLE_BUBBLE64        7
 
 // these are the only configstrings that the system reserves, all the
 // other ones are strictly for servergame to clientgame communication
@@ -2353,18 +2285,6 @@ typedef struct
 #define MAX_OTHER_SERVERS        128
 #define MAX_PINGREQUESTS         16
 #define MAX_SERVERSTATUSREQUESTS 16
-
-// NERVE - SMF - wolf server/game states
-	typedef enum
-	{
-	  GS_INITIALIZE = -1,
-	  GS_PLAYING,
-	  GS_WARMUP_COUNTDOWN,
-	  GS_WARMUP,
-	  GS_INTERMISSION,
-	  GS_WAITING_FOR_PLAYERS,
-	  GS_RESET
-	} gamestate_t;
 
 #define GENTITYNUM_MASK           ( MAX_GENTITIES - 1 )
 

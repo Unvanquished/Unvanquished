@@ -3732,7 +3732,7 @@ void BG_PackEntityNumbers( entityState_t *es, const int *entityNums, int count )
 	{
 		count = MAX_NUM_PACKED_ENTITY_NUMS;
 		Com_Printf( S_COLOR_YELLOW "WARNING: A maximum of %d entity numbers can be "
-		            "packed, but BG_PackEntityNumbers was passed %d entities",
+		            "packed, but BG_PackEntityNumbers was passed %d entities\n",
 		            MAX_NUM_PACKED_ENTITY_NUMS, count );
 	}
 

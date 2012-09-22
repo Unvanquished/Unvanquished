@@ -37,7 +37,6 @@ Maryland 20850 USA.
 // doesn't understand static functions though, so we only want them in
 // one file. That's what this is about.
 #ifdef Q3_VM
-#define __Q3_VM_MATH
 #define FLT_EPSILON 1.19209290E-07F
 #define atanf(x) ( (float) atan( (x) ) )
 #define tanf(x) ( (float) tan( (x) ) )
@@ -517,69 +516,22 @@ void PlaneIntersectRay( const vec3_t rayPos, const vec3_t rayDir, const vec4_t p
 /*
 ===============
 RotatePointAroundVector
-
-This is not implemented very well...
 ===============
 */
 void RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point, float degrees )
 {
-	float  m[ 3 ][ 3 ];
-	float  im[ 3 ][ 3 ];
-	float  zrot[ 3 ][ 3 ];
-	float  tmpmat[ 3 ][ 3 ];
-	float  rot[ 3 ][ 3 ];
-	vec3_t vf;
-	float  rad;
-	float c, s;
-	int i;
+	float sind, cosd, expr;
+	vec3_t dxp;
 
-	vf[ 0 ] = dir[ 0 ];
-	vf[ 1 ] = dir[ 1 ];
-	vf[ 2 ] = dir[ 2 ];
+	degrees = DEG2RAD( degrees );
+	sind = sin( degrees );
+	cosd = cos( degrees );
+	expr = ( 1 - cosd ) * DotProduct( dir, point );
+	CrossProduct( dir, point, dxp );
 
-	if ( VectorNormalize( vf ) == 0 || degrees == 0.0f )
-	{
-		// degenerate case
-		VectorCopy( point, dst );
-		return;
-	}
-
-	//make a new axis and place directly into the inverse matrix
-	PerpendicularVector( im[ 0 ], dir );
-	CrossProduct( im[ 0 ], vf, im[ 1 ] );
-	VectorCopy(vf, im[ 2 ]);
-
-	//transpose the matrix
-	m[ 0 ][ 0 ] = im[ 0 ][ 0 ];
-	m[ 1 ][ 0 ] = im[ 0 ][ 1 ];
-	m[ 2 ][ 0 ] = im[ 0 ][ 2 ];
-
-	m[ 0 ][ 1 ] = im[ 1 ][ 0 ];
-	m[ 1 ][ 1 ] = im[ 1 ][ 1 ];
-	m[ 2 ][ 1 ] = im[ 1 ][ 2 ];
-
-	m[ 0 ][ 2 ] = im[ 2 ][ 0 ];
-	m[ 1 ][ 2 ] = im[ 2 ][ 1 ];
-	m[ 2 ][ 2 ] = im[ 2 ][ 2 ];
-
-	AxisCopy(axisDefault, zrot);
-
-	rad = DEG2RAD( degrees );
-
-	c = cos( rad );
-	s = sin( rad );
-	zrot[ 0 ][ 0 ] = c;
-	zrot[ 0 ][ 1 ] = s;
-	zrot[ 1 ][ 0 ] = -s;
-	zrot[ 1 ][ 1 ] = c;
-
-	AxisMultiply( m, zrot, tmpmat );
-	AxisMultiply( tmpmat, im, rot );
-
-	for ( i = 0; i < 3; i++ )
-	{
-		dst[ i ] = rot[ i ][ 0 ] * point[ 0 ] + rot[ i ][ 1 ] * point[ 1 ] + rot[ i ][ 2 ] * point[ 2 ];
-	}
+	dst[ 0 ] = expr * dir[ 0 ] + cosd * point[ 0 ] + sind * dxp[ 0 ];
+	dst[ 1 ] = expr * dir[ 1 ] + cosd * point[ 1 ] + sind * dxp[ 1 ];
+	dst[ 2 ] = expr * dir[ 2 ] + cosd * point[ 2 ] + sind * dxp[ 2 ];
 }
 
 /*
@@ -755,25 +707,10 @@ void AxisCopy( vec3_t in[ 3 ], vec3_t out[ 3 ] )
 	VectorCopy( in[ 2 ], out[ 2 ] );
 }
 
-void ProjectPointOnPlane( vec3_t dst, const vec3_t p, const vec3_t normal )
+void ProjectPointOnPlane( vec3_t dst, const vec3_t point, const vec3_t normal )
 {
-	float  d;
-	vec3_t n;
-	float  inv_denom;
-
-	inv_denom = 1.0F / DotProduct( normal, normal );
-#ifndef Q3_VM
-	assert( Q_fabs( inv_denom ) != 0.0f );   // zero vectors get here
-#endif
-	d = DotProduct( normal, p ) * inv_denom;
-
-	n[ 0 ] = normal[ 0 ] * inv_denom;
-	n[ 1 ] = normal[ 1 ] * inv_denom;
-	n[ 2 ] = normal[ 2 ] * inv_denom;
-
-	dst[ 0 ] = p[ 0 ] - d * n[ 0 ];
-	dst[ 1 ] = p[ 1 ] - d * n[ 1 ];
-	dst[ 2 ] = p[ 2 ] - d * n[ 2 ];
+	float d = -DotProduct( point, normal );
+	VectorMA( point, d, normal, dst );
 }
 
 /*

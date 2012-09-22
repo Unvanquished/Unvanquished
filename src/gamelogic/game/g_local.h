@@ -34,10 +34,6 @@ typedef struct gclient_s gclient_t;
 
 //==================================================================
 
-#define INFINITE                   1000000
-
-#define FRAMETIME                  100 // msec
-
 #define INTERMISSION_DELAY_TIME    1000
 
 // gentity->flags
@@ -45,10 +41,9 @@ typedef struct gclient_s gclient_t;
 #define FL_NOTARGET                0x00000020
 #define FL_TEAMSLAVE               0x00000400 // not the first on the team
 #define FL_NO_KNOCKBACK            0x00000800
-#define FL_DROPPED_ITEM            0x00001000
 #define FL_NO_BOTS                 0x00002000 // spawn point not for bot use
 #define FL_NO_HUMANS               0x00004000 // spawn point just for bots
-#define FL_FORCE_GESTURE           0x00008000 // spawn point just for bots
+#define FL_FORCE_GESTURE           0x00008000
 
 // localisation
 #if 0
@@ -223,7 +218,6 @@ struct gentity_s
 
 	gentity_t   *targeted; // true if the player is currently a valid target of a turret
 	vec3_t      turretAim; // aim vector for turrets
-	vec3_t      turretAimRate; // track turn speed for norfenturrets
 	int         turretSpinupTime; // spinup delay for norfenturrets
 
 	vec4_t      animation; // animated map objects
@@ -255,7 +249,7 @@ typedef enum
   CON_CONNECTED
 } clientConnected_t;
 
-// client data that stays across multiple levels or tournament restarts
+// client data that stays across multiple levels or map restarts
 // this is achieved by writing all the data to cvar strings at game shutdown
 // time and reading them back at connection time.  Anything added here
 // MUST be dealt with in G_InitSessionData() / G_ReadSessionData() / G_WriteSessionData()
@@ -394,31 +388,19 @@ struct gclient_s
 	vec3_t   damage_from; // origin for vector calculation
 	qboolean damage_fromWorld; // if true, don't use the damage_from vector
 
-	//
-	int lastkilled_client; // last client that this client killed
-	int lasthurt_client; // last client that damaged this client
-	int lasthurt_mod; // type of damage the client did
-
 	// timers
 	int        respawnTime; // can respawn when time > this
 	int        inactivityTime; // kick players when time > this
 	qboolean   inactivityWarning; // qtrue if the five seoond warning has been given
-	int        rewardTime; // clear the EF_AWARD_IMPRESSIVE, etc when time > this
 	int        boostedTime; // last time we touched a booster
 
 	int        airOutTime;
-
-	qboolean   fireHeld; // used for hook
-	qboolean   fire2Held; // used for alt fire
-	gentity_t  *hook; // grapple hook if out
 
 	int        switchTeamTime; // time the player switched teams
 
 	int        time100; // timer for 100ms interval events
 	int        time1000; // timer for one second interval events
 	int        time10000; // timer for ten second interval events
-
-	char       *areabits;
 
 	int        lastPoisonTime;
 	int        poisonImmunityTime;
@@ -433,10 +415,6 @@ struct gclient_s
 	int        lastCreepSlowTime; // time until creep can be removed
 	int        lastCombatTime; // time of last damage received/dealt or held by basilisk
 
-	qboolean   charging;
-
-	int        lastFlameBall; // s.number of the last flame ball fired
-
 	unlagged_t unlaggedHist[ MAX_UNLAGGED_MARKERS ];
 	unlagged_t unlaggedBackup;
 	unlagged_t unlaggedCalc;
@@ -445,7 +423,6 @@ struct gclient_s
 	float      voiceEnthusiasm;
 	char       lastVoiceCmd[ MAX_VOICE_CMD_LEN ];
 
-	int        lcannonStartTime;
 	int        trampleBuildablesHitPos;
 	int        trampleBuildablesHit[ MAX_TRAMPLE_BUILDABLES_TRACKED ];
 
@@ -580,11 +557,7 @@ typedef struct
 
 	int      startTime; // level.time the map was started
 
-	int      teamScores[ NUM_TEAMS ];
 	int      lastTeamLocationTime; // last time of client team location update
-
-	qboolean newSession; // don't use any old session data, because
-	// we changed gametype
 
 	qboolean restarted; // waiting for a map_restart to fire
 
@@ -872,7 +845,6 @@ char       *G_CopyString( const char *str );
 
 void       G_TouchTriggers( gentity_t *ent );
 
-float      *tv( float x, float y, float z );
 char       *vtos( const vec3_t v );
 
 float      vectoyaw( const vec3_t vec );
@@ -928,7 +900,6 @@ gentity_t *fire_blaster( gentity_t *self, vec3_t start, vec3_t dir );
 gentity_t *fire_pulseRifle( gentity_t *self, vec3_t start, vec3_t dir );
 gentity_t *fire_luciferCannon( gentity_t *self, vec3_t start, vec3_t dir, int damage, int radius, int speed );
 gentity_t *fire_lockblob( gentity_t *self, vec3_t start, vec3_t dir );
-gentity_t *fire_paraLockBlob( gentity_t *self, vec3_t start, vec3_t dir );
 gentity_t *fire_slowBlob( gentity_t *self, vec3_t start, vec3_t dir );
 gentity_t *fire_bounceBall( gentity_t *self, vec3_t start, vec3_t dir );
 gentity_t *fire_hive( gentity_t *self, vec3_t start, vec3_t dir );
@@ -1104,8 +1075,11 @@ void G_namelog_update_score( gclient_t *client );
 void G_namelog_update_name( gclient_t *client );
 void G_namelog_cleanup( void );
 
-//some maxs
-#define MAX_FILEPATH 144
+//
+// g_admin.c
+//
+const char *G_admin_name( gentity_t *ent );
+const char *G_quoted_admin_name( gentity_t *ent );
 
 extern  level_locals_t level;
 extern  gentity_t      g_entities[ MAX_GENTITIES ];
@@ -1235,7 +1209,7 @@ extern  vmCvar_t g_censorship;
 extern  vmCvar_t g_showKillerHP;
 extern  vmCvar_t g_combatCooldown;
 
-void             trap_Print( const char *fmt );
+void             trap_Print( const char *string );
 void             trap_Error( const char *string ) NORETURN;
 int              trap_Milliseconds( void );
 void             trap_Cvar_Register( vmCvar_t *cvar, const char *var_name, const char *value, int flags );

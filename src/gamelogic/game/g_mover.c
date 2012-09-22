@@ -1494,7 +1494,7 @@ void manualTriggerSpectator( gentity_t *trigger, gentity_t *player )
 	gentity_t *t = NULL;
 	gentity_t *targets[ MAX_GENTITIES ];
 	int       i = 0, j;
-	float     minDistance = ( float ) INFINITE;
+	float     minDistance;
 
 	//restrict this hack to trigger_multiple only for now
 	if ( strcmp( trigger->classname, "trigger_multiple" ) )
@@ -1524,9 +1524,9 @@ void manualTriggerSpectator( gentity_t *trigger, gentity_t *player )
 		//pick the closest door
 		for ( j = 0; j < i; j++ )
 		{
-			float d = Distance( player->r.currentOrigin, targets[ j ]->r.currentOrigin );
+			float d = DistanceSquared( player->r.currentOrigin, targets[ j ]->r.currentOrigin );
 
-			if ( d < minDistance )
+			if ( closest == NULL || d < minDistance )
 			{
 				minDistance = d;
 				closest = targets[ j ];

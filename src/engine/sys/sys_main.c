@@ -158,12 +158,6 @@ char *Sys_ConsoleInput( void )
 	return CON_Input();
 }
 
-#ifdef DEDICATED
-#       define PID_FILENAME PRODUCT_NAME_UPPPER "_server.pid"
-#else
-#       define PID_FILENAME PRODUCT_NAME_UPPPER ".pid"
-#endif
-
 /*
 =================
 Sys_Exit
@@ -418,8 +412,6 @@ void Sys_UnloadDll( void *dllHandle )
 /*
 =================
 Sys_GetDLLName
-
-Used to load a development dll instead of a virtual machine
 =================
 */
 extern int cl_connectedToPureServer;
@@ -446,7 +438,7 @@ static void *Sys_TryLibraryLoad( const char *base, const char *gamedir, const ch
 	*fqpath = 0;
 
 	fn = FS_BuildOSPath( base, gamedir, fname );
-	Com_DPrintf( "Sys_LoadDll(%s)... \n", fn );
+	Com_DPrintf( "Sys_LoadDll(%s)...\n", fn );
 
 	libHandle = Sys_LoadLibrary( fn );
 
@@ -466,7 +458,7 @@ static void *Sys_TryLibraryLoad( const char *base, const char *gamedir, const ch
 =================
 Sys_LoadDll
 
-Used to load a development dll instead of a virtual machine
+Used to load a DLL instead of a virtual machine
 #1 look in fs_homepath
 #2 look in fs_basepath
 #4 look in fs_libpath (if not "")

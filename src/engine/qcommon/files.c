@@ -1199,7 +1199,7 @@ fileHandle_t FS_FCreateOpenPipeFile( const char *filename ) {
 	
 	if ( !fs_searchpaths )
 	{
-		Com_Error( ERR_FATAL, "Filesystem call made without initialization\n" );
+		Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
 	}
 	
 	f = FS_HandleForFile();
@@ -1534,13 +1534,13 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 						}
 					}
 
-					// cgame dll
+					// cgame module
 					if ( !( pak->referenced & FS_CGAME_REF ) && !Q_stricmp( filename, "vm/cgame.qvm" ) )
 					{
 						pak->referenced |= FS_CGAME_REF;
 					}
 
-					// ui dll
+					// ui module
 					if ( !( pak->referenced & FS_UI_REF ) && !Q_stricmp( filename, "vm/ui.qvm" ) )
 					{
 						pak->referenced |= FS_UI_REF;

@@ -2233,7 +2233,7 @@ static qboolean IRC_InitialiseUser( const char *name )
 
 	IRC_User.nicklen = j;
 
-	// If the nickname is overriden and its modified value differs
+	// If the nickname is overridden and its modified value differs,
 	// it is invalid
 	if ( ovrnn && strcmp( source, IRC_User.nick ) )
 	{

@@ -1329,7 +1329,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	// if a player reconnects quickly after a disconnect, the client disconnect may never be called, thus flag can get lost in the ether
 	if ( ent->inuse )
 	{
-		G_LogPrintf( "Forcing disconnect on active client: %i\n", ent-g_entities );
+		G_LogPrintf( "Forcing disconnect on active client: %i\n", (int)( ent - g_entities ) );
 		// so lets just fix up anything that should happen on a disconnect
 		ClientDisconnect( ent-g_entities );
 	}
@@ -1356,7 +1356,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	client->pers.connected = CON_CONNECTING;
 
 	// read or initialize the session data
-	if ( firstTime || level.newSession )
+	if ( firstTime )
 	{
 		G_InitSessionData( client, userinfo );
 	}
@@ -1609,7 +1609,6 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	client->ps.ping = savedPing;
 	client->noclip = savedNoclip;
 	client->cliprcontents = savedCliprcontents;
-	client->lastkilled_client = -1;
 
 	for ( i = 0; i < MAX_PERSISTANT; i++ )
 	{

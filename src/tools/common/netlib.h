@@ -80,7 +80,7 @@ void            Net_SocketToAddress(socket_t * sock, address_t * address);
 //converts a string to an address
 void            Net_StringToAddress(char *string, address_t * address);
 
-//set the address ip port
+//set the address port
 void            Net_SetAddressPort(address_t * address, int port);
 
 //send a message to the given socket

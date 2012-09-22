@@ -1420,7 +1420,7 @@ void Cvar_Update( vmCvar_t *vmCvar )
 	if ( strlen( cv->string ) + 1 > MAX_CVAR_VALUE_STRING )
 	{
 		Com_Error( ERR_DROP, "Cvar_Update: src %s length %lu exceeds MAX_CVAR_VALUE_STRING(%lu)",
-		           cv->string, ( long unsigned ) strlen( cv->string ), ( long unsigned ) sizeof( vmCvar->string ) );
+		           cv->string, ( unsigned long ) strlen( cv->string ), ( unsigned long ) sizeof( vmCvar->string ) );
 	}
 
 	// bk001212 - Q_strncpyz guarantees zero padding and dest[MAX_CVAR_VALUE_STRING-1]==0
@@ -1480,7 +1480,4 @@ void Cvar_Init( void )
 	Cmd_SetCommandCompletionFunc( "reset", Cvar_CompleteCvarName );
 	Cmd_AddCommand( "cvarlist", Cvar_List_f );
 	Cmd_AddCommand( "cvar_restart", Cvar_Restart_f );
-
-	// NERVE - SMF - can't rely on autoexec to do this
-	Cvar_Get( "devdll", "1", CVAR_ROM );
 }

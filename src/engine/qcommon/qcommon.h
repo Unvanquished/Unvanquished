@@ -136,8 +136,6 @@ void  MSG_ReadDeltaEntity( msg_t *msg, entityState_t *from, entityState_t *to, i
 void  MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct playerState_s *to );
 void  MSG_ReadDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct playerState_s *to );
 
-void  MSG_ReportChangeVectors_f( void );
-
 //============================================================================
 
 /*
@@ -150,9 +148,9 @@ NET
 
 #define NET_ENABLEV4        0x01
 #define NET_ENABLEV6        0x02
-// if this flag is set, always attempt ipv6 connections instead of ipv4 if a v6 address is found.
+// if this flag is set, always attempt IPv6 connections instead of IPv4 if a v6 address is found.
 #define NET_PRIOV6          0x04
-// disables ipv6 multicast support if set.
+// disables IPv6 multicast support if set.
 #define NET_DISABLEMCAST    0x08
 
 #define PACKET_BACKUP       32 // number of old messages that must be kept on client and
@@ -214,7 +212,6 @@ void QDECL NET_OutOfBandData( netsrc_t sock, netadr_t adr, byte *format, int len
 qboolean   NET_CompareAdr( netadr_t a, netadr_t b );
 qboolean   NET_CompareBaseAdr( netadr_t a, netadr_t b );
 qboolean   NET_IsLocalAddress( netadr_t adr );
-qboolean   NET_IsIPXAddress( const char *buf );
 const char *NET_AdrToString( netadr_t a );
 const char *NET_AdrToStringwPort( netadr_t a );
 int        NET_StringToAdr( const char *s, netadr_t *a, netadrtype_t family );
@@ -292,7 +289,7 @@ You or the server may be running older versions of the game."
 #define PROTOCOL_VERSION       86
 
 #define URI_SCHEME             GAMENAME_STRING "://"
-#define URI_SCHEME_LENGTH      6
+#define URI_SCHEME_LENGTH      ( ARRAY_LEN( URI_SCHEME ) - 1 )
 
 // maintain a list of compatible protocols for demo playing
 // NOTE: that stuff only works with two digits protocols
@@ -507,7 +504,7 @@ void Cmd_QuoteStringBuffer( const char *in, char *buffer, int size );
 
 // The functions that execute commands get their parameters with these
 // functions. Cmd_Argv () will return an empty string, not a NULL
-// if arg > argc, so string operations are allways safe.
+// if arg >= argc, so string operations are always safe.
 
 void Cmd_TokenizeString( const char *text );
 void Cmd_TokenizeStringIgnoreQuotes( const char *text_in );
@@ -1435,9 +1432,9 @@ void Com_RandomBytes( byte *string, int len );
 #define N_(x) (x)
 
 void Trans_Init( void );
-const char* Trans_Gettext( const char *msgid ) __attribute__((format_arg(1)));
-const char* Trans_Pgettext( const char *ctxt, const char *msgid ) __attribute__((format_arg(2)));
-const char* Trans_GettextGame( const char *msgid ) __attribute__((format_arg(1)));
-const char* Trans_PgettextGame( const char *ctxt, const char *msgid ) __attribute__((format_arg(2)));
+const char* Trans_Gettext( const char *msgid ) __attribute__((__format_arg__(1)));
+const char* Trans_Pgettext( const char *ctxt, const char *msgid ) __attribute__((__format_arg__(2)));
+const char* Trans_GettextGame( const char *msgid ) __attribute__((__format_arg__(1)));
+const char* Trans_PgettextGame( const char *ctxt, const char *msgid ) __attribute__((__format_arg__(2)));
 
 #endif // _QCOMMON_H_

@@ -195,8 +195,6 @@ void        CL_CheckForResend( void );
 void        CL_ShowIP_f( void );
 void        CL_ServerStatus_f( void );
 void        CL_ServerStatusResponse( netadr_t from, msg_t *msg );
-void        CL_SaveTranslations_f( void );
-void        CL_LoadTranslations_f( void );
 
 // fretn
 void        CL_WriteWaveClose( void );
@@ -1904,7 +1902,6 @@ CL_Disconnect_f
 void CL_Disconnect_f( void )
 {
 	SCR_StopCinematic();
-	Cvar_Set( "g_reloading", "0" );
 
 	if ( cls.state != CA_DISCONNECTED && cls.state != CA_CINEMATIC )
 	{
@@ -2035,7 +2032,7 @@ void CL_Connect_f( void )
 
 	Com_DPrintf(_( "%s resolved to %s\n"), cls.servername, serverString );
 
-	// if we aren't playing on a lan, we needto authenticate
+	// if we aren't playing on a LAN, we need to authenticate
 	// with the cd key
 	if ( NET_IsLocalAddress( clc.serverAddress ) )
 	{
@@ -2237,7 +2234,7 @@ static void CL_GenerateRSAKey( void )
 	
 	if ( !f )
 	{
-		Com_Error( ERR_FATAL, _( "Daemon RSA public-key could not open %s for write, RSA support will be disabled\n" ), RSAKEY_FILE );
+		Com_Error( ERR_FATAL, _( "Daemon RSA public-key could not open %s for write, RSA support will be disabled" ), RSAKEY_FILE );
 		return;
 	}
 	
@@ -2248,7 +2245,7 @@ static void CL_GenerateRSAKey( void )
 	return;
 	
 	keygen_error:
-	Com_Error( ERR_FATAL, _( "Error generating RSA keypair, RSA support will be disabled\n" ) );
+	Com_Error( ERR_FATAL, _( "Error generating RSA keypair, RSA support will be disabled" ) );
 	Crypto_Shutdown();
 }
 
@@ -2745,7 +2742,7 @@ void CL_InitDownloads( void )
 	cls.bWWWDlDisconnected = qfalse;
 	CL_ClearStaticDownload();
 
-	// whatever autodownlad configuration, store missing files in a cvar, use later in the ui maybe
+	// whatever autodownload configuration, store missing files in a cvar, use later in the ui maybe
 	if ( FS_ComparePaks( missingfiles, sizeof( missingfiles ), qfalse ) )
 	{
 		Cvar_Set( "com_missingFiles", missingfiles );
@@ -2891,7 +2888,7 @@ void CL_DisconnectPacket( netadr_t from )
 	{
 		// drop the connection
 		message = "Server disconnected for unknown reason";
-		Com_Printf( "%s", message );
+		Com_Printf( "%s\n", message );
 		Cvar_Set( "com_errorMessage", message );
 		CL_Disconnect( qtrue );
 	}
@@ -4393,9 +4390,6 @@ void CL_Init( void )
 
 	cl_serverStatusResendTime = Cvar_Get( "cl_serverStatusResendTime", "750", 0 );
 
-	// RF
-	cl_recoilPitch = Cvar_Get( "cg_recoilPitch", "0", CVAR_ROM );
-
 	cl_doubletapdelay = Cvar_Get( "cl_doubletapdelay", "250", CVAR_ARCHIVE );  // Arnout: double tap
 	m_pitch = Cvar_Get( "m_pitch", "0.022", CVAR_ARCHIVE );
 	m_yaw = Cvar_Get( "m_yaw", "0.022", CVAR_ARCHIVE );
@@ -5106,7 +5100,7 @@ void CL_LocalServers_f( void )
 
 	// The 'xxx' in the message is a challenge that will be echoed back
 	// by the server.  We don't care about that here, but master servers
-	// can use that to prevent spoofed server responses from invalid ip
+	// can use that to prevent spoofed server responses from invalid IP addresses
 	message = "\377\377\377\377getinfo xxx";
 
 	// send each message twice in case one is dropped
@@ -5286,7 +5280,7 @@ void CL_GetPing( int n, char *buf, int buflen, int *pingtime )
 
 	if ( n < 0 || n >= MAX_PINGREQUESTS || !cl_pinglist[ n ].adr.port )
 	{
-		// empty slot
+		// invalid or empty slot
 		buf[ 0 ] = '\0';
 		*pingtime = 0;
 		return;
@@ -5322,21 +5316,6 @@ void CL_GetPing( int n, char *buf, int buflen, int *pingtime )
 
 /*
 ==================
-CL_UpdateServerInfo
-==================
-*/
-void CL_UpdateServerInfo( int n )
-{
-	if ( n < 0 || n >= MAX_PINGREQUESTS || !cl_pinglist[ n ].adr.port )
-	{
-		return;
-	}
-
-	CL_SetServerInfoByAddress( cl_pinglist[ n ].adr, cl_pinglist[ n ].info, cl_pinglist[ n ].time );
-}
-
-/*
-==================
 CL_GetPingInfo
 ==================
 */
@@ -5344,7 +5323,7 @@ void CL_GetPingInfo( int n, char *buf, int buflen )
 {
 	if ( n < 0 || n >= MAX_PINGREQUESTS || !cl_pinglist[ n ].adr.port )
 	{
-		// empty slot
+		// invalid or empty slot
 		if ( buflen )
 		{
 			buf[ 0 ] = '\0';

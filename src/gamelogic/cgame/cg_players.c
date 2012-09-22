@@ -295,7 +295,7 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 
 			if ( token[0] != '{' )
 			{
-				Com_Printf( _( "^1ERROR^7: Expected '{' but found '%s' in character.cfg" ), token );
+				Com_Printf( _( "^1ERROR^7: Expected '{' but found '%s' in character.cfg\n" ), token );
 			}
 
 			i = 0;
@@ -609,7 +609,7 @@ static qboolean CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 
 		if ( i != MAX_PLAYER_ANIMATIONS )
 		{
-			CG_Printf(_( "Error parsing animation file: %s"), filename );
+			CG_Printf(_( "Error parsing animation file: %s\n"), filename );
 			return qfalse;
 		}
 
@@ -702,7 +702,7 @@ static qboolean CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 
 		if ( i != MAX_NONSEG_PLAYER_ANIMATIONS )
 		{
-			CG_Printf(_( "Error parsing animation file: %s"), filename );
+			CG_Printf(_( "Error parsing animation file: %s\n"), filename );
 			return qfalse;
 		}
 
@@ -2298,8 +2298,7 @@ static void CG_PlayerWWSmoothing( centity_t *cent, vec3_t in[ 3 ], vec3_t out[ 3
 
 	if ( !VectorCompare( surfNormal, cent->pe.lastNormal ) )
 	{
-		//if we moving from the ceiling to the floor special case
-		//( x product of colinear vectors is undefined)
+		// special case: moving from the ceiling to the floor
 		if ( VectorCompare( ceilingNormal, cent->pe.lastNormal ) &&
 		     VectorCompare( refNormal,     surfNormal ) )
 		{
@@ -3047,10 +3046,6 @@ void CG_Player( centity_t *cent )
 		if ( !cg.renderingThirdPerson )
 		{
 			renderfx = RF_THIRD_PERSON; // only draw in mirrors
-		}
-		else if ( cg_cameraMode.integer )
-		{
-			return;
 		}
 	}
 

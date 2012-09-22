@@ -359,11 +359,11 @@
 	* Fixed problems with scons compiling
 
 2011-09-12 Dusan Jocic <dusanjocic@msn.com>
-	* Players should see IP and GUID when a player connects
+	* Players should see the IP address and the GUID when a player connects
 	* Re-added CURL x64 libraries
 
 2011-09-10 Dusan Jocic <dusanjocic@msn.com>
-	* Added working Bass Library interface for playing internet stream (internet radio)
+	* Added working Bass Library interface for playing Internet streams (Internet radio)
 	* Added Bass library files for x86 and x64 solutions
 	* Fixed missing BZIP2 library for other solutions
 		+ We should use BZIP2 compression in different format (TODO) if we convert map and add Newton physics to it
@@ -507,7 +507,7 @@
 	* Added forced VM unloading
 	* Aalign sse control word storage space to 16 byte boundary for snapvector
 	* Replace some whitespace with tabs in snapvector.c
-	* Clear ip address listings after a NET_Restart		
+	* Clear IP address listings after a NET_Restart
 	
 2011-07-26 Dusan Jocic <dusanjocic@msn.com>
 	* Defined missing Sys_DoubleTime in qcommon.h
@@ -1096,7 +1096,7 @@
 
 2011-04-02 donmichelangelo <michael@michaelseevogel.de>
 
-	* added ipv4 max connection limit per client to prevent flooding of bots (thanks to etpub/tjm) and code clean up
+	* add per-client connection limits to prevent flooding of bots (thanks to etpub/tjm); clean up the code
 
 2011-03-31 donmichelangelo <michael@michaelseevogel.de>
 
@@ -1366,7 +1366,7 @@
 
 	* updated changelog 
 	* all files for Visual Studio 2010 project 
-	* switched to visual studio 2010, and wolf.vcxproj need ws2_32.lib for ipv6	
+	* switched to Visual Studio 2010; wolf.vcxproj needs ws2_32.lib for IPv6
 	* Ported ioQuake3 IPv6 and Multicast
 
 2011-02-26 Dusan Jocic <dusanjocic@msn.com>
@@ -1390,7 +1390,7 @@
 	* Tiny patch to print values of cvars when tab completing ala ET 
 	* always try native dll first 
 	* disable demo restrictions 
-	* add checks for LAN IPs to prevent q3ded from trying to authenticate private IPs
+	* add checks to prevent q3ded from trying to authenticate private IP addresses
 	* Fix buffer overflow, added missing texture 
 	* added changelog and todo 
 
@@ -2421,7 +2421,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	  . Ctrl-` for the mini-console works.
 	
 	06-12-2004		Ben <rain at bluecherry.net>
-	+ Fixed xxx - <|Rain|> the if-hostname-is-x-chars-long-it's-always-treated-as-ipx bug
+	+ Fixed xxx - <|Rain|> the if-hostname-is-x-chars-long-it's-always-treated-as-IPX-address bug
 	+ Fixed the overflow when more than MAX_GLOBAL_SERVERS are returned from the master.
 	
 	05-12-2004
@@ -2436,7 +2436,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	
 	03-12-2004
 				Chris <zinx at bluecherry.net>
-	+ Fixed xxx - security hole allowing clients to override ip (eg setu IP localhost to bypass server passwords)
+	+ Fixed xxx - security hole allowing clients to override their source IP address (eg., "setu ip localhost" to bypass server passwords)
 	
 	02-12-2004
 				Dan <goemon at anime.net>
@@ -2779,7 +2779,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Fixed memory leak in patch collision generation code
 		- Single case where winding wouldn't be freed in CM_ValidateFacet
 	+ Fixed using clientinfo valid flag, rather than entitystate valid flag for tank mounted guns allowing duplicates to show, d'oh
-	+ Fixed time displaying incorrectly on debreifing screen
+	+ Fixed the time displaying incorrectly on the debriefing screen
 		
 			Arnout <rr2do2@splashdamage.com>
 	+ Fixed antilag in voting menu (non-referee).
@@ -2946,7 +2946,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 
 07-05-2003
 			TTimo <ttimo@idsoftware.com>
-	+ autoupdate: 'status' shows connected clients and IPs - goes to python module logging too
+	+ autoupdate: "status" shows connected clients and IP addresses - this goes to the python module logging too
 	+ exceptions get printed out to log also
 	+ python module activity logging to 'autoupdate.log'
 
@@ -3128,9 +3128,9 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Changed flag spawncounts to update when a player changes(joins a) team
 	+ Added XP sorting when shuffling teams
 	+ Upped default complaint limit to 12
-	+ Added complaint ip tracking
+	+ Added complaint IP address tracking
 	+ Fixed some issues with multiple dead bodies showing up
-	+ Fixed back button appearing on debrieifing under certain circumstances
+	+ Fixed the back button appearing on debriefing under certain circumstances
 	+ Added option for servers to enable filtering of limbo camera
 	+ Added varied skins for syringe/ammo packs when skills are gained
 	+ Fixed spawn selection being preserved over map changes
@@ -3226,7 +3226,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Added tapout menu
 	+ Fixed not getting XP display on debriefing for any gametype bar campaign
 	+ Cleaned up configstrings, to get us below 1024 entries again
-		- Also changed to not propogate changes to configstring till the end of a server frame
+		- Also deferred updates for configstrings until the end of a server frame
 			saves multiple copies of the same configstring being sent when multiple changes done to same configstring in one frame, 
 			which is icky, and annoying to work around
 	+ Added ability for gamecode to grab latched cvar values
@@ -3626,7 +3626,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Removed +dropweapon as it doesn't actually do anything, and was confuzing rtcw players
 	+ Scoreboard colour/format changes
 	+ ATVI Wolfenstein XP #3529: Fixed getting knockback whilst invulnerable
-	+ Changed campaign debrieifing to show last map winner instead of current campaign winner, unless it's the final campaign.
+	+ Changed the campaign debriefing to show the last map's winner instead of the current campaign's winner, unless it's the final campaign
 	+ ATVI Wolfenstein XP #3531: Fixed can't tell current progress through a campaign
 	+ ATVI Wolfenstein XP #3527: Fixed spectators can see landmines
 
@@ -3724,7 +3724,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 15-04-2003
 			Arnout <rr2do2@splashdamage.com>
 	+ ATVI Wolfenstein XP #3225 : if a user doesn't set his rate (ui_rate) it now defaults to 5000.
-	+ Fixed bad server adress not kicking you back to main menu (left ui_connecting set to 1).
+	+ Fixed bad server addresses not kicking you back to the main menu (ui_connecting was left set to 1).
 	+ Fixed pickup hint not showing for Thompsons and MP40s.
 	+ Upped version numbers to ET 2.31a and ET 2.41a.
 
@@ -3767,7 +3767,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 			Arnout <rr2do2@splashdamage.com>
 	+ ATVI Wolfenstein XP #3225 : Cvar setting was outside the list bounding check.
 	+ ATVI Wolfenstein XP #428 : ui_netgametype now gets set right on open.
-	+ ATVI Wolfenstein XP #3087 : Added IP banning for maxlives which is used when PunkBuster isn't active.
+	+ ATVI Wolfenstein XP #3087 : Added IP address banning for maxlives, which is used when PunkBuster isn't active.
 	+ Removed some message of the day lines for the server( only 6 lines now).
 	+ Upped version numbers to ET 2.30f and ET 2.40f.
 	+ Stopped r_uifullscreen from removing fog.
@@ -4198,7 +4198,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 			Gordon	<djbob@splashdamage.com>
 	+ Removed key hint markers from hud
 	+ Added large right hand side of hud popup messages
-	+ Began recolouring the debrieing screens to be similar to the frontend ui colours
+	+ Began recolouring the debriefing screens to be similar to the frontend UI colours
 	+ Fixed solider menu on quickchat
 	
 29-03-2003
@@ -4648,7 +4648,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	
 			Gordon	<djbob@splashdamage.com>
 	+ Removed lots of LittleFloat/LittleLongs from Sfx resampling on long, speeding up sound loading by 1.5-2x
-	+ Changed engine to use Q_Fabs instead of fabs for various speedups all over the place, patch loading notibly
+	+ Changed the engine to use Q_fabs() instead of fabs() for various speedups all over the place, notably patch loading
 	+ Fixed tracers from mounted mg42 not coming from gun
 	+ Fixed mounted mg42 gun ring not animating with the tank it was attached to
 	+ Fixed vertical range locking on mounted mg42 not adjusting with the pitching of the tank
@@ -4752,7 +4752,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Added the ability to grab a keynum for a binding string (which must be in lower case) quickly
 		- Current system was a mess, and horribly slow, now, hash stored per key when binding changed for fast lookup
 	+ Cleaned up danger area finding code to stop doing 70squillion string compares, and added checking for being in a construction zone
-		- Landmine avoidance is there, need to check it tommorow
+		- Landmine avoidance is there, need to check it tomorrow
 	+ Changed the panzertarget AI Node to check whether the player can actually fire the panzerfaust (i.e. has ammo, etc.), not just whether he has one
 	+ Added forced delay to sniper rifle firing on bots, and changed their reloading to only reload if they haven't fired for a longer time than before
 	+ Stopped AI Defend Node doing lots of string compares
@@ -4948,7 +4948,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Changed construction goal finding to go to a construction if 
 		a) first pass, only if no-one else is going for it, 
 		b) second pass, only if 1 other person is going for it, otherwise ignore totally
-		- NOTE: will rewrite the goal finding totally tommorow, to be a much cleaner class-based prioritised list of options which will be selected from appropriately
+		- NOTE: will rewrite the goal finding totally tomorrow, to be a much cleaner, class-based, prioritised list of options which will be selected from appropriately
 	+ Changed bspc to ignore trigger_hurts, they were screwing up the aas on forest
 	
 20-02-2003
@@ -6525,7 +6525,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ #577 - flamethrower cheat (aim at your feet) - G_BurnMeGood
 	+ #577 - ATVI Wolfenstein Misc #462 - sv_punkbuster trigger dependent on what core says
 	+ #577 - vsprintf -> Q_vsnprintf to fix many potential overflow crashes
-	+ #577 - IP banning fix - idcvs/2002-August/000223.html
+	+ #577 - IP address banning fix - idcvs/2002-August/000223.html
 		and Xian GUID-based maxlives enforcement - seems functional but cl_guid is not effective atm
 	+ Linux: using ~/.etwolf, renamed window class to 'Enemy Territory'
 
@@ -7533,7 +7533,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 
 15-10-2002
 			Arnout <rr2do2@splashdamage.com>
-	+ Changed BotAllocateClient to accept a clientNum parameter so you can allocate a prefered clientslot (needed for savegames).
+	+ Changed BotAllocateClient() to accept a clientNum parameter, so you can allocate a preferred clientslot (needed for savegames).
 	+ Made sure all bot clients get dropped at the end of an SP game (shutdowngame/exitlevel).
 	+ Made sure bots get the classname "bot" instead of "player" or undefined.
 	+ Savegame and loadgame system can now quite reliably store and restore game situations. Several quickloads in a row still has the same artifact as multiple map_restarts, namely the whole map and media reloads for no obvious reason.
@@ -8068,7 +8068,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	  on creation, but sometimes the target hadn't been loaded yet,
 	  so it was failing to find it.  No need to find the target then.
 	+ Modified bs->idealviewangles to not cause bots to stare at the
-	  floor or ceilign when standing...
+	  floor or ceiling when standing...
 	+ If MoveToMarker fails due to bad AAS data, it now drops the
 	  bot into STAND, so that they'll respond to enemies, etc.
 	+ Fixed timing bug with allied bots running away from dynamite.
@@ -9061,7 +9061,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 16-05-2002
 			Arnout	<rr2do2@splashdamage.com>
 	+ Upped version number to Wolf 2.00c-MP.
-	+ Changed HQ to only give feedback when there are more than three players on a team. (Can be overriden by setting g_e3_forcehqsupport to 1 - this is an e3 thing that should be removed later :).
+	+ Changed HQ to only give feedback when there are more than three players on a team. (Can be overridden by setting g_e3_forcehqsupport to 1 - this is an e3 thing that should be removed later.)
 	+ Changed disguise (steal uniform) sound to 'sound/pickup/armour/body_pickup.wav'.
 	+ Added construction sounds. (Under construction/decayed.)
 	+ Added multi stage destruction.

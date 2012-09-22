@@ -377,7 +377,7 @@ void Cdelay_Frame( void ) {
 			run_it = qtrue;
 		} else if(delayed_cmd[i].type == CMD_DELAY_FRAME)
 		{
-			delayed_cmd[i].delay --;
+			delayed_cmd[i].delay--;
 			if(delayed_cmd[i].delay == CMD_DELAY_FRAME_FIRE)
 				run_it = qtrue;
 		}
@@ -854,7 +854,7 @@ void Cmd_Math_f( void )
 		}
 		else
 		{
-			Com_Printf(_( "math <variableToSet> = <value1> <operator> <value2>\nmath <variableToSet> <operator> <value1>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * / \n" ));
+			Com_Printf(_( "math <variableToSet> = <value1> <operator> <value2>\nmath <variableToSet> <operator> <value1>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * /\n" ));
 			return;
 		}
 	}
@@ -888,7 +888,7 @@ void Cmd_Math_f( void )
 		}
 		else
 		{
-			Com_Printf(_( "math <variableToSet> = <value1> <operator> <value2>\nmath <variableToSet> <operator> <value1>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * / \n" ));
+			Com_Printf(_( "math <variableToSet> = <value1> <operator> <value2>\nmath <variableToSet> <operator> <value1>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * /\n" ));
 			return;
 		}
 	}
@@ -923,13 +923,13 @@ void Cmd_Math_f( void )
 		}
 		else
 		{
-			Com_Printf(_( "math <variableToSet> = <value1> <operator> <value2>\nmath <variableToSet> <operator> <value1>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * / \n" ));
+			Com_Printf(_( "math <variableToSet> = <value1> <operator> <value2>\nmath <variableToSet> <operator> <value1>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * /\n" ));
 			return;
 		}
 	}
 	else
 	{
-		Com_Printf(_( "math <variableToSet> = <value1> <operator> <value2>\nmath <variableToSet> <operator> <value1>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * / \n" ));
+		Com_Printf(_( "math <variableToSet> = <value1> <operator> <value2>\nmath <variableToSet> <operator> <value1>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * /\n" ));
 		return;
 	}
 }
@@ -977,7 +977,7 @@ void Cmd_Strcmp_f( void )
 		}
 		else
 		{
-			Com_Printf(_( "invalid operator in strcmp command. valid operators are = != \n" ));
+			Com_Printf(_( "invalid operator in strcmp command. valid operators are = !=\n" ));
 			return;
 		}
 	}

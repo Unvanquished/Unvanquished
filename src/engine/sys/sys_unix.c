@@ -706,7 +706,7 @@ void Sys_ErrorDialog( const char *error )
 	unsigned int size;
 	int          f = -1;
 	const char   *homepath = Cvar_VariableString( "fs_homepath" );
-	const char   *gamedir = Cvar_VariableString( "fs_gamedir" );
+	const char   *gamedir = Cvar_VariableString( "fs_game" );
 	const char   *fileName = "crashlog.txt";
 	char         *ospath = FS_BuildOSPath( homepath, gamedir, fileName );
 
@@ -1033,8 +1033,8 @@ void Sys_GLimpInit( void )
 
 void Sys_SetFloatEnv( void )
 {
-	// rounding towards 0
-	fesetround( FE_TOWARDZERO );
+	// rounding toward nearest
+	fesetround( FE_TONEAREST );
 }
 
 /*

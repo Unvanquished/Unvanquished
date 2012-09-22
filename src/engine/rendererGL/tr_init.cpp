@@ -369,7 +369,6 @@ extern "C" {
 		//
 		// GLimp_Init directly or indirectly references the following cvars:
 		//      - r_fullscreen
-		//      - r_glDriver
 		//      - r_mode
 		//      - r_(color|depth|stencil)bits
 		//      - r_ignorehwgamma
@@ -1908,7 +1907,7 @@ extern "C" {
 			if ( FAILED( hr ) )
 #endif
 			{
-				ri.Printf( PRINT_ALL, "R_Init: Failed to find PerfHUD" );
+				ri.Printf( PRINT_ALL, "R_Init: Failed to find PerfHUD\n" );
 
 				for ( i = 0; i < numDriverTypes; i++ )
 				{
