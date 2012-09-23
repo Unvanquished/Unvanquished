@@ -109,11 +109,6 @@ void S_Base_SoundInfo_f( void )
 	}
 	else
 	{
-		if ( s_soundMuted )
-		{
-			Com_Printf("%s", _( "sound system is muted\n" ));
-		}
-
 		Com_Printf(_( "%5d stereo\n"), dma.channels - 1 );
 		Com_Printf(_( "%5d samples\n"), dma.samples );
 		Com_Printf(_( "%5d samplebits\n"), dma.samplebits );
