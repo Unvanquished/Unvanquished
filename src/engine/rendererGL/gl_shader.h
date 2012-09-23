@@ -29,6 +29,18 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "tr_local.h"
 
 // *INDENT-OFF*
+static const unsigned int GL_SHADER_VERSION = 1;
+
+struct GLShaderHeader
+{
+	unsigned int version;
+};
+
+struct GLShaderProgramHeader
+{
+	GLenum   binaryFormat;
+	GLint    binaryLength;
+};
 
 class GLUniform;
 class GLCompileMacro;
@@ -131,7 +143,11 @@ protected:
 	bool        GetCompileMacrosString( int permutation, std::string &compileMacrosOut ) const;
 	void        UpdateShaderProgramUniformLocations( shaderProgram_t *shaderProgram ) const;
 
-	void        CompilePermutations();
+	void         LoadShader();
+	bool         LoadShaderBinary();
+	void         SaveShaderBinary();
+	void         CompilePermutations();
+
 	virtual void BuildShaderVertexLibNames( std::string& vertexInlines ) { };
 	virtual void BuildShaderFragmentLibNames( std::string& vertexInlines ) { };
 	virtual void BuildShaderCompileMacros( std::string& vertexInlines ) { };
@@ -158,10 +174,7 @@ private:
 
 protected:
 	void ValidateProgram( GLuint program ) const;
-	void SaveShaderProgram( GLuint program, const char *pname, int i ) const;
-	bool LoadShaderProgram( GLuint program, const char *pname, int i ) const;
 	void ShowProgramUniforms( GLuint program ) const;
-
 public:
 	void SelectProgram();
 	void BindProgram();
