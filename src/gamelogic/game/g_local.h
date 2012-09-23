@@ -1245,7 +1245,6 @@ void             trap_GetUserinfo( int num, char *buffer, int bufferSize );
 void             trap_GetServerinfo( char *buffer, int bufferSize );
 void             trap_AdjustAreaPortalState( gentity_t *ent, qboolean open );
 qboolean         trap_AreasConnected( int area1, int area2 );
-void             trap_UpdateSharedConfig( unsigned int port, const char *rconpass );
 int              trap_BotAllocateClient( int clientNum );
 void             trap_BotFreeClient( int clientNum );
 void             trap_GetUsercmd( int clientNum, usercmd_t *cmd );
