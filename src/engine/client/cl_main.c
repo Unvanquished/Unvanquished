@@ -2061,6 +2061,8 @@ void CL_Connect_f( void )
 	Cvar_Set( "cl_currentServerIP", serverString );
 }
 
+#define MAX_RCON_MESSAGE 1024
+
 /*
 =====================
 CL_Rcon_f
@@ -2071,7 +2073,7 @@ CL_Rcon_f
 */
 void CL_Rcon_f( void )
 {
-	char     message[ 1024 ];
+	char     message[ MAX_RCON_MESSAGE ];
 	netadr_t to;
 
 	if ( !rcon_client_password->string )
@@ -2087,13 +2089,13 @@ void CL_Rcon_f( void )
 	message[ 3 ] = -1;
 	message[ 4 ] = 0;
 
-	strcat( message, "rcon " );
+	Q_strcat( message, MAX_RCON_MESSAGE, "rcon " );
 
-	strcat( message, rcon_client_password->string );
-	strcat( message, " " );
+	Q_strcat( message, MAX_RCON_MESSAGE, rcon_client_password->string );
+	Q_strcat( message, MAX_RCON_MESSAGE, " " );
 
 	// ATVI Wolfenstein Misc #284
-	strcat( message, Cmd_Cmd() + 5 );
+	Q_strcat( message, MAX_RCON_MESSAGE, Cmd_Cmd() + 5 );
 
 	if ( cls.state >= CA_CONNECTED )
 	{
