@@ -1779,7 +1779,7 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 		}
 	}
 
-	if ( statsbits || persistantbits )
+	if ( statsbits || persistantbits || miscbits )
 	{
 		MSG_WriteBits( msg, 1, 1 );  // something changed
 

@@ -749,9 +749,6 @@ static void BuildCloudData()
 			FillCloudBox( tess.surfaceShader, i );
 		}
 	}
-
-	// Tr3B: FIXME analyze required vertex attribs by the current material
-	Tess_UpdateVBOs( 0 );
 }
 
 /*

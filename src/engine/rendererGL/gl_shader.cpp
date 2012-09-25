@@ -797,36 +797,26 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 	return shaderText;
 }
 
-void GLShader::SaveShaderProgram( GLuint program, const char *pname, int i ) const
+void GLShader::LoadShader()
 {
-#ifdef GLEW_ARB_get_program_binary
-	GLint   binaryLength;
-	GLvoid  *binary;
+	_shaderPrograms = std::vector<shaderProgram_t>( 1 << _compileMacros.size() );
 
-	// Don't even try if the necessary functions aren't available
-	if( !glConfig2.getProgramBinaryAvailable )
+	if ( !LoadShaderBinary() )
 	{
-		return;
+		CompilePermutations();
+		SaveShaderBinary();
 	}
-
-	glGetProgramiv( program, GL_PROGRAM_BINARY_LENGTH, &binaryLength );
-
-	// Allocate enough for the binary and the binaryFormat
-	binary = (GLvoid*)ri.Hunk_AllocateTempMemory( binaryLength + sizeof( GLenum ) );
-	glGetProgramBinary( program, binaryLength, NULL, (GLenum*)binary, (char*)binary + sizeof( GLenum ) );
-
-	ri.FS_WriteFile( va( "glsl/%s_%d.bin", pname, i ), binary, binaryLength + sizeof( GLenum ) );
-
-	ri.Hunk_FreeTempMemory( binary );
-#endif
 }
 
-bool GLShader::LoadShaderProgram( GLuint program, const char *pname, int i ) const
+bool GLShader::LoadShaderBinary()
 {
 #ifdef GLEW_ARB_get_program_binary
-	GLint  binaryLength, success;
-	GLvoid *binary;
-	GLenum binaryFormat;
+	GLint          success;
+	GLint          fileLength;
+	void           *binary;
+	byte           *binaryptr;
+	GLShaderHeader shaderHeader;
+	int            numLoaded = 0;
 
 	//we need to recompile the shaders
 	if( r_recompileShaders->integer )
@@ -840,33 +830,163 @@ bool GLShader::LoadShaderProgram( GLuint program, const char *pname, int i ) con
 		return false;
 	}
 
-	binaryLength = ri.FS_ReadFile( va( "glsl/%s_%d.bin", pname, i ), (void **) &binary );
+	fileLength = ri.FS_ReadFile( va( "glsl/%s.bin", this->GetName().c_str() ), &binary );
 
 	// File empty or not found
-	if( binaryLength <= 0 )
+	if( fileLength <= 0 )
+	{
+		return false;
+	}
+	
+	binaryptr = ( byte* )binary;
+
+	// Get the shader header from the file
+	memcpy( &shaderHeader, binaryptr, sizeof( shaderHeader ) );
+
+	if ( shaderHeader.version != GL_SHADER_VERSION )
 	{
 		return false;
 	}
 
-	// Get the binaryFormat from the file
-	binaryFormat = *(GLenum *)binary;
+	binaryptr += sizeof( GLShaderHeader );
 
-	glProgramBinary( program, binaryFormat, (char*)binary + sizeof( GLenum ), binaryLength - sizeof( GLenum ) );
+	for ( size_t i = 0; i < ( 1 << _compileMacros.size() ); i++ )
+	{
+		GLShaderProgramHeader programHeader;
+		std::string compileMacros;
 
-	glGetProgramiv( program, GL_LINK_STATUS, &success );
+		if( GetCompileMacrosString( i, compileMacros ) )
+		{
+			memcpy( &programHeader, binaryptr, sizeof( programHeader ) );
+			binaryptr += sizeof( programHeader );
 
+			this->BuildShaderCompileMacros( compileMacros );
+
+			//ri.Printf(PRINT_ALL, "Compile macros: '%s'\n", compileMacros.c_str());
+
+			shaderProgram_t *shaderProgram = &_shaderPrograms[ i ];
+			
+			Q_strncpyz( shaderProgram->name, this->GetName().c_str(), sizeof( shaderProgram->name ) );
+
+			#if 0
+			if ( !compileMacros.empty() )
+			{
+				program->compileMacros = ( char * ) ri.Hunk_Alloc( sizeof( char ) * compileMacros.length() + 1, h_low );
+				Q_strncpyz( program->compileMacros, compileMacros.c_str(), compileMacros.length() + 1 );
+			}
+			else
+			#endif
+			{
+				shaderProgram->compileMacros = NULL;
+			}
+
+			shaderProgram->program = glCreateProgram();
+			shaderProgram->attribs = _vertexAttribsRequired; // | _vertexAttribsOptional;
+
+			glProgramBinary( shaderProgram->program, programHeader.binaryFormat, ( void* )binaryptr, programHeader.binaryLength );
+
+			glGetProgramiv( shaderProgram->program, GL_LINK_STATUS, &success );
+
+			if ( !success )
+			{
+				ri.FS_FreeFile( binary );
+
+				for ( std::size_t i = 0; i < _shaderPrograms.size(); i++ )
+				{
+					if ( _shaderPrograms[ i ].program )
+					{
+						glDeleteProgram( _shaderPrograms[ i ].program );
+					}
+				}
+				return false;
+			}
+
+			binaryptr += programHeader.binaryLength;
+
+			UpdateShaderProgramUniformLocations( shaderProgram );
+
+			SetShaderProgramUniformLocations( shaderProgram );
+			glUseProgram( shaderProgram->program );
+			SetShaderProgramUniforms( shaderProgram );
+			glUseProgram( 0 );
+
+			ValidateProgram( shaderProgram->program );
+			//ShowProgramUniforms(shaderProgram->program);
+			GL_CheckErrors();
+			numLoaded++;
+		}
+	}
 	ri.FS_FreeFile( binary );
-	// Did it work?
-	if( !success )
-	{
-		return false;
-	}
+	ri.Printf( PRINT_ALL, "...loaded %i cached %s shader permutations\n", numLoaded, this->GetName().c_str() );
 	return true;
 #else
-        return false;
+	return false;
 #endif
 }
+void GLShader::SaveShaderBinary()
+{
+#ifdef GLEW_ARB_get_program_binary
+	GLint                 binaryLength;
+	GLuint                binarySize = 0;
+	byte                  *binary;
+	byte                  *binaryptr;
+	GLShaderHeader        shaderHeader;
 
+	// Don't even try if the necessary functions aren't available
+	if( !glConfig2.getProgramBinaryAvailable )
+	{
+		return;
+	}
+
+	// Find the size of the concatenated shader binary
+	binarySize += sizeof( GLShaderHeader );
+
+	for( size_t i = 0; i < _shaderPrograms.size(); i++ )
+	{
+		GLuint program = _shaderPrograms[ i ].program;
+
+		if ( !program )
+		{
+			continue;
+		}
+
+		glGetProgramiv( program, GL_PROGRAM_BINARY_LENGTH, &binaryLength );
+
+		// Space for the program header and the program binary length
+		binarySize += sizeof( GLShaderProgramHeader ) + binaryLength;
+	}
+
+	// Alloate space for the binary, and the number of permutations
+	binaryptr = binary = (byte*)ri.Hunk_AllocateTempMemory( binarySize );
+
+	shaderHeader.version = GL_SHADER_VERSION;
+
+	memcpy( ( void* )binaryptr, &shaderHeader, sizeof( shaderHeader ) );
+
+	binaryptr += sizeof( shaderHeader );
+
+	// Add the program binarys
+	for( size_t i = 0; i < _shaderPrograms.size(); i++ )
+	{
+		GLuint program = _shaderPrograms[ i ].program;
+		GLShaderProgramHeader programHeader;
+
+		if ( !program )
+		{
+			continue;
+		}
+		
+		glGetProgramBinary( program, binarySize - ( binaryptr - binary ), &programHeader.binaryLength, &programHeader.binaryFormat, (GLvoid*)( binaryptr + sizeof( programHeader ) ) );
+
+		memcpy( ( void* )binaryptr, &programHeader, sizeof( programHeader ) );
+		binaryptr += sizeof( programHeader ) + programHeader.binaryLength;
+	}
+
+	ri.FS_WriteFile( va( "glsl/%s.bin", this->GetName().c_str() ), binary, binarySize );
+
+	ri.Hunk_FreeTempMemory( binary );
+#endif
+}
 void GLShader::CompileAndLinkGPUShaderProgram( shaderProgram_t *program,
     const std::string &vertexShaderText,
     const std::string &fragmentShaderText,
@@ -1022,8 +1142,6 @@ void GLShader::CompilePermutations()
 	ri.Printf(PRINT_ALL, "/// creating %s shaders --------\n", this->GetName().c_str());
 
 	int startTime = ri.Milliseconds();
-
-	_shaderPrograms = std::vector<shaderProgram_t>(1 << _compileMacros.size());
 	
 	//Com_Memset(_shaderPrograms, 0, sizeof(_shaderPrograms));
 
@@ -1093,11 +1211,7 @@ void GLShader::CompilePermutations()
 			shaderProgram->program = glCreateProgram();
 			shaderProgram->attribs = _vertexAttribsRequired; // | _vertexAttribsOptional;
 
-			if( !LoadShaderProgram( shaderProgram->program, shaderProgram->name, i ) )
-			{
-				CompileAndLinkGPUShaderProgram(	shaderProgram, vertexShaderText, fragmentShaderText, compileMacros, i);
-				SaveShaderProgram( shaderProgram->program, shaderProgram->name, i );
-			}
+			CompileAndLinkGPUShaderProgram(	shaderProgram, vertexShaderText, fragmentShaderText, compileMacros, i);
 
 			UpdateShaderProgramUniformLocations(shaderProgram);
 
@@ -1432,7 +1546,7 @@ GLShader_generic::GLShader_generic() :
 	GLCompileMacro_USE_TCGEN_ENVIRONMENT( this ),
 	GLCompileMacro_USE_TCGEN_LIGHTMAP( this )
 {
-	CompilePermutations();
+	LoadShader();
 }
 
 void GLShader_generic::BuildShaderVertexLibNames( std::string& vertexInlines )
@@ -1476,7 +1590,7 @@ GLShader_lightMapping::GLShader_lightMapping() :
 	GLCompileMacro_USE_PARALLAX_MAPPING( this )  //,
 	//GLCompileMacro_TWOSIDED(this)
 {
-	CompilePermutations();
+	LoadShader();
 }
 
 void GLShader_lightMapping::BuildShaderVertexLibNames( std::string& vertexInlines )
@@ -1543,7 +1657,7 @@ GLShader_vertexLighting_DBS_entity::GLShader_vertexLighting_DBS_entity() :
 	GLCompileMacro_USE_REFLECTIVE_SPECULAR( this )  //,
 	//GLCompileMacro_TWOSIDED(this)
 {
-	CompilePermutations();
+	LoadShader();
 }
 
 void GLShader_vertexLighting_DBS_entity::BuildShaderVertexLibNames( std::string& vertexInlines )
@@ -1611,7 +1725,7 @@ GLShader_vertexLighting_DBS_world::GLShader_vertexLighting_DBS_world() :
 	GLCompileMacro_USE_PARALLAX_MAPPING( this )  //,
 	//GLCompileMacro_TWOSIDED(this)
 {
-	CompilePermutations();
+	LoadShader();
 }
 
 void GLShader_vertexLighting_DBS_world::BuildShaderVertexLibNames( std::string& vertexInlines )
@@ -1679,7 +1793,7 @@ GLShader_forwardLighting_omniXYZ::GLShader_forwardLighting_omniXYZ():
 	GLCompileMacro_USE_SHADOWING( this )  //,
 	//GLCompileMacro_TWOSIDED(this)
 {
-	CompilePermutations();
+	LoadShader();
 }
 
 void GLShader_forwardLighting_omniXYZ::BuildShaderVertexLibNames( std::string& vertexInlines )
@@ -1765,7 +1879,7 @@ GLShader_forwardLighting_projXYZ::GLShader_forwardLighting_projXYZ():
 	GLCompileMacro_USE_SHADOWING( this )  //,
 	//GLCompileMacro_TWOSIDED(this)
 {
-	CompilePermutations();
+	LoadShader();
 }
 
 void GLShader_forwardLighting_projXYZ::BuildShaderVertexLibNames( std::string& vertexInlines )
@@ -1855,7 +1969,7 @@ GLShader_forwardLighting_directionalSun::GLShader_forwardLighting_directionalSun
 	GLCompileMacro_USE_SHADOWING( this )  //,
 	//GLCompileMacro_TWOSIDED(this)
 {
-	CompilePermutations();
+	LoadShader();
 }
 
 void GLShader_forwardLighting_directionalSun::BuildShaderVertexLibNames( std::string& vertexInlines )
@@ -1934,7 +2048,7 @@ GLShader_deferredLighting_omniXYZ::GLShader_deferredLighting_omniXYZ():
 	GLCompileMacro_USE_SHADOWING( this )  //,
 	//GLCompileMacro_TWOSIDED(this)
 {
-	CompilePermutations();
+	LoadShader();
 }
 
 void GLShader_deferredLighting_omniXYZ::BuildShaderCompileMacros( std::string& compileMacros )
@@ -1994,7 +2108,7 @@ GLShader_deferredLighting_projXYZ::GLShader_deferredLighting_projXYZ():
 	GLCompileMacro_USE_SHADOWING( this )  //,
 	//GLCompileMacro_TWOSIDED(this)
 {
-	CompilePermutations();
+	LoadShader();
 }
 
 void GLShader_deferredLighting_projXYZ::BuildShaderCompileMacros( std::string& compileMacros )
@@ -2056,7 +2170,7 @@ GLShader_deferredLighting_directionalSun::GLShader_deferredLighting_directionalS
 	GLCompileMacro_USE_SHADOWING( this )  //,
 	//GLCompileMacro_TWOSIDED(this)
 {
-	CompilePermutations();
+	LoadShader();
 }
 
 void GLShader_deferredLighting_directionalSun::BuildShaderCompileMacros( std::string& compileMacros )
@@ -2124,7 +2238,7 @@ GLShader_geometricFill::GLShader_geometricFill():
 	GLCompileMacro_USE_PARALLAX_MAPPING( this ),
 	GLCompileMacro_USE_REFLECTIVE_SPECULAR( this )
 {
-	CompilePermutations();
+	LoadShader();
 }
 
 void GLShader_geometricFill::BuildShaderVertexLibNames( std::string& vertexInlines )
@@ -2186,7 +2300,7 @@ GLShader_shadowFill::GLShader_shadowFill() :
 	GLCompileMacro_USE_DEFORM_VERTEXES( this ),
 	GLCompileMacro_LIGHT_DIRECTIONAL( this )
 {
-	CompilePermutations();
+	LoadShader();
 }
 
 void GLShader_shadowFill::BuildShaderVertexLibNames( std::string& vertexInlines )
@@ -2228,7 +2342,7 @@ GLShader_reflection::GLShader_reflection():
 	GLCompileMacro_USE_NORMAL_MAPPING( this )  //,
 	//GLCompileMacro_TWOSIDED(this)
 {
-	CompilePermutations();
+	LoadShader();
 }
 
 void GLShader_reflection::BuildShaderVertexLibNames( std::string& vertexInlines )
@@ -2268,7 +2382,7 @@ GLShader_skybox::GLShader_skybox() :
 	GLDeformStage( this ),
 	GLCompileMacro_USE_PORTAL_CLIPPING( this )
 {
-	CompilePermutations();
+	LoadShader();
 }
 
 void GLShader_skybox::SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram )
@@ -2299,7 +2413,7 @@ GLShader_fogQuake3::GLShader_fogQuake3() :
 	GLCompileMacro_USE_DEFORM_VERTEXES( this ),
 	GLCompileMacro_EYE_OUTSIDE( this )
 {
-	CompilePermutations();
+	LoadShader();
 }
 
 void GLShader_fogQuake3::BuildShaderVertexLibNames( std::string& vertexInlines )
@@ -2332,7 +2446,7 @@ GLShader_fogGlobal::GLShader_fogGlobal() :
 	u_FogDistanceVector( this ),
 	u_FogDepthVector( this )
 {
-	CompilePermutations();
+	LoadShader();
 }
 
 void GLShader_fogGlobal::SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram )
@@ -2369,7 +2483,7 @@ GLShader_heatHaze::GLShader_heatHaze() :
 	GLCompileMacro_USE_VERTEX_ANIMATION( this ),
 	GLCompileMacro_USE_DEFORM_VERTEXES( this )
 {
-	CompilePermutations();
+	LoadShader();
 }
 
 void GLShader_heatHaze::BuildShaderVertexLibNames( std::string& vertexInlines )
@@ -2408,7 +2522,7 @@ GLShader_screen::GLShader_screen() :
 	GLShader( "screen", ATTR_POSITION ),
 	u_ModelViewProjectionMatrix( this )
 {
-	CompilePermutations();
+	LoadShader();
 }
 
 void GLShader_screen::SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram )
@@ -2427,7 +2541,7 @@ GLShader_portal::GLShader_portal() :
 	u_ModelViewProjectionMatrix( this ),
 	u_PortalRange( this )
 {
-	CompilePermutations();
+	LoadShader();
 }
 
 void GLShader_portal::SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram )
@@ -2448,7 +2562,7 @@ GLShader_toneMapping::GLShader_toneMapping() :
 	u_HDRMaxLuminance( this ),
 	GLCompileMacro_BRIGHTPASS_FILTER( this )
 {
-	CompilePermutations();
+	LoadShader();
 }
 
 void GLShader_toneMapping::SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram )
@@ -2465,7 +2579,7 @@ GLShader_contrast::GLShader_contrast() :
 	GLShader( "contrast", ATTR_POSITION ),
 	u_ModelViewProjectionMatrix( this )
 {
-	CompilePermutations();
+	LoadShader();
 }
 
 void GLShader_contrast::SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram )
@@ -2484,7 +2598,7 @@ GLShader_cameraEffects::GLShader_cameraEffects() :
 	u_ModelViewProjectionMatrix( this ),
 	u_DeformMagnitude( this )
 {
-	CompilePermutations();
+	LoadShader();
 }
 
 void GLShader_cameraEffects::SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram )
@@ -2506,7 +2620,7 @@ GLShader_blurX::GLShader_blurX() :
 	u_ModelViewProjectionMatrix( this ),
 	u_DeformMagnitude( this )
 {
-	CompilePermutations();
+	LoadShader();
 }
 
 void GLShader_blurX::SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram )
@@ -2524,7 +2638,7 @@ GLShader_blurY::GLShader_blurY() :
 	u_ModelViewProjectionMatrix( this ),
 	u_DeformMagnitude( this )
 {
-	CompilePermutations();
+	LoadShader();
 }
 
 void GLShader_blurY::SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram )
@@ -2541,7 +2655,7 @@ GLShader_debugShadowMap::GLShader_debugShadowMap() :
 	GLShader( "debugShadowMap", ATTR_POSITION ),
 	u_ModelViewProjectionMatrix( this )
 {
-	CompilePermutations();
+	LoadShader();
 }
 
 void GLShader_debugShadowMap::SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram )
@@ -2560,7 +2674,7 @@ GLShader_depthToColor::GLShader_depthToColor() :
 	u_BoneMatrix( this ),
 	GLCompileMacro_USE_VERTEX_SKINNING( this )
 {
-	CompilePermutations();
+	LoadShader();
 }
 
 void GLShader_depthToColor::BuildShaderVertexLibNames( std::string& vertexInlines )
@@ -2580,7 +2694,7 @@ GLShader_lightVolume_omni::GLShader_lightVolume_omni() :
 	u_UnprojectMatrix( this ),
 	GLCompileMacro_USE_SHADOWING( this )
 {
-	CompilePermutations();
+	LoadShader();
 }
 
 void GLShader_lightVolume_omni::SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram )
@@ -2613,7 +2727,7 @@ GLShader_deferredShadowing_proj::GLShader_deferredShadowing_proj() :
 	GLCompileMacro_USE_PORTAL_CLIPPING( this ),
 	GLCompileMacro_USE_SHADOWING( this )
 {
-	CompilePermutations();
+	LoadShader();
 }
 
 void GLShader_deferredShadowing_proj::SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram )
@@ -2652,7 +2766,7 @@ GLShader_liquid::GLShader_liquid() :
 	u_FogColor( this ),
 	GLCompileMacro_USE_PARALLAX_MAPPING( this )
 {
-	CompilePermutations();
+	LoadShader();
 }
 
 void GLShader_liquid::SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram )
@@ -2679,7 +2793,7 @@ GLShader_volumetricFog::GLShader_volumetricFog() :
 	u_FogDensity( this ),
 	u_FogColor( this )
 {
-	CompilePermutations();
+	LoadShader();
 }
 
 void GLShader_volumetricFog::SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram )
@@ -2701,7 +2815,7 @@ GLShader_screenSpaceAmbientOcclusion::GLShader_screenSpaceAmbientOcclusion() :
 	GLShader( "screenSpaceAmbientOcclusion", ATTR_POSITION ),
 	u_ModelViewProjectionMatrix( this )
 {
-	CompilePermutations();
+	LoadShader();
 }
 
 void GLShader_screenSpaceAmbientOcclusion::SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram )
@@ -2720,7 +2834,7 @@ GLShader_depthOfField::GLShader_depthOfField() :
 	GLShader( "depthOfField", ATTR_POSITION ),
 	u_ModelViewProjectionMatrix( this )
 {
-	CompilePermutations();
+	LoadShader();
 }
 
 void GLShader_depthOfField::SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram )
