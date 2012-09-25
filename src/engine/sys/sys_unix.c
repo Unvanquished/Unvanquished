@@ -1033,8 +1033,6 @@ void Sys_GLimpInit( void )
 
 void Sys_SetFloatEnv( void )
 {
-	// rounding towards 0
-	fesetround( FE_TOWARDZERO );
 }
 
 /*

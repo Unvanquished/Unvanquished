@@ -67,13 +67,13 @@ Set FPU control word to default value
 ================
 */
 
-#ifndef _RC_CHOP
+#ifndef _RC_NEAR
 // mingw doesn't seem to have these defined :(
 
 #define _MCW_EM  0x0008001fU
 #define _MCW_RC  0x00000300U
 #define _MCW_PC  0x00030000U
-#define _RC_CHOP 0x00000300U
+#define _RC_NEAR 0x00000000U
 #define _PC_53   0x00010000U
 
 unsigned int _controlfp( unsigned int new, unsigned int mask );
@@ -81,7 +81,7 @@ unsigned int _controlfp( unsigned int new, unsigned int mask );
 #endif
 
 #define FPUCWMASK1 ( _MCW_RC | _MCW_EM )
-#define FPUCW      ( _RC_CHOP | _MCW_EM | _PC_53 )
+#define FPUCW      ( _RC_NEAR | _MCW_EM | _PC_53 )
 
 #if idx64
 #define FPUCWMASK  ( FPUCWMASK1 )
