@@ -23,25 +23,7 @@
 ;
 ; assumes __fastcall calling convention
 
-DoSyscall PROTO
-
 .code
-
-; Call to static void DoSyscall(int syscallNum, int programStack, int *opStackBase, uint8_t opStackOfs, intptr_t arg)
-
-qsyscall64 PROC
-  sub rsp, 28h						; after this esp will be aligned to 16 byte boundary
-  mov qword ptr [rsp + 20h], rcx	; 5th parameter "arg" is passed on stack
-  mov r9b, bl						; opStackOfs
-  mov r8, rdi						; opStackBase
-  mov edx, esi						; programStack
-  mov ecx, eax						; syscallNum
-  mov rax, DoSyscall				; store call address of DoSyscall in rax
-  call rax
-  add rsp, 28h
-  ret
-qsyscall64 ENDP
-
 
 ; Call to compiled code after setting up the register environment for the VM
 ; prototype:
@@ -58,7 +40,7 @@ qvmcall64 PROC
   xor rbx, rbx						; opStackOfs starts out being 0
   mov rdi, rdx						; opStack
   mov esi, dword ptr [rcx]			; programStack
-  
+
   call qword ptr [r8]				; instructionPointers[0] is also the entry point
 
   pop rcx
@@ -69,7 +51,7 @@ qvmcall64 PROC
   pop rbx
   pop rdi
   pop rsi
-  
+
   ret
 qvmcall64 ENDP
 
