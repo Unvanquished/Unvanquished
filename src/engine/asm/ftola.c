@@ -25,7 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 static const unsigned short fpucw = 0x0C7F;
 
 /*
- * GNU inline asm ftol conversion functions using SSE or FPU
+ * The GNU inline asm version of the ftol conversion functions using SSE or FPU
  */
 
 long qftolsse(float f)

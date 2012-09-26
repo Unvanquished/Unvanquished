@@ -18,8 +18,8 @@
 ; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ; ===========================================================================
 
-; MASM version of snapvector conversion function using SSE or FPU
-; assume __cdecl calling convention is being used for x86, __fastcall for x64
+; the MASM version of the snapvector functions using SSE or FPU
+; assumes that the cdecl calling convention is being used on x86, and the fastcall one on x64
 ;
 ; function prototype:
 ; void qsnapvector(vec3_t vec)
@@ -45,31 +45,31 @@ IFDEF idx64
 
   qsnapvectorsse PROC
     sub rsp, 8
-	movaps xmm1, ssemask		; initialize the mask register
-	movups xmm0, [rcx]			; here is stored our vector. Read 4 values in one go
+	movaps xmm1, ssemask		; initialize the mask register for maskmovdqu
+	movups xmm0, [rcx]			; our vector is stored here; read 4 values at once
 	movaps xmm2, xmm0			; keep a copy of the original data
 	andps xmm0, xmm1			; set the fourth value to zero in xmm0
-	andnps xmm1, xmm2			; copy fourth value to xmm1 and set rest to zero
-	cvtps2dq xmm0, xmm0			; convert 4 single fp to int
-	cvtdq2ps xmm0, xmm0			; convert 4 int to single fp
+	andnps xmm1, xmm2			; copy the fourth value to xmm1 and set the rest to zero
+	cvtps2dq xmm0, xmm0			; convert 4 floats to ints
+	cvtdq2ps xmm0, xmm0			; convert 4 ints to floats
 	orps xmm0, xmm1				; combine all 4 values again
-	movups [rcx], xmm0			; write 3 rounded and 1 unchanged values back to memory
+	movups [rcx], xmm0			; write 3 rounded and 1 unchanged values back to the memory
 	ret
   qsnapvectorsse ENDP
 
 ELSE
 
   qsnapvectorsse PROC
-	mov eax, dword ptr 4[esp]		; store address of vector in eax
-	movaps xmm1, ssemask			; initialize the mask register for maskmovdqu
-	movups xmm0, [eax]			; here is stored our vector. Read 4 values in one go
+	mov eax, dword ptr 4[esp]	; store the address of the vector in eax
+	movaps xmm1, ssemask		; initialize the mask register for maskmovdqu
+	movups xmm0, [eax]			; our vector is stored here; read 4 values at once
 	movaps xmm2, xmm0			; keep a copy of the original data
 	andps xmm0, xmm1			; set the fourth value to zero in xmm0
-	andnps xmm1, xmm2			; copy fourth value to xmm1 and set rest to zero
-	cvtps2dq xmm0, xmm0			; convert 4 single fp to int
-	cvtdq2ps xmm0, xmm0			; convert 4 int to single fp
+	andnps xmm1, xmm2			; copy the fourth value to xmm1 and set the rest to zero
+	cvtps2dq xmm0, xmm0			; convert 4 floats to ints
+	cvtdq2ps xmm0, xmm0			; convert 4 ints to floats
 	orps xmm0, xmm1				; combine all 4 values again
-	movups [eax], xmm0			; write 3 rounded and 1 unchanged values back to memory
+	movups [eax], xmm0			; write 3 rounded and 1 unchanged values back to the memory
 	ret
   qsnapvectorsse ENDP
 

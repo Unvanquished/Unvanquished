@@ -24,8 +24,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../qcommon/q_shared.h"
 
 /*
- * GNU inline asm version of qsnapvector
- * See MASM snapvector.asm for commentary
+ * The GNU inline asm version of qsnapvector
+ * See snapvector.asm (the MASM version) for commentary
  */
 
 static unsigned char ssemask[16] ALIGNED(16) =
