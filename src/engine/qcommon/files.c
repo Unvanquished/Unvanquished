@@ -242,7 +242,6 @@ static  cvar_t      *fs_apppath;
 static cvar_t       *fs_basegame;
 static cvar_t       *fs_copyfiles;
 static cvar_t       *fs_gamedirvar;
-static cvar_t       *fs_restrict;
 static searchpath_t *fs_searchpaths;
 static int          fs_readCount; // total bytes read
 static int          fs_loadCount; // total files read
@@ -1542,11 +1541,11 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 
 			// check a file in the directory tree
 
-			// if we are running restricted, or if the filesystem is configured for pure (fs_numServerPaks)
-			// the only files we will allow to come from the directory are .cfg files
+			// if the filesystem is configured for pure (fs_numServerPaks != 0), then
+			// the only files we will allow to come from the directory are .cfg, .menu, etc. files
 			l = strlen( filename );
 
-			if ( fs_restrict->integer || fs_numServerPaks )
+			if ( fs_numServerPaks )
 			{
 				if ( Q_stricmp( filename + l - 4, ".cfg" )  // for config files
 				     && Q_stricmp( filename + l - 4, ".ttf" )
@@ -2833,14 +2832,8 @@ char **FS_ListFilteredFiles( const char *path, const char *extension, char *filt
 			char **sysFiles;
 			char *name;
 
-			// don't scan directories for files if we are pure or restricted
+			// don't scan directories for files if we are pure
 			if ( fs_numServerPaks )
-			{
-				continue;
-			}
-			else if ( fs_restrict->integer &&
-			          Q_stricmpn( path, "profiles", 8 ) &&
-			          Q_stricmpn( path, "demos", 5 ) )
 			{
 				continue;
 			}
@@ -4153,7 +4146,6 @@ static void FS_Startup( const char *gameName )
 
 	fs_homepath = Cvar_Get( "fs_homepath", homePath, CVAR_INIT );
 	fs_gamedirvar = Cvar_Get( "fs_game", "", CVAR_INIT | CVAR_SYSTEMINFO );
-	fs_restrict = Cvar_Get( "fs_restrict", "", CVAR_INIT );
 
 	// add search path elements in reverse priority order
 	if ( fs_basepath->string[ 0 ] )
@@ -4706,7 +4698,6 @@ FS_LoadPakChecksums to send the pak string to the client
 FS_LoadPakPureChecksums is used locally to compare against what the client sends back
 
 the pure_checksums are computed by Com_MemoryBlockChecksum with a random key (fs_checksumFeed)
-since we can't do this on restricted server, we always use the same fs_checksumFeed value
 
 drop lightweight pak0 checksum, put the faked pk3s pure checksums instead
 
@@ -5006,7 +4997,6 @@ void FS_InitFilesystem( void )
 	Com_StartupVariable( "fs_homepath" );
 	Com_StartupVariable( "fs_game" );
 	Com_StartupVariable( "fs_copyfiles" );
-	Com_StartupVariable( "fs_restrict" );
 	// other command line variable settings don't happen
 	// until after the filesystem has been initialized
 
@@ -5063,7 +5053,6 @@ void FS_Restart( int checksumFeed )
 			Cvar_Set( "fs_gamedirvar", lastValidGame );
 			lastValidBase[ 0 ] = '\0';
 			lastValidGame[ 0 ] = '\0';
-			Cvar_Set( "fs_restrict", "0" );
 			FS_Restart( checksumFeed );
 			Com_Error( ERR_DROP, "Invalid game folder" );
 		}
