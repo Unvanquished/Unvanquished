@@ -5110,7 +5110,7 @@ void FS_InitFilesystem( void )
 	// Arnout: we want the nice error message here as well
 	if ( FS_ReadFile( "default.cfg", NULL ) <= 0 )
 	{
-		Com_Error( ERR_FATAL, "Couldn't load default.cfg - I am missing essential files – verify your installation?" );
+		Com_Error( ERR_FATAL, "Couldn't load default.cfg — I am missing essential files — verify your installation?" );
 	}
 
 	Q_strncpyz( lastValidBase, fs_basepath->string, sizeof( lastValidBase ) );
@@ -5161,7 +5161,7 @@ void FS_Restart( int checksumFeed )
 		}
 
 		// TTimo - added some verbosity, 'couldn't load default.cfg' confuses the hell out of users
-		Com_Error( ERR_FATAL, "Couldn't load default.cfg - I am missing essential files – verify your installation?" );
+		Com_Error( ERR_FATAL, "Couldn't load default.cfg — I am missing essential files — verify your installation?" );
 	}
 
 	// bk010116 - new check before safeMode
@@ -5178,7 +5178,7 @@ void FS_Restart( int checksumFeed )
 				if ( !Com_CheckProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
 				{
 #ifdef NDEBUG
-					Com_Printf(_( "^3WARNING: profile.pid found for profile '%s' – system settings will revert to defaults\n"), cl_profileStr );
+					Com_Printf(_( "^3WARNING: profile.pid found for profile '%s' — the system settings will revert to their defaults\n"), cl_profileStr );
 					// ydnar: set crashed state
 					Cbuf_AddText( "set com_crashed 1\n" );
 #endif

@@ -1322,7 +1322,7 @@ extern "C" {
 
 			if ( glConfig.driverType == GLDRV_MESA )
 			{
-				ri.Printf( PRINT_DEVELOPER, "^3NOT using GPU vertex skinning – known to be broken with Radeon HD and Mesa\n" );
+				ri.Printf( PRINT_DEVELOPER, "^3Not using GPU vertex skinning: known to be broken with Radeon HD and Mesa\n" );
 				glConfig2.vboVertexSkinningAvailable = qfalse;
 			}
 		}

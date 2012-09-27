@@ -753,7 +753,7 @@ void Cmd_If_f( void )
 		case 3:
 			vt = Cmd_Argv( 2 );
 #ifdef DEDICATED
-			Com_Printf(_( "if <modifiers>… is not supported on the server – assuming true.\n" ));
+			Com_Printf(_( "if <modifiers>… is not supported on the server — assuming true.\n" ));
 			v = vt;
 #else
 			v = Cmd_Argv( 1 );

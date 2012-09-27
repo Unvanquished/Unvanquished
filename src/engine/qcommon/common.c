@@ -3193,7 +3193,7 @@ void Com_Init( char *commandLine )
 			if ( !Com_CheckProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
 			{
 #if 0
-				Com_Printf(_( "^3WARNING: profile.pid found for profile '%s' – system settings will revert to defaults\n"),
+				Com_Printf(_( "^3WARNING: profile.pid found for profile '%s' — the system settings will revert to their defaults\n"),
 				            cl_profileStr );
 				// ydnar: set crashed state
 				Cbuf_AddText( "set com_crashed 1\n" );
@@ -3742,7 +3742,7 @@ void Com_Frame( void )
 			}
 			else if ( Sys_Milliseconds() - watchdogTime > com_watchdog->integer * 1000 )
 			{
-				Com_Printf(_( "Idle Server with no map – triggering watchdog\n" ));
+				Com_Printf(_( "Idle server with no map — triggering watchdog\n" ));
 				watchdogTime = 0;
 				watchWarn = qfalse;
 

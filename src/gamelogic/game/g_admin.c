@@ -1209,7 +1209,7 @@ static int admin_find_admin( gentity_t *ent, char *name, const char *command,
 		{
 			for ( i = 0, a = g_admin_admins; a; i++, a = a->next ) {; }
 
-			ADMP( va( "%s %s %s %d %d %d", QQ( N_("^3$1$: ^7$2$ not in range 0-$3$ or $4$-$5$\n") ),
+			ADMP( va( "%s %s %s %d %d %d", QQ( N_("^3$1$: ^7$2$ not in range 0–$3$ or $4$–$5$\n") ),
 			          Quote(command), Quote(name),
 			          level.maxclients - 1,
 			          MAX_CLIENTS, MAX_CLIENTS + i - 1 ) );
@@ -1425,7 +1425,7 @@ qboolean G_admin_ban_check( gentity_t *ent, char *reason, int rlen )
 		{
 			trap_Print( va( "%s%s\n", warningMessage,
 			                ban->warnCount + 1 == 10 ?
-			                S_COLOR_WHITE " - future messages for this ban will be suppressed" :
+			                S_COLOR_WHITE " — future messages for this ban will be suppressed" :
 			                "" ) );
 		}
 
@@ -2478,7 +2478,7 @@ qboolean G_admin_ban( gentity_t *ent )
 
 		if ( ip.mask < min || ip.mask > max )
 		{
-			ADMP( va( "%s %d %d %d", QQ( N_("^3ban: ^7invalid netmask ($1$ is not one of $2$-$3$)\n") ),
+			ADMP( va( "%s %d %d %d", QQ( N_("^3ban: ^7invalid netmask ($1$ is not one of $2$–$3$)\n") ),
 			          ip.mask, min, max ) );
 			return qfalse;
 		}
@@ -2713,7 +2713,7 @@ qboolean G_admin_adjustban( gentity_t *ent )
 
 		if ( mask < min || mask > max )
 		{
-			ADMP( va( "%s %d %d %d", QQ( N_("^3adjustban: ^7invalid netmask ($1$ is not one of $2$-$3$)\n") ),
+			ADMP( va( "%s %d %d %d", QQ( N_("^3adjustban: ^7invalid netmask ($1$ is not one of $2$–$3$)\n") ),
 			          mask, min, max ) );
 			return qfalse;
 		}
@@ -4612,7 +4612,7 @@ qboolean G_admin_buildlog( gentity_t *ent )
 	ADMBP( "\"" );
 	ADMBP_end();
 
-	ADMP( va( "%s %d %d %d %d %d %s", QQ( N_("^3buildlog: ^7showing $1$ build logs $2$ - $3$ of $4$ – $5$.  $6$\n") ),
+	ADMP( va( "%s %d %d %d %d %d %s", QQ( N_("^3buildlog: ^7showing $1$ build logs $2$–$3$ of $4$–$5$.  $6$\n") ),
 	           printed, start + MAX_CLIENTS, i + MAX_CLIENTS - 1,
 	           level.buildId + MAX_CLIENTS - level.numBuildLogs,
 	           level.buildId + MAX_CLIENTS - 1,

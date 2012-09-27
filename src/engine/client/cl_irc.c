@@ -1570,7 +1570,7 @@ static int IRCH_ServerError()
 
 	if ( IRC_ReceivedMessage.arg_count == 1 )
 	{
-		Com_Printf(_( "IRC: server error – %s\n"), IRC_String( arg_values[ 0 ] ) );
+		Com_Printf(_( "IRC: server error: %s\n"), IRC_String( arg_values[ 0 ] ) );
 	}
 	else
 	{
@@ -1960,7 +1960,7 @@ static int CTCP_Version( qboolean is_channel, const char *argument )
 		return IRC_CMD_SUCCESS;
 	}
 
-	return IRC_Send( "NOTICE %s :\001VERSION Daemon IRC client – v\n" Q3_VERSION "\001", IRC_String( pfx_nickOrServer ) );
+	return IRC_Send( "NOTICE %s :\001VERSION Daemon IRC client — v\n" Q3_VERSION "\001", IRC_String( pfx_nickOrServer ) );
 }
 
 /*--------------------------------------------------------------------------*/
