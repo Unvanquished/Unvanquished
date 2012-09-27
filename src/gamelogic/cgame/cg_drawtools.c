@@ -574,7 +574,7 @@ void CG_DrawRangeMarker( rangeMarkerType_t rmType, const vec3_t origin, float ra
 		vec4_t rgba;
 		pcsh = cgs.media.plainColorShader;
 		VectorCopy(rgb, rgba);
-		rgba[ 3 ] = Com_Clamp( 0.1f, 1.0f, cg_rangeMarkerSurfaceOpacity.value );
+		rgba[ 3 ] = Com_Clamp( 0.0f, 1.0f, cg_rangeMarkerSurfaceOpacity.value );
 		switch( rmType )
 		{
 			case RMT_SPHERE:
@@ -594,8 +594,10 @@ void CG_DrawRangeMarker( rangeMarkerType_t rmType, const vec3_t origin, float ra
 		const cgMediaBinaryShader_t *mbsh;
 		cgBinaryShaderSetting_t     *bshs;
 		int                         i;
-		float lineThickness = Com_Clamp( 0.1f, 1.0f, cg_rangeMarkerLineThickness.value );
-		float lineOpacity   = Com_Clamp( 0.1f, 1.0f, cg_rangeMarkerLineOpacity.value );
+		float lineOpacity   = Com_Clamp( 0.0f, 1.0f, cg_rangeMarkerLineOpacity.value );
+		float lineThickness = cg_rangeMarkerLineThickness.value;
+		if ( lineThickness < 0.0f )
+			lineThickness = 0.0f;
 
 		if ( cg.numBinaryShadersUsed >= NUM_BINARY_SHADERS )
 		{
