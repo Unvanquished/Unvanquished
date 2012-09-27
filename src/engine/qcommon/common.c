@@ -43,8 +43,6 @@ Maryland 20850 USA.
 #if defined __linux__ || defined __FreeBSD__ || MACOS_X
 #include <sys/types.h>
 #include <netinet/in.h>
-// getpid
-#include <unistd.h>
 #else
 #include <winsock.h>
 #endif
@@ -3093,6 +3091,8 @@ void Com_Init( char *commandLine )
 	char              *s;
 	int               pid;
 
+	pid = Sys_GetPID();
+
 	Com_Printf( "%s %s %s\n%s\n", Q3_VERSION, ARCH_STRING, __DATE__, commandLine );
 
 	if ( setjmp( abortframe ) )
@@ -3130,12 +3130,6 @@ void Com_Init( char *commandLine )
 	// ydnar: init crashed variable as early as possible
 	com_crashed = Cvar_Get( "com_crashed", "0", CVAR_TEMP );
 
-	// bani: init pid
-#ifdef _WIN32
-	pid = GetCurrentProcessId();
-#else
-	pid = getpid();
-#endif
 	s = va( "%d", pid );
 	com_pid = Cvar_Get( "com_pid", s, CVAR_ROM );
 
