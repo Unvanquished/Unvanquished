@@ -3093,9 +3093,6 @@ void Com_Init( char *commandLine )
 	char              *s;
 	int               pid;
 
-	// TTimo gcc warning: variable `safeMode' might be clobbered by `longjmp' or `vfork'
-	volatile qboolean safeMode = qtrue;
-
 	Com_Printf( "%s %s %s\n%s\n", Q3_VERSION, ARCH_STRING, __DATE__, commandLine );
 
 	if ( setjmp( abortframe ) )
@@ -3328,7 +3325,7 @@ void Com_Init( char *commandLine )
 	CL_StartHunkUsers();
 
 	// NERVE - SMF - force recommendedSet and don't do vid_restart if in safe mode
-	if ( !com_recommendedSet->integer && !safeMode )
+	if ( !com_recommendedSet->integer && !Com_SafeMode() )
 	{
 		Com_SetRecommended();
 		Cbuf_ExecuteText( EXEC_APPEND, "vid_restart\n" );
