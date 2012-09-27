@@ -56,6 +56,8 @@ option( ENABLE_W_ALL         "Use -Wall"                                   0 )
 option( ENABLE_WARNINGS      "Enable security & code-checking warning options" 1 )
 option( ENABLE_HARDENING     "Enable security hardening options"           1 )
 
+option( USE_GIT_DESCRIBE     "Use the revision information reported by Git's describe function" 1 )
+
 cmake_dependent_option( BUILD_OLD_RENDERER   "Build old renderer library"                            1 BUILD_CLIENT                   0 )
 cmake_dependent_option( BUILD_NEW_RENDERER   "Build new renderer library"                            1 BUILD_CLIENT                   0 )
 cmake_dependent_option( USE_OPENAL           "Use OpenAL"                                            1 BUILD_CLIENT                   0 )
@@ -93,7 +95,7 @@ cmake_dependent_option( ENABLE_W_EXTRA       "Use -Wextra"                      
 cmake_dependent_option( ENABLE_FSTACKPROT    "Enable stack protection if available"        1 ENABLE_HARDENING 0 )
 cmake_dependent_option( ENABLE_RELRO         "Enable relro & bindnow if available"         1 ENABLE_HARDENING 0 )
 
-mark_as_advanced( GAME_LIB_LLVM LLVM_CONFIG ENABLE_FSTACKPROT ENABLE_RELRO )
+mark_as_advanced( GAME_LIB_LLVM LLVM_CONFIG ENABLE_FSTACKPROT ENABLE_RELRO USE_GIT_DESCRIBE )
 
 if( GAME_LIB_LLVM )
   find_program( LLVM_CONFIG llvm-config )
@@ -172,32 +174,34 @@ else()
   endif()
 endif()
 
-# Report the git commit identification, if possible
+if( USE_GIT_DESCRIBE )
+  # Report the Git commit identification, if possible
 
-if( EXISTS "${CMAKE_SOURCE_DIR}/.git" )
-  find_package( Git )
-  if( GIT_FOUND )
-    execute_process( COMMAND git describe --tags --long --dirty=+dirty OUTPUT_VARIABLE GIT_DESCRIBE_REPORT OUTPUT_STRIP_TRAILING_WHITESPACE )
-    message( STATUS "git reported ${GIT_DESCRIBE_REPORT}" )
-    # this may fail with annotated non-release tags
-    if( GIT_DESCRIBE_REPORT MATCHES "-0-g.......$" )
-      set( GIT_DESCRIBE_REPORT )
+  if( EXISTS "${CMAKE_SOURCE_DIR}/.git" )
+    find_package( Git )
+    if( GIT_FOUND )
+      execute_process( COMMAND git describe --tags --long --dirty=+dirty OUTPUT_VARIABLE GIT_DESCRIBE_REPORT OUTPUT_STRIP_TRAILING_WHITESPACE )
+      message( STATUS "git reported ${GIT_DESCRIBE_REPORT}" )
+      # this may fail with annotated non-release tags
+      if( GIT_DESCRIBE_REPORT MATCHES "-0-g.......$" )
+        set( GIT_DESCRIBE_REPORT )
+      endif()
     endif()
   endif()
+
+  if( GIT_DESCRIBE_REPORT )
+    set( DESIRED_REVISION_H_CONTENTS "#define REVISION \"${GIT_DESCRIBE_REPORT}\"\n" )
+  endif()
+  set( GIT_DESCRIBE ${GIT_DESCRIBE_REPORT} CACHE INTERNAL "commit id reported by Git" FORCE )
 endif()
 
-if( GIT_DESCRIBE_REPORT )
-  set( DESIRED_GIT_VERSION_H_CONTENTS "#define GIT_VERSION \"${GIT_DESCRIBE_REPORT}\"\n" )
-endif()
-set( GIT_DESCRIBE ${GIT_DESCRIBE_REPORT} CACHE INTERNAL "commit id reported by git" FORCE )
-
-if( EXISTS "${CMAKE_BINARY_DIR}/CMakeFiles/git_version.h" )
-  file( READ "${CMAKE_BINARY_DIR}/CMakeFiles/git_version.h" ACTUAL_GIT_VERSION_H_CONTENTS )
-  if( NOT "${ACTUAL_GIT_VERSION_H_CONTENTS}" STREQUAL "${DESIRED_GIT_VERSION_H_CONTENTS}" )
-    file( WRITE "${CMAKE_BINARY_DIR}/CMakeFiles/git_version.h" "${DESIRED_GIT_VERSION_H_CONTENTS}" )
+if( EXISTS "${CMAKE_BINARY_DIR}/CMakeFiles/revision.h" )
+  file( READ "${CMAKE_BINARY_DIR}/CMakeFiles/revision.h" ACTUAL_REVISION_H_CONTENTS )
+  if( NOT "${ACTUAL_REVISION_H_CONTENTS}" STREQUAL "${DESIRED_REVISION_H_CONTENTS}" )
+    file( WRITE "${CMAKE_BINARY_DIR}/CMakeFiles/revision.h" "${DESIRED_REVISION_H_CONTENTS}" )
   endif()
 else()
-  file( WRITE "${CMAKE_BINARY_DIR}/CMakeFiles/git_version.h" "${DESIRED_GIT_VERSION_H_CONTENTS}" )
+  file( WRITE "${CMAKE_BINARY_DIR}/CMakeFiles/revision.h" "${DESIRED_REVISION_H_CONTENTS}" )
 endif()
 
 include_directories( "${CMAKE_BINARY_DIR}/CMakeFiles" )

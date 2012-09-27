@@ -34,7 +34,6 @@ Maryland 20850 USA.
 
 // cl_main.c  -- client main loop
 
-#include "git_version.h"
 #include "client.h"
 #include <limits.h>
 

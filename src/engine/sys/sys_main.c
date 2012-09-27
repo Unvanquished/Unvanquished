@@ -32,7 +32,7 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "git_version.h"
+#include "revision.h"
 
 #include <CPUInfo.h>
 
