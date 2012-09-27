@@ -40,8 +40,6 @@ Maryland 20850 USA.
  *
  *****************************************************************************/
 
-#define MP_LEGACY_PAK 0x7776DC09
-
 #include "../qcommon/q_shared.h"
 #include "qcommon.h"
 #include "unzip.h"
@@ -241,8 +239,6 @@ static cvar_t *fs_libpath;
 static  cvar_t      *fs_apppath;
 #endif
 
-static cvar_t       *fs_buildpath;
-static cvar_t       *fs_buildgame;
 static cvar_t       *fs_basegame;
 static cvar_t       *fs_copyfiles;
 static cvar_t       *fs_gamedirvar;
@@ -301,12 +297,6 @@ static char *fs_serverReferencedPakNames[ MAX_SEARCH_PATHS ]; // pk3 names
 // last valid game folder used
 char        lastValidBase[ MAX_OSPATH ];
 char        lastValidGame[ MAX_OSPATH ];
-
-#ifdef FS_MISSING
-FILE         *missingFiles = NULL;
-#endif
-
-qboolean    legacy_mp_bin = qfalse;
 
 /*
 ==============
@@ -1536,36 +1526,6 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 						            filename, pak->pakFilename );
 					}
 
-					// Arnout: let's make this thing work from pakfiles as well
-					// FIXME: doing this seems to break things?
-
-					/*if ( fs_copyfiles->integer && fs_buildpath->string[0] && Q_stricmpn( fs_buildpath->string, pak->pakFilename, strlen(fs_buildpath->string) ) ) {
-					        char      copypath[MAX_OSPATH];
-					        fileHandle_t  f;
-					        byte      *srcData;
-					        int       len = zfi->cur_file_info.uncompressed_size;
-
-					        Q_strncpyz( copypath, FS_BuildOSPath( fs_buildpath->string, fs_buildgame->string, filename ), sizeof(copypath) );
-					        netpath = FS_BuildOSPath( fs_basepath->string, fs_gamedir, filename );
-
-					        f = FS_FOpenFileWrite( filename );
-					        if ( !f ) {
-					                Com_Printf(_( "FS_FOpenFileRead Failed to open %s for copying\n"), filename );
-					        } else {
-					                srcData = Hunk_AllocateTempMemory( len) ;
-					                FS_Read( srcData, len, *file );
-					                FS_Write( srcData, len, f );
-					                FS_FCloseFile( f );
-					                Hunk_FreeTempMemory( srcData );
-
-					                if (rename( netpath, copypath )) {
-					                        // Failed, try copying it and deleting the original
-					                        FS_CopyFile ( netpath, copypath );
-					                        FS_Remove ( netpath );
-					                }
-					        }
-					}*/
-
 					return pakFile->len;
 				}
 
@@ -1650,14 +1610,7 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 	{
 		Com_Printf( "Can't find %s\n", filename );
 	}
-#ifdef FS_MISSING
 
-	if ( missingFiles )
-	{
-		fprintf( missingFiles, "%s\n", filename );
-	}
-
-#endif
 	*file = 0;
 	return -1;
 }
@@ -2313,16 +2266,6 @@ int FS_FileIsInPAK( const char *filename, int *pChecksum )
 					if ( pChecksum )
 					{
 						*pChecksum = pak->pure_checksum;
-					}
-
-					// Mac hack
-					if ( pak->checksum == MP_LEGACY_PAK )
-					{
-						legacy_mp_bin = qtrue;
-					}
-					else
-					{
-						legacy_mp_bin = qfalse;
 					}
 
 					return 1;
@@ -4133,15 +4076,6 @@ void FS_Shutdown( qboolean closemfp )
 	Cmd_RemoveCommand( "fdir" );
 	Cmd_RemoveCommand( "touchFile" );
 	Cmd_RemoveCommand( "which" );
-
-#ifdef FS_MISSING
-
-	if ( closemfp )
-	{
-		fclose( missingFiles );
-	}
-
-#endif
 }
 
 /*
@@ -4205,8 +4139,6 @@ static void FS_Startup( const char *gameName )
 	fs_debug = Cvar_Get( "fs_debug", "0", 0 );
 	fs_copyfiles = Cvar_Get( "fs_copyfiles", "0", CVAR_INIT );
 	fs_basepath = Cvar_Get( "fs_basepath", Sys_DefaultBasePath(), CVAR_INIT );
-	fs_buildpath = Cvar_Get( "fs_buildpath", "", CVAR_INIT );
-	fs_buildgame = Cvar_Get( "fs_buildgame", BASEGAME, CVAR_INIT );
 	fs_basegame = Cvar_Get( "fs_basegame", "", CVAR_INIT );
 	fs_libpath = Cvar_Get( "fs_libpath", Sys_DefaultLibPath(), CVAR_INIT );
 #ifdef MACOS_X
@@ -4299,15 +4231,6 @@ static void FS_Startup( const char *gameName )
 	fs_gamedirvar->modified = qfalse; // We just loaded, it's not modified
 
 	Com_DPrintf( "----------------------\n" );
-
-#ifdef FS_MISSING
-
-	if ( missingFiles == NULL )
-	{
-		missingFiles = fopen( "\\missing.txt", "ab" );
-	}
-
-#endif
 	Com_DPrintf(_( "%d files in pk3 files\n"), fs_packFiles );
 }
 
@@ -5080,8 +5003,6 @@ void FS_InitFilesystem( void )
 {
 	// allow command line arguments to override the following fs_* variables
 	Com_StartupVariable( "fs_basepath" );
-	Com_StartupVariable( "fs_buildpath" );
-	Com_StartupVariable( "fs_buildgame" );
 	Com_StartupVariable( "fs_homepath" );
 	Com_StartupVariable( "fs_game" );
 	Com_StartupVariable( "fs_copyfiles" );

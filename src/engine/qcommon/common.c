@@ -95,7 +95,6 @@ cvar_t *com_pipefile;
 cvar_t *com_showtrace;
 cvar_t *com_version;
 
-cvar_t *com_buildScript; // for automated data building scripts
 cvar_t *con_drawnotify;
 cvar_t *com_ansiColor;
 
@@ -318,13 +317,6 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 	static int lastErrorTime;
 	static int errorCount;
 	int        currentTime;
-
-	// when we are running automated scripts, make sure we
-	// know if anything failed
-	if ( com_buildScript && com_buildScript->integer )
-	{
-		code = ERR_FATAL;
-	}
 
 	// make sure we can get at our local stuff
 	FS_PureServerSetLoadedPaks( "", "" );
@@ -3263,7 +3255,6 @@ void Com_Init( char *commandLine )
 	sv_paused = Cvar_Get( "sv_paused", "0", CVAR_ROM );
 	com_sv_running = Cvar_Get( "sv_running", "0", CVAR_ROM );
 	com_cl_running = Cvar_Get( "cl_running", "0", CVAR_ROM );
-	com_buildScript = Cvar_Get( "com_buildScript", "0", 0 );
 
 	con_drawnotify = Cvar_Get( "con_drawnotify", "0", CVAR_CHEAT );
 

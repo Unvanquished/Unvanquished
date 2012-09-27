@@ -173,7 +173,7 @@ static void SV_Map_f( void )
 	char     *cmd;
 	char     *map;
 	char     mapname[ MAX_QPATH ];
-	qboolean cheat, buildScript;
+	qboolean cheat;
 	char     expanded[ MAX_QPATH ];
 
 	map = Cmd_Argv( 1 );
@@ -182,8 +182,6 @@ static void SV_Map_f( void )
 	{
 		return;
 	}
-
-	buildScript = Cvar_VariableIntegerValue( "com_buildScript" );
 
 	// make sure the level exists before trying to change, so that
 	// a typo at the server console won't end the game

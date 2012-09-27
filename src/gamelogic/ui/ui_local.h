@@ -318,8 +318,6 @@ typedef struct
 	language_t            languages[ 50 ];
 	int                   languageIndex;
 
-	qboolean              inGameLoad;
-
 	qboolean              chatTeam;
 	qboolean              chatAdmin;
 	qboolean              chatIRC;

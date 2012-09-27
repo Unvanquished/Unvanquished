@@ -152,7 +152,7 @@ This is the only way control passes into the module.
 This must be the very first function compiled into the .qvm file
 ================
 */
-void     UI_Init( qboolean );
+void     UI_Init( void );
 void     UI_Shutdown( void );
 void     UI_KeyEvent( int key, int chr, int flags );
 void     UI_MouseEvent( int dx, int dy );
@@ -172,7 +172,7 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 			return UI_API_VERSION;
 
 		case UI_INIT:
-			UI_Init( arg0 );
+			UI_Init();
 			return 0;
 
 		case UI_SHUTDOWN:
@@ -4951,7 +4951,7 @@ void UI_ParseLanguages( void )
 UI_Init
 =================
 */
-void UI_Init( qboolean inGameLoad )
+void UI_Init( void )
 {
 	int start;
 
@@ -4959,8 +4959,6 @@ void UI_Init( qboolean inGameLoad )
 
 	BG_InitClassConfigs();
 	BG_InitAllowedGameElements();
-
-	uiInfo.inGameLoad = inGameLoad;
 
 	UI_RegisterCvars();
 	UI_InitMemory();
