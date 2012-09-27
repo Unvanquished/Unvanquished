@@ -565,25 +565,26 @@ void CG_DrawSphericalCone( const vec3_t tip, const vec3_t rotation, float radius
 CG_DrawRangeMarker
 ================
 */
-void CG_DrawRangeMarker( rangeMarkerType_t rmType, const vec3_t origin, float range, const vec3_t angles,
-                         const vec3_t rgb )
+void CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range, const vec3_t angles, const vec3_t rgb )
 {
 	if ( cg_rangeMarkerDrawSurface.integer )
 	{
 		qhandle_t pcsh;
-		vec4_t rgba;
+		vec4_t    rgba;
+
 		pcsh = cgs.media.plainColorShader;
-		VectorCopy(rgb, rgba);
+		VectorCopy( rgb, rgba );
 		rgba[ 3 ] = Com_Clamp( 0.0f, 1.0f, cg_rangeMarkerSurfaceOpacity.value );
+
 		switch( rmType )
 		{
-			case RMT_SPHERE:
+			case RM_SPHERE:
 				CG_DrawSphere( origin, range, pcsh, rgba );
 				break;
-			case RMT_CONE_64:
+			case RM_SPHERICAL_CONE_64:
 				CG_DrawSphericalCone( origin, angles, range, qfalse, pcsh, rgba );
 				break;
-			case RMT_CONE_240:
+			case RM_SPHERICAL_CONE_240:
 				CG_DrawSphericalCone( origin, angles, range, qtrue, pcsh, rgba );
 				break;
 		}
@@ -591,22 +592,23 @@ void CG_DrawRangeMarker( rangeMarkerType_t rmType, const vec3_t origin, float ra
 
 	if ( cg_rangeMarkerDrawIntersection.integer || cg_rangeMarkerDrawFrontline.integer )
 	{
+		float                       lineOpacity, lineThickness;
 		const cgMediaBinaryShader_t *mbsh;
 		cgBinaryShaderSetting_t     *bshs;
 		int                         i;
-		float lineOpacity   = Com_Clamp( 0.0f, 1.0f, cg_rangeMarkerLineOpacity.value );
-		float lineThickness = cg_rangeMarkerLineThickness.value;
-		if ( lineThickness < 0.0f )
-			lineThickness = 0.0f;
 
 		if ( cg.numBinaryShadersUsed >= NUM_BINARY_SHADERS )
 		{
 			return;
 		}
 
+		lineOpacity = Com_Clamp( 0.0f, 1.0f, cg_rangeMarkerLineOpacity.value );
+		lineThickness = cg_rangeMarkerLineThickness.value;
+		if ( lineThickness < 0.0f )
+			lineThickness = 0.0f;
 		mbsh = &cgs.media.binaryShaders[ cg.numBinaryShadersUsed ];
 
-		if ( rmType == RMT_SPHERE )
+		if ( rmType == RM_SPHERE )
 		{
 			if ( range > lineThickness / 2 )
 			{
@@ -631,7 +633,7 @@ void CG_DrawRangeMarker( rangeMarkerType_t rmType, const vec3_t origin, float ra
 			float    f, r;
 			vec3_t   forward, tip;
 
-			t2 = ( rmType == RMT_CONE_240 );
+			t2 = ( rmType == RM_SPHERICAL_CONE_240 );
 			f = lineThickness * ( t2 ? 0.26f : 0.8f );
 			r = f + lineThickness * ( t2 ? 0.23f : 0.43f );
 			AngleVectors( angles, forward, NULL, NULL );

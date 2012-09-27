@@ -1115,7 +1115,7 @@ CG_RangeMarker
 */
 void CG_RangeMarker( centity_t *cent )
 {
-	rangeMarkerType_t  rmType;
+	rangeMarker_t rmType;
 	float    range;
 	vec3_t   rgb;
 
