@@ -1236,6 +1236,7 @@ void                  Sys_UnloadDll( void *dllHandle );
 void                  *Sys_LoadFunction( void *dllHandle, const char *functionName );
 
 char                  *Sys_GetCurrentUser( void );
+int                   Sys_GetPID( void );
 
 void QDECL            Sys_Error( const char *error, ... ) PRINTF_LIKE(1) NORETURN;
 void                  Sys_Quit( void ) NORETURN;

@@ -1069,10 +1069,10 @@ void Sys_PlatformInit( void )
 
 /*
 ==============
-Sys_PID
+Sys_GetPID
 ==============
 */
-int Sys_PID( void )
+int Sys_GetPID( void )
 {
 	return getpid();
 }
