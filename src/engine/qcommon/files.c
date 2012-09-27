@@ -99,10 +99,6 @@ zip files of the form "pak0.pk3", "pak1.pk3", etc.  Zip files are searched in de
 from the highest number to the lowest, and will always take precedence over the filesystem.
 This allows a pk3 distributed as a patch to override all existing data.
 
-If the "fs_copyfiles" cvar is set to 1, then every time a file is sourced from the cd
-path, it will be copied over to the base path.  This is a development aid to help build
-test releases and to copy working sets over slow network links.
-
 File search order: when FS_FOpenFileRead gets called it will go through the fs_searchpaths
 structure and stop on the first successful hit. fs_searchpaths is built with successive
 calls to FS_AddGameDirectory
@@ -240,7 +236,6 @@ static  cvar_t      *fs_apppath;
 #endif
 
 static cvar_t       *fs_basegame;
-static cvar_t       *fs_copyfiles;
 static cvar_t       *fs_gamedirvar;
 static searchpath_t *fs_searchpaths;
 static int          fs_readCount; // total bytes read
@@ -3417,32 +3412,6 @@ void FS_Path_f( void )
 
 /*
 ============
-FS_TouchFile_f
-
-The only purpose of this function is to allow game script files to copy
-arbitrary files furing an "fs_copyfiles 1" run.
-============
-*/
-void FS_TouchFile_f( void )
-{
-	fileHandle_t f;
-
-	if ( Cmd_Argc() != 2 )
-	{
-		Com_Printf(_( "Usage: touchFile <file>\n" ));
-		return;
-	}
-
-	FS_FOpenFileRead( Cmd_Argv( 1 ), &f, qfalse );
-
-	if ( f )
-	{
-		FS_FCloseFile( f );
-	}
-}
-
-/*
-============
 FS_Which_f
 ============
 */
@@ -4067,7 +4036,6 @@ void FS_Shutdown( qboolean closemfp )
 	Cmd_RemoveCommand( "path" );
 	Cmd_RemoveCommand( "dir" );
 	Cmd_RemoveCommand( "fdir" );
-	Cmd_RemoveCommand( "touchFile" );
 	Cmd_RemoveCommand( "which" );
 }
 
@@ -4130,7 +4098,6 @@ static void FS_Startup( const char *gameName )
 	Com_DPrintf( "----- FS_Startup -----\n" );
 
 	fs_debug = Cvar_Get( "fs_debug", "0", 0 );
-	fs_copyfiles = Cvar_Get( "fs_copyfiles", "0", CVAR_INIT );
 	fs_basepath = Cvar_Get( "fs_basepath", Sys_DefaultBasePath(), CVAR_INIT );
 	fs_basegame = Cvar_Get( "fs_basegame", "", CVAR_INIT );
 	fs_libpath = Cvar_Get( "fs_libpath", Sys_DefaultLibPath(), CVAR_INIT );
@@ -4210,7 +4177,6 @@ static void FS_Startup( const char *gameName )
 	Cmd_AddCommand( "path", FS_Path_f );
 	Cmd_AddCommand( "dir", FS_Dir_f );
 	Cmd_AddCommand( "fdir", FS_NewDir_f );
-	Cmd_AddCommand( "touchFile", FS_TouchFile_f );
 	Cmd_AddCommand( "which", FS_Which_f );
 
 	// show_bug.cgi?id=506
@@ -4996,7 +4962,6 @@ void FS_InitFilesystem( void )
 	Com_StartupVariable( "fs_basepath" );
 	Com_StartupVariable( "fs_homepath" );
 	Com_StartupVariable( "fs_game" );
-	Com_StartupVariable( "fs_copyfiles" );
 	// other command line variable settings don't happen
 	// until after the filesystem has been initialized
 
