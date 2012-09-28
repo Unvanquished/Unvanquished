@@ -325,11 +325,6 @@ qboolean FS_PakIsPure( pack_t *pack )
 			}
 		}
 
-		if ( strstr( pack->pakBasename, "pak3" ) )
-		{
-			return qtrue;
-		}
-
 		return qfalse; // not on the pure server pak list
 	}
 
@@ -1534,10 +1529,6 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 				     && Q_stricmp( filename + l - 8, ".botents" )
 				     && Q_stricmp( filename + l - 3, ".po" )
 				     && !FS_CheckUIImageFile( filename )
-#ifdef __MACOS__
-				     // even when pure is on, let the server game be loaded
-				     && Q_stricmp( filename, "qagame_mac" )
-#endif
 				   )
 				{
 					continue;
@@ -4388,26 +4379,15 @@ const char *FS_ReferencedPakPureChecksums( void )
 			// is the element a pak file and has it been referenced based on flag?
 			if ( search->pack && ( search->pack->referenced & nFlags ) )
 			{
-				// XreaL BEGIN
+				Q_strcat( info, sizeof( info ), va( "%i ", search->pack->pure_checksum ) );
 
-				// CHEAT ALARM: always allow zz-XreaL-<date>.pk3 files so we don't need them on the server
-				if ( strstr( search->pack->pakBasename, "pak3" ) )
+				if ( nFlags & ( FS_CGAME_REF | FS_UI_REF ) )
 				{
-					continue;
+					break;
 				}
-				// XreaL END
-				else
-				{
-					Q_strcat( info, sizeof( info ), va( "%i ", search->pack->pure_checksum ) );
 
-					if ( nFlags & ( FS_CGAME_REF | FS_UI_REF ) )
-					{
-						break;
-					}
-
-					checksum ^= search->pack->pure_checksum;
-					numPaks++;
-				}
+				checksum ^= search->pack->pure_checksum;
+				numPaks++;
 			}
 		}
 
