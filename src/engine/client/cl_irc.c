@@ -112,7 +112,7 @@ cvar_t *cl_IRC_reconnect_delay;
 /* Function that sets the thread status when the thread dies. Since that is
  * system-dependent, it can't be done in the thread's main code.
  */
-static void         IRC_SetThreadDead();
+static void         IRC_SetThreadDead( void );
 
 /* Status of the IRC thread */
 static int          IRC_ThreadStatus = IRC_THREAD_DEAD;
@@ -212,7 +212,7 @@ static struct irc_message_t IRC_ReceivedMessage;
  * they are stored in hash tables.
  */
 
-typedef int ( *irc_handler_func_t )();
+typedef int ( *irc_handler_func_t )( void );
 typedef int ( *ctcp_handler_func_t )( qboolean is_channel, const char *message );
 
 struct irc_handler_t
@@ -289,7 +289,7 @@ IRC_InitHandlers
 Initialises the handler tables
 ==================
 */
-static INLINE void IRC_InitHandlers()
+static INLINE void IRC_InitHandlers( void )
 {
 	IRC_Handlers = HT_Create( 100, HT_FLAG_INTABLE | HT_FLAG_CASE,
 	                          sizeof( struct irc_handler_t ),
@@ -308,7 +308,7 @@ IRC_FreeHandlers
 Frees the list of handlers (used when the IRC thread dies).
 ==================
 */
-static void IRC_FreeHandlers()
+static void IRC_FreeHandlers( void )
 {
 	HT_Destroy( IRC_Handlers );
 	HT_Destroy( IRC_CTCPHandlers );
@@ -356,7 +356,7 @@ Executes the command handler for the currently stored command. If there is
 no registered handler matching the command, ignore it.
 ==================
 */
-static int IRC_ExecuteHandler()
+static int IRC_ExecuteHandler( void )
 {
 	struct irc_handler_t *handler;
 
@@ -459,7 +459,7 @@ IRC_DequeueDelayed
 This function dequeues an entry from the delayed execution queue.
 ==================
 */
-static qboolean IRC_DequeueDelayed()
+static qboolean IRC_DequeueDelayed( void )
 {
 	struct irc_delayed_t *found;
 
@@ -481,7 +481,7 @@ IRC_ProcessDEQueue
 This function deletes all remaining entries from the delayed execution queue
 ==================
 */
-static void IRC_FlushDEQueue()
+static void IRC_FlushDEQueue( void )
 {
 	while ( IRC_DequeueDelayed() )
 	{
@@ -496,7 +496,7 @@ IRC_ProcessDEQueue
 This function processes the delayed execution queue.
 ==================
 */
-static int IRC_ProcessDEQueue()
+static int IRC_ProcessDEQueue( void )
 {
 	struct irc_delayed_t *iter;
 
@@ -961,7 +961,7 @@ Debugging function that dumps the IRC message.
 ==================
 */
 #ifdef DEBUG_DUMP_IRC
-static void IRC_DumpMessage()
+static void IRC_DumpMessage( void )
 {
 	int i;
 
@@ -1177,7 +1177,7 @@ static int PRINTF_LIKE(1) IRC_Send( const char *format, ... )
 IRC_Wait
 ==================
 */
-static int IRC_Wait()
+static int IRC_Wait( void )
 {
 	struct timeval timeout;
 
@@ -1257,7 +1257,7 @@ IRC_UpdateRateLimiter
 Decrease all non-zero rate limiter entries.
 ==================
 */
-static INLINE void IRC_UpdateRateLimiter()
+static INLINE void IRC_UpdateRateLimiter( void )
 {
 	int i;
 
@@ -1277,7 +1277,7 @@ IRC_InitRateLimiter
 Initialise the rate limiter.
 ==================
 */
-static INLINE void IRC_InitRateLimiter()
+static INLINE void IRC_InitRateLimiter( void )
 {
 	int i;
 
@@ -1520,7 +1520,7 @@ IRC_SendNickname
 Send the user's nickname.
 ==================
 */
-static int IRC_SendNickname()
+static int IRC_SendNickname( void )
 {
 	return IRC_Send( "NICK %s\n", IRC_User.nick );
 }
@@ -1532,7 +1532,7 @@ IRC_JoinChannel
 Join the channel
 ==================
 */
-static int IRC_JoinChannel()
+static int IRC_JoinChannel( void )
 {
 	return IRC_Send( "JOIN #%s\n", cl_IRC_channel->string );
 }
@@ -1544,7 +1544,7 @@ IRCH_Ping
 Handles a PING by replying with a PONG.
 ==================
 */
-static int IRCH_Ping()
+static int IRCH_Ping( void )
 {
 	if ( IRC_ReceivedMessage.arg_count == 1 )
 	{
@@ -1561,7 +1561,7 @@ IRCH_ServerError
 Handles server errors
 ==================
 */
-static int IRCH_ServerError()
+static int IRCH_ServerError( void )
 {
 	if ( IRC_ThreadStatus == IRC_THREAD_QUITTING )
 	{
@@ -1587,7 +1587,7 @@ IRCH_FatalError
 Some fatal error was received, the IRC thread must die.
 ==================
 */
-static int IRCH_FatalError()
+static int IRCH_FatalError( void )
 {
 	IRC_Display( IRC_MakeEvent( QUIT, 1 ), "", "fatal error" );
 	IRC_Send( "QUIT :Something went wrong\n" );
@@ -1604,7 +1604,7 @@ not have been received anyway.
 ==================
 */
 #define RANDOM_NUMBER_CHAR ( '0' + rand() % 10 )
-static int IRCH_NickError()
+static int IRCH_NickError( void )
 {
 	int i;
 
@@ -1645,7 +1645,7 @@ IRCH_Connected
 Connection established, we will be able to join a channel
 ==================
 */
-static int IRCH_Connected()
+static int IRCH_Connected( void )
 {
 	if ( IRC_ThreadStatus != IRC_THREAD_SETNICK )
 	{
@@ -1666,7 +1666,7 @@ IRCH_Joined
 Received JOIN
 ==================
 */
-static int IRCH_Joined()
+static int IRCH_Joined( void )
 {
 	int event;
 
@@ -1698,7 +1698,7 @@ IRCH_Part
 Received PART
 ==================
 */
-static int IRCH_Part()
+static int IRCH_Part( void )
 {
 	IRC_Display( IRC_MakeEvent( PART, 0 ), IRC_String( pfx_nickOrServer ), IRC_String( arg_values[ 1 ] ) );
 	return IRC_CMD_SUCCESS;
@@ -1711,7 +1711,7 @@ IRCH_Quit
 Received QUIT
 ==================
 */
-static int IRCH_Quit()
+static int IRCH_Quit( void )
 {
 	IRC_Display( IRC_MakeEvent( QUIT, 0 ), IRC_String( pfx_nickOrServer ), IRC_String( arg_values[ 0 ] ) );
 	return IRC_CMD_SUCCESS;
@@ -1724,7 +1724,7 @@ IRCH_Kick
 Received KICK
 ==================
 */
-static int IRCH_Kick()
+static int IRCH_Kick( void )
 {
 	if ( !strcmp( IRC_String( arg_values[ 1 ] ), IRC_User.nick ) )
 	{
@@ -1761,7 +1761,7 @@ it is still possible to receive a NICK applying to the connected user
 because of e.g. OperServ's SVSNICK command.
 ==================
 */
-static int IRCH_Nick()
+static int IRCH_Nick( void )
 {
 	int event;
 
@@ -1851,7 +1851,7 @@ This is either an actual message (to the channel or to the user) or a
 CTCP command (action, version, etc...)
 ==================
 */
-static int IRCH_PrivMsg()
+static int IRCH_PrivMsg( void )
 {
 	qboolean is_channel;
 
@@ -1885,7 +1885,7 @@ IRCH_Banned
 User is banned. Leave and do not come back.
 ==================
 */
-static int IRCH_Banned()
+static int IRCH_Banned( void )
 {
 	IRC_Display( IRC_MakeEvent( QUIT, 1 ), "", "banned from channel..\n" );
 	IRC_Send( "QUIT :b&!\n" );
@@ -2001,7 +2001,7 @@ IRC_InitSendQueue
 Initialise the send queue.
 ==================
 */
-static INLINE void IRC_InitSendQueue()
+static INLINE void IRC_InitSendQueue( void )
 {
 	memset( &IRC_SendQueue, 0, sizeof( IRC_SendQueue ) );
 }
@@ -2034,7 +2034,7 @@ CL_IRCSay
 Sends an IRC message (console command).
 ==================
 */
-void CL_IRCSay()
+void CL_IRCSay( void )
 {
 	char     m_sendstring[ 480 ];
 	qboolean send_result;
@@ -2081,7 +2081,7 @@ IRC_ProcessSendQueue
 Processes the next item on the send queue, if any.
 ==================
 */
-static qboolean IRC_ProcessSendQueue()
+static qboolean IRC_ProcessSendQueue( void )
 {
 	const char *fmt_string;
 	int        event, rv;
@@ -2256,7 +2256,7 @@ Establishes the IRC connection, sets the nick, etc...
 #define CHECK_SHUTDOWN       { if ( IRC_QuitRequested ) { return IRC_CMD_FATAL; } }
 #define CHECK_SHUTDOWN_CLOSE { if ( IRC_QuitRequested ) { closesocket( IRC_Socket ); return IRC_CMD_FATAL; } }
 
-static int IRC_AttemptConnection()
+static int IRC_AttemptConnection( void )
 {
 	struct sockaddr_in address; // socket address
 
@@ -2358,7 +2358,7 @@ Only retry a few times and assume the server's dead/does not exist if
 connection can't be established.
 ==================
 */
-static qboolean IRC_InitialConnect()
+static qboolean IRC_InitialConnect( void )
 {
 	int err_code, retries = 3;
 	int rc_delay = cl_IRC_reconnect_delay->integer;
@@ -2399,7 +2399,7 @@ Attempt to reconnect to the IRC server. Only stop trying on fatal errors
 or if the thread's status is set to QUITTING.
 ==================
 */
-static int IRC_Reconnect()
+static int IRC_Reconnect( void )
 {
 	int err_code;
 	int rc_delay = cl_IRC_reconnect_delay->integer;
@@ -2437,7 +2437,7 @@ Once the initial connection has been established, either
 connection is lost.
 ==================
 */
-static void IRC_MainLoop()
+static void IRC_MainLoop( void )
 {
 	int err_code;
 
@@ -2515,7 +2515,7 @@ start the main loop, and uninitialise handlers after the loop
 exits.
 ==================
 */
-static void IRC_Thread()
+static void IRC_Thread( void )
 {
 	// Init. send queue & rate limiter
 	IRC_InitSendQueue();
@@ -2581,7 +2581,7 @@ static DWORD WINAPI IRC_SystemThreadProc( LPVOID dummy )
 IRC_StartThread
 ==================
 */
-static void IRC_StartThread()
+static void IRC_StartThread( void )
 {
 	if ( IRC_ThreadHandle == NULL )
 	{
@@ -2594,7 +2594,7 @@ static void IRC_StartThread()
 IRC_SetThreadDead
 ==================
 */
-static void IRC_SetThreadDead()
+static void IRC_SetThreadDead( void )
 {
 	IRC_ThreadStatus = IRC_THREAD_DEAD;
 	IRC_ThreadHandle = NULL;
@@ -2605,7 +2605,7 @@ static void IRC_SetThreadDead()
 IRC_StartThread
 ==================
 */
-static void IRC_WaitThread()
+static void IRC_WaitThread( void )
 {
 	if ( IRC_ThreadHandle != NULL )
 	{
@@ -2654,7 +2654,7 @@ static void IRC_StartThread( void )
 IRC_SetThreadDead
 ==================
 */
-static void IRC_SetThreadDead()
+static void IRC_SetThreadDead( void )
 {
 	IRC_ThreadStatus = IRC_THREAD_DEAD;
 	IRC_ThreadHandle = ( pthread_t ) NULL;
@@ -2665,7 +2665,7 @@ static void IRC_SetThreadDead()
 IRC_WaitThread
 ==================
 */
-static void IRC_WaitThread()
+static void IRC_WaitThread( void )
 {
 	if ( IRC_ThreadHandle != ( pthread_t ) NULL )
 	{

@@ -4093,7 +4093,7 @@ R_CreateAreas
 */
 
 /*
-static void R_CreateAreas()
+static void R_CreateAreas( void )
 {
         int             i, j;
         int             numAreas, maxArea;
@@ -4197,7 +4197,7 @@ R_CreateVBOWorldSurfaces
 */
 
 /*
-static void R_CreateVBOWorldSurfaces()
+static void R_CreateVBOWorldSurfaces( void )
 {
         int             i, j, k, l, a;
 
@@ -4539,7 +4539,7 @@ static void R_CreateVBOWorldSurfaces()
 R_CreateClusters
 =================
 */
-static void R_CreateClusters()
+static void R_CreateClusters( void )
 {
 	int          i, j;
 	bspSurface_t *surface;
@@ -4942,7 +4942,7 @@ void SmoothNormals( const char *name, srfVert_t *verts, int numTotalVerts )
 R_CreateWorldVBO
 ===============
 */
-static void R_CreateWorldVBO()
+static void R_CreateWorldVBO( void )
 {
 	int       i, j, k;
 
@@ -5281,7 +5281,7 @@ static void R_CreateWorldVBO()
 R_CreateSubModelVBOs
 ===============
 */
-static void R_CreateSubModelVBOs()
+static void R_CreateSubModelVBOs( void )
 {
 	int           i, j, k, l, m;
 
@@ -9171,7 +9171,7 @@ static void R_CalcInteractionCubeSideBits( trRefLight_t *light )
 R_PrecacheInteractions
 =============
 */
-void R_PrecacheInteractions()
+void R_PrecacheInteractions( void )
 {
 	int          i;
 	trRefLight_t *light;

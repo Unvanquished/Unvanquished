@@ -328,7 +328,7 @@ void           *R_GetCommandBuffer( int bytes )
 R_AddDrawViewCmd
 =============
 */
-void R_AddDrawViewCmd()
+void R_AddDrawViewCmd( void )
 {
 	drawViewCommand_t *cmd;
 

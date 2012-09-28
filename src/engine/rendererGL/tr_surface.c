@@ -43,7 +43,7 @@ use the shader system.
 Tess_EndBegin
 ==============
 */
-void Tess_EndBegin()
+void Tess_EndBegin( void )
 {
 	Tess_End();
 	Tess_Begin( tess.stageIteratorFunc, tess.stageIteratorFunc2, tess.surfaceShader, tess.lightShader, tess.skipTangentSpaces, tess.skipVBO,

@@ -38,7 +38,7 @@ Maryland 20850 USA.
 #include "snd_codec.h"
 #include "client.h"
 
-void         S_Update_();
+void         S_Update_( void );
 void         S_Base_StopAllSounds( void );
 void         S_UpdateBackgroundTrack( void );
 
@@ -151,7 +151,7 @@ void S_ChannelFree( channel_t *v )
 S_ChannelMalloc
 ================
 */
-channel_t      *S_ChannelMalloc()
+channel_t      *S_ChannelMalloc( void )
 {
 	channel_t *v;
 
@@ -166,7 +166,7 @@ channel_t      *S_ChannelMalloc()
 	return v;
 }
 
-void S_ChannelSetup()
+void S_ChannelSetup( void )
 {
 	channel_t *p, *q;
 
@@ -1068,7 +1068,7 @@ void S_ByteSwapRawSamples( int samples, int width, int s_channels, const byte *d
 	}
 }
 
-portable_samplepair_t *S_GetRawSamplePointer()
+portable_samplepair_t *S_GetRawSamplePointer( void )
 {
 	return s_rawsamples;
 }
@@ -1686,7 +1686,7 @@ S_FreeOldestSound
 ======================
 */
 
-void S_FreeOldestSound()
+void S_FreeOldestSound( void )
 {
 	int       i, oldest, used;
 	sfx_t     *sfx;

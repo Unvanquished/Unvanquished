@@ -43,9 +43,9 @@ typedef enum
 } dlStatus_t;
 
 int        DL_BeginDownload( const char *localName, const char *remoteName, int debug );
-dlStatus_t DL_DownloadLoop();
+dlStatus_t DL_DownloadLoop( void );
 
-void       DL_Shutdown();
+void       DL_Shutdown( void );
 
 // bitmask
 typedef enum

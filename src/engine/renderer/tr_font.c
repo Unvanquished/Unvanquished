@@ -324,7 +324,7 @@ static glyphInfo_t *RE_ConstructGlyphInfo( unsigned char *imageOut, int *xOut, i
 static int  fdOffset;
 static byte *fdFile;
 
-int readInt()
+int readInt( void )
 {
 	int i =
 	  fdFile[ fdOffset ] + ( fdFile[ fdOffset + 1 ] << 8 ) + ( fdFile[ fdOffset + 2 ] << 16 ) + ( fdFile[ fdOffset + 3 ] << 24 );
@@ -338,7 +338,7 @@ typedef union
 	float ffred;
 } poor;
 
-float readFloat()
+float readFloat( void )
 {
 	poor me;
 

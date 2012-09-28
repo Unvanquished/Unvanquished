@@ -570,7 +570,7 @@ static void GLimp_DetectAvailableModes( void )
 }
 
 #if defined( USE_XREAL_RENDERER )
-static qboolean GLimp_InitOpenGL3xContext()
+static qboolean GLimp_InitOpenGL3xContext( void )
 {
 #if defined( WIN32 ) || defined( __linux__ )
 	int        retVal;

@@ -204,7 +204,7 @@ void UI_InitMemory( void )
 	outOfMemory = qfalse;
 }
 
-qboolean UI_OutOfMemory()
+qboolean UI_OutOfMemory( void )
 {
 	return outOfMemory;
 }

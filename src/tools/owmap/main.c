@@ -450,7 +450,7 @@ qboolean MiniMapEvaluateSampleOffsets(int *bestj, int *bestk, float *bestval)
 	return *bestval < 3;
 }
 
-void MiniMapMakeSampleOffsets()
+void MiniMapMakeSampleOffsets(void)
 {
 	int             i, j, k, jj, kk;
 	float           val, valj, valk, sx, sy, rx, ry;

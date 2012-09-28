@@ -4792,7 +4792,7 @@ CollapseMultitexture
 =================
 */
 // *INDENT-OFF*
-static void CollapseStages()
+static void CollapseStages( void )
 {
 //	int             abits, bbits;
 	int           i, j;

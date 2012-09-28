@@ -1192,7 +1192,7 @@ static void CL_WriteWaveHeader( void )
 }
 
 static char wavName[ MAX_QPATH ]; // compiler bug workaround
-void CL_WriteWaveOpen()
+void CL_WriteWaveOpen( void )
 {
 	// we will just save it as a 16bit stereo 22050kz pcm file
 
@@ -1260,7 +1260,7 @@ void CL_WriteWaveOpen()
 	Cvar_Set( "cl_waveoffset", "0" );
 }
 
-void CL_WriteWaveClose()
+void CL_WriteWaveClose( void )
 {
 	Com_Printf("%s", _( "Stopped recording\n" ));
 

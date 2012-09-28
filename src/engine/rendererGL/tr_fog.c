@@ -138,7 +138,7 @@ void RB_Fog( glfog_t *curfog )
 #endif
 }
 
-void RB_FogOff()
+void RB_FogOff( void )
 {
 	GLimp_LogComment( "--- RB_FogOff() ---\n" );
 
@@ -154,7 +154,7 @@ void RB_FogOff()
 #endif
 }
 
-void RB_FogOn()
+void RB_FogOn( void )
 {
 	GLimp_LogComment( "--- RB_FogOn() ---\n" );
 
@@ -292,7 +292,7 @@ void RE_SetFog( int fogvar, int var1, int var2, float r, float g, float b, float
 R_SetFrameFog
 ==============
 */
-void R_SetFrameFog()
+void R_SetFrameFog( void )
 {
 	if ( !tr.world )
 	{

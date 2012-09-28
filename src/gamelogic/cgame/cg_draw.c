@@ -1888,7 +1888,7 @@ float CG_GetValue( int ownerDraw )
 	return -1;
 }
 
-const char *CG_GetKillerText()
+const char *CG_GetKillerText( void )
 {
 	const char *s = "";
 

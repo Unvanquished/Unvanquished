@@ -143,7 +143,7 @@ qboolean com_fullyInitialized;
 char     com_errorMessage[ MAXPRINTMSG ];
 
 void     Com_WriteConfig_f( void );
-void     CIN_CloseAllVideos();
+void     CIN_CloseAllVideos( void );
 
 //============================================================================
 
@@ -2945,7 +2945,7 @@ static void NORETURN Com_Crash_f( void )
 	exit( 1 ); // silence warning
 }
 
-void Com_SetRecommended()
+void Com_SetRecommended( void )
 {
 	cvar_t   *r_highQualityVideo; //, *com_recommended;
 	qboolean goodVideo;

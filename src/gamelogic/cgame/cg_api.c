@@ -649,14 +649,14 @@ void trap_R_RenderScene( const refdef_t *fd )
 
 //81.
 //re.SaveViewParms();
-void trap_R_SaveViewParms()
+void trap_R_SaveViewParms( void )
 {
 	syscall( CG_R_SAVEVIEWPARMS );
 }
 
 //82.
 //re.RestoreViewParms();
-void trap_R_RestoreViewParms()
+void trap_R_RestoreViewParms( void )
 {
 	syscall( CG_R_RESTOREVIEWPARMS );
 }

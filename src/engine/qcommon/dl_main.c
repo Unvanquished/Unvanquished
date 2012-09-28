@@ -149,7 +149,7 @@ BOOL HTAlertCallback_prompt( HTRequest *request, HTAlertOpcode op,
 	return NO;
 }
 
-void DL_InitDownload()
+void DL_InitDownload( void )
 {
 	if ( dl_initialized )
 	{
@@ -193,7 +193,7 @@ DL_Shutdown
 
 ================
 */
-void DL_Shutdown()
+void DL_Shutdown( void )
 {
 	if ( !dl_initialized )
 	{
@@ -371,7 +371,7 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 }
 
 // (maybe this should be CL_DL_DownloadLoop)
-dlStatus_t DL_DownloadLoop()
+dlStatus_t DL_DownloadLoop( void )
 {
 	if ( !dl_running )
 	{

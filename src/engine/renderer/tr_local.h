@@ -2179,8 +2179,8 @@ void RE_AddCoronaToScene( const vec3_t org, float r, float g, float b, float sca
 
 //----(SA)
 void RE_RenderScene( const refdef_t *fd );
-void RE_SaveViewParms();
-void RE_RestoreViewParms();
+void RE_SaveViewParms( void );
+void RE_RestoreViewParms( void );
 
 /*
 =============================================================
@@ -2466,8 +2466,8 @@ int        RE_AnimFrameRate( qhandle_t hAnim );
 int        RE_BoneIndex( qhandle_t hModel, const char *boneName );
 
 // font stuff
-void       R_InitFreeType();
-void       R_DoneFreeType();
+void       R_InitFreeType( void );
+void       R_DoneFreeType( void );
 void       RE_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t *font );
 void       RE_UnregisterFont( fontInfo_t *font );
 void       RE_Glyph(fontInfo_t *font, const char *str, glyphInfo_t *glyph);

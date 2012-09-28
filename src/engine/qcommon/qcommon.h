@@ -657,7 +657,7 @@ issues.
 #define Q_rmdir          rmdir
 #endif
 
-qboolean FS_Initialized();
+qboolean FS_Initialized( void );
 
 void     FS_InitFilesystem( void );
 void     FS_Shutdown( qboolean closemfp );
@@ -678,7 +678,7 @@ void         FS_FreeFileList( char **list );
 qboolean     FS_FileExists( const char *file );
 qboolean     FS_OS_FileExists( const char *file );  // TTimo - test file existence given OS path
 
-int          FS_LoadStack();
+int          FS_LoadStack( void );
 
 int          FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize );
 int          FS_GetModList( char *listbuf, int bufsize );
@@ -816,7 +816,7 @@ qboolean   FS_CL_ExtractFromPakFile( const char *base, const char *gamedir, cons
 #endif
 
 #if defined( DO_LIGHT_DEDICATED )
-int FS_RandChecksumFeed();
+int FS_RandChecksumFeed( void );
 
 #endif
 
@@ -947,7 +947,7 @@ qboolean   Com_SafeMode( void );
 qboolean   Com_IsVoipTarget( uint8_t *voipTargets, int voipTargetsSize, int clientNum );
 
 void       Com_StartupVariable( const char *match );
-void       Com_SetRecommended();
+void       Com_SetRecommended( void );
 
 // checks for and removes command line "+set var arg" constructs
 // if match is NULL, all set commands will be executed, otherwise
@@ -1289,7 +1289,7 @@ void         Sys_FreeFileList( char **list );
 
 void         Sys_Sleep( int msec );
 
-qboolean     Sys_LowPhysicalMemory();
+qboolean     Sys_LowPhysicalMemory( void );
 
 typedef enum
 {

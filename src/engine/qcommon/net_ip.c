@@ -1308,7 +1308,7 @@ void NET_JoinMulticast6( void )
 	}
 }
 
-void NET_LeaveMulticast6()
+void NET_LeaveMulticast6( void )
 {
 	if ( multicast6_socket != INVALID_SOCKET )
 	{

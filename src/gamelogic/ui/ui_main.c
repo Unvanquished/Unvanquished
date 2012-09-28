@@ -2919,7 +2919,7 @@ static void UI_LoadHumanBuilds( void )
 UI_LoadProfiles
 ===============
 */
-static void UI_LoadProfiles()
+static void UI_LoadProfiles( void )
 {
 	int             numdirs;
 	char            dirlist[ 2048 ];

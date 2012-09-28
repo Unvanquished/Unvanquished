@@ -113,8 +113,8 @@ typedef struct
 //----(SA)
 	void ( *RenderScene )( const refdef_t *fd );
 
-	void ( *SaveViewParms )();
-	void ( *RestoreViewParms )();
+	void ( *SaveViewParms )( void );
+	void ( *RestoreViewParms )( void );
 
 	void ( *SetColor )( const float *rgba );             // NULL = 1,1,1,1
 	void ( *SetClipRegion )( const float *region );

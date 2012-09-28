@@ -1176,7 +1176,7 @@ UNIX
 #define ioctlsocket ioctl
 #define closesocket close
 
-int WSAGetLastError()
+int WSAGetLastError(void)
 {
 	return errno;
 }

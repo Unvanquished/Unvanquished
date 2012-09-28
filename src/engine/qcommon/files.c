@@ -298,7 +298,7 @@ FS_Initialized
 ==============
 */
 
-qboolean FS_Initialized()
+qboolean FS_Initialized( void )
 {
 	return ( fs_searchpaths != NULL );
 }
@@ -337,7 +337,7 @@ FS_LoadStack
 return load stack
 =================
 */
-int FS_LoadStack()
+int FS_LoadStack( void )
 {
 	return fs_loadStack;
 }
@@ -3891,7 +3891,7 @@ NOTE TTimo: the reordering that happens here is not reflected in the cvars (\cva
   this can lead to misleading situations, see show_bug.cgi?id=540
 ================
 */
-static void FS_ReorderPurePaks()
+static void FS_ReorderPurePaks( void )
 {
 	searchpath_t *s;
 	int          i;
@@ -4358,7 +4358,7 @@ randomize the order of the 5 checksums we rely on
 5 random swaps of the table
 =====================
 */
-void FS_InitRandomFeed()
+void FS_InitRandomFeed( void )
 {
 	int i, swap, aux;
 
@@ -4379,7 +4379,7 @@ Return a random checksum feed among our list
 we keep the seed and use it when requested for the pure checksum
 =====================
 */
-int FS_RandChecksumFeed()
+int FS_RandChecksumFeed( void )
 {
 	/*
 	// use this to dump shifted versions of the pure checksum strings

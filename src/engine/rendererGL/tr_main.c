@@ -2840,7 +2840,7 @@ void R_AddPolygonInteractions( trRefLight_t *light )
 R_AddLightInteractions
 =============
 */
-void R_AddLightInteractions()
+void R_AddLightInteractions( void )
 {
 	int          i;
 	trRefLight_t *light;
@@ -3076,7 +3076,7 @@ void R_AddLightInteractions()
 	}
 }
 
-void R_AddLightBoundsToVisBounds()
+void R_AddLightBoundsToVisBounds( void )
 {
 	int          i;
 	trRefLight_t *light;
