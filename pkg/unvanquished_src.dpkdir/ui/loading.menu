@@ -122,7 +122,7 @@
     itemDef
     {
       name "mapname"
-      rect 70 420 400 25
+      rect 80 413 400 25
       visible MENU_TRUE
       decoration
       forecolor 1 1 1 1
