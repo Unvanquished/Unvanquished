@@ -1057,12 +1057,10 @@ void GLShader::CompileAndLinkGPUShaderProgram( shaderProgram_t *program,
 		int                 length = 0;
 		int                 i;
 
-		const std::string version = ( glConfig.driverType == GLDRV_OPENGL3 ) ? "#version 130\n" : "#version 120\n";
-
 		glslopt_shader *shaderOptimized = glslopt_optimize( s_glslOptimizer, kGlslOptShaderVertex, vertexShaderTextWithMacros.c_str(), 0 );
 		if( glslopt_get_status( shaderOptimized ) )
 		{
-			vertexShaderTextWithMacros = version + glslopt_get_output( shaderOptimized );
+			vertexShaderTextWithMacros = glslopt_get_output( shaderOptimized );
 
 			ri.Printf( PRINT_DEVELOPER, "----------------------------------------------------------\n" );
 			ri.Printf( PRINT_DEVELOPER, "OPTIMIZED VERTEX shader '%s' ----------\n", program->name );
@@ -1098,7 +1096,7 @@ void GLShader::CompileAndLinkGPUShaderProgram( shaderProgram_t *program,
 		glslopt_shader *shaderOptimized1 = glslopt_optimize( s_glslOptimizer, kGlslOptShaderFragment, fragmentShaderTextWithMacros.c_str(), 0 );
 		if( glslopt_get_status( shaderOptimized1 ) )
 		{
-			fragmentShaderTextWithMacros = version + glslopt_get_output( shaderOptimized1 );
+			fragmentShaderTextWithMacros = glslopt_get_output( shaderOptimized1 );
 
 			ri.Printf( PRINT_DEVELOPER, "----------------------------------------------------------\n" );
 			ri.Printf( PRINT_DEVELOPER, "OPTIMIZED FRAGMENT shader '%s' ----------\n", program->name );
