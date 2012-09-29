@@ -65,6 +65,7 @@ Maryland 20850 USA.
 #define RF_HILIGHT       0x000100 // more than RF_MINLIGHT.  For when an object is "Highlighted" (looked at/training identification/etc)
 #define RF_BLINK         0x000200 // eyes in 'blink' state
 #define RF_FORCENOLOD    0x000400
+#define RF_SWAPCULL      0x000800 // swap CT_FRONT_SIDED and CT_BACK_SIDED
 
 // refdef flags
 #define RDF_NOWORLDMODEL ( 1 << 0 ) // used for player configuration screen

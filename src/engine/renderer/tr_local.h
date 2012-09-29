@@ -497,10 +497,13 @@ struct shaderCommands_s;
 
 typedef enum
 {
-  CT_FRONT_SIDED,
-  CT_BACK_SIDED,
-  CT_TWO_SIDED
+  CT_FRONT_SIDED = 0,
+  CT_TWO_SIDED   = 1,
+  CT_BACK_SIDED  = 2
 } cullType_t;
+
+// reverse the cull operation
+#define ReverseCull(c) (2 - (c))
 
 typedef enum
 {
