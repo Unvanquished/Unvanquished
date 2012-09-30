@@ -19,22 +19,23 @@
     itemDef
     {
       name "buildtimer"
-      rect 266 445 104 13
+      rect 335 225 30 30
       aspectBias ALIGN_CENTER
       visible MENU_TRUE
       decoration
-      forecolor 1.0 0.0 0.0 .5
-      background "ui/assets/human/buildstat/health.tga"
-      ownerdraw CG_PLAYER_BUILD_TIMER_BAR
+      forecolor 1.0 0.0 0.0 .2
+      ownerdraw CG_PLAYER_BUILD_TIMER
     }
 
     //BUILD POINTS
     itemDef
     {
       name "build-points"
-      rect 498 459 60 15
-      aspectBias ALIGN_RIGHT
+      rect 0 460 60 15
+      aspectBias ALIGN_LEFT
+textalign ALIGN_RIGHT
       visible MENU_TRUE
+	textScale 0.4
       decoration
       forecolor 1.0 0.0 0.0 1.0
       ownerdraw CG_PLAYER_AMMO_VALUE
@@ -46,11 +47,11 @@
       type ITEM_TYPE_TEXT
       text "build points"
       style WINDOW_STYLE_EMPTY
-	aspectBias ALIGN_RIGHT
+	aspectBias ALIGN_LEFT
       textstyle ITEM_TEXTSTYLE_PLAIN
-      rect 574 462 45 11.25
+      rect 65 463 45 11.25
 	textscale .35
-      textalign ALIGN_CENTER
+      textalign ALIGN_LEFT
      forecolor .51 .51 .51 1 
       visible MENU_TRUE
       decoration
