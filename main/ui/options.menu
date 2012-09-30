@@ -207,7 +207,7 @@
 
 //////// PLAYER
 	BUTTON	( player, "Set Profile", open profiles, .2 )
-	CVAR	( player, "Name:", "name", 1, 1.5 )
+	CVAR	( player, "Name:", "name", 39, 1.5 )
 	YESNO	( player, "Taunts Sounds Off:", "cg_noTaunt", play "sound/misc/menu1.wav", 2.5 )
 //	YESNO	( player, "Team Chats Only:", "cg_teamChatsOnly", play "sound/misc/menu1.wav", 3.5 )
 	YESNO	( player, "Sticky Spectate:", "cg_stickySpec", play "sound/misc/menu1.wav", 3.5 )
