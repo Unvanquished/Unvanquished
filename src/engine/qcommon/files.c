@@ -1340,7 +1340,7 @@ static int      fs_filter_flag = 0;
 
 static qboolean FS_CheckUIImageFile( const char *filename )
 {
-	int l = 0;
+	int l = strlen( filename );
 
 	if ( !Q_stricmpn( filename, "ui/assets/", 10 ) &&
 	   ( !Q_stricmp( filename + l - 4, ".tga" ) ||
