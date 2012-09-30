@@ -1,5 +1,36 @@
 #include "ui/menudef.h"
-#include "ui/firstrun.h"
+#include "ui/options.h"
+
+{
+  \\ INGAME OPTIONS BOX \\
+
+#define W             320
+#define H             290
+#define X             10
+#define Y             60
+#define BORDER        10
+
+#define BUTT_W        45
+#define BUTT_H        35
+
+#define TOPBUTT_W     ((W-(2*BORDER))/4)
+#define TOPBUTT_H     30
+
+#define CONTENT_X     BORDER
+#define CONTENT_Y     ((1.5*BORDER)+TOPBUTT_H)
+#define CONTENT_W     (W-(2*BORDER))
+#define CONTENT_OFF   (0-(CONTENT_W/2))
+
+#define SIDEBUTT_W    65
+#define SIDEBUTT_H    25
+#define SCONTENT_X    (SIDEBUTT_W+BORDER)
+#define SCONTENT_Y    CONTENT_Y
+#define SCONTENT_W    (W-(SIDEBUTT_W+(2*BORDER)))
+#define SCONTENT_OFF  (0-(SCONTENT_W/2))
+
+#define RESCOMBO_OFF  8
+
+#define ELEM_H        16
 
 {
   \\ FRONT END OPTIONS BOX \\
@@ -9,11 +40,23 @@
     name "simple_options"
     visible MENU_FALSE
     fullscreen MENU_FALSE
+    outOfBoundsClick      // this closes the window if it gets a click out of the rectangle
     rect (320-(W/2)) (240-(H/2)) W H
-    focusColor 1 .2 1 1
+    focusColor 1 .75 0 1
+    aspectBias ALIGN_CENTER
     style WINDOW_STYLE_FILLED
     border WINDOW_BORDER_FULL
-    popup
+	popup
+    onopen
+    {
+      hide optionsGrp;
+      show player;
+
+      setitemcolor playerBtn    forecolor 0.2 0.2 0.2 1.0;
+      setitemcolor hudBtn       forecolor 1.0 1.0 1.0 1.0;
+      setitemcolor controlsBtn  forecolor 1.0 1.0 1.0 1.0;
+      setitemcolor systemBtn    forecolor 1.0 1.0 1.0 1.0
+    }
     onEsc
     {
       play "sound/misc/menu1.wav";
@@ -35,82 +78,577 @@
       borderColor 1 1 1 1
     }
 
-	CVAR( "Name:", "name", 1, 1 )
-	COMBO( "Language:", FEEDER_LANGUAGES, 2 )
-	MULTI( "Video Quality:", "ui_glCustom", 
-		{ "High" 0 "Intermediate" 1 "Low" 2 "Very Low" 3 "Custom" 4 },
-		play "sound/misc/menu1.wav" ; uiScript update "ui_glCustom" ,
-		3 )
-	COMBO( "Video Mode:", FEEDER_RESOLUTIONS, 4 )
-	SLIDER( "Video Brightness:", "r_gamma", 1, 0.5, 2, 5 )
-	YESNO( "OpenAL Sound:", "s_usemodule", 
-		play "sound/misc/menu1.wav" ;,
-		6 )
-	SLIDER( "Effects Volume:", "s_volume", 0.7, 0, 1, 7 )
-	SLIDER( "Music Volume:", "s_musicvolume", 0.25, 0, 1, 8 )
-	SLIDER( "Mouse Sensitivity:", "sensitivity", 0.1, 1, 30, 9 )
-	YESNO( "Invert Mouse:", "ui_mousePitch",
-		play "sound/misc/menu1.wav" ; uiScript update ui_mousePitch,
-		10 )
-	MULTI( "Network Connection:", "rate", 
-		{ "<=28.8k" 2500 "33.6k" 3000 "56k" 4000 "ISDN" 5000 "LAN/CABLE/xDSL" 25000  },
-		play "sound/misc/menu1.wav" ;,
-		11 )
-	YESNO( "Allow Auto Download:", "cl_allowDownload", 
-		play "sound/misc/menu1.wav" ;,
-		12 )
 
+    //Section menus
+    itemDef
+    {
+      name PlayerBtn
+      text "Player"
+      group menuGrp
+      style WINDOW_STYLE_EMPTY
+      rect (W-((4*TOPBUTT_W)+BORDER)) BORDER TOPBUTT_W TOPBUTT_H
+      type ITEM_TYPE_BUTTON
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      textscale .35
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        hide optionsGrp;
+        show player;
+
+        setitemcolor playerBtn    forecolor 0.2 0.2 0.2 1.0;
+        setitemcolor hudBtn       forecolor 1.0 1.0 1.0 1.0;
+        setitemcolor controlsBtn  forecolor 1.0 1.0 1.0 1.0;
+        setitemcolor systemBtn    forecolor 1.0 1.0 1.0 1.0
+      }
+    }
+    itemDef
+    {
+      name hudBtn
+      text "HUD"
+      group menuGrp
+      style WINDOW_STYLE_EMPTY
+      rect (W-((3*TOPBUTT_W)+BORDER)) BORDER TOPBUTT_W TOPBUTT_H
+      type ITEM_TYPE_BUTTON
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      textscale .35
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        hide optionsGrp;
+        show hud;
+
+        setitemcolor playerBtn    forecolor 1.0 1.0 1.0 1.0;
+        setitemcolor hudBtn       forecolor 0.2 0.2 0.2 1.0;
+        setitemcolor controlsBtn  forecolor 1.0 1.0 1.0 1.0;
+        setitemcolor systemBtn    forecolor 1.0 1.0 1.0 1.0
+      }
+    }
 
     itemDef
     {
-      text "For further options please use the in-game options menu"
-      type ITEM_TYPE_TEXT
+      name controlsBtn
+      text "Controls"
+      group menuGrp
       style WINDOW_STYLE_EMPTY
-      textstyle ITEM_TEXTSTYLE_PLAIN
-      textscale .25
-      rect 0 (H-40) W 10
+      rect (W-((2*TOPBUTT_W)+BORDER)) BORDER TOPBUTT_W TOPBUTT_H
+      type ITEM_TYPE_BUTTON
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
+      textscale .35
       forecolor 1 1 1 1
       visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        hide optionsGrp;
+        show controls;
+        show look;
+
+        setitemcolor playerBtn    forecolor 1.0 1.0 1.0 1.0;
+        setitemcolor hudBtn       forecolor 1.0 1.0 1.0 1.0;
+        setitemcolor controlsBtn  forecolor 0.2 0.2 0.2 1.0;
+        setitemcolor systemBtn    forecolor 1.0 1.0 1.0 1.0
+      }
+    }
+
+    itemDef
+    {
+      name systemBtn
+      text "System"
+      group menuGrp
+      style WINDOW_STYLE_EMPTY
+      rect (W-((1*TOPBUTT_W)+BORDER)) BORDER TOPBUTT_W TOPBUTT_H
+      type ITEM_TYPE_BUTTON
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      textscale .35
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        hide optionsGrp;
+        show system;
+        show ghardware;
+
+        setitemcolor playerBtn    forecolor 1.0 1.0 1.0 1.0;
+        setitemcolor hudBtn       forecolor 1.0 1.0 1.0 1.0;
+        setitemcolor controlsBtn  forecolor 1.0 1.0 1.0 1.0;
+        setitemcolor systemBtn    forecolor 0.2 0.2 0.2 1.0
+      }
+    }
+
+    itemDef
+    {
+      name closeBtn
+      text "Close"
+      group menuGrp
+      style WINDOW_STYLE_EMPTY
+      rect (W-BUTT_W) (H-BUTT_H) BUTT_W BUTT_H
+      type ITEM_TYPE_BUTTON
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu3.wav";
+		close simple_options
+      }
+    }
+
+//////// PLAYER
+	BUTTON	( player, "Set Profile", open profiles, .2 )
+	CVAR	( player, "Name:", "name", 1, 1.5 )
+	YESNO	( player, "Taunts Sounds Off:", "cg_noTaunt", play "sound/misc/menu1.wav", 2.5 )
+//	YESNO	( player, "Team Chats Only:", "cg_teamChatsOnly", play "sound/misc/menu1.wav", 3.5 )
+	YESNO	( player, "Sticky Spectate:", "cg_stickySpec", play "sound/misc/menu1.wav", 3.5 )
+	YESNO	( player, "Tutorial Mode:", "cg_tutorial", play "sound/misc/menu1.wav", 4.5 )
+	MULTI	( player, "Disable Warning Dialogs:", "cg_disableWarningDialogs", { "No" 0 "Print to Console" 1 "Yes" 2 }, play "sound/misc/menu1.wav", 5.5 )
+	YESNO	( player, "Static Death Cam:", "cg_staticDeathCam", play "sound/misc/menu1.wav", 6.5 )
+	YESNO	( player, "Sprint Toggles:", "cg_sprintToggle", play "sound/misc/menu1.wav", 7.5 )
+	YESNO	( player, "Wallwalk Control Toggles:", "cg_wwToggle", play "sound/misc/menu1.wav", 8.5 )
+	MULTI	( player, "Wallwalking Speed:", "cg_wwSmoothTime", { "Medium" 300 "Fast" 150 "Instant" 0 "Slow" 600 }, play "sound/misc/menu1.wav",	9.5 )
+
+//////// HUD
+
+	MULTI	( hud, "Show Clock:", "cg_drawClock", { "No" 0 "12 Hour" 1 "24 Hour" 2 }, play "sound/misc/menu1.wav", 0 )
+	MULTI	( hud, "Show Crosshair:", "cg_drawCrosshair", { "Never" 0 "Ranged Weapons Only" 1 "Always" 2 }, play "sound/misc/menu1.wav", 1 )
+	MULTI	( hud, "Crosshair Size:", "cg_crosshairSize", { "Intermediate" 1 "Small" 0.75 "Tiny" 0.5 "Huge" 1.25 }, play "sound/misc/menu1.wav", 2 )
+	YESNO	( hud, "Show Charge Bar:", "cg_drawChargeBar", play "sound/misc/menu1.wav", 3 )
+	YESNO	( hud, "Show Lag-o-meter:", "cg_lagometer",	play "sound/misc/menu1.wav", 4 )
+	MULTI	( hud, "Show Team Overlay:", "cg_drawTeamOverlay", { "Off" 0 "All Teammates" 1 "Support Teammates" 2 "Nearby Teammates" 3 }, play "sound/misc/menu1.wav", 5 )
+	MULTI	( hud, "Sort Team Overlay:", "cg_teamOverlaySortMode", { "None" 0 "Score" 1 "Weapon/Class" 2 }, play "sound/misc/menu1.wav", 6 )
+	YESNO	( hud, "Show Gun:", "cg_drawGun", play "sound/misc/menu1.wav", 7 )
+	MULTI	( hud, "Show Speed:", "cg_drawspeed", { "No" 0 "Text" 1 "Graph" 2 "Text + Graph" 3 "Text No-Z" 5 "Graph No-Z" 6 "Text + Graph No-Z" 7 }, play "sound/misc/menu1.wav", 8 )
+	YESNO	( hud, "Show FPS:", "cg_drawFPS", play "sound/misc/menu1.wav", 9 )
+	YESNO	( hud, "Show Timer:", "cg_drawTimer", play "sound/misc/menu1.wav", 10 )
+	YESNO	( hud, "Show Demo State:", "cg_drawDemoState", play "sound/misc/menu1.wav", 11 )
+
+//////// CONTROLS
+
+    //Controls menu
+    itemDef
+    {
+      name controls
+      text "Look"
+      group optionsGrp
+      style WINDOW_STYLE_EMPTY
+      rect 0 ((2*BORDER)+TOPBUTT_H+(0*SIDEBUTT_H)) SIDEBUTT_W SIDEBUTT_H
+      type ITEM_TYPE_BUTTON
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        hide optionsGrp;
+        show controls;
+        show look
+      }
+    }
+
+//////// LOOK
+
+	BINDX	( look, "Look Up:", "+lookup", 0 )
+	BINDX	( look, "Look Down:", "+lookdown", 1 )
+	BINDX	( look, "Mouse Look:", "+mlook", 2 )
+	BINDX	( look, "Centerview:", "centerview", 3 )
+	YESNOX	( look, "Free Look:", "cl_freelook", play "sound/misc/menu1.wav", 4 )
+	SLIDERX	( look, "Mouse Sensitivity:", "sensitivity", 5, 1, 30, 5 )
+	YESNOX	( look, "Invert Mouse:", "ui_mousePitch", play "sound/misc/menu1.wav"; uiScript update ui_mousePitch, 6 )
+	YESNOX	( look, "Smooth Mouse:", "m_filter", play "sound/misc/menu1.wav", 7 )
+	YESNOX	( look, "Auto Wallwalk Pitching:", "cg_wwFollow", play "sound/misc/menu1.wav", 8 )
+
+
+//////// MOVE
+
+    itemDef
+    {
+      name controls
+      text "Move"
+      group optionsGrp
+      style WINDOW_STYLE_EMPTY
+      rect 0 ((2*BORDER)+TOPBUTT_H+(1*SIDEBUTT_H)) SIDEBUTT_W SIDEBUTT_H
+      type ITEM_TYPE_BUTTON
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        hide optionsGrp;
+        show controls;
+        show move
+      }
+    }
+
+	BINDX	( move, "Run / Walk:", "+speed", 0 )
+	BINDX	( move, "Dodge:", "+dodge", 1 )
+	BINDX	( move, "Sprint:", "+sprint", 2 )
+	BINDX	( move, "Forward:", "+forward", 3 )
+	BINDX	( move, "Backpedal:", "+back", 4 )
+	BINDX	( move, "Move Left:", "+moveleft", 5 )
+	BINDX	( move, "Move Right:", "+moveright", 6 )
+	BINDX	( move, "Jump:", "+moveup", 7 )
+	BINDX	( move, "Crouch:", "+movedown", 8 )
+	BINDX	( move, "Turn Left:", "+left", 9 )
+	BINDX	( move, "Turn Right:", "+right", 10 )
+	BINDX	( move, "Strafe:", "+strafe", 11 )
+
+//////// UPGRADES
+
+    itemDef
+    {
+      name controls
+      text "Upgrades"
+      group optionsGrp
+      style WINDOW_STYLE_EMPTY
+      rect 0 ((2*BORDER)+TOPBUTT_H+(2*SIDEBUTT_H)) SIDEBUTT_W SIDEBUTT_H
+      type ITEM_TYPE_BUTTON
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        hide optionsGrp;
+        show controls;
+        show upgrades
+      }
+    }
+
+	BINDX	( upgrades, "Primary Attack:", "+attack", 0 )
+	BINDX	( upgrades, "Secondary Attack:", "+attack2", 1 )
+	BINDX	( upgrades, "Previous Upgrade:", "weapprev", 2 )
+	BINDX	( upgrades, "Next Upgrade:", "weapnext", 3 )
+	BINDX	( upgrades, "Activate Upgrade:", "+useitem", 4 )
+	BINDX	( upgrades, "Reload:", "reload", 5 )
+	BINDX	( upgrades, "Buy Ammo:", "buy ammo", 6 )
+	BINDX	( upgrades, "Use Medkit:", "itemact medkit", 7 )
+	BINDX	( upgrades, "Use Structure/Evolve:", "+activate", 8 )
+
+//////// COMMUNICATION
+
+    itemDef
+    {
+      name controls
+      text "Chat & Vote"
+      group optionsGrp
+      style WINDOW_STYLE_EMPTY
+      rect 0 ((2*BORDER)+TOPBUTT_H+(3*SIDEBUTT_H)) SIDEBUTT_W SIDEBUTT_H
+      type ITEM_TYPE_BUTTON
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        hide optionsGrp;
+        show controls;
+        show communication
+      }
+    }
+
+	BINDX	( communication, "Gesture:", "+taunt", 0 )
+	BINDX	( communication, "Chat:", "messagemode", 1 )
+	BINDX	( communication, "Team Chat:", "messagemode2", 2 )
+	BINDX	( communication, "Admin Chat:", "messagemode3", 3 )
+	BINDX	( communication, "IRC Chat:", "messagemode4", 4 )
+	BINDX	( communication, "Vote Yes:", "vote yes", 5 )
+	BINDX	( communication, "Vote No:", "vote no", 6 )
+	BINDX	( communication, "Team Vote Yes:", "teamvote yes", 7 )
+	BINDX	( communication, "Team Vote No:", "teamvote no", 8 )
+	BINDX	( communication, "Voice Say Menu:", "menu vsay_top", 9 )
+
+//////// MISC
+
+    itemDef
+    {
+      name controls
+      text "Misc"
+      group optionsGrp
+      style WINDOW_STYLE_EMPTY
+      rect 0 ((2*BORDER)+TOPBUTT_H+(4*SIDEBUTT_H)) SIDEBUTT_W SIDEBUTT_H
+      type ITEM_TYPE_BUTTON
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        hide optionsGrp;
+        show controls;
+        show misc
+      }
+    }
+
+	BINDX	( misc, "Show Scores:", "+scores", 0 )
+	BINDX	( misc, "Scroll Scores Up:", "scoresUp", 1 )
+	BINDX	( misc, "Scroll Score Down:", "scoresDown", 2 )
+	BINDX	( misc, "Deconstruct Structure:", "deconstruct", 3 )
+	BINDX	( misc, "Screenshot:", "screenshotJPEG", 4 )
+
+//////// SYSTEM
+
+    //System menu
+    itemDef
+    {
+      name system
+      text "GFX Hardware"
+      group optionsGrp
+      style WINDOW_STYLE_EMPTY
+      rect 0 ((2*BORDER)+TOPBUTT_H+(0*SIDEBUTT_H)) SIDEBUTT_W SIDEBUTT_H
+      type ITEM_TYPE_BUTTON
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        hide optionsGrp;
+        show system;
+        show ghardware
+      }
+    }
+
+//////// GFX HARDWARE
+	MULTIX	( ghardware, "Quality:", "ui_glCustom", 
+			"High" 0 "Intermediate" 1 "Low" 2 "Very Low" 3 "Custom" 4, 
+			play "sound/misc/menu1.wav"; uiScript update "ui_glCustom",
+			0 )
+	YESNOX	( ghardware, "GL Extensions:", "r_allowExtensions",
+			play "sound/misc/menu1.wav", 
+			1 )
+	COMBOX	( ghardware, "Video Mode:", FEEDER_RESOLUTIONS, 
+			2 )
+	MULTIX	( ghardware, "Color Depth:", "r_colorbits",
+			"Default" 0 "16 bit" 16 "32 bit" 32,
+			play "sound/misc/menu1.wav"; uiScript glCustom; uiScript update "r_colorbits",
+			3 )
+	YESNOX	( ghardware, "Fullscreen:", "r_fullscreen",
+			play "sound/misc/menu1.wav"; uiScript glCustom, 
+			4 )
+	MULTIX	( ghardware, "Lighting:", "r_vertexLighting",
+			"Light Map (high)" 0 "Vertex (low)" 1,
+			play "sound/misc/menu1.wav"; uiScript glCustom,
+			5 )
+	MULTIX	( ghardware, "Geometric Detail:", "r_lodbias",
+			"High" 0 "Medium" 1 "Low" 2,
+			play "sound/misc/menu1.wav"; uiScript glCustom; uiScript update "r_lodbias",
+			6 )
+	MULTIX	( ghardware, "Texture Detail:", "r_picmip",
+			"Low" 2 "Intermediate" 1 "High" 0,
+			play "sound/misc/menu1.wav"; uiScript glCustom,
+			7 )
+	MULTIX	( ghardware, "Texture Quality:", "r_texturebits",
+			"Default" 0 "16 bit" 16 "32 bit" 32,
+			play "sound/misc/menu1.wav",
+			8 )
+	MULTIX	( ghardware, "Texture Filter:", "r_texturemode",
+			"Bilinear" GL_LINEAR_MIPMAP_NEAREST "Trilinear" GL_LINEAR_MIPMAP_LINEAR,
+			play "sound/misc/menu1.wav"; uiScript glCustom,
+			9 )
+	YESNOX	( ghardware, "Anisotropic Filtering:", "r_ext_texture_filter_anisotropic",
+			play "sound/misc/menu1.wav"; uiScript glCustom,
+			10 )
+	YESNOX	( ghardware, "Compress Textures:", "r_ext_compressed_textures",
+			play "sound/misc/menu1.wav"; uiScript glCustom,
+			11 )
+	MULTIX	( ghardware, "Multisampling:", "r_ext_multisample",
+			"No" 0 "2x" 2 "4x" 4 "6x" 6,
+			play "sound/misc/menu1.wav",
+			12 )
+	BUTTONX	( ghardware, "APPLY", play "sound/misc/menu1.wav"; exec "vid_restart",
+			13 )
+
+//////// GFX SOFTWARE
+
+    itemDef
+    {
+      name system
+      text "GFX Software"
+      group optionsGrp
+      style WINDOW_STYLE_EMPTY
+      rect 0 ((2*BORDER)+TOPBUTT_H+(1*SIDEBUTT_H)) SIDEBUTT_W SIDEBUTT_H
+      type ITEM_TYPE_BUTTON
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        hide optionsGrp;
+        show system;
+        show gsoftware
+      }
+    }
+
+	SLIDERX	( gsoftware, "Brightness:", "r_gamma", 1, .5, 2, 0 )
+	SLIDERX	( gsoftware, "Screen Size:", "cg_viewsize", 100, 30, 100, 1 )
+	YESNOX	( gsoftware, "Mark On Walls:", "cg_marks", play "sound/misc/menu1.wav", 2 )
+	YESNOX	( gsoftware, "Dynamic Lights:", "r_dynamiclight", play "sound/misc/menu1.wav", 3 )
+	YESNOX	( gsoftware, "Draw Gun:", "cg_drawGun", play "sound/misc/menu1.wav", 4 )
+	YESNOX	( gsoftware, "Low Quality Sky:", "r_fastsky", play "sound/misc/menu1.wav", 5 )
+	YESNOX	( gsoftware, "Sync Every Frame:", "r_finish", play "sound/misc/menu1.wav", 6 )
+	YESNOX	( gsoftware, "In Game Videos:", "r_inGameVideo", play "sound/misc/menu1.wav", 7 )
+	YESNOX	( gsoftware, "Depth Sort Particles:", "cg_depthSortParticles", play "sound/misc/menu1.wav", 8 )
+	MULTIX	( gsoftware, "Particle Physics:", "cg_bounceParticles", 
+			"Low Quality" 0 "High Quality" 1, 
+			play "sound/misc/menu1.wav", 
+			9 )
+	MULTIX	( gsoftware, "Light Flares:", "cg_lightFlare", 
+			"Off" 0 "No Fade" 1 "Timed Fade" 2 "Real Fade" 3, 
+			play "sound/misc/menu1.wav", 
+			10 )
+
+//////// GL INFO
+
+    itemDef
+    {
+      name system
+      text "OpenGL Info"
+      group optionsGrp
+      style WINDOW_STYLE_EMPTY
+      rect 0 ((2*BORDER)+TOPBUTT_H+(2*SIDEBUTT_H)) SIDEBUTT_W SIDEBUTT_H
+      type ITEM_TYPE_BUTTON
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textscale .25
+      forecolor 1 1 1 1
+      visible MENU_FALSE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        hide optionsGrp;
+        show system;
+        show glinfo
+      }
+    }
+
+    itemDef
+    {
+      name glinfo
+      group optionsGrp
+      rect SCONTENT_X SCONTENT_Y SCONTENT_W (H-(SCONTENT_Y+BORDER))
+      ownerdraw UI_GLINFO
+      textscale .25
+      textalign ALIGN_LEFT
+      textvalign VALIGN_TOP
+      textalignx 4
+      textaligny 4
+      forecolor 1 1 1 1
+      visible MENU_FALSE
       decoration
     }
 
+//////// NET & SOUND
 
     itemDef
     {
-      text "APPLY"
-      type ITEM_TYPE_BUTTON
-      textscale .25
+      name system
+      text "Net & Sound"
+      group optionsGrp
       style WINDOW_STYLE_EMPTY
-      rect (W-(2*BUTT_W)) (H-BUTT_H) BUTT_W BUTT_H
-      textalign ALIGN_CENTER
+      rect 0 ((2*BORDER)+TOPBUTT_H+(3*SIDEBUTT_H)) SIDEBUTT_W SIDEBUTT_H
+      type ITEM_TYPE_BUTTON
+      textalign ALIGN_RIGHT
       textvalign VALIGN_CENTER
+      textscale .25
       forecolor 1 1 1 1
-      visible MENU_TRUE
+      visible MENU_FALSE
       action
       {
         play "sound/misc/menu1.wav";
-        exec "updatelanguage;snd_restart" // includes vid_restart
+        hide optionsGrp;
+        show system;
+        show netsound
       }
     }
 
+	TEXTX	( netsound, "Sound", 0 )
+	SLIDERX	( netsound, "Effects Volume:", "s_volume", .7, 0, 1, 1 )
+	SLIDERX	( netsound, "Music Volume:", "s_musicvolume", .25, 0, 1, 2 )
+	YESNOX	( netsound, "OpenAL:", "s_usemodule", play "sound/misc/menu1.wav", 3 )
+	MULTIX	( netsound, "Sound Quality:", "s_khz",
+			"44 khz (very high)" 44 "22 khz (high)" 22 "11 khz (low)" 11,
+			play "sound/misc/menu1.wav",
+			4 )
+	YESNOX	( netsound, "Doppler Sound:", "s_doppler", play "sound/misc/menu1.wav", 5 )
+	TEXTX	( netsound, "Network", 7 )
+	MULTIX	( netsound, "Net Data Rate:", "rate",
+			"<=28.8k" 2500 "33.6k" 3000 "56k" 4000 "ISDN" 5000 "LAN/CABLE/xDSl" 25000,
+			play "sound/misc/menu1.wav",
+			8 )
+	BUTTONX	( netsound, APPLY, play "sound/misc/menu1.wav"; exec "snd_restart", 10 )
+
+//////// RANGE MARKERS
+
     itemDef
     {
-      text "OK"
-      type ITEM_TYPE_BUTTON
-      textscale .25
+      name system
+      text "Range Markers"
+      group optionsGrp
       style WINDOW_STYLE_EMPTY
-      rect (W-BUTT_W) (H-BUTT_H) BUTT_W BUTT_H
-      textalign ALIGN_CENTER
+      rect 0 ((2*BORDER)+TOPBUTT_H+(4*SIDEBUTT_H)) SIDEBUTT_W SIDEBUTT_H
+      type ITEM_TYPE_BUTTON
+      textalign ALIGN_RIGHT
       textvalign VALIGN_CENTER
+      textscale .25
       forecolor 1 1 1 1
-      visible MENU_TRUE
+      visible MENU_FALSE
       action
       {
         play "sound/misc/menu1.wav";
-        close simple_options
+        hide optionsGrp;
+        show system;
+        show rangemarkers
       }
     }
+
+	MULTIX	( rangemarkers, "Range Markers for:", "cg_rangeMarkerBuildableTypes",
+			"No Buildables"					none
+			"All Buildables"				all
+			"Support Buildables"			support
+			"Offensive Buildables"			offensive
+			"Alien Buildables"				alien
+			"Human Buildables"				human
+			"Alien Support Buildables"		aliensupport
+			"Human Support Buildables"		humansupport
+			"Offensive Alien Buildables"	alienoffensive
+			"Offensive Human Buildables"	humanoffensive,
+			play "sound/misc/menu1.wav",
+			0 )
+	YESNOX	( rangemarkers, "Range Marker for Blueprint:", "cg_rangeMarkerForBlueprint", play "sound/misc/menu1.wav", 1 )
+	YESNOX	( rangemarkers, "Draw Surface:", "cg_rangeMarkerDrawSurface", play "sound/misc/menu1.wav", 2 )
+	YESNOX	( rangemarkers, "Draw Intersection:", "cg_rangeMarkerDrawIntersection", play "sound/misc/menu1.wav", 3 )
+	YESNOX	( rangemarkers, "Draw Frontline:", "cg_rangeMarkerDrawFrontline", play "sound/misc/menu1.wav", 4 )
+	SLIDERX	( rangemarkers, "Surface Opacity:", "cg_rangeMarkerSurfaceOpacity", .08, .035, .3, 5 )
+	SLIDERX	( rangemarkers, "Line Opacity:", "cg_rangeMarkerLineOpacity", .4, .075, 1, 6 )
+	SLIDERX	( rangemarkers, "Line Thickness:", "cg_rangeMarkerLineThickness", 4, 1, 11, 7 )
+	SLIDERX	( rangemarkers, "Binary Shader Screen Scale:", "cg_binaryShaderScreenScale", 1, .005, 1, 8 )
   }
+}
 }
