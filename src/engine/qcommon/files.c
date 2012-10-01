@@ -505,7 +505,7 @@ FS_CreatePath
 Creates any directories needed to store the given filename
 ============
 */
-int FS_CreatePath( const char *OSPath_ )
+qboolean FS_CreatePath( const char *OSPath_ )
 {
 	// use va() to have a clean const char* prototype
 	char *OSPath = va( "%s", OSPath_ );

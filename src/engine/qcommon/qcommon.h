@@ -826,7 +826,7 @@ void         FS_CopyFile( char *fromOSPath, char *toOSPath );
 
 char         *FS_FindDll( const char *filename );
 
-int          FS_CreatePath( const char *OSPath );
+qboolean     FS_CreatePath( const char *OSPath );
 
 qboolean     FS_VerifyPak( const char *pak );
 
