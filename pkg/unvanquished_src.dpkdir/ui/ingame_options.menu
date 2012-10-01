@@ -605,10 +605,10 @@
 	YESNOX	( rangemarkers, "Draw Surface:", "cg_rangeMarkerDrawSurface", play "sound/misc/menu1.wav", 2 )
 	YESNOX	( rangemarkers, "Draw Intersection:", "cg_rangeMarkerDrawIntersection", play "sound/misc/menu1.wav", 3 )
 	YESNOX	( rangemarkers, "Draw Frontline:", "cg_rangeMarkerDrawFrontline", play "sound/misc/menu1.wav", 4 )
-	SLIDERX	( rangemarkers, "Surface Opacity:", "cg_rangeMarkerSurfaceOpacity", .08, .035, .3, 5 )
-	SLIDERX	( rangemarkers, "Line Opacity:", "cg_rangeMarkerLineOpacity", .4, .075, 1, 6 )
-	SLIDERX	( rangemarkers, "Line Thickness:", "cg_rangeMarkerLineThickness", 4, 1, 11, 7 )
-	SLIDERX	( rangemarkers, "Binary Shader Screen Scale:", "cg_binaryShaderScreenScale", 1, .005, 1, 8 )
+	SLIDERX	( rangemarkers, "Surface Opacity:", "cg_rangeMarkerSurfaceOpacity", .08, .0325, .3, 5 )
+	SLIDERX	( rangemarkers, "Line Opacity:", "cg_rangeMarkerLineOpacity", .4, .0675, 1, 6 )
+	SLIDERX	( rangemarkers, "Line Thickness:", "cg_rangeMarkerLineThickness", 4, .75, 11, 7 )
+	SLIDERX	( rangemarkers, "Binary Shader Screen Scale:", "cg_binaryShaderScreenScale", 1, .0025, 1, 8 )
   }
  }
 }
