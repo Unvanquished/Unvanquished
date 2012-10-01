@@ -4244,8 +4244,6 @@ void CL_InitRef( const char *renderer )
 	ri.CL_WriteAVIVideoFrame = CL_WriteAVIVideoFrame;
 
 	// XreaL BEGIN
-	//ri.Sys_GetSystemHandles = Sys_GetSystemHandles;
-
 	ri.CL_VideoRecording = CL_VideoRecording;
 	ri.CL_WriteAVIVideoFrame = CL_WriteAVIVideoFrame;
 	// XreaL END

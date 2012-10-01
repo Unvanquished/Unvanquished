@@ -520,19 +520,6 @@ char *FS_BuildOSPath( const char *base, const char *game, const char *qpath )
 }
 
 /*
-=====================
-FS_BuildOSHomePath
-
-  * return a path to a file in the users homepath
-=====================
-*/
-void FS_BuildOSHomePath( char *ospath, int size, const char *qpath )
-{
-	Com_sprintf( ospath, size, "%s/%s/%s", fs_homepath->string, fs_gamedir, qpath );
-	FS_ReplaceSeparators( ospath );
-}
-
-/*
 ============
 FS_CreatePath
 
@@ -5376,41 +5363,6 @@ qboolean FS_VerifyPak( const char *pak )
 qboolean FS_IsPure( void )
 {
 	return fs_numServerPaks != 0;
-}
-
-unsigned int FS_ChecksumOSPath( char *OSPath )
-{
-	FILE         *f;
-	int          len;
-	byte         *buf;
-	unsigned int checksum;
-
-	f = fopen( OSPath, "rb" );
-
-	if ( !f )
-	{
-		return ( unsigned int ) - 1;
-	}
-
-	fseek( f, 0, SEEK_END );
-	len = ftell( f );
-	fseek( f, 0, SEEK_SET );
-
-	buf = malloc( len );
-
-	if ( fread( buf, 1, len, f ) != len )
-	{
-		Com_Error( ERR_FATAL, "short read in FS_ChecksumOSPath" );
-	}
-
-	fclose( f );
-
-	// Com_BlockChecksum returns an endian-dependent value
-	// (better fix would have to be doing the LittleLong inside that function..)
-	checksum = LittleLong( Com_BlockChecksum( buf, len ) );
-
-	free( buf );
-	return checksum;
 }
 
 void    FS_FilenameCompletion( const char *dir, const char *ext,

@@ -1295,7 +1295,7 @@ endif()
 if( BUILD_OLD_RENDERER )
   # Setup target renderer
   add_library( renderer SHARED ${RENDERERLIST} ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c ${SHAREDLIST} ${MOUNT_DIR}/engine/rendererGL/rendererGL.def )
-  set_property( TARGET renderer PROPERTY COMPILE_DEFINITIONS BUILD_FREETYPE USE_REFENTITY_ANIMATIONSYSTEM )
+  set_property( TARGET renderer PROPERTY COMPILE_DEFINITIONS USE_REFENTITY_ANIMATIONSYSTEM )
   set_target_properties( renderer PROPERTIES OUTPUT_NAME "rendererGL${BUILD_ARCH}" )
   
   if( NOT MSVC )
@@ -1335,7 +1335,7 @@ endif()
 if( BUILD_NEW_RENDERER )
   # Setup target rendererGL
   add_library( rendererGL SHARED ${SHAREDLIST} ${OPENEXRLIST} ${RENDERERGLLIST} ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c ${MOUNT_DIR}/engine/rendererGL/rendererGL.def )
-  set_property( TARGET rendererGL PROPERTY COMPILE_DEFINITIONS BUILD_FREETYPE FT_FREETYPE USE_XREAL_RENDERER USE_REFENTITY_ANIMATIONSYSTEM )
+  set_property( TARGET rendererGL PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER USE_REFENTITY_ANIMATIONSYSTEM )
   set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "rendererGL3${BUILD_ARCH}" )
 
   target_link_libraries( rendererGL ${OS_LIBRARIES} )

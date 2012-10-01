@@ -291,10 +291,6 @@ You or the server may be running older versions of the game."
 #define URI_SCHEME             GAMENAME_STRING "://"
 #define URI_SCHEME_LENGTH      ( ARRAY_LEN( URI_SCHEME ) - 1 )
 
-// maintain a list of compatible protocols for demo playing
-// NOTE: that stuff only works with two digits protocols
-extern int demo_protocols[];
-
 // NERVE - SMF - wolf multiplayer master servers
 #ifndef MASTER_SERVER_NAME
 # define MASTER_SERVER_NAME    "unvanquished.net"
@@ -817,7 +813,6 @@ qboolean   FS_ComparePaks( char *neededpaks, int len, qboolean dlstring );
 void       FS_Rename( const char *from, const char *to );
 
 char       *FS_BuildOSPath( const char *base, const char *game, const char *qpath );
-void       FS_BuildOSHomePath( char *ospath, int size, const char *qpath );
 
 extern int cl_connectedToPureServer;
 #if !defined( NO_UNTRUSTED_PLUGINS )
@@ -844,8 +839,6 @@ qboolean     FS_IsPure( void );
 
 void         FS_Remove( const char *ospath );
 
-unsigned int FS_ChecksumOSPath( char *OSPath );
-
 // XreaL BEGIN
 void         FS_HomeRemove( const char *homePath );
 
@@ -854,7 +847,6 @@ void         FS_HomeRemove( const char *homePath );
 void       FS_FilenameCompletion( const char *dir, const char *ext,
                                   qboolean stripExt, void ( *callback )( const char *s ) );
 
-const char *FS_GetCurrentGameDir( void );
 qboolean   FS_Which( const char *filename, void *searchPath );
 
 /*
@@ -986,7 +978,6 @@ extern cvar_t       *com_cl_running;
 extern cvar_t       *com_viewlog; // 0 = hidden, 1 = visible, 2 = minimized
 extern cvar_t       *com_version;
 
-//extern    cvar_t  *com_blood;
 extern cvar_t       *com_buildScript; // for building release pak files
 extern cvar_t       *com_journal;
 extern cvar_t       *com_ansiColor;
@@ -1145,10 +1136,6 @@ void CL_ForwardCommandToServer( const char *string );
 // things like godmode, noclip, etc, are commands directed to the server,
 // so when they are typed in at the console, they will need to be forwarded.
 
-void CL_CDDialog( void );
-
-// bring up the "need a cd to play" dialog
-
 void CL_ShutdownAll( void );
 
 // shutdown all the client stuff
@@ -1252,22 +1239,7 @@ void           *QDECL Sys_LoadDll( const char *name, char *fqpath, intptr_t ( QD
 
 void                  Sys_UnloadDll( void *dllHandle );
 
-void                  Sys_UnloadGame( void );
-void                  *Sys_GetGameAPI( void *parms );
-
-void                  Sys_UnloadCGame( void );
-void                  *Sys_GetCGameAPI( void );
-
-void                  Sys_UnloadUI( void );
-void                  *Sys_GetUIAPI( void );
-
-// RB: added generic DLL loading routines
-void                  *Sys_LoadDLLSimple( const char *name );
 void                  *Sys_LoadFunction( void *dllHandle, const char *functionName );
-char                  *Sys_DLLError();
-
-// RB: added to link OS specific pointers to the renderer.dll space
-void                  *Sys_GetSystemHandles( void );
 
 char                  *Sys_GetCurrentUser( void );
 
@@ -1324,7 +1296,6 @@ void         Sys_FreeFileList( char **list );
 void         Sys_Sleep( int msec );
 
 qboolean     Sys_LowPhysicalMemory();
-unsigned int Sys_ProcessorCount();
 
 typedef enum
 {

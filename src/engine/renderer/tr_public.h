@@ -267,8 +267,6 @@ typedef struct
 	long( *ftol )( float f );
 
 	// XreaL BEGIN
-	void            *( *Sys_GetSystemHandles )( void );
-
 	qboolean( *CL_VideoRecording )( void );
 	void ( *CL_WriteAVIVideoFrame )( const byte *buffer, int size );
 	// XreaL END

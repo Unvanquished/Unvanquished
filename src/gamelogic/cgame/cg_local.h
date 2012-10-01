@@ -1022,9 +1022,6 @@ typedef struct
 	char centerPrint[ MAX_STRING_CHARS ];
 	int  centerPrintLines;
 
-	// kill timers for carnage reward
-	int lastKillTime;
-
 	// crosshair client ID
 	int crosshairBuildable;
 	int crosshairClientNum;

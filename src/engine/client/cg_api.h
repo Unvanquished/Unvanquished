@@ -25,7 +25,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../renderer/tr_types.h"
 
 #define CGAME_IMPORT_API_VERSION 3
-#define CAM_PRIMARY              0
 
 #define CMD_BACKUP               64
 #define CMD_MASK                 ( CMD_BACKUP - 1 )

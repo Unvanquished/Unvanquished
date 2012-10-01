@@ -49,8 +49,6 @@ Maryland 20850 USA.
 #include <winsock.h>
 #endif
 
-int demo_protocols[] = { 66, 67, 68, 0 };
-
 #define MAX_NUM_ARGVS             50
 
 #define MIN_DEDICATED_COMHUNKMEGS 4
@@ -97,7 +95,6 @@ cvar_t *com_pipefile;
 cvar_t *com_showtrace;
 cvar_t *com_version;
 
-//cvar_t    *com_blood;
 cvar_t *com_buildScript; // for automated data building scripts
 cvar_t *con_drawnotify;
 cvar_t *com_ansiColor;
@@ -3246,7 +3243,6 @@ void Com_Init( char *commandLine )
 	//
 	// Gordon: no need to latch this in ET, our recoil is framerate-independent
 	com_maxfps = Cvar_Get( "com_maxfps", "125", CVAR_ARCHIVE /*|CVAR_LATCH */ );
-//  com_blood = Cvar_Get ("com_blood", "1", CVAR_ARCHIVE); // Gordon: no longer used?
 
 	com_developer = Cvar_Get( "developer", "0", CVAR_TEMP );
 

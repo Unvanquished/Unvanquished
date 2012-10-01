@@ -83,14 +83,6 @@ typedef enum
   SS_GAME // actively running
 } serverState_t;
 
-typedef struct configString_s
-{
-	char         *s;
-
-	qboolean     restricted; // if true, don't send to clientList
-	clientList_t clientList;
-} configString_t;
-
 typedef struct
 {
 	serverState_t state;

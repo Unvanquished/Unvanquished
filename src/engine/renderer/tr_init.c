@@ -191,8 +191,6 @@ cvar_t *r_cacheModels;
 
 cvar_t *r_cacheGathering;
 
-cvar_t *r_buildScript;
-
 cvar_t *r_bonesDebug;
 
 // done.
@@ -1237,7 +1235,6 @@ void R_Register( void )
 
 	r_cacheModels = ri.Cvar_Get( "r_cacheModels", "1", CVAR_LATCH );
 	r_cacheGathering = ri.Cvar_Get( "cl_cacheGathering", "0", 0 );
-	r_buildScript = ri.Cvar_Get( "com_buildscript", "0", 0 );
 	r_bonesDebug = ri.Cvar_Get( "r_bonesDebug", "0", CVAR_CHEAT );
 	// done.
 
