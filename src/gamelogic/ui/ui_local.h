@@ -68,6 +68,7 @@ extern vmCvar_t ui_chatPromptColours;
 #define MAX_HELP_INFOPANES      32
 #define MAX_RESOLUTIONS         32
 #define MAX_PROFILES            64
+#define MAX_LANGUAGES           16
 
 typedef struct
 {
@@ -313,9 +314,9 @@ typedef struct
 	resolution_t          resolutions[ MAX_RESOLUTIONS ];
 	int                   numResolutions;
 	int                   resolutionIndex;
-	
+
 	int                   numLanguages;
-	language_t            languages[ 50 ];
+	language_t            languages[ MAX_LANGUAGES ];
 	int                   languageIndex;
 
 	qboolean              chatTeam;
