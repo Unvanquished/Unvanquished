@@ -2016,6 +2016,7 @@ static const char *EscapeString( const char *in, qboolean quote )
 	char        *out = escapeBuffer;
 	const char  *end = escapeBuffer + ESCAPEBUFFER_SIZE - 1 - !!quote;
 	qboolean    quoted = qfalse;
+	qboolean    forcequote = qfalse;
 
 	if ( quote )
 	{
@@ -2026,11 +2027,18 @@ static const char *EscapeString( const char *in, qboolean quote )
 	{
 		char c = *in++;
 
+		if ( forcequote )
+		{
+			forcequote = qfalse;
+			goto doquote;
+		}
+
 		switch ( c )
 		{
 		case '/':
 			// only quote "//" and "/*"
 			if ( *in != '/' && *in != '*' ) break;
+			forcequote = qtrue;
 			goto doquote;
 		case ';':
 			// no need to quote semicolons if in ""
