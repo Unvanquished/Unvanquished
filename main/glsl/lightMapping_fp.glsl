@@ -148,8 +148,8 @@ void	main()
 	N = normalize(tangentToWorldMatrix * N);
 
 	// compute light direction in world space
-	vec3 L = 2.0 * (texture2D(u_DeluxeMap, var_TexLight).xyz - 0.5);
-	//L = normalize(L);
+	vec3 L = (2.0 * (texture2D(u_DeluxeMap, var_TexLight).xyz - 0.5));
+	L = normalize(tangentToWorldMatrix * L);
 
 	// compute half angle in world space
 	vec3 H = normalize(L + I);
