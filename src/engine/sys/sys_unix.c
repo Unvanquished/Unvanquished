@@ -704,7 +704,7 @@ void Sys_ErrorDialog( const char *error )
 {
 	char         buffer[ 1024 ];
 	unsigned int size;
-	int          f = -1;
+	int          f;
 	const char   *homepath = Cvar_VariableString( "fs_homepath" );
 	const char   *gamedir = Cvar_VariableString( "fs_game" );
 	const char   *fileName = "crashlog.txt";

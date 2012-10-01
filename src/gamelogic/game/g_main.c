@@ -1791,7 +1791,7 @@ void FindIntermissionPoint( void )
 	if ( !ent )
 	{
 		// the map creator forgot to put in an intermission point...
-		G_SelectSpawnPoint( vec3_origin, level.intermission_origin, level.intermission_angle );
+		G_SelectRandomFurthestSpawnPoint( vec3_origin, level.intermission_origin, level.intermission_angle );
 	}
 	else
 	{
