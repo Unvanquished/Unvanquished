@@ -65,8 +65,6 @@ extern "C" {
 
 #define CONFIG_NAME             "autogen.cfg"
 
-#define LOCALIZATION_SUPPORT
-
 #if 1
 #if !defined( COMPAT_Q3A )
 #define COMPAT_Q3A 1
@@ -2081,9 +2079,9 @@ char *Q_UTF8Unstore( int e );
 
 		ET_RANGE_MARKER,
 		ET_BUILDABLE,       // buildable type
-		
+
 		ET_LOCATION,
-		
+
 		ET_MISSILE,
 		ET_MOVER,
 		ET_BEAM,
@@ -2093,14 +2091,14 @@ char *Q_UTF8Unstore( int e );
 		ET_TELEPORT_TRIGGER,
 		ET_INVISIBLE,
 		ET_GRAPPLE,       // grapple hooked on wall
-		
+
 		ET_CORPSE,
 		ET_PARTICLE_SYSTEM,
 		ET_ANIMMAPOBJ,
 		ET_MODELDOOR,
 		ET_LIGHTFLARE,
 		ET_LEV2_ZAP_CHAIN,
-		
+
 		ET_EVENTS       // any of the EV_* events can be added freestanding
 		// by setting eType to ET_EVENTS + eventNum
 		// this avoids having to set eFlags and eventNum
