@@ -798,7 +798,7 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 	if ( interpret == VMI_NATIVE && !onlyQVM )
 	{
 		// try to load as a system dll
-		vm->dllHandle = Sys_LoadDll( module, vm->fqpath, &vm->entryPoint, VM_DllSyscall );
+		vm->dllHandle = Sys_LoadDll( module, &vm->entryPoint, VM_DllSyscall );
 
 		if ( vm->dllHandle )
 		{

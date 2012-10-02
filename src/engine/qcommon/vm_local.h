@@ -194,8 +194,6 @@ struct vm_s
 	byte              *jumpTableTargets;
 	int               numJumpTableTargets;
 
-	char              fqpath[ MAX_QPATH + 1 ];
-
 	byte              sanity[ 16 ];
 	qboolean          versionChecked;
 	qboolean          clean;

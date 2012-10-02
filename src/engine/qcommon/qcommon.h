@@ -1227,9 +1227,7 @@ qboolean   Sys_IsNumLockDown( void );
 
 char       *Sys_GetDLLName( const char *name );
 
-// fqpath param added 2/15/02 by T.Ray - Sys_LoadDll is only called in vm.c at this time
-//
-void           *QDECL Sys_LoadDll( const char *name, char *fqpath, intptr_t ( QDECL  * *entryPoint )( int, ... ),
+void           *QDECL Sys_LoadDll( const char *name, intptr_t ( QDECL  * *entryPoint )( int, ... ),
                                    intptr_t ( QDECL *systemcalls )( intptr_t, ... ) );
 
 void                  Sys_UnloadDll( void *dllHandle );
