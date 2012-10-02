@@ -7575,7 +7575,7 @@ static void R_RecursiveAddInteractionNode( bspNode_t *node, trRefLight_t *light 
 		VectorCopy( node->mins, worldBounds[ 0 ] );
 		VectorCopy( node->maxs, worldBounds[ 1 ] );
 
-		if ( R_CullLightWorldBounds( light, worldBounds ) != CULL_OUT )
+		if ( node->numMarkSurfaces > 0 && R_CullLightWorldBounds( light, worldBounds ) != CULL_OUT )
 		{
 			link_t *l;
 
