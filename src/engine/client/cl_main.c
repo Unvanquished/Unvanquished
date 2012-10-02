@@ -4161,7 +4161,7 @@ qboolean CL_InitRef( const char *renderer )
 #if !defined( REF_HARD_LINKED )
 	for ( i = 0; i < ARRAY_LEN( varName ); ++i )
 	{
-		Com_sprintf( dllName, sizeof( dllName ), "%s/" DLL_PREFIX "renderer%s" ARCH_STRING DLL_EXT, Cvar_VariableString( varName[ i ] ), renderer );
+		Com_sprintf( dllName, sizeof( dllName ), "%s/" DLL_PREFIX "renderer%s" DLL_EXT, Cvar_VariableString( varName[ i ] ), renderer );
 
 		Com_Printf(_( "Loading \"%s\"…"), dllName );
 

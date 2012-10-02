@@ -1221,8 +1221,6 @@ sysEvent_t Com_GetSystemEvent( void );
 void       Sys_Init( void );
 qboolean   Sys_IsNumLockDown( void );
 
-char       *Sys_GetDLLName( const char *name );
-
 void           *QDECL Sys_LoadDll( const char *name, intptr_t ( QDECL  * *entryPoint )( int, ... ),
                                    intptr_t ( QDECL *systemcalls )( intptr_t, ... ) );
 

@@ -394,20 +394,6 @@ void Sys_UnloadDll( void *dllHandle )
 
 /*
 =================
-Sys_GetDLLName
-=================
-*/
-char *Sys_GetDLLName( const char *name )
-{
-#if defined _WIN32
-	return va( "%s_mp_" ARCH_STRING DLL_EXT, name );
-#else
-	return va( "%s.mp." ARCH_STRING DLL_EXT, name );
-#endif
-}
-
-/*
-=================
 Sys_TryLibraryLoad
 =================
 */
@@ -456,7 +442,7 @@ void *QDECL Sys_LoadDll( const char *name,
 
 	assert( name );
 
-	Q_strncpyz( fname, Sys_GetDLLName( name ), sizeof( fname ) );
+	Com_sprintf( fname, sizeof( fname ), "%s%s", name, DLL_EXT );
 
 	// TODO: use fs_searchpaths from files.c
 	basepath = Cvar_VariableString( "fs_basepath" );
