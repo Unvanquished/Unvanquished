@@ -1094,7 +1094,6 @@ void GLShader::CompileAndLinkGPUShaderProgram( shaderProgram_t *program,
 		}
 		glslopt_shader_delete( shaderOptimized );
 
-
 		glslopt_shader *shaderOptimized1 = glslopt_optimize( s_glslOptimizer, kGlslOptShaderFragment, fragmentShaderTextWithMacros.c_str(), 0 );
 		if( glslopt_get_status( shaderOptimized1 ) )
 		{
@@ -1136,13 +1135,13 @@ void GLShader::CompileAndLinkGPUShaderProgram( shaderProgram_t *program,
 	BindAttribLocations( program->program );  //, _vertexAttribsRequired | _vertexAttribsOptional);
 	LinkProgram( program->program );
 }
-void GLShader::CompilePermutations() 
+void GLShader::CompilePermutations()
 {
 	ri.Printf(PRINT_ALL, "/// -------------------------------------------------\n");
 	ri.Printf(PRINT_ALL, "/// creating %s shaders --------\n", this->GetName().c_str());
 
 	int startTime = ri.Milliseconds();
-	
+
 	//Com_Memset(_shaderPrograms, 0, sizeof(_shaderPrograms));
 
 	std::string vertexInlines = "";
@@ -1193,7 +1192,7 @@ void GLShader::CompilePermutations()
 			//ri.Printf(PRINT_ALL, "Compile macros: '%s'\n", compileMacros.c_str());
 
 			shaderProgram_t *shaderProgram = &_shaderPrograms[i];
-			
+
 			Q_strncpyz( shaderProgram->name, this->GetName().c_str(), sizeof( shaderProgram->name ) );
 
 			#if 0
@@ -1902,7 +1901,6 @@ void GLShader_forwardLighting_projXYZ::BuildShaderCompileMacros( std::string& co
 	compileMacros += "LIGHT_PROJ ";
 	compileMacros += "TWOSIDED ";
 }
-
 
 void GLShader_forwardLighting_projXYZ::SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram )
 {
@@ -2747,7 +2745,7 @@ void GLShader_deferredShadowing_proj::SetShaderProgramUniforms( shaderProgram_t 
 }
 
 GLShader_liquid::GLShader_liquid() :
-	GLShader( "liquid", ATTR_POSITION | ATTR_TEXCOORD | ATTR_TANGENT | ATTR_BINORMAL | ATTR_NORMAL | ATTR_COLOR 
+	GLShader( "liquid", ATTR_POSITION | ATTR_TEXCOORD | ATTR_TANGENT | ATTR_BINORMAL | ATTR_NORMAL | ATTR_COLOR
 		#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
 	                    | ATTR_LIGHTDIRECTION
 		#endif
@@ -2798,7 +2796,6 @@ GLShader_volumetricFog::GLShader_volumetricFog() :
 
 void GLShader_volumetricFog::SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram )
 {
-	
 	shaderProgram->u_DepthMap = glGetUniformLocation( shaderProgram->program, "u_DepthMap" );
 	shaderProgram->u_DepthMapBack = glGetUniformLocation( shaderProgram->program, "u_DepthMapBack" );
 	shaderProgram->u_DepthMapFront = glGetUniformLocation( shaderProgram->program, "u_DepthMapFront" );
