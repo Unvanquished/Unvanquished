@@ -756,7 +756,7 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 	qboolean   onlyQVM = !!Cvar_VariableValue( "sv_pure" );
 
 #ifdef DEDICATED
-	onlyQVM &= strcmp( module, "qagame" );
+	onlyQVM &= strcmp( module, "game" );
 #endif
 
 	if ( !module || !module[ 0 ] || !systemCalls )

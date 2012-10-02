@@ -878,7 +878,7 @@ void SV_InitGameProgs( void )
 	sv.num_tags = 0;
 
 	// load the game module
-	gvm = VM_Create( "qagame", SV_GameSystemCalls, Cvar_VariableValue( "vm_game" ) );
+	gvm = VM_Create( "game", SV_GameSystemCalls, Cvar_VariableValue( "vm_game" ) );
 
 	if ( !gvm )
 	{

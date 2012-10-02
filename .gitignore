@@ -14,7 +14,7 @@ daemonmap.*
 download-pk3.sh
 librendererGL*
 main/cgame.mp.*
-main/qagame.mp.*
+main/game.mp.*
 main/ui.mp.*
 main/vm
 libglcpp-library.a
