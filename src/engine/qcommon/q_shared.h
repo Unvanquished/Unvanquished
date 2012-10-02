@@ -1860,7 +1860,7 @@ char *Q_UTF8Unstore( int e );
 		int           otherEntityNum;
 		vec3_t        grapplePoint; // location of grapple to pull towards if PMF_GRAPPLE_PULL
 		int           weaponAnim; // mask off ANIM_TOGGLEBIT
-		int           Ammo;
+		int           ammo;
 		int           clips; // clips held
 		int           tauntTimer; // don't allow another taunt until this runs out
 		int           misc[ MAX_MISC ]; // misc data

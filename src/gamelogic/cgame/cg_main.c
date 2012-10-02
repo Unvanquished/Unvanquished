@@ -628,7 +628,7 @@ static void CG_SetUIVars( void )
 
 	trap_Cvar_Set( "p_credits", va( "%d", ps->persistant[ PERS_CREDIT ] ) );
 	trap_Cvar_Set( "p_score", va( "%d", ps->persistant[ PERS_SCORE ] ) );
-	trap_Cvar_Set( "p_ammo", va( "%d", ps->Ammo ) );
+	trap_Cvar_Set( "p_ammo", va( "%d", ps->ammo ) );
 	trap_Cvar_Set( "p_clips", va( "%d", ps->clips ) );
 }
 

@@ -2028,7 +2028,7 @@ void CG_DrawItemSelect( rectDef_t *rect, vec4_t color )
 			continue;
 		}
 
-		if ( !ps->Ammo && !ps->clips && !BG_Weapon( i )->infiniteAmmo )
+		if ( !ps->ammo && !ps->clips && !BG_Weapon( i )->infiniteAmmo )
 		{
 			colinfo[ numItems ] = 1;
 		}

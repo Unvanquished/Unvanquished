@@ -717,7 +717,7 @@ static void CG_DrawPlayerPoisonBarbs( rectDef_t *rect, vec4_t color, qhandle_t s
 	int      iconsize, numBarbs, maxBarbs;
 
 	maxBarbs = BG_Weapon( cg.snap->ps.weapon )->maxAmmo;
-	numBarbs = cg.snap->ps.Ammo;
+	numBarbs = cg.snap->ps.ammo;
 
 	if ( maxBarbs <= 0 || numBarbs <= 0 )
 	{
@@ -817,7 +817,7 @@ static void CG_DrawPlayerAmmoValue( rectDef_t *rect, vec4_t color )
 			break;
 
 		default:
-			value = cg.snap->ps.Ammo;
+			value = cg.snap->ps.ammo;
 			break;
 	}
 
@@ -916,7 +916,7 @@ static void CG_DrawPlayerTotalAmmoValue( rectDef_t *rect, vec4_t color )
 				maxAmmo *= BATTPACK_MODIFIER;
 			}
 			
-			value = cg.snap->ps.Ammo + ( cg.snap->ps.clips * maxAmmo );
+			value = cg.snap->ps.ammo + ( cg.snap->ps.clips * maxAmmo );
 			break;
 	}
 
@@ -1595,7 +1595,7 @@ static void CG_DrawPlayerClipMeter( rectDef_t *rect, int align, vec4_t color, qh
 	}
 		
 	
-	fraction = (float)cg.snap->ps.Ammo / (float)maxAmmo;
+	fraction = (float)cg.snap->ps.ammo / (float)maxAmmo;
 
 	CG_DrawPlayerMeter( rect, align, fraction, color, shader );
 }
@@ -1865,7 +1865,7 @@ float CG_GetValue( int ownerDraw )
 		case CG_PLAYER_AMMO_VALUE:
 			if ( weapon )
 			{
-				return ps->Ammo;
+				return ps->ammo;
 			}
 
 			break;
@@ -3218,7 +3218,7 @@ void CG_DrawWeaponIcon( rectDef_t *rect, vec4_t color )
 
 	if ( ps->clips == 0 && !BG_Weapon( weapon )->infiniteAmmo )
 	{
-		float ammoPercent = ( float ) ps->Ammo / ( float ) maxAmmo;
+		float ammoPercent = ( float ) ps->ammo / ( float ) maxAmmo;
 
 		if ( ammoPercent < 0.33f )
 		{
@@ -3717,7 +3717,7 @@ static void CG_DrawPlayerAmmoStack( rectDef_t *rect,
 		maxVal *= BATTPACK_MODIFIER;
 	}
 
-	val = ps->Ammo;
+	val = ps->ammo;
 
 	// draw background if required
 	if ( backColor[ 3 ] > 0.f )

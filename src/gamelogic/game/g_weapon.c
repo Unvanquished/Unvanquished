@@ -84,7 +84,7 @@ void G_GiveClientMaxAmmo( gentity_t *ent, qboolean buyingEnergyAmmo )
 		if ( !BG_InventoryContainsWeapon( i, ent->client->ps.stats ) ||
 		     BG_Weapon( i )->infiniteAmmo ||
 		     BG_WeaponIsFull( i, ent->client->ps.stats,
-		                      ent->client->ps.Ammo, ent->client->ps.clips ) ||
+		                      ent->client->ps.ammo, ent->client->ps.clips ) ||
 		     ( buyingEnergyAmmo && !energyWeapon ) )
 		{
 			continue;
@@ -101,7 +101,7 @@ void G_GiveClientMaxAmmo( gentity_t *ent, qboolean buyingEnergyAmmo )
 			restoredEnergy = qtrue;
 		}
 
-		ent->client->ps.Ammo = maxAmmo;
+		ent->client->ps.ammo = maxAmmo;
 		ent->client->ps.clips = maxClips;
 
 		restoredAmmo = qtrue;
