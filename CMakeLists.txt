@@ -73,7 +73,6 @@ cmake_dependent_option( USE_CPUINFO          "Use CPUInfo (if compilation fails,
 cmake_dependent_option( USE_CURSES           "Use the curses console"                                1 "BUILD_CLIENT OR BUILD_SERVER" 0 )
 cmake_dependent_option( USE_PHYSICS          "Compile with Newton Physics"                           0 "BUILD_CLIENT OR BUILD_SERVER" 0 )
 cmake_dependent_option( USE_INTERNAL_CRYPTO  "Use internal crypto (nettle)"                          0 "BUILD_CLIENT OR BUILD_SERVER" 0 )
-cmake_dependent_option( NO_UNTRUSTED_PLUGINS "Don't load native plugins from the user dir"           1 "BUILD_CLIENT OR BUILD_SERVER" 0 )
 
 cmake_dependent_option( USE_INTERNAL_JPEG    "Use JPEG files included with Unvanquished"             0
                                                                         "BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER OR BUILD_DAEMONMAP" 0 )
@@ -1091,10 +1090,6 @@ elseif( UNIX )
   else()
     set( OS_LIBRARIES ${CMAKE_DL_LIBS} m z rt )
   endif()
-endif()
-
-if( NO_UNTRUSTED_PLUGINS )
-  add_definitions( -DNO_UNTRUSTED_PLUGINS )
 endif()
 
 ###############################
