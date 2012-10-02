@@ -837,7 +837,7 @@ bool GLShader::LoadShaderBinary()
 	{
 		return false;
 	}
-	
+
 	binaryptr = ( byte* )binary;
 
 	// Get the shader header from the file
@@ -865,7 +865,7 @@ bool GLShader::LoadShaderBinary()
 			//ri.Printf(PRINT_ALL, "Compile macros: '%s'\n", compileMacros.c_str());
 
 			shaderProgram_t *shaderProgram = &_shaderPrograms[ i ];
-			
+
 			Q_strncpyz( shaderProgram->name, this->GetName().c_str(), sizeof( shaderProgram->name ) );
 
 			#if 0
@@ -957,7 +957,7 @@ void GLShader::SaveShaderBinary()
 	}
 
 	// Alloate space for the binary, and the number of permutations
-	binaryptr = binary = (byte*)ri.Hunk_AllocateTempMemory( binarySize );
+	binaryptr = binary = ( byte* )ri.Hunk_AllocateTempMemory( binarySize );
 
 	shaderHeader.version = GL_SHADER_VERSION;
 
@@ -970,15 +970,17 @@ void GLShader::SaveShaderBinary()
 	{
 		GLuint program = _shaderPrograms[ i ].program;
 		GLShaderProgramHeader programHeader;
+		byte *programBinary = binaryptr + sizeof( programHeader );
 
 		if ( !program )
 		{
 			continue;
 		}
-		
-		glGetProgramBinary( program, binarySize - ( binaryptr - binary ), &programHeader.binaryLength, &programHeader.binaryFormat, (GLvoid*)( binaryptr + sizeof( programHeader ) ) );
+
+		glGetProgramBinary( program, binarySize - ( programBinary - binary ), &programHeader.binaryLength, &programHeader.binaryFormat, ( GLvoid* )programBinary );
 
 		memcpy( ( void* )binaryptr, &programHeader, sizeof( programHeader ) );
+
 		binaryptr += sizeof( programHeader ) + programHeader.binaryLength;
 	}
 
