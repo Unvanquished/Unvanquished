@@ -455,7 +455,7 @@ Returns 0 if we have a representable time
 Truncation is ignored
 ====================
 */
-static qboolean SV_GetTimeString( char *buffer, int length, const char *format, const qtime_t *tm )
+static void SV_GetTimeString( char *buffer, int length, const char *format, const qtime_t *tm )
 {
 	if ( tm )
 	{
@@ -473,8 +473,10 @@ static qboolean SV_GetTimeString( char *buffer, int length, const char *format, 
 
 		strftime ( buffer, length, format, &t );
 	}
-
-	return !time;
+	else
+	{
+		strftime( buffer, length, format, gmtime( NULL ) );
+	}
 }
 
 /*
@@ -772,7 +774,8 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 
                 case G_GETTIMESTRING:
 		        VM_CheckBlock( args[1], args[2], "STRFTIME" );
-		        return SV_GetTimeString( VMA( 1 ), args[ 2 ], VMA( 3 ), VMA( 4 ) );
+			SV_GetTimeString( VMA( 1 ), args[ 2 ], VMA( 3 ), VMA( 4 ) );
+			return 0;
 			
 		default:
 			Com_Error( ERR_DROP, "Bad game system trap: %ld", ( long int ) args[ 0 ] );
