@@ -1983,11 +1983,11 @@ Q_EXTERN game_t				games[]
 #else
 							=
 							{
-								#include "game_openwolf.h"
+#include "game_openwolf.h"
 								,
-                                #include "game_tremulous.h"
+#include "game_tremulous.h"
                                 ,
-                                #include "game_unvanquished.h"
+#include "game_unvanquished.h"
                                 ,
 								{ NULL }	/* null game */
 							};

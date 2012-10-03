@@ -618,10 +618,10 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 	/*
 	// if your system does not have lrintf() and round() you can try this block. Please also open a bug report at bugzilla.icculus.org
 	// or write a mail to the ioq3 mailing list.
-	#else
-	  #define Q_ftol(v) ((long) (v))
-	  #define Q_round(v) do { if((v) < 0) (v) -= 0.5f; else (v) += 0.5f; (v) = Q_ftol((v)); } while(0)
-	  #define Q_SnapVector(vec) \
+#else
+#	define Q_ftol(v) ((long) (v))
+#	define Q_round(v) do { if((v) < 0) (v) -= 0.5f; else (v) += 0.5f; (v) = Q_ftol((v)); } while(0)
+#	define Q_SnapVector(vec) \
 	        do\
 	        {\
 	                vec3_t *temp = (vec);\
@@ -630,7 +630,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 	                Q_round((*temp)[1]);\
 	                Q_round((*temp)[2]);\
 	        } while(0)
-	#endif
+#endif
 	*/
 
 	STATIC_INLINE long XreaL_Q_ftol( float f ) IFDECLARE
@@ -775,7 +775,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 		return out;
 	}
 #else
-	#define Q_recip(x) ( 1.0f / (x) )
+#	define Q_recip(x) ( 1.0f / (x) )
 #endif
 
 	byte         ClampByte( int i );

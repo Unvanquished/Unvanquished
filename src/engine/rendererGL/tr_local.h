@@ -1970,12 +1970,12 @@ extern "C" {
 	static INLINE void GLSL_SetUniform_ShadowMatrix( shaderProgram_t *program, matrix_t m[ MAX_SHADOWMAPS ] )
 	{
 		/*
-		#if defined(USE_UNIFORM_FIREWALL)
+#if defined(USE_UNIFORM_FIREWALL)
 		        if(MatrixCompare(program->t_ShadowMatrix[index], m))
 		                return;
 
 		        MatrixCopy(m, program->t_ShadowMatrix[index]);
-		#endif
+#endif
 		*/
 
 #if defined( LOG_GLSL_UNIFORMS )

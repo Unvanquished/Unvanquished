@@ -1585,12 +1585,12 @@ void WriteMapFileDoom3(char *filename)
 					vec_t			ST[3][5]; // [ point index ] [ xyz ST ]
 
 
-					#if 0 //ndef NDEBUG
+#if 0 //ndef NDEBUG
 					if ( f->plane.normal[0]==0.0f && f->plane.normal[1]==0.0f && f->plane.normal[2]==0.0f )
 					{
 						Sys_Printf("Warning : f->plane.normal is (0,0,0) in FaceToBrushPrimitFace\n");
 					}
-					#endif
+#endif
 
 					// compute axis base
 					ComputeAxisBase(mapplanes[side->planenum].normal, texX, texY);

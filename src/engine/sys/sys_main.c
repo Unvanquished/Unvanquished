@@ -658,7 +658,7 @@ int main( int argc, char **argv )
 #ifdef OPENMP
 	Com_Printf( "-----------------------------------\n" );
 	/* Start parallel region */
-	#pragma omp parallel private(nthreads, tid)
+#pragma omp parallel private(nthreads, tid)
 	{
 		/* Obtain thread number */
 		tid = omp_get_thread_num();

@@ -557,19 +557,19 @@ static int loadVideoFrameTheora( void )
 				                                //TODO: use one yuv->rgb function for the whole frame (large amount of stack movement (yuv->rgb calls) can't be good ;))
 				                                for(j=0;j<g_ogm.th_info.height;++j) {
 				                                        for(i=0;i<g_ogm.th_info.width;++i) {
-				#if 1
+#if 1
 				                                                // simple grayscale-output ^^
 				                                                pixelPtr[0] =
 				                                                        pixelPtr[1] =
 				                                                        pixelPtr[2] = g_ogm.th_yuvbuffer.y[i+j*g_ogm.th_yuvbuffer.y_stride];
 				                                                pixelPtr+=4;
 
-				#else
+#else
 				                                                // using RoQ yuv->rgb code
 				                                                *pixPtr++ = yuv_to_rgb24( g_ogm.th_yuvbuffer.y[(i>>yWShift)+(j>>yHShift)*g_ogm.th_yuvbuffer.y_stride],
 				                                                                                                g_ogm.th_yuvbuffer.u[(i>>uvWShift)+(j>>uvHShift)*g_ogm.th_yuvbuffer.uv_stride],
 				                                                                                                g_ogm.th_yuvbuffer.v[(i>>uvWShift)+(j>>uvHShift)*g_ogm.th_yuvbuffer.uv_stride]);
-				#endif
+#endif
 				                                        }
 				                                }
 				*/

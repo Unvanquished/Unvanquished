@@ -3076,7 +3076,7 @@ static void SetImplicitShaderStages( image_t *image )
 			break;
 	}
 
-	#if 0
+#if 0
 
 	if ( shader.lightmapIndex == LIGHTMAP_NONE )
 	{

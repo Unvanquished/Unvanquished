@@ -1987,7 +1987,7 @@ static qboolean ParseMapEntity(qboolean onlyLights)
 		}
 
 		// Tr3B: move modelscale to rotation key because DarkRadiant does not support modelscale
-		#if 1
+#if 1
 		if(!Q_stricmp("misc_model", classname))
 		{
 			vec_t			temp;
@@ -2043,7 +2043,7 @@ static qboolean ParseMapEntity(qboolean onlyLights)
 			SetKeyValue(mapEnt, "rotation", va("%f %f %f %f %f %f %f %f %f", rotationScaled[0], rotationScaled[1], rotationScaled[2],
 				   rotationScaled[4], rotationScaled[5], rotationScaled[6], rotationScaled[8], rotationScaled[9], rotationScaled[10]));
 		}
-		#endif
+#endif
 
 		// Tr3B: move detail brushes from world spawn into separate func_static
 		// or the detail brush flags will be lost and the brushes will generate really many bsp splits

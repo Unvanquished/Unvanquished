@@ -1713,14 +1713,14 @@ public:
 	{
 		shaderProgram_t *program = _shader->GetProgram();
 
-		#if defined( LOG_GLSL_UNIFORMS )
+#if defined( LOG_GLSL_UNIFORMS )
 
 			if ( r_logFile->integer )
 			{
 				GLimp_LogComment( va( "--- GLSL_SetUniform_FresnelPower( program = %s, value = %f ) ---\n", program->name, value ) );
 			}
 
-		#endif
+#endif
 		glUniform1f( program->u_FresnelPower, value );
 	}
 };
@@ -1748,14 +1748,14 @@ public:
 	{
 		shaderProgram_t *program = _shader->GetProgram();
 
-		#if defined( LOG_GLSL_UNIFORMS )
+#if defined( LOG_GLSL_UNIFORMS )
 
 			if ( r_logFile->integer )
 			{
 				GLimp_LogComment( va( "--- GLSL_SetUniform_FresnelScale( program = %s, value = %f ) ---\n", program->name, value ) );
 			}
 
-		#endif
+#endif
 		glUniform1f( program->u_FresnelScale, value );
 	}
 };
@@ -1783,14 +1783,14 @@ public:
 	{
 		shaderProgram_t *program = _shader->GetProgram();
 
-		#if defined( LOG_GLSL_UNIFORMS )
+#if defined( LOG_GLSL_UNIFORMS )
 
 			if ( r_logFile->integer )
 			{
 				GLimp_LogComment( va( "--- GLSL_SetUniform_FresnelBias( program = %s, value = %f ) ---\n", program->name, value ) );
 			}
 
-		#endif
+#endif
 		glUniform1f( program->u_FresnelBias, value );
 	}
 };
@@ -1818,14 +1818,14 @@ public:
 	{
 		shaderProgram_t *program = _shader->GetProgram();
 
-		#if defined( LOG_GLSL_UNIFORMS )
+#if defined( LOG_GLSL_UNIFORMS )
 
 			if ( r_logFile->integer )
 			{
 				GLimp_LogComment( va( "--- GLSL_SetUniform_NormalScale( program = %s, value = %f ) ---\n", program->name, value ) );
 			}
 
-		#endif
+#endif
 		glUniform1f( program->u_NormalScale, value );
 	}
 };
@@ -1853,14 +1853,14 @@ public:
 	{
 		shaderProgram_t *program = _shader->GetProgram();
 
-		#if defined( LOG_GLSL_UNIFORMS )
+#if defined( LOG_GLSL_UNIFORMS )
 
 			if ( r_logFile->integer )
 			{
 				GLimp_LogComment( va( "--- GLSL_SetUniform_FogDensity( program = %s, value = %f ) ---\n", program->name, value ) );
 			}
 
-		#endif
+#endif
 		glUniform1f( program->u_FogDensity, value );
 	}
 };
@@ -1888,14 +1888,14 @@ public:
 	{
 		shaderProgram_t *program = _shader->GetProgram();
 
-		#if defined( LOG_GLSL_UNIFORMS )
+#if defined( LOG_GLSL_UNIFORMS )
 
 			if ( r_logFile->integer )
 			{
 				GLimp_LogComment( va( "--- GLSL_SetUniform_FogColor( program = %s, value = %f %f %f ) ---\n", program->name, v1, v2, v3 ) );
 			}
 
-		#endif
+#endif
 		glUniform3f( program->u_FogColor, v1, v2, v3 );
 	}
 };
