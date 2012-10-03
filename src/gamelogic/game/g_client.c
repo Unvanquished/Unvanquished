@@ -1291,6 +1291,11 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	client->pers.admin = G_admin_admin( client->pers.guid );
 	client->pers.pubkey_authenticated = 0;
 
+	if ( client->pers.admin )
+	{
+		trap_RealTime( &client->pers.admin->lastSeen );
+	}
+
 	// check for admin ban
 	if ( G_admin_ban_check( ent, reason, sizeof( reason ) ) )
 	{

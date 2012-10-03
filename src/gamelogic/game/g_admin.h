@@ -107,6 +107,7 @@ typedef struct g_admin_admin
 	char                 pubkey[ RSA_STRING_LENGTH ];
 	char                 msg[ RSA_STRING_LENGTH ];
 	char                 msg2[ RSA_STRING_LENGTH ];
+	qtime_t              lastSeen;
 	int                  counter;
 }
 

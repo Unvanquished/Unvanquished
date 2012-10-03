@@ -449,6 +449,36 @@ extern int S_GetSoundLength( sfxHandle_t sfxHandle );
 
 /*
 ====================
+SV_GetTimeString
+
+Returns 0 if we have a representable time
+Truncation is ignored
+====================
+*/
+static qboolean SV_GetTimeString( char *buffer, int length, const char *format, const qtime_t *tm )
+{
+	if ( tm )
+	{
+		struct tm t;
+
+		t.tm_sec   = tm->tm_sec;
+		t.tm_min   = tm->tm_min;
+		t.tm_hour  = tm->tm_hour;
+		t.tm_mday  = tm->tm_mday;
+		t.tm_mon   = tm->tm_mon;
+		t.tm_year  = tm->tm_year;
+		t.tm_wday  = tm->tm_wday;
+		t.tm_yday  = tm->tm_yday;
+		t.tm_isdst = tm->tm_isdst;
+
+		strftime ( buffer, length, format, &t );
+	}
+
+	return !time;
+}
+
+/*
+====================
 SV_GameSystemCalls
 
 The module is making a system call
@@ -739,6 +769,10 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 		case G_GETPLAYERPUBKEY:
 			SV_GetPlayerPubkey( args[ 1 ], VMA( 2 ), args[ 3 ] );
 			return 0;
+
+                case G_GETTIMESTRING:
+		        VM_CheckBlock( args[1], args[2], "STRFTIME" );
+		        return SV_GetTimeString( VMA( 1 ), args[ 2 ], VMA( 3 ), VMA( 4 ) );
 			
 		default:
 			Com_Error( ERR_DROP, "Bad game system trap: %ld", ( long int ) args[ 0 ] );

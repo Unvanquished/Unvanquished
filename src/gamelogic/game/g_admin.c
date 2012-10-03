@@ -745,6 +745,8 @@ void G_admin_writeconfig( void )
 		admin_writeconfig_string( a->msg2, f );
 		trap_FS_Write( "counter = ", 10, f );
 		admin_writeconfig_int( a->counter, f );
+		trap_FS_Write( "lastseen = ", 11, f );
+		admin_writeconfig_int( a->lastSeen.tm_year * 10000 + a->lastSeen.tm_mon * 100 + a->lastSeen.tm_mday, f );
 		trap_FS_Write( "\n", 1, f );
 	}
 
@@ -1089,6 +1091,7 @@ static int admin_out( void *admin, char *str )
 	g_admin_admin_t *a = ( g_admin_admin_t * ) admin;
 	g_admin_level_t *l;
 	int             lncol = 0, i;
+	char            lastSeen[64] = "          ";
 
 	if ( !str )
 	{
@@ -1109,9 +1112,14 @@ static int admin_out( void *admin, char *str )
 		}
 	}
 
-	Com_sprintf( str, MAX_STRING_CHARS, "%-6d %*s^7 %s",
+	if ( a->lastSeen.tm_mday )
+	{
+		trap_GetTimeString( lastSeen, sizeof( lastSeen ), "%Y-%m-%d", &a->lastSeen );
+	}
+
+	Com_sprintf( str, MAX_STRING_CHARS, "%-6d %*s^7 %s %s",
 	             a->level, admin_level_maxname + lncol - 1, l ? l->name : "(null)",
-	             a->name );
+	             lastSeen, a->name );
 
 	return 0;
 }
@@ -1763,6 +1771,7 @@ qboolean G_admin_readconfig( gentity_t *ent )
 				a = g_admin_admins = BG_Alloc( sizeof( g_admin_admin_t ) );
 			}
 
+			memset( a, 0, sizeof( *a ) );
 			admin_open = qtrue;
 			level_open = ban_open = command_open = qfalse;
 			ac++;
@@ -1859,6 +1868,15 @@ qboolean G_admin_readconfig( gentity_t *ent )
 			else if ( !Q_stricmp( t, "counter" ) )
 			{
 				admin_readconfig_int( &cnf, &a->counter );
+			}
+			else if ( !Q_stricmp( t, "lastseen" ) )
+			{
+				unsigned int tm;
+				admin_readconfig_int( &cnf, (int *) &tm );
+				// trust the admin here...
+				a->lastSeen.tm_year = tm / 10000;
+				a->lastSeen.tm_mon = ( tm / 100 ) % 100;
+				a->lastSeen.tm_mday = tm % 100;
 			}
 			else
 			{
@@ -2141,6 +2159,7 @@ qboolean G_admin_setlevel( gentity_t *ent )
 
 		vic->client->pers.admin = a;
 		Q_strncpyz( a->guid, vic->client->pers.guid, sizeof( a->guid ) );
+		trap_RealTime( &a->lastSeen ); // player is connected...
 	}
 
 	a->level = l->level;
