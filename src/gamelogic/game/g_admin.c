@@ -3345,9 +3345,10 @@ qboolean G_admin_listinactive( gentity_t *ent )
 	qtime_t      tm;
 
 	i = trap_Argc();
-	if ( i < 2 || i > 3 )
+	if ( i > 3 )
 	{
 		ADMP( QQ( N_("^3listinactive: ^7usage: listinactive [^5months^7] (^5start admin#^7)\n") ) );
+		return qfalse;
 	}
 
 	trap_Argv( 1, s, sizeof( s ) );
