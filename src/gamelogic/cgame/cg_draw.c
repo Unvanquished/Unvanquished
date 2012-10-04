@@ -358,6 +358,7 @@ static void CG_DrawPlayerCreditsValue( rectDef_t *rect, vec4_t color, qboolean p
 	int           value;
 	playerState_t *ps;
 	centity_t     *cent;
+	vec4_t        localColor;
 
 	cent = &cg_entities[ cg.snap->ps.clientNum ];
 	ps = &cg.snap->ps;
@@ -373,6 +374,8 @@ static void CG_DrawPlayerCreditsValue( rectDef_t *rect, vec4_t color, qboolean p
 
 	if ( value > -1 )
 	{
+		Vector4Copy( color, localColor );
+
 		if ( cg.predictedPlayerState.stats[ STAT_TEAM ] == TEAM_ALIENS )
 		{
 			if ( !BG_AlienCanEvolve( cg.predictedPlayerState.stats[ STAT_CLASS ],
@@ -380,13 +383,13 @@ static void CG_DrawPlayerCreditsValue( rectDef_t *rect, vec4_t color, qboolean p
 			     cg.time - cg.lastEvolveAttempt <= NO_CREDITS_TIME &&
 			     ( ( cg.time - cg.lastEvolveAttempt ) / 300 ) & 1 )
 			{
-				color[ 3 ] = 0.0f;
+				localColor[ 3 ] = 0.0f;
 			}
 
 			value /= ALIEN_CREDITS_PER_KILL;
 		}
 
-		trap_R_SetColor( color );
+		trap_R_SetColor( localColor );
 
 		if ( padding )
 		{
@@ -405,6 +408,7 @@ static void CG_DrawPlayerCreditsFraction( rectDef_t *rect, vec4_t color, qhandle
 {
 	float fraction;
 	float height;
+	rectDef_t aRect;
 
 	if ( cg.predictedPlayerState.stats[ STAT_TEAM ] != TEAM_ALIENS )
 	{
@@ -414,11 +418,12 @@ static void CG_DrawPlayerCreditsFraction( rectDef_t *rect, vec4_t color, qhandle
 	fraction = ( ( float )( cg.predictedPlayerState.persistant[ PERS_CREDIT ] %
 	                        ALIEN_CREDITS_PER_KILL ) ) / ALIEN_CREDITS_PER_KILL;
 
-	CG_AdjustFrom640( &rect->x, &rect->y, &rect->w, &rect->h );
-	height = rect->h * fraction;
+	aRect = *rect;
+	CG_AdjustFrom640( &aRect.x, &aRect.y, &aRect.w, &aRect.h );
+	height = aRect.h * fraction;
 
 	trap_R_SetColor( color );
-	trap_R_DrawStretchPic( rect->x, rect->y - height + rect->h, rect->w,
+	trap_R_DrawStretchPic( aRect.x, aRect.y - height + aRect.h, aRect.w,
 	                       height, 0.0f, 1.0f - fraction, 1.0f, 1.0f, shader );
 	trap_R_SetColor( NULL );
 }
@@ -431,6 +436,7 @@ static void CG_DrawPlayerAlienEvos( rectDef_t *rect, float text_x, float text_y,
 	playerState_t *ps;
 	centity_t     *cent;
 	char           *s;
+	vec4_t        localColor;
 	cent = &cg_entities[ cg.snap->ps.clientNum ];
 	ps = &cg.snap->ps;
 
@@ -438,6 +444,8 @@ static void CG_DrawPlayerAlienEvos( rectDef_t *rect, float text_x, float text_y,
 
 	if ( value > -1 )
 	{
+		Vector4Copy( color, localColor );
+
 		if ( cg.predictedPlayerState.stats[ STAT_TEAM ] == TEAM_ALIENS )
 		{
 			if ( !BG_AlienCanEvolve( cg.predictedPlayerState.stats[ STAT_CLASS ],
@@ -445,7 +453,7 @@ static void CG_DrawPlayerAlienEvos( rectDef_t *rect, float text_x, float text_y,
 			     cg.time - cg.lastEvolveAttempt <= NO_CREDITS_TIME &&
 			     ( ( cg.time - cg.lastEvolveAttempt ) / 300 ) & 1 )
 			{
-				color[ 3 ] = 0.0f;
+				localColor[ 3 ] = 0.0f;
 			}
 
 			value /= ( float ) ALIEN_CREDITS_PER_KILL;
@@ -454,7 +462,7 @@ static void CG_DrawPlayerAlienEvos( rectDef_t *rect, float text_x, float text_y,
 		s = va( "%0.1f", floor( value * 10 ) / 10 );
 		CG_AlignText( rect, s, scale, 0.0f, 0.0f, textalign, textvalign, &tx, &ty );
 
-		UI_Text_Paint( text_x + tx, text_y + ty, scale, color, s, 0, textStyle );
+		UI_Text_Paint( text_x + tx, text_y + ty, scale, localColor, s, 0, textStyle );
 	}
 }
 
@@ -468,15 +476,18 @@ static void CG_DrawPlayerStaminaValue( rectDef_t *rect, vec4_t color )
 	playerState_t *ps = &cg.snap->ps;
 	float         stamina = ps->stats[ STAT_STAMINA ];
 	int           percent = 100 * ( stamina + ( float ) STAMINA_MAX ) / ( 2 * ( float ) STAMINA_MAX );
+	vec4_t        localColor;
+
+	Vector4Copy( color, localColor );
 
 	if ( percent < 30  && ( cg.time & 128 ) )
 	{
-		color[ 0 ] = 1.0f;
-		color[ 1 ] = 0.0f;
-		color[ 2 ] = 0.0f;
+		localColor[ 0 ] = 1.0f;
+		localColor[ 1 ] = 0.0f;
+		localColor[ 2 ] = 0.0f;
 	}
 
-	trap_R_SetColor( color );
+	trap_R_SetColor( localColor );
 	CG_DrawField( rect->x - 5, rect->y, 4, rect->w / 4, rect->h, percent );
 	trap_R_SetColor( NULL );
 }
@@ -1057,6 +1068,7 @@ static void CG_DrawPlayerBuildTimer( rectDef_t *rect, vec4_t color )
 {
 	int           index;
 	playerState_t *ps;
+	vec4_t        localColor;
 
 	ps = &cg.snap->ps;
 
@@ -1087,15 +1099,17 @@ static void CG_DrawPlayerBuildTimer( rectDef_t *rect, vec4_t color )
 		index = 0;
 	}
 
+	Vector4Copy( color, localColor );
+
 	if ( cg.time - cg.lastBuildAttempt <= BUILD_DELAY_TIME &&
 	     ( ( cg.time - cg.lastBuildAttempt ) / 300 ) % 2 )
 	{
-		color[ 0 ] = 1.0f;
-		color[ 1 ] = color[ 2 ] = 0.0f;
-		color[ 3 ] = 1.0f;
+		localColor[ 0 ] = 1.0f;
+		localColor[ 1 ] = localColor[ 2 ] = 0.0f;
+		localColor[ 3 ] = 1.0f;
 	}
 
-	trap_R_SetColor( color );
+	trap_R_SetColor( localColor );
 	CG_DrawPic( rect->x, rect->y, rect->w, rect->h,
 	            cgs.media.buildWeaponTimerPie[ index ] );
 	trap_R_SetColor( NULL );
@@ -1520,28 +1534,29 @@ static void CG_DrawPlayerHealthBar( rectDef_t *rect, vec4_t foreColor, qhandle_t
 
 static void CG_DrawPlayerMeter( rectDef_t *rect, int align, float fraction, vec4_t color, qhandle_t shader )
 {
+	rectDef_t aRect = *rect;
 
-	CG_AdjustFrom640( &rect->x, &rect->y, &rect->w, &rect->h );
+	CG_AdjustFrom640( &aRect.x, &aRect.y, &aRect.w, &aRect.h );
 
 	// Vertical meter
-	if( rect->h >= rect->w )
+	if( aRect.h >= aRect.w )
 	{
 		float height;
 		
-		height = rect->h * fraction;
+		height = aRect.h * fraction;
 
 		// Meter decreases down
 		if ( align == ALIGN_LEFT )
 		{
 			trap_R_SetColor( color );
-			trap_R_DrawStretchPic( rect->x, rect->y, rect->w, height,
+			trap_R_DrawStretchPic( aRect.x, aRect.y, aRect.w, height,
 								   0.0f, 0.0f, 1.0f, fraction, shader );
 			trap_R_SetColor( NULL );
 		}
 		else
 		{
 			trap_R_SetColor( color );
-			trap_R_DrawStretchPic( rect->x, rect->y - height + rect->h, rect->w,
+			trap_R_DrawStretchPic( aRect.x, aRect.y - height + aRect.h, aRect.w,
 								   height, 0.0f, 1.0f - fraction, 1.0f, 1.0f, shader );
 			trap_R_SetColor( NULL );
 		}	
@@ -1552,21 +1567,21 @@ static void CG_DrawPlayerMeter( rectDef_t *rect, int align, float fraction, vec4
 	{
 		float width;
 
-		width = rect->w * fraction;
+		width = aRect.w * fraction;
 
 		// Meter decreases to the left
 		if ( align == ALIGN_LEFT )
 		{
 			trap_R_SetColor( color );
-			trap_R_DrawStretchPic( rect->x, rect->y, width,
-								rect->h, 0.0f, 0.0f, fraction, 1.0f, shader );
+			trap_R_DrawStretchPic( aRect.x, aRect.y, width,
+			                       aRect.h, 0.0f, 0.0f, fraction, 1.0f, shader );
 			trap_R_SetColor( NULL );
 		}
 		else
 		{
 			trap_R_SetColor( color );
-			trap_R_DrawStretchPic( rect->x - width + rect->w, rect->y, width,
-								   rect->h, 1.0f - fraction, 0.0f, 1.0f, 1.0f, shader );
+			trap_R_DrawStretchPic( aRect.x - width + aRect.w, aRect.y, width,
+			                       aRect.h, 1.0f - fraction, 0.0f, 1.0f, 1.0f, shader );
 			trap_R_SetColor( NULL );
 		}
 	}
@@ -3191,6 +3206,7 @@ void CG_DrawWeaponIcon( rectDef_t *rect, vec4_t color )
 	centity_t     *cent;
 	playerState_t *ps;
 	weapon_t      weapon;
+	vec4_t        localColor;
 
 	cent = &cg_entities[ cg.snap->ps.clientNum ];
 	ps = &cg.snap->ps;
@@ -3216,14 +3232,16 @@ void CG_DrawWeaponIcon( rectDef_t *rect, vec4_t color )
 		return;
 	}
 
+	Vector4Copy( color, localColor );
+
 	if ( ps->clips == 0 && !BG_Weapon( weapon )->infiniteAmmo )
 	{
 		float ammoPercent = ( float ) ps->ammo / ( float ) maxAmmo;
 
 		if ( ammoPercent < 0.33f )
 		{
-			color[ 0 ] = 1.0f;
-			color[ 1 ] = color[ 2 ] = 0.0f;
+			localColor[ 0 ] = 1.0f;
+			localColor[ 1 ] = localColor[ 2 ] = 0.0f;
 		}
 	}
 
@@ -3235,12 +3253,12 @@ void CG_DrawWeaponIcon( rectDef_t *rect, vec4_t color )
 		{
 			if ( ( ( cg.time - cg.lastEvolveAttempt ) / 300 ) % 2 )
 			{
-				color[ 3 ] = 0.0f;
+				localColor[ 3 ] = 0.0f;
 			}
 		}
 	}
 
-	trap_R_SetColor( color );
+	trap_R_SetColor( localColor );
 	CG_DrawPic( rect->x, rect->y, rect->w, rect->h,
 	            cg_weapons[ weapon ].weaponIcon );
 	trap_R_SetColor( NULL );
@@ -3266,6 +3284,7 @@ static void CG_DrawCrosshair( rectDef_t *rect, vec4_t color )
 	float        x, y;
 	weaponInfo_t *wi;
 	weapon_t     weapon;
+	vec4_t       localColor;
 
 	weapon = BG_GetPlayerWeapon( &cg.snap->ps );
 
@@ -3307,6 +3326,8 @@ static void CG_DrawCrosshair( rectDef_t *rect, vec4_t color )
 
 	hShader = wi->crossHair;
 
+	Vector4Copy( color, localColor );
+
 	//aiming at a friendly player/buildable, dim the crosshair
 	if ( cg.time == cg.crosshairClientTime || cg.crosshairBuildable >= 0 )
 	{
@@ -3314,13 +3335,13 @@ static void CG_DrawCrosshair( rectDef_t *rect, vec4_t color )
 
 		for ( i = 0; i < 3; i++ )
 		{
-			color[ i ] *= .5f;
+			localColor[ i ] *= .5f;
 		}
 	}
 
 	if ( hShader != 0 )
 	{
-		trap_R_SetColor( color );
+		trap_R_SetColor( localColor );
 		CG_DrawPic( x, y, w, h, hShader );
 		trap_R_SetColor( NULL );
 	}
@@ -3501,6 +3522,7 @@ static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
 	float    nudge;
 	float    fmax = max; // we don't want integer division
 	qboolean vertical; // a stack taller than it is wide is drawn vertically
+	vec4_t   localColor;
 
 	// so that the vertical and horizontal bars can share code, abstract the
 	// longer dimension and the alignment parameter
@@ -3652,8 +3674,9 @@ static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
 		return; // no partial square, we're done here
 	}
 
-	color[ 3 ] *= frac;
-	trap_R_SetColor( color );
+	Vector4Copy( color, localColor );
+	localColor[ 3 ] *= frac;
+	trap_R_SetColor( localColor );
 
 	switch ( lalign )
 	{

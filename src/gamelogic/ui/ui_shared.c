@@ -2732,8 +2732,11 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 
 		if ( cursorX >= 0 && !( ( DC->realTime / BLINK_DIVISOR ) & 1 ) )
 		{
-			color[3] /= 2.0;
-			DC->setColor( color );
+			vec4_t recolor;
+			Vector4Copy( color, recolor );
+			recolor[3] /= 2.0f;
+
+			DC->setColor( recolor );
 
 			if ( DC->getOverstrikeMode() )
 			{
