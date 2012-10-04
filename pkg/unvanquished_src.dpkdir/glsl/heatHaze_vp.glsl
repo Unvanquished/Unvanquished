@@ -88,6 +88,6 @@ void	main()
 	d1 = dot(u_ProjectionMatrixTranspose[0],  deformVec);
     d2 = dot(u_ProjectionMatrixTranspose[3],  deformVec);
 
-	// clamp the distance so the the deformations don't get too wacky near the view
+	// clamp the distance, so the deformations don't get too wacky near the view
 	var_Deform = min(d1 * (1.0 / max(d2, 1.0)), 0.02) * u_DeformMagnitude;
 }
