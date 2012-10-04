@@ -518,7 +518,7 @@ static void ParseMesh( dsurface_t *ds, drawVert_t *verts, msurface_t *surf )
 		R_ColorShiftLightingBytes( verts[ i ].color, points[ i ].color );
 	}
 
-	// pre-tesseleate
+	// pre-tesselate
 	grid = R_SubdividePatchToGrid( width, height, points );
 	surf->data = ( surfaceType_t * ) grid;
 

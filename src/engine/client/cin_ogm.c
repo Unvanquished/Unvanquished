@@ -554,7 +554,7 @@ static int loadVideoFrameTheora( void )
 				                                unsigned int* pixPtr;
 				                                pixPtr = (unsigned int*)g_ogm.outputBuffer;
 
-				                                //TODO: use one yuv->rgb funktion for the hole frame (the big amout of stack movement(yuv->rgb calls) couldn't be good ;) )
+				                                //TODO: use one yuv->rgb function for the whole frame (large amount of stack movement (yuv->rgb calls) can't be good ;))
 				                                for(j=0;j<g_ogm.th_info.height;++j) {
 				                                        for(i=0;i<g_ogm.th_info.width;++i) {
 				#if 1

@@ -81,7 +81,7 @@ int CM_SignbitsForNormal( vec3_t normal )
 =====================
 CM_PlaneFromPoints
 
-Returns false if the triangle is degenrate.
+Returns false if the triangle is degenerate.
 The normal will point out of the clock for clockwise ordered points
 =====================
 */

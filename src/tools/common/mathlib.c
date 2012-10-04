@@ -77,7 +77,7 @@ void NormalToLatLong(const vec3_t normal, byte bytes[2])
 =====================
 PlaneFromPoints
 
-Returns false if the triangle is degenrate.
+Returns false if the triangle is degenerate.
 The normal will point out of the clock for clockwise ordered points if cw == qtrue
 =====================
 */

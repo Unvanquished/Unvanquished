@@ -68,7 +68,7 @@ typedef struct
 	// currentOrigin will be used for all collision detection and world linking.
 	// it will not necessarily be the same as the trajectory evaluation for the current
 	// time, because each entity must be moved one at a time after time is advanced
-	// to avoid simultanious collision issues
+	// to avoid simultaneous collision issues
 	vec3_t currentOrigin;
 	vec3_t currentAngles;
 

@@ -1734,7 +1734,7 @@ static void ParseMesh( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf )
 #endif
 	}
 
-	// pre-tesseleate
+	// pre-tesselate
 	grid = R_SubdividePatchToGrid( width, height, points );
 	surf->data = ( surfaceType_t * ) grid;
 

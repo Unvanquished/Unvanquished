@@ -253,7 +253,7 @@ typedef enum
   // cgame will display loading status by calling SCR_Update, which
   // will call CG_DrawInformation during the loading process
   // reliableCommandSequence will be 0 on fresh loads, but higher for
-  // demos, tourney restarts, or vid_restarts
+  // demos or vid_restarts
 
   CG_SHUTDOWN,
 //  void (*CG_Shutdown)( void );

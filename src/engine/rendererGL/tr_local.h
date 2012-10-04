@@ -4739,7 +4739,7 @@ extern "C" {
 	/*
 	Add a polyhedron that is composed of four triangular faces
 
-	@param tretraVerts[0..2] are the ground vertices, tretaVerts[3] is the pyramid offset
+	@param tetraVerts[0..2] are the ground vertices, tetraVerts[3] is the pyramid offset
 	*/
 	void Tess_AddTetrahedron( vec4_t tetraVerts[ 4 ], vec4_t const color );
 

@@ -1056,8 +1056,6 @@ static void CG_RegisterSounds( void )
 /*
 =================
 CG_RegisterGraphics
-
-This function may execute for a couple of minutes with a slow disk.
 =================
 */
 static void CG_RegisterGraphics( void )

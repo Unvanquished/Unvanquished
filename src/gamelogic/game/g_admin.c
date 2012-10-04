@@ -3605,7 +3605,7 @@ static int ban_out( void *ban, char *str )
 		}
 	}
 
-	// only print out the the date part of made
+	// only print out the date part of made
 	date[ 0 ] = '\0';
 
 	for ( i = 0; *made && *made != ' ' && i < sizeof( date ) - 1; i++ )
@@ -4923,7 +4923,7 @@ qboolean G_admin_timelimit( gentity_t *ent )
 			}
 			return qtrue;
 		}
-		// fall through
+		// fallthrough
 
 	default:
 		ADMP( QQ( N_("^3gametimelimit: ^7usage: gametimelimit [minutes]\n") ) );

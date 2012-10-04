@@ -1171,7 +1171,7 @@ static void AssembleLine( void ) {
 
 /*
   Opcode search using hash table.
-  Since the opcodes stays mostly fixed, this may benefit even more from a tree.
+  Since the opcodes stay mostly fixed, this may benefit even more from a tree.
   Always with the tree :)
  -PH
 */

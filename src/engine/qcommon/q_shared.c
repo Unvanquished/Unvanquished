@@ -2858,7 +2858,7 @@ char *Info_ValueForKey( const char *s, const char *key )
 ===================
 Info_NextPair
 
-Used to itterate through all the key/value pairs in an info string
+Used to iterate through all the key/value pairs in an info string
 ===================
 */
 void Info_NextPair( const char **head, char *key, char *value )
