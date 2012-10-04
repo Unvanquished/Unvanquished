@@ -460,8 +460,6 @@ gentity_t *fire_flamer( gentity_t *self, vec3_t start, vec3_t dir )
 	gentity_t *bolt;
 	vec3_t    pvel;
 
-	VectorNormalize( dir );
-
 	bolt = G_Spawn();
 	bolt->classname = "flame";
 	bolt->pointAgainstWorld = qfalse;
@@ -507,8 +505,6 @@ gentity_t *fire_blaster( gentity_t *self, vec3_t start, vec3_t dir )
 {
 	gentity_t *bolt;
 
-	VectorNormalize( dir );
-
 	bolt = G_Spawn();
 	bolt->classname = "blaster";
 	bolt->pointAgainstWorld = qtrue;
@@ -551,8 +547,6 @@ fire_pulseRifle
 gentity_t *fire_pulseRifle( gentity_t *self, vec3_t start, vec3_t dir )
 {
 	gentity_t *bolt;
-
-	VectorNormalize( dir );
 
 	bolt = G_Spawn();
 	bolt->classname = "pulse";
@@ -599,8 +593,6 @@ gentity_t *fire_luciferCannon( gentity_t *self, vec3_t start, vec3_t dir,
 {
 	gentity_t *bolt;
 	float     charge;
-
-	VectorNormalize( dir );
 
 	bolt = G_Spawn();
 	bolt->classname = "lcannon";
@@ -666,8 +658,6 @@ launch_grenade
 gentity_t *launch_grenade( gentity_t *self, vec3_t start, vec3_t dir )
 {
 	gentity_t *bolt;
-
-	VectorNormalize( dir );
 
 	bolt = G_Spawn();
 	bolt->classname = "grenade";
@@ -780,8 +770,6 @@ gentity_t *fire_hive( gentity_t *self, vec3_t start, vec3_t dir )
 {
 	gentity_t *bolt;
 
-	VectorNormalize( dir );
-
 	bolt = G_Spawn();
 	bolt->classname = "hive";
 	bolt->pointAgainstWorld = qfalse;
@@ -822,8 +810,6 @@ gentity_t *fire_lockblob( gentity_t *self, vec3_t start, vec3_t dir )
 {
 	gentity_t *bolt;
 
-	VectorNormalize( dir );
-
 	bolt = G_Spawn();
 	bolt->classname = "lockblob";
 	bolt->pointAgainstWorld = qtrue;
@@ -859,8 +845,6 @@ fire_slowBlob
 gentity_t *fire_slowBlob( gentity_t *self, vec3_t start, vec3_t dir )
 {
 	gentity_t *bolt;
-
-	VectorNormalize( dir );
 
 	bolt = G_Spawn();
 	bolt->classname = "slowblob";
@@ -898,8 +882,6 @@ fire_bounceBall
 gentity_t *fire_bounceBall( gentity_t *self, vec3_t start, vec3_t dir )
 {
 	gentity_t *bolt;
-
-	VectorNormalize( dir );
 
 	bolt = G_Spawn();
 	bolt->classname = "bounceball";

@@ -1119,10 +1119,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	{
 		dflags |= DAMAGE_NO_KNOCKBACK;
 	}
-	else
-	{
-		VectorNormalize( dir );
-	}
 
 	knockback = damage;
 
