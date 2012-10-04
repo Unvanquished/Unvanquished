@@ -69,6 +69,7 @@ extern vmCvar_t ui_chatPromptColours;
 #define MAX_RESOLUTIONS         32
 #define MAX_PROFILES            64
 #define MAX_LANGUAGES           16
+#define MAX_HUDS                16
 
 typedef struct
 {
@@ -229,6 +230,14 @@ typedef enum
 
 typedef struct
 {
+	const char *name;
+	qhandle_t  hudShot;
+}
+
+hudInfo_t;
+
+typedef struct
+{
 	displayContextDef_t uiDC;
 
 	int                 playerCount;
@@ -330,6 +339,10 @@ typedef struct
 	int                   languageIndex;
 
 	chatType_t            chatType;
+
+	int                   hudCount;
+	hudInfo_t             huds[ MAX_HUDS ];
+	int                   hudIndex;
 
 	profileInfo_t         profileList[ MAX_PROFILES ];
 	int                   profileCount;

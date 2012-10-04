@@ -1970,6 +1970,11 @@ static void UI_DrawSelectedMapPreview( rectDef_t *rect, float scale, vec4_t colo
 	}
 }
 
+static void UI_DrawSelectedHUDPreview( rectDef_t *rect )
+{
+	UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, uiInfo.huds[ uiInfo.hudIndex ].hudShot );
+}
+
 static void UI_DrawSelectedMapName( rectDef_t *rect, float scale, vec4_t color, int textStyle )
 {
 	int map = ui_selectedMap.integer;
@@ -2228,6 +2233,10 @@ static void UI_OwnerDraw( float x, float y, float w, float h,
 
 		case UI_GLINFO:
 			UI_DrawGLInfo( &rect, scale, textalign, textvalign, foreColor, textStyle, text_x, text_y );
+			break;
+
+		case UI_SELECTEDHUDPREVIEW:
+			UI_DrawSelectedHUDPreview( &rect );
 			break;
 
 		default:
@@ -3075,6 +3084,41 @@ static void UI_LoadDemos( void )
 	}
 }
 
+/*
+===============
+UI_LoadHUDs
+===============
+*/
+static void UI_LoadHUDs( void )
+{
+	char hudList[ 4096 ];
+	char *hudName;
+	int  i, numHUDs, len;
+	int  pos = 0;
+
+	numHUDs = uiInfo.hudCount = trap_FS_GetFileList( "ui", "/", hudList, 4096 );
+
+	hudName = hudList;
+
+	for ( i = 0; i < numHUDs; i++ )
+	{
+		len = strlen( hudName );
+
+		if ( !trap_FS_FOpenFile( va( "ui/%s/hud.cfg", hudName ), NULL, FS_READ ) )
+		{
+			uiInfo.hudCount--;
+			hudName += len + 1;
+			continue;
+		}
+
+		uiInfo.huds[ pos ].name = String_Alloc( hudName );
+		uiInfo.huds[ pos++ ].hudShot = trap_R_RegisterShaderNoMip( va( "ui/%s/hudShot", hudName ) );
+
+		hudName += len + 1;
+	}
+}
+
+
 static void UI_Update( const char *name )
 {
 	int val = trap_Cvar_VariableValue( name );
@@ -3312,6 +3356,15 @@ static void UI_RunMenuScript( char **args )
 		else if ( Q_stricmp( name, "LoadTeams" ) == 0 )
 		{
 			UI_LoadTeams();
+		}
+		else if ( Q_stricmp( name, "LoadHUDs" ) == 0 )
+		{
+			UI_LoadHUDs();
+		}
+		else if ( Q_stricmp( name, "applyHud" ) == 0 )
+		{
+			trap_Cmd_ExecuteText( EXEC_APPEND, va( "exec ui/%s/install.cfg;", uiInfo.huds[ uiInfo.hudIndex ].name ) );
+			trap_Cmd_ExecuteText( EXEC_APPEND, "reloadhud" );
 		}
 		else if ( Q_stricmp( name, "JoinTeam" ) == 0 )
 		{
@@ -4137,6 +4190,10 @@ static int UI_FeederCount( int feederID )
 	{
 		return uiInfo.profileCount;
 	}
+	else if ( feederID == FEEDER_HUDS )
+	{
+		return uiInfo.hudCount;
+	}
 	else if ( feederID == FEEDER_RESOLUTIONS )
 	{
 		if ( UI_FeederInitialise( feederID ) == uiInfo.numResolutions )
@@ -4477,6 +4534,14 @@ static const char *UI_FeederItemText( int feederID, int index, int column, qhand
 			return uiInfo.profileList[ index ].name;
 		}
 	}
+	else if ( feederID  == FEEDER_HUDS )
+	{
+		if ( index >= 0 && index < uiInfo.hudCount )
+		{
+			return uiInfo.huds[ index ].name;
+		}
+	}
+
 	else if ( feederID == FEEDER_RESOLUTIONS )
 	{
 		static char resolution[ MAX_STRING_CHARS ];
@@ -4519,6 +4584,14 @@ static qhandle_t UI_FeederItemImage( int feederID, int index )
 			}
 
 			return uiInfo.mapList[ index ].levelShot;
+		}
+	}
+
+	if ( feederID == FEEDER_HUDS )
+	{
+		if ( index >= 0 && index < uiInfo.hudCount )
+		{
+			return uiInfo.huds[ index ].hudShot;
 		}
 	}
 
@@ -4665,6 +4738,10 @@ static void UI_FeederSelection( int feederID, int index )
 	else if ( feederID == FEEDER_PROFILES )
 	{
 		uiInfo.profileIndex = index;
+	}
+	else if ( feederID == FEEDER_HUDS )
+	{
+		uiInfo.hudIndex = index;
 	}
 	else if ( feederID == FEEDER_RESOLUTIONS )
 	{
