@@ -990,7 +990,7 @@ static int admin_search( gentity_t *ent,
                          int ( *out )( void *, char * ),
                          const void *list,
                          const void *arg,
-                         const char *matchmsg,
+                         const char *arglist,
                          int start,
                          const int offset,
                          const int limit )
@@ -1063,13 +1063,12 @@ static int admin_search( gentity_t *ent,
 	{
 		ADMBP( va( "^3%s: ^7showing %d of %d %s %d-%d%s%s.",
 		           cmd, count, found, noun, start + offset, end + offset,
-		           ( matchmsg && *matchmsg ) ? " matching " : "", matchmsg ) );
+		           ( arglist && *arglist ) ? " matching " : "", arglist ) );
 
 		if ( next )
 		{
 			ADMBP( va( "  use '%s%s%s %d' to see more", cmd,
-			           * ( char * ) arg ? " " : "",
-			           ( char * ) arg,
+			           arglist ? " " : "", arglist,
 			           next + offset ) );
 		}
 	}
@@ -3339,7 +3338,7 @@ static qboolean admin_match_inactive( void *admin, const void *match )
 qboolean G_admin_listinactive( gentity_t *ent )
 {
 	int          i;
-	int          date;
+	int          months, date;
 	int          start = MAX_CLIENTS;
 	char         s[ MAX_NAME_LENGTH ] = { "" };
 	qtime_t      tm;
@@ -3354,11 +3353,11 @@ qboolean G_admin_listinactive( gentity_t *ent )
 	trap_Argv( 1, s, sizeof( s ) );
 	trap_RealTime( &tm );
 
-	date = atoi( s );
-	date = date < 1 ? 1 : date; // minimum of 1 month
+	months = atoi( s );
+	months = months < 1 ? 1 : months; // minimum of 1 month
 
 	// move the date back by the requested no. of months
-	tm.tm_mon -= date;
+	tm.tm_mon -= months;
 
 	// correct for -ve month no.
 	while ( tm.tm_mon < 0 )
@@ -3382,7 +3381,7 @@ qboolean G_admin_listinactive( gentity_t *ent )
 		start = atoi( s );
 	}
 
-	trap_GetTimeString( s, sizeof( s ), "inactive since %Y-%m-%d", &tm );
+	Com_sprintf( s, sizeof( s ), "%d", months );
 	admin_search( ent, "listinactive", "admins", admin_match_inactive, admin_out,
 	              g_admin_admins, &date, s, start, MAX_CLIENTS, MAX_ADMIN_LISTITEMS );
 
