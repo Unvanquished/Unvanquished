@@ -1823,9 +1823,8 @@ static int CG_FeederCount( int feederID )
 	return count;
 }
 
-void CG_SetScoreSelection( void *p )
+void CG_SetScoreSelection( menuDef_t *menu )
 {
-	menuDef_t     *menu = ( menuDef_t * ) p;
 	playerState_t *ps = &cg.snap->ps;
 	int           i, alien, human;
 	int           feeder;
