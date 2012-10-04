@@ -1125,7 +1125,7 @@ static int admin_out( void *admin, char *str )
 	}
 
 	Com_sprintf( str, MAX_STRING_CHARS, "%-6d %*s^7 %s %s",
-	             a->level, admin_level_maxname + lncol - 1, l ? l->name : "(null)",
+	             a->level, admin_level_maxname + lncol, l ? l->name : "(null)",
 	             lastSeen, a->name );
 
 	return 0;
