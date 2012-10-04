@@ -1480,6 +1480,8 @@ void SV_PrintTranslatedText( const char *text, qboolean broadcast )
 	memset( &str, 0, sizeof( str ) );
 	while( *in )
 	{
+		const char *inOld = in;
+
 		if( *in == '$' )
 		{
 			const char *number = ++in;
@@ -1543,10 +1545,16 @@ void SV_PrintTranslatedText( const char *text, qboolean broadcast )
 						break;
 					}
 				}
+				else
+				{
+					in = inOld;
+					goto broken;
+				}
 			}
 		}
 		else
 		{
+			broken:
 			if( i < MAX_STRING_CHARS )
 			{
 				str[ i++ ] = *in;
