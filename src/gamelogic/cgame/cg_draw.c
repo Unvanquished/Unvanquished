@@ -3871,303 +3871,296 @@ CG_OwnerDraw
 Draw an owner drawn item
 ===============
 */
-void CG_OwnerDraw( float x, float y, float w, float h, float text_x,
+void CG_OwnerDraw( rectDef_t *rect, float text_x,
                    float text_y, int ownerDraw, int ownerDrawFlags,
                    int align, int textalign, int textvalign, float borderSize,
                    float scale, vec4_t foreColor, vec4_t backColor,
                    qhandle_t shader, int textStyle )
 {
-	rectDef_t rect;
-
-	rect.x = x;
-	rect.y = y;
-	rect.w = w;
-	rect.h = h;
-
 	switch ( ownerDraw )
 	{
 		case CG_PLAYER_CREDITS_VALUE:
-			CG_DrawPlayerCreditsValue( &rect, foreColor, qtrue );
+			CG_DrawPlayerCreditsValue( rect, foreColor, qtrue );
 			break;
 
 		case CG_PLAYER_CREDITS_FRACTION:
-			CG_DrawPlayerCreditsFraction( &rect, foreColor, shader );
+			CG_DrawPlayerCreditsFraction( rect, foreColor, shader );
 			break;
 
 		case CG_PLAYER_CREDITS_VALUE_NOPAD:
-			CG_DrawPlayerCreditsValue( &rect, foreColor, qfalse );
+			CG_DrawPlayerCreditsValue( rect, foreColor, qfalse );
 			break;
 
 		case CG_PLAYER_ALIEN_EVOS:
-			CG_DrawPlayerAlienEvos( &rect, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
+			CG_DrawPlayerAlienEvos( rect, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
 			break;
 
 		case CG_PLAYER_STAMINA:
-			CG_DrawPlayerStaminaBar( &rect, foreColor, shader );
+			CG_DrawPlayerStaminaBar( rect, foreColor, shader );
 			break;
 
 		case CG_PLAYER_STAMINA_VALUE:
-			CG_DrawPlayerStaminaValue( &rect, foreColor );
+			CG_DrawPlayerStaminaValue( rect, foreColor );
 			break;
 
 		case CG_PLAYER_STAMINA_1:
 		case CG_PLAYER_STAMINA_2:
 		case CG_PLAYER_STAMINA_3:
 		case CG_PLAYER_STAMINA_4:
-			CG_DrawPlayerStamina( ownerDraw, &rect, backColor, foreColor, shader );
+			CG_DrawPlayerStamina( ownerDraw, rect, backColor, foreColor, shader );
 			break;
 
 		case CG_PLAYER_STAMINA_BOLT:
-			CG_DrawPlayerStaminaBolt( &rect, backColor, foreColor, shader );
+			CG_DrawPlayerStaminaBolt( rect, backColor, foreColor, shader );
 			break;
 
 		case CG_PLAYER_AMMO_VALUE:
-			CG_DrawPlayerAmmoValue( &rect, foreColor );
+			CG_DrawPlayerAmmoValue( rect, foreColor );
 			break;
 
 		case CG_PLAYER_TOTAL_AMMO_VALUE:
-			CG_DrawPlayerTotalAmmoValue( &rect, foreColor );
+			CG_DrawPlayerTotalAmmoValue( rect, foreColor );
 			break;
 
 		case CG_PLAYER_CLIPS_VALUE:
-			CG_DrawPlayerClipsValue( &rect, foreColor );
+			CG_DrawPlayerClipsValue( rect, foreColor );
 			break;
 
 		case CG_PLAYER_CLIPS_METER:
-			CG_DrawPlayerClipMeter( &rect, align, foreColor, shader );
+			CG_DrawPlayerClipMeter( rect, align, foreColor, shader );
 			break;
 
 		case CG_PLAYER_AMMO_STACK:
-			CG_DrawPlayerAmmoStack( &rect, backColor, foreColor, textalign,
+			CG_DrawPlayerAmmoStack( rect, backColor, foreColor, textalign,
 			                        textvalign );
 			break;
 
 		case CG_PLAYER_CLIPS_STACK:
-			CG_DrawPlayerClipsStack( &rect, backColor, foreColor, textalign,
+			CG_DrawPlayerClipsStack( rect, backColor, foreColor, textalign,
 			                         textvalign );
 			break;
 
 		case CG_PLAYER_BUILD_TIMER:
-			CG_DrawPlayerBuildTimer( &rect, foreColor );
+			CG_DrawPlayerBuildTimer( rect, foreColor );
 			break;
 
 		case CG_PLAYER_BUILD_TIMER_BAR:
-			CG_DrawPlayerBuildTimerBar( &rect, foreColor, shader );
+			CG_DrawPlayerBuildTimerBar( rect, foreColor, shader );
 			break;
 		case CG_PLAYER_HEALTH:
-			CG_DrawPlayerHealthValue( &rect, foreColor );
+			CG_DrawPlayerHealthValue( rect, foreColor );
 			break;
 		case CG_PLAYER_HEALTH_BAR:
-			CG_DrawPlayerHealthBar( &rect, foreColor, shader );
+			CG_DrawPlayerHealthBar( rect, foreColor, shader );
 			break;
 		case CG_PLAYER_HEALTH_CROSS:
-			CG_DrawPlayerHealthCross( &rect, foreColor );
+			CG_DrawPlayerHealthCross( rect, foreColor );
 			break;
 
 		case CG_PLAYER_HEALTH_METER:
-			CG_DrawPlayerHealthMeter( &rect, align, foreColor, shader );
+			CG_DrawPlayerHealthMeter( rect, align, foreColor, shader );
 			break;
 
 		case CG_PLAYER_CHARGE_BAR_BG:
-			CG_DrawPlayerChargeBarBG( &rect, foreColor, shader );
+			CG_DrawPlayerChargeBarBG( rect, foreColor, shader );
 			break;
 
 		case CG_PLAYER_CHARGE_BAR:
-			CG_DrawPlayerChargeBar( &rect, foreColor, shader );
+			CG_DrawPlayerChargeBar( rect, foreColor, shader );
 			break;
 
 		case CG_PLAYER_CLIPS_RING:
-			CG_DrawPlayerClipsRing( &rect, backColor, foreColor, shader );
+			CG_DrawPlayerClipsRing( rect, backColor, foreColor, shader );
 			break;
 
 		case CG_PLAYER_BUILD_TIMER_RING:
-			CG_DrawPlayerBuildTimerRing( &rect, backColor, foreColor, shader );
+			CG_DrawPlayerBuildTimerRing( rect, backColor, foreColor, shader );
 			break;
 
 		case CG_PLAYER_WALLCLIMBING:
-			CG_DrawPlayerWallclimbing( &rect, backColor, foreColor, shader );
+			CG_DrawPlayerWallclimbing( rect, backColor, foreColor, shader );
 			break;
 
 		case CG_PLAYER_BOOSTED:
-			CG_DrawPlayerBoosted( &rect, backColor, foreColor, shader );
+			CG_DrawPlayerBoosted( rect, backColor, foreColor, shader );
 			break;
 
 		case CG_PLAYER_BOOST_BOLT:
-			CG_DrawPlayerBoosterBolt( &rect, backColor, foreColor, shader );
+			CG_DrawPlayerBoosterBolt( rect, backColor, foreColor, shader );
 			break;
 
 		case CG_PLAYER_BOOSTED_METER:
-			CG_DrawPlayerBoostedMeter( &rect, align, foreColor, shader );
+			CG_DrawPlayerBoostedMeter( rect, align, foreColor, shader );
 			break;
 
 		case CG_PLAYER_POISON_BARBS:
-			CG_DrawPlayerPoisonBarbs( &rect, foreColor, shader );
+			CG_DrawPlayerPoisonBarbs( rect, foreColor, shader );
 			break;
 
 		case CG_PLAYER_ALIEN_SENSE:
-			CG_DrawAlienSense( &rect );
+			CG_DrawAlienSense( rect );
 			break;
 
 		case CG_PLAYER_HUMAN_SCANNER:
-			CG_DrawHumanScanner( &rect, shader, foreColor );
+			CG_DrawHumanScanner( rect, shader, foreColor );
 			break;
 
 		case CG_PLAYER_USABLE_BUILDABLE:
-			CG_DrawUsableBuildable( &rect, shader, foreColor );
+			CG_DrawUsableBuildable( rect, shader, foreColor );
 			break;
 
 		case CG_KILLER:
-			CG_DrawKiller( &rect, scale, foreColor, shader, textStyle );
+			CG_DrawKiller( rect, scale, foreColor, shader, textStyle );
 			break;
 
 		case CG_PLAYER_SELECT:
-			CG_DrawItemSelect( &rect, foreColor );
+			CG_DrawItemSelect( rect, foreColor );
 			break;
 
 		case CG_PLAYER_WEAPONICON:
-			CG_DrawWeaponIcon( &rect, foreColor );
+			CG_DrawWeaponIcon( rect, foreColor );
 			break;
 
 		case CG_PLAYER_SELECTTEXT:
-			CG_DrawItemSelectText( &rect, scale, textStyle );
+			CG_DrawItemSelectText( rect, scale, textStyle );
 			break;
 
 		case CG_SPECTATORS:
-			CG_DrawTeamSpectators( &rect, scale, textvalign, foreColor, shader );
+			CG_DrawTeamSpectators( rect, scale, textvalign, foreColor, shader );
 			break;
 
 		case CG_PLAYER_LOCATION:
-			CG_DrawLocation( &rect, scale, textalign, foreColor );
+			CG_DrawLocation( rect, scale, textalign, foreColor );
 			break;
 
 		case CG_FOLLOW:
-			CG_DrawFollow( &rect, text_x, text_y, foreColor, scale,
+			CG_DrawFollow( rect, text_x, text_y, foreColor, scale,
 			               textalign, textvalign, textStyle );
 			break;
 
 		case CG_PLAYER_CROSSHAIRNAMES:
-			CG_DrawCrosshairNames( &rect, scale, textStyle );
+			CG_DrawCrosshairNames( rect, scale, textStyle );
 			break;
 
 		case CG_PLAYER_CROSSHAIR:
-			CG_DrawCrosshair( &rect, foreColor );
+			CG_DrawCrosshair( rect, foreColor );
 			break;
 
 		case CG_STAGE_REPORT_TEXT:
-			CG_DrawStageReport( &rect, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
+			CG_DrawStageReport( rect, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
 			break;
 
 		case CG_ALIENS_SCORE_LABEL:
-			CG_DrawTeamLabel( &rect, TEAM_ALIENS, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
+			CG_DrawTeamLabel( rect, TEAM_ALIENS, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
 			break;
 
 		case CG_HUMANS_SCORE_LABEL:
-			CG_DrawTeamLabel( &rect, TEAM_HUMANS, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
+			CG_DrawTeamLabel( rect, TEAM_HUMANS, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
 			break;
 
 			//loading screen
 		case CG_LOAD_LEVELSHOT:
-			CG_DrawLevelShot( &rect );
+			CG_DrawLevelShot( rect );
 			break;
 
 		case CG_LOAD_MEDIA:
-			CG_DrawMediaProgress( &rect, foreColor, scale, align, textalign, textStyle,
+			CG_DrawMediaProgress( rect, foreColor, scale, align, textalign, textStyle,
 			                      borderSize );
 			break;
 
 		case CG_LOAD_MEDIA_LABEL:
-			CG_DrawMediaProgressLabel( &rect, text_x, text_y, foreColor, scale, textalign, textvalign );
+			CG_DrawMediaProgressLabel( rect, text_x, text_y, foreColor, scale, textalign, textvalign );
 			break;
 
 		case CG_LOAD_BUILDABLES:
-			CG_DrawBuildablesProgress( &rect, foreColor, scale, align, textalign,
+			CG_DrawBuildablesProgress( rect, foreColor, scale, align, textalign,
 			                           textStyle, borderSize );
 			break;
 
 		case CG_LOAD_BUILDABLES_LABEL:
-			CG_DrawBuildablesProgressLabel( &rect, text_x, text_y, foreColor, scale, textalign, textvalign );
+			CG_DrawBuildablesProgressLabel( rect, text_x, text_y, foreColor, scale, textalign, textvalign );
 			break;
 
 		case CG_LOAD_CHARMODEL:
-			CG_DrawCharModelProgress( &rect, foreColor, scale, align, textalign,
+			CG_DrawCharModelProgress( rect, foreColor, scale, align, textalign,
 			                          textStyle, borderSize );
 			break;
 
 		case CG_LOAD_CHARMODEL_LABEL:
-			CG_DrawCharModelProgressLabel( &rect, text_x, text_y, foreColor, scale, textalign, textvalign );
+			CG_DrawCharModelProgressLabel( rect, text_x, text_y, foreColor, scale, textalign, textvalign );
 			break;
 
 		case CG_LOAD_OVERALL:
-			CG_DrawOverallProgress( &rect, foreColor, scale, align, textalign, textStyle,
+			CG_DrawOverallProgress( rect, foreColor, scale, align, textalign, textStyle,
 			                        borderSize );
 			break;
 
 		case CG_LOAD_LEVELNAME:
-			CG_DrawLevelName( &rect, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
+			CG_DrawLevelName( rect, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
 			break;
 
 		case CG_LOAD_MOTD:
-			CG_DrawMOTD( &rect, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
+			CG_DrawMOTD( rect, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
 			break;
 
 		case CG_LOAD_HOSTNAME:
-			CG_DrawHostname( &rect, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
+			CG_DrawHostname( rect, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
 			break;
 
 		case CG_FPS:
-			CG_DrawFPS( &rect, text_x, text_y, scale, foreColor, textalign, textvalign, textStyle, qtrue );
+			CG_DrawFPS( rect, text_x, text_y, scale, foreColor, textalign, textvalign, textStyle, qtrue );
 			break;
 
 		case CG_FPS_FIXED:
-			CG_DrawFPS( &rect, text_x, text_y, scale, foreColor, textalign, textvalign, textStyle, qfalse );
+			CG_DrawFPS( rect, text_x, text_y, scale, foreColor, textalign, textvalign, textStyle, qfalse );
 			break;
 
 		case CG_TIMER:
-			CG_DrawTimer( &rect, text_x, text_y, scale, foreColor, textalign, textvalign, textStyle );
+			CG_DrawTimer( rect, text_x, text_y, scale, foreColor, textalign, textvalign, textStyle );
 			break;
 
 		case CG_CLOCK:
-			CG_DrawClock( &rect, text_x, text_y, scale, foreColor, textalign, textvalign, textStyle );
+			CG_DrawClock( rect, text_x, text_y, scale, foreColor, textalign, textvalign, textStyle );
 			break;
 
 		case CG_TIMER_MINS:
-			CG_DrawTimerMins( &rect, foreColor );
+			CG_DrawTimerMins( rect, foreColor );
 			break;
 
 		case CG_TIMER_SECS:
-			CG_DrawTimerSecs( &rect, foreColor );
+			CG_DrawTimerSecs( rect, foreColor );
 			break;
 
 		case CG_SNAPSHOT:
-			CG_DrawSnapshot( &rect, text_x, text_y, scale, foreColor, textalign, textvalign, textStyle );
+			CG_DrawSnapshot( rect, text_x, text_y, scale, foreColor, textalign, textvalign, textStyle );
 			break;
 
 		case CG_LAGOMETER:
-			CG_DrawLagometer( &rect, text_x, text_y, scale, foreColor );
+			CG_DrawLagometer( rect, text_x, text_y, scale, foreColor );
 			break;
 
 		case CG_TEAMOVERLAY:
-			CG_DrawTeamOverlay( &rect, scale, foreColor );
+			CG_DrawTeamOverlay( rect, scale, foreColor );
 			break;
 
 		case CG_SPEEDOMETER:
-			CG_DrawSpeed( &rect, text_x, text_y, scale, foreColor, backColor );
+			CG_DrawSpeed( rect, text_x, text_y, scale, foreColor, backColor );
 			break;
 
 		case CG_DEMO_PLAYBACK:
-			CG_DrawDemoPlayback( &rect, foreColor, shader );
+			CG_DrawDemoPlayback( rect, foreColor, shader );
 			break;
 
 		case CG_DEMO_RECORDING:
-			CG_DrawDemoRecording( &rect, foreColor, shader );
+			CG_DrawDemoRecording( rect, foreColor, shader );
 			break;
 
 		case CG_CONSOLE:
-			CG_DrawConsole( &rect, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
+			CG_DrawConsole( rect, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
 			break;
 
 		case CG_TUTORIAL:
-			CG_DrawTutorial( &rect, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
+			CG_DrawTutorial( rect, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
 			break;
 
 		default:

@@ -405,7 +405,7 @@ typedef struct
 	void ( *glyphChar )( fontHandle_t, int ch, glyphInfo_t *glyph );
 	void ( *freeCachedGlyphs )( fontHandle_t );
 
-	void ( *ownerDrawItem )( float x, float y, float w, float h, float text_x,
+	void ( *ownerDrawItem )( rectDef_t *rect, float text_x,
 	                         float text_y, int ownerDraw, int ownerDrawFlags,
 	                         int align, int textalign, int textvalign,
 	                         float borderSize, float scale, vec4_t foreColor,

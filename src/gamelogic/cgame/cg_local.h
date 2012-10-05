@@ -1639,7 +1639,7 @@ void CG_AddLagometerSnapshotInfo( snapshot_t *snap );
 void CG_AddSpeed( void );
 void CG_CenterPrint( const char *str, int y, int charWidth );
 void CG_DrawActive( stereoFrame_t stereoView );
-void CG_OwnerDraw( float x, float y, float w, float h, float text_x,
+void CG_OwnerDraw( rectDef_t *rect, float text_x,
                    float text_y, int ownerDraw, int ownerDrawFlags,
                    int align, int textalign, int textvalign,
                    float borderSize, float scale, vec4_t foreColor,

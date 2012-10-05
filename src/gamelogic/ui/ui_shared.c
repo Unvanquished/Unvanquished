@@ -6812,8 +6812,7 @@ void Item_OwnerDraw_Paint( itemDef_t *item )
 		}
 		else
 		{
-			DC->ownerDrawItem( item->window.rect.x, item->window.rect.y,
-			                   item->window.rect.w, item->window.rect.h,
+			DC->ownerDrawItem( &item->window.rect,
 			                   item->textalignx, item->textaligny,
 			                   item->window.ownerDraw, item->window.ownerDrawFlags,
 			                   item->alignment, item->textalignment, item->textvalignment,

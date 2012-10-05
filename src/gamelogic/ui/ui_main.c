@@ -2169,7 +2169,7 @@ static void UI_DrawGLInfo( rectDef_t *rect, float scale, int textalign, int text
 
 // FIXME: table drive
 //
-static void UI_OwnerDraw( float x, float y, float w, float h,
+static void UI_OwnerDraw( rectDef_t *rect,
                           float text_x, float text_y, int ownerDraw,
                           int ownerDrawFlags, int align,
                           int textalign, int textvalign, float borderSize,
@@ -2177,74 +2177,67 @@ static void UI_OwnerDraw( float x, float y, float w, float h,
                           qhandle_t shader,
                           int textStyle )
 {
-	rectDef_t       rect;
-
-	rect.x = x;
-	rect.y = y;
-	rect.w = w;
-	rect.h = h;
-
 	switch ( ownerDraw )
 	{
 		case UI_TEAMINFOPANE:
 			UI_DrawInfoPane( &uiInfo.teamList[ uiInfo.teamIndex ],
-			                 &rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+			                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
 			break;
 
 		case UI_ACLASSINFOPANE:
 			UI_DrawInfoPane( &uiInfo.alienClassList[ uiInfo.alienClassIndex ],
-			                 &rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+			                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
 			break;
 
 		case UI_AUPGRADEINFOPANE:
 			UI_DrawInfoPane( &uiInfo.alienUpgradeList[ uiInfo.alienUpgradeIndex ],
-			                 &rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+			                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
 			break;
 
 		case UI_HITEMINFOPANE:
 			UI_DrawInfoPane( &uiInfo.humanItemList[ uiInfo.humanItemIndex ],
-			                 &rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+			                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
 			break;
 
 		case UI_HBUYINFOPANE:
 			UI_DrawInfoPane( &uiInfo.humanArmouryBuyList[ uiInfo.humanArmouryBuyIndex ],
-			                 &rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+			                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
 			break;
 
 		case UI_HSELLINFOPANE:
 			UI_DrawInfoPane( &uiInfo.humanArmourySellList[ uiInfo.humanArmourySellIndex ],
-			                 &rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+			                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
 			break;
 
 		case UI_ABUILDINFOPANE:
 			UI_DrawInfoPane( &uiInfo.alienBuildList[ uiInfo.alienBuildIndex ],
-			                 &rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+			                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
 			break;
 
 		case UI_HBUILDINFOPANE:
 			UI_DrawInfoPane( &uiInfo.humanBuildList[ uiInfo.humanBuildIndex ],
-			                 &rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+			                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
 			break;
 
 		case UI_HELPINFOPANE:
 			UI_DrawInfoPane( &uiInfo.helpList[ uiInfo.helpIndex ],
-			                 &rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+			                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
 			break;
 
 		case UI_NETMAPPREVIEW:
-			UI_DrawServerMapPreview( &rect, scale, foreColor );
+			UI_DrawServerMapPreview( rect, scale, foreColor );
 			break;
 
 		case UI_SELECTEDMAPPREVIEW:
-			UI_DrawSelectedMapPreview( &rect, scale, foreColor );
+			UI_DrawSelectedMapPreview( rect, scale, foreColor );
 			break;
 
 		case UI_SELECTEDMAPNAME:
-			UI_DrawSelectedMapName( &rect, scale, foreColor, textStyle );
+			UI_DrawSelectedMapName( rect, scale, foreColor, textStyle );
 			break;
 
 		case UI_GLINFO:
-			UI_DrawGLInfo( &rect, scale, textalign, textvalign, foreColor, textStyle, text_x, text_y );
+			UI_DrawGLInfo( rect, scale, textalign, textvalign, foreColor, textStyle, text_x, text_y );
 			break;
 
 		default:
