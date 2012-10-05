@@ -877,7 +877,7 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
 													va( "%s_view_fire.md5anim", token2 ), qfalse, qfalse, qfalse );
 						break;
-						
+
 					case WP_BLASTER:
 					case WP_PAIN_SAW:
 					case WP_LAS_GUN:
@@ -893,7 +893,7 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
 													va( "%s_view_fire.md5anim", token2 ), qfalse, qfalse, qfalse );
 						break;
-						
+
 					case WP_ALEVEL1:
 					case WP_ALEVEL1_UPG:
 					case WP_ALEVEL2:
@@ -911,7 +911,7 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK6 ],
 													va( "%s_view_fire6.md5anim", token2 ), qfalse, qfalse, qfalse );
 						break;
-						
+
 					case WP_ALEVEL2_UPG:
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
 													va( "%s_view_fire.md5anim", token2 ), qfalse, qfalse, qfalse );
@@ -1787,7 +1787,7 @@ void CG_AddViewWeapon( playerState_t *ps )
 			}
 			break;
 	}
-			
+
 
 	if ( !wi->registered )
 	{

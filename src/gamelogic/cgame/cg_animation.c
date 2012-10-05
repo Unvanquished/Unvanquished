@@ -302,7 +302,7 @@ void CG_BuildAnimSkeleton( const lerpFrame_t *lf, refSkeleton_t *newSkeleton, co
 		return;
 	}
 
-	if ( !trap_R_BuildSkeleton( newSkeleton, lf->animation->handle, lf->oldFrame, lf->frame, lf->backlerp, lf->animation->clearOrigin ) )
+	if ( !trap_R_BuildSkeleton( newSkeleton, lf->animation->handle, lf->oldFrame, lf->frame, 1 - lf->backlerp, lf->animation->clearOrigin ) )
 	{
 		CG_Printf( "%s", _( "CG_BuildAnimSkeleton: Can't build skeleton\n" ));
 	}
