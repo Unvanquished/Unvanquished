@@ -3195,6 +3195,14 @@ void CG_Player( centity_t *cent )
 				QuatFromAngles( rotation, torsoAngles[ YAW ], 0, 0 );
 				QuatMultiply0( body.skeleton.bones[ boneIndex ].rotation, rotation );
 			}
+
+			QuatFromAngles( rotation, -cent->lerpAngles[ 0 ], 0, 0 );
+			QuatMultiply0( body.skeleton.bones[ 32 ].rotation, rotation );
+
+			// Relationships are emphirically derived. They will probably need to be changed upon changes to the human model
+			// FIXME: Don't use hard coded bone numbers
+			QuatFromAngles( rotation, cent->lerpAngles[ 0 ], cent->lerpAngles[ 0 ] < 0 ? -cent->lerpAngles[ 0 ] / 9 : -cent->lerpAngles[ 0 ] / ( 8 - ( 5 * ( cent->lerpAngles[ 0 ] / 90 ) ) )  , 0 );
+			QuatMultiply0( body.skeleton.bones[ 54 ].rotation, rotation );
 		}
 		else
 		{
