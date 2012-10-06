@@ -1303,10 +1303,20 @@ static void CG_RegisterClients( void )
 		trap_UpdateScreen();
 	}
 
-	cgs.media.larmourHeadSkin = trap_R_RegisterSkin( "models/players/human_base/head_light.skin" );
-	cgs.media.larmourLegsSkin = trap_R_RegisterSkin( "models/players/human_base/lower_light.skin" );
-	cgs.media.larmourTorsoSkin = trap_R_RegisterSkin( "models/players/human_base/upper_light.skin" );
-
+	if ( !cg_highPolyPlayerModels.integer )
+	{
+		cgs.media.larmourHeadSkin = trap_R_RegisterSkin( "models/players/human_base/head_light.skin" );
+		cgs.media.larmourLegsSkin = trap_R_RegisterSkin( "models/players/human_base/lower_light.skin" );
+		cgs.media.larmourTorsoSkin = trap_R_RegisterSkin( "models/players/human_base/upper_light.skin" );
+	}
+	else
+	{
+		// Borrow these variables for MD5 models so we don't have to create new ones.
+		cgs.media.larmourHeadSkin = trap_R_RegisterSkin( "models/players/human_base/body_helmet.skin" );
+		cgs.media.larmourLegsSkin = trap_R_RegisterSkin( "models/players/human_base/body_larmour.skin" );
+		cgs.media.larmourTorsoSkin = trap_R_RegisterSkin( "models/players/human_base/body_helmetlarmour.skin" );
+	}
+	
 	cgs.media.jetpackModel = trap_R_RegisterModel( "models/players/human_base/jetpack.md3" );
 	cgs.media.jetpackFlashModel = trap_R_RegisterModel( "models/players/human_base/jetpack_flash.md3" );
 	cgs.media.battpackModel = trap_R_RegisterModel( "models/players/human_base/battpack.md3" );
