@@ -1,5 +1,5 @@
-// hud menu defs
-//
+// HUD menu defs
+
 {
   loadMenu { "ui/tremulous_human_hud.menu" }
   loadMenu { "ui/tremulous_alien_builder_hud.menu" }

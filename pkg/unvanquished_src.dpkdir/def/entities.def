@@ -604,7 +604,7 @@ entityDef func_button
 {    
 	"editor_color"				"0 .5 .8"
 	
-	"editor_usage"				"When a button is touched by a player, it moves in the direction set by the angle key, triggers all its targets, stays pressed by an amount of time set by the wait key, then returns to it's original position where it can be operated again."
+	"editor_usage"				"When a button is touched by a player, it moves in the direction set by the angle key, triggers all its targets, stays pressed by an amount of time set by the wait key, and then returns to its original position where it can be activated again."
 	
 	"editor_float movedir"		"-(up = -1, down = -2)- Determines the direction in which the button will move."
 	"editor_var target"			"All entities with a matching targetname will be triggered."
