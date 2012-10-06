@@ -376,7 +376,6 @@ static qboolean CG_RegisterPlayerAnimation( clientInfo_t *ci, const char *modelN
 static qboolean CG_DeriveAnimationDelta( const char *modelName, weapon_t weapon, clientInfo_t *ci )
 {
 	int handle, i;
-	int w = weapon;
 	refSkeleton_t base, delta;
 
 	handle = trap_R_RegisterAnimation( va( "models/players/%s/%s_delta.md5anim", modelName, BG_Weapon( weapon )->name ) );
@@ -393,15 +392,14 @@ static qboolean CG_DeriveAnimationDelta( const char *modelName, weapon_t weapon,
 
 	for ( i = 0; i < ci->numHandBones; i++ )
 	{
-		vec3_t angles;
 
-		VectorSubtract( delta.bones[ ci->handBones[ i ] ].origin, base.bones[ ci->handBones[ i ] ].origin, deltas[ w ][ ci->handBones[ i ] ].delta );
+		VectorSubtract( delta.bones[ ci->handBones[ i ] ].origin, base.bones[ ci->handBones[ i ] ].origin, deltas[ weapon ][ ci->handBones[ i ] ].delta );
 
 		QuatInverse( base.bones[ ci->handBones[ i ] ].rotation );
 
-		QuatMultiply1( base.bones[ ci->handBones[ i ] ].rotation, delta.bones[ ci->handBones[ i ] ].rotation, deltas[ w ][ ci->handBones[ i ] ].rot );
+		QuatMultiply1( base.bones[ ci->handBones[ i ] ].rotation, delta.bones[ ci->handBones[ i ] ].rotation, deltas[ weapon ][ ci->handBones[ i ] ].rot );
 
-		QuatToAngles( deltas[ w ][ ci->handBones[ i ] ].rot, angles );
+		QuatToAngles( deltas[ weapon ][ ci->handBones[ i ] ].rot, angles );
 	}
 
 	return qtrue;
