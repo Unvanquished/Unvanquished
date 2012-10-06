@@ -154,6 +154,8 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 	ci->modelScale[ 0 ] = 1;
 	ci->modelScale[ 1 ] = 1;
 	ci->modelScale[ 2 ] = 1;
+	ci->leftShoulderBone = 0;
+	ci->rightShoulderBone = 0;
 
 	// read optional parameters
 	while ( 1 )
@@ -270,6 +272,20 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 			token = COM_Parse2( &text_p );
 
 			ci->torsoControlBone = trap_R_BoneIndex( ci->bodyModel, token );
+			continue;
+		}
+		else if ( !Q_stricmp( token, "leftShoulder" ) )
+		{
+			token = COM_Parse2( &text_p );
+
+			ci->leftShoulderBone = trap_R_BoneIndex( ci->bodyModel, token );
+			continue;
+		}
+		else if ( !Q_stricmp( token, "rightShoulder" ) )
+		{
+			token = COM_Parse2( &text_p );
+
+			ci->rightShoulderBone = trap_R_BoneIndex( ci->bodyModel, token );
 			continue;
 		}
 		else if ( !Q_stricmp( token, "handBones" ) )
@@ -1328,6 +1344,8 @@ static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to )
 	to->numHandBones = from->numHandBones;
 	to->torsoControlBone = from->torsoControlBone;
 	to->weaponAdjusted = from->weaponAdjusted;
+	to->rightShoulderBone = from->rightShoulderBone;
+	to->leftShoulderBone = from->leftShoulderBone;
 
 	to->legsModel = from->legsModel;
 	to->legsSkin = from->legsSkin;
@@ -3283,12 +3301,11 @@ void CG_Player( centity_t *cent )
 			}
 
 			QuatFromAngles( rotation, -cent->lerpAngles[ 0 ], 0, 0 );
-			QuatMultiply0( body.skeleton.bones[ 32 ].rotation, rotation );
+			QuatMultiply0( body.skeleton.bones[ ci->rightShoulderBone ].rotation, rotation );
 
 			// Relationships are emphirically derived. They will probably need to be changed upon changes to the human model
-			// FIXME: Don't use hard coded bone numbers
 			QuatFromAngles( rotation, cent->lerpAngles[ 0 ], cent->lerpAngles[ 0 ] < 0 ? -cent->lerpAngles[ 0 ] / 9 : -cent->lerpAngles[ 0 ] / ( 8 - ( 5 * ( cent->lerpAngles[ 0 ] / 90 ) ) )  , 0 );
-			QuatMultiply0( body.skeleton.bones[ 54 ].rotation, rotation );
+			QuatMultiply0( body.skeleton.bones[ ci->leftShoulderBone ].rotation, rotation );
 		}
 		else
 		{

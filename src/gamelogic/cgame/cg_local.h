@@ -759,6 +759,8 @@ typedef struct
 	vec3_t      modelScale;
 
 	int         torsoControlBone;
+	int         leftShoulderBone;
+	int         rightShoulderBone;
 
 	int         legBones[ MAX_BONES ];
 	int         numLegBones;
