@@ -103,7 +103,7 @@ Reads the animation.cfg for weapons
 
 static qboolean CG_ParseWeaponAnimationFile( const char *filename, weaponInfo_t *wi )
 {
-	char         *text_p, *prev;
+	char         *text_p;
 	int          len;
 	int          i;
 	char         *token;
@@ -171,7 +171,7 @@ static qboolean CG_ParseWeaponAnimationFile( const char *filename, weaponInfo_t 
 
 	if ( i != MAX_WEAPON_ANIMATIONS )
 	{
-		CG_Printf( _( "Error parsing weapon animation file: %s"), filename );
+		CG_Printf( _( "Error parsing weapon animation file: %s\n"), filename );
 		return qfalse;
 	}
 
@@ -1913,7 +1913,10 @@ void CG_AddViewWeapon( playerState_t *ps )
 	CG_CalculateWeaponPosition( hand.origin, angles );
 
 	VectorMA( hand.origin, ( cg_gun_x.value + wi->posOffs[ 0 ] ), cg.refdef.viewaxis[ 0 ], hand.origin );
-	VectorMA( hand.origin, ( cg_gun_y.value + wi->posOffs[ 1 ] ), cg.refdef.viewaxis[ 1 ], hand.origin );
+	if( cg_mirrorgun.integer )
+		VectorMA( hand.origin, -( cg_gun_y.value + wi->posOffs[ 1 ] ), cg.refdef.viewaxis[ 1 ], hand.origin );
+	else
+		VectorMA( hand.origin, ( cg_gun_y.value + wi->posOffs[ 1 ] ), cg.refdef.viewaxis[ 1 ], hand.origin );
 	VectorMA( hand.origin, ( cg_gun_z.value + fovOffset + wi->posOffs[ 2 ] ), cg.refdef.viewaxis[ 2 ], hand.origin );
 
 	// Lucifer Cannon vibration effect
@@ -1929,6 +1932,11 @@ void CG_AddViewWeapon( playerState_t *ps )
 	}
 
 	AnglesToAxis( angles, hand.axis );
+	if( cg_mirrorgun.integer ) {
+		hand.axis[1][0] = - hand.axis[1][0];
+		hand.axis[1][1] = - hand.axis[1][1];
+		hand.axis[1][2] = - hand.axis[1][2];
+	}
 
 	// map torso animations to weapon animations
 	if ( cg_gun_frame.integer )
@@ -1948,6 +1956,8 @@ void CG_AddViewWeapon( playerState_t *ps )
 
 	hand.hModel = wi->handsModel;
 	hand.renderfx = RF_DEPTHHACK | RF_FIRST_PERSON | RF_MINLIGHT;
+	if( cg_mirrorgun.integer )
+		hand.renderfx |= RF_SWAPCULL;
 
 	// add everything onto the hand
 	if ( weapon )
@@ -2045,9 +2055,6 @@ void CG_DrawItemSelect( rectDef_t *rect, vec4_t color )
 			}
 		}
 	}
-
-	// showing weapon select clears pickup item display, but not the blend blob
-	cg.itemPickupTime = 0;
 
 	// put all weapons in the items list
 	for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )

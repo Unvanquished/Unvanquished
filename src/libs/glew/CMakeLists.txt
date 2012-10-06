@@ -3,6 +3,7 @@
 find_package( OpenGL REQUIRED )
 
 include_directories( ${GLEW_DIR}/include )
+include_directories( ${OPENGL_INCLUDE_DIR} )
 
 
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/Release/${GAMELIB_OUTPUT_DIR}" )

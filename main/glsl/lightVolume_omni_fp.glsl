@@ -32,7 +32,6 @@ uniform vec3		u_LightColor;
 uniform float		u_LightRadius;
 uniform float       u_LightScale;
 uniform mat4		u_LightAttenuationMatrix;
-uniform int			u_ShadowCompare;
 uniform mat4		u_UnprojectMatrix;
 
 varying vec2		var_TexDiffuse;
@@ -52,7 +51,7 @@ void	main()
 	P.xyz /= P.w;
 
 #if 0
-	if(bool(u_PortalClipping))
+	#if defined(USE_PORTAL_CLIPPING)
 	{
 		float dist = dot(P.xyz, u_PortalPlane.xyz) - u_PortalPlane.w;
 		if(dist < 0.0)
@@ -61,6 +60,7 @@ void	main()
 			return;
 		}
 	}
+	#endif
 #endif
 
 	// compute incident ray in world space
@@ -97,7 +97,7 @@ void	main()
 		float shadow = 1.0;
 
 		#if defined(VSM)
-		if(bool(u_ShadowCompare))
+		#if defined(USE_SHADOWING)
 		{
 			// compute incident ray
 			vec3 I2 = T - u_LightOrigin;
@@ -137,6 +137,7 @@ void	main()
 			continue;
 		}
 		else
+		#endif
 		#endif
 		{
 			color.rgb += attenuationXY * attenuationZ;

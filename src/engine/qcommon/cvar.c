@@ -322,6 +322,19 @@ cvar_t         *Cvar_Get( const char *var_name, const char *var_value, int flags
 			Z_Free( var->resetString );
 			var->resetString = CopyString( var_value );
 
+			if ( flags & CVAR_ROM )
+			{
+				// this variable was set by the user,
+				// so force it to value given by the engine.
+
+				if ( var->latchedString )
+				{
+					Z_Free( var->latchedString );
+				}
+
+				var->latchedString = CopyString( var_value );
+			}
+
 			// ZOID--needs to be set so that cvars the game sets as
 			// SERVERINFO get sent to clients
 			cvar_modifiedFlags |= flags;
@@ -383,7 +396,7 @@ cvar_t         *Cvar_Get( const char *var_name, const char *var_value, int flags
 	//
 	if ( cvar_numIndexes >= MAX_CVARS )
 	{
-		Com_Error( ERR_FATAL, "MAX_CVARS (%d) hit – too many cvars!", MAX_CVARS );
+		Com_Error( ERR_FATAL, "MAX_CVARS (%d) hit: too many cvars!", MAX_CVARS );
 	}
 
 	var = &cvar_indexes[ cvar_numIndexes ];
@@ -401,6 +414,9 @@ cvar_t         *Cvar_Get( const char *var_name, const char *var_value, int flags
 	cvar_vars = var;
 
 	var->flags = flags;
+
+	// note what types of cvars have been modified (userinfo, archive, serverinfo, systeminfo)
+	cvar_modifiedFlags |= var->flags;
 
 	hash = generateHashValue( var_name );
 	var->hashNext = hashTable[ hash ];
@@ -784,7 +800,7 @@ qboolean Cvar_Command( void )
 	}
 
 	// set the value if forcing isn't required
-	Cvar_Set2( v->name, Cmd_Argv( 1 ), qfalse );
+	Cvar_Set2( v->name, Cmd_Args(), qfalse );
 	return qtrue;
 }
 
@@ -1137,6 +1153,15 @@ void Cvar_List_f( void )
 			Com_Printf( " " );
 		}
 
+		if ( var->flags & CVAR_SYSTEMINFO )
+		{
+			Com_Printf( "s" );
+		}
+		else
+		{
+			Com_Printf( " " );
+		}
+
 		if ( var->flags & CVAR_USERINFO )
 		{
 			Com_Printf( "U" );
@@ -1185,6 +1210,15 @@ void Cvar_List_f( void )
 		if ( var->flags & CVAR_CHEAT )
 		{
 			Com_Printf( "C" );
+		}
+		else
+		{
+			Com_Printf( " " );
+		}
+
+		if ( var->flags & CVAR_USER_CREATED )
+		{
+			Com_Printf( "?" );
 		}
 		else
 		{
@@ -1420,7 +1454,7 @@ void Cvar_Update( vmCvar_t *vmCvar )
 	if ( strlen( cv->string ) + 1 > MAX_CVAR_VALUE_STRING )
 	{
 		Com_Error( ERR_DROP, "Cvar_Update: src %s length %lu exceeds MAX_CVAR_VALUE_STRING(%lu)",
-		           cv->string, ( long unsigned ) strlen( cv->string ), ( long unsigned ) sizeof( vmCvar->string ) );
+		           cv->string, ( unsigned long ) strlen( cv->string ), ( unsigned long ) sizeof( vmCvar->string ) );
 	}
 
 	// bk001212 - Q_strncpyz guarantees zero padding and dest[MAX_CVAR_VALUE_STRING-1]==0
@@ -1480,7 +1514,4 @@ void Cvar_Init( void )
 	Cmd_SetCommandCompletionFunc( "reset", Cvar_CompleteCvarName );
 	Cmd_AddCommand( "cvarlist", Cvar_List_f );
 	Cmd_AddCommand( "cvar_restart", Cvar_Restart_f );
-
-	// NERVE - SMF - can't rely on autoexec to do this
-	Cvar_Get( "devdll", "1", CVAR_ROM );
 }

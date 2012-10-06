@@ -450,7 +450,7 @@ qboolean MiniMapEvaluateSampleOffsets(int *bestj, int *bestk, float *bestval)
 	return *bestval < 3;
 }
 
-void MiniMapMakeSampleOffsets()
+void MiniMapMakeSampleOffsets(void)
 {
 	int             i, j, k, jj, kk;
 	float           val, valj, valk, sx, sy, rx, ry;
@@ -1159,7 +1159,7 @@ static void ExtrapolateTexcoords(const float *axyz, const float *ast, const floa
 	md = MatrixDet(solvematrix);
 	if(md * md < 1e-10)
 	{
-		Sys_Printf("Cannot invert some matrix, some texcoords aren't extrapolated!");
+		Sys_Printf("Cannot invert some matrix, some texcoords aren't extrapolated!\n");
 		return;
 	}
 
@@ -1585,7 +1585,7 @@ void WriteMapFileDoom3(char *filename)
 					vec_t			ST[3][5]; // [ point index ] [ xyz ST ]
 
 
-					#if 0 //def _DEBUG
+					#if 0 //ndef NDEBUG
 					if ( f->plane.normal[0]==0.0f && f->plane.normal[1]==0.0f && f->plane.normal[2]==0.0f )
 					{
 						Sys_Printf("Warning : f->plane.normal is (0,0,0) in FaceToBrushPrimitFace\n");

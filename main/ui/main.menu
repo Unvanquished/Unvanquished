@@ -18,10 +18,6 @@
     shadowColor 0.1 0.1 0.1 0.25      // shadow color
   }
 
-
-
-
-
   menuDef
   {
     name main
@@ -45,6 +41,7 @@
       decoration
       nostretch
     }
+
     itemDef
     {
       name logo
@@ -58,8 +55,6 @@
       nostretch
     }
 
-
-
 #define X      234 
 #define Y      170 //190
 #define W      150
@@ -68,11 +63,13 @@
 #define ALIGNY -5
 
 	MMBUTTON( "Play", open joinserver, 0 )
+	MMBUTTON( "Help", open help, 1 )
 // 	MMBUTTON( "News", open news_menu, 1 )
-	MMBUTTON( "Profiles", open profiles, 1 )
+//	MMBUTTON( "Profiles", open profiles, 2 )
 	MMBUTTON( "Options", open simple_options, 2 )
-	MMBUTTON( "Mods", open mod, 3 )
-	MMBUTTON( "Quit", open quit_popmenu, 4 )
+	MMBUTTON( "Demos", open demo, 3 )
+	MMBUTTON( "Mods", open mod, 4 )
+	MMBUTTON( "Quit", open quit_popmenu, 5 )
 	
 	TITLE_LAYOUT
 

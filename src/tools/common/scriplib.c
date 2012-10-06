@@ -427,7 +427,7 @@ Skips until a matching close brace is found.
 Internal brace depths are properly skipped.
 =================
 */
-void SkipBracedSection()
+void SkipBracedSection(void)
 {
 	int             depth;
 
@@ -454,7 +454,7 @@ void SkipBracedSection()
 SkipRestOfLine
 =================
 */
-void SkipRestOfLine()
+void SkipRestOfLine(void)
 {
 	char           *p;
 	int             c;

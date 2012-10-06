@@ -1395,8 +1395,6 @@ static void PM_JetPackMove( void )
 /*
 ===================
 PM_FlyMove
-
-Only with the flight powerup
 ===================
 */
 static void PM_FlyMove( void )

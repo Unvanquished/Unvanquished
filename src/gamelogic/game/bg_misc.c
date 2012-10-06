@@ -3001,7 +3001,7 @@ void trap_Cvar_VariableStringBuffer( const char *var_name, char *buffer, int buf
 
 void BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, playerState_t *ps )
 {
-#ifdef _DEBUG
+#ifndef NDEBUG
 	{
 		char buf[ 256 ];
 		trap_Cvar_VariableStringBuffer( "showevents", buf, sizeof( buf ) );
@@ -3732,7 +3732,7 @@ void BG_PackEntityNumbers( entityState_t *es, const int *entityNums, int count )
 	{
 		count = MAX_NUM_PACKED_ENTITY_NUMS;
 		Com_Printf( S_COLOR_YELLOW "WARNING: A maximum of %d entity numbers can be "
-		            "packed, but BG_PackEntityNumbers was passed %d entities",
+		            "packed, but BG_PackEntityNumbers was passed %d entities\n",
 		            MAX_NUM_PACKED_ENTITY_NUMS, count );
 	}
 

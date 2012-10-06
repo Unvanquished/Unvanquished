@@ -72,7 +72,7 @@ Maryland 20850 USA.
 #define idppc         1
 #if defined( __VEC__ )
 #define idppc_altivec 1
-#ifdef MACOS_X // Apple's GCC does this differently than the FSF.
+#ifdef MACOS_X // Apple's GCC does this differently than the GNU's.
 #define VECCONST_UINT8(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p) \
         (vector unsigned char) ( a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p )
 #else
@@ -135,7 +135,6 @@ Maryland 20850 USA.
 
 #define Q3_LITTLE_ENDIAN
 
-#define DLL_DIRECTORY "libs"
 #define DLL_PREFIX    ""
 #define DLL_EXT       ".dll"
 
@@ -169,7 +168,6 @@ Maryland 20850 USA.
 
 #define Q3_LITTLE_ENDIAN
 
-#define DLL_DIRECTORY "libs"
 #define DLL_PREFIX    ""
 #define DLL_EXT       ".dll"
 
@@ -203,7 +201,6 @@ Maryland 20850 USA.
 #define Q3_LITTLE_ENDIAN
 #endif
 
-#define DLL_DIRECTORY "libs"
 #define DLL_PREFIX    "lib"
 #define DLL_EXT       ".dylib"
 
@@ -259,7 +256,6 @@ Maryland 20850 USA.
 #define Q3_LITTLE_ENDIAN
 #endif
 
-#define DLL_DIRECTORY "libs"
 #define DLL_PREFIX    "lib"
 #define DLL_EXT       ".so"
 
@@ -309,7 +305,6 @@ Maryland 20850 USA.
 #define Q3_LITTLE_ENDIAN
 #endif
 
-#define DLL_DIRECTORY "libs"
 #define DLL_PREFIX    "lib"
 #define DLL_EXT       ".so"
 
@@ -340,7 +335,6 @@ Maryland 20850 USA.
 #define Q3_LITTLE_ENDIAN
 #endif
 
-#define DLL_DIRECTORY "libs"
 #define DLL_PREFIX    "lib"
 #define DLL_EXT       ".so"
 
@@ -360,7 +354,6 @@ Maryland 20850 USA.
 
 #define Q3_BIG_ENDIAN // SGI's MIPSes are always big endian
 
-#define DLL_DIRECTORY "libs"
 #define DLL_PREFIX    "lib"
 #define DLL_EXT       ".so"
 
@@ -379,7 +372,6 @@ Maryland 20850 USA.
 
 #define ARCH_STRING   "bytecode"
 
-#define DLL_DIRECTORY "libs"
 #define DLL_PREFIX    ""
 #define DLL_EXT       ".qvm"
 

@@ -1518,7 +1518,7 @@ static void CG_DrawPlayerHealthBar( rectDef_t *rect, vec4_t foreColor, qhandle_t
 	CG_DrawPlayerProgressBar( rect, foreColor, progress, -0.3, shader );
 }
 
-static void CG_DrawPlayerMeter( rectDef_t *rect, float fraction, vec4_t color, qhandle_t shader )
+static void CG_DrawPlayerMeter( rectDef_t *rect, int align, float fraction, vec4_t color, qhandle_t shader )
 {
 
 	CG_AdjustFrom640( &rect->x, &rect->y, &rect->w, &rect->h );
@@ -1530,10 +1530,21 @@ static void CG_DrawPlayerMeter( rectDef_t *rect, float fraction, vec4_t color, q
 		
 		height = rect->h * fraction;
 
-		trap_R_SetColor( color );
-		trap_R_DrawStretchPic( rect->x, rect->y - height + rect->h, rect->w,
-							height, 0.0f, 1.0f - fraction, 1.0f, 1.0f, shader );
-		trap_R_SetColor( NULL );
+		// Meter decreases down
+		if ( align == ALIGN_LEFT )
+		{
+			trap_R_SetColor( color );
+			trap_R_DrawStretchPic( rect->x, rect->y, rect->w, height,
+								   0.0f, 0.0f, 1.0f, fraction, shader );
+			trap_R_SetColor( NULL );
+		}
+		else
+		{
+			trap_R_SetColor( color );
+			trap_R_DrawStretchPic( rect->x, rect->y - height + rect->h, rect->w,
+								   height, 0.0f, 1.0f - fraction, 1.0f, 1.0f, shader );
+			trap_R_SetColor( NULL );
+		}	
 	}
 
 	// Horizontal meter
@@ -1543,14 +1554,25 @@ static void CG_DrawPlayerMeter( rectDef_t *rect, float fraction, vec4_t color, q
 
 		width = rect->w * fraction;
 
-		trap_R_SetColor( color );
-		trap_R_DrawStretchPic( rect->x - width + rect->w, rect->y, width,
-							   rect->h, 1.0f - fraction, 0.0f, 1.0f, 1.0f, shader );
-		trap_R_SetColor( NULL );
-	}	
+		// Meter decreases to the left
+		if ( align == ALIGN_LEFT )
+		{
+			trap_R_SetColor( color );
+			trap_R_DrawStretchPic( rect->x, rect->y, width,
+								rect->h, 0.0f, 0.0f, fraction, 1.0f, shader );
+			trap_R_SetColor( NULL );
+		}
+		else
+		{
+			trap_R_SetColor( color );
+			trap_R_DrawStretchPic( rect->x - width + rect->w, rect->y, width,
+								   rect->h, 1.0f - fraction, 0.0f, 1.0f, 1.0f, shader );
+			trap_R_SetColor( NULL );
+		}
+	}
 }
 
-static void CG_DrawPlayerClipMeter( rectDef_t *rect, vec4_t color, qhandle_t shader )
+static void CG_DrawPlayerClipMeter( rectDef_t *rect, int align, vec4_t color, qhandle_t shader )
 {
 	float    fraction;
 	int      maxAmmo;
@@ -1575,19 +1597,19 @@ static void CG_DrawPlayerClipMeter( rectDef_t *rect, vec4_t color, qhandle_t sha
 	
 	fraction = (float)cg.snap->ps.Ammo / (float)maxAmmo;
 
-	CG_DrawPlayerMeter( rect, fraction, color, shader );
+	CG_DrawPlayerMeter( rect, align, fraction, color, shader );
 }
 
-static void CG_DrawPlayerHealthMeter( rectDef_t *rect, vec4_t color, qhandle_t shader )
+static void CG_DrawPlayerHealthMeter( rectDef_t *rect, int align, vec4_t color, qhandle_t shader )
 {
 	float fraction;
 	
 	fraction = (float)cg.snap->ps.stats[ STAT_HEALTH ] / (float)BG_Class( cg.snap->ps.stats[ STAT_CLASS ] )->health;
 	
-	CG_DrawPlayerMeter( rect, fraction, color, shader );
+	CG_DrawPlayerMeter( rect, align, fraction, color, shader );
 }
 
-static void CG_DrawPlayerBoostedMeter( rectDef_t *rect, vec4_t foreColor, qhandle_t shader )
+static void CG_DrawPlayerBoostedMeter( rectDef_t *rect, int align, vec4_t foreColor, qhandle_t shader )
 {
 	static int time = -1;
 	
@@ -1602,7 +1624,7 @@ static void CG_DrawPlayerBoostedMeter( rectDef_t *rect, vec4_t foreColor, qhandl
 		
 		progress = ( (float)cg.time - time ) / BOOST_TIME;
 		
-		CG_DrawPlayerMeter( rect, 1-progress, foreColor, shader );
+		CG_DrawPlayerMeter( rect, align, 1-progress, foreColor, shader );
 		
 	}
 	else
@@ -1866,7 +1888,7 @@ float CG_GetValue( int ownerDraw )
 	return -1;
 }
 
-const char *CG_GetKillerText()
+const char *CG_GetKillerText( void )
 {
 	const char *s = "";
 
@@ -2127,7 +2149,7 @@ static void CG_DrawFPS( rectDef_t *rect, float text_x, float text_y,
 	}
 
 	// don't use serverTime, because that will be drifting to
-	// correct for internet lag changes, timescales, timedemos, etc
+	// correct for Internet lag changes, timescales, timedemos, etc.
 	t = trap_Milliseconds();
 	frameTime = t - previous;
 	previous = t;
@@ -2359,7 +2381,7 @@ static void CG_DrawTeamOverlay( rectDef_t *rect, float scale, vec4_t color )
 		return;
 	}
 
-	if ( !cgs.teaminfoReceievedTime )
+	if ( !cgs.teamInfoReceived )
 	{
 		return;
 	}
@@ -3446,7 +3468,7 @@ static void CG_DrawCrosshairNames( rectDef_t *rect, float scale, int textStyle )
 
 	if ( cg_teamOverlayUserinfo.integer &&
 	     cg.snap->ps.stats[ STAT_TEAM ] != TEAM_NONE &&
-	     cgs.teaminfoReceievedTime &&
+	     cgs.teamInfoReceived &&
 	     cgs.clientinfo[ cg.crosshairClientNum ].health > 0 )
 	{
 		name = va( "%s ^7[^%c%d^7]", name,
@@ -3889,7 +3911,7 @@ void CG_OwnerDraw( float x, float y, float w, float h, float text_x,
 			break;
 
 		case CG_PLAYER_CLIPS_METER:
-			CG_DrawPlayerClipMeter( &rect, foreColor, shader );
+			CG_DrawPlayerClipMeter( &rect, align, foreColor, shader );
 			break;
 
 		case CG_PLAYER_AMMO_STACK:
@@ -3920,7 +3942,7 @@ void CG_OwnerDraw( float x, float y, float w, float h, float text_x,
 			break;
 
 		case CG_PLAYER_HEALTH_METER:
-			CG_DrawPlayerHealthMeter( &rect, foreColor, shader );
+			CG_DrawPlayerHealthMeter( &rect, align, foreColor, shader );
 			break;
 
 		case CG_PLAYER_CHARGE_BAR_BG:
@@ -3952,7 +3974,7 @@ void CG_OwnerDraw( float x, float y, float w, float h, float text_x,
 			break;
 
 		case CG_PLAYER_BOOSTED_METER:
-			CG_DrawPlayerBoostedMeter( &rect, foreColor, shader );
+			CG_DrawPlayerBoostedMeter( &rect, align, foreColor, shader );
 			break;
 
 		case CG_PLAYER_POISON_BARBS:
@@ -4498,7 +4520,6 @@ static qboolean CG_DrawScoreboard( void )
 
 	if ( cg_paused.integer )
 	{
-		cg.deferredPlayerLoading = 0;
 		firstTime = qtrue;
 		return qfalse;
 	}
@@ -4511,7 +4532,6 @@ static qboolean CG_DrawScoreboard( void )
 	}
 	else
 	{
-		cg.deferredPlayerLoading = 0;
 		cg.killerName[ 0 ] = 0;
 		firstTime = qtrue;
 		return qfalse;

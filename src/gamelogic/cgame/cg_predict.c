@@ -606,14 +606,14 @@ playerState_t.
 For normal gameplay, it will be the result of predicted usercmd_t on
 top of the most recent playerState_t received from the server.
 
-Each new snapshot will usually have one or more new usercmd over the last,
+Each new snapshot will usually have one or more new usercmds over the last,
 but we simulate all unacknowledged commands each time, not just the new ones.
-This means that on an internet connection, quite a few pmoves may be issued
-each frame.
+This means that in case of an Internet connection, quite a few pmoves may be
+issued each frame.
 
-OPTIMIZE: don't re-simulate unless the newly arrived snapshot playerState_t
-differs from the predicted one.  Would require saving all intermediate
-playerState_t during prediction.
+OPTIMIZE: Don't re-simulate unless the newly arrived snapshot's playerState_t
+differs from the predicted one.  This would require saving all intermediate
+playerState_ts during prediction.
 
 We detect prediction errors and allow them to be decayed off over several frames
 to ease the jerk.
@@ -850,9 +850,9 @@ void CG_PredictPlayerState( void )
 			continue;
 		}
 
-		// check for a prediction error from last frame
-		// on a lan, this will often be the exact value
-		// from the snapshot, but on a wan we will have
+		// check for a prediction error from the last frame;
+		// on a LAN, this will often be the exact value
+		// from the snapshot, but on a WAN we will have
 		// to predict several commands to get to the point
 		// we want to compare
 		if ( cg.predictedPlayerState.commandTime == oldPlayerState.commandTime )

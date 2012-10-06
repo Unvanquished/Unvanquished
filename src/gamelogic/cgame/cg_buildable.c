@@ -600,7 +600,7 @@ void CG_InitBuildables( void )
 CG_BuildableRangeMarkerProperties
 ================
 */
-qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarkerType_t *rmType, float *range, vec3_t rgb )
+qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t *rmType, float *range, vec3_t rgb )
 {
 	shaderColorEnum_t shc;
 
@@ -662,15 +662,15 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarkerTyp
 
 	if ( bType == BA_A_TRAPPER )
 	{
-		*rmType = RMT_CONE_64;
+		*rmType = RM_SPHERICAL_CONE_64;
 	}
 	else if ( bType == BA_H_MGTURRET )
 	{
-		*rmType = RMT_CONE_240;
+		*rmType = RM_SPHERICAL_CONE_240;
 	}
 	else
 	{
-		*rmType = RMT_SPHERE;
+		*rmType = RM_SPHERE;
 	}
 
 	VectorCopy( cg_shaderColors[ shc ], rgb );
@@ -991,13 +991,13 @@ CG_GhostBuildableRangeMarker
 */
 static void CG_GhostBuildableRangeMarker( buildable_t buildable, const vec3_t origin, const vec3_t normal )
 {
-	rangeMarkerType_t   rmType;
+	rangeMarker_t rmType;
 	float    range;
 	vec3_t   rgb;
 
 	if ( CG_GetBuildableRangeMarkerProperties( buildable, &rmType, &range, rgb ) )
 	{
-		vec3_t localOrigin, angles;
+		vec3_t localOrigin;
 
 		if ( buildable == BA_A_HIVE || buildable == BA_H_TESLAGEN )
 		{
@@ -1008,9 +1008,16 @@ static void CG_GhostBuildableRangeMarker( buildable_t buildable, const vec3_t or
 			VectorCopy( origin, localOrigin );
 		}
 
-		vectoangles( normal, angles );
-
-		CG_DrawRangeMarker( rmType, localOrigin, range, angles, rgb );
+		if ( rmType == RM_SPHERE )
+		{
+			CG_DrawRangeMarker( rmType, localOrigin, range, NULL, rgb );
+		}
+		else
+		{
+			vec3_t angles;
+			vectoangles( normal, angles );
+			CG_DrawRangeMarker( rmType, localOrigin, range, angles, rgb );
+		}
 	}
 }
 
@@ -1070,6 +1077,13 @@ void CG_GhostBuildable( buildable_t buildable )
 		Scale[0] = Scale[1] = Scale[2] = scale;
 		trap_R_BuildSkeleton( &ent.skeleton, cg_buildables[ buildable ].animations[ BANIM_IDLE1 ].handle, 0, 0, 0, qfalse );
 		CG_TransformSkeleton( &ent.skeleton, Scale );
+
+		VectorCopy( mins, ent.skeleton.bounds[ 0 ] );
+		VectorCopy( maxs, ent.skeleton.bounds[ 1 ] );
+
+		//skeleton bounds start at z = 0
+		ent.skeleton.bounds[ 0 ][ 2 ] = 0;
+		ent.skeleton.bounds[ 1 ][ 2 ] -= mins[ 2 ];
 	}
 
 	if ( scale != 1.0f )
@@ -1969,6 +1983,10 @@ void CG_Buildable( centity_t *cent )
 		CG_TransformSkeleton( &ent.skeleton, Scale );
 		VectorCopy(mins, ent.skeleton.bounds[ 0 ]);
 		VectorCopy(maxs, ent.skeleton.bounds[ 1 ]);
+		
+		//skeleton bounds start at z = 0
+		ent.skeleton.bounds[ 0 ][ 2 ] = 0;
+		ent.skeleton.bounds[ 1 ][ 2 ] -= mins[ 2 ];
 	}
 
 	//add to refresh list

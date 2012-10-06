@@ -315,7 +315,7 @@ qhandle_t RE_RegisterModel( const char *name )
 		return mod->index;
 	}
 
-#ifdef _DEBUG
+#ifndef NDEBUG
 	else
 	{
 		ri.Printf( PRINT_WARNING, "couldn't load '%s'\n", name );
@@ -474,7 +474,7 @@ static qboolean R_LoadDAE(model_t * mod, void *buffer, int bufferLen, const char
 
         if(xmlStrcmp(node->name, (const xmlChar *) "COLLADA"))
         {
-                ri.Printf(PRINT_WARNING, "R_LoadDAE: '%s' document of the wrong type, root node != COLLADA", modName);
+                ri.Printf(PRINT_WARNING, "R_LoadDAE: '%s' document of the wrong type, root node != COLLADA\n", modName);
                 xmlFreeDoc(doc);
                 return qfalse;
         }

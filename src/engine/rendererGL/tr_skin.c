@@ -194,7 +194,7 @@ RE_GetShaderFromModel
         'withlightmap' set to '0' will create a new shader that is a copy of the one found
         on the model, without the lighmap stage, if the shader has a lightmap stage
 
-        NOTE: only works for bmodels right now.  Could modify for other models (md3's etc.)
+        NOTE: this only works for bmodels right now. could modify it for other models (MD3s, etc.)...
 ==============
 */
 qhandle_t RE_GetShaderFromModel( qhandle_t modelid, int surfnum, int withlightmap )

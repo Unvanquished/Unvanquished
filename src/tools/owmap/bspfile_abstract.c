@@ -58,7 +58,7 @@ special-case code messiness out of the rest of the program.
 /* FIXME: remove the functions below that handle memory management of bsp file chunks */
 
 int             numBSPDrawVertsBuffer = 0;
-void IncDrawVerts()
+void IncDrawVerts(void)
 {
 	numBSPDrawVerts++;
 
@@ -100,7 +100,7 @@ void SetDrawVerts(int n)
 }
 
 int             numBSPDrawSurfacesBuffer = 0;
-void SetDrawSurfacesBuffer()
+void SetDrawSurfacesBuffer(void)
 {
 	if(bspDrawSurfaces != 0)
 		free(bspDrawSurfaces);
@@ -125,7 +125,7 @@ void SetDrawSurfaces(int n)
 	memset(bspDrawSurfaces, 0, n * sizeof(bspDrawSurface_t));
 }
 
-void BSPFilesCleanup()
+void BSPFilesCleanup(void)
 {
 	if(bspDrawVerts != 0)
 		free(bspDrawVerts);

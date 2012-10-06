@@ -45,16 +45,16 @@ void trap_SyscallABIVersion( int major, int minor )
 
 //00.
 //Com_Printf("%s", (char *)VMA(1));
-void trap_Print( const char *fmt )
+void trap_Print( const char *string )
 {
-	syscall( G_PRINT, fmt );
+	syscall( G_PRINT, string );
 }
 
 //01.
 //Com_Error(ERR_DROP, "%s", (char *)VMA(1));
-void NORETURN trap_Error( const char *fmt )
+void NORETURN trap_Error( const char *string )
 {
-	syscall( G_ERROR, fmt );
+	syscall( G_ERROR, string );
 	exit(1); // silence warning
 }
 
@@ -573,4 +573,9 @@ void trap_GenFingerprint( const char *pubkey, int size, char *buffer, int bufsiz
 void trap_GetPlayerPubkey( int clientNum, char *pubkey, int size )
 {
 	syscall( G_GETPLAYERPUBKEY, clientNum, pubkey, size );
+}
+
+void trap_GetTimeString( char *buffer, int size, const char *format, const qtime_t *tm )
+{
+	syscall( G_GETTIMESTRING, buffer, size, format, tm );
 }

@@ -43,7 +43,7 @@ use the shader system.
 Tess_EndBegin
 ==============
 */
-void Tess_EndBegin()
+void Tess_EndBegin( void )
 {
 	Tess_End();
 	Tess_Begin( tess.stageIteratorFunc, tess.stageIteratorFunc2, tess.surfaceShader, tess.lightShader, tess.skipTangentSpaces, tess.skipVBO,
@@ -803,7 +803,7 @@ Tess_SurfacePolychain
 */
 static void Tess_SurfacePolychain( srfPoly_t *p )
 {
-	int i;
+	int i, j;
 	int numVertexes;
 	int numIndexes;
 
@@ -842,8 +842,6 @@ static void Tess_SurfacePolychain( srfPoly_t *p )
 		tess.indexes[ tess.numIndexes + i * 3 + 2 ] = tess.numVertexes + i + 2;
 		numIndexes += 3;
 	}
-
-#if 0
 
 	// calc tangent spaces
 	if ( tess.surfaceShader->interactLight && !tess.skipTangentSpaces )
@@ -891,8 +889,6 @@ static void Tess_SurfacePolychain( srfPoly_t *p )
 		VectorArrayNormalize( ( vec4_t * ) tess.binormals[ tess.numVertexes ], numVertexes );
 		VectorArrayNormalize( ( vec4_t * ) tess.normals[ tess.numVertexes ], numVertexes );
 	}
-
-#endif
 
 	tess.numIndexes += numIndexes;
 	tess.numVertexes += numVertexes;
@@ -1791,7 +1787,7 @@ static void Tess_SurfaceMDV( mdvSurface_t *srf )
 	int           numIndexes = 0;
 	int           numVertexes;
 //	mdvModel_t     *model;
-	mdvVertex_t   *oldVert, *newVert;
+	mdvXyz_t      *oldVert, *newVert;
 	mdvSt_t       *st;
 	srfTriangle_t *tri;
 //	vec3_t          lightOrigin;

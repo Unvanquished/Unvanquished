@@ -44,7 +44,6 @@ static shaderTable_t table;
 static shaderStage_t stages[ MAX_SHADER_STAGES ];
 static shader_t      shader;
 static texModInfo_t  texMods[ MAX_SHADER_STAGES ][ TR_MAX_TEXMODS ];
-static qboolean      deferLoad;
 
 // ydnar: these are here because they are only referenced while parsing a shader
 static char          implicitMap[ MAX_QPATH ];
@@ -4793,7 +4792,7 @@ CollapseMultitexture
 =================
 */
 // *INDENT-OFF*
-static void CollapseStages()
+static void CollapseStages( void )
 {
 //	int             abits, bbits;
 	int           i, j;
@@ -5272,7 +5271,7 @@ static void GeneratePermanentShaderTable( float *values, int numValues )
 	newTable->numValues = numValues;
 	newTable->values = ri.Hunk_Alloc( sizeof( float ) * numValues, h_low );
 
-//  ri.Printf(PRINT_ALL, "values: \n");
+//  ri.Printf(PRINT_ALL, "values:\n");
 	for ( i = 0; i < numValues; i++ )
 	{
 		newTable->values[ i ] = values[ i ];
@@ -5409,6 +5408,11 @@ static shader_t *FinishShader( void )
 
 			case ST_NORMALMAP:
 				{
+					if ( !shader.isSky )
+					{
+						shader.interactLight = qtrue;
+					}
+
 					if ( !pStage->bundle[ 0 ].image[ 0 ] )
 					{
 						ri.Printf( PRINT_WARNING, "Shader %s has a normalmap stage with no image\n", shader.name );
@@ -6534,7 +6538,7 @@ static void ScanAndLoadGuideFiles( void )
 
 	s_guideText = ri.Hunk_Alloc( sum + numGuides * 2, h_low );
 
-	// load in reverse order, so doubled templates are overriden properly
+	// load in reverse order, so doubled templates are overridden properly
 	for ( i = numGuides - 1; i >= 0; i-- )
 	{
 		Com_sprintf( filename, sizeof( filename ), "guides/%s", guideFiles[ i ] );
@@ -7152,8 +7156,6 @@ void R_InitShaders( void )
 {
 	Com_Memset( shaderTableHashTable, 0, sizeof( shaderTableHashTable ) );
 	Com_Memset( shaderHashTable, 0, sizeof( shaderHashTable ) );
-
-	deferLoad = qfalse;
 
 	CreateInternalShaders();
 

@@ -1477,7 +1477,7 @@ void Key_EditBind_f( void )
 
 	if ( b != 2 )
 	{
-		Com_Printf( "%s", _( "editbind <key> : edit a key binding (in the in-game console)" ));
+		Com_Printf( "%s\n", _( "usage: editbind <key>" ));
 		return;
 	}
 

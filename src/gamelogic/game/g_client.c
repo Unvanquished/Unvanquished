@@ -128,14 +128,6 @@ void G_AddCreditToClient( gclient_t *client, short credit, qboolean cap )
 }
 
 /*
-=======================================================================
-
-  G_SelectSpawnPoint
-
-=======================================================================
-*/
-
-/*
 ================
 SpotWouldTelefrag
 
@@ -173,7 +165,7 @@ G_SelectRandomFurthestSpawnPoint
 Chooses a player start, deathmatch start, etc
 ============
 */
-static gentity_t *G_SelectRandomFurthestSpawnPoint( vec3_t avoidPoint, vec3_t origin, vec3_t angles )
+gentity_t *G_SelectRandomFurthestSpawnPoint( vec3_t avoidPoint, vec3_t origin, vec3_t angles )
 {
 	gentity_t *spot;
 	vec3_t    delta;
@@ -307,18 +299,6 @@ static gentity_t *G_SelectSpawnBuildable( vec3_t preference, buildable_t buildab
 	}
 
 	return spot;
-}
-
-/*
-===========
-G_SelectSpawnPoint
-
-Chooses a player start, deathmatch start, etc
-============
-*/
-gentity_t *G_SelectSpawnPoint( vec3_t avoidPoint, vec3_t origin, vec3_t angles )
-{
-	return G_SelectRandomFurthestSpawnPoint( avoidPoint, origin, angles );
 }
 
 /*
@@ -1321,6 +1301,11 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	client->pers.admin = G_admin_admin( client->pers.guid );
 	client->pers.pubkey_authenticated = 0;
 
+	if ( client->pers.admin )
+	{
+		trap_RealTime( &client->pers.admin->lastSeen );
+	}
+
 	// check for admin ban
 	if ( G_admin_ban_check( ent, reason, sizeof( reason ) ) && !isBot )
 	{
@@ -1339,7 +1324,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	// if a player reconnects quickly after a disconnect, the client disconnect may never be called, thus flag can get lost in the ether
 	if ( ent->inuse && !isBot)
 	{
-		G_LogPrintf( "Forcing disconnect on active client: %i\n", ent-g_entities );
+		G_LogPrintf( "Forcing disconnect on active client: %i\n", (int)( ent - g_entities ) );
 		// so lets just fix up anything that should happen on a disconnect
 		ClientDisconnect( ent-g_entities );
 	}
@@ -1366,7 +1351,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	client->pers.connected = CON_CONNECTING;
 
 	// read or initialize the session data
-	if ( firstTime || level.newSession )
+	if ( firstTime )
 	{
 		G_InitSessionData( client, userinfo );
 	}
@@ -1619,7 +1604,6 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	client->ps.ping = savedPing;
 	client->noclip = savedNoclip;
 	client->cliprcontents = savedCliprcontents;
-	client->lastkilled_client = -1;
 
 	for ( i = 0; i < MAX_PERSISTANT; i++ )
 	{

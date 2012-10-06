@@ -795,7 +795,7 @@ int NET_StringToAdr( const char *s, netadr_t *a, netadrtype_t family )
 
 	if ( *base == '[' || Q_CountChar( base, ':' ) > 1 )
 	{
-		// This is an ipv6 address, handle it specially.
+		// This is an IPv6 address, handle it specially.
 		search = strchr( base, ']' );
 
 		if ( search )

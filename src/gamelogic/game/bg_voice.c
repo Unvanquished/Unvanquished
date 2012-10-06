@@ -81,7 +81,7 @@ static voice_t *BG_VoiceList( void )
 	// always be loaded first in the event of overflow of voice definitions
 	if ( !trap_FS_FOpenFile( "voice/default.voice", NULL, FS_READ ) )
 	{
-		Com_Printf( "voice/default.voice missing, voice system disabled." );
+		Com_Printf( "voice/default.voice missing, voice system disabled.\n" );
 		return NULL;
 	}
 
@@ -108,7 +108,7 @@ static voice_t *BG_VoiceList( void )
 		if ( fileLen > MAX_VOICE_NAME_LEN + 8 )
 		{
 			Com_Printf( S_COLOR_YELLOW "WARNING: MAX_VOICE_NAME_LEN is %d. "
-			            "skipping \"%s\", filename too long", MAX_VOICE_NAME_LEN, filePtr );
+			            "skipping \"%s\", filename too long\n", MAX_VOICE_NAME_LEN, filePtr );
 			continue;
 		}
 
@@ -118,14 +118,14 @@ static voice_t *BG_VoiceList( void )
 			Com_Printf( S_COLOR_YELLOW "WARNING: BG_VoiceList(): detected "
 			            "an invalid .voice file \"%s\" in directory listing.  You have "
 			            "probably named one or more .voice files with outrageously long "
-			            "names.  gjbs", filePtr );
+			            "names.\n", filePtr );
 			break;
 		}
 
 		if ( count >= MAX_VOICES )
 		{
 			Com_Printf( S_COLOR_YELLOW "WARNING: .voice file overflow.  "
-			            "%d of %d .voice files loaded.  MAX_VOICES is %d",
+			            "%d of %d .voice files loaded.  MAX_VOICES is %d\n",
 			            count, numFiles, MAX_VOICES );
 			break;
 		}

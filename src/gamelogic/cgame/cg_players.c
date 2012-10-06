@@ -123,7 +123,7 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 
 	if ( len >= sizeof( text ) - 1 )
 	{
-		CG_Printf(_( "File %s too long\n"), filename );
+		CG_Printf(_( "File %s is too long\n"), filename );
 		trap_FS_FCloseFile( f );
 		return qfalse;
 	}
@@ -267,7 +267,7 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 
 			if ( token[0] != '{' )
 			{
-				Com_Printf( _( "^1ERROR^7: Expected '{' but found '%s' in character.cfg" ), token );
+				Com_Printf( _( "^1ERROR^7: Expected '{' but found '%s' in character.cfg\n" ), token );
 			}
 
 			i = 0;
@@ -581,7 +581,7 @@ static qboolean CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 
 		if ( i != MAX_PLAYER_ANIMATIONS )
 		{
-			CG_Printf(_( "Error parsing animation file: %s"), filename );
+			CG_Printf(_( "Error parsing animation file: %s\n"), filename );
 			return qfalse;
 		}
 
@@ -674,7 +674,7 @@ static qboolean CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 
 		if ( i != MAX_NONSEG_PLAYER_ANIMATIONS )
 		{
-			CG_Printf(_( "Error parsing animation file: %s"), filename );
+			CG_Printf(_( "Error parsing animation file: %s\n"), filename );
 			return qfalse;
 		}
 
@@ -1641,16 +1641,23 @@ cg.time should be between oldFrameTime and frameTime after exit
 */
 static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation, refSkeleton_t *skel, float speedScale )
 {
+	qboolean animChanged = qfalse;
+	
     // see if the animation sequence is switching
 	if ( newAnimation != lf->animationNumber || !lf->animation )
 	{
 		CG_SetLerpFrameAnimation( ci, lf, newAnimation, skel );
+		animChanged = qtrue;
 	}
 
-	CG_RunLerpFrame( lf, speedScale );
-
-	if ( ci->bodyModel )
+	if ( !ci->bodyModel )
 	{
+		CG_RunLerpFrame( lf, speedScale );
+	}
+	else
+	{
+		CG_RunMD5LerpFrame( lf, speedScale, animChanged );
+
 		// blend old and current animation
 		CG_BlendPlayerLerpFrame( lf );
 
@@ -2368,8 +2375,7 @@ static void CG_PlayerWWSmoothing( centity_t *cent, vec3_t in[ 3 ], vec3_t out[ 3
 
 	if ( !VectorCompare( surfNormal, cent->pe.lastNormal ) )
 	{
-		//if we moving from the ceiling to the floor special case
-		//( x product of colinear vectors is undefined)
+		// special case: moving from the ceiling to the floor
 		if ( VectorCompare( ceilingNormal, cent->pe.lastNormal ) &&
 		     VectorCompare( refNormal,     surfNormal ) )
 		{
@@ -3118,10 +3124,6 @@ void CG_Player( centity_t *cent )
 		{
 			renderfx = RF_THIRD_PERSON; // only draw in mirrors
 		}
-		else if ( cg_cameraMode.integer )
-		{
-			return;
-		}
 	}
 
 	if ( cg_drawBBOX.integer )
@@ -3325,6 +3327,10 @@ void CG_Player( centity_t *cent )
 
 		VectorCopy( mins, body.skeleton.bounds[ 0 ]);
 		VectorCopy( maxs, body.skeleton.bounds[ 1 ]);
+
+		//skeleton bounds start at z = 0
+		body.skeleton.bounds[ 0 ][ 2 ] = 0;
+		body.skeleton.bounds[ 1 ][ 2 ] -= mins[ 2 ];
 
 		// add the gun / barrel / flash
 		if ( es->weapon != WP_NONE )
@@ -3719,6 +3725,10 @@ void CG_Corpse( centity_t *cent )
 		CG_TransformSkeleton( &legs.skeleton, ci->modelScale );
 		VectorCopy( deadZ, legs.skeleton.bounds[ 0 ]);
 		VectorCopy( deadMax, legs.skeleton.bounds[ 1 ]);
+
+		//skeleton bounds start at z = 0
+		legs.skeleton.bounds[ 0 ][ 2 ] = 0;
+		legs.skeleton.bounds[ 1 ][ 2 ] -= deadZ[ 2 ];
 	}
 
 	//

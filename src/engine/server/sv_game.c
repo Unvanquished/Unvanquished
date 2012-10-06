@@ -32,7 +32,7 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-// sv_game.c -- interface to the game dll
+// sv_game.c -- interface to the game module
 
 #include "server.h"
 #include "../qcommon/crypto.h"
@@ -288,7 +288,7 @@ void SV_AdjustAreaPortalState( sharedEntity_t *ent, qboolean open )
 
 /*
 ==================
-SV_GameAreaEntities
+SV_EntityContact
 ==================
 */
 qboolean SV_EntityContact( vec3_t mins, vec3_t maxs, const sharedEntity_t *gEnt, traceType_t type )
@@ -446,6 +446,38 @@ void SV_UpdateSharedConfig( unsigned int port, const char *rconpass )
 
 extern int S_RegisterSound( const char *name, qboolean compressed );
 extern int S_GetSoundLength( sfxHandle_t sfxHandle );
+
+/*
+====================
+SV_GetTimeString
+
+Returns 0 if we have a representable time
+Truncation is ignored
+====================
+*/
+static void SV_GetTimeString( char *buffer, int length, const char *format, const qtime_t *tm )
+{
+	if ( tm )
+	{
+		struct tm t;
+
+		t.tm_sec   = tm->tm_sec;
+		t.tm_min   = tm->tm_min;
+		t.tm_hour  = tm->tm_hour;
+		t.tm_mday  = tm->tm_mday;
+		t.tm_mon   = tm->tm_mon;
+		t.tm_year  = tm->tm_year;
+		t.tm_wday  = tm->tm_wday;
+		t.tm_yday  = tm->tm_yday;
+		t.tm_isdst = tm->tm_isdst;
+
+		strftime ( buffer, length, format, &t );
+	}
+	else
+	{
+		strftime( buffer, length, format, gmtime( NULL ) );
+	}
+}
 
 /*
 ====================
@@ -739,6 +771,11 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 		case G_GETPLAYERPUBKEY:
 			SV_GetPlayerPubkey( args[ 1 ], VMA( 2 ), args[ 3 ] );
 			return 0;
+
+                case G_GETTIMESTRING:
+		        VM_CheckBlock( args[1], args[2], "STRFTIME" );
+			SV_GetTimeString( VMA( 1 ), args[ 2 ], VMA( 3 ), VMA( 4 ) );
+			return 0;
 			
 		default:
 			Com_Error( ERR_DROP, "Bad game system trap: %ld", ( long int ) args[ 0 ] );
@@ -840,7 +877,7 @@ void SV_InitGameProgs( void )
 	sv.num_tagheaders = 0;
 	sv.num_tags = 0;
 
-	// load the dll or bytecode
+	// load the game module
 	gvm = VM_Create( "qagame", SV_GameSystemCalls, Cvar_VariableValue( "vm_game" ) );
 
 	if ( !gvm )

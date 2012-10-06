@@ -25,7 +25,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../renderer/tr_types.h"
 
 #define CGAME_IMPORT_API_VERSION 3
-#define CAM_PRIMARY              0
 
 #define CMD_BACKUP               64
 #define CMD_MASK                 ( CMD_BACKUP - 1 )
@@ -301,7 +300,7 @@ typedef enum
 // use Cmd_Argc() / Cmd_Argv() to read the command
 } cgameExport_t;
 
-void            trap_Print( const char *fmt );
+void            trap_Print( const char *string );
 void            trap_Error( const char *string ) NORETURN;
 int             trap_Milliseconds( void );
 void            trap_Cvar_Register( vmCvar_t *vmCvar, const char *varName, const char *defaultValue, int flags );
@@ -395,8 +394,8 @@ void            trap_R_AddCoronaToScene( const vec3_t org, float r, float g, flo
 void            trap_R_SetFog( int fogvar, int var1, int var2, float r, float g, float b, float density );
 void            trap_R_SetGlobalFog( qboolean restore, int duration, float r, float g, float b, float depthForOpaque );
 void            trap_R_RenderScene( const refdef_t *fd );
-void            trap_R_SaveViewParms();
-void            trap_R_RestoreViewParms();
+void            trap_R_SaveViewParms( void );
+void            trap_R_RestoreViewParms( void );
 void            trap_R_SetColor( const float *rgba );
 void            trap_R_SetClipRegion( const float *region );
 void            trap_R_DrawStretchPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader );

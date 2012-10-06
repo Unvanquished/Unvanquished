@@ -152,8 +152,8 @@ static void *GPA( char *str )
 	}
 	else
 	{
-#if defined _DEBUG
-		Com_Printf( " Loaded symbol %s (0x%08X)\n", str, rv );
+#ifndef NDEBUG
+		Com_Printf( " Loaded symbol %s (%p)\n", str, rv );
 #endif
 		return rv;
 	}
@@ -275,7 +275,7 @@ qboolean QAL_Init( const char *libname )
 	return qtrue;
 }
 
-void QAL_Shutdown()
+void QAL_Shutdown( void )
 {
 	if ( OpenALLib )
 	{

@@ -306,7 +306,6 @@ float R_ProcessLightmap( byte **pic, int in_padding, int width, int height, byte
 {
 	int   j;
 	float maxIntensity = 0;
-//	double          sumIntensity = 0;
 
 	/*
 	if(r_lightmap->integer > 1)
@@ -352,8 +351,6 @@ float R_ProcessLightmap( byte **pic, int in_padding, int width, int height, byte
 	                        (*pic_out)[j * 4 + 2] = out[2] * 255;
 	                }
 	                (*pic_out)[j * 4 + 3] = 255;
-
-	                sumIntensity += intensity;
 	        }
 	}
 	else
@@ -1162,7 +1159,7 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 		if ( numLightmaps == 1 )
 		{
 			//FIXME: HACK: maps with only one lightmap turn up fullbright for some reason.
-			//this avoids this, but isn't the correct solution.
+			//this hack avoids that scenario, but isn't the correct solution.
 			numLightmaps++;
 		}
 		else if ( numLightmaps >= MAX_LIGHTMAPS )
@@ -1539,8 +1536,6 @@ static void ParseFace( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, in
 		}
 	}
 
-	R_CalcSurfaceTrianglePlanes( numTriangles, cv->triangles, cv->verts );
-
 	// take the plane information from the lightmap vector
 	for ( i = 0; i < 3; i++ )
 	{
@@ -1905,8 +1900,6 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 		AddPointToBounds( cv->verts[ tri->indexes[ 1 ] ].xyz, cv->bounds[ 0 ], cv->bounds[ 1 ] );
 		AddPointToBounds( cv->verts[ tri->indexes[ 2 ] ].xyz, cv->bounds[ 0 ], cv->bounds[ 1 ] );
 	}
-
-	R_CalcSurfaceTrianglePlanes( numTriangles, cv->triangles, cv->verts );
 
 	// Tr3B - calc tangent spaces
 #if 0
@@ -4100,7 +4093,7 @@ R_CreateAreas
 */
 
 /*
-static void R_CreateAreas()
+static void R_CreateAreas( void )
 {
         int             i, j;
         int             numAreas, maxArea;
@@ -4204,7 +4197,7 @@ R_CreateVBOWorldSurfaces
 */
 
 /*
-static void R_CreateVBOWorldSurfaces()
+static void R_CreateVBOWorldSurfaces( void )
 {
         int             i, j, k, l, a;
 
@@ -4546,7 +4539,7 @@ static void R_CreateVBOWorldSurfaces()
 R_CreateClusters
 =================
 */
-static void R_CreateClusters()
+static void R_CreateClusters( void )
 {
 	int          i, j;
 	bspSurface_t *surface;
@@ -4949,7 +4942,7 @@ void SmoothNormals( const char *name, srfVert_t *verts, int numTotalVerts )
 R_CreateWorldVBO
 ===============
 */
-static void R_CreateWorldVBO()
+static void R_CreateWorldVBO( void )
 {
 	int       i, j, k;
 
@@ -5288,7 +5281,7 @@ static void R_CreateWorldVBO()
 R_CreateSubModelVBOs
 ===============
 */
-static void R_CreateSubModelVBOs()
+static void R_CreateSubModelVBOs( void )
 {
 	int           i, j, k, l, m;
 
@@ -7377,32 +7370,14 @@ static int R_BuildShadowPlanes(int numTriangles, const srfTriangle_t * triangles
 }
 */
 
-static qboolean R_PrecacheFaceInteraction( srfSurfaceFace_t *cv, shader_t *shader, trRefLight_t *light )
+/*
+================
+R_PrecacheGenericSurfInteraction
+================
+*/
+static qboolean R_PrecacheGenericSurfInteraction( srfGeneric_t *face, trRefLight_t *light )
 {
-	// check if bounds intersect
-	if ( !BoundsIntersect( light->worldBounds[ 0 ], light->worldBounds[ 1 ], cv->bounds[ 0 ], cv->bounds[ 1 ] ) )
-	{
-		return qfalse;
-	}
-
-	return qtrue;
-}
-
-static int R_PrecacheGridInteraction( srfGridMesh_t *cv, shader_t *shader, trRefLight_t *light )
-{
-	// check if bounds intersect
-	if ( !BoundsIntersect( light->worldBounds[ 0 ], light->worldBounds[ 1 ], cv->bounds[ 0 ], cv->bounds[ 1 ] ) )
-	{
-		return qfalse;
-	}
-
-	return qtrue;
-}
-
-static int R_PrecacheTrisurfInteraction( srfTriangles_t *cv, shader_t *shader, trRefLight_t *light )
-{
-	// check if bounds intersect
-	if ( !BoundsIntersect( light->worldBounds[ 0 ], light->worldBounds[ 1 ], cv->bounds[ 0 ], cv->bounds[ 1 ] ) )
+	if ( !BoundsIntersect( face->bounds[ 0 ], face->bounds[ 1 ], light->worldBounds[ 0 ], light->worldBounds[ 1 ] ) )
 	{
 		return qfalse;
 	}
@@ -7432,21 +7407,16 @@ static void R_PrecacheInteractionSurface( bspSurface_t *surf, trRefLight_t *ligh
 		return;
 	}
 
-	if ( *surf->data == SF_FACE )
+	switch ( *surf->data )
 	{
-		intersects = R_PrecacheFaceInteraction( ( srfSurfaceFace_t * ) surf->data, surf->shader, light );
-	}
-	else if ( *surf->data == SF_GRID )
-	{
-		intersects = R_PrecacheGridInteraction( ( srfGridMesh_t * ) surf->data, surf->shader, light );
-	}
-	else if ( *surf->data == SF_TRIANGLES )
-	{
-		intersects = R_PrecacheTrisurfInteraction( ( srfTriangles_t * ) surf->data, surf->shader, light );
-	}
-	else
-	{
-		intersects = qfalse;
+		case SF_FACE:
+		case SF_GRID:
+		case SF_TRIANGLES:
+			intersects = R_PrecacheGenericSurfInteraction( ( srfGeneric_t * ) surf->data, light );
+			break;
+		default:
+			intersects = qfalse;
+			break;
 	}
 
 	if ( intersects )
@@ -7464,19 +7434,52 @@ static void R_RecursivePrecacheInteractionNode( bspNode_t *node, trRefLight_t *l
 {
 	int r;
 
-	// light already hit node
-	if ( node->lightCount == s_lightCount )
+	do
 	{
-		return;
+		// light already hit node
+		if ( node->lightCount == s_lightCount )
+		{
+			return;
+		}
+
+		node->lightCount = s_lightCount;
+
+		if ( node->contents != -1 )
+		{
+			break;
+		}
+
+		// node is just a decision point, so go down both sides
+		// since we don't care about sort orders, just go positive to negative
+		r = BoxOnPlaneSide( light->worldBounds[ 0 ], light->worldBounds[ 1 ], node->plane );
+
+		switch ( r )
+		{
+			case 1:
+				node = node->children[ 0 ];
+				break;
+
+			case 2:
+				node = node->children[ 1 ];
+				break;
+
+			case 3:
+			default:
+				// recurse down the children, front side first
+				R_RecursivePrecacheInteractionNode( node->children[ 0 ], light );
+
+				// tail recurse
+				node = node->children[ 1 ];
+				break;
+		}
 	}
+	while ( 1 );
 
-	node->lightCount = s_lightCount;
-
-	if ( node->contents != -1 )
 	{
 		// leaf node, so add mark surfaces
 		int          c;
 		bspSurface_t *surf, **mark;
+		vec3_t       worldBounds[ 2 ];
 
 		// add the individual surfaces
 		mark = node->markSurfaces;
@@ -7491,91 +7494,20 @@ static void R_RecursivePrecacheInteractionNode( bspNode_t *node, trRefLight_t *l
 			mark++;
 		}
 
-		return;
-	}
-
-	// node is just a decision point, so go down both sides
-	// since we don't care about sort orders, just go positive to negative
-	r = BoxOnPlaneSide( light->worldBounds[ 0 ], light->worldBounds[ 1 ], node->plane );
-
-	switch ( r )
-	{
-		case 1:
-			R_RecursivePrecacheInteractionNode( node->children[ 0 ], light );
-			break;
-
-		case 2:
-			R_RecursivePrecacheInteractionNode( node->children[ 1 ], light );
-			break;
-
-		case 3:
-		default:
-			// recurse down the children, front side first
-			R_RecursivePrecacheInteractionNode( node->children[ 0 ], light );
-			R_RecursivePrecacheInteractionNode( node->children[ 1 ], light );
-			break;
-	}
-}
-
-/*
-================
-R_RecursiveAddInteractionNode
-================
-*/
-static void R_RecursiveAddInteractionNode( bspNode_t *node, trRefLight_t *light )
-{
-	int r;
-
-	// light already hit node
-	if ( node->lightCount == s_lightCount )
-	{
-		return;
-	}
-
-	node->lightCount = s_lightCount;
-
-	if ( node->contents != -1 )
-	{
-		vec3_t worldBounds[ 2 ];
-
 		VectorCopy( node->mins, worldBounds[ 0 ] );
 		VectorCopy( node->maxs, worldBounds[ 1 ] );
 
-		if ( R_CullLightWorldBounds( light, worldBounds ) != CULL_OUT )
+		if ( node->numMarkSurfaces > 0 && R_CullLightWorldBounds( light, worldBounds ) != CULL_OUT )
 		{
 			link_t *l;
 
-			l = ri.Hunk_Alloc( sizeof( *l ), h_low );
+			l = ( link_t *)ri.Hunk_Alloc( sizeof( *l ), h_low );
 			InitLink( l, node );
 
 			InsertLink( l, &light->leafs );
 
 			light->leafs.numElements++;
 		}
-
-		return;
-	}
-
-	// node is just a decision point, so go down both sides
-	// since we don't care about sort orders, just go positive to negative
-	r = BoxOnPlaneSide( light->worldBounds[ 0 ], light->worldBounds[ 1 ], node->plane );
-
-	switch ( r )
-	{
-		case 1:
-			R_RecursiveAddInteractionNode( node->children[ 0 ], light );
-			break;
-
-		case 2:
-			R_RecursiveAddInteractionNode( node->children[ 1 ], light );
-			break;
-
-		case 3:
-		default:
-			// recurse down the children, front side first
-			R_RecursiveAddInteractionNode( node->children[ 0 ], light );
-			R_RecursiveAddInteractionNode( node->children[ 1 ], light );
-			break;
 	}
 }
 
@@ -7808,15 +7740,15 @@ static int UpdateLightTriangles( const srfVert_t *verts, int numTriangles, srfTr
 	{
 #if 1
 		vec3_t pos[ 3 ];
+		vec4_t triPlane;
 		float  d;
 
 		VectorCopy( verts[ tri->indexes[ 0 ] ].xyz, pos[ 0 ] );
 		VectorCopy( verts[ tri->indexes[ 1 ] ].xyz, pos[ 1 ] );
 		VectorCopy( verts[ tri->indexes[ 2 ] ].xyz, pos[ 2 ] );
 
-		if ( PlaneFromPoints( tri->plane, pos[ 0 ], pos[ 1 ], pos[ 2 ] ) )
+		if ( PlaneFromPoints( triPlane, pos[ 0 ], pos[ 1 ], pos[ 2 ] ) )
 		{
-			tri->degenerated = qfalse;
 
 			if ( light->l.rlType == RL_DIRECTIONAL )
 			{
@@ -7829,7 +7761,7 @@ static int UpdateLightTriangles( const srfVert_t *verts, int numTriangles, srfTr
 				VectorCopy( light->direction, lightDirection );
 #endif
 
-				d = DotProduct( tri->plane, lightDirection );
+				d = DotProduct( triPlane, lightDirection );
 
 				if ( surfaceShader->cullType == CT_TWO_SIDED || ( d > 0 && surfaceShader->cullType != CT_BACK_SIDED ) )
 				{
@@ -7843,7 +7775,7 @@ static int UpdateLightTriangles( const srfVert_t *verts, int numTriangles, srfTr
 			else
 			{
 				// check if light origin is behind triangle
-				d = DotProduct( tri->plane, light->origin ) - tri->plane[ 3 ];
+				d = DotProduct( triPlane, light->origin ) - triPlane[ 3 ];
 
 				if ( surfaceShader->cullType == CT_TWO_SIDED || ( d > 0 && surfaceShader->cullType != CT_BACK_SIDED ) )
 				{
@@ -7857,7 +7789,6 @@ static int UpdateLightTriangles( const srfVert_t *verts, int numTriangles, srfTr
 		}
 		else
 		{
-			tri->degenerated = qtrue;
 			tri->facingLight = qtrue; // FIXME ?
 		}
 
@@ -9162,7 +9093,7 @@ static void R_CalcInteractionCubeSideBits( trRefLight_t *light )
 R_PrecacheInteractions
 =============
 */
-void R_PrecacheInteractions()
+void R_PrecacheInteractions( void )
 {
 	int          i;
 	trRefLight_t *light;
@@ -9239,12 +9170,8 @@ void R_PrecacheInteractions()
 
 		// perform culling and add all the potentially visible surfaces
 		s_lightCount++;
-		R_RecursivePrecacheInteractionNode( s_worldData.nodes, light );
-
-		// count number of leafs that touch this light
-		s_lightCount++;
 		QueueInit( &light->leafs );
-		R_RecursiveAddInteractionNode( s_worldData.nodes, light );
+		R_RecursivePrecacheInteractionNode( s_worldData.nodes, light );
 		//ri.Printf(PRINT_ALL, "light %i touched %i leaves\n", i, QueueSize(&light->leafs));
 
 #if 0

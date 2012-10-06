@@ -34,7 +34,6 @@ Maryland 20850 USA.
 
 // cl_main.c  -- client main loop
 
-#include "git_version.h"
 #include "client.h"
 #include <limits.h>
 
@@ -195,8 +194,6 @@ void        CL_CheckForResend( void );
 void        CL_ShowIP_f( void );
 void        CL_ServerStatus_f( void );
 void        CL_ServerStatusResponse( netadr_t from, msg_t *msg );
-void        CL_SaveTranslations_f( void );
-void        CL_LoadTranslations_f( void );
 
 // fretn
 void        CL_WriteWaveClose( void );
@@ -1194,7 +1191,7 @@ static void CL_WriteWaveHeader( void )
 }
 
 static char wavName[ MAX_QPATH ]; // compiler bug workaround
-void CL_WriteWaveOpen()
+void CL_WriteWaveOpen( void )
 {
 	// we will just save it as a 16bit stereo 22050kz pcm file
 
@@ -1262,7 +1259,7 @@ void CL_WriteWaveOpen()
 	Cvar_Set( "cl_waveoffset", "0" );
 }
 
-void CL_WriteWaveClose()
+void CL_WriteWaveClose( void )
 {
 	Com_Printf("%s", _( "Stopped recording\n" ));
 
@@ -1904,7 +1901,6 @@ CL_Disconnect_f
 void CL_Disconnect_f( void )
 {
 	SCR_StopCinematic();
-	Cvar_Set( "g_reloading", "0" );
 
 	if ( cls.state != CA_DISCONNECTED && cls.state != CA_CINEMATIC )
 	{
@@ -2035,7 +2031,7 @@ void CL_Connect_f( void )
 
 	Com_DPrintf(_( "%s resolved to %s\n"), cls.servername, serverString );
 
-	// if we aren't playing on a lan, we needto authenticate
+	// if we aren't playing on a LAN, we need to authenticate
 	// with the cd key
 	if ( NET_IsLocalAddress( clc.serverAddress ) )
 	{
@@ -2064,6 +2060,8 @@ void CL_Connect_f( void )
 	Cvar_Set( "cl_currentServerIP", serverString );
 }
 
+#define MAX_RCON_MESSAGE 1024
+
 /*
 =====================
 CL_Rcon_f
@@ -2074,7 +2072,7 @@ CL_Rcon_f
 */
 void CL_Rcon_f( void )
 {
-	char     message[ 1024 ];
+	char     message[ MAX_RCON_MESSAGE ];
 	netadr_t to;
 
 	if ( !rcon_client_password->string )
@@ -2090,13 +2088,13 @@ void CL_Rcon_f( void )
 	message[ 3 ] = -1;
 	message[ 4 ] = 0;
 
-	strcat( message, "rcon " );
+	Q_strcat( message, MAX_RCON_MESSAGE, "rcon " );
 
-	strcat( message, rcon_client_password->string );
-	strcat( message, " " );
+	Q_strcat( message, MAX_RCON_MESSAGE, rcon_client_password->string );
+	Q_strcat( message, MAX_RCON_MESSAGE, " " );
 
 	// ATVI Wolfenstein Misc #284
-	strcat( message, Cmd_Cmd() + 5 );
+	Q_strcat( message, MAX_RCON_MESSAGE, Cmd_Cmd() + 5 );
 
 	if ( cls.state >= CA_CONNECTED )
 	{
@@ -2106,9 +2104,9 @@ void CL_Rcon_f( void )
 	{
 		if ( !strlen( rconAddress->string ) )
 		{
-			Com_Printf( "%s", _( "You must either be connected,\n"
-			            "or set the 'rconAddress' cvar\n"
-			            "to issue rcon commands\n" ));
+			Com_Printf( "%s", _( "Connect to a server "
+			            "or set the 'rconAddress' cvar "
+			            "to issue rcon commands\n"));
 
 			return;
 		}
@@ -2133,20 +2131,11 @@ void CL_SendPureChecksums( void )
 {
 	const char *pChecksums;
 	char       cMsg[ MAX_INFO_VALUE ];
-	int        i;
 
 	// if we are pure we need to send back a command with our referenced pk3 checksums
 	pChecksums = FS_ReferencedPakPureChecksums();
 
-	// "cp"
-	Com_sprintf( cMsg, sizeof( cMsg ), "Va " );
-	Q_strcat( cMsg, sizeof( cMsg ), va( "%d ", cl.serverId ) );
-	Q_strcat( cMsg, sizeof( cMsg ), pChecksums );
-
-	for ( i = 0; i < 2; i++ )
-	{
-		cMsg[ i ] += 13 + ( i * 2 );
-	}
+	Com_sprintf( cMsg, sizeof( cMsg ), "cp %d %s", cl.serverId, pChecksums );
 
 	CL_AddReliableCommand( cMsg );
 }
@@ -2237,7 +2226,7 @@ static void CL_GenerateRSAKey( void )
 	
 	if ( !f )
 	{
-		Com_Error( ERR_FATAL, _( "Daemon RSA public-key could not open %s for write, RSA support will be disabled\n" ), RSAKEY_FILE );
+		Com_Error( ERR_FATAL, _( "Daemon RSA public-key could not open %s for write, RSA support will be disabled" ), RSAKEY_FILE );
 		return;
 	}
 	
@@ -2248,7 +2237,7 @@ static void CL_GenerateRSAKey( void )
 	return;
 	
 	keygen_error:
-	Com_Error( ERR_FATAL, _( "Error generating RSA keypair, RSA support will be disabled\n" ) );
+	Com_Error( ERR_FATAL, _( "Error generating RSA keypair, RSA support will be disabled" ) );
 	Crypto_Shutdown();
 }
 
@@ -2745,7 +2734,7 @@ void CL_InitDownloads( void )
 	cls.bWWWDlDisconnected = qfalse;
 	CL_ClearStaticDownload();
 
-	// whatever autodownlad configuration, store missing files in a cvar, use later in the ui maybe
+	// whatever autodownload configuration, store missing files in a cvar, use later in the ui maybe
 	if ( FS_ComparePaks( missingfiles, sizeof( missingfiles ), qfalse ) )
 	{
 		Cvar_Set( "com_missingFiles", missingfiles );
@@ -2891,7 +2880,7 @@ void CL_DisconnectPacket( netadr_t from )
 	{
 		// drop the connection
 		message = "Server disconnected for unknown reason";
-		Com_Printf( "%s", message );
+		Com_Printf( "%s\n", message );
 		Cvar_Set( "com_errorMessage", message );
 		CL_Disconnect( qtrue );
 	}
@@ -4247,8 +4236,6 @@ void CL_InitRef( const char *renderer )
 	ri.CL_WriteAVIVideoFrame = CL_WriteAVIVideoFrame;
 
 	// XreaL BEGIN
-	//ri.Sys_GetSystemHandles = Sys_GetSystemHandles;
-
 	ri.CL_VideoRecording = CL_VideoRecording;
 	ri.CL_WriteAVIVideoFrame = CL_WriteAVIVideoFrame;
 	// XreaL END
@@ -4392,9 +4379,6 @@ void CL_Init( void )
 	cl_inGameVideo = Cvar_Get( "r_inGameVideo", "1", CVAR_ARCHIVE );
 
 	cl_serverStatusResendTime = Cvar_Get( "cl_serverStatusResendTime", "750", 0 );
-
-	// RF
-	cl_recoilPitch = Cvar_Get( "cg_recoilPitch", "0", CVAR_ROM );
 
 	cl_doubletapdelay = Cvar_Get( "cl_doubletapdelay", "250", CVAR_ARCHIVE );  // Arnout: double tap
 	m_pitch = Cvar_Get( "m_pitch", "0.022", CVAR_ARCHIVE );
@@ -4732,7 +4716,8 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg )
 		if ( cl_pinglist[ i ].adr.port && !cl_pinglist[ i ].time && NET_CompareAdr( from, cl_pinglist[ i ].adr ) )
 		{
 			// calc ping time
-			cl_pinglist[ i ].time = cls.realtime - cl_pinglist[ i ].start + 1;
+			cl_pinglist[ i ].time = Sys_Milliseconds() - cl_pinglist[ i ].start;
+
 			Com_DPrintf( "ping time %dms from %s\n", cl_pinglist[ i ].time, NET_AdrToString( from ) );
 
 			// save of info
@@ -5106,7 +5091,7 @@ void CL_LocalServers_f( void )
 
 	// The 'xxx' in the message is a challenge that will be echoed back
 	// by the server.  We don't care about that here, but master servers
-	// can use that to prevent spoofed server responses from invalid ip
+	// can use that to prevent spoofed server responses from invalid IP addresses
 	message = "\377\377\377\377getinfo xxx";
 
 	// send each message twice in case one is dropped
@@ -5286,7 +5271,7 @@ void CL_GetPing( int n, char *buf, int buflen, int *pingtime )
 
 	if ( n < 0 || n >= MAX_PINGREQUESTS || !cl_pinglist[ n ].adr.port )
 	{
-		// empty slot
+		// invalid or empty slot
 		buf[ 0 ] = '\0';
 		*pingtime = 0;
 		return;
@@ -5300,7 +5285,7 @@ void CL_GetPing( int n, char *buf, int buflen, int *pingtime )
 	if ( !time )
 	{
 		// check for timeout
-		time = cls.realtime - cl_pinglist[ n ].start;
+		time = Sys_Milliseconds() - cl_pinglist[ n ].start;
 		maxPing = Cvar_VariableIntegerValue( "cl_maxPing" );
 
 		if ( maxPing < 100 )
@@ -5322,21 +5307,6 @@ void CL_GetPing( int n, char *buf, int buflen, int *pingtime )
 
 /*
 ==================
-CL_UpdateServerInfo
-==================
-*/
-void CL_UpdateServerInfo( int n )
-{
-	if ( n < 0 || n >= MAX_PINGREQUESTS || !cl_pinglist[ n ].adr.port )
-	{
-		return;
-	}
-
-	CL_SetServerInfoByAddress( cl_pinglist[ n ].adr, cl_pinglist[ n ].info, cl_pinglist[ n ].time );
-}
-
-/*
-==================
 CL_GetPingInfo
 ==================
 */
@@ -5344,7 +5314,7 @@ void CL_GetPingInfo( int n, char *buf, int buflen )
 {
 	if ( n < 0 || n >= MAX_PINGREQUESTS || !cl_pinglist[ n ].adr.port )
 	{
-		// empty slot
+		// invalid or empty slot
 		if ( buflen )
 		{
 			buf[ 0 ] = '\0';
@@ -5418,7 +5388,7 @@ ping_t         *CL_GetFreePing( void )
 		{
 			if ( !pingptr->time )
 			{
-				if ( cls.realtime - pingptr->start < 500 )
+				if ( Sys_Milliseconds() - pingptr->start < 500 )
 				{
 					// still waiting for response
 					continue;
@@ -5444,7 +5414,7 @@ ping_t         *CL_GetFreePing( void )
 	for ( i = 0; i < MAX_PINGREQUESTS; i++, pingptr++ )
 	{
 		// scan for oldest
-		time = cls.realtime - pingptr->start;
+		time = Sys_Milliseconds() - pingptr->start;
 
 		if ( time > oldest )
 		{
@@ -5509,7 +5479,7 @@ void CL_Ping_f( void )
 	pingptr = CL_GetFreePing();
 
 	memcpy( &pingptr->adr, &to, sizeof( netadr_t ) );
-	pingptr->start = cls.realtime;
+	pingptr->start = Sys_Milliseconds();
 	pingptr->time = 0;
 
 	CL_SetServerInfoByAddress( pingptr->adr, NULL, 0 );
@@ -5603,7 +5573,7 @@ qboolean CL_UpdateVisiblePings_f( int source )
 						}
 
 						memcpy( &cl_pinglist[ j ].adr, &server[ i ].adr, sizeof( netadr_t ) );
-						cl_pinglist[ j ].start = cls.realtime;
+						cl_pinglist[ j ].start = Sys_Milliseconds();
 						cl_pinglist[ j ].time = 0;
 						NET_OutOfBandPrint( NS_CLIENT, cl_pinglist[ j ].adr, "getinfo xxx" );
 						slots++;
