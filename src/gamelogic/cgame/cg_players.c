@@ -2235,7 +2235,7 @@ static void CG_PlayerAngles( centity_t *cent, const vec3_t srcAngles,
 		vec3_t axis[ 3 ];
 		float  side;
 
-		speed *= 0.05f;
+		speed *= 0.03f;
 
 		AnglesToAxis( legsAngles, axis );
 		side = speed * DotProduct( velocity, axis[ 1 ] );
