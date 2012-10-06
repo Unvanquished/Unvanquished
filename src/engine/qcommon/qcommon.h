@@ -1274,8 +1274,8 @@ char     *Sys_DefaultAppPath( void );
 char *Sys_DefaultLibPath( void );
 
 char         *Sys_DefaultHomePath( void );
-const char   *Sys_Dirname( char *path );
-const char   *Sys_Basename( char *path );
+char         *Sys_Dirname( char *path );
+char         *Sys_Basename( char *path );
 char         *Sys_ConsoleInput( void );
 
 char         **Sys_ListFiles( const char *directory, const char *extension, char *filter, int *numfiles, qboolean wantsubs );
