@@ -987,7 +987,7 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 
 			for ( i = WP_BLASTER; i < WP_NUM_WEAPONS; i++ )
 			{
-				if ( BG_Weapon( i )->team != TEAM_HUMANS || !BG_Weapon( i )->purchasable || i == WP_GRENADE ) { continue; }
+				if ( BG_Weapon( i )->team != TEAM_HUMANS || ( !BG_Weapon( i )->purchasable && i != WP_BLASTER ) || i == WP_GRENADE ) { continue; }
 				CG_DeriveAnimationDelta( modelName, i, ci );
 			}
 
@@ -3311,13 +3311,13 @@ void CG_Player( centity_t *cent )
 			{
 				CG_DestroyParticleSystem( &cent->muzzlePS );
 			}
-			
+
 			if ( CG_IsParticleSystemValid( &cent->jetPackPS ) )
 			{
 				CG_DestroyParticleSystem( &cent->jetPackPS );
 			}
 		}
-		
+
 
 		// add body to renderer
 		trap_R_AddRefEntityToScene( &body );
