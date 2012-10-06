@@ -34,6 +34,15 @@ static refSkeleton_t legsSkeleton;
 static refSkeleton_t torsoSkeleton;
 static refSkeleton_t oldSkeleton;
 
+typedef struct {
+	vec3_t delta;
+	quat_t rot;
+}
+
+delta_t;
+
+delta_t deltas[ WP_NUM_WEAPONS ][ MAX_BONES ];
+
 static const char *const cg_customSoundNames[ MAX_CUSTOM_SOUNDS ] =
 {
 	"*death1.wav",
@@ -360,6 +369,40 @@ static qboolean CG_RegisterPlayerAnimation( clientInfo_t *ci, const char *modelN
 
 	ci->animations[ anim ].reversed = reversed;
 	ci->animations[ anim ].clearOrigin = clearOrigin;
+
+	return qtrue;
+}
+
+static qboolean CG_DeriveAnimationDelta( const char *modelName, weapon_t weapon, clientInfo_t *ci )
+{
+	int handle, i;
+	int w = weapon;
+	refSkeleton_t base, delta;
+
+	handle = trap_R_RegisterAnimation( va( "models/players/%s/%s_delta.md5anim", modelName, BG_Weapon( weapon )->name ) );
+
+	if ( !handle )
+	{
+		return qfalse;
+	}
+
+	ci->weaponAdjusted |= 1 << weapon;
+
+	trap_R_BuildSkeleton( &delta, handle, 1, 1, 0, qfalse );
+	trap_R_BuildSkeleton( &base, ci->animations[ TORSO_STAND ].handle, 1, 1, 0, qfalse );
+
+	for ( i = 0; i < ci->numHandBones; i++ )
+	{
+		vec3_t angles;
+
+		VectorSubtract( delta.bones[ ci->handBones[ i ] ].origin, base.bones[ ci->handBones[ i ] ].origin, deltas[ w ][ ci->handBones[ i ] ].delta );
+
+		QuatInverse( base.bones[ ci->handBones[ i ] ].rotation );
+
+		QuatMultiply1( base.bones[ ci->handBones[ i ] ].rotation, delta.bones[ ci->handBones[ i ] ].rotation, deltas[ w ][ ci->handBones[ i ] ].rot );
+
+		QuatToAngles( deltas[ w ][ ci->handBones[ i ] ].rot, angles );
+	}
 
 	return qtrue;
 }
@@ -814,7 +857,7 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 
 	if ( ci->md5 )
 	{
-		int i;
+		int i, handle;
 		// load the animations
 		Com_sprintf( filename, sizeof( filename ), "models/players/%s/character.cfg", modelName );
 
@@ -823,6 +866,8 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 			Com_Printf(_( "Failed to load character file %s\n"), filename );
 			return qfalse;
 		}
+
+		ci->weaponAdjusted = 0;
 
 		// If model is not an alien, load human animations
 		if ( ci->gender != GENDER_NEUTER )
@@ -944,6 +989,13 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 			{
 				ci->animations[ LEGS_TURN ] = ci->animations[ LEGS_IDLE ];
 			}
+
+			for ( i = WP_BLASTER; i < WP_NUM_WEAPONS; i++ )
+			{
+				if ( BG_Weapon( i )->team != TEAM_HUMANS || !BG_Weapon( i )->purchasable || i == WP_GRENADE ) { continue; }
+				CG_DeriveAnimationDelta( modelName, i, ci );
+			}
+
 		}
 		else
 		{
@@ -1269,7 +1321,9 @@ static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to )
 	to->gender = from->gender;
 
 	to->numLegBones = from->numLegBones;
+	to->numHandBones = from->numHandBones;
 	to->torsoControlBone = from->torsoControlBone;
+	to->weaponAdjusted = from->weaponAdjusted;
 
 	to->legsModel = from->legsModel;
 	to->legsSkin = from->legsSkin;
@@ -1290,6 +1344,7 @@ static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to )
 	memcpy( to->customFootsteps, from->customFootsteps, sizeof( to->customFootsteps ) );
 	memcpy( to->customMetalFootsteps, from->customMetalFootsteps, sizeof( to->customMetalFootsteps ) );
 	memcpy( to->legBones, from->legBones, sizeof( to->legBones ) );
+	memcpy( to->handBones, from->handBones, sizeof( to->legBones ) );
 }
 
 /*
@@ -3185,6 +3240,18 @@ void CG_Player( centity_t *cent )
 			{
 				CG_CombineLegSkeleton( &body.skeleton, &legsSkeleton, ci->legBones, ci->numLegBones );
 			}
+
+			if ( ci->weaponAdjusted & ( 1 << es->weapon ) )
+			{
+				int j;
+
+				for ( j = 0; j < ci->numHandBones; j++ )
+				{
+					VectorAdd( deltas[ es->weapon ][ ci->handBones[ j ] ].delta, body.skeleton.bones[ ci->handBones[ j ] ].origin, body.skeleton.bones[ ci->handBones[ j ] ].origin );
+					QuatMultiply0( body.skeleton.bones[ ci->handBones[ j ] ].rotation, deltas[ es->weapon ][ ci->handBones[ j ] ].rot );
+				}
+			}
+
 
 			// rotate torso
 			boneIndex = ci->torsoControlBone;

@@ -763,6 +763,7 @@ typedef struct
 	int         legBones[ MAX_BONES ];
 	int         numLegBones;
 
+	int         weaponAdjusted; // bitmask of all weapons that have hand deltas
 	int         handBones[ MAX_BONES ];
 	int         numHandBones;
 
