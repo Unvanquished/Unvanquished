@@ -985,6 +985,15 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 				ci->animations[ LEGS_TURN ] = ci->animations[ LEGS_IDLE ];
 			}
 
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_DROP, "drop", qfalse, qfalse, qfalse ) )
+			{
+				ci->animations[ TORSO_DROP ] = ci->animations[ LEGS_IDLE ];
+			}
+
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_RAISE, "raise", qfalse, qfalse, qfalse ) )
+			{
+				ci->animations[ TORSO_RAISE ] = ci->animations[ LEGS_IDLE ];
+			}
 			for ( i = WP_BLASTER; i < WP_NUM_WEAPONS; i++ )
 			{
 				if ( BG_Weapon( i )->team != TEAM_HUMANS || !BG_Weapon( i )->purchasable || i == WP_GRENADE ) { continue; }
@@ -3311,13 +3320,13 @@ void CG_Player( centity_t *cent )
 			{
 				CG_DestroyParticleSystem( &cent->muzzlePS );
 			}
-			
+
 			if ( CG_IsParticleSystemValid( &cent->jetPackPS ) )
 			{
 				CG_DestroyParticleSystem( &cent->jetPackPS );
 			}
 		}
-		
+
 
 		// add body to renderer
 		trap_R_AddRefEntityToScene( &body );
