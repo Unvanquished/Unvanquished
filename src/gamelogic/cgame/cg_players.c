@@ -392,14 +392,11 @@ static qboolean CG_DeriveAnimationDelta( const char *modelName, weapon_t weapon,
 
 	for ( i = 0; i < ci->numHandBones; i++ )
 	{
-
 		VectorSubtract( delta.bones[ ci->handBones[ i ] ].origin, base.bones[ ci->handBones[ i ] ].origin, deltas[ weapon ][ ci->handBones[ i ] ].delta );
 
 		QuatInverse( base.bones[ ci->handBones[ i ] ].rotation );
 
 		QuatMultiply1( base.bones[ ci->handBones[ i ] ].rotation, delta.bones[ ci->handBones[ i ] ].rotation, deltas[ weapon ][ ci->handBones[ i ] ].rot );
-
-		QuatToAngles( deltas[ weapon ][ ci->handBones[ i ] ].rot, angles );
 	}
 
 	return qtrue;
