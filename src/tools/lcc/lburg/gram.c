@@ -201,7 +201,7 @@ static short *yyss;
 static YYSTYPE *yyvs;
 static int yystacksize;
 #define yyfree(x) free(x)
-extern int yylex();
+int yylex(void);
 
 static YYPTR
 YYDEFUN (yymalloc, (bytes), unsigned bytes)
@@ -225,7 +225,7 @@ static int
 #ifdef __GNUC__
 inline
 #endif
-yygrow ()
+yygrow (void)
 {
 #if YYDEBUG
     int old_stacksize = yystacksize;
@@ -407,14 +407,14 @@ void yywarn(char *fmt, ...) {
 
 #if YYDEBUG
 #ifdef __cplusplus
-extern "C" char *getenv();
+extern "C" char *getenv(const char *name);
 #else
-extern char *getenv();
+char *getenv(const char *name);
 #endif
 #endif
 
 int
-yyparse()
+yyparse(void)
 {
     register int yym, yyn, yystate;
     register YYSTYPE *yyvsp;

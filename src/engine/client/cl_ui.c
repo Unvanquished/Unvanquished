@@ -63,7 +63,7 @@ static void GetClientState( uiClientState_t *state )
 LAN_LoadCachedServers
 ====================
 */
-void LAN_LoadCachedServers()
+void LAN_LoadCachedServers( void )
 {
 	int          size;
 	fileHandle_t fileIn;
@@ -109,7 +109,7 @@ void LAN_LoadCachedServers()
 LAN_SaveServersToCache
 ====================
 */
-void LAN_SaveServersToCache()
+void LAN_SaveServersToCache( void )
 {
 	int          size;
 	fileHandle_t fileOut;

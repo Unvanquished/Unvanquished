@@ -128,14 +128,6 @@ void G_AddCreditToClient( gclient_t *client, short credit, qboolean cap )
 }
 
 /*
-=======================================================================
-
-  G_SelectSpawnPoint
-
-=======================================================================
-*/
-
-/*
 ================
 SpotWouldTelefrag
 
@@ -173,7 +165,7 @@ G_SelectRandomFurthestSpawnPoint
 Chooses a player start, deathmatch start, etc
 ============
 */
-static gentity_t *G_SelectRandomFurthestSpawnPoint( vec3_t avoidPoint, vec3_t origin, vec3_t angles )
+gentity_t *G_SelectRandomFurthestSpawnPoint( vec3_t avoidPoint, vec3_t origin, vec3_t angles )
 {
 	gentity_t *spot;
 	vec3_t    delta;
@@ -307,18 +299,6 @@ static gentity_t *G_SelectSpawnBuildable( vec3_t preference, buildable_t buildab
 	}
 
 	return spot;
-}
-
-/*
-===========
-G_SelectSpawnPoint
-
-Chooses a player start, deathmatch start, etc
-============
-*/
-gentity_t *G_SelectSpawnPoint( vec3_t avoidPoint, vec3_t origin, vec3_t angles )
-{
-	return G_SelectRandomFurthestSpawnPoint( avoidPoint, origin, angles );
 }
 
 /*
@@ -1310,6 +1290,11 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 
 	client->pers.admin = G_admin_admin( client->pers.guid );
 	client->pers.pubkey_authenticated = 0;
+
+	if ( client->pers.admin )
+	{
+		trap_RealTime( &client->pers.admin->lastSeen );
+	}
 
 	// check for admin ban
 	if ( G_admin_ban_check( ent, reason, sizeof( reason ) ) )

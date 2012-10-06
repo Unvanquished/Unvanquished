@@ -938,7 +938,7 @@ typedef struct
 
 	qboolean demoPlayback;
 	qboolean loading; // don't defer players at initial startup
-	qboolean intermissionStarted; // don't play voice rewards, because game will end shortly
+	qboolean intermissionStarted;
 
 	// there are only one or two snapshot_t that are relevent at a time
 	int        latestSnapshotNum; // the number of snapshots the client system has received
@@ -1026,9 +1026,6 @@ typedef struct
 	int  centerPrintY;
 	char centerPrint[ MAX_STRING_CHARS ];
 	int  centerPrintLines;
-
-	// kill timers for carnage reward
-	int lastKillTime;
 
 	// crosshair client ID
 	int crosshairBuildable;
@@ -1404,10 +1401,10 @@ typedef enum
 
 typedef enum
 {
-	RMT_SPHERE,
-	RMT_CONE_64,
-	RMT_CONE_240,
-} rangeMarkerType_t;
+	RM_SPHERE,
+	RM_SPHERICAL_CONE_64,
+	RM_SPHERICAL_CONE_240,
+} rangeMarker_t;
 
 //==============================================================================
 
@@ -1463,6 +1460,7 @@ extern  vmCvar_t            cg_gun_frame;
 extern  vmCvar_t            cg_gun_x;
 extern  vmCvar_t            cg_gun_y;
 extern  vmCvar_t            cg_gun_z;
+extern  vmCvar_t            cg_mirrorgun;
 extern  vmCvar_t            cg_tracerChance;
 extern  vmCvar_t            cg_tracerWidth;
 extern  vmCvar_t            cg_tracerLength;
@@ -1633,8 +1631,7 @@ char     CG_GetColorCharForHealth( int clientnum );
 void     CG_DrawSphere( const vec3_t center, float radius, int customShader, const float *shaderRGBA );
 void     CG_DrawSphericalCone( const vec3_t tip, const vec3_t rotation, float radius,
                                qboolean a240, int customShader, const float *shaderRGBA );
-void     CG_DrawRangeMarker( rangeMarkerType_t rmType, const vec3_t origin, float range, const vec3_t angles,
-                             const vec3_t rgb );
+void     CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range, const vec3_t angles, const vec3_t rgb );
 
 //
 // cg_draw.c
@@ -1684,7 +1681,7 @@ void     CG_DrawBuildableStatus( void );
 void     CG_InitBuildables( void );
 void     CG_HumanBuildableExplosion( vec3_t origin, vec3_t dir );
 void     CG_AlienBuildableExplosion( vec3_t origin, vec3_t dir );
-qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarkerType_t *rmType, float *range, vec3_t rgb );
+qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t *rmType, float *range, vec3_t rgb );
 
 //
 // cg_animation.c

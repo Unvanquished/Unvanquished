@@ -1125,8 +1125,8 @@ void S_AL_UpdateEntityPosition( int entityNum, const vec3_t origin )
 /*
 =================
 S_AL_CheckInput
-Check whether input values from mods are out of range.
-Necessary for i.g. Western Quake3 mod which is buggy.
+Check whether the input values are in range.
+This is necessary, for example, for the Western Quake 3 mod, which is buggy.
 =================
 */
 static qboolean S_AL_CheckInput(int entityNum, sfxHandle_t sfx)

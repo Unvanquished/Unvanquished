@@ -32,7 +32,7 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "git_version.h"
+#include "revision.h"
 
 #include <CPUInfo.h>
 
@@ -355,23 +355,6 @@ void PRINTF_LIKE(1) NORETURN Sys_Error( const char *error, ... )
 	Sys_ErrorDialog( string );
 
 	Sys_Exit( 3 );
-}
-
-/*
-=================
-Sys_Warn
-=================
-*/
-void PRINTF_LIKE(1) Sys_Warn( char *warning, ... )
-{
-	va_list argptr;
-	char    string[ 1024 ];
-
-	va_start( argptr, warning );
-	Q_vsnprintf( string, sizeof( string ), warning, argptr );
-	va_end( argptr );
-
-	CON_Print( va( "Warning: %s", string ) );
 }
 
 /*

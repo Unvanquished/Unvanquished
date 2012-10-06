@@ -152,7 +152,7 @@ This is the only way control passes into the module.
 This must be the very first function compiled into the .qvm file
 ================
 */
-void     UI_Init( qboolean );
+void     UI_Init( void );
 void     UI_Shutdown( void );
 void     UI_KeyEvent( int key, int chr, int flags );
 void     UI_MouseEvent( int dx, int dy );
@@ -172,7 +172,7 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 			return UI_API_VERSION;
 
 		case UI_INIT:
-			UI_Init( arg0 );
+			UI_Init();
 			return 0;
 
 		case UI_SHUTDOWN:
@@ -1233,7 +1233,7 @@ static void UI_StartServerRefresh( qboolean full )
 
 		trap_Cmd_ExecuteText( EXEC_APPEND, va( "globalservers %d 86 full empty\n",
 		                                       global ? 0 : 1 ) );
-		                                       
+
 	}
 }
 
@@ -1599,9 +1599,6 @@ qboolean UI_ParseMenu( const char *menuFile )
 qboolean Load_Menu( int handle )
 {
 	pc_token_t token;
-#ifdef LOCALIZATION_SUPPORT
-	int        cl_lang;
-#endif
 
 	if ( !trap_Parse_ReadToken( handle, &token ) )
 	{
@@ -1629,50 +1626,6 @@ qboolean Load_Menu( int handle )
 		{
 			return qtrue;
 		}
-
-#ifdef LOCALIZATION_SUPPORT
-		cl_lang = atoi( UI_Cvar_VariableString( "cl_language" ) );
-
-		if ( cl_lang )
-		{
-			const char *s = NULL;
-			const char *fname;
-			char       out[ 256 ];
-
-			COM_StripFilename( token.string, out );
-
-			fname = COM_SkipPath( token.string );
-
-			// NOTE : cl_language 0 - English
-
-			if ( cl_lang == 1 )
-			{
-				s = va( "%s%s", out, "french/" );
-			}
-			else if ( cl_lang == 2 )
-			{
-				s = va( "%s%s", out, "german/" );
-			}
-			else if ( cl_lang == 3 )
-			{
-				s = va( "%s%s", out, "italian/" );
-			}
-			else if ( cl_lang == 4 )
-			{
-				s = va( "%s%s", out, "spanish/" );
-			}
-			else if ( cl_lang == 5 )
-			{
-				s = va( "%s%s", out, "japanese/" );
-			}
-
-			if ( UI_ParseMenu( va( "%s%s", s, fname ) ) )
-			{
-				continue;
-			}
-		}
-
-#endif // LOCALIZATION_SUPPORT
 
 		UI_ParseMenu( token.string );
 	}
@@ -2919,7 +2872,7 @@ static void UI_LoadHumanBuilds( void )
 UI_LoadProfiles
 ===============
 */
-static void UI_LoadProfiles()
+static void UI_LoadProfiles( void )
 {
 	int             numdirs;
 	char            dirlist[ 2048 ];
@@ -4775,14 +4728,14 @@ static int UI_FeederInitialise( int feederID )
 
 		return uiInfo.numResolutions;
 	}
-	
+
 	if ( feederID == FEEDER_LANGUAGES )
 	{
 		int i;
 		char lang[25];
-		
+
 		trap_Cvar_VariableStringBuffer( "language", lang, sizeof( lang ) );
-		
+
 		for ( i = 0; i < uiInfo.numLanguages; i++ )
 		{
 			if( !Q_stricmp( lang, uiInfo.languages[ i ].lang ) )
@@ -4901,7 +4854,7 @@ void UI_ParseLanguages( void )
 	int         index = 0, lang = 0;
 	qboolean    quoted = qfalse;
 	char        *p;
-	
+
 	trap_Cvar_VariableStringBuffer( "trans_languages", buf, sizeof( buf ) );
 	p = buf;
 	memset( &temp, 0, sizeof( temp ) );
@@ -4913,7 +4866,7 @@ void UI_ParseLanguages( void )
 			quoted = qfalse;
 			index = 0;
 		}
-			
+
 		else if( *p == '"' || quoted )
 		{
 			if( !quoted ) { p++; }
@@ -4934,7 +4887,7 @@ void UI_ParseLanguages( void )
 			quoted = qfalse;
 			index = 0;
 		}
-			
+
 		else if( *p == '"' || quoted )
 		{
 			if( !quoted ) { p++; }
@@ -4943,7 +4896,7 @@ void UI_ParseLanguages( void )
 		}
 		p++;
 	}
-	
+
 	uiInfo.numLanguages = lang;
 }
 /*
@@ -4951,7 +4904,7 @@ void UI_ParseLanguages( void )
 UI_Init
 =================
 */
-void UI_Init( qboolean inGameLoad )
+void UI_Init( void )
 {
 	int start;
 
@@ -4959,8 +4912,6 @@ void UI_Init( qboolean inGameLoad )
 
 	BG_InitClassConfigs();
 	BG_InitAllowedGameElements();
-
-	uiInfo.inGameLoad = inGameLoad;
 
 	UI_RegisterCvars();
 	UI_InitMemory();

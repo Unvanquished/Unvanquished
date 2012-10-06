@@ -555,7 +555,7 @@ void CL_WriteAVIAudioFrame( const byte *pcmBuffer, int size )
 
 	if ( bytesInBuffer + size > PCM_BUFFER_SIZE )
 	{
-		Com_Printf( "%s", _( S_COLOR_YELLOW  "WARNING: Audio capture buffer overflow – truncating\n" ));
+		Com_Printf( "%s", _( S_COLOR_YELLOW  "WARNING: Audio capture buffer overflow — truncating\n" ));
 		size = PCM_BUFFER_SIZE - bytesInBuffer;
 	}
 

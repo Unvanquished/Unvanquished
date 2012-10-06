@@ -113,8 +113,8 @@ typedef struct
 //----(SA)
 	void ( *RenderScene )( const refdef_t *fd );
 
-	void ( *SaveViewParms )();
-	void ( *RestoreViewParms )();
+	void ( *SaveViewParms )( void );
+	void ( *RestoreViewParms )( void );
 
 	void ( *SetColor )( const float *rgba );             // NULL = 1,1,1,1
 	void ( *SetClipRegion )( const float *region );
@@ -245,7 +245,7 @@ typedef struct
 	void ( *CM_DrawDebugSurface )( void ( *drawPoly )( int color, int numPoints, float *points ) );
 
 	// a -1 return means the file does not exist
-	// NULL can be passed for buf to just determine existance
+	// NULL can be passed for buf to just determine existence
 	int ( *FS_FileIsInPAK )( const char *name, int *pChecksum );
 	int ( *FS_ReadFile )( const char *name, void **buf );
 	void ( *FS_FreeFile )( void *buf );
@@ -267,8 +267,6 @@ typedef struct
 	long( *ftol )( float f );
 
 	// XreaL BEGIN
-	void            *( *Sys_GetSystemHandles )( void );
-
 	qboolean( *CL_VideoRecording )( void );
 	void ( *CL_WriteAVIVideoFrame )( const byte *buffer, int size );
 	// XreaL END

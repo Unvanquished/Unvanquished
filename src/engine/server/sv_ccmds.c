@@ -173,7 +173,7 @@ static void SV_Map_f( void )
 	char     *cmd;
 	char     *map;
 	char     mapname[ MAX_QPATH ];
-	qboolean cheat, buildScript;
+	qboolean cheat;
 	char     expanded[ MAX_QPATH ];
 
 	map = Cmd_Argv( 1 );
@@ -182,8 +182,6 @@ static void SV_Map_f( void )
 	{
 		return;
 	}
-
-	buildScript = Cvar_VariableIntegerValue( "com_buildScript" );
 
 	// make sure the level exists before trying to change, so that
 	// a typo at the server console won't end the game
@@ -282,7 +280,7 @@ static void SV_MapRestart_f( void )
 	{
 		char mapname[ MAX_QPATH ];
 
-		Com_Printf(_( "sv_maxclients variable change – restarting.\n" ));
+		Com_Printf(_( "sv_maxclients variable change — restarting.\n" ));
 		// restart the map the slow way
 		Q_strncpyz( mapname, Cvar_VariableString( "mapname" ), sizeof( mapname ) );
 
@@ -357,7 +355,7 @@ static void SV_MapRestart_f( void )
 
 			if ( !isBot )
 			{
-				Com_Printf(_( "SV_MapRestart_f(%d): dropped client %i – denied!\n"), delay, i );  // bk010125
+				Com_Printf(_( "SV_MapRestart_f(%d): dropped client %i: denied!\n"), delay, i );  // bk010125
 			}
 
 			continue;

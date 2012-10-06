@@ -1873,7 +1873,10 @@ void CG_AddViewWeapon( playerState_t *ps )
 	CG_CalculateWeaponPosition( hand.origin, angles );
 
 	VectorMA( hand.origin, ( cg_gun_x.value + wi->posOffs[ 0 ] ), cg.refdef.viewaxis[ 0 ], hand.origin );
-	VectorMA( hand.origin, ( cg_gun_y.value + wi->posOffs[ 1 ] ), cg.refdef.viewaxis[ 1 ], hand.origin );
+	if( cg_mirrorgun.integer )
+		VectorMA( hand.origin, -( cg_gun_y.value + wi->posOffs[ 1 ] ), cg.refdef.viewaxis[ 1 ], hand.origin );
+	else
+		VectorMA( hand.origin, ( cg_gun_y.value + wi->posOffs[ 1 ] ), cg.refdef.viewaxis[ 1 ], hand.origin );
 	VectorMA( hand.origin, ( cg_gun_z.value + fovOffset + wi->posOffs[ 2 ] ), cg.refdef.viewaxis[ 2 ], hand.origin );
 
 	// Lucifer Cannon vibration effect
@@ -1889,6 +1892,11 @@ void CG_AddViewWeapon( playerState_t *ps )
 	}
 
 	AnglesToAxis( angles, hand.axis );
+	if( cg_mirrorgun.integer ) {
+		hand.axis[1][0] = - hand.axis[1][0];
+		hand.axis[1][1] = - hand.axis[1][1];
+		hand.axis[1][2] = - hand.axis[1][2];
+	}
 
 	// map torso animations to weapon animations
 	if ( cg_gun_frame.integer )
@@ -1908,6 +1916,8 @@ void CG_AddViewWeapon( playerState_t *ps )
 
 	hand.hModel = wi->handsModel;
 	hand.renderfx = RF_DEPTHHACK | RF_FIRST_PERSON | RF_MINLIGHT;
+	if( cg_mirrorgun.integer )
+		hand.renderfx |= RF_SWAPCULL;
 
 	// add everything onto the hand
 	if ( weapon )

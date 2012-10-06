@@ -18,8 +18,8 @@
 ; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ; ===========================================================================
 
-; MASM ftol conversion functions using SSE or FPU
-; assume __cdecl calling convention is being used for x86, __fastcall for x64
+; the MASM version of the ftol conversion functions using SSE or FPU
+; assumes that the cdecl calling convention is being used on x86, and the fastcall one on x64
 
 IFNDEF idx64
 .model flat, c
@@ -61,7 +61,7 @@ ELSE
 	add esp, 2
 	ret
   endm
-  
+
   qftolx87 PROC
     qftolx87m [esp + 6]
   qftolx87 ENDP

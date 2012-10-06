@@ -98,10 +98,6 @@ void CL_InitKeyCommands( void )
 {
 }
 
-void CL_CDDialog( void )
-{
-}
-
 void CL_FlushMemory( void )
 {
 }

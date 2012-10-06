@@ -1322,7 +1322,7 @@ extern "C" {
 
 			if ( glConfig.driverType == GLDRV_MESA )
 			{
-				ri.Printf( PRINT_DEVELOPER, "^3NOT using GPU vertex skinning – known to be broken with Radeon HD and Mesa\n" );
+				ri.Printf( PRINT_DEVELOPER, "^3Not using GPU vertex skinning: known to be broken with Radeon HD and Mesa\n" );
 				glConfig2.vboVertexSkinningAvailable = qfalse;
 			}
 		}
@@ -1679,7 +1679,7 @@ extern "C" {
 		r_cullShadowPyramidCurves = ri.Cvar_Get( "r_cullShadowPyramidCurves", "1", CVAR_CHEAT );
 		r_cullShadowPyramidTriangles = ri.Cvar_Get( "r_cullShadowPyramidTriangles", "1", CVAR_CHEAT );
 		r_noShadowFrustums = ri.Cvar_Get( "r_noShadowFrustums", "0", CVAR_CHEAT );
-		r_noLightFrustums = ri.Cvar_Get( "r_noLightFrustums", "0", CVAR_CHEAT );
+		r_noLightFrustums = ri.Cvar_Get( "r_noLightFrustums", "1", CVAR_CHEAT );
 
 		r_maxPolys = ri.Cvar_Get( "r_maxpolys", "10000", 0 );  // 600 in vanilla Q3A
 		AssertCvarRange( r_maxPolys, 600, 30000, qtrue );

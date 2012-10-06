@@ -39,11 +39,11 @@ indent -kr -ut -ts2 -i2 <file>
 */
 #include "dl_public.h"
 
-void DL_InitDownload()
+void DL_InitDownload( void )
 {
 }
 
-void DL_Shutdown()
+void DL_Shutdown( void )
 {
 }
 
@@ -59,7 +59,7 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 }
 
 // (maybe this should be CL_DL_DownloadLoop)
-dlStatus_t DL_DownloadLoop()
+dlStatus_t DL_DownloadLoop( void )
 {
 	return DL_DONE;
 }

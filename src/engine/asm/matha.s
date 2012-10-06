@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 	.text
 
-// TODO: rounding needed?
+// TODO: is rounding needed?
 // stack parameter offset
 #define	val	4
 

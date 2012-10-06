@@ -72,7 +72,7 @@ Maryland 20850 USA.
 #define idppc         1
 #if defined( __VEC__ )
 #define idppc_altivec 1
-#ifdef MACOS_X // Apple's GCC does this differently than the FSF.
+#ifdef MACOS_X // Apple's GCC does this differently than the GNU's.
 #define VECCONST_UINT8(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p) \
         (vector unsigned char) ( a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p )
 #else

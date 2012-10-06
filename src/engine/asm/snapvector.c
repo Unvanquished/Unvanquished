@@ -24,8 +24,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../qcommon/q_shared.h"
 
 /*
- * GNU inline asm version of qsnapvector
- * See MASM snapvector.asm for commentary
+ * The GNU inline asm version of qsnapvector
+ * See snapvector.asm (the MASM version) for commentary
  */
 
 static unsigned char ssemask[16] ALIGNED(16) =
@@ -47,17 +47,26 @@ void qsnapvectorsse(vec3_t vec)
 		"orps %%xmm1, %%xmm0\n"
 		"movups %%xmm0, (%1)\n"
 		:
+	// there's a Clang/LLVM warning for an uninitialized use of the oldcw variable.
+	// i wasn't able to come up with anything better than the use of compiler
+	// pragmas to silence the warning. TODO: come up with a better solution.
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wuninitialized"
+#endif
 		: "r" (ssemask), "r" (vec)
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 		: "memory", "%xmm0", "%xmm1", "%xmm2"
 	);
-	
 }
 
 #define QROUNDX87(src) \
 	"flds " src "\n" \
 	"fistps " src "\n" \
 	"filds " src "\n" \
-	"fstps " src "\n"	
+	"fstps " src "\n"
 
 void qsnapvectorx87(vec3_t vec)
 {

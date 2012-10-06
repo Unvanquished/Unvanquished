@@ -50,8 +50,8 @@ extern "C" {
 #define ENGINE_NAME             "Daemon Engine"
 #define ENGINE_VERSION          "0.7.0"
 
-#ifdef GIT_VERSION
-# define Q3_VERSION             PRODUCT_NAME " " PRODUCT_VERSION" " GIT_VERSION
+#ifdef REVISION
+# define Q3_VERSION             PRODUCT_NAME " " PRODUCT_VERSION " " REVISION
 #else
 # define Q3_VERSION             PRODUCT_NAME " " PRODUCT_VERSION
 #endif
@@ -64,8 +64,6 @@ extern "C" {
 #define GAMENAME_FOR_MASTER     PRODUCT_NAME_UPPER
 
 #define CONFIG_NAME             "autogen.cfg"
-
-#define LOCALIZATION_SUPPORT
 
 #if 1
 #if !defined( COMPAT_Q3A )
@@ -2081,9 +2079,9 @@ char *Q_UTF8Unstore( int e );
 
 		ET_RANGE_MARKER,
 		ET_BUILDABLE,       // buildable type
-		
+
 		ET_LOCATION,
-		
+
 		ET_MISSILE,
 		ET_MOVER,
 		ET_BEAM,
@@ -2093,14 +2091,14 @@ char *Q_UTF8Unstore( int e );
 		ET_TELEPORT_TRIGGER,
 		ET_INVISIBLE,
 		ET_GRAPPLE,       // grapple hooked on wall
-		
+
 		ET_CORPSE,
 		ET_PARTICLE_SYSTEM,
 		ET_ANIMMAPOBJ,
 		ET_MODELDOOR,
 		ET_LIGHTFLARE,
 		ET_LEV2_ZAP_CHAIN,
-		
+
 		ET_EVENTS       // any of the EV_* events can be added freestanding
 		// by setting eType to ET_EVENTS + eventNum
 		// this avoids having to set eFlags and eventNum
@@ -2184,7 +2182,7 @@ char *Q_UTF8Unstore( int e );
 #define GLYPH_END       255
 #define GLYPH_CHARSTART 32
 #define GLYPH_CHAREND   127
-#define GLYPHS_PER_FONT GLYPH_END - GLYPH_START + 1
+#define GLYPHS_PER_FONT ( GLYPH_END - GLYPH_START + 1 )
 typedef struct
 {
 	int       height; // number of scan lines

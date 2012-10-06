@@ -259,7 +259,7 @@ void Broadcast_Setup(const char *dest)
 #endif
 }
 
-void Broadcast_Shutdown()
+void Broadcast_Shutdown(void)
 {
 #if defined(USE_XML)
 	if(brdcst_socket)
@@ -318,7 +318,7 @@ void FPrintf(int flag, char *buf)
 }
 
 #ifdef DBG_XML
-void DumpXML()
+void DumpXML(void)
 {
 	xmlSaveFile("XMLDump.xml", doc);
 }

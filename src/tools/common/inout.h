@@ -49,13 +49,13 @@ void            xml_Point(char *msg, vec3_t pt);
 #endif
 
 #ifdef DBG_XML
-void            DumpXML();
+void            DumpXML(void);
 #endif
 
 #endif // USE_XML
 
 void            Broadcast_Setup(const char *dest);
-void            Broadcast_Shutdown();
+void            Broadcast_Shutdown(void);
 
 #define SYS_VRB 0				// verbose support (on/off)
 #define SYS_STD 1				// standard print level

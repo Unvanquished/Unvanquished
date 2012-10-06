@@ -753,7 +753,7 @@ void Cmd_If_f( void )
 		case 3:
 			vt = Cmd_Argv( 2 );
 #ifdef DEDICATED
-			Com_Printf(_( "if <modifiers>… is not supported on the server – assuming true.\n" ));
+			Com_Printf(_( "if <modifiers>… is not supported on the server — assuming true.\n" ));
 			v = vt;
 #else
 			v = Cmd_Argv( 1 );
@@ -1673,7 +1673,7 @@ For rcon use when you want to transmit without altering quoting
 ATVI Wolfenstein Misc #284
 ============
 */
-const char *Cmd_Cmd()
+const char *Cmd_Cmd( void )
 {
 	return cmd.cmd;
 }
@@ -2016,6 +2016,7 @@ static const char *EscapeString( const char *in, qboolean quote )
 	char        *out = escapeBuffer;
 	const char  *end = escapeBuffer + ESCAPEBUFFER_SIZE - 1 - !!quote;
 	qboolean    quoted = qfalse;
+	qboolean    forcequote = qfalse;
 
 	if ( quote )
 	{
@@ -2026,11 +2027,18 @@ static const char *EscapeString( const char *in, qboolean quote )
 	{
 		char c = *in++;
 
+		if ( forcequote )
+		{
+			forcequote = qfalse;
+			goto doquote;
+		}
+
 		switch ( c )
 		{
 		case '/':
 			// only quote "//" and "/*"
 			if ( *in != '/' && *in != '*' ) break;
+			forcequote = qtrue;
 			goto doquote;
 		case ';':
 			// no need to quote semicolons if in ""

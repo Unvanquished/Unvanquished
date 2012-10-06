@@ -570,7 +570,7 @@ static void GLimp_DetectAvailableModes( void )
 }
 
 #if defined( USE_XREAL_RENDERER )
-static qboolean GLimp_InitOpenGL3xContext()
+static qboolean GLimp_InitOpenGL3xContext( void )
 {
 #if defined( WIN32 ) || defined( __linux__ )
 	int        retVal;
@@ -1957,7 +1957,17 @@ success:
 
 	Q_strncpyz( glConfig.version_string, ( char * ) glGetString( GL_VERSION ), sizeof( glConfig.version_string ) );
 
-	if ( glConfig.driverType != GLDRV_OPENGL3 )
+	if ( glConfig.driverType == GLDRV_OPENGL3 )
+	{
+		GLint numExts, i;
+
+		glGetIntegerv( GL_NUM_EXTENSIONS, &numExts );
+
+		glConfig.extensions_string[ 0 ] = '\0';
+		for ( i = 0; i < numExts; ++i )
+			Q_strcat( glConfig.extensions_string, sizeof( glConfig.extensions_string ), ( char * ) glGetStringi( GL_EXTENSIONS, i ) );
+	}
+	else
 	{
 		Q_strncpyz( glConfig.extensions_string, ( char * ) glGetString( GL_EXTENSIONS ), sizeof( glConfig.extensions_string ) );
 	}

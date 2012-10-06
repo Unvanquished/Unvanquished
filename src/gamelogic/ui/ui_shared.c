@@ -204,7 +204,7 @@ void UI_InitMemory( void )
 	outOfMemory = qfalse;
 }
 
-qboolean UI_OutOfMemory()
+qboolean UI_OutOfMemory( void )
 {
 	return outOfMemory;
 }
@@ -4856,7 +4856,7 @@ void Menu_HandleKey( menuDef_t *menu, int key, int chr, qboolean down )
 		Item_RunScript( &it, menu->onKEY[ key ] );
 	}
 
-	for ( i = 0; i < 6; ++i )
+	for ( i = 0; i < ARRAY_LEN( modkeys ); ++i )
 	{
 		if ( key == modkeys[ i ] )
 		{

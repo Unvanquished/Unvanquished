@@ -927,6 +927,9 @@ qboolean Sys_IsLANAddress( netadr_t adr )
 		// 10.0.0.0        -   10.255.255.255  (10/8 prefix)
 		// 172.16.0.0      -   172.31.255.255  (172.16/12 prefix)
 		// 192.168.0.0     -   192.168.255.255 (192.168/16 prefix)
+
+		// 127.0.0.0       -   127.255.255.255 (127/8 prefix)
+
 		if ( adr.ip[ 0 ] == 10 )
 		{
 			return qtrue;
@@ -1305,7 +1308,7 @@ void NET_JoinMulticast6( void )
 	}
 }
 
-void NET_LeaveMulticast6()
+void NET_LeaveMulticast6( void )
 {
 	if ( multicast6_socket != INVALID_SOCKET )
 	{

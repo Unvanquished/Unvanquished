@@ -95,15 +95,15 @@ void CM_DrawDebugSurface( void ( *drawPoly )( int color, int numPoints, float *p
 // Physics
 #ifdef USE_PHYSICS
 void CMod_PhysicsInit( void );
-void CMod_PhysicsShutdown();
-void CMod_PhysicsClearBodies();
+void CMod_PhysicsShutdown( void );
+void CMod_PhysicsClearBodies( void );
 void CMod_PhysicsAddBSPModel( int index, int firstSurface, int numSurfaces );
 
 void CMod_PhysicsAddFaceToModel( int modelIndex, int surface, vec3_t vec[ 3 ] );
 int  CMod_PhysicsBSPSurfaceIsModel( int surfaceID );
-void CMod_PhysicsUpdate();
-void CMod_PhysicsEndBSPCollisionTree();
-void CMod_PhysicsBeginBSPCollisionTree();
+void CMod_PhysicsUpdate( void );
+void CMod_PhysicsEndBSPCollisionTree( void );
+void CMod_PhysicsBeginBSPCollisionTree( void );
 
 void CMod_PhysicsAddBSPFace( vec3_t vec[ 3 ] );
 #endif

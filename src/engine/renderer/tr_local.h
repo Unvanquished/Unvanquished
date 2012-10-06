@@ -497,10 +497,13 @@ struct shaderCommands_s;
 
 typedef enum
 {
-  CT_FRONT_SIDED,
-  CT_BACK_SIDED,
-  CT_TWO_SIDED
+  CT_FRONT_SIDED = 0,
+  CT_TWO_SIDED   = 1,
+  CT_BACK_SIDED  = 2
 } cullType_t;
+
+// reverse the cull operation
+#define ReverseCull(c) (2 - (c))
 
 typedef enum
 {
@@ -1627,7 +1630,7 @@ extern cvar_t *r_lodscale;
 
 extern cvar_t *r_lightScale; // Dynamic light intensity for Q3A compatibility
 
-extern cvar_t *r_primitives; // "0" = based on compiled vertex array existance
+extern cvar_t *r_primitives; // "0" = based on compiled vertex array existence
 
 // "1" = glDrawElemet tristrips
 // "2" = glDrawElements triangles
@@ -2176,8 +2179,8 @@ void RE_AddCoronaToScene( const vec3_t org, float r, float g, float b, float sca
 
 //----(SA)
 void RE_RenderScene( const refdef_t *fd );
-void RE_SaveViewParms();
-void RE_RestoreViewParms();
+void RE_SaveViewParms( void );
+void RE_RestoreViewParms( void );
 
 /*
 =============================================================
@@ -2418,8 +2421,6 @@ extern int                          max_polyverts;
 
 extern backEndData_t                *backEndData[ SMP_FRAMES ]; // the second one may not be allocated
 
-extern volatile renderCommandList_t *renderCommandList;
-
 extern volatile qboolean            renderThreadActive;
 
 void                                *R_GetCommandBuffer( int bytes );
@@ -2465,8 +2466,8 @@ int        RE_AnimFrameRate( qhandle_t hAnim );
 int        RE_BoneIndex( qhandle_t hModel, const char *boneName );
 
 // font stuff
-void       R_InitFreeType();
-void       R_DoneFreeType();
+void       R_InitFreeType( void );
+void       R_DoneFreeType( void );
 void       RE_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t *font );
 void       RE_UnregisterFont( fontInfo_t *font );
 void       RE_Glyph(fontInfo_t *font, const char *str, glyphInfo_t *glyph);

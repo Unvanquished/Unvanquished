@@ -275,7 +275,7 @@ qboolean QAL_Init( const char *libname )
 	return qtrue;
 }
 
-void QAL_Shutdown()
+void QAL_Shutdown( void )
 {
 	if ( OpenALLib )
 	{

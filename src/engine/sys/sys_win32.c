@@ -32,7 +32,7 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "git_version.h"
+#include "revision.h"
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "sys_local.h"
@@ -67,7 +67,7 @@ Set FPU control word to default value
 ================
 */
 
-#ifndef _RC_CHOP
+#ifndef _RC_NEAR
 // mingw doesn't seem to have these defined :(
 
 #define _MCW_EM  0x0008001fU
@@ -873,10 +873,10 @@ void Sys_PlatformExit( void )
 
 /*
 ==============
-Sys_PID
+Sys_GetPID
 ==============
 */
-int Sys_PID( void )
+int Sys_GetPID( void )
 {
 	return GetCurrentProcessId();
 }

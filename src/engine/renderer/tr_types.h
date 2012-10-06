@@ -65,6 +65,7 @@ Maryland 20850 USA.
 #define RF_HILIGHT       0x000100 // more than RF_MINLIGHT.  For when an object is "Highlighted" (looked at/training identification/etc)
 #define RF_BLINK         0x000200 // eyes in 'blink' state
 #define RF_FORCENOLOD    0x000400
+#define RF_SWAPCULL      0x000800 // swap CT_FRONT_SIDED and CT_BACK_SIDED
 
 // refdef flags
 #define RDF_NOWORLDMODEL ( 1 << 0 ) // used for player configuration screen
@@ -81,7 +82,7 @@ Maryland 20850 USA.
 
 // XreaL BEGIN
 #define RDF_NOCUBEMAP    ( 1 << 7 ) // RB: don't use cubemaps
-#define RDF_NOBLOOM      ( 1 << 8 ) // RB: disable bloom. useful for hud models
+#define RDF_NOBLOOM      ( 1 << 8 ) // RB: disable bloom. useful for HUD models
 // XreaL END
 
 #define GL_INDEX_TYPE GL_UNSIGNED_INT
@@ -301,7 +302,7 @@ typedef enum
 
   FOG_SKY, //  1   fog values to apply to the sky when using density fog for the world (non-distance clipping fog) (only used if(glfogsettings[FOG_MAP].registered) or if(glfogsettings[FOG_MAP].registered))
   FOG_PORTALVIEW, //  2   used by the portal sky scene
-  FOG_HUD, //  3   used by the 3D hud scene
+  FOG_HUD, //  3   used by the 3D HUD scene
 
   //      The result of these for a given frame is copied to the scene.glFog when the scene is rendered
 

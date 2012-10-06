@@ -974,7 +974,7 @@ char *COM_ParseExt( char **data_p, qboolean allowLineBreaks )
 				data++;
 			}
 
-//			com_lines++;
+			//com_lines++;
 		}
 		// skip /* */ comments
 		else if ( c == '/' && data[ 1 ] == '*' )
@@ -985,10 +985,10 @@ char *COM_ParseExt( char **data_p, qboolean allowLineBreaks )
 			{
 				data++;
 
-				if ( *data == '\n' )
-				{
-//					com_lines++;
-				}
+				//if ( *data == '\n' )
+				//{
+				//	com_lines++;
+				//}
 			}
 
 			if ( *data )
@@ -1011,7 +1011,7 @@ char *COM_ParseExt( char **data_p, qboolean allowLineBreaks )
 		{
 			c = *data++;
 
-			if ( c == '\\' && * ( data ) == '\"' )
+			if ( c == '\\' && *data == '\"' )
 			{
 				// Arnout: string-in-string
 				if ( len < MAX_TOKEN_CHARS )
@@ -1033,7 +1033,7 @@ char *COM_ParseExt( char **data_p, qboolean allowLineBreaks )
 						break;
 					}
 
-					if ( ( c == '\\' && * ( data ) == '\"' ) )
+					if ( ( c == '\\' && *data == '\"' ) )
 					{
 						if ( len < MAX_TOKEN_CHARS )
 						{

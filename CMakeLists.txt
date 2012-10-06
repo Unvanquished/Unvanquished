@@ -56,6 +56,8 @@ option( ENABLE_W_ALL         "Use -Wall"                                   0 )
 option( ENABLE_WARNINGS      "Enable security & code-checking warning options" 1 )
 option( ENABLE_HARDENING     "Enable security hardening options"           1 )
 
+option( USE_GIT_DESCRIBE     "Use the revision information reported by Git's describe function" 1 )
+
 cmake_dependent_option( BUILD_OLD_RENDERER   "Build old renderer library"                            1 BUILD_CLIENT                   0 )
 cmake_dependent_option( BUILD_NEW_RENDERER   "Build new renderer library"                            1 BUILD_CLIENT                   0 )
 cmake_dependent_option( USE_OPENAL           "Use OpenAL"                                            1 BUILD_CLIENT                   0 )
@@ -93,7 +95,7 @@ cmake_dependent_option( ENABLE_W_EXTRA       "Use -Wextra"                      
 cmake_dependent_option( ENABLE_FSTACKPROT    "Enable stack protection if available"        1 ENABLE_HARDENING 0 )
 cmake_dependent_option( ENABLE_RELRO         "Enable relro & bindnow if available"         1 ENABLE_HARDENING 0 )
 
-mark_as_advanced( GAME_LIB_LLVM LLVM_CONFIG ENABLE_FSTACKPROT ENABLE_RELRO )
+mark_as_advanced( GAME_LIB_LLVM LLVM_CONFIG ENABLE_FSTACKPROT ENABLE_RELRO USE_GIT_DESCRIBE )
 
 if( GAME_LIB_LLVM )
   find_program( LLVM_CONFIG llvm-config )
@@ -172,32 +174,34 @@ else()
   endif()
 endif()
 
-# Report the git commit identification, if possible
+if( USE_GIT_DESCRIBE )
+  # Report the Git commit identification, if possible
 
-if( EXISTS "${CMAKE_SOURCE_DIR}/.git" )
-  find_package( Git )
-  if( GIT_FOUND )
-    execute_process( COMMAND git describe --tags --long --dirty=+dirty OUTPUT_VARIABLE GIT_DESCRIBE_REPORT OUTPUT_STRIP_TRAILING_WHITESPACE )
-    message( STATUS "git reported ${GIT_DESCRIBE_REPORT}" )
-    # this may fail with annotated non-release tags
-    if( GIT_DESCRIBE_REPORT MATCHES "-0-g.......$" )
-      set( GIT_DESCRIBE_REPORT )
+  if( EXISTS "${CMAKE_SOURCE_DIR}/.git" )
+    find_package( Git )
+    if( GIT_FOUND )
+      execute_process( COMMAND git describe --tags --long --dirty=+dirty OUTPUT_VARIABLE GIT_DESCRIBE_REPORT OUTPUT_STRIP_TRAILING_WHITESPACE )
+      message( STATUS "git reported ${GIT_DESCRIBE_REPORT}" )
+      # this may fail with annotated non-release tags
+      if( GIT_DESCRIBE_REPORT MATCHES "-0-g.......$" )
+        set( GIT_DESCRIBE_REPORT )
+      endif()
     endif()
   endif()
+
+  if( GIT_DESCRIBE_REPORT )
+    set( DESIRED_REVISION_H_CONTENTS "#define REVISION \"${GIT_DESCRIBE_REPORT}\"\n" )
+  endif()
+  set( GIT_DESCRIBE ${GIT_DESCRIBE_REPORT} CACHE INTERNAL "commit id reported by Git" FORCE )
 endif()
 
-if( GIT_DESCRIBE_REPORT )
-  set( DESIRED_GIT_VERSION_H_CONTENTS "#define GIT_VERSION \"${GIT_DESCRIBE_REPORT}\"\n" )
-endif()
-set( GIT_DESCRIBE ${GIT_DESCRIBE_REPORT} CACHE INTERNAL "commit id reported by git" FORCE )
-
-if( EXISTS "${CMAKE_BINARY_DIR}/CMakeFiles/git_version.h" )
-  file( READ "${CMAKE_BINARY_DIR}/CMakeFiles/git_version.h" ACTUAL_GIT_VERSION_H_CONTENTS )
-  if( NOT "${ACTUAL_GIT_VERSION_H_CONTENTS}" STREQUAL "${DESIRED_GIT_VERSION_H_CONTENTS}" )
-    file( WRITE "${CMAKE_BINARY_DIR}/CMakeFiles/git_version.h" "${DESIRED_GIT_VERSION_H_CONTENTS}" )
+if( EXISTS "${CMAKE_BINARY_DIR}/CMakeFiles/revision.h" )
+  file( READ "${CMAKE_BINARY_DIR}/CMakeFiles/revision.h" ACTUAL_REVISION_H_CONTENTS )
+  if( NOT "${ACTUAL_REVISION_H_CONTENTS}" STREQUAL "${DESIRED_REVISION_H_CONTENTS}" )
+    file( WRITE "${CMAKE_BINARY_DIR}/CMakeFiles/revision.h" "${DESIRED_REVISION_H_CONTENTS}" )
   endif()
 else()
-  file( WRITE "${CMAKE_BINARY_DIR}/CMakeFiles/git_version.h" "${DESIRED_GIT_VERSION_H_CONTENTS}" )
+  file( WRITE "${CMAKE_BINARY_DIR}/CMakeFiles/revision.h" "${DESIRED_REVISION_H_CONTENTS}" )
 endif()
 
 include_directories( "${CMAKE_BINARY_DIR}/CMakeFiles" )
@@ -881,78 +885,82 @@ set( MESALIST
 )
 
 set( GLSLLIST
-  ${LIB_DIR}/glsl-optimizer/src/glsl/loop_analysis.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_jumps.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ast_function.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ast_type.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_hv_accept.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/glsl_types.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_reader.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/hir_field_selection.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_dead_functions.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_variable.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_redundant_jumps.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_tree_grafting.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_instructions.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_dead_code_local.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_function_detect_recursion.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_if_to_cond_assign.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/glsl_symbol_table.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_rvalue_visitor.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/loop_unroll.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_if_simplification.cpp
   ${LIB_DIR}/glsl-optimizer/src/glsl/ast_expr.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_validate.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_vector.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_variable_refcount.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_set_program_inouts.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_noise.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_swizzle_swizzle.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/glsl_parser.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_structure_splitting.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_dead_code.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_import_prototypes.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_basic_block.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/s_expression.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_texture_projection.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_constant_variable.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ast_function.cpp
   ${LIB_DIR}/glsl-optimizer/src/glsl/ast_to_hir.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/linker.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_copy_propagation.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_noop_swizzle.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/standalone_scaffolding.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_print_visitor.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_function_can_inline.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_discard.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/loop_controls.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_constant_propagation.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_function_inlining.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/link_functions.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_vec_index_to_swizzle.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ast_type.cpp
   ${LIB_DIR}/glsl-optimizer/src/glsl/builtin_function.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_function.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_mat_op_to_vec.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_print_glsl_visitor.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/glsl_optimizer.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_vec_index_to_cond_assign.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_copy_propagation_elements.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_unused_structs.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_constant_folding.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/builtin_stubs.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/builtin_variables.cpp
   ${LIB_DIR}/glsl-optimizer/src/glsl/glsl_lexer.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_clone.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_variable_index_to_cond_assign.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_hierarchical_visitor.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_algebraic.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_expression_flattening.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_constant_expression.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/glsl_optimizer.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/glsl_parser.cpp
   ${LIB_DIR}/glsl-optimizer/src/glsl/glsl_parser_extras.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_discard_simplification.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/glcpp/glcpp-parse.c
-  ${LIB_DIR}/glsl-optimizer/src/glsl/glcpp/glcpp-lex.c
-  ${LIB_DIR}/glsl-optimizer/src/glsl/glcpp/pp.c
-  ${LIB_DIR}/glsl-optimizer/src/glsl/glcpp/glcpp.c
+  ${LIB_DIR}/glsl-optimizer/src/glsl/glsl_symbol_table.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/glsl_types.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/hir_field_selection.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_basic_block.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_builder.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_clone.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_constant_expression.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_expression_flattening.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_function_can_inline.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_function.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_function_detect_recursion.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_hierarchical_visitor.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_hv_accept.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_import_prototypes.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_print_glsl_visitor.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_print_visitor.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_reader.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_rvalue_visitor.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_set_program_inouts.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_unused_structs.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_validate.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_variable_refcount.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/linker.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/link_functions.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/link_uniform_initializers.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/link_uniforms.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/loop_analysis.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/loop_controls.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/loop_unroll.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_clip_distance.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_discard.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_discard_flow.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_if_to_cond_assign.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_instructions.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_jumps.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_mat_op_to_vec.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_noise.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_output_reads.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_ubo_reference.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_variable_index_to_cond_assign.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_vec_index_to_cond_assign.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_vec_index_to_swizzle.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_vector.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/main.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_algebraic.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_array_splitting.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_constant_folding.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_constant_propagation.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_constant_variable.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_copy_propagation.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_copy_propagation_elements.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_dead_code.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_dead_code_local.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_dead_functions.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_function_inlining.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_if_simplification.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_noop_swizzle.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_redundant_jumps.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_structure_splitting.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_swizzle_swizzle.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_tree_grafting.cpp
   ${LIB_DIR}/glsl-optimizer/src/glsl/ralloc.c
+  ${LIB_DIR}/glsl-optimizer/src/glsl/s_expression.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/standalone_scaffolding.cpp
   ${LIB_DIR}/glsl-optimizer/src/glsl/strtod.c
 )
 
@@ -1291,7 +1299,7 @@ endif()
 if( BUILD_OLD_RENDERER )
   # Setup target renderer
   add_library( renderer SHARED ${RENDERERLIST} ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c ${SHAREDLIST} ${MOUNT_DIR}/engine/rendererGL/rendererGL.def )
-  set_property( TARGET renderer PROPERTY COMPILE_DEFINITIONS BUILD_FREETYPE USE_REFENTITY_ANIMATIONSYSTEM )
+  set_property( TARGET renderer PROPERTY COMPILE_DEFINITIONS USE_REFENTITY_ANIMATIONSYSTEM )
   set_target_properties( renderer PROPERTIES OUTPUT_NAME "rendererGL${BUILD_ARCH}" )
   
   if( NOT MSVC )
@@ -1331,7 +1339,7 @@ endif()
 if( BUILD_NEW_RENDERER )
   # Setup target rendererGL
   add_library( rendererGL SHARED ${SHAREDLIST} ${OPENEXRLIST} ${RENDERERGLLIST} ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c ${MOUNT_DIR}/engine/rendererGL/rendererGL.def )
-  set_property( TARGET rendererGL PROPERTY COMPILE_DEFINITIONS BUILD_FREETYPE FT_FREETYPE USE_XREAL_RENDERER USE_REFENTITY_ANIMATIONSYSTEM )
+  set_property( TARGET rendererGL PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER USE_REFENTITY_ANIMATIONSYSTEM )
   set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "rendererGL3${BUILD_ARCH}" )
 
   target_link_libraries( rendererGL ${OS_LIBRARIES} )

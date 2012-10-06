@@ -142,6 +142,12 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 	},
 
 	{
+		"listinactive", G_admin_listinactive, qtrue, "listadmins",
+		N_("display a list of inactive server admins and their levels"),
+		N_("[^5months^7] (^5start admin#^7)")
+	},
+
+	{
 		"listlayouts",  G_admin_listlayouts, qtrue,  "listlayouts",
 		N_("display a list of all available layouts for a map"),
 		N_("(^5mapname^7)")
@@ -745,6 +751,8 @@ void G_admin_writeconfig( void )
 		admin_writeconfig_string( a->msg2, f );
 		trap_FS_Write( "counter = ", 10, f );
 		admin_writeconfig_int( a->counter, f );
+		trap_FS_Write( "lastseen = ", 11, f );
+		admin_writeconfig_int( a->lastSeen.tm_year * 10000 + a->lastSeen.tm_mon * 100 + a->lastSeen.tm_mday, f );
 		trap_FS_Write( "\n", 1, f );
 	}
 
@@ -981,7 +989,8 @@ static int admin_search( gentity_t *ent,
                          qboolean( *match )( void *, const void * ),
                          int ( *out )( void *, char * ),
                          const void *list,
-                         const void *arg, /* this will be used as char* later */
+                         const void *arg,
+                         const char *arglist,
                          int start,
                          const int offset,
                          const int limit )
@@ -1054,13 +1063,12 @@ static int admin_search( gentity_t *ent,
 	{
 		ADMBP( va( "^3%s: ^7showing %d of %d %s %d-%d%s%s.",
 		           cmd, count, found, noun, start + offset, end + offset,
-		           * ( char * ) arg ? " matching " : "", ( char * ) arg ) );
+		           ( arglist && *arglist ) ? " matching " : "", arglist ) );
 
 		if ( next )
 		{
 			ADMBP( va( "  use '%s%s%s %d' to see more", cmd,
-			           * ( char * ) arg ? " " : "",
-			           ( char * ) arg,
+			           arglist ? " " : "", arglist,
 			           next + offset ) );
 		}
 	}
@@ -1089,6 +1097,7 @@ static int admin_out( void *admin, char *str )
 	g_admin_admin_t *a = ( g_admin_admin_t * ) admin;
 	g_admin_level_t *l;
 	int             lncol = 0, i;
+	char            lastSeen[64] = "          ";
 
 	if ( !str )
 	{
@@ -1109,9 +1118,14 @@ static int admin_out( void *admin, char *str )
 		}
 	}
 
-	Com_sprintf( str, MAX_STRING_CHARS, "%-6d %*s^7 %s",
-	             a->level, admin_level_maxname + lncol - 1, l ? l->name : "(null)",
-	             a->name );
+	if ( a->lastSeen.tm_mday )
+	{
+		trap_GetTimeString( lastSeen, sizeof( lastSeen ), "%Y-%m-%d", &a->lastSeen );
+	}
+
+	Com_sprintf( str, MAX_STRING_CHARS, "%-6d %*s^7 %s %s",
+	             a->level, admin_level_maxname + lncol, l ? l->name : "(null)",
+	             lastSeen, a->name );
 
 	return 0;
 }
@@ -1119,7 +1133,7 @@ static int admin_out( void *admin, char *str )
 static int admin_listadmins( gentity_t *ent, int start, char *search )
 {
 	return admin_search( ent, "listadmins", "admins", admin_match, admin_out,
-	                     g_admin_admins, search, start, MAX_CLIENTS, MAX_ADMIN_LISTITEMS );
+	                     g_admin_admins, search, search, start, MAX_CLIENTS, MAX_ADMIN_LISTITEMS );
 }
 
 static int admin_find_admin( gentity_t *ent, char *name, const char *command,
@@ -1209,7 +1223,7 @@ static int admin_find_admin( gentity_t *ent, char *name, const char *command,
 		{
 			for ( i = 0, a = g_admin_admins; a; i++, a = a->next ) {; }
 
-			ADMP( va( "%s %s %s %d %d %d", QQ( N_("^3$1$: ^7$2$ not in range 0-$3$ or $4$-$5$\n") ),
+			ADMP( va( "%s %s %s %d %d %d", QQ( N_("^3$1$: ^7$2$ not in range 0–$3$ or $4$–$5$\n") ),
 			          Quote(command), Quote(name),
 			          level.maxclients - 1,
 			          MAX_CLIENTS, MAX_CLIENTS + i - 1 ) );
@@ -1425,7 +1439,7 @@ qboolean G_admin_ban_check( gentity_t *ent, char *reason, int rlen )
 		{
 			trap_Print( va( "%s%s\n", warningMessage,
 			                ban->warnCount + 1 == 10 ?
-			                S_COLOR_WHITE " - future messages for this ban will be suppressed" :
+			                S_COLOR_WHITE " — future messages for this ban will be suppressed" :
 			                "" ) );
 		}
 
@@ -1763,6 +1777,7 @@ qboolean G_admin_readconfig( gentity_t *ent )
 				a = g_admin_admins = BG_Alloc( sizeof( g_admin_admin_t ) );
 			}
 
+			memset( a, 0, sizeof( *a ) );
 			admin_open = qtrue;
 			level_open = ban_open = command_open = qfalse;
 			ac++;
@@ -1859,6 +1874,15 @@ qboolean G_admin_readconfig( gentity_t *ent )
 			else if ( !Q_stricmp( t, "counter" ) )
 			{
 				admin_readconfig_int( &cnf, &a->counter );
+			}
+			else if ( !Q_stricmp( t, "lastseen" ) )
+			{
+				unsigned int tm;
+				admin_readconfig_int( &cnf, (int *) &tm );
+				// trust the admin here...
+				a->lastSeen.tm_year = tm / 10000;
+				a->lastSeen.tm_mon = ( tm / 100 ) % 100;
+				a->lastSeen.tm_mday = tm % 100;
 			}
 			else
 			{
@@ -2141,6 +2165,7 @@ qboolean G_admin_setlevel( gentity_t *ent )
 
 		vic->client->pers.admin = a;
 		Q_strncpyz( a->guid, vic->client->pers.guid, sizeof( a->guid ) );
+		trap_RealTime( &a->lastSeen ); // player is connected...
 	}
 
 	a->level = l->level;
@@ -2478,7 +2503,7 @@ qboolean G_admin_ban( gentity_t *ent )
 
 		if ( ip.mask < min || ip.mask > max )
 		{
-			ADMP( va( "%s %d %d %d", QQ( N_("^3ban: ^7invalid netmask ($1$ is not one of $2$-$3$)\n") ),
+			ADMP( va( "%s %d %d %d", QQ( N_("^3ban: ^7invalid netmask ($1$ is not one of $2$–$3$)\n") ),
 			          ip.mask, min, max ) );
 			return qfalse;
 		}
@@ -2713,7 +2738,7 @@ qboolean G_admin_adjustban( gentity_t *ent )
 
 		if ( mask < min || mask > max )
 		{
-			ADMP( va( "%s %d %d %d", QQ( N_("^3adjustban: ^7invalid netmask ($1$ is not one of $2$-$3$)\n") ),
+			ADMP( va( "%s %d %d %d", QQ( N_("^3adjustban: ^7invalid netmask ($1$ is not one of $2$–$3$)\n") ),
 			          mask, min, max ) );
 			return qfalse;
 		}
@@ -3301,6 +3326,68 @@ qboolean G_admin_listadmins( gentity_t *ent )
 	return qtrue;
 }
 
+static qboolean admin_match_inactive( void *admin, const void *match )
+{
+	g_admin_admin_t *a = ( g_admin_admin_t * ) admin;
+	unsigned int    date = a->lastSeen.tm_year * 10000 + a->lastSeen.tm_mon * 100 + a->lastSeen.tm_mday;
+	unsigned int	since = *(unsigned int *) match;
+
+	return ( date < since ) ? qtrue : qfalse;
+}
+
+qboolean G_admin_listinactive( gentity_t *ent )
+{
+	int          i;
+	int          months, date;
+	int          start = MAX_CLIENTS;
+	char         s[ MAX_NAME_LENGTH ] = { "" };
+	qtime_t      tm;
+
+	i = trap_Argc();
+	if ( i > 3 )
+	{
+		ADMP( QQ( N_("^3listinactive: ^7usage: listinactive [^5months^7] (^5start admin#^7)\n") ) );
+		return qfalse;
+	}
+
+	trap_Argv( 1, s, sizeof( s ) );
+	trap_RealTime( &tm );
+
+	months = atoi( s );
+	months = months < 1 ? 1 : months; // minimum of 1 month
+
+	// move the date back by the requested no. of months
+	tm.tm_mon -= months;
+
+	// correct for -ve month no.
+	while ( tm.tm_mon < 0 )
+	{
+		--tm.tm_year;
+		tm.tm_mon += 12;
+	}
+
+	// ... and clip to Jan 1900 (which is more than far enough in the past)
+	if ( tm.tm_year < 0 )
+	{
+		tm.tm_mon = tm.tm_year = 0;
+	}
+
+	date = tm.tm_year * 10000 + tm.tm_mon * 100 + tm.tm_mday;
+
+	if ( i == 3 ) // (i still contains the argument count)
+	{
+		// just assume that this is a number
+		trap_Argv( 2, s, sizeof( s ) );
+		start = atoi( s );
+	}
+
+	Com_sprintf( s, sizeof( s ), "%d", months );
+	admin_search( ent, "listinactive", "admins", admin_match_inactive, admin_out,
+	              g_admin_admins, &date, s, start, MAX_CLIENTS, MAX_ADMIN_LISTITEMS );
+
+	return qtrue;
+}
+
 qboolean G_admin_listlayouts( gentity_t *ent )
 {
 	char list[ MAX_CVAR_VALUE_STRING ];
@@ -3595,6 +3682,7 @@ qboolean G_admin_showbans( gentity_t *ent )
 	admin_search( ent, "showbans", "bans",
 	              ipmatch ? ban_matchip : ban_matchname,
 	              ban_out, g_admin_bans,
+	              ipmatch ? ( void * ) &ip : ( void * ) name_match,
 	              ipmatch ? ( void * ) &ip : ( void * ) name_match,
 	              start, 1, MAX_ADMIN_SHOWBANS );
 	return qtrue;
@@ -4157,7 +4245,8 @@ qboolean G_admin_namelog( gentity_t *ent )
 
 	admin_search( ent, "namelog", "recent players",
 	              ipmatch ? namelog_matchip : namelog_matchname, namelog_out, level.namelogs,
-	              ipmatch ? ( void * ) &ip : s2, start, MAX_CLIENTS, MAX_ADMIN_LISTITEMS );
+	              ipmatch ? ( void * ) &ip : s2, ipmatch ? ( void * ) &ip : s2,
+	              start, MAX_CLIENTS, MAX_ADMIN_LISTITEMS );
 	return qtrue;
 }
 
@@ -4249,7 +4338,7 @@ namelog_t *G_NamelogFromString( gentity_t *ent, char *s )
 	if ( found > 1 )
 	{
 		admin_search( ent, "namelog", "recent players", namelog_matchname,
-		              namelog_out, level.namelogs, s2, 0, MAX_CLIENTS, -1 );
+		              namelog_out, level.namelogs, s2, s2, 0, MAX_CLIENTS, -1 );
 	}
 
 	return NULL;
@@ -4612,7 +4701,7 @@ qboolean G_admin_buildlog( gentity_t *ent )
 	ADMBP( "\"" );
 	ADMBP_end();
 
-	ADMP( va( "%s %d %d %d %d %d %s", QQ( N_("^3buildlog: ^7showing $1$ build logs $2$ - $3$ of $4$ – $5$.  $6$\n") ),
+	ADMP( va( "%s %d %d %d %d %d %s", QQ( N_("^3buildlog: ^7showing $1$ build logs $2$–$3$ of $4$–$5$.  $6$\n") ),
 	           printed, start + MAX_CLIENTS, i + MAX_CLIENTS - 1,
 	           level.buildId + MAX_CLIENTS - level.numBuildLogs,
 	           level.buildId + MAX_CLIENTS - 1,

@@ -704,7 +704,7 @@ void Sys_ErrorDialog( const char *error )
 {
 	char         buffer[ 1024 ];
 	unsigned int size;
-	int          f = -1;
+	int          f;
 	const char   *homepath = Cvar_VariableString( "fs_homepath" );
 	const char   *gamedir = Cvar_VariableString( "fs_game" );
 	const char   *fileName = "crashlog.txt";
@@ -1033,8 +1033,6 @@ void Sys_GLimpInit( void )
 
 void Sys_SetFloatEnv( void )
 {
-	// rounding toward nearest
-	fesetround( FE_TONEAREST );
 }
 
 /*
@@ -1071,10 +1069,10 @@ void Sys_PlatformInit( void )
 
 /*
 ==============
-Sys_PID
+Sys_GetPID
 ==============
 */
-int Sys_PID( void )
+int Sys_GetPID( void )
 {
 	return getpid();
 }

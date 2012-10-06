@@ -574,3 +574,8 @@ void trap_GetPlayerPubkey( int clientNum, char *pubkey, int size )
 {
 	syscall( G_GETPLAYERPUBKEY, clientNum, pubkey, size );
 }
+
+void trap_GetTimeString( char *buffer, int size, const char *format, const qtime_t *tm )
+{
+	syscall( G_GETTIMESTRING, buffer, size, format, tm );
+}

@@ -4574,7 +4574,7 @@ void FloodLightRawLightmap(int rawLightmapNum)
 	}
 }
 
-void FloodlightRawLightmaps()
+void FloodlightRawLightmaps(void)
 {
 	Sys_Printf("--- FloodlightRawLightmap ---\n");
 	numSurfacesFloodlighten = 0;

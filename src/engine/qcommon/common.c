@@ -34,7 +34,7 @@ Maryland 20850 USA.
 
 // common.c -- misc functions used in client and server
 
-#include "git_version.h"
+#include "revision.h"
 #include "../qcommon/q_shared.h"
 #include "qcommon.h"
 #include <setjmp.h>
@@ -43,13 +43,9 @@ Maryland 20850 USA.
 #if defined __linux__ || defined __FreeBSD__ || MACOS_X
 #include <sys/types.h>
 #include <netinet/in.h>
-// getpid
-#include <unistd.h>
 #else
 #include <winsock.h>
 #endif
-
-int demo_protocols[] = { 66, 67, 68, 0 };
 
 #define MAX_NUM_ARGVS             50
 
@@ -97,13 +93,13 @@ cvar_t *com_pipefile;
 cvar_t *com_showtrace;
 cvar_t *com_version;
 
-//cvar_t    *com_blood;
-cvar_t *com_buildScript; // for automated data building scripts
 cvar_t *con_drawnotify;
 cvar_t *com_ansiColor;
 
 cvar_t *com_unfocused;
+cvar_t *com_maxfpsUnfocused;
 cvar_t *com_minimized;
+cvar_t *com_maxfpsMinimized;
 
 cvar_t *com_introPlayed;
 cvar_t *com_logosPlaying;
@@ -147,7 +143,7 @@ qboolean com_fullyInitialized;
 char     com_errorMessage[ MAXPRINTMSG ];
 
 void     Com_WriteConfig_f( void );
-void     CIN_CloseAllVideos();
+void     CIN_CloseAllVideos( void );
 
 //============================================================================
 
@@ -322,13 +318,6 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 	static int errorCount;
 	int        currentTime;
 
-	// when we are running automated scripts, make sure we
-	// know if anything failed
-	if ( com_buildScript && com_buildScript->integer )
-	{
-		code = ERR_FATAL;
-	}
-
 	// make sure we can get at our local stuff
 	FS_PureServerSetLoadedPaks( "", "" );
 
@@ -374,6 +363,7 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 	if ( code == ERR_SERVERDISCONNECT )
 	{
 		VM_Forced_Unload_Start();
+		SV_Shutdown( "Server disconnected" );
 		CL_Disconnect( qtrue );
 		CL_FlushMemory();
 		VM_Forced_Unload_Done();
@@ -431,6 +421,8 @@ do the appropriate things.
 void NORETURN Com_Quit_f( void )
 {
 	// don't try to shutdown if we are in a recursive error
+	char *p = Cmd_Args();
+
 	if ( !com_errorEntered )
 	{
 		// Some VMs might execute "quit" command directly,
@@ -438,7 +430,7 @@ void NORETURN Com_Quit_f( void )
 		// Sys_Quit will kill this process anyways, so
 		// a corrupt call stack makes no difference
 		VM_Forced_Unload_Start();
-		SV_Shutdown( "Server quit\n" );
+		SV_Shutdown( p[ 0 ] ? p : "Server quit\n" );
 //bani
 #ifndef DEDICATED
 		CL_ShutdownCGame();
@@ -2956,7 +2948,7 @@ static void NORETURN Com_Crash_f( void )
 	exit( 1 ); // silence warning
 }
 
-void Com_SetRecommended()
+void Com_SetRecommended( void )
 {
 	cvar_t   *r_highQualityVideo; //, *com_recommended;
 	qboolean goodVideo;
@@ -3102,10 +3094,9 @@ Com_Init
 void Com_Init( char *commandLine )
 {
 	char              *s;
-	int               pid;
+	int               pid, qport;
 
-	// TTimo gcc warning: variable `safeMode' might be clobbered by `longjmp' or `vfork'
-	volatile qboolean safeMode = qtrue;
+	pid = Sys_GetPID();
 
 	Com_Printf( "%s %s %s\n%s\n", Q3_VERSION, ARCH_STRING, __DATE__, commandLine );
 
@@ -3144,12 +3135,6 @@ void Com_Init( char *commandLine )
 	// ydnar: init crashed variable as early as possible
 	com_crashed = Cvar_Get( "com_crashed", "0", CVAR_TEMP );
 
-	// bani: init pid
-#ifdef _WIN32
-	pid = GetCurrentProcessId();
-#else
-	pid = getpid();
-#endif
 	s = va( "%d", pid );
 	com_pid = Cvar_Get( "com_pid", s, CVAR_ROM );
 
@@ -3193,7 +3178,7 @@ void Com_Init( char *commandLine )
 			if ( !Com_CheckProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
 			{
 #if 0
-				Com_Printf(_( "^3WARNING: profile.pid found for profile '%s' – system settings will revert to defaults\n"),
+				Com_Printf(_( "^3WARNING: profile.pid found for profile '%s' — the system settings will revert to their defaults\n"),
 				            cl_profileStr );
 				// ydnar: set crashed state
 				Cbuf_AddText( "set com_crashed 1\n" );
@@ -3246,7 +3231,6 @@ void Com_Init( char *commandLine )
 	//
 	// Gordon: no need to latch this in ET, our recoil is framerate-independent
 	com_maxfps = Cvar_Get( "com_maxfps", "125", CVAR_ARCHIVE /*|CVAR_LATCH */ );
-//  com_blood = Cvar_Get ("com_blood", "1", CVAR_ARCHIVE); // Gordon: no longer used?
 
 	com_developer = Cvar_Get( "developer", "0", CVAR_TEMP );
 
@@ -3267,7 +3251,6 @@ void Com_Init( char *commandLine )
 	sv_paused = Cvar_Get( "sv_paused", "0", CVAR_ROM );
 	com_sv_running = Cvar_Get( "sv_running", "0", CVAR_ROM );
 	com_cl_running = Cvar_Get( "cl_running", "0", CVAR_ROM );
-	com_buildScript = Cvar_Get( "com_buildScript", "0", 0 );
 
 	con_drawnotify = Cvar_Get( "con_drawnotify", "0", CVAR_CHEAT );
 
@@ -3277,7 +3260,9 @@ void Com_Init( char *commandLine )
 	com_recommendedSet = Cvar_Get( "com_recommendedSet", "0", CVAR_ARCHIVE );
 
 	com_unfocused = Cvar_Get( "com_unfocused", "0", CVAR_ROM );
+	com_maxfpsUnfocused = Cvar_Get( "com_maxfpsUnfocused", "0", CVAR_ARCHIVE );
 	com_minimized = Cvar_Get( "com_minimized", "0", CVAR_ROM );
+	com_maxfpsMinimized = Cvar_Get( "com_maxfpsMinimized", "0", CVAR_ARCHIVE );
 
 #if defined( _WIN32 ) && !defined( NDEBUG )
 	com_noErrorInterrupt = Cvar_Get( "com_noErrorInterrupt", "0", 0 );
@@ -3308,7 +3293,14 @@ void Com_Init( char *commandLine )
 	com_version = Cvar_Get( "version", s, CVAR_ROM | CVAR_SERVERINFO );
 
 	Sys_Init();
-	Netchan_Init( Com_Milliseconds() & 0xffff );  // pick a port value that should be nice and random
+
+	// Pick a qport value that is nice and random.
+	// As machines get faster, Com_Milliseconds() can't be used
+	// anymore, as it results in a smaller and smaller range of
+	// qport values.
+	Com_RandomBytes( ( byte * )&qport, sizeof( int ) );
+	Netchan_Init( qport & 0xffff );
+
 	VM_Init();
 	SV_Init();
 	Hist_Load();
@@ -3341,7 +3333,7 @@ void Com_Init( char *commandLine )
 	CL_StartHunkUsers();
 
 	// NERVE - SMF - force recommendedSet and don't do vid_restart if in safe mode
-	if ( !com_recommendedSet->integer && !safeMode )
+	if ( !com_recommendedSet->integer && !Com_SafeMode() )
 	{
 		Com_SetRecommended();
 		Cbuf_ExecuteText( EXEC_APPEND, "vid_restart\n" );
@@ -3622,13 +3614,24 @@ void Com_Frame( void )
 	}
 
 	// we may want to spin here if things are going too fast
-	if ( !com_dedicated->integer && com_maxfps->integer > 0 && !com_timedemo->integer )
+	if ( !com_dedicated->integer && !com_timedemo->integer )
 	{
-		minMsec = 1000 / com_maxfps->integer;
-	}
-	else
-	{
-		minMsec = 1;
+		if ( com_minimized->integer && com_maxfpsMinimized->integer > 0 )
+		{
+			minMsec = 1000 / com_maxfpsMinimized->integer;
+		}
+		else if ( com_unfocused->integer && com_maxfpsUnfocused->integer > 0 )
+		{
+			minMsec = 1000 / com_maxfpsUnfocused->integer;
+		}
+		else if ( com_maxfps->integer > 0 )
+		{
+			minMsec = 1000 / com_maxfps->integer;
+		}
+		else
+		{
+			minMsec = 1;
+		}
 	}
 
 	com_frameTime = Com_EventLoop();
@@ -3742,7 +3745,7 @@ void Com_Frame( void )
 			}
 			else if ( Sys_Milliseconds() - watchdogTime > com_watchdog->integer * 1000 )
 			{
-				Com_Printf(_( "Idle Server with no map – triggering watchdog\n" ));
+				Com_Printf(_( "Idle server with no map — triggering watchdog\n" ));
 				watchdogTime = 0;
 				watchWarn = qfalse;
 

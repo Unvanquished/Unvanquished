@@ -1064,10 +1064,13 @@ extern "C" {
 
 	typedef enum
 	{
-	  CT_FRONT_SIDED,
-	  CT_BACK_SIDED,
-	  CT_TWO_SIDED
+		CT_FRONT_SIDED = 0,
+		CT_TWO_SIDED   = 1,
+		CT_BACK_SIDED  = 2
 	} cullType_t;
+
+	// reverse the cull operation
+#       define ReverseCull(c) (2 - (c))
 
 	typedef enum
 	{
@@ -4463,7 +4466,7 @@ extern "C" {
 #if !defined( USE_D3D10 )
 	void GL_Bind( image_t *image );
 	void GL_BindNearestCubeMap( const vec3_t xyz );
-	void GL_Unbind();
+	void GL_Unbind( void );
 	void BindAnimatedImage( textureBundle_t *bundle );
 	void GL_TextureFilter( image_t *image, filterType_t filterType );
 	void GL_BindProgram( shaderProgram_t *program );
@@ -4484,8 +4487,8 @@ extern "C" {
 	void GL_FrontFace( GLenum mode );
 	void GL_LoadModelViewMatrix( const matrix_t m );
 	void GL_LoadProjectionMatrix( const matrix_t m );
-	void GL_PushMatrix();
-	void GL_PopMatrix();
+	void GL_PushMatrix( void );
+	void GL_PopMatrix( void );
 	void GL_PolygonMode( GLenum face, GLenum mode );
 	void GL_Scissor( GLint x, GLint y, GLsizei width, GLsizei height );
 	void GL_Viewport( GLint x, GLint y, GLsizei width, GLsizei height );
@@ -4550,7 +4553,7 @@ extern "C" {
 	void       R_InitSkins( void );
 	skin_t     *R_GetSkinByHandle( qhandle_t hSkin );
 
-	void       R_DeleteSurfaceVBOs();
+	void       R_DeleteSurfaceVBOs( void );
 
 	/*
 	====================================================================
@@ -4688,8 +4691,8 @@ extern "C" {
 		matrix_t    boneMatrices[ MAX_BONES ];
 
 		// info extracted from current shader or backend mode
-		void ( *stageIteratorFunc )();
-		void ( *stageIteratorFunc2 )();
+		void ( *stageIteratorFunc )( void );
+		void ( *stageIteratorFunc2 )( void );
 
 		int           numSurfaceStages;
 		shaderStage_t **surfaceStages;
@@ -4698,8 +4701,8 @@ extern "C" {
 	extern shaderCommands_t tess;
 
 #if !defined( USE_D3D10 )
-	void                    GLSL_InitGPUShaders();
-	void                    GLSL_ShutdownGPUShaders();
+	void                    GLSL_InitGPUShaders( void );
+	void                    GLSL_ShutdownGPUShaders( void );
 
 #endif
 
@@ -4714,20 +4717,20 @@ extern "C" {
 
 // *INDENT-ON*
 	void Tess_End( void );
-	void Tess_EndBegin();
-	void Tess_DrawElements();
+	void Tess_EndBegin( void );
+	void Tess_DrawElements( void );
 	void Tess_CheckOverflow( int verts, int indexes );
 
 	void Tess_ComputeColor( shaderStage_t *pStage );
 
-	void Tess_StageIteratorDebug();
-	void Tess_StageIteratorGeneric();
-	void Tess_StageIteratorGBuffer();
-	void Tess_StageIteratorGBufferNormalsOnly();
-	void Tess_StageIteratorDepthFill();
-	void Tess_StageIteratorShadowFill();
-	void Tess_StageIteratorLighting();
-	void Tess_StageIteratorSky();
+	void Tess_StageIteratorDebug( void );
+	void Tess_StageIteratorGeneric( void );
+	void Tess_StageIteratorGBuffer( void );
+	void Tess_StageIteratorGBufferNormalsOnly( void );
+	void Tess_StageIteratorDepthFill( void );
+	void Tess_StageIteratorShadowFill( void );
+	void Tess_StageIteratorLighting( void );
+	void Tess_StageIteratorSky( void );
 
 	void Tess_AddQuadStamp( vec3_t origin, vec3_t left, vec3_t up, const vec4_t color );
 	void Tess_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, const vec4_t color, float s1, float t1, float s2, float t2 );
@@ -4765,7 +4768,7 @@ extern "C" {
 
 	void     R_AddWorldInteractions( trRefLight_t *light );
 	void     R_AddPrecachedWorldInteractions( trRefLight_t *light );
-	void     R_ShutdownVBOs();
+	void     R_ShutdownVBOs( void );
 
 	/*
 	============================================================
@@ -4829,10 +4832,10 @@ extern "C" {
 	*/
 
 #if defined( COMPAT_ET )
-	void R_SetFrameFog();
+	void R_SetFrameFog( void );
 	void RB_Fog( glfog_t *curfog );
-	void RB_FogOff();
-	void RB_FogOn();
+	void RB_FogOff( void );
+	void RB_FogOn( void );
 	void RE_SetFog( int fogvar, int var1, int var2, float r, float g, float b, float density );
 	void RE_SetGlobalFog( qboolean restore, int duration, float r, float g, float b, float depthForOpaque );
 
@@ -4846,7 +4849,7 @@ extern "C" {
 	============================================================
 	*/
 
-	void RB_ProjectionShadowDeform();
+	void RB_ProjectionShadowDeform( void );
 
 	/*
 	============================================================
@@ -4982,8 +4985,8 @@ extern "C" {
 
 	void RE_AddCoronaToScene( const vec3_t org, float r, float g, float b, float scale, int id, qboolean visible );
 	void RE_RenderScene( const refdef_t *fd );
-	void RE_SaveViewParms();
-	void RE_RestoreViewParms();
+	void RE_SaveViewParms( void );
+	void RE_RestoreViewParms( void );
 
 	/*
 	=============================================================
@@ -5062,7 +5065,7 @@ extern "C" {
 	float    R_ProjectRadius( float r, vec3_t location );
 
 	qboolean ShaderRequiresCPUDeforms( const shader_t *shader );
-	void     Tess_DeformGeometry();
+	void     Tess_DeformGeometry( void );
 
 	float    RB_EvalWaveForm( const waveForm_t *wf );
 	float    RB_EvalWaveFormClamped( const waveForm_t *wf );
@@ -5247,8 +5250,6 @@ extern "C" {
 	} backEndData_t;
 
 	extern backEndData_t                *backEndData[ SMP_FRAMES ]; // the second one may not be allocated
-
-	extern volatile renderCommandList_t *renderCommandList;
 
 	extern volatile qboolean            renderThreadActive;
 

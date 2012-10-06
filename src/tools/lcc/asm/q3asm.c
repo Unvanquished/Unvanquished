@@ -381,7 +381,7 @@ static int symlist_cmp (const void *e1, const void *e2)
   However, qsort(3) already exists, and I'm really lazy.
  -PH
 */
-static void sort_symbols ()
+static void sort_symbols (void)
 {
   int i, elems;
   symbol_t *s;
@@ -817,7 +817,7 @@ static void HackToSegment( segmentName_t seg ) {
 
 //#define STAT(L) report("STAT " L "\n");
 #define STAT(L)
-#define ASM(O) int TryAssemble##O ()
+#define ASM(O) int TryAssemble##O (void)
 
 
 /*

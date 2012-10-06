@@ -3782,7 +3782,10 @@ void Tess_StageIteratorGeneric()
 	//SetIteratorFog();
 
 	// set face culling appropriately
-	GL_Cull( tess.surfaceShader->cullType );
+	if( backEnd.currentEntity->e.renderfx & RF_SWAPCULL )
+		GL_Cull( ReverseCull( tess.surfaceShader->cullType ) );
+	else
+		GL_Cull( tess.surfaceShader->cullType );
 
 	// set polygon offset if necessary
 	if ( tess.surfaceShader->polygonOffset )
@@ -3996,7 +3999,10 @@ void Tess_StageIteratorGBuffer()
 	}
 
 	// set face culling appropriately
-	GL_Cull( tess.surfaceShader->cullType );
+	if( backEnd.currentEntity->e.renderfx & RF_SWAPCULL )
+		GL_Cull( ReverseCull( tess.surfaceShader->cullType ) );
+	else
+		GL_Cull( tess.surfaceShader->cullType );
 
 	// set polygon offset if necessary
 	if ( tess.surfaceShader->polygonOffset )
@@ -4208,7 +4214,10 @@ void Tess_StageIteratorGBufferNormalsOnly()
 	}
 
 	// set face culling appropriately
-	GL_Cull( tess.surfaceShader->cullType );
+	if( backEnd.currentEntity->e.renderfx & RF_SWAPCULL )
+		GL_Cull( ReverseCull( tess.surfaceShader->cullType ) );
+	else
+		GL_Cull( tess.surfaceShader->cullType );
 
 	// set polygon offset if necessary
 	if ( tess.surfaceShader->polygonOffset )
@@ -4308,7 +4317,10 @@ void Tess_StageIteratorDepthFill()
 	}
 
 	// set face culling appropriately
-	GL_Cull( tess.surfaceShader->cullType );
+	if( backEnd.currentEntity->e.renderfx & RF_SWAPCULL )
+		GL_Cull( ReverseCull( tess.surfaceShader->cullType ) );
+	else
+		GL_Cull( tess.surfaceShader->cullType );
 
 	// set polygon offset if necessary
 	if ( tess.surfaceShader->polygonOffset )
@@ -4397,7 +4409,10 @@ void Tess_StageIteratorShadowFill()
 	}
 
 	// set face culling appropriately
-	GL_Cull( tess.surfaceShader->cullType );
+	if( backEnd.currentEntity->e.renderfx & RF_SWAPCULL )
+		GL_Cull( ReverseCull( tess.surfaceShader->cullType ) );
+	else
+		GL_Cull( tess.surfaceShader->cullType );
 
 	// set polygon offset if necessary
 	if ( tess.surfaceShader->polygonOffset )
@@ -4503,7 +4518,10 @@ void Tess_StageIteratorLighting()
 	}
 
 	// set face culling appropriately
-	GL_Cull( tess.surfaceShader->cullType );
+	if( backEnd.currentEntity->e.renderfx & RF_SWAPCULL )
+		GL_Cull( ReverseCull( tess.surfaceShader->cullType ) );
+	else
+		GL_Cull( tess.surfaceShader->cullType );
 
 	// set polygon offset if necessary
 	if ( tess.surfaceShader->polygonOffset )
