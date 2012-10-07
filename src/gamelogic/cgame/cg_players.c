@@ -1002,7 +1002,7 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 
 			for ( i = TORSO_GESTURE_BLASTER, j = WP_BLASTER; i <= TORSO_GESTURE_CKIT; i++, j++ )
 			{
-				if ( i == TORSO_GESTURE ) { continue; }
+				if ( i == TORSO_GESTURE || j == WP_GRENADE ) { continue; }
 				if ( i == TORSO_ATTACK - 1 ) { j = WP_HBUILD; }
 
 				if ( !CG_RegisterPlayerAnimation( ci, modelName, i, va( "%s_taunt", BG_Weapon( j )->name ), qfalse, qfalse, qfalse ) )
