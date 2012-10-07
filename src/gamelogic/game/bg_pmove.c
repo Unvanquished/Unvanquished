@@ -3355,7 +3355,7 @@ static void PM_TorsoAnimation( void )
 		{
 			if ( pm->ps->weapon == WP_BLASTER )
 			{
-				PM_ContinueTorsoAnim( TORSO_STAND2 );
+				PM_ContinueTorsoAnim( TORSO_STAND_BLASTER );
 			}
 			else
 			{
@@ -3648,7 +3648,7 @@ static void PM_Weapon( void )
 		{
 			if ( pm->ps->weapon == WP_BLASTER )
 			{
-				PM_ContinueTorsoAnim( TORSO_STAND2 );
+				PM_ContinueTorsoAnim( TORSO_STAND_BLASTER );
 			}
 			else
 			{
@@ -3903,7 +3903,12 @@ static void PM_Weapon( void )
 				break;
 
 			case WP_BLASTER:
-				PM_StartTorsoAnim( TORSO_ATTACK2 );
+				PM_StartTorsoAnim( TORSO_ATTACK_BLASTER );
+				PM_StartWeaponAnim( WANIM_ATTACK1 );
+				break;
+
+			case WP_PAIN_SAW:
+				PM_StartTorsoAnim( TORSO_ATTACK_PSAW );
 				PM_StartWeaponAnim( WANIM_ATTACK1 );
 				break;
 
