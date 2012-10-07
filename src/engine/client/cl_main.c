@@ -4143,7 +4143,7 @@ void CL_InitRef( const char *renderer )
 
 #if !defined( REF_HARD_LINKED )
 
-	Com_sprintf( dllName, sizeof( dllName ), DLL_PREFIX "renderer%s" ARCH_STRING DLL_EXT, renderer );
+	Com_sprintf( dllName, sizeof( dllName ), "%s/" DLL_PREFIX "renderer%s" ARCH_STRING DLL_EXT, Cvar_VariableString( "fs_basepath" ), renderer );
 
 	Com_Printf(_( "Loading \"%s\"…"), dllName );
 
