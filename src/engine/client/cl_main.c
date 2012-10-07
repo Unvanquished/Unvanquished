@@ -4154,7 +4154,7 @@ void CL_InitRef( const char *renderer )
 		//fall back to default
 		Com_sprintf( dllName, sizeof( dllName ), "%s/" DLL_PREFIX "rendererGL" ARCH_STRING DLL_EXT, Cvar_VariableString( "fs_basepath" ) );
 
-		Com_Printf(_	( "Loading \"%s\"…"), dllName );
+		Com_Printf(_( "Loading \"%s\"…"), dllName );
 
 		if ( ( rendererLib = Sys_LoadLibrary( dllName ) ) == 0 )
 		{
