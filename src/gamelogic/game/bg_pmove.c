@@ -4048,7 +4048,9 @@ static void PM_Animate( void )
 		{
 			if ( pm->ps->torsoTimer == 0 )
 			{
-				PM_StartTorsoAnim( TORSO_GESTURE );
+				PM_StartTorsoAnim( TORSO_GESTURE_BLASTER + ( pm->ps->weapon - WP_BLASTER ) > WP_LUCIFER_CANNON ?
+				    TORSO_GESTURE_CKIT :
+				    TORSO_GESTURE_BLASTER + ( pm->ps->weapon - WP_BLASTER ) );
 				pm->ps->torsoTimer = TIMER_GESTURE;
 				pm->ps->tauntTimer = TIMER_GESTURE;
 

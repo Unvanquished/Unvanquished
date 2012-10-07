@@ -648,7 +648,7 @@ static qboolean CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 		if ( i != MAX_PLAYER_ANIMATIONS )
 		{
 			CG_Printf(_( "Error parsing animation file: %s\n"), filename );
-			return qfalse;
+// 			return qfalse;
 		}
 
 		// crouch backward animation
@@ -852,7 +852,7 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 
 	if ( ci->md5 )
 	{
-		int i, handle;
+		int i, j;
 		// load the animations
 		Com_sprintf( filename, sizeof( filename ), "models/players/%s/character.cfg", modelName );
 
@@ -994,6 +994,18 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 			{
 				ci->animations[ TORSO_RAISE ] = ci->animations[ LEGS_IDLE ];
 			}
+
+			for ( i = TORSO_GESTURE_BLASTER, j = WP_BLASTER; i < TORSO_ATTACK; i++, j++ )
+			{
+				if ( i == TORSO_GESTURE ) { continue; }
+				if ( i == TORSO_ATTACK - 1 ) { j = WP_HBUILD; }
+
+				if ( CG_RegisterPlayerAnimation( ci, modelName, i, va( "%s_taunt", BG_Weapon( j )->name ), qfalse, qfalse, qfalse ) )
+				{
+					ci->animations[ i ] = ci->animations[ TORSO_GESTURE ];
+				}
+			}
+
 			for ( i = WP_BLASTER; i < WP_NUM_WEAPONS; i++ )
 			{
 				if ( BG_Weapon( i )->team != TEAM_HUMANS || !BG_Weapon( i )->purchasable || i == WP_GRENADE ) { continue; }
