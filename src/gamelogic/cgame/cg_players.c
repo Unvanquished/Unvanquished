@@ -3277,7 +3277,7 @@ void CG_Player( centity_t *cent )
 				CG_CombineLegSkeleton( &body.skeleton, &legsSkeleton, ci->legBones, ci->numLegBones );
 			}
 
-			if ( ci->weaponAdjusted & ( 1 << es->weapon ) )
+			if ( ci->weaponAdjusted & ( 1 << es->weapon ) && ( cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT ) >= TORSO_ATTACK  )
 			{
 				int j;
 
