@@ -2686,6 +2686,8 @@ extern "C" {
 // any changes in surfaceType must be mirrored in rb_surfaceTable[]
 	typedef enum
 	{
+	  SF_MIN = -1, // partially ensures that sizeof(surfaceType_t) == sizeof(int)
+
 	  SF_BAD,
 	  SF_SKIP, // ignore
 
@@ -2714,7 +2716,8 @@ extern "C" {
 	  SF_VBO_MDVMESH,
 
 	  SF_NUM_SURFACE_TYPES,
-	  SF_MAX = 0x7fffffff // ensures that sizeof( surfaceType_t ) == sizeof( int )
+
+	  SF_MAX = 0x7fffffff // partially (together, fully) ensures that sizeof(surfaceType_t) == sizeof(int)
 	} surfaceType_t;
 
 	typedef struct drawSurf_s
