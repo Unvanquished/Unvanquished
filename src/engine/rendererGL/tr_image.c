@@ -2352,7 +2352,7 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 
 	if ( bits & IF_LIGHTMAP )
 	{
-		R_ProcessLightmap( &pic, 4, width, height, &pic );
+		R_ProcessLightmap( pic, 4, width, height, pic );
 
 		bits |= IF_NOCOMPRESSION;
 	}

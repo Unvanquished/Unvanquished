@@ -1858,7 +1858,7 @@ void      RE_Shutdown( qboolean destroyWindow );
 
 qboolean  R_GetEntityToken( char *buffer, int size );
 
-float     R_ProcessLightmap( byte **pic, int in_padding, int width, int height, byte **pic_out );  // Arnout
+float     R_ProcessLightmap( byte *pic, int in_padding, int width, int height, byte *pic_out );  // Arnout
 
 //----(SA)
 qboolean  RE_GetSkinModel( qhandle_t skinid, const char *type, char *name );

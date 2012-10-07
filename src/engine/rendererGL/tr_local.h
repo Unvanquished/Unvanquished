@@ -4533,7 +4533,7 @@ extern "C" {
 //----(SA) end
 
 	qboolean   R_GetEntityToken( char *buffer, int size );
-	float      R_ProcessLightmap( byte **pic, int in_padding, int width, int height, byte **pic_out );  // Arnout
+	float      R_ProcessLightmap( byte *pic, int in_padding, int width, int height, byte *pic_out );  // Arnout
 
 	model_t    *R_AllocModel( void );
 

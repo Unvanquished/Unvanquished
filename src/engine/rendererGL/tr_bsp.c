@@ -302,7 +302,7 @@ R_ProcessLightmap
 ===============
 */
 #if defined( COMPAT_Q3A ) || defined( COMPAT_ET )
-float R_ProcessLightmap( byte **pic, int in_padding, int width, int height, byte **pic_out )
+float R_ProcessLightmap( byte *pic, int in_padding, int width, int height, byte *pic_out )
 {
 	int   j;
 	float maxIntensity = 0;
@@ -313,9 +313,9 @@ float R_ProcessLightmap( byte **pic, int in_padding, int width, int height, byte
 	        // color code by intensity as development tool (FIXME: check range)
 	        for(j = 0; j < width * height; j++)
 	        {
-	                float           r = (*pic)[j * in_padding + 0];
-	                float           g = (*pic)[j * in_padding + 1];
-	                float           b = (*pic)[j * in_padding + 2];
+	                float           r = pic[j * in_padding + 0];
+	                float           g = pic[j * in_padding + 1];
+	                float           b = pic[j * in_padding + 2];
 	                float           intensity;
 	                float           out[3];
 
@@ -340,17 +340,17 @@ float R_ProcessLightmap( byte **pic, int in_padding, int width, int height, byte
 	                if(r_lightmap->integer == 3)
 	                {
 	                        // Arnout: artists wanted the colours to be inversed
-	                        (*pic_out)[j * 4 + 0] = out[2] * 255;
-	                        (*pic_out)[j * 4 + 1] = out[1] * 255;
-	                        (*pic_out)[j * 4 + 2] = out[0] * 255;
+	                        pic_out[j * 4 + 0] = out[2] * 255;
+	                        pic_out[j * 4 + 1] = out[1] * 255;
+	                        pic_out[j * 4 + 2] = out[0] * 255;
 	                }
 	                else
 	                {
-	                        (*pic_out)[j * 4 + 0] = out[0] * 255;
-	                        (*pic_out)[j * 4 + 1] = out[1] * 255;
-	                        (*pic_out)[j * 4 + 2] = out[2] * 255;
+	                        pic_out[j * 4 + 0] = out[0] * 255;
+	                        pic_out[j * 4 + 1] = out[1] * 255;
+	                        pic_out[j * 4 + 2] = out[2] * 255;
 	                }
-	                (*pic_out)[j * 4 + 3] = 255;
+	                pic_out[j * 4 + 3] = 255;
 	        }
 	}
 	else
@@ -358,8 +358,8 @@ float R_ProcessLightmap( byte **pic, int in_padding, int width, int height, byte
 	{
 		for ( j = 0; j < width * height; j++ )
 		{
-			R_ColorShiftLightingBytes( & ( *pic ) [ j * in_padding ], & ( *pic_out ) [ j * 4 ] );
-			( *pic_out ) [ j * 4 + 3 ] = 255;
+			R_ColorShiftLightingBytes( &pic[ j * in_padding ], &pic_out[ j * 4 ] );
+			pic_out[ j * 4 + 3 ] = 255;
 		}
 	}
 
