@@ -3288,6 +3288,13 @@ void CG_Player( centity_t *cent )
 				}
 			}
 
+			// HACK: Stop taunt from clipping through the body.
+			if ( ( cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT ) >= TORSO_GESTURE_BLASTER && ( cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT ) <= TORSO_GESTURE_CKIT  )
+			{
+				quat_t rot;
+				QuatFromAngles( rot, 15, 0, 0 );
+				QuatMultiply0( body.skeleton.bones[ 33 ].rotation, rot );
+			}
 
 			// rotate torso
 			boneIndex = ci->torsoControlBone;
