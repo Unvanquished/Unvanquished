@@ -1000,12 +1000,12 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 				ci->animations[ TORSO_RAISE ] = ci->animations[ LEGS_IDLE ];
 			}
 
-			for ( i = TORSO_GESTURE_BLASTER, j = WP_BLASTER; i < TORSO_ATTACK; i++, j++ )
+			for ( i = TORSO_GESTURE_BLASTER, j = WP_BLASTER; i <= TORSO_GESTURE_CKIT; i++, j++ )
 			{
 				if ( i == TORSO_GESTURE ) { continue; }
 				if ( i == TORSO_ATTACK - 1 ) { j = WP_HBUILD; }
 
-				if ( CG_RegisterPlayerAnimation( ci, modelName, i, va( "%s_taunt", BG_Weapon( j )->name ), qfalse, qfalse, qfalse ) )
+				if ( !CG_RegisterPlayerAnimation( ci, modelName, i, va( "%s_taunt", BG_Weapon( j )->name ), qfalse, qfalse, qfalse ) )
 				{
 					ci->animations[ i ] = ci->animations[ TORSO_GESTURE ];
 				}
