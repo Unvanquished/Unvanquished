@@ -886,7 +886,6 @@ void Cmd_Team_f( gentity_t *ent )
 			                        va( "print_tr %s %d", QQ( N_("You cannot join a team for another $1$s.\n") ), remaining ) );
 			return;
 		}
-
 	}
 
 	// stop team join spam
@@ -1575,6 +1574,7 @@ static const struct {
 	{ "layout",       qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
 	{ "nextmap",      qfalse, V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_nextMapVotesPercent },
 	{ "poll",         qfalse, V_ANY,    T_NONE,    qfalse,  qtrue,  &g_pollVotesPercent,        VOTE_NO_AUTO },
+	{ "spectatebots", qfalse, V_PUBLIC, T_NONE,    qfalse,  qfalse, &g_kickVotesPercent },
 	{ NULL }
 };
 
@@ -1655,7 +1655,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		cmd[0] = '\0';
 
 		Q_strcat( cmd, sizeof( cmd ), "print \"" );
-	
+
 		for( voteId = 0; voteInfo[voteId].name; ++voteId )
 		{
 			if ( ( team == TEAM_NONE && voteInfo[voteId].type != V_TEAM   ) ||
@@ -1822,7 +1822,6 @@ void Cmd_CallVote_f( gentity_t *ent )
 			                        va( "print_tr %s %s", QQ( N_("$1$: player is not on your team\n") ), cmd ) );
 			return;
 		}
-
 	}
 
 	if ( voteInfo[voteId].reasonNeeded && !reason[ 0 ] &&
@@ -1850,6 +1849,11 @@ void Cmd_CallVote_f( gentity_t *ent )
 		Com_sprintf( level.voteDisplayString[ team ],
 		             sizeof( level.voteDisplayString[ team ] ),
 		             N_("Move player '%s' to spectators"), name );
+		break;
+
+	case VOTE_BOT_SPECTATE:
+		Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ), "bot spec all" );
+		Com_sprintf( level.voteDisplayString[ team ], sizeof( level.voteDisplayString[ team ] ), N_("Move all bots to spectators") );
 		break;
 
 	case VOTE_MUTE:
