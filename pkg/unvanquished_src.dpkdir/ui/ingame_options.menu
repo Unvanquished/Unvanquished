@@ -10,6 +10,9 @@
 #define Y             60
 #define BORDER        10
 
+#define BUTT_W        45
+#define BUTT_H        35
+
 #define TOPBUTT_W     ((W-(2*BORDER))/4)
 #define TOPBUTT_H     30
 
@@ -29,6 +32,7 @@
 
 #define ELEM_H        16
 
+{
   menuDef
   {
     name "ingame_options"
@@ -171,7 +175,7 @@
     }
 
 //////// PLAYER
-	CVAR	( player, "Name:", "name", 1, 0 )
+	CVAR	( player, "Name:", "name", 40, 0 )
 	YESNO	( player, "Taunts Sounds Off:", "cg_noTaunt", play "sound/misc/menu1.wav", 1 )
 	YESNO	( player, "Team Chats Only:", "cg_teamChatsOnly", play "sound/misc/menu1.wav", 2 )
 	YESNO	( player, "Sticky Spectate:", "cg_stickySpec", play "sound/misc/menu1.wav", 3 )
@@ -191,7 +195,7 @@
 	YESNO	( hud, "Show Lag-o-meter:", "cg_lagometer",	play "sound/misc/menu1.wav", 4 )
 	MULTI	( hud, "Show Team Overlay:", "cg_drawTeamOverlay", { "Off" 0 "All Teammates" 1 "Support Teammates" 2 "Nearby Teammates" 3 }, play "sound/misc/menu1.wav", 5 )
 	MULTI	( hud, "Sort Team Overlay:", "cg_teamOverlaySortMode", { "None" 0 "Score" 1 "Weapon/Class" 2 }, play "sound/misc/menu1.wav", 6 )
-	YESNO	( hud, "Show Gun:", "cg_drawGun", play "sound/misc/menu1.wav", 7 )
+	MULTI	( hud, "Show Gun:", "cg_drawGun", { "No" 0 "Humans Only" 1 "Yes" 2 }, play "sound/misc/menu1.wav", 7 )
 	MULTI	( hud, "Show Speed:", "cg_drawspeed", { "No" 0 "Text" 1 "Graph" 2 "Text + Graph" 3 "Text No-Z" 5 "Graph No-Z" 6 "Text + Graph No-Z" 7 }, play "sound/misc/menu1.wav", 8 )
 	YESNO	( hud, "Show FPS:", "cg_drawFPS", play "sound/misc/menu1.wav", 9 )
 	YESNO	( hud, "Show Timer:", "cg_drawTimer", play "sound/misc/menu1.wav", 10 )
@@ -397,21 +401,21 @@
     }
 
 //////// GFX HARDWARE
-	MULTIX	( ghardware, "Quality:", "ui_glCustom", 
-			"High" 0 "Intermediate" 1 "Low" 2 "Very Low" 3 "Custom" 4, 
+	MULTIX	( ghardware, "Quality:", "ui_glCustom",
+			"High" 0 "Intermediate" 1 "Low" 2 "Very Low" 3 "Custom" 4,
 			play "sound/misc/menu1.wav"; uiScript update "ui_glCustom",
 			0 )
 	YESNOX	( ghardware, "GL Extensions:", "r_allowExtensions",
-			play "sound/misc/menu1.wav", 
+			play "sound/misc/menu1.wav",
 			1 )
-	COMBOX	( ghardware, "Video Mode:", FEEDER_RESOLUTIONS, 
+	COMBOX	( ghardware, "Video Mode:", FEEDER_RESOLUTIONS,
 			2 )
 	MULTIX	( ghardware, "Color Depth:", "r_colorbits",
 			"Default" 0 "16 bit" 16 "32 bit" 32,
 			play "sound/misc/menu1.wav"; uiScript glCustom; uiScript update "r_colorbits",
 			3 )
 	YESNOX	( ghardware, "Fullscreen:", "r_fullscreen",
-			play "sound/misc/menu1.wav"; uiScript glCustom, 
+			play "sound/misc/menu1.wav"; uiScript glCustom,
 			4 )
 	MULTIX	( ghardware, "Lighting:", "r_vertexLighting",
 			"Light Map (high)" 0 "Vertex (low)" 1,
@@ -479,13 +483,13 @@
 	YESNOX	( gsoftware, "Sync Every Frame:", "r_finish", play "sound/misc/menu1.wav", 6 )
 	YESNOX	( gsoftware, "In Game Videos:", "r_inGameVideo", play "sound/misc/menu1.wav", 7 )
 	YESNOX	( gsoftware, "Depth Sort Particles:", "cg_depthSortParticles", play "sound/misc/menu1.wav", 8 )
-	MULTIX	( gsoftware, "Particle Physics:", "cg_bounceParticles", 
-			"Low Quality" 0 "High Quality" 1, 
-			play "sound/misc/menu1.wav", 
+	MULTIX	( gsoftware, "Particle Physics:", "cg_bounceParticles",
+			"Low Quality" 0 "High Quality" 1,
+			play "sound/misc/menu1.wav",
 			9 )
-	MULTIX	( gsoftware, "Light Flares:", "cg_lightFlare", 
-			"Off" 0 "No Fade" 1 "Timed Fade" 2 "Real Fade" 3, 
-			play "sound/misc/menu1.wav", 
+	MULTIX	( gsoftware, "Light Flares:", "cg_lightFlare",
+			"Off" 0 "No Fade" 1 "Timed Fade" 2 "Real Fade" 3,
+			play "sound/misc/menu1.wav",
 			10 )
 
 //////// GL INFO
@@ -556,13 +560,17 @@
 	SLIDERX	( netsound, "Effects Volume:", "s_volume", .7, 0, 1, 1 )
 	SLIDERX	( netsound, "Music Volume:", "s_musicvolume", .25, 0, 1, 2 )
 	YESNOX	( netsound, "OpenAL:", "s_usemodule", play "sound/misc/menu1.wav", 3 )
-	YESNOX	( netsound, "Doppler Sound:", "s_doppler", play "sound/misc/menu1.wav", 4 )
-	TEXTX	( netsound, "Network", 6 )
+	MULTIX	( netsound, "Sound Quality:", "s_khz",
+			"44 khz (very high)" 44 "22 khz (high)" 22 "11 khz (low)" 11,
+			play "sound/misc/menu1.wav",
+			4 )
+	YESNOX	( netsound, "Doppler Sound:", "s_doppler", play "sound/misc/menu1.wav", 5 )
+	TEXTX	( netsound, "Network", 7 )
 	MULTIX	( netsound, "Net Data Rate:", "rate",
 			"<=28.8k" 2500 "33.6k" 3000 "56k" 4000 "ISDN" 5000 "LAN/CABLE/xDSl" 25000,
 			play "sound/misc/menu1.wav",
-			7 )
-	BUTTONX	( netsound, APPLY, play "sound/misc/menu1.wav"; exec "snd_restart", 9 )
+			8 )
+	BUTTONX	( netsound, APPLY, play "sound/misc/menu1.wav"; exec "snd_restart", 10 )
 
 //////// RANGE MARKERS
 
@@ -605,10 +613,9 @@
 	YESNOX	( rangemarkers, "Draw Surface:", "cg_rangeMarkerDrawSurface", play "sound/misc/menu1.wav", 2 )
 	YESNOX	( rangemarkers, "Draw Intersection:", "cg_rangeMarkerDrawIntersection", play "sound/misc/menu1.wav", 3 )
 	YESNOX	( rangemarkers, "Draw Frontline:", "cg_rangeMarkerDrawFrontline", play "sound/misc/menu1.wav", 4 )
-	SLIDERX	( rangemarkers, "Surface Opacity:", "cg_rangeMarkerSurfaceOpacity", .08, .0325, .3, 5 )
-	SLIDERX	( rangemarkers, "Line Opacity:", "cg_rangeMarkerLineOpacity", .4, .0675, 1, 6 )
-	SLIDERX	( rangemarkers, "Line Thickness:", "cg_rangeMarkerLineThickness", 4, .75, 11, 7 )
-	SLIDERX	( rangemarkers, "Binary Shader Screen Scale:", "cg_binaryShaderScreenScale", 1, .0025, 1, 8 )
-  }
+	SLIDERX ( rangemarkers, "Surface Opacity:", "cg_rangeMarkerSurfaceOpacity", .08, .0325, .3, 5 )
+    SLIDERX ( rangemarkers, "Line Opacity:", "cg_rangeMarkerLineOpacity", .4, .0675, 1, 6 )
+    SLIDERX ( rangemarkers, "Line Thickness:", "cg_rangeMarkerLineThickness", 4, .75, 11, 7 )
+    SLIDERX ( rangemarkers, "Binary Shader Screen Scale:", "cg_binaryShaderScreenScale", 1, .0025, 1, 8 )  }
  }
 }
