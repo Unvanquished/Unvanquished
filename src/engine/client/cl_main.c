@@ -2164,12 +2164,12 @@ static void CL_GenerateRSAKey( void )
 	fileHandle_t         f;
 	void                 *buf;
 	struct nettle_buffer key_buffer;
-	
+
 	int                  key_buffer_len = 0;
-	
+
 	rsa_public_key_init( &public_key );
 	rsa_private_key_init( &private_key );
-	
+
 	if( cl_profile->string[ 0 ] )
 	{
 		len = FS_FOpenFileRead( va( "profiles/%s/%s", cl_profile->string, RSAKEY_FILE ), &f, qtrue );
@@ -2184,32 +2184,32 @@ static void CL_GenerateRSAKey( void )
 		Com_Printf( "%s", _( "Daemon RSA public-key file not found, regenerating\n" ) );
 		goto new_key;
 	}
-	
+
 	buf = Z_TagMalloc( len, TAG_CRYPTO );
 	FS_Read( buf, len, f );
 	FS_FCloseFile( f );
-	
+
 	if ( !rsa_keypair_from_sexp( &public_key, &private_key, 0, len, buf ) )
 	{
 		Com_Printf( "%s", _( "Invalid RSA keypair in RSAKey, regenerating\n" ) );
 		Z_Free( buf );
 		goto new_key;
 	}
-	
+
 	Z_Free( buf );
 	Com_Printf( "%s", _( "Daemon RSA public-key found.\n" ) );
 	return;
-	
+
 	new_key:
 	mpz_set_ui( public_key.e, RSA_PUBLIC_EXPONENT );
-	
+
 	if ( !rsa_generate_keypair( &public_key, &private_key, NULL, qnettle_random, NULL, NULL, RSA_KEY_LENGTH, 0 ) )
 	{
 		goto keygen_error;
 	}
-	
+
 	qnettle_buffer_init( &key_buffer, &key_buffer_len );
-	
+
 	if ( !rsa_keypair_to_sexp( &key_buffer, NULL, &public_key, &private_key ) )
 	{
 		goto keygen_error;
@@ -2223,19 +2223,19 @@ static void CL_GenerateRSAKey( void )
 	{
 		f = FS_FOpenFileWrite( RSAKEY_FILE );
 	}
-	
+
 	if ( !f )
 	{
 		Com_Error( ERR_FATAL, _( "Daemon RSA public-key could not open %s for write, RSA support will be disabled" ), RSAKEY_FILE );
 		return;
 	}
-	
+
 	FS_Write( key_buffer.contents, key_buffer.size, f );
 	nettle_buffer_clear( &key_buffer );
 	FS_FCloseFile( f );
 	Com_Printf( "%s", _( "Daemon RSA public-key generated\n" ) );
 	return;
-	
+
 	keygen_error:
 	Com_Error( ERR_FATAL, _( "Error generating RSA keypair, RSA support will be disabled" ) );
 	Crypto_Shutdown();
@@ -2317,7 +2317,7 @@ void CL_Vid_Restart_f( void )
 
 	if( Cvar_VariableIntegerValue( "cl_newProfile" ) )
 	{
-		CL_GenerateRSAKey();		
+		CL_GenerateRSAKey();
 		Cvar_Set( "cl_newProfile", "0" );
 	}
 #ifdef _WIN32
@@ -4139,14 +4139,11 @@ void CL_InitRef( const char *renderer )
 	char        dllName[ MAX_OSPATH ];
 #endif
 
-	char        fn[ 1024 ];
-	Q_strncpyz( fn, Sys_Cwd(), sizeof( fn ) );
-
 	Com_Printf("%s", _( "----- Initializing Renderer ----\n" ));
 
 #if !defined( REF_HARD_LINKED )
 
-	Com_sprintf( dllName, sizeof( dllName ), "%s/" DLL_PREFIX "renderer%s" ARCH_STRING DLL_EXT, fn, renderer );
+	Com_sprintf( dllName, sizeof( dllName ), DLL_PREFIX "renderer%s" ARCH_STRING DLL_EXT, renderer );
 
 	Com_Printf(_( "Loading \"%s\"…"), dllName );
 
@@ -4155,9 +4152,9 @@ void CL_InitRef( const char *renderer )
 		Com_Printf(_( "failed:\n\"%s\"\n"), Sys_LibraryError() );
 
 		//fall back to default
-		Com_sprintf( dllName, sizeof( dllName ), "%s/" DLL_PREFIX "rendererGL" ARCH_STRING DLL_EXT, fn );
+		Com_sprintf( dllName, sizeof( dllName ), "%s/" DLL_PREFIX "rendererGL" ARCH_STRING DLL_EXT, Cvar_VariableString( "fs_basepath" ) );
 
-		Com_Printf(_( "Loading \"%s\"…"), dllName );
+		Com_Printf(_	( "Loading \"%s\"…"), dllName );
 
 		if ( ( rendererLib = Sys_LoadLibrary( dllName ) ) == 0 )
 		{
