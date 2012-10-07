@@ -648,7 +648,7 @@ static qboolean CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 		if ( i != MAX_PLAYER_ANIMATIONS )
 		{
 			CG_Printf(_( "Error parsing animation file: %s\n"), filename );
-// 			return qfalse;
+			return qfalse;
 		}
 
 		// crouch backward animation
