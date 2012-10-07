@@ -2511,14 +2511,14 @@ dest = malloc(4*4*channels);
 src = malloc(2*2*channels);
 [____]
 [____]
-R_SubImageCpy(dest, 0, 0, 4, 4, src, 2, 2, channels, qtrue);
+R_SubImageCpy(dest, 0, 0, 4, 4, src, 2, 2, channels);
 [____]___]
 [____]___]
 [________]
 [________]
 ===============
 */
-void R_SubImageCpy( byte *dest, size_t destx, size_t desty, size_t destw, size_t desth, byte *src, size_t srcw, size_t srch, size_t bytes, qboolean in )
+void R_SubImageCpy( byte *dest, size_t destx, size_t desty, size_t destw, size_t desth, byte *src, size_t srcw, size_t srch, size_t bytes )
 {
 	size_t s_rowBytes = srcw * bytes;
 	size_t d_rowBytes = destw * bytes;
@@ -2529,15 +2529,7 @@ void R_SubImageCpy( byte *dest, size_t destx, size_t desty, size_t destw, size_t
 
 	while ( ( s <= s_max ) && ( d <= d_max ) )
 	{
-		if ( in )
-		{
-			memcpy( d, s, s_rowBytes );
-		}
-		else
-		{
-			memcpy( s, d, s_rowBytes );
-		}
-
+		memcpy( d, s, s_rowBytes );
 		d += d_rowBytes;
 		s += s_rowBytes;
 	}

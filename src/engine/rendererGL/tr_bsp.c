@@ -9950,7 +9950,7 @@ void R_BuildCubeMaps( void )
 				               REF_CUBEMAP_STORE_SIZE, REF_CUBEMAP_STORE_SIZE,
 				               tr.cubeTemp[ i ],
 				               REF_CUBEMAP_SIZE, REF_CUBEMAP_SIZE,
-				               4, qtrue );
+				               4 );
 
 				// Increment everything
 				fileBufX++;

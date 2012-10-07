@@ -4547,7 +4547,7 @@ extern "C" {
 	void       R_ImageList_f( void );
 	void       R_SkinList_f( void );
 
-	void       R_SubImageCpy( byte *dest, size_t destx, size_t desty, size_t destw, size_t desth, byte *src, size_t srcw, size_t srch, size_t bytes, qboolean in );
+	void       R_SubImageCpy( byte *dest, size_t destx, size_t desty, size_t destw, size_t desth, byte *src, size_t srcw, size_t srch, size_t bytes );
 
 // https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=516
 	const void *RB_TakeScreenshotCmd( const void *data );
