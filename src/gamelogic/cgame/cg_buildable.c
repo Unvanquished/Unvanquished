@@ -880,55 +880,9 @@ static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *b
 
 	if ( cg_buildables[ BG_Buildable( cent->currentState.modelindex )->number ].md5 )
 	{
-		// blend old and current animation
-		if ( cg_animBlend.value <= 0.0f )
-		{
-			lf->blendlerp = 0.0f;
-		}
+		CG_BlendLerpFrame( lf );
 
-		if ( ( lf->blendlerp > 0.0f ) && ( cg.time > lf->blendtime ) )
-		{
-#if 0
-			// linear blending
-			lf->blendlerp -= 0.025f;
-#else
-			// exp blending
-			lf->blendlerp -= lf->blendlerp / cg_animBlend.value;
-#endif
-
-			if ( lf->blendlerp <= 0.0f )
-			{
-				lf->blendlerp = 0.0f;
-			}
-
-			if ( lf->blendlerp >= 1.0f )
-			{
-				lf->blendlerp = 1.0f;
-			}
-
-			lf->blendtime = cg.time + 10;
-		}
-
-		if ( lf->animation && lf->animation->handle )
-		{
-			if ( !trap_R_BuildSkeleton( &bSkeleton, lf->animation->handle, lf->oldFrame, lf->frame, 1.0 - lf->backlerp, lf->animation->clearOrigin ) )
-			{
-				CG_Printf( "%s", _( "CG_RunBuildableLerpFrame: Can't build lf->bSkeleton\n" ));
-			}
-
-			if ( oldbSkeleton.type != SK_INVALID && oldbSkeleton.numBones == bSkeleton.numBones )
-			{
-				// lerp between old and new animation if possible
-				if ( lf->blendlerp > 0.0f && oldbSkeleton.numBones == bSkeleton.numBones )
-				{
-					if ( !trap_R_BlendSkeleton( &bSkeleton, &oldbSkeleton, lf->blendlerp ) )
-					{
-						CG_Printf( "%s", _( "CG_RunBuildableLerpFrame: Can't blend lf->bSkeleton\n" ));
-						return;
-					}
-				}
-			}
-		}
+		CG_BuildAnimSkeleton( lf, &bSkeleton, &oldbSkeleton );
 	}
 }
 

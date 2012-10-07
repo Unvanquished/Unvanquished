@@ -946,7 +946,8 @@ static void S_AL_SrcKill(srcHandle_t src)
 	}
 
 	// Remove the buffer
-	qalSourcei(curSource->alSource, AL_BUFFER, 0);
+	if(qalSourcei)
+		qalSourcei(curSource->alSource, AL_BUFFER, 0);
 
 	curSource->sfx = 0;
 	curSource->lastUsedTime = 0;
@@ -2344,8 +2345,11 @@ void S_AL_Shutdown( void )
 	S_AL_SrcShutdown( );
 	S_AL_BufferShutdown( );
 
-	qalcDestroyContext(alContext);
-	qalcCloseDevice(alDevice);
+	if (qalcDestroyContext)
+	{
+		qalcDestroyContext(alContext);
+		qalcCloseDevice(alDevice);
+	}
 
 #ifdef USE_VOIP
 	if (alCaptureDevice != NULL) {

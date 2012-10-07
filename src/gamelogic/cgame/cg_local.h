@@ -729,6 +729,7 @@ typedef struct
 	qboolean    fixedlegs; // true if legs yaw is always the same as torso yaw
 	qboolean    fixedtorso; // true if torso never changes yaw
 	qboolean    nonsegmented; // true if model is Q2 style nonsegmented
+	qboolean    md5; // true if model is in the md5 model format
 
 	vec3_t      headOffset; // move head in icon views
 	footstep_t  footsteps;
@@ -746,6 +747,9 @@ typedef struct
 	qhandle_t   nonSegModel; //non-segmented model system
 	qhandle_t   nonSegSkin; //non-segmented model system
 
+	qhandle_t   bodyModel; //md5 model format
+	qhandle_t   bodySkin; //md5 model format
+
 	qhandle_t   modelIcon;
 
 	animation_t animations[ MAX_PLAYER_TOTALANIMATIONS ];
@@ -755,12 +759,15 @@ typedef struct
 	vec3_t      modelScale;
 
 	int         torsoControlBone;
+	int         leftShoulderBone;
+	int         rightShoulderBone;
 
 	int         legBones[ MAX_BONES ];
 	int         numLegBones;
 
-	qhandle_t   bodyModel;
-	qhandle_t   bodySkin;
+	int         weaponAdjusted; // bitmask of all weapons that have hand deltas
+	int         handBones[ MAX_BONES ];
+	int         numHandBones;
 
 	sfxHandle_t customFootsteps[ 4 ];
 	sfxHandle_t customMetalFootsteps[ 4 ];
@@ -1683,6 +1690,8 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 //
 void CG_RunLerpFrame( lerpFrame_t *lf, float scale );
 void CG_RunMD5LerpFrame( lerpFrame_t *lf, float scale, qboolean animChanged );
+void CG_BlendLerpFrame( lerpFrame_t *lf );
+void CG_BuildAnimSkeleton( const lerpFrame_t *lf, refSkeleton_t *newSkeleton, const refSkeleton_t *oldSkeleton );
 
 //
 // cg_animmapobj.c
