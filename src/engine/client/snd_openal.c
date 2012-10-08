@@ -2345,8 +2345,11 @@ void S_AL_Shutdown( void )
 	S_AL_SrcShutdown( );
 	S_AL_BufferShutdown( );
 
-	qalcDestroyContext(alContext);
-	qalcCloseDevice(alDevice);
+	if (qalcDestroyContext)
+	{
+		qalcDestroyContext(alContext);
+		qalcCloseDevice(alDevice);
+	}
 
 #ifdef USE_VOIP
 	if (alCaptureDevice != NULL) {

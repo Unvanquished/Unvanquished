@@ -4573,7 +4573,10 @@ void CL_Shutdown( void )
 	S_Shutdown();
 	DL_Shutdown();
 
-	re.UnregisterFont( NULL );
+	if ( re.UnregisterFont )
+	{
+		re.UnregisterFont( NULL );
+	}
 
 	CL_ShutdownRef();
 
