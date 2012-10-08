@@ -23,8 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // tr_cmds.c
 #include "tr_local.h"
 
-volatile renderCommandList_t *renderCommandList;
-
 volatile qboolean            renderThreadActive;
 
 /*
@@ -121,10 +119,6 @@ void R_PerformanceCounters( void )
 		           backEnd.pc.c_occlusionQueriesLeafsCulled,
 		           backEnd.pc.c_occlusionQueriesResponseTime,
 		           backEnd.pc.c_occlusionQueriesFetchTime );
-	}
-	else if ( r_speeds->integer == RSPEEDS_DEPTH_BOUNDS_TESTS )
-	{
-		ri.Printf( PRINT_ALL, "depth bounds tests:%i rejected:%i\n", tr.pc.c_depthBoundsTests, tr.pc.c_depthBoundsTestsRejected );
 	}
 	else if ( r_speeds->integer == RSPEEDS_SHADING_TIMES )
 	{
@@ -334,7 +328,7 @@ void           *R_GetCommandBuffer( int bytes )
 R_AddDrawViewCmd
 =============
 */
-void R_AddDrawViewCmd()
+void R_AddDrawViewCmd( void )
 {
 	drawViewCommand_t *cmd;
 

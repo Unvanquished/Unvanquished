@@ -324,7 +324,7 @@ static glyphInfo_t *RE_ConstructGlyphInfo( unsigned char *imageOut, int *xOut, i
 static int  fdOffset;
 static byte *fdFile;
 
-int readInt()
+int readInt( void )
 {
 	int i =
 	  fdFile[ fdOffset ] + ( fdFile[ fdOffset + 1 ] << 8 ) + ( fdFile[ fdOffset + 2 ] << 16 ) + ( fdFile[ fdOffset + 3 ] << 24 );
@@ -338,7 +338,7 @@ typedef union
 	float ffred;
 } poor;
 
-float readFloat()
+float readFloat( void )
 {
 	poor me;
 
@@ -494,7 +494,7 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 
 	if ( out == NULL )
 	{
-		ri.Printf( PRINT_WARNING, "RE_RegisterFont: ri.Malloc failure during output image creation.\n" );
+		ri.Printf( PRINT_WARNING, "RE_RenderChunk: ri.Malloc failure during output image creation.\n" );
 		return;
 	}
 
@@ -517,7 +517,7 @@ void RE_RenderChunk( fontInfo_t *font, const int chunk )
 		return;
 	}
 
-	//ri.Printf(PRINT_WARNING, "RE_RegisterFont: max glyph height for font %s is %i\n", strippedName, maxHeight);
+	//ri.Printf(PRINT_WARNING, "RE_RenderChunk: max glyph height for font %s is %i\n", strippedName, maxHeight);
 
 	glyphs = font->glyphBlock[ chunk ] = ri.Z_Malloc( sizeof( glyphBlock_t ) );
 	memset( glyphs, 0, sizeof( glyphBlock_t ) );

@@ -428,7 +428,7 @@ void RE_AddRefLightToScene( const refLight_t *l )
 R_AddWorldLightsToScene
 =====================
 */
-static void R_AddWorldLightsToScene()
+static void R_AddWorldLightsToScene( void )
 {
 	int          i;
 	trRefLight_t *light;
@@ -782,7 +782,7 @@ Save out the old render info to a temp place so we don't kill the LOD system
 when we do a second render.
 ================
 */
-void RE_SaveViewParms()
+void RE_SaveViewParms( void )
 {
 	// save old viewParms so we can return to it after the mirror view
 	g_oldViewParms = tr.viewParms;
@@ -796,7 +796,7 @@ Restore the old render info so we don't kill the LOD system
 when we do a second render.
 ================
 */
-void RE_RestoreViewParms()
+void RE_RestoreViewParms( void )
 {
 	// This was killing the LOD computation
 	tr.viewParms = g_oldViewParms;

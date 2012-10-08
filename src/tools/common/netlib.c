@@ -60,7 +60,7 @@ int             WINS_SetSocketPort(struct sockaddr_s *addr, int port);
 #define qtrue	1
 #define qfalse	0
 
-#ifdef _DEBUG
+#ifndef NDEBUG
 void PRINTF_LIKE(1) WinPrint(char *str, ...)
 {
 	va_list         argptr;
@@ -171,7 +171,7 @@ int Net_Receive(socket_t * sock, netmessage_t * msg)
 		return msg->size - 4;
 	}							//end if
 	//the message has not been completely read yet
-#ifdef _DEBUG
+#ifndef NDEBUG
 	printf("++timo TODO: debug the Net_Receive on big size messages\n");
 #endif
 	return 0;
@@ -342,7 +342,7 @@ void NMSG_WriteByte(netmessage_t * msg, int c)
 void NMSG_WriteShort(netmessage_t * msg, int c)
 {
 	if(c < ((short)0x8000) || c > (short)0x7fff)
-		WinPrint("NMSG_WriteShort: range error");
+		WinPrint("NMSG_WriteShort: range error\n");
 
 	if(msg->size + 2 >= MAX_NETMESSAGE)
 	{
@@ -606,7 +606,7 @@ ERROR_STRUCT    errlist[] = {
 	{-1, NULL}
 };
 
-#ifdef _DEBUG
+#ifndef NDEBUG
 void WinPrint(char *str, ...) PRINTF_LIKE(1);
 #else
 void WinPrint(char *str, ...) PRINTF_LIKE(1);
@@ -1176,7 +1176,7 @@ UNIX
 #define ioctlsocket ioctl
 #define closesocket close
 
-int WSAGetLastError()
+int WSAGetLastError(void)
 {
 	return errno;
 }
@@ -1216,7 +1216,7 @@ static unsigned long myAddr;
 
 ERROR_STRUCT    errlist[] = {
 	{EACCES, "EACCES - The address is protected, user is not root"},
-	{EAGAIN, "EAGAIN - Operation on non-blocking socket that cannot return immediatly"},
+	{EAGAIN, "EAGAIN - Operation on non-blocking socket that cannot return immediately"},
 	{EBADF, "EBADF - sockfd is not a valid descriptor"},
 	{EFAULT, "EFAULT - The parameter is not in a writable part of the user address space"},
 	{EINVAL, "EINVAL - The socket is already bound to an address"},

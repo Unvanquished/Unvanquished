@@ -377,7 +377,7 @@ void Cdelay_Frame( void ) {
 			run_it = qtrue;
 		} else if(delayed_cmd[i].type == CMD_DELAY_FRAME)
 		{
-			delayed_cmd[i].delay --;
+			delayed_cmd[i].delay--;
 			if(delayed_cmd[i].delay == CMD_DELAY_FRAME_FIRE)
 				run_it = qtrue;
 		}
@@ -753,7 +753,7 @@ void Cmd_If_f( void )
 		case 3:
 			vt = Cmd_Argv( 2 );
 #ifdef DEDICATED
-			Com_Printf(_( "if <modifiers>… is not supported on the server – assuming true.\n" ));
+			Com_Printf(_( "if <modifiers>… is not supported on the server — assuming true.\n" ));
 			v = vt;
 #else
 			v = Cmd_Argv( 1 );
@@ -854,7 +854,7 @@ void Cmd_Math_f( void )
 		}
 		else
 		{
-			Com_Printf(_( "math <variableToSet> = <value1> <operator> <value2>\nmath <variableToSet> <operator> <value1>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * / \n" ));
+			Com_Printf(_( "math <variableToSet> = <value1> <operator> <value2>\nmath <variableToSet> <operator> <value1>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * /\n" ));
 			return;
 		}
 	}
@@ -888,7 +888,7 @@ void Cmd_Math_f( void )
 		}
 		else
 		{
-			Com_Printf(_( "math <variableToSet> = <value1> <operator> <value2>\nmath <variableToSet> <operator> <value1>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * / \n" ));
+			Com_Printf(_( "math <variableToSet> = <value1> <operator> <value2>\nmath <variableToSet> <operator> <value1>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * /\n" ));
 			return;
 		}
 	}
@@ -923,13 +923,13 @@ void Cmd_Math_f( void )
 		}
 		else
 		{
-			Com_Printf(_( "math <variableToSet> = <value1> <operator> <value2>\nmath <variableToSet> <operator> <value1>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * / \n" ));
+			Com_Printf(_( "math <variableToSet> = <value1> <operator> <value2>\nmath <variableToSet> <operator> <value1>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * /\n" ));
 			return;
 		}
 	}
 	else
 	{
-		Com_Printf(_( "math <variableToSet> = <value1> <operator> <value2>\nmath <variableToSet> <operator> <value1>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * / \n" ));
+		Com_Printf(_( "math <variableToSet> = <value1> <operator> <value2>\nmath <variableToSet> <operator> <value1>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * /\n" ));
 		return;
 	}
 }
@@ -977,7 +977,7 @@ void Cmd_Strcmp_f( void )
 		}
 		else
 		{
-			Com_Printf(_( "invalid operator in strcmp command. valid operators are = != \n" ));
+			Com_Printf(_( "invalid operator in strcmp command. valid operators are = !=\n" ));
 			return;
 		}
 	}
@@ -1673,7 +1673,7 @@ For rcon use when you want to transmit without altering quoting
 ATVI Wolfenstein Misc #284
 ============
 */
-const char *Cmd_Cmd()
+const char *Cmd_Cmd( void )
 {
 	return cmd.cmd;
 }
@@ -2016,6 +2016,7 @@ static const char *EscapeString( const char *in, qboolean quote )
 	char        *out = escapeBuffer;
 	const char  *end = escapeBuffer + ESCAPEBUFFER_SIZE - 1 - !!quote;
 	qboolean    quoted = qfalse;
+	qboolean    forcequote = qfalse;
 
 	if ( quote )
 	{
@@ -2026,11 +2027,18 @@ static const char *EscapeString( const char *in, qboolean quote )
 	{
 		char c = *in++;
 
+		if ( forcequote )
+		{
+			forcequote = qfalse;
+			goto doquote;
+		}
+
 		switch ( c )
 		{
 		case '/':
 			// only quote "//" and "/*"
 			if ( *in != '/' && *in != '*' ) break;
+			forcequote = qtrue;
 			goto doquote;
 		case ';':
 			// no need to quote semicolons if in ""

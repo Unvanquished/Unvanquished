@@ -78,7 +78,7 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 	mdvFrame_t     *frame;
 	mdvSurface_t   *surf; //, *surface;
 	srfTriangle_t  *tri;
-	mdvVertex_t    *v;
+	mdvXyz_t       *v;
 	mdvSt_t        *st;
 	mdvTag_t       *tag;
 	mdvTagName_t   *tagName;
@@ -288,6 +288,9 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 #if 1
 	// create VBO surfaces from md3 surfaces
 	{
+		mdvNormTanBi_t  *vertexes;
+		mdvNormTanBi_t  *vert;
+
 		growList_t      vboSurfaces;
 		srfVBOMDVMesh_t *vboSurf;
 
@@ -314,6 +317,9 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 
 		for ( i = 0, surf = mdvModel->surfaces; i < mdvModel->numSurfaces; i++, surf++ )
 		{
+			//allocate temp memory for vertex data
+			vertexes = (mdvNormTanBi_t*)ri.Hunk_AllocateTempMemory( sizeof( *vertexes ) * surf->numVerts * mdvModel->numFrames );
+
 			// calc tangent spaces
 			{
 				const float *v0, *v1, *v2;
@@ -322,11 +328,11 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 				vec3_t      binormal;
 				vec3_t      normal;
 
-				for ( j = 0, v = surf->verts; j < ( surf->numVerts * mdvModel->numFrames ); j++, v++ )
+				for ( j = 0, vert = vertexes; j < ( surf->numVerts * mdvModel->numFrames ); j++, vert++ )
 				{
-					VectorClear( v->tangent );
-					VectorClear( v->binormal );
-					VectorClear( v->normal );
+					VectorClear( vert->tangent );
+					VectorClear( vert->binormal );
+					VectorClear( vert->normal );
 				}
 
 				for ( f = 0; f < mdvModel->numFrames; f++ )
@@ -352,23 +358,23 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 						{
 							float *v;
 
-							v = surf->verts[ surf->numVerts * f + tri->indexes[ k ] ].tangent;
+							v = vertexes[ surf->numVerts * f + tri->indexes[ k ] ].tangent;
 							VectorAdd( v, tangent, v );
 
-							v = surf->verts[ surf->numVerts * f + tri->indexes[ k ] ].binormal;
+							v = vertexes[ surf->numVerts * f + tri->indexes[ k ] ].binormal;
 							VectorAdd( v, binormal, v );
 
-							v = surf->verts[ surf->numVerts * f + tri->indexes[ k ] ].normal;
+							v = vertexes[ surf->numVerts * f + tri->indexes[ k ] ].normal;
 							VectorAdd( v, normal, v );
 						}
 					}
 				}
 
-				for ( j = 0, v = surf->verts; j < ( surf->numVerts * mdvModel->numFrames ); j++, v++ )
+				for ( j = 0, vert = vertexes; j < ( surf->numVerts * mdvModel->numFrames ); j++, vert++ )
 				{
-					VectorNormalize( v->tangent );
-					VectorNormalize( v->binormal );
-					VectorNormalize( v->normal );
+					VectorNormalize( vert->tangent );
+					VectorNormalize( vert->binormal );
+					VectorNormalize( vert->normal );
 				}
 			}
 
@@ -392,11 +398,12 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 
 			vboSurf->ibo = R_CreateIBO2( va( "staticMD3Mesh_IBO %s", surf->name ), surf->numTriangles, surf->triangles, VBO_USAGE_STATIC );
 
-			// create VBO
 			vertexesNum = surf->numVerts;
 
+			//allocate vbo data
 			dataSize = ( surf->numVerts * mdvModel->numFrames * sizeof( vec4_t ) * 4 ) +  // xyz, tangent, binormal, normal
 			           ( surf->numVerts * sizeof( vec4_t ) );  // texcoords
+
 			data = ri.Hunk_AllocateTempMemory( dataSize );
 			dataOfs = 0;
 
@@ -446,7 +453,7 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 				{
 					for ( k = 0; k < 3; k++ )
 					{
-						tmp[ k ] = surf->verts[ f * vertexesNum + j ].tangent[ k ];
+						tmp[ k ] = vertexes[ f * vertexesNum + j ].tangent[ k ];
 					}
 
 					tmp[ 3 ] = 1;
@@ -469,7 +476,7 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 				{
 					for ( k = 0; k < 3; k++ )
 					{
-						tmp[ k ] = surf->verts[ f * vertexesNum + j ].binormal[ k ];
+						tmp[ k ] = vertexes[ f * vertexesNum + j ].binormal[ k ];
 					}
 
 					tmp[ 3 ] = 1;
@@ -492,7 +499,7 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 				{
 					for ( k = 0; k < 3; k++ )
 					{
-						tmp[ k ] = surf->verts[ f * vertexesNum + j ].normal[ k ];
+						tmp[ k ] = vertexes[ f * vertexesNum + j ].normal[ k ];
 					}
 
 					tmp[ 3 ] = 1;
@@ -520,6 +527,7 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 			vboSurf->vbo->sizeNormals = sizeNormals;
 
 			ri.Hunk_FreeTempMemory( data );
+			ri.Hunk_FreeTempMemory( vertexes );
 		}
 
 		// move VBO surfaces list to hunk

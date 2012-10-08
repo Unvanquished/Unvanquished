@@ -38,7 +38,7 @@ Maryland 20850 USA.
 #include "snd_codec.h"
 #include "client.h"
 
-void         S_Update_();
+void         S_Update_( void );
 void         S_Base_StopAllSounds( void );
 void         S_UpdateBackgroundTrack( void );
 
@@ -105,15 +105,10 @@ void S_Base_SoundInfo_f( void )
 
 	if ( !s_soundStarted )
 	{
-		Com_Printf("%s", _( "sound system not started\n" ));
+		Com_Printf("%s", _( "the sound system is not started\n" ));
 	}
 	else
 	{
-		if ( s_soundMuted )
-		{
-			Com_Printf("%s", _( "sound system is muted\n" ));
-		}
-
 		Com_Printf(_( "%5d stereo\n"), dma.channels - 1 );
 		Com_Printf(_( "%5d samples\n"), dma.samples );
 		Com_Printf(_( "%5d samplebits\n"), dma.samplebits );
@@ -151,7 +146,7 @@ void S_ChannelFree( channel_t *v )
 S_ChannelMalloc
 ================
 */
-channel_t      *S_ChannelMalloc()
+channel_t      *S_ChannelMalloc( void )
 {
 	channel_t *v;
 
@@ -166,7 +161,7 @@ channel_t      *S_ChannelMalloc()
 	return v;
 }
 
-void S_ChannelSetup()
+void S_ChannelSetup( void )
 {
 	channel_t *p, *q;
 
@@ -417,7 +412,7 @@ sfxHandle_t     S_Base_RegisterSound( const char *name, qboolean compressed )
 	{
 		if ( sfx->defaultSound )
 		{
-			Com_Printf( _( S_COLOR_YELLOW  "WARNING: could not find %s – using default\n"), sfx->soundName );
+			Com_Printf( _( S_COLOR_YELLOW  "WARNING: could not find %s — using default\n"), sfx->soundName );
 			return 0;
 		}
 
@@ -431,7 +426,7 @@ sfxHandle_t     S_Base_RegisterSound( const char *name, qboolean compressed )
 
 	if ( sfx->defaultSound )
 	{
-		Com_Printf( _( S_COLOR_YELLOW  "WARNING: could not find %s – using default\n"), sfx->soundName );
+		Com_Printf( _( S_COLOR_YELLOW  "WARNING: could not find %s — using default\n"), sfx->soundName );
 		return 0;
 	}
 
@@ -753,11 +748,7 @@ void S_Base_ClearSoundBuffer( void )
 
 	if ( dma.buffer )
 	{
-		// TTimo: due to a particular bug workaround in linux sound code,
-		//   have to optionally use a custom C implementation of Com_Memset
-		//   not affecting win32, we have #define Snd_Memset Com_Memset
-		// https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=371
-		Snd_Memset( dma.buffer, clear, dma.samples * dma.samplebits / 8 );
+		Com_Memset( dma.buffer, clear, dma.samples * dma.samplebits / 8 );
 	}
 
 	SNDDMA_Submit();
@@ -1072,7 +1063,7 @@ void S_ByteSwapRawSamples( int samples, int width, int s_channels, const byte *d
 	}
 }
 
-portable_samplepair_t *S_GetRawSamplePointer()
+portable_samplepair_t *S_GetRawSamplePointer( void )
 {
 	return s_rawsamples;
 }
@@ -1690,7 +1681,7 @@ S_FreeOldestSound
 ======================
 */
 
-void S_FreeOldestSound()
+void S_FreeOldestSound( void )
 {
 	int       i, oldest, used;
 	sfx_t     *sfx;

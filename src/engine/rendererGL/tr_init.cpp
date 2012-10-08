@@ -369,7 +369,6 @@ extern "C" {
 		//
 		// GLimp_Init directly or indirectly references the following cvars:
 		//      - r_fullscreen
-		//      - r_glDriver
 		//      - r_mode
 		//      - r_(color|depth|stencil)bits
 		//      - r_ignorehwgamma
@@ -1323,7 +1322,7 @@ extern "C" {
 
 			if ( glConfig.driverType == GLDRV_MESA )
 			{
-				ri.Printf( PRINT_DEVELOPER, "^3NOT using GPU vertex skinning – known to be broken with Radeon HD and Mesa\n" );
+				ri.Printf( PRINT_DEVELOPER, "^3Not using GPU vertex skinning: known to be broken with Radeon HD and Mesa\n" );
 				glConfig2.vboVertexSkinningAvailable = qfalse;
 			}
 		}
@@ -1680,7 +1679,7 @@ extern "C" {
 		r_cullShadowPyramidCurves = ri.Cvar_Get( "r_cullShadowPyramidCurves", "1", CVAR_CHEAT );
 		r_cullShadowPyramidTriangles = ri.Cvar_Get( "r_cullShadowPyramidTriangles", "1", CVAR_CHEAT );
 		r_noShadowFrustums = ri.Cvar_Get( "r_noShadowFrustums", "0", CVAR_CHEAT );
-		r_noLightFrustums = ri.Cvar_Get( "r_noLightFrustums", "0", CVAR_CHEAT );
+		r_noLightFrustums = ri.Cvar_Get( "r_noLightFrustums", "1", CVAR_CHEAT );
 
 		r_maxPolys = ri.Cvar_Get( "r_maxpolys", "10000", 0 );  // 600 in vanilla Q3A
 		AssertCvarRange( r_maxPolys, 600, 30000, qtrue );
@@ -1836,7 +1835,7 @@ extern "C" {
 			//UINT width = rc.right - rc.left;
 			//UINT height = rc.bottom - rc.top;
 
-#ifdef _DEBUG
+#ifndef NDEBUG
 			createDeviceFlags |= D3D10_CREATE_DEVICE_DEBUG;
 #endif
 
@@ -1908,7 +1907,7 @@ extern "C" {
 			if ( FAILED( hr ) )
 #endif
 			{
-				ri.Printf( PRINT_ALL, "R_Init: Failed to find PerfHUD" );
+				ri.Printf( PRINT_ALL, "R_Init: Failed to find PerfHUD\n" );
 
 				for ( i = 0; i < numDriverTypes; i++ )
 				{
@@ -1961,7 +1960,7 @@ extern "C" {
 #if 0
 			// create the effect
 			DWORD dwShaderFlags = D3D10_SHADER_ENABLE_STRICTNESS;
-#if defined( DEBUG ) || defined( _DEBUG )
+#if defined( DEBUG ) || !defined( NDEBUG )
 			// Set the D3D10_SHADER_DEBUG flag to embed debug information in the shaders.
 			// Setting this flag improves the shader debugging experience, but still allows
 			// the shaders to be optimized and to run exactly the way they will run in

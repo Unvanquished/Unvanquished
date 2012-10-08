@@ -103,7 +103,7 @@ Reads the animation.cfg for weapons
 
 static qboolean CG_ParseWeaponAnimationFile( const char *filename, weaponInfo_t *wi )
 {
-	char         *text_p, *prev;
+	char         *text_p;
 	int          len;
 	int          i;
 	char         *token;
@@ -171,7 +171,7 @@ static qboolean CG_ParseWeaponAnimationFile( const char *filename, weaponInfo_t 
 
 	if ( i != MAX_WEAPON_ANIMATIONS )
 	{
-		CG_Printf( _( "Error parsing weapon animation file: %s"), filename );
+		CG_Printf( _( "Error parsing weapon animation file: %s\n"), filename );
 		return qfalse;
 	}
 
@@ -877,7 +877,7 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
 													va( "%s_view_fire.md5anim", token2 ), qfalse, qfalse, qfalse );
 						break;
-						
+
 					case WP_BLASTER:
 					case WP_PAIN_SAW:
 					case WP_LAS_GUN:
@@ -893,7 +893,7 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
 													va( "%s_view_fire.md5anim", token2 ), qfalse, qfalse, qfalse );
 						break;
-						
+
 					case WP_ALEVEL1:
 					case WP_ALEVEL1_UPG:
 					case WP_ALEVEL2:
@@ -911,7 +911,7 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK6 ],
 													va( "%s_view_fire6.md5anim", token2 ), qfalse, qfalse, qfalse );
 						break;
-						
+
 					case WP_ALEVEL2_UPG:
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
 													va( "%s_view_fire.md5anim", token2 ), qfalse, qfalse, qfalse );
@@ -1294,49 +1294,9 @@ static void CG_WeaponAnimation( centity_t *cent, int *old, int *now, float *back
 
 	if ( cg_weapons[ cent->currentState.weapon ].md5 )
 	{
-		// blend old and current animation
-		if ( cg_animBlend.value <= 0.0f )
-		{
-			lf->blendlerp = 0.0f;
-		}
+		CG_BlendLerpFrame( lf );
 
-		if ( ( lf->blendlerp > 0.0f ) && ( cg.time > lf->blendtime ) )
-		{
-#if 0
-			// linear blending
-			lf->blendlerp -= 0.025f;
-#else
-			// exp blending
-			lf->blendlerp -= lf->blendlerp / cg_animBlend.value;
-#endif
-
-			if ( lf->blendlerp <= 0.0f )
-			{
-				lf->blendlerp = 0.0f;
-			}
-
-			if ( lf->blendlerp >= 1.0f )
-			{
-				lf->blendlerp = 1.0f;
-			}
-
-			lf->blendtime = cg.time + 10;
-		}
-
-		if ( !trap_R_BuildSkeleton( &gunSkeleton, lf->animation->handle, lf->oldFrame, lf->frame, 1.0 - lf->backlerp, lf->animation->clearOrigin ) )
-		{
-			CG_Printf( "%s", _( "CG_RunWeaponLerpFrame: Can't build lf->gunSkeleton\n" ));
-		}
-
-		// lerp between old and new animation if possible
-		if ( lf->blendlerp > 0.0f && gunSkeleton.numBones == oldGunSkeleton.numBones )
-		{
-			if ( !trap_R_BlendSkeleton( &gunSkeleton, &oldGunSkeleton, lf->blendlerp ) )
-			{
-				CG_Printf( "%s", _( "CG_RunWeaponLerpFrame: Can't blend lf->gunSkeleton\n" ));
-				return;
-			}
-		}
+		CG_BuildAnimSkeleton( lf, &gunSkeleton, &oldGunSkeleton );
 	}
 }
 
@@ -1365,10 +1325,10 @@ static int CG_MapTorsoToWeaponFrame( clientInfo_t *ci, int frame, qboolean md5 )
 		}
 
 		// stand attack 2
-		if ( frame >= ci->animations[ TORSO_ATTACK2 ].firstFrame &&
-		     frame < ci->animations[ TORSO_ATTACK2 ].firstFrame + 6 )
+		if ( frame >= ci->animations[ TORSO_ATTACK_BLASTER ].firstFrame &&
+		     frame < ci->animations[ TORSO_ATTACK_BLASTER ].firstFrame + 6 )
 		{
-			return 1 + frame - ci->animations[ TORSO_ATTACK2 ].firstFrame;
+			return 1 + frame - ci->animations[ TORSO_ATTACK_BLASTER ].firstFrame;
 		}
 	}
 
@@ -1616,26 +1576,30 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 		CG_PositionEntityOnTag( &gun, parent, parent->hModel, "tag_weapon" );
 		CG_WeaponAnimation( cent, &gun.oldframe, &gun.frame, &gun.backlerp );
 
-		gun.skeleton = gunSkeleton;
-
-		if ( weapon->rotationBone[ 0 ] && ps )
+		if ( weapon->md5 )
 		{
-			int    boneIndex = trap_R_BoneIndex( gun.hModel, weapon->rotationBone );
-			quat_t rotation;
 
-			if ( boneIndex < 0 )
+			gun.skeleton = gunSkeleton;
+
+			if ( weapon->rotationBone[ 0 ] && ps )
 			{
-				Com_Printf( _( S_COLOR_YELLOW  "WARNING: Cannot find bone index %s, using root bone\n"),
-				            weapon->rotationBone );
-				weapon->rotationBone[ 0 ] = '\0'; // avoid repeated warnings
-				boneIndex = 0;
+				int    boneIndex = trap_R_BoneIndex( gun.hModel, weapon->rotationBone );
+				quat_t rotation;
+
+				if ( boneIndex < 0 )
+				{
+					Com_Printf( _( S_COLOR_YELLOW  "WARNING: Cannot find bone index %s, using root bone\n"),
+								weapon->rotationBone );
+					weapon->rotationBone[ 0 ] = '\0'; // avoid repeated warnings
+					boneIndex = 0;
+				}
+
+				QuatFromAngles( rotation, weapon->rotation[ 0 ], weapon->rotation[ 1 ], weapon->rotation[ 2 ] );
+				QuatMultiply0( gun.skeleton.bones[ boneIndex ].rotation, rotation );
 			}
 
-			QuatFromAngles( rotation, weapon->rotation[ 0 ], weapon->rotation[ 1 ], weapon->rotation[ 2 ] );
-			QuatMultiply0( gun.skeleton.bones[ boneIndex ].rotation, rotation );
+			CG_TransformSkeleton( &gun.skeleton, weapon->scale );
 		}
-
-		CG_TransformSkeleton( &gun.skeleton, weapon->scale );
 
 		trap_R_AddRefEntityToScene( &gun );
 
@@ -1827,7 +1791,7 @@ void CG_AddViewWeapon( playerState_t *ps )
 			}
 			break;
 	}
-			
+
 
 	if ( !wi->registered )
 	{
@@ -1913,7 +1877,10 @@ void CG_AddViewWeapon( playerState_t *ps )
 	CG_CalculateWeaponPosition( hand.origin, angles );
 
 	VectorMA( hand.origin, ( cg_gun_x.value + wi->posOffs[ 0 ] ), cg.refdef.viewaxis[ 0 ], hand.origin );
-	VectorMA( hand.origin, ( cg_gun_y.value + wi->posOffs[ 1 ] ), cg.refdef.viewaxis[ 1 ], hand.origin );
+	if( cg_mirrorgun.integer )
+		VectorMA( hand.origin, -( cg_gun_y.value + wi->posOffs[ 1 ] ), cg.refdef.viewaxis[ 1 ], hand.origin );
+	else
+		VectorMA( hand.origin, ( cg_gun_y.value + wi->posOffs[ 1 ] ), cg.refdef.viewaxis[ 1 ], hand.origin );
 	VectorMA( hand.origin, ( cg_gun_z.value + fovOffset + wi->posOffs[ 2 ] ), cg.refdef.viewaxis[ 2 ], hand.origin );
 
 	// Lucifer Cannon vibration effect
@@ -1929,6 +1896,11 @@ void CG_AddViewWeapon( playerState_t *ps )
 	}
 
 	AnglesToAxis( angles, hand.axis );
+	if( cg_mirrorgun.integer ) {
+		hand.axis[1][0] = - hand.axis[1][0];
+		hand.axis[1][1] = - hand.axis[1][1];
+		hand.axis[1][2] = - hand.axis[1][2];
+	}
 
 	// map torso animations to weapon animations
 	if ( cg_gun_frame.integer )
@@ -1948,6 +1920,8 @@ void CG_AddViewWeapon( playerState_t *ps )
 
 	hand.hModel = wi->handsModel;
 	hand.renderfx = RF_DEPTHHACK | RF_FIRST_PERSON | RF_MINLIGHT;
+	if( cg_mirrorgun.integer )
+		hand.renderfx |= RF_SWAPCULL;
 
 	// add everything onto the hand
 	if ( weapon )
@@ -2045,9 +2019,6 @@ void CG_DrawItemSelect( rectDef_t *rect, vec4_t color )
 			}
 		}
 	}
-
-	// showing weapon select clears pickup item display, but not the blend blob
-	cg.itemPickupTime = 0;
 
 	// put all weapons in the items list
 	for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )

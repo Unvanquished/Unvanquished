@@ -89,7 +89,7 @@ int G_MatchOnePlayer( const int *plist, int found, char *err, int len )
 
 			if ( cl->pers.connected == CON_CONNECTED )
 			{
-				Com_sprintf( line, sizeof( line ), "%2i – %s^7\n",
+				Com_sprintf( line, sizeof( line ), "%2i — %s^7\n",
 				             plist[p], cl->pers.netname );
 
 				if ( strlen( err ) + strlen( line ) > len )
@@ -202,7 +202,7 @@ int G_ClientNumberFromString( const char *s, char *err, int len )
 		{
 			if ( p )
 			{
-				l = Q_snprintf( p, l2, "%-2d – %s^7\n", i, cl->pers.netname );
+				l = Q_snprintf( p, l2, "%-2d — %s^7\n", i, cl->pers.netname );
 				p += l;
 				l2 -= l;
 			}
@@ -1143,10 +1143,18 @@ static qboolean G_SayTo( gentity_t *ent, gentity_t *other, saymode_t mode, const
 		}
 	}
 
-	trap_SendServerCommand( other - g_entities, va( "chat %ld %d %s",
-	                        ent ? ( long )( ent - g_entities ) : -1,
-	                        mode,
-	                        Quote( message ) ) );
+	if ( mode == SAY_ALL_ADMIN )
+	{
+		trap_SendServerCommand( other - g_entities, va( "achat %s %d %s",
+		                        G_quoted_admin_name( ent ),
+		                        mode, Quote( message ) ) );
+	}
+	else
+	{
+		trap_SendServerCommand( other - g_entities, va( "chat %ld %d %s",
+		                        ent ? ( long )( ent - g_entities ) : -1,
+		                        mode, Quote( message ) ) );
+	}
 
 	return qtrue;
 }
@@ -1172,6 +1180,12 @@ void G_Say( gentity_t *ent, saymode_t mode, const char *chatText )
 	{
 		case SAY_ALL:
 			G_LogPrintf( "Say: %d \"%s" S_COLOR_WHITE "\": " S_COLOR_GREEN "%s\n",
+			             ( ent ) ? ( int )( ent - g_entities ) : -1,
+			             ( ent ) ? ent->client->pers.netname : "console", chatText );
+			break;
+
+		case SAY_ALL_ADMIN:
+			G_LogPrintf( "Say: %d \"%s" S_COLOR_WHITE "\": " S_COLOR_MAGENTA "%s\n",
 			             ( ent ) ? ( int )( ent - g_entities ) : -1,
 			             ( ent ) ? ent->client->pers.netname : "console", chatText );
 			break;
@@ -1332,6 +1346,16 @@ static void Cmd_Say_f( gentity_t *ent )
 	{
 		mode = SAY_TEAM;
 	}
+	else if ( Q_stricmp( cmd, "asay" ) == 0 )
+	{
+		if ( !G_admin_permission( ent, ADMF_ADMINCHAT ) )
+		{
+			ADMP( va( "%s %s", QQ( N_("^3$1$: ^7permission denied\n") ), "asay" ) );
+			return;
+		}
+
+		mode = SAY_ALL_ADMIN;
+	}
 
 	p = ConcatArgs( 1 );
 
@@ -1368,7 +1392,7 @@ void Cmd_VSay_f( gentity_t *ent )
 	if ( trap_Argc() < 2 )
 	{
 		trap_SendServerCommand( ent - g_entities, va(
-		                          "print_tr %s %s", QQ( N_("usage: $1$ command [text] \n") ),  arg ) );
+		                          "print_tr %s %s", QQ( N_("usage: $1$ command [text]\n") ),  arg ) );
 		return;
 	}
 
@@ -1723,7 +1747,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		     G_TimeTilSuddenDeath() <= g_suddenDeathVoteDelay.integer * 1000 )
 		{
 			trap_SendServerCommand( ent - g_entities,
-			                        "print_tr \"" N_("Sudden Death is imminent – this vote may have no effect\n") "\"" );
+			                        "print_tr \"" N_("Sudden Death is imminent — this vote may have no effect\n") "\"" );
 			// DON'T stop the vote. It might pass or fail before SD starts.
 		}
 
@@ -4120,6 +4144,7 @@ static void Cmd_Pubkey_Identify_f( gentity_t *ent )
 static const commands_t cmds[] =
 {
 	{ "a",               CMD_MESSAGE | CMD_INTERMISSION,      Cmd_AdminMessage_f     },
+	{ "asay",            CMD_MESSAGE | CMD_INTERMISSION,      Cmd_Say_f              },
 	{ "build",           CMD_TEAM | CMD_ALIVE,                Cmd_Build_f            },
 	{ "buy",             CMD_HUMAN | CMD_ALIVE,               Cmd_Buy_f              },
 	{ "callteamvote",    CMD_MESSAGE | CMD_TEAM,              Cmd_CallVote_f         },

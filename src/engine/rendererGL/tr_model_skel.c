@@ -486,7 +486,7 @@ void AddSurfaceToVBOSurfacesList2( growList_t *vboSurfaces, growList_t *vboTrian
 	vboSurf->surfaceType = SF_VBO_MD5MESH;
 	vboSurf->md5Model = md5;
 
-	ri.Printf( PRINT_ALL, "AddSurfaceToVBOSurfacesList2: loading shader '%s'", materialName );
+	ri.Printf( PRINT_ALL, "AddSurfaceToVBOSurfacesList2: loading shader '%s'\n", materialName );
 	shader = R_FindShader( materialName, SHADER_3D_DYNAMIC, qtrue );
 
 	if ( shader->defaultShader )

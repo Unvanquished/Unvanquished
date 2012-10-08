@@ -225,7 +225,7 @@ static void CG_CalcVrect( void )
 {
 	int size;
 
-	// the intermission should allways be full screen
+	// the intermission should always be in fullscreen
 	if ( cg.snap->ps.pm_type == PM_INTERMISSION )
 	{
 		size = 100;
@@ -418,22 +418,20 @@ void CG_OffsetThirdPersonView( void )
 
 	// Ensure that the current camera position isn't out of bounds and that there
 	// is nothing between the camera and the player.
-	if ( !cg_cameraMode.integer )
+
+	// Trace a ray from the origin to the viewpoint to make sure the view isn't
+	// in a solid block.  Use an 8 by 8 block to prevent the view from near clipping anything
+	CG_Trace( &trace, cg.refdef.vieworg, mins, maxs, view, cg.predictedPlayerState.clientNum, MASK_SOLID );
+
+	if ( trace.fraction != 1.0f )
 	{
-		// Trace a ray from the origin to the viewpoint to make sure the view isn't
-		// in a solid block.  Use an 8 by 8 block to prevent the view from near clipping anything
+		VectorCopy( trace.endpos, view );
+		view[ 2 ] += ( 1.0f - trace.fraction ) * 32;
+		// Try another trace to this position, because a tunnel may have the ceiling
+		// close enogh that this is poking out.
+
 		CG_Trace( &trace, cg.refdef.vieworg, mins, maxs, view, cg.predictedPlayerState.clientNum, MASK_SOLID );
-
-		if ( trace.fraction != 1.0f )
-		{
-			VectorCopy( trace.endpos, view );
-			view[ 2 ] += ( 1.0f - trace.fraction ) * 32;
-			// Try another trace to this position, because a tunnel may have the ceiling
-			// close enogh that this is poking out.
-
-			CG_Trace( &trace, cg.refdef.vieworg, mins, maxs, view, cg.predictedPlayerState.clientNum, MASK_SOLID );
-			VectorCopy( trace.endpos, view );
-		}
+		VectorCopy( trace.endpos, view );
 	}
 
 	// Set the camera position to what we calculated.
@@ -1374,7 +1372,7 @@ static int CG_CalcViewValues( void )
 		VectorCopy( ps->viewangles, cg.refdefViewAngles );
 	}
 
-	//clumsy logic, but it needs to be this way round because the CS propogation
+	//clumsy logic, but it needs to be this way around because the CS propagation
 	//delay screws things up otherwise
 	if ( !BG_ClassHasAbility( ps->stats[ STAT_CLASS ], SCA_WALLJUMPER ) )
 	{
@@ -1443,46 +1441,6 @@ static int CG_CalcViewValues( void )
 
 	// field of view
 	return CG_CalcFov();
-}
-
-/*
-=====================
-CG_AddBufferedSound
-=====================
-*/
-void CG_AddBufferedSound( sfxHandle_t sfx )
-{
-	if ( !sfx )
-	{
-		return;
-	}
-
-	cg.soundBuffer[ cg.soundBufferIn ] = sfx;
-	cg.soundBufferIn = ( cg.soundBufferIn + 1 ) % MAX_SOUNDBUFFER;
-
-	if ( cg.soundBufferIn == cg.soundBufferOut )
-	{
-		cg.soundBufferOut++;
-	}
-}
-
-/*
-=====================
-CG_PlayBufferedSounds
-=====================
-*/
-static void CG_PlayBufferedSounds( void )
-{
-	if ( cg.soundTime < cg.time )
-	{
-		if ( cg.soundBufferOut != cg.soundBufferIn && cg.soundBuffer[ cg.soundBufferOut ] )
-		{
-			trap_S_StartLocalSound( cg.soundBuffer[ cg.soundBufferOut ], CHAN_ANNOUNCER );
-			cg.soundBuffer[ cg.soundBufferOut ] = 0;
-			cg.soundBufferOut = ( cg.soundBufferOut + 1 ) % MAX_SOUNDBUFFER;
-			cg.soundTime = cg.time + 750;
-		}
-	}
 }
 
 //=========================================================================
@@ -1594,14 +1552,6 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	// update cvars
 	CG_UpdateCvars();
 
-	// if we are only updating the screen as a loading
-	// pacifier, don't even try to read snapshots
-	if ( cg.infoScreenText[ 0 ] != 0 )
-	{
-		CG_DrawLoadingScreen();
-		return;
-	}
-
 	// any looped sounds will be respecified as entities
 	// are added to the render list
 	trap_S_ClearLoopingSounds( qfalse );
@@ -1657,9 +1607,6 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 		CG_AddParticles();
 		CG_AddTrails();
 	}
-
-	// add buffered sounds
-	CG_PlayBufferedSounds();
 
 	// finish up the rest of the refdef
 	if ( cg.testModelEntity.hModel )

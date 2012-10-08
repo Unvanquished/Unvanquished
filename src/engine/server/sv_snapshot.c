@@ -214,9 +214,6 @@ static void SV_WriteSnapshotToClient( client_t *client, msg_t *msg )
 	MSG_WriteData( msg, frame->areabits, frame->areabytes );
 
 	{
-//      int sz = msg->cursize;
-//      int usz = msg->uncompsize;
-
 		// delta encode the playerstate
 		if ( oldframe )
 		{
@@ -226,8 +223,6 @@ static void SV_WriteSnapshotToClient( client_t *client, msg_t *msg )
 		{
 			MSG_WriteDeltaPlayerstate( msg, NULL, &frame->ps );
 		}
-
-//      Com_Printf(_( "Playerstate delta size: %f\n"), ((msg->cursize - sz) * sv_fps->integer) / 8.f );
 	}
 
 	// delta encode the entities

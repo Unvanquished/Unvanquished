@@ -111,7 +111,7 @@ static snd_codec_t *findCodec( const char *filename )
 /*
  * Codec management
  */
-void codec_init()
+void codec_init( void )
 {
 	codecs = NULL;
 	codec_register( &wav_codec );
@@ -120,7 +120,7 @@ void codec_init()
 #endif
 }
 
-void codec_shutdown()
+void codec_shutdown( void )
 {
 	codecs = NULL;
 }

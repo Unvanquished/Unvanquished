@@ -1395,8 +1395,6 @@ static void PM_JetPackMove( void )
 /*
 ===================
 PM_FlyMove
-
-Only with the flight powerup
 ===================
 */
 static void PM_FlyMove( void )
@@ -3357,7 +3355,7 @@ static void PM_TorsoAnimation( void )
 		{
 			if ( pm->ps->weapon == WP_BLASTER )
 			{
-				PM_ContinueTorsoAnim( TORSO_STAND2 );
+				PM_ContinueTorsoAnim( TORSO_STAND_BLASTER );
 			}
 			else
 			{
@@ -3650,7 +3648,7 @@ static void PM_Weapon( void )
 		{
 			if ( pm->ps->weapon == WP_BLASTER )
 			{
-				PM_ContinueTorsoAnim( TORSO_STAND2 );
+				PM_ContinueTorsoAnim( TORSO_STAND_BLASTER );
 			}
 			else
 			{
@@ -3905,7 +3903,12 @@ static void PM_Weapon( void )
 				break;
 
 			case WP_BLASTER:
-				PM_StartTorsoAnim( TORSO_ATTACK2 );
+				PM_StartTorsoAnim( TORSO_ATTACK_BLASTER );
+				PM_StartWeaponAnim( WANIM_ATTACK1 );
+				break;
+
+			case WP_PAIN_SAW:
+				PM_StartTorsoAnim( TORSO_ATTACK_PSAW );
 				PM_StartWeaponAnim( WANIM_ATTACK1 );
 				break;
 
@@ -4050,7 +4053,9 @@ static void PM_Animate( void )
 		{
 			if ( pm->ps->torsoTimer == 0 )
 			{
-				PM_StartTorsoAnim( TORSO_GESTURE );
+				PM_StartTorsoAnim( TORSO_GESTURE_BLASTER + ( pm->ps->weapon - WP_BLASTER ) > WP_LUCIFER_CANNON ?
+				    TORSO_GESTURE_CKIT :
+				    TORSO_GESTURE_BLASTER + ( pm->ps->weapon - WP_BLASTER ) );
 				pm->ps->torsoTimer = TIMER_GESTURE;
 				pm->ps->tauntTimer = TIMER_GESTURE;
 

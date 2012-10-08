@@ -311,7 +311,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define TRAPPER_RANGE           400
 #define TRAPPER_REPEAT          1000
 #define TRAPPER_VALUE           ABVM(TRAPPER_BP)
-#define LOCKBLOB_SPEED          650.0f
+#define LOCKBLOB_SPEED          500.0f
 #define LOCKBLOB_LOCKTIME       5000
 #define LOCKBLOB_DOT            0.85f // max angle = acos( LOCKBLOB_DOT )
 #define LOCKBLOB_K_SCALE        1.0f
@@ -339,7 +339,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define ALIEN_POISON_TIME        10000
 #define ALIEN_POISON_DMG         5
-#define ALIEN_POISON_DIVIDER     ( 1.0f / 1.32f ) //about 1.0/(time`th root of damage)
+#define ALIEN_POISON_DIVIDER     ( 1.0f / 1.32f ) //about 1.0/((time)th root of damage)
 
 #define ALIEN_SPAWN_REPEAT_TIME  10000
 

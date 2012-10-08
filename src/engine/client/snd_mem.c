@@ -63,7 +63,7 @@ void    SND_free( sndBuffer *v )
 	inUse += sizeof( sndBuffer );
 }
 
-sndBuffer      *SND_malloc()
+sndBuffer      *SND_malloc( void )
 {
 	sndBuffer *v;
 redo:
@@ -83,7 +83,7 @@ redo:
 	return v;
 }
 
-void SND_setup()
+void SND_setup( void )
 {
 	sndBuffer *p, *q;
 	cvar_t    *cv;
@@ -306,7 +306,7 @@ qboolean S_LoadSound( sfx_t *sfx )
 	return qtrue;
 }
 
-void S_DisplayFreeMemory()
+void S_DisplayFreeMemory( void )
 {
 	Com_Printf(_( "%d bytes free sound buffer memory, %d total used\n"), inUse, totalInUse );
 }

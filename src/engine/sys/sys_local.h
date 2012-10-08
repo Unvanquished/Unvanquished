@@ -69,4 +69,4 @@ void     Sys_InitStreamThread( void );
 void     Sys_PrintCpuInfo( void );
 void     Sys_PrintMemoryInfo( void );
 
-int      Sys_PID( void );
+int      Sys_GetPID( void );

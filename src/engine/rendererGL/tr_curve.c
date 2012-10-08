@@ -395,8 +395,6 @@ static int MakeMeshTriangles( int width, int height, srfVert_t ctrl[ MAX_GRID_SI
 		}
 	}
 
-	R_CalcSurfaceTrianglePlanes( numTriangles, triangles, ctrl2 );
-
 	return numTriangles;
 }
 

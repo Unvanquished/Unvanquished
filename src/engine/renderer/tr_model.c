@@ -51,8 +51,6 @@ qboolean        R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const cha
 
 model_t         *loadmodel;
 
-extern cvar_t   *r_buildScript;
-
 /*
 ** R_GetModelByHandle
 */
@@ -2317,6 +2315,9 @@ int R_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagNam
 		VectorCopy( tag->axis[ 1 ], tag->axis[ 2 ] );
 		VectorCopy( tag->axis[ 0 ], tag->axis[ 1 ] );
 		VectorCopy( tmp, tag->axis[ 0 ] );
+		VectorNormalize( tag->axis[ 0 ] );
+		VectorNormalize( tag->axis[ 1 ] );
+		VectorNormalize( tag->axis[ 2 ] );
 		return retval;
 	}
 

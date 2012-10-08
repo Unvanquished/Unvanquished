@@ -34,7 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define VFS_MAXDIRS 8
 
 void            vfsInitDirectory(const char *path);
-void            vfsShutdown();
+void            vfsShutdown(void);
 int             vfsGetFileCount(const char *filename);
 int             vfsLoadFile(const char *filename, void **buffer, int index);
 

@@ -11,17 +11,50 @@
 itemDef
 {
 	name "background"
-	rect 223 403 201 150
-	aspectBias ALIGN_CENTER
+	rect -24 373 258 127
+	aspectBias ALIGN_LEFT
 	visible MENU_TRUE
 	decoration
-	forecolor .48 .02 .03 1
+	forecolor .48 .02 .03 .3
 	style WINDOW_STYLE_SHADER
-	background "ui/assets/alien/background.tga"
+	background "ui/assets/alien/hbg.tga"
 }
 
+itemDef
+{
+	name "health"
+	rect -3 399 179 83
+	aspectBias ALIGN_LEFT
+	visible MENU_TRUE
+	decoration
+	forecolor .48 .02 .03 .3
+	ownerdraw CG_PLAYER_HEALTH_METER
+	background "ui/assets/alien/healt.tga"
+}
 
+itemDef
+{
+	name "background"
+	rect 406 373 258 127
+	aspectBias ALIGN_RIGHT
+	visible MENU_TRUE
+	decoration
+	forecolor .48 .02 .03 .5
+	style WINDOW_STYLE_SHADER
+	background "ui/assets/alien/pbg.tga"
+}
 
+itemDef
+{
+	name "poison"
+	rect 464 399 179 83
+	aspectBias ALIGN_RIGHT
+	visible MENU_TRUE
+	decoration
+	forecolor .39 0 .09 .7	
+ownerdraw CG_PLAYER_BOOSTED_METER
+	background "ui/assets/alien/poisonbg.tga"
+}
 ///////////////////
 //DYNAMIC OBJECTS//
 ///////////////////
@@ -30,84 +63,109 @@ itemDef
 //WALLCLIMB
 itemDef
 {
-	name "wallclimb"
-	rect 222 411 194 66
-	aspectBias ALIGN_CENTER
+	name "leftsmall"
+	rect -16 358 251 85
+	aspectBias ALIGN_LEFT
 	visible MENU_TRUE
 	decoration
-	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.5
+	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0
+	backcolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1
+	background "ui/assets/alien/l-spikes-small.png"
+	ownerdraw CG_PLAYER_WALLCLIMBING
+}
+
+//WALLCLIMB
+itemDef
+{
+	name "leftbig"
+	rect -20 336 255 107
+	aspectBias ALIGN_LEFT
+	visible MENU_TRUE
+	decoration
+	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1
 	backcolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0
-	background "ui/assets/alien/wallclimb.tga"
+	background "ui/assets/alien/l-spikes-big.png"
+	ownerdraw CG_PLAYER_WALLCLIMBING
+}
+
+//WALLCLIMB
+itemDef
+{
+	name "rightsmall"
+	rect 405 358 251 85
+	aspectBias ALIGN_RIGHT
+	visible MENU_TRUE
+	decoration
+	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0
+	backcolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1
+	background "ui/assets/alien/r-spikes-small.png"
+	ownerdraw CG_PLAYER_WALLCLIMBING
+}
+
+//WALLCLIMB
+itemDef
+{
+	name "rightbig"
+	rect 405 336 255 107
+	aspectBias ALIGN_RIGHT
+	visible MENU_TRUE
+	decoration
+	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1
+	backcolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0
+	background "ui/assets/alien/r-spikes-big.png"
 	ownerdraw CG_PLAYER_WALLCLIMBING
 }
 
 
-//BOOSTED BACKGROUND
 itemDef
 {
-	name "boostedbg"
-        rect 10 385 40 66
+	name "background"
+	rect -24 394 209 96
 	aspectBias ALIGN_LEFT
 	visible MENU_TRUE
 	decoration
-	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B  0.4
-	backcolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0
-	background "ui/assets/alien/poisonbg.tga"
-	ownerdraw CG_PLAYER_BOOSTED
+	forecolor 1 1 1 .9
+	style WINDOW_STYLE_SHADER
+	background "ui/assets/alien/ll.png"
 }
+
+itemDef
+{
+	name "background"
+	rect 455 394 209 96
+	aspectBias ALIGN_RIGHT
+	visible MENU_TRUE
+	decoration
+	forecolor 1 1 1 .9
+	style WINDOW_STYLE_SHADER
+	background "ui/assets/alien/rl.tga"
+}
+
 
 //BOOSTED
 itemDef
 {
 	name "boosted"
-    rect 10 385 40 66
-	aspectBias ALIGN_LEFT
+    rect 450 409 29 47
+	aspectBias ALIGN_RIGHT
 	visible MENU_TRUE
 	decoration
-	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B  0.1
+	forecolor .54 .11 .17 .7
 	backcolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0
 	background "ui/assets/alien/poison.tga"
 	ownerdraw CG_PLAYER_BOOSTED
-}
-
-itemDef
-{
-	name "boosted1"
-	rect 10 385 40 66
-	aspectBias ALIGN_LEFT
-	visible MENU_TRUE
-	decoration
-	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B  0.7
-	background "ui/assets/alien/poison.tga"
-	ownerdraw CG_PLAYER_BOOSTED_METER
-}
-
-
-
-//HEALTH BAR
-itemDef
-{
-	name "healthbar"
-	rect 266 445 104 13
-	aspectBias ALIGN_CENTER
-	visible MENU_TRUE
-	decoration
-	forecolor .48 .02 .03 1
-	backColor 0 0 0 0
-	background "ui/assets/human/buildstat/health.tga"
-	ownerdraw CG_PLAYER_HEALTH_BAR
 }
 
 //HEALTH
 itemDef
 {
 	name "health"
-	rect 277 444 50 13
-	aspectBias ALIGN_CENTER
+	rect 30 431 70 20
+	aspectBias ALIGN_LEFT
 	visible MENU_TRUE
-      textalign ALIGN_CENTER
+      textalign ALIGN_RIGHT
 	decoration
-	forecolor .75 .26 .25 1
+	forecolor .94 .13 .1  1
 	ownerdraw CG_PLAYER_HEALTH
 }
 
@@ -117,11 +175,11 @@ itemDef
 itemDef
 {
 	name "cross"
-	rect 260 442 24 24
-	aspectBias ALIGN_CENTER
+	rect 105 428 30 30
+	aspectBias ALIGN_LEFT
 	visible MENU_TRUE
 	decoration
-	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.5
+	forecolor .94 .13 .1  .5
 	ownerdraw CG_PLAYER_HEALTH_CROSS
 }
 
@@ -158,11 +216,11 @@ itemDef
 itemDef
 {
 	name "alien-icon"
-	rect 299 402 40 40
-	aspectBias ALIGN_CENTER
+	rect 568 422 40 40
+	aspectBias ALIGN_RIGHT
 	visible MENU_TRUE
 	decoration
-	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.5
+	forecolor .87 .01 .07 .5
 	ownerdraw CG_PLAYER_WEAPONICON
 }
 
@@ -170,8 +228,8 @@ itemDef
 itemDef
 {
 	name "organs"
-	rect 256 460 15 15
-	aspectBias ALIGN_CENTER
+	rect 511 460 15 15
+	aspectBias ALIGN_RIGHT
 	visible MENU_TRUE
 	textScale 0.4
 	decoration
@@ -185,9 +243,9 @@ itemDef
       type ITEM_TYPE_TEXT
       text "evolution points"
       style WINDOW_STYLE_EMPTY
-	aspectBias ALIGN_CENTER
+	aspectBias ALIGN_RIGHT
       textstyle ITEM_TEXTSTYLE_PLAIN
-      rect 283 458 101 15
+      rect 536 460 101 15
       textscale .35
       textalign ALIGN_LEFT
      forecolor .51 .51 .51 1       
@@ -209,11 +267,11 @@ itemDef
 itemDef
 {
 	name "charge"
-	rect 266 445 104 13
+	rect  150 460 340 20
 	aspectBias ALIGN_CENTER
 	visible MENU_TRUE
 	decoration
-	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.5
+	forecolor .48 .02 .03 .5
 	ownerdraw CG_PLAYER_CHARGE_BAR
 	background "ui/assets/human/buildstat/health.tga"
 }
@@ -250,10 +308,9 @@ itemDef
 	textalign ALIGN_LEFT
 	textvalign VALIGN_TOP
     textscale .35
-    textalign ALIGN_LEFT
-    forecolor .37 .16 .17  1
-	rect 3 462 200 30
-    forecolor .51 .51 .51 1
+    textalign ALIGN_CENTER
+    forecolor .73 .73 .73 1
+	rect 220 462 200 30
 	decoration
 	visible MENU_TRUE
 	ownerdraw CG_STAGE_REPORT_TEXT

@@ -63,14 +63,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "bg_lib.h"
 
-#if defined( LIBC_SCCS ) && !defined( lint )
-#if 0
-static char       sccsid[] = "@(#)qsort.c 8.1 (Berkeley) 6/4/93";
-#endif
-static const char rcsid[] =
-  "$Id: bg_lib.c 2248 2011-08-08 22:39:07Z cschwarz $";
-#endif /* LIBC_SCCS and not lint */
-
 static char *med3( char *, char *, char *, cmp_t * );
 static void swapfunc( char *, char *, int, int );
 

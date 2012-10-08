@@ -390,7 +390,7 @@ typedef struct
 bspShader_t;
 
 
-/* planes x^1 is allways the opposite of plane x */
+/* planes x^1 is always the opposite of plane x */
 
 typedef struct
 {
@@ -1825,7 +1825,7 @@ void            RadLightForTriangles(int num, int lightmapNum, rawLightmap_t * l
 void            RadLightForPatch(int num, int lightmapNum, rawLightmap_t * lm, shaderInfo_t * si, float scale, float subdivide,
 								 clipWork_t * cw);
 void            RadCreateDiffuseLights(void);
-void            RadFreeLights();
+void            RadFreeLights(void);
 
 
 /* light_ydnar.c */
@@ -1836,12 +1836,12 @@ void            SmoothNormals(void);
 
 void            MapRawLightmap(int num);
 
-void            SetupDirt();
+void            SetupDirt(void);
 float           DirtForSample(trace_t * trace);
 void            DirtyRawLightmap(int num);
 
-void            SetupFloodLight();
-void            FloodlightRawLightmaps();
+void            SetupFloodLight(void);
+void            FloodlightRawLightmaps(void);
 void            FloodlightIlluminateLightmap(rawLightmap_t * lm);
 float           FloodLightForSample(trace_t * trace, float floodLightDistance, qboolean floodLightLowQuality);
 void            FloodLightRawLightmap(int num);
@@ -1906,10 +1906,10 @@ shaderInfo_t   *ShaderInfoForShader(const char *shader);
 /* bspfile_abstract.c */
 void            SetGridPoints(int n);
 void            SetDrawVerts(int n);
-void            IncDrawVerts();
+void            IncDrawVerts(void);
 void            SetDrawSurfaces(int n);
-void            SetDrawSurfacesBuffer();
-void            BSPFilesCleanup();
+void            SetDrawSurfacesBuffer(void);
+void            BSPFilesCleanup(void);
 
 void            SwapBlock(int *block, int size);
 

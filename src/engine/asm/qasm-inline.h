@@ -22,7 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef __ASM_INLINE_I386__
 #define __ASM_INLINE_I386__
 
-// There is no q_platform.h in qcommon ... which one do we want to include here ?
 #include "../qcommon/q_platform.h"
 
 #if idx64

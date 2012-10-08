@@ -836,7 +836,7 @@ EmitMetaStatictics
 vortex: prints meta statistics in general output
 */
 
-void EmitMetaStats()
+void EmitMetaStats(void)
 {
 	Sys_Printf("--- EmitMetaStats ---\n");
 	Sys_Printf("%9d total meta surfaces\n", numMetaSurfaces);

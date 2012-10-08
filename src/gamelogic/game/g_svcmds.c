@@ -162,41 +162,6 @@ static gclient_t *ClientForString( char *s )
 	return &level.clients[ idnum ];
 }
 
-static void Svcmd_Status_f( void )
-{
-	int       i;
-	gclient_t *cl;
-	char      userinfo[ MAX_INFO_STRING ];
-
-	G_Printf( "slot score ping address               rate     name\n" );
-	G_Printf( "---- ----- ---- -------               ----     ----\n" );
-
-	for ( i = 0, cl = level.clients; i < level.maxclients; i++, cl++ )
-	{
-		if ( cl->pers.connected == CON_DISCONNECTED )
-		{
-			continue;
-		}
-
-		G_Printf( "%-4d ", i );
-		G_Printf( "%-5d ", cl->ps.persistant[ PERS_SCORE ] );
-
-		if ( cl->pers.connected == CON_CONNECTING )
-		{
-			G_Printf( "CNCT " );
-		}
-		else
-		{
-			G_Printf( "%-4d ", cl->ps.ping );
-		}
-
-		trap_GetUserinfo( i, userinfo, sizeof( userinfo ) );
-		G_Printf( "%-21s ", Info_ValueForKey( userinfo, "ip" ) );
-		G_Printf( "%-8d ", ( int )( intptr_t ) Info_ValueForKey( userinfo, "rate" ) );
-		G_Printf( "%s\n", cl->pers.netname );  // Info_ValueForKey( userinfo, "name" )
-	}
-}
-
 /*
 ===================
 Svcmd_ForceTeam_f
@@ -583,6 +548,10 @@ static void Svcmd_MessageWrapper( void )
 	{
 		Cmd_AdminMessage_f( NULL );
 	}
+	else if ( !Q_stricmp( cmd, "asay" ) )
+	{
+		G_Say( NULL, SAY_ALL_ADMIN, ConcatArgs( 1 ) );
+	}
 	else if ( !Q_stricmp( cmd, "m" ) )
 	{
 		Cmd_PrivateMessage_f( NULL );
@@ -639,6 +608,7 @@ static const struct svcmd
 	{ "admitDefeat",        qfalse, Svcmd_AdmitDefeat_f          },
 	{ "advanceMapRotation", qfalse, Svcmd_G_AdvanceMapRotation_f },
 	{ "alienWin",           qfalse, Svcmd_TeamWin_f              },
+	{ "asay",               qtrue,  Svcmd_MessageWrapper         },
 	{ "chat",               qtrue,  Svcmd_MessageWrapper         },
 	{ "cp",                 qtrue,  Svcmd_CenterPrint_f          },
 	{ "dumpuser",           qfalse, Svcmd_DumpUser_f             },
@@ -660,7 +630,6 @@ static const struct svcmd
 	{ "printqueue",         qfalse, Svcmd_PrintQueue_f           },
 	{ "say",                qtrue,  Svcmd_MessageWrapper         },
 	{ "say_team",           qtrue,  Svcmd_TeamMessage_f          },
-	{ "status",             qfalse, Svcmd_Status_f               },
 	{ "stopMapRotation",    qfalse, G_StopMapRotation            },
 	{ "suddendeath",        qfalse, Svcmd_SuddenDeath_f          }
 };

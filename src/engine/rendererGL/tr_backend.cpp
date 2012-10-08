@@ -1744,7 +1744,7 @@ static void Render_lightVolume( interaction_t *ia )
 			GLimp_LogComment( "--- Render_lightVolume_omni ---\n" );
 
 			// enable shader, set arrays
-			GL_BindProgram( &tr.lightVolumeShader_omni );
+			gl_lightVolumeShader_omni->BindProgram();
 			//GL_VertexAttribsState(tr.lightVolumeShader_omni.attribs);
 			GL_Cull( CT_TWO_SIDED );
 			GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
@@ -1757,22 +1757,22 @@ static void Render_lightVolume( interaction_t *ia )
 			VectorCopy( light->origin, lightOrigin );
 			VectorCopy( tess.svars.color, lightColor );
 
-			shadowCompare = r_shadows->integer >= SHADOWING_ESM16 && !light->l.noShadows && light->shadowLOD >= 0;
+			shadowCompare = (qboolean)((int)r_shadows->integer >= SHADOWING_ESM16 && !light->l.noShadows && light->shadowLOD >= 0);
 
-			GLSL_SetUniform_ViewOrigin( &tr.lightVolumeShader_omni, viewOrigin );
-			GLSL_SetUniform_LightOrigin( &tr.lightVolumeShader_omni, lightOrigin );
-			GLSL_SetUniform_LightColor( &tr.lightVolumeShader_omni, lightColor );
-			GLSL_SetUniform_LightRadius( &tr.lightVolumeShader_omni, light->sphereRadius );
-			GLSL_SetUniform_LightScale( &tr.lightVolumeShader_omni, light->l.scale );
-			GLSL_SetUniform_LightAttenuationMatrix( &tr.lightVolumeShader_omni, light->attenuationMatrix2 );
+			gl_lightVolumeShader_omni->SetUniform_ViewOrigin( viewOrigin );
+			gl_lightVolumeShader_omni->SetUniform_LightOrigin( lightOrigin );
+			gl_lightVolumeShader_omni->SetUniform_LightColor( lightColor );
+			gl_lightVolumeShader_omni->SetUniform_LightRadius( light->sphereRadius );
+			gl_lightVolumeShader_omni->SetUniform_LightScale( light->l.scale );
+			gl_lightVolumeShader_omni->SetUniform_LightAttenuationMatrix( light->attenuationMatrix2 );
 
-			// FIXME GLSL_SetUniform_ShadowMatrix(&tr.lightVolumeShader_omni, light->attenuationMatrix);
-			GLSL_SetUniform_ShadowCompare( &tr.lightVolumeShader_omni, shadowCompare );
+			// FIXME gl_lightVolumeShader_omni->SetUniform_ShadowMatrix( light->attenuationMatrix );
+			gl_lightVolumeShader_omni->SetShadowing( shadowCompare );
+			gl_lightVolumeShader_omni->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-			GLSL_SetUniform_ModelViewProjectionMatrix( &tr.lightVolumeShader_omni, glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-			GLSL_SetUniform_UnprojectMatrix( &tr.lightVolumeShader_omni, backEnd.viewParms.unprojectionMatrix );
+			gl_lightVolumeShader_omni->SetUniform_UnprojectMatrix( backEnd.viewParms.unprojectionMatrix );
 
-			//GLSL_SetUniform_PortalClipping(&tr.lightVolumeShader_omni, backEnd.viewParms.isPortal);
+			//gl_lightVolumeShader_omni->SetUniform_PortalClipping( backEnd.viewParms.isPortal );
 
 			// bind u_DepthMap
 			GL_SelectTexture( 0 );
@@ -6530,7 +6530,7 @@ void RB_RenderScreenSpaceAmbientOcclusion( qboolean deferred )
 	}
 
 	// enable shader, set arrays
-	GL_BindProgram( &tr.screenSpaceAmbientOcclusionShader );
+	gl_screenSpaceAmbientOcclusionShader->BindProgram();
 
 	GL_State( GLS_DEPTHTEST_DISABLE );  // | GLS_DEPTHMASK_TRUE);
 	GL_Cull( CT_TWO_SIDED );
@@ -6599,8 +6599,7 @@ void RB_RenderScreenSpaceAmbientOcclusion( qboolean deferred )
 	GL_LoadProjectionMatrix( ortho );
 	GL_LoadModelViewMatrix( matrixIdentity );
 
-	GLSL_SetUniform_ModelViewProjectionMatrix( &tr.screenSpaceAmbientOcclusionShader, glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-
+	gl_screenSpaceAmbientOcclusionShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 	// draw viewport
 	Tess_InstantQuad( backEnd.viewParms.viewportVerts );
 
@@ -6630,7 +6629,7 @@ void RB_RenderDepthOfField()
 	}
 
 	// enable shader, set arrays
-	GL_BindProgram( &tr.depthOfFieldShader );
+	gl_depthOfFieldShader->BindProgram();
 
 	GL_State( GLS_DEPTHTEST_DISABLE );  // | GLS_DEPTHMASK_TRUE);
 	GL_Cull( CT_TWO_SIDED );
@@ -6685,7 +6684,7 @@ void RB_RenderDepthOfField()
 	GL_LoadProjectionMatrix( ortho );
 	GL_LoadModelViewMatrix( matrixIdentity );
 
-	GLSL_SetUniform_ModelViewProjectionMatrix( &tr.depthOfFieldShader, glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+	gl_depthOfFieldShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 	// draw viewport
 	Tess_InstantQuad( backEnd.viewParms.viewportVerts );
@@ -8638,33 +8637,29 @@ void RB_RenderBspOcclusionQueries()
 		bspNode_t *node;
 		link_t    *l, *next, *sentinel;
 
-		GL_BindProgram( &tr.genericShader );
+		gl_genericShader->BindProgram();
+
 		GL_Cull( CT_TWO_SIDED );
 
 		GL_LoadProjectionMatrix( backEnd.viewParms.projectionMatrix );
 
 		// set uniforms
-		GLSL_SetUniform_TCGen_Environment( &tr.genericShader,  qfalse );
-		GLSL_SetUniform_ColorGen( &tr.genericShader, CGEN_VERTEX );
-		GLSL_SetUniform_AlphaGen( &tr.genericShader, AGEN_VERTEX );
+		gl_genericShader->SetTCGenEnvironment( qfalse );
+		gl_genericShader->SetUniform_ColorModulate( CGEN_VERTEX, AGEN_VERTEX );
+		gl_genericShader->SetVertexSkinning( qfalse );
 
-		if ( glConfig2.vboVertexSkinningAvailable )
-		{
-			GLSL_SetUniform_VertexSkinning( &tr.genericShader, qfalse );
-		}
-
-		GLSL_SetUniform_DeformGen( &tr.genericShader, DGEN_NONE );
-		GLSL_SetUniform_AlphaTest( &tr.genericShader, 0 );
+		gl_genericShader->SetUniform_AlphaTest( DGEN_NONE );
+		gl_genericShader->SetUniform_AlphaTest( 0 );
 
 		// set up the transformation matrix
 		backEnd.orientation = backEnd.viewParms.world;
 		GL_LoadModelViewMatrix( backEnd.orientation.modelViewMatrix );
-		GLSL_SetUniform_ModelViewProjectionMatrix( &tr.genericShader, glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+		gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 		// bind u_ColorMap
 		GL_SelectTexture( 0 );
 		GL_Bind( tr.whiteImage );
-		GLSL_SetUniform_ColorTextureMatrix( &tr.genericShader, matrixIdentity );
+		gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
 		// don't write to the color buffer or depth buffer
 		GL_State( GLS_COLORMASK_BITS );
@@ -11083,7 +11078,7 @@ static void RB_RenderView( void )
 		GL_CheckErrors();
 #ifdef EXPERIMENTAL
 		// render depth of field post process effect
-		RB_RenderDepthOfField( qfalse );
+		RB_RenderDepthOfField();
 #endif
 		// render bloom post process effect
 		RB_RenderBloom();

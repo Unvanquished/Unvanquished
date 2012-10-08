@@ -52,7 +52,7 @@ cvar_t         *sv_maxclients;
 
 cvar_t         *sv_privateClients; // number of clients reserved for password
 cvar_t         *sv_hostname;
-cvar_t         *sv_master[ MAX_MASTER_SERVERS ]; // master server ip address
+cvar_t         *sv_master[ MAX_MASTER_SERVERS ]; // master server IP addresses
 cvar_t         *sv_reconnectlimit; // minimum seconds between connect messages
 cvar_t         *sv_padPackets; // add nop bytes to messages
 cvar_t         *sv_killserver; // menu system can set to 1 to shut server down
@@ -70,8 +70,6 @@ cvar_t         *sv_lanForceRate; // TTimo - dedicated 1 (LAN) server forces loca
 
 cvar_t         *sv_dl_maxRate;
 
-cvar_t *sv_reloading;
-
 cvar_t *sv_showAverageBPS; // NERVE - SMF - net debugging
 
 cvar_t *sv_wwwDownload; // server does a www dl redirect
@@ -88,8 +86,6 @@ cvar_t *sv_packetdelay;
 
 // fretn
 cvar_t *sv_fullmsg;
-
-void   SVC_GameCompleteStatus( netadr_t from );  // NERVE - SMF
 
 #define LL( x ) x = LittleLong( x )
 
@@ -261,7 +257,7 @@ changes from empty to non-empty, and full to non-full,
 but not on every player enter or exit.
 ================
 */
-#define HEARTBEAT_MSEC 300 * 1000
+#define HEARTBEAT_MSEC (300 * 1000)
 //#define   HEARTBEAT_GAME  "Wolfenstein-1"
 //#define   HEARTBEAT_DEAD  "WolfFlatline-1"            // NERVE - SMF
 #define HEARTBEAT_GAME "EnemyTerritory-1"
@@ -276,7 +272,7 @@ void SV_MasterHeartbeat( const char *hbname )
 
 	netenabled = Cvar_VariableIntegerValue( "net_enabled" );
 
-	// "dedicated 1" is for lan play, "dedicated 2" is for inet public play
+	// "dedicated 1" is for LAN play, "dedicated 2" is for Internet play
 	if ( !com_dedicated || com_dedicated->integer != 2 || !( netenabled & ( NET_ENABLEV4 | NET_ENABLEV6 ) ) )
 	{
 		return; // only dedicated servers send heartbeats
@@ -372,68 +368,6 @@ void SV_MasterHeartbeat( const char *hbname )
 		{
 			NET_OutOfBandPrint( NS_SERVER, adr[ i ][ 1 ], "heartbeat %s\n", HEARTBEAT_GAME );
 		}
-	}
-}
-
-/*
-=================
-SV_MasterGameCompleteStatus
-
-NERVE - SMF - Sends gameCompleteStatus messages to all master servers
-=================
-*/
-void SV_MasterGameCompleteStatus()
-{
-	static netadr_t adr[ MAX_MASTER_SERVERS ];
-	int             i;
-
-	// "dedicated 1" is for lan play, "dedicated 2" is for inet public play
-	if ( !com_dedicated || com_dedicated->integer != 2 )
-	{
-		return; // only dedicated servers send master game status
-	}
-
-	// send to group masters
-	for ( i = 0; i < MAX_MASTER_SERVERS; i++ )
-	{
-		if ( !sv_master[ i ]->string || !sv_master[ i ]->string[ 0 ] )
-		{
-			continue;
-		}
-
-		// see if we haven't already resolved the name
-		// resolving usually causes hitches on win95, so only
-		// do it when needed
-		if ( sv_master[ i ]->modified )
-		{
-			sv_master[ i ]->modified = qfalse;
-
-			Com_Printf(_( "Resolving %s\n"), sv_master[ i ]->string );
-
-			if ( !NET_StringToAdr( sv_master[ i ]->string, &adr[ i ], NA_IP ) )
-			{
-				// if the address failed to resolve, clear it
-				// so we don't take repeated dns hits
-				Com_Printf(_( "Couldn't resolve address: %s\n"), sv_master[ i ]->string );
-				Cvar_Set( sv_master[ i ]->name, "" );
-				sv_master[ i ]->modified = qfalse;
-				continue;
-			}
-
-			if ( !strstr( ":", sv_master[ i ]->string ) )
-			{
-				adr[ i ].port = BigShort( PORT_MASTER );
-			}
-
-			Com_Printf(_( "%s resolved to %i.%i.%i.%i:%i\n"), sv_master[ i ]->string,
-			            adr[ i ].ip[ 0 ], adr[ i ].ip[ 1 ], adr[ i ].ip[ 2 ], adr[ i ].ip[ 3 ],
-			            BigShort( adr[ i ].port ) );
-		}
-
-		Com_Printf(_( "Sending gameCompleteStatus to %s\n"), sv_master[ i ]->string );
-		// this command should be changed if the server info / status format
-		// ever incompatibly changes
-		SVC_GameCompleteStatus( adr[ i ] );
 	}
 }
 
@@ -590,63 +524,6 @@ void SVC_Status( netadr_t from )
 	}
 
 	NET_OutOfBandPrint( NS_SERVER, from, "statusResponse\n%s\n%s", infostring, status );
-}
-
-/*
-=================
-SVC_GameCompleteStatus
-
-NERVE - SMF - Send serverinfo cvars, etc to master servers when
-game complete. Useful for tracking global player stats.
-=================
-*/
-void SVC_GameCompleteStatus( netadr_t from )
-{
-	char          player[ 1024 ];
-	char          status[ MAX_MSGLEN ];
-	int           i;
-	client_t      *cl;
-	playerState_t *ps;
-	int           statusLength;
-	int           playerLength;
-	char          infostring[ MAX_INFO_STRING ];
-
-	//bani - bugtraq 12534
-	if ( !SV_VerifyChallenge( Cmd_Argv( 1 ) ) )
-	{
-		return;
-	}
-
-	strcpy( infostring, Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE ) );
-
-	// echo back the parameter to status. so master servers can use it as a challenge
-	// to prevent timed spoofed reply packets that add ghost servers
-	Info_SetValueForKey( infostring, "challenge", Cmd_Argv( 1 ) );
-
-	status[ 0 ] = 0;
-	statusLength = 0;
-
-	for ( i = 0; i < sv_maxclients->integer; i++ )
-	{
-		cl = &svs.clients[ i ];
-
-		if ( cl->state >= CS_CONNECTED )
-		{
-			ps = SV_GameClientNum( i );
-			Com_sprintf( player, sizeof( player ), "%i %i \"%s\"\n", ps->persistant[ PERS_SCORE ], cl->ping, cl->name );
-			playerLength = strlen( player );
-
-			if ( statusLength + playerLength >= sizeof( status ) )
-			{
-				break; // can't hold any more
-			}
-
-			strcpy( status + statusLength, player );
-			statusLength += playerLength;
-		}
-	}
-
-	NET_OutOfBandPrint( NS_SERVER, from, "gameCompleteStatus\n%s\n%s", infostring, status );
 }
 
 /*
@@ -834,7 +711,7 @@ qboolean SV_CheckDRDoS( netadr_t from )
 		return qtrue;
 	}
 
-	if ( specificCount >= 3 ) // Already sent 3 to this IP in last 2 seconds.
+	if ( specificCount >= 3 ) // Already sent 3 to this IP address in last 2 seconds.
 	{
 		if ( lastSpecificLogTime + 1000 <= svs.time ) // Limit one log every second.
 		{
@@ -1158,7 +1035,7 @@ void SV_CalcPings( void )
 			}
 		}
 
-		// let the game dll know about the ping
+		// let the game module know about the ping
 		ps = SV_GameClientNum( i );
 		ps->ping = cl->ping;
 	}
@@ -1603,6 +1480,8 @@ void SV_PrintTranslatedText( const char *text, qboolean broadcast )
 	memset( &str, 0, sizeof( str ) );
 	while( *in )
 	{
+		const char *inOld = in;
+
 		if( *in == '$' )
 		{
 			const char *number = ++in;
@@ -1666,10 +1545,16 @@ void SV_PrintTranslatedText( const char *text, qboolean broadcast )
 						break;
 					}
 				}
+				else
+				{
+					in = inOld;
+					goto broken;
+				}
 			}
 		}
 		else
 		{
+			broken:
 			if( i < MAX_STRING_CHARS )
 			{
 				str[ i++ ] = *in;

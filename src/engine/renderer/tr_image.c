@@ -1626,7 +1626,7 @@ static void LoadPCX( const char *filename, byte **pic, byte **palette, int *widt
 
 	if ( raw - ( byte * ) pcx > len )
 	{
-		ri.Printf( PRINT_DEVELOPER, "PCX file %s was malformed", filename );
+		ri.Printf( PRINT_DEVELOPER, "PCX file %s was malformed\n", filename );
 		ri.Free( *pic );
 		*pic = NULL;
 	}

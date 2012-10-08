@@ -5,8 +5,8 @@
 # set to 1 to enable
 START_DAEMON=0
 
-# DNS name or IP address of your internet interface.
-# Change it if you're setting up an internet server.
+# DNS name or IP address of your Internet interface.
+# Change it if you're setting up an Internet server.
 NET_IP="localhost"
 
 # Additional options that are passed to the Daemon.

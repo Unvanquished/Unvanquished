@@ -90,7 +90,7 @@ typedef struct
 =============================================================================
 
 the clientActive_t structure is wiped completely at every
-new gamestate_t, potentially several times during an established connection
+new gameState_t, potentially several times during an established connection
 
 =============================================================================
 */
@@ -411,9 +411,9 @@ extern clientStatic_t cls;
 
 //=============================================================================
 
-extern vm_t                   *cgvm; // interface to cgame dll or vm
-extern vm_t                   *uivm; // interface to ui dll or vm
-extern refexport_t            re; // interface to refresh .dll
+extern vm_t                   *cgvm; // interface to the cgame module
+extern vm_t                   *uivm; // interface to the ui module
+extern refexport_t            re; // interface to refresh library
 
 extern struct rsa_public_key  public_key;
 
@@ -440,8 +440,6 @@ extern cvar_t *cl_yawspeed;
 extern cvar_t *cl_pitchspeed;
 extern cvar_t *cl_run;
 extern cvar_t *cl_anglespeedkey;
-
-extern cvar_t *cl_recoilPitch; // RF
 
 extern cvar_t *cl_doubletapdelay;
 
@@ -801,8 +799,8 @@ void CL_InitUI( void );
 void CL_ShutdownUI( void );
 int  Key_GetCatcher( void );
 void Key_SetCatcher( int catcher );
-void LAN_LoadCachedServers();
-void LAN_SaveServersToCache();
+void LAN_LoadCachedServers( void );
+void LAN_SaveServersToCache( void );
 
 //
 // cl_net_chan.c

@@ -150,6 +150,7 @@ vmCvar_t        cg_gun_frame;
 vmCvar_t        cg_gun_x;
 vmCvar_t        cg_gun_y;
 vmCvar_t        cg_gun_z;
+vmCvar_t        cg_mirrorgun;
 vmCvar_t        cg_tracerChance;
 vmCvar_t        cg_tracerWidth;
 vmCvar_t        cg_tracerLength;
@@ -180,7 +181,6 @@ vmCvar_t        cg_hudFilesEnable;
 vmCvar_t        cg_smoothClients;
 vmCvar_t        pmove_fixed;
 vmCvar_t        pmove_msec;
-vmCvar_t        cg_cameraMode;
 vmCvar_t        cg_timescaleFadeEnd;
 vmCvar_t        cg_timescaleFadeSpeed;
 vmCvar_t        cg_timescale;
@@ -247,7 +247,6 @@ vmCvar_t        cg_chatTeamPrefix;
 
 vmCvar_t        cg_animSpeed;
 vmCvar_t        cg_animBlend;
-vmCvar_t        cg_core;
 
 vmCvar_t        cg_highPolyPlayerModels;
 vmCvar_t        cg_highPolyBuildableModels;
@@ -294,6 +293,7 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_gun_x,                       "cg_gunX",                        "0",            CVAR_CHEAT                   },
 	{ &cg_gun_y,                       "cg_gunY",                        "0",            CVAR_CHEAT                   },
 	{ &cg_gun_z,                       "cg_gunZ",                        "0",            CVAR_CHEAT                   },
+	{ &cg_mirrorgun,                   "cg_mirrorgun",                   "0",            CVAR_ARCHIVE                 },
 	{ &cg_centertime,                  "cg_centertime",                  "3",            CVAR_CHEAT                   },
 	{ &cg_runpitch,                    "cg_runpitch",                    "0.002",        CVAR_ARCHIVE                 },
 	{ &cg_runroll,                     "cg_runroll",                     "0.005",        CVAR_ARCHIVE                 },
@@ -411,7 +411,6 @@ static const cvarTable_t cvarTable[] =
 
 	{ &cg_animSpeed,                   "cg_animspeed",                   "1",            CVAR_CHEAT                   },
 	{ &cg_animBlend,                   "cg_animblend",                   "5.0",          CVAR_ARCHIVE                 },
-	{ &cg_core,                        "cg_core",                        "3",            CVAR_ARCHIVE                 },
 
 	{ &cg_chatTeamPrefix,              "cg_chatTeamPrefix",              "1",            CVAR_ARCHIVE                 },
 	{ &cg_highPolyPlayerModels,        "cg_highPolyPlayerModels",        "1",            CVAR_ARCHIVE | CVAR_LATCH    },
@@ -438,17 +437,12 @@ void CG_RegisterCvars( void )
 {
 	int         i;
 	const cvarTable_t *cv;
-	char        var[ MAX_TOKEN_CHARS ];
 
 	for ( i = 0, cv = cvarTable; i < cvarTableSize; i++, cv++ )
 	{
 		trap_Cvar_Register( cv->vmCvar, cv->cvarName,
 		                    cv->defaultString, cv->cvarFlags );
 	}
-
-	// see if we are also running the server on this machine
-	trap_Cvar_VariableStringBuffer( "sv_running", var, sizeof( var ) );
-	cgs.localServer = atoi( var );
 }
 
 /*
@@ -1309,10 +1303,20 @@ static void CG_RegisterClients( void )
 		trap_UpdateScreen();
 	}
 
-	cgs.media.larmourHeadSkin = trap_R_RegisterSkin( "models/players/human_base/head_light.skin" );
-	cgs.media.larmourLegsSkin = trap_R_RegisterSkin( "models/players/human_base/lower_light.skin" );
-	cgs.media.larmourTorsoSkin = trap_R_RegisterSkin( "models/players/human_base/upper_light.skin" );
-
+	if ( !cg_highPolyPlayerModels.integer )
+	{
+		cgs.media.larmourHeadSkin = trap_R_RegisterSkin( "models/players/human_base/head_light.skin" );
+		cgs.media.larmourLegsSkin = trap_R_RegisterSkin( "models/players/human_base/lower_light.skin" );
+		cgs.media.larmourTorsoSkin = trap_R_RegisterSkin( "models/players/human_base/upper_light.skin" );
+	}
+	else
+	{
+		// Borrow these variables for MD5 models so we don't have to create new ones.
+		cgs.media.larmourHeadSkin = trap_R_RegisterSkin( "models/players/human_base/body_helmet.skin" );
+		cgs.media.larmourLegsSkin = trap_R_RegisterSkin( "models/players/human_base/body_larmour.skin" );
+		cgs.media.larmourTorsoSkin = trap_R_RegisterSkin( "models/players/human_base/body_helmetlarmour.skin" );
+	}
+	
 	cgs.media.jetpackModel = trap_R_RegisterModel( "models/players/human_base/jetpack.md3" );
 	cgs.media.jetpackFlashModel = trap_R_RegisterModel( "models/players/human_base/jetpack_flash.md3" );
 	cgs.media.battpackModel = trap_R_RegisterModel( "models/players/human_base/battpack.md3" );
@@ -1376,32 +1380,9 @@ void CG_StartMusic( void )
 	trap_S_StartBackgroundTrack( parm1, parm2 );
 }
 
-/*
-======================
-CG_PlayerCount
-======================
-*/
-int CG_PlayerCount( void )
-{
-	int i, count = 0;
-
-	CG_RequestScores();
-
-	for ( i = 0; i < cg.numScores; i++ )
-	{
-		if ( cg.scores[ i ].team == TEAM_ALIENS ||
-		     cg.scores[ i ].team == TEAM_HUMANS )
-		{
-			count++;
-		}
-	}
-
-	return count;
-}
-
 //
 // ==============================
-// new hud stuff ( mission pack )
+// HUD stuff (mission pack)
 // ==============================
 //
 char *CG_GetMenuBuffer( const char *filename )
@@ -1420,7 +1401,7 @@ char *CG_GetMenuBuffer( const char *filename )
 
 	if ( len >= MAX_MENUFILE )
 	{
-		trap_Print( va( S_COLOR_RED "menu file too large: %s is %i, max allowed is %i",
+		trap_Print( va( S_COLOR_RED "menu file too large: %s is %i, max allowed is %i\n",
 		                filename, len, MAX_MENUFILE ) );
 		trap_FS_FCloseFile( f );
 		return NULL;
@@ -2331,9 +2312,6 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	CG_RegisterClients(); // if low on memory, some clients will be deferred
 
 	CG_InitMarkPolys();
-
-	// remove the last loading update
-	cg.infoScreenText[ 0 ] = 0;
 
 	// Make sure we have update values (scores)
 	CG_SetConfigValues();
