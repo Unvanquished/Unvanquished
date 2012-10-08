@@ -1,8 +1,10 @@
 unvanquished (0.8.0-1) unstable; urgency=low
 
   * Release of alpha 8.
+  * Fix renderer loading (broken during the 0.8 dev cycle).
+  * Pull in two ckit fixes (514e834 and 1cb6a55) from master.
 
- -- Darren Salt <devspam@moreofthesa.me.uk>  Mon, 08 Oct 2012 02:33:26 +0100
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Mon, 08 Oct 2012 15:46:59 +0100
 
 unvanquished (0.7.0-1) unstable; urgency=low
 
