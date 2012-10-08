@@ -1522,7 +1522,10 @@ void CL_ShutdownAll( void )
 	}
 
 	// Clear Faces
-	re.UnregisterFont( &cls.consoleFont );
+	if ( re.UnregisterFont )
+	{
+		re.UnregisterFont( &cls.consoleFont );
+	}
 }
 
 /*

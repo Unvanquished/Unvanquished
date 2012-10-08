@@ -946,7 +946,8 @@ static void S_AL_SrcKill(srcHandle_t src)
 	}
 
 	// Remove the buffer
-	qalSourcei(curSource->alSource, AL_BUFFER, 0);
+	if(qalSourcei)
+		qalSourcei(curSource->alSource, AL_BUFFER, 0);
 
 	curSource->sfx = 0;
 	curSource->lastUsedTime = 0;
