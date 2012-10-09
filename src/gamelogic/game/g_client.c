@@ -1336,18 +1336,18 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 			continue;
 		}
 
-		if ( !Q_stricmp( client->pers.guid, level.clients[ i ].pers.guid ) && !isBot )
+		if ( !( g_entities[i].r.svFlags & SVF_BOT ) && !Q_stricmp( client->pers.guid, level.clients[ i ].pers.guid ) && !isBot )
 		{
 			if ( !G_ClientIsLagging( level.clients + i ) )
 			{
 				trap_SendServerCommand( i, "cp \"Your GUID is not secure\"" );
 				return "Duplicate GUID";
 			}
-			
+
 			trap_DropClient( i, "Ghost" );
 		}
 	}
-	
+
 	client->pers.connected = CON_CONNECTING;
 
 	// read or initialize the session data
