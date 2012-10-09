@@ -297,16 +297,16 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 		// FIXME: wrong damage direction?
 		if ( ent->damage )
 		{
-			vec3_t velocity;
+			vec3_t dir;
 
-			BG_EvaluateTrajectoryDelta( &ent->s.pos, level.time, velocity );
+			BG_EvaluateTrajectoryDelta( &ent->s.pos, level.time, dir );
 
-			if ( VectorLength( velocity ) == 0 )
+			if ( VectorNormalize( dir ) == 0 )
 			{
-				velocity[ 2 ] = 1; // stepped on a grenade
+				dir[ 2 ] = 1; // stepped on a grenade
 			}
 
-			G_Damage( other, ent, attacker, velocity, ent->s.origin, ent->damage,
+			G_Damage( other, ent, attacker, dir, ent->s.origin, ent->damage,
 			          DAMAGE_NO_LOCDAMAGE, ent->methodOfDeath );
 		}
 	}

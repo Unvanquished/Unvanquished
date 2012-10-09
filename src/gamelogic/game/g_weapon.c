@@ -798,6 +798,7 @@ void teslaFire( gentity_t *self )
 		vec3_t dir;
 
 		VectorSubtract( target, origin, dir );
+		VectorNormalize( dir );
 		G_Damage( self->enemy, self, self, dir, tr.endpos,
 		          TESLAGEN_DMG, 0, MOD_TESLAGEN );
 	}
@@ -1583,6 +1584,7 @@ void G_CrushAttack( gentity_t *ent, gentity_t *victim )
 
 	// Crush the victim over a period of time
 	VectorSubtract( victim->s.origin, ent->client->ps.origin, dir );
+	VectorNormalize( dir );
 	G_Damage( victim, ent, ent, dir, victim->s.origin, damage,
 	          DAMAGE_NO_LOCDAMAGE, MOD_LEVEL4_CRUSH );
 }
