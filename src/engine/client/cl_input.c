@@ -473,9 +473,12 @@ CL_MouseEvent
 */
 void CL_MouseEvent( int dx, int dy, int time )
 {
-	if ( cls.keyCatchers & KEYCATCH_UI )
+	if ( cls.keyCatchers & ( KEYCATCH_UI | KEYCATCH_CONSOLE ) )
 	{
-		VM_Call( uivm, UI_MOUSE_EVENT, dx, dy );
+		float fdx = dx, fdy = dy;
+		// Scale both by yscale to account for grabbed mouse movement
+		SCR_AdjustFrom640( NULL, &fdx, NULL, &fdy );
+		VM_Call( uivm, UI_MOUSE_EVENT, ( int ) fdx, ( int ) fdy );
 	}
 	else if ( cls.keyCatchers & KEYCATCH_CGAME )
 	{
