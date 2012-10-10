@@ -223,6 +223,10 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass)
 	return false;
 }
 bool BotCanEvolveToClass(gentity_t *self, class_t newClass) {
+	if ( self->client->pers.namelog->strip && !BG_Strip_ClassAllowedInStage( newClass, (stage_t) g_alienStage.integer ) )
+	{
+		return false;
+	}
 	return (BG_ClassCanEvolveFromTo((class_t)self->client->ps.stats[STAT_CLASS],newClass,self->client->ps.persistant[PERS_CREDIT],g_alienStage.integer,0) >= 0);
 }
 /*
@@ -242,7 +246,7 @@ botTaskStatus_t BotTaskEvolve ( gentity_t *self, usercmd_t *botCmdBuffer )
 		BotEvolveToClass(self, PCL_ALIEN_LEVEL4);
 	} else if(BotCanEvolveToClass(self, PCL_ALIEN_LEVEL3_UPG) && g_bot_level3upg.integer) {
 		BotEvolveToClass(self, PCL_ALIEN_LEVEL3_UPG);
-	} else if(BotCanEvolveToClass(self, PCL_ALIEN_LEVEL3) && (!BG_ClassAllowedInStage(PCL_ALIEN_LEVEL3_UPG, (stage_t) g_alienStage.integer) || !g_bot_level2upg.integer || !g_bot_level3upg.integer) && g_bot_level3.integer){
+	} else if(BotCanEvolveToClass(self, PCL_ALIEN_LEVEL3) && (!BG_ClassAllowedInStage(PCL_ALIEN_LEVEL3_UPG, (stage_t) g_alienStage.integer) || !g_bot_level2upg.integer || (!g_bot_level3upg.integer || !BotCanEvolveToClass(self, PCL_ALIEN_LEVEL3_UPG))) && g_bot_level3.integer){
 		BotEvolveToClass(self, PCL_ALIEN_LEVEL3);
 	} else if(BotCanEvolveToClass(self, PCL_ALIEN_LEVEL2_UPG) && g_bot_level2upg.integer) {
 		BotEvolveToClass(self, PCL_ALIEN_LEVEL2_UPG);

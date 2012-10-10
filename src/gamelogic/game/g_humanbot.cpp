@@ -77,6 +77,12 @@ void BotBuy(gentity_t *self, weapon_t weapon) {
 			return;
 		}
 
+		//are we /denied/ this (stripped)? (shouldn't happen - should be caught before we get here)
+		if( self->client->pers.namelog->strip && !BG_Strip_WeaponAllowedInStage( weapon, (stage_t) g_humanStage.integer ) )
+		{
+			return;
+		}
+
 		//can afford this?
 		if( BG_Weapon( weapon )->price > (short)self->client->pers.credit )
 		{
@@ -160,6 +166,12 @@ void BotBuy(gentity_t *self, upgrade_t upgrade) {
 
 		//are we /allowed/ to buy this?
 		if( !BG_UpgradeAllowedInStage( upgrade, (stage_t)g_humanStage.integer ) || !BG_UpgradeIsAllowed( upgrade ) )
+		{
+			return;
+		}
+
+		//are we /denied/ this (stripped)? (shouldn't happen - should be caught before we get here)
+		if( self->client->pers.namelog->strip && !BG_Strip_UpgradeAllowedInStage( upgrade, (stage_t) g_humanStage.integer ) )
 		{
 			return;
 		}
@@ -293,6 +305,14 @@ int BotValueOfUpgrades(gentity_t *self) {
 	}
 	return worth;
 }
+static bool BotCanBuy(const gentity_t *self, weapon_t weapon)
+{
+	return !self->client->pers.namelog->strip || BG_Strip_WeaponAllowedInStage( weapon, (stage_t) g_humanStage.integer );
+}
+static bool BotCanBuy(const gentity_t *self, upgrade_t upgrade)
+{
+	return !self->client->pers.namelog->strip || BG_Strip_UpgradeAllowedInStage( upgrade, (stage_t) g_humanStage.integer );
+}
 void BotGetDesiredBuy(gentity_t *self, weapon_t *weapon, upgrade_t (*upgrades)[3], int *numUpgrades) {
 	int equipmentPrice = BotValueOfWeapons(self) + BotValueOfUpgrades(self);
 	int credits = self->client->ps.persistant[PERS_CREDIT];
@@ -306,16 +326,16 @@ void BotGetDesiredBuy(gentity_t *self, weapon_t *weapon, upgrade_t (*upgrades)[3
 	}
 
 	//decide what upgrade(s) to buy
-	if(g_humanStage.integer >= 2 && usableCapital >= (PAINSAW_PRICE + BSUIT_PRICE )) {
+	if(g_humanStage.integer >= 2 && usableCapital >= (PAINSAW_PRICE + BSUIT_PRICE ) && BotCanBuy(self, WP_PAIN_SAW) && BotCanBuy(self, UP_BATTLESUIT)) {
 		(*upgrades)[0] = UP_BATTLESUIT;
 		*numUpgrades = 1;
 		usableCapital -= BSUIT_PRICE;
-	} else if(g_humanStage.integer >= 1 && usableCapital >= (SHOTGUN_PRICE + LIGHTARMOUR_PRICE + HELMET_PRICE)) {
+	} else if(g_humanStage.integer >= 1 && usableCapital >= (SHOTGUN_PRICE + LIGHTARMOUR_PRICE + HELMET_PRICE) && BotCanBuy(self, WP_SHOTGUN) && BotCanBuy(self, UP_LIGHTARMOUR) && BotCanBuy(self, UP_HELMET)) {
 		(*upgrades)[0] = UP_LIGHTARMOUR;
 		(*upgrades)[1] = UP_HELMET;
 		*numUpgrades = 2;
 		usableCapital = usableCapital - (LIGHTARMOUR_PRICE + HELMET_PRICE);
-	} else if(g_humanStage.integer >= 0 && usableCapital >= (PAINSAW_PRICE + LIGHTARMOUR_PRICE )) {
+	} else if(g_humanStage.integer >= 0 && usableCapital >= (PAINSAW_PRICE + LIGHTARMOUR_PRICE ) && BotCanBuy(self, WP_PAIN_SAW) && BotCanBuy(self, UP_LIGHTARMOUR)) {
 		(*upgrades)[0] = UP_LIGHTARMOUR;
 		*numUpgrades = 1;
 		usableCapital -= LIGHTARMOUR_PRICE;
@@ -324,31 +344,31 @@ void BotGetDesiredBuy(gentity_t *self, weapon_t *weapon, upgrade_t (*upgrades)[3
 	}
 
 	//now decide what weapon to buy
-	if(g_humanStage.integer >= 2  && usableCapital >= LCANNON_PRICE && g_bot_lcannon.integer) {
+	if(g_humanStage.integer >= 2  && usableCapital >= LCANNON_PRICE && g_bot_lcannon.integer && BotCanBuy(self, WP_LUCIFER_CANNON)) {
 		*weapon = WP_LUCIFER_CANNON;
 		usableCapital -= LCANNON_PRICE;
-	} else if(g_humanStage.integer >= 2 && usableCapital >= CHAINGUN_PRICE && (*upgrades)[0] == UP_BATTLESUIT && g_bot_chaingun.integer) {
+	} else if(g_humanStage.integer >= 2 && usableCapital >= CHAINGUN_PRICE && (*upgrades)[0] == UP_BATTLESUIT && g_bot_chaingun.integer && BotCanBuy(self, WP_CHAINGUN)) {
 		*weapon = WP_CHAINGUN;
 		usableCapital -= CHAINGUN_PRICE;
-	} else if(g_humanStage.integer >= 1 && g_alienStage.integer < 2 && usableCapital >= FLAMER_PRICE && g_bot_flamer.integer){
+	} else if(g_humanStage.integer >= 1 && g_alienStage.integer < 2 && usableCapital >= FLAMER_PRICE && g_bot_flamer.integer && BotCanBuy(self, WP_FLAMER)){
 		*weapon = WP_FLAMER;
 		usableCapital -= FLAMER_PRICE;
-	}else if(g_humanStage.integer >= 1 && usableCapital >= PRIFLE_PRICE && g_bot_prifle.integer){
+	}else if(g_humanStage.integer >= 1 && usableCapital >= PRIFLE_PRICE && g_bot_prifle.integer && BotCanBuy(self, WP_PULSE_RIFLE)){
 		*weapon = WP_PULSE_RIFLE;
 		usableCapital -= PRIFLE_PRICE;
-	}else if(g_humanStage.integer >= 0 && usableCapital >= CHAINGUN_PRICE && g_bot_chaingun.integer){
+	}else if(g_humanStage.integer >= 0 && usableCapital >= CHAINGUN_PRICE && g_bot_chaingun.integer && BotCanBuy(self, WP_CHAINGUN)){
 		*weapon = WP_CHAINGUN;
 		usableCapital -= CHAINGUN_PRICE;
-	}else if(g_humanStage.integer >= 0 && usableCapital >= MDRIVER_PRICE && g_bot_mdriver.integer){
+	}else if(g_humanStage.integer >= 0 && usableCapital >= MDRIVER_PRICE && g_bot_mdriver.integer && BotCanBuy(self, WP_MASS_DRIVER)){
 		*weapon = WP_MASS_DRIVER;
 		usableCapital -= MDRIVER_PRICE;
-	}else if(g_humanStage.integer >= 0 && usableCapital >= LASGUN_PRICE && g_bot_lasgun.integer){
+	}else if(g_humanStage.integer >= 0 && usableCapital >= LASGUN_PRICE && g_bot_lasgun.integer && BotCanBuy(self, WP_LAS_GUN)){
 		*weapon = WP_LAS_GUN;
 		usableCapital -= LASGUN_PRICE;
-	}else if(g_humanStage.integer >= 0 && usableCapital >= SHOTGUN_PRICE && g_bot_shotgun.integer){
+	}else if(g_humanStage.integer >= 0 && usableCapital >= SHOTGUN_PRICE && g_bot_shotgun.integer && BotCanBuy(self, WP_SHOTGUN)){
 		*weapon = WP_SHOTGUN;
 		usableCapital -= SHOTGUN_PRICE;
-	}else if(g_humanStage.integer >= 0 && usableCapital >= PAINSAW_PRICE && g_bot_painsaw.integer){
+	}else if(g_humanStage.integer >= 0 && usableCapital >= PAINSAW_PRICE && g_bot_painsaw.integer && BotCanBuy(self, WP_PAIN_SAW)){
 		*weapon = WP_PAIN_SAW;
 		usableCapital -= PAINSAW_PRICE;
 	} else {
@@ -357,7 +377,7 @@ void BotGetDesiredBuy(gentity_t *self, weapon_t *weapon, upgrade_t (*upgrades)[3
 	}
 
 	//finally, see if we can buy a battpack
-	if(BG_Weapon(*weapon)->usesEnergy && usableCapital >= BATTPACK_PRICE && g_humanStage.integer >= 1 && (*upgrades)[0] != UP_BATTLESUIT) {
+	if(BG_Weapon(*weapon)->usesEnergy && usableCapital >= BATTPACK_PRICE && g_humanStage.integer >= 1 && (*upgrades)[0] != UP_BATTLESUIT && BotCanBuy(self, UP_BATTPACK)) {
 		(*upgrades)[(*numUpgrades)++] = UP_BATTPACK;
 		usableCapital -= BATTPACK_PRICE;
 	}
