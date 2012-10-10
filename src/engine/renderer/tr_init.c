@@ -129,8 +129,6 @@ cvar_t *r_texturebits;
 cvar_t *r_ext_multisample;
 
 cvar_t *r_drawBuffer;
-cvar_t *r_glDriver;
-cvar_t *r_glIgnoreWicked3D;
 cvar_t *r_showLightMaps;
 cvar_t *r_uiFullScreen;
 cvar_t *r_shadows;
@@ -185,7 +183,6 @@ cvar_t *r_directedScale;
 cvar_t *r_debugLight;
 cvar_t *r_debugSort;
 cvar_t *r_printShaders;
-cvar_t *r_saveFontData;
 
 // Ridah
 cvar_t *r_cache;
@@ -193,8 +190,6 @@ cvar_t *r_cacheShaders;
 cvar_t *r_cacheModels;
 
 cvar_t *r_cacheGathering;
-
-cvar_t *r_buildScript;
 
 cvar_t *r_bonesDebug;
 
@@ -299,7 +294,6 @@ static void InitOpenGL( void )
 	//
 	// GLimp_Init directly or indirectly references the following cvars:
 	//      - r_fullscreen
-	//      - r_glDriver
 	//      - r_mode
 	//      - r_(color|depth|stencil)bits
 	//      - r_ignorehwgamma
@@ -1099,13 +1093,11 @@ void R_Register( void )
 	//
 	// latched and archived variables
 	//
-	r_glDriver = ri.Cvar_Get( "r_glDriver", OPENGL_DRIVER_NAME, CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );
 	r_allowExtensions = ri.Cvar_Get( "r_allowExtensions", "1", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );
 	r_ext_compressed_textures = ri.Cvar_Get( "r_ext_compressed_textures", "1", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );  // (SA) ew, a spelling change I missed from the missionpack
 	r_ext_gamma_control = ri.Cvar_Get( "r_ext_gamma_control", "1", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );
 	r_ext_multitexture = ri.Cvar_Get( "r_ext_multitexture", "1", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );
 	r_ext_compiled_vertex_array = ri.Cvar_Get( "r_ext_compiled_vertex_array", "1", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );
-	r_glIgnoreWicked3D = ri.Cvar_Get( "r_glIgnoreWicked3D", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );
 
 //----(SA)  added
 	r_ext_ATI_pntriangles = ri.Cvar_Get( "r_ext_ATI_pntriangles", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_UNSAFE );  //----(SA)  default to '0'
@@ -1228,7 +1220,6 @@ void R_Register( void )
 	r_debugLight = ri.Cvar_Get( "r_debuglight", "0", CVAR_TEMP );
 	r_debugSort = ri.Cvar_Get( "r_debugSort", "0", CVAR_CHEAT );
 	r_printShaders = ri.Cvar_Get( "r_printShaders", "0", 0 );
-	r_saveFontData = ri.Cvar_Get( "r_saveFontData", "0", 0 );
 
 	r_fontScale = ri.Cvar_Get( "r_fontScale", "36", CVAR_ARCHIVE | CVAR_LATCH);
 
@@ -1244,7 +1235,6 @@ void R_Register( void )
 
 	r_cacheModels = ri.Cvar_Get( "r_cacheModels", "1", CVAR_LATCH );
 	r_cacheGathering = ri.Cvar_Get( "cl_cacheGathering", "0", 0 );
-	r_buildScript = ri.Cvar_Get( "com_buildscript", "0", 0 );
 	r_bonesDebug = ri.Cvar_Get( "r_bonesDebug", "0", CVAR_CHEAT );
 	// done.
 

@@ -826,7 +826,7 @@ void R_SetFrameFog( void )
 	else
 	{
 		// probably usually not necessary to copy the whole thing.
-		// potential FIXME: since this is the most common occurance, diff first and only set changes
+		// potential FIXME: since this is the most common occurrence, diff first and only set changes
 		memcpy( &glfogsettings[ FOG_CURRENT ], &glfogsettings[ FOG_TARGET ], sizeof( glfog_t ) );
 	}
 
@@ -1741,7 +1741,7 @@ void R_SortDrawSurfs( drawSurf_t *drawSurfs, int numDrawSurfs )
 		// no shader should ever have this sort type
 		if ( shader->sort == SS_BAD )
 		{
-			ri.Error( ERR_DROP, "Shader '%s'with sort == SS_BAD", shader->name );
+			ri.Error( ERR_DROP, "Shader '%s' with sort == SS_BAD", shader->name );
 		}
 
 		// if the mirror was completely clipped away, we may need to check another surface

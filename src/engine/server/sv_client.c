@@ -54,7 +54,7 @@ If we are authorizing, a challenge request will cause a packet
 to be sent to the authorize server.
 
 When an authorizeip is returned, a challenge response will be
-sent to that ip.
+sent to that IP address.
 =================
 */
 void SV_GetChallenge( netadr_t from )
@@ -67,7 +67,7 @@ void SV_GetChallenge( netadr_t from )
 	oldest = 0;
 	oldestTime = 0x7fffffff;
 
-	// see if we already have a challenge for this ip
+	// see if we already have a challenge for this IP address
 	challenge = &svs.challenges[ 0 ];
 
 	for ( i = 0; i < MAX_CHALLENGES; i++, challenge++ )
@@ -210,7 +210,7 @@ void SV_DirectConnect( netadr_t from )
 			return;
 		}
 
-		// force the IP key/value pair so the game can filter based on ip
+		// force the IP address key/value pair, so the game can filter based on it
 		Info_SetValueForKey( userinfo, "ip", NET_AdrToString( from ) );
 
 		if ( svs.challenges[ i ].firstPing == 0 )
@@ -253,7 +253,7 @@ void SV_DirectConnect( netadr_t from )
 	newcl = &temp;
 	memset( newcl, 0, sizeof( client_t ) );
 
-	// if there is already a slot for this ip, reuse it
+	// if there is already a slot for this IP address, reuse it
 	for ( i = 0, cl = svs.clients; i < sv_maxclients->integer; i++, cl++ )
 	{
 		if ( cl->state == CS_FREE )
@@ -486,7 +486,7 @@ void SV_DropClient( client_t *drop, const char *reason )
 
 	if ( !isBot )
 	{
-		// see if we already have a challenge for this ip
+		// see if we already have a challenge for this IP address
 		challenge = &svs.challenges[ 0 ];
 
 		for ( i = 0; i < MAX_CHALLENGES; i++, challenge++ )
@@ -540,7 +540,7 @@ void SV_DropClient( client_t *drop, const char *reason )
 	// if this was the last client on the server, send a heartbeat
 	// to the master so it is known the server is empty
 	// send a heartbeat now so the master will get up to date info
-	// if there is already a slot for this ip, reuse it
+	// if there is already a slot for this IP address, reuse it
 	for ( i = 0; i < sv_maxclients->integer; i++ )
 	{
 		if ( svs.clients[ i ].state >= CS_CONNECTED )
@@ -920,7 +920,6 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 	int      curindex;
 	int      rate;
 	int      blockspersnap;
-	int      idPack;
 	char     errorMessage[ 1024 ];
 	int      download_flag;
 
@@ -956,35 +955,23 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 			Com_Printf(_( "clientDownload: %d : beginning \"%s\"\n"), ( int )( cl - svs.clients ), cl->downloadName );
 		}
 
-		idPack = FS_idPak( cl->downloadName, BASEGAME );
-
-		// sv_allowDownload and idPack checks
-		if ( !sv_allowDownload->integer || idPack )
+		if ( !sv_allowDownload->integer )
 		{
-			// cannot auto-download file
-			if ( idPack )
+			Com_Printf(_( "clientDownload: %d : \"%s\" download disabled\n"), ( int )( cl - svs.clients ), cl->downloadName );
+
+			if ( sv_pure->integer )
 			{
-				Com_Printf(_( "clientDownload: %d : \"%s\" cannot download id pk3 files\n"), ( int )( cl - svs.clients ), cl->downloadName );
-				Com_sprintf( errorMessage, sizeof( errorMessage ), "Cannot autodownload official pk3 file \"%s\"", cl->downloadName );
+				Com_sprintf( errorMessage, sizeof( errorMessage ),
+							 "Could not download \"%s\" because autodownloading is disabled on the server.\n\n"
+							 "You will need to get this file elsewhere before you " "can connect to this pure server.\n",
+							 cl->downloadName );
 			}
 			else
 			{
-				Com_Printf(_( "clientDownload: %d : \"%s\" download disabled"), ( int )( cl - svs.clients ), cl->downloadName );
-
-				if ( sv_pure->integer )
-				{
-					Com_sprintf( errorMessage, sizeof( errorMessage ),
-					             "Could not download \"%s\" because autodownloading is disabled on the server.\n\n"
-					             "You will need to get this file elsewhere before you " "can connect to this pure server.\n",
-					             cl->downloadName );
-				}
-				else
-				{
-					Com_sprintf( errorMessage, sizeof( errorMessage ),
-					             "Could not download \"%s\" because autodownloading is disabled on the server.\n\n"
-					             "Set autodownload to No in your settings and you might be "
-					             "able to connect even if you don't have the file.\n", cl->downloadName );
-				}
+				Com_sprintf( errorMessage, sizeof( errorMessage ),
+							 "Could not download \"%s\" because autodownloading is disabled on the server.\n\n"
+							 "Set autodownload to No in your settings and you might be "
+							 "able to connect even if you don't have the file.\n", cl->downloadName );
 			}
 
 			SV_BadDownload( cl, msg );
@@ -1237,8 +1224,7 @@ SV_VerifyPaks_f
 
 If we are pure, disconnect the client if they do no meet the following conditions:
 
-1. the first two checksums match our view of cgame and ui DLLs
-   Wolf specific: the checksum is the checksum of the pk3 we found the DLL in
+1. the first two checksums match our view of cgame and ui modules
 2. there are no any additional checksums that we do not have
 
 This routine would be a bit simpler with a goto but i abstained
@@ -1475,7 +1461,7 @@ void SV_UserinfoChanged( client_t *cl )
 	// rate command
 
 	// if the client is on the same subnet as the server and we aren't running an
-	// internet public server, assume they don't need a rate choke
+	// Internet server, assume that they don't need a rate choke
 	if ( Sys_IsLANAddress( cl->netchan.remoteAddress ) && com_dedicated->integer != 2 && sv_lanForceRate->integer == 1 )
 	{
 		cl->rate = 99999; // lans should not rate limit
@@ -1539,8 +1525,8 @@ void SV_UserinfoChanged( client_t *cl )
 	// this is set in SV_DirectConnect (directly on the server, not transmitted), may be lost when client updates its userinfo
 	// the banning code relies on this being consistently present
 	// zinx - modified to always keep this consistent, instead of only
-	// when "ip" is 0-length, so users can't supply their own IP
-	//Com_DPrintf("Maintain IP in userinfo for '%s'\n", cl->name);
+	// when "ip" is 0-length, so users can't supply their own IP address
+	//Com_DPrintf("Maintain IP address in userinfo for '%s'\n", cl->name);
 	if ( !NET_IsLocalAddress( cl->netchan.remoteAddress ) )
 	{
 		Info_SetValueForKey( cl->userinfo, "ip", NET_AdrToString( cl->netchan.remoteAddress ) );

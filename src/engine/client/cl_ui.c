@@ -63,7 +63,7 @@ static void GetClientState( uiClientState_t *state )
 LAN_LoadCachedServers
 ====================
 */
-void LAN_LoadCachedServers()
+void LAN_LoadCachedServers( void )
 {
 	int          size;
 	fileHandle_t fileIn;
@@ -109,7 +109,7 @@ void LAN_LoadCachedServers()
 LAN_SaveServersToCache
 ====================
 */
-void LAN_SaveServersToCache()
+void LAN_SaveServersToCache( void )
 {
 	int          size;
 	fileHandle_t fileOut;
@@ -1362,10 +1362,6 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 
 		case UI_R_REMAP_SHADER:
 			re.RemapShader( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
-			return 0;
-
-		case UI_OPENURL:
-			CL_OpenURL( ( const char * ) VMA( 1 ) );
 			return 0;
 
 		case UI_GETHUNKDATA:

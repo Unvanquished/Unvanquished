@@ -640,14 +640,6 @@ void CL_ParseGamestate( msg_t *msg )
 	// parse serverId and other cvars
 	CL_SystemInfoChanged();
 
-	// Arnout: verify if we have all official pakfiles. As we won't
-	// be downloading them, we should be kicked for not having them.
-	if ( cl_connectedToPureServer && !FS_VerifyOfficialPaks() )
-	{
-		Com_Error( ERR_DROP,
-		           "Couldn't load an official pak file; verify your installation and make sure it has been updated to the latest version." );
-	}
-
 	// reinitialize the filesystem if the game directory has changed
 	FS_ConditionalRestart( clc.checksumFeed );
 
@@ -695,15 +687,6 @@ void CL_ParseDownload( msg_t *msg )
 			Q_strncpyz( cls.downloadName, MSG_ReadString( msg ), sizeof( cls.downloadName ) );
 			clc.downloadSize = MSG_ReadLong( msg );
 			clc.downloadFlags = MSG_ReadLong( msg );
-
-			if ( clc.downloadFlags & ( 1 << DL_FLAG_URL ) )
-			{
-				Sys_OpenURL( cls.downloadName, qtrue );
-				Cbuf_ExecuteText( EXEC_APPEND, "quit\n" );
-				CL_AddReliableCommand( "wwwdl bbl8r" );  // not sure if that's the right msg
-				clc.bWWWDlAborting = qtrue;
-				return;
-			}
 
 			Cvar_SetValue( "cl_downloadSize", clc.downloadSize );
 			Com_DPrintf(_( "Server redirected download: %s\n"), cls.downloadName );

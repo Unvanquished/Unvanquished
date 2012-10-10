@@ -45,17 +45,17 @@ void trap_SyscallABIVersion( int major, int minor )
 }
 
 //00.
-//Com_Printf_(("%s"), (char *)VMA(1));
-void trap_Print( const char *fmt )
+//Com_Printf("%s", (char *)VMA(1));
+void trap_Print( const char *string )
 {
-	syscall( CG_PRINT, fmt );
+	syscall( CG_PRINT, string );
 }
 
 //01.
 //Com_Error(ERR_DROP, "%s", (char *)VMA(1));
-void NORETURN trap_Error( const char *fmt )
+void NORETURN trap_Error( const char *string )
 {
-	syscall( CG_ERROR, fmt );
+	syscall( CG_ERROR, string );
 	exit(1); // silence warning
 }
 
@@ -649,14 +649,14 @@ void trap_R_RenderScene( const refdef_t *fd )
 
 //81.
 //re.SaveViewParms();
-void trap_R_SaveViewParms()
+void trap_R_SaveViewParms( void )
 {
 	syscall( CG_R_SAVEVIEWPARMS );
 }
 
 //82.
 //re.RestoreViewParms();
-void trap_R_RestoreViewParms()
+void trap_R_RestoreViewParms( void )
 {
 	syscall( CG_R_RESTOREVIEWPARMS );
 }
@@ -962,20 +962,6 @@ void trap_CIN_SetExtents( int handle, int x, int y, int w, int h )
 void trap_R_RemapShader( const char *oldShader, const char *newShader, const char *timeOffset )
 {
 	syscall( CG_R_REMAP_SHADER, oldShader, newShader, timeOffset );
-}
-
-//132.
-//Com_Printf_(("%s%i\n"), (char *)VMA(1), args[2]);
-void testPrintInt( char *string, int i )
-{
-	syscall( TRAP_TESTPRINTINT, string, i );
-}
-
-//133.
-//Com_Printf_(("%s%f\n"), (char *)VMA(1), VMF(2));
-void testPrintFloat( char *string, float f )
-{
-	syscall( TRAP_TESTPRINTFLOAT, string, PASSFLOAT( f ) );
 }
 
 //134.

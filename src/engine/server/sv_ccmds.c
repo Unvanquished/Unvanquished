@@ -173,9 +173,8 @@ static void SV_Map_f( void )
 	char     *cmd;
 	char     *map;
 	char     mapname[ MAX_QPATH ];
-	qboolean cheat, buildScript;
+	qboolean cheat;
 	char     expanded[ MAX_QPATH ];
-	char     *cl_profileStr = Cvar_VariableString( "cl_profile" );
 
 	map = Cmd_Argv( 1 );
 
@@ -183,8 +182,6 @@ static void SV_Map_f( void )
 	{
 		return;
 	}
-
-	buildScript = Cvar_VariableIntegerValue( "com_buildScript" );
 
 	// make sure the level exists before trying to change, so that
 	// a typo at the server console won't end the game
@@ -196,8 +193,6 @@ static void SV_Map_f( void )
 
 		return;
 	}
-
-	Cvar_Set( "gamestate", va( "%i", GS_INITIALIZE ) );   // NERVE - SMF - reset gamestate on map/devmap
 
 	cmd = Cmd_Argv( 0 );
 
@@ -231,75 +226,6 @@ static void SV_Map_f( void )
 	}
 }
 
-/*
-================
-SV_CheckTransitionGameState
-
-NERVE - SMF
-================
-*/
-static qboolean SV_CheckTransitionGameState( gamestate_t new_gs, gamestate_t old_gs )
-{
-	if ( old_gs == new_gs && new_gs != GS_PLAYING )
-	{
-		return qfalse;
-	}
-
-//  if ( old_gs == GS_WARMUP && new_gs != GS_WARMUP_COUNTDOWN )
-//      return qfalse;
-
-//  if ( old_gs == GS_WARMUP_COUNTDOWN && new_gs != GS_PLAYING )
-//      return qfalse;
-
-	if ( old_gs == GS_WAITING_FOR_PLAYERS && new_gs != GS_WARMUP )
-	{
-		return qfalse;
-	}
-
-	if ( old_gs == GS_INTERMISSION && new_gs != GS_WARMUP )
-	{
-		return qfalse;
-	}
-
-	if ( old_gs == GS_RESET && ( new_gs != GS_WAITING_FOR_PLAYERS && new_gs != GS_WARMUP ) )
-	{
-		return qfalse;
-	}
-
-	return qtrue;
-}
-
-/*
-================
-SV_TransitionGameState
-
-NERVE - SMF
-================
-*/
-static qboolean SV_TransitionGameState( gamestate_t new_gs, gamestate_t old_gs, int delay )
-{
-	// we always do a warmup before starting match
-	if ( old_gs == GS_INTERMISSION && new_gs == GS_PLAYING )
-	{
-		new_gs = GS_WARMUP;
-	}
-
-	// check if it's a valid state transition
-	if ( !SV_CheckTransitionGameState( new_gs, old_gs ) )
-	{
-		return qfalse;
-	}
-
-	if ( new_gs == GS_RESET )
-	{
-		new_gs = GS_WARMUP;
-	}
-
-	Cvar_Set( "gamestate", va( "%i", new_gs ) );
-
-	return qtrue;
-}
-
 void MSG_PrioritiseEntitystateFields( void );
 void MSG_PrioritisePlayerStateFields( void );
 
@@ -324,7 +250,6 @@ static void SV_MapRestart_f( void )
 	char        *denied;
 	qboolean    isBot;
 	int         delay = 0;
-	gamestate_t new_gs, old_gs; // NERVE - SMF
 
 	// make sure we aren't restarting twice in the same frame
 	if ( com_frameTime == sv.serverId )
@@ -349,30 +274,13 @@ static void SV_MapRestart_f( void )
 		delay = atoi( Cmd_Argv( 1 ) );
 	}
 
-	// NERVE - SMF - read in gamestate or just default to GS_PLAYING
-	old_gs = atoi( Cvar_VariableString( "gamestate" ) );
-
-	if ( Cmd_Argc() > 2 )
-	{
-		new_gs = atoi( Cmd_Argv( 2 ) );
-	}
-	else
-	{
-		new_gs = GS_PLAYING;
-	}
-
-	if ( !SV_TransitionGameState( new_gs, old_gs, delay ) )
-	{
-		return;
-	}
-
 	// check for changes in variables that can't just be restarted
 	// check for maxclients change
 	if ( sv_maxclients->modified )
 	{
 		char mapname[ MAX_QPATH ];
 
-		Com_Printf(_( "sv_maxclients variable change – restarting.\n" ));
+		Com_Printf(_( "sv_maxclients variable change — restarting.\n" ));
 		// restart the map the slow way
 		Q_strncpyz( mapname, Cvar_VariableString( "mapname" ), sizeof( mapname ) );
 
@@ -447,7 +355,7 @@ static void SV_MapRestart_f( void )
 
 			if ( !isBot )
 			{
-				Com_Printf(_( "SV_MapRestart_f(%d): dropped client %i – denied!\n"), delay, i );  // bk010125
+				Com_Printf(_( "SV_MapRestart_f(%d): dropped client %i: denied!\n"), delay, i );  // bk010125
 			}
 
 			continue;
@@ -596,43 +504,6 @@ static void SV_Systeminfo_f( void )
 }
 
 /*
-===========
-SV_DumpUser_f
-
-Examine a user's userinfo string
-FIXME: move to game
-===========
-*/
-static void SV_DumpUser_f( void )
-{
-	client_t *cl;
-
-	// make sure server is running
-	if ( !com_sv_running->integer )
-	{
-		Com_Printf(_( "Server is not running.\n" ));
-		return;
-	}
-
-	if ( Cmd_Argc() != 2 )
-	{
-		Com_Printf(_( "Usage: info <userid>\n" ));
-		return;
-	}
-
-	cl = SV_GetPlayerByName();
-
-	if ( !cl )
-	{
-		return;
-	}
-
-	Com_Printf(_( "userinfo\n" ));
-	Com_Printf(_( "--------\n" ));
-	Info_Print( cl->userinfo );
-}
-
-/*
 =================
 SV_KillServer
 =================
@@ -680,7 +551,6 @@ void SV_AddOperatorCommands( void )
 	if ( com_sv_running->integer )
 	{
 		// These commands should only be available while the server is running.
-		Cmd_AddCommand( "dumpuser",    SV_DumpUser_f );
 		Cmd_AddCommand( "fieldinfo",   SV_FieldInfo_f );
 		Cmd_AddCommand( "heartbeat",   SV_Heartbeat_f );
 		Cmd_AddCommand( "killserver",  SV_KillServer_f );

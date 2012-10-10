@@ -136,8 +136,6 @@ void  MSG_ReadDeltaEntity( msg_t *msg, entityState_t *from, entityState_t *to, i
 void  MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct playerState_s *to );
 void  MSG_ReadDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct playerState_s *to );
 
-void  MSG_ReportChangeVectors_f( void );
-
 //============================================================================
 
 /*
@@ -150,9 +148,9 @@ NET
 
 #define NET_ENABLEV4        0x01
 #define NET_ENABLEV6        0x02
-// if this flag is set, always attempt ipv6 connections instead of ipv4 if a v6 address is found.
+// if this flag is set, always attempt IPv6 connections instead of IPv4 if a v6 address is found.
 #define NET_PRIOV6          0x04
-// disables ipv6 multicast support if set.
+// disables IPv6 multicast support if set.
 #define NET_DISABLEMCAST    0x08
 
 #define PACKET_BACKUP       32 // number of old messages that must be kept on client and
@@ -214,7 +212,6 @@ void QDECL NET_OutOfBandData( netsrc_t sock, netadr_t adr, byte *format, int len
 qboolean   NET_CompareAdr( netadr_t a, netadr_t b );
 qboolean   NET_CompareBaseAdr( netadr_t a, netadr_t b );
 qboolean   NET_IsLocalAddress( netadr_t adr );
-qboolean   NET_IsIPXAddress( const char *buf );
 const char *NET_AdrToString( netadr_t a );
 const char *NET_AdrToStringwPort( netadr_t a );
 int        NET_StringToAdr( const char *s, netadr_t *a, netadrtype_t family );
@@ -292,11 +289,7 @@ You or the server may be running older versions of the game."
 #define PROTOCOL_VERSION       86
 
 #define URI_SCHEME             GAMENAME_STRING "://"
-#define URI_SCHEME_LENGTH      6
-
-// maintain a list of compatible protocols for demo playing
-// NOTE: that stuff only works with two digits protocols
-extern int demo_protocols[];
+#define URI_SCHEME_LENGTH      ( ARRAY_LEN( URI_SCHEME ) - 1 )
 
 // NERVE - SMF - wolf multiplayer master servers
 #ifndef MASTER_SERVER_NAME
@@ -443,7 +436,7 @@ void Cbuf_Execute( void );
 // Do not call inside a command function, or current args will be destroyed.
 
 void Cdelay_Frame (void);
-//Check if a delayed command have to be executed and decreases the remaining
+//Checks if a delayed command has to be executed and decreases the remaining
 //delay time for all of them
 
 //===========================================================================
@@ -507,7 +500,7 @@ void Cmd_QuoteStringBuffer( const char *in, char *buffer, int size );
 
 // The functions that execute commands get their parameters with these
 // functions. Cmd_Argv () will return an empty string, not a NULL
-// if arg > argc, so string operations are allways safe.
+// if arg >= argc, so string operations are always safe.
 
 void Cmd_TokenizeString( const char *text );
 void Cmd_TokenizeStringIgnoreQuotes( const char *text_in );
@@ -537,15 +530,13 @@ cvar_t variables are used to hold scalar or string variables that can be changed
 or displayed at the console or prog code as well as accessed directly
 in C code.
 
-The user can access cvars from the console in three ways:
-r_draworder     prints the current value
-r_draworder 0   sets the current value to 0
-set r_draworder 0 as above, but creates the cvar if not present
+The user can basically access cvars from the console in three ways:
+<name>             — prints the current value of the named cvar, or says that the cvar does not exist
+                      (unless the name is actually the name of a command, in which case the command is executed)
+<name> <value>     — sets the value of the cvar if the cvar exists (unless, see above)
+set <name> <value> — sets the value of the cvar, but creates the cvar if it does not exist yet
 
-Cvars are restricted from having the same names as commands to keep this
-interface from being ambiguous.
-
-The are also occasionally used to communicated information between different
+They are also occasionally used to communicate information between different
 modules of the program.
 
 */
@@ -657,8 +648,6 @@ issues.
 #define FS_GENERAL_REF   0x01
 #define FS_UI_REF        0x02
 #define FS_CGAME_REF     0x04
-// number of id paks that will never be autodownloaded from baseq3
-#define NUM_ID_PAKS      9
 
 #define MAX_FILE_HANDLES 64
 
@@ -668,7 +657,7 @@ issues.
 #define Q_rmdir          rmdir
 #endif
 
-qboolean FS_Initialized();
+qboolean FS_Initialized( void );
 
 void     FS_InitFilesystem( void );
 void     FS_Shutdown( qboolean closemfp );
@@ -689,7 +678,7 @@ void         FS_FreeFileList( char **list );
 qboolean     FS_FileExists( const char *file );
 qboolean     FS_OS_FileExists( const char *file );  // TTimo - test file existence given OS path
 
-int          FS_LoadStack();
+int          FS_LoadStack( void );
 
 int          FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize );
 int          FS_GetModList( char *listbuf, int bufsize );
@@ -746,8 +735,8 @@ int  FS_ReadFile( const char *qpath, void **buffer );
 int  FS_ReadFileCheck( const char *qpath, void **buffer );
 
 // returns the length of the file
-// a null buffer will just return the file length without loading
-// as a quick check for existance. -1 length == not present
+// a null buffer will just return the file length without loading,
+// as a quick check for existence. -1 length == not present
 // A 0 byte will always be appended at the end, so string ops are safe.
 // the buffer should be considered read-only, because it may be cached
 // for other uses.
@@ -815,14 +804,11 @@ void FS_PureServerSetLoadedPaks( const char *pakSums, const char *pakNames );
 // separated checksums will be checked for files, with the
 // sole exception of .cfg files.
 
-qboolean   FS_idPak( char *pak, char *base );
-qboolean   FS_VerifyOfficialPaks( void );
 qboolean   FS_ComparePaks( char *neededpaks, int len, qboolean dlstring );
 
 void       FS_Rename( const char *from, const char *to );
 
 char       *FS_BuildOSPath( const char *base, const char *game, const char *qpath );
-void       FS_BuildOSHomePath( char *ospath, int size, const char *qpath );
 
 extern int cl_connectedToPureServer;
 #if !defined( NO_UNTRUSTED_PLUGINS )
@@ -830,26 +816,23 @@ qboolean   FS_CL_ExtractFromPakFile( const char *base, const char *gamedir, cons
 #endif
 
 #if defined( DO_LIGHT_DEDICATED )
-int FS_RandChecksumFeed();
+int FS_RandChecksumFeed( void );
 
 #endif
 
-char         *FS_ShiftedStrStr( const char *string, const char *substring, int shift );
 char         *FS_ShiftStr( const char *string, int shift );
 
 void         FS_CopyFile( char *fromOSPath, char *toOSPath );
 
 char         *FS_FindDll( const char *filename );
 
-int          FS_CreatePath( const char *OSPath );
+qboolean     FS_CreatePath( const char *OSPath );
 
 qboolean     FS_VerifyPak( const char *pak );
 
 qboolean     FS_IsPure( void );
 
 void         FS_Remove( const char *ospath );
-
-unsigned int FS_ChecksumOSPath( char *OSPath );
 
 // XreaL BEGIN
 void         FS_HomeRemove( const char *homePath );
@@ -859,7 +842,6 @@ void         FS_HomeRemove( const char *homePath );
 void       FS_FilenameCompletion( const char *dir, const char *ext,
                                   qboolean stripExt, void ( *callback )( const char *s ) );
 
-const char *FS_GetCurrentGameDir( void );
 qboolean   FS_Which( const char *filename, void *searchPath );
 
 /*
@@ -965,7 +947,7 @@ qboolean   Com_SafeMode( void );
 qboolean   Com_IsVoipTarget( uint8_t *voipTargets, int voipTargetsSize, int clientNum );
 
 void       Com_StartupVariable( const char *match );
-void       Com_SetRecommended();
+void       Com_SetRecommended( void );
 
 // checks for and removes command line "+set var arg" constructs
 // if match is NULL, all set commands will be executed, otherwise
@@ -991,14 +973,14 @@ extern cvar_t       *com_cl_running;
 extern cvar_t       *com_viewlog; // 0 = hidden, 1 = visible, 2 = minimized
 extern cvar_t       *com_version;
 
-//extern    cvar_t  *com_blood;
-extern cvar_t       *com_buildScript; // for building release pak files
 extern cvar_t       *com_journal;
 extern cvar_t       *com_ansiColor;
 extern cvar_t       *com_logosPlaying;
 
 extern cvar_t       *com_unfocused;
+extern cvar_t       *com_maxfpsUnfocused;
 extern cvar_t       *com_minimized;
+extern cvar_t       *com_maxfpsMinimized;
 
 // watchdog
 extern cvar_t       *com_watchdog;
@@ -1064,9 +1046,9 @@ temp file loading
 #define Z_TagMalloc( size, tag ) Z_TagMallocDebug( size, tag, # size, __FILE__, __LINE__ )
 #define Z_Malloc( size )         Z_MallocDebug( size, # size, __FILE__, __LINE__ )
 #define S_Malloc( size )         S_MallocDebug( size, # size, __FILE__, __LINE__ )
-void     *Z_TagMallocDebug( int size, int tag, char *label, char *file, int line );  // NOT 0 filled memory
-void     *Z_MallocDebug( int size, char *label, char *file, int line );  // returns 0 filled memory
-void     *S_MallocDebug( int size, char *label, char *file, int line );  // returns 0 filled memory
+void     *Z_TagMallocDebug( int size, int tag, const char *label, const char *file, int line );  // NOT 0 filled memory
+void     *Z_MallocDebug( int size, const char *label, const char *file, int line );  // returns 0 filled memory
+void     *S_MallocDebug( int size, const char *label, const char *file, int line );  // NOT 0 filled memory
 
 #else
 void     *Z_TagMalloc( int size, int tag );  // NOT 0 filled memory
@@ -1149,10 +1131,6 @@ void CL_ForwardCommandToServer( const char *string );
 // adds the current command line as a clc_clientCommand to the client message.
 // things like godmode, noclip, etc, are commands directed to the server,
 // so when they are typed in at the console, they will need to be forwarded.
-
-void CL_CDDialog( void );
-
-// bring up the "need a cd to play" dialog
 
 void CL_ShutdownAll( void );
 
@@ -1257,24 +1235,10 @@ void           *QDECL Sys_LoadDll( const char *name, char *fqpath, intptr_t ( QD
 
 void                  Sys_UnloadDll( void *dllHandle );
 
-void                  Sys_UnloadGame( void );
-void                  *Sys_GetGameAPI( void *parms );
-
-void                  Sys_UnloadCGame( void );
-void                  *Sys_GetCGameAPI( void );
-
-void                  Sys_UnloadUI( void );
-void                  *Sys_GetUIAPI( void );
-
-// RB: added generic DLL loading routines
-void                  *Sys_LoadDLLSimple( const char *name );
 void                  *Sys_LoadFunction( void *dllHandle, const char *functionName );
-char                  *Sys_DLLError();
-
-// RB: added to link OS specific pointers to the renderer.dll space
-void                  *Sys_GetSystemHandles( void );
 
 char                  *Sys_GetCurrentUser( void );
+int                   Sys_GetPID( void );
 
 void QDECL            Sys_Error( const char *error, ... ) PRINTF_LIKE(1) NORETURN;
 void                  Sys_Quit( void ) NORETURN;
@@ -1311,18 +1275,14 @@ qboolean Sys_Mkdir( const char *path );
 FILE     *Sys_Mkfifo( const char *ospath );
 char     *Sys_Cwd( void );
 char     *Sys_DefaultBasePath( void );
-char     *Sys_DefaultInstallPath( void );
 
 #ifdef MACOS_X
 char     *Sys_DefaultAppPath( void );
-
 #endif
 
-void Sys_SetDefaultLibPath( const char *path );
 char *Sys_DefaultLibPath( void );
 
 char         *Sys_DefaultHomePath( void );
-qboolean     Sys_Fork( const char *path, const char *cmdLine );
 const char   *Sys_Dirname( char *path );
 const char   *Sys_Basename( char *path );
 char         *Sys_ConsoleInput( void );
@@ -1332,12 +1292,7 @@ void         Sys_FreeFileList( char **list );
 
 void         Sys_Sleep( int msec );
 
-qboolean     Sys_OpenUrl( const char *url );
-
-qboolean     Sys_LowPhysicalMemory();
-unsigned int Sys_ProcessorCount();
-
-void         Sys_SetEnv( const char *name, const char *value );
+qboolean     Sys_LowPhysicalMemory( void );
 
 typedef enum
 {
@@ -1358,19 +1313,7 @@ typedef enum
 
 dialogResult_t Sys_Dialog( dialogType_t type, const char *message, const char *title );
 
-qboolean       Sys_WritePIDFile( void );
-
-// NOTE TTimo - on win32 the cwd is prepended .. non portable behaviour
-void           Sys_StartProcess( char *exeName, qboolean doexit );  // NERVE - SMF
-void           Sys_OpenURL( const char *url, qboolean doexit );  // NERVE - SMF
 void           Sys_QueEvent( int time, sysEventType_t type, int value, int value2, int ptrLength, void *ptr );
-
-#ifdef __linux__
-// TTimo only on linux .. maybe on Mac too?
-// will OR with the existing mode (chmod ..+..)
-void Sys_Chmod( char *file, int mode );
-
-#endif
 
 void       Hist_Load( void );
 void       Hist_Add( const char *field );
@@ -1455,9 +1398,9 @@ void Com_RandomBytes( byte *string, int len );
 #define N_(x) (x)
 
 void Trans_Init( void );
-const char* Trans_Gettext( const char *msgid ) __attribute__((format_arg(1)));
-const char* Trans_Pgettext( const char *ctxt, const char *msgid ) __attribute__((format_arg(2)));
-const char* Trans_GettextGame( const char *msgid ) __attribute__((format_arg(1)));
-const char* Trans_PgettextGame( const char *ctxt, const char *msgid ) __attribute__((format_arg(2)));
+const char* Trans_Gettext( const char *msgid ) __attribute__((__format_arg__(1)));
+const char* Trans_Pgettext( const char *ctxt, const char *msgid ) __attribute__((__format_arg__(2)));
+const char* Trans_GettextGame( const char *msgid ) __attribute__((__format_arg__(1)));
+const char* Trans_PgettextGame( const char *ctxt, const char *msgid ) __attribute__((__format_arg__(2)));
 
 #endif // _QCOMMON_H_

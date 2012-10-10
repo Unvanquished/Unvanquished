@@ -68,7 +68,7 @@ extern  pml_t   pml;
 #define pm_flyaccelerate     (4.0f)
 
 #define pm_friction          (6.0f)
-#define pm_waterfriction     (1.0f)
+#define pm_waterfriction     (1.125f)
 #define pm_flightfriction    (6.0f)
 #define pm_spectatorfriction (5.0f)
 

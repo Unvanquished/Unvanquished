@@ -393,8 +393,8 @@ static void VM_InitSanity( vm_t *vm )
 	vm->versionChecked = qfalse;
 }
 
-#ifdef _DEBUG
-#define VM_Insanity(c,n) Com_Error( ERR_DROP, "And it's a good night from vm. [%ld %s]", (c), (n) );
+#ifndef NDEBUG
+#define VM_Insanity(c,n) Com_Error( ERR_DROP, "And it's a good night from vm. [%ld %s]", (long)(c), (n) );
 #else
 #define VM_Insanity(c,n) Com_Error( ERR_DROP, "And it's a good night from vm." );
 #endif
@@ -554,7 +554,7 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 
 	vm->clean = i >= 0;
 
-	// show where the qvm was loaded from
+	// show where the QVM was loaded from
 	if ( com_developer->integer )
 	{
 		Cmd_ExecuteString( va( "which %s\n", filename ) );
@@ -1046,7 +1046,7 @@ intptr_t        QDECL VM_Call( vm_t *vm, int callnum, ... )
 
 	++vm->callLevel;
 
-	// if we have a dll loaded, call it directly
+	// if we have a native library loaded, call it directly
 	if ( vm->entryPoint )
 	{
 		//rcg010207 -  see dissertation at top of VM_DllSyscall() in this file.
@@ -1390,14 +1390,6 @@ intptr_t VM_SystemCall( intptr_t *args )
 
 		case TRAP_PERPENDICULARVECTOR:
 			PerpendicularVector( VMA( 1 ), VMA( 2 ) );
-			return 0;
-
-		case TRAP_TESTPRINTINT:
-			Com_Printf( "%s%" PRIiPTR "\n", ( char * ) VMA( 1 ), args[ 2 ] );
-			return 0;
-
-		case TRAP_TESTPRINTFLOAT:
-			Com_Printf( "%s%f\n", ( char * ) VMA( 1 ), VMF( 2 ) );
 			return 0;
 
 		case TRAP_VERSION:

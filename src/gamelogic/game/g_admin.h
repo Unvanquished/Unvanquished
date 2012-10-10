@@ -108,6 +108,7 @@ typedef struct g_admin_admin
 	char                 pubkey[ RSA_STRING_LENGTH ];
 	char                 msg[ RSA_STRING_LENGTH ];
 	char                 msg2[ RSA_STRING_LENGTH ];
+	qtime_t              lastSeen;
 	int                  counter;
 }
 
@@ -209,6 +210,7 @@ qboolean        G_admin_putteam( gentity_t *ent );
 qboolean        G_admin_speclock( gentity_t *ent );
 qboolean        G_admin_specunlock( gentity_t *ent );
 qboolean        G_admin_listadmins( gentity_t *ent );
+qboolean        G_admin_listinactive( gentity_t *ent );
 qboolean        G_admin_listlayouts( gentity_t *ent );
 qboolean        G_admin_listplayers( gentity_t *ent );
 qboolean        G_admin_listrotation( gentity_t *ent );

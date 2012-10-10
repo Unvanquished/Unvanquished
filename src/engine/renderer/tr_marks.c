@@ -527,7 +527,7 @@ int R_OldMarkFragments( int numPoints, const vec3_t *points, const vec3_t projec
 			{
 				for ( j = 0; j < 3; j++ )
 				{
-					v = surf->points[ 0 ] + VERTEXSIZE * indexes[ k + j ];;
+					v = surf->points[ 0 ] + VERTEXSIZE * indexes[ k + j ];
 					VectorMA( v, MARKER_OFFSET, surf->plane.normal, clipPoints[ 0 ][ j ] );
 				}
 
@@ -760,7 +760,7 @@ int R_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projectio
 		                }
 		                // bestCenter is now the real center
 		                VectorCopy( bestCenter, center );
-		                Com_Printf("bestnormal: %1.1f %1.1f %1.1f \n", bestnormal[0], bestnormal[1], bestnormal[2] );
+		                Com_Printf("bestnormal: %1.1f %1.1f %1.1f\n", bestnormal[0], bestnormal[1], bestnormal[2] );
 		*/
 		VectorNegate( bestnormal, bestnormal );
 	}
@@ -1017,7 +1017,7 @@ int R_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projectio
 				{
 					for ( j = 0; j < 3; j++ )
 					{
-						v = surf->points[ 0 ] + VERTEXSIZE * indexes[ k + j ];;
+						v = surf->points[ 0 ] + VERTEXSIZE * indexes[ k + j ];
 						VectorMA( v, MARKER_OFFSET, surf->plane.normal, clipPoints[ 0 ][ j ] );
 					}
 

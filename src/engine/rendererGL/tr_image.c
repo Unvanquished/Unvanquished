@@ -2249,7 +2249,7 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 	byte          *pic = NULL;
 	long          hash;
 	char          buffer[ 1024 ];
-	char          ddsName[ 1024 ];
+	//char          ddsName[ 1024 ];
 	char          *buffer_p;
 	unsigned long diff;
 

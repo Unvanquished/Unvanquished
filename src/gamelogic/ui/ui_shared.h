@@ -30,13 +30,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "../../../main/ui/menudef.h"
 
-#define MAX_MENUNAME               32
-#define MAX_ITEMTEXT               64
-#define MAX_ITEMACTION             64
 #define MAX_MENUDEFFILE            4096
 #define MAX_MENUFILE               32768
 #define MAX_MENUS                  256
-#define MAX_MENUITEMS              128
+#define MAX_MENUITEMS              256
 #define MAX_COLOR_RANGES           10
 #define MAX_OPEN_MENUS             16
 
@@ -76,20 +73,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #else
 #define STRING_POOL_SIZE           384 * 1024
 #endif
-#define MAX_STRING_HANDLES         4096
 
-#define MAX_SCRIPT_ARGS            12
 #define MAX_EDITFIELD              256
 #define ITEM_VALUE_OFFSET          8
-
-#define ART_FX_BASE                "menu/art/fx_base"
-#define ART_FX_BLUE                "menu/art/fx_blue"
-#define ART_FX_CYAN                "menu/art/fx_cyan"
-#define ART_FX_GREEN               "menu/art/fx_grn"
-#define ART_FX_RED                 "menu/art/fx_red"
-#define ART_FX_TEAL                "menu/art/fx_teal"
-#define ART_FX_WHITE               "menu/art/fx_white"
-#define ART_FX_YELLOW              "menu/art/fx_yel"
 
 #define ASSET_GRADIENTBAR          "ui/assets/gradientbar2.tga"
 #define ASSET_SCROLLBAR            "ui/assets/scrollbar.tga"
@@ -129,14 +115,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #	define G_(text)             Pgettext( Trans_GenderContext( gender ), text)
 #	define N_(one, many, count) ( (count) == 1 ? (one) : (many) )
 #endif
-
-typedef struct
-{
-	const char *command;
-	const char *args[ MAX_SCRIPT_ARGS ];
-}
-
-scriptDef_t;
 
 typedef struct
 {
@@ -599,6 +577,6 @@ void       UI_R_UnregisterFont( fontHandle_t );
 
 int ui_CursorToOffset( const char *buf, int cursor );
 int ui_OffsetToCursor( const char *buf, int offset );
-const char *Gettext( const char *msgid ) __attribute__((format_arg(1)));
-const char *Pgettext( const char *ctxt, const char *msgid ) __attribute__((format_arg(2)));
+const char *Gettext( const char *msgid ) __attribute__((__format_arg__(1)));
+const char *Pgettext( const char *ctxt, const char *msgid ) __attribute__((__format_arg__(2)));
 #endif

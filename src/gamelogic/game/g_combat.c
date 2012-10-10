@@ -601,8 +601,6 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 
 	if ( attacker && attacker->client )
 	{
-		attacker->client->lastkilled_client = self->s.number;
-
 		attacker->client->pers.namelog->damageStats.kills++;
 		attacker->client->pers.namelog->damageStats.killingSpree++;
 
@@ -1286,7 +1284,7 @@ void G_InitDamageLocations( void )
 
 		if ( len >= MAX_DAMAGE_REGION_TEXT )
 		{
-			G_Printf( S_COLOR_RED "file too large: %s is %i, max allowed is %i",
+			G_Printf( S_COLOR_RED "file too large: %s is %i, max allowed is %i\n",
 			          filename, len, MAX_DAMAGE_REGION_TEXT );
 			trap_FS_FCloseFile( fileHandle );
 			continue;
@@ -1316,7 +1314,7 @@ void G_InitDamageLocations( void )
 
 		if ( len >= MAX_DAMAGE_REGION_TEXT )
 		{
-			G_Printf( S_COLOR_RED "file too large: %s is %i, max allowed is %i",
+			G_Printf( S_COLOR_RED "file too large: %s is %i, max allowed is %i\n",
 			          filename, len, MAX_DAMAGE_REGION_TEXT );
 			trap_FS_FCloseFile( fileHandle );
 			continue;
@@ -1639,9 +1637,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			client->damage_fromWorld = qtrue;
 		}
 
-		// set the last client who damaged the target
-		targ->client->lasthurt_client = attacker->s.number;
-		targ->client->lasthurt_mod = mod;
 		take = ( int )( take * G_CalcDamageModifier( point, targ, attacker,
 		                client->ps.stats[ STAT_CLASS ],
 		                dflags ) + 0.5f );

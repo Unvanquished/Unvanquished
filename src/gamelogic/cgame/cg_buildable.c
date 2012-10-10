@@ -600,7 +600,7 @@ void CG_InitBuildables( void )
 CG_BuildableRangeMarkerProperties
 ================
 */
-qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarkerType_t *rmType, float *range, vec3_t rgb )
+qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t *rmType, float *range, vec3_t rgb )
 {
 	shaderColorEnum_t shc;
 
@@ -662,15 +662,15 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarkerTyp
 
 	if ( bType == BA_A_TRAPPER )
 	{
-		*rmType = RMT_CONE_64;
+		*rmType = RM_SPHERICAL_CONE_64;
 	}
 	else if ( bType == BA_H_MGTURRET )
 	{
-		*rmType = RMT_CONE_240;
+		*rmType = RM_SPHERICAL_CONE_240;
 	}
 	else
 	{
-		*rmType = RMT_SPHERE;
+		*rmType = RM_SPHERE;
 	}
 
 	VectorCopy( cg_shaderColors[ shc ], rgb );
@@ -880,55 +880,9 @@ static void CG_BuildableAnimation( centity_t *cent, int *old, int *now, float *b
 
 	if ( cg_buildables[ BG_Buildable( cent->currentState.modelindex )->number ].md5 )
 	{
-		// blend old and current animation
-		if ( cg_animBlend.value <= 0.0f )
-		{
-			lf->blendlerp = 0.0f;
-		}
+		CG_BlendLerpFrame( lf );
 
-		if ( ( lf->blendlerp > 0.0f ) && ( cg.time > lf->blendtime ) )
-		{
-#if 0
-			// linear blending
-			lf->blendlerp -= 0.025f;
-#else
-			// exp blending
-			lf->blendlerp -= lf->blendlerp / cg_animBlend.value;
-#endif
-
-			if ( lf->blendlerp <= 0.0f )
-			{
-				lf->blendlerp = 0.0f;
-			}
-
-			if ( lf->blendlerp >= 1.0f )
-			{
-				lf->blendlerp = 1.0f;
-			}
-
-			lf->blendtime = cg.time + 10;
-		}
-
-		if ( lf->animation && lf->animation->handle )
-		{
-			if ( !trap_R_BuildSkeleton( &bSkeleton, lf->animation->handle, lf->oldFrame, lf->frame, 1.0 - lf->backlerp, lf->animation->clearOrigin ) )
-			{
-				CG_Printf( "%s", _( "CG_RunBuildableLerpFrame: Can't build lf->bSkeleton\n" ));
-			}
-
-			if ( oldbSkeleton.type != SK_INVALID && oldbSkeleton.numBones == bSkeleton.numBones )
-			{
-				// lerp between old and new animation if possible
-				if ( lf->blendlerp > 0.0f && oldbSkeleton.numBones == bSkeleton.numBones )
-				{
-					if ( !trap_R_BlendSkeleton( &bSkeleton, &oldbSkeleton, lf->blendlerp ) )
-					{
-						CG_Printf( "%s", _( "CG_RunBuildableLerpFrame: Can't blend lf->bSkeleton\n" ));
-						return;
-					}
-				}
-			}
-		}
+		CG_BuildAnimSkeleton( lf, &bSkeleton, &oldbSkeleton );
 	}
 }
 
@@ -944,9 +898,9 @@ static void CG_PositionAndOrientateBuildable( const vec3_t angles, const vec3_t 
     const vec3_t mins, const vec3_t maxs,
     vec3_t outAxis[ 3 ], vec3_t outOrigin )
 {
-	vec3_t  forward, start, end;
-	trace_t tr, box_tr;
-	float   mag, fraction;
+	vec3_t  forward, end;
+	trace_t tr;
+	float   fraction;
 
 	AngleVectors( angles, forward, NULL, NULL );
 	VectorCopy( normal, outAxis[ 2 ] );
@@ -965,27 +919,20 @@ static void CG_PositionAndOrientateBuildable( const vec3_t angles, const vec3_t 
 	outAxis[ 1 ][ 2 ] = -outAxis[ 1 ][ 2 ];
 
 	VectorMA( inOrigin, -TRACE_DEPTH, normal, end );
-	VectorMA( inOrigin, 1.0f, normal, start );
 
-	// Take both capsule and box traces. If the capsule trace does not differ
-	//  significantly from the box trace use it. This may cause buildables to be
-	//  positioned *inside* the surface on which it is placed. This is intentional
-
-	CG_CapTrace( &tr, start, mins, maxs, end, skipNumber,
+	CG_CapTrace( &tr, inOrigin, mins, maxs, end, skipNumber,
 	             CONTENTS_SOLID | CONTENTS_PLAYERCLIP );
 
-	CG_Trace( &box_tr, start, mins, maxs, end, skipNumber,
-	          CONTENTS_SOLID | CONTENTS_PLAYERCLIP );
-
-	mag = Distance( tr.endpos, box_tr.endpos );
-
 	fraction = tr.fraction;
-
-	// this is either too far off of the bbox to be useful for gameplay purposes
-	//  or the model is positioned in thin air anyways.
-	if ( mag > 15.0f || tr.fraction == 1.0f )
+	if ( tr.startsolid )
 	{
-		fraction = box_tr.fraction;
+		fraction = 0;
+	}
+	else if ( tr.fraction == 1.0f )
+	{
+		// this is either too far off of the bbox to be useful for gameplay purposes
+		//  or the model is positioned in thin air anyways.
+		fraction = 0;
 	}
 
 	VectorMA( inOrigin, fraction * -TRACE_DEPTH, normal, outOrigin );
@@ -998,13 +945,13 @@ CG_GhostBuildableRangeMarker
 */
 static void CG_GhostBuildableRangeMarker( buildable_t buildable, const vec3_t origin, const vec3_t normal )
 {
-	rangeMarkerType_t   rmType;
+	rangeMarker_t rmType;
 	float    range;
 	vec3_t   rgb;
 
 	if ( CG_GetBuildableRangeMarkerProperties( buildable, &rmType, &range, rgb ) )
 	{
-		vec3_t localOrigin, angles;
+		vec3_t localOrigin;
 
 		if ( buildable == BA_A_HIVE || buildable == BA_H_TESLAGEN )
 		{
@@ -1015,9 +962,16 @@ static void CG_GhostBuildableRangeMarker( buildable_t buildable, const vec3_t or
 			VectorCopy( origin, localOrigin );
 		}
 
-		vectoangles( normal, angles );
-
-		CG_DrawRangeMarker( rmType, localOrigin, range, angles, rgb );
+		if ( rmType == RM_SPHERE )
+		{
+			CG_DrawRangeMarker( rmType, localOrigin, range, NULL, rgb );
+		}
+		else
+		{
+			vec3_t angles;
+			vectoangles( normal, angles );
+			CG_DrawRangeMarker( rmType, localOrigin, range, angles, rgb );
+		}
 	}
 }
 
@@ -1077,6 +1031,13 @@ void CG_GhostBuildable( buildable_t buildable )
 		Scale[0] = Scale[1] = Scale[2] = scale;
 		trap_R_BuildSkeleton( &ent.skeleton, cg_buildables[ buildable ].animations[ BANIM_IDLE1 ].handle, 0, 0, 0, qfalse );
 		CG_TransformSkeleton( &ent.skeleton, Scale );
+
+		VectorCopy( mins, ent.skeleton.bounds[ 0 ] );
+		VectorCopy( maxs, ent.skeleton.bounds[ 1 ] );
+
+		//skeleton bounds start at z = 0
+		ent.skeleton.bounds[ 0 ][ 2 ] = 0;
+		ent.skeleton.bounds[ 1 ][ 2 ] -= mins[ 2 ];
 	}
 
 	if ( scale != 1.0f )
@@ -1854,10 +1815,6 @@ void CG_Buildable( centity_t *cent )
 
 	memset( &ent, 0, sizeof( ent ) );
 
-	VectorCopy( cent->lerpOrigin, ent.origin );
-	VectorCopy( cent->lerpOrigin, ent.oldorigin );
-	VectorCopy( cent->lerpOrigin, ent.lightingOrigin );
-
 	VectorCopy( es->origin2, surfNormal );
 
 	VectorCopy( es->angles, angles );
@@ -1865,7 +1822,6 @@ void CG_Buildable( centity_t *cent )
 
 	if ( es->pos.trType == TR_STATIONARY )
 	{
-		// Positioning a buildable involves potentially up to two traces, and
 		// seeing as buildables rarely move, we cache the results and recalculate
 		// only if the buildable moves or changes orientation
 		if ( VectorCompare( cent->buildableCache.cachedOrigin, cent->lerpOrigin ) &&
@@ -1880,7 +1836,7 @@ void CG_Buildable( centity_t *cent )
 		}
 		else
 		{
-			CG_PositionAndOrientateBuildable( angles, ent.origin, surfNormal,
+			CG_PositionAndOrientateBuildable( angles, cent->lerpOrigin, surfNormal,
 			                                  es->number, mins, maxs, ent.axis,
 			                                  ent.origin );
 			VectorCopy( ent.axis[ 0 ], cent->buildableCache.axis[ 0 ] );
@@ -1893,10 +1849,15 @@ void CG_Buildable( centity_t *cent )
 			cent->buildableCache.cachedType = es->modelindex;
 		}
 	}
+	else
+	{
+		VectorCopy( cent->lerpOrigin, ent.origin );
+		AnglesToAxis( cent->lerpAngles, ent.axis );
+	}
 
 	if( cg_drawBBOX.integer )
 	{
-		CG_DrawBoundingBox( ent.origin, mins, maxs );
+		CG_DrawBoundingBox( cent->lerpOrigin, mins, maxs );
 	}
 
 	//offset on the Z axis if required
@@ -1963,7 +1924,7 @@ void CG_Buildable( centity_t *cent )
 			//FIXME: Don't hard code bones to specific assets. Soon, I should put bone names in
 			// .cfg so we can change it should the rig change.
 
-			QuatFromAngles( rotation, es->angles2[ YAW ] - es->angles[ YAW ] + 90, 0, 0 );
+			QuatFromAngles( rotation, es->angles2[ YAW ] - es->angles[ YAW ], 0, 0 );
 			QuatMultiply0( ent.skeleton.bones[ 1 ].rotation, rotation );
 
 			QuatFromAngles( rotation, es->angles2[ PITCH ], 0, 0 );
@@ -1976,6 +1937,10 @@ void CG_Buildable( centity_t *cent )
 		CG_TransformSkeleton( &ent.skeleton, Scale );
 		VectorCopy(mins, ent.skeleton.bounds[ 0 ]);
 		VectorCopy(maxs, ent.skeleton.bounds[ 1 ]);
+		
+		//skeleton bounds start at z = 0
+		ent.skeleton.bounds[ 0 ][ 2 ] = 0;
+		ent.skeleton.bounds[ 1 ][ 2 ] -= mins[ 2 ];
 	}
 
 	//add to refresh list

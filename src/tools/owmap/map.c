@@ -128,7 +128,7 @@ int CreateNewFloatPlane(vec3_t normal, vec_t dist)
 
 	nummapplanes += 2;
 
-	// allways put axial planes facing positive first
+	// always put axial planes facing positive first
 	if(p->type < 3)
 	{
 		if(p->normal[0] < 0 || p->normal[1] < 0 || p->normal[2] < 0)
@@ -673,7 +673,7 @@ void AddBrushBevels(void)
 #if defined(USE_XML)
 					xml_Select("MAX_BUILD_SIDES", buildBrush->entityNum, buildBrush->brushNum, qtrue);
 #else
-					Sys_Printf("Entity %i, Brush %i: MAX_BUILD_SIDES", buildBrush->entityNum, buildBrush->brushNum);
+					Sys_Printf("Entity %i, Brush %i: MAX_BUILD_SIDES\n", buildBrush->entityNum, buildBrush->brushNum);
 #endif
 				}
 				memset(s, 0, sizeof(*s));

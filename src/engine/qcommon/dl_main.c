@@ -149,7 +149,7 @@ BOOL HTAlertCallback_prompt( HTRequest *request, HTAlertOpcode op,
 	return NO;
 }
 
-void DL_InitDownload()
+void DL_InitDownload( void )
 {
 	if ( dl_initialized )
 	{
@@ -167,7 +167,7 @@ void DL_InitDownload()
 	HTAlert_setInteractive( YES );
 
 	/* And the traces... */
-#ifdef _DEBUG
+#ifndef NDEBUG
 	// see HTHome.c, you can specify the flags - empty string gets you all traces
 	HTSetTraceMessageMask( "" );
 #endif
@@ -193,7 +193,7 @@ DL_Shutdown
 
 ================
 */
-void DL_Shutdown()
+void DL_Shutdown( void )
 {
 	if ( !dl_initialized )
 	{
@@ -308,7 +308,7 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 			/* correct the HTTP */
 			url = HT_MALLOC( 7 + strlen( ptr + 1 ) + strlen( path ) + 1 );
 			sprintf( url, "http://%s%s", ptr + 1, path );
-			Com_DPrintf( "HTTP Basic Auth – %s %s %s\n", login, passwd, url );
+			Com_DPrintf( "HTTP Basic Auth — %s %s %s\n", login, passwd, url );
 			HT_FREE( login );
 			HT_FREE( path );
 		}
@@ -371,7 +371,7 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 }
 
 // (maybe this should be CL_DL_DownloadLoop)
-dlStatus_t DL_DownloadLoop()
+dlStatus_t DL_DownloadLoop( void )
 {
 	if ( !dl_running )
 	{

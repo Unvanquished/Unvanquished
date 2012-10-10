@@ -843,7 +843,7 @@ gentity_t *fire_lockblob( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->s.pos.trType = TR_LINEAR;
 	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME; // move a bit on the very first frame
 	VectorCopy( start, bolt->s.pos.trBase );
-	VectorScale( dir, 500, bolt->s.pos.trDelta );
+	VectorScale( dir, LOCKBLOB_SPEED, bolt->s.pos.trDelta );
 	SnapVector( bolt->s.pos.trDelta );  // save net bandwidth
 	VectorCopy( start, bolt->r.currentOrigin );
 
@@ -883,43 +883,6 @@ gentity_t *fire_slowBlob( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME; // move a bit on the very first frame
 	VectorCopy( start, bolt->s.pos.trBase );
 	VectorScale( dir, ABUILDER_BLOB_SPEED, bolt->s.pos.trDelta );
-	SnapVector( bolt->s.pos.trDelta );  // save net bandwidth
-	VectorCopy( start, bolt->r.currentOrigin );
-
-	return bolt;
-}
-
-/*
-=================
-fire_paraLockBlob
-=================
-*/
-gentity_t *fire_paraLockBlob( gentity_t *self, vec3_t start, vec3_t dir )
-{
-	gentity_t *bolt;
-
-	VectorNormalize( dir );
-
-	bolt = G_Spawn();
-	bolt->classname = "lockblob";
-	bolt->pointAgainstWorld = qtrue;
-	bolt->nextthink = level.time + 15000;
-	bolt->think = G_ExplodeMissile;
-	bolt->s.eType = ET_MISSILE;
-	bolt->s.weapon = WP_LOCKBLOB_LAUNCHER;
-	bolt->s.generic1 = self->s.generic1; //weaponMode
-	bolt->r.ownerNum = self->s.number;
-	bolt->parent = self;
-	bolt->damage = 0;
-	bolt->splashDamage = 0;
-	bolt->splashRadius = 0;
-	bolt->clipmask = MASK_SHOT;
-	bolt->target_ent = NULL;
-
-	bolt->s.pos.trType = TR_GRAVITY;
-	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME; // move a bit on the very first frame
-	VectorCopy( start, bolt->s.pos.trBase );
-	VectorScale( dir, LOCKBLOB_SPEED, bolt->s.pos.trDelta );
 	SnapVector( bolt->s.pos.trDelta );  // save net bandwidth
 	VectorCopy( start, bolt->r.currentOrigin );
 

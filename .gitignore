@@ -11,6 +11,7 @@ cmake_install.cmake
 daemon.*
 daemonded.*
 daemonmap.*
+download-pk3.sh
 librendererGL*
 main/cgame.mp.*
 main/qagame.mp.*

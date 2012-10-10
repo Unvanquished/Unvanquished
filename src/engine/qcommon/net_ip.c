@@ -699,7 +699,7 @@ qboolean        NET_IsLocalAddress( netadr_t adr )
 ==================
 Sys_GetPacket
 
-Never called by the game logic, just the system event queing
+Never called by the game logic, just the system event queuing
 ==================
 */
 qboolean Sys_GetPacket( netadr_t *net_from, msg_t *net_message )
@@ -927,6 +927,9 @@ qboolean Sys_IsLANAddress( netadr_t adr )
 		// 10.0.0.0        -   10.255.255.255  (10/8 prefix)
 		// 172.16.0.0      -   172.31.255.255  (172.16/12 prefix)
 		// 192.168.0.0     -   192.168.255.255 (192.168/16 prefix)
+
+		// 127.0.0.0       -   127.255.255.255 (127/8 prefix)
+
 		if ( adr.ip[ 0 ] == 10 )
 		{
 			return qtrue;
@@ -1163,7 +1166,7 @@ int NET_IP6Socket( char *net_interface, int port, struct sockaddr_in6 *bindto, i
 	{
 		int i = 1;
 
-		// ipv4 addresses should not be allowed to connect via this socket.
+		// IPv4 addresses should not be allowed to connect via this socket.
 		if ( setsockopt( newsocket, IPPROTO_IPV6, IPV6_V6ONLY, ( char * ) &i, sizeof( i ) ) == SOCKET_ERROR )
 		{
 			// win32 systems don't seem to support this anyways.
@@ -1305,7 +1308,7 @@ void NET_JoinMulticast6( void )
 	}
 }
 
-void NET_LeaveMulticast6()
+void NET_LeaveMulticast6( void )
 {
 	if ( multicast6_socket != INVALID_SOCKET )
 	{
@@ -1654,7 +1657,7 @@ static void NET_GetLocalAddress( void )
 		mask6.sin6_family = AF_INET6;
 		memset( &mask6.sin6_addr, 0xFF, sizeof( mask6.sin6_addr ) );
 
-		// add all IPs from returned list.
+		// add all IP addresses from the returned list.
 		for ( search = res; search; search = search->ai_next )
 		{
 			if ( search->ai_family == AF_INET )
@@ -1721,7 +1724,7 @@ void NET_OpenIP( void )
 
 		if ( ip6_socket == INVALID_SOCKET )
 		{
-			Com_Printf(_( "WARNING: Couldn't bind to a v6 ip address.\n" ));
+			Com_Printf(_( "WARNING: Couldn't bind to an IPv6 address.\n" ));
 		}
 	}
 
@@ -1753,7 +1756,7 @@ void NET_OpenIP( void )
 
 		if ( ip_socket == INVALID_SOCKET )
 		{
-			Com_Printf(_( "WARNING: Couldn't bind to a v4 ip address.\n" ));
+			Com_Printf(_( "WARNING: Couldn't bind to an IPv4 address.\n" ));
 		}
 	}
 }
@@ -1770,11 +1773,11 @@ static qboolean NET_GetCvars( void )
 	int modified;
 
 #ifdef DEDICATED
-	// I want server owners to explicitly turn on ipv6 support.
+	// I want server owners to explicitly turn on IPv6 support.
 	net_enabled = Cvar_Get( "net_enabled", "1", CVAR_LATCH | CVAR_ARCHIVE );
 #else
 
-	/* End users have it enabled so they can connect to ipv6-only hosts, but ipv4 will be
+	/* End users have it enabled so they can connect to IPv6-only hosts, but IPv4 will be
 	 * used if available due to ping */
 	net_enabled = Cvar_Get( "net_enabled", "3", CVAR_LATCH | CVAR_ARCHIVE );
 #endif

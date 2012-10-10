@@ -13,8 +13,6 @@ equ atan2                                 -10
 equ sqrt                                  -11
 equ floor                                 -12
 equ ceil                                  -13
-equ testPrintInt                          -225
-equ testPrintFloat                        -226
 equ trap_SyscallABIVersion                -256
 equ trap_Print                            -257
 equ trap_Error                            -258
@@ -86,3 +84,4 @@ equ trap_RSA_GenerateMessage              -321
 equ trap_QuoteString                      -322
 equ trap_GenFingerprint                   -323
 equ trap_GetPlayerPubkey                  -324
+equ trap_GetTimeString                    -325

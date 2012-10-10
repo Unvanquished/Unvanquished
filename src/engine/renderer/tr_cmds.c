@@ -34,8 +34,6 @@ Maryland 20850 USA.
 
 #include "tr_local.h"
 
-volatile renderCommandList_t *renderCommandList;
-
 volatile qboolean            renderThreadActive;
 
 /*

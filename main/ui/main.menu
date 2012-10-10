@@ -18,10 +18,6 @@
     shadowColor 0.1 0.1 0.1 0.25      // shadow color
   }
 
-
-
-
-
   menuDef
   {
     name main
@@ -45,33 +41,35 @@
       decoration
       nostretch
     }
+
     itemDef
     {
       name logo
       type ITEM_TYPE_TEXT
       style WINDOW_STYLE_SHADER
-      rect 200 60 237 150
+      //60
+      rect 200 45 237 150
       background "ui/assets/logo.png"
       visible MENU_TRUE
       decoration
       nostretch
     }
 
-
-
-#define X      234
-#define Y      210
+#define X      234 
+#define Y      170 //190
 #define W      150
 #define ELEM_H 24
 #define ELEM_O 5
 #define ALIGNY -5
 
 	MMBUTTON( "Play", open joinserver, 0 )
+	MMBUTTON( "Help", open help, 1 )
 // 	MMBUTTON( "News", open news_menu, 1 )
-	MMBUTTON( "Profiles", open profiles, 1 )
+//	MMBUTTON( "Profiles", open profiles, 2 )
 	MMBUTTON( "Options", open simple_options, 2 )
-	MMBUTTON( "Mods", open mod, 3 )
-	MMBUTTON( "Quit", open quit_popmenu, 4 )
+	MMBUTTON( "Demos", open demo, 3 )
+	MMBUTTON( "Mods", open mod, 4 )
+	MMBUTTON( "Quit", open quit_popmenu, 5 )
 	
 	TITLE_LAYOUT
 

@@ -493,7 +493,7 @@ void R_BindNullIBO( void )
 	}
 }
 
-static void R_InitUnitCubeVBO()
+static void R_InitUnitCubeVBO( void )
 {
 	vec3_t        mins = { -1, -1, -1 };
 	vec3_t        maxs = { 1,  1,  1 };

@@ -22,8 +22,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "qasm-inline.h"
 
+static const unsigned short fpucw = 0x0C7F;
+
 /*
- * GNU inline asm ftol conversion functions using SSE or FPU
+ * The GNU inline asm version of the ftol conversion functions using SSE or FPU
  */
 
 long qftolsse(float f)
@@ -59,14 +61,28 @@ int qvmftolsse(void)
 long qftolx87(float f)
 {
   long retval;
+  unsigned short oldcw;
 
   __asm__ volatile
   (
+    "fnstcw %2\n"
+    "fldcw %3\n"
     "flds %1\n"
     "fistpl %1\n"
+    "fldcw %2\n"
     "mov %1, %0\n"
     : "=r" (retval)
-    : "m" (f)
+    // there's a Clang/LLVM warning for an uninitialized use of the oldcw variable.
+    // i wasn't able to come up with anything better than the use of compiler
+    // pragmas to silence the warning. TODO: come up with a better solution.
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wuninitialized"
+#endif
+    : "m" (f), "m" (oldcw), "m" (fpucw)
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
   );
 
   return retval;
@@ -75,13 +91,28 @@ long qftolx87(float f)
 int qvmftolx87(void)
 {
   int retval;
+  unsigned short oldcw;
 
   __asm__ volatile
   (
+    "fnstcw %1\n"
+    "fldcw %2\n"
     "flds (" EDI ", " EBX ", 4)\n"
     "fistpl (" EDI ", " EBX ", 4)\n"
+    "fldcw %1\n"
     "mov (" EDI ", " EBX ", 4), %0\n"
     : "=r" (retval)
+    // there's a Clang/LLVM warning for an uninitialized use of the oldcw variable.
+    // i wasn't able to come up with anything better than the use of compiler
+    // pragmas to silence the warning. TODO: come up with a better solution.
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wuninitialized"
+#endif
+    : "m" (oldcw), "m" (fpucw)
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
   );
 
   return retval;

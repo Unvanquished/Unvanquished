@@ -166,7 +166,7 @@ void IN_KeyUp( kbutton_t *b )
 	}
 	else
 	{
-		return; // key up without coresponding down (menu pass through)
+		return; // key up without corresponding down (menu pass-through)
 	}
 
 	if ( b->down[ 0 ] || b->down[ 1 ] )
@@ -304,8 +304,6 @@ cvar_t *cl_pitchspeed;
 cvar_t *cl_run;
 
 cvar_t *cl_anglespeedkey;
-
-cvar_t *cl_recoilPitch;
 
 cvar_t *cl_doubletapdelay;
 
@@ -787,7 +785,6 @@ usercmd_t CL_CreateCmd( void )
 {
 	usercmd_t cmd;
 	vec3_t    oldAngles;
-	float     recoilAdd;
 
 	VectorCopy( cl.viewangles, oldAngles );
 
@@ -823,17 +820,6 @@ usercmd_t CL_CreateCmd( void )
 	{
 		cl.viewangles[ PITCH ] = oldAngles[ PITCH ] - 90;
 	}
-
-	// RF, set the kickAngles so aiming is effected
-	recoilAdd = cl_recoilPitch->value;
-
-	if ( Q_fabs( cl.viewangles[ PITCH ] + recoilAdd ) < 40 )
-	{
-		cl.viewangles[ PITCH ] += recoilAdd;
-	}
-
-	// the recoilPitch has been used, so clear it out
-	cl_recoilPitch->value = 0;
 
 	// store out the final values
 	CL_FinishMove( &cmd );

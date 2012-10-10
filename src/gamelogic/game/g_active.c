@@ -642,7 +642,7 @@ qboolean ClientInactivityTimer( gentity_t *ent )
 				trap_SendServerCommand( -1,
 				                        va( "print_tr %s %s %s", QQ( N_("$1$^7 moved from $2$ to spectators due to inactivity\n") ),
 				                            Quote( client->pers.netname ), Quote( BG_TeamName( client->pers.teamSelection ) ) ) );
-				G_LogPrintf( "Inactivity: %d", (int)( client - level.clients ) );
+				G_LogPrintf( "Inactivity: %d\n", (int)( client - level.clients ) );
 				G_ChangeTeam( ent, TEAM_NONE );
 			}
 			else
@@ -1987,16 +1987,6 @@ void ClientThink_real( gentity_t *ent )
 	}
 
 	SendPendingPredictableEvents( &ent->client->ps );
-
-	if ( !( ent->client->ps.eFlags & EF_FIRING ) )
-	{
-		client->fireHeld = qfalse; // for grapple
-	}
-
-	if ( !( ent->client->ps.eFlags & EF_FIRING2 ) )
-	{
-		client->fire2Held = qfalse;
-	}
 
 	// use the snapped origin for linking so it matches client predicted versions
 	VectorCopy( ent->s.pos.trBase, ent->r.currentOrigin );

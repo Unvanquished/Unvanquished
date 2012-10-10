@@ -946,7 +946,8 @@ static void S_AL_SrcKill(srcHandle_t src)
 	}
 
 	// Remove the buffer
-	qalSourcei(curSource->alSource, AL_BUFFER, 0);
+	if(qalSourcei)
+		qalSourcei(curSource->alSource, AL_BUFFER, 0);
 
 	curSource->sfx = 0;
 	curSource->lastUsedTime = 0;
@@ -1125,8 +1126,8 @@ void S_AL_UpdateEntityPosition( int entityNum, const vec3_t origin )
 /*
 =================
 S_AL_CheckInput
-Check whether input values from mods are out of range.
-Necessary for i.g. Western Quake3 mod which is buggy.
+Check whether the input values are in range.
+This is necessary, for example, for the Western Quake 3 mod, which is buggy.
 =================
 */
 static qboolean S_AL_CheckInput(int entityNum, sfxHandle_t sfx)
@@ -2344,8 +2345,11 @@ void S_AL_Shutdown( void )
 	S_AL_SrcShutdown( );
 	S_AL_BufferShutdown( );
 
-	qalcDestroyContext(alContext);
-	qalcCloseDevice(alDevice);
+	if (qalcDestroyContext)
+	{
+		qalcDestroyContext(alContext);
+		qalcCloseDevice(alDevice);
+	}
 
 #ifdef USE_VOIP
 	if (alCaptureDevice != NULL) {

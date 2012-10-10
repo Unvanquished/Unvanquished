@@ -394,7 +394,7 @@ rescan:
 		// NERVE - SMF - allow server to indicate why they were disconnected
 		if ( argc >= 2 )
 		{
-			Com_Error( ERR_SERVERDISCONNECT, "Server Disconnected – %s", Cmd_Argv( 1 ) );
+			Com_Error( ERR_SERVERDISCONNECT, "Server disconnected: %s", Cmd_Argv( 1 ) );
 		}
 		else
 		{
@@ -579,8 +579,7 @@ void CL_CM_LoadMap( const char *mapname )
 
 /*
 ====================
-CL_ShutdonwCGame
-
+CL_ShutdownCGame
 ====================
 */
 void CL_ShutdownCGame( void )
@@ -874,6 +873,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_R_LOADWORLDMAP:
+			re.SetWorldVisData( CM_ClusterPVS( -1 ) );
 			re.LoadWorld( VMA( 1 ) );
 			return 0;
 
@@ -1526,7 +1526,7 @@ Adjust the clients view of server time.
 
 We attempt to have cl.serverTime exactly equal the server's view
 of time plus the timeNudge, but with variable latencies over
-the internet it will often need to drift a bit to match conditions.
+the Internet, it will often need to drift a bit to match conditions.
 
 Our ideal time would be to have the adjusted time approach, but not pass,
 the very latest snapshot.

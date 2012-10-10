@@ -235,7 +235,7 @@ qboolean BoundBrush(brush_t * brush)
 
 /*
 SnapWeldVector() - ydnar
-welds two vec3_t's into a third, taking into account nearest-to-integer
+welds two vec3_ts into a third, taking into account nearest-to-integer
 instead of averaging
 */
 
@@ -746,7 +746,7 @@ node_t         *AllocNode(void)
 WindingIsTiny
 
 Returns true if the winding would be crunched out of
-existance by the vertex snapping.
+existence by the vertex snapping.
 ================
 */
 #define	EDGE_LENGTH	0.2

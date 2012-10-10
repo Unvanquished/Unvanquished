@@ -38,13 +38,6 @@ Maryland 20850 USA.
 static huffman_t msgHuff;
 static qboolean  msgInit = qfalse;
 
-int              pcount[ 256 ];
-int              wastedbits = 0;
-
-static int       oldsize = 0;
-
-// static int overflows = 0;
-
 /*
 ==============================================================================
 
@@ -54,7 +47,7 @@ Handles byte ordering and avoids alignment errors
 ==============================================================================
 */
 
-void MSG_initHuffman();
+void MSG_initHuffman( void );
 
 void MSG_Init( msg_t *buf, byte *data, int length )
 {
@@ -145,16 +138,12 @@ bit functions
 =============================================================================
 */
 
-int overflows;
-
 // negative bit values include signs
 void MSG_WriteBits( msg_t *msg, int value, int bits )
 {
 	int i;
 
 //  FILE*   fp;
-
-	oldsize += bits;
 
 	msg->uncompsize += bits; // NERVE - SMF - net debugging
 
@@ -169,34 +158,6 @@ void MSG_WriteBits( msg_t *msg, int value, int bits )
 	{
 		Com_Error( ERR_DROP, "MSG_WriteBits: bad bits %i", bits );
 	}
-
-	// TTimo - the overflow count is not used anywhere atm
-#if 1
-
-	// check for overflows
-	if ( bits != 32 )
-	{
-		if ( bits > 0 )
-		{
-			if ( value > ( ( 1 << bits ) - 1 ) || value < 0 )
-			{
-				overflows++;
-			}
-		}
-		else
-		{
-			int r;
-
-			r = 1 << ( bits - 1 );
-
-			if ( value > r - 1 || value < -r )
-			{
-				overflows++;
-			}
-		}
-	}
-
-#endif
 
 	if ( bits < 0 )
 	{
@@ -450,7 +411,7 @@ void MSG_WriteString( msg_t *sb, const char *s )
 
 		if ( l >= MAX_STRING_CHARS )
 		{
-			Com_Printf( "MSG_WriteString: MAX_STRING_CHARS" );
+			Com_Printf( "MSG_WriteString: MAX_STRING_CHARS exceeded\n" );
 			MSG_WriteData( sb, "", 1 );
 			return;
 		}
@@ -476,7 +437,7 @@ void MSG_WriteBigString( msg_t *sb, const char *s )
 
 		if ( l >= BIG_INFO_STRING )
 		{
-			Com_Printf( "MSG_WriteString: BIG_INFO_STRING" );
+			Com_Printf( "MSG_WriteBigString: BIG_INFO_STRING exceeded\n" );
 			MSG_WriteData( sb, "", 1 );
 			return;
 		}
@@ -842,16 +803,6 @@ usercmd_t communication
 ============================================================================
 */
 
-// ms is allways sent, the others are optional
-#define CM_ANGLE1  ( 1 << 0 )
-#define CM_ANGLE2  ( 1 << 1 )
-#define CM_ANGLE3  ( 1 << 2 )
-#define CM_FORWARD ( 1 << 3 )
-#define CM_SIDE    ( 1 << 4 )
-#define CM_UP      ( 1 << 5 )
-#define CM_BUTTONS ( 1 << 6 )
-#define CM_WEAPON  ( 1 << 7 )
-
 /*
 =====================
 MSG_WriteDeltaUsercmd
@@ -960,7 +911,6 @@ void MSG_WriteDeltaUsercmdKey( msg_t *msg, int key, usercmd_t *from, usercmd_t *
 	{
 		// NERVE - SMF
 		MSG_WriteBits( msg, 0, 1 );  // no change
-		oldsize += 7;
 		return;
 	}
 
@@ -1047,26 +997,6 @@ entityState_t communication
 
 =============================================================================
 */
-
-/*
-=================
-MSG_ReportChangeVectors_f
-
-Prints out a table from the current statistics for copying to code
-=================
-*/
-void MSG_ReportChangeVectors_f( void )
-{
-	int i;
-
-	for ( i = 0; i < 256; i++ )
-	{
-		if ( pcount[ i ] )
-		{
-			Com_Printf(_( "%d used %d\n"), i, pcount[ i ] );
-		}
-	}
-}
 
 typedef struct
 {
@@ -1281,8 +1211,6 @@ void MSG_WriteDeltaEntity( msg_t *msg, struct entityState_s *from, struct entity
 
 	MSG_WriteByte( msg, lc );  // # of changes
 
-	oldsize += numFields;
-
 //  Com_Printf(_( "Delta for ent %i: "), to->number );
 
 	for ( i = 0, field = entityStateFields; i < lc; i++, field++ )
@@ -1293,9 +1221,6 @@ void MSG_WriteDeltaEntity( msg_t *msg, struct entityState_s *from, struct entity
 		if ( *fromF == *toF )
 		{
 			MSG_WriteBits( msg, 0, 1 );  // no change
-
-			wastedbits++;
-
 			continue;
 		}
 
@@ -1310,7 +1235,6 @@ void MSG_WriteDeltaEntity( msg_t *msg, struct entityState_s *from, struct entity
 			if ( fullFloat == 0.0f )
 			{
 				MSG_WriteBits( msg, 0, 1 );
-				oldsize += FLOAT_INT_BITS;
 			}
 			else
 			{
@@ -1515,8 +1439,6 @@ void MSG_ReadDeltaEntity( msg_t *msg, entityState_t *from, entityState_t *to, in
 					}
 				}
 			}
-
-//          pcount[i]++;
 		}
 	}
 
@@ -1722,9 +1644,6 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 	int           statsbits;
 	int           persistantbits;
 	int           numFields;
-
-//bani - appears to have been debugging left in
-//  int             c;
 	netField_t *field;
 	int        *fromF, *toF;
 	float      fullFloat;
@@ -1760,9 +1679,6 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 		print = 0;
 	}
 
-//bani - appears to have been debugging left in
-//  c = msg->cursize;
-
 	numFields = ARRAY_LEN( playerStateFields );
 
 	lc = 0;
@@ -1782,8 +1698,6 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 
 	MSG_WriteByte( msg, lc );  // # of changes
 
-	oldsize += numFields - lc;
-
 	for ( i = 0, field = playerStateFields; i < lc; i++, field++ )
 	{
 		fromF = ( int * )( ( byte * ) from + field->offset );
@@ -1791,14 +1705,11 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 
 		if ( *fromF == *toF )
 		{
-			wastedbits++;
-
 			MSG_WriteBits( msg, 0, 1 );  // no change
 			continue;
 		}
 
 		MSG_WriteBits( msg, 1, 1 );  // changed
-//      pcount[i]++;
 
 		if ( field->bits == 0 )
 		{
@@ -1835,9 +1746,6 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 		}
 	}
 
-//bani - appears to have been debugging left in
-//  c = msg->cursize - c;
-
 	//
 	// send the arrays
 	//
@@ -1871,7 +1779,7 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 		}
 	}
 
-	if ( statsbits || persistantbits )
+	if ( statsbits || persistantbits || miscbits )
 	{
 		MSG_WriteBits( msg, 1, 1 );  // something changed
 
@@ -1934,7 +1842,6 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 	else
 	{
 		MSG_WriteBits( msg, 0, 1 );  // no change to any
-		oldsize += 4;
 	}
 
 	if ( print )
@@ -2393,7 +2300,7 @@ int msg_hData[ 256 ] =
 	13504, // 255
 };
 
-void MSG_initHuffman()
+void MSG_initHuffman( void )
 {
 	int i, j;
 

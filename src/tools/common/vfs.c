@@ -213,7 +213,7 @@ void vfsInitDirectory(const char *path)
 }
 
 // frees all memory that we allocated
-void vfsShutdown()
+void vfsShutdown(void)
 {
 	while(g_unzFiles)
 	{

@@ -18,21 +18,27 @@ set( CMAKE_BUILD_TYPE Release CACHE STRING "Build configuration (Debug, Release,
 
 project( Daemon C CXX ASM )
 
-if( MSVC )
-  set( CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /arch:SSE /fp:fast /Oy" )
-else()
-  set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -msse2 -pipe" )
-  set( CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g" )
-  set( CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL} -DNDEBUG -Os" )
-  set( CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -DNDEBUG -O3 -ffast-math -fomit-frame-pointer -fno-strict-aliasing" )
-  set( CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} -DNDEBUG -O3 -ffast-math -fomit-frame-pointer -fno-strict-aliasing -g" )
+# Check if this is first run and if so set some default flags
+if( NOT DEFINED SUBSEQUENT_RUN )
+  set( SUBSEQUENT_RUN 1 CACHE INTERNAL "True if not first run" )
+
+  if( MSVC )
+    set( CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /arch:SSE /fp:precise /Oy" CACHE STRING "Flags used by the compiler during release builds" FORCE )
+  else()
+    set( CMAKE_C_FLAGS "-msse2 -pipe" CACHE STRING "Flags used by the compiler during all build types" FORCE )
+    set( CMAKE_C_FLAGS_DEBUG "-g" CACHE STRING "Flags used by the compiler during debug builds." FORCE )
+    set( CMAKE_C_FLAGS_MINSIZEREL "-DNDEBUG -Os" CACHE STRING "Flags used by the compiler during release minsize builds." FORCE )
+    set( CMAKE_C_FLAGS_RELEASE "-DNDEBUG -O3 -ffast-math -fomit-frame-pointer -fno-strict-aliasing" CACHE STRING "Flags used by the compiler during release builds" FORCE )
+    set( CMAKE_C_FLAGS_RELWITHDEBINFO "-DNDEBUG -O3 -ffast-math -fomit-frame-pointer -fno-strict-aliasing -g" CACHE STRING "Flags used by the compiler during Release with Debug Info builds." FORCE )
+  endif()
+
+  set( CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS}" CACHE STRING "Flags used by the compiler during all build types" FORCE )
+  set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}" CACHE STRING "Flags used by the compiler during debug builds." FORCE )
+  set( CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL}" CACHE STRING "Flags used by the compiler during release minsize builds." FORCE )
+  set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}" CACHE STRING "Flags used by the compiler during release builds" FORCE )
+  set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}" CACHE STRING "Flags used by the compiler during Release with Debug Info builds." FORCE )
 endif()
 
-set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_C_FLAGS}" )
-set( CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} ${CMAKE_C_FLAGS_DEBUG}" )
-set( CMAKE_CXX_FLAGS_MINSIZEREL "${CMAKE_CXX_FLAGS_MINSIZEREL} ${CMAKE_C_FLAGS_MINSIZEREL}" )
-set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${CMAKE_C_FLAGS_RELEASE}" )
-set( CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} ${CMAKE_C_FLAGS_RELWITHDEBINFO}" )
 set( CMAKE_ASM_COMPILER ${CMAKE_C_COMPILER} )
 set( CMAKE_ASM_COMPILE_OBJECT ${CMAKE_C_COMPILE_OBJECT} )
 set( CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "" ) # Need this to get rid of -rdynamic linker flag set by default by cmake
@@ -48,7 +54,9 @@ option( BUILD_DAEMONMAP      "Build Mapping tool"                          0 )
 
 option( ENABLE_W_ALL         "Use -Wall"                                   0 )
 option( ENABLE_WARNINGS      "Enable security & code-checking warning options" 1 )
-option( ENABLE_HARDENING     "Enable security hardening options"            1 )
+option( ENABLE_HARDENING     "Enable security hardening options"           1 )
+
+option( USE_GIT_DESCRIBE     "Use the revision information reported by Git's describe function" 1 )
 
 cmake_dependent_option( BUILD_OLD_RENDERER   "Build old renderer library"                            1 BUILD_CLIENT                   0 )
 cmake_dependent_option( BUILD_NEW_RENDERER   "Build new renderer library"                            1 BUILD_CLIENT                   0 )
@@ -75,7 +83,6 @@ cmake_dependent_option( USE_SDL_ICONV        "Compile with SDL's iconv implement
 cmake_dependent_option( HAVE_BZIP2           "Compile with BZip2 support"                            0 "HAVE_BZIP2"                   0 )
 
 cmake_dependent_option( BUILD_GAME_GPP       "Build Tremulous GPP game logic"              1 "GAME_LIB OR GAME_QVM" 0 )
-cmake_dependent_option( QVM_DEBUG            "Enable (some) QVM debugging"                 1 GAME_QVM         0 )
 cmake_dependent_option( GAME_LIB_LLVM        "Use LLVM, not shared libs, for game logic"   0 GAME_LIB         0 )
 
 cmake_dependent_option( USE_OPENAL_DLOPEN    "Use dlopen to load OpenAL"                   1 USE_OPENAL       0 )
@@ -88,16 +95,16 @@ cmake_dependent_option( ENABLE_W_EXTRA       "Use -Wextra"                      
 cmake_dependent_option( ENABLE_FSTACKPROT    "Enable stack protection if available"        1 ENABLE_HARDENING 0 )
 cmake_dependent_option( ENABLE_RELRO         "Enable relro & bindnow if available"         1 ENABLE_HARDENING 0 )
 
-mark_as_advanced( GAME_LIB_LLVM LLVM_CONFIG ENABLE_FSTACKPROT ENABLE_RELRO )
+mark_as_advanced( GAME_LIB_LLVM LLVM_CONFIG ENABLE_FSTACKPROT ENABLE_RELRO USE_GIT_DESCRIBE )
 
 if( GAME_LIB_LLVM )
-  find_program(LLVM_CONFIG llvm-config)
-  execute_process(COMMAND ${LLVM_CONFIG} --libfiles
-                  OUTPUT_VARIABLE LLVM_LIBS OUTPUT_STRIP_TRAILING_WHITESPACE)
-  execute_process(COMMAND ${LLVM_CONFIG} --includedir OUTPUT_VARIABLE LLVM_INCLUDE_DIR OUTPUT_STRIP_TRAILING_WHITESPACE)
-  execute_process(COMMAND ${LLVM_CONFIG} --version OUTPUT_VARIABLE LLVM_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
-  execute_process(COMMAND ${LLVM_CONFIG} --libdir OUTPUT_VARIABLE LLVM_LIBDIR OUTPUT_STRIP_TRAILING_WHITESPACE)
-  separate_arguments(LLVM_LIBS)
+  find_program( LLVM_CONFIG llvm-config )
+  execute_process( COMMAND ${LLVM_CONFIG} --libfiles
+                   OUTPUT_VARIABLE LLVM_LIBS OUTPUT_STRIP_TRAILING_WHITESPACE )
+  execute_process( COMMAND ${LLVM_CONFIG} --includedir OUTPUT_VARIABLE LLVM_INCLUDE_DIR OUTPUT_STRIP_TRAILING_WHITESPACE )
+  execute_process( COMMAND ${LLVM_CONFIG} --version OUTPUT_VARIABLE LLVM_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE )
+  execute_process( COMMAND ${LLVM_CONFIG} --libdir OUTPUT_VARIABLE LLVM_LIBDIR OUTPUT_STRIP_TRAILING_WHITESPACE )
+  separate_arguments( LLVM_LIBS )
 
   include( ${CMAKE_SOURCE_DIR}/cmake/CMakeLLVMInformation.cmake )
   include( ${CMAKE_SOURCE_DIR}/cmake/CMakeLLVMXXInformation.cmake )
@@ -167,32 +174,34 @@ else()
   endif()
 endif()
 
-# Report the git commit identification, if possible
+if( USE_GIT_DESCRIBE )
+  # Report the Git commit identification, if possible
 
-if( EXISTS "${CMAKE_SOURCE_DIR}/.git" )
-  find_package( Git )
-  if( GIT_FOUND )
-    execute_process( COMMAND git describe --tags --long --dirty=+dirty OUTPUT_VARIABLE GIT_DESCRIBE_REPORT OUTPUT_STRIP_TRAILING_WHITESPACE )
-    message( STATUS "git reported ${GIT_DESCRIBE_REPORT}" )
-    # this may fail with annotated non-release tags
-    if( GIT_DESCRIBE_REPORT MATCHES "-0-g.......$" )
-      set( GIT_DESCRIBE_REPORT )
+  if( EXISTS "${CMAKE_SOURCE_DIR}/.git" )
+    find_package( Git )
+    if( GIT_FOUND )
+      execute_process( COMMAND git describe --tags --long --dirty=+dirty OUTPUT_VARIABLE GIT_DESCRIBE_REPORT OUTPUT_STRIP_TRAILING_WHITESPACE )
+      message( STATUS "git reported ${GIT_DESCRIBE_REPORT}" )
+      # this may fail with annotated non-release tags
+      if( GIT_DESCRIBE_REPORT MATCHES "-0-g.......$" )
+        set( GIT_DESCRIBE_REPORT )
+      endif()
     endif()
   endif()
+
+  if( GIT_DESCRIBE_REPORT )
+    set( DESIRED_REVISION_H_CONTENTS "#define REVISION \"${GIT_DESCRIBE_REPORT}\"\n" )
+  endif()
+  set( GIT_DESCRIBE ${GIT_DESCRIBE_REPORT} CACHE INTERNAL "commit id reported by Git" FORCE )
 endif()
 
-if( GIT_DESCRIBE_REPORT )
-  set( DESIRED_GIT_VERSION_H_CONTENTS "#define GIT_VERSION \"${GIT_DESCRIBE_REPORT}\"\n" )
-endif()
-set( GIT_DESCRIBE ${GIT_DESCRIBE_REPORT} CACHE INTERNAL "commit id reported by git" FORCE )
-
-if( EXISTS "${CMAKE_BINARY_DIR}/CMakeFiles/git_version.h" )
-  file( READ "${CMAKE_BINARY_DIR}/CMakeFiles/git_version.h" ACTUAL_GIT_VERSION_H_CONTENTS )
-  if( NOT "${ACTUAL_GIT_VERSION_H_CONTENTS}" STREQUAL "${DESIRED_GIT_VERSION_H_CONTENTS}" )
-    file( WRITE "${CMAKE_BINARY_DIR}/CMakeFiles/git_version.h" "${DESIRED_GIT_VERSION_H_CONTENTS}" )
+if( EXISTS "${CMAKE_BINARY_DIR}/CMakeFiles/revision.h" )
+  file( READ "${CMAKE_BINARY_DIR}/CMakeFiles/revision.h" ACTUAL_REVISION_H_CONTENTS )
+  if( NOT "${ACTUAL_REVISION_H_CONTENTS}" STREQUAL "${DESIRED_REVISION_H_CONTENTS}" )
+    file( WRITE "${CMAKE_BINARY_DIR}/CMakeFiles/revision.h" "${DESIRED_REVISION_H_CONTENTS}" )
   endif()
 else()
-  file( WRITE "${CMAKE_BINARY_DIR}/CMakeFiles/git_version.h" "${DESIRED_GIT_VERSION_H_CONTENTS}" )
+  file( WRITE "${CMAKE_BINARY_DIR}/CMakeFiles/revision.h" "${DESIRED_REVISION_H_CONTENTS}" )
 endif()
 
 include_directories( "${CMAKE_BINARY_DIR}/CMakeFiles" )
@@ -226,9 +235,9 @@ set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/GPL.txt" )
 set( CPACK_BUNDLE_NAME ${CPACK_PACKAGE_FILE_NAME} )
 set( CPACK_BUNDLE_ICON ${CPACK_PACKAGE_ICON} )
 if( ${BUILD_ARCH} STREQUAL "i386" )
-  set( CPACK_BUNDLE_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cpack/OS_X/x86/info.plist")
+  set( CPACK_BUNDLE_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cpack/OS_X/x86/info.plist" )
 else()
-  set( CPACK_BUNDLE_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cpack/OS_X/x86_64/info.plist")
+  set( CPACK_BUNDLE_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cpack/OS_X/x86_64/info.plist" )
 endif()
 
 #################
@@ -261,11 +270,11 @@ macro( try_c_flag PROP FLAG )
 endmacro()
 
 macro( try_cxx_flag PROP FLAG )
-  try_compiler_flag_internal( ${PROP} ${FLAG} CXX cxx C++)
+  try_compiler_flag_internal( ${PROP} ${FLAG} CXX cxx C++ )
 endmacro()
 
 macro( try_llvm_flag PROP FLAG )
-  try_compiler_flag_internal( ${PROP} ${FLAG} LLVM cc C/LLVM)
+  try_compiler_flag_internal( ${PROP} ${FLAG} LLVM cc C/LLVM )
 endmacro()
 
 macro( try_c_llvm_flag PROP FLAG )
@@ -307,7 +316,7 @@ if( ENABLE_WARNINGS )
   try_c_cxx_llvm_flag( HAVE_W_MISSING_NORETURN -Wmissing-noreturn )
   try_c_llvm_flag    ( HAVE_W_IMPLICIT_FN      -Wimplicit-function-declaration )
   if( HAVE_W_IMPLICIT_FN_C )
-    try_c_cxx_llvm_flag( HAVE_W_ERR_IMPLICIT_FN  -Werror=implicit-function-declaration )
+    try_c_cxx_llvm_flag( HAVE_W_ERR_IMPLICIT_FN -Werror=implicit-function-declaration )
   endif()
   try_c_cxx_llvm_flag( HAVE_W_FMT_SECURITY     -Wformat-security )
   if( HAVE_W_FMT_SECURITY_C )
@@ -317,7 +326,7 @@ endif()
 
 # Hardening
 if( ENABLE_HARDENING )
-  try_c_cxx_flag( HAVE_F_STACK_PROTECTOR  -fstack-protector )
+  try_c_cxx_flag( HAVE_F_STACK_PROTECTOR -fstack-protector )
 endif()
 
 ##############
@@ -421,7 +430,7 @@ set( RENDERERGLLIST
   ${MOUNT_DIR}/engine/rendererGL/tr_fbo.c
   ${MOUNT_DIR}/engine/rendererGL/tr_flares.c
   ${MOUNT_DIR}/engine/rendererGL/tr_fog.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_font.c
+  ${MOUNT_DIR}/engine/renderer/tr_font.c
   ${MOUNT_DIR}/engine/rendererGL/tr_image.c
   ${MOUNT_DIR}/engine/rendererGL/tr_image_dds.c
   ${MOUNT_DIR}/engine/rendererGL/tr_image_exr.cpp
@@ -470,6 +479,7 @@ set( QCOMMONLIST
   ${MOUNT_DIR}/engine/qcommon/cm_load.c
   ${MOUNT_DIR}/engine/qcommon/cm_trisoup.c
   ${MOUNT_DIR}/engine/qcommon/cm_patch.c
+  ${MOUNT_DIR}/engine/qcommon/cm_plane.c
   ${MOUNT_DIR}/engine/qcommon/cm_polylib.c
   ${MOUNT_DIR}/engine/qcommon/cm_test.c
   ${MOUNT_DIR}/engine/qcommon/cm_trace.c
@@ -630,8 +640,8 @@ set( CGAMEGPP_BASE
   ${GPP_DIR}/cgame/cg_tutorial.c
   ${GPP_DIR}/ui/ui_shared.c
   ${GPP_DIR}/ui/ui_utf8.c
-  ${MOUNT_DIR}/engine/qcommon/./q_math.c
-  ${MOUNT_DIR}/engine/qcommon/./q_shared.c
+  ${MOUNT_DIR}/engine/qcommon/q_math.c
+  ${MOUNT_DIR}/engine/qcommon/q_shared.c
 )
 
 set( CGAMEGPP_SO
@@ -672,8 +682,8 @@ set( GAMEGPP_BASE
   ${GPP_DIR}/game/g_weapon.c
   ${GPP_DIR}/game/g_admin.c
   ${GPP_DIR}/game/g_namelog.c
-  ${MOUNT_DIR}/engine/qcommon/./q_math.c
-  ${MOUNT_DIR}/engine/qcommon/./q_shared.c
+  ${MOUNT_DIR}/engine/qcommon/q_math.c
+  ${MOUNT_DIR}/engine/qcommon/q_shared.c
 )
 
 set( GAMEGPP_SO
@@ -693,8 +703,8 @@ set( UIGPP_BASE
   ${GPP_DIR}/ui/ui_gameinfo.c
   ${GPP_DIR}/game/bg_misc.c
   ${GPP_DIR}/game/bg_lib.c
-  ${MOUNT_DIR}/engine/qcommon/./q_math.c
-  ${MOUNT_DIR}/engine/qcommon/./q_shared.c
+  ${MOUNT_DIR}/engine/qcommon/q_math.c
+  ${MOUNT_DIR}/engine/qcommon/q_shared.c
   ${GPP_DIR}/ui/ui_utf8.c
 )
 
@@ -875,78 +885,82 @@ set( MESALIST
 )
 
 set( GLSLLIST
-  ${LIB_DIR}/glsl-optimizer/src/glsl/loop_analysis.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_jumps.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ast_function.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ast_type.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_hv_accept.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/glsl_types.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_reader.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/hir_field_selection.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_dead_functions.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_variable.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_redundant_jumps.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_tree_grafting.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_instructions.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_dead_code_local.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_function_detect_recursion.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_if_to_cond_assign.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/glsl_symbol_table.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_rvalue_visitor.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/loop_unroll.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_if_simplification.cpp
   ${LIB_DIR}/glsl-optimizer/src/glsl/ast_expr.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_validate.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_vector.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_variable_refcount.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_set_program_inouts.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_noise.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_swizzle_swizzle.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/glsl_parser.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_structure_splitting.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_dead_code.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_import_prototypes.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_basic_block.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/s_expression.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_texture_projection.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_constant_variable.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ast_function.cpp
   ${LIB_DIR}/glsl-optimizer/src/glsl/ast_to_hir.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/linker.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_copy_propagation.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_noop_swizzle.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/standalone_scaffolding.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_print_visitor.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_function_can_inline.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_discard.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/loop_controls.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_constant_propagation.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_function_inlining.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/link_functions.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_vec_index_to_swizzle.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ast_type.cpp
   ${LIB_DIR}/glsl-optimizer/src/glsl/builtin_function.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_function.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_mat_op_to_vec.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_print_glsl_visitor.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/glsl_optimizer.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_vec_index_to_cond_assign.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_copy_propagation_elements.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_unused_structs.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_constant_folding.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/builtin_stubs.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/builtin_variables.cpp
   ${LIB_DIR}/glsl-optimizer/src/glsl/glsl_lexer.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_clone.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_variable_index_to_cond_assign.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_hierarchical_visitor.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_algebraic.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_expression_flattening.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_constant_expression.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/glsl_optimizer.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/glsl_parser.cpp
   ${LIB_DIR}/glsl-optimizer/src/glsl/glsl_parser_extras.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_discard_simplification.cpp
-  ${LIB_DIR}/glsl-optimizer/src/glsl/glcpp/glcpp-parse.c
-  ${LIB_DIR}/glsl-optimizer/src/glsl/glcpp/glcpp-lex.c
-  ${LIB_DIR}/glsl-optimizer/src/glsl/glcpp/pp.c
-  ${LIB_DIR}/glsl-optimizer/src/glsl/glcpp/glcpp.c
+  ${LIB_DIR}/glsl-optimizer/src/glsl/glsl_symbol_table.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/glsl_types.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/hir_field_selection.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_basic_block.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_builder.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_clone.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_constant_expression.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_expression_flattening.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_function_can_inline.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_function.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_function_detect_recursion.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_hierarchical_visitor.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_hv_accept.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_import_prototypes.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_print_glsl_visitor.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_print_visitor.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_reader.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_rvalue_visitor.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_set_program_inouts.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_unused_structs.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_validate.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/ir_variable_refcount.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/linker.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/link_functions.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/link_uniform_initializers.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/link_uniforms.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/loop_analysis.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/loop_controls.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/loop_unroll.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_clip_distance.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_discard.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_discard_flow.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_if_to_cond_assign.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_instructions.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_jumps.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_mat_op_to_vec.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_noise.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_output_reads.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_ubo_reference.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_variable_index_to_cond_assign.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_vec_index_to_cond_assign.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_vec_index_to_swizzle.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/lower_vector.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/main.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_algebraic.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_array_splitting.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_constant_folding.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_constant_propagation.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_constant_variable.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_copy_propagation.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_copy_propagation_elements.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_dead_code.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_dead_code_local.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_dead_functions.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_function_inlining.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_if_simplification.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_noop_swizzle.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_redundant_jumps.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_structure_splitting.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_swizzle_swizzle.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/opt_tree_grafting.cpp
   ${LIB_DIR}/glsl-optimizer/src/glsl/ralloc.c
+  ${LIB_DIR}/glsl-optimizer/src/glsl/s_expression.cpp
+  ${LIB_DIR}/glsl-optimizer/src/glsl/standalone_scaffolding.cpp
   ${LIB_DIR}/glsl-optimizer/src/glsl/strtod.c
 )
 
@@ -1093,7 +1107,7 @@ function( GAMELIB )
   # ParseArguments setup
   set( oneValueArgs LIB_NAME OUTPUT_NAME OUTPUT_DIR )
   set( multiValueArgs COMPILE_DEF LIB_FILES QVM_FILES QVM_ASM )
-  cmake_parse_arguments(GAMELIB "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
+  cmake_parse_arguments( GAMELIB "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN} )
 
   if( GAME_LIB )
     # Xcode places the game libraries in the incorrect location. This should fix it
@@ -1185,9 +1199,6 @@ function( GAMELIB )
       -D__inline=
       -DQ3_VM
     )
-    if( QVM_DEBUG )
-      set( QVM_CPP_OPTIONS ${QVM_CPP_OPTIONS} -D_DEBUG )
-    endif()
     foreach( DEF ${GAMELIB_COMPILE_DEF} )
       set( QVM_CPP_OPTIONS ${QVM_CPP_OPTIONS} -D${DEF} )
     endforeach()
@@ -1196,7 +1207,7 @@ function( GAMELIB )
     set( GAMELIB_QVM_FILES ${GAMELIB_QVM_FILES} ${MOUNT_DIR}/engine/qcommon/q_static.c )
     foreach( QVM_FILE ${GAMELIB_QVM_FILES} )
       get_filename_component( QVM_FILENAME ${QVM_FILE} NAME_WE )
-      get_filename_component( QVM_FILEDIR  ${QVM_FILE} PATH )
+      get_filename_component( QVM_FILEDIR ${QVM_FILE} PATH )
       set( QVM_COMPONENT ${QVM_DIR}/${QVM_FILENAME} )
       set( QVM_OBJECTS ${QVM_OBJECTS} ${QVM_COMPONENT}.asm )
 
@@ -1207,14 +1218,14 @@ function( GAMELIB )
         WORKING_DIRECTORY ${QVM_DIR}
       )
     endforeach()
-    
+
     # Ensure qvms end up in the correct folder for VS or Xcode projects
     if( XCODE_VERSION OR MSVC )
       set( QVM_OUTPUT ${CMAKE_BINARY_DIR}/$<CONFIGURATION>/${GAMELIB_OUTPUT_DIR}/vm/${GAMELIB_OUTPUT_NAME}.qvm )
     else()
       set( QVM_OUTPUT ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/vm/${GAMELIB_OUTPUT_NAME}.qvm )
     endif()
-    
+
     add_custom_command(
       OUTPUT ${CMAKE_BINARY_DIR}/${GAMELIB_OUTPUT_DIR}/vm/${GAMELIB_OUTPUT_NAME}.qvm
       COMMAND asm -o ${QVM_OUTPUT} ${QVM_OBJECTS} ${GAMELIB_QVM_ASM}
@@ -1288,7 +1299,7 @@ endif()
 if( BUILD_OLD_RENDERER )
   # Setup target renderer
   add_library( renderer SHARED ${RENDERERLIST} ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c ${SHAREDLIST} ${MOUNT_DIR}/engine/rendererGL/rendererGL.def )
-  set_property( TARGET renderer PROPERTY COMPILE_DEFINITIONS BUILD_FREETYPE USE_REFENTITY_ANIMATIONSYSTEM )
+  set_property( TARGET renderer PROPERTY COMPILE_DEFINITIONS USE_REFENTITY_ANIMATIONSYSTEM )
   set_target_properties( renderer PROPERTIES OUTPUT_NAME "rendererGL${BUILD_ARCH}" )
   
   if( NOT MSVC )
@@ -1296,7 +1307,7 @@ if( BUILD_OLD_RENDERER )
   endif()
 
   # Setup CPack for target renderer
-  install( TARGETS renderer DESTINATION "Unvanquished")
+  install( TARGETS renderer DESTINATION "Unvanquished" )
   get_target_property( LOCATION renderer LOCATION )
   get_filename_component( OUTPUT_NAME ${LOCATION} NAME )
   set( PLUGINS ${PLUGINS} "\${CMAKE_INSTALL_PREFIX}/Unvanquished/${OUTPUT_NAME}" )
@@ -1328,13 +1339,13 @@ endif()
 if( BUILD_NEW_RENDERER )
   # Setup target rendererGL
   add_library( rendererGL SHARED ${SHAREDLIST} ${OPENEXRLIST} ${RENDERERGLLIST} ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c ${MOUNT_DIR}/engine/rendererGL/rendererGL.def )
-  set_property( TARGET rendererGL PROPERTY COMPILE_DEFINITIONS BUILD_FREETYPE FT_FREETYPE USE_XREAL_RENDERER USE_REFENTITY_ANIMATIONSYSTEM )
+  set_property( TARGET rendererGL PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER USE_REFENTITY_ANIMATIONSYSTEM )
   set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "rendererGL3${BUILD_ARCH}" )
 
   target_link_libraries( rendererGL ${OS_LIBRARIES} )
 
   # Setup CPack for target rendererGL
-  install( TARGETS rendererGL DESTINATION "Unvanquished")
+  install( TARGETS rendererGL DESTINATION "Unvanquished" )
   get_target_property( LOCATION rendererGL LOCATION )
   get_filename_component( OUTPUT_NAME ${LOCATION} NAME )
   set( PLUGINS ${PLUGINS} "\${CMAKE_INSTALL_PREFIX}/Unvanquished/${OUTPUT_NAME}" )
@@ -1399,7 +1410,7 @@ if( USE_CURSES )
   if( CURSESW_FOUND )
     set( CURSES_DEFINES USE_CURSES USE_CURSES_W )
     set( CURSES_INCLUDE_DIR ${CURSESW_INCLUDE_DIR} )
-    set( CURSES_LIBRARIES   ${CURSESW_LIBRARIES} )
+    set( CURSES_LIBRARIES ${CURSESW_LIBRARIES} )
   else()
     find_package( Curses REQUIRED )
     set( CURSES_DEFINES USE_CURSES )
@@ -1422,7 +1433,7 @@ if( BUILD_CLIENT )
   set_target_properties( client PROPERTIES OUTPUT_NAME "daemon.${BUILD_ARCH}" PREFIX "" LINKER_LANGUAGE CXX )
 
   # Setup CPack for target client
-  install( TARGETS client DESTINATION "Unvanquished")
+  install( TARGETS client DESTINATION "Unvanquished" )
   get_target_property( LOCATION client LOCATION )
   get_filename_component( OUTPUT_NAME ${LOCATION} NAME )
   set( APPS ${APPS} Unvanquished/${OUTPUT_NAME} )
@@ -1437,7 +1448,7 @@ if( BUILD_CLIENT )
       set_target_properties( client PROPERTIES COMPILE_FLAGS "-mdynamic-no-pic" LINK_FLAGS "-read_only_relocs suppress" )
     endif()
   endif()
-  
+
   # Visual Studio specific settings
   if( MSVC )
     include_directories( ${MOUNT_DIR}/libs/msinttypes )
@@ -1573,7 +1584,7 @@ if( BUILD_SERVER )
   set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded.${BUILD_ARCH}" PREFIX "" LINKER_LANGUAGE CXX )
 
   # Setup CPack for target server
-  install( TARGETS server DESTINATION "Unvanquished")
+  install( TARGETS server DESTINATION "Unvanquished" )
   get_target_property( LOCATION server LOCATION )
   get_filename_component( OUTPUT_NAME ${LOCATION} NAME )
   set( APPS ${APPS} Unvanquished/${OUTPUT_NAME} )
@@ -1582,7 +1593,7 @@ if( BUILD_SERVER )
   if( CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND BUILD_ARCH STREQUAL "i386" )
     set_target_properties( server PROPERTIES COMPILE_FLAGS -mdynamic-no-pic LINK_FLAGS "-read_only_relocs suppress" )
   endif()
-  
+
   # Visual Studio specific settings
   if( MSVC )
     set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS ZLIB_WINAPI )
@@ -1655,7 +1666,7 @@ if( BUILD_DAEMONMAP )
   set_target_properties( daemonMap PROPERTIES OUTPUT_NAME "daemonmap.${BUILD_ARCH}" PREFIX "" )
 
   # Setup CPack for target daemonmap
-  install( TARGETS daemonMap DESTINATION "Unvanquished")
+  install( TARGETS daemonMap DESTINATION "Unvanquished" )
   get_target_property( OUTPUT_NAME daemonMap OUTPUT_NAME )
   set( APPS ${APPS} Unvanquished/${OUTPUT_NAME} )
 
@@ -1663,7 +1674,7 @@ if( BUILD_DAEMONMAP )
   if( MSVC )
     set_property( TARGET daemonMap APPEND PROPERTY COMPILE_DEFINITIONS ZLIB_WINAPI )
   endif()
-  
+
   # This section finds and provides REQUIRED dependencies to DaemonMap target
   find_package( OpenGL REQUIRED )
   find_package( SDL REQUIRED )
@@ -1672,6 +1683,19 @@ if( BUILD_DAEMONMAP )
   find_package( GLib2 REQUIRED )
   target_link_libraries( daemonMap ${OPENGL_LIBRARIES} ${SDL_LIBRARY} ${JPEG_LIBRARIES} ${PNG_LIBRARIES} ${GLIB_LIBRARIES} )
   include_directories( ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${GLIB_INCLUDE_DIRS} )
+endif()
+
+###########################
+#Configure Download Script#
+###########################
+
+if( NOT MSVC )
+  execute_process( COMMAND sed -e "/^#define PRODUCT_VERSION/! d; s/.*\"\\(.*\\)\\.[^.]\"/\\1/" ${CMAKE_SOURCE_DIR}/src/engine/qcommon/q_shared.h
+                   OUTPUT_VARIABLE PRODUCT_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE )
+  add_custom_target( download-pk3.sh ALL
+    sed -e 's/VERSION=/&${PRODUCT_VERSION}/' ${CMAKE_SOURCE_DIR}/download-pk3.sh.in >${CMAKE_BINARY_DIR}/download-pk3.sh\; chmod +x ${CMAKE_BINARY_DIR}/download-pk3.sh
+    DEPENDS ${CMAKE_SOURCE_DIR}/src/engine/qcommon/q_shared.h ${CMAKE_SOURCE_DIR}/download-pk3.sh.in
+  )
 endif()
 
 #####################
@@ -1683,17 +1707,17 @@ endif()
 # SDL framework doesn't work with bundleutilities so detect if it's being used
 # and copy it over manually
 foreach( LIB ${SDL_LIBRARY} )
-  if( ${LIB} MATCHES "SDL.framework")
+  if( ${LIB} MATCHES "SDL.framework" )
     install( DIRECTORY ${LIB} DESTINATION Frameworks )
   endif()
 endforeach()
 
 # Automatically copy over any dependencies
 foreach( APP ${APPS} )
-  install(CODE "
-     include(BundleUtilities)
+  install( CODE "
+     include( BundleUtilities )
      message( \"\${CMAKE_INSTALL_PREFIX}/${APP}\" )
-     fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/${APP}\"   \"${PLUGINS}\"   \"${CMAKE_LIBRARY_PATH}\")
+     fixup_bundle( \"\${CMAKE_INSTALL_PREFIX}/${APP}\" \"${PLUGINS}\" \"${CMAKE_LIBRARY_PATH}\" )
      " )
 endforeach()
 

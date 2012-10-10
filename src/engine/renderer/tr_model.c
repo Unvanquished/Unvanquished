@@ -51,8 +51,6 @@ qboolean        R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const cha
 
 model_t         *loadmodel;
 
-extern cvar_t   *r_buildScript;
-
 /*
 ** R_GetModelByHandle
 */
@@ -2317,6 +2315,9 @@ int R_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagNam
 		VectorCopy( tag->axis[ 1 ], tag->axis[ 2 ] );
 		VectorCopy( tag->axis[ 0 ], tag->axis[ 1 ] );
 		VectorCopy( tmp, tag->axis[ 0 ] );
+		VectorNormalize( tag->axis[ 0 ] );
+		VectorNormalize( tag->axis[ 1 ] );
+		VectorNormalize( tag->axis[ 2 ] );
 		return retval;
 	}
 
@@ -2497,16 +2498,17 @@ void           *R_Hunk_Begin( void )
 		// if not win32, then just allocate it now
 		// it is possible that we have been allocated already, in case we don't do anything
 		membase = malloc( maxsize );
+
+		if ( !membase )
+		{
+			ri.Error( ERR_DROP, "R_Hunk_Begin: reserve failed" );
+		}
+
 		// TTimo NOTE: initially, I was doing the memset even if we had an existing membase
 		// but this breaks some shaders (i.e. /map mp_beach, then go back to the main menu .. some shaders are missing)
 		// I assume the shader missing is because we don't clear memory either on win32
 		// meaning even on win32 we are using memory that is still reserved but was uncommited .. it works out of pure luck
 		memset( membase, 0, maxsize );
-	}
-
-	if ( !membase )
-	{
-		ri.Error( ERR_DROP, "R_Hunk_Begin: reserve failed" );
 	}
 
 	return ( void * ) membase;

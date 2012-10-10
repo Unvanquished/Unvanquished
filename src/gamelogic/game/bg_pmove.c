@@ -266,13 +266,8 @@ static void PM_Friction( void )
 
 	speed = VectorLength( vec );
 
-	if ( speed < 1 )
-	{
-		vel[ 0 ] = 0;
-		vel[ 1 ] = 0; // allow sinking underwater
-		// FIXME: still have z friction underwater?
+	if ( speed < 0.1f )
 		return;
-	}
 
 	drop = 0;
 
@@ -1310,21 +1305,13 @@ static void PM_WaterMove( void )
 	//
 	// user intentions
 	//
-	if ( !scale )
-	{
-		wishvel[ 0 ] = 0;
-		wishvel[ 1 ] = 0;
-		wishvel[ 2 ] = -60; // sink towards bottom
-	}
-	else
-	{
-		for ( i = 0; i < 3; i++ )
-		{
-			wishvel[ i ] = scale * pml.forward[ i ] * pm->cmd.forwardmove + scale * pml.right[ i ] * pm->cmd.rightmove;
-		}
 
-		wishvel[ 2 ] += scale * pm->cmd.upmove;
+	for ( i = 0; i < 3; i++ )
+	{
+		wishvel[ i ] = scale * pml.forward[ i ] * pm->cmd.forwardmove + scale * pml.right[ i ] * pm->cmd.rightmove;
 	}
+
+	wishvel[ 2 ] += scale * pm->cmd.upmove;
 
 	VectorCopy( wishvel, wishdir );
 	wishspeed = VectorNormalize( wishdir );
@@ -1408,8 +1395,6 @@ static void PM_JetPackMove( void )
 /*
 ===================
 PM_FlyMove
-
-Only with the flight powerup
 ===================
 */
 static void PM_FlyMove( void )
@@ -3370,7 +3355,7 @@ static void PM_TorsoAnimation( void )
 		{
 			if ( pm->ps->weapon == WP_BLASTER )
 			{
-				PM_ContinueTorsoAnim( TORSO_STAND2 );
+				PM_ContinueTorsoAnim( TORSO_STAND_BLASTER );
 			}
 			else
 			{
@@ -3663,7 +3648,7 @@ static void PM_Weapon( void )
 		{
 			if ( pm->ps->weapon == WP_BLASTER )
 			{
-				PM_ContinueTorsoAnim( TORSO_STAND2 );
+				PM_ContinueTorsoAnim( TORSO_STAND_BLASTER );
 			}
 			else
 			{
@@ -3725,6 +3710,7 @@ static void PM_Weapon( void )
 		//drop the weapon
 		PM_StartTorsoAnim( TORSO_DROP );
 		PM_StartWeaponAnim( WANIM_RELOAD );
+		BG_AddPredictableEventToPlayerstate( EV_WEAPON_RELOAD, pm->ps->weapon, pm->ps );
 
 		pm->ps->weaponTime += BG_Weapon( pm->ps->weapon )->reloadTime;
 		return;
@@ -3917,7 +3903,12 @@ static void PM_Weapon( void )
 				break;
 
 			case WP_BLASTER:
-				PM_StartTorsoAnim( TORSO_ATTACK2 );
+				PM_StartTorsoAnim( TORSO_ATTACK_BLASTER );
+				PM_StartWeaponAnim( WANIM_ATTACK1 );
+				break;
+
+			case WP_PAIN_SAW:
+				PM_StartTorsoAnim( TORSO_ATTACK_PSAW );
 				PM_StartWeaponAnim( WANIM_ATTACK1 );
 				break;
 
@@ -3966,6 +3957,7 @@ static void PM_Weapon( void )
 			case WP_ALEVEL4:
 				num /= RAND_MAX / 3 + 1;
 				PM_ForceLegsAnim( NSPA_ATTACK1 + num );
+				num = rand() / ( RAND_MAX / 6 + 1 );
 				PM_StartWeaponAnim( WANIM_ATTACK1 + num );
 				break;
 
@@ -4061,7 +4053,9 @@ static void PM_Animate( void )
 		{
 			if ( pm->ps->torsoTimer == 0 )
 			{
-				PM_StartTorsoAnim( TORSO_GESTURE );
+				PM_StartTorsoAnim( TORSO_GESTURE_BLASTER + ( pm->ps->weapon - WP_BLASTER ) > WP_LUCIFER_CANNON ?
+				    TORSO_GESTURE_CKIT :
+				    TORSO_GESTURE_BLASTER + ( pm->ps->weapon - WP_BLASTER ) );
 				pm->ps->torsoTimer = TIMER_GESTURE;
 				pm->ps->tauntTimer = TIMER_GESTURE;
 

@@ -20,9 +20,6 @@ along with Daemon; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-#ifdef USING_CMAKE
-#include "git_version.h"
-#endif
 
 #include "g_local.h"
 
@@ -1795,7 +1792,7 @@ void MoveClientToIntermission( gentity_t *ent )
 	VectorCopy( level.intermission_angle, ent->client->ps.viewangles );
 	ent->client->ps.pm_type = PM_INTERMISSION;
 
-	// clean up powerup info
+	// clean up misc info
 	memset( ent->client->ps.misc, 0, sizeof( ent->client->ps.misc ) );
 
 	ent->client->ps.eFlags = 0;
@@ -1824,7 +1821,7 @@ void FindIntermissionPoint( void )
 	if ( !ent )
 	{
 		// the map creator forgot to put in an intermission point...
-		G_SelectSpawnPoint( vec3_origin, level.intermission_origin, level.intermission_angle );
+		G_SelectRandomFurthestSpawnPoint( vec3_origin, level.intermission_origin, level.intermission_angle );
 	}
 	else
 	{
@@ -2555,12 +2552,12 @@ void G_CheckVote( team_t team )
 
 	if ( pass )
 	{
-		cmd = va( "print_tr %s %d %d", ( team == TEAM_NONE ) ? QQ( N_("Vote passed ($1$ – $2$)\n") ) : QQ( N_("Team vote passed ($1$ – $2$)\n") ),
+		cmd = va( "print_tr %s %d %d", ( team == TEAM_NONE ) ? QQ( N_("Vote passed ($1$ — $2$)\n") ) : QQ( N_("Team vote passed ($1$ — $2$)\n") ),
 		            level.voteYes[ team ], level.voteNo[ team ] );
 	}
 	else
 	{
-		cmd = va( "print_tr %s %d %d %.0f", ( team == TEAM_NONE ) ? QQ( N_("Vote failed ($1$ – $2$; $3$% needed)\n") ) : QQ( N_("Team vote failed ($1$ – $2$; $3$% needed)\n") ),
+		cmd = va( "print_tr %s %d %d %.0f", ( team == TEAM_NONE ) ? QQ( N_("Vote failed ($1$ — $2$; $3$% needed)\n") ) : QQ( N_("Team vote failed ($1$ — $2$; $3$% needed)\n") ),
 		            level.voteYes[ team ], level.voteNo[ team ], votePassThreshold * 100 );
 	}
 

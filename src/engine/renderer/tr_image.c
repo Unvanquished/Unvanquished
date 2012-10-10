@@ -1626,7 +1626,7 @@ static void LoadPCX( const char *filename, byte **pic, byte **palette, int *widt
 
 	if ( raw - ( byte * ) pcx > len )
 	{
-		ri.Printf( PRINT_DEVELOPER, "PCX file %s was malformed", filename );
+		ri.Printf( PRINT_DEVELOPER, "PCX file %s was malformed\n", filename );
 		ri.Free( *pic );
 		*pic = NULL;
 	}
@@ -2403,10 +2403,9 @@ void R_LoadImage( const char *name, byte **pic, int *width, int *height )
 	{
 		LoadWEBP( name, pic, width, height );
 	}
-
+	else
 #endif
-
-	else if ( !Q_stricmp( ext, "jpg" ) )
+	if ( !Q_stricmp( ext, "jpg" ) )
 	{
 		LoadJPG( name, pic, width, height );
 	}
