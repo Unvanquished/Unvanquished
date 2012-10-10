@@ -82,9 +82,6 @@ qboolean CM_AreasConnected( int area1, int area2 );
 
 int      CM_WriteAreaBits( byte *buffer, int area );
 
-// cm_tag.c
-int      CM_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagName, int startIndex );
-
 // cm_marks.c
 int      CM_MarkFragments( int numPoints, const vec3_t *points, const vec3_t projection,
                            int maxPoints, vec3_t pointBuffer, int maxFragments, markFragment_t *fragmentBuffer );

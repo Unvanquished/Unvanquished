@@ -1623,7 +1623,6 @@ int      CG_DrawStrlen( const char *str );
 
 float    *CG_FadeColor( int startMsec, int totalMsec );
 void     CG_TileClear( void );
-void     CG_ColorForHealth( vec4_t hcolor );
 void     CG_DrawRect( float x, float y, float width, float height, float size, const float *color );
 void     CG_DrawSides( float x, float y, float w, float h, float size );
 void     CG_DrawTopBottom( float x, float y, float w, float h, float size );
@@ -1652,7 +1651,6 @@ void CG_OwnerDraw( float x, float y, float w, float h, float text_x,
 float      CG_GetValue( int ownerDraw );
 void       CG_RunMenuScript( char **args );
 void       CG_SetPrintString( int type, const char *p );
-void       CG_GetTeamColor( vec4_t *color );
 const char *CG_GetKillerText( void );
 void       CG_DrawLoadingScreen( void );
 void       CG_UpdateMediaFraction( float newFract );

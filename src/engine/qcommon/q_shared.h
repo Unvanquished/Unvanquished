@@ -1470,34 +1470,6 @@ char *Q_UTF8Unstore( int e );
 
 //=============================================
 
-// 64-bit integers for global rankings interface
-// implemented as a struct for QVM compatibility
-	typedef struct
-	{
-		byte b0;
-		byte b1;
-		byte b2;
-		byte b3;
-		byte b4;
-		byte b5;
-		byte b6;
-		byte b7;
-	} qint64;
-
-	/*
-	short           LittleShort(short l);
-	int             LittleLong(int l);
-	qint64          LittleLong64(qint64 l);
-	float           LittleFloat(float l);
-
-	short           BigShort(short l);
-	int             BigLong(int l);
-	qint64          BigLong64(qint64 l);
-	float           BigFloat(float l);
-
-	void            Swap_Init(void);
-	*/
-
 	char     *QDECL va( const char *format, ... ) PRINTF_LIKE(1);
 
 //=============================================
@@ -1761,9 +1733,6 @@ char *Q_UTF8Unstore( int e );
 #define GENTITYNUM_BITS     10 // JPW NERVE put q3ta default back for testing // don't need to send any more
 
 #define MAX_GENTITIES       ( 1 << GENTITYNUM_BITS )
-
-// tjw: used for limiting weapons that may overflow gentities[]
-#define MIN_SPARE_GENTITIES 64
 
 // entitynums are communicated with GENTITY_BITS, so any reserved
 // values thatare going to be communcated over the net need to
@@ -2036,19 +2005,9 @@ char *Q_UTF8Unstore( int e );
 	  TR_INTERPOLATE, // non-parametric, but interpolate between snapshots
 	  TR_LINEAR,
 	  TR_LINEAR_STOP,
-	  TR_LINEAR_STOP_BACK, //----(SA)  added.  so reverse movement can be different than forward
 	  TR_SINE, // value = base + sin( time / duration ) * delta
 	  TR_GRAVITY,
-	  // Ridah
-	  TR_GRAVITY_LOW,
-	  TR_GRAVITY_FLOAT, // super low grav with no gravity acceleration (floating feathers/fabric/leaves/...)
-	  TR_GRAVITY_PAUSED, //----(SA)  has stopped, but will still do a short trace to see if it should be switched back to TR_GRAVITY
-	  TR_ACCELERATE,
-	  TR_DECELERATE,
 	  TR_BUOYANCY,
-	  // Gordon
-	  TR_SPLINE,
-	  TR_LINEAR_PATH
 	} trType_t;
 
 	typedef struct
@@ -2261,15 +2220,6 @@ typedef struct
 	  FMV_LOOPED,
 	  FMV_ID_WAIT
 	} e_status;
-
-	typedef enum _flag_status
-	{
-	  FLAG_ATBASE = 0,
-	  FLAG_TAKEN, // CTF
-	  FLAG_TAKEN_RED, // One Flag CTF
-	  FLAG_TAKEN_BLUE, // One Flag CTF
-	  FLAG_DROPPED
-	} flagStatus_t;
 
 	typedef enum
 	{

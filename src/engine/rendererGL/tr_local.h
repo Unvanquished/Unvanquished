@@ -4393,10 +4393,6 @@ extern "C" {
 
 	void           R_AddMDVSurfaces( trRefEntity_t *e );
 	void           R_AddMDVInteractions( trRefEntity_t *e, trRefLight_t *light );
-	void           R_AddNullModelSurfaces( trRefEntity_t *e );
-	void           R_AddBeamSurfaces( trRefEntity_t *e );
-	void           R_AddRailSurfaces( trRefEntity_t *e, qboolean isUnderwater );
-	void           R_AddLightningBoltSurfaces( trRefEntity_t *e );
 
 	void           R_AddPolygonSurfaces( void );
 	void           R_AddPolygonBufferSurfaces( void );
@@ -4430,9 +4426,11 @@ extern "C" {
 	    const vec3_t v0, const vec3_t v1, const vec3_t v2,
 	    const vec2_t t0, const vec2_t t1, const vec2_t t2 );
 
+#if 0
 	void R_CalcTangentsForTriangle2( vec3_t tangent, vec3_t binormal,
 	                                 const vec3_t v0, const vec3_t v1, const vec3_t v2,
 	                                 const vec2_t t0, const vec2_t t1, const vec2_t t2 );
+#endif
 
 	void R_CalcTangentSpace( vec3_t tangent, vec3_t binormal, vec3_t normal,
 	                         const vec3_t v0, const vec3_t v1, const vec3_t v2,
@@ -4601,7 +4599,6 @@ extern "C" {
 
 	shader_t  *R_FindShader( const char *name, shaderType_t type, qboolean mipRawImage );
 	shader_t  *R_GetShaderByHandle( qhandle_t hShader );
-	shader_t  *R_GetShaderByState( int index, long *cycleTime );
 	shader_t  *R_FindShaderByName( const char *name );
 	void      R_InitShaders( void );
 	void      R_ShaderList_f( void );
@@ -4948,8 +4945,6 @@ extern "C" {
 	                          int fadeTime );
 	void     RE_ClearDecals( void );
 
-	void     R_AddModelShadow( refEntity_t *ent );
-
 	void     R_TransformDecalProjector( decalProjector_t *in, vec3_t axis[ 3 ], vec3_t origin, decalProjector_t *out );
 	qboolean R_TestDecalBoundingBox( decalProjector_t *dp, vec3_t mins, vec3_t maxs );
 	qboolean R_TestDecalBoundingSphere( decalProjector_t *dp, vec3_t center, float radius2 );
@@ -5028,7 +5023,6 @@ extern "C" {
 	*/
 
 	/*
-	void            R_MakeAnimModel(model_t * model);
 	void            R_AddAnimSurfaces(trRefEntity_t * ent);
 	void            RB_SurfaceAnim(mdsSurface_t * surfType);
 	int             R_GetBoneTag(orientation_t * outTag, mdsHeader_t * mds, int startTagIndex, const refEntity_t * refent,

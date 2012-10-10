@@ -397,8 +397,6 @@ void Sys_UnloadDll( void *dllHandle )
 Sys_GetDLLName
 =================
 */
-extern int cl_connectedToPureServer;
-
 char *Sys_GetDLLName( const char *name )
 {
 #if defined _WIN32

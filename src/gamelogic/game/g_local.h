@@ -45,14 +45,8 @@ typedef struct gclient_s gclient_t;
 #define FL_NO_HUMANS               0x00004000 // spawn point just for bots
 #define FL_FORCE_GESTURE           0x00008000
 
-// localisation
-#if 0
-#	define _(text)              gettext( text )
-#	define N_(one, many, count) ngettext( (one), (many), (count) )
-#else
-#	define N_(text)              text
-#	define P_(one, many, count) ( (count) == 1 ? (one) : (many) )
-#endif
+#define N_( text )             text
+#define P_( one, many, count ) ( ( count ) == 1 ? ( one ) : ( many ) )
 
 // movers are things like doors, plats, buttons, etc
 typedef enum
@@ -809,7 +803,6 @@ int              G_GetMarkedBuildPoints( const vec3_t pos, team_t team );
 qboolean         G_FindPower( gentity_t *self, qboolean searchUnspawned );
 gentity_t        *G_PowerEntityForPoint( const vec3_t origin );
 gentity_t        *G_PowerEntityForEntity( gentity_t *ent );
-gentity_t        *G_RepeaterEntityForPoint( vec3_t origin );
 gentity_t        *G_InPowerZone( gentity_t *self );
 buildLog_t       *G_BuildLogNew( gentity_t *actor, buildFate_t fate );
 void             G_BuildLogSet( buildLog_t *log, gentity_t *ent );

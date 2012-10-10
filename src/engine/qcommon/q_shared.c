@@ -627,37 +627,6 @@ void COM_BitClear( int array[], int bitNum )
 ============================================================================
 */
 
-/*
-============================================================================
-
-                                        BYTE ORDER FUNCTIONS
-
-============================================================================
-*/
-
-/*
-// can't just use function pointers, or dll linkage can
-// mess up when qcommon is included in multiple places
-static short ( *_BigShort )( short l ) = NULL;
-static short ( *_LittleShort )( short l ) = NULL;
-static int ( *_BigLong )( int l ) = NULL;
-static int ( *_LittleLong )( int l ) = NULL;
-static qint64 ( *_BigLong64 )( qint64 l ) = NULL;
-static qint64 ( *_LittleLong64 )( qint64 l ) = NULL;
-static float ( *_BigFloat )( float l ) = NULL;
-static float ( *_LittleFloat )( float l ) = NULL;
-
-short   LittleShort( short l ) {return _LittleShort( l );}
-int     LittleLong( int l ) {return _LittleLong( l );}
-qint64  LittleLong64( qint64 l ) {return _LittleLong64( l );}
-float   LittleFloat( float l ) {return _LittleFloat( l );}
-
-short   BigShort( short l ) {return _BigShort( l );}
-int     BigLong( int l ) {return _BigLong( l );}
-qint64  BigLong64( qint64 l ) {return _BigLong64( l );}
-float   BigFloat( float l ) {return _BigFloat( l );}
-*/
-
 short   ShortSwap( short l )
 {
 	byte b1, b2;
@@ -710,36 +679,6 @@ float FloatNoSwap( float f )
 {
 	return f;
 }
-
-/*
-================
-Swap_Init
-================
-
-void Swap_Init( void ) {
-        byte swaptest[2] = {1,0};
-
-// set the byte swapping variables in a portable manner
-        if ( *(short *)swaptest == 1 ) {
-                _BigShort = ShortSwap;
-                _LittleShort = ShortNoSwap;
-                _BigLong = LongSwap;
-                _LittleLong = LongNoSwap;
-                _BigFloat = FloatSwap;
-                _LittleFloat = FloatNoSwap;
-        } else
-        {
-                _BigShort = ShortNoSwap;
-                _LittleShort = ShortSwap;
-                _BigLong = LongNoSwap;
-                _LittleLong = LongSwap;
-                _BigFloat = FloatNoSwap;
-                _LittleFloat = FloatSwap;
-        }
-
-}
-
-*/
 
 /*
 ============================================================================

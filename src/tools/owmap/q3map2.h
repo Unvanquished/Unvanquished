@@ -1532,7 +1532,6 @@ prototypes
 vec_t           Random(void);
 int             BSPInfo(int count, char **fileNames);
 int             ScaleBSPMain(int argc, char **argv);
-int             ConvertMain(int argc, char **argv);
 
 
 /* path_init.c */

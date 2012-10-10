@@ -1766,10 +1766,6 @@ void  R_SwapBuffers( int );
 void  R_RenderView( viewParms_t *parms );
 
 void  R_AddMD3Surfaces( trRefEntity_t *e );
-void  R_AddNullModelSurfaces( trRefEntity_t *e );
-void  R_AddBeamSurfaces( trRefEntity_t *e );
-void  R_AddRailSurfaces( trRefEntity_t *e, qboolean isUnderwater );
-void  R_AddLightningBoltSurfaces( trRefEntity_t *e );
 
 void  R_TagInfo_f( void );
 
@@ -1917,7 +1913,6 @@ qhandle_t RE_RegisterShaderFromImage( const char *name, int lightmapIndex, image
 
 shader_t  *R_FindShader( const char *name, int lightmapIndex, qboolean mipRawImage );
 shader_t  *R_GetShaderByHandle( qhandle_t hShader );
-shader_t  *R_GetShaderByState( int index, long *cycleTime );
 shader_t  *R_FindShaderByName( const char *name );
 void      R_InitShaders( void );
 void      R_ShaderList_f( void );
@@ -2094,7 +2089,6 @@ SKIES
 
 void R_BuildCloudData( shaderCommands_t *shader );
 void R_InitSkyTexCoords( float cloudLayerHeight );
-void R_DrawSkyBox( shaderCommands_t *shader );
 void RB_DrawSun( void );
 void RB_ClipSkyPolygons( shaderCommands_t *shader );
 
@@ -2192,7 +2186,6 @@ ANIMATED MODELS
 
 void R_InitAnimations( void );
 
-void R_MakeAnimModel( model_t *model );
 void R_AddAnimSurfaces( trRefEntity_t *ent );
 void RB_SurfaceAnim( mdsSurface_t *surfType );
 int  R_GetBoneTag( orientation_t *outTag, mdsHeader_t *mds, int startTagIndex, const refEntity_t *refent,
@@ -2201,7 +2194,6 @@ int  R_GetBoneTag( orientation_t *outTag, mdsHeader_t *mds, int startTagIndex, c
 //
 // MDM / MDX
 //
-void R_MDM_MakeAnimModel( model_t *model );
 void R_MDM_AddAnimSurfaces( trRefEntity_t *ent );
 void RB_MDM_SurfaceAnim( mdmSurface_t *surfType );
 int  R_MDM_GetBoneTag( orientation_t *outTag, mdmHeader_t *mdm, int startTagIndex, const refEntity_t *refent,

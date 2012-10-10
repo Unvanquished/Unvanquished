@@ -157,7 +157,6 @@ struct vm_s
 	//------------------------------------
 
 	char name[ MAX_QPATH ];
-	void *searchPath; // hint for FS_ReadFileDir()
 
 	// for dynamic linked modules
 	void     *dllHandle;
@@ -196,8 +195,6 @@ struct vm_s
 	int               numJumpTableTargets;
 
 	char              fqpath[ MAX_QPATH + 1 ];
-	// for qmv modules
-	void              *qvmModuleProvider;
 
 	byte              sanity[ 16 ];
 	qboolean          versionChecked;
