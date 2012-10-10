@@ -4484,7 +4484,6 @@ static void CG_DrawVote( team_t team )
 static qboolean CG_DrawScoreboard( void )
 {
 	static qboolean firstTime = qtrue;
-	float           fade, *fadeColor;
 
 	if ( menuScoreboard )
 	{
@@ -4497,13 +4496,8 @@ static qboolean CG_DrawScoreboard( void )
 		return qfalse;
 	}
 
-	if ( cg.showScores ||
-	     cg.predictedPlayerState.pm_type == PM_INTERMISSION )
-	{
-		fade = 1.0;
-		fadeColor = colorWhite;
-	}
-	else
+	if ( !cg.showScores &&
+	     cg.predictedPlayerState.pm_type != PM_INTERMISSION )
 	{
 		cg.killerName[ 0 ] = 0;
 		firstTime = qtrue;

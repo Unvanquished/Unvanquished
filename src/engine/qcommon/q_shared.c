@@ -689,7 +689,7 @@ PARSING
 */
 
 // multiple character punctuation tokens
-const char  *punctuation[] =
+static const char *punctuation[] =
 {
 	"+=", "-=", "*=", "/=", "&=", "|=", "++", "--",
 	"&&", "||", "<=", ">=", "==", "!=",
