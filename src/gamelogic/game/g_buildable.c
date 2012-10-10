@@ -157,8 +157,20 @@ static void G_PuntBlocker( gentity_t *self, gentity_t *blocker )
 	nudge[ 1 ] = crandom() * 100.0f;
 	nudge[ 2 ] = 75.0f;
 
-	VectorAdd( blocker->client->ps.velocity, nudge, blocker->client->ps.velocity );
-	trap_SendServerCommand( blocker - g_entities, "cp \"Don't spawn block!\"" );
+	if ( blocker->r.svFlags & SVF_BOT )
+	{
+	        // nudge the bot (okay, we lose the fractional part)
+		blocker->client->pers.cmd.forwardmove = nudge[0];
+		blocker->client->pers.cmd.rightmove = nudge[1];
+		blocker->client->pers.cmd.upmove = nudge[2];
+		// bots don't double-tap, so use as a nudge flag
+		blocker->client->pers.cmd.doubleTap = 1;
+	}
+	else
+	{
+		VectorAdd( blocker->client->ps.velocity, nudge, blocker->client->ps.velocity );
+		trap_SendServerCommand( blocker - g_entities, "cp \"Don't spawn block!\"" );
+        }
 }
 
 #define POWER_REFRESH_TIME 2000
@@ -3529,7 +3541,7 @@ Determine if enough build points can be released for the buildable
 and list the buildables that must be destroyed if this is the case
 ===============
 */
-static itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable,
+itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable,
     vec3_t          origin )
 {
 	int              i;
@@ -4126,8 +4138,8 @@ G_Build
 Spawns a buildable
 ================
 */
-static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
-                           const vec3_t origin, const vec3_t normal, const vec3_t angles, int groundEntNum )
+gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
+                           const vec3_t origin, const vec3_t normal, const vec3_t angles )
 {
 	gentity_t  *built;
 	char       readable[ MAX_STRING_CHARS ];
@@ -4300,14 +4312,7 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 	built->s.angles2[ PITCH ] = MGTURRET_VERTICALCAP;
 	built->physicsBounce = BG_Buildable( buildable )->bounce;
 
-	built->s.groundEntityNum = groundEntNum;
-	if ( groundEntNum == ENTITYNUM_NONE )
-	{
-		built->s.pos.trType = BG_Buildable( buildable )->traj;
-		built->s.pos.trTime = level.time;
-		// gently nudge the buildable onto the surface :)
-		VectorScale( normal, -50.0f, built->s.pos.trDelta );
-	}
+	built->s.groundEntityNum = -1;
 
 	built->s.generic1 = MAX( built->health, 0 );
 
@@ -4389,7 +4394,7 @@ qboolean G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 	switch ( G_CanBuild( ent, buildable, dist, origin, normal, &groundEntNum ) )
 	{
 		case IBE_NONE:
-			G_Build( ent, buildable, origin, normal, ent->s.apos.trBase, groundEntNum );
+			G_Build( ent, buildable, origin, normal, ent->s.apos.trBase );
 			return qtrue;
 
 		case IBE_NOALIENBP:
@@ -4480,7 +4485,7 @@ static gentity_t *G_FinishSpawningBuildable( gentity_t *ent, qboolean force )
 	}
 
 	built = G_Build( ent, buildable, ent->s.pos.trBase,
-	                 normal, ent->s.angles, ENTITYNUM_NONE );
+	                 normal, ent->s.angles );
 
 	built->takedamage = qtrue;
 	built->spawned = qtrue; //map entities are already spawned

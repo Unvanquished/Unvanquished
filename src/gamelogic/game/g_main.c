@@ -187,6 +187,45 @@ vmCvar_t           g_AutoStrip_KillingSpreeStageDif;
 vmCvar_t           g_AutoStrip_kpmAllowed;
 vmCvar_t           g_AutoStrip_kpmTreshold;
 
+// <bot stuff>
+
+// bot buy cvars
+vmCvar_t g_bot_buy;
+vmCvar_t g_bot_rifle;
+vmCvar_t g_bot_painsaw;
+vmCvar_t g_bot_shotgun;
+vmCvar_t g_bot_lasgun;
+vmCvar_t g_bot_mdriver;
+vmCvar_t g_bot_chaingun;
+vmCvar_t g_bot_prifle;
+vmCvar_t g_bot_flamer;
+vmCvar_t g_bot_lcannon;
+
+// bot evolution cvars
+vmCvar_t g_bot_evolve;
+vmCvar_t g_bot_level1;
+vmCvar_t g_bot_level1upg;
+vmCvar_t g_bot_level2;
+vmCvar_t g_bot_level2upg;
+vmCvar_t g_bot_level3;
+vmCvar_t g_bot_level3upg;
+vmCvar_t g_bot_level4;
+
+// misc bot cvars
+vmCvar_t g_bot_attackStruct;
+vmCvar_t g_bot_roam;
+vmCvar_t g_bot_rush;
+vmCvar_t g_bot_repair;
+vmCvar_t g_bot_build;
+vmCvar_t g_bot_retreat;
+vmCvar_t g_bot_infinite_funds;
+vmCvar_t g_bot_numInGroup;
+vmCvar_t g_bot_persistent;
+vmCvar_t g_bot_debug;
+vmCvar_t g_bot_buildLayout;
+
+//</bot stuff>
+
 // copy cvars that can be set in worldspawn so they can be restored later
 static char        cv_gravity[ MAX_CVAR_VALUE_STRING ];
 static char        cv_humanMaxStage[ MAX_CVAR_VALUE_STRING ];
@@ -361,6 +400,42 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_AutoStrip_KillingSpreeStageDif, "g_AutoStrip_KillingSpreeStageDif", "1",                          CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_AutoStrip_kpmTreshold,          "g_AutoStrip_kpmTreshold",          "0",                          CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_AutoStrip_kpmAllowed,           "g_AutoStrip_kpmAllowed",           "0",                          CVAR_ARCHIVE,                                    0, qfalse           },
+
+	// <bot stuff>
+	// bot buy cvars
+	{ &g_bot_buy, "g_bot_buy", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_rifle, "g_bot_rifle", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_painsaw, "g_bot_painsaw", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_shotgun, "g_bot_shotgun", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_lasgun, "g_bot_lasgun", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_mdriver, "g_bot_mdriver", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_chaingun, "g_bot_chain", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_prifle, "g_bot_prifle", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_flamer, "g_bot_flamer", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_lcannon, "g_bot_lcannon", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+
+	// bot evolution cvars
+	{ &g_bot_evolve, "g_bot_evolve", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_level1, "g_bot_level1", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_level1upg, "g_bot_level1upg", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_level2, "g_bot_level2", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_level2upg, "g_bot_level2upg", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_level3, "g_bot_level3", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_level3upg, "g_bot_level3upg", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_level4, "g_bot_level4", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+
+	// misc bot cvars
+	{ &g_bot_attackStruct, "g_bot_attackStruct", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_roam, "g_bot_roam", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_rush, "g_bot_rush", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_repair, "g_bot_repair", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_build, "g_bot_build", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_retreat, "g_bot_retreat", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_infinite_funds, "g_bot_infinite_funds", "0", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_numInGroup, "g_bot_numInGroup", "3", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_debug, "g_bot_debug", "0", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_buildLayout, "g_bot_buildLayout", "botbuild", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse }
+	// </bot stuff>
 };
 
 static int         gameCvarTableSize = ARRAY_LEN( gameCvarTable );
@@ -761,6 +836,12 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	// load up a custom building layout if there is one
 	G_LayoutLoad();
 
+	  // load a bot layout
+	G_BotLoadBuildLayout();
+
+	// load the navmesh for bots
+	G_NavMeshInit( );
+
 	// the map might disable some things
 	BG_InitAllowedGameElements();
 
@@ -877,6 +958,7 @@ void G_ShutdownGame( int restart )
 
 	G_admin_cleanup();
 	G_namelog_cleanup();
+	G_NavMeshCleanup( );
 	G_UnregisterCommands();
 
 	G_ShutdownMapRotations();
@@ -1684,22 +1766,43 @@ void CalculateRanks( void )
 
 		if ( level.clients[ i ].pers.connected != CON_DISCONNECTED )
 		{
+			int team = level.clients[ i ].pers.teamSelection;
+			qboolean bot = qfalse;
+			int j;
+
+			for ( j = 0; j < level.num_entities; ++j)
+			{
+				if ( level.gentities[ i ].client == &level.clients[ i ] )
+				{
+					bot = !!(level.gentities[ i ].r.svFlags & SVF_BOT);
+					break;
+				}
+			}
+
 			level.sortedClients[ level.numConnectedClients ] = i;
 			level.numConnectedClients++;
-			P[ i ] = ( char ) '0' + level.clients[ i ].pers.teamSelection;
+			P[ i ] = ( char ) '0' + team;
 
-			level.numVotingClients[ TEAM_NONE ]++;
+			if ( !bot )
+			{
+				level.numVotingClients[ TEAM_NONE ]++;
+			}
 
 			if ( level.clients[ i ].pers.connected != CON_CONNECTED )
 			{
 				continue;
 			}
 
-			if ( level.clients[ i ].pers.teamSelection != TEAM_NONE )
+			if ( team != TEAM_NONE )
 			{
 				level.numPlayingClients++;
 
-				if ( level.clients[ i ].pers.teamSelection == TEAM_ALIENS )
+				if ( !bot )
+				{
+					level.numVotingClients[ team ]++;
+				}
+
+				if ( team == TEAM_ALIENS )
 				{
 					level.numAlienClients++;
 
@@ -1708,7 +1811,7 @@ void CalculateRanks( void )
 						level.numLiveAlienClients++;
 					}
 				}
-				else if ( level.clients[ i ].pers.teamSelection == TEAM_HUMANS )
+				else if ( team == TEAM_HUMANS )
 				{
 					level.numHumanClients++;
 
@@ -1723,8 +1826,6 @@ void CalculateRanks( void )
 
 	level.numNonSpectatorClients = level.numLiveAlienClients +
 	                               level.numLiveHumanClients;
-	level.numVotingClients[ TEAM_ALIENS ] = level.numAlienClients;
-	level.numVotingClients[ TEAM_HUMANS ] = level.numHumanClients;
 	P[ i ] = '\0';
 	trap_Cvar_Set( "P", P );
 
@@ -2625,6 +2726,14 @@ void CheckCvars( void )
 	{
 		lastSDTimeModCount = g_suddenDeathTime.modificationCount;
 		level.suddenDeathBeginTime = g_suddenDeathTime.integer * 60000;
+	}
+
+	// FIXME: workaround for a segfault (NULL deref)
+	// All should be 0 on dlopen(), but isn't necessarily; unknown reason.
+	if ( lastNumZones && !level.buildPointZones )
+	{
+		G_Printf( S_COLOR_YELLOW "Ouch. buildPointZones is NULL and lastNumZones should be 0 but is %d\n", lastNumZones );
+		lastNumZones = 0;
 	}
 
 	// If the number of zones changes, we need a new array

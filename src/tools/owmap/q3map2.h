@@ -1551,6 +1551,9 @@ int             ConvertBSPToMap(char *bspName);
 /* convert_ase.c */
 int             ConvertBSPToASE(char *bspName);
 
+/* nav.cpp */
+int             NavMain(int argc, char **argv);
+
 /**
 Tr3B: convertType_t is used for .map to .map conversions
 */

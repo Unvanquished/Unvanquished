@@ -647,6 +647,7 @@ set( CGAMEGPP_BASE
 set( CGAMEGPP_SO
   ${CGAMEGPP_BASE}
   ${GPP_DIR}/cgame/cg_api.c
+#   ${GPP_DIR}/cgame/cg_nav.c
   ${GPP_DIR}/cgame/cgame.def
 )
 
@@ -689,6 +690,10 @@ set( GAMEGPP_BASE
 set( GAMEGPP_SO
   ${GAMEGPP_BASE}
   ${GPP_DIR}/game/g_api.c
+  ${GPP_DIR}/game/g_bot.cpp
+  ${GPP_DIR}/game/g_alienbot.cpp
+  ${GPP_DIR}/game/g_humanbot.cpp
+  ${GPP_DIR}/game/g_nav.cpp
   ${GPP_DIR}/game/game.def
 )
 
@@ -793,6 +798,7 @@ set( DAEMONMAPLIST
   ${MOUNT_DIR}/tools/owmap/tree.c
   ${MOUNT_DIR}/tools/owmap/vis.c
   ${MOUNT_DIR}/tools/owmap/visflow.c
+  ${MOUNT_DIR}/tools/owmap/nav.cpp
   ${MOUNT_DIR}/libs/zlib/adler32.c
   ${MOUNT_DIR}/libs/zlib/compress.c
   ${MOUNT_DIR}/libs/zlib/crc32.c
@@ -807,6 +813,34 @@ set( DAEMONMAPLIST
   ${MOUNT_DIR}/libs/zlib/uncompr.c
   ${MOUNT_DIR}/libs/zlib/zutil.c
 )
+
+set( DETOURLIST
+  ${MOUNT_DIR}/libs/detour/DetourAlloc.cpp
+  ${MOUNT_DIR}/libs/detour/DetourCommon.cpp
+#   ${MOUNT_DIR}/libs/detour/DetourLocalBoundary.cpp
+  ${MOUNT_DIR}/libs/detour/DetourNavMeshBuilder.cpp
+  ${MOUNT_DIR}/libs/detour/DetourNavMesh.cpp
+  ${MOUNT_DIR}/libs/detour/DetourNavMeshQuery.cpp
+  ${MOUNT_DIR}/libs/detour/DetourNode.cpp
+#   ${MOUNT_DIR}/libs/detour/DetourObstacleAvoidance.cpp
+  ${MOUNT_DIR}/libs/detour/DetourPathCorridor.cpp
+#   ${MOUNT_DIR}/libs/detour/DetourProximityGrid.cpp
+)
+
+set( RECASTLIST
+  ${MOUNT_DIR}/libs/recast/RecastAlloc.cpp
+  ${MOUNT_DIR}/libs/recast/RecastArea.cpp
+  ${MOUNT_DIR}/libs/recast/RecastContour.cpp
+  ${MOUNT_DIR}/libs/recast/Recast.cpp
+  ${MOUNT_DIR}/libs/recast/RecastFilter.cpp
+  ${MOUNT_DIR}/libs/recast/RecastLayers.cpp
+  ${MOUNT_DIR}/libs/recast/RecastMesh.cpp
+  ${MOUNT_DIR}/libs/recast/RecastMeshDetail.cpp
+  ${MOUNT_DIR}/libs/recast/RecastRasterization.cpp
+  ${MOUNT_DIR}/libs/recast/RecastRegion.cpp
+)
+
+
 
 if( USE_VOIP AND USE_INTERNAL_SPEEX )
     set( SPEEXLIST
@@ -1247,9 +1281,10 @@ GAMELIB( LIB_NAME gppgame
   OUTPUT_NAME qagame
   OUTPUT_DIR main
   COMPILE_DEF GAME GAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM
-  LIB_FILES ${GAMEGPP_SO} ${GPP_DIR}
-  QVM_FILES ${GAMEGPP_BASE}
-  QVM_ASM ${GAMEGPP_QVM}
+  LIB_FILES ${GAMEGPP_SO} ${GPP_DIR} ${RECASTLIST} ${DETOURLIST}
+# temporarily disabled due to build failure with bots code
+#  QVM_FILES ${GAMEGPP_BASE}
+#  QVM_ASM ${GAMEGPP_QVM}
 )
 
 GAMELIB( LIB_NAME gpptrem
@@ -1659,7 +1694,7 @@ endif()
 ###################
 if( BUILD_DAEMONMAP )
   # Setup DaemonMap target
-  add_executable( daemonMap ${DAEMONMAPLIST} ${WIN_RC} )
+  add_executable( daemonMap ${DAEMONMAPLIST} ${DETOURLIST} ${RECASTLIST} ${WIN_RC} )
   include_directories( ${LIB_DIR}/picomodel ${MOUNT_DIR}/tools/common )
   target_link_libraries( daemonMap ${OS_LIBRARIES} )
   set_property( TARGET daemonMap APPEND PROPERTY COMPILE_DEFINITIONS USE_OPENGL )

@@ -80,7 +80,11 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 		"specified"),
 		N_("[^3name|slot#|IP(/mask)^7] (^5duration^7) (^5reason^7)")
 	},
-
+	{
+		"bot",          G_admin_bot,         qfalse, "bot",
+		"Add/Del/Spec bots",
+		"[^5add|del|spec|unspec^7] [^5name|all^7] [^5aliens/humans^7] (^5skill^7)"
+	},
 	{
 		"builder",      G_admin_builder,     qtrue,  "builder",
 		N_("show who built a structure"),
@@ -1119,7 +1123,7 @@ static int admin_search( gentity_t *ent,
 			           next + offset ) );
 		}
 	}
-	
+
 	ADMBP( "\n\"" );
 	ADMBP_end();
 	return next + offset;
@@ -2103,9 +2107,9 @@ qboolean G_admin_readconfig( gentity_t *ent )
 qboolean G_admin_time( gentity_t *ent )
 {
 	qtime_t qt;
-		
+
 	trap_RealTime( &qt );
-	
+
 	ADMP( va( "%s %02i %02i %02i", QQ( N_("^3time: ^7local time is $1$:$2$:$3$\n") ),
 	          qt.tm_hour, qt.tm_min, qt.tm_sec ) );
 	return qtrue;
@@ -2731,7 +2735,7 @@ qboolean G_admin_ban( gentity_t *ent )
 	        "duration: $3$$4t$, reason: $5t$\n") ),
 	        Quote( match->name[ match->nameOffset ] ),
 	        G_quoted_admin_name( ent ),
-	        Quote( time ), duration, 
+	        Quote( time ), duration,
 	        ( *reason ) ? Quote( reason ) : QQ( N_( "banned by admin" ) ) ) );
 
 	admin_log( va( "%d (%s) \"%s" S_COLOR_WHITE "\": \"%s" S_COLOR_WHITE "\"",
@@ -3612,7 +3616,7 @@ qboolean G_admin_listplayers( gentity_t *ent )
 	char            c, t; // color and team letter
 	char            *registeredname;
 	char            lname[ MAX_NAME_LENGTH ];
-	char            muted, denied, stripped;
+	char            bot, muted, denied, stripped;
 	int             colorlen;
 	int             authed = 1;
 	char            namecleaned[ MAX_NAME_LENGTH ];
@@ -3659,6 +3663,7 @@ qboolean G_admin_listplayers( gentity_t *ent )
 			}
 		}
 
+		bot = ( level.gentities[ i ].r.svFlags & SVF_BOT ) ? 'R' : ' ';
 		muted = p->pers.namelog->muted ? 'M' : ' ';
 		denied = p->pers.namelog->denyBuild ? 'B' : ' ';
 		stripped = p->pers.namelog->strip ? 'S' : ' ';
@@ -3708,7 +3713,7 @@ qboolean G_admin_listplayers( gentity_t *ent )
 			}
 		}
 
-		ADMBP( va( "%2i ^%c%c^7 %-2i^2%c^7 %*s^7 ^1%c%c%c^7 %s^7 %s%s%s %s\n",
+		ADMBP( va( "%2i ^%c%c^7 %-2i^2%c^7 %*s^7 ^5%c^1%c%c%c^7 %s^7 %s%s%s %s\n",
 		           i,
 		           c,
 		           t,
@@ -3716,6 +3721,7 @@ qboolean G_admin_listplayers( gentity_t *ent )
 		           hint ? '*' : ' ',
 		           admin_level_maxname + colorlen,
 		           lname,
+		           bot,
 		           muted,
 		           denied,
 		           stripped,
@@ -5664,3 +5670,127 @@ qboolean G_admin_showlongstrips( gentity_t *ent )
 	return qtrue;
 }
 
+qboolean G_admin_bot( gentity_t *ent ) {
+	int min_args = 3;
+	char arg1[MAX_TOKEN_CHARS];
+	char name[MAX_TOKEN_CHARS];
+	char team[MAX_TOKEN_CHARS];
+	char skill[MAX_TOKEN_CHARS];
+	char err[MAX_STRING_CHARS];
+	int skill_int;
+	int i;
+	if(trap_Argc() < min_args) {
+		ADMP( "^3bot: ^7usage: bot [^5add|del|spec|unspec^7] [^5name|all^7] [^5aliens/humans^7] (^5skill^7)\n" );
+		return qfalse;
+	}
+	trap_Argv(1, arg1, sizeof(arg1));
+	trap_Argv(2, name, sizeof(name));
+
+	if(!Q_stricmp(arg1, "add")) {
+		min_args++; //now we also need a team name
+		if(!Q_stricmp(name, "all")) {
+			ADMP( "bots can't have that name\n");
+			return qfalse;
+		}
+		if(trap_Argc() < min_args) {
+			ADMP( "^3bot: ^7usage: bot [^5add|del|spec|unspec^7] [^5name|all^7] [^5aliens/humans^7] (^5skill^7)\n" );
+			return qfalse;
+		}
+		trap_Argv(3, team, sizeof(team));
+
+		//skill level checks
+		min_args++;
+		if(trap_Argc() < min_args) {
+			skill_int = 5; //no skill arg
+		} else {
+			trap_Argv(4, skill, sizeof(skill));
+			skill_int = atoi(skill);
+			if(skill_int < 1) {
+				skill_int = 1; //skill arg too small, reset to 1
+			} else if(skill_int > 10) {
+				skill_int = 10; //skill arg too bit, reset to 10
+			}
+		}
+	//choose team
+		if(!Q_stricmp(team, "humans") || !Q_stricmp(team, "h")) {
+			if(!G_BotAdd(name,TEAM_HUMANS,skill_int)) {
+				ADMP("Can't add a bot\n");
+			return qfalse;
+		}
+		} else if(!Q_stricmp(team, "aliens") || !Q_stricmp(team, "a")) {
+			if(!G_BotAdd(name,TEAM_ALIENS,skill_int)) {
+				ADMP("Can't add a bot\n");
+				return qfalse;
+			}
+		} else {
+			ADMP( "Invalid team name\n");
+			ADMP( "^3bot: ^7usage: bot [^5add|del|spec|unspec^7] [^5name|all^7] [^5aliens/humans^7] (^5skill^7)\n" );
+			return qfalse;
+		}
+	} else if(!Q_stricmp(arg1, "del")) {
+		int clientNum = G_ClientNumberFromString(name,err, sizeof(err));
+		if(!Q_stricmp(name, "all")) {
+			for(i=0;i<MAX_CLIENTS;i++) {
+				if(g_entities[i].r.svFlags & SVF_BOT)
+					G_BotDel(i);
+			}
+			return qtrue;
+		}
+
+		if(clientNum == -1) { //something went wrong when finding the client Number
+			ADMP(err);
+			return qfalse;
+		}
+		G_BotDel(clientNum); //delete the bot
+	} else if(!Q_stricmp(arg1, "spec")) {
+		int clientNum = G_ClientNumberFromString(name,err, sizeof(err));
+		if(!Q_stricmp(name, "all")) {
+			for(i=0;i<MAX_CLIENTS;i++) {
+				if(g_entities[i].r.svFlags & SVF_BOT)
+					G_ChangeTeam(&g_entities[i], TEAM_NONE);
+			}
+			return qtrue;
+		}
+
+		if(clientNum == -1) {
+			ADMP(err);
+			return qfalse;
+		}
+		if(g_entities[clientNum].r.svFlags & SVF_BOT) {
+			G_ChangeTeam(&g_entities[clientNum], TEAM_NONE);
+		} else {
+			ADMP("%s is not a bot\n");
+		}
+	} else if(!Q_stricmp(arg1, "unspec")) {
+		int clientNum = G_ClientNumberFromString(name,err, sizeof(err));
+		if(!Q_stricmp(name, "all")) {
+			for(i=0;i<MAX_CLIENTS;i++) {
+				if(g_entities[i].r.svFlags & SVF_BOT && g_entities[i].client->ps.stats[STAT_TEAM] == TEAM_NONE)
+					G_ChangeTeam(&g_entities[i], g_entities[i].botMind->botTeam);
+			}
+			return qtrue;
+		}
+
+		if(clientNum == -1) {
+			ADMP(err);
+			return qfalse;
+		}
+
+		if(!(g_entities[clientNum].r.svFlags & SVF_BOT)) {
+			ADMP("%s is not a bot\n");
+			return qfalse;
+		}
+
+		if(g_entities[clientNum].client->ps.stats[STAT_TEAM] != TEAM_NONE) {
+			ADMP("%s is not on spectators\n");
+			return qfalse;
+		}
+
+		G_ChangeTeam(&g_entities[clientNum], g_entities[clientNum].botMind->botTeam);
+	} else {
+		ADMP("Invalid command\n");
+		ADMP( "^3bot: ^7usage: bot [^5add|del|spec|unspec^7] [^5name|all^7] [^5aliens/humans^7] (^5skill^7)\n" );
+		return qfalse;
+	}
+	return qtrue;
+}

@@ -46,6 +46,7 @@ SV_BotAllocateClient
 int SV_BotAllocateClient( int clientNum )
 {
 	int      i;
+	int      firstSlot = MAX( 1, sv_privateClients->integer );
 	client_t *cl;
 
 	// Arnout: added possibility to request a clientnum
@@ -73,7 +74,8 @@ int SV_BotAllocateClient( int clientNum )
 		for ( i = 0, cl = svs.clients; i < sv_maxclients->integer; i++, cl++ )
 		{
 			// Wolfenstein, never use the first slot, otherwise if a bot connects before the first client on a listen server, game won't start
-			if ( i < 1 )
+			// Also, never use reserved slots since that messes up the reported player count
+			if ( i < firstSlot )
 			{
 				continue;
 			}

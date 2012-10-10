@@ -1254,10 +1254,13 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	gentity_t       *ent;
 	char            reason[ MAX_STRING_CHARS ] = { "" };
 	int             i;
+	qboolean        isBot;
+	g_admin_admin_t *admin;
 
 	ent = &g_entities[ clientNum ];
 	client = &level.clients[ clientNum ];
 
+	isBot = (ent->r.svFlags & SVF_BOT);
 	// ignore if client already connected
 	if ( client->pers.connected != CON_DISCONNECTED )
 	{
@@ -1281,12 +1284,19 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 
 	trap_GetPlayerPubkey( clientNum, pubkey, sizeof( pubkey ) );
 
-	if ( strlen( pubkey ) != RSA_STRING_LENGTH - 1 )
+	if ( strlen( pubkey ) != RSA_STRING_LENGTH - 1 && !isBot )
 	{
 		return "Invalid pubkey key";
 	}
-	
-	trap_GenFingerprint( pubkey, sizeof( pubkey ), client->pers.guid, sizeof( client->pers.guid ) );
+
+	if ( !isBot )
+	{
+		trap_GenFingerprint( pubkey, sizeof( pubkey ), client->pers.guid, sizeof( client->pers.guid ) );
+	}
+	else
+	{
+		Q_strncpyz( client->pers.guid, "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", sizeof( client->pers.guid ) );
+	}
 
 	client->pers.admin = G_admin_admin( client->pers.guid );
 	client->pers.pubkey_authenticated = 0;
@@ -1297,7 +1307,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	}
 
 	// check for admin ban
-	if ( G_admin_ban_check( ent, reason, sizeof( reason ) ) )
+	if ( G_admin_ban_check( ent, reason, sizeof( reason ) ) && !isBot )
 	{
 		return va( "%s", reason ); // reason is local
 	}
@@ -1306,13 +1316,13 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	value = Info_ValueForKey( userinfo, "password" );
 
 	if ( g_password.string[ 0 ] && Q_stricmp( g_password.string, "none" ) &&
-	     strcmp( g_password.string, value ) != 0 )
+	     strcmp( g_password.string, value ) != 0  && !isBot)
 	{
 		return "Invalid password";
 	}
 
 	// if a player reconnects quickly after a disconnect, the client disconnect may never be called, thus flag can get lost in the ether
-	if ( ent->inuse )
+	if ( ent->inuse && !isBot)
 	{
 		G_LogPrintf( "Forcing disconnect on active client: %i\n", (int)( ent - g_entities ) );
 		// so lets just fix up anything that should happen on a disconnect
@@ -1325,19 +1335,19 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 		{
 			continue;
 		}
-		
-		if ( !Q_stricmp( client->pers.guid, level.clients[ i ].pers.guid ) )
+
+		if ( !( g_entities[i].r.svFlags & SVF_BOT ) && !Q_stricmp( client->pers.guid, level.clients[ i ].pers.guid ) && !isBot )
 		{
 			if ( !G_ClientIsLagging( level.clients + i ) )
 			{
 				trap_SendServerCommand( i, "cp \"Your GUID is not secure\"" );
 				return "Duplicate GUID";
 			}
-			
+
 			trap_DropClient( i, "Ghost" );
 		}
 	}
-	
+
 	client->pers.connected = CON_CONNECTING;
 
 	// read or initialize the session data
@@ -1358,7 +1368,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	}
 
 	G_LogPrintf( "ClientConnect: %i [%s] (%s) \"%s^7\" \"%c%s%c^7\"\n",
-	             clientNum, client->pers.ip.str, client->pers.guid,
+	             clientNum, client->pers.ip.str[0] ? client->pers.ip.str : "127.0.0.1", client->pers.guid,
 	             client->pers.netname,
 	             DECOLOR_OFF, client->pers.netname, DECOLOR_ON );
 
