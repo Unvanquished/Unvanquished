@@ -1991,6 +1991,7 @@ void CG_DrawItemSelect( rectDef_t *rect, vec4_t color )
 	qboolean      vertical;
 	centity_t     *cent;
 	playerState_t *ps;
+	vec4_t        localColor;
 
 	cent = &cg_entities[ cg.snap->ps.clientNum ];
 	ps = &cg.snap->ps;
@@ -2100,6 +2101,8 @@ void CG_DrawItemSelect( rectDef_t *rect, vec4_t color )
 		length = width / ( height * cgDC.aspectScale );
 	}
 
+	localColor[ 3 ] = 0.5f;
+
 	// render icon ring
 	for ( i = 0; i < length; i++ )
 	{
@@ -2119,20 +2122,23 @@ void CG_DrawItemSelect( rectDef_t *rect, vec4_t color )
 			switch ( colinfo[ item ] )
 			{
 				case 0:
-					color = colorCyan;
+					VectorCopy( colorCyan, localColor );
 					break;
 
 				case 1:
-					color = colorRed;
+					VectorCopy( colorRed, localColor );
 					break;
 
 				case 2:
-					color = colorMdGrey;
+					VectorCopy( colorMdGrey, localColor );
+					break;
+
+				default:
+					VectorCopy( color, localColor );
 					break;
 			}
 
-			color[ 3 ] = 0.5;
-			trap_R_SetColor( color );
+			trap_R_SetColor( localColor );
 
 			if ( items[ item ] < 32 )
 			{
