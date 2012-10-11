@@ -1612,6 +1612,7 @@ extern  vmCvar_t            cg_sprintToggle;
 extern  vmCvar_t            cg_unlagged;
 
 extern  vmCvar_t            cg_cmdGrenadeThrown;
+extern  vmCvar_t            cg_cmdNeedHealth;
 
 extern  vmCvar_t            cg_debugVoices;
 

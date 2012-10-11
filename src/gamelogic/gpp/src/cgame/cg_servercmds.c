@@ -1498,6 +1498,10 @@ static void CG_VCommand( void )
 	{
 		trap_SendClientCommand( cg_cmdGrenadeThrown.string );
 	}
+	else if ( !Q_stricmp( cmd, "needhealth" ) )
+	{
+		trap_SendClientCommand( cg_cmdNeedHealth.string );
+	}
 
 	recurse = 0;
 }
