@@ -48,8 +48,6 @@ void UI_RegisterCvars( void );
 void UI_UpdateCvars( void );
 void UI_DrawConnectScreen( qboolean overlay );
 
-extern vmCvar_t ui_chatPromptColours;
-
 // new ui stuff
 #define MAX_MAPS                128
 #define MAX_ADDRESSLENGTH       64

@@ -164,7 +164,6 @@ const char *const chatMenus[CHAT_TYPE_LAST] = { "say_command", "say", "say_team"
 static void UI_MessageMode_f( void )
 {
 	char *arg = UI_Argv( 0 );
-	int             chatColour;
 	int             team;
 	uiClientState_t cs;
 	char            info[ MAX_INFO_STRING ];
@@ -182,36 +181,30 @@ static void UI_MessageMode_f( void )
 		case '\0':
 			// Global
 			uiInfo.chatType = CHAT_TYPE_ALL;
-			chatColour = ui_chatPromptColours.integer ? SAY_ALL : SAY_DEFAULT;
 			break;
 
 		case '2':
 			// Team
 			uiInfo.chatType = CHAT_TYPE_TEAM;
-			chatColour = ui_chatPromptColours.integer ? SAY_TEAM : SAY_DEFAULT;
 			break;
 
 		case '3':
 			// Administrators
 			uiInfo.chatType = CHAT_TYPE_ADMIN;
-			chatColour = ui_chatPromptColours.integer ? SAY_ADMINS : SAY_DEFAULT;
 			break;
 
 		case '4':
 			// IRC
 			uiInfo.chatType = CHAT_TYPE_IRC;
-			chatColour = ui_chatPromptColours.integer ? SAY_RAW : SAY_DEFAULT;
 			break;
 
 		case 'c':
 		case 'C':
 			// Command
 			uiInfo.chatType = CHAT_TYPE_COMMAND;
-			chatColour = SAY_DEFAULT;
 			break;
 	}
 
-	memcpy( g_color_table + 11, g_color_table + UI_GetChatColour( chatColour, team ), sizeof( g_color_table[ 0 ] ) );
 	trap_Key_SetCatcher( KEYCATCH_UI );
 	for ( i = 0; i < CHAT_TYPE_LAST; ++i )
 	{

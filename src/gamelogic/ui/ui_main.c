@@ -132,7 +132,7 @@ static const cvarTable_t   cvarTable[] =
 	{ &cl_defaultProfile,      "cl_defaultProfile",           "",                          CVAR_ROM                  },
 	{ &ui_profile,             "ui_profile",                  "",                          CVAR_ROM                  },
 	{ &ui_chatCommands,        "ui_chatCommands",             "1",                         CVAR_ARCHIVE              },
-	{ &ui_chatPromptColours,   "ui_chatPromptColors",         "0",                         CVAR_ARCHIVE              },
+	{ &ui_chatPromptColours,   "ui_chatPromptColors",         "0",                         CVAR_ARCHIVE | CVAR_LATCH },
 
 	{ &ui_menuFiles,           "ui_menuFiles",                "ui/menu/menus.txt",         CVAR_ARCHIVE              },
 	{ &ui_ingameFiles,         "ui_ingameFiles",              "ui/menu/ingame/ingame.txt", CVAR_ARCHIVE              },
@@ -1648,6 +1648,23 @@ void UI_LoadMenus( const char *menuFile, qboolean reset )
 
 	trap_Cvar_VariableStringBuffer( "ui_assetScale", assetScale, sizeof( assetScale ) );
 	trap_Parse_AddGlobalDefine( va( "ASSET_SCALE %f", assetScale[ 0 ] ? atof( assetScale ) : 1.0f ) );
+
+	if ( trap_Cvar_VariableValue( "ui_chatPromptColors" ) )
+	{
+		trap_Parse_AddGlobalDefine( "ASSET_COLOR_STRING_SAY_TO_ALL \"^2\"" );
+		trap_Parse_AddGlobalDefine( "ASSET_COLOR_STRING_SAY_TO_TEAM \"^5\"" );
+		trap_Parse_AddGlobalDefine( "ASSET_COLOR_STRING_SAY_TO_ADMINS \"^6\"" );
+		trap_Parse_AddGlobalDefine( "ASSET_COLOR_STRING_SAY_TO_IRC \"^7\"" );
+		trap_Parse_AddGlobalDefine( "ASSET_COLOR_STRING_SAY_COMMAND \"^7\"" );
+	}
+	else
+	{
+		trap_Parse_AddGlobalDefine( "ASSET_COLOR_STRING_SAY_TO_ALL \"\"" );
+		trap_Parse_AddGlobalDefine( "ASSET_COLOR_STRING_SAY_TO_TEAM \"\"" );
+		trap_Parse_AddGlobalDefine( "ASSET_COLOR_STRING_SAY_TO_ADMINS \"\"" );
+		trap_Parse_AddGlobalDefine( "ASSET_COLOR_STRING_SAY_TO_IRC \"\"" );
+		trap_Parse_AddGlobalDefine( "ASSET_COLOR_STRING_SAY_COMMAND \"\"" );
+	}
 
 	while ( 1 )
 	{
