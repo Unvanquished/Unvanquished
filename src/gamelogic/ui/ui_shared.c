@@ -2644,6 +2644,7 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 		     style == ITEM_TEXTSTYLE_SHADOWEDMORE )
 		{
 			int ofs;
+			vec4_t localColor;
 
 			if ( style == ITEM_TEXTSTYLE_SHADOWED )
 			{
@@ -2654,11 +2655,11 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 				ofs = 2;
 			}
 
-			colorBlack[ 3 ] = newColor[ 3 ];
-			DC->setColor( colorBlack );
+			VectorCopy( colorBlack, localColor );
+			localColor[ 3 ] = newColor[ 3 ];
+			DC->setColor( localColor );
 			UI_Text_PaintChar( x + ofs, y + ofs, useScale, glyph, 0.0f );
 			DC->setColor( newColor );
-			colorBlack[ 3 ] = 1.0f;
 		}
 		else if ( style == ITEM_TEXTSTYLE_NEON )
 		{
