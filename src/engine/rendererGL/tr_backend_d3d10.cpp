@@ -606,8 +606,8 @@ extern "C" {
 #else
 		RB_SetGL2D();
 
-		qglVertexAttrib4fARB( ATTR_INDEX_NORMAL, 0, 0, 1, 1 );
-		qglVertexAttrib4fARB( ATTR_INDEX_COLOR, tr.identityLight, tr.identityLight, tr.identityLight, 1 );
+		qglVertexAttrib4f( ATTR_INDEX_NORMAL, 0, 0, 1, 1 );
+		qglVertexAttrib4f( ATTR_INDEX_COLOR, tr.identityLight, tr.identityLight, tr.identityLight, 1 );
 
 		GL_BindProgram( &tr.genericSingleShader );
 
@@ -665,7 +665,7 @@ extern "C" {
 			qglFinish();
 #endif
 			end = ri.Milliseconds();
-			ri.Printf( PRINT_ALL, "qglTexSubImage2D %i, %i: %i msec\n", cols, rows, end - start );
+			ri.Printf( PRINT_DEVELOPER, "qglTexSubImage2D %i, %i: %i msec\n", cols, rows, end - start );
 		}
 
 		tess.numVertexes = 0;
@@ -1031,14 +1031,14 @@ extern "C" {
 
 			/*
 			   qglBegin(GL_QUADS);
-			   qglVertexAttrib4fARB(ATTR_INDEX_TEXCOORD0, 0, 0, 0, 1);
-			   qglVertexAttrib4fARB(ATTR_INDEX_POSITION, x, y, 0, 1);
-			   qglVertexAttrib4fARB(ATTR_INDEX_TEXCOORD0, 1, 0, 0, 1);
-			   qglVertexAttrib4fARB(ATTR_INDEX_POSITION, x + w, y, 0, 1);
-			   qglVertexAttrib4fARB(ATTR_INDEX_TEXCOORD0, 1, 1, 0, 1);
-			   qglVertexAttrib4fARB(ATTR_INDEX_POSITION, x + w, y + h, 0, 1);
-			   qglVertexAttrib4fARB(ATTR_INDEX_TEXCOORD0, 0, 1, 0, 1);
-			   qglVertexAttrib4fARB(ATTR_INDEX_POSITION, x, y + h, 0, 1);
+			   qglVertexAttrib4f(ATTR_INDEX_TEXCOORD0, 0, 0, 0, 1);
+			   qglVertexAttrib4f(ATTR_INDEX_POSITION, x, y, 0, 1);
+			   qglVertexAttrib4f(ATTR_INDEX_TEXCOORD0, 1, 0, 0, 1);
+			   qglVertexAttrib4f(ATTR_INDEX_POSITION, x + w, y, 0, 1);
+			   qglVertexAttrib4f(ATTR_INDEX_TEXCOORD0, 1, 1, 0, 1);
+			   qglVertexAttrib4f(ATTR_INDEX_POSITION, x + w, y + h, 0, 1);
+			   qglVertexAttrib4f(ATTR_INDEX_TEXCOORD0, 0, 1, 0, 1);
+			   qglVertexAttrib4f(ATTR_INDEX_POSITION, x, y + h, 0, 1);
 			   qglEnd();
 			 */
 		}
@@ -1046,7 +1046,7 @@ extern "C" {
 		qglFinish();
 
 		end = ri.Milliseconds();
-		ri.Printf( PRINT_ALL, "%i msec to draw all images\n", end - start );
+		ri.Printf( PRINT_DEVELOPER, "%i msec to draw all images\n", end - start );
 
 		GL_CheckErrors();
 	}

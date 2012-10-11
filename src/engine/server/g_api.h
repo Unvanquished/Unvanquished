@@ -162,7 +162,10 @@ typedef enum gameImport_s
   G_SENDMESSAGE,
   G_MESSAGESTATUS,
   G_RSA_GENMSG, // ( const char *public_key, char *cleartext, char *encrypted )
-  G_QUOTESTRING
+  G_QUOTESTRING,
+  G_GENFINGERPRINT,
+  G_GETPLAYERPUBKEY,
+  G_GETTIMESTRING
 } gameImport_t;
 
 // engine-to-game-module calls

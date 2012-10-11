@@ -306,7 +306,6 @@ float R_ProcessLightmap( byte **pic, int in_padding, int width, int height, byte
 {
 	int   j;
 	float maxIntensity = 0;
-//	double          sumIntensity = 0;
 
 	/*
 	if(r_lightmap->integer > 1)
@@ -352,8 +351,6 @@ float R_ProcessLightmap( byte **pic, int in_padding, int width, int height, byte
 	                        (*pic_out)[j * 4 + 2] = out[2] * 255;
 	                }
 	                (*pic_out)[j * 4 + 3] = 255;
-
-	                sumIntensity += intensity;
 	        }
 	}
 	else
@@ -892,7 +889,7 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 				return;
 			}
 
-			ri.Printf( PRINT_ALL, "...loading %i HDR lightmaps\n", numLightmaps );
+			ri.Printf( PRINT_DEVELOPER, "...loading %i HDR lightmaps\n", numLightmaps );
 
 			if ( r_hdrRendering->integer && r_hdrLightmap->integer && glConfig2.framebufferObjectAvailable &&
 			     glConfig2.framebufferBlitAvailable && glConfig2.textureFloatAvailable && glConfig2.textureHalfFloatAvailable )
@@ -902,7 +899,7 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 
 				for ( i = 0; i < numLightmaps; i++ )
 				{
-					ri.Printf( PRINT_ALL, "...loading external lightmap as RGB 16 bit half HDR '%s/%s'\n", mapName, lightmapFiles[ i ] );
+					ri.Printf( PRINT_DEVELOPER, "...loading external lightmap as RGB 16 bit half HDR '%s/%s'\n", mapName, lightmapFiles[ i ] );
 
 					width = height = 0;
 					//LoadRGBEToFloats(va("%s/%s", mapName, lightmapFiles[i]), &hdrImage, &width, &height, qtrue, qfalse, qtrue);
@@ -930,11 +927,11 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 
 					GL_Bind( image );
 
-					image->internalFormat = GL_RGBA16F_ARB;
+					image->internalFormat = GL_RGBA16F;
 					image->uploadWidth = width;
 					image->uploadHeight = height;
 
-					glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F_ARB, width, height, 0, GL_RGB, GL_HALF_FLOAT_ARB, hdrImage );
+					glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_HALF_FLOAT, hdrImage );
 
 					if ( glConfig2.generateMipmapAvailable )
 					{
@@ -976,7 +973,7 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 
 				for ( i = 0; i < numLightmaps; i++ )
 				{
-					ri.Printf( PRINT_ALL, "...loading external lightmap as RGB8 LDR '%s/%s'\n", mapName, lightmapFiles[ i ] );
+					ri.Printf( PRINT_DEVELOPER, "...loading external lightmap as RGB8 LDR '%s/%s'\n", mapName, lightmapFiles[ i ] );
 
 					width = height = 0;
 					LoadRGBEToBytes( va( "%s/%s", mapName, lightmapFiles[ i ] ), &ldrImage, &width, &height );
@@ -1008,11 +1005,11 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 
 				qsort( lightmapFiles, numLightmaps, sizeof( char * ), LightmapNameCompare );
 
-				ri.Printf( PRINT_ALL, "...loading %i deluxemaps\n", numLightmaps );
+				ri.Printf( PRINT_DEVELOPER, "...loading %i deluxemaps\n", numLightmaps );
 
 				for ( i = 0; i < numLightmaps; i++ )
 				{
-					ri.Printf( PRINT_ALL, "...loading external lightmap '%s/%s'\n", mapName, lightmapFiles[ i ] );
+					ri.Printf( PRINT_DEVELOPER, "...loading external lightmap '%s/%s'\n", mapName, lightmapFiles[ i ] );
 
 					image = R_FindImageFile( va( "%s/%s", mapName, lightmapFiles[ i ] ), IF_NORMALMAP | IF_NOCOMPRESSION, FT_DEFAULT, WT_CLAMP, NULL );
 					Com_AddToGrowList( &tr.deluxemaps, image );
@@ -1036,14 +1033,14 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 
 			qsort( lightmapFiles, numLightmaps, sizeof( char * ), LightmapNameCompare );
 
-			ri.Printf( PRINT_ALL, "...loading %i lightmaps\n", numLightmaps );
+			ri.Printf( PRINT_DEVELOPER, "...loading %i lightmaps\n", numLightmaps );
 
 			// we are about to upload textures
 			R_SyncRenderThread();
 
 			for ( i = 0; i < numLightmaps; i++ )
 			{
-				ri.Printf( PRINT_ALL, "...loading external lightmap '%s/%s'\n", mapName, lightmapFiles[ i ] );
+				ri.Printf( PRINT_DEVELOPER, "...loading external lightmap '%s/%s'\n", mapName, lightmapFiles[ i ] );
 
 				if ( tr.worldDeluxeMapping )
 				{
@@ -1080,7 +1077,7 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 		// create all the lightmaps
 		tr.numLightmaps = len / ( LIGHTMAP_SIZE * LIGHTMAP_SIZE * 3 );
 
-		ri.Printf( PRINT_ALL, "...loading %i lightmaps\n", tr.numLightmaps );
+		ri.Printf( PRINT_DEVELOPER, "...loading %i lightmaps\n", tr.numLightmaps );
 
 		for ( i = 0; i < tr.numLightmaps; i++ )
 		{
@@ -1162,7 +1159,7 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 		if ( numLightmaps == 1 )
 		{
 			//FIXME: HACK: maps with only one lightmap turn up fullbright for some reason.
-			//this avoids this, but isn't the correct solution.
+			//this hack avoids that scenario, but isn't the correct solution.
 			numLightmaps++;
 		}
 		else if ( numLightmaps >= MAX_LIGHTMAPS )
@@ -1290,7 +1287,7 @@ static void R_LoadVisibility( lump_t *l )
 	int  len;
 	byte *buf;
 
-	ri.Printf( PRINT_ALL, "...loading visibility\n" );
+	ri.Printf( PRINT_DEVELOPER, "...loading visibility\n" );
 
 	len = ( s_worldData.numClusters + 63 ) & ~63;
 	s_worldData.novis = ri.Hunk_Alloc( len, h_low );
@@ -1538,9 +1535,6 @@ static void ParseFace( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf, in
 			}
 		}
 	}
-
-	R_CalcSurfaceTriangleNeighbors( numTriangles, cv->triangles );
-	R_CalcSurfaceTrianglePlanes( numTriangles, cv->triangles, cv->verts );
 
 	// take the plane information from the lightmap vector
 	for ( i = 0; i < 3; i++ )
@@ -1906,9 +1900,6 @@ static void ParseTriSurf( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf,
 		AddPointToBounds( cv->verts[ tri->indexes[ 1 ] ].xyz, cv->bounds[ 0 ], cv->bounds[ 1 ] );
 		AddPointToBounds( cv->verts[ tri->indexes[ 2 ] ].xyz, cv->bounds[ 0 ], cv->bounds[ 1 ] );
 	}
-
-	R_CalcSurfaceTriangleNeighbors( numTriangles, cv->triangles );
-	R_CalcSurfaceTrianglePlanes( numTriangles, cv->triangles, cv->verts );
 
 	// Tr3B - calc tangent spaces
 #if 0
@@ -3286,7 +3277,7 @@ void R_StitchAllPatches( void )
 	int           i, stitched, numstitches;
 	srfGridMesh_t *grid1;
 
-	ri.Printf( PRINT_ALL, "...stitching LoD cracks\n" );
+	ri.Printf( PRINT_DEVELOPER, "...stitching LoD cracks\n" );
 
 	numstitches = 0;
 
@@ -3320,7 +3311,7 @@ void R_StitchAllPatches( void )
 	}
 	while ( stitched );
 
-	ri.Printf( PRINT_ALL, "stitched %d LoD cracks\n", numstitches );
+	ri.Printf( PRINT_DEVELOPER, "stitched %d LoD cracks\n", numstitches );
 }
 
 /*
@@ -3417,7 +3408,9 @@ static void CopyVert( const srfVert_t *in, srfVert_t *out )
 		out->tangent[ j ] = in->tangent[ j ];
 		out->binormal[ j ] = in->binormal[ j ];
 		out->normal[ j ] = in->normal[ j ];
+#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
 		out->lightDirection[ j ] = in->lightDirection[ j ];
+#endif
 	}
 
 	for ( j = 0; j < 2; j++ )
@@ -3428,7 +3421,9 @@ static void CopyVert( const srfVert_t *in, srfVert_t *out )
 
 	for ( j = 0; j < 4; j++ )
 	{
+#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
 		out->paintColor[ j ] = in->paintColor[ j ];
+#endif
 		out->lightColor[ j ] = in->lightColor[ j ];
 	}
 
@@ -4041,7 +4036,7 @@ static void R_LoadAreaPortals(const char *bspName)
         token = COM_ParseExt2(&buf_p, qtrue);
         numAreaPortals = atoi(token);
 
-        ri.Printf(PRINT_ALL, "...loading %i area portals\n", numAreaPortals);
+        ri.Printf(PRINT_DEVELOPER, "...loading %i area portals\n", numAreaPortals);
 
         s_worldData.numAreaPortals = numAreaPortals;
         s_worldData.areaPortals = ri.Hunk_Alloc(numAreaPortals * sizeof(*s_worldData.areaPortals), h_low);
@@ -4098,7 +4093,7 @@ R_CreateAreas
 */
 
 /*
-static void R_CreateAreas()
+static void R_CreateAreas( void )
 {
         int             i, j;
         int             numAreas, maxArea;
@@ -4202,7 +4197,7 @@ R_CreateVBOWorldSurfaces
 */
 
 /*
-static void R_CreateVBOWorldSurfaces()
+static void R_CreateVBOWorldSurfaces( void )
 {
         int             i, j, k, l, a;
 
@@ -4544,12 +4539,14 @@ static void R_CreateVBOWorldSurfaces()
 R_CreateClusters
 =================
 */
-static void R_CreateClusters()
+static void R_CreateClusters( void )
 {
 	int          i, j;
 	bspSurface_t *surface;
 	bspNode_t    *node;
 #if defined( USE_BSP_CLUSTERSURFACE_MERGING )
+	bspNode_t    *parent;
+	bspSurface_t **mark;
 	int          numClusters;
 	bspCluster_t *cluster;
 	growList_t   clusterSurfaces;
@@ -4945,7 +4942,7 @@ void SmoothNormals( const char *name, srfVert_t *verts, int numTotalVerts )
 R_CreateWorldVBO
 ===============
 */
-static void R_CreateWorldVBO()
+static void R_CreateWorldVBO( void )
 {
 	int       i, j, k;
 
@@ -5020,7 +5017,7 @@ static void R_CreateWorldVBO()
 		return;
 	}
 
-	ri.Printf( PRINT_ALL, "...calculating world VBO ( %i verts %i tris )\n", numVerts, numTriangles );
+	ri.Printf( PRINT_DEVELOPER, "...calculating world VBO ( %i verts %i tris )\n", numVerts, numTriangles );
 
 	// create arrays
 
@@ -5198,7 +5195,7 @@ static void R_CreateWorldVBO()
 	s_worldData.ibo = R_CreateIBO2( va( "staticBspModel0_IBO %i", 0 ), numTriangles, triangles, VBO_USAGE_STATIC );
 
 	endTime = ri.Milliseconds();
-	ri.Printf( PRINT_ALL, "world VBO calculation time = %5.2f seconds\n", ( endTime - startTime ) / 1000.0 );
+	ri.Printf( PRINT_DEVELOPER, "world VBO calculation time = %5.2f seconds\n", ( endTime - startTime ) / 1000.0 );
 
 	// point triangle surfaces to world VBO
 	for ( k = 0, surface = &s_worldData.surfaces[ 0 ]; k < s_worldData.numWorldSurfaces; k++, surface++ )
@@ -5284,7 +5281,7 @@ static void R_CreateWorldVBO()
 R_CreateSubModelVBOs
 ===============
 */
-static void R_CreateSubModelVBOs()
+static void R_CreateSubModelVBOs( void )
 {
 	int           i, j, k, l, m;
 
@@ -5671,7 +5668,7 @@ static void R_CreateSubModelVBOs()
 
 		Com_DestroyGrowList( &vboSurfaces );
 
-		ri.Printf( PRINT_ALL, "%i VBO surfaces created for BSP submodel %i\n", model->numVBOSurfaces, m );
+		ri.Printf( PRINT_DEVELOPER, "%i VBO surfaces created for BSP submodel %i\n", model->numVBOSurfaces, m );
 	}
 }
 
@@ -5690,7 +5687,7 @@ static void R_LoadSurfaces( lump_t *surfs, lump_t *verts, lump_t *indexLump )
 	int          numFaces, numMeshes, numTriSurfs, numFlares, numFoliages;
 	int          i;
 
-	ri.Printf( PRINT_ALL, "...loading surfaces\n" );
+	ri.Printf( PRINT_DEVELOPER, "...loading surfaces\n" );
 
 	numFaces = 0;
 	numMeshes = 0;
@@ -5761,7 +5758,7 @@ static void R_LoadSurfaces( lump_t *surfs, lump_t *verts, lump_t *indexLump )
 		}
 	}
 
-	ri.Printf( PRINT_ALL, "...loaded %d faces, %i meshes, %i trisurfs, %i flares %i foliages\n", numFaces, numMeshes, numTriSurfs,
+	ri.Printf( PRINT_DEVELOPER, "...loaded %d faces, %i meshes, %i trisurfs, %i flares %i foliages\n", numFaces, numMeshes, numTriSurfs,
 	           numFlares, numFoliages );
 
 	if ( r_stitchCurves->integer )
@@ -5788,7 +5785,7 @@ static void R_LoadSubmodels( lump_t *l )
 	bspModel_t *out;
 	int        i, j, count;
 
-	ri.Printf( PRINT_ALL, "...loading submodels\n" );
+	ri.Printf( PRINT_DEVELOPER, "...loading submodels\n" );
 
 	in = ( void * )( fileBase + l->fileofs );
 
@@ -5936,7 +5933,7 @@ static void R_LoadNodesAndLeafs( lump_t *nodeLump, lump_t *leafLump )
 	vec3_t        mins, maxs;
 //	vec3_t     offset = {0.01, 0.01, 0.01};
 
-	ri.Printf( PRINT_ALL, "...loading nodes and leaves\n" );
+	ri.Printf( PRINT_DEVELOPER, "...loading nodes and leaves\n" );
 
 	in = ( void * )( fileBase + nodeLump->fileofs );
 
@@ -6035,60 +6032,14 @@ static void R_LoadNodesAndLeafs( lump_t *nodeLump, lump_t *leafLump )
 		InitLink( &out->occlusionQuery2, out );
 		//QueueInit(&node->multiQuery);
 
-		glGenQueriesARB( MAX_VIEWS, out->occlusionQueryObjects );
+		glGenQueries( MAX_VIEWS, out->occlusionQueryObjects );
 
 		tess.multiDrawPrimitives = 0;
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;
 
-#if 0
-		out->shrinkedAABB = qfalse;
-
-		if ( out->contents != CONTENTS_NODE && out->numMarkSurfaces )
-		{
-			// BSP leaves don't have an optimal size so shrink them if possible by their surfaces
-#if 1
-			mins[ 0 ] = Q_min( Q_max( out->mins[ 0 ], out->surfMins[ 0 ] ), out->maxs[ 0 ] );
-			mins[ 1 ] = Q_min( Q_max( out->mins[ 1 ], out->surfMins[ 1 ] ), out->maxs[ 1 ] );
-			mins[ 2 ] = Q_min( Q_max( out->mins[ 2 ], out->surfMins[ 2 ] ), out->maxs[ 2 ] );
-
-			maxs[ 0 ] = Q_max( Q_min( out->maxs[ 0 ], out->surfMaxs[ 0 ] ), out->mins[ 0 ] );
-			maxs[ 1 ] = Q_max( Q_min( out->maxs[ 1 ], out->surfMaxs[ 1 ] ), out->mins[ 1 ] );
-			maxs[ 2 ] = Q_max( Q_min( out->maxs[ 2 ], out->surfMaxs[ 2 ] ), out->mins[ 2 ] );
-#else
-			mins[ 0 ] = Q_max( out->mins[ 0 ], out->surfMins[ 0 ] );
-			mins[ 1 ] = Q_max( out->mins[ 1 ], out->surfMins[ 1 ] );
-			mins[ 2 ] = Q_max( out->mins[ 2 ], out->surfMins[ 2 ] );
-
-			maxs[ 0 ] = Q_min( out->maxs[ 0 ], out->surfMaxs[ 0 ] );
-			maxs[ 1 ] = Q_min( out->maxs[ 1 ], out->surfMaxs[ 1 ] );
-			maxs[ 2 ] = Q_min( out->maxs[ 2 ], out->surfMaxs[ 2 ] );
-#endif
-
-			for ( i = 0; i < 3; i++ )
-			{
-				if ( mins[ i ] > maxs[ i ] )
-				{
-					float tmp = mins[ i ];
-					mins[ i ] = maxs[ i ];
-					maxs[ i ] = tmp;
-				}
-			}
-
-			VectorCopy( out->surfMins, mins );
-			VectorCopy( out->surfMaxs, maxs );
-
-			if ( !VectorCompareEpsilon( out->mins, mins, 1.0 ) || !VectorCompareEpsilon( out->maxs, maxs, 1.0 ) )
-			{
-				out->shrinkedAABB = qtrue;
-			}
-		}
-		else
-#endif
-		{
-			VectorCopy( out->mins, mins );
-			VectorCopy( out->maxs, maxs );
-		}
+		VectorCopy( out->mins, mins );
+		VectorCopy( out->maxs, maxs );
 
 		for ( i = 0; i < 3; i++ )
 		{
@@ -6157,7 +6108,7 @@ static void R_LoadShaders( lump_t *l )
 	int       i, count;
 	dshader_t *in, *out;
 
-	ri.Printf( PRINT_ALL, "...loading shaders\n" );
+	ri.Printf( PRINT_DEVELOPER, "...loading shaders\n" );
 
 	in = ( void * )( fileBase + l->fileofs );
 
@@ -6176,7 +6127,7 @@ static void R_LoadShaders( lump_t *l )
 
 	for ( i = 0; i < count; i++ )
 	{
-		ri.Printf( PRINT_ALL, "shader: '%s'\n", out[ i ].shader );
+		ri.Printf( PRINT_DEVELOPER, "shader: '%s'\n", out[ i ].shader );
 
 		out[ i ].surfaceFlags = LittleLong( out[ i ].surfaceFlags );
 		out[ i ].contentFlags = LittleLong( out[ i ].contentFlags );
@@ -6194,7 +6145,7 @@ static void R_LoadMarksurfaces( lump_t *l )
 	int          *in;
 	bspSurface_t **out;
 
-	ri.Printf( PRINT_ALL, "...loading mark surfaces\n" );
+	ri.Printf( PRINT_DEVELOPER, "...loading mark surfaces\n" );
 
 	in = ( void * )( fileBase + l->fileofs );
 
@@ -6229,7 +6180,7 @@ static void R_LoadPlanes( lump_t *l )
 	int      count;
 	int      bits;
 
-	ri.Printf( PRINT_ALL, "...loading planes\n" );
+	ri.Printf( PRINT_DEVELOPER, "...loading planes\n" );
 
 	in = ( void * )( fileBase + l->fileofs );
 
@@ -6283,7 +6234,7 @@ static void R_LoadFogs( lump_t *l, lump_t *brushesLump, lump_t *sidesLump )
 	float        d;
 	int          firstSide = 0;
 
-	ri.Printf( PRINT_ALL, "...loading fogs\n" );
+	ri.Printf( PRINT_DEVELOPER, "...loading fogs\n" );
 
 	fogs = ( void * )( fileBase + l->fileofs );
 
@@ -6304,7 +6255,7 @@ static void R_LoadFogs( lump_t *l, lump_t *brushesLump, lump_t *sidesLump )
 
 	if ( !count )
 	{
-		ri.Printf( PRINT_ALL, "no fog volumes loaded\n" );
+		ri.Printf( PRINT_DEVELOPER, "no fog volumes loaded\n" );
 		return;
 	}
 
@@ -6418,7 +6369,7 @@ static void R_LoadFogs( lump_t *l, lump_t *brushesLump, lump_t *sidesLump )
 		out++;
 	}
 
-	ri.Printf( PRINT_ALL, "%i fog volumes loaded\n", s_worldData.numFogs );
+	ri.Printf( PRINT_DEVELOPER, "%i fog volumes loaded\n", s_worldData.numFogs );
 }
 
 /*
@@ -6439,7 +6390,7 @@ void R_LoadLightGrid( lump_t *l )
 	int            pos[ 3 ];
 	float          posFloat[ 3 ];
 
-	ri.Printf( PRINT_ALL, "...loading light grid\n" );
+	ri.Printf( PRINT_DEVELOPER, "...loading light grid\n" );
 
 	w = &s_worldData;
 
@@ -6459,9 +6410,9 @@ void R_LoadLightGrid( lump_t *l )
 
 	w->numLightGridPoints = w->lightGridBounds[ 0 ] * w->lightGridBounds[ 1 ] * w->lightGridBounds[ 2 ];
 
-	ri.Printf( PRINT_ALL, "grid size (%i %i %i)\n", ( int ) w->lightGridSize[ 0 ], ( int ) w->lightGridSize[ 1 ],
+	ri.Printf( PRINT_DEVELOPER, "grid size (%i %i %i)\n", ( int ) w->lightGridSize[ 0 ], ( int ) w->lightGridSize[ 1 ],
 	           ( int ) w->lightGridSize[ 2 ] );
-	ri.Printf( PRINT_ALL, "grid bounds (%i %i %i)\n", ( int ) w->lightGridBounds[ 0 ], ( int ) w->lightGridBounds[ 1 ],
+	ri.Printf( PRINT_DEVELOPER, "grid bounds (%i %i %i)\n", ( int ) w->lightGridBounds[ 0 ], ( int ) w->lightGridBounds[ 1 ],
 	           ( int ) w->lightGridBounds[ 2 ] );
 
 	if ( l->filelen != w->numLightGridPoints * sizeof( dgridPoint_t ) )
@@ -6578,7 +6529,7 @@ void R_LoadLightGrid( lump_t *l )
 		}
 	}
 
-	ri.Printf( PRINT_ALL, "%i light grid points created\n", w->numLightGridPoints );
+	ri.Printf( PRINT_DEVELOPER, "%i light grid points created\n", w->numLightGridPoints );
 }
 
 /*
@@ -6601,7 +6552,7 @@ void R_LoadEntities( lump_t *l )
 	int          numParallelLights = 0;
 	trRefLight_t *light;
 
-	ri.Printf( PRINT_ALL, "...loading entities\n" );
+	ri.Printf( PRINT_DEVELOPER, "...loading entities\n" );
 
 	w = &s_worldData;
 	w->lightGridSize[ 0 ] = 64;
@@ -6724,7 +6675,7 @@ void R_LoadEntities( lump_t *l )
 		// check for deluxe mapping support
 		if ( !Q_stricmp( keyname, "deluxeMapping" ) && !Q_stricmp( value, "1" ) )
 		{
-			ri.Printf( PRINT_ALL, "map features directional light mapping\n" );
+			ri.Printf( PRINT_DEVELOPER, "map features directional light mapping\n" );
 			tr.worldDeluxeMapping = qtrue;
 			continue;
 		}
@@ -6742,7 +6693,7 @@ void R_LoadEntities( lump_t *l )
 
 			if ( s )
 			{
-				ri.Printf( PRINT_ALL, "map features directional light mapping\n" );
+				ri.Printf( PRINT_DEVELOPER, "map features directional light mapping\n" );
 				tr.worldDeluxeMapping = qtrue;
 			}
 
@@ -6752,7 +6703,7 @@ void R_LoadEntities( lump_t *l )
 		// check for HDR light mapping support
 		if ( !Q_stricmp( keyname, "hdrRGBE" ) && !Q_stricmp( value, "1" ) )
 		{
-			ri.Printf( PRINT_ALL, "map features HDR light mapping\n" );
+			ri.Printf( PRINT_DEVELOPER, "map features HDR light mapping\n" );
 			tr.worldHDR_RGBE = qtrue;
 			continue;
 		}
@@ -6841,8 +6792,8 @@ void R_LoadEntities( lump_t *l )
 		numEntities++;
 	}
 
-	ri.Printf( PRINT_ALL, "%i total entities counted\n", numEntities );
-	ri.Printf( PRINT_ALL, "%i total lights counted\n", numLights );
+	ri.Printf( PRINT_DEVELOPER, "%i total entities counted\n", numEntities );
+	ri.Printf( PRINT_DEVELOPER, "%i total lights counted\n", numLights );
 
 	s_worldData.numLights = numLights;
 
@@ -7108,11 +7059,11 @@ void R_LoadEntities( lump_t *l )
 		ri.Error( ERR_DROP, "counted %i lights and parsed %i lights", s_worldData.numLights, ( numOmniLights + numProjLights + numParallelLights ) );
 	}
 
-	ri.Printf( PRINT_ALL, "%i total entities parsed\n", numEntities );
-	ri.Printf( PRINT_ALL, "%i total lights parsed\n", numOmniLights + numProjLights );
-	ri.Printf( PRINT_ALL, "%i omni-directional lights parsed\n", numOmniLights );
-	ri.Printf( PRINT_ALL, "%i projective lights parsed\n", numProjLights );
-	ri.Printf( PRINT_ALL, "%i directional lights parsed\n", numParallelLights );
+	ri.Printf( PRINT_DEVELOPER, "%i total entities parsed\n", numEntities );
+	ri.Printf( PRINT_DEVELOPER, "%i total lights parsed\n", numOmniLights + numProjLights );
+	ri.Printf( PRINT_DEVELOPER, "%i omni-directional lights parsed\n", numOmniLights );
+	ri.Printf( PRINT_DEVELOPER, "%i projective lights parsed\n", numProjLights );
+	ri.Printf( PRINT_DEVELOPER, "%i directional lights parsed\n", numParallelLights );
 }
 
 /*
@@ -7419,32 +7370,14 @@ static int R_BuildShadowPlanes(int numTriangles, const srfTriangle_t * triangles
 }
 */
 
-static qboolean R_PrecacheFaceInteraction( srfSurfaceFace_t *cv, shader_t *shader, trRefLight_t *light )
+/*
+================
+R_PrecacheGenericSurfInteraction
+================
+*/
+static qboolean R_PrecacheGenericSurfInteraction( srfGeneric_t *face, trRefLight_t *light )
 {
-	// check if bounds intersect
-	if ( !BoundsIntersect( light->worldBounds[ 0 ], light->worldBounds[ 1 ], cv->bounds[ 0 ], cv->bounds[ 1 ] ) )
-	{
-		return qfalse;
-	}
-
-	return qtrue;
-}
-
-static int R_PrecacheGridInteraction( srfGridMesh_t *cv, shader_t *shader, trRefLight_t *light )
-{
-	// check if bounds intersect
-	if ( !BoundsIntersect( light->worldBounds[ 0 ], light->worldBounds[ 1 ], cv->bounds[ 0 ], cv->bounds[ 1 ] ) )
-	{
-		return qfalse;
-	}
-
-	return qtrue;
-}
-
-static int R_PrecacheTrisurfInteraction( srfTriangles_t *cv, shader_t *shader, trRefLight_t *light )
-{
-	// check if bounds intersect
-	if ( !BoundsIntersect( light->worldBounds[ 0 ], light->worldBounds[ 1 ], cv->bounds[ 0 ], cv->bounds[ 1 ] ) )
+	if ( !BoundsIntersect( face->bounds[ 0 ], face->bounds[ 1 ], light->worldBounds[ 0 ], light->worldBounds[ 1 ] ) )
 	{
 		return qfalse;
 	}
@@ -7474,21 +7407,16 @@ static void R_PrecacheInteractionSurface( bspSurface_t *surf, trRefLight_t *ligh
 		return;
 	}
 
-	if ( *surf->data == SF_FACE )
+	switch ( *surf->data )
 	{
-		intersects = R_PrecacheFaceInteraction( ( srfSurfaceFace_t * ) surf->data, surf->shader, light );
-	}
-	else if ( *surf->data == SF_GRID )
-	{
-		intersects = R_PrecacheGridInteraction( ( srfGridMesh_t * ) surf->data, surf->shader, light );
-	}
-	else if ( *surf->data == SF_TRIANGLES )
-	{
-		intersects = R_PrecacheTrisurfInteraction( ( srfTriangles_t * ) surf->data, surf->shader, light );
-	}
-	else
-	{
-		intersects = qfalse;
+		case SF_FACE:
+		case SF_GRID:
+		case SF_TRIANGLES:
+			intersects = R_PrecacheGenericSurfInteraction( ( srfGeneric_t * ) surf->data, light );
+			break;
+		default:
+			intersects = qfalse;
+			break;
 	}
 
 	if ( intersects )
@@ -7506,19 +7434,52 @@ static void R_RecursivePrecacheInteractionNode( bspNode_t *node, trRefLight_t *l
 {
 	int r;
 
-	// light already hit node
-	if ( node->lightCount == s_lightCount )
+	do
 	{
-		return;
+		// light already hit node
+		if ( node->lightCount == s_lightCount )
+		{
+			return;
+		}
+
+		node->lightCount = s_lightCount;
+
+		if ( node->contents != -1 )
+		{
+			break;
+		}
+
+		// node is just a decision point, so go down both sides
+		// since we don't care about sort orders, just go positive to negative
+		r = BoxOnPlaneSide( light->worldBounds[ 0 ], light->worldBounds[ 1 ], node->plane );
+
+		switch ( r )
+		{
+			case 1:
+				node = node->children[ 0 ];
+				break;
+
+			case 2:
+				node = node->children[ 1 ];
+				break;
+
+			case 3:
+			default:
+				// recurse down the children, front side first
+				R_RecursivePrecacheInteractionNode( node->children[ 0 ], light );
+
+				// tail recurse
+				node = node->children[ 1 ];
+				break;
+		}
 	}
+	while ( 1 );
 
-	node->lightCount = s_lightCount;
-
-	if ( node->contents != -1 )
 	{
 		// leaf node, so add mark surfaces
 		int          c;
 		bspSurface_t *surf, **mark;
+		vec3_t       worldBounds[ 2 ];
 
 		// add the individual surfaces
 		mark = node->markSurfaces;
@@ -7533,91 +7494,20 @@ static void R_RecursivePrecacheInteractionNode( bspNode_t *node, trRefLight_t *l
 			mark++;
 		}
 
-		return;
-	}
-
-	// node is just a decision point, so go down both sides
-	// since we don't care about sort orders, just go positive to negative
-	r = BoxOnPlaneSide( light->worldBounds[ 0 ], light->worldBounds[ 1 ], node->plane );
-
-	switch ( r )
-	{
-		case 1:
-			R_RecursivePrecacheInteractionNode( node->children[ 0 ], light );
-			break;
-
-		case 2:
-			R_RecursivePrecacheInteractionNode( node->children[ 1 ], light );
-			break;
-
-		case 3:
-		default:
-			// recurse down the children, front side first
-			R_RecursivePrecacheInteractionNode( node->children[ 0 ], light );
-			R_RecursivePrecacheInteractionNode( node->children[ 1 ], light );
-			break;
-	}
-}
-
-/*
-================
-R_RecursiveAddInteractionNode
-================
-*/
-static void R_RecursiveAddInteractionNode( bspNode_t *node, trRefLight_t *light )
-{
-	int r;
-
-	// light already hit node
-	if ( node->lightCount == s_lightCount )
-	{
-		return;
-	}
-
-	node->lightCount = s_lightCount;
-
-	if ( node->contents != -1 )
-	{
-		vec3_t worldBounds[ 2 ];
-
 		VectorCopy( node->mins, worldBounds[ 0 ] );
 		VectorCopy( node->maxs, worldBounds[ 1 ] );
 
-		if ( R_CullLightWorldBounds( light, worldBounds ) != CULL_OUT )
+		if ( node->numMarkSurfaces > 0 && R_CullLightWorldBounds( light, worldBounds ) != CULL_OUT )
 		{
 			link_t *l;
 
-			l = ri.Hunk_Alloc( sizeof( *l ), h_low );
+			l = ( link_t *)ri.Hunk_Alloc( sizeof( *l ), h_low );
 			InitLink( l, node );
 
 			InsertLink( l, &light->leafs );
 
 			light->leafs.numElements++;
 		}
-
-		return;
-	}
-
-	// node is just a decision point, so go down both sides
-	// since we don't care about sort orders, just go positive to negative
-	r = BoxOnPlaneSide( light->worldBounds[ 0 ], light->worldBounds[ 1 ], node->plane );
-
-	switch ( r )
-	{
-		case 1:
-			R_RecursiveAddInteractionNode( node->children[ 0 ], light );
-			break;
-
-		case 2:
-			R_RecursiveAddInteractionNode( node->children[ 1 ], light );
-			break;
-
-		case 3:
-		default:
-			// recurse down the children, front side first
-			R_RecursiveAddInteractionNode( node->children[ 0 ], light );
-			R_RecursiveAddInteractionNode( node->children[ 1 ], light );
-			break;
 	}
 }
 
@@ -7850,15 +7740,15 @@ static int UpdateLightTriangles( const srfVert_t *verts, int numTriangles, srfTr
 	{
 #if 1
 		vec3_t pos[ 3 ];
+		vec4_t triPlane;
 		float  d;
 
 		VectorCopy( verts[ tri->indexes[ 0 ] ].xyz, pos[ 0 ] );
 		VectorCopy( verts[ tri->indexes[ 1 ] ].xyz, pos[ 1 ] );
 		VectorCopy( verts[ tri->indexes[ 2 ] ].xyz, pos[ 2 ] );
 
-		if ( PlaneFromPoints( tri->plane, pos[ 0 ], pos[ 1 ], pos[ 2 ] ) )
+		if ( PlaneFromPoints( triPlane, pos[ 0 ], pos[ 1 ], pos[ 2 ] ) )
 		{
-			tri->degenerated = qfalse;
 
 			if ( light->l.rlType == RL_DIRECTIONAL )
 			{
@@ -7871,7 +7761,7 @@ static int UpdateLightTriangles( const srfVert_t *verts, int numTriangles, srfTr
 				VectorCopy( light->direction, lightDirection );
 #endif
 
-				d = DotProduct( tri->plane, lightDirection );
+				d = DotProduct( triPlane, lightDirection );
 
 				if ( surfaceShader->cullType == CT_TWO_SIDED || ( d > 0 && surfaceShader->cullType != CT_BACK_SIDED ) )
 				{
@@ -7885,7 +7775,7 @@ static int UpdateLightTriangles( const srfVert_t *verts, int numTriangles, srfTr
 			else
 			{
 				// check if light origin is behind triangle
-				d = DotProduct( tri->plane, light->origin ) - tri->plane[ 3 ];
+				d = DotProduct( triPlane, light->origin ) - triPlane[ 3 ];
 
 				if ( surfaceShader->cullType == CT_TWO_SIDED || ( d > 0 && surfaceShader->cullType != CT_BACK_SIDED ) )
 				{
@@ -7899,7 +7789,6 @@ static int UpdateLightTriangles( const srfVert_t *verts, int numTriangles, srfTr
 		}
 		else
 		{
-			tri->degenerated = qtrue;
 			tri->facingLight = qtrue; // FIXME ?
 		}
 
@@ -9204,7 +9093,7 @@ static void R_CalcInteractionCubeSideBits( trRefLight_t *light )
 R_PrecacheInteractions
 =============
 */
-void R_PrecacheInteractions()
+void R_PrecacheInteractions( void )
 {
 	int          i;
 	trRefLight_t *light;
@@ -9232,7 +9121,7 @@ void R_PrecacheInteractions()
 	c_vboLightSurfaces = 0;
 	c_vboShadowSurfaces = 0;
 
-	ri.Printf( PRINT_ALL, "...precaching %i lights\n", s_worldData.numLights );
+	ri.Printf( PRINT_DEVELOPER, "...precaching %i lights\n", s_worldData.numLights );
 
 	for ( i = 0; i < s_worldData.numLights; i++ )
 	{
@@ -9281,12 +9170,8 @@ void R_PrecacheInteractions()
 
 		// perform culling and add all the potentially visible surfaces
 		s_lightCount++;
-		R_RecursivePrecacheInteractionNode( s_worldData.nodes, light );
-
-		// count number of leafs that touch this light
-		s_lightCount++;
 		QueueInit( &light->leafs );
-		R_RecursiveAddInteractionNode( s_worldData.nodes, light );
+		R_RecursivePrecacheInteractionNode( s_worldData.nodes, light );
 		//ri.Printf(PRINT_ALL, "light %i touched %i leaves\n", i, QueueSize(&light->leafs));
 
 #if 0
@@ -9320,21 +9205,21 @@ void R_PrecacheInteractions()
 
 	Com_DestroyGrowList( &s_interactions );
 
-	ri.Printf( PRINT_ALL, "%i interactions precached\n", s_worldData.numInteractions );
-	ri.Printf( PRINT_ALL, "%i interactions were hidden in shadows\n", c_redundantInteractions );
+	ri.Printf( PRINT_DEVELOPER, "%i interactions precached\n", s_worldData.numInteractions );
+	ri.Printf( PRINT_DEVELOPER, "%i interactions were hidden in shadows\n", c_redundantInteractions );
 
 	if ( r_shadows->integer >= SHADOWING_ESM16 )
 	{
 		// only interesting for omni-directional shadow mapping
-		ri.Printf( PRINT_ALL, "%i omni pyramid tests\n", tr.pc.c_pyramidTests );
-		ri.Printf( PRINT_ALL, "%i omni pyramid surfaces visible\n", tr.pc.c_pyramid_cull_ent_in );
-		ri.Printf( PRINT_ALL, "%i omni pyramid surfaces clipped\n", tr.pc.c_pyramid_cull_ent_clip );
-		ri.Printf( PRINT_ALL, "%i omni pyramid surfaces culled\n", tr.pc.c_pyramid_cull_ent_out );
+		ri.Printf( PRINT_DEVELOPER, "%i omni pyramid tests\n", tr.pc.c_pyramidTests );
+		ri.Printf( PRINT_DEVELOPER, "%i omni pyramid surfaces visible\n", tr.pc.c_pyramid_cull_ent_in );
+		ri.Printf( PRINT_DEVELOPER, "%i omni pyramid surfaces clipped\n", tr.pc.c_pyramid_cull_ent_clip );
+		ri.Printf( PRINT_DEVELOPER, "%i omni pyramid surfaces culled\n", tr.pc.c_pyramid_cull_ent_out );
 	}
 
 	endTime = ri.Milliseconds();
 
-	ri.Printf( PRINT_ALL, "lights precaching time = %5.2f seconds\n", ( endTime - startTime ) / 1000.0 );
+	ri.Printf( PRINT_DEVELOPER, "lights precaching time = %5.2f seconds\n", ( endTime - startTime ) / 1000.0 );
 }
 
 #define HASHTABLE_SIZE 7919 // 32749 // 2039    /* prime, use % */
@@ -10105,7 +9990,7 @@ void R_BuildCubeMaps( void )
 			return;
 		}
 
-		cubeProbe->cubemap->type = GL_TEXTURE_CUBE_MAP_ARB;
+		cubeProbe->cubemap->type = GL_TEXTURE_CUBE_MAP;
 
 		cubeProbe->cubemap->width = REF_CUBEMAP_SIZE;
 		cubeProbe->cubemap->height = REF_CUBEMAP_SIZE;
@@ -10229,7 +10114,7 @@ void RE_LoadWorldMap( const char *name )
 		ri.Error( ERR_DROP, "ERROR: attempted to redundantly load world map" );
 	}
 
-	ri.Printf( PRINT_ALL, "----- RE_LoadWorldMap( %s ) -----\n", name );
+	ri.Printf( PRINT_DEVELOPER, "----- RE_LoadWorldMap( %s ) -----\n", name );
 
 	// set default sun direction to be used if it isn't
 	// overridden by a shader

@@ -230,12 +230,12 @@ qhandle_t RE_RegisterModel( const char *name )
 			strcat( filename, namebuf );
 		}
 
-		filename[ strlen( filename ) - 1 ] = 'c';  // try MDC first
+		filename[ strlen( filename ) - 1 ] = '3';  // try MD3 first
 		ri.FS_ReadFile( filename, ( void ** ) &buffer );
 
 		if ( !buffer )
 		{
-			filename[ strlen( filename ) - 1 ] = '3';  // try MD3 second
+			filename[ strlen( filename ) - 1 ] = 'c';  // try MDC second
 			ri.FS_ReadFile( filename, ( void ** ) &buffer );
 
 			if ( !buffer )
@@ -315,7 +315,7 @@ qhandle_t RE_RegisterModel( const char *name )
 		return mod->index;
 	}
 
-#ifdef _DEBUG
+#ifndef NDEBUG
 	else
 	{
 		ri.Printf( PRINT_WARNING, "couldn't load '%s'\n", name );
@@ -455,7 +455,7 @@ static qboolean R_LoadDAE(model_t * mod, void *buffer, int bufferLen, const char
         xmlInitParser();
         xmlSetGenericErrorFunc(NULL, R_XMLError);
 
-        ri.Printf(PRINT_ALL, "...loading DAE '%s'\n", modName);
+        ri.Printf(PRINT_DEVELOPER, "...loading DAE '%s'\n", modName);
 
         doc = xmlParseMemory(buffer, bufferLen);
         if(doc == NULL)
@@ -474,7 +474,7 @@ static qboolean R_LoadDAE(model_t * mod, void *buffer, int bufferLen, const char
 
         if(xmlStrcmp(node->name, (const xmlChar *) "COLLADA"))
         {
-                ri.Printf(PRINT_WARNING, "R_LoadDAE: '%s' document of the wrong type, root node != COLLADA", modName);
+                ri.Printf(PRINT_WARNING, "R_LoadDAE: '%s' document of the wrong type, root node != COLLADA\n", modName);
                 xmlFreeDoc(doc);
                 return qfalse;
         }
@@ -840,6 +840,9 @@ int RE_LerpTagET( orientation_t *tag, const refEntity_t *refent, const char *tag
 		VectorCopy( tag->axis[ 1 ], tag->axis[ 2 ] );
 		VectorCopy( tag->axis[ 0 ], tag->axis[ 1 ] );
 		VectorCopy( tmp, tag->axis[ 0 ] );
+		VectorNormalize( tag->axis[ 0 ] );
+		VectorNormalize( tag->axis[ 1 ] );
+		VectorNormalize( tag->axis[ 2 ] );
 		return retval;
 	}
 

@@ -502,7 +502,7 @@ static int SCR_Strlen( const char *str )
 */
 int SCR_GetBigStringWidth( const char *str )
 {
-	return SCR_Strlen( str ) * 16;
+	return SCR_Strlen( str ) * BIGCHAR_WIDTH;
 }
 
 //===============================================================================
@@ -790,7 +790,7 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 				CL_CGameRendering( stereoFrame );
 
 				// also draw the connection information, so it doesn't
-				// flash away too briefly on local or lan games
+				// flash away too briefly on local or LAN games
 				//if (!com_sv_running->value || Cvar_VariableIntegerValue("sv_cheats")) // Ridah, don't draw useless text if not in dev mode
 				VM_Call( uivm, UI_REFRESH, cls.realtime );
 				VM_Call( uivm, UI_DRAW_CONNECT_SCREEN, qtrue );

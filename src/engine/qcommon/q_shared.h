@@ -43,15 +43,15 @@ extern "C" {
 // A user mod should never modify this file
 
 #define PRODUCT_NAME            "Unvanquished"
-#define PRODUCT_NAME_UPPPER     "UNVANQUISHED" // Case, No spaces
+#define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.5.1"
+#define PRODUCT_VERSION         "0.8.0"
 
 #define ENGINE_NAME             "Daemon Engine"
-#define ENGINE_VERSION          "0.5.1"
+#define ENGINE_VERSION          "0.8.0"
 
-#ifdef GIT_VERSION
-# define Q3_VERSION             PRODUCT_NAME " " PRODUCT_VERSION" " GIT_VERSION
+#ifdef REVISION
+# define Q3_VERSION             PRODUCT_NAME " " PRODUCT_VERSION " " REVISION
 #else
 # define Q3_VERSION             PRODUCT_NAME " " PRODUCT_VERSION
 #endif
@@ -61,11 +61,9 @@ extern "C" {
 
 #define CLIENT_WINDOW_TITLE     PRODUCT_NAME
 #define CLIENT_WINDOW_MIN_TITLE PRODUCT_NAME_LOWER
-#define GAMENAME_FOR_MASTER     PRODUCT_NAME_UPPPER
+#define GAMENAME_FOR_MASTER     PRODUCT_NAME_UPPER
 
 #define CONFIG_NAME             "autogen.cfg"
-
-#define LOCALIZATION_SUPPORT
 
 #if 1
 #if !defined( COMPAT_Q3A )
@@ -79,8 +77,6 @@ extern "C" {
 #endif
 #endif
 
-#define NEW_ANIMS
-#define MAX_TEAMNAME 32
 #define UNNAMED_PLAYER "UnnamedPlayer"
 
 #if defined _WIN32 && !defined __GNUC__
@@ -144,7 +140,7 @@ extern "C" {
 
 #ifdef Q3_VM
 
-#include "../../gamelogic/gpp/src/game/bg_lib.h"
+#include "../../gamelogic/game/bg_lib.h"
 
 	typedef int intptr_t;
 
@@ -226,6 +222,7 @@ extern int memcmp( void *, void *, size_t );
 #define ALIGNED(a)
 #define ALWAYS_INLINE
 #define __attribute__(x)
+#define __func__ __FUNCTION__
 #endif
 
 //bani
@@ -276,9 +273,6 @@ extern int memcmp( void *, void *, size_t );
 #ifndef BIT
 #define BIT(x) ( 1 << ( x ) )
 #endif
-
-// RF, this is just here so different elements of the engine can be aware of this setting as it changes
-#define MAX_SP_CLIENTS 64 // increasing this will increase memory usage significantly
 
 // the game guarantees that no string from the network will ever
 // exceed MAX_STRING_CHARS
@@ -337,7 +331,7 @@ extern int memcmp( void *, void *, size_t );
 	} printParm_t;
 
 #ifdef ERR_FATAL
-#undef ERR_FATAL // this is be defined in malloc.h
+#undef ERR_FATAL // this is possibly defined in malloc.h
 #endif
 
 // parameters to the main Error routine
@@ -347,42 +341,15 @@ extern int memcmp( void *, void *, size_t );
 	  ERR_VID_FATAL, // exit the entire game with a popup window and doesn't delete profile.pid
 	  ERR_DROP, // print to console and disconnect from game
 	  ERR_SERVERDISCONNECT, // don't kill server
-	  ERR_DISCONNECT, // client disconnected from the server
-	  ERR_NEED_CD, // pop up the need-cd dialog
-	  ERR_AUTOUPDATE
+	  ERR_DISCONNECT // client disconnected from the server
 	} errorParm_t;
 
 // font rendering values used by ui and cgame
 
-#define PROP_GAP_WIDTH        3
-#define PROP_SPACE_WIDTH      8
-#define PROP_HEIGHT           27
-#define PROP_SMALL_SIZE_SCALE 0.75
-
 #define BLINK_DIVISOR         200
 #define PULSE_DIVISOR         75
 
-#define UI_LEFT               0x00000000 // default
-#define UI_CENTER             0x00000001
-#define UI_RIGHT              0x00000002
-#define UI_FORMATMASK         0x00000007
-#define UI_SMALLFONT          0x00000010
-#define UI_BIGFONT            0x00000020 // default
-#define UI_GIANTFONT          0x00000040
-#define UI_DROPSHADOW         0x00000800
-#define UI_BLINK              0x00001000
-#define UI_INVERSE            0x00002000
-#define UI_PULSE              0x00004000
-// JOSEPH 10-24-99
-#define UI_MENULEFT           0x00008000
-#define UI_MENURIGHT          0x00010000
-#define UI_EXSMALLFONT        0x00020000
-#define UI_MENUFULL           0x00080000
-// END JOSEPH
-
-#define UI_SMALLFONT75        0x00100000
-
-#if defined( _DEBUG ) && !defined( BSPC )
+#if !defined( NDEBUG ) && !defined( BSPC )
 #define HUNK_DEBUG
 #endif
 
@@ -395,19 +362,11 @@ extern int memcmp( void *, void *, size_t );
 
 #ifdef HUNK_DEBUG
 #define Hunk_Alloc( size, preference ) Hunk_AllocDebug( size, preference, # size, __FILE__, __LINE__ )
-	void *Hunk_AllocDebug( int size, ha_pref preference, char *label, char *file, int line );
+	void *Hunk_AllocDebug( int size, ha_pref preference, const char *label, const char *file, int line );
 
 #else
 	void *Hunk_Alloc( int size, ha_pref preference );
 
-#endif
-
-#ifdef __linux__
-// custom Snd_Memset implementation for glibc memset bug workaround
-	void Snd_Memset( void *dest, const int val, const size_t count );
-
-#else
-#define Snd_Memset   Com_Memset
 #endif
 
 #define Com_Memset   memset
@@ -465,10 +424,6 @@ extern int memcmp( void *, void *, size_t );
 #endif
 
 #define ARRAY_LEN(x) ( sizeof( x ) / sizeof( *( x ) ) )
-
-#if defined ( IPHONE )
-#define UNIMPL()     Com_Printf_(("%s(): Unimplemented\n"), __FUNCTION__)
-#endif
 
 // angle indexes
 #define PITCH 0 // up / down
@@ -590,7 +545,7 @@ extern int memcmp( void *, void *, size_t );
 STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 #ifdef Q3_VM_INSTANTIATE
 {
-	return ( p && p[0] == Q_COLOR_ESCAPE &&
+	return ( p[0] == Q_COLOR_ESCAPE &&
 	         ( p[1] == COLOR_NULL || ( p[1] >= '0' && p[1] != Q_COLOR_ESCAPE && p[1] < 'p' ) )
 	       ) ? qtrue : qfalse;
 }
@@ -628,7 +583,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 
 #define nanmask ( 255 << 23 )
 
-#define IS_NAN( x ) ( ( ( *(int *)&x ) & nanmask ) == nanmask )
+#define IS_NAN( x ) ( ( ( *(int *)&( x ) ) & nanmask ) == nanmask )
 
 #if idx64
 	extern long qftolsse( float f );
@@ -1054,7 +1009,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 
 	qboolean PlaneFromPoints( vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c );
 	qboolean PlaneFromPointsOrder( vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c, qboolean cw );
-	void     ProjectPointOnPlane( vec3_t dst, const vec3_t p, const vec3_t normal );
+	void     ProjectPointOnPlane( vec3_t dst, const vec3_t point, const vec3_t normal );
 	void     RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point, float degrees );
 	void     RotatePointAroundVertex( vec3_t pnt, float rot_x, float rot_y, float rot_z, const vec3_t origin );
 
@@ -1465,19 +1420,13 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 	char       *Q_strrchr( const char *string, int c );
 	const char *Q_stristr( const char *s, const char *find );
 
-#ifdef _WIN32
-#define Q_putenv _putenv
-#else
-#define Q_putenv putenv
-#endif
-
 #if defined(_WIN32) && !defined(__MINGW32__)
 double rint( double x );
 #endif
 
 // buffer size safe library replacements
 // NOTE : had problem with loading QVM modules
-#ifndef _DEBUG
+#ifdef NDEBUG
 	void Q_strncpyz( char *dest, const char *src, int destsize );
 
 #else
@@ -1548,7 +1497,6 @@ char *Q_UTF8Unstore( int e );
 
 	void            Swap_Init(void);
 	*/
-	float           *tv( float x, float y, float z );
 
 	char     *QDECL va( const char *format, ... ) PRINTF_LIKE(1);
 
@@ -1569,20 +1517,6 @@ char *Q_UTF8Unstore( int e );
 	void QDECL Com_Error( int level, const char *error, ... ) PRINTF_LIKE(2) NORETURN;
 	void QDECL Com_Printf( const char *msg, ... ) PRINTF_LIKE(1);
 	void QDECL Com_DPrintf( const char *msg, ... ) PRINTF_LIKE(1);
-
-	/*
-	==========================================================
-
-	  RELOAD STATES
-
-	==========================================================
-	*/
-
-#define RELOAD_SAVEGAME        0x01
-#define RELOAD_NEXTMAP         0x02
-#define RELOAD_NEXTMAP_WAITING 0x04
-#define RELOAD_FAILED          0x08
-#define RELOAD_ENDGAME         0x10
 
 	/*
 	==========================================================
@@ -1789,7 +1723,7 @@ char *Q_UTF8Unstore( int e );
 
 // sound channels
 // channel 0 never willingly overrides
-// other channels will allways override a playing sound on that channel
+// other channels will always override a playing sound on that channel
 	typedef enum
 	{
 	  CHAN_AUTO,
@@ -1847,22 +1781,7 @@ char *Q_UTF8Unstore( int e );
 #define MAX_SERVER_TAGS          256
 #define MAX_TAG_FILES            64
 
-#define MAX_MULTI_SPAWNTARGETS   16 // JPW NERVE
-
 #define MAX_CONFIGSTRINGS        1024
-
-#define MAX_DLIGHT_CONFIGSTRINGS 16
-#define MAX_SPLINE_CONFIGSTRINGS 8
-
-#define PARTICLE_SNOW128         1
-#define PARTICLE_SNOW64          2
-#define PARTICLE_SNOW32          3
-#define PARTICLE_SNOW256         0
-
-#define PARTICLE_BUBBLE8         4
-#define PARTICLE_BUBBLE16        5
-#define PARTICLE_BUBBLE32        6
-#define PARTICLE_BUBBLE64        7
 
 // these are the only configstrings that the system reserves, all the
 // other ones are strictly for servergame to clientgame communication
@@ -1879,17 +1798,6 @@ char *Q_UTF8Unstore( int e );
 		int  dataCount;
 	} gameState_t;
 
-// xkan, 1/10/2003 - adapted from original SP
-	typedef enum
-	{
-	  AISTATE_RELAXED,
-	  AISTATE_QUERY,
-	  AISTATE_ALERT,
-	  AISTATE_COMBAT,
-
-	  MAX_AISTATES
-	} aistateEnum_t;
-
 #define REF_FORCE_DLIGHT       ( 1 << 31 ) // RF, passed in through overdraw parameter, force this dlight under all conditions
 #define REF_JUNIOR_DLIGHT      ( 1 << 30 ) // (SA) this dlight does not light surfaces.  it only affects dynamic light grid
 #define REF_DIRECTED_DLIGHT    ( 1 << 29 ) // ydnar: global directional light, origin should be interpreted as a normal vector
@@ -1898,8 +1806,6 @@ char *Q_UTF8Unstore( int e );
 #define MAX_STATS              16
 #define MAX_PERSISTANT         16
 #define MAX_MISC               16
-#define MAX_POWERUPS           16
-#define MAX_WEAPONS            64 // (SA) and yet more!
 
 #define MAX_EVENTS             4 // max events per frame before we drop events
 
@@ -1929,14 +1835,7 @@ char *Q_UTF8Unstore( int e );
 		vec3_t origin;
 		vec3_t velocity;
 		int    weaponTime;
-		int    weaponDelay; // for weapons that don't fire immediately when 'fire' is hit (grenades, venom, ...)
-		int    grenadeTimeLeft; // for delayed grenade throwing.  this is set to a #define for grenade
-		// lifetime when the attack button goes down, then when attack is released
-		// this is the amount of time left before the grenade goes off (or if it
-		// gets to 0 while in players hand, it explodes)
-
-		int   gravity;
-		float leanf; // amount of 'lean' when player is looking around corner //----(SA) added
+		int    gravity;
 
 		int   speed;
 		int   delta_angles[ 3 ]; // add to command angles to get view direction
@@ -1972,9 +1871,6 @@ char *Q_UTF8Unstore( int e );
 		int weapon; // copied to entityState_t->weapon
 		int weaponstate;
 
-		// item info
-		int    item;
-
 		vec3_t viewangles; // for fixed views
 		int    viewheight;
 
@@ -1986,40 +1882,6 @@ char *Q_UTF8Unstore( int e );
 
 		int stats[ MAX_STATS ];
 		int persistant[ MAX_PERSISTANT ]; // stats that aren't cleared on death
-		int powerups[ MAX_POWERUPS ]; // level.time that the powerup runs out
-		int ammo[ MAX_WEAPONS ]; // total amount of ammo
-		int ammoclip[ MAX_WEAPONS ]; // ammo in clip
-		int holdable[ 16 ];
-		int holding; // the current item in holdable[] that is selected (held)
-		int weapons[ MAX_WEAPONS / ( sizeof( int ) * 8 ) ];  // 64 bits for weapons held
-
-		// Ridah, allow for individual bounding boxes
-		vec3_t mins, maxs;
-		float  crouchMaxZ;
-		float  crouchViewHeight, standViewHeight, deadViewHeight;
-		// variable movement speed
-		float  runSpeedScale, sprintSpeedScale, crouchSpeedScale;
-		// done.
-
-		// Ridah, view locking for mg42
-		int   viewlocked;
-		int   viewlocked_entNum;
-
-		float friction;
-
-		int   nextWeapon;
-		int   teamNum; // Arnout: doesn't seem to be communicated over the net
-
-		// Rafael
-		//int     gunfx;
-
-		// RF, burning effect is required for view blending effect
-		int     onFireStart;
-
-		int     serverCursorHint; // what type of cursor hint the server is dictating
-		int     serverCursorHintVal; // a value (0-255) associated with the above
-
-		trace_t serverCursorHintTrace; // not communicated over net, but used to store the current server-side cursorhint trace
 
 		// ----------------------------------------------------------------------
 		// So to use persistent variables here, which don't need to come from the server,
@@ -2033,37 +1895,6 @@ char *Q_UTF8Unstore( int e );
 		int pmove_framecount;
 		int entityEventSequence;
 
-		int sprintExertTime;
-
-		// JPW NERVE -- value for all multiplayer classes with regenerating "class weapons" -- ie LT artillery, medic medpack, engineer build points, etc
-		int classWeaponTime; // Arnout : DOES get send over the network
-		int jumpTime; // used in MP to prevent jump accel
-		// jpw
-
-		int      weapAnim; // mask off ANIM_TOGGLEBIT                    //----(SA)  added   // Arnout: does get sent over the network
-
-		qboolean releasedFire;
-
-		float    aimSpreadScaleFloat; // (SA) the server-side aimspreadscale that lets it track finer changes but still only
-		// transmit the 8bit int to the client
-		int      aimSpreadScale; // 0 - 255 increases with angular movement    // Arnout : DOES get send over the network
-		int      lastFireTime; // used by server to hold last firing frame briefly when randomly releasing trigger (AI)
-
-		int      quickGrenTime;
-
-		int      leanStopDebounceTime;
-
-//----(SA)  added
-
-		// seems like heat and aimspread could be tied together somehow, however, they (appear to) change at different rates and
-		// I can't currently see how to optimize this to one server->client transmission "weapstatus" value.
-		int           weapHeat[ MAX_WEAPONS ]; // some weapons can overheat.  this tracks (server-side) how hot each weapon currently is.
-		int           curWeapHeat; // value for the currently selected weapon (for transmission to client)    // Arnout : DOES get send over the network
-		int           identifyClient; // NERVE - SMF
-		int           identifyClientHealth;
-
-		aistateEnum_t aiState; // xkan, 1/10/2003
-
 		int           generic1;
 		int           loopSound;
 		int           otherEntityNum;
@@ -2073,8 +1904,6 @@ char *Q_UTF8Unstore( int e );
 		int           clips; // clips held
 		int           tauntTimer; // don't allow another taunt until this runs out
 		int           misc[ MAX_MISC ]; // misc data
-		int           jumppad_frame;
-		int           jumppad_ent; // jumppad entity hit this frame
 	} playerState_t;
 
 //====================================================================
@@ -2118,8 +1947,6 @@ char *Q_UTF8Unstore( int e );
 	  DT_MOVERIGHT,
 	  DT_FORWARD,
 	  DT_BACK,
-	  DT_LEANLEFT,   // etmain
-	  DT_LEANRIGHT,
 	  DT_UP,
 	  DT_NUM
 	} dtType_t;
@@ -2246,101 +2073,35 @@ char *Q_UTF8Unstore( int e );
 
 	typedef enum
 	{
-	  ET_GENERAL,
-	  ET_PLAYER,
-	  ET_ITEM,
-	  ET_MISSILE,
-	  ET_MOVER,
-	  ET_BEAM,
-	  ET_PORTAL,
-	  ET_SPEAKER,
-	  ET_PUSH_TRIGGER,
-	  ET_TELEPORT_TRIGGER,
-	  ET_INVISIBLE,
-	  ET_CONCUSSIVE_TRIGGER, // JPW NERVE trigger for concussive dust particles
-	  ET_OID_TRIGGER, // DHM - Nerve :: Objective Info Display
-	  ET_EXPLOSIVE_INDICATOR, // NERVE - SMF
+		ET_GENERAL,
+		ET_PLAYER,
+		ET_ITEM,
 
-	  //---- (SA) Wolf
-	  ET_EXPLOSIVE, // brush that will break into smaller bits when damaged
-	  ET_EF_SPOTLIGHT,
-	  ET_ALARMBOX,
-	  ET_CORONA,
-	  ET_TRAP,
+		ET_RANGE_MARKER,
+		ET_BUILDABLE,       // buildable type
 
-	  ET_GAMEMODEL, // misc_gamemodel.  similar to misc_model, but it's a dynamic model so we have LOD
-	  ET_FOOTLOCKER, //----(SA)  added
-	  //---- end
+		ET_LOCATION,
 
-	  ET_FLAMEBARREL,
-	  ET_FP_PARTS,
+		ET_MISSILE,
+		ET_MOVER,
+		ET_BEAM,
+		ET_PORTAL,
+		ET_SPEAKER,
+		ET_PUSH_TRIGGER,
+		ET_TELEPORT_TRIGGER,
+		ET_INVISIBLE,
+		ET_GRAPPLE,       // grapple hooked on wall
 
-	  // FIRE PROPS
-	  ET_FIRE_COLUMN,
-	  ET_FIRE_COLUMN_SMOKE,
-	  ET_RAMJET,
+		ET_CORPSE,
+		ET_PARTICLE_SYSTEM,
+		ET_ANIMMAPOBJ,
+		ET_MODELDOOR,
+		ET_LIGHTFLARE,
+		ET_LEV2_ZAP_CHAIN,
 
-	  ET_FLAMETHROWER_CHUNK, // DHM - NERVE :: Used in server side collision detection for flamethrower
-
-	  ET_EXPLO_PART,
-
-	  ET_PROP,
-
-	  ET_AI_EFFECT,
-
-	  ET_CAMERA,
-	  ET_MOVERSCALED,
-
-	  ET_CONSTRUCTIBLE_INDICATOR,
-	  ET_CONSTRUCTIBLE,
-	  ET_CONSTRUCTIBLE_MARKER,
-	  ET_BOMB,
-	  ET_WAYPOINT,
-	  ET_BEAM_2,
-	  ET_TANK_INDICATOR,
-	  ET_TANK_INDICATOR_DEAD,
-	  // Start - TAT - 8/29/2002
-	  // An indicator object created by the bot code to show where the bots are moving to
-	  ET_BOTGOAL_INDICATOR,
-	  // End - TA - 8/29/2002
-	  ET_CORPSE, // Arnout: dead player
-	  ET_SMOKER, // Arnout: target_smoke entity
-
-	  ET_TEMPHEAD, // Gordon: temporary head for clients for bullet traces
-	  ET_MG42_BARREL, // Arnout: MG42 barrel
-	  ET_TEMPLEGS, // Arnout: temporary leg for clients for bullet traces
-	  ET_TRIGGER_MULTIPLE,
-	  ET_TRIGGER_FLAGONLY,
-	  ET_TRIGGER_FLAGONLY_MULTIPLE,
-	  ET_GAMEMANAGER,
-	  ET_AAGUN,
-	  ET_CABINET_H,
-	  ET_CABINET_A,
-	  ET_HEALER,
-	  ET_SUPPLIER,
-
-	  ET_LANDMINE_HINT, // Gordon: landmine hint for botsetgoalstate filter
-	  ET_ATTRACTOR_HINT, // Gordon: attractor hint for botsetgoalstate filter
-	  ET_SNIPER_HINT, // Gordon: sniper hint for botsetgoalstate filter
-	  ET_LANDMINESPOT_HINT, // Gordon: landminespot hint for botsetgoalstate filter
-
-	  ET_COMMANDMAP_MARKER,
-
-	  ET_WOLF_OBJECTIVE,
-
-	  ET_RANGE_MARKER,
-	  ET_BUILDABLE,
-	  ET_PARTICLE_SYSTEM,
-	  ET_LOCATION,
-	  ET_LIGHTFLARE,
-	  ET_LEV2_ZAP_CHAIN,
-	  ET_ANIMMAPOBJ,
-	  ET_MODELDOOR,
-	  ET_GRAPPLE,
-
-	  ET_EVENTS // any of the EV_* events can be added freestanding
-	  // by setting eType to ET_EVENTS + eventNum
-	  // this avoids having to set eFlags and eventNum
+		ET_EVENTS       // any of the EV_* events can be added freestanding
+		// by setting eType to ET_EVENTS + eventNum
+		// this avoids having to set eFlags and eventNum
 	} entityType_t;
 
 	typedef struct entityState_s
@@ -2367,7 +2128,6 @@ char *Q_UTF8Unstore( int e );
 		int          groundEntityNum; // ENTITYNUM_NONE = in air
 
 		int          constantLight; // r + (g<<8) + (b<<16) + (intensity<<24)
-		int          dl_intensity; // used for coronas
 		int          loopSound; // constantly loop this sound
 
 		int          modelindex;
@@ -2386,25 +2146,9 @@ char *Q_UTF8Unstore( int e );
 		int eventParms[ MAX_EVENTS ];
 
 		// for players
-		int powerups; // bit flags  // Arnout: used to store entState_t for non-player entities (so we know to draw them translucent clientsided)
 		int weapon; // determines weapon and flash model, etc
 		int legsAnim; // mask off ANIM_TOGGLEBIT
 		int torsoAnim; // mask off ANIM_TOGGLEBIT
-
-		int density; // for particle effects
-
-		int dmgFlags; // to pass along additional information for damage effects for players/ Also used for cursorhints for non-player entities
-
-		// Ridah
-		int           onFireStart, onFireEnd;
-
-		int           nextWeapon;
-		int           teamNum;
-
-		int           effect1Time, effect2Time, effect3Time;
-
-		aistateEnum_t aiState; // xkan, 1/10/2003
-		int           animMovetype; // clients can't derive movetype of other clients for anim scripting system
 
 		int           misc; // bit flags
 		int           generic1;
@@ -2415,7 +2159,6 @@ char *Q_UTF8Unstore( int e );
 	{
 	  CA_UNINITIALIZED,
 	  CA_DISCONNECTED, // not talking to a server
-	  CA_AUTHORIZING, // not used any more, was checking cd key
 	  CA_CONNECTING, // sending request packets to the server
 	  CA_CHALLENGING, // sending challenge packets to the server
 	  CA_CONNECTED, // netchan_t established, getting gamestate
@@ -2439,7 +2182,7 @@ char *Q_UTF8Unstore( int e );
 #define GLYPH_END       255
 #define GLYPH_CHARSTART 32
 #define GLYPH_CHAREND   127
-#define GLYPHS_PER_FONT GLYPH_END - GLYPH_START + 1
+#define GLYPHS_PER_FONT ( GLYPH_END - GLYPH_START + 1 )
 typedef struct
 {
 	int       height; // number of scan lines
@@ -2541,31 +2284,6 @@ typedef struct
 #define MAX_PINGREQUESTS         16
 #define MAX_SERVERSTATUSREQUESTS 16
 
-#define CDKEY_LEN                16
-#define CDCHKSUM_LEN             2
-
-// NERVE - SMF - localization
-	typedef enum
-	{
-	  LANGUAGE_FRENCH = 0,
-	  LANGUAGE_GERMAN,
-	  LANGUAGE_ITALIAN,
-	  LANGUAGE_SPANISH,
-	  MAX_LANGUAGES
-	} languages_t;
-
-// NERVE - SMF - wolf server/game states
-	typedef enum
-	{
-	  GS_INITIALIZE = -1,
-	  GS_PLAYING,
-	  GS_WARMUP_COUNTDOWN,
-	  GS_WARMUP,
-	  GS_INTERMISSION,
-	  GS_WAITING_FOR_PLAYERS,
-	  GS_RESET
-	} gamestate_t;
-
 #define GENTITYNUM_MASK           ( MAX_GENTITIES - 1 )
 
 #define MAX_EMOTICON_NAME_LEN     16
@@ -2599,17 +2317,6 @@ typedef struct
 	void     Com_ClientListRemove( clientList_t *list, int clientNum );
 	char     *Com_ClientListString( const clientList_t *list );
 	void     Com_ClientListParse( clientList_t *list, const char *s );
-
-	enum
-	{
-	  AUTHORIZE_BAD,
-	  AUTHORIZE_OK,
-	  AUTHORIZE_NOTVERIFIED,
-	  AUTHORIZE_CREATECHARACTER,
-	  AUTHORIZE_DELETECHARACTER,
-	  AUTHORIZE_ACCOUNTINFO,
-	  AUTHORIZE_UNAVAILABLE,
-	};
 
 	/* This should not be changed because this value is
 	* expected to be the same on the client and on the server */

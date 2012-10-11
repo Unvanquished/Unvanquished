@@ -43,7 +43,6 @@ static char *s_shaderText;
 static shaderStage_t stages[ MAX_SHADER_STAGES ];
 static shader_t      shader;
 static texModInfo_t  texMods[ MAX_SHADER_STAGES ][ TR_MAX_TEXMODS ];
-static qboolean      deferLoad;
 
 // ydnar: these are here because they are only referenced while parsing a shader
 static char          implicitMap[ MAX_QPATH ];
@@ -119,7 +118,7 @@ void R_RemapShader( const char *shaderName, const char *newShaderName, const cha
 
 	if ( sh == NULL || sh == tr.defaultShader )
 	{
-		h = RE_RegisterShaderLightMap( shaderName, 0 );
+		h = RE_RegisterShaderLightMap( shaderName, LIGHTMAP_NONE );
 		sh = R_GetShaderByHandle( h );
 	}
 
@@ -133,7 +132,7 @@ void R_RemapShader( const char *shaderName, const char *newShaderName, const cha
 
 	if ( sh2 == NULL || sh2 == tr.defaultShader )
 	{
-		h = RE_RegisterShaderLightMap( newShaderName, 0 );
+		h = RE_RegisterShaderLightMap( newShaderName, LIGHTMAP_NONE );
 		sh2 = R_GetShaderByHandle( h );
 	}
 
@@ -1764,7 +1763,7 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 			{
 				stage->bundle[ 0 ].isLightmap = qtrue;
 
-				if ( shader.lightmapIndex < 0 )
+				if ( shader.lightmapIndex < 0 || !tr.lightmaps )
 				{
 					stage->bundle[ 0 ].image[ 0 ] = tr.whiteImage;
 				}
@@ -4299,7 +4298,7 @@ static void SetImplicitShaderStages( image_t *image )
 			stages[ 0 ].active = qtrue;
 			stages[ 0 ].rgbGen = CGEN_VERTEX;
 			stages[ 0 ].alphaGen = AGEN_SKIP;
-			stages[ 0 ].stateBits = GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+			stages[ 0 ].stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 			break;
 
 			// fullbright is disabled per atvi request
@@ -4375,7 +4374,7 @@ static void SetImplicitShaderStages( image_t *image )
 		stages[ 0 ].active = qtrue;
 		stages[ 0 ].rgbGen = CGEN_VERTEX;
 		stages[ 0 ].alphaGen = AGEN_VERTEX;
-		stages[ 0 ].stateBits = GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
+		stages[ 0 ].stateBits = GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA;
 	}
 	else if ( shader.lightmapIndex == LIGHTMAP_WHITEIMAGE )
 	{
@@ -6152,10 +6151,9 @@ void R_InitShaders( void )
 {
 	glfogNum = FOG_NONE;
 
-	ri.Printf( PRINT_ALL, "Initializing Shaders\n" );
+	ri.Printf( PRINT_DEVELOPER, "Initializing Shaders\n" );
 
 	memset( hashTable, 0, sizeof( hashTable ) );
-	deferLoad = qfalse;
 
 	CreateInternalShaders();
 

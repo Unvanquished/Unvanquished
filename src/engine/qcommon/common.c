@@ -34,10 +34,7 @@ Maryland 20850 USA.
 
 // common.c -- misc functions used in client and server
 
-#ifdef USING_CMAKE
-#include "git_version.h"
-#endif
-
+#include "revision.h"
 #include "../qcommon/q_shared.h"
 #include "qcommon.h"
 #include <setjmp.h>
@@ -46,13 +43,9 @@ Maryland 20850 USA.
 #if defined __linux__ || defined __FreeBSD__ || MACOS_X
 #include <sys/types.h>
 #include <netinet/in.h>
-// getpid
-#include <unistd.h>
 #else
 #include <winsock.h>
 #endif
-
-int demo_protocols[] = { 66, 67, 68, 0 };
 
 #define MAX_NUM_ARGVS             50
 
@@ -74,6 +67,7 @@ jmp_buf             abortframe; // an ERR_DROP has occurred, exit the entire fra
 
 FILE                *debuglogfile;
 static fileHandle_t logfile;
+static fileHandle_t pipefile;
 fileHandle_t        com_journalFile; // events are written here
 fileHandle_t        com_journalDataFile; // config files are written here
 
@@ -94,17 +88,18 @@ cvar_t *com_maxfps;
 cvar_t *com_timedemo;
 cvar_t *com_sv_running;
 cvar_t *com_cl_running;
-cvar_t *com_logfile; // 1 = buffer log, 2 = flush after each print
+cvar_t *com_logfile; // 1 = buffer log, 2 = flush after each print, 3 = append + flush
+cvar_t *com_pipefile;
 cvar_t *com_showtrace;
 cvar_t *com_version;
 
-//cvar_t    *com_blood;
-cvar_t *com_buildScript; // for automated data building scripts
 cvar_t *con_drawnotify;
 cvar_t *com_ansiColor;
 
 cvar_t *com_unfocused;
+cvar_t *com_maxfpsUnfocused;
 cvar_t *com_minimized;
+cvar_t *com_maxfpsMinimized;
 
 cvar_t *com_introPlayed;
 cvar_t *com_logosPlaying;
@@ -112,9 +107,8 @@ cvar_t *cl_paused;
 cvar_t *sv_paused;
 cvar_t *cl_packetdelay;
 cvar_t *sv_packetdelay;
-cvar_t *com_cameraMode;
 
-#if defined( _WIN32 ) && defined( _DEBUG )
+#if defined( _WIN32 ) && !defined( NDEBUG )
 cvar_t *com_noErrorInterrupt;
 #endif
 cvar_t *com_recommendedSet;
@@ -122,11 +116,7 @@ cvar_t *com_recommendedSet;
 cvar_t *com_watchdog;
 cvar_t *com_watchdog_cmd;
 
-// Rafael Notebook
-cvar_t *cl_notebook;
-
 cvar_t *com_hunkused; // Ridah
-cvar_t *com_protocol;
 
 #if idx64
 int ( *Q_VMftol )( void );
@@ -153,7 +143,7 @@ qboolean com_fullyInitialized;
 char     com_errorMessage[ MAXPRINTMSG ];
 
 void     Com_WriteConfig_f( void );
-void     CIN_CloseAllVideos();
+void     CIN_CloseAllVideos( void );
 
 //============================================================================
 
@@ -249,7 +239,15 @@ int QDECL VPRINTF_LIKE(1) Com_VPrintf( const char *fmt, va_list argptr )
 			time( &aclock );
 			newtime = localtime( &aclock );
 
-			logfile = FS_FOpenFileWrite( "etconsole.log" );
+			if ( com_logfile->integer != 3 )
+			{
+				logfile = FS_FOpenFileWrite( "etconsole.log" );
+			}
+			else
+			{
+				logfile = FS_FOpenFileAppend( "etconsole.log" );
+			}
+
 			Com_Printf(_( "logfile opened on %s\n"), asctime( newtime ) );
 
 			if ( com_logfile->integer > 1 )
@@ -320,13 +318,6 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 	static int errorCount;
 	int        currentTime;
 
-	// when we are running automated scripts, make sure we
-	// know if anything failed
-	if ( com_buildScript && com_buildScript->integer )
-	{
-		code = ERR_FATAL;
-	}
-
 	// make sure we can get at our local stuff
 	FS_PureServerSetLoadedPaks( "", "" );
 
@@ -372,6 +363,7 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 	if ( code == ERR_SERVERDISCONNECT )
 	{
 		VM_Forced_Unload_Start();
+		SV_Shutdown( "Server disconnected" );
 		CL_Disconnect( qtrue );
 		CL_FlushMemory();
 		VM_Forced_Unload_Done();
@@ -399,27 +391,6 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 		com_errorEntered = qfalse;
 		longjmp( abortframe, -1 );
 	}
-
-#ifndef DEDICATED
-	else if ( code == ERR_AUTOUPDATE )
-	{
-		VM_Forced_Unload_Start();
-		CL_Disconnect( qtrue );
-		CL_FlushMemory();
-		VM_Forced_Unload_Done();
-		com_errorEntered = qfalse;
-
-		if ( !Q_stricmpn( com_errorMessage, "Server is full", 14 ) && CL_NextUpdateServer() )
-		{
-			CL_GetAutoUpdate();
-		}
-		else
-		{
-			longjmp( abortframe, -1 );
-		}
-	}
-
-#endif
 	else
 	{
 		VM_Forced_Unload_Start();
@@ -450,6 +421,8 @@ do the appropriate things.
 void NORETURN Com_Quit_f( void )
 {
 	// don't try to shutdown if we are in a recursive error
+	char *p = Cmd_Args();
+
 	if ( !com_errorEntered )
 	{
 		// Some VMs might execute "quit" command directly,
@@ -457,7 +430,7 @@ void NORETURN Com_Quit_f( void )
 		// Sys_Quit will kill this process anyways, so
 		// a corrupt call stack makes no difference
 		VM_Forced_Unload_Start();
-		SV_Shutdown( "Server quit\n" );
+		SV_Shutdown( p[ 0 ] ? p : "Server quit\n" );
 //bani
 #ifndef DEDICATED
 		CL_ShutdownCGame();
@@ -501,18 +474,11 @@ Break it up into multiple console lines
 */
 void Com_ParseCommandLine( char *commandLine )
 {
-	int inq = 0;
-
 	com_consoleLines[ 0 ] = commandLine;
 	com_numConsoleLines = 1;
 
 	while ( *commandLine )
 	{
-		if ( *commandLine == '"' )
-		{
-			inq = !inq;
-		}
-
 		// look for a + separating character
 		// if commandLine came from a file, we might have real line separators
 		if ( *commandLine == '+' || *commandLine == '\n' || *commandLine == '\r' )
@@ -978,8 +944,8 @@ all big things are allocated on the hunk.
 
 typedef struct zonedebug_s
 {
-	char *label;
-	char *file;
+	const char *label;
+	const char *file;
 	int  line;
 	int  allocSize;
 } zonedebug_t;
@@ -1175,7 +1141,7 @@ Z_TagMalloc
 memblock_t *debugblock; // RF, jusy so we can track a block to find out when it's getting trashed
 
 #ifdef ZONE_DEBUG
-void           *Z_TagMallocDebug( int size, int tag, char *label, char *file, int line )
+void           *Z_TagMallocDebug( int size, int tag, const char *label, const char *file, int line )
 {
 #else
 void           *Z_TagMalloc( int size, int tag )
@@ -1217,12 +1183,16 @@ void           *Z_TagMalloc( int size, int tag )
 	{
 		if ( rover == start )
 		{
+			// scaned all the way around the list
 #ifdef ZONE_DEBUG
 			Z_LogHeap();
-#endif
-			// scaned all the way around the list
+
+			Com_Error( ERR_FATAL, "Z_Malloc: failed on allocation of %i bytes from the %s zone: %s, line: %d (%s)",
+			           size, zone == smallzone ? "small" : "main", file, line, label );
+#else
 			Com_Error( ERR_FATAL, "Z_Malloc: failed on allocation of %i bytes from the %s zone",
 			           size, zone == smallzone ? "small" : "main" );
+#endif
 			return NULL;
 		}
 
@@ -1282,7 +1252,7 @@ Z_Malloc
 ========================
 */
 #ifdef ZONE_DEBUG
-void           *Z_MallocDebug( int size, char *label, char *file, int line )
+void           *Z_MallocDebug( int size, const char *label, const char *file, int line )
 {
 #else
 void           *Z_Malloc( int size )
@@ -1303,7 +1273,7 @@ void           *Z_Malloc( int size )
 }
 
 #ifdef ZONE_DEBUG
-void           *S_MallocDebug( int size, char *label, char *file, int line )
+void           *S_MallocDebug( int size, const char *label, const char *file, int line )
 {
 	return Z_TagMallocDebug( size, TAG_SMALL, label, file, line );
 }
@@ -1354,13 +1324,14 @@ void Z_CheckHeap( void )
 Z_LogZoneHeap
 ========================
 */
-void Z_LogZoneHeap( memzone_t *zone, char *name )
+void Z_LogZoneHeap( const memzone_t *zone, const char *name )
 {
 #ifdef ZONE_DEBUG
-	char       dump[ 32 ], *ptr;
+	char       dump[ 32 ];
+	const char *ptr;
 	int        i, j;
 #endif
-	memblock_t *block;
+	const memblock_t *block;
 	char       buf[ 4096 ];
 	int        size, allocSize, numBlocks;
 
@@ -1378,7 +1349,7 @@ void Z_LogZoneHeap( memzone_t *zone, char *name )
 		if ( block->tag )
 		{
 #ifdef ZONE_DEBUG
-			ptr = ( ( char * ) block ) + sizeof( memblock_t );
+			ptr = ( ( const char * ) block ) + sizeof( memblock_t );
 			j = 0;
 
 			for ( i = 0; i < 20 && i < block->d.allocSize; i++ )
@@ -1567,8 +1538,8 @@ typedef struct hunkblock_s
 	byte               printed;
 	struct hunkblock_s *next;
 
-	char               *label;
-	char               *file;
+	const char         *label;
+	const char         *file;
 	int                line;
 } hunkblock_t;
 
@@ -1766,7 +1737,7 @@ void Com_TouchMemory( void )
 
 	end = Sys_Milliseconds();
 
-	Com_Printf(_( "Com_TouchMemory: %i msec\n"), end - start );
+	Com_DPrintf(_( "Com_TouchMemory: %i msec\n"), end - start );
 }
 
 /*
@@ -2131,7 +2102,7 @@ void Hunk_Clear( void )
 	Cvar_Set( "com_hunkused", va( "%i", hunk_low.permanent + hunk_high.permanent ) );
 	com_hunkusedvalue = hunk_low.permanent + hunk_high.permanent;
 
-	Com_Printf(_( "Hunk_Clear: reset the hunk ok\n" ));
+	Com_DPrintf(_( "Hunk_Clear: reset the hunk ok\n" ));
 	VM_Clear(); // (SA) FIXME:TODO: was commented out in wolf
 #ifdef HUNK_DEBUG
 	hunkblocks = NULL;
@@ -2166,7 +2137,7 @@ Allocate permanent (until the hunk is cleared) memory
 =================
 */
 #ifdef HUNK_DEBUG
-void           *Hunk_AllocDebug( int size, ha_pref preference, char *label, char *file, int line )
+void           *Hunk_AllocDebug( int size, ha_pref preference, const char *label, const char *file, int line )
 {
 #else
 void           *Hunk_Alloc( int size, ha_pref preference )
@@ -2193,8 +2164,11 @@ void           *Hunk_Alloc( int size, ha_pref preference )
 #ifdef HUNK_DEBUG
 		Hunk_Log();
 		Hunk_SmallLog();
-#endif
+
+		Com_Error( ERR_DROP, "Hunk_Alloc failed on %i: %s, line: %d (%s)", size, file, line, label );
+#else
 		Com_Error( ERR_DROP, "Hunk_Alloc failed on %i", size );
+#endif
 	}
 
 	if ( hunk_permanent == &hunk_low )
@@ -2823,12 +2797,6 @@ int Com_EventLoop( void )
 			case SE_JOYSTICK_AXIS:
 				CL_JoystickEvent( ev.evValue, ev.evValue2, ev.evTime );
 				break;
-#ifdef IPHONE
-
-			case SE_ACCEL:
-				CL_AccelEvent( ev.evValue, ev.evValue2, ev.evValue3 );
-				break;
-#endif
 
 			case SE_CONSOLE:
 				Cbuf_AddText( ( char * ) ev.evPtr );
@@ -2980,15 +2948,7 @@ static void NORETURN Com_Crash_f( void )
 	exit( 1 ); // silence warning
 }
 
-// TTimo: centralizing the cl_cdkey stuff after I discovered a buffer overflow problem with the dedicated server version
-//   not sure it's necessary to have different defaults for regular and dedicated, but I don't want to take the risk
-#ifndef DEDICATED
-char cl_cdkey[ 34 ] = "                                ";
-#else
-char cl_cdkey[ 34 ] = "123456789";
-#endif
-
-void Com_SetRecommended()
+void Com_SetRecommended( void )
 {
 	cvar_t   *r_highQualityVideo; //, *com_recommended;
 	qboolean goodVideo;
@@ -3009,102 +2969,6 @@ void Com_SetRecommended()
 		Com_Printf(_( "Found low quality video and slow CPU\n" ));
 		Cbuf_AddText( "exec preset_fastest.cfg\n" );
 		Cvar_Set( "com_recommended", "3" );
-	}
-}
-
-// Arnout: gameinfo, to let the engine know which gametypes are SP and if we should use profiles.
-// This can't be dependent on the game code as we sometimes need to know about it when no game modules
-// are loaded
-gameInfo_t com_gameInfo;
-
-void Com_GetGameInfo()
-{
-	char *f, *buf;
-	char *token;
-
-	memset( &com_gameInfo, 0, sizeof( com_gameInfo ) );
-
-	if ( FS_ReadFile( "gameinfo.dat", ( void ** ) &f ) > 0 )
-	{
-		buf = f;
-
-		while ( ( token = COM_Parse( &buf ) ) != NULL && token[ 0 ] )
-		{
-			if ( !Q_stricmp( token, "spEnabled" ) )
-			{
-				com_gameInfo.spEnabled = qtrue;
-			}
-			else if ( !Q_stricmp( token, "spGameTypes" ) )
-			{
-				while ( ( token = COM_ParseExt( &buf, qfalse ) ) != NULL && token[ 0 ] )
-				{
-					com_gameInfo.spGameTypes |= ( 1 << atoi( token ) );
-				}
-			}
-			else if ( !Q_stricmp( token, "defaultSPGameType" ) )
-			{
-				if ( ( token = COM_ParseExt( &buf, qfalse ) ) != NULL && token[ 0 ] )
-				{
-					com_gameInfo.defaultSPGameType = atoi( token );
-				}
-				else
-				{
-					FS_FreeFile( f );
-					Com_Error( ERR_FATAL, "Com_GetGameInfo: bad syntax." );
-				}
-			}
-			else if ( !Q_stricmp( token, "coopGameTypes" ) )
-			{
-				while ( ( token = COM_ParseExt( &buf, qfalse ) ) != NULL && token[ 0 ] )
-				{
-					com_gameInfo.coopGameTypes |= ( 1 << atoi( token ) );
-				}
-			}
-			else if ( !Q_stricmp( token, "defaultCoopGameType" ) )
-			{
-				if ( ( token = COM_ParseExt( &buf, qfalse ) ) != NULL && token[ 0 ] )
-				{
-					com_gameInfo.defaultCoopGameType = atoi( token );
-				}
-				else
-				{
-					FS_FreeFile( f );
-					Com_Error( ERR_FATAL, "Com_GetGameInfo: bad syntax." );
-				}
-			}
-			else if ( !Q_stricmp( token, "defaultGameType" ) )
-			{
-				if ( ( token = COM_ParseExt( &buf, qfalse ) ) != NULL && token[ 0 ] )
-				{
-					com_gameInfo.defaultGameType = atoi( token );
-				}
-				else
-				{
-					FS_FreeFile( f );
-					Com_Error( ERR_FATAL, "Com_GetGameInfo: bad syntax." );
-				}
-			}
-			else if ( !Q_stricmp( token, "usesProfiles" ) )
-			{
-				if ( ( token = COM_ParseExt( &buf, qfalse ) ) != NULL && token[ 0 ] )
-				{
-					com_gameInfo.usesProfiles = atoi( token );
-				}
-				else
-				{
-					FS_FreeFile( f );
-					Com_Error( ERR_FATAL, "Com_GetGameInfo: bad syntax." );
-				}
-			}
-			else
-			{
-				FS_FreeFile( f );
-				Com_Error( ERR_FATAL, "Com_GetGameInfo: bad syntax." );
-			}
-		}
-
-		// all is good
-		FS_FreeFile( f );
 	}
 }
 
@@ -3230,10 +3094,9 @@ Com_Init
 void Com_Init( char *commandLine )
 {
 	char              *s;
-	int               pid;
+	int               pid, qport;
 
-	// TTimo gcc warning: variable `safeMode' might be clobbered by `longjmp' or `vfork'
-	volatile qboolean safeMode = qtrue;
+	pid = Sys_GetPID();
 
 	Com_Printf( "%s %s %s\n%s\n", Q3_VERSION, ARCH_STRING, __DATE__, commandLine );
 
@@ -3272,12 +3135,6 @@ void Com_Init( char *commandLine )
 	// ydnar: init crashed variable as early as possible
 	com_crashed = Cvar_Get( "com_crashed", "0", CVAR_TEMP );
 
-	// bani: init pid
-#ifdef _WIN32
-	pid = GetCurrentProcessId();
-#else
-	pid = getpid();
-#endif
 	s = va( "%d", pid );
 	com_pid = Cvar_Get( "com_pid", s, CVAR_ROM );
 
@@ -3287,8 +3144,6 @@ void Com_Init( char *commandLine )
 	FS_InitFilesystem();
 	Com_InitJournaling();
 
-	Com_GetGameInfo();
-
 	Cbuf_AddText( "exec default.cfg\n" );
 
 	// skip the q3config.cfg if "safe" is on the command line
@@ -3296,62 +3151,56 @@ void Com_Init( char *commandLine )
 	{
 		char *cl_profileStr = Cvar_VariableString( "cl_profile" );
 
-		safeMode = qfalse;
-
-		if ( com_gameInfo.usesProfiles )
+		if ( !cl_profileStr[ 0 ] )
 		{
-			if ( !cl_profileStr[ 0 ] )
+			char *defaultProfile = NULL;
+
+			if( FS_ReadFile( "profiles/defaultprofile.dat", ( void ** ) &defaultProfile ) > 0 )
 			{
-				char *defaultProfile = NULL;
+				Q_CleanStr( defaultProfile );
+				Q_CleanDirName( defaultProfile );
 
-				if( FS_ReadFile( "profiles/defaultprofile.dat", ( void ** ) &defaultProfile ) > 0 )
+				if ( defaultProfile )
 				{
-					Q_CleanStr( defaultProfile );
-					Q_CleanDirName( defaultProfile );
+					Cvar_Set( "cl_defaultProfile", defaultProfile );
+					Cvar_Set( "cl_profile", defaultProfile );
 
-					if ( defaultProfile )
-					{
-						Cvar_Set( "cl_defaultProfile", defaultProfile );
-						Cvar_Set( "cl_profile", defaultProfile );
+					FS_FreeFile( defaultProfile );
 
-						FS_FreeFile( defaultProfile );
-
-						cl_profileStr = Cvar_VariableString( "cl_defaultProfile" );
-					}
+					cl_profileStr = Cvar_VariableString( "cl_defaultProfile" );
 				}
 			}
+		}
 
-			if ( cl_profileStr[ 0 ] )
+		if ( cl_profileStr[ 0 ] )
+		{
+			// bani - check existing pid file and make sure it's ok
+			if ( !Com_CheckProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
 			{
-				// bani - check existing pid file and make sure it's ok
-				if ( !Com_CheckProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
-				{
-#ifndef _DEBUG
-					Com_Printf(_( "^3WARNING: profile.pid found for profile '%s' – system settings will revert to defaults\n"),
-					            cl_profileStr );
-					// ydnar: set crashed state
-					Cbuf_AddText( "set com_crashed 1\n" );
+#if 0
+				Com_Printf(_( "^3WARNING: profile.pid found for profile '%s' — the system settings will revert to their defaults\n"),
+				            cl_profileStr );
+				// ydnar: set crashed state
+				Cbuf_AddText( "set com_crashed 1\n" );
 #endif
-				}
-
-				// bani - write a new one
-				if ( !Com_WriteProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
-				{
-					Com_Printf(_( "^3WARNING: couldn't write profiles/%s/profile.pid\n"), cl_profileStr );
-				}
-
-				// exec the config
-				Cbuf_AddText( va( "exec profiles/%s/%s\n", cl_profileStr, CONFIG_NAME ) );
-				Cbuf_AddText( va( "exec profiles/%s/autoexec.cfg\n", cl_profileStr ) );
 			}
+
+			// bani - write a new one
+			if ( !Com_WriteProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
+			{
+				Com_Printf(_( "^3WARNING: couldn't write profiles/%s/profile.pid\n"), cl_profileStr );
+			}
+
+			// exec the config
+			Cbuf_AddText( va( "exec profiles/%s/%s\n", cl_profileStr, CONFIG_NAME ) );
+			Cbuf_AddText( va( "exec profiles/%s/autoexec.cfg\n", cl_profileStr ) );
 		}
 		else
 		{
 			Cbuf_AddText( va( "exec %s\n", CONFIG_NAME ) );
+			Cbuf_AddText( "exec autoexec.cfg" );
 		}
 	}
-
-	
 
 	// ydnar: reset crashed state
 	Cbuf_AddText( "set com_crashed 0\n" );
@@ -3363,7 +3212,7 @@ void Com_Init( char *commandLine )
 	Com_StartupVariable( NULL );
 
 #ifdef DEDICATED
-	// TTimo: default to internet dedicated, not LAN dedicated
+	// TTimo: default to Internet dedicated, not LAN dedicated
 	com_dedicated = Cvar_Get( "dedicated", "2", CVAR_ROM );
 	Cvar_CheckRange( com_dedicated, 1, 2, qtrue );
 #else
@@ -3382,7 +3231,6 @@ void Com_Init( char *commandLine )
 	//
 	// Gordon: no need to latch this in ET, our recoil is framerate-independent
 	com_maxfps = Cvar_Get( "com_maxfps", "125", CVAR_ARCHIVE /*|CVAR_LATCH */ );
-//  com_blood = Cvar_Get ("com_blood", "1", CVAR_ARCHIVE); // Gordon: no longer used?
 
 	com_developer = Cvar_Get( "developer", "0", CVAR_TEMP );
 
@@ -3395,7 +3243,6 @@ void Com_Init( char *commandLine )
 	com_viewlog = Cvar_Get( "viewlog", "0", CVAR_CHEAT );
 	com_speeds = Cvar_Get( "com_speeds", "0", 0 );
 	com_timedemo = Cvar_Get( "timedemo", "0", CVAR_CHEAT );
-	com_cameraMode = Cvar_Get( "com_cameraMode", "0", CVAR_CHEAT );
 
 	com_watchdog = Cvar_Get( "com_watchdog", "60", CVAR_ARCHIVE );
 	com_watchdog_cmd = Cvar_Get( "com_watchdog_cmd", "", CVAR_ARCHIVE );
@@ -3404,7 +3251,6 @@ void Com_Init( char *commandLine )
 	sv_paused = Cvar_Get( "sv_paused", "0", CVAR_ROM );
 	com_sv_running = Cvar_Get( "sv_running", "0", CVAR_ROM );
 	com_cl_running = Cvar_Get( "cl_running", "0", CVAR_ROM );
-	com_buildScript = Cvar_Get( "com_buildScript", "0", 0 );
 
 	con_drawnotify = Cvar_Get( "con_drawnotify", "0", CVAR_CHEAT );
 
@@ -3414,11 +3260,11 @@ void Com_Init( char *commandLine )
 	com_recommendedSet = Cvar_Get( "com_recommendedSet", "0", CVAR_ARCHIVE );
 
 	com_unfocused = Cvar_Get( "com_unfocused", "0", CVAR_ROM );
+	com_maxfpsUnfocused = Cvar_Get( "com_maxfpsUnfocused", "0", CVAR_ARCHIVE );
 	com_minimized = Cvar_Get( "com_minimized", "0", CVAR_ROM );
+	com_maxfpsMinimized = Cvar_Get( "com_maxfpsMinimized", "0", CVAR_ARCHIVE );
 
-	Cvar_Get( "savegame_loading", "0", CVAR_ROM );
-
-#if defined( _WIN32 ) && defined( _DEBUG )
+#if defined( _WIN32 ) && !defined( NDEBUG )
 	com_noErrorInterrupt = Cvar_Get( "com_noErrorInterrupt", "0", 0 );
 #endif
 
@@ -3441,26 +3287,26 @@ void Com_Init( char *commandLine )
 	}
 
 	Cmd_AddCommand( "quit", Com_Quit_f );
-	Cmd_AddCommand( "changeVectors", MSG_ReportChangeVectors_f );
 	Cmd_AddCommand( "writeconfig", Com_WriteConfig_f );
 
 	s = va( "%s %s %s", Q3_VERSION, ARCH_STRING, __DATE__ );
 	com_version = Cvar_Get( "version", s, CVAR_ROM | CVAR_SERVERINFO );
-	com_protocol = Cvar_Get( "protocol", va( "%i", PROTOCOL_VERSION ), CVAR_SERVERINFO | CVAR_ARCHIVE );
 
 	Sys_Init();
-	Netchan_Init( Com_Milliseconds() & 0xffff );  // pick a port value that should be nice and random
+
+	// Pick a qport value that is nice and random.
+	// As machines get faster, Com_Milliseconds() can't be used
+	// anymore, as it results in a smaller and smaller range of
+	// qport values.
+	Com_RandomBytes( ( byte * )&qport, sizeof( int ) );
+	Netchan_Init( qport & 0xffff );
+
 	VM_Init();
 	SV_Init();
 	Hist_Load();
 
 	if ( !Crypto_Init() )
 	{
-		// Disable all crypto functions
-		Cvar_Get( "g_adminPubkeyID", "0", CVAR_ROM );
-#ifndef DEDICATED
-		Cvar_Get( "cl_pubkeyID", "0", CVAR_ROM );
-#endif
 	}
 
 	com_dedicated->modified = qfalse;
@@ -3487,7 +3333,7 @@ void Com_Init( char *commandLine )
 	CL_StartHunkUsers();
 
 	// NERVE - SMF - force recommendedSet and don't do vid_restart if in safe mode
-	if ( !com_recommendedSet->integer && !safeMode )
+	if ( !com_recommendedSet->integer && !Com_SafeMode() )
 	{
 		Com_SetRecommended();
 		Cbuf_ExecuteText( EXEC_APPEND, "vid_restart\n" );
@@ -3498,7 +3344,7 @@ void Com_Init( char *commandLine )
 	if ( !com_dedicated->integer )
 	{
 		//Cvar_Set( "com_logosPlaying", "1" );
-		Cbuf_AddText( "cinematic etintro.roq\n" );
+		//Cbuf_AddText( "cinematic etintro.roq\n" );
 
 		/*Cvar_Set( "nextmap", "cinematic avlogo.roq" );
 		   if( !com_introPlayed->integer ) {
@@ -3506,9 +3352,71 @@ void Com_Init( char *commandLine )
 		   //Cvar_Set( "nextmap", "cinematic avlogo.roq" );
 		   } */
 	}
-	
+#ifndef _WIN32
+	com_pipefile = Cvar_Get( "com_pipefile", "pipe", CVAR_ARCHIVE | CVAR_LATCH );
+#else
+	com_pipefile = Cvar_Get( "com_pipefile", "", CVAR_ARCHIVE | CVAR_LATCH );
+#endif
+	if ( com_pipefile->string[0] )
+	{
+		pipefile = FS_FCreateOpenPipeFile( com_pipefile->string );
+	}
 	com_fullyInitialized = qtrue;
 	Com_Printf( "%s", _("--- Common Initialization Complete ---\n"));
+}
+
+/*
+===============
+Com_ReadFromPipe
+
+Read whatever is in the pipe, and if a line gets accumulated, executed it
+===============
+*/
+void Com_ReadFromPipe( void )
+{
+	static char buf[ MAX_STRING_CHARS ];
+	static int  numAccd = 0;
+	int         numNew;
+	
+	if ( !pipefile )
+	{
+		return;
+	}
+	
+	while ( ( numNew = FS_Read( buf + numAccd, sizeof( buf ) - 1 - numAccd, pipefile ) ) > 0 )
+	{
+		char *brk = NULL; // will point to after the last CR/LF character, if any
+		int i;
+
+		for ( i = numAccd; i < numAccd + numNew; ++i )
+		{
+			if( buf[ i ] == '\0' )
+				buf[ i ] = '\n';
+			if( buf[ i ] == '\n' || buf[ i ] == '\r' )
+				brk = &buf[ i + 1 ];
+		}
+
+		numAccd += numNew;
+
+		if ( brk )
+		{
+			char tmp = *brk;
+			*brk = '\0';
+			Cbuf_ExecuteText( EXEC_APPEND, buf );
+			*brk = tmp;
+
+			numAccd -= brk - buf;
+			memmove( buf, brk, numAccd );
+		}
+		else if ( numAccd >= sizeof( buf ) - 1 ) // there are no CR/LF characters, but the buffer is full
+		{
+			// unfortunately, this command line gets chopped
+			//  (but Cbuf_ExecuteText() chops long command lines at (MAX_STRING_CHARS - 1) anyway)
+			buf[ sizeof( buf ) - 1 ] = '\0';
+			Cbuf_ExecuteText( EXEC_APPEND, buf );
+			numAccd = 0;
+		}
+	}
 }
 
 //==================================================================
@@ -3556,7 +3464,7 @@ void Com_WriteConfiguration( void )
 
 	cvar_modifiedFlags &= ~CVAR_ARCHIVE;
 
-	if ( com_gameInfo.usesProfiles && cl_profileStr[ 0 ] )
+	if ( cl_profileStr[ 0 ] )
 	{
 		Com_WriteConfigToFile( va( "profiles/%s/%s", cl_profileStr, CONFIG_NAME ) );
 	}
@@ -3608,8 +3516,6 @@ int Com_ModifyMsec( int msec )
 	else if ( com_timescale->value )
 	{
 		msec *= com_timescale->value;
-//  } else if (com_cameraMode->integer) {
-//      msec *= com_timescale->value;
 	}
 
 	// don't let it scale below 1 msec
@@ -3708,13 +3614,24 @@ void Com_Frame( void )
 	}
 
 	// we may want to spin here if things are going too fast
-	if ( !com_dedicated->integer && com_maxfps->integer > 0 && !com_timedemo->integer )
+	if ( !com_dedicated->integer && !com_timedemo->integer )
 	{
-		minMsec = 1000 / com_maxfps->integer;
-	}
-	else
-	{
-		minMsec = 1;
+		if ( com_minimized->integer && com_maxfpsMinimized->integer > 0 )
+		{
+			minMsec = 1000 / com_maxfpsMinimized->integer;
+		}
+		else if ( com_unfocused->integer && com_maxfpsUnfocused->integer > 0 )
+		{
+			minMsec = 1000 / com_maxfpsUnfocused->integer;
+		}
+		else if ( com_maxfps->integer > 0 )
+		{
+			minMsec = 1000 / com_maxfps->integer;
+		}
+		else
+		{
+			minMsec = 1;
+		}
 	}
 
 	com_frameTime = Com_EventLoop();
@@ -3789,7 +3706,7 @@ void Com_Frame( void )
 
 		Com_EventLoop();
 		Cbuf_Execute();
-
+		Cdelay_Frame();
 		//
 		// client side
 		//
@@ -3828,7 +3745,7 @@ void Com_Frame( void )
 			}
 			else if ( Sys_Milliseconds() - watchdogTime > com_watchdog->integer * 1000 )
 			{
-				Com_Printf(_( "Idle Server with no map – triggering watchdog\n" ));
+				Com_Printf(_( "Idle server with no map — triggering watchdog\n" ));
 				watchdogTime = 0;
 				watchWarn = qfalse;
 
@@ -3883,6 +3800,8 @@ void Com_Frame( void )
 	// old net chan encryption key
 	//key = lastTime * 0x87243987;
 
+	Com_ReadFromPipe();
+	
 	com_frameNumber++;
 }
 
@@ -3896,7 +3815,7 @@ void Com_Shutdown( qboolean badProfile )
 	char *cl_profileStr = Cvar_VariableString( "cl_profile" );
 
 	// delete pid file
-	if ( com_gameInfo.usesProfiles && cl_profileStr[ 0 ] && !badProfile )
+	if ( cl_profileStr[ 0 ] && !badProfile )
 	{
 		if ( FS_FileExists( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
 		{
@@ -3914,6 +3833,12 @@ void Com_Shutdown( qboolean badProfile )
 	{
 		FS_FCloseFile( com_journalFile );
 		com_journalFile = 0;
+	}
+
+	if ( pipefile )
+	{
+		FS_FCloseFile( pipefile );
+		FS_HomeRemove( com_pipefile->string );
 	}
 }
 

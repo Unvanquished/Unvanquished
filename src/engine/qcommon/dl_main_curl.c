@@ -43,9 +43,6 @@ Maryland 20850 USA.
 #include "qcommon.h"
 #include "dl_public.h"
 
-#define APP_NAME    "ID_DOWNLOAD"
-#define APP_VERSION "2.0"
-
 // initialize once
 static int   dl_initialized = 0;
 
@@ -75,7 +72,7 @@ static int DL_cb_Progress( void *clientp, double dltotal, double dlnow, double u
 	return 0;
 }
 
-void DL_InitDownload()
+void DL_InitDownload( void )
 {
 	if ( dl_initialized )
 	{
@@ -87,7 +84,7 @@ void DL_InitDownload()
 
 	dl_multi = curl_multi_init();
 
-	Com_Printf(_( "Client download subsystem initialized\n" ));
+	Com_DPrintf(_( "Client download subsystem initialized\n" ));
 	dl_initialized = 1;
 }
 
@@ -97,7 +94,7 @@ DL_Shutdown
 
 ================
 */
-void DL_Shutdown()
+void DL_Shutdown( void )
 {
 	if ( !dl_initialized )
 	{
@@ -120,7 +117,7 @@ setup the download, return once we have a connection
 */
 int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 {
-	char referer[ MAX_STRING_CHARS + 5 /*"ET://" */ ];
+	char referer[ MAX_STRING_CHARS + URI_SCHEME_LENGTH ];
 
 	if ( dl_request )
 	{
@@ -145,12 +142,11 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 
 	DL_InitDownload();
 
-	/* ET://ip:port */
-	strcpy( referer, "ET://" );
-	Q_strncpyz( referer + 5, Cvar_VariableString( "cl_currentServerIP" ), MAX_STRING_CHARS );
+	strcpy( referer, URI_SCHEME );
+	Q_strncpyz( referer + URI_SCHEME_LENGTH, Cvar_VariableString( "cl_currentServerIP" ), MAX_STRING_CHARS );
 
 	dl_request = curl_easy_init();
-	curl_easy_setopt( dl_request, CURLOPT_USERAGENT, va( "%s %s", APP_NAME "/" APP_VERSION, curl_version() ) );
+	curl_easy_setopt( dl_request, CURLOPT_USERAGENT, va( "%s %s", PRODUCT_NAME "/" PRODUCT_VERSION, curl_version() ) );
 	curl_easy_setopt( dl_request, CURLOPT_REFERER, referer );
 	curl_easy_setopt( dl_request, CURLOPT_URL, remoteName );
 	curl_easy_setopt( dl_request, CURLOPT_WRITEFUNCTION, DL_cb_FWriteFile );
@@ -167,7 +163,7 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 }
 
 // (maybe this should be CL_DL_DownloadLoop)
-dlStatus_t DL_DownloadLoop()
+dlStatus_t DL_DownloadLoop( void )
 {
 	CURLMcode  status;
 	CURLMsg    *msg;

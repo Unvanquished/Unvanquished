@@ -53,9 +53,6 @@ indent -kr -ut -ts2 -i2 <file>
 #include "dl_public.h"
 #include "dl_local.h"
 
-#define APP_NAME    "ID_DOWNLOAD"
-#define APP_VERSION "1.0"
-
 // initialize once
 // NOTE: anything planned for shutdown? an HTLibTerminate call?
 static int dl_initialized = 0;
@@ -152,7 +149,7 @@ BOOL HTAlertCallback_prompt( HTRequest *request, HTAlertOpcode op,
 	return NO;
 }
 
-void DL_InitDownload()
+void DL_InitDownload( void )
 {
 	if ( dl_initialized )
 	{
@@ -160,7 +157,7 @@ void DL_InitDownload()
 	}
 
 	/* Initiate W3C Reference Library with a client profile */
-	HTProfile_newNoCacheClient( APP_NAME, APP_VERSION );
+	HTProfile_newNoCacheClient( PRODUCT_NAME, PRODUCT_VERSION );
 
 	// if you leave the default (interactive)
 	// then prompts can happen:
@@ -170,7 +167,7 @@ void DL_InitDownload()
 	HTAlert_setInteractive( YES );
 
 	/* And the traces... */
-#ifdef _DEBUG
+#ifndef NDEBUG
 	// see HTHome.c, you can specify the flags - empty string gets you all traces
 	HTSetTraceMessageMask( "" );
 #endif
@@ -186,7 +183,7 @@ void DL_InitDownload()
 	HTAlert_add( HTAlertCallback_confirm, HT_A_CONFIRM );
 	HTAlert_add( HTAlertCallback_prompt, HT_A_PROMPT | HT_A_SECRET | HT_A_USER_PW );
 
-	Com_Printf(_( "Client download subsystem initialized\n" ));
+	Com_DPrintf(_( "Client download subsystem initialized\n" ));
 	dl_initialized = 1;
 }
 
@@ -196,7 +193,7 @@ DL_Shutdown
 
 ================
 */
-void DL_Shutdown()
+void DL_Shutdown( void )
 {
 	if ( !dl_initialized )
 	{
@@ -311,7 +308,7 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 			/* correct the HTTP */
 			url = HT_MALLOC( 7 + strlen( ptr + 1 ) + strlen( path ) + 1 );
 			sprintf( url, "http://%s%s", ptr + 1, path );
-			Com_DPrintf( "HTTP Basic Auth – %s %s %s\n", login, passwd, url );
+			Com_DPrintf( "HTTP Basic Auth — %s %s %s\n", login, passwd, url );
 			HT_FREE( login );
 			HT_FREE( path );
 		}
@@ -374,7 +371,7 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 }
 
 // (maybe this should be CL_DL_DownloadLoop)
-dlStatus_t DL_DownloadLoop()
+dlStatus_t DL_DownloadLoop( void )
 {
 	if ( !dl_running )
 	{

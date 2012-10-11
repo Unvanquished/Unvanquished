@@ -400,8 +400,6 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 			}
 		}
 
-		R_CalcSurfaceTriangleNeighbors( surf->numTriangles, surf->triangles );
-
 		// parse numWeights <number>
 		token = COM_ParseExt2( &buf_p, qtrue );
 

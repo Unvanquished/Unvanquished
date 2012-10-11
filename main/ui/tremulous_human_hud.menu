@@ -1,0 +1,409 @@
+#include "ui/menudef.h"
+
+{
+
+#define W         640
+#define H         480
+
+  menuDef
+  {
+    name "human_hud"
+    fullScreen MENU_FALSE
+    visible MENU_TRUE
+    rect 0 0 W H
+    aspectBias ASPECT_NONE
+//.67 1 1 1
+#define COMMON_HUD_R 0.67
+#define COMMON_HUD_G 1
+#define COMMON_HUD_B 1
+#define COMMON_HUD_A 0.25
+#include "ui/tremulous_common_hud.h"
+
+#define HUD_BG_R .15
+#define HUD_BG_G .44
+#define HUD_BG_B .49
+
+
+itemDef
+    {
+      name "rightbg"
+      rect 436 387 204 93
+      aspectBias ALIGN_RIGHT
+      visible MENU_TRUE
+      decoration
+      forecolor HUD_BG_R HUD_BG_G HUD_BG_B .5
+      style WINDOW_STYLE_SHADER
+      background "ui/assets/human/rightbg.tga"
+    }
+itemDef
+    {
+      name "leftbg"
+      rect 0 387 204 93
+      aspectBias ALIGN_LEFT
+      visible MENU_TRUE
+      decoration
+      forecolor HUD_BG_R HUD_BG_G HUD_BG_B .5
+      style WINDOW_STYLE_SHADER
+      background "ui/assets/human/leftbg.tga"
+    }
+
+//////////////////
+///////BARS///////
+//////////////////
+
+itemDef
+{
+	name "healthbar"
+	rect 0 444 152 18
+	aspectBias ALIGN_LEFT
+	visible MENU_TRUE
+	decoration
+	forecolor 1 0 .11 .48 
+	backColor .51 1 .93 .32 
+	background "ui/assets/human/buildstat/health.tga"
+	ownerdraw CG_PLAYER_HEALTH_BAR
+}
+
+//STAMINABAR
+itemDef
+{
+	name "staminabar"
+	rect 0 421 152 18
+	aspectBias ALIGN_LEFT
+	visible MENU_TRUE
+	decoration
+	forecolor .51 1 .93 .32 
+	backColor 0 0 0 0
+	background "ui/assets/human/buildstat/health.tga"
+	ownerdraw CG_PLAYER_STAMINA
+}
+
+//AMMOBAR
+itemDef
+{
+	name "ammobar"
+	rect 488 421 152 18
+	aspectBias ALIGN_RIGHT
+	visible MENU_TRUE
+	decoration
+	forecolor .29 .57 .56 .5  
+	backColor 0 0 0 0
+	background "ui/assets/human/buildstat/health.tga"
+	ownerdraw CG_PLAYER_AMMO_STACK
+}
+
+//BUILDTIMERBAR
+itemDef
+{
+	name "buildtimerbar"
+	rect 488 421 152 18
+	aspectBias ALIGN_RIGHT
+	visible MENU_TRUE
+	decoration
+	forecolor .51 1 .93 .32 
+	backColor 0 0 0 0
+	background "ui/assets/human/buildstat/health.tga"
+	ownerdraw CG_PLAYER_BUILD_TIMER_BAR
+}
+
+//CLIPSBAR
+itemDef
+{
+	name "ammobar"
+	rect 488 444 152 18
+	aspectBias ALIGN_RIGHT
+	visible MENU_TRUE
+	decoration
+	forecolor .29 .57 .56 .5
+	backColor 0 0 0 0
+	background "ui/assets/human/buildstat/health.tga"
+	ownerdraw CG_PLAYER_CLIPS_STACK
+}
+
+
+
+
+    //////////////////
+    //STATIC OBJECTS//
+    //////////////////
+
+itemDef
+    {
+      name "stamina"
+      rect 0 415 25 25
+      aspectBias ALIGN_LEFT
+      visible MENU_TRUE
+      decoration
+      forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.8 
+	backColor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.2 
+      background "ui/assets/human/stamina.tga"
+	ownerdraw CG_PLAYER_STAMINA_BOLT
+    }
+
+    //CLIP ICON
+    itemDef
+    {
+      name "clip"
+      rect 492 445 18 18
+      aspectBias ALIGN_RIGHT
+      visible MENU_TRUE
+	background "ui/assets/human/clip.tga"
+      decoration
+      style WINDOW_STYLE_SHADER
+      forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B .7 
+    }
+
+
+    itemDef
+    {
+      name "creditstext"
+      type ITEM_TYPE_TEXT
+      text "Credits"
+      style WINDOW_STYLE_EMPTY
+	aspectBias ALIGN_RIGHT
+      textstyle ITEM_TEXTSTYLE_PLAIN
+      rect 574 464 45 11.25
+textscale .35
+      textalign ALIGN_CENTER
+      forecolor 1 1 1 1
+      visible MENU_TRUE
+      decoration
+    }
+
+    ///////////////////
+    //DYNAMIC OBJECTS//
+    ///////////////////
+
+    //CROSS
+    itemDef
+    {
+      name "cross"
+      rect 2 439.5 30 30
+      aspectBias ALIGN_LEFT
+      visible MENU_TRUE
+      decoration
+      forecolor 1 .4 .38 1
+      ownerdraw CG_PLAYER_HEALTH_CROSS
+    }
+
+    //CREDITS
+    itemDef
+    {
+      name "credits"
+      rect 525 465 45 11.25
+      aspectBias ALIGN_RIGHT
+      visible MENU_TRUE
+	textscale .5
+      decoration
+      forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1 
+      ownerdraw CG_PLAYER_CREDITS_VALUE
+    }
+
+
+
+    //WEAPON ICON
+    itemDef
+    {
+      name "weapon"
+      rect 489 417 25 25
+      aspectBias ALIGN_RIGHT
+      visible MENU_TRUE
+      decoration
+      forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1 
+      ownerdraw CG_PLAYER_WEAPONICON
+    }
+
+
+
+
+
+    //WEAPON SELECT TEXT
+    itemDef
+    {
+      name "selecttext"
+      rect 200 300 240 25
+      aspectBias ALIGN_CENTER
+      visible MENU_TRUE
+      decoration
+      textScale .5
+      ownerdraw CG_PLAYER_SELECTTEXT
+      textstyle ITEM_TEXTSTYLE_SHADOWED
+    }
+
+//AMMO
+itemDef
+{
+	name "ammo"
+	textalign ALIGN_CENTER
+	rect 520 422 60 15
+	aspectBias ALIGN_RIGHT
+	visible MENU_TRUE
+	decoration
+	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1 
+	ownerdraw CG_PLAYER_AMMO_VALUE
+}
+
+//HEALTH
+itemDef
+{
+	name "health"
+	rect 40 445 60 15
+	aspectBias ALIGN_LEFT
+	visible MENU_TRUE
+	decoration
+	forecolor 1 .4 .38 1
+	ownerdraw CG_PLAYER_HEALTH
+}
+
+
+
+    //CLIPS
+    itemDef
+    {
+      name "clips"
+	textalign ALIGN_CENTER
+      rect 515 445 60 15
+      aspectBias ALIGN_RIGHT
+      visible MENU_TRUE
+      decoration
+      forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1 
+      ownerdraw CG_PLAYER_CLIPS_VALUE
+    }
+
+
+    //USABLE
+    itemDef
+    {
+      name "usable"
+      rect 307.5 380 25 25
+      aspectBias ALIGN_CENTER
+      visible MENU_TRUE
+      decoration
+      forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B .5
+      background "ui/assets/neutral/use.tga"
+      ownerdraw CG_PLAYER_USABLE_BUILDABLE
+    }
+
+    //SCANNER
+    itemDef
+    {
+      name "scanner"
+      rect 164 340 312 72
+      aspectBias ALIGN_CENTER
+      visible MENU_TRUE
+      decoration
+      forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B .5
+      background "ui/assets/human/scanner.tga"
+      ownerdraw CG_PLAYER_HUMAN_SCANNER
+    }
+
+ //SELECTED
+    itemDef
+    {
+      name "selected"
+      rect 285 450 70 30 //306 454 27 27
+      aspectBias ALIGN_CENTER
+      visible MENU_TRUE
+      decoration
+      forecolor .15 .44 .49 .7
+      style WINDOW_STYLE_SHADER
+      background "ui/assets/neutral/selected.tga"
+    }
+
+    //INVENTORY
+    itemDef
+    {
+      name "inventory"
+      rect 182.5 455 275 25
+      aspectBias ALIGN_CENTER
+      visible MENU_TRUE
+      decoration
+      forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1
+      ownerdraw CG_PLAYER_SELECT
+    }
+
+    //CHARGE BAR
+    itemDef
+    {
+      name "charge"
+      rect 488 421 152 18
+      aspectBias ALIGN_RIGHT
+      visible MENU_TRUE
+      decoration
+      forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.5
+      ownerdraw CG_PLAYER_CHARGE_BAR
+      background "ui/assets/human/buildstat/health.tga"
+    }
+
+//     //CHARGE BAR BG
+//     itemDef
+//     {
+//       name "chargebg"
+//       rect 506 380 64 16
+//       aspectBias ALIGN_RIGHT
+//       visible MENU_TRUE
+//       decoration
+//       forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.25
+//       ownerdraw CG_PLAYER_CHARGE_BAR_BG
+//       background "ui/assets/neutral/charge_bg_h.tga"
+//     }
+
+   
+
+    //TEAM OVERLAY
+    itemDef
+    {
+      name "teamoverlay"
+      rect BORDER 175 200 128
+      style WINDOW_STYLE_EMPTY
+      visible MENU_TRUE
+      decoration
+      forecolor .15 .44 .49 .5
+      textscale 0.85
+      ownerdraw CG_TEAMOVERLAY
+    }
+
+
+	//STAGE REPORT
+	itemDef
+	{
+		name stagereport
+		textalign ALIGN_LEFT
+		textvalign VALIGN_TOP
+		textscale 0.27
+		rect 3 466 200 30
+		forecolor  COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1
+		decoration
+		visible MENU_TRUE
+		ownerdraw CG_STAGE_REPORT_TEXT
+	}
+
+    itemDef
+    {
+      name "healthmeter"
+      rect  295 226 10 30
+      aspectBias ALIGN_CENTER
+      visible MENU_TRUE
+      decoration
+      forecolor 1 .4 .38 .2
+      cvarTest "hud_crosshairbars"
+      showCvar {1}
+      background "ui/assets/neutral/crescent_left.tga"
+      ownerdraw CG_PLAYER_HEALTH_METER
+    }
+
+    itemDef
+    {
+      name "clipsmeter"
+      rect 335 226 10 30
+      aspectBias ALIGN_CENTER
+      visible MENU_TRUE
+      decoration
+      forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B .1
+      cvarTest "hud_crosshairbars"
+      showCvar {1}
+      background "ui/assets/neutral/crescent_right.tga"
+      ownerdraw CG_PLAYER_CLIPS_METER
+    }
+  }
+}

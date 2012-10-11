@@ -25,7 +25,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../renderer/tr_types.h"
 
 #define CGAME_IMPORT_API_VERSION 3
-#define CAM_PRIMARY              0
 
 #define CMD_BACKUP               64
 #define CMD_MASK                 ( CMD_BACKUP - 1 )
@@ -79,6 +78,7 @@ typedef enum cgameImport_s
   CG_CVAR_SET,
   CG_CVAR_VARIABLESTRINGBUFFER,
   CG_CVAR_LATCHEDVARIABLESTRINGBUFFER,
+  CG_CVAR_VARIABLEINTEGERVALUE,
   CG_ARGC,
   CG_ARGV,
   CG_ARGS,
@@ -217,9 +217,6 @@ typedef enum cgameImport_s
   CG_S_FADEALLSOUNDS,
   CG_R_INPVS,
   CG_GETHUNKDATA,
-  CG_PUMPEVENTLOOP,
-  CG_SENDMESSAGE,
-  CG_MESSAGESTATUS,
   CG_R_LOADDYNAMICSHADER,
   CG_R_RENDERTOTEXTURE,
   CG_R_GETTEXTUREID,
@@ -243,7 +240,8 @@ typedef enum cgameImport_s
   CG_GETTEXT,
   CG_R_GLYPH,
   CG_R_GLYPHCHAR,
-  CG_R_UREGISTERFONT
+  CG_R_UREGISTERFONT,
+  CG_PGETTEXT
 } cgameImport_t;
 
 typedef enum
@@ -292,17 +290,6 @@ typedef enum
   CG_EVENT_HANDLING,
 //  void (*CG_EventHandling)(int type, qboolean fForced);
 
-  CG_GET_TAG,
-//  qboolean CG_GetTag( int clientNum, const char *tagname, orientation_t *or );
-
-  CG_CHECKEXECKEY,
-
-  CG_WANTSBINDKEYS,
-
-  // zinx
-  CG_MESSAGERECEIVED,
-//  void (*CG_MessageReceived)( const char *buf, int buflen, int serverTime );
-  // -zinx
   CG_VOIP_STRING,
 // char *(*CG_VoIPString)( void );
 // returns a string of comma-delimited clientnums based on cl_voipSendTarget
@@ -313,7 +300,7 @@ typedef enum
 // use Cmd_Argc() / Cmd_Argv() to read the command
 } cgameExport_t;
 
-void            trap_Print( const char *fmt );
+void            trap_Print( const char *string );
 void            trap_Error( const char *string ) NORETURN;
 int             trap_Milliseconds( void );
 void            trap_Cvar_Register( vmCvar_t *vmCvar, const char *varName, const char *defaultValue, int flags );
@@ -321,6 +308,7 @@ void            trap_Cvar_Update( vmCvar_t *vmCvar );
 void            trap_Cvar_Set( const char *var_name, const char *value );
 void            trap_Cvar_VariableStringBuffer( const char *var_name, char *buffer, int bufsize );
 void            trap_Cvar_LatchedVariableStringBuffer( const char *var_name, char *buffer, int bufsize );
+int             trap_Cvar_VariableIntegerValue( const char *var_name );
 int             trap_Argc( void );
 void            trap_Argv( int n, char *buffer, int bufferLength );
 void            trap_Args( char *buffer, int bufferLength );
@@ -406,8 +394,8 @@ void            trap_R_AddCoronaToScene( const vec3_t org, float r, float g, flo
 void            trap_R_SetFog( int fogvar, int var1, int var2, float r, float g, float b, float density );
 void            trap_R_SetGlobalFog( qboolean restore, int duration, float r, float g, float b, float depthForOpaque );
 void            trap_R_RenderScene( const refdef_t *fd );
-void            trap_R_SaveViewParms();
-void            trap_R_RestoreViewParms();
+void            trap_R_SaveViewParms( void );
+void            trap_R_RestoreViewParms( void );
 void            trap_R_SetColor( const float *rgba );
 void            trap_R_SetClipRegion( const float *region );
 void            trap_R_DrawStretchPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader );
@@ -447,8 +435,6 @@ e_status        trap_CIN_RunCinematic( int handle );
 void            trap_CIN_DrawCinematic( int handle );
 void            trap_CIN_SetExtents( int handle, int x, int y, int w, int h );
 void            trap_R_RemapShader( const char *oldShader, const char *newShader, const char *timeOffset );
-void            testPrintInt( char *string, int i );
-void            testPrintFloat( char *string, float f );
 qboolean        trap_loadCamera( int camNum, const char *name );
 void            trap_startCamera( int camNum, int time );
 void            trap_stopCamera( int camNum );
@@ -469,9 +455,6 @@ void            trap_CG_TranslateString( const char *string, char *buf );
 void            trap_S_FadeAllSound( float targetvol, int time, qboolean stopsounds );
 qboolean        trap_R_inPVS( const vec3_t p1, const vec3_t p2 );
 void            trap_GetHunkData( int *hunkused, int *hunkexpected );
-void            trap_PumpEventLoop( void );
-void            trap_SendMessage( char *buf, int buflen );
-messageStatus_t trap_MessageStatus( void );
 qboolean        trap_R_LoadDynamicShader( const char *shadername, const char *shadertext );
 void            trap_R_RenderToTexture( int textureid, int x, int y, int w, int h );
 int             trap_R_GetTextureId( const char *name );
@@ -497,3 +480,4 @@ void            trap_RegisterButtonCommands( const char *cmds );
 void            trap_GetClipboardData( char *, int, clipboard_t );
 void            trap_QuoteString( const char *, char*, int );
 void            trap_Gettext( char *buffer, const char *msgid, int bufferLength );
+void            trap_Pgettext( char *buffer, const char *ctxt, const char *msgid, int bufferLength );

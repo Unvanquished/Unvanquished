@@ -497,10 +497,13 @@ struct shaderCommands_s;
 
 typedef enum
 {
-  CT_FRONT_SIDED,
-  CT_BACK_SIDED,
-  CT_TWO_SIDED
+  CT_FRONT_SIDED = 0,
+  CT_TWO_SIDED   = 1,
+  CT_BACK_SIDED  = 2
 } cullType_t;
+
+// reverse the cull operation
+#define ReverseCull(c) (2 - (c))
 
 typedef enum
 {
@@ -1625,7 +1628,9 @@ extern cvar_t *r_measureOverdraw; // enables stencil buffer overdraw measurement
 extern cvar_t *r_lodbias; // push/pull LOD transitions
 extern cvar_t *r_lodscale;
 
-extern cvar_t *r_primitives; // "0" = based on compiled vertex array existance
+extern cvar_t *r_lightScale; // Dynamic light intensity for Q3A compatibility
+
+extern cvar_t *r_primitives; // "0" = based on compiled vertex array existence
 
 // "1" = glDrawElemet tristrips
 // "2" = glDrawElements triangles
@@ -1684,8 +1689,6 @@ extern cvar_t *r_colorMipLevels; // development aid to see texture mip usage
 extern cvar_t *r_picmip; // controls picmip values
 extern cvar_t *r_finish;
 extern cvar_t *r_drawBuffer;
-extern cvar_t *r_glDriver;
-extern cvar_t *r_glIgnoreWicked3D;
 extern cvar_t *r_swapInterval;
 extern cvar_t *r_textureMode;
 extern cvar_t *r_textureAnisotropy;
@@ -1732,7 +1735,6 @@ extern cvar_t *r_showImages;
 extern cvar_t *r_debugSort;
 
 extern cvar_t *r_printShaders;
-extern cvar_t *r_saveFontData;
 
 // Ridah
 extern cvar_t *r_cache;
@@ -1943,17 +1945,8 @@ extern int gl_NormalFontBase;
 
 qboolean   GLimp_Init( void );
 
-#ifdef IPHONE
-void       GLimp_SetMode( float rotation );
-
-#endif // IPHONE
 void       GLimp_Shutdown( void );
 void       GLimp_AcquireGL( void );
-
-#ifdef IPHONE
-void       GLimp_ReleaseGL( void );
-
-#endif // IPHONE
 
 void     GLimp_EndFrame( void );
 
@@ -2051,8 +2044,6 @@ WORLD MAP
 void R_AddBrushModelSurfaces( trRefEntity_t *e );
 void R_AddWorldSurfaces( void );
 
-#ifndef IPHONE
-
 /*
 ============================================================
 
@@ -2066,8 +2057,6 @@ void R_ClearFlares( void );
 void RB_AddFlare( void *surface, int fogNum, vec3_t point, vec3_t color, float scale, vec3_t normal, int id, qboolean visible );  //----(SA)  added scale.  added id.  added visible
 void RB_AddDlightFlares( void );
 void RB_RenderFlares( void );
-
-#endif // IPHONE
 
 /*
 ============================================================
@@ -2183,14 +2172,15 @@ void RE_AddPolyBufferToScene( polyBuffer_t *pPolyBuffer );
 // void RE_AddLightToScene( const vec3_t org, float intensity, float r, float g, float b, int overdraw );
 void RE_AddLightToScene( const vec3_t org, float radius, float intensity, float r, float g, float b, qhandle_t hShader,
                          int flags );
-
+// Compatibility function
+void RE_AddLightToSceneQ3A( const vec3_t org, float radius, float r, float g, float b );
 //----(SA)
 void RE_AddCoronaToScene( const vec3_t org, float r, float g, float b, float scale, int id, qboolean visible );
 
 //----(SA)
 void RE_RenderScene( const refdef_t *fd );
-void RE_SaveViewParms();
-void RE_RestoreViewParms();
+void RE_SaveViewParms( void );
+void RE_RestoreViewParms( void );
 
 /*
 =============================================================
@@ -2431,8 +2421,6 @@ extern int                          max_polyverts;
 
 extern backEndData_t                *backEndData[ SMP_FRAMES ]; // the second one may not be allocated
 
-extern volatile renderCommandList_t *renderCommandList;
-
 extern volatile qboolean            renderThreadActive;
 
 void                                *R_GetCommandBuffer( int bytes );
@@ -2478,8 +2466,8 @@ int        RE_AnimFrameRate( qhandle_t hAnim );
 int        RE_BoneIndex( qhandle_t hModel, const char *boneName );
 
 // font stuff
-void       R_InitFreeType();
-void       R_DoneFreeType();
+void       R_InitFreeType( void );
+void       R_DoneFreeType( void );
 void       RE_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t *font );
 void       RE_UnregisterFont( fontInfo_t *font );
 void       RE_Glyph(fontInfo_t *font, const char *str, glyphInfo_t *glyph);

@@ -52,10 +52,8 @@ cvar_t         *sv_maxclients;
 
 cvar_t         *sv_privateClients; // number of clients reserved for password
 cvar_t         *sv_hostname;
-cvar_t         *sv_master[ MAX_MASTER_SERVERS ]; // master server ip address
+cvar_t         *sv_master[ MAX_MASTER_SERVERS ]; // master server IP addresses
 cvar_t         *sv_reconnectlimit; // minimum seconds between connect messages
-cvar_t         *sv_tempbanmessage;
-cvar_t         *sv_showloss; // report when usercmds are lost
 cvar_t         *sv_padPackets; // add nop bytes to messages
 cvar_t         *sv_killserver; // menu system can set to 1 to shut server down
 cvar_t         *sv_mapname;
@@ -65,33 +63,12 @@ cvar_t         *sv_maxRate;
 cvar_t         *sv_minPing;
 cvar_t         *sv_maxPing;
 
-//cvar_t    *sv_gametype;
 cvar_t         *sv_pure;
 cvar_t         *sv_newGameShlib;
 cvar_t         *sv_floodProtect;
-cvar_t         *sv_allowAnonymous;
 cvar_t         *sv_lanForceRate; // TTimo - dedicated 1 (LAN) server forces local client rates to 99999 (bug #491)
-cvar_t         *sv_onlyVisibleClients; // DHM - Nerve
-cvar_t         *sv_friendlyFire; // NERVE - SMF
-cvar_t         *sv_maxlives; // NERVE - SMF
-cvar_t         *sv_needpass;
 
 cvar_t         *sv_dl_maxRate;
-
-cvar_t         *g_gameType;
-
-cvar_t         *sv_requireValidGuid; // whether client userinfo must contain a cl_guid, string of length 32 consisting
-// of characters '0' through '9' and 'A' through 'F', default 0 don't require
-#ifdef USE_HUB_SERVER
-cvar_t         *sv_owHubHost; // hostname/port of hub we are using, default "" (disabled)
-cvar_t         *sv_owHubKey; // encryption key of hub we are using, default "defaultkey123456"
-#endif
-
-// Rafael gameskill
-//cvar_t    *sv_gameskill;
-// done
-
-cvar_t *sv_reloading;
 
 cvar_t *sv_showAverageBPS; // NERVE - SMF - net debugging
 
@@ -105,13 +82,10 @@ cvar_t *sv_wwwFallbackURL; // URL to send to if an http/ftp fails or is refused 
 
 //bani
 cvar_t *sv_cheats;
-cvar_t *sv_packetloss;
 cvar_t *sv_packetdelay;
 
 // fretn
 cvar_t *sv_fullmsg;
-
-void   SVC_GameCompleteStatus( netadr_t from );  // NERVE - SMF
 
 #define LL( x ) x = LittleLong( x )
 
@@ -235,13 +209,13 @@ void QDECL PRINTF_LIKE(2) SV_SendServerCommand( client_t *cl, const char *fmt, .
 	
 	if ( com_dedicated->integer && !strncmp( ( char * ) message, "print_tr ", 9 ) )
 	{
-		SV_PrintTranslatedText( ( const char * ) message );
+		SV_PrintTranslatedText( ( const char * ) message, qtrue );
 	}
 
 	// hack to echo broadcast prints to console
 	else if ( com_dedicated->integer && !strncmp( ( char * ) message, "print ", 6 ) )
 	{
-		Com_Printf( "%s", Cmd_UnquoteString( ( char * ) message + 6 ) );
+		Com_Printf( "Broadcast: %s", Cmd_UnquoteString( ( char * ) message + 6 ) );
 	}
 
 	
@@ -283,7 +257,7 @@ changes from empty to non-empty, and full to non-full,
 but not on every player enter or exit.
 ================
 */
-#define HEARTBEAT_MSEC 300 * 1000
+#define HEARTBEAT_MSEC (300 * 1000)
 //#define   HEARTBEAT_GAME  "Wolfenstein-1"
 //#define   HEARTBEAT_DEAD  "WolfFlatline-1"            // NERVE - SMF
 #define HEARTBEAT_GAME "EnemyTerritory-1"
@@ -298,12 +272,7 @@ void SV_MasterHeartbeat( const char *hbname )
 
 	netenabled = Cvar_VariableIntegerValue( "net_enabled" );
 
-	if ( SV_GameIsSinglePlayer() )
-	{
-		return; // no heartbeats for SP
-	}
-
-	// "dedicated 1" is for lan play, "dedicated 2" is for inet public play
+	// "dedicated 1" is for LAN play, "dedicated 2" is for Internet play
 	if ( !com_dedicated || com_dedicated->integer != 2 || !( netenabled & ( NET_ENABLEV4 | NET_ENABLEV6 ) ) )
 	{
 		return; // only dedicated servers send heartbeats
@@ -399,68 +368,6 @@ void SV_MasterHeartbeat( const char *hbname )
 		{
 			NET_OutOfBandPrint( NS_SERVER, adr[ i ][ 1 ], "heartbeat %s\n", HEARTBEAT_GAME );
 		}
-	}
-}
-
-/*
-=================
-SV_MasterGameCompleteStatus
-
-NERVE - SMF - Sends gameCompleteStatus messages to all master servers
-=================
-*/
-void SV_MasterGameCompleteStatus()
-{
-	static netadr_t adr[ MAX_MASTER_SERVERS ];
-	int             i;
-
-	// "dedicated 1" is for lan play, "dedicated 2" is for inet public play
-	if ( !com_dedicated || com_dedicated->integer != 2 )
-	{
-		return; // only dedicated servers send master game status
-	}
-
-	// send to group masters
-	for ( i = 0; i < MAX_MASTER_SERVERS; i++ )
-	{
-		if ( !sv_master[ i ]->string || !sv_master[ i ]->string[ 0 ] )
-		{
-			continue;
-		}
-
-		// see if we haven't already resolved the name
-		// resolving usually causes hitches on win95, so only
-		// do it when needed
-		if ( sv_master[ i ]->modified )
-		{
-			sv_master[ i ]->modified = qfalse;
-
-			Com_Printf(_( "Resolving %s\n"), sv_master[ i ]->string );
-
-			if ( !NET_StringToAdr( sv_master[ i ]->string, &adr[ i ], NA_IP ) )
-			{
-				// if the address failed to resolve, clear it
-				// so we don't take repeated dns hits
-				Com_Printf(_( "Couldn't resolve address: %s\n"), sv_master[ i ]->string );
-				Cvar_Set( sv_master[ i ]->name, "" );
-				sv_master[ i ]->modified = qfalse;
-				continue;
-			}
-
-			if ( !strstr( ":", sv_master[ i ]->string ) )
-			{
-				adr[ i ].port = BigShort( PORT_MASTER );
-			}
-
-			Com_Printf(_( "%s resolved to %i.%i.%i.%i:%i\n"), sv_master[ i ]->string,
-			            adr[ i ].ip[ 0 ], adr[ i ].ip[ 1 ], adr[ i ].ip[ 2 ], adr[ i ].ip[ 3 ],
-			            BigShort( adr[ i ].port ) );
-		}
-
-		Com_Printf(_( "Sending gameCompleteStatus to %s\n"), sv_master[ i ]->string );
-		// this command should be changed if the server info / status format
-		// ever incompatibly changes
-		SVC_GameCompleteStatus( adr[ i ] );
 	}
 }
 
@@ -581,12 +488,6 @@ void SVC_Status( netadr_t from )
 	int           playerLength;
 	char          infostring[ MAX_INFO_STRING ];
 
-	// ignore if we are in single player
-	if ( SV_GameIsSinglePlayer() )
-	{
-		return;
-	}
-
 	//bani - bugtraq 12534
 	if ( !SV_VerifyChallenge( Cmd_Argv( 1 ) ) )
 	{
@@ -598,15 +499,6 @@ void SVC_Status( netadr_t from )
 	// echo back the parameter to status. so master servers can use it as a challenge
 	// to prevent timed spoofed reply packets that add ghost servers
 	Info_SetValueForKey( infostring, "challenge", Cmd_Argv( 1 ) );
-
-	// add "demo" to the sv_keywords if restricted
-	if ( Cvar_VariableValue( "fs_restrict" ) )
-	{
-		char keywords[ MAX_INFO_STRING ];
-
-		Com_sprintf( keywords, sizeof( keywords ), "ettest %s", Info_ValueForKey( infostring, "sv_keywords" ) );
-		Info_SetValueForKey( infostring, "sv_keywords", keywords );
-	}
 
 	status[ 0 ] = 0;
 	statusLength = 0;
@@ -635,78 +527,6 @@ void SVC_Status( netadr_t from )
 }
 
 /*
-=================
-SVC_GameCompleteStatus
-
-NERVE - SMF - Send serverinfo cvars, etc to master servers when
-game complete. Useful for tracking global player stats.
-=================
-*/
-void SVC_GameCompleteStatus( netadr_t from )
-{
-	char          player[ 1024 ];
-	char          status[ MAX_MSGLEN ];
-	int           i;
-	client_t      *cl;
-	playerState_t *ps;
-	int           statusLength;
-	int           playerLength;
-	char          infostring[ MAX_INFO_STRING ];
-
-	// ignore if we are in single player
-	if ( SV_GameIsSinglePlayer() )
-	{
-		return;
-	}
-
-	//bani - bugtraq 12534
-	if ( !SV_VerifyChallenge( Cmd_Argv( 1 ) ) )
-	{
-		return;
-	}
-
-	strcpy( infostring, Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE ) );
-
-	// echo back the parameter to status. so master servers can use it as a challenge
-	// to prevent timed spoofed reply packets that add ghost servers
-	Info_SetValueForKey( infostring, "challenge", Cmd_Argv( 1 ) );
-
-	// add "demo" to the sv_keywords if restricted
-	if ( Cvar_VariableValue( "fs_restrict" ) )
-	{
-		char keywords[ MAX_INFO_STRING ];
-
-		Com_sprintf( keywords, sizeof( keywords ), "ettest %s", Info_ValueForKey( infostring, "sv_keywords" ) );
-		Info_SetValueForKey( infostring, "sv_keywords", keywords );
-	}
-
-	status[ 0 ] = 0;
-	statusLength = 0;
-
-	for ( i = 0; i < sv_maxclients->integer; i++ )
-	{
-		cl = &svs.clients[ i ];
-
-		if ( cl->state >= CS_CONNECTED )
-		{
-			ps = SV_GameClientNum( i );
-			Com_sprintf( player, sizeof( player ), "%i %i \"%s\"\n", ps->persistant[ PERS_SCORE ], cl->ping, cl->name );
-			playerLength = strlen( player );
-
-			if ( statusLength + playerLength >= sizeof( status ) )
-			{
-				break; // can't hold any more
-			}
-
-			strcpy( status + statusLength, player );
-			statusLength += playerLength;
-		}
-	}
-
-	NET_OutOfBandPrint( NS_SERVER, from, "gameCompleteStatus\n%s\n%s", infostring, status );
-}
-
-/*
 ================
 SVC_Info
 
@@ -719,15 +539,6 @@ void SVC_Info( netadr_t from )
 	int  i, count;
 	char *gamedir;
 	char infostring[ MAX_INFO_STRING ];
-	char *antilag;
-	char *weaprestrict;
-	char *balancedteams;
-
-	// ignore if we are in single player
-	if ( SV_GameIsSinglePlayer() )
-	{
-		return;
-	}
 
 	//bani - bugtraq 12534
 	if ( !SV_VerifyChallenge( Cmd_Argv( 1 ) ) )
@@ -761,14 +572,12 @@ void SVC_Info( netadr_t from )
 	// echo back the parameter to status. so servers can use it as a challenge
 	// to prevent timed spoofed reply packets that add ghost servers
 	Info_SetValueForKey( infostring, "challenge", Cmd_Argv( 1 ) );
-	Info_SetValueForKey( infostring, "protocol", va( "%i", com_protocol->integer ) );
+	Info_SetValueForKey( infostring, "protocol", va( "%i", PROTOCOL_VERSION ) );
 	Info_SetValueForKey( infostring, "hostname", sv_hostname->string );
 	Info_SetValueForKey( infostring, "serverload", va( "%i", svs.serverLoad ) );
 	Info_SetValueForKey( infostring, "mapname", sv_mapname->string );
 	Info_SetValueForKey( infostring, "clients", va( "%i", count ) );
 	Info_SetValueForKey( infostring, "sv_maxclients", va( "%i", sv_maxclients->integer - sv_privateClients->integer ) );
-	//Info_SetValueForKey( infostring, "gametype", va("%i", sv_gametype->integer ) );
-	Info_SetValueForKey( infostring, "gametype", Cvar_VariableString( "g_gametype" ) );
 	Info_SetValueForKey( infostring, "pure", va( "%i", sv_pure->integer ) );
 
 #ifdef USE_VOIP
@@ -797,38 +606,7 @@ void SVC_Info( netadr_t from )
 		Info_SetValueForKey( infostring, "game", gamedir );
 	}
 
-	Info_SetValueForKey( infostring, "sv_allowAnonymous", va( "%i", sv_allowAnonymous->integer ) );
-
-	// Rafael gameskill
-//  Info_SetValueForKey (infostring, "gameskill", va ("%i", sv_gameskill->integer));
-	// done
-
-	Info_SetValueForKey( infostring, "friendlyFire", va( "%i", sv_friendlyFire->integer ) );   // NERVE - SMF
-	Info_SetValueForKey( infostring, "maxlives", va( "%i", sv_maxlives->integer ? 1 : 0 ) );   // NERVE - SMF
-	Info_SetValueForKey( infostring, "needpass", va( "%i", sv_needpass->integer ? 1 : 0 ) );
 	Info_SetValueForKey( infostring, "gamename", GAMENAME_STRING );  // Arnout: to be able to filter out Quake servers
-
-	// TTimo
-	antilag = Cvar_VariableString( "g_antilag" );
-
-	if ( antilag )
-	{
-		Info_SetValueForKey( infostring, "g_antilag", antilag );
-	}
-
-	weaprestrict = Cvar_VariableString( "g_heavyWeaponRestriction" );
-
-	if ( weaprestrict )
-	{
-		Info_SetValueForKey( infostring, "weaprestrict", weaprestrict );
-	}
-
-	balancedteams = Cvar_VariableString( "g_balancedteams" );
-
-	if ( balancedteams )
-	{
-		Info_SetValueForKey( infostring, "balancedteams", balancedteams );
-	}
 
 	NET_OutOfBandPrint( NS_SERVER, from, "infoResponse\n%s", infostring );
 }
@@ -933,7 +711,7 @@ qboolean SV_CheckDRDoS( netadr_t from )
 		return qtrue;
 	}
 
-	if ( specificCount >= 3 ) // Already sent 3 to this IP in last 2 seconds.
+	if ( specificCount >= 3 ) // Already sent 3 to this IP address in last 2 seconds.
 	{
 		if ( lastSpecificLogTime + 1000 <= svs.time ) // Limit one log every second.
 		{
@@ -1098,12 +876,6 @@ void SV_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	else if ( !Q_stricmp( c, "connect" ) )
 	{
 		SV_DirectConnect( from );
-#ifdef AUTHORIZE_SUPPORT
-	}
-	else if ( !Q_stricmp( c, "ipAuthorize" ) )
-	{
-		SV_AuthorizeIpPacket( from );
-#endif // AUTHORIZE_SUPPORT
 	}
 	else if ( !Q_stricmp( c, "rcon" ) )
 	{
@@ -1263,7 +1035,7 @@ void SV_CalcPings( void )
 			}
 		}
 
-		// let the game dll know about the ping
+		// let the game module know about the ping
 		ps = SV_GameClientNum( i );
 		ps->ping = cl->ping;
 	}
@@ -1693,19 +1465,23 @@ int SV_LoadTag( const char *mod_name )
 ========================
  */
 
-void SV_PrintTranslatedText( const char *text )
+void SV_PrintTranslatedText( const char *text, qboolean broadcast )
 {
 	char        str[ MAX_STRING_CHARS ];
+	char        buf[ MAX_STRING_CHARS ];
 	const char  *in;
 	int         i = 0;
 
 	Cmd_SaveCmdContext();
 	Cmd_TokenizeString( text );
 	
-	in = Trans_GettextGame( Cmd_Argv( 1 ) );
+	Q_strncpyz( buf, Trans_GettextGame( Cmd_Argv( 1 ) ), sizeof( buf ) );
+	in = buf;
 	memset( &str, 0, sizeof( str ) );
 	while( *in )
 	{
+		const char *inOld = in;
+
 		if( *in == '$' )
 		{
 			const char *number = ++in;
@@ -1769,10 +1545,16 @@ void SV_PrintTranslatedText( const char *text )
 						break;
 					}
 				}
+				else
+				{
+					in = inOld;
+					goto broken;
+				}
 			}
 		}
 		else
 		{
+			broken:
 			if( i < MAX_STRING_CHARS )
 			{
 				str[ i++ ] = *in;
@@ -1787,7 +1569,10 @@ void SV_PrintTranslatedText( const char *text )
 		}
 	}
 
-	Com_Printf( "%s", str );
+	Com_Printf( "%s%s",
+		broadcast ? "Broadcast: " : "",
+		str );
+
 	Cmd_RestoreCmdContext();
 }
 

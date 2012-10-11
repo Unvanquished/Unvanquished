@@ -32,17 +32,12 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#ifdef USE_LOCAL_HEADERS
-#       include "SDL.h"
-#else
-#       include <SDL.h>
-#endif
-
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../renderer/tr_local.h"
+#include <SDL.h>
+
 #include "../client/client.h"
 #include "../sys/sys_local.h"
 
@@ -79,8 +74,6 @@ static cvar_t       *in_joystickUseAnalog = NULL;
 static cvar_t *in_xbox360Controller = NULL;
 static cvar_t *in_xbox360ControllerAvailable = NULL;
 static cvar_t *in_xbox360ControllerDebug = NULL;
-
-static int    vidRestartTime = 0;
 
 #define CTRL(a) (( a ) - 'a' + 1 )
 
@@ -1750,7 +1743,7 @@ void IN_Frame( void )
 	IN_ProcessEvents();
 
 	// If not DISCONNECTED (main menu) or ACTIVE (in game), we're loading
-	loading = !!( cls.state != CA_DISCONNECTED && cls.state != CA_ACTIVE );
+	loading = ( cls.state != CA_DISCONNECTED && cls.state != CA_ACTIVE );
 
 	if ( !Cvar_VariableIntegerValue( "r_fullscreen" ) && ( cls.keyCatchers & KEYCATCH_CONSOLE ) )
 	{
@@ -1775,13 +1768,6 @@ void IN_Frame( void )
 	else
 	{
 		IN_ActivateMouse();
-	}
-
-	/* in case we had to delay actual restart of video system... */
-	if ( ( vidRestartTime != 0 ) && ( vidRestartTime < Sys_Milliseconds() ) )
-	{
-		vidRestartTime = 0;
-		Cbuf_AddText( "vid_restart\n" );
 	}
 }
 
@@ -1823,16 +1809,8 @@ void IN_Init( void )
 	SDL_EnableKeyRepeat( SDL_DEFAULT_REPEAT_DELAY, SDL_DEFAULT_REPEAT_INTERVAL );
 	keyRepeatEnabled = qtrue;
 
-	if ( in_mouse->value )
-	{
-		mouseAvailable = qtrue;
-		IN_ActivateMouse();
-	}
-	else
-	{
-		IN_DeactivateMouse();
-		mouseAvailable = qfalse;
-	}
+	mouseAvailable = ( in_mouse->value != 0 );
+	IN_DeactivateMouse();
 
 	appState = SDL_GetAppState();
 	Cvar_SetValue( "com_unfocused", !( appState & SDL_APPINPUTFOCUS ) );

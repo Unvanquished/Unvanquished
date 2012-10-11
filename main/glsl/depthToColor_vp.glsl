@@ -23,38 +23,28 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 /* depthToColor_vp.glsl */
 
 attribute vec4		attr_Position;
-#if defined(r_VertexSkinning)
-attribute vec4		attr_BoneIndexes;
-attribute vec4		attr_BoneWeights;
-uniform int			u_VertexSkinning;
-uniform mat4		u_BoneMatrix[MAX_GLSL_BONES];
+#if defined(USE_VERTEX_SKINNING)
+attribute vec3      attr_Normal;
 #endif
 
 uniform mat4		u_ModelViewProjectionMatrix;
 
 void	main()
 {
-#if defined(r_VertexSkinning)
-	if(bool(u_VertexSkinning))
+	#if defined(USE_VERTEX_SKINNING)
 	{
-		vec4 vertex = vec4(0.0);
-
-		for(int i = 0; i < 4; i++)
-		{
-			int boneIndex = int(attr_BoneIndexes[i]);
-			float boneWeight = attr_BoneWeights[i];
-			mat4  boneMatrix = u_BoneMatrix[boneIndex];
-
-			vertex += (boneMatrix * attr_Position) * boneWeight;
-		}
+		vec4 position;
+		vec3 normal;
+		
+		VertexSkinning_P_N( attr_Position, attr_Normal, position, normal );
 
 		// transform vertex position into homogenous clip-space
-		gl_Position = u_ModelViewProjectionMatrix * vertex;
+		gl_Position = u_ModelViewProjectionMatrix * position;
 	}
-	else
-#endif
+	#else
 	{
 		// transform vertex position into homogenous clip-space
 		gl_Position = u_ModelViewProjectionMatrix * attr_Position;
 	}
+	#endif
 }

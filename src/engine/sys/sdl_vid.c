@@ -20,11 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-#ifdef USE_LOCAL_HEADERS
-#       include "SDL.h"
-#else
-#       include <SDL.h>
-#endif
+#include <SDL.h>
 
 #if !SDL_VERSION_ATLEAST(1, 2, 10)
 #define SDL_GL_ACCELERATED_VISUAL 15
@@ -188,7 +184,6 @@ static void GLimp_DetectAvailableModes( void )
 
 	if ( numModes > 1 )
 	{
-		//qsort(modes + 1, numModes - 1, sizeof(SDL_Rect *), GLimp_CompareModes);
 		qsort( modes, numModes, sizeof( SDL_Rect * ), GLimp_CompareModes );
 	}
 

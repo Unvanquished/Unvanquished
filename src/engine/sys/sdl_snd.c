@@ -23,11 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <stdlib.h>
 #include <stdio.h>
 
-#ifdef USE_LOCAL_HEADERS
-#       include "SDL.h"
-#else
-#       include <SDL.h>
-#endif
+#include <SDL.h>
 
 #include "../qcommon/q_shared.h"
 #include "../client/snd_local.h"
@@ -43,41 +39,6 @@ cvar_t          *s_sdlMixSamps;
 /* The audio callback. All the magic happens here. */
 static int      dmapos = 0;
 static int      dmasize = 0;
-
-/*
-===============
-Snd_Memset
-===============
-*/
-
-#ifdef __linux__
-
-static qboolean use_custom_memset = qfalse;
-
-#ifdef Snd_Memset
-#undef Snd_Memset
-#endif
-void Snd_Memset( void *dest, const int val, const size_t count )
-{
-	int *pDest;
-	int i, iterate;
-
-	if ( !use_custom_memset )
-	{
-		Com_Memset( dest, val, count );
-		return;
-	}
-
-	iterate = count / sizeof( int );
-	pDest = ( int * ) dest;
-
-	for ( i = 0; i < iterate; i++ )
-	{
-		pDest[ i ] = val;
-	}
-}
-
-#endif
 
 /*
 ===============

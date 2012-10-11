@@ -908,7 +908,7 @@ static void R_CullMD5( trRefEntity_t *ent )
 	if ( ent->e.skeleton.type == SK_INVALID )
 	{
 		// no properly set skeleton so use the bounding box by the model instead by the animations
-		md5Model_t *model = tr.currentModel->md5;;
+		md5Model_t *model = tr.currentModel->md5;
 
 		VectorCopy( model->bounds[ 0 ], ent->localBounds[ 0 ] );
 		VectorCopy( model->bounds[ 1 ], ent->localBounds[ 1 ] );

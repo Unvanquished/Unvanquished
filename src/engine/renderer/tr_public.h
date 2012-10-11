@@ -113,8 +113,8 @@ typedef struct
 //----(SA)
 	void ( *RenderScene )( const refdef_t *fd );
 
-	void ( *SaveViewParms )();
-	void ( *RestoreViewParms )();
+	void ( *SaveViewParms )( void );
+	void ( *RestoreViewParms )( void );
 
 	void ( *SetColor )( const float *rgba );             // NULL = 1,1,1,1
 	void ( *SetClipRegion )( const float *region );
@@ -209,7 +209,7 @@ typedef struct
 	// won't be freed
 	void ( *Hunk_Clear )( void );
 #ifdef HUNK_DEBUG
-	void            *( *Hunk_AllocDebug )( int size, ha_pref pref, char *label, char *file, int line );
+	void            *( *Hunk_AllocDebug )( int size, ha_pref pref, const char *label, const char *file, int line );
 #else
 	void            *( *Hunk_Alloc )( int size, ha_pref pref );
 #endif
@@ -218,7 +218,7 @@ typedef struct
 
 	// dynamic memory allocator for things that need to be freed
 #ifdef ZONE_DEBUG
-	void            *( *Z_MallocDebug )( int bytes, char *label, char *file, int line );
+	void            *( *Z_MallocDebug )( int bytes, const char *label, const char *file, int line );
 #else
 	void            *( *Z_Malloc )( int bytes );
 #endif
@@ -245,7 +245,7 @@ typedef struct
 	void ( *CM_DrawDebugSurface )( void ( *drawPoly )( int color, int numPoints, float *points ) );
 
 	// a -1 return means the file does not exist
-	// NULL can be passed for buf to just determine existance
+	// NULL can be passed for buf to just determine existence
 	int ( *FS_FileIsInPAK )( const char *name, int *pChecksum );
 	int ( *FS_ReadFile )( const char *name, void **buf );
 	void ( *FS_FreeFile )( void *buf );
@@ -265,12 +265,8 @@ typedef struct
 	e_status( *CIN_RunCinematic )( int handle );
 
 	long( *ftol )( float f );
-	const char      *( *Con_GetText )( int console );
-	void ( *HTTP_PostBug )( const char *fileName );
 
 	// XreaL BEGIN
-	void            *( *Sys_GetSystemHandles )( void );
-
 	qboolean( *CL_VideoRecording )( void );
 	void ( *CL_WriteAVIVideoFrame )( const byte *buffer, int size );
 	// XreaL END

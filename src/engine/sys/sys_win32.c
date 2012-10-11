@@ -32,10 +32,7 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#ifdef USING_CMAKE
-#include "git_version.h"
-#endif
-
+#include "revision.h"
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "sys_local.h"
@@ -70,13 +67,13 @@ Set FPU control word to default value
 ================
 */
 
-#ifndef _RC_CHOP
+#ifndef _RC_NEAR
 // mingw doesn't seem to have these defined :(
 
 #define _MCW_EM  0x0008001fU
 #define _MCW_RC  0x00000300U
 #define _MCW_PC  0x00030000U
-#define _RC_CHOP 0x00000300U
+#define _RC_NEAR 0x00000000U
 #define _PC_53   0x00010000U
 
 unsigned int _controlfp( unsigned int new, unsigned int mask );
@@ -84,7 +81,7 @@ unsigned int _controlfp( unsigned int new, unsigned int mask );
 #endif
 
 #define FPUCWMASK1 ( _MCW_RC | _MCW_EM )
-#define FPUCW      ( _RC_CHOP | _MCW_EM | _PC_53 )
+#define FPUCW      ( _RC_NEAR | _MCW_EM | _PC_53 )
 
 #if idx64
 #define FPUCWMASK  ( FPUCWMASK1 )
@@ -139,28 +136,6 @@ char *Sys_DefaultHomePath( void )
 	}
 
 	return homePath;
-}
-
-/*
-================
-Sys_TempPath
-================
-*/
-const char *Sys_TempPath( void )
-{
-	static TCHAR path[ MAX_PATH ];
-	DWORD        length;
-
-	length = GetTempPath( sizeof( path ), path );
-
-	if ( length > sizeof( path ) || length == 0 )
-	{
-		return Sys_DefaultHomePath();
-	}
-	else
-	{
-		return path;
-	}
 }
 
 /*
@@ -274,13 +249,9 @@ Sys_LowPhysicalMemory
 */
 qboolean Sys_LowPhysicalMemory( void )
 {
-#if defined ( IPHONE )
-	return qtrue;
-#else
 	MEMORYSTATUS stat;
 	GlobalMemoryStatus( &stat );
 	return ( stat.dwTotalPhys <= MEM_THRESHOLD ) ? qtrue : qfalse;
-#endif
 }
 
 /*
@@ -359,6 +330,18 @@ qboolean Sys_Mkdir( const char *path )
 
 	return qtrue;
 }
+
+/*
+==================
+Sys_Mkfifo
+Noop on windows because named pipes do not function the same way
+==================
+*/
+FILE *Sys_Mkfifo( const char *ospath )
+{
+	return NULL;
+}
+
 
 /*
 ==============
@@ -676,11 +659,6 @@ void Sys_Sleep( int msec )
 #endif
 }
 
-qboolean Sys_OpenUrl( const char *url )
-{
-	return ( ( int ) ShellExecute( NULL, NULL, url, NULL, NULL, SW_SHOWNORMAL ) > 32 ) ? qtrue : qfalse;
-}
-
 /*
 ==============
 Sys_ErrorDialog
@@ -844,7 +822,6 @@ void Sys_PlatformInit( void )
 {
 #ifndef DEDICATED
 	TIMECAPS ptc;
-	UINT res;
 	const char *SDL_VIDEODRIVER = getenv( "SDL_VIDEODRIVER" );
 #endif
 
@@ -896,132 +873,12 @@ void Sys_PlatformExit( void )
 
 /*
 ==============
-Sys_SetEnv
-
-set/unset environment variables (empty value removes it)
+Sys_GetPID
 ==============
 */
-void Sys_SetEnv( const char *name, const char *value )
-{
-	_putenv( va( "%s=%s", name, value ) );
-}
-
-/*
-==============
-Sys_PID
-==============
-*/
-int Sys_PID( void )
+int Sys_GetPID( void )
 {
 	return GetCurrentProcessId();
-}
-
-/*
-==============
-Sys_PIDIsRunning
-==============
-*/
-qboolean Sys_PIDIsRunning( int pid )
-{
-	DWORD processes[ 1024 ];
-	DWORD numBytes, numProcesses;
-	int   i;
-
-	if ( !EnumProcesses( processes, sizeof( processes ), &numBytes ) )
-	{
-		return qfalse; // Assume it's not running
-	}
-
-	numProcesses = numBytes / sizeof( DWORD );
-
-	// Search for the pid
-	for ( i = 0; i < numProcesses; i++ )
-	{
-		if ( processes[ i ] == pid )
-		{
-			return qtrue;
-		}
-	}
-
-	return qfalse;
-}
-
-/*
-==================
-Sys_StartProcess
-
-NERVE - SMF
-==================
-*/
-void Sys_StartProcess( char *exeName, qboolean doexit )
-{
-	TCHAR               szPathOrig[ _MAX_PATH ];
-	STARTUPINFO         si;
-	PROCESS_INFORMATION pi;
-
-	ZeroMemory( &si, sizeof( si ) );
-	si.cb = sizeof( si );
-
-	GetCurrentDirectory( _MAX_PATH, szPathOrig );
-
-	// JPW NERVE swiped from Sherman's SP code
-	if ( !CreateProcess( NULL, va( "%s\\%s", szPathOrig, exeName ), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi ) )
-	{
-		// couldn't start it, popup error box
-		Com_Error( ERR_DROP, "Could not start process: '%s\\%s' ", szPathOrig, exeName );
-		return;
-	}
-
-	// jpw
-
-	// TTimo: similar way of exiting as used in Sys_OpenURL below
-	if ( doexit )
-	{
-		Cbuf_ExecuteText( EXEC_APPEND, "quit\n" );
-	}
-}
-
-/*
-==================
-Sys_OpenURL
-
-NERVE - SMF
-==================
-*/
-void Sys_OpenURL( const char *url, qboolean doexit )
-{
-	HWND            wnd;
-
-	static qboolean doexit_spamguard = qfalse;
-
-	if ( doexit_spamguard )
-	{
-		Com_DPrintf( "Sys_OpenURL: already in a doexit sequence, ignoring %s\n", url );
-		return;
-	}
-
-	Com_Printf( "Open URL: %s\n", url );
-
-	if ( !ShellExecute( NULL, "open", url, NULL, NULL, SW_RESTORE ) )
-	{
-		// couldn't start it, popup error box
-		Com_Error( ERR_DROP, "Could not open url: '%s' ", url );
-		return;
-	}
-
-	wnd = GetForegroundWindow();
-
-	if ( wnd )
-	{
-		ShowWindow( wnd, SW_MAXIMIZE );
-	}
-
-	if ( doexit )
-	{
-		// show_bug.cgi?id=612
-		doexit_spamguard = qtrue;
-		Cbuf_ExecuteText( EXEC_APPEND, "quit\n" );
-	}
 }
 
 /*

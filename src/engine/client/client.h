@@ -38,7 +38,7 @@ Maryland 20850 USA.
 #include "../qcommon/qcommon.h"
 #include "../renderer/tr_public.h"
 #include "keys.h"
-#include "../../gamelogic/gpp/src/game/bg_public.h" // FIXME
+#include "../../gamelogic/game/bg_public.h" // FIXME
 #include "snd_public.h"
 
 #include "../client/ui_api.h"
@@ -48,8 +48,6 @@ Maryland 20850 USA.
 #include <speex/speex.h>
 #include <speex/speex_preprocess.h>
 #endif
-
-#define GUIDKEY_FILE       "guid"
 
 // file containing our RSA public and private keys
 #define RSAKEY_FILE        "pubkey"
@@ -92,7 +90,7 @@ typedef struct
 =============================================================================
 
 the clientActive_t structure is wiped completely at every
-new gamestate_t, potentially several times during an established connection
+new gameState_t, potentially several times during an established connection
 
 =============================================================================
 */
@@ -140,9 +138,6 @@ typedef struct
 	int          mouseDx[ 2 ], mouseDy[ 2 ]; // added to by mouse events
 	int          mouseIndex;
 	int          joystickAxis[ MAX_JOYSTICK_AXIS ]; // set by joystick events
-#if defined ( IPHONE )
-	int          accelAngles[ 3 ];
-#endif
 
 	// cgame communicates a few values to the client system
 	int    cgameUserCmdValue; // current weapon to add to usercmd_t
@@ -208,8 +203,6 @@ typedef struct
 
 	int      challenge; // from the server to use for connecting
 	int      checksumFeed; // from the server for checksum calculations
-
-	int      onlyVisibleClients; // DHM - Nerve
 
 	// these are our reliable messages that go to the server
 	int  reliableSequence;
@@ -332,21 +325,14 @@ typedef struct
 	char     game[ MAX_NAME_LENGTH ];
 	char     label[ MAX_FEATLABEL_CHARS ]; // for featured servers, NULL otherwise
 	int      netType;
-	int      gameType;
 	int      clients;
 	int      maxClients;
 	int      minPing;
 	int      maxPing;
 	int      ping;
 	qboolean visible;
-	int      allowAnonymous;
 	int      friendlyFire; // NERVE - SMF
-	int      maxlives; // NERVE - SMF
 	int      needpass;
-	int      punkbuster; // DHM - Nerve
-	int      antilag; // TTimo
-	int      weaprestrict;
-	int      balancedteams;
 	char     gameName[ MAX_NAME_LENGTH ]; // Arnout
 } serverInfo_t;
 
@@ -400,15 +386,6 @@ typedef struct
 	char     updateChallenge[ MAX_TOKEN_CHARS ];
 	char     updateInfoString[ MAX_INFO_STRING ];
 
-	netadr_t authorizeServer;
-
-	// DHM - Nerve :: Auto-update Info
-	char     autoupdateServerNames[ MAX_AUTOUPDATE_SERVERS ][ MAX_QPATH ];
-	netadr_t autoupdateServer;
-	qboolean autoUpdateServerChecked[ MAX_AUTOUPDATE_SERVERS ];
-	int      autoupdatServerFirstIndex; // to know when we went through all of them
-	int      autoupdatServerIndex; // to cycle through them
-
 	// rendering info
 	glconfig_t  glconfig;
 	glconfig2_t glconfig2;
@@ -434,9 +411,9 @@ extern clientStatic_t cls;
 
 //=============================================================================
 
-extern vm_t                   *cgvm; // interface to cgame dll or vm
-extern vm_t                   *uivm; // interface to ui dll or vm
-extern refexport_t            re; // interface to refresh .dll
+extern vm_t                   *cgvm; // interface to the cgame module
+extern vm_t                   *uivm; // interface to the ui module
+extern refexport_t            re; // interface to refresh library
 
 extern struct rsa_public_key  public_key;
 
@@ -453,7 +430,6 @@ extern cvar_t *cl_maxpackets;
 extern cvar_t *cl_packetdup;
 extern cvar_t *cl_shownet;
 extern cvar_t *cl_shownuments; // DHM - Nerve
-extern cvar_t *cl_visibleClients; // DHM - Nerve
 extern cvar_t *cl_showSend;
 extern cvar_t *cl_showServerCommands; // NERVE - SMF
 extern cvar_t *cl_timeNudge;
@@ -464,10 +440,6 @@ extern cvar_t *cl_yawspeed;
 extern cvar_t *cl_pitchspeed;
 extern cvar_t *cl_run;
 extern cvar_t *cl_anglespeedkey;
-
-extern cvar_t *cl_recoilPitch; // RF
-
-extern cvar_t *cl_bypassMouseInput; // NERVE - SMF
 
 extern cvar_t *cl_doubletapdelay;
 
@@ -513,10 +485,7 @@ extern cvar_t *cl_autorecord;
 extern cvar_t *cl_allowDownload;
 extern cvar_t *cl_conXOffset;
 extern cvar_t *cl_inGameVideo;
-extern cvar_t *cl_authserver;
 
-extern cvar_t *cl_missionStats;
-extern cvar_t *cl_waitForFire;
 extern cvar_t *cl_altTab;
 
 // -NERVE - SMF
@@ -535,8 +504,6 @@ extern cvar_t  *cl_aviMotionJpeg;
 // XreaL END
 
 extern cvar_t  *cl_allowPaste;
-
-extern cvar_t  *cl_pubkeyID;
 
 #ifdef USE_MUMBLE
 extern cvar_t  *cl_useMumble;
@@ -577,10 +544,6 @@ void        CL_RegisterButtonCommands( const char *cmdList );
 
 void        CL_StartHunkUsers( void );
 
-void        CL_CheckAutoUpdate( void );
-qboolean    CL_NextUpdateServer( void );
-void        CL_GetAutoUpdate( void );
-
 void        CL_Disconnect_f( void );
 void        CL_GetChallengePacket( void );
 void        CL_Vid_Restart_f( void );
@@ -601,11 +564,9 @@ void        CL_ClearPing( int n );
 int         CL_GetPingQueueCount( void );
 
 void        CL_ShutdownRef( void );
-void        CL_InitRef( const char *renderer );
+qboolean    CL_InitRef( const char *renderer );
 
 int         CL_ServerStatus( char *serverAddress, char *serverStatusString, int maxLen );
-
-void CL_OpenURL( const char *url );  // TTimo
 
 void CL_Record( const char *name );
 
@@ -684,8 +645,6 @@ void CL_SystemInfoChanged( void );
 void CL_ParseServerMessage( msg_t *msg );
 
 //====================================================================
-
-void     CL_UpdateInfoPacket( netadr_t from );  // DHM - Nerve
 
 void     CL_ServerInfoPacket( netadr_t from, msg_t *msg );
 void     CL_LocalServers_f( void );
@@ -840,8 +799,8 @@ void CL_InitUI( void );
 void CL_ShutdownUI( void );
 int  Key_GetCatcher( void );
 void Key_SetCatcher( int catcher );
-void LAN_LoadCachedServers();
-void LAN_SaveServersToCache();
+void LAN_LoadCachedServers( void );
+void LAN_SaveServersToCache( void );
 
 //
 // cl_net_chan.c

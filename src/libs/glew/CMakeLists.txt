@@ -1,12 +1,9 @@
 # Create Glew for VS projects.
 
-if( NOT WIN32 )
-  message( FATAL_ERROR "USE_INTERNAL_SDL is only support for Windows" )
-endif()
-
 find_package( OpenGL REQUIRED )
 
 include_directories( ${GLEW_DIR}/include )
+include_directories( ${OPENGL_INCLUDE_DIR} )
 
 
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/Release/${GAMELIB_OUTPUT_DIR}" )

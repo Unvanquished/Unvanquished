@@ -52,15 +52,16 @@ Maryland 20850 USA.
 #include <fcntl.h>
 #include <fenv.h>
 
+
+#ifndef DEDICATED
 #include <SDL.h>
 #include <SDL_syswm.h>
+#endif
 
 qboolean    stdinIsATTY;
 
 // Used to determine where to store user-specific files
 static char homePath[ MAX_OSPATH ] = { 0 };
-
-static char exit_cmdline[ MAX_CMD ] = "";
 
 /*
 ==================
@@ -86,56 +87,6 @@ char *Sys_DefaultHomePath( void )
 	}
 
 	return homePath;
-}
-
-#ifndef MACOS_X
-
-/*
-================
-Sys_TempPath
-================
-*/
-const char *Sys_TempPath( void )
-{
-	const char *TMPDIR = getenv( "TMPDIR" );
-
-	if ( TMPDIR == NULL || TMPDIR[ 0 ] == '\0' )
-	{
-		return "/tmp";
-	}
-	else
-	{
-		return TMPDIR;
-	}
-}
-
-#endif
-
-/*
-==================
-chmod OR on a file
-==================
-*/
-void Sys_Chmod( char *file, int mode )
-{
-	struct stat s_buf;
-
-	int         perm;
-
-	if ( stat( file, &s_buf ) != 0 )
-	{
-		Com_Printf( "stat('%s')  failed: errno %d\n", file, errno );
-		return;
-	}
-
-	perm = s_buf.st_mode | mode;
-
-	if ( chmod( file, perm ) != 0 )
-	{
-		Com_Printf( "chmod('%s', %d) failed: errno %d\n", file, perm, errno );
-	}
-
-	Com_DPrintf( "chmod +%d '%s'\n", mode, file );
 }
 
 /*
@@ -396,6 +347,38 @@ qboolean Sys_Mkdir( const char *path )
 
 	return qtrue;
 }
+
+/*
+==================
+Sys_Mkfifo
+==================
+*/
+FILE *Sys_Mkfifo( const char *ospath )
+{
+	FILE	*fifo;
+	int	result;
+	int	fn;
+	struct	stat buf;
+	
+	// if file already exists AND is a pipefile, remove it
+	if( !stat( ospath, &buf ) && S_ISFIFO( buf.st_mode ) )
+		FS_Remove( ospath );
+	
+	result = mkfifo( ospath, 0600 );
+	if( result != 0 )
+		return NULL;
+	
+	fn = open( ospath, O_RDWR | O_NONBLOCK );
+	if( fn == -1 )
+		return NULL;
+
+	fifo = fdopen( fn, "w+" );
+	if( fifo == NULL )
+		close( fn );
+
+	return fifo;
+}
+
 
 /*
 ==================
@@ -721,9 +704,9 @@ void Sys_ErrorDialog( const char *error )
 {
 	char         buffer[ 1024 ];
 	unsigned int size;
-	int          f = -1;
+	int          f;
 	const char   *homepath = Cvar_VariableString( "fs_homepath" );
-	const char   *gamedir = Cvar_VariableString( "fs_gamedir" );
+	const char   *gamedir = Cvar_VariableString( "fs_game" );
 	const char   *fileName = "crashlog.txt";
 	char         *ospath = FS_BuildOSPath( homepath, gamedir, fileName );
 
@@ -897,7 +880,7 @@ static int Sys_KdialogCommand( dialogType_t type, const char *message, const cha
 			break;
 	}
 
-	return Sys_System( "kdialog", options, "--title", title, message, NULL );
+	return Sys_System( "kdialog", options, "--title", title, "--", message, NULL );
 }
 
 /*
@@ -1025,199 +1008,6 @@ dialogResult_t Sys_Dialog( dialogType_t type, const char *message, const char *t
 #endif
 
 /*
-==================
-Sys_DoStartProcess
-actually forks and starts a process
-
-UGLY HACK:
-  Sys_StartProcess works with a command line only
-  if this command line is actually a binary with command line parameters,
-  the only way to do this on unix is to use a system() call
-  but system doesn't replace the current process, which leads to a situation like:
-  wolf.x86--spawned_process.x86
-  in the case of auto-update for instance, this will cause write access denied on wolf.x86:
-  wolf-beta/2002-March/000079.html
-  we hack the implementation here, if there are no space in the command line, assume it's a straight process and use execl
-  otherwise, use system ..
-  The clean solution would be Sys_StartProcess and Sys_StartProcess_Args..
-==================
-*/
-void Sys_DoStartProcess( char *cmdline )
-{
-	switch ( fork() )
-	{
-		case -1:
-			// main thread
-			break;
-
-		case 0:
-			if ( strchr( cmdline, ' ' ) )
-			{
-				system( cmdline );
-			}
-			else
-			{
-				execl( cmdline, cmdline, NULL );
-				printf( "execl failed: %s\n", strerror( errno ) );
-			}
-
-			_exit( 0 );
-	}
-}
-
-/*
-==================
-Sys_StartProcess
-if !doexit, start the process asap
-otherwise, push it for execution at exit
-(i.e. let complete shutdown of the game and freeing of resources happen)
-NOTE: might even want to add a small delay?
-==================
-*/
-void Sys_StartProcess( char *cmdline, qboolean doexit )
-{
-	if ( doexit )
-	{
-		Com_DPrintf( "Sys_StartProcess %s (delaying to final exit)\n", cmdline );
-		Q_strncpyz( exit_cmdline, cmdline, MAX_CMD );
-		Cbuf_ExecuteText( EXEC_APPEND, "quit\n" );
-		return;
-	}
-
-	Com_DPrintf( "Sys_StartProcess %s\n", cmdline );
-	Sys_DoStartProcess( cmdline );
-}
-
-/*
-=================
-Sys_OpenURL
-=================
-*/
-void Sys_OpenURL( const char *url, qboolean doexit )
-{
-	char            *basepath, *homepath, *pwdpath;
-	char            fname[ 20 ];
-	char            fn[ MAX_OSPATH ];
-	char            cmdline[ MAX_CMD ];
-
-	static qboolean doexit_spamguard = qfalse;
-
-	if ( doexit_spamguard )
-	{
-		Com_DPrintf( "Sys_OpenURL: already in a doexit sequence, ignoring %s\n", url );
-		return;
-	}
-
-	Com_Printf( "Open URL: %s\n", url );
-	// opening a URL on *nix can mean a lot of things
-	// just spawn a script instead of deciding for the user :-)
-
-	// do the setup before we fork
-	// search for an openurl.sh script
-	// search procedure taken from Sys_LoadDll
-	Q_strncpyz( fname, "openurl.sh", 20 );
-
-	pwdpath = Sys_Cwd();
-	Com_sprintf( fn, MAX_OSPATH, "%s/%s", pwdpath, fname );
-
-	if ( access( fn, X_OK ) == -1 )
-	{
-		Com_DPrintf( "%s not found\n", fn );
-		// try in home path
-		homepath = Cvar_VariableString( "fs_homepath" );
-		Com_sprintf( fn, MAX_OSPATH, "%s/%s", homepath, fname );
-
-		if ( access( fn, X_OK ) == -1 )
-		{
-			Com_DPrintf( "%s not found\n", fn );
-			// basepath, last resort
-			basepath = Cvar_VariableString( "fs_basepath" );
-			Com_sprintf( fn, MAX_OSPATH, "%s/%s", basepath, fname );
-
-			if ( access( fn, X_OK ) == -1 )
-			{
-				Com_DPrintf( "%s not found\n", fn );
-				Com_Printf( "Can't find script '%s' to open requested URL (use +set developer 1 for more verbosity)\n", fname );
-				// we won't quit
-				return;
-			}
-		}
-	}
-
-	// show_bug.cgi?id=612
-	if ( doexit )
-	{
-		doexit_spamguard = qtrue;
-	}
-
-	Com_DPrintf( "URL script: %s\n", fn );
-
-	// build the command line
-	Com_sprintf( cmdline, MAX_CMD, "%s '%s' &", fn, url );
-
-	Sys_StartProcess( cmdline, doexit );
-}
-
-qboolean Sys_OpenUrl( const char *url )
-{
-	char *browser = getenv( "BROWSER" );
-	char *kde_session = getenv( "KDE_FULL_SESSION" );
-	char *gnome_session = getenv( "GNOME_DESKTOP_SESSION_ID" );
-
-	//Try to use xdg-open, if not, try default, then kde, gnome
-	if ( browser )
-	{
-		Sys_Fork( browser, url );
-		return qtrue;
-	}
-	else if ( kde_session && Q_stricmp( "true", kde_session ) == 0 )
-	{
-		Sys_Fork( "konqueror", url );
-		return qtrue;
-	}
-	else if ( gnome_session )
-	{
-		Sys_Fork( "gnome-open", url );
-		return qtrue;
-	}
-	else
-	{
-		Sys_Fork( "/usr/bin/firefox", url );
-	}
-
-	// open url somehow
-	return qtrue;
-}
-
-qboolean Sys_Fork( const char *path, const char *cmdLine )
-{
-	int pid;
-
-	pid = fork();
-
-	if ( pid == 0 )
-	{
-		struct stat filestat;
-
-		//Try to set the executable bit
-		if ( stat( path, &filestat ) == 0 )
-		{
-			chmod( path, filestat.st_mode | S_IXUSR );
-		}
-
-		execlp( path, path, cmdLine, NULL );
-		printf( "Exec Failed for: %s\n", path );
-		_exit( 255 );
-	}
-	else if ( pid == -1 )
-	{
-		return qfalse;
-	}
-
-	return qtrue;
-}
-
-/*
 ==============
 Sys_GLimpSafeInit
 
@@ -1243,8 +1033,6 @@ void Sys_GLimpInit( void )
 
 void Sys_SetFloatEnv( void )
 {
-	// rounding towards 0
-	fesetround( FE_TOWARDZERO );
 }
 
 /*
@@ -1281,42 +1069,12 @@ void Sys_PlatformInit( void )
 
 /*
 ==============
-Sys_SetEnv
-
-set/unset environment variables (empty value removes it)
+Sys_GetPID
 ==============
 */
-
-void Sys_SetEnv( const char *name, const char *value )
-{
-	if ( value && *value )
-	{
-		setenv( name, value, 1 );
-	}
-	else
-	{
-		unsetenv( name );
-	}
-}
-
-/*
-==============
-Sys_PID
-==============
-*/
-int Sys_PID( void )
+int Sys_GetPID( void )
 {
 	return getpid();
-}
-
-/*
-==============
-Sys_PIDIsRunning
-==============
-*/
-qboolean Sys_PIDIsRunning( int pid )
-{
-	return kill( pid, 0 ) == 0;
 }
 
 /*
@@ -1326,6 +1084,15 @@ Sys_IsNumLockDown
 */
 qboolean Sys_IsNumLockDown( void )
 {
-	// FIXME for Linux
-	return qfalse;
+#if !defined(MACOS_X) && !defined(DEDICATED)
+	Display        *dpy = XOpenDisplay(":0");
+	XKeyboardState x;
+
+	XGetKeyboardControl(dpy, &x);
+	XCloseDisplay(dpy);
+
+	return (x.led_mask & 2) ? qtrue : qfalse;
+#else
+	return qtrue; // Macs don't have Numlock.
+#endif
 }

@@ -423,7 +423,7 @@ void R_AddBSPModelSurfaces( trRefEntity_t *ent )
 {
 	bspModel_t *bspModel;
 	model_t    *pModel;
-	int        i;
+	unsigned int i;
 	vec3_t     v;
 	vec3_t     transformed;
 	vec3_t     boundsCenter;
@@ -478,7 +478,6 @@ void R_AddBSPModelSurfaces( trRefEntity_t *ent )
 
 	if ( r_vboModels->integer && bspModel->numVBOSurfaces )
 	{
-		int          i;
 		srfVBOMesh_t *vboSurface;
 
 		for ( i = 0; i < bspModel->numVBOSurfaces; i++ )
@@ -668,47 +667,79 @@ static void R_RecursiveInteractionNode( bspNode_t *node, trRefLight_t *light, in
 	int i;
 	int r;
 
-	// if the node wasn't marked as potentially visible, exit
-	if ( node->visCounts[ tr.visIndex ] != tr.visCounts[ tr.visIndex ] )
+	do
 	{
-		return;
-	}
-
-	// light already hit node
-	if ( node->lightCount == tr.lightCount )
-	{
-		return;
-	}
-
-	node->lightCount = tr.lightCount;
-
-	// if the bounding volume is outside the frustum, nothing
-	// inside can be visible OPTIMIZE: don't do this all the way to leafs?
-
-	// Tr3B - even surfaces that belong to nodes that are outside of the view frustum
-	// can cast shadows into the view frustum
-	if ( !r_nocull->integer && r_shadows->integer <= SHADOWING_BLOB )
-	{
-		for ( i = 0; i < FRUSTUM_PLANES; i++ )
+		// if the node wasn't marked as potentially visible, exit
+		if ( node->visCounts[ tr.visIndex ] != tr.visCounts[ tr.visIndex ] )
 		{
-			if ( planeBits & ( 1 << i ) )
+			return;
+		}
+
+		// light already hit node
+		if ( node->lightCount == tr.lightCount )
+		{
+			return;
+		}
+
+		node->lightCount = tr.lightCount;
+
+		// if the bounding volume is outside the frustum, nothing
+		// inside can be visible OPTIMIZE: don't do this all the way to leafs?
+
+		// Tr3B - even surfaces that belong to nodes that are outside of the view frustum
+		// can cast shadows into the view frustum
+		if ( !r_nocull->integer && r_shadows->integer <= SHADOWING_BLOB )
+		{
+			for ( i = 0; i < FRUSTUM_PLANES; i++ )
 			{
-				r = BoxOnPlaneSide( node->mins, node->maxs, &tr.viewParms.frustums[ 0 ][ i ] );
-
-				if ( r == 2 )
+				if ( planeBits & ( 1 << i ) )
 				{
-					return; // culled
-				}
+					r = BoxOnPlaneSide( node->mins, node->maxs, &tr.viewParms.frustums[ 0 ][ i ] );
 
-				if ( r == 1 )
-				{
-					planeBits &= ~( 1 << i );  // all descendants will also be in front
+					if ( r == 2 )
+					{
+						return; // culled
+					}
+
+					if ( r == 1 )
+					{
+						planeBits &= ~( 1 << i );  // all descendants will also be in front
+					}
 				}
 			}
 		}
-	}
 
-	if ( node->contents != -1 )
+		if ( node->contents != -1 )
+		{
+			break;
+		}
+
+		// node is just a decision point, so go down both sides
+		// since we don't care about sort orders, just go positive to negative
+		r = BoxOnPlaneSide( light->worldBounds[ 0 ], light->worldBounds[ 1 ], node->plane );
+
+		switch ( r )
+		{
+			case 1:
+				node = node->children[ 0 ];
+				break;
+
+			case 2:
+				node = node->children[ 1 ];
+				break;
+
+			case 3:
+			default:
+				// recurse down the children, front side first
+				R_RecursiveInteractionNode( node->children[ 0 ], light, planeBits );
+
+				// tail recurse
+				node = node->children[ 1 ];
+				break;
+		}
+	}
+	while ( 1 );
+
 	{
 		// leaf node, so add mark surfaces
 		int          c;
@@ -726,30 +757,6 @@ static void R_RecursiveInteractionNode( bspNode_t *node, trRefLight_t *light, in
 			R_AddInteractionSurface( surf, light );
 			mark++;
 		}
-
-		return;
-	}
-
-	// node is just a decision point, so go down both sides
-	// since we don't care about sort orders, just go positive to negative
-	r = BoxOnPlaneSide( light->worldBounds[ 0 ], light->worldBounds[ 1 ], node->plane );
-
-	switch ( r )
-	{
-		case 1:
-			R_RecursiveInteractionNode( node->children[ 0 ], light, planeBits );
-			break;
-
-		case 2:
-			R_RecursiveInteractionNode( node->children[ 1 ], light, planeBits );
-			break;
-
-		case 3:
-		default:
-			// recurse down the children, front side first
-			R_RecursiveInteractionNode( node->children[ 0 ], light, planeBits );
-			R_RecursiveInteractionNode( node->children[ 1 ], light, planeBits );
-			break;
 	}
 }
 
@@ -1169,7 +1176,7 @@ static void R_UpdateClusterSurfaces()
 				/*
 				   if(ibo->indexesVBO)
 				   {
-				   glDeleteBuffersARB(1, &ibo->indexesVBO);
+				   glDeleteBuffers(1, &ibo->indexesVBO);
 				   ibo->indexesVBO = 0;
 				   }
 				 */
@@ -1188,7 +1195,7 @@ static void R_UpdateClusterSurfaces()
 #if defined( USE_D3D10 )
 				// TODO
 #else
-				glGenBuffersARB( 1, &ibo->indexesVBO );
+				glGenBuffers( 1, &ibo->indexesVBO );
 #endif
 
 				Com_AddToGrowList( &tr.world->clusterVBOSurfaces[ tr.visIndex ], vboSurf );
@@ -1219,7 +1226,7 @@ static void R_UpdateClusterSurfaces()
 #if defined( USE_D3D10 )
 			// TODO
 #else
-			glBufferDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB, indexesSize, indexes, GL_DYNAMIC_DRAW_ARB );
+			glBufferData( GL_ELEMENT_ARRAY_BUFFER, indexesSize, indexes, GL_DYNAMIC_DRAW_ARB );
 #endif
 			R_BindNullIBO();
 
@@ -1594,7 +1601,7 @@ static void IssueOcclusionQuery( link_t *queue, bspNode_t *node, qboolean resetM
 
 #if 0
 
-	if ( glIsQueryARB( node->occlusionQueryObjects[ tr.viewCount ] ) )
+	if ( glIsQuery( node->occlusionQueryObjects[ tr.viewCount ] ) )
 	{
 		ri.Error( ERR_FATAL, "IssueOcclusionQuery: node %i has already an occlusion query object in slot %i: %i", node - tr.world->nodes, tr.viewCount, node->occlusionQueryObjects[ tr.viewCount ] );
 	}
@@ -1602,7 +1609,7 @@ static void IssueOcclusionQuery( link_t *queue, bspNode_t *node, qboolean resetM
 #endif
 
 	// begin the occlusion query
-	glBeginQueryARB( GL_SAMPLES_PASSED, node->occlusionQueryObjects[ tr.viewCount ] );
+	glBeginQuery( GL_SAMPLES_PASSED, node->occlusionQueryObjects[ tr.viewCount ] );
 
 	GL_CheckErrors();
 
@@ -1617,11 +1624,11 @@ static void IssueOcclusionQuery( link_t *queue, bspNode_t *node, qboolean resetM
 	Tess_DrawElements();
 
 	// end the query
-	glEndQueryARB( GL_SAMPLES_PASSED );
+	glEndQuery( GL_SAMPLES_PASSED );
 
 #if 1
 
-	if ( !glIsQueryARB( node->occlusionQueryObjects[ tr.viewCount ] ) )
+	if ( !glIsQuery( node->occlusionQueryObjects[ tr.viewCount ] ) )
 	{
 		ri.Error( ERR_FATAL, "IssueOcclusionQuery: node %li has no occlusion query object in slot %i: %i", (long)( node - tr.world->nodes ), tr.viewCount, node->occlusionQueryObjects[ tr.viewCount ] );
 	}
@@ -1672,14 +1679,14 @@ static void IssueMultiOcclusionQueries( link_t *multiQueue, link_t *individualQu
 
 #if 0
 
-	if ( !glIsQueryARB( multiQueryNode->occlusionQueryObjects[ tr.viewCount ] ) )
+	if ( !glIsQuery( multiQueryNode->occlusionQueryObjects[ tr.viewCount ] ) )
 	{
 		ri.Error( ERR_FATAL, "IssueMultiOcclusionQueries: node %i has already occlusion query object in slot %i: %i", multiQueryNode - tr.world->nodes, tr.viewCount, multiQueryNode->occlusionQueryObjects[ tr.viewCount ] );
 	}
 
 #endif
 
-	glBeginQueryARB( GL_SAMPLES_PASSED, multiQueryNode->occlusionQueryObjects[ tr.viewCount ] );
+	glBeginQuery( GL_SAMPLES_PASSED, multiQueryNode->occlusionQueryObjects[ tr.viewCount ] );
 
 	GL_CheckErrors();
 
@@ -1726,13 +1733,13 @@ static void IssueMultiOcclusionQueries( link_t *multiQueue, link_t *individualQu
 	tr.pc.c_occlusionQueriesMulti++;
 
 	// end the query
-	glEndQueryARB( GL_SAMPLES_PASSED );
+	glEndQuery( GL_SAMPLES_PASSED );
 
 	GL_CheckErrors();
 
 #if 0
 
-	if ( !glIsQueryARB( multiQueryNode->occlusionQueryObjects[ tr.viewCount ] ) )
+	if ( !glIsQuery( multiQueryNode->occlusionQueryObjects[ tr.viewCount ] ) )
 	{
 		ri.Error( ERR_FATAL, "IssueMultiOcclusionQueries: node %i has no occlusion query object in slot %i: %i", multiQueryNode - tr.world->nodes, tr.viewCount, multiQueryNode->occlusionQueryObjects[ tr.viewCount ] );
 	}
@@ -1761,9 +1768,9 @@ static qboolean ResultAvailable( bspNode_t *node )
 	//glFinish();
 
 	available = 0;
-	//if(glIsQueryARB(node->occlusionQueryObjects[tr.viewCount]))
+	//if(glIsQuery(node->occlusionQueryObjects[tr.viewCount]))
 	{
-		glGetQueryObjectivARB( node->occlusionQueryObjects[ tr.viewCount ], GL_QUERY_RESULT_AVAILABLE_ARB, &available );
+		glGetQueryObjectiv( node->occlusionQueryObjects[ tr.viewCount ], GL_QUERY_RESULT_AVAILABLE, &available );
 		GL_CheckErrors();
 	}
 
@@ -1783,7 +1790,7 @@ static void GetOcclusionQueryResult( bspNode_t *node )
 
 #if 0
 
-	if ( !glIsQueryARB( node->occlusionQueryObjects[ tr.viewCount ] ) )
+	if ( !glIsQuery( node->occlusionQueryObjects[ tr.viewCount ] ) )
 	{
 		ri.Error( ERR_FATAL, "GetOcclusionQueryResult: node %i has no occlusion query object in slot %i: %i", node - tr.world->nodes, tr.viewCount, node->occlusionQueryObjects[ tr.viewCount ] );
 	}
@@ -1794,14 +1801,14 @@ static void GetOcclusionQueryResult( bspNode_t *node )
 
 	while ( !available )
 	{
-		//if(glIsQueryARB(node->occlusionQueryObjects[tr.viewCount]))
+		//if(glIsQuery(node->occlusionQueryObjects[tr.viewCount]))
 		{
-			glGetQueryObjectivARB( node->occlusionQueryObjects[ tr.viewCount ], GL_QUERY_RESULT_AVAILABLE_ARB, &available );
+			glGetQueryObjectiv( node->occlusionQueryObjects[ tr.viewCount ], GL_QUERY_RESULT_AVAILABLE, &available );
 			//GL_CheckErrors();
 		}
 	}
 
-	glGetQueryObjectivARB( node->occlusionQueryObjects[ tr.viewCount ], GL_QUERY_RESULT, &ocSamples );
+	glGetQueryObjectiv( node->occlusionQueryObjects[ tr.viewCount ], GL_QUERY_RESULT, &ocSamples );
 
 	if ( r_logFile->integer )
 	{
@@ -2303,17 +2310,6 @@ static void R_CoherentHierachicalCulling()
 
 				// update node's visited flag
 				node->lastVisited[ tr.viewCount ] = tr.frameCount;
-
-				// optimization
-#if 0
-
-				if ( ( node->contents != -1 ) && node->sameAABBAsParent )
-				{
-					node->visible[ tr.viewCount ] = qtrue;
-					wasVisible = qtrue;
-				}
-
-#endif
 
 				bool leafThatNeedsQuery = node->contents != -1;
 

@@ -243,7 +243,7 @@ qboolean IsTriangleDegenerate(bspDrawVert_t * points, int a, int b, int c)
 	float           d;
 
 
-	/* calcuate the area of the triangle */
+	/* calculate the area of the triangle */
 	VectorSubtract(points[b].xyz, points[a].xyz, v1);
 	VectorSubtract(points[c].xyz, points[a].xyz, v2);
 	CrossProduct(v1, v2, v3);

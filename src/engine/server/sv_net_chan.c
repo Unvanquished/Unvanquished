@@ -49,7 +49,8 @@ static void SV_Netchan_Encode( client_t *client, msg_t *msg, char *commandString
 {
 	long /*reliableAcknowledge,*/ i, index;
 	byte                                     key, *string;
-	int                                      srdc, sbit, soob;
+	int                                      srdc, sbit;
+	qboolean                                 soob;
 
 	if ( msg->cursize < SV_ENCODE_START )
 	{
@@ -63,7 +64,7 @@ static void SV_Netchan_Encode( client_t *client, msg_t *msg, char *commandString
 
 	msg->bit = 0;
 	msg->readcount = 0;
-	msg->oob = 0;
+	msg->oob = qfalse;
 
 	/*reliableAcknowledge = */
 	MSG_ReadLong( msg );
@@ -114,14 +115,15 @@ SV_Netchan_Decode
 static void SV_Netchan_Decode( client_t *client, msg_t *msg )
 {
 	int  serverId, messageAcknowledge, reliableAcknowledge;
-	int  i, index, srdc, sbit, soob;
+	int  i, index, srdc, sbit;
 	byte key, *string;
+	qboolean soob;
 
 	srdc = msg->readcount;
 	sbit = msg->bit;
 	soob = msg->oob;
 
-	msg->oob = 0;
+	msg->oob = qfalse;
 
 	serverId = MSG_ReadLong( msg );
 	messageAcknowledge = MSG_ReadLong( msg );
@@ -204,10 +206,7 @@ void SV_Netchan_TransmitNextFragment( client_t *client )
 			client->netchan_end_queue = NULL;
 		}
 
-		if ( !SV_GameIsSinglePlayer() )
-		{
-			SV_Netchan_Encode( client, &netbuf->msg, netbuf->lastClientCommandString );
-		}
+		SV_Netchan_Encode( client, &netbuf->msg, netbuf->lastClientCommandString );
 
 		Netchan_Transmit( &client->netchan, netbuf->msg.cursize, netbuf->msg.data );
 
@@ -293,11 +292,7 @@ void SV_Netchan_Transmit( client_t *client, msg_t *msg )
 	}
 	else
 	{
-		if ( !SV_GameIsSinglePlayer() )
-		{
-			SV_Netchan_Encode( client, msg, client->lastClientCommandString );
-		}
-
+		SV_Netchan_Encode( client, msg, client->lastClientCommandString );
 		Netchan_Transmit( &client->netchan, msg->cursize, msg->data );
 	}
 }
@@ -318,10 +313,7 @@ qboolean SV_Netchan_Process( client_t *client, msg_t *msg )
 		return qfalse;
 	}
 
-	if ( !SV_GameIsSinglePlayer() )
-	{
-		SV_Netchan_Decode( client, msg );
-	}
+	SV_Netchan_Decode( client, msg );
 
 	return qtrue;
 }

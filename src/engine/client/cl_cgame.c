@@ -35,13 +35,15 @@ Maryland 20850 USA.
 // cl_cgame.c  -- client system interaction with client game
 
 #include "client.h"
-#include "libmumblelink.h"
 
-#ifdef USE_CRYPTO
-#include "../qcommon/crypto.h"
+#ifdef USE_MUMBLE
+#include "libmumblelink.h"
 #endif
 
+#include "../qcommon/crypto.h"
+
 #define __(x) Trans_GettextGame(x)
+#define C__(x, y) Trans_PgettextGame(x, y)
 
 extern qboolean        loadCamera( int camNum, const char *name );
 extern void            startCamera( int camNum, int time );
@@ -265,18 +267,6 @@ void CL_AddCgameCommand( const char *cmdName )
 	Cmd_SetCommandCompletionFunc( cmdName, CL_CompleteCgameCommand );
 }
 
-qboolean CL_CGameCheckKeyExec( int key )
-{
-	if ( cgvm )
-	{
-		return VM_Call( cgvm, CG_CHECKEXECKEY, key );
-	}
-	else
-	{
-		return qfalse;
-	}
-}
-
 /*
 =====================
 CL_ConfigstringModified
@@ -404,7 +394,7 @@ rescan:
 		// NERVE - SMF - allow server to indicate why they were disconnected
 		if ( argc >= 2 )
 		{
-			Com_Error( ERR_SERVERDISCONNECT, "Server Disconnected – %s", Cmd_Argv( 1 ) );
+			Com_Error( ERR_SERVERDISCONNECT, "Server disconnected: %s", Cmd_Argv( 1 ) );
 		}
 		else
 		{
@@ -474,17 +464,7 @@ rescan:
 		return qfalse;
 	}
 
-#ifdef USE_CRYPTO
-
-	if ( cl_pubkeyID->integer && !strcmp( cmd, "pubkey_request" ) )
-	{
-		char buffer[ MAX_STRING_CHARS ] = "pubkey ";
-		mpz_get_str( buffer + 7, 16, public_key.n );
-		CL_AddReliableCommand( buffer );
-		return qfalse;
-	}
-
-	if ( cl_pubkeyID->integer && !strcmp( cmd, "pubkey_decrypt" ) )
+	if ( !strcmp( cmd, "pubkey_decrypt" ) )
 	{
 		char         buffer[ MAX_STRING_CHARS ] = "pubkey_identify ";
 		unsigned int msg_len = MAX_STRING_CHARS - 16;
@@ -508,8 +488,6 @@ rescan:
 		mpz_clear( message );
 		return qfalse;
 	}
-
-#endif
 
 	// we may want to put a "connect to other server" command here
 
@@ -573,54 +551,6 @@ void CL_SetExpectedHunkUsage( const char *mapname )
 	com_expectedhunkusage = -1;
 }
 
-// dhm - nerve
-
-/*
-====================
-CL_SendBinaryMessage
-====================
-*/
-static void CL_SendBinaryMessage( const char *buf, int buflen )
-{
-	if ( buflen < 0 || buflen > MAX_BINARY_MESSAGE )
-	{
-		Com_Error( ERR_DROP, "CL_SendBinaryMessage: bad length %i", buflen );
-	}
-
-	clc.binaryMessageLength = buflen;
-	memcpy( clc.binaryMessage, buf, buflen );
-}
-
-/*
-====================
-CL_BinaryMessageStatus
-====================
-*/
-static int CL_BinaryMessageStatus( void )
-{
-	if ( clc.binaryMessageLength == 0 )
-	{
-		return MESSAGE_EMPTY;
-	}
-
-	if ( clc.binaryMessageOverflowed )
-	{
-		return MESSAGE_WAITING_OVERFLOW;
-	}
-
-	return MESSAGE_WAITING;
-}
-
-/*
-====================
-CL_CGameBinaryMessageReceived
-====================
-*/
-void CL_CGameBinaryMessageReceived( const char *buf, int buflen, int serverTime )
-{
-	VM_Call( cgvm, CG_MESSAGERECEIVED, buf, buflen, serverTime );
-}
-
 /*
 ====================
 CL_CM_LoadMap
@@ -649,8 +579,7 @@ void CL_CM_LoadMap( const char *mapname )
 
 /*
 ====================
-CL_ShutdonwCGame
-
+CL_ShutdownCGame
 ====================
 */
 void CL_ShutdownCGame( void )
@@ -720,6 +649,9 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			VM_CheckBlock( args[2], args[3], "CVARLVSB" );
 			Cvar_LatchedVariableStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 			return 0;
+
+		case CG_CVAR_VARIABLEINTEGERVALUE:
+			return Cvar_VariableIntegerValue( VMA( 1 ) );
 
 		case CG_ARGC:
 			return Cmd_Argc();
@@ -941,17 +873,12 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_R_LOADWORLDMAP:
+			re.SetWorldVisData( CM_ClusterPVS( -1 ) );
 			re.LoadWorld( VMA( 1 ) );
 			return 0;
 
 		case CG_R_REGISTERMODEL:
-#ifdef IPHONE
-			GLimp_AcquireGL();
 			return re.RegisterModel( VMA( 1 ) );
-			GLimp_ReleaseGL();
-#else
-			return re.RegisterModel( VMA( 1 ) );
-#endif // IPHONE
 
 		case CG_R_REGISTERSKIN:
 			return re.RegisterSkin( VMA( 1 ) );
@@ -965,28 +892,16 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			//----(SA)  end
 
 		case CG_R_REGISTERSHADER:
-#ifdef IPHONE_NOTYET
-			GLimp_AcquireGL();
 			return re.RegisterShader( VMA( 1 ) );
-			GLimp_ReleaseGL();
-#else
-			return re.RegisterShader( VMA( 1 ) );
-#endif // IPHONE
 
 		case CG_R_REGISTERFONT:
 			re.RegisterFontVM( VMA( 1 ), VMA( 2 ), args[ 3 ], VMA( 4 ) );
 			return 0;
 
 		case CG_R_REGISTERSHADERNOMIP:
-#ifdef IPHONE_NOTYET
-			GLimp_AcquireGL();
 			return re.RegisterShaderNoMip( VMA( 1 ) );
-			GLimp_ReleaseGL();
-#else
-			return re.RegisterShaderNoMip( VMA( 1 ) );
-#endif // IPHONE
-#if defined( USE_REFLIGHT )
 
+#if defined( USE_REFLIGHT )
 		case CG_R_REGISTERSHADERLIGHTATTENUATION:
 			return re.RegisterShaderLightAttenuation( VMA( 1 ) );
 #endif
@@ -998,8 +913,8 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_R_ADDREFENTITYTOSCENE:
 			re.AddRefEntityToScene( VMA( 1 ) );
 			return 0;
-#if defined( USE_REFLIGHT )
 
+#if defined( USE_REFLIGHT )
 		case CG_R_ADDREFLIGHTSTOSCENE:
 			re.AddRefLightToScene( VMA( 1 ) );
 			return 0;
@@ -1258,20 +1173,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Com_GetHunkInfo( VMA( 1 ), VMA( 2 ) );
 			return 0;
 
-		case CG_PUMPEVENTLOOP:
-//      Com_EventLoop();
-//      CL_WritePacket();
-			return 0;
-
-			//zinx - binary channel
-		case CG_SENDMESSAGE:
-			VM_CheckBlock( args[1], args[2], "SENDM" );
- 			CL_SendBinaryMessage( VMA( 1 ), args[ 2 ] );
-			return 0;
-
-		case CG_MESSAGESTATUS:
-			return CL_BinaryMessageStatus();
-
 			//bani - dynamic shaders
 		case CG_R_LOADDYNAMICSHADER:
 			return re.LoadDynamicShader( VMA( 1 ), VMA( 2 ) );
@@ -1300,8 +1201,8 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_S_SOUNDDURATION:
 			return S_SoundDuration( args[ 1 ] );
-#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 
+#if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 		case CG_R_REGISTERANIMATION:
 			return re.RegisterAnimation( VMA( 1 ) );
 
@@ -1347,6 +1248,10 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_GETTEXT:
 			strncpy( VMA(1), __(VMA(2)), args[3] );
+			return 0;
+
+		case CG_PGETTEXT:
+			strncpy( VMA( 1 ), C__( VMA( 2 ), VMA( 3 ) ), args[ 4 ] );
 			return 0;
 
 		case CG_R_GLYPH:
@@ -1538,7 +1443,7 @@ void CL_InitCGame( void )
 
 	t2 = Sys_Milliseconds();
 
-	Com_Printf( "CL_InitCGame: %5.2fs\n", ( t2 - t1 ) / 1000.0 );
+	Com_DPrintf( "CL_InitCGame: %5.2fs\n", ( t2 - t1 ) / 1000.0 );
 
 	// have the renderer touch all its images, so they are present
 	// on the card even if the driver does deferred loading
@@ -1621,7 +1526,7 @@ Adjust the clients view of server time.
 
 We attempt to have cl.serverTime exactly equal the server's view
 of time plus the timeNudge, but with variable latencies over
-the internet it will often need to drift a bit to match conditions.
+the Internet, it will often need to drift a bit to match conditions.
 
 Our ideal time would be to have the adjusted time approach, but not pass,
 the very latest snapshot.
@@ -1728,11 +1633,6 @@ void CL_FirstSnapshot( void )
 	}
 
 	cls.state = CA_ACTIVE;
-
-#ifdef IPHONE
-	// Force the device into right landscape mode:
-	GLimp_SetMode( 90 );
-#endif // IPHONE
 
 	// set the timedelta so we are exactly on this first frame
 	cl.serverTimeDelta = cl.snap.serverTime - cls.realtime;
@@ -1852,7 +1752,6 @@ void CL_SetCGameTime( void )
 		Com_Error( ERR_DROP, "CL_SetCGameTime: !cl.snap.valid" );
 	}
 
-	// allow pause in single player
 	if ( sv_paused->integer && cl_paused->integer && com_sv_running->integer )
 	{
 		// paused

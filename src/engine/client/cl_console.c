@@ -34,10 +34,7 @@ Maryland 20850 USA.
 
 // console.c
 
-#ifdef USING_CMAKE
-#include "git_version.h"
-#endif
-
+#include "revision.h"
 #include "client.h"
 
 int g_console_field_width = 78;
@@ -46,7 +43,6 @@ int g_console_field_width = 78;
 
 console_t con;
 
-cvar_t    *con_debug;
 cvar_t    *con_conspeed;
 cvar_t    *con_notifytime;
 cvar_t    *con_autoclear;
@@ -204,11 +200,6 @@ void Con_OpenConsole_f( void )
 	{
 		Con_ToggleConsole_f();
 	}
-}
-
-const char *Con_GetText( int console )
-{
-	return NULL;
 }
 
 /*
@@ -507,7 +498,6 @@ void Con_Init( void )
 {
 	con_notifytime = Cvar_Get( "con_notifytime", "7", 0 );  // JPW NERVE increased per id req for obits
 	con_conspeed = Cvar_Get( "scr_conspeed", "3", 0 );
-	con_debug = Cvar_Get( "con_debug", "0", CVAR_ARCHIVE );  //----(SA)    added
 	con_autoclear = Cvar_Get( "con_autoclear", "1", CVAR_ARCHIVE );
 	con_restricted = Cvar_Get( "con_restricted", "0", CVAR_INIT );  // DHM - Nerve
 
@@ -519,7 +509,7 @@ void Con_Init( void )
 	scr_conColorBlue = Cvar_Get( "scr_conColorBlue", "0.3", CVAR_ARCHIVE );
 	scr_conColorGreen = Cvar_Get( "scr_conColorGreen", "0.23", CVAR_ARCHIVE );
 
-	scr_conUseOld = Cvar_Get( "scr_conUseOld", "0", CVAR_ARCHIVE | CVAR_LATCH );
+	scr_conUseOld = Cvar_Get( "scr_conUseOld", "0", CVAR_ARCHIVE );
 
 	scr_conBarHeight = Cvar_Get( "scr_conBarHeight", "2", CVAR_ARCHIVE );
 
@@ -909,6 +899,10 @@ void Con_DrawSolidConsole( float frac )
 	if (!scr_conUseOld->integer)
 	{
 		con.xadjust = 15;
+	}
+	else
+	{
+		con.xadjust = 0;
 	}
 
 	SCR_AdjustFrom640 (&con.xadjust, NULL, NULL, NULL);

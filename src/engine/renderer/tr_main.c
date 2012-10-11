@@ -826,7 +826,7 @@ void R_SetFrameFog( void )
 	else
 	{
 		// probably usually not necessary to copy the whole thing.
-		// potential FIXME: since this is the most common occurance, diff first and only set changes
+		// potential FIXME: since this is the most common occurrence, diff first and only set changes
 		memcpy( &glfogsettings[ FOG_CURRENT ], &glfogsettings[ FOG_TARGET ], sizeof( glfog_t ) );
 	}
 
@@ -1050,57 +1050,15 @@ void R_SetupProjection( void )
 	height = ymax - ymin;
 	depth = zFar - zNear;
 
-#ifdef IPHONE
+	tr.viewParms.projectionMatrix[ 0 ] = 2 * zNear / width;
+	tr.viewParms.projectionMatrix[ 4 ] = 0;
+	tr.viewParms.projectionMatrix[ 8 ] = ( xmax + xmin ) / width; // ie., 0
+	tr.viewParms.projectionMatrix[ 12 ] = 0;
 
-	if ( glConfig.vidRotation == 90 )
-	{
-		tr.viewParms.projectionMatrix[ 0 ] = 0;
-		tr.viewParms.projectionMatrix[ 4 ] = -2 * zNear / height;
-		tr.viewParms.projectionMatrix[ 8 ] = ( ymax + ymin ) / height; // ie., 0
-		tr.viewParms.projectionMatrix[ 12 ] = 0;
-
-		tr.viewParms.projectionMatrix[ 1 ] = 2 * zNear / width;
-		tr.viewParms.projectionMatrix[ 5 ] = 0;
-		tr.viewParms.projectionMatrix[ 9 ] = ( xmax + xmin ) / width; // ie., 0
-		tr.viewParms.projectionMatrix[ 13 ] = 0;
-	}
-	else if ( glConfig.vidRotation == 180 )
-	{
-		tr.viewParms.projectionMatrix[ 0 ] = -2 * zNear / width;
-		tr.viewParms.projectionMatrix[ 4 ] = 0;
-		tr.viewParms.projectionMatrix[ 8 ] = ( xmax + xmin ) / width; // ie., 0
-		tr.viewParms.projectionMatrix[ 12 ] = 0;
-
-		tr.viewParms.projectionMatrix[ 1 ] = 0;
-		tr.viewParms.projectionMatrix[ 5 ] = -2 * zNear / height;
-		tr.viewParms.projectionMatrix[ 9 ] = ( ymax + ymin ) / height; // ie., 0
-		tr.viewParms.projectionMatrix[ 13 ] = 0;
-	}
-	else if ( glConfig.vidRotation == 270 )
-	{
-		tr.viewParms.projectionMatrix[ 0 ] = 0;
-		tr.viewParms.projectionMatrix[ 4 ] = 2 * zNear / height;
-		tr.viewParms.projectionMatrix[ 8 ] = ( ymax + ymin ) / height; // ie., 0
-		tr.viewParms.projectionMatrix[ 12 ] = 0;
-
-		tr.viewParms.projectionMatrix[ 1 ] = -2 * zNear / width;
-		tr.viewParms.projectionMatrix[ 5 ] = 0;
-		tr.viewParms.projectionMatrix[ 9 ] = ( xmax + xmin ) / width; // ie., 0
-		tr.viewParms.projectionMatrix[ 13 ] = 0;
-	}
-	else
-#endif // IPHONE
-	{
-		tr.viewParms.projectionMatrix[ 0 ] = 2 * zNear / width;
-		tr.viewParms.projectionMatrix[ 4 ] = 0;
-		tr.viewParms.projectionMatrix[ 8 ] = ( xmax + xmin ) / width; // ie., 0
-		tr.viewParms.projectionMatrix[ 12 ] = 0;
-
-		tr.viewParms.projectionMatrix[ 1 ] = 0;
-		tr.viewParms.projectionMatrix[ 5 ] = 2 * zNear / height;
-		tr.viewParms.projectionMatrix[ 9 ] = ( ymax + ymin ) / height; // ie., 0
-		tr.viewParms.projectionMatrix[ 13 ] = 0;
-	}
+	tr.viewParms.projectionMatrix[ 1 ] = 0;
+	tr.viewParms.projectionMatrix[ 5 ] = 2 * zNear / height;
+	tr.viewParms.projectionMatrix[ 9 ] = ( ymax + ymin ) / height; // ie., 0
+	tr.viewParms.projectionMatrix[ 13 ] = 0;
 
 	tr.viewParms.projectionMatrix[ 2 ] = 0;
 	tr.viewParms.projectionMatrix[ 6 ] = 0;
@@ -1783,7 +1741,7 @@ void R_SortDrawSurfs( drawSurf_t *drawSurfs, int numDrawSurfs )
 		// no shader should ever have this sort type
 		if ( shader->sort == SS_BAD )
 		{
-			ri.Error( ERR_DROP, "Shader '%s'with sort == SS_BAD", shader->name );
+			ri.Error( ERR_DROP, "Shader '%s' with sort == SS_BAD", shader->name );
 		}
 
 		// if the mirror was completely clipped away, we may need to check another surface
@@ -2057,6 +2015,8 @@ void R_DebugGraphics( void )
 	GL_Bind( tr.whiteImage );
 	GL_Cull( CT_FRONT_SIDED );
 	ri.CM_DrawDebugSurface( R_DebugPolygon );
+	
+	R_FogOn();
 }
 
 /*
@@ -2117,7 +2077,5 @@ void R_RenderView( viewParms_t *parms )
 	R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
 
 	// draw main system development information (surface outlines, etc)
-	R_FogOff();
 	R_DebugGraphics();
-	R_FogOn();
 }

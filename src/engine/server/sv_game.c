@@ -32,13 +32,10 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-// sv_game.c -- interface to the game dll
+// sv_game.c -- interface to the game module
 
 #include "server.h"
-
-#ifdef USE_CRYPTO
 #include "../qcommon/crypto.h"
-#endif
 
 void            CMod_PhysicsAddEntity( sharedEntity_t *gEnt );
 void            CMod_PhysicsAddStatic( const sharedEntity_t *gEnt );
@@ -105,7 +102,7 @@ void SV_GameSendServerCommand( int clientNum, const char *text )
 	}
 	else if ( clientNum == -2 )
 	{
-		SV_PrintTranslatedText( text );
+		SV_PrintTranslatedText( text, qfalse );
 	}
 	else
 	{
@@ -125,7 +122,7 @@ SV_GameDropClient
 Disconnects the client with a message
 ===============
 */
-void SV_GameDropClient( int clientNum, const char *reason, int length )
+void SV_GameDropClient( int clientNum, const char *reason )
 {
 	if ( clientNum < 0 || clientNum >= sv_maxclients->integer )
 	{
@@ -133,11 +130,6 @@ void SV_GameDropClient( int clientNum, const char *reason, int length )
 	}
 
 	SV_DropClient( svs.clients + clientNum, reason );
-
-	if ( length )
-	{
-		SV_TempBanNetAddress( svs.clients[ clientNum ].netchan.remoteAddress, length );
-	}
 }
 
 /*
@@ -149,7 +141,6 @@ Generate an encrypted RSA message
 */
 int SV_RSAGenMsg( const char *pubkey, char *cleartext, char *encrypted )
 {
-#ifdef USE_CRYPTO
 	struct rsa_public_key public_key;
 
 	mpz_t                 message;
@@ -172,9 +163,6 @@ int SV_RSAGenMsg( const char *pubkey, char *cleartext, char *encrypted )
 	mpz_get_str( encrypted, 16, message );
 	mpz_clear( message );
 	return retval;
-#else
-	return 0;
-#endif
 }
 
 /*
@@ -300,7 +288,7 @@ void SV_AdjustAreaPortalState( sharedEntity_t *ent, qboolean open )
 
 /*
 ==================
-SV_GameAreaEntities
+SV_EntityContact
 ==================
 */
 qboolean SV_EntityContact( vec3_t mins, vec3_t maxs, const sharedEntity_t *gEnt, traceType_t type )
@@ -461,6 +449,38 @@ extern int S_GetSoundLength( sfxHandle_t sfxHandle );
 
 /*
 ====================
+SV_GetTimeString
+
+Returns 0 if we have a representable time
+Truncation is ignored
+====================
+*/
+static void SV_GetTimeString( char *buffer, int length, const char *format, const qtime_t *tm )
+{
+	if ( tm )
+	{
+		struct tm t;
+
+		t.tm_sec   = tm->tm_sec;
+		t.tm_min   = tm->tm_min;
+		t.tm_hour  = tm->tm_hour;
+		t.tm_mday  = tm->tm_mday;
+		t.tm_mon   = tm->tm_mon;
+		t.tm_year  = tm->tm_year;
+		t.tm_wday  = tm->tm_wday;
+		t.tm_yday  = tm->tm_yday;
+		t.tm_isdst = tm->tm_isdst;
+
+		strftime ( buffer, length, format, &t );
+	}
+	else
+	{
+		strftime( buffer, length, format, gmtime( NULL ) );
+	}
+}
+
+/*
+====================
 SV_GameSystemCalls
 
 The module is making a system call
@@ -546,7 +566,7 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return 0;
 
 		case G_DROP_CLIENT:
-			SV_GameDropClient( args[ 1 ], VMA( 2 ), args[ 3 ] );
+			SV_GameDropClient( args[ 1 ], VMA( 2 ) );
 			return 0;
 
 		case G_SEND_SERVER_COMMAND:
@@ -740,10 +760,23 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 		case G_RSA_GENMSG:
 			return SV_RSAGenMsg( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
 
-                case G_QUOTESTRING:
+		case G_QUOTESTRING:
 			Cmd_QuoteStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 			return 0;
 
+		case G_GENFINGERPRINT:
+			Com_MD5Buffer( VMA( 1 ), args[ 2 ], VMA( 3 ), args [ 4 ] );
+			return 0;
+
+		case G_GETPLAYERPUBKEY:
+			SV_GetPlayerPubkey( args[ 1 ], VMA( 2 ), args[ 3 ] );
+			return 0;
+
+                case G_GETTIMESTRING:
+		        VM_CheckBlock( args[1], args[2], "STRFTIME" );
+			SV_GetTimeString( VMA( 1 ), args[ 2 ], VMA( 3 ), VMA( 4 ) );
+			return 0;
+			
 		default:
 			Com_Error( ERR_DROP, "Bad game system trap: %ld", ( long int ) args[ 0 ] );
 	}
@@ -844,7 +877,7 @@ void SV_InitGameProgs( void )
 	sv.num_tagheaders = 0;
 	sv.num_tags = 0;
 
-	// load the dll or bytecode
+	// load the game module
 	gvm = VM_Create( "qagame", SV_GameSystemCalls, Cvar_VariableValue( "vm_game" ) );
 
 	if ( !gvm )
@@ -870,28 +903,6 @@ qboolean SV_GameCommand( void )
 	}
 
 	return VM_Call( gvm, GAME_CONSOLE_COMMAND );
-}
-
-/*
-====================
-SV_GameIsSinglePlayer
-====================
-*/
-qboolean SV_GameIsSinglePlayer( void )
-{
-	return ( com_gameInfo.spGameTypes & ( 1 << g_gameType->integer ) );
-}
-
-/*
-====================
-SV_GameIsCoop
-
-        This is a modified SinglePlayer, no savegame capability for example
-====================
-*/
-qboolean SV_GameIsCoop( void )
-{
-	return ( com_gameInfo.coopGameTypes & ( 1 << g_gameType->integer ) );
 }
 
 /*

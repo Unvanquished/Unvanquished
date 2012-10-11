@@ -48,28 +48,6 @@ Maryland 20850 USA.
 #import <Cocoa/Cocoa.h>
 
 /*
-================
-Sys_TempPath
-================
-*/
-const char *Sys_TempPath( void )
-{
-	static UInt8 posixPath[ MAX_OSPATH ];
-	FSRef ref;
-	if( FSFindFolder( kOnAppropriateDisk,
-				kTemporaryFolderType, kCreateFolder, &ref ) == noErr )
-	{
-		if( FSRefMakePath( &ref, posixPath,
-					sizeof( posixPath ) - 1 ) == noErr )
-		{
-			return (const char *)posixPath;
-		}
-	}
-
-	return "/tmp";
-}
-
-/*
 ==================
 Sys_GetClipboardData
 ==================
@@ -148,21 +126,4 @@ dialogResult_t Sys_Dialog( dialogType_t type, const char *message, const char *t
 	[alert release];
 
 	return result;
-}
-
-char *Sys_StripAppBundle( char *dir )
-{
-	static char cwd[MAX_OSPATH];
-
-	Q_strncpyz(cwd, dir, sizeof(cwd));
-	if(strcmp(Sys_Basename(cwd), "MacOS"))
-		return dir;
-	Q_strncpyz(cwd, Sys_Dirname(cwd), sizeof(cwd));
-	if(strcmp(Sys_Basename(cwd), "Contents"))
-		return dir;
-	Q_strncpyz(cwd, Sys_Dirname(cwd), sizeof(cwd));
-	if(!strstr(Sys_Basename(cwd), ".app"))
-		return dir;
-	Q_strncpyz(cwd, Sys_Dirname(cwd), sizeof(cwd));
-	return cwd;
 }

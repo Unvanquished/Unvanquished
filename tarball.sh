@@ -91,12 +91,12 @@ test "$STRIP_BINARIES" = '' || {
 
 # purge (most) assets
 test "$STRIP_ASSETS" = '' || {
-  rm -rf $PACKAGE/main $PACKAGE/src/gamelogic/*/ui/*[^h]
+  rm -rf $PACKAGE/main/[^u]* $PACKAGE/main/ui/*[^h]
 }
 
 # remove some disabled-by-default code
 test "$STRIP_DEAD" = '' || {
-  rm -rf $PACKAGE/src/gamelogic/etmain $PACKAGE/src/gamelogic/base
+  : # nothing to do?
 }
 
 # kill empty directories

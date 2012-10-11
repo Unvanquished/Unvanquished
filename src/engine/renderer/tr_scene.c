@@ -474,6 +474,11 @@ void RE_AddRefEntityToScene( const refEntity_t *ent )
 	R_AddModelShadow( ( refEntity_t * ) ent );
 }
 
+void RE_AddLightToSceneQ3A( const vec3_t org, float radius, float r, float g, float b )
+{
+	RE_AddLightToScene( org, radius, r_lightScale->value, r, g, b, 0, 0 );
+}
+
 /*
 RE_AddLightToScene()
 ydnar: modified dlight system to support separate radius and intensity
@@ -687,43 +692,9 @@ void RE_RenderScene( const refdef_t *fd )
 	// convert to GL's 0-at-the-bottom space
 	//
 	memset( &parms, 0, sizeof( parms ) );
-#ifdef IPHONE
-
-	if ( glConfig.vidRotation == 90 || glConfig.vidRotation == 270 )
 	{
-		parms.viewportX = tr.refdef.y;
-
-		if ( glConfig.vidRotation == 270 )
-		{
-			parms.viewportX = glConfig.vidHeight - ( tr.refdef.y + tr.refdef.height );
-			parms.viewportY = glConfig.vidWidth - ( tr.refdef.x + tr.refdef.width );
-		}
-		else
-		{
-			parms.viewportX = tr.refdef.y;
-			parms.viewportY = tr.refdef.x;
-		}
-
-		parms.viewportWidth = tr.refdef.height;
-		parms.viewportHeight = tr.refdef.width;
-	}
-	else
-#endif // IPHONE
-	{
-#ifdef IPHONE
-
-		if ( glConfig.vidRotation == 180 )
-		{
-			parms.viewportX = glConfig.vidWidth - ( tr.refdef.x + tr.refdef.width );
-			parms.viewportY = tr.refdef.y;
-		}
-		else
-#endif // IPHONE
-		{
-			parms.viewportX = tr.refdef.x;
-			parms.viewportY = glConfig.vidHeight - ( tr.refdef.y + tr.refdef.height );
-		}
-
+		parms.viewportX = tr.refdef.x;
+		parms.viewportY = glConfig.vidHeight - ( tr.refdef.y + tr.refdef.height );
 		parms.viewportWidth = tr.refdef.width;
 		parms.viewportHeight = tr.refdef.height;
 	}
@@ -764,7 +735,7 @@ Save out the old render info to a temp place so we don't kill the LOD system
 when we do a second render.
 ================
 */
-void RE_SaveViewParms()
+void RE_SaveViewParms( void )
 {
 	// save old viewParms so we can return to it after the mirror view
 	g_oldViewParms = tr.viewParms;
@@ -778,7 +749,7 @@ Restore the old render info so we don't kill the LOD system
 when we do a second render.
 ================
 */
-void RE_RestoreViewParms()
+void RE_RestoreViewParms( void )
 {
 	// This was killing the LOD computation
 	tr.viewParms = g_oldViewParms;

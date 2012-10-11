@@ -400,10 +400,10 @@ void R_CalcTBN2( vec3_t tangent, vec3_t binormal, vec3_t normal,
 	VectorSubtract( v3, v1, v3v1 );
 
 	// The equation presented in the article states that:
-	// c2c1_T = V2.texcoord.x – V1.texcoord.x
-	// c2c1_B = V2.texcoord.y – V1.texcoord.y
-	// c3c1_T = V3.texcoord.x – V1.texcoord.x
-	// c3c1_B = V3.texcoord.y – V1.texcoord.y
+	// c2c1_T = V2.texcoord.x − V1.texcoord.x
+	// c2c1_B = V2.texcoord.y − V1.texcoord.y
+	// c3c1_T = V3.texcoord.x − V1.texcoord.x
+	// c3c1_B = V3.texcoord.y − V1.texcoord.y
 
 	// Calculate c2c1_T and c2c1_B
 	c2c1_T = t2[ 0 ] - t1[ 0 ];
@@ -530,95 +530,6 @@ qboolean R_CalcTangentVectors( srfVert_t *dv[ 3 ] )
 	}
 
 	return qtrue;
-}
-
-/*
-=================
-R_FindSurfaceTriangleWithEdge
-Tr3B - recoded from Q2E
-=================
-*/
-static int R_FindSurfaceTriangleWithEdge( int numTriangles, srfTriangle_t *triangles, int start, int end, int ignore )
-{
-	srfTriangle_t *tri;
-	int           count, match;
-	int           i;
-
-	count = 0;
-	match = -1;
-
-	for ( i = 0, tri = triangles; i < numTriangles; i++, tri++ )
-	{
-		if ( ( tri->indexes[ 0 ] == start && tri->indexes[ 1 ] == end ) ||
-		     ( tri->indexes[ 1 ] == start && tri->indexes[ 2 ] == end ) || ( tri->indexes[ 2 ] == start && tri->indexes[ 0 ] == end ) )
-		{
-			if ( i != ignore )
-			{
-				match = i;
-			}
-
-			count++;
-		}
-		else if ( ( tri->indexes[ 1 ] == start && tri->indexes[ 0 ] == end ) ||
-		          ( tri->indexes[ 2 ] == start && tri->indexes[ 1 ] == end ) || ( tri->indexes[ 0 ] == start && tri->indexes[ 2 ] == end ) )
-		{
-			count++;
-		}
-	}
-
-	// detect edges shared by three triangles and make them seams
-	if ( count > 2 )
-	{
-		match = -1;
-	}
-
-	return match;
-}
-
-/*
-=================
-R_CalcSurfaceTriangleNeighbors
-Tr3B - recoded from Q2E
-=================
-*/
-void R_CalcSurfaceTriangleNeighbors( int numTriangles, srfTriangle_t *triangles )
-{
-	int           i;
-	srfTriangle_t *tri;
-
-	for ( i = 0, tri = triangles; i < numTriangles; i++, tri++ )
-	{
-		tri->neighbors[ 0 ] = R_FindSurfaceTriangleWithEdge( numTriangles, triangles, tri->indexes[ 1 ], tri->indexes[ 0 ], i );
-		tri->neighbors[ 1 ] = R_FindSurfaceTriangleWithEdge( numTriangles, triangles, tri->indexes[ 2 ], tri->indexes[ 1 ], i );
-		tri->neighbors[ 2 ] = R_FindSurfaceTriangleWithEdge( numTriangles, triangles, tri->indexes[ 0 ], tri->indexes[ 2 ], i );
-	}
-}
-
-/*
-=================
-R_CalcSurfaceTrianglePlanes
-=================
-*/
-void R_CalcSurfaceTrianglePlanes( int numTriangles, srfTriangle_t *triangles, srfVert_t *verts )
-{
-	int           i;
-	srfTriangle_t *tri;
-
-	for ( i = 0, tri = triangles; i < numTriangles; i++, tri++ )
-	{
-		float  *v1, *v2, *v3;
-		vec3_t d1, d2;
-
-		v1 = verts[ tri->indexes[ 0 ] ].xyz;
-		v2 = verts[ tri->indexes[ 1 ] ].xyz;
-		v3 = verts[ tri->indexes[ 2 ] ].xyz;
-
-		VectorSubtract( v2, v1, d1 );
-		VectorSubtract( v3, v1, d2 );
-
-		CrossProduct( d2, d1, tri->plane );
-		tri->plane[ 3 ] = DotProduct( tri->plane, v1 );
-	}
 }
 
 /*
@@ -2929,7 +2840,7 @@ void R_AddPolygonInteractions( trRefLight_t *light )
 R_AddLightInteractions
 =============
 */
-void R_AddLightInteractions()
+void R_AddLightInteractions( void )
 {
 	int          i;
 	trRefLight_t *light;
@@ -3104,9 +3015,6 @@ void R_AddLightInteractions()
 		// set up view dependent light scissor
 		R_SetupLightScissor( light );
 
-		// set up view dependent light depth bounds
-		R_SetupLightDepthBounds( light );
-
 		// set up view dependent light Level of Detail
 		R_SetupLightLOD( light );
 
@@ -3168,7 +3076,7 @@ void R_AddLightInteractions()
 	}
 }
 
-void R_AddLightBoundsToVisBounds()
+void R_AddLightBoundsToVisBounds( void )
 {
 	int          i;
 	trRefLight_t *light;
@@ -3409,7 +3317,7 @@ void R_DebugBoundingBox( const vec3_t origin, const vec3_t mins, const vec3_t ma
 
 	// draw bounding box
 	glBegin( GL_LINES );
-	glVertexAttrib4fvARB( ATTR_INDEX_COLOR, color );
+	glVertexAttrib4fv( ATTR_INDEX_COLOR, color );
 
 	for ( i = 0; i < 4; i++ )
 	{

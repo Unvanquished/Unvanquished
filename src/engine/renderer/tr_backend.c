@@ -703,11 +703,7 @@ void RB_BeginDrawingView( void )
 	if ( backEnd.viewParms.isPortal )
 	{
 		float  plane[ 4 ];
-#ifdef IPHONE
-		float  plane2[ 4 ];
-#else
 		double plane2[ 4 ];
-#endif // IPHONE
 
 		plane[ 0 ] = backEnd.viewParms.portalPlane.normal[ 0 ];
 		plane[ 1 ] = backEnd.viewParms.portalPlane.normal[ 1 ];
@@ -914,10 +910,8 @@ void RB_RenderDrawSurfList( drawSurf_t *drawSurfs, int numDrawSurfs )
 	// darken down any stencil shadows
 	RB_ShadowFinish();
 
-#ifndef IPHONE
 	// add light flares on lights that aren't obscured
 	RB_RenderFlares();
-#endif // !PHONE
 
 #ifdef __MACOS__
 	Sys_PumpEvents(); // crutch up the mac's limited buffer queue size
@@ -943,26 +937,11 @@ void RB_SetGL2D( void )
 	backEnd.projection2D = qtrue;
 
 	// set 2D virtual screen size
-#ifdef IPHONE
-
-	if ( glConfig.vidRotation == 90.0 || glConfig.vidRotation == 270.0 )
-	{
-		glViewport( 0, 0, glConfig.vidHeight, glConfig.vidWidth );
-		glScissor( 0, 0, glConfig.vidHeight, glConfig.vidWidth );
-	}
-	else
-#endif // IPHONE
-	{
-		glViewport( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
-		glScissor( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
-	}
+	glViewport( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
+	glScissor( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
 
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
-#ifdef IPHONE
-	glRotatef( glConfig.vidRotation, 0, 0, 1 );
-	glTranslatef( 0, 0, 0 );
-#endif // IPHONE
 	glOrtho( 0, glConfig.vidWidth, glConfig.vidHeight, 0, 0, 1 );
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
@@ -1029,11 +1008,7 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 	{
 		tr.scratchImage[ client ]->width = tr.scratchImage[ client ]->uploadWidth = cols;
 		tr.scratchImage[ client ]->height = tr.scratchImage[ client ]->uploadHeight = rows;
-#ifdef IPHONE
-		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, cols, rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
-#else
 		glTexImage2D( GL_TEXTURE_2D, 0, 3, cols, rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
-#endif
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
@@ -1052,7 +1027,7 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 	if ( r_speeds->integer )
 	{
 		end = ri.Milliseconds();
-		ri.Printf( PRINT_ALL, "glTexSubImage2D %i, %i: %i msec\n", cols, rows, end - start );
+		ri.Printf( PRINT_DEVELOPER, "glTexSubImage2D %i, %i: %i msec\n", cols, rows, end - start );
 	}
 
 	RB_SetGL2D();
@@ -1080,11 +1055,7 @@ void RE_UploadCinematic( int w, int h, int cols, int rows, const byte *data, int
 	{
 		tr.scratchImage[ client ]->width = tr.scratchImage[ client ]->uploadWidth = cols;
 		tr.scratchImage[ client ]->height = tr.scratchImage[ client ]->uploadHeight = rows;
-#ifdef IPHONE
-		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, cols, rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
-#else
 		glTexImage2D( GL_TEXTURE_2D, 0, 3, cols, rows, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
-#endif // IPHONE
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 		glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP );
@@ -1546,7 +1517,7 @@ void RB_ShowImages( void )
 	glFinish();
 
 	end = ri.Milliseconds();
-	ri.Printf( PRINT_ALL, "%i msec to draw all images\n", end - start );
+	ri.Printf( PRINT_DEVELOPER, "%i msec to draw all images\n", end - start );
 }
 
 /*
@@ -1622,8 +1593,6 @@ const void     *RB_SwapBuffers( const void *data )
 
 	cmd = ( const swapBuffersCommand_t * ) data;
 
-#ifndef IPHONE
-
 	// we measure overdraw by reading back the stencil buffer and
 	// counting up the number of increments that have happened
 	if ( r_measureOverdraw->integer )
@@ -1643,8 +1612,6 @@ const void     *RB_SwapBuffers( const void *data )
 		backEnd.pc.c_overDraw += sum;
 		ri.Hunk_FreeTempMemory( stencilReadback );
 	}
-
-#endif // !IPHONE
 
 	if ( !glState.finishCalled )
 	{

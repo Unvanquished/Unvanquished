@@ -36,9 +36,9 @@ Maryland 20850 USA.
 #define __VM_TRAPS_H
 
 // Major: API breakage
-#define SYSCALL_ABI_VERSION_MAJOR 1
+#define SYSCALL_ABI_VERSION_MAJOR 3
 // Minor: API extension
-#define SYSCALL_ABI_VERSION_MINOR 0
+#define SYSCALL_ABI_VERSION_MINOR 1
 
 // First VM-specific call no.
 #define FIRST_VM_SYSCALL 256
@@ -65,9 +65,6 @@ typedef enum sharedImport_s
   TRAP_MATRIXMULTIPLY = 128, // unused
   TRAP_ANGLEVECTORS,         // unused
   TRAP_PERPENDICULARVECTOR,  // unused
-
-  TRAP_TESTPRINTINT = 224,   // = testPrintInt
-  TRAP_TESTPRINTFLOAT,       // = testPrintFloat
 
   TRAP_VERSION = 255
 } sharedTraps_t;

@@ -41,22 +41,23 @@ Maryland 20850 USA.
 
 #ifdef _WIN32
 #include <windows.h>
-#endif
+#else
 
 #ifdef __FreeBSD__
 #include <sys/types.h>
 #endif
 
-#ifndef _WIN32
 #include <sys/mman.h> // for PROT_ stuff
-#endif
 
 /* need this on NX enabled systems (i386 with PAE kernel or
  * noexec32=on x86_64) */
-#if defined( __linux__ ) || defined( __FreeBSD__ )
 #define VM_X86_MMAP
-#endif
 
+ // workaround for systems that use the old MAP_ANON macro
+#ifndef MAP_ANONYMOUS
+#define MAP_ANONYMOUS MAP_ANON
+#endif
+#endif
 static void VM_Destroy_Compiled( vm_t *self );
 
 /*
@@ -442,66 +443,39 @@ static void NORETURN ErrJump( void )
 /*
 =================
 DoSyscall
-Uses asm to retrieve arguments from registers to work around different calling conventions
+
+Assembler helper routines will write their arguments directly to global variables,
+so as to work around different calling conventions
 =================
 */
 
-#if defined( _MSC_VER ) && idx64
+int      vm_syscallNum;
+int      vm_programStack;
+int *    vm_opStackBase;
+uint8_t  vm_opStackOfs;
+intptr_t vm_arg;
 
-extern void    qsyscall64( void );
-extern uint8_t qvmcall64( int *programStack, int *opStack, intptr_t *instructionPointers, byte *dataBase );
-
-// Microsoft does not support inline assembler on x64 platforms. Meh.
-void DoSyscall( int syscallNum, int programStack, int *opStackBase, uint8_t opStackOfs, intptr_t arg )
-{
-#else
 static void DoSyscall( void )
 {
-	int      syscallNum;
-	int      programStack;
-	int      *opStackBase;
-	uint8_t  opStackOfs;
-	intptr_t arg;
-#endif
-
 	vm_t     *savedVM;
-
-#if defined( _MSC_VER )
-#if !idx64
-	__asm
-	{
-		mov     dword ptr syscallNum, eax
-		mov     dword ptr programStack, esi
-		mov     byte ptr opStackOfs, bl
-		mov     dword ptr opStackBase, edi
-		mov     dword ptr arg, ecx
-	}
-#endif
-#else
-	__asm__ volatile(
-	  ""
-	  : "=a"( syscallNum ), "=S"( programStack ), "=D"( opStackBase ), "=b"( opStackOfs ),
-	  "=c"( arg )
-	);
-#endif
 
 	// save currentVM so as to allow for recursive VM entry
 	savedVM = currentVM;
 	// modify VM stack pointer for recursive VM entry
-	currentVM->programStack = programStack - 4;
+	currentVM->programStack = vm_programStack - 4;
 
-	if ( syscallNum < 0 )
+	if ( vm_syscallNum < 0 )
 	{
 		int      *data;
 #if idx64
 		int      index;
 		intptr_t args[ 11 ];
 #endif
-		VM_SetSanity( savedVM, ~syscallNum );
-		data = ( int * )( savedVM->dataBase + programStack + 4 );
+		VM_SetSanity( savedVM, ~vm_syscallNum );
+		data = ( int * )( savedVM->dataBase + vm_programStack + 4 );
 
 #if idx64
-		args[ 0 ] = ~syscallNum;
+		args[ 0 ] = ~vm_syscallNum;
 
 		for ( index = 1; index < ARRAY_LEN( args ); index++ )
 		{
@@ -510,44 +484,44 @@ static void DoSyscall( void )
 
 		if ( args[ 0 ] < FIRST_VM_SYSCALL )
 		{
-			opStackBase[ opStackOfs + 1 ] = VM_SystemCall( args ); // Common
+			vm_opStackBase[ vm_opStackOfs + 1 ] = VM_SystemCall( args ); // Common
 		}
 		else
 		{
-			opStackBase[ opStackOfs + 1 ] = savedVM->systemCall( args ); // VM-specific
+			vm_opStackBase[ vm_opStackOfs + 1 ] = savedVM->systemCall( args ); // VM-specific
 		}
 #else
-		data[ 0 ] = ~syscallNum;
+		data[ 0 ] = ~vm_syscallNum;
 
 		if ( data[ 0 ] < FIRST_VM_SYSCALL )
 		{
-			opStackBase[ opStackOfs + 1 ] = VM_SystemCall( data ); // Common
+			vm_opStackBase[ vm_opStackOfs + 1 ] = VM_SystemCall( data ); // Common
 		}
 		else
 		{
-			opStackBase[ opStackOfs + 1 ] = savedVM->systemCall( data ); // VM-specific
+			vm_opStackBase[ vm_opStackOfs + 1 ] = savedVM->systemCall( (intptr_t *) data ); // VM-specific
 		}
 #endif
-		VM_CheckSanity( savedVM, ~syscallNum );
+		VM_CheckSanity( savedVM, ~vm_syscallNum );
 	}
 	else
 	{
-		switch ( syscallNum )
+		switch ( vm_syscallNum )
 		{
 			case VM_JMP_VIOLATION:
 					ErrJump();
 
 			case VM_BLOCK_COPY:
-					if ( opStackOfs < 1 )
+					if ( vm_opStackOfs < 1 )
 					{
 						Com_Error( ERR_DROP, "VM_BLOCK_COPY failed due to corrupted opStack" );
 					}
 
-				VM_BlockCopy( opStackBase[( opStackOfs - 1 ) ], opStackBase[ opStackOfs ], arg );
+				VM_BlockCopy( vm_opStackBase[ ( vm_opStackOfs - 1 ) ], vm_opStackBase[ vm_opStackOfs ], vm_arg );
 				break;
 
 			default:
-					Com_Error( ERR_DROP, "Unknown VM operation %d", syscallNum );
+					Com_Error( ERR_DROP, "Unknown VM operation %d", vm_syscallNum );
 		}
 	}
 
@@ -577,13 +551,8 @@ Call to DoSyscall()
 int EmitCallDoSyscall( vm_t *vm )
 {
 	// use edx register to store DoSyscall address
-#if defined( _MSC_VER ) && idx64
-	EmitRexString( 0x48, "BA" );  // mov edx, qsyscall64
-	EmitPtr( qsyscall64 );
-#else
 	EmitRexString( 0x48, "BA" );  // mov edx, DoSyscall
 	EmitPtr( DoSyscall );
-#endif
 
 	// Push important registers to stack as we can't really make
 	// any assumptions about calling conventions.
@@ -594,6 +563,27 @@ int EmitCallDoSyscall( vm_t *vm )
 	EmitRexString( 0x41, "50" );  // push r8
 	EmitRexString( 0x41, "51" );  // push r9
 #endif
+
+	// write arguments to global vars
+	// syscall number
+	EmitString( "A3" ); // mov [0x12345678], eax
+	EmitPtr( &vm_syscallNum );
+	// vm_programStack value
+	EmitString( "89 F0" ); // mov eax, esi
+	EmitString( "A3" ); // mov [0x12345678], eax
+	EmitPtr( &vm_programStack );
+	// vm_opStackOfs
+	EmitString( "88 D8" ); // mov al, bl
+	EmitString( "A2" ); // mov [0x12345678], al
+	EmitPtr( &vm_opStackOfs );
+	// vm_opStackBase
+	EmitRexString( 0x48, "89 F8" ); // mov eax, edi
+	EmitRexString( 0x48, "A3" ); // mov [0x12345678], eax
+	EmitPtr( &vm_opStackBase );
+	// vm_arg
+	EmitString( "89 C8" ); // mov eax, ecx
+	EmitString( "A3" ); // mov [0x12345678], eax
+	EmitPtr( &vm_arg );
 
 	// align the stack pointer to a 16-byte-boundary
 	EmitString( "55" );  // push ebp
@@ -1890,7 +1880,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 	Z_Free( code );
 	Z_Free( buf );
 	Z_Free( jused );
-	Com_Printf(_( "VM file %s compiled to %i bytes of code\n"), vm->name, compiledOfs );
+	Com_DPrintf(_( "VM file %s compiled to %i bytes of code\n"), vm->name, compiledOfs );
 
 	vm->destroy = VM_Destroy_Compiled;
 

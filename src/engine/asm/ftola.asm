@@ -18,18 +18,18 @@
 ; Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ; ===========================================================================
 
-; MASM ftol conversion functions using SSE or FPU
-; assume __cdecl calling convention is being used for x86, __fastcall for x64
+; the MASM version of the ftol conversion functions using SSE or FPU
+; assumes that the cdecl calling convention is being used on x86, and the fastcall one on x64
 
 IFNDEF idx64
 .model flat, c
 ENDIF
 
-; .data
+.data
 
-; ifndef idx64
-;   fpucw WORD 0F7Fh
-; endif
+ifndef idx64
+  fpucw WORD 0F7Fh
+endif
 
 .code
 
@@ -51,22 +51,19 @@ ELSE
 ; qftol using FPU
 
   qftolx87m macro src
-;    not necessary, fpucw is set with _controlfp at startup
-;    sub esp, 2
-;    fnstcw word ptr [esp]
-;    fldcw fpucw
+    sub esp, 2
+    fnstcw word ptr [esp]
+    fldcw fpucw
     fld dword ptr src
 	fistp dword ptr src
-;	fldcw [esp]
+	fldcw [esp]
 	mov eax, src
-;	add esp, 2
+	add esp, 2
 	ret
   endm
-  
+
   qftolx87 PROC
-; need this line when storing FPU control word on stack
-;    qftolx87m [esp + 6]
-    qftolx87m [esp + 4]
+    qftolx87m [esp + 6]
   qftolx87 ENDP
 
   qvmftolx87 PROC

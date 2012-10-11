@@ -328,7 +328,7 @@ Tess_ClipSkyPolygons
 void Tess_ClipSkyPolygons()
 {
 	vec3_t p[ 5 ]; // need one extra point for clipping
-	int    i, j;
+	unsigned int i, j;
 
 	ClearSkyBox();
 
@@ -447,11 +447,11 @@ static void DrawSkySide(struct image_s *image, const int mins[2], const int maxs
 
                 for(s = mins[0] + HALF_SKY_SUBDIVISIONS; s <= maxs[0] + HALF_SKY_SUBDIVISIONS; s++)
                 {
-                        glVertexAttrib4fvARB(ATTR_INDEX_TEXCOORD0, s_skyTexCoords[t][s]);
-                        glVertexAttrib4fvARB(ATTR_INDEX_POSITION, s_skyPoints[t][s]);
+                        glVertexAttrib4fv(ATTR_INDEX_TEXCOORD0, s_skyTexCoords[t][s]);
+                        glVertexAttrib4fv(ATTR_INDEX_POSITION, s_skyPoints[t][s]);
 
-                        glVertexAttrib4fvARB(ATTR_INDEX_TEXCOORD0, s_skyTexCoords[t + 1][s]);
-                        glVertexAttrib4fvARB(ATTR_INDEX_POSITION, s_skyPoints[t + 1][s]);
+                        glVertexAttrib4fv(ATTR_INDEX_TEXCOORD0, s_skyTexCoords[t + 1][s]);
+                        glVertexAttrib4fv(ATTR_INDEX_POSITION, s_skyPoints[t + 1][s]);
                 }
 
                 glEnd();
@@ -749,9 +749,6 @@ static void BuildCloudData()
 			FillCloudBox( tess.surfaceShader, i );
 		}
 	}
-
-	// Tr3B: FIXME analyze required vertex attribs by the current material
-	Tess_UpdateVBOs( 0 );
 }
 
 /*

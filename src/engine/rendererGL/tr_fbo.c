@@ -170,7 +170,7 @@ void R_CreateFBOColorBuffer( FBO_t *fbo, int format, int index )
 
 	if ( format != GL_RGB &&
 	     format != GL_RGBA &&
-	     format != GL_RGB16F_ARB && format != GL_RGBA16F_ARB && format != GL_RGB32F_ARB && format != GL_RGBA32F_ARB )
+	     format != GL_RGB16F && format != GL_RGBA16F && format != GL_RGB32F_ARB && format != GL_RGBA32F_ARB )
 	{
 		ri.Printf( PRINT_WARNING, "R_CreateFBOColorBuffer: format %i is not color-renderable\n", format );
 		//return;
@@ -213,7 +213,7 @@ void R_CreateFBODepthBuffer( FBO_t *fbo, int format )
 	qboolean absent;
 
 	if ( format != GL_DEPTH_COMPONENT &&
-	     format != GL_DEPTH_COMPONENT16_ARB && format != GL_DEPTH_COMPONENT24_ARB && format != GL_DEPTH_COMPONENT32_ARB )
+	     format != GL_DEPTH_COMPONENT16 && format != GL_DEPTH_COMPONENT24 && format != GL_DEPTH_COMPONENT32_ARB )
 	{
 		ri.Printf( PRINT_WARNING, "R_CreateFBODepthBuffer: format %i is not depth-renderable\n", format );
 		return;
@@ -358,7 +358,7 @@ void R_AttachFBOTexture2D( int target, int texId, int index )
 	// TODO
 #else
 
-	if ( target != GL_TEXTURE_2D && ( target < GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB || target > GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB ) )
+	if ( target != GL_TEXTURE_2D && ( target < GL_TEXTURE_CUBE_MAP_POSITIVE_X || target > GL_TEXTURE_CUBE_MAP_NEGATIVE_Z ) )
 	{
 		ri.Printf( PRINT_WARNING, "R_AttachFBOTexture2D: invalid target %i\n", target );
 		return;
@@ -508,7 +508,7 @@ void R_InitFBOs( void )
 	int i;
 	int width, height;
 
-	ri.Printf( PRINT_ALL, "------- R_InitFBOs -------\n" );
+	ri.Printf( PRINT_DEVELOPER, "------- R_InitFBOs -------\n" );
 
 	if ( !glConfig2.framebufferObjectAvailable )
 	{
@@ -557,18 +557,18 @@ void R_InitFBOs( void )
 
 		else if ( glConfig.hardwareType == GLHW_ATI || glConfig.hardwareType == GLHW_ATI_DX10 ) // || glConfig.hardwareType == GLHW_NV_DX10)
 		{
-			R_CreateFBODepthBuffer( tr.geometricRenderFBO, GL_DEPTH_COMPONENT16_ARB );
+			R_CreateFBODepthBuffer( tr.geometricRenderFBO, GL_DEPTH_COMPONENT16 );
 			R_AttachFBOTextureDepth( tr.depthRenderImage->texnum );
 		}
 		else
 #endif
 		{
-			R_CreateFBODepthBuffer( tr.geometricRenderFBO, GL_DEPTH_COMPONENT24_ARB );
+			R_CreateFBODepthBuffer( tr.geometricRenderFBO, GL_DEPTH_COMPONENT24 );
 			R_AttachFBOTextureDepth( tr.depthRenderImage->texnum );
 		}
 
 		// enable all attachments as draw buffers
-		//glDrawBuffersARB(4, geometricRenderTargets);
+		//glDrawBuffers(4, geometricRenderTargets);
 
 		R_CreateFBOColorBuffer( tr.geometricRenderFBO, GL_RGBA, 0 );
 		R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.deferredRenderFBOImage->texnum, 0 );
@@ -605,7 +605,7 @@ void R_InitFBOs( void )
 
 		if ( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
 		{
-			R_CreateFBOColorBuffer( tr.deferredRenderFBO, GL_RGBA16F_ARB, 0 );
+			R_CreateFBOColorBuffer( tr.deferredRenderFBO, GL_RGBA16F, 0 );
 		}
 		else
 		{
@@ -623,13 +623,13 @@ void R_InitFBOs( void )
 		}
 		else if ( glConfig.hardwareType == GLHW_ATI || glConfig.hardwareType == GLHW_ATI_DX10 ) // || glConfig.hardwareType == GLHW_NV_DX10)
 		{
-			R_CreateFBODepthBuffer( tr.deferredRenderFBO, GL_DEPTH_COMPONENT16_ARB );
+			R_CreateFBODepthBuffer( tr.deferredRenderFBO, GL_DEPTH_COMPONENT16 );
 			R_AttachFBOTextureDepth( tr.depthRenderImage->texnum );
 		}
 		else
 #endif
 		{
-			R_CreateFBODepthBuffer( tr.deferredRenderFBO, GL_DEPTH_COMPONENT24_ARB );
+			R_CreateFBODepthBuffer( tr.deferredRenderFBO, GL_DEPTH_COMPONENT24 );
 			R_AttachFBOTextureDepth( tr.depthRenderImage->texnum );
 		}
 
@@ -654,23 +654,23 @@ void R_InitFBOs( void )
 
 		if ( glConfig.hardwareType == GLHW_ATI_DX10 )
 		{
-			//R_CreateFBOColorBuffer(tr.occlusionRenderFBO, GL_ALPHA16F_ARB, 0);
-			R_CreateFBODepthBuffer( tr.occlusionRenderFBO, GL_DEPTH_COMPONENT16_ARB );
+			//R_CreateFBOColorBuffer(tr.occlusionRenderFBO, GL_ALPHA16F, 0);
+			R_CreateFBODepthBuffer( tr.occlusionRenderFBO, GL_DEPTH_COMPONENT16 );
 		}
 		else if ( glConfig.hardwareType == GLHW_NV_DX10 )
 		{
-			//R_CreateFBOColorBuffer(tr.occlusionRenderFBO, GL_ALPHA32F_ARB, 0);
-			R_CreateFBODepthBuffer( tr.occlusionRenderFBO, GL_DEPTH_COMPONENT24_ARB );
+			//R_CreateFBOColorBuffer(tr.occlusionRenderFBO, GL_ALPHA32F, 0);
+			R_CreateFBODepthBuffer( tr.occlusionRenderFBO, GL_DEPTH_COMPONENT24 );
 		}
 		else if ( glConfig2.framebufferPackedDepthStencilAvailable )
 		{
-			//R_CreateFBOColorBuffer(tr.occlusionRenderFBO, GL_ALPHA32F_ARB, 0);
+			//R_CreateFBOColorBuffer(tr.occlusionRenderFBO, GL_ALPHA32F, 0);
 			R_CreateFBOPackedDepthStencilBuffer( tr.occlusionRenderFBO, GL_DEPTH24_STENCIL8_EXT );
 		}
 		else
 		{
 			//R_CreateFBOColorBuffer(tr.occlusionRenderFBO, GL_RGBA, 0);
-			R_CreateFBODepthBuffer( tr.occlusionRenderFBO, GL_DEPTH_COMPONENT24_ARB );
+			R_CreateFBODepthBuffer( tr.occlusionRenderFBO, GL_DEPTH_COMPONENT24 );
 		}
 
 		R_CreateFBOColorBuffer( tr.occlusionRenderFBO, GL_RGBA, 0 );
@@ -707,12 +707,12 @@ void R_InitFBOs( void )
 					}
 					else
 					{
-						R_CreateFBOColorBuffer( tr.shadowMapFBO[ i ], GL_RGBA32F_ARB, 0 );
+						R_CreateFBOColorBuffer( tr.shadowMapFBO[ i ], GL_RGBA32F, 0 );
 					}
 				}
 				else
 				{
-					R_CreateFBOColorBuffer( tr.shadowMapFBO[ i ], GL_RGBA16F_ARB, 0 );
+					R_CreateFBOColorBuffer( tr.shadowMapFBO[ i ], GL_RGBA16F, 0 );
 				}
 			}
 			else
@@ -727,11 +727,11 @@ void R_InitFBOs( void )
 				}
 				else
 				{
-					R_CreateFBOColorBuffer( tr.shadowMapFBO[ i ], GL_RGBA16F_ARB, 0 );
+					R_CreateFBOColorBuffer( tr.shadowMapFBO[ i ], GL_RGBA16F, 0 );
 				}
 			}
 
-			R_CreateFBODepthBuffer( tr.shadowMapFBO[ i ], GL_DEPTH_COMPONENT24_ARB );
+			R_CreateFBODepthBuffer( tr.shadowMapFBO[ i ], GL_DEPTH_COMPONENT24 );
 
 			R_CheckFBO( tr.shadowMapFBO[ i ] );
 		}
@@ -758,12 +758,12 @@ void R_InitFBOs( void )
 				{
 					if ( !r_evsmPostProcess->integer )
 					{
-						R_CreateFBOColorBuffer( tr.sunShadowMapFBO[ i ], GL_RGBA32F_ARB, 0 );
+						R_CreateFBOColorBuffer( tr.sunShadowMapFBO[ i ], GL_RGBA32F, 0 );
 					}
 				}
 				else
 				{
-					R_CreateFBOColorBuffer( tr.sunShadowMapFBO[ i ], GL_RGBA16F_ARB, 0 );
+					R_CreateFBOColorBuffer( tr.sunShadowMapFBO[ i ], GL_RGBA16F, 0 );
 				}
 			}
 			else
@@ -778,11 +778,11 @@ void R_InitFBOs( void )
 				}
 				else
 				{
-					R_CreateFBOColorBuffer( tr.sunShadowMapFBO[ i ], GL_RGBA16F_ARB, 0 );
+					R_CreateFBOColorBuffer( tr.sunShadowMapFBO[ i ], GL_RGBA16F, 0 );
 				}
 			}
 
-			R_CreateFBODepthBuffer( tr.sunShadowMapFBO[ i ], GL_DEPTH_COMPONENT24_ARB );
+			R_CreateFBODepthBuffer( tr.sunShadowMapFBO[ i ], GL_DEPTH_COMPONENT24 );
 
 			if ( r_shadows->integer == SHADOWING_EVSM32 && r_evsmPostProcess->integer )
 			{
@@ -819,7 +819,7 @@ void R_InitFBOs( void )
 
 		if ( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
 		{
-			R_CreateFBOColorBuffer( tr.portalRenderFBO, GL_RGBA16F_ARB, 0 );
+			R_CreateFBOColorBuffer( tr.portalRenderFBO, GL_RGBA16F, 0 );
 		}
 		else
 		{
@@ -848,7 +848,7 @@ void R_InitFBOs( void )
 
 		if ( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
 		{
-			R_CreateFBOColorBuffer( tr.downScaleFBO_quarter, GL_RGBA16F_ARB, 0 );
+			R_CreateFBOColorBuffer( tr.downScaleFBO_quarter, GL_RGBA16F, 0 );
 		}
 		else
 		{
@@ -863,7 +863,7 @@ void R_InitFBOs( void )
 
 		if ( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
 		{
-			R_CreateFBOColorBuffer( tr.downScaleFBO_64x64, GL_RGBA16F_ARB, 0 );
+			R_CreateFBOColorBuffer( tr.downScaleFBO_64x64, GL_RGBA16F, 0 );
 		}
 		else
 		{
@@ -879,7 +879,7 @@ void R_InitFBOs( void )
 
 		if ( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
 		{
-			R_CreateFBOColorBuffer( tr.downScaleFBO_16x16, GL_RGBA16F_ARB, 0 );
+			R_CreateFBOColorBuffer( tr.downScaleFBO_16x16, GL_RGBA16F, 0 );
 		}
 		else
 		{
@@ -894,7 +894,7 @@ void R_InitFBOs( void )
 
 		if ( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
 		{
-			R_CreateFBOColorBuffer( tr.downScaleFBO_4x4, GL_RGBA16F_ARB, 0 );
+			R_CreateFBOColorBuffer( tr.downScaleFBO_4x4, GL_RGBA16F, 0 );
 		}
 		else
 		{
@@ -909,7 +909,7 @@ void R_InitFBOs( void )
 
 		if ( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
 		{
-			R_CreateFBOColorBuffer( tr.downScaleFBO_1x1, GL_RGBA16F_ARB, 0 );
+			R_CreateFBOColorBuffer( tr.downScaleFBO_1x1, GL_RGBA16F, 0 );
 		}
 		else
 		{
@@ -936,7 +936,7 @@ void R_InitFBOs( void )
 
 		if ( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
 		{
-			R_CreateFBOColorBuffer( tr.contrastRenderFBO, GL_RGBA16F_ARB, 0 );
+			R_CreateFBOColorBuffer( tr.contrastRenderFBO, GL_RGBA16F, 0 );
 		}
 		else
 		{
@@ -954,7 +954,7 @@ void R_InitFBOs( void )
 
 			if ( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
 			{
-				R_CreateFBOColorBuffer( tr.bloomRenderFBO[ i ], GL_RGBA16F_ARB, 0 );
+				R_CreateFBOColorBuffer( tr.bloomRenderFBO[ i ], GL_RGBA16F, 0 );
 			}
 			else
 			{
@@ -983,7 +983,7 @@ void R_ShutdownFBOs( void )
 	int   i, j;
 	FBO_t *fbo;
 
-	ri.Printf( PRINT_ALL, "------- R_ShutdownFBOs -------\n" );
+	ri.Printf( PRINT_DEVELOPER, "------- R_ShutdownFBOs -------\n" );
 
 #if !defined( USE_D3D10 )
 

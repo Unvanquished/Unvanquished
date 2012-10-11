@@ -97,7 +97,6 @@ extern "C" {
 	  RSPEEDS_FOG,
 	  RSPEEDS_FLARES,
 	  RSPEEDS_OCCLUSION_QUERIES,
-	  RSPEEDS_DEPTH_BOUNDS_TESTS,
 	  RSPEEDS_SHADING_TIMES,
 	  RSPEEDS_CHC,
 	  RSPEEDS_NEAR_FAR,
@@ -349,11 +348,6 @@ extern "C" {
 		float        sphereRadius; // calculated from localBounds
 
 		int8_t       shadowLOD; // Level of Detail for shadow mapping
-
-		// GL_EXT_depth_bounds_test
-		float                     depthNear;
-		float                     depthFar;
-		qboolean                  noDepthBoundsTest;
 
 		qboolean                  clipsNearPlane;
 
@@ -1070,10 +1064,13 @@ extern "C" {
 
 	typedef enum
 	{
-	  CT_FRONT_SIDED,
-	  CT_BACK_SIDED,
-	  CT_TWO_SIDED
+		CT_FRONT_SIDED = 0,
+		CT_TWO_SIDED   = 1,
+		CT_BACK_SIDED  = 2
 	} cullType_t;
+
+	// reverse the cull operation
+#       define ReverseCull(c) (2 - (c))
 
 	typedef enum
 	{
@@ -1584,7 +1581,7 @@ extern "C" {
 		MatrixCopy( m, program->t_ColorTextureMatrix );
 #endif
 
-		glUniformMatrix4fvARB( program->u_ColorTextureMatrix, 1, GL_FALSE, m );
+		glUniformMatrix4fv( program->u_ColorTextureMatrix, 1, GL_FALSE, m );
 	}
 
 	static INLINE void GLSL_SetUniform_DiffuseTextureMatrix( shaderProgram_t *program, const matrix_t m )
@@ -1599,7 +1596,7 @@ extern "C" {
 		MatrixCopy( m, program->t_DiffuseTextureMatrix );
 #endif
 
-		glUniformMatrix4fvARB( program->u_DiffuseTextureMatrix, 1, GL_FALSE, m );
+		glUniformMatrix4fv( program->u_DiffuseTextureMatrix, 1, GL_FALSE, m );
 	}
 
 	static INLINE void GLSL_SetUniform_NormalTextureMatrix( shaderProgram_t *program, const matrix_t m )
@@ -1614,7 +1611,7 @@ extern "C" {
 		MatrixCopy( m, program->t_NormalTextureMatrix );
 #endif
 
-		glUniformMatrix4fvARB( program->u_NormalTextureMatrix, 1, GL_FALSE, m );
+		glUniformMatrix4fv( program->u_NormalTextureMatrix, 1, GL_FALSE, m );
 	}
 
 	static INLINE void GLSL_SetUniform_SpecularTextureMatrix( shaderProgram_t *program, const matrix_t m )
@@ -1629,7 +1626,7 @@ extern "C" {
 		MatrixCopy( m, program->t_SpecularTextureMatrix );
 #endif
 
-		glUniformMatrix4fvARB( program->u_SpecularTextureMatrix, 1, GL_FALSE, m );
+		glUniformMatrix4fv( program->u_SpecularTextureMatrix, 1, GL_FALSE, m );
 	}
 
 	void GLimp_LogComment( const char *comment );
@@ -1678,7 +1675,7 @@ extern "C" {
 		program->t_AlphaTest = value;
 #endif
 
-		glUniform1iARB( program->u_AlphaTest, value );
+		glUniform1i( program->u_AlphaTest, value );
 	}
 
 	static INLINE void GLSL_SetUniform_ViewOrigin( shaderProgram_t *program, const vec3_t v )
@@ -1702,7 +1699,7 @@ extern "C" {
 
 #endif
 
-		glUniform3fARB( program->u_ViewOrigin, v[ 0 ], v[ 1 ], v[ 2 ] );
+		glUniform3f( program->u_ViewOrigin, v[ 0 ], v[ 1 ], v[ 2 ] );
 	}
 
 	static INLINE void GLSL_SetUniform_Color( shaderProgram_t *program, const vec4_t v )
@@ -1726,7 +1723,7 @@ extern "C" {
 
 #endif
 
-		glUniform4fARB( program->u_Color, v[ 0 ], v[ 1 ], v[ 2 ], v[ 3 ] );
+		glUniform4f( program->u_Color, v[ 0 ], v[ 1 ], v[ 2 ], v[ 3 ] );
 	}
 
 	static INLINE void GLSL_SetUniform_ColorModulate( shaderProgram_t *program, const vec4_t v )
@@ -1750,7 +1747,7 @@ extern "C" {
 
 #endif
 
-		glUniform4fARB( program->u_ColorModulate, v[ 0 ], v[ 1 ], v[ 2 ], v[ 3 ] );
+		glUniform4f( program->u_ColorModulate, v[ 0 ], v[ 1 ], v[ 2 ], v[ 3 ] );
 	}
 
 	static INLINE void GLSL_SetUniform_AmbientColor( shaderProgram_t *program, const vec3_t v )
@@ -1774,7 +1771,7 @@ extern "C" {
 
 #endif
 
-		glUniform3fARB( program->u_AmbientColor, v[ 0 ], v[ 1 ], v[ 2 ] );
+		glUniform3f( program->u_AmbientColor, v[ 0 ], v[ 1 ], v[ 2 ] );
 	}
 
 	static INLINE void GLSL_SetUniform_LightDir( shaderProgram_t *program, const vec3_t v )
@@ -1798,7 +1795,7 @@ extern "C" {
 
 #endif
 
-		glUniform3fARB( program->u_LightDir, v[ 0 ], v[ 1 ], v[ 2 ] );
+		glUniform3f( program->u_LightDir, v[ 0 ], v[ 1 ], v[ 2 ] );
 	}
 
 	static INLINE void GLSL_SetUniform_LightOrigin( shaderProgram_t *program, const vec3_t v )
@@ -1822,7 +1819,7 @@ extern "C" {
 
 #endif
 
-		glUniform3fARB( program->u_LightOrigin, v[ 0 ], v[ 1 ], v[ 2 ] );
+		glUniform3f( program->u_LightOrigin, v[ 0 ], v[ 1 ], v[ 2 ] );
 	}
 
 	static INLINE void GLSL_SetUniform_LightColor( shaderProgram_t *program, const vec3_t v )
@@ -1846,7 +1843,7 @@ extern "C" {
 
 #endif
 
-		glUniform3fARB( program->u_LightColor, v[ 0 ], v[ 1 ], v[ 2 ] );
+		glUniform3f( program->u_LightColor, v[ 0 ], v[ 1 ], v[ 2 ] );
 	}
 
 	static INLINE void GLSL_SetUniform_LightRadius( shaderProgram_t *program, float value )
@@ -1870,7 +1867,7 @@ extern "C" {
 
 #endif
 
-		glUniform1fARB( program->u_LightRadius, value );
+		glUniform1f( program->u_LightRadius, value );
 	}
 
 	static INLINE void GLSL_SetUniform_LightParallel( shaderProgram_t *program, qboolean value )
@@ -1894,7 +1891,7 @@ extern "C" {
 
 #endif
 
-		glUniform1iARB( program->u_LightParallel, value );
+		glUniform1i( program->u_LightParallel, value );
 	}
 
 	static INLINE void GLSL_SetUniform_LightScale( shaderProgram_t *program, float value )
@@ -1928,7 +1925,7 @@ extern "C" {
 
 #endif
 
-		glUniform1fARB( program->u_LightScale, value );
+		glUniform1f( program->u_LightScale, value );
 	}
 
 	static INLINE void GLSL_SetUniform_LightWrapAround( shaderProgram_t *program, float value )
@@ -1952,7 +1949,7 @@ extern "C" {
 
 #endif
 
-		glUniform1fARB( program->u_LightWrapAround, value );
+		glUniform1f( program->u_LightWrapAround, value );
 	}
 
 	static INLINE void GLSL_SetUniform_LightAttenuationMatrix( shaderProgram_t *program, const matrix_t m )
@@ -1967,7 +1964,7 @@ extern "C" {
 		MatrixCopy( m, program->t_LightAttenuationMatrix );
 #endif
 
-		glUniformMatrix4fvARB( program->u_LightAttenuationMatrix, 1, GL_FALSE, m );
+		glUniformMatrix4fv( program->u_LightAttenuationMatrix, 1, GL_FALSE, m );
 	}
 
 	static INLINE void GLSL_SetUniform_ShadowMatrix( shaderProgram_t *program, matrix_t m[ MAX_SHADOWMAPS ] )
@@ -1989,7 +1986,7 @@ extern "C" {
 			for ( i = 0; i < MAX_SHADOWMAPS; i++ )
 			{
 				GLimp_LogComment( va( "--- GLSL_SetUniform_ShadowMatrix( program = %s, "
-				                      "matrix(%i) = \n"
+				                      "matrix(%i) =\n"
 				                      "( %5.3f, %5.3f, %5.3f, %5.3f )\n"
 				                      "( %5.3f, %5.3f, %5.3f, %5.3f )\n"
 				                      "( %5.3f, %5.3f, %5.3f, %5.3f )\n"
@@ -2005,7 +2002,7 @@ extern "C" {
 
 #endif
 
-		glUniformMatrix4fvARB( program->u_ShadowMatrix, MAX_SHADOWMAPS, GL_FALSE, &m[ 0 ][ 0 ] );
+		glUniformMatrix4fv( program->u_ShadowMatrix, MAX_SHADOWMAPS, GL_FALSE, &m[ 0 ][ 0 ] );
 	}
 
 	static INLINE void GLSL_SetUniform_ShadowCompare( shaderProgram_t *program, qboolean value )
@@ -2029,7 +2026,7 @@ extern "C" {
 
 #endif
 
-		glUniform1iARB( program->u_ShadowCompare, value );
+		glUniform1i( program->u_ShadowCompare, value );
 	}
 
 	static INLINE void GLSL_SetUniform_ShadowTexelSize( shaderProgram_t *program, float value )
@@ -2053,7 +2050,7 @@ extern "C" {
 
 #endif
 
-		glUniform1fARB( program->u_ShadowTexelSize, value );
+		glUniform1f( program->u_ShadowTexelSize, value );
 	}
 
 	static INLINE void GLSL_SetUniform_ShadowBlur( shaderProgram_t *program, float value )
@@ -2077,7 +2074,7 @@ extern "C" {
 
 #endif
 
-		glUniform1fARB( program->u_ShadowBlur, value );
+		glUniform1f( program->u_ShadowBlur, value );
 	}
 
 	static INLINE void GLSL_SetUniform_ShadowParallelSplitDistances( shaderProgram_t *program, const vec4_t v )
@@ -2101,7 +2098,7 @@ extern "C" {
 
 #endif
 
-		glUniform4fARB( program->u_ShadowParallelSplitDistances, v[ 0 ], v[ 1 ], v[ 2 ], v[ 3 ] );
+		glUniform4f( program->u_ShadowParallelSplitDistances, v[ 0 ], v[ 1 ], v[ 2 ], v[ 3 ] );
 	}
 
 	static INLINE void GLSL_SetUniform_RefractionIndex( shaderProgram_t *program, float value )
@@ -2125,7 +2122,7 @@ extern "C" {
 
 #endif
 
-		glUniform1fARB( program->u_RefractionIndex, value );
+		glUniform1f( program->u_RefractionIndex, value );
 	}
 
 	static INLINE void GLSL_SetUniform_ParallaxMapping( shaderProgram_t *program, qboolean value )
@@ -2149,7 +2146,7 @@ extern "C" {
 
 #endif
 
-		glUniform1iARB( program->u_ParallaxMapping, value );
+		glUniform1i( program->u_ParallaxMapping, value );
 	}
 
 	static INLINE void GLSL_SetUniform_DepthScale( shaderProgram_t *program, float value )
@@ -2173,7 +2170,7 @@ extern "C" {
 
 #endif
 
-		glUniform1fARB( program->u_DepthScale, value );
+		glUniform1f( program->u_DepthScale, value );
 	}
 
 	static INLINE void GLSL_SetUniform_EnvironmentInterpolation( shaderProgram_t *program, float value )
@@ -2197,7 +2194,7 @@ extern "C" {
 
 #endif
 
-		glUniform1fARB( program->u_EnvironmentInterpolation, value );
+		glUniform1f( program->u_EnvironmentInterpolation, value );
 	}
 
 	static INLINE void GLSL_SetUniform_PortalClipping( shaderProgram_t *program, qboolean value )
@@ -2221,7 +2218,7 @@ extern "C" {
 
 #endif
 
-		glUniform1iARB( program->u_PortalClipping, value );
+		glUniform1i( program->u_PortalClipping, value );
 	}
 
 	static INLINE void GLSL_SetUniform_PortalPlane( shaderProgram_t *program, const vec4_t v )
@@ -2245,7 +2242,7 @@ extern "C" {
 
 #endif
 
-		glUniform4fARB( program->u_PortalPlane, v[ 0 ], v[ 1 ], v[ 2 ], v[ 3 ] );
+		glUniform4f( program->u_PortalPlane, v[ 0 ], v[ 1 ], v[ 2 ], v[ 3 ] );
 	}
 
 	static INLINE void GLSL_SetUniform_PortalRange( shaderProgram_t *program, float value )
@@ -2269,7 +2266,7 @@ extern "C" {
 
 #endif
 
-		glUniform1fARB( program->u_PortalRange, value );
+		glUniform1f( program->u_PortalRange, value );
 	}
 
 	static INLINE void GLSL_SetUniform_ModelMatrix( shaderProgram_t *program, const matrix_t m )
@@ -2289,7 +2286,7 @@ extern "C" {
 		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- GLSL_SetUniform_ModelMatrix( program = %s, "
-			                      "matrix = \n"
+			                      "matrix =\n"
 			                      "( %5.3f, %5.3f, %5.3f, %5.3f )\n"
 			                      "( %5.3f, %5.3f, %5.3f, %5.3f )\n"
 			                      "( %5.3f, %5.3f, %5.3f, %5.3f )\n"
@@ -2303,7 +2300,7 @@ extern "C" {
 
 #endif
 
-		glUniformMatrix4fvARB( program->u_ModelMatrix, 1, GL_FALSE, m );
+		glUniformMatrix4fv( program->u_ModelMatrix, 1, GL_FALSE, m );
 	}
 
 	static INLINE void GLSL_SetUniform_ViewMatrix( shaderProgram_t *program, const matrix_t m )
@@ -2318,7 +2315,7 @@ extern "C" {
 		MatrixCopy( m, program->t_ViewMatrix );
 #endif
 
-		glUniformMatrix4fvARB( program->u_ViewMatrix, 1, GL_FALSE, m );
+		glUniformMatrix4fv( program->u_ViewMatrix, 1, GL_FALSE, m );
 	}
 
 	static INLINE void GLSL_SetUniform_ModelViewMatrix( shaderProgram_t *program, const matrix_t m )
@@ -2333,7 +2330,7 @@ extern "C" {
 		MatrixCopy( m, program->t_ModelViewMatrix );
 #endif
 
-		glUniformMatrix4fvARB( program->u_ModelViewMatrix, 1, GL_FALSE, m );
+		glUniformMatrix4fv( program->u_ModelViewMatrix, 1, GL_FALSE, m );
 	}
 
 	static INLINE void GLSL_SetUniform_ModelViewMatrixTranspose( shaderProgram_t *program, const matrix_t m )
@@ -2348,7 +2345,7 @@ extern "C" {
 		MatrixCopy( m, program->t_ModelViewMatrixTranspose );
 #endif
 
-		glUniformMatrix4fvARB( program->u_ModelViewMatrixTranspose, 1, GL_TRUE, m );
+		glUniformMatrix4fv( program->u_ModelViewMatrixTranspose, 1, GL_TRUE, m );
 	}
 
 	static INLINE void GLSL_SetUniform_ProjectionMatrix( shaderProgram_t *program, const matrix_t m )
@@ -2363,7 +2360,7 @@ extern "C" {
 		MatrixCopy( m, program->t_ProjectionMatrix );
 #endif
 
-		glUniformMatrix4fvARB( program->u_ProjectionMatrix, 1, GL_FALSE, m );
+		glUniformMatrix4fv( program->u_ProjectionMatrix, 1, GL_FALSE, m );
 	}
 
 	static INLINE void GLSL_SetUniform_ProjectionMatrixTranspose( shaderProgram_t *program, const matrix_t m )
@@ -2378,7 +2375,7 @@ extern "C" {
 		MatrixCopy( m, program->t_ProjectionMatrixTranspose );
 #endif
 
-		glUniformMatrix4fvARB( program->u_ProjectionMatrixTranspose, 1, GL_TRUE, m );
+		glUniformMatrix4fv( program->u_ProjectionMatrixTranspose, 1, GL_TRUE, m );
 	}
 
 	static INLINE void GLSL_SetUniform_ModelViewProjectionMatrix( shaderProgram_t *program, const matrix_t m )
@@ -2398,7 +2395,7 @@ extern "C" {
 		if ( r_logFile->integer )
 		{
 			GLimp_LogComment( va( "--- GLSL_SetUniform_ModelViewProjectionMatrix( program = %s, "
-			                      "matrix = \n"
+			                      "matrix =\n"
 			                      "( %5.3f, %5.3f, %5.3f, %5.3f )\n"
 			                      "( %5.3f, %5.3f, %5.3f, %5.3f )\n"
 			                      "( %5.3f, %5.3f, %5.3f, %5.3f )\n"
@@ -2412,7 +2409,7 @@ extern "C" {
 
 #endif
 
-		glUniformMatrix4fvARB( program->u_ModelViewProjectionMatrix, 1, GL_FALSE, m );
+		glUniformMatrix4fv( program->u_ModelViewProjectionMatrix, 1, GL_FALSE, m );
 	}
 
 	static INLINE void GLSL_SetUniform_UnprojectMatrix( shaderProgram_t *program, const matrix_t m )
@@ -2427,7 +2424,7 @@ extern "C" {
 		MatrixCopy( m, program->t_UnprojectMatrix );
 #endif
 
-		glUniformMatrix4fvARB( program->u_UnprojectMatrix, 1, GL_FALSE, m );
+		glUniformMatrix4fv( program->u_UnprojectMatrix, 1, GL_FALSE, m );
 	}
 
 	static INLINE void GLSL_SetUniform_VertexSkinning( shaderProgram_t *program, qboolean value )
@@ -2451,7 +2448,7 @@ extern "C" {
 
 #endif
 
-		glUniform1iARB( program->u_VertexSkinning, value );
+		glUniform1i( program->u_VertexSkinning, value );
 	}
 
 	static INLINE void GLSL_SetUniform_VertexInterpolation( shaderProgram_t *program, float value )
@@ -2475,7 +2472,7 @@ extern "C" {
 
 #endif
 
-		glUniform1fARB( program->u_VertexInterpolation, value );
+		glUniform1f( program->u_VertexInterpolation, value );
 	}
 
 	static INLINE void GLSL_SetUniform_Time( shaderProgram_t *program, float value )
@@ -2499,7 +2496,7 @@ extern "C" {
 
 #endif
 
-		glUniform1fARB( program->u_Time, value );
+		glUniform1f( program->u_Time, value );
 	}
 
 // *INDENT-ON*
@@ -2781,10 +2778,6 @@ extern "C" {
 
 		int16_t              scissorX, scissorY, scissorWidth, scissorHeight;
 
-		float                depthNear; // for GL_EXT_depth_bounds_test
-		float                depthFar;
-		qboolean             noDepthBoundsTest;
-
 		uint32_t             occlusionQuerySamples; // visible fragment count
 		qboolean             noOcclusionQueries;
 
@@ -2857,9 +2850,12 @@ extern "C" {
 		vec3_t tangent;
 		vec3_t binormal;
 		vec3_t normal;
-		vec4_t paintColor;
 		vec4_t lightColor;
+
+#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
+		vec4_t paintColor;
 		vec3_t lightDirection;
+#endif
 
 #if DEBUG_OPTIMIZEVERTICES
 		unsigned int id;
@@ -2869,10 +2865,7 @@ extern "C" {
 	typedef struct
 	{
 		int      indexes[ 3 ];
-		int      neighbors[ 3 ];
-		vec4_t   plane;
 		qboolean facingLight;
-		qboolean degenerated;
 	} srfTriangle_t;
 
 // ydnar: plain map drawsurfaces must match this header
@@ -3146,8 +3139,6 @@ extern "C" {
 		// leaf specific
 		int          cluster;
 		int          area;
-		qboolean     sameAABBAsParent;
-		qboolean     shrinkedAABB;
 
 		int          numMarkSurfaces;
 		bspSurface_t **markSurfaces;
@@ -3231,10 +3222,12 @@ extern "C" {
 
 		int           numVerts;
 		srfVert_t     *verts;
+#if CALC_REDUNDANT_SHADOWVERTS
 		int           redundantVertsCalculationNeeded;
 		int           *redundantLightVerts; // util to optimize IBOs
 		int           *redundantShadowVerts;
 		int           *redundantShadowAlphaTestVerts;
+#endif
 		VBO_t         *vbo;
 		IBO_t         *ibo;
 
@@ -3323,10 +3316,14 @@ extern "C" {
 	typedef struct
 	{
 		vec3_t xyz;
+	} mdvXyz_t;
+
+	typedef struct
+	{
 		vec3_t normal;
 		vec3_t tangent;
 		vec3_t binormal;
-	} mdvVertex_t;
+	} mdvNormTanBi_t;
 
 	typedef struct
 	{
@@ -3342,7 +3339,7 @@ extern "C" {
 		shader_t          *shader;
 
 		int               numVerts;
-		mdvVertex_t       *verts;
+		mdvXyz_t          *verts;
 		mdvSt_t           *st;
 
 		int               numTriangles;
@@ -3680,8 +3677,6 @@ extern "C" {
 		int c_dlightSurfacesCulled;
 		int c_dlightInteractions;
 
-		int c_depthBoundsTests, c_depthBoundsTestsRejected;
-
 		int c_occlusionQueries;
 		int c_occlusionQueriesMulti;
 		int c_occlusionQueriesSaved;
@@ -3975,27 +3970,9 @@ extern "C" {
 		//
 
 #if !defined( GLSL_COMPILE_STARTUP_ONLY )
-		// depth to color encoding
-		shaderProgram_t depthToColorShader;
-
-#ifdef VOLUMETRIC_LIGHTING
-		// volumetric lighting
-		shaderProgram_t lightVolumeShader_omni;
-#endif
-
-		// UT3 style player shadowing
-		shaderProgram_t deferredShadowingShader_proj;
 
 		// post process effects
 		shaderProgram_t rotoscopeShader;
-		shaderProgram_t liquidShader;
-		shaderProgram_t volumetricFogShader;
-#ifdef EXPERIMENTAL
-		shaderProgram_t screenSpaceAmbientOcclusionShader;
-#endif
-#ifdef EXPERIMENTAL
-		shaderProgram_t depthOfFieldShader;
-#endif
 
 #endif // GLSL_COMPILE_STARTUP_ONLY
 
@@ -4143,6 +4120,7 @@ extern "C" {
 	extern cvar_t *r_forceAmbient;
 	extern cvar_t *r_ambientScale;
 	extern cvar_t *r_lightScale;
+	extern cvar_t *r_lightRadiusScale;
 	extern cvar_t *r_debugLight;
 
 	extern cvar_t *r_inGameVideo; // controls whether in game video should be draw
@@ -4470,9 +4448,6 @@ extern "C" {
 
 	qboolean R_CalcTangentVectors( srfVert_t *dv[ 3 ] );
 
-	void     R_CalcSurfaceTriangleNeighbors( int numTriangles, srfTriangle_t *triangles );
-	void     R_CalcSurfaceTrianglePlanes( int numTriangles, srfTriangle_t *triangles, srfVert_t *verts );
-
 	float    R_CalcFov( float fovX, float width, float height );
 
 // Tr3B - visualisation tools to help debugging the renderer frontend
@@ -4491,7 +4466,7 @@ extern "C" {
 #if !defined( USE_D3D10 )
 	void GL_Bind( image_t *image );
 	void GL_BindNearestCubeMap( const vec3_t xyz );
-	void GL_Unbind();
+	void GL_Unbind( void );
 	void BindAnimatedImage( textureBundle_t *bundle );
 	void GL_TextureFilter( image_t *image, filterType_t filterType );
 	void GL_BindProgram( shaderProgram_t *program );
@@ -4512,8 +4487,8 @@ extern "C" {
 	void GL_FrontFace( GLenum mode );
 	void GL_LoadModelViewMatrix( const matrix_t m );
 	void GL_LoadProjectionMatrix( const matrix_t m );
-	void GL_PushMatrix();
-	void GL_PopMatrix();
+	void GL_PushMatrix( void );
+	void GL_PopMatrix( void );
 	void GL_PolygonMode( GLenum face, GLenum mode );
 	void GL_Scissor( GLint x, GLint y, GLsizei width, GLsizei height );
 	void GL_Viewport( GLint x, GLint y, GLsizei width, GLsizei height );
@@ -4578,7 +4553,7 @@ extern "C" {
 	void       R_InitSkins( void );
 	skin_t     *R_GetSkinByHandle( qhandle_t hSkin );
 
-	void       R_DeleteSurfaceVBOs();
+	void       R_DeleteSurfaceVBOs( void );
 
 	/*
 	====================================================================
@@ -4716,8 +4691,8 @@ extern "C" {
 		matrix_t    boneMatrices[ MAX_BONES ];
 
 		// info extracted from current shader or backend mode
-		void ( *stageIteratorFunc )();
-		void ( *stageIteratorFunc2 )();
+		void ( *stageIteratorFunc )( void );
+		void ( *stageIteratorFunc2 )( void );
 
 		int           numSurfaceStages;
 		shaderStage_t **surfaceStages;
@@ -4726,8 +4701,8 @@ extern "C" {
 	extern shaderCommands_t tess;
 
 #if !defined( USE_D3D10 )
-	void                    GLSL_InitGPUShaders();
-	void                    GLSL_ShutdownGPUShaders();
+	void                    GLSL_InitGPUShaders( void );
+	void                    GLSL_ShutdownGPUShaders( void );
 
 #endif
 
@@ -4742,20 +4717,20 @@ extern "C" {
 
 // *INDENT-ON*
 	void Tess_End( void );
-	void Tess_EndBegin();
-	void Tess_DrawElements();
+	void Tess_EndBegin( void );
+	void Tess_DrawElements( void );
 	void Tess_CheckOverflow( int verts, int indexes );
 
 	void Tess_ComputeColor( shaderStage_t *pStage );
 
-	void Tess_StageIteratorDebug();
-	void Tess_StageIteratorGeneric();
-	void Tess_StageIteratorGBuffer();
-	void Tess_StageIteratorGBufferNormalsOnly();
-	void Tess_StageIteratorDepthFill();
-	void Tess_StageIteratorShadowFill();
-	void Tess_StageIteratorLighting();
-	void Tess_StageIteratorSky();
+	void Tess_StageIteratorDebug( void );
+	void Tess_StageIteratorGeneric( void );
+	void Tess_StageIteratorGBuffer( void );
+	void Tess_StageIteratorGBufferNormalsOnly( void );
+	void Tess_StageIteratorDepthFill( void );
+	void Tess_StageIteratorShadowFill( void );
+	void Tess_StageIteratorLighting( void );
+	void Tess_StageIteratorSky( void );
 
 	void Tess_AddQuadStamp( vec3_t origin, vec3_t left, vec3_t up, const vec4_t color );
 	void Tess_AddQuadStampExt( vec3_t origin, vec3_t left, vec3_t up, const vec4_t color, float s1, float t1, float s2, float t2 );
@@ -4793,7 +4768,7 @@ extern "C" {
 
 	void     R_AddWorldInteractions( trRefLight_t *light );
 	void     R_AddPrecachedWorldInteractions( trRefLight_t *light );
-	void     R_ShutdownVBOs();
+	void     R_ShutdownVBOs( void );
 
 	/*
 	============================================================
@@ -4835,7 +4810,6 @@ extern "C" {
 	void     R_SortInteractions( trRefLight_t *light );
 
 	void     R_SetupLightScissor( trRefLight_t *light );
-	void     R_SetupLightDepthBounds( trRefLight_t *light );
 	void     R_SetupLightLOD( trRefLight_t *light );
 
 	void     R_SetupLightShader( trRefLight_t *light );
@@ -4858,10 +4832,10 @@ extern "C" {
 	*/
 
 #if defined( COMPAT_ET )
-	void R_SetFrameFog();
+	void R_SetFrameFog( void );
 	void RB_Fog( glfog_t *curfog );
-	void RB_FogOff();
-	void RB_FogOn();
+	void RB_FogOff( void );
+	void RB_FogOn( void );
 	void RE_SetFog( int fogvar, int var1, int var2, float r, float g, float b, float density );
 	void RE_SetGlobalFog( qboolean restore, int duration, float r, float g, float b, float depthForOpaque );
 
@@ -4875,7 +4849,7 @@ extern "C" {
 	============================================================
 	*/
 
-	void RB_ProjectionShadowDeform();
+	void RB_ProjectionShadowDeform( void );
 
 	/*
 	============================================================
@@ -5011,8 +4985,8 @@ extern "C" {
 
 	void RE_AddCoronaToScene( const vec3_t org, float r, float g, float b, float scale, int id, qboolean visible );
 	void RE_RenderScene( const refdef_t *fd );
-	void RE_SaveViewParms();
-	void RE_RestoreViewParms();
+	void RE_SaveViewParms( void );
+	void RE_RestoreViewParms( void );
 
 	/*
 	=============================================================
@@ -5091,7 +5065,7 @@ extern "C" {
 	float    R_ProjectRadius( float r, vec3_t location );
 
 	qboolean ShaderRequiresCPUDeforms( const shader_t *shader );
-	void     Tess_DeformGeometry();
+	void     Tess_DeformGeometry( void );
 
 	float    RB_EvalWaveForm( const waveForm_t *wf );
 	float    RB_EvalWaveFormClamped( const waveForm_t *wf );
@@ -5276,8 +5250,6 @@ extern "C" {
 	} backEndData_t;
 
 	extern backEndData_t                *backEndData[ SMP_FRAMES ]; // the second one may not be allocated
-
-	extern volatile renderCommandList_t *renderCommandList;
 
 	extern volatile qboolean            renderThreadActive;
 

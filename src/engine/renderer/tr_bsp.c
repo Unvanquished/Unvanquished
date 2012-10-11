@@ -158,7 +158,6 @@ float R_ProcessLightmap( byte **pic, int in_padding, int width, int height, byte
 {
 	int    j;
 	float  maxIntensity = 0;
-	double sumIntensity = 0;
 
 	if ( r_showLightMaps->integer > 1 )
 	{
@@ -204,8 +203,6 @@ float R_ProcessLightmap( byte **pic, int in_padding, int width, int height, byte
 			}
 
 			( *pic_out ) [ j * 4 + 3 ] = 255;
-
-			sumIntensity += intensity;
 		}
 	}
 	else
@@ -235,8 +232,6 @@ static void R_LoadLightmaps( lump_t *l )
 	int             i /*, j */;
 	float           intensity, maxIntensity = 0;
 
-//  double sumIntensity = 0;
-
 	// ydnar: clear lightmaps first
 	tr.numLightmaps = 0;
 	memset( tr.lightmaps, 0, sizeof( *tr.lightmaps ) * MAX_LIGHTMAPS );
@@ -259,7 +254,7 @@ static void R_LoadLightmaps( lump_t *l )
 	if ( tr.numLightmaps == 1 )
 	{
 		//FIXME: HACK: maps with only one lightmap turn up fullbright for some reason.
-		//this avoids this, but isn't the correct solution.
+		//this hack avoids that scenario, but isn't the correct solution.
 		tr.numLightmaps++;
 	}
 
@@ -287,7 +282,7 @@ static void R_LoadLightmaps( lump_t *l )
 
 	if ( r_showLightMaps->integer > 1 )
 	{
-		ri.Printf( PRINT_ALL, "Brightest lightmap value: %d\n", ( int )( maxIntensity * 255 ) );
+		ri.Printf( PRINT_DEVELOPER, "Brightest lightmap value: %d\n", ( int )( maxIntensity * 255 ) );
 	}
 }
 
@@ -2292,7 +2287,7 @@ void R_StitchAllPatches( void )
 	}
 	while ( stitched );
 
-	ri.Printf( PRINT_ALL, "stitched %d LoD cracks\n", numstitches );
+	ri.Printf( PRINT_DEVELOPER, "stitched %d LoD cracks\n", numstitches );
 }
 
 /*
@@ -2434,7 +2429,7 @@ static void R_LoadSurfaces( lump_t *surfs, lump_t *verts, lump_t *indexLump )
 	R_MovePatchSurfacesToHunk();
 #endif
 
-	ri.Printf( PRINT_ALL, "...loaded %d faces, %i meshes, %i trisurfs, %i flares %i foliage\n",
+	ri.Printf( PRINT_DEVELOPER, "...loaded %d faces, %i meshes, %i trisurfs, %i flares %i foliage\n",
 	           numFaces, numMeshes, numTriSurfs, numFlares, numFoliage );
 }
 

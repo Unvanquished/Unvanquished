@@ -69,7 +69,7 @@ void NormalToLatLong(const vec3_t normal, byte bytes[2])
 		b &= 0xff;
 
 		bytes[0] = b;			// longitude
-		bytes[1] = a;			// lattitude
+		bytes[1] = a;			// latitude
 	}
 }
 
@@ -412,23 +412,10 @@ int PlaneTypeForNormal(vec3_t normal)
 	return PLANE_NON_AXIAL;
 }
 
-void ProjectPointOnPlane(vec3_t dst, const vec3_t p, const vec3_t normal)
+void ProjectPointOnPlane(vec3_t dst, const vec3_t point, const vec3_t normal)
 {
-	float           d;
-	vec3_t          n;
-	float           inv_denom;
-
-	inv_denom = 1.0F / DotProduct(normal, normal);
-
-	d = DotProduct(normal, p) * inv_denom;
-
-	n[0] = normal[0] * inv_denom;
-	n[1] = normal[1] * inv_denom;
-	n[2] = normal[2] * inv_denom;
-
-	dst[0] = p[0] - d * n[0];
-	dst[1] = p[1] - d * n[1];
-	dst[2] = p[2] - d * n[2];
+	vec_t d = -DotProduct(point, normal);
+	VectorMA(point, d, normal, dst);
 }
 
 /*
@@ -483,65 +470,22 @@ void AxisMultiply(float in1[3][3], float in2[3][3], float out[3][3])
 /*
 ===============
 RotatePointAroundVector
-
-This is not implemented very well...
 ===============
 */
-void RotatePointAroundVector(vec3_t dst, const vec3_t dir, const vec3_t point, float degrees)
+void RotatePointAroundVector(vec3_t dst, const vec3_t dir, const vec3_t point, vec_t degrees)
 {
-	float           m[3][3];
-	float           im[3][3];
-	float           zrot[3][3];
-	float           tmpmat[3][3];
-	float           rot[3][3];
-	int             i;
-	vec3_t          vr, vup, vf;
-	float           rad;
+	vec_t sind, cosd, expr;
+	vec3_t dxp;
 
-	vf[0] = dir[0];
-	vf[1] = dir[1];
-	vf[2] = dir[2];
+	degrees = DEG2RAD(degrees);
+	sind = sin(degrees);
+	cosd = cos(degrees);
+	expr = (1 - cosd) * DotProduct(dir, point);
+	CrossProduct(dir, point, dxp);
 
-	PerpendicularVector(vr, dir);
-	CrossProduct(vr, vf, vup);
-
-	m[0][0] = vr[0];
-	m[1][0] = vr[1];
-	m[2][0] = vr[2];
-
-	m[0][1] = vup[0];
-	m[1][1] = vup[1];
-	m[2][1] = vup[2];
-
-	m[0][2] = vf[0];
-	m[1][2] = vf[1];
-	m[2][2] = vf[2];
-
-	memcpy(im, m, sizeof(im));
-
-	im[0][1] = m[1][0];
-	im[0][2] = m[2][0];
-	im[1][0] = m[0][1];
-	im[1][2] = m[2][1];
-	im[2][0] = m[0][2];
-	im[2][1] = m[1][2];
-
-	memset(zrot, 0, sizeof(zrot));
-	zrot[0][0] = zrot[1][1] = zrot[2][2] = 1.0F;
-
-	rad = DEG2RAD(degrees);
-	zrot[0][0] = cos(rad);
-	zrot[0][1] = sin(rad);
-	zrot[1][0] = -sin(rad);
-	zrot[1][1] = cos(rad);
-
-	AxisMultiply(m, zrot, tmpmat);
-	AxisMultiply(tmpmat, im, rot);
-
-	for(i = 0; i < 3; i++)
-	{
-		dst[i] = rot[i][0] * point[0] + rot[i][1] * point[1] + rot[i][2] * point[2];
-	}
+	dst[0] = expr * dir[0] + cosd * point[0] + sind * dxp[0];
+	dst[1] = expr * dir[1] + cosd * point[1] + sind * dxp[1];
+	dst[2] = expr * dir[2] + cosd * point[2] + sind * dxp[2];
 }
 
 // *INDENT-OFF*

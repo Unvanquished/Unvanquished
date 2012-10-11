@@ -231,6 +231,7 @@ void CalcPortalVis(void)
 	Sys_Printf("%6d portals out of %d", 0, numportals * 2);
 	//get rid of the counter
 	RunThreadsOnIndividual(numportals * 2, qfalse, PortalFlow);
+	Sys_Printf("\n");
 #else
 	RunThreadsOnIndividual(numportals * 2, qtrue, PortalFlow);
 #endif

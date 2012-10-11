@@ -326,14 +326,14 @@ static void DrawTreeNodes_r(node_t * node)
 	DrawTreeNodes_r(node->children[0]);
 	DrawTreeNodes_r(node->children[1]);
 }
-static void DrawNodes()
+static void DrawNodes(void)
 {
 	DrawTreeNodes_r(drawTree->headnode);
 }
 
 static face_t  *drawChildLists[2];
 static node_t  *drawSplitNode;
-static void DrawPartitions()
+static void DrawPartitions(void)
 {
 	face_t         *face;
 	winding_t      *w;
