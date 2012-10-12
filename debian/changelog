@@ -1,3 +1,9 @@
+unvanquished (0.8.0-2) unstable; urgency=low
+
+  * Rebuild against libwebp4.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Fri, 12 Oct 2012 16:52:56 +0100
+
 unvanquished (0.8.0-1) unstable; urgency=low
 
   * Release of alpha 8.
