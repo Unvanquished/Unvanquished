@@ -1704,14 +1704,6 @@ endif()
 # This section requires a lot of escaping as these values are parsed then passed
 # to CPack. Be very very careful when modifying values
 
-# SDL framework doesn't work with bundleutilities so detect if it's being used
-# and copy it over manually
-foreach( LIB ${SDL_LIBRARY} )
-  if( ${LIB} MATCHES "SDL.framework" )
-    install( DIRECTORY ${LIB} DESTINATION Frameworks )
-  endif()
-endforeach()
-
 # Automatically copy over any dependencies
 foreach( APP ${APPS} )
   install( CODE "
