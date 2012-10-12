@@ -57,6 +57,7 @@ option( ENABLE_WARNINGS      "Enable security & code-checking warning options" 1
 option( ENABLE_HARDENING     "Enable security hardening options"           1 )
 
 option( USE_GIT_DESCRIBE     "Use the revision information reported by Git's describe function" 1 )
+option( ENABLE_BUNDLING      "When packaging automatically include all non-system libraries in package" 0 )
 
 cmake_dependent_option( BUILD_OLD_RENDERER   "Build old renderer library"                            1 BUILD_CLIENT                   0 )
 cmake_dependent_option( BUILD_NEW_RENDERER   "Build new renderer library"                            1 BUILD_CLIENT                   0 )
@@ -95,7 +96,7 @@ cmake_dependent_option( ENABLE_W_EXTRA       "Use -Wextra"                      
 cmake_dependent_option( ENABLE_FSTACKPROT    "Enable stack protection if available"        1 ENABLE_HARDENING 0 )
 cmake_dependent_option( ENABLE_RELRO         "Enable relro & bindnow if available"         1 ENABLE_HARDENING 0 )
 
-mark_as_advanced( GAME_LIB_LLVM LLVM_CONFIG ENABLE_FSTACKPROT ENABLE_RELRO USE_GIT_DESCRIBE )
+mark_as_advanced( GAME_LIB_LLVM LLVM_CONFIG ENABLE_FSTACKPROT ENABLE_RELRO USE_GIT_DESCRIBE ENABLE_BUNDLING )
 
 if( GAME_LIB_LLVM )
   find_program( LLVM_CONFIG llvm-config )
@@ -1704,14 +1705,16 @@ endif()
 # This section requires a lot of escaping as these values are parsed then passed
 # to CPack. Be very very careful when modifying values
 
-# Automatically copy over any dependencies
-foreach( APP ${APPS} )
-  install( CODE "
-     include( BundleUtilities )
-     message( \"\${CMAKE_INSTALL_PREFIX}/${APP}\" )
-     fixup_bundle( \"\${CMAKE_INSTALL_PREFIX}/${APP}\" \"${PLUGINS}\" \"${CMAKE_LIBRARY_PATH}\" )
-     " )
-endforeach()
+if( ENABLE_BUNDLING )
+  # Automatically copy over any dependencies
+  foreach( APP ${APPS} )
+    install( CODE "
+       include( BundleUtilities )
+       message( \"\${CMAKE_INSTALL_PREFIX}/${APP}\" )
+       fixup_bundle( \"\${CMAKE_INSTALL_PREFIX}/${APP}\" \"${PLUGINS}\" \"${CMAKE_LIBRARY_PATH}\" )
+       " )
+  endforeach()
+endif()
 
 # include( CPack ) must be at the end of CMakeLists.txt
 include( CPack )
