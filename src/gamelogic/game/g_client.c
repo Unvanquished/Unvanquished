@@ -1254,13 +1254,11 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	gentity_t       *ent;
 	char            reason[ MAX_STRING_CHARS ] = { "" };
 	int             i;
-	qboolean        isBot;
 	g_admin_admin_t *admin;
 
 	ent = &g_entities[ clientNum ];
 	client = &level.clients[ clientNum ];
 
-	isBot = (ent->r.svFlags & SVF_BOT);
 	// ignore if client already connected
 	if ( client->pers.connected != CON_DISCONNECTED )
 	{
@@ -1284,22 +1282,15 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 
 	trap_GetPlayerPubkey( clientNum, pubkey, sizeof( pubkey ) );
 
-	if ( strlen( pubkey ) != RSA_STRING_LENGTH - 1 && !isBot )
+	if ( strlen( pubkey ) != RSA_STRING_LENGTH - 1 )
 	{
 		return "Invalid pubkey key";
 	}
 
-	if ( !isBot )
-	{
-		trap_GenFingerprint( pubkey, sizeof( pubkey ), client->pers.guid, sizeof( client->pers.guid ) );
-	}
-	else
-	{
-		Q_strncpyz( client->pers.guid, "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", sizeof( client->pers.guid ) );
-	}
-
+	trap_GenFingerprint( pubkey, sizeof( pubkey ), client->pers.guid, sizeof( client->pers.guid ) );
 	client->pers.admin = G_admin_admin( client->pers.guid );
-	client->pers.pubkey_authenticated = 0;
+
+	client->pers.pubkey_authenticated = qfalse;
 
 	if ( client->pers.admin )
 	{
@@ -1307,7 +1298,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	}
 
 	// check for admin ban
-	if ( G_admin_ban_check( ent, reason, sizeof( reason ) ) && !isBot )
+	if ( G_admin_ban_check( ent, reason, sizeof( reason ) ) )
 	{
 		return va( "%s", reason ); // reason is local
 	}
@@ -1316,13 +1307,13 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	value = Info_ValueForKey( userinfo, "password" );
 
 	if ( g_password.string[ 0 ] && Q_stricmp( g_password.string, "none" ) &&
-	     strcmp( g_password.string, value ) != 0  && !isBot)
+	     strcmp( g_password.string, value ) != 0 )
 	{
 		return "Invalid password";
 	}
 
 	// if a player reconnects quickly after a disconnect, the client disconnect may never be called, thus flag can get lost in the ether
-	if ( ent->inuse && !isBot)
+	if ( ent->inuse )
 	{
 		G_LogPrintf( "Forcing disconnect on active client: %i\n", (int)( ent - g_entities ) );
 		// so lets just fix up anything that should happen on a disconnect
@@ -1336,7 +1327,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 			continue;
 		}
 
-		if ( !( g_entities[i].r.svFlags & SVF_BOT ) && !Q_stricmp( client->pers.guid, level.clients[ i ].pers.guid ) && !isBot )
+		if ( !( g_entities[i].r.svFlags & SVF_BOT ) && !Q_stricmp( client->pers.guid, level.clients[ i ].pers.guid ) )
 		{
 			if ( !G_ClientIsLagging( level.clients + i ) )
 			{
@@ -1387,6 +1378,86 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	{
 		G_ChangeTeam( ent, client->sess.restartTeam );
 		client->sess.restartTeam = TEAM_NONE;
+	}
+
+	return NULL;
+}
+
+/*
+===========
+ClientBotConnect
+
+Cut-down version of ClientConnect.
+Doesn't do things not relevant to bots (which are local GUIDless clients).
+============
+*/
+char *ClientBotConnect( int clientNum, qboolean firstTime, team_t team )
+{
+	char            *value;
+	char            *userInfoError;
+	gclient_t       *client;
+	char            userinfo[ MAX_INFO_STRING ];
+	gentity_t       *ent;
+	char            reason[ MAX_STRING_CHARS ] = { "" };
+	int             i;
+
+	ent = &g_entities[ clientNum ];
+	client = &level.clients[ clientNum ];
+
+	ent->client = client;
+	memset( client, 0, sizeof( *client ) );
+
+	trap_GetUserinfo( clientNum, userinfo, sizeof( userinfo ) );
+
+	client->pers.localClient = qtrue;
+	G_AddressParse( "localhost", &client->pers.ip );
+
+	Q_strncpyz( client->pers.guid, "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", sizeof( client->pers.guid ) );
+	client->pers.admin = NULL;
+	client->pers.pubkey_authenticated = qtrue;
+	client->pers.connected = CON_CONNECTING;
+
+	// read or initialize the session data
+	if ( firstTime )
+	{
+		G_InitSessionData( client, userinfo );
+	}
+
+	G_ReadSessionData( client );
+
+	// get and distribute relevant parameters
+	G_namelog_connect( client );
+	userInfoError = ClientUserinfoChanged( clientNum, qfalse );
+
+	if ( userInfoError != NULL )
+	{
+		return userInfoError;
+	}
+
+	G_LogPrintf( "ClientConnect: %i [%s] (%s) \"%s^7\" \"%c%s%c^7\" [BOT]\n",
+	             clientNum, client->pers.ip.str[0] ? client->pers.ip.str : "127.0.0.1", client->pers.guid,
+	             client->pers.netname,
+	             DECOLOR_OFF, client->pers.netname, DECOLOR_ON );
+
+	// don't do the "xxx connected" messages if they were caried over from previous level
+	if ( firstTime )
+	{
+		trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^7 connected\n") ),
+		                                Quote( client->pers.netname ) ) );
+	}
+
+	// count current clients and rank for scoreboard
+	CalculateRanks();
+
+	// if this is after !restart keepteams or !restart switchteams, apply said selection
+	if ( client->sess.restartTeam != TEAM_NONE )
+	{
+		G_ChangeTeam( ent, client->sess.restartTeam );
+		client->sess.restartTeam = TEAM_NONE;
+	}
+	else if ( team != TEAM_NONE )
+	{
+		G_ChangeTeam( ent, team );
 	}
 
 	return NULL;

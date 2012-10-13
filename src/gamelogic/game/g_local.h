@@ -1185,6 +1185,7 @@ int        G_TimeTilSuddenDeath( void );
 // g_client.c
 //
 char *ClientConnect( int clientNum, qboolean firstTime );
+char *ClientBotConnect( int clientNum, qboolean firstTime, team_t team );
 char *ClientUserinfoChanged( int clientNum, qboolean forceName );
 void ClientDisconnect( int clientNum );
 void ClientBegin( int clientNum );

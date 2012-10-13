@@ -1726,7 +1726,7 @@ qboolean G_BotAdd( char *name, team_t team, int skill ) {
 	trap_SetUserinfo( clientNum, userinfo );
 
 	// have it connect to the game as a normal client
-	if((s = ClientConnect(clientNum, qtrue)))
+	if((s = ClientBotConnect(clientNum, qtrue, team)))
 	{
 		// won't let us join
 		trap_Print(s);
@@ -1734,7 +1734,6 @@ qboolean G_BotAdd( char *name, team_t team, int skill ) {
 	}
 
 	ClientBegin( clientNum );
-	G_ChangeTeam( bot, team );
 	return qtrue;
 }
 
