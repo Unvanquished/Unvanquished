@@ -1744,6 +1744,8 @@ void G_BotDel( int clientNum ) {
 		trap_Print( va("'^7%s^7' is not a bot\n", bot->client->pers.netname) );
 		return;
 	}
+	trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^7 disconnected\n") ),
+		                        Quote( bot->client->pers.netname ) ) );
 	trap_DropClient(clientNum, "disconnected");
 }
 
