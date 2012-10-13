@@ -1678,6 +1678,31 @@ botTaskStatus_t BotTaskRoam(gentity_t *self, usercmd_t *botCmdBuffer) {
 Bot management functions
 =======================
 */
+extern "C" void G_BotSetDefaults( int clientNum, team_t team, int skill )
+{
+	botMemory_t *botMind;
+
+	botMind = g_entities[clientNum].botMind = &g_botMind[clientNum];
+
+	botMind->enemyLastSeen = 0;
+	botMind->botTeam = team;
+	botMind->command = BOT_AUTO;
+	botMind->spawnItem = WP_HBUILD;
+	botMind->needNewGoal = qtrue;
+	botMind->modus = BOT_MODUS_IDLE;
+	botMind->task = BOT_TASK_NONE;
+	botMind->pathCorridor = &pathCorridor[clientNum];
+
+	BotSetSkillLevel(&g_entities[clientNum], skill);
+
+	g_entities[clientNum].r.svFlags |= SVF_BOT;
+
+	if ( team != TEAM_NONE )
+	{
+		level.clients[clientNum].sess.restartTeam = team;
+	}
+}
+
 qboolean G_BotAdd( char *name, team_t team, int skill ) {
 	int clientNum;
 	char userinfo[MAX_INFO_STRING];
@@ -1702,16 +1727,7 @@ qboolean G_BotAdd( char *name, team_t team, int skill ) {
 
 
 	//default bot data
-	bot->botMind = &g_botMind[clientNum];
-	bot->botMind->enemyLastSeen = 0;
-	bot->botMind->botTeam = team;
-	bot->botMind->command = BOT_AUTO;
-	bot->botMind->spawnItem = WP_HBUILD;
-	bot->botMind->needNewGoal = qtrue;
-	bot->botMind->modus = BOT_MODUS_IDLE;
-	bot->botMind->task = BOT_TASK_NONE;
-	bot->botMind->pathCorridor = &pathCorridor[clientNum];
-	BotSetSkillLevel(bot, skill);
+	G_BotSetDefaults( clientNum, team, skill );
 
 	// register user information
 	userinfo[0] = '\0';
@@ -1915,6 +1931,11 @@ extern "C" void G_BotSpectatorThink( gentity_t *self ) {
 			self->botMind->navFilter = &navFilters[PCL_ALIEN_LEVEL0];
 			G_PushSpawnQueue( &level.alienSpawnQueue, clientNum );
 		}
+	}
+	else
+	{
+		G_ChangeTeam( self, self->client->sess.restartTeam );
+		self->client->sess.restartTeam = TEAM_NONE;
 	}
 }
 

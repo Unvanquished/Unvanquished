@@ -1434,6 +1434,14 @@ char *ClientBotConnect( int clientNum, qboolean firstTime, team_t team )
 		return userInfoError;
 	}
 
+	ent->r.svFlags |= SVF_BOT;
+
+	// can happen during reconnection
+	if ( !ent->botMind )
+	{
+		G_BotSetDefaults( clientNum, team, client->sess.botSkill );
+	}
+
 	G_LogPrintf( "ClientConnect: %i [%s] (%s) \"%s^7\" \"%c%s%c^7\" [BOT]\n",
 	             clientNum, client->pers.ip.str[0] ? client->pers.ip.str : "127.0.0.1", client->pers.guid,
 	             client->pers.netname,
@@ -1452,12 +1460,13 @@ char *ClientBotConnect( int clientNum, qboolean firstTime, team_t team )
 	// if this is after !restart keepteams or !restart switchteams, apply said selection
 	if ( client->sess.restartTeam != TEAM_NONE )
 	{
-		G_ChangeTeam( ent, client->sess.restartTeam );
-		client->sess.restartTeam = TEAM_NONE;
+//		G_ChangeTeam( ent, client->sess.restartTeam );
+//		client->sess.restartTeam = TEAM_NONE;
 	}
 	else if ( team != TEAM_NONE )
 	{
-		G_ChangeTeam( ent, team );
+//		G_ChangeTeam( ent, team );
+		client->sess.restartTeam = team;
 	}
 
 	return NULL;

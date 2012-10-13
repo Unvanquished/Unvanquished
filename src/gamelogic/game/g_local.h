@@ -419,6 +419,7 @@ typedef struct
 	spectatorState_t spectatorState;
 	int              spectatorClient; // for chasecam and follow mode
 	team_t           restartTeam; //for !restart keepteams and !restart switchteams
+	int              botSkill;
 	clientList_t     ignoreList;
 } clientSession_t;
 
@@ -875,6 +876,7 @@ char     *G_NewString( const char *string );
 // g_cmds.c
 //
 qboolean G_BotAdd( char *name, team_t team, int skill );
+void G_BotSetDefaults( int clientNum, team_t team, int skill );
 void G_BotDel( int clientNum );
 void G_BotCmd( gentity_t *master, int clientNum, char *command);
 void G_BotThink(gentity_t *self);
