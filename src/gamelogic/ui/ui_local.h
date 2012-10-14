@@ -219,6 +219,7 @@ language_t;
 
 typedef enum
 {
+  CHAT_TYPE_COMMAND,
   CHAT_TYPE_ALL,
   CHAT_TYPE_TEAM,
   CHAT_TYPE_ADMIN,

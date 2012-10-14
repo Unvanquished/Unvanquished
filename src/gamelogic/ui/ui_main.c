@@ -3430,6 +3430,10 @@ static void UI_RunMenuScript( char **args )
 			{
 				trap_Cmd_ExecuteText( EXEC_APPEND, va( "%s\n", buffer + 1 ) );
 			}
+			else if ( uiInfo.chatType == CHAT_TYPE_COMMAND )
+			{
+				trap_Cmd_ExecuteText( EXEC_APPEND, va( "%s\n", buffer ) );
+			}
 			else
 			{
 				// it ‘happens’ that the menu names match the command names
@@ -3438,16 +3442,16 @@ static void UI_RunMenuScript( char **args )
 		}
 		else if ( Q_stricmp( name, "SayKeydown" ) == 0 )
 		{
-			if ( ui_chatCommands.integer )
+			if ( ui_chatCommands.integer && uiInfo.chatType != CHAT_TYPE_COMMAND )
 			{
 				char buffer[ MAX_CVAR_VALUE_STRING ];
 				trap_Cvar_VariableStringBuffer( "ui_sayBuffer", buffer, sizeof( buffer ) );
 
 				if ( buffer[ 0 ] == '/' || buffer[ 0 ] == '\\' )
 				{
-					Menus_ReplaceActiveByName( "say_command" );
+					Menus_ReplaceActiveByName( chatMenus[ CHAT_TYPE_COMMAND ] );
 				}
-				else
+				else if ( uiInfo.chatType != CHAT_TYPE_COMMAND )
 				{
 					Menus_ReplaceActiveByName( chatMenus[ uiInfo.chatType ] );
 				}

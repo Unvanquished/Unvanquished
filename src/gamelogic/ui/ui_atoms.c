@@ -159,7 +159,7 @@ static void UI_CloseMenus_f( void )
 }
 
 // menu names; also the command names
-const char *const chatMenus[CHAT_TYPE_LAST] = { "say", "say_team", "a", "irc_say" };
+const char *const chatMenus[CHAT_TYPE_LAST] = { "say_command", "say", "say_team", "a", "irc_say" };
 
 static void UI_MessageMode_f( void )
 {
@@ -202,6 +202,13 @@ static void UI_MessageMode_f( void )
 			uiInfo.chatType = CHAT_TYPE_IRC;
 			chatColour = ui_chatPromptColours.integer ? SAY_RAW : SAY_DEFAULT;
 			break;
+
+		case 'c':
+		case 'C':
+			// Command
+			uiInfo.chatType = CHAT_TYPE_COMMAND;
+			chatColour = SAY_DEFAULT;
+			break;
 	}
 
 	memcpy( g_color_table + 11, g_color_table + UI_GetChatColour( chatColour, team ), sizeof( g_color_table[ 0 ] ) );
@@ -237,6 +244,7 @@ static const struct uicmd
 	{ "messagemode2", UI_MessageMode_f },
 	{ "messagemode3", UI_MessageMode_f },
 	{ "messagemode4", UI_MessageMode_f },
+	{ "messagemodec", UI_MessageMode_f },
 	{ "ui_cache",     UI_Cache_f       },
 	{ "ui_report",    UI_Report        }
 };

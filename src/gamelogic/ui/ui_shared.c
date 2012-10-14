@@ -6029,7 +6029,8 @@ static bind_t g_bindings[] =
 	{ "messagemode",    -1,                 -1,            -1, -1 },
 	{ "messagemode2",   -1,                 -1,            -1, -1 },
 	{ "messagemode3",   -1,                 -1,            -1, -1 },
-	{ "messagemode4",   -1,                 -1,            -1, -1 }
+	{ "messagemode4",   -1,                 -1,            -1, -1 },
+	{ "messagemodec",   -1,                 -1,            -1, -1 }
 };
 
 static const int g_bindCount = ARRAY_LEN( g_bindings );
