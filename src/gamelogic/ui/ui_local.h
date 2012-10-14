@@ -217,6 +217,15 @@ typedef struct
 
 language_t;
 
+typedef enum
+{
+  CHAT_TYPE_ALL,
+  CHAT_TYPE_TEAM,
+  CHAT_TYPE_ADMIN,
+  CHAT_TYPE_IRC,
+  CHAT_TYPE_LAST // end marker
+} chatType_t;
+
 typedef struct
 {
 	displayContextDef_t uiDC;
@@ -319,9 +328,7 @@ typedef struct
 	language_t            languages[ MAX_LANGUAGES ];
 	int                   languageIndex;
 
-	qboolean              chatTeam;
-	qboolean              chatAdmin;
-	qboolean              chatIRC;
+	chatType_t            chatType;
 
 	profileInfo_t         profileList[ MAX_PROFILES ];
 	int                   profileCount;
@@ -331,6 +338,7 @@ typedef struct
 uiInfo_t;
 
 extern uiInfo_t uiInfo;
+extern const char *const chatMenus[CHAT_TYPE_LAST];
 
 qboolean        UI_ConsoleCommand( int realTime );
 char            *UI_Cvar_VariableString( const char *var_name );

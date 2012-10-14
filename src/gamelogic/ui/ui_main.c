@@ -3430,21 +3430,10 @@ static void UI_RunMenuScript( char **args )
 			{
 				trap_Cmd_ExecuteText( EXEC_APPEND, va( "%s\n", buffer + 1 ) );
 			}
-			else if ( uiInfo.chatTeam )
-			{
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "say_team %s\n", Quote( buffer ) ) );
-			}
-			else if ( uiInfo.chatAdmin )
-			{
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "a %s\n", Quote( buffer ) ) );
-			}
-			else if ( uiInfo.chatIRC )
-			{
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "irc_say %s\n", Quote( buffer ) ) );
-			}
 			else
 			{
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "say %s\n", Quote( buffer ) ) );
+				// it ‘happens’ that the menu names match the command names
+				trap_Cmd_ExecuteText( EXEC_APPEND, va( "%s %s\n", chatMenus[ uiInfo.chatType ], Quote( buffer ) ) );
 			}
 		}
 		else if ( Q_stricmp( name, "SayKeydown" ) == 0 )
@@ -3458,21 +3447,9 @@ static void UI_RunMenuScript( char **args )
 				{
 					Menus_ReplaceActiveByName( "say_command" );
 				}
-				else if ( uiInfo.chatTeam )
-				{
-					Menus_ReplaceActiveByName( "say_team" );
-				}
-				else if ( uiInfo.chatAdmin )
-				{
-					Menus_ReplaceActiveByName( "a" );
-				}
-				else if ( uiInfo.chatIRC )
-				{
-					Menus_ReplaceActiveByName( "irc_say" );
-				}
 				else
 				{
-					Menus_ReplaceActiveByName( "say" );
+					Menus_ReplaceActiveByName( chatMenus[ uiInfo.chatType ] );
 				}
 			}
 		}

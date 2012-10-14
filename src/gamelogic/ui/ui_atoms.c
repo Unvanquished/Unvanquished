@@ -158,6 +158,9 @@ static void UI_CloseMenus_f( void )
 	}
 }
 
+// menu names; also the command names
+const char *const chatMenus[CHAT_TYPE_LAST] = { "say", "say_team", "a", "irc_say" };
+
 static void UI_MessageMode_f( void )
 {
 	char *arg = UI_Argv( 0 );
@@ -165,6 +168,7 @@ static void UI_MessageMode_f( void )
 	int             team;
 	uiClientState_t cs;
 	char            info[ MAX_INFO_STRING ];
+	int             i;
 
 	trap_GetClientState( &cs );
 	trap_GetConfigString( CS_PLAYERS + cs.clientNum, info, MAX_INFO_STRING );
@@ -177,60 +181,37 @@ static void UI_MessageMode_f( void )
 		default:
 		case '\0':
 			// Global
-			uiInfo.chatTeam = qfalse;
-			uiInfo.chatAdmin = qfalse;
-			uiInfo.chatIRC = qfalse;
+			uiInfo.chatType = CHAT_TYPE_ALL;
 			chatColour = ui_chatPromptColours.integer ? SAY_ALL : SAY_DEFAULT;
 			break;
 
 		case '2':
 			// Team
-			uiInfo.chatTeam = qtrue;
-			uiInfo.chatAdmin = qfalse;
-			uiInfo.chatIRC = qfalse;
+			uiInfo.chatType = CHAT_TYPE_TEAM;
 			chatColour = ui_chatPromptColours.integer ? SAY_TEAM : SAY_DEFAULT;
 			break;
 
 		case '3':
 			// Administrators
-			uiInfo.chatTeam = qfalse;
-			uiInfo.chatAdmin = qtrue;
-			uiInfo.chatIRC = qfalse;
+			uiInfo.chatType = CHAT_TYPE_ADMIN;
 			chatColour = ui_chatPromptColours.integer ? SAY_ADMINS : SAY_DEFAULT;
 			break;
 
 		case '4':
 			// IRC
-			uiInfo.chatTeam = qfalse;
-			uiInfo.chatAdmin = qfalse;
-			uiInfo.chatIRC = qtrue;
+			uiInfo.chatType = CHAT_TYPE_IRC;
 			chatColour = ui_chatPromptColours.integer ? SAY_RAW : SAY_DEFAULT;
 			break;
 	}
 
 	memcpy( g_color_table + 11, g_color_table + UI_GetChatColour( chatColour, team ), sizeof( g_color_table[ 0 ] ) );
 	trap_Key_SetCatcher( KEYCATCH_UI );
-	Menus_CloseByName( "say" );
-	Menus_CloseByName( "say_team" );
-	Menus_CloseByName( "a" );
-	Menus_CloseByName( "irc_say" );
+	for ( i = 0; i < CHAT_TYPE_LAST; ++i )
+	{
+		Menus_CloseByName( chatMenus[ i ] );
+	}
 
-	if ( uiInfo.chatTeam )
-	{
-		Menus_ActivateByName( "say_team" );
-	}
-	else if ( uiInfo.chatAdmin )
-	{
-		Menus_ActivateByName( "a" );
-	}
-	else if ( uiInfo.chatIRC )
-	{
-		Menus_ActivateByName( "irc_say" );
-	}
-	else
-	{
-		Menus_ActivateByName( "say" );
-	}
+	Menus_ActivateByName( chatMenus[ uiInfo.chatType ] );
 }
 
 static void UI_Me_f( void )
