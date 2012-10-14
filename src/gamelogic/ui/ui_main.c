@@ -156,9 +156,10 @@ void     UI_Init( void );
 void     UI_Shutdown( void );
 void     UI_KeyEvent( int key, int chr, int flags );
 void     UI_MouseEvent( int dx, int dy );
-int      UI_MousePosition( void );
+int      UI_MousePosition( qboolean draw );
 void     UI_SetMousePosition( int x, int y );
 void     UI_Refresh( int realtime );
+void     UI_DrawCursor( void );
 qboolean UI_IsFullscreen( void );
 void     UI_SetActiveMenu( uiMenuCommand_t menu );
 
@@ -197,11 +198,7 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 			return 0;
 
 		case UI_MOUSE_POSITION:
-			return UI_MousePosition();
-
-		case UI_SET_MOUSE_POSITION:
-			UI_SetMousePosition( arg0, arg1 );
-			return 0;
+			return UI_MousePosition( arg0 );
 
 		case UI_REFRESH:
 			UI_Refresh( arg0 );
@@ -219,6 +216,10 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 
 		case UI_DRAW_CONNECT_SCREEN:
 			UI_DrawConnectScreen( arg0 );
+			return 0;
+
+		case UI_DRAW_CURSOR:
+			UI_DrawCursor();
 			return 0;
 
 		default:
@@ -1285,15 +1286,6 @@ void UI_Refresh( int realtime )
 		UI_BuildServerStatus( qfalse );
 		UI_BuildFindPlayerList( qfalse );
 		UI_UpdateNews( qfalse );
-	}
-
-	// draw cursor
-	UI_SetColor( NULL );
-
-	if ( trap_Key_GetCatcher() == KEYCATCH_UI && !trap_Cvar_VariableValue( "ui_hideCursor" ) )
-	{
-		UI_DrawHandlePic( uiInfo.uiDC.cursorx - ( 16.0f * uiInfo.uiDC.aspectScale ), uiInfo.uiDC.cursory - 16.0f,
-		                  32.0f * uiInfo.uiDC.aspectScale, 32.0f, uiInfo.uiDC.Assets.cursor );
 	}
 }
 
@@ -5030,30 +5022,30 @@ UI_MouseEvent
 void UI_MouseEvent( int dx, int dy )
 {
 	// update mouse screen position
-	uiInfo.uiDC.cursorx += ( dx * uiInfo.uiDC.aspectScale );
-
-	if ( uiInfo.uiDC.cursorx < 0 )
+	uiInfo.uiDC.unscaledCursorx += dx;
+	if ( uiInfo.uiDC.unscaledCursorx < 0 )
 	{
-		uiInfo.uiDC.cursorx = 0;
+		uiInfo.uiDC.unscaledCursorx = 0;
 	}
-	else if ( uiInfo.uiDC.cursorx > SCREEN_WIDTH )
+	else if ( uiInfo.uiDC.unscaledCursorx > uiInfo.uiDC.glconfig.vidWidth )
 	{
-		uiInfo.uiDC.cursorx = SCREEN_WIDTH;
+		uiInfo.uiDC.unscaledCursorx = uiInfo.uiDC.glconfig.vidWidth;
 	}
+	uiInfo.uiDC.cursorx = ( uiInfo.uiDC.unscaledCursorx / uiInfo.uiDC.xscale );
 
-	uiInfo.uiDC.cursory += dy;
-
-	if ( uiInfo.uiDC.cursory < 0 )
+	uiInfo.uiDC.unscaledCursory += dy;
+	if ( uiInfo.uiDC.unscaledCursory < 0 )
 	{
-		uiInfo.uiDC.cursory = 0;
+		uiInfo.uiDC.unscaledCursory = 0;
 	}
-	else if ( uiInfo.uiDC.cursory > SCREEN_HEIGHT )
+	else if ( uiInfo.uiDC.unscaledCursory > uiInfo.uiDC.glconfig.vidHeight )
 	{
-		uiInfo.uiDC.cursory = SCREEN_HEIGHT;
+		uiInfo.uiDC.unscaledCursory = uiInfo.uiDC.glconfig.vidHeight;
 	}
+	uiInfo.uiDC.cursory = ( uiInfo.uiDC.unscaledCursory / uiInfo.uiDC.yscale );
 
-	uiInfo.uiDC.cursordx = dx * uiInfo.uiDC.aspectScale;
-	uiInfo.uiDC.cursordy = dy;
+	uiInfo.uiDC.cursordx = dx / uiInfo.uiDC.xscale;
+	uiInfo.uiDC.cursordy = dy / uiInfo.uiDC.yscale;
 
 	if ( Menu_Count() > 0 )
 	{
@@ -5066,26 +5058,16 @@ void UI_MouseEvent( int dx, int dy )
 UI_MousePosition
 =================
 */
-int UI_MousePosition( void )
+int UI_MousePosition( qboolean draw )
 {
-	return ( int ) rint( uiInfo.uiDC.cursorx ) |
-	       ( int ) rint( uiInfo.uiDC.cursory ) << 16;
-}
-
-/*
-=================
-UI_SetMousePosition
-=================
-*/
-void UI_SetMousePosition( int x, int y )
-{
-	uiInfo.uiDC.cursorx = x;
-	uiInfo.uiDC.cursory = y;
-
-	if ( Menu_Count() > 0 )
+	// MASSIVE HACK: draw the mouse cursor if draw = 1
+	// TODO: remove once caller (cl_scrn.c) switches to UI_DRAW_CURSOR, after alpha 9
+	if ( draw )
 	{
-		Display_MouseMove( NULL, uiInfo.uiDC.cursorx, uiInfo.uiDC.cursory );
+		UI_DrawCursor();
 	}
+	return uiInfo.uiDC.unscaledCursorx |
+	       uiInfo.uiDC.unscaledCursory << 16;
 }
 
 void UI_SetActiveMenu( uiMenuCommand_t menu )
@@ -5495,6 +5477,22 @@ void UI_DrawConnectScreen( qboolean overlay )
 	}
 
 	// password required / connection rejected information goes here
+}
+
+/*
+========================
+UI_DrawCursor
+========================
+*/
+void UI_DrawCursor( void ){
+	// draw cursor
+	UI_SetColor( NULL );
+
+	if ( (trap_Key_GetCatcher() & (KEYCATCH_CONSOLE|KEYCATCH_UI) ) && !trap_Cvar_VariableValue( "ui_hideCursor" ) )
+	{
+		UI_DrawHandlePic( uiInfo.uiDC.cursorx - ( 16.0f * uiInfo.uiDC.aspectScale ), uiInfo.uiDC.cursory - 16.0f,
+		                  32.0f * uiInfo.uiDC.aspectScale, 32.0f, uiInfo.uiDC.Assets.cursor );
+	}
 }
 
 /*

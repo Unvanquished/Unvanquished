@@ -816,6 +816,9 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 	// console draws next
 	Con_DrawConsole();
 
+	// TODO (after no compatibility needed with alpha 8): replace with UI_DRAW_CURSOR
+	VM_Call( uivm, UI_MOUSE_POSITION, qtrue );
+
 	// debug graph can be drawn on top of anything
 	if ( cl_debuggraph->integer || cl_timegraph->integer || cl_debugMove->integer )
 	{

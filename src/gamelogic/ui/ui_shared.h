@@ -455,6 +455,8 @@ typedef struct
 	float          aspectScale;
 	int            realTime;
 	int            frameTime;
+	int            unscaledCursorx;
+	int            unscaledCursory;
 	float          cursorx;
 	float          cursory;
 	float          cursordx;
