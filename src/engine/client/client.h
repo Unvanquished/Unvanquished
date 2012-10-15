@@ -613,6 +613,8 @@ void CL_ReadPackets( void );
 
 void CL_WritePacket( void );
 
+qboolean CL_UIOwnsMouse ( void );
+
 void IN_Notebook( void );
 void IN_Help( void );
 
