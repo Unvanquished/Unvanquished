@@ -5487,12 +5487,8 @@ UI_DrawCursor
 void UI_DrawCursor( void ){
 	// draw cursor
 	UI_SetColor( NULL );
-
-	if ( (trap_Key_GetCatcher() & (KEYCATCH_CONSOLE|KEYCATCH_UI) ) && !trap_Cvar_VariableValue( "ui_hideCursor" ) )
-	{
-		UI_DrawHandlePic( uiInfo.uiDC.cursorx - ( 16.0f * uiInfo.uiDC.aspectScale ), uiInfo.uiDC.cursory - 16.0f,
-		                  32.0f * uiInfo.uiDC.aspectScale, 32.0f, uiInfo.uiDC.Assets.cursor );
-	}
+	UI_DrawHandlePic( uiInfo.uiDC.cursorx - ( 16.0f * uiInfo.uiDC.aspectScale ), uiInfo.uiDC.cursory - 16.0f,
+	                  32.0f * uiInfo.uiDC.aspectScale, 32.0f, uiInfo.uiDC.Assets.cursor );
 }
 
 /*
