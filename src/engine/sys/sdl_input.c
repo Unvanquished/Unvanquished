@@ -53,7 +53,7 @@ static cvar_t       *in_keyboardDebug = NULL;
 static SDL_Joystick *stick = NULL;
 
 static qboolean     mouseAvailable = qfalse;
-static qboolean     mouseActive = qfalse;
+qboolean            mouseActive = qfalse;
 static qboolean     keyRepeatEnabled = qfalse;
 
 static cvar_t       *in_mouse = NULL;
@@ -1758,7 +1758,7 @@ void IN_Frame( void )
 	loading = ( cls.state != CA_DISCONNECTED && cls.state != CA_ACTIVE );
 
 	if ( !Cvar_VariableIntegerValue( "r_fullscreen" ) &&
-	     ( cls.keyCatchers & KEYCATCH_CONSOLE || ( cls.keyCatchers & KEYCATCH_UI && !in_uigrab->integer ) ) )
+	     ( cls.keyCatchers & KEYCATCH_CONSOLE || ( CL_UIOwnsMouse() && !in_uigrab->integer ) ) )
 	{
 		// Console is down, or UI is up, in windowed mode
 		IN_DeactivateMouse( qfalse );
@@ -1805,7 +1805,7 @@ void IN_Init( void )
 	// mouse variables
 	in_mouse = Cvar_Get( "in_mouse", "1", CVAR_ARCHIVE );
 	in_nograb = Cvar_Get( "in_nograb", "0", CVAR_ARCHIVE );
-	in_uigrab = Cvar_Get( "in_uigrab", "0", CVAR_ARCHIVE );
+	in_uigrab = Cvar_Get( "in_uigrab", "1", CVAR_ARCHIVE );
 
 	in_joystick = Cvar_Get( "in_joystick", "0", CVAR_ARCHIVE | CVAR_LATCH );
 	in_joystickDebug = Cvar_Get( "in_joystickDebug", "0", CVAR_TEMP );
