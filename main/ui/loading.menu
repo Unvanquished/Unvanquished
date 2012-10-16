@@ -95,7 +95,7 @@
     itemDef
     {
       name "mapbg"
-      rect 3 3 632 472
+      rect 4 4 632 472
       style WINDOW_STYLE_FILLED
       border 1
       bordercolor .5 .5 .5 1
