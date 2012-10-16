@@ -2391,6 +2391,7 @@ qboolean G_admin_kick( gentity_t *ent )
 	char      name[ MAX_NAME_LENGTH ], *reason, err[ MAX_STRING_CHARS ];
 	int       minargc;
 	gentity_t *vic;
+	int       time;
 
 	minargc = 3;
 
@@ -2434,11 +2435,12 @@ qboolean G_admin_kick( gentity_t *ent )
 	               vic->client->pers.guid,
 	               vic->client->pers.netname,
 	               reason ) );
+	time = G_admin_parse_time( g_adminTempBan.string );
 	admin_create_ban( ent,
 	                  vic->client->pers.netname,
 	                  vic->client->pers.guid,
 	                  &vic->client->pers.ip,
-	                  MAX( 1, G_admin_parse_time( g_adminTempBan.string ) ),
+	                  MAX( 1, time ),
 	                  ( *reason ) ? reason : "kicked by admin" );
 	G_admin_writeconfig();
 
@@ -2487,9 +2489,9 @@ qboolean G_admin_ban( gentity_t *ent )
 
 	if ( !G_admin_permission( ent, ADMF_CAN_PERM_BAN ) )
 	{
-		int maximum = MAX( 1, G_admin_parse_time( g_adminMaxBan.string ) );
+		int maximum = G_admin_parse_time( g_adminMaxBan.string );
 
-		if ( seconds == 0 || seconds > maximum )
+		if ( seconds == 0 || seconds > MAX( 1, maximum ) )
 		{
 			ADMP( QQ( N_("^3ban: ^7you may not issue permanent bans\n") ) );
 			seconds = maximum;
@@ -2639,12 +2641,15 @@ qboolean G_admin_unban( gentity_t *ent )
 		return qfalse;
 	}
 
-	if ( !G_admin_permission( ent, ADMF_CAN_PERM_BAN ) &&
-	     ( ban->expires == 0 || ( ban->expires - time > MAX( 1,
-	                              G_admin_parse_time( g_adminMaxBan.string ) ) ) ) )
+	if ( !G_admin_permission( ent, ADMF_CAN_PERM_BAN ) )
 	{
-		ADMP( QQ( N_("^3unban: ^7you cannot remove permanent bans\n") ) );
-		return qfalse;
+		int maximum;
+		if ( ban->expires == 0 ||
+		     ( maximum = G_admin_parse_time( g_adminMaxBan.string ), ban->expires - time > MAX( 1, maximum ) ) )
+		{
+			ADMP( QQ( N_("^3unban: ^7you cannot remove permanent bans\n") ) );
+			return qfalse;
+		}
 	}
 
 	if ( expireOnly && G_ADMIN_BAN_EXPIRED( ban, time ) )
@@ -2719,7 +2724,8 @@ qboolean G_admin_adjustban( gentity_t *ent )
 		return qfalse;
 	}
 
-	maximum = MAX( 1, G_admin_parse_time( g_adminMaxBan.string ) );
+	maximum = G_admin_parse_time( g_adminMaxBan.string );
+	maximum = MAX( 1, maximum );
 
 	if ( !G_admin_permission( ent, ADMF_CAN_PERM_BAN ) &&
 	     ( ban->expires == 0 || ban->expires - time > maximum ) )

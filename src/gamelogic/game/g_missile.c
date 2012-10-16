@@ -103,7 +103,8 @@ static void G_MissileTimePowerReduce( gentity_t *self, int fullPower, int halfLi
 
 	case PR_COSINE:
 		travelled = lifetime;
-		divider = MAX( 0.0, cos( travelled * M_PI / 2.0 / ( fullPower + 1 ) ) );
+		divider = cos( travelled * M_PI / 2.0f / ( fullPower + 1 ) );
+		divider = MAX( 0.0f, divider );
 		break;
 
 	case PR_END:; // compiler, do shut up :-)

@@ -3078,9 +3078,9 @@ static void Item_ListBox_SetStartPos( itemDef_t *item, int startPos )
 		listPtr->startPos = MIN( max, startPos );
 	}
 
+	max = Item_ListBox_NumItemsForItemHeight( item );
 	total = DC->feederCount( item->feederID );
-	listPtr->endPos = listPtr->startPos + MIN( ( total - listPtr->startPos ),
-	                  Item_ListBox_NumItemsForItemHeight( item ) );
+	listPtr->endPos = listPtr->startPos + MIN( max, total - listPtr->startPos );
 }
 
 float Item_ListBox_ThumbPosition( itemDef_t *item )
@@ -3257,11 +3257,12 @@ void Item_ListBox_MouseEnter( itemDef_t *item, float x, float y )
 
 	if ( !( item->window.flags & listBoxFlags ) )
 	{
+		int numItems = Item_ListBox_NumItemsForItemHeight( item );
+
 		r.x = SCROLLBAR_X( item );
 		r.y = SCROLLBAR_Y( item );
 		r.w = SCROLLBAR_W( item );
-		r.h = listPtr->elementHeight *
-		      MIN( Item_ListBox_NumItemsForItemHeight( item ), total );
+		r.h = listPtr->elementHeight * MIN( numItems, total );
 
 		if ( Rect_ContainsPoint( &r, x, y ) )
 		{
