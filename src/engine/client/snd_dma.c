@@ -456,9 +456,9 @@ Used for spatializing s_channels
 */
 void S_SpatializeOrigin( vec3_t origin, int master_vol, int *left_vol, int *right_vol )
 {
-	vec_t       dot;
-	vec_t       dist;
-	vec_t       lscale, rscale, scale;
+	float       dot;
+	float       dist;
+	float       lscale, rscale, scale;
 	vec3_t      source_vec;
 	vec3_t      vec;
 

@@ -386,9 +386,9 @@ void ClampColor( vec4_t color )
 	}
 }
 
-vec_t PlaneNormalize( vec4_t plane )
+float PlaneNormalize( vec4_t plane )
 {
-	vec_t length, ilength;
+	float length, ilength;
 
 	length = sqrt( plane[ 0 ] * plane[ 0 ] + plane[ 1 ] * plane[ 1 ] + plane[ 2 ] * plane[ 2 ] );
 
@@ -470,7 +470,7 @@ qboolean PlanesGetIntersectionPoint( const vec4_t plane1, const vec4_t plane2, c
 
 	vec3_t n1, n2, n3;
 	vec3_t n1n2, n2n3, n3n1;
-	vec_t  denom;
+	float  denom;
 
 	VectorNormalize2( plane1, n1 );
 	VectorNormalize2( plane2, n2 );
@@ -897,7 +897,7 @@ returns the angle between two vectors normalized to the range [0 <= angle <= 180
 */
 float AngleBetweenVectors( const vec3_t a, const vec3_t b )
 {
-	vec_t alen, blen;
+	float alen, blen;
 
 	alen = VectorLength( a );
 	blen = VectorLength( b );
@@ -1476,7 +1476,7 @@ qboolean BoundsIntersect( const vec3_t mins, const vec3_t maxs, const vec3_t min
 	return qtrue;
 }
 
-qboolean BoundsIntersectSphere( const vec3_t mins, const vec3_t maxs, const vec3_t origin, vec_t radius )
+qboolean BoundsIntersectSphere( const vec3_t mins, const vec3_t maxs, const vec3_t origin, float radius )
 {
 	if ( origin[ 0 ] - radius > maxs[ 0 ] ||
 	     origin[ 0 ] + radius < mins[ 0 ] ||
@@ -1510,7 +1510,7 @@ int VectorCompare( const vec3_t v1, const vec3_t v2 )
 	return 1;
 }
 
-vec_t VectorNormalize( vec3_t v )
+float VectorNormalize( vec3_t v )
 {
 	float length, ilength;
 
@@ -1545,7 +1545,7 @@ void VectorNormalizeFast( vec3_t v )
 	v[ 2 ] *= ilength;
 }
 
-vec_t VectorNormalize2( const vec3_t v, vec3_t out )
+float VectorNormalize2( const vec3_t v, vec3_t out )
 {
 	float length, ilength;
 
@@ -1576,7 +1576,7 @@ void _VectorMA( const vec3_t veca, float scale, const vec3_t vecb, vec3_t vecc )
 	vecc[ 2 ] = veca[ 2 ] + scale * vecb[ 2 ];
 }
 
-vec_t _DotProduct( const vec3_t v1, const vec3_t v2 )
+float _DotProduct( const vec3_t v1, const vec3_t v2 )
 {
 	return v1[ 0 ] * v2[ 0 ] + v1[ 1 ] * v2[ 1 ] + v1[ 2 ] * v2[ 2 ];
 }
@@ -1602,7 +1602,7 @@ void _VectorCopy( const vec3_t in, vec3_t out )
 	out[ 2 ] = in[ 2 ];
 }
 
-void _VectorScale( const vec3_t in, vec_t scale, vec3_t out )
+void _VectorScale( const vec3_t in, float scale, vec3_t out )
 {
 	out[ 0 ] = in[ 0 ] * scale;
 	out[ 1 ] = in[ 1 ] * scale;
@@ -1616,17 +1616,17 @@ void CrossProduct( const vec3_t v1, const vec3_t v2, vec3_t cross )
 	cross[ 2 ] = v1[ 0 ] * v2[ 1 ] - v1[ 1 ] * v2[ 0 ];
 }
 
-vec_t VectorLength( const vec3_t v )
+float VectorLength( const vec3_t v )
 {
 	return sqrt( v[ 0 ] * v[ 0 ] + v[ 1 ] * v[ 1 ] + v[ 2 ] * v[ 2 ] );
 }
 
-vec_t VectorLengthSquared( const vec3_t v )
+float VectorLengthSquared( const vec3_t v )
 {
 	return ( v[ 0 ] * v[ 0 ] + v[ 1 ] * v[ 1 ] + v[ 2 ] * v[ 2 ] );
 }
 
-vec_t Distance( const vec3_t p1, const vec3_t p2 )
+float Distance( const vec3_t p1, const vec3_t p2 )
 {
 	vec3_t v;
 
@@ -1634,7 +1634,7 @@ vec_t Distance( const vec3_t p1, const vec3_t p2 )
 	return VectorLength( v );
 }
 
-vec_t DistanceSquared( const vec3_t p1, const vec3_t p2 )
+float DistanceSquared( const vec3_t p1, const vec3_t p2 )
 {
 	vec3_t v;
 
@@ -1649,7 +1649,7 @@ void VectorInverse( vec3_t v )
 	v[ 2 ] = -v[ 2 ];
 }
 
-void Vector4Scale( const vec4_t in, vec_t scale, vec4_t out )
+void Vector4Scale( const vec4_t in, float scale, vec4_t out )
 {
 	out[ 0 ] = in[ 0 ] * scale;
 	out[ 1 ] = in[ 1 ] * scale;
@@ -1849,7 +1849,7 @@ Return the smallest distance between two line segments, squared
 ================
 */
 
-vec_t DistanceBetweenLineSegmentsSquared( const vec3_t sP0, const vec3_t sP1,
+float DistanceBetweenLineSegmentsSquared( const vec3_t sP0, const vec3_t sP1,
     const vec3_t tP0, const vec3_t tP1, float *s, float *t )
 {
 	vec3_t sMag, tMag, diff;
@@ -1961,9 +1961,9 @@ Return the smallest distance between two line segments
 ================
 */
 
-vec_t DistanceBetweenLineSegments( const vec3_t sP0, const vec3_t sP1, const vec3_t tP0, const vec3_t tP1, float *s, float *t )
+float DistanceBetweenLineSegments( const vec3_t sP0, const vec3_t sP1, const vec3_t tP0, const vec3_t tP1, float *s, float *t )
 {
-	return ( vec_t ) sqrt( DistanceBetweenLineSegmentsSquared( sP0, sP1, tP0, tP1, s, t ) );
+	return sqrt( DistanceBetweenLineSegmentsSquared( sP0, sP1, tP0, tP1, s, t ) );
 }
 
 /*
@@ -2538,9 +2538,9 @@ qboolean MatrixInverse( matrix_t matrix )
 	return qfalse;
 }
 
-void MatrixSetupXRotation( matrix_t m, vec_t degrees )
+void MatrixSetupXRotation( matrix_t m, float degrees )
 {
-	vec_t a = DEG2RAD( degrees );
+	float a = DEG2RAD( degrees );
 
 	m[ 0 ] = 1;
 	m[ 4 ] = 0;
@@ -2560,9 +2560,9 @@ void MatrixSetupXRotation( matrix_t m, vec_t degrees )
 	m[ 15 ] = 1;
 }
 
-void MatrixSetupYRotation( matrix_t m, vec_t degrees )
+void MatrixSetupYRotation( matrix_t m, float degrees )
 {
-	vec_t a = DEG2RAD( degrees );
+	float a = DEG2RAD( degrees );
 
 	m[ 0 ] = cos( a );
 	m[ 4 ] = 0;
@@ -2582,9 +2582,9 @@ void MatrixSetupYRotation( matrix_t m, vec_t degrees )
 	m[ 15 ] = 1;
 }
 
-void MatrixSetupZRotation( matrix_t m, vec_t degrees )
+void MatrixSetupZRotation( matrix_t m, float degrees )
 {
-	vec_t a = DEG2RAD( degrees );
+	float a = DEG2RAD( degrees );
 
 	m[ 0 ] = cos( a );
 	m[ 4 ] = -sin( a );
@@ -2604,7 +2604,7 @@ void MatrixSetupZRotation( matrix_t m, vec_t degrees )
 	m[ 15 ] = 1;
 }
 
-void MatrixSetupTranslation( matrix_t m, vec_t x, vec_t y, vec_t z )
+void MatrixSetupTranslation( matrix_t m, float x, float y, float z )
 {
 	m[ 0 ] = 1;
 	m[ 4 ] = 0;
@@ -2624,7 +2624,7 @@ void MatrixSetupTranslation( matrix_t m, vec_t x, vec_t y, vec_t z )
 	m[ 15 ] = 1;
 }
 
-void MatrixSetupScale( matrix_t m, vec_t x, vec_t y, vec_t z )
+void MatrixSetupScale( matrix_t m, float x, float y, float z )
 {
 	m[ 0 ] = x;
 	m[ 4 ] = 0;
@@ -2644,7 +2644,7 @@ void MatrixSetupScale( matrix_t m, vec_t x, vec_t y, vec_t z )
 	m[ 15 ] = 1;
 }
 
-void MatrixSetupShear( matrix_t m, vec_t x, vec_t y )
+void MatrixSetupShear( matrix_t m, float x, float y )
 {
 	m[ 0 ] = 1;
 	m[ 4 ] = x;
@@ -2728,7 +2728,7 @@ void MatrixMultiply2( matrix_t m, const matrix_t m2 )
 	MatrixMultiply( tmp, m2, m );
 }
 
-void MatrixMultiplyRotation( matrix_t m, vec_t pitch, vec_t yaw, vec_t roll )
+void MatrixMultiplyRotation( matrix_t m, float pitch, float yaw, float roll )
 {
 	matrix_t tmp, rot;
 
@@ -2738,7 +2738,7 @@ void MatrixMultiplyRotation( matrix_t m, vec_t pitch, vec_t yaw, vec_t roll )
 	MatrixMultiply( tmp, rot, m );
 }
 
-void MatrixMultiplyZRotation( matrix_t m, vec_t degrees )
+void MatrixMultiplyZRotation( matrix_t m, float degrees )
 {
 	matrix_t tmp, rot;
 
@@ -2748,7 +2748,7 @@ void MatrixMultiplyZRotation( matrix_t m, vec_t degrees )
 	MatrixMultiply( tmp, rot, m );
 }
 
-void MatrixMultiplyTranslation( matrix_t m, vec_t x, vec_t y, vec_t z )
+void MatrixMultiplyTranslation( matrix_t m, float x, float y, float z )
 {
 #if 1
 	matrix_t tmp, trans;
@@ -2764,7 +2764,7 @@ void MatrixMultiplyTranslation( matrix_t m, vec_t x, vec_t y, vec_t z )
 #endif
 }
 
-void MatrixMultiplyScale( matrix_t m, vec_t x, vec_t y, vec_t z )
+void MatrixMultiplyScale( matrix_t m, float x, float y, float z )
 {
 #if 0
 	matrix_t tmp, scale;
@@ -2788,7 +2788,7 @@ void MatrixMultiplyScale( matrix_t m, vec_t x, vec_t y, vec_t z )
 #endif
 }
 
-void MatrixMultiplyShear( matrix_t m, vec_t x, vec_t y )
+void MatrixMultiplyShear( matrix_t m, float x, float y )
 {
 	matrix_t tmp, shear;
 
@@ -2856,7 +2856,7 @@ void MatrixToAngles( const matrix_t m, vec3_t angles )
 #endif
 }
 
-void MatrixFromAngles( matrix_t m, vec_t pitch, vec_t yaw, vec_t roll )
+void MatrixFromAngles( matrix_t m, float pitch, float yaw, float roll )
 {
 	static float sr, sp, sy, cr, cp, cy;
 
@@ -3319,7 +3319,7 @@ void MatrixTransformPlane2( const matrix_t m, vec4_t inout )
 replacement for glFrustum
 see glspec30.pdf chapter 2.12 Coordinate Transformations
 */
-void MatrixPerspectiveProjection( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far )
+void MatrixPerspectiveProjection( matrix_t m, float left, float right, float bottom, float top, float near, float far )
 {
 	m[ 0 ] = ( 2 * near ) / ( right - left );
 	m[ 4 ] = 0;
@@ -3344,7 +3344,7 @@ same as D3DXMatrixPerspectiveOffCenterLH
 
 http://msdn.microsoft.com/en-us/library/bb205353(VS.85).aspx
 */
-void MatrixPerspectiveProjectionLH( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far )
+void MatrixPerspectiveProjectionLH( matrix_t m, float left, float right, float bottom, float top, float near, float far )
 {
 	m[ 0 ] = ( 2 * near ) / ( right - left );
 	m[ 4 ] = 0;
@@ -3369,7 +3369,7 @@ same as D3DXMatrixPerspectiveOffCenterRH
 
 http://msdn.microsoft.com/en-us/library/bb205354(VS.85).aspx
 */
-void MatrixPerspectiveProjectionRH( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far )
+void MatrixPerspectiveProjectionRH( matrix_t m, float left, float right, float bottom, float top, float near, float far )
 {
 	m[ 0 ] = ( 2 * near ) / ( right - left );
 	m[ 4 ] = 0;
@@ -3394,9 +3394,9 @@ same as D3DXMatrixPerspectiveFovLH
 
 http://msdn.microsoft.com/en-us/library/bb205350(VS.85).aspx
 */
-void MatrixPerspectiveProjectionFovYAspectLH( matrix_t m, vec_t fov, vec_t aspect, vec_t near, vec_t far )
+void MatrixPerspectiveProjectionFovYAspectLH( matrix_t m, float fov, float aspect, float near, float far )
 {
-	vec_t width, height;
+	float width, height;
 
 	width = tanf( DEG2RAD( fov * 0.5f ) );
 	height = width / aspect;
@@ -3419,9 +3419,9 @@ void MatrixPerspectiveProjectionFovYAspectLH( matrix_t m, vec_t fov, vec_t aspec
 	m[ 15 ] = 0;
 }
 
-void MatrixPerspectiveProjectionFovXYLH( matrix_t m, vec_t fovX, vec_t fovY, vec_t near, vec_t far )
+void MatrixPerspectiveProjectionFovXYLH( matrix_t m, float fovX, float fovY, float near, float far )
 {
-	vec_t width, height;
+	float width, height;
 
 	width = tanf( DEG2RAD( fovX * 0.5f ) );
 	height = tanf( DEG2RAD( fovY * 0.5f ) );
@@ -3444,9 +3444,9 @@ void MatrixPerspectiveProjectionFovXYLH( matrix_t m, vec_t fovX, vec_t fovY, vec
 	m[ 15 ] = 0;
 }
 
-void MatrixPerspectiveProjectionFovXYRH( matrix_t m, vec_t fovX, vec_t fovY, vec_t near, vec_t far )
+void MatrixPerspectiveProjectionFovXYRH( matrix_t m, float fovX, float fovY, float near, float far )
 {
-	vec_t width, height;
+	float width, height;
 
 	width = tanf( DEG2RAD( fovX * 0.5f ) );
 	height = tanf( DEG2RAD( fovY * 0.5f ) );
@@ -3470,9 +3470,9 @@ void MatrixPerspectiveProjectionFovXYRH( matrix_t m, vec_t fovX, vec_t fovY, vec
 }
 
 // Tr3B: far plane at infinity, see RobustShadowVolumes.pdf by Nvidia
-void MatrixPerspectiveProjectionFovXYInfiniteRH( matrix_t m, vec_t fovX, vec_t fovY, vec_t near )
+void MatrixPerspectiveProjectionFovXYInfiniteRH( matrix_t m, float fovX, float fovY, float near )
 {
-	vec_t width, height;
+	float width, height;
 
 	width = tanf( DEG2RAD( fovX * 0.5f ) );
 	height = tanf( DEG2RAD( fovY * 0.5f ) );
@@ -3499,7 +3499,7 @@ void MatrixPerspectiveProjectionFovXYInfiniteRH( matrix_t m, vec_t fovX, vec_t f
 replacement for glOrtho
 see glspec30.pdf chapter 2.12 Coordinate Transformations
 */
-void MatrixOrthogonalProjection( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far )
+void MatrixOrthogonalProjection( matrix_t m, float left, float right, float bottom, float top, float near, float far )
 {
 	m[ 0 ] = 2 / ( right - left );
 	m[ 4 ] = 0;
@@ -3524,7 +3524,7 @@ same as D3DXMatrixOrthoOffCenterLH
 
 http://msdn.microsoft.com/en-us/library/bb205347(VS.85).aspx
 */
-void MatrixOrthogonalProjectionLH( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far )
+void MatrixOrthogonalProjectionLH( matrix_t m, float left, float right, float bottom, float top, float near, float far )
 {
 	m[ 0 ] = 2 / ( right - left );
 	m[ 4 ] = 0;
@@ -3549,7 +3549,7 @@ same as D3DXMatrixOrthoOffCenterRH
 
 http://msdn.microsoft.com/en-us/library/bb205348(VS.85).aspx
 */
-void MatrixOrthogonalProjectionRH( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far )
+void MatrixOrthogonalProjectionRH( matrix_t m, float left, float right, float bottom, float top, float near, float far )
 {
 	m[ 0 ] = 2 / ( right - left );
 	m[ 4 ] = 0;
@@ -3746,7 +3746,7 @@ void MatrixCrop( matrix_t m, const vec3_t mins, const vec3_t maxs )
 
 // *INDENT-ON*
 
-vec_t QuatNormalize( quat_t q )
+float QuatNormalize( quat_t q )
 {
 	float length, ilength;
 
@@ -3765,7 +3765,7 @@ vec_t QuatNormalize( quat_t q )
 	return length;
 }
 
-void QuatFromAngles( quat_t q, vec_t pitch, vec_t yaw, vec_t roll )
+void QuatFromAngles( quat_t q, float pitch, float yaw, float roll )
 {
 #if 1
 	matrix_t tmp;
@@ -3855,7 +3855,7 @@ void QuatFromMatrix( quat_t q, const matrix_t m )
 
 	if ( trace > 0.0f )
 	{
-		vec_t s = 0.5f / sqrt( trace );
+		float s = 0.5f / sqrt( trace );
 
 		q[ 0 ] = ( m[ 6 ] - m[ 9 ] ) * s;
 		q[ 1 ] = ( m[ 8 ] - m[ 2 ] ) * s;

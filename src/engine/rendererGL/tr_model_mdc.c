@@ -789,7 +789,7 @@ qboolean R_LoadMDC( model_t *mod, int lod, void *buffer, int bufferSize, const c
 					}
 
 					tmp[ 3 ] = 1;
-					Com_Memcpy( data + dataOfs, ( vec_t * ) tmp, sizeof( vec4_t ) );
+					Com_Memcpy( data + dataOfs, ( float * ) tmp, sizeof( vec4_t ) );
 					dataOfs += sizeof( vec4_t );
 				}
 
@@ -811,7 +811,7 @@ qboolean R_LoadMDC( model_t *mod, int lod, void *buffer, int bufferSize, const c
 
 				tmp[ 2 ] = 0;
 				tmp[ 3 ] = 1;
-				Com_Memcpy( data + dataOfs, ( vec_t * ) tmp, sizeof( vec4_t ) );
+				Com_Memcpy( data + dataOfs, ( float * ) tmp, sizeof( vec4_t ) );
 				dataOfs += sizeof( vec4_t );
 			}
 
@@ -828,7 +828,7 @@ qboolean R_LoadMDC( model_t *mod, int lod, void *buffer, int bufferSize, const c
 					}
 
 					tmp[ 3 ] = 1;
-					Com_Memcpy( data + dataOfs, ( vec_t * ) tmp, sizeof( vec4_t ) );
+					Com_Memcpy( data + dataOfs, ( float * ) tmp, sizeof( vec4_t ) );
 					dataOfs += sizeof( vec4_t );
 				}
 
@@ -851,7 +851,7 @@ qboolean R_LoadMDC( model_t *mod, int lod, void *buffer, int bufferSize, const c
 					}
 
 					tmp[ 3 ] = 1;
-					Com_Memcpy( data + dataOfs, ( vec_t * ) tmp, sizeof( vec4_t ) );
+					Com_Memcpy( data + dataOfs, ( float * ) tmp, sizeof( vec4_t ) );
 					dataOfs += sizeof( vec4_t );
 				}
 
@@ -874,7 +874,7 @@ qboolean R_LoadMDC( model_t *mod, int lod, void *buffer, int bufferSize, const c
 					}
 
 					tmp[ 3 ] = 1;
-					Com_Memcpy( data + dataOfs, ( vec_t * ) tmp, sizeof( vec4_t ) );
+					Com_Memcpy( data + dataOfs, ( float * ) tmp, sizeof( vec4_t ) );
 					dataOfs += sizeof( vec4_t );
 				}
 

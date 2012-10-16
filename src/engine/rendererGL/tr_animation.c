@@ -1460,22 +1460,22 @@ int RE_BuildSkeleton( refSkeleton_t *skel, qhandle_t hAnim, int startFrame, int 
 			// update quaternion rotation bits
 			if ( channel->componentsBits & COMPONENT_BIT_QX )
 			{
-				( ( vec_t * ) oldQuat ) [ 0 ] = oldFrame->components[ channel->componentsOffset + componentsApplied ];
-				( ( vec_t * ) newQuat ) [ 0 ] = newFrame->components[ channel->componentsOffset + componentsApplied ];
+				( ( float * ) oldQuat ) [ 0 ] = oldFrame->components[ channel->componentsOffset + componentsApplied ];
+				( ( float * ) newQuat ) [ 0 ] = newFrame->components[ channel->componentsOffset + componentsApplied ];
 				componentsApplied++;
 			}
 
 			if ( channel->componentsBits & COMPONENT_BIT_QY )
 			{
-				( ( vec_t * ) oldQuat ) [ 1 ] = oldFrame->components[ channel->componentsOffset + componentsApplied ];
-				( ( vec_t * ) newQuat ) [ 1 ] = newFrame->components[ channel->componentsOffset + componentsApplied ];
+				( ( float * ) oldQuat ) [ 1 ] = oldFrame->components[ channel->componentsOffset + componentsApplied ];
+				( ( float * ) newQuat ) [ 1 ] = newFrame->components[ channel->componentsOffset + componentsApplied ];
 				componentsApplied++;
 			}
 
 			if ( channel->componentsBits & COMPONENT_BIT_QZ )
 			{
-				( ( vec_t * ) oldQuat ) [ 2 ] = oldFrame->components[ channel->componentsOffset + componentsApplied ];
-				( ( vec_t * ) newQuat ) [ 2 ] = newFrame->components[ channel->componentsOffset + componentsApplied ];
+				( ( float * ) oldQuat ) [ 2 ] = oldFrame->components[ channel->componentsOffset + componentsApplied ];
+				( ( float * ) newQuat ) [ 2 ] = newFrame->components[ channel->componentsOffset + componentsApplied ];
 			}
 
 			QuatCalcW( oldQuat );

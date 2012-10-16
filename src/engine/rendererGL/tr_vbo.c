@@ -167,7 +167,7 @@ VBO_t          *R_CreateVBO2( const char *name, int numVertexes, srfVert_t *vert
 	// 3-entry -> { memb[0], memb[1], memb[2], 1 }
 #define VERTEXCOPY(memb) \
 	do { \
-		vec_t *tmp = (vec_t *) ( data + dataOfs ); \
+		float *tmp = (float *) ( data + dataOfs ); \
 		for ( i = 0; i < numVertexes; i++ ) \
 		{ \
 			for ( j = 0; j < ARRAY_LEN( verts->memb ); j++ ) { *tmp++ = verts[ i ].memb[ j ]; } \

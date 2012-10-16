@@ -297,7 +297,7 @@ void AddSurfaceToVBOSurfacesList( growList_t *vboSurfaces, growList_t *vboTriang
 		}
 
 		tmp[ 3 ] = 1;
-		Com_Memcpy( data + dataOfs, ( vec_t * ) tmp, sizeof( vec4_t ) );
+		Com_Memcpy( data + dataOfs, ( float * ) tmp, sizeof( vec4_t ) );
 		dataOfs += sizeof( vec4_t );
 	}
 
@@ -313,7 +313,7 @@ void AddSurfaceToVBOSurfacesList( growList_t *vboSurfaces, growList_t *vboTriang
 
 		tmp[ 2 ] = 0;
 		tmp[ 3 ] = 1;
-		Com_Memcpy( data + dataOfs, ( vec_t * ) tmp, sizeof( vec4_t ) );
+		Com_Memcpy( data + dataOfs, ( float * ) tmp, sizeof( vec4_t ) );
 		dataOfs += sizeof( vec4_t );
 	}
 
@@ -328,7 +328,7 @@ void AddSurfaceToVBOSurfacesList( growList_t *vboSurfaces, growList_t *vboTriang
 		}
 
 		tmp[ 3 ] = 1;
-		Com_Memcpy( data + dataOfs, ( vec_t * ) tmp, sizeof( vec4_t ) );
+		Com_Memcpy( data + dataOfs, ( float * ) tmp, sizeof( vec4_t ) );
 		dataOfs += sizeof( vec4_t );
 	}
 
@@ -343,7 +343,7 @@ void AddSurfaceToVBOSurfacesList( growList_t *vboSurfaces, growList_t *vboTriang
 		}
 
 		tmp[ 3 ] = 1;
-		Com_Memcpy( data + dataOfs, ( vec_t * ) tmp, sizeof( vec4_t ) );
+		Com_Memcpy( data + dataOfs, ( float * ) tmp, sizeof( vec4_t ) );
 		dataOfs += sizeof( vec4_t );
 	}
 
@@ -358,7 +358,7 @@ void AddSurfaceToVBOSurfacesList( growList_t *vboSurfaces, growList_t *vboTriang
 		}
 
 		tmp[ 3 ] = 1;
-		Com_Memcpy( data + dataOfs, ( vec_t * ) tmp, sizeof( vec4_t ) );
+		Com_Memcpy( data + dataOfs, ( float * ) tmp, sizeof( vec4_t ) );
 		dataOfs += sizeof( vec4_t );
 	}
 
@@ -409,7 +409,7 @@ void AddSurfaceToVBOSurfacesList( growList_t *vboSurfaces, growList_t *vboTriang
 			}
 		}
 
-		Com_Memcpy( data + dataOfs, ( vec_t * ) tmp, sizeof( vec4_t ) );
+		Com_Memcpy( data + dataOfs, ( float * ) tmp, sizeof( vec4_t ) );
 		dataOfs += sizeof( vec4_t );
 	}
 
@@ -559,7 +559,7 @@ void AddSurfaceToVBOSurfacesList2( growList_t *vboSurfaces, growList_t *vboTrian
 		}
 
 		tmp[ 3 ] = 1;
-		Com_Memcpy( data + dataOfs, ( vec_t * ) tmp, sizeof( vec4_t ) );
+		Com_Memcpy( data + dataOfs, ( float * ) tmp, sizeof( vec4_t ) );
 		dataOfs += sizeof( vec4_t );
 	}
 
@@ -577,7 +577,7 @@ void AddSurfaceToVBOSurfacesList2( growList_t *vboSurfaces, growList_t *vboTrian
 
 		tmp[ 2 ] = 0;
 		tmp[ 3 ] = 1;
-		Com_Memcpy( data + dataOfs, ( vec_t * ) tmp, sizeof( vec4_t ) );
+		Com_Memcpy( data + dataOfs, ( float * ) tmp, sizeof( vec4_t ) );
 		dataOfs += sizeof( vec4_t );
 	}
 
@@ -594,7 +594,7 @@ void AddSurfaceToVBOSurfacesList2( growList_t *vboSurfaces, growList_t *vboTrian
 		}
 
 		tmp[ 3 ] = 1;
-		Com_Memcpy( data + dataOfs, ( vec_t * ) tmp, sizeof( vec4_t ) );
+		Com_Memcpy( data + dataOfs, ( float * ) tmp, sizeof( vec4_t ) );
 		dataOfs += sizeof( vec4_t );
 	}
 
@@ -611,7 +611,7 @@ void AddSurfaceToVBOSurfacesList2( growList_t *vboSurfaces, growList_t *vboTrian
 		}
 
 		tmp[ 3 ] = 1;
-		Com_Memcpy( data + dataOfs, ( vec_t * ) tmp, sizeof( vec4_t ) );
+		Com_Memcpy( data + dataOfs, ( float * ) tmp, sizeof( vec4_t ) );
 		dataOfs += sizeof( vec4_t );
 	}
 
@@ -628,7 +628,7 @@ void AddSurfaceToVBOSurfacesList2( growList_t *vboSurfaces, growList_t *vboTrian
 		}
 
 		tmp[ 3 ] = 1;
-		Com_Memcpy( data + dataOfs, ( vec_t * ) tmp, sizeof( vec4_t ) );
+		Com_Memcpy( data + dataOfs, ( float * ) tmp, sizeof( vec4_t ) );
 		dataOfs += sizeof( vec4_t );
 	}
 
@@ -683,7 +683,7 @@ void AddSurfaceToVBOSurfacesList2( growList_t *vboSurfaces, growList_t *vboTrian
 			}
 		}
 
-		Com_Memcpy( data + dataOfs, ( vec_t * ) tmp, sizeof( vec4_t ) );
+		Com_Memcpy( data + dataOfs, ( float * ) tmp, sizeof( vec4_t ) );
 		dataOfs += sizeof( vec4_t );
 	}
 

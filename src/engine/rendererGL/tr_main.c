@@ -1740,7 +1740,7 @@ void R_SetupFrustum2( frustum_t frustum, const matrix_t mvp )
 
 	for ( i = 0; i < 6; i++ )
 	{
-		vec_t length, ilength;
+		float length, ilength;
 
 		frustum[ i ].type = PLANE_NON_AXIAL;
 

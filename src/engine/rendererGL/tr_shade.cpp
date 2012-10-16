@@ -3586,7 +3586,7 @@ Tess_ComputeTexMatrices
 static void Tess_ComputeTexMatrices( shaderStage_t *pStage )
 {
 	int   i;
-	vec_t *matrix;
+	float *matrix;
 
 	GLimp_LogComment( "--- Tess_ComputeTexMatrices ---\n" );
 
