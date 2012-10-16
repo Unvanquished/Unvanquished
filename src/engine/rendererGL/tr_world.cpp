@@ -2007,7 +2007,7 @@ static bool QueryReasonable( bspNode_t *node )
 {
 	// if r_chcMaxVisibleFrames 10 then range from 5 to 10
 	//return ((tr.frameCount - node->lastQueried[tr.viewCount]) > r_chcMaxVisibleFrames->integer);
-	return ( ( tr.frameCount - node->lastQueried[ tr.viewCount ] ) > Q_min( ( int ) ceil( ( r_chcMaxVisibleFrames->value * 0.5f ) + ( r_chcMaxVisibleFrames->value * 0.5f ) * random() ), r_chcMaxVisibleFrames->integer ) );
+	return ( ( tr.frameCount - node->lastQueried[ tr.viewCount ] ) > MAX( ( int ) ceil( ( r_chcMaxVisibleFrames->value * 0.5f ) + ( r_chcMaxVisibleFrames->value * 0.5f ) * random() ), r_chcMaxVisibleFrames->integer ) );
 }
 
 static void R_CoherentHierachicalCulling()

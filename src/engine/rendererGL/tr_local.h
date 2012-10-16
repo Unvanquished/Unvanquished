@@ -1901,7 +1901,7 @@ extern "C" {
 		if ( DS_PREPASS_LIGHTING_ENABLED() )
 		{
 			value -= ( r_lightScale->value - 1 );
-			value = Q_max( value, 0 );
+			value = MAX( value, 0 );
 		}
 
 #endif

@@ -262,7 +262,7 @@ static void AddSurfaceToVBOSurfacesListMDM( growList_t *vboSurfaces, growList_t 
 
 		flod = mdmLODResolutions[ lod ];
 
-		renderCount = Q_min( ( int )( ( float ) surf->numVerts * flod ), surf->numVerts );
+		renderCount = MIN( ( int )( ( float ) surf->numVerts * flod ), surf->numVerts );
 
 		if ( renderCount < surf->minLod )
 		{

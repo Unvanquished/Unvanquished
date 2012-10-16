@@ -211,7 +211,7 @@ static void R_HDRTonemapLightingColors( const vec4_t in, vec4_t out, qboolean ap
 #endif
 
 	VectorScale( sample, finalLuminance, sample );
-	sample[ 3 ] = Q_min( 1.0f, sample[ 3 ] );
+	sample[ 3 ] = MIN( 1.0f, sample[ 3 ] );
 
 	if ( !r_hdrRendering->integer || !r_hdrLightmap->integer || !glConfig2.framebufferObjectAvailable ||
 	     !glConfig2.textureFloatAvailable || !glConfig2.framebufferBlitAvailable )
@@ -220,7 +220,7 @@ static void R_HDRTonemapLightingColors( const vec4_t in, vec4_t out, qboolean ap
 
 		// clamp with color normalization
 		NormalizeColor( sample, out );
-		out[ 3 ] = Q_min( 1.0f, sample[ 3 ] );
+		out[ 3 ] = MIN( 1.0f, sample[ 3 ] );
 	}
 	else
 	{
@@ -256,7 +256,7 @@ static void R_HDRTonemapLightingColors( const vec4_t in, vec4_t out, qboolean ap
 
 		VectorScale( out, ( 1.0f / 255.0f ), out );
 
-		out[ 3 ] = Q_min( 1.0f, sample[ 3 ] );
+		out[ 3 ] = MIN( 1.0f, sample[ 3 ] );
 	}
 	else
 	{
@@ -285,7 +285,7 @@ static void R_HDRTonemapLightingColors( const vec4_t in, vec4_t out, qboolean ap
 		VectorCopy( sample, out );
 #endif
 
-		out[ 3 ] = Q_min( 1.0f, sample[ 3 ] );
+		out[ 3 ] = MIN( 1.0f, sample[ 3 ] );
 	}
 
 #endif
