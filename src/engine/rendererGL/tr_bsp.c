@@ -693,7 +693,7 @@ void LoadRGBEToFloats( const char *name, float **pic, int *width, int *height, q
 			sum += log( luminance );
 		}
 
-		sum /= ( float )( w * h );
+		sum /= w * h;
 		avgLuminance = exp( sum );
 
 		// post process buffer with tone mapping

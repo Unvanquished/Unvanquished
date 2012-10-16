@@ -7209,7 +7209,7 @@ static void RB_CalculateAdaptation()
 		sum += log( luminance );
 	}
 
-	sum /= ( 64.0f * 64.0f );
+	sum /= 64 * 64;
 	avgLuminance = exp( sum );
 
 	// the user's adapted luminance level is simulated by closing the gap between

@@ -3066,22 +3066,19 @@ static void Item_ComboBox_MaybeUnCastFromListBox( itemDef_t *item, qboolean unCa
 static void Item_ListBox_SetStartPos( itemDef_t *item, int startPos )
 {
 	listBoxDef_t *listPtr = item->typeData.list;
-	int          total = DC->feederCount( item->feederID );
-	int          max = Item_ListBox_MaxScroll( item );
+	int          max, total;
 
 	if ( startPos < 0 )
 	{
 		listPtr->startPos = 0;
 	}
-	else if ( startPos > max )
-	{
-		listPtr->startPos = max;
-	}
 	else
 	{
-		listPtr->startPos = startPos;
+		max = Item_ListBox_MaxScroll( item );
+		listPtr->startPos = MIN( max, startPos );
 	}
 
+	total = DC->feederCount( item->feederID );
 	listPtr->endPos = listPtr->startPos + MIN( ( total - listPtr->startPos ),
 	                  Item_ListBox_NumItemsForItemHeight( item ) );
 }

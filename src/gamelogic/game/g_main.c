@@ -1312,9 +1312,9 @@ void G_CalculateBuildPoints( void )
 	          level.suddenDeathWarning < TW_IMMINENT )
 	{
 		trap_SendServerCommand( -1, va( "cp \"Sudden Death in %d seconds!\"",
-		                                ( int )( G_TimeTilSuddenDeath() / 1000 ) ) );
+		                                G_TimeTilSuddenDeath() / 1000 ) );
 		trap_SendServerCommand( -1, va( "print_tr %s %d", QQ( N_("Sudden Death will begin in $1$ seconds.\n") ),
-		                                ( int )( G_TimeTilSuddenDeath() / 1000 ) ) );
+		                                G_TimeTilSuddenDeath() / 1000 ) );
 		level.suddenDeathWarning = TW_IMMINENT;
 	}
 
