@@ -10543,7 +10543,6 @@ static void RB_RenderView( void )
 			                                                   0, 0, glConfig.vidWidth, glConfig.vidHeight,
 			                                                   GL_COLOR_BUFFER_BIT,
 			                                                   GL_NEAREST);
-
 			}
 			 */
 		}
@@ -11737,15 +11736,8 @@ const void     *RB_StretchPicGradient( const void *data )
 
 	for ( i = 0; i < 4; i++ )
 	{
-		tess.colors[ numVerts + 2 ][ 0 ] = cmd->gradientColor[ 0 ] * ( 1.0f / 255.0f );
-		tess.colors[ numVerts + 2 ][ 1 ] = cmd->gradientColor[ 0 ] * ( 1.0f / 255.0f );
-		tess.colors[ numVerts + 2 ][ 2 ] = cmd->gradientColor[ 0 ] * ( 1.0f / 255.0f );
-		tess.colors[ numVerts + 2 ][ 3 ] = cmd->gradientColor[ 0 ] * ( 1.0f / 255.0f );
-
-		tess.colors[ numVerts + 3 ][ 0 ] = cmd->gradientColor[ 0 ] * ( 1.0f / 255.0f );
-		tess.colors[ numVerts + 3 ][ 1 ] = cmd->gradientColor[ 0 ] * ( 1.0f / 255.0f );
-		tess.colors[ numVerts + 3 ][ 2 ] = cmd->gradientColor[ 0 ] * ( 1.0f / 255.0f );
-		tess.colors[ numVerts + 3 ][ 3 ] = cmd->gradientColor[ 0 ] * ( 1.0f / 255.0f );
+		tess.colors[ numVerts + 2 ][ i ] = cmd->gradientColor[ i ] * ( 1.0f / 255.0f );
+		tess.colors[ numVerts + 3 ][ i ] = cmd->gradientColor[ i ] * ( 1.0f / 255.0f );
 	}
 
 	tess.xyz[ numVerts ][ 0 ] = cmd->x;
