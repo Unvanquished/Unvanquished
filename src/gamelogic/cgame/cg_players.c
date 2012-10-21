@@ -1735,7 +1735,7 @@ static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int new
 
 		//Com_Printf(_("new: %i old %i\n"), newAnimation,lf->old_animationNumber);
 
-		if ( lf->old_animation != NULL && oldSkeleton.numBones == skel->numBones )
+		if ( lf->old_animation->handle && oldSkeleton.numBones == skel->numBones )
 		{
 			if ( !trap_R_BuildSkeleton( &oldSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
 			{
