@@ -923,6 +923,15 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 
 			break;
 
+		case EV_PLAYER_HURT:
+			// Low health warning
+			if(	cg_lowHealthWarning.integer != 0 &&
+				cg.snap->ps.stats[ STAT_HEALTH ] <= cg_lowHealthWarning.integer ) {
+				trap_S_StartSound( NULL, 0, CHAN_LOCAL, CG_CustomSound( 0, "sounds/feedback/hit.wav" ) );
+			}
+
+			break;
+
 		case EV_PAIN:
 
 			// local player sounds are triggered in CG_CheckLocalSounds,
