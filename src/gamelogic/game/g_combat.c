@@ -1110,6 +1110,8 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 	client = targ->client;
 
+	BG_AddPredictableEventToPlayerstate( EV_PLAYER_HURT, 0, &client->ps );
+
 	if ( client && client->noclip )
 	{
 		return;

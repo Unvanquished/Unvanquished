@@ -49,7 +49,7 @@ void CG_DamageFeedback( int yawByte, int pitchByte, int damage )
 
 	// the lower on health you are, the greater the view kick will be
 	health = cg.snap->ps.stats[ STAT_HEALTH ];
-
+	
 	if ( health < 40 )
 	{
 		scale = 1;
