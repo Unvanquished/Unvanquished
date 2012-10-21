@@ -3677,7 +3677,7 @@ void CL_Frame( int msec )
 		return;
 	}
 
-	if ( cls.state == CA_DISCONNECTED && !( cls.keyCatchers & KEYCATCH_UI ) && !com_sv_running->integer )
+	if ( uivm && cls.state == CA_DISCONNECTED && !( cls.keyCatchers & KEYCATCH_UI ) && !com_sv_running->integer )
 	{
 		// if disconnected, bring up the menu
 		//S_StopAllSounds();
