@@ -924,16 +924,10 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			break;
 
 		case EV_PLAYER_HURT:
-
 			// Low health warning
-
-			//Com_Printf("Want a warning about your health?\n");
 			if(	cg_lowHealthWarning.integer != 0 &&
-				cg.snap->ps.stats[ STAT_HEALTH ] <= cg_lowHealthWarning.integer) {
-				int EntityNum = 0;
-				int ClientNum = EntityNum;
-				trap_S_StartSound( NULL, EntityNum, CHAN_LOCAL, CG_CustomSound( EntityNum, "sounds/feedback/hit.wav" ) );
-				//Com_Printf("Low health! Retreat!\n");
+				cg.snap->ps.stats[ STAT_HEALTH ] <= cg_lowHealthWarning.integer ) {
+				trap_S_StartSound( NULL, 0, CHAN_LOCAL, CG_CustomSound( 0, "sounds/feedback/hit.wav" ) );
 			}
 
 			break;
