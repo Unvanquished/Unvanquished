@@ -777,6 +777,12 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 
 		case EV_FIRE_WEAPON:
 			CG_FireWeapon( cent, WPM_PRIMARY );
+			// Low ammo warning
+			if( cg.snap->ps.Ammo / (float)BG_Weapon( cg.snap->ps.weapon )->maxAmmo <= cg_lowAmmoWarning.value )
+			{
+				trap_S_StartSound( NULL, 0, CHAN_LOCAL, CG_CustomSound( 0, "sound/misc/menu3.wav" ) );
+			}
+
 			break;
 
 		case EV_FIRE_WEAPON2:
@@ -925,8 +931,8 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 
 		case EV_PLAYER_HURT:
 			// Low health warning
-			if(	cg_lowHealthWarning.integer != 0 &&
-				cg.snap->ps.stats[ STAT_HEALTH ] <= cg_lowHealthWarning.integer ) {
+			if( (float)cg.snap->ps.stats[ STAT_HEALTH ] / (float)BG_Class( cg.snap->ps.stats[ STAT_CLASS ] )->health <= cg_lowHealthWarning.value )
+			{
 				trap_S_StartSound( NULL, 0, CHAN_LOCAL, CG_CustomSound( 0, "sounds/feedback/hit.wav" ) );
 			}
 
