@@ -3146,6 +3146,7 @@ void Com_Init( char *commandLine )
 
 	Cbuf_AddText( "exec default.cfg\n" );
 
+#ifndef DEDICATED
 	// skip the q3config.cfg if "safe" is on the command line
 	if ( !Com_SafeMode() )
 	{
@@ -3201,6 +3202,10 @@ void Com_Init( char *commandLine )
 			Cbuf_AddText( "exec autoexec.cfg" );
 		}
 	}
+#else
+	Cbuf_AddText( va( "exec %s\n", CONFIG_NAME ) );
+#endif
+
 
 	// ydnar: reset crashed state
 	Cbuf_AddText( "set com_crashed 0\n" );
@@ -3377,12 +3382,12 @@ void Com_ReadFromPipe( void )
 	static char buf[ MAX_STRING_CHARS ];
 	static int  numAccd = 0;
 	int         numNew;
-	
+
 	if ( !pipefile )
 	{
 		return;
 	}
-	
+
 	while ( ( numNew = FS_Read( buf + numAccd, sizeof( buf ) - 1 - numAccd, pipefile ) ) > 0 )
 	{
 		char *brk = NULL; // will point to after the last CR/LF character, if any
@@ -3801,7 +3806,7 @@ void Com_Frame( void )
 	//key = lastTime * 0x87243987;
 
 	Com_ReadFromPipe();
-	
+
 	com_frameNumber++;
 }
 
