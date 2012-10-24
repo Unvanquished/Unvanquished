@@ -639,7 +639,7 @@ void Info_Print( const char *s )
 
 		if ( !*s )
 		{
-			Com_Printf(_( "MISSING VALUE\n" ));
+			Com_Printf( "MISSING VALUE\n" );
 			return;
 		}
 
@@ -1601,17 +1601,17 @@ void Com_Meminfo_f( void )
 
 		if ( ( byte * ) block + block->size != ( byte * ) block->next )
 		{
-			Com_Printf(_( "ERROR: block size does not touch the next block\n" ));
+			Com_Printf( "ERROR: block size does not touch the next block\n" );
 		}
 
 		if ( block->next->prev != block )
 		{
-			Com_Printf(_( "ERROR: next block doesn't have proper back link\n" ));
+			Com_Printf( "ERROR: next block doesn't have proper back link\n" );
 		}
 
 		if ( !block->tag && !block->next->tag )
 		{
-			Com_Printf(_( "ERROR: two consecutive free blocks\n" ));
+			Com_Printf( "ERROR: two consecutive free blocks\n" );
 		}
 	}
 
@@ -1737,7 +1737,7 @@ void Com_TouchMemory( void )
 
 	end = Sys_Milliseconds();
 
-	Com_DPrintf(_( "Com_TouchMemory: %i msec\n"), end - start );
+	Com_DPrintf( "Com_TouchMemory: %i msec\n", end - start );
 }
 
 /*
@@ -1771,7 +1771,7 @@ static void Com_DetectSSE( void )
 #endif
 		Q_VMftol = qvmftolsse;
 
-		Com_Printf(_( "Have SSE support\n" ));
+		Com_Printf( "Have SSE support\n" );
 #if !idx64
 	}
 
@@ -1781,7 +1781,7 @@ static void Com_DetectSSE( void )
 		Q_VMftol = qvmftolx87;
 		Q_SnapVector = qsnapvectorx87;
 
-		Com_Printf(_( "No SSE support on this machine\n" ));
+		Com_Printf( "No SSE support on this machine\n" );
 	}
 
 #endif
@@ -2102,7 +2102,7 @@ void Hunk_Clear( void )
 	Cvar_Set( "com_hunkused", va( "%i", hunk_low.permanent + hunk_high.permanent ) );
 	com_hunkusedvalue = hunk_low.permanent + hunk_high.permanent;
 
-	Com_DPrintf(_( "Hunk_Clear: reset the hunk ok\n" ));
+	Com_DPrintf( "Hunk_Clear: reset the hunk ok\n" );
 	VM_Clear(); // (SA) FIXME:TODO: was commented out in wolf
 #ifdef HUNK_DEBUG
 	hunkblocks = NULL;
@@ -2312,7 +2312,7 @@ void Hunk_FreeTempMemory( void *buf )
 		}
 		else
 		{
-			Com_Printf(_( "Hunk_FreeTempMemory: not the final block\n" ));
+			Com_Printf( "Hunk_FreeTempMemory: not the final block\n" );
 		}
 	}
 	else
@@ -2323,7 +2323,7 @@ void Hunk_FreeTempMemory( void *buf )
 		}
 		else
 		{
-			Com_Printf(_( "Hunk_FreeTempMemory: not the final block\n" ));
+			Com_Printf( "Hunk_FreeTempMemory: not the final block\n" );
 		}
 	}
 }
@@ -2380,7 +2380,7 @@ void Com_InitJournaling( void )
 	{
 		if ( com_journal->string && com_journal->string[ 0 ] == '_' )
 		{
-			Com_Printf(_( "Replaying journaled events\n" ));
+			Com_Printf( "Replaying journaled events\n" );
 			FS_FOpenFileRead( va( "journal%s.dat", com_journal->string ), &com_journalFile, qtrue );
 			FS_FOpenFileRead( va( "journal_data%s.dat", com_journal->string ), &com_journalDataFile, qtrue );
 			com_journal->integer = 2;
@@ -2405,14 +2405,14 @@ void Com_InitJournaling( void )
 
 		if ( com_journal->integer == 1 )
 		{
-			Com_Printf(_( "Journaling events\n" ));
+			Com_Printf( "Journaling events\n" );
 			com_journalFile = FS_FOpenFileWrite( va( "journal_%04d.dat", i ) );
 			com_journalDataFile = FS_FOpenFileWrite( va( "journal_data_%04d.dat", i ) );
 		}
 		else if ( com_journal->integer == 2 )
 		{
 			i--;
-			Com_Printf(_( "Replaying journaled events\n" ));
+			Com_Printf( "Replaying journaled events\n" );
 			FS_FOpenFileRead( va( "journal_%04d.dat", i ), &com_journalFile, qtrue );
 			FS_FOpenFileRead( va( "journal_data_%04d.dat", i ), &com_journalDataFile, qtrue );
 		}
@@ -2423,7 +2423,7 @@ void Com_InitJournaling( void )
 		Cvar_Set( "journal", "0" );
 		com_journalFile = 0;
 		com_journalDataFile = 0;
-		Com_Printf(_( "Couldn't open journal files\n" ));
+		Com_Printf( "Couldn't open journal files\n" );
 	}
 }
 
@@ -2458,7 +2458,7 @@ void Com_QueueEvent( int time, sysEventType_t type, int value, int value2, int p
 
 	if ( eventHead - eventTail >= MAX_QUEUED_EVENTS )
 	{
-		Com_Printf(_( "Com_QueueEvent: overflow\n" ));
+		Com_Printf( "Com_QueueEvent: overflow\n" );
 
 		// we are discarding an event, but don't leak memory
 		if ( ev->evPtr )
@@ -2648,7 +2648,7 @@ void Com_PushEvent( sysEvent_t *event )
 		if ( !printedWarning )
 		{
 			printedWarning = qtrue;
-			Com_Printf(_( "WARNING: Com_PushEvent overflow\n" ));
+			Com_Printf( "WARNING: Com_PushEvent overflow\n" );
 		}
 
 		if ( ev->evPtr )
@@ -2708,7 +2708,7 @@ void Com_RunAndTimeServerPacket( netadr_t *evFrom, msg_t *buf )
 
 		if ( com_speeds->integer == 3 )
 		{
-			Com_Printf(_( "SV_PacketEvent time: %i\n"), msec );
+			Com_Printf( "SV_PacketEvent time: %i\n", msec );
 		}
 	}
 }
@@ -2827,7 +2827,7 @@ int Com_EventLoop( void )
 				// enough to hold fragment reassembly
 				if ( ( unsigned ) buf.cursize > buf.maxsize )
 				{
-					Com_Printf(_( "Com_EventLoop: oversize packet\n" ));
+					Com_Printf( "Com_EventLoop: oversize packet\n" );
 					continue;
 				}
 
@@ -3040,7 +3040,7 @@ void Com_TrackProfile( char *profile_path )
 
 			if ( FS_FileExists( last_profile_path ) )
 			{
-				Com_Printf(_( "Com_TrackProfile: Deleting old pid file [%s] [%s]\n"), fs_gamedir, last_profile_path );
+				Com_Printf( "Com_TrackProfile: Deleting old pid file [%s] [%s]\n", fs_gamedir, last_profile_path );
 				FS_Delete( last_profile_path );
 			}
 
@@ -3070,7 +3070,7 @@ qboolean Com_WriteProfile( char *profile_path )
 
 	if ( f < 0 )
 	{
-		Com_Printf(_( "Com_WriteProfile: Can't write %s.\n"), profile_path );
+		Com_Printf( "Com_WriteProfile: Can't write %s.\n", profile_path );
 		return qfalse;
 	}
 
@@ -3367,7 +3367,7 @@ void Com_Init( char *commandLine )
 		pipefile = FS_FCreateOpenPipeFile( com_pipefile->string );
 	}
 	com_fullyInitialized = qtrue;
-	Com_Printf( "%s", _("--- Common Initialization Complete ---\n"));
+	Com_Printf( "%s", "--- Common Initialization Complete ---\n" );
 }
 
 /*
@@ -3536,7 +3536,7 @@ int Com_ModifyMsec( int msec )
 		// of time.
 		if ( msec > 500 && msec < 500000 )
 		{
-			Com_Printf(_( "Hitch warning: %i msec frame time\n"), msec );
+			Com_Printf( "Hitch warning: %i msec frame time\n", msec );
 		}
 
 		clampTime = 5000;
@@ -3793,7 +3793,7 @@ void Com_Frame( void )
 		extern int c_traces, c_brush_traces, c_patch_traces, c_trisoup_traces;
 		extern int c_pointcontents;
 
-		Com_Printf(_( "%4i traces  (%ib %ip %it) %4i points\n"), c_traces, c_brush_traces, c_patch_traces, c_trisoup_traces,
+		Com_Printf( "%4i traces  (%ib %ip %it) %4i points\n", c_traces, c_brush_traces, c_patch_traces, c_trisoup_traces,
 		            c_pointcontents );
 		c_traces = 0;
 		c_brush_traces = 0;
@@ -4410,7 +4410,7 @@ void Com_RandomBytes( byte *string, int len )
 		return;
 	}
 
-	Com_Printf(_( "Com_RandomBytes: using weak randomization\n" ));
+	Com_Printf( "Com_RandomBytes: using weak randomization\n" );
 
 	for ( i = 0; i < len; i++ )
 	{

@@ -419,7 +419,7 @@ qboolean Netchan_Process( netchan_t *chan, msg_t *msg )
 	{
 		if ( showdrop->integer || showpackets->integer )
 		{
-			Com_Printf(_( "%s: Out-of-order packet %i at %i\n")
+			Com_Printf( "%s: Out-of-order packet %i at %i\n"
 			            , NET_AdrToString( chan->remoteAddress )
 			            ,  sequence
 			            , chan->incomingSequence );
@@ -437,7 +437,7 @@ qboolean Netchan_Process( netchan_t *chan, msg_t *msg )
 	{
 		if ( showdrop->integer || showpackets->integer )
 		{
-			Com_Printf(_( "%s: Dropped %i packets at %i\n")
+			Com_Printf( "%s: Dropped %i packets at %i\n"
 			            , NET_AdrToString( chan->remoteAddress )
 			            , chan->dropped
 			            , sequence );
@@ -466,7 +466,7 @@ qboolean Netchan_Process( netchan_t *chan, msg_t *msg )
 		{
 			if ( showdrop->integer || showpackets->integer )
 			{
-				Com_Printf(_( "%s: Dropped a message fragment\n")
+				Com_Printf( "%s: Dropped a message fragment\n"
 				            , NET_AdrToString( chan->remoteAddress ) );
 			}
 
@@ -481,7 +481,7 @@ qboolean Netchan_Process( netchan_t *chan, msg_t *msg )
 		{
 			if ( showdrop->integer || showpackets->integer )
 			{
-				Com_Printf(_( "%s: illegal fragment length\n")
+				Com_Printf( "%s: illegal fragment length\n"
 				            , NET_AdrToString( chan->remoteAddress ) );
 			}
 
@@ -680,7 +680,7 @@ void NET_SendPacket( netsrc_t sock, int length, const void *data, netadr_t to )
 	// sequenced packets are shown in netchan, so just show oob
 	if ( showpackets->integer && * ( int * ) data == -1 )
 	{
-		Com_Printf(_( "send packet %4i\n"), length );
+		Com_Printf( "send packet %4i\n", length );
 	}
 
 	if ( to.type == NA_LOOPBACK )

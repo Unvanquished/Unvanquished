@@ -366,17 +366,17 @@ void CL_ParseSnapshot( msg_t *msg )
 		if ( !old->valid )
 		{
 			// should never happen
-			Com_Printf( "%s", _( "Delta from invalid frame (not supposed to happen!).\n" ));
+			Com_Printf( "Delta from invalid frame (not supposed to happen!).\n" );
 		}
 		else if ( old->messageNum != newSnap.deltaNum )
 		{
 			// The frame that the server did the delta from
 			// is too old, so we can't reconstruct it properly.
-			Com_DPrintf("%s", _( "Delta frame too old.\n" ));
+			Com_DPrintf( "Delta frame too old.\n" );
 		}
 		else if ( cl.parseEntitiesNum - old->parseEntitiesNum > MAX_PARSE_ENTITIES - 128 )
 		{
-			Com_DPrintf("%s", _( "Delta parseEntitiesNum too old.\n" ));
+			Com_DPrintf( "Delta parseEntitiesNum too old.\n" );
 		}
 		else
 		{
@@ -689,7 +689,7 @@ void CL_ParseDownload( msg_t *msg )
 			clc.downloadFlags = MSG_ReadLong( msg );
 
 			Cvar_SetValue( "cl_downloadSize", clc.downloadSize );
-			Com_DPrintf(_( "Server redirected download: %s\n"), cls.downloadName );
+			Com_DPrintf( "Server redirected download: %s\n", cls.downloadName );
 			clc.bWWWDl = qtrue; // activate wwwdl client loop
 			CL_AddReliableCommand( "wwwdl ack" );
 
@@ -763,7 +763,7 @@ void CL_ParseDownload( msg_t *msg )
 
 	if ( clc.downloadBlock != block )
 	{
-		Com_DPrintf(_( "CL_ParseDownload: Expected block %d, got %d\n"), clc.downloadBlock, block );
+		Com_DPrintf( "CL_ParseDownload: Expected block %d, got %d\n", clc.downloadBlock, block );
 		return;
 	}
 

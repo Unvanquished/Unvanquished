@@ -121,7 +121,7 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 
 	if ( dl_request )
 	{
-		Com_Printf(_( "ERROR: DL_BeginDownload called with a download request already active\n" ));
+		Com_Printf( "ERROR: DL_BeginDownload called with a download request already active\n" );
 		return 0;
 	}
 
@@ -136,7 +136,7 @@ int DL_BeginDownload( const char *localName, const char *remoteName, int debug )
 
 	if ( !dl_file )
 	{
-		Com_Printf(_( "ERROR: DL_BeginDownload unable to open '%s' for writing\n"), localName );
+		Com_Printf( "ERROR: DL_BeginDownload unable to open '%s' for writing\n", localName );
 		return 0;
 	}
 

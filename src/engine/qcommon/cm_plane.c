@@ -498,7 +498,7 @@ void CM_AddFacetBevels( cFacet_t *facet )
 			{
 				if ( facet->numBorders > MAX_FACET_BEVELS )
 				{
-					Com_Printf(_( "ERROR: too many bevels\n" ));
+					Com_Printf( "ERROR: too many bevels\n" );
 				}
 
 				facet->borderPlanes[ facet->numBorders ] = CM_FindPlane2( plane, &flipped );
@@ -592,7 +592,7 @@ void CM_AddFacetBevels( cFacet_t *facet )
 				{
 					if ( facet->numBorders > MAX_FACET_BEVELS )
 					{
-						Com_Printf(_( "ERROR: too many bevels\n" ));
+						Com_Printf( "ERROR: too many bevels\n" );
 					}
 
 					facet->borderPlanes[ facet->numBorders ] = CM_FindPlane2( plane, &flipped );
@@ -601,7 +601,7 @@ void CM_AddFacetBevels( cFacet_t *facet )
 					{
 						if ( facet->borderPlanes[ facet->numBorders ] == facet->borderPlanes[ k ] )
 						{
-							Com_Printf(_( "WARNING: bevel plane already used\n" ));
+							Com_Printf( "WARNING: bevel plane already used\n" );
 						}
 					}
 
