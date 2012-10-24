@@ -134,10 +134,10 @@ static const cvarTable_t   cvarTable[] =
 	{ &ui_chatCommands,        "ui_chatCommands",             "1",                         CVAR_ARCHIVE              },
 	{ &ui_chatPromptColours,   "ui_chatPromptColors",         "0",                         CVAR_ARCHIVE              },
 
-	{ &ui_menuFiles,           "ui_menuFiles",                "ui/menu/menus.txt",         CVAR_ARCHIVE              },
-	{ &ui_ingameFiles,         "ui_ingameFiles",              "ui/menu/ingame/ingame.txt", CVAR_ARCHIVE              },
-	{ &ui_teamFiles,           "ui_teamFiles",                "ui/menu/team/team.txt",     CVAR_ARCHIVE              },
-	{ &ui_helpFiles,           "ui_helpFiles",                "ui/menu/help/help.txt",     CVAR_ARCHIVE              }
+	{ &ui_menuFiles,           "ui_menuFiles",                "ui/menus.txt",         CVAR_ARCHIVE              },
+	{ &ui_ingameFiles,         "ui_ingameFiles",              "ui/ingame.txt", CVAR_ARCHIVE              },
+	{ &ui_teamFiles,           "ui_teamFiles",                "ui/tremulous.txt",     CVAR_ARCHIVE              },
+	{ &ui_helpFiles,           "ui_helpFiles",                "ui/help.txt",     CVAR_ARCHIVE              }
 };
 
 static const int           cvarTableSize = ARRAY_LEN( cvarTable );
@@ -5041,10 +5041,10 @@ void UI_Init( void )
 
 	start = trap_Milliseconds();
 
-	UI_LoadMenus( "ui/menus.txt", qtrue );
-	UI_LoadMenus( "ui/ingame.txt", qfalse );
-	UI_LoadMenus( "ui/tremulous.txt", qfalse );
-	UI_LoadHelp( "ui/help.txt" );
+	UI_LoadMenus( ui_menuFiles.string, qtrue );
+	UI_LoadMenus( ui_ingameFiles.string, qfalse );
+	UI_LoadMenus( ui_teamFiles.string, qfalse );
+	UI_LoadHelp( ui_helpFiles.string );
 
 	Menus_CloseAll();
 
