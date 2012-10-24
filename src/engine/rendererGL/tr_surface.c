@@ -2015,7 +2015,6 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 				MatrixTransformPoint( boneMatrices[ w->boneIndex ], w->offset, tmpVert );
 				VectorMA( *tmpPosition, w->boneWeight, tmpVert, *tmpPosition );
 			}
-
 		}
 	}
 	else
@@ -2391,6 +2390,7 @@ static void Tess_SurfaceVBOMD5Mesh( srfVBOMD5Mesh_t *srf )
 	if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
 	{
 		tess.vboVertexSkinning = qtrue;
+		tess.numBoneMatrices = srf->numBoneRemap;
 
 		MatrixSetupScale( m,
 		                  backEnd.currentEntity->e.skeleton.scale[ 0 ],

@@ -1801,7 +1801,6 @@ static void R_CalcBones( const refEntity_t *refent, int *boneList, int numBones 
 			}
 
 			//if ( !(thisBoneInfo->flags & BONEFLAG_TAG) ) {
-
 			// 1st multiply with the bone->matrix
 			// 2nd translation for rotation relative to bone around torso parent offset
 			VectorSubtract( bonePtr->translation, torsoParentOffset, t );
@@ -1820,7 +1819,6 @@ static void R_CalcBones( const refEntity_t *refent, int *boneList, int numBones 
 			Matrix4MultiplyInto3x3AndTranslation( m2, m1, bonePtr->matrix, bonePtr->translation );
 
 			/*} else {  // tags require special handling
-
 			   // rotate each of the axis by the torsoAngles
 			   LocalScaledMatrixTransformVector( bonePtr->matrix[0], thisBoneInfo->torsoWeight, torsoAxis, tmpAxis[0] );
 			   LocalScaledMatrixTransformVector( bonePtr->matrix[1], thisBoneInfo->torsoWeight, torsoAxis, tmpAxis[1] );
@@ -1831,7 +1829,6 @@ static void R_CalcBones( const refEntity_t *refent, int *boneList, int numBones 
 			   VectorSubtract( bonePtr->translation, torsoParentOffset, t );
 			   LocalScaledMatrixTransformVector( t, thisBoneInfo->torsoWeight, torsoAxis, bonePtr->translation );
 			   VectorAdd( bonePtr->translation, torsoParentOffset, bonePtr->translation );
-
 			   } */
 		}
 	}
@@ -2400,7 +2397,7 @@ void Tess_SurfaceVBOMDMMesh( srfVBOMDMMesh_t *surface )
 	R_CalcBones( ( const refEntity_t * ) refent, mdmSurface->boneReferences, mdmSurface->numBoneReferences );
 
 	tess.vboVertexSkinning = qtrue;
-
+	tess.numBoneMatrices = surface->numBoneRemap;
 	for ( i = 0; i < surface->numBoneRemap; i++ )
 	{
 #if 1
