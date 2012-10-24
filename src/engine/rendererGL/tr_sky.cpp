@@ -995,6 +995,8 @@ void Tess_StageIteratorSky( void )
 		ri.Error( ERR_FATAL, "tess.stageIteratorFunc == NULL" );
 	}
 
+	GL_Cull(CT_TWO_SIDED);
+
 	if ( tess.stageIteratorFunc2 == &Tess_StageIteratorDepthFill )
 	{
 		// go through all the polygons and project them onto
