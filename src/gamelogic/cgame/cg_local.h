@@ -1560,6 +1560,7 @@ extern vmCvar_t             cg_highPolyPlayerModels;
 extern vmCvar_t             cg_highPolyBuildableModels;
 extern vmCvar_t             cg_highPolyWeaponModels;
 extern vmCvar_t             cg_lowHealthWarning;
+extern vmCvar_t             cg_lowAmmoWarning;
 
 //
 // cg_main.c
