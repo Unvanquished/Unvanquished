@@ -392,7 +392,7 @@ void PRINTF_LIKE(2) PC_SourceWarning( int handle, char *format, ... )
 	line = 0;
 	trap_Parse_SourceFileAndLine( handle, filename, &line );
 
-	Com_Printf( _( S_COLOR_YELLOW  "WARNING: %s, line %d: %s\n"), filename, line, string );
+	Com_Printf( S_COLOR_YELLOW  "WARNING: %s, line %d: %s\n", filename, line, string );
 }
 
 /*
@@ -415,7 +415,7 @@ void PRINTF_LIKE(2) PC_SourceError( int handle, char *format, ... )
 	line = 0;
 	trap_Parse_SourceFileAndLine( handle, filename, &line );
 
-	Com_Printf( _( S_COLOR_RED  "ERROR: %s, line %d: %s\n"), filename, line, string );
+	Com_Printf( S_COLOR_RED  "ERROR: %s, line %d: %s\n", filename, line, string );
 }
 
 /*
@@ -4043,7 +4043,7 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 				const char *str = Q_UTF8Unstore( chr );
 				int        index, width, oldWidth, max;
 
-				if ( (unsigned int)( Q_UTF8CodePoint( str ) - 0xF700 ) < 0x200u ) 
+				if ( (unsigned int)( Q_UTF8CodePoint( str ) - 0xF700 ) < 0x200u )
 				{
 					// Filter out Mac cursor keys etc.
 					releaseFocus = qfalse;
@@ -9636,7 +9636,7 @@ const char *Gettext( const char *msgid )
 	static char buffer[ 4 ][ MAX_STRING_CHARS ];
 	static int index = -1;
 	char *buf;
-	
+
 	index = ( index + 1 ) & 3;
 	buf = buffer[ index ];
 	trap_Gettext( buf, msgid, sizeof( buffer[ 0 ] ) );

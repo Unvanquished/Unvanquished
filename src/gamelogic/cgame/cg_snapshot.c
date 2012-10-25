@@ -281,7 +281,7 @@ static snapshot_t *CG_ReadNextSnapshot( void )
 
 	if ( cg.latestSnapshotNum > cgs.processedSnapshotNum + 1000 )
 	{
-		CG_Printf(_( "WARNING: CG_ReadNextSnapshot: way out of range, %i > %i\n"),
+		CG_Printf( "WARNING: CG_ReadNextSnapshot: way out of range, %i > %i\n",
 		           cg.latestSnapshotNum, cgs.processedSnapshotNum );
 	}
 

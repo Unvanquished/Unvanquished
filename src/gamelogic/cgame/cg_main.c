@@ -418,7 +418,7 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_highPolyBuildableModels,     "cg_highPolyBuildableModels",     "1",            CVAR_ARCHIVE | CVAR_LATCH    },
 	{ &cg_highPolyWeaponModels,        "cg_highPolyWeaponModels",        "1",            CVAR_ARCHIVE | CVAR_LATCH    },
 	{ &cg_lowHealthWarning,            "cg_lowHealthWarning",            "0",            CVAR_ARCHIVE                 },
-	
+
 	{ &cg_fov_builder,                 "cg_fov_builder",                 "0",            CVAR_ARCHIVE                 },
 	{ &cg_fov_level0,                  "cg_fov_level0",                  "0",            CVAR_ARCHIVE                 },
 	{ &cg_fov_level1,                  "cg_fov_level1",                  "0",            CVAR_ARCHIVE                 },
@@ -728,7 +728,7 @@ void CG_UpdateBuildableRangeMarkerMask( void )
 				}
 				else
 				{
-					Com_Printf( _( S_COLOR_YELLOW  "WARNING: unknown buildable or group: %s\n"), p );
+					Com_Printf( S_COLOR_YELLOW  "WARNING: unknown buildable or group: %s\n", p );
 				}
 			}
 
@@ -1318,7 +1318,7 @@ static void CG_RegisterClients( void )
 		cgs.media.larmourLegsSkin = trap_R_RegisterSkin( "models/players/human_base/body_larmour.skin" );
 		cgs.media.larmourTorsoSkin = trap_R_RegisterSkin( "models/players/human_base/body_helmetlarmour.skin" );
 	}
-	
+
 	cgs.media.jetpackModel = trap_R_RegisterModel( "models/players/human_base/jetpack.md3" );
 	cgs.media.jetpackFlashModel = trap_R_RegisterModel( "models/players/human_base/jetpack_flash.md3" );
 	cgs.media.battpackModel = trap_R_RegisterModel( "models/players/human_base/battpack.md3" );
@@ -2377,7 +2377,7 @@ static char *CG_VoIPString( void )
 
 			if ( slen + nlen + 1 >= sizeof( voipString ) )
 			{
-				CG_Printf( "%s", _( "^3WARNING: voipString overflowed\n" ));
+				CG_Printf( "^3WARNING: voipString overflowed\n" );
 				break;
 			}
 

@@ -304,7 +304,7 @@ void CG_BuildAnimSkeleton( const lerpFrame_t *lf, refSkeleton_t *newSkeleton, co
 
 	if ( !trap_R_BuildSkeleton( newSkeleton, lf->animation->handle, lf->oldFrame, lf->frame, 1 - lf->backlerp, lf->animation->clearOrigin ) )
 	{
-		CG_Printf( "%s", _( "CG_BuildAnimSkeleton: Can't build skeleton\n" ));
+		CG_Printf( "CG_BuildAnimSkeleton: Can't build skeleton\n" );
 	}
 
 	// lerp between old and new animation if possible
@@ -314,7 +314,7 @@ void CG_BuildAnimSkeleton( const lerpFrame_t *lf, refSkeleton_t *newSkeleton, co
 		{
 			if ( !trap_R_BlendSkeleton( newSkeleton, oldSkeleton, lf->blendlerp ) )
 			{
-				CG_Printf( "%s", _( "CG_BuildAnimSkeleton: Can't blend skeletons\n" ));
+				CG_Printf( "CG_BuildAnimSkeleton: Can't blend skeletons\n" );
 				return;
 			}
 		}

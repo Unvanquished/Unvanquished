@@ -915,7 +915,7 @@ static void CG_DrawPlayerTotalAmmoValue( rectDef_t *rect, vec4_t color )
 			{
 				maxAmmo *= BATTPACK_MODIFIER;
 			}
-			
+
 			value = cg.snap->ps.Ammo + ( cg.snap->ps.clips * maxAmmo );
 			break;
 	}
@@ -1479,7 +1479,7 @@ static void CG_DrawPlayerBuildTimerBar( rectDef_t *rect, vec4_t foreColor, qhand
 	{
 		return;
 	}
-	
+
 	// Not building anything
 	if( ps->stats[ STAT_MISC ] <= 0 )
 	{
@@ -1527,7 +1527,7 @@ static void CG_DrawPlayerMeter( rectDef_t *rect, int align, float fraction, vec4
 	if( rect->h >= rect->w )
 	{
 		float height;
-		
+
 		height = rect->h * fraction;
 
 		// Meter decreases down
@@ -1544,7 +1544,7 @@ static void CG_DrawPlayerMeter( rectDef_t *rect, int align, float fraction, vec4
 			trap_R_DrawStretchPic( rect->x, rect->y - height + rect->h, rect->w,
 								   height, 0.0f, 1.0f - fraction, 1.0f, 1.0f, shader );
 			trap_R_SetColor( NULL );
-		}	
+		}
 	}
 
 	// Horizontal meter
@@ -1577,7 +1577,7 @@ static void CG_DrawPlayerClipMeter( rectDef_t *rect, int align, vec4_t color, qh
 	float    fraction;
 	int      maxAmmo;
 	weapon_t weapon;
-	
+
 	if ( cg.predictedPlayerState.stats[ STAT_TEAM ] != TEAM_HUMANS )
 	{
 		return;
@@ -1593,8 +1593,8 @@ static void CG_DrawPlayerClipMeter( rectDef_t *rect, int align, vec4_t color, qh
 	{
 		maxAmmo *= BATTPACK_MODIFIER;
 	}
-		
-	
+
+
 	fraction = (float)cg.snap->ps.Ammo / (float)maxAmmo;
 
 	CG_DrawPlayerMeter( rect, align, fraction, color, shader );
@@ -1603,36 +1603,36 @@ static void CG_DrawPlayerClipMeter( rectDef_t *rect, int align, vec4_t color, qh
 static void CG_DrawPlayerHealthMeter( rectDef_t *rect, int align, vec4_t color, qhandle_t shader )
 {
 	float fraction;
-	
+
 	fraction = (float)cg.snap->ps.stats[ STAT_HEALTH ] / (float)BG_Class( cg.snap->ps.stats[ STAT_CLASS ] )->health;
-	
+
 	CG_DrawPlayerMeter( rect, align, fraction, color, shader );
 }
 
 static void CG_DrawPlayerBoostedMeter( rectDef_t *rect, int align, vec4_t foreColor, qhandle_t shader )
 {
 	static int time = -1;
-	
+
 	if( cg.snap->ps.stats[ STAT_STATE ] & SS_BOOSTED )
 	{
 		float      progress;
-		
+
 		if( time == -1 || cg.snap->ps.stats[ STAT_STATE ] & SS_BOOSTEDNEW )
 		{
 			time = cg.time;
 		}
-		
+
 		progress = ( (float)cg.time - time ) / BOOST_TIME;
-		
+
 		CG_DrawPlayerMeter( rect, align, 1-progress, foreColor, shader );
-		
+
 	}
 	else
 	{
 		time = -1;
 		return;
 	}
-	
+
 }
 
 static void CG_DrawProgressLabel( rectDef_t *rect, float text_x, float text_y, vec4_t color,
@@ -3211,8 +3211,8 @@ void CG_DrawWeaponIcon( rectDef_t *rect, vec4_t color )
 
 	if ( !cg_weapons[ weapon ].registered )
 	{
-		Com_Printf( _( S_COLOR_YELLOW  "WARNING: CG_DrawWeaponIcon: weapon %d (%s) "
-		            "is not registered\n"), weapon, BG_Weapon( weapon )->name );
+		Com_Printf( S_COLOR_YELLOW  "WARNING: CG_DrawWeaponIcon: weapon %d (%s) "
+		            "is not registered\n", weapon, BG_Weapon( weapon )->name );
 		return;
 	}
 

@@ -132,7 +132,7 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 
 	if ( len >= sizeof( text ) - 1 )
 	{
-		CG_Printf(_( "File %s is too long\n"), filename );
+		CG_Printf( "File %s is too long\n", filename );
 		trap_FS_FCloseFile( f );
 		return qfalse;
 	}
@@ -195,7 +195,7 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 			}
 			else
 			{
-				CG_Printf(_("Bad footsteps parm in %s: %s\n"), filename, token);
+				CG_Printf( "Bad footsteps parm in %s: %s\n", filename, token);
 			}
 			continue;
 		}
@@ -278,7 +278,7 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 
 			if ( token[0] != '{' )
 			{
-				Com_Printf( _( "^1ERROR^7: Expected '{' but found '%s' in character.cfg" ), token );
+				Com_Printf( "^1ERROR^7: Expected '{' but found '%s' in character.cfg", token );
 			}
 
 			i = 0;
@@ -304,7 +304,7 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 
 			if ( token[0] != '{' )
 			{
-				Com_Printf( _( "^1ERROR^7: Expected '{' but found '%s' in character.cfg\n" ), token );
+				Com_Printf( "^1ERROR^7: Expected '{' but found '%s' in character.cfg\n", token );
 			}
 
 			i = 0;
@@ -325,7 +325,7 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 			continue;
 		}
 
-		Com_Printf(_( "unknown token '%s' is %s\n"), token, filename );
+		Com_Printf( "unknown token '%s' is %s\n", token, filename );
 	}
 
 	return qtrue;
@@ -342,7 +342,7 @@ static qboolean CG_RegisterPlayerAnimation( clientInfo_t *ci, const char *modelN
 
 	if ( !ci->animations[ anim ].handle )
 	{
-		Com_Printf(_( "Failed to load animation file %s\n"), filename );
+		Com_Printf( "Failed to load animation file %s\n", filename );
 		return qfalse;
 	}
 
@@ -434,7 +434,7 @@ static qboolean CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 
 	if ( len == 0 || len >= sizeof( text ) - 1 )
 	{
-		CG_Printf( len == 0 ? _( "File %s is empty\n" ) : _( "File %s is too long\n" ) , filename );
+		CG_Printf( len == 0 ? "File %s is empty\n" : "File %s is too long\n", filename );
 		trap_FS_FCloseFile( f );
 		return qfalse;
 	}
@@ -492,7 +492,7 @@ static qboolean CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 			}
 			else
 			{
-				CG_Printf(_( "Bad footsteps parm in %s: %s\n"), filename, token );
+				CG_Printf( "Bad footsteps parm in %s: %s\n", filename, token );
 			}
 
 			continue;
@@ -560,7 +560,7 @@ static qboolean CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 			break;
 		}
 
-		Com_Printf(_( "unknown token '%s' is %s\n"), token, filename );
+		Com_Printf( "unknown token '%s' is %s\n", token, filename );
 	}
 
 	if ( !ci->nonsegmented )
@@ -647,7 +647,7 @@ static qboolean CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 
 		if ( i != MAX_PLAYER_ANIMATIONS )
 		{
-			CG_Printf(_( "Error parsing animation file: %s\n"), filename );
+			CG_Printf( "Error parsing animation file: %s\n", filename );
 			return qfalse;
 		}
 
@@ -740,7 +740,7 @@ static qboolean CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 
 		if ( i != MAX_NONSEG_PLAYER_ANIMATIONS )
 		{
-			CG_Printf(_( "Error parsing animation file: %s\n"), filename );
+			CG_Printf( "Error parsing animation file: %s\n", filename );
 			return qfalse;
 		}
 
@@ -768,7 +768,7 @@ static qboolean CG_RegisterClientSkin( clientInfo_t *ci, const char *modelName, 
 
 		if ( !ci->bodySkin )
 		{
-			Com_Printf(_( "MD5 skin load failure: %s\n"), filename );
+			Com_Printf( "MD5 skin load failure: %s\n", filename );
 		}
 
 		if ( !ci->bodySkin )
@@ -783,7 +783,7 @@ static qboolean CG_RegisterClientSkin( clientInfo_t *ci, const char *modelName, 
 
 		if ( !ci->legsSkin )
 		{
-			Com_Printf(_( "Leg skin load failure: %s\n"), filename );
+			Com_Printf( "Leg skin load failure: %s\n", filename );
 		}
 
 		Com_sprintf( filename, sizeof( filename ), "models/players/%s/upper_%s.skin", modelName, skinName );
@@ -791,7 +791,7 @@ static qboolean CG_RegisterClientSkin( clientInfo_t *ci, const char *modelName, 
 
 		if ( !ci->torsoSkin )
 		{
-			Com_Printf(_( "Torso skin load failure: %s\n"), filename );
+			Com_Printf( "Torso skin load failure: %s\n", filename );
 		}
 
 		Com_sprintf( filename, sizeof( filename ), "models/players/%s/head_%s.skin", modelName, skinName );
@@ -799,7 +799,7 @@ static qboolean CG_RegisterClientSkin( clientInfo_t *ci, const char *modelName, 
 
 		if ( !ci->headSkin )
 		{
-			Com_Printf(_( "Head skin load failure: %s\n"), filename );
+			Com_Printf( "Head skin load failure: %s\n", filename );
 		}
 
 		if ( !ci->legsSkin || !ci->torsoSkin || !ci->headSkin )
@@ -814,7 +814,7 @@ static qboolean CG_RegisterClientSkin( clientInfo_t *ci, const char *modelName, 
 
 		if ( !ci->nonSegSkin )
 		{
-			Com_Printf(_( "Non-segmented skin load failure: %s\n"), filename );
+			Com_Printf( "Non-segmented skin load failure: %s\n", filename );
 		}
 
 		if ( !ci->nonSegSkin )
@@ -858,7 +858,7 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 
 		if ( !CG_ParseCharacterFile( filename, ci ) )
 		{
-			Com_Printf(_( "Failed to load character file %s\n"), filename );
+			Com_Printf( "Failed to load character file %s\n", filename );
 			return qfalse;
 		}
 
@@ -869,7 +869,7 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 		{
 			if ( !CG_RegisterPlayerAnimation( ci, modelName, LEGS_IDLE, "idle", qtrue, qfalse, qfalse ) )
 			{
-				Com_Printf(_( "Failed to load idle animation file %s\n"), filename );
+				Com_Printf( "Failed to load idle animation file %s\n", filename );
 				return qfalse;
 			}
 
@@ -1031,7 +1031,7 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 			// Load Alien animations
 			if ( !CG_RegisterPlayerAnimation( ci, modelName, NSPA_STAND, "stand", qtrue, qfalse, qfalse ) )
 			{
-				Com_Printf(_( "Failed to load standing animation file %s\n"), filename );
+				Com_Printf( "Failed to load standing animation file %s\n", filename );
 				return qfalse;
 			}
 
@@ -1174,7 +1174,7 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 		// if any skins failed to load, return failure
 		if ( !CG_RegisterClientSkin( ci, modelName, skinName ) )
 		{
-			Com_Printf(_( "Failed to load skin file: %s : %s\n"), modelName, skinName );
+			Com_Printf( "Failed to load skin file: %s : %s\n", modelName, skinName );
 			return qfalse;
 		}
 
@@ -1187,7 +1187,7 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 
 	if ( !CG_ParseAnimationFile( filename, ci ) )
 	{
-		Com_Printf(_( "Failed to load animation file %s\n"), filename );
+		Com_Printf( "Failed to load animation file %s\n", filename );
 		return qfalse;
 	}
 
@@ -1199,7 +1199,7 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 
 		if ( !ci->legsModel )
 		{
-			Com_Printf(_( "Failed to load model file %s\n"), filename );
+			Com_Printf( "Failed to load model file %s\n", filename );
 			return qfalse;
 		}
 
@@ -1208,7 +1208,7 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 
 		if ( !ci->torsoModel )
 		{
-			Com_Printf(_( "Failed to load model file %s\n"), filename );
+			Com_Printf( "Failed to load model file %s\n", filename );
 			return qfalse;
 		}
 
@@ -1217,7 +1217,7 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 
 		if ( !ci->headModel )
 		{
-			Com_Printf(_( "Failed to load model file %s\n"), filename );
+			Com_Printf( "Failed to load model file %s\n", filename );
 			return qfalse;
 		}
 	}
@@ -1228,7 +1228,7 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 
 		if ( !ci->nonSegModel )
 		{
-			Com_Printf(_( "Failed to load model file %s\n"), filename );
+			Com_Printf( "Failed to load model file %s\n", filename );
 			return qfalse;
 		}
 	}
@@ -1236,7 +1236,7 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 	// if any skins failed to load, return failure
 	if ( !CG_RegisterClientSkin( ci, modelName, skinName ) )
 	{
-		Com_Printf(_( "Failed to load skin file: %s : %s\n"), modelName, skinName );
+		Com_Printf( "Failed to load skin file: %s : %s\n", modelName, skinName );
 		return qfalse;
 	}
 
@@ -1739,7 +1739,7 @@ static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int new
 		{
 			if ( !trap_R_BuildSkeleton( &oldSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
 			{
-				CG_Printf( "%s", _( "Can't blend skeleton\n" ));
+				CG_Printf( "Can't blend skeleton\n" );
 				return;
 			}
 		}
@@ -1825,7 +1825,7 @@ static void CG_RunCorpseLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 	{
 		if ( !trap_R_BuildSkeleton( &legsSkeleton, lf->animation->handle, anim->numFrames, anim->numFrames, 0, lf->animation->clearOrigin ) )
 		{
-			CG_Printf( "%s", _( "Can't build lf->skeleton\n" ));
+			CG_Printf( "Can't build lf->skeleton\n" );
 		}
 	}
 }
@@ -3209,7 +3209,7 @@ void CG_Player( centity_t *cent )
 
 		if ( !body.hModel )
 		{
-			CG_Printf(_( "No body model for player %i\n"), clientNum );
+			CG_Printf( "No body model for player %i\n", clientNum );
 			return;
 		}
 
@@ -3898,7 +3898,7 @@ void CG_ResetPlayerEntity( centity_t *cent )
 
 	if ( cg_debugPosition.integer )
 	{
-		CG_Printf(_( "%i ResetPlayerEntity yaw=%.2f\n"), cent->currentState.number, cent->pe.torso.yawAngle );
+		CG_Printf( "%i ResetPlayerEntity yaw=%.2f\n", cent->currentState.number, cent->pe.torso.yawAngle );
 	}
 }
 
