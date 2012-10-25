@@ -1816,13 +1816,13 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 			{
 				s = va( "%s\n\n%s",
 				        BG_ClassConfig( item->v.pclass )->humanName,
-				        BG_Class( item->v.pclass )->info );
+				        _( BG_Class( item->v.pclass )->info ) );
 			}
 			else
 			{
 				s = va( "%s\n\n%s\n\nFrags: %d",
 				        BG_ClassConfig( item->v.pclass )->humanName,
-				        BG_Class( item->v.pclass )->info,
+				        _( BG_Class( item->v.pclass )->info ),
 				        value );
 			}
 
@@ -1835,13 +1835,13 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 			{
 				s = va( "%s\n\n%s\n\nCredits: Free",
 				        BG_Weapon( item->v.weapon )->humanName,
-				        BG_Weapon( item->v.weapon )->info );
+				        _( BG_Weapon( item->v.weapon )->info ) );
 			}
 			else
 			{
 				s = va( "%s\n\n%s\n\nCredits: %d",
 				        BG_Weapon( item->v.weapon )->humanName,
-				        BG_Weapon( item->v.weapon )->info,
+				        _( BG_Weapon( item->v.weapon )->info ),
 				        value );
 			}
 
@@ -1854,13 +1854,13 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 			{
 				s = va( "%s\n\n%s\n\nCredits: Free",
 				        BG_Upgrade( item->v.upgrade )->humanName,
-				        BG_Upgrade( item->v.upgrade )->info );
+				        _( BG_Upgrade( item->v.upgrade )->info ) );
 			}
 			else
 			{
 				s = va( "%s\n\n%s\n\nCredits: %d",
 				        BG_Upgrade( item->v.upgrade )->humanName,
-				        BG_Upgrade( item->v.upgrade )->info,
+				        _( BG_Upgrade( item->v.upgrade )->info ),
 				        value );
 			}
 
@@ -1887,13 +1887,13 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 			{
 				s = va( "%s\n\n%s",
 				        BG_Buildable( item->v.buildable )->humanName,
-				        BG_Buildable( item->v.buildable )->info );
+				        _( BG_Buildable( item->v.buildable )->info ) );
 			}
 			else
 			{
 				s = va( "%s\n\n%s\n\n%s: %d",
 				        BG_Buildable( item->v.buildable )->humanName,
-				        BG_Buildable( item->v.buildable )->info,
+				        _( BG_Buildable( item->v.buildable )->info ),
 				        string, value );
 			}
 
