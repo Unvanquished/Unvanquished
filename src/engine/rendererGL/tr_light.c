@@ -747,7 +747,7 @@ void R_SetupLightFrustum( trRefLight_t *light )
 
 				for ( i = 0; i < 6; i++ )
 				{
-					float length, ilength;
+					vec_t length, ilength;
 
 					light->frustum[ i ].type = PLANE_NON_AXIAL;
 

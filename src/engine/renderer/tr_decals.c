@@ -497,7 +497,7 @@ clips a winding to the fragment behind the plane
 #define SIDE_ON    2
 
 static void ChopWindingBehindPlane( int numInPoints, vec3_t inPoints[ MAX_DECAL_VERTS ],
-                                    int *numOutPoints, vec3_t outPoints[ MAX_DECAL_VERTS ], vec4_t plane, float epsilon )
+                                    int *numOutPoints, vec3_t outPoints[ MAX_DECAL_VERTS ], vec4_t plane, vec_t epsilon )
 {
 	int   i, j;
 	float dot;

@@ -9489,7 +9489,7 @@ static void RB_RenderDebugUtils()
 		vec3_t               origin, offset;
 		vec3_t               forward, right, up;
 		vec3_t               diff, tmp, tmp2, tmp3;
-		float                length;
+		vec_t                length;
 		vec4_t               tetraVerts[ 4 ];
 		static refSkeleton_t skeleton;
 		refSkeleton_t        *skel;
@@ -9929,7 +9929,7 @@ static void RB_RenderDebugUtils()
 		vec3_t         offset;
 		vec3_t         lightDirection;
 		vec3_t         tmp, tmp2, tmp3;
-		float          length;
+		vec_t          length;
 		vec4_t         tetraVerts[ 4 ];
 
 		if ( backEnd.refdef.rdflags & ( RDF_NOWORLDMODEL | RDF_NOCUBEMAP ) )

@@ -1596,7 +1596,7 @@ void     CG_TestModelNextSkin_f( void );
 void     CG_TestModelPrevSkin_f( void );
 void     CG_AddBufferedSound( sfxHandle_t sfx );
 qboolean CG_CullBox(vec3_t mins, vec3_t maxs);
-qboolean CG_CullPointAndRadius(const vec3_t pt, float radius);
+qboolean CG_CullPointAndRadius(const vec3_t pt, vec_t radius);
 void     CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demoPlayback );
 void     CG_OffsetFirstPersonView( void );
 void     CG_OffsetThirdPersonView( void );

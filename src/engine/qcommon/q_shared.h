@@ -389,22 +389,23 @@ extern int memcmp( void *, void *, size_t );
 	==============================================================
 	*/
 
-	typedef float  vec2_t[ 2 ];
+	typedef float  vec_t;
+	typedef vec_t  vec2_t[ 2 ];
 
 #if defined( SSEVEC3_T )
-	typedef float  vec3_t[ 4 ]; // ALIGN(16);
+	typedef vec_t  vec3_t[ 4 ]; // ALIGN(16);
 	typedef vec3_t vec4_t;
 #else
-	typedef float  vec3_t[ 3 ];
-	typedef float  vec4_t[ 4 ];
+	typedef vec_t  vec3_t[ 3 ];
+	typedef vec_t  vec4_t[ 4 ];
 #endif
 
-	typedef float  vec5_t[ 5 ];
+	typedef vec_t  vec5_t[ 5 ];
 
 	typedef vec3_t axis_t[ 3 ];
-	typedef float  matrix3x3_t[ 9 ];
-	typedef float  matrix_t[ 16 ];
-	typedef float  quat_t[ 4 ];
+	typedef vec_t  matrix3x3_t[ 9 ];
+	typedef vec_t  matrix_t[ 16 ];
+	typedef vec_t  quat_t[ 4 ];
 
 	typedef int    fixed4_t;
 	typedef int    fixed8_t;
@@ -762,7 +763,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 #if id386_3dnow && defined __GNUC__ && 0
 	STATIC_INLINE float Q_recip( float in )
 	{
-		float out;
+		vec_t out;
 
 		femms();
 		asm volatile( "movd		(%%eax),	%%mm0\n""pfrcp		%%mm0,		%%mm1\n"                    // (approx)
@@ -843,7 +844,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 #define SnapVector( v )              do { v[ 0 ] = ( (int)( v[ 0 ] ) ); v[ 1 ] = ( (int)( v[ 1 ] ) ); v[ 2 ] = ( (int)( v[ 2 ] ) ); } while ( 0 )
 
 // just in case you don't want to use the macros
-	float    _DotProduct( const vec3_t v1, const vec3_t v2 );
+	vec_t    _DotProduct( const vec3_t v1, const vec3_t v2 );
 	void     _VectorSubtract( const vec3_t veca, const vec3_t vecb, vec3_t out );
 	void     _VectorAdd( const vec3_t veca, const vec3_t vecb, vec3_t out );
 	void     _VectorCopy( const vec3_t in, vec3_t out );
@@ -866,7 +867,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 
 	void     BoundsAdd( vec3_t mins, vec3_t maxs, const vec3_t mins2, const vec3_t maxs2 );
 	qboolean BoundsIntersect( const vec3_t mins, const vec3_t maxs, const vec3_t mins2, const vec3_t maxs2 );
-	qboolean BoundsIntersectSphere( const vec3_t mins, const vec3_t maxs, const vec3_t origin, float radius );
+	qboolean BoundsIntersectSphere( const vec3_t mins, const vec3_t maxs, const vec3_t origin, vec_t radius );
 	qboolean BoundsIntersectPoint( const vec3_t mins, const vec3_t maxs, const vec3_t origin );
 
 	STATIC_INLINE void BoundsToCorners( const vec3_t mins, const vec3_t maxs, vec3_t corners[ 8 ] ) IFDECLARE
@@ -929,16 +930,16 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 	}
 #endif
 
-	float VectorLength( const vec3_t v );
-	float VectorLengthSquared( const vec3_t v );
-	float Distance( const vec3_t p1, const vec3_t p2 );
-	float DistanceSquared( const vec3_t p1, const vec3_t p2 );
+	vec_t VectorLength( const vec3_t v );
+	vec_t VectorLengthSquared( const vec3_t v );
+	vec_t Distance( const vec3_t p1, const vec3_t p2 );
+	vec_t DistanceSquared( const vec3_t p1, const vec3_t p2 );
 	void  CrossProduct( const vec3_t v1, const vec3_t v2, vec3_t cross );
-	float VectorNormalize( vec3_t v );  // returns vector length
+	vec_t VectorNormalize( vec3_t v );  // returns vector length
 	void  VectorNormalizeFast( vec3_t v );  // does NOT return vector length, uses rsqrt approximation
-	float VectorNormalize2( const vec3_t v, vec3_t out );
+	vec_t VectorNormalize2( const vec3_t v, vec3_t out );
 	void  VectorInverse( vec3_t v );
-	void  Vector4Scale( const vec4_t in, float scale, vec4_t out );
+	void  Vector4Scale( const vec4_t in, vec_t scale, vec4_t out );
 
 	void  VectorRotate( vec3_t in, vec3_t matrix[ 3 ], vec3_t out );
 
@@ -961,7 +962,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 	float vectoyaw( const vec3_t vec );
 
 	void  AnglesToAxis( const vec3_t angles, vec3_t axis[ 3 ] );
-// TTimo: const float ** would require explicit casts for ANSI C conformance
+// TTimo: const vec_t ** would require explicit casts for ANSI C conformance
 // see unix/const-arg.c
 	void  AxisToAngles( /*const*/ vec3_t axis[ 3 ], vec3_t angles );
 //void AxisToAngles ( const vec3_t axis[3], vec3_t angles );
@@ -992,7 +993,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 
 #define AnglesToVector(angles, out) AngleVectors( (angles), (out), NULL, NULL )
 
-	float PlaneNormalize( vec4_t plane );  // returns normal length
+	vec_t PlaneNormalize( vec4_t plane );  // returns normal length
 
 	/* greebo: This calculates the intersection point of three planes.
 	 * Returns <0,0,0> if no intersection point could be found, otherwise returns the coordinates of the intersection point
@@ -1031,9 +1032,9 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 
 // done.
 
-	float DistanceBetweenLineSegmentsSquared( const vec3_t sP0, const vec3_t sP1,
+	vec_t DistanceBetweenLineSegmentsSquared( const vec3_t sP0, const vec3_t sP1,
 	    const vec3_t tP0, const vec3_t tP1, float *s, float *t );
-	float DistanceBetweenLineSegments( const vec3_t sP0, const vec3_t sP1,
+	vec_t DistanceBetweenLineSegments( const vec3_t sP0, const vec3_t sP1,
 	                                   const vec3_t tP0, const vec3_t tP1, float *s, float *t );
 
 //=============================================
@@ -1049,21 +1050,21 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 
 // invert any m4x4 using Kramer's rule.. return qtrue if matrix is singular, else return qfalse
 	qboolean MatrixInverse( matrix_t m );
-	void     MatrixSetupXRotation( matrix_t m, float degrees );
-	void     MatrixSetupYRotation( matrix_t m, float degrees );
-	void     MatrixSetupZRotation( matrix_t m, float degrees );
-	void     MatrixSetupTranslation( matrix_t m, float x, float y, float z );
-	void     MatrixSetupScale( matrix_t m, float x, float y, float z );
-	void     MatrixSetupShear( matrix_t m, float x, float y );
+	void     MatrixSetupXRotation( matrix_t m, vec_t degrees );
+	void     MatrixSetupYRotation( matrix_t m, vec_t degrees );
+	void     MatrixSetupZRotation( matrix_t m, vec_t degrees );
+	void     MatrixSetupTranslation( matrix_t m, vec_t x, vec_t y, vec_t z );
+	void     MatrixSetupScale( matrix_t m, vec_t x, vec_t y, vec_t z );
+	void     MatrixSetupShear( matrix_t m, vec_t x, vec_t y );
 	void     MatrixMultiply( const matrix_t a, const matrix_t b, matrix_t out );
 	void     MatrixMultiply2( matrix_t m, const matrix_t m2 );
-	void     MatrixMultiplyRotation( matrix_t m, float pitch, float yaw, float roll );
-	void     MatrixMultiplyZRotation( matrix_t m, float degrees );
-	void     MatrixMultiplyTranslation( matrix_t m, float x, float y, float z );
-	void     MatrixMultiplyScale( matrix_t m, float x, float y, float z );
-	void     MatrixMultiplyShear( matrix_t m, float x, float y );
+	void     MatrixMultiplyRotation( matrix_t m, vec_t pitch, vec_t yaw, vec_t roll );
+	void     MatrixMultiplyZRotation( matrix_t m, vec_t degrees );
+	void     MatrixMultiplyTranslation( matrix_t m, vec_t x, vec_t y, vec_t z );
+	void     MatrixMultiplyScale( matrix_t m, vec_t x, vec_t y, vec_t z );
+	void     MatrixMultiplyShear( matrix_t m, vec_t x, vec_t y );
 	void     MatrixToAngles( const matrix_t m, vec3_t angles );
-	void     MatrixFromAngles( matrix_t m, float pitch, float yaw, float roll );
+	void     MatrixFromAngles( matrix_t m, vec_t pitch, vec_t yaw, vec_t roll );
 	void     MatrixFromVectorsFLU( matrix_t m, const vec3_t forward, const vec3_t left, const vec3_t up );
 	void     MatrixFromVectorsFRU( matrix_t m, const vec3_t forward, const vec3_t right, const vec3_t up );
 	void     MatrixFromQuat( matrix_t m, const quat_t q );
@@ -1083,17 +1084,17 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 	void     MatrixTransform4( const matrix_t m, const vec4_t in, vec4_t out );
 	void     MatrixTransformPlane( const matrix_t m, const vec4_t in, vec4_t out );
 	void     MatrixTransformPlane2( const matrix_t m, vec3_t inout );
-	void     MatrixPerspectiveProjection( matrix_t m, float left, float right, float bottom, float top, float near, float far );
-	void     MatrixPerspectiveProjectionLH( matrix_t m, float left, float right, float bottom, float top, float near, float far );
-	void     MatrixPerspectiveProjectionRH( matrix_t m, float left, float right, float bottom, float top, float near, float far );
-	void     MatrixPerspectiveProjectionFovYAspectLH( matrix_t m, float fov, float aspect, float near, float far );
-	void     MatrixPerspectiveProjectionFovXYLH( matrix_t m, float fovX, float fovY, float near, float far );
-	void     MatrixPerspectiveProjectionFovXYRH( matrix_t m, float fovX, float fovY, float near, float far );
-	void     MatrixPerspectiveProjectionFovXYInfiniteRH( matrix_t m, float fovX, float fovY, float near );
-	void     MatrixOrthogonalProjection( matrix_t m, float left, float right, float bottom, float top, float near, float far );
+	void     MatrixPerspectiveProjection( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far );
+	void     MatrixPerspectiveProjectionLH( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far );
+	void     MatrixPerspectiveProjectionRH( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far );
+	void     MatrixPerspectiveProjectionFovYAspectLH( matrix_t m, vec_t fov, vec_t aspect, vec_t near, vec_t far );
+	void     MatrixPerspectiveProjectionFovXYLH( matrix_t m, vec_t fovX, vec_t fovY, vec_t near, vec_t far );
+	void     MatrixPerspectiveProjectionFovXYRH( matrix_t m, vec_t fovX, vec_t fovY, vec_t near, vec_t far );
+	void     MatrixPerspectiveProjectionFovXYInfiniteRH( matrix_t m, vec_t fovX, vec_t fovY, vec_t near );
+	void     MatrixOrthogonalProjection( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far );
 
-	void     MatrixOrthogonalProjectionLH( matrix_t m, float left, float right, float bottom, float top, float near, float far );
-	void     MatrixOrthogonalProjectionRH( matrix_t m, float left, float right, float bottom, float top, float near, float far );
+	void     MatrixOrthogonalProjectionLH( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far );
+	void     MatrixOrthogonalProjectionRH( matrix_t m, vec_t left, vec_t right, vec_t bottom, vec_t top, vec_t near, vec_t far );
 
 	void     MatrixPlaneReflection( matrix_t m, const vec4_t plane );
 
@@ -1143,7 +1144,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 #ifdef Q3_VM_INSTANTIATE
 	{
 #if 1
-		float term = 1.0f - ( q[ 0 ] * q[ 0 ] + q[ 1 ] * q[ 1 ] + q[ 2 ] * q[ 2 ] );
+		vec_t term = 1.0f - ( q[ 0 ] * q[ 0 ] + q[ 1 ] * q[ 1 ] + q[ 2 ] * q[ 2 ] );
 
 		if ( term < 0.0 )
 		{
@@ -1179,16 +1180,16 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 	}
 #endif
 
-	STATIC_INLINE float QuatLength( const quat_t q ) IFDECLARE
+	STATIC_INLINE vec_t QuatLength( const quat_t q ) IFDECLARE
 #ifdef Q3_VM_INSTANTIATE
 	{
-		return sqrt( q[ 0 ] * q[ 0 ] + q[ 1 ] * q[ 1 ] + q[ 2 ] * q[ 2 ] + q[ 3 ] * q[ 3 ] );
+		return ( vec_t ) sqrt( q[ 0 ] * q[ 0 ] + q[ 1 ] * q[ 1 ] + q[ 2 ] * q[ 2 ] + q[ 3 ] * q[ 3 ] );
 	}
 #endif
 
-	float QuatNormalize( quat_t q );
+	vec_t QuatNormalize( quat_t q );
 
-	void  QuatFromAngles( quat_t q, float pitch, float yaw, float roll );
+	void  QuatFromAngles( quat_t q, vec_t pitch, vec_t yaw, vec_t roll );
 
 	STATIC_INLINE void AnglesToQuat( const vec3_t angles, quat_t q ) IFDECLARE
 #ifdef Q3_VM_INSTANTIATE

@@ -1516,7 +1516,7 @@ CG_PointAndRadius
 returns true if culled
 =================
 */
-qboolean CG_CullPointAndRadius(const vec3_t pt, float radius)
+qboolean CG_CullPointAndRadius(const vec3_t pt, vec_t radius)
 {
 	int             i;
 	cplane_t        *frust;

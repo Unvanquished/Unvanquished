@@ -55,7 +55,7 @@ BASIC MATH
 RotatePoint
 ================
 */
-// TTimo: const float ** would require explicit casts for ANSI C conformance
+// TTimo: const vec_t ** would require explicit casts for ANSI C conformance
 // see unix/const-arg.c in Wolf MP source
 void RotatePoint( vec3_t point, /*const */ vec3_t matrix[ 3 ] )
 {
@@ -72,7 +72,7 @@ void RotatePoint( vec3_t point, /*const */ vec3_t matrix[ 3 ] )
 TransposeMatrix
 ================
 */
-// TTimo: const float ** would require explicit casts for ANSI C conformance
+// TTimo: const vec_t ** would require explicit casts for ANSI C conformance
 // see unix/const-arg.c in Wolf MP source
 void TransposeMatrix( /*const */ vec3_t matrix[ 3 ], vec3_t transpose[ 3 ] )
 {

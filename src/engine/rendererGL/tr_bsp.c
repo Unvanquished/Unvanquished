@@ -6962,7 +6962,7 @@ void R_LoadEntities( lump_t *l )
 			// check for radius
 			else if ( !Q_stricmp( keyname, "light" ) || !Q_stricmp( keyname, "_light" ) )
 			{
-				float value2;
+				vec_t value2;
 
 				value2 = atof( value );
 				light->l.radius[ 0 ] = value2;
@@ -7358,7 +7358,7 @@ static int R_BuildShadowPlanes(int numTriangles, const srfTriangle_t * triangles
 
         for(i = 0; i < numShadowPlanes; i++)
         {
-                //float           length, ilength;
+                //vec_t           length, ilength;
 
                 shadowPlanes[i].type = PLANE_NON_AXIAL;
 

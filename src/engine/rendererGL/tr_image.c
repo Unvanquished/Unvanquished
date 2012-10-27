@@ -698,7 +698,7 @@ static void R_MipNormalMap( byte *in, int width, int height )
 	int    i, j;
 	byte   *out;
 	vec4_t n;
-	float  length;
+	vec_t  length;
 
 	float  inv255 = 1.0f / 255.0f;
 

@@ -503,7 +503,7 @@ void RB_SurfaceFoliage( srfFoliage_t *srf )
 	vec4_t            distanceCull, distanceVector;
 	float             alpha, z, dist, fovScale;
 	vec3_t            viewOrigin, local;
-	float             *xyz;
+	vec_t             *xyz;
 	int               srcColor, *color;
 	int               dlightBits;
 	foliageInstance_t *instance;
