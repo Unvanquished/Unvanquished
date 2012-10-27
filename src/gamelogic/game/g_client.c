@@ -1810,6 +1810,9 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	// positively link the client, even if the command times are weird
 	if ( client->sess.spectatorState == SPECTATOR_NOT )
 	{
+		ent->r.svFlags |= SVF_CLIENTS_IN_RANGE;
+		ent->r.clientRadius = MAX( HELMET_RANGE, ALIENSENSE_RANGE );
+
 		BG_PlayerStateToEntityState( &client->ps, &ent->s, qtrue );
 		VectorCopy( ent->client->ps.origin, ent->r.currentOrigin );
 		trap_LinkEntity( ent );
