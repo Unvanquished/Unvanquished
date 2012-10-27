@@ -3677,7 +3677,7 @@ void CL_Frame( int msec )
 		return;
 	}
 
-	if ( cls.state == CA_DISCONNECTED && !( cls.keyCatchers & KEYCATCH_UI ) && !com_sv_running->integer )
+	if ( uivm && cls.state == CA_DISCONNECTED && !( cls.keyCatchers & KEYCATCH_UI ) && !com_sv_running->integer )
 	{
 		// if disconnected, bring up the menu
 		//S_StopAllSounds();
@@ -4035,6 +4035,8 @@ void CL_StartHunkUsers( void )
 		char renderers[ MAX_QPATH ];
 		char *from, *to;
 
+		Com_Printf("%s", _( "----- Initializing Renderer ----\n" ));
+
 		Q_strncpyz( renderers, cl_renderer->string, sizeof( renderers ) );
 		from = renderers;
 
@@ -4047,9 +4049,7 @@ void CL_StartHunkUsers( void )
 				*to++ = '\0';
 			}
 
-			CL_InitRef( from );
-
-			if ( CL_InitRenderer() )
+			if ( CL_InitRef( from ) && CL_InitRenderer() )
 			{
 				cls.rendererStarted = qtrue;
 				break;
@@ -4058,6 +4058,19 @@ void CL_StartHunkUsers( void )
 			CL_ShutdownRef();
 			from = to;
 		}
+
+		if ( !cls.rendererStarted && CL_InitRef( "GL" ) && CL_InitRenderer() )
+		{
+			cls.rendererStarted = qtrue;
+		}
+
+		if ( !cls.rendererStarted )
+		{
+			CL_ShutdownRef();
+			Com_Error( ERR_FATAL, "Couldn't load a renderer" );
+		}
+
+		Com_Printf( "-------------------------------\n" );
 	}
 	else if ( !cls.rendererStarted )
 	{
@@ -4132,48 +4145,51 @@ CL_InitRef
 RB: changed to load the renderer from a .dll
 ============
 */
-void CL_InitRef( const char *renderer )
+qboolean CL_InitRef( const char *renderer )
 {
 	refimport_t ri;
 	refexport_t *ret;
+	void        *lib = NULL;
 
 #if !defined( REF_HARD_LINKED )
 	GetRefAPI_t GetRefAPI;
 	char        dllName[ MAX_OSPATH ];
+	const char  varName[][16] = { "fs_libpath", "fs_basepath" };
+	int         i;
 #endif
 
-	Com_Printf("%s", _( "----- Initializing Renderer ----\n" ));
-
 #if !defined( REF_HARD_LINKED )
-
-	Com_sprintf( dllName, sizeof( dllName ), "%s/" DLL_PREFIX "renderer%s" ARCH_STRING DLL_EXT, Cvar_VariableString( "fs_basepath" ), renderer );
-
-	Com_Printf(_( "Loading \"%s\"…"), dllName );
-
-	if ( ( rendererLib = Sys_LoadLibrary( dllName ) ) == 0 )
+	for ( i = 0; i < ARRAY_LEN( varName ); ++i )
 	{
-		Com_Printf(_( "failed:\n\"%s\"\n"), Sys_LibraryError() );
-
-		//fall back to default
-		Com_sprintf( dllName, sizeof( dllName ), "%s/" DLL_PREFIX "rendererGL" ARCH_STRING DLL_EXT, Cvar_VariableString( "fs_basepath" ) );
+		Com_sprintf( dllName, sizeof( dllName ), "%s/" DLL_PREFIX "renderer%s" ARCH_STRING DLL_EXT, Cvar_VariableString( varName[ i ] ), renderer );
 
 		Com_Printf(_( "Loading \"%s\"…"), dllName );
 
-		if ( ( rendererLib = Sys_LoadLibrary( dllName ) ) == 0 )
+		lib = Sys_LoadLibrary( dllName );
+
+		if ( lib )
 		{
-			Com_Error( ERR_FATAL, "failed:\n\"%s\"", Sys_LibraryError() );
+			break;
 		}
+
+		Com_Printf(_( "failed:\n\"%s\"\n"), Sys_LibraryError() );
+	}
+
+	if ( !lib )
+	{
+		return qfalse;
 	}
 
 	Com_Printf("%s", _( "done\n" ));
 
-	GetRefAPI = Sys_LoadFunction( rendererLib, "GetRefAPI" );
+	GetRefAPI = Sys_LoadFunction( lib, "GetRefAPI" );
 
 	if ( !GetRefAPI )
 	{
-		Com_Error( ERR_FATAL, "Can't load symbol GetRefAPI: '%s'",  Sys_LibraryError() );
+		Com_Printf( "Can't load symbol GetRefAPI: '%s'",  Sys_LibraryError() );
+		Sys_UnloadDll( lib );
+		return qfalse;
 	}
-
 #endif
 
 	ri.Cmd_AddCommand = Cmd_AddCommand;
@@ -4252,17 +4268,20 @@ void CL_InitRef( const char *renderer )
 	Com_Printf("%s", _( "Calling GetRefAPI…\n" ));
 	ret = GetRefAPI( REF_API_VERSION, &ri );
 
-	Com_Printf( "-------------------------------\n" );
-
 	if ( !ret )
 	{
-		Com_Error( ERR_FATAL, "Couldn't initialize refresh" );
+		Com_Printf( "Couldn't initialize refresh\n" );
+		Sys_UnloadDll( lib );
+		return qfalse;
 	}
 
 	re = *ret;
 
 	// unpause so the cgame definitely gets a snapshot and renders a frame
 	Cvar_Set( "cl_paused", "0" );
+
+	rendererLib = lib; // at this point, we pass on unloading responsibility
+	return qtrue;
 }
 
 /*

@@ -251,6 +251,7 @@ vmCvar_t        cg_animBlend;
 vmCvar_t        cg_highPolyPlayerModels;
 vmCvar_t        cg_highPolyBuildableModels;
 vmCvar_t        cg_highPolyWeaponModels;
+vmCvar_t        cg_lowHealthWarning;
 
 vmCvar_t        cg_fov_builder;
 vmCvar_t        cg_fov_level0;
@@ -416,7 +417,8 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_highPolyPlayerModels,        "cg_highPolyPlayerModels",        "1",            CVAR_ARCHIVE | CVAR_LATCH    },
 	{ &cg_highPolyBuildableModels,     "cg_highPolyBuildableModels",     "1",            CVAR_ARCHIVE | CVAR_LATCH    },
 	{ &cg_highPolyWeaponModels,        "cg_highPolyWeaponModels",        "1",            CVAR_ARCHIVE | CVAR_LATCH    },
-
+	{ &cg_lowHealthWarning,            "cg_lowHealthWarning",            "0",            CVAR_ARCHIVE                 },
+	
 	{ &cg_fov_builder,                 "cg_fov_builder",                 "0",            CVAR_ARCHIVE                 },
 	{ &cg_fov_level0,                  "cg_fov_level0",                  "0",            CVAR_ARCHIVE                 },
 	{ &cg_fov_level1,                  "cg_fov_level1",                  "0",            CVAR_ARCHIVE                 },

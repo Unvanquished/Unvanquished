@@ -23,4 +23,5 @@
   loadMenu { "ui/newprofile.menu" }
   loadMenu { "ui/confirmdelprofile.menu" }
   loadMenu { "ui/help.menu" }
+  loadMenu { "ui/huds.menu" }
 }

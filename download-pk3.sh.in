@@ -25,6 +25,8 @@ case "$(uname -s)" in
     ;;
 esac
 
+VERSION=
+
 case "$1" in
   --help|-h|-\?)
     echo "$0: download Unvanquished game files"
@@ -65,18 +67,26 @@ cd "$CURDIR"
 # Utility function for downloading. Saves in a temp dir.
 # $1 = destination directory
 # $2 = leafname
+# $3 = retry using / save as (defaults to $2)
 download ()
 {
-  echo "[0;33mDownloading $2 to $1...[m"
-  curl --retry 5 -fLo "$1/$2.tmp" "$BASE_URL$2"
-  mv -f "$1/$2.tmp" "$1/$2"
+  echo "[0;33mDownloading $2 ${3:+as $3 }to $1...[m"
+  if test "$3" != ''; then
+    curl --retry 5 -fLo "$1/$3.tmp" "$BASE_URL$2" || {
+      echo "[0;33mDownloading $3 instead...[m"
+      curl --retry 5 -fLo "$1/$3.tmp" "$BASE_URL$3"
+    }
+  else
+    curl --retry 5 -fLo "$1/$2.tmp" "$BASE_URL$2"
+  fi
+  mv -f "$1/${3:-$2}.tmp" "$1/${3:-$2}"
   echo '[32mDownloaded.[m'
 }
 
 test -f "$CACHE/md5sums" && mv -f "$CACHE/md5sums" "$CACHE/md5sums.old"
 
 # Get the md5sum checksums
-download "$CACHE" md5sums
+download "$CACHE" "md5sums$VERSION" "md5sums" || download "$CACHE" "md5sums"
 
 # Check that the file is properly formatted
 echo '[33mVerifying md5sums integrity...[m'

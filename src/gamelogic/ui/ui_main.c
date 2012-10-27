@@ -134,10 +134,10 @@ static const cvarTable_t   cvarTable[] =
 	{ &ui_chatCommands,        "ui_chatCommands",             "1",                         CVAR_ARCHIVE              },
 	{ &ui_chatPromptColours,   "ui_chatPromptColors",         "0",                         CVAR_ARCHIVE              },
 
-	{ &ui_menuFiles,           "ui_menuFiles",                "ui/menu/menus.txt",         CVAR_ARCHIVE              },
-	{ &ui_ingameFiles,         "ui_ingameFiles",              "ui/menu/ingame/ingame.txt", CVAR_ARCHIVE              },
-	{ &ui_teamFiles,           "ui_teamFiles",                "ui/menu/team/team.txt",     CVAR_ARCHIVE              },
-	{ &ui_helpFiles,           "ui_helpFiles",                "ui/menu/help/help.txt",     CVAR_ARCHIVE              }
+	{ &ui_menuFiles,           "ui_menuFiles",                "ui/menus.txt",         CVAR_ARCHIVE              },
+	{ &ui_ingameFiles,         "ui_ingameFiles",              "ui/ingame.txt", CVAR_ARCHIVE              },
+	{ &ui_teamFiles,           "ui_teamFiles",                "ui/tremulous.txt",     CVAR_ARCHIVE              },
+	{ &ui_helpFiles,           "ui_helpFiles",                "ui/help.txt",     CVAR_ARCHIVE              }
 };
 
 static const int           cvarTableSize = ARRAY_LEN( cvarTable );
@@ -156,9 +156,10 @@ void     UI_Init( void );
 void     UI_Shutdown( void );
 void     UI_KeyEvent( int key, int chr, int flags );
 void     UI_MouseEvent( int dx, int dy );
-int      UI_MousePosition( void );
+int      UI_MousePosition( qboolean draw );
 void     UI_SetMousePosition( int x, int y );
 void     UI_Refresh( int realtime );
+void     UI_DrawCursor( void );
 qboolean UI_IsFullscreen( void );
 void     UI_SetActiveMenu( uiMenuCommand_t menu );
 
@@ -197,11 +198,7 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 			return 0;
 
 		case UI_MOUSE_POSITION:
-			return UI_MousePosition();
-
-		case UI_SET_MOUSE_POSITION:
-			UI_SetMousePosition( arg0, arg1 );
-			return 0;
+			return UI_MousePosition( arg0 );
 
 		case UI_REFRESH:
 			UI_Refresh( arg0 );
@@ -219,6 +216,10 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 
 		case UI_DRAW_CONNECT_SCREEN:
 			UI_DrawConnectScreen( arg0 );
+			return 0;
+
+		case UI_DRAW_CURSOR:
+			UI_DrawCursor();
 			return 0;
 
 		default:
@@ -1286,15 +1287,6 @@ void UI_Refresh( int realtime )
 		UI_BuildFindPlayerList( qfalse );
 		UI_UpdateNews( qfalse );
 	}
-
-	// draw cursor
-	UI_SetColor( NULL );
-
-	if ( trap_Key_GetCatcher() == KEYCATCH_UI && !trap_Cvar_VariableValue( "ui_hideCursor" ) )
-	{
-		UI_DrawHandlePic( uiInfo.uiDC.cursorx - ( 16.0f * uiInfo.uiDC.aspectScale ), uiInfo.uiDC.cursory - 16.0f,
-		                  32.0f * uiInfo.uiDC.aspectScale, 32.0f, uiInfo.uiDC.Assets.cursor );
-	}
 }
 
 /*
@@ -1978,6 +1970,11 @@ static void UI_DrawSelectedMapPreview( rectDef_t *rect, float scale, vec4_t colo
 	}
 }
 
+static void UI_DrawSelectedHUDPreview( rectDef_t *rect )
+{
+	UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, uiInfo.huds[ uiInfo.hudIndex ].hudShot );
+}
+
 static void UI_DrawSelectedMapName( rectDef_t *rect, float scale, vec4_t color, int textStyle )
 {
 	int map = ui_selectedMap.integer;
@@ -2236,6 +2233,10 @@ static void UI_OwnerDraw( float x, float y, float w, float h,
 
 		case UI_GLINFO:
 			UI_DrawGLInfo( &rect, scale, textalign, textvalign, foreColor, textStyle, text_x, text_y );
+			break;
+
+		case UI_SELECTEDHUDPREVIEW:
+			UI_DrawSelectedHUDPreview( &rect );
 			break;
 
 		default:
@@ -3083,6 +3084,41 @@ static void UI_LoadDemos( void )
 	}
 }
 
+/*
+===============
+UI_LoadHUDs
+===============
+*/
+static void UI_LoadHUDs( void )
+{
+	char hudList[ 4096 ];
+	char *hudName;
+	int  i, numHUDs, len;
+	int  pos = 0;
+
+	numHUDs = uiInfo.hudCount = trap_FS_GetFileList( "ui", "/", hudList, 4096 );
+
+	hudName = hudList;
+
+	for ( i = 0; i < numHUDs; i++ )
+	{
+		len = strlen( hudName );
+
+		if ( !trap_FS_FOpenFile( va( "ui/%s/hud.cfg", hudName ), NULL, FS_READ ) )
+		{
+			uiInfo.hudCount--;
+			hudName += len + 1;
+			continue;
+		}
+
+		uiInfo.huds[ pos ].name = String_Alloc( hudName );
+		uiInfo.huds[ pos++ ].hudShot = trap_R_RegisterShaderNoMip( va( "ui/%s/hudShot", hudName ) );
+
+		hudName += len + 1;
+	}
+}
+
+
 static void UI_Update( const char *name )
 {
 	int val = trap_Cvar_VariableValue( name );
@@ -3321,6 +3357,15 @@ static void UI_RunMenuScript( char **args )
 		{
 			UI_LoadTeams();
 		}
+		else if ( Q_stricmp( name, "LoadHUDs" ) == 0 )
+		{
+			UI_LoadHUDs();
+		}
+		else if ( Q_stricmp( name, "applyHud" ) == 0 )
+		{
+			trap_Cmd_ExecuteText( EXEC_APPEND, va( "exec ui/%s/install.cfg;", uiInfo.huds[ uiInfo.hudIndex ].name ) );
+			trap_Cmd_ExecuteText( EXEC_APPEND, "reloadhud" );
+		}
 		else if ( Q_stricmp( name, "JoinTeam" ) == 0 )
 		{
 			if ( ( cmd = uiInfo.teamList[ uiInfo.teamIndex ].cmd ) )
@@ -3430,49 +3475,30 @@ static void UI_RunMenuScript( char **args )
 			{
 				trap_Cmd_ExecuteText( EXEC_APPEND, va( "%s\n", buffer + 1 ) );
 			}
-			else if ( uiInfo.chatTeam )
+			else if ( uiInfo.chatType == CHAT_TYPE_COMMAND )
 			{
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "say_team %s\n", Quote( buffer ) ) );
-			}
-			else if ( uiInfo.chatAdmin )
-			{
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "a %s\n", Quote( buffer ) ) );
-			}
-			else if ( uiInfo.chatIRC )
-			{
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "irc_say %s\n", Quote( buffer ) ) );
+				trap_Cmd_ExecuteText( EXEC_APPEND, va( "%s\n", buffer ) );
 			}
 			else
 			{
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "say %s\n", Quote( buffer ) ) );
+				// it ‘happens’ that the menu names match the command names
+				trap_Cmd_ExecuteText( EXEC_APPEND, va( "%s %s\n", chatMenus[ uiInfo.chatType ], Quote( buffer ) ) );
 			}
 		}
 		else if ( Q_stricmp( name, "SayKeydown" ) == 0 )
 		{
-			if ( ui_chatCommands.integer )
+			if ( ui_chatCommands.integer && uiInfo.chatType != CHAT_TYPE_COMMAND )
 			{
 				char buffer[ MAX_CVAR_VALUE_STRING ];
 				trap_Cvar_VariableStringBuffer( "ui_sayBuffer", buffer, sizeof( buffer ) );
 
 				if ( buffer[ 0 ] == '/' || buffer[ 0 ] == '\\' )
 				{
-					Menus_ReplaceActiveByName( "say_command" );
+					Menus_ReplaceActiveByName( chatMenus[ CHAT_TYPE_COMMAND ] );
 				}
-				else if ( uiInfo.chatTeam )
+				else if ( uiInfo.chatType != CHAT_TYPE_COMMAND )
 				{
-					Menus_ReplaceActiveByName( "say_team" );
-				}
-				else if ( uiInfo.chatAdmin )
-				{
-					Menus_ReplaceActiveByName( "a" );
-				}
-				else if ( uiInfo.chatIRC )
-				{
-					Menus_ReplaceActiveByName( "irc_say" );
-				}
-				else
-				{
-					Menus_ReplaceActiveByName( "say" );
+					Menus_ReplaceActiveByName( chatMenus[ uiInfo.chatType ] );
 				}
 			}
 		}
@@ -4164,6 +4190,10 @@ static int UI_FeederCount( int feederID )
 	{
 		return uiInfo.profileCount;
 	}
+	else if ( feederID == FEEDER_HUDS )
+	{
+		return uiInfo.hudCount;
+	}
 	else if ( feederID == FEEDER_RESOLUTIONS )
 	{
 		if ( UI_FeederInitialise( feederID ) == uiInfo.numResolutions )
@@ -4504,6 +4534,14 @@ static const char *UI_FeederItemText( int feederID, int index, int column, qhand
 			return uiInfo.profileList[ index ].name;
 		}
 	}
+	else if ( feederID  == FEEDER_HUDS )
+	{
+		if ( index >= 0 && index < uiInfo.hudCount )
+		{
+			return uiInfo.huds[ index ].name;
+		}
+	}
+
 	else if ( feederID == FEEDER_RESOLUTIONS )
 	{
 		static char resolution[ MAX_STRING_CHARS ];
@@ -4546,6 +4584,14 @@ static qhandle_t UI_FeederItemImage( int feederID, int index )
 			}
 
 			return uiInfo.mapList[ index ].levelShot;
+		}
+	}
+
+	if ( feederID == FEEDER_HUDS )
+	{
+		if ( index >= 0 && index < uiInfo.hudCount )
+		{
+			return uiInfo.huds[ index ].hudShot;
 		}
 	}
 
@@ -4692,6 +4738,10 @@ static void UI_FeederSelection( int feederID, int index )
 	else if ( feederID == FEEDER_PROFILES )
 	{
 		uiInfo.profileIndex = index;
+	}
+	else if ( feederID == FEEDER_HUDS )
+	{
+		uiInfo.hudIndex = index;
 	}
 	else if ( feederID == FEEDER_RESOLUTIONS )
 	{
@@ -4991,10 +5041,10 @@ void UI_Init( void )
 
 	start = trap_Milliseconds();
 
-	UI_LoadMenus( "ui/menus.txt", qtrue );
-	UI_LoadMenus( "ui/ingame.txt", qfalse );
-	UI_LoadMenus( "ui/tremulous.txt", qfalse );
-	UI_LoadHelp( "ui/help.txt" );
+	UI_LoadMenus( ui_menuFiles.string, qtrue );
+	UI_LoadMenus( ui_ingameFiles.string, qfalse );
+	UI_LoadMenus( ui_teamFiles.string, qfalse );
+	UI_LoadHelp( ui_helpFiles.string );
 
 	Menus_CloseAll();
 
@@ -5049,30 +5099,30 @@ UI_MouseEvent
 void UI_MouseEvent( int dx, int dy )
 {
 	// update mouse screen position
-	uiInfo.uiDC.cursorx += ( dx * uiInfo.uiDC.aspectScale );
-
-	if ( uiInfo.uiDC.cursorx < 0 )
+	uiInfo.uiDC.unscaledCursorx += dx;
+	if ( uiInfo.uiDC.unscaledCursorx < 0 )
 	{
-		uiInfo.uiDC.cursorx = 0;
+		uiInfo.uiDC.unscaledCursorx = 0;
 	}
-	else if ( uiInfo.uiDC.cursorx > SCREEN_WIDTH )
+	else if ( uiInfo.uiDC.unscaledCursorx > uiInfo.uiDC.glconfig.vidWidth )
 	{
-		uiInfo.uiDC.cursorx = SCREEN_WIDTH;
+		uiInfo.uiDC.unscaledCursorx = uiInfo.uiDC.glconfig.vidWidth;
 	}
+	uiInfo.uiDC.cursorx = ( uiInfo.uiDC.unscaledCursorx / uiInfo.uiDC.xscale );
 
-	uiInfo.uiDC.cursory += dy;
-
-	if ( uiInfo.uiDC.cursory < 0 )
+	uiInfo.uiDC.unscaledCursory += dy;
+	if ( uiInfo.uiDC.unscaledCursory < 0 )
 	{
-		uiInfo.uiDC.cursory = 0;
+		uiInfo.uiDC.unscaledCursory = 0;
 	}
-	else if ( uiInfo.uiDC.cursory > SCREEN_HEIGHT )
+	else if ( uiInfo.uiDC.unscaledCursory > uiInfo.uiDC.glconfig.vidHeight )
 	{
-		uiInfo.uiDC.cursory = SCREEN_HEIGHT;
+		uiInfo.uiDC.unscaledCursory = uiInfo.uiDC.glconfig.vidHeight;
 	}
+	uiInfo.uiDC.cursory = ( uiInfo.uiDC.unscaledCursory / uiInfo.uiDC.yscale );
 
-	uiInfo.uiDC.cursordx = dx * uiInfo.uiDC.aspectScale;
-	uiInfo.uiDC.cursordy = dy;
+	uiInfo.uiDC.cursordx = dx / uiInfo.uiDC.xscale;
+	uiInfo.uiDC.cursordy = dy / uiInfo.uiDC.yscale;
 
 	if ( Menu_Count() > 0 )
 	{
@@ -5085,26 +5135,16 @@ void UI_MouseEvent( int dx, int dy )
 UI_MousePosition
 =================
 */
-int UI_MousePosition( void )
+int UI_MousePosition( qboolean draw )
 {
-	return ( int ) rint( uiInfo.uiDC.cursorx ) |
-	       ( int ) rint( uiInfo.uiDC.cursory ) << 16;
-}
-
-/*
-=================
-UI_SetMousePosition
-=================
-*/
-void UI_SetMousePosition( int x, int y )
-{
-	uiInfo.uiDC.cursorx = x;
-	uiInfo.uiDC.cursory = y;
-
-	if ( Menu_Count() > 0 )
+	// MASSIVE HACK: draw the mouse cursor if draw = 1
+	// TODO: remove once caller (cl_scrn.c) switches to UI_DRAW_CURSOR, after alpha 9
+	if ( draw )
 	{
-		Display_MouseMove( NULL, uiInfo.uiDC.cursorx, uiInfo.uiDC.cursory );
+		UI_DrawCursor();
 	}
+	return uiInfo.uiDC.unscaledCursorx |
+	       uiInfo.uiDC.unscaledCursory << 16;
 }
 
 void UI_SetActiveMenu( uiMenuCommand_t menu )
@@ -5514,6 +5554,18 @@ void UI_DrawConnectScreen( qboolean overlay )
 	}
 
 	// password required / connection rejected information goes here
+}
+
+/*
+========================
+UI_DrawCursor
+========================
+*/
+void UI_DrawCursor( void ){
+	// draw cursor
+	UI_SetColor( NULL );
+	UI_DrawHandlePic( uiInfo.uiDC.cursorx - ( 16.0f * uiInfo.uiDC.aspectScale ), uiInfo.uiDC.cursory - 16.0f,
+	                  32.0f * uiInfo.uiDC.aspectScale, 32.0f, uiInfo.uiDC.Assets.cursor );
 }
 
 /*

@@ -1,3 +1,33 @@
+unvanquished (0.8.0-1) unstable; urgency=low
+
+  * Release of alpha 8.
+  * Fix renderer loading (broken during the 0.8 dev cycle).
+  * Pull in two ckit fixes (514e834 and 1cb6a55) from master.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Mon, 08 Oct 2012 15:46:59 +0100
+
+unvanquished (0.7.0-1) unstable; urgency=low
+
+  * Release of alpha 7.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Sat, 01 Sep 2012 12:56:06 +0100
+
+unvanquished (0.6.0-3) unstable; urgency=medium
+
+  * Upstream changes since release:
+    - Expired bans aren't correctly displayed.
+    - Fix a possible hang in string token replacement.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Wed, 15 Aug 2012 21:10:40 +0100
+
+unvanquished (0.6.0-2) unstable; urgency=high
+
+  * Fix a hole in the launcher script.
+  * Upstream changes since release:
+    - Hard-code the protocol number.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Thu, 02 Aug 2012 15:50:32 +0100
+
 unvanquished (0.6.0-1) unstable; urgency=low
 
   * Release of alpha 6.

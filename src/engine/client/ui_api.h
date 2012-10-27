@@ -233,8 +233,8 @@ typedef enum
   UI_MOUSE_POSITION,
   //  int   UI_MousePosition( void );
 
-  UI_SET_MOUSE_POSITION,
-  //  void  UI_SetMousePosition( int x, int y );
+  UI_DRAW_CURSOR,
+  //  void  UI_DrawCursor( void );
 } uiExport_t;
 
 void        trap_Cvar_CopyValue_i( const char *in_var, const char *out_var );

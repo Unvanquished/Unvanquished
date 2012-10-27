@@ -57,6 +57,7 @@ option( ENABLE_WARNINGS      "Enable security & code-checking warning options" 1
 option( ENABLE_HARDENING     "Enable security hardening options"           1 )
 
 option( USE_GIT_DESCRIBE     "Use the revision information reported by Git's describe function" 1 )
+option( ENABLE_BUNDLING      "When packaging automatically include all non-system libraries in package" 0 )
 
 cmake_dependent_option( BUILD_OLD_RENDERER   "Build old renderer library"                            1 BUILD_CLIENT                   0 )
 cmake_dependent_option( BUILD_NEW_RENDERER   "Build new renderer library"                            1 BUILD_CLIENT                   0 )
@@ -95,7 +96,7 @@ cmake_dependent_option( ENABLE_W_EXTRA       "Use -Wextra"                      
 cmake_dependent_option( ENABLE_FSTACKPROT    "Enable stack protection if available"        1 ENABLE_HARDENING 0 )
 cmake_dependent_option( ENABLE_RELRO         "Enable relro & bindnow if available"         1 ENABLE_HARDENING 0 )
 
-mark_as_advanced( GAME_LIB_LLVM LLVM_CONFIG ENABLE_FSTACKPROT ENABLE_RELRO USE_GIT_DESCRIBE )
+mark_as_advanced( GAME_LIB_LLVM LLVM_CONFIG ENABLE_FSTACKPROT ENABLE_RELRO USE_GIT_DESCRIBE ENABLE_BUNDLING )
 
 if( GAME_LIB_LLVM )
   find_program( LLVM_CONFIG llvm-config )
@@ -302,7 +303,7 @@ if( ENABLE_W_ALL )
   try_c_cxx_llvm_flag( HAVE_W_ALL              -Wall )
 endif()
 if( ENABLE_W_EXTRA )
-  try_c_cxx_llvm_flag( HAVE_W_ALL              -Wall )
+  try_c_cxx_llvm_flag( HAVE_W_EXTRA            -Wextra )
 endif()
 if( ENABLE_WARNINGS )
   try_c_cxx_llvm_flag( HAVE_W_FORMAT2          -Wformat=2 )
@@ -321,6 +322,10 @@ if( ENABLE_WARNINGS )
   try_c_cxx_llvm_flag( HAVE_W_FMT_SECURITY     -Wformat-security )
   if( HAVE_W_FMT_SECURITY_C )
     try_c_cxx_llvm_flag( HAVE_W_ERR_FMT_SECURITY -Werror=format-security )
+  endif()
+  try_c_llvm_flag( HAVE_W_DECL_AFT_STMT        -Wdeclaration-after-statement )
+  if( HAVE_W_DECL_AFT_STMT_C )
+    try_c_llvm_flag( HAVE_W_ERR_DECL_AFT_STMT  -Werror=declaration-after-statement )
   endif()
 endif()
 
@@ -1720,28 +1725,35 @@ if( BUILD_DAEMONMAP )
   include_directories( ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${GLIB_INCLUDE_DIRS} )
 endif()
 
+###########################
+#Configure Download Script#
+###########################
+
+if( NOT MSVC )
+  execute_process( COMMAND sed -e "/^#define PRODUCT_VERSION/! d; s/.*\"\\(.*\\)\\.[^.]\"/\\1/" ${CMAKE_SOURCE_DIR}/src/engine/qcommon/q_shared.h
+                   OUTPUT_VARIABLE PRODUCT_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE )
+  add_custom_target( download-pk3.sh ALL
+    sed -e 's/VERSION=/&${PRODUCT_VERSION}/' ${CMAKE_SOURCE_DIR}/download-pk3.sh.in >${CMAKE_BINARY_DIR}/download-pk3.sh\; chmod +x ${CMAKE_BINARY_DIR}/download-pk3.sh
+    DEPENDS ${CMAKE_SOURCE_DIR}/src/engine/qcommon/q_shared.h ${CMAKE_SOURCE_DIR}/download-pk3.sh.in
+  )
+endif()
+
 #####################
 #Configure Installer#
 #####################
 # This section requires a lot of escaping as these values are parsed then passed
 # to CPack. Be very very careful when modifying values
 
-# SDL framework doesn't work with bundleutilities so detect if it's being used
-# and copy it over manually
-foreach( LIB ${SDL_LIBRARY} )
-  if( ${LIB} MATCHES "SDL.framework" )
-    install( DIRECTORY ${LIB} DESTINATION Frameworks )
-  endif()
-endforeach()
-
-# Automatically copy over any dependencies
-foreach( APP ${APPS} )
-  install( CODE "
-     include( BundleUtilities )
-     message( \"\${CMAKE_INSTALL_PREFIX}/${APP}\" )
-     fixup_bundle( \"\${CMAKE_INSTALL_PREFIX}/${APP}\" \"${PLUGINS}\" \"${CMAKE_LIBRARY_PATH}\" )
-     " )
-endforeach()
+if( ENABLE_BUNDLING )
+  # Automatically copy over any dependencies
+  foreach( APP ${APPS} )
+    install( CODE "
+       include( BundleUtilities )
+       message( \"\${CMAKE_INSTALL_PREFIX}/${APP}\" )
+       fixup_bundle( \"\${CMAKE_INSTALL_PREFIX}/${APP}\" \"${PLUGINS}\" \"${CMAKE_LIBRARY_PATH}\" )
+       " )
+  endforeach()
+endif()
 
 # include( CPack ) must be at the end of CMakeLists.txt
 include( CPack )

@@ -892,8 +892,16 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 			{
 				ci->animations[ BOTH_DEATH1 ] = ci->animations[ LEGS_IDLE ];
 			}
-			//CG_RegisterPlayerAnimation(ci, modelName, BOTH_DEATH2, "death2", qfalse, qfalse, qfalse);
-			//CG_RegisterPlayerAnimation(ci, modelName, BOTH_DEATH3, "death3", qfalse, qfalse, qfalse);
+
+			if( !CG_RegisterPlayerAnimation(ci, modelName, BOTH_DEATH2, "death2", qfalse, qfalse, qfalse) )
+			{
+				ci->animations[ BOTH_DEATH2 ] = ci->animations[ BOTH_DEATH1 ];
+			}
+
+			if( !CG_RegisterPlayerAnimation(ci, modelName, BOTH_DEATH3, "death3", qfalse, qfalse, qfalse) )
+			{
+				ci->animations[ BOTH_DEATH3 ] = ci->animations[ BOTH_DEATH1 ];
+			}
 
 			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_GESTURE, "gesture", qfalse, qfalse, qfalse ) )
 			{
@@ -1727,7 +1735,7 @@ static void CG_SetLerpFrameAnimation( clientInfo_t *ci, lerpFrame_t *lf, int new
 
 		//Com_Printf(_("new: %i old %i\n"), newAnimation,lf->old_animationNumber);
 
-		if ( lf->old_animation != NULL && oldSkeleton.numBones == skel->numBones )
+		if ( lf->old_animation->handle && oldSkeleton.numBones == skel->numBones )
 		{
 			if ( !trap_R_BuildSkeleton( &oldSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->blendlerp, lf->old_animation->clearOrigin ) )
 			{

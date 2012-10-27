@@ -330,8 +330,9 @@ char *CON_Input( void )
 
 				if ( key == '\t' )
 				{
+					field_t *edit;
 					CON_Hide();
-					field_t *edit = &TTY_con;
+					edit = &TTY_con;
 					Cmd_TokenizeString( edit->buffer );
 					Field_AutoComplete( edit, "]" );
 					CON_Show();

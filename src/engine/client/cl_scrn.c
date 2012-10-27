@@ -744,6 +744,8 @@ This will be called twice if rendering in stereo mode
 */
 void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 {
+	extern qboolean mouseActive; // see sdl_input.c
+
 	re.BeginFrame( stereoFrame );
 
 	// wide aspect ratio screens need to have the sides cleared
@@ -815,6 +817,11 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 
 	// console draws next
 	Con_DrawConsole();
+
+	if ( uivm && ( CL_UIOwnsMouse() || !mouseActive ) ) {
+		// TODO (after no compatibility needed with alpha 8): replace with UI_DRAW_CURSOR
+		VM_Call( uivm, UI_MOUSE_POSITION, qtrue );
+	}
 
 	// debug graph can be drawn on top of anything
 	if ( cl_debuggraph->integer || cl_timegraph->integer || cl_debugMove->integer )

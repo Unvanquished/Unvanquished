@@ -69,6 +69,7 @@ extern vmCvar_t ui_chatPromptColours;
 #define MAX_RESOLUTIONS         32
 #define MAX_PROFILES            64
 #define MAX_LANGUAGES           16
+#define MAX_HUDS                16
 
 typedef struct
 {
@@ -217,6 +218,24 @@ typedef struct
 
 language_t;
 
+typedef enum
+{
+  CHAT_TYPE_COMMAND,
+  CHAT_TYPE_ALL,
+  CHAT_TYPE_TEAM,
+  CHAT_TYPE_ADMIN,
+  CHAT_TYPE_IRC,
+  CHAT_TYPE_LAST // end marker
+} chatType_t;
+
+typedef struct
+{
+	const char *name;
+	qhandle_t  hudShot;
+}
+
+hudInfo_t;
+
 typedef struct
 {
 	displayContextDef_t uiDC;
@@ -319,9 +338,11 @@ typedef struct
 	language_t            languages[ MAX_LANGUAGES ];
 	int                   languageIndex;
 
-	qboolean              chatTeam;
-	qboolean              chatAdmin;
-	qboolean              chatIRC;
+	chatType_t            chatType;
+
+	int                   hudCount;
+	hudInfo_t             huds[ MAX_HUDS ];
+	int                   hudIndex;
 
 	profileInfo_t         profileList[ MAX_PROFILES ];
 	int                   profileCount;
@@ -331,6 +352,7 @@ typedef struct
 uiInfo_t;
 
 extern uiInfo_t uiInfo;
+extern const char *const chatMenus[CHAT_TYPE_LAST];
 
 qboolean        UI_ConsoleCommand( int realTime );
 char            *UI_Cvar_VariableString( const char *var_name );

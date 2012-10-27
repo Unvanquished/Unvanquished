@@ -2060,6 +2060,11 @@ void HRepeater_Think( gentity_t *self )
 
 	self->powered = G_FindPower( self, qfalse );
 
+	if ( G_SuicideIfNoPower( self ) )
+	{
+		return;
+	}
+
 	powerEnt = G_InPowerZone( self );
 
 	if ( powerEnt != NULL )

@@ -23,6 +23,12 @@ fi
 PRECMD=
 if test $NOT_URI = 0; then
   PRECMD='connect '
+else
+  echo "$1" | LANG=C grep -qi '^unv://'
+  if test $? = 0; then
+    echo "$0: invalid URI: $1" >&2
+    exit 2
+  fi
 fi
 
 exec ./unvanquished +set fs_libpath "$PWD" +set fs_basepath /var/games/unvanquished +$PRECMD"$@"
