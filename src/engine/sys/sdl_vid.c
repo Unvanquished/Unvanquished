@@ -276,6 +276,13 @@ static int GLimp_SetMode( int mode, int fullscreen, int noborder )
 		colorbits = r_colorbits->value;
 	}
 
+	alphabits = r_alphabits->value;
+
+	if ( alphabits < 0 )
+	{
+		alphabits = 0;
+	}
+
 	if ( !r_depthbits->value )
 	{
 		depthbits = 24;
@@ -381,6 +388,7 @@ static int GLimp_SetMode( int mode, int fullscreen, int noborder )
 		SDL_GL_SetAttribute( SDL_GL_RED_SIZE, sdlcolorbits );
 		SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, sdlcolorbits );
 		SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, sdlcolorbits );
+		SDL_GL_SetAttribute( SDL_GL_ALPHA_SIZE, alphabits );
 		SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, tdepthbits );
 		SDL_GL_SetAttribute( SDL_GL_STENCIL_SIZE, tstencilbits );
 		SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );

@@ -1669,7 +1669,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	maxAmmo = BG_Weapon( weapon )->maxAmmo;
 	maxClips = BG_Weapon( weapon )->maxClips;
 	client->ps.stats[ STAT_WEAPON ] = weapon;
-	client->ps.Ammo = maxAmmo;
+	client->ps.ammo = maxAmmo;
 	client->ps.clips = maxClips;
 
 	// We just spawned, not changing weapons

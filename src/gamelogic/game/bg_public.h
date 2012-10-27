@@ -1129,7 +1129,6 @@ int                         BG_GetValueOfPlayer( playerState_t *ps );
 qboolean                    BG_PlayerCanChangeWeapon( playerState_t *ps );
 int                         BG_PlayerPoisonCloudTime( playerState_t *ps );
 weapon_t                    BG_GetPlayerWeapon( playerState_t *ps );
-qboolean                    BG_HasEnergyWeapon( playerState_t *ps );
 
 void                        BG_PackEntityNumbers( entityState_t *es, const int *entityNums, int count );
 int                         BG_UnpackEntityNumbers( entityState_t *es, int *entityNums, int count );
@@ -1198,9 +1197,6 @@ void     BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, playe
 void     BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean snap );
 void     BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s, int time, qboolean snap );
 
-qboolean BG_PlayerTouchesItem( playerState_t *ps, entityState_t *item, int atTime );
-
-#define ARENAS_PER_TIER 4
 #define MAX_ARENAS      1024
 #define MAX_ARENAS_TEXT 8192
 

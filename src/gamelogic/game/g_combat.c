@@ -1124,10 +1124,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	{
 		dflags |= DAMAGE_NO_KNOCKBACK;
 	}
-	else
-	{
-		VectorNormalize( dir );
-	}
 
 	knockback = damage;
 
@@ -1548,6 +1544,7 @@ qboolean G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float dama
 			// push the center of mass higher than the origin so players
 			// get knocked into the air more
 			dir[ 2 ] += 24;
+			VectorNormalize( dir );
 			hitClient = qtrue;
 			G_Damage( ent, NULL, attacker, dir, origin,
 			          ( int ) points, DAMAGE_RADIUS | DAMAGE_NO_LOCDAMAGE, mod );
@@ -1634,6 +1631,7 @@ qboolean G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage,
 			// push the center of mass higher than the origin so players
 			// get knocked into the air more
 			dir[ 2 ] += 24;
+			VectorNormalize( dir );
 			hitClient = qtrue;
 			G_Damage( ent, NULL, attacker, dir, origin,
 			          ( int ) points, DAMAGE_RADIUS | DAMAGE_NO_LOCDAMAGE, mod );

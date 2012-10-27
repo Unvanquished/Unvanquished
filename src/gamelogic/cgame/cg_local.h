@@ -1365,9 +1365,6 @@ typedef struct
 
 	int          cursorX;
 	int          cursorY;
-	qboolean     eventHandling;
-	qboolean     mouseCaptured;
-	qboolean     sizingHud;
 	void         *capturedItem;
 	qhandle_t    activeCursor;
 
@@ -1582,8 +1579,7 @@ int        CG_LastAttacker( void );
 void       CG_LoadMenus( const char *menuFile );
 void       CG_KeyEvent( int key, int chr, int flags );
 void       CG_MouseEvent( int x, int y );
-void       CG_EventHandling( int type );
-void       CG_SetScoreSelection( void *menu );
+void       CG_SetScoreSelection( menuDef_t *menu );
 qboolean   CG_ClientIsReady( int clientNum );
 void       CG_BuildSpectatorString( void );
 
@@ -1627,7 +1623,6 @@ int      CG_DrawStrlen( const char *str );
 
 float    *CG_FadeColor( int startMsec, int totalMsec );
 void     CG_TileClear( void );
-void     CG_ColorForHealth( vec4_t hcolor );
 void     CG_DrawRect( float x, float y, float width, float height, float size, const float *color );
 void     CG_DrawSides( float x, float y, float w, float h, float size );
 void     CG_DrawTopBottom( float x, float y, float w, float h, float size );
@@ -1648,7 +1643,7 @@ void CG_AddLagometerSnapshotInfo( snapshot_t *snap );
 void CG_AddSpeed( void );
 void CG_CenterPrint( const char *str, int y, int charWidth );
 void CG_DrawActive( stereoFrame_t stereoView );
-void CG_OwnerDraw( float x, float y, float w, float h, float text_x,
+void CG_OwnerDraw( rectDef_t *rect, float text_x,
                    float text_y, int ownerDraw, int ownerDrawFlags,
                    int align, int textalign, int textvalign,
                    float borderSize, float scale, vec4_t foreColor,
@@ -1656,7 +1651,6 @@ void CG_OwnerDraw( float x, float y, float w, float h, float text_x,
 float      CG_GetValue( int ownerDraw );
 void       CG_RunMenuScript( char **args );
 void       CG_SetPrintString( int type, const char *p );
-void       CG_GetTeamColor( vec4_t *color );
 const char *CG_GetKillerText( void );
 void       CG_DrawLoadingScreen( void );
 void       CG_UpdateMediaFraction( float newFract );

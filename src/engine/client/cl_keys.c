@@ -1761,36 +1761,6 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 		return;
 	}
 
-//----(SA)  added
-	if ( cl.cameraMode )
-	{
-		if ( !( cls.keyCatchers & ( KEYCATCH_UI | KEYCATCH_CONSOLE ) ) )  // let menu/console handle keys if necessary
-		{
-			// in cutscenes we need to handle keys specially (pausing not allowed in camera mode)
-			if ( ( key == K_ESCAPE ||
-			       key == K_SPACE ||
-			       key == K_ENTER ) && down )
-			{
-				CL_AddReliableCommand( "cameraInterrupt" );
-				return;
-			}
-
-			// eat all keys
-			if ( down )
-			{
-				return;
-			}
-		}
-
-		if ( ( cls.keyCatchers & KEYCATCH_CONSOLE ) && key == K_ESCAPE )
-		{
-			// don't allow menu starting when console is down and camera running
-			return;
-		}
-	}
-
-	//----(SA)  end
-
 	// most keys during demo playback will bring up the menu, but non-ascii
 
 	/* Do something better than this :)
@@ -1806,14 +1776,6 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	// escape is always handled special
 	if ( key == K_ESCAPE && down )
 	{
-		// escape always gets out of CGAME stuff
-		if ( cls.keyCatchers & KEYCATCH_CGAME )
-		{
-			cls.keyCatchers &= ~KEYCATCH_CGAME;
-			VM_Call( cgvm, CG_EVENT_HANDLING, CGAME_EVENT_NONE );
-			return;
-		}
-
 		if ( !( cls.keyCatchers & KEYCATCH_UI ) )
 		{
 			if ( cls.state == CA_ACTIVE && !clc.demoplaying )

@@ -89,10 +89,6 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 			// cgame doesn't care where the cursor is
 			return 0;
 
-		case CG_EVENT_HANDLING:
-			CG_EventHandling( arg0 );
-			return 0;
-
 		case CG_VOIP_STRING:
 			return ( intptr_t ) CG_VoIPString();
 
@@ -632,7 +628,7 @@ static void CG_SetUIVars( void )
 
 	trap_Cvar_Set( "p_credits", va( "%d", ps->persistant[ PERS_CREDIT ] ) );
 	trap_Cvar_Set( "p_score", va( "%d", ps->persistant[ PERS_SCORE ] ) );
-	trap_Cvar_Set( "p_ammo", va( "%d", ps->Ammo ) );
+	trap_Cvar_Set( "p_ammo", va( "%d", ps->ammo ) );
 	trap_Cvar_Set( "p_clips", va( "%d", ps->clips ) );
 }
 
@@ -1060,8 +1056,6 @@ static void CG_RegisterSounds( void )
 /*
 =================
 CG_RegisterGraphics
-
-This function may execute for a couple of minutes with a slow disk.
 =================
 */
 static void CG_RegisterGraphics( void )
@@ -1833,9 +1827,8 @@ static int CG_FeederCount( int feederID )
 	return count;
 }
 
-void CG_SetScoreSelection( void *p )
+void CG_SetScoreSelection( menuDef_t *menu )
 {
-	menuDef_t     *menu = ( menuDef_t * ) p;
 	playerState_t *ps = &cg.snap->ps;
 	int           i, alien, human;
 	int           feeder;

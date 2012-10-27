@@ -2842,12 +2842,12 @@ void BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t resu
 		case TR_SINE:
 			deltaTime = ( atTime - tr->trTime ) / ( float ) tr->trDuration;
 			phase = cos( deltaTime * M_PI * 2 );  // derivative of sin = cos
-			phase *= 0.5;
+			phase *= 2 * M_PI * 1000 / tr->trDuration;
 			VectorScale( tr->trDelta, phase, result );
 			break;
 
 		case TR_LINEAR_STOP:
-			if ( atTime > tr->trTime + tr->trDuration )
+			if ( atTime > tr->trTime + tr->trDuration || atTime < tr->trTime )
 			{
 				VectorClear( result );
 				return;

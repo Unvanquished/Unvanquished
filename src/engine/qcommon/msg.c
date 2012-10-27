@@ -1576,7 +1576,7 @@ netField_t playerStateFields[] =
 	,
 	{ PSF( grapplePoint[ 2 ] ),    0               }
 	,
-	{ PSF( Ammo ),                 12              }
+	{ PSF( ammo ),                 12              }
 	,
 	{ PSF( clips ),                4               }
 	,

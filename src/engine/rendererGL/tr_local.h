@@ -1901,7 +1901,7 @@ extern "C" {
 		if ( DS_PREPASS_LIGHTING_ENABLED() )
 		{
 			value -= ( r_lightScale->value - 1 );
-			value = Q_max( value, 0 );
+			value = MAX( value, 0 );
 		}
 
 #endif
@@ -1970,12 +1970,12 @@ extern "C" {
 	static INLINE void GLSL_SetUniform_ShadowMatrix( shaderProgram_t *program, matrix_t m[ MAX_SHADOWMAPS ] )
 	{
 		/*
-		#if defined(USE_UNIFORM_FIREWALL)
+#if defined(USE_UNIFORM_FIREWALL)
 		        if(MatrixCompare(program->t_ShadowMatrix[index], m))
 		                return;
 
 		        MatrixCopy(m, program->t_ShadowMatrix[index]);
-		#endif
+#endif
 		*/
 
 #if defined( LOG_GLSL_UNIFORMS )
@@ -2686,6 +2686,8 @@ extern "C" {
 // any changes in surfaceType must be mirrored in rb_surfaceTable[]
 	typedef enum
 	{
+	  SF_MIN = -1, // partially ensures that sizeof(surfaceType_t) == sizeof(int)
+
 	  SF_BAD,
 	  SF_SKIP, // ignore
 
@@ -2714,7 +2716,8 @@ extern "C" {
 	  SF_VBO_MDVMESH,
 
 	  SF_NUM_SURFACE_TYPES,
-	  SF_MAX = 0x7fffffff // ensures that sizeof( surfaceType_t ) == sizeof( int )
+
+	  SF_MAX = 0x7fffffff // partially (together, fully) ensures that sizeof(surfaceType_t) == sizeof(int)
 	} surfaceType_t;
 
 	typedef struct drawSurf_s
@@ -4103,6 +4106,7 @@ extern "C" {
 	extern cvar_t *r_stencilbits; // number of desired stencil bits
 	extern cvar_t *r_depthbits; // number of desired depth bits
 	extern cvar_t *r_colorbits; // number of desired color bits, only relevant for fullscreen
+	extern cvar_t *r_alphabits; // number of desired depth bits
 	extern cvar_t *r_stereo; // desired pixelformat stereo flag
 
 	extern cvar_t *r_ext_multisample;  // desired number of MSAA samples
@@ -4393,10 +4397,6 @@ extern "C" {
 
 	void           R_AddMDVSurfaces( trRefEntity_t *e );
 	void           R_AddMDVInteractions( trRefEntity_t *e, trRefLight_t *light );
-	void           R_AddNullModelSurfaces( trRefEntity_t *e );
-	void           R_AddBeamSurfaces( trRefEntity_t *e );
-	void           R_AddRailSurfaces( trRefEntity_t *e, qboolean isUnderwater );
-	void           R_AddLightningBoltSurfaces( trRefEntity_t *e );
 
 	void           R_AddPolygonSurfaces( void );
 	void           R_AddPolygonBufferSurfaces( void );
@@ -4430,9 +4430,11 @@ extern "C" {
 	    const vec3_t v0, const vec3_t v1, const vec3_t v2,
 	    const vec2_t t0, const vec2_t t1, const vec2_t t2 );
 
+#if 0
 	void R_CalcTangentsForTriangle2( vec3_t tangent, vec3_t binormal,
 	                                 const vec3_t v0, const vec3_t v1, const vec3_t v2,
 	                                 const vec2_t t0, const vec2_t t1, const vec2_t t2 );
+#endif
 
 	void R_CalcTangentSpace( vec3_t tangent, vec3_t binormal, vec3_t normal,
 	                         const vec3_t v0, const vec3_t v1, const vec3_t v2,
@@ -4531,7 +4533,7 @@ extern "C" {
 //----(SA) end
 
 	qboolean   R_GetEntityToken( char *buffer, int size );
-	float      R_ProcessLightmap( byte **pic, int in_padding, int width, int height, byte **pic_out );  // Arnout
+	float      R_ProcessLightmap( byte *pic, int in_padding, int width, int height, byte *pic_out );  // Arnout
 
 	model_t    *R_AllocModel( void );
 
@@ -4545,7 +4547,7 @@ extern "C" {
 	void       R_ImageList_f( void );
 	void       R_SkinList_f( void );
 
-	void       R_SubImageCpy( byte *dest, size_t destx, size_t desty, size_t destw, size_t desth, byte *src, size_t srcw, size_t srch, size_t bytes, qboolean in );
+	void       R_SubImageCpy( byte *dest, size_t destx, size_t desty, size_t destw, size_t desth, byte *src, size_t srcw, size_t srch, size_t bytes );
 
 // https://zerowing.idsoftware.com/bugzilla/show_bug.cgi?id=516
 	const void *RB_TakeScreenshotCmd( const void *data );
@@ -4601,7 +4603,6 @@ extern "C" {
 
 	shader_t  *R_FindShader( const char *name, shaderType_t type, qboolean mipRawImage );
 	shader_t  *R_GetShaderByHandle( qhandle_t hShader );
-	shader_t  *R_GetShaderByState( int index, long *cycleTime );
 	shader_t  *R_FindShaderByName( const char *name );
 	void      R_InitShaders( void );
 	void      R_ShaderList_f( void );
@@ -4708,8 +4709,8 @@ extern "C" {
 #endif
 
 // *INDENT-OFF*
-	void Tess_Begin( void ( *stageIteratorFunc )(),
-	                 void ( *stageIteratorFunc2 )(),
+	void Tess_Begin( void ( *stageIteratorFunc )( void ),
+	                 void ( *stageIteratorFunc2 )( void ),
 	                 shader_t *surfaceShader, shader_t *lightShader,
 	                 qboolean skipTangentSpaces,
 	                 qboolean skipVBO,
@@ -4743,7 +4744,7 @@ extern "C" {
 	/*
 	Add a polyhedron that is composed of four triangular faces
 
-	@param tretraVerts[0..2] are the ground vertices, tretaVerts[3] is the pyramid offset
+	@param tetraVerts[0..2] are the ground vertices, tetraVerts[3] is the pyramid offset
 	*/
 	void Tess_AddTetrahedron( vec4_t tetraVerts[ 4 ], vec4_t const color );
 
@@ -4949,8 +4950,6 @@ extern "C" {
 	                          int fadeTime );
 	void     RE_ClearDecals( void );
 
-	void     R_AddModelShadow( refEntity_t *ent );
-
 	void     R_TransformDecalProjector( decalProjector_t *in, vec3_t axis[ 3 ], vec3_t origin, decalProjector_t *out );
 	qboolean R_TestDecalBoundingBox( decalProjector_t *dp, vec3_t mins, vec3_t maxs );
 	qboolean R_TestDecalBoundingSphere( decalProjector_t *dp, vec3_t center, float radius2 );
@@ -5029,7 +5028,6 @@ extern "C" {
 	*/
 
 	/*
-	void            R_MakeAnimModel(model_t * model);
 	void            R_AddAnimSurfaces(trRefEntity_t * ent);
 	void            RB_SurfaceAnim(mdsSurface_t * surfType);
 	int             R_GetBoneTag(orientation_t * outTag, mdsHeader_t * mds, int startTagIndex, const refEntity_t * refent,

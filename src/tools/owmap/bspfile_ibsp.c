@@ -353,10 +353,10 @@ static void AddDrawVertsLump(FILE * file, ibspHeader_t * header)
 
 		VectorCopy(in->normal, out->normal);
 
-		out->color[0] = (byte)Q_rint(in->lightColor[0][0]);
-		out->color[1] = (byte)Q_rint(in->lightColor[0][1]);
-		out->color[2] = (byte)Q_rint(in->lightColor[0][2]);
-		out->color[3] = (byte)Q_rint(in->lightColor[0][3]);
+		out->color[0] = (byte)rint(in->lightColor[0][0]);
+		out->color[1] = (byte)rint(in->lightColor[0][1]);
+		out->color[2] = (byte)rint(in->lightColor[0][2]);
+		out->color[3] = (byte)rint(in->lightColor[0][3]);
 
 		in++;
 		out++;
@@ -437,13 +437,13 @@ static void AddLightGridLumps(FILE * file, ibspHeader_t * header)
 	out = buffer;
 	for(i = 0; i < numBSPGridPoints; i++)
 	{
-		out->ambient[0] = (byte) Q_rint(in->ambient[0][0]);
-		out->ambient[1] = (byte) Q_rint(in->ambient[0][1]);
-		out->ambient[2] = (byte) Q_rint(in->ambient[0][2]);
+		out->ambient[0] = (byte)rint(in->ambient[0][0]);
+		out->ambient[1] = (byte)rint(in->ambient[0][1]);
+		out->ambient[2] = (byte)rint(in->ambient[0][2]);
 
-		out->directed[0] = (byte) Q_rint(in->directed[0][0]);
-		out->directed[1] = (byte) Q_rint(in->directed[0][1]);
-		out->directed[2] = (byte) Q_rint(in->directed[0][2]);
+		out->directed[0] = (byte)rint(in->directed[0][0]);
+		out->directed[1] = (byte)rint(in->directed[0][1]);
+		out->directed[2] = (byte)rint(in->directed[0][2]);
 
 		out->latLong[0] = in->latLong[0];
 		out->latLong[1] = in->latLong[1];

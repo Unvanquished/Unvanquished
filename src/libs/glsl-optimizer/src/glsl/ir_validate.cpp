@@ -475,6 +475,9 @@ ir_validate::visit_leave(ir_expression *ir)
 	 assert(!"Should not get here.");
 	 break;
       }
+      default:
+      /* silence a warning */
+      break;
    }
 
    return visit_continue;

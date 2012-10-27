@@ -778,7 +778,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 		case EV_FIRE_WEAPON:
 			CG_FireWeapon( cent, WPM_PRIMARY );
 			// Low ammo warning
-			if( cg.snap->ps.Ammo / (float)BG_Weapon( cg.snap->ps.weapon )->maxAmmo <= cg_lowAmmoWarning.value )
+			if( cg.snap->ps.ammo / (float)BG_Weapon( cg.snap->ps.weapon )->maxAmmo <= cg_lowAmmoWarning.value )
 			{
 				trap_S_StartSound( NULL, 0, CHAN_LOCAL, CG_CustomSound( 0, "sound/misc/menu3.wav" ) );
 			}

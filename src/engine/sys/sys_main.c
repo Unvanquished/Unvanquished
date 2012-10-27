@@ -394,31 +394,13 @@ void Sys_UnloadDll( void *dllHandle )
 
 /*
 =================
-Sys_GetDLLName
-=================
-*/
-extern int cl_connectedToPureServer;
-
-char *Sys_GetDLLName( const char *name )
-{
-#if defined _WIN32
-	return va( "%s_mp_" ARCH_STRING DLL_EXT, name );
-#else
-	return va( "%s.mp." ARCH_STRING DLL_EXT, name );
-#endif
-}
-
-/*
-=================
 Sys_TryLibraryLoad
 =================
 */
-static void *Sys_TryLibraryLoad( const char *base, const char *gamedir, const char *fname, char *fqpath )
+static void *Sys_TryLibraryLoad( const char *base, const char *gamedir, const char *fname )
 {
 	void *libHandle = NULL;
 	char *fn;
-
-	*fqpath = 0;
 
 	fn = FS_BuildOSPath( base, gamedir, fname );
 	Com_DPrintf( "Sys_LoadDll(%s)...\n", fn );
@@ -432,7 +414,6 @@ static void *Sys_TryLibraryLoad( const char *base, const char *gamedir, const ch
 	}
 
 	Com_DPrintf( "Sys_LoadDll(%s): succeeded ...\n", fn );
-	Q_strncpyz( fqpath, fn, MAX_QPATH );
 
 	return libHandle;
 }
@@ -447,7 +428,7 @@ Used to load a DLL instead of a virtual machine
 #4 look in fs_libpath (if not "")
 =================
 */
-void *QDECL Sys_LoadDll( const char *name, char *fqpath,
+void *QDECL Sys_LoadDll( const char *name,
                          intptr_t ( QDECL  * *entryPoint )( int, ... ),
                          intptr_t ( QDECL *systemcalls )( intptr_t, ... ) )
 {
@@ -461,7 +442,7 @@ void *QDECL Sys_LoadDll( const char *name, char *fqpath,
 
 	assert( name );
 
-	Q_strncpyz( fname, Sys_GetDLLName( name ), sizeof( fname ) );
+	Com_sprintf( fname, sizeof( fname ), "%s%s", name, DLL_EXT );
 
 	// TODO: use fs_searchpaths from files.c
 	basepath = Cvar_VariableString( "fs_basepath" );
@@ -469,28 +450,17 @@ void *QDECL Sys_LoadDll( const char *name, char *fqpath,
 	gamedir = Cvar_VariableString( "fs_game" );
 	libpath = Cvar_VariableString( "fs_libpath" );
 
-#if !defined( NO_UNTRUSTED_PLUGINS )
-	// if the server is pure, extract the dlls from the mp_bin.pk3 so
-	// that they can be referenced
-	if ( Cvar_VariableValue( "sv_pure" ) && Q_stricmp( name, "qagame" ) )
-	{
-		FS_CL_ExtractFromPakFile( homepath, gamedir, fname );
-	}
-
-	libHandle = Sys_TryLibraryLoad( homepath, gamedir, fname, fqpath );
-#else
 	libHandle = NULL;
-#endif
 
-	if ( !libHandle && libpath && libpath[0] )
+	if ( libpath[0] )
 	{
-		libHandle = Sys_TryLibraryLoad( libpath, gamedir, fname, fqpath );
+		libHandle = Sys_TryLibraryLoad( libpath, gamedir, fname );
 	}
 
 
 	if ( !libHandle && basepath )
 	{
-		libHandle = Sys_TryLibraryLoad( basepath, gamedir, fname, fqpath );
+		libHandle = Sys_TryLibraryLoad( basepath, gamedir, fname );
 	}
 
 	if ( !libHandle )
@@ -538,9 +508,6 @@ void *QDECL Sys_LoadDll( const char *name, char *fqpath,
 	dllEntry( systemcalls );
 
 	Com_DPrintf( "Sys_LoadDll(%s) succeeded!\n", name );
-
-	// Copy the fname to fqpath.
-	Q_strncpyz( fqpath, fname, MAX_QPATH );
 
 	return libHandle;
 }
@@ -666,7 +633,7 @@ int main( int argc, char **argv )
 #ifdef OPENMP
 	Com_Printf( "-----------------------------------\n" );
 	/* Start parallel region */
-	#pragma omp parallel private(nthreads, tid)
+#pragma omp parallel private(nthreads, tid)
 	{
 		/* Obtain thread number */
 		tid = omp_get_thread_num();

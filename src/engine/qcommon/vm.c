@@ -756,7 +756,7 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 	qboolean   onlyQVM = !!Cvar_VariableValue( "sv_pure" );
 
 #ifdef DEDICATED
-	onlyQVM &= strcmp( module, "qagame" );
+	onlyQVM &= strcmp( module, "game" );
 #endif
 
 	if ( !module || !module[ 0 ] || !systemCalls )
@@ -798,7 +798,7 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 	if ( interpret == VMI_NATIVE && !onlyQVM )
 	{
 		// try to load as a system dll
-		vm->dllHandle = Sys_LoadDll( module, vm->fqpath, &vm->entryPoint, VM_DllSyscall );
+		vm->dllHandle = Sys_LoadDll( module, &vm->entryPoint, VM_DllSyscall );
 
 		if ( vm->dllHandle )
 		{
@@ -1363,7 +1363,7 @@ intptr_t VM_SystemCall( intptr_t *args )
 			return FloatAsInt( asin( VMF( 1 ) ) );
 
 //		case TRAP_ACOS:
-//			return FloatAsInt( Q_acos( VMF( 1 ) ) );
+//			return FloatAsInt( acos( VMF( 1 ) ) );
 
 		case TRAP_ATAN:
 			return FloatAsInt( atan( VMF( 1 ) ) );
