@@ -64,7 +64,6 @@ cmake_dependent_option( BUILD_NEW_RENDERER   "Build new renderer library"       
 cmake_dependent_option( USE_OPENAL           "Use OpenAL"                                            1 BUILD_CLIENT                   0 )
 cmake_dependent_option( USE_CODEC_VORBIS     "Compile with support for Vorbis"                       1 BUILD_CLIENT                   0 )
 cmake_dependent_option( USE_MUMBLE           "Compile with support for Mumble"                       1 BUILD_CLIENT                   0 )
-cmake_dependent_option( USE_WEBP             "Compile with WebP loader"                              1 BUILD_CLIENT                   0 ) # technically, any renderer, not client
 cmake_dependent_option( USE_VOIP             "Compile with VOIP support"                             1 BUILD_CLIENT                   0 )
 cmake_dependent_option( USE_CIN_XVID         "Encode videos with XViD"                               1 BUILD_CLIENT                   0 )
 cmake_dependent_option( USE_INTERNAL_SDL     "Use SDL files included with Unvanquished"              0 BUILD_CLIENT                   0 )
@@ -1328,13 +1327,12 @@ if( BUILD_OLD_RENDERER )
   include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${SDL_INCLUDE_DIR} )
   target_link_libraries( renderer ${PNG_LIBRARIES} ${SDL_LIBRARY} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} )
 
+  find_package( WebP REQUIRED )
+  set_property( TARGET renderer APPEND PROPERTY COMPILE_DEFINITIONS USE_WEBP )
+  include_directories( ${WEBP_INCLUDE_DIRS} )
+  target_link_libraries( renderer ${WEBP_LIBRARIES} )
+
   # This section finds and provides OPTIONAL dependencies to target renderer
-  if( USE_WEBP )
-    find_package( WebP REQUIRED )
-    set_property( TARGET renderer APPEND PROPERTY COMPILE_DEFINITIONS USE_WEBP )
-    include_directories( ${WEBP_INCLUDE_DIRS} )
-    target_link_libraries( renderer ${WEBP_LIBRARIES} )
-  endif()
 endif()
 
 ######################
@@ -1366,14 +1364,12 @@ if( BUILD_NEW_RENDERER )
   include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${SDL_INCLUDE_DIR} )
   target_link_libraries( rendererGL ${PNG_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} ${SDL_LIBRARY} )
 
-  # This section finds and provides OPTIONAL dependencies to target rendererGL
-  if( USE_WEBP )
-    find_package( WebP REQUIRED )
-    set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS USE_WEBP )
-    include_directories( ${WEBP_INCLUDE_DIRS} )
-    target_link_libraries( rendererGL ${WEBP_LIBRARIES} )
-  endif()
+  find_package( WebP REQUIRED )
+  set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS USE_WEBP )
+  include_directories( ${WEBP_INCLUDE_DIRS} )
+  target_link_libraries( rendererGL ${WEBP_LIBRARIES} )
 
+  # This section finds and provides OPTIONAL dependencies to target rendererGL
   if( USE_GLSL_OPTIMIZER )
     include_directories( ${LIB_DIR}/glsl-optimizer/include )
     target_link_libraries( rendererGL glsl_optimizer )
