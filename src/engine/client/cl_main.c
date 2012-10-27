@@ -725,6 +725,17 @@ void CL_AddReliableCommand( const char *cmd )
 {
 	int index;
 
+	// catch empty commands
+	while ( *cmd && *cmd <= ' ' )
+	{
+		++cmd;
+	}
+
+	if ( !*cmd )
+	{
+		return;
+	}
+
 	// if we would be losing an old command that hasn't been acknowledged,
 	// we must drop the connection
 	if ( clc.reliableSequence - clc.reliableAcknowledge > MAX_RELIABLE_COMMANDS )
