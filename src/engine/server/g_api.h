@@ -44,6 +44,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define SVF_SELF_PORTAL           0x00008000
 #define SVF_SELF_PORTAL_EXCLUSIVE 0x00010000
 #define SVF_RIGID_BODY            0x00020000 // ignored by the engine
+#define SVF_CLIENTS_IN_RANGE      0x00040000 // clients within range
 
 typedef struct
 {
@@ -56,6 +57,7 @@ typedef struct
 	//  clients specified by the following 64-bit bitmask:
 	//  hiMask: high-order bits (32..63)
 	//  loMask: low-order bits (0..31)
+	float    clientRadius;    // if SVF_CLIENTS_IN_RANGE, send to all clients within this range
 
 	qboolean bmodel; // if false, assume an explicit mins/maxs bounding box
 	// only set by trap_SetBrushModel
