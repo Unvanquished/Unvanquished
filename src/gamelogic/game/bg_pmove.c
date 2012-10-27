@@ -4275,6 +4275,17 @@ static float roundf( float v )
 }
 #endif
 
+static void PM_UpdateRadarTimer( qboolean isMoving ) {
+	if( isMoving ) {
+		pm->ps->stats[ STAT_RADARTIME ] = RADAR_FADEOUT_TIME;
+	}
+	else if( pm->ps->stats[ STAT_RADARTIME ] > pml.msec ) {
+		pm->ps->stats[ STAT_RADARTIME ] -= pml.msec;
+	} else {
+		pm->ps->stats[ STAT_RADARTIME ] = 0;
+	}
+}
+
 /*
 ================
 PmoveSingle
@@ -4459,6 +4470,11 @@ void PmoveSingle( pmove_t *pmove )
 	{
 		return; // no movement at all
 	}
+
+	// update radar timer
+	PM_UpdateRadarTimer( pm->cmd.forwardmove ||
+			     pm->cmd.rightmove   ||
+			     pm->cmd.upmove );
 
 	// set watertype, and waterlevel
 	PM_SetWaterLevel();
