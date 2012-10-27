@@ -4167,6 +4167,8 @@ gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 	// Spawn the buildable
 	built = G_Spawn();
 	built->s.eType = ET_BUILDABLE;
+	built->r.svFlags = SVF_CLIENTS_IN_RANGE;
+	built->r.clientRadius = MAX( HELMET_RANGE, ALIENSENSE_RANGE );
 	built->killedBy = ENTITYNUM_NONE;
 	built->classname = BG_Buildable( buildable )->entityName;
 	built->s.modelindex = buildable;

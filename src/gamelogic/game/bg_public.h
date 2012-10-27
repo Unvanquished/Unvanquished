@@ -230,7 +230,8 @@ typedef enum
   STAT_MISC, // for uh...misc stuff (pounce, trample, lcannon)
   STAT_BUILDABLE, // which ghost model to display for building
   STAT_FALLDIST, // the distance the player fell
-  STAT_VIEWLOCK // direction to lock the view in
+  STAT_VIEWLOCK, // direction to lock the view in
+  STAT_RADARTIME // time in msec this player will be visible on radar/sense
   // netcode has space for 3 more
 } statIndex_t;
 

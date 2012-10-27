@@ -456,6 +456,14 @@ static void SV_AddEntitiesVisibleFromPoint( vec3_t origin, clientSnapshot_t *fra
 			continue;
 		}
 
+		// send entity if the client is in range
+		if ( (ent->r.svFlags & SVF_CLIENTS_IN_RANGE) &&
+		     Distance( ent->s.origin, playerEnt->s.origin ) <= ent->r.clientRadius )
+		{
+			SV_AddEntToSnapshot( playerEnt, svEnt, ent, eNums );
+			continue;
+		}
+
 		bitvector = clientpvs;
 
 		// Gordon: just check origin for being in pvs, ignore bmodel extents

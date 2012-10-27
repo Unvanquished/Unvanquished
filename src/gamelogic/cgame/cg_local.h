@@ -894,9 +894,11 @@ typedef struct
 	int    numHumanBuildables;
 
 	vec3_t alienClientPos[ MAX_CLIENTS ];
+	float  alienClientIntensity[ MAX_CLIENTS ];
 	int    numAlienClients;
 
 	vec3_t humanClientPos[ MAX_CLIENTS ];
+	float  humanClientIntensity[ MAX_CLIENTS ];
 	int    numHumanClients;
 
 	int    lastUpdateTime;
