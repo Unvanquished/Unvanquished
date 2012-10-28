@@ -1,3 +1,3 @@
-obj-*-*-*/main/game*.so		usr/lib/games/unvanquished/main/
+obj-*-*-*/main/game.so			usr/lib/games/unvanquished/main/
 debian/scripts/unvanquished-download-paks usr/sbin/
-download-pk3.sh				usr/lib/games/unvanquished/
+obj-*-*-*/download-pk3.sh		usr/lib/games/unvanquished/

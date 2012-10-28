@@ -30,7 +30,7 @@ override_dh_auto_install:
 
 override_dh_install:
 	dh_install
-	rename "s/daemon/unvanquished/; s%\\.[^./]+$$%%" '{}' ';' debian/unvanquished*/usr/lib/games/unvanquished/daemon*
+	rename "s/daemon/unvanquished/" '{}' ';' debian/unvanquished*/usr/lib/games/unvanquished/daemon*
 
 override_dh_strip:
 	dh_strip --dbg-package=unvanquished-dbg
