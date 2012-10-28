@@ -1490,6 +1490,39 @@ static void CG_PoisonCloud_f( void )
 	}
 }
 
+/*
+=================
+CG_VCommand
+
+The server has asked us to execute a string from some variable
+=================
+*/
+static void CG_VCommand( void )
+{
+	static int recurse = 0;
+	char       cmd[ 32 ];
+
+	if ( recurse || trap_Argc() != 2 )
+	{
+		return;
+	}
+
+	recurse = 1;
+
+	trap_Argv( 1, cmd, sizeof( cmd ) );
+
+	if ( !Q_stricmp( cmd, "grenade" ) )
+	{
+		trap_SendClientCommand( cg_cmdGrenadeThrown.string );
+	}
+	else if ( !Q_stricmp( cmd, "needhealth" ) )
+	{
+		trap_SendClientCommand( cg_cmdNeedHealth.string );
+	}
+
+	recurse = 0;
+}
+
 static void CG_GameCmds_f( void )
 {
 	int i;
@@ -1522,6 +1555,7 @@ static const consoleCommand_t svcommands[] =
 	{ "serverclosemenus", CG_ServerCloseMenus_f   },
 	{ "servermenu",       CG_ServerMenu_f         },
 	{ "tinfo",            CG_ParseTeamInfo        },
+	{ "vcommand",         CG_VCommand             },
 	{ "voice",            CG_ParseVoice           }
 };
 

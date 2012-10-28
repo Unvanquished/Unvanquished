@@ -220,6 +220,9 @@ vmCvar_t        cg_stickySpec;
 vmCvar_t        cg_sprintToggle;
 vmCvar_t        cg_unlagged;
 
+vmCvar_t        cg_cmdGrenadeThrown;
+vmCvar_t        cg_cmdNeedHealth;
+
 vmCvar_t        cg_debugVoices;
 
 vmCvar_t        ui_currentClass;
@@ -371,6 +374,9 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_painBlendMax,                "cg_painBlendMax",                "0.7",          0                            },
 	{ &cg_painBlendScale,              "cg_painBlendScale",              "7.0",          0                            },
 	{ &cg_painBlendZoom,               "cg_painBlendZoom",               "0.65",         0                            },
+
+	{ &cg_cmdGrenadeThrown,            "cg_cmdGrenadeThrown",            "vsay_local grenade", CVAR_ARCHIVE           },
+	{ &cg_cmdNeedHealth,               "cg_cmdNeedHealth",               "vsay_local needhealth", CVAR_ARCHIVE        },
 
 	{ &cg_debugVoices,                 "cg_debugVoices",                 "0",            0                            },
 
