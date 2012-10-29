@@ -710,7 +710,7 @@ void Cmd_ModCase_f( void )
 
 found:
 
-	if ( v )
+	if ( v && *v )
 	{
 		if ( *v == '/' || *v == '\\' )
 		{
@@ -812,7 +812,7 @@ void Cmd_If_f( void )
 			return;
 	}
 
-	if ( v )
+	if ( v && *v )
 	{
 		if ( *v == '/' || *v == '\\' )
 		{
