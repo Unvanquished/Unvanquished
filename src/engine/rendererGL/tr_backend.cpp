@@ -10559,8 +10559,6 @@ static void RB_RenderView( void )
 			backEnd.isHyperspace = qfalse;
 		}
 
-		glState.faceCulling = -1; // force face culling to set next time
-
 		// we will only draw a sun if there was sky rendered in this view
 		backEnd.skyRenderedThisView = qfalse;
 
@@ -10949,8 +10947,6 @@ static void RB_RenderView( void )
 		{
 			backEnd.isHyperspace = qfalse;
 		}
-
-		glState.faceCulling = -1; // force face culling to set next time
 
 		// we will only draw a sun if there was sky rendered in this view
 		backEnd.skyRenderedThisView = qfalse;
