@@ -228,11 +228,12 @@
 	MULTI	( hud, "Show Team Overlay:", "cg_drawTeamOverlay", { "Off" 0 "All Teammates" 1 "Support Teammates" 2 "Nearby Teammates" 3 }, play "sound/misc/menu1.wav", 5 )
 	MULTI	( hud, "Sort Team Overlay:", "cg_teamOverlaySortMode", { "None" 0 "Score" 1 "Weapon/Class" 2 }, play "sound/misc/menu1.wav", 6 )
 	MULTI	( hud, "Show Gun:", "cg_drawGun", { "No" 0 "Humans Only" 1 "Yes" 2 }, play "sound/misc/menu1.wav", 7 )
-	MULTI	( hud, "Show Speed:", "cg_drawspeed", { "No" 0 "Text" 1 "Graph" 2 "Text + Graph" 3 "Text No-Z" 5 "Graph No-Z" 6 "Text + Graph No-Z" 7 }, play "sound/misc/menu1.wav", 8 )
-	YESNO	( hud, "Show FPS:", "cg_drawFPS", play "sound/misc/menu1.wav", 9 )
-	YESNO	( hud, "Show Timer:", "cg_drawTimer", play "sound/misc/menu1.wav", 10 )
-	YESNO	( hud, "Show Demo State:", "cg_drawDemoState", play "sound/misc/menu1.wav", 11 )
-	BUTTON	( hud, "Set HUD", open huds, 12 )
+	YESNO	( hud, "Mirror Gun", "cg_mirrorgun", play "sound/misc/menu1.wav", 8 )
+	MULTI	( hud, "Show Speed:", "cg_drawspeed", { "No" 0 "Text" 1 "Graph" 2 "Text + Graph" 3 "Text No-Z" 5 "Graph No-Z" 6 "Text + Graph No-Z" 7 }, play "sound/misc/menu1.wav", 9 )
+	YESNO	( hud, "Show FPS:", "cg_drawFPS", play "sound/misc/menu1.wav", 10 )
+	YESNO	( hud, "Show Timer:", "cg_drawTimer", play "sound/misc/menu1.wav", 11 )
+	YESNO	( hud, "Show Demo State:", "cg_drawDemoState", play "sound/misc/menu1.wav", 12 )
+	BUTTON	( hud, "Set HUD", open huds, 13 )
 
 //////// CONTROLS
 
