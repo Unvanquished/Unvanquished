@@ -352,6 +352,8 @@ void PRINTF_LIKE(1) NORETURN Sys_Error( const char *error, ... )
 	Sys_Print( "\n" );
 
 	CL_Shutdown();
+
+	Q_CleanStr( string );
 	Sys_ErrorDialog( string );
 
 	Sys_Exit( 3 );
