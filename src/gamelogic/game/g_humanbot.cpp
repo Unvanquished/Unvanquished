@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 qboolean WeaponIsEmpty( weapon_t weapon, playerState_t ps)
 {
-	if(ps.Ammo <= 0 && ps.clips <= 0 && !BG_Weapon(weapon)->infiniteAmmo)
+	if(ps.ammo <= 0 && ps.clips <= 0 && !BG_Weapon(weapon)->infiniteAmmo)
 		return qtrue;
 	else
 		return qfalse;
@@ -43,7 +43,7 @@ float PercentAmmoRemaining( weapon_t weapon, int stats[], playerState_t ps ) {
 			maxAmmo = (int)( (float)maxAmmo * BATTPACK_MODIFIER );
 
 		totalMaxAmmo = (float) maxAmmo + maxClips * maxAmmo;
-		totalAmmo = (float) ps.Ammo + ps.clips * maxAmmo;
+		totalAmmo = (float) ps.ammo + ps.clips * maxAmmo;
 
 		return (float) totalAmmo / totalMaxAmmo;
 	} else
@@ -94,12 +94,12 @@ void BotBuy(gentity_t *self, weapon_t weapon) {
 			return;
 
 		self->client->ps.stats[ STAT_WEAPON ] = weapon;
-		self->client->ps.Ammo = BG_Weapon( weapon )->maxAmmo;
+		self->client->ps.ammo = BG_Weapon( weapon )->maxAmmo;
 		self->client->ps.clips = BG_Weapon( weapon )->maxClips;
 
 		if( BG_Weapon( weapon )->usesEnergy &&
 			BG_InventoryContainsUpgrade( UP_BATTPACK, self->client->ps.stats ) )
-			self->client->ps.Ammo *= BATTPACK_MODIFIER;
+			self->client->ps.ammo *= BATTPACK_MODIFIER;
 
 		G_ForceWeaponChange( self, weapon );
 
