@@ -2842,12 +2842,12 @@ void BG_EvaluateTrajectoryDelta( const trajectory_t *tr, int atTime, vec3_t resu
 		case TR_SINE:
 			deltaTime = ( atTime - tr->trTime ) / ( float ) tr->trDuration;
 			phase = cos( deltaTime * M_PI * 2 );  // derivative of sin = cos
-			phase *= 0.5;
+			phase *= 2 * M_PI * 1000 / tr->trDuration;
 			VectorScale( tr->trDelta, phase, result );
 			break;
 
 		case TR_LINEAR_STOP:
-			if ( atTime > tr->trTime + tr->trDuration )
+			if ( atTime > tr->trTime + tr->trDuration || atTime < tr->trTime )
 			{
 				VectorClear( result );
 				return;
@@ -3146,6 +3146,9 @@ void BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean 
 	s->loopSound = ps->loopSound;
 	s->generic1 = ps->generic1;
 
+	if( s->eType == ET_PLAYER )
+		s->constantLight = ps->stats[ STAT_RADARTIME ];
+
 	if ( s->generic1 <= WPM_NONE || s->generic1 >= WPM_NUM_WEAPONMODES )
 	{
 		s->generic1 = WPM_PRIMARY;
@@ -3278,6 +3281,9 @@ void BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s
 
 	s->loopSound = ps->loopSound;
 	s->generic1 = ps->generic1;
+
+	if( s->eType == ET_PLAYER )
+		s->constantLight = ps->stats[ STAT_RADARTIME ];
 
 	if ( s->generic1 <= WPM_NONE || s->generic1 >= WPM_NUM_WEAPONMODES )
 	{

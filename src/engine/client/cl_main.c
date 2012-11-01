@@ -724,6 +724,17 @@ void CL_AddReliableCommand( const char *cmd )
 {
 	int index;
 
+	// catch empty commands
+	while ( *cmd && *cmd <= ' ' )
+	{
+		++cmd;
+	}
+
+	if ( !*cmd )
+	{
+		return;
+	}
+
 	// if we would be losing an old command that hasn't been acknowledged,
 	// we must drop the connection
 	if ( clc.reliableSequence - clc.reliableAcknowledge > MAX_RELIABLE_COMMANDS )
@@ -1978,7 +1989,7 @@ void CL_Connect_f( void )
 	// Set and skip the password.
 	if ( ( offset = strchr( server, '@' ) ) != NULL )
 	{
-		Q_strncpyz( password, server, Q_min( sizeof( password ), ( offset - server + 1 ) ) );
+		Q_strncpyz( password, server, MIN( sizeof( password ), ( offset - server + 1 ) ) );
 		Cvar_Set( "password", password );
 		server = offset + 1;
 	}
@@ -4160,7 +4171,7 @@ qboolean CL_InitRef( const char *renderer )
 #if !defined( REF_HARD_LINKED )
 	for ( i = 0; i < ARRAY_LEN( varName ); ++i )
 	{
-		Com_sprintf( dllName, sizeof( dllName ), "%s/" DLL_PREFIX "renderer%s" ARCH_STRING DLL_EXT, Cvar_VariableString( varName[ i ] ), renderer );
+		Com_sprintf( dllName, sizeof( dllName ), "%s/" DLL_PREFIX "renderer%s" DLL_EXT, Cvar_VariableString( varName[ i ] ), renderer );
 
 		Com_Printf( "Loading \"%s\"…", dllName );
 

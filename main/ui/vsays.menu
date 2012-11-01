@@ -29,11 +29,11 @@
 #define VSAY_ITEM( TEXT, KEY, ACTION, X, Y, POS ) \
 	itemDef \
 	{ \
-		name "pos"##TEXT \
+		name "pos" TEXT \
 		style WINDOW_STYLE_EMPTY \
 		rect (X+10) (Y+40+(25*POS)) 20 25 \
 		type ITEM_TYPE_TEXT \
-		text #KEY##"." \
+		text #KEY "." \
 		textstyle ITEM_TEXTSTYLE_SHADOWED \
 		textscale .375 \
 		forecolor 1 1 1 1 \
@@ -42,7 +42,7 @@
 	} \
 	itemDef \
 	{ \
-		name "pos"##TEXT \
+		name "pos" TEXT \
 		style WINDOW_STYLE_EMPTY \
 		rect (X+30) (Y+40+(25*POS)) 230 25 \
 		type ITEM_TYPE_TEXT \

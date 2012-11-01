@@ -1693,7 +1693,7 @@ static void Render_lightVolume( interaction_t *ia )
 		case RL_PROJ:
 			{
 				MatrixSetupTranslation( light->attenuationMatrix, 0.5, 0.5, 0.0 );  // bias
-				MatrixMultiplyScale( light->attenuationMatrix, 0.5, 0.5, 1.0 / Q_min( light->falloffLength, 1.0 ) );   // scale
+				MatrixMultiplyScale( light->attenuationMatrix, 0.5f, 0.5f, 1.0f / MIN( light->falloffLength, 1.0f ) );   // scale
 				break;
 			}
 
@@ -2182,7 +2182,7 @@ static void RB_RenderInteractions()
 				case RL_PROJ:
 					{
 						MatrixSetupTranslation( light->attenuationMatrix, 0.5, 0.5, 0.0 );  // bias
-						MatrixMultiplyScale( light->attenuationMatrix, 0.5, 0.5, 1.0 / Q_min( light->falloffLength, 1.0 ) );   // scale
+						MatrixMultiplyScale( light->attenuationMatrix, 0.5f, 0.5f, 1.0f / MIN( light->falloffLength, 1.0f ) );   // scale
 						break;
 					}
 
@@ -2809,16 +2809,16 @@ static void RB_RenderInteractionsShadowMapped()
 									}
 
 									// scene-dependent bounding volume
-									cropBounds[ 0 ][ 0 ] = Q_max( Q_max( casterBounds[ 0 ][ 0 ], receiverBounds[ 0 ][ 0 ] ), splitFrustumClipBounds[ 0 ][ 0 ] );
-									cropBounds[ 0 ][ 1 ] = Q_max( Q_max( casterBounds[ 0 ][ 1 ], receiverBounds[ 0 ][ 1 ] ), splitFrustumClipBounds[ 0 ][ 1 ] );
+									cropBounds[ 0 ][ 0 ] = MAX( MAX( casterBounds[ 0 ][ 0 ], receiverBounds[ 0 ][ 0 ] ), splitFrustumClipBounds[ 0 ][ 0 ] );
+									cropBounds[ 0 ][ 1 ] = MAX( MAX( casterBounds[ 0 ][ 1 ], receiverBounds[ 0 ][ 1 ] ), splitFrustumClipBounds[ 0 ][ 1 ] );
 
-									cropBounds[ 1 ][ 0 ] = Q_min( Q_min( casterBounds[ 1 ][ 0 ], receiverBounds[ 1 ][ 0 ] ), splitFrustumClipBounds[ 1 ][ 0 ] );
-									cropBounds[ 1 ][ 1 ] = Q_min( Q_min( casterBounds[ 1 ][ 1 ], receiverBounds[ 1 ][ 1 ] ), splitFrustumClipBounds[ 1 ][ 1 ] );
+									cropBounds[ 1 ][ 0 ] = MIN( MIN( casterBounds[ 1 ][ 0 ], receiverBounds[ 1 ][ 0 ] ), splitFrustumClipBounds[ 1 ][ 0 ] );
+									cropBounds[ 1 ][ 1 ] = MIN( MIN( casterBounds[ 1 ][ 1 ], receiverBounds[ 1 ][ 1 ] ), splitFrustumClipBounds[ 1 ][ 1 ] );
 
-									cropBounds[ 0 ][ 2 ] = Q_min( casterBounds[ 0 ][ 2 ], splitFrustumClipBounds[ 0 ][ 2 ] );
+									cropBounds[ 0 ][ 2 ] = MIN( casterBounds[ 0 ][ 2 ], splitFrustumClipBounds[ 0 ][ 2 ] );
 									//cropBounds[0][2] = casterBounds[0][2];
 									//cropBounds[0][2] = splitFrustumClipBounds[0][2];
-									cropBounds[ 1 ][ 2 ] = Q_min( receiverBounds[ 1 ][ 2 ], splitFrustumClipBounds[ 1 ][ 2 ] );
+									cropBounds[ 1 ][ 2 ] = MIN( receiverBounds[ 1 ][ 2 ], splitFrustumClipBounds[ 1 ][ 2 ] );
 									//cropBounds[1][2] = splitFrustumClipBounds[1][2];
 
 									if ( numCasters == 0 )
@@ -3339,7 +3339,7 @@ static void RB_RenderInteractionsShadowMapped()
 				case RL_PROJ:
 					{
 						MatrixSetupTranslation( light->attenuationMatrix, 0.5, 0.5, 0.0 );  // bias
-						MatrixMultiplyScale( light->attenuationMatrix, 0.5, 0.5, 1.0 / Q_min( light->falloffLength, 1.0 ) );   // scale
+						MatrixMultiplyScale( light->attenuationMatrix, 0.5f, 0.5f, 1.0f / MIN( light->falloffLength, 1.0f ) );   // scale
 						MatrixMultiply2( light->attenuationMatrix, light->projectionMatrix );
 						MatrixMultiply2( light->attenuationMatrix, modelToLight );
 
@@ -3815,7 +3815,7 @@ skipInteraction:
 						{
 							// build the attenuation matrix
 							MatrixSetupTranslation( light->attenuationMatrix, 0.5, 0.5, 0.0 );  // bias
-							MatrixMultiplyScale( light->attenuationMatrix, 0.5, 0.5, Q_min( light->falloffLength, 1.0 ) );   // scale
+							MatrixMultiplyScale( light->attenuationMatrix, 0.5f, 0.5f, MIN( light->falloffLength, 1.0f ) );   // scale
 							MatrixMultiply2( light->attenuationMatrix, light->projectionMatrix );
 							MatrixMultiply2( light->attenuationMatrix, light->viewMatrix );
 							break;
@@ -5256,16 +5256,16 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 										}
 
 										// scene-dependent bounding volume
-										cropBounds[ 0 ][ 0 ] = Q_max( Q_max( casterBounds[ 0 ][ 0 ], receiverBounds[ 0 ][ 0 ] ), splitFrustumClipBounds[ 0 ][ 0 ] );
-										cropBounds[ 0 ][ 1 ] = Q_max( Q_max( casterBounds[ 0 ][ 1 ], receiverBounds[ 0 ][ 1 ] ), splitFrustumClipBounds[ 0 ][ 1 ] );
+										cropBounds[ 0 ][ 0 ] = MAX( MAX( casterBounds[ 0 ][ 0 ], receiverBounds[ 0 ][ 0 ] ), splitFrustumClipBounds[ 0 ][ 0 ] );
+										cropBounds[ 0 ][ 1 ] = MAX( MAX( casterBounds[ 0 ][ 1 ], receiverBounds[ 0 ][ 1 ] ), splitFrustumClipBounds[ 0 ][ 1 ] );
 
-										cropBounds[ 1 ][ 0 ] = Q_min( Q_min( casterBounds[ 1 ][ 0 ], receiverBounds[ 1 ][ 0 ] ), splitFrustumClipBounds[ 1 ][ 0 ] );
-										cropBounds[ 1 ][ 1 ] = Q_min( Q_min( casterBounds[ 1 ][ 1 ], receiverBounds[ 1 ][ 1 ] ), splitFrustumClipBounds[ 1 ][ 1 ] );
+										cropBounds[ 1 ][ 0 ] = MIN( MIN( casterBounds[ 1 ][ 0 ], receiverBounds[ 1 ][ 0 ] ), splitFrustumClipBounds[ 1 ][ 0 ] );
+										cropBounds[ 1 ][ 1 ] = MIN( MIN( casterBounds[ 1 ][ 1 ], receiverBounds[ 1 ][ 1 ] ), splitFrustumClipBounds[ 1 ][ 1 ] );
 
-										cropBounds[ 0 ][ 2 ] = Q_min( casterBounds[ 0 ][ 2 ], splitFrustumClipBounds[ 0 ][ 2 ] );
+										cropBounds[ 0 ][ 2 ] = MIN( casterBounds[ 0 ][ 2 ], splitFrustumClipBounds[ 0 ][ 2 ] );
 										//cropBounds[0][2] = casterBounds[0][2];
 										//cropBounds[0][2] = splitFrustumClipBounds[0][2];
-										cropBounds[ 1 ][ 2 ] = Q_min( receiverBounds[ 1 ][ 2 ], splitFrustumClipBounds[ 1 ][ 2 ] );
+										cropBounds[ 1 ][ 2 ] = MIN( receiverBounds[ 1 ][ 2 ], splitFrustumClipBounds[ 1 ][ 2 ] );
 										//cropBounds[1][2] = splitFrustumClipBounds[1][2];
 
 										if ( numCasters == 0 )
@@ -5401,7 +5401,7 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 						{
 							// build the attenuation matrix
 							MatrixSetupTranslation( light->attenuationMatrix, 0.5, 0.5, 0.0 );
-							MatrixMultiplyScale( light->attenuationMatrix, 0.5, 0.5, 1.0 / Q_min( light->falloffLength, 1.0 ) );
+							MatrixMultiplyScale( light->attenuationMatrix, 0.5f, 0.5f, 1.0f / MIN( light->falloffLength, 1.0f ) );
 							MatrixMultiply2( light->attenuationMatrix, light->projectionMatrix );
 							MatrixMultiply2( light->attenuationMatrix, light->viewMatrix );
 
@@ -7209,7 +7209,7 @@ static void RB_CalculateAdaptation()
 		sum += log( luminance );
 	}
 
-	sum /= ( 64.0f * 64.0f );
+	sum /= 64 * 64;
 	avgLuminance = exp( sum );
 
 	// the user's adapted luminance level is simulated by closing the gap between
@@ -10543,7 +10543,6 @@ static void RB_RenderView( void )
 			                                                   0, 0, glConfig.vidWidth, glConfig.vidHeight,
 			                                                   GL_COLOR_BUFFER_BIT,
 			                                                   GL_NEAREST);
-
 			}
 			 */
 		}
@@ -10559,8 +10558,6 @@ static void RB_RenderView( void )
 		{
 			backEnd.isHyperspace = qfalse;
 		}
-
-		glState.faceCulling = -1; // force face culling to set next time
 
 		// we will only draw a sun if there was sky rendered in this view
 		backEnd.skyRenderedThisView = qfalse;
@@ -10950,8 +10947,6 @@ static void RB_RenderView( void )
 		{
 			backEnd.isHyperspace = qfalse;
 		}
-
-		glState.faceCulling = -1; // force face culling to set next time
 
 		// we will only draw a sun if there was sky rendered in this view
 		backEnd.skyRenderedThisView = qfalse;
@@ -11574,10 +11569,10 @@ const void     *RB_Draw2dPolys( const void *data )
 		tess.texCoords[ tess.numVertexes ][ 0 ] = cmd->verts[ i ].st[ 0 ];
 		tess.texCoords[ tess.numVertexes ][ 1 ] = cmd->verts[ i ].st[ 1 ];
 
-		tess.colors[ tess.numVertexes ][ 0 ] = cmd->verts[ i ].modulate[ 0 ];
-		tess.colors[ tess.numVertexes ][ 1 ] = cmd->verts[ i ].modulate[ 1 ];
-		tess.colors[ tess.numVertexes ][ 2 ] = cmd->verts[ i ].modulate[ 2 ];
-		tess.colors[ tess.numVertexes ][ 3 ] = cmd->verts[ i ].modulate[ 3 ];
+		tess.colors[ tess.numVertexes ][ 0 ] = cmd->verts[ i ].modulate[ 0 ] * ( 1.0 / 255.0f );
+		tess.colors[ tess.numVertexes ][ 1 ] = cmd->verts[ i ].modulate[ 1 ] * ( 1.0 / 255.0f );
+		tess.colors[ tess.numVertexes ][ 2 ] = cmd->verts[ i ].modulate[ 2 ] * ( 1.0 / 255.0f );
+		tess.colors[ tess.numVertexes ][ 3 ] = cmd->verts[ i ].modulate[ 3 ] * ( 1.0 / 255.0f );
 		tess.numVertexes++;
 	}
 
@@ -11737,15 +11732,8 @@ const void     *RB_StretchPicGradient( const void *data )
 
 	for ( i = 0; i < 4; i++ )
 	{
-		tess.colors[ numVerts + 2 ][ 0 ] = cmd->gradientColor[ 0 ] * ( 1.0f / 255.0f );
-		tess.colors[ numVerts + 2 ][ 1 ] = cmd->gradientColor[ 0 ] * ( 1.0f / 255.0f );
-		tess.colors[ numVerts + 2 ][ 2 ] = cmd->gradientColor[ 0 ] * ( 1.0f / 255.0f );
-		tess.colors[ numVerts + 2 ][ 3 ] = cmd->gradientColor[ 0 ] * ( 1.0f / 255.0f );
-
-		tess.colors[ numVerts + 3 ][ 0 ] = cmd->gradientColor[ 0 ] * ( 1.0f / 255.0f );
-		tess.colors[ numVerts + 3 ][ 1 ] = cmd->gradientColor[ 0 ] * ( 1.0f / 255.0f );
-		tess.colors[ numVerts + 3 ][ 2 ] = cmd->gradientColor[ 0 ] * ( 1.0f / 255.0f );
-		tess.colors[ numVerts + 3 ][ 3 ] = cmd->gradientColor[ 0 ] * ( 1.0f / 255.0f );
+		tess.colors[ numVerts + 2 ][ i ] = cmd->gradientColor[ i ] * ( 1.0f / 255.0f );
+		tess.colors[ numVerts + 3 ][ i ] = cmd->gradientColor[ i ] * ( 1.0f / 255.0f );
 	}
 
 	tess.xyz[ numVerts ][ 0 ] = cmd->x;

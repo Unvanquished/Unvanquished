@@ -84,7 +84,7 @@ void G_GiveClientMaxAmmo( gentity_t *ent, qboolean buyingEnergyAmmo )
 		if ( !BG_InventoryContainsWeapon( i, ent->client->ps.stats ) ||
 		     BG_Weapon( i )->infiniteAmmo ||
 		     BG_WeaponIsFull( i, ent->client->ps.stats,
-		                      ent->client->ps.Ammo, ent->client->ps.clips ) ||
+		                      ent->client->ps.ammo, ent->client->ps.clips ) ||
 		     ( buyingEnergyAmmo && !energyWeapon ) )
 		{
 			continue;
@@ -101,7 +101,7 @@ void G_GiveClientMaxAmmo( gentity_t *ent, qboolean buyingEnergyAmmo )
 			restoredEnergy = qtrue;
 		}
 
-		ent->client->ps.Ammo = maxAmmo;
+		ent->client->ps.ammo = maxAmmo;
 		ent->client->ps.clips = maxClips;
 
 		restoredAmmo = qtrue;
@@ -798,6 +798,7 @@ void teslaFire( gentity_t *self )
 		vec3_t dir;
 
 		VectorSubtract( target, origin, dir );
+		VectorNormalize( dir );
 		G_Damage( self->enemy, self, self, dir, tr.endpos,
 		          TESLAGEN_DMG, 0, MOD_TESLAGEN );
 	}
@@ -1583,6 +1584,7 @@ void G_CrushAttack( gentity_t *ent, gentity_t *victim )
 
 	// Crush the victim over a period of time
 	VectorSubtract( victim->s.origin, ent->client->ps.origin, dir );
+	VectorNormalize( dir );
 	G_Damage( victim, ent, ent, dir, victim->s.origin, damage,
 	          DAMAGE_NO_LOCDAMAGE, MOD_LEVEL4_CRUSH );
 }

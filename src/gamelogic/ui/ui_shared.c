@@ -2644,6 +2644,7 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 		     style == ITEM_TEXTSTYLE_SHADOWEDMORE )
 		{
 			int ofs;
+			vec4_t localColor;
 
 			if ( style == ITEM_TEXTSTYLE_SHADOWED )
 			{
@@ -2654,11 +2655,11 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 				ofs = 2;
 			}
 
-			colorBlack[ 3 ] = newColor[ 3 ];
-			DC->setColor( colorBlack );
+			VectorCopy( colorBlack, localColor );
+			localColor[ 3 ] = newColor[ 3 ];
+			DC->setColor( localColor );
 			UI_Text_PaintChar( x + ofs, y + ofs, useScale, glyph, 0.0f );
 			DC->setColor( newColor );
-			colorBlack[ 3 ] = 1.0f;
 		}
 		else if ( style == ITEM_TEXTSTYLE_NEON )
 		{
@@ -2731,8 +2732,11 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 
 		if ( cursorX >= 0 && !( ( DC->realTime / BLINK_DIVISOR ) & 1 ) )
 		{
-			color[3] /= 2.0;
-			DC->setColor( color );
+			vec4_t recolor;
+			Vector4Copy( color, recolor );
+			recolor[3] /= 2.0f;
+
+			DC->setColor( recolor );
 
 			if ( DC->getOverstrikeMode() )
 			{
@@ -3066,24 +3070,21 @@ static void Item_ComboBox_MaybeUnCastFromListBox( itemDef_t *item, qboolean unCa
 static void Item_ListBox_SetStartPos( itemDef_t *item, int startPos )
 {
 	listBoxDef_t *listPtr = item->typeData.list;
-	int          total = DC->feederCount( item->feederID );
-	int          max = Item_ListBox_MaxScroll( item );
+	int          max, total;
 
 	if ( startPos < 0 )
 	{
 		listPtr->startPos = 0;
 	}
-	else if ( startPos > max )
-	{
-		listPtr->startPos = max;
-	}
 	else
 	{
-		listPtr->startPos = startPos;
+		max = Item_ListBox_MaxScroll( item );
+		listPtr->startPos = MIN( max, startPos );
 	}
 
-	listPtr->endPos = listPtr->startPos + MIN( ( total - listPtr->startPos ),
-	                  Item_ListBox_NumItemsForItemHeight( item ) );
+	max = Item_ListBox_NumItemsForItemHeight( item );
+	total = DC->feederCount( item->feederID );
+	listPtr->endPos = listPtr->startPos + MIN( max, total - listPtr->startPos );
 }
 
 float Item_ListBox_ThumbPosition( itemDef_t *item )
@@ -3260,11 +3261,12 @@ void Item_ListBox_MouseEnter( itemDef_t *item, float x, float y )
 
 	if ( !( item->window.flags & listBoxFlags ) )
 	{
+		int numItems = Item_ListBox_NumItemsForItemHeight( item );
+
 		r.x = SCROLLBAR_X( item );
 		r.y = SCROLLBAR_Y( item );
 		r.w = SCROLLBAR_W( item );
-		r.h = listPtr->elementHeight *
-		      MIN( Item_ListBox_NumItemsForItemHeight( item ), total );
+		r.h = listPtr->elementHeight * MIN( numItems, total );
 
 		if ( Rect_ContainsPoint( &r, x, y ) )
 		{
@@ -6810,8 +6812,7 @@ void Item_OwnerDraw_Paint( itemDef_t *item )
 		}
 		else
 		{
-			DC->ownerDrawItem( item->window.rect.x, item->window.rect.y,
-			                   item->window.rect.w, item->window.rect.h,
+			DC->ownerDrawItem( &item->window.rect,
 			                   item->textalignx, item->textaligny,
 			                   item->window.ownerDraw, item->window.ownerDrawFlags,
 			                   item->alignment, item->textalignment, item->textvalignment,

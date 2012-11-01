@@ -48,11 +48,6 @@ void UI_RegisterCvars( void );
 void UI_UpdateCvars( void );
 void UI_DrawConnectScreen( qboolean overlay );
 
-const char *gettext( const char *msgid );
-const char *pgettext( const char *ctxt, const char *msgid );
-
-extern vmCvar_t ui_chatPromptColours;
-
 // new ui stuff
 #define MAX_MAPS                128
 #define MAX_ADDRESSLENGTH       64

@@ -412,36 +412,6 @@ void SV_GameBinaryMessageReceived( int cno, const char *buf, int buflen, int com
 	VM_Call( gvm, GAME_MESSAGERECEIVED, cno, buf, buflen, commandTime );
 }
 
-// taken from cl_main.c
-#define MAX_RCON_MESSAGE 1024
-
-/*
-===============
-SV_UpdateSharedConfig
-===============
-*/
-
-void SV_UpdateSharedConfig( unsigned int port, const char *rconpass )
-{
-	char     message[ MAX_RCON_MESSAGE ];
-	netadr_t to;
-
-	message[ 0 ] = -1;
-	message[ 1 ] = -1;
-	message[ 2 ] = -1;
-	message[ 3 ] = -1;
-	message[ 4 ] = 0;
-
-	Q_strcat( message, MAX_RCON_MESSAGE, "rcon " );
-
-	Q_strcat( message, MAX_RCON_MESSAGE, rconpass );
-	Q_strcat( message, MAX_RCON_MESSAGE, " !readconfig" );
-	NET_StringToAdr( "127.0.0.1", &to, NA_UNSPEC );
-	to.port = BigShort( port );
-
-	NET_SendPacket( NS_SERVER, strlen( message ) + 1, message, to );
-}
-
 //==============================================
 
 extern int S_RegisterSound( const char *name, qboolean compressed );
@@ -646,10 +616,6 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 
 		case G_AREAS_CONNECTED:
 			return CM_AreasConnected( args[ 1 ], args[ 2 ] );
-
-		case G_UPDATE_SHARED_CONFIG:
-			SV_UpdateSharedConfig( args[ 1 ], VMA( 2 ) );
-			return 0;
 
 		case G_BOT_ALLOCATE_CLIENT:
 			return SV_BotAllocateClient( args[ 1 ] );
@@ -878,7 +844,7 @@ void SV_InitGameProgs( void )
 	sv.num_tags = 0;
 
 	// load the game module
-	gvm = VM_Create( "qagame", SV_GameSystemCalls, Cvar_VariableValue( "vm_game" ) );
+	gvm = VM_Create( "game", SV_GameSystemCalls, Cvar_VariableValue( "vm_game" ) );
 
 	if ( !gvm )
 	{

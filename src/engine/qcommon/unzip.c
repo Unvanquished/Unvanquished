@@ -726,13 +726,13 @@ local unzFile unzOpenInternal( const void *path,
 	ZPOS64_T central_pos;
 	uLong    uL;
 
-	uLong    number_disk; /* number of the current dist, used for
-                       spaning ZIP, unsupported, always 0*/
-	uLong    number_disk_with_CD; /* number the the disk with central dir, used
-                       for spaning ZIP, unsupported, always 0*/
+	uLong    number_disk; /* number of the current disk, used for
+                       spanning ZIP; unsupported, always 0 */
+	uLong    number_disk_with_CD; /* number of the disk with the central dir, used
+                       for spanning ZIP; unsupported, always 0 */
 	ZPOS64_T number_entry_CD; /* total number of entries in
                        the central dir
-                       (same than number_entry on nospan) */
+                       (same as number_entry on nospan) */
 
 	int err = UNZ_OK;
 

@@ -3521,10 +3521,10 @@ static void PM_Weapon( void )
 				pm->ps->stats[ STAT_MISC ] = LCANNON_CHARGE_TIME_MAX;
 			}
 
-			if ( pm->ps->stats[ STAT_MISC ] > pm->ps->Ammo * LCANNON_CHARGE_TIME_MAX /
+			if ( pm->ps->stats[ STAT_MISC ] > pm->ps->ammo * LCANNON_CHARGE_TIME_MAX /
 			     LCANNON_CHARGE_AMMO )
 			{
-				pm->ps->stats[ STAT_MISC ] = pm->ps->Ammo * LCANNON_CHARGE_TIME_MAX /
+				pm->ps->stats[ STAT_MISC ] = pm->ps->ammo * LCANNON_CHARGE_TIME_MAX /
 				                             LCANNON_CHARGE_AMMO;
 			}
 		}
@@ -3662,7 +3662,7 @@ static void PM_Weapon( void )
 	}
 
 	// check for out of ammo
-	if ( !pm->ps->Ammo && !pm->ps->clips && !BG_Weapon( pm->ps->weapon )->infiniteAmmo )
+	if ( !pm->ps->ammo && !pm->ps->clips && !BG_Weapon( pm->ps->weapon )->infiniteAmmo )
 	{
 		if ( attack1 ||
 		     ( BG_Weapon( pm->ps->weapon )->hasAltMode && attack2 ) ||
@@ -3684,12 +3684,12 @@ static void PM_Weapon( void )
 	if ( pm->ps->weaponstate == WEAPON_RELOADING )
 	{
 		pm->ps->clips--;
-		pm->ps->Ammo = BG_Weapon( pm->ps->weapon )->maxAmmo;
+		pm->ps->ammo = BG_Weapon( pm->ps->weapon )->maxAmmo;
 
 		if ( BG_Weapon( pm->ps->weapon )->usesEnergy &&
 		     BG_InventoryContainsUpgrade( UP_BATTPACK, pm->ps->stats ) )
 		{
-			pm->ps->Ammo *= BATTPACK_MODIFIER;
+			pm->ps->ammo *= BATTPACK_MODIFIER;
 		}
 
 		//allow some time for the weapon to be raised
@@ -3701,7 +3701,7 @@ static void PM_Weapon( void )
 
 	// check for end of clip
 	if ( !BG_Weapon( pm->ps->weapon )->infiniteAmmo &&
-	     ( pm->ps->Ammo <= 0 || ( pm->ps->pm_flags & PMF_WEAPON_RELOAD ) ) &&
+	     ( pm->ps->ammo <= 0 || ( pm->ps->pm_flags & PMF_WEAPON_RELOAD ) ) &&
 	     pm->ps->clips > 0 )
 	{
 		pm->ps->pm_flags &= ~PMF_WEAPON_RELOAD;
@@ -3824,7 +3824,7 @@ static void PM_Weapon( void )
 		if ( BG_Weapon( pm->ps->weapon )->hasThirdMode )
 		{
 			//hacky special case for slowblob
-			if ( pm->ps->weapon == WP_ALEVEL3_UPG && !pm->ps->Ammo )
+			if ( pm->ps->weapon == WP_ALEVEL3_UPG && !pm->ps->ammo )
 			{
 				pm->ps->weaponTime += 200;
 				return;
@@ -3996,18 +3996,18 @@ static void PM_Weapon( void )
 		// Special case for lcannon
 		if ( pm->ps->weapon == WP_LUCIFER_CANNON && attack1 && !attack2 )
 		{
-			pm->ps->Ammo -= ( pm->ps->stats[ STAT_MISC ] * LCANNON_CHARGE_AMMO +
+			pm->ps->ammo -= ( pm->ps->stats[ STAT_MISC ] * LCANNON_CHARGE_AMMO +
 			                  LCANNON_CHARGE_TIME_MAX - 1 ) / LCANNON_CHARGE_TIME_MAX;
 		}
 		else
 		{
-			pm->ps->Ammo--;
+			pm->ps->ammo--;
 		}
 
 		// Stay on the safe side
-		if ( pm->ps->Ammo < 0 )
+		if ( pm->ps->ammo < 0 )
 		{
-			pm->ps->Ammo = 0;
+			pm->ps->ammo = 0;
 		}
 	}
 
@@ -4275,6 +4275,17 @@ static float roundf( float v )
 }
 #endif
 
+static void PM_UpdateRadarTimer( qboolean isMoving ) {
+	if( isMoving ) {
+		pm->ps->stats[ STAT_RADARTIME ] = RADAR_FADEOUT_TIME;
+	}
+	else if( pm->ps->stats[ STAT_RADARTIME ] > pml.msec ) {
+		pm->ps->stats[ STAT_RADARTIME ] -= pml.msec;
+	} else {
+		pm->ps->stats[ STAT_RADARTIME ] = 0;
+	}
+}
+
 /*
 ================
 PmoveSingle
@@ -4309,7 +4320,7 @@ void PmoveSingle( pmove_t *pmove )
 	// set the firing flag for continuous beam weapons
 	if ( !( pm->ps->pm_flags & PMF_RESPAWNED ) && pm->ps->pm_type != PM_INTERMISSION &&
 	     usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK ) &&
-	     ( ( pm->ps->Ammo > 0 || pm->ps->clips > 0 ) || BG_Weapon( pm->ps->weapon )->infiniteAmmo ) )
+	     ( ( pm->ps->ammo > 0 || pm->ps->clips > 0 ) || BG_Weapon( pm->ps->weapon )->infiniteAmmo ) )
 	{
 		pm->ps->eFlags |= EF_FIRING;
 	}
@@ -4321,7 +4332,7 @@ void PmoveSingle( pmove_t *pmove )
 	// set the firing flag for continuous beam weapons
 	if ( !( pm->ps->pm_flags & PMF_RESPAWNED ) && pm->ps->pm_type != PM_INTERMISSION &&
 	     usercmdButtonPressed( pm->cmd.buttons, BUTTON_ATTACK2 ) &&
-	     ( ( pm->ps->Ammo > 0 || pm->ps->clips > 0 ) || BG_Weapon( pm->ps->weapon )->infiniteAmmo ) )
+	     ( ( pm->ps->ammo > 0 || pm->ps->clips > 0 ) || BG_Weapon( pm->ps->weapon )->infiniteAmmo ) )
 	{
 		pm->ps->eFlags |= EF_FIRING2;
 	}
@@ -4333,7 +4344,7 @@ void PmoveSingle( pmove_t *pmove )
 	// set the firing flag for continuous beam weapons
 	if ( !( pm->ps->pm_flags & PMF_RESPAWNED ) && pm->ps->pm_type != PM_INTERMISSION &&
 	     usercmdButtonPressed( pm->cmd.buttons, BUTTON_USE_HOLDABLE ) &&
-	     ( ( pm->ps->Ammo > 0 || pm->ps->clips > 0 ) || BG_Weapon( pm->ps->weapon )->infiniteAmmo ) )
+	     ( ( pm->ps->ammo > 0 || pm->ps->clips > 0 ) || BG_Weapon( pm->ps->weapon )->infiniteAmmo ) )
 	{
 		pm->ps->eFlags |= EF_FIRING3;
 	}
@@ -4459,6 +4470,11 @@ void PmoveSingle( pmove_t *pmove )
 	{
 		return; // no movement at all
 	}
+
+	// update radar timer
+	PM_UpdateRadarTimer( pm->cmd.forwardmove ||
+			     pm->cmd.rightmove   ||
+			     pm->cmd.upmove );
 
 	// set watertype, and waterlevel
 	PM_SetWaterLevel();

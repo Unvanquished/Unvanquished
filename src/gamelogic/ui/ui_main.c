@@ -132,7 +132,7 @@ static const cvarTable_t   cvarTable[] =
 	{ &cl_defaultProfile,      "cl_defaultProfile",           "",                          CVAR_ROM                  },
 	{ &ui_profile,             "ui_profile",                  "",                          CVAR_ROM                  },
 	{ &ui_chatCommands,        "ui_chatCommands",             "1",                         CVAR_ARCHIVE              },
-	{ &ui_chatPromptColours,   "ui_chatPromptColors",         "0",                         CVAR_ARCHIVE              },
+	{ &ui_chatPromptColours,   "ui_chatPromptColors",         "0",                         CVAR_ARCHIVE | CVAR_LATCH },
 
 	{ &ui_menuFiles,           "ui_menuFiles",                "ui/menus.txt",         CVAR_ARCHIVE              },
 	{ &ui_ingameFiles,         "ui_ingameFiles",              "ui/ingame.txt", CVAR_ARCHIVE              },
@@ -1649,6 +1649,23 @@ void UI_LoadMenus( const char *menuFile, qboolean reset )
 	trap_Cvar_VariableStringBuffer( "ui_assetScale", assetScale, sizeof( assetScale ) );
 	trap_Parse_AddGlobalDefine( va( "ASSET_SCALE %f", assetScale[ 0 ] ? atof( assetScale ) : 1.0f ) );
 
+	if ( trap_Cvar_VariableValue( "ui_chatPromptColors" ) )
+	{
+		trap_Parse_AddGlobalDefine( "ASSET_COLOR_STRING_SAY_TO_ALL \"^2\"" );
+		trap_Parse_AddGlobalDefine( "ASSET_COLOR_STRING_SAY_TO_TEAM \"^5\"" );
+		trap_Parse_AddGlobalDefine( "ASSET_COLOR_STRING_SAY_TO_ADMINS \"^6\"" );
+		trap_Parse_AddGlobalDefine( "ASSET_COLOR_STRING_SAY_TO_IRC \"^7\"" );
+		trap_Parse_AddGlobalDefine( "ASSET_COLOR_STRING_SAY_COMMAND \"^7\"" );
+	}
+	else
+	{
+		trap_Parse_AddGlobalDefine( "ASSET_COLOR_STRING_SAY_TO_ALL \"\"" );
+		trap_Parse_AddGlobalDefine( "ASSET_COLOR_STRING_SAY_TO_TEAM \"\"" );
+		trap_Parse_AddGlobalDefine( "ASSET_COLOR_STRING_SAY_TO_ADMINS \"\"" );
+		trap_Parse_AddGlobalDefine( "ASSET_COLOR_STRING_SAY_TO_IRC \"\"" );
+		trap_Parse_AddGlobalDefine( "ASSET_COLOR_STRING_SAY_COMMAND \"\"" );
+	}
+
 	while ( 1 )
 	{
 		if ( !trap_Parse_ReadToken( handle, &token ) )
@@ -2157,7 +2174,7 @@ static void UI_DrawGLInfo( rectDef_t *rect, float scale, int textalign, int text
 
 // FIXME: table drive
 //
-static void UI_OwnerDraw( float x, float y, float w, float h,
+static void UI_OwnerDraw( rectDef_t *rect,
                           float text_x, float text_y, int ownerDraw,
                           int ownerDrawFlags, int align,
                           int textalign, int textvalign, float borderSize,
@@ -2165,78 +2182,71 @@ static void UI_OwnerDraw( float x, float y, float w, float h,
                           qhandle_t shader,
                           int textStyle )
 {
-	rectDef_t       rect;
-
-	rect.x = x;
-	rect.y = y;
-	rect.w = w;
-	rect.h = h;
-
 	switch ( ownerDraw )
 	{
 		case UI_TEAMINFOPANE:
 			UI_DrawInfoPane( &uiInfo.teamList[ uiInfo.teamIndex ],
-			                 &rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+			                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
 			break;
 
 		case UI_ACLASSINFOPANE:
 			UI_DrawInfoPane( &uiInfo.alienClassList[ uiInfo.alienClassIndex ],
-			                 &rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+			                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
 			break;
 
 		case UI_AUPGRADEINFOPANE:
 			UI_DrawInfoPane( &uiInfo.alienUpgradeList[ uiInfo.alienUpgradeIndex ],
-			                 &rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+			                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
 			break;
 
 		case UI_HITEMINFOPANE:
 			UI_DrawInfoPane( &uiInfo.humanItemList[ uiInfo.humanItemIndex ],
-			                 &rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+			                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
 			break;
 
 		case UI_HBUYINFOPANE:
 			UI_DrawInfoPane( &uiInfo.humanArmouryBuyList[ uiInfo.humanArmouryBuyIndex ],
-			                 &rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+			                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
 			break;
 
 		case UI_HSELLINFOPANE:
 			UI_DrawInfoPane( &uiInfo.humanArmourySellList[ uiInfo.humanArmourySellIndex ],
-			                 &rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+			                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
 			break;
 
 		case UI_ABUILDINFOPANE:
 			UI_DrawInfoPane( &uiInfo.alienBuildList[ uiInfo.alienBuildIndex ],
-			                 &rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+			                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
 			break;
 
 		case UI_HBUILDINFOPANE:
 			UI_DrawInfoPane( &uiInfo.humanBuildList[ uiInfo.humanBuildIndex ],
-			                 &rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+			                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
 			break;
 
 		case UI_HELPINFOPANE:
 			UI_DrawInfoPane( &uiInfo.helpList[ uiInfo.helpIndex ],
-			                 &rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+			                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
 			break;
 
 		case UI_NETMAPPREVIEW:
-			UI_DrawServerMapPreview( &rect, scale, foreColor );
+			UI_DrawServerMapPreview( rect, scale, foreColor );
 			break;
 
 		case UI_SELECTEDMAPPREVIEW:
-			UI_DrawSelectedMapPreview( &rect, scale, foreColor );
+			UI_DrawSelectedMapPreview( rect, scale, foreColor );
 			break;
 
 		case UI_SELECTEDMAPNAME:
-			UI_DrawSelectedMapName( &rect, scale, foreColor, textStyle );
+			UI_DrawSelectedMapName( rect, scale, foreColor, textStyle );
 			break;
 
 		case UI_GLINFO:
-			UI_DrawGLInfo( &rect, scale, textalign, textvalign, foreColor, textStyle, text_x, text_y );
+			UI_DrawGLInfo( rect, scale, textalign, textvalign, foreColor, textStyle, text_x, text_y );
 			break;
 
 		case UI_SELECTEDHUDPREVIEW:
-			UI_DrawSelectedHUDPreview( &rect );
+			UI_DrawSelectedHUDPreview( rect );
 			break;
 
 		default:
@@ -5676,21 +5686,3 @@ void UI_UpdateNews( qboolean begin )
 		uiInfo.newsInfo.refreshActive = qfalse;
 	}
 }
-
-const char *gettext( const char *msgid )
-{
-	QVM_STATIC char buffer[ 32000 ];
-	char *buf = buffer;
-	trap_Gettext( buf, msgid, sizeof( buffer ) );
-	return buf;
-}
-
-// TMP
-const char *pgettext( const char *ctxt, const char *msgid )
-{
-	QVM_STATIC char buffer[ 32000 ];
-	char *buf = buffer;
-	trap_Pgettext( buf, ctxt, msgid, sizeof( buffer ) );
-	return buf;
-}
-

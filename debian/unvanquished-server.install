@@ -1,3 +1,3 @@
 debian/scripts/unvanquished-server	usr/games/
-obj-*-*-*/daemonded.*			usr/lib/games/unvanquished/
+obj-*-*-*/daemonded			usr/lib/games/unvanquished/
 debian/config/*.cfg                     etc/unvanquished-server

@@ -67,7 +67,6 @@ qboolean VectorCompare( const vec3_t v1, const vec3_t v2 );
 #define	VectorNegate(x) {x[0]=-x[0];x[1]=-x[1];x[2]=-x[2];}
 void Vec10Copy( vec_t *in, vec_t *out );
 
-vec_t Q_rint (vec_t in);
 vec_t _DotProduct (vec3_t v1, vec3_t v2);
 void _VectorSubtract (vec3_t va, vec3_t vb, vec3_t out);
 void _VectorAdd (vec3_t va, vec3_t vb, vec3_t out);

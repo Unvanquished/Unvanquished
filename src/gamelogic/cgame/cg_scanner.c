@@ -89,11 +89,13 @@ void CG_UpdateEntityPositions( void )
 		else if ( cent->currentState.eType == ET_PLAYER )
 		{
 			int team = cent->currentState.misc & 0x00FF;
+			float fadeout = cent->currentState.constantLight * (1.0f / RADAR_FADEOUT_TIME);
 
 			if ( team == TEAM_ALIENS )
 			{
 				VectorCopy( cent->lerpOrigin, entityPositions.alienClientPos[
 				              entityPositions.numAlienClients ] );
+				entityPositions.alienClientIntensity[ entityPositions.numAlienClients ] = fadeout;
 
 				if ( entityPositions.numAlienClients < MAX_CLIENTS )
 				{
@@ -104,6 +106,7 @@ void CG_UpdateEntityPositions( void )
 			{
 				VectorCopy( cent->lerpOrigin, entityPositions.humanClientPos[
 				              entityPositions.numHumanClients ] );
+				entityPositions.humanClientIntensity[ entityPositions.numHumanClients ] = fadeout;
 
 				if ( entityPositions.numHumanClients < MAX_CLIENTS )
 				{
@@ -244,7 +247,7 @@ void CG_AlienSense( rectDef_t *rect )
 	vec3_t relOrigin;
 	vec4_t  color_human = { 0.04f, 0.71f, 0.88f, 1.0f };
 	vec4_t  color_alien = { 0.75f, 0.00f, 0.00f, 1.0f };
-	double  length;
+	float  length;
 
 	VectorCopy( entityPositions.origin, origin );
 
@@ -272,6 +275,7 @@ void CG_AlienSense( rectDef_t *rect )
 		if ( length < ALIENSENSE_RANGE )
 		{
 			color_human[3] = 1.f - length / ALIENSENSE_RANGE;
+			color_human[3] *= entityPositions.humanClientIntensity[ i ];
 			CG_DrawDir( rect, relOrigin, color_human, cgs.media.scannerBlipShader );
 		}
 	}
@@ -350,8 +354,6 @@ void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 	}
 
 	//draw human clients below scanner plane
-	color_human[3] = color[3];
-
 	for ( i = 0; i < entityPositions.numHumanClients; i++ )
 	{
 		VectorClear( relOrigin );
@@ -359,12 +361,13 @@ void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 
 		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] < 0 ) )
 		{
+			color_human[3] = color[3] * entityPositions.humanClientIntensity[ i ];
+
 			CG_DrawBlips( rect, relOrigin, color_human, cgs.media.scannerBlipShader );
 		}
 	}
 
 	//draw alien clients below scanner plane
-	color_alien[3] = color[3];
 	for ( i = 0; i < entityPositions.numAlienClients; i++ )
 	{
 		VectorClear( relOrigin );
@@ -372,6 +375,7 @@ void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 
 		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] < 0 ) )
 		{
+			color_alien[3] = color[3] * entityPositions.alienClientIntensity[ i ];
 			CG_DrawBlips( rect, relOrigin, color_alien, cgs.media.scannerBlipShader );
 		}
 	}
@@ -412,8 +416,6 @@ void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 	}
 
 	//draw human clients above scanner plane
-	color_human[3] *= 1.5f;
-
 	for ( i = 0; i < entityPositions.numHumanClients; i++ )
 	{
 		VectorClear( relOrigin );
@@ -421,13 +423,12 @@ void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 
 		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] > 0 ) )
 		{
+			color_human[3] = color[3] * 1.5f * entityPositions.humanClientIntensity[ i ];
 			CG_DrawBlips( rect, relOrigin, color_human, cgs.media.scannerBlipShader );
 		}
 	}
 
 	//draw alien clients above scanner plane
-	color_alien[3] *= 1.5f;
-
 	for ( i = 0; i < entityPositions.numAlienClients; i++ )
 	{
 		VectorClear( relOrigin );
@@ -435,6 +436,7 @@ void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 
 		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] > 0 ) )
 		{
+			color_alien[3] = color[3] * 1.5f * entityPositions.alienClientIntensity[ i ];
 			CG_DrawBlips( rect, relOrigin, color_alien, cgs.media.scannerBlipShader );
 		}
 	}

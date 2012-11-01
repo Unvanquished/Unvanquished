@@ -908,7 +908,7 @@ void Tess_SurfacePolybuffer( srfPolyBuffer_t *surf )
 
 	Tess_CheckOverflow( surf->pPolyBuffer->numVerts, surf->pPolyBuffer->numIndicies );
 
-	numIndexes = Q_min( surf->pPolyBuffer->numIndicies, MAX_PB_INDICIES );
+	numIndexes = MIN( surf->pPolyBuffer->numIndicies, MAX_PB_INDICIES );
 	indices = surf->pPolyBuffer->indicies;
 
 	for ( i = 0; i < numIndexes; i++ )
@@ -918,7 +918,7 @@ void Tess_SurfacePolybuffer( srfPolyBuffer_t *surf )
 
 	tess.numIndexes += numIndexes;
 
-	numVertexes = Q_min( surf->pPolyBuffer->numVerts, MAX_PB_VERTS );
+	numVertexes = MIN( surf->pPolyBuffer->numVerts, MAX_PB_VERTS );
 	xyzw = &surf->pPolyBuffer->xyz[ 0 ][ 0 ];
 	st = &surf->pPolyBuffer->st[ 0 ][ 0 ];
 	color = &surf->pPolyBuffer->color[ 0 ][ 0 ];
@@ -2015,7 +2015,6 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 				MatrixTransformPoint( boneMatrices[ w->boneIndex ], w->offset, tmpVert );
 				VectorMA( *tmpPosition, w->boneWeight, tmpVert, *tmpPosition );
 			}
-
 		}
 	}
 	else
@@ -2391,6 +2390,7 @@ static void Tess_SurfaceVBOMD5Mesh( srfVBOMD5Mesh_t *srf )
 	if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
 	{
 		tess.vboVertexSkinning = qtrue;
+		tess.numBoneMatrices = srf->numBoneRemap;
 
 		MatrixSetupScale( m,
 		                  backEnd.currentEntity->e.skeleton.scale[ 0 ],

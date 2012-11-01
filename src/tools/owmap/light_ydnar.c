@@ -747,7 +747,7 @@ static int MapSingleLuxel(rawLightmap_t * lm, surfaceInfo_t * info, bspDrawVert_
 	/* point in solid? (except in dark mode) */
 	if(pointCluster < 0 && dark == qfalse)
 	{
-		/* nudge the the location around */
+		/* nudge the location around */
 		nudge = nudges[0];
 		while(nudge[0] > BOGUS_NUDGE && pointCluster < 0)
 		{

@@ -1532,7 +1532,6 @@ prototypes
 vec_t           Random(void);
 int             BSPInfo(int count, char **fileNames);
 int             ScaleBSPMain(int argc, char **argv);
-int             ConvertMain(int argc, char **argv);
 
 
 /* path_init.c */
@@ -1984,11 +1983,11 @@ Q_EXTERN game_t				games[]
 #else
 							=
 							{
-								#include "game_openwolf.h"
+#include "game_openwolf.h"
 								,
-                                #include "game_tremulous.h"
+#include "game_tremulous.h"
                                 ,
-                                #include "game_unvanquished.h"
+#include "game_unvanquished.h"
                                 ,
 								{ NULL }	/* null game */
 							};

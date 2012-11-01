@@ -364,7 +364,7 @@ static int MakeDecalProjector(shaderInfo_t * si, vec4_t projection, float distan
 		AddPointToBounds(xyz, dp->mins, dp->maxs);
 	}
 
-	/* make bouding sphere */
+	/* make the bounding sphere */
 	VectorAdd(dp->mins, dp->maxs, dp->center);
 	VectorScale(dp->center, 0.5f, dp->center);
 	VectorSubtract(dp->maxs, dp->center, xyz);
