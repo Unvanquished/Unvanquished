@@ -119,7 +119,7 @@ void IN_KeyDown( kbutton_t *b )
 	}
 	else
 	{
-		Com_DPrintf("%s", _( "Three keys down for a button!\n" ));
+		Com_DPrintf( "Three keys down for a button!\n" );
 		return;
 	}
 
@@ -1155,7 +1155,7 @@ void CL_WritePacket( void )
 	{
 		if ( cl_showSend->integer )
 		{
-			Com_Printf( "%s", _( "WARNING: unsent fragments (not supposed to happen!)\n" ));
+			Com_Printf( "WARNING: unsent fragments (not supposed to happen!)\n" );
 		}
 
 		CL_Netchan_TransmitNextFragment( &clc.netchan );
@@ -1251,7 +1251,7 @@ void CL_RegisterButtonCommands( const char *cmd_names )
 
 	if ( cmd_names )
 	{
-		Com_Printf(_( "^1BUG: cgame: some button commands left unregistered (\"%s\")\n"), cmd_names );
+		Com_Printf( "^1BUG: cgame: some button commands left unregistered (\"%s\")\n", cmd_names );
 	}
 }
 

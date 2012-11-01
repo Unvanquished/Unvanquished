@@ -49,7 +49,7 @@ void CG_DamageFeedback( int yawByte, int pitchByte, int damage )
 
 	// the lower on health you are, the greater the view kick will be
 	health = cg.snap->ps.stats[ STAT_HEALTH ];
-	
+
 	if ( health < 40 )
 	{
 		scale = 1;
@@ -268,7 +268,7 @@ void CG_CheckChangedPredictableEvents( playerState_t *ps )
 
 				if ( cg_showmiss.integer )
 				{
-					CG_Printf( "%s", _( "^4WARNING: changed predicted event\n" ));
+					CG_Printf( "^4WARNING: changed predicted event\n" );
 				}
 			}
 		}

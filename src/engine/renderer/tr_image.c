@@ -2586,7 +2586,7 @@ image_t        *R_FindImageFile( const char *name, qboolean mipmap, qboolean all
 	// Arnout: apply lightmap colouring
 	if ( lightmap )
 	{
-		R_ProcessLightmap( &pic, 4, width, height, &pic );
+		R_ProcessLightmap( pic, 4, width, height, pic );
 
 		// ydnar: no texture compression
 		if ( lightmap )

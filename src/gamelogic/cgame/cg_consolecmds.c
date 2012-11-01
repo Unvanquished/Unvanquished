@@ -117,7 +117,7 @@ static void CG_ScoresDown_f( void )
 		{
 			if ( cg_debugRandom.integer )
 			{
-				CG_Printf( "%s", _( "CG_ScoresDown_f: scores out of date\n" ));
+				CG_Printf( "CG_ScoresDown_f: scores out of date\n" );
 			}
 
 			cg.showScores = qtrue;

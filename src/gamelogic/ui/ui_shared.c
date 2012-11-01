@@ -392,7 +392,7 @@ void PRINTF_LIKE(2) PC_SourceWarning( int handle, char *format, ... )
 	line = 0;
 	trap_Parse_SourceFileAndLine( handle, filename, &line );
 
-	Com_Printf( _( S_COLOR_YELLOW  "WARNING: %s, line %d: %s\n"), filename, line, string );
+	Com_Printf( S_COLOR_YELLOW  "WARNING: %s, line %d: %s\n", filename, line, string );
 }
 
 /*
@@ -415,7 +415,7 @@ void PRINTF_LIKE(2) PC_SourceError( int handle, char *format, ... )
 	line = 0;
 	trap_Parse_SourceFileAndLine( handle, filename, &line );
 
-	Com_Printf( _( S_COLOR_RED  "ERROR: %s, line %d: %s\n"), filename, line, string );
+	Com_Printf( S_COLOR_RED  "ERROR: %s, line %d: %s\n", filename, line, string );
 }
 
 /*
@@ -2644,6 +2644,7 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 		     style == ITEM_TEXTSTYLE_SHADOWEDMORE )
 		{
 			int ofs;
+			vec4_t localColor;
 
 			if ( style == ITEM_TEXTSTYLE_SHADOWED )
 			{
@@ -2654,11 +2655,11 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 				ofs = 2;
 			}
 
-			colorBlack[ 3 ] = newColor[ 3 ];
-			DC->setColor( colorBlack );
+			VectorCopy( colorBlack, localColor );
+			localColor[ 3 ] = newColor[ 3 ];
+			DC->setColor( localColor );
 			UI_Text_PaintChar( x + ofs, y + ofs, useScale, glyph, 0.0f );
 			DC->setColor( newColor );
-			colorBlack[ 3 ] = 1.0f;
 		}
 		else if ( style == ITEM_TEXTSTYLE_NEON )
 		{
@@ -2731,8 +2732,11 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 
 		if ( cursorX >= 0 && !( ( DC->realTime / BLINK_DIVISOR ) & 1 ) )
 		{
-			color[3] /= 2.0;
-			DC->setColor( color );
+			vec4_t recolor;
+			Vector4Copy( color, recolor );
+			recolor[3] /= 2.0f;
+
+			DC->setColor( recolor );
 
 			if ( DC->getOverstrikeMode() )
 			{
@@ -3066,24 +3070,21 @@ static void Item_ComboBox_MaybeUnCastFromListBox( itemDef_t *item, qboolean unCa
 static void Item_ListBox_SetStartPos( itemDef_t *item, int startPos )
 {
 	listBoxDef_t *listPtr = item->typeData.list;
-	int          total = DC->feederCount( item->feederID );
-	int          max = Item_ListBox_MaxScroll( item );
+	int          max, total;
 
 	if ( startPos < 0 )
 	{
 		listPtr->startPos = 0;
 	}
-	else if ( startPos > max )
-	{
-		listPtr->startPos = max;
-	}
 	else
 	{
-		listPtr->startPos = startPos;
+		max = Item_ListBox_MaxScroll( item );
+		listPtr->startPos = MIN( max, startPos );
 	}
 
-	listPtr->endPos = listPtr->startPos + MIN( ( total - listPtr->startPos ),
-	                  Item_ListBox_NumItemsForItemHeight( item ) );
+	max = Item_ListBox_NumItemsForItemHeight( item );
+	total = DC->feederCount( item->feederID );
+	listPtr->endPos = listPtr->startPos + MIN( max, total - listPtr->startPos );
 }
 
 float Item_ListBox_ThumbPosition( itemDef_t *item )
@@ -3260,11 +3261,12 @@ void Item_ListBox_MouseEnter( itemDef_t *item, float x, float y )
 
 	if ( !( item->window.flags & listBoxFlags ) )
 	{
+		int numItems = Item_ListBox_NumItemsForItemHeight( item );
+
 		r.x = SCROLLBAR_X( item );
 		r.y = SCROLLBAR_Y( item );
 		r.w = SCROLLBAR_W( item );
-		r.h = listPtr->elementHeight *
-		      MIN( Item_ListBox_NumItemsForItemHeight( item ), total );
+		r.h = listPtr->elementHeight * MIN( numItems, total );
 
 		if ( Rect_ContainsPoint( &r, x, y ) )
 		{
@@ -4043,7 +4045,7 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 				const char *str = Q_UTF8Unstore( chr );
 				int        index, width, oldWidth, max;
 
-				if ( (unsigned int)( Q_UTF8CodePoint( str ) - 0xF700 ) < 0x200u ) 
+				if ( (unsigned int)( Q_UTF8CodePoint( str ) - 0xF700 ) < 0x200u )
 				{
 					// Filter out Mac cursor keys etc.
 					releaseFocus = qfalse;
@@ -6810,8 +6812,7 @@ void Item_OwnerDraw_Paint( itemDef_t *item )
 		}
 		else
 		{
-			DC->ownerDrawItem( item->window.rect.x, item->window.rect.y,
-			                   item->window.rect.w, item->window.rect.h,
+			DC->ownerDrawItem( &item->window.rect,
 			                   item->textalignx, item->textaligny,
 			                   item->window.ownerDraw, item->window.ownerDrawFlags,
 			                   item->alignment, item->textalignment, item->textvalignment,
@@ -9636,7 +9637,7 @@ const char *Gettext( const char *msgid )
 	static char buffer[ 4 ][ MAX_STRING_CHARS ];
 	static int index = -1;
 	char *buf;
-	
+
 	index = ( index + 1 ) & 3;
 	buf = buffer[ index ];
 	trap_Gettext( buf, msgid, sizeof( buffer[ 0 ] ) );

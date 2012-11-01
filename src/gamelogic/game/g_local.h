@@ -47,14 +47,8 @@ typedef struct gclient_s gclient_t;
 #define FL_NO_HUMANS               0x00004000 // spawn point just for bots
 #define FL_FORCE_GESTURE           0x00008000
 
-// localisation
-#if 0
-#	define _(text)              gettext( text )
-#	define N_(one, many, count) ngettext( (one), (many), (count) )
-#else
-#	define N_(text)              text
-#	define P_(one, many, count) ( (count) == 1 ? (one) : (many) )
-#endif
+#define N_( text )             text
+#define P_( one, many, count ) ( ( count ) == 1 ? ( one ) : ( many ) )
 
 // movers are things like doors, plats, buttons, etc
 typedef enum
@@ -534,7 +528,7 @@ struct gclient_s
 
 	int                lastCmdTime; // level.time of last usercmd_t, for EF_CONNECTION
 	// we can't just use pers.lastCommand.time, because
-	// of the g_sycronousclients case
+	// of the g_synchronousClients case
 	byte   buttons[ USERCMD_BUTTONS / 8 ];
 	byte   oldbuttons[ USERCMD_BUTTONS / 8 ];
 	byte   latched_buttons[ USERCMD_BUTTONS / 8 ];
@@ -989,7 +983,6 @@ int              G_GetMarkedBuildPoints( const vec3_t pos, team_t team );
 qboolean         G_FindPower( gentity_t *self, qboolean searchUnspawned );
 gentity_t        *G_PowerEntityForPoint( const vec3_t origin );
 gentity_t        *G_PowerEntityForEntity( gentity_t *ent );
-gentity_t        *G_RepeaterEntityForPoint( vec3_t origin );
 gentity_t        *G_InPowerZone( gentity_t *self );
 buildLog_t       *G_BuildLogNew( gentity_t *actor, buildFate_t fate );
 void             G_BuildLogSet( buildLog_t *log, gentity_t *ent );
@@ -1468,7 +1461,6 @@ void             trap_GetUserinfo( int num, char *buffer, int bufferSize );
 void             trap_GetServerinfo( char *buffer, int bufferSize );
 void             trap_AdjustAreaPortalState( gentity_t *ent, qboolean open );
 qboolean         trap_AreasConnected( int area1, int area2 );
-void             trap_UpdateSharedConfig( unsigned int port, const char *rconpass );
 int              trap_BotAllocateClient( int clientNum );
 void             trap_BotFreeClient( int clientNum );
 void             trap_GetUsercmd( int clientNum, usercmd_t *cmd );

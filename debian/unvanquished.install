@@ -1,7 +1,7 @@
-obj-*-*-*/daemon.*			usr/lib/games/unvanquished/
+obj-*-*-*/daemon			usr/lib/games/unvanquished/
 obj-*-*-*/*.so				usr/lib/games/unvanquished/
-obj-*-*-*/main/cgame*.so		usr/lib/games/unvanquished/main/
-obj-*-*-*/main/ui*.so			usr/lib/games/unvanquished/main/
+obj-*-*-*/main/cgame.so			usr/lib/games/unvanquished/main/
+obj-*-*-*/main/ui.so			usr/lib/games/unvanquished/main/
 
 #src/gamelogic/base/ui			usr/share/games/unvanquished/base/
 #main					usr/share/games/unvanquished/

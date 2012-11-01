@@ -192,7 +192,7 @@ static void SelectSplitPlaneNum(node_t * node, face_t * list, int *splitPlaneNum
 			}
 
 			// we want a huge score bias based on plane size
-			#if 0
+#if 0
 			{
 				winding_t      *w;
 				node_t         *n;
@@ -231,7 +231,7 @@ static void SelectSplitPlaneNum(node_t * node, face_t * list, int *splitPlaneNum
 				if(w != NULL)
 					value += WindingArea(w);
 			}
-			#endif
+#endif
 		}
 		else
 		{
@@ -244,9 +244,9 @@ static void SelectSplitPlaneNum(node_t * node, face_t * list, int *splitPlaneNum
 
 		value += split->priority;	// prioritize hints higher
 
-		#if defined(DEBUG_SPLITS)
+#if defined(DEBUG_SPLITS)
 		Sys_FPrintf(SYS_VRB, " %d", value);
-		#endif
+#endif
 
 		if(value > bestValue)
 		{

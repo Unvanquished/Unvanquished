@@ -279,8 +279,8 @@ void SnapPlane(vec3_t normal, vec_t * dist)
 	// solve so that we can better engineer it (I'm not saying that SnapPlane()
 	// should be removed altogether).  Fix all this snapping code at some point!
 
-	if(fabs(*dist - Q_rint(*dist)) < distanceEpsilon)
-		*dist = Q_rint(*dist);
+	if(fabs(*dist - rint(*dist)) < distanceEpsilon)
+		*dist = rint(*dist);
 }
 
 /*
@@ -315,7 +315,7 @@ void SnapPlaneImproved(vec3_t normal, vec_t * dist, int numPoints, const vec3_t 
 	{
 		// Only snap distance if the normal is an axis.  Otherwise there
 		// is nothing "natural" about snapping the distance to an integer.
-		distNearestInt = Q_rint(*dist);
+		distNearestInt = rint(*dist);
 		if(-distanceEpsilon < *dist - distNearestInt && *dist - distNearestInt < distanceEpsilon)
 		{
 			*dist = distNearestInt;
@@ -1987,7 +1987,7 @@ static qboolean ParseMapEntity(qboolean onlyLights)
 		}
 
 		// Tr3B: move modelscale to rotation key because DarkRadiant does not support modelscale
-		#if 1
+#if 1
 		if(!Q_stricmp("misc_model", classname))
 		{
 			vec_t			temp;
@@ -2043,7 +2043,7 @@ static qboolean ParseMapEntity(qboolean onlyLights)
 			SetKeyValue(mapEnt, "rotation", va("%f %f %f %f %f %f %f %f %f", rotationScaled[0], rotationScaled[1], rotationScaled[2],
 				   rotationScaled[4], rotationScaled[5], rotationScaled[6], rotationScaled[8], rotationScaled[9], rotationScaled[10]));
 		}
-		#endif
+#endif
 
 		// Tr3B: move detail brushes from world spawn into separate func_static
 		// or the detail brush flags will be lost and the brushes will generate really many bsp splits

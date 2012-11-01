@@ -343,13 +343,6 @@ qboolean trap_AreasConnected( int area1, int area2 )
 	return syscall( G_AREAS_CONNECTED, area1, area2 );
 }
 
-//40.
-//SV_UpdateSharedConfig( args[1], VMA(2) );
-void trap_UpdateSharedConfig( unsigned int port, const char *rconpass )
-{
-	syscall( G_UPDATE_SHARED_CONFIG, port, rconpass );
-}
-
 //41.
 //return SV_BotAllocateClient(args[1]);
 int trap_BotAllocateClient( int clientNum )

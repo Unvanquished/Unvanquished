@@ -64,7 +64,6 @@ cmake_dependent_option( BUILD_NEW_RENDERER   "Build new renderer library"       
 cmake_dependent_option( USE_OPENAL           "Use OpenAL"                                            1 BUILD_CLIENT                   0 )
 cmake_dependent_option( USE_CODEC_VORBIS     "Compile with support for Vorbis"                       1 BUILD_CLIENT                   0 )
 cmake_dependent_option( USE_MUMBLE           "Compile with support for Mumble"                       1 BUILD_CLIENT                   0 )
-cmake_dependent_option( USE_WEBP             "Compile with WebP loader"                              1 BUILD_CLIENT                   0 ) # technically, any renderer, not client
 cmake_dependent_option( USE_VOIP             "Compile with VOIP support"                             1 BUILD_CLIENT                   0 )
 cmake_dependent_option( USE_CIN_XVID         "Encode videos with XViD"                               1 BUILD_CLIENT                   0 )
 cmake_dependent_option( USE_INTERNAL_SDL     "Use SDL files included with Unvanquished"              0 BUILD_CLIENT                   0 )
@@ -73,7 +72,6 @@ cmake_dependent_option( USE_CPUINFO          "Use CPUInfo (if compilation fails,
 cmake_dependent_option( USE_CURSES           "Use the curses console"                                1 "BUILD_CLIENT OR BUILD_SERVER" 0 )
 cmake_dependent_option( USE_PHYSICS          "Compile with Newton Physics"                           0 "BUILD_CLIENT OR BUILD_SERVER" 0 )
 cmake_dependent_option( USE_INTERNAL_CRYPTO  "Use internal crypto (nettle)"                          0 "BUILD_CLIENT OR BUILD_SERVER" 0 )
-cmake_dependent_option( NO_UNTRUSTED_PLUGINS "Don't load native plugins from the user dir"           1 "BUILD_CLIENT OR BUILD_SERVER" 0 )
 
 cmake_dependent_option( USE_INTERNAL_JPEG    "Use JPEG files included with Unvanquished"             0
                                                                         "BUILD_OLD_RENDERER OR BUILD_NEW_RENDERER OR BUILD_DAEMONMAP" 0 )
@@ -1131,10 +1129,6 @@ elseif( UNIX )
   endif()
 endif()
 
-if( NO_UNTRUSTED_PLUGINS )
-  add_definitions( -DNO_UNTRUSTED_PLUGINS )
-endif()
-
 ###############################
 # Build Game/Cgame/Ui DLL/.so #
 ###############################
@@ -1222,11 +1216,8 @@ function( GAMELIB )
         COMPILE_DEFINITIONS "${GAMELIB_COMPILE_DEF}"
       )
       # May need more here for different architectures
-
-    elseif( WIN32 )
-      set_target_properties( ${GAMELIB_LIB_NAME} PROPERTIES OUTPUT_NAME "${GAMELIB_OUTPUT_NAME}_mp_${BUILD_ARCH}" )
     else()
-      set_target_properties( ${GAMELIB_LIB_NAME} PROPERTIES OUTPUT_NAME "${GAMELIB_OUTPUT_NAME}.mp.${BUILD_ARCH}" )
+      set_target_properties( ${GAMELIB_LIB_NAME} PROPERTIES OUTPUT_NAME "${GAMELIB_OUTPUT_NAME}" )
     endif()
   endif()
 
@@ -1283,7 +1274,7 @@ if( GAME_QVM )
 endif()
 
 GAMELIB( LIB_NAME gppgame
-  OUTPUT_NAME qagame
+  OUTPUT_NAME game
   OUTPUT_DIR main
   COMPILE_DEF GAME GAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM
   LIB_FILES ${GAMEGPP_SO} ${GPP_DIR} ${RECASTLIST} ${DETOURLIST}
@@ -1340,7 +1331,7 @@ if( BUILD_OLD_RENDERER )
   # Setup target renderer
   add_library( renderer SHARED ${RENDERERLIST} ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c ${SHAREDLIST} ${MOUNT_DIR}/engine/rendererGL/rendererGL.def )
   set_property( TARGET renderer PROPERTY COMPILE_DEFINITIONS USE_REFENTITY_ANIMATIONSYSTEM )
-  set_target_properties( renderer PROPERTIES OUTPUT_NAME "rendererGL${BUILD_ARCH}" )
+  set_target_properties( renderer PROPERTIES OUTPUT_NAME "rendererGL" )
   
   if( NOT MSVC )
     target_link_libraries( renderer m )
@@ -1363,13 +1354,12 @@ if( BUILD_OLD_RENDERER )
   include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${SDL_INCLUDE_DIR} )
   target_link_libraries( renderer ${PNG_LIBRARIES} ${SDL_LIBRARY} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} )
 
+  find_package( WebP REQUIRED )
+  set_property( TARGET renderer APPEND PROPERTY COMPILE_DEFINITIONS USE_WEBP )
+  include_directories( ${WEBP_INCLUDE_DIRS} )
+  target_link_libraries( renderer ${WEBP_LIBRARIES} )
+
   # This section finds and provides OPTIONAL dependencies to target renderer
-  if( USE_WEBP )
-    find_package( WebP REQUIRED )
-    set_property( TARGET renderer APPEND PROPERTY COMPILE_DEFINITIONS USE_WEBP )
-    include_directories( ${WEBP_INCLUDE_DIRS} )
-    target_link_libraries( renderer ${WEBP_LIBRARIES} )
-  endif()
 endif()
 
 ######################
@@ -1380,7 +1370,7 @@ if( BUILD_NEW_RENDERER )
   # Setup target rendererGL
   add_library( rendererGL SHARED ${SHAREDLIST} ${OPENEXRLIST} ${RENDERERGLLIST} ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c ${MOUNT_DIR}/engine/rendererGL/rendererGL.def )
   set_property( TARGET rendererGL PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER USE_REFENTITY_ANIMATIONSYSTEM )
-  set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "rendererGL3${BUILD_ARCH}" )
+  set_target_properties( rendererGL PROPERTIES OUTPUT_NAME "rendererGL3" )
 
   target_link_libraries( rendererGL ${OS_LIBRARIES} )
 
@@ -1401,14 +1391,12 @@ if( BUILD_NEW_RENDERER )
   include_directories( ${PNG_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${FREETYPE_INCLUDE_DIRS} ${GLEW_INCLUDE_DIRS} ${SDL_INCLUDE_DIR} )
   target_link_libraries( rendererGL ${PNG_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} ${SDL_LIBRARY} )
 
-  # This section finds and provides OPTIONAL dependencies to target rendererGL
-  if( USE_WEBP )
-    find_package( WebP REQUIRED )
-    set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS USE_WEBP )
-    include_directories( ${WEBP_INCLUDE_DIRS} )
-    target_link_libraries( rendererGL ${WEBP_LIBRARIES} )
-  endif()
+  find_package( WebP REQUIRED )
+  set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS USE_WEBP )
+  include_directories( ${WEBP_INCLUDE_DIRS} )
+  target_link_libraries( rendererGL ${WEBP_LIBRARIES} )
 
+  # This section finds and provides OPTIONAL dependencies to target rendererGL
   if( USE_GLSL_OPTIMIZER )
     include_directories( ${LIB_DIR}/glsl-optimizer/include )
     target_link_libraries( rendererGL glsl_optimizer )
@@ -1470,7 +1458,7 @@ if( BUILD_CLIENT )
   include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )
   target_link_libraries( client ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
   set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER COMPAT_ET USE_REFENTITY_ANIMATIONSYSTEM HAVE_SDL )
-  set_target_properties( client PROPERTIES OUTPUT_NAME "daemon.${BUILD_ARCH}" PREFIX "" LINKER_LANGUAGE CXX )
+  set_target_properties( client PROPERTIES OUTPUT_NAME "daemon" PREFIX "" LINKER_LANGUAGE CXX )
 
   # Setup CPack for target client
   install( TARGETS client DESTINATION "Unvanquished" )
@@ -1621,7 +1609,7 @@ if( BUILD_SERVER )
   include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )
   target_link_libraries( server ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
   set_property( TARGET server APPEND PROPERTY COMPILE_DEFINITIONS DEDICATED COMPAT_ET )
-  set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded.${BUILD_ARCH}" PREFIX "" LINKER_LANGUAGE CXX )
+  set_target_properties( server PROPERTIES OUTPUT_NAME "daemonded" PREFIX "" LINKER_LANGUAGE CXX )
 
   # Setup CPack for target server
   install( TARGETS server DESTINATION "Unvanquished" )
@@ -1703,7 +1691,7 @@ if( BUILD_DAEMONMAP )
   include_directories( ${LIB_DIR}/picomodel ${MOUNT_DIR}/tools/common )
   target_link_libraries( daemonMap ${OS_LIBRARIES} )
   set_property( TARGET daemonMap APPEND PROPERTY COMPILE_DEFINITIONS USE_OPENGL )
-  set_target_properties( daemonMap PROPERTIES OUTPUT_NAME "daemonmap.${BUILD_ARCH}" PREFIX "" )
+  set_target_properties( daemonMap PROPERTIES OUTPUT_NAME "daemonmap" PREFIX "" )
 
   # Setup CPack for target daemonmap
   install( TARGETS daemonMap DESTINATION "Unvanquished" )

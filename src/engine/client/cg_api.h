@@ -57,17 +57,6 @@ typedef struct
 	int           serverCommandSequence; // snapshot becomes current
 } snapshot_t;
 
-typedef enum cgameEvent_e
-{
-  CGAME_EVENT_NONE,
-  CGAME_EVENT_GAMEVIEW,
-  CGAME_EVENT_SPEAKEREDITOR,
-  CGAME_EVENT_CAMPAIGNBREIFING,
-  CGAME_EVENT_DEMO,
-  CGAME_EVENT_FIRETEAMMSG,
-  CGAME_EVENT_MULTIVIEW
-} cgameEvent_t;
-
 typedef enum cgameImport_s
 {
   CG_PRINT = FIRST_VM_SYSCALL,
@@ -197,10 +186,6 @@ typedef enum cgameImport_s
   CG_CIN_DRAWCINEMATIC,
   CG_CIN_SETEXTENTS,
   CG_R_REMAP_SHADER,
-  CG_LOADCAMERA,
-  CG_STARTCAMERA,
-  CG_STOPCAMERA,
-  CG_GETCAMERAINFO,
   CG_GET_ENTITY_TOKEN,
   CG_INGAME_POPUP,
   CG_INGAME_CLOSEPOPUP,
@@ -253,7 +238,7 @@ typedef enum
   // cgame will display loading status by calling SCR_Update, which
   // will call CG_DrawInformation during the loading process
   // reliableCommandSequence will be 0 on fresh loads, but higher for
-  // demos, tourney restarts, or vid_restarts
+  // demos or vid_restarts
 
   CG_SHUTDOWN,
 //  void (*CG_Shutdown)( void );
@@ -287,8 +272,6 @@ typedef enum
 
   CG_MOUSE_EVENT,
 //  void    (*CG_MouseEvent)( int dx, int dy );
-  CG_EVENT_HANDLING,
-//  void (*CG_EventHandling)(int type, qboolean fForced);
 
   CG_VOIP_STRING,
 // char *(*CG_VoIPString)( void );
@@ -435,10 +418,6 @@ e_status        trap_CIN_RunCinematic( int handle );
 void            trap_CIN_DrawCinematic( int handle );
 void            trap_CIN_SetExtents( int handle, int x, int y, int w, int h );
 void            trap_R_RemapShader( const char *oldShader, const char *newShader, const char *timeOffset );
-qboolean        trap_loadCamera( int camNum, const char *name );
-void            trap_startCamera( int camNum, int time );
-void            trap_stopCamera( int camNum );
-qboolean        trap_getCameraInfo( int camNum, int time, vec3_t *origin, vec3_t *angles, float *fov );
 qboolean        trap_GetEntityToken( char *buffer, int bufferSize );
 void            trap_UI_Popup( int arg0 );
 void            trap_UI_ClosePopup( const char *arg0 );

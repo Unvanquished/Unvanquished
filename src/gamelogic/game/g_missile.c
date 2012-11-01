@@ -103,7 +103,8 @@ static void G_MissileTimePowerReduce( gentity_t *self, int fullPower, int halfLi
 
 	case PR_COSINE:
 		travelled = lifetime;
-		divider = MAX( 0.0, cos( travelled * M_PI / 2.0 / ( fullPower + 1 ) ) );
+		divider = cos( travelled * M_PI / 2.0f / ( fullPower + 1 ) );
+		divider = MAX( 0.0f, divider );
 		break;
 
 	case PR_END:; // compiler, do shut up :-)
@@ -296,16 +297,16 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 		// FIXME: wrong damage direction?
 		if ( ent->damage )
 		{
-			vec3_t velocity;
+			vec3_t dir;
 
-			BG_EvaluateTrajectoryDelta( &ent->s.pos, level.time, velocity );
+			BG_EvaluateTrajectoryDelta( &ent->s.pos, level.time, dir );
 
-			if ( VectorLength( velocity ) == 0 )
+			if ( VectorNormalize( dir ) == 0 )
 			{
-				velocity[ 2 ] = 1; // stepped on a grenade
+				dir[ 2 ] = 1; // stepped on a grenade
 			}
 
-			G_Damage( other, ent, attacker, velocity, ent->s.origin, ent->damage,
+			G_Damage( other, ent, attacker, dir, ent->s.origin, ent->damage,
 			          DAMAGE_NO_LOCDAMAGE, ent->methodOfDeath );
 		}
 	}
@@ -459,8 +460,6 @@ gentity_t *fire_flamer( gentity_t *self, vec3_t start, vec3_t dir )
 	gentity_t *bolt;
 	vec3_t    pvel;
 
-	VectorNormalize( dir );
-
 	bolt = G_Spawn();
 	bolt->classname = "flame";
 	bolt->pointAgainstWorld = qfalse;
@@ -506,8 +505,6 @@ gentity_t *fire_blaster( gentity_t *self, vec3_t start, vec3_t dir )
 {
 	gentity_t *bolt;
 
-	VectorNormalize( dir );
-
 	bolt = G_Spawn();
 	bolt->classname = "blaster";
 	bolt->pointAgainstWorld = qtrue;
@@ -550,8 +547,6 @@ fire_pulseRifle
 gentity_t *fire_pulseRifle( gentity_t *self, vec3_t start, vec3_t dir )
 {
 	gentity_t *bolt;
-
-	VectorNormalize( dir );
 
 	bolt = G_Spawn();
 	bolt->classname = "pulse";
@@ -598,8 +593,6 @@ gentity_t *fire_luciferCannon( gentity_t *self, vec3_t start, vec3_t dir,
 {
 	gentity_t *bolt;
 	float     charge;
-
-	VectorNormalize( dir );
 
 	bolt = G_Spawn();
 	bolt->classname = "lcannon";
@@ -666,8 +659,6 @@ gentity_t *launch_grenade( gentity_t *self, vec3_t start, vec3_t dir )
 {
 	gentity_t *bolt;
 
-	VectorNormalize( dir );
-
 	bolt = G_Spawn();
 	bolt->classname = "grenade";
 	bolt->pointAgainstWorld = qfalse;
@@ -697,6 +688,8 @@ gentity_t *launch_grenade( gentity_t *self, vec3_t start, vec3_t dir )
 	SnapVector( bolt->s.pos.trDelta );  // save net bandwidth
 
 	VectorCopy( start, bolt->r.currentOrigin );
+
+	trap_SendServerCommand( self - g_entities, "vcommand grenade" );
 
 	return bolt;
 }
@@ -779,8 +772,6 @@ gentity_t *fire_hive( gentity_t *self, vec3_t start, vec3_t dir )
 {
 	gentity_t *bolt;
 
-	VectorNormalize( dir );
-
 	bolt = G_Spawn();
 	bolt->classname = "hive";
 	bolt->pointAgainstWorld = qfalse;
@@ -821,8 +812,6 @@ gentity_t *fire_lockblob( gentity_t *self, vec3_t start, vec3_t dir )
 {
 	gentity_t *bolt;
 
-	VectorNormalize( dir );
-
 	bolt = G_Spawn();
 	bolt->classname = "lockblob";
 	bolt->pointAgainstWorld = qtrue;
@@ -858,8 +847,6 @@ fire_slowBlob
 gentity_t *fire_slowBlob( gentity_t *self, vec3_t start, vec3_t dir )
 {
 	gentity_t *bolt;
-
-	VectorNormalize( dir );
 
 	bolt = G_Spawn();
 	bolt->classname = "slowblob";
@@ -897,8 +884,6 @@ fire_bounceBall
 gentity_t *fire_bounceBall( gentity_t *self, vec3_t start, vec3_t dir )
 {
 	gentity_t *bolt;
-
-	VectorNormalize( dir );
 
 	bolt = G_Spawn();
 	bolt->classname = "bounceball";

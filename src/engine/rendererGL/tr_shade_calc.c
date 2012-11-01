@@ -840,7 +840,7 @@ static void AutospriteDeform( void )
 		mid[ 2 ] = 0.25f * ( xyz[ 2 ] + xyz[ 6 ] + xyz[ 10 ] + xyz[ 14 ] );
 
 		VectorSubtract( xyz, mid, delta );
-		radius = VectorLength( delta ) * 0.707f;  // / sqrt(2)
+		radius = VectorLength( delta ) * 0.7071067811865f;  // / sqrt(2)
 
 		VectorScale( leftDir, radius, left );
 		VectorScale( upDir, radius, up );

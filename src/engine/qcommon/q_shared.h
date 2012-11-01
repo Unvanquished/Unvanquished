@@ -576,11 +576,9 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 #define DEG2RAD( a )                  ( ( ( a ) * M_PI ) / 180.0F )
 #define RAD2DEG( a )                  ( ( ( a ) * 180.0f ) / M_PI )
 
-#define Q_max(a, b)                   (( a ) > ( b ) ? ( a ) : ( b ))
-#define Q_min(a, b)                   (( a ) < ( b ) ? ( a ) : ( b ))
-#define Q_bound(a, b, c)              ( Q_max(a, Q_min(b, c)))
-#define Q_clamp(a, b, c)              (( b ) >= ( c ) ? ( a ) = ( b ) : ( a ) < ( b ) ? ( a ) = ( b ) : ( a ) > ( c ) ? ( a ) = ( c ) : ( a ))
-#define Q_lerp(from, to, frac)        ( from + (( to - from ) * frac ))
+#define Q_bound( a, b, c )            ( MAX( ( a ), MIN( ( b ), ( c ) ) ) )
+#define Q_clamp( a, b, c )            ( ( b ) >= ( c ) ? ( a ) = ( b ) : ( a ) < ( b ) ? ( a ) = ( b ) : ( a ) > ( c ) ? ( a ) = ( c ) : ( a ) )
+#define Q_lerp( from, to, frac )      ( ( from ) + ( frac ) * ( ( to ) - ( from ) ) )
 
 	struct cplane_s;
 
@@ -629,10 +627,10 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 	/*
 	// if your system does not have lrintf() and round() you can try this block. Please also open a bug report at bugzilla.icculus.org
 	// or write a mail to the ioq3 mailing list.
-	#else
-	  #define Q_ftol(v) ((long) (v))
-	  #define Q_round(v) do { if((v) < 0) (v) -= 0.5f; else (v) += 0.5f; (v) = Q_ftol((v)); } while(0)
-	  #define Q_SnapVector(vec) \
+#else
+#	define Q_ftol(v) ((long) (v))
+#	define Q_round(v) do { if((v) < 0) (v) -= 0.5f; else (v) += 0.5f; (v) = Q_ftol((v)); } while(0)
+#	define Q_SnapVector(vec) \
 	        do\
 	        {\
 	                vec3_t *temp = (vec);\
@@ -641,7 +639,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 	                Q_round((*temp)[1]);\
 	                Q_round((*temp)[2]);\
 	        } while(0)
-	#endif
+#endif
 	*/
 
 	STATIC_INLINE long XreaL_Q_ftol( float f ) IFDECLARE
@@ -786,7 +784,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 		return out;
 	}
 #else
-	#define Q_recip(x) ( 1.0f / (x) )
+#	define Q_recip(x) ( 1.0f / (x) )
 #endif
 
 	byte         ClampByte( int i );
@@ -955,11 +953,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 
 	int   NearestPowerOfTwo( int val );
 	int   Q_log2( int val );
-#ifdef Q3_VM
-#define Q_acos(c) acos(c)
-#else
-	float Q_acos( float c );
-#endif
+
 	int   Q_isnan( float x );
 
 	int   Q_rand( int *seed );
@@ -1301,10 +1295,6 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 #define MIN(x,y) (( x ) < ( y ) ? ( x ) : ( y ))
 #endif
 
-#if defined( _MSC_VER ) || defined( Q3_VM )
-	float rintf( float v );
-#endif
-
 //=============================================
 
 	float      Com_Clamp( float min, float max, float value );
@@ -1477,34 +1467,6 @@ int Q_UTF8Store( const char *s );
 char *Q_UTF8Unstore( int e );
 
 //=============================================
-
-// 64-bit integers for global rankings interface
-// implemented as a struct for QVM compatibility
-	typedef struct
-	{
-		byte b0;
-		byte b1;
-		byte b2;
-		byte b3;
-		byte b4;
-		byte b5;
-		byte b6;
-		byte b7;
-	} qint64;
-
-	/*
-	short           LittleShort(short l);
-	int             LittleLong(int l);
-	qint64          LittleLong64(qint64 l);
-	float           LittleFloat(float l);
-
-	short           BigShort(short l);
-	int             BigLong(int l);
-	qint64          BigLong64(qint64 l);
-	float           BigFloat(float l);
-
-	void            Swap_Init(void);
-	*/
 
 	char     *QDECL va( const char *format, ... ) PRINTF_LIKE(1);
 
@@ -1770,9 +1732,6 @@ char *Q_UTF8Unstore( int e );
 
 #define MAX_GENTITIES       ( 1 << GENTITYNUM_BITS )
 
-// tjw: used for limiting weapons that may overflow gentities[]
-#define MIN_SPARE_GENTITIES 64
-
 // entitynums are communicated with GENTITY_BITS, so any reserved
 // values thatare going to be communcated over the net need to
 // also be in this range
@@ -1908,7 +1867,7 @@ char *Q_UTF8Unstore( int e );
 		int           otherEntityNum;
 		vec3_t        grapplePoint; // location of grapple to pull towards if PMF_GRAPPLE_PULL
 		int           weaponAnim; // mask off ANIM_TOGGLEBIT
-		int           Ammo;
+		int           ammo;
 		int           clips; // clips held
 		int           tauntTimer; // don't allow another taunt until this runs out
 		int           misc[ MAX_MISC ]; // misc data
@@ -2044,19 +2003,9 @@ char *Q_UTF8Unstore( int e );
 	  TR_INTERPOLATE, // non-parametric, but interpolate between snapshots
 	  TR_LINEAR,
 	  TR_LINEAR_STOP,
-	  TR_LINEAR_STOP_BACK, //----(SA)  added.  so reverse movement can be different than forward
 	  TR_SINE, // value = base + sin( time / duration ) * delta
 	  TR_GRAVITY,
-	  // Ridah
-	  TR_GRAVITY_LOW,
-	  TR_GRAVITY_FLOAT, // super low grav with no gravity acceleration (floating feathers/fabric/leaves/...)
-	  TR_GRAVITY_PAUSED, //----(SA)  has stopped, but will still do a short trace to see if it should be switched back to TR_GRAVITY
-	  TR_ACCELERATE,
-	  TR_DECELERATE,
 	  TR_BUOYANCY,
-	  // Gordon
-	  TR_SPLINE,
-	  TR_LINEAR_PATH
 	} trType_t;
 
 	typedef struct
@@ -2269,15 +2218,6 @@ typedef struct
 	  FMV_LOOPED,
 	  FMV_ID_WAIT
 	} e_status;
-
-	typedef enum _flag_status
-	{
-	  FLAG_ATBASE = 0,
-	  FLAG_TAKEN, // CTF
-	  FLAG_TAKEN_RED, // One Flag CTF
-	  FLAG_TAKEN_BLUE, // One Flag CTF
-	  FLAG_DROPPED
-	} flagStatus_t;
 
 	typedef enum
 	{

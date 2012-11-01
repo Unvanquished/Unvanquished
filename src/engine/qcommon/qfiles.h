@@ -730,12 +730,12 @@ typedef struct
 
 	/*  char    bonesfile[64];  // bone file
 
-	#ifdef UTILS
+#ifdef UTILS
 	        int     skel;
-	#else
+#else
 	        // dummy in file, set on load to link to MDX
 	        qhandle_t skel;
-	#endif // UTILS
+#endif // UTILS
 	*/
 	float lodScale;
 	float lodBias;

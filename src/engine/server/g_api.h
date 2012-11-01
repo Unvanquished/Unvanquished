@@ -70,7 +70,7 @@ typedef struct
 	// currentOrigin will be used for all collision detection and world linking.
 	// it will not necessarily be the same as the trajectory evaluation for the current
 	// time, because each entity must be moved one at a time after time is advanced
-	// to avoid simultanious collision issues
+	// to avoid simultaneous collision issues
 	vec3_t currentOrigin;
 	vec3_t currentAngles;
 
@@ -139,7 +139,6 @@ typedef enum gameImport_s
   G_GET_SERVERINFO,
   G_ADJUST_AREA_PORTAL_STATE,
   G_AREAS_CONNECTED,
-  G_UPDATE_SHARED_CONFIG,
   G_BOT_ALLOCATE_CLIENT,
   G_BOT_FREE_CLIENT,
   G_GET_USERCMD,

@@ -700,7 +700,7 @@ static void CM_SurfaceCollideFromGrid( cGrid_t *grid, cSurfaceCollide_t *sc )
 			{
 				if ( gridPlanes[ i ][ j ][ 0 ] == -1 )
 				{
-					continue; // degenrate
+					continue; // degenerate
 				}
 
 				facet->surfacePlane = gridPlanes[ i ][ j ][ 0 ];

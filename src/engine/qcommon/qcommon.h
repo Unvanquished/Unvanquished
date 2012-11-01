@@ -335,8 +335,8 @@ enum clc_ops_e
 {
   clc_bad,
   clc_nop,
-  clc_move, // [[usercmd_t]
-  clc_moveNoDelta, // [[usercmd_t]
+  clc_move, // [usercmd_t]
+  clc_moveNoDelta, // [usercmd_t]
   clc_clientCommand, // [string] message
   clc_EOF,
   clc_voip, // not wrapped in USE_VOIP, so this value is reserved.
@@ -810,11 +810,6 @@ void       FS_Rename( const char *from, const char *to );
 
 char       *FS_BuildOSPath( const char *base, const char *game, const char *qpath );
 
-extern int cl_connectedToPureServer;
-#if !defined( NO_UNTRUSTED_PLUGINS )
-qboolean   FS_CL_ExtractFromPakFile( const char *base, const char *gamedir, const char *filename );
-#endif
-
 #if defined( DO_LIGHT_DEDICATED )
 int FS_RandChecksumFeed( void );
 
@@ -1226,11 +1221,7 @@ sysEvent_t Com_GetSystemEvent( void );
 void       Sys_Init( void );
 qboolean   Sys_IsNumLockDown( void );
 
-char       *Sys_GetDLLName( const char *name );
-
-// fqpath param added 2/15/02 by T.Ray - Sys_LoadDll is only called in vm.c at this time
-//
-void           *QDECL Sys_LoadDll( const char *name, char *fqpath, intptr_t ( QDECL  * *entryPoint )( int, ... ),
+void           *QDECL Sys_LoadDll( const char *name, intptr_t ( QDECL  * *entryPoint )( int, ... ),
                                    intptr_t ( QDECL *systemcalls )( intptr_t, ... ) );
 
 void                  Sys_UnloadDll( void *dllHandle );
@@ -1283,8 +1274,8 @@ char     *Sys_DefaultAppPath( void );
 char *Sys_DefaultLibPath( void );
 
 char         *Sys_DefaultHomePath( void );
-const char   *Sys_Dirname( char *path );
-const char   *Sys_Basename( char *path );
+char         *Sys_Dirname( char *path );
+char         *Sys_Basename( char *path );
 char         *Sys_ConsoleInput( void );
 
 char         **Sys_ListFiles( const char *directory, const char *extension, char *filter, int *numfiles, qboolean wantsubs );

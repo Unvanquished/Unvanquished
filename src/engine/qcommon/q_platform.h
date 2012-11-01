@@ -438,13 +438,6 @@ float FloatSwap( float f );
 #error "Endianness not defined"
 #endif
 
-//platform string
-#ifdef NDEBUG
-#define PLATFORM_STRING OS_STRING "-" ARCH_STRING
-#else
-#define PLATFORM_STRING OS_STRING "-" ARCH_STRING "-debug"
-#endif
-
 #endif
 
 #endif

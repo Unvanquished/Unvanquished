@@ -714,7 +714,7 @@ void CMod_LoadEntityString( lump_t *l )
 
 		if ( !*token )
 		{
-			Com_Printf( _( S_COLOR_YELLOW  "WARNING: unexpected end of entities string while parsing worldspawn\n" ));
+			Com_Printf( S_COLOR_YELLOW "WARNING: unexpected end of entities string while parsing worldspawn\n" );
 			break;
 		}
 
@@ -750,7 +750,7 @@ void CMod_LoadEntityString( lump_t *l )
 
 		if ( !Q_stricmp( keyname, "classname" ) && Q_stricmp( value, "worldspawn" ) )
 		{
-			Com_Printf( _( S_COLOR_YELLOW  "WARNING: expected worldspawn, found '%s'\n"), value );
+			Com_Printf( S_COLOR_YELLOW  "WARNING: expected worldspawn, found '%s'\n", value );
 			break;
 		}
 	}

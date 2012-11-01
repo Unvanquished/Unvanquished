@@ -450,7 +450,7 @@ nextInstruction2:
 
 		if ( vm_debugLevel > 1 )
 		{
-			Com_Printf(_( "%s %s\n"), DEBUGSTR, opnames[ opcode ] );
+			Com_Printf( "%s %s\n", DEBUGSTR, opnames[ opcode ] );
 		}
 
 		profileSymbol->profileCount++;
@@ -552,7 +552,7 @@ nextInstruction2:
 
 					if ( vm_debugLevel )
 					{
-						Com_Printf(_( "%s---> systemcall(%i)\n"), DEBUGSTR, -1 - programCounter );
+						Com_Printf( "%s---> systemcall(%i)\n", DEBUGSTR, -1 - programCounter );
 					}
 
 #endif
@@ -620,7 +620,7 @@ nextInstruction2:
 
 					if ( vm_debugLevel )
 					{
-						Com_Printf(_( "%s<--- %s\n"), DEBUGSTR, VM_ValueToSymbol( vm, programCounter ) );
+						Com_Printf( "%s<--- %s\n", DEBUGSTR, VM_ValueToSymbol( vm, programCounter ) );
 					}
 
 #endif
@@ -660,7 +660,7 @@ nextInstruction2:
 
 				if ( vm_debugLevel )
 				{
-					Com_Printf(_( "%s---> %s\n"), DEBUGSTR, VM_ValueToSymbol( vm, programCounter - 5 ) );
+					Com_Printf( "%s---> %s\n", DEBUGSTR, VM_ValueToSymbol( vm, programCounter - 5 ) );
 
 					if ( vm->breakFunction && programCounter - 5 == vm->breakFunction )
 					{
@@ -690,7 +690,7 @@ nextInstruction2:
 				if ( vm_debugLevel )
 				{
 //				vm->callLevel--;
-					Com_Printf(_( "%s<--- %s\n"), DEBUGSTR, VM_ValueToSymbol( vm, programCounter ) );
+					Com_Printf( "%s<--- %s\n", DEBUGSTR, VM_ValueToSymbol( vm, programCounter ) );
 				}
 
 #endif

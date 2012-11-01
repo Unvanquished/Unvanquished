@@ -355,7 +355,7 @@ static void SV_MapRestart_f( void )
 
 			if ( !isBot )
 			{
-				Com_Printf(_( "SV_MapRestart_f(%d): dropped client %i: denied!\n"), delay, i );  // bk010125
+				Com_Printf( "SV_MapRestart_f(%d): dropped client %i: denied!\n", delay, i );  // bk010125
 			}
 
 			continue;
@@ -403,13 +403,13 @@ static void SV_Status_f( void )
 
 	avg = 1000 * svs.stats.latched_active / STATFRAMES;
 
-	Com_Printf(_( "cpu utilization  : %3i%%\n"), ( int ) cpu );
-	Com_Printf(_( "avg response time: %i ms\n"), ( int ) avg );
+	Com_Printf( "cpu utilization  : %3i%%\n", ( int ) cpu );
+	Com_Printf( "avg response time: %i ms\n", ( int ) avg );
 
-	Com_Printf(_( "map: %s\n"), sv_mapname->string );
+	Com_Printf( "map: %s\n", sv_mapname->string );
 
-	Com_Printf(_( "num score ping name            lastmsg address               qport rate\n" ));
-	Com_Printf(_( "--- ----- ---- --------------- ------- --------------------- ----- -----\n" ));
+	Com_Printf( "num score ping name            lastmsg address               qport rate\n" );
+	Com_Printf( "--- ----- ---- --------------- ------- --------------------- ----- -----\n" );
 
 	for ( i = 0, cl = svs.clients; i < sv_maxclients->integer; i++, cl++ )
 	{

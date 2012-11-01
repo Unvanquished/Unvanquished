@@ -51,7 +51,7 @@ static void CG_ParseScores( void )
 
 	if ( cg_debugRandom.integer )
 	{
-		CG_Printf(_( "cg.numScores: %d\n"), cg.numScores );
+		CG_Printf( "cg.numScores: %d\n", cg.numScores );
 	}
 
 	for ( i = 0; i < cg.numScores; i++ )
@@ -97,7 +97,7 @@ static void CG_ParseTeamInfo( void )
 
 		if ( client < 0 || client >= MAX_CLIENTS )
 		{
-			CG_Printf(_( "[skipnotify]CG_ParseTeamInfo: bad client number: %d\n"), client );
+			CG_Printf( "[skipnotify]CG_ParseTeamInfo: bad client number: %d\n", client );
 			return;
 		}
 
@@ -1316,7 +1316,7 @@ static void CG_PrintTR_f( void )
 	const char  *in;
 	char        number[2];
 	int         i=0, j=0;
-	
+
 	Q_strncpyz( buf, _( CG_Argv( 1 ) ), sizeof( buf ) );
 	in = buf;
 	memset( &str, 0, sizeof( str ) );
@@ -1407,7 +1407,7 @@ static void CG_PrintTR_f( void )
 			}
 		}
 	}
-	
+
 	Com_Printf( "%s", str );
 }
 
@@ -1490,6 +1490,39 @@ static void CG_PoisonCloud_f( void )
 	}
 }
 
+/*
+=================
+CG_VCommand
+
+The server has asked us to execute a string from some variable
+=================
+*/
+static void CG_VCommand( void )
+{
+	static int recurse = 0;
+	char       cmd[ 32 ];
+
+	if ( recurse || trap_Argc() != 2 )
+	{
+		return;
+	}
+
+	recurse = 1;
+
+	trap_Argv( 1, cmd, sizeof( cmd ) );
+
+	if ( !Q_stricmp( cmd, "grenade" ) )
+	{
+		trap_SendClientCommand( cg_cmdGrenadeThrown.string );
+	}
+	else if ( !Q_stricmp( cmd, "needhealth" ) )
+	{
+		trap_SendClientCommand( cg_cmdNeedHealth.string );
+	}
+
+	recurse = 0;
+}
+
 static void CG_GameCmds_f( void )
 {
 	int i;
@@ -1522,6 +1555,7 @@ static const consoleCommand_t svcommands[] =
 	{ "serverclosemenus", CG_ServerCloseMenus_f   },
 	{ "servermenu",       CG_ServerMenu_f         },
 	{ "tinfo",            CG_ParseTeamInfo        },
+	{ "vcommand",         CG_VCommand             },
 	{ "voice",            CG_ParseVoice           }
 };
 
