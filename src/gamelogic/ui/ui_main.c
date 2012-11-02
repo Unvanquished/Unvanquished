@@ -1625,7 +1625,7 @@ qboolean Load_Menu( int handle )
 	return qfalse;
 }
 
-void UI_LoadMenus( const char *menuFile, qboolean reset )
+qboolean UI_LoadMenus( const char *menuFile, qboolean reset )
 {
 	pc_token_t token;
 	int        handle;
@@ -1638,7 +1638,7 @@ void UI_LoadMenus( const char *menuFile, qboolean reset )
 
 	if ( !handle )
 	{
-		trap_Error( va( S_COLOR_RED "menu list '%s' not found, unable to continue!", menuFile ) );
+		return qfalse;
 	}
 
 	if ( reset )
@@ -1699,6 +1699,7 @@ void UI_LoadMenus( const char *menuFile, qboolean reset )
 	// Com_Printf(_( "UI menu file '%s' loaded in %d msec\n"), menuFile, trap_Milliseconds() - start );
 
 	trap_Parse_FreeSource( handle );
+	return qtrue;
 }
 
 void UI_LoadHelp( const char *helpFile )
@@ -5051,9 +5052,37 @@ void UI_Init( void )
 
 	start = trap_Milliseconds();
 
-	UI_LoadMenus( ui_menuFiles.string, qtrue );
-	UI_LoadMenus( ui_ingameFiles.string, qfalse );
-	UI_LoadMenus( ui_teamFiles.string, qfalse );
+	if ( !UI_LoadMenus( ui_menuFiles.string, qtrue ) )
+	{
+		Com_Printf( "^3WARNING: %s not found. Attempting to load default value...\n", ui_menuFiles.string );
+		trap_Cvar_Reset( "ui_menuFiles" );
+		trap_Cvar_Update( &ui_menuFiles );
+		if ( !UI_LoadMenus( ui_menuFiles.string, qtrue ) )
+		{
+			trap_Error( va( S_COLOR_RED "menu list '%s' not found, unable to continue!", ui_menuFiles.string ) );
+		}
+	}
+	if ( !UI_LoadMenus( ui_ingameFiles.string, qfalse ) )
+	{
+		Com_Printf( "^3WARNING: %s not found. Attempting to load default value...\n", ui_ingameFiles.string );
+		trap_Cvar_Reset( "ui_ingameFiles" );
+		trap_Cvar_Update( &ui_ingameFiles );
+		if ( !UI_LoadMenus( ui_ingameFiles.string, qfalse ) )
+		{
+			trap_Error( va( S_COLOR_RED "menu list '%s' not found, unable to continue!", ui_ingameFiles.string ) );
+		}
+	}
+	if ( !UI_LoadMenus( ui_teamFiles.string, qfalse ) )
+	{
+		Com_Printf( "^3WARNING: %s not found. Attempting to load default value...\n", ui_teamFiles.string );
+		trap_Cvar_Reset( "ui_teamFiles" );
+		trap_Cvar_Update( &ui_teamFiles );
+
+		if ( !UI_LoadMenus( ui_teamFiles.string, qfalse ) )
+		{
+			trap_Error( va( S_COLOR_RED "menu list '%s' not found, unable to continue!", ui_teamFiles.string ) );
+		}
+	}
 	UI_LoadHelp( ui_helpFiles.string );
 
 	Menus_CloseAll();

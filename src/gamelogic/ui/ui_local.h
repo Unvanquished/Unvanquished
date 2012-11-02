@@ -34,19 +34,19 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //
 // ui_main.c
 //
-void UI_Report( void );
-void UI_Load( void );
-void UI_LoadMenus( const char *menuFile, qboolean reset );
-int  UI_AdjustTimeByGame( int time );
-void UI_ClearScores( void );
-void UI_LoadArenas( void );
-void UI_ServerInfo( void );
+void     UI_Report( void );
+void     UI_Load( void );
+qboolean UI_LoadMenus( const char *menuFile, qboolean reset );
+int      UI_AdjustTimeByGame( int time );
+void     UI_ClearScores( void );
+void     UI_LoadArenas( void );
+void     UI_ServerInfo( void );
 
-void UI_UpdateNews( qboolean );
+void     UI_UpdateNews( qboolean );
 
-void UI_RegisterCvars( void );
-void UI_UpdateCvars( void );
-void UI_DrawConnectScreen( qboolean overlay );
+void     UI_RegisterCvars( void );
+void     UI_UpdateCvars( void );
+void     UI_DrawConnectScreen( qboolean overlay );
 
 // new ui stuff
 #define MAX_MAPS                128
