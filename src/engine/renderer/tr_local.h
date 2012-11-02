@@ -2441,7 +2441,7 @@ int                                 SaveJPGToBuffer( byte *buffer, size_t bufSiz
 void                                SaveJPG( char *filename, int quality, int image_width, int image_height, unsigned char *image_buffer );
 void                                SavePNG( const char *name, const byte *pic, int width, int height, int numBytes, qboolean flip );
 
-#ifdef USE_WEBP
+#ifndef USE_WEBP
 #define LoadWEBP(n,p,w,h) /* nothing doing */
 #endif
 
