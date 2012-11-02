@@ -4949,7 +4949,7 @@ an external lightmap image and/or sets the index to a valid number
 ===============
 */
 
-#define EXTERNAL_LIGHTMAP "lm_%04d.tga" // THIS MUST BE IN SYNC WITH Q3MAP2
+#define EXTERNAL_LIGHTMAP "lm_%04d" // THIS MUST BE IN SYNC WITH Q3MAP2
 
 void R_FindLightmap( int *lightmapIndex )
 {
@@ -4978,14 +4978,26 @@ void R_FindLightmap( int *lightmapIndex )
 	// sync up render thread, because we're going to have to load an image
 	R_SyncRenderThread();
 
-	// attempt to load an external lightmap
-	sprintf( fileName, "%s/" EXTERNAL_LIGHTMAP, tr.worldDir, *lightmapIndex );
+	// attempt to load an external lightmap. Try tga, then webp, then png.
+	sprintf( fileName, "%s/" EXTERNAL_LIGHTMAP ".tga", tr.worldDir, *lightmapIndex );
 	image = R_FindImageFile( fileName, qfalse, qfalse, GL_CLAMP, qtrue );
 
 	if ( image == NULL )
 	{
-		*lightmapIndex = LIGHTMAP_BY_VERTEX;
-		return;
+		sprintf( fileName, "%s/" EXTERNAL_LIGHTMAP ".webp", tr.worldDir, *lightmapIndex );
+		image = R_FindImageFile( fileName, qfalse, qfalse, GL_CLAMP, qtrue );
+
+		if ( image == NULL )
+		{
+			sprintf( fileName, "%s/" EXTERNAL_LIGHTMAP ".png", tr.worldDir, *lightmapIndex );
+			image = R_FindImageFile( fileName, qfalse, qfalse, GL_CLAMP, qtrue );
+
+			if ( image == NULL )
+			{
+				*lightmapIndex = LIGHTMAP_BY_VERTEX;
+				return;
+			}
+		}
 	}
 
 	// add it to the lightmap list
