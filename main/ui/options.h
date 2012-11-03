@@ -40,7 +40,7 @@
     itemDef \
     { \
       name NAME \
-      group optionGrp \
+      group optionsGrp \
       type ITEM_TYPE_TEXT \
       text TEXT \
       rect CONTENT_X (CONTENT_Y+(POS*ELEM_H)) (CONTENT_W/2) ELEM_H \
@@ -54,7 +54,7 @@
     itemDef \
     { \
       name NAME \
-      group optionGrp \
+      group optionsGrp \
       rect (CONTENT_X+(CONTENT_W/2)+RESCOMBO_OFF) (CONTENT_Y+(POS*ELEM_H)) ((SCONTENT_W/2)-(2*RESCOMBO_OFF)) ELEM_H \
       type ITEM_TYPE_COMBOBOX \
       style WINDOW_STYLE_FILLED \
