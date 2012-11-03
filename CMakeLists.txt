@@ -401,7 +401,6 @@ set( RENDERERLIST
   ${MOUNT_DIR}/engine/renderer/tr_flares.c
   ${MOUNT_DIR}/engine/renderer/tr_font.c
   ${MOUNT_DIR}/engine/renderer/tr_image.c
-  ${MOUNT_DIR}/engine/rendererGL/tr_image_webp.c
   ${MOUNT_DIR}/engine/renderer/tr_init.c
   ${MOUNT_DIR}/engine/renderer/tr_light.c
   ${MOUNT_DIR}/engine/renderer/tr_main.c
@@ -1332,7 +1331,7 @@ if( BUILD_OLD_RENDERER )
   add_library( renderer SHARED ${RENDERERLIST} ${MOUNT_DIR}/engine/sys/sdl_glimp.c ${MOUNT_DIR}/engine/sys/sdl_gamma.c ${SHAREDLIST} ${MOUNT_DIR}/engine/rendererGL/rendererGL.def )
   set_property( TARGET renderer PROPERTY COMPILE_DEFINITIONS USE_REFENTITY_ANIMATIONSYSTEM )
   set_target_properties( renderer PROPERTIES OUTPUT_NAME "rendererGL" )
-  
+
   if( NOT MSVC )
     target_link_libraries( renderer m )
   endif()

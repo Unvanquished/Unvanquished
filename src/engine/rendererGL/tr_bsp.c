@@ -998,8 +998,13 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 
 					if ( !lightmapFiles || !numLightmaps )
 					{
-						ri.Printf( PRINT_WARNING, "WARNING: no lightmap files found\n" );
-						return;
+						lightmapFiles = ri.FS_ListFiles( mapName, ".webp", &numLightmaps );
+
+						if ( !lightmapFiles || !numLightmaps )
+						{
+							ri.Printf( PRINT_WARNING, "WARNING: no lightmap files found\n" );
+							return;
+						}
 					}
 				}
 
@@ -1026,8 +1031,13 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 
 				if ( !lightmapFiles || !numLightmaps )
 				{
-					ri.Printf( PRINT_WARNING, "WARNING: no lightmap files found\n" );
-					return;
+					lightmapFiles = ri.FS_ListFiles( mapName, ".webp", &numLightmaps );
+
+					if ( !lightmapFiles || !numLightmaps )
+					{
+						ri.Printf( PRINT_WARNING, "WARNING: no lightmap files found\n" );
+						return;
+					}
 				}
 			}
 
