@@ -226,7 +226,8 @@ typedef enum cgameImport_s
   CG_R_GLYPH,
   CG_R_GLYPHCHAR,
   CG_R_UREGISTERFONT,
-  CG_PGETTEXT
+  CG_PGETTEXT,
+  CG_R_INPVVS
 } cgameImport_t;
 
 typedef enum
@@ -433,6 +434,7 @@ void            trap_Key_KeysForBinding( const char *binding, int *key1, int *ke
 void            trap_CG_TranslateString( const char *string, char *buf );
 void            trap_S_FadeAllSound( float targetvol, int time, qboolean stopsounds );
 qboolean        trap_R_inPVS( const vec3_t p1, const vec3_t p2 );
+qboolean        trap_R_inPVVS( const vec3_t p1, const vec3_t p2 );
 void            trap_GetHunkData( int *hunkused, int *hunkexpected );
 qboolean        trap_R_LoadDynamicShader( const char *shadername, const char *shadertext );
 void            trap_R_RenderToTexture( int textureid, int x, int y, int w, int h );

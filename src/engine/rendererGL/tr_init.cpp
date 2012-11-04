@@ -2379,6 +2379,7 @@ extern "C" {
 		re.RemapShader = R_RemapShader;
 		re.GetEntityToken = R_GetEntityToken;
 		re.inPVS = R_inPVS;
+		re.inPVVS = R_inPVVS;
 		// Q3A END
 
 		// ET BEGIN

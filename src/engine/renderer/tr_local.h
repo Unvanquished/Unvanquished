@@ -1152,6 +1152,7 @@ typedef struct
 	int        clusterBytes;
 	const byte *vis; // may be passed in by CM_LoadMap to save space
 
+	byte       *visvis; // clusters visible from visible clusters
 	byte       *novis; // clusterBytes of 0xff
 
 	char       *entityString;
@@ -2575,5 +2576,6 @@ void               R_Hunk_End( void );
 void               R_FreeImageBuffer( void );
 
 qboolean           R_inPVS( const vec3_t p1, const vec3_t p2 );
+qboolean           R_inPVVS( const vec3_t p1, const vec3_t p2 );
 
 #endif //TR_LOCAL_H (THIS MUST BE LAST!!)

@@ -668,6 +668,8 @@ typedef struct centity_s
 	trailSystem_t         *muzzleTS; //used for the tesla and reactor
 	int                   muzzleTSDeathTime;
 
+	float                 radarVisibility;
+
 	qboolean              valid;
 	qboolean              oldValid;
 	struct centity_s      *nextLocation;
@@ -887,10 +889,11 @@ typedef struct
 typedef struct
 {
 	vec3_t alienBuildablePos[ MAX_GENTITIES ];
-	int    alienBuildableTimes[ MAX_GENTITIES ];
+	float  alienBuildableIntensity[ MAX_GENTITIES ];
 	int    numAlienBuildables;
 
 	vec3_t humanBuildablePos[ MAX_GENTITIES ];
+	float  humanBuildableIntensity[ MAX_GENTITIES ];
 	int    numHumanBuildables;
 
 	vec3_t alienClientPos[ MAX_CLIENTS ];

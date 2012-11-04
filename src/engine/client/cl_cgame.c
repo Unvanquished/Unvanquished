@@ -1142,6 +1142,9 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_R_INPVS:
 			return re.inPVS( VMA( 1 ), VMA( 2 ) );
 
+		case CG_R_INPVVS:
+			return re.inPVVS( VMA( 1 ), VMA( 2 ) );
+
 		case CG_GETHUNKDATA:
 			Com_GetHunkInfo( VMA( 1 ), VMA( 2 ) );
 			return 0;
