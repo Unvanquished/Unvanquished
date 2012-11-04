@@ -57,9 +57,9 @@ floatSwapUnion;
 
 
 #ifndef __BIG_ENDIAN__
-	#ifdef _SGI_SOURCE
-		#define	__BIG_ENDIAN__
-	#endif
+#	ifdef _SGI_SOURCE
+#		define	__BIG_ENDIAN__
+#	endif
 #endif
 
 

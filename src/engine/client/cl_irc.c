@@ -542,7 +542,7 @@ static int IRC_ProcessDEQueue( void )
 #if defined DEBUG_DUMP_IRC
 #define P_ERROR(S)        { \
     if ( !IRC_ParserError ) { \
-      Com_Printf(_( "IRC PARSER ERROR (state: %d , received: %d)\n"), IRC_ParserState, next ); \
+      Com_Printf( "IRC PARSER ERROR (state: %d , received: %d)\n", IRC_ParserState, next ); \
     } \
     P_SET_STATE(S); \
     IRC_ParserError = qtrue; \

@@ -230,7 +230,8 @@ typedef enum
   STAT_MISC, // for uh...misc stuff (pounce, trample, lcannon)
   STAT_BUILDABLE, // which ghost model to display for building
   STAT_FALLDIST, // the distance the player fell
-  STAT_VIEWLOCK // direction to lock the view in
+  STAT_VIEWLOCK, // direction to lock the view in
+  STAT_RADARTIME // time in msec this player will be visible on radar/sense
   // netcode has space for 3 more
 } statIndex_t;
 
@@ -1127,7 +1128,6 @@ int                         BG_GetValueOfPlayer( playerState_t *ps );
 qboolean                    BG_PlayerCanChangeWeapon( playerState_t *ps );
 int                         BG_PlayerPoisonCloudTime( playerState_t *ps );
 weapon_t                    BG_GetPlayerWeapon( playerState_t *ps );
-qboolean                    BG_HasEnergyWeapon( playerState_t *ps );
 
 void                        BG_PackEntityNumbers( entityState_t *es, const int *entityNums, int count );
 int                         BG_UnpackEntityNumbers( entityState_t *es, int *entityNums, int count );
@@ -1196,9 +1196,6 @@ void     BG_AddPredictableEventToPlayerstate( int newEvent, int eventParm, playe
 void     BG_PlayerStateToEntityState( playerState_t *ps, entityState_t *s, qboolean snap );
 void     BG_PlayerStateToEntityStateExtraPolate( playerState_t *ps, entityState_t *s, int time, qboolean snap );
 
-qboolean BG_PlayerTouchesItem( playerState_t *ps, entityState_t *item, int atTime );
-
-#define ARENAS_PER_TIER 4
 #define MAX_ARENAS      1024
 #define MAX_ARENAS_TEXT 8192
 

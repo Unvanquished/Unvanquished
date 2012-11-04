@@ -284,8 +284,7 @@ void CL_UpdateVoipIgnore( const char *idstr, qboolean ignore )
 			clc.voipIgnore[ id ] = ignore;
 			CL_AddReliableCommand( va( "voip %s %d",
 			                           ignore ? "ignore" : "unignore", id ) );
-			Com_Printf(_( "VoIP: %s ignoring player #%d\n"),
-			            ignore ? "Now" : "No longer", id );
+			Com_Printf( ignore ? _( "VoIP: Now ignoring player #%d\n") : _( "VoIP: No longer ignoring player #%d\n"), id );
 			return;
 		}
 	}
@@ -724,6 +723,17 @@ not have future usercmd_t executed before it is executed
 void CL_AddReliableCommand( const char *cmd )
 {
 	int index;
+
+	// catch empty commands
+	while ( *cmd && *cmd <= ' ' )
+	{
+		++cmd;
+	}
+
+	if ( !*cmd )
+	{
+		return;
+	}
 
 	// if we would be losing an old command that hasn't been acknowledged,
 	// we must drop the connection
@@ -1837,7 +1847,7 @@ void CL_RequestMotd( void )
 		return;
 	}
 
-	Com_DPrintf(_( "Resolving %s\n"), MASTER_SERVER_NAME );
+	Com_DPrintf( "Resolving %s\n", MASTER_SERVER_NAME );
 
 	switch ( NET_StringToAdr( MASTER_SERVER_NAME, &cls.updateServer,
 	                          NA_UNSPEC ) )
@@ -1979,7 +1989,7 @@ void CL_Connect_f( void )
 	// Set and skip the password.
 	if ( ( offset = strchr( server, '@' ) ) != NULL )
 	{
-		Q_strncpyz( password, server, Q_min( sizeof( password ), ( offset - server + 1 ) ) );
+		Q_strncpyz( password, server, MIN( sizeof( password ), ( offset - server + 1 ) ) );
 		Cvar_Set( "password", password );
 		server = offset + 1;
 	}
@@ -2240,7 +2250,7 @@ static void CL_GenerateRSAKey( void )
 	return;
 
 	keygen_error:
-	Com_Error( ERR_FATAL, _( "Error generating RSA keypair, RSA support will be disabled" ) );
+	Com_Error( ERR_FATAL, "Error generating RSA keypair, RSA support will be disabled" );
 	Crypto_Shutdown();
 }
 
@@ -2391,7 +2401,7 @@ CL_PK3List_f
 */
 void CL_OpenedPK3List_f( void )
 {
-	Com_Printf(_( "Opened PK3 Names: %s\n"), FS_LoadedPakNames() );
+	Com_Printf( "Opened PK3 Names: %s\n", FS_LoadedPakNames() );
 }
 
 /*
@@ -2401,7 +2411,7 @@ CL_PureList_f
 */
 void CL_ReferencedPK3List_f( void )
 {
-	Com_Printf(_( "Referenced PK3 Names: %s\n"), FS_ReferencedPakNames() );
+	Com_Printf( "Referenced PK3 Names: %s\n", FS_ReferencedPakNames() );
 }
 
 /*
@@ -2440,12 +2450,12 @@ CL_Clientinfo_f
 */
 void CL_Clientinfo_f( void )
 {
-	Com_Printf("%s", _( "--------- Client Information ---------\n" ));
-	Com_Printf(_( "state: %i\n"), cls.state );
-	Com_Printf(_( "Server: %s\n"), cls.servername );
-	Com_Printf("%s", _( "User info settings:\n" ));
+	Com_Printf("%s",  "--------- Client Information ---------\n" );
+	Com_Printf( "state: %i\n", cls.state );
+	Com_Printf( "Server: %s\n", cls.servername );
+	Com_Printf("%s", "User info settings:\n" );
 	Info_Print( Cvar_InfoString( CVAR_USERINFO ) );
-	Com_Printf("%s", _( "--------------------------------------\n" ));
+	Com_Printf("%s", "--------------------------------------\n" );
 }
 
 /*
@@ -2753,7 +2763,7 @@ void CL_InitDownloads( void )
 	if ( cl_allowDownload->integer && FS_ComparePaks( clc.downloadList, sizeof( clc.downloadList ), qtrue ) )
 	{
 		// this gets printed to UI, i18n
-		Com_DPrintf(_( "Need paks: %s\n"), clc.downloadList );
+		Com_DPrintf( "Need paks: %s\n", clc.downloadList );
 
 		if ( *clc.downloadList )
 		{
@@ -3270,7 +3280,7 @@ void CL_ServersResponsePacket( const netadr_t *from, msg_t *msg, qboolean extend
 	cls.numglobalservers = count;
 	total = count + cls.numGlobalServerAddresses;
 
-	Com_DPrintf(_( "%d servers parsed (total %d)\n"), numservers, total );
+	Com_DPrintf( "%d servers parsed (total %d)\n", numservers, total );
 }
 
 /*
@@ -3301,7 +3311,7 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	{
 		if ( cls.state != CA_CONNECTING )
 		{
-			Com_Printf("%s", _( "Unwanted challenge response received.  Ignored.\n" ));
+			Com_Printf( "Unwanted challenge response received.  Ignored.\n" );
 		}
 		else
 		{
@@ -3325,20 +3335,20 @@ void CL_ConnectionlessPacket( netadr_t from, msg_t *msg )
 	{
 		if ( cls.state >= CA_CONNECTED )
 		{
-			Com_Printf("%s", _( "Dup connect received. Ignored.\n" ));
+			Com_Printf( "Dup connect received. Ignored.\n" );
 			return;
 		}
 
 		if ( cls.state != CA_CHALLENGING )
 		{
-			Com_Printf("%s", _( "connectResponse packet while not connecting. Ignored.\n" ));
+			Com_Printf( "connectResponse packet while not connecting. Ignored.\n" );
 			return;
 		}
 
 		if ( !NET_CompareAdr( from, clc.serverAddress ) )
 		{
-			Com_Printf("%s", _( "connectResponse from a different address. Ignored.\n" ));
-			Com_Printf(_( "%s should have been %s\n"), NET_AdrToString( from ),
+			Com_Printf( "connectResponse from a different address. Ignored.\n" );
+			Com_Printf( "%s should have been %s\n", NET_AdrToString( from ),
 			            NET_AdrToStringwPort( clc.serverAddress ) );
 			return;
 		}
@@ -3436,7 +3446,7 @@ void CL_PacketEvent( netadr_t from, msg_t *msg )
 
 	if ( msg->cursize < 4 )
 	{
-		Com_Printf(_( "%s: Runt packet\n"), NET_AdrToStringwPort( from ) );
+		Com_Printf( "%s: Runt packet\n", NET_AdrToStringwPort( from ) );
 		return;
 	}
 
@@ -3445,7 +3455,7 @@ void CL_PacketEvent( netadr_t from, msg_t *msg )
 	//
 	if ( !NET_CompareAdr( from, clc.netchan.remoteAddress ) )
 	{
-		Com_DPrintf( _("%s: sequenced packet without connection\n"), NET_AdrToStringwPort( from ) );
+		Com_DPrintf( "%s: sequenced packet without connection\n", NET_AdrToStringwPort( from ) );
 		// FIXME: send a client disconnect?
 		return;
 	}
@@ -3595,7 +3605,7 @@ void CL_WWWDownload( void )
 			if ( strlen( clc.redirectedList ) + strlen( cls.originalDownloadName ) + 1 >= sizeof( clc.redirectedList ) )
 			{
 				// just to be safe
-				Com_Printf(_( "ERROR: redirectedList overflow (%s)\n"), clc.redirectedList );
+				Com_Printf( "ERROR: redirectedList overflow (%s)\n", clc.redirectedList );
 			}
 			else
 			{
@@ -3651,7 +3661,7 @@ qboolean CL_WWWBadChecksum( const char *pakname )
 
 		if ( strlen( clc.badChecksumList ) + strlen( pakname ) + 1 >= sizeof( clc.badChecksumList ) )
 		{
-			Com_Printf(_( "ERROR: badChecksumList overflowed (%s)\n"), clc.badChecksumList );
+			Com_Printf( "ERROR: badChecksumList overflowed (%s)\n", clc.badChecksumList );
 			return qfalse;
 		}
 
@@ -3677,7 +3687,7 @@ void CL_Frame( int msec )
 		return;
 	}
 
-	if ( cls.state == CA_DISCONNECTED && !( cls.keyCatchers & KEYCATCH_UI ) && !com_sv_running->integer )
+	if ( uivm && cls.state == CA_DISCONNECTED && !( cls.keyCatchers & KEYCATCH_UI ) && !com_sv_running->integer )
 	{
 		// if disconnected, bring up the menu
 		//S_StopAllSounds();
@@ -4161,9 +4171,9 @@ qboolean CL_InitRef( const char *renderer )
 #if !defined( REF_HARD_LINKED )
 	for ( i = 0; i < ARRAY_LEN( varName ); ++i )
 	{
-		Com_sprintf( dllName, sizeof( dllName ), "%s/" DLL_PREFIX "renderer%s" ARCH_STRING DLL_EXT, Cvar_VariableString( varName[ i ] ), renderer );
+		Com_sprintf( dllName, sizeof( dllName ), "%s/" DLL_PREFIX "renderer%s" DLL_EXT, Cvar_VariableString( varName[ i ] ), renderer );
 
-		Com_Printf(_( "Loading \"%s\"…"), dllName );
+		Com_Printf( "Loading \"%s\"…", dllName );
 
 		lib = Sys_LoadLibrary( dllName );
 
@@ -4172,7 +4182,7 @@ qboolean CL_InitRef( const char *renderer )
 			break;
 		}
 
-		Com_Printf(_( "failed:\n\"%s\"\n"), Sys_LibraryError() );
+		Com_Printf( "failed:\n\"%s\"\n", Sys_LibraryError() );
 	}
 
 	if ( !lib )
@@ -4180,7 +4190,7 @@ qboolean CL_InitRef( const char *renderer )
 		return qfalse;
 	}
 
-	Com_Printf("%s", _( "done\n" ));
+	Com_Printf( "done\n" );
 
 	GetRefAPI = Sys_LoadFunction( lib, "GetRefAPI" );
 
@@ -4270,7 +4280,7 @@ qboolean CL_InitRef( const char *renderer )
 
 	if ( !ret )
 	{
-		Com_Printf( "Couldn't initialize refresh\n" );
+		Com_Printf( "Couldn't initialize refresh module\n" );
 		Sys_UnloadDll( lib );
 		return qfalse;
 	}
@@ -4641,7 +4651,7 @@ void CL_Shutdown( void )
 
 	memset( &cls, 0, sizeof( cls ) );
 
-	Com_DPrintf("%s", _( "-----------------------\n" ));
+	Com_DPrintf( "-----------------------\n" );
 
 }
 
@@ -5158,7 +5168,7 @@ void CL_GlobalServers_f( void )
 
 	if ( !*masteraddress )
 	{
-		Com_Printf("%s", _( "CL_GlobalServers_f: Error: No master server address given.\n" ));
+		Com_Printf( "CL_GlobalServers_f: Error: No master server address given.\n" );
 		return;
 	}
 
@@ -5169,7 +5179,7 @@ void CL_GlobalServers_f( void )
 
 	if ( !i )
 	{
-		Com_Printf(_( "CL_GlobalServers_f: Error: could not resolve address of master %s\n"), masteraddress );
+		Com_Printf( "CL_GlobalServers_f: Error: could not resolve address of master %s\n", masteraddress );
 		return;
 	}
 	else if ( i == 2 )
@@ -5177,7 +5187,7 @@ void CL_GlobalServers_f( void )
 		to.port = BigShort( PORT_MASTER );
 	}
 
-	Com_DPrintf(_( "Requesting servers from master %s…\n"), masteraddress );
+	Com_DPrintf( "Requesting servers from master %s…\n", masteraddress );
 
 	cls.numglobalservers = -1;
 	cls.pingUpdateSource = AS_GLOBAL;

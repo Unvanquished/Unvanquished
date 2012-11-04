@@ -1107,7 +1107,7 @@ void MSG_PrioritiseEntitystateFields( void )
 
 	qsort( fieldorders, numfields, sizeof( int ), qsort_entitystatefields );
 
-	Com_Printf(_( "Entitystate fields in order of priority\n" ));
+	Com_Printf( "Entitystate fields in order of priority\n" );
 	Com_Printf( "netField_t entityStateFields[] = {\n" );
 
 	for ( i = 0; i < numfields; i++ )
@@ -1576,7 +1576,7 @@ netField_t playerStateFields[] =
 	,
 	{ PSF( grapplePoint[ 2 ] ),    0               }
 	,
-	{ PSF( Ammo ),                 12              }
+	{ PSF( ammo ),                 12              }
 	,
 	{ PSF( clips ),                4               }
 	,
@@ -1620,7 +1620,7 @@ void MSG_PrioritisePlayerStateFields( void )
 
 	qsort( fieldorders, numfields, sizeof( int ), qsort_playerstatefields );
 
-	Com_Printf(_( "Playerstate fields in order of priority\n" ));
+	Com_Printf( "Playerstate fields in order of priority\n" );
 	Com_Printf( "netField_t playerStateFields[] = {\n" );
 
 	for ( i = 0; i < numfields; i++ )

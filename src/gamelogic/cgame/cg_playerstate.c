@@ -268,7 +268,7 @@ void CG_CheckChangedPredictableEvents( playerState_t *ps )
 
 				if ( cg_showmiss.integer )
 				{
-					CG_Printf( "%s", _( "^4WARNING: changed predicted event\n" ));
+					CG_Printf( "^4WARNING: changed predicted event\n" );
 				}
 			}
 		}

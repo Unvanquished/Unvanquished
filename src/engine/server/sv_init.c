@@ -814,7 +814,7 @@ void SV_SpawnServer( char *server )
 
 	SV_AddOperatorCommands();
 
-	Com_Printf(_( "-----------------------------------\n" ));
+	Com_Printf( "-----------------------------------\n" );
 }
 
 /*
@@ -850,7 +850,7 @@ void SV_Init( void )
 #else
 	// Use OS shared libs for the client at startup. This prevents crashes due to mismatching syscall ABIs
 	// from loading outdated vms pk3s. The correct vms pk3 will be loaded upon connecting to a pure server.
-	sv_pure = Cvar_Get( "sv_pure", "0", CVAR_SYSTEMINFO ); 
+	sv_pure = Cvar_Get( "sv_pure", "0", CVAR_SYSTEMINFO );
 #endif
 #ifdef USE_VOIP
 	sv_voip = Cvar_Get( "sv_voip", "1", CVAR_SYSTEMINFO | CVAR_LATCH );
@@ -995,7 +995,7 @@ void SV_Shutdown( char *finalmsg )
 
 	Cvar_Set( "sv_running", "0" );
 
-	Com_Printf(_( "---------------------------\n" ));
+	Com_Printf( "---------------------------\n" );
 
 	// disconnect any local clients
 	CL_Disconnect( qfalse );

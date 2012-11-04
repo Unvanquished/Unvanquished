@@ -308,5 +308,5 @@ qboolean S_LoadSound( sfx_t *sfx )
 
 void S_DisplayFreeMemory( void )
 {
-	Com_Printf(_( "%d bytes free sound buffer memory, %d total used\n"), inUse, totalInUse );
+	Com_Printf( "%d bytes free sound buffer memory, %d total used\n", inUse, totalInUse );
 }

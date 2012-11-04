@@ -546,12 +546,12 @@ static void R_UploadImage2D( image_t *img, GLenum target, int level, GLenum int_
                              int width, int height, GLenum format, GLenum type, const void *data )
 {
 	/*
-	#ifdef Q3_BIG_ENDIAN
+#ifdef Q3_BIG_ENDIAN
 	        // OSX 10.3.9 has problems with GL_UNSIGNED_SHORT_5_6_5 which gives us the multicolored lightmaps
 	        if(type == GL_UNSIGNED_SHORT_5_6_5)
-	#else
+#else
 	        if(type == GL_UNSIGNED_SHORT_5_6_5 && !GLEW_VERSION_1_2)
-	#endif
+#endif
 	        {
 	                R_UploadEncodedImageDirect(target, level, format, int_fmat, width, height, data, R_DecodeRGB565Block);
 	                return;

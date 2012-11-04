@@ -132,12 +132,12 @@ static const cvarTable_t   cvarTable[] =
 	{ &cl_defaultProfile,      "cl_defaultProfile",           "",                          CVAR_ROM                  },
 	{ &ui_profile,             "ui_profile",                  "",                          CVAR_ROM                  },
 	{ &ui_chatCommands,        "ui_chatCommands",             "1",                         CVAR_ARCHIVE              },
-	{ &ui_chatPromptColours,   "ui_chatPromptColors",         "0",                         CVAR_ARCHIVE              },
+	{ &ui_chatPromptColours,   "ui_chatPromptColors",         "0",                         CVAR_ARCHIVE | CVAR_LATCH },
 
-	{ &ui_menuFiles,           "ui_menuFiles",                "ui/menu/menus.txt",         CVAR_ARCHIVE              },
-	{ &ui_ingameFiles,         "ui_ingameFiles",              "ui/menu/ingame/ingame.txt", CVAR_ARCHIVE              },
-	{ &ui_teamFiles,           "ui_teamFiles",                "ui/menu/team/team.txt",     CVAR_ARCHIVE              },
-	{ &ui_helpFiles,           "ui_helpFiles",                "ui/menu/help/help.txt",     CVAR_ARCHIVE              }
+	{ &ui_menuFiles,           "ui_menuFiles",                "ui/menus.txt",         CVAR_ARCHIVE              },
+	{ &ui_ingameFiles,         "ui_ingameFiles",              "ui/ingame.txt", CVAR_ARCHIVE              },
+	{ &ui_teamFiles,           "ui_teamFiles",                "ui/tremulous.txt",     CVAR_ARCHIVE              },
+	{ &ui_helpFiles,           "ui_helpFiles",                "ui/help.txt",     CVAR_ARCHIVE              }
 };
 
 static const int           cvarTableSize = ARRAY_LEN( cvarTable );
@@ -156,9 +156,10 @@ void     UI_Init( void );
 void     UI_Shutdown( void );
 void     UI_KeyEvent( int key, int chr, int flags );
 void     UI_MouseEvent( int dx, int dy );
-int      UI_MousePosition( void );
+int      UI_MousePosition( qboolean draw );
 void     UI_SetMousePosition( int x, int y );
 void     UI_Refresh( int realtime );
+void     UI_DrawCursor( void );
 qboolean UI_IsFullscreen( void );
 void     UI_SetActiveMenu( uiMenuCommand_t menu );
 
@@ -197,11 +198,7 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 			return 0;
 
 		case UI_MOUSE_POSITION:
-			return UI_MousePosition();
-
-		case UI_SET_MOUSE_POSITION:
-			UI_SetMousePosition( arg0, arg1 );
-			return 0;
+			return UI_MousePosition( arg0 );
 
 		case UI_REFRESH:
 			UI_Refresh( arg0 );
@@ -219,6 +216,10 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 
 		case UI_DRAW_CONNECT_SCREEN:
 			UI_DrawConnectScreen( arg0 );
+			return 0;
+
+		case UI_DRAW_CURSOR:
+			UI_DrawCursor();
 			return 0;
 
 		default:
@@ -1286,15 +1287,6 @@ void UI_Refresh( int realtime )
 		UI_BuildFindPlayerList( qfalse );
 		UI_UpdateNews( qfalse );
 	}
-
-	// draw cursor
-	UI_SetColor( NULL );
-
-	if ( trap_Key_GetCatcher() == KEYCATCH_UI && !trap_Cvar_VariableValue( "ui_hideCursor" ) )
-	{
-		UI_DrawHandlePic( uiInfo.uiDC.cursorx - ( 16.0f * uiInfo.uiDC.aspectScale ), uiInfo.uiDC.cursory - 16.0f,
-		                  32.0f * uiInfo.uiDC.aspectScale, 32.0f, uiInfo.uiDC.Assets.cursor );
-	}
 }
 
 /*
@@ -1633,7 +1625,7 @@ qboolean Load_Menu( int handle )
 	return qfalse;
 }
 
-void UI_LoadMenus( const char *menuFile, qboolean reset )
+qboolean UI_LoadMenus( const char *menuFile, qboolean reset )
 {
 	pc_token_t token;
 	int        handle;
@@ -1646,7 +1638,7 @@ void UI_LoadMenus( const char *menuFile, qboolean reset )
 
 	if ( !handle )
 	{
-		trap_Error( va( S_COLOR_RED "menu list '%s' not found, unable to continue!", menuFile ) );
+		return qfalse;
 	}
 
 	if ( reset )
@@ -1656,6 +1648,23 @@ void UI_LoadMenus( const char *menuFile, qboolean reset )
 
 	trap_Cvar_VariableStringBuffer( "ui_assetScale", assetScale, sizeof( assetScale ) );
 	trap_Parse_AddGlobalDefine( va( "ASSET_SCALE %f", assetScale[ 0 ] ? atof( assetScale ) : 1.0f ) );
+
+	if ( trap_Cvar_VariableValue( "ui_chatPromptColors" ) )
+	{
+		trap_Parse_AddGlobalDefine( "ASSET_COLOR_STRING_SAY_TO_ALL \"^2\"" );
+		trap_Parse_AddGlobalDefine( "ASSET_COLOR_STRING_SAY_TO_TEAM \"^5\"" );
+		trap_Parse_AddGlobalDefine( "ASSET_COLOR_STRING_SAY_TO_ADMINS \"^6\"" );
+		trap_Parse_AddGlobalDefine( "ASSET_COLOR_STRING_SAY_TO_IRC \"^7\"" );
+		trap_Parse_AddGlobalDefine( "ASSET_COLOR_STRING_SAY_COMMAND \"^7\"" );
+	}
+	else
+	{
+		trap_Parse_AddGlobalDefine( "ASSET_COLOR_STRING_SAY_TO_ALL \"\"" );
+		trap_Parse_AddGlobalDefine( "ASSET_COLOR_STRING_SAY_TO_TEAM \"\"" );
+		trap_Parse_AddGlobalDefine( "ASSET_COLOR_STRING_SAY_TO_ADMINS \"\"" );
+		trap_Parse_AddGlobalDefine( "ASSET_COLOR_STRING_SAY_TO_IRC \"\"" );
+		trap_Parse_AddGlobalDefine( "ASSET_COLOR_STRING_SAY_COMMAND \"\"" );
+	}
 
 	while ( 1 )
 	{
@@ -1690,6 +1699,7 @@ void UI_LoadMenus( const char *menuFile, qboolean reset )
 	// Com_Printf(_( "UI menu file '%s' loaded in %d msec\n"), menuFile, trap_Milliseconds() - start );
 
 	trap_Parse_FreeSource( handle );
+	return qtrue;
 }
 
 void UI_LoadHelp( const char *helpFile )
@@ -1824,13 +1834,13 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 			{
 				s = va( "%s\n\n%s",
 				        BG_ClassConfig( item->v.pclass )->humanName,
-				        BG_Class( item->v.pclass )->info );
+				        _( BG_Class( item->v.pclass )->info ) );
 			}
 			else
 			{
 				s = va( "%s\n\n%s\n\nFrags: %d",
 				        BG_ClassConfig( item->v.pclass )->humanName,
-				        BG_Class( item->v.pclass )->info,
+				        _( BG_Class( item->v.pclass )->info ),
 				        value );
 			}
 
@@ -1843,13 +1853,13 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 			{
 				s = va( "%s\n\n%s\n\nCredits: Free",
 				        BG_Weapon( item->v.weapon )->humanName,
-				        BG_Weapon( item->v.weapon )->info );
+				        _( BG_Weapon( item->v.weapon )->info ) );
 			}
 			else
 			{
 				s = va( "%s\n\n%s\n\nCredits: %d",
 				        BG_Weapon( item->v.weapon )->humanName,
-				        BG_Weapon( item->v.weapon )->info,
+				        _( BG_Weapon( item->v.weapon )->info ),
 				        value );
 			}
 
@@ -1862,13 +1872,13 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 			{
 				s = va( "%s\n\n%s\n\nCredits: Free",
 				        BG_Upgrade( item->v.upgrade )->humanName,
-				        BG_Upgrade( item->v.upgrade )->info );
+				        _( BG_Upgrade( item->v.upgrade )->info ) );
 			}
 			else
 			{
 				s = va( "%s\n\n%s\n\nCredits: %d",
 				        BG_Upgrade( item->v.upgrade )->humanName,
-				        BG_Upgrade( item->v.upgrade )->info,
+				        _( BG_Upgrade( item->v.upgrade )->info ),
 				        value );
 			}
 
@@ -1895,13 +1905,13 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 			{
 				s = va( "%s\n\n%s",
 				        BG_Buildable( item->v.buildable )->humanName,
-				        BG_Buildable( item->v.buildable )->info );
+				        _( BG_Buildable( item->v.buildable )->info ) );
 			}
 			else
 			{
 				s = va( "%s\n\n%s\n\n%s: %d",
 				        BG_Buildable( item->v.buildable )->humanName,
-				        BG_Buildable( item->v.buildable )->info,
+				        _( BG_Buildable( item->v.buildable )->info ),
 				        string, value );
 			}
 
@@ -1976,6 +1986,11 @@ static void UI_DrawSelectedMapPreview( rectDef_t *rect, float scale, vec4_t colo
 			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip( "gfx/2d/load_screen" ) );
 		}
 	}
+}
+
+static void UI_DrawSelectedHUDPreview( rectDef_t *rect )
+{
+	UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, uiInfo.huds[ uiInfo.hudIndex ].hudShot );
 }
 
 static void UI_DrawSelectedMapName( rectDef_t *rect, float scale, vec4_t color, int textStyle )
@@ -2160,7 +2175,7 @@ static void UI_DrawGLInfo( rectDef_t *rect, float scale, int textalign, int text
 
 // FIXME: table drive
 //
-static void UI_OwnerDraw( float x, float y, float w, float h,
+static void UI_OwnerDraw( rectDef_t *rect,
                           float text_x, float text_y, int ownerDraw,
                           int ownerDrawFlags, int align,
                           int textalign, int textvalign, float borderSize,
@@ -2168,74 +2183,71 @@ static void UI_OwnerDraw( float x, float y, float w, float h,
                           qhandle_t shader,
                           int textStyle )
 {
-	rectDef_t       rect;
-
-	rect.x = x;
-	rect.y = y;
-	rect.w = w;
-	rect.h = h;
-
 	switch ( ownerDraw )
 	{
 		case UI_TEAMINFOPANE:
 			UI_DrawInfoPane( &uiInfo.teamList[ uiInfo.teamIndex ],
-			                 &rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+			                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
 			break;
 
 		case UI_ACLASSINFOPANE:
 			UI_DrawInfoPane( &uiInfo.alienClassList[ uiInfo.alienClassIndex ],
-			                 &rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+			                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
 			break;
 
 		case UI_AUPGRADEINFOPANE:
 			UI_DrawInfoPane( &uiInfo.alienUpgradeList[ uiInfo.alienUpgradeIndex ],
-			                 &rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+			                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
 			break;
 
 		case UI_HITEMINFOPANE:
 			UI_DrawInfoPane( &uiInfo.humanItemList[ uiInfo.humanItemIndex ],
-			                 &rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+			                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
 			break;
 
 		case UI_HBUYINFOPANE:
 			UI_DrawInfoPane( &uiInfo.humanArmouryBuyList[ uiInfo.humanArmouryBuyIndex ],
-			                 &rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+			                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
 			break;
 
 		case UI_HSELLINFOPANE:
 			UI_DrawInfoPane( &uiInfo.humanArmourySellList[ uiInfo.humanArmourySellIndex ],
-			                 &rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+			                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
 			break;
 
 		case UI_ABUILDINFOPANE:
 			UI_DrawInfoPane( &uiInfo.alienBuildList[ uiInfo.alienBuildIndex ],
-			                 &rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+			                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
 			break;
 
 		case UI_HBUILDINFOPANE:
 			UI_DrawInfoPane( &uiInfo.humanBuildList[ uiInfo.humanBuildIndex ],
-			                 &rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+			                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
 			break;
 
 		case UI_HELPINFOPANE:
 			UI_DrawInfoPane( &uiInfo.helpList[ uiInfo.helpIndex ],
-			                 &rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
+			                 rect, text_x, text_y, scale, textalign, textvalign, foreColor, textStyle );
 			break;
 
 		case UI_NETMAPPREVIEW:
-			UI_DrawServerMapPreview( &rect, scale, foreColor );
+			UI_DrawServerMapPreview( rect, scale, foreColor );
 			break;
 
 		case UI_SELECTEDMAPPREVIEW:
-			UI_DrawSelectedMapPreview( &rect, scale, foreColor );
+			UI_DrawSelectedMapPreview( rect, scale, foreColor );
 			break;
 
 		case UI_SELECTEDMAPNAME:
-			UI_DrawSelectedMapName( &rect, scale, foreColor, textStyle );
+			UI_DrawSelectedMapName( rect, scale, foreColor, textStyle );
 			break;
 
 		case UI_GLINFO:
-			UI_DrawGLInfo( &rect, scale, textalign, textvalign, foreColor, textStyle, text_x, text_y );
+			UI_DrawGLInfo( rect, scale, textalign, textvalign, foreColor, textStyle, text_x, text_y );
+			break;
+
+		case UI_SELECTEDHUDPREVIEW:
+			UI_DrawSelectedHUDPreview( rect );
 			break;
 
 		default:
@@ -3083,6 +3095,41 @@ static void UI_LoadDemos( void )
 	}
 }
 
+/*
+===============
+UI_LoadHUDs
+===============
+*/
+static void UI_LoadHUDs( void )
+{
+	char hudList[ 4096 ];
+	char *hudName;
+	int  i, numHUDs, len;
+	int  pos = 0;
+
+	numHUDs = uiInfo.hudCount = trap_FS_GetFileList( "ui", "/", hudList, 4096 );
+
+	hudName = hudList;
+
+	for ( i = 0; i < numHUDs; i++ )
+	{
+		len = strlen( hudName );
+
+		if ( !trap_FS_FOpenFile( va( "ui/%s/hud.cfg", hudName ), NULL, FS_READ ) )
+		{
+			uiInfo.hudCount--;
+			hudName += len + 1;
+			continue;
+		}
+
+		uiInfo.huds[ pos ].name = String_Alloc( hudName );
+		uiInfo.huds[ pos++ ].hudShot = trap_R_RegisterShaderNoMip( va( "ui/%s/hudShot", hudName ) );
+
+		hudName += len + 1;
+	}
+}
+
+
 static void UI_Update( const char *name )
 {
 	int val = trap_Cvar_VariableValue( name );
@@ -3321,6 +3368,22 @@ static void UI_RunMenuScript( char **args )
 		{
 			UI_LoadTeams();
 		}
+		else if ( Q_stricmp( name, "LoadHUDs" ) == 0 )
+		{
+			UI_LoadHUDs();
+		}
+		else if ( Q_stricmp( name, "applyHud" ) == 0 )
+		{
+			uiClientState_t cstate;
+
+			trap_GetClientState( &cstate );
+
+			trap_Cmd_ExecuteText( EXEC_APPEND, va( "exec ui/%s/install.cfg;", uiInfo.huds[ uiInfo.hudIndex ].name ) );
+			if ( cstate.connState == CA_ACTIVE )
+			{
+				trap_Cmd_ExecuteText( EXEC_APPEND, "reloadhud" );
+			}
+		}
 		else if ( Q_stricmp( name, "JoinTeam" ) == 0 )
 		{
 			if ( ( cmd = uiInfo.teamList[ uiInfo.teamIndex ].cmd ) )
@@ -3430,49 +3493,30 @@ static void UI_RunMenuScript( char **args )
 			{
 				trap_Cmd_ExecuteText( EXEC_APPEND, va( "%s\n", buffer + 1 ) );
 			}
-			else if ( uiInfo.chatTeam )
+			else if ( uiInfo.chatType == CHAT_TYPE_COMMAND )
 			{
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "say_team %s\n", Quote( buffer ) ) );
-			}
-			else if ( uiInfo.chatAdmin )
-			{
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "a %s\n", Quote( buffer ) ) );
-			}
-			else if ( uiInfo.chatIRC )
-			{
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "irc_say %s\n", Quote( buffer ) ) );
+				trap_Cmd_ExecuteText( EXEC_APPEND, va( "%s\n", buffer ) );
 			}
 			else
 			{
-				trap_Cmd_ExecuteText( EXEC_APPEND, va( "say %s\n", Quote( buffer ) ) );
+				// it ‘happens’ that the menu names match the command names
+				trap_Cmd_ExecuteText( EXEC_APPEND, va( "%s %s\n", chatMenus[ uiInfo.chatType ], Quote( buffer ) ) );
 			}
 		}
 		else if ( Q_stricmp( name, "SayKeydown" ) == 0 )
 		{
-			if ( ui_chatCommands.integer )
+			if ( ui_chatCommands.integer && uiInfo.chatType != CHAT_TYPE_COMMAND )
 			{
 				char buffer[ MAX_CVAR_VALUE_STRING ];
 				trap_Cvar_VariableStringBuffer( "ui_sayBuffer", buffer, sizeof( buffer ) );
 
 				if ( buffer[ 0 ] == '/' || buffer[ 0 ] == '\\' )
 				{
-					Menus_ReplaceActiveByName( "say_command" );
+					Menus_ReplaceActiveByName( chatMenus[ CHAT_TYPE_COMMAND ] );
 				}
-				else if ( uiInfo.chatTeam )
+				else if ( uiInfo.chatType != CHAT_TYPE_COMMAND )
 				{
-					Menus_ReplaceActiveByName( "say_team" );
-				}
-				else if ( uiInfo.chatAdmin )
-				{
-					Menus_ReplaceActiveByName( "a" );
-				}
-				else if ( uiInfo.chatIRC )
-				{
-					Menus_ReplaceActiveByName( "irc_say" );
-				}
-				else
-				{
-					Menus_ReplaceActiveByName( "say" );
+					Menus_ReplaceActiveByName( chatMenus[ uiInfo.chatType ] );
 				}
 			}
 		}
@@ -4164,6 +4208,10 @@ static int UI_FeederCount( int feederID )
 	{
 		return uiInfo.profileCount;
 	}
+	else if ( feederID == FEEDER_HUDS )
+	{
+		return uiInfo.hudCount;
+	}
 	else if ( feederID == FEEDER_RESOLUTIONS )
 	{
 		if ( UI_FeederInitialise( feederID ) == uiInfo.numResolutions )
@@ -4504,6 +4552,14 @@ static const char *UI_FeederItemText( int feederID, int index, int column, qhand
 			return uiInfo.profileList[ index ].name;
 		}
 	}
+	else if ( feederID  == FEEDER_HUDS )
+	{
+		if ( index >= 0 && index < uiInfo.hudCount )
+		{
+			return uiInfo.huds[ index ].name;
+		}
+	}
+
 	else if ( feederID == FEEDER_RESOLUTIONS )
 	{
 		static char resolution[ MAX_STRING_CHARS ];
@@ -4546,6 +4602,14 @@ static qhandle_t UI_FeederItemImage( int feederID, int index )
 			}
 
 			return uiInfo.mapList[ index ].levelShot;
+		}
+	}
+
+	if ( feederID == FEEDER_HUDS )
+	{
+		if ( index >= 0 && index < uiInfo.hudCount )
+		{
+			return uiInfo.huds[ index ].hudShot;
 		}
 	}
 
@@ -4692,6 +4756,10 @@ static void UI_FeederSelection( int feederID, int index )
 	else if ( feederID == FEEDER_PROFILES )
 	{
 		uiInfo.profileIndex = index;
+	}
+	else if ( feederID == FEEDER_HUDS )
+	{
+		uiInfo.hudIndex = index;
 	}
 	else if ( feederID == FEEDER_RESOLUTIONS )
 	{
@@ -4991,10 +5059,38 @@ void UI_Init( void )
 
 	start = trap_Milliseconds();
 
-	UI_LoadMenus( "ui/menus.txt", qtrue );
-	UI_LoadMenus( "ui/ingame.txt", qfalse );
-	UI_LoadMenus( "ui/tremulous.txt", qfalse );
-	UI_LoadHelp( "ui/help.txt" );
+	if ( !UI_LoadMenus( ui_menuFiles.string, qtrue ) )
+	{
+		Com_Printf( "^3WARNING: %s not found. Attempting to load default value...\n", ui_menuFiles.string );
+		trap_Cvar_Reset( "ui_menuFiles" );
+		trap_Cvar_Update( &ui_menuFiles );
+		if ( !UI_LoadMenus( ui_menuFiles.string, qtrue ) )
+		{
+			trap_Error( va( S_COLOR_RED "menu list '%s' not found, unable to continue!", ui_menuFiles.string ) );
+		}
+	}
+	if ( !UI_LoadMenus( ui_ingameFiles.string, qfalse ) )
+	{
+		Com_Printf( "^3WARNING: %s not found. Attempting to load default value...\n", ui_ingameFiles.string );
+		trap_Cvar_Reset( "ui_ingameFiles" );
+		trap_Cvar_Update( &ui_ingameFiles );
+		if ( !UI_LoadMenus( ui_ingameFiles.string, qfalse ) )
+		{
+			trap_Error( va( S_COLOR_RED "menu list '%s' not found, unable to continue!", ui_ingameFiles.string ) );
+		}
+	}
+	if ( !UI_LoadMenus( ui_teamFiles.string, qfalse ) )
+	{
+		Com_Printf( "^3WARNING: %s not found. Attempting to load default value...\n", ui_teamFiles.string );
+		trap_Cvar_Reset( "ui_teamFiles" );
+		trap_Cvar_Update( &ui_teamFiles );
+
+		if ( !UI_LoadMenus( ui_teamFiles.string, qfalse ) )
+		{
+			trap_Error( va( S_COLOR_RED "menu list '%s' not found, unable to continue!", ui_teamFiles.string ) );
+		}
+	}
+	UI_LoadHelp( ui_helpFiles.string );
 
 	Menus_CloseAll();
 
@@ -5049,30 +5145,30 @@ UI_MouseEvent
 void UI_MouseEvent( int dx, int dy )
 {
 	// update mouse screen position
-	uiInfo.uiDC.cursorx += ( dx * uiInfo.uiDC.aspectScale );
-
-	if ( uiInfo.uiDC.cursorx < 0 )
+	uiInfo.uiDC.unscaledCursorx += dx;
+	if ( uiInfo.uiDC.unscaledCursorx < 0 )
 	{
-		uiInfo.uiDC.cursorx = 0;
+		uiInfo.uiDC.unscaledCursorx = 0;
 	}
-	else if ( uiInfo.uiDC.cursorx > SCREEN_WIDTH )
+	else if ( uiInfo.uiDC.unscaledCursorx > uiInfo.uiDC.glconfig.vidWidth )
 	{
-		uiInfo.uiDC.cursorx = SCREEN_WIDTH;
+		uiInfo.uiDC.unscaledCursorx = uiInfo.uiDC.glconfig.vidWidth;
 	}
+	uiInfo.uiDC.cursorx = ( uiInfo.uiDC.unscaledCursorx / uiInfo.uiDC.xscale );
 
-	uiInfo.uiDC.cursory += dy;
-
-	if ( uiInfo.uiDC.cursory < 0 )
+	uiInfo.uiDC.unscaledCursory += dy;
+	if ( uiInfo.uiDC.unscaledCursory < 0 )
 	{
-		uiInfo.uiDC.cursory = 0;
+		uiInfo.uiDC.unscaledCursory = 0;
 	}
-	else if ( uiInfo.uiDC.cursory > SCREEN_HEIGHT )
+	else if ( uiInfo.uiDC.unscaledCursory > uiInfo.uiDC.glconfig.vidHeight )
 	{
-		uiInfo.uiDC.cursory = SCREEN_HEIGHT;
+		uiInfo.uiDC.unscaledCursory = uiInfo.uiDC.glconfig.vidHeight;
 	}
+	uiInfo.uiDC.cursory = ( uiInfo.uiDC.unscaledCursory / uiInfo.uiDC.yscale );
 
-	uiInfo.uiDC.cursordx = dx * uiInfo.uiDC.aspectScale;
-	uiInfo.uiDC.cursordy = dy;
+	uiInfo.uiDC.cursordx = dx / uiInfo.uiDC.xscale;
+	uiInfo.uiDC.cursordy = dy / uiInfo.uiDC.yscale;
 
 	if ( Menu_Count() > 0 )
 	{
@@ -5085,26 +5181,16 @@ void UI_MouseEvent( int dx, int dy )
 UI_MousePosition
 =================
 */
-int UI_MousePosition( void )
+int UI_MousePosition( qboolean draw )
 {
-	return ( int ) rint( uiInfo.uiDC.cursorx ) |
-	       ( int ) rint( uiInfo.uiDC.cursory ) << 16;
-}
-
-/*
-=================
-UI_SetMousePosition
-=================
-*/
-void UI_SetMousePosition( int x, int y )
-{
-	uiInfo.uiDC.cursorx = x;
-	uiInfo.uiDC.cursory = y;
-
-	if ( Menu_Count() > 0 )
+	// MASSIVE HACK: draw the mouse cursor if draw = 1
+	// TODO: remove once caller (cl_scrn.c) switches to UI_DRAW_CURSOR, after alpha 9
+	if ( draw )
 	{
-		Display_MouseMove( NULL, uiInfo.uiDC.cursorx, uiInfo.uiDC.cursory );
+		UI_DrawCursor();
 	}
+	return uiInfo.uiDC.unscaledCursorx |
+	       uiInfo.uiDC.unscaledCursory << 16;
 }
 
 void UI_SetActiveMenu( uiMenuCommand_t menu )
@@ -5517,6 +5603,18 @@ void UI_DrawConnectScreen( qboolean overlay )
 }
 
 /*
+========================
+UI_DrawCursor
+========================
+*/
+void UI_DrawCursor( void ){
+	// draw cursor
+	UI_SetColor( NULL );
+	UI_DrawHandlePic( uiInfo.uiDC.cursorx - ( 16.0f * uiInfo.uiDC.aspectScale ), uiInfo.uiDC.cursory - 16.0f,
+	                  32.0f * uiInfo.uiDC.aspectScale, 32.0f, uiInfo.uiDC.Assets.cursor );
+}
+
+/*
 =================
 UI_RegisterCvars
 =================
@@ -5624,21 +5722,3 @@ void UI_UpdateNews( qboolean begin )
 		uiInfo.newsInfo.refreshActive = qfalse;
 	}
 }
-
-const char *gettext( const char *msgid )
-{
-	QVM_STATIC char buffer[ 32000 ];
-	char *buf = buffer;
-	trap_Gettext( buf, msgid, sizeof( buffer ) );
-	return buf;
-}
-
-// TMP
-const char *pgettext( const char *ctxt, const char *msgid )
-{
-	QVM_STATIC char buffer[ 32000 ];
-	char *buf = buffer;
-	trap_Pgettext( buf, ctxt, msgid, sizeof( buffer ) );
-	return buf;
-}
-

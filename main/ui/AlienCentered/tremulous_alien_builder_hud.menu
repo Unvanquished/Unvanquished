@@ -1,0 +1,63 @@
+#include "ui/menudef.h"
+
+{
+
+#define W         640
+#define H         480
+
+  menuDef
+  {
+    name "alien_builder_hud"
+    fullScreen MENU_FALSE
+    visible MENU_TRUE
+    rect 0 0 W H
+    aspectBias ASPECT_NONE
+
+#include "ui/AlienCentered/tremulous_alien_common_hud.h"
+
+    //BUILD TIMER
+    itemDef
+    {
+      name "buildtimer"
+      rect 266 445 104 13
+      aspectBias ALIGN_CENTER
+      visible MENU_TRUE
+      decoration
+      forecolor 1.0 0.0 0.0 .5
+      background "ui/assets/human/buildstat/health.tga"
+      ownerdraw CG_PLAYER_BUILD_TIMER_BAR
+    }
+
+    //BUILD POINTS
+    itemDef
+    {
+      name "build-points"
+      rect 498 459 60 15
+      aspectBias ALIGN_RIGHT
+      visible MENU_TRUE
+      decoration
+      forecolor 1.0 0.0 0.0 1.0
+      ownerdraw CG_PLAYER_AMMO_VALUE
+    }
+
+    itemDef
+    {
+      name "buildpointstext"
+      type ITEM_TYPE_TEXT
+      text "build points"
+      style WINDOW_STYLE_EMPTY
+	aspectBias ALIGN_RIGHT
+      textstyle ITEM_TEXTSTYLE_PLAIN
+      rect 574 462 45 11.25
+	textscale .35
+      textalign ALIGN_CENTER
+     forecolor .51 .51 .51 1
+      visible MENU_TRUE
+      decoration
+    }
+
+  }
+
+
+
+}

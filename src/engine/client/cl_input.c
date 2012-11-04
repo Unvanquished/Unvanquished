@@ -119,7 +119,7 @@ void IN_KeyDown( kbutton_t *b )
 	}
 	else
 	{
-		Com_DPrintf("%s", _( "Three keys down for a button!\n" ));
+		Com_DPrintf( "Three keys down for a button!\n" );
 		return;
 	}
 
@@ -466,6 +466,11 @@ void CL_KeyMove( usercmd_t *cmd )
 	}
 }
 
+qboolean CL_UIOwnsMouse( void )
+{
+	return ( ( cls.keyCatchers & KEYCATCH_UI ) && !( cls.keyCatchers & KEYCATCH_CONSOLE ) && !Cvar_VariableValue( "ui_hideCursor" ) );
+}
+
 /*
 =================
 CL_MouseEvent
@@ -473,9 +478,12 @@ CL_MouseEvent
 */
 void CL_MouseEvent( int dx, int dy, int time )
 {
-	if ( cls.keyCatchers & KEYCATCH_UI )
+	if ( CL_UIOwnsMouse() )
 	{
-		VM_Call( uivm, UI_MOUSE_EVENT, dx, dy );
+		float fdx = dx, fdy = dy;
+		// Scale both by yscale to account for grabbed mouse movement
+		SCR_AdjustFrom640( NULL, &fdx, NULL, &fdy );
+		VM_Call( uivm, UI_MOUSE_EVENT, ( int ) fdx, ( int ) fdy );
 	}
 	else if ( cls.keyCatchers & KEYCATCH_CGAME )
 	{
@@ -1147,7 +1155,7 @@ void CL_WritePacket( void )
 	{
 		if ( cl_showSend->integer )
 		{
-			Com_Printf( "%s", _( "WARNING: unsent fragments (not supposed to happen!)\n" ));
+			Com_Printf( "WARNING: unsent fragments (not supposed to happen!)\n" );
 		}
 
 		CL_Netchan_TransmitNextFragment( &clc.netchan );
@@ -1243,7 +1251,7 @@ void CL_RegisterButtonCommands( const char *cmd_names )
 
 	if ( cmd_names )
 	{
-		Com_Printf(_( "^1BUG: cgame: some button commands left unregistered (\"%s\")\n"), cmd_names );
+		Com_Printf( "^1BUG: cgame: some button commands left unregistered (\"%s\")\n", cmd_names );
 	}
 }
 

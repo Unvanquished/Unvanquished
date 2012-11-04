@@ -531,9 +531,9 @@ typedef struct src_s
 } src_t;
 
 #ifdef MACOS_X
-	#define MAX_SRC 64
+#	define MAX_SRC 64
 #else
-	#define MAX_SRC 128
+#	define MAX_SRC 128
 #endif
 static src_t srcList[MAX_SRC];
 static int srcCount = 0;
@@ -2144,17 +2144,18 @@ static
 void S_AL_Respatialize( int entityNum, const vec3_t origin, vec3_t axis[3], int inwater )
 {
 	float		orientation[6];
-	vec3_t	sorigin;
+	vec3_t	sorigin, saxis[3];
 
 	VectorCopy( origin, sorigin );
 	S_AL_SanitiseVector( sorigin );
 
-	S_AL_SanitiseVector( axis[ 0 ] );
-	S_AL_SanitiseVector( axis[ 1 ] );
-	S_AL_SanitiseVector( axis[ 2 ] );
+	AxisCopy( axis, saxis );
+	S_AL_SanitiseVector( saxis[ 0 ] );
+	S_AL_SanitiseVector( saxis[ 1 ] );
+	S_AL_SanitiseVector( saxis[ 2 ] );
 
-	orientation[0] = axis[0][0]; orientation[1] = axis[0][1]; orientation[2] = axis[0][2];
-	orientation[3] = axis[2][0]; orientation[4] = axis[2][1]; orientation[5] = axis[2][2];
+	orientation[0] = saxis[0][0]; orientation[1] = saxis[0][1]; orientation[2] = saxis[0][2];
+	orientation[3] = saxis[2][0]; orientation[4] = saxis[2][1]; orientation[5] = saxis[2][2];
 
 	VectorCopy( sorigin, lastListenerOrigin );
 

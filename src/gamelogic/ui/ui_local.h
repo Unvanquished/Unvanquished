@@ -34,24 +34,19 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //
 // ui_main.c
 //
-void UI_Report( void );
-void UI_Load( void );
-void UI_LoadMenus( const char *menuFile, qboolean reset );
-int  UI_AdjustTimeByGame( int time );
-void UI_ClearScores( void );
-void UI_LoadArenas( void );
-void UI_ServerInfo( void );
+void     UI_Report( void );
+void     UI_Load( void );
+qboolean UI_LoadMenus( const char *menuFile, qboolean reset );
+int      UI_AdjustTimeByGame( int time );
+void     UI_ClearScores( void );
+void     UI_LoadArenas( void );
+void     UI_ServerInfo( void );
 
-void UI_UpdateNews( qboolean );
+void     UI_UpdateNews( qboolean );
 
-void UI_RegisterCvars( void );
-void UI_UpdateCvars( void );
-void UI_DrawConnectScreen( qboolean overlay );
-
-const char *gettext( const char *msgid );
-const char *pgettext( const char *ctxt, const char *msgid );
-
-extern vmCvar_t ui_chatPromptColours;
+void     UI_RegisterCvars( void );
+void     UI_UpdateCvars( void );
+void     UI_DrawConnectScreen( qboolean overlay );
 
 // new ui stuff
 #define MAX_MAPS                128
@@ -69,6 +64,7 @@ extern vmCvar_t ui_chatPromptColours;
 #define MAX_RESOLUTIONS         32
 #define MAX_PROFILES            64
 #define MAX_LANGUAGES           16
+#define MAX_HUDS                16
 
 typedef struct
 {
@@ -217,6 +213,24 @@ typedef struct
 
 language_t;
 
+typedef enum
+{
+  CHAT_TYPE_COMMAND,
+  CHAT_TYPE_ALL,
+  CHAT_TYPE_TEAM,
+  CHAT_TYPE_ADMIN,
+  CHAT_TYPE_IRC,
+  CHAT_TYPE_LAST // end marker
+} chatType_t;
+
+typedef struct
+{
+	const char *name;
+	qhandle_t  hudShot;
+}
+
+hudInfo_t;
+
 typedef struct
 {
 	displayContextDef_t uiDC;
@@ -319,9 +333,11 @@ typedef struct
 	language_t            languages[ MAX_LANGUAGES ];
 	int                   languageIndex;
 
-	qboolean              chatTeam;
-	qboolean              chatAdmin;
-	qboolean              chatIRC;
+	chatType_t            chatType;
+
+	int                   hudCount;
+	hudInfo_t             huds[ MAX_HUDS ];
+	int                   hudIndex;
 
 	profileInfo_t         profileList[ MAX_PROFILES ];
 	int                   profileCount;
@@ -331,6 +347,7 @@ typedef struct
 uiInfo_t;
 
 extern uiInfo_t uiInfo;
+extern const char *const chatMenus[CHAT_TYPE_LAST];
 
 qboolean        UI_ConsoleCommand( int realTime );
 char            *UI_Cvar_VariableString( const char *var_name );

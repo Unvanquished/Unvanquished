@@ -265,7 +265,7 @@ void SV_DirectConnect( netadr_t from )
 		     && ( cl->netchan.qport == qport
 		          || from.port == cl->netchan.remoteAddress.port ) )
 		{
-			Com_Printf(_( "%s:reconnect\n"), NET_AdrToString( from ) );
+			Com_Printf( "%s:reconnect\n", NET_AdrToString( from ) );
 			newcl = cl;
 
 			// this doesn't work because it nukes the players userinfo
@@ -952,12 +952,12 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 		if ( cl->downloadnotify & DLNOTIFY_BEGIN )
 		{
 			cl->downloadnotify &= ~DLNOTIFY_BEGIN;
-			Com_Printf(_( "clientDownload: %d : beginning \"%s\"\n"), ( int )( cl - svs.clients ), cl->downloadName );
+			Com_Printf( "clientDownload: %d : beginning \"%s\"\n", ( int )( cl - svs.clients ), cl->downloadName );
 		}
 
 		if ( !sv_allowDownload->integer )
 		{
-			Com_Printf(_( "clientDownload: %d : \"%s\" download disabled\n"), ( int )( cl - svs.clients ), cl->downloadName );
+			Com_Printf( "clientDownload: %d : \"%s\" download disabled\n", ( int )( cl - svs.clients ), cl->downloadName );
 
 			if ( sv_pure->integer )
 			{
@@ -1293,7 +1293,7 @@ static void SV_VerifyPaks_f( client_t *cl )
 
 			if ( !pArg || *pArg == '@' || atoi( pArg ) != nChkSum1 )
 			{
-				Com_Printf(_( "nChkSum1 %d == %d\n"), atoi( pArg ), nChkSum1 );
+				Com_Printf( "nChkSum1 %d == %d\n", atoi( pArg ), nChkSum1 );
 				bGood = qfalse;
 				break;
 			}
@@ -1303,7 +1303,7 @@ static void SV_VerifyPaks_f( client_t *cl )
 
 			if ( !pArg || *pArg == '@' || atoi( pArg ) != nChkSum2 )
 			{
-				Com_Printf(_( "nChkSum2 %d == %d\n"), atoi( pArg ), nChkSum2 );
+				Com_Printf( "nChkSum2 %d == %d\n", atoi( pArg ), nChkSum2 );
 				bGood = qfalse;
 				break;
 			}
@@ -1838,13 +1838,13 @@ static void SV_UserMove( client_t *cl, msg_t *msg, qboolean delta )
 
 	if ( cmdCount < 1 )
 	{
-		Com_Printf(_( "cmdCount < 1\n" ));
+		Com_Printf( "cmdCount < 1\n" );
 		return;
 	}
 
 	if ( cmdCount > MAX_PACKET_USERCMDS )
 	{
-		Com_Printf(_( "cmdCount > MAX_PACKET_USERCMDS\n" ));
+		Com_Printf( "cmdCount > MAX_PACKET_USERCMDS\n" );
 		return;
 	}
 

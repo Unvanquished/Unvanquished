@@ -710,7 +710,7 @@ void Cmd_ModCase_f( void )
 
 found:
 
-	if ( v )
+	if ( v && *v )
 	{
 		if ( *v == '/' || *v == '\\' )
 		{
@@ -812,7 +812,7 @@ void Cmd_If_f( void )
 			return;
 	}
 
-	if ( v )
+	if ( v && *v )
 	{
 		if ( *v == '/' || *v == '\\' )
 		{
@@ -1230,7 +1230,7 @@ void Cmd_Random_f( void )
 	{
 		v1 = atoi( Cmd_Argv( 2 ) );
 		v2 = atoi( Cmd_Argv( 3 ) );
-		Cvar_SetValueLatched( Cmd_Argv( 1 ), ( int )( rand() / ( float ) RAND_MAX * ( MAX( v1, v2 ) - MIN( v1, v2 ) ) + MIN( v1, v2 ) ) );
+		Cvar_SetValueLatched( Cmd_Argv( 1 ), ( int )( v1 + rand() / ( double ) RAND_MAX * ( v2 - ( double ) v1 ) ) );
 	}
 	else
 	{

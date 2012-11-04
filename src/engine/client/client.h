@@ -172,8 +172,6 @@ typedef struct
 	entityState_t entityBaselines[ MAX_GENTITIES ]; // for delta compression when not in previous frame
 
 	entityState_t parseEntities[ MAX_PARSE_ENTITIES ];
-
-	qboolean cameraMode;
 } clientActive_t;
 
 extern clientActive_t cl;
@@ -612,6 +610,8 @@ void CL_ClearState( void );
 void CL_ReadPackets( void );
 
 void CL_WritePacket( void );
+
+qboolean CL_UIOwnsMouse ( void );
 
 void IN_Notebook( void );
 void IN_Help( void );

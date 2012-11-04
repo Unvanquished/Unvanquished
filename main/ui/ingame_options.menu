@@ -175,31 +175,35 @@
     }
 
 //////// PLAYER
-	CVAR	( player, "Name:", "name", 40, 0 )
-	YESNO	( player, "Taunts Sounds Off:", "cg_noTaunt", play "sound/misc/menu1.wav", 1 )
-	YESNO	( player, "Team Chats Only:", "cg_teamChatsOnly", play "sound/misc/menu1.wav", 2 )
-	YESNO	( player, "Sticky Spectate:", "cg_stickySpec", play "sound/misc/menu1.wav", 3 )
-	YESNO	( player, "Tutorial Mode:", "cg_tutorial", play "sound/misc/menu1.wav", 4 )
-	MULTI	( player, "Disable Warning Dialogs:", "cg_disableWarningDialogs", { "No" 0 "Print to Console" 1 "Yes" 2 }, play "sound/misc/menu1.wav", 5 )
-	YESNO	( player, "Static Death Cam:", "cg_staticDeathCam", play "sound/misc/menu1.wav", 6 )
-	YESNO	( player, "Sprint Toggles:", "cg_sprintToggle", play "sound/misc/menu1.wav", 7 )
-	YESNO	( player, "Wallwalk Control Toggles:", "cg_wwToggle", play "sound/misc/menu1.wav", 8 )
-	MULTI	( player, "Wallwalking Speed:", "cg_wwSmoothTime", { "Medium" 300 "Fast" 150 "Instant" 0 "Slow" 600 }, play "sound/misc/menu1.wav",	9 )
+
+	COMBO	( player, "Language:", FEEDER_LANGUAGES, 0 )
+	CVAR	( player, "Name:", "name", 40, 1 )
+	YESNO	( player, "Taunts Sounds Off:", "cg_noTaunt", play "sound/misc/menu1.wav", 2 )
+	YESNO	( player, "Team Chats Only:", "cg_teamChatsOnly", play "sound/misc/menu1.wav", 3 )
+	YESNO	( player, "Sticky Spectate:", "cg_stickySpec", play "sound/misc/menu1.wav", 4 )
+	YESNO	( player, "Tutorial Mode:", "cg_tutorial", play "sound/misc/menu1.wav", 5 )
+	MULTI	( player, "Disable Warning Dialogs:", "cg_disableWarningDialogs", { "No" 0 "Print to Console" 1 "Yes" 2 }, play "sound/misc/menu1.wav", 6 )
+	YESNO	( player, "Static Death Cam:", "cg_staticDeathCam", play "sound/misc/menu1.wav", 7 )
+	YESNO	( player, "Sprint Toggles:", "cg_sprintToggle", play "sound/misc/menu1.wav", 8 )
+	YESNO	( player, "Wallwalk Control Toggles:", "cg_wwToggle", play "sound/misc/menu1.wav", 9 )
+	MULTI	( player, "Wallwalking Speed:", "cg_wwSmoothTime", { "Medium" 300 "Fast" 150 "Instant" 0 "Slow" 600 }, play "sound/misc/menu1.wav", 10 )
 
 //////// HUD
 
-	MULTI	( hud, "Show Clock:", "cg_drawClock", { "No" 0 "12 Hour" 1 "24 Hour" 2 }, play "sound/misc/menu1.wav", 0 )
-	MULTI	( hud, "Show Crosshair:", "cg_drawCrosshair", { "Never" 0 "Ranged Weapons Only" 1 "Always" 2 }, play "sound/misc/menu1.wav", 1 )
-	MULTI	( hud, "Crosshair Size:", "cg_crosshairSize", { "Intermediate" 1 "Small" 0.75 "Tiny" 0.5 "Huge" 1.25 }, play "sound/misc/menu1.wav", 2 )
-	YESNO	( hud, "Show Charge Bar:", "cg_drawChargeBar", play "sound/misc/menu1.wav", 3 )
-	YESNO	( hud, "Show Lag-o-meter:", "cg_lagometer",	play "sound/misc/menu1.wav", 4 )
-	MULTI	( hud, "Show Team Overlay:", "cg_drawTeamOverlay", { "Off" 0 "All Teammates" 1 "Support Teammates" 2 "Nearby Teammates" 3 }, play "sound/misc/menu1.wav", 5 )
-	MULTI	( hud, "Sort Team Overlay:", "cg_teamOverlaySortMode", { "None" 0 "Score" 1 "Weapon/Class" 2 }, play "sound/misc/menu1.wav", 6 )
-	MULTI	( hud, "Show Gun:", "cg_drawGun", { "No" 0 "Humans Only" 1 "Yes" 2 }, play "sound/misc/menu1.wav", 7 )
-	MULTI	( hud, "Show Speed:", "cg_drawspeed", { "No" 0 "Text" 1 "Graph" 2 "Text + Graph" 3 "Text No-Z" 5 "Graph No-Z" 6 "Text + Graph No-Z" 7 }, play "sound/misc/menu1.wav", 8 )
-	YESNO	( hud, "Show FPS:", "cg_drawFPS", play "sound/misc/menu1.wav", 9 )
-	YESNO	( hud, "Show Timer:", "cg_drawTimer", play "sound/misc/menu1.wav", 10 )
-	YESNO	( hud, "Show Demo State:", "cg_drawDemoState", play "sound/misc/menu1.wav", 11 )
+	BUTTON	( hud, "Set HUD", open huds, 0 )
+	MULTI	( hud, "Show Clock:", "cg_drawClock", { "No" 0 "12 Hour" 1 "24 Hour" 2 }, play "sound/misc/menu1.wav", 1 )
+	MULTI	( hud, "Show Crosshair:", "cg_drawCrosshair", { "Never" 0 "Ranged Weapons Only" 1 "Always" 2 }, play "sound/misc/menu1.wav", 2 )
+	MULTI	( hud, "Crosshair Size:", "cg_crosshairSize", { "Intermediate" 1 "Small" 0.75 "Tiny" 0.5 "Huge" 1.25 }, play "sound/misc/menu1.wav", 3 )
+	YESNO	( hud, "Show Charge Bar:", "cg_drawChargeBar", play "sound/misc/menu1.wav", 4 )
+	YESNO	( hud, "Show Lag-o-meter:", "cg_lagometer",	play "sound/misc/menu1.wav", 5 )
+	MULTI	( hud, "Show Team Overlay:", "cg_drawTeamOverlay", { "Off" 0 "All Teammates" 1 "Support Teammates" 2 "Nearby Teammates" 3 }, play "sound/misc/menu1.wav", 6 )
+	MULTI	( hud, "Sort Team Overlay:", "cg_teamOverlaySortMode", { "None" 0 "Score" 1 "Weapon/Class" 2 }, play "sound/misc/menu1.wav", 7 )
+	MULTI	( hud, "Show Gun:", "cg_drawGun", { "No" 0 "Humans Only" 1 "Yes" 2 }, play "sound/misc/menu1.wav", 8 )
+	YESNO	( hud, "Mirror Gun", "cg_mirrorgun", play "sound/misc/menu1.wav", 9 )
+	MULTI	( hud, "Show Speed:", "cg_drawspeed", { "No" 0 "Text" 1 "Graph" 2 "Text + Graph" 3 "Text No-Z" 5 "Graph No-Z" 6 "Text + Graph No-Z" 7 }, play "sound/misc/menu1.wav", 10 )
+	YESNO	( hud, "Show FPS:", "cg_drawFPS", play "sound/misc/menu1.wav", 11 )
+	YESNO	( hud, "Show Timer:", "cg_drawTimer", play "sound/misc/menu1.wav", 12 )
+	YESNO	( hud, "Show Demo State:", "cg_drawDemoState", play "sound/misc/menu1.wav", 13 )
 
 //////// CONTROLS
 
@@ -560,17 +564,13 @@
 	SLIDERX	( netsound, "Effects Volume:", "s_volume", .7, 0, 1, 1 )
 	SLIDERX	( netsound, "Music Volume:", "s_musicvolume", .25, 0, 1, 2 )
 	YESNOX	( netsound, "OpenAL:", "s_usemodule", play "sound/misc/menu1.wav", 3 )
-	MULTIX	( netsound, "Sound Quality:", "s_khz",
-			"44 khz (very high)" 44 "22 khz (high)" 22 "11 khz (low)" 11,
-			play "sound/misc/menu1.wav",
-			4 )
-	YESNOX	( netsound, "Doppler Sound:", "s_doppler", play "sound/misc/menu1.wav", 5 )
-	TEXTX	( netsound, "Network", 7 )
+	YESNOX	( netsound, "Doppler Sound:", "s_doppler", play "sound/misc/menu1.wav", 4 )
+	TEXTX	( netsound, "Network", 6 )
 	MULTIX	( netsound, "Net Data Rate:", "rate",
 			"<=28.8k" 2500 "33.6k" 3000 "56k" 4000 "ISDN" 5000 "LAN/CABLE/xDSl" 25000,
 			play "sound/misc/menu1.wav",
-			8 )
-	BUTTONX	( netsound, APPLY, play "sound/misc/menu1.wav"; exec "snd_restart", 10 )
+			7 )
+	BUTTONX	( netsound, APPLY, play "sound/misc/menu1.wav"; exec "snd_restart", 9 )
 
 //////// RANGE MARKERS
 

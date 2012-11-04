@@ -117,7 +117,8 @@ enum
   FEEDER_HELP_LIST, // help topics
   FEEDER_RESOLUTIONS, // display resolutions
   FEEDER_PROFILES, // Profiles
-  FEEDER_LANGUAGES // Languages
+  FEEDER_LANGUAGES, // Languages
+  FEEDER_HUDS // HUDs
 };
 
 // display flags
@@ -221,6 +222,7 @@ enum
   UI_KEYBINDSTATUS,
   UI_SELECTEDMAPPREVIEW,
   UI_SELECTEDMAPNAME,
+  UI_SELECTEDHUDPREVIEW,
 
   UI_TEAMINFOPANE,
   UI_ACLASSINFOPANE,

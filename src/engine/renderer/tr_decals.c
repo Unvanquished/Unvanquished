@@ -52,15 +52,12 @@ MakeTextureMatrix()
 generates a texture projection matrix for a triangle
 returns qfalse if a texture matrix cannot be created
 */
-
-typedef double dvec3_t[ 3 ];
-
 static qboolean MakeTextureMatrix( vec4_t texMat[ 2 ], vec4_t projection, decalVert_t *a, decalVert_t *b, decalVert_t *c )
 {
 	int     i, j;
-	double  bb, s, t, d;
-	dvec3_t pa, pb, pc;
-	dvec3_t bary, origin, xyz;
+	float   bb, s, t, d;
+	vec3_t  pa, pb, pc;
+	vec3_t  bary, origin, xyz;
 	vec3_t  vecs[ 3 ], axis[ 3 ], lengths;
 
 	/* project triangle onto plane of projection */

@@ -316,7 +316,7 @@ qboolean Sys_LowPhysicalMemory( void )
 Sys_Basename
 ==================
 */
-const char *Sys_Basename( char *path )
+char *Sys_Basename( char *path )
 {
 	return basename( path );
 }
@@ -326,7 +326,7 @@ const char *Sys_Basename( char *path )
 Sys_Dirname
 ==================
 */
-const char *Sys_Dirname( char *path )
+char *Sys_Dirname( char *path )
 {
 	return dirname( path );
 }

@@ -162,10 +162,10 @@ void SV_AddServerCommand( client_t *client, const char *cmd )
 
 		for ( i = client->reliableAcknowledge + 1; i <= client->reliableSequence; i++ )
 		{
-			Com_Printf(_( "cmd %5d: %s\n"), i, client->reliableCommands[ i & ( MAX_RELIABLE_COMMANDS - 1 ) ] );
+			Com_Printf( "cmd %5d: %s\n", i, client->reliableCommands[ i & ( MAX_RELIABLE_COMMANDS - 1 ) ] );
 		}
 
-		Com_Printf(_( "cmd %5d: %s\n"), i, cmd );
+		Com_Printf( "cmd %5d: %s\n", i, cmd );
 		SV_DropClient( client, "Server command overflow" );
 		return;
 	}
@@ -206,7 +206,7 @@ void QDECL PRINTF_LIKE(2) SV_SendServerCommand( client_t *cl, const char *fmt, .
 		SV_AddServerCommand( cl, ( char * ) message );
 		return;
 	}
-	
+
 	if ( com_dedicated->integer && !strncmp( ( char * ) message, "print_tr ", 9 ) )
 	{
 		SV_PrintTranslatedText( ( const char * ) message, qtrue );
@@ -218,7 +218,7 @@ void QDECL PRINTF_LIKE(2) SV_SendServerCommand( client_t *cl, const char *fmt, .
 		Com_Printf( "Broadcast: %s", Cmd_UnquoteString( ( char * ) message + 6 ) );
 	}
 
-	
+
 	// send the data to all relevent clients
 	for ( j = 0, client = svs.clients; j < sv_maxclients->integer; j++, client++ )
 	{
@@ -944,7 +944,7 @@ void SV_PacketEvent( netadr_t from, msg_t *msg )
 		// port assignments
 		if ( cl->netchan.remoteAddress.port != from.port )
 		{
-			Com_Printf(_( "SV_PacketEvent: fixing up a translated port\n" ));
+			Com_Printf( "SV_PacketEvent: fixing up a translated port\n" );
 			cl->netchan.remoteAddress.port = from.port;
 		}
 
@@ -1411,7 +1411,7 @@ int SV_LoadTag( const char *mod_name )
 	if ( version != TAG_VERSION )
 	{
 		FS_FreeFile( buffer );
-		Com_Printf( _( S_COLOR_YELLOW  "WARNING: SV_LoadTag: %s has wrong version (%i should be %i)\n"), mod_name, version,
+		Com_Printf( S_COLOR_YELLOW  "WARNING: SV_LoadTag: %s has wrong version (%i should be %i)\n", mod_name, version,
 		            TAG_VERSION );
 		return 0;
 	}
@@ -1474,7 +1474,7 @@ void SV_PrintTranslatedText( const char *text, qboolean broadcast )
 
 	Cmd_SaveCmdContext();
 	Cmd_TokenizeString( text );
-	
+
 	Q_strncpyz( buf, Trans_GettextGame( Cmd_Argv( 1 ) ), sizeof( buf ) );
 	in = buf;
 	memset( &str, 0, sizeof( str ) );
@@ -1494,7 +1494,7 @@ void SV_PrintTranslatedText( const char *text, qboolean broadcast )
 					in++;
 					break;
 				}
-				
+
 				if( isdigit( *in ) )
 				{
 					in++;
@@ -1519,7 +1519,7 @@ void SV_PrintTranslatedText( const char *text, qboolean broadcast )
 
 						Q_strcat( str, sizeof( str ), Trans_GettextGame( Cmd_Argv( num + 1 ) ) );
 						in += 2;
-							
+
 						break;
 					}
 					else if( *in == '$' )

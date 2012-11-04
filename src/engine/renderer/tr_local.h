@@ -1613,6 +1613,7 @@ extern cvar_t *r_zfar; // far Z clip plane
 extern cvar_t *r_stencilbits; // number of desired stencil bits
 extern cvar_t *r_depthbits; // number of desired depth bits
 extern cvar_t *r_colorbits; // number of desired color bits, only relevant for fullscreen
+extern cvar_t *r_alphabits; // number of desired alpha bits
 extern cvar_t *r_stereo; // desired pixelformat stereo flag
 extern cvar_t *r_texturebits; // number of desired texture bits
 
@@ -1766,10 +1767,6 @@ void  R_SwapBuffers( int );
 void  R_RenderView( viewParms_t *parms );
 
 void  R_AddMD3Surfaces( trRefEntity_t *e );
-void  R_AddNullModelSurfaces( trRefEntity_t *e );
-void  R_AddBeamSurfaces( trRefEntity_t *e );
-void  R_AddRailSurfaces( trRefEntity_t *e, qboolean isUnderwater );
-void  R_AddLightningBoltSurfaces( trRefEntity_t *e );
 
 void  R_TagInfo_f( void );
 
@@ -1861,7 +1858,7 @@ void      RE_Shutdown( qboolean destroyWindow );
 
 qboolean  R_GetEntityToken( char *buffer, int size );
 
-float     R_ProcessLightmap( byte **pic, int in_padding, int width, int height, byte **pic_out );  // Arnout
+float     R_ProcessLightmap( byte *pic, int in_padding, int width, int height, byte *pic_out );  // Arnout
 
 //----(SA)
 qboolean  RE_GetSkinModel( qhandle_t skinid, const char *type, char *name );
@@ -1917,7 +1914,6 @@ qhandle_t RE_RegisterShaderFromImage( const char *name, int lightmapIndex, image
 
 shader_t  *R_FindShader( const char *name, int lightmapIndex, qboolean mipRawImage );
 shader_t  *R_GetShaderByHandle( qhandle_t hShader );
-shader_t  *R_GetShaderByState( int index, long *cycleTime );
 shader_t  *R_FindShaderByName( const char *name );
 void      R_InitShaders( void );
 void      R_ShaderList_f( void );
@@ -2094,7 +2090,6 @@ SKIES
 
 void R_BuildCloudData( shaderCommands_t *shader );
 void R_InitSkyTexCoords( float cloudLayerHeight );
-void R_DrawSkyBox( shaderCommands_t *shader );
 void RB_DrawSun( void );
 void RB_ClipSkyPolygons( shaderCommands_t *shader );
 
@@ -2192,7 +2187,6 @@ ANIMATED MODELS
 
 void R_InitAnimations( void );
 
-void R_MakeAnimModel( model_t *model );
 void R_AddAnimSurfaces( trRefEntity_t *ent );
 void RB_SurfaceAnim( mdsSurface_t *surfType );
 int  R_GetBoneTag( orientation_t *outTag, mdsHeader_t *mds, int startTagIndex, const refEntity_t *refent,
@@ -2201,7 +2195,6 @@ int  R_GetBoneTag( orientation_t *outTag, mdsHeader_t *mds, int startTagIndex, c
 //
 // MDM / MDX
 //
-void R_MDM_MakeAnimModel( model_t *model );
 void R_MDM_AddAnimSurfaces( trRefEntity_t *ent );
 void RB_MDM_SurfaceAnim( mdmSurface_t *surfType );
 int  R_MDM_GetBoneTag( orientation_t *outTag, mdmHeader_t *mdm, int startTagIndex, const refEntity_t *refent,
@@ -2448,7 +2441,7 @@ int                                 SaveJPGToBuffer( byte *buffer, size_t bufSiz
 void                                SaveJPG( char *filename, int quality, int image_width, int image_height, unsigned char *image_buffer );
 void                                SavePNG( const char *name, const byte *pic, int width, int height, int numBytes, qboolean flip );
 
-#ifdef USE_WEBP
+#ifndef USE_WEBP
 #define LoadWEBP(n,p,w,h) /* nothing doing */
 #endif
 

@@ -103,18 +103,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define SLIDER_HEIGHT       16.0f
 #define SLIDER_THUMB_WIDTH  ( 12.0f * DC->aspectScale )
 #define SLIDER_THUMB_HEIGHT 20.0f
-#define NUM_CROSSHAIRS      10
 
-// localisation
-#if 0
-#	define _(text)              gettext( text )
-#	define N_(one, many, count) ngettext( (one), (many), (count) )
-#else
-#	define _(text)              Gettext(text)
-#	define C_(ctxt, text)       Pgettext(ctxt, text)
-#	define G_(text)             Pgettext( Trans_GenderContext( gender ), text)
-#	define N_(one, many, count) ( (count) == 1 ? (one) : (many) )
-#endif
+#define _( text )              Gettext( text )
+#define C_( ctxt, text )       Pgettext( ctxt, text )
+#define G_( text )             Pgettext( Trans_GenderContext( gender ), text )
+#define N_( one, many, count ) ( ( count ) == 1 ? ( one ) : ( many ) )
 
 typedef struct
 {
@@ -412,7 +405,7 @@ typedef struct
 	void ( *glyphChar )( fontHandle_t, int ch, glyphInfo_t *glyph );
 	void ( *freeCachedGlyphs )( fontHandle_t );
 
-	void ( *ownerDrawItem )( float x, float y, float w, float h, float text_x,
+	void ( *ownerDrawItem )( rectDef_t *rect, float text_x,
 	                         float text_y, int ownerDraw, int ownerDrawFlags,
 	                         int align, int textalign, int textvalign,
 	                         float borderSize, float scale, vec4_t foreColor,
@@ -455,6 +448,8 @@ typedef struct
 	float          aspectScale;
 	int            realTime;
 	int            frameTime;
+	int            unscaledCursorx;
+	int            unscaledCursory;
 	float          cursorx;
 	float          cursory;
 	float          cursordx;
@@ -478,7 +473,6 @@ const char          *String_Alloc( const char *p );
 void                String_Init( void );
 void                String_Report( void );
 void                Init_Display( displayContextDef_t *dc );
-void                Display_ExpandMacros( char *buff );
 void                Menu_Init( menuDef_t *menu );
 void                Item_Init( itemDef_t *item );
 void                Menu_PostParse( menuDef_t *menu );

@@ -3514,7 +3514,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Added onEnter and onEsc events to itemDef_t.
 	+ Hitting esc now closes the chat dialog.
 	+ Added mousewheel support to listboxes.
-	+ Fixed keybourd input for listboxes.
+	+ Fixed keyboard input for listboxes.
 	+ Changed recursive error error to list both the last and the current error message.
 	+ ATVI Wolfenstein XP #3583, #3585 : Fixed memory leak in virtual memory allocation.
 	+ Added con_autoclear, defaulting to 1.
@@ -6060,7 +6060,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Bullets shot from silenced weapons into bodies do not alert hearing system,
 		although ricochets do.
 	+ Move-out-of-the-way code has been added to FollowLeader AINode.
-	+ Added a random factor the the footstep hearing code.
+	+ Added a random factor the footstep hearing code.
 	
 24-12-2002
 			Ian <ian@maddocsoftware.com>
@@ -6699,7 +6699,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	+ Added a colored background round timer w/optional reinforcement timer to the right
 
 			Xinbo <xkan@maddocsoftware.com>
-	+ Added script command StartLosingCountDown and ResetLosingCoundDown.
+	+ Added script commands StartLosingCountDown and ResetLosingCountDown.
 	
 			Gordon <djbob@splashdamage.com>
 	+ Fixed crash in BSPC after CM_LoadMap, relating to uninitialized memory
@@ -6908,7 +6908,7 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 			Ian	<ian@maddocsoftware.com>
 	+ Added new project configuration to VC 6 version of project: "Release Missionpack with Debug".
 	  This is a release build with just line numbers for debug info.  Much easier to fix.
-	+ Added command line parameters to "Extract" project, a program that pulls out special AI/server entities
+	+ Added command-line option to the "Extract" project, a program that pulls out special AI/server entities
 
 			MrE <MrElusive@idsoftware.com>
 	+ added trace plane optimization to collision detection activated with MRE_OPTIMIZE.
@@ -7193,8 +7193,8 @@ update CHANGES to point to the 2.60 changes file ( html in Docs )
 	---> Reduced Airstrike danger range to 550 from 1500.  That was just too big
 	---> Added minimum time to stay away from danger for airstrike (bots could
 	     decide to run back between shells
-	---> Fixed serious bug in AAS_AvoidDangerArea that didn't init "inlist" flag
-	     properly.  This caused good routes to be cutoff.  I'll have to check
+	---> Fixed a serious bug in AAS_AvoidDangerArea() that didn't init the "inlist"
+	     flag properly.  This caused good routes to be cut off.  I'll have to check
 		 if that is a systemic problem in other AAS calls.
 	+ Single Player bots now hear bullet impacts.
 

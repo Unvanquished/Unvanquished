@@ -30,7 +30,7 @@
       name say_field \
       type ITEM_TYPE_SAYFIELD \
       style WINDOW_STYLE_EMPTY \
-      text "^;"##PROMPT##":" \
+      text PROMPT ":" \
       cvar "ui_sayBuffer" \
       maxchars 128 \
       rect 0 0 W H \
@@ -53,13 +53,13 @@
   }
 
   // Say to All
-  SAY_ITEM( say, "Say" )
+  SAY_ITEM( say, ASSET_COLOR_STRING_SAY_TO_ALL "Say" )
   // Say to Team
-  SAY_ITEM( say_team, "Say to team" )
+  SAY_ITEM( say_team, ASSET_COLOR_STRING_SAY_TO_TEAM "Say to team" )
   // Say to Admins
-  SAY_ITEM( a, "Say to admins" )
+  SAY_ITEM( a, ASSET_COLOR_STRING_SAY_TO_ADMINS "Say to admins" )
   // Say to IRC
-  SAY_ITEM( irc_say, "Say to IRC" )
+  SAY_ITEM( irc_say, ASSET_COLOR_STRING_SAY_TO_IRC "Say to IRC" )
   // Command
-  SAY_ITEM( say_command, "Command" )
+  SAY_ITEM( say_command, ASSET_COLOR_STRING_SAY_COMMAND "Command" )
 }

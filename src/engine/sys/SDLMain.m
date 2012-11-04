@@ -169,7 +169,7 @@ static void CustomApplicationMain( int argc, char **argv )
  * Catch document open requests...this lets us notice files when the app
  *  was launched by double-clicking a document, or when a document was
  *  dragged/dropped on the app's icon. You need to have a
- *  CFBundleDocumentsType section in your Info.plist to get this message,
+ *  CFBundleDocumentTypes section in your Info.plist to get this message,
  *  apparently.
  *
  * Files are added to gArgv, so to the app, they'll look like command line

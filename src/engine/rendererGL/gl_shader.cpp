@@ -868,14 +868,14 @@ bool GLShader::LoadShaderBinary()
 
 			Q_strncpyz( shaderProgram->name, this->GetName().c_str(), sizeof( shaderProgram->name ) );
 
-			#if 0
+#if 0
 			if ( !compileMacros.empty() )
 			{
 				program->compileMacros = ( char * ) ri.Hunk_Alloc( sizeof( char ) * compileMacros.length() + 1, h_low );
 				Q_strncpyz( program->compileMacros, compileMacros.c_str(), compileMacros.length() + 1 );
 			}
 			else
-			#endif
+#endif
 			{
 				shaderProgram->compileMacros = NULL;
 			}
@@ -1195,14 +1195,14 @@ void GLShader::CompilePermutations()
 
 			Q_strncpyz( shaderProgram->name, this->GetName().c_str(), sizeof( shaderProgram->name ) );
 
-			#if 0
+#if 0
 			if ( !compileMacros.empty() )
 			{
 				program->compileMacros = ( char * ) ri.Hunk_Alloc( sizeof( char ) * compileMacros.length() + 1, h_low );
 				Q_strncpyz( program->compileMacros, compileMacros.c_str(), compileMacros.length() + 1 );
 			}
 			else
-			#endif
+#endif
 			{
 				shaderProgram->compileMacros = NULL;
 			}
@@ -2746,9 +2746,9 @@ void GLShader_deferredShadowing_proj::SetShaderProgramUniforms( shaderProgram_t 
 
 GLShader_liquid::GLShader_liquid() :
 	GLShader( "liquid", ATTR_POSITION | ATTR_TEXCOORD | ATTR_TANGENT | ATTR_BINORMAL | ATTR_NORMAL | ATTR_COLOR
-		#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
+#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
 	                    | ATTR_LIGHTDIRECTION
-		#endif
+#endif
 		),
 	u_NormalTextureMatrix( this ),
 	u_ViewOrigin( this ),

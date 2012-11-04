@@ -53,7 +53,7 @@ static cvar_t       *in_keyboardDebug = NULL;
 static SDL_Joystick *stick = NULL;
 
 static qboolean     mouseAvailable = qfalse;
-static qboolean     mouseActive = qfalse;
+qboolean            mouseActive = qfalse;
 static qboolean     keyRepeatEnabled = qfalse;
 
 static cvar_t       *in_mouse = NULL;
@@ -62,6 +62,7 @@ static cvar_t       *in_disablemacosxmouseaccel = NULL;
 static double       originalMouseSpeed = -1.0;
 #endif
 static cvar_t       *in_nograb;
+static cvar_t       *in_uigrab;
 
 static cvar_t       *in_joystick = NULL;
 static cvar_t       *in_joystickDebug = NULL;
@@ -809,18 +810,18 @@ static void IN_ActivateMouse( void )
 IN_DeactivateMouse
 ===============
 */
-void IN_DeactivateMouse( void )
+void IN_DeactivateMouse( qboolean showCursor )
 {
 	if ( !SDL_WasInit( SDL_INIT_VIDEO ) )
 	{
 		return;
 	}
 
-	// Always show the cursor when the mouse is disabled,
+	// Show the cursor when the mouse is disabled,
 	// but not when fullscreen
 	if ( !Cvar_VariableIntegerValue( "r_fullscreen" ) )
 	{
-		SDL_ShowCursor( 1 );
+		SDL_ShowCursor( showCursor );
 	}
 
 	if ( !mouseAvailable )
@@ -858,13 +859,17 @@ void IN_DeactivateMouse( void )
 
 	if ( mouseActive )
 	{
-		IN_GobbleMotionEvents();
-
 		SDL_WM_GrabInput( SDL_GRAB_OFF );
 
-		// Don't warp the mouse unless the cursor is within the window
-		//if( SDL_GetAppState( ) & SDL_APPMOUSEFOCUS )
-		//SDL_WarpMouse( cls.glconfig.vidWidth / 2, cls.glconfig.vidHeight / 2 );
+		if ( uivm )
+		{
+			// TODO (after no compatibility needed with alpha 9): remove argument
+			int mousepos = VM_Call( uivm, UI_MOUSE_POSITION, 0 );
+			int cursorx = mousepos & 0xFFFF;
+			int cursory = mousepos >> 16;
+			SDL_WarpMouse( cursorx, cursory );
+		}
+		IN_GobbleMotionEvents();
 
 		mouseActive = qfalse;
 	}
@@ -1639,7 +1644,14 @@ static void IN_ProcessEvents( void )
 				{
 					Com_QueueEvent( 0, SE_MOUSE, e.motion.xrel, e.motion.yrel, 0, NULL );
 				}
-
+				else if ( uivm )
+				{
+					// TODO (after no compatibility needed with alpha 8): remove argument
+					int mousepos = VM_Call( uivm, UI_MOUSE_POSITION, 0 );
+					int cursorx = mousepos & 0xFFFF;
+					int cursory = mousepos >> 16;
+					VM_Call( uivm, UI_MOUSE_EVENT, e.motion.x - cursorx, e.motion.y - cursory );
+				}
 				break;
 
 			case SDL_MOUSEBUTTONDOWN:
@@ -1745,25 +1757,26 @@ void IN_Frame( void )
 	// If not DISCONNECTED (main menu) or ACTIVE (in game), we're loading
 	loading = ( cls.state != CA_DISCONNECTED && cls.state != CA_ACTIVE );
 
-	if ( !Cvar_VariableIntegerValue( "r_fullscreen" ) && ( cls.keyCatchers & KEYCATCH_CONSOLE ) )
+	if ( !Cvar_VariableIntegerValue( "r_fullscreen" ) &&
+	     ( cls.keyCatchers & KEYCATCH_CONSOLE || ( CL_UIOwnsMouse() && !in_uigrab->integer ) ) )
 	{
-		// Console is down in windowed mode
-		IN_DeactivateMouse();
+		// Console is down, or UI is up, in windowed mode
+		IN_DeactivateMouse( qfalse );
 	}
 	else if ( !Cvar_VariableIntegerValue( "r_fullscreen" ) && loading )
 	{
 		// Loading in windowed mode
-		IN_DeactivateMouse();
+		IN_DeactivateMouse( qtrue );
 	}
 	else if ( !( SDL_GetAppState() & SDL_APPINPUTFOCUS ) )
 	{
 		// Window not got focus
-		IN_DeactivateMouse();
+		IN_DeactivateMouse( qfalse );
 	}
 	else if ( com_minimized->integer )
 	{
 		// Minimized
-		IN_DeactivateMouse();
+		IN_DeactivateMouse( qtrue );
 	}
 	else
 	{
@@ -1792,6 +1805,7 @@ void IN_Init( void )
 	// mouse variables
 	in_mouse = Cvar_Get( "in_mouse", "1", CVAR_ARCHIVE );
 	in_nograb = Cvar_Get( "in_nograb", "0", CVAR_ARCHIVE );
+	in_uigrab = Cvar_Get( "in_uigrab", "1", CVAR_ARCHIVE );
 
 	in_joystick = Cvar_Get( "in_joystick", "0", CVAR_ARCHIVE | CVAR_LATCH );
 	in_joystickDebug = Cvar_Get( "in_joystickDebug", "0", CVAR_TEMP );
@@ -1810,7 +1824,7 @@ void IN_Init( void )
 	keyRepeatEnabled = qtrue;
 
 	mouseAvailable = ( in_mouse->value != 0 );
-	IN_DeactivateMouse();
+	IN_DeactivateMouse( qtrue );
 
 	appState = SDL_GetAppState();
 	Cvar_SetValue( "com_unfocused", !( appState & SDL_APPINPUTFOCUS ) );
@@ -1827,7 +1841,7 @@ IN_Shutdown
 */
 void IN_Shutdown( void )
 {
-	IN_DeactivateMouse();
+	IN_DeactivateMouse( qtrue );
 	mouseAvailable = qfalse;
 
 	IN_ShutdownJoystick();

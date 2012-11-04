@@ -296,7 +296,7 @@ cvar_t         *Cvar_Get( const char *var_name, const char *var_value, int flags
 
 	if ( !Cvar_ValidateString( var_name ) )
 	{
-		Com_Printf(_( "invalid cvar name string: %s\n"), var_name );
+		Com_Printf( "invalid cvar name string: %s\n", var_name );
 		var_name = "BADNAME";
 	}
 
@@ -304,7 +304,7 @@ cvar_t         *Cvar_Get( const char *var_name, const char *var_value, int flags
 
 	if ( !Cvar_ValidateString( var_value ) )
 	{
-		Com_Printf(_( "invalid cvar value string: %s\n"), var_value );
+		Com_Printf( "invalid cvar value string: %s\n", var_value );
 		var_value = "BADVALUE";
 	}
 
@@ -447,7 +447,7 @@ cvar_t         *Cvar_Set2( const char *var_name, const char *value, qboolean for
 
 	if ( !Cvar_ValidateString( var_name ) )
 	{
-		Com_Printf(_( "invalid cvar name string: %s\n"), var_name );
+		Com_Printf( "invalid cvar name string: %s\n", var_name );
 		var_name = "BADNAME";
 	}
 
@@ -641,7 +641,7 @@ void Cvar_SetIFlag( const char *var_name )
   */
 
 	if ( !Cvar_ValidateString( var_name + 1 ) ) {
-		Com_Printf(_("invalid cvar name string: %s\n"), var_name );
+		Com_Printf( "invalid cvar name string: %s\n", var_name );
 		var_name = "BADNAME";
 	}
 
@@ -1249,8 +1249,8 @@ void Cvar_List_f( void )
 		}
 	}
 
-	Com_Printf(_( "\n%i total cvars\n"), i );
-	Com_Printf(_( "%i cvar indexes\n"), cvar_numIndexes );
+	Com_Printf( "\n%i total cvars\n", i );
+	Com_Printf( "%i cvar indexes\n", cvar_numIndexes );
 }
 
 /*
