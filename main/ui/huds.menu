@@ -68,10 +68,25 @@
 		visible MENU_TRUE
 	}
 
+	itemDef
+	{
+		type ITEM_TYPE_YESNO
+		text "Enable Custom HUDs:"
+		cvar "cg_hudFilesEnable"
+		rect BORDER ((2*H/3)-7) (3*H/5) 10
+		textalign ALIGN_CENTER
+		textscale .25
+		forecolor 1 1 1 1
+		visible MENU_TRUE
+		action
+		{
+			uiScript update cg_hudFilesEnable
+		}
+	}
     itemDef
     {
       name hudlist
-      rect BORDER (2*H/3) (W-(2*BORDER)) 45
+      rect BORDER ((2*H/3)+10) (W-(2*BORDER)) 45
       type ITEM_TYPE_LISTBOX
       style WINDOW_STYLE_EMPTY
       elementwidth 120
