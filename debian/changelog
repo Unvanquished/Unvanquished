@@ -1,6 +1,7 @@
 unvanquished (0.9.0-1) unstable; urgency=low
 
   * Release of alpha 9.
+  * Require libwebp-dev 0.2 or newer.
   * Distribute client translations.
 
  -- Darren Salt <devspam@moreofthesa.me.uk>  Sun, 04 Nov 2012 22:53:10 +0000
