@@ -673,5 +673,3 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //do to increment the stage kill counters
 
 #define MAXIMUM_BUILD_TIME                 20000 // used for pie timer
-#define RADAR_FADEOUT_TIME                 1000  // time to fadeout on helmet radar
-                                                 // or alien sense

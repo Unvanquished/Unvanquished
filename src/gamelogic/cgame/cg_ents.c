@@ -1167,6 +1167,7 @@ static void CG_CEntityPVSEnter( centity_t *cent )
 	//when a buildable enters the PVS
 	cent->buildableAnim = cent->lerpFrame.animationNumber = BANIM_NONE;
 	cent->oldBuildableAnim = es->legsAnim;
+	cent->radarVisibility = 0.0f;
 }
 
 /*
