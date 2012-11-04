@@ -508,7 +508,6 @@ typedef enum
   EV_DEATH2,
   EV_DEATH3,
   EV_OBITUARY,
-  EV_PLAYER_HURT,
 
   EV_GIB_PLAYER,
 

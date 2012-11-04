@@ -45,7 +45,8 @@ extern "C"
 
 using namespace tinygettext;
 // Ugly char buffer
-static char gettextbuffer[ MAX_STRING_CHARS ];
+static char gettextbuffer[ 4 ][ MAX_STRING_CHARS ];
+static int num = -1;
 
 DictionaryManager trans_manager;
 DictionaryManager trans_managergame;
@@ -91,7 +92,7 @@ Language Trans_ReturnLanguage( const char *lang )
 	if( !bestLang )
 	{
 		Com_Printf( _("^3WARNING:^7 Language \"%s\" (%s) not found. Default to \"English\" (en)\n"),
-					language.get_name().empty() ? _("Unknown Language") : language.get_name().c_str(),
+					language.get_name().empty() ? _( "Unknown Language" ) : language.get_name().c_str(),
 					lang );
 		bestLang = Language::from_env( "en" );
 	}
@@ -207,40 +208,47 @@ extern "C" void Trans_Init( void )
 extern "C" const char* Trans_Gettext( const char *msgid )
 {
 	if( !enabled ) { return msgid; }
-	Q_strncpyz( gettextbuffer, trans_dict.translate( msgid ).c_str(), sizeof( gettextbuffer ) );
-	return gettextbuffer;
+	num = ( num + 1 ) & 3;
+	Q_strncpyz( gettextbuffer[ num ], trans_dict.translate( msgid ).c_str(), sizeof( gettextbuffer[ num ] ) );
+	return gettextbuffer[ num ];
 }
 
 extern "C" const char* Trans_Pgettext( const char *ctxt, const char *msgid )
 {
 	if ( !enabled ) { return msgid; }
-	Q_strncpyz( gettextbuffer, trans_dict.translate_ctxt( ctxt, msgid ).c_str(), sizeof( gettextbuffer ) );
-	return gettextbuffer;
+	num = ( num + 1 ) & 3;
+	Q_strncpyz( gettextbuffer[ num ], trans_dict.translate_ctxt( ctxt, msgid ).c_str(), sizeof( gettextbuffer[ num ] ) );
+	return gettextbuffer[ num ];
 }
 
 extern "C" const char* Trans_GettextGame( const char *msgid )
 {
 	if( !enabled ) { return msgid; }
-	Q_strncpyz( gettextbuffer, trans_dictgame.translate( msgid ).c_str(), sizeof( gettextbuffer ) );
-	return gettextbuffer;
+	num = ( num + 1 ) & 3;
+	Q_strncpyz( gettextbuffer[ num ], trans_dictgame.translate( msgid ).c_str(), sizeof( gettextbuffer[ num ] ) );
+	return gettextbuffer[ num ];
 }
 
 extern "C" const char* Trans_PgettextGame( const char *ctxt, const char *msgid )
 {
 	if( !enabled ) { return msgid; }
-	return trans_dictgame.translate_ctxt( std::string( ctxt ), std::string( msgid ) ).c_str();
+	num = ( num + 1 ) & 3;
+	Q_strncpyz( gettextbuffer[ num ], trans_dictgame.translate_ctxt( std::string( ctxt ), std::string( msgid ) ).c_str(), sizeof( gettextbuffer[ num ] ) );
+	return gettextbuffer[ num ];
 }
 
 extern "C" const char* Trans_GettextPlural( const char *msgid, const char *msgid_plural, int num )
 {
 	if( !enabled ) { return num == 1 ? msgid : msgid_plural; }
-	Q_strncpyz( gettextbuffer, trans_dict.translate_plural( msgid, msgid_plural, num ).c_str(), sizeof( gettextbuffer ) );
-	return gettextbuffer;
+	num = ( num + 1 ) & 3;
+	Q_strncpyz( gettextbuffer[ num ], trans_dict.translate_plural( msgid, msgid_plural, num ).c_str(), sizeof( gettextbuffer[ num ] ) );
+	return gettextbuffer[ num ];
 }
 
 extern "C" const char* Trans_GettextGamePlural( const char *msgid, const char *msgid_plural, int num )
 {
 	if( !enabled ) { return num == 1 ? msgid : msgid_plural; }
-	Q_strncpyz( gettextbuffer, trans_dictgame.translate_plural( msgid, msgid_plural, num ).c_str(), sizeof( gettextbuffer ) );
-	return gettextbuffer;
+	num = ( num + 1 ) & 3;
+	Q_strncpyz( gettextbuffer[ num ], trans_dictgame.translate_plural( msgid, msgid_plural, num ).c_str(), sizeof( gettextbuffer[ num ] ) );
+	return gettextbuffer[ num ];
 }

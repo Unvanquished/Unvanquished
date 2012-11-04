@@ -1306,9 +1306,11 @@ CG_MapTorsoToWeaponFrame
 
 =================
 */
-static int CG_MapTorsoToWeaponFrame( clientInfo_t *ci, int frame, qboolean md5 )
+static int CG_MapTorsoToWeaponFrame( clientInfo_t *ci, int frame, int anim )
 {
-	if ( !md5 )
+	if ( anim == -1 ) { return 0; }
+
+	if ( !cg_highPolyPlayerModels.integer )
 	{
 		// change weapon
 		if ( frame >= ci->animations[ TORSO_DROP ].firstFrame &&
@@ -1329,6 +1331,20 @@ static int CG_MapTorsoToWeaponFrame( clientInfo_t *ci, int frame, qboolean md5 )
 		     frame < ci->animations[ TORSO_ATTACK_BLASTER ].firstFrame + 6 )
 		{
 			return 1 + frame - ci->animations[ TORSO_ATTACK_BLASTER ].firstFrame;
+		}
+	}
+	else // MD5 animations all start at 0, so there is no way to differentiate them with first frame alone
+	{
+		// change weapon
+		if ( anim == TORSO_DROP && frame < 9 )
+		{
+			return frame - 6;
+		}
+
+		// stand attack
+		else if ( ( anim == TORSO_ATTACK || anim == TORSO_ATTACK_BLASTER ) && frame < 6 )
+		{
+			return 1 + frame;
 		}
 	}
 
@@ -1913,8 +1929,8 @@ void CG_AddViewWeapon( playerState_t *ps )
 	{
 		// get clientinfo for animation map
 		ci = &cgs.clientinfo[ cent->currentState.clientNum ];
-		hand.frame = CG_MapTorsoToWeaponFrame( ci, cent->pe.torso.frame, wi->md5 );
-		hand.oldframe = CG_MapTorsoToWeaponFrame( ci, cent->pe.torso.oldFrame, wi->md5 );
+		hand.frame = CG_MapTorsoToWeaponFrame( ci, cent->pe.torso.frame, !wi->md5 ? cent->pe.torso.animationNumber & ~ANIM_TOGGLEBIT : -1 );
+		hand.oldframe = CG_MapTorsoToWeaponFrame( ci, cent->pe.torso.oldFrame, !wi->md5 ? cent->pe.torso.animationNumber & ~ANIM_TOGGLEBIT : -1 );
 		hand.backlerp = cent->pe.torso.backlerp;
 	}
 

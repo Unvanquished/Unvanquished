@@ -1,8 +1,9 @@
 *~
 build/*
 lcc/*
-*.DS_STORE
+*.DS_Store
 CMakeCache.txt
+CMakeLists.txt.user
 CMakeFiles
 CPackConfig.cmake
 CPackSourceConfig.cmake
