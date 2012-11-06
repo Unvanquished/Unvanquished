@@ -35,6 +35,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // big ugly global buffer for use with buffered printing of long outputs
 static char       g_bfb[ 32000 ];
 
+static qboolean G_admin_maprestarted( gentity_t * );
+
 // note: list ordered alphabetically
 static const g_admin_cmd_t     g_admin_cmds[] =
 {
@@ -175,6 +177,12 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 		"lock",         G_admin_lock,        qfalse, "lock",
 		N_("lock a team to prevent anyone from joining it"),
 		"[^3a|h^7]"
+	},
+
+	{
+		"maprestarted", G_admin_maprestarted, qfalse, "",
+		NULL,
+		NULL
 	},
 
 	{
@@ -4055,6 +4063,8 @@ qboolean G_admin_restart( gentity_t *ent )
 	admin_log( layout );
 	admin_log( teampref );
 
+	trap_Cvar_Set( "g_mapRestarted", "y" );
+
 	if ( !Q_stricmp( teampref, "keepteams" ) || !Q_stricmp( teampref, "keepteamslock" ) || !Q_stricmp( teampref,"kt" ) || !Q_stricmp( teampref,"ktl" ) )
 	{
 		for ( i = 0; i < g_maxclients.integer; i++ )
@@ -4073,6 +4083,8 @@ qboolean G_admin_restart( gentity_t *ent )
 
 			cl->sess.restartTeam = cl->pers.teamSelection;
 		}
+
+		trap_Cvar_Set( "g_mapRestarted", "yk" );
 	}
 	else if ( !Q_stricmp( teampref, "switchteams" ) || !Q_stricmp( teampref, "switchteamslock" ) || !Q_stricmp( teampref,"st" ) || !Q_stricmp( teampref,"stl" ))
 	{
@@ -4094,11 +4106,17 @@ qboolean G_admin_restart( gentity_t *ent )
 				cl->sess.restartTeam = TEAM_HUMANS;
 			}
 		}
+
+		trap_Cvar_Set( "g_mapRestarted", "yks" );
 	}
 	else if ( trap_Argc() > 1 )
 	{
 		ADMP( va( "%s %s", QQ( N_( "^3restart: ^7unrecognised option '$1$'\n") ), Quote( teampref ) ) );
 		return qfalse;
+	}
+	else
+	{
+		trap_Cvar_Set( "g_teamsKept", "" );
 	}
 
 	if ( !Q_stricmp( teampref, "switchteamslock" ) ||
@@ -5029,4 +5047,12 @@ void G_admin_cleanup( void )
 
 	g_admin_commands = NULL;
 	BG_DefragmentMemory();
+}
+
+static qboolean G_admin_maprestarted( gentity_t *ent )
+{
+	if ( !ent )
+	{
+		trap_Cvar_Set( "g_mapRestarted", "" );
+	}
 }

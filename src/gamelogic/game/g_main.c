@@ -66,6 +66,7 @@ vmCvar_t           g_synchronousClients;
 vmCvar_t           g_warmup;
 vmCvar_t           g_doWarmup;
 vmCvar_t           g_lockTeamsAtStart;
+vmCvar_t           g_mapRestarted;
 vmCvar_t           g_logFile;
 vmCvar_t           g_logFileSync;
 vmCvar_t           g_allowVote;
@@ -188,6 +189,7 @@ static cvarTable_t gameCvarTable[] =
 	{ NULL,                           "gamename",                      GAME_VERSION,                       CVAR_SERVERINFO | CVAR_ROM,                      0, qfalse           },
 	{ NULL,                           "gamedate",                      __DATE__,                           CVAR_ROM,                                        0, qfalse           },
 	{ &g_lockTeamsAtStart,            "g_lockTeamsAtStart",            "0",                                CVAR_ROM,                                        0, qfalse           },
+	{ &g_mapRestarted,                "g_mapRestarted",                "0",                                CVAR_ROM,                                        0, qfalse           },
 	{ NULL,                           "sv_mapname",                    "",                                 CVAR_SERVERINFO | CVAR_ROM,                      0, qfalse           },
 	{ NULL,                           "P",                             "",                                 CVAR_SERVERINFO | CVAR_ROM,                      0, qfalse           },
 
@@ -601,6 +603,7 @@ void G_MapConfigs( const char *mapname )
 	                         va( "exec %s/%s.cfg\n", Quote( g_mapConfigs.string ), Quote( mapname ) ) );
 
 	trap_Cvar_Set( "g_mapConfigsLoaded", "1" );
+	trap_SendConsoleCommand( EXEC_APPEND, "maprestarted" );
 }
 
 /*
