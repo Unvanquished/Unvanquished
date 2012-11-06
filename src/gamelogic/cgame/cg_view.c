@@ -98,7 +98,7 @@ void CG_TestModel_f( void )
 
 	if ( !cg.testModelEntity.hModel )
 	{
-		CG_Printf( "%s", _( "Can't register model\n" ));
+		CG_Printf( "Can't register model\n" );
 		return;
 	}
 
@@ -180,7 +180,7 @@ static void CG_AddTestModel( void )
 
 	if ( !cg.testModelEntity.hModel )
 	{
-		CG_Printf( "%s", _( "Can't register model\n" ));
+		CG_Printf( "Can't register model\n" );
 		return;
 	}
 
@@ -1499,7 +1499,7 @@ qboolean CG_CullBox(vec3_t mins, vec3_t maxs)
 	cplane_t         *frust;
 
 	//check against frustum planes
-	for( i = 0; i < 4; i++ ) 
+	for( i = 0; i < 4; i++ )
 	{
 		frust = &frustum[i];
 

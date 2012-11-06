@@ -10,7 +10,7 @@ Dependencies
     - libcurl
     - libsdl
     - OpenAL (optional)
-    - libwebp (optional)
+    - libwebp ( >= 0.2.0 )
     - libxvid (optional)
     - Newton (provided)
     - libgmp

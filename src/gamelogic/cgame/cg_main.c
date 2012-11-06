@@ -89,10 +89,6 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 			// cgame doesn't care where the cursor is
 			return 0;
 
-		case CG_EVENT_HANDLING:
-			CG_EventHandling( arg0 );
-			return 0;
-
 		case CG_VOIP_STRING:
 			return ( intptr_t ) CG_VoIPString();
 
@@ -224,6 +220,9 @@ vmCvar_t        cg_stickySpec;
 vmCvar_t        cg_sprintToggle;
 vmCvar_t        cg_unlagged;
 
+vmCvar_t        cg_cmdGrenadeThrown;
+vmCvar_t        cg_cmdNeedHealth;
+
 vmCvar_t        cg_debugVoices;
 
 vmCvar_t        ui_currentClass;
@@ -273,7 +272,7 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_drawGun,                     "cg_drawGun",                     "1",            CVAR_ARCHIVE                 },
 	{ &cg_viewsize,                    "cg_viewsize",                    "100",          CVAR_ARCHIVE                 },
 	{ &cg_stereoSeparation,            "cg_stereoSeparation",            "0.4",          CVAR_ARCHIVE                 },
-	{ &cg_shadows,                     "cg_shadows",                     "1",            CVAR_ARCHIVE                 },
+	{ &cg_shadows,                     "cg_shadows",                     "1",            CVAR_ARCHIVE | CVAR_LATCH    },
 	{ &cg_draw2D,                      "cg_draw2D",                      "1",            CVAR_ARCHIVE                 },
 	{ &cg_drawTimer,                   "cg_drawTimer",                   "1",            CVAR_ARCHIVE                 },
 	{ &cg_drawClock,                   "cg_drawClock",                   "0",            CVAR_ARCHIVE                 },
@@ -374,6 +373,9 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_painBlendScale,              "cg_painBlendScale",              "7.0",          0                            },
 	{ &cg_painBlendZoom,               "cg_painBlendZoom",               "0.65",         0                            },
 
+	{ &cg_cmdGrenadeThrown,            "cg_cmdGrenadeThrown",            "vsay_local grenade", CVAR_ARCHIVE           },
+	{ &cg_cmdNeedHealth,               "cg_cmdNeedHealth",               "vsay_local needhealth", CVAR_ARCHIVE        },
+
 	{ &cg_debugVoices,                 "cg_debugVoices",                 "0",            0                            },
 
 	// communication cvars set by the cgame to be read by ui
@@ -416,7 +418,6 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_highPolyPlayerModels,        "cg_highPolyPlayerModels",        "1",            CVAR_ARCHIVE | CVAR_LATCH    },
 	{ &cg_highPolyBuildableModels,     "cg_highPolyBuildableModels",     "1",            CVAR_ARCHIVE | CVAR_LATCH    },
 	{ &cg_highPolyWeaponModels,        "cg_highPolyWeaponModels",        "1",            CVAR_ARCHIVE | CVAR_LATCH    },
-
 	{ &cg_fov_builder,                 "cg_fov_builder",                 "0",            CVAR_ARCHIVE                 },
 	{ &cg_fov_level0,                  "cg_fov_level0",                  "0",            CVAR_ARCHIVE                 },
 	{ &cg_fov_level1,                  "cg_fov_level1",                  "0",            CVAR_ARCHIVE                 },
@@ -628,7 +629,7 @@ static void CG_SetUIVars( void )
 
 	trap_Cvar_Set( "p_credits", va( "%d", ps->persistant[ PERS_CREDIT ] ) );
 	trap_Cvar_Set( "p_score", va( "%d", ps->persistant[ PERS_SCORE ] ) );
-	trap_Cvar_Set( "p_ammo", va( "%d", ps->Ammo ) );
+	trap_Cvar_Set( "p_ammo", va( "%d", ps->ammo ) );
 	trap_Cvar_Set( "p_clips", va( "%d", ps->clips ) );
 }
 
@@ -726,7 +727,7 @@ void CG_UpdateBuildableRangeMarkerMask( void )
 				}
 				else
 				{
-					Com_Printf( _( S_COLOR_YELLOW  "WARNING: unknown buildable or group: %s\n"), p );
+					Com_Printf( S_COLOR_YELLOW  "WARNING: unknown buildable or group: %s\n", p );
 				}
 			}
 
@@ -1056,8 +1057,6 @@ static void CG_RegisterSounds( void )
 /*
 =================
 CG_RegisterGraphics
-
-This function may execute for a couple of minutes with a slow disk.
 =================
 */
 static void CG_RegisterGraphics( void )
@@ -1316,7 +1315,7 @@ static void CG_RegisterClients( void )
 		cgs.media.larmourLegsSkin = trap_R_RegisterSkin( "models/players/human_base/body_larmour.skin" );
 		cgs.media.larmourTorsoSkin = trap_R_RegisterSkin( "models/players/human_base/body_helmetlarmour.skin" );
 	}
-	
+
 	cgs.media.jetpackModel = trap_R_RegisterModel( "models/players/human_base/jetpack.md3" );
 	cgs.media.jetpackFlashModel = trap_R_RegisterModel( "models/players/human_base/jetpack_flash.md3" );
 	cgs.media.battpackModel = trap_R_RegisterModel( "models/players/human_base/battpack.md3" );
@@ -1829,9 +1828,8 @@ static int CG_FeederCount( int feederID )
 	return count;
 }
 
-void CG_SetScoreSelection( void *p )
+void CG_SetScoreSelection( menuDef_t *menu )
 {
-	menuDef_t     *menu = ( menuDef_t * ) p;
 	playerState_t *ps = &cg.snap->ps;
 	int           i, alien, human;
 	int           feeder;
@@ -2375,7 +2373,7 @@ static char *CG_VoIPString( void )
 
 			if ( slen + nlen + 1 >= sizeof( voipString ) )
 			{
-				CG_Printf( "%s", _( "^3WARNING: voipString overflowed\n" ));
+				CG_Printf( "^3WARNING: voipString overflowed\n" );
 				break;
 			}
 

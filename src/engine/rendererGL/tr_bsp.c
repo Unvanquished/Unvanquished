@@ -211,7 +211,7 @@ static void R_HDRTonemapLightingColors( const vec4_t in, vec4_t out, qboolean ap
 #endif
 
 	VectorScale( sample, finalLuminance, sample );
-	sample[ 3 ] = Q_min( 1.0f, sample[ 3 ] );
+	sample[ 3 ] = MIN( 1.0f, sample[ 3 ] );
 
 	if ( !r_hdrRendering->integer || !r_hdrLightmap->integer || !glConfig2.framebufferObjectAvailable ||
 	     !glConfig2.textureFloatAvailable || !glConfig2.framebufferBlitAvailable )
@@ -220,7 +220,7 @@ static void R_HDRTonemapLightingColors( const vec4_t in, vec4_t out, qboolean ap
 
 		// clamp with color normalization
 		NormalizeColor( sample, out );
-		out[ 3 ] = Q_min( 1.0f, sample[ 3 ] );
+		out[ 3 ] = MIN( 1.0f, sample[ 3 ] );
 	}
 	else
 	{
@@ -256,7 +256,7 @@ static void R_HDRTonemapLightingColors( const vec4_t in, vec4_t out, qboolean ap
 
 		VectorScale( out, ( 1.0f / 255.0f ), out );
 
-		out[ 3 ] = Q_min( 1.0f, sample[ 3 ] );
+		out[ 3 ] = MIN( 1.0f, sample[ 3 ] );
 	}
 	else
 	{
@@ -285,7 +285,7 @@ static void R_HDRTonemapLightingColors( const vec4_t in, vec4_t out, qboolean ap
 		VectorCopy( sample, out );
 #endif
 
-		out[ 3 ] = Q_min( 1.0f, sample[ 3 ] );
+		out[ 3 ] = MIN( 1.0f, sample[ 3 ] );
 	}
 
 #endif
@@ -302,7 +302,7 @@ R_ProcessLightmap
 ===============
 */
 #if defined( COMPAT_Q3A ) || defined( COMPAT_ET )
-float R_ProcessLightmap( byte **pic, int in_padding, int width, int height, byte **pic_out )
+float R_ProcessLightmap( byte *pic, int in_padding, int width, int height, byte *pic_out )
 {
 	int   j;
 	float maxIntensity = 0;
@@ -313,9 +313,9 @@ float R_ProcessLightmap( byte **pic, int in_padding, int width, int height, byte
 	        // color code by intensity as development tool (FIXME: check range)
 	        for(j = 0; j < width * height; j++)
 	        {
-	                float           r = (*pic)[j * in_padding + 0];
-	                float           g = (*pic)[j * in_padding + 1];
-	                float           b = (*pic)[j * in_padding + 2];
+	                float           r = pic[j * in_padding + 0];
+	                float           g = pic[j * in_padding + 1];
+	                float           b = pic[j * in_padding + 2];
 	                float           intensity;
 	                float           out[3];
 
@@ -340,17 +340,17 @@ float R_ProcessLightmap( byte **pic, int in_padding, int width, int height, byte
 	                if(r_lightmap->integer == 3)
 	                {
 	                        // Arnout: artists wanted the colours to be inversed
-	                        (*pic_out)[j * 4 + 0] = out[2] * 255;
-	                        (*pic_out)[j * 4 + 1] = out[1] * 255;
-	                        (*pic_out)[j * 4 + 2] = out[0] * 255;
+	                        pic_out[j * 4 + 0] = out[2] * 255;
+	                        pic_out[j * 4 + 1] = out[1] * 255;
+	                        pic_out[j * 4 + 2] = out[0] * 255;
 	                }
 	                else
 	                {
-	                        (*pic_out)[j * 4 + 0] = out[0] * 255;
-	                        (*pic_out)[j * 4 + 1] = out[1] * 255;
-	                        (*pic_out)[j * 4 + 2] = out[2] * 255;
+	                        pic_out[j * 4 + 0] = out[0] * 255;
+	                        pic_out[j * 4 + 1] = out[1] * 255;
+	                        pic_out[j * 4 + 2] = out[2] * 255;
 	                }
-	                (*pic_out)[j * 4 + 3] = 255;
+	                pic_out[j * 4 + 3] = 255;
 	        }
 	}
 	else
@@ -358,8 +358,8 @@ float R_ProcessLightmap( byte **pic, int in_padding, int width, int height, byte
 	{
 		for ( j = 0; j < width * height; j++ )
 		{
-			R_ColorShiftLightingBytes( & ( *pic ) [ j * in_padding ], & ( *pic_out ) [ j * 4 ] );
-			( *pic_out ) [ j * 4 + 3 ] = 255;
+			R_ColorShiftLightingBytes( &pic[ j * in_padding ], &pic_out[ j * 4 ] );
+			pic_out[ j * 4 + 3 ] = 255;
 		}
 	}
 
@@ -693,7 +693,7 @@ void LoadRGBEToFloats( const char *name, float **pic, int *width, int *height, q
 			sum += log( luminance );
 		}
 
-		sum /= ( float )( w * h );
+		sum /= w * h;
 		avgLuminance = exp( sum );
 
 		// post process buffer with tone mapping
@@ -998,8 +998,13 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 
 					if ( !lightmapFiles || !numLightmaps )
 					{
-						ri.Printf( PRINT_WARNING, "WARNING: no lightmap files found\n" );
-						return;
+						lightmapFiles = ri.FS_ListFiles( mapName, ".webp", &numLightmaps );
+
+						if ( !lightmapFiles || !numLightmaps )
+						{
+							ri.Printf( PRINT_WARNING, "WARNING: no lightmap files found\n" );
+							return;
+						}
 					}
 				}
 
@@ -1026,8 +1031,13 @@ static void R_LoadLightmaps( lump_t *l, const char *bspName )
 
 				if ( !lightmapFiles || !numLightmaps )
 				{
-					ri.Printf( PRINT_WARNING, "WARNING: no lightmap files found\n" );
-					return;
+					lightmapFiles = ri.FS_ListFiles( mapName, ".webp", &numLightmaps );
+
+					if ( !lightmapFiles || !numLightmaps )
+					{
+						ri.Printf( PRINT_WARNING, "WARNING: no lightmap files found\n" );
+						return;
+					}
 				}
 			}
 
@@ -1734,7 +1744,7 @@ static void ParseMesh( dsurface_t *ds, drawVert_t *verts, bspSurface_t *surf )
 #endif
 	}
 
-	// pre-tesseleate
+	// pre-tesselate
 	grid = R_SubdividePatchToGrid( width, height, points );
 	surf->data = ( surfaceType_t * ) grid;
 
@@ -9950,7 +9960,7 @@ void R_BuildCubeMaps( void )
 				               REF_CUBEMAP_STORE_SIZE, REF_CUBEMAP_STORE_SIZE,
 				               tr.cubeTemp[ i ],
 				               REF_CUBEMAP_SIZE, REF_CUBEMAP_SIZE,
-				               4, qtrue );
+				               4 );
 
 				// Increment everything
 				fileBufX++;

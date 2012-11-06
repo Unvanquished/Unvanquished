@@ -101,8 +101,8 @@ void LeakFile(tree_t * tree)
 	while(node->occupied > 1)
 	{
 		int             next;
-		portal_t       *p, *nextportal;
-		node_t         *nextnode;
+		portal_t       *p, *nextportal = NULL; // STFU, compiler
+		node_t         *nextnode = NULL; // STFU, compiler
 		int             s;
 
 		// find the best portal exit
@@ -118,10 +118,8 @@ void LeakFile(tree_t * tree)
 			}
 		}
 		node = nextnode;
-        if(nextportal) {
-		  WindingCenter(nextportal->winding, mid);
-		  fprintf(linefile, "%f %f %f\n", mid[0], mid[1], mid[2]);
-        }
+		WindingCenter(nextportal->winding, mid);
+		fprintf(linefile, "%f %f %f\n", mid[0], mid[1], mid[2]);
 #if defined(USE_XML)
 		point = xml_NodeForVec(mid);
 		xmlAddChild(xml_node, point);

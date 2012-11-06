@@ -1512,7 +1512,7 @@ static int AddMetaTriangleToSurface(mapDrawSurface_t * ds, metaTriangle_t * tri,
 	/* set initial score */
 	score = tri->surfaceNum == ds->surfaceNum ? SURFACE_SCORE : 0;
 
-	/* score the the dot product of lightmap axis to plane */
+	/* score the dot product of lightmap axis to plane */
 	if((ds->shaderInfo->compileFlags & C_VERTEXLIT) || VectorCompare(ds->lightmapAxis, tri->lightmapAxis))
 		score += AXIS_SCORE;
 	else

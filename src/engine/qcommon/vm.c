@@ -297,7 +297,7 @@ void VM_LoadSymbols( vm_t *vm )
 
 	if ( !mapfile.c )
 	{
-		Com_Printf(_( "Couldn't load symbol file: %s\n"), symbols );
+		Com_Printf( "Couldn't load symbol file: %s\n", symbols );
 		return;
 	}
 
@@ -330,7 +330,7 @@ void VM_LoadSymbols( vm_t *vm )
 
 		if ( !token[ 0 ] )
 		{
-			Com_Printf(_( "WARNING: incomplete line at end of file\n" ));
+			Com_Printf( "WARNING: incomplete line at end of file\n" );
 			break;
 		}
 
@@ -340,7 +340,7 @@ void VM_LoadSymbols( vm_t *vm )
 
 		if ( !token[ 0 ] )
 		{
-			Com_Printf(_( "WARNING: incomplete line at end of file\n" ));
+			Com_Printf( "WARNING: incomplete line at end of file\n" );
 			break;
 		}
 
@@ -363,7 +363,7 @@ void VM_LoadSymbols( vm_t *vm )
 	}
 
 	vm->numSymbols = count;
-	Com_Printf(_( "%i symbols parsed from %s\n"), count, symbols );
+	Com_Printf( "%i symbols parsed from %s\n", count, symbols );
 	FS_FreeFile( mapfile.v );
 }
 
@@ -541,13 +541,13 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 
 	// load the image
 	Com_sprintf( filename, sizeof( filename ), "vm/%s.qvm", vm->name );
-	Com_DPrintf(_( "Loading vm file %s…\n"), filename );
+	Com_DPrintf( "Loading vm file %s…\n", filename );
 
 	i = FS_ReadFileCheck( filename, &header.v );
 
 	if ( !header.h )
 	{
-		Com_Printf(_( "Failed.\n" ));
+		Com_Printf( "Failed.\n" );
 		VM_Free( vm );
 		return NULL;
 	}
@@ -562,7 +562,7 @@ vmHeader_t *VM_LoadQVM( vm_t *vm, qboolean alloc )
 
 	if ( LittleLong( header.h->vmMagic ) == VM_MAGIC_VER2 )
 	{
-		Com_DPrintf(_( "…which has vmMagic VM_MAGIC_VER2\n" ));
+		Com_DPrintf( "…which has vmMagic VM_MAGIC_VER2\n" );
 
 		// byte swap the header
 		for ( i = 0; i < sizeof( vmHeader_t ) / 4; i++ )
@@ -756,7 +756,7 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 	qboolean   onlyQVM = !!Cvar_VariableValue( "sv_pure" );
 
 #ifdef DEDICATED
-	onlyQVM &= strcmp( module, "qagame" );
+	onlyQVM &= strcmp( module, "game" );
 #endif
 
 	if ( !module || !module[ 0 ] || !systemCalls )
@@ -798,7 +798,7 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 	if ( interpret == VMI_NATIVE && !onlyQVM )
 	{
 		// try to load as a system dll
-		vm->dllHandle = Sys_LoadDll( module, vm->fqpath, &vm->entryPoint, VM_DllSyscall );
+		vm->dllHandle = Sys_LoadDll( module, &vm->entryPoint, VM_DllSyscall );
 
 		if ( vm->dllHandle )
 		{
@@ -806,7 +806,7 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 			return vm;
 		}
 
-		Com_DPrintf(_( "Failed loading dll, trying next\n" ));
+		Com_DPrintf( "Failed loading dll, trying next\n" );
 #if USE_LLVM
 		interpret = VMI_BYTECODE;
 #endif
@@ -816,7 +816,7 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 	if ( !onlyQVM )
 	{
 		// try to load the LLVM
-		Com_DPrintf(_( "Loading llvm file %s.\n"), vm->name );
+		Com_DPrintf( "Loading llvm file %s.\n", vm->name );
 		vm->llvmModuleProvider = VM_LoadLLVM( vm, VM_DllSyscall );
 
 		if ( vm->llvmModuleProvider )
@@ -824,7 +824,7 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 			return vm;
 		}
 
-		Com_DPrintf(_( "Failed to load llvm, looking for qvm.\n" ));
+		Com_DPrintf( "Failed to load llvm, looking for qvm.\n" );
 	}
 #endif // USE_LLVM
 
@@ -849,7 +849,7 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 
 	if ( interpret >= VMI_COMPILED )
 	{
-		Com_DPrintf(_( "Architecture doesn't have a bytecode compiler, using interpreter\n" ));
+		Com_DPrintf( "Architecture doesn't have a bytecode compiler, using interpreter\n" );
 		interpret = VMI_BYTECODE;
 	}
 
@@ -879,7 +879,7 @@ vm_t *VM_Create( const char *module, intptr_t ( *systemCalls )( intptr_t * ),
 	vm->programStack = vm->dataMask + 1;
 	vm->stackBottom = vm->programStack - PROGRAM_STACK_SIZE;
 
-	Com_DPrintf(_( "%s loaded in %d bytes on the hunk\n"), module, remaining - Hunk_MemoryRemaining() );
+	Com_DPrintf( "%s loaded in %d bytes on the hunk\n", module, remaining - Hunk_MemoryRemaining() );
 
 	VM_InitSanity( vm );
 
@@ -1363,7 +1363,7 @@ intptr_t VM_SystemCall( intptr_t *args )
 			return FloatAsInt( asin( VMF( 1 ) ) );
 
 //		case TRAP_ACOS:
-//			return FloatAsInt( Q_acos( VMF( 1 ) ) );
+//			return FloatAsInt( acos( VMF( 1 ) ) );
 
 		case TRAP_ATAN:
 			return FloatAsInt( atan( VMF( 1 ) ) );

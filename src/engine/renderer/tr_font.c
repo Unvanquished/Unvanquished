@@ -837,7 +837,7 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 	font->fallback = fallback;
 	font->fallbackData = fallbackData;
 	font->pointSize = pointSize;
-	font->glyphScale = MAX( 24.0, MIN( 64.0, r_fontScale->value ) ) / pointSize;
+	font->glyphScale = Com_Clamp( 24.0f, 64.0f, r_fontScale->value ) / pointSize;
 	font->height = ceil( ( face->height / 64.0 ) * ( face->size->metrics.y_scale / 65536.0 ) * font->glyphScale );
 
 	RE_RenderChunk( font, 0 );

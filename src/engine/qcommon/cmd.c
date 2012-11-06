@@ -254,8 +254,8 @@ void Cbuf_ExecuteText( int exec_when, const char *text )
 			}
 			else
 			{
-				Cbuf_Execute();
 				Com_DPrintf( S_COLOR_YELLOW "EXEC_NOW %s\n", cmd_text.data );
+				Cbuf_Execute();
 			}
 
 			break;
@@ -710,7 +710,7 @@ void Cmd_ModCase_f( void )
 
 found:
 
-	if ( v )
+	if ( v && *v )
 	{
 		if ( *v == '/' || *v == '\\' )
 		{
@@ -735,8 +735,8 @@ Compares two values, if true executes the third argument, if false executes the 
 void Cmd_If_f( void )
 {
 	char           *v = NULL;
-	int            v1;
-	int            v2;
+	int            v1, v2;
+	const char     *s1, *s2;
 	char           *vt;
 	char           *vf = NULL;
 	char           *op;
@@ -773,31 +773,24 @@ void Cmd_If_f( void )
 
 		case 5:
 			vt = Cmd_Argv( 4 );
-			v1 = atoi( Cmd_Argv( 1 ) );
+			v1 = atoi( s1 = Cmd_Argv( 1 ) );
 			op = Cmd_Argv( 2 );
-			v2 = atoi( Cmd_Argv( 3 ) );
+			v2 = atoi( s2 = Cmd_Argv( 3 ) );
 
-			if ( ( !strcmp( op, "=" ) && v1 == v2 ) ||
-			     ( !strcmp( op, "!=" ) && v1 != v2 ) ||
-			     ( !strcmp( op, "<" ) && v1 <  v2 ) ||
-			     ( !strcmp( op, "<=" ) && v1 <= v2 ) ||
-			     ( !strcmp( op, ">" ) && v1 >  v2 ) ||
-			     ( !strcmp( op, ">=" ) && v1 >= v2 ) )
-			{
-				v = vt;
-			}
-			else if ( ( !strcmp( op, "=" ) && v1 != v2 ) ||
-			          ( !strcmp( op, "!=" ) && v1 == v2 ) ||
-			          ( !strcmp( op, "<" ) && v1 >= v2 ) ||
-			          ( !strcmp( op, "<=" ) && v1 >  v2 ) ||
-			          ( !strcmp( op, ">" ) && v1 <= v2 ) ||
-			          ( !strcmp( op, ">=" ) && v1 <  v2 ) )
-			{
-				v = vf;
-			}
+			if      ( !strcmp( op, "="  ) ) { v = ( v1 == v2 ) ? vt : vf; }
+			else if ( !strcmp( op, "!=" ) ) { v = ( v1 != v2 ) ? vt : vf; }
+			else if ( !strcmp( op, "<"  ) ) { v = ( v1 <  v2 ) ? vt : vf; }
+			else if ( !strcmp( op, "<=" ) ) { v = ( v1 <= v2 ) ? vt : vf; }
+			else if ( !strcmp( op, ">"  ) ) { v = ( v1 >  v2 ) ? vt : vf; }
+			else if ( !strcmp( op, ">=" ) ) { v = ( v1 >= v2 ) ? vt : vf; }
+			else if ( !strcmp( op, "!=" ) ) { v = ( v1 != v2 ) ? vt : vf; }
+			else if ( !strcmp( op, "eq" ) ) { v = ( Q_stricmp( s1, s2 ) == 0 ) ? vt : vf; }
+			else if ( !strcmp( op, "ne" ) ) { v = ( Q_stricmp( s1, s2 ) != 0 ) ? vt : vf; }
+			else if ( !strcmp( op, "in" ) ) { v = ( Q_stristr( s2, s1 ) != 0 ) ? vt : vf; }
+			else if ( !strcmp( op, "!in") ) { v = ( Q_stristr( s2, s1 ) == 0 ) ? vt : vf; }
 			else
 			{
-				Com_Printf(_( "invalid operator in if command. valid operators are = != < > >= <=\n" ));
+				Com_Printf(_( "invalid operator in if command. valid operators are = != < > >= <= eq ne in !in\n" ));
 				return;
 			}
 
@@ -812,7 +805,7 @@ void Cmd_If_f( void )
 			return;
 	}
 
-	if ( v )
+	if ( v && *v )
 	{
 		if ( *v == '/' || *v == '\\' )
 		{
@@ -1230,7 +1223,7 @@ void Cmd_Random_f( void )
 	{
 		v1 = atoi( Cmd_Argv( 2 ) );
 		v2 = atoi( Cmd_Argv( 3 ) );
-		Cvar_SetValueLatched( Cmd_Argv( 1 ), ( int )( rand() / ( float ) RAND_MAX * ( MAX( v1, v2 ) - MIN( v1, v2 ) ) + MIN( v1, v2 ) ) );
+		Cvar_SetValueLatched( Cmd_Argv( 1 ), ( int )( v1 + rand() / ( double ) RAND_MAX * ( v2 - ( double ) v1 ) ) );
 	}
 	else
 	{

@@ -49,7 +49,7 @@ void CG_RegisterUpgrade( int upgradeNum )
 
 	if ( upgradeInfo->registered )
 	{
-		CG_Printf(_( "CG_RegisterUpgrade: already registered: (%d) %s\n"), upgradeNum,
+		CG_Printf( "CG_RegisterUpgrade: already registered: (%d) %s\n", upgradeNum,
 		           BG_Upgrade( upgradeNum )->name );
 		return;
 	}
@@ -58,7 +58,7 @@ void CG_RegisterUpgrade( int upgradeNum )
 
 	if ( !BG_Upgrade( upgradeNum )->name[ 0 ] )
 	{
-		CG_Error( _("Couldn't find upgrade %i"), upgradeNum );
+		CG_Error( "Couldn't find upgrade %i", upgradeNum );
 	}
 
 	upgradeInfo->humanName = BG_Upgrade( upgradeNum )->humanName;
@@ -125,7 +125,7 @@ static qboolean CG_ParseWeaponAnimationFile( const char *filename, weaponInfo_t 
 
 	if ( len == 0 || len >= sizeof( text ) - 1 )
 	{
-		CG_Printf( len == 0 ? _( "File %s is empty\n" ) : _( "File %s is too long\n" ) , filename );
+		CG_Printf( len == 0 ? "File %s is empty\n" : "File %s is too long\n", filename );
 		trap_FS_FCloseFile( f );
 		return qfalse;
 	}
@@ -171,7 +171,7 @@ static qboolean CG_ParseWeaponAnimationFile( const char *filename, weaponInfo_t 
 
 	if ( i != MAX_WEAPON_ANIMATIONS )
 	{
-		CG_Printf( _( "Error parsing weapon animation file: %s\n"), filename );
+		CG_Printf( "Error parsing weapon animation file: %s\n", filename );
 		return qfalse;
 	}
 
@@ -221,7 +221,7 @@ static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p 
 
 			if ( !wim->missileModel )
 			{
-				CG_Printf( _( S_COLOR_RED  "ERROR: missile model not found %s\n"), token );
+				CG_Printf( S_COLOR_RED  "ERROR: missile model not found %s\n", token );
 			}
 
 			continue;
@@ -257,7 +257,7 @@ static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p 
 
 			if ( !wim->missileSprite )
 			{
-				CG_Printf( _( S_COLOR_RED  "ERROR: missile sprite not found %s\n"), token );
+				CG_Printf( S_COLOR_RED  "ERROR: missile sprite not found %s\n", token );
 			}
 
 			continue;
@@ -336,7 +336,7 @@ static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p 
 
 			if ( !wim->missileParticleSystem )
 			{
-				CG_Printf( _( S_COLOR_RED  "ERROR: missile particle system not found %s\n"), token );
+				CG_Printf( S_COLOR_RED  "ERROR: missile particle system not found %s\n", token );
 			}
 
 			continue;
@@ -354,7 +354,7 @@ static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p 
 
 			if ( !wim->missileTrailSystem )
 			{
-				CG_Printf( _( S_COLOR_RED  "ERROR: missile trail system not found %s\n"), token );
+				CG_Printf( S_COLOR_RED  "ERROR: missile trail system not found %s\n", token );
 			}
 
 			continue;
@@ -372,7 +372,7 @@ static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p 
 
 			if ( !wim->muzzleParticleSystem )
 			{
-				CG_Printf( _( S_COLOR_RED  "ERROR: muzzle particle system not found %s\n"), token );
+				CG_Printf( S_COLOR_RED  "ERROR: muzzle particle system not found %s\n", token );
 			}
 
 			continue;
@@ -390,7 +390,7 @@ static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p 
 
 			if ( !wim->impactParticleSystem )
 			{
-				CG_Printf( _( S_COLOR_RED  "ERROR: impact particle system not found %s\n"), token );
+				CG_Printf( S_COLOR_RED  "ERROR: impact particle system not found %s\n", token );
 			}
 
 			continue;
@@ -425,7 +425,7 @@ static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p 
 
 			if ( !wim->impactMark )
 			{
-				CG_Printf( _( S_COLOR_RED  "ERROR: impact mark shader not found %s\n"), token );
+				CG_Printf( S_COLOR_RED  "ERROR: impact mark shader not found %s\n", token );
 			}
 
 			continue;
@@ -686,7 +686,7 @@ static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p 
 		}
 		else
 		{
-			CG_Printf( _( S_COLOR_RED  "ERROR: unknown token '%s' in weapon section\n"), token );
+			CG_Printf( S_COLOR_RED  "ERROR: unknown token '%s' in weapon section\n", token );
 			return qfalse;
 		}
 	}
@@ -703,7 +703,7 @@ static qboolean CG_RegisterWeaponAnimation( animation_t *anim, const char *filen
 
 	if ( !anim->handle )
 	{
-		Com_Printf(_( "Failed to load animation file %s\n"), filename );
+		Com_Printf( "Failed to load animation file %s\n", filename );
 		return qfalse;
 	}
 
@@ -763,7 +763,7 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 	if ( len == 0 || len >= sizeof( text ) - 1 )
 	{
 		trap_FS_FCloseFile( f );
-		CG_Printf( len == 0 ? _( "File %s is empty\n" ) : _( "File %s is too long\n" ) , filename );
+		CG_Printf( len == 0 ? "File %s is empty\n" : "File %s is too long\n", filename );
 		return qfalse;
 	}
 
@@ -798,12 +798,12 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 		{
 			if ( weaponMode == WPM_NONE )
 			{
-				CG_Printf( "%s", _( "^1ERROR: weapon mode section started without a declaration\n" ));
+				CG_Printf( "^1ERROR: weapon mode section started without a declaration\n" );
 				return qfalse;
 			}
 			else if ( !CG_ParseWeaponModeSection( &wi->wim[ weaponMode ], &text_p ) )
 			{
-				CG_Printf( "%s", _( "^1ERROR: failed to parse weapon mode section\n" ));
+				CG_Printf( "^1ERROR: failed to parse weapon mode section\n" );
 				return qfalse;
 			}
 
@@ -936,7 +936,7 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 
 			if ( !wi->weaponModel )
 			{
-				CG_Printf( _( S_COLOR_RED  "ERROR: weapon model not found %s\n"), token );
+				CG_Printf( S_COLOR_RED  "ERROR: weapon model not found %s\n", token );
 			}
 
 			COM_StripExtension( token, path );
@@ -968,8 +968,8 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 
 			if ( !wi->weaponModel3rdPerson )
 			{
-				CG_Printf( _( S_COLOR_RED  "ERROR: 3rd person weapon "
-				           "model not found %s\n"), token );
+				CG_Printf( S_COLOR_RED  "ERROR: 3rd person weapon "
+				           "model not found %s\n", token );
 			}
 
 			COM_StripExtension( token, path );
@@ -1008,7 +1008,7 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 
 			if ( !wi->weaponIcon )
 			{
-				CG_Printf( _( S_COLOR_RED  "ERROR: weapon icon not found %s\n"), token );
+				CG_Printf( S_COLOR_RED  "ERROR: weapon icon not found %s\n", token );
 			}
 
 			continue;
@@ -1043,7 +1043,7 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 
 			if ( !wi->crossHair )
 			{
-				CG_Printf( _( S_COLOR_RED  "ERROR: weapon crosshair not found %s\n"), token );
+				CG_Printf( S_COLOR_RED  "ERROR: weapon crosshair not found %s\n", token );
 			}
 
 			continue;
@@ -1138,7 +1138,7 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 			continue;
 		}
 
-		Com_Printf( _( S_COLOR_RED  "ERROR: unknown token '%s'\n"), token );
+		Com_Printf( S_COLOR_RED  "ERROR: unknown token '%s'\n", token );
 		return qfalse;
 	}
 
@@ -1166,7 +1166,7 @@ void CG_RegisterWeapon( int weaponNum )
 
 	if ( weaponInfo->registered )
 	{
-		CG_Printf(_( "CG_RegisterWeapon: already registered: (%d) %s\n"), weaponNum,
+		CG_Printf( "CG_RegisterWeapon: already registered: (%d) %s\n", weaponNum,
 		           BG_Weapon( weaponNum )->name );
 		return;
 	}
@@ -1184,7 +1184,7 @@ void CG_RegisterWeapon( int weaponNum )
 
 	if ( !CG_ParseWeaponFile( path, weaponNum, weaponInfo ) )
 	{
-		Com_Printf( _( S_COLOR_RED  "ERROR: failed to parse %s\n"), path );
+		Com_Printf( S_COLOR_RED  "ERROR: failed to parse %s\n", path );
 	}
 
 	if( !weaponInfo->md5 )
@@ -1264,7 +1264,7 @@ static void CG_SetWeaponLerpFrameAnimation( weapon_t weapon, lerpFrame_t *lf, in
 	{
 		if ( !trap_R_BuildSkeleton( &oldGunSkeleton, lf->old_animation->handle, lf->oldFrame, lf->frame, lf->backlerp, lf->old_animation->clearOrigin ) )
 		{
-			CG_Printf( "%s", _( "CG_SetWeaponLerpFrameAnimation: can't build old gunSkeleton\n" ));
+			CG_Printf( "CG_SetWeaponLerpFrameAnimation: can't build old gunSkeleton\n" );
 			return;
 		}
 	}
@@ -1306,9 +1306,11 @@ CG_MapTorsoToWeaponFrame
 
 =================
 */
-static int CG_MapTorsoToWeaponFrame( clientInfo_t *ci, int frame, qboolean md5 )
+static int CG_MapTorsoToWeaponFrame( clientInfo_t *ci, int frame, int anim )
 {
-	if ( !md5 )
+	if ( anim == -1 ) { return 0; }
+
+	if ( !cg_highPolyPlayerModels.integer )
 	{
 		// change weapon
 		if ( frame >= ci->animations[ TORSO_DROP ].firstFrame &&
@@ -1329,6 +1331,20 @@ static int CG_MapTorsoToWeaponFrame( clientInfo_t *ci, int frame, qboolean md5 )
 		     frame < ci->animations[ TORSO_ATTACK_BLASTER ].firstFrame + 6 )
 		{
 			return 1 + frame - ci->animations[ TORSO_ATTACK_BLASTER ].firstFrame;
+		}
+	}
+	else // MD5 animations all start at 0, so there is no way to differentiate them with first frame alone
+	{
+		// change weapon
+		if ( anim == TORSO_DROP && frame < 9 )
+		{
+			return frame - 6;
+		}
+
+		// stand attack
+		else if ( ( anim == TORSO_ATTACK || anim == TORSO_ATTACK_BLASTER ) && frame < 6 )
+		{
+			return 1 + frame;
 		}
 	}
 
@@ -1490,8 +1506,8 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
 	if ( !weapon->registered )
 	{
-		Com_Printf( _( S_COLOR_YELLOW  "WARNING: CG_AddPlayerWeapon: weapon %d (%s) "
-		            "is not registered\n"), weaponNum, BG_Weapon( weaponNum )->name );
+		Com_Printf( S_COLOR_YELLOW  "WARNING: CG_AddPlayerWeapon: weapon %d (%s) "
+		            "is not registered\n", weaponNum, BG_Weapon( weaponNum )->name );
 		return;
 	}
 
@@ -1588,7 +1604,7 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 
 				if ( boneIndex < 0 )
 				{
-					Com_Printf( _( S_COLOR_YELLOW  "WARNING: Cannot find bone index %s, using root bone\n"),
+					Com_Printf( S_COLOR_YELLOW  "WARNING: Cannot find bone index %s, using root bone\n",
 								weapon->rotationBone );
 					weapon->rotationBone[ 0 ] = '\0'; // avoid repeated warnings
 					boneIndex = 0;
@@ -1795,8 +1811,8 @@ void CG_AddViewWeapon( playerState_t *ps )
 
 	if ( !wi->registered )
 	{
-		Com_Printf( _( S_COLOR_YELLOW  "WARNING: CG_AddViewWeapon: weapon %d (%s) "
-		            "is not registered\n"), weapon, BG_Weapon( weapon )->name );
+		Com_Printf( S_COLOR_YELLOW  "WARNING: CG_AddViewWeapon: weapon %d (%s) "
+		            "is not registered\n", weapon, BG_Weapon( weapon )->name );
 		return;
 	}
 
@@ -1913,8 +1929,8 @@ void CG_AddViewWeapon( playerState_t *ps )
 	{
 		// get clientinfo for animation map
 		ci = &cgs.clientinfo[ cent->currentState.clientNum ];
-		hand.frame = CG_MapTorsoToWeaponFrame( ci, cent->pe.torso.frame, wi->md5 );
-		hand.oldframe = CG_MapTorsoToWeaponFrame( ci, cent->pe.torso.oldFrame, wi->md5 );
+		hand.frame = CG_MapTorsoToWeaponFrame( ci, cent->pe.torso.frame, !wi->md5 ? cent->pe.torso.animationNumber & ~ANIM_TOGGLEBIT : -1 );
+		hand.oldframe = CG_MapTorsoToWeaponFrame( ci, cent->pe.torso.oldFrame, !wi->md5 ? cent->pe.torso.animationNumber & ~ANIM_TOGGLEBIT : -1 );
 		hand.backlerp = cent->pe.torso.backlerp;
 	}
 
@@ -1991,6 +2007,7 @@ void CG_DrawItemSelect( rectDef_t *rect, vec4_t color )
 	qboolean      vertical;
 	centity_t     *cent;
 	playerState_t *ps;
+	vec4_t        localColor;
 
 	cent = &cg_entities[ cg.snap->ps.clientNum ];
 	ps = &cg.snap->ps;
@@ -2028,7 +2045,7 @@ void CG_DrawItemSelect( rectDef_t *rect, vec4_t color )
 			continue;
 		}
 
-		if ( !ps->Ammo && !ps->clips && !BG_Weapon( i )->infiniteAmmo )
+		if ( !ps->ammo && !ps->clips && !BG_Weapon( i )->infiniteAmmo )
 		{
 			colinfo[ numItems ] = 1;
 		}
@@ -2044,8 +2061,8 @@ void CG_DrawItemSelect( rectDef_t *rect, vec4_t color )
 
 		if ( !cg_weapons[ i ].registered )
 		{
-			Com_Printf( _( S_COLOR_YELLOW  "WARNING: CG_DrawItemSelect: weapon %d (%s) "
-			            "is not registered\n"), i, BG_Weapon( i )->name );
+			Com_Printf( S_COLOR_YELLOW  "WARNING: CG_DrawItemSelect: weapon %d (%s) "
+			            "is not registered\n", i, BG_Weapon( i )->name );
 			continue;
 		}
 
@@ -2075,8 +2092,8 @@ void CG_DrawItemSelect( rectDef_t *rect, vec4_t color )
 
 		if ( !cg_upgrades[ i ].registered )
 		{
-			Com_Printf( _( S_COLOR_YELLOW  "WARNING: CG_DrawItemSelect: upgrade %d (%s) "
-			            "is not registered\n"), i, BG_Upgrade( i )->name );
+			Com_Printf( S_COLOR_YELLOW  "WARNING: CG_DrawItemSelect: upgrade %d (%s) "
+			            "is not registered\n", i, BG_Upgrade( i )->name );
 			continue;
 		}
 
@@ -2100,6 +2117,8 @@ void CG_DrawItemSelect( rectDef_t *rect, vec4_t color )
 		length = width / ( height * cgDC.aspectScale );
 	}
 
+	localColor[ 3 ] = 0.5f;
+
 	// render icon ring
 	for ( i = 0; i < length; i++ )
 	{
@@ -2119,20 +2138,23 @@ void CG_DrawItemSelect( rectDef_t *rect, vec4_t color )
 			switch ( colinfo[ item ] )
 			{
 				case 0:
-					color = colorCyan;
+					VectorCopy( colorCyan, localColor );
 					break;
 
 				case 1:
-					color = colorRed;
+					VectorCopy( colorRed, localColor );
 					break;
 
 				case 2:
-					color = colorMdGrey;
+					VectorCopy( colorMdGrey, localColor );
+					break;
+
+				default:
+					VectorCopy( color, localColor );
 					break;
 			}
 
-			color[ 3 ] = 0.5;
-			trap_R_SetColor( color );
+			trap_R_SetColor( localColor );
 
 			if ( items[ item ] < 32 )
 			{

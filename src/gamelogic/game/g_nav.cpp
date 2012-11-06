@@ -41,7 +41,7 @@ qboolean G_NavLoad(dtNavMeshCreateParams *navParams, class_t classt) {
 	char filename[MAX_QPATH];
 	char mapname[MAX_QPATH];
 	long len;
-	char text[Square(MAX_STRING_CHARS)];
+	char text[1024 * 1024 * 2]; // plenty of space for those big complicated maps, we hope
 	char *text_p = NULL;
 	fileHandle_t f;
 	NavMeshHeader_t navHeader;

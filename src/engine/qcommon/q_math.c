@@ -411,7 +411,7 @@ vec_t PlaneNormalize( vec4_t plane )
 =====================
 PlaneFromPoints
 
-Returns false if the triangle is degenrate.
+Returns false if the triangle is degenerate.
 The normal will point out of the clock for clockwise ordered points
 =====================
 */
@@ -436,7 +436,7 @@ qboolean PlaneFromPoints( vec4_t plane, const vec3_t a, const vec3_t b, const ve
 =====================
 PlaneFromPoints
 
-Returns false if the triangle is degenrate.
+Returns false if the triangle is degenerate.
 =====================
 */
 qboolean PlaneFromPointsOrder( vec4_t plane, const vec3_t a, const vec3_t b, const vec3_t c, qboolean cw )
@@ -536,7 +536,7 @@ void RotatePointAroundVector( vec3_t dst, const vec3_t dir, const vec3_t point, 
 
 /*
 ===============
-RotatePointArountVertex
+RotatePointAroundVertex
 
 Rotate a point around a vertex
 ===============
@@ -911,7 +911,7 @@ float AngleBetweenVectors( const vec3_t a, const vec3_t b )
 	// this results in:
 	//
 	// angle = acos( (a * b) / (|a| * |b|) )
-	return RAD2DEG( Q_acos( DotProduct( a, b ) / ( alen * blen ) ) );
+	return RAD2DEG( acos( DotProduct( a, b ) / ( alen * blen ) ) );
 }
 
 //============================================================
@@ -1682,40 +1682,6 @@ int Q_log2( int val )
 
 	return answer;
 }
-
-#ifndef Q3_VM
-
-/*
-=====================
-Q_acos
-
-the msvc acos doesn't always return a value between -PI and PI:
-
-int i;
-i = 1065353246;
-acos(*(float*) &i) == -1.#IND0
-=====================
-*/
-float Q_acos( float c )
-{
-	float angle;
-
-	angle = acos( c );
-
-	if ( angle > M_PI )
-	{
-		return ( float ) M_PI;
-	}
-
-	if ( angle < -M_PI )
-	{
-		return ( float ) M_PI;
-	}
-
-	return angle;
-}
-
-#endif
 
 /*
 =================
@@ -2834,9 +2800,9 @@ void MatrixMultiplyShear( matrix_t m, vec_t x, vec_t y )
 void MatrixToAngles( const matrix_t m, vec3_t angles )
 {
 #if 1
-	double theta;
-	double cp;
-	double sp;
+	float theta;
+	float cp;
+	float sp;
 
 	sp = m[ 2 ];
 
@@ -2867,8 +2833,8 @@ void MatrixToAngles( const matrix_t m, vec3_t angles )
 	}
 
 #else
-	double a;
-	double ca;
+	float a;
+	float ca;
 
 	a = asin( -m[ 2 ] );
 	ca = cos( a );
@@ -4025,7 +3991,7 @@ void QuatSlerp( const quat_t from, const quat_t to, float frac, quat_t out )
 {
 #if 0
 	quat_t to1;
-	double omega, cosom, sinom, scale0, scale1;
+	float omega, cosom, sinom, scale0, scale1;
 
 	cosom = from[ 0 ] * to[ 0 ] + from[ 1 ] * to[ 1 ] + from[ 2 ] * to[ 2 ] + from[ 3 ] * to[ 3 ];
 
@@ -4125,18 +4091,6 @@ void QuatTransformVector( const quat_t q, const vec3_t in, vec3_t out )
 #if defined(_WIN32) && !defined(__MINGW32__)
 double rint( double x )
 {
-	char *buf;
-	int  i, dec, sig;
-
-	buf = _fcvt( x, 0, &dec, &sig );
-	i = atoi( buf );
-
-	if( sig == 1 )
-	{
-		i = i * -1;
-	}
-
-	return i;
+	return floor( x + 0.5 );
 }
-
 #endif

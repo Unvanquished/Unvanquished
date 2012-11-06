@@ -95,9 +95,9 @@
     itemDef
     {
       name "mapbg"
-      rect 3 3 632 472
+      rect 4 4 632 472
       style WINDOW_STYLE_FILLED
-      border 1
+      border WINDOW_BORDER_FULL
       bordercolor .5 .5 .5 1
       backcolor 0 0 0 .2
       visible MENU_TRUE
@@ -122,7 +122,7 @@
     itemDef
     {
       name "mapname"
-      rect 70 420 400 25
+      rect 80 413 400 25
       visible MENU_TRUE
       decoration
       forecolor 1 1 1 1

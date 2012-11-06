@@ -353,7 +353,7 @@ int S_Base_SoundDuration( sfxHandle_t handle )
 {
 	if ( handle < 0 || handle >= s_numSfx )
 	{
-		Com_Printf( _( S_COLOR_YELLOW  "S_Base_SoundDuration: handle %i out of range\n"), handle );
+		Com_Printf( S_COLOR_YELLOW  "S_Base_SoundDuration: handle %i out of range\n", handle );
 		return 0;
 	}
 

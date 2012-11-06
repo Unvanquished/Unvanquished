@@ -908,7 +908,7 @@ void Tess_SurfacePolybuffer( srfPolyBuffer_t *surf )
 
 	Tess_CheckOverflow( surf->pPolyBuffer->numVerts, surf->pPolyBuffer->numIndicies );
 
-	numIndexes = Q_min( surf->pPolyBuffer->numIndicies, MAX_PB_INDICIES );
+	numIndexes = MIN( surf->pPolyBuffer->numIndicies, MAX_PB_INDICIES );
 	indices = surf->pPolyBuffer->indicies;
 
 	for ( i = 0; i < numIndexes; i++ )
@@ -918,7 +918,7 @@ void Tess_SurfacePolybuffer( srfPolyBuffer_t *surf )
 
 	tess.numIndexes += numIndexes;
 
-	numVertexes = Q_min( surf->pPolyBuffer->numVerts, MAX_PB_VERTS );
+	numVertexes = MIN( surf->pPolyBuffer->numVerts, MAX_PB_VERTS );
 	xyzw = &surf->pPolyBuffer->xyz[ 0 ][ 0 ];
 	st = &surf->pPolyBuffer->st[ 0 ][ 0 ];
 	color = &surf->pPolyBuffer->color[ 0 ][ 0 ];
@@ -1966,7 +1966,6 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 	if ( tess.skipTangentSpaces )
 	{
 		vec3_t      tmpVert;
-		vec3_t      tmpPosition;
 		md5Weight_t *w;
 
 		// convert bones back to matrices
@@ -1996,36 +1995,31 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 		// deform the vertices by the lerped bones
 		numVertexes = srf->numVerts;
 
+		memset( tess.xyz + tess.numVertexes, 0, numVertexes * sizeof( tess.xyz[ 0 ] ) );
+
 		for ( j = 0, v = srf->verts; j < numVertexes; j++, v++ )
 		{
-			VectorClear( tmpPosition );
+			vec3_t      *const tmpPosition = (vec3_t *) tess.xyz[ tess.numVertexes + j ];
 
-			for ( k = 0, w = v->weights[ 0 ]; k < v->numWeights; k++, w++ )
-			{
-				//bone = &model->bones[w->boneIndex];
-
-				MatrixTransformPoint( boneMatrices[ w->boneIndex ], w->offset, tmpVert );
-				VectorMA( tmpPosition, w->boneWeight, tmpVert, tmpPosition );
-			}
-
-			tess.xyz[ tess.numVertexes + j ][ 0 ] = tmpPosition[ 0 ];
-			tess.xyz[ tess.numVertexes + j ][ 1 ] = tmpPosition[ 1 ];
-			tess.xyz[ tess.numVertexes + j ][ 2 ] = tmpPosition[ 2 ];
 			tess.xyz[ tess.numVertexes + j ][ 3 ] = 1;
 
 			tess.texCoords[ tess.numVertexes + j ][ 0 ] = v->texCoords[ 0 ];
 			tess.texCoords[ tess.numVertexes + j ][ 1 ] = v->texCoords[ 1 ];
 			tess.texCoords[ tess.numVertexes + j ][ 2 ] = 0;
 			tess.texCoords[ tess.numVertexes + j ][ 3 ] = 1;
+
+			for ( k = 0, w = v->weights[ 0 ]; k < v->numWeights; k++, w++ )
+			{
+				//bone = &model->bones[w->boneIndex];
+
+				MatrixTransformPoint( boneMatrices[ w->boneIndex ], w->offset, tmpVert );
+				VectorMA( *tmpPosition, w->boneWeight, tmpVert, *tmpPosition );
+			}
 		}
 	}
 	else
 	{
 		vec3_t      tmpVert;
-		vec3_t      tmpPosition;
-		vec3_t      tmpNormal;
-		vec3_t      tmpTangent;
-		vec3_t      tmpBinormal;
 		md5Weight_t *w;
 
 		// convert bones back to matrices
@@ -2057,27 +2051,42 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 		// deform the vertices by the lerped bones
 		numVertexes = srf->numVerts;
 
+		memset( tess.xyz       + tess.numVertexes, 0, numVertexes * sizeof( tess.xyz[ 0 ] ) );
+		memset( tess.tangents  + tess.numVertexes, 0, numVertexes * sizeof( tess.tangents[ 0 ] ) );
+		memset( tess.binormals + tess.numVertexes, 0, numVertexes * sizeof( tess.binormals[ 0 ] ) );
+		memset( tess.normals   + tess.numVertexes, 0, numVertexes * sizeof( tess.normals[ 0 ] ) );
+
 		for ( j = 0, v = srf->verts; j < numVertexes; j++, v++ )
 		{
-			VectorClear( tmpPosition );
-			VectorClear( tmpTangent );
-			VectorClear( tmpBinormal );
-			VectorClear( tmpNormal );
+			vec3_t *const tmpPosition = (vec3_t *) tess.xyz[ tess.numVertexes + j ];
+			vec3_t *const tmpTangent  = (vec3_t *) tess.tangents[ tess.numVertexes + j ];
+			vec3_t *const tmpBinormal = (vec3_t *) tess.binormals[ tess.numVertexes + j ];
+			vec3_t *const tmpNormal   = (vec3_t *) tess.normals[ tess.numVertexes + j ];
+
+			tess.xyz[ tess.numVertexes + j ][ 3 ] = 1;
+			tess.tangents[ tess.numVertexes + j ][ 3 ] = 1;
+			tess.binormals[ tess.numVertexes + j ][ 3 ] = 1;
+			tess.normals[ tess.numVertexes + j ][ 3 ] = 1;
+
+			tess.texCoords[ tess.numVertexes + j ][ 0 ] = v->texCoords[ 0 ];
+			tess.texCoords[ tess.numVertexes + j ][ 1 ] = v->texCoords[ 1 ];
+			tess.texCoords[ tess.numVertexes + j ][ 2 ] = 0;
+			tess.texCoords[ tess.numVertexes + j ][ 3 ] = 1;
 
 			for ( k = 0, w = v->weights[ 0 ]; k < v->numWeights; k++, w++ )
 			{
 				//MatrixTransformPoint(boneMatrices[w->boneIndex], w->offset, tmpVert);
 				MatrixTransformPoint( boneMatrices[ w->boneIndex ], v->position, tmpVert );
-				VectorMA( tmpPosition, w->boneWeight, tmpVert, tmpPosition );
+				VectorMA( *tmpPosition, w->boneWeight, tmpVert, *tmpPosition );
 
 				MatrixTransformNormal( boneMatrices[ w->boneIndex ], v->tangent, tmpVert );
-				VectorMA( tmpTangent, w->boneWeight, tmpVert, tmpTangent );
+				VectorMA( *tmpTangent, w->boneWeight, tmpVert, *tmpTangent );
 
 				MatrixTransformNormal( boneMatrices[ w->boneIndex ], v->binormal, tmpVert );
-				VectorMA( tmpBinormal, w->boneWeight, tmpVert, tmpBinormal );
+				VectorMA( *tmpBinormal, w->boneWeight, tmpVert, *tmpBinormal );
 
 				MatrixTransformNormal( boneMatrices[ w->boneIndex ], v->normal, tmpVert );
-				VectorMA( tmpNormal, w->boneWeight, tmpVert, tmpNormal );
+				VectorMA( *tmpNormal, w->boneWeight, tmpVert, *tmpNormal );
 			}
 
 			//VectorNormalize(tmpTangent);
@@ -2087,31 +2096,6 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 			//VectorCopy(v->tangent, tmpTangent);
 			//VectorCopy(v->binormal, tmpBinormal);
 			//VectorCopy(v->normal, tmpNormal);
-
-			tess.xyz[ tess.numVertexes + j ][ 0 ] = tmpPosition[ 0 ];
-			tess.xyz[ tess.numVertexes + j ][ 1 ] = tmpPosition[ 1 ];
-			tess.xyz[ tess.numVertexes + j ][ 2 ] = tmpPosition[ 2 ];
-			tess.xyz[ tess.numVertexes + j ][ 3 ] = 1;
-
-			tess.texCoords[ tess.numVertexes + j ][ 0 ] = v->texCoords[ 0 ];
-			tess.texCoords[ tess.numVertexes + j ][ 1 ] = v->texCoords[ 1 ];
-			tess.texCoords[ tess.numVertexes + j ][ 2 ] = 0;
-			tess.texCoords[ tess.numVertexes + j ][ 3 ] = 1;
-
-			tess.tangents[ tess.numVertexes + j ][ 0 ] = tmpTangent[ 0 ];
-			tess.tangents[ tess.numVertexes + j ][ 1 ] = tmpTangent[ 1 ];
-			tess.tangents[ tess.numVertexes + j ][ 2 ] = tmpTangent[ 2 ];
-			tess.tangents[ tess.numVertexes + j ][ 3 ] = 1;
-
-			tess.binormals[ tess.numVertexes + j ][ 0 ] = tmpBinormal[ 0 ];
-			tess.binormals[ tess.numVertexes + j ][ 1 ] = tmpBinormal[ 1 ];
-			tess.binormals[ tess.numVertexes + j ][ 2 ] = tmpBinormal[ 2 ];
-			tess.binormals[ tess.numVertexes + j ][ 3 ] = 1;
-
-			tess.normals[ tess.numVertexes + j ][ 0 ] = tmpNormal[ 0 ];
-			tess.normals[ tess.numVertexes + j ][ 1 ] = tmpNormal[ 1 ];
-			tess.normals[ tess.numVertexes + j ][ 2 ] = tmpNormal[ 2 ];
-			tess.normals[ tess.numVertexes + j ][ 3 ] = 1;
 		}
 	}
 
@@ -2406,6 +2390,7 @@ static void Tess_SurfaceVBOMD5Mesh( srfVBOMD5Mesh_t *srf )
 	if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
 	{
 		tess.vboVertexSkinning = qtrue;
+		tess.numBoneMatrices = srf->numBoneRemap;
 
 		MatrixSetupScale( m,
 		                  backEnd.currentEntity->e.skeleton.scale[ 0 ],

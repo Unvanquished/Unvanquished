@@ -600,13 +600,13 @@ void Cmd_Give_f( gentity_t *ent )
 			return;
 		}
 
-		client->ps.Ammo = BG_Weapon( client->ps.weapon )->maxAmmo;
+		client->ps.ammo = BG_Weapon( client->ps.weapon )->maxAmmo;
 		client->ps.clips = BG_Weapon( client->ps.weapon )->maxClips;
 
 		if ( BG_Weapon( client->ps.weapon )->usesEnergy &&
 		     BG_InventoryContainsUpgrade( UP_BATTPACK, client->ps.stats ) )
 		{
-			client->ps.Ammo = ( int )( ( float ) client->ps.Ammo * BATTPACK_MODIFIER );
+			client->ps.ammo = ( int )( ( float ) client->ps.ammo * BATTPACK_MODIFIER );
 		}
 	}
 }
@@ -2658,6 +2658,11 @@ void Cmd_ActivateItem_f( gentity_t *ent )
 	else
 	{
 		trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("You don't have the $1$\n") ), Quote( s ) ) );
+
+		if ( upgrade == UP_MEDKIT )
+		{
+			trap_SendServerCommand( ent - g_entities, "vcommand needhealth" );
+		}
 	}
 }
 
@@ -2841,13 +2846,13 @@ void Cmd_Buy_f( gentity_t *ent )
 		}
 
 		ent->client->ps.stats[ STAT_WEAPON ] = weapon;
-		ent->client->ps.Ammo = BG_Weapon( weapon )->maxAmmo;
+		ent->client->ps.ammo = BG_Weapon( weapon )->maxAmmo;
 		ent->client->ps.clips = BG_Weapon( weapon )->maxClips;
 
 		if ( BG_Weapon( weapon )->usesEnergy &&
 		     BG_InventoryContainsUpgrade( UP_BATTPACK, ent->client->ps.stats ) )
 		{
-			ent->client->ps.Ammo *= BATTPACK_MODIFIER;
+			ent->client->ps.ammo *= BATTPACK_MODIFIER;
 		}
 
 		G_ForceWeaponChange( ent, weapon );
@@ -3306,7 +3311,7 @@ void Cmd_Reload_f( gentity_t *ent )
 	}
 
 	// don't reload when full
-	if ( ps->Ammo >= ammo )
+	if ( ps->ammo >= ammo )
 	{
 		return;
 	}

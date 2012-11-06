@@ -165,12 +165,7 @@ extern  int                   numLoopChannels;
 
 extern  int                   s_paintedtime;
 extern  int                   s_rawend;
-extern  vec3_t                listener_forward;
-extern  vec3_t                listener_right;
-extern  vec3_t                listener_up;
 extern  dma_t                 dma;
-
-extern unsigned char          s_entityTalkAmplitude[ MAX_CLIENTS ];
 
 #define MAX_RAW_SAMPLES 16384
 extern  portable_samplepair_t s_rawsamples[ MAX_RAW_SAMPLES ];
@@ -193,9 +188,6 @@ void                          S_PaintChannels( int endtime );
 
 void                          S_memoryLoad( sfx_t *sfx );
 portable_samplepair_t         *S_GetRawSamplePointer( void );
-
-// spatializes a channel
-void                          S_Spatialize( channel_t *ch );
 
 int                           S_GetVoiceAmplitude( int entityNum );
 

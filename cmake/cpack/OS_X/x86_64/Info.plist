@@ -5,7 +5,7 @@
 	<key>CFBundleDisplayName</key>
 	<string>Unvanquished</string>
 	<key>CFBundleExecutable</key>
-	<string>../Resources/Unvanquished/daemon.x86_64</string>
+	<string>../Resources/Unvanquished/daemon</string>
 	<key>CFBundleIconFile</key>
 	<string>Unvanquished.icns</string>
 	<key>CFBundleIdentifier</key>

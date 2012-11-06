@@ -553,8 +553,8 @@ to overflow.
 ==============
 */
 // *INDENT-OFF*
-void            Tess_Begin( void ( *stageIteratorFunc )(),
-                            void ( *stageIteratorFunc2 )(),
+void            Tess_Begin( void ( *stageIteratorFunc )( void ),
+                            void ( *stageIteratorFunc2 )( void ),
                             shader_t *surfaceShader, shader_t *lightShader,
                             qboolean skipTangentSpaces,
                             qboolean skipVBO,

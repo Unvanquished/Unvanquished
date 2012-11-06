@@ -177,7 +177,7 @@ static qboolean read_wav_header( fileHandle_t file, snd_info_t *info )
 	// Scan for the format chunk
 	if ( ( fmtlen = S_FindWavChunk( file, "fmt " ) ) == 0 )
 	{
-		Com_Printf("%s", _( "No ‘fmt’ chunk\n" ));
+		Com_Printf( "No ‘fmt’ chunk\n" );
 		return qfalse;
 	}
 

@@ -35,6 +35,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // big ugly global buffer for use with buffered printing of long outputs
 static char       g_bfb[ 32000 ];
 
+static qboolean G_admin_maprestarted( gentity_t * );
+
 // note: list ordered alphabetically
 static const g_admin_cmd_t     g_admin_cmds[] =
 {
@@ -82,8 +84,8 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 	},
 	{
 		"bot",          G_admin_bot,         qfalse, "bot",
-		"Add/Del/Spec bots",
-		"[^5add|del|spec|unspec^7] [^5name|all^7] [^5aliens/humans^7] (^5skill^7)"
+		N_("Add/Del/Spec bots"),
+		N_("[^5add|del|spec|unspec^7] [^5name|all^7] [^5aliens/humans^7] (^5skill^7)")
 	},
 	{
 		"builder",      G_admin_builder,     qtrue,  "builder",
@@ -186,6 +188,12 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 		"longstrip",    G_admin_longstrip,   qfalse, "longstrip",
 		N_("add a player by IP and GUID to list of stripped players"),
 		N_("[^3name|slot#|IP(/mask)^7]")
+	},
+
+	{
+		"maprestarted", G_admin_maprestarted, qfalse, "",
+		NULL,
+		NULL
 	},
 
 	{
@@ -2562,6 +2570,7 @@ qboolean G_admin_kick( gentity_t *ent )
 	char      name[ MAX_NAME_LENGTH ], *reason, err[ MAX_STRING_CHARS ];
 	int       minargc;
 	gentity_t *vic;
+	int       time;
 
 	minargc = 3;
 
@@ -2605,11 +2614,12 @@ qboolean G_admin_kick( gentity_t *ent )
 	               vic->client->pers.guid,
 	               vic->client->pers.netname,
 	               reason ) );
+	time = G_admin_parse_time( g_adminTempBan.string );
 	admin_create_ban( ent,
 	                  vic->client->pers.netname,
 	                  vic->client->pers.guid,
 	                  &vic->client->pers.ip,
-	                  MAX( 1, G_admin_parse_time( g_adminTempBan.string ) ),
+	                  MAX( 1, time ),
 	                  ( *reason ) ? reason : "kicked by admin" );
 	G_admin_writeconfig();
 
@@ -2658,9 +2668,9 @@ qboolean G_admin_ban( gentity_t *ent )
 
 	if ( !G_admin_permission( ent, ADMF_CAN_PERM_BAN ) )
 	{
-		int maximum = MAX( 1, G_admin_parse_time( g_adminMaxBan.string ) );
+		int maximum = G_admin_parse_time( g_adminMaxBan.string );
 
-		if ( seconds == 0 || seconds > maximum )
+		if ( seconds == 0 || seconds > MAX( 1, maximum ) )
 		{
 			ADMP( QQ( N_("^3ban: ^7you may not issue permanent bans\n") ) );
 			seconds = maximum;
@@ -2810,12 +2820,15 @@ qboolean G_admin_unban( gentity_t *ent )
 		return qfalse;
 	}
 
-	if ( !G_admin_permission( ent, ADMF_CAN_PERM_BAN ) &&
-	     ( ban->expires == 0 || ( ban->expires - time > MAX( 1,
-	                              G_admin_parse_time( g_adminMaxBan.string ) ) ) ) )
+	if ( !G_admin_permission( ent, ADMF_CAN_PERM_BAN ) )
 	{
-		ADMP( QQ( N_("^3unban: ^7you cannot remove permanent bans\n") ) );
-		return qfalse;
+		int maximum;
+		if ( ban->expires == 0 ||
+		     ( maximum = G_admin_parse_time( g_adminMaxBan.string ), ban->expires - time > MAX( 1, maximum ) ) )
+		{
+			ADMP( QQ( N_("^3unban: ^7you cannot remove permanent bans\n") ) );
+			return qfalse;
+		}
 	}
 
 	if ( expireOnly && G_ADMIN_BAN_EXPIRED( ban, time ) )
@@ -2890,7 +2903,8 @@ qboolean G_admin_adjustban( gentity_t *ent )
 		return qfalse;
 	}
 
-	maximum = MAX( 1, G_admin_parse_time( g_adminMaxBan.string ) );
+	maximum = G_admin_parse_time( g_adminMaxBan.string );
+	maximum = MAX( 1, maximum );
 
 	if ( !G_admin_permission( ent, ADMF_CAN_PERM_BAN ) &&
 	     ( ban->expires == 0 || ban->expires - time > maximum ) )
@@ -3780,7 +3794,7 @@ static int ban_out( void *ban, char *str )
 		}
 	}
 
-	// only print out the the date part of made
+	// only print out the date part of made
 	date[ 0 ] = '\0';
 
 	for ( i = 0; *made && *made != ' ' && i < sizeof( date ) - 1; i++ )
@@ -4224,6 +4238,8 @@ qboolean G_admin_restart( gentity_t *ent )
 	admin_log( layout );
 	admin_log( teampref );
 
+	trap_Cvar_Set( "g_mapRestarted", "y" );
+
 	if ( !Q_stricmp( teampref, "keepteams" ) || !Q_stricmp( teampref, "keepteamslock" ) || !Q_stricmp( teampref,"kt" ) || !Q_stricmp( teampref,"ktl" ) )
 	{
 		for ( i = 0; i < g_maxclients.integer; i++ )
@@ -4242,6 +4258,8 @@ qboolean G_admin_restart( gentity_t *ent )
 
 			cl->sess.restartTeam = cl->pers.teamSelection;
 		}
+
+		trap_Cvar_Set( "g_mapRestarted", "yk" );
 	}
 	else if ( !Q_stricmp( teampref, "switchteams" ) || !Q_stricmp( teampref, "switchteamslock" ) || !Q_stricmp( teampref,"st" ) || !Q_stricmp( teampref,"stl" ))
 	{
@@ -4263,11 +4281,17 @@ qboolean G_admin_restart( gentity_t *ent )
 				cl->sess.restartTeam = TEAM_HUMANS;
 			}
 		}
+
+		trap_Cvar_Set( "g_mapRestarted", "yks" );
 	}
 	else if ( trap_Argc() > 1 )
 	{
 		ADMP( va( "%s %s", QQ( N_( "^3restart: ^7unrecognised option '$1$'\n") ), Quote( teampref ) ) );
 		return qfalse;
+	}
+	else
+	{
+		trap_Cvar_Set( "g_teamsKept", "" );
 	}
 
 	if ( !Q_stricmp( teampref, "switchteamslock" ) ||
@@ -5098,7 +5122,7 @@ qboolean G_admin_timelimit( gentity_t *ent )
 			}
 			return qtrue;
 		}
-		// fall through
+		// fallthrough
 
 	default:
 		ADMP( QQ( N_("^3gametimelimit: ^7usage: gametimelimit [minutes]\n") ) );
@@ -5679,8 +5703,11 @@ qboolean G_admin_bot( gentity_t *ent ) {
 	char err[MAX_STRING_CHARS];
 	int skill_int;
 	int i;
+
+	static const char bot_usage[] = QQ( N_( "^3bot: ^7usage: bot [^5add|del|spec|unspec^7] [^5name|all^7] [^5aliens/humans^7] (^5skill^7)\n" ) );
+
 	if(trap_Argc() < min_args) {
-		ADMP( "^3bot: ^7usage: bot [^5add|del|spec|unspec^7] [^5name|all^7] [^5aliens/humans^7] (^5skill^7)\n" );
+		ADMP( bot_usage );
 		return qfalse;
 	}
 	trap_Argv(1, arg1, sizeof(arg1));
@@ -5689,11 +5716,11 @@ qboolean G_admin_bot( gentity_t *ent ) {
 	if(!Q_stricmp(arg1, "add")) {
 		min_args++; //now we also need a team name
 		if(!Q_stricmp(name, "all")) {
-			ADMP( "bots can't have that name\n");
+			ADMP( QQ( N_( "bots can't have that name\n" ) ) );
 			return qfalse;
 		}
 		if(trap_Argc() < min_args) {
-			ADMP( "^3bot: ^7usage: bot [^5add|del|spec|unspec^7] [^5name|all^7] [^5aliens/humans^7] (^5skill^7)\n" );
+			ADMP( bot_usage );
 			return qfalse;
 		}
 		trap_Argv(3, team, sizeof(team));
@@ -5714,17 +5741,17 @@ qboolean G_admin_bot( gentity_t *ent ) {
 	//choose team
 		if(!Q_stricmp(team, "humans") || !Q_stricmp(team, "h")) {
 			if(!G_BotAdd(name,TEAM_HUMANS,skill_int)) {
-				ADMP("Can't add a bot\n");
+				ADMP( QQ( "Can't add a bot\n" ) );
 			return qfalse;
 		}
 		} else if(!Q_stricmp(team, "aliens") || !Q_stricmp(team, "a")) {
 			if(!G_BotAdd(name,TEAM_ALIENS,skill_int)) {
-				ADMP("Can't add a bot\n");
+				ADMP( QQ( N_( "Can't add a bot\n" ) ) );
 				return qfalse;
 			}
 		} else {
-			ADMP( "Invalid team name\n");
-			ADMP( "^3bot: ^7usage: bot [^5add|del|spec|unspec^7] [^5name|all^7] [^5aliens/humans^7] (^5skill^7)\n" );
+			ADMP( QQ( N_( "Invalid team name\n" ) ) );
+			ADMP( bot_usage );
 			return qfalse;
 		}
 	} else if(!Q_stricmp(arg1, "del")) {
@@ -5737,8 +5764,9 @@ qboolean G_admin_bot( gentity_t *ent ) {
 			return qtrue;
 		}
 
-		if(clientNum == -1) { //something went wrong when finding the client Number
-			ADMP(err);
+		if(clientNum == -1) //something went wrong when finding the client Number
+		{
+			ADMP( va( "%s %s %s", QQ( "^3$1$: ^7$2t$" ), "bot", Quote( err ) ) );
 			return qfalse;
 		}
 		G_BotDel(clientNum); //delete the bot
@@ -5752,14 +5780,15 @@ qboolean G_admin_bot( gentity_t *ent ) {
 			return qtrue;
 		}
 
-		if(clientNum == -1) {
-			ADMP(err);
+		if(clientNum == -1)
+		{
+			ADMP( va( "%s %s %s", QQ( "^3$1$: ^7$2t$" ), "bot", Quote( err ) ) );
 			return qfalse;
 		}
 		if(g_entities[clientNum].r.svFlags & SVF_BOT) {
 			G_ChangeTeam(&g_entities[clientNum], TEAM_NONE);
 		} else {
-			ADMP("%s is not a bot\n");
+			ADMP( QQ( N_( "%s is not a bot\n" ) ) );
 		}
 	} else if(!Q_stricmp(arg1, "unspec")) {
 		int clientNum = G_ClientNumberFromString(name,err, sizeof(err));
@@ -5771,26 +5800,35 @@ qboolean G_admin_bot( gentity_t *ent ) {
 			return qtrue;
 		}
 
-		if(clientNum == -1) {
-			ADMP(err);
+		if(clientNum == -1)
+		{
+			ADMP( va( "%s %s %s", QQ( "^3$1$: ^7$2t$" ), "bot", Quote( err ) ) );
 			return qfalse;
 		}
 
 		if(!(g_entities[clientNum].r.svFlags & SVF_BOT)) {
-			ADMP("%s is not a bot\n");
+			ADMP( QQ( N_( "%s is not a bot\n" ) ) );
 			return qfalse;
 		}
 
 		if(g_entities[clientNum].client->ps.stats[STAT_TEAM] != TEAM_NONE) {
-			ADMP("%s is not on spectators\n");
+			ADMP( QQ( N_( "%s is not on spectators\n" ) ) );
 			return qfalse;
 		}
 
 		G_ChangeTeam(&g_entities[clientNum], g_entities[clientNum].botMind->botTeam);
 	} else {
-		ADMP("Invalid command\n");
-		ADMP( "^3bot: ^7usage: bot [^5add|del|spec|unspec^7] [^5name|all^7] [^5aliens/humans^7] (^5skill^7)\n" );
+		ADMP( QQ( N_( "Invalid command\n" ) ) );
+		ADMP( bot_usage );
 		return qfalse;
 	}
 	return qtrue;
+}
+
+static qboolean G_admin_maprestarted( gentity_t *ent )
+{
+	if ( !ent )
+	{
+		trap_Cvar_Set( "g_mapRestarted", "" );
+	}
 }

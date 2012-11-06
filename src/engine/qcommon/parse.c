@@ -384,7 +384,7 @@ static void QDECL PRINTF_LIKE(2) Parse_ScriptError( script_t *script, char *str,
 	va_start( ap, str );
 	vsprintf( text, str, ap );
 	va_end( ap );
-	Com_Printf(_( "file %s, line %d: %s\n"), script->filename, script->line, text );
+	Com_Printf( "file %s, line %d: %s\n", script->filename, script->line, text );
 }
 
 /*
@@ -402,7 +402,7 @@ static void QDECL PRINTF_LIKE(2) Parse_ScriptWarning( script_t *script, char *st
 	va_start( ap, str );
 	vsprintf( text, str, ap );
 	va_end( ap );
-	Com_Printf(_( "file %s, line %d: %s\n"), script->filename, script->line, text );
+	Com_Printf( "file %s, line %d: %s\n", script->filename, script->line, text );
 }
 
 /*
@@ -1258,7 +1258,7 @@ static void QDECL PRINTF_LIKE(2) Parse_SourceError( source_t *source, char *str,
 	va_start( ap, str );
 	vsprintf( text, str, ap );
 	va_end( ap );
-	Com_Printf(_( "file %s, line %d: %s\n"), source->scriptstack->filename, source->scriptstack->line, text );
+	Com_Printf( "file %s, line %d: %s\n", source->scriptstack->filename, source->scriptstack->line, text );
 }
 
 /*
@@ -1274,7 +1274,7 @@ static void QDECL PRINTF_LIKE(2) Parse_SourceWarning( source_t *source, char *st
 	va_start( ap, str );
 	vsprintf( text, str, ap );
 	va_end( ap );
-	Com_Printf(_( "file %s, line %d: %s\n"), source->scriptstack->filename, source->scriptstack->line, text );
+	Com_Printf( "file %s, line %d: %s\n", source->scriptstack->filename, source->scriptstack->line, text );
 }
 
 /*

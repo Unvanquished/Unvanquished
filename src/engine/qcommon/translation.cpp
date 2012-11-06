@@ -45,7 +45,8 @@ extern "C"
 
 using namespace tinygettext;
 // Ugly char buffer
-static char gettextbuffer[ MAX_STRING_CHARS ];
+static char gettextbuffer[ 4 ][ MAX_STRING_CHARS ];
+static int num = -1;
 
 DictionaryManager trans_manager;
 DictionaryManager trans_managergame;
@@ -66,7 +67,7 @@ int               modificationCount=0;
 ====================
 Trans_ReturnLanguage
 
-Return a loaded language. If desired language is not found, return closest match. 
+Return a loaded language. If desired language is not found, return closest match.
 If no languages are close, force English.
 ====================
 */
@@ -74,28 +75,28 @@ Language Trans_ReturnLanguage( const char *lang )
 {
 	int bestScore = 0;
 	Language bestLang, language = Language::from_env( std::string( lang ) );
-	
+
 	std::set<Language> langs = trans_manager.get_languages();
 	for( std::set<Language>::iterator i = langs.begin(); i != langs.end(); i++ )
 	{
 		int score = Language::match( language, *i );
-		
+
 		if( score > bestScore )
 		{
 			bestScore = score;
 			bestLang = *i;
 		}
 	}
-	
+
 	// Return "en" if language not found
 	if( !bestLang )
 	{
 		Com_Printf( _("^3WARNING:^7 Language \"%s\" (%s) not found. Default to \"English\" (en)\n"),
-					language.get_name().empty() ? _("Unknown Language") : language.get_name().c_str(),
+					language.get_name().empty() ? _( "Unknown Language" ) : language.get_name().c_str(),
 					lang );
 		bestLang = Language::from_env( "en" );
 	}
-	
+
 	return bestLang;
 }
 
@@ -127,37 +128,37 @@ extern "C" void Trans_Init( void )
 	FL_Locale           *locale;
 	std::set<Language>  langs;
 	Language            lang;
-	
+
 	language = Cvar_Get( "language", "", CVAR_ARCHIVE );
 	language_debug = Cvar_Get( "language_debug", "0", CVAR_ARCHIVE );
 	trans_languages = Cvar_Get( "trans_languages", "", CVAR_ROM );
-	trans_encodings = Cvar_Get( "trans_languages", "", CVAR_ROM );
-	
+	trans_encodings = Cvar_Get( "trans_encodings", "", CVAR_ROM );
+
 	// Only detect locale if no previous language set.
 	if( !language->string[0] )
 	{
 		FL_FindLocale( &locale, FL_MESSAGES );
-		
+
 		// Invalid or not found. Just use builtin language.
-		if( !locale->lang || !locale->lang[0] || !locale->country || !locale->country[0] ) 
+		if( !locale->lang || !locale->lang[0] || !locale->country || !locale->country[0] )
 		{
 			Cvar_Set( "language", "en" );
 		}
 		else
 		{
-			Cvar_Set( "language", va( "%s%s%s", locale->lang, 
+			Cvar_Set( "language", va( "%s%s%s", locale->lang,
 									  locale->country[0] ? "_" : "",
 									  locale->country ) );
 		}
 	}
-	
+
 	poFiles = FS_ListFiles( "translation/client", ".po", &numPoFiles );
-	
+
 	// This assumes that the filenames in both folders are the same
 	for( i = 0; i < numPoFiles; i++ )
 	{
 		char *buffer, language[ 6 ];
-		
+
 		if( FS_ReadFile( va( "translation/client/%s", poFiles[ i ] ), ( void ** ) &buffer ) > 0 )
 		{
 			COM_StripExtension2( poFiles[ i ], language, sizeof( language ) );
@@ -169,7 +170,7 @@ extern "C" void Trans_Init( void )
 		{
 			Com_Printf(_( "^1ERROR: Could not open client translation: %s\n"), poFiles[ i ] );
 		}
-		
+
 		if( FS_ReadFile( va( "translation/game/%s", poFiles[ i ] ), ( void ** ) &buffer ) > 0 )
 		{
 			COM_StripExtension2( poFiles[ i ], language, sizeof( language ) );
@@ -187,7 +188,7 @@ extern "C" void Trans_Init( void )
 	for( std::set<Language>::iterator p = langs.begin(); p != langs.end(); p++ )
 	{
 		Q_strcat( langList, sizeof( langList ), va( "\"%s\" ", p->get_name().c_str() ) );
-		Q_strcat( encList, sizeof( encList ), va( "\"%s%s%s\" ", p->get_language().c_str(), 
+		Q_strcat( encList, sizeof( encList ), va( "\"%s%s%s\" ", p->get_language().c_str(),
 												  p->get_country().c_str()[0] ? "_" : "",
 												  p->get_country().c_str() ) );
 	}
@@ -207,40 +208,47 @@ extern "C" void Trans_Init( void )
 extern "C" const char* Trans_Gettext( const char *msgid )
 {
 	if( !enabled ) { return msgid; }
-	Q_strncpyz( gettextbuffer, trans_dict.translate( msgid ).c_str(), sizeof( gettextbuffer ) );
-	return gettextbuffer;
+	num = ( num + 1 ) & 3;
+	Q_strncpyz( gettextbuffer[ num ], trans_dict.translate( msgid ).c_str(), sizeof( gettextbuffer[ num ] ) );
+	return gettextbuffer[ num ];
 }
 
 extern "C" const char* Trans_Pgettext( const char *ctxt, const char *msgid )
 {
 	if ( !enabled ) { return msgid; }
-	Q_strncpyz( gettextbuffer, trans_dict.translate_ctxt( ctxt, msgid ).c_str(), sizeof( gettextbuffer ) );
-	return gettextbuffer;
+	num = ( num + 1 ) & 3;
+	Q_strncpyz( gettextbuffer[ num ], trans_dict.translate_ctxt( ctxt, msgid ).c_str(), sizeof( gettextbuffer[ num ] ) );
+	return gettextbuffer[ num ];
 }
 
 extern "C" const char* Trans_GettextGame( const char *msgid )
 {
 	if( !enabled ) { return msgid; }
-	Q_strncpyz( gettextbuffer, trans_dictgame.translate( msgid ).c_str(), sizeof( gettextbuffer ) );
-	return gettextbuffer;
+	num = ( num + 1 ) & 3;
+	Q_strncpyz( gettextbuffer[ num ], trans_dictgame.translate( msgid ).c_str(), sizeof( gettextbuffer[ num ] ) );
+	return gettextbuffer[ num ];
 }
 
 extern "C" const char* Trans_PgettextGame( const char *ctxt, const char *msgid )
 {
 	if( !enabled ) { return msgid; }
-	return trans_dictgame.translate_ctxt( std::string( ctxt ), std::string( msgid ) ).c_str();
+	num = ( num + 1 ) & 3;
+	Q_strncpyz( gettextbuffer[ num ], trans_dictgame.translate_ctxt( std::string( ctxt ), std::string( msgid ) ).c_str(), sizeof( gettextbuffer[ num ] ) );
+	return gettextbuffer[ num ];
 }
 
 extern "C" const char* Trans_GettextPlural( const char *msgid, const char *msgid_plural, int num )
 {
 	if( !enabled ) { return num == 1 ? msgid : msgid_plural; }
-	Q_strncpyz( gettextbuffer, trans_dict.translate_plural( msgid, msgid_plural, num ).c_str(), sizeof( gettextbuffer ) );
-	return gettextbuffer;
+	num = ( num + 1 ) & 3;
+	Q_strncpyz( gettextbuffer[ num ], trans_dict.translate_plural( msgid, msgid_plural, num ).c_str(), sizeof( gettextbuffer[ num ] ) );
+	return gettextbuffer[ num ];
 }
 
 extern "C" const char* Trans_GettextGamePlural( const char *msgid, const char *msgid_plural, int num )
 {
 	if( !enabled ) { return num == 1 ? msgid : msgid_plural; }
-	Q_strncpyz( gettextbuffer, trans_dictgame.translate_plural( msgid, msgid_plural, num ).c_str(), sizeof( gettextbuffer ) );
-	return gettextbuffer;
+	num = ( num + 1 ) & 3;
+	Q_strncpyz( gettextbuffer[ num ], trans_dictgame.translate_plural( msgid, msgid_plural, num ).c_str(), sizeof( gettextbuffer[ num ] ) );
+	return gettextbuffer[ num ];
 }

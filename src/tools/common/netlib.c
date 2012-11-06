@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <stdlib.h>
 #include "netlib.h"
 
-//++timo FIXME: the WINS_ things are not necessary, they can be made portable arther easily
+//++timo FIXME: the WINS_ things are not necessary, they can be made portable rather easily
 char           *WINS_ErrorMessage(int error);
 
 int             WINS_Init(void);

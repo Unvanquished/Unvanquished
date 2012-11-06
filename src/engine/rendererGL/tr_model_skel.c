@@ -211,7 +211,6 @@ void AddSurfaceToVBOSurfacesList( growList_t *vboSurfaces, growList_t *vboTriang
 	GLuint          ofsTangents;
 	GLuint          ofsBinormals;
 	GLuint          ofsNormals;
-	GLuint          ofsColors;
 	GLuint          ofsBoneIndexes;
 	GLuint          ofsBoneWeights;
 
@@ -227,8 +226,6 @@ void AddSurfaceToVBOSurfacesList( growList_t *vboSurfaces, growList_t *vboTriang
 
 	srfVBOMD5Mesh_t *vboSurf;
 	md5Vertex_t     *v;
-
-	vec4_t          tmpColor = { 1, 1, 1, 1 };
 
 	vertexesNum = surf->numVerts;
 	indexesNum = vboTriangles->currentElements * 3;
@@ -362,15 +359,6 @@ void AddSurfaceToVBOSurfacesList( growList_t *vboSurfaces, growList_t *vboTriang
 		dataOfs += sizeof( vec4_t );
 	}
 
-	// feed vertex colors
-	ofsColors = dataOfs;
-
-	for ( j = 0; j < vertexesNum; j++ )
-	{
-		Com_Memcpy( data + dataOfs, tmpColor, sizeof( vec4_t ) );
-		dataOfs += sizeof( vec4_t );
-	}
-
 	// feed bone indices
 	ofsBoneIndexes = dataOfs;
 
@@ -420,9 +408,6 @@ void AddSurfaceToVBOSurfacesList( growList_t *vboSurfaces, growList_t *vboTriang
 	vboSurf->vbo->ofsTangents = ofsTangents;
 	vboSurf->vbo->ofsBinormals = ofsBinormals;
 	vboSurf->vbo->ofsNormals = ofsNormals;
-	vboSurf->vbo->ofsColors = ofsColors;
-	vboSurf->vbo->ofsLightCoords = ofsColors; // not required anyway
-	vboSurf->vbo->ofsLightDirections = ofsColors; // not required anyway
 	vboSurf->vbo->ofsBoneIndexes = ofsBoneIndexes;
 	vboSurf->vbo->ofsBoneWeights = ofsBoneWeights;
 
@@ -454,7 +439,6 @@ void AddSurfaceToVBOSurfacesList2( growList_t *vboSurfaces, growList_t *vboTrian
 	GLuint          ofsTangents;
 	GLuint          ofsBinormals;
 	GLuint          ofsNormals;
-	GLuint          ofsColors;
 	GLuint          ofsBoneIndexes;
 	GLuint          ofsBoneWeights;
 
@@ -470,8 +454,6 @@ void AddSurfaceToVBOSurfacesList2( growList_t *vboSurfaces, growList_t *vboTrian
 
 	srfVBOMD5Mesh_t *vboSurf;
 	md5Vertex_t     *v;
-
-	vec4_t          tmpColor = { 1, 1, 1, 1 };
 
 	shader_t        *shader;
 	int             shaderIndex;
@@ -632,15 +614,6 @@ void AddSurfaceToVBOSurfacesList2( growList_t *vboSurfaces, growList_t *vboTrian
 		dataOfs += sizeof( vec4_t );
 	}
 
-	// feed vertex colors
-	ofsColors = dataOfs;
-
-	for ( j = 0; j < vertexesNum; j++ )
-	{
-		Com_Memcpy( data + dataOfs, tmpColor, sizeof( vec4_t ) );
-		dataOfs += sizeof( vec4_t );
-	}
-
 	// feed bone indices
 	ofsBoneIndexes = dataOfs;
 
@@ -694,9 +667,6 @@ void AddSurfaceToVBOSurfacesList2( growList_t *vboSurfaces, growList_t *vboTrian
 	vboSurf->vbo->ofsTangents = ofsTangents;
 	vboSurf->vbo->ofsBinormals = ofsBinormals;
 	vboSurf->vbo->ofsNormals = ofsNormals;
-	vboSurf->vbo->ofsColors = ofsColors;
-	vboSurf->vbo->ofsLightCoords = ofsColors; // not required anyway
-	vboSurf->vbo->ofsLightDirections = ofsColors; // not required anyway
 	vboSurf->vbo->ofsBoneIndexes = ofsBoneIndexes;
 	vboSurf->vbo->ofsBoneWeights = ofsBoneWeights;
 

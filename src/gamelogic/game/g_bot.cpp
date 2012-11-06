@@ -554,7 +554,7 @@ qboolean BotTargetInAttackRange(gentity_t *self, botTarget_t target) {
 			range = LEVEL3_CLAW_RANGE;
 			//we can pounce, or we have barbs
 			secondaryRange = LEVEL3_POUNCE_JUMP_MAG_UPG; //An arbitrary value for pounce and barbs, has nothing to do with actual range
-			if(self->client->ps.Ammo > 0)
+			if(self->client->ps.ammo > 0)
 				secondaryRange = 900;
 			width = height = LEVEL3_CLAW_WIDTH;
 			break;
@@ -939,7 +939,7 @@ qboolean BotShouldRetreat(gentity_t *self) {
 	//skip over infinite ammo weapons
 	if(weapon->infiniteAmmo)
 	continue;
-	totalAmmo += bot->client->ps.Ammo + weapon->maxAmmo * bot->client->ps.clips;
+	totalAmmo += bot->client->ps.ammo + weapon->maxAmmo * bot->client->ps.clips;
 	maxAmmo += weapon->maxAmmo + weapon->maxAmmo * weapon->maxClips;
 	}
 	}
@@ -1050,7 +1050,7 @@ void BotClassMovement(gentity_t *self, qboolean inAttackRange, usercmd_t *botCmd
 	case PCL_ALIEN_LEVEL3:
 		break;
 	case PCL_ALIEN_LEVEL3_UPG:
-		if(BotGetTargetType(self->botMind->goal) == ET_BUILDABLE && self->client->ps.Ammo > 0
+		if(BotGetTargetType(self->botMind->goal) == ET_BUILDABLE && self->client->ps.ammo > 0
 			&& inAttackRange) {
 				//dont move when sniping buildings
 				botCmdBuffer->forwardmove = 0;
@@ -1121,7 +1121,7 @@ void BotFireWeaponAI(gentity_t *self, usercmd_t *botCmdBuffer) {
 			BotFireWeapon(WPM_PRIMARY, botCmdBuffer); //goon chomp
 		break;
 	case WP_ALEVEL3_UPG:
-		if(self->client->ps.Ammo > 0 && distance > LEVEL3_CLAW_UPG_RANGE) {
+		if(self->client->ps.ammo > 0 && distance > LEVEL3_CLAW_UPG_RANGE) {
 			botCmdBuffer->angles[PITCH] = ANGLE2SHORT(-CalcBarbAimPitch(self, self->botMind->goal)); //compute and apply correct aim pitch to hit target
 			BotFireWeapon(WPM_TERTIARY, botCmdBuffer); //goon barb
 		} else if(distance > LEVEL3_CLAW_UPG_RANGE && self->client->ps.stats[ STAT_MISC ] < LEVEL3_POUNCE_TIME_UPG) {

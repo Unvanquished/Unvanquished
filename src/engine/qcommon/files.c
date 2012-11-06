@@ -515,7 +515,7 @@ qboolean FS_CreatePath( const char *OSPath_ )
 	// FIXME: is c: allowed???
 	if ( strstr( OSPath, ".." ) || strstr( OSPath, "::" ) )
 	{
-		Com_Printf(_( "WARNING: refusing to create relative path \"%s\"\n"), OSPath );
+		Com_Printf( "WARNING: refusing to create relative path \"%s\"\n", OSPath );
 		return qtrue;
 	}
 
@@ -546,11 +546,11 @@ void FS_CopyFile( char *fromOSPath, char *toOSPath )
 	int  len;
 	byte *buf;
 
-	Com_Printf(_( "copy %s to %s\n"), fromOSPath, toOSPath );
+	Com_Printf( "copy %s to %s\n", fromOSPath, toOSPath );
 
 	if ( strstr( fromOSPath, "journal.dat" ) || strstr( fromOSPath, "journaldata.dat" ) )
 	{
-		Com_Printf(_( "Ignoring journal files\n" ));
+		Com_Printf( "Ignoring journal files\n" );
 		return;
 	}
 
@@ -733,7 +733,7 @@ fileHandle_t FS_SV_FOpenFileWrite( const char *filename )
 
 	if ( fs_debug->integer )
 	{
-		Com_Printf(_( "FS_SV_FOpenFileWrite: %s\n"), ospath );
+		Com_Printf( "FS_SV_FOpenFileWrite: %s\n", ospath );
 	}
 
 	if ( FS_CreatePath( ospath ) )
@@ -788,7 +788,7 @@ int FS_SV_FOpenFileRead( const char *filename, fileHandle_t *fp )
 
 	if ( fs_debug->integer )
 	{
-		Com_Printf(_( "FS_SV_FOpenFileRead (fs_homepath): %s\n"), ospath );
+		Com_Printf( "FS_SV_FOpenFileRead (fs_homepath): %s\n", ospath );
 	}
 
 	fsh[ f ].handleFiles.file.o = fopen( ospath, "rb" );
@@ -805,7 +805,7 @@ int FS_SV_FOpenFileRead( const char *filename, fileHandle_t *fp )
 
 			if ( fs_debug->integer )
 			{
-				Com_Printf(_( "FS_SV_FOpenFileRead (fs_basepath): %s\n"), ospath );
+				Com_Printf( "FS_SV_FOpenFileRead (fs_basepath): %s\n", ospath );
 			}
 
 			fsh[ f ].handleFiles.file.o = fopen( ospath, "rb" );
@@ -853,7 +853,7 @@ void FS_SV_Rename( const char *from, const char *to )
 
 	if ( fs_debug->integer )
 	{
-		Com_Printf(_( "FS_SV_Rename: %s --> %s\n"), from_ospath, to_ospath );
+		Com_Printf( "FS_SV_Rename: %s --> %s\n", from_ospath, to_ospath );
 	}
 
 	if ( rename( from_ospath, to_ospath ) )
@@ -887,7 +887,7 @@ void FS_Rename( const char *from, const char *to )
 
 	if ( fs_debug->integer )
 	{
-		Com_Printf(_( "FS_Rename: %s --> %s\n"), from_ospath, to_ospath );
+		Com_Printf( "FS_Rename: %s --> %s\n", from_ospath, to_ospath );
 	}
 
 	if ( rename( from_ospath, to_ospath ) )
@@ -965,7 +965,7 @@ fileHandle_t FS_FOpenFileWrite( const char *filename )
 
 	if ( fs_debug->integer )
 	{
-		Com_Printf(_( "FS_FOpenFileWrite: %s\n"), ospath );
+		Com_Printf( "FS_FOpenFileWrite: %s\n", ospath );
 	}
 
 	if ( FS_CreatePath( ospath ) )
@@ -1018,7 +1018,7 @@ fileHandle_t FS_FOpenFileAppend( const char *filename )
 
 	if ( fs_debug->integer )
 	{
-		Com_Printf(_( "FS_FOpenFileAppend: %s\n"), ospath );
+		Com_Printf( "FS_FOpenFileAppend: %s\n", ospath );
 	}
 
 	if ( FS_CreatePath( ospath ) )
@@ -1060,7 +1060,7 @@ int FS_FOpenFileDirect( const char *filename, fileHandle_t *f )
 
 	if ( fs_debug->integer )
 	{
-		Com_Printf(_( "FS_FOpenFileDirect: %s\n"), ospath );
+		Com_Printf( "FS_FOpenFileDirect: %s\n", ospath );
 	}
 
 	// enabling the following line causes a recursive function call loop
@@ -1103,7 +1103,7 @@ fileHandle_t FS_FOpenFileUpdate( const char *filename, int *length )
 
 	if ( fs_debug->integer )
 	{
-		Com_Printf(_( "FS_FOpenFileWrite: %s\n"), ospath );
+		Com_Printf( "FS_FOpenFileWrite: %s\n", ospath );
 	}
 
 	if ( FS_CreatePath( ospath ) )
@@ -1134,29 +1134,29 @@ fileHandle_t FS_FCreateOpenPipeFile( const char *filename ) {
 	char         *ospath;
 	FILE         *fifo;
 	fileHandle_t  f;
-	
+
 	if ( !fs_searchpaths )
 	{
 		Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
 	}
-	
+
 	f = FS_HandleForFile();
 	fsh[f].zipFile = qfalse;
-	
+
 	Q_strncpyz( fsh[f].name, filename, sizeof( fsh[f].name ) );
-	
+
 	// don't let sound stutter
 	S_ClearSoundBuffer();
-	
+
 	ospath = FS_BuildOSPath( fs_homepath->string, fs_gamedir, filename );
-	
+
 	if ( fs_debug->integer )
 	{
 		Com_Printf( "FS_FCreateOpenPipeFile: %s\n", ospath );
 	}
-	
+
 	FS_CheckFilenameIsNotExecutable( ospath, __func__ );
-	
+
 	fifo = Sys_Mkfifo( ospath );
 	if( fifo )
 	{
@@ -1169,7 +1169,7 @@ fileHandle_t FS_FCreateOpenPipeFile( const char *filename ) {
 		"com_pipefile will not be used.\n", ospath );
 		f = 0;
 	}
-	
+
 	return f;
 }
 
@@ -1273,7 +1273,7 @@ static qboolean FS_CheckUIImageFile( const char *filename )
 
 	return qfalse;
 }
-		
+
 
 int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueFILE )
 {
@@ -1446,7 +1446,7 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 						     Q_stricmp( filename + l - 6, ".arena" ) != 0 &&
 						     Q_stricmp( filename + l - 5, ".menu" ) != 0 &&
 						     Q_stricmp( filename + l - 3, ".po" ) != 0 &&
-						     Q_stricmp( filename, "qagame.qvm" ) != 0  &&
+						     Q_stricmp( filename, "game.qvm" ) != 0  &&
 						     !FS_CheckUIImageFile( filename ) )
 						{
 							pak->referenced |= FS_GENERAL_REF;
@@ -1492,7 +1492,7 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 
 					if ( fs_debug->integer )
 					{
-						Com_Printf(_( "FS_FOpenFileRead: %s (found in '%s')\n"),
+						Com_Printf( "FS_FOpenFileRead: %s (found in '%s')\n",
 						            filename, pak->pakFilename );
 					}
 
@@ -1565,7 +1565,7 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 
 			if ( fs_debug->integer )
 			{
-				Com_Printf(_( "FS_FOpenFileRead: %s (found in '%s/%s')\n"), filename,
+				Com_Printf( "FS_FOpenFileRead: %s (found in '%s/%s')\n", filename,
 				            dir->path, dir->gamedir );
 			}
 
@@ -1591,119 +1591,6 @@ int FS_FOpenFileRead_Filtered( const char *qpath, fileHandle_t *file, qboolean u
 
 	return ret;
 }
-
-// TTimo
-// relevant to client only
-#if !defined( NO_UNTRUSTED_PLUGINS )
-/*
-==================
-FS_CL_ExtractFromPakFile
-
-NERVE - SMF - Extracts the latest file from a pak file.
-
-Compares packed file against extracted file. If no differences, does not copy.
-This is necessary for exe/dlls which may or may not be locked.
-
-NOTE TTimo:
-  path gives the full OS path to the dll that will potentially be loaded
-        on win32 it's always in fs_basepath/<fs_game>/
-        on linux it can be in fs_homepath/<fs_game>/ or fs_basepath/<fs_game>/
-  the dll is extracted to fs_homepath (== fs_basepath on win32) if needed
-
-  the return value doesn't tell whether file was extracted or not, it just says whether it's ok to continue
-  (i.e. either the right file was extracted successfully, or it was already present)
-
-  cvar_lastVersion is the optional name of a CVAR_ARCHIVE used to store the wolf version for the last extracted .so
-  show_bug.cgi?id=463
-
-==================
-*/
-qboolean FS_CL_ExtractFromPakFile( const char *base, const char *gamedir, const char *filename )
-{
-	int           srcLength;
-	int           destLength;
-	unsigned char *srcData;
-	unsigned char *destData;
-	qboolean      needToCopy;
-	FILE          *destHandle;
-	char          *fn;
-
-	fn = FS_BuildOSPath( base, gamedir, filename );
-	needToCopy = qtrue;
-
-	// read in compressed file
-	srcLength = FS_ReadFile( filename, ( void ** ) &srcData );
-
-	// if it's not in the pak, we bail
-	if ( srcLength == -1 )
-	{
-		return qfalse;
-	}
-
-	// read in local file
-	destHandle = fopen( fn, "rb" );
-
-	// if we have a local file, we need to compare the two
-	if ( destHandle )
-	{
-		fseek( destHandle, 0, SEEK_END );
-		destLength = ftell( destHandle );
-		fseek( destHandle, 0, SEEK_SET );
-
-		if ( destLength > 0 )
-		{
-			destData = ( unsigned char * ) Z_Malloc( destLength );
-
-			fread( destData, destLength, 1, destHandle );
-
-			// compare files
-			if ( destLength == srcLength )
-			{
-				int i;
-
-				for ( i = 0; i < destLength; i++ )
-				{
-					if ( destData[ i ] != srcData[ i ] )
-					{
-						break;
-					}
-				}
-
-				if ( i == destLength )
-				{
-					needToCopy = qfalse;
-				}
-			}
-
-			Z_Free( destData );  // TTimo
-		}
-
-		fclose( destHandle );
-	}
-
-	// write file
-	if ( needToCopy )
-	{
-		fileHandle_t f;
-
-		f = FS_FOpenFileWrite( filename );
-
-		if ( !f )
-		{
-			Com_Printf(_( "Failed to open %s\n"), filename );
-			return qfalse;
-		}
-
-		FS_Write( srcData, srcLength, f );
-
-		FS_FCloseFile( f );
-	}
-
-	FS_FreeFile( srcData );
-	return qtrue;
-}
-
-#endif
 
 /*
 ==============
@@ -2040,14 +1927,14 @@ int FS_Write( const void *buffer, int len, fileHandle_t h )
 			}
 			else
 			{
-				Com_Printf(_( "FS_Write: 0 bytes written (%d attempted)\n"), block );
+				Com_Printf( "FS_Write: 0 bytes written (%d attempted)\n", block );
 				return 0;
 			}
 		}
 
 		if ( written < 0 )
 		{
-			Com_Printf(_( "FS_Write: %d bytes written (%d attempted)\n"), written, block ); // FIXME PLURAL
+			Com_Printf( "FS_Write: %d bytes written (%d attempted)\n", written, block ); // FIXME PLURAL
 			return 0;
 		}
 
@@ -2460,7 +2347,7 @@ void FS_WriteFile( const char *qpath, const void *buffer, int size )
 
 	if ( !f )
 	{
-		Com_Printf(_( "Failed to open %s\n"), qpath );
+		Com_Printf( "Failed to open %s\n", qpath );
 		return;
 	}
 
@@ -3344,7 +3231,7 @@ void FS_Path_f( void )
 	searchpath_t *s;
 	int          i;
 
-	Com_DPrintf(_( "Current search path:\n" ));
+	Com_DPrintf( "Current search path:\n" );
 
 	for ( s = fs_searchpaths; s; s = s->next )
 	{
@@ -3357,11 +3244,11 @@ void FS_Path_f( void )
 			{
 				if ( !FS_PakIsPure( s->pack ) )
 				{
-					Com_DPrintf(_( "    not on the pure list\n" ));
+					Com_DPrintf( "    not on the pure list\n" );
 				}
 				else
 				{
-					Com_DPrintf(_( "    on the pure list\n" ));
+					Com_DPrintf( "    on the pure list\n" );
 				}
 			}
 		}
@@ -3667,7 +3554,7 @@ void FS_AddGameDirectory( const char *path, const char *dir )
 		{
 			Com_Printf( " ( %d files )\n", pak->numfiles );
 		}
-		
+
 		search = Z_Malloc( sizeof( searchpath_t ) );
 		search->pack = pak;
 		search->next = fs_searchpaths;
@@ -3828,7 +3715,7 @@ qboolean FS_ComparePaks( char *neededpaks, int len, qboolean dlstring )
 
 	if ( *neededpaks )
 	{
-		Com_DPrintf(_( "Need paks: %s\n"), neededpaks );
+		Com_DPrintf( "Need paks: %s\n", neededpaks );
 		return qtrue;
 	}
 
@@ -4034,7 +3921,7 @@ static void FS_Startup( const char *gameName )
 	fs_gamedirvar->modified = qfalse; // We just loaded, it's not modified
 
 	Com_DPrintf( "----------------------\n" );
-	Com_DPrintf(_( "%d files in pk3 files\n"), fs_packFiles );
+	Com_DPrintf( "%d files in pk3 files\n", fs_packFiles );
 }
 
 #if !defined( DO_LIGHT_DEDICATED )
@@ -4873,7 +4760,7 @@ void FS_Restart( int checksumFeed )
 				if ( !Com_CheckProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
 				{
 #ifdef NDEBUG
-					Com_Printf(_( "^3WARNING: profile.pid found for profile '%s' — the system settings will revert to their defaults\n"), cl_profileStr );
+					Com_Printf( "^3WARNING: profile.pid found for profile '%s' — the system settings will revert to their defaults\n", cl_profileStr );
 					// ydnar: set crashed state
 					Cbuf_AddText( "set com_crashed 1\n" );
 #endif
@@ -4882,7 +4769,7 @@ void FS_Restart( int checksumFeed )
 				// bani - write a new one
 				if ( !Com_WriteProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
 				{
-					Com_Printf(_( "^3WARNING: couldn't write profiles/%s/profile.pid\n"), cl_profileStr );
+					Com_Printf( "^3WARNING: couldn't write profiles/%s/profile.pid\n", cl_profileStr );
 				}
 
 				// exec the config

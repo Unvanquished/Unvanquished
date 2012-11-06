@@ -2060,6 +2060,11 @@ void HRepeater_Think( gentity_t *self )
 
 	self->powered = G_FindPower( self, qfalse );
 
+	if ( G_SuicideIfNoPower( self ) )
+	{
+		return;
+	}
+
 	powerEnt = G_InPowerZone( self );
 
 	if ( powerEnt != NULL )
@@ -2893,7 +2898,7 @@ static int G_QueueValue( gentity_t *self )
 	int    i;
 	int    damageTotal = 0;
 	int    queuePoints;
-	double queueFraction = 0;
+	float  queueFraction = 0;
 
 	for ( i = 0; i < level.maxclients; i++ )
 	{
@@ -2903,20 +2908,20 @@ static int G_QueueValue( gentity_t *self )
 
 		if ( self->buildableTeam != player->client->pers.teamSelection )
 		{
-			queueFraction += ( double ) self->credits[ i ];
+			queueFraction += self->credits[ i ];
 		}
 	}
 
 	if ( damageTotal > 0 )
 	{
-		queueFraction = queueFraction / ( double ) damageTotal;
+		queueFraction = queueFraction / damageTotal;
 	}
 	else // all damage was done by nonclients, so queue everything
 	{
 		queueFraction = 1.0;
 	}
 
-	queuePoints = ( int )( queueFraction * ( double ) BG_Buildable( self->s.modelindex )->buildPoints );
+	queuePoints = ( int )( queueFraction * BG_Buildable( self->s.modelindex )->buildPoints );
 	return queuePoints;
 }
 
@@ -4162,6 +4167,8 @@ gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 	// Spawn the buildable
 	built = G_Spawn();
 	built->s.eType = ET_BUILDABLE;
+	built->r.svFlags = SVF_CLIENTS_IN_RANGE;
+	built->r.clientRadius = MAX( HELMET_RANGE, ALIENSENSE_RANGE );
 	built->killedBy = ENTITYNUM_NONE;
 	built->classname = BG_Buildable( buildable )->entityName;
 	built->s.modelindex = buildable;
@@ -4773,6 +4780,7 @@ void G_LayoutSelect( void )
 	}
 
 	G_Printf( "using layout \"%s\" from list (%s)\n", level.layout, layouts );
+	trap_Cvar_Set( "layout", level.layout );
 }
 
 /*

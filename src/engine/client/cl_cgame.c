@@ -45,10 +45,6 @@ Maryland 20850 USA.
 #define __(x) Trans_GettextGame(x)
 #define C__(x, y) Trans_PgettextGame(x, y)
 
-extern qboolean        loadCamera( int camNum, const char *name );
-extern void            startCamera( int camNum, int time );
-extern qboolean        getCameraInfo( int camNum, int time, vec3_t *origin, vec3_t *angles, float *fov );
-
 static void ( *completer )( const char *s ) = NULL;
 
 // NERVE - SMF
@@ -1084,29 +1080,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_R_REMAP_SHADER:
 			re.RemapShader( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
-			return 0;
-
-		case CG_LOADCAMERA:
-			//return loadCamera(args[1], VMA(2));
-			return 0;
-
-		case CG_STARTCAMERA:
-			//if(args[1] == 0)
-			//{         // CAM_PRIMARY
-			//  cl.cameraMode = qtrue;
-			//}
-			//startCamera(args[1], args[2]);
-			return 0;
-
-		case CG_STOPCAMERA:
-			//if(args[1] == 0)
-			//{         // CAM_PRIMARY
-			//  cl.cameraMode = qfalse;
-			//}
-			return 0;
-
-		case CG_GETCAMERAINFO:
-			//return getCameraInfo(args[1], args[2], VMA(3), VMA(4), VMA(5));
 			return 0;
 
 		case CG_GET_ENTITY_TOKEN:

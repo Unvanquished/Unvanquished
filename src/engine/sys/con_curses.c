@@ -478,8 +478,8 @@ void CON_Init( void )
 	int col;
 
 #ifndef _WIN32
-	// If the process is backgrounded (running non interactively)
-	// then SIGTTIN or SIGTOU is emitted, if not caught, turns into a SIGSTP
+	// If the process is backgrounded (running non-interactively),
+	// then SIGTTIN or SIGTTOU is emitted; if not caught, turns into a SIGSTP
 	signal( SIGTTIN, SIG_IGN );
 	signal( SIGTTOU, SIG_IGN );
 #endif

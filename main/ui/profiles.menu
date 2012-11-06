@@ -67,7 +67,7 @@
         play "sound/misc/menu1.wav";
       }
     }
-    
+
     itemDef
     {
       name defa
@@ -104,7 +104,7 @@
         open confirmdelprofile
       }
     }
-    
+
     itemDef
     {
       name new

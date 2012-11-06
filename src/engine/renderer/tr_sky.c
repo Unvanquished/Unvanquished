@@ -931,8 +931,8 @@ void R_InitSkyTexCoords( float heightCloud )
 				// compute vector from world origin to intersection point 'v'
 				VectorNormalize( v );
 
-				sRad = Q_acos( v[ 0 ] );
-				tRad = Q_acos( v[ 1 ] );
+				sRad = acos( v[ 0 ] );
+				tRad = acos( v[ 1 ] );
 
 				s_cloudTexCoords[ i ][ t ][ s ][ 0 ] = sRad;
 				s_cloudTexCoords[ i ][ t ][ s ][ 1 ] = tRad;
@@ -1147,6 +1147,8 @@ void RB_StageIteratorSky( void )
 	{
 		glDepthRange( 1.0, 1.0 );
 	}
+
+	GL_Cull(CT_TWO_SIDED);
 
 	// draw the outer skybox
 	if ( tess.shader->sky.outerbox[ 0 ] && tess.shader->sky.outerbox[ 0 ] != tr.defaultImage )

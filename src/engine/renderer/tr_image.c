@@ -51,7 +51,10 @@ Maryland 20850 USA.
 
 #include <jpeglib.h>
 #include <png.h>
-
+#ifdef USE_WEBP
+#include <webp/decode.h>
+#endif
+static void          LoadWEBP( const char *name, byte **pic, int *width, int *height );
 static void          LoadBMP( const char *name, byte **pic, int *width, int *height );
 static void          LoadTGA( const char *name, byte **pic, int *width, int *height );
 static void          LoadJPG( const char *name, byte **pic, int *width, int *height );
@@ -2586,7 +2589,7 @@ image_t        *R_FindImageFile( const char *name, qboolean mipmap, qboolean all
 	// Arnout: apply lightmap colouring
 	if ( lightmap )
 	{
-		R_ProcessLightmap( &pic, 4, width, height, &pic );
+		R_ProcessLightmap( pic, 4, width, height, pic );
 
 		// ydnar: no texture compression
 		if ( lightmap )
@@ -3192,6 +3195,47 @@ void SaveTGAAlpha( char *name, byte **pic, int width, int height )
 	ri.FS_WriteFile( name, outbuf, ( int )( outpixel - outbuf ) );
 
 	ri.Hunk_FreeTempMemory( outbuf );
+}
+
+static void LoadWEBP( const char *name, byte **pic, int *width, int *height )
+{
+	byte *out;
+	int  len;
+	int  stride;
+	int  size;
+	union
+	{
+		byte *b;
+		void *v;
+	} fbuffer;
+
+	/* read compressed data */
+	len = ri.FS_ReadFile( ( char * ) name, &fbuffer.v );
+
+	if ( !fbuffer.b || len < 0 )
+	{
+		return;
+	}
+
+	/* validate data and query image size */
+	if ( !WebPGetInfo( fbuffer.b, len, width, height ) )
+	{
+		ri.FS_FreeFile( fbuffer.v );
+		return;
+	}
+
+	stride = *width * sizeof( color4ub_t );
+	size = *height * stride;
+
+	out = R_GetImageBuffer( size, BUFFER_IMAGE );
+
+	if ( !WebPDecodeRGBAInto( fbuffer.b, len, out, size, stride ) )
+	{
+		return;
+	}
+
+	ri.FS_FreeFile( fbuffer.v );
+	*pic = out;
 }
 
 /*
