@@ -777,24 +777,13 @@ void Cmd_If_f( void )
 			op = Cmd_Argv( 2 );
 			v2 = atoi( Cmd_Argv( 3 ) );
 
-			if ( ( !strcmp( op, "=" ) && v1 == v2 ) ||
-			     ( !strcmp( op, "!=" ) && v1 != v2 ) ||
-			     ( !strcmp( op, "<" ) && v1 <  v2 ) ||
-			     ( !strcmp( op, "<=" ) && v1 <= v2 ) ||
-			     ( !strcmp( op, ">" ) && v1 >  v2 ) ||
-			     ( !strcmp( op, ">=" ) && v1 >= v2 ) )
-			{
-				v = vt;
-			}
-			else if ( ( !strcmp( op, "=" ) && v1 != v2 ) ||
-			          ( !strcmp( op, "!=" ) && v1 == v2 ) ||
-			          ( !strcmp( op, "<" ) && v1 >= v2 ) ||
-			          ( !strcmp( op, "<=" ) && v1 >  v2 ) ||
-			          ( !strcmp( op, ">" ) && v1 <= v2 ) ||
-			          ( !strcmp( op, ">=" ) && v1 <  v2 ) )
-			{
-				v = vf;
-			}
+			if      ( !strcmp( op, "="  ) ) { v = ( v1 == v2 ) ? vt : vf; }
+			else if ( !strcmp( op, "!=" ) ) { v = ( v1 != v2 ) ? vt : vf; }
+			else if ( !strcmp( op, "<"  ) ) { v = ( v1 <  v2 ) ? vt : vf; }
+			else if ( !strcmp( op, "<=" ) ) { v = ( v1 <= v2 ) ? vt : vf; }
+			else if ( !strcmp( op, ">"  ) ) { v = ( v1 >  v2 ) ? vt : vf; }
+			else if ( !strcmp( op, ">=" ) ) { v = ( v1 >= v2 ) ? vt : vf; }
+			else if ( !strcmp( op, "!=" ) ) { v = ( v1 != v2 ) ? vt : vf; }
 			else
 			{
 				Com_Printf(_( "invalid operator in if command. valid operators are = != < > >= <=\n" ));
