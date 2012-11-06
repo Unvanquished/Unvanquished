@@ -16,6 +16,9 @@ set( MSVC_INCREMENTAL_DEFAULT ON )
 
 set( CMAKE_BUILD_TYPE Release CACHE STRING "Build configuration (Debug, Release, RelWithDebInfo, MinSizeRel)" )
 
+# convenience option for source distros
+option( MINIMAL_FLAGS "try not to mess up system flags" 0)
+
 project( Daemon C CXX ASM )
 
 # Check if this is first run and if so set some default flags
@@ -25,11 +28,16 @@ if( NOT DEFINED SUBSEQUENT_RUN )
   if( MSVC )
     set( CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /arch:SSE /fp:precise /Oy" CACHE STRING "Flags used by the compiler during release builds" FORCE )
   else()
-    set( CMAKE_C_FLAGS "-msse2 -pipe" CACHE STRING "Flags used by the compiler during all build types" FORCE )
-    set( CMAKE_C_FLAGS_DEBUG "-g" CACHE STRING "Flags used by the compiler during debug builds." FORCE )
-    set( CMAKE_C_FLAGS_MINSIZEREL "-DNDEBUG -Os" CACHE STRING "Flags used by the compiler during release minsize builds." FORCE )
-    set( CMAKE_C_FLAGS_RELEASE "-DNDEBUG -O3 -ffast-math -fomit-frame-pointer -fno-strict-aliasing" CACHE STRING "Flags used by the compiler during release builds" FORCE )
-    set( CMAKE_C_FLAGS_RELWITHDEBINFO "-DNDEBUG -O3 -ffast-math -fomit-frame-pointer -fno-strict-aliasing -g" CACHE STRING "Flags used by the compiler during Release with Debug Info builds." FORCE )
+    if(NOT MINIMAL_FLAGS)
+      set( CMAKE_C_FLAGS "-msse2 -pipe" CACHE STRING "Flags used by the compiler during all build types" FORCE )
+      set( CMAKE_C_FLAGS_DEBUG "-g" CACHE STRING "Flags used by the compiler during debug builds." FORCE )
+      set( CMAKE_C_FLAGS_MINSIZEREL "-DNDEBUG -Os" CACHE STRING "Flags used by the compiler during release minsize builds." FORCE )
+      set( CMAKE_C_FLAGS_RELEASE "-DNDEBUG -O3 -ffast-math -fomit-frame-pointer -fno-strict-aliasing" CACHE STRING "Flags used by the compiler during release builds" FORCE )
+      set( CMAKE_C_FLAGS_RELWITHDEBINFO "-DNDEBUG -O3 -ffast-math -fomit-frame-pointer -fno-strict-aliasing -g" CACHE STRING "Flags used by the compiler during Release with Debug Info builds." FORCE )
+    else(NOT MINIMAL_FLAGS)
+      set( CMAKE_C_FLAGS_DEBUG "" )
+      set( CMAKE_C_FLAGS_RELEASE "-DNDEBUG" )
+    endif(NOT MINIMAL_FLAGS)
   endif()
 
   set( CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS}" CACHE STRING "Flags used by the compiler during all build types" FORCE )
@@ -239,141 +247,143 @@ else()
   set( CPACK_BUNDLE_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cpack/OS_X/x86_64/info.plist" )
 endif()
 
-#################
-# Compile flags #
-#################
+if(NOT MINIMAL_FLAGS)
+  #################
+  # Compile flags #
+  #################
 
-macro( try_compiler_flag_internal PROP FLAG CC SUFFIX LABEL )
-  set( SAVED_FLAGS "${CMAKE_${CC}_FLAGS}" )
-  set( CMAKE_${CC}_FLAGS "${CMAKE_${CC}_FLAGS} ${FLAG}" )
-  # test it on an executable
-  if( NOT ${PROP}_${CC}_CACHED )
-    try_compile( ${PROP}_${CC} ${MOUNT_DIR}/tests ${MOUNT_DIR}/tests/test.${SUFFIX}
-                 CMAKE_FLAGS "-DCMAKE_${CC}_FLAGS=${CMAKE_${CC}_FLAGS}" )
-  endif()
-  if( ${PROP}_${CC} )
+  macro( try_compiler_flag_internal PROP FLAG CC SUFFIX LABEL )
+    set( SAVED_FLAGS "${CMAKE_${CC}_FLAGS}" )
+    set( CMAKE_${CC}_FLAGS "${CMAKE_${CC}_FLAGS} ${FLAG}" )
+    # test it on an executable
     if( NOT ${PROP}_${CC}_CACHED )
-      message( STATUS "Using ${LABEL} flag ${FLAG}" )
+      try_compile( ${PROP}_${CC} ${MOUNT_DIR}/tests ${MOUNT_DIR}/tests/test.${SUFFIX}
+                   CMAKE_FLAGS "-DCMAKE_${CC}_FLAGS=${CMAKE_${CC}_FLAGS}" )
     endif()
-  else()
-    if( NOT ${PROP}_${CC}_CACHED )
-      message( STATUS "${LABEL} flag ${FLAG} is not available" )
+    if( ${PROP}_${CC} )
+      if( NOT ${PROP}_${CC}_CACHED )
+        message( STATUS "Using ${LABEL} flag ${FLAG}" )
+      endif()
+    else()
+      if( NOT ${PROP}_${CC}_CACHED )
+        message( STATUS "${LABEL} flag ${FLAG} is not available" )
+      endif()
+      set( CMAKE_${CC}_FLAGS "${SAVED_FLAGS}" )
     endif()
-    set( CMAKE_${CC}_FLAGS "${SAVED_FLAGS}" )
+    set( ${PROP}_${CC}_CACHED TRUE CACHE INTERNAL "Set if ${LABEL} option ${FLAG} has been checked for." )
+  endmacro()
+
+  macro( try_c_flag PROP FLAG )
+    try_compiler_flag_internal( ${PROP} ${FLAG} C c C )
+  endmacro()
+
+  macro( try_cxx_flag PROP FLAG )
+    try_compiler_flag_internal( ${PROP} ${FLAG} CXX cxx C++ )
+  endmacro()
+
+  macro( try_llvm_flag PROP FLAG )
+    try_compiler_flag_internal( ${PROP} ${FLAG} LLVM cc C/LLVM )
+  endmacro()
+
+  macro( try_c_llvm_flag PROP FLAG )
+    try_c_flag( ${PROP} ${FLAG} )
+    if( GAME_LIB_LLVM )
+      try_llvm_flag( ${PROP} ${FLAG} )
+    endif()
+  endmacro()
+
+  macro( try_c_cxx_flag PROP FLAG )
+    try_c_flag( ${PROP} ${FLAG} )
+    try_cxx_flag( ${PROP} ${FLAG} )
+  endmacro()
+
+  macro( try_c_cxx_llvm_flag PROP FLAG )
+    try_c_flag( ${PROP} ${FLAG} )
+    try_cxx_flag( ${PROP} ${FLAG} )
+    if( GAME_LIB_LLVM )
+      try_llvm_flag( ${PROP} ${FLAG} )
+    endif()
+  endmacro()
+
+  # Various warnings
+  if( ENABLE_W_ALL )
+    try_c_cxx_llvm_flag( HAVE_W_ALL              -Wall )
   endif()
-  set( ${PROP}_${CC}_CACHED TRUE CACHE INTERNAL "Set if ${LABEL} option ${FLAG} has been checked for." )
-endmacro()
-
-macro( try_c_flag PROP FLAG )
-  try_compiler_flag_internal( ${PROP} ${FLAG} C c C )
-endmacro()
-
-macro( try_cxx_flag PROP FLAG )
-  try_compiler_flag_internal( ${PROP} ${FLAG} CXX cxx C++ )
-endmacro()
-
-macro( try_llvm_flag PROP FLAG )
-  try_compiler_flag_internal( ${PROP} ${FLAG} LLVM cc C/LLVM )
-endmacro()
-
-macro( try_c_llvm_flag PROP FLAG )
-  try_c_flag( ${PROP} ${FLAG} )
-  if( GAME_LIB_LLVM )
-    try_llvm_flag( ${PROP} ${FLAG} )
+  if( ENABLE_W_EXTRA )
+    try_c_cxx_llvm_flag( HAVE_W_EXTRA            -Wextra )
   endif()
-endmacro()
-
-macro( try_c_cxx_flag PROP FLAG )
-  try_c_flag( ${PROP} ${FLAG} )
-  try_cxx_flag( ${PROP} ${FLAG} )
-endmacro()
-
-macro( try_c_cxx_llvm_flag PROP FLAG )
-  try_c_flag( ${PROP} ${FLAG} )
-  try_cxx_flag( ${PROP} ${FLAG} )
-  if( GAME_LIB_LLVM )
-    try_llvm_flag( ${PROP} ${FLAG} )
+  if( ENABLE_WARNINGS )
+    try_c_cxx_llvm_flag( HAVE_W_FORMAT2          -Wformat=2 )
+    if( NOT HAVE_W_FORMAT2_C )
+      try_c_cxx_llvm_flag( HAVE_W_FORMAT         -Wformat )
+    endif()
+    try_c_llvm_flag    ( HAVE_W_0LEN_FMT         -Wno-format-zero-length )
+    try_c_cxx_llvm_flag( HAVE_W_FORMAT_SECURITY  -Wformat-security )
+    try_c_cxx_llvm_flag( HAVE_W_STRICT_ALIAS_2   -Wstrict-aliasing=2 )
+    try_c_cxx_llvm_flag( HAVE_W_MISSING_FMT_ATTR -Wmissing-format-attribute )
+    try_c_cxx_llvm_flag( HAVE_W_MISSING_NORETURN -Wmissing-noreturn )
+    try_c_llvm_flag    ( HAVE_W_IMPLICIT_FN      -Wimplicit-function-declaration )
+    if( HAVE_W_IMPLICIT_FN_C )
+      try_c_cxx_llvm_flag( HAVE_W_ERR_IMPLICIT_FN -Werror=implicit-function-declaration )
+    endif()
+    try_c_cxx_llvm_flag( HAVE_W_FMT_SECURITY     -Wformat-security )
+    if( HAVE_W_FMT_SECURITY_C )
+      try_c_cxx_llvm_flag( HAVE_W_ERR_FMT_SECURITY -Werror=format-security )
+    endif()
+    try_c_llvm_flag( HAVE_W_DECL_AFT_STMT        -Wdeclaration-after-statement )
+    if( HAVE_W_DECL_AFT_STMT_C )
+      try_c_llvm_flag( HAVE_W_ERR_DECL_AFT_STMT  -Werror=declaration-after-statement )
+    endif()
   endif()
-endmacro()
 
-# Various warnings
-if( ENABLE_W_ALL )
-  try_c_cxx_llvm_flag( HAVE_W_ALL              -Wall )
-endif()
-if( ENABLE_W_EXTRA )
-  try_c_cxx_llvm_flag( HAVE_W_EXTRA            -Wextra )
-endif()
-if( ENABLE_WARNINGS )
-  try_c_cxx_llvm_flag( HAVE_W_FORMAT2          -Wformat=2 )
-  if( NOT HAVE_W_FORMAT2_C )
-    try_c_cxx_llvm_flag( HAVE_W_FORMAT         -Wformat )
+  # Hardening
+  if( ENABLE_HARDENING )
+    try_c_cxx_flag( HAVE_F_STACK_PROTECTOR -fstack-protector )
   endif()
-  try_c_llvm_flag    ( HAVE_W_0LEN_FMT         -Wno-format-zero-length )
-  try_c_cxx_llvm_flag( HAVE_W_FORMAT_SECURITY  -Wformat-security )
-  try_c_cxx_llvm_flag( HAVE_W_STRICT_ALIAS_2   -Wstrict-aliasing=2 )
-  try_c_cxx_llvm_flag( HAVE_W_MISSING_FMT_ATTR -Wmissing-format-attribute )
-  try_c_cxx_llvm_flag( HAVE_W_MISSING_NORETURN -Wmissing-noreturn )
-  try_c_llvm_flag    ( HAVE_W_IMPLICIT_FN      -Wimplicit-function-declaration )
-  if( HAVE_W_IMPLICIT_FN_C )
-    try_c_cxx_llvm_flag( HAVE_W_ERR_IMPLICIT_FN -Werror=implicit-function-declaration )
-  endif()
-  try_c_cxx_llvm_flag( HAVE_W_FMT_SECURITY     -Wformat-security )
-  if( HAVE_W_FMT_SECURITY_C )
-    try_c_cxx_llvm_flag( HAVE_W_ERR_FMT_SECURITY -Werror=format-security )
-  endif()
-  try_c_llvm_flag( HAVE_W_DECL_AFT_STMT        -Wdeclaration-after-statement )
-  if( HAVE_W_DECL_AFT_STMT_C )
-    try_c_llvm_flag( HAVE_W_ERR_DECL_AFT_STMT  -Werror=declaration-after-statement )
-  endif()
-endif()
 
-# Hardening
-if( ENABLE_HARDENING )
-  try_c_cxx_flag( HAVE_F_STACK_PROTECTOR -fstack-protector )
-endif()
+  ##############
+  # Link flags #
+  ##############
 
-##############
-# Link flags #
-##############
-
-macro( try_linker_flag PROP FLAG )
-  set( SAVED_FLAGS "${CMAKE_EXE_LINKER_FLAGS}" )
-  set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${FLAG}" )
-  # test it on an executable
-  if( NOT ${PROP}_CACHED )
-    try_compile( ${PROP} ${MOUNT_DIR}/tests ${MOUNT_DIR}/tests/test.c
-                 CMAKE_FLAGS -DCMAKE_EXE_LINKER_FLAGS=${CMAKE_EXE_LINKER_FLAGS} )
-  endif()
-  if( ${PROP} )
+  macro( try_linker_flag PROP FLAG )
+    set( SAVED_FLAGS "${CMAKE_EXE_LINKER_FLAGS}" )
+    set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${FLAG}" )
+    # test it on an executable
     if( NOT ${PROP}_CACHED )
-      message( STATUS "Using linker flag ${FLAG}" )
+      try_compile( ${PROP} ${MOUNT_DIR}/tests ${MOUNT_DIR}/tests/test.c
+                   CMAKE_FLAGS -DCMAKE_EXE_LINKER_FLAGS=${CMAKE_EXE_LINKER_FLAGS} )
     endif()
-    # assume that it works for shared & static libs too
-    set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${FLAG}" )
-    set( CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${FLAG}" )
-  else()
-    if( NOT ${PROP}_CACHED )
-      message( STATUS "Linker flag ${FLAG} is not available" )
+    if( ${PROP} )
+      if( NOT ${PROP}_CACHED )
+        message( STATUS "Using linker flag ${FLAG}" )
+      endif()
+      # assume that it works for shared & static libs too
+      set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${FLAG}" )
+      set( CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} ${FLAG}" )
+    else()
+      if( NOT ${PROP}_CACHED )
+        message( STATUS "Linker flag ${FLAG} is not available" )
+      endif()
+      set( CMAKE_EXE_LINKER_FLAGS "${SAVED_FLAGS}" )
     endif()
-    set( CMAKE_EXE_LINKER_FLAGS "${SAVED_FLAGS}" )
+    set( ${PROP}_CACHED TRUE CACHE INTERNAL "Set if linker option ${FLAG} has been checked for." )
+  endmacro()
+
+  if( NOT MSVC )
+    # Can we get rid of unneeded external libraries?
+    try_linker_flag( HAVE_AS_NEEDED -Wl,--as-needed )
+
+    # If we can, fail if there are unresolved symbols
+    try_linker_flag( HAVE_Z_DEFS -Wl,-z,defs )
   endif()
-  set( ${PROP}_CACHED TRUE CACHE INTERNAL "Set if linker option ${FLAG} has been checked for." )
-endmacro()
 
-if( NOT MSVC )
-  # Can we get rid of unneeded external libraries?
-  try_linker_flag( HAVE_AS_NEEDED -Wl,--as-needed )
-
-  # If we can, fail if there are unresolved symbols
-  try_linker_flag( HAVE_Z_DEFS -Wl,-z,defs )
-endif()
-
-if( ENABLE_FSTACKPROT )
-  try_linker_flag( HAVE_FSTACKPROT "-fstack-protector --param=ssp-buffer-size=4" )
-endif()
-if( ENABLE_RELRO )
-  try_linker_flag( HAVE_Z_RELRO_Z_NOW -Wl,-z,relro,-z,now )
-endif()
+  if( ENABLE_FSTACKPROT )
+    try_linker_flag( HAVE_FSTACKPROT "-fstack-protector --param=ssp-buffer-size=4" )
+  endif()
+  if( ENABLE_RELRO )
+    try_linker_flag( HAVE_Z_RELRO_Z_NOW -Wl,-z,relro,-z,now )
+  endif()
+endif(NOT MINIMAL_FLAGS)
 
 ######################
 # Define Build Files #

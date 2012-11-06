@@ -17,7 +17,7 @@ Build-Depends: debhelper (>= 8.0.0), cmake,
 	libspeexdsp-dev,
 	libtheora-dev,
 	libvorbis-dev,
-	libwebp-dev | cmake (<< 2.8.7),
+	libwebp-dev (>> 0.2),
 	libxvidcore-dev | cmake (<< 2.8.5),
 	nettle-dev,
 	zlib1g-dev

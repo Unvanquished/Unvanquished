@@ -4780,6 +4780,7 @@ void G_LayoutSelect( void )
 	}
 
 	G_Printf( "using layout \"%s\" from list (%s)\n", level.layout, layouts );
+	trap_Cvar_Set( "layout", level.layout );
 }
 
 /*
