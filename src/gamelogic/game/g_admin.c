@@ -5045,8 +5045,11 @@ qboolean G_admin_bot( gentity_t *ent ) {
 	char err[MAX_STRING_CHARS];
 	int skill_int;
 	int i;
+
+	static const char bot_usage[] = QQ( N_( "^3bot: ^7usage: bot [^5add|del|spec|unspec^7] [^5name|all^7] [^5aliens/humans^7] (^5skill^7)\n" ) );
+
 	if(trap_Argc() < min_args) {
-		ADMP( QQ( N_( "^3bot: ^7usage: bot [^5add|del|spec|unspec^7] [^5name|all^7] [^5aliens/humans^7] (^5skill^7)\n" ) ) );
+		ADMP( bot_usage );
 		return qfalse;
 	}
 	trap_Argv(1, arg1, sizeof(arg1));
@@ -5059,7 +5062,7 @@ qboolean G_admin_bot( gentity_t *ent ) {
 			return qfalse;
 		}
 		if(trap_Argc() < min_args) {
-			ADMP( QQ( N_( "^3bot: ^7usage: bot [^5add|del|spec|unspec^7] [^5name|all^7] [^5aliens/humans^7] (^5skill^7)\n" ) ) );
+			ADMP( bot_usage );
 			return qfalse;
 		}
 		trap_Argv(3, team, sizeof(team));
@@ -5090,7 +5093,7 @@ qboolean G_admin_bot( gentity_t *ent ) {
 			}
 		} else {
 			ADMP( QQ( N_( "Invalid team name\n" ) ) );
-			ADMP( QQ( N_( "^3bot: ^7usage: bot [^5add|del|spec|unspec^7] [^5name|all^7] [^5aliens/humans^7] (^5skill^7)\n" ) ) );
+			ADMP( bot_usage );
 			return qfalse;
 		}
 	} else if(!Q_stricmp(arg1, "del")) {
@@ -5158,7 +5161,7 @@ qboolean G_admin_bot( gentity_t *ent ) {
 		G_ChangeTeam(&g_entities[clientNum], g_entities[clientNum].botMind->botTeam);
 	} else {
 		ADMP( QQ( N_( "Invalid command\n" ) ) );
-		ADMP( QQ( N_( "^3bot: ^7usage: bot [^5add|del|spec|unspec^7] [^5name|all^7] [^5aliens/humans^7] (^5skill^7)\n" ) ) );
+		ADMP( bot_usage );
 		return qfalse;
 	}
 	return qtrue;
