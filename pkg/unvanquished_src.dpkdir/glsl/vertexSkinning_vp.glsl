@@ -40,7 +40,7 @@ void VertexSkinning_P_N(const vec4 inPosition,
 	position.xyz = ( boneMatrix * inPosition ).xyz;
 	position.w = 1.0;
 	
-	normal = mat3( boneMatrix ) * inNormal;
+	normal = ( boneMatrix * vec4( inNormal, 0.0 ) ).xyz;
 }
 
 void VertexSkinning_P_TBN(	const vec4 inPosition,
@@ -62,7 +62,7 @@ void VertexSkinning_P_TBN(	const vec4 inPosition,
 	position.xyz = ( boneMatrix * inPosition ).xyz;
 	position.w = 1.0;
 	
-	tangent = mat3( boneMatrix ) * inTangent;
-	binormal = mat3( boneMatrix ) * inBinormal;
-	normal = mat3( boneMatrix ) * inNormal;
+	tangent = ( boneMatrix * vec4( inTangent, 0.0 ) ).xyz;
+	binormal = ( boneMatrix * vec4( inBinormal, 0.0 ) ).xyz;
+	normal = ( boneMatrix * vec4( inNormal, 0.0 ) ).xyz;
 }
