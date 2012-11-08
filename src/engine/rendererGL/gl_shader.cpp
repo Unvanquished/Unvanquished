@@ -651,16 +651,6 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 		   }
 		 */
 
-		if ( r_normalMapping->integer )
-		{
-			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_NormalMapping\n#define r_NormalMapping 1\n#endif\n" );
-		}
-
-		if ( /* TODO: check for shader model 3 hardware  && */ r_normalMapping->integer && r_parallaxMapping->integer )
-		{
-			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_ParallaxMapping\n#define r_ParallaxMapping 1\n#endif\n" );
-		}
-
 		if ( r_wrapAroundLighting->value )
 		{
 			Q_strcat( bufferExtra, sizeof( bufferExtra ),
