@@ -5119,7 +5119,7 @@ qboolean G_admin_bot( gentity_t *ent ) {
 		int clientNum = G_ClientNumberFromString(name,err, sizeof(err));
 		if(!Q_stricmp(name, "all")) {
 			for(i=0;i<MAX_CLIENTS;i++) {
-				if(g_entities[i].r.svFlags & SVF_BOT)
+				if(g_entities[i].r.svFlags & SVF_BOT && level.clients[i].pers.connected != CON_DISCONNECTED)
 					G_BotDel(i);
 			}
 			return qtrue;
