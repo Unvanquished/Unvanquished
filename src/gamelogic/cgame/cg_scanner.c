@@ -59,8 +59,54 @@ static void CG_UpdateRadarVisibility( void ) {
 		} else if ( cent->currentState.eType == ET_PLAYER ) {
 			const classAttributes_t *cls = BG_Class( (cent->currentState.misc >> 8) & 0xff );
 			float fadeOut = cls->radarFadeOut;
+			clientInfo_t *ci = &cgs.clientinfo[ cent->currentState.clientNum ];
 
-			cent->radarVisibility = 1.0f;
+			if ( ci->nonsegmented ) {
+				switch( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT) {
+				case NSPA_STAND:
+				case NSPA_DEATH1:
+				case NSPA_DEAD1:
+				case NSPA_DEATH2:
+				case NSPA_DEAD2:
+				case NSPA_DEATH3:
+				case NSPA_DEAD3:
+					cent->radarVisibility = MAX( cent->radarVisibility - fadeOut * msec, 0.0f );
+					break;
+				default:
+					cent->radarVisibility = 1.0f;
+					break;
+				}
+			} else {
+				switch( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT) {
+				case LEGS_IDLE:
+				case LEGS_IDLECR:
+				case BOTH_DEATH1:
+				case BOTH_DEAD1:
+				case BOTH_DEATH2:
+				case BOTH_DEAD2:
+				case BOTH_DEATH3:
+				case BOTH_DEAD3:
+					switch( cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT ) {
+					case BOTH_DEATH1:
+					case BOTH_DEAD1:
+					case BOTH_DEATH2:
+					case BOTH_DEAD2:
+					case BOTH_DEATH3:
+					case BOTH_DEAD3:
+					case TORSO_STAND:
+					case TORSO_STAND_BLASTER:
+						cent->radarVisibility = MAX( cent->radarVisibility - fadeOut * msec, 0.0f );
+						break;
+					default:
+						cent->radarVisibility = 1.0f;
+						break;
+					}
+					break;
+				default:
+					cent->radarVisibility = 1.0f;
+					break;
+				}
+			}
 		}
 	}
 }
