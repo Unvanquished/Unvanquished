@@ -2107,4 +2107,6 @@ void CG_Buildable( centity_t *cent )
 
 	//smoke etc for damaged buildables
 	CG_BuildableParticleEffects( cent );
+
+	CG_RangeMarker( cent );
 }

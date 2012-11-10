@@ -1522,6 +1522,7 @@ extern  vmCvar_t            cg_rangeMarkerLineThickness;
 extern  vmCvar_t            cg_rangeMarkerForBlueprint;
 extern  vmCvar_t            cg_rangeMarkerBuildableTypes;
 extern  vmCvar_t            cg_rangeMarkerWhenSpectating;
+extern  vmCvar_t            cg_buildableRangeMarkerMask;
 extern  vmCvar_t            cg_binaryShaderScreenScale;
 
 extern  vmCvar_t            cg_painBlendUpRate;

@@ -2594,7 +2594,6 @@ void Cmd_Destroy_f( gentity_t *ent )
 
 				G_Damage( traceEnt, ent, ent, forward, tr.endpos,
 				          traceEnt->health, 0, MOD_DECONSTRUCT );
-				G_RemoveRangeMarkerFrom( traceEnt );
 				G_FreeEntity( traceEnt );
 			}
 		}

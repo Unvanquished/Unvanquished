@@ -1121,7 +1121,26 @@ void CG_RangeMarker( centity_t *cent )
 
 	if ( CG_GetBuildableRangeMarkerProperties( cent->currentState.modelindex, &rmType, &range, rgb ) )
 	{
-		CG_DrawRangeMarker( rmType, cent->lerpOrigin, range, cent->lerpAngles, rgb );
+		playerState_t *ps = &cg.predictedPlayerState;
+		team_t team = ps->stats[ STAT_TEAM ];
+		qboolean weaponDisplays, wantsToSee;
+
+		if ( team == TEAM_HUMANS ) {
+			weaponDisplays = BG_InventoryContainsWeapon( WP_HBUILD, ps->stats );
+			wantsToSee = ( BG_Buildable( cent->currentState.modelindex )->team == TEAM_HUMANS );
+		} else if ( team == TEAM_ALIENS ) {
+			weaponDisplays = ps->weapon == WP_ABUILD ||
+			                 ps->weapon == WP_ABUILD2;
+			wantsToSee = ( BG_Buildable( cent->currentState.modelindex )->team == TEAM_ALIENS );
+		} else {
+			weaponDisplays = qtrue;
+			wantsToSee = !!(cg_buildableRangeMarkerMask.integer & (1 << BA_NONE));
+		}
+
+		wantsToSee &= !!(cg_buildableRangeMarkerMask.integer & (1 << rmType));
+
+		if( weaponDisplays && wantsToSee )
+			CG_DrawRangeMarker( rmType, cent->lerpOrigin, range, cent->lerpAngles, rgb );
 	}
 }
 
@@ -1248,10 +1267,6 @@ static void CG_AddCEntity( centity_t *cent )
 
 		case ET_BUILDABLE:
 			CG_Buildable( cent );
-			break;
-
-		case ET_RANGE_MARKER:
-			CG_RangeMarker( cent );
 			break;
 
 		case ET_MISSILE:
