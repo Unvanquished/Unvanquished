@@ -565,16 +565,14 @@ void CG_DrawSphericalCone( const vec3_t tip, const vec3_t rotation, float radius
 CG_DrawRangeMarker
 ================
 */
-void CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range, const vec3_t angles, const vec3_t rgb )
+void CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range, const vec3_t angles, vec4_t rgba )
 {
 	if ( cg_rangeMarkerDrawSurface.integer )
 	{
 		qhandle_t pcsh;
-		vec4_t    rgba;
 
 		pcsh = cgs.media.plainColorShader;
-		VectorCopy( rgb, rgba );
-		rgba[ 3 ] = Com_Clamp( 0.0f, 1.0f, cg_rangeMarkerSurfaceOpacity.value );
+		rgba[ 3 ] *= Com_Clamp( 0.0f, 1.0f, cg_rangeMarkerSurfaceOpacity.value );
 
 		switch( rmType )
 		{
@@ -664,7 +662,7 @@ void CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range,
 
 		for ( i = 0; i < 3; ++i )
 		{
-			bshs->color[ i ] = 255 * lineOpacity * rgb[ i ];
+			bshs->color[ i ] = 255 * lineOpacity * rgba[ i ];
 		}
 
 		bshs->drawIntersection = !!cg_rangeMarkerDrawIntersection.integer;
