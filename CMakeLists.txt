@@ -241,11 +241,7 @@ set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/GPL.txt" )
 # Mac OS X Bundle specific settings
 set( CPACK_BUNDLE_NAME ${CPACK_PACKAGE_FILE_NAME} )
 set( CPACK_BUNDLE_ICON ${CPACK_PACKAGE_ICON} )
-if( ${BUILD_ARCH} STREQUAL "i386" )
-  set( CPACK_BUNDLE_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cpack/OS_X/x86/info.plist" )
-else()
-  set( CPACK_BUNDLE_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cpack/OS_X/x86_64/info.plist" )
-endif()
+set( CPACK_BUNDLE_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cpack/OS_X/info.plist" )
 
 if(NOT MINIMAL_FLAGS)
   #################
