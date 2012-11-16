@@ -72,7 +72,7 @@ cmake_dependent_option( BUILD_NEW_RENDERER   "Build new renderer library"       
 cmake_dependent_option( USE_OPENAL           "Use OpenAL"                                            1 BUILD_CLIENT                   0 )
 cmake_dependent_option( USE_CODEC_VORBIS     "Compile with support for Vorbis"                       1 BUILD_CLIENT                   0 )
 cmake_dependent_option( USE_MUMBLE           "Compile with support for Mumble"                       1 BUILD_CLIENT                   0 )
-cmake_dependent_option( USE_VOIP             "Compile with VOIP support"                             1 BUILD_CLIENT                   0 )
+cmake_dependent_option( USE_VOIP             "Compile with VOIP support"                             1 "BUILD_CLIENT OR BUILD_SERVER" 0 )
 cmake_dependent_option( USE_CIN_XVID         "Encode videos with XViD"                               1 BUILD_CLIENT                   0 )
 cmake_dependent_option( USE_INTERNAL_SDL     "Use SDL files included with Unvanquished"              0 BUILD_CLIENT                   0 )
 
