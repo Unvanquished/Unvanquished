@@ -22,3 +22,4 @@ libmesa.a
 build-32/*
 build-64/*
 *.vcxproj.user
+*.kdev4
