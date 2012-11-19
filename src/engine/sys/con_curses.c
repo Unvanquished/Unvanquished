@@ -605,7 +605,7 @@ void CON_Init( void )
 	wnoutrefresh( stdscr );
 	doupdate();
 
-#ifndef _WIN32
+#ifdef SIGWINCH
 	// Catch window resizes
 	signal( SIGWINCH, ( void * ) CON_Resize );
 #endif
