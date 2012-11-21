@@ -3464,7 +3464,7 @@ void G_FreeMarkedBuildables( gentity_t *deconner, char *readable, int rsize,
 		nums[ 0 ] = '\0';
 	}
 
-	if ( DECON_MARK_CHECK( INSTANT ) )
+	if ( DECON_MARK_CHECK( INSTANT ) && !DECON_OPTION_CHECK( PROTECT ) )
 	{
 		return; // Not enabled, can't deconstruct anything
 	}
@@ -3587,7 +3587,7 @@ static itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable,
 	}
 
 	// Simple non-marking case
-	if ( DECON_MARK_CHECK( INSTANT ) )
+	if ( DECON_MARK_CHECK( INSTANT ) && !DECON_OPTION_CHECK( PROTECT ) )
 	{
 		if ( remainingBP - buildPoints < 0 )
 		{
