@@ -1794,6 +1794,11 @@ static void Menus_Close( menuDef_t *menu )
 		{
 			Menus_Activate( menuStack[ openMenuCount - 1 ] );
 		}
+		else
+		{
+			// no menus open now; flag it for other code
+			DC->setCVar( "ui_menuIsOpen", "0" );
+		}
 	}
 }
 
@@ -4688,6 +4693,7 @@ void Menus_Activate( menuDef_t *menu )
 		if ( openMenuCount < MAX_OPEN_MENUS )
 		{
 			menuStack[ openMenuCount++ ] = menu;
+			DC->setCVar( "ui_menuIsOpen", "1" );
 		}
 	}
 }

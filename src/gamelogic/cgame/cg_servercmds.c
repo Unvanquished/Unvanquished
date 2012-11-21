@@ -892,6 +892,20 @@ void CG_Menu( int menu, int arg )
 			Com_Printf(_( "cgame: debug: no such menu %d\n"), menu );
 	}
 
+	switch ( type )
+	{
+		case DT_BUILD:
+		case DT_ARMOURYEVOLVE:
+			// menu open? we need to use the modal dbox
+			// menu closed? we want to centre print
+			if ( !trap_Cvar_VariableIntegerValue( "ui_menuIsOpen" ) )
+			{
+				cmd = NULL;
+                        }
+		default:
+			break;
+	}
+
 	if ( type == DT_ARMOURYEVOLVE && cg_disableUpgradeDialogs.integer )
 	{
 		return;
@@ -907,14 +921,26 @@ void CG_Menu( int menu, int arg )
 		return;
 	}
 
-	if ( cmd != dialog )
+	if ( cmd && cmd != dialog )
 	{
 		trap_SendConsoleCommand( cmd );
 	}
 	else if ( longMsg && cg_disableWarningDialogs.integer == 0 )
 	{
-		trap_Cvar_Set( "ui_dialog", longMsg );
-		trap_SendConsoleCommand( cmd );
+		if ( cmd )
+		{
+			trap_Cvar_Set( "ui_dialog", longMsg );
+			trap_SendConsoleCommand( cmd );
+		}
+		else
+		{
+			CG_CenterPrint( longMsg, SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH );
+
+			if ( shortMsg && cg_disableWarningDialogs.integer < 2 )
+			{
+				CG_Printf( "%s\n", shortMsg );
+			}
+		}
 	}
 	else if ( shortMsg && cg_disableWarningDialogs.integer < 2 )
 	{
