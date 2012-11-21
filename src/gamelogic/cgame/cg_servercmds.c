@@ -901,6 +901,8 @@ void CG_Menu( int menu, int arg )
 			if ( !trap_Cvar_VariableIntegerValue( "ui_menuIsOpen" ) )
 			{
 				cmd = NULL;
+				// only a short message? make the long message the same
+				longMsg = longMsg ? longMsg : shortMsg;
                         }
 		default:
 			break;
