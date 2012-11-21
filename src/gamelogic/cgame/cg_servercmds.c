@@ -643,6 +643,7 @@ void CG_Menu( int menu, int arg )
 			          "which often quickly results in a loss. Try building more "
 			          "spawns.");
 			shortMsg = _("You may not deconstruct the last spawn");
+			type = DT_MISC_CP;
 			break;
 
 		case MN_B_SUDDENDEATH:
@@ -666,6 +667,7 @@ void CG_Menu( int menu, int arg )
 			          "traitors and cowards are not allowed to build.");
 			// too harsh?
 			shortMsg = _("Building is denied to traitorous cowards");
+			type = DT_MISC_CP;
 			break;
 
 			//===============================
@@ -896,6 +898,7 @@ void CG_Menu( int menu, int arg )
 	{
 		case DT_BUILD:
 		case DT_ARMOURYEVOLVE:
+		case DT_MISC_CP:
 			// menu open? we need to use the modal dbox
 			// menu closed? we want to centre print
 			if ( !trap_Cvar_VariableIntegerValue( "ui_menuIsOpen" ) )
