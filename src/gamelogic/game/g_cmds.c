@@ -2541,6 +2541,7 @@ void Cmd_Destroy_f( gentity_t *ent )
 	gentity_t *traceEnt;
 	char      cmd[ 12 ];
 	qboolean  deconstruct = qtrue;
+	qboolean  instant = qfalse;
 	qboolean  lastSpawn = qfalse;
 
 	if ( ent->client->pers.namelog->denyBuild )
@@ -2554,6 +2555,11 @@ void Cmd_Destroy_f( gentity_t *ent )
 	if ( Q_stricmp( cmd, "destroy" ) == 0 )
 	{
 		deconstruct = qfalse;
+	}
+	else if ( DECON_OPTION_CHECK( INSTANT ) && trap_Argc() == 2 )
+	{
+		trap_Argv( 1, cmd, sizeof( cmd ) );
+		instant = !Q_stricmp( cmd, "now" );
 	}
 
 	BG_GetClientViewOrigin( &ent->client->ps, viewOrigin );
@@ -2579,7 +2585,8 @@ void Cmd_Destroy_f( gentity_t *ent )
 		}
 
 		// Cancel deconstruction (unmark)
-		if ( deconstruct && ! DECON_MARK_CHECK( INSTANT ) && traceEnt->deconstruct )
+		// If instant decon is enabled and selected, don't unmark
+		if ( deconstruct && !instant && /*! DECON_MARK_CHECK( INSTANT ) &&*/ traceEnt->deconstruct )
 		{
 			traceEnt->deconstruct = qfalse;
 			return;
@@ -2628,6 +2635,12 @@ void Cmd_Destroy_f( gentity_t *ent )
 			}
 		}
 
+		// Not marked for decon ⇒ can't do explicit instant decon
+		if ( !traceEnt->deconstruct )
+		{
+			instant = qfalse;
+		}
+
 		if ( traceEnt->health > 0 )
 		{
 			if ( !deconstruct )
@@ -2635,15 +2648,26 @@ void Cmd_Destroy_f( gentity_t *ent )
 				G_Damage( traceEnt, ent, ent, forward, tr.endpos,
 				          traceEnt->health, 0, MOD_SUICIDE );
 			}
-			else if ( ! DECON_MARK_CHECK( INSTANT ) &&
-			          ( ent->client->pers.teamSelection != TEAM_HUMANS ||
-			            G_FindPower( traceEnt, qtrue ) || lastSpawn ) )
+			else if ( lastSpawn && !g_cheats.integer )
 			{
+				if ( traceEnt->deconstruct )
+				{
+					G_TriggerMenu( ent->client->ps.clientNum, MN_B_LASTSPAWN );
+					return;
+				}
+
 				traceEnt->deconstruct = qtrue; // Mark buildable for deconstruction
 				traceEnt->deconstructTime = level.time;
 			}
-			else
+			else if ( instant || DECON_MARK_CHECK( INSTANT ) ||
+			          ( ent->client->pers.teamSelection == TEAM_HUMANS && !G_FindPower( traceEnt, qtrue ) ) )
 			{
+				if ( lastSpawn && !g_cheats.integer )
+				{
+					G_TriggerMenu( ent->client->ps.clientNum, MN_B_LASTSPAWN );
+					return;
+				}
+
 				if ( !g_cheats.integer ) // add a bit to the build timer
 				{
 					ent->client->ps.stats[ STAT_MISC ] +=
@@ -2654,6 +2678,11 @@ void Cmd_Destroy_f( gentity_t *ent )
 				          traceEnt->health, 0, MOD_DECONSTRUCT );
 				G_RemoveRangeMarkerFrom( traceEnt );
 				G_FreeEntity( traceEnt );
+			}
+			else
+			{
+				traceEnt->deconstruct = qtrue; // Mark buildable for deconstruction
+				traceEnt->deconstructTime = level.time;
 			}
 		}
 	}
