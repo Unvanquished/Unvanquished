@@ -1182,7 +1182,9 @@ GAMELIB( LIB_NAME gppui
 
 # Don't worry about installing targets individually just copy entire folder over
 # This allows maps/.pk3s to be easily added to the installer
-install( DIRECTORY ${CMAKE_BINARY_DIR}/main DESTINATION "Unvanquished" )
+if( GAME_LIB OR GAME_QVM )
+  install( DIRECTORY ${CMAKE_BINARY_DIR}/main DESTINATION "Unvanquished" )
+endif()
 
 if( USE_PHYSICS )
   if( LINUX )
