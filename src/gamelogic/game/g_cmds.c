@@ -2579,7 +2579,7 @@ void Cmd_Destroy_f( gentity_t *ent )
 		}
 
 		// Cancel deconstruction (unmark)
-		if ( deconstruct && g_markDeconstruct.integer && traceEnt->deconstruct )
+		if ( deconstruct && ! DECON_MARK_CHECK( INSTANT ) && traceEnt->deconstruct )
 		{
 			traceEnt->deconstruct = qfalse;
 			return;
@@ -2604,7 +2604,7 @@ void Cmd_Destroy_f( gentity_t *ent )
 		}
 
 		if ( lastSpawn && !g_cheats.integer &&
-		     !g_markDeconstruct.integer )
+		     DECON_MARK_CHECK( INSTANT ) )
 		{
 			G_TriggerMenu( ent->client->ps.clientNum, MN_B_LASTSPAWN );
 			return;
@@ -2617,7 +2617,7 @@ void Cmd_Destroy_f( gentity_t *ent )
 			return;
 		}
 
-		if ( !g_markDeconstruct.integer ||
+		if ( DECON_MARK_CHECK( INSTANT ) ||
 		     ( ent->client->pers.teamSelection == TEAM_HUMANS &&
 		       !G_FindPower( traceEnt, qtrue ) ) )
 		{
@@ -2635,7 +2635,7 @@ void Cmd_Destroy_f( gentity_t *ent )
 				G_Damage( traceEnt, ent, ent, forward, tr.endpos,
 				          traceEnt->health, 0, MOD_SUICIDE );
 			}
-			else if ( g_markDeconstruct.integer &&
+			else if ( ! DECON_MARK_CHECK( INSTANT ) &&
 			          ( ent->client->pers.teamSelection != TEAM_HUMANS ||
 			            G_FindPower( traceEnt, qtrue ) || lastSpawn ) )
 			{

@@ -452,7 +452,7 @@ int G_GetMarkedBuildPoints( const vec3_t pos, team_t team )
 		return 0;
 	}
 
-	if ( !g_markDeconstruct.integer )
+	if ( DECON_MARK_CHECK( INSTANT ) )
 	{
 		return 0;
 	}
@@ -3464,7 +3464,7 @@ void G_FreeMarkedBuildables( gentity_t *deconner, char *readable, int rsize,
 		nums[ 0 ] = '\0';
 	}
 
-	if ( !g_markDeconstruct.integer )
+	if ( DECON_MARK_CHECK( INSTANT ) )
 	{
 		return; // Not enabled, can't deconstruct anything
 	}
@@ -3587,7 +3587,7 @@ static itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable,
 	}
 
 	// Simple non-marking case
-	if ( !g_markDeconstruct.integer )
+	if ( DECON_MARK_CHECK( INSTANT ) )
 	{
 		if ( remainingBP - buildPoints < 0 )
 		{
@@ -3627,13 +3627,13 @@ static itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable,
 		if ( collision )
 		{
 			// Don't allow replacements at all
-			if ( g_markDeconstruct.integer == 1 )
+			if ( DECON_MARK_CHECK( NO_REPLACE ) )
 			{
 				return IBE_NOROOM;
 			}
 
 			// Only allow replacements of the same type
-			if ( g_markDeconstruct.integer == 2 && ent->s.modelindex != buildable )
+			if ( DECON_MARK_CHECK( REPLACE_SAME ) && ent->s.modelindex != buildable )
 			{
 				return IBE_NOROOM;
 			}
@@ -3998,11 +3998,11 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 			{
 				reason = IBE_RPTNOREAC;
 			}
-			else if ( g_markDeconstruct.integer && G_IsPowered( entity_origin ) == BA_H_REACTOR )
+			else if ( ! DECON_MARK_CHECK( INSTANT ) && G_IsPowered( entity_origin ) == BA_H_REACTOR )
 			{
 				reason = IBE_RPTPOWERHERE;
 			}
-			else if ( !g_markDeconstruct.integer && G_IsPowered( entity_origin ) )
+			else if ( DECON_MARK_CHECK( INSTANT ) && G_IsPowered( entity_origin ) )
 			{
 				reason = IBE_RPTPOWERHERE;
 			}

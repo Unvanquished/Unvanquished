@@ -48,6 +48,14 @@ typedef struct gclient_s gclient_t;
 #define N_( text )             text
 #define P_( one, many, count ) ( ( count ) == 1 ? ( one ) : ( many ) )
 
+// decon types for g_markDeconstruct
+#define DECON_MARK_MASK            15
+#define DECON_MARK_INSTANT         0
+#define DECON_MARK_NO_REPLACE      1
+#define DECON_MARK_REPLACE_SAME    2
+#define DECON_MARK_REPLACE_ANY     3
+#define DECON_MARK_CHECK(mark) ( ( g_markDeconstruct.integer & DECON_MARK_MASK ) == DECON_MARK_##mark )
+
 // movers are things like doors, plats, buttons, etc
 typedef enum
 {
