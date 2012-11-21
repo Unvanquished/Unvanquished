@@ -2544,6 +2544,7 @@ void Cmd_Destroy_f( gentity_t *ent )
 	qboolean  instant = qfalse;
 	qboolean  protect;
 	qboolean  lastSpawn = qfalse;
+	qboolean  prevDeconstruct;
 
 	if ( ent->client->pers.namelog->denyBuild )
 	{
@@ -2569,6 +2570,7 @@ void Cmd_Destroy_f( gentity_t *ent )
 
 	trap_Trace( &tr, viewOrigin, NULL, NULL, end, ent->s.number, MASK_PLAYERSOLID );
 	traceEnt = &g_entities[ tr.entityNum ];
+	prevDeconstruct = traceEnt->deconstruct;
 
 	if ( tr.fraction < 1.0f &&
 	     ( traceEnt->s.eType == ET_BUILDABLE ) &&
@@ -2616,17 +2618,6 @@ void Cmd_Destroy_f( gentity_t *ent )
 		{
 			G_TriggerMenu( ent->client->ps.clientNum, MN_B_SUDDENDEATH );
 			return;
-		}
-
-		if ( DECON_MARK_CHECK( INSTANT ) ||
-		     ( ent->client->pers.teamSelection == TEAM_HUMANS &&
-		       !G_FindPower( traceEnt, qtrue ) ) )
-		{
-			if ( ent->client->ps.stats[ STAT_MISC ] > 0 )
-			{
-				G_AddEvent( ent, EV_BUILD_DELAY, ent->client->ps.clientNum );
-				return;
-			}
 		}
 
 		// Not marked for decon ⇒ can't do explicit instant decon
@@ -2693,6 +2684,17 @@ do_deconstruct:
 fail_lastSpawn:
 		G_TriggerMenu( ent->client->ps.clientNum, MN_B_LASTSPAWN );
 		return;
+	}
+
+	// deny decon if Build Timer Says No
+	if ( ent->client->pers.teamSelection != TEAM_HUMANS || G_FindPower( traceEnt, qtrue ) )
+	{
+		if ( ent->client->ps.stats[ STAT_MISC ] > 0 )
+		{
+			traceEnt->deconstruct = prevDeconstruct; // restore the decon flag (for repeat '/deconstruct now')
+			G_AddEvent( ent, EV_BUILD_DELAY, ent->client->ps.clientNum );
+			return;
+		}
 	}
 
 	if ( !g_cheats.integer ) // add a bit to the build timer
