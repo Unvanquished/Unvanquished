@@ -2270,9 +2270,8 @@ static qboolean G_RoomForClassChange( gentity_t *ent, class_t class,
 Cmd_Class_f
 =================
 */
-void Cmd_Class_f( gentity_t *ent )
+static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean report )
 {
-	char      s[ MAX_TOKEN_CHARS ];
 	int       clientNum;
 	int       i;
 	vec3_t    infestOrigin;
@@ -2287,7 +2286,6 @@ void Cmd_Class_f( gentity_t *ent )
 	vec3_t    oldVel;
 
 	clientNum = ent->client - level.clients;
-	trap_Argv( 1, s, sizeof( s ) );
 	newClass = BG_ClassByName( s )->number;
 
 	if ( ent->client->sess.spectatorState != SPECTATOR_NOT )
@@ -2303,20 +2301,29 @@ void Cmd_Class_f( gentity_t *ent )
 			     newClass != PCL_ALIEN_BUILDER0_UPG &&
 			     newClass != PCL_ALIEN_LEVEL0 )
 			{
-				G_TriggerMenuArgs( ent->client->ps.clientNum, MN_A_CLASSNOTSPAWN, newClass );
-				return;
+				if ( report )
+				{
+					G_TriggerMenuArgs( ent->client->ps.clientNum, MN_A_CLASSNOTSPAWN, newClass );
+				}
+				return qfalse;
 			}
 
 			if ( !BG_ClassIsAllowed( newClass ) )
 			{
-				G_TriggerMenuArgs( ent->client->ps.clientNum, MN_A_CLASSNOTALLOWED, newClass );
-				return;
+				if ( report )
+				{
+					G_TriggerMenuArgs( ent->client->ps.clientNum, MN_A_CLASSNOTALLOWED, newClass );
+				}
+				return qfalse;
 			}
 
 			if ( !BG_ClassAllowedInStage( newClass, g_alienStage.integer ) )
 			{
-				G_TriggerMenuArgs( ent->client->ps.clientNum, MN_A_CLASSNOTATSTAGE, newClass );
-				return;
+				if ( report )
+				{
+					G_TriggerMenuArgs( ent->client->ps.clientNum, MN_A_CLASSNOTATSTAGE, newClass );
+				}
+				return qfalse;
 			}
 
 			// spawn from an egg
@@ -2324,6 +2331,8 @@ void Cmd_Class_f( gentity_t *ent )
 			{
 				ent->client->pers.classSelection = newClass;
 				ent->client->ps.stats[ STAT_CLASS ] = newClass;
+
+				return qtrue;
 			}
 		}
 		else if ( ent->client->pers.teamSelection == TEAM_HUMANS )
@@ -2341,8 +2350,11 @@ void Cmd_Class_f( gentity_t *ent )
 			}
 			else
 			{
-				G_TriggerMenu( ent->client->ps.clientNum, MN_H_UNKNOWNSPAWNITEM );
-				return;
+				if ( report )
+				{
+					G_TriggerMenu( ent->client->ps.clientNum, MN_H_UNKNOWNSPAWNITEM );
+				}
+				return qfalse;
 			}
 
 			// spawn from a telenode
@@ -2350,23 +2362,28 @@ void Cmd_Class_f( gentity_t *ent )
 			{
 				ent->client->pers.classSelection = PCL_HUMAN;
 				ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN;
+
+				return qtrue;
 			}
 		}
 
-		return;
+		return qfalse;
 	}
 
 	if ( ent->health <= 0 )
 	{
-		return;
+		return qtrue; // dead, can't evolve; no point in trying other classes (if any listed)
 	}
 
 	if ( ent->client->pers.teamSelection == TEAM_ALIENS )
 	{
 		if ( newClass == PCL_NONE )
 		{
-			G_TriggerMenu( ent->client->ps.clientNum, MN_A_UNKNOWNCLASS );
-			return;
+			if ( report )
+			{
+				G_TriggerMenu( ent->client->ps.clientNum, MN_A_UNKNOWNCLASS );
+			}
+			return qfalse;
 		}
 
 		//if we are not currently spectating, we are attempting evolution
@@ -2377,8 +2394,11 @@ void Cmd_Class_f( gentity_t *ent )
 			//check that we have an overmind
 			if ( !G_Overmind() )
 			{
-				G_TriggerMenu( clientNum, MN_A_NOOVMND_EVOLVE );
-				return;
+				if ( report )
+				{
+					G_TriggerMenu( clientNum, MN_A_NOOVMND_EVOLVE );
+				}
+				return qfalse;
 			}
 
 			//check there are no humans nearby
@@ -2395,16 +2415,22 @@ void Cmd_Class_f( gentity_t *ent )
 				     ( other->s.eType == ET_BUILDABLE && other->buildableTeam == TEAM_HUMANS &&
 				       other->powered ) )
 				{
-					G_TriggerMenu( clientNum, MN_A_TOOCLOSE );
-					return;
+					if ( report )
+					{
+						G_TriggerMenu( clientNum, MN_A_TOOCLOSE );
+					}
+					return qfalse;
 				}
 			}
 
 			//check that we are not wallwalking
 			if ( ent->client->ps.eFlags & EF_WALLCLIMB )
 			{
-				G_TriggerMenu( clientNum, MN_A_EVOLVEWALLWALK );
-				return;
+				if ( report )
+				{
+					G_TriggerMenu( clientNum, MN_A_EVOLVEWALLWALK );
+				}
+				return qfalse;
 			}
 
 			if ( ent->client->sess.spectatorState == SPECTATOR_NOT &&
@@ -2412,8 +2438,11 @@ void Cmd_Class_f( gentity_t *ent )
 			       currentClass == PCL_ALIEN_BUILDER0_UPG ) &&
 			     ent->client->ps.stats[ STAT_MISC ] > 0 )
 			{
-				G_TriggerMenu( ent->client->ps.clientNum, MN_A_EVOLVEBUILDTIMER );
-				return;
+				if ( report )
+				{
+					G_TriggerMenu( ent->client->ps.clientNum, MN_A_EVOLVEBUILDTIMER );
+				}
+				return qfalse;
 			}
 
 			if( ent->client->pers.namelog->strip &&
@@ -2468,18 +2497,47 @@ void Cmd_Class_f( gentity_t *ent )
 				}
 				else
 				{
-					G_TriggerMenuArgs( clientNum, MN_A_CANTEVOLVE, newClass );
+					if ( report )
+					{
+						G_TriggerMenuArgs( clientNum, MN_A_CANTEVOLVE, newClass );
+					}
+					return qfalse;
 				}
 			}
 			else
 			{
-				G_TriggerMenu( clientNum, MN_A_NOEROOM );
+				if ( report )
+				{
+					G_TriggerMenu( clientNum, MN_A_NOEROOM );
+				}
+				return qfalse;
 			}
 		}
 	}
 	else if ( ent->client->pers.teamSelection == TEAM_HUMANS )
 	{
-		G_TriggerMenu( clientNum, MN_H_DEADTOCLASS );
+		if ( report )
+		{
+			G_TriggerMenu( clientNum, MN_H_DEADTOCLASS );
+		}
+		return qfalse;
+	}
+
+	// if we reach this, found a valid class and changed to it
+	return qtrue;
+}
+
+void Cmd_Class_f( gentity_t *ent )
+{
+	char s[ MAX_TOKEN_CHARS ];
+	int  i;
+	int  args = trap_Argc() - 1;
+
+	for ( i = 1; i <= args; ++i )
+	{
+		trap_Argv( i, s, sizeof( s ) );
+
+		if ( Cmd_Class_internal( ent, s, i == args ) ) break;
 	}
 }
 

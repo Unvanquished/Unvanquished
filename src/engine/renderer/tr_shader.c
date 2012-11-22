@@ -2136,6 +2136,7 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 				// no, let's have depth-mask
 				blendSrcBits = GLS_SRCBLEND_ONE;
 				blendDstBits = GLS_DSTBLEND_ZERO;
+				stage->rgbGen = CGEN_LIGHTING_DIFFUSE;
 			}
 			else if ( !Q_stricmp( token, "bumpMap" ) )
 			{

@@ -20,11 +20,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-#ifdef USE_CURSES_W
-#define _XOPEN_SOURCE 500
-//#include <stdio.h>
-#endif
-
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "sys_local.h"
@@ -610,7 +605,7 @@ void CON_Init( void )
 	wnoutrefresh( stdscr );
 	doupdate();
 
-#ifndef _WIN32
+#ifdef SIGWINCH
 	// Catch window resizes
 	signal( SIGWINCH, ( void * ) CON_Resize );
 #endif
