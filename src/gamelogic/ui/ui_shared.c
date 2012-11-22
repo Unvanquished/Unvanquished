@@ -6022,7 +6022,7 @@ static bind_t g_bindings[] =
 	{ "buy ammo",       'b',                -1,            -1, -1 }, // buy ammo
 	{ "itemact medkit", 'm',                -1,            -1, -1 }, // use medkit
 	{ "+activate",      'q',                -1,            -1, -1 }, // buildable use
-	{ "if shift \"/deconstruct now\" /deconstruct",
+	{ "if alt \"/deconstruct marked\" /deconstruct",
 	                    'e',                -1,            -1, -1 }, // buildable destroy
 	{ "weapprev",       '[',                -1,            -1, -1 },
 	{ "weapnext",       ']',                -1,            -1, -1 },

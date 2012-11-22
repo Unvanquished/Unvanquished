@@ -2561,7 +2561,7 @@ void Cmd_Destroy_f( gentity_t *ent )
 	else if ( DECON_OPTION_CHECK( INSTANT ) && trap_Argc() == 2 )
 	{
 		trap_Argv( 1, cmd, sizeof( cmd ) );
-		instant = !Q_stricmp( cmd, "now" );
+		instant = !Q_stricmp( cmd, "marked" );
 	}
 
 	BG_GetClientViewOrigin( &ent->client->ps, viewOrigin );
@@ -2691,7 +2691,7 @@ fail_lastSpawn:
 	{
 		if ( ent->client->ps.stats[ STAT_MISC ] > 0 )
 		{
-			traceEnt->deconstruct = prevDeconstruct; // restore the decon flag (for repeat '/deconstruct now')
+			traceEnt->deconstruct = prevDeconstruct; // restore the decon flag (for repeat '/deconstruct marked')
 			G_AddEvent( ent, EV_BUILD_DELAY, ent->client->ps.clientNum );
 			return;
 		}

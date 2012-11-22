@@ -211,7 +211,7 @@ static void CG_BuilderText( char *text, playerState_t *ps )
 
 	if ( ( es = CG_BuildableInRange( ps, NULL ) ) )
 	{
-	        const char *key = CG_KeyNameForCommand( "if shift \"/deconstruct now\" /deconstruct" );
+	        const char *key = CG_KeyNameForCommand( "if alt \"/deconstruct marked\" /deconstruct" );
 
 		if ( cgs.markDeconstruct )
 		{
