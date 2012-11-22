@@ -240,7 +240,7 @@ void Con_Dump_f( void )
 {
 	int          l;
 	fileHandle_t f;
-	char         *name[ MAX_STRING_CHARS ];
+	char         name[ MAX_STRING_CHARS ];
 
 	if ( Cmd_Argc() != 2 )
 	{
