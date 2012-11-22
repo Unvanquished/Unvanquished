@@ -603,7 +603,7 @@ void G_MapConfigs( const char *mapname )
 	                         va( "exec %s/%s.cfg\n", Quote( g_mapConfigs.string ), Quote( mapname ) ) );
 
 	trap_Cvar_Set( "g_mapConfigsLoaded", "1" );
-	trap_SendConsoleCommand( EXEC_APPEND, "maprestarted" );
+	trap_SendConsoleCommand( EXEC_APPEND, "maprestarted\n" );
 }
 
 /*
