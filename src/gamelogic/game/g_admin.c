@@ -1584,9 +1584,11 @@ static void llsort( struct llist **head, int compar( const void *, const void * 
 		return;
 	}
 
+	b = t = NULL;
+
 	do
 	{
-		a = *head, l = *head = NULL;
+		a = *head; l = *head = NULL;
 
 		for ( ns = 0; a; ns++, a = b )
 		{
@@ -1606,11 +1608,11 @@ static void llsort( struct llist **head, int compar( const void *, const void * 
 			{
 				if ( as && ( !bs || !b || compar( a, b ) <= 0 ) )
 				{
-					t = a, a = a->next, as--;
+					t = a; a = a->next; as--;
 				}
 				else
 				{
-					t = b, b = b->next, bs--;
+					t = b; b = b->next; bs--;
 				}
 
 				if ( l )
@@ -1770,6 +1772,7 @@ qboolean G_admin_readconfig( gentity_t *ent )
 				l = g_admin_levels = BG_Alloc( sizeof( g_admin_level_t ) );
 			}
 
+			memset( l, 0, sizeof( *l ) );
 			level_open = qtrue;
 			admin_open = ban_open = command_open = qfalse;
 			lc++;

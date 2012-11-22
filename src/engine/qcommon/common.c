@@ -3638,6 +3638,10 @@ void Com_Frame( void )
 			minMsec = 1;
 		}
 	}
+	else
+	{
+		minMsec = 0; // let's not spin at all
+	}
 
 	com_frameTime = Com_EventLoop();
 

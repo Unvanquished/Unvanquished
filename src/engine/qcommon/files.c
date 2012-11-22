@@ -1285,7 +1285,7 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 	long         hash = 0;
 	FILE         *temp;
 	int          l;
-	char         demoExt[ 16 ];
+//	char         demoExt[ 16 ];
 
 	hash = 0;
 
@@ -1523,7 +1523,7 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 				     && Q_stricmp( filename + l - 4, ".otf" )
 				     && Q_stricmp( filename + l - 5, ".menu" )  // menu files
 				     && Q_stricmp( filename + l - 5, ".game" )  // menu files
-				     && Q_stricmp( filename + l - strlen( demoExt ), demoExt )   // menu files
+				     //&& Q_stricmp( filename + l - strlen( demoExt ), demoExt )   // menu files
 				     && Q_stricmp( filename + l - 4, ".dat" )  // for journal files
 				     && Q_stricmp( filename + l - 8, "bots.txt" )
 				     && Q_stricmp( filename + l - 8, ".botents" )
@@ -1550,7 +1550,7 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 			     && Q_stricmp( filename + l - 4, ".otf" ) != 0
 			     && Q_stricmp( filename + l - 5, ".menu" )  // menu files
 			     && Q_stricmp( filename + l - 5, ".game" )  // menu files
-			     && Q_stricmp( filename + l - strlen( demoExt ), demoExt )   // menu files
+			     //&& Q_stricmp( filename + l - strlen( demoExt ), demoExt )   // menu files
 			     && Q_stricmp( filename + l - 4, ".dat" )
 			     && Q_stricmp( filename + l - 8, ".botents" )
 			     && Q_stricmp( filename + l - 3, ".po" )
