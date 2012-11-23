@@ -57,9 +57,6 @@ Maryland 20850 USA.
 #define DEF_COMHUNKMEGS_S         XSTRING(DEF_COMHUNKMEGS)
 #define DEF_COMZONEMEGS_S         XSTRING(DEF_COMZONEMEGS)
 
-#define _(x) Trans_Gettext(x)
-#define C_(x, y) Trans_Pgettext(x, y)
-
 int                 com_argc;
 char                *com_argv[ MAX_NUM_ARGVS + 1 ];
 
@@ -3226,7 +3223,9 @@ void Com_Init( char *commandLine )
 #endif
 	// allocate the stack based hunk allocator
 	Com_InitHunkMemory();
+
 	Trans_Init();
+
 	// if any archived cvars are modified after this, we will trigger a writing
 	// of the config file
 	cvar_modifiedFlags &= ~CVAR_ARCHIVE;

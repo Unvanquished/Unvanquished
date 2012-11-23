@@ -60,9 +60,6 @@ cvar_t            *trans_languages;
 bool              enabled = false;
 int               modificationCount=0;
 
-#define _(x) Trans_Gettext(x)
-#define C_(x, y) Trans_Pgettext(x, y)
-
 /*
 ====================
 Trans_ReturnLanguage
