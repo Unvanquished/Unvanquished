@@ -191,8 +191,9 @@ extern "C" void Trans_Init( void )
 	}
 	Cvar_Set( "trans_languages", langList );
 	Cvar_Set( "trans_encodings", encList );
-	Com_Printf(_( "Loaded %lu language(s)\n"), (unsigned long)langs.size() );
+
 	Cmd_AddCommand( "updatelanguage", Trans_UpdateLanguage_f );
+	
 	if( langs.size() )
 	{
 		lang = Trans_ReturnLanguage( language->string );
@@ -200,6 +201,8 @@ extern "C" void Trans_Init( void )
 		trans_dictgame = trans_managergame.get_dictionary( lang );
 		enabled = true;
 	}
+	
+	Com_Printf(_( "Loaded %lu language(s)\n"), (unsigned long)langs.size() );
 }
 
 extern "C" const char* Trans_Gettext( const char *msgid )

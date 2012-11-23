@@ -363,17 +363,17 @@ void Cdelay_Frame( void ) {
 	int i;
 	int sys_time = Sys_Milliseconds();
 	qboolean run_it;
-	
+
 	for(i=0; (i<MAX_DELAYED_COMMANDS); i++)
 	{
 		run_it = qfalse;
-		
+
 		if(delayed_cmd[i].delay == CMD_DELAY_UNUSED)
 			continue;
-		
+
 		//check if we should run the command (both type)
 		if(delayed_cmd[i].type == CMD_DELAY_MSEC && delayed_cmd[i].delay < sys_time)
-		{			
+		{
 			run_it = qtrue;
 		} else if(delayed_cmd[i].type == CMD_DELAY_FRAME)
 		{
@@ -381,7 +381,7 @@ void Cdelay_Frame( void ) {
 			if(delayed_cmd[i].delay == CMD_DELAY_FRAME_FIRE)
 				run_it = qtrue;
 		}
-		
+
 		if(run_it)
 		{
 			delayed_cmd[i].delay = CMD_DELAY_UNUSED;
@@ -447,7 +447,7 @@ void Cmd_Exec_f( void )
 		return;
 	}
 
-	Com_Printf(_( "execing %s\n"), Cmd_Argv( 1 ) );
+	Com_Printf( "execing %s\n", Cmd_Argv( 1 ) );
 
 	Q_strncpyz( filename, Cmd_Argv( 1 ), sizeof( filename ) );
 	COM_DefaultExtension( filename, sizeof( filename ), ".cfg" );
@@ -476,7 +476,7 @@ void Cmd_Exec_f( void )
 
 	if ( !success )
 	{
-		Com_Printf(_( "couldn't exec %s\n"), Cmd_Argv( 1 ) );
+		Com_Printf( "couldn't exec %s\n", Cmd_Argv( 1 ) );
 	}
 }
 

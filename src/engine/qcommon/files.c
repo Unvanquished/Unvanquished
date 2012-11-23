@@ -3238,7 +3238,7 @@ void FS_Path_f( void )
 		if ( s->pack )
 		{
 			//      Com_Printf(_( "%s %X (%i files)\n"), s->pack->pakFilename, s->pack->checksum, s->pack->numfiles );
-			Com_DPrintf(_( "%s (%i files)\n"), s->pack->pakFilename, s->pack->numfiles );
+			Com_DPrintf( "%s (%i files)\n", s->pack->pakFilename, s->pack->numfiles );
 
 			if ( fs_numServerPaks )
 			{
