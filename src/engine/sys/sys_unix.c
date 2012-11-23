@@ -1048,9 +1048,11 @@ void Sys_PlatformInit( void )
 
 	signal( SIGHUP, Sys_SigHandler );
 	signal( SIGQUIT, Sys_SigHandler );
+#ifdef NDEBUG
 	signal( SIGTRAP, Sys_SigHandler );
 	signal( SIGIOT, Sys_SigHandler );
 	signal( SIGBUS, Sys_SigHandler );
+#endif
 
 	stdinIsATTY = isatty( STDIN_FILENO ) &&
 	              !( term && ( !strcmp( term, "raw" ) || !strcmp( term, "dumb" ) ) );
