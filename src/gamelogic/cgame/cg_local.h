@@ -1801,6 +1801,7 @@ void CG_ParseServerinfo( void );
 void CG_SetConfigValues( void );
 void CG_ShaderStateChanged( void );
 void CG_CompleteCommand( int argNum );
+void CG_CenterPrint_f( void );
 
 //
 // cg_playerstate.c

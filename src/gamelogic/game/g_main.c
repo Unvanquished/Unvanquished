@@ -135,6 +135,7 @@ vmCvar_t           g_mapRotationStack;
 vmCvar_t           g_nextMap;
 vmCvar_t           g_initialMapRotation;
 vmCvar_t           g_mapLog;
+vmCvar_t           g_mapStartupMessageDelay;
 
 vmCvar_t           g_debugVoices;
 vmCvar_t           g_voiceChats;
@@ -196,6 +197,8 @@ static cvarTable_t gameCvarTable[] =
 	// latched vars
 
 	{ &g_maxclients,                  "sv_maxclients",                 "8",                                CVAR_SERVERINFO | CVAR_LATCH | CVAR_ARCHIVE,     0, qfalse           },
+
+	{ NULL,                           "g_mapStartupMessage",           "",                                 0,                                               0, qfalse           },
 
 	// change anytime vars
 	{ &g_maxGameClients,              "g_maxGameClients",              "0",                                CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qfalse           },
@@ -300,6 +303,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_nextMap,                     "g_nextMap",                     "",                                 0,                                               0, qtrue            },
 	{ &g_initialMapRotation,          "g_initialMapRotation",          "rotation1",                        CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_mapLog,                      "g_mapLog",                      "",                                 CVAR_ROM,                                        0, qfalse           },
+	{ &g_mapStartupMessageDelay,      "g_mapStartupMessageDelay",      "5000",                             CVAR_ARCHIVE | CVAR_LATCH,                       0, qfalse           },
 	{ &g_debugVoices,                 "g_debugVoices",                 "0",                                0,                                               0, qfalse           },
 	{ &g_voiceChats,                  "g_voiceChats",                  "1",                                CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_shove,                       "g_shove",                       "0.0",                              CVAR_ARCHIVE,                                    0, qfalse           },
@@ -674,6 +678,9 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	{
 		G_Printf( "Not logging to disk\n" );
 	}
+
+	// clear this now; it'll be set, if needed, from rotation
+	trap_Cvar_Set( "g_mapStartupMessage", "" );
 
 	{
 		char map[ MAX_CVAR_VALUE_STRING ] = { "" };
