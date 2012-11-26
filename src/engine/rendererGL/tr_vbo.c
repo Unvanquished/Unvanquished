@@ -104,8 +104,8 @@ VBO_t          *R_CreateVBO2( const char *name, int numVertexes, srfVert_t *vert
 	byte   *data;
 	int    dataSize;
 	int    dataOfs;
-
 	int    glUsage;
+	unsigned int bits;
 
 	switch ( usage )
 	{
@@ -157,8 +157,20 @@ VBO_t          *R_CreateVBO2( const char *name, int numVertexes, srfVert_t *vert
 	vbo->sizeBinormals = 0;
 	vbo->sizeNormals = 0;
 
-	// create VBO
-	dataSize = numVertexes * ( sizeof( vec4_t ) * 9 );
+	// size VBO
+	dataSize = 0;
+	bits = stateBits;
+	while ( bits )
+	{
+		if ( bits & 1 )
+		{
+			dataSize += sizeof( vec4_t );
+		}
+
+		bits >>= 1;
+	}
+
+	dataSize *= numVertexes;
 	data = ri.Hunk_AllocateTempMemory( dataSize );
 	dataOfs = 0;
 
@@ -177,8 +189,11 @@ VBO_t          *R_CreateVBO2( const char *name, int numVertexes, srfVert_t *vert
 		dataOfs += i * sizeof( vec4_t ); \
 	} while ( 0 )
 
-	// set up xyz array
-	VERTEXCOPY( xyz );
+	if ( stateBits & ATTR_POSITION )
+	{
+		vbo->ofsXYZ = dataOfs;
+		VERTEXCOPY( xyz );
+	}
 
 	// feed vertex texcoords
 	if ( stateBits & ATTR_TEXCOORD )
