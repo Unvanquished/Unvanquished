@@ -597,7 +597,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 
 #define IS_NAN( x ) ( ( ( *(int *)&( x ) ) & nanmask ) == nanmask )
 
-#if idx64
+#if idx64 || idx64_32
 	extern long qftolsse( float f );
 	extern int  qvmftolsse( void );
 	extern void qsnapvectorsse( vec3_t vec );
