@@ -1051,6 +1051,8 @@ void CL_ParseVoip( msg_t *msg )
 		CL_PlayVoip( sender, written, ( const byte * ) decoded, flags );
 	}
 
+	cls.voipSender = sender;
+
 	clc.voipIncomingSequence[ sender ] = sequence + frames;
 }
 

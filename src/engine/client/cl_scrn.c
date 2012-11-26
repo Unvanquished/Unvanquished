@@ -592,6 +592,7 @@ SCR_DrawVoipSender
 void SCR_DrawVoipSender( void )
 {
 	char string[ 256 ];
+	char teamColor;
 
 	// Little bit of a hack here, but it's the only thing i could come up with
 	if ( cls.voipTime > cls.realtime )
@@ -617,7 +618,16 @@ void SCR_DrawVoipSender( void )
 			return; // client has VoIP support disabled.
 		}
 
-		sprintf( string, "Talker's number: %i", cls.voipSender );
+		switch ( atoi( Info_ValueForKey(cl.gameState.stringData +
+			cl.gameState.stringOffsets[CS_PLAYERS + cls.voipSender], "t") ) )
+		{
+			case TEAM_ALIENS: teamColor = '1'; break;
+			case TEAM_HUMANS: teamColor = '4'; break;
+			default: teamColor = '3';
+		}
+
+		sprintf( string, "VoIP: ^%c%s", teamColor, Info_ValueForKey(cl.gameState.stringData +
+		cl.gameState.stringOffsets[CS_PLAYERS + cls.voipSender], "t" ) );
 
 		if ( cl_voipSenderPos->integer == 0 ) // Lower right-hand corner, above HUD
 		{
