@@ -1400,7 +1400,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		return;
 	}
 
-	if( !attacker->client )
+	if( !attacker->client || !attacker->client->pers.namelog )
 	{
 		// nothing to do
 	}
