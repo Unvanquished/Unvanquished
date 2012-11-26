@@ -39,44 +39,205 @@ extern "C"
 #include "../../libs/findlocale/findlocale.h"
 }
 
+#include "../../libs/tinygettext/log.hpp"
 #include "../../libs/tinygettext/tinygettext.hpp"
+#include "../../libs/tinygettext/file_system.hpp"
+
 #include <sstream>
 #include <iostream>
 
 using namespace tinygettext;
+
 // Ugly char buffer
 static char gettextbuffer[ 4 ][ MAX_STRING_CHARS ];
 static int num = -1;
 
 DictionaryManager trans_manager;
 DictionaryManager trans_managergame;
-Dictionary        trans_dict;
-Dictionary        trans_dictgame;
 
 cvar_t            *language;
-cvar_t            *language_debug;
+cvar_t            *trans_debug;
 cvar_t            *trans_encodings;
 cvar_t            *trans_languages;
-bool              enabled = false;
-int               modificationCount=0;
+
+#ifndef DEDICATED
+extern "C" cvar_t *cl_consoleKeys; // should really #include client.h
+#endif
 
 /*
 ====================
-Trans_ReturnLanguage
+DaemonInputbuf
 
-Return a loaded language. If desired language is not found, return closest match.
+Streambuf based class that uses the engine's File I/O functions for input
+====================
+*/
+
+class DaemonInputbuf : public std::streambuf
+{
+private:
+	static const size_t BUFFER_SIZE = 8192;
+	fileHandle_t fileHandle;
+	char  buffer[ BUFFER_SIZE ];
+	size_t  putBack;
+public:
+	DaemonInputbuf( const std::string& filename ) : putBack( 1 )
+	{
+		char *end;
+
+		end = buffer + BUFFER_SIZE - putBack;
+		setg( end, end, end );
+
+		FS_FOpenFileRead( filename.c_str(), &fileHandle, qfalse );
+	}
+
+	~DaemonInputbuf()
+	{
+		if( fileHandle )
+		{
+			FS_FCloseFile( fileHandle );
+		}
+	}
+
+	int underflow()
+	{
+		if( gptr() < egptr() ) // buffer not exhausted
+		{
+			return traits_type::to_int_type( *gptr() );
+		}
+
+		if( !fileHandle )
+		{
+			return traits_type::eof();
+		}
+
+		char *base = buffer;
+		char *start = base;
+
+		if( eback() == base )
+		{
+			// Make arrangements for putback characters
+			memmove( base, egptr() - putBack, putBack );
+			start += putBack;
+		}
+
+		size_t n = FS_Read( start, BUFFER_SIZE - ( start - base ), fileHandle );
+
+		if( n == 0 )
+		{
+			return traits_type::eof();
+		}
+
+		// Set buffer pointers
+		setg( base, start, start + n );
+
+		return traits_type::to_int_type( *gptr() );
+	}
+};
+
+/*
+====================
+DaemonIstream
+
+Simple istream based class that takes ownership of the streambuf
+====================
+*/
+
+class DaemonIstream : public std::istream
+{
+public:
+	DaemonIstream( const std::string& filename ) : std::istream( new DaemonInputbuf( filename ) ) {}
+	~DaemonIstream()
+	{
+		delete rdbuf();
+	}
+};
+
+/*
+====================
+DaemonFileSystem
+
+Class used by tinygettext to read files and directorys
+Uses the engine's File I/O functions for this purpose
+====================
+*/
+
+class DaemonFileSystem : public FileSystem
+{
+public:
+	DaemonFileSystem() {}
+
+	std::vector<std::string> open_directory( const std::string& pathname )
+	{
+		int numFiles;
+		char **files;
+		std::vector<std::string> ret;
+
+		files = FS_ListFiles( pathname.c_str(), NULL, &numFiles );
+
+		for( int i = 0; i < numFiles; i++ )
+		{
+			ret.push_back( std::string( files[ i ] ) );
+		}
+
+		FS_FreeFileList( files );
+		return ret;
+	}
+
+	std::auto_ptr<std::istream> open_file( const std::string& filename )
+	{
+		return std::auto_ptr<std::istream>( new DaemonIstream( filename ) );
+	}
+};
+
+/*
+====================
+Logging functions used by tinygettext
+====================
+*/
+
+void Trans_Error( const std::string& str )
+{
+	Com_Printf( "^1%s^7", str.c_str() );
+}
+
+void Trans_Warning( const std::string& str )
+{
+	if( trans_debug->integer != 0 )
+	{
+		Com_Printf( "^3%s^7", str.c_str() );
+	}
+}
+
+void Trans_Info( const std::string& str )
+{
+	if( trans_debug->integer != 0 )
+	{
+		Com_Printf( "%s", str.c_str() );
+	}
+}
+
+/*
+====================
+Trans_SetLanguage
+
+Sets a loaded language. If desired language is not found, set closest match.
 If no languages are close, force English.
 ====================
 */
-Language Trans_ReturnLanguage( const char *lang )
+
+void Trans_SetLanguage( const char* lang )
 {
-	int bestScore = 0;
-	Language bestLang, language = Language::from_env( std::string( lang ) );
+	Language requestLang = Language::from_env( std::string( lang ) );
+
+	// default to english
+	Language bestLang = Language::from_env( "en" );
+	int bestScore = Language::match( requestLang, bestLang );
 
 	std::set<Language> langs = trans_manager.get_languages();
+
 	for( std::set<Language>::iterator i = langs.begin(); i != langs.end(); i++ )
 	{
-		int score = Language::match( language, *i );
+		int score = Language::match( requestLang, *i );
 
 		if( score > bestScore )
 		{
@@ -85,29 +246,26 @@ Language Trans_ReturnLanguage( const char *lang )
 		}
 	}
 
-	// Return "en" if language not found
-	if( !bestLang )
+	// language not found, display warning
+	if( bestScore == 0 )
 	{
 		Com_Printf( _("^3WARNING:^7 Language \"%s\" (%s) not found. Default to \"English\" (en)\n"),
-					language.get_name().empty() ? _( "Unknown Language" ) : language.get_name().c_str(),
+					requestLang.get_name().empty() ? _( "Unknown Language" ) : requestLang.get_name().c_str(),
 					lang );
-		bestLang = Language::from_env( "en" );
 	}
 
-	return bestLang;
+	trans_manager.set_language( bestLang );
+	trans_managergame.set_language( bestLang );
+
+	Com_Printf( _( "Set language to %s\n" ), bestLang.get_name().c_str() );
 }
 
 extern "C" void Trans_UpdateLanguage_f( void )
 {
-	if( !enabled ) { return; }
-	Language lang = Trans_ReturnLanguage( language->string );
-	trans_dict = trans_manager.get_dictionary( lang );
-	trans_dictgame = trans_managergame.get_dictionary( lang );
-	Com_Printf(_( "Switched language to %s\n"), lang.get_name().c_str() );
+	Trans_SetLanguage( language->string );
 
 #ifndef DEDICATED
 	// update the default console keys string
-	extern cvar_t *cl_consoleKeys; // should really #include client.h
 	Z_Free( cl_consoleKeys->resetString );
 	cl_consoleKeys->resetString = CopyString( _("~ ` 0x7e 0x60") );
 #endif
@@ -120,16 +278,42 @@ Trans_Init
 */
 extern "C" void Trans_Init( void )
 {
-	char                **poFiles, langList[ MAX_TOKEN_CHARS ] = "", encList[ MAX_TOKEN_CHARS ] = "";
-	int                 numPoFiles, i;
+	char langList[ MAX_TOKEN_CHARS ] = "";
+	char encList[ MAX_TOKEN_CHARS ] = "";
 	FL_Locale           *locale;
 	std::set<Language>  langs;
 	Language            lang;
 
+	Cmd_AddCommand( "updatelanguage", Trans_UpdateLanguage_f );
+
 	language = Cvar_Get( "language", "", CVAR_ARCHIVE );
-	language_debug = Cvar_Get( "language_debug", "0", CVAR_ARCHIVE );
+	trans_debug = Cvar_Get( "trans_debug", "0", CVAR_ARCHIVE );
 	trans_languages = Cvar_Get( "trans_languages", "", CVAR_ROM );
 	trans_encodings = Cvar_Get( "trans_encodings", "", CVAR_ROM );
+
+	// set tinygettext log callbacks
+	Log::set_log_error_callback( &Trans_Error );
+	Log::set_log_warning_callback( &Trans_Warning );
+	Log::set_log_info_callback( &Trans_Info );
+
+	trans_manager.set_filesystem( std::auto_ptr<DaemonFileSystem>( new DaemonFileSystem ) );
+	trans_managergame.set_filesystem( std::auto_ptr<DaemonFileSystem>( new DaemonFileSystem ) );
+
+	trans_manager.add_directory( "translation/client" );
+	trans_managergame.add_directory( "translation/game" );
+
+	langs = trans_manager.get_languages();
+
+	for( std::set<Language>::iterator p = langs.begin(); p != langs.end(); p++ )
+	{
+		Q_strcat( langList, sizeof( langList ), va( "\"%s\" ", p->get_name().c_str() ) );
+		Q_strcat( encList, sizeof( encList ), va( "\"%s%s%s\" ", p->get_language().c_str(),
+												  p->get_country().c_str()[0] ? "_" : "",
+												  p->get_country().c_str() ) );
+	}
+
+	Cvar_Set( "trans_languages", langList );
+	Cvar_Set( "trans_encodings", encList );
 
 	// Only detect locale if no previous language set.
 	if( !language->string[0] )
@@ -149,106 +333,58 @@ extern "C" void Trans_Init( void )
 		}
 	}
 
-	poFiles = FS_ListFiles( "translation/client", ".po", &numPoFiles );
+	Trans_SetLanguage( language->string );
 
-	// This assumes that the filenames in both folders are the same
-	for( i = 0; i < numPoFiles; i++ )
-	{
-		char *buffer, language[ 6 ];
+	Com_Printf( _( "Loaded %lu language(s)\n" ), ( unsigned long )langs.size() );
+}
 
-		if( FS_ReadFile( va( "translation/client/%s", poFiles[ i ] ), ( void ** ) &buffer ) > 0 )
-		{
-			COM_StripExtension2( poFiles[ i ], language, sizeof( language ) );
-			std::stringstream ss( buffer );
-			trans_manager.add_po( poFiles[ i ], ss, Language::from_env( std::string( language ) ) );
-			FS_FreeFile( buffer );
-		}
-		else
-		{
-			Com_Printf(_( "^1ERROR: Could not open client translation: %s\n"), poFiles[ i ] );
-		}
+const char* Trans_Gettext_Internal( const char *msgid, DictionaryManager& manager )
+{
+	num = ( num + 1 ) & 3;
+	Q_strncpyz( gettextbuffer[ num ], manager.get_dictionary().translate( msgid ).c_str(), sizeof( gettextbuffer[ num ] ) );
+	return gettextbuffer[ num ];
+}
 
-		if( FS_ReadFile( va( "translation/game/%s", poFiles[ i ] ), ( void ** ) &buffer ) > 0 )
-		{
-			COM_StripExtension2( poFiles[ i ], language, sizeof( language ) );
-			std::stringstream ss( buffer );
-			trans_managergame.add_po( poFiles[ i ], ss, Language::from_env( std::string( language ) ) );
-			FS_FreeFile( buffer );
-		}
-		else
-		{
-			Com_Printf(_( "^1ERROR: Could not open game translation: %s\n"), poFiles[ i ] );
-		}
-	}
-	FS_FreeFileList( poFiles );
-	langs = trans_manager.get_languages();
-	for( std::set<Language>::iterator p = langs.begin(); p != langs.end(); p++ )
-	{
-		Q_strcat( langList, sizeof( langList ), va( "\"%s\" ", p->get_name().c_str() ) );
-		Q_strcat( encList, sizeof( encList ), va( "\"%s%s%s\" ", p->get_language().c_str(),
-												  p->get_country().c_str()[0] ? "_" : "",
-												  p->get_country().c_str() ) );
-	}
-	Cvar_Set( "trans_languages", langList );
-	Cvar_Set( "trans_encodings", encList );
+const char* Trans_Pgettext_Internal( const char *ctxt, const char *msgid, DictionaryManager& manager )
+{
+	num = ( num + 1 ) & 3;
+	Q_strncpyz( gettextbuffer[ num ], manager.get_dictionary().translate_ctxt( ctxt, msgid ).c_str(), sizeof( gettextbuffer[ num ] ) );
+	return gettextbuffer[ num ];
+}
 
-	Cmd_AddCommand( "updatelanguage", Trans_UpdateLanguage_f );
-	
-	if( langs.size() )
-	{
-		lang = Trans_ReturnLanguage( language->string );
-		trans_dict = trans_manager.get_dictionary( lang );
-		trans_dictgame = trans_managergame.get_dictionary( lang );
-		enabled = true;
-	}
-	
-	Com_Printf(_( "Loaded %lu language(s)\n"), (unsigned long)langs.size() );
+const char* Trans_GettextPlural_Internal( const char *msgid, const char *msgid_plural, int num, DictionaryManager& manager )
+{
+	num = ( num + 1 ) & 3;
+	Q_strncpyz( gettextbuffer[ num ], manager.get_dictionary().translate_plural( msgid, msgid_plural, num ).c_str(), sizeof( gettextbuffer[ num ] ) );
+	return gettextbuffer[ num ];
 }
 
 extern "C" const char* Trans_Gettext( const char *msgid )
 {
-	if( !enabled ) { return msgid; }
-	num = ( num + 1 ) & 3;
-	Q_strncpyz( gettextbuffer[ num ], trans_dict.translate( msgid ).c_str(), sizeof( gettextbuffer[ num ] ) );
-	return gettextbuffer[ num ];
+	return Trans_Gettext_Internal( msgid, trans_manager );
 }
 
 extern "C" const char* Trans_Pgettext( const char *ctxt, const char *msgid )
 {
-	if ( !enabled ) { return msgid; }
-	num = ( num + 1 ) & 3;
-	Q_strncpyz( gettextbuffer[ num ], trans_dict.translate_ctxt( ctxt, msgid ).c_str(), sizeof( gettextbuffer[ num ] ) );
-	return gettextbuffer[ num ];
-}
-
-extern "C" const char* Trans_GettextGame( const char *msgid )
-{
-	if( !enabled ) { return msgid; }
-	num = ( num + 1 ) & 3;
-	Q_strncpyz( gettextbuffer[ num ], trans_dictgame.translate( msgid ).c_str(), sizeof( gettextbuffer[ num ] ) );
-	return gettextbuffer[ num ];
-}
-
-extern "C" const char* Trans_PgettextGame( const char *ctxt, const char *msgid )
-{
-	if( !enabled ) { return msgid; }
-	num = ( num + 1 ) & 3;
-	Q_strncpyz( gettextbuffer[ num ], trans_dictgame.translate_ctxt( std::string( ctxt ), std::string( msgid ) ).c_str(), sizeof( gettextbuffer[ num ] ) );
-	return gettextbuffer[ num ];
+	return Trans_Pgettext_Internal( ctxt, msgid, trans_manager );
 }
 
 extern "C" const char* Trans_GettextPlural( const char *msgid, const char *msgid_plural, int num )
 {
-	if( !enabled ) { return num == 1 ? msgid : msgid_plural; }
-	num = ( num + 1 ) & 3;
-	Q_strncpyz( gettextbuffer[ num ], trans_dict.translate_plural( msgid, msgid_plural, num ).c_str(), sizeof( gettextbuffer[ num ] ) );
-	return gettextbuffer[ num ];
+	return Trans_GettextPlural_Internal( msgid, msgid_plural, num, trans_manager );
+}
+
+extern "C" const char* Trans_GettextGame( const char *msgid )
+{
+	return Trans_Gettext_Internal( msgid, trans_managergame );
+}
+
+extern "C" const char* Trans_PgettextGame( const char *ctxt, const char *msgid )
+{
+	return Trans_Pgettext_Internal( ctxt, msgid, trans_managergame );
 }
 
 extern "C" const char* Trans_GettextGamePlural( const char *msgid, const char *msgid_plural, int num )
 {
-	if( !enabled ) { return num == 1 ? msgid : msgid_plural; }
-	num = ( num + 1 ) & 3;
-	Q_strncpyz( gettextbuffer[ num ], trans_dictgame.translate_plural( msgid, msgid_plural, num ).c_str(), sizeof( gettextbuffer[ num ] ) );
-	return gettextbuffer[ num ];
+	return Trans_GettextPlural_Internal( msgid, msgid_plural, num, trans_managergame );
 }
