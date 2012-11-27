@@ -559,18 +559,6 @@ extern "C" {
 		uint32_t sizeBinormals;
 		uint32_t sizeNormals;
 
-		uint32_t strideXYZ;
-		uint32_t strideTexCoords;
-		uint32_t strideLightCoords;
-		uint32_t strideTangents;
-		uint32_t strideBinormals;
-		uint32_t strideNormals;
-		uint32_t strideColors;
-		uint32_t stridePaintColors;
-		uint32_t strideLightDirections;
-		uint32_t strideBoneIndexes;
-		uint32_t strideBoneWeights;
-
 		uint32_t attribs;
 	} VBO_t;
 
