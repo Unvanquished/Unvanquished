@@ -5058,4 +5058,6 @@ static qboolean G_admin_maprestarted( gentity_t *ent )
 	{
 		trap_Cvar_Set( "g_mapRestarted", "" );
 	}
+
+	return qtrue;
 }

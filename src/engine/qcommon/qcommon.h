@@ -357,9 +357,7 @@ typedef struct vm_s vm_t;
 typedef enum
 {
   VMI_NATIVE,
-#if USE_LLVM
   VMI_BYTECODE,
-#endif
   VMI_COMPILED
 } vmInterpret_t;
 

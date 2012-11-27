@@ -26,9 +26,9 @@
 
 #include "log_stream.hpp"
 #include "po_parser.hpp"
+#include "unix_file_system.hpp"
 
 namespace tinygettext {
-
 static bool has_suffix(const std::string& lhs, const std::string rhs)
 {
   if (lhs.length() < rhs.length())
@@ -44,7 +44,8 @@ DictionaryManager::DictionaryManager(const std::string& charset_) :
   use_fuzzy(true),
   current_language(),
   current_dict(0),
-  empty_dict()
+  empty_dict(),
+  filesystem(0)
 {
 }
 
@@ -73,7 +74,7 @@ DictionaryManager::get_dictionary()
 {
   if (current_dict)
   {
-    return *current_dict; 
+    return *current_dict;
   }
   else
   {
@@ -96,7 +97,7 @@ DictionaryManager::get_dictionary(const Language& language)
   //log_debug << "...normalized as \"" << lang << "\"" << std::endl;
   assert(language);
 
-  Dictionaries::iterator i = dictionaries.find(language); 
+  Dictionaries::iterator i = dictionaries.find(language);
   if (i != dictionaries.end())
   {
     return *i->second;
@@ -107,9 +108,63 @@ DictionaryManager::get_dictionary(const Language& language)
     Dictionary* dict = new Dictionary(charset);
 
     dictionaries[language] = dict;
+
+    for (SearchPath::reverse_iterator p = search_path.rbegin(); p != search_path.rend(); ++p)
+    {
+      std::vector<std::string> files = filesystem->open_directory(*p);
+
+      std::string best_filename;
+      int best_score = 0;
+
+      for(std::vector<std::string>::iterator filename = files.begin(); filename != files.end(); filename++)
+      {
+        // check if filename matches requested language
+        if (has_suffix(*filename, ".po"))
+        { // ignore anything that isn't a .po file
+          Language po_language = Language::from_env(filename->substr(0, filename->size()-3));
+
+          if (!po_language)
+          {
+            log_warning << *filename << ": warning: ignoring, unknown language" << std::endl;
+          }
+          else
+          {
+            int score = Language::match(language, po_language);
+
+            if (score > best_score)
+            {
+              best_score = score;
+              best_filename = *filename;
+            }
+          }
+        }
+      }
+
+      if (!best_filename.empty())
+      {
+        std::string pofile = *p + "/" + best_filename;
+        try
+        {
+          std::auto_ptr<std::istream> in = filesystem->open_file(pofile);
+          if (!in.get())
+          {
+            log_error << "error: failure opening: " << pofile << std::endl;
+          }
+          else
+          {
+            POParser::parse(pofile, *in, *dict);
+          }
+        }
+        catch(std::exception& e)
+        {
+          log_error << "error: failure parsing: " << pofile << std::endl;
+          log_error << e.what() << "" << std::endl;
+        }
+      }
+    }
+
     return *dict;
   }
-
 }
 
 std::set<Language>
@@ -117,9 +172,17 @@ DictionaryManager::get_languages()
 {
   std::set<Language> languages;
 
-  for (std::map<Language,Dictionary*>::iterator p = dictionaries.begin(); p != dictionaries.end(); ++p)
+  for (SearchPath::iterator p = search_path.begin(); p != search_path.end(); ++p)
   {
-    languages.insert(p->first);
+    std::vector<std::string> files = filesystem->open_directory(*p);
+
+    for(std::vector<std::string>::iterator file = files.begin(); file != files.end(); ++file)
+    {
+      if (has_suffix(*file, ".po"))
+      {
+        languages.insert(Language::from_env(file->substr(0, file->size()-3)));
+      }
+    }
   }
   return languages;
 }
@@ -167,14 +230,11 @@ DictionaryManager::add_directory(const std::string& pathname)
   search_path.push_back(pathname);
 }
 
-void 
-DictionaryManager::add_po(const std::string& name, std::istream& in, const Language& lang)
+void
+DictionaryManager::set_filesystem(std::auto_ptr<FileSystem> filesystem_)
 {
-  Dictionary *dict = new Dictionary(charset);
-  POParser::parse( name, in, *dict ); 
-  dictionaries[lang] = dict;
+  filesystem = filesystem_;
 }
-  
 } // namespace tinygettext
 
 /* EOF */

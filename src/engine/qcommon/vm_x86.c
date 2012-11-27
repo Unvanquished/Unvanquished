@@ -39,6 +39,8 @@ Maryland 20850 USA.
 #include "vm_local.h"
 #include "vm_traps.h"
 
+#ifndef NO_VM_COMPILED
+
 #ifdef _WIN32
 #include <windows.h>
 #else
@@ -2013,3 +2015,5 @@ int VM_CallCompiled( vm_t *vm, int *args )
 
 	return opStack[ opStackOfs ];
 }
+
+#endif // NO_VM_COMPILED

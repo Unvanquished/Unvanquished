@@ -407,6 +407,7 @@ static const struct
 	{ "itemact",       0,                       CG_CompleteItem  },
 	{ "itemdeact",     0,                       CG_CompleteItem  },
 	{ "itemtoggle",    0,                       CG_CompleteItem  },
+	{ "lcp",           CG_CenterPrint_f,        0                },
 	{ "m",             0,                       CG_CompleteName  },
 	{ "mt",            0,                       CG_CompleteName  },
 	{ "nextframe",     CG_TestModelNextFrame_f, 0                },

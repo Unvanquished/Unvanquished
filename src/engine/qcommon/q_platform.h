@@ -220,6 +220,9 @@ Maryland 20850 USA.
 
 #if defined __i386__
 #define ARCH_STRING "i386"
+#elif defined __x86_64__ && defined _ILP32
+#define ARCH_STRING "x32"
+#define NO_VM_COMPILED
 #elif defined __x86_64__
 #undef idx64
 #define idx64       1
