@@ -569,7 +569,11 @@ void R_InitVBOs( void )
 	Com_InitGrowList( &tr.vbos, 100 );
 	Com_InitGrowList( &tr.ibos, 100 );
 
-	dataSize = sizeof( vec4_t ) * SHADER_MAX_VERTEXES * 11;
+#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
+	dataSize = sizeof( vec4_t ) * SHADER_MAX_VERTEXES * 9;
+#else
+	dataSize = sizeof( vec4_t ) * SHADER_MAX_VERTEXES * 7;
+#endif
 
 	tess.vbo = R_CreateVBO( "tessVertexArray_VBO", NULL, dataSize, VBO_USAGE_DYNAMIC );
 	tess.vbo->ofsXYZ = 0;
