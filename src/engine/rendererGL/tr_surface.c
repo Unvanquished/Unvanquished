@@ -1971,19 +1971,16 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 		// convert bones back to matrices
 		for ( i = 0; i < model->numBones; i++ )
 		{
-			matrix_t m, m2;
 
 #if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 
 			if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
 			{
-				MatrixSetupScale( m,
+				MatrixSetupTransformFromQuat( boneMatrices[ i ], backEnd.currentEntity->e.skeleton.bones[ i ].rotation,
+				                              backEnd.currentEntity->e.skeleton.bones[ i ].origin );
+				MatrixMultiplyScale( boneMatrices[ i ],
 				                  backEnd.currentEntity->e.skeleton.scale[ 0 ],
 				                  backEnd.currentEntity->e.skeleton.scale[ 1 ], backEnd.currentEntity->e.skeleton.scale[ 2 ] );
-
-				MatrixSetupTransformFromQuat( m2, backEnd.currentEntity->e.skeleton.bones[ i ].rotation,
-				                              backEnd.currentEntity->e.skeleton.bones[ i ].origin );
-				MatrixMultiply( m2, m, boneMatrices[ i ] );
 			}
 			else
 #endif
@@ -2025,19 +2022,16 @@ static void Tess_SurfaceMD5( md5Surface_t *srf )
 		// convert bones back to matrices
 		for ( i = 0; i < model->numBones; i++ )
 		{
-			matrix_t m, m2; //, m3;
 
 #if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 
 			if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
 			{
-				MatrixSetupScale( m,
+				MatrixSetupTransformFromQuat( boneMatrices[ i ], backEnd.currentEntity->e.skeleton.bones[ i ].rotation,
+				                              backEnd.currentEntity->e.skeleton.bones[ i ].origin );
+				MatrixMultiplyScale( boneMatrices[ i ],
 				                  backEnd.currentEntity->e.skeleton.scale[ 0 ],
 				                  backEnd.currentEntity->e.skeleton.scale[ 1 ], backEnd.currentEntity->e.skeleton.scale[ 2 ] );
-
-				MatrixSetupTransformFromQuat( m2, backEnd.currentEntity->e.skeleton.bones[ i ].rotation,
-				                              backEnd.currentEntity->e.skeleton.bones[ i ].origin );
-				MatrixMultiply( m2, m, boneMatrices[ i ] );
 
 				MatrixMultiply2( boneMatrices[ i ], model->bones[ i ].inverseTransform );
 			}
@@ -2366,7 +2360,6 @@ static void Tess_SurfaceVBOMD5Mesh( srfVBOMD5Mesh_t *srf )
 {
 	int        i;
 	md5Model_t *model;
-	matrix_t   m, m2; //, m3;
 
 	GLimp_LogComment( "--- Tess_SurfaceVBOMD5Mesh ---\n" );
 
@@ -2392,38 +2385,15 @@ static void Tess_SurfaceVBOMD5Mesh( srfVBOMD5Mesh_t *srf )
 		tess.vboVertexSkinning = qtrue;
 		tess.numBoneMatrices = srf->numBoneRemap;
 
-		MatrixSetupScale( m,
-		                  backEnd.currentEntity->e.skeleton.scale[ 0 ],
-		                  backEnd.currentEntity->e.skeleton.scale[ 1 ], backEnd.currentEntity->e.skeleton.scale[ 2 ] );
-
-#if 0
-
-		// convert bones back to matrices
-		for ( i = 0; i < model->numBones; i++ )
-		{
-			MatrixSetupScale( m,
-			                  backEnd.currentEntity->e.skeleton.scale[ 0 ],
-			                  backEnd.currentEntity->e.skeleton.scale[ 1 ], backEnd.currentEntity->e.skeleton.scale[ 2 ] );
-
-			MatrixSetupTransformFromQuat( m2, backEnd.currentEntity->e.skeleton.bones[ i ].rotation,
-			                              backEnd.currentEntity->e.skeleton.bones[ i ].origin );
-
-			MatrixMultiply( m2, m, tess.boneMatrices[ i ] );
-			MatrixMultiply2( tess.boneMatrices[ i ], model->bones[ i ].inverseTransform );
-		}
-
-#else
-
 		for ( i = 0; i < srf->numBoneRemap; i++ )
 		{
-			MatrixSetupTransformFromQuat( m2, backEnd.currentEntity->e.skeleton.bones[ srf->boneRemapInverse[ i ] ].rotation,
+			MatrixSetupTransformFromQuat( tess.boneMatrices[ i ], backEnd.currentEntity->e.skeleton.bones[ srf->boneRemapInverse[ i ] ].rotation,
 			                              backEnd.currentEntity->e.skeleton.bones[ srf->boneRemapInverse[ i ] ].origin );
-
-			MatrixMultiply( m2, m, tess.boneMatrices[ i ] );
+			MatrixMultiplyScale( tess.boneMatrices[ i ],
+				                  backEnd.currentEntity->e.skeleton.scale[ 0 ],
+				                  backEnd.currentEntity->e.skeleton.scale[ 1 ], backEnd.currentEntity->e.skeleton.scale[ 2 ] );
 			MatrixMultiply2( tess.boneMatrices[ i ], model->bones[ srf->boneRemapInverse[ i ] ].inverseTransform );
 		}
-
-#endif
 	}
 	else
 #endif

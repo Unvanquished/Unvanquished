@@ -1792,7 +1792,8 @@ void CG_Buildable( centity_t *cent )
 	vec3_t        surfNormal, xNormal, mins, maxs;
 	vec3_t        refNormal = { 0.0f, 0.0f, 1.0f };
 	float         rotAngle;
-	team_t        team = BG_Buildable( es->modelindex )->team;
+	const buildableAttributes_t *buildable = BG_Buildable( es->modelindex );
+	team_t        team = buildable->team;
 	float         scale;
 	int           health;
 
@@ -1914,7 +1915,7 @@ void CG_Buildable( centity_t *cent )
 		qboolean  spawned = ( es->eFlags & EF_B_SPAWNED ) || ( team == TEAM_HUMANS ); // If buildable has spawned or is a human buildable, don't alter the size
 
 		Scale[0] = Scale[1] = Scale[2] = spawned ? scale :
-		       scale * (float) sin ( 0.5f * (cg.time - es->time) / BG_Buildable( es->modelindex )->buildTime * M_PI );
+		       scale * (float) sin ( 0.5f * (cg.time - es->time) / buildable->buildTime * M_PI );
 		ent.skeleton = bSkeleton;
 
 		if( es->modelindex == BA_H_MGTURRET )
@@ -2050,7 +2051,7 @@ void CG_Buildable( centity_t *cent )
 		weaponInfo_t *weapon = &cg_weapons[ es->weapon ];
 
 		if ( cg.time - cent->muzzleFlashTime > MUZZLE_FLASH_TIME ||
-		     BG_Buildable( es->modelindex )->turretProjType == WP_TESLAGEN )
+		     buildable->turretProjType == WP_TESLAGEN )
 		{
 			if ( weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 0 ] ||
 			     weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 1 ] ||
@@ -2106,4 +2107,6 @@ void CG_Buildable( centity_t *cent )
 
 	//smoke etc for damaged buildables
 	CG_BuildableParticleEffects( cent );
+
+	CG_RangeMarker( cent );
 }

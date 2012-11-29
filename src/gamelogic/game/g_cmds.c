@@ -1655,7 +1655,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		cmd[0] = '\0';
 
 		Q_strcat( cmd, sizeof( cmd ), "print \"" );
-	
+
 		for( voteId = 0; voteInfo[voteId].name; ++voteId )
 		{
 			if ( ( team == TEAM_NONE && voteInfo[voteId].type != V_TEAM   ) ||
@@ -2705,7 +2705,6 @@ fail_lastSpawn:
 
 	G_Damage( traceEnt, ent, ent, forward, tr.endpos,
 		  traceEnt->health, 0, MOD_DECONSTRUCT );
-	G_RemoveRangeMarkerFrom( traceEnt );
 	G_FreeEntity( traceEnt );
 }
 

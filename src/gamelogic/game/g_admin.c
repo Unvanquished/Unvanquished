@@ -1080,7 +1080,7 @@ static int admin_search( gentity_t *ent,
 			           next + offset ) );
 		}
 	}
-	
+
 	ADMBP( "\n\"" );
 	ADMBP_end();
 	return next + offset;
@@ -2002,9 +2002,9 @@ qboolean G_admin_readconfig( gentity_t *ent )
 qboolean G_admin_time( gentity_t *ent )
 {
 	qtime_t qt;
-		
+
 	trap_RealTime( &qt );
-	
+
 	ADMP( va( "%s %02i %02i %02i", QQ( N_("^3time: ^7local time is $1$:$2$:$3$\n") ),
 	          qt.tm_hour, qt.tm_min, qt.tm_sec ) );
 	return qtrue;
@@ -2577,7 +2577,7 @@ qboolean G_admin_ban( gentity_t *ent )
 	        "duration: $3$$4t$, reason: $5t$\n") ),
 	        Quote( match->name[ match->nameOffset ] ),
 	        G_quoted_admin_name( ent ),
-	        Quote( time ), duration, 
+	        Quote( time ), duration,
 	        ( *reason ) ? Quote( reason ) : QQ( N_( "banned by admin" ) ) ) );
 
 	admin_log( va( "%d (%s) \"%s" S_COLOR_WHITE "\": \"%s" S_COLOR_WHITE "\"",
@@ -4112,7 +4112,7 @@ qboolean G_admin_restart( gentity_t *ent )
 
 		trap_Cvar_Set( "g_mapRestarted", "yks" );
 	}
-	else if ( trap_Argc() > 1 )
+	else if ( !layout[ 0 ] && trap_Argc() > 1 )
 	{
 		ADMP( va( "%s %s", QQ( N_( "^3restart: ^7unrecognised option '$1$'\n") ), Quote( teampref ) ) );
 		return qfalse;

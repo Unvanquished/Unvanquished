@@ -1117,11 +1117,39 @@ void CG_RangeMarker( centity_t *cent )
 {
 	rangeMarker_t rmType;
 	float    range;
-	vec3_t   rgb;
+	vec4_t   rgba;
 
-	if ( CG_GetBuildableRangeMarkerProperties( cent->currentState.modelindex, &rmType, &range, rgb ) )
+	if ( CG_GetBuildableRangeMarkerProperties( cent->currentState.modelindex, &rmType, &range, rgba ) )
 	{
-		CG_DrawRangeMarker( rmType, cent->lerpOrigin, range, cent->lerpAngles, rgb );
+		playerState_t *ps = &cg.predictedPlayerState;
+		team_t team = ps->stats[ STAT_TEAM ];
+		qboolean weaponDisplays, wantsToSee;
+		float dist, maxDist = MAX( HELMET_RANGE, ALIENSENSE_RANGE );
+
+		if ( team == TEAM_HUMANS ) {
+			weaponDisplays = BG_InventoryContainsWeapon( WP_HBUILD, ps->stats );
+			wantsToSee = ( BG_Buildable( cent->currentState.modelindex )->team == TEAM_HUMANS );
+		} else if ( team == TEAM_ALIENS ) {
+			weaponDisplays = ps->weapon == WP_ABUILD ||
+			                 ps->weapon == WP_ABUILD2;
+			wantsToSee = ( BG_Buildable( cent->currentState.modelindex )->team == TEAM_ALIENS );
+		} else {
+			weaponDisplays = qtrue;
+			wantsToSee = !!(cg_buildableRangeMarkerMask.integer & (1 << BA_NONE));
+		}
+
+		wantsToSee &= !!(cg_buildableRangeMarkerMask.integer & (1 << rmType));
+
+		dist = Distance( cent->lerpOrigin, cg.refdef.vieworg );
+
+		if( weaponDisplays && wantsToSee && dist <= maxDist ) {
+			if( dist < 0.9f * maxDist ) {
+				rgba[3] = 1.0f;
+			} else {
+				rgba[3] = 10.0f - 10.0f * dist / maxDist;
+			}
+			CG_DrawRangeMarker( rmType, cent->lerpOrigin, range, cent->lerpAngles, rgba );
+		}
 	}
 }
 
@@ -1167,6 +1195,7 @@ static void CG_CEntityPVSEnter( centity_t *cent )
 	//when a buildable enters the PVS
 	cent->buildableAnim = cent->lerpFrame.animationNumber = BANIM_NONE;
 	cent->oldBuildableAnim = es->legsAnim;
+	cent->radarVisibility = 0.0f;
 }
 
 /*
@@ -1247,10 +1276,6 @@ static void CG_AddCEntity( centity_t *cent )
 
 		case ET_BUILDABLE:
 			CG_Buildable( cent );
-			break;
-
-		case ET_RANGE_MARKER:
-			CG_RangeMarker( cent );
 			break;
 
 		case ET_MISSILE:

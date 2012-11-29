@@ -28,6 +28,91 @@ static entityPos_t entityPositions;
 
 /*
 =============
+CG_UpdateRadarVisibility
+
+Update radar visibility of all entities
+=============
+*/
+static void CG_UpdateRadarVisibility( void ) {
+	centity_t *cent = NULL;
+	int       i;
+	int       msec;
+
+	msec = cg.time - cg.oldTime;
+
+	for ( i = 0; i < cg.snap->numEntities; i++ )
+	{
+		cent = &cg_entities[ cg.snap->entities[ i ].number ];
+
+		if ( cent->currentState.eType == ET_BUILDABLE &&
+		     !( cent->currentState.eFlags & EF_DEAD ) ) {
+			const buildableAttributes_t *bld = BG_Buildable( cent->currentState.modelindex );
+			float fadeOut = bld->radarFadeOut;
+
+			if( fadeOut <= 0.0f ||
+			    cent->currentState.modelindex2 == cg.predictedPlayerState.stats[ STAT_TEAM ] ||
+			    cent->buildableAnim != bld->idleAnim ) {
+				cent->radarVisibility = 1.0f;
+			} else {
+				cent->radarVisibility = MAX( cent->radarVisibility - fadeOut * msec, 0.0f );
+			}
+		} else if ( cent->currentState.eType == ET_PLAYER ) {
+			const classAttributes_t *cls = BG_Class( (cent->currentState.misc >> 8) & 0xff );
+			float fadeOut = cls->radarFadeOut;
+			clientInfo_t *ci = &cgs.clientinfo[ cent->currentState.clientNum ];
+
+			if ( ci->nonsegmented ) {
+				switch( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT) {
+				case NSPA_STAND:
+				case NSPA_DEATH1:
+				case NSPA_DEAD1:
+				case NSPA_DEATH2:
+				case NSPA_DEAD2:
+				case NSPA_DEATH3:
+				case NSPA_DEAD3:
+					cent->radarVisibility = MAX( cent->radarVisibility - fadeOut * msec, 0.0f );
+					break;
+				default:
+					cent->radarVisibility = 1.0f;
+					break;
+				}
+			} else {
+				switch( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT) {
+				case LEGS_IDLE:
+				case LEGS_IDLECR:
+				case BOTH_DEATH1:
+				case BOTH_DEAD1:
+				case BOTH_DEATH2:
+				case BOTH_DEAD2:
+				case BOTH_DEATH3:
+				case BOTH_DEAD3:
+					switch( cent->currentState.torsoAnim & ~ANIM_TOGGLEBIT ) {
+					case BOTH_DEATH1:
+					case BOTH_DEAD1:
+					case BOTH_DEATH2:
+					case BOTH_DEAD2:
+					case BOTH_DEATH3:
+					case BOTH_DEAD3:
+					case TORSO_STAND:
+					case TORSO_STAND_BLASTER:
+						cent->radarVisibility = MAX( cent->radarVisibility - fadeOut * msec, 0.0f );
+						break;
+					default:
+						cent->radarVisibility = 1.0f;
+						break;
+					}
+					break;
+				default:
+					cent->radarVisibility = 1.0f;
+					break;
+				}
+			}
+		}
+	}
+}
+
+/*
+=============
 CG_UpdateEntityPositions
 
 Update this client's perception of entity positions
@@ -37,6 +122,8 @@ void CG_UpdateEntityPositions( void )
 {
 	centity_t *cent = NULL;
 	int       i;
+
+	CG_UpdateRadarVisibility();
 
 	if ( cg.predictedPlayerState.stats[ STAT_TEAM ] == TEAM_HUMANS )
 	{
@@ -59,6 +146,9 @@ void CG_UpdateEntityPositions( void )
 	{
 		cent = &cg_entities[ cg.snap->entities[ i ].number ];
 
+		if( !trap_R_inPVVS( entityPositions.origin, cent->lerpOrigin ) )
+			continue;
+
 		if ( cent->currentState.eType == ET_BUILDABLE &&
 		     !( cent->currentState.eFlags & EF_DEAD ) )
 		{
@@ -67,8 +157,8 @@ void CG_UpdateEntityPositions( void )
 			{
 				VectorCopy( cent->lerpOrigin, entityPositions.alienBuildablePos[
 				              entityPositions.numAlienBuildables ] );
-				entityPositions.alienBuildableTimes[
-				  entityPositions.numAlienBuildables ] = cent->miscTime;
+
+				entityPositions.alienBuildableIntensity[ entityPositions.numAlienBuildables ] = cent->radarVisibility;
 
 				if ( entityPositions.numAlienBuildables < MAX_GENTITIES )
 				{
@@ -80,6 +170,8 @@ void CG_UpdateEntityPositions( void )
 				VectorCopy( cent->lerpOrigin, entityPositions.humanBuildablePos[
 				              entityPositions.numHumanBuildables ] );
 
+				entityPositions.humanBuildableIntensity[ entityPositions.numHumanBuildables ] = cent->radarVisibility;
+
 				if ( entityPositions.numHumanBuildables < MAX_GENTITIES )
 				{
 					entityPositions.numHumanBuildables++;
@@ -89,13 +181,12 @@ void CG_UpdateEntityPositions( void )
 		else if ( cent->currentState.eType == ET_PLAYER )
 		{
 			int team = cent->currentState.misc & 0x00FF;
-			float fadeout = cent->currentState.constantLight * (1.0f / RADAR_FADEOUT_TIME);
 
 			if ( team == TEAM_ALIENS )
 			{
 				VectorCopy( cent->lerpOrigin, entityPositions.alienClientPos[
 				              entityPositions.numAlienClients ] );
-				entityPositions.alienClientIntensity[ entityPositions.numAlienClients ] = fadeout;
+				entityPositions.alienClientIntensity[ entityPositions.numAlienClients ] = cent->radarVisibility;
 
 				if ( entityPositions.numAlienClients < MAX_CLIENTS )
 				{
@@ -106,7 +197,7 @@ void CG_UpdateEntityPositions( void )
 			{
 				VectorCopy( cent->lerpOrigin, entityPositions.humanClientPos[
 				              entityPositions.numHumanClients ] );
-				entityPositions.humanClientIntensity[ entityPositions.numHumanClients ] = fadeout;
+				entityPositions.humanClientIntensity[ entityPositions.numHumanClients ] = cent->radarVisibility;
 
 				if ( entityPositions.numHumanClients < MAX_CLIENTS )
 				{
@@ -261,6 +352,7 @@ void CG_AlienSense( rectDef_t *rect )
 		if ( length < ALIENSENSE_RANGE )
 		{
 			color_human[3] = 1.f - length / ALIENSENSE_RANGE;
+			color_human[3] *= entityPositions.humanBuildableIntensity[ i ];
 			CG_DrawDir( rect, relOrigin, color_human, cgs.media.scannerBlipBldgShader );
 		}
 	}
@@ -290,6 +382,7 @@ void CG_AlienSense( rectDef_t *rect )
 		if ( length < ALIENSENSE_RANGE )
 		{
 			color_alien[3] = 1.f - length / ALIENSENSE_RANGE;
+			color_alien[3] *= entityPositions.alienBuildableIntensity[ i ];
 			CG_DrawDir( rect, relOrigin, color_alien, cgs.media.scannerBlipBldgShader );
 		}
 	}
@@ -305,6 +398,7 @@ void CG_AlienSense( rectDef_t *rect )
 		if ( length < ALIENSENSE_RANGE )
 		{
 			color_alien[3] = 1.f - length / ALIENSENSE_RANGE;
+			color_alien[3] *= entityPositions.alienClientIntensity[ i ];
 			CG_DrawDir( rect, relOrigin, color_alien, cgs.media.scannerBlipShader );
 		}
 	}
@@ -335,6 +429,7 @@ void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 
 		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] < 0 ) )
 		{
+			color_human[3] = color[3] * entityPositions.humanBuildableIntensity[ i ];
 			CG_DrawBlips( rect, relOrigin, color_human, cgs.media.scannerBlipBldgShader );
 		}
 	}
@@ -349,6 +444,7 @@ void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 
 		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] < 0 ) )
 		{
+			color_alien[3] = color[3] * entityPositions.alienBuildableIntensity[ i ];
 			CG_DrawBlips( rect, relOrigin, color_alien, cgs.media.scannerBlipBldgShader );
 		}
 	}
@@ -388,8 +484,6 @@ void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 	}
 
 	//draw human buildables above scanner plane
-	color_human[3] *= 1.5f;
-
 	for ( i = 0; i < entityPositions.numHumanBuildables; i++ )
 	{
 		VectorClear( relOrigin );
@@ -397,13 +491,12 @@ void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 
 		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] > 0 ) )
 		{
+			color_human[3] = 1.5f * color[3] * entityPositions.humanBuildableIntensity[ i ];
 			CG_DrawBlips( rect, relOrigin, color_human, cgs.media.scannerBlipBldgShader );
 		}
 	}
 
 	//draw alien buildables above scanner plane
-	color_alien[3] *= 1.5f;
-
 	for ( i = 0; i < entityPositions.numAlienBuildables; i++ )
 	{
 		VectorClear( relOrigin );
@@ -411,6 +504,7 @@ void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 
 		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] > 0 ) )
 		{
+			color_alien[3] = 1.5f * color[3] * entityPositions.alienBuildableIntensity[ i ];
 			CG_DrawBlips( rect, relOrigin, color_alien, cgs.media.scannerBlipBldgShader );
 		}
 	}
@@ -423,7 +517,7 @@ void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 
 		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] > 0 ) )
 		{
-			color_human[3] = color[3] * 1.5f * entityPositions.humanClientIntensity[ i ];
+			color_human[3] = 1.5f * color[3] * entityPositions.humanClientIntensity[ i ];
 			CG_DrawBlips( rect, relOrigin, color_human, cgs.media.scannerBlipShader );
 		}
 	}
@@ -436,7 +530,7 @@ void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 
 		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] > 0 ) )
 		{
-			color_alien[3] = color[3] * 1.5f * entityPositions.alienClientIntensity[ i ];
+			color_alien[3] = 1.5f * color[3] * entityPositions.alienClientIntensity[ i ];
 			CG_DrawBlips( rect, relOrigin, color_alien, cgs.media.scannerBlipShader );
 		}
 	}
