@@ -3280,6 +3280,7 @@ extern "C" {
 #endif
 		int                clusterBytes;
 		const byte         *vis; // may be passed in by CM_LoadMap to save space
+		byte       *visvis; // clusters visible from visible clusters
 		byte               *novis; // clusterBytes of 0xff
 
 #if defined( USE_BSP_CLUSTERSURFACE_MERGING )
@@ -4767,6 +4768,7 @@ extern "C" {
 	void     R_AddBSPModelSurfaces( trRefEntity_t *e );
 	void     R_AddWorldSurfaces( void );
 	qboolean R_inPVS( const vec3_t p1, const vec3_t p2 );
+	qboolean R_inPVVS( const vec3_t p1, const vec3_t p2 );
 
 	void     R_AddWorldInteractions( trRefLight_t *light );
 	void     R_AddPrecachedWorldInteractions( trRefLight_t *light );

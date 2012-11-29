@@ -156,6 +156,7 @@ typedef struct
 	void ( *SetGlobalFog )( qboolean restore, int duration, float r, float g, float b, float depthForOpaque );
 
 	qboolean( *inPVS )( const vec3_t p1, const vec3_t p2 );
+	qboolean( *inPVVS )( const vec3_t p1, const vec3_t p2 );
 
 	void ( *purgeCache )( void );
 

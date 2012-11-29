@@ -166,11 +166,6 @@ void G_Physics( gentity_t *ent, int msec )
 
 	if ( contents & CONTENTS_NODROP )
 	{
-		if ( ent->s.eType == ET_BUILDABLE )
-		{
-			G_RemoveRangeMarkerFrom( ent );
-		}
-
 		G_FreeEntity( ent );
 		return;
 	}

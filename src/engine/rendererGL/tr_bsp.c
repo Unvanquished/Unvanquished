@@ -1294,7 +1294,7 @@ R_LoadVisibility
 */
 static void R_LoadVisibility( lump_t *l )
 {
-	int  len;
+	int  len, i, j, k;
 	byte *buf;
 
 	ri.Printf( PRINT_DEVELOPER, "...loading visibility\n" );
@@ -1328,6 +1328,28 @@ static void R_LoadVisibility( lump_t *l )
 		dest = ri.Hunk_Alloc( len - 8, h_low );
 		Com_Memcpy( dest, buf + 8, len - 8 );
 		s_worldData.vis = dest;
+	}
+
+	// initialize visvis := vis
+	len = s_worldData.numClusters * s_worldData.clusterBytes;
+	s_worldData.visvis = ri.Hunk_Alloc( len, h_low );
+	memcpy( s_worldData.visvis, s_worldData.vis, len );
+	for(i = 0; i < s_worldData.numClusters; i++ ) {
+		const byte *src, *src2;
+		byte *dest;
+
+		src  = s_worldData.vis + i * s_worldData.clusterBytes;
+		dest = s_worldData.visvis + i * s_worldData.clusterBytes;
+
+		for( j = 0; j < s_worldData.numClusters; j++ ) {
+			if( !(src[ j >> 3 ] & (1 << ( j & 7 ) ) ) )
+				continue;
+
+			src2 = s_worldData.vis + j * s_worldData.clusterBytes;
+
+			for( k = 0; k < s_worldData.clusterBytes; k++ )
+				dest[ k ] |= src2[ k ];
+		}
 	}
 }
 

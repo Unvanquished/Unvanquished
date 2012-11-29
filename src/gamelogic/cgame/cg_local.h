@@ -668,6 +668,8 @@ typedef struct centity_s
 	trailSystem_t         *muzzleTS; //used for the tesla and reactor
 	int                   muzzleTSDeathTime;
 
+	float                 radarVisibility;
+
 	qboolean              valid;
 	qboolean              oldValid;
 	struct centity_s      *nextLocation;
@@ -887,10 +889,11 @@ typedef struct
 typedef struct
 {
 	vec3_t alienBuildablePos[ MAX_GENTITIES ];
-	int    alienBuildableTimes[ MAX_GENTITIES ];
+	float  alienBuildableIntensity[ MAX_GENTITIES ];
 	int    numAlienBuildables;
 
 	vec3_t humanBuildablePos[ MAX_GENTITIES ];
+	float  humanBuildableIntensity[ MAX_GENTITIES ];
 	int    numHumanBuildables;
 
 	vec3_t alienClientPos[ MAX_CLIENTS ];
@@ -1519,6 +1522,7 @@ extern  vmCvar_t            cg_rangeMarkerLineThickness;
 extern  vmCvar_t            cg_rangeMarkerForBlueprint;
 extern  vmCvar_t            cg_rangeMarkerBuildableTypes;
 extern  vmCvar_t            cg_rangeMarkerWhenSpectating;
+extern  vmCvar_t            cg_buildableRangeMarkerMask;
 extern  vmCvar_t            cg_binaryShaderScreenScale;
 
 extern  vmCvar_t            cg_painBlendUpRate;
@@ -1633,7 +1637,7 @@ char     CG_GetColorCharForHealth( int clientnum );
 void     CG_DrawSphere( const vec3_t center, float radius, int customShader, const float *shaderRGBA );
 void     CG_DrawSphericalCone( const vec3_t tip, const vec3_t rotation, float radius,
                                qboolean a240, int customShader, const float *shaderRGBA );
-void     CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range, const vec3_t angles, const vec3_t rgb );
+void     CG_DrawRangeMarker( rangeMarker_t rmType, const vec3_t origin, float range, const vec3_t angles, vec4_t rgba );
 
 //
 // cg_draw.c

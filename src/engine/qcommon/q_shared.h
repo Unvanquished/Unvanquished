@@ -2040,7 +2040,6 @@ char *Q_UTF8Unstore( int e );
 		ET_PLAYER,
 		ET_ITEM,
 
-		ET_RANGE_MARKER,
 		ET_BUILDABLE,       // buildable type
 
 		ET_LOCATION,

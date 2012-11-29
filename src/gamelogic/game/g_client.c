@@ -1179,9 +1179,6 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 		client->pers.disableBlueprintErrors = qfalse;
 	}
 
-	client->pers.buildableRangeMarkerMask =
-	  atoi( Info_ValueForKey( userinfo, "cg_buildableRangeMarkerMask" ) );
-
 	// teamInfo
 	s = Info_ValueForKey( userinfo, "teamoverlay" );
 

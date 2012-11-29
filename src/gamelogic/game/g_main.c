@@ -2866,7 +2866,6 @@ void G_RunFrame( int levelTime )
 	G_SpawnClients( TEAM_HUMANS );
 	G_CalculateAvgPlayers();
 	G_UpdateZaps( msec );
-	G_UpdateBuildableRangeMarkers();
 
 	// see if it is time to end the level
 	CheckExitRules();
