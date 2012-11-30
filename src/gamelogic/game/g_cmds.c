@@ -4110,6 +4110,160 @@ void Cmd_MapLog_f( gentity_t *ent )
 
 /*
 =================
+Cmd_Share_f
+=================
+*/
+void Cmd_Share_f( gentity_t *ent )
+{
+	int      i, teamCount = 0;
+	float    creds, maxCreds;
+	float    totalShared = 0, shared[ MAX_CLIENTS ] = {};
+	qboolean teamMap[ MAX_CLIENTS ] = {};
+	qboolean noSpawns, done = qfalse;
+	char     arg[ MAX_TOKEN_CHARS ];
+	team_t   team;
+
+	if( !ent || !ent->client || ( ent->client->pers.teamSelection == TEAM_NONE ) )
+	{
+		return;
+	}
+
+	team = ent->client->pers.teamSelection;
+	trap_Argv( 1, arg, sizeof( arg ) );
+
+	noSpawns = ( team == TEAM_HUMANS ? level.numHumanSpawns : level.numAlienSpawns ) == 0;
+
+	for ( i = 0; i < level.maxclients; ++i )
+	{
+		if ( i != ent - g_entities && g_entities[ i ].client && g_entities[ i ].client->pers.teamSelection == team )
+		{
+			if ( !noSpawns ||
+			     !( g_entities[ i ].client->ps.stats[ STAT_HEALTH ] <= 0 ||
+			        g_entities[ i ].client->sess.spectatorState != SPECTATOR_NOT ) )
+			{
+				teamMap[ i ] = qtrue;
+				++teamCount;
+			}
+		}
+	}
+
+	if ( teamCount == 0 )
+	{
+		trap_SendServerCommand( ent - g_entities, "print_tr " QQ( N_( "share: no teammates with whom to share\n" ) ) );
+		return;
+	}
+
+	if ( !Q_stricmp( arg, "and" ) )
+	{
+		trap_Argv( 2, arg, sizeof( arg ) );
+		if ( !Q_stricmp( arg, "enjoy" ) )
+		{
+			trap_SendServerCommand( ent - g_entities, "print \"We are proud to say that ^2this game is ^3not^2 sponsored by the ^5Sirius Cybernetics Corporation^2.\n\"" );
+			return;
+		}
+		*arg = 0;
+	}
+
+	// credit count from parameter
+	creds = atof( arg );
+
+	if( creds <= 0 )
+	{
+		// default credit count
+		if( team == TEAM_HUMANS )
+		{
+			creds = FREEKILL_HUMAN;
+		}
+		else if( team == TEAM_ALIENS )
+		{
+			creds = FREEKILL_ALIEN;
+		}
+	}
+	else if ( team == TEAM_ALIENS )
+	{
+		creds *= ALIEN_CREDITS_PER_KILL;
+	}
+
+	maxCreds = team == TEAM_HUMANS ? HUMAN_MAX_CREDITS : ALIEN_MAX_CREDITS;
+
+	// limit to what the player really has
+	if( creds > ent->client->ps.persistant[ PERS_CREDIT ] )
+	{
+		creds = ent->client->ps.persistant[ PERS_CREDIT ];
+	}
+
+	if( creds <= 0 )
+	{
+		trap_SendServerCommand( ent - g_entities,
+		                        team == TEAM_HUMANS
+		                          ? "print_tr " QQ( N_( "share: no credits to transfer\n" ) )
+		                          : "print_tr " QQ( N_( "share: no frags to transfer\n" ) ) );
+		return;
+	}
+
+	// Share out the credits among team-mates.
+	while ( !done )
+	{
+							float slice = ( creds - totalShared ) / (float) teamCount;
+
+		if ( slice < 1 ) break; // not worth it
+
+		done = qtrue;
+
+		for ( i = 0; i < MAX_CLIENTS; ++i )
+		{
+			float diff;
+
+			if ( !teamMap[ i ] ) continue; // not sharing with this one
+
+			diff = maxCreds - level.clients[ i ].ps.persistant[ PERS_CREDIT ];
+
+			if ( diff <= 0 ) continue; // already at max credit
+
+			// sharing with this one...
+			done = qfalse;
+
+			if ( diff > slice ) diff = slice; // share at most one fair slice of the pie
+
+			shared[ i ] += diff;
+			totalShared += diff;
+			ent->client->ps.persistant[ PERS_CREDIT ] -= diff;
+			level.clients[ i ].ps.persistant[ PERS_CREDIT ] += diff;
+		}
+	}
+
+	// FIXME: plural
+	if ( team == TEAM_ALIENS )
+	{
+		creds /= ALIEN_CREDITS_PER_KILL;
+		trap_SendServerCommand( ent - g_entities, va( "print_tr " QQ( N_( "share: transferring $1$ frags to teammates.\n" ) ) " %g", totalShared / ALIEN_CREDITS_PER_KILL ) );
+
+		for ( i = 0; i < level.maxclients; ++i )
+		{
+			if ( shared[ i ] )
+			{
+				trap_SendServerCommand( i, va( "print_tr " QQ( N_( "You have received $1$ frags from $2$" ) ) " %g %s",
+				                               shared[ i ] / ALIEN_CREDITS_PER_KILL, Quote( ent->client->pers.netname ) ) );
+			}
+		}
+	}
+	else
+	{
+		trap_SendServerCommand( ent - g_entities, va( "print_tr " QQ( N_( "share: transferring $1$ credits to teammates.\n" ) ) " %g", totalShared ) );
+
+		for ( i = 0; i < level.maxclients; ++i )
+		{
+			if ( shared[ i ] )
+			{
+				trap_SendServerCommand( i, va( "print_tr " QQ( N_( "You have received $1$ credits from $2$" ) ) " %g %s",
+				                               shared[ i ], Quote( ent->client->pers.netname ) ) );
+			}
+		}
+	}
+}
+
+/*
+=================
 Cmd_Donate_f
 =================
 */
@@ -4432,6 +4586,7 @@ static const commands_t cmds[] =
 	{ "score",           CMD_INTERMISSION,                    ScoreboardMessage      },
 	{ "sell",            CMD_HUMAN | CMD_ALIVE,               Cmd_Sell_f             },
 	{ "setviewpos",      CMD_CHEAT_TEAM,                      Cmd_SetViewpos_f       },
+	{ "share",           CMD_TEAM,                            Cmd_Share_f            },
 	{ "team",            0,                                   Cmd_Team_f             },
 	{ "teamvote",        CMD_TEAM | CMD_INTERMISSION,         Cmd_Vote_f             },
 	{ "test",            CMD_CHEAT,                           Cmd_Test_f             },
