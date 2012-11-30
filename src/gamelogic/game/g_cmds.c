@@ -4110,15 +4110,16 @@ void Cmd_MapLog_f( gentity_t *ent )
 
 /*
 =================
-Cmd_Share_f
+Cmd_Donate_f
 =================
 */
-void Cmd_Share_f( gentity_t *ent )
+void Cmd_Donate_f( gentity_t *ent )
 {
-	int    i, clientNum = 0, creds = 0;
+	int    i, clientNum = 0;
+	float  creds;
 	int    clientNums[ MAX_CLIENTS ] = { -1 };
-	char   arg1[ MAX_STRING_TOKENS ];
-	char   arg2[ MAX_STRING_TOKENS ];
+	char   arg1[ MAX_TOKEN_CHARS ];
+	char   arg2[ MAX_TOKEN_CHARS ];
 	team_t team;
 
 	if( !ent || !ent->client || ( ent->client->pers.teamSelection == TEAM_NONE ) )
@@ -4132,21 +4133,11 @@ void Cmd_Share_f( gentity_t *ent )
 
 	if( arg1[0] ) // target player name is in arg1
 	{
-		//check arg1 is a number
-		for( i = 0; arg1[ i ]; i++ )
+		if ( !Q_stricmp( arg1, "console" ) )
 		{
-			if( arg1[ i ] < '0' || arg1[ i ] > '9' )
-			{
-				clientNum = -1;
-				break;
-			}
+			clientNum = level.maxclients;
 		}
-
-		if( clientNum >= 0 )
-		{
-			clientNum = atoi( arg1 );
-		}
-		else if( G_ClientNumbersFromString( arg1, clientNums, ARRAY_LEN( clientNums ) ) == 1 )
+		else if ( G_ClientNumbersFromString( arg1, clientNums, ARRAY_LEN( clientNums ) ) == 1 )
 		{
 			// there was one partial name match name was clientNum
 			clientNum = clientNums[ 0 ];
@@ -4160,7 +4151,7 @@ void Cmd_Share_f( gentity_t *ent )
 
 			if( clientNum == -1 )
 			{
-				trap_SendServerCommand( ent - g_entities, va( "print \"share: %s\n\"", err ) );
+				trap_SendServerCommand( ent - g_entities, va( "print_tr " QQ( "donate: $1$\n" ) " %s", Quote( err ) ) );
 				return;
 			}
 		}
@@ -4184,19 +4175,30 @@ void Cmd_Share_f( gentity_t *ent )
 		}
 		else
 		{
-			trap_SendServerCommand( ent - g_entities, "print \"share: no player to transfer credits to found\n\"" );
+			trap_SendServerCommand( ent - g_entities,
+			                        team == TEAM_HUMANS
+			                          ? "print_tr " QQ( N_( "donate: no player found to whom to transfer credits\n" ) )
+			                          : "print_tr " QQ( N_( "donate: no player found to whom to transfer frags\n" ) ) );
 			return;
 		}
 	}
 
 	// verify target player team
-	if( clientNum < 0 || clientNum >= level.maxclients || level.clients[ clientNum ].pers.teamSelection != team )
+	if( clientNum < 0 || clientNum > level.maxclients || ( clientNum != level.maxclients && level.clients[ clientNum ].pers.teamSelection != team ) )
 	{
-		trap_SendServerCommand( ent - g_entities, "print \"share: that player is not on your team\n\"" );
+		trap_SendServerCommand( ent - g_entities, "print_tr " QQ( N_( "donate: that player is not on your team\n" ) ) );
 		return;
 	}
 
-	if( !arg1[0] || !arg2[0] )
+	if ( clientNum == ent - g_entities )
+	{
+		trap_SendServerCommand( ent - g_entities, "print_tr " QQ( N_( "donate: that's more credit than you deserve\n" ) ) );
+	}
+
+	// credit count from parameter
+	creds = atof( arg2 );
+
+	if( creds <= 0 || !arg1[0] || !arg2[0] )
 	{
 		// default credit count
 		if( team == TEAM_HUMANS )
@@ -4208,20 +4210,9 @@ void Cmd_Share_f( gentity_t *ent )
 			creds = FREEKILL_ALIEN;
 		}
 	}
-	else
+	else if ( team == TEAM_ALIENS )
 	{
-		//check arg2 is a number
-		for( i = 0; arg2[ i ]; i++ )
-		{
-			if( arg2[ i ] < '0' || arg2[ i ] > '9' )
-			{
-				trap_SendServerCommand( ent-g_entities,	"print \"Usage: share (name|slot#) (amount)\n\"" );
-				break;
-			}
-		}
-
-		// credit count from parameter
-		creds = atoi( arg2 );
+		creds *= ALIEN_CREDITS_PER_KILL;
 	}
 
 	// transfer only credits the player really has
@@ -4230,29 +4221,52 @@ void Cmd_Share_f( gentity_t *ent )
 		creds = ent->client->ps.persistant[ PERS_CREDIT ];
 	}
 
+	if ( clientNum == level.maxclients )
+	{
+		ent->client->ps.persistant[ PERS_CREDIT ] -= creds;
+		trap_SendServerCommand( ent - g_entities, "print \"Your donation is much appreciated!\n\"" );
+		return;
+	}
+
 	// allow transfers only up to the credit/evo limit
 	if( team == TEAM_HUMANS && creds > HUMAN_MAX_CREDITS - level.clients[ clientNum ].ps.persistant[ PERS_CREDIT ] )
 	{
 		creds = HUMAN_MAX_CREDITS - level.clients[ clientNum ].ps.persistant[ PERS_CREDIT ];
 	}
-	else if( team == TEAM_ALIENS && creds > ALIEN_MAX_FRAGS - level.clients[ clientNum ].ps.persistant[ PERS_CREDIT ] )
+	else if( team == TEAM_ALIENS && creds > ALIEN_MAX_CREDITS - level.clients[ clientNum ].ps.persistant[ PERS_CREDIT ] )
 	{
-		creds = ALIEN_MAX_FRAGS - level.clients[ clientNum ].ps.persistant[ PERS_CREDIT ];
+		creds = ALIEN_MAX_CREDITS - level.clients[ clientNum ].ps.persistant[ PERS_CREDIT ];
 	}
 
 	if( creds <= 0 )
 	{
-		trap_SendServerCommand( ent-g_entities,	"print \"share: no credits to transfer\n\"" );
+		trap_SendServerCommand( ent - g_entities,
+		                        team == TEAM_HUMANS
+		                          ? "print_tr " QQ( N_( "donate: no credits to transfer\n" ) )
+		                          : "print_tr " QQ( N_( "donate: no frags to transfer\n" ) ) );
 		return;
 	}
 
 	// transfer credits
 	ent->client->ps.persistant[ PERS_CREDIT ] -= creds;
-	trap_SendServerCommand( ent-g_entities,	va( "print \"share: transferring %d credits to %s.\n\"",
-	                                            creds, level.clients[ clientNum ].pers.netname ) );
 	level.clients[ clientNum ].ps.persistant[ PERS_CREDIT ] += creds;
-	trap_SendServerCommand( clientNum, va( "print \"You have received %d credits from %s\"",
-	                                       creds, ent->client->pers.netname ) );
+
+	// FIXME: plural
+	if ( ent->client->pers.teamSelection == TEAM_ALIENS )
+	{
+		creds /= ALIEN_CREDITS_PER_KILL;
+		trap_SendServerCommand( ent - g_entities, va( "print_tr " QQ( N_( "donate: transferring $1$ frags to $2$.\n" ) ) " %g %s",
+		                                              creds, Quote( level.clients[ clientNum ].pers.netname ) ) );
+		trap_SendServerCommand( clientNum, va( "print_tr " QQ( N_( "You have received $1$ frags from $2$" ) ) " %g %s",
+		                                       creds, Quote( ent->client->pers.netname ) ) );
+	}
+	else
+	{
+		trap_SendServerCommand( ent - g_entities, va( "print_tr " QQ( N_( "donate: transferring $1$ credits to $2$.\n" ) ) " %g %s",
+		                                              creds, Quote( level.clients[ clientNum ].pers.netname ) ) );
+		trap_SendServerCommand( clientNum, va( "print_tr " QQ( N_( "You have received $1$ credits from $2$" ) ) " %g %s",
+		                                       creds, Quote( ent->client->pers.netname ) ) );
+	}
 }
 
 /*
@@ -4391,6 +4405,7 @@ static const commands_t cmds[] =
 	{ "damage",          CMD_CHEAT | CMD_ALIVE,               Cmd_Damage_f           },
 	{ "deconstruct",     CMD_TEAM | CMD_ALIVE,                Cmd_Destroy_f          },
 	{ "destroy",         CMD_CHEAT | CMD_TEAM | CMD_ALIVE,    Cmd_Destroy_f          },
+	{ "donate",          CMD_TEAM,                            Cmd_Donate_f           },
 	{ "follow",          CMD_SPEC,                            Cmd_Follow_f           },
 	{ "follownext",      CMD_SPEC,                            Cmd_FollowCycle_f      },
 	{ "followprev",      CMD_SPEC,                            Cmd_FollowCycle_f      },
@@ -4417,7 +4432,6 @@ static const commands_t cmds[] =
 	{ "score",           CMD_INTERMISSION,                    ScoreboardMessage      },
 	{ "sell",            CMD_HUMAN | CMD_ALIVE,               Cmd_Sell_f             },
 	{ "setviewpos",      CMD_CHEAT_TEAM,                      Cmd_SetViewpos_f       },
-	{ "share",           CMD_TEAM,                            Cmd_Share_f            },
 	{ "team",            0,                                   Cmd_Team_f             },
 	{ "teamvote",        CMD_TEAM | CMD_INTERMISSION,         Cmd_Vote_f             },
 	{ "test",            CMD_CHEAT,                           Cmd_Test_f             },
