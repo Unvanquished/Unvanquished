@@ -175,6 +175,8 @@ vmCvar_t           g_combatCooldown;
 vmCvar_t           g_strip_structDmgPrcnt;
 vmCvar_t           g_strip_playerDmgPrcnt;
 
+vmCvar_t           g_allowDonations;
+
 vmCvar_t           g_AutoStrip;
 vmCvar_t           g_AutoStrip_MinKillToFeed;
 vmCvar_t           g_AutoStrip_MinKills;
@@ -385,6 +387,8 @@ static cvarTable_t gameCvarTable[] =
 
 	{ &g_showKillerHP,                "g_showKillerHP",                "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_combatCooldown,              "g_combatCooldown",              "15",                               CVAR_ARCHIVE,                                    0, qfalse           },
+
+	{ &g_allowDonations,              "g_allowDonations",              "1",                                CVAR_ARCHIVE,                                    0, qfalse           },
 
 	{ &g_strip_structDmgPrcnt,        "g_strip_structDmgPrcnt",        "100",                              CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_strip_playerDmgPrcnt,        "g_strip_playerDmgPrcnt",        "100",                              CVAR_ARCHIVE,                                    0, qfalse           },

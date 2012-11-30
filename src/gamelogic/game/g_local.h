@@ -1401,6 +1401,8 @@ extern  vmCvar_t g_censorship;
 extern  vmCvar_t g_showKillerHP;
 extern  vmCvar_t g_combatCooldown;
 
+extern  vmCvar_t g_allowDonations;
+
 extern  vmCvar_t  g_strip_structDmgPrcnt;
 extern  vmCvar_t  g_strip_playerDmgPrcnt;
 

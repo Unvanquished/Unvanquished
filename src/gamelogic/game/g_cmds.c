@@ -4131,6 +4131,23 @@ void Cmd_Share_f( gentity_t *ent )
 	team = ent->client->pers.teamSelection;
 	trap_Argv( 1, arg, sizeof( arg ) );
 
+	if ( !Q_stricmp( arg, "and" ) )
+	{
+		trap_Argv( 2, arg, sizeof( arg ) );
+		if ( !Q_stricmp( arg, "enjoy" ) )
+		{
+			trap_SendServerCommand( ent - g_entities, "print \"We are proud to say that ^2this game is ^3not^2 sponsored by the ^5Sirius Cybernetics Corporation^2.\n\"" );
+			return;
+		}
+		*arg = 0;
+	}
+
+	if ( !g_allowDonations.integer )
+	{
+		trap_SendServerCommand( ent - g_entities, "print_tr " QQ( N_( "share is disabled on this server\n" ) ) );
+		return;
+	}
+
 	noSpawns = ( team == TEAM_HUMANS ? level.numHumanSpawns : level.numAlienSpawns ) == 0;
 
 	for ( i = 0; i < level.maxclients; ++i )
@@ -4151,17 +4168,6 @@ void Cmd_Share_f( gentity_t *ent )
 	{
 		trap_SendServerCommand( ent - g_entities, "print_tr " QQ( N_( "share: no teammates with whom to share\n" ) ) );
 		return;
-	}
-
-	if ( !Q_stricmp( arg, "and" ) )
-	{
-		trap_Argv( 2, arg, sizeof( arg ) );
-		if ( !Q_stricmp( arg, "enjoy" ) )
-		{
-			trap_SendServerCommand( ent - g_entities, "print \"We are proud to say that ^2this game is ^3not^2 sponsored by the ^5Sirius Cybernetics Corporation^2.\n\"" );
-			return;
-		}
-		*arg = 0;
 	}
 
 	// credit count from parameter
@@ -4285,13 +4291,19 @@ void Cmd_Donate_f( gentity_t *ent )
 	trap_Argv( 1, arg1, sizeof( arg1 ) );
 	trap_Argv( 2, arg2, sizeof( arg2 ) );
 
-	if( arg1[0] ) // target player name is in arg1
+	if ( !Q_stricmp( arg1, "console" ) )
 	{
-		if ( !Q_stricmp( arg1, "console" ) )
-		{
-			clientNum = level.maxclients;
-		}
-		else if ( G_ClientNumbersFromString( arg1, clientNums, ARRAY_LEN( clientNums ) ) == 1 )
+		clientNum = level.maxclients;
+	}
+	else if ( !g_allowDonations.integer )
+	{
+		trap_SendServerCommand( ent - g_entities, "print_tr " QQ( N_( "donate is disabled on this server\n" ) ) );
+		return;
+	}
+
+	if( arg1[0] && !clientNum ) // target player name is in arg1
+	{
+		if ( G_ClientNumbersFromString( arg1, clientNums, ARRAY_LEN( clientNums ) ) == 1 )
 		{
 			// there was one partial name match name was clientNum
 			clientNum = clientNums[ 0 ];
@@ -4310,7 +4322,7 @@ void Cmd_Donate_f( gentity_t *ent )
 			}
 		}
 	}
-	else // arg1 not set
+	else if ( !clientNum )// arg1 not set
 	{
 		vec3_t    forward, end;
 		trace_t   tr;
