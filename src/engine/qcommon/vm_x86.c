@@ -1493,7 +1493,7 @@ void VM_Compile( vm_t *vm, vmHeader_t *header )
 					}
 
 					EmitMovEAXStack( vm, vm->dataMask );
-#if idx64 || idx641_32
+#if idx64 || idx64_32
 					EmitRexString( 0x41, "8B 04 01" );  // mov eax, dword ptr [r9 + eax]
 #else
 					EmitString( "8B 80" );  // mov eax, dword ptr [eax + 0x12345678]
