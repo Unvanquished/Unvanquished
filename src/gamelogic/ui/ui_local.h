@@ -65,6 +65,7 @@ void     UI_DrawConnectScreen( qboolean overlay );
 #define MAX_PROFILES            64
 #define MAX_LANGUAGES           16
 #define MAX_HUDS                16
+#define MAX_SOUND_DEVICES       16
 
 typedef struct
 {
@@ -343,11 +344,11 @@ typedef struct
 	int                   profileCount;
 	int                   profileIndex;
 
-	const char            *voipInput[ 5 ];
+	const char            *voipInput[ MAX_SOUND_DEVICES ];
 	int                   voipInputCount;
 	int                   voipInputIndex;
 
-	const char            *alOutput[ 5 ];
+	const char            *alOutput[ MAX_SOUND_DEVICES ];
 	int                   alOutputCount;
 	int                   alOutputIndex;
 }

@@ -5037,7 +5037,7 @@ void UI_ParseVoipInputs( void )
 {
 	char buf[ MAX_STRING_CHARS ];
 	char *p, *head;
-	int inputs;
+	int inputs = 0;
 
 	trap_Cvar_VariableStringBuffer( "s_alAvailableInputDevices", buf, sizeof( buf ) );
 	head = buf;
@@ -5055,7 +5055,7 @@ void UI_ParseAlOutputs( void )
 {
 	char buf[ MAX_STRING_CHARS ];
 	char *p, *head;
-	int outputs;
+	int outputs = 0;
 
 	trap_Cvar_VariableStringBuffer( "s_alAvailableDevices", buf, sizeof( buf ) );
 	head = buf;
