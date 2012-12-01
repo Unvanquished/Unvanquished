@@ -225,8 +225,6 @@ Maryland 20850 USA.
 #undef idx64_32
 #define idx64_32    1
 #define ARCH_STRING "x32"
-// until we work out why it's crashing on connecting to a remote server
-#define NO_VM_COMPILED
 #elif defined __x86_64__
 #undef idx64
 #define idx64       1
