@@ -506,7 +506,7 @@ void *QDECL Sys_LoadDll( const char *name,
 		return NULL;
 	}
 
-	Com_Printf( "Sys_LoadDll(%s) found vmMain function at %p\n", name, *entryPoint );
+	Com_DPrintf( "Sys_LoadDll(%s) found vmMain function at %p\n", name, *entryPoint );
 	dllEntry( systemcalls );
 
 	Com_DPrintf( "Sys_LoadDll(%s) succeeded!\n", name );

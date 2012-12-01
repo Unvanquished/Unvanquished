@@ -3101,7 +3101,7 @@ int CL_GSRSequenceInformation( byte **data )
 	{
 		// Assume we sent two getservers and somehow they changed in
 		// between - only use the results that arrive later
-		Com_DPrintf("%s", "Master changed its mind about packet count!\n" );
+		Com_DPrintf( "Master changed its mind about packet count!\n" );
 		cls.receivedMasterPackets = 0;
 		cls.numglobalservers = 0;
 		cls.numGlobalServerAddresses = 0;
