@@ -161,7 +161,7 @@ void SV_DirectConnect( netadr_t from )
 			if ( ( svs.time - cl->lastConnectTime )
 			     < ( sv_reconnectlimit->integer * 1000 ) )
 			{
-				Com_DPrintf( "%s:reconnect rejected : too soon\n", NET_AdrToString( from ) );
+				Com_DPrintf( "%s: reconnect rejected: too soon\n", NET_AdrToString( from ) );
 				return;
 			}
 
@@ -718,7 +718,7 @@ void SV_StopDownload_f( client_t *cl )
 {
 	if ( *cl->downloadName )
 	{
-		Com_DPrintf( "clientDownload: %d : file \"%s\" aborted\n", ( int )( cl - svs.clients ), cl->downloadName );
+		Com_DPrintf( "clientDownload: %d: file \"%s^7\" aborted\n", ( int )( cl - svs.clients ), cl->downloadName );
 	}
 
 	SV_CloseDownload( cl );
@@ -733,7 +733,7 @@ Downloads are finished
 */
 void SV_DoneDownload_f( client_t *cl )
 {
-	Com_DPrintf( "clientDownload: %s Done\n", cl->name );
+	Com_DPrintf( "clientDownload: %s^7 Done\n", cl->name );
 	// resend the game state to update any clients that entered during the download
 	SV_SendClientGameState( cl );
 }
@@ -752,7 +752,7 @@ void SV_NextDownload_f( client_t *cl )
 
 	if ( block == cl->downloadClientBlock )
 	{
-		Com_DPrintf( "clientDownload: %d : client acknowledge of block %d\n", ( int )( cl - svs.clients ), block );
+		Com_DPrintf( "clientDownload: %d: client acknowledge of block %d\n", ( int )( cl - svs.clients ), block );
 
 		// Find out if we are done.  A zero-length block indicates EOF
 		if ( cl->downloadBlockSize[ cl->downloadClientBlock % MAX_DOWNLOAD_WINDOW ] == 0 )
@@ -1196,7 +1196,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 			MSG_WriteData( msg, cl->downloadBlocks[ curindex ], cl->downloadBlockSize[ curindex ] );
 		}
 
-		Com_DPrintf( "clientDownload: %d : writing block %d\n", ( int )( cl - svs.clients ), cl->downloadXmitBlock );
+		Com_DPrintf( "clientDownload: %d: writing block %d\n", ( int )( cl - svs.clients ), cl->downloadXmitBlock );
 
 		// Move on to the next block
 		// It will get sent with next snap shot.  The rate will keep us in line.
@@ -1712,7 +1712,7 @@ void SV_ExecuteClientCommand( client_t *cl, const char *s, qboolean clientOK, qb
 	}
 	else if ( !bProcessed )
 	{
-		Com_DPrintf( "client text ignored for %s: %s\n", cl->name, Cmd_Argv( 0 ) );
+		Com_DPrintf( "client text ignored for %s^7: %s\n", cl->name, Cmd_Argv( 0 ) );
 	}
 }
 
@@ -1737,7 +1737,7 @@ static qboolean SV_ClientCommand( client_t *cl, msg_t *msg, qboolean premapresta
 		return qtrue;
 	}
 
-	Com_DPrintf( "clientCommand: %s : %i : %s\n", cl->name, seq, s );
+	Com_DPrintf( "clientCommand: %s^7 : %i : %s\n", cl->name, seq, s );
 
 	// drop the connection if we have somehow lost commands
 	if ( seq > cl->lastClientCommand + 1 )
@@ -1878,7 +1878,7 @@ static void SV_UserMove( client_t *cl, msg_t *msg, qboolean delta )
 		if ( cl->state == CS_ACTIVE )
 		{
 			// we didn't get a cp yet, don't assume anything and just send the gamestate all over again
-			Com_DPrintf( "%s: didn't get cp command, resending gamestate\n", cl->name );
+			Com_DPrintf( "%s^7: didn't get cp command, resending gamestate\n", cl->name );
 			SV_SendClientGameState( cl );
 		}
 
@@ -2164,7 +2164,7 @@ void SV_ExecuteClientMessage( client_t *cl, msg_t *msg )
 		{
 			// TTimo - use a comparison here to catch multiple map_restart
 			// they just haven't caught the map_restart yet
-			Com_DPrintf( "%s : ignoring pre map_restart / outdated client message\n", cl->name );
+			Com_DPrintf( "%s^7: ignoring pre map_restart / outdated client message\n", cl->name );
 			return;
 		}
 
@@ -2172,7 +2172,7 @@ void SV_ExecuteClientMessage( client_t *cl, msg_t *msg )
 		// gamestate we sent them, resend it
 		if ( cl->messageAcknowledge > cl->gamestateMessageNum )
 		{
-			Com_DPrintf( "%s : dropped gamestate, resending\n", cl->name );
+			Com_DPrintf( "%s^7: dropped gamestate, resending\n", cl->name );
 			SV_SendClientGameState( cl );
 		}
 

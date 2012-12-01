@@ -163,7 +163,7 @@ static void SV_WriteSnapshotToClient( client_t *client, msg_t *msg )
 	else if ( client->netchan.outgoingSequence - client->deltaMessage >= ( PACKET_BACKUP - 3 ) )
 	{
 		// client hasn't gotten a good message through in a long time
-		Com_DPrintf( "%s: Delta request from out of date packet.\n", client->name );
+		Com_DPrintf( "%s^7: Delta request from out of date packet.\n", client->name );
 		oldframe = NULL;
 		lastframe = 0;
 	}
@@ -176,7 +176,7 @@ static void SV_WriteSnapshotToClient( client_t *client, msg_t *msg )
 		// the snapshot's entities may still have rolled off the buffer, though
 		if ( oldframe->first_entity <= svs.nextSnapshotEntities - svs.numSnapshotEntities )
 		{
-			Com_DPrintf( "%s: Delta request from out of date entities.\n", client->name );
+			Com_DPrintf( "%s^7: Delta request from out of date entities.\n", client->name );
 			oldframe = NULL;
 			lastframe = 0;
 		}
