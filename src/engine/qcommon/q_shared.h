@@ -165,10 +165,12 @@ extern int memcmp( void *, void *, size_t );
 #else
 
 // for visibility of some functions in system headers
+#undef _GNU_SOURCE
 #undef _BSD_SOURCE
 #undef _XOPEN_SOURCE
 #undef _XOPEN_SOURCE_EXTENDED
 #undef _POSIX_C_SOURCE
+#define _GNU_SOURCE
 #define _BSD_SOURCE
 #define _XOPEN_SOURCE 500
 #define _XOPEN_SOURCE_EXTENDED
