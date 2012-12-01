@@ -4204,6 +4204,14 @@ static int UI_FeederCount( int feederID )
 	{
 		return uiInfo.numLanguages;
 	}
+	else if ( feederID == FEEDER_VOIPINPUT )
+	{
+		return uiInfo.voipInputCount;
+	}
+	else if ( feederID == FEEDER_ALOUTPUT )
+	{
+		return uiInfo.alOutputCount;
+	}
 	else if ( feederID == FEEDER_PROFILES )
 	{
 		return uiInfo.profileCount;
@@ -4545,6 +4553,20 @@ static const char *UI_FeederItemText( int feederID, int index, int column, qhand
 			return uiInfo.languages[ index ].name;
 		}
 	}
+	else if ( feederID == FEEDER_VOIPINPUT )
+	{
+		if ( index >= 0 && index < uiInfo.voipInputCount )
+		{
+			return uiInfo.voipInput[ index ];
+		}
+	}
+	else if ( feederID == FEEDER_ALOUTPUT )
+	{
+		if ( index >= 0 && index < uiInfo.alOutputCount )
+		{
+			return uiInfo.alOutput[ index ];
+		}
+	}
 	else if ( feederID == FEEDER_PROFILES )
 	{
 		if( index >= 0 && index < uiInfo.profileCount )
@@ -4753,6 +4775,16 @@ static void UI_FeederSelection( int feederID, int index )
 		trap_Cvar_Set( "language", uiInfo.languages[ index ].lang );
 		uiInfo.languageIndex = index;
 	}
+	else if ( feederID == FEEDER_VOIPINPUT )
+	{
+		trap_Cvar_Set( "s_alInputDevice", uiInfo.voipInput[ index ] );
+		uiInfo.voipInputIndex = index;
+	}
+	else if ( feederID == FEEDER_ALOUTPUT )
+	{
+		trap_Cvar_Set( "s_alDevice", uiInfo.alOutput[ index ] );
+		uiInfo.alOutputIndex = index;
+	}
 	else if ( feederID == FEEDER_PROFILES )
 	{
 		uiInfo.profileIndex = index;
@@ -4812,6 +4844,39 @@ static int UI_FeederInitialise( int feederID )
 			}
 		}
 	}
+
+	if ( feederID == FEEDER_VOIPINPUT )
+	{
+		int i;
+		char input[ 256 ];
+
+		trap_Cvar_VariableStringBuffer( "s_alInputDevice", input, sizeof( input ) );
+
+		for ( i = 0; i < uiInfo.voipInputCount; i++ )
+		{
+			if ( !Q_stricmp( input, uiInfo.voipInput[ i ] ) )
+			{
+				return i;
+			}
+		}
+	}
+
+	if ( feederID == FEEDER_ALOUTPUT )
+	{
+		int i;
+		char output[ 256 ];
+
+		trap_Cvar_VariableStringBuffer( "s_alDevice", output, sizeof( output ) );
+
+		for ( i = 0; i < uiInfo.alOutputCount; i++ )
+		{
+			if ( !Q_stricmp( output, uiInfo.alOutput[ i ] ) )
+			{
+				return i;
+			}
+		}
+	}
+
 
 	return 0;
 }
@@ -4967,6 +5032,43 @@ void UI_ParseLanguages( void )
 
 	uiInfo.numLanguages = lang;
 }
+
+void UI_ParseVoipInputs( void )
+{
+	char buf[ MAX_STRING_CHARS ];
+	char *p, *head;
+	int inputs;
+
+	trap_Cvar_VariableStringBuffer( "s_alAvailableInputDevices", buf, sizeof( buf ) );
+	head = buf;
+	while ( p = strchr( head, '\n' ) )
+	{
+		*p = '\0';
+		uiInfo.voipInput[ inputs++ ] = String_Alloc( head );
+		head = p + 1;
+	}
+
+	uiInfo.voipInputCount = inputs;
+}
+
+void UI_ParseAlOutputs( void )
+{
+	char buf[ MAX_STRING_CHARS ];
+	char *p, *head;
+	int outputs;
+
+	trap_Cvar_VariableStringBuffer( "s_alAvailableDevices", buf, sizeof( buf ) );
+	head = buf;
+	while ( p = strchr( head, '\n' ) )
+	{
+		*p = '\0';
+		uiInfo.alOutput[ outputs++ ] = String_Alloc( head );
+		head = p + 1;
+	}
+
+	uiInfo.alOutputCount = outputs;
+}
+
 /*
 =================
 UI_Init
@@ -5104,6 +5206,8 @@ void UI_Init( void )
 
 	UI_ParseResolutions();
 	UI_ParseLanguages();
+	UI_ParseVoipInputs();
+	UI_ParseAlOutputs();
 }
 
 /*

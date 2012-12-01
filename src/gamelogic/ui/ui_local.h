@@ -342,6 +342,14 @@ typedef struct
 	profileInfo_t         profileList[ MAX_PROFILES ];
 	int                   profileCount;
 	int                   profileIndex;
+
+	const char            *voipInput[ 5 ];
+	int                   voipInputCount;
+	int                   voipInputIndex;
+
+	const char            *alOutput[ 5 ];
+	int                   alOutputCount;
+	int                   alOutputIndex;
 }
 
 uiInfo_t;
