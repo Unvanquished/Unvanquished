@@ -393,7 +393,7 @@ void S_Init( void )
 		s_show = Cvar_Get( "s_show", "0", CVAR_CHEAT );
 		s_testsound = Cvar_Get( "s_testsound", "0", CVAR_CHEAT );
 
-		cv = Cvar_Get( "s_usemodule", "1", CVAR_ARCHIVE );
+		cv = Cvar_Get( "s_useOpenAL", "1", CVAR_ARCHIVE );
 		if( cv->integer )
 		{
 			started = S_AL_Init( &si );
