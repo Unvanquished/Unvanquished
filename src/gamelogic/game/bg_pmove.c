@@ -4074,6 +4074,38 @@ static void PM_Animate( void )
 			}
 		}
 	}
+
+	if ( usercmdButtonPressed( pm->cmd.buttons, BUTTON_RALLY ) )
+	{
+		if ( pm->ps->tauntTimer > 0 )
+		{
+			return;
+		}
+
+		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+		{
+			if ( pm->ps->torsoTimer == 0 )
+			{
+				PM_StartTorsoAnim( TORSO_RALLY );
+				pm->ps->torsoTimer = TIMER_GESTURE;
+				pm->ps->tauntTimer = TIMER_GESTURE;
+
+				PM_AddEvent( EV_TAUNT );
+			}
+		}
+		else
+		{
+			if ( pm->ps->torsoTimer == 0 )
+			{
+				PM_ForceLegsAnim( NSPA_GESTURE );
+				pm->ps->torsoTimer = TIMER_GESTURE;
+				pm->ps->tauntTimer = TIMER_GESTURE;
+
+				PM_AddEvent( EV_TAUNT );
+			}
+		}
+	}
+
 }
 
 /*
