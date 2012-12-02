@@ -375,11 +375,13 @@
 	BINDX	( communication, "Team Chat:", "messagemode2", 2 )
 	BINDX	( communication, "Admin Chat:", "messagemode3", 3 )
 	BINDX	( communication, "IRC Chat:", "messagemode4", 4 )
-	BINDX	( communication, "Vote Yes:", "vote yes", 5 )
-	BINDX	( communication, "Vote No:", "vote no", 6 )
-	BINDX	( communication, "Team Vote Yes:", "teamvote yes", 7 )
-	BINDX	( communication, "Team Vote No:", "teamvote no", 8 )
-	BINDX	( communication, "Voice Say Menu:", "menu vsay_top", 9 )
+	BINDX   ( communication, "VoIP Chat:", "+voiprecord", 5 )
+	BINDX	( communication, "Vote Yes:", "vote yes", 6 )
+	BINDX	( communication, "Vote No:", "vote no", 7 )
+	BINDX	( communication, "Team Vote Yes:", "teamvote yes", 8 )
+	BINDX	( communication, "Team Vote No:", "teamvote no", 9 )
+	BINDX	( communication, "Voice Say Menu:", "menu vsay_top", 10 )
+	BINDX   ( communication, "VoIP Menu:", "menu voip", 11 )
 
 //////// MISC
 
@@ -595,14 +597,53 @@
 	TEXTX	( netsound, "Sound", 0 )
 	SLIDERX	( netsound, "Effects Volume:", "s_volume", .7, 0, 1, 1 )
 	SLIDERX	( netsound, "Music Volume:", "s_musicvolume", .25, 0, 1, 2 )
-	YESNOX	( netsound, "OpenAL:", "s_usemodule", play "sound/misc/menu1.wav", 3 )
-	YESNOX	( netsound, "Doppler Sound:", "s_doppler", play "sound/misc/menu1.wav", 4 )
-	TEXTX	( netsound, "Network", 6 )
+	YESNOX	( netsound, "OpenAL:", "s_useOpenAL", play "sound/misc/menu1.wav", 3 )
+	YESNOX  ( netsound, "OpenAL Capture", "s_alCapture", play "sound/misc/menu1.wav", 4 )
+	COMBOX  ( netsound, "OpenAL Device:", FEEDER_ALOUTPUT, 5 )
+	COMBOX  ( netsound, "OpenAL Capture Device:", FEEDER_VOIPINPUT, 6 )
+	YESNOX	( netsound, "Doppler Sound:", "s_doppler", play "sound/misc/menu1.wav", 7 )
+	TEXTX	( netsound, "Network", 9 )
 	MULTIX	( netsound, "Net Data Rate:", "rate",
 			"<=28.8k" 2500 "33.6k" 3000 "56k" 4000 "ISDN" 5000 "LAN/CABLE/xDSl" 25000,
 			play "sound/misc/menu1.wav",
-			7 )
-	BUTTONX	( netsound, APPLY, play "sound/misc/menu1.wav"; exec "snd_restart", 9 )
+			10 )
+	BUTTONX	( netsound, APPLY, play "sound/misc/menu1.wav"; exec "snd_restart", 12 )
+
+//////// VOIP
+
+	itemDef
+	{
+		name system
+		text "VoIP"
+		group optionsGrp
+		style WINDOW_STYLE_EMPTY
+		rect 0 ((2*BORDER)+TOPBUTT_H+(4*SIDEBUTT_H)) SIDEBUTT_W SIDEBUTT_H
+		type ITEM_TYPE_BUTTON
+		textalign ALIGN_RIGHT
+		textvalign VALIGN_CENTER
+		textscale .25
+		forecolor 1 1 1 1
+			visible MENU_FALSE
+			action
+			{
+				play "sound/misc/menu1.wav";
+				hide optionsGrp;
+				show system;
+				show voip
+			}
+	}
+
+	TEXTX   ( voip, "VoIP", 0 )
+	YESNOX  ( voip, "Enable VoIP:", "cl_voip", play "sound/misc/menu1.wav", 1 )
+	YESNOX  ( voip, "Show VoIP Meter:", "cl_voipShowMeter", play "sound/misc/menu1.wav", 2 )
+	MULTIX  ( voip, "Show VoIP Sender:", "cl_voipShowSender",
+			  "Off" 0 "Lower Right" 1 "Lower Left" 2 "Top Right" 3 "Top Center" 4 "Bottom Center" 5, play "sound/misc/menu1.wav", 3 )
+	SLIDERX ( voip, "Capture Gain:", "cl_voipGainDuringCapture", 0, 0.2, 6, 4 )
+	SLIDERX ( voip, "Capture Multiplier:", "cl_voipCaptureMult", 0, 2, 6, 5 )
+	YESNOX  ( voip, "Voice Activation Detection:", "cl_voipUseVAD", play "sound/misc/menu1.wav", 6 )
+	SLIDERX ( voip, "VAD Threshold:", "cl_voipVADThreshold", 0, 0.25, 1, 7 )
+
+
 
 //////// RANGE MARKERS
 
@@ -612,7 +653,7 @@
       text "Range Markers"
       group optionsGrp
       style WINDOW_STYLE_EMPTY
-      rect 0 ((2*BORDER)+TOPBUTT_H+(4*SIDEBUTT_H)) SIDEBUTT_W SIDEBUTT_H
+      rect 0 ((2*BORDER)+TOPBUTT_H+(5*SIDEBUTT_H)) SIDEBUTT_W SIDEBUTT_H
       type ITEM_TYPE_BUTTON
       textalign ALIGN_RIGHT
       textvalign VALIGN_CENTER

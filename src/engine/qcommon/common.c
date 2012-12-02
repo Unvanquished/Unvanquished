@@ -115,7 +115,7 @@ cvar_t *com_watchdog_cmd;
 
 cvar_t *com_hunkused; // Ridah
 
-#if idx64
+#if idx64 || idx64_32
 int ( *Q_VMftol )( void );
 #elif id386
 long( QDECL *Q_ftol )( float f );
@@ -1744,11 +1744,11 @@ Find out whether we have SSE support for Q_ftol function
 =================
 */
 
-#if id386 || idx64
+#if id386 || idx64 || idx64_32
 
 static void Com_DetectSSE( void )
 {
-#if !idx64
+#if !idx64 && !idx64_32
 	cpuFeatures_t feat;
 
 	feat = Sys_GetProcessorFeatures();
@@ -1769,7 +1769,7 @@ static void Com_DetectSSE( void )
 		Q_VMftol = qvmftolsse;
 
 		Com_Printf( "Have SSE support\n" );
-#if !idx64
+#if !idx64 && !idx64_32
 	}
 
 	else

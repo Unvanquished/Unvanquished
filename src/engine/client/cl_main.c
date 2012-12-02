@@ -64,7 +64,6 @@ cvar_t *cl_voipGainDuringCapture;
 cvar_t *cl_voipCaptureMult;
 cvar_t *cl_voipShowMeter;
 cvar_t *cl_voipShowSender;
-cvar_t *cl_voipSenderPos;
 cvar_t *cl_voip;
 #endif
 
@@ -450,12 +449,44 @@ void CL_VoipParseTargets( void )
 				return;
 			}
 
-			if ( !Q_stricmpn( target, "spatial", 7 ) )
+			else if ( !Q_stricmpn( target, "spatial", 7 ) )
 			{
 				clc.voipFlags |= VOIP_SPATIAL;
 				target += 7;
 				continue;
 			}
+
+			else if ( !Q_stricmpn( target, "team", 4 ) )
+			{
+				int i = 0;
+
+				for ( i = 0; i < MAX_CLIENTS; i++ )
+				{
+					team_t team = atoi( Info_ValueForKey(cl.gameState.stringData +
+					cl.gameState.stringOffsets[CS_PLAYERS + i], "t") );
+
+					qboolean connected = Info_ValueForKey(cl.gameState.stringData +
+					cl.gameState.stringOffsets[CS_PLAYERS + i], "n")[0];
+
+					if ( connected && team == cl.snap.ps.stats[ STAT_TEAM ] )
+					{
+						val = i;
+						if ( val < 0 || val >= MAX_CLIENTS )
+						{
+							Com_Printf( _( S_COLOR_YELLOW  "WARNING: VoIP "
+							"target %d is not a valid client "
+							"number\n"), val );
+
+							continue;
+						}
+
+
+						clc.voipTargets[ val / 8 ] |= 1 << ( val % 8 );
+					}
+				}
+				target += 4;
+			}
+
 			else
 			{
 				if ( !Q_stricmpn( target, "attacker", 8 ) )
@@ -4477,7 +4508,6 @@ void CL_Init( void )
 	cl_voipUseVAD = Cvar_Get( "cl_voipUseVAD", "0", CVAR_ARCHIVE );
 	cl_voipVADThreshold = Cvar_Get( "cl_voipVADThreshold", "0.25", CVAR_ARCHIVE );
 	cl_voipShowMeter = Cvar_Get( "cl_voipShowMeter", "1", CVAR_ARCHIVE );
-	cl_voipSenderPos = Cvar_Get( "cl_voipSenderPos", "0", CVAR_ARCHIVE );
 	cl_voipShowSender = Cvar_Get( "cl_voipShowSender", "1", CVAR_ARCHIVE );
 
 	// This is a protocol version number.
