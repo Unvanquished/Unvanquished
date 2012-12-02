@@ -24,6 +24,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef TR_LOCAL_H
 #define TR_LOCAL_H
 
+#if defined( __cplusplus )
+extern "C" {
+#endif
+
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qfiles.h"
 #include "../qcommon/qcommon.h"
@@ -43,10 +47,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <SDL_thread.h>
 #else
 #include <GL/glew.h>
-#endif
-
-#if defined( __cplusplus )
-extern "C" {
 #endif
 
 #define BUFFER_OFFSET(i) ((char *)NULL + ( i ))
