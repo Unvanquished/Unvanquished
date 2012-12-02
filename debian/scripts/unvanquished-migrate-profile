@@ -1,6 +1,7 @@
 #! /bin/sh
 
 test -f ~/.Unvanquished/main/profiles/defaultprofile.dat && exit 0
+test -f ~/.Unvanquished/main/autogen.cfg || exit 0
 
 set -e
 
