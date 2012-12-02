@@ -791,65 +791,33 @@ void GLShader::LoadShader()
 {
 	_shaderPrograms = std::vector<shaderProgram_t>( 1 << _compileMacros.size() );
 
-	if ( !LoadShaderBinary() )
+	int startTime = ri.Milliseconds();
+
+	//Com_Memset(_shaderPrograms, 0, sizeof(_shaderPrograms));
+
+	std::string vertexInlines = "";
+	this->BuildShaderVertexLibNames( vertexInlines );
+
+	std::string fragmentInlines = "";
+	this->BuildShaderFragmentLibNames( fragmentInlines );
+
+	std::string vertexShaderText = BuildGPUShaderText( this->GetMainShaderName().c_str(), vertexInlines.c_str(), GL_VERTEX_SHADER );
+	std::string fragmentShaderText = BuildGPUShaderText( this->GetMainShaderName().c_str(), fragmentInlines.c_str(), GL_FRAGMENT_SHADER );
+	std::string combinedShaderText= vertexShaderText + fragmentShaderText;
+
+	_checkSum = Com_BlockChecksum( combinedShaderText.c_str(), combinedShaderText.length );
+
+	size_t numPermutations = ( 1 << _compileMacros.size() );	// same as 2^n, n = no. compile macros
+	size_t numCompiled = 0;
+	size_t numLoaded = 0;
+	ri.Printf( PRINT_ALL, "...loading %s shaders\n", this->GetName().c_str() );
+
+	for( size_t i = 0; i < numPermutations; i++ )
 	{
-		CompilePermutations();
-		SaveShaderBinary();
-	}
-}
-
-bool GLShader::LoadShaderBinary()
-{
-#ifdef GLEW_ARB_get_program_binary
-	GLint          success;
-	GLint          fileLength;
-	void           *binary;
-	byte           *binaryptr;
-	GLShaderHeader shaderHeader;
-	int            numLoaded = 0;
-
-	//we need to recompile the shaders
-	if( r_recompileShaders->integer )
-	{
-		return false;
-	}
-
-	// Don't even try if the necessary functions aren't available
-	if( !glConfig2.getProgramBinaryAvailable )
-	{
-		return false;
-	}
-
-	fileLength = ri.FS_ReadFile( va( "glsl/%s.bin", this->GetName().c_str() ), &binary );
-
-	// File empty or not found
-	if( fileLength <= 0 )
-	{
-		return false;
-	}
-
-	binaryptr = ( byte* )binary;
-
-	// Get the shader header from the file
-	memcpy( &shaderHeader, binaryptr, sizeof( shaderHeader ) );
-
-	if ( shaderHeader.version != GL_SHADER_VERSION )
-	{
-		return false;
-	}
-
-	binaryptr += sizeof( GLShaderHeader );
-
-	for ( size_t i = 0; i < ( 1 << _compileMacros.size() ); i++ )
-	{
-		GLShaderProgramHeader programHeader;
 		std::string compileMacros;
 
 		if( GetCompileMacrosString( i, compileMacros ) )
 		{
-			memcpy( &programHeader, binaryptr, sizeof( programHeader ) );
-			binaryptr += sizeof( programHeader );
-
 			this->BuildShaderCompileMacros( compileMacros );
 
 			//ri.Printf(PRINT_ALL, "Compile macros: '%s'\n", compileMacros.c_str());
@@ -873,25 +841,12 @@ bool GLShader::LoadShaderBinary()
 			shaderProgram->program = glCreateProgram();
 			shaderProgram->attribs = _vertexAttribsRequired; // | _vertexAttribsOptional;
 
-			glProgramBinary( shaderProgram->program, programHeader.binaryFormat, ( void* )binaryptr, programHeader.binaryLength );
-
-			glGetProgramiv( shaderProgram->program, GL_LINK_STATUS, &success );
-
-			if ( !success )
+			if ( !LoadShaderBinary( i ) )
 			{
-				ri.FS_FreeFile( binary );
-
-				for ( std::size_t i = 0; i < _shaderPrograms.size(); i++ )
-				{
-					if ( _shaderPrograms[ i ].program )
-					{
-						glDeleteProgram( _shaderPrograms[ i ].program );
-					}
-				}
-				return false;
+				CompileAndLinkGPUShaderProgram(	shaderProgram, vertexShaderText, fragmentShaderText, compileMacros, i);
+				SaveShaderBinary( i );
+				numCompiled++;
 			}
-
-			binaryptr += programHeader.binaryLength;
 
 			UpdateShaderProgramUniformLocations( shaderProgram );
 
@@ -903,17 +858,105 @@ bool GLShader::LoadShaderBinary()
 			ValidateProgram( shaderProgram->program );
 			//ShowProgramUniforms(shaderProgram->program);
 			GL_CheckErrors();
+
 			numLoaded++;
 		}
 	}
+
+	SelectProgram();
+
+	int endTime = ri.Milliseconds();
+	float time = ( endTime - startTime ) / 1000.0;
+	
+	ri.Printf( PRINT_ALL, "...compiled %u shaders and loaded %u cached shaders in %5.2f seconds\n", numCompiled, numLoaded - numCompiled, time );
+}
+
+bool GLShader::LoadShaderBinary( size_t programNum )
+{
+#ifdef GLEW_ARB_get_program_binary
+	GLint          success;
+	GLint          fileLength;
+	void           *binary;
+	byte           *binaryptr;
+	GLShaderHeader shaderHeader;
+	int            numLoaded = 0;
+	int            numProgramsNeeded = 0;
+
+	// we need to recompile the shaders
+	if( r_recompileShaders->integer )
+	{
+		return false;
+	}
+
+	// don't even try if the necessary functions aren't available
+	if( !glConfig2.getProgramBinaryAvailable )
+	{
+		return false;
+	}
+
+	fileLength = ri.FS_ReadFile( va( "glsl/%s/%s_%u.bin", this->GetName().c_str(), this->GetName().c_str(), programNum ), &binary );
+
+	// file empty or not found
+	if( fileLength <= 0 )
+	{
+		return false;
+	}
+
+	binaryptr = ( byte* )binary;
+
+	// get the shader header from the file
+	memcpy( &shaderHeader, binaryptr, sizeof( shaderHeader ) );
+	binaryptr += sizeof( shaderHeader );
+
+	// check if this shader binary is the correct format
+	if ( shaderHeader.version != GL_SHADER_VERSION )
+	{
+		ri.FS_FreeFile( binary );
+		return false;
+	}
+
+	// make sure this shader uses the same number of macros
+	if ( shaderHeader.numMacros != _compileMacros.size() )
+	{
+		ri.FS_FreeFile( binary );
+		return false;
+	}
+
+	// make sure this shader uses the same macros
+	for ( int i = 0; i < shaderHeader.numMacros; i++ )
+	{
+		if ( _compileMacros[ i ]->GetType() != shaderHeader.macros[ i ] )
+		{
+			ri.FS_FreeFile( binary );
+			return false;
+		}
+	}
+
+	// make sure the checksums for the source code match
+	if ( shaderHeader.checkSum != _checkSum )
+	{
+		ri.FS_FreeFile( binary );
+		return false;
+	}
+
+	// load the shader
+	shaderProgram_t *shaderProgram = &_shaderPrograms[ programNum ];
+	glProgramBinary( shaderProgram->program, shaderHeader.binaryFormat, binaryptr, shaderHeader.binaryLength );
+	glGetProgramiv( shaderProgram->program, GL_LINK_STATUS, &success );
+
+	if ( !success )
+	{
+		ri.FS_FreeFile( binary );
+		return false;
+	}
+
 	ri.FS_FreeFile( binary );
-	ri.Printf( PRINT_ALL, "...loaded %i cached %s shader permutations\n", numLoaded, this->GetName().c_str() );
 	return true;
 #else
 	return false;
 #endif
 }
-void GLShader::SaveShaderBinary()
+void GLShader::SaveShaderBinary( size_t programNum )
 {
 #ifdef GLEW_ARB_get_program_binary
 	GLint                 binaryLength;
@@ -921,60 +964,49 @@ void GLShader::SaveShaderBinary()
 	byte                  *binary;
 	byte                  *binaryptr;
 	GLShaderHeader        shaderHeader;
+	shaderProgram_t       *shaderProgram;
 
-	// Don't even try if the necessary functions aren't available
+	// don't even try if the necessary functions aren't available
 	if( !glConfig2.getProgramBinaryAvailable )
 	{
 		return;
 	}
 
-	// Find the size of the concatenated shader binary
-	binarySize += sizeof( GLShaderHeader );
+	shaderProgram = &_shaderPrograms[ programNum ];
 
-	for( size_t i = 0; i < _shaderPrograms.size(); i++ )
-	{
-		GLuint program = _shaderPrograms[ i ].program;
+	memset( &shaderHeader, 0, sizeof( shaderHeader ) );
 
-		if ( !program )
-		{
-			continue;
-		}
+	// find output size
+	binarySize += sizeof( shaderHeader );
+	glGetProgramiv( shaderProgram->program, GL_PROGRAM_BINARY_LENGTH, &binaryLength );
+	binarySize += binaryLength;
 
-		glGetProgramiv( program, GL_PROGRAM_BINARY_LENGTH, &binaryLength );
-
-		// Space for the program header and the program binary length
-		binarySize += sizeof( GLShaderProgramHeader ) + binaryLength;
-	}
-
-	// Alloate space for the binary, and the number of permutations
 	binaryptr = binary = ( byte* )ri.Hunk_AllocateTempMemory( binarySize );
 
-	shaderHeader.version = GL_SHADER_VERSION;
+	// reserve space for the header
+	binaryptr += sizeof( shaderHeader );
 
-	memcpy( ( void* )binaryptr, &shaderHeader, sizeof( shaderHeader ) );
+	// get the program binary and write it to the buffer
+	glGetProgramBinary( shaderProgram->program, binaryLength, NULL, &shaderHeader.binaryFormat, binaryptr );
+
+	// set the header
+	shaderHeader.version = GL_SHADER_VERSION;
+	shaderHeader.numMacros = _compileMacros.size();
+
+	for ( int i = 0; i < shaderHeader.numMacros; i++ )
+	{
+		shaderHeader.macros[ i ] = _compileMacros[ i ]->GetType();
+	}
+
+	shaderHeader.binaryLength = binaryLength;
+	shaderHeader.checkSum = _checkSum;
+	
+	// write the header to the buffer
+	memcpy( ( void* )binary, &shaderHeader, sizeof( shaderHeader ) );
 
 	binaryptr += sizeof( shaderHeader );
 
-	// Add the program binarys
-	for( size_t i = 0; i < _shaderPrograms.size(); i++ )
-	{
-		GLuint program = _shaderPrograms[ i ].program;
-		GLShaderProgramHeader programHeader;
-		byte *programBinary = binaryptr + sizeof( programHeader );
-
-		if ( !program )
-		{
-			continue;
-		}
-
-		glGetProgramBinary( program, binarySize - ( programBinary - binary ), &programHeader.binaryLength, &programHeader.binaryFormat, ( GLvoid* )programBinary );
-
-		memcpy( ( void* )binaryptr, &programHeader, sizeof( programHeader ) );
-
-		binaryptr += sizeof( programHeader ) + programHeader.binaryLength;
-	}
-
-	ri.FS_WriteFile( va( "glsl/%s.bin", this->GetName().c_str() ), binary, binarySize );
+	ri.FS_WriteFile( va( "glsl/%s/%s_%u.bin", this->GetName().c_str(), this->GetName().c_str(), programNum ), binary, binarySize );
 
 	ri.Hunk_FreeTempMemory( binary );
 #endif
@@ -1120,108 +1152,12 @@ void GLShader::CompileAndLinkGPUShaderProgram( shaderProgram_t *program,
 		glslopt_shader_delete( shaderOptimized1 );
 	}
 #endif
-	CompileGPUShader( program->program, program->name, vertexShaderTextWithMacros.c_str(), strlen( vertexShaderTextWithMacros.c_str() ), GL_VERTEX_SHADER );
-	CompileGPUShader( program->program, program->name, fragmentShaderTextWithMacros.c_str(), strlen( fragmentShaderTextWithMacros.c_str() ), GL_FRAGMENT_SHADER );
-	BindAttribLocations( program->program );  //, _vertexAttribsRequired | _vertexAttribsOptional);
+	CompileGPUShader( program->program, program->name, vertexShaderTextWithMacros.c_str(), vertexShaderTextWithMacros.length(), GL_VERTEX_SHADER );
+	CompileGPUShader( program->program, program->name, fragmentShaderTextWithMacros.c_str(), fragmentShaderTextWithMacros.length(), GL_FRAGMENT_SHADER );
+	BindAttribLocations( program->program );
 	LinkProgram( program->program );
 }
-void GLShader::CompilePermutations()
-{
-	ri.Printf(PRINT_ALL, "/// -------------------------------------------------\n");
-	ri.Printf(PRINT_ALL, "/// creating %s shaders --------\n", this->GetName().c_str());
 
-	int startTime = ri.Milliseconds();
-
-	//Com_Memset(_shaderPrograms, 0, sizeof(_shaderPrograms));
-
-	std::string vertexInlines = "";
-	this->BuildShaderVertexLibNames(vertexInlines);
-
-	std::string fragmentInlines = "";
-	this->BuildShaderFragmentLibNames(fragmentInlines);
-
-	std::string vertexShaderText = BuildGPUShaderText( this->GetMainShaderName().c_str(), vertexInlines.c_str(), GL_VERTEX_SHADER );
-	std::string fragmentShaderText = BuildGPUShaderText( this->GetMainShaderName().c_str(), fragmentInlines.c_str(), GL_FRAGMENT_SHADER );
-
-	size_t numPermutations = (1 << _compileMacros.size());	// same as 2^n, n = no. compile macros
-	size_t numCompiled = 0;
-	ri.Printf(PRINT_ALL, "...compiling %s shaders\n", this->GetName().c_str());
-	ri.Printf(PRINT_ALL, "0%%  10   20   30   40   50   60   70   80   90   100%%\n");
-	ri.Printf(PRINT_ALL, "|----|----|----|----|----|----|----|----|----|----|\n");
-	size_t tics = 0;
-	size_t nextTicCount = 0;
-
-	for(size_t i = 0; i < numPermutations; i++)
-	{
-		if((i + 1) >= nextTicCount)
-		{
-			size_t ticsNeeded = (size_t)(((double)(i + 1) / numPermutations) * 50.0);
-
-			do { ri.Printf(PRINT_ALL, "*"); }
-			while ( ++tics < ticsNeeded );
-
-			nextTicCount = (size_t)((tics / 50.0) * numPermutations);
-
-			if(i == (numPermutations - 1))
-			{
-				if(tics < 51)
-				{
-					ri.Printf(PRINT_ALL, "*");
-				}
-
-				ri.Printf(PRINT_ALL, "\n");
-			}
-		}
-
-		std::string compileMacros;
-
-		if(GetCompileMacrosString(i, compileMacros))
-		{
-			this->BuildShaderCompileMacros(compileMacros);
-
-			//ri.Printf(PRINT_ALL, "Compile macros: '%s'\n", compileMacros.c_str());
-
-			shaderProgram_t *shaderProgram = &_shaderPrograms[i];
-
-			Q_strncpyz( shaderProgram->name, this->GetName().c_str(), sizeof( shaderProgram->name ) );
-
-#if 0
-			if ( !compileMacros.empty() )
-			{
-				program->compileMacros = ( char * ) ri.Hunk_Alloc( sizeof( char ) * compileMacros.length() + 1, h_low );
-				Q_strncpyz( program->compileMacros, compileMacros.c_str(), compileMacros.length() + 1 );
-			}
-			else
-#endif
-			{
-				shaderProgram->compileMacros = NULL;
-			}
-
-			shaderProgram->program = glCreateProgram();
-			shaderProgram->attribs = _vertexAttribsRequired; // | _vertexAttribsOptional;
-
-			CompileAndLinkGPUShaderProgram(	shaderProgram, vertexShaderText, fragmentShaderText, compileMacros, i);
-
-			UpdateShaderProgramUniformLocations(shaderProgram);
-
-			SetShaderProgramUniformLocations(shaderProgram);
-			glUseProgram( shaderProgram->program );
-			SetShaderProgramUniforms(shaderProgram);
-			glUseProgram( 0 );
-
-			ValidateProgram(shaderProgram->program);
-			//ShowProgramUniforms(shaderProgram->program);
-			GL_CheckErrors();
-
-			numCompiled++;
-		}
-	}
-
-	SelectProgram();
-
-	int endTime = ri.Milliseconds();
-	ri.Printf( PRINT_ALL, "...compiled %i %s shader permutations in %5.2f seconds\n", ( int ) numCompiled, this->GetName().c_str(), ( endTime - startTime ) / 1000.0 );
-}
 void GLShader::CompileGPUShader( GLuint program, const char *programName, const char *shaderText, int shaderTextSize, GLenum shaderType ) const
 {
 	GLuint shader = glCreateShader( shaderType );

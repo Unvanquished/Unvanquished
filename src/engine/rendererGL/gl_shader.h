@@ -29,17 +29,19 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "tr_local.h"
 
 // *INDENT-OFF*
-static const unsigned int GL_SHADER_VERSION = 1;
+static const int MAX_SHADER_MACROS = 9;
+static const unsigned int GL_SHADER_VERSION = 2;
 
 struct GLShaderHeader
 {
 	unsigned int version;
-};
+	unsigned int checkSum; // checksum of shader source this was built from
 
-struct GLShaderProgramHeader
-{
-	GLenum   binaryFormat;
-	GLint    binaryLength;
+	unsigned int macros[ MAX_SHADER_MACROS ]; // macros the shader uses ( may or may not be enabled )
+	unsigned int numMacros;
+
+	GLenum binaryFormat; // argument to glProgramBinary
+	GLint  binaryLength; // argument to glProgramBinary
 };
 
 class GLUniform;
@@ -56,7 +58,6 @@ private:
 	std::string                    _mainShaderName;
 protected:
 	int                            _activeMacros;
-
 	std::vector< shaderProgram_t > _shaderPrograms;
 	shaderProgram_t                 *_currentProgram;
 
@@ -67,11 +68,13 @@ protected:
 //	const uint32_t           _vertexAttribsOptional;
 //	const uint32_t           _vertexAttribsUnsupported;
 	uint32_t                       _vertexAttribs; // can be set by uniforms
+	unsigned int                   _checkSum;
 
 	GLShader( const std::string &name, uint32_t vertexAttribsRequired /*, uint32_t vertexAttribsOptional, uint32_t vertexAttribsUnsupported*/ ) :
 		_name( name ),
 		_mainShaderName( name ),
 		_activeMacros( 0 ),
+		_checkSum( 0 ),
 		_currentProgram( NULL ),
 		_vertexAttribsRequired( vertexAttribsRequired ),
 		_vertexAttribs( 0 )
@@ -112,7 +115,7 @@ public:
 
 	void RegisterCompileMacro( GLCompileMacro *compileMacro )
 	{
-		if ( _compileMacros.size() >= 9 )
+		if ( _compileMacros.size() >= MAX_SHADER_MACROS )
 		{
 			ri.Error( ERR_DROP, "Can't register more than 9 compile macros for a single shader" );
 		}
@@ -144,9 +147,8 @@ protected:
 	void        UpdateShaderProgramUniformLocations( shaderProgram_t *shaderProgram ) const;
 
 	void         LoadShader();
-	bool         LoadShaderBinary();
-	void         SaveShaderBinary();
-	void         CompilePermutations();
+	bool         LoadShaderBinary( size_t programNum );
+	void         SaveShaderBinary( size_t programNum );
 
 	virtual void BuildShaderVertexLibNames( std::string& vertexInlines ) { };
 	virtual void BuildShaderFragmentLibNames( std::string& vertexInlines ) { };

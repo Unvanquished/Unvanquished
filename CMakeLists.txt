@@ -471,6 +471,7 @@ set( RENDERERGLLIST
   ${MOUNT_DIR}/engine/rendererGL/tr_surface.c
   ${MOUNT_DIR}/engine/rendererGL/tr_vbo.c
   ${MOUNT_DIR}/engine/rendererGL/tr_world.cpp
+  ${MOUNT_DIR}/engine/qcommon/md4.c
 )
 
 set( SERVERLIST
