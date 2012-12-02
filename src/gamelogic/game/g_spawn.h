@@ -83,3 +83,6 @@ void    SP_misc_portal_surface( gentity_t *ent );
 void    SP_misc_particle_system( gentity_t *ent );
 void    SP_misc_anim_model( gentity_t *ent );
 void    SP_misc_light_flare( gentity_t *ent );
+
+// Init functions
+void    SP_target_init( void );
