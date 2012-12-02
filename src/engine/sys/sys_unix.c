@@ -58,6 +58,10 @@ Maryland 20850 USA.
 #include <SDL_syswm.h>
 #endif
 
+#ifndef SIGIOT
+#define SIGIOT SIGABRT
+#endif
+
 qboolean    stdinIsATTY;
 
 // Used to determine where to store user-specific files
@@ -387,6 +391,8 @@ Sys_Cwd
 */
 char *Sys_Cwd( void )
 {
+	static char cwd[ MAX_OSPATH ];
+
 #ifdef MACOS_X
 	char *apppath = Sys_DefaultAppPath();
 
@@ -396,8 +402,6 @@ char *Sys_Cwd( void )
 	}
 
 #endif
-
-	static char cwd[ MAX_OSPATH ];
 
 	char        *result = getcwd( cwd, sizeof( cwd ) - 1 );
 
