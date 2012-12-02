@@ -805,7 +805,7 @@ void GLShader::LoadShader()
 	std::string fragmentShaderText = BuildGPUShaderText( this->GetMainShaderName().c_str(), fragmentInlines.c_str(), GL_FRAGMENT_SHADER );
 	std::string combinedShaderText= vertexShaderText + fragmentShaderText;
 
-	_checkSum = Com_BlockChecksum( combinedShaderText.c_str(), combinedShaderText.length );
+	_checkSum = Com_BlockChecksum( combinedShaderText.c_str(), combinedShaderText.length() );
 
 	size_t numPermutations = ( 1 << _compileMacros.size() );	// same as 2^n, n = no. compile macros
 	size_t numCompiled = 0;
