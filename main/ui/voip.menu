@@ -1,0 +1,66 @@
+#include "ui/menudef.h"
+#define W 250
+#define H 500
+
+
+#define VOIP_ITEM( TEXT, KEY, ACTION, POS ) \
+	itemDef \
+	{ \
+		name TEXT \
+		style WINDOW_STYLE_EMPTY \
+		rect 10 (145+(25*POS)) 20 25 \
+		type ITEM_TYPE_TEXT \
+		text #KEY "." \
+		textstyle ITEM_TEXTSTYLE_SHADOWED \
+		textscale .375 \
+		forecolor 1 1 1 1 \
+		visible MENU_TRUE \
+		decoration \
+	} \
+	itemDef \
+	{ \
+		name TEXT \
+		style WINDOW_STYLE_EMPTY \
+		rect 30 (145+(25*POS)) 240 25 \
+		type ITEM_TYPE_TEXT \
+		text TEXT \
+		textstyle ITEM_TEXTSTYLE_SHADOWED \
+		textscale .5 \
+		forecolor 1 1 1 1 \
+		visible MENU_TRUE \
+		decoration \
+	} \
+	onKEY KEY { exec "set cl_voipSendTarget " ##ACTION; close voip }
+
+{
+	menuDef
+	{
+		name "voip"
+		visible MENU_FALSE
+		fullscreen MENU_FALSE
+		rect 0 0 W H
+		focusColor 1 .2 1 1
+		aspectBias ALIGN_LEFT
+		style WINDOW_STYLE_FILLED
+		border WINDOW_BORDER_FULL
+
+		itemDef
+		{
+			name window
+			rect -90 -10 (W+100) H
+			style WINDOW_STYLE_SHADER
+			background "ui/assets/vertgrad.tga"
+			forecolor MENU_TEAL_TRANS
+			visible MENU_TRUE
+			decoration
+			border WINDOW_BORDER_KCGRADIENT
+			borderSize 1.0
+			borderColor 1 1 1 1
+		}
+
+		VOIP_ITEM( "Team", 1, "team", 1 )
+		VOIP_ITEM( "Spatial", 2, "spatial", 2 )
+		VOIP_ITEM( "Attacker", 3, "attacker", 3 )
+		VOIP_ITEM( "Crosshair", 4, "crosshair", 4 )
+	}
+}

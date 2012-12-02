@@ -18,4 +18,5 @@
 
   loadMenu { "ui/say.menu" }
   loadMenu { "ui/vsays.menu" }
+  loadMenu { "ui/voip.menu" }
 }
