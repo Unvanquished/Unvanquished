@@ -868,7 +868,8 @@ void GLShader::LoadShader()
 	int endTime = ri.Milliseconds();
 	float time = ( endTime - startTime ) / 1000.0;
 	
-	ri.Printf( PRINT_ALL, "...compiled %u shaders and loaded %u cached shaders in %5.2f seconds\n", numCompiled, numLoaded - numCompiled, time );
+	ri.Printf( PRINT_ALL, "...compiled %u shaders and loaded %u cached shaders in %5.2f seconds\n", ( unsigned int ) numCompiled, 
+	                                                                                                ( unsigned int ) ( numLoaded - numCompiled ), time );
 }
 
 bool GLShader::LoadShaderBinary( size_t programNum )
@@ -894,7 +895,7 @@ bool GLShader::LoadShaderBinary( size_t programNum )
 		return false;
 	}
 
-	fileLength = ri.FS_ReadFile( va( "glsl/%s/%s_%u.bin", this->GetName().c_str(), this->GetName().c_str(), programNum ), &binary );
+	fileLength = ri.FS_ReadFile( va( "glsl/%s/%s_%u.bin", this->GetName().c_str(), this->GetName().c_str(), ( unsigned int ) programNum ), &binary );
 
 	// file empty or not found
 	if( fileLength <= 0 )
@@ -1006,7 +1007,7 @@ void GLShader::SaveShaderBinary( size_t programNum )
 
 	binaryptr += sizeof( shaderHeader );
 
-	ri.FS_WriteFile( va( "glsl/%s/%s_%u.bin", this->GetName().c_str(), this->GetName().c_str(), programNum ), binary, binarySize );
+	ri.FS_WriteFile( va( "glsl/%s/%s_%u.bin", this->GetName().c_str(), this->GetName().c_str(), ( unsigned int ) programNum ), binary, binarySize );
 
 	ri.Hunk_FreeTempMemory( binary );
 #endif
