@@ -361,6 +361,7 @@ gotnewcl:
 	clientNum = newcl - svs.clients;
 	ent = SV_GentityNum( clientNum );
 	newcl->gentity = ent;
+	ent->r.svFlags = 0;
 
 	// save the challenge
 	newcl->challenge = challenge;
