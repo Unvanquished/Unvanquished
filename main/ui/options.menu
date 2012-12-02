@@ -375,11 +375,13 @@
 	BINDX	( communication, "Team Chat:", "messagemode2", 2 )
 	BINDX	( communication, "Admin Chat:", "messagemode3", 3 )
 	BINDX	( communication, "IRC Chat:", "messagemode4", 4 )
-	BINDX	( communication, "Vote Yes:", "vote yes", 5 )
-	BINDX	( communication, "Vote No:", "vote no", 6 )
-	BINDX	( communication, "Team Vote Yes:", "teamvote yes", 7 )
-	BINDX	( communication, "Team Vote No:", "teamvote no", 8 )
-	BINDX	( communication, "Voice Say Menu:", "menu vsay_top", 9 )
+	BINDX   ( communication, "VoIP Chat:", "+voiprecord", 5 )
+	BINDX	( communication, "Vote Yes:", "vote yes", 6 )
+	BINDX	( communication, "Vote No:", "vote no", 7 )
+	BINDX	( communication, "Team Vote Yes:", "teamvote yes", 8 )
+	BINDX	( communication, "Team Vote No:", "teamvote no", 9 )
+	BINDX	( communication, "Voice Say Menu:", "menu vsay_top", 10 )
+	BINDX   ( communication, "VoIP Menu:", "menu voip", 11 )
 
 //////// MISC
 
