@@ -1,0 +1,2018 @@
+# UNVANQUISHED
+# Copyright (C) 2012 Unvanquished Development
+# This file is distributed under the same license as Unvanquished.
+msgid ""
+msgstr ""
+"Project-Id-Version: Unv Client DE r1\n"
+"Report-Msgid-Bugs-To: vcelestialragev@gmail.com\n"
+"POT-Creation-Date: 2012-11-01 03:39+0000\n"
+"PO-Revision-Date: 2012-11-26 11:20+0100\n"
+"Last-Translator: Viech\n"
+"Language-Team: Unvanquished Development\n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Pootle 2.1.6\n"
+
+# Erwarte Serverbefehle/Serverbefehle anstehend?
+#: src/engine/server/sv_main.c:161
+msgid "===== pending server commands =====\n"
+msgstr "===== Anstehende Serverbefehle =====\n"
+
+#: src/engine/server/sv_main.c:306
+#, c-format
+msgid "Resolving %s (IPv4)\n"
+msgstr "Löse %s zu IPv4 Adresse auf\n"
+
+#: src/engine/server/sv_main.c:317 src/engine/server/sv_main.c:338
+#: src/engine/server/sv_main.c:424 src/engine/client/cl_main.c:1866
+#: src/engine/client/cl_main.c:2045
+#, c-format
+msgid "%s resolved to %s\n"
+msgstr "%s aufgelöst zu %s\n"
+
+#: src/engine/server/sv_main.c:321
+#, c-format
+msgid "%s has no IPv4 address.\n"
+msgstr "%s hat keine IPv4 Adresse.\n"
+
+#: src/engine/server/sv_main.c:327
+#, c-format
+msgid "Resolving %s (IPv6)\n"
+msgstr "Löse %s zu IPv6 Adresse auf\n"
+
+#: src/engine/server/sv_main.c:342
+#, c-format
+msgid "%s has no IPv6 address.\n"
+msgstr "%s hat keine IPv6 Adresse.\n"
+
+#: src/engine/server/sv_main.c:350
+#, c-format
+msgid "Couldn't resolve address: %s\n"
+msgstr "Adresse %s konnte nicht aufgelöst werden\n"
+
+#: src/engine/server/sv_main.c:357
+#, c-format
+msgid "Sending heartbeat to %s\n"
+msgstr "Sende Lebenszeichen an %s\n"
+
+#: src/engine/server/sv_main.c:409
+#, c-format
+msgid "Resolving %s\n"
+msgstr "Löse %s auf\n"
+
+#: src/engine/server/sv_main.c:414
+#, c-format
+msgid "Couldn't resolve master address: %s\n"
+msgstr "Adresse des Hauptservers konnte nicht aufgelöst werden: %s\n"
+
+#: src/engine/server/sv_main.c:427
+#, c-format
+msgid "Sending gamestat to %s\n"
+msgstr "Sende Spielstatus an %s\n"
+
+#: src/engine/server/sv_main.c:707
+msgid "Detected flood of getinfo/getstatus connectionless packets\n"
+msgstr "Übermäßige verbindungslose getinfo/getstatus Anfragen entdeckt\n"
+
+#: src/engine/server/sv_main.c:718
+#, c-format
+msgid ""
+"Possible DRDoS attack to address %i.%i.%i.%i, ignoring getinfo/getstatus "
+"connectionless packet\n"
+msgstr "Möglicher DDoS-Angriff gegen Adresse %i.%i.%i.%i, ignoriere verbindungslose "
+"getinfo/getstatus Pakete\n"
+
+#: src/engine/server/sv_main.c:770
+#, c-format
+msgid ""
+"Bad rcon from %s:\n"
+"%s\n"
+msgstr ""
+"Ungültigen rcon-Befehl von %s erhalten:\n"
+"%s\n"
+
+#: src/engine/server/sv_main.c:775
+#, c-format
+msgid ""
+"Rcon from %s:\n"
+"%s\n"
+msgstr ""
+"rcon-Befehl von %s erhalten:\n"
+"%s\n"
+
+#: src/engine/server/sv_main.c:790
+msgid "No rconpassword set on the server.\n"
+msgstr "Auf dem Server ist kein rcon-Passwort gesetzt.\n"
+
+#: src/engine/server/sv_main.c:794
+msgid "Bad rconpassword.\n"
+msgstr "Falsches rcon-Passwort.\n"
+
+#: src/engine/server/sv_init.c:576
+msgid "------ Server Initialization ------\n"
+msgstr "----- Server startet -----\n"
+
+#: src/engine/server/sv_init.c:577
+#, c-format
+msgid "Server: %s\n"
+msgstr "Server: %s\n"
+
+#: src/engine/server/sv_init.c:766
+msgid "WARNING: sv_pure set but no PK3 files loaded\n"
+msgstr "WARNUNG: sv_pure ist gesetzt aber es wurden keine PK3-Dateien geladen\n"
+
+#: src/engine/server/sv_init.c:963
+msgid "----- Server Shutdown -----\n"
+msgstr "----- Server fährt herunter -----\n"
+
+#: src/engine/server/sv_client.c:226
+#, c-format
+msgid "Client %i connecting with %i challenge ping\n"
+msgstr "Client %i baut Verbindung mit %i Challenge-Pings auf\n"
+
+#: src/engine/server/sv_client.c:760
+#, c-format
+msgid "clientDownload: %d : file \"%s\" completed\n"
+msgstr "clientDownload: %d : Datei \"%s\" vollständig\n"
+
+#: src/engine/server/sv_client.c:809 src/engine/server/sv_client.c:833
+#, c-format
+msgid "SV_WWWDownload: unexpected wwwdl '%s' for client '%s'\n"
+msgstr "SV_WWWDownload: Unerwarteter wwwdl '%s' für Client '%s'\n"
+
+#: src/engine/server/sv_client.c:818
+#, c-format
+msgid "WARNING: dupe wwwdl ack from client '%s'\n"
+msgstr "Warnung: Doppelte wwwdl-Empfangsbestätigung von Client '%s' erhalten\n"
+
+#: src/engine/server/sv_client.c:857
+#, c-format
+msgid ""
+"WARNING: client '%s' reports that the redirect download for '%s' had wrong "
+"checksum.\n"
+msgstr "Warnung: Client '%s' meldet, dass der weitergeleitete Download für '%s' eine "
+"ungültige Prüfsumme hat.\n"
+
+#: src/engine/server/sv_client.c:859
+msgid "         you should check your download redirect configuration.\n"
+msgstr "         Du solltest deine Download-Weiterleitungseinstellungen überprüfen.\n"
+
+#: src/engine/server/sv_client.c:869
+#, c-format
+msgid "SV_WWWDownload: unknown wwwdl subcommand '%s' for client '%s'\n"
+msgstr "SV_WWWDownload: Unbekannter wwwdl-Unterbefehl '%s' von Client '%s'\n"
+
+#: src/engine/server/sv_client.c:899
+#, c-format
+msgid "clientDownload: sending client '%s' to fallback URL '%s'\n"
+msgstr "clientDownload: Leite Client '%s' auf Ausweich-URL '%s' weiter\n"
+
+#: src/engine/server/sv_client.c:1007
+#, c-format
+msgid "Redirecting client '%s' to %s\n"
+msgstr "Leite Client '%s' weiter nach '%s'\n"
+
+#: src/engine/server/sv_client.c:1031
+#, c-format
+msgid "ERROR: Client '%s': couldn't extract file size for %s\n"
+msgstr "FEHLER: Client '%s' konnte Dateigröße von %s nicht extrahieren\n"
+
+#: src/engine/server/sv_client.c:1044
+#, c-format
+msgid "Client '%s': falling back to regular downloading for failed file %s\n"
+msgstr "Client '%s' weicht nach Fehlversuch auf regulären Download für %s aus\n"
+
+#: src/engine/server/sv_client.c:1055
+#, c-format
+msgid "Client '%s' is not configured for www download\n"
+msgstr "Client '%s' kann keinen HTTP-Download tätigen\n"
+
+#: src/engine/server/sv_client.c:1065
+#, c-format
+msgid "clientDownload: %d : \"%s\" file not found on server\n"
+msgstr "clientDownload: %d : Datei \"%s\" ist auf dem Server nicht verfügbar\n"
+
+#: src/engine/server/sv_client.c:1131
+#, c-format
+msgid "'%s' downloading at sv_dl_maxrate (%d)\n"
+msgstr "'%s' lädt mit maximaler Downloadrate (sv_dl_maxrate: %d)\n"
+
+#: src/engine/server/sv_client.c:1136
+#, c-format
+msgid "'%s' downloading at rate %d\n"
+msgstr "'%s' lädt mit Datenrate %d\n"
+
+#: src/engine/server/sv_client.c:1745
+#, c-format
+msgid "Client %s lost %i clientCommands\n"
+msgstr "Client %s hat %i Befehle (clientCommands) verloren\n"
+
+#: src/engine/server/sv_client.c:2078
+#, c-format
+msgid "Too many VoIP packets queued for client #%d\n"
+msgstr "Für Client #%d liegen zu viele VoIP-Pakete in der Warteschlange\n"
+
+#: src/engine/server/sv_client.c:2253
+#, c-format
+msgid "WARNING: bad command byte for client %i\n"
+msgstr "WARNUNG: Ungültiges Befehlsbyte von Client %i\n"
+
+#: src/engine/server/sv_snapshot.c:960 src/engine/server/sv_snapshot.c:1031
+#, c-format
+msgid "WARNING: msg overflowed for %s\n"
+msgstr "WARNUNG: Nachrichtenpuffer für %s übergelaufen\n"
+
+#: src/engine/server/sv_ccmds.c:68 src/engine/server/sv_ccmds.c:125
+msgid "No player specified.\n"
+msgstr "Kein Spieler angegeben.\n"
+
+#: src/engine/server/sv_ccmds.c:96
+#, c-format
+msgid "Player %s is not on the server\n"
+msgstr "Spieler %s ist nicht auf dem Server\n"
+
+#: src/engine/server/sv_ccmds.c:135
+#, c-format
+msgid "Bad slot number: %s\n"
+msgstr "Ungültige Slotnummer: %s\n"
+
+#: src/engine/server/sv_ccmds.c:144
+#, c-format
+msgid "Bad client slot: %i\n"
+msgstr "Ungültiger Client-Slot: %i\n"
+
+#: src/engine/server/sv_ccmds.c:152
+#, c-format
+msgid "Client %i is not active\n"
+msgstr "Client %i ist nicht aktiv\n"
+
+#: src/engine/server/sv_ccmds.c:192
+#, c-format
+msgid "Can't find map %s\n"
+msgstr "Kann Map %s nicht finden\n"
+
+#: src/engine/server/sv_ccmds.c:263 src/engine/server/sv_ccmds.c:393
+msgid "Server is not running.\n"
+msgstr "Server läuft nicht.\n"
+
+#: src/engine/server/sv_ccmds.c:283
+msgid "sv_maxclients variable change — restarting.\n"
+msgstr "Die Variable sv_maxclients wurde verändert — führe Neustart durch.\n"
+
+# Server Infoeinstellungen/Serverinfo Einstellungen?
+#: src/engine/server/sv_ccmds.c:489
+msgid "Server info settings:\n"
+msgstr "Serverinfo Einstellungen:\n"
+
+# Systeminfo Einstellungen/System Infoeinstellungen?
+#: src/engine/server/sv_ccmds.c:502
+msgid "System info settings:\n"
+msgstr "Systeminfo Einstellungen:\n"
+
+#: src/engine/client/cl_keys.c:1373
+msgid "unbind <key> : remove commands from a key\n"
+msgstr "unbind <Taste> : Löscht die Tastenbelegung\n"
+
+#: src/engine/client/cl_keys.c:1381 src/engine/client/cl_keys.c:1434
+#: src/engine/client/cl_keys.c:1489
+#, c-format
+msgid "\"%s\" isn't a valid key\n"
+msgstr "\"%s\" ist eine ungültige Taste\n"
+
+#: src/engine/client/cl_keys.c:1421
+msgid "bind <key> [command] : attach a command to a key\n"
+msgstr "bind <Taste> [Befehl] : Belegt eine Taste mit einem Befehl\n"
+
+#: src/engine/client/cl_keys.c:1446
+#, c-format
+msgid "\"%s\" is not bound\n"
+msgstr "\"%s\" ist kein Befehl zugeordnet\n"
+
+#: src/engine/client/cl_keys.c:1480
+msgid "usage: editbind <key>"
+msgstr "Benutzung: editbind <Taste>"
+
+#: src/engine/client/cl_parse.c:671
+msgid "Server sending download, but no download was requested\n"
+msgstr "Server bietet einen Download, obwohl keiner angefordert wurde\n"
+
+#: src/engine/client/cl_parse.c:699
+#, c-format
+msgid "refusing redirect to %s by server (bad checksum)\n"
+msgstr "Weise Umleitung nach %s zurück (Prüfsumme ungültig)\n"
+
+#: src/engine/client/cl_parse.c:718
+#, c-format
+msgid "Failed to initialize download for '%s'\n"
+msgstr "Download konnte nicht initialisiert werden: '%s'\n"
+
+#: src/engine/client/cl_parse.c:777
+#, c-format
+msgid "Could not create %s\n"
+msgstr "%s konnte nicht erstellt werden\n"
+
+#: src/engine/client/cl_console.c:246
+msgid "usage: condump <filename>\n"
+msgstr "Benutzung: condump <Dateiname>\n"
+
+#: src/engine/client/cl_console.c:250
+#, c-format
+msgid "Dumped console text to %s.\n"
+msgstr "Konsolentext nach %s geschrieben.\n"
+
+#: src/engine/client/cl_console.c:256 src/engine/client/cl_main.c:938
+msgid "ERROR: couldn't open.\n"
+msgstr "FEHLER: Konnte nicht geöffnet werden.\n"
+
+#: src/engine/client/cl_console.c:294
+#, c-format
+msgid "usage: %s <string1> <string2> <…>\n"
+msgstr "Benutzung: %s <Zeichenkette1> <Zeichenkette2> <...>\n"
+
+#: src/engine/client/cl_console.c:340
+msgid "usage: grep <string>\n"
+msgstr "Benutzung: grep <Zeichenkette>\n"
+
+#: src/engine/client/snd_main.c:374
+msgid "------ Initializing Sound -----\n"
+msgstr "------ Initialisiere Sound -----\n"
+
+#: src/engine/client/snd_mem.c:113
+msgid "Sound memory manager started\n"
+msgstr "Soundspeichermanager gestartet\n"
+
+#: src/engine/client/cl_cgame.c:471
+msgid "^3Server sent a pubkey_decrypt command, but sent nothing to decrypt!\n"
+msgstr "^3Server hat einen pubkey_decrypt Befehl gesendet, es gibt aber nichts zu "
+"entschlüsseln!\n"
+
+#: src/engine/client/cl_cgame.c:1632
+msgid "Mumble: Linking to Mumble application okay\n"
+msgstr "Mumble: Verbindung zu Mumble-Anwendung steht\n"
+
+#: src/engine/client/cl_cgame.c:1632
+msgid "Mumble: Linking to Mumble application failed\n"
+msgstr "Mumble: Verbindung zu Mumble-Anwendung fehlgeschlagen\n"
+
+#: src/engine/client/snd_dma.c:104
+msgid "----- Sound Info -----\n"
+msgstr "----- Sound Info -----\n"
+
+#: src/engine/client/snd_dma.c:108
+msgid "the sound system is not started\n"
+msgstr "Soundsystem wurde nicht gestartet\n"
+
+#: src/engine/client/snd_dma.c:112
+#, c-format
+msgid "%5d stereo\n"
+msgstr "%5d stereo\n"
+
+#: src/engine/client/snd_dma.c:113
+#, c-format
+msgid "%5d samples\n"
+msgstr "%5d Samples\n"
+
+#: src/engine/client/snd_dma.c:114
+#, c-format
+msgid "%5d samplebits\n"
+msgstr "%5d Samplebits\n"
+
+#: src/engine/client/snd_dma.c:115
+#, c-format
+msgid "%5d submission_chunk\n"
+msgstr "%5d submission_chunk\n"
+
+#: src/engine/client/snd_dma.c:116
+#, c-format
+msgid "%5d speed\n"
+msgstr "%5d speed\n"
+
+#: src/engine/client/snd_dma.c:117
+#, c-format
+msgid "%p DMA buffer\n"
+msgstr "%p DMA-Puffer\n"
+
+#: src/engine/client/snd_dma.c:121
+#, c-format
+msgid "Background stream: %s\n"
+msgstr "Hintergrundstream: %s\n"
+
+#: src/engine/client/snd_dma.c:125
+msgid "No background file.\n"
+msgstr "Keine Hintergrunddatei.\n"
+
+#: src/engine/client/snd_dma.c:181
+msgid "Channel memory manager started\n"
+msgstr "Kanalspeichermanager gestartet\n"
+
+#: src/engine/client/snd_dma.c:405
+msgid "Sound name exceeds MAX_QPATH\n"
+msgstr "Name des Sounds überschreitet MAX_QPATH\n"
+
+#: src/engine/client/snd_dma.c:415 src/engine/client/snd_dma.c:429
+#, c-format
+msgid "WARNING: could not find %s — using default\n"
+msgstr "WARNUNG: %s konnte nicht gefunden werden — Verwende Standardwerte\n"
+
+# "handle" als Fehlerbehandlung oder als "Soundhandle"?
+#: src/engine/client/snd_dma.c:558
+#, c-format
+msgid "S_StartSound: handle %i out of range\n"
+msgstr "S_StartSound: Handle %i ausserhalb des Bereichs\n"
+
+#: src/engine/client/snd_dma.c:661
+msgid "dropping sound\n"
+msgstr "Sound wird verworfen\n"
+
+#: src/engine/client/snd_dma.c:705
+#, c-format
+msgid "S_StartLocalSound: handle %i out of range\n"
+msgstr "S_StartLocalSound: Handle %i ausserhalb des Bereichs\n"
+
+#: src/engine/client/snd_dma.c:831
+#, c-format
+msgid "S_AddLoopingSound: handle %i out of range\n"
+msgstr "S_AddLoopingSound: Handle %i ausserhalb des Bereichs\n"
+
+#: src/engine/client/snd_dma.c:905
+#, c-format
+msgid "S_AddRealLoopingSound: handle %i out of range\n"
+msgstr "S_AddRealLoopingSound: Handle %i ausserhalb des Bereichs\n"
+
+#: src/engine/client/snd_dma.c:1493
+msgid "paged out"
+msgstr "ausgelagert"
+
+#: src/engine/client/snd_dma.c:1493
+msgid "resident"
+msgstr "vorliegend"
+
+#: src/engine/client/snd_dma.c:1504
+#, c-format
+msgid "Total resident: %i\n"
+msgstr "Insgesammt vorliegend: %i\n"
+
+#: src/engine/client/cl_irc.c:1001
+msgid "Unable to initialise socket.\n"
+msgstr "Konnte Socket nicht initialisieren.\n"
+
+#: src/engine/client/cl_irc.c:1005
+msgid "The specified address family is not supported.\n"
+msgstr "Der angegebene Netzwerktyp wird nicht unterstützt.\n"
+
+# verfügbar/erreichbar?
+#: src/engine/client/cl_irc.c:1009
+msgid "Specified address is not available from the local machine.\n"
+msgstr "Die angegebene Adresse ist von der lokalen Maschine aus nicht verfügbar.\n"
+
+# forcefully?
+#: src/engine/client/cl_irc.c:1013
+msgid "The attempt to connect was forcefully rejected.\n"
+msgstr "Verbindungsversuch mutwillig abgelehnt.\n"
+
+#: src/engine/client/cl_irc.c:1017
+msgid "address destination address is required.\n"
+msgstr "Zieladresse wird benötigt.\n"
+
+#: src/engine/client/cl_irc.c:1021
+msgid "The namelen argument is incorrect.\n"
+msgstr "Das Argument 'namelen' ist inkorrekt.\n"
+
+#: src/engine/client/cl_irc.c:1025
+msgid "The socket is not already bound to an address.\n"
+msgstr "Der Socket ist noch nicht an eine Adresse gebunden.\n"
+
+#: src/engine/client/cl_irc.c:1029
+msgid "The socket is already connected.\n"
+msgstr "Der Socket ist bereits verbunden.\n"
+
+#: src/engine/client/cl_irc.c:1033
+msgid "The specified address is already in use.\n"
+msgstr "Die angegebene Adresse wird bereits verwendet.\n"
+
+#: src/engine/client/cl_irc.c:1037
+msgid "No more file descriptors are available.\n"
+msgstr "Keine weiteren Dateideskriptoren verfügbar.\n"
+
+#: src/engine/client/cl_irc.c:1041
+msgid "No buffer space available. The socket cannot be created.\n"
+msgstr "Kein Pufferspeicher verfügbar. Der Socket kann nicht erstellt werden.\n"
+
+#: src/engine/client/cl_irc.c:1045
+msgid "The specified protocol is not supported.\n"
+msgstr "Das angegebene Protokoll wird nicht unterstützt.\n"
+
+#: src/engine/client/cl_irc.c:1049
+msgid "The specified protocol is the wrong type for this socket.\n"
+msgstr "Das angegebene Protokoll passt nicht zu diesem Socket.\n"
+
+#: src/engine/client/cl_irc.c:1053
+msgid "The network can't be reached from this host at this time.\n"
+msgstr "Das Netzwerk kann von diesem Host derzeit nicht erreicht werden.\n"
+
+#: src/engine/client/cl_irc.c:1057
+msgid "The descriptor is not a socket.\n"
+msgstr "Der Deskriptor ist kein Socket.\n"
+
+#: src/engine/client/cl_irc.c:1061
+msgid "Attempt timed out without establishing a connection.\n"
+msgstr "Zeitüberschreitung, Verbindungsaufbau fehlgeschlagen.\n"
+
+#: src/engine/client/cl_irc.c:1065
+msgid "Socket type is not supported in this address family.\n"
+msgstr "Socket-Typ wird in dieser Adressfamilie nicht unterstützt.\n"
+
+#: src/engine/client/cl_irc.c:1069
+msgid "Network subsystem failure.\n"
+msgstr "Fehler des Netzwerksubsystems.\n"
+
+#: src/engine/client/cl_irc.c:1073
+msgid "Authoritative Answer Host not found.\n"
+msgstr "Authoritäre Antwort: Host nicht gefunden\n"
+
+#: src/engine/client/cl_irc.c:1077
+msgid "Non-Authoritative Host not found or SERVERFAIL.\n"
+msgstr "Nicht-authoritäre Antwort: Host nicht gefunden oder Serverfehler.\n"
+
+#: src/engine/client/cl_irc.c:1081
+msgid "Non recoverable errors, FORMERR, REFUSED, NOTIMP.\n"
+msgstr "Nicht behebbare Fehler: FORMERR, REFUSED, NOTIMP.\n"
+
+#: src/engine/client/cl_irc.c:1085
+msgid "Valid name, no data record of requested type.\n"
+msgstr "Gültiger Name aber kein Eintrag zum angefragten Typ.\n"
+
+#: src/engine/client/cl_irc.c:1089
+msgid "address blocking Windows Sockets operation is in progress.\n"
+msgstr "Adressblockierende Windows Sockets Operation ist aktiv.\n"
+
+#: src/engine/client/cl_irc.c:1093
+msgid "Unknown connection error.\n"
+msgstr "Unbekannter Verbindungsfehler.\n"
+
+#: src/engine/client/cl_irc.c:1103
+#, c-format
+msgid "IRC socket connection error: %s\n"
+msgstr "IRC-Socket-Verbindungsfehler: %s\n"
+
+#: src/engine/client/cl_irc.c:1394
+#, c-format
+msgid "^5-> ^7%s^5 has entered the channel.\n"
+msgstr "^5-> ^7%s^5 hat den Kanal betreten.\n"
+
+#: src/engine/client/cl_irc.c:1398
+msgid "^2Joined IRC chat.\n"
+msgstr "^2IRC-Chat betreten.\n"
+
+#: src/engine/client/cl_irc.c:1411
+#, c-format
+msgid "^5<- ^7%s^5 has left the channel: %s.\n"
+msgstr "^5-> ^7%s^5 hat den Kanal verlassen: %s\n"
+
+#: src/engine/client/cl_irc.c:1415
+#, c-format
+msgid "^5<- ^7%s^5 has left the channel.\n"
+msgstr "^5-> ^7%s^5 hat den Kanal verlassen.\n"
+
+#: src/engine/client/cl_irc.c:1429
+#, c-format
+msgid "^5<- ^7%s^5 has quit: %s.\n"
+msgstr "^5<- ^7%s^5 hat die Verbindung getrennt: %s\n"
+
+#: src/engine/client/cl_irc.c:1433
+#, c-format
+msgid "^5<- ^7%s^5 has quit.\n"
+msgstr "^5<- ^7%s^5 hat die Verbindung getrennt.\n"
+
+#: src/engine/client/cl_irc.c:1439
+#, c-format
+msgid "^2Quit IRC chat: %s.\n"
+msgstr "^2IRC-Chat verlassen: %s\n"
+
+#: src/engine/client/cl_irc.c:1449
+#, c-format
+msgid "^2Kicked by ^7%s^2: %s.\n"
+msgstr "^2Herausgeworfen von ^7%s^2: %s\n"
+
+#: src/engine/client/cl_irc.c:1453
+#, c-format
+msgid "^5<- ^7%s^5 has been kicked: %s.\n"
+msgstr "^5<- ^7%s^5 wurde herausgeworfen: %s\n"
+
+#: src/engine/client/cl_irc.c:1463
+#, c-format
+msgid "^2** ^7%s^2 is now known as ^7%s^2.\n"
+msgstr "^2** ^7%s^2 ist jetzt bekannt als ^7%s^2.\n"
+
+#: src/engine/client/cl_irc.c:1467
+#, c-format
+msgid "^5** ^7%s^5 is now known as ^7%s^5.\n"
+msgstr "^5** ^7%s^5 ist jetzt bekannt als ^7%s^5.\n"
+
+#: src/engine/client/cl_irc.c:1474
+msgid "unknown message received\n"
+msgstr "Unbekannte Nachricht erhalten\n"
+
+#: src/engine/client/cl_irc.c:1573
+#, c-format
+msgid "IRC: server error: %s\n"
+msgstr "IRC: Serverfehler: %s\n"
+
+#: src/engine/client/cl_irc.c:1577
+msgid "IRC: server error\n"
+msgstr "IRC: Serverfehler\n"
+
+#: src/engine/client/cl_irc.c:1635
+msgid "…IRC: got spurious nickname error\n"
+msgstr "...IRC: Unerwarteter, womöglich ungültiger Fehler bezüglich des Nicknamens "
+"erhalten\n"
+
+#: src/engine/client/cl_irc.c:2044
+msgid "usage: irc_say <text>\n"
+msgstr "Benutzung: irc_say <Text>\n"
+
+#: src/engine/client/cl_irc.c:2050
+msgid "IRC: Not connected\n"
+msgstr "IRC: Nicht verbunden\n"
+
+#: src/engine/client/cl_irc.c:2073
+msgid "IRC: flood detected, message not sent\n"
+msgstr "IRC: Flood entdeckt, Nachricht wurde nicht gesendet\n"
+
+#: src/engine/client/cl_irc.c:2271
+msgid "…IRC: connecting to server\n"
+msgstr "…IRC: Verbinde zu Server\n"
+
+#: src/engine/client/cl_irc.c:2278
+msgid "…IRC: rejected due to unset player name\n"
+msgstr "…IRC: Abgewiesen da Spielername nicht angegeben wurde\n"
+
+#: src/engine/client/cl_irc.c:2285
+msgid "…IRC: rejected due to mostly unusable player name\n"
+msgstr "…IRC: Abgewiesen aufgrund eines unbenutzbaren Spielernamens\n"
+
+#: src/engine/client/cl_irc.c:2294
+msgid "…IRC: unknown server\n"
+msgstr "…IRC: Unbekannter Server\n"
+
+#: src/engine/client/cl_irc.c:2312
+msgid "IRC: invalid port number, defaulting to 6667\n"
+msgstr "IRC: Ungültige Portnummer, es wird der Standardport 6667 verwendet\n"
+
+#: src/engine/client/cl_irc.c:2324
+msgid "…IRC connection refused.\n"
+msgstr "…IRC Verbindung abgewiesen.\n"
+
+#: src/engine/client/cl_irc.c:2348
+msgid "…Connected to IRC server\n"
+msgstr "…Mit IRC Server verbunden\n"
+
+#: src/engine/client/cl_irc.c:2549
+msgid "…IRC: disconnected from server\n"
+msgstr "…IRC: Verbindung zum Server getrennt\n"
+
+#: src/engine/client/cl_irc.c:2714
+msgid "…IRC thread is already running\n"
+msgstr "…IRC-Thread läuft bereits\n"
+
+#: src/engine/client/snd_codec_wav.c:203
+msgid "No ‘data’ chunk\n"
+msgstr "Kein Datenteil\n"
+
+#: src/engine/client/snd_codec_wav.c:235 src/engine/client/snd_codec.c:196
+#, c-format
+msgid "Can't read sound file %s\n"
+msgstr "Sounddatei %s kann nicht gelesen werden\n"
+
+#: src/engine/client/snd_codec_wav.c:243
+#, c-format
+msgid "Can't understand wav file %s\n"
+msgstr "Wav-Datei %s wurde nicht verstanden\n"
+
+#: src/engine/client/snd_codec_wav.c:253
+#, c-format
+msgid "ERROR: Out of memory reading \"%s\"\n"
+msgstr "Fehler: Speicher wurde beim Lesen von \"%s\" aufgebraucht\n"
+
+#: src/engine/client/snd_codec.c:143 src/engine/client/snd_codec.c:162
+#, c-format
+msgid "Unknown extension for %s\n"
+msgstr "Unbekannte Dateiendung für %s\n"
+
+#: src/engine/client/cl_main.c:287
+#, c-format
+msgid "VoIP: Now ignoring player #%d\n"
+msgstr "VoIP: Spieler #%d wird ignoriert\n"
+
+#: src/engine/client/cl_main.c:287
+#, c-format
+msgid "VoIP: No longer ignoring player #%d\n"
+msgstr "VoIP: Spieler #%d wird nicht mehr ignoriert\n"
+
+#: src/engine/client/cl_main.c:292 src/engine/client/cl_main.c:364
+msgid "VoIP: invalid player ID#\n"
+msgstr "VoIP: Ungültige SpielerID#\n"
+
+#: src/engine/client/cl_main.c:310
+#, c-format
+msgid "VoIP: player #%d gain now set to %f\n"
+msgstr "VoIP: Verstärkung für Spieler #%d auf %f gesetzt\n"
+
+#: src/engine/client/cl_main.c:335
+#, c-format
+msgid "VoIP: command ignored: %s\n"
+msgstr "VoIP: Befehl ignoriert: %s\n"
+
+#: src/engine/client/cl_main.c:359
+#, c-format
+msgid "VoIP: current gain for player #%d is %f\n"
+msgstr "VoIP: Momentane Verstärkung für Spieler #%d ist %f\n"
+
+#: src/engine/client/cl_main.c:369
+msgid "usage: voip gain <playerID#> [value]\n"
+msgstr "Benutzung: voip gain <SpielerID#> [Wert]\n"
+
+#: src/engine/client/cl_main.c:374
+msgid "VoIP: muting incoming voice\n"
+msgstr "VoIP: Eingehende Stimme wird stumm geschaltet\n"
+
+#: src/engine/client/cl_main.c:380
+msgid "VoIP: unmuting incoming voice\n"
+msgstr "VoIP: Eingehende Stimme nicht mehr stumm geschaltet\n"
+
+#: src/engine/client/cl_main.c:386
+msgid ""
+"usage: voip [un]ignore <playerID#>\n"
+"       voip [un]muteall\n"
+"       voip gain <playerID#> [value]\n"
+msgstr ""
+"Benutzung: voip [un]ignore <SpielerID#>\n"
+"       voip [un]muteall\n"
+"       voip gain <SpielerID#> [Wert]\n"
+
+#: src/engine/client/cl_main.c:488
+#, c-format
+msgid "WARNING: VoIP target %d is not a valid client number\n"
+msgstr "WARNUNG: VoIP Ziel %d ist keine gültige Clientnummer\n"
+
+#: src/engine/client/cl_main.c:817
+msgid "Not recording a demo.\n"
+msgstr "Es wird keine Demo aufgezeichnet.\n"
+
+#: src/engine/client/cl_main.c:832
+msgid "Stopped demo.\n"
+msgstr "Demo gestoppt.\n"
+
+#: src/engine/client/cl_main.c:870
+msgid "record <demoname>\n"
+msgstr "record <Demoname>\n"
+
+#: src/engine/client/cl_main.c:876
+msgid "Already recording.\n"
+msgstr "Bereits am aufnehmen.\n"
+
+#: src/engine/client/cl_main.c:882
+msgid "You must be in a level to record.\n"
+msgstr "Du musst auf einer Map sein um aufzunehmen.\n"
+
+#: src/engine/client/cl_main.c:890
+msgid ""
+"WARNING: You should set 'g_synchronousClients 1' for smoother demo "
+"recording\n"
+msgstr "WARNUNG: Du solltest 'g_synchronousClients' auf '1' ändern, um die Demo "
+"gleichmäßiger aufnehmen zu können\n"
+
+#: src/engine/client/cl_main.c:933 src/engine/client/cl_main.c:1253
+#, c-format
+msgid "recording to %s.\n"
+msgstr "Nehme auf nach %s.\n"
+
+#: src/engine/client/cl_main.c:1038
+#, c-format
+msgid "%i frames, %3.1fs: %3.1f fps\n"
+msgstr "%i Frames, %3.1f Sekunden: %3.1f FPS\n"
+
+#: src/engine/client/cl_main.c:1113
+msgid "Demo file was truncated.\n"
+msgstr "Demodatei endet abrupt.\n"
+
+#: src/engine/client/cl_main.c:1214
+msgid "wav_record <wavname>\n"
+msgstr "wav_record <WavName>\n"
+
+#: src/engine/client/cl_main.c:1220 src/engine/client/cl_main.c:2471
+msgid "Already recording a wav file\n"
+msgstr "Es wird bereits eine Wav-Datei aufgenommen\n"
+
+#: src/engine/client/cl_main.c:1258
+#, c-format
+msgid "ERROR: couldn't open %s for writing.\n"
+msgstr "FEHLER: %s konnte nicht zum schreiben geöffnet werden.\n"
+
+#: src/engine/client/cl_main.c:1274
+msgid "Stopped recording\n"
+msgstr "Aufnahme gestoppt\n"
+
+#: src/engine/client/cl_main.c:1321
+msgid "playdemo <demoname>\n"
+msgstr "playdemo <Demoname>\n"
+
+#: src/engine/client/cl_main.c:1686
+msgid "Mumble: Unlinking from Mumble application\n"
+msgstr "Mumble: Verbindung zur Mumble-Andwendung wird beendet\n"
+
+#: src/engine/client/cl_main.c:1821
+#, c-format
+msgid "Unknown command \"%s\"\n"
+msgstr "Unbekannter Befehl \"%s\"\n"
+
+#: src/engine/client/cl_main.c:1856
+msgid "Couldn't resolve master address\n"
+msgstr "Hauptserveradresse konnte nicht aufgelöst werden\n"
+
+#: src/engine/client/cl_main.c:1898 src/engine/client/cl_main.c:2429
+#: src/engine/client/cl_main.c:5678
+msgid "Not connected to a server.\n"
+msgstr "Zu keinem Server verbunden.\n"
+
+#: src/engine/client/cl_main.c:1934
+msgid "Can't reconnect to localhost.\n"
+msgstr "Wiederverbindung zu lokalem Server nicht möglich.\n"
+
+#: src/engine/client/cl_main.c:1957
+msgid "usage: connect [-4|-6] server\n"
+msgstr "Benutzung: connect [-4|-6] server\n"
+
+#: src/engine/client/cl_main.c:1977 src/engine/client/cl_main.c:5498
+#: src/engine/client/cl_main.c:5706
+msgid "warning: only -4 or -6 as address type understood.\n"
+msgstr "Warnung: nur -4 oder -6 als Adresstyp möglich.\n"
+
+#: src/engine/client/cl_main.c:2032
+msgid "Bad server address\n"
+msgstr "Ungültige Serveradresse\n"
+
+#: src/engine/client/cl_main.c:2093
+msgid ""
+"You must set 'rconPassword' before\n"
+"issuing an rcon command.\n"
+msgstr "'rconPassword' muss gesetzt werden, bevor ein rcon-Befehl ausgeführt werden "
+"kann.\n"
+
+#: src/engine/client/cl_main.c:2120
+msgid ""
+"Connect to a server or set the 'rconAddress' cvar to issue rcon commands\n"
+msgstr "Verbinde Dich zu einem Server oder setze 'rconAddress' um einen rcon-Befehl "
+"auszuführen.\n"
+
+#: src/engine/client/cl_main.c:2197
+msgid "Daemon RSA public-key file not found, regenerating\n"
+msgstr "Öffentlicher RSA-Schlüssel wurde nicht gefunden, generiere ein neues "
+"Schlüsselpaar\n"
+
+#: src/engine/client/cl_main.c:2207
+msgid "Invalid RSA keypair in RSAKey, regenerating\n"
+msgstr "Ungültiges RSA-Schlüsselpaar gefunden, regeneriere ein neues\n"
+
+#: src/engine/client/cl_main.c:2213
+msgid "Daemon RSA public-key found.\n"
+msgstr "RSA-Schlüsselpaar gefunden.\n"
+
+#: src/engine/client/cl_main.c:2242
+#, c-format
+msgid ""
+"Daemon RSA public-key could not open %s for write, RSA support will be "
+"disabled"
+msgstr ""
+"Konnte %s nicht zum speichern eines RSA-Schlüssels öffnen, RSA wird nicht "
+"unterstützt"
+
+#: src/engine/client/cl_main.c:2249
+msgid "Daemon RSA public-key generated\n"
+msgstr "RSA-Schlüsselpaar generiert\n"
+
+#: src/engine/client/cl_main.c:2488
+msgid "Not recording a wav file\n"
+msgstr "Es wird keine Wav-Datei aufgenommen\n"
+
+#: src/engine/client/cl_main.c:2516
+msgid "The video command can only be used when playing back demos\n"
+msgstr "Der 'video' Befehl kann nur ausgeführt werden, wenn eine Demo abgespielt "
+"wird\n"
+
+#: src/engine/client/cl_main.c:2552
+msgid "ERROR: no free file names to create video\n"
+msgstr "FEHLER: Keine freien Dateinamen um Video zu erstellen\n"
+
+#: src/engine/client/cl_main.c:3625 src/engine/client/cl_main.c:3634
+#, c-format
+msgid "Download failure while getting '%s'\n"
+msgstr "Der Download von '%s' schlug fehl\n"
+
+#: src/engine/client/cl_main.c:3659
+#, c-format
+msgid ""
+"WARNING: file %s obtained through download redirect has wrong checksum\n"
+"         this likely means the server configuration is broken\n"
+msgstr ""
+"WARNUNG: Datei %s die durch einen weitergeleiteten Download erhalten wurde "
+"hat eine ungültige Prüfsumme\n"
+"         Dies bedeutet i.d.R. dass die Serverkonfiguration fehlerhaft ist\n"
+
+#: src/engine/client/cl_main.c:3670
+#, c-format
+msgid "bad checksums: %s\n"
+msgstr "Ungültige Prüfsumme: %s\n"
+
+#: src/engine/client/cl_main.c:4048
+msgid "----- Initializing Renderer ----\n"
+msgstr "----- Renderer wird gestartet ----\n"
+
+#: src/engine/client/cl_main.c:4278
+msgid "Calling GetRefAPI…\n"
+msgstr "Rufe GetRefAPI auf...\n"
+
+#: src/engine/client/cl_main.c:4328
+msgid "----- Client Initialization -----\n"
+msgstr "----- Client Initialisierung -----\n"
+
+#: src/engine/client/cl_main.c:4431 src/engine/qcommon/translation.cpp:114
+msgid "~ ` 0x7e 0x60"
+msgstr "~ ` 0x7e 0x60"
+
+#: src/engine/client/cl_main.c:4490
+msgid ""
+"Your network rate is too slow for VoIP.\n"
+"Set 'Data Rate' to 'LAN/Cable/xDSL' in 'Setup/System/Network' and restart.\n"
+"Until then, VoIP is disabled.\n"
+msgstr ""
+"Deine Netzwerkgeschwindigkeit ist für VoIP zu langsam.\n"
+"Stelle in den Einstellungen 'Datenrate' auf 'LAN/Cable/xDSL' und starte neu.\n"
+"Bis dahin wird VoIP deaktiviert sein.\n"
+
+#: src/engine/client/cl_main.c:4563
+msgid "----- Client Initialization Complete -----\n"
+msgstr "----- Clientinitialisierung Abgeschlossen -----\n"
+
+#: src/engine/client/cl_main.c:4582
+msgid "----- CL_Shutdown -----\n"
+msgstr "----- CL_Shutdown -----\n"
+
+#: src/engine/client/cl_main.c:5002
+msgid "Server settings:\n"
+msgstr "Servereinstellungen:\n"
+
+#: src/engine/client/cl_main.c:5052
+msgid ""
+"\n"
+"Players:\n"
+msgstr ""
+"\n"
+"Spieler:\n"
+
+#: src/engine/client/cl_main.c:5053
+msgid "num: score: ping: name:\n"
+msgstr "Nummer: Punktzahl: Ping: Name:\n"
+
+#: src/engine/client/cl_main.c:5109
+msgid "Scanning for servers on the local network…\n"
+msgstr "Suche nach Servern im lokalen Netzwerk...\n"
+
+#: src/engine/client/cl_main.c:5162
+#, c-format
+msgid "usage: globalservers <master# 0-%d> [protocol] [keywords]\n"
+msgstr "Benutzung: globalservers <master# 0-%d> [Protokoll] [Schlüsselwörter]\n"
+
+#: src/engine/client/cl_main.c:5228
+#, c-format
+msgid "usage: globalservers <master# 0-%d> <protocol> [keywords]\n"
+msgstr "Benutzung: globalservers <master# 0-%d> <Protokoll> [Schlüsselwörter]\n"
+
+#: src/engine/client/cl_main.c:5237
+msgid "CL_GlobalServers_f: Error: No master server address given.\n"
+msgstr "CL_GlobalServers_f: Fehler: Keine Hauptserver-Adresse angegeben.\n"
+
+#: src/engine/client/cl_main.c:5248
+#, c-format
+msgid "CL_GlobalServers_f: Error: could not resolve address of master %s\n"
+msgstr "CL_GlobalServers_f: Fehler: Konnte Adresse des Hauptservers %s nicht "
+"auflösen\n"
+
+#: src/engine/client/cl_main.c:5256
+#, c-format
+msgid "Requesting servers from master %s…\n"
+msgstr "Fordere Serverliste vom Hauptserver %s an...\n"
+
+#: src/engine/client/cl_main.c:5478
+msgid "usage: ping [-4|-6] server\n"
+msgstr "Benutzung: ping [-4|-6] server\n"
+
+#: src/engine/client/cl_main.c:5679
+msgid "usage: serverstatus [-4|-6] server\n"
+msgstr "Benutzung: serverstatus [-4|-6] server\n"
+
+#: src/engine/qcommon/vm.c:1208
+msgid "Registered virtual machines:\n"
+msgstr "Registrierte virtuelle Maschinen:\n"
+
+#: src/engine/qcommon/dl_main.c:128
+msgid "Replace existing download target file\n"
+msgstr "Download: Ersetze existierende Zieldatei\n"
+
+#: src/engine/qcommon/dl_main.c:186 src/engine/qcommon/dl_main_curl.c:87
+msgid "Client download subsystem initialized\n"
+msgstr "Clientdownload Subsystem gestartet\n"
+
+#: src/engine/qcommon/cmd.c:196
+msgid "Cbuf_AddText: overflow\n"
+msgstr "CBuf_AddText: Überlauf\n"
+
+#: src/engine/qcommon/cmd.c:221
+msgid "Cbuf_InsertText overflowed\n"
+msgstr "Cbuf_InsertText ist übergelaufen\n"
+
+#: src/engine/qcommon/cmd.c:446
+msgid "exec <filename> (args) : execute a script file\n"
+msgstr "exec <Dateiname> (Argumente) : Führe eine Skript-Datei aus\n"
+
+#: src/engine/qcommon/cmd.c:450
+#, c-format
+msgid "execing %s\n"
+msgstr "Führe %s aus\n"
+
+#: src/engine/qcommon/cmd.c:479
+#, c-format
+msgid "couldn't exec %s\n"
+msgstr "Konnte %s nicht ausführen\n"
+
+#: src/engine/qcommon/cmd.c:496
+msgid "vstr <variablename> : execute a variable command\n"
+msgstr "vstr <Variablenname> : Führe einen Variablenbefehl aus\n"
+
+#: src/engine/qcommon/cmd.c:510
+msgid "not supported in the dedicated server"
+msgstr "wird vom dedizierten Server nicht unterstützt"
+
+#: src/engine/qcommon/cmd.c:512
+msgid "shift, ctrl, alt, command/cmd, mode, super; ! negates; e.g. shift,!alt"
+msgstr "shift, ctrl, alt, command/cmd, mode, super; ! negiert; z.B. shift,!alt"
+
+#: src/engine/qcommon/cmd.c:583
+#, c-format
+msgid "can't have %s both pressed and not pressed\n"
+msgstr "%s kann nicht gleichzeitig gedrückt und nicht gedrückt sein\n"
+
+#: src/engine/qcommon/cmd.c:604
+#, c-format
+msgid "unknown modifier key name in \"%s\"\n"
+msgstr "Unbekannte Modifikatortaste in \"%s\"\n"
+
+#: src/engine/qcommon/cmd.c:668
+msgid "modcase <modifiers> <command> [<modifiers> <command>] … [<command>]\n"
+msgstr "modcase <Modifikatoren> <Befehl> [<Modifikatoren> <Befehl>] ... [<Befehl>]\n"
+
+#: src/engine/qcommon/cmd.c:756
+msgid "if <modifiers>… is not supported on the server — assuming true.\n"
+msgstr "if <Modifikatoren>... wird vom Server nicht unterstützt — nehme Gültigkeit "
+"an.\n"
+
+#: src/engine/qcommon/cmd.c:800
+msgid "invalid operator in if command. valid operators are = != < > >= <=\n"
+msgstr "Ungültiger Operator in if-Befehl. Gültige Operatoren sind = != < > >= <=\n"
+
+#: src/engine/qcommon/cmd.c:807
+#, c-format
+msgid ""
+"if <value1> <operator> <value2> <cmdthen> (<cmdelse>) : compares the first "
+"two values and executes <cmdthen> if true, <cmdelse> if false\n"
+"if <modifiers> <cmdthen> (<cmdelse>) : check if modifiers are (not) pressed\n"
+"-- modifiers are %s\n"
+"-- commands are cvar names unless prefixed with / or \\\n"
+msgstr ""
+"if <Wert1> <Operator> <Wert2> <Dann-Befehl> [<Sonst-Befehl>] : Vergleicht "
+"zwei Werte und führt den <Dann-Befehl> aus wenn die Bedinung erfüllt ist, "
+"ansonsten wird der <Sonst-Befehl> ausgeführt\n"
+"if <Modifikatoren> <Dann-Befehl> [<Sonst-Befehl>] : Führe <Dann-Befehl> aus "
+"wenn Modifikatoren gedrückt sind, sonst den [<Sonst-Befehl>\n"
+"-- Modifikatoren sind %s\n"
+"-- Befehle sind Variablennamen außer sie beginnen mit / order \\\n"
+
+#: src/engine/qcommon/cmd.c:857 src/engine/qcommon/cmd.c:891
+#: src/engine/qcommon/cmd.c:926 src/engine/qcommon/cmd.c:932
+msgid ""
+"math <variableToSet> = <value1> <operator> <value2>\n"
+"math <variableToSet> <operator> <value1>\n"
+"math <variableToSet> ++\n"
+"math <variableToSet> --\n"
+"valid operators are + - * /\n"
+msgstr ""
+"math <Zielvariable> = <Wert1> <Operator> <Wert2>\n"
+"math <Zielvariable> <Operator> <Wert1>\n"
+"math <Zielvariable> ++\n"
+"math <Zielvariable> --\n"
+"Gültige Operatoren sind + - * /\n"
+
+#: src/engine/qcommon/cmd.c:883 src/engine/qcommon/cmd.c:918
+#: src/engine/qcommon/cmd.c:1061
+msgid "Cannot divide by 0!\n"
+msgstr "Kann nicht durch 0 teilen!\n"
+
+#: src/engine/qcommon/cmd.c:980
+msgid "invalid operator in strcmp command. valid operators are = !=\n"
+msgstr "Ungültiger Operator in strcmp-Befehl. Gültige Operatoren sind = !=\n"
+
+#: src/engine/qcommon/cmd.c:986
+msgid ""
+"strcmp <string1> <operator> <string2> <cmdthen> (<cmdelse>) : compares the "
+"first two strings and executes <cmdthen> if true, <cmdelse> if false\n"
+msgstr "strcmp <Zeichenkette1> <Operator> <Zeichenkette2> <Dann-Befehl> [<Sonst-"
+"Befehl>] : Vergleicht zwei Zeichenketten und führt bei Gültigkeit <Dann-"
+"Befehl> und sonst <Sonst-Befehl> aus\n"
+
+#: src/engine/qcommon/cmd.c:1007
+msgid ""
+"concat <variableToSet> <variable1> … <variableN> : concatenates variable1 to "
+"variableN and sets the result to variableToSet\n"
+msgstr "concat <Zielvariable> <Variable 1> ... <Variable n> : Hänge die Werte der "
+"Variablen aneinander und schreibe das Ergebnis nach <Zielvariable>\n"
+
+#: src/engine/qcommon/cmd.c:1034 src/engine/qcommon/cmd.c:1077
+msgid "calc <number> <function> <number>, accepted functions: +, -, /, */x\n"
+msgstr "calc <Zahl> <Operator> <Zahl>, Gültige Operatoren: +, -, /, *\n"
+
+#: src/engine/qcommon/cmd.c:1107
+msgid ""
+"undelay <name> (command)\n"
+"removes all commands with <name> in them.\n"
+"if (command) is specified, the removal will be limited only to delays whose "
+"commands contain (command).\n"
+msgstr ""
+"undelay <Name> [<Befehl>]\n"
+"Entfernt alle Verzögerungsbefehle, die <Name> enthalten.\n"
+"Falls <Befehl> angegeben wird, sind nur die Befehle, die <Befehl> enthalten "
+"betroffen.\n"
+
+#: src/engine/qcommon/cmd.c:1156
+msgid ""
+"delay (name) <delay in milliseconds> <command>\n"
+"delay <delay in frames>f <command>\n"
+"executes <command> after the delay\n"
+msgstr ""
+"delay [<Name>] <Verzögerung in ms> <Befehl>\n"
+"delay <Verzögerung in Frames>f <Befehl>\n"
+"Führt <Befehl> nach einer Verzögerung aus\n"
+
+#: src/engine/qcommon/cmd.c:1178
+msgid "delay: the delay must be a positive integer\n"
+msgstr "delay: Die Verzögerung muss eine positive Ganzzahl sein\n"
+
+#: src/engine/qcommon/cmd.c:1194
+msgid "WARNING: Maximum amount of delayed commands reached\n"
+msgstr "WARNUNG: Maximale Anzahl an Verzögerungsbefehlen erreicht\n"
+
+#: src/engine/qcommon/cmd.c:1237
+msgid "random <variableToSet> <value1> <value2>\n"
+msgstr "random <Zielvariable> <Wert1> <Wert2>\n"
+
+#: src/engine/qcommon/cmd.c:1381
+msgid "unalias <name> : delete an alias\n"
+msgstr "unalias <Name> : Lösche ein Alias\n"
+
+#: src/engine/qcommon/cmd.c:1428
+msgid "alias <name> : show an alias\n"
+msgstr "alias <Name> : Zeige ein Alias an\n"
+
+#: src/engine/qcommon/cmd.c:1429
+msgid "alias <name> <exec> : create an alias\n"
+msgstr "alias <Name> <Befehl> : Erstelle ein Alias\n"
+
+#: src/engine/qcommon/cmd.c:1452
+msgid "Can't make an alias to itself\n"
+msgstr "Kann kein reflexives Alias anlegen\n"
+
+#: src/engine/qcommon/cmd.c:1461
+msgid "Can't override a builtin function with an alias\n"
+msgstr "Kann keine eingebaute Funktion durch ein Alias ersetzen\n"
+
+#: src/engine/qcommon/cmd.c:1487
+#, c-format
+msgid "Alias %s does not exist\n"
+msgstr "Alias %s existiert nicht\n"
+
+#: src/engine/qcommon/cmd.c:2233
+#, c-format
+msgid "Cmd_AddCommand: %s already defined\n"
+msgstr "Cmd_AddCommand: %s ist bereits definiert\n"
+
+#: src/engine/qcommon/cmd.c:2305
+#, c-format
+msgid "Cmd_AddButtonCommand: +/-%s already defined\n"
+msgstr "Cmd_AddButtonCommand: +/-%s ist bereits definiert\n"
+
+#: src/engine/qcommon/cmd.c:2512
+#, c-format
+msgid "%i commands\n"
+msgstr "%i Befehle\n"
+
+#: src/engine/qcommon/cm_load.c:746
+msgid "map features per poly collision detection\n"
+msgstr "Map unterstützt polygonbasierte Kollisionserkennung\n"
+
+#: src/engine/qcommon/cvar.c:486
+#, c-format
+msgid "Using %s instead of %s\n"
+msgstr "Benutze %s anstatt von %s\n"
+
+#: src/engine/qcommon/cvar.c:514 src/engine/qcommon/cvar.c:940
+#, c-format
+msgid "%s is unsafe. Check com_crashed.\n"
+msgstr "%s ist unsicher. Prüfe com_crashed.\n"
+
+#: src/engine/qcommon/cvar.c:520
+#, c-format
+msgid "%s is read only.\n"
+msgstr "%s kann nicht geändert werden.\n"
+
+#: src/engine/qcommon/cvar.c:526
+#, c-format
+msgid "%s is write protected.\n"
+msgstr "%s kann nicht geändert werden.\n"
+
+#: src/engine/qcommon/cvar.c:532
+#, c-format
+msgid "%s is cheat protected.\n"
+msgstr "%s ist ein Cheat und kann in diesem Kontext nicht verwendet werden. (Starte "
+"eine Map mit 'devmap' um Cheats benutzen zu können.)\n"
+
+#: src/engine/qcommon/cvar.c:538
+#, c-format
+msgid "%s will be changed upon recompiling shaders.\n"
+msgstr "%s wird geändert sobald die Shader neu kompiliert werden.\n"
+
+#: src/engine/qcommon/cvar.c:561
+#, c-format
+msgid "%s will be changed upon restarting.\n"
+msgstr "%s wird beim Neustart geändert.\n"
+
+#: src/engine/qcommon/cvar.c:792
+#, c-format
+msgid "\"%s\" is:\"%s"
+msgstr "\"%s\" ist:\"%s"
+
+#: src/engine/qcommon/cvar.c:796
+#, c-format
+msgid "latched: \"%s\"\n"
+msgstr "eingehängt: \"%s\"\n"
+
+#: src/engine/qcommon/cvar.c:824
+msgid "usage: toggle <variable> [<value> …]\n"
+msgstr "Benutzung: toggle <Variable> [<Wert> ...]\n"
+
+#: src/engine/qcommon/cvar.c:867
+msgid "usage: cycle <variable> <start> <end> [step]\n"
+msgstr "Benutzung: cycle <Variable> <Start> <Ende> [Schritt]\n"
+
+# "unsafe" konstante?
+#: src/engine/qcommon/cvar.c:928
+msgid "usage: set <variable> <value> [unsafe]\n"
+msgstr "Benutzung: set <Variable> <Wert> [unsafe]\n"
+
+#: src/engine/qcommon/cvar.c:1002
+msgid "usage: setu <variable> <value> [unsafe]\n"
+msgstr "Benutzung: setu <Variable> <Wert> [unsafe]\n"
+
+#: src/engine/qcommon/cvar.c:1030
+msgid "usage: sets <variable> <value> [unsafe]\n"
+msgstr "Benutzung: sets <Variable> <Wert> [unsafe]\n"
+
+#: src/engine/qcommon/cvar.c:1058
+msgid "usage: seta <variable> <value> [unsafe]\n"
+msgstr "Benutzung: seta <Variable> <Wert> [unsafe]\n"
+
+#: src/engine/qcommon/cvar.c:1082
+msgid "usage: reset <variable>\n"
+msgstr "Benutzung: reset <Variable>\n"
+
+# extension: Dateiendung oder voller Dateiname?
+#: src/engine/qcommon/files.c:3052
+msgid "usage: dir <directory> [extension]\n"
+msgstr "Benutzung: dir <Pfad> [Dateiendung]\n"
+
+#: src/engine/qcommon/files.c:3067
+#, c-format
+msgid "Directory of %s %s\n"
+msgstr "Verzeichnis von %s %s\n"
+
+#: src/engine/qcommon/files.c:3200
+msgid "usage: fdir <filter>\n"
+msgstr "Benutzung: fdir <Filter>\n"
+
+#: src/engine/qcommon/files.c:3201
+msgid "example: fdir *q3dm*.bsp\n"
+msgstr "Beispiel: fdir *q3dm*.bsp\n"
+
+#: src/engine/qcommon/files.c:3219
+#, c-format
+msgid "%d files listed\n"
+msgstr "%d Dateien\n"
+
+#: src/engine/qcommon/files.c:3241
+#, c-format
+msgid "%s (%i files)\n"
+msgstr "%s (%i Dateien)\n"
+
+#: src/engine/qcommon/files.c:3294
+msgid "Usage: which <file>\n"
+msgstr "Benutzung: which <Datei>\n"
+
+#: src/engine/qcommon/files.c:3325
+#, c-format
+msgid "File \"%s\" found in \"%s\"\n"
+msgstr "Datei \"%s\" gefunden in \"%s\"\n"
+
+#: src/engine/qcommon/files.c:3348
+#, c-format
+msgid "File \"%s\" found at \"%s\"\n"
+msgstr "Datei \"%s\" gefunden in \"%s\"\n"
+
+#: src/engine/qcommon/files.c:3353
+#, c-format
+msgid "File not found: \"%s\"\n"
+msgstr "Datei nicht gefunden: \"%s\"\n"
+
+#: src/engine/qcommon/cm_patch.c:415
+msgid "WARNING: CM_GridPlane unresolvable\n"
+msgstr "WARNUNG: CM_GridPlane unauflösbar\n"
+
+# on = in?
+#: src/engine/qcommon/common.c:251
+#, c-format
+msgid "logfile opened on %s\n"
+msgstr "Logdatei in %s geöffnet\n"
+
+#: src/engine/qcommon/common.c:386
+#, c-format
+msgid ""
+"********************\n"
+"ERROR: %s\n"
+"********************\n"
+msgstr ""
+"********************\n"
+"FEHLER: %s\n"
+"********************\n"
+
+#: src/engine/qcommon/common.c:2919
+msgid "freeze <seconds>\n"
+msgstr "freeze <Sekunden>\n"
+
+#: src/engine/qcommon/common.c:2963
+msgid "Found high quality video and slow CPU\n"
+msgstr "Schnelle Grafikkarte und langsame CPU entdeckt\n"
+
+#: src/engine/qcommon/common.c:2969
+msgid "Found low quality video and slow CPU\n"
+msgstr "Langsame Grafikkarte und langsame CPU entdeckt\n"
+
+#: src/engine/qcommon/common.c:3182
+#, c-format
+msgid ""
+"^3WARNING: profile.pid found for profile '%s' — the system settings will "
+"revert to their defaults\n"
+msgstr "^3WARNUNG: Datei profile.pid für Profil '%s' entdeckt — Die "
+"Systemeinstellungen werden auf Standardwerte zurückgesetzt\n"
+
+#: src/engine/qcommon/common.c:3192
+#, c-format
+msgid "^3WARNING: couldn't write profiles/%s/profile.pid\n"
+msgstr "^3WARNUNG: Konnte nicht in Datei profiles/%s/profile.pid schreiben\n"
+
+#: src/engine/qcommon/common.c:3437 src/engine/qcommon/common.c:4526
+#, c-format
+msgid "Couldn't write %s.\n"
+msgstr "Kann %s nicht schreiben.\n"
+
+#: src/engine/qcommon/common.c:3495
+msgid "Usage: writeconfig <filename>\n"
+msgstr "Benutzung: writeconfig <Dateiname>\n"
+
+#: src/engine/qcommon/common.c:3501
+#, c-format
+msgid "Writing %s.\n"
+msgstr "Schreibe %s.\n"
+
+#: src/engine/qcommon/common.c:3748
+msgid "WARNING: watchdog will trigger in 4 seconds\n"
+msgstr "WARNUNG: Watchdog wird in 4 Sekunden ausgelöst\n"
+
+#: src/engine/qcommon/common.c:3753
+msgid "Idle server with no map — triggering watchdog\n"
+msgstr "Server läuft im Leerlauf (keine Map aktiv) — Starte Watchdog\n"
+
+#: src/engine/qcommon/common.c:4477
+#, c-format
+msgid "Couldn't read %s.\n"
+msgstr "Kann %s nicht lesen.\n"
+
+#: src/engine/qcommon/translation.cpp:93
+#, c-format
+msgid ""
+"^3WARNING:^7 Language \"%s\" (%s) not found. Default to \"English\" (en)\n"
+msgstr "^3WARNUNG: ^7 Sprache \"%s\" (%s) nicht gefunden. Weiche auf \"English\" (en) "
+"aus\n"
+
+#: src/engine/qcommon/translation.cpp:94
+msgid "Unknown Language"
+msgstr "Unbekannte Sprache"
+
+#: src/engine/qcommon/translation.cpp:108
+#, c-format
+msgid "Switched language to %s\n"
+msgstr "Sprache auf %s geändert\n"
+
+#: src/engine/qcommon/translation.cpp:170
+#, c-format
+msgid "^1ERROR: Could not open client translation: %s\n"
+msgstr "^1FEHLER: Konnte Client-Übersetzung nicht öffnen: %s\n"
+
+#: src/engine/qcommon/translation.cpp:182
+#, c-format
+msgid "^1ERROR: Could not open game translation: %s\n"
+msgstr "^1FEHLER: Konnte Spiel-Übersetzung nicht öffnen: %s\n"
+
+#: src/engine/qcommon/translation.cpp:196
+#, c-format
+msgid "Loaded %lu language(s)\n"
+msgstr "%lu Sprache(n) geladen.\n"
+
+#: src/engine/qcommon/net_ip.c:1055
+#, c-format
+msgid "Opening IP socket: %s:%i\n"
+msgstr "Öffne IPv4 Socket: %s:%i\n"
+
+#: src/engine/qcommon/net_ip.c:1059
+#, c-format
+msgid "Opening IP socket: 0.0.0.0:%i\n"
+msgstr "Öffne IPv4 Socket: 0.0.0.0:%i\n"
+
+#: src/engine/qcommon/net_ip.c:1137
+#, c-format
+msgid "Opening IP6 socket: [%s]:%i\n"
+msgstr "Öffne IPv6 Socket: [%s]:%i\n"
+
+#: src/engine/qcommon/net_ip.c:1141
+#, c-format
+msgid "Opening IP6 socket: %s:%i\n"
+msgstr "Öffne IPv6 Socket: %s:%i\n"
+
+#: src/engine/qcommon/net_ip.c:1146
+#, c-format
+msgid "Opening IP6 socket: [::]:%i\n"
+msgstr "Öffne IPv6 Socket: [::]:%i\n"
+
+#: src/engine/qcommon/net_ip.c:1345
+msgid "Opening connection to SOCKS server.\n"
+msgstr "Verbindung zum SOCKS-Server wird hergestellt.\n"
+
+#: src/engine/qcommon/net_ip.c:1635
+#, c-format
+msgid "Hostname: %s\n"
+msgstr "Hostname: %s\n"
+
+#~ msgid "[Theora] unexpected resolution in a YUV frame\n"
+#~ msgstr "[Theora] unerwartete Auflösung in einem YUV-Frame\n"
+
+#~ msgid ""
+#~ "WARNING: there is already an OGM running, which will be stopped before "
+#~ "starting %s\n"
+#~ msgstr ""
+#~ "WARNING: es läuft schon ein OGM, dieser wird gestoppt bevor %s gestartet "
+#~ "wird\n"
+
+#~ msgid "WARNING: Can't open OGM file for reading (%s)\n"
+#~ msgstr "WARNUNG: OGM-Datei konnte zum lesen nicht geöffnet werden (%s)\n"
+
+#~ msgid ""
+#~ "WARNING: more than one audio stream in OGM file(%s). We will stay at the "
+#~ "first one\n"
+#~ msgstr ""
+#~ "WARNING: Mehr als ein Audiostream in der OGM-Datei (%s). Nutze weiterhin "
+#~ "den vorherigen.\n"
+
+#~ msgid ""
+#~ "WARNING: more than one video stream in OGM file(%s). We will stay at the "
+#~ "first one\n"
+#~ msgstr ""
+#~ "WARNING: Mehr als ein Audiostream in der OGM-Datei (%s). Werde den ersten "
+#~ "nutzen.\n"
+
+#~ msgid ""
+#~ "more than one video stream in OGM file(%s). We will stay at the first "
+#~ "one\n"
+#~ msgstr ""
+#~ "Mehr als ein Audiostream in der OGM-Datei (%s). Werde den ersten nutzen.\n"
+
+#, fuzzy
+#~ msgid "Video width of the OGM file isn't a power of 2 (%s)\n"
+#~ msgstr "VideoWith der ogm-Datei ist keine Potenz von 2 (%s)\n"
+
+#, fuzzy
+#~ msgid "Video height of the OGM file isn't a power of 2 (%s)\n"
+#~ msgstr "VideoHeight der ogm-Datei ist keine Potenz von 2 (%s)\n"
+
+#, fuzzy
+#~ msgid "WARNING: Found \"video\" and \"theora\" stream; OGM file (%s)\n"
+#~ msgstr ""
+#~ "WARNUNG: \"video\"- und \"theora\"-Stream gefunden, ogm-Datei (%s)\n"
+
+#~ msgid "WARNING: Didn't find a Vorbis audio stream in %s\n"
+#~ msgstr "WARNUNG: Konnte keinen Vorbis audio stream in %s finden\n"
+
+#~ msgid "WARNING: Haven't found a video stream in OGM file (%s)\n"
+#~ msgstr "WARNUNG: Kein Videostream in OGM-Datei gefunden (%s)\n"
+
+#~ msgid "WARNING: Corrupt Ogg packet while loading Vorbis headers (%s)\n"
+#~ msgstr ""
+#~ "WARNUNG: Fehlerhaftes Ogg-Paket während dem Laden des Vorbis-Headers "
+#~ "(%s)\n"
+
+#~ msgid ""
+#~ "WARNING: This Ogg bitstream does not contain Vorbis audio data (%s)\n"
+#~ msgstr ""
+#~ "WARNUNG: Dieser Ogg Datenstrom enthält keine Vorbis Audi Daten (%s)\n"
+
+#, fuzzy
+#~ msgid ""
+#~ "WARNING: Couldn't find all Vorbis headers before end of OGM file (%s)\n"
+#~ msgstr ""
+#~ "WARNUNG: Es konnten nicht alle vorbis-Header vor dem Ende der ogm-Datei "
+#~ "gefunden werden (%s)\n"
+
+#~ msgid "[Xvid]Decore INIT problem, return value %d(OGM file: %s)\n"
+#~ msgstr "[Xvid]Decore START Problem, Rückgabe Wert %d(OGM file: %s)\n"
+
+#~ msgid "WARNING: Corrupt Ogg packet while loading Theora headers (%s)\n"
+#~ msgstr ""
+#~ "WARNUNG: Fehlerhaftes Ogg Paket während dem laden des Theora Headers "
+#~ "(%s)\n"
+
+#~ msgid "WARNING: This Ogg bitstream does not contain Theora data (%s)\n"
+#~ msgstr "WARNUNG: Dieser Ogg Datenstrom enthält keine Theora Daten (%s)\n"
+
+#~ msgid ""
+#~ "WARNING: Couldn't find all Theora headers before end of OGM file (%s)\n"
+#~ msgstr ""
+#~ "WARNUNG: Es konnten nicht alle Theora-Header vor dem Ende der OGM-Datei "
+#~ "gefunden werden (%s)\n"
+
+#~ msgid "WARNING: Video width of the OGM file isn't a power of 2 (%s)\n"
+#~ msgstr "WARNUNG: Videobreite der OGM-Datei ist keine Potenz von 2 (%s)\n"
+
+#~ msgid "WARNING: Video height of the OGM file isn't a power of 2 (%s)\n"
+#~ msgstr "WARNUNG: Videohöhe der OGM-Datei ist keine Potenz von 2 (%s)\n"
+
+#~ msgid "[Xvid]Decore RELEASE problem; return value %d\n"
+#~ msgstr "[Xvid]Decode RELEASE Problem: Rückgabewert %d\n"
+
+#~ msgid "cl_aviFrameRate must be ≥ 1\n"
+#~ msgstr "cl_aviFrameRate muss ≥ 1 sein\n"
+
+#~ msgid ""
+#~ "WARNING: cl_aviFrameRate is not a divisor of the audio rate, suggest %d\n"
+#~ msgstr ""
+#~ "WARNUNG: cl_aviFrameRater ist kein Teiler der Audiorate, Schlage %d vor\n"
+
+#~ msgid ""
+#~ "WARNING: Audio capture is not supported with OpenAL. Set s_useOpenAL to 0 "
+#~ "for audio capture\n"
+#~ msgstr ""
+#~ "WARNUNG: Audioaufnahme wird von OpenAL nicht unterstützt. Setze "
+#~ "s_useOpenAL auf 0 um Audioaufnahme zu nutzen\n"
+
+#~ msgid "WARNING: Audio capture buffer overflow – truncating\n"
+#~ msgstr "WARNUNG: Audioaufnahmepufferüberlauf - kürze\n"
+
+#~ msgid "Wrote %d:%d frames to %s\n"
+#~ msgstr "%d:%d Frames in %s geschrieben\n"
+
+#~ msgid "failed to start OGM playback (%s)\n"
+#~ msgstr "Start der OGM-Wiedergabe fehlgeschlagen (%s)\n"
+
+#~ msgid "Three keys down for a button!\n"
+#~ msgstr "Es verweisen drei Tasten auf den gleichen Befehl!\n"
+
+#~ msgid "WARNING: unsent fragments (not supposed to happen!)\n"
+#~ msgstr "WARNUNG: nicht gesendete Fragmente (sollte nicht passieren!)\n"
+
+#~ msgid "^1BUG: cgame: some button commands left unregistered (\"%s\")\n"
+#~ msgstr "^1BUG: cgame: einige Button-Befehle wurden nicht erkannt (\"%s\")\n"
+
+#~ msgid "IRC PARSER ERROR (state: %d , received: %d)\n"
+#~ msgstr "IRC PARSER FEHLER (Status: %d , erhalten: %d)\n"
+
+#~ msgid "IRC: server error – %s\n"
+#~ msgstr "IRC: Server Fehler – %s\n"
+
+#~ msgid "editbind <key> : edit a key binding (in the in-game console)"
+#~ msgstr ""
+#~ "editbind <Taste> : bearbeite einen einer Taste zugeordneten Befehl (in "
+#~ "der in-game Konsole)"
+
+#~ msgid "Usage: openurl <url>\n"
+#~ msgstr "Anwendung: openurl <URL>\n"
+
+#~ msgid "Invalid URL prefix.\n"
+#~ msgstr "Ungültiges URL Präfix.\n"
+
+#~ msgid "Invalid domain.\n"
+#~ msgstr "Ungültige Domain.\n"
+
+#~ msgid "Invalid URL\n"
+#~ msgstr "Ungültige URL\n"
+
+#~ msgid "System error opening URL\n"
+#~ msgstr "Systemfehler beim öffnen der URL\n"
+
+#~ msgid "Couldn't resolve address\n"
+#~ msgstr "Adresse konnte nicht aufgelöst werden\n"
+
+#~ msgid "%s resolved to %i.%i.%i.%i:%i\n"
+#~ msgstr "%s aufgelöst zu %i.%i.%i.%i:%i\n"
+
+#~ msgid "%s undefined\n"
+#~ msgstr "%s ist nicht definiert\n"
+
+#~ msgid "--------- Client Information ---------\n"
+#~ msgstr "--------- Client Informationen ---------\n"
+
+#~ msgid "state: %i\n"
+#~ msgstr "Status: %i\n"
+
+#~ msgid "User info settings:\n"
+#~ msgstr "Benutzerinfo Einstellungen:\n"
+
+#~ msgid "--------------------------------------\n"
+#~ msgstr "--------------------------------------\n"
+
+#~ msgid "-----------------------\n"
+#~ msgstr "-----------------------\n"
+
+#~ msgid "Delta from invalid frame (not supposed to happen!).\n"
+#~ msgstr "Delta von ungültigem Frame (sollte nicht passieren!).\n"
+
+#~ msgid "Delta frame too old.\n"
+#~ msgstr "Delta Frame zu alt.\n"
+
+#~ msgid "Delta parseEntitiesNum too old.\n"
+#~ msgstr "Delta parseEntitiesNum zu alt.\n"
+
+#~ msgid "Server redirected download: %s\n"
+#~ msgstr "Server leitet Download um: %s\n"
+
+#~ msgid "sound system not started\n"
+#~ msgstr "Soundsystem nicht gestartet\n"
+
+#~ msgid "sound system is muted\n"
+#~ msgstr "Soundsystem stumm\n"
+
+#~ msgid "S_Base_SoundDuration: handle %i out of range\n"
+#~ msgstr "S_Base_SoundDuration: Handle %i ausserhalb des Bereichs\n"
+
+#, fuzzy
+#~ msgid "WARNING: could not find %s – using default\n"
+#~ msgstr ""
+#~ "WARNUNG: %s konnte nicht gefunden werden - Standart wird verwendet\n"
+
+#~ msgid "music <musicfile> [loopfile]\n"
+#~ msgstr "music <Musikdatei> [Loopdatei]\n"
+
+#~ msgid "using sound module %s\n"
+#~ msgstr "Soundmodul %s wird verwendet\n"
+
+#, fuzzy
+#~ msgid "can't load sound module – bailing\n"
+#~ msgstr "Soundmodul konnte nicht geladen werden, Abbruch\n"
+
+#, fuzzy
+#~ msgid "can't find GetSndAPI – bailing\n"
+#~ msgstr "GetSndAPI konnte nicht gefunden werden, Abbruch\n"
+
+#, fuzzy
+#~ msgid "call to GetSndAPI failed – bailing\n"
+#~ msgstr "GetSndAPI konnte nicht aufgerufen werden, Abbruch\n"
+
+#, fuzzy
+#~ msgid "call to Init failed – bailing\n"
+#~ msgstr "Init konnte nicht aufgerufen werden, Abbruch\n"
+
+#~ msgid "%d bytes free sound buffer memory, %d total used\n"
+#~ msgstr "%d Bytes freier Soundpufferspeicher, total %d besetzt\n"
+
+#~ msgid "Usage: banUser <player name>\n"
+#~ msgstr "Anwendung banUser <Spielername>\n"
+
+#~ msgid "Usage: info <userid>\n"
+#~ msgstr "Anwendung: info <BenutzerID>\n"
+
+#, fuzzy
+#~ msgid "-----------------------------------\n"
+#~ msgstr "--------------------------------------\n"
+
+#, fuzzy
+#~ msgid "---------------------------\n"
+#~ msgstr "-----------------------\n"
+
+#~ msgid "MISSING VALUE\n"
+#~ msgstr "FEHLENDER WERT\n"
+
+#~ msgid "ERROR: block size does not touch the next block\n"
+#~ msgstr "FEHLER: Block Größe reicht nicht zum nächsten Block"
+
+#, fuzzy
+#~ msgid "--- Common Initialization Complete ---\n"
+#~ msgstr "----- Client Initialisierung Abgeschlossen -----\n"
+
+#, fuzzy
+#~ msgid "%4i traces  (%ib %ip %it) %4i points\n"
+#~ msgstr "%4i traces  (%ib %ip %it) %4i points\n"
+
+#~ msgid "invalid cvar name string: %s\n"
+#~ msgstr "Ungültige Zeichen für cvar Namen: %s\n"
+
+#~ msgid "invalid cvar value string: %s\n"
+#~ msgstr "Ungültige Zeichen für cvar Wert: %s\n"
+
+#~ msgid ""
+#~ "\n"
+#~ "%i total cvars\n"
+#~ msgstr ""
+#~ "\n"
+#~ "%i totale cvars\n"
+
+#~ msgid "%i cvar indexes\n"
+#~ msgstr "%i cvar Indexes\n"
+
+#~ msgid "ERROR: DL_BeginDownload unable to open '%s' for writing\n"
+#~ msgstr "FEHLER: DL_BeginDownload kann '%s' nicht zum schreiben öffnen\n"
+
+#~ msgid "WARNING: refusing to create relative path \"%s\"\n"
+#~ msgstr "WARNUNG: relativer Pfad zu \"%s\" verweigert\n"
+
+#~ msgid "copy %s to %s\n"
+#~ msgstr "Kopiere %s nach %s\n"
+
+#~ msgid "Ignoring journal files\n"
+#~ msgstr "Ignoriere Protokoll Dateien\n"
+
+#, fuzzy
+#~ msgid "FS_SV_FOpenFileWrite: %s\n"
+#~ msgstr "FS_SV_FOpenFileWrite: %s\n"
+
+#, fuzzy
+#~ msgid "FS_SV_FOpenFileRead (fs_homepath): %s\n"
+#~ msgstr "FS_SV_FOpenFileRead (fs_homepath): %s\n"
+
+#~ msgid "FS_FOpenFileRead: %s (found in '%s')\n"
+#~ msgstr "FS_FOpenFileRead: %s (gefunden in '%s')\n"
+
+#~ msgid "FS_FOpenFileRead: %s (found in '%s/%s')\n"
+#~ msgstr "FS_FOpenFileRead: %s (gefunden in '%s/%s')\n"
+
+#~ msgid "Failed to open %s\n"
+#~ msgstr "%s konnte nicht geöffnet werden\n"
+
+#~ msgid "FS_Write: 0 bytes written (%d attempted)\n"
+#~ msgstr "FS_Write: 0 bytes geschrieben (%d Versuche)\n"
+
+#~ msgid "FS_Write: %d bytes written (%d attempted)\n"
+#~ msgstr "FS_Write: %d bytes geschrieben (%d Versuche)\n"
+
+#~ msgid "Current search path:\n"
+#~ msgstr "Aktueller such Pfad:\n"
+
+#~ msgid "Usage: touchFile <file>\n"
+#~ msgstr "Anwendung: touchFile <Datei>\n"
+
+#~ msgid "%d files in pk3 files\n"
+#~ msgstr "%d Dateien in pk3 Dateien\n"
+
+#~ msgid "%d used %d\n"
+#~ msgstr "%d benutzt %d\n"
+
+#, fuzzy
+#~ msgid "NET_GetPacket: %s\n"
+#~ msgstr "NET_GetPacket: %s\n"
+
+#~ msgid "Oversize packet from %s\n"
+#~ msgstr "Zu großes Paket von %s\n"
+
+#~ msgid "IP: %s\n"
+#~ msgstr "IP: %s\n"
+
+#~ msgid "IP6: %s\n"
+#~ msgstr "IP6: %s\n"
+
+#~ msgid "WARNING: NET_IPSocket: socket: %s\n"
+#~ msgstr "WARNUNG: NET_IPSocket: Socket: %s\n"
+
+#~ msgid "WARNING: NET_IPSocket: ioctl FIONBIO: %s\n"
+#~ msgstr "WARNUNG: NET_IPSocket: ioctl FIONBIO: %s\n"
+
+#~ msgid "WARNING: NET_IPSocket: setsockopt SO_BROADCAST: %s\n"
+#~ msgstr "WARNUNG: NET_IPSocket: setsockopt SO_BROADCAST: %s\n"
+
+#~ msgid "WARNING: NET_IP6Socket: socket: %s\n"
+#~ msgstr "WARNUNG: NET_IP6Socket: Socket: %s\n"
+
+#~ msgid "WARNING: NET_IP6Socket: ioctl FIONBIO: %s\n"
+#~ msgstr "WARNUNG: NET_IP6Socket: ioctl FIONBIO: %s\n"
+
+#~ msgid "WARNING: NET_OpenSocks: socket: %s\n"
+#~ msgstr "Warnung: NET_OpenSocks: Socket: %s\n"
+
+#~ msgid "WARNING: NET_OpenSocks: gethostbyname: %s\n"
+#~ msgstr "Warnung: NET_OpenSocks: gethostbyname: %s\n"
+
+#~ msgid ""
+#~ "WARNING: NET_OpenSocks: gethostbyname: address type was not AF_INET\n"
+#~ msgstr ""
+#~ "Warnung: NET_OpenSocks: gethostbyname: Address Typ war nicht AF_INET\n"
+
+#, fuzzy
+#~ msgid "NET_OpenSocks: connect: %s\n"
+#~ msgstr "NET_OpenSocks: verbindet: %s\n"
+
+#~ msgid "file %s, line %d: %s\n"
+#~ msgstr "Datei %s, Zeile %d: %s\n"
+
+#~ msgid "Couldn't load symbol file: %s\n"
+#~ msgstr "Konnte Symbol Datei nicht laden: %s\n"
+
+#~ msgid "WARNING: incomplete line at end of file\n"
+#~ msgstr "Warnung: Unvollständige Zeile am Datei Ende\n"
+
+#~ msgid "Loading vm file %s…\n"
+#~ msgstr "Lade vm Datei %s…\n"
+
+#~ msgid "Failed.\n"
+#~ msgstr "Fehlgeschlagen.\n"
+
+#~ msgid "Loading llvm file %s.\n"
+#~ msgstr "Lade llvm Datei %s.\n"
+
+#~ msgid "%s %s\n"
+#~ msgstr "%s %s\n"
+
+#~ msgid "%s---> systemcall(%i)\n"
+#~ msgstr "%s---> systemcall(%i)\n"
+
+#~ msgid "%s<--- %s\n"
+#~ msgstr "%s<--- %s\n"
+
+#~ msgid "%s---> %s\n"
+#~ msgstr "%s---> %s\n"
+
+#~ msgid "Couldn't load llvm file: %s\n"
+#~ msgstr "Konnte llvm Datei nicht laden: %s\n"
+
+#~ msgid "Couldn't parse llvm file: %s: %s\n"
+#~ msgstr "Konnte llvm Datei nicht verarbeiten: %s\n"
+
+#~ msgid "Couldn't remove llvm\n"
+#~ msgstr "Konnte llvm nicht entfernen\n"
+
+#~ msgid "%s is unbound, use controls menu to set.\n"
+#~ msgstr ""
+#~ "%s ist kein Befehl zugeordnet, benutze das Menü, um eine Zuordnung "
+#~ "vorzunehmen.\n"
+
+#~ msgid "can't load sound module - bailing\n"
+#~ msgstr "Soundmodul konnte nicht geladen werden, Abbruch\n"
+
+#~ msgid "can't find GetSndAPI - bailing\n"
+#~ msgstr "GetSndAPI konnte nicht gefunden werden, Abbruch\n"
+
+#~ msgid "call to GetSndAPI failed - bailing\n"
+#~ msgstr "GetSndAPI konnte nicht aufgerufen werden, Abbruch\n"
+
+#~ msgid "call to Init failed - bailing\n"
+#~ msgstr "Init konnte nicht aufgerufen werden, Abbruch\n"
+
+#~ msgid "cl_aviFrameRate must be >= 1\n"
+#~ msgstr "cl_aviFrameRate muss >= 1 sein\n"
+
+#~ msgid "[Theora] unexpected resolution in a yuv-Frame\n"
+#~ msgstr "[Theora] unerwartete Auflösung in einem yuv-Frame\n"
+
+#~ msgid ""
+#~ "WARNING: it seams there was already a ogm running, it will be killed to "
+#~ "start %s\n"
+#~ msgstr ""
+#~ "WARNUNG: dem Anschein nach war ein ogm am laufen, es wird gestoppt, um %s "
+#~ "zu starten\n"
+
+#~ msgid "WARNING: Can't open ogm-file for reading (%s)\n"
+#~ msgstr "WARNUNG: ogm-Datei konnte zum lesen nicht geöffnet werden (%s)\n"
+
+#~ msgid ""
+#~ "WARNING: more than one audio stream, in ogm-file(%s) ... we will stay at "
+#~ "the first one\n"
+#~ msgstr ""
+#~ "WARNUNG: mehr als ein Audiostream in der ogm-Datei(%s) ... der erste wird "
+#~ "verwendet\n"
+
+#~ msgid ""
+#~ "WARNING: more than one video stream, in ogm-file(%s) ... we will stay at "
+#~ "the first one\n"
+#~ msgstr ""
+#~ "WARNUNG: mehr als ein Videostream in der ogm-Datei(%s) ... der erste wird "
+#~ "verwendet\n"
+
+#~ msgid ""
+#~ "more than one video stream, in ogm-file(%s) ... we will stay at the first "
+#~ "one\n"
+#~ msgstr ""
+#~ "mehr als ein Videostream in der ogm-Datei(%s) ... der erste wird "
+#~ "verwendet\n"
+
+#~ msgid "VideoWidth of the ogm-file isn't a power of 2 value (%s)\n"
+#~ msgstr "VideoWith der ogm-Datei ist keine Potenz von 2 (%s)\n"
+
+#~ msgid "VideoHeight of the ogm-file isn't a power of 2 value (%s)\n"
+#~ msgstr "VideoHeight der ogm-Datei ist keine Potenz von 2 (%s)\n"
+
+#~ msgid "WARNING: Found \"video\"- and \"theora\"-stream ,ogm-file (%s)\n"
+#~ msgstr ""
+#~ "WARNUNG: \"video\"- und \"theora\"-Stream gefunden, ogm-Datei (%s)\n"
+
+#~ msgid "WARNING: Haven't found a audio(vorbis) stream in ogm-file (%s)\n"
+#~ msgstr "WARNUNG: Kein Audiostream (vorbis) in ogm-Datei gefunden (%s)\n"
+
+#~ msgid "WARNING: Haven't found a video stream in ogm-file (%s)\n"
+#~ msgstr "WARNUNG: Kein Videostream in ogm-Datei gfunden (%s)\n"
+
+#~ msgid ""
+#~ "WARNING: Corrupt ogg packet while loading vorbis-headers, ogm-file(%s)\n"
+#~ msgstr ""
+#~ "WARNUNG: Unbrauchbares ogg-Paket beim laden des vorbis-Headers, ogm-Datei "
+#~ "(%s)\n"
+
+#~ msgid ""
+#~ "WARNING: This Ogg bitstream does not contain Vorbis audio data, ogm-file"
+#~ "(%s)\n"
+#~ msgstr ""
+#~ "WARNUNG: Dieser OGG-Bitsream enthält keine Vorbis-Audiodaten, ogm-Datei "
+#~ "(%s)\n"
+
+#~ msgid ""
+#~ "WARNING: Couldn't find all vorbis headers before end of ogm-file (%s)\n"
+#~ msgstr ""
+#~ "WARNUNG: Es konnten nicht alle vorbis-Header vor dem Ende der ogm-Datei "
+#~ "gefunden werden (%s)\n"
+
+#~ msgid ""
+#~ "WARNING: Corrupt ogg packet while loading theora-headers, ogm-file(%s)\n"
+#~ msgstr ""
+#~ "WARNUNG: Unbrauchbares ogg-Paket beim laden der theora-Header, ogm-Datei "
+#~ "(%s)\n"
+
+#~ msgid ""
+#~ "WARNING: This Ogg bitstream does not contain theora data, ogm-file(%s)\n"
+#~ msgstr ""
+#~ "WARNUNG: Dieser Ogg-Bitstream enthält keine theora-Daten, ogm-Datei (%s)\n"
+
+#~ msgid ""
+#~ "WARNING: Couldn't find all theora headers before end of ogm-file (%s)\n"
+#~ msgstr ""
+#~ "WARNUNG: Es konnten nicht alle theora -Header vor dem Ende der ogm-Datei "
+#~ "gefunden werden (%s)\n"
+
+#~ msgid "WARNING: VideoWidth of the ogm-file isn't a power of 2 value (%s)\n"
+#~ msgstr "WARNUNG: Videobreite der ogm-Datei ist keine Potenz von 2 (%s)\n"
+
+#~ msgid "WARNING: VideoHeight of the ogm-file isn't a power of 2 value (%s)\n"
+#~ msgstr "WARNUNG: Videohöhe der ogm-Datei ist keine Potenz von 2 (%s)\n"
+
+#~ msgid "usage: %s <string1> <string2> <...>\n"
+#~ msgstr "Anwendung: %s <Zeichenkette1> <Zeichenkette2> <...>\n"
+
+#~ msgid "CL_InitCGame: %5.2fs\n"
+#~ msgstr "CL_InitCGame: %5.2fs\n"
+
+#~ msgid "Mumble: Linking to Mumble application ok\n"
+#~ msgstr "Mumble: Verbindung zu Mumble Anwendung ok\n"
+
+#~ msgid "WARNING: could not find %s - using default\n"
+#~ msgstr ""
+#~ "WARNUNG: %s konnte nicht gefunden werden - Standart wird verwendet\n"
+
+#~ msgid "%i frames, %3.1f seconds: %3.1f fps\n"
+#~ msgstr "%i Frames, %3.1f Sekunden: %3.1f FPS\n"
+
+#~ msgid "Scanning for servers on the local network...\n"
+#~ msgstr "Suche nach Servern im lokalen Netzwerk...\n"
+
+#~ msgid "usage: toggle <variable> [<value> ...]\n"
+#~ msgstr "Anwendung: toggle <Variable> [<Wert> ...]\n"
