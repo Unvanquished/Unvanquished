@@ -1,3 +1,18 @@
+unvanquished (0.10.0-1) unstable; urgency=low
+
+  * Release of alpha 10.
+  * Fix a bashism in the launcher script.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Mon, 03 Dec 2012 00:33:39 +0000
+
+unvanquished (0.9.0-2) unstable; urgency=low
+
+  * Cope with a pipe file but no running Unvanquished. (Requires lsof.)
+  * Backported a few ‘vanilla’ renderer patches from git master.
+  * Link against libopenal rather than dlopen it. (Fixes a missing dep.)
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Thu, 15 Nov 2012 02:08:57 +0000
+
 unvanquished (0.9.0-1) unstable; urgency=low
 
   * Release of alpha 9.

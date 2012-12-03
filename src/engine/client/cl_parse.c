@@ -36,7 +36,7 @@ Maryland 20850 USA.
 
 #include "client.h"
 
-char *svc_strings[ 256 ] =
+static const char *const svc_strings[ 256 ] =
 {
 	"svc_bad",
 
@@ -52,7 +52,7 @@ char *svc_strings[ 256 ] =
 	"svc_EOF"
 };
 
-void SHOWNET( msg_t *msg, char *s )
+static void SHOWNET( msg_t *msg, const char *s )
 {
 	if ( cl_shownet->integer >= 2 )
 	{
@@ -1050,6 +1050,8 @@ void CL_ParseVoip( msg_t *msg )
 	{
 		CL_PlayVoip( sender, written, ( const byte * ) decoded, flags );
 	}
+
+	cls.voipSender = sender;
 
 	clc.voipIncomingSequence[ sender ] = sequence + frames;
 }

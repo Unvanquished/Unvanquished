@@ -1473,4 +1473,6 @@ void G_ShutdownMapRotations( void )
 			G_FreeNode( node );
 		}
 	}
+
+	memset( &mapRotations, 0, sizeof( mapRotations ) );
 }

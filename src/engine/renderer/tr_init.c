@@ -1621,6 +1621,7 @@ extern "C" {
 		re.SetGlobalFog = RE_SetGlobalFog;
 
 		re.inPVS = R_inPVS;
+		re.inPVVS = R_inPVVS;
 
 		re.purgeCache = R_PurgeCache;
 

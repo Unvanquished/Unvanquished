@@ -45,10 +45,10 @@ extern "C" {
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.9.0"
+#define PRODUCT_VERSION         "0.10.0"
 
 #define ENGINE_NAME             "Daemon Engine"
-#define ENGINE_VERSION          "0.9.0"
+#define ENGINE_VERSION          "0.10.0"
 
 #ifdef REVISION
 # define Q3_VERSION             PRODUCT_NAME " " PRODUCT_VERSION " " REVISION
@@ -163,6 +163,18 @@ extern int memcmp( void *, void *, size_t );
 #endif
 
 #else
+
+// for visibility of some functions in system headers
+#undef _GNU_SOURCE
+#undef _BSD_SOURCE
+#undef _XOPEN_SOURCE
+#undef _XOPEN_SOURCE_EXTENDED
+#undef _POSIX_C_SOURCE
+#define _GNU_SOURCE
+#define _BSD_SOURCE
+#define _XOPEN_SOURCE 500
+#define _XOPEN_SOURCE_EXTENDED
+#define _POSIX_C_SOURCE 200112L
 
 #include <assert.h>
 #include <math.h>
@@ -591,7 +603,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 
 #define IS_NAN( x ) ( ( ( *(int *)&( x ) ) & nanmask ) == nanmask )
 
-#if idx64
+#if idx64 || idx64_32
 	extern long qftolsse( float f );
 	extern int  qvmftolsse( void );
 	extern void qsnapvectorsse( vec3_t vec );
@@ -1900,7 +1912,7 @@ char *Q_UTF8Unstore( int e );
 //                          11
 //                          12
 //                          13
-//                          14
+#define BUTTON_RALLY        14
 #define BUTTON_DODGE        15
 
 #define MOVE_RUN          120 // if forwardmove or rightmove are >= MOVE_RUN,
@@ -2034,7 +2046,6 @@ char *Q_UTF8Unstore( int e );
 		ET_PLAYER,
 		ET_ITEM,
 
-		ET_RANGE_MARKER,
 		ET_BUILDABLE,       // buildable type
 
 		ET_LOCATION,

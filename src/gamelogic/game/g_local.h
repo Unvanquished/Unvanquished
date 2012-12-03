@@ -50,6 +50,18 @@ typedef struct gclient_s gclient_t;
 #define N_( text )             text
 #define P_( one, many, count ) ( ( count ) == 1 ? ( one ) : ( many ) )
 
+// decon types for g_markDeconstruct
+#define DECON_MARK_MASK            15
+#define DECON_MARK_INSTANT         0
+#define DECON_MARK_NO_REPLACE      1
+#define DECON_MARK_REPLACE_SAME    2
+#define DECON_MARK_REPLACE_ANY     3
+#define DECON_MARK_CHECK(mark) ( ( g_markDeconstruct.integer & DECON_MARK_MASK ) == DECON_MARK_##mark )
+
+#define DECON_OPTION_INSTANT       16
+#define DECON_OPTION_PROTECT       32
+#define DECON_OPTION_CHECK(option) ( g_markDeconstruct.integer & DECON_OPTION_##option )
+
 // movers are things like doors, plats, buttons, etc
 typedef enum
 {
@@ -345,7 +357,6 @@ struct gentity_s
 
 	team_t      buildableTeam; // buildable item team
 	gentity_t   *parentNode; // for creep and defence/spawn dependencies
-	gentity_t   *rangeMarker;
 	qboolean    active; // for power repeater, but could be useful elsewhere
 	qboolean    powered; // for human buildables
 	int         builtBy; // clientNum of person that built this
@@ -463,7 +474,6 @@ typedef struct
 	qboolean          teamInfo; // send team overlay updates?
 	float             flySpeed; // for spectator/noclip moves
 	qboolean          disableBlueprintErrors; // should the buildable blueprint never be hidden from the players?
-	int               buildableRangeMarkerMask;
 
 	class_t           classSelection; // player class (copied to ent->client->ps.stats[ STAT_CLASS ] once spawned)
 	float             evolveHealthFraction;
@@ -988,8 +998,7 @@ buildLog_t       *G_BuildLogNew( gentity_t *actor, buildFate_t fate );
 void             G_BuildLogSet( buildLog_t *log, gentity_t *ent );
 void             G_BuildLogAuto( gentity_t *actor, gentity_t *buildable, buildFate_t fate );
 void             G_BuildLogRevert( int id );
-void             G_RemoveRangeMarkerFrom( gentity_t *self );
-void             G_UpdateBuildableRangeMarkers( void );
+
 //
 // g_utils.c
 //
@@ -1347,6 +1356,7 @@ extern  vmCvar_t g_mapRotationStack;
 extern  vmCvar_t g_nextMap;
 extern  vmCvar_t g_initialMapRotation;
 extern  vmCvar_t g_mapLog;
+extern  vmCvar_t g_mapStartupMessageDelay;
 extern  vmCvar_t g_sayAreaRange;
 
 extern  vmCvar_t g_debugVoices;

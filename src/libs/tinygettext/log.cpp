@@ -15,11 +15,6 @@
 //  along with this program; if not, write to the Free Software
 //  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-extern "C"
-{
-extern int Cvar_VariableIntegerValue( const char* str );
-}
-
 #include <iostream>
 #include "log.hpp"
 
@@ -32,10 +27,7 @@ Log::log_callback_t Log::log_error_callback   = &Log::default_log_callback;
 void
 Log::default_log_callback(const std::string& str)
 {
-  if( Cvar_VariableIntegerValue( "language_debug" ) )
-  {
-	std::cerr << "tinygettext: " << str;
-  }
+  std::cerr << "tinygettext: " << str;
 }
 
 void
@@ -62,15 +54,15 @@ Log::Log(log_callback_t callback_) :
 {
 }
 
-Log::~Log() 
+Log::~Log()
 {
   callback(out.str());
 }
 
 std::ostream&
-Log::get() 
+Log::get()
 {
-  return out; 
+  return out;
 }
 
 } // namespace tinygettext

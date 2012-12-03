@@ -176,3 +176,4 @@ equ trap_R_Glyph                          -415
 equ trap_R_GlyphChar                      -416
 equ trap_R_UnregisterFont                 -417
 equ trap_Pgettext                         -418
+equ trap_R_inPVVS                         -419

@@ -230,8 +230,7 @@ typedef enum
   STAT_MISC, // for uh...misc stuff (pounce, trample, lcannon)
   STAT_BUILDABLE, // which ghost model to display for building
   STAT_FALLDIST, // the distance the player fell
-  STAT_VIEWLOCK, // direction to lock the view in
-  STAT_RADARTIME // time in msec this player will be visible on radar/sense
+  STAT_VIEWLOCK // direction to lock the view in
   // netcode has space for 3 more
 } statIndex_t;
 
@@ -639,6 +638,8 @@ typedef enum
   TORSO_GESTURE_LUCI,
   TORSO_GESTURE_CKIT,
 
+  TORSO_RALLY,
+
   TORSO_ATTACK_BLASTER,
   TORSO_ATTACK_PSAW,
   TORSO_ATTACK,
@@ -953,6 +954,8 @@ typedef struct
 	int      children[ 3 ];
 	int      cost;
 	int      value;
+
+	float    radarFadeOut;
 } classAttributes_t;
 
 typedef struct
@@ -1033,6 +1036,8 @@ typedef struct
 	qboolean    uniqueTest;
 
 	int         value;
+
+	float       radarFadeOut;
 } buildableAttributes_t;
 
 typedef struct

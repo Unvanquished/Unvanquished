@@ -37,6 +37,7 @@ Maryland 20850 USA.
 
 // this is for determining if we have an asm version of a C function
 #define idx64 0
+#define idx64_32 0
 
 #ifdef Q3_VM
 
@@ -220,6 +221,10 @@ Maryland 20850 USA.
 
 #if defined __i386__
 #define ARCH_STRING "i386"
+#elif defined __x86_64__ && defined _ILP32
+#undef idx64_32
+#define idx64_32    1
+#define ARCH_STRING "x32"
 #elif defined __x86_64__
 #undef idx64
 #define idx64       1

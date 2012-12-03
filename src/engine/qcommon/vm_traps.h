@@ -38,7 +38,7 @@ Maryland 20850 USA.
 // Major: API breakage
 #define SYSCALL_ABI_VERSION_MAJOR 4
 // Minor: API extension
-#define SYSCALL_ABI_VERSION_MINOR 0
+#define SYSCALL_ABI_VERSION_MINOR 1
 
 // First VM-specific call no.
 #define FIRST_VM_SYSCALL 256

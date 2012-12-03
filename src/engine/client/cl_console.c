@@ -240,6 +240,7 @@ void Con_Dump_f( void )
 {
 	int          l;
 	fileHandle_t f;
+	char         name[ MAX_STRING_CHARS ];
 
 	if ( Cmd_Argc() != 2 )
 	{
@@ -247,9 +248,11 @@ void Con_Dump_f( void )
 		return;
 	}
 
-	Com_Printf(_( "Dumped console text to %s.\n"), Cmd_Argv( 1 ) );
+	Q_snprintf( name, sizeof( name ), "condump/%s", Cmd_Argv( 1 ) );
 
-	f = FS_FOpenFileWrite( Cmd_Argv( 1 ) );
+	Com_Printf(_( "Dumped console text to %s.\n"), name );
+
+	f = FS_FOpenFileWrite( name );
 
 	if ( !f )
 	{

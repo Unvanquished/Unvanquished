@@ -461,10 +461,12 @@ extern cvar_t *j_pitch;
 extern cvar_t *j_yaw;
 extern cvar_t *j_forward;
 extern cvar_t *j_side;
+extern cvar_t *j_up;
 extern cvar_t *j_pitch_axis;
 extern cvar_t *j_yaw_axis;
 extern cvar_t *j_forward_axis;
 extern cvar_t *j_side_axis;
+extern cvar_t *j_up_axis;
 
 extern cvar_t *cl_IRC_connect_at_startup;
 extern cvar_t *cl_IRC_server;
@@ -520,7 +522,6 @@ extern  cvar_t *cl_voipGainDuringCapture;
 extern  cvar_t *cl_voipCaptureMult;
 extern  cvar_t *cl_voipShowMeter;
 extern  cvar_t *cl_voipShowSender;
-extern  cvar_t *cl_voipSenderPos;
 extern  cvar_t *cl_voip;
 #endif
 

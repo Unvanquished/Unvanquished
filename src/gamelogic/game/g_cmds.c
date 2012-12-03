@@ -2270,9 +2270,8 @@ static qboolean G_RoomForClassChange( gentity_t *ent, class_t class,
 Cmd_Class_f
 =================
 */
-void Cmd_Class_f( gentity_t *ent )
+static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean report )
 {
-	char      s[ MAX_TOKEN_CHARS ];
 	int       clientNum;
 	int       i;
 	vec3_t    infestOrigin;
@@ -2287,7 +2286,6 @@ void Cmd_Class_f( gentity_t *ent )
 	vec3_t    oldVel;
 
 	clientNum = ent->client - level.clients;
-	trap_Argv( 1, s, sizeof( s ) );
 	newClass = BG_ClassByName( s )->number;
 
 	if ( ent->client->sess.spectatorState != SPECTATOR_NOT )
@@ -2303,20 +2301,29 @@ void Cmd_Class_f( gentity_t *ent )
 			     newClass != PCL_ALIEN_BUILDER0_UPG &&
 			     newClass != PCL_ALIEN_LEVEL0 )
 			{
-				G_TriggerMenuArgs( ent->client->ps.clientNum, MN_A_CLASSNOTSPAWN, newClass );
-				return;
+				if ( report )
+				{
+					G_TriggerMenuArgs( ent->client->ps.clientNum, MN_A_CLASSNOTSPAWN, newClass );
+				}
+				return qfalse;
 			}
 
 			if ( !BG_ClassIsAllowed( newClass ) )
 			{
-				G_TriggerMenuArgs( ent->client->ps.clientNum, MN_A_CLASSNOTALLOWED, newClass );
-				return;
+				if ( report )
+				{
+					G_TriggerMenuArgs( ent->client->ps.clientNum, MN_A_CLASSNOTALLOWED, newClass );
+				}
+				return qfalse;
 			}
 
 			if ( !BG_ClassAllowedInStage( newClass, g_alienStage.integer ) )
 			{
-				G_TriggerMenuArgs( ent->client->ps.clientNum, MN_A_CLASSNOTATSTAGE, newClass );
-				return;
+				if ( report )
+				{
+					G_TriggerMenuArgs( ent->client->ps.clientNum, MN_A_CLASSNOTATSTAGE, newClass );
+				}
+				return qfalse;
 			}
 
 			// spawn from an egg
@@ -2324,6 +2331,8 @@ void Cmd_Class_f( gentity_t *ent )
 			{
 				ent->client->pers.classSelection = newClass;
 				ent->client->ps.stats[ STAT_CLASS ] = newClass;
+
+				return qtrue;
 			}
 		}
 		else if ( ent->client->pers.teamSelection == TEAM_HUMANS )
@@ -2341,8 +2350,11 @@ void Cmd_Class_f( gentity_t *ent )
 			}
 			else
 			{
-				G_TriggerMenu( ent->client->ps.clientNum, MN_H_UNKNOWNSPAWNITEM );
-				return;
+				if ( report )
+				{
+					G_TriggerMenu( ent->client->ps.clientNum, MN_H_UNKNOWNSPAWNITEM );
+				}
+				return qfalse;
 			}
 
 			// spawn from a telenode
@@ -2350,23 +2362,28 @@ void Cmd_Class_f( gentity_t *ent )
 			{
 				ent->client->pers.classSelection = PCL_HUMAN;
 				ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN;
+
+				return qtrue;
 			}
 		}
 
-		return;
+		return qfalse;
 	}
 
 	if ( ent->health <= 0 )
 	{
-		return;
+		return qtrue; // dead, can't evolve; no point in trying other classes (if any listed)
 	}
 
 	if ( ent->client->pers.teamSelection == TEAM_ALIENS )
 	{
 		if ( newClass == PCL_NONE )
 		{
-			G_TriggerMenu( ent->client->ps.clientNum, MN_A_UNKNOWNCLASS );
-			return;
+			if ( report )
+			{
+				G_TriggerMenu( ent->client->ps.clientNum, MN_A_UNKNOWNCLASS );
+			}
+			return qfalse;
 		}
 
 		//if we are not currently spectating, we are attempting evolution
@@ -2377,8 +2394,11 @@ void Cmd_Class_f( gentity_t *ent )
 			//check that we have an overmind
 			if ( !G_Overmind() )
 			{
-				G_TriggerMenu( clientNum, MN_A_NOOVMND_EVOLVE );
-				return;
+				if ( report )
+				{
+					G_TriggerMenu( clientNum, MN_A_NOOVMND_EVOLVE );
+				}
+				return qfalse;
 			}
 
 			//check there are no humans nearby
@@ -2395,16 +2415,22 @@ void Cmd_Class_f( gentity_t *ent )
 				     ( other->s.eType == ET_BUILDABLE && other->buildableTeam == TEAM_HUMANS &&
 				       other->powered ) )
 				{
-					G_TriggerMenu( clientNum, MN_A_TOOCLOSE );
-					return;
+					if ( report )
+					{
+						G_TriggerMenu( clientNum, MN_A_TOOCLOSE );
+					}
+					return qfalse;
 				}
 			}
 
 			//check that we are not wallwalking
 			if ( ent->client->ps.eFlags & EF_WALLCLIMB )
 			{
-				G_TriggerMenu( clientNum, MN_A_EVOLVEWALLWALK );
-				return;
+				if ( report )
+				{
+					G_TriggerMenu( clientNum, MN_A_EVOLVEWALLWALK );
+				}
+				return qfalse;
 			}
 
 			if ( ent->client->sess.spectatorState == SPECTATOR_NOT &&
@@ -2412,8 +2438,11 @@ void Cmd_Class_f( gentity_t *ent )
 			       currentClass == PCL_ALIEN_BUILDER0_UPG ) &&
 			     ent->client->ps.stats[ STAT_MISC ] > 0 )
 			{
-				G_TriggerMenu( ent->client->ps.clientNum, MN_A_EVOLVEBUILDTIMER );
-				return;
+				if ( report )
+				{
+					G_TriggerMenu( ent->client->ps.clientNum, MN_A_EVOLVEBUILDTIMER );
+				}
+				return qfalse;
 			}
 
 			cost = BG_ClassCanEvolveFromTo( currentClass, newClass,
@@ -2460,18 +2489,47 @@ void Cmd_Class_f( gentity_t *ent )
 				}
 				else
 				{
-					G_TriggerMenuArgs( clientNum, MN_A_CANTEVOLVE, newClass );
+					if ( report )
+					{
+						G_TriggerMenuArgs( clientNum, MN_A_CANTEVOLVE, newClass );
+					}
+					return qfalse;
 				}
 			}
 			else
 			{
-				G_TriggerMenu( clientNum, MN_A_NOEROOM );
+				if ( report )
+				{
+					G_TriggerMenu( clientNum, MN_A_NOEROOM );
+				}
+				return qfalse;
 			}
 		}
 	}
 	else if ( ent->client->pers.teamSelection == TEAM_HUMANS )
 	{
-		G_TriggerMenu( clientNum, MN_H_DEADTOCLASS );
+		if ( report )
+		{
+			G_TriggerMenu( clientNum, MN_H_DEADTOCLASS );
+		}
+		return qfalse;
+	}
+
+	// if we reach this, found a valid class and changed to it
+	return qtrue;
+}
+
+void Cmd_Class_f( gentity_t *ent )
+{
+	char s[ MAX_TOKEN_CHARS ];
+	int  i;
+	int  args = trap_Argc() - 1;
+
+	for ( i = 1; i <= args; ++i )
+	{
+		trap_Argv( i, s, sizeof( s ) );
+
+		if ( Cmd_Class_internal( ent, s, i == args ) ) break;
 	}
 }
 
@@ -2487,7 +2545,10 @@ void Cmd_Destroy_f( gentity_t *ent )
 	gentity_t *traceEnt;
 	char      cmd[ 12 ];
 	qboolean  deconstruct = qtrue;
+	qboolean  instant = qfalse;
+	qboolean  protect;
 	qboolean  lastSpawn = qfalse;
+	qboolean  prevDeconstruct;
 
 	if ( ent->client->pers.namelog->denyBuild )
 	{
@@ -2501,6 +2562,11 @@ void Cmd_Destroy_f( gentity_t *ent )
 	{
 		deconstruct = qfalse;
 	}
+	else if ( DECON_OPTION_CHECK( INSTANT ) && trap_Argc() == 2 )
+	{
+		trap_Argv( 1, cmd, sizeof( cmd ) );
+		instant = !Q_stricmp( cmd, "marked" );
+	}
 
 	BG_GetClientViewOrigin( &ent->client->ps, viewOrigin );
 	AngleVectors( ent->client->ps.viewangles, forward, NULL, NULL );
@@ -2508,6 +2574,7 @@ void Cmd_Destroy_f( gentity_t *ent )
 
 	trap_Trace( &tr, viewOrigin, NULL, NULL, end, ent->s.number, MASK_PLAYERSOLID );
 	traceEnt = &g_entities[ tr.entityNum ];
+	prevDeconstruct = traceEnt->deconstruct;
 
 	if ( tr.fraction < 1.0f &&
 	     ( traceEnt->s.eType == ET_BUILDABLE ) &&
@@ -2525,7 +2592,8 @@ void Cmd_Destroy_f( gentity_t *ent )
 		}
 
 		// Cancel deconstruction (unmark)
-		if ( deconstruct && g_markDeconstruct.integer && traceEnt->deconstruct )
+		// If instant decon is enabled and selected, don't unmark
+		if ( deconstruct && !instant && /*! DECON_MARK_CHECK( INSTANT ) &&*/ traceEnt->deconstruct )
 		{
 			traceEnt->deconstruct = qfalse;
 			return;
@@ -2549,13 +2617,6 @@ void Cmd_Destroy_f( gentity_t *ent )
 			}
 		}
 
-		if ( lastSpawn && !g_cheats.integer &&
-		     !g_markDeconstruct.integer )
-		{
-			G_TriggerMenu( ent->client->ps.clientNum, MN_B_LASTSPAWN );
-			return;
-		}
-
 		// Don't allow destruction of buildables that cannot be rebuilt
 		if ( G_TimeTilSuddenDeath() <= 0 )
 		{
@@ -2563,15 +2624,24 @@ void Cmd_Destroy_f( gentity_t *ent )
 			return;
 		}
 
-		if ( !g_markDeconstruct.integer ||
-		     ( ent->client->pers.teamSelection == TEAM_HUMANS &&
-		       !G_FindPower( traceEnt, qtrue ) ) )
+		// Not marked for decon ⇒ can't do explicit instant decon
+		if ( !traceEnt->deconstruct )
 		{
-			if ( ent->client->ps.stats[ STAT_MISC ] > 0 )
-			{
-				G_AddEvent( ent, EV_BUILD_DELAY, ent->client->ps.clientNum );
-				return;
-			}
+			instant = qfalse;
+		}
+
+		switch ( traceEnt->s.modelindex )
+		{
+			case BA_A_SPAWN:
+			case BA_H_SPAWN:
+			case BA_H_REACTOR:
+			case BA_A_OVERMIND:
+				protect = DECON_OPTION_CHECK( PROTECT );
+				break;
+
+			default: // nothing else is protected
+				protect = qfalse;
+				break;
 		}
 
 		if ( traceEnt->health > 0 )
@@ -2581,28 +2651,65 @@ void Cmd_Destroy_f( gentity_t *ent )
 				G_Damage( traceEnt, ent, ent, forward, tr.endpos,
 				          traceEnt->health, 0, MOD_SUICIDE );
 			}
-			else if ( g_markDeconstruct.integer &&
-			          ( ent->client->pers.teamSelection != TEAM_HUMANS ||
-			            G_FindPower( traceEnt, qtrue ) || lastSpawn ) )
+			else if ( lastSpawn && !g_cheats.integer )
 			{
-				traceEnt->deconstruct = qtrue; // Mark buildable for deconstruction
-				traceEnt->deconstructTime = level.time;
+				if ( !instant && !protect && DECON_MARK_CHECK( INSTANT ) ) goto fail_lastSpawn;
+				goto toggle_deconstruct;
+			}
+			else if ( protect && ( ent->client->pers.teamSelection != TEAM_HUMANS || G_FindPower( traceEnt, qtrue ) ) )
+			{
+				goto toggle_deconstruct;
+			}
+			else if ( instant || DECON_MARK_CHECK( INSTANT ) ||
+			          ( ent->client->pers.teamSelection == TEAM_HUMANS && !G_FindPower( traceEnt, qtrue ) ) )
+			{
+				goto do_deconstruct;
 			}
 			else
 			{
-				if ( !g_cheats.integer ) // add a bit to the build timer
-				{
-					ent->client->ps.stats[ STAT_MISC ] +=
-					  BG_Buildable( traceEnt->s.modelindex )->buildTime / 4;
-				}
-
-				G_Damage( traceEnt, ent, ent, forward, tr.endpos,
-				          traceEnt->health, 0, MOD_DECONSTRUCT );
-				G_RemoveRangeMarkerFrom( traceEnt );
-				G_FreeEntity( traceEnt );
+				goto toggle_deconstruct;
 			}
 		}
 	}
+
+	return;
+
+toggle_deconstruct:
+	traceEnt->deconstruct = !traceEnt->deconstruct;
+	traceEnt->deconstructTime = level.time;
+
+	// Return unless instant decon was requested and the building has just been unmarked for decon
+	if ( !instant ) return;
+
+do_deconstruct:
+	// Deny if last spawn
+	if ( lastSpawn && !g_cheats.integer )
+	{
+fail_lastSpawn:
+		G_TriggerMenu( ent->client->ps.clientNum, MN_B_LASTSPAWN );
+		return;
+	}
+
+	// deny decon if Build Timer Says No
+	if ( ent->client->pers.teamSelection != TEAM_HUMANS || G_FindPower( traceEnt, qtrue ) )
+	{
+		if ( ent->client->ps.stats[ STAT_MISC ] > 0 )
+		{
+			traceEnt->deconstruct = prevDeconstruct; // restore the decon flag (for repeat '/deconstruct marked')
+			G_AddEvent( ent, EV_BUILD_DELAY, ent->client->ps.clientNum );
+			return;
+		}
+	}
+
+	if ( !g_cheats.integer ) // add a bit to the build timer
+	{
+		ent->client->ps.stats[ STAT_MISC ] +=
+		  BG_Buildable( traceEnt->s.modelindex )->buildTime / 4;
+	}
+
+	G_Damage( traceEnt, ent, ent, forward, tr.endpos,
+		  traceEnt->health, 0, MOD_DECONSTRUCT );
+	G_FreeEntity( traceEnt );
 }
 
 /*

@@ -506,7 +506,7 @@ void *QDECL Sys_LoadDll( const char *name,
 		return NULL;
 	}
 
-	Com_Printf( "Sys_LoadDll(%s) found vmMain function at %p\n", name, *entryPoint );
+	Com_DPrintf( "Sys_LoadDll(%s) found vmMain function at %p\n", name, *entryPoint );
 	dllEntry( systemcalls );
 
 	Com_DPrintf( "Sys_LoadDll(%s) succeeded!\n", name );
@@ -720,9 +720,11 @@ int main( int argc, char **argv )
 	CON_Init();
 #endif
 
+#ifdef NDEBUG
 	signal( SIGILL, Sys_SigHandler );
 	signal( SIGFPE, Sys_SigHandler );
 	signal( SIGSEGV, Sys_SigHandler );
+#endif
 	signal( SIGTERM, Sys_SigHandler );
 	signal( SIGINT, Sys_SigHandler );
 

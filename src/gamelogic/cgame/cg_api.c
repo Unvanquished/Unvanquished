@@ -1225,3 +1225,10 @@ void trap_Pgettext( char *buffer, const char *ctxt, const char *msgid, int buffe
 {
 	syscall( CG_PGETTEXT, buffer, ctxt, msgid, bufferLength );
 }
+
+//181.
+//return re.inPVVS(VMA(1), VMA(2));
+qboolean trap_R_inPVVS( const vec3_t p1, const vec3_t p2 )
+{
+	return syscall( CG_R_INPVVS, p1, p2 );
+}

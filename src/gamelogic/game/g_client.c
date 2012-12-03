@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "g_local.h"
+#include "g_spawn.h"
 
 // g_client.c -- client functions that don't happen every frame
 
@@ -1179,9 +1180,6 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 		client->pers.disableBlueprintErrors = qfalse;
 	}
 
-	client->pers.buildableRangeMarkerMask =
-	  atoi( Info_ValueForKey( userinfo, "cg_buildableRangeMarkerMask" ) );
-
 	// teamInfo
 	s = Info_ValueForKey( userinfo, "teamoverlay" );
 
@@ -1487,6 +1485,7 @@ void ClientBegin( int clientNum )
 	gclient_t       *client;
 	int             flags;
 	g_admin_admin_t *admin;
+	char            startMsg[ MAX_STRING_CHARS ];
 
 	ent = g_entities + clientNum;
 
@@ -1534,6 +1533,13 @@ void ClientBegin( int clientNum )
 	ClientSpawn( ent, NULL, NULL, NULL );
 
 	trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^7 entered the game\n") ), Quote( client->pers.netname ) ) );
+
+	trap_Cvar_VariableStringBuffer( "g_mapStartupMessage", startMsg, sizeof( startMsg ) );
+
+	if ( *startMsg )
+	{
+		trap_SendServerCommand( ent - g_entities, va( "cpd %d %s", g_mapStartupMessageDelay.integer, Quote( startMsg ) ) );
+	}
 
 	G_namelog_restore( client );
 

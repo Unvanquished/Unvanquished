@@ -57,9 +57,6 @@ Maryland 20850 USA.
 #define DEF_COMHUNKMEGS_S         XSTRING(DEF_COMHUNKMEGS)
 #define DEF_COMZONEMEGS_S         XSTRING(DEF_COMZONEMEGS)
 
-#define _(x) Trans_Gettext(x)
-#define C_(x, y) Trans_Pgettext(x, y)
-
 int                 com_argc;
 char                *com_argv[ MAX_NUM_ARGVS + 1 ];
 
@@ -118,7 +115,7 @@ cvar_t *com_watchdog_cmd;
 
 cvar_t *com_hunkused; // Ridah
 
-#if idx64
+#if idx64 || idx64_32
 int ( *Q_VMftol )( void );
 #elif id386
 long( QDECL *Q_ftol )( float f );
@@ -1747,11 +1744,11 @@ Find out whether we have SSE support for Q_ftol function
 =================
 */
 
-#if id386 || idx64
+#if id386 || idx64 || idx64_32
 
 static void Com_DetectSSE( void )
 {
-#if !idx64
+#if !idx64 && !idx64_32
 	cpuFeatures_t feat;
 
 	feat = Sys_GetProcessorFeatures();
@@ -1772,7 +1769,7 @@ static void Com_DetectSSE( void )
 		Q_VMftol = qvmftolsse;
 
 		Com_Printf( "Have SSE support\n" );
-#if !idx64
+#if !idx64 && !idx64_32
 	}
 
 	else
@@ -3226,7 +3223,9 @@ void Com_Init( char *commandLine )
 #endif
 	// allocate the stack based hunk allocator
 	Com_InitHunkMemory();
+
 	Trans_Init();
+
 	// if any archived cvars are modified after this, we will trigger a writing
 	// of the config file
 	cvar_modifiedFlags &= ~CVAR_ARCHIVE;
@@ -3637,6 +3636,10 @@ void Com_Frame( void )
 		{
 			minMsec = 1;
 		}
+	}
+	else
+	{
+		minMsec = 0; // let's not spin at all
 	}
 
 	com_frameTime = Com_EventLoop();
