@@ -1125,6 +1125,7 @@ void CG_RangeMarker( centity_t *cent )
 		team_t team = ps->stats[ STAT_TEAM ];
 		qboolean weaponDisplays, wantsToSee;
 		float dist, maxDist = MAX( HELMET_RANGE, ALIENSENSE_RANGE );
+		vec3_t angles;
 
 		if ( team == TEAM_HUMANS ) {
 			weaponDisplays = BG_InventoryContainsWeapon( WP_HBUILD, ps->stats );
@@ -1148,7 +1149,14 @@ void CG_RangeMarker( centity_t *cent )
 			} else {
 				rgba[3] = 10.0f - 10.0f * dist / maxDist;
 			}
-			CG_DrawRangeMarker( rmType, cent->lerpOrigin, range, cent->lerpAngles, rgba );
+			if( cent->currentState.origin2[0] || 
+			    cent->currentState.origin2[1] || 
+			    cent->currentState.origin2[2] )
+				vectoangles( cent->currentState.origin2, angles );
+			else
+				VectorCopy( cent->lerpAngles, angles );
+				
+			CG_DrawRangeMarker( rmType, cent->lerpOrigin, range, angles, rgba );
 		}
 	}
 }
