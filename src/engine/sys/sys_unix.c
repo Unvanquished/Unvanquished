@@ -392,6 +392,7 @@ Sys_Cwd
 char *Sys_Cwd( void )
 {
 	static char cwd[ MAX_OSPATH ];
+	char        *result = getcwd( cwd, sizeof( cwd ) - 1 );
 
 #ifdef MACOS_X
 	char *apppath = Sys_DefaultAppPath();
@@ -402,8 +403,6 @@ char *Sys_Cwd( void )
 	}
 
 #endif
-
-	char        *result = getcwd( cwd, sizeof( cwd ) - 1 );
 
 	if ( result != cwd )
 	{
