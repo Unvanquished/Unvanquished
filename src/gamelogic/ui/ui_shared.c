@@ -6028,6 +6028,7 @@ static bind_t g_bindings[] =
 	{ "weapprev",       '[',                -1,            -1, -1 },
 	{ "weapnext",       ']',                -1,            -1, -1 },
 	{ "+taunt",         K_MOUSE3,           -1,            -1, -1 },
+	{ "+rally",         'g',                -1,            -1, -1 },
 	{ "vote yes",       K_F1,               -1,            -1, -1 },
 	{ "vote no",        K_F2,               -1,            -1, -1 },
 	{ "teamvote yes",   K_F3,               -1,            -1, -1 },
