@@ -5,14 +5,6 @@ use strict;
 no locale;
 
 use File::Basename;
-use Text::ParseWords;
-
-my %context;
-my $text;
-my $line;
-my $linenum=1;
-my $key;
-my $start=0;
 
 if (!$ARGV[0])
 {
@@ -21,66 +13,28 @@ if (!$ARGV[0])
 }
 
 open MENU, '<'.$ARGV[0] or die "$!\n";
-while (defined ($line = <MENU>))
-{
-	if ( $start == 1)
-	{
-		if ($line =~ /.*?\)/)
-		{
-			$start = 0;
-			$text .= $line;
-			$text =~ s{\n}{ }g;
-			chomp $text;
- 			if ( $text =~ /MULTI.*\((.*?),(.*?),(.*?),(.*?),(.*?),(.*?)\)/ )
- 			{
-				my @arr = quotewords('\s+', 1, $4);
-				foreach my $str (@arr)
-				{
-					print "\n// " . basename($ARGV[0]) . ": $linenum\n" . "$str"
-				}
- 			}
- 			if ( $text =~ /MULTI\s*\((.*?),(.*?),(.*?),(.*?),(.*?)\)/ )
-			{
-				my @arr = quotewords('\s+', 1, $3);
-				foreach my $str (@arr)
-				{
-					print "\n// " . basename($ARGV[0]) . ": $linenum\n" . "$str"
-				}
-			}
-			$text = "";
-		}
-		else
-		{
-			$text .= $line;
-		}
-	}
-	elsif ($line =~ /MULTI/)
-	{
-		$start = 1;
-		$text = $line;
-		if ($text =~ /MULTI.*\((.*?),(.*?),(.*?),(.*?),(.*?),(.*?)\)/)
-		{
-			my @arr = quotewords('\s+', 0, $1);
-			foreach my $str (@arr)
-			{
-				print "\n// " . basename($ARGV[0]) . ": $linenum\n" . "$str"
-			}
-			$start = 0;
-		}
-		if ($text =~ /MULTI\s*\((.*?),(.*?),(.*?),(.*?),(.*?)\)/)
-		{
-			my @arr = quotewords('\s+', 0, $1);
-			foreach my $str (@arr)
-			{
-				print "\n// " . basename($ARGV[0]) . ": $linenum\n" . "$str\n" . "a\n"
-			}
-			$start = 0;
-		}
-	}
-	elsif ($line =~ /text .*(\".*?\")/)
-	{
-		print  "\n// " . basename($ARGV[0]) . ": $linenum\n" . "$1\n" . "a\n";
-	}
-	$linenum++;
-}
+my $code = do { local $/ = <MENU> };
 close MENU;
+
+my $filename = basename($ARGV[0]);
+
+while ($code =~ /\s(?:text\s+(?<text>"[^"]*")|MULTIX?\s*\((?:(?:[^,]+),)?\s*(?<name>[^,]+)\s*,(?:[^,]+),\s*(?<choices>[^,]+)\s*,([^,)]+),([^)]+)\))/mg) {
+	my $linenum;
+	if (defined($+{'text'})) { # text "..."
+		my $linenum = 1 + substr($code, 0, $+[1]) =~ y/\n//;
+		printf("// %s:%i\n%s\na\n\n", $filename, $linenum, $+{'text'});
+	}
+	elsif (defined($+{'name'}) && defined($+{'choices'})) { # MULTI(...)
+		# "name" arg
+		$linenum = 1 + substr($code, 0, $+[2]) =~ y/\n//;
+		printf("// %s:%i\n%s\na\n\n", $filename, $linenum, $+{'name'});
+
+		# "choice" arg, consists of (string,value) pairs
+		$linenum = 1 + substr($code, 0, $-[3]) =~ y/\n//;
+		my $choices = $+{'choices'};
+		while ($choices =~ /("[^"]*")\s*/g) {
+			my $choice_linenum = $linenum + (substr($choices, 0, $+[1]) =~ y/\n//);
+			printf("// %s:%i\n%s\na\n\n", $filename, $choice_linenum, $1);
+		}
+	}
+}
