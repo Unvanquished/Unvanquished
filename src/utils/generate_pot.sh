@@ -23,6 +23,7 @@ find main/ui/ | grep .menu$ | xgettext --from-code=UTF-8 -C -o messages_game.pot
 -kYESNO:1,4t \
 -kMMBUTTON \
 -kCVAR:2,5t \
+-kCVAR_INT:2,5t \
 -kMULTI:2,6t \
 -kMULTIX:2 \
 -kCOMBO:2,4t \
