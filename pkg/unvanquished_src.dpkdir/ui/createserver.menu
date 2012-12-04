@@ -1,5 +1,6 @@
 #include "ui/menudef.h"
 #include "ui/main.h"
+#include "ui/createserver.h"
 
 {
   \\ Server Creation \\
@@ -122,272 +123,41 @@
       borderColor 1 1 1 1
     }
 
-    itemDef
-    {
-      name expert
-      type ITEM_TYPE_EDITFIELD
-      text "Host Name:"
-      cvar "sv_hostname"
-      maxChars 40
-      rect (OPTIONS_X+BORDER) (OPTIONS_Y+ELEM_OFF_Y+(0*ELEM_H)) (OPTIONS_W-(2*BORDER)) ELEM_H
-      textalign ALIGN_RIGHT
-      textvalign VALIGN_CENTER
-      textalignx ELEM_OFF_X
-      textscale .36
-      forecolor 1 1 1 1
-      visible MENU_TRUE
-    }
+    CVAR ( expert, "Host Name AAA:", "sv_hostname", 40, 0 )
 
-    itemDef
-    {
-      name general
-      type ITEM_TYPE_NUMERICFIELD
-      text "Time Limit:"
-      cvar "timelimit"
-      rect (OPTIONS_X+BORDER) (OPTIONS_Y+ELEM_OFF_Y+(1*ELEM_H)) (OPTIONS_W-(2*BORDER)) ELEM_H
-      textalign ALIGN_RIGHT
-      textvalign VALIGN_CENTER
-      textalignx ELEM_OFF_X
-      maxchars 4
-      textscale .36
-      forecolor 1 1 1 1
-      visible MENU_TRUE
-    }
+    CVAR_INT ( general, "Time Limit:", "timelimit", 4, 1 )
 
-    itemDef
-    {
-      name expert
-      type ITEM_TYPE_NUMERICFIELD
-      text "Maximum Players:"
-      cvar "sv_maxclients"
-      rect (OPTIONS_X+BORDER) (OPTIONS_Y+ELEM_OFF_Y+(2*ELEM_H)) (OPTIONS_W-(2*BORDER)) ELEM_H
-      textalign ALIGN_RIGHT
-      textvalign VALIGN_CENTER
-      textalignx ELEM_OFF_X
-      maxchars 4
-      textscale .36
-      forecolor 1 1 1 1
-      visible MENU_TRUE
-    }
+    CVAR_INT ( expert, "Maximum Players:", "sv_maxclients", 4, 2 )
 
-    itemDef
-    {
-      name expert
-      type ITEM_TYPE_YESNO
-      text "Require Password:"
-      cvar "g_needpassword"
-      rect (OPTIONS_X+BORDER) (OPTIONS_Y+ELEM_OFF_Y+(3*ELEM_H)) (OPTIONS_W-(2*BORDER)) ELEM_H
-      textalign ALIGN_RIGHT
-      textvalign VALIGN_CENTER
-      textalignx ELEM_OFF_X
-      textscale .36
-      forecolor 1 1 1 1
-      visible MENU_TRUE
-      action
-      {
-        play "sound/misc/menu1.wav"
-      }
-    }
+    YESNO ( expert, "Require Password:", "g_needpassword",
+            play "sound/misc/menu1.wav", 3 )
 
-    itemDef
-    {
-      name expert
-      type ITEM_TYPE_EDITFIELD
-      text "Password:"
-      cvar "g_password"
-      rect (OPTIONS_X+BORDER) (OPTIONS_Y+ELEM_OFF_Y+(4*ELEM_H)) (OPTIONS_W-(2*BORDER)) ELEM_H
-      maxchars 10
-      textalign ALIGN_RIGHT
-      textvalign VALIGN_CENTER
-      textalignx ELEM_OFF_X
-      textscale .36
-      forecolor 1 1 1 1
-      visible MENU_TRUE
-    }
+    CVAR ( expert, "Password:", "g_password", 10, 4 )
 
+    YESNO ( general, "Pure Server:", "sv_pure",
+            play "sound/misc/menu1.wav", 6 )
 
+    MULTI ( general, "Dedicated:", "ui_dedicated",
+            { "No" 0 "LAN" 1 "Internet" 2 }, play "sound/misc/menu1.wav", 7 )
 
-    itemDef
-    {
-      name general
-      type ITEM_TYPE_YESNO
-      text "Pure Server:"
-      cvar "sv_pure"
-      rect (OPTIONS_X+BORDER) (OPTIONS_Y+ELEM_OFF_Y+(6*ELEM_H)) (OPTIONS_W-(2*BORDER)) ELEM_H
-      textalign ALIGN_RIGHT
-      textvalign VALIGN_CENTER
-      textalignx ELEM_OFF_X
-      textscale .36
-      forecolor 1 1 1 1
-      visible MENU_TRUE
-      action
-      {
-        play "sound/misc/menu1.wav"
-      }
-    }
+    YESNO ( expert, "Auto Download:", "sv_allowdownload",
+            play "sound/misc/menu1.wav", 8 )
 
-    itemDef
-    {
-      name general
-      type ITEM_TYPE_MULTI
-      text "Dedicated:"
-      // dedicated is a special cvar in that as soon as it is set,
-      // the game goes to console only so the ui catches this one specifically
-      cvar "ui_dedicated"
-      cvarFloatList { "No" 0 "LAN" 1 "Internet" 2 }
-      rect (OPTIONS_X+BORDER) (OPTIONS_Y+ELEM_OFF_Y+(7*ELEM_H)) (OPTIONS_W-(2*BORDER)) ELEM_H
-      textalign ALIGN_RIGHT
-      textvalign VALIGN_CENTER
-      textalignx ELEM_OFF_X
-      textscale .36
-      forecolor 1 1 1 1
-      visible MENU_TRUE
-      action
-      {
-        play "sound/misc/menu1.wav"
-      }
-    }
+    YESNO ( expert, "Enable Voting:", "g_allowvote",
+            play "sound/misc/menu1.wav", 9 )
 
-    itemDef
-    {
-      name expert
-      type ITEM_TYPE_YESNO
-      text "Auto Download:"
-      cvar "sv_allowdownload"
-      rect (OPTIONS_X+BORDER) (OPTIONS_Y+ELEM_OFF_Y+(8*ELEM_H)) (OPTIONS_W-(2*BORDER)) ELEM_H
-      textalign ALIGN_RIGHT
-      textvalign VALIGN_CENTER
-      textalignx ELEM_OFF_X
-      textscale .36
-      forecolor 1 1 1 1
-      visible MENU_TRUE
-      action
-      {
-        play "sound/misc/menu1.wav"
-      }
-    }
+    CVAR_INT ( expert, "Minimum Ping:", "sv_minping", 4, 11 )
 
-    itemDef
-    {
-      name expert
-      type ITEM_TYPE_YESNO
-      text "Enable Voting:"
-      cvar "g_allowvote"
-      rect (OPTIONS_X+BORDER) (OPTIONS_Y+ELEM_OFF_Y+(9*ELEM_H)) (OPTIONS_W-(2*BORDER)) ELEM_H
-      textalign ALIGN_RIGHT
-      textvalign VALIGN_CENTER
-      textalignx ELEM_OFF_X
-      textscale .36
-      forecolor 1 1 1 1
-      visible MENU_TRUE
-      action
-      {
-        play "sound/misc/menu1.wav"
-      }
-    }
+    CVAR_INT ( expert, "Maximum Ping:", "sv_maxping", 4, 12 )
 
+    YESNO ( expert, "Synchronous Client:", "g_synchronousclients",
+            play "sound/misc/menu1.wav", 13 )
 
+    CVAR_INT ( expert, "Max Rate:", "sv_maxrate", 4, 14 )
 
-    itemDef
-    {
-      name expert
-      type ITEM_TYPE_NUMERICFIELD
-      text "Minimum Ping:"
-      cvar "sv_minping"
-      rect (OPTIONS_X+BORDER) (OPTIONS_Y+ELEM_OFF_Y+(11*ELEM_H)) (OPTIONS_W-(2*BORDER)) ELEM_H
-      textalign ALIGN_RIGHT
-      textvalign VALIGN_CENTER
-      textalignx ELEM_OFF_X
-      maxchars 4
-      textscale .36
-      forecolor 1 1 1 1
-      visible MENU_TRUE
-    }
+    CVAR_INT ( expert, "Zombie Time:", "sv_zombietime", 4, 15 )
 
-    itemDef
-    {
-      name expert
-      type ITEM_TYPE_NUMERICFIELD
-      text "Maximum Ping:"
-      cvar "sv_maxping"
-      rect (OPTIONS_X+BORDER) (OPTIONS_Y+ELEM_OFF_Y+(12*ELEM_H)) (OPTIONS_W-(2*BORDER)) ELEM_H
-      textalign ALIGN_RIGHT
-      textvalign VALIGN_CENTER
-      textalignx ELEM_OFF_X
-      maxchars 4
-      textscale .36
-      forecolor 1 1 1 1
-      visible MENU_TRUE
-    }
-
-    itemDef
-    {
-      name expert
-      type ITEM_TYPE_YESNO
-      text "Synchronous Client:"
-      cvar "g_synchronousclients"
-      rect (OPTIONS_X+BORDER) (OPTIONS_Y+ELEM_OFF_Y+(13*ELEM_H)) (OPTIONS_W-(2*BORDER)) ELEM_H
-      textalign ALIGN_RIGHT
-      textvalign VALIGN_CENTER
-      textalignx ELEM_OFF_X
-      textscale .36
-      forecolor 1 1 1 1
-      visible MENU_TRUE
-      action
-      {
-        play "sound/misc/menu1.wav"
-      }
-    }
-
-    itemDef
-    {
-      name expert
-      type ITEM_TYPE_NUMERICFIELD
-      text "Max Rate:"
-      cvar "sv_maxrate"
-      rect (OPTIONS_X+BORDER) (OPTIONS_Y+ELEM_OFF_Y+(14*ELEM_H)) (OPTIONS_W-(2*BORDER)) ELEM_H
-      textalign ALIGN_RIGHT
-      textvalign VALIGN_CENTER
-      textalignx ELEM_OFF_X
-      maxchars 4
-      textscale .36
-      forecolor 1 1 1 1
-      visible MENU_TRUE
-    }
-
-    itemDef
-    {
-      name expert
-      type ITEM_TYPE_NUMERICFIELD
-      text "Zombie Time:"
-      cvar "sv_zombietime"
-      rect (OPTIONS_X+BORDER) (OPTIONS_Y+ELEM_OFF_Y+(15*ELEM_H)) (OPTIONS_W-(2*BORDER)) ELEM_H
-      maxchars 4
-      textalign ALIGN_RIGHT
-      textvalign VALIGN_CENTER
-      textalignx ELEM_OFF_X
-      textscale .36
-      forecolor 1 1 1 1
-      visible MENU_TRUE
-    }
-
-    itemDef
-    {
-      name expert
-      type ITEM_TYPE_NUMERICFIELD
-      text "Reconnect Limit:"
-      cvar "sv_reconnectlimit"
-      maxchars 4
-      rect (OPTIONS_X+BORDER) (OPTIONS_Y+ELEM_OFF_Y+(16*ELEM_H)) (OPTIONS_W-(2*BORDER)) ELEM_H
-      textalign ALIGN_RIGHT
-      textvalign VALIGN_CENTER
-      textalignx ELEM_OFF_X
-      textscale .36
-      forecolor 1 1 1 1
-      visible MENU_TRUE
-    }
-
-
+    CVAR_INT ( expert, "Reconnect Limit:", "sv_reconnectlimit", 4, 16 )
 
     // BACK BAR //
 
