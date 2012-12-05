@@ -572,17 +572,6 @@ void NORETURN Sys_SigHandler( int signal )
 	}
 }
 
-typedef struct
-{
-	fileHandle_t file;
-	byte         *buffer;
-	qboolean     eof;
-	qboolean     active;
-	int          bufferSize;
-	int          streamPosition; // next byte to be returned by Sys_StreamRead
-	int          threadPosition; // next byte to be read from file
-} streamsIO_t;
-
 /*
 =================
 main
@@ -698,10 +687,6 @@ int main( int argc, char **argv )
 		Q_strcat( commandLine, sizeof( commandLine ), Cmd_QuoteString( argv[ i ] ) );
 		Q_strcat( commandLine, sizeof( commandLine ), " " );
 	}
-
-#ifdef _WIN32
-	Sys_InitStreamThread();
-#endif
 
 	Com_Init( commandLine );
 	NET_Init();

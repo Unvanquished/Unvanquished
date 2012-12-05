@@ -64,8 +64,6 @@ void     Sys_SigHandler( int signal ) NORETURN;
 void     Sys_ErrorDialog( const char *error );
 void     Sys_AnsiColorPrint( const char *msg );
 
-void     Sys_InitStreamThread( void );
-
 void     Sys_PrintCpuInfo( void );
 void     Sys_PrintMemoryInfo( void );
 
