@@ -486,6 +486,12 @@ set( SERVERLIST
   ${MOUNT_DIR}/engine/server/sv_world.c
 )
 
+set( QCOMMON_ARCH "" )
+if( BUILD_ARCH STREQUAL "i386" OR BUILD_ARCH STREQUAL "x32" OR BUILD_ARCH STREQUAL "x86_64" )
+  set( QCOMMON_ARCH ${MOUNT_DIR}/engine/qcommon/vm_x86.c )
+#elseif( ... )
+endif()
+
 set( QCOMMONLIST
   ${MOUNT_DIR}/engine/qcommon/cm_load.c
   ${MOUNT_DIR}/engine/qcommon/cm_trisoup.c
@@ -511,8 +517,8 @@ set( QCOMMONLIST
   ${MOUNT_DIR}/engine/qcommon/unzip.c
   ${MOUNT_DIR}/engine/qcommon/ioapi.c
   ${MOUNT_DIR}/engine/qcommon/vm.c
-  ${MOUNT_DIR}/engine/qcommon/vm_x86.c
   ${MOUNT_DIR}/engine/qcommon/vm_interpreted.c
+  ${QCOMMON_ARCH}
 )
 
 # Visual studio can't handle inline assembly
@@ -522,7 +528,6 @@ if( MSVC )
   else()
     set( ASM_APP ml64 -D idx64=1 )
   endif()
-  set( QCOMMONLIST ${QCOMMONLIST} ftola.obj snapvector.obj )
   # Work around - bugs in cmake prevent adding asm files to target in VS projects
   add_custom_command( OUTPUT ftola.obj COMMAND ${ASM_APP} /c ARGS "${MOUNT_DIR}/engine/asm/ftola.asm" MAIN_DEPENDENCY ${MOUNT_DIR}/engine/asm/ftola.asm )
   add_custom_command( OUTPUT snapvector.obj COMMAND ${ASM_APP} /c ARGS "${MOUNT_DIR}/engine/asm/snapvector.asm" MAIN_DEPENDENCY ${MOUNT_DIR}/engine/asm/snapvector.asm )
@@ -530,7 +535,7 @@ if( MSVC )
     set( QCOMMONLIST ${QCOMMONLIST} vm_x86_64.obj )
     add_custom_command( OUTPUT vm_x86_64.obj COMMAND ${ASM_APP} /c ARGS "${MOUNT_DIR}/engine/asm/vm_x86_64.asm" MAIN_DEPENDENCY ${MOUNT_DIR}/engine/asm/vm_x86_64.asm )
   endif()
-else()
+elseif( BUILD_ARCH STREQUAL "i386" OR BUILD_ARCH STREQUAL "x32" OR BUILD_ARCH STREQUAL "x86_64" )
     set( QCOMMONLIST ${QCOMMONLIST}
     ${MOUNT_DIR}/engine/asm/ftola.c
     ${MOUNT_DIR}/engine/asm/snapvector.c
