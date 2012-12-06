@@ -91,6 +91,7 @@ vmCvar_t           g_teamForceBalance;
 vmCvar_t           g_smoothClients;
 vmCvar_t           pmove_fixed;
 vmCvar_t           pmove_msec;
+vmCvar_t           pmove_accurate;
 vmCvar_t           g_minNameChangePeriod;
 vmCvar_t           g_maxNameChanges;
 
@@ -256,7 +257,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_smoothClients,               "g_smoothClients",               "1",                                0,                                               0, qfalse           },
 	{ &pmove_fixed,                   "pmove_fixed",                   "0",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 	{ &pmove_msec,                    "pmove_msec",                    "8",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
-
+	{ &pmove_accurate,                "pmove_accurate",                "0",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 	{ &g_alienBuildPoints,            "g_alienBuildPoints",            DEFAULT_ALIEN_BUILDPOINTS,          0,                                               0, qfalse, cv_alienBuildPoints},
 	{ &g_alienBuildQueueTime,         "g_alienBuildQueueTime",         DEFAULT_ALIEN_QUEUE_TIME,           CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_humanBuildPoints,            "g_humanBuildPoints",            DEFAULT_HUMAN_BUILDPOINTS,          0,                                               0, qfalse, cv_humanBuildPoints},

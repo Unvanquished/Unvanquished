@@ -1490,6 +1490,7 @@ extern  vmCvar_t            cg_hudFiles;
 extern  vmCvar_t            cg_hudFilesEnable;
 extern  vmCvar_t            cg_smoothClients;
 extern  vmCvar_t            pmove_fixed;
+extern  vmCvar_t            pmove_accurate;
 extern  vmCvar_t            pmove_msec;
 extern  vmCvar_t            cg_timescaleFadeEnd;
 extern  vmCvar_t            cg_timescaleFadeSpeed;

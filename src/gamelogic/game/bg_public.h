@@ -200,6 +200,9 @@ typedef struct pmove_s
 	int pmove_fixed;
 	int pmove_msec;
 
+	// don't round velocity to an integer
+	int pmove_accurate;
+
 	// callbacks to test the world
 	// these will be different functions during game and cgame
 	/*void    (*trace)( trace_t *results, const vec3_t start, vec3_t mins, vec3_t maxs, const vec3_t end, int passEntityNum, int contentMask );*/

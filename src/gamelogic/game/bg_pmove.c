@@ -4570,10 +4570,13 @@ void PmoveSingle( pmove_t *pmove )
 	// entering / leaving water splashes
 	PM_WaterEvents();
 
-	// snap some parts of playerstate to save network bandwidth
-	pm->ps->velocity[0] = roundf( pm->ps->velocity[0] );
-	pm->ps->velocity[1] = roundf( pm->ps->velocity[1] );
-	pm->ps->velocity[2] = roundf( pm->ps->velocity[2] );
+	if ( !pmove->pmove_accurate )
+	{
+		// snap some parts of playerstate to save network bandwidth
+		pm->ps->velocity[0] = roundf( pm->ps->velocity[0] );
+		pm->ps->velocity[1] = roundf( pm->ps->velocity[1] );
+		pm->ps->velocity[2] = roundf( pm->ps->velocity[2] );
+	}
 }
 
 /*
