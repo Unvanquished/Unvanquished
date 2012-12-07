@@ -167,14 +167,16 @@ extern int memcmp( void *, void *, size_t );
 // for visibility of some functions in system headers
 #undef _GNU_SOURCE
 #undef _BSD_SOURCE
-#undef _XOPEN_SOURCE
 #undef _XOPEN_SOURCE_EXTENDED
-#undef _POSIX_C_SOURCE
 #define _GNU_SOURCE
 #define _BSD_SOURCE
-#define _XOPEN_SOURCE 500
 #define _XOPEN_SOURCE_EXTENDED
+#ifndef __MACOS__ // defining the following breaks things on Mac OS X
+#undef _XOPEN_SOURCE
+#undef _POSIX_C_SOURCE
+#define _XOPEN_SOURCE 500
 #define _POSIX_C_SOURCE 200112L
+#endif
 
 #include <assert.h>
 #include <math.h>
