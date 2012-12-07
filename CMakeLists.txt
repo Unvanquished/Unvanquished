@@ -528,6 +528,7 @@ if( MSVC )
   else()
     set( ASM_APP ml64 -D idx64=1 )
   endif()
+  set( QCOMMONLIST ${QCOMMONLIST} ftola.obj snapvector.obj )
   # Work around - bugs in cmake prevent adding asm files to target in VS projects
   add_custom_command( OUTPUT ftola.obj COMMAND ${ASM_APP} /c ARGS "${MOUNT_DIR}/engine/asm/ftola.asm" MAIN_DEPENDENCY ${MOUNT_DIR}/engine/asm/ftola.asm )
   add_custom_command( OUTPUT snapvector.obj COMMAND ${ASM_APP} /c ARGS "${MOUNT_DIR}/engine/asm/snapvector.asm" MAIN_DEPENDENCY ${MOUNT_DIR}/engine/asm/snapvector.asm )
