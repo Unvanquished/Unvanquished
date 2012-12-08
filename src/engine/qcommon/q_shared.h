@@ -171,7 +171,7 @@ extern int memcmp( void *, void *, size_t );
 #define _GNU_SOURCE
 #define _BSD_SOURCE
 #define _XOPEN_SOURCE_EXTENDED
-#ifndef __MACOS__ // defining the following breaks things on Mac OS X
+#ifndef __APPLE__ // defining the following breaks things on Mac OS X
 #undef _XOPEN_SOURCE
 #undef _POSIX_C_SOURCE
 #define _XOPEN_SOURCE 500
