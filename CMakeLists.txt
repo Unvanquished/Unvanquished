@@ -97,6 +97,8 @@ cmake_dependent_option( USE_CIN_THEORA       "Compile with support for Theora"  
 cmake_dependent_option( USE_INTERNAL_SPEEX   "Use internal speex"                          0 USE_VOIP         0 )
 cmake_dependent_option( USE_INTERNAL_GLEW    "Use internal GLEW"                           0 BUILD_CLIENT     0 )
 
+cmake_dependent_option( USE_INTERNAL_WEBP    "Use internal WebP"                           0 BUILD_CLIENT     0 )
+
 cmake_dependent_option( ENABLE_W_EXTRA       "Use -Wextra"                                 0 ENABLE_W_ALL     0 )
 
 cmake_dependent_option( ENABLE_FSTACKPROT    "Enable stack protection if available"        1 ENABLE_HARDENING 0 )
@@ -128,6 +130,7 @@ set( LIB_DIR ${CMAKE_SOURCE_DIR}/src/libs ) # LIB_DIR is also defined in Visual_
 set( SDL_DIR ${LIB_DIR}/libsdl )
 set( JPEG_DIR ${LIB_DIR}/jpeg )
 set( GLEW_DIR ${LIB_DIR}/glew )
+set( WEBP_DIR ${LIB_DIR}/libwebp )
 
 if( WIN32 )
   add_definitions( -D_CRT_SECURE_NO_WARNINGS )
@@ -232,6 +235,12 @@ if( USE_INTERNAL_GLEW )
   add_subdirectory( ${GLEW_DIR} )
   set( GLEW_LIBRARY INTERNAL_GLEW CACHE STRING "Glew library" FORCE )
   set( GLEW_INCLUDE_DIR ${GLEW_DIR}/include CACHE STRING "Glew include directory" FORCE )
+endif()
+
+if( USE_INTERNAL_WEBP )
+  add_subdirectory( ${WEBP_DIR} )
+  set( WEBP_LIBRARY INTERNAL_WEBP CACHE STRING "WebP library" FORCE )
+  set( WEBP_INCLUDE_DIR ${WEBP_DIR} CACHE STRING "WebP include directory" FORCE )
 endif()
 
 # Setup CPack

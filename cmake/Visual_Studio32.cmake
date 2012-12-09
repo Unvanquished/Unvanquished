@@ -10,8 +10,6 @@ set( GMP_INCLUDE_DIR ${LIB_DIR}/gmp/include CACHE STRING "GMP include directory"
 set( GMP_LIBRARY ${LIB_DIR}/GMP/libs/win32/mpir.lib CACHE STRING "GMP library" FORCE )
 set( CURL_INCLUDE_DIR ${LIB_DIR}/curl-7.21.6/include CACHE STRING "cURL include directory" FORCE )
 set( CURL_LIBRARY optimized ${LIB_DIR}/curl-7.21.6/lib/win32/release/libcurl_imp.lib debug ${LIB_DIR}/curl-7.21.6/lib/win32/debug/libcurld_imp.lib  CACHE STRING "cURL library" FORCE )
-set( WEBP_INCLUDE_DIR ${LIB_DIR}/libwebp/Include CACHE STRING "webP include directory" FORCE )
-set( WEBP_LIBRARY optimized ${LIB_DIR}/libwebp/Lib/x86/release/libwebp_a.lib debug ${LIB_DIR}/libwebp/Lib/x86/debug/libwebp_a_debug.lib CACHE STRING "webP library" FORCE )
 set( VORBIS_INCLUDE_DIR ${LIB_DIR}/libvorbis/include CACHE STRING "Vorbis include directory" FORCE )
 set( VORBIS_LIBRARY optimized ${LIB_DIR}/libvorbis/libs/Win32/Release/libvorbis.lib debug ${LIB_DIR}/libvorbis/libs/Win32/Debug/libvorbis.lib CACHE STRING "Vorbis library" FORCE )
 set( VORBISFILE_LIBRARY optimized ${LIB_DIR}/libvorbis/libs/Win32/Release/libvorbisfile.lib debug ${LIB_DIR}/libvorbis/libs/Win32/Release/libvorbisfile.lib CACHE STRING "VorbisFile library" FORCE )
