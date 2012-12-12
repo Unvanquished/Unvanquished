@@ -44,16 +44,27 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define PRINTF_LIKE(n) PRINTF_ARGS((n), (n) + 1)
 #define VPRINTF_LIKE(n) PRINTF_ARGS((n), 0)
 #define ALIGNED(a) __attribute__((__aligned__(a)))
-#define ALWAYS_INLINE __attribute__((__always_inline__))
+#define ALWAYS_INLINE INLINE __attribute__((__always_inline__))
+#elif defined ( _MSC_VER )
+#define NORETURN
+#define UNUSED
+#define PRINTF_ARGS(f, a)
+#define PRINTF_LIKE(n)
+#define VPRINTF_LIKE(n)
+#define ALIGNED( a, x ) __declspec(align(a)) x
+#define ALWAYS_INLINE __forceinline
+#define __attribute__(x)
+#define __func__ __FUNCTION__
 #else
 #define NORETURN
 #define UNUSED
 #define PRINTF_ARGS(f, a)
 #define PRINTF_LIKE(n)
 #define VPRINTF_LIKE(n)
-#define ALIGNED(a)
+#define ALIGNED( a, x ) x
 #define ALWAYS_INLINE
 #define __attribute__(x)
+#define __func__
 #endif
 
 #include <stdio.h>

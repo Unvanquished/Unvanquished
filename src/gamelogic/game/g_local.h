@@ -1314,6 +1314,7 @@ extern  vmCvar_t g_teamForceBalance;
 extern  vmCvar_t g_smoothClients;
 extern  vmCvar_t pmove_fixed;
 extern  vmCvar_t pmove_msec;
+extern  vmCvar_t pmove_accurate;
 
 extern  vmCvar_t g_alienBuildPoints;
 extern  vmCvar_t g_alienBuildQueueTime;

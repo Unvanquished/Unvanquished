@@ -1490,6 +1490,7 @@ extern  vmCvar_t            cg_hudFiles;
 extern  vmCvar_t            cg_hudFilesEnable;
 extern  vmCvar_t            cg_smoothClients;
 extern  vmCvar_t            pmove_fixed;
+extern  vmCvar_t            pmove_accurate;
 extern  vmCvar_t            pmove_msec;
 extern  vmCvar_t            cg_timescaleFadeEnd;
 extern  vmCvar_t            cg_timescaleFadeSpeed;
@@ -1738,7 +1739,6 @@ void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
                              qhandle_t parentModel, const char *tagName );
 void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
                                     qhandle_t parentModel, const char *tagName );
-void CG_RangeMarker( centity_t *cent );
 void CG_TransformSkeleton( refSkeleton_t *skel, const vec3_t scale );
 
 //

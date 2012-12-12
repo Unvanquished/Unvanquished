@@ -720,22 +720,28 @@ void MatrixMultiplyRotation(matrix_t m, vec_t pitch, vec_t yaw, vec_t roll)
 	MatrixMultiply(rot, tmp, m);
 }
 
-void MatrixMultiplyTranslation(matrix_t m, vec_t x, vec_t y, vec_t z)
+void MatrixMultiplyTranslation( matrix_t m, vec_t x, vec_t y, vec_t z )
 {
-	matrix_t        tmp, trans;
-
-	MatrixCopy(m, tmp);
-	MatrixSetupTranslation(trans, x, y, z);
-	MatrixMultiply(trans, tmp, m);
+	m[ 12 ] += m[ 0 ] * x + m[ 4 ] * y + m[ 8 ] * z;
+	m[ 13 ] += m[ 1 ] * x + m[ 5 ] * y + m[ 9 ] * z;
+	m[ 14 ] += m[ 2 ] * x + m[ 6 ] * y + m[ 10 ] * z;
+	m[ 15 ] += m[ 3 ] * x + m[ 7 ] * y + m[ 11 ] * z;
 }
 
-void MatrixMultiplyScale(matrix_t m, vec_t x, vec_t y, vec_t z)
+void MatrixMultiplyScale( matrix_t m, vec_t x, vec_t y, vec_t z )
 {
-	matrix_t        tmp, scale;
-
-	MatrixCopy(m, tmp);
-	MatrixSetupScale(scale, x, y, z);
-	MatrixMultiply(scale, tmp, m);
+	m[ 0 ] *= x;
+	m[ 4 ] *= y;
+	m[ 8 ] *= z;
+	m[ 1 ] *= x;
+	m[ 5 ] *= y;
+	m[ 9 ] *= z;
+	m[ 2 ] *= x;
+	m[ 6 ] *= y;
+	m[ 10 ] *= z;
+	m[ 3 ] *= x;
+	m[ 7 ] *= y;
+	m[ 11 ] *= z;
 }
 
 void MatrixFromAngles(matrix_t m, vec_t pitch, vec_t yaw, vec_t roll)

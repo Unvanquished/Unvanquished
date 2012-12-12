@@ -167,14 +167,16 @@ extern int memcmp( void *, void *, size_t );
 // for visibility of some functions in system headers
 #undef _GNU_SOURCE
 #undef _BSD_SOURCE
-#undef _XOPEN_SOURCE
 #undef _XOPEN_SOURCE_EXTENDED
-#undef _POSIX_C_SOURCE
 #define _GNU_SOURCE
 #define _BSD_SOURCE
-#define _XOPEN_SOURCE 500
 #define _XOPEN_SOURCE_EXTENDED
+#ifndef __APPLE__ // defining the following breaks things on Mac OS X
+#undef _XOPEN_SOURCE
+#undef _POSIX_C_SOURCE
+#define _XOPEN_SOURCE 500
 #define _POSIX_C_SOURCE 200112L
+#endif
 
 #include <assert.h>
 #include <math.h>
@@ -216,7 +218,7 @@ extern int memcmp( void *, void *, size_t );
 #include "q_platform.h"
 
 // not VM - we can have static inline
-#define STATIC_INLINE static INLINE ALWAYS_INLINE
+#define STATIC_INLINE static ALWAYS_INLINE
 #define IFDECLARE
 #define Q3_VM_INSTANTIATE
 #endif
@@ -227,18 +229,28 @@ extern int memcmp( void *, void *, size_t );
 #define PRINTF_ARGS(f, a) __attribute__((__format__(__printf__, (f), (a))))
 #define PRINTF_LIKE(n) PRINTF_ARGS((n), (n) + 1)
 #define VPRINTF_LIKE(n) PRINTF_ARGS((n), 0)
-#define ALIGNED(a) __attribute__((__aligned__(a)))
-#define ALWAYS_INLINE __attribute__((__always_inline__))
+#define ALIGNED(a, x) x __attribute__((__aligned__(a)))
+#define ALWAYS_INLINE INLINE __attribute__((__always_inline__))
+#elif ( defined _MSC_VER )
+#define NORETURN
+#define UNUSED
+#define PRINTF_ARGS(f, a)
+#define PRINTF_LIKE(n)
+#define VPRINTF_LIKE(n)
+#define ALIGNED( a, x ) __declspec(align(a)) x
+#define ALWAYS_INLINE __forceinline
+#define __attribute__(x)
+#define __func__ __FUNCTION__
 #else
 #define NORETURN
 #define UNUSED
 #define PRINTF_ARGS(f, a)
 #define PRINTF_LIKE(n)
 #define VPRINTF_LIKE(n)
-#define ALIGNED(a)
+#define ALIGNED( a, x ) x
 #define ALWAYS_INLINE
 #define __attribute__(x)
-#define __func__ __FUNCTION__
+#define __func__
 #endif
 
 //bani
