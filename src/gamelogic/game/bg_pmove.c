@@ -4074,6 +4074,38 @@ static void PM_Animate( void )
 			}
 		}
 	}
+
+	if ( usercmdButtonPressed( pm->cmd.buttons, BUTTON_RALLY ) )
+	{
+		if ( pm->ps->tauntTimer > 0 )
+		{
+			return;
+		}
+
+		if ( !( pm->ps->persistant[ PERS_STATE ] & PS_NONSEGMODEL ) )
+		{
+			if ( pm->ps->torsoTimer == 0 )
+			{
+				PM_StartTorsoAnim( TORSO_RALLY );
+				pm->ps->torsoTimer = TIMER_GESTURE;
+				pm->ps->tauntTimer = TIMER_GESTURE;
+
+				PM_AddEvent( EV_TAUNT );
+			}
+		}
+		else
+		{
+			if ( pm->ps->torsoTimer == 0 )
+			{
+				PM_ForceLegsAnim( NSPA_GESTURE );
+				pm->ps->torsoTimer = TIMER_GESTURE;
+				pm->ps->tauntTimer = TIMER_GESTURE;
+
+				PM_AddEvent( EV_TAUNT );
+			}
+		}
+	}
+
 }
 
 /*
@@ -4275,17 +4307,6 @@ static float roundf( float v )
 }
 #endif
 
-static void PM_UpdateRadarTimer( qboolean isMoving ) {
-	if( isMoving ) {
-		pm->ps->stats[ STAT_RADARTIME ] = RADAR_FADEOUT_TIME;
-	}
-	else if( pm->ps->stats[ STAT_RADARTIME ] > pml.msec ) {
-		pm->ps->stats[ STAT_RADARTIME ] -= pml.msec;
-	} else {
-		pm->ps->stats[ STAT_RADARTIME ] = 0;
-	}
-}
-
 /*
 ================
 PmoveSingle
@@ -4471,11 +4492,6 @@ void PmoveSingle( pmove_t *pmove )
 		return; // no movement at all
 	}
 
-	// update radar timer
-	PM_UpdateRadarTimer( pm->cmd.forwardmove ||
-			     pm->cmd.rightmove   ||
-			     pm->cmd.upmove );
-
 	// set watertype, and waterlevel
 	PM_SetWaterLevel();
 	pml.previous_waterlevel = pmove->waterlevel;
@@ -4554,10 +4570,13 @@ void PmoveSingle( pmove_t *pmove )
 	// entering / leaving water splashes
 	PM_WaterEvents();
 
-	// snap some parts of playerstate to save network bandwidth
-	pm->ps->velocity[0] = roundf( pm->ps->velocity[0] );
-	pm->ps->velocity[1] = roundf( pm->ps->velocity[1] );
-	pm->ps->velocity[2] = roundf( pm->ps->velocity[2] );
+	if ( !pmove->pmove_accurate )
+	{
+		// snap some parts of playerstate to save network bandwidth
+		pm->ps->velocity[0] = roundf( pm->ps->velocity[0] );
+		pm->ps->velocity[1] = roundf( pm->ps->velocity[1] );
+		pm->ps->velocity[2] = roundf( pm->ps->velocity[2] );
+	}
 }
 
 /*

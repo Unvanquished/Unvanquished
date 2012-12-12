@@ -32,7 +32,6 @@
 #include "plural_forms.hpp"
 
 namespace tinygettext {
-
 bool POParser::pedantic = true;
 
 void
@@ -45,15 +44,15 @@ POParser::parse(const std::string& filename, std::istream& in, Dictionary& dict)
 class POParserError {};
 
 POParser::POParser(const std::string& filename_, std::istream& in_, Dictionary& dict_, bool use_fuzzy_) :
-  filename(filename_), 
-  in(in_), 
-  dict(dict_), 
+  filename(filename_),
+  in(in_),
+  dict(dict_),
   use_fuzzy(use_fuzzy_),
-  running(false), 
-  eof(false), 
+  running(false),
+  eof(false),
   big5(false),
-  line_number(0), 
-  current_line(), 
+  line_number(0),
+  current_line(),
   conv()
 {
 }
@@ -98,7 +97,7 @@ POParser::get_string_line(std::ostringstream& out,unsigned int skip)
 
   if (current_line[skip] != '"')
     error("expected start of string '\"'");
-  
+
   std::string::size_type i;
   for(i = skip+1; current_line[i] != '\"'; ++i)
   {
@@ -107,10 +106,10 @@ POParser::get_string_line(std::ostringstream& out,unsigned int skip)
       out << current_line[i];
 
       i += 1;
-          
+
       if (i >= current_line.size())
         error("invalid big5 encoding");
-          
+
       out << current_line[i];
     }
     else if (i >= current_line.size())
@@ -134,7 +133,7 @@ POParser::get_string_line(std::ostringstream& out,unsigned int skip)
         case 'r':  out << '\r'; break;
         case '"':  out << '"'; break;
         case '\\': out << '\\'; break;
-        default: 
+        default:
           std::ostringstream err;
           err << "unhandled escape '\\" << current_line[i] << "'";
           warning(err.str());
@@ -196,7 +195,7 @@ POParser::get_string(unsigned int skip)
       skip += 1;
     }
   }
-  
+
 next:
   next_line();
   for(std::string::size_type i = 0; i < current_line.size(); ++i)
@@ -346,7 +345,7 @@ POParser::parse()
   // Parser structure
   while(!eof)
   {
-    try 
+    try
     {
       bool fuzzy =  false;
       bool has_msgctxt = false;
@@ -391,7 +390,7 @@ POParser::parse()
               error("expected 'msgstr[N] (0 <= N <= 9)'");
           }
           else if (prefix("msgstr[") &&
-                   current_line.size() > 8 && 
+                   current_line.size() > 8 &&
                    isdigit(current_line[7]) && current_line[8] == ']')
           {
             unsigned int number = static_cast<unsigned int>(current_line[7] - '0');
@@ -406,7 +405,7 @@ POParser::parse()
             msgstr_num[number] = conv.convert(msgstr);
             goto next;
           }
-          else 
+          else
           {
             error("expected 'msgstr[N]'");
           }
@@ -479,18 +478,17 @@ POParser::parse()
           error("expected 'msgstr' or 'msgid_plural'");
         }
       }
-      
+
       if (!is_empty_line())
         error("expected empty line");
 
       next_line();
     }
     catch(POParserError&)
-    {          
+    {
     }
   }
 }
-
 } // namespace tinygettext
 
 /* EOF */

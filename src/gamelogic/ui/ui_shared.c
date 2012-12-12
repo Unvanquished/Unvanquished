@@ -6003,6 +6003,7 @@ static bind_t g_bindings[] =
 	{ "+mlook",         '/',                -1,            -1, -1 },
 	{ "centerview",     K_END,              -1,            -1, -1 },
 	{ "+zoom",          -1,                 -1,            -1, -1 },
+	{ "+voiprecord",    'n',                -1,            -1, -1 },
 	{ "weapon 1",       '1',                -1,            -1, -1 },
 	{ "weapon 2",       '2',                -1,            -1, -1 },
 	{ "weapon 3",       '3',                -1,            -1, -1 },
@@ -6022,15 +6023,18 @@ static bind_t g_bindings[] =
 	{ "buy ammo",       'b',                -1,            -1, -1 }, // buy ammo
 	{ "itemact medkit", 'm',                -1,            -1, -1 }, // use medkit
 	{ "+activate",      'q',                -1,            -1, -1 }, // buildable use
-	{ "deconstruct",    'e',                -1,            -1, -1 }, // buildable destroy
+	{ "if alt \"/deconstruct marked\" /deconstruct",
+	                    'e',                -1,            -1, -1 }, // buildable destroy
 	{ "weapprev",       '[',                -1,            -1, -1 },
 	{ "weapnext",       ']',                -1,            -1, -1 },
 	{ "+taunt",         K_MOUSE3,           -1,            -1, -1 },
+	{ "+rally",         'g',                -1,            -1, -1 },
 	{ "vote yes",       K_F1,               -1,            -1, -1 },
 	{ "vote no",        K_F2,               -1,            -1, -1 },
 	{ "teamvote yes",   K_F3,               -1,            -1, -1 },
 	{ "teamvote no",    K_F4,               -1,            -1, -1 },
-	{ "menu vsay_top",  'o',                -1             -1, -1 },
+	{ "menu vsay_top",  'o',                -1,            -1, -1 },
+	{ "menu voip",      'p',                -1,            -1, -1 },
 	{ "scoresUp",       K_KP_PGUP,          -1,            -1, -1 },
 	{ "scoresDown",     K_KP_PGDN,          -1,            -1, -1 },
 	{ "screenshotJPEG", -1,                 -1,            -1, -1 },

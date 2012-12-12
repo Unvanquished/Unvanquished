@@ -600,7 +600,7 @@ void CG_InitBuildables( void )
 CG_BuildableRangeMarkerProperties
 ================
 */
-qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t *rmType, float *range, vec3_t rgb )
+qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t *rmType, float *range, vec4_t rgba )
 {
 	shaderColorEnum_t shc;
 
@@ -673,7 +673,8 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 		*rmType = RM_SPHERE;
 	}
 
-	VectorCopy( cg_shaderColors[ shc ], rgb );
+	VectorCopy( cg_shaderColors[ shc ], rgba );
+	rgba[3] = 1.0f;
 
 	return qtrue;
 }
@@ -940,18 +941,20 @@ static void CG_PositionAndOrientateBuildable( const vec3_t angles, const vec3_t 
 
 /*
 ================
-CG_GhostBuildableRangeMarker
+CG_DrawBuildableRangeMarker
 ================
 */
-static void CG_GhostBuildableRangeMarker( buildable_t buildable, const vec3_t origin, const vec3_t normal )
+static void CG_DrawBuildableRangeMarker( buildable_t buildable, const vec3_t origin, const vec3_t normal, float opacity )
 {
 	rangeMarker_t rmType;
 	float    range;
-	vec3_t   rgb;
+	vec4_t   rgba;
 
-	if ( CG_GetBuildableRangeMarkerProperties( buildable, &rmType, &range, rgb ) )
+	if ( CG_GetBuildableRangeMarkerProperties( buildable, &rmType, &range, rgba ) )
 	{
 		vec3_t localOrigin;
+
+		rgba[3] *= opacity;
 
 		if ( buildable == BA_A_HIVE || buildable == BA_H_TESLAGEN )
 		{
@@ -964,13 +967,13 @@ static void CG_GhostBuildableRangeMarker( buildable_t buildable, const vec3_t or
 
 		if ( rmType == RM_SPHERE )
 		{
-			CG_DrawRangeMarker( rmType, localOrigin, range, NULL, rgb );
+			CG_DrawRangeMarker( rmType, localOrigin, range, NULL, rgba );
 		}
 		else
 		{
 			vec3_t angles;
 			vectoangles( normal, angles );
-			CG_DrawRangeMarker( rmType, localOrigin, range, angles, rgb );
+			CG_DrawRangeMarker( rmType, localOrigin, range, angles, rgba );
 		}
 	}
 }
@@ -999,7 +1002,7 @@ void CG_GhostBuildable( buildable_t buildable )
 
 	if ( cg_rangeMarkerForBlueprint.integer && tr.entityNum != ENTITYNUM_NONE )
 	{
-		CG_GhostBuildableRangeMarker( buildable, entity_origin, tr.plane.normal );
+		CG_DrawBuildableRangeMarker( buildable, entity_origin, tr.plane.normal, 1.0f );
 	}
 
 	CG_PositionAndOrientateBuildable( ps->viewangles, entity_origin, tr.plane.normal, ps->clientNum,
@@ -1792,7 +1795,8 @@ void CG_Buildable( centity_t *cent )
 	vec3_t        surfNormal, xNormal, mins, maxs;
 	vec3_t        refNormal = { 0.0f, 0.0f, 1.0f };
 	float         rotAngle;
-	team_t        team = BG_Buildable( es->modelindex )->team;
+	const buildableAttributes_t *buildable = BG_Buildable( es->modelindex );
+	team_t        team = buildable->team;
 	float         scale;
 	int           health;
 
@@ -1914,7 +1918,7 @@ void CG_Buildable( centity_t *cent )
 		qboolean  spawned = ( es->eFlags & EF_B_SPAWNED ) || ( team == TEAM_HUMANS ); // If buildable has spawned or is a human buildable, don't alter the size
 
 		Scale[0] = Scale[1] = Scale[2] = spawned ? scale :
-		       scale * (float) sin ( 0.5f * (cg.time - es->time) / BG_Buildable( es->modelindex )->buildTime * M_PI );
+		       scale * (float) sin ( 0.5f * (cg.time - es->time) / buildable->buildTime * M_PI );
 		ent.skeleton = bSkeleton;
 
 		if( es->modelindex == BA_H_MGTURRET )
@@ -2050,7 +2054,7 @@ void CG_Buildable( centity_t *cent )
 		weaponInfo_t *weapon = &cg_weapons[ es->weapon ];
 
 		if ( cg.time - cent->muzzleFlashTime > MUZZLE_FLASH_TIME ||
-		     BG_Buildable( es->modelindex )->turretProjType == WP_TESLAGEN )
+		     buildable->turretProjType == WP_TESLAGEN )
 		{
 			if ( weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 0 ] ||
 			     weapon->wim[ WPM_PRIMARY ].flashDlightColor[ 1 ] ||
@@ -2106,4 +2110,33 @@ void CG_Buildable( centity_t *cent )
 
 	//smoke etc for damaged buildables
 	CG_BuildableParticleEffects( cent );
+
+	// draw range marker if enabled
+	if( team == cg.predictedPlayerState.stats[ STAT_TEAM ] ) {
+		qboolean drawRange;
+		float dist, maxDist = MAX( HELMET_RANGE, ALIENSENSE_RANGE );
+
+		if ( team == TEAM_HUMANS ) {
+			drawRange = BG_InventoryContainsWeapon( WP_HBUILD, cg.predictedPlayerState.stats );
+		} else if ( team == TEAM_ALIENS ) {
+			drawRange = cg.predictedPlayerState.weapon == WP_ABUILD ||
+			            cg.predictedPlayerState.weapon == WP_ABUILD2;
+		} else {
+			drawRange = !!(cg_buildableRangeMarkerMask.integer & (1 << BA_NONE));
+		}
+
+		drawRange &= !!(cg_buildableRangeMarkerMask.integer & (1 << buildable->number));
+
+		dist = Distance( cent->lerpOrigin, cg.refdef.vieworg );
+
+		if( drawRange && dist <= maxDist ) {
+			float opacity = 1.0f;
+
+			if( dist >= 0.9f * maxDist ) {
+				opacity = 10.0f - 10.0f * dist / maxDist;
+			}
+
+			CG_DrawBuildableRangeMarker( buildable->number, cent->lerpOrigin, cent->currentState.origin2, opacity );
+		}
+	}
 }

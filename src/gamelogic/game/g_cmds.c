@@ -2553,7 +2553,10 @@ void Cmd_Destroy_f( gentity_t *ent )
 	gentity_t *traceEnt;
 	char      cmd[ 12 ];
 	qboolean  deconstruct = qtrue;
+	qboolean  instant = qfalse;
+	qboolean  protect;
 	qboolean  lastSpawn = qfalse;
+	qboolean  prevDeconstruct;
 
 	if ( ent->client->pers.namelog->denyBuild )
 	{
@@ -2567,6 +2570,11 @@ void Cmd_Destroy_f( gentity_t *ent )
 	{
 		deconstruct = qfalse;
 	}
+	else if ( DECON_OPTION_CHECK( INSTANT ) && trap_Argc() == 2 )
+	{
+		trap_Argv( 1, cmd, sizeof( cmd ) );
+		instant = !Q_stricmp( cmd, "marked" );
+	}
 
 	BG_GetClientViewOrigin( &ent->client->ps, viewOrigin );
 	AngleVectors( ent->client->ps.viewangles, forward, NULL, NULL );
@@ -2574,6 +2582,7 @@ void Cmd_Destroy_f( gentity_t *ent )
 
 	trap_Trace( &tr, viewOrigin, NULL, NULL, end, ent->s.number, MASK_PLAYERSOLID );
 	traceEnt = &g_entities[ tr.entityNum ];
+	prevDeconstruct = traceEnt->deconstruct;
 
 	if ( tr.fraction < 1.0f &&
 	     ( traceEnt->s.eType == ET_BUILDABLE ) &&
@@ -2591,7 +2600,8 @@ void Cmd_Destroy_f( gentity_t *ent )
 		}
 
 		// Cancel deconstruction (unmark)
-		if ( deconstruct && g_markDeconstruct.integer && traceEnt->deconstruct )
+		// If instant decon is enabled and selected, don't unmark
+		if ( deconstruct && !instant && /*! DECON_MARK_CHECK( INSTANT ) &&*/ traceEnt->deconstruct )
 		{
 			traceEnt->deconstruct = qfalse;
 			return;
@@ -2615,13 +2625,6 @@ void Cmd_Destroy_f( gentity_t *ent )
 			}
 		}
 
-		if ( lastSpawn && !g_cheats.integer &&
-		     !g_markDeconstruct.integer )
-		{
-			G_TriggerMenu( ent->client->ps.clientNum, MN_B_LASTSPAWN );
-			return;
-		}
-
 		// Don't allow destruction of buildables that cannot be rebuilt
 		if ( G_TimeTilSuddenDeath() <= 0 )
 		{
@@ -2629,15 +2632,24 @@ void Cmd_Destroy_f( gentity_t *ent )
 			return;
 		}
 
-		if ( !g_markDeconstruct.integer ||
-		     ( ent->client->pers.teamSelection == TEAM_HUMANS &&
-		       !G_FindPower( traceEnt, qtrue ) ) )
+		// Not marked for decon ⇒ can't do explicit instant decon
+		if ( !traceEnt->deconstruct )
 		{
-			if ( ent->client->ps.stats[ STAT_MISC ] > 0 )
-			{
-				G_AddEvent( ent, EV_BUILD_DELAY, ent->client->ps.clientNum );
-				return;
-			}
+			instant = qfalse;
+		}
+
+		switch ( traceEnt->s.modelindex )
+		{
+			case BA_A_SPAWN:
+			case BA_H_SPAWN:
+			case BA_H_REACTOR:
+			case BA_A_OVERMIND:
+				protect = DECON_OPTION_CHECK( PROTECT );
+				break;
+
+			default: // nothing else is protected
+				protect = qfalse;
+				break;
 		}
 
 		if ( traceEnt->health > 0 )
@@ -2647,28 +2659,65 @@ void Cmd_Destroy_f( gentity_t *ent )
 				G_Damage( traceEnt, ent, ent, forward, tr.endpos,
 				          traceEnt->health, 0, MOD_SUICIDE );
 			}
-			else if ( g_markDeconstruct.integer &&
-			          ( ent->client->pers.teamSelection != TEAM_HUMANS ||
-			            G_FindPower( traceEnt, qtrue ) || lastSpawn ) )
+			else if ( lastSpawn && !g_cheats.integer )
 			{
-				traceEnt->deconstruct = qtrue; // Mark buildable for deconstruction
-				traceEnt->deconstructTime = level.time;
+				if ( !instant && !protect && DECON_MARK_CHECK( INSTANT ) ) goto fail_lastSpawn;
+				goto toggle_deconstruct;
+			}
+			else if ( protect && ( ent->client->pers.teamSelection != TEAM_HUMANS || G_FindPower( traceEnt, qtrue ) ) )
+			{
+				goto toggle_deconstruct;
+			}
+			else if ( instant || DECON_MARK_CHECK( INSTANT ) ||
+			          ( ent->client->pers.teamSelection == TEAM_HUMANS && !G_FindPower( traceEnt, qtrue ) ) )
+			{
+				goto do_deconstruct;
 			}
 			else
 			{
-				if ( !g_cheats.integer ) // add a bit to the build timer
-				{
-					ent->client->ps.stats[ STAT_MISC ] +=
-					  BG_Buildable( traceEnt->s.modelindex )->buildTime / 4;
-				}
-
-				G_Damage( traceEnt, ent, ent, forward, tr.endpos,
-				          traceEnt->health, 0, MOD_DECONSTRUCT );
-				G_RemoveRangeMarkerFrom( traceEnt );
-				G_FreeEntity( traceEnt );
+				goto toggle_deconstruct;
 			}
 		}
 	}
+
+	return;
+
+toggle_deconstruct:
+	traceEnt->deconstruct = !traceEnt->deconstruct;
+	traceEnt->deconstructTime = level.time;
+
+	// Return unless instant decon was requested and the building has just been unmarked for decon
+	if ( !instant ) return;
+
+do_deconstruct:
+	// Deny if last spawn
+	if ( lastSpawn && !g_cheats.integer )
+	{
+fail_lastSpawn:
+		G_TriggerMenu( ent->client->ps.clientNum, MN_B_LASTSPAWN );
+		return;
+	}
+
+	// deny decon if Build Timer Says No
+	if ( ent->client->pers.teamSelection != TEAM_HUMANS || G_FindPower( traceEnt, qtrue ) )
+	{
+		if ( ent->client->ps.stats[ STAT_MISC ] > 0 )
+		{
+			traceEnt->deconstruct = prevDeconstruct; // restore the decon flag (for repeat '/deconstruct marked')
+			G_AddEvent( ent, EV_BUILD_DELAY, ent->client->ps.clientNum );
+			return;
+		}
+	}
+
+	if ( !g_cheats.integer ) // add a bit to the build timer
+	{
+		ent->client->ps.stats[ STAT_MISC ] +=
+		  BG_Buildable( traceEnt->s.modelindex )->buildTime / 4;
+	}
+
+	G_Damage( traceEnt, ent, ent, forward, tr.endpos,
+		  traceEnt->health, 0, MOD_DECONSTRUCT );
+	G_FreeEntity( traceEnt );
 }
 
 /*

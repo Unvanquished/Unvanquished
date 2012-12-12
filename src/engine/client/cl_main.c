@@ -64,7 +64,6 @@ cvar_t *cl_voipGainDuringCapture;
 cvar_t *cl_voipCaptureMult;
 cvar_t *cl_voipShowMeter;
 cvar_t *cl_voipShowSender;
-cvar_t *cl_voipSenderPos;
 cvar_t *cl_voip;
 #endif
 
@@ -112,10 +111,12 @@ cvar_t *j_pitch;
 cvar_t *j_yaw;
 cvar_t *j_forward;
 cvar_t *j_side;
+cvar_t *j_up;
 cvar_t *j_pitch_axis;
 cvar_t *j_yaw_axis;
 cvar_t *j_forward_axis;
 cvar_t *j_side_axis;
+cvar_t *j_up_axis;
 
 cvar_t *cl_activeAction;
 
@@ -448,12 +449,44 @@ void CL_VoipParseTargets( void )
 				return;
 			}
 
-			if ( !Q_stricmpn( target, "spatial", 7 ) )
+			else if ( !Q_stricmpn( target, "spatial", 7 ) )
 			{
 				clc.voipFlags |= VOIP_SPATIAL;
 				target += 7;
 				continue;
 			}
+
+			else if ( !Q_stricmpn( target, "team", 4 ) )
+			{
+				int i = 0;
+
+				for ( i = 0; i < MAX_CLIENTS; i++ )
+				{
+					team_t team = atoi( Info_ValueForKey(cl.gameState.stringData +
+					cl.gameState.stringOffsets[CS_PLAYERS + i], "t") );
+
+					qboolean connected = Info_ValueForKey(cl.gameState.stringData +
+					cl.gameState.stringOffsets[CS_PLAYERS + i], "n")[0];
+
+					if ( connected && team == cl.snap.ps.stats[ STAT_TEAM ] )
+					{
+						val = i;
+						if ( val < 0 || val >= MAX_CLIENTS )
+						{
+							Com_Printf( _( S_COLOR_YELLOW  "WARNING: VoIP "
+							"target %d is not a valid client "
+							"number\n"), val );
+
+							continue;
+						}
+
+
+						clc.voipTargets[ val / 8 ] |= 1 << ( val % 8 );
+					}
+				}
+				target += 4;
+			}
+
 			else
 			{
 				if ( !Q_stricmpn( target, "attacker", 8 ) )
@@ -3067,7 +3100,7 @@ int CL_GSRSequenceInformation( byte **data )
 	{
 		// Assume we sent two getservers and somehow they changed in
 		// between - only use the results that arrive later
-		Com_DPrintf("%s", "Master changed its mind about packet count!\n" );
+		Com_DPrintf( "Master changed its mind about packet count!\n" );
 		cls.receivedMasterPackets = 0;
 		cls.numglobalservers = 0;
 		cls.numGlobalServerAddresses = 0;
@@ -4420,10 +4453,13 @@ void CL_Init( void )
 	j_yaw = Cvar_Get( "j_yaw", "-0.022", CVAR_ARCHIVE );
 	j_forward = Cvar_Get( "j_forward", "-0.25", CVAR_ARCHIVE );
 	j_side = Cvar_Get( "j_side", "0.25", CVAR_ARCHIVE );
+	j_up = Cvar_Get ("j_up", "1", CVAR_ARCHIVE);
+
 	j_pitch_axis = Cvar_Get( "j_pitch_axis", "3", CVAR_ARCHIVE );
 	j_yaw_axis = Cvar_Get( "j_yaw_axis", "4", CVAR_ARCHIVE );
 	j_forward_axis = Cvar_Get( "j_forward_axis", "1", CVAR_ARCHIVE );
 	j_side_axis = Cvar_Get( "j_side_axis", "0", CVAR_ARCHIVE );
+	j_up_axis = Cvar_Get( "j_up_axis", "2", CVAR_ARCHIVE );
 
 	cl_motdString = Cvar_Get( "cl_motdString", "", CVAR_ROM );
 
@@ -4472,7 +4508,6 @@ void CL_Init( void )
 	cl_voipUseVAD = Cvar_Get( "cl_voipUseVAD", "0", CVAR_ARCHIVE );
 	cl_voipVADThreshold = Cvar_Get( "cl_voipVADThreshold", "0.25", CVAR_ARCHIVE );
 	cl_voipShowMeter = Cvar_Get( "cl_voipShowMeter", "1", CVAR_ARCHIVE );
-	cl_voipSenderPos = Cvar_Get( "cl_voipSenderPos", "0", CVAR_ARCHIVE );
 	cl_voipShowSender = Cvar_Get( "cl_voipShowSender", "1", CVAR_ARCHIVE );
 
 	// This is a protocol version number.

@@ -28,7 +28,7 @@ Vcs-Browser: http://github.com/Unvanquished/Unvanquished
 
 Package: unvanquished
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends},
+Depends: ${shlibs:Depends}, ${misc:Depends}, lsof,
 	unvanquished-common (= ${binary:Version})
 Suggests: unvanquished-server
 Description: Team-based FPS game, aliens v. humans

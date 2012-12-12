@@ -211,26 +211,25 @@ static void CG_BuilderText( char *text, playerState_t *ps )
 
 	if ( ( es = CG_BuildableInRange( ps, NULL ) ) )
 	{
+	        const char *key = CG_KeyNameForCommand( "if alt \"/deconstruct marked\" /deconstruct" );
+
 		if ( cgs.markDeconstruct )
 		{
 			if ( es->eFlags & EF_B_MARKED )
 			{
 				Q_strcat( text, MAX_TUTORIAL_TEXT,
-				          va( "Press %s to unmark this structure for replacement\n",
-				              CG_KeyNameForCommand( "deconstruct" ) ) );
+				          va( "Press %s to unmark this structure for replacement\n", key ) );
 			}
 			else
 			{
 				Q_strcat( text, MAX_TUTORIAL_TEXT,
-				          va( "Press %s to mark this structure for replacement\n",
-				              CG_KeyNameForCommand( "deconstruct" ) ) );
+				          va( "Press %s to mark this structure for replacement\n", key ) );
 			}
 		}
 		else
 		{
 			Q_strcat( text, MAX_TUTORIAL_TEXT,
-			          va( "Press %s to destroy this structure\n",
-			              CG_KeyNameForCommand( "deconstruct" ) ) );
+			          va( "Press %s to destroy this structure\n", key ) );
 		}
 	}
 }

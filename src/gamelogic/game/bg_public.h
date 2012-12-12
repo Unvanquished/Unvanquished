@@ -200,6 +200,9 @@ typedef struct pmove_s
 	int pmove_fixed;
 	int pmove_msec;
 
+	// don't round velocity to an integer
+	int pmove_accurate;
+
 	// callbacks to test the world
 	// these will be different functions during game and cgame
 	/*void    (*trace)( trace_t *results, const vec3_t start, vec3_t mins, vec3_t maxs, const vec3_t end, int passEntityNum, int contentMask );*/
@@ -230,8 +233,7 @@ typedef enum
   STAT_MISC, // for uh...misc stuff (pounce, trample, lcannon)
   STAT_BUILDABLE, // which ghost model to display for building
   STAT_FALLDIST, // the distance the player fell
-  STAT_VIEWLOCK, // direction to lock the view in
-  STAT_RADARTIME // time in msec this player will be visible on radar/sense
+  STAT_VIEWLOCK // direction to lock the view in
   // netcode has space for 3 more
 } statIndex_t;
 
@@ -639,6 +641,8 @@ typedef enum
   TORSO_GESTURE_LUCI,
   TORSO_GESTURE_CKIT,
 
+  TORSO_RALLY,
+
   TORSO_ATTACK_BLASTER,
   TORSO_ATTACK_PSAW,
   TORSO_ATTACK,
@@ -954,6 +958,8 @@ typedef struct
 	int      children[ 3 ];
 	int      cost;
 	int      value;
+
+	float    radarFadeOut;
 } classAttributes_t;
 
 typedef struct
@@ -1034,6 +1040,8 @@ typedef struct
 	qboolean    uniqueTest;
 
 	int         value;
+
+	float       radarFadeOut;
 } buildableAttributes_t;
 
 typedef struct

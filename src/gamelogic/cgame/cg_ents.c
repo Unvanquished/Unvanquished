@@ -1109,23 +1109,6 @@ static void CG_CalcEntityLerpPositions( centity_t *cent )
 }
 
 /*
-================
-CG_RangeMarker
-================
-*/
-void CG_RangeMarker( centity_t *cent )
-{
-	rangeMarker_t rmType;
-	float    range;
-	vec3_t   rgb;
-
-	if ( CG_GetBuildableRangeMarkerProperties( cent->currentState.modelindex, &rmType, &range, rgb ) )
-	{
-		CG_DrawRangeMarker( rmType, cent->lerpOrigin, range, cent->lerpAngles, rgb );
-	}
-}
-
-/*
 ===============
 CG_CEntityPVSEnter
 
@@ -1167,6 +1150,7 @@ static void CG_CEntityPVSEnter( centity_t *cent )
 	//when a buildable enters the PVS
 	cent->buildableAnim = cent->lerpFrame.animationNumber = BANIM_NONE;
 	cent->oldBuildableAnim = es->legsAnim;
+	cent->radarVisibility = 0.0f;
 }
 
 /*
@@ -1247,10 +1231,6 @@ static void CG_AddCEntity( centity_t *cent )
 
 		case ET_BUILDABLE:
 			CG_Buildable( cent );
-			break;
-
-		case ET_RANGE_MARKER:
-			CG_RangeMarker( cent );
 			break;
 
 		case ET_MISSILE:

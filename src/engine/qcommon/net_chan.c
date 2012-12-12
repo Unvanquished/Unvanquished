@@ -69,7 +69,7 @@ cvar_t      *showpackets;
 cvar_t      *showdrop;
 cvar_t      *qport;
 
-static char *netsrcString[ 2 ] =
+static const char *const netsrcString[ 2 ] =
 {
 	"client",
 	"server"

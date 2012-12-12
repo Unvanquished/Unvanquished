@@ -2740,39 +2740,34 @@ void MatrixMultiplyRotation( matrix_t m, vec_t pitch, vec_t yaw, vec_t roll )
 
 void MatrixMultiplyZRotation( matrix_t m, vec_t degrees )
 {
-	matrix_t tmp, rot;
+	matrix_t tmp;
+	float angle = DEG2RAD( degrees );
+	float s = sin( angle );
+	float c = cos( angle );
 
 	MatrixCopy( m, tmp );
-	MatrixSetupZRotation( rot, degrees );
 
-	MatrixMultiply( tmp, rot, m );
+	m[ 0 ] = tmp[ 0 ] * c + tmp[ 4 ] * s;
+	m[ 1 ] = tmp[ 1 ] * c + tmp[ 5 ] * s;
+	m[ 2 ] = tmp[ 2 ] * c + tmp[ 6 ] * s;
+	m[ 3 ] = tmp[ 3 ] * c + tmp[ 7 ] * s;
+
+	m[ 4 ] = tmp[ 0 ] * -s + tmp[ 4 ] * c;
+	m[ 5 ] = tmp[ 1 ] * -s + tmp[ 5 ] * c;
+	m[ 6 ] = tmp[ 2 ] * -s + tmp[ 6 ] * c;
+	m[ 7 ] = tmp[ 3 ] * -s + tmp[ 7 ] * c;
 }
 
 void MatrixMultiplyTranslation( matrix_t m, vec_t x, vec_t y, vec_t z )
 {
-#if 1
-	matrix_t tmp, trans;
-
-	MatrixCopy( m, tmp );
-	MatrixSetupTranslation( trans, x, y, z );
-	MatrixMultiply( tmp, trans, m );
-#else
 	m[ 12 ] += m[ 0 ] * x + m[ 4 ] * y + m[ 8 ] * z;
 	m[ 13 ] += m[ 1 ] * x + m[ 5 ] * y + m[ 9 ] * z;
 	m[ 14 ] += m[ 2 ] * x + m[ 6 ] * y + m[ 10 ] * z;
 	m[ 15 ] += m[ 3 ] * x + m[ 7 ] * y + m[ 11 ] * z;
-#endif
 }
 
 void MatrixMultiplyScale( matrix_t m, vec_t x, vec_t y, vec_t z )
 {
-#if 0
-	matrix_t tmp, scale;
-
-	MatrixCopy( m, tmp );
-	MatrixSetupScale( scale, x, y, z );
-	MatrixMultiply( tmp, scale, m );
-#else
 	m[ 0 ] *= x;
 	m[ 4 ] *= y;
 	m[ 8 ] *= z;
@@ -2785,16 +2780,23 @@ void MatrixMultiplyScale( matrix_t m, vec_t x, vec_t y, vec_t z )
 	m[ 3 ] *= x;
 	m[ 7 ] *= y;
 	m[ 11 ] *= z;
-#endif
 }
 
 void MatrixMultiplyShear( matrix_t m, vec_t x, vec_t y )
 {
-	matrix_t tmp, shear;
+	matrix_t tmp;
 
 	MatrixCopy( m, tmp );
-	MatrixSetupShear( shear, x, y );
-	MatrixMultiply( tmp, shear, m );
+
+	m[ 0 ] += m[ 4 ] * y;
+	m[ 1 ] += m[ 5 ] * y;
+	m[ 2 ] += m[ 6 ] * y;
+	m[ 3 ] += m[ 7 ] * y;
+
+	m[ 4 ] += tmp[ 0 ] * x;
+	m[ 5 ] += tmp[ 1 ] * x;
+	m[ 6 ] += tmp[ 2 ] * x;
+	m[ 7 ] += tmp[ 3 ] * x;
 }
 
 void MatrixToAngles( const matrix_t m, vec3_t angles )

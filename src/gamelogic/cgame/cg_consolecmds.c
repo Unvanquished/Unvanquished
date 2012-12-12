@@ -407,6 +407,7 @@ static const struct
 	{ "itemact",       0,                       CG_CompleteItem  },
 	{ "itemdeact",     0,                       CG_CompleteItem  },
 	{ "itemtoggle",    0,                       CG_CompleteItem  },
+	{ "lcp",           CG_CenterPrint_f,        0                },
 	{ "m",             0,                       CG_CompleteName  },
 	{ "mt",            0,                       CG_CompleteName  },
 	{ "nextframe",     CG_TestModelNextFrame_f, 0                },
@@ -504,7 +505,7 @@ void CG_InitConsoleCommands( void )
 
 	trap_RegisterButtonCommands(
 	    // 0      12       3     45      6        78       9ABCDEF      <- bit nos.
-	      "attack,,useitem,taunt,,sprint,activate,,attack2,,,,,,,dodge"
+	      "attack,,useitem,taunt,,sprint,activate,,attack2,,,,,,rally,dodge"
 	    );
 }
 

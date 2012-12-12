@@ -24,6 +24,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef TR_LOCAL_H
 #define TR_LOCAL_H
 
+#if defined( __cplusplus )
+extern "C" {
+#endif
+
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qfiles.h"
 #include "../qcommon/qcommon.h"
@@ -43,10 +47,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <SDL_thread.h>
 #else
 #include <GL/glew.h>
-#endif
-
-#if defined( __cplusplus )
-extern "C" {
 #endif
 
 #define BUFFER_OFFSET(i) ((char *)NULL + ( i ))
@@ -3280,6 +3280,7 @@ extern "C" {
 #endif
 		int                clusterBytes;
 		const byte         *vis; // may be passed in by CM_LoadMap to save space
+		byte       *visvis; // clusters visible from visible clusters
 		byte               *novis; // clusterBytes of 0xff
 
 #if defined( USE_BSP_CLUSTERSURFACE_MERGING )
@@ -4767,6 +4768,7 @@ extern "C" {
 	void     R_AddBSPModelSurfaces( trRefEntity_t *e );
 	void     R_AddWorldSurfaces( void );
 	qboolean R_inPVS( const vec3_t p1, const vec3_t p2 );
+	qboolean R_inPVVS( const vec3_t p1, const vec3_t p2 );
 
 	void     R_AddWorldInteractions( trRefLight_t *light );
 	void     R_AddPrecachedWorldInteractions( trRefLight_t *light );

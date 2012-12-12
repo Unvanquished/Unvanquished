@@ -16,23 +16,27 @@ src/utils/gender_context.pl src/gamelogic/cgame/cg_event.c >> messages_game.pot
 find src/gamelogic/ | grep .c$ | xgettext --from-code=UTF-8 -j -o messages_game.pot -k_ -kN_ -k -f -
 
 find main/ui/ | grep .menu$ | xgettext --from-code=UTF-8 -C -o messages_game.pot -j \
--kCVAR:4:1 \
--kMULTI:5:1 \
--kCOMBO:3:1 \
--kSLIDER:6:1 \
--kYESNO:4:1 \
+-kCVAR:1,4t \
+-kMULTI:1,5t \
+-kCOMBO:1,3t \
+-kSLIDER:1,6t \
+-kYESNO:1,4t \
 -kMMBUTTON \
--kCVAR:5:2 \
--kMULTI:6:2 \
+-kCVAR:2,5t \
+-kCVAR_INT:2,5t \
+-kMULTI:2,6t \
 -kMULTIX:2 \
--kCOMBO:4:2 \
+-kCOMBO:2,4t \
 -kCOMBOX:2 \
--kSLIDER:7:2 \
--kYESNO:5:2 \
--kBUTTON:4:2 \
+-kSLIDER:2,7t \
+-kYESNO:2,5t \
+-kBUTTON:2,4t \
 -kBUTTONX:2 \
 -kBIND:2 \
 -kBINDX:2 \
 -kSLIDERX:2 \
 -kTEXTX:2 \
+-kVSAY_ITEM:1 \
+-kYESNOX:2 \
+-kSAY_ITEM:2 \
 -f -

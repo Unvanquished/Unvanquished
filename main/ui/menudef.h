@@ -118,7 +118,9 @@ enum
   FEEDER_RESOLUTIONS, // display resolutions
   FEEDER_PROFILES, // Profiles
   FEEDER_LANGUAGES, // Languages
-  FEEDER_HUDS // HUDs
+  FEEDER_HUDS, // HUDs
+  FEEDER_VOIPINPUT, // VOIP INPUT DEVICES
+  FEEDER_ALOUTPUT // OPENAL OUTPUT DEVICES
 };
 
 // display flags

@@ -91,6 +91,7 @@ vmCvar_t           g_teamForceBalance;
 vmCvar_t           g_smoothClients;
 vmCvar_t           pmove_fixed;
 vmCvar_t           pmove_msec;
+vmCvar_t           pmove_accurate;
 vmCvar_t           g_minNameChangePeriod;
 vmCvar_t           g_maxNameChanges;
 
@@ -135,6 +136,7 @@ vmCvar_t           g_mapRotationStack;
 vmCvar_t           g_nextMap;
 vmCvar_t           g_initialMapRotation;
 vmCvar_t           g_mapLog;
+vmCvar_t           g_mapStartupMessageDelay;
 
 vmCvar_t           g_debugVoices;
 vmCvar_t           g_voiceChats;
@@ -249,10 +251,13 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_mapRestarted,                "g_mapRestarted",                "0",                                CVAR_ROM,                                        0, qfalse           },
 	{ NULL,                           "sv_mapname",                    "",                                 CVAR_SERVERINFO | CVAR_ROM,                      0, qfalse           },
 	{ NULL,                           "P",                             "",                                 CVAR_SERVERINFO | CVAR_ROM,                      0, qfalse           },
+	{ NULL,                           "B",                             "",                                 CVAR_SERVERINFO | CVAR_ROM,                      0, qfalse           },
 
 	// latched vars
 
 	{ &g_maxclients,                  "sv_maxclients",                 "8",                                CVAR_SERVERINFO | CVAR_LATCH | CVAR_ARCHIVE,     0, qfalse           },
+
+	{ NULL,                           "g_mapStartupMessage",           "",                                 0,                                               0, qfalse           },
 
 	// change anytime vars
 	{ &g_maxGameClients,              "g_maxGameClients",              "0",                                CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qfalse           },
@@ -310,7 +315,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_smoothClients,               "g_smoothClients",               "1",                                0,                                               0, qfalse           },
 	{ &pmove_fixed,                   "pmove_fixed",                   "0",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 	{ &pmove_msec,                    "pmove_msec",                    "8",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
-
+	{ &pmove_accurate,                "pmove_accurate",                "0",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 	{ &g_alienBuildPoints,            "g_alienBuildPoints",            DEFAULT_ALIEN_BUILDPOINTS,          0,                                               0, qfalse, cv_alienBuildPoints},
 	{ &g_alienBuildQueueTime,         "g_alienBuildQueueTime",         DEFAULT_ALIEN_QUEUE_TIME,           CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_humanBuildPoints,            "g_humanBuildPoints",            DEFAULT_HUMAN_BUILDPOINTS,          0,                                               0, qfalse, cv_humanBuildPoints},
@@ -357,6 +362,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_nextMap,                     "g_nextMap",                     "",                                 0,                                               0, qtrue            },
 	{ &g_initialMapRotation,          "g_initialMapRotation",          "rotation1",                        CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_mapLog,                      "g_mapLog",                      "",                                 CVAR_ROM,                                        0, qfalse           },
+	{ &g_mapStartupMessageDelay,      "g_mapStartupMessageDelay",      "5000",                             CVAR_ARCHIVE | CVAR_LATCH,                       0, qfalse           },
 	{ &g_debugVoices,                 "g_debugVoices",                 "0",                                0,                                               0, qfalse           },
 	{ &g_voiceChats,                  "g_voiceChats",                  "1",                                CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_shove,                       "g_shove",                       "0.0",                              CVAR_ARCHIVE,                                    0, qfalse           },
@@ -719,7 +725,7 @@ void G_MapConfigs( const char *mapname )
 	                         va( "exec %s/%s.cfg\n", Quote( g_mapConfigs.string ), Quote( mapname ) ) );
 
 	trap_Cvar_Set( "g_mapConfigsLoaded", "1" );
-	trap_SendConsoleCommand( EXEC_APPEND, "maprestarted" );
+	trap_SendConsoleCommand( EXEC_APPEND, "maprestarted\n" );
 }
 
 /*
@@ -790,6 +796,9 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	{
 		G_Printf( "Not logging to disk\n" );
 	}
+
+	// clear this now; it'll be set, if needed, from rotation
+	trap_Cvar_Set( "g_mapStartupMessage", "" );
 
 	{
 		char map[ MAX_CVAR_VALUE_STRING ] = { "" };
@@ -1761,7 +1770,7 @@ and team change.
 void CalculateRanks( void )
 {
 	int  i;
-	char P[ MAX_CLIENTS + 1 ] = { "" };
+	char P[ MAX_CLIENTS + 1 ] = "", B[ MAX_CLIENTS + 1 ] = "";
 
 	level.numConnectedClients = 0;
 	level.numPlayingClients = 0;
@@ -1774,6 +1783,7 @@ void CalculateRanks( void )
 	for ( i = 0; i < level.maxclients; i++ )
 	{
 		P[ i ] = '-';
+		B[ i ] = '-';
 
 		if ( level.clients[ i ].pers.connected != CON_DISCONNECTED )
 		{
@@ -1794,7 +1804,11 @@ void CalculateRanks( void )
 			level.numConnectedClients++;
 			P[ i ] = ( char ) '0' + team;
 
-			if ( !bot )
+			if ( bot )
+			{
+				B[ i ] = 'b';
+			}
+			else
 			{
 				level.numVotingClients[ TEAM_NONE ]++;
 			}
@@ -1839,6 +1853,8 @@ void CalculateRanks( void )
 	                               level.numLiveHumanClients;
 	P[ i ] = '\0';
 	trap_Cvar_Set( "P", P );
+	B[ i ] = '\0';
+	trap_Cvar_Set( "B", B );
 
 	qsort( level.sortedClients, level.numConnectedClients,
 	       sizeof( level.sortedClients[ 0 ] ), SortRanks );
@@ -3009,7 +3025,6 @@ void G_RunFrame( int levelTime )
 	G_SpawnClients( TEAM_HUMANS );
 	G_CalculateAvgPlayers();
 	G_UpdateZaps( msec );
-	G_UpdateBuildableRangeMarkers();
 
 	// see if it is time to end the level
 	CheckExitRules();

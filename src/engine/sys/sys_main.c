@@ -506,7 +506,7 @@ void *QDECL Sys_LoadDll( const char *name,
 		return NULL;
 	}
 
-	Com_Printf( "Sys_LoadDll(%s) found vmMain function at %p\n", name, *entryPoint );
+	Com_DPrintf( "Sys_LoadDll(%s) found vmMain function at %p\n", name, *entryPoint );
 	dllEntry( systemcalls );
 
 	Com_DPrintf( "Sys_LoadDll(%s) succeeded!\n", name );
@@ -571,17 +571,6 @@ void NORETURN Sys_SigHandler( int signal )
 		Sys_Exit( 2 );
 	}
 }
-
-typedef struct
-{
-	fileHandle_t file;
-	byte         *buffer;
-	qboolean     eof;
-	qboolean     active;
-	int          bufferSize;
-	int          streamPosition; // next byte to be returned by Sys_StreamRead
-	int          threadPosition; // next byte to be read from file
-} streamsIO_t;
 
 /*
 =================
@@ -699,10 +688,6 @@ int main( int argc, char **argv )
 		Q_strcat( commandLine, sizeof( commandLine ), " " );
 	}
 
-#ifdef _WIN32
-	Sys_InitStreamThread();
-#endif
-
 	Com_Init( commandLine );
 	NET_Init();
 #ifdef USE_CURSES
@@ -720,9 +705,11 @@ int main( int argc, char **argv )
 	CON_Init();
 #endif
 
+#ifdef NDEBUG
 	signal( SIGILL, Sys_SigHandler );
 	signal( SIGFPE, Sys_SigHandler );
 	signal( SIGSEGV, Sys_SigHandler );
+#endif
 	signal( SIGTERM, Sys_SigHandler );
 	signal( SIGINT, Sys_SigHandler );
 

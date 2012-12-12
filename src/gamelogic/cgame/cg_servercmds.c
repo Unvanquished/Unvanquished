@@ -1320,9 +1320,22 @@ static void CG_ParseVoice( void )
 CG_CenterPrint_f
 =================
 */
-static void CG_CenterPrint_f( void )
+void CG_CenterPrint_f( void )
 {
 	CG_CenterPrint( CG_Argv( 1 ), SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH );
+}
+
+/*
+=================
+CG_CenterPrint_Delay_f
+=================
+*/
+void CG_CenterPrint_Delay_f( void )
+{
+	char cmd[ MAX_STRING_CHARS ];
+
+	Com_sprintf( cmd, sizeof( cmd ), "delay %s lcp %s", Quote( CG_Argv( 1 ) ), Quote( CG_Argv( 2 ) ) );
+	trap_SendConsoleCommand( cmd );
 }
 
 /*
@@ -1577,6 +1590,7 @@ static const consoleCommand_t svcommands[] =
 	{ "chat",             CG_Chat_f               },
 	{ "cmds",             CG_GameCmds_f           },
 	{ "cp",               CG_CenterPrint_f        },
+	{ "cpd",              CG_CenterPrint_Delay_f  },
 	{ "cs",               CG_ConfigStringModified },
 	{ "map_restart",      CG_MapRestart           },
 	{ "poisoncloud",      CG_PoisonCloud_f        },

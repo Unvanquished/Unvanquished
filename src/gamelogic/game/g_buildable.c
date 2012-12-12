@@ -464,7 +464,7 @@ int G_GetMarkedBuildPoints( const vec3_t pos, team_t team )
 		return 0;
 	}
 
-	if ( !g_markDeconstruct.integer )
+	if ( DECON_MARK_CHECK( INSTANT ) )
 	{
 		return 0;
 	}
@@ -953,7 +953,6 @@ void AGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 		self->nextthink = level.time; //blast immediately
 	}
 
-	G_RemoveRangeMarkerFrom( self );
 	G_LogDestruction( self, attacker, mod );
 }
 
@@ -1939,7 +1938,6 @@ void HSpawn_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		self->nextthink = level.time; //blast immediately
 	}
 
-	G_RemoveRangeMarkerFrom( self );
 	G_LogDestruction( self, attacker, mod );
 }
 
@@ -2033,7 +2031,6 @@ static void HRepeater_Die( gentity_t *self, gentity_t *inflictor, gentity_t *att
 		self->nextthink = level.time; //blast immediately
 	}
 
-	G_RemoveRangeMarkerFrom( self );
 	G_LogDestruction( self, attacker, mod );
 
 	if ( self->usesBuildPointZone )
@@ -3476,7 +3473,7 @@ void G_FreeMarkedBuildables( gentity_t *deconner, char *readable, int rsize,
 		nums[ 0 ] = '\0';
 	}
 
-	if ( !g_markDeconstruct.integer )
+	if ( DECON_MARK_CHECK( INSTANT ) && !DECON_OPTION_CHECK( PROTECT ) )
 	{
 		return; // Not enabled, can't deconstruct anything
 	}
@@ -3500,7 +3497,6 @@ void G_FreeMarkedBuildables( gentity_t *deconner, char *readable, int rsize,
 			Q_strcat( nums, nsize, va( " %ld", ( long )( ent - g_entities ) ) );
 		}
 
-		G_RemoveRangeMarkerFrom( ent );
 		G_FreeEntity( ent );
 	}
 
@@ -3599,7 +3595,7 @@ itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable,
 	}
 
 	// Simple non-marking case
-	if ( !g_markDeconstruct.integer )
+	if ( DECON_MARK_CHECK( INSTANT ) && !DECON_OPTION_CHECK( PROTECT ) )
 	{
 		if ( remainingBP - buildPoints < 0 )
 		{
@@ -3639,13 +3635,13 @@ itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable,
 		if ( collision )
 		{
 			// Don't allow replacements at all
-			if ( g_markDeconstruct.integer == 1 )
+			if ( DECON_MARK_CHECK( NO_REPLACE ) )
 			{
 				return IBE_NOROOM;
 			}
 
 			// Only allow replacements of the same type
-			if ( g_markDeconstruct.integer == 2 && ent->s.modelindex != buildable )
+			if ( DECON_MARK_CHECK( REPLACE_SAME ) && ent->s.modelindex != buildable )
 			{
 				return IBE_NOROOM;
 			}
@@ -4010,11 +4006,11 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 			{
 				reason = IBE_RPTNOREAC;
 			}
-			else if ( g_markDeconstruct.integer && G_IsPowered( entity_origin ) == BA_H_REACTOR )
+			else if ( ! DECON_MARK_CHECK( INSTANT ) && G_IsPowered( entity_origin ) == BA_H_REACTOR )
 			{
 				reason = IBE_RPTPOWERHERE;
 			}
-			else if ( !g_markDeconstruct.integer && G_IsPowered( entity_origin ) )
+			else if ( DECON_MARK_CHECK( INSTANT ) && G_IsPowered( entity_origin ) )
 			{
 				reason = IBE_RPTPOWERHERE;
 			}
@@ -4084,56 +4080,6 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 	}
 
 	return reason;
-}
-
-/*
-================
-G_AddRangeMarkerForBuildable
-================
-*/
-static void G_AddRangeMarkerForBuildable( gentity_t *self )
-{
-	gentity_t *rm;
-
-	switch ( self->s.modelindex )
-	{
-		case BA_A_SPAWN:
-		case BA_A_OVERMIND:
-		case BA_A_ACIDTUBE:
-		case BA_A_TRAPPER:
-		case BA_A_HIVE:
-		case BA_H_MGTURRET:
-		case BA_H_TESLAGEN:
-		case BA_H_DCC:
-		case BA_H_REACTOR:
-		case BA_H_REPEATER:
-			break;
-
-		default:
-			return;
-	}
-
-	rm = G_Spawn();
-	rm->classname = "buildablerangemarker";
-	rm->r.svFlags = SVF_BROADCAST | SVF_CLIENTMASK;
-	rm->s.eType = ET_RANGE_MARKER;
-	rm->s.modelindex = self->s.modelindex;
-
-	self->rangeMarker = rm;
-}
-
-/*
-================
-G_RemoveRangeMarkerFrom
-================
-*/
-void G_RemoveRangeMarkerFrom( gentity_t *self )
-{
-	if ( self->rangeMarker )
-	{
-		G_FreeEntity( self->rangeMarker );
-		self->rangeMarker = NULL;
-	}
 }
 
 /*
@@ -4375,8 +4321,6 @@ gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 		G_BuildLogSet( log, built );
 	}
 
-	G_AddRangeMarkerForBuildable( built );
-
 	return built;
 }
 
@@ -4509,7 +4453,6 @@ static gentity_t *G_FinishSpawningBuildable( gentity_t *ent, qboolean force )
 	{
 		G_Printf( S_COLOR_YELLOW "G_FinishSpawningBuildable: %s startsolid at %s\n",
 		          built->classname, vtos( built->s.origin ) );
-		G_RemoveRangeMarkerFrom( built );
 		G_FreeEntity( built );
 		return NULL;
 	}
@@ -5052,7 +4995,6 @@ void G_BuildLogRevert( int id )
 							             ( int )( ent - g_entities ), BG_Buildable( ent->s.modelindex )->name );
 						}
 
-						G_RemoveRangeMarkerFrom( ent );
 						G_FreeEntity( ent );
 						break;
 					}
@@ -5110,85 +5052,5 @@ void G_BuildLogRevert( int id )
 				}
 			}
 		}
-	}
-}
-
-/*
-================
-G_UpdateBuildableRangeMarkers
-================
-*/
-void G_UpdateBuildableRangeMarkers( void )
-{
-	gentity_t *e;
-
-	for ( e = &g_entities[ MAX_CLIENTS ]; e < &g_entities[ level.num_entities ]; ++e )
-	{
-		buildable_t bType;
-		team_t      bTeam;
-		int         i;
-
-		if ( e->s.eType != ET_BUILDABLE || !e->rangeMarker )
-		{
-			continue;
-		}
-
-		bType = e->s.modelindex;
-		bTeam = BG_Buildable( bType )->team;
-
-		e->rangeMarker->s.pos = e->s.pos;
-
-		if ( bType == BA_A_HIVE || bType == BA_H_TESLAGEN )
-		{
-			VectorMA( e->s.pos.trBase, e->r.maxs[ 2 ], e->s.origin2, e->rangeMarker->s.pos.trBase );
-		}
-		else if ( bType == BA_A_TRAPPER || bType == BA_H_MGTURRET )
-		{
-			vectoangles( e->s.origin2, e->rangeMarker->s.apos.trBase );
-		}
-
-		e->rangeMarker->r.loMask = 0;
-		e->rangeMarker->r.hiMask = 0;
-
-		for ( i = 0; i < level.maxclients; ++i )
-		{
-			gclient_t *client;
-			team_t    team;
-			qboolean  weaponDisplays, wantsToSee;
-
-			client = &level.clients[ i ];
-
-			if ( client->pers.connected != CON_CONNECTED )
-			{
-				continue;
-			}
-
-			team = client->pers.teamSelection;
-
-			if ( team != TEAM_NONE )
-			{
-				weaponDisplays = ( BG_InventoryContainsWeapon( WP_HBUILD, client->ps.stats ) ||
-				                   client->ps.weapon == WP_ABUILD || client->ps.weapon == WP_ABUILD2 );
-			}
-
-			wantsToSee = !!( client->pers.buildableRangeMarkerMask & ( 1 << bType ) );
-			if ( team == TEAM_NONE )
-				wantsToSee = wantsToSee && ( client->pers.buildableRangeMarkerMask & ( 1 << BA_NONE ) );
-
-			if ( wantsToSee &&
-			     ( team == TEAM_NONE || ( team == bTeam && weaponDisplays ) ) )
-			{
-				if ( i >= 32 )
-				{
-					e->rangeMarker->r.hiMask |= 1 << ( i - 32 );
-				}
-				else
-				{
-					e->rangeMarker->r.loMask |= 1 << i;
-				}
-			}
-		}
-
-		trap_LinkEntity( e->rangeMarker );
 	}
 }

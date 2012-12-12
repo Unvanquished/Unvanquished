@@ -53,4 +53,4 @@ http://www.sourceforge.net/projects/unvanquished/files/Assets and any maps (the 
 http://sourceforge.net/projects/unvanquished/files/Map%20Pack/maps.7z/download
 is recommended) into main
 
-Run with ./daemon.arch or Daemon.exe depending on OS.
+Run with ./daemon or Daemon.exe depending on OS.

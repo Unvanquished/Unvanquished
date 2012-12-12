@@ -1657,9 +1657,11 @@ static void llsort( struct llist **head, int compar( const void *, const void * 
 		return;
 	}
 
+	b = t = NULL;
+
 	do
 	{
-		a = *head, l = *head = NULL;
+		a = *head; l = *head = NULL;
 
 		for ( ns = 0; a; ns++, a = b )
 		{
@@ -1679,11 +1681,11 @@ static void llsort( struct llist **head, int compar( const void *, const void * 
 			{
 				if ( as && ( !bs || !b || compar( a, b ) <= 0 ) )
 				{
-					t = a, a = a->next, as--;
+					t = a; a = a->next; as--;
 				}
 				else
 				{
-					t = b, b = b->next, bs--;
+					t = b; b = b->next; bs--;
 				}
 
 				if ( l )
@@ -1844,6 +1846,7 @@ qboolean G_admin_readconfig( gentity_t *ent )
 				l = g_admin_levels = BG_Alloc( sizeof( g_admin_level_t ) );
 			}
 
+			memset( l, 0, sizeof( *l ) );
 			level_open = qtrue;
 			admin_open = ban_open = strip_open = command_open = qfalse;
 			lc++;
@@ -4284,7 +4287,7 @@ qboolean G_admin_restart( gentity_t *ent )
 
 		trap_Cvar_Set( "g_mapRestarted", "yks" );
 	}
-	else if ( trap_Argc() > 1 )
+	else if ( !layout[ 0 ] && trap_Argc() > 1 )
 	{
 		ADMP( va( "%s %s", QQ( N_( "^3restart: ^7unrecognised option '$1$'\n") ), Quote( teampref ) ) );
 		return qfalse;
@@ -5758,7 +5761,7 @@ qboolean G_admin_bot( gentity_t *ent ) {
 		int clientNum = G_ClientNumberFromString(name,err, sizeof(err));
 		if(!Q_stricmp(name, "all")) {
 			for(i=0;i<MAX_CLIENTS;i++) {
-				if(g_entities[i].r.svFlags & SVF_BOT)
+				if(g_entities[i].r.svFlags & SVF_BOT && level.clients[i].pers.connected != CON_DISCONNECTED)
 					G_BotDel(i);
 			}
 			return qtrue;
@@ -5831,4 +5834,6 @@ static qboolean G_admin_maprestarted( gentity_t *ent )
 	{
 		trap_Cvar_Set( "g_mapRestarted", "" );
 	}
+
+	return qtrue;
 }

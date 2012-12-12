@@ -43,7 +43,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <sys/ioctl.h>
 #endif
 
-#define _XOPEN_SOURCE_EXTENDED
 #ifdef USE_CURSES_W
 #include <wchar.h>
 #endif

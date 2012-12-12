@@ -1697,19 +1697,17 @@ static void RB_SurfaceMD5( md5Surface_t *srf )
 	// convert bones back to matrices
 	for ( i = 0; i < model->numBones; i++ )
 	{
-		matrix_t m, m2;
 
 #if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 
 		if ( backEnd.currentEntity->e.skeleton.type == SK_ABSOLUTE )
 		{
-			MatrixSetupScale( m,
+
+			MatrixSetupTransformFromQuat( boneMatrices[ i ], backEnd.currentEntity->e.skeleton.bones[ i ].rotation,
+			                              backEnd.currentEntity->e.skeleton.bones[ i ].origin );
+			MatrixMultiplyScale( boneMatrices[ i ],
 			                  backEnd.currentEntity->e.skeleton.scale[ 0 ],
 			                  backEnd.currentEntity->e.skeleton.scale[ 1 ], backEnd.currentEntity->e.skeleton.scale[ 2 ] );
-
-			MatrixSetupTransformFromQuat( m2, backEnd.currentEntity->e.skeleton.bones[ i ].rotation,
-			                              backEnd.currentEntity->e.skeleton.bones[ i ].origin );
-			MatrixMultiply( m2, m, boneMatrices[ i ] );
 			MatrixMultiply2( boneMatrices[ i ], model->bones[ i ].inverseTransform );
 		}
 		else

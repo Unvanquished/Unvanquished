@@ -97,6 +97,8 @@ cmake_dependent_option( USE_CIN_THEORA       "Compile with support for Theora"  
 cmake_dependent_option( USE_INTERNAL_SPEEX   "Use internal speex"                          0 USE_VOIP         0 )
 cmake_dependent_option( USE_INTERNAL_GLEW    "Use internal GLEW"                           0 BUILD_CLIENT     0 )
 
+cmake_dependent_option( USE_INTERNAL_WEBP    "Use internal WebP"                           0 BUILD_CLIENT     0 )
+
 cmake_dependent_option( ENABLE_W_EXTRA       "Use -Wextra"                                 0 ENABLE_W_ALL     0 )
 
 cmake_dependent_option( ENABLE_FSTACKPROT    "Enable stack protection if available"        1 ENABLE_HARDENING 0 )
@@ -128,6 +130,7 @@ set( LIB_DIR ${CMAKE_SOURCE_DIR}/src/libs ) # LIB_DIR is also defined in Visual_
 set( SDL_DIR ${LIB_DIR}/libsdl )
 set( JPEG_DIR ${LIB_DIR}/jpeg )
 set( GLEW_DIR ${LIB_DIR}/glew )
+set( WEBP_DIR ${LIB_DIR}/libwebp )
 
 if( WIN32 )
   add_definitions( -D_CRT_SECURE_NO_WARNINGS )
@@ -174,8 +177,10 @@ else()
   # CMAKE_SYSTEM_PROCESSOR is reliable for *nix
   if( CMAKE_SYSTEM_PROCESSOR MATCHES "i.86" )
     set( BUILD_ARCH "i386" )
-  elseif( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" )
+  elseif( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" AND CMAKE_SIZEOF_VOID_P EQUAL 8)
     set( BUILD_ARCH "x86_64" )
+  elseif( CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" AND CMAKE_SIZEOF_VOID_P EQUAL 4 )
+    set( BUILD_ARCH "x32" )
   else()
     set( BUILD_ARCH ${CMAKE_SYSTEM_PROCESSOR} )
   endif()
@@ -230,6 +235,12 @@ if( USE_INTERNAL_GLEW )
   add_subdirectory( ${GLEW_DIR} )
   set( GLEW_LIBRARY INTERNAL_GLEW CACHE STRING "Glew library" FORCE )
   set( GLEW_INCLUDE_DIR ${GLEW_DIR}/include CACHE STRING "Glew include directory" FORCE )
+endif()
+
+if( USE_INTERNAL_WEBP )
+  add_subdirectory( ${WEBP_DIR} )
+  set( WEBP_LIBRARY INTERNAL_WEBP CACHE STRING "WebP library" FORCE )
+  set( WEBP_INCLUDE_DIR ${WEBP_DIR} CACHE STRING "WebP include directory" FORCE )
 endif()
 
 # Setup CPack
@@ -469,6 +480,7 @@ set( RENDERERGLLIST
   ${MOUNT_DIR}/engine/rendererGL/tr_surface.c
   ${MOUNT_DIR}/engine/rendererGL/tr_vbo.c
   ${MOUNT_DIR}/engine/rendererGL/tr_world.cpp
+  ${MOUNT_DIR}/engine/qcommon/md4.c
 )
 
 set( SERVERLIST
@@ -482,6 +494,12 @@ set( SERVERLIST
   ${MOUNT_DIR}/engine/server/sv_snapshot.c
   ${MOUNT_DIR}/engine/server/sv_world.c
 )
+
+set( QCOMMON_ARCH "" )
+if( BUILD_ARCH STREQUAL "i386" OR BUILD_ARCH STREQUAL "x32" OR BUILD_ARCH STREQUAL "x86_64" )
+  set( QCOMMON_ARCH ${MOUNT_DIR}/engine/qcommon/vm_x86.c )
+#elseif( ... )
+endif()
 
 set( QCOMMONLIST
   ${MOUNT_DIR}/engine/qcommon/cm_load.c
@@ -508,8 +526,8 @@ set( QCOMMONLIST
   ${MOUNT_DIR}/engine/qcommon/unzip.c
   ${MOUNT_DIR}/engine/qcommon/ioapi.c
   ${MOUNT_DIR}/engine/qcommon/vm.c
-  ${MOUNT_DIR}/engine/qcommon/vm_x86.c
   ${MOUNT_DIR}/engine/qcommon/vm_interpreted.c
+  ${QCOMMON_ARCH}
 )
 
 # Visual studio can't handle inline assembly
@@ -527,7 +545,7 @@ if( MSVC )
     set( QCOMMONLIST ${QCOMMONLIST} vm_x86_64.obj )
     add_custom_command( OUTPUT vm_x86_64.obj COMMAND ${ASM_APP} /c ARGS "${MOUNT_DIR}/engine/asm/vm_x86_64.asm" MAIN_DEPENDENCY ${MOUNT_DIR}/engine/asm/vm_x86_64.asm )
   endif()
-else()
+elseif( BUILD_ARCH STREQUAL "i386" OR BUILD_ARCH STREQUAL "x32" OR BUILD_ARCH STREQUAL "x86_64" )
     set( QCOMMONLIST ${QCOMMONLIST}
     ${MOUNT_DIR}/engine/asm/ftola.c
     ${MOUNT_DIR}/engine/asm/snapvector.c

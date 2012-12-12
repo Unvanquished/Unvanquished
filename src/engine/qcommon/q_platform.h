@@ -37,6 +37,11 @@ Maryland 20850 USA.
 
 // this is for determining if we have an asm version of a C function
 #define idx64 0
+#define idx64_32 0
+
+#ifdef VM_COMPILED
+#undef VM_COMPILED
+#endif
 
 #ifdef Q3_VM
 
@@ -129,6 +134,7 @@ Maryland 20850 USA.
 
 #if defined( __WIN64__ )
 #define ARCH_STRING "x86_64"
+#define VM_COMPILED
 #elif defined _M_ALPHA
 #define ARCH_STRING "AXP"
 #endif
@@ -162,6 +168,7 @@ Maryland 20850 USA.
 
 #if defined( _M_IX86 ) || defined( __i386__ )
 #define ARCH_STRING "i386"
+#define VM_COMPILED
 #elif defined _M_ALPHA
 #define ARCH_STRING "AXP"
 #endif
@@ -194,11 +201,13 @@ Maryland 20850 USA.
 #elif defined __i386__
 #define ARCH_STRING "i386"
 #define Q3_LITTLE_ENDIAN
+#define VM_COMPILED
 #elif defined __x86_64__
 #undef idx64
 #define idx64       1
 #define ARCH_STRING "x86_64"
 #define Q3_LITTLE_ENDIAN
+#define VM_COMPILED
 #endif
 
 #define DLL_PREFIX    "lib"
@@ -220,10 +229,17 @@ Maryland 20850 USA.
 
 #if defined __i386__
 #define ARCH_STRING "i386"
+#define VM_COMPILED
+#elif defined __x86_64__ && defined _ILP32
+#undef idx64_32
+#define idx64_32    1
+#define ARCH_STRING "x32"
+#define VM_COMPILED
 #elif defined __x86_64__
 #undef idx64
 #define idx64       1
 #define ARCH_STRING "x86_64"
+#define VM_COMPILED
 #elif defined __powerpc64__
 #define ARCH_STRING "ppc64"
 #elif defined __powerpc__
@@ -438,6 +454,10 @@ float FloatSwap( float f );
 #error "Endianness not defined"
 #endif
 
+#endif
+
+#ifndef VM_COMPILED
+#define NO_VM_COMPILED
 #endif
 
 #endif

@@ -266,7 +266,6 @@ typedef struct
 	int      fileSize;
 	int      zipFilePos;
 	qboolean zipFile;
-	qboolean streamed;
 	char     name[ MAX_ZPATH ];
 } fileHandleData_t;
 
@@ -1285,7 +1284,7 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 	long         hash = 0;
 	FILE         *temp;
 	int          l;
-	char         demoExt[ 16 ];
+//	char         demoExt[ 16 ];
 
 	hash = 0;
 
@@ -1523,7 +1522,7 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 				     && Q_stricmp( filename + l - 4, ".otf" )
 				     && Q_stricmp( filename + l - 5, ".menu" )  // menu files
 				     && Q_stricmp( filename + l - 5, ".game" )  // menu files
-				     && Q_stricmp( filename + l - strlen( demoExt ), demoExt )   // menu files
+				     //&& Q_stricmp( filename + l - strlen( demoExt ), demoExt )   // menu files
 				     && Q_stricmp( filename + l - 4, ".dat" )  // for journal files
 				     && Q_stricmp( filename + l - 8, "bots.txt" )
 				     && Q_stricmp( filename + l - 8, ".botents" )
@@ -1550,7 +1549,7 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 			     && Q_stricmp( filename + l - 4, ".otf" ) != 0
 			     && Q_stricmp( filename + l - 5, ".menu" )  // menu files
 			     && Q_stricmp( filename + l - 5, ".game" )  // menu files
-			     && Q_stricmp( filename + l - strlen( demoExt ), demoExt )   // menu files
+			     //&& Q_stricmp( filename + l - strlen( demoExt ), demoExt )   // menu files
 			     && Q_stricmp( filename + l - 4, ".dat" )
 			     && Q_stricmp( filename + l - 8, ".botents" )
 			     && Q_stricmp( filename + l - 3, ".po" )
@@ -1807,18 +1806,7 @@ int FS_Read2( void *buffer, int len, fileHandle_t f )
 		return 0;
 	}
 
-	if ( fsh[ f ].streamed )
-	{
-		int r;
-		fsh[ f ].streamed = qfalse;
-		r = FS_Read( buffer, len, f );
-		fsh[ f ].streamed = qtrue;
-		return r;
-	}
-	else
-	{
-		return FS_Read( buffer, len, f );
-	}
+	return FS_Read( buffer, len, f );
 }
 
 int FS_Read( void *buffer, int len, fileHandle_t f )
@@ -1977,13 +1965,6 @@ int FS_Seek( fileHandle_t f, long offset, int origin )
 	if ( !fs_searchpaths )
 	{
 		Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
-	}
-
-	if ( fsh[ f ].streamed )
-	{
-		fsh[ f ].streamed = qfalse;
-		FS_Seek( f, offset, origin );
-		fsh[ f ].streamed = qtrue;
 	}
 
 	if ( fsh[ f ].zipFile == qtrue )
@@ -3238,7 +3219,7 @@ void FS_Path_f( void )
 		if ( s->pack )
 		{
 			//      Com_Printf(_( "%s %X (%i files)\n"), s->pack->pakFilename, s->pack->checksum, s->pack->numfiles );
-			Com_DPrintf(_( "%s (%i files)\n"), s->pack->pakFilename, s->pack->numfiles );
+			Com_DPrintf( "%s (%i files)\n", s->pack->pakFilename, s->pack->numfiles );
 
 			if ( fs_numServerPaks )
 			{
@@ -4889,18 +4870,6 @@ int     FS_FOpenFileByMode( const char *qpath, fileHandle_t *f, fsMode_t mode )
 		}
 
 		fsh[ *f ].fileSize = r;
-		fsh[ *f ].streamed = qfalse;
-
-		// uncommenting this makes fs_reads
-		// use the background threads --
-		// MAY be faster for loading levels depending on the use of file io
-		// q3a not faster
-		// wolf not faster
-
-//		if (mode == FS_READ) {
-//			Sys_BeginStreamedFile( *f, 0x4000 );
-//			fsh[*f].streamed = qtrue;
-//		}
 	}
 
 	fsh[ *f ].handleSync = sync;

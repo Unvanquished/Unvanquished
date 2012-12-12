@@ -908,6 +908,12 @@ static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelN
 				ci->animations[ TORSO_GESTURE ] = ci->animations[ LEGS_IDLE ];
 			}
 
+			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_RALLY, "rally", qfalse, qfalse, qfalse ) )
+			{
+				ci->animations[ TORSO_RALLY ] = ci->animations[ LEGS_IDLE ];
+			}
+
+
 			if ( !CG_RegisterPlayerAnimation( ci, modelName, TORSO_ATTACK, "attack", qfalse, qfalse, qfalse ) )
 			{
 				ci->animations[ TORSO_ATTACK ] = ci->animations[ LEGS_IDLE ];
