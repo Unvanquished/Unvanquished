@@ -233,6 +233,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_mapRestarted,                "g_mapRestarted",                "0",                                CVAR_ROM,                                        0, qfalse           },
 	{ NULL,                           "sv_mapname",                    "",                                 CVAR_SERVERINFO | CVAR_ROM,                      0, qfalse           },
 	{ NULL,                           "P",                             "",                                 CVAR_SERVERINFO | CVAR_ROM,                      0, qfalse           },
+	{ NULL,                           "B",                             "",                                 CVAR_SERVERINFO | CVAR_ROM,                      0, qfalse           },
 
 	// latched vars
 
@@ -1731,7 +1732,7 @@ and team change.
 void CalculateRanks( void )
 {
 	int  i;
-	char P[ MAX_CLIENTS + 1 ] = { "" };
+	char P[ MAX_CLIENTS + 1 ] = "", B[ MAX_CLIENTS + 1 ] = "";
 
 	level.numConnectedClients = 0;
 	level.numPlayingClients = 0;
@@ -1744,6 +1745,7 @@ void CalculateRanks( void )
 	for ( i = 0; i < level.maxclients; i++ )
 	{
 		P[ i ] = '-';
+		B[ i ] = '-';
 
 		if ( level.clients[ i ].pers.connected != CON_DISCONNECTED )
 		{
@@ -1764,7 +1766,11 @@ void CalculateRanks( void )
 			level.numConnectedClients++;
 			P[ i ] = ( char ) '0' + team;
 
-			if ( !bot )
+			if ( bot )
+			{
+				B[ i ] = 'b';
+			}
+			else
 			{
 				level.numVotingClients[ TEAM_NONE ]++;
 			}
@@ -1809,6 +1815,8 @@ void CalculateRanks( void )
 	                               level.numLiveHumanClients;
 	P[ i ] = '\0';
 	trap_Cvar_Set( "P", P );
+	B[ i ] = '\0';
+	trap_Cvar_Set( "B", B );
 
 	qsort( level.sortedClients, level.numConnectedClients,
 	       sizeof( level.sortedClients[ 0 ] ), SortRanks );
