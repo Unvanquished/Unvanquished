@@ -2234,6 +2234,14 @@ void SV_ExecuteClientMessage( client_t *cl, msg_t *msg )
 	}
 	while ( 1 );
 
+	if ( c == clc_voip )
+	{
+#ifdef USE_VOIP
+		SV_UserVoip( cl, msg );
+		c = MSG_ReadByte( msg );
+#endif
+	}
+
 	// read the usercmd_t
 	if ( c == clc_move )
 	{
@@ -2242,12 +2250,6 @@ void SV_ExecuteClientMessage( client_t *cl, msg_t *msg )
 	else if ( c == clc_moveNoDelta )
 	{
 		SV_UserMove( cl, msg, qfalse );
-	}
-	else if ( c == clc_voip )
-	{
-#ifdef USE_VOIP
-		SV_UserVoip( cl, msg );
-#endif
 	}
 	else if ( c != clc_EOF )
 	{
