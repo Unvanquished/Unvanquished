@@ -734,6 +734,11 @@ Downloads are finished
 */
 void SV_DoneDownload_f( client_t *cl )
 {
+	if ( cl->state == CS_ACTIVE )
+	{
+		return;
+	}
+
 	Com_DPrintf( "clientDownload: %s^7 Done\n", cl->name );
 	// resend the game state to update any clients that entered during the download
 	SV_SendClientGameState( cl );
