@@ -131,6 +131,7 @@ set( SDL_DIR ${LIB_DIR}/libsdl )
 set( JPEG_DIR ${LIB_DIR}/jpeg )
 set( GLEW_DIR ${LIB_DIR}/glew )
 set( WEBP_DIR ${LIB_DIR}/libwebp )
+set( ROCKET_DIR ${LIB_DIR}/libRocket )
 
 if( WIN32 )
   add_definitions( -D_CRT_SECURE_NO_WARNINGS )
@@ -242,6 +243,8 @@ if( USE_INTERNAL_WEBP )
   set( WEBP_LIBRARY INTERNAL_WEBP CACHE STRING "WebP library" FORCE )
   set( WEBP_INCLUDE_DIR ${WEBP_DIR} CACHE STRING "WebP include directory" FORCE )
 endif()
+
+add_subdirectory( ${ROCKET_DIR} )
 
 # Setup CPack
 set( CPACK_PACKAGE_FILE_NAME "Unvanquished" )
@@ -1338,8 +1341,8 @@ if( BUILD_CLIENT )
     ${CPUINFOLIST} ${SDLLIST} ${QCOMMONLIST} ${SHAREDLIST} ${CRYPTOLIST} ${TINYGETTEXT_LIST}
     ${DATABASELIST} ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c ${SPEEXLIST} ${WIN_RC} )
   add_dependencies( client rendererGL )
-  include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )
-  target_link_libraries( client ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
+  include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} ${ROCKET_DIR}/include )
+  target_link_libraries( client ${OS_LIBRARIES} ${NEWTON_LIBRARY} ROCKET_LIB )
   set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER COMPAT_ET USE_REFENTITY_ANIMATIONSYSTEM HAVE_SDL )
   set_target_properties( client PROPERTIES OUTPUT_NAME "daemon" PREFIX "" LINKER_LANGUAGE CXX )
 
