@@ -23,28 +23,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // nav.cpp -- navigation mesh generator interface
 
-
-//extern "C" {
 extern "C" {
 #include "q3map2.h"
 #include "../common/surfaceflags.h"
 }
-//}
+
 #include "../recast/Recast.h"
+
 #include "../../engine/botlib/nav.h"
 
-class rcContext context(false);
-
-rcHeightfield *heightField;
-unsigned char *navData;
-int navDataSize;
 vec3_t mapmins;
 vec3_t mapmaxs;
-
-rcContourSet *contours;
-rcCompactHeightfield *compHeightField;
-rcPolyMesh *polyMesh;
-rcPolyMeshDetail *detailedPolyMesh;
 
 // Load indices
 const int *indexes;
@@ -60,11 +49,12 @@ const bspDrawVert_t *vertices;
 float *verts;
 int numverts;
 
+float cellSize = 6;
+float cellHeight = 0.5;
+float stepSize = STEPSIZE;
+
 // Load models
 const bspModel_t *models;
-
-// Recast config
-rcConfig cfg;
 
 const int numSkipEntities = 18;
 const char *skipEntities[18] = {"func_door"				, "team_alien_trapper"	,
@@ -159,6 +149,7 @@ static void quake2recast(vec3_t vec) {
 	vec[1] = vec[2];
 	vec[2] = -temp;
 }
+
 static void WriteRecastData (const char* agentname, const rcPolyMesh *polyMesh, const rcPolyMeshDetail *detailedPolyMesh, const rcConfig *cfg )
 {
 	FILE *file;
@@ -270,24 +261,6 @@ static void WriteRecastData (const char* agentname, const rcPolyMesh *polyMesh, 
 	fclose(file);
 }
 
-static void UpdatePolyFlags(void){
-
-	Sys_Printf(" updating flags...\n");
-	// Update poly flags from areas.
-	for (int i = 0; i < polyMesh->npolys; ++i)
-	{
-		if (polyMesh->areas[i] == RC_WALKABLE_AREA) {
-			polyMesh->areas[i] = POLYAREA_GROUND;
-			polyMesh->flags[i] = POLYFLAGS_WALK;
-		} else if (polyMesh->areas[i] == POLYAREA_WATER) {
-			polyMesh->flags[i] = POLYFLAGS_SWIM;
-		}
-		else if (polyMesh->areas[i] == POLYAREA_DOOR) {
-			polyMesh->flags[i] = POLYFLAGS_WALK | POLYFLAGS_DOOR;
-		}
-	}
-
-}
 static qboolean skipEntity(const entity_t *ent) {
 	const char *value = ValueForKey(ent,"classname");
 	for(int i=0;i<numSkipEntities;i++) {
@@ -347,125 +320,6 @@ free(verts);
 }
 }
 }*/
-
-static void CreateDetailMesh ( void )
-{
-	Sys_Printf(" creating detail mesh...\n");
-
-	detailedPolyMesh = rcAllocPolyMeshDetail();
-	if ( !rcBuildPolyMeshDetail (&context, *polyMesh, *compHeightField, cfg.detailSampleDist, cfg.detailSampleMaxError, *detailedPolyMesh) )
-	{
-		Error ("Failed to create detail mesh for navigation mesh.\n");
-	}
-}
-
-static void BuildMeshFromContours ( void )
-{
-	Sys_Printf(" building mesh from contours...\n");
-
-	polyMesh = rcAllocPolyMesh();
-	if ( !rcBuildPolyMesh (&context, *contours, cfg.maxVertsPerPoly, *polyMesh) )
-	{
-		Error ("Failed to triangulate contours.\n");
-	}
-}
-static void CreateContours( void )
-{
-	Sys_Printf(" creating contours...\n");
-
-	contours = rcAllocContourSet();
-	if ( !rcBuildContours (&context, *compHeightField, cfg.maxSimplificationError, cfg.maxEdgeLen, *contours) )
-	{
-		Error ("Failed to create contour set for navigation mesh.\n");
-	}
-}
-
-static void CreateRegions ( void )
-{
-	Sys_Printf(" creating compact heightfield...\n");
-
-	compHeightField = rcAllocCompactHeightfield();
-	if ( !rcBuildCompactHeightfield (&context, cfg.walkableHeight, cfg.walkableClimb, *heightField, *compHeightField) )
-	{
-		Error ("Failed to create compact heightfield for navigation mesh.\n");
-	}
-	if(median) {
-		Sys_Printf(" applying median filter...\n");
-		if(!rcMedianFilterWalkableArea(&context, *compHeightField))
-		{
-			Error ("Failed to apply Median filter to walkable areas.\n");
-		}
-	}
-	Sys_Printf(" eroding the walkable surface...\n");
-	if ( !rcErodeWalkableArea (&context, cfg.walkableRadius + cfg.maxSimplificationError, *compHeightField) )
-	{
-		Error ("Unable to erode walkable surfaces.\n");
-	}
-	Sys_Printf(" building the distance field...\n");
-	if ( !rcBuildDistanceField (&context, *compHeightField) )
-	{
-		Error ("Failed to build distance field for navigation mesh.\n");
-	}
-
-	Sys_Printf(" building regions...\n");
-	if ( !rcBuildRegions (&context, *compHeightField, 0, cfg.minRegionArea, cfg.mergeRegionArea) )
-	{
-		Error ("Failed to build regions for navigation mesh.\n");
-	}
-}
-
-static void FilterSurfaces ()
-{
-	Sys_Printf(" filtering surfaces...\n");
-
-	rcFilterLowHangingWalkableObstacles (&context, cfg.walkableClimb, *heightField);
-	rcFilterLedgeSpans (&context, cfg.walkableHeight, cfg.walkableClimb, *heightField);
-	rcFilterWalkableLowHeightSpans (&context, cfg.walkableHeight, *heightField);
-}
-
-static void CreateHeightfield ( void )
-{
-	Sys_Printf(" creating heightfield...\n");
-
-	heightField = rcAllocHeightfield();
-	if ( !rcCreateHeightfield (&context, *heightField, cfg.width, cfg.height, cfg.bmin, cfg.bmax, cfg.cs, cfg.ch) )
-	{
-		Error ("Failed to create heightfield for navigation mesh.\n");
-	}
-	unsigned char *triareas = new unsigned char[numtris];
-	memset (triareas, 0, numtris);
-	Sys_Printf(" marking walkable triangles...\n");
-	rcMarkWalkableTriangles (&context, cfg.walkableSlopeAngle, verts, numverts, tris, numtris, triareas);
-	Sys_Printf(" rasterizing triangles...\n");
-	rcRasterizeTriangles (&context, verts, triareas, numtris, *heightField, cfg.walkableClimb);
-	delete[] triareas;
-	triareas = NULL;
-}
-static void ConfigureRecast ( int agentRadius, int agentHeight, float cellSize, float cellHeight, float stepSize )
-{
-	Sys_Printf("    configuring recast options...\n");
-
-	memset (&cfg, 0, sizeof (cfg));
-	VectorCopy (mapmaxs, cfg.bmax);
-	VectorCopy (mapmins, cfg.bmin);
-
-	cfg.cs = cellSize;
-	cfg.ch = cellHeight;
-	cfg.walkableSlopeAngle = 46; //max slope is 45, but recast checks for < 45 so we need 46
-	cfg.maxEdgeLen = 64;
-	cfg.maxSimplificationError = 1;
-	cfg.maxVertsPerPoly = 6;
-	cfg.detailSampleDist = cfg.cs * 6.0f;
-	cfg.detailSampleMaxError = cfg.ch * 1.0f;
-	cfg.minRegionArea = rcSqr(8);
-	cfg.mergeRegionArea = rcSqr(30);
-	cfg.walkableHeight = (int) ceilf(agentHeight / cfg.ch);
-	cfg.walkableClimb = (int) floorf(stepSize/cfg.ch);
-	cfg.walkableRadius = (int) ceilf(agentRadius / cfg.cs);
-
-	rcCalcGridSize (cfg.bmin, cfg.bmax, cfg.cs, &cfg.width, &cfg.height);
-	Sys_Printf(" using %d x %d cells\n",cfg.width,cfg.height);
-}
 
 static void CountPatchVertsTris(bspDrawSurface_t **surfaces, int numSurfaces, int *numverts, int *numtris) {
 	const bspDrawSurface_t *surface;
@@ -944,11 +798,133 @@ static void LoadRecast()
 	numverts = 0;
 	tris = NULL;
 	numtris = 0;
-	contours = NULL;
-	compHeightField = NULL;
-	polyMesh = NULL;
-	detailedPolyMesh = NULL;
+}
 
+static void buildPolyMesh( int characterNum, vec3_t mapmins, vec3_t mapmaxs, rcPolyMesh *&polyMesh, rcPolyMeshDetail *&detailedPolyMesh, rcConfig &cfg )
+{
+	float agentHeight = tremClasses[ characterNum ].height;
+	float agentRadius = tremClasses[ characterNum ].radius;
+	rcHeightfield *heightField;
+	rcCompactHeightfield *compHeightField;
+	rcContourSet *contours;
+
+	memset (&cfg, 0, sizeof (cfg));
+	VectorCopy (mapmaxs, cfg.bmax);
+	VectorCopy (mapmins, cfg.bmin);
+
+	cfg.cs = cellSize;
+	cfg.ch = cellHeight;
+	cfg.walkableSlopeAngle = 46; //max slope is 45, but recast checks for < 45 so we need 46
+	cfg.maxEdgeLen = 64;
+	cfg.maxSimplificationError = 1;
+	cfg.maxVertsPerPoly = 6;
+	cfg.detailSampleDist = cfg.cs * 6.0f;
+	cfg.detailSampleMaxError = cfg.ch * 1.0f;
+	cfg.minRegionArea = rcSqr(8);
+	cfg.mergeRegionArea = rcSqr(30);
+	cfg.walkableHeight = (int) ceilf(agentHeight / cfg.ch);
+	cfg.walkableClimb = (int) floorf(stepSize/cfg.ch);
+	cfg.walkableRadius = (int) ceilf(agentRadius / cfg.cs);
+
+	rcCalcGridSize (cfg.bmin, cfg.bmax, cfg.cs, &cfg.width, &cfg.height);
+
+	class rcContext context(false);
+
+	heightField = rcAllocHeightfield();
+
+	if ( !rcCreateHeightfield (&context, *heightField, cfg.width, cfg.height, cfg.bmin, cfg.bmax, cfg.cs, cfg.ch) )
+	{
+		Error ("Failed to create heightfield for navigation mesh.\n");
+	}
+
+	unsigned char *triareas = new unsigned char[numtris];
+	memset (triareas, 0, numtris);
+
+	rcMarkWalkableTriangles (&context, cfg.walkableSlopeAngle, verts, numverts, tris, numtris, triareas);
+	rcRasterizeTriangles (&context, verts, triareas, numtris, *heightField, cfg.walkableClimb);
+	delete[] triareas;
+	triareas = NULL;
+
+	rcFilterLowHangingWalkableObstacles (&context, cfg.walkableClimb, *heightField);
+	rcFilterLedgeSpans (&context, cfg.walkableHeight, cfg.walkableClimb, *heightField);
+	rcFilterWalkableLowHeightSpans (&context, cfg.walkableHeight, *heightField);
+
+	compHeightField = rcAllocCompactHeightfield();
+	if ( !rcBuildCompactHeightfield (&context, cfg.walkableHeight, cfg.walkableClimb, *heightField, *compHeightField) )
+	{
+		Error ("Failed to create compact heightfield for navigation mesh.\n");
+	}
+
+	rcFreeHeightField( heightField );
+
+	if( median ) {
+		if(!rcMedianFilterWalkableArea(&context, *compHeightField))
+		{
+			Error ("Failed to apply Median filter to walkable areas.\n");
+		}
+	}
+
+	if ( !rcErodeWalkableArea (&context, cfg.walkableRadius + cfg.maxSimplificationError, *compHeightField) )
+	{
+		Error ("Unable to erode walkable surfaces.\n");
+	}
+
+	if ( !rcBuildDistanceField (&context, *compHeightField) )
+	{
+		Error ("Failed to build distance field for navigation mesh.\n");
+	}
+
+	if ( !rcBuildRegions (&context, *compHeightField, 0, cfg.minRegionArea, cfg.mergeRegionArea) )
+	{
+		Error ("Failed to build regions for navigation mesh.\n");
+	}
+
+	contours = rcAllocContourSet();
+	if ( !rcBuildContours (&context, *compHeightField, cfg.maxSimplificationError, cfg.maxEdgeLen, *contours) )
+	{
+		Error ("Failed to create contour set for navigation mesh.\n");
+	}
+
+	rcFreeCompactHeightfield (compHeightField);
+
+	polyMesh = rcAllocPolyMesh();
+	if ( !rcBuildPolyMesh (&context, *contours, cfg.maxVertsPerPoly, *polyMesh) )
+	{
+		Error ("Failed to triangulate contours.\n");
+	}
+	rcFreeContourSet (contours);
+
+	detailedPolyMesh = rcAllocPolyMeshDetail();
+	if ( !rcBuildPolyMeshDetail (&context, *polyMesh, *compHeightField, cfg.detailSampleDist, cfg.detailSampleMaxError, *detailedPolyMesh) )
+	{
+		Error ("Failed to create detail mesh for navigation mesh.\n");
+	}
+
+	// Update poly flags from areas.
+	for (int i = 0; i < polyMesh->npolys; ++i)
+	{
+		if (polyMesh->areas[i] == RC_WALKABLE_AREA) {
+			polyMesh->areas[i] = POLYAREA_GROUND;
+			polyMesh->flags[i] = POLYFLAGS_WALK;
+		} else if (polyMesh->areas[i] == POLYAREA_WATER) {
+			polyMesh->flags[i] = POLYFLAGS_SWIM;
+		}
+		else if (polyMesh->areas[i] == POLYAREA_DOOR) {
+			polyMesh->flags[i] = POLYFLAGS_WALK | POLYFLAGS_DOOR;
+		}
+	}
+}
+
+static void BuildSoloMesh(int characterNum) {
+	rcConfig cfg;
+	rcPolyMesh *polyMesh = rcAllocPolyMesh();
+	rcPolyMeshDetail *detailedPolyMesh = rcAllocPolyMeshDetail();
+
+	buildPolyMesh( characterNum, mapmins, mapmaxs, polyMesh, detailedPolyMesh, cfg );
+	WriteRecastData( tremClasses[characterNum].name, polyMesh, detailedPolyMesh, &cfg );
+
+	rcFreePolyMesh( polyMesh );
+	rcFreePolyMeshDetail( detailedPolyMesh );
 }
 
 /*
@@ -959,9 +935,7 @@ NavMain
 extern "C" int NavMain(int argc, char **argv)
 {
 	float temp;
-	float cellSize = 6;
-	float cellHeight = 0.5;
-	float stepSize = STEPSIZE;
+
 
 	/* note it */
 	Sys_Printf("--- Nav ---\n");
@@ -1023,52 +997,10 @@ extern "C" int NavMain(int argc, char **argv)
 		Sys_Printf("New cellheight: %f\n", cellHeight);
 	}
 
-	for(int i=0;i<12;i++) {
-		Sys_Printf("Making NavMesh for %s\n",tremClasses[i].name);
+	RunThreadsOnIndividual( sizeof( tremClasses ) / sizeof( tremClasses[ 0 ] ), qtrue, BuildSoloMesh);
 
-		/* configure recast */
-		ConfigureRecast(tremClasses[i].radius , tremClasses[i].height, cellSize,cellHeight,stepSize);
-
-		//only need to do this once
-		if(i==0) {
-			/* create recast height field */
-			CreateHeightfield();
-		}
-
-		/* filter walkable surfaces */
-		FilterSurfaces ();
-
-		/* partition walkable surface to simple regions */
-		CreateRegions ();
-
-		/* create contours */
-		CreateContours();
-
-		/* build polygons mesh from contours */
-		BuildMeshFromContours();
-
-		/* Create detail mesh */
-		CreateDetailMesh();
-
-		/* Update poly areas */
-		//UpdatePolyAreas();
-
-		/* Update poly flags */
-		UpdatePolyFlags();
-
-		/* write navigation data to disk */
-		WriteRecastData( tremClasses[i].name, polyMesh, detailedPolyMesh, &cfg );
-
-
-
-		rcFreeCompactHeightfield (compHeightField);
-		rcFreeContourSet (contours);
-		rcFreePolyMesh (polyMesh);
-		rcFreePolyMeshDetail (detailedPolyMesh);
-	}
 	/* clean up */
 	Sys_Printf(" cleaning up recast...\n");
-	rcFreeHeightField (heightField);
 	delete[] verts;
 	delete[] tris;
 	return 0;
