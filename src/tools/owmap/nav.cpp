@@ -133,13 +133,16 @@ const tremClass_t tremClasses[] = {
 
 
 //flag for optional median filter of walkable surfaces
-qboolean median = qfalse;
+static qboolean median = qfalse;
 
 //flag for optimistic walkableclimb projection
-qboolean optimistic = qfalse;
+static qboolean optimistic = qfalse;
 
 //flag for excluding caulk surfaces
-qboolean excludeCaulk = qtrue;
+static qboolean excludeCaulk = qtrue;
+
+//flag for adding new walkable spans so bots can walk over small gaps
+static qboolean filterGaps;
 
 //copied from cm_patch.c
 static const int MAX_GRID_SIZE = 129;
@@ -1120,6 +1123,110 @@ static void RemoveUnreachableSpans(rcCompactHeightfield &chf) {
 	delete[] prevAreas;
 }
 
+/*
+rcFilterGaps
+
+Does a super simple sampling of ledges to detect and fix
+any "gaps" in the heightfield that are narrow enough for us to walk over
+because of our AABB based collision system
+*/
+static void rcFilterGaps(rcContext *ctx, int walkableRadius, int walkableClimb, int walkableHeight, rcHeightfield &solid) {
+	const int h = solid.height;
+	const int w = solid.width;
+	const int MAX_HEIGHT = 0xffff;
+	std::vector<int> spanData;
+	spanData.reserve(500*3);
+	std::vector<int> data;
+	data.reserve((walkableRadius*2-1)*3);
+
+	//for every span in the heightfield
+	for(int y=0;y<h;++y) {
+		for(int x=0;x<w;++x) {
+			//check each span in the column
+			for(rcSpan *s = solid.spans[x + y*w]; s;s = s->next) {
+				//bottom and top of the "base" span
+				const int sbot = s->smax;
+				const int stop = (s->next) ? (s->next->smin) : MAX_HEIGHT;
+
+				//if the span is walkable
+				if(s->area != RC_NULL_AREA) {
+					//check all neighbor connections
+					for(int dir=0;dir<4;dir++) {
+						const int dirx = rcGetDirOffsetX(dir);
+						const int diry = rcGetDirOffsetY(dir);
+						int dx = x;
+						int dy = y;
+						bool freeSpace = false;
+						bool stop = false;
+
+						//keep going the direction for walkableRadius * 2 - 1 spans
+						//because we can walk as long as at least part of our bbox is on a solid surface
+						for(int i=1;i<walkableRadius*2;i++) {
+							dx = dx + dirx;
+							dy = dy + diry;
+							if(dx < 0 || dy < 0 || dx >= w || dy >= h) {
+								break;
+							}
+
+							//tells if there is space here for us to stand
+							freeSpace = false;
+
+							//go through the column
+							for(rcSpan *ns = solid.spans[dx + dy*w];ns;ns = ns->next) {
+								int nsbot = ns->smax;
+								int nstop = (ns->next) ? (ns->next->smin) : MAX_HEIGHT;
+
+								//if there is a span within walkableClimb of the base span, we have reached the end of the gap (if any)
+								if(rcAbs(sbot - nsbot) <= walkableClimb) {
+									//set flag telling us to stop
+									stop = true;
+
+									//only add spans if we have gone for more than 1 iteration
+									//if we stop at the first iteration, it means there was no gap to begin with
+									if(i>1)
+										freeSpace = true;
+									break;
+								}
+
+								if(nsbot < sbot && nstop >= sbot + walkableHeight) {
+									//tell that we found walkable space within reach of the previous span
+									freeSpace = true;
+									//add this span to a temporary storage location
+									data.push_back(dx);
+									data.push_back(dy);
+									data.push_back(sbot);
+									break;
+								}
+							}
+
+							//stop if there is no more freespace, or we have reached end of gap
+							if(stop || !freeSpace) {
+								break;
+							}
+						}
+						//move the spans from the temp location to the storage
+						//we check freeSpace to make sure we don't add a
+						//span when we stop at the first iteration (because there is no gap)
+						//checking stop tells us if there was a span to complete the "bridge"
+						if(freeSpace && stop) {
+							const int N = data.size();
+							for(int i=0;i<N;i++)
+								spanData.push_back(data[i]);
+						}
+						data.clear();
+					}
+				}
+			}
+		}
+	}
+
+	//add the new spans
+	//we cant do this in the loop, because the loop would then iterate over those added spans
+	for(int i=0;i<spanData.size();i+=3) {
+		rcAddSpan(ctx, solid, spanData[i], spanData[i+1], spanData[i+2]-1, spanData[i+2], RC_WALKABLE_AREA, walkableClimb);
+	}
+}
+
 static void buildPolyMesh( int characterNum, vec3_t mapmins, vec3_t mapmaxs, rcPolyMesh *&polyMesh, rcPolyMeshDetail *&detailedPolyMesh, rcConfig &cfg )
 {
 	float agentHeight = tremClasses[ characterNum ].height;
@@ -1168,7 +1275,12 @@ static void buildPolyMesh( int characterNum, vec3_t mapmins, vec3_t mapmaxs, rcP
 	rcFilterLowHangingWalkableObstacles (&context, cfg.walkableClimb, *heightField);
 	rcFilterLedgeSpans (&context, cfg.walkableHeight, cfg.walkableClimb, *heightField);
 	rcFilterWalkableLowHeightSpans (&context, cfg.walkableHeight, *heightField);
-
+	
+	if(filterGaps)
+	{
+		rcFilterGaps(&context, cfg.walkableRadius, cfg.walkableClimb, cfg.walkableHeight, *heightField);
+	}
+	
 	compHeightField = rcAllocCompactHeightfield();
 	if ( !rcBuildCompactHeightfield (&context, cfg.walkableHeight, cfg.walkableClimb, *heightField, *compHeightField) )
 	{
@@ -1288,6 +1400,8 @@ extern "C" int NavMain(int argc, char **argv)
 			stepSize = 20;
 		} else if(!Q_stricmp(argv[i], "-median")) {
 			median = qtrue;
+		} else if(!Q_stricmp(argv[i], "-nogaps")) {
+			filterGaps = qfalse;
 		} else {
 			Sys_Printf("WARNING: Unknown option \"%s\"\n", argv[i]);
 		}
