@@ -161,7 +161,7 @@ static void WriteRecastData (const char* agentname, const rcPolyMesh *polyMesh, 
 	strcpy(filename,source);
 	sprintf(filename,"%s-%s",filename,agentname);
 	DefaultExtension(filename, ".navMesh");
-	Sys_Printf(" writing %s\n", filename);
+
 	file = fopen(filename, "w");
 	if(!file) {
 		Error("Error opening %s: %s", filename, strerror(errno));
@@ -170,37 +170,26 @@ static void WriteRecastData (const char* agentname, const rcPolyMesh *polyMesh, 
 
 	//print header info
 	navHeader.version = 1;
-	Sys_Printf(" file version: %i\n",navHeader.version);
 
 	navHeader.numVerts = polyMesh->nverts;
-	Sys_Printf(" numVerts: %i\n", navHeader.numVerts);
 
 	navHeader.numPolys = polyMesh->npolys;
-	Sys_Printf(" numPolys: %i\n", navHeader.numPolys);
 
 	navHeader.numVertsPerPoly = polyMesh->nvp;
-	Sys_Printf(" numVertsPerPoly: %i\n", navHeader.numVertsPerPoly);
 
 	VectorCopy (polyMesh->bmin, navHeader.mins);
-	Sys_Printf(" min bounds: %f %f %f\n", navHeader.mins[0], navHeader.mins[1], navHeader.mins[2]);
 
 	VectorCopy (polyMesh->bmax, navHeader.maxs);
-	Sys_Printf(" max bounds: %f %f %f\n", navHeader.maxs[0], navHeader.maxs[1], navHeader.maxs[2]);
 
 	navHeader.dNumMeshes = detailedPolyMesh->nmeshes;
-	Sys_Printf(" dNumMeshes: %i\n", navHeader.dNumMeshes);
 
 	navHeader.dNumVerts = detailedPolyMesh->nverts;
-	Sys_Printf(" dNumVerts: %i\n", navHeader.dNumVerts);
 
 	navHeader.dNumTris = detailedPolyMesh->ntris;
-	Sys_Printf(" dNumTris: %i\n", navHeader.dNumTris);
 
 	navHeader.cellSize = cfg->cs;
-	Sys_Printf(" cellSize: %f\n", navHeader.cellSize);
 
 	navHeader.cellHeight = cfg->ch;
-	Sys_Printf(" cellHeight: %f\n", navHeader.cellHeight);
 
 	//write header
 	fprintf(file, "%d ", navHeader.version);
@@ -259,7 +248,7 @@ static void WriteRecastData (const char* agentname, const rcPolyMesh *polyMesh, 
 		fprintf(file, "%d %d %d %d\n", detailedPolyMesh->tris[j], detailedPolyMesh->tris[j+1],
 			detailedPolyMesh->tris[j+2], detailedPolyMesh->tris[j+3]);
 	}
-	Sys_Printf("Navigation Mesh file written: %ld bytes\n", ftell(file));
+
 	fclose(file);
 }
 
