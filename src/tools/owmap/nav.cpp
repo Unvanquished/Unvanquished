@@ -1075,8 +1075,6 @@ static void buildPolyMesh( int characterNum, vec3_t mapmins, vec3_t mapmaxs, rcP
 		Error ("Failed to create contour set for navigation mesh.\n");
 	}
 
-	rcFreeCompactHeightfield (compHeightField);
-
 	polyMesh = rcAllocPolyMesh();
 	if ( !rcBuildPolyMesh (&context, *contours, cfg.maxVertsPerPoly, *polyMesh) )
 	{
@@ -1089,6 +1087,8 @@ static void buildPolyMesh( int characterNum, vec3_t mapmins, vec3_t mapmaxs, rcP
 	{
 		Error ("Failed to create detail mesh for navigation mesh.\n");
 	}
+
+	rcFreeCompactHeightfield (compHeightField);
 
 	// Update poly flags from areas.
 	for (int i = 0; i < polyMesh->npolys; ++i)
