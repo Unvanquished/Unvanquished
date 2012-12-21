@@ -1273,7 +1273,10 @@ static void buildPolyMesh( int characterNum, vec3_t mapmins, vec3_t mapmaxs, rcP
 	triareas = NULL;
 
 	rcFilterLowHangingWalkableObstacles (&context, cfg.walkableClimb, *heightField);
-	rcFilterLedgeSpans (&context, cfg.walkableHeight, cfg.walkableClimb, *heightField);
+
+	//dont filter ledge spans since characters CAN walk on ledges due to using a bbox for movement collision
+	//rcFilterLedgeSpans (&context, cfg.walkableHeight, cfg.walkableClimb, *heightField);
+
 	rcFilterWalkableLowHeightSpans (&context, cfg.walkableHeight, *heightField);
 	
 	if(filterGaps)
