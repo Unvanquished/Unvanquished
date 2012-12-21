@@ -32,6 +32,7 @@ extern "C" {
 #include "../recast/RecastAlloc.h"
 #include "../recast/RecastAssert.h"
 #include <vector>
+#include <queue>
 #include "../../engine/botlib/nav.h"
 
 vec3_t mapmins;
@@ -154,6 +155,12 @@ typedef struct
 	qboolean wrapHeight;
 	vec3_t   points[ MAX_GRID_SIZE ][ MAX_GRID_SIZE ]; // [width][height]
 } cGrid_t;
+
+struct spanStruct {
+	int idx;
+	int x;
+	int y;
+};
 
 static void quake2recast(vec3_t vec) {
 	vec_t temp = vec[1];
@@ -989,6 +996,130 @@ static bool rcErodeWalkableAreaByBox(rcContext* ctx, int boxRadius, rcCompactHei
 	return true;
 }
 
+/*
+FloodSpans
+
+Does a flood fill through spans that are open to one another
+*/
+static void FloodSpans(int cx, int cy, int spanIdx, int radius, unsigned char area, rcCompactHeightfield &chf) {
+	const int w =chf.width;
+	const int h = chf.height;
+	const int mins[2] = {rcMax(cx - radius,0), rcMax(cy - radius,0)};
+	const int maxs[2] = {rcMin(cx + radius,w-1), rcMin(cy + radius,h-1)};
+
+	std::queue<spanStruct> queue;
+	spanStruct span;
+	span.idx = spanIdx;
+	span.x = cx;
+	span.y = cy;
+	queue.push(span);
+
+	std::vector<int> closed;
+	closed.reserve(radius*radius);
+	chf.areas[spanIdx] = UCHAR_MAX;
+
+	while(!queue.empty()) {
+		const spanStruct span = queue.front();
+		queue.pop();
+		const rcCompactSpan &s = chf.spans[span.idx];
+
+		for(int dir=0;dir<4;dir++) {
+			spanStruct ns;
+			ns.x = span.x + rcGetDirOffsetX(dir);
+			ns.y = span.y + rcGetDirOffsetY(dir);
+
+			//skip span if past bounds
+			if(ns.x < mins[0] || ns.y < mins[1])
+				continue;
+			if(ns.x > maxs[0] || ns.y > maxs[1])
+				continue;
+
+			rcCompactCell &c = chf.cells[ns.x + ns.y*w];
+			for(int i=(int)c.index,ni = (int)(c.index+c.count);i<ni;i++) {
+				rcCompactSpan &nns = chf.spans[i];
+
+				//skip span if it is not within current span's z bounds
+				//if(nns.y < s.y && (nns.y+nns.h) > (s.y + s.h))
+					//continue;
+				//if(nns.y > s.y && nns.y > (s.y + s.h))
+				if(nns.y > (s.y + s.h))
+					continue;
+				if((nns.y + nns.h) < s.y)
+					continue;
+				ns.idx = i;
+				if(chf.areas[ns.idx] != UCHAR_MAX) {
+					chf.areas[ns.idx] = UCHAR_MAX;
+					queue.push(ns);
+				}
+			}
+		}
+		closed.push_back(span.idx);
+	}
+	for(int i=0;i<closed.size();i++) {
+		chf.areas[closed[i]] = area;
+	}
+}
+
+char floodEntities[][17] = {"team_human_spawn", "team_alien_spawn"};
+
+static bool inEntityList(entity_t *e) {
+	for(int i=0;i<sizeof(floodEntities)/sizeof(floodEntities[0]);i++) {
+		if(!Q_stricmp(ValueForKey(e,"classname"), floodEntities[i]))
+			return true;
+	}
+	return false;
+}
+
+static void RemoveUnreachableSpans(rcCompactHeightfield &chf) {
+	int radius = rcMax(chf.width, chf.height);
+
+	//copy over current span areas
+	unsigned char *prevAreas = new unsigned char[chf.spanCount];
+	memcpy(prevAreas, chf.areas, chf.spanCount);
+
+	//go over the entities and flood fill from them in the compact heightfield
+	for(int i=1;i<numEntities;i++) {
+		entity_t *e = &entities[i];
+		if(!inEntityList(e))
+			continue;
+		vec3_t origin;
+		GetVectorForKey(e, "origin", origin);
+		quake2recast(origin);
+
+		//find voxel cordinate for the origin
+		int x = (origin[0] - chf.bmin[0]) / chf.cs;
+		int y = (origin[1] - chf.bmin[1]) / chf.ch;
+		int z = (origin[2] - chf.bmin[2]) / chf.cs;
+
+		//now find a walkableSpan closest to the origin
+		rcCompactCell &c = chf.cells[x+z*chf.width];
+		int bestDist = INT_MAX;
+		int spanIdx = -1;
+		for(int i = (int)c.index, ni = (int)(c.index + c.count); i < ni; i++) {
+			if(chf.areas[i] == RC_NULL_AREA)
+				continue;
+			rcCompactSpan &s = chf.spans[i];
+			if(rcAbs(s.y - y) < bestDist) {
+				spanIdx = i;
+				bestDist = rcAbs(s.y - y);
+			}
+		}
+
+		//flood fill spans that are open to one another
+		if(spanIdx > -1)
+			FloodSpans(x, z, spanIdx, radius, UCHAR_MAX, chf);
+	}
+
+	//now we go through the areas and only use the ones that we flooded to
+	for(int i=0;i<chf.spanCount;i++) {
+		if(chf.areas[i] == UCHAR_MAX)
+			chf.areas[i] = prevAreas[i];
+		else
+			chf.areas[i] = RC_NULL_AREA;
+	}
+	delete[] prevAreas;
+}
+
 static void buildPolyMesh( int characterNum, vec3_t mapmins, vec3_t mapmaxs, rcPolyMesh *&polyMesh, rcPolyMeshDetail *&detailedPolyMesh, rcConfig &cfg )
 {
 	float agentHeight = tremClasses[ characterNum ].height;
@@ -1057,6 +1188,9 @@ static void buildPolyMesh( int characterNum, vec3_t mapmins, vec3_t mapmaxs, rcP
 	{
 		Error ("Unable to erode walkable surfaces.\n");
 	}
+
+	//remove unreachable spans ( examples: roof of map, inside closed spaces such as boxes ) so we don't have to build a navmesh for them
+	RemoveUnreachableSpans( *compHeightField );
 
 	if ( !rcBuildDistanceField (&context, *compHeightField) )
 	{
