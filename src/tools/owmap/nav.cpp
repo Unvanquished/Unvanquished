@@ -705,7 +705,7 @@ static void LoadPatchTris(std::vector<float> &verts, std::vector<int> &tris) {
 }
 static void LoadGeometry()
 {
-	Sys_Printf(" loading geometry...\n");
+	Sys_Printf("loading geometry...\n");
 
 	//count surfaces
 	LoadBrushTris( verts, tris );
@@ -713,8 +713,8 @@ static void LoadGeometry()
 
 	numtris = tris.size() / 3;
 	numverts = verts.size() / 3;
-	Sys_Printf(" Using %d triangles\n", numtris);
-	Sys_Printf(" Using %d vertices\n", numverts);
+	Sys_Printf("Using %d triangles\n", numtris);
+	Sys_Printf("Using %d vertices\n", numverts);
 
 	// find bounds
 	ClearBounds( mapmins, mapmaxs );
@@ -724,9 +724,9 @@ static void LoadGeometry()
 		AddPointToBounds(vert, mapmins, mapmaxs);
 	}
 
-	Sys_Printf(" set recast world bounds to\n");
-	Sys_Printf(" min: %f %f %f\n", mapmins[0], mapmins[1], mapmins[2]);
-	Sys_Printf(" max: %f %f %f\n", mapmaxs[0], mapmaxs[1], mapmaxs[2]);
+	Sys_Printf("set recast world bounds to\n");
+	Sys_Printf("min: %f %f %f\n", mapmins[0], mapmins[1], mapmins[2]);
+	Sys_Printf("max: %f %f %f\n", mapmaxs[0], mapmaxs[1], mapmaxs[2]);
 }
 
 // Modified version of Recast's rcErodeWalkableArea that uses an AABB instead of a cylindrical radius
