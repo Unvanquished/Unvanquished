@@ -40,11 +40,11 @@ vec3_t mapmaxs;
 
 // Load triangles
 std::vector<int> tris;
-int numtris;
+int numtris = 0;
 
 // Load vertices
 std::vector<float> verts;
-int numverts;
+int numverts = 0;
 
 float cellSize = 6;
 float cellHeight = 0.5;
@@ -789,6 +789,7 @@ static void LoadGeometry()
 	Sys_Printf(" Using %d vertices\n", numverts);
 
 	// find bounds
+	ClearBounds( mapmins, mapmaxs );
 	for(int i=0;i<numverts;i++) {
 		vec3_t vert;
 		VectorSet(vert,verts[i*3],verts[i*3+1],verts[i*3+2]);
@@ -798,17 +799,6 @@ static void LoadGeometry()
 	Sys_Printf(" set recast world bounds to\n");
 	Sys_Printf(" min: %f %f %f\n", mapmins[0], mapmins[1], mapmins[2]);
 	Sys_Printf(" max: %f %f %f\n", mapmaxs[0], mapmaxs[1], mapmaxs[2]);
-}
-
-static void LoadRecast()
-{
-	Sys_Printf(" setting up recast...\n");
-
-	VectorClear(mapmins);
-	VectorClear(mapmaxs);
-	
-	numtris = 0;
-	numverts = 0;
 }
 
 // Modified version of Recast's rcErodeWalkableArea that uses an AABB instead of a cylindrical radius
@@ -1421,9 +1411,6 @@ extern "C" int NavMain(int argc, char **argv)
 
 	/* parse bsp entities */
 	ParseEntities();
-
-	/* set up recast */
-	LoadRecast();
 
 	/* get the data into recast */
 	LoadGeometry();
