@@ -129,7 +129,11 @@ static qboolean optimistic = qfalse;
 static qboolean excludeCaulk = qtrue;
 
 //flag for adding new walkable spans so bots can walk over small gaps
-static qboolean filterGaps;
+static qboolean filterGaps = qtrue;
+
+//flag for faster but generally worse Monotone Partitioning
+//Monotone partitioning will result in more navmesh polygons than the default algorithm
+static qboolean fast = qfalse;
 
 //copied from cm_patch.c
 static const int MAX_GRID_SIZE = 129;
@@ -1224,14 +1228,24 @@ static void buildPolyMesh( int characterNum, vec3_t mapmins, vec3_t mapmaxs, rcP
 	//remove unreachable spans ( examples: roof of map, inside closed spaces such as boxes ) so we don't have to build a navmesh for them
 	RemoveUnreachableSpans( *compHeightField );
 
-	if ( !rcBuildDistanceField (&context, *compHeightField) )
+	if(fast) 
 	{
-		Error ("Failed to build distance field for navigation mesh.\n");
-	}
+		if ( !rcBuildRegionsMonotone (&context, *compHeightField, cfg.borderSize, cfg.minRegionArea, cfg.mergeRegionArea) )
+		{
+			Error ("Failed to build regions for navigation mesh.\n");
+		}
+	} 
+	else
+	{
+		if ( !rcBuildDistanceField (&context, *compHeightField) )
+		{
+			Error ("Failed to build distance field for navigation mesh.\n");
+		}
 
-	if ( !rcBuildRegions (&context, *compHeightField, 0, cfg.minRegionArea, cfg.mergeRegionArea) )
-	{
-		Error ("Failed to build regions for navigation mesh.\n");
+		if ( !rcBuildRegions (&context, *compHeightField, cfg.borderSize, cfg.minRegionArea, cfg.mergeRegionArea) )
+		{
+			Error ("Failed to build regions for navigation mesh.\n");
+		}
 	}
 
 	contours = rcAllocContourSet();
@@ -1313,6 +1327,9 @@ extern "C" int NavMain(int argc, char **argv)
 			median = qtrue;
 		} else if(!Q_stricmp(argv[i], "-nogaps")) {
 			filterGaps = qfalse;
+		} else if(!Q_stricmp(argv[i], "-fast")) {
+			filterGaps = qfalse;
+			fast = qtrue;
 		} else {
 			Sys_Printf("WARNING: Unknown option \"%s\"\n", argv[i]);
 		}
