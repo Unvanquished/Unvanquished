@@ -726,14 +726,6 @@ extern "C" {
 
 	typedef enum
 	{
-	  ATEST_NONE,
-	  ATEST_GT_0,
-	  ATEST_LT_128,
-	  ATEST_GE_128
-	} alphaTest_t;
-
-	typedef enum
-	{
 	  OP_BAD,
 	  // logic operators
 	  OP_LAND,
@@ -1281,15 +1273,12 @@ extern "C" {
 	  GLS_DEPTHFUNC_BITS = GLS_DEPTHFUNC_LESS
 	                       | GLS_DEPTHFUNC_EQUAL,
 
-	  GLS_ATEST_GT_0 = ( 1 << 22 ),
-	  GLS_ATEST_LT_128 = ( 1 << 23 ),
-	  GLS_ATEST_GE_128 = ( 1 << 24 ),
-//	GLS_ATEST_GE_CUSTOM          = (1 << 25),
+	  GLS_ATEST_NONE   = ( 0 << 22 ),
+	  GLS_ATEST_GT_0   = ( 1 << 22 ),
+	  GLS_ATEST_LT_128 = ( 2 << 22 ),
+	  GLS_ATEST_GE_128 = ( 3 << 22 ),
 
-	  GLS_ATEST_BITS = GLS_ATEST_GT_0
-	                   | GLS_ATEST_LT_128
-	                   | GLS_ATEST_GE_128,
-//											| GLS_ATEST_GT_CUSTOM,
+	  GLS_ATEST_BITS   = ( 7 << 22 ),
 
 	  GLS_REDMASK_FALSE = ( 1 << 26 ),
 	  GLS_GREENMASK_FALSE = ( 1 << 27 ),
@@ -1404,8 +1393,8 @@ extern "C" {
 		int32_t     u_SpecularTextureMatrix;
 		matrix_t    t_SpecularTextureMatrix;
 
-		int32_t     u_AlphaTest;
-		alphaTest_t t_AlphaTest;
+		int32_t     u_AlphaThreshold;
+		float       t_AlphaThreshold;
 
 		int32_t     u_ViewOrigin;
 		vec3_t      t_ViewOrigin;
@@ -1631,51 +1620,30 @@ extern "C" {
 
 	void GLimp_LogComment( const char *comment );
 
-	static INLINE void GLSL_SetUniform_AlphaTest( shaderProgram_t *program, uint32_t stateBits )
+	static INLINE void GLSL_SetUniform_AlphaThreshold( shaderProgram_t *program, float value )
 	{
-		alphaTest_t value;
-
-		switch ( stateBits & GLS_ATEST_BITS )
-		{
-			case GLS_ATEST_GT_0:
-				value = ATEST_GT_0;
-				break;
-
-			case GLS_ATEST_LT_128:
-				value = ATEST_LT_128;
-				break;
-
-			case GLS_ATEST_GE_128:
-				value = ATEST_GE_128;
-				break;
-
-			default:
-				value = ATEST_NONE;
-				break;
-		}
-
 #if defined( LOG_GLSL_UNIFORMS )
 
 		if ( r_logFile->integer )
 		{
 			// don't just call LogComment, or we will get
 			// a call to va() every frame!
-			GLimp_LogComment( va( "--- GLSL_SetUniformAlphaTest( program = %s, value = %i ) ---\n", program->name, value ) );
+			GLimp_LogComment( va( "--- GLSL_SetUniformAlphaTest( program = %s, value = %f ) ---\n", program->name, value ) );
 		}
 
 #endif
 
 #if defined( USE_UNIFORM_FIREWALL )
 
-		if ( program->t_AlphaTest == value )
+		if ( program->t_AlphaThreshold == value )
 		{
 			return;
 		}
 
-		program->t_AlphaTest = value;
+		program->t_AlphaThreshold = value;
 #endif
 
-		glUniform1i( program->u_AlphaTest, value );
+		glUniform1f( program->u_AlphaThreshold, value );
 	}
 
 	static INLINE void GLSL_SetUniform_ViewOrigin( shaderProgram_t *program, const vec3_t v )

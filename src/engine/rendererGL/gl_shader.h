@@ -49,8 +49,6 @@ class GLCompileMacro;
 
 class GLShader
 {
-//friend class GLCompileMacro_USE_ALPHA_TESTING;
-
 private:
 	GLShader &operator             = ( const GLShader & );
 
@@ -250,7 +248,6 @@ protected:
 // It also works regardless of RTTI is enabled or not.
 	enum EGLCompileMacro
 	{
-	  USE_ALPHA_TESTING,
 	  USE_PORTAL_CLIPPING,
 	  USE_FRUSTUM_CLIPPING,
 	  USE_VERTEX_SKINNING,
@@ -317,48 +314,6 @@ public:
 	}
 
 	virtual ~GLCompileMacro() {}
-};
-
-class GLCompileMacro_USE_ALPHA_TESTING :
-	GLCompileMacro
-{
-public:
-	GLCompileMacro_USE_ALPHA_TESTING( GLShader *shader ) :
-		GLCompileMacro( shader )
-	{
-	}
-
-	const char *GetName() const
-	{
-		return "USE_ALPHA_TESTING";
-	}
-
-	EGLCompileMacro GetType() const
-	{
-		return USE_ALPHA_TESTING;
-	}
-
-	void EnableAlphaTesting()
-	{
-		EnableMacro();
-	}
-
-	void DisableAlphaTesting()
-	{
-		DisableMacro();
-	}
-
-	void SetAlphaTesting( bool enable )
-	{
-		if ( enable )
-		{
-			EnableMacro();
-		}
-		else
-		{
-			DisableMacro();
-		}
-	}
 };
 
 class GLCompileMacro_USE_PORTAL_CLIPPING :
@@ -1258,28 +1213,50 @@ public:
 	}
 };
 
-class u_AlphaTest :
+class u_AlphaThreshold :
 	GLUniform
 {
 public:
-	u_AlphaTest( GLShader *shader ) :
+	u_AlphaThreshold( GLShader *shader ) :
 		GLUniform( shader )
 	{
 	}
 
 	const char *GetName() const
 	{
-		return "u_AlphaTest";
+		return "u_AlphaThreshold";
 	}
 
 	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
 	{
-		shaderProgram->u_AlphaTest = glGetUniformLocation( shaderProgram->program, GetName() );
+		shaderProgram->u_AlphaThreshold = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
-	void SetUniform_AlphaTest( uint32_t stateBits )
+	void SetUniform_AlphaThreshold( float alphaThreshold )
 	{
-		GLSL_SetUniform_AlphaTest( _shader->GetProgram(), stateBits );
+		GLSL_SetUniform_AlphaThreshold( _shader->GetProgram(), alphaThreshold );
+	}
+
+	void Set_AlphaTest( uint32_t stateBits )
+	{
+		float value;
+
+		switch( stateBits & GLS_ATEST_BITS ) {
+		case GLS_ATEST_GT_0:
+			value = 1.0f;
+			break;
+		case GLS_ATEST_LT_128:
+			value = -1.5f;
+			break;
+		case GLS_ATEST_GE_128:
+			value = 0.5f;
+			break;
+		default:
+			value = 1.5f;
+			break;
+		}
+
+		SetUniform_AlphaThreshold( value );
 	}
 };
 
@@ -2763,7 +2740,7 @@ class GLShader_generic :
 	public u_ColorMap,
 	public u_ColorTextureMatrix,
 	public u_ViewOrigin,
-	public u_AlphaTest,
+	public u_AlphaThreshold,
 	public u_ModelMatrix,
 	public u_ModelViewProjectionMatrix,
 	public u_ColorModulate,
@@ -2773,7 +2750,6 @@ class GLShader_generic :
 	public u_PortalPlane,
 	public GLDeformStage,
 	public GLCompileMacro_USE_PORTAL_CLIPPING,
-	public GLCompileMacro_USE_ALPHA_TESTING,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
@@ -2794,7 +2770,7 @@ class GLShader_lightMapping :
 	public u_SpecularTextureMatrix,
 	public u_ColorModulate,
 	public u_Color,
-	public u_AlphaTest,
+	public u_AlphaThreshold,
 	public u_ViewOrigin,
 	public u_ModelMatrix,
 	public u_ModelViewProjectionMatrix,
@@ -2802,7 +2778,6 @@ class GLShader_lightMapping :
 	public u_DepthScale,
 	public GLDeformStage,
 	public GLCompileMacro_USE_PORTAL_CLIPPING,
-	public GLCompileMacro_USE_ALPHA_TESTING,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING //,
@@ -2822,7 +2797,7 @@ class GLShader_vertexLighting_DBS_entity :
 	public u_DiffuseTextureMatrix,
 	public u_NormalTextureMatrix,
 	public u_SpecularTextureMatrix,
-	public u_AlphaTest,
+	public u_AlphaThreshold,
 	public u_AmbientColor,
 	public u_ViewOrigin,
 	public u_LightDir,
@@ -2836,7 +2811,6 @@ class GLShader_vertexLighting_DBS_entity :
 	public u_EnvironmentInterpolation,
 	public GLDeformStage,
 	public GLCompileMacro_USE_PORTAL_CLIPPING,
-	public GLCompileMacro_USE_ALPHA_TESTING,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
@@ -2861,7 +2835,7 @@ class GLShader_vertexLighting_DBS_world :
 	public u_SpecularTextureMatrix,
 	public u_ColorModulate,
 	public u_Color,
-	public u_AlphaTest,
+	public u_AlphaThreshold,
 	public u_ViewOrigin,
 	public u_ModelMatrix,
 	public u_ModelViewProjectionMatrix,
@@ -2870,7 +2844,6 @@ class GLShader_vertexLighting_DBS_world :
 	public u_LightWrapAround,
 	public GLDeformStage,
 	public GLCompileMacro_USE_PORTAL_CLIPPING,
-	public GLCompileMacro_USE_ALPHA_TESTING,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING //,
@@ -2891,7 +2864,7 @@ class GLShader_forwardLighting_omniXYZ :
 	public u_DiffuseTextureMatrix,
 	public u_NormalTextureMatrix,
 	public u_SpecularTextureMatrix,
-	public u_AlphaTest,
+	public u_AlphaThreshold,
 	public u_ColorModulate,
 	public u_Color,
 	public u_ViewOrigin,
@@ -2911,7 +2884,6 @@ class GLShader_forwardLighting_omniXYZ :
 	public u_DepthScale,
 	public GLDeformStage,
 	public GLCompileMacro_USE_PORTAL_CLIPPING,
-	public GLCompileMacro_USE_ALPHA_TESTING,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
@@ -2934,7 +2906,7 @@ class GLShader_forwardLighting_projXYZ :
 	public u_DiffuseTextureMatrix,
 	public u_NormalTextureMatrix,
 	public u_SpecularTextureMatrix,
-	public u_AlphaTest,
+	public u_AlphaThreshold,
 	public u_ColorModulate,
 	public u_Color,
 	public u_ViewOrigin,
@@ -2955,7 +2927,6 @@ class GLShader_forwardLighting_projXYZ :
 	public u_DepthScale,
 	public GLDeformStage,
 	public GLCompileMacro_USE_PORTAL_CLIPPING,
-	public GLCompileMacro_USE_ALPHA_TESTING,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
@@ -2978,7 +2949,7 @@ class GLShader_forwardLighting_directionalSun :
 	public u_DiffuseTextureMatrix,
 	public u_NormalTextureMatrix,
 	public u_SpecularTextureMatrix,
-	public u_AlphaTest,
+	public u_AlphaThreshold,
 	public u_ColorModulate,
 	public u_Color,
 	public u_ViewOrigin,
@@ -3001,7 +2972,6 @@ class GLShader_forwardLighting_directionalSun :
 	public u_DepthScale,
 	public GLDeformStage,
 	public GLCompileMacro_USE_PORTAL_CLIPPING,
-	public GLCompileMacro_USE_ALPHA_TESTING,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
@@ -3118,7 +3088,7 @@ class GLShader_geometricFill :
 	public u_DiffuseTextureMatrix,
 	public u_NormalTextureMatrix,
 	public u_SpecularTextureMatrix,
-	public u_AlphaTest,
+	public u_AlphaThreshold,
 	public u_ColorModulate,
 	public u_Color,
 	public u_ViewOrigin,
@@ -3130,7 +3100,6 @@ class GLShader_geometricFill :
 	public u_DepthScale,
 	public GLDeformStage,
 	public GLCompileMacro_USE_PORTAL_CLIPPING,
-	public GLCompileMacro_USE_ALPHA_TESTING,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
@@ -3151,7 +3120,7 @@ class GLShader_shadowFill :
 	public GLShader,
 	public u_ColorTextureMatrix,
 	public u_ViewOrigin,
-	public u_AlphaTest,
+	public u_AlphaThreshold,
 	public u_LightOrigin,
 	public u_LightRadius,
 	public u_ModelMatrix,
@@ -3162,7 +3131,6 @@ class GLShader_shadowFill :
 	public u_PortalPlane,
 	public GLDeformStage,
 	public GLCompileMacro_USE_PORTAL_CLIPPING,
-	public GLCompileMacro_USE_ALPHA_TESTING,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
@@ -3265,7 +3233,6 @@ class GLShader_heatHaze :
 	public GLShader,
 	public u_NormalTextureMatrix,
 	public u_ViewOrigin,
-//public u_AlphaTest,
 public u_DeformMagnitude,
 public u_ModelMatrix,
 public u_ModelViewProjectionMatrix,
@@ -3278,7 +3245,6 @@ public u_VertexInterpolation,
 public u_PortalPlane,
 public GLDeformStage,
 public GLCompileMacro_USE_PORTAL_CLIPPING,
-//public GLCompileMacro_USE_ALPHA_TESTING,
 public GLCompileMacro_USE_VERTEX_SKINNING,
 public GLCompileMacro_USE_VERTEX_ANIMATION,
 public GLCompileMacro_USE_DEFORM_VERTEXES

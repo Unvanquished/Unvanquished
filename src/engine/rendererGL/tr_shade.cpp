@@ -551,7 +551,7 @@ static void DrawTris()
 {
 	GLimp_LogComment( "--- DrawTris ---\n" );
 
-	gl_genericShader->DisableAlphaTesting();
+	gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
 	gl_genericShader->SetPortalClipping( backEnd.viewParms.isPortal );
 
 	gl_genericShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
@@ -721,7 +721,6 @@ static void Render_generic( int stage )
 	GL_State( pStage->stateBits );
 
 	// choose right shader program ----------------------------------
-	gl_genericShader->SetAlphaTesting( ( pStage->stateBits & GLS_ATEST_BITS ) != 0 );
 	gl_genericShader->SetPortalClipping( backEnd.viewParms.isPortal );
 
 	gl_genericShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
@@ -742,7 +741,7 @@ static void Render_generic( int stage )
 	}
 
 	// u_AlphaTest
-	gl_genericShader->SetUniform_AlphaTest( pStage->stateBits );
+	gl_genericShader->Set_AlphaTest( pStage->stateBits );
 
 	// u_ColorGen
 	switch ( pStage->rgbGen )
@@ -842,7 +841,6 @@ static void Render_vertexLighting_DBS_entity( int stage )
 
 	// choose right shader program ----------------------------------
 	gl_vertexLightingShader_DBS_entity->SetPortalClipping( backEnd.viewParms.isPortal );
-	gl_vertexLightingShader_DBS_entity->SetAlphaTesting( ( pStage->stateBits & GLS_ATEST_BITS ) != 0 );
 
 	gl_vertexLightingShader_DBS_entity->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_vertexLightingShader_DBS_entity->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
@@ -878,7 +876,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 	VectorCopy( backEnd.currentEntity->lightDir, lightDir );
 
 	// u_AlphaTest
-	gl_vertexLightingShader_DBS_entity->SetUniform_AlphaTest( pStage->stateBits );
+	gl_vertexLightingShader_DBS_entity->Set_AlphaTest( pStage->stateBits );
 
 	gl_vertexLightingShader_DBS_entity->SetUniform_AmbientColor( ambientColor );
 	gl_vertexLightingShader_DBS_entity->SetUniform_ViewOrigin( viewOrigin );
@@ -1071,7 +1069,6 @@ static void Render_vertexLighting_DBS_world( int stage )
 
 	// choose right shader program ----------------------------------
 	gl_vertexLightingShader_DBS_world->SetPortalClipping( backEnd.viewParms.isPortal );
-	gl_vertexLightingShader_DBS_world->SetAlphaTesting( ( pStage->stateBits & GLS_ATEST_BITS ) != 0 );
 
 	gl_vertexLightingShader_DBS_world->SetDeformVertexes( tess.surfaceShader->numDeforms );
 
@@ -1151,8 +1148,7 @@ static void Render_vertexLighting_DBS_world( int stage )
 	gl_vertexLightingShader_DBS_world->SetUniform_ViewOrigin( viewOrigin );
 	gl_vertexLightingShader_DBS_world->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-	gl_vertexLightingShader_DBS_world->SetUniform_AlphaTest( pStage->stateBits );
-
+	gl_vertexLightingShader_DBS_world->Set_AlphaTest( pStage->stateBits );
 	if ( r_parallaxMapping->integer )
 	{
 		float depthScale;
@@ -1269,7 +1265,6 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 	// choose right shader program ----------------------------------
 
 	gl_lightMappingShader->SetPortalClipping( backEnd.viewParms.isPortal );
-	gl_lightMappingShader->SetAlphaTesting( ( pStage->stateBits & GLS_ATEST_BITS ) != 0 );
 
 	gl_lightMappingShader->SetDeformVertexes( tess.surfaceShader->numDeforms );
 
@@ -1295,7 +1290,7 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 
 	gl_lightMappingShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
 	gl_lightMappingShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-	gl_lightMappingShader->SetUniform_AlphaTest( pStage->stateBits );
+	gl_lightMappingShader->Set_AlphaTest( pStage->stateBits );
 
 	// u_ColorModulate
 	gl_lightMappingShader->SetUniform_ColorModulate( rgbGen, alphaGen );
@@ -1403,7 +1398,6 @@ static void Render_geometricFill( int stage, bool cmap2black )
 
 	// choose right shader program ----------------------------------
 	gl_geometricFillShader->SetPortalClipping( backEnd.viewParms.isPortal );
-	gl_geometricFillShader->SetAlphaTesting( ( pStage->stateBits & GLS_ATEST_BITS ) != 0 );
 
 	gl_geometricFillShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_geometricFillShader->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
@@ -1441,7 +1435,7 @@ static void Render_geometricFill( int stage, bool cmap2black )
 	}
 	*/
 
-	gl_geometricFillShader->SetUniform_AlphaTest( pStage->stateBits );
+	gl_geometricFillShader->Set_AlphaTest( pStage->stateBits );
 	gl_geometricFillShader->SetUniform_ViewOrigin( backEnd.viewParms.orientation.origin );  // world space
 //	gl_geometricFillShader->SetUniform_AmbientColor(ambientColor);
 
@@ -1570,7 +1564,6 @@ static void Render_depthFill( int stage )
 
 	GL_State( pStage->stateBits );
 
-	gl_genericShader->SetAlphaTesting( ( pStage->stateBits & GLS_ATEST_BITS ) != 0 );
 	gl_genericShader->SetPortalClipping( backEnd.viewParms.isPortal );
 
 	gl_genericShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
@@ -1589,7 +1582,7 @@ static void Render_depthFill( int stage )
 	}
 
 	// u_AlphaTest
-	gl_genericShader->SetUniform_AlphaTest( pStage->stateBits );
+	gl_genericShader->Set_AlphaTest( pStage->stateBits );
 
 	// u_ColorModulate
 	gl_genericShader->SetUniform_ColorModulate( CGEN_CONST, AGEN_CONST );
@@ -1684,7 +1677,6 @@ static void Render_shadowFill( int stage )
 
 	GL_State( stateBits );
 
-	gl_shadowFillShader->SetAlphaTesting( ( pStage->stateBits & GLS_ATEST_BITS ) != 0 );
 	gl_shadowFillShader->SetPortalClipping( backEnd.viewParms.isPortal );
 
 	gl_shadowFillShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
@@ -1706,7 +1698,7 @@ static void Render_shadowFill( int stage )
 		gl_shadowFillShader->SetUniform_Color( shadowMapColor );
 	}
 
-	gl_shadowFillShader->SetUniform_AlphaTest( pStage->stateBits );
+	gl_shadowFillShader->Set_AlphaTest( pStage->stateBits );
 
 	if ( backEnd.currentLight->l.rlType != RL_DIRECTIONAL )
 	{
@@ -1786,7 +1778,6 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 
 	// choose right shader program ----------------------------------
 	gl_forwardLightingShader_omniXYZ->SetPortalClipping( backEnd.viewParms.isPortal );
-	gl_forwardLightingShader_omniXYZ->SetAlphaTesting( ( diffuseStage->stateBits & GLS_ATEST_BITS ) != 0 );
 
 	gl_forwardLightingShader_omniXYZ->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_forwardLightingShader_omniXYZ->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
@@ -1998,7 +1989,6 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 
 	// choose right shader program ----------------------------------
 	gl_forwardLightingShader_projXYZ->SetPortalClipping( backEnd.viewParms.isPortal );
-	gl_forwardLightingShader_projXYZ->SetAlphaTesting( ( diffuseStage->stateBits & GLS_ATEST_BITS ) != 0 );
 
 	gl_forwardLightingShader_projXYZ->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_forwardLightingShader_projXYZ->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
@@ -2212,7 +2202,6 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 
 	// choose right shader program ----------------------------------
 	gl_forwardLightingShader_directionalSun->SetPortalClipping( backEnd.viewParms.isPortal );
-	gl_forwardLightingShader_directionalSun->SetAlphaTesting( ( diffuseStage->stateBits & GLS_ATEST_BITS ) != 0 );
 
 	gl_forwardLightingShader_directionalSun->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_forwardLightingShader_directionalSun->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
@@ -2439,7 +2428,6 @@ static void Render_reflection_CB( int stage )
 
 	// choose right shader program ----------------------------------
 	gl_reflectionShader->SetPortalClipping( backEnd.viewParms.isPortal );
-//	gl_reflectionShader->SetAlphaTesting((pStage->stateBits & GLS_ATEST_BITS) != 0);
 
 	gl_reflectionShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_reflectionShader->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
@@ -2748,8 +2736,7 @@ static void Render_heatHaze( int stage )
 		GL_State( stateBits );
 
 		// choose right shader program ----------------------------------
-		//gl_genericShader->SetAlphaTesting((pStage->stateBits & GLS_ATEST_BITS) != 0);
-		gl_genericShader->SetAlphaTesting( false );
+		gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetPortalClipping( backEnd.viewParms.isPortal );
 
 		gl_genericShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
@@ -2827,7 +2814,6 @@ static void Render_heatHaze( int stage )
 
 	// choose right shader program ----------------------------------
 	gl_heatHazeShader->SetPortalClipping( backEnd.viewParms.isPortal );
-	//gl_heatHazeShader->SetAlphaTesting((pStage->stateBits & GLS_ATEST_BITS) != 0);
 
 	gl_heatHazeShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_heatHazeShader->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
@@ -2839,7 +2825,6 @@ static void Render_heatHaze( int stage )
 	// end choose right shader program ------------------------------
 
 	// set uniforms
-	//GLSL_SetUniform_AlphaTest(&tr.heatHazeShader, pStage->stateBits);
 
 	deformMagnitude = RB_EvalExpression( &pStage->deformMagnitudeExp, 1.0 );
 	gl_heatHazeShader->SetUniform_DeformMagnitude( deformMagnitude );

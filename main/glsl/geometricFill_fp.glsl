@@ -32,7 +32,7 @@ uniform samplerCube	u_EnvironmentMap0;
 uniform samplerCube	u_EnvironmentMap1;
 uniform float		u_EnvironmentInterpolation;
 
-uniform int			u_AlphaTest;
+uniform float		u_AlphaThreshold;
 uniform vec3		u_ViewOrigin;
 uniform vec3        u_AmbientColor;
 uniform float		u_DepthScale;
@@ -190,23 +190,11 @@ void	main()
 	// compute the diffuse term
 	vec4 diffuse = texture2D(u_DiffuseMap, texDiffuse);
 
-#if defined(USE_ALPHA_TESTING)
-	if(u_AlphaTest == ATEST_GT_0 && diffuse.a <= 0.0)
+	if( abs(diffuse.a + u_AlphaThreshold) <= 1.0 )
 	{
 		discard;
 		return;
 	}
-	else if(u_AlphaTest == ATEST_LT_128 && diffuse.a >= 0.5)
-	{
-		discard;
-		return;
-	}
-	else if(u_AlphaTest == ATEST_GE_128 && diffuse.a < 0.5)
-	{
-		discard;
-		return;
-	}
-#endif
 
 //	vec4 depthColor = diffuse;
 //	depthColor.rgb *= u_AmbientColor;
