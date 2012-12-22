@@ -46,7 +46,6 @@ int numtris = 0;
 std::vector<float> verts;
 int numverts = 0;
 
-float cellSize = 6;
 float cellHeight = 0.5;
 float stepSize = STEPSIZE;
 
@@ -1157,16 +1156,16 @@ static void buildPolyMesh( int characterNum, vec3_t mapmins, vec3_t mapmaxs, rcP
 	VectorCopy (mapmaxs, cfg.bmax);
 	VectorCopy (mapmins, cfg.bmin);
 
-	cfg.cs = cellSize;
+	cfg.cs = agentRadius / 4.0f; // evenly divide agent radius
 	cfg.ch = cellHeight;
-	cfg.walkableSlopeAngle = 46; //max slope is 45, but recast checks for < 45 so we need 46
-	cfg.maxEdgeLen = 64;
-	cfg.maxSimplificationError = 1;
+	cfg.walkableSlopeAngle = 45.5729959991941f; //retrieved via RAD2DEG(acos(MIN_WALK_NORMAL))
+	cfg.maxEdgeLen = 200;
+	cfg.maxSimplificationError = 1.3;
 	cfg.maxVertsPerPoly = 6;
 	cfg.detailSampleDist = cfg.cs * 6.0f;
 	cfg.detailSampleMaxError = cfg.ch * 1.0f;
-	cfg.minRegionArea = rcSqr(8);
-	cfg.mergeRegionArea = rcSqr(30);
+	cfg.minRegionArea = rcSqr(25);
+	cfg.mergeRegionArea = rcSqr(50);
 	cfg.walkableHeight = (int) ceilf(agentHeight / cfg.ch);
 	cfg.walkableClimb = (int) floorf(stepSize/cfg.ch);
 	cfg.walkableRadius = (int) ceilf(agentRadius / cfg.cs);
@@ -1291,24 +1290,15 @@ NavMain
 extern "C" int NavMain(int argc, char **argv)
 {
 	float temp;
-
+	int i;
 
 	/* note it */
 	Sys_Printf("--- Nav ---\n");
-	int i;
+
 	/* process arguments */
 	for(i = 1; i < (argc - 1); i++)
 	{
-		if(!Q_stricmp(argv[i],"-cellsize")) {
-			i++;
-			if(i<(argc - 1)) {
-				temp = atof(argv[i]);
-				if(temp > 0) {
-					cellSize = temp;
-				}
-			}
-
-		} else if(!Q_stricmp(argv[i],"-cellheight")) {
+		if(!Q_stricmp(argv[i],"-cellheight")) {
 			i++;
 			if(i<(argc - 1)) {
 				temp = atof(argv[i]);
@@ -1327,6 +1317,7 @@ extern "C" int NavMain(int argc, char **argv)
 			Sys_Printf("WARNING: Unknown option \"%s\"\n", argv[i]);
 		}
 	}
+
 	/* load the bsp */
 	sprintf(source, "%s%s", inbase, ExpandArg(argv[i]));
 	StripExtension(source);
