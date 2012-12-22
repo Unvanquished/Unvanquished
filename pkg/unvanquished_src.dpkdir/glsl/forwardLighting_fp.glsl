@@ -54,7 +54,7 @@ uniform vec3		u_LightColor;
 uniform float		u_LightRadius;
 uniform float       u_LightScale;
 uniform	float		u_LightWrapAround;
-uniform int			u_AlphaTest;
+uniform float		u_AlphaThreshold;
 
 uniform mat4		u_ShadowMatrix[MAX_SHADOWMAPS];
 uniform vec4		u_ShadowParallelSplitDistances;
@@ -1043,23 +1043,11 @@ void	main()
 
 	// compute the diffuse term
 	vec4 diffuse = texture2D(u_DiffuseMap, texDiffuse.st);
-#if defined(USE_ALPHA_TESTING)
-	if(u_AlphaTest == ATEST_GT_0 && diffuse.a <= 0.0)
+	if( abs(diffuse.a + u_AlphaThreshold) <= 1.0 )
 	{
 		discard;
 		return;
 	}
-	else if(u_AlphaTest == ATEST_LT_128 && diffuse.a >= 0.5)
-	{
-		discard;
-		return;
-	}
-	else if(u_AlphaTest == ATEST_GE_128 && diffuse.a < 0.5)
-	{
-		discard;
-		return;
-	}
-#endif
 	diffuse.rgb *= u_LightColor * NL;
 
 #if defined(USE_NORMAL_MAPPING)
