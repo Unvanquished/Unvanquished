@@ -50,18 +50,6 @@ float cellSize = 6;
 float cellHeight = 0.5;
 float stepSize = STEPSIZE;
 
-const int numSkipEntities = 18;
-const char *skipEntities[18] = {"func_door"				, "team_alien_trapper"	,
-	"team_alien_booster"	, "team_alien_barricade",
-	"team_alien_spawn"		, "team_alien_acid_tube",
-	"team_alien_overmind"	, "team_human_spawn"	,
-	"team_human_mgturret"	, "team_human_medistat"	,
-	"team_human_armoury"	, "team_human_reactor"	,
-	"team_human_repeater"	, "team_human_tesla"	,
-	"team_human_dcc"		, "func_door_model"		,
-	"func_train"			, "func_door_rotating" };
-
-
 typedef struct {
 	char* name;   //appended to filename
 	short radius; //radius of agents (BBox maxs[0] or BBox maxs[1])
@@ -271,66 +259,6 @@ static void WriteRecastData (const char* agentname, const rcPolyMesh *polyMesh, 
 
 	fclose(file);
 }
-
-static qboolean skipEntity(const entity_t *ent) {
-	const char *value = ValueForKey(ent,"classname");
-	for(int i=0;i<numSkipEntities;i++) {
-		if(!strcmp(skipEntities[i], value))
-			return qtrue;
-	}
-	return qfalse;
-}
-/*static void UpdatePolyAreas(void) {
-entity_t *e;
-const bspModel_t *model;
-const bspDrawSurface_t *surface;
-int modelNum;
-const char *value;
-Sys_Printf("updating poly areas..\n");
-for(int i=0;i<numEntities;i++) {
-e = &entities[i];
-if(skipEntity(e))
-continue;
-//get model num
-if(i == 0)
-modelNum = 0;
-else
-{
-value = ValueForKey(e, "model");
-if(value[0] == '*')
-modelNum = atoi(value + 1);
-else
-modelNum = -1;
-}
-model = &bspModels[modelNum];
-for(int n=model->firstBSPSurface,k=0;k < model->numBSPSurfaces;k++,n++) {
-surface = &bspDrawSurfaces[n];
-if( bspShaders[surface->shaderNum].surfaceFlags & ( SURF_SKIP | SURF_SKY | SURF_SLICK | SURF_HINT | SURF_NONSOLID))
-{
-continue;
-}
-
-if ( surface->surfaceType != MST_PLANAR && surface->surfaceType != MST_TRIANGLE_SOUP )
-{
-continue;
-}
-//find the verticies
-float *verts = (float*)malloc(sizeof(float) * 3 * surface->numVerts);
-for(int j=surface->firstVert,m=0;m < surface->numVerts;m+=3,n++) {
-verts[m] = -bspDrawVerts[j].xyz[0];
-verts[m+1] = bspDrawVerts[j].xyz[2];
-verts[m+2] = -bspDrawVerts[j].xyz[1];
-}
-if(bspShaders[surface->shaderNum].contentFlags & CONTENTS_WATER)
-rcMarkConvexPolyArea(&context, verts, surface->numVerts, 1, 1, POLYAREA_WATER, *compHeightField);
-if(bspShaders[surface->shaderNum].contentFlags & CONTENTS_JUMPPAD)
-rcMarkConvexPolyArea(&context, verts, surface->numVerts, 1, 1, POLYAREA_JUMPPAD, *compHeightField);
-if(bspShaders[surface->shaderNum].contentFlags & CONTENTS_TELEPORTER)
-rcMarkConvexPolyArea(&context, verts, surface->numVerts, 1, 1, POLYAREA_TELEPORTER, *compHeightField);
-free(verts);
-}
-}
-}*/
 
 //need this to get the windings for brushes
 extern "C" qboolean FixWinding( winding_t* w );
