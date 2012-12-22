@@ -1251,6 +1251,12 @@ public:
 		case GLS_ATEST_GE_128:
 			value = 0.5f;
 			break;
+		case GLS_ATEST_GT_ENT:
+			value = 1.0f - backEnd.currentEntity->e.shaderRGBA[3] * (1.0f / 255.0f);
+			break;
+		case GLS_ATEST_LT_ENT:
+			value = -2.0f + backEnd.currentEntity->e.shaderRGBA[3] * (1.0f / 255.0f);
+			break;
 		default:
 			value = 1.5f;
 			break;

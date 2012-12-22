@@ -1277,6 +1277,8 @@ extern "C" {
 	  GLS_ATEST_GT_0   = ( 1 << 22 ),
 	  GLS_ATEST_LT_128 = ( 2 << 22 ),
 	  GLS_ATEST_GE_128 = ( 3 << 22 ),
+	  GLS_ATEST_LT_ENT = ( 4 << 22 ),
+	  GLS_ATEST_GT_ENT = ( 5 << 22 ),
 
 	  GLS_ATEST_BITS   = ( 7 << 22 ),
 

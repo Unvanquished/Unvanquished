@@ -449,6 +449,16 @@ void GL_State( unsigned long stateBits )
 				glAlphaFunc( GL_GEQUAL, 0.5f );
 				break;
 
+			case GLS_ATEST_LT_ENT:
+				glEnable( GL_ALPHA_TEST );
+				glAlphaFunc( GL_LESS, backEnd.currentEntity->e.shaderRGBA[3] * (1.0f / 255.0f) );
+				break;
+
+			case GLS_ATEST_GT_ENT:
+				glEnable( GL_ALPHA_TEST );
+				glAlphaFunc( GL_GREATER, backEnd.currentEntity->e.shaderRGBA[3] * (1.0f / 255.0f) );
+				break;
+
 			default:
 				assert( 0 );
 				break;
