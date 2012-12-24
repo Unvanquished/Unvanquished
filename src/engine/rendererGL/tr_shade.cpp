@@ -552,7 +552,6 @@ static void DrawTris()
 	GLimp_LogComment( "--- DrawTris ---\n" );
 
 	gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
-	gl_genericShader->SetPortalClipping( backEnd.viewParms.isPortal );
 
 	gl_genericShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_genericShader->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
@@ -721,8 +720,6 @@ static void Render_generic( int stage )
 	GL_State( pStage->stateBits );
 
 	// choose right shader program ----------------------------------
-	gl_genericShader->SetPortalClipping( backEnd.viewParms.isPortal );
-
 	gl_genericShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_genericShader->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
 
@@ -797,19 +794,6 @@ static void Render_generic( int stage )
 		gl_genericShader->SetUniform_Time( backEnd.refdef.floatTime );
 	}
 
-	if ( backEnd.viewParms.isPortal )
-	{
-		float plane[ 4 ];
-
-		// clipping plane in world space
-		plane[ 0 ] = backEnd.viewParms.portalPlane.normal[ 0 ];
-		plane[ 1 ] = backEnd.viewParms.portalPlane.normal[ 1 ];
-		plane[ 2 ] = backEnd.viewParms.portalPlane.normal[ 2 ];
-		plane[ 3 ] = backEnd.viewParms.portalPlane.dist;
-
-		gl_genericShader->SetUniform_PortalPlane( plane );
-	}
-
 	// bind u_ColorMap
 	GL_SelectTexture( 0 );
 	BindAnimatedImage( &pStage->bundle[ TB_COLORMAP ] );
@@ -840,8 +824,6 @@ static void Render_vertexLighting_DBS_entity( int stage )
 	bool normalMapping = r_normalMapping->integer && ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] != NULL );
 
 	// choose right shader program ----------------------------------
-	gl_vertexLightingShader_DBS_entity->SetPortalClipping( backEnd.viewParms.isPortal );
-
 	gl_vertexLightingShader_DBS_entity->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_vertexLightingShader_DBS_entity->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
 
@@ -905,19 +887,6 @@ static void Render_vertexLighting_DBS_entity( int stage )
 
 		depthScale = RB_EvalExpression( &pStage->depthScaleExp, r_parallaxDepthScale->value );
 		gl_vertexLightingShader_DBS_entity->SetUniform_DepthScale( depthScale );
-	}
-
-	if ( backEnd.viewParms.isPortal )
-	{
-		float plane[ 4 ];
-
-		// clipping plane in world space
-		plane[ 0 ] = backEnd.viewParms.portalPlane.normal[ 0 ];
-		plane[ 1 ] = backEnd.viewParms.portalPlane.normal[ 1 ];
-		plane[ 2 ] = backEnd.viewParms.portalPlane.normal[ 2 ];
-		plane[ 3 ] = backEnd.viewParms.portalPlane.dist;
-
-		gl_vertexLightingShader_DBS_entity->SetUniform_PortalPlane( plane );
 	}
 
 	// bind u_DiffuseMap
@@ -1068,8 +1037,6 @@ static void Render_vertexLighting_DBS_world( int stage )
 	bool normalMapping = r_normalMapping->integer && ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] != NULL );
 
 	// choose right shader program ----------------------------------
-	gl_vertexLightingShader_DBS_world->SetPortalClipping( backEnd.viewParms.isPortal );
-
 	gl_vertexLightingShader_DBS_world->SetDeformVertexes( tess.surfaceShader->numDeforms );
 
 	gl_vertexLightingShader_DBS_world->SetNormalMapping( normalMapping );
@@ -1155,19 +1122,6 @@ static void Render_vertexLighting_DBS_world( int stage )
 
 		depthScale = RB_EvalExpression( &pStage->depthScaleExp, r_parallaxDepthScale->value );
 		gl_vertexLightingShader_DBS_world->SetUniform_DepthScale( depthScale );
-	}
-
-	if ( backEnd.viewParms.isPortal )
-	{
-		float plane[ 4 ];
-
-		// clipping plane in world space
-		plane[ 0 ] = backEnd.viewParms.portalPlane.normal[ 0 ];
-		plane[ 1 ] = backEnd.viewParms.portalPlane.normal[ 1 ];
-		plane[ 2 ] = backEnd.viewParms.portalPlane.normal[ 2 ];
-		plane[ 3 ] = backEnd.viewParms.portalPlane.dist;
-
-		gl_vertexLightingShader_DBS_world->SetUniform_PortalPlane( plane );
 	}
 
 	// bind u_DiffuseMap
@@ -1264,8 +1218,6 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 
 	// choose right shader program ----------------------------------
 
-	gl_lightMappingShader->SetPortalClipping( backEnd.viewParms.isPortal );
-
 	gl_lightMappingShader->SetDeformVertexes( tess.surfaceShader->numDeforms );
 
 	gl_lightMappingShader->SetNormalMapping( normalMapping );
@@ -1304,19 +1256,6 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 
 		depthScale = RB_EvalExpression( &pStage->depthScaleExp, r_parallaxDepthScale->value );
 		gl_lightMappingShader->SetUniform_DepthScale( depthScale );
-	}
-
-	if ( backEnd.viewParms.isPortal )
-	{
-		float plane[ 4 ];
-
-		// clipping plane in world space
-		plane[ 0 ] = backEnd.viewParms.portalPlane.normal[ 0 ];
-		plane[ 1 ] = backEnd.viewParms.portalPlane.normal[ 1 ];
-		plane[ 2 ] = backEnd.viewParms.portalPlane.normal[ 2 ];
-		plane[ 3 ] = backEnd.viewParms.portalPlane.dist;
-
-		gl_lightMappingShader->SetUniform_PortalPlane( plane );
 	}
 
 	// bind u_DiffuseMap
@@ -1397,8 +1336,6 @@ static void Render_geometricFill( int stage, bool cmap2black )
 	bool normalMapping = r_normalMapping->integer && ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] != NULL );
 
 	// choose right shader program ----------------------------------
-	gl_geometricFillShader->SetPortalClipping( backEnd.viewParms.isPortal );
-
 	gl_geometricFillShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_geometricFillShader->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
 
@@ -1469,20 +1406,6 @@ static void Render_geometricFill( int stage, bool cmap2black )
 
 		depthScale = RB_EvalExpression( &pStage->depthScaleExp, r_parallaxDepthScale->value );
 		gl_geometricFillShader->SetUniform_DepthScale( depthScale );
-	}
-
-	// u_PortalPlane
-	if ( backEnd.viewParms.isPortal )
-	{
-		float plane[ 4 ];
-
-		// clipping plane in world space
-		plane[ 0 ] = backEnd.viewParms.portalPlane.normal[ 0 ];
-		plane[ 1 ] = backEnd.viewParms.portalPlane.normal[ 1 ];
-		plane[ 2 ] = backEnd.viewParms.portalPlane.normal[ 2 ];
-		plane[ 3 ] = backEnd.viewParms.portalPlane.dist;
-
-		gl_geometricFillShader->SetUniform_PortalPlane( plane );
 	}
 
 	//if(r_deferredShading->integer == DS_STANDARD)
@@ -1564,8 +1487,6 @@ static void Render_depthFill( int stage )
 
 	GL_State( pStage->stateBits );
 
-	gl_genericShader->SetPortalClipping( backEnd.viewParms.isPortal );
-
 	gl_genericShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_genericShader->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
 
@@ -1627,19 +1548,6 @@ static void Render_depthFill( int stage )
 		gl_genericShader->SetUniform_Time( backEnd.refdef.floatTime );
 	}
 
-	if ( backEnd.viewParms.isPortal )
-	{
-		float plane[ 4 ];
-
-		// clipping plane in world space
-		plane[ 0 ] = backEnd.viewParms.portalPlane.normal[ 0 ];
-		plane[ 1 ] = backEnd.viewParms.portalPlane.normal[ 1 ];
-		plane[ 2 ] = backEnd.viewParms.portalPlane.normal[ 2 ];
-		plane[ 3 ] = backEnd.viewParms.portalPlane.dist;
-
-		gl_genericShader->SetUniform_PortalPlane( plane );
-	}
-
 	// bind u_ColorMap
 	GL_SelectTexture( 0 );
 
@@ -1676,8 +1584,6 @@ static void Render_shadowFill( int stage )
 	stateBits &= ~( GLS_SRCBLEND_BITS | GLS_DSTBLEND_BITS );
 
 	GL_State( stateBits );
-
-	gl_shadowFillShader->SetPortalClipping( backEnd.viewParms.isPortal );
 
 	gl_shadowFillShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_shadowFillShader->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
@@ -1728,19 +1634,6 @@ static void Render_shadowFill( int stage )
 		gl_shadowFillShader->SetUniform_Time( backEnd.refdef.floatTime );
 	}
 
-	if ( backEnd.viewParms.isPortal )
-	{
-		float plane[ 4 ];
-
-		// clipping plane in world space
-		plane[ 0 ] = backEnd.viewParms.portalPlane.normal[ 0 ];
-		plane[ 1 ] = backEnd.viewParms.portalPlane.normal[ 1 ];
-		plane[ 2 ] = backEnd.viewParms.portalPlane.normal[ 2 ];
-		plane[ 3 ] = backEnd.viewParms.portalPlane.dist;
-
-		gl_shadowFillShader->SetUniform_PortalPlane( plane );
-	}
-
 	// bind u_ColorMap
 	GL_SelectTexture( 0 );
 
@@ -1777,8 +1670,6 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 	bool shadowCompare = ( r_shadows->integer >= SHADOWING_ESM16 && !light->l.noShadows && light->shadowLOD >= 0 );
 
 	// choose right shader program ----------------------------------
-	gl_forwardLightingShader_omniXYZ->SetPortalClipping( backEnd.viewParms.isPortal );
-
 	gl_forwardLightingShader_omniXYZ->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_forwardLightingShader_omniXYZ->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
 
@@ -1889,19 +1780,6 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 		gl_forwardLightingShader_omniXYZ->SetUniform_Time( backEnd.refdef.floatTime );
 	}
 
-	if ( backEnd.viewParms.isPortal )
-	{
-		float plane[ 4 ];
-
-		// clipping plane in world space
-		plane[ 0 ] = backEnd.viewParms.portalPlane.normal[ 0 ];
-		plane[ 1 ] = backEnd.viewParms.portalPlane.normal[ 1 ];
-		plane[ 2 ] = backEnd.viewParms.portalPlane.normal[ 2 ];
-		plane[ 3 ] = backEnd.viewParms.portalPlane.dist;
-
-		gl_forwardLightingShader_omniXYZ->SetUniform_PortalPlane( plane );
-	}
-
 	GL_CheckErrors();
 
 	// bind u_DiffuseMap
@@ -1988,8 +1866,6 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 	bool shadowCompare = ( r_shadows->integer >= SHADOWING_ESM16 && !light->l.noShadows && light->shadowLOD >= 0 );
 
 	// choose right shader program ----------------------------------
-	gl_forwardLightingShader_projXYZ->SetPortalClipping( backEnd.viewParms.isPortal );
-
 	gl_forwardLightingShader_projXYZ->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_forwardLightingShader_projXYZ->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
 
@@ -2101,19 +1977,6 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 		gl_forwardLightingShader_projXYZ->SetUniform_Time( backEnd.refdef.floatTime );
 	}
 
-	if ( backEnd.viewParms.isPortal )
-	{
-		float plane[ 4 ];
-
-		// clipping plane in world space
-		plane[ 0 ] = backEnd.viewParms.portalPlane.normal[ 0 ];
-		plane[ 1 ] = backEnd.viewParms.portalPlane.normal[ 1 ];
-		plane[ 2 ] = backEnd.viewParms.portalPlane.normal[ 2 ];
-		plane[ 3 ] = backEnd.viewParms.portalPlane.dist;
-
-		gl_forwardLightingShader_projXYZ->SetUniform_PortalPlane( plane );
-	}
-
 	GL_CheckErrors();
 
 	// bind u_DiffuseMap
@@ -2201,8 +2064,6 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 	bool shadowCompare = ( r_shadows->integer >= SHADOWING_ESM16 && !light->l.noShadows && light->shadowLOD >= 0 );
 
 	// choose right shader program ----------------------------------
-	gl_forwardLightingShader_directionalSun->SetPortalClipping( backEnd.viewParms.isPortal );
-
 	gl_forwardLightingShader_directionalSun->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_forwardLightingShader_directionalSun->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
 
@@ -2322,19 +2183,6 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 		gl_forwardLightingShader_directionalSun->SetUniform_Time( backEnd.refdef.floatTime );
 	}
 
-	if ( backEnd.viewParms.isPortal )
-	{
-		float plane[ 4 ];
-
-		// clipping plane in world space
-		plane[ 0 ] = backEnd.viewParms.portalPlane.normal[ 0 ];
-		plane[ 1 ] = backEnd.viewParms.portalPlane.normal[ 1 ];
-		plane[ 2 ] = backEnd.viewParms.portalPlane.normal[ 2 ];
-		plane[ 3 ] = backEnd.viewParms.portalPlane.dist;
-
-		gl_forwardLightingShader_directionalSun->SetUniform_PortalPlane( plane );
-	}
-
 	GL_CheckErrors();
 
 	// bind u_DiffuseMap
@@ -2427,8 +2275,6 @@ static void Render_reflection_CB( int stage )
 	bool normalMapping = r_normalMapping->integer && ( pStage->bundle[ TB_NORMALMAP ].image[ 0 ] != NULL );
 
 	// choose right shader program ----------------------------------
-	gl_reflectionShader->SetPortalClipping( backEnd.viewParms.isPortal );
-
 	gl_reflectionShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_reflectionShader->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
 
@@ -2549,27 +2395,12 @@ static void Render_skybox( int stage )
 
 	GL_State( pStage->stateBits );
 
-	gl_skyboxShader->SetPortalClipping( backEnd.viewParms.isPortal );
 	gl_skyboxShader->BindProgram();
 
 	gl_skyboxShader->SetUniform_ViewOrigin( backEnd.viewParms.orientation.origin );  // in world space
 
 	gl_skyboxShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
 	gl_skyboxShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-
-	// u_PortalPlane
-	if ( backEnd.viewParms.isPortal )
-	{
-		float plane[ 4 ];
-
-		// clipping plane in world space
-		plane[ 0 ] = backEnd.viewParms.portalPlane.normal[ 0 ];
-		plane[ 1 ] = backEnd.viewParms.portalPlane.normal[ 1 ];
-		plane[ 2 ] = backEnd.viewParms.portalPlane.normal[ 2 ];
-		plane[ 3 ] = backEnd.viewParms.portalPlane.dist;
-
-		gl_skyboxShader->SetUniform_PortalPlane( plane );
-	}
 
 	// bind u_ColorMap
 	GL_SelectTexture( 0 );
@@ -2737,7 +2568,6 @@ static void Render_heatHaze( int stage )
 
 		// choose right shader program ----------------------------------
 		gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
-		gl_genericShader->SetPortalClipping( backEnd.viewParms.isPortal );
 
 		gl_genericShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 		gl_genericShader->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
@@ -2776,19 +2606,6 @@ static void Render_heatHaze( int stage )
 			gl_genericShader->SetUniform_Time( backEnd.refdef.floatTime );
 		}
 
-		if ( backEnd.viewParms.isPortal )
-		{
-			float plane[ 4 ];
-
-			// clipping plane in world space
-			plane[ 0 ] = backEnd.viewParms.portalPlane.normal[ 0 ];
-			plane[ 1 ] = backEnd.viewParms.portalPlane.normal[ 1 ];
-			plane[ 2 ] = backEnd.viewParms.portalPlane.normal[ 2 ];
-			plane[ 3 ] = backEnd.viewParms.portalPlane.dist;
-
-			gl_genericShader->SetUniform_PortalPlane( plane );
-		}
-
 		// bind u_ColorMap
 		GL_SelectTexture( 0 );
 		GL_Bind( tr.whiteImage );
@@ -2813,8 +2630,6 @@ static void Render_heatHaze( int stage )
 	GL_State( stateBits );
 
 	// choose right shader program ----------------------------------
-	gl_heatHazeShader->SetPortalClipping( backEnd.viewParms.isPortal );
-
 	gl_heatHazeShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_heatHazeShader->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
 
@@ -3079,8 +2894,6 @@ static void Render_fog()
 		GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 	}
 
-	gl_fogQuake3Shader->SetPortalClipping( backEnd.viewParms.isPortal );
-
 	gl_fogQuake3Shader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_fogQuake3Shader->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
 
@@ -3117,19 +2930,6 @@ static void Render_fog()
 	{
 		gl_fogQuake3Shader->SetUniform_DeformParms( tess.surfaceShader->deforms, tess.surfaceShader->numDeforms );
 		gl_fogQuake3Shader->SetUniform_Time( backEnd.refdef.floatTime );
-	}
-
-	if ( backEnd.viewParms.isPortal )
-	{
-		float plane[ 4 ];
-
-		// clipping plane in world space
-		plane[ 0 ] = backEnd.viewParms.portalPlane.normal[ 0 ];
-		plane[ 1 ] = backEnd.viewParms.portalPlane.normal[ 1 ];
-		plane[ 2 ] = backEnd.viewParms.portalPlane.normal[ 2 ];
-		plane[ 3 ] = backEnd.viewParms.portalPlane.dist;
-
-		gl_fogQuake3Shader->SetUniform_PortalPlane( plane );
 	}
 
 	// bind u_ColorMap

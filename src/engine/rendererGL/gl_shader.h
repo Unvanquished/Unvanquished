@@ -248,7 +248,6 @@ protected:
 // It also works regardless of RTTI is enabled or not.
 	enum EGLCompileMacro
 	{
-	  USE_PORTAL_CLIPPING,
 	  USE_FRUSTUM_CLIPPING,
 	  USE_VERTEX_SKINNING,
 	  USE_VERTEX_ANIMATION,
@@ -314,48 +313,6 @@ public:
 	}
 
 	virtual ~GLCompileMacro() {}
-};
-
-class GLCompileMacro_USE_PORTAL_CLIPPING :
-	GLCompileMacro
-{
-public:
-	GLCompileMacro_USE_PORTAL_CLIPPING( GLShader *shader ) :
-		GLCompileMacro( shader )
-	{
-	}
-
-	const char *GetName() const
-	{
-		return "USE_PORTAL_CLIPPING";
-	}
-
-	EGLCompileMacro GetType() const
-	{
-		return USE_PORTAL_CLIPPING;
-	}
-
-	void EnablePortalClipping()
-	{
-		EnableMacro();
-	}
-
-	void DisablePortalClipping()
-	{
-		DisableMacro();
-	}
-
-	void SetPortalClipping( bool enable )
-	{
-		if ( enable )
-		{
-			EnableMacro();
-		}
-		else
-		{
-			DisableMacro();
-		}
-	}
 };
 
 class GLCompileMacro_USE_FRUSTUM_CLIPPING :
@@ -2135,31 +2092,6 @@ public:
 	}
 };
 
-class u_PortalPlane :
-	GLUniform
-{
-public:
-	u_PortalPlane( GLShader *shader ) :
-		GLUniform( shader )
-	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_PortalPlane";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_PortalPlane = glGetUniformLocation( shaderProgram->program, GetName() );
-	}
-
-	void SetUniform_PortalPlane( const vec4_t v )
-	{
-		GLSL_SetUniform_PortalPlane( _shader->GetProgram(), v );
-	}
-};
-
 class u_PortalRange :
 	GLUniform
 {
@@ -2753,9 +2685,7 @@ class GLShader_generic :
 	public u_Color,
 	public u_BoneMatrix,
 	public u_VertexInterpolation,
-	public u_PortalPlane,
 	public GLDeformStage,
-	public GLCompileMacro_USE_PORTAL_CLIPPING,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
@@ -2780,10 +2710,8 @@ class GLShader_lightMapping :
 	public u_ViewOrigin,
 	public u_ModelMatrix,
 	public u_ModelViewProjectionMatrix,
-	public u_PortalPlane,
 	public u_DepthScale,
 	public GLDeformStage,
-	public GLCompileMacro_USE_PORTAL_CLIPPING,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING //,
@@ -2812,11 +2740,9 @@ class GLShader_vertexLighting_DBS_entity :
 	public u_ModelViewProjectionMatrix,
 	public u_BoneMatrix,
 	public u_VertexInterpolation,
-	public u_PortalPlane,
 	public u_DepthScale,
 	public u_EnvironmentInterpolation,
 	public GLDeformStage,
-	public GLCompileMacro_USE_PORTAL_CLIPPING,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
@@ -2845,11 +2771,9 @@ class GLShader_vertexLighting_DBS_world :
 	public u_ViewOrigin,
 	public u_ModelMatrix,
 	public u_ModelViewProjectionMatrix,
-	public u_PortalPlane,
 	public u_DepthScale,
 	public u_LightWrapAround,
 	public GLDeformStage,
-	public GLCompileMacro_USE_PORTAL_CLIPPING,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING //,
@@ -2886,10 +2810,8 @@ class GLShader_forwardLighting_omniXYZ :
 	public u_ModelViewProjectionMatrix,
 	public u_BoneMatrix,
 	public u_VertexInterpolation,
-	public u_PortalPlane,
 	public u_DepthScale,
 	public GLDeformStage,
-	public GLCompileMacro_USE_PORTAL_CLIPPING,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
@@ -2929,10 +2851,8 @@ class GLShader_forwardLighting_projXYZ :
 	public u_ModelViewProjectionMatrix,
 	public u_BoneMatrix,
 	public u_VertexInterpolation,
-	public u_PortalPlane,
 	public u_DepthScale,
 	public GLDeformStage,
-	public GLCompileMacro_USE_PORTAL_CLIPPING,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
@@ -2974,10 +2894,8 @@ class GLShader_forwardLighting_directionalSun :
 	public u_ModelViewProjectionMatrix,
 	public u_BoneMatrix,
 	public u_VertexInterpolation,
-	public u_PortalPlane,
 	public u_DepthScale,
 	public GLDeformStage,
-	public GLCompileMacro_USE_PORTAL_CLIPPING,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
@@ -3010,9 +2928,7 @@ class GLShader_deferredLighting_omniXYZ :
 	public u_ModelMatrix,
 	public u_ModelViewProjectionMatrix,
 	public u_UnprojectMatrix,
-	public u_PortalPlane,
 	public GLDeformStage,
-	public GLCompileMacro_USE_PORTAL_CLIPPING,
 	public GLCompileMacro_USE_FRUSTUM_CLIPPING,
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_SHADOWING //,
@@ -3041,9 +2957,7 @@ class GLShader_deferredLighting_projXYZ :
 	public u_ModelMatrix,
 	public u_ModelViewProjectionMatrix,
 	public u_UnprojectMatrix,
-	public u_PortalPlane,
 	public GLDeformStage,
-	public GLCompileMacro_USE_PORTAL_CLIPPING,
 	public GLCompileMacro_USE_FRUSTUM_CLIPPING,
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_SHADOWING //,
@@ -3074,9 +2988,7 @@ class GLShader_deferredLighting_directionalSun :
 	public u_ModelViewProjectionMatrix,
 	public u_ViewMatrix,
 	public u_UnprojectMatrix,
-	public u_PortalPlane,
 	public GLDeformStage,
-	public GLCompileMacro_USE_PORTAL_CLIPPING,
 	public GLCompileMacro_USE_FRUSTUM_CLIPPING,
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_SHADOWING //,
@@ -3102,10 +3014,8 @@ class GLShader_geometricFill :
 	public u_ModelViewProjectionMatrix,
 	public u_BoneMatrix,
 	public u_VertexInterpolation,
-	public u_PortalPlane,
 	public u_DepthScale,
 	public GLDeformStage,
-	public GLCompileMacro_USE_PORTAL_CLIPPING,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
@@ -3134,9 +3044,7 @@ class GLShader_shadowFill :
 	public u_Color,
 	public u_BoneMatrix,
 	public u_VertexInterpolation,
-	public u_PortalPlane,
 	public GLDeformStage,
-	public GLCompileMacro_USE_PORTAL_CLIPPING,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
@@ -3159,9 +3067,7 @@ class GLShader_reflection :
 	public u_ModelViewProjectionMatrix,
 	public u_BoneMatrix,
 	public u_VertexInterpolation,
-	public u_PortalPlane,
 	public GLDeformStage,
-	public GLCompileMacro_USE_PORTAL_CLIPPING,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
@@ -3184,9 +3090,7 @@ class GLShader_skybox :
 	public u_ModelViewProjectionMatrix,
 	public u_BoneMatrix,
 	public u_VertexInterpolation,
-	public u_PortalPlane,
-	public GLDeformStage,
-	public GLCompileMacro_USE_PORTAL_CLIPPING
+	public GLDeformStage
 {
 public:
 	GLShader_skybox();
@@ -3201,12 +3105,10 @@ class GLShader_fogQuake3 :
 	public u_Color,
 	public u_BoneMatrix,
 	public u_VertexInterpolation,
-	public u_PortalPlane,
 	public u_FogDistanceVector,
 	public u_FogDepthVector,
 	public u_FogEyeT,
 	public GLDeformStage,
-	public GLCompileMacro_USE_PORTAL_CLIPPING,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
@@ -3248,9 +3150,7 @@ public u_ColorModulate,
 public u_Color,
 public u_BoneMatrix,
 public u_VertexInterpolation,
-public u_PortalPlane,
 public GLDeformStage,
-public GLCompileMacro_USE_PORTAL_CLIPPING,
 public GLCompileMacro_USE_VERTEX_SKINNING,
 public GLCompileMacro_USE_VERTEX_ANIMATION,
 public GLCompileMacro_USE_DEFORM_VERTEXES
@@ -3389,10 +3289,8 @@ class GLShader_deferredShadowing_proj :
 	public u_LightScale,
 	public u_LightAttenuationMatrix,
 	public u_ShadowMatrix,
-	public u_PortalPlane,
 	public u_ModelViewProjectionMatrix,
 	public u_UnprojectMatrix,
-	public GLCompileMacro_USE_PORTAL_CLIPPING,
 	public GLCompileMacro_USE_SHADOWING
 {
 public:

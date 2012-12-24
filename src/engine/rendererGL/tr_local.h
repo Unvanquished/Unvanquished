@@ -1485,12 +1485,6 @@ extern "C" {
 		int32_t     u_DepthScale;
 		float       t_DepthScale;
 
-		GLint       u_PortalClipping;
-		qboolean    t_PortalClipping;
-
-		GLint       u_PortalPlane;
-		vec4_t      t_PortalPlane;
-
 		int32_t     u_PortalRange;
 		float       t_PortalRange;
 
@@ -2165,54 +2159,6 @@ extern "C" {
 #endif
 
 		glUniform1f( program->u_EnvironmentInterpolation, value );
-	}
-
-	static INLINE void GLSL_SetUniform_PortalClipping( shaderProgram_t *program, qboolean value )
-	{
-#if defined( USE_UNIFORM_FIREWALL )
-
-		if ( program->t_PortalClipping == value )
-		{
-			return;
-		}
-
-		program->t_PortalClipping = value;
-#endif
-
-#if defined( LOG_GLSL_UNIFORMS )
-
-		if ( r_logFile->integer )
-		{
-			GLimp_LogComment( va( "--- GLSL_SetUniform_PortalClipping( program = %s, value = %i ) ---\n", program->name, value ) );
-		}
-
-#endif
-
-		glUniform1i( program->u_PortalClipping, value );
-	}
-
-	static INLINE void GLSL_SetUniform_PortalPlane( shaderProgram_t *program, const vec4_t v )
-	{
-#if defined( USE_UNIFORM_FIREWALL )
-
-		if ( Vector4Compare( program->t_PortalPlane, v ) )
-		{
-			return;
-		}
-
-		VectorCopy( v, program->t_PortalPlane );
-#endif
-
-#if defined( LOG_GLSL_UNIFORMS )
-
-		if ( r_logFile->integer )
-		{
-			GLimp_LogComment( va( "--- GLSL_SetUniform_PortalPlane( program = %s, plane = ( %5.3f, %5.3f, %5.3f, %5.3f ) ) ---\n", program->name, v[ 0 ], v[ 1 ], v[ 2 ], v[ 3 ] ) );
-		}
-
-#endif
-
-		glUniform4f( program->u_PortalPlane, v[ 0 ], v[ 1 ], v[ 2 ], v[ 3 ] );
 	}
 
 	static INLINE void GLSL_SetUniform_PortalRange( shaderProgram_t *program, float value )

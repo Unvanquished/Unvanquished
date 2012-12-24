@@ -28,8 +28,6 @@ uniform sampler2D	u_SpecularMap;
 uniform float		u_AlphaThreshold;
 uniform vec3		u_ViewOrigin;
 uniform float		u_DepthScale;
-uniform int         u_PortalClipping;
-uniform vec4		u_PortalPlane;
 uniform	float		u_LightWrapAround;
 
 varying vec3		var_Position;
@@ -47,16 +45,6 @@ varying vec3		var_Normal;
 
 void	main()
 {
-	if(bool(u_PortalClipping))
-	{
-		float dist = dot(var_Position.xyz, u_PortalPlane.xyz) - u_PortalPlane.w;
-		if(dist < 0.0)
-		{
-			discard;
-			return;
-		}
-	}
-
 #if defined(USE_NORMAL_MAPPING)
 
 	// construct object-space-to-tangent-space 3x3 matrix

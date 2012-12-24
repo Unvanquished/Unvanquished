@@ -493,8 +493,29 @@ static void RB_Hyperspace( void )
 
 static void SetViewportAndScissor( void )
 {
+	float	mat[16], scale;
+	vec4_t	q, c;
+
+	Com_Memcpy( mat, backEnd.viewParms.projectionMatrix, sizeof(mat) );
+	if( backEnd.viewParms.isPortal ) {
+		c[0] = -DotProduct( backEnd.viewParms.portalPlane.normal, backEnd.viewParms.orientation.axis[1] );
+		c[1] = DotProduct( backEnd.viewParms.portalPlane.normal, backEnd.viewParms.orientation.axis[2] );
+		c[2] = -DotProduct( backEnd.viewParms.portalPlane.normal, backEnd.viewParms.orientation.axis[0] );
+		c[3] = DotProduct( backEnd.viewParms.portalPlane.normal, backEnd.viewParms.orientation.origin ) - backEnd.viewParms.portalPlane.dist;
+		
+		q[0] = (c[0] < 0.0f ? -1.0f : 1.0f) / mat[0];
+		q[1] = (c[1] < 0.0f ? -1.0f : 1.0f) / mat[5];
+		q[2] = -1.0f;
+		q[3] = (1.0f + mat[10]) / mat[14];
+		
+		scale = 2.0f / (DotProduct( c, q ) + c[3] * q[3]);
+		mat[2]  = c[0] * scale;
+		mat[6]  = c[1] * scale;
+		mat[10] = c[2] * scale + 1.0f;
+		mat[14] = c[3] * scale;
+	}
 	glMatrixMode( GL_PROJECTION );
-	glLoadMatrixf( backEnd.viewParms.projectionMatrix );
+	glLoadMatrixf( mat );
 	glMatrixMode( GL_MODELVIEW );
 
 	// set the window clipping
@@ -708,31 +729,6 @@ void RB_BeginDrawingView( void )
 
 	// we will only draw a sun if there was sky rendered in this view
 	backEnd.skyRenderedThisView = qfalse;
-
-	// clip to the plane of the portal
-	if ( backEnd.viewParms.isPortal )
-	{
-		float  plane[ 4 ];
-		double plane2[ 4 ];
-
-		plane[ 0 ] = backEnd.viewParms.portalPlane.normal[ 0 ];
-		plane[ 1 ] = backEnd.viewParms.portalPlane.normal[ 1 ];
-		plane[ 2 ] = backEnd.viewParms.portalPlane.normal[ 2 ];
-		plane[ 3 ] = backEnd.viewParms.portalPlane.dist;
-
-		plane2[ 0 ] = DotProduct( backEnd.viewParms.orientation.axis[ 0 ], plane );
-		plane2[ 1 ] = DotProduct( backEnd.viewParms.orientation.axis[ 1 ], plane );
-		plane2[ 2 ] = DotProduct( backEnd.viewParms.orientation.axis[ 2 ], plane );
-		plane2[ 3 ] = DotProduct( plane, backEnd.viewParms.orientation.origin ) - plane[ 3 ];
-
-		glLoadMatrixf( s_flipMatrix );
-		glClipPlane( GL_CLIP_PLANE0, plane2 );
-		glEnable( GL_CLIP_PLANE0 );
-	}
-	else
-	{
-		glDisable( GL_CLIP_PLANE0 );
-	}
 }
 
 #define MAC_EVENT_PUMP_MSEC 5
@@ -959,7 +955,6 @@ void RB_SetGL2D( void )
 	GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 
 	glDisable( GL_CULL_FACE );
-	glDisable( GL_CLIP_PLANE0 );
 
 	// set time for 2D shaders
 	backEnd.refdef.time = ri.Milliseconds();
