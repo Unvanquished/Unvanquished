@@ -37,7 +37,6 @@ uniform vec3		u_ViewOrigin;
 uniform vec3        u_AmbientColor;
 uniform float		u_DepthScale;
 uniform mat4		u_ModelMatrix;
-uniform vec4		u_PortalPlane;
 
 varying vec4		var_Position;
 varying vec2		var_TexDiffuse;
@@ -57,18 +56,6 @@ varying vec4		var_Color;
 
 void	main()
 {
-
-#if defined(USE_PORTAL_CLIPPING)
-	{
-		float dist = dot(var_Position.xyz, u_PortalPlane.xyz) - u_PortalPlane.w;
-		if(dist < 0.0)
-		{
-			discard;
-			return;
-		}
-	}
-#endif
-
 	// compute view direction in world space
 	vec3 V = normalize(u_ViewOrigin - var_Position.xyz);
 

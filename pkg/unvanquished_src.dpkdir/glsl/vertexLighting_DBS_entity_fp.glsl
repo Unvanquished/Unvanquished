@@ -37,7 +37,6 @@ uniform vec3		u_LightDir;
 uniform vec3		u_LightColor;
 uniform float		u_SpecularExponent;
 uniform float		u_DepthScale;
-uniform vec4		u_PortalPlane;
 
 varying vec3		var_Position;
 varying vec2		var_TexDiffuse;
@@ -53,17 +52,6 @@ varying vec3		var_Normal;
 
 void	main()
 {
-#if defined(USE_PORTAL_CLIPPING)
-	{
-		float dist = dot(var_Position.xyz, u_PortalPlane.xyz) - u_PortalPlane.w;
-		if(dist < 0.0)
-		{
-			discard;
-			return;
-		}
-	}
-#endif
-
 	// compute light direction in world space
 	vec3 L = u_LightDir;
 

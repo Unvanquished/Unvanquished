@@ -63,8 +63,6 @@ uniform float       u_ShadowBlur;
 
 uniform mat4		u_ViewMatrix;
 
-uniform vec4		u_PortalPlane;
-
 uniform float		u_DepthScale;
 
 varying vec3		var_Position;
@@ -596,18 +594,6 @@ float log_conv(float x0, float X, float y0, float Y)
 
 void	main()
 {
-#if defined(USE_PORTAL_CLIPPING)
-	{
-		float dist = dot(var_Position.xyz, u_PortalPlane.xyz) - u_PortalPlane.w;
-		if(dist < 0.0)
-		{
-			discard;
-			return;
-		}
-	}
-#endif
-
-
 #if 0
 	// create random noise vector
 	vec3 rand = RandomVec3(gl_FragCoord.st * r_FBufScale);
