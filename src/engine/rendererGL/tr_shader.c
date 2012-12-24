@@ -2523,7 +2523,9 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 			else if ( !Q_stricmp( token, "portal" ) )
 			{
 				ri.Printf( PRINT_WARNING, "WARNING: alphaGen portal keyword not supported in shader '%s'\n", shader.name );
-				stage->type = ST_PORTALMAP;
+				//stage->type = ST_PORTALMAP;
+				stage->alphaGen = AGEN_CONST;
+				stage->constantColor[3] = 0;
 				SkipRestOfLine( text );
 			}
 			else

@@ -420,12 +420,19 @@ void GL_PolygonOffset( float factor, float units )
 
 void GL_Cull( int cullType )
 {
+	if ( backEnd.viewParms.isMirror )
+	{
+		GL_FrontFace( GL_CW );
+	}
+	else
+	{
+		GL_FrontFace( GL_CCW );
+	}
+
 	if ( glState.faceCulling == cullType )
 	{
 		return;
 	}
-
-#if 1
 
 	if ( cullType == CT_TWO_SIDED )
 	{
@@ -439,35 +446,13 @@ void GL_Cull( int cullType )
 		if ( cullType == CT_BACK_SIDED )
 		{
 			GL_CullFace( GL_BACK );
-
-			if ( backEnd.viewParms.isMirror )
-			{
-				GL_FrontFace( GL_CW );
-			}
-			else
-			{
-				GL_FrontFace( GL_CCW );
-			}
 		}
 		else
 		{
 			GL_CullFace( GL_FRONT );
-
-			if ( backEnd.viewParms.isMirror )
-			{
-				GL_FrontFace( GL_CW );
-			}
-			else
-			{
-				GL_FrontFace( GL_CCW );
-			}
 		}
 	}
 	glState.faceCulling = cullType;
-#else
-	glState.faceCulling = CT_TWO_SIDED;
-	glDisable( GL_CULL_FACE );
-#endif
 }
 
 /*
