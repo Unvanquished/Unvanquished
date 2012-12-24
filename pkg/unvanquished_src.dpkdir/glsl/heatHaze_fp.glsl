@@ -27,7 +27,7 @@ uniform sampler2D	u_CurrentMap;
 #if defined(r_heatHazeFix)
 uniform sampler2D	u_ContrastMap;
 #endif
-uniform int			u_AlphaTest;
+uniform float		u_AlphaThreshold;
 
 varying vec2		var_TexNormal;
 varying float		var_Deform;
@@ -42,24 +42,6 @@ void	main()
 
 	// calculate the screen texcoord in the 0.0 to 1.0 range
 	vec2 st = gl_FragCoord.st * r_FBufScale;
-
-#if defined(USE_ALPHA_TESTING)
-	if(u_AlphaTest == ATEST_GT_0 && color0.a <= 0.0)
-	{
-		discard;
-		return;
-	}
-	else if(u_AlphaTest == ATEST_LT_128 && color0.a >= 0.5)
-	{
-		discard;
-		return;
-	}
-	else if(u_AlphaTest == ATEST_GE_128 && color0.a < 0.5)
-	{
-		discard;
-		return;
-	}
-#endif
 
 	// offset by the scaled normal and clamp it to 0.0 - 1.0
 	st += N.xy * var_Deform;

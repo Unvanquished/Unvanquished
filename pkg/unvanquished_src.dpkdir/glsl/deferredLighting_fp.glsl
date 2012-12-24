@@ -65,8 +65,6 @@ uniform float       u_ShadowBlur;
 uniform mat4		u_ViewMatrix;
 uniform mat4		u_UnprojectMatrix;
 
-uniform vec4		u_PortalPlane;
-
 
 
 
@@ -592,17 +590,6 @@ void	main()
 	float depth = texture2D(u_DepthMap, st).r;
 	vec4 P = u_UnprojectMatrix * vec4(gl_FragCoord.xy, depth, 1.0);
 	P.xyz /= P.w;
-
-#if defined(USE_PORTAL_CLIPPING)
-	{
-		float dist = dot(P.xyz, u_PortalPlane.xyz) - u_PortalPlane.w;
-		if(dist < 0.0)
-		{
-			discard;
-			return;
-		}
-	}
-#endif
 
 #if defined(USE_FRUSTUM_CLIPPING)
 	// many lights in Doom 3 don't fade out near the light frustum border
