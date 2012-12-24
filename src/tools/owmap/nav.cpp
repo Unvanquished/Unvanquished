@@ -133,7 +133,7 @@ static qboolean filterGaps = qtrue;
 
 //flag for faster but generally worse Monotone Partitioning
 //Monotone partitioning will result in more navmesh polygons than the default algorithm
-static qboolean fast = qfalse;
+static qboolean fastGen = qfalse;
 
 //copied from cm_patch.c
 static const int MAX_GRID_SIZE = 129;
@@ -1228,7 +1228,7 @@ static void buildPolyMesh( int characterNum, vec3_t mapmins, vec3_t mapmaxs, rcP
 	//remove unreachable spans ( examples: roof of map, inside closed spaces such as boxes ) so we don't have to build a navmesh for them
 	RemoveUnreachableSpans( *compHeightField );
 
-	if(fast) 
+	if(fastGen)
 	{
 		if ( !rcBuildRegionsMonotone (&context, *compHeightField, cfg.borderSize, cfg.minRegionArea, cfg.mergeRegionArea) )
 		{
@@ -1329,7 +1329,7 @@ extern "C" int NavMain(int argc, char **argv)
 			filterGaps = qfalse;
 		} else if(!Q_stricmp(argv[i], "-fast")) {
 			filterGaps = qfalse;
-			fast = qtrue;
+			fastGen = qtrue;
 		} else {
 			Sys_Printf("WARNING: Unknown option \"%s\"\n", argv[i]);
 		}
