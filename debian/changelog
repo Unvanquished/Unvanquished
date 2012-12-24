@@ -1,3 +1,11 @@
+unvanquished (0.10.0-3) unstable; urgency=low
+
+  * Pull in a few more bug fixes:
+    - Avoid “too many target locations” (game.so, on loading)
+    - Fix mirrors.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Wed, 05 Dec 2012 19:32:15 +0000
+
 unvanquished (0.10.0-2) unstable; urgency=low
 
   * Pull in a few bug fixes:
