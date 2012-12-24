@@ -50,19 +50,6 @@ void	main()
 	vec4 P = u_UnprojectMatrix * vec4(gl_FragCoord.xy, depth, 1.0);
 	P.xyz /= P.w;
 
-#if 0
-	#if defined(USE_PORTAL_CLIPPING)
-	{
-		float dist = dot(P.xyz, u_PortalPlane.xyz) - u_PortalPlane.w;
-		if(dist < 0.0)
-		{
-			discard;
-			return;
-		}
-	}
-	#endif
-#endif
-
 	// compute incident ray in world space
 	vec3 R = normalize(P.xyz - u_ViewOrigin);
 	//vec3 R = normalize(u_ViewOrigin - P.xyz);

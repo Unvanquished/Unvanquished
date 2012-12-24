@@ -49,8 +49,6 @@ class GLCompileMacro;
 
 class GLShader
 {
-//friend class GLCompileMacro_USE_ALPHA_TESTING;
-
 private:
 	GLShader &operator             = ( const GLShader & );
 
@@ -250,8 +248,6 @@ protected:
 // It also works regardless of RTTI is enabled or not.
 	enum EGLCompileMacro
 	{
-	  USE_ALPHA_TESTING,
-	  USE_PORTAL_CLIPPING,
 	  USE_FRUSTUM_CLIPPING,
 	  USE_VERTEX_SKINNING,
 	  USE_VERTEX_ANIMATION,
@@ -317,90 +313,6 @@ public:
 	}
 
 	virtual ~GLCompileMacro() {}
-};
-
-class GLCompileMacro_USE_ALPHA_TESTING :
-	GLCompileMacro
-{
-public:
-	GLCompileMacro_USE_ALPHA_TESTING( GLShader *shader ) :
-		GLCompileMacro( shader )
-	{
-	}
-
-	const char *GetName() const
-	{
-		return "USE_ALPHA_TESTING";
-	}
-
-	EGLCompileMacro GetType() const
-	{
-		return USE_ALPHA_TESTING;
-	}
-
-	void EnableAlphaTesting()
-	{
-		EnableMacro();
-	}
-
-	void DisableAlphaTesting()
-	{
-		DisableMacro();
-	}
-
-	void SetAlphaTesting( bool enable )
-	{
-		if ( enable )
-		{
-			EnableMacro();
-		}
-		else
-		{
-			DisableMacro();
-		}
-	}
-};
-
-class GLCompileMacro_USE_PORTAL_CLIPPING :
-	GLCompileMacro
-{
-public:
-	GLCompileMacro_USE_PORTAL_CLIPPING( GLShader *shader ) :
-		GLCompileMacro( shader )
-	{
-	}
-
-	const char *GetName() const
-	{
-		return "USE_PORTAL_CLIPPING";
-	}
-
-	EGLCompileMacro GetType() const
-	{
-		return USE_PORTAL_CLIPPING;
-	}
-
-	void EnablePortalClipping()
-	{
-		EnableMacro();
-	}
-
-	void DisablePortalClipping()
-	{
-		DisableMacro();
-	}
-
-	void SetPortalClipping( bool enable )
-	{
-		if ( enable )
-		{
-			EnableMacro();
-		}
-		else
-		{
-			DisableMacro();
-		}
-	}
 };
 
 class GLCompileMacro_USE_FRUSTUM_CLIPPING :
@@ -1258,28 +1170,56 @@ public:
 	}
 };
 
-class u_AlphaTest :
+class u_AlphaThreshold :
 	GLUniform
 {
 public:
-	u_AlphaTest( GLShader *shader ) :
+	u_AlphaThreshold( GLShader *shader ) :
 		GLUniform( shader )
 	{
 	}
 
 	const char *GetName() const
 	{
-		return "u_AlphaTest";
+		return "u_AlphaThreshold";
 	}
 
 	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
 	{
-		shaderProgram->u_AlphaTest = glGetUniformLocation( shaderProgram->program, GetName() );
+		shaderProgram->u_AlphaThreshold = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
-	void SetUniform_AlphaTest( uint32_t stateBits )
+	void SetUniform_AlphaThreshold( float alphaThreshold )
 	{
-		GLSL_SetUniform_AlphaTest( _shader->GetProgram(), stateBits );
+		GLSL_SetUniform_AlphaThreshold( _shader->GetProgram(), alphaThreshold );
+	}
+
+	void Set_AlphaTest( uint32_t stateBits )
+	{
+		float value;
+
+		switch( stateBits & GLS_ATEST_BITS ) {
+		case GLS_ATEST_GT_0:
+			value = 1.0f;
+			break;
+		case GLS_ATEST_LT_128:
+			value = -1.5f;
+			break;
+		case GLS_ATEST_GE_128:
+			value = 0.5f;
+			break;
+		case GLS_ATEST_GT_ENT:
+			value = 1.0f - backEnd.currentEntity->e.shaderRGBA[3] * (1.0f / 255.0f);
+			break;
+		case GLS_ATEST_LT_ENT:
+			value = -2.0f + backEnd.currentEntity->e.shaderRGBA[3] * (1.0f / 255.0f);
+			break;
+		default:
+			value = 1.5f;
+			break;
+		}
+
+		SetUniform_AlphaThreshold( value );
 	}
 };
 
@@ -2152,31 +2092,6 @@ public:
 	}
 };
 
-class u_PortalPlane :
-	GLUniform
-{
-public:
-	u_PortalPlane( GLShader *shader ) :
-		GLUniform( shader )
-	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_PortalPlane";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_PortalPlane = glGetUniformLocation( shaderProgram->program, GetName() );
-	}
-
-	void SetUniform_PortalPlane( const vec4_t v )
-	{
-		GLSL_SetUniform_PortalPlane( _shader->GetProgram(), v );
-	}
-};
-
 class u_PortalRange :
 	GLUniform
 {
@@ -2763,17 +2678,14 @@ class GLShader_generic :
 	public u_ColorMap,
 	public u_ColorTextureMatrix,
 	public u_ViewOrigin,
-	public u_AlphaTest,
+	public u_AlphaThreshold,
 	public u_ModelMatrix,
 	public u_ModelViewProjectionMatrix,
 	public u_ColorModulate,
 	public u_Color,
 	public u_BoneMatrix,
 	public u_VertexInterpolation,
-	public u_PortalPlane,
 	public GLDeformStage,
-	public GLCompileMacro_USE_PORTAL_CLIPPING,
-	public GLCompileMacro_USE_ALPHA_TESTING,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
@@ -2794,15 +2706,12 @@ class GLShader_lightMapping :
 	public u_SpecularTextureMatrix,
 	public u_ColorModulate,
 	public u_Color,
-	public u_AlphaTest,
+	public u_AlphaThreshold,
 	public u_ViewOrigin,
 	public u_ModelMatrix,
 	public u_ModelViewProjectionMatrix,
-	public u_PortalPlane,
 	public u_DepthScale,
 	public GLDeformStage,
-	public GLCompileMacro_USE_PORTAL_CLIPPING,
-	public GLCompileMacro_USE_ALPHA_TESTING,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING //,
@@ -2822,7 +2731,7 @@ class GLShader_vertexLighting_DBS_entity :
 	public u_DiffuseTextureMatrix,
 	public u_NormalTextureMatrix,
 	public u_SpecularTextureMatrix,
-	public u_AlphaTest,
+	public u_AlphaThreshold,
 	public u_AmbientColor,
 	public u_ViewOrigin,
 	public u_LightDir,
@@ -2831,12 +2740,9 @@ class GLShader_vertexLighting_DBS_entity :
 	public u_ModelViewProjectionMatrix,
 	public u_BoneMatrix,
 	public u_VertexInterpolation,
-	public u_PortalPlane,
 	public u_DepthScale,
 	public u_EnvironmentInterpolation,
 	public GLDeformStage,
-	public GLCompileMacro_USE_PORTAL_CLIPPING,
-	public GLCompileMacro_USE_ALPHA_TESTING,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
@@ -2861,16 +2767,13 @@ class GLShader_vertexLighting_DBS_world :
 	public u_SpecularTextureMatrix,
 	public u_ColorModulate,
 	public u_Color,
-	public u_AlphaTest,
+	public u_AlphaThreshold,
 	public u_ViewOrigin,
 	public u_ModelMatrix,
 	public u_ModelViewProjectionMatrix,
-	public u_PortalPlane,
 	public u_DepthScale,
 	public u_LightWrapAround,
 	public GLDeformStage,
-	public GLCompileMacro_USE_PORTAL_CLIPPING,
-	public GLCompileMacro_USE_ALPHA_TESTING,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_PARALLAX_MAPPING //,
@@ -2891,7 +2794,7 @@ class GLShader_forwardLighting_omniXYZ :
 	public u_DiffuseTextureMatrix,
 	public u_NormalTextureMatrix,
 	public u_SpecularTextureMatrix,
-	public u_AlphaTest,
+	public u_AlphaThreshold,
 	public u_ColorModulate,
 	public u_Color,
 	public u_ViewOrigin,
@@ -2907,11 +2810,8 @@ class GLShader_forwardLighting_omniXYZ :
 	public u_ModelViewProjectionMatrix,
 	public u_BoneMatrix,
 	public u_VertexInterpolation,
-	public u_PortalPlane,
 	public u_DepthScale,
 	public GLDeformStage,
-	public GLCompileMacro_USE_PORTAL_CLIPPING,
-	public GLCompileMacro_USE_ALPHA_TESTING,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
@@ -2934,7 +2834,7 @@ class GLShader_forwardLighting_projXYZ :
 	public u_DiffuseTextureMatrix,
 	public u_NormalTextureMatrix,
 	public u_SpecularTextureMatrix,
-	public u_AlphaTest,
+	public u_AlphaThreshold,
 	public u_ColorModulate,
 	public u_Color,
 	public u_ViewOrigin,
@@ -2951,11 +2851,8 @@ class GLShader_forwardLighting_projXYZ :
 	public u_ModelViewProjectionMatrix,
 	public u_BoneMatrix,
 	public u_VertexInterpolation,
-	public u_PortalPlane,
 	public u_DepthScale,
 	public GLDeformStage,
-	public GLCompileMacro_USE_PORTAL_CLIPPING,
-	public GLCompileMacro_USE_ALPHA_TESTING,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
@@ -2978,7 +2875,7 @@ class GLShader_forwardLighting_directionalSun :
 	public u_DiffuseTextureMatrix,
 	public u_NormalTextureMatrix,
 	public u_SpecularTextureMatrix,
-	public u_AlphaTest,
+	public u_AlphaThreshold,
 	public u_ColorModulate,
 	public u_Color,
 	public u_ViewOrigin,
@@ -2997,11 +2894,8 @@ class GLShader_forwardLighting_directionalSun :
 	public u_ModelViewProjectionMatrix,
 	public u_BoneMatrix,
 	public u_VertexInterpolation,
-	public u_PortalPlane,
 	public u_DepthScale,
 	public GLDeformStage,
-	public GLCompileMacro_USE_PORTAL_CLIPPING,
-	public GLCompileMacro_USE_ALPHA_TESTING,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
@@ -3034,9 +2928,7 @@ class GLShader_deferredLighting_omniXYZ :
 	public u_ModelMatrix,
 	public u_ModelViewProjectionMatrix,
 	public u_UnprojectMatrix,
-	public u_PortalPlane,
 	public GLDeformStage,
-	public GLCompileMacro_USE_PORTAL_CLIPPING,
 	public GLCompileMacro_USE_FRUSTUM_CLIPPING,
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_SHADOWING //,
@@ -3065,9 +2957,7 @@ class GLShader_deferredLighting_projXYZ :
 	public u_ModelMatrix,
 	public u_ModelViewProjectionMatrix,
 	public u_UnprojectMatrix,
-	public u_PortalPlane,
 	public GLDeformStage,
-	public GLCompileMacro_USE_PORTAL_CLIPPING,
 	public GLCompileMacro_USE_FRUSTUM_CLIPPING,
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_SHADOWING //,
@@ -3098,9 +2988,7 @@ class GLShader_deferredLighting_directionalSun :
 	public u_ModelViewProjectionMatrix,
 	public u_ViewMatrix,
 	public u_UnprojectMatrix,
-	public u_PortalPlane,
 	public GLDeformStage,
-	public GLCompileMacro_USE_PORTAL_CLIPPING,
 	public GLCompileMacro_USE_FRUSTUM_CLIPPING,
 	public GLCompileMacro_USE_NORMAL_MAPPING,
 	public GLCompileMacro_USE_SHADOWING //,
@@ -3118,7 +3006,7 @@ class GLShader_geometricFill :
 	public u_DiffuseTextureMatrix,
 	public u_NormalTextureMatrix,
 	public u_SpecularTextureMatrix,
-	public u_AlphaTest,
+	public u_AlphaThreshold,
 	public u_ColorModulate,
 	public u_Color,
 	public u_ViewOrigin,
@@ -3126,11 +3014,8 @@ class GLShader_geometricFill :
 	public u_ModelViewProjectionMatrix,
 	public u_BoneMatrix,
 	public u_VertexInterpolation,
-	public u_PortalPlane,
 	public u_DepthScale,
 	public GLDeformStage,
-	public GLCompileMacro_USE_PORTAL_CLIPPING,
-	public GLCompileMacro_USE_ALPHA_TESTING,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
@@ -3151,7 +3036,7 @@ class GLShader_shadowFill :
 	public GLShader,
 	public u_ColorTextureMatrix,
 	public u_ViewOrigin,
-	public u_AlphaTest,
+	public u_AlphaThreshold,
 	public u_LightOrigin,
 	public u_LightRadius,
 	public u_ModelMatrix,
@@ -3159,10 +3044,7 @@ class GLShader_shadowFill :
 	public u_Color,
 	public u_BoneMatrix,
 	public u_VertexInterpolation,
-	public u_PortalPlane,
 	public GLDeformStage,
-	public GLCompileMacro_USE_PORTAL_CLIPPING,
-	public GLCompileMacro_USE_ALPHA_TESTING,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
@@ -3185,9 +3067,7 @@ class GLShader_reflection :
 	public u_ModelViewProjectionMatrix,
 	public u_BoneMatrix,
 	public u_VertexInterpolation,
-	public u_PortalPlane,
 	public GLDeformStage,
-	public GLCompileMacro_USE_PORTAL_CLIPPING,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
@@ -3210,9 +3090,7 @@ class GLShader_skybox :
 	public u_ModelViewProjectionMatrix,
 	public u_BoneMatrix,
 	public u_VertexInterpolation,
-	public u_PortalPlane,
-	public GLDeformStage,
-	public GLCompileMacro_USE_PORTAL_CLIPPING
+	public GLDeformStage
 {
 public:
 	GLShader_skybox();
@@ -3227,12 +3105,10 @@ class GLShader_fogQuake3 :
 	public u_Color,
 	public u_BoneMatrix,
 	public u_VertexInterpolation,
-	public u_PortalPlane,
 	public u_FogDistanceVector,
 	public u_FogDepthVector,
 	public u_FogEyeT,
 	public GLDeformStage,
-	public GLCompileMacro_USE_PORTAL_CLIPPING,
 	public GLCompileMacro_USE_VERTEX_SKINNING,
 	public GLCompileMacro_USE_VERTEX_ANIMATION,
 	public GLCompileMacro_USE_DEFORM_VERTEXES,
@@ -3265,7 +3141,6 @@ class GLShader_heatHaze :
 	public GLShader,
 	public u_NormalTextureMatrix,
 	public u_ViewOrigin,
-//public u_AlphaTest,
 public u_DeformMagnitude,
 public u_ModelMatrix,
 public u_ModelViewProjectionMatrix,
@@ -3275,10 +3150,7 @@ public u_ColorModulate,
 public u_Color,
 public u_BoneMatrix,
 public u_VertexInterpolation,
-public u_PortalPlane,
 public GLDeformStage,
-public GLCompileMacro_USE_PORTAL_CLIPPING,
-//public GLCompileMacro_USE_ALPHA_TESTING,
 public GLCompileMacro_USE_VERTEX_SKINNING,
 public GLCompileMacro_USE_VERTEX_ANIMATION,
 public GLCompileMacro_USE_DEFORM_VERTEXES
@@ -3417,10 +3289,8 @@ class GLShader_deferredShadowing_proj :
 	public u_LightScale,
 	public u_LightAttenuationMatrix,
 	public u_ShadowMatrix,
-	public u_PortalPlane,
 	public u_ModelViewProjectionMatrix,
 	public u_UnprojectMatrix,
-	public GLCompileMacro_USE_PORTAL_CLIPPING,
 	public GLCompileMacro_USE_SHADOWING
 {
 public:

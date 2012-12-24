@@ -1045,27 +1045,12 @@ void Tess_StageIteratorSky( void )
 			R_BindVBO( tess.vbo );
 			R_BindIBO( tess.ibo );
 
-			gl_skyboxShader->SetPortalClipping( backEnd.viewParms.isPortal );
 			gl_skyboxShader->BindProgram();
 
 			gl_skyboxShader->SetUniform_ViewOrigin( backEnd.viewParms.orientation.origin );  // in world space
 
 			gl_skyboxShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
 			gl_skyboxShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-
-			// u_PortalPlane
-			if ( backEnd.viewParms.isPortal )
-			{
-				float plane[ 4 ];
-
-				// clipping plane in world space
-				plane[ 0 ] = backEnd.viewParms.portalPlane.normal[ 0 ];
-				plane[ 1 ] = backEnd.viewParms.portalPlane.normal[ 1 ];
-				plane[ 2 ] = backEnd.viewParms.portalPlane.normal[ 2 ];
-				plane[ 3 ] = backEnd.viewParms.portalPlane.dist;
-
-				gl_skyboxShader->SetUniform_PortalPlane( plane );
-			}
 
 			gl_skyboxShader->SetRequiredVertexPointers();
 
