@@ -2355,7 +2355,7 @@ char *Q_CleanStr( char *string )
 		{
 			s++;
 		}
-		else if ( c >= 0x20 && c <= 0x7E )
+		else if ( c >= 0x20 && c != 0x7F )
 		{
 			*d++ = c;
 		}
