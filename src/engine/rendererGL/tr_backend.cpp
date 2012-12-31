@@ -2090,7 +2090,7 @@ static void RB_RenderInteractions()
 			}
 		}
 
-		if ( !shader->interactLight )
+		if ( !shader || !shader->interactLight )
 		{
 			// skip this interaction because the surface shader has no ability to interact with light
 			// this will save texcoords and matrix calculations
