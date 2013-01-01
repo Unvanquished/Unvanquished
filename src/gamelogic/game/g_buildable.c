@@ -179,6 +179,8 @@ qboolean G_FindPower( gentity_t *self, qboolean searchUnspawned )
 	int       minDistance = REPEATER_BASESIZE + 1;
 	vec3_t    temp_v;
 
+	int buildPoints = g_humanBuildPoints.integer;
+
 	if ( self->buildableTeam != TEAM_HUMANS )
 	{
 		return qfalse;
@@ -221,7 +223,10 @@ qboolean G_FindPower( gentity_t *self, qboolean searchUnspawned )
 				// Only power as much BP as the reactor can hold
 				if ( self->s.modelindex != BA_NONE )
 				{
-					int buildPoints = g_humanBuildPoints.integer;
+					if ( g_humanRepeaterBuildPoints.integer )
+					{
+						buildPoints = g_humanBuildPoints.integer;
+					}
 
 					// Scan the buildables in the reactor zone
 					for ( j = MAX_CLIENTS, ent2 = g_entities + j; j < level.num_entities; j++, ent2++ )
@@ -273,7 +278,10 @@ qboolean G_FindPower( gentity_t *self, qboolean searchUnspawned )
 
 				if ( self->s.modelindex != BA_NONE )
 				{
-					int buildPoints = g_humanRepeaterBuildPoints.integer;
+					if ( g_humanRepeaterBuildPoints.integer )
+					{
+						buildPoints = g_humanRepeaterBuildPoints.integer;
+					}
 
 					// Scan the buildables in the repeater zone
 					for ( j = MAX_CLIENTS, ent2 = g_entities + j; j < level.num_entities; j++, ent2++ )
@@ -415,7 +423,7 @@ int G_GetBuildPoints( const vec3_t pos, team_t team )
 	{
 		gentity_t *powerPoint = G_PowerEntityForPoint( pos );
 
-		if ( powerPoint && powerPoint->s.modelindex == BA_H_REACTOR )
+		if ( !g_humanRepeaterBuildPoints.integer || powerPoint && powerPoint->s.modelindex == BA_H_REACTOR )
 		{
 			return level.humanBuildPoints;
 		}

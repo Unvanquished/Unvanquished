@@ -1382,7 +1382,7 @@ void G_CalculateBuildPoints( void )
 
 			if ( power )
 			{
-				if ( power->s.modelindex == BA_H_REACTOR )
+				if ( !g_humanRepeaterBuildPoints.integer || power->s.modelindex == BA_H_REACTOR )
 				{
 					level.humanBuildPoints -= cost;
 				}
