@@ -2090,7 +2090,7 @@ static void RB_RenderInteractions()
 			}
 		}
 
-		if ( !shader->interactLight )
+		if ( !shader || !shader->interactLight )
 		{
 			// skip this interaction because the surface shader has no ability to interact with light
 			// this will save texcoords and matrix calculations
@@ -6756,7 +6756,7 @@ void RB_RenderGlobalFog()
 
 void RB_RenderBloom()
 {
-	int      i, j;
+	int      i, j, flip = 0;
 	matrix_t ortho;
 
 	GLimp_LogComment( "--- RB_RenderBloom ---\n" );
@@ -6850,11 +6850,12 @@ void RB_RenderBloom()
 		Tess_InstantQuad( backEnd.viewParms.viewportVerts );
 
 		// render bloom in multiple passes
+		GL_Bind( tr.contrastRenderFBOImage );
 		for ( i = 0; i < 2; i++ )
 		{
 			for ( j = 0; j < r_bloomPasses->integer; j++ )
 			{
-				R_BindFBO( tr.bloomRenderFBO[( j + 1 ) % 2 ] );
+				R_BindFBO( tr.bloomRenderFBO[ flip ] );
 
 				GL_ClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
 				glClear( GL_COLOR_BUFFER_BIT );
@@ -6862,15 +6863,6 @@ void RB_RenderBloom()
 				GL_State( GLS_DEPTHTEST_DISABLE );
 
 				GL_SelectTexture( 0 );
-
-				if ( j == 0 )
-				{
-					GL_Bind( tr.contrastRenderFBOImage );
-				}
-				else
-				{
-					GL_Bind( tr.bloomRenderFBOImage[ j % 2 ] );
-				}
 
 				GL_PushMatrix();
 				GL_LoadModelViewMatrix( matrixIdentity );
@@ -6896,54 +6888,45 @@ void RB_RenderBloom()
 				GL_PopMatrix();
 
 				Tess_InstantQuad( backEnd.viewParms.viewportVerts );
+				GL_Bind( tr.bloomRenderFBOImage[ flip ] );
+				flip ^= 1;
 			}
-
-			// add offscreen processed bloom to screen
-			if ( DS_STANDARD_ENABLED() )
-			{
-				R_BindFBO( tr.geometricRenderFBO );
-				glDrawBuffers( 1, geometricRenderTargets );
-
-				gl_screenShader->BindProgram();
-				GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
-				glVertexAttrib4fv( ATTR_INDEX_COLOR, colorWhite );
-
-				gl_screenShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-
-				GL_SelectTexture( 0 );
-				GL_Bind( tr.bloomRenderFBOImage[ j % 2 ] );
-			}
-			else if ( HDR_ENABLED() )
-			{
-				R_BindFBO( tr.deferredRenderFBO );
-
-				gl_screenShader->BindProgram();
-				GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
-				glVertexAttrib4fv( ATTR_INDEX_COLOR, colorWhite );
-
-				gl_screenShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-
-				GL_SelectTexture( 0 );
-				GL_Bind( tr.bloomRenderFBOImage[ j % 2 ] );
-				//GL_Bind(tr.contrastRenderFBOImage);
-			}
-			else
-			{
-				R_BindNullFBO();
-
-				gl_screenShader->BindProgram();
-				GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
-				glVertexAttrib4fv( ATTR_INDEX_COLOR, colorWhite );
-
-				gl_screenShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-
-				GL_SelectTexture( 0 );
-				GL_Bind( tr.bloomRenderFBOImage[ j % 2 ] );
-				//GL_Bind(tr.contrastRenderFBOImage);
-			}
-
-			Tess_InstantQuad( backEnd.viewParms.viewportVerts );
 		}
+
+		// add offscreen processed bloom to screen
+		if ( DS_STANDARD_ENABLED() )
+		{
+			R_BindFBO( tr.geometricRenderFBO );
+			glDrawBuffers( 1, geometricRenderTargets );
+
+			gl_screenShader->BindProgram();
+			GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
+			glVertexAttrib4fv( ATTR_INDEX_COLOR, colorWhite );
+
+			gl_screenShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+		}
+		else if ( HDR_ENABLED() )
+		{
+			R_BindFBO( tr.deferredRenderFBO );
+
+			gl_screenShader->BindProgram();
+			GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
+			glVertexAttrib4fv( ATTR_INDEX_COLOR, colorWhite );
+
+			gl_screenShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+		}
+		else
+		{
+			R_BindNullFBO();
+
+			gl_screenShader->BindProgram();
+			GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
+			glVertexAttrib4fv( ATTR_INDEX_COLOR, colorWhite );
+
+			gl_screenShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+		}
+
+		Tess_InstantQuad( backEnd.viewParms.viewportVerts );
 	}
 
 	// go back to 3D

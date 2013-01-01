@@ -326,7 +326,8 @@ extern int memcmp( void *, void *, size_t );
 
 // rain - increased to 36 to match MAX_NETNAME, fixes #13 - UI stuff breaks
 // with very long names
-#define MAX_NAME_LENGTH    36 // max length of a client name
+#define MAX_NAME_LENGTH    128 // max length of a client name, in bytes
+#define MAX_NAME_LENGTH_CP 32  // max length of a client name, in Unicode chars
 
 #define MAX_SAY_TEXT       400
 
