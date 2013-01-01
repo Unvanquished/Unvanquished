@@ -777,8 +777,8 @@ msgid "Create Server"
 msgstr "Створити сервер"
 
 #. main.menu: 80
-msgid "Unvanquished (C) 2011-2012 Unvanquished Development"
-msgstr "Unvanquished © 2011-2012 Unvanquished Development"
+msgid "Unvanquished © 2011-2013 Unvanquished Development"
+msgstr "Unvanquished © 2011-2013 Unvanquished Development"
 
 #. mod.menu: 75
 #. profiles.menu: 130
