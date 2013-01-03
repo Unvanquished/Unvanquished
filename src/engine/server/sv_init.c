@@ -628,10 +628,10 @@ void SV_SpawnServer( char *server )
 	// server has changed
 	svs.snapFlagServerBit ^= SNAPFLAG_SERVERCOUNT;
 
-	// set nextmap to the same map, but it may be overridden
+	// set sv_nextmap to the same map, but it may be overridden
 	// by the game startup or another console command
-	Cvar_Set( "nextmap", "map_restart 0" );
-//  Cvar_Set( "nextmap", va("map %s", server) );
+	Cvar_Set( "sv_nextmap", "map_restart 0" );
+//  Cvar_Set( "sv_nextmap", va("map %s", server) );
 
 	SV_SetExpectedHunkUsage( va( "maps/%s.bsp", server ) );
 
@@ -868,7 +868,7 @@ void SV_Init( void )
 	sv_fps = Cvar_Get( "sv_fps", "40", CVAR_TEMP );
 	sv_timeout = Cvar_Get( "sv_timeout", "240", CVAR_TEMP );
 	sv_zombietime = Cvar_Get( "sv_zombietime", "2", CVAR_TEMP );
-	Cvar_Get( "nextmap", "", CVAR_TEMP );
+	Cvar_Get( "sv_nextmap", "", CVAR_TEMP );
 
 	sv_allowDownload = Cvar_Get( "sv_allowDownload", "1", CVAR_ARCHIVE );
 	sv_master[ 0 ] = Cvar_Get( "sv_master1", MASTER_SERVER_NAME, 0 );
