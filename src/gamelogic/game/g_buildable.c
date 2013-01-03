@@ -3648,9 +3648,10 @@ static itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable,
 		}
 
 		// Check if this is a repeater and it's in range
+		// (fudge factor +1 should avoid instant repeater destruction)
 		if ( buildable == BA_H_REPEATER &&
 		     buildable == ent->s.modelindex &&
-		     Distance( ent->s.origin, origin ) < REPEATER_BASESIZE )
+		     Distance( ent->s.origin, origin ) <= REPEATER_BASESIZE + 1 )
 		{
 			repeaterInRange = qtrue;
 			repeaterInRangeCount++;
