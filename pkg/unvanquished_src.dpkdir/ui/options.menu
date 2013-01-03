@@ -531,6 +531,9 @@
 			"Off" 0 "No Fade" 1 "Timed Fade" 2 "Real Fade" 3,
 			play "sound/misc/menu1.wav",
 			10 )
+	YESNOX	( gsoftware, "Bloom:", "r_bloom",
+			play "sound/misc/menu1.wav"; uiScript glCustom,
+			11 )
 
 //////// GL INFO
 
