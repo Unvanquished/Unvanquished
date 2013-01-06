@@ -123,7 +123,7 @@
       borderColor 1 1 1 1
     }
 
-    CVAR ( expert, "Host Name AAA:", "sv_hostname", 40, 0 )
+    CVAR ( expert, "Host Name:", "sv_hostname", 40, 0 )
 
     CVAR_INT ( general, "Time Limit:", "timelimit", 4, 1 )
 
