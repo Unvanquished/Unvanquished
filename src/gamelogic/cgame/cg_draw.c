@@ -4585,13 +4585,11 @@ static qboolean CG_DrawQueue( void )
 	{
 		Com_sprintf( buffer, MAX_STRING_CHARS, _("There are no spawns remaining") );
 	}
-	else if ( cg.snap->ps.persistant[ PERS_SPAWNS ] == 1 )
-	{
-		Com_sprintf( buffer, MAX_STRING_CHARS, _("There is 1 spawn remaining") );
-	}
 	else
 	{
-		Com_sprintf( buffer, MAX_STRING_CHARS, _("There are %d spawns remaining"),
+		Com_sprintf( buffer, MAX_STRING_CHARS,
+		             P_("There is 1 spawn remaining", "There are %d spawns remaining",
+		                cg.snap->ps.persistant[ PERS_SPAWNS ]),
 		             cg.snap->ps.persistant[ PERS_SPAWNS ] );
 	}
 
