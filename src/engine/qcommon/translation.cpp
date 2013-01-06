@@ -331,6 +331,8 @@ extern "C" void Trans_Init( void )
 									  locale->country[0] ? "_" : "",
 									  locale->country ) );
 		}
+
+		FL_FreeLocale( &locale );
 	}
 
 	Trans_SetLanguage( language->string );
