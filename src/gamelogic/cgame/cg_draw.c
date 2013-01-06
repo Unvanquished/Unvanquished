@@ -2010,7 +2010,7 @@ CG_DrawTeamLabel
 static void CG_DrawTeamLabel( rectDef_t *rect, team_t team, float text_x, float text_y,
                               vec4_t color, float scale, int textalign, int textvalign, int textStyle )
 {
-	char  *t;
+	const char *t;
 	char  stage[ MAX_TOKEN_CHARS ];
 	char  *s;
 	float tx, ty;
@@ -2020,21 +2020,21 @@ static void CG_DrawTeamLabel( rectDef_t *rect, team_t team, float text_x, float 
 	switch ( team )
 	{
 		case TEAM_ALIENS:
-			t = "Aliens";
+			t = _("Aliens");
 
 			if ( cg.intermissionStarted )
 			{
-				Com_sprintf( stage, MAX_TOKEN_CHARS, "(Stage %d)", cgs.alienStage + 1 );
+				Com_sprintf( stage, MAX_TOKEN_CHARS, _("(Stage %d)"), cgs.alienStage + 1 );
 			}
 
 			break;
 
 		case TEAM_HUMANS:
-			t = "Humans";
+			t = _("Humans");
 
 			if ( cg.intermissionStarted )
 			{
-				Com_sprintf( stage, MAX_TOKEN_CHARS, "(Stage %d)", cgs.humanStage + 1 );
+				Com_sprintf( stage, MAX_TOKEN_CHARS, _("(Stage %d)"), cgs.humanStage + 1 );
 			}
 
 			break;
@@ -2092,16 +2092,16 @@ static void CG_DrawStageReport( rectDef_t *rect, float text_x, float text_y,
 
 		if ( cgs.alienNextStageThreshold < 0 )
 		{
-			Com_sprintf( s, MAX_TOKEN_CHARS, "Stage %d", cgs.alienStage + 1 );
+			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d"), cgs.alienStage + 1 );
 		}
 		else if ( kills == 1 )
 		{
-			Com_sprintf( s, MAX_TOKEN_CHARS, "Stage %d, 1 frag for next stage",
+			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, 1 frag for next stage"),
 			             cgs.alienStage + 1 );
 		}
 		else
 		{
-			Com_sprintf( s, MAX_TOKEN_CHARS, "Stage %d, %d frags for next stage",
+			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %d frags for next stage"),
 			             cgs.alienStage + 1, kills );
 		}
 	}
@@ -2116,16 +2116,16 @@ static void CG_DrawStageReport( rectDef_t *rect, float text_x, float text_y,
 
 		if ( cgs.humanNextStageThreshold < 0 )
 		{
-			Com_sprintf( s, MAX_TOKEN_CHARS, "Stage %d", cgs.humanStage + 1 );
+			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d"), cgs.humanStage + 1 );
 		}
 		else if ( credits == 1 )
 		{
-			Com_sprintf( s, MAX_TOKEN_CHARS, "Stage %d, 1 credit for next stage",
+			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, 1 credit for next stage"),
 			             cgs.humanStage + 1 );
 		}
 		else
 		{
-			Com_sprintf( s, MAX_TOKEN_CHARS, "Stage %d, %d credits for next stage",
+			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %d credits for next stage"),
 			             cgs.humanStage + 1, credits );
 		}
 	}
@@ -2761,7 +2761,7 @@ static void CG_DrawDisconnect( void )
 	}
 
 	// also add text in center of screen
-	s = "Connection Interrupted";
+	s = _("Connection Interrupted");
 	w = UI_Text_Width( s, 0.7f );
 	UI_Text_Paint( 320 - w / 2, 100, 0.7f, color, s, 0, ITEM_TEXTSTYLE_SHADOWED );
 
@@ -4571,11 +4571,11 @@ static qboolean CG_DrawQueue( void )
 
 	if ( position == 1 )
 	{
-		Com_sprintf( buffer, MAX_STRING_CHARS, "You are at the front of the spawn queue" );
+		Com_sprintf( buffer, MAX_STRING_CHARS, _("You are at the front of the spawn queue") );
 	}
 	else
 	{
-		Com_sprintf( buffer, MAX_STRING_CHARS, "You are at position %d in the spawn queue", position );
+		Com_sprintf( buffer, MAX_STRING_CHARS, _("You are at position %d in the spawn queue"), position );
 	}
 
 	w = UI_Text_Width( buffer, 0.7f );
@@ -4583,15 +4583,15 @@ static qboolean CG_DrawQueue( void )
 
 	if ( cg.snap->ps.persistant[ PERS_SPAWNS ] == 0 )
 	{
-		Com_sprintf( buffer, MAX_STRING_CHARS, "There are no spawns remaining" );
+		Com_sprintf( buffer, MAX_STRING_CHARS, _("There are no spawns remaining") );
 	}
 	else if ( cg.snap->ps.persistant[ PERS_SPAWNS ] == 1 )
 	{
-		Com_sprintf( buffer, MAX_STRING_CHARS, "There is 1 spawn remaining" );
+		Com_sprintf( buffer, MAX_STRING_CHARS, _("There is 1 spawn remaining") );
 	}
 	else
 	{
-		Com_sprintf( buffer, MAX_STRING_CHARS, "There are %d spawns remaining",
+		Com_sprintf( buffer, MAX_STRING_CHARS, _("There are %d spawns remaining"),
 		             cg.snap->ps.persistant[ PERS_SPAWNS ] );
 	}
 
@@ -4612,7 +4612,7 @@ static void CG_DrawWarmup( void )
 	int   w;
 	int   h;
 	float size = 0.5f;
-	char  text[ MAX_STRING_CHARS ] = "Warmup Time:";
+	char  text[ MAX_STRING_CHARS ];
 
 	if ( !cg.warmupTime )
 	{
@@ -4626,11 +4626,12 @@ static void CG_DrawWarmup( void )
 		return;
 	}
 
+	strncpy( text, _( "Warmup Time:" ), sizeof( text ) );
 	w = UI_Text_Width( text, size );
 	h = UI_Text_Height( text, size );
 	UI_Text_Paint( 320 - w / 2, 200, size, colorWhite, text, 0, ITEM_TEXTSTYLE_SHADOWED );
 
-	Com_sprintf( text, sizeof( text ), "%s", sec ? va( "%d", sec ) : "FIGHT!" );
+	Com_sprintf( text, sizeof( text ), "%s", sec ? va( "%d", sec ) : _("FIGHT!") );
 
 	w = UI_Text_Width( text, size );
 	UI_Text_Paint( 320 - w / 2, 200 + 1.5f * h, size, colorWhite, text, 0, ITEM_TEXTSTYLE_SHADOWED );

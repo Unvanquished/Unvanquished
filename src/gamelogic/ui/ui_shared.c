@@ -326,16 +326,16 @@ const char *String_Alloc( const char *p )
 void String_Report( void )
 {
 	float f;
-	Com_Printf("%s", _( "Memory/String Pool Info\n" ));
+	Com_Printf("%s", "Memory/String Pool Info\n" );
 	Com_Printf( "----------------\n" );
 	f = strPoolIndex;
 	f /= STRING_POOL_SIZE;
 	f *= 100;
-	Com_Printf(_( "String Pool is %.1f%% full, %i bytes out of %i used.\n"), f, strPoolIndex, STRING_POOL_SIZE );
+	Com_Printf( "String Pool is %.1f%% full, %i bytes out of %i used.\n", f, strPoolIndex, STRING_POOL_SIZE );
 	f = allocPoint;
 	f /= MEM_POOL_SIZE;
 	f *= 100;
-	Com_Printf(_( "Memory Pool is %.1f%% full, %i bytes out of %i used.\n"), f, allocPoint, MEM_POOL_SIZE );
+	Com_Printf( "Memory Pool is %.1f%% full, %i bytes out of %i used.\n", f, allocPoint, MEM_POOL_SIZE );
 }
 
 /*
@@ -5890,11 +5890,11 @@ void Item_YesNo_Paint( itemDef_t *item )
 	{
 		Item_Text_Paint( item );
 		UI_Text_Paint( item->textRect.x + item->textRect.w + 8, item->textRect.y, item->textscale, newColor,
-		               ( value != 0 ) ? "Yes" : "No", 0, item->textStyle );
+		               ( value != 0 ) ? _("Yes") : _("No"), 0, item->textStyle );
 	}
 	else
 	{
-		UI_Text_Paint( item->textRect.x, item->textRect.y, item->textscale, newColor, ( value != 0 ) ? "Yes" : "No", 0,
+		UI_Text_Paint( item->textRect.x, item->textRect.y, item->textscale, newColor, ( value != 0 ) ? _("Yes") : _("No"), 0,
 		               item->textStyle );
 	}
 }
@@ -5920,11 +5920,11 @@ void Item_Multi_Paint( itemDef_t *item )
 	{
 		Item_Text_Paint( item );
 		UI_Text_Paint( item->textRect.x + item->textRect.w + ITEM_VALUE_OFFSET, item->textRect.y,
-		               item->textscale, newColor, text, 0, item->textStyle );
+		               item->textscale, newColor, _(text), 0, item->textStyle );
 	}
 	else
 	{
-		UI_Text_Paint( item->textRect.x, item->textRect.y, item->textscale, newColor, text, 0, item->textStyle );
+		UI_Text_Paint( item->textRect.x, item->textRect.y, item->textscale, newColor, _(text), 0, item->textStyle );
 	}
 }
 
@@ -5953,11 +5953,11 @@ void Item_Cycle_Paint( itemDef_t *item )
 	{
 		Item_Text_Paint( item );
 		UI_Text_Paint( item->textRect.x + item->textRect.w + ITEM_VALUE_OFFSET, item->textRect.y,
-		               item->textscale, newColor, text, 0, item->textStyle );
+		               item->textscale, newColor, _(text), 0, item->textStyle );
 	}
 	else
 	{
-		UI_Text_Paint( item->textRect.x, item->textRect.y, item->textscale, newColor, text, 0, item->textStyle );
+		UI_Text_Paint( item->textRect.x, item->textRect.y, item->textscale, newColor, _(text), 0, item->textStyle );
 	}
 }
 
@@ -6289,7 +6289,7 @@ void Item_Bind_Paint( itemDef_t *item )
 		if ( g_bindItem == item && g_waitingForKey )
 		{
 			UI_Text_Paint( item->textRect.x + item->textRect.w + ITEM_VALUE_OFFSET, item->textRect.y,
-			               item->textscale, newColor, "Press key", 0, item->textStyle );
+			               item->textscale, newColor, _("Press key"), 0, item->textStyle );
 		}
 		else
 		{
@@ -6614,7 +6614,7 @@ void Item_ListBoxRow_Paint( itemDef_t *item, int row, int renderPos, qboolean hi
 
 					UI_Text_Paint( x + columnPos + alignOffset,
 					               y + m + ( ( listPtr->elementHeight - m ) / 2.0f ),
-					               item->textscale, item->window.foreColor, text, 0,
+					               item->textscale, item->window.foreColor, _(text), 0,
 					               item->textStyle );
 				}
 
@@ -6645,7 +6645,7 @@ void Item_ListBoxRow_Paint( itemDef_t *item, int row, int renderPos, qboolean hi
 			else if ( text[ 0 ] )
 			{
 				UI_Text_Paint( x + offset, y + m + ( ( listPtr->elementHeight - m ) / 2.0f ),
-				               item->textscale, item->window.foreColor, text, 0,
+				               item->textscale, item->window.foreColor, _(text), 0,
 				               item->textStyle );
 			}
 
@@ -6811,7 +6811,7 @@ void Item_OwnerDraw_Paint( itemDef_t *item )
 
 				UI_Text_Paint( item->textRect.x + item->textRect.w + ITEM_VALUE_OFFSET,
 				               item->textRect.y, item->textscale,
-				               color, text, 0, item->textStyle );
+				               color, _(text), 0, item->textStyle );
 			}
 			else
 			{

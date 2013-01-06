@@ -248,7 +248,7 @@ static void CG_AnnounceAlienStageTransition( stage_t from, stage_t to )
 	}
 
 	trap_S_StartLocalSound( cgs.media.alienStageTransition, CHAN_ANNOUNCER );
-	CG_CenterPrint( "We have evolved!", 200, GIANTCHAR_WIDTH * 4 );
+	CG_CenterPrint( _("We have evolved!"), 200, GIANTCHAR_WIDTH * 4 );
 }
 
 /*
@@ -264,7 +264,7 @@ static void CG_AnnounceHumanStageTransition( stage_t from, stage_t to )
 	}
 
 	trap_S_StartLocalSound( cgs.media.humanStageTransition, CHAN_ANNOUNCER );
-	CG_CenterPrint( "Reinforcements have arrived!", 200, GIANTCHAR_WIDTH * 4 );
+	CG_CenterPrint( _("Reinforcements have arrived!"), 200, GIANTCHAR_WIDTH * 4 );
 }
 
 /*
@@ -857,7 +857,7 @@ void CG_Menu( int menu, int arg )
 
 		case MN_A_CANTEVOLVE:
 			shortMsg = va( _("You cannot evolve into a %s"),
-			               BG_ClassConfig( arg )->humanName );
+			               _( BG_ClassConfig( arg )->humanName ) );
 			type = DT_ARMOURYEVOLVE;
 			break;
 
@@ -873,19 +873,19 @@ void CG_Menu( int menu, int arg )
 
 		case MN_A_CLASSNOTSPAWN:
 			shortMsg = va( _("You cannot spawn as a %s"),
-			               BG_ClassConfig( arg )->humanName );
+			               _( BG_ClassConfig( arg )->humanName ) );
 			type = DT_ARMOURYEVOLVE;
 			break;
 
 		case MN_A_CLASSNOTALLOWED:
 			shortMsg = va( _("The %s is not allowed"),
-			               BG_ClassConfig( arg )->humanName );
+			               _( BG_ClassConfig( arg )->humanName ) );
 			type = DT_ARMOURYEVOLVE;
 			break;
 
 		case MN_A_CLASSNOTATSTAGE:
 			shortMsg = va( _("The %s is not allowed at Stage %d"),
-			               BG_ClassConfig( arg )->humanName,
+			               _( BG_ClassConfig( arg )->humanName ),
 			               cgs.alienStage + 1 );
 			type = DT_ARMOURYEVOLVE;
 			break;
@@ -1155,7 +1155,7 @@ static voiceTrack_t *CG_VoiceTrack( char *voice, int cmd, int track )
 
 	if ( !v )
 	{
-		CG_Printf(_( "[skipnotify]WARNING: could not find voice \"%s\"\n"), voice );
+		CG_Printf( "[skipnotify]WARNING: could not find voice \"%s\"\n", voice );
 		return NULL;
 	}
 
@@ -1163,8 +1163,8 @@ static voiceTrack_t *CG_VoiceTrack( char *voice, int cmd, int track )
 
 	if ( !c )
 	{
-		CG_Printf(_( "[skipnotify]WARNING: could not find command %d "
-		           "in voice \"%s\"\n"), cmd, voice );
+		CG_Printf( "[skipnotify]WARNING: could not find command %d "
+		           "in voice \"%s\"\n", cmd, voice );
 		return NULL;
 	}
 
@@ -1172,8 +1172,8 @@ static voiceTrack_t *CG_VoiceTrack( char *voice, int cmd, int track )
 
 	if ( !t )
 	{
-		CG_Printf(_( "[skipnotify]WARNING: could not find track %d for command %d in "
-		           "voice \"%s\"\n"), track, cmd, voice );
+		CG_Printf( "[skipnotify]WARNING: could not find track %d for command %d in "
+		           "voice \"%s\"\n", track, cmd, voice );
 		return NULL;
 	}
 
