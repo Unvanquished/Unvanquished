@@ -901,7 +901,7 @@ static void UI_BuildFindPlayerList( qboolean force )
 		        int count = uiInfo.numFoundPlayerServers - 1;
 			Com_sprintf( uiInfo.foundPlayerServerNames[ count ],
 			             sizeof( uiInfo.foundPlayerServerAddresses[ 0 ] ),
-			             N_( "%d server found with player %s",
+			             P_( "%d server found with player %s",
 			                 "%d servers found with player %s", count ),
                                      count, uiInfo.findPlayerName );
 		}
