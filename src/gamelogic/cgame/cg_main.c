@@ -1739,7 +1739,7 @@ void CG_LoadMenus( const char *menuFile )
 
 	if ( !f )
 	{
-		Com_Printf( _( S_COLOR_YELLOW  "menu file not found: %s, using default\n"), menuFile );
+		Com_Printf( S_COLOR_YELLOW  "menu file not found: %s, using default\n", menuFile );
 		len = trap_FS_FOpenFile( "ui/hud.txt", &f, FS_READ );
 
 		if ( !f )

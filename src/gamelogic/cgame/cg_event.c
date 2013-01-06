@@ -339,7 +339,7 @@ static void CG_Obituary( entityState_t *ent )
 			           targetName,
 			           ( teamKill ) ? _("^1TEAMMATE^7 ") : "",
 			           attackerName,
-			           ( attackerClass != -1 ) ? BG_ClassConfig( attackerClass )->humanName : NULL );
+			           ( attackerClass != -1 ) ? _( BG_ClassConfig( attackerClass )->humanName ) : NULL );
 
 			if ( teamKill && attacker == cg.clientNum )
 			{

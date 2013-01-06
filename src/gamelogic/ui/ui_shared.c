@@ -326,16 +326,16 @@ const char *String_Alloc( const char *p )
 void String_Report( void )
 {
 	float f;
-	Com_Printf("%s", _( "Memory/String Pool Info\n" ));
+	Com_Printf("%s", "Memory/String Pool Info\n" );
 	Com_Printf( "----------------\n" );
 	f = strPoolIndex;
 	f /= STRING_POOL_SIZE;
 	f *= 100;
-	Com_Printf(_( "String Pool is %.1f%% full, %i bytes out of %i used.\n"), f, strPoolIndex, STRING_POOL_SIZE );
+	Com_Printf( "String Pool is %.1f%% full, %i bytes out of %i used.\n", f, strPoolIndex, STRING_POOL_SIZE );
 	f = allocPoint;
 	f /= MEM_POOL_SIZE;
 	f *= 100;
-	Com_Printf(_( "Memory Pool is %.1f%% full, %i bytes out of %i used.\n"), f, allocPoint, MEM_POOL_SIZE );
+	Com_Printf( "Memory Pool is %.1f%% full, %i bytes out of %i used.\n", f, allocPoint, MEM_POOL_SIZE );
 }
 
 /*

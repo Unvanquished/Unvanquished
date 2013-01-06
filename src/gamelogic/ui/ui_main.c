@@ -35,9 +35,9 @@ uiInfo_t          uiInfo;
 
 static const char *const netSources[] =
 {
-	"LAN",
-	"Internet",
-	"Favorites"
+	N_( "LAN" ),
+	N_( "Internet" ),
+	N_( "Favorites" )
 };
 
 static const int  numNetSources = ARRAY_LEN( netSources );
@@ -894,15 +894,15 @@ static void UI_BuildFindPlayerList( qboolean force )
 		if ( !uiInfo.numFoundPlayerServers )
 		{
 			Com_sprintf( uiInfo.foundPlayerServerNames[ uiInfo.numFoundPlayerServers - 1 ],
-			             sizeof( uiInfo.foundPlayerServerAddresses[ 0 ] ), "no servers found" );
+			             sizeof( uiInfo.foundPlayerServerAddresses[ 0 ] ), _("no servers found") );
 		}
 		else
 		{
 		        int count = uiInfo.numFoundPlayerServers - 1;
 			Com_sprintf( uiInfo.foundPlayerServerNames[ count ],
 			             sizeof( uiInfo.foundPlayerServerAddresses[ 0 ] ),
-			             P_( "%d server found with player %s",
-			                 "%d servers found with player %s", count ),
+			             P_( _("%d server found with player %s"),
+			                 _("%d servers found with player %s"), count ),
                                      count, uiInfo.findPlayerName );
 		}
 
@@ -1536,7 +1536,7 @@ qboolean UI_ParseMenu( const char *menuFile )
 
 	if ( !handle )
 	{
-		Com_Printf( _( S_COLOR_YELLOW  "WARNING: Menu file %s not found\n"),
+		Com_Printf( S_COLOR_YELLOW  "WARNING: Menu file %s not found\n",
 		            menuFile );
 		return qfalse;
 	}
@@ -1714,7 +1714,7 @@ void UI_LoadHelp( const char *helpFile )
 
 	if ( !handle )
 	{
-		Com_Printf( _( S_COLOR_YELLOW  "WARNING: help file '%s' not found!\n"),
+		Com_Printf( S_COLOR_YELLOW  "WARNING: help file '%s' not found!\n",
 		            helpFile );
 		return;
 	}
@@ -1722,8 +1722,8 @@ void UI_LoadHelp( const char *helpFile )
 	if ( !trap_Parse_ReadToken( handle, &token ) ||
 	     token.string[ 0 ] == 0 || token.string[ 0 ] != '{' )
 	{
-		Com_Printf( _( S_COLOR_YELLOW  "WARNING: help file '%s' does not start with "
-		            "'{'\n"), helpFile );
+		Com_Printf( S_COLOR_YELLOW  "WARNING: help file '%s' does not start with "
+		            "'{'\n", helpFile );
 		return;
 	}
 
@@ -1810,7 +1810,7 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 {
 	int        value = 0;
 	const char *s = "";
-	char       *string = "";
+	const char *string = "";
 
 	int        class, credits;
 	char       ui_currentClass[ MAX_STRING_CHARS ];
@@ -1822,7 +1822,7 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 	switch ( item->type )
 	{
 		case INFOTYPE_TEXT:
-			s = item->v.text;
+			s = _( item->v.text );
 			break;
 
 		case INFOTYPE_CLASS:
@@ -1833,13 +1833,13 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 			if ( value < 1 )
 			{
 				s = va( "%s\n\n%s",
-				        BG_ClassConfig( item->v.pclass )->humanName,
+				        _( BG_ClassConfig( item->v.pclass )->humanName ),
 				        _( BG_Class( item->v.pclass )->info ) );
 			}
 			else
 			{
-				s = va( "%s\n\n%s\n\nFrags: %d",
-				        BG_ClassConfig( item->v.pclass )->humanName,
+				s = va( _("%s\n\n%s\n\nFrags: %d"),
+				        _( BG_ClassConfig( item->v.pclass )->humanName ),
 				        _( BG_Class( item->v.pclass )->info ),
 				        value );
 			}
@@ -1851,14 +1851,14 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 
 			if ( value == 0 )
 			{
-				s = va( "%s\n\n%s\n\nCredits: Free",
-				        BG_Weapon( item->v.weapon )->humanName,
+				s = va( _("%s\n\n%s\n\nCredits: Free"),
+				        _( BG_Weapon( item->v.weapon )->humanName ),
 				        _( BG_Weapon( item->v.weapon )->info ) );
 			}
 			else
 			{
-				s = va( "%s\n\n%s\n\nCredits: %d",
-				        BG_Weapon( item->v.weapon )->humanName,
+				s = va( _("%s\n\n%s\n\nCredits: %d"),
+				        _( BG_Weapon( item->v.weapon )->humanName ),
 				        _( BG_Weapon( item->v.weapon )->info ),
 				        value );
 			}
@@ -1870,14 +1870,14 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 
 			if ( value == 0 )
 			{
-				s = va( "%s\n\n%s\n\nCredits: Free",
-				        BG_Upgrade( item->v.upgrade )->humanName,
+				s = va( _("%s\n\n%s\n\nCredits: Free"),
+				        _( BG_Upgrade( item->v.upgrade )->humanName ),
 				        _( BG_Upgrade( item->v.upgrade )->info ) );
 			}
 			else
 			{
-				s = va( "%s\n\n%s\n\nCredits: %d",
-				        BG_Upgrade( item->v.upgrade )->humanName,
+				s = va( _("%s\n\n%s\n\nCredits: %d"),
+				        _( BG_Upgrade( item->v.upgrade )->humanName ),
 				        _( BG_Upgrade( item->v.upgrade )->info ),
 				        value );
 			}
@@ -1890,11 +1890,11 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 			switch ( BG_Buildable( item->v.buildable )->team )
 			{
 				case TEAM_ALIENS:
-					string = "Sentience";
+					string = _("Sentience");
 					break;
 
 				case TEAM_HUMANS:
-					string = "Power";
+					string = _("Power");
 					break;
 
 				default:
@@ -1904,13 +1904,13 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 			if ( value == 0 )
 			{
 				s = va( "%s\n\n%s",
-				        BG_Buildable( item->v.buildable )->humanName,
+				        _( BG_Buildable( item->v.buildable )->humanName ),
 				        _( BG_Buildable( item->v.buildable )->info ) );
 			}
 			else
 			{
 				s = va( "%s\n\n%s\n\n%s: %d",
-				        BG_Buildable( item->v.buildable )->humanName,
+				        _( BG_Buildable( item->v.buildable )->humanName ),
 				        _( BG_Buildable( item->v.buildable )->info ),
 				        string, value );
 			}
@@ -2015,7 +2015,7 @@ static const char *UI_OwnerDrawText( int ownerDraw )
 				ui_netSource.integer = 0;
 			}
 
-			s = netSources[ ui_netSource.integer ];
+			s = _( netSources[ ui_netSource.integer ] );
 			break;
 
 		case UI_KEYBINDSTATUS:
@@ -2046,12 +2046,12 @@ static const char *UI_OwnerDrawText( int ownerDraw )
 
 				dots[ i ] = '\0';
 
-				s = numServers < 0 ? va( "Waiting for response%s", dots ) :
-				    va( "Getting info for %d servers (ESC to cancel)%s", numServers, dots );
+				s = numServers < 0 ? va( _("Waiting for response%s"), dots ) :
+				    va( _("Getting info for %d servers (ESC to cancel)%s"), numServers, dots );
 			}
 			else
 			{
-				s = va( "Refresh Time: %s", UI_Cvar_VariableString( va( "ui_lastServerRefresh_%i", ui_netSource.integer ) ) );
+				s = va( _("Refresh Time: %s"), UI_Cvar_VariableString( va( "ui_lastServerRefresh_%i", ui_netSource.integer ) ) );
 			}
 
 			break;
@@ -2461,36 +2461,36 @@ static void UI_LoadTeams( void )
 {
 	uiInfo.teamCount = 4;
 
-	uiInfo.teamList[ 0 ].text = "Aliens";
+	uiInfo.teamList[ 0 ].text = N_("Aliens");
 	uiInfo.teamList[ 0 ].cmd = "cmd team aliens\n";
 	uiInfo.teamList[ 0 ].type = INFOTYPE_TEXT;
 	uiInfo.teamList[ 0 ].v.text =
-	  "The Alien Team\n\n"
+	  N_("The Alien Team\n\n"
 	  "The Aliens' strengths are in movement and the ability to "
 	  "quickly construct new bases quickly. They possess a range "
 	  "of abilities including basic melee attacks, movement-"
-	  "crippling poisons and more.";
+	  "crippling poisons and more.");
 
-	uiInfo.teamList[ 1 ].text = "Humans";
+	uiInfo.teamList[ 1 ].text = N_("Humans");
 	uiInfo.teamList[ 1 ].cmd = "cmd team humans\n";
 	uiInfo.teamList[ 1 ].type = INFOTYPE_TEXT;
 	uiInfo.teamList[ 1 ].v.text =
-	  "The Human Team\n\n"
+	  N_("The Human Team\n\n"
 	  "The humans are the masters of technology. Although their "
 	  "bases take long to construct, their automated defense "
 	  "ensures they stay built. A wide range of upgrades and "
 	  "weapons are available to the humans, each contributing "
-	  "to eradicate the alien threat.";
+	  "to eradicate the alien threat.");
 
-	uiInfo.teamList[ 2 ].text = "Spectate";
+	uiInfo.teamList[ 2 ].text = N_("Spectate");
 	uiInfo.teamList[ 2 ].cmd = "cmd team spectate\n";
 	uiInfo.teamList[ 2 ].type = INFOTYPE_TEXT;
-	uiInfo.teamList[ 2 ].v.text = "Watch the game without playing.";
+	uiInfo.teamList[ 2 ].v.text = N_("Watch the game without playing.");
 
-	uiInfo.teamList[ 3 ].text = "Auto select";
+	uiInfo.teamList[ 3 ].text = N_("Auto select");
 	uiInfo.teamList[ 3 ].cmd = "cmd team auto\n";
 	uiInfo.teamList[ 3 ].type = INFOTYPE_TEXT;
-	uiInfo.teamList[ 3 ].v.text = "Join the team with the least players.";
+	uiInfo.teamList[ 3 ].v.text = N_("Join the team with the least players.");
 }
 
 /*
@@ -4094,7 +4094,7 @@ static void UI_RunMenuScript( char **args )
 		}
 		else
 		{
-			Com_Printf(_( "unknown UI script %s\n"), name );
+			Com_Printf( "unknown UI script %s\n", name );
 		}
 	}
 }
@@ -5598,7 +5598,7 @@ UI_DrawConnectScreen
 */
 void UI_DrawConnectScreen( qboolean overlay )
 {
-	char      *s;
+	const char *s;
 	uiClientState_t cstate;
 	char      info[ MAX_INFO_VALUE ];
 	char text[ 256 ];
@@ -5632,17 +5632,17 @@ void UI_DrawConnectScreen( qboolean overlay )
 
 	if ( trap_GetConfigString( CS_SERVERINFO, info, sizeof( info ) ) )
 	{
-		Text_PaintCenter( centerPoint, yStart, scale, colorWhite, va( "Loading %s", Info_ValueForKey( info, "mapname" ) ), 0 );
+		Text_PaintCenter( centerPoint, yStart, scale, colorWhite, va( _("Loading %s"), Info_ValueForKey( info, "mapname" ) ), 0 );
 	}
 
 	if ( !Q_stricmp( cstate.servername, "localhost" ) )
 	{
 		Text_PaintCenter( centerPoint, yStart + 48, scale, colorWhite,
-		                  "Starting up…", ITEM_TEXTSTYLE_SHADOWEDMORE );
+		                  _("Starting up…"), ITEM_TEXTSTYLE_SHADOWEDMORE );
 	}
 	else
 	{
-		Com_sprintf( text, sizeof( text ), "Connecting to %s", cstate.servername );
+		Com_sprintf( text, sizeof( text ), _("Connecting to %s"), cstate.servername );
 		Text_PaintCenter( centerPoint, yStart + 48, scale, colorWhite, text, ITEM_TEXTSTYLE_SHADOWEDMORE );
 	}
 
@@ -5665,11 +5665,11 @@ void UI_DrawConnectScreen( qboolean overlay )
 	switch ( cstate.connState )
 	{
 		case CA_CONNECTING:
-			s = va( "Awaiting connection…%i", cstate.connectPacketCount );
+			s = va( _("Awaiting connection…%i"), cstate.connectPacketCount );
 			break;
 
 		case CA_CHALLENGING:
-			s = va( "Awaiting challenge…%i", cstate.connectPacketCount );
+			s = va( _("Awaiting challenge…%i"), cstate.connectPacketCount );
 			break;
 
 		case CA_CONNECTED:
@@ -5685,7 +5685,7 @@ void UI_DrawConnectScreen( qboolean overlay )
 				}
 			}
 
-			s = "Awaiting gamestate…";
+			s = _("Awaiting gamestate…");
 			break;
 
 		case CA_LOADING:
