@@ -1,8 +1,9 @@
 unvanquished (0.11.0-1) unstable; urgency=low
 
   * Release of alpha 11.
+  * Build-depend on libncursesw5-dev, not libncurses5-dev.
 
- -- Darren Salt <devspam@moreofthesa.me.uk>  Sun, 06 Jan 2013 03:20:40 +0000
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Sun, 06 Jan 2013 17:28:43 +0000
 
 unvanquished (0.10.0-3) unstable; urgency=low
 
