@@ -105,7 +105,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define SLIDER_THUMB_HEIGHT 20.0f
 
 #define _( text )              Gettext( text )
-#define N_( text )             ( text )
+#define N_( text )             text
 #define C_( ctxt, text )       Pgettext( ctxt, text )
 #define G_( text )             Pgettext( Trans_GenderContext( gender ), text )
 #define P_( one, many, count ) ( ( count ) == 1 ? ( one ) : ( many ) )
