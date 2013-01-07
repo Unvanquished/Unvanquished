@@ -30,14 +30,13 @@ uniform samplerCube	u_EnvironmentMap0;
 uniform samplerCube	u_EnvironmentMap1;
 uniform float		u_EnvironmentInterpolation;
 
-uniform int			u_AlphaTest;
+uniform float		u_AlphaThreshold;
 uniform vec3		u_ViewOrigin;
 uniform vec3		u_AmbientColor;
 uniform vec3		u_LightDir;
 uniform vec3		u_LightColor;
 uniform float		u_SpecularExponent;
 uniform float		u_DepthScale;
-uniform vec4		u_PortalPlane;
 
 varying vec3		var_Position;
 varying vec2		var_TexDiffuse;
@@ -53,17 +52,6 @@ varying vec3		var_Normal;
 
 void	main()
 {
-#if defined(USE_PORTAL_CLIPPING)
-	{
-		float dist = dot(var_Position.xyz, u_PortalPlane.xyz) - u_PortalPlane.w;
-		if(dist < 0.0)
-		{
-			discard;
-			return;
-		}
-	}
-#endif
-
 	// compute light direction in world space
 	vec3 L = u_LightDir;
 
@@ -190,23 +178,11 @@ void	main()
 	// compute the diffuse term
 	vec4 diffuse = texture2D(u_DiffuseMap, texDiffuse);
 
-#if defined(USE_ALPHA_TESTING)
-	if(u_AlphaTest == ATEST_GT_0 && diffuse.a <= 0.0)
+	if( abs(diffuse.a + u_AlphaThreshold) <= 1.0 )
 	{
 		discard;
 		return;
 	}
-	else if(u_AlphaTest == ATEST_LT_128 && diffuse.a >= 0.5)
-	{
-		discard;
-		return;
-	}
-	else if(u_AlphaTest == ATEST_GE_128 && diffuse.a < 0.5)
-	{
-		discard;
-		return;
-	}
-#endif
 
 
 // add Rim Lighting to highlight the edges

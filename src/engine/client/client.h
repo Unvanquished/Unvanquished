@@ -44,7 +44,7 @@ Maryland 20850 USA.
 #include "../client/ui_api.h"
 #include "../client/cg_api.h"
 
-#ifdef USE_VOIP
+#if defined(USE_VOIP) && !defined(DEDICATED)
 #include <speex/speex.h>
 #include <speex/speex_preprocess.h>
 #endif
@@ -250,7 +250,7 @@ typedef struct
 	qboolean     firstDemoFrameSkipped;
 	fileHandle_t demofile;
 
-#ifdef USE_VOIP
+#if defined(USE_VOIP) && !defined(DEDICATED)
 	qboolean voipEnabled;
 	qboolean speexInitialized;
 	int      speexFrameSize;
@@ -510,7 +510,7 @@ extern cvar_t  *cl_useMumble;
 extern cvar_t  *cl_mumbleScale;
 #endif
 
-#ifdef USE_VOIP
+#if defined(USE_VOIP) && !defined(DEDICATED)
 // cl_voipSendTarget is a string: "all" to broadcast to everyone, "none" to
 //  send to no one, or a comma-separated list of client numbers:
 //  "0,7,2,23" ... an empty string is treated like "all".
@@ -637,7 +637,7 @@ qboolean CL_IRCIsRunning( void );
 //
 extern int cl_connectedToPureServer;
 
-#ifdef USE_VOIP
+#if defined(USE_VOIP) && !defined(DEDICATED)
 void       CL_Voip_f( void );
 
 #endif

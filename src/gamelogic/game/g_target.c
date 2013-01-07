@@ -345,15 +345,16 @@ Set "count" to 0-7 for color.
 Closest target_location in sight used for the location, if none
 in site, closest in distance
 */
+static int SP_target_counter = 1;
+
 void SP_target_location( gentity_t *self )
 {
-	static int n = 1;
 	char       *message;
 	self->s.eType = ET_LOCATION;
 	self->r.svFlags = SVF_BROADCAST;
 	trap_LinkEntity( self );  // make the server send them to the clients
 
-	if ( n == MAX_LOCATIONS )
+	if ( SP_target_counter == MAX_LOCATIONS )
 	{
 		G_Printf( S_COLOR_YELLOW "too many target_locations\n" );
 		return;
@@ -379,11 +380,11 @@ void SP_target_location( gentity_t *self )
 		message = self->message;
 	}
 
-	trap_SetConfigstring( CS_LOCATIONS + n, message );
+	trap_SetConfigstring( CS_LOCATIONS + SP_target_counter, message );
 	self->nextTrain = level.locationHead;
-	self->s.generic1 = n; // use for location marking
+	self->s.generic1 = SP_target_counter; // use for location marking
 	level.locationHead = self;
-	n++;
+	SP_target_counter++;
 
 	G_SetOrigin( self, self->s.origin );
 }
@@ -553,4 +554,10 @@ void SP_target_hurt( gentity_t *self )
 	}
 
 	self->use = target_hurt_use;
+}
+
+/* Init */
+void SP_target_init( void )
+{
+	SP_target_counter = 1;
 }

@@ -38,7 +38,7 @@ void	main()
 	// scale by the screen non-power-of-two-adjust
 	st *= r_NPOTScale;
 
-#if 1
+#if 0
 	// set so a magnitude of 1 is approximately 1 pixel with 640x480
 	//vec2 deform = vec2(u_DeformMagnitude * 0.0016, u_DeformMagnitude * 0.00213333);
 	vec2 deform = u_DeformMagnitude * r_FBufScale;
@@ -145,10 +145,10 @@ void	main()
 	// do a full gaussian blur
 	vec4 sumColors = vec4(0.0);
 
-	int tap = 3;
+	const int tap = 3;
 	for(int i = -tap; i < tap; i++)
-    {
-	    float weight = gaussFact[i + 2];
+	{
+		float weight = gaussFact[i + tap];
 		vec4 color = texture2D(u_ColorMap, st + vec2(0, i) * u_DeformMagnitude * r_FBufScale) * weight;
 
 		sumColors += color;

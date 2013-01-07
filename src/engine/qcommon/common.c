@@ -3350,10 +3350,10 @@ void Com_Init( char *commandLine )
 		//Cvar_Set( "com_logosPlaying", "1" );
 		//Cbuf_AddText( "cinematic etintro.roq\n" );
 
-		/*Cvar_Set( "nextmap", "cinematic avlogo.roq" );
+		/*Cvar_Set( "sv_nextmap", "cinematic avlogo.roq" );
 		   if( !com_introPlayed->integer ) {
 		   Cvar_Set( com_introPlayed->name, "1" );
-		   //Cvar_Set( "nextmap", "cinematic avlogo.roq" );
+		   //Cvar_Set( "sv_nextmap", "cinematic avlogo.roq" );
 		   } */
 	}
 #ifndef _WIN32

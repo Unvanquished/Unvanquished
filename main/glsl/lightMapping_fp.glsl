@@ -27,10 +27,9 @@ uniform sampler2D	u_NormalMap;
 uniform sampler2D	u_SpecularMap;
 uniform sampler2D	u_LightMap;
 uniform sampler2D	u_DeluxeMap;
-uniform int			u_AlphaTest;
+uniform float		u_AlphaThreshold;
 uniform vec3		u_ViewOrigin;
 uniform float		u_DepthScale;
-uniform vec4		u_PortalPlane;
 
 varying vec3		var_Position;
 varying vec4		var_TexDiffuseNormal;
@@ -46,18 +45,6 @@ varying vec4		var_Color;
 
 void	main()
 {
-#if defined(USE_PORTAL_CLIPPING)
-	{
-		float dist = dot(var_Position.xyz, u_PortalPlane.xyz) - u_PortalPlane.w;
-		if(dist < 0.0)
-		{
-			discard;
-			return;
-		}
-	}
-#endif
-
-
 #if defined(USE_NORMAL_MAPPING)
 
 	vec2 texDiffuse = var_TexDiffuseNormal.st;
@@ -121,23 +108,11 @@ void	main()
 	// compute the diffuse term
 	vec4 diffuse = texture2D(u_DiffuseMap, texDiffuse);
 
-#if defined(USE_ALPHA_TESTING)
-	if(u_AlphaTest == ATEST_GT_0 && diffuse.a <= 0.0)
+	if( abs(diffuse.a + u_AlphaThreshold) <= 1.0 )
 	{
 		discard;
 		return;
 	}
-	else if(u_AlphaTest == ATEST_LT_128 && diffuse.a >= 0.5)
-	{
-		discard;
-		return;
-	}
-	else if(u_AlphaTest == ATEST_GE_128 && diffuse.a < 0.5)
-	{
-		discard;
-		return;
-	}
-#endif
 
 
 	// compute normal in world space from normalmap
@@ -186,23 +161,11 @@ void	main()
 	// compute the diffuse term
 	vec4 diffuse = texture2D(u_DiffuseMap, var_TexDiffuseNormal.st);
 
-#if defined(USE_ALPHA_TESTING)
-	if(u_AlphaTest == ATEST_GT_0 && diffuse.a <= 0.0)
+	if( abs(diffuse.a + u_AlphaThreshold) <= 1.0 )
 	{
 		discard;
 		return;
 	}
-	else if(u_AlphaTest == ATEST_LT_128 && diffuse.a >= 0.5)
-	{
-		discard;
-		return;
-	}
-	else if(u_AlphaTest == ATEST_GE_128 && diffuse.a < 0.5)
-	{
-		discard;
-		return;
-	}
-#endif
 
 	vec3 N;
 

@@ -4738,7 +4738,7 @@ static const char *const fates[] =
 	N_("^2built^7"),
 	N_("^3deconstructed^7"),
 	N_("^7replaced^7"),
-	N_("^3destroyed^7"),
+	N_("^5destroyed^7"),
 	N_("^1TEAMKILLED^7"),
 	N_("^7unpowered^7"),
 	N_("removed")

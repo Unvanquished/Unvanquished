@@ -2089,8 +2089,7 @@ static void R_CoherentHierachicalCulling()
 		R_BindNullFBO();
 	}
 
-	gl_genericShader->DisableAlphaTesting();
-	gl_genericShader->DisablePortalClipping();
+	gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
 	gl_genericShader->DisableVertexSkinning();
 	gl_genericShader->DisableVertexAnimation();
 	gl_genericShader->DisableDeformVertexes();

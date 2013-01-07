@@ -41,7 +41,7 @@ static const buildableAttributes_t bg_buildableList[] =
 	{
 		BA_A_SPAWN, //int       number;
 		"eggpod", //char      *name;
-		"Egg", //char      *humanName;
+		N_( "Egg" ), //char      *humanName;
 		N_( "The most basic alien structure. It allows aliens to spawn "
 		"and protect the Overmind. Without any of these, the Overmind "
 		"is left nearly defenseless and defeat is imminent." ),
@@ -77,7 +77,7 @@ static const buildableAttributes_t bg_buildableList[] =
 	{
 		BA_A_OVERMIND, //int       number;
 		"overmind", //char      *name;
-		"Overmind", //char      *humanName;
+		N_( "Overmind" ), //char      *humanName;
 		N_( "A collective consciousness that controls all the alien structures "
 		"in its vicinity. It must be protected at all costs, since its "
 		"death will render alien structures defenseless." ),
@@ -113,7 +113,7 @@ static const buildableAttributes_t bg_buildableList[] =
 	{
 		BA_A_BARRICADE, //int       number;
 		"barricade", //char      *name;
-		"Barricade", //char      *humanName;
+		N_( "Barricade" ), //char      *humanName;
 		N_( "Used to obstruct corridors and doorways, hindering humans from "
 		"threatening the spawns and Overmind. Barricades will shrink "
 		"to allow aliens to pass over them, however." ),
@@ -149,7 +149,7 @@ static const buildableAttributes_t bg_buildableList[] =
 	{
 		BA_A_ACIDTUBE, //int       number;
 		"acid_tube", //char      *name;
-		"Acid Tube", //char      *humanName;
+		N_( "Acid Tube" ), //char      *humanName;
 		N_( "Ejects lethal poisonous acid at an approaching human. These "
 		"are highly effective when used in conjunction with a trapper "
 		"to hold the victim in place." ),
@@ -185,7 +185,7 @@ static const buildableAttributes_t bg_buildableList[] =
 	{
 		BA_A_TRAPPER, //int       number;
 		"trapper", //char      *name;
-		"Trapper", //char      *humanName;
+		N_( "Trapper" ), //char      *humanName;
 		N_( "Fires a blob of adhesive spit at any non-alien in its line of "
 		"sight. This hinders their movement, making them an easy target "
 		"for other defensive structures or aliens." ),
@@ -221,7 +221,7 @@ static const buildableAttributes_t bg_buildableList[] =
 	{
 		BA_A_BOOSTER, //int       number;
 		"booster", //char      *name;
-		"Booster", //char      *humanName;
+		N_( "Booster" ), //char      *humanName;
 		N_( "Laces the attacks of any alien that touches it with a poison "
 		"that will gradually deal damage to any humans exposed to it. "
 		"The booster also increases the rate of health regeneration for "
@@ -258,7 +258,7 @@ static const buildableAttributes_t bg_buildableList[] =
 	{
 		BA_A_HIVE, //int       number;
 		"hive", //char      *name;
-		"Hive", //char      *humanName;
+		N_( "Hive" ), //char      *humanName;
 		N_( "Houses millions of tiny insectoid aliens. When a human "
 		"approaches this structure, the insectoids attack." ),
 		"team_alien_hive", //char      *entityName;
@@ -293,7 +293,7 @@ static const buildableAttributes_t bg_buildableList[] =
 	{
 		BA_H_SPAWN, //int       number;
 		"telenode", //char      *name;
-		"Telenode", //char      *humanName;
+		N_( "Telenode" ), //char      *humanName;
 		N_( "The most basic human structure. It provides a means for humans "
 		"to enter the battle arena. Without any of these the humans "
 		"cannot spawn and defeat is imminent." ),
@@ -329,7 +329,7 @@ static const buildableAttributes_t bg_buildableList[] =
 	{
 		BA_H_MGTURRET, //int       number;
 		"mgturret", //char      *name;
-		"Machinegun Turret", //char      *humanName;
+		N_( "Machinegun Turret" ), //char      *humanName;
 		N_( "Automated base defense that is effective against large targets "
 		"but slow to begin firing. Should always be "
 		"backed up by physical support." ),
@@ -365,7 +365,7 @@ static const buildableAttributes_t bg_buildableList[] =
 	{
 		BA_H_TESLAGEN, //int       number;
 		"tesla", //char      *name;
-		"Tesla Generator", //char      *humanName;
+		N_( "Tesla Generator" ), //char      *humanName;
 		N_( "A structure equipped with a strong electrical attack that fires "
 		"instantly and always hits its target. It is effective against smaller "
 		"aliens and for consolidating basic defense." ),
@@ -401,7 +401,7 @@ static const buildableAttributes_t bg_buildableList[] =
 	{
 		BA_H_ARMOURY, //int       number;
 		"arm", //char      *name;
-		"Armoury", //char      *humanName;
+		N_( "Armoury" ), //char      *humanName;
 		N_( "An essential part of the human base, providing a means "
 		"to upgrade the basic human equipment. A range of upgrades "
 		"and weapons are available for sale from the armoury." ),
@@ -437,7 +437,7 @@ static const buildableAttributes_t bg_buildableList[] =
 	{
 		BA_H_DCC, //int       number;
 		"dcc", //char      *name;
-		"Defence Computer", //char      *humanName;
+		N_( "Defence Computer" ), //char      *humanName;
 		N_( "A structure that enables self-repair functionality in "
 		"human structures. Each Defence Computer built increases "
 		"repair rate slightly." ),
@@ -473,7 +473,7 @@ static const buildableAttributes_t bg_buildableList[] =
 	{
 		BA_H_MEDISTAT, //int       number;
 		"medistat", //char      *name;
-		"Medistation", //char      *humanName;
+		N_( "Medistation" ), //char      *humanName;
 		N_( "A structure that automatically restores "
 		"the health and stamina of any human that stands on it. "
 		"It may only be used by one person at a time. This structure "
@@ -510,7 +510,7 @@ static const buildableAttributes_t bg_buildableList[] =
 	{
 		BA_H_REACTOR, //int       number;
 		"reactor", //char      *name;
-		"Reactor", //char      *humanName;
+		N_( "Reactor" ), //char      *humanName;
 		N_( "All structures except the telenode rely on a reactor to operate. "
 		"The reactor provides power for all the human structures either "
 		"directly or via repeaters. Only one reactor can be built at a time." ),
@@ -546,7 +546,7 @@ static const buildableAttributes_t bg_buildableList[] =
 	{
 		BA_H_REPEATER, //int       number;
 		"repeater", //char      *name;
-		"Repeater", //char      *humanName;
+		N_( "Repeater" ), //char      *humanName;
 		N_( "A power distributor that transmits power from the reactor "
 		"to remote locations, so that bases may be built far "
 		"from the reactor." ),
@@ -2144,7 +2144,7 @@ static const weaponAttributes_t bg_weapons[] =
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		0, //int       slots;
 		"blaster", //char      *name;
-		"Blaster", //char      *humanName;
+		N_( "Blaster" ), //char      *humanName;
 		"",
 		0, //int       maxAmmo;
 		0, //int       maxClips;
@@ -2170,9 +2170,9 @@ static const weaponAttributes_t bg_weapons[] =
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"rifle", //char      *name;
-		"Rifle", //char      *humanName;
-		"Basic weapon. Cased projectile weapon, with a slow clip based "
-		"reload system.",
+		N_( "Rifle" ), //char      *humanName;
+		N_( "Basic weapon. Cased projectile weapon, with a slow clip based "
+		"reload system." ),
 		RIFLE_CLIPSIZE, //int       maxAmmo;
 		RIFLE_MAXCLIPS, //int       maxClips;
 		qfalse, //int       infiniteAmmo;
@@ -2197,7 +2197,7 @@ static const weaponAttributes_t bg_weapons[] =
 		0, //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"psaw", //char      *name;
-		"Pain Saw", //char      *humanName;
+		N_( "Pain Saw" ), //char      *humanName;
 		N_( "Similar to a chainsaw, but instead of a chain it has an "
 		"electric arc capable of dealing a great deal of damage at "
 		"close range." ),
@@ -2225,7 +2225,7 @@ static const weaponAttributes_t bg_weapons[] =
 		( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"shotgun", //char      *name;
-		"Shotgun", //char      *humanName;
+		N_( "Shotgun" ), //char      *humanName;
 		N_( "Close range weapon that is useful against larger foes. "
 		"It has a slow repeat rate, but can be devastatingly "
 		"effective." ),
@@ -2253,7 +2253,7 @@ static const weaponAttributes_t bg_weapons[] =
 		0, //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"lgun", //char      *name;
-		"Las Gun", //char      *humanName;
+		N_( "Las Gun" ), //char      *humanName;
 		N_( "Slightly more powerful than the basic rifle, rapidly fires "
 		"small packets of energy." ),
 		LASGUN_AMMO, //int       maxAmmo;
@@ -2280,7 +2280,7 @@ static const weaponAttributes_t bg_weapons[] =
 		0, //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"mdriver", //char      *name;
-		"Mass Driver", //char      *humanName;
+		N_( "Mass Driver" ), //char      *humanName;
 		N_( "A portable particle accelerator which causes minor nuclear "
 		"reactions at the point of impact. It has a very large "
 		"payload, but fires slowly." ),
@@ -2308,7 +2308,7 @@ static const weaponAttributes_t bg_weapons[] =
 		0, //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"chaingun", //char      *name;
-		"Chaingun", //char      *humanName;
+		N_( "Chaingun" ), //char      *humanName;
 		N_( "Belt drive, cased projectile weapon. It has a high repeat "
 		"rate but a wide firing angle and is therefore relatively "
 		"inaccurate." ),
@@ -2336,7 +2336,7 @@ static const weaponAttributes_t bg_weapons[] =
 		0, //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"flamer", //char      *name;
-		"Flame Thrower", //char      *humanName;
+		N_( "Flame Thrower" ), //char      *humanName;
 		N_( "Sprays fire at its target. It is powered by compressed "
 		"gas. The relatively low rate of fire means this weapon is most "
 		"effective against static targets." ),
@@ -2364,7 +2364,7 @@ static const weaponAttributes_t bg_weapons[] =
 		0, //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"prifle", //char      *name;
-		"Pulse Rifle", //char      *humanName;
+		N_( "Pulse Rifle" ), //char      *humanName;
 		N_( "An energy weapon that fires rapid pulses of concentrated energy." ),
 		PRIFLE_CLIPS, //int       maxAmmo;
 		PRIFLE_MAXCLIPS, //int       maxClips;
@@ -2390,7 +2390,7 @@ static const weaponAttributes_t bg_weapons[] =
 		0, //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"lcannon", //char      *name;
-		"Lucifer Cannon", //char      *humanName;
+		N_( "Lucifer Cannon" ), //char      *humanName;
 		N_( "Blaster technology scaled up to deliver devastating power. "
 		"Primary fire must be charged before firing. It has a quick "
 		"secondary attack that does not require charging." ),
@@ -2418,7 +2418,7 @@ static const weaponAttributes_t bg_weapons[] =
 		0, //int  strippedStages;
 		SLOT_NONE, //int       slots;
 		"grenade", //char      *name;
-		"Grenade", //char      *humanName;
+		N_( "Grenade" ), //char      *humanName;
 		"",
 		1, //int       maxAmmo;
 		0, //int       maxClips;
@@ -2470,7 +2470,7 @@ static const weaponAttributes_t bg_weapons[] =
 		0, //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"hive", //char      *name;
-		"Hive", //char      *humanName;
+		N_( "Hive" ), //char      *humanName;
 		"",
 		0, //int       maxAmmo;
 		0, //int       maxClips;
@@ -2496,7 +2496,7 @@ static const weaponAttributes_t bg_weapons[] =
 		0, //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"teslagen", //char      *name;
-		"Tesla Generator", //char      *humanName;
+		N_( "Tesla Generator" ), //char      *humanName;
 		"",
 		0, //int       maxAmmo;
 		0, //int       maxClips;
@@ -2522,7 +2522,7 @@ static const weaponAttributes_t bg_weapons[] =
 		0, //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"mgturret", //char      *name;
-		"Machinegun Turret", //char      *humanName;
+		N_( "Machinegun Turret" ), //char      *humanName;
 		"",
 		0, //int       maxAmmo;
 		0, //int       maxClips;
@@ -2600,7 +2600,7 @@ static const weaponAttributes_t bg_weapons[] =
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		SLOT_WEAPON, //int       slots;
 		"ckit", //char      *name;
-		"Construction Kit", //char      *humanName;
+		N_( "Construction Kit" ), //char      *humanName;
 		N_( "Used for building structures. This includes "
 		"spawns, power and basic defense. More structures become "
 		"available with new stages." ),
@@ -2698,9 +2698,9 @@ static const upgradeAttributes_t bg_upgrades[] =
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		SLOT_TORSO | SLOT_ARMS | SLOT_LEGS, //int   slots;
 		"larmour", //char  *name;
-		"Light Armour", //char  *humanName;
-		"Protective armour that helps to defend against light alien melee "
-		"attacks.",
+		N_( "Light Armour" ), //char  *humanName;
+		N_( "Protective armour that helps to defend against light alien melee "
+		"attacks." ),
 		"icons/iconu_larmour",
 		qtrue, //qboolean purchasable;
 		qfalse, //qboolean usable;
@@ -2713,7 +2713,7 @@ static const upgradeAttributes_t bg_upgrades[] =
 		( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		SLOT_HEAD, //int   slots;
 		"helmet", //char  *name;
-		"Helmet", //char  *humanName;
+		N_( "Helmet" ), //char  *humanName;
 		N_( "In addition to protecting your head, the helmet provides a "
 		"scanner indicating the presence of any friendly or hostile "
 		"lifeforms and structures in your immediate vicinity." ),
@@ -2729,7 +2729,7 @@ static const upgradeAttributes_t bg_upgrades[] =
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		SLOT_NONE, //int   slots;
 		"medkit", //char  *name;
-		"Medkit", //char  *humanName;
+		N_("Medkit"), //char  *humanName;
 		"",
 		"icons/iconu_atoxin",
 		qfalse, //qboolean purchasable;
@@ -2743,7 +2743,7 @@ static const upgradeAttributes_t bg_upgrades[] =
 		0, //int  strippedStages;
 		SLOT_BACKPACK, //int   slots;
 		"battpack", //char  *name;
-		"Battery Pack", //char  *humanName;
+		N_("Battery Pack"), //char  *humanName;
 		N_( "Back-mounted battery pack that permits storage of one and a half "
 		"times as much energy capacity for energy weapons." ),
 		"icons/iconu_battpack",
@@ -2758,7 +2758,7 @@ static const upgradeAttributes_t bg_upgrades[] =
 		0, //int  strippedStages;
 		SLOT_BACKPACK, //int   slots;
 		"jetpack", //char  *name;
-		"Jet Pack", //char  *humanName;
+		N_( "Jet Pack" ), //char  *humanName;
 		N_( "Back-mounted jet pack that enables the user to fly to remote "
 		"locations. It is very useful against alien spawns in hard "
 		"to reach spots." ),
@@ -2774,7 +2774,7 @@ static const upgradeAttributes_t bg_upgrades[] =
 		0, //int  strippedStages;
 		SLOT_HEAD | SLOT_TORSO | SLOT_ARMS | SLOT_LEGS | SLOT_BACKPACK, //int   slots;
 		"bsuit", //char  *name;
-		"Battlesuit", //char  *humanName;
+		N_( "Battlesuit" ), //char  *humanName;
 		N_( "A full body armour that is highly effective at repelling alien attacks. "
 		"It allows the user to enter hostile situations with a greater degree "
 		"of confidence." ),
@@ -2790,7 +2790,7 @@ static const upgradeAttributes_t bg_upgrades[] =
 		0, //int  strippedStages;
 		SLOT_NONE, //int   slots;
 		"gren", //char  *name;
-		"Grenade", //char  *humanName;
+		N_( "Grenade" ), //char  *humanName;
 		N_( "A small incendinary device ideal for damaging tightly packed "
 		"alien structures. Has a five second timer." ),
 		0,
@@ -2805,7 +2805,7 @@ static const upgradeAttributes_t bg_upgrades[] =
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  strippedStages;
 		SLOT_NONE, //int   slots;
 		"ammo", //char  *name;
-		"Ammunition", //char  *humanName;
+		N_( "Ammunition" ), //char  *humanName;
 		N_( "Ammunition for the currently held weapon." ),
 		0,
 		qtrue, //qboolean purchasable;

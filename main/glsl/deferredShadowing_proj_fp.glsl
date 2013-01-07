@@ -32,7 +32,6 @@ uniform vec3		u_LightColor;
 uniform float		u_LightRadius;
 uniform mat4		u_LightAttenuationMatrix;
 uniform mat4		u_ShadowMatrix[MAX_SHADOWMAPS];
-uniform vec4		u_PortalPlane;
 uniform mat4		u_UnprojectMatrix;
 
 void	main()
@@ -47,15 +46,6 @@ void	main()
 	float depth = texture2D(u_DepthMap, st).r;
 	vec4 P = u_UnprojectMatrix * vec4(gl_FragCoord.xy, depth, 1.0);
 	P.xyz /= P.w;
-
-	#if defined(USE_PORTAL_CLIPPING)
-		float dist = dot(P.xyz, u_PortalPlane.xyz) - u_PortalPlane.w;
-		if(dist < 0.0)
-		{
-			discard;
-			return;
-		}
-	#endif
 
 	// transform vertex position into light space
 	vec4 texAtten			= u_LightAttenuationMatrix * vec4(P.xyz, 1.0);

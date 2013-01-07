@@ -961,6 +961,14 @@ static unsigned NameToAFunc( const char *funcname )
 	{
 		return GLS_ATEST_GE_128;
 	}
+	else if ( !Q_stricmp( funcname, "LTENT" ) )
+	{
+		return GLS_ATEST_LT_ENT;
+	}
+	else if ( !Q_stricmp( funcname, "GTENT" ) )
+	{
+		return GLS_ATEST_GT_ENT;
+	}
 
 	ri.Printf( PRINT_WARNING, "WARNING: invalid alphaFunc name '%s' in shader '%s'\n", funcname, shader.name );
 	return 0;
@@ -2515,7 +2523,9 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 			else if ( !Q_stricmp( token, "portal" ) )
 			{
 				ri.Printf( PRINT_WARNING, "WARNING: alphaGen portal keyword not supported in shader '%s'\n", shader.name );
-				stage->type = ST_PORTALMAP;
+				//stage->type = ST_PORTALMAP;
+				stage->alphaGen = AGEN_CONST;
+				stage->constantColor[3] = 0;
 				SkipRestOfLine( text );
 			}
 			else
