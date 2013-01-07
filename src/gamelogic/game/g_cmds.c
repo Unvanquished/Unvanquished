@@ -4242,9 +4242,9 @@ void Cmd_Share_f( gentity_t *ent )
 	maxCreds = team == TEAM_HUMANS ? HUMAN_MAX_CREDITS : ALIEN_MAX_CREDITS;
 
 	// limit to what the player really has
-	if( creds > ent->client->ps.persistant[ PERS_CREDIT ] )
+	if( creds > ent->client->pers.credit )
 	{
-		creds = ent->client->ps.persistant[ PERS_CREDIT ];
+		creds = ent->client->pers.credit;
 	}
 
 	if( creds <= 0 )
@@ -4271,7 +4271,7 @@ void Cmd_Share_f( gentity_t *ent )
 
 			if ( !teamMap[ i ] ) continue; // not sharing with this one
 
-			diff = maxCreds - level.clients[ i ].ps.persistant[ PERS_CREDIT ];
+			diff = maxCreds - level.clients[ i ].pers.credit;
 
 			if ( diff <= 0 ) continue; // already at max credit
 
@@ -4282,8 +4282,8 @@ void Cmd_Share_f( gentity_t *ent )
 
 			shared[ i ] += diff;
 			totalShared += diff;
-			ent->client->ps.persistant[ PERS_CREDIT ] -= diff;
-			level.clients[ i ].ps.persistant[ PERS_CREDIT ] += diff;
+			ent->client->ps.persistant[ PERS_CREDIT ] = ent->client->pers.credit -= diff;
+			level.clients[ i ].ps.persistant[ PERS_CREDIT ] = level.clients[ i ].pers.credit += diff;
 		}
 	}
 
@@ -4442,26 +4442,26 @@ void Cmd_Donate_f( gentity_t *ent )
 	}
 
 	// transfer only credits the player really has
-	if( creds > ent->client->ps.persistant[ PERS_CREDIT ] )
+	if( creds > ent->client->pers.credit )
 	{
-		creds = ent->client->ps.persistant[ PERS_CREDIT ];
+		creds = ent->client->pers.credit;
 	}
 
 	if ( clientNum == level.maxclients )
 	{
-		ent->client->ps.persistant[ PERS_CREDIT ] -= creds;
+		ent->client->pers.credit -= creds;
 		trap_SendServerCommand( ent - g_entities, "print \"Your donation is much appreciated!\n\"" );
 		return;
 	}
 
 	// allow transfers only up to the credit/evo limit
-	if( team == TEAM_HUMANS && creds > HUMAN_MAX_CREDITS - level.clients[ clientNum ].ps.persistant[ PERS_CREDIT ] )
+	if( team == TEAM_HUMANS && creds > HUMAN_MAX_CREDITS - level.clients[ clientNum ].pers.credit )
 	{
-		creds = HUMAN_MAX_CREDITS - level.clients[ clientNum ].ps.persistant[ PERS_CREDIT ];
+		creds = HUMAN_MAX_CREDITS - level.clients[ clientNum ].pers.credit;
 	}
-	else if( team == TEAM_ALIENS && creds > ALIEN_MAX_CREDITS - level.clients[ clientNum ].ps.persistant[ PERS_CREDIT ] )
+	else if( team == TEAM_ALIENS && creds > ALIEN_MAX_CREDITS - level.clients[ clientNum ].pers.credit )
 	{
-		creds = ALIEN_MAX_CREDITS - level.clients[ clientNum ].ps.persistant[ PERS_CREDIT ];
+		creds = ALIEN_MAX_CREDITS - level.clients[ clientNum ].pers.credit;
 	}
 
 	if( creds <= 0 )
@@ -4474,8 +4474,8 @@ void Cmd_Donate_f( gentity_t *ent )
 	}
 
 	// transfer credits
-	ent->client->ps.persistant[ PERS_CREDIT ] -= creds;
-	level.clients[ clientNum ].ps.persistant[ PERS_CREDIT ] += creds;
+	ent->client->ps.persistant[ PERS_CREDIT ] = ent->client->pers.credit -= creds;
+	level.clients[ clientNum ].ps.persistant[ PERS_CREDIT ] = level.clients[ clientNum ].pers.credit += creds;
 
 	// FIXME: plural
 	if ( ent->client->pers.teamSelection == TEAM_ALIENS )
