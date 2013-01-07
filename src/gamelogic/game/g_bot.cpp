@@ -617,7 +617,11 @@ qboolean BotTargetIsVisible( gentity_t *self, botTarget_t target, int mask ) {
 	AngleVectors( self->client->ps.viewangles, forward, right, up );
 	CalcMuzzlePoint( self, forward, right, up, muzzle );
 	BotGetTargetPos(target, targetPos);
-	trap_Trace( &trace, muzzle, NULL, NULL,targetPos, self->s.number, mask);
+
+	if(!trap_InPVS(muzzle,targetPos))
+		return qfalse;
+
+	trap_TraceNoEnts( &trace, muzzle, NULL, NULL,targetPos, self->s.number, mask);
 
 	if( trace.surfaceFlags & SURF_NOIMPACT )
 		return qfalse;
