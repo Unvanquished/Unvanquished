@@ -1718,6 +1718,8 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 	// u_Color
 	gl_forwardLightingShader_omniXYZ->SetUniform_Color( tess.svars.color );
 
+	gl_forwardLightingShader_omniXYZ->Set_AlphaTest( diffuseStage->stateBits );
+
 	if ( r_parallaxMapping->integer )
 	{
 		float depthScale;
@@ -1913,6 +1915,8 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 
 	// u_Color
 	gl_forwardLightingShader_projXYZ->SetUniform_Color( tess.svars.color );
+
+	gl_forwardLightingShader_projXYZ->Set_AlphaTest( diffuseStage->stateBits );
 
 	if ( r_parallaxMapping->integer )
 	{
@@ -2111,6 +2115,8 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 
 	// u_Color
 	gl_forwardLightingShader_directionalSun->SetUniform_Color( tess.svars.color );
+
+	gl_forwardLightingShader_directionalSun->Set_AlphaTest( diffuseStage->stateBits );
 
 	if ( r_parallaxMapping->integer )
 	{

@@ -1561,12 +1561,12 @@ static void RoQShutdown( void )
 		// if we are aborting the intro cinematic with
 		// a devmap command, nextmap would be valid by
 		// the time it was referenced
-		s = Cvar_VariableString( "nextmap" );
+		s = Cvar_VariableString( "sv_nextmap" );
 
 		if ( s[ 0 ] )
 		{
 			Cbuf_ExecuteText( EXEC_APPEND, va( "%s\n", s ) );
-			Cvar_Set( "nextmap", "" );
+			Cvar_Set( "sv_nextmap", "" );
 		}
 
 		CL_handle = -1;
