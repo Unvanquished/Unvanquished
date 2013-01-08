@@ -4451,12 +4451,15 @@ qboolean G_admin_builder( gentity_t *ent )
 	gentity_t  *traceEnt;
 	buildLog_t *log;
 	int        i;
+	qboolean   buildlog;
 
 	if ( !ent )
 	{
 		ADMP( QQ( N_("^3builder: ^7console can't aim.\n") ) );
 		return qfalse;
 	}
+
+	buildlog = G_admin_permission( ent, "buildlog" );
 
 	AngleVectors( ent->client->ps.viewangles, forward, right, up );
 
@@ -4479,7 +4482,7 @@ qboolean G_admin_builder( gentity_t *ent )
 	{
 		const char *builder;
 
-		if ( !G_admin_permission( ent, "buildlog" ) &&
+		if ( !buildlog &&
 		     ent->client->pers.teamSelection != TEAM_NONE &&
 		     ent->client->pers.teamSelection != traceEnt->buildableTeam )
 		{
@@ -4491,27 +4494,20 @@ qboolean G_admin_builder( gentity_t *ent )
 		{
 			log = &level.buildLog[( level.buildId - i - 1 ) % MAX_BUILDLOG ];
 
-			if ( log->fate == BF_CONSTRUCT && traceEnt->s.modelindex == log->modelindex && log->time == traceEnt->s.time )
+			if ( log->fate == BF_CONSTRUCT && traceEnt->s.modelindex == log->modelindex )
 			{
 				break;
 			}
 		}
 
-		if ( traceEnt->builtBy >= 0 && log->actor  )
-		{
-			builder = log->actor->name[ log->actor->nameOffset ];
-		}
-		else
-		{
-			builder = "<world>";
-		}
+		builder = traceEnt->builtBy ? traceEnt->builtBy->name[ traceEnt->builtBy->nameOffset ] : "<world>";
 
-		if ( traceEnt->builtBy >= 0 && i < level.numBuildLogs && G_admin_permission( ent, "buildlog" ) )
+		if ( traceEnt->builtBy && i < level.numBuildLogs && buildlog )
 		{
 			ADMP( va( "%s %s %s %d", QQ( N_("^3builder: ^7$1$ built by $2$^7, buildlog #$3$\n") ),
 				  Quote( BG_Buildable( log->modelindex )->humanName ), Quote( builder ), MAX_CLIENTS + level.buildId - i - 1 ) );
 		}
-		else if ( traceEnt->builtBy >= 0 )
+		else if ( traceEnt->builtBy )
 		{
 			ADMP( va( "%s %s %s", QQ( N_("^3builder: ^7$1$ built by $2$^7\n") ),
 				  Quote( BG_Buildable( log->modelindex )->humanName ), Quote( builder ) ) );
@@ -4712,13 +4708,16 @@ qboolean G_admin_buildlog( gentity_t *ent )
 		printed++;
 		time = ( log->time - level.startTime ) / 1000;
 		Com_sprintf( stamp, sizeof( stamp ), "%3d:%02d", time / 60, time % 60 );
-		ADMBP( va( "^2%c^7%-3d %s ^7%s^7 %s%s%s\n",
+		ADMBP( va( "^2%c^7%-3d %s ^7%s^7%s%s%s %s%s%s\n",
 		           log->actor && log->fate != BF_REPLACE && log->fate != BF_UNPOWER ?
 		           '*' : ' ',
 		           i + MAX_CLIENTS,
 		           log->actor && ( log->fate == BF_REPLACE || log->fate == BF_UNPOWER ) ?
 		           "    \\_" : stamp,
 		           BG_Buildable( log->modelindex )->humanName,
+		           log->builtBy && log->fate != BF_CONSTRUCT ? " (built by " : "",
+		           log->builtBy && log->fate != BF_CONSTRUCT ? log->builtBy->name[ log->builtBy->nameOffset ] : "",
+		           log->builtBy && log->fate != BF_CONSTRUCT ? "^7)" : "",
 		           fates[ log->fate ],
 		           log->actor ? " by " : "",
 		           log->actor ?

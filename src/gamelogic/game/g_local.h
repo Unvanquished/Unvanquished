@@ -202,7 +202,7 @@ struct gentity_s
 	gentity_t   *parentNode; // for creep and defence/spawn dependencies
 	qboolean    active; // for power repeater, but could be useful elsewhere
 	qboolean    powered; // for human buildables
-	int         builtBy; // clientNum of person that built this
+	struct namelog_s *builtBy; // clientNum of person that built this
 	int         dcc; // number of controlling dccs
 	qboolean    spawned; // whether or not this buildable has finished spawning
 	int         shrunkTime; // time when a barricade shrunk or zero
@@ -502,6 +502,7 @@ typedef struct
 	int         time;
 	buildFate_t fate;
 	namelog_t   *actor;
+	namelog_t   *builtBy;
 	buildable_t modelindex;
 	qboolean    deconstruct;
 	int         deconstructTime;
