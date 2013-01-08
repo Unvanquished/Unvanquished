@@ -2894,22 +2894,19 @@ void Cmd_Buy_f( gentity_t *ent )
 		// Only humans can buy stuff
 		if ( BG_Weapon( weapon )->team != TEAM_HUMANS )
 		{
-			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't buy alien items\n") "\"" );
-			return;
+			goto not_alien;
 		}
 
 		//are we /allowed/ to buy this?
 		if ( !BG_Weapon( weapon )->purchasable )
 		{
-			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't buy this item\n") "\"" );
-			return;
+			goto cant_buy;
 		}
 
 		//are we /allowed/ to buy this?
 		if ( !BG_WeaponAllowedInStage( weapon, g_humanStage.integer ) || !BG_WeaponIsAllowed( weapon ) )
 		{
-			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't buy this item\n") "\"" );
-			return;
+			goto cant_buy;
 		}
 
 		//can afford this?
@@ -2976,22 +2973,19 @@ void Cmd_Buy_f( gentity_t *ent )
 		// Only humans can buy stuff
 		if ( BG_Upgrade( upgrade )->team != TEAM_HUMANS )
 		{
-			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't buy alien items\n") "\"" );
-			return;
+			goto not_alien;
 		}
 
 		//are we /allowed/ to buy this?
 		if ( !BG_Upgrade( upgrade )->purchasable )
 		{
-			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't buy this item\n") "\"" );
-			return;
+			goto cant_buy;
 		}
 
 		//are we /allowed/ to buy this?
 		if ( !BG_UpgradeAllowedInStage( upgrade, g_humanStage.integer ) || !BG_UpgradeIsAllowed( upgrade ) )
 		{
-			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't buy this item\n") "\"" );
-			return;
+			goto cant_buy;
 		}
 
 		if ( upgrade == UP_AMMO )
@@ -3035,6 +3029,15 @@ void Cmd_Buy_f( gentity_t *ent )
 
 	//update ClientInfo
 	ClientUserinfoChanged( ent->client->ps.clientNum, qfalse );
+	return;
+
+cant_buy:
+	trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't buy this item\n") "\"" );
+	return;
+
+not_alien:
+	trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't buy alien items\n") "\"" );
+	return;
 }
 
 /*
