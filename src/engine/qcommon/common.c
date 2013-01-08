@@ -1403,10 +1403,10 @@ typedef struct memstatic_s
 } memstatic_t;
 
 // bk001204 - initializer brackets
-memstatic_t emptystring = { { ( sizeof( memblock_t ) + 2 + 3 ) &~3, TAG_STATIC, NULL, NULL, ZONEID }
+static const memstatic_t emptystring = { { ( sizeof( memblock_t ) + 2 + 3 ) &~3, TAG_STATIC, NULL, NULL, ZONEID }
 	, { '\0',                            '\0' }
 };
-memstatic_t numberstring[] =
+static const memstatic_t numberstring[] =
 {
 	{	{ ( sizeof( memstatic_t ) + 3 ) &~3, TAG_STATIC, NULL, NULL, ZONEID }
 		, { '0', '\0' }

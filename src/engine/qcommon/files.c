@@ -4168,8 +4168,8 @@ more details are in unix/dedicated-only.txt
 
 // our target faked checksums
 // those don't need to be encrypted or anything, that's what you see in the +set developer 1
-static const char *pak_checksums = "-137448799 131270674 125907563 -1023558518 764840216 1886207346";
-static const char *pak_names = "mp_pak4 mp_pak3 mp_pak2 mp_pak1 mp_pak0 pak0";
+static const char *const pak_checksums = "-137448799 131270674 125907563 -1023558518 764840216 1886207346";
+static const char *const pak_names = "mp_pak4 mp_pak3 mp_pak2 mp_pak1 mp_pak0 pak0";
 
 /*
 this is the pure checksum string for a constant value of fs_checksumFeed we have chosen (see SV_SpawnServer)
@@ -4205,7 +4205,7 @@ static const int feeds[ 5 ] =
 
 // shifted strings, so that it's not directly scannable from exe
 // see FS_RandChecksumFeed to generate them
-static const char *pak_purechecksums[ 5 ] =
+static const char *const pak_purechecksums[ 5 ] =
 {
 	// rain - escaped ?s to prevent parsing as trigraph
 	":C@>=BE?@C->A@F>F>ECE-:>DBEB@BD\?\?-:>>=FC@FE@=-:DBC@A?A?B-:?C=BBF@A",
