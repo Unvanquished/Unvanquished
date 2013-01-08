@@ -108,7 +108,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define N_( text )             text
 #define C_( ctxt, text )       Pgettext( ctxt, text )
 #define G_( text )             Pgettext( Trans_GenderContext( gender ), text )
-#define P_( one, many, count ) ( ( count ) == 1 ? ( one ) : ( many ) )
+// FIXME: CLIENT PLURAL (use tinygettext plural handling)
+#define P_( one, many, count ) Gettext( ( count ) == 1 ? ( one ) : ( many ) )
 
 typedef struct
 {

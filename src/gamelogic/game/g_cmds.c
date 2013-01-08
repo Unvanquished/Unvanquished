@@ -4557,9 +4557,10 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 		ADMP( va( "%s %c %s", QQ( N_("^$1$Private message: ^7$2$\n") ), color, Quote( text ) ) );
 		// remove trailing ", "
 		recipients[ strlen( recipients ) - 2 ] = '\0';
-		ADMP( va( "%s %c %i %s", P_( QQ( N_("^$1$sent to $2$ player: ^7$3$\n" ) ),
-		                             QQ( N_( "^$1$sent to $2$ players: ^7$3$\n" ) ),
-                                     count ),
+		// FIXME PLURAL
+		ADMP( va( "%s %c %i %s",
+		          Quote( P_( "^$1$sent to $2$ player: ^7$3$\n",
+		                     "^$1$sent to $2$ players: ^7$3$\n", count ) ),
 		          color, count, Quote( recipients ) ) );
 
 		G_LogPrintf( "%s: %d \"%s" S_COLOR_WHITE "\" \"%s\": ^%c%s\n",

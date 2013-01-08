@@ -46,6 +46,7 @@ typedef struct gclient_s gclient_t;
 #define FL_FORCE_GESTURE           0x00008000
 
 #define N_( text )             text
+// FIXME: CLIENT PLURAL
 #define P_( one, many, count ) ( ( count ) == 1 ? ( one ) : ( many ) )
 
 // decon types for g_markDeconstruct
