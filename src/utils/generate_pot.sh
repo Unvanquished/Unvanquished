@@ -4,11 +4,11 @@ cd "$SELF"
 SELF="$PWD"
 cd ../..
 
-find src/engine/server/ src/engine/client/ src/engine/qcommon/ | grep .c[p]*$ | xgettext --from-code=UTF-8 -o messages_client.pot -k_ -kN_ -kC_:2 -f -
+find src/engine/server/ src/engine/client/ src/engine/qcommon/ -name '*.c' -o -name '*.cpp' | sort | xgettext --from-code=UTF-8 -o messages_client.pot -k_ -kN_ -kC_:2 -f -
 touch messages_game.pot
 find main/ -name '*.menu' | sort | while read i
 do
-	src/utils/generate_menu_pot.pl $i | xgettext --from-code=UTF-8 -a --no-location -C -c -j -o messages_game.pot -
+	src/utils/generate_menu_pot.pl "$i" | xgettext --from-code=UTF-8 -a --no-location -C -c -j -o messages_game.pot -
 done
 
 # generate_menu_pot.pl writes file references as code comments (#. file:line)
@@ -18,9 +18,9 @@ mv messages_game.pot.tmp messages_game.pot
 
 src/utils/gender_context.pl src/gamelogic/cgame/cg_event.c >> messages_game.pot
 
-find src/gamelogic/ | grep .c$ | xgettext --from-code=UTF-8 -j -o messages_game.pot -k_ -kN_ -k -f -
+find src/gamelogic/ -name '*.c' | sort | xgettext --from-code=UTF-8 -j -o messages_game.pot -k_ -kN_ -k -f -
 
-find main/ui/ | grep .menu$ | xgettext --from-code=UTF-8 -C -o messages_game.pot -j \
+find main/ui/ -name '*.menu' | sort | xgettext --from-code=UTF-8 -C -o messages_game.pot -j \
 -kCVAR:1,4t \
 -kMULTI:1,5t \
 -kCOMBO:1,3t \
