@@ -3045,10 +3045,85 @@ not_alien:
 Cmd_Sell_f
 =================
 */
+static void Cmd_Sell_weapons( gentity_t *ent )
+{
+	int      i;
+	weapon_t selected = BG_GetPlayerWeapon( &ent->client->ps );
+
+	if ( !BG_PlayerCanChangeWeapon( &ent->client->ps ) )
+	{
+		return;
+	}
+
+	for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
+	{
+		// guard against selling the HBUILD weapons exploit
+		if ( i == WP_HBUILD && ent->client->ps.stats[ STAT_MISC ] > 0 )
+		{
+			G_TriggerMenu( ent->client->ps.clientNum, MN_H_ARMOURYBUILDTIMER );
+			continue;
+		}
+
+		if ( BG_InventoryContainsWeapon( i, ent->client->ps.stats ) &&
+		     BG_Weapon( i )->purchasable )
+		{
+			ent->client->ps.stats[ STAT_WEAPON ] = WP_NONE;
+
+			// add to funds
+			G_AddCreditToClient( ent->client, ( short ) BG_Weapon( i )->price, qfalse );
+		}
+
+		// if we have this weapon selected, force a new selection
+		if ( i == selected )
+		{
+			G_ForceWeaponChange( ent, WP_NONE );
+		}
+	}
+}
+
+static void Cmd_Sell_upgrades( gentity_t *ent )
+{
+	int      i;
+
+	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
+	{
+		// remove upgrade if carried
+		if ( BG_InventoryContainsUpgrade( i, ent->client->ps.stats ) &&
+		     BG_Upgrade( i )->purchasable )
+		{
+			// shouldn't really need to test for this, but just to be safe
+			if ( i == UP_BATTLESUIT )
+			{
+				vec3_t newOrigin;
+
+				if ( !G_RoomForClassChange( ent, PCL_HUMAN, newOrigin ) )
+				{
+					G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMBSUITOFF );
+					continue;
+				}
+
+				VectorCopy( newOrigin, ent->client->ps.origin );
+				ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN;
+				ent->client->pers.classSelection = PCL_HUMAN;
+				ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
+			}
+
+			BG_RemoveUpgradeFromInventory( i, ent->client->ps.stats );
+
+			if ( i == UP_BATTPACK )
+			{
+				G_GiveClientMaxAmmo( ent, qtrue );
+			}
+
+			// add to funds
+			G_AddCreditToClient( ent->client, ( short ) BG_Upgrade( i )->price, qfalse );
+		}
+	}
+}
+
 void Cmd_Sell_f( gentity_t *ent )
 {
 	char      s[ MAX_TOKEN_CHARS ];
-	int       i;
 	weapon_t  weapon;
 	upgrade_t upgrade;
 
@@ -3155,74 +3230,16 @@ void Cmd_Sell_f( gentity_t *ent )
 	}
 	else if ( !Q_stricmp( s, "weapons" ) )
 	{
-		weapon_t selected = BG_GetPlayerWeapon( &ent->client->ps );
-
-		if ( !BG_PlayerCanChangeWeapon( &ent->client->ps ) )
-		{
-			return;
-		}
-
-		for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
-		{
-			//guard against selling the HBUILD weapons exploit
-			if ( i == WP_HBUILD && ent->client->ps.stats[ STAT_MISC ] > 0 )
-			{
-				G_TriggerMenu( ent->client->ps.clientNum, MN_H_ARMOURYBUILDTIMER );
-				continue;
-			}
-
-			if ( BG_InventoryContainsWeapon( i, ent->client->ps.stats ) &&
-			     BG_Weapon( i )->purchasable )
-			{
-				ent->client->ps.stats[ STAT_WEAPON ] = WP_NONE;
-
-				//add to funds
-				G_AddCreditToClient( ent->client, ( short ) BG_Weapon( i )->price, qfalse );
-			}
-
-			//if we have this weapon selected, force a new selection
-			if ( i == selected )
-			{
-				G_ForceWeaponChange( ent, WP_NONE );
-			}
-		}
+		Cmd_Sell_weapons( ent );
 	}
 	else if ( !Q_stricmp( s, "upgrades" ) )
 	{
-		for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
-		{
-			//remove upgrade if carried
-			if ( BG_InventoryContainsUpgrade( i, ent->client->ps.stats ) &&
-			     BG_Upgrade( i )->purchasable )
-			{
-				// shouldn't really need to test for this, but just to be safe
-				if ( i == UP_BATTLESUIT )
-				{
-					vec3_t newOrigin;
-
-					if ( !G_RoomForClassChange( ent, PCL_HUMAN, newOrigin ) )
-					{
-						G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMBSUITOFF );
-						continue;
-					}
-
-					VectorCopy( newOrigin, ent->client->ps.origin );
-					ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN;
-					ent->client->pers.classSelection = PCL_HUMAN;
-					ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
-				}
-
-				BG_RemoveUpgradeFromInventory( i, ent->client->ps.stats );
-
-				if ( i == UP_BATTPACK )
-				{
-					G_GiveClientMaxAmmo( ent, qtrue );
-				}
-
-				//add to funds
-				G_AddCreditToClient( ent->client, ( short ) BG_Upgrade( i )->price, qfalse );
-			}
-		}
+		Cmd_Sell_upgrades( ent );
+	}
+	else if ( !Q_stricmp( s, "all" ) )
+	{
+		Cmd_Sell_weapons( ent );
+		Cmd_Sell_upgrades( ent );
 	}
 	else
 	{
