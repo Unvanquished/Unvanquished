@@ -714,7 +714,7 @@ static qboolean CG_ParseColor( byte *c, char **text_p )
 	{
 		token = COM_Parse( text_p );
 
-		if ( !Q_stricmp( token, "" ) )
+		if ( !*token )
 		{
 			return qfalse;
 		}
@@ -743,12 +743,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 	{
 		token = COM_Parse( text_p );
 
-		if ( !token )
-		{
-			break;
-		}
-
-		if ( !Q_stricmp( token, "" ) )
+		if ( !*token )
 		{
 			return qfalse;
 		}
@@ -757,7 +752,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 		{
 			token = COM_Parse( text_p );
 
-			if ( !token )
+			if ( !*token )
 			{
 				break;
 			}
@@ -852,7 +847,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 
 			token = COM_Parse( text_p );
 
-			if ( !token )
+			if ( !*token )
 			{
 				break;
 			}
@@ -975,7 +970,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 		{
 			token = COM_Parse( text_p );
 
-			if ( !token )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1015,7 +1010,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 		{
 			token = COM_Parse( text_p );
 
-			if ( !token )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1035,7 +1030,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 		{
 			token = COM_Parse( text_p );
 
-			if ( !token )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1051,7 +1046,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 		{
 			token = COM_Parse( text_p );
 
-			if ( !token )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1069,7 +1064,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 			{
 				token = COM_Parse( text_p );
 
-				if ( !token )
+				if ( !*token )
 				{
 					break;
 				}
@@ -1079,7 +1074,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 
 			token = COM_Parse( text_p );
 
-			if ( !token )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1096,7 +1091,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 			{
 				token = COM_Parse( text_p );
 
-				if ( !token )
+				if ( !*token )
 				{
 					break;
 				}
@@ -1106,7 +1101,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 
 			token = COM_Parse( text_p );
 
-			if ( !token )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1122,7 +1117,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 		{
 			token = COM_Parse( text_p );
 
-			if ( !token )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1162,7 +1157,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 		{
 			token = COM_Parse( text_p );
 
-			if ( !token )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1182,7 +1177,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 		{
 			token = COM_Parse( text_p );
 
-			if ( !token )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1200,7 +1195,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 			{
 				token = COM_Parse( text_p );
 
-				if ( !token )
+				if ( !*token )
 				{
 					break;
 				}
@@ -1210,7 +1205,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 
 			token = COM_Parse( text_p );
 
-			if ( !token )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1227,7 +1222,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 			{
 				token = COM_Parse( text_p );
 
-				if ( !token )
+				if ( !*token )
 				{
 					break;
 				}
@@ -1237,7 +1232,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 
 			token = COM_Parse( text_p );
 
-			if ( !token )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1255,7 +1250,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 			{
 				token = COM_Parse( text_p );
 
-				if ( !token )
+				if ( !*token )
 				{
 					break;
 				}
@@ -1292,7 +1287,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 		{
 			token = COM_Parse( text_p );
 
-			if ( !token )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1396,7 +1391,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 		{
 			token = COM_Parse( text_p );
 
-			if ( !token )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1408,7 +1403,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 
 			token = COM_Parse( text_p );
 
-			if ( !token )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1420,7 +1415,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 
 			token = COM_Parse( text_p );
 
-			if ( !token )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1444,7 +1439,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 		{
 			token = COM_Parse( text_p );
 
-			if ( !token )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1455,7 +1450,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 		{
 			token = COM_Parse( text_p );
 
-			if ( !token )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1467,7 +1462,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 
 			token = COM_Parse( text_p );
 
-			if ( !token )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1479,7 +1474,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 
 			token = COM_Parse( text_p );
 
-			if ( !token )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1581,7 +1576,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 		{
 			token = COM_Parse( text_p );
 
-			if ( !token )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1593,7 +1588,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 
 			token = COM_Parse( text_p );
 
-			if ( !token )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1605,7 +1600,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 
 			token = COM_Parse( text_p );
 
-			if ( !token )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1629,7 +1624,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 		{
 			token = COM_Parse( text_p );
 
-			if ( !token )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1645,7 +1640,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 		{
 			token = COM_Parse( text_p );
 
-			if ( !token )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1658,7 +1653,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 		{
 			token = COM_Parse( text_p );
 
-			if ( !token )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1671,7 +1666,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 		{
 			token = COM_Parse( text_p );
 
-			if ( !token )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1684,7 +1679,7 @@ static qboolean CG_ParseParticle( baseParticle_t *bp, char **text_p )
 		{
 			token = COM_Parse( text_p );
 
-			if ( !token )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1737,12 +1732,7 @@ static qboolean CG_ParseParticleEjector( baseParticleEjector_t *bpe, char **text
 	{
 		token = COM_Parse( text_p );
 
-		if ( !token )
-		{
-			break;
-		}
-
-		if ( !Q_stricmp( token, "" ) )
+		if ( !*token )
 		{
 			return qfalse;
 		}
@@ -1781,7 +1771,7 @@ static qboolean CG_ParseParticleEjector( baseParticleEjector_t *bpe, char **text
 		{
 			token = COM_Parse( text_p );
 
-			if ( !token )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1797,7 +1787,7 @@ static qboolean CG_ParseParticleEjector( baseParticleEjector_t *bpe, char **text
 		{
 			token = COM_Parse( text_p );
 
-			if ( !token )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1806,7 +1796,7 @@ static qboolean CG_ParseParticleEjector( baseParticleEjector_t *bpe, char **text
 
 			token = COM_Parse( text_p );
 
-			if ( !token )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1822,7 +1812,7 @@ static qboolean CG_ParseParticleEjector( baseParticleEjector_t *bpe, char **text
 
 			token = COM_Parse( text_p );
 
-			if ( !token )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1835,7 +1825,7 @@ static qboolean CG_ParseParticleEjector( baseParticleEjector_t *bpe, char **text
 		{
 			token = COM_Parse( text_p );
 
-			if ( !token )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1890,12 +1880,7 @@ static qboolean CG_ParseParticleSystem( baseParticleSystem_t *bps, char **text_p
 	{
 		token = COM_Parse( text_p );
 
-		if ( !token )
-		{
-			break;
-		}
-
-		if ( !Q_stricmp( token, "" ) )
+		if ( !*token )
 		{
 			return qfalse;
 		}
@@ -2011,7 +1996,7 @@ static qboolean CG_ParseParticleFile( const char *fileName )
 	{
 		token = COM_Parse( &text_p );
 
-		if ( !Q_stricmp( token, "" ) )
+		if ( !*token )
 		{
 			break;
 		}
