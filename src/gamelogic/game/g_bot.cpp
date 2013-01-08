@@ -504,9 +504,9 @@ qboolean BotTargetInAttackRange(gentity_t *self, botTarget_t target) {
 	vec3_t muzzle;
 	vec3_t maxs, mins;
 	vec3_t targetPos;
-	vec3_t end;
 	trace_t trace;
 	float width = 0, height = 0;
+
 	AngleVectors( self->client->ps.viewangles, forward, right, up);
 	CalcMuzzlePoint( self, forward, right, up , muzzle);
 	BotGetTargetPos(target,targetPos);
@@ -541,7 +541,7 @@ qboolean BotTargetInAttackRange(gentity_t *self, botTarget_t target) {
 			width = height = LEVEL2_CLAW_WIDTH;
 			break;
 		case WP_ALEVEL2_UPG:
-			range = LEVEL2_CLAW_RANGE;
+			range = LEVEL2_CLAW_U_RANGE;
 			secondaryRange = LEVEL2_AREAZAP_RANGE;
 			width = height = LEVEL2_CLAW_WIDTH;
 			break;
@@ -549,6 +549,7 @@ qboolean BotTargetInAttackRange(gentity_t *self, botTarget_t target) {
 			range = LEVEL3_CLAW_RANGE;
 			//need to check if we can pounce to the target
 			secondaryRange = LEVEL3_POUNCE_JUMP_MAG; //An arbitrary value for pounce, has nothing to do with actual range
+			width = height = LEVEL3_CLAW_WIDTH;
 			break;
 		case WP_ALEVEL3_UPG:
 			range = LEVEL3_CLAW_RANGE;
@@ -561,6 +562,7 @@ qboolean BotTargetInAttackRange(gentity_t *self, botTarget_t target) {
 		case WP_ALEVEL4:
 			range = LEVEL4_CLAW_RANGE;
 			secondaryRange = 0; //Using 0 since tyrant rush is basically just movement, not a ranged attack
+			width = height = LEVEL4_CLAW_WIDTH;
 			break;
 		case WP_HBUILD:
 			range = 100;
@@ -571,7 +573,7 @@ qboolean BotTargetInAttackRange(gentity_t *self, botTarget_t target) {
 			secondaryRange = 0;
 			break;
 		case WP_FLAMER:
-			range = FLAMER_SPEED;
+			range = FLAMER_SPEED * FLAMER_LIFETIME / 1000.0f - 20.0f;
 			secondaryRange = 0;
 			width = height = FLAMER_SIZE;
 			// Correct muzzle so that the missile does not start in the ceiling
@@ -598,20 +600,12 @@ qboolean BotTargetInAttackRange(gentity_t *self, botTarget_t target) {
 		}
 	VectorSet(maxs, width, width, width);
 	VectorSet(mins, -width, -width, -height);
-	VectorSubtract(targetPos,muzzle,forward);
-	VectorNormalize(forward);
-	VectorScale(forward,MAX(range,secondaryRange),end);
+
 	trap_Trace(&trace,muzzle,mins,maxs,targetPos,self->s.number,MASK_SHOT);
 
-	if(trace.entityNum < ENTITYNUM_MAX_NORMAL && Distance(muzzle,trace.endpos) <= MAX(range,secondaryRange)) {
-		trap_Trace(&trace,muzzle,mins,maxs,end,self->s.number,MASK_SHOT);
-
-		if(BotGetTeam(self) != BotGetTeam(&g_entities[trace.entityNum])
-			&& BotAimNegligence(self,target) <= BOT_AIM_NEGLIGENCE)
-			return qtrue;
-		else
-			return qfalse;
-	} else
+	if(self->client->ps.stats[STAT_TEAM] != BotGetTeam(&g_entities[trace.entityNum]) && Distance(muzzle, trace.endpos) <= MAX(range, secondaryRange))
+		return qtrue;
+	else
 		return qfalse;
 }
 
@@ -623,7 +617,11 @@ qboolean BotTargetIsVisible( gentity_t *self, botTarget_t target, int mask ) {
 	AngleVectors( self->client->ps.viewangles, forward, right, up );
 	CalcMuzzlePoint( self, forward, right, up, muzzle );
 	BotGetTargetPos(target, targetPos);
-	trap_Trace( &trace, muzzle, NULL, NULL,targetPos, self->s.number, mask);
+
+	if(!trap_InPVS(muzzle,targetPos))
+		return qfalse;
+
+	trap_TraceNoEnts( &trace, muzzle, NULL, NULL,targetPos, self->s.number, mask);
 
 	if( trace.surfaceFlags & SURF_NOIMPACT )
 		return qfalse;
