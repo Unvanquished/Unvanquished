@@ -52,7 +52,7 @@
       hide optionsGrp;
       show player;
 
-      setitemcolor playerBtn    forecolor 0.2 0.2 0.2 1.0;
+      setitemcolor playerBtn    forecolor 0.6 0.6 0.6 1.0;
       setitemcolor hudBtn       forecolor 1.0 1.0 1.0 1.0;
       setitemcolor controlsBtn  forecolor 1.0 1.0 1.0 1.0;
       setitemcolor systemBtn    forecolor 1.0 1.0 1.0 1.0
@@ -99,7 +99,7 @@
         hide optionsGrp;
         show player;
 
-        setitemcolor playerBtn    forecolor 0.2 0.2 0.2 1.0;
+        setitemcolor playerBtn    forecolor 0.6 0.6 0.6 1.0;
         setitemcolor hudBtn       forecolor 1.0 1.0 1.0 1.0;
         setitemcolor controlsBtn  forecolor 1.0 1.0 1.0 1.0;
         setitemcolor systemBtn    forecolor 1.0 1.0 1.0 1.0
@@ -125,7 +125,7 @@
         show hud;
 
         setitemcolor playerBtn    forecolor 1.0 1.0 1.0 1.0;
-        setitemcolor hudBtn       forecolor 0.2 0.2 0.2 1.0;
+        setitemcolor hudBtn       forecolor 0.6 0.6 0.6 1.0;
         setitemcolor controlsBtn  forecolor 1.0 1.0 1.0 1.0;
         setitemcolor systemBtn    forecolor 1.0 1.0 1.0 1.0
       }
@@ -153,7 +153,7 @@
 
         setitemcolor playerBtn    forecolor 1.0 1.0 1.0 1.0;
         setitemcolor hudBtn       forecolor 1.0 1.0 1.0 1.0;
-        setitemcolor controlsBtn  forecolor 0.2 0.2 0.2 1.0;
+        setitemcolor controlsBtn  forecolor 0.6 0.6 0.6 1.0;
         setitemcolor systemBtn    forecolor 1.0 1.0 1.0 1.0
       }
     }
@@ -181,7 +181,7 @@
         setitemcolor playerBtn    forecolor 1.0 1.0 1.0 1.0;
         setitemcolor hudBtn       forecolor 1.0 1.0 1.0 1.0;
         setitemcolor controlsBtn  forecolor 1.0 1.0 1.0 1.0;
-        setitemcolor systemBtn    forecolor 0.2 0.2 0.2 1.0
+        setitemcolor systemBtn    forecolor 0.6 0.6 0.6 1.0
       }
     }
 
