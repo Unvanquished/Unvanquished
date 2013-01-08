@@ -42,7 +42,8 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 {
 	{
 		"adjustban",    G_admin_adjustban,   qfalse, "ban",
-		N_("change the duration or reason of a ban.  duration is specified as "
+		N_("change the IP address mask, duration or reason of a ban.  mask is "
+		"prefixed with '/'.  duration is specified as "
 		"numbers followed by units 'w' (weeks), 'd' (days), 'h' (hours) or "
 		"'m' (minutes), or seconds if no units are specified.  if the duration is"
 		" preceded by a + or -, the ban duration will be extended or shortened by"
