@@ -3196,7 +3196,7 @@ void Com_Init( char *commandLine )
 		else
 		{
 			Cbuf_AddText( va( "exec %s\n", CONFIG_NAME ) );
-			Cbuf_AddText( "exec autoexec.cfg" );
+			Cbuf_AddText( "exec autoexec.cfg\n" );
 		}
 	}
 #else
