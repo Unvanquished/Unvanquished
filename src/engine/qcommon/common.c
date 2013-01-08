@@ -3357,7 +3357,11 @@ void Com_Init( char *commandLine )
 		   } */
 	}
 #ifndef _WIN32
+# ifdef DEDICATED
+	com_pipefile = Cvar_Get( "com_pipefile", "svpipe", CVAR_ARCHIVE | CVAR_LATCH );
+# else
 	com_pipefile = Cvar_Get( "com_pipefile", "pipe", CVAR_ARCHIVE | CVAR_LATCH );
+# endif
 #else
 	com_pipefile = Cvar_Get( "com_pipefile", "", CVAR_ARCHIVE | CVAR_LATCH );
 #endif
