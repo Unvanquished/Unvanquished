@@ -2005,16 +2005,6 @@ static qboolean CG_ParseParticleFile( const char *fileName )
 		{
 			if ( psNameSet )
 			{
-				//check for name space clashes
-				for ( i = 0; i < numBaseParticleSystems; i++ )
-				{
-					if ( !Q_stricmp( baseParticleSystems[ i ].name, psName ) )
-					{
-						CG_Printf( S_COLOR_RED  "ERROR: a particle system is already named %s\n", psName );
-						return qfalse;
-					}
-				}
-
 				Q_strncpyz( baseParticleSystems[ numBaseParticleSystems ].name, psName, MAX_QPATH );
 
 				if ( !CG_ParseParticleSystem( &baseParticleSystems[ numBaseParticleSystems ], &text_p, psName ) )
@@ -2045,10 +2035,26 @@ static qboolean CG_ParseParticleFile( const char *fileName )
 				return qfalse;
 			}
 		}
-
-		if ( !psNameSet )
+		else if ( !psNameSet )
 		{
 			Q_strncpyz( psName, token, sizeof( psName ) );
+
+			//check for name space clashes
+			for ( i = 0; i < numBaseParticleSystems; i++ )
+			{
+				if ( !Q_stricmp( baseParticleSystems[ i ].name, psName ) )
+				{
+					CG_Printf( S_COLOR_RED "ERROR: a particle system is already named %s\n", psName );
+					break;
+				}
+			}
+
+			if ( i < numBaseParticleSystems )
+			{
+				SkipBracedSection( &text_p );
+				continue;
+			}
+
 			psNameSet = qtrue;
 		}
 		else
