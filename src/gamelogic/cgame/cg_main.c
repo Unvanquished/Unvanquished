@@ -430,7 +430,7 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_fov_human,                   "cg_fov_human",                   "0",            CVAR_ARCHIVE                 },
 };
 
-static int         cvarTableSize = ARRAY_LEN( cvarTable );
+static const size_t cvarTableSize = ARRAY_LEN( cvarTable );
 
 /*
 =================
