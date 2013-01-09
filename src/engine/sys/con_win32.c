@@ -459,11 +459,11 @@ char *CON_Input( void )
 		return NULL;
 	}
 
-	Hist_Add( qconsole_line );
-	Com_Printf( "]%s\n", qconsole_line );
-
 	qconsole_linelen = 0;
 	CON_Show();
+
+	Hist_Add( qconsole_line );
+	Com_Printf( "]%s\n", qconsole_line );
 
 	return qconsole_line;
 }
