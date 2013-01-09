@@ -198,12 +198,7 @@ static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p 
 	{
 		token = COM_Parse( text_p );
 
-		if ( !token )
-		{
-			break;
-		}
-
-		if ( !Q_stricmp( token, "" ) )
+		if ( !*token )
 		{
 			return qfalse;
 		}
@@ -784,12 +779,7 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 	{
 		token = COM_Parse( &text_p );
 
-		if ( !token )
-		{
-			break;
-		}
-
-		if ( !Q_stricmp( token, "" ) )
+		if ( !*token )
 		{
 			break;
 		}

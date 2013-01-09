@@ -40,7 +40,7 @@ static const char *const netSources[] =
 	N_( "Favorites" )
 };
 
-static const int  numNetSources = ARRAY_LEN( netSources );
+static const size_t numNetSources = ARRAY_LEN( netSources );
 
 static const char *const netnames[] =
 {
@@ -140,7 +140,7 @@ static const cvarTable_t   cvarTable[] =
 	{ &ui_helpFiles,           "ui_helpFiles",                "ui/help.txt",     CVAR_ARCHIVE              }
 };
 
-static const int           cvarTableSize = ARRAY_LEN( cvarTable );
+static const size_t         cvarTableSize = ARRAY_LEN( cvarTable );
 
 extern displayContextDef_t *DC;
 
@@ -901,8 +901,8 @@ static void UI_BuildFindPlayerList( qboolean force )
 		        int count = uiInfo.numFoundPlayerServers - 1;
 			Com_sprintf( uiInfo.foundPlayerServerNames[ count ],
 			             sizeof( uiInfo.foundPlayerServerAddresses[ 0 ] ),
-			             P_( _("%d server found with player %s"),
-			                 _("%d servers found with player %s"), count ),
+			             P_( "%d server found with player %s",
+			                 "%d servers found with player %s", count ),
                                      count, uiInfo.findPlayerName );
 		}
 

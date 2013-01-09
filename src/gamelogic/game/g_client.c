@@ -1199,11 +1199,15 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 
 	if ( atoi( s ) != 0 )
 	{
-		client->pers.teamInfo = qtrue;
+		// teamoverlay was enabled so we need an update
+		if ( client->pers.teamInfo == 0 )
+		{
+			client->pers.teamInfo = 1;
+		}
 	}
 	else
 	{
-		client->pers.teamInfo = qfalse;
+		client->pers.teamInfo = 0;
 	}
 
 	s = Info_ValueForKey( userinfo, "cg_unlagged" );
@@ -1936,6 +1940,8 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	// clear entity state values
 	BG_PlayerStateToEntityState( &client->ps, &ent->s, qtrue );
+
+	client->pers.infoChangeTime = level.time;
 }
 
 /*

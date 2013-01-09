@@ -42,7 +42,8 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 {
 	{
 		"adjustban",    G_admin_adjustban,   qfalse, "ban",
-		N_("change the duration or reason of a ban.  duration is specified as "
+		N_("change the IP address mask, duration or reason of a ban.  mask is "
+		"prefixed with '/'.  duration is specified as "
 		"numbers followed by units 'w' (weeks), 'd' (days), 'h' (hours) or "
 		"'m' (minutes), or seconds if no units are specified.  if the duration is"
 		" preceded by a + or -, the ban duration will be extended or shortened by"
@@ -4451,17 +4452,20 @@ qboolean G_admin_lock( gentity_t *ent )
 qboolean G_admin_builder( gentity_t *ent )
 {
 	vec3_t     forward, right, up;
-	vec3_t     start, end;
+	vec3_t     start, end, dist;
 	trace_t    tr;
 	gentity_t  *traceEnt;
 	buildLog_t *log;
 	int        i;
+	qboolean   buildlog;
 
 	if ( !ent )
 	{
 		ADMP( QQ( N_("^3builder: ^7console can't aim.\n") ) );
 		return qfalse;
 	}
+
+	buildlog = G_admin_permission( ent, "buildlog" );
 
 	AngleVectors( ent->client->ps.viewangles, forward, right, up );
 
@@ -4484,7 +4488,7 @@ qboolean G_admin_builder( gentity_t *ent )
 	{
 		const char *builder;
 
-		if ( !G_admin_permission( ent, "buildlog" ) &&
+		if ( !buildlog &&
 		     ent->client->pers.teamSelection != TEAM_NONE &&
 		     ent->client->pers.teamSelection != traceEnt->buildableTeam )
 		{
@@ -4492,31 +4496,33 @@ qboolean G_admin_builder( gentity_t *ent )
 			return qfalse;
 		}
 
-		for ( i = 0; i < level.numBuildLogs; i++ )
+		if ( buildlog )
 		{
-			log = &level.buildLog[( level.buildId - i - 1 ) % MAX_BUILDLOG ];
-
-			if ( log->fate == BF_CONSTRUCT && traceEnt->s.modelindex == log->modelindex && log->time == traceEnt->s.time )
+			// i is only valid if buildlog is set (i.e. actor has that flag)
+			for ( i = 0; i < level.numBuildLogs; i++ )
 			{
-				break;
+				log = &level.buildLog[( level.buildId - i - 1 ) % MAX_BUILDLOG ];
+
+				if ( log->fate == BF_CONSTRUCT && traceEnt->s.modelindex == log->modelindex )
+				{
+				        VectorSubtract( traceEnt->s.pos.trBase, log->origin, dist );
+
+				        if ( VectorLengthSquared( dist ) < 2.0f )
+				        {
+						break;
+					}
+				}
 			}
 		}
 
-		if ( traceEnt->builtBy >= 0 && log->actor  )
-		{
-			builder = log->actor->name[ log->actor->nameOffset ];
-		}
-		else
-		{
-			builder = "<world>";
-		}
+		builder = traceEnt->builtBy ? traceEnt->builtBy->name[ traceEnt->builtBy->nameOffset ] : "<world>";
 
-		if ( traceEnt->builtBy >= 0 && i < level.numBuildLogs && G_admin_permission( ent, "buildlog" ) )
+		if ( buildlog && traceEnt->builtBy && i < level.numBuildLogs )
 		{
 			ADMP( va( "%s %s %s %d", QQ( N_("^3builder: ^7$1$ built by $2$^7, buildlog #$3$\n") ),
 				  Quote( BG_Buildable( log->modelindex )->humanName ), Quote( builder ), MAX_CLIENTS + level.buildId - i - 1 ) );
 		}
-		else if ( traceEnt->builtBy >= 0 )
+		else if ( traceEnt->builtBy )
 		{
 			ADMP( va( "%s %s %s", QQ( N_("^3builder: ^7$1$ built by $2$^7\n") ),
 				  Quote( BG_Buildable( log->modelindex )->humanName ), Quote( builder ) ) );
@@ -4717,13 +4723,16 @@ qboolean G_admin_buildlog( gentity_t *ent )
 		printed++;
 		time = ( log->time - level.startTime ) / 1000;
 		Com_sprintf( stamp, sizeof( stamp ), "%3d:%02d", time / 60, time % 60 );
-		ADMBP( va( "^2%c^7%-3d %s ^7%s^7 %s%s%s\n",
+		ADMBP( va( "^2%c^7%-3d %s ^7%s^7%s%s%s %s%s%s\n",
 		           log->actor && log->fate != BF_REPLACE && log->fate != BF_UNPOWER ?
 		           '*' : ' ',
 		           i + MAX_CLIENTS,
 		           log->actor && ( log->fate == BF_REPLACE || log->fate == BF_UNPOWER ) ?
 		           "    \\_" : stamp,
 		           BG_Buildable( log->modelindex )->humanName,
+		           log->builtBy && log->fate != BF_CONSTRUCT ? " (built by " : "",
+		           log->builtBy && log->fate != BF_CONSTRUCT ? log->builtBy->name[ log->builtBy->nameOffset ] : "",
+		           log->builtBy && log->fate != BF_CONSTRUCT ? "^7)" : "",
 		           fates[ log->fate ],
 		           log->actor ? " by " : "",
 		           log->actor ?
