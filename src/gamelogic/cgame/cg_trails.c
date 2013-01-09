@@ -723,31 +723,6 @@ static void CG_UpdateBeam( trailBeam_t *tb )
 
 /*
 ===============
-CG_ParseTrailBeamColor
-===============
-*/
-static qboolean CG_ParseTrailBeamColor( byte *c, char **text_p )
-{
-	char *token;
-	int  i;
-
-	for ( i = 0; i <= 2; i++ )
-	{
-		token = COM_Parse( text_p );
-
-		if ( !*token )
-		{
-			return qfalse;
-		}
-
-		c[ i ] = ( int )( ( float ) 0xFF * atof_neg( token, qfalse ) );
-	}
-
-	return qtrue;
-}
-
-/*
-===============
 CG_ParseTrailBeam
 
 Parse a trail beam
@@ -855,16 +830,8 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 
 			if ( !Q_stricmp( token, "{" ) )
 			{
-				if ( !CG_ParseTrailBeamColor( btb->frontColor, text_p ) )
+				if ( !CG_ParseColor( btb->frontColor, text_p ) )
 				{
-					break;
-				}
-
-				token = COM_Parse( text_p );
-
-				if ( Q_stricmp( token, "}" ) )
-				{
-					CG_Printf( "^1ERROR: missing '}'\n" );
 					break;
 				}
 
@@ -883,16 +850,8 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 				}
 				else if ( !Q_stricmp( token, "{" ) )
 				{
-					if ( !CG_ParseTrailBeamColor( btb->backColor, text_p ) )
+					if ( !CG_ParseColor( btb->backColor, text_p ) )
 					{
-						break;
-					}
-
-					token = COM_Parse( text_p );
-
-					if ( Q_stricmp( token, "}" ) )
-					{
-						CG_Printf( "^1ERROR: missing '}'\n" );
 						break;
 					}
 				}

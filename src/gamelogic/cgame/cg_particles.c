@@ -701,39 +701,6 @@ static void CG_ParseValueAndVariance( char *token, float *value, float *variance
 }
 
 /*
-===============
-CG_ParseColor
-===============
-*/
-static qboolean CG_ParseColor( byte *c, char **text_p )
-{
-	char *token;
-	int  i;
-
-	for ( i = 0; i <= 2; i++ )
-	{
-		token = COM_Parse( text_p );
-
-		if ( !*token )
-		{
-			return qfalse;
-		}
-
-		c[ i ] = ( int )( ( float ) 0xFF * atof_neg( token, qfalse ) );
-	}
-
-	token = COM_Parse( text_p );
-
-	if ( strcmp( token, "}" ) )
-	{
-		CG_Printf( S_COLOR_RED "ERROR: missing '}'\n" );
-		return qfalse;
-	}
-
-	return qtrue;
-}
-
-/*
 CG_ParseParticle helpers
 */
 static void CG_CopyLine( int *i, char *toks, size_t num, size_t size, char **text_p )

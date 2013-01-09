@@ -676,6 +676,7 @@ set( CGAMEGPP_BASE
   ${GPP_DIR}/cgame/cg_trails.c
   ${GPP_DIR}/cgame/cg_particles.c
   ${GPP_DIR}/cgame/cg_tutorial.c
+  ${GPP_DIR}/cgame/cg_utils.c
   ${GPP_DIR}/ui/ui_shared.c
   ${GPP_DIR}/ui/ui_utf8.c
   ${MOUNT_DIR}/engine/qcommon/q_math.c
