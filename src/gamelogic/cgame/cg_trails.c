@@ -735,7 +735,7 @@ static qboolean CG_ParseTrailBeamColor( byte *c, char **text_p )
 	{
 		token = COM_Parse( text_p );
 
-		if ( !Q_stricmp( token, "" ) )
+		if ( !*token )
 		{
 			return qfalse;
 		}
@@ -762,7 +762,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 	{
 		token = COM_Parse( text_p );
 
-		if ( !Q_stricmp( token, "" ) )
+		if ( !*token )
 		{
 			return qfalse;
 		}
@@ -771,7 +771,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 		{
 			token = COM_Parse( text_p );
 
-			if ( !Q_stricmp( token, "" ) )
+			if ( !*token )
 			{
 				break;
 			}
@@ -790,7 +790,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 		{
 			token = COM_Parse( text_p );
 
-			if ( !Q_stricmp( token, "" ) )
+			if ( !*token )
 			{
 				break;
 			}
@@ -799,7 +799,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 
 			token = COM_Parse( text_p );
 
-			if ( !Q_stricmp( token, "" ) )
+			if ( !*token )
 			{
 				break;
 			}
@@ -819,7 +819,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 		{
 			token = COM_Parse( text_p );
 
-			if ( !Q_stricmp( token, "" ) )
+			if ( !*token )
 			{
 				break;
 			}
@@ -828,7 +828,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 
 			token = COM_Parse( text_p );
 
-			if ( !Q_stricmp( token, "" ) )
+			if ( !*token )
 			{
 				break;
 			}
@@ -848,7 +848,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 		{
 			token = COM_Parse( text_p );
 
-			if ( !Q_stricmp( token, "" ) )
+			if ( !*token )
 			{
 				break;
 			}
@@ -870,7 +870,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 
 				token = COM_Parse( text_p );
 
-				if ( !Q_stricmp( token, "" ) )
+				if ( !*token )
 				{
 					break;
 				}
@@ -914,7 +914,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 		{
 			token = COM_Parse( text_p );
 
-			if ( !Q_stricmp( token, "" ) )
+			if ( !*token )
 			{
 				break;
 			}
@@ -926,7 +926,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 		{
 			token = COM_Parse( text_p );
 
-			if ( !Q_stricmp( token, "" ) )
+			if ( !*token )
 			{
 				break;
 			}
@@ -938,7 +938,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 		{
 			token = COM_Parse( text_p );
 
-			if ( !Q_stricmp( token, "" ) )
+			if ( !*token )
 			{
 				break;
 			}
@@ -951,7 +951,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 		{
 			token = COM_Parse( text_p );
 
-			if ( !Q_stricmp( token, "" ) )
+			if ( !*token )
 			{
 				break;
 			}
@@ -962,7 +962,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 
 				token = COM_Parse( text_p );
 
-				if ( !Q_stricmp( token, "" ) )
+				if ( !*token )
 				{
 					break;
 				}
@@ -971,7 +971,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 
 				token = COM_Parse( text_p );
 
-				if ( !Q_stricmp( token, "" ) )
+				if ( !*token )
 				{
 					break;
 				}
@@ -984,7 +984,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 
 				token = COM_Parse( text_p );
 
-				if ( !Q_stricmp( token, "" ) )
+				if ( !*token )
 				{
 					break;
 				}
@@ -1005,7 +1005,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 
 				token = COM_Parse( text_p );
 
-				if ( !Q_stricmp( token, "" ) )
+				if ( !*token )
 				{
 					break;
 				}
@@ -1036,7 +1036,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 
 			token = COM_Parse( text_p );
 
-			if ( !Q_stricmp( token, "" ) )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1045,7 +1045,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 
 			token = COM_Parse( text_p );
 
-			if ( !Q_stricmp( token, "" ) )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1114,7 +1114,7 @@ static qboolean CG_ParseTrailSystem( baseTrailSystem_t *bts, char **text_p, cons
 	{
 		token = COM_Parse( text_p );
 
-		if ( !Q_stricmp( token, "" ) )
+		if ( !*token )
 		{
 			return qfalse;
 		}
@@ -1158,7 +1158,7 @@ static qboolean CG_ParseTrailSystem( baseTrailSystem_t *bts, char **text_p, cons
 		{
 			token = COM_Parse( text_p );
 
-			if ( !Q_stricmp( token, "" ) )
+			if ( !*token )
 			{
 				break;
 			}
@@ -1234,7 +1234,7 @@ static qboolean CG_ParseTrailFile( const char *fileName )
 	{
 		token = COM_Parse( &text_p );
 
-		if ( !Q_stricmp( token, "" ) )
+		if ( !*token )
 		{
 			break;
 		}

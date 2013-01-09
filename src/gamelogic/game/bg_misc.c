@@ -746,12 +746,7 @@ static qboolean BG_ParseBuildableFile( const char *filename, buildableConfig_t *
 	{
 		token = COM_Parse( &text_p );
 
-		if ( !token )
-		{
-			break;
-		}
-
-		if ( !Q_stricmp( token, "" ) )
+		if ( !*token )
 		{
 			break;
 		}
@@ -1602,12 +1597,7 @@ static qboolean BG_ParseClassFile( const char *filename, classConfig_t *cc )
 	{
 		token = COM_Parse( &text_p );
 
-		if ( !token )
-		{
-			break;
-		}
-
-		if ( !Q_stricmp( token, "" ) )
+		if ( !*token )
 		{
 			break;
 		}
