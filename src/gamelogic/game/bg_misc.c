@@ -581,7 +581,7 @@ static const buildableAttributes_t bg_buildableList[] =
 	}
 };
 
-int                                bg_numBuildables = ARRAY_LEN( bg_buildableList );
+static const size_t bg_numBuildables = ARRAY_LEN( bg_buildableList );
 
 static const buildableAttributes_t nullBuildable = { 0 };
 
@@ -1330,7 +1330,7 @@ static const classAttributes_t bg_classList[] =
 	}
 };
 
-int                            bg_numClasses = ARRAY_LEN( bg_classList );
+static const size_t bg_numClasses = ARRAY_LEN( bg_classList );
 
 static const classAttributes_t nullClass = { 0 };
 
@@ -2567,7 +2567,7 @@ static const weaponAttributes_t bg_weapons[] =
 	}
 };
 
-int                             bg_numWeapons = ARRAY_LEN( bg_weapons );
+static const size_t bg_numWeapons = ARRAY_LEN( bg_weapons );
 
 static const weaponAttributes_t nullWeapon = { 0 };
 
@@ -2733,7 +2733,7 @@ static const upgradeAttributes_t bg_upgrades[] =
 	}
 };
 
-int                              bg_numUpgrades = ARRAY_LEN( bg_upgrades );
+static const size_t bg_numUpgrades = ARRAY_LEN( bg_upgrades );
 
 static const upgradeAttributes_t nullUpgrade = { 0 };
 
