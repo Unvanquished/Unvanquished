@@ -1403,10 +1403,10 @@ typedef struct memstatic_s
 } memstatic_t;
 
 // bk001204 - initializer brackets
-memstatic_t emptystring = { { ( sizeof( memblock_t ) + 2 + 3 ) &~3, TAG_STATIC, NULL, NULL, ZONEID }
+static const memstatic_t emptystring = { { ( sizeof( memblock_t ) + 2 + 3 ) &~3, TAG_STATIC, NULL, NULL, ZONEID }
 	, { '\0',                            '\0' }
 };
-memstatic_t numberstring[] =
+static const memstatic_t numberstring[] =
 {
 	{	{ ( sizeof( memstatic_t ) + 3 ) &~3, TAG_STATIC, NULL, NULL, ZONEID }
 		, { '0', '\0' }
@@ -3196,7 +3196,7 @@ void Com_Init( char *commandLine )
 		else
 		{
 			Cbuf_AddText( va( "exec %s\n", CONFIG_NAME ) );
-			Cbuf_AddText( "exec autoexec.cfg" );
+			Cbuf_AddText( "exec autoexec.cfg\n" );
 		}
 	}
 #else
@@ -3357,7 +3357,11 @@ void Com_Init( char *commandLine )
 		   } */
 	}
 #ifndef _WIN32
+# ifdef DEDICATED
+	com_pipefile = Cvar_Get( "com_pipefile", "svpipe", CVAR_ARCHIVE | CVAR_LATCH );
+# else
 	com_pipefile = Cvar_Get( "com_pipefile", "pipe", CVAR_ARCHIVE | CVAR_LATCH );
+# endif
 #else
 	com_pipefile = Cvar_Get( "com_pipefile", "", CVAR_ARCHIVE | CVAR_LATCH );
 #endif

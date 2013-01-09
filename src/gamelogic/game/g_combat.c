@@ -773,6 +773,8 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	}
 
 	trap_LinkEntity( self );
+
+	self->client->pers.infoChangeTime = level.time;
 }
 
 /*
@@ -1671,6 +1673,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		if ( targ->client )
 		{
 			targ->client->ps.stats[ STAT_HEALTH ] = targ->health;
+			targ->client->pers.infoChangeTime = level.time;
 		}
 
 		targ->lastDamageTime = level.time;

@@ -736,7 +736,7 @@ delta functions with keys
 =============================================================================
 */
 
-int kbitmask[ 32 ] =
+static const int kbitmask[ 32 ] =
 {
 	0x00000001, 0x00000003, 0x00000007, 0x0000000F,
 	0x0000001F, 0x0000003F, 0x0000007F, 0x000000FF,
@@ -1000,7 +1000,7 @@ entityState_t communication
 
 typedef struct
 {
-	char *name;
+	const char *name;
 	int  offset;
 	int  bits;
 	int  used;
@@ -1009,7 +1009,7 @@ typedef struct
 // using the stringizing operator to save typing...
 #define NETF( x ) # x,(size_t)&( (entityState_t*)0 )->x
 
-netField_t entityStateFields[] =
+static netField_t entityStateFields[] =
 {
 	{ NETF( eType ),             8               },
 	{ NETF( eFlags ),            24              },
@@ -1476,7 +1476,7 @@ player_state_t communication
 // using the stringizing operator to save typing...
 #define PSF( x ) # x,(size_t)&( (playerState_t*)0 )->x
 
-netField_t playerStateFields[] =
+static netField_t playerStateFields[] =
 {
 	{ PSF( commandTime ),          32              }
 	,
@@ -2040,7 +2040,7 @@ void MSG_ReadDeltaPlayerstate( msg_t *msg, playerState_t *from, playerState_t *t
 	}
 }
 
-int msg_hData[ 256 ] =
+static const int msg_hData[ 256 ] =
 {
 	250315, // 0
 	41193, // 1

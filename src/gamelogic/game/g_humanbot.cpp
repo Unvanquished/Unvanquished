@@ -414,7 +414,8 @@ int BotFindBuildingNotBuiltByBot(gentity_t *self, int buildingType) {
 	for( int i = MAX_CLIENTS; i < level.num_entities; ++i ) {
 		target = &g_entities[i];
 		if(target->s.eType == ET_BUILDABLE) {
-			if(g_entities[target->builtBy].botMind)
+			if(target->builtBy && target->builtBy->slot >= 0 &&
+			   g_entities[target->builtBy->slot].botMind)
 				continue;
 			if(target->s.modelindex == buildingType && (target->buildableTeam == TEAM_ALIENS || (target->powered && target->spawned)) && target->health > 0) {
 				newDistance = DistanceSquared(self->s.origin,target->s.origin);
@@ -440,7 +441,8 @@ int BotFindBuildingsPoweredBy(gentity_t *powerEntity, gentity_t **buildings, int
 			continue;
 		if(building == powerEntity)
 			continue;
-		if(g_entities[building->builtBy].botMind)
+		if(building->builtBy && building->builtBy->slot >= 0 &&
+		   g_entities[building->builtBy->slot].botMind)
 			continue;
 		if(numBuildings < maxBuildings) {
 			buildings[numBuildings++] = building;

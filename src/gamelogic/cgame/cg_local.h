@@ -1898,3 +1898,8 @@ typedef enum
   DT_COMMAND, // You must be alive/human/spec/etc.
   DT_MISC_CP, // Misc errors which may be centre-printed but not hidden
 } dialogType_t;
+
+//
+// cg_utils.c
+//
+qboolean CG_ParseColor( byte *c, char **text_p );

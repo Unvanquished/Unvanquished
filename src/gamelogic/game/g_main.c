@@ -450,7 +450,7 @@ static cvarTable_t gameCvarTable[] =
 	// </bot stuff>
 };
 
-static int         gameCvarTableSize = ARRAY_LEN( gameCvarTable );
+static const size_t gameCvarTableSize = ARRAY_LEN( gameCvarTable );
 
 void               G_InitGame( int levelTime, int randomSeed, int restart );
 void               G_RunFrame( int levelTime );

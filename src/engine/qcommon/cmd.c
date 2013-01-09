@@ -464,14 +464,16 @@ void Cmd_Exec_f( void )
 		Cmd_ExecFile( f.c );
 		Hunk_FreeTempMemory( f.v );
 	}
-
-	FS_ReadFile( filename, &f.v );
-
-	if ( f.c )
+	else
 	{
-		success = qtrue;
-		Cmd_ExecFile( f.c );
-		FS_FreeFile( f.v );
+		FS_ReadFile( filename, &f.v );
+
+		if ( f.c )
+		{
+			success = qtrue;
+			Cmd_ExecFile( f.c );
+			FS_FreeFile( f.v );
+		}
 	}
 
 	if ( !success )

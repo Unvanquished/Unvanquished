@@ -4503,6 +4503,8 @@ static qboolean CG_DrawScoreboard( void )
 		return qfalse;
 	}
 
+	CG_RequestScores();
+
 	if ( menuScoreboard == NULL )
 	{
 		menuScoreboard = Menus_FindByName( "teamscore_menu" );
@@ -4588,7 +4590,7 @@ static qboolean CG_DrawQueue( void )
 	else
 	{
 		Com_sprintf( buffer, MAX_STRING_CHARS,
-		             P_( _("There is 1 spawn remaining"), _("There are %d spawns remaining"),
+		             P_( "There is 1 spawn remaining", "There are %d spawns remaining",
 		                cg.snap->ps.persistant[ PERS_SPAWNS ]),
 		             cg.snap->ps.persistant[ PERS_SPAWNS ] );
 	}

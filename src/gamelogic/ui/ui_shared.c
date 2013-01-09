@@ -6045,7 +6045,7 @@ static bind_t g_bindings[] =
 	{ "messagemodec",   -1,                 -1,            -1, -1 }
 };
 
-static const int g_bindCount = ARRAY_LEN( g_bindings );
+static const size_t g_bindCount = ARRAY_LEN( g_bindings );
 
 /*
 =================

@@ -151,7 +151,7 @@ static void G_WideTrace( trace_t *tr, gentity_t *ent, float range,
 	vec3_t end;
 
 	VectorSet( mins, -width, -width, -height );
-	VectorSet( maxs, width, width, width );
+	VectorSet( maxs, width, width, height );
 
 	*target = NULL;
 
