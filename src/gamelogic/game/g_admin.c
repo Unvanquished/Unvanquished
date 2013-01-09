@@ -4446,7 +4446,7 @@ qboolean G_admin_lock( gentity_t *ent )
 qboolean G_admin_builder( gentity_t *ent )
 {
 	vec3_t     forward, right, up;
-	vec3_t     start, end;
+	vec3_t     start, end, dist;
 	trace_t    tr;
 	gentity_t  *traceEnt;
 	buildLog_t *log;
@@ -4490,19 +4490,28 @@ qboolean G_admin_builder( gentity_t *ent )
 			return qfalse;
 		}
 
-		for ( i = 0; i < level.numBuildLogs; i++ )
+		if ( buildlog )
 		{
-			log = &level.buildLog[( level.buildId - i - 1 ) % MAX_BUILDLOG ];
-
-			if ( log->fate == BF_CONSTRUCT && traceEnt->s.modelindex == log->modelindex )
+			// i is only valid if buildlog is set (i.e. actor has that flag)
+			for ( i = 0; i < level.numBuildLogs; i++ )
 			{
-				break;
+				log = &level.buildLog[( level.buildId - i - 1 ) % MAX_BUILDLOG ];
+
+				if ( log->fate == BF_CONSTRUCT && traceEnt->s.modelindex == log->modelindex )
+				{
+				        VectorSubtract( traceEnt->s.pos.trBase, log->origin, dist );
+
+				        if ( VectorLengthSquared( dist ) < 2.0f )
+				        {
+						break;
+					}
+				}
 			}
 		}
 
 		builder = traceEnt->builtBy ? traceEnt->builtBy->name[ traceEnt->builtBy->nameOffset ] : "<world>";
 
-		if ( traceEnt->builtBy && i < level.numBuildLogs && buildlog )
+		if ( buildlog && traceEnt->builtBy && i < level.numBuildLogs )
 		{
 			ADMP( va( "%s %s %s %d", QQ( N_("^3builder: ^7$1$ built by $2$^7, buildlog #$3$\n") ),
 				  Quote( BG_Buildable( log->modelindex )->humanName ), Quote( builder ), MAX_CLIENTS + level.buildId - i - 1 ) );
