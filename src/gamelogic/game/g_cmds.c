@@ -4434,13 +4434,14 @@ void Cmd_Donate_f( gentity_t *ent )
 		trap_SendServerCommand( ent - g_entities, "print_tr " QQ( N_( "donate: that's more credit than you deserve\n" ) ) );
 	}
 
-	if( g_entities[ clientNum ].r.svFlags & SVF_BOT )
+	if( clientNum < level.maxclients && g_entities[ clientNum ].r.svFlags & SVF_BOT )
 	{
 		trap_SendServerCommand( ent - g_entities, "print_tr " QQ( N_( "donate: that player is a bot\n" ) ) );
 		return;
 	}
 
-	if ( g_entities[ clientNum ].client->ps.stats[ STAT_HEALTH ] <= 0 || g_entities[ clientNum ].client->sess.spectatorState != SPECTATOR_NOT )
+	if ( clientNum < level.maxclients &&
+	     ( g_entities[ clientNum ].client->ps.stats[ STAT_HEALTH ] <= 0 || g_entities[ clientNum ].client->sess.spectatorState != SPECTATOR_NOT ) )
 	{
 		trap_SendServerCommand( ent - g_entities, "print_tr " QQ( N_( "donate: that player is not alive\n" ) ) );
 		return;
