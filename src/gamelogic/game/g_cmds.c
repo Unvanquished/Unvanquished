@@ -3942,7 +3942,6 @@ void Cmd_ListMaps_f( gentity_t *ent )
 	}
 
 	ADMBP_begin();
-	ADMBP( "\"" );
 
 	for ( row = 0; row < rows; row++ )
 	{
@@ -3962,7 +3961,7 @@ void Cmd_ListMaps_f( gentity_t *ent )
 
 		ADMBP( "\n" );
 	}
-	ADMBP( "\"" );
+
 	ADMBP_end();
 
 	if ( search[ 0 ] )
@@ -4099,8 +4098,7 @@ void Cmd_MapLog_f( gentity_t *ent )
 	ptr = maplog;
 
 	ADMP( "\"" N_("^3maplog: ^7recent map results, newest first\n") "\"" );
-	ADMBP_begin( );
-	ADMBP( "\"" );
+	ADMBP_begin();
 
 	while( *ptr )
 	{
@@ -4150,7 +4148,6 @@ void Cmd_MapLog_f( gentity_t *ent )
 		           ptr, clock, result ) );
 		ptr = end;
 	}
-	ADMBP( "\"" );
 	ADMBP_end();
 }
 

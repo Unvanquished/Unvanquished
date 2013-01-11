@@ -1034,7 +1034,6 @@ static int admin_search( gentity_t *ent,
 	}
 
 	ADMBP_begin();
-	ADMBP( "\"" );
 
 	for ( i = 0, l = ( struct llist * ) list; l; i++, l = l->next )
 	{
@@ -1082,7 +1081,7 @@ static int admin_search( gentity_t *ent,
 		}
 	}
 
-	ADMBP( "\n\"" );
+	ADMBP( "\n" );
 	ADMBP_end();
 	return next + offset;
 }
@@ -3334,7 +3333,6 @@ qboolean G_admin_listlayouts( gentity_t *ent )
 	count = G_LayoutList( map, list, sizeof( list ) );
 	ADMP( va( "%s %d %s", QQ( N_("^3listlayouts:^7 $1$ layouts found for '$2$':\n") ), count, map ) );
 	ADMBP_begin();
-	ADMBP( "\"" );
 	s = &list[ 0 ];
 
 	while ( *s )
@@ -3358,7 +3356,7 @@ qboolean G_admin_listlayouts( gentity_t *ent )
 	{
 		ADMBP( va( " %s\n", layout ) );
 	}
-	ADMBP( "\"" );
+
 	ADMBP_end();
 	return qtrue;
 }
@@ -3383,7 +3381,6 @@ qboolean G_admin_listplayers( gentity_t *ent )
 	ADMP( va( "%s %d", QQ( N_("^3listplayers: ^7$1$ players connected:\n") ),
 	           level.numConnectedClients ) );
 	ADMBP_begin();
-	ADMBP( "\"" );
 
 	for ( i = 0; i < level.maxclients; i++ )
 	{
@@ -3481,7 +3478,7 @@ qboolean G_admin_listplayers( gentity_t *ent )
 		           ( registeredname ) ? S_COLOR_WHITE ")" : "",
 		           ( !authed ) ? S_COLOR_RED "NOT AUTHED" : "" ) );
 	}
-	ADMBP( "\"" );
+
 	ADMBP_end();
 	return qtrue;
 }
@@ -3623,7 +3620,7 @@ qboolean G_admin_adminhelp( gentity_t *ent )
 		int count = 0;
 
 		ADMBP_begin();
-		ADMBP( "\"" );
+
 		for ( i = 0; i < adminNumCmds; i++ )
 		{
 			if ( G_admin_permission( ent, g_admin_cmds[ i ].flag ) )
@@ -3660,7 +3657,7 @@ qboolean G_admin_adminhelp( gentity_t *ent )
 		{
 			ADMBP( "\n" );
 		}
-		ADMBP( "\"" );
+
 		ADMBP_end();
 		ADMP( va( "%s %d", QQ( N_("^3adminhelp: ^7$1$ available commands\n"
 		"run adminhelp [^3command^7] for adminhelp with a specific command.\n") ),count ) );
@@ -3680,15 +3677,20 @@ qboolean G_admin_adminhelp( gentity_t *ent )
 		{
 			if ( G_admin_permission( ent, c->flag ) )
 			{
-				ADMBP_begin();
-				ADMBP( "\"" );
-				ADMBP( N_( "^3adminhelp: ^7help for '$1$':\n"
-							" ^3Description: ^7$2t$\n"
-							" ^3Syntax: ^7$3$\n"
-							" ^3Flag: ^7'%s'\n" ) );
-				ADMBP( "\"" );
-				ADMBP( va( "%s %s %s %s", c->command, Quote( c->desc ), c->command, c->flag ) );
-				ADMBP_end();
+				ADMP( va( "%s %s", QQ( N_("^3adminhelp: ^7help for '$1$':\n") ), c->command ) );
+
+				if ( c->desc )
+				{
+					ADMP( va( "%s %s", QQ( N_(" ^3Description: ^7$1t$\n") ), c->desc ) );
+				}
+
+				ADMP( va( "%s %s", QQ( N_(" ^3Syntax: ^7$1$\n") ), c->command ) );
+
+				if ( c->flag )
+				{
+					ADMP( va( "%s %s", QQ( N_(" ^3Flag: ^7'$1$'\n") ), c->flag ) );
+				}
+
 				return qtrue;
 			}
 
@@ -3699,23 +3701,28 @@ qboolean G_admin_adminhelp( gentity_t *ent )
 		{
 			if ( G_admin_permission( ent, admincmd->flag ) )
 			{
-				ADMBP_begin();
-				ADMBP( "\"" );
-				ADMBP( N_( "^3adminhelp: ^7help for '$1$':\n"
-							" ^3Description: ^7$2t$\n"
-							" ^3Syntax: ^7$1$ $3t$\n"
-							" ^3Flag: ^7'$4$'\n" ) );
-				ADMBP( "\" " );
-				ADMBP( va( "%s %s %s %s", admincmd->keyword, Quote( admincmd->function ), Quote( admincmd->syntax ), Quote( admincmd->flag ? admincmd->flag : "<none>" ) ) );
-				ADMBP_end();
+				ADMP( va( "%s %s", QQ( N_("^3adminhelp: ^7help for '$1$':\n") ), admincmd->keyword ) );
+
+				if ( admincmd->function )
+				{
+					ADMP( va( "%s %s", QQ( N_(" ^3Description: ^7$1t$\n") ), admincmd->function ) );
+				}
+
+				ADMP( va( "%s %s %s", QQ( N_(" ^3Syntax: ^7$1$ $2t$\n") ), admincmd->keyword, admincmd->syntax ? Quote( admincmd->syntax ) : "" ) );
+
+				if ( admincmd->flag )
+				{
+					ADMP( va( "%s %s", QQ( N_(" ^3Flag: ^7'$1$'\n") ), admincmd->flag ) );
+				}
+
 				return qtrue;
 			}
 
 			denied = qtrue;
 		}
 
-		ADMP( va( "%s %s", denied ? QQ( N_("^3adminhelp: ^7you do not have permission to use '$1$'") ) :
-		QQ( N_("^3adminhelp: ^7no help found for '$1$'") ), param ) );
+		ADMP( va( "%s %s", denied ? QQ( N_("^3adminhelp: ^7you do not have permission to use '$1$'\n") )
+		                          : QQ( N_("^3adminhelp: ^7no help found for '$1$'\n") ), param ) );
 		return qfalse;
 	}
 }
@@ -4582,7 +4589,7 @@ qboolean G_admin_buildlog( gentity_t *ent )
 	}
 
 	ADMBP_begin();
-	ADMBP( "\"");
+
 	for ( i = start; i < level.buildId && printed < MAX_ADMIN_LISTITEMS; i++ )
 	{
 		log = &level.buildLog[ i % MAX_BUILDLOG ];
@@ -4641,7 +4648,6 @@ qboolean G_admin_buildlog( gentity_t *ent )
 		           "" ) );
 	}
 
-	ADMBP( "\"" );
 	ADMBP_end();
 
 	ADMP( va( "%s %d %d %d %d %d %s", QQ( N_("^3buildlog: ^7showing $1$ build logs $2$–$3$ of $4$–$5$.  $6$\n") ),
@@ -4880,6 +4886,8 @@ qboolean G_admin_timelimit( gentity_t *ent )
 
  This function facilitates the ADMP define.  ADMP() is similar to CP except
  that it prints the message to the server console if ent is not defined.
+
+ The supplied string is assumed to be quoted as needed.
 ================
 */
 void G_admin_print( gentity_t *ent, const char *m )
@@ -4894,6 +4902,15 @@ void G_admin_print( gentity_t *ent, const char *m )
 	}
 }
 
+/*
+================
+ G_admin_buffer_begin, G_admin_buffer_print, G_admin_buffer_end,
+
+ These function facilitates the ADMBP* defines, and output is as for ADMP().
+
+ The supplied text is raw; it will be quoted but not marked translatable.
+================
+*/
 void G_admin_buffer_begin( void )
 {
 	g_bfb[ 0 ] = '\0';
@@ -4901,20 +4918,22 @@ void G_admin_buffer_begin( void )
 
 void G_admin_buffer_end( gentity_t *ent )
 {
-	ADMP( g_bfb );
+	G_admin_buffer_print( ent, NULL );
 }
 
 void G_admin_buffer_print( gentity_t *ent, const char *m )
 {
 	// 1022 - strlen("print 64 \"\"") - 1
-	if ( strlen( m ) + strlen( g_bfb ) >= 1009 )
+	if ( !m ||  strlen( m ) + strlen( g_bfb ) >= 1009 )
 	{
-		ADMP( g_bfb );
+		trap_SendServerCommand( ent ? ent - level.gentities : -2, va( "print \"$1$\" %s", Quote( g_bfb ) ) );
 		g_bfb[ 0 ] = '\0';
-		Q_strcat( g_bfb, sizeof( g_bfb ), "\"" );
 	}
 
-	Q_strcat( g_bfb, sizeof( g_bfb ), m );
+	if ( m )
+	{
+		Q_strcat( g_bfb, sizeof( g_bfb ), m );
+	}
 }
 
 void G_admin_cleanup( void )
