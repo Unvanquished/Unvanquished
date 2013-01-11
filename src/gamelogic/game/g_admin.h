@@ -34,6 +34,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define MAX_ADMIN_FLAG_LEN   20
 #define MAX_ADMIN_FLAGS      1024
+#define MAX_ADMIN_FLAG_KEYS  128
 #define MAX_ADMIN_CMD_LEN    20
 #define MAX_ADMIN_BAN_REASON 100
 
@@ -217,6 +218,8 @@ qboolean        G_admin_timelimit( gentity_t *ent );
 qboolean        G_admin_nextmap( gentity_t *ent );
 qboolean        G_admin_namelog( gentity_t *ent );
 qboolean        G_admin_lock( gentity_t *ent );
+qboolean        G_admin_flaglist( gentity_t *ent );
+qboolean        G_admin_flag( gentity_t *ent );
 qboolean        G_admin_pause( gentity_t *ent );
 qboolean        G_admin_builder( gentity_t *ent );
 qboolean        G_admin_buildlog( gentity_t *ent );
