@@ -2022,14 +2022,11 @@ but that seems kind of stupid
 */
 qboolean G_admin_setlevel( gentity_t *ent )
 {
-	char            name[ MAX_NAME_LENGTH ] = { "" };
+	char            name[ MAX_NAME_LENGTH ];
 	char            lstr[ 12 ]; // 11 is max strlen() for 32-bit (signed) int
-	char            testname[ MAX_NAME_LENGTH ] = { "" };
-	int             i;
 	gentity_t       *vic = NULL;
 	g_admin_admin_t *a = NULL;
-	g_admin_level_t *l = NULL;
-	int             na;
+	g_admin_level_t *l;
 
 	if ( trap_Argc() < 3 )
 	{
@@ -2037,7 +2034,7 @@ qboolean G_admin_setlevel( gentity_t *ent )
 		return qfalse;
 	}
 
-	trap_Argv( 1, testname, sizeof( testname ) );
+	trap_Argv( 1, name, sizeof( name ) );
 	trap_Argv( 2, lstr, sizeof( lstr ) );
 
 	if ( !( l = G_admin_level( atoi( lstr ) ) ) )
@@ -2054,99 +2051,9 @@ qboolean G_admin_setlevel( gentity_t *ent )
 		return qfalse;
 	}
 
-	for ( na = 0, a = g_admin_admins; a; na++, a = a->next ) {; }
-
-	for ( i = 0; testname[ i ] && isdigit( testname[ i ] ); i++ ) {; }
-
-	if ( !testname[ i ] )
+	if ( admin_find_admin( ent, name, "setlevel", &vic, &a ) < 0 )
 	{
-		int id = atoi( testname );
-
-		if ( id < MAX_CLIENTS )
-		{
-			vic = &g_entities[ id ];
-
-			if ( !vic || !vic->client || vic->client->pers.connected == CON_DISCONNECTED )
-			{
-				ADMP( va( "%s %d", QQ( N_("^3setlevel: ^7no player connected in slot $1$\n") ), id ) );
-				return qfalse;
-			}
-		}
-		else if ( id < na + MAX_CLIENTS )
-		{
-			for ( i = 0, a = g_admin_admins; i < id - MAX_CLIENTS; i++, a = a->next ) {; }
-		}
-		else
-		{
-			ADMP( va( "%s %s %d", QQ( N_("^3setlevel: ^7$1$ not in range 1-$2$\n") ),
-			          Quote( testname ), na + MAX_CLIENTS - 1 ) );
-			return qfalse;
-		}
-	}
-	else
-	{
-		G_SanitiseString( testname, name, sizeof( name ) );
-	}
-
-	if ( vic )
-	{
-		a = vic->client->pers.admin;
-	}
-	else if ( !a )
-	{
-		g_admin_admin_t *wa;
-		int             matches = 0;
-
-		for ( wa = g_admin_admins; wa && matches < 2; wa = wa->next )
-		{
-			G_SanitiseString( wa->name, testname, sizeof( testname ) );
-
-			if ( strstr( testname, name ) )
-			{
-				a = wa;
-				matches++;
-			}
-		}
-
-		for ( i = 0; i < level.maxclients && matches < 2; i++ )
-		{
-			if ( level.clients[ i ].pers.connected == CON_DISCONNECTED )
-			{
-				continue;
-			}
-
-			if ( matches && level.clients[ i ].pers.admin &&
-			     level.clients[ i ].pers.admin == a )
-			{
-				vic = &g_entities[ i ];
-				continue;
-			}
-
-			G_SanitiseString( level.clients[ i ].pers.netname, testname,
-			                  sizeof( testname ) );
-
-			if ( strstr( testname, name ) )
-			{
-				vic = &g_entities[ i ];
-				a = vic->client->pers.admin;
-				matches++;
-			}
-		}
-
-		if ( matches == 0 )
-		{
-			ADMP( QQ( N_("^3setlevel:^7 no match.  use listplayers or listadmins to "
-			      "find an appropriate number to use instead of name.\n") ) );
-			return qfalse;
-		}
-
-		if ( matches > 1 )
-		{
-			ADMP( QQ( N_("^3setlevel:^7 more than one match.  Use the admin number "
-			      "instead:\n") ) );
-			admin_listadmins( ent, 0, name );
-			return qfalse;
-		}
+		return qfalse;
 	}
 
 	if ( l->level && vic && G_IsUnnamed( vic->client->pers.netname ) )
