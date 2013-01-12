@@ -1725,7 +1725,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		break;
 
 	case VOTE_REMAIN:
-		if ( level.time - level.startTime < ( level.timelimit - voteInfo[voteId].specialCvar->integer / 2 ) * 60000 )
+		if ( !level.timelimit || level.time - level.startTime < ( level.timelimit - voteInfo[voteId].specialCvar->integer / 2 ) * 60000 )
 		{
 			trap_SendServerCommand( ent - g_entities,
 			                        va( "print_tr %s %s %d", QQ( N_("'$1$' votes are only allowed with less than $2$ minutes remaining\n") ),
@@ -3970,7 +3970,6 @@ void Cmd_ListMaps_f( gentity_t *ent )
 	}
 
 	ADMBP_begin();
-	ADMBP( "\"" );
 
 	for ( row = 0; row < rows; row++ )
 	{
@@ -3990,7 +3989,7 @@ void Cmd_ListMaps_f( gentity_t *ent )
 
 		ADMBP( "\n" );
 	}
-	ADMBP( "\"" );
+
 	ADMBP_end();
 
 	if ( search[ 0 ] )
@@ -4127,8 +4126,7 @@ void Cmd_MapLog_f( gentity_t *ent )
 	ptr = maplog;
 
 	ADMP( "\"" N_("^3maplog: ^7recent map results, newest first\n") "\"" );
-	ADMBP_begin( );
-	ADMBP( "\"" );
+	ADMBP_begin();
 
 	while( *ptr )
 	{
@@ -4178,7 +4176,6 @@ void Cmd_MapLog_f( gentity_t *ent )
 		           ptr, clock, result ) );
 		ptr = end;
 	}
-	ADMBP( "\"" );
 	ADMBP_end();
 }
 

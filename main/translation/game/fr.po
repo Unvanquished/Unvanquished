@@ -3852,28 +3852,21 @@ msgstr ""
 
 #: src/gamelogic/game/g_admin.c:3777
 #, c-format
-msgid ""
-"^3adminhelp: ^7help for '$1$':\n"
-" ^3Description: ^7$2t$\n"
-" ^3Syntax: ^7$3$\n"
-" ^3Flag: ^7'%s'\n"
-msgstr ""
-"^3adminhelp : ^7aide pour « $1$ » :\n"
-"^3Description : ^7$2t$\n"
-"^3Syntaxe : ^7$3$\n"
-"^3Étiquette : ^7« %s »\n"
+msgid "^3adminhelp: ^7help for '$1$':\n"
+msgstr "^3adminhelp : ^7aide pour « $1$ » :\n"
+
+msgid " ^3Description: ^7$1t$\n"
+msgstr "^3Description : ^7$1t$\n"
+
+msgid " ^3Syntax: ^7$1$\n"
+msgstr "^3Syntaxe : ^7$1$\n"
+
+msgid " ^3Flag: ^7'$1$'\n"
+msgstr "^3Étiquette : ^7« %$1$»\n"
 
 #: src/gamelogic/game/g_admin.c:3796
-msgid ""
-"^3adminhelp: ^7help for '$1$':\n"
-" ^3Description: ^7$2t$\n"
-" ^3Syntax: ^7$1$ $3t$\n"
-" ^3Flag: ^7'$4$'\n"
-msgstr ""
-"^3adminhelp : ^7aide pour « $1$ » :\n"
-"^3Description : ^7$2t$\n"
-"^3Syntaxe : ^7$1$ $3$\n"
-"^3Étiquette : ^7« $4$ »\n"
+msgid " ^3Syntax: ^7$1$ $2t$\n"
+msgstr "^3Syntaxe : ^7$1$ 23$\n"
 
 #: src/gamelogic/game/g_admin.c:3809
 msgid "^3adminhelp: ^7you do not have permission to use '$1$'"

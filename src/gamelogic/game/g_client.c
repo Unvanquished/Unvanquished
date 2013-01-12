@@ -1750,7 +1750,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	ent->s.groundEntityNum = ENTITYNUM_NONE;
 	ent->client = &level.clients[ index ];
-	ent->takedamage = qtrue;
+	ent->takedamage = teamLocal != TEAM_NONE && client->sess.spectatorState == SPECTATOR_NOT; //qtrue;
 	ent->classname = "player";
 	if ( client->noclip )
 	{
