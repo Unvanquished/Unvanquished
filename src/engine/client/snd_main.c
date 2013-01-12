@@ -39,6 +39,17 @@ cvar_t                *s_musicVolume;
 cvar_t                *s_separation;
 cvar_t                *s_doppler;
 
+/*
+ * 0: unmuted
+ * 1: mute all
+ * 2: mute only local sounds and music
+ * 3: mute only gamesounds and music
+ */
+cvar_t                *s_mute;
+cvar_t                *s_muteWhenMinimized;
+cvar_t                *s_muteWhenUnfocused;
+
+
 void S_Shutdown( void )
 {
 	if( si.Shutdown )
@@ -55,8 +66,34 @@ void S_Shutdown( void )
 	Cmd_RemoveCommand( "soundinfo" );
 }
 
+/**
+ * the mute mode for the current client state (focus, unfocused, minimized)
+ *
+ * @returns 0 if not muted,
+ *			1 if everything is muted,
+ *	 	 	2 for having all but non-local gamesounds muted (to strip most of what is optional to the gameplay),
+ * 			3 for having all but local sounds muted (great for focusing on chatnotifications while minimized)
+ */
+int S_IsMuted( void )
+{
+	if ( com_minimized->integer )
+		return s_muteWhenMinimized->integer;
+
+	if ( com_unfocused->integer )
+		return s_muteWhenUnfocused->integer;
+
+	return s_mute->integer;
+}
+
+/**
+ * used for most ingame sounds like steps, damage taken or shooting
+ * (excluding e.g. the saw, flamer or barbs flying through the air)
+ */
 void S_StartSound( vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx )
 {
+	if( S_IsMuted() && S_IsMuted() != 2 )
+		return;
+
 	if( si.StartSound )
 	{
 		si.StartSound( origin, entnum, entchannel, sfx );
@@ -71,8 +108,18 @@ void S_StartSoundEx( vec3_t origin, int entnum, int entchannel, sfxHandle_t sfx 
 	}
 }
 
+/**
+ * start a local (to the player) sound, that is not placed anywhere
+ * particular in the world.
+ *
+ * This includes chat notifications or menu selection-sounds,
+ * but is also used for the vocal notifications about the overmind being attacked etc.
+ */
 void S_StartLocalSound( sfxHandle_t sfx, int channelNum )
 {
+	if( S_IsMuted() && S_IsMuted() != 3 )
+		return;
+
 	if( si.StartLocalSound )
 	{
 		si.StartLocalSound( sfx, channelNum );
@@ -112,16 +159,32 @@ void S_ClearLoopingSounds( qboolean killall )
 	}
 }
 
+/**
+ * add a looping sound
+ * used for many temporary environment sounds that loop while being active,
+ * like the idle sounds of base-buildings, saws,
+ * flame-throwers and the sound of a building being assembled or growing
+ */
 void S_AddLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx )
 {
+	if( S_IsMuted() && S_IsMuted() != 2 )
+		return;
+
 	if( si.AddLoopingSound )
 	{
 		si.AddLoopingSound( entityNum,  origin, velocity, sfx );
 	}
 }
 
+/**
+ * add a looping sound that will remain active
+ * used for many environment sounds like those defined by maps, that will continue during the game
+ */
 void S_AddRealLoopingSound( int entityNum, const vec3_t origin, const vec3_t velocity, sfxHandle_t sfx )
 {
+	if( S_IsMuted() )
+		return;
+
 	if( si.AddRealLoopingSound )
 	{
 		si.AddRealLoopingSound( entityNum, origin, velocity, sfx );
@@ -312,8 +375,6 @@ void S_StopAllSounds( void )
 	}
 }
 
-
-
 void S_Play_f( void )
 {
 	int         i;
@@ -388,6 +449,10 @@ void S_Init( void )
 		s_separation = Cvar_Get( "s_separation", "0.5", CVAR_ARCHIVE );
 		s_doppler = Cvar_Get( "s_doppler", "1", CVAR_ARCHIVE );
 		s_mixahead = Cvar_Get( "s_mixahead", "0.2", CVAR_ARCHIVE );
+
+		s_mute = Cvar_Get( "s_mute", "0", CVAR_TEMP );
+		s_muteWhenMinimized = Cvar_Get( "s_muteWhenMinimized", "1", CVAR_ARCHIVE );
+		s_muteWhenUnfocused = Cvar_Get( "s_muteWhenUnfocused", "0", CVAR_ARCHIVE );
 
 		s_mixPreStep = Cvar_Get( "s_mixPreStep", "0.05", CVAR_ARCHIVE );
 		s_show = Cvar_Get( "s_show", "0", CVAR_CHEAT );
