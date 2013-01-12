@@ -1605,6 +1605,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 	int    id = -1;
 	int    voteId;
 	team_t team;
+	int    i;
 
 	trap_Argv( 0, cmd, sizeof( cmd ) );
 	team = ( !Q_stricmp( cmd, "callteamvote" ) ) ? ent->client->pers.teamSelection : TEAM_NONE;
@@ -1852,6 +1853,22 @@ void Cmd_CallVote_f( gentity_t *ent )
 		break;
 
 	case VOTE_BOT_SPECTATE:
+		for ( i = 0; i < MAX_CLIENTS; ++i )
+		{
+			if ( g_entities[i].r.svFlags & SVF_BOT &&
+			     g_entities[i].client->pers.teamSelection != TEAM_NONE )
+			{
+				break;
+			}
+		}
+
+		if ( i == MAX_CLIENTS )
+		{
+			trap_SendServerCommand( ent - g_entities,
+			                        va( "print_tr %s %s", QQ( N_("$1$: there are no active bots\n") ), cmd ) );
+			return;
+		}
+
 		Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ), "bot spec all" );
 		Com_sprintf( level.voteDisplayString[ team ], sizeof( level.voteDisplayString[ team ] ), N_("Move all bots to spectators") );
 		break;
