@@ -4926,7 +4926,7 @@ void G_admin_buffer_print( gentity_t *ent, const char *m )
 	// 1022 - strlen("print 64 \"\"") - 1
 	if ( !m ||  strlen( m ) + strlen( g_bfb ) >= 1009 )
 	{
-		trap_SendServerCommand( ent ? ent - level.gentities : -2, va( "print \"$1$\" %s", Quote( g_bfb ) ) );
+		trap_SendServerCommand( ent ? ent - level.gentities : -2, va( "print %s", Quote( g_bfb ) ) );
 		g_bfb[ 0 ] = '\0';
 	}
 
