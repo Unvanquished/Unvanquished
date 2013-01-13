@@ -5396,7 +5396,10 @@ qboolean G_admin_bot( gentity_t *ent ) {
 	int skill_int;
 	int i;
 
-	static const char bot_usage[] = QQ( N_( "^3bot: ^7usage: bot [^5add|del|spec|unspec^7] [^5name|all^7] [^5aliens/humans^7] (^5skill^7)\n" ) );
+	static const char bot_usage[] = QQ( N_( "^3bot: ^7usage: bot add [^5name|*^7] [^5aliens|humans^7] (^5skill^7)\n"
+	                                        "            bot [^5del|spec|unspec^7] [^5name|all^7]\n"
+	                                        "            bot names [^5aliens|humans^7] [^5names…^7]\n"
+	                                        "            bot names [^5clear|list^7]\n" ) );
 
 	if(trap_Argc() < min_args) {
 		ADMP( bot_usage );
@@ -5509,7 +5512,26 @@ qboolean G_admin_bot( gentity_t *ent ) {
 		}
 
 		G_ChangeTeam(&g_entities[clientNum], g_entities[clientNum].botMind->botTeam);
+	} else if (!Q_stricmp(arg1, "names")) {
+		if (!Q_stricmp(name, "humans") || !Q_stricmp(name, "h")) {
+			i = G_BotAddNames(TEAM_HUMANS, 3, trap_Argc());
+			ADMP( va( "%s %d", Quote( P_( "added $1$ human bot name\n", "added $1$ human bot names\n", i ) ), i ) );
+		} else if (!Q_stricmp(name, "aliens") || !Q_stricmp(name, "a")) {
+			i = G_BotAddNames(TEAM_ALIENS, 3, trap_Argc());
+			ADMP( va( "%s %d", Quote( P_( "added $1$ alien bot name\n", "added $1$ alien bot names\n", i ) ), i ) );
+		} else if (!Q_stricmp(name, "clear") || !Q_stricmp(name, "c")) {
+			if (!G_BotClearNames())
+			{
+				ADMP( QQ( N_("some automatic bot names are in use – not clearing lists\n") ) );
+				return qfalse;
+			}
+		} else if (!Q_stricmp(name, "list") || !Q_stricmp(name, "l")) {
+			G_BotListNames( ent );
+		} else {
+			goto usage;
+		}
 	} else {
+usage:
 		ADMP( QQ( N_( "Invalid command\n" ) ) );
 		ADMP( bot_usage );
 		return qfalse;

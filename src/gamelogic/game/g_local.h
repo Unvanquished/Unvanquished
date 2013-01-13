@@ -891,6 +891,9 @@ void G_BotSpectatorThink( gentity_t *self );
 void G_BotIntermissionThink( gclient_t *client );
 void G_BotAssignGroups(void);
 void G_BotLoadBuildLayout();
+void G_BotListNames( gentity_t *ent );
+qboolean G_BotClearNames(void);
+int G_BotAddNames(team_t team, int arg, int last);
 
 //
 // g_cmds.c
