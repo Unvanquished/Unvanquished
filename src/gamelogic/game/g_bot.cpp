@@ -1676,6 +1676,116 @@ botTaskStatus_t BotTaskRoam(gentity_t *self, usercmd_t *botCmdBuffer) {
 Bot management functions
 =======================
 */
+static struct {
+	int count;
+	struct {
+		char *name;
+		qboolean inUse;
+	} name[MAX_CLIENTS];
+} botNames[NUM_TEAMS];
+
+static void G_BotListTeamNames(gentity_t *ent, const char *heading, team_t team, const char *marker)
+{
+	int i;
+
+	if (botNames[team].count)
+	{
+		ADMP(heading);
+		ADMBP_begin();
+
+		for (i = 0; i < botNames[team].count; ++i)
+		{
+			ADMBP( va( "  %s^7 %s\n", botNames[team].name[i].inUse ? marker : " ", botNames[team].name[i].name ) );
+		}
+
+		ADMBP_end();
+	}
+}
+
+extern "C" void G_BotListNames(gentity_t *ent)
+{
+	G_BotListTeamNames(ent, QQ( N_("^3Alien bot names:\n") ), TEAM_ALIENS, "^1*");
+	G_BotListTeamNames(ent, QQ( N_("^3Human bot names:\n") ), TEAM_HUMANS, "^5*");
+}
+
+extern "C" qboolean G_BotClearNames(void)
+{
+	int i;
+
+	for (i = 0; i < botNames[TEAM_ALIENS].count; ++i)
+		if (botNames[TEAM_ALIENS].name[i].inUse)
+			return qfalse;
+
+	for (i = 0; i < botNames[TEAM_HUMANS].count; ++i)
+		if (botNames[TEAM_HUMANS].name[i].inUse)
+			return qfalse;
+
+	for (i = 0; i < botNames[TEAM_ALIENS].count; ++i)
+		BG_Free( botNames[TEAM_ALIENS].name[i].name );
+
+	for (i = 0; i < botNames[TEAM_HUMANS].count; ++i)
+		BG_Free( botNames[TEAM_HUMANS].name[i].name );
+
+	botNames[TEAM_ALIENS].count = 0;
+	botNames[TEAM_HUMANS].count = 0;
+
+	return qtrue;
+}
+
+extern "C" int G_BotAddNames(team_t team, int first, int last)
+{
+	int  i = botNames[team].count;
+	int  arg = first;
+	char name[MAX_NAME_LENGTH];
+
+	while (arg < last && i < MAX_CLIENTS)
+	{
+		trap_Argv(arg, name, sizeof(name));
+
+		botNames[team].name[i].name = (char *)BG_Alloc(strlen(name) + 1);
+		strcpy(botNames[team].name[i].name, name);
+
+		++arg;
+		++i;
+	}
+
+	botNames[team].count = i;
+	return arg - first;
+}
+
+static char *G_BotSelectName(team_t team)
+{
+	unsigned int i, choice;
+
+	if (botNames[team].count < 1)
+		return NULL;
+
+	choice = rand() % botNames[team].count;
+
+	for (i = 0; i < botNames[team].count; ++i)
+	{
+		if (!botNames[team].name[choice].inUse)
+			return botNames[team].name[choice].name;
+		choice = (choice + 1) % botNames[team].count;
+	}
+
+	return NULL;
+}
+
+static void G_BotNameUsed(team_t team, const char *name, qboolean inUse)
+{
+	unsigned int i;
+
+	for (i = 0; i < botNames[team].count; ++i)
+	{
+		if (!Q_stricmp(name, botNames[team].name[i].name))
+		{
+			botNames[team].name[i].inUse = inUse;
+			return;
+		}
+	}
+}
+
 extern "C" void G_BotSetDefaults( int clientNum, team_t team, int skill )
 {
 	botMemory_t *botMind;
@@ -1706,6 +1816,7 @@ qboolean G_BotAdd( char *name, team_t team, int skill ) {
 	char userinfo[MAX_INFO_STRING];
 	const char* s = 0;
 	gentity_t *bot;
+	bool autoname = false;
 
 	if(!navMeshLoaded) {
 		trap_Print("No Navigation Mesh file is available for this map\n");
@@ -1723,15 +1834,21 @@ qboolean G_BotAdd( char *name, team_t team, int skill ) {
 	bot->r.svFlags |= SVF_BOT;
 	bot->inuse = qtrue;
 
+	if(!Q_stricmp(name, "*")) {
+		name = G_BotSelectName(team);
+		autoname = name != NULL;
+	}
 
 	//default bot data
 	G_BotSetDefaults( clientNum, team, skill );
 
 	// register user information
 	userinfo[0] = '\0';
-	Info_SetValueForKey( userinfo, "name", name );
+	Info_SetValueForKey( userinfo, "name", name ? name : "" ); // allow defaulting
 	Info_SetValueForKey( userinfo, "rate", "25000" );
 	Info_SetValueForKey( userinfo, "snaps", "20" );
+	if (autoname)
+		Info_SetValueForKey( userinfo, "autoname", name );
 
 	//so we can connect if server is password protected
 	if(g_needpass.integer == 1)
@@ -1747,16 +1864,29 @@ qboolean G_BotAdd( char *name, team_t team, int skill ) {
 		return qfalse;
 	}
 
+	if (autoname)
+		G_BotNameUsed(team, name, qtrue);
+
 	ClientBegin( clientNum );
 	return qtrue;
 }
 
 void G_BotDel( int clientNum ) {
 	gentity_t *bot = &g_entities[clientNum];
+	char userinfo[MAX_INFO_STRING];
+	const char *autoname;
+
 	if( !( bot->r.svFlags & SVF_BOT ) || !bot->botMind) {
 		trap_Print( va("'^7%s^7' is not a bot\n", bot->client->pers.netname) );
 		return;
 	}
+
+	trap_GetUserinfo( clientNum, userinfo, sizeof( userinfo ) );
+
+	autoname = Info_ValueForKey( userinfo, "autoname" );
+	if (autoname && *autoname)
+		G_BotNameUsed(BotGetTeam(bot), autoname, qfalse);
+
 	trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^7 disconnected\n") ),
 		                        Quote( bot->client->pers.netname ) ) );
 	trap_DropClient(clientNum, "disconnected");

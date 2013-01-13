@@ -4475,7 +4475,7 @@ const char *BG_TeamNamePlural( team_t team )
 
 int cmdcmp( const void *a, const void *b )
 {
-	return Q_stricmp( ( const char * ) a, ( ( dummyCmd_t * ) b )->name );
+	return b ? Q_stricmp( ( const char * ) a, ( ( dummyCmd_t * ) b )->name ) : 1;
 }
 
 /*
