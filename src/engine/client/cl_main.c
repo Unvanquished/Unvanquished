@@ -1537,6 +1537,8 @@ void CL_ShutdownAll( void )
 	// shutdown UI
 	CL_ShutdownUI();
 
+	Rocket_Shutdown();
+
 	// shutdown the renderer
 	if ( re.Shutdown )
 	{
@@ -4138,6 +4140,7 @@ void CL_StartHunkUsers( void )
 	if ( !cls.uiStarted )
 	{
 		cls.uiStarted = qtrue;
+		Rocket_Init();
 		CL_InitUI();
 	}
 }

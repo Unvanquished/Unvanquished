@@ -4801,6 +4801,18 @@ int R_GetTextureId( const char *name )
 	return -1;
 }
 
+void R_GetTextureSize( int textureID, int *width, int *height )
+{
+	image_t *image;
+	if ( textureID < 0 || textureID >= tr.numImages )
+	{
+		ri.Error( ERR_DROP, "R_GetTextureSize: called with invalid textureID %d\n", textureID );
+	}
+
+	image = tr.images[ textureID ];
+	*width = image->width;
+	*height = image->height;
+}
 // ydnar: glGenTextures, sir...
 
 #if 0

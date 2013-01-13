@@ -1649,6 +1649,7 @@ extern "C" {
 		re.AnimFrameRate = RE_AnimFrameRate;
 #endif
 
+		re.GetTextureSize = R_GetTextureSize;
 		return &re;
 	}
 

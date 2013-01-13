@@ -2433,6 +2433,7 @@ extern "C" {
 		re.AnimFrameRate = RE_AnimFrameRate;
 #endif
 
+		re.GetTextureSize = RE_GetTextureSize;
 		// XreaL END
 
 		return &re;

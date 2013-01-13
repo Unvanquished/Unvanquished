@@ -4501,7 +4501,7 @@ extern "C" {
 	void    R_UploadImage( const byte **dataArray, int numData, image_t *image );
 
 	int     RE_GetTextureId( const char *name );
-
+	void    RE_GetTextureSize( int textureID, int *width, int *height );
 	void    R_InitFogTable( void );
 	float   R_FogFactor( float s, float t );
 
@@ -5073,6 +5073,15 @@ extern "C" {
 
 	typedef struct
 	{
+		int        commandId;
+		polyVert_t *verts;
+		int        numverts;
+		shader_t   *shader;
+		int        x, y, width, height; // scissor region
+	} poly2dScissorCommand_t;
+
+	typedef struct
+	{
 		int         commandId;
 		trRefdef_t  refdef;
 		viewParms_t viewParms;
@@ -5127,6 +5136,7 @@ extern "C" {
 	  RC_SET_COLOR,
 	  RC_STRETCH_PIC,
 	  RC_2DPOLYS,
+	  RC_2DPOLYSSCISSOR,
 	  RC_ROTATED_PIC,
 	  RC_STRETCH_PIC_GRADIENT, // (SA) added
 	  RC_DRAW_VIEW,
@@ -5188,7 +5198,7 @@ extern "C" {
 	    float s1, float t1, float s2, float t2, qhandle_t hShader, const float *gradientColor,
 	    int gradientType );
 	void                                RE_2DPolyies( polyVert_t *verts, int numverts, qhandle_t hShader );
-
+	void                                RE_2DPolysScissor( polyVert_t *verts, int numverts, qhandle_t hShader, int *scissor );
 	void                                RE_BeginFrame( stereoFrame_t stereoFrame );
 	void                                RE_EndFrame( int *frontEndMsec, int *backEndMsec );
 

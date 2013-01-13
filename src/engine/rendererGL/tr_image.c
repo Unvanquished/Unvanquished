@@ -3936,3 +3936,16 @@ int RE_GetTextureId( const char *name )
 //  ri.Printf(PRINT_ALL, "Image not found.\n");
 	return -1;
 }
+
+void RE_GetTextureSize( int textureID, int *width, int *height )
+{
+	image_t *image;
+	if ( textureID < 0 || textureID >= tr.images.currentElements )
+	{
+		ri.Error( ERR_DROP, "RE_GetTextureSize: called with invalid textureID %d\n", textureID );
+	}
+
+	image = ( image_t * )Com_GrowListElement( &tr.images, textureID );
+	*width = image->width;
+	*height = image->height;
+}

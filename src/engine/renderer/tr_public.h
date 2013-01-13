@@ -186,6 +186,7 @@ typedef struct
 	int ( *AnimFrameRate )( qhandle_t hAnim );
 #endif
 
+	void ( *GetTextureSize )( int textureID, int *width, int *height );
 	// XreaL END
 } refexport_t;
 

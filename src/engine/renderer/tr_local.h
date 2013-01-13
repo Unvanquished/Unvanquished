@@ -1933,6 +1933,7 @@ void      RE_RenderToTexture( int textureid, int x, int y, int w, int h );
 void      RE_Finish( void );
 int       R_GetTextureId( const char *name );
 
+void      R_GetTextureSize( int textureID, int *width, int *height );
 /*
 ====================================================================
 
