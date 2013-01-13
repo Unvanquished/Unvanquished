@@ -420,12 +420,19 @@ void GL_PolygonOffset( float factor, float units )
 
 void GL_Cull( int cullType )
 {
+	if ( backEnd.viewParms.isMirror )
+	{
+		GL_FrontFace( GL_CW );
+	}
+	else
+	{
+		GL_FrontFace( GL_CCW );
+	}
+
 	if ( glState.faceCulling == cullType )
 	{
 		return;
 	}
-
-#if 1
 
 	if ( cullType == CT_TWO_SIDED )
 	{
@@ -439,35 +446,13 @@ void GL_Cull( int cullType )
 		if ( cullType == CT_BACK_SIDED )
 		{
 			GL_CullFace( GL_BACK );
-
-			if ( backEnd.viewParms.isMirror )
-			{
-				GL_FrontFace( GL_CW );
-			}
-			else
-			{
-				GL_FrontFace( GL_CCW );
-			}
 		}
 		else
 		{
 			GL_CullFace( GL_FRONT );
-
-			if ( backEnd.viewParms.isMirror )
-			{
-				GL_FrontFace( GL_CW );
-			}
-			else
-			{
-				GL_FrontFace( GL_CCW );
-			}
 		}
 	}
 	glState.faceCulling = cullType;
-#else
-	glState.faceCulling = CT_TWO_SIDED;
-	glDisable( GL_CULL_FACE );
-#endif
 }
 
 /*
@@ -1292,7 +1277,28 @@ static void RB_Hyperspace( void )
 
 static void SetViewportAndScissor( void )
 {
-	GL_LoadProjectionMatrix( backEnd.viewParms.projectionMatrix );
+	float	mat[16], scale;
+	vec4_t	q, c;
+
+	Com_Memcpy( mat, backEnd.viewParms.projectionMatrix, sizeof(mat) );
+	if( backEnd.viewParms.isPortal ) {
+		c[0] = -DotProduct( backEnd.viewParms.portalPlane.normal, backEnd.viewParms.orientation.axis[1] );
+		c[1] = DotProduct( backEnd.viewParms.portalPlane.normal, backEnd.viewParms.orientation.axis[2] );
+		c[2] = -DotProduct( backEnd.viewParms.portalPlane.normal, backEnd.viewParms.orientation.axis[0] );
+		c[3] = DotProduct( backEnd.viewParms.portalPlane.normal, backEnd.viewParms.orientation.origin ) - backEnd.viewParms.portalPlane.dist;
+		
+		q[0] = (c[0] < 0.0f ? -1.0f : 1.0f) / mat[0];
+		q[1] = (c[1] < 0.0f ? -1.0f : 1.0f) / mat[5];
+		q[2] = -1.0f;
+		q[3] = (1.0f + mat[10]) / mat[14];
+		
+		scale = 2.0f / (DotProduct( c, q ) + c[3] * q[3]);
+		mat[2]  = c[0] * scale;
+		mat[6]  = c[1] * scale;
+		mat[10] = c[2] * scale + 1.0f;
+		mat[14] = c[3] * scale;
+	}
+	GL_LoadProjectionMatrix( mat );
 
 	// set the window clipping
 	GL_Viewport( backEnd.viewParms.viewportX, backEnd.viewParms.viewportY,
@@ -2084,7 +2090,7 @@ static void RB_RenderInteractions()
 			}
 		}
 
-		if ( !shader->interactLight )
+		if ( !shader || !shader->interactLight )
 		{
 			// skip this interaction because the surface shader has no ability to interact with light
 			// this will save texcoords and matrix calculations
@@ -2992,8 +2998,7 @@ static void RB_RenderInteractionsShadowMapped()
 
 										GL_PushMatrix();
 
-										gl_genericShader->DisableAlphaTesting();
-										gl_genericShader->DisablePortalClipping();
+										gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
 										gl_genericShader->DisableVertexSkinning();
 										gl_genericShader->DisableVertexAnimation();
 										gl_genericShader->DisableDeformVertexes();
@@ -4043,7 +4048,6 @@ skipInteraction:
 					if ( light->l.rlType == RL_OMNI )
 					{
 						// choose right shader program ----------------------------------
-						gl_deferredLightingShader_omniXYZ->SetPortalClipping( backEnd.viewParms.isPortal );
 						gl_deferredLightingShader_omniXYZ->SetNormalMapping( r_normalMapping->integer );
 						gl_deferredLightingShader_omniXYZ->SetShadowing( false );
 						gl_deferredLightingShader_omniXYZ->SetFrustumClipping( light->clipsNearPlane );
@@ -4062,19 +4066,6 @@ skipInteraction:
 
 						gl_deferredLightingShader_omniXYZ->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 						gl_deferredLightingShader_omniXYZ->SetUniform_UnprojectMatrix( backEnd.viewParms.unprojectionMatrix );
-
-						if ( backEnd.viewParms.isPortal )
-						{
-							float plane[ 4 ];
-
-							// clipping plane in world space
-							plane[ 0 ] = backEnd.viewParms.portalPlane.normal[ 0 ];
-							plane[ 1 ] = backEnd.viewParms.portalPlane.normal[ 1 ];
-							plane[ 2 ] = backEnd.viewParms.portalPlane.normal[ 2 ];
-							plane[ 3 ] = backEnd.viewParms.portalPlane.dist;
-
-							gl_deferredLightingShader_omniXYZ->SetUniform_PortalPlane( plane );
-						}
 
 						// bind u_DiffuseMap
 						GL_SelectTexture( 0 );
@@ -4125,7 +4116,6 @@ skipInteraction:
 					else if ( light->l.rlType == RL_PROJ )
 					{
 						// choose right shader program ----------------------------------
-						gl_deferredLightingShader_projXYZ->SetPortalClipping( backEnd.viewParms.isPortal );
 						gl_deferredLightingShader_projXYZ->SetNormalMapping( r_normalMapping->integer );
 						gl_deferredLightingShader_projXYZ->SetShadowing( false );
 						gl_deferredLightingShader_projXYZ->SetFrustumClipping( light->clipsNearPlane );
@@ -4144,19 +4134,6 @@ skipInteraction:
 
 						gl_deferredLightingShader_projXYZ->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 						gl_deferredLightingShader_projXYZ->SetUniform_UnprojectMatrix( backEnd.viewParms.unprojectionMatrix );
-
-						if ( backEnd.viewParms.isPortal )
-						{
-							float plane[ 4 ];
-
-							// clipping plane in world space
-							plane[ 0 ] = backEnd.viewParms.portalPlane.normal[ 0 ];
-							plane[ 1 ] = backEnd.viewParms.portalPlane.normal[ 1 ];
-							plane[ 2 ] = backEnd.viewParms.portalPlane.normal[ 2 ];
-							plane[ 3 ] = backEnd.viewParms.portalPlane.dist;
-
-							gl_deferredLightingShader_projXYZ->SetUniform_PortalPlane( plane );
-						}
 
 						// bind u_DiffuseMap
 						GL_SelectTexture( 0 );
@@ -4207,7 +4184,6 @@ skipInteraction:
 					else if ( light->l.rlType == RL_DIRECTIONAL )
 					{
 						// choose right shader program ----------------------------------
-						gl_deferredLightingShader_directionalSun->SetPortalClipping( backEnd.viewParms.isPortal );
 						gl_deferredLightingShader_directionalSun->SetNormalMapping( r_normalMapping->integer );
 						gl_deferredLightingShader_directionalSun->SetShadowing( false );
 						gl_deferredLightingShader_directionalSun->SetFrustumClipping( light->clipsNearPlane );
@@ -4226,19 +4202,6 @@ skipInteraction:
 
 						gl_deferredLightingShader_directionalSun->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 						gl_deferredLightingShader_directionalSun->SetUniform_UnprojectMatrix( backEnd.viewParms.unprojectionMatrix );
-
-						if ( backEnd.viewParms.isPortal )
-						{
-							float plane[ 4 ];
-
-							// clipping plane in world space
-							plane[ 0 ] = backEnd.viewParms.portalPlane.normal[ 0 ];
-							plane[ 1 ] = backEnd.viewParms.portalPlane.normal[ 1 ];
-							plane[ 2 ] = backEnd.viewParms.portalPlane.normal[ 2 ];
-							plane[ 3 ] = backEnd.viewParms.portalPlane.dist;
-
-							gl_deferredLightingShader_directionalSun->SetUniform_PortalPlane( plane );
-						}
 
 						// bind u_DiffuseMap
 						GL_SelectTexture( 0 );
@@ -5664,7 +5627,6 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 					if ( light->l.rlType == RL_OMNI )
 					{
 						// choose right shader program ----------------------------------
-						gl_deferredLightingShader_omniXYZ->SetPortalClipping( backEnd.viewParms.isPortal );
 						gl_deferredLightingShader_omniXYZ->SetNormalMapping( r_normalMapping->integer );
 						gl_deferredLightingShader_omniXYZ->SetShadowing( shadowCompare );
 						gl_deferredLightingShader_omniXYZ->SetFrustumClipping( light->clipsNearPlane );
@@ -5683,19 +5645,6 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 
 						gl_deferredLightingShader_omniXYZ->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 						gl_deferredLightingShader_omniXYZ->SetUniform_UnprojectMatrix( backEnd.viewParms.unprojectionMatrix );
-
-						if ( backEnd.viewParms.isPortal )
-						{
-							float plane[ 4 ];
-
-							// clipping plane in world space
-							plane[ 0 ] = backEnd.viewParms.portalPlane.normal[ 0 ];
-							plane[ 1 ] = backEnd.viewParms.portalPlane.normal[ 1 ];
-							plane[ 2 ] = backEnd.viewParms.portalPlane.normal[ 2 ];
-							plane[ 3 ] = backEnd.viewParms.portalPlane.dist;
-
-							gl_deferredLightingShader_omniXYZ->SetUniform_PortalPlane( plane );
-						}
 
 						// bind u_DiffuseMap
 						GL_SelectTexture( 0 );
@@ -5745,7 +5694,6 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 					else if ( light->l.rlType == RL_PROJ )
 					{
 						// choose right shader program ----------------------------------
-						gl_deferredLightingShader_projXYZ->SetPortalClipping( backEnd.viewParms.isPortal );
 						gl_deferredLightingShader_projXYZ->SetNormalMapping( r_normalMapping->integer );
 						gl_deferredLightingShader_projXYZ->SetShadowing( shadowCompare );
 						gl_deferredLightingShader_projXYZ->SetFrustumClipping( light->clipsNearPlane );
@@ -5771,19 +5719,6 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 
 						gl_deferredLightingShader_projXYZ->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 						gl_deferredLightingShader_projXYZ->SetUniform_UnprojectMatrix( backEnd.viewParms.unprojectionMatrix );
-
-						if ( backEnd.viewParms.isPortal )
-						{
-							float plane[ 4 ];
-
-							// clipping plane in world space
-							plane[ 0 ] = backEnd.viewParms.portalPlane.normal[ 0 ];
-							plane[ 1 ] = backEnd.viewParms.portalPlane.normal[ 1 ];
-							plane[ 2 ] = backEnd.viewParms.portalPlane.normal[ 2 ];
-							plane[ 3 ] = backEnd.viewParms.portalPlane.dist;
-
-							gl_deferredLightingShader_projXYZ->SetUniform_PortalPlane( plane );
-						}
 
 						// bind u_DiffuseMap
 						GL_SelectTexture( 0 );
@@ -5835,7 +5770,6 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 						shadowCompare = ( r_shadows->integer >= SHADOWING_ESM16 && !light->l.noShadows ); // && light->shadowLOD >= 0);
 
 						// choose right shader program ----------------------------------
-						gl_deferredLightingShader_directionalSun->SetPortalClipping( backEnd.viewParms.isPortal );
 						gl_deferredLightingShader_directionalSun->SetNormalMapping( r_normalMapping->integer );
 						gl_deferredLightingShader_directionalSun->SetShadowing( shadowCompare );
 						gl_deferredLightingShader_directionalSun->SetFrustumClipping( light->clipsNearPlane );
@@ -5863,19 +5797,6 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 						gl_deferredLightingShader_directionalSun->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 						gl_deferredLightingShader_directionalSun->SetUniform_UnprojectMatrix( backEnd.viewParms.unprojectionMatrix );
 						gl_deferredLightingShader_directionalSun->SetUniform_ViewMatrix( backEnd.viewParms.world.viewMatrix );
-
-						if ( backEnd.viewParms.isPortal )
-						{
-							float plane[ 4 ];
-
-							// clipping plane in world space
-							plane[ 0 ] = backEnd.viewParms.portalPlane.normal[ 0 ];
-							plane[ 1 ] = backEnd.viewParms.portalPlane.normal[ 1 ];
-							plane[ 2 ] = backEnd.viewParms.portalPlane.normal[ 2 ];
-							plane[ 3 ] = backEnd.viewParms.portalPlane.dist;
-
-							gl_deferredLightingShader_directionalSun->SetUniform_PortalPlane( plane );
-						}
 
 						// bind u_DiffuseMap
 						GL_SelectTexture( 0 );
@@ -6015,8 +5936,7 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 							GL_State( GLS_POLYMODE_LINE | GLS_DEPTHTEST_DISABLE );
 							GL_Cull( CT_TWO_SIDED );
 
-							gl_genericShader->DisableAlphaTesting();
-							gl_genericShader->DisablePortalClipping();
+							gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
 							gl_genericShader->DisableVertexSkinning();
 							gl_genericShader->DisableVertexAnimation();
 							gl_genericShader->DisableDeformVertexes();
@@ -6836,7 +6756,7 @@ void RB_RenderGlobalFog()
 
 void RB_RenderBloom()
 {
-	int      i, j;
+	int      i, j, flip = 0;
 	matrix_t ortho;
 
 	GLimp_LogComment( "--- RB_RenderBloom ---\n" );
@@ -6930,11 +6850,12 @@ void RB_RenderBloom()
 		Tess_InstantQuad( backEnd.viewParms.viewportVerts );
 
 		// render bloom in multiple passes
+		GL_Bind( tr.contrastRenderFBOImage );
 		for ( i = 0; i < 2; i++ )
 		{
 			for ( j = 0; j < r_bloomPasses->integer; j++ )
 			{
-				R_BindFBO( tr.bloomRenderFBO[( j + 1 ) % 2 ] );
+				R_BindFBO( tr.bloomRenderFBO[ flip ] );
 
 				GL_ClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
 				glClear( GL_COLOR_BUFFER_BIT );
@@ -6942,15 +6863,6 @@ void RB_RenderBloom()
 				GL_State( GLS_DEPTHTEST_DISABLE );
 
 				GL_SelectTexture( 0 );
-
-				if ( j == 0 )
-				{
-					GL_Bind( tr.contrastRenderFBOImage );
-				}
-				else
-				{
-					GL_Bind( tr.bloomRenderFBOImage[ j % 2 ] );
-				}
 
 				GL_PushMatrix();
 				GL_LoadModelViewMatrix( matrixIdentity );
@@ -6976,54 +6888,45 @@ void RB_RenderBloom()
 				GL_PopMatrix();
 
 				Tess_InstantQuad( backEnd.viewParms.viewportVerts );
+				GL_Bind( tr.bloomRenderFBOImage[ flip ] );
+				flip ^= 1;
 			}
-
-			// add offscreen processed bloom to screen
-			if ( DS_STANDARD_ENABLED() )
-			{
-				R_BindFBO( tr.geometricRenderFBO );
-				glDrawBuffers( 1, geometricRenderTargets );
-
-				gl_screenShader->BindProgram();
-				GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
-				glVertexAttrib4fv( ATTR_INDEX_COLOR, colorWhite );
-
-				gl_screenShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-
-				GL_SelectTexture( 0 );
-				GL_Bind( tr.bloomRenderFBOImage[ j % 2 ] );
-			}
-			else if ( HDR_ENABLED() )
-			{
-				R_BindFBO( tr.deferredRenderFBO );
-
-				gl_screenShader->BindProgram();
-				GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
-				glVertexAttrib4fv( ATTR_INDEX_COLOR, colorWhite );
-
-				gl_screenShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-
-				GL_SelectTexture( 0 );
-				GL_Bind( tr.bloomRenderFBOImage[ j % 2 ] );
-				//GL_Bind(tr.contrastRenderFBOImage);
-			}
-			else
-			{
-				R_BindNullFBO();
-
-				gl_screenShader->BindProgram();
-				GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
-				glVertexAttrib4fv( ATTR_INDEX_COLOR, colorWhite );
-
-				gl_screenShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-
-				GL_SelectTexture( 0 );
-				GL_Bind( tr.bloomRenderFBOImage[ j % 2 ] );
-				//GL_Bind(tr.contrastRenderFBOImage);
-			}
-
-			Tess_InstantQuad( backEnd.viewParms.viewportVerts );
 		}
+
+		// add offscreen processed bloom to screen
+		if ( DS_STANDARD_ENABLED() )
+		{
+			R_BindFBO( tr.geometricRenderFBO );
+			glDrawBuffers( 1, geometricRenderTargets );
+
+			gl_screenShader->BindProgram();
+			GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
+			glVertexAttrib4fv( ATTR_INDEX_COLOR, colorWhite );
+
+			gl_screenShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+		}
+		else if ( HDR_ENABLED() )
+		{
+			R_BindFBO( tr.deferredRenderFBO );
+
+			gl_screenShader->BindProgram();
+			GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
+			glVertexAttrib4fv( ATTR_INDEX_COLOR, colorWhite );
+
+			gl_screenShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+		}
+		else
+		{
+			R_BindNullFBO();
+
+			gl_screenShader->BindProgram();
+			GL_State( GLS_DEPTHTEST_DISABLE | GLS_SRCBLEND_ONE | GLS_DSTBLEND_ONE );
+			glVertexAttrib4fv( ATTR_INDEX_COLOR, colorWhite );
+
+			gl_screenShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+		}
+
+		Tess_InstantQuad( backEnd.viewParms.viewportVerts );
 	}
 
 	// go back to 3D
@@ -7845,8 +7748,7 @@ void RB_RenderLightOcclusionQueries()
 			startTime = ri.Milliseconds();
 		}
 
-		gl_genericShader->DisableAlphaTesting();
-		gl_genericShader->DisablePortalClipping();
+		gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
 		gl_genericShader->DisableDeformVertexes();
@@ -8443,8 +8345,7 @@ void RB_RenderEntityOcclusionQueries()
 			startTime = ri.Milliseconds();
 		}
 
-		gl_genericShader->DisableAlphaTesting();
-		gl_genericShader->DisablePortalClipping();
+		gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
 		gl_genericShader->DisableDeformVertexes();
@@ -8648,7 +8549,6 @@ void RB_RenderBspOcclusionQueries()
 		gl_genericShader->SetUniform_ColorModulate( CGEN_VERTEX, AGEN_VERTEX );
 		gl_genericShader->SetVertexSkinning( qfalse );
 
-		gl_genericShader->SetUniform_AlphaTest( DGEN_NONE );
 		gl_genericShader->SetUniform_AlphaTest( 0 );
 
 		// set up the transformation matrix
@@ -8825,8 +8725,7 @@ static void RB_RenderDebugUtils()
 		static const vec3_t minSize = { -2, -2, -2 };
 		static const vec3_t maxSize = { 2,  2,  2 };
 
-		gl_genericShader->DisableAlphaTesting();
-		gl_genericShader->DisablePortalClipping();
+		gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
 		gl_genericShader->DisableDeformVertexes();
@@ -9207,8 +9106,7 @@ static void RB_RenderDebugUtils()
 		static const vec3_t mins = { -1, -1, -1 };
 		static const vec3_t maxs = { 1, 1, 1 };
 
-		gl_genericShader->DisableAlphaTesting();
-		gl_genericShader->DisablePortalClipping();
+		gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
 		gl_genericShader->DisableDeformVertexes();
@@ -9396,8 +9294,7 @@ static void RB_RenderDebugUtils()
 		static const vec3_t mins = { -1, -1, -1 };
 		static const vec3_t maxs = { 1, 1, 1 };
 
-		gl_genericShader->DisableAlphaTesting();
-		gl_genericShader->DisablePortalClipping();
+		gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
 		gl_genericShader->DisableDeformVertexes();
@@ -9494,8 +9391,7 @@ static void RB_RenderDebugUtils()
 		static refSkeleton_t skeleton;
 		refSkeleton_t        *skel;
 
-		gl_genericShader->DisableAlphaTesting();
-		gl_genericShader->DisablePortalClipping();
+		gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
 		gl_genericShader->DisableDeformVertexes();
@@ -9714,8 +9610,7 @@ static void RB_RenderDebugUtils()
 		matrix_t      ortho;
 		vec4_t        quadVerts[ 4 ];
 
-		gl_genericShader->DisableAlphaTesting();
-		gl_genericShader->DisablePortalClipping();
+		gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
 		gl_genericShader->DisableDeformVertexes();
@@ -9815,9 +9710,6 @@ static void RB_RenderDebugUtils()
 		}
 
 		// choose right shader program ----------------------------------
-		gl_reflectionShader->SetPortalClipping( backEnd.viewParms.isPortal );
-		//  gl_reflectionShader->SetAlphaTesting((pStage->stateBits & GLS_ATEST_BITS) != 0);
-
 		gl_reflectionShader->SetVertexSkinning( false );
 		gl_reflectionShader->SetVertexAnimation( false );
 
@@ -9861,8 +9753,7 @@ static void RB_RenderDebugUtils()
 			cubemapProbe_t *cubeProbeNearest;
 			cubemapProbe_t *cubeProbeSecondNearest;
 
-			gl_genericShader->DisableAlphaTesting();
-			gl_genericShader->DisablePortalClipping();
+			gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
 			gl_genericShader->DisableVertexSkinning();
 			gl_genericShader->DisableVertexAnimation();
 			gl_genericShader->DisableDeformVertexes();
@@ -9939,8 +9830,7 @@ static void RB_RenderDebugUtils()
 
 		GLimp_LogComment( "--- r_showLightGrid > 0: Rendering light grid\n" );
 
-		gl_genericShader->DisableAlphaTesting();
-		gl_genericShader->DisablePortalClipping();
+		gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
 		gl_genericShader->DisableDeformVertexes();
@@ -10026,8 +9916,7 @@ static void RB_RenderDebugUtils()
 			return;
 		}
 
-		gl_genericShader->DisableAlphaTesting();
-		gl_genericShader->DisablePortalClipping();
+		gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
 		gl_genericShader->DisableDeformVertexes();
@@ -10387,8 +10276,7 @@ static void RB_RenderDebugUtils()
 			return;
 		}
 
-		gl_genericShader->DisableAlphaTesting();
-		gl_genericShader->DisablePortalClipping();
+		gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
 		gl_genericShader->DisableDeformVertexes();
@@ -11245,8 +11133,7 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 	glVertexAttrib4f( ATTR_INDEX_NORMAL, 0, 0, 1, 1 );
 	glVertexAttrib4f( ATTR_INDEX_COLOR, tr.identityLight, tr.identityLight, tr.identityLight, 1 );
 
-	gl_genericShader->DisableAlphaTesting();
-	gl_genericShader->DisablePortalClipping();
+	gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
 	gl_genericShader->DisableVertexSkinning();
 	gl_genericShader->DisableVertexAnimation();
 	gl_genericShader->DisableDeformVertexes();
@@ -11853,8 +11740,7 @@ void RB_ShowImages( void )
 
 	glFinish();
 
-	gl_genericShader->DisableAlphaTesting();
-	gl_genericShader->DisablePortalClipping();
+	gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
 	gl_genericShader->DisableVertexSkinning();
 	gl_genericShader->DisableVertexAnimation();
 	gl_genericShader->DisableDeformVertexes();

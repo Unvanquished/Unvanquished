@@ -354,7 +354,7 @@ sfxHandle_t trap_S_RegisterSound( const char *sample, qboolean compressed )
 
 	if ( i == 0 )
 	{
-		Com_Printf(_( "^1Warning: Failed to load sound: %s\n"), sample );
+		Com_Printf( "^1Warning: Failed to load sound: %s\n", sample );
 	}
 
 #endif

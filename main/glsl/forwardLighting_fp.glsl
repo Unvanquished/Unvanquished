@@ -54,7 +54,7 @@ uniform vec3		u_LightColor;
 uniform float		u_LightRadius;
 uniform float       u_LightScale;
 uniform	float		u_LightWrapAround;
-uniform int			u_AlphaTest;
+uniform float		u_AlphaThreshold;
 
 uniform mat4		u_ShadowMatrix[MAX_SHADOWMAPS];
 uniform vec4		u_ShadowParallelSplitDistances;
@@ -62,8 +62,6 @@ uniform float       u_ShadowTexelSize;
 uniform float       u_ShadowBlur;
 
 uniform mat4		u_ViewMatrix;
-
-uniform vec4		u_PortalPlane;
 
 uniform float		u_DepthScale;
 
@@ -596,18 +594,6 @@ float log_conv(float x0, float X, float y0, float Y)
 
 void	main()
 {
-#if defined(USE_PORTAL_CLIPPING)
-	{
-		float dist = dot(var_Position.xyz, u_PortalPlane.xyz) - u_PortalPlane.w;
-		if(dist < 0.0)
-		{
-			discard;
-			return;
-		}
-	}
-#endif
-
-
 #if 0
 	// create random noise vector
 	vec3 rand = RandomVec3(gl_FragCoord.st * r_FBufScale);
@@ -1043,23 +1029,11 @@ void	main()
 
 	// compute the diffuse term
 	vec4 diffuse = texture2D(u_DiffuseMap, texDiffuse.st);
-#if defined(USE_ALPHA_TESTING)
-	if(u_AlphaTest == ATEST_GT_0 && diffuse.a <= 0.0)
+	if( abs(diffuse.a + u_AlphaThreshold) <= 1.0 )
 	{
 		discard;
 		return;
 	}
-	else if(u_AlphaTest == ATEST_LT_128 && diffuse.a >= 0.5)
-	{
-		discard;
-		return;
-	}
-	else if(u_AlphaTest == ATEST_GE_128 && diffuse.a < 0.5)
-	{
-		discard;
-		return;
-	}
-#endif
 	diffuse.rgb *= u_LightColor * NL;
 
 #if defined(USE_NORMAL_MAPPING)

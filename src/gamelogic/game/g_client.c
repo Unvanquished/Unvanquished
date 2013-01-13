@@ -791,6 +791,7 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 	int      spaces;
 	qboolean escaped;
 	qboolean invalid = qfalse;
+	qboolean haslatin = qfalse;
 
 	//save room for trailing null byte
 	outSize--;
@@ -810,9 +811,16 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 		}
 
 		// don't allow nonprinting characters or (dead) console keys
-		if ( *in < ' ' || *in > '}' || *in == '`' )
+		// but do allow UTF-8 (unvalidated)
+		if ( *in >= 0 && *in < ' ' )
 		{
 			continue;
+		}
+
+		if ( ( *in >= 'A' && *in <= 'Z' ) ||
+		     ( *in >= 'a' && *in <= 'z' ) )
+		{
+			haslatin = qtrue;
 		}
 
 		// check colors
@@ -898,8 +906,14 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 		invalid = qtrue;
 	}
 
+	// limit no. of code points
+	if ( Q_UTF8PrintStrlen( p ) > MAX_NAME_LENGTH_CP )
+	{
+		invalid = qtrue;
+	}
+
 	// if something made the name bad, put them back to UnnamedPlayer
-	if ( invalid )
+	if ( invalid || !haslatin )
 	{
 		Q_strncpyz( p, G_UnnamedClientName( client ), outSize );
 	}
@@ -1185,11 +1199,15 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 
 	if ( atoi( s ) != 0 )
 	{
-		client->pers.teamInfo = qtrue;
+		// teamoverlay was enabled so we need an update
+		if ( client->pers.teamInfo == 0 )
+		{
+			client->pers.teamInfo = 1;
+		}
 	}
 	else
 	{
-		client->pers.teamInfo = qfalse;
+		client->pers.teamInfo = 0;
 	}
 
 	s = Info_ValueForKey( userinfo, "cg_unlagged" );
@@ -1621,7 +1639,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	ent->s.groundEntityNum = ENTITYNUM_NONE;
 	ent->client = &level.clients[ index ];
-	ent->takedamage = qtrue;
+	ent->takedamage = teamLocal != TEAM_NONE && client->sess.spectatorState == SPECTATOR_NOT; //qtrue;
 	ent->classname = "player";
 	if ( client->noclip )
 	{
@@ -1832,6 +1850,8 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	// clear entity state values
 	BG_PlayerStateToEntityState( &client->ps, &ent->s, qtrue );
+
+	client->pers.infoChangeTime = level.time;
 }
 
 /*

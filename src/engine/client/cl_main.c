@@ -1634,7 +1634,7 @@ void CL_MapLoading( void )
 	else
 	{
 		// clear nextmap so the cinematic shutdown doesn't execute it
-		Cvar_Set( "nextmap", "" );
+		Cvar_Set( "sv_nextmap", "" );
 		CL_Disconnect( qtrue );
 		Q_strncpyz( cls.servername, "localhost", sizeof( cls.servername ) );
 		cls.state = CA_CHALLENGING; // so the connect screen is drawn

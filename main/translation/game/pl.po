@@ -778,8 +778,8 @@ msgid "Create Server"
 msgstr "Stwórz Serwer"
 
 #. main.menu: 80
-msgid "Unvanquished (C) 2011-2012 Unvanquished Development"
-msgstr "Unvanquished (C) 2011-2012 Unvanquished Development"
+msgid "Unvanquished © 2011-2013 Unvanquished Development"
+msgstr "Unvanquished © 2011-2013 Unvanquished Development"
 
 #. mod.menu: 75
 #. profiles.menu: 130
@@ -3213,29 +3213,21 @@ msgstr ""
 "wpisz adminhelp [^3komenda^7] by otrzymać pomoc wobec wybranej komendy.\n"
 
 #: src/gamelogic/game/g_admin.c:3766
-#, c-format
-msgid ""
-"^3adminhelp: ^7help for '$1$':\n"
-" ^3Description: ^7$2t$\n"
-" ^3Syntax: ^7$3$\n"
-" ^3Flag: ^7'%s'\n"
-msgstr ""
-"^3adminhelp: ^7pomoc dla '$1$':\n"
-"^3Opis: ^7$2t$\n"
-"^3Składnia: ^7$3$\n"
-"^3Flagi: ^7'%s'\n"
+msgid "^3adminhelp: ^7help for '$1$':\n"
+msgstr "^3adminhelp: ^7pomoc dla '$1$':\n"
+
+msgid " ^3Description: ^7$1t$\n"
+msgstr "^3Opis: ^7$1t$\n"
+
+msgid " ^3Syntax: ^7$1$\n"
+msgstr "^3Składnia: ^7$1$\n"
+
+msgid " ^3Flag: ^7'$1$'\n"
+msgstr "^3Flagi: ^7'$1$'\n"
 
 #: src/gamelogic/game/g_admin.c:3785
-msgid ""
-"^3adminhelp: ^7help for '$1$':\n"
-" ^3Description: ^7$2t$\n"
-" ^3Syntax: ^7$1$ $3t$\n"
-" ^3Flag: ^7'$4$'\n"
-msgstr ""
-"^3adminhelp: ^7pomoc dla '$1$':\n"
-"^3Opis: ^7$2t$\n"
-"^3Składnia: ^7$1$ $3t$\n"
-"^3Flagi: ^7'$4$'\n"
+msgid " ^3Syntax: ^7$1$ $2t$\n"
+msgstr "^3Składnia: ^7$1$ $2t$\n"
 
 # 98%
 #: src/gamelogic/game/g_admin.c:3798

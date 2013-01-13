@@ -45,10 +45,10 @@ extern "C" {
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.10.0"
+#define PRODUCT_VERSION         "0.11.0"
 
 #define ENGINE_NAME             "Daemon Engine"
-#define ENGINE_VERSION          "0.10.0"
+#define ENGINE_VERSION          "0.11.0"
 
 #ifdef REVISION
 # define Q3_VERSION             PRODUCT_NAME " " PRODUCT_VERSION " " REVISION
@@ -322,7 +322,8 @@ extern int memcmp( void *, void *, size_t );
 
 // rain - increased to 36 to match MAX_NETNAME, fixes #13 - UI stuff breaks
 // with very long names
-#define MAX_NAME_LENGTH    36 // max length of a client name
+#define MAX_NAME_LENGTH    128 // max length of a client name, in bytes
+#define MAX_NAME_LENGTH_CP 32  // max length of a client name, in Unicode chars
 
 #define MAX_SAY_TEXT       400
 

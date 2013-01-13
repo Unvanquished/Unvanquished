@@ -430,7 +430,7 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_fov_human,                   "cg_fov_human",                   "0",            CVAR_ARCHIVE                 },
 };
 
-static int         cvarTableSize = ARRAY_LEN( cvarTable );
+static const size_t cvarTableSize = ARRAY_LEN( cvarTable );
 
 /*
 =================
@@ -1739,7 +1739,7 @@ void CG_LoadMenus( const char *menuFile )
 
 	if ( !f )
 	{
-		Com_Printf( _( S_COLOR_YELLOW  "menu file not found: %s, using default\n"), menuFile );
+		Com_Printf( S_COLOR_YELLOW  "menu file not found: %s, using default\n", menuFile );
 		len = trap_FS_FOpenFile( "ui/hud.txt", &f, FS_READ );
 
 		if ( !f )

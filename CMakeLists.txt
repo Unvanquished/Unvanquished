@@ -21,6 +21,11 @@ option( MINIMAL_FLAGS "try not to mess up system flags" 0)
 
 project( Daemon C CXX ASM )
 
+set( X86 0 )
+if( WIN32 OR MSVC OR CMAKE_SYSTEM_PROCESSOR MATCHES "i.86" OR CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64" )
+  set( X86 1 )
+endif()
+
 # Check if this is first run and if so set some default flags
 if( NOT DEFINED SUBSEQUENT_RUN )
   set( SUBSEQUENT_RUN 1 CACHE INTERNAL "True if not first run" )
@@ -29,7 +34,13 @@ if( NOT DEFINED SUBSEQUENT_RUN )
     set( CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /arch:SSE /fp:precise /Oy" CACHE STRING "Flags used by the compiler during release builds" FORCE )
   else()
     if(NOT MINIMAL_FLAGS)
-      set( CMAKE_C_FLAGS "-msse2 -pipe" CACHE STRING "Flags used by the compiler during all build types" FORCE )
+      # "gcc -msse2" fails on non-x86
+      if( X86 )
+        set( CMAKE_USE_SSE2 "-msse2" )
+      else()
+        set( CMAKE_USE_SSE2 "" )
+      endif()
+      set( CMAKE_C_FLAGS "${CMAKE_USE_SSE2} -pipe" CACHE STRING "Flags used by the compiler during all build types" FORCE )
       set( CMAKE_C_FLAGS_DEBUG "-g" CACHE STRING "Flags used by the compiler during debug builds." FORCE )
       set( CMAKE_C_FLAGS_MINSIZEREL "-DNDEBUG -Os" CACHE STRING "Flags used by the compiler during release minsize builds." FORCE )
       set( CMAKE_C_FLAGS_RELEASE "-DNDEBUG -O3 -ffast-math -fomit-frame-pointer -fno-strict-aliasing" CACHE STRING "Flags used by the compiler during release builds" FORCE )
@@ -76,7 +87,7 @@ cmake_dependent_option( USE_VOIP             "Compile with VOIP support"        
 cmake_dependent_option( USE_CIN_XVID         "Encode videos with XViD"                               1 BUILD_CLIENT                   0 )
 cmake_dependent_option( USE_INTERNAL_SDL     "Use SDL files included with Unvanquished"              0 BUILD_CLIENT                   0 )
 
-cmake_dependent_option( USE_CPUINFO          "Use CPUInfo (if compilation fails, then disable this)" 1 "BUILD_CLIENT OR BUILD_SERVER" 0 )
+cmake_dependent_option( USE_CPUINFO          "Use CPUInfo (if compilation fails, then disable this)" 1 "X86 AND (BUILD_CLIENT OR BUILD_SERVER)" 0 )
 cmake_dependent_option( USE_CURSES           "Use the curses console"                                1 "BUILD_CLIENT OR BUILD_SERVER" 0 )
 cmake_dependent_option( USE_PHYSICS          "Compile with Newton Physics"                           0 "BUILD_CLIENT OR BUILD_SERVER" 0 )
 cmake_dependent_option( USE_INTERNAL_CRYPTO  "Use internal crypto (nettle)"                          0 "BUILD_CLIENT OR BUILD_SERVER" 0 )
@@ -90,6 +101,7 @@ cmake_dependent_option( USE_SDL_ICONV        "Compile with SDL's iconv implement
 cmake_dependent_option( HAVE_BZIP2           "Compile with BZip2 support"                            0 "HAVE_BZIP2"                   0 )
 
 cmake_dependent_option( BUILD_GAME_GPP       "Build Tremulous GPP game logic"              1 "GAME_LIB OR GAME_QVM" 0 )
+cmake_dependent_option( DEBUG_VM_ALLOC       "Debug some allocations (VM as native code)"  0 GAME_LIB         0 )
 cmake_dependent_option( GAME_LIB_LLVM        "Use LLVM, not shared libs, for game logic"   0 GAME_LIB         0 )
 
 cmake_dependent_option( USE_OPENAL_DLOPEN    "Use dlopen to load OpenAL"                   1 USE_OPENAL       0 )
@@ -667,6 +679,7 @@ set( CGAMEGPP_BASE
   ${GPP_DIR}/cgame/cg_trails.c
   ${GPP_DIR}/cgame/cg_particles.c
   ${GPP_DIR}/cgame/cg_tutorial.c
+  ${GPP_DIR}/cgame/cg_utils.c
   ${GPP_DIR}/ui/ui_shared.c
   ${GPP_DIR}/ui/ui_utf8.c
   ${MOUNT_DIR}/engine/qcommon/q_math.c
@@ -1055,6 +1068,10 @@ function( GAMELIB )
       set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "MinSizeRel/${GAMELIB_OUTPUT_DIR}" )
       set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "RelWithDebInfo/${GAMELIB_OUTPUT_DIR}" )
     endif()
+    set( GAMELIB_COMPILE_DEF_NATIVE ${GAMELIB_COMPILE_DEF} )
+    if( DEBUG_VM_ALLOC )
+      set( GAMELIB_COMPILE_DEF_NATIVE ${GAMELIB_COMPILE_DEF} DEBUG_VM_ALLOC )
+    endif()
 
     if( GAME_LIB_LLVM )
       add_library( ${GAMELIB_LIB_NAME} SHARED ${GAMELIB_LIB_FILES} ${GAME_VM_COMMON} )
@@ -1069,7 +1086,7 @@ function( GAMELIB )
       LIBRARY_OUTPUT_DIRECTORY ${GAMELIB_OUTPUT_DIR}
       RUNTIME_OUTPUT_DIRECTORY ${GAMELIB_OUTPUT_DIR}
       ARCHIVE_OUTPUT_DIRECTORY ${GAMELIB_OUTPUT_DIR}
-      COMPILE_DEFINITIONS "${GAMELIB_COMPILE_DEF}"
+      COMPILE_DEFINITIONS "${GAMELIB_COMPILE_DEF_NATIVE}"
     )
 
     if( GAME_LIB_LLVM )

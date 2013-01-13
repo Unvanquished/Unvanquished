@@ -487,7 +487,7 @@
 	YESNOX	( gsoftware, "Dynamic Lights:", "r_dynamiclight", play "sound/misc/menu1.wav", 3 )
 	YESNOX	( gsoftware, "Draw Gun:", "cg_drawGun", play "sound/misc/menu1.wav", 4 )
 	YESNOX	( gsoftware, "Low Quality Sky:", "r_fastsky", play "sound/misc/menu1.wav", 5 )
-	YESNOX	( gsoftware, "Sync Every Frame:", "r_finish", play "sound/misc/menu1.wav", 6 )
+	YESNOX	( gsoftware, "Sync Every Frame:", "r_swapinterval", play "sound/misc/menu1.wav", 6 )
 	YESNOX	( gsoftware, "In Game Videos:", "r_inGameVideo", play "sound/misc/menu1.wav", 7 )
 	YESNOX	( gsoftware, "Depth Sort Particles:", "cg_depthSortParticles", play "sound/misc/menu1.wav", 8 )
 	MULTIX	( gsoftware, "Particle Physics:", "cg_bounceParticles",
@@ -498,6 +498,9 @@
 			"Off" 0 "No Fade" 1 "Timed Fade" 2 "Real Fade" 3,
 			play "sound/misc/menu1.wav",
 			10 )
+	YESNOX	( gsoftware, "Bloom:", "r_bloom",
+			play "sound/misc/menu1.wav"; uiScript glCustom,
+			11 )
 
 //////// GL INFO
 
