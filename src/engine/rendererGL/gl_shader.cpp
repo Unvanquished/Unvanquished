@@ -655,7 +655,6 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 		if ( r_rimLighting->integer )
 		{
 			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_RimLighting\n#define r_RimLighting 1\n#endif\n" );
-			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_RimColor\n#define r_RimColor vec4(0.26, 0.19, 0.16, 0.0)\n#endif\n" );
 			Q_strcat( bufferExtra, sizeof( bufferExtra ), va( "#ifndef r_RimExponent\n#define r_RimExponent %f\n#endif\n",
 			          r_rimExponent->value ) );
 		}

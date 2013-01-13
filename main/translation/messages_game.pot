@@ -2941,20 +2941,20 @@ msgid ""
 msgstr ""
 
 #: src/gamelogic/game/g_admin.c:3766
-#, c-format
-msgid ""
-"^3adminhelp: ^7help for '$1$':\n"
-" ^3Description: ^7$2t$\n"
-" ^3Syntax: ^7$3$\n"
-" ^3Flag: ^7'%s'\n"
+msgid "^3adminhelp: ^7help for '$1$':\n"
+msgstr ""
+
+msgid " ^3Description: ^7$1t$\n"
+msgstr ""
+
+msgid " ^3Syntax: ^7$1$\n"
+msgstr ""
+
+msgid " ^3Flag: ^7'$1$'\n"
 msgstr ""
 
 #: src/gamelogic/game/g_admin.c:3785
-msgid ""
-"^3adminhelp: ^7help for '$1$':\n"
-" ^3Description: ^7$2t$\n"
-" ^3Syntax: ^7$1$ $3t$\n"
-" ^3Flag: ^7'$4$'\n"
+msgid " ^3Syntax: ^7$1$ $2t$\n"
 msgstr ""
 
 #: src/gamelogic/game/g_admin.c:3798

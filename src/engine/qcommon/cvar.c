@@ -983,20 +983,13 @@ void Cvar_Set_f( void )
 	free( value );
 }
 
-/*
-============
-Cvar_SetU_f
-
-As Cvar_Set, but also flags it as serverinfo
-============
-*/
-void Cvar_SetU_f( void )
+static void Cvar_Set_Flagged( int flag )
 {
 	cvar_t *v;
 
-	if ( Cmd_Argc() != 3 && Cmd_Argc() != 4 )
+	if ( Cmd_Argc() < 3 )
 	{
-		Com_Printf(_( "usage: setu <variable> <value> [unsafe]\n" ));
+		Com_Printf(_( "usage: %s <variable> <value> [unsafe]\n" ), Cmd_Argv( 0 ) );
 		return;
 	}
 
@@ -1008,7 +1001,19 @@ void Cvar_SetU_f( void )
 		return;
 	}
 
-	v->flags |= CVAR_USERINFO;
+	v->flags |= flag;
+}
+
+/*
+============
+Cvar_SetU_f
+
+As Cvar_Set, but also flags it as userinfo
+============
+*/
+void Cvar_SetU_f( void )
+{
+	Cvar_Set_Flagged( CVAR_USERINFO );
 }
 
 /*
@@ -1020,23 +1025,7 @@ As Cvar_Set, but also flags it as serverinfo
 */
 void Cvar_SetS_f( void )
 {
-	cvar_t *v;
-
-	if ( Cmd_Argc() != 3 && Cmd_Argc() != 4 )
-	{
-		Com_Printf(_( "usage: sets <variable> <value> [unsafe]\n" ));
-		return;
-	}
-
-	Cvar_Set_f();
-	v = Cvar_FindVar( Cmd_Argv( 1 ) );
-
-	if ( !v )
-	{
-		return;
-	}
-
-	v->flags |= CVAR_SERVERINFO;
+	Cvar_Set_Flagged( CVAR_SERVERINFO );
 }
 
 /*
@@ -1048,23 +1037,7 @@ As Cvar_Set, but also flags it as archived
 */
 void Cvar_SetA_f( void )
 {
-	cvar_t *v;
-
-	if ( Cmd_Argc() != 3 && Cmd_Argc() != 4 )
-	{
-		Com_Printf(_( "usage: seta <variable> <value> [unsafe]\n" ));
-		return;
-	}
-
-	Cvar_Set_f();
-	v = Cvar_FindVar( Cmd_Argv( 1 ) );
-
-	if ( !v )
-	{
-		return;
-	}
-
-	v->flags |= CVAR_ARCHIVE;
+	Cvar_Set_Flagged( CVAR_ARCHIVE );
 }
 
 /*

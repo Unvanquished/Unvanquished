@@ -770,7 +770,6 @@ void G_PrintCurrentRotation( gentity_t *ent )
 	trap_Cvar_VariableStringBuffer( "mapname", currentMapName, sizeof( currentMapName ) );
 
 	ADMBP_begin();
-	ADMBP( "\"" );
 	ADMBP( va( "%s:\n", mapRotation->name ) );
 
 	while ( ( node = mapRotation->nodes[ i++ ] ) )
@@ -829,7 +828,7 @@ void G_PrintCurrentRotation( gentity_t *ent )
 	{
 		ADMBP( va( "^7The next map has been set to %s\n", g_nextMap.string ) );
 	}
-	ADMBP( "\"" );
+
 	ADMBP_end();
 }
 
