@@ -1551,8 +1551,8 @@ botTaskStatus_t BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
 						usercmdPressButton(botCmdBuffer->buttons, BUTTON_DODGE);
 						botCmdBuffer->forwardmove = 0;
 					}
-				} else {
-					//we should be >= MAX_HUMAN_DANCE_DIST from the enemy
+				} else if (DistanceToGoalSquared(self) >= Square(MAX_HUMAN_DANCE_DIST) && self->client->ps.weapon != WP_PAIN_SAW) {
+	
 					//dont go forward
 					botCmdBuffer->forwardmove = 0;
 
