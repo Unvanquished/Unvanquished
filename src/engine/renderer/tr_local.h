@@ -2320,6 +2320,16 @@ typedef struct
 
 typedef struct
 {
+	int        commandId;
+	polyVert_t *verts;
+	int        numverts;
+	int        *indexes;
+	int        numIndexes;
+	shader_t   *shader;
+} poly2dIndexedCommand_t;
+
+typedef struct
+{
 	int         commandId;
 	trRefdef_t  refdef;
 	viewParms_t viewParms;
@@ -2367,6 +2377,7 @@ typedef enum
   RC_SET_COLOR,
   RC_STRETCH_PIC,
   RC_2DPOLYS,
+  RC_2DPOLYSINDEXED,
   RC_ROTATED_PIC,
   RC_STRETCH_PIC_GRADIENT, // (SA) added
   RC_DRAW_SURFS,
@@ -2409,6 +2420,7 @@ typedef struct
 	srfPoly_t           polys[ MAX_POLYS ];
 	srfPolyBuffer_t     polybuffers[ MAX_POLYS ];
 	polyVert_t          polyVerts[ MAX_POLYVERTS ];
+	int                 polyIndexes[ MAX_POLYVERTS ];
 	decalProjector_t    decalProjectors[ MAX_DECAL_PROJECTORS ];
 	srfDecal_t          decals[ MAX_DECALS ];
 	renderCommandList_t commands;
@@ -2439,6 +2451,7 @@ void                                RE_StretchPicGradient( float x, float y, flo
     float s1, float t1, float s2, float t2, qhandle_t hShader, const float *gradientColor,
     int gradientType );
 void                                RE_2DPolyies( polyVert_t *verts, int numverts, qhandle_t hShader );
+void                                RE_2DPolyiesIndexed( polyVert_t *verts, int numverts, int *indexes, int numindexes, qhandle_t hShader );
 void                                RE_SetGlobalFog( qboolean restore, int duration, float r, float g, float b, float depthForOpaque );
 void                                RE_BeginFrame( stereoFrame_t stereoFrame );
 void                                RE_EndFrame( int *frontEndMsec, int *backEndMsec );

@@ -11466,6 +11466,60 @@ const void     *RB_Draw2dPolys( const void *data )
 	return ( const void * )( cmd + 1 );
 }
 
+const void     *RB_Draw2dPolysIndexed( const void *data )
+{
+	const poly2dIndexedCommand_t *cmd;
+	shader_t              *shader;
+	int                   i;
+
+	cmd = ( const poly2dIndexedCommand_t * ) data;
+
+	if ( !backEnd.projection2D )
+	{
+		RB_SetGL2D();
+	}
+
+	shader = cmd->shader;
+
+	if ( shader != tess.surfaceShader )
+	{
+		if ( tess.numIndexes )
+		{
+			Tess_End();
+		}
+
+		backEnd.currentEntity = &backEnd.entity2D;
+		Tess_Begin( Tess_StageIteratorGeneric, NULL, shader, NULL, qfalse, qfalse, -1, 0 );
+	}
+
+	Tess_CheckOverflow( cmd->numverts, cmd->numIndexes );
+
+	for ( i = 0; i < cmd->numIndexes; i++ )
+	{
+		tess.indexes[ tess.numIndexes + i ] = tess.numVertexes + cmd->indexes[ i ];
+	}
+	tess.numIndexes += cmd->numIndexes;
+
+	for ( i = 0; i < cmd->numverts; i++ )
+	{
+		tess.xyz[ tess.numVertexes ][ 0 ] = cmd->verts[ i ].xyz[ 0 ];
+		tess.xyz[ tess.numVertexes ][ 1 ] = cmd->verts[ i ].xyz[ 1 ];
+		tess.xyz[ tess.numVertexes ][ 2 ] = 0;
+		tess.xyz[ tess.numVertexes ][ 3 ] = 1;
+
+		tess.texCoords[ tess.numVertexes ][ 0 ] = cmd->verts[ i ].st[ 0 ];
+		tess.texCoords[ tess.numVertexes ][ 1 ] = cmd->verts[ i ].st[ 1 ];
+
+		tess.colors[ tess.numVertexes ][ 0 ] = cmd->verts[ i ].modulate[ 0 ] * ( 1.0 / 255.0f );
+		tess.colors[ tess.numVertexes ][ 1 ] = cmd->verts[ i ].modulate[ 1 ] * ( 1.0 / 255.0f );
+		tess.colors[ tess.numVertexes ][ 2 ] = cmd->verts[ i ].modulate[ 2 ] * ( 1.0 / 255.0f );
+		tess.colors[ tess.numVertexes ][ 3 ] = cmd->verts[ i ].modulate[ 3 ] * ( 1.0 / 255.0f );
+		tess.numVertexes++;
+	}
+
+	return ( const void * )( cmd + 1 );
+}
+
 // NERVE - SMF
 
 /*
@@ -11956,7 +12010,9 @@ void RB_ExecuteRenderCommands( const void *data )
 			case RC_2DPOLYS:
 				data = RB_Draw2dPolys( data );
 				break;
-
+			case RC_2DPOLYSINDEXED:
+				data = RB_Draw2dPolysIndexed( data );
+				break;
 			case RC_ROTATED_PIC:
 				data = RB_RotatedPic( data );
 				break;

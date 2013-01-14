@@ -5076,9 +5076,10 @@ extern "C" {
 		int        commandId;
 		polyVert_t *verts;
 		int        numverts;
+		int        *indexes;
+		int        numIndexes;
 		shader_t   *shader;
-		int        x, y, width, height; // scissor region
-	} poly2dScissorCommand_t;
+	} poly2dIndexedCommand_t;
 
 	typedef struct
 	{
@@ -5136,7 +5137,7 @@ extern "C" {
 	  RC_SET_COLOR,
 	  RC_STRETCH_PIC,
 	  RC_2DPOLYS,
-	  RC_2DPOLYSSCISSOR,
+	  RC_2DPOLYSINDEXED,
 	  RC_ROTATED_PIC,
 	  RC_STRETCH_PIC_GRADIENT, // (SA) added
 	  RC_DRAW_VIEW,
@@ -5168,6 +5169,7 @@ extern "C" {
 
 		srfPoly_t           *polys; //[MAX_POLYS];
 		polyVert_t          *polyVerts; //[MAX_POLYVERTS];
+		int                 *polyIndexes; //[MAX_POLYVERTS];
 		srfPolyBuffer_t     *polybuffers; //[MAX_POLYS];
 
 		decalProjector_t    decalProjectors[ MAX_DECAL_PROJECTORS ];
@@ -5198,7 +5200,7 @@ extern "C" {
 	    float s1, float t1, float s2, float t2, qhandle_t hShader, const float *gradientColor,
 	    int gradientType );
 	void                                RE_2DPolyies( polyVert_t *verts, int numverts, qhandle_t hShader );
-	void                                RE_2DPolysScissor( polyVert_t *verts, int numverts, qhandle_t hShader, int *scissor );
+	void                                RE_2DPolyiesIndexed( polyVert_t *verts, int numverts, int *indexes, int numindexes, qhandle_t hShader );
 	void                                RE_BeginFrame( stereoFrame_t stereoFrame );
 	void                                RE_EndFrame( int *frontEndMsec, int *backEndMsec );
 

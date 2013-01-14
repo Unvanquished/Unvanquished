@@ -167,7 +167,7 @@ public:
 			Vector2Copy( vert.tex_coord, polyVert.st );
 		}
 
-		re.Add2dPolys( verts, numVerticies, ( qhandle_t ) texture );
+		re.Add2dPolysIndexed( verts, numVerticies, indices, numIndicies, ( qhandle_t ) texture );
 
 		Z_Free( verts );
 	}

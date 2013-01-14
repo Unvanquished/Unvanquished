@@ -49,6 +49,7 @@ int r_numpolys;
 int r_firstScenePoly;
 
 int r_numpolyverts;
+int r_numpolyindexes;
 
 // Gordon: TESTING
 int r_firstScenePolybuffer;
@@ -98,6 +99,7 @@ void R_ToggleSmpFrame( void )
 	r_firstScenePoly = 0;
 
 	r_numpolyverts = 0;
+	r_numpolyindexes = 0;
 
 	// Gordon: TESTING
 	r_numpolybuffers = 0;

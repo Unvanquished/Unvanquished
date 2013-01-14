@@ -1232,6 +1232,59 @@ const void     *RB_Draw2dPolys( const void *data )
 	return ( const void * )( cmd + 1 );
 }
 
+const void     *RB_Draw2dPolysIndexed( const void *data )
+{
+	const poly2dIndexedCommand_t *cmd;
+	shader_t              *shader;
+	int                   i;
+
+	cmd = ( const poly2dIndexedCommand_t * ) data;
+
+	if ( !backEnd.projection2D )
+	{
+		RB_SetGL2D();
+	}
+
+	shader = cmd->shader;
+
+	if ( shader != tess.shader )
+	{
+		if ( tess.numIndexes )
+		{
+			RB_EndSurface();
+		}
+
+		backEnd.currentEntity = &backEnd.entity2D;
+		RB_BeginSurface( shader, 0 );
+	}
+
+	RB_CHECKOVERFLOW( cmd->numverts, cmd->numIndexes );
+
+	for ( i = 0; i < cmd->numIndexes; i++ )
+	{
+		tess.indexes[ tess.numIndexes + i ] = tess.numVertexes + cmd->indexes[ i ];
+	}
+	tess.numIndexes += cmd->numIndexes;
+
+	for ( i = 0; i < cmd->numverts; i++ )
+	{
+		tess.xyz[ tess.numVertexes ].v[ 0 ] = cmd->verts[ i ].xyz[ 0 ];
+		tess.xyz[ tess.numVertexes ].v[ 1 ] = cmd->verts[ i ].xyz[ 1 ];
+		tess.xyz[ tess.numVertexes ].v[ 2 ] = 0;
+
+		tess.texCoords0[ tess.numVertexes ].v[ 0 ] = cmd->verts[ i ].st[ 0 ];
+		tess.texCoords0[ tess.numVertexes ].v[ 1 ] = cmd->verts[ i ].st[ 1 ];
+
+		tess.vertexColors[ tess.numVertexes ].v[ 0 ] = cmd->verts[ i ].modulate[ 0 ];
+		tess.vertexColors[ tess.numVertexes ].v[ 1 ] = cmd->verts[ i ].modulate[ 1 ];
+		tess.vertexColors[ tess.numVertexes ].v[ 2 ] = cmd->verts[ i ].modulate[ 2 ];
+		tess.vertexColors[ tess.numVertexes ].v[ 3 ] = cmd->verts[ i ].modulate[ 3 ];
+		tess.numVertexes++;
+	}
+
+	return ( const void * )( cmd + 1 );
+}
+
 // NERVE - SMF
 
 /*
@@ -1717,7 +1770,9 @@ void RB_ExecuteRenderCommands( const void *data )
 			case RC_2DPOLYS:
 				data = RB_Draw2dPolys( data );
 				break;
-
+			case RC_2DPOLYSINDEXED:
+				data = RB_Draw2dPolysIndexed( data );
+				break;
 			case RC_ROTATED_PIC:
 				data = RB_RotatedPic( data );
 				break;
