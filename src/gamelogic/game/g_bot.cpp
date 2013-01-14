@@ -1732,25 +1732,34 @@ extern "C" qboolean G_BotClearNames(void)
 	return qtrue;
 }
 
-extern "C" int G_BotAddNames(team_t team, int first, int last)
+extern "C" int G_BotAddNames(team_t team, int arg, int last)
 {
 	int  i = botNames[team].count;
-	int  arg = first;
+	int  added = 0;
 	char name[MAX_NAME_LENGTH];
 
 	while (arg < last && i < MAX_CLIENTS)
 	{
-		trap_Argv(arg, name, sizeof(name));
+		int j, t;
+
+		trap_Argv(arg++, name, sizeof(name));
+
+		// name already in the list? (quick check, including colours & invalid)
+		for (t = 1; t < NUM_TEAMS; ++t)
+			for (j = 0; j < botNames[t].count; ++j)
+				if (!Q_stricmp(botNames[t].name[j].name, name))
+					goto next;
 
 		botNames[team].name[i].name = (char *)BG_Alloc(strlen(name) + 1);
 		strcpy(botNames[team].name[i].name, name);
 
-		++arg;
-		++i;
+		botNames[team].count = ++i;
+		++added;
+
+		next:;
 	}
 
-	botNames[team].count = i;
-	return arg - first;
+	return added;
 }
 
 static char *G_BotSelectName(team_t team)
