@@ -528,11 +528,21 @@ void SetMoverState( gentity_t *ent, moverState_t moverState, int time )
 		case MOVER_POS1:
 			VectorCopy( ent->pos1, ent->s.pos.trBase );
 			ent->s.pos.trType = TR_STATIONARY;
+
+			if ( !Q_stricmp( ent->classname, "func_door" ) && ( ent->targetname || ent->takedamage  ) )
+			{
+				G_BotDisableArea( ent->pos1, ent->r.mins, ent->r.maxs );
+			}
 			break;
 
 		case MOVER_POS2:
 			VectorCopy( ent->pos2, ent->s.pos.trBase );
 			ent->s.pos.trType = TR_STATIONARY;
+
+			if ( !Q_stricmp( ent->classname, "func_door" ) && ( ent->targetname || ent->takedamage ) )
+			{
+				G_BotEnableArea( ent->pos1, ent->r.mins, ent->r.maxs );
+			}
 			break;
 
 		case MOVER_1TO2:

@@ -880,7 +880,7 @@ void     G_SpawnEntitiesFromString( void );
 char     *G_NewString( const char *string );
 
 //
-// g_cmds.c
+// g_bot.c
 //
 qboolean G_BotAdd( char *name, team_t team, int skill );
 void G_BotSetDefaults( int clientNum, team_t team, int skill );
@@ -895,7 +895,8 @@ void G_BotListNames( gentity_t *ent );
 qboolean G_BotClearNames(void);
 int G_BotAddNames(team_t team, int arg, int last);
 void G_BotCleanup(int restart);
-
+void G_BotDisableArea( vec3_t origin, vec3_t mins, vec3_t maxs );
+void G_BotEnableArea( vec3_t origin, vec3_t mins, vec3_t maxs );
 //
 // g_cmds.c
 //
