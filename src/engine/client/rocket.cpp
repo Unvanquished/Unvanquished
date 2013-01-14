@@ -44,6 +44,7 @@ extern "C"
 #include <Rocket/Core/SystemInterface.h>
 #include <Rocket/Core/RenderInterface.h>
 #include <Rocket/Core.h>
+//#include <Rocket/Debugger.h>
 
 class DaemonFileInterface : public Rocket::Core::FileInterface
 {
@@ -221,8 +222,7 @@ public:
 static DaemonFileInterface fileInterface;
 static DaemonSystemInterface systemInterface;
 static DaemonRenderInterface renderInterface;
-static Rocket::Core::Context *context;
-static Rocket::Core::ElementDocument *document;
+static Rocket::Core::Context *context = NULL;
 
 extern "C" void Rocket_Init( void )
 {
@@ -243,7 +243,9 @@ extern "C" void Rocket_Init( void )
 
 	//Rocket::Debugger::Initialise(context);
 
-	document = context->LoadDocument( "demo.rml" );
+	
+
+	Rocket::Core::ElementDocument* document = context->LoadDocument( "demo.rml" );
 
 	if( document )
 	{
@@ -258,9 +260,11 @@ extern "C" void Rocket_Init( void )
 
 extern "C" void Rocket_Shutdown( void )
 {
-	//Crash?
-	context->UnloadDocument( document );
-	delete context;
+	if ( context )
+	{
+		context->RemoveReference();
+		context = NULL;
+	}
 	Rocket::Core::Shutdown();
 }
 
