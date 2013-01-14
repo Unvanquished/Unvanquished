@@ -123,19 +123,19 @@ public:
 		switch ( type )
 		{
 			case Rocket::Core::Log::LT_ALWAYS :
-				Com_Printf( "%s", message.CString() );
+				Com_Printf( "ALWAYS: %s\n", message.CString() );
 				break;
 			case Rocket::Core::Log::LT_ERROR :
-				Com_Printf( "%s", message.CString() );
+				Com_Printf( "ERROR: %s\n", message.CString() );
 				break;
 			case Rocket::Core::Log::LT_WARNING :
-				Com_Printf( "%s", message.CString() );
+				Com_Printf( "WARNING: %s\n", message.CString() );
 				break;
 			case Rocket::Core::Log::LT_INFO :
-				Com_Printf( "%s", message.CString() );
+				Com_Printf( "INFO: %s\n", message.CString() );
 				break;
 			default:
-				Com_Printf( "%s", message.CString() );
+				Com_Printf( "%s\n", message.CString() );
 		}
 		return true;
 	}
@@ -174,14 +174,13 @@ public:
 
 	bool LoadTexture( Rocket::Core::TextureHandle& textureHandle, Rocket::Core::Vector2i& textureDimensions, const Rocket::Core::String& source )
 	{
+		char temp[ MAX_QPATH ];
 		qhandle_t shaderHandle = re.RegisterShaderNoMip( source.CString() );
 
-		// find the size of the texture
-		char *texnoext = ( char* ) Z_Malloc( source.Length() + 1 );
-		COM_StripExtension( source.CString(), texnoext );
+		COM_StripExtension3( source.CString(), temp, sizeof( temp ) );
 
-		int textureID = re.GetTextureId( texnoext );
-		Z_Free( texnoext );
+		// find the size of the texture
+		int textureID = re.GetTextureId( temp );
 
 		re.GetTextureSize( textureID, &textureDimensions.x, &textureDimensions.y );
 
@@ -270,17 +269,17 @@ extern "C" void Rocket_Shutdown( void )
 
 extern "C" void Rocket_Render( void )
 {
-	/*if ( context )
+	if ( context )
 	{
 		context->Render();
-	}*/
+	}
 }
 
 extern "C" void Rocket_Update( void )
 {
 	//TODO: add mouse/key events
-	/*if ( context )
+	if ( context )
 	{
 		context->Update();
-	}*/
+	}
 }
