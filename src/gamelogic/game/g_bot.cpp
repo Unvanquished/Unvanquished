@@ -2072,3 +2072,17 @@ extern "C" void G_BotIntermissionThink( gclient_t *client )
 	client->readyToExit = qtrue;
 }
 
+
+extern "C" void G_BotCleanup( int restart )
+{
+	if ( !restart )
+	{
+		int i;
+
+		for ( i = 0; i < MAX_CLIENTS; ++i)
+			if ( g_entities[i].r.svFlags & SVF_BOT && level.clients[i].pers.connected != CON_DISCONNECTED )
+				G_BotDel(i);
+
+		G_BotClearNames();
+	}
+}

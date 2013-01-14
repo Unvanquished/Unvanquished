@@ -894,6 +894,7 @@ void G_BotLoadBuildLayout();
 void G_BotListNames( gentity_t *ent );
 qboolean G_BotClearNames(void);
 int G_BotAddNames(team_t team, int arg, int last);
+void G_BotCleanup(int restart);
 
 //
 // g_cmds.c
