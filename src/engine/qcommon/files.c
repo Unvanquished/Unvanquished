@@ -3362,12 +3362,12 @@ void FS_AddGameDirectory( const char *path, const char *dir )
 	searchpath_t *search;
 	pack_t       *pak;
 	char         *pakfile;
-	int          numfiles;
+	int          numfiles, usedfiles = 0;
 	char         **pakfiles;
 //	char            *sorted[MAX_PAKFILES];
 	int          pakfilesi = 0;
 //	char     **pakfilestmp;
-	int          numdirs;
+	int          numdirs, useddirs = 0;
 	char         **pakdirs;
 	int          pakdirsi = 0;
 // JPW NERVE
@@ -3419,12 +3419,6 @@ void FS_AddGameDirectory( const char *path, const char *dir )
 
 	qsort( pakfiles, numfiles, sizeof( char * ), paksort );
 	qsort( pakdirs, numdirs, sizeof( char * ), paksort );
-
-	// Log may not be initialized at this point, but it will still show in the console.
-	if ( !com_fullyInitialized )
-	{
-		Com_Printf( "FS_AddGameDirectory(\"%s\", \"%s\") found %d .pk3 and %d .pk3dir\n", path, dir, numfiles, numdirs );
-	}
 
 #if 0
 	for ( ; ( pakfilesi + pakdirsi ) < ( numfiles + numdirs ); )
@@ -3542,6 +3536,7 @@ void FS_AddGameDirectory( const char *path, const char *dir )
 		fs_searchpaths = search;
 
 		pakfilesi++;
+		++usedfiles;
 	}
 
 	while ( pakdirsi < numdirs )
@@ -3574,6 +3569,13 @@ void FS_AddGameDirectory( const char *path, const char *dir )
 		fs_searchpaths = search;
 
 		pakdirsi++;
+		++useddirs;
+	}
+
+	// Log may not be initialized at this point, but it will still show in the console.
+	if ( !com_fullyInitialized )
+	{
+		Com_Printf( "FS_AddGameDirectory(\"%s\", \"%s\") found %d .pk3 and %d .pk3dir\n", path, dir, usedfiles, useddirs );
 	}
 
 	// done
