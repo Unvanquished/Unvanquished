@@ -3684,42 +3684,63 @@ qboolean G_admin_adminhelp( gentity_t *ent )
 	{
 		int i;
 		int count = 0;
-
-		ADMBP_begin();
+		int width = 13;
+		int perline;
+		qboolean perms[ adminNumCmds ];
 
 		for ( i = 0; i < adminNumCmds; i++ )
 		{
-			if ( G_admin_permission( ent, g_admin_cmds[ i ].flag ) )
+			if ( g_admin_cmds[ i ].keyword && G_admin_permission( ent, g_admin_cmds[ i ].flag ) )
 			{
-				ADMBP( va( "^3%-13s", g_admin_cmds[ i ].keyword ) );
-				count++;
+				int thiswidth = strlen( g_admin_cmds[ i ].keyword );
 
-				// show 6 commands per line
-				if ( count % 6 == 0 )
+				if ( width < thiswidth )
 				{
-					ADMBP( "\n" );
+					width = thiswidth;
 				}
+
+				perms[ i ] = qtrue;
+			}
+			else
+			{
+				perms[ i ] = qfalse;
 			}
 		}
 
 		for ( c = g_admin_commands; c; c = c->next )
 		{
-			if ( !G_admin_permission( ent, c->flag ) )
+			if ( G_admin_permission( ent, c->flag ) )
 			{
-				continue;
-			}
+				int thiswidth = strlen( g_admin_cmds[ i ].keyword );
 
-			ADMBP( va( "^1%-13s", c->command ) );
-			count++;
-
-			// show 6 commands per line
-			if ( count % 6 == 0 )
-			{
-				ADMBP( "\n" );
+				if ( width < thiswidth )
+				{
+					width = thiswidth;
+				}
 			}
 		}
 
-		if ( count % 6 )
+		perline = 78 / ( width + 1 ); // allow for curses console border and at least one space between each word
+
+		ADMBP_begin();
+
+		for ( i = 0; i < adminNumCmds; i++ )
+		{
+			if ( perms[ i ] )
+			{
+				ADMBP( va( "^3%-*s%c", width, g_admin_cmds[ i ].keyword, ( ++count % perline == 0 ) ? '\n' : ' ' ) );
+			}
+		}
+
+		for ( c = g_admin_commands; c; c = c->next )
+		{
+			if ( G_admin_permission( ent, c->flag ) )
+			{
+				ADMBP( va( "^1%-*s%c", width, c->command, ( ++count % perline == 0 ) ? '\n' : ' ' ) );
+			}
+		}
+
+		if ( count % perline )
 		{
 			ADMBP( "\n" );
 		}
