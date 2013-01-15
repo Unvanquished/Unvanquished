@@ -2796,9 +2796,20 @@ int Com_EventLoop( void )
 				break;
 
 			case SE_CONSOLE:
-				Cbuf_AddText( ( char * ) ev.evPtr );
-				Cbuf_AddText( "\n" );
+			{
+				char *cmd = (char *) ev.evPtr;
+				if (cmd[0] == '/' || cmd[0] == '\\')
+				{
+					Cbuf_AddText( cmd + 1);
+					Cbuf_AddText( "\n" );
+				}
+				else
+				{
+					Cbuf_AddText( cmd );
+					Cbuf_AddText( "\n" );
+				}
 				break;
+			}
 
 			case SE_PACKET:
 

@@ -318,14 +318,13 @@ char *CON_Input( void )
 				if ( key == '\n' )
 				{
 					// push it in history
-					Q_snprintf( text, sizeof(text), "\\%s",
-					            TTY_con.buffer + ( TTY_con.buffer[ 0 ] == '\\' || TTY_con.buffer[ 0 ] == '/' ) );
-					Hist_Add( text );
+					Hist_Add( TTY_con.buffer );
+					Q_strncpyz( text, TTY_con.buffer, sizeof( text ) );
 					Field_Clear( &TTY_con );
 					key = '\n';
 					write( STDOUT_FILENO, &key, 1 );
 					write( STDOUT_FILENO, "]", 1 );
-					return text + 1;
+					return text;
 				}
 
 				if ( key == '\t' )

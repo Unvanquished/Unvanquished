@@ -681,16 +681,15 @@ char *CON_Input( void )
 					continue;
 				}
 
-				Q_snprintf( text, sizeof( text ), "\\%s",
-				            input_field.buffer + ( input_field.buffer[ 0 ] == '\\' || input_field.buffer[ 0 ] == '/' ) );
-				Hist_Add( text );
+				Hist_Add( input_field.buffer );
+				Q_strncpyz(text, input_field.buffer, sizeof ( text ) );
 				Field_Clear( &input_field );
 				werase( inputwin );
 				wnoutrefresh( inputwin );
 				CON_UpdateCursor();
 				//doupdate();
-				Com_Printf( PROMPT "^7%s\n", text + 1 );
-				return text + 1;
+				Com_Printf( PROMPT "^7%s\n", text );
+				return text;
 
 			case 21: // Ctrl-U
 				Field_Clear( &input_field );
