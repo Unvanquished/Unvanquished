@@ -500,8 +500,16 @@ static qboolean admin_permission( char *flags, const char *flag, qboolean *perm 
 
 g_admin_cmd_t *G_admin_cmd( const char *cmd )
 {
-	return bsearch( cmd, g_admin_cmds, adminNumCmds, sizeof( g_admin_cmd_t ),
-	                cmdcmp );
+	const g_admin_cmd_t *cmds = g_admin_cmds;
+	int count = adminNumCmds;
+
+	while ( count && !cmds->keyword )
+	{
+		++cmds;
+		--count;
+	}
+
+	return bsearch( cmd, cmds, count, sizeof( g_admin_cmd_t ), cmdcmp );
 }
 
 g_admin_level_t *G_admin_level( const int l )
