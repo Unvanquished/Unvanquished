@@ -125,12 +125,6 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 	},
 
 	{
-		"gametimelimit", G_admin_timelimit,  qfalse, NULL, // but setting requires "gametimelimit"
-		N_("change the time limit for the current game"),
-		N_("[^3minutes^7]")
-	},
-
-	{
 		"flag",          G_admin_flag,       qfalse, "flag",
 		N_("add an admin flag to a player, prefix flag with '-' to disallow the flag. "
 		   "console can use this command on admin levels by prefacing a '*' to the admin level value."),
@@ -141,6 +135,12 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 		"flaglist",      G_admin_flaglist,   qfalse, "flag",
 		N_("list the flags understood by this server"),
 		""
+	},
+
+	{
+		"gametimelimit", G_admin_timelimit,  qfalse, NULL, // but setting requires "gametimelimit"
+		N_("change the time limit for the current game"),
+		N_("[^3minutes^7]")
 	},
 
 	{
