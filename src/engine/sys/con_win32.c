@@ -201,7 +201,7 @@ static void CON_Show( void )
 	COORD                      writeSize = { MAX_EDIT_LINE, 1 };
 	COORD                      writePos = { 0, 0 };
 	SMALL_RECT                 writeArea = { 0, 0, 0, 0 };
-	int                        i;
+	int                        i, j;
 	CHAR_INFO                  line[ MAX_EDIT_LINE ];
 	WORD                       attrib;
 
@@ -222,23 +222,30 @@ static void CON_Show( void )
 	attrib = CON_ColorCharToAttrib( COLOR_WHITE );
 
 	// build a space-padded CHAR_INFO array
-	for ( i = 0; i < MAX_EDIT_LINE; i++ )
+	for ( i = j = 0; j < MAX_EDIT_LINE; j++ )
 	{
 		if ( Q_IsColorString( qconsole_line + i ) )
 		{
 			attrib = CON_ColorCharToAttrib( *( qconsole_line + i + 1 ) );
+			i += 2;
+			continue;
+		}
+		else if ( qconsole_line[ i ] == Q_COLOR_ESCAPE && qconsole_line[ i ] == Q_COLOR_ESCAPE )
+		{
+			i += 1;
 		}
 
 		if ( i < qconsole_linelen )
 		{
-			line[ i ].Char.AsciiChar = qconsole_line[ i ];
+			line[ j ].Char.AsciiChar = qconsole_line[ i ];
+			++i;
 		}
 		else
 		{
-			line[ i ].Char.AsciiChar = ' ';
+			line[ j ].Char.AsciiChar = ' ';
 		}
 
-		line[ i ].Attributes = attrib;
+		line[ j ].Attributes = attrib;
 	}
 
 	if ( qconsole_linelen > binfo.srWindow.Right )
