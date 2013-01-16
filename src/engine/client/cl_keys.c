@@ -982,7 +982,7 @@ void Console_Key( int key )
 			}
 			else
 			{
-				Cbuf_AddText( va("%s %s\n", com_consoleCommand->string, g_consoleField.buffer) );
+				Cbuf_AddText( va("%s %s\n", cl_consoleCommand->string, g_consoleField.buffer) );
 			}
 		}
 
