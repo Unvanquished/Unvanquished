@@ -3280,13 +3280,9 @@ void Com_Init( char *commandLine )
 
 	con_drawnotify = Cvar_Get( "con_drawnotify", "0", CVAR_CHEAT );
 
-#ifdef DEDICATED
-	//on a dedicated server commands have to be used a lot more often than say
+	//on a server, commands have to be used a lot more often than say
+	//we could differentiate server and client, but would change the default behavior many might be used to
 	com_consoleCommand = Cvar_Get( "com_consoleCommand", "", CVAR_ARCHIVE );
-#else
-	//default behavior for a client for a long time
-	com_consoleCommand = Cvar_Get( "com_consoleCommand", "say", CVAR_ARCHIVE );
-#endif
 
 	com_introPlayed = Cvar_Get( "com_introplayed", "0", CVAR_ARCHIVE );
 	com_ansiColor = Cvar_Get( "com_ansiColor", "0", CVAR_ARCHIVE );
