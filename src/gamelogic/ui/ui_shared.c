@@ -2558,6 +2558,7 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 	int         emoticonWidth;
 	float       cursorX = -1, cursorW = EDIT_CURSOR_WIDTH;
 	float       startX = x;
+	int         notColour = 0;
 
 	const fontMetrics_t *font;
 
@@ -2597,23 +2598,39 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 			break;
 		}
 
-		if ( cursorPos < 0 )
+		if ( !notColour && Q_IsColorString( s ) )
 		{
-			if ( Q_IsColorString( s ) )
+			memcpy( newColor, g_color_table[ ColorIndex( * ( s + 1 ) ) ],
+				sizeof( newColor ) );
+			newColor[ 3 ] = color[ 3 ];
+			DC->setColor( newColor );
+
+			if ( cursorPos < 0 )
 			{
-				memcpy( newColor, g_color_table[ ColorIndex( * ( s + 1 ) ) ],
-				        sizeof( newColor ) );
-				newColor[ 3 ] = color[ 3 ];
-				DC->setColor( newColor );
 				s += 2;
 				continue;
 			}
+		}
 
-			if ( *s == Q_COLOR_ESCAPE && s[1] == Q_COLOR_ESCAPE )
+		if ( !notColour && *s == Q_COLOR_ESCAPE && s[1] == Q_COLOR_ESCAPE )
+		{
+			if ( cursorPos < 0 )
 			{
 				++s;
 			}
+			else
+			{
+				notColour = 2;
+			}
+		}
 
+		if ( notColour )
+		{
+			--notColour;
+		}
+
+		if ( cursorPos < 0 )
+		{
 			if ( *s == INDENT_MARKER )
 			{
 				s++;
