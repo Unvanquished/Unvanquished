@@ -929,7 +929,7 @@ static void CompleteCommand( void )
 ====================
 Console_Key
 
-Handles history and console scrollback
+Handles history and console scrollback for the ingame console
 ====================
 */
 void Console_Key( int key )

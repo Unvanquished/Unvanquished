@@ -2809,6 +2809,13 @@ int Com_EventLoop( void )
 				}
 				else
 				{
+					/*
+					 * when there was no command prefix, execute the command prefixed by com_consoleCommand
+					 * if the cvar is empty, it will interpret the text as command direclty
+					 * (and will so for DEDICATED)
+					 *
+					 * the additional space gets trimmed by the parser
+					 */
 					Cbuf_AddText( va("%s %s\n", com_consoleCommand->string, cmd) );
 				}
 
@@ -3274,8 +3281,10 @@ void Com_Init( char *commandLine )
 	con_drawnotify = Cvar_Get( "con_drawnotify", "0", CVAR_CHEAT );
 
 #ifdef DEDICATED
+	//on a dedicated server commands have to be used a lot more often than say
 	com_consoleCommand = Cvar_Get( "com_consoleCommand", "", CVAR_ARCHIVE );
 #else
+	//default behavior for a client for a long time
 	com_consoleCommand = Cvar_Get( "com_consoleCommand", "say", CVAR_ARCHIVE );
 #endif
 
