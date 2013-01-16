@@ -402,12 +402,6 @@ void Cdelay_Frame( void ) {
 Cmd_Exec_f
 ===============
 */
-
-/*
-===============
-Cmd_Exec_f
-===============
-*/
 static void Cmd_ExecFile( char *f )
 {
 	int i;
@@ -447,8 +441,6 @@ void Cmd_Exec_f( void )
 		return;
 	}
 
-	Com_Printf( "execing %s\n", Cmd_Argv( 1 ) );
-
 	Q_strncpyz( filename, Cmd_Argv( 1 ), sizeof( filename ) );
 	COM_DefaultExtension( filename, sizeof( filename ), ".cfg" );
 
@@ -478,7 +470,11 @@ void Cmd_Exec_f( void )
 
 	if ( !success )
 	{
-		Com_Printf( "couldn't exec %s\n", Cmd_Argv( 1 ) );
+		Com_Printf( "couldn't exec %s\n", filename );
+	}
+	else
+	{
+		Com_Printf( "execing %s\n", filename );
 	}
 }
 
