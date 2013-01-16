@@ -734,6 +734,11 @@ Downloads are finished
 */
 void SV_DoneDownload_f( client_t *cl )
 {
+	if ( cl->state == CS_ACTIVE )
+	{
+		return;
+	}
+
 	Com_DPrintf( "clientDownload: %s^7 Done\n", cl->name );
 	// resend the game state to update any clients that entered during the download
 	SV_SendClientGameState( cl );
@@ -2234,6 +2239,14 @@ void SV_ExecuteClientMessage( client_t *cl, msg_t *msg )
 	}
 	while ( 1 );
 
+	if ( c == clc_voip )
+	{
+#ifdef USE_VOIP
+		SV_UserVoip( cl, msg );
+		c = MSG_ReadByte( msg );
+#endif
+	}
+
 	// read the usercmd_t
 	if ( c == clc_move )
 	{
@@ -2242,12 +2255,6 @@ void SV_ExecuteClientMessage( client_t *cl, msg_t *msg )
 	else if ( c == clc_moveNoDelta )
 	{
 		SV_UserMove( cl, msg, qfalse );
-	}
-	else if ( c == clc_voip )
-	{
-#ifdef USE_VOIP
-		SV_UserVoip( cl, msg );
-#endif
 	}
 	else if ( c != clc_EOF )
 	{

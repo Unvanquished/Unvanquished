@@ -49,6 +49,7 @@ Maryland 20850 USA.
 #endif
 
 static WORD                qconsole_attrib;
+static WORD qconsole_backgroundAttrib;
 
 // saved console status
 static DWORD               qconsole_orig_mode;
@@ -62,9 +63,43 @@ static int                 qconsole_history_oldest = 0;
 // current edit buffer
 static char                qconsole_line[ MAX_EDIT_LINE ];
 static int                 qconsole_linelen = 0;
+static qboolean            qconsole_drawinput = qtrue;
 
 static HANDLE              qconsole_hout;
 static HANDLE              qconsole_hin;
+
+/*
+==================
+CON_ColorCharToAttrib
+
+Convert Quake color character to Windows text attrib
+==================
+*/
+static WORD CON_ColorCharToAttrib( char color )
+{
+	WORD attrib;
+
+	if ( color == COLOR_WHITE )
+	{
+		// use console's foreground and background colors
+		attrib = qconsole_attrib;
+	}
+	else
+	{
+		float *rgba = g_color_table[ ColorIndex( color ) ];
+
+		// set foreground color
+		attrib = ( rgba[0] >= 0.5 ? FOREGROUND_RED       : 0 ) |
+		         ( rgba[1] >= 0.5 ? FOREGROUND_GREEN     : 0 ) |
+		         ( rgba[2] >= 0.5 ? FOREGROUND_BLUE      : 0 ) |
+		         ( rgba[3] >= 0.5 ? FOREGROUND_INTENSITY : 0 );
+
+		// use console's background color
+		attrib |= qconsole_backgroundAttrib;
+	}
+
+	return attrib;
+}
 
 /*
 ==================
@@ -167,13 +202,15 @@ static void CON_Show( void )
 	COORD                      writeSize = { MAX_EDIT_LINE, 1 };
 	COORD                      writePos = { 0, 0 };
 	SMALL_RECT                 writeArea = { 0, 0, 0, 0 };
-	int                        i;
+	COORD                      cursorPos;
+	int                        i, j;
 	CHAR_INFO                  line[ MAX_EDIT_LINE ];
+	WORD                       attrib;
 
 	GetConsoleScreenBufferInfo( qconsole_hout, &binfo );
 
 	// if we're in the middle of printf, don't bother writing the buffer
-	if ( binfo.dwCursorPosition.X != 0 )
+	if ( !qconsole_drawinput )
 	{
 		return;
 	}
@@ -183,19 +220,34 @@ static void CON_Show( void )
 	writeArea.Bottom = binfo.dwCursorPosition.Y;
 	writeArea.Right = MAX_EDIT_LINE;
 
+	// set color to white
+	attrib = CON_ColorCharToAttrib( COLOR_WHITE );
+
 	// build a space-padded CHAR_INFO array
-	for ( i = 0; i < MAX_EDIT_LINE; i++ )
+	for ( i = j = 0; j < MAX_EDIT_LINE; j++ )
 	{
+		if ( Q_IsColorString( qconsole_line + i ) )
+		{
+			attrib = CON_ColorCharToAttrib( *( qconsole_line + i + 1 ) );
+			i += 2;
+			continue;
+		}
+		else if ( qconsole_line[ i ] == Q_COLOR_ESCAPE && qconsole_line[ i ] == Q_COLOR_ESCAPE )
+		{
+			i += 1;
+		}
+
 		if ( i < qconsole_linelen )
 		{
-			line[ i ].Char.AsciiChar = qconsole_line[ i ];
+			line[ j ].Char.AsciiChar = qconsole_line[ i ];
+			++i;
 		}
 		else
 		{
-			line[ i ].Char.AsciiChar = ' ';
+			line[ j ].Char.AsciiChar = ' ';
 		}
 
-		line[ i ].Attributes = qconsole_attrib;
+		line[ j ].Attributes = attrib;
 	}
 
 	if ( qconsole_linelen > binfo.srWindow.Right )
@@ -209,17 +261,42 @@ static void CON_Show( void )
 		WriteConsoleOutput( qconsole_hout, line, writeSize,
 		                    writePos, &writeArea );
 	}
+
+	// set curor position
+	cursorPos.Y = binfo.dwCursorPosition.Y;
+	cursorPos.X = qconsole_linelen > binfo.srWindow.Right ? binfo.srWindow.Right : qconsole_linelen;
+
+	SetConsoleCursorPosition( qconsole_hout, cursorPos );
 }
 
 /*
 ==================
-CON_Shutdown
+CON_Hide
++==================
+*/
+static void CON_Hide( void )
+{
+	int realLen = qconsole_linelen;
+
+	// remove input line from console output buffer
+	qconsole_linelen = 0;
+	CON_Show( );
+
+	qconsole_linelen = realLen;
+}
+
+
+/*
+==================
+ CON_Shutdown
 ==================
 */
 void CON_Shutdown( void )
 {
+	CON_Hide();
 	SetConsoleMode( qconsole_hin, qconsole_orig_mode );
 	SetConsoleCursorInfo( qconsole_hout, &qconsole_orig_cursorinfo );
+	SetConsoleTextAttribute( qconsole_hout, qconsole_attrib );
 	CloseHandle( qconsole_hout );
 	CloseHandle( qconsole_hin );
 }
@@ -231,7 +308,6 @@ CON_Init
 */
 void CON_Init( void )
 {
-	CONSOLE_CURSOR_INFO        curs;
 	CONSOLE_SCREEN_BUFFER_INFO info;
 	int                        i;
 
@@ -262,20 +338,18 @@ void CON_Init( void )
 
 	GetConsoleScreenBufferInfo( qconsole_hout, &info );
 	qconsole_attrib = info.wAttributes;
+	qconsole_backgroundAttrib = qconsole_attrib & ( BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED | BACKGROUND_INTENSITY );
 
 	SetConsoleTitle( "Daemon Console" );
-
-	// make cursor invisible
-	GetConsoleCursorInfo( qconsole_hout, &qconsole_orig_cursorinfo );
-	curs.dwSize = 1;
-	curs.bVisible = FALSE;
-	SetConsoleCursorInfo( qconsole_hout, &curs );
 
 	// initialize history
 	for ( i = 0; i < QCONSOLE_HISTORY; i++ )
 	{
 		qconsole_history[ i ][ 0 ] = '\0';
 	}
+
+	// set text color to white
+	SetConsoleTextAttribute( qconsole_hout, CON_ColorCharToAttrib( COLOR_WHITE ) );
 }
 
 /*
@@ -404,13 +478,72 @@ char *CON_Input( void )
 		return NULL;
 	}
 
-	Hist_Add( qconsole_line );
-	Com_Printf( "]%s\n", qconsole_line );
-
 	qconsole_linelen = 0;
 	CON_Show();
 
+	Hist_Add( qconsole_line );
+	Com_Printf( "]%s\n", qconsole_line );
+
 	return qconsole_line;
+}
+
+/*
+=================
+CON_WindowsColorPrint
+
+Set text colors based on Q3 color codes
+=================
+*/
+void CON_WindowsColorPrint( const char *msg )
+{
+	static char buffer[ MAXPRINTMSG ];
+	int         length = 0;
+
+	while( *msg )
+	{
+		qconsole_drawinput = ( *msg == '\n' );
+
+		if ( Q_IsColorString( msg ) || *msg == '\n' )
+		{
+			// First empty the buffer
+			if ( length > 0 )
+			{
+				buffer[ length ] = '\0';
+				fputs( buffer, stderr );
+				length = 0;
+			}
+
+			if ( *msg == '\n' )
+			{
+				// Reset color and then add the newline
+				SetConsoleTextAttribute( qconsole_hout, CON_ColorCharToAttrib( COLOR_WHITE ) );
+				fputs( "\n", stderr );
+				msg++;
+			}
+			else
+			{
+				// Set the color
+				SetConsoleTextAttribute( qconsole_hout, CON_ColorCharToAttrib( *( msg + 1 ) ) );
+				msg += 2;
+			}
+		}
+		else
+		{
+			if ( length >= MAXPRINTMSG - 1 )
+				break;
+
+			buffer[ length ] = *msg;
+			length++;
+			msg++;
+		}
+	}
+
+	// Empty anything still left in the buffer
+	if ( length > 0 )
+	{
+		buffer[ length ] = '\0';
+		fputs( buffer, stderr );
+	}
 }
 
 /*
@@ -420,7 +553,9 @@ CON_Print
 */
 void CON_Print( const char *msg )
 {
-	fputs( msg, stderr );
+	CON_Hide();
+
+	CON_WindowsColorPrint( msg );
 
 	CON_Show();
 }
