@@ -681,8 +681,17 @@ char *CON_Input( void )
 					continue;
 				}
 
-				Hist_Add( input_field.buffer );
-				Q_strncpyz(text, input_field.buffer, sizeof ( text ) );
+				if(!com_consoleCommand->string[0])
+				{
+					Q_snprintf( text, sizeof( text ), "\\%s",
+							input_field.buffer + ( input_field.buffer[ 0 ] == '\\' || input_field.buffer[ 0 ] == '/' ) );
+				}
+				else
+				{
+					Q_strncpyz( text, input_field.buffer, sizeof ( text ) );
+				}
+
+				Hist_Add( text );
 				Field_Clear( &input_field );
 				werase( inputwin );
 				wnoutrefresh( inputwin );
