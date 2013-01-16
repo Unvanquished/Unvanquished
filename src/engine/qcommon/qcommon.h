@@ -975,6 +975,8 @@ extern cvar_t       *com_cl_running;
 extern cvar_t       *com_viewlog; // 0 = hidden, 1 = visible, 2 = minimized
 extern cvar_t       *com_version;
 
+extern cvar_t       *com_consoleCommand;
+
 extern cvar_t       *com_journal;
 extern cvar_t       *com_ansiColor;
 extern cvar_t       *com_logosPlaying;

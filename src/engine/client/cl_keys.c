@@ -982,9 +982,7 @@ void Console_Key( int key )
 			}
 			else
 			{
-				Cbuf_AddText( "cmd say " );
-				Cbuf_AddText( g_consoleField.buffer );
-				Cbuf_AddText( "\n" );
+				Cbuf_AddText( va("%s %s\n", com_consoleCommand->string, g_consoleField.buffer) );
 			}
 		}
 
