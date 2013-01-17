@@ -396,8 +396,8 @@ static cvarTable_t gameCvarTable[] =
 
 	{ &g_allowDonations,              "g_allowDonations",              "1",                                CVAR_ARCHIVE,                                    0, qfalse           },
 
-	{ &g_strip_structDmgPrcnt,        "g_strip_structDmgPrcnt",        "100",                              CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_strip_playerDmgPrcnt,        "g_strip_playerDmgPrcnt",        "100",                              CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_strip_structDmgPrcnt,        "g_strip_structDamagePercent",   "100",                              CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_strip_playerDmgPrcnt,        "g_strip_playerDamagePercent",   "100",                              CVAR_ARCHIVE,                                    0, qfalse           },
 
 	// cicho-sza add-on:
 	{ &g_AutoStrip,                      "g_AutoStrip",                      "0",                          CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qtrue            },
@@ -407,10 +407,10 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_AutoStrip_KillsPerStage,        "g_AutoStrip_KillsPerStage",        "4",                          CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_AutoStrip_BetterThanTeam,       "g_AutoStrip_BetterThanTeam",       "100",                        CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_AutoStrip_BetterThanEnemy,      "g_AutoStrip_BetterThanEnemy",      "100",                        CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_AutoStrip_KillingSpreeLvl,      "g_AutoStrip_KillingSpreeLvl",      "6",                          CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_AutoStrip_KillingSpreeLvl,      "g_AutoStrip_KillingSpreeLevel",    "6",                          CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_AutoStrip_KillingSpreePerStage, "g_AutoStrip_KillingSpreePerStage", "2",                          CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_AutoStrip_KillingSpreeStageDif, "g_AutoStrip_KillingSpreeStageDif", "1",                          CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_AutoStrip_kpmTreshold,          "g_AutoStrip_kpmTreshold",          "0",                          CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_AutoStrip_KillingSpreeStageDif, "g_AutoStrip_KillingSpreeStageDifference", "1",                   CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_AutoStrip_kpmTreshold,          "g_AutoStrip_kpmThreshold",         "0",                          CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_AutoStrip_kpmAllowed,           "g_AutoStrip_kpmAllowed",           "0",                          CVAR_ARCHIVE,                                    0, qfalse           },
 
 	// <bot stuff>
