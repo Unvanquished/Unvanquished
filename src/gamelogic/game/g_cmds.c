@@ -4523,14 +4523,14 @@ void Cmd_Donate_f( gentity_t *ent )
 		creds /= ALIEN_CREDITS_PER_KILL;
 		trap_SendServerCommand( ent - g_entities, va( "print_tr " QQ( N_( "donate: transferring $1$ frags to $2$.\n" ) ) " %i %s",
 		                                              creds, Quote( level.clients[ clientNum ].pers.netname ) ) );
-		trap_SendServerCommand( clientNum, va( "print_tr " QQ( N_( "You have received $1$ frags from $2$" ) ) " %i %s",
+		trap_SendServerCommand( clientNum, va( "print_tr " QQ( N_( "You have received $1$ frags from $2$\n" ) ) " %i %s",
 		                                       creds, Quote( ent->client->pers.netname ) ) );
 	}
 	else
 	{
 		trap_SendServerCommand( ent - g_entities, va( "print_tr " QQ( N_( "donate: transferring $1$ credits to $2$.\n" ) ) " %i %s",
 		                                              creds, Quote( level.clients[ clientNum ].pers.netname ) ) );
-		trap_SendServerCommand( clientNum, va( "print_tr " QQ( N_( "You have received $1$ credits from $2$" ) ) " %i %s",
+		trap_SendServerCommand( clientNum, va( "print_tr " QQ( N_( "You have received $1$ credits from $2$\n" ) ) " %i %s",
 		                                       creds, Quote( ent->client->pers.netname ) ) );
 	}
 }
