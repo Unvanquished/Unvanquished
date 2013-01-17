@@ -929,7 +929,7 @@ static void CompleteCommand( void )
 ====================
 Console_Key
 
-Handles history and console scrollback
+Handles history and console scrollback for the ingame console
 ====================
 */
 void Console_Key( int key )
@@ -955,7 +955,7 @@ void Console_Key( int key )
 		con.acLength = 0;
 
 		// if not in the game explicitly prepend a slash if needed
-		if ( cls.state != CA_ACTIVE && g_consoleField.buffer[ 0 ] != '\\'
+		if ( (cls.state != CA_ACTIVE || !cl_consoleCommand->string[0] ) && g_consoleField.buffer[ 0 ] != '\\'
 		     && g_consoleField.buffer[ 0 ] != '/' )
 		{
 			char temp[ MAX_STRING_CHARS ];
@@ -982,9 +982,7 @@ void Console_Key( int key )
 			}
 			else
 			{
-				Cbuf_AddText( "cmd say " );
-				Cbuf_AddText( g_consoleField.buffer );
-				Cbuf_AddText( "\n" );
+				Cbuf_AddText( va("%s %s\n", cl_consoleCommand->string, g_consoleField.buffer) );
 			}
 		}
 

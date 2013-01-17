@@ -93,6 +93,8 @@ cvar_t *com_version;
 cvar_t *con_drawnotify;
 cvar_t *com_ansiColor;
 
+cvar_t *com_consoleCommand;
+
 cvar_t *com_unfocused;
 cvar_t *com_maxfpsUnfocused;
 cvar_t *com_minimized;
@@ -2796,9 +2798,29 @@ int Com_EventLoop( void )
 				break;
 
 			case SE_CONSOLE:
-				Cbuf_AddText( ( char * ) ev.evPtr );
-				Cbuf_AddText( "\n" );
+			{
+				char *cmd = (char *) ev.evPtr;
+
+				if (cmd[0] == '/' || cmd[0] == '\\')
+				{
+					//make sure, explicit commands are not getting handled with com_consoleCommand
+					Cbuf_AddText( cmd + 1);
+					Cbuf_AddText( "\n" );
+				}
+				else
+				{
+					/*
+					 * when there was no command prefix, execute the command prefixed by com_consoleCommand
+					 * if the cvar is empty, it will interpret the text as command direclty
+					 * (and will so for DEDICATED)
+					 *
+					 * the additional space gets trimmed by the parser
+					 */
+					Cbuf_AddText( va("%s %s\n", com_consoleCommand->string, cmd) );
+				}
+
 				break;
+			}
 
 			case SE_PACKET:
 
@@ -3257,6 +3279,10 @@ void Com_Init( char *commandLine )
 	com_cl_running = Cvar_Get( "cl_running", "0", CVAR_ROM );
 
 	con_drawnotify = Cvar_Get( "con_drawnotify", "0", CVAR_CHEAT );
+
+	//on a server, commands have to be used a lot more often than say
+	//we could differentiate server and client, but would change the default behavior many might be used to
+	com_consoleCommand = Cvar_Get( "com_consoleCommand", "", CVAR_ARCHIVE );
 
 	com_introPlayed = Cvar_Get( "com_introplayed", "0", CVAR_ARCHIVE );
 	com_ansiColor = Cvar_Get( "com_ansiColor", "0", CVAR_ARCHIVE );

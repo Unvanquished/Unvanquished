@@ -317,15 +317,24 @@ char *CON_Input( void )
 			{
 				if ( key == '\n' )
 				{
+					if(!com_consoleCommand->string[0])
+					{
+						Q_snprintf( text, sizeof( text ), "\\%s",
+								TTY_con.buffer + ( TTY_con.buffer[ 0 ] == '\\' || TTY_con.buffer[ 0 ] == '/' ) );
+					}
+					else
+					{
+						Q_strncpyz( text, TTY_con.buffer, sizeof ( text ) );
+					}
+
 					// push it in history
-					Q_snprintf( text, sizeof(text), "\\%s",
-					            TTY_con.buffer + ( TTY_con.buffer[ 0 ] == '\\' || TTY_con.buffer[ 0 ] == '/' ) );
 					Hist_Add( text );
+					Q_strncpyz( text, TTY_con.buffer, sizeof( text ) );
 					Field_Clear( &TTY_con );
 					key = '\n';
 					write( STDOUT_FILENO, &key, 1 );
 					write( STDOUT_FILENO, "]", 1 );
-					return text + 1;
+					return text;
 				}
 
 				if ( key == '\t' )
