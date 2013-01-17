@@ -955,7 +955,7 @@ void Console_Key( int key )
 		con.acLength = 0;
 
 		// if not in the game explicitly prepend a slash if needed
-		if ( cls.state != CA_ACTIVE && g_consoleField.buffer[ 0 ] != '\\'
+		if ( (cls.state != CA_ACTIVE || !cl_consoleCommand->string[0] ) && g_consoleField.buffer[ 0 ] != '\\'
 		     && g_consoleField.buffer[ 0 ] != '/' )
 		{
 			char temp[ MAX_STRING_CHARS ];

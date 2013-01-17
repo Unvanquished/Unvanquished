@@ -317,8 +317,18 @@ char *CON_Input( void )
 			{
 				if ( key == '\n' )
 				{
+					if(!com_consoleCommand->string[0])
+					{
+						Q_snprintf( text, sizeof( text ), "\\%s",
+								TTY_con.buffer + ( TTY_con.buffer[ 0 ] == '\\' || TTY_con.buffer[ 0 ] == '/' ) );
+					}
+					else
+					{
+						Q_strncpyz( text, TTY_con.buffer, sizeof ( text ) );
+					}
+
 					// push it in history
-					Hist_Add( TTY_con.buffer );
+					Hist_Add( text );
 					Q_strncpyz( text, TTY_con.buffer, sizeof( text ) );
 					Field_Clear( &TTY_con );
 					key = '\n';
