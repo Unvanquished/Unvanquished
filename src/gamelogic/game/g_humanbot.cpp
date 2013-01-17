@@ -713,6 +713,8 @@ botTaskStatus_t BotTaskBuy(gentity_t *self, weapon_t weapon, upgrade_t *upgrades
 		BotBuy(self, weapon);
 		for(int i=0;i<numUpgrades;i++)
 			BotBuy(self, upgrades[i]);
+		// make sure that we're not using the blaster
+		G_ForceWeaponChange( self, (weapon_t) self->client->ps.stats[ STAT_WEAPON ] );
 		//we have bought the stuff, return
 		return TASK_STOPPED;
 	}
