@@ -329,7 +329,7 @@ void BotFindClosestBuildings(gentity_t *self, botClosestBuildings_t *closest) {
 			case BA_H_REACTOR:
 				if(newDist < closest->reactor.distance || closest->reactor.distance == 0) {
 					closest->reactor.ent = testEnt;
-					closest->reactor.distance = sqrt(newDist);
+					closest->reactor.distance = newDist;
 				}
 				break;
 			case BA_H_REPEATER:
