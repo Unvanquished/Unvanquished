@@ -1901,6 +1901,22 @@ void G_BotDel( int clientNum ) {
 	trap_DropClient(clientNum, "disconnected");
 }
 
+extern "C" void G_BotDelAll(void)
+{
+	int i;
+
+	for(i=0;i<MAX_CLIENTS;i++) {
+		if(g_entities[i].r.svFlags & SVF_BOT && level.clients[i].pers.connected != CON_DISCONNECTED)
+			G_BotDel(i);
+	}
+
+	for (i = 0; i < botNames[TEAM_ALIENS].count; ++i)
+		botNames[TEAM_ALIENS].name[i].inUse = qfalse;
+
+	for (i = 0; i < botNames[TEAM_HUMANS].count; ++i)
+		botNames[TEAM_HUMANS].name[i].inUse = qfalse;
+}
+
 void G_BotCmd( gentity_t *master, int clientNum, char *command) {
 	gentity_t *bot = &g_entities[clientNum];
 	if( !( bot->r.svFlags & SVF_BOT ) || !bot->botMind)

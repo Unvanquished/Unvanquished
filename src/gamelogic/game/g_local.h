@@ -885,6 +885,7 @@ char     *G_NewString( const char *string );
 qboolean G_BotAdd( char *name, team_t team, int skill );
 void G_BotSetDefaults( int clientNum, team_t team, int skill );
 void G_BotDel( int clientNum );
+void G_BotDelAll(void);
 void G_BotCmd( gentity_t *master, int clientNum, char *command);
 void G_BotThink(gentity_t *self);
 void G_BotSpectatorThink( gentity_t *self );
