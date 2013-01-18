@@ -117,13 +117,13 @@ void BotBuy(gentity_t *self, upgrade_t upgrade) {
 	qboolean  energyOnly = qfalse;
 
 	// Only give energy from reactors or repeaters
-	if( G_BuildableRange( self->client->ps.origin, 100, BA_H_ARMOURY ) )
-		energyOnly = qfalse;
-	else if( upgrade == UP_AMMO &&
+	if( upgrade == UP_AMMO &&
 		BG_Weapon( (weapon_t)self->client->ps.stats[ STAT_WEAPON ] )->usesEnergy &&
 		( G_BuildableRange( self->client->ps.origin, 100, BA_H_REACTOR ) ||
 		G_BuildableRange( self->client->ps.origin, 100, BA_H_REPEATER ) ) )
 		energyOnly = qtrue;
+	else if( G_BuildableRange( self->client->ps.origin, 100, BA_H_ARMOURY ) )
+		energyOnly = qfalse;
 	else if( upgrade == UP_AMMO && BG_Weapon( (weapon_t)self->client->ps.weapon )->usesEnergy )
 		return;
 
@@ -661,11 +661,21 @@ botTaskStatus_t BotTaskBuy(gentity_t *self, usercmd_t *botCmdBuffer) {
 	return BotTaskBuy(self, weapon, upgrades, numUpgrades, botCmdBuffer);
 }
 botTaskStatus_t BotTaskBuy(gentity_t *self, weapon_t weapon, upgrade_t *upgrades, int numUpgrades, usercmd_t *botCmdBuffer) {
+
 	if(!g_bot_buy.integer)
 		return TASK_STOPPED;
 	if(BotGetTeam(self) != TEAM_HUMANS)
 		return TASK_STOPPED;
-	if(!self->botMind->closestBuildings.armoury.ent)
+	if(numUpgrades && upgrades[0] == UP_AMMO && BG_Weapon( (weapon_t)self->client->ps.stats[ STAT_WEAPON ] )->usesEnergy)
+	{
+		if(!self->botMind->closestBuildings.armoury.ent &&
+		   !self->botMind->closestBuildings.repeater.ent &&
+		   !self->botMind->closestBuildings.reactor.ent)
+		{
+			return TASK_STOPPED; //wanted ammo for energy? no armoury, repeater or reactor, so fail
+		}
+	}
+	else if(!self->botMind->closestBuildings.armoury.ent)
 		return TASK_STOPPED; //no armoury, so fail
 	if(self->botMind->bestEnemy.ent) {
 		if(self->botMind->bestEnemy.distance <= BOT_ENGAGE_DIST)
@@ -690,7 +700,23 @@ botTaskStatus_t BotTaskBuy(gentity_t *self, weapon_t weapon, upgrade_t *upgrades
 	}
 
 	if(BotRoutePermission(self, BOT_TASK_BUY)) {
-		if(!BotChangeTarget(self, self->botMind->closestBuildings.armoury.ent, NULL))
+		//default to armoury
+		const botEntityAndDistance_t *ent = &self->botMind->closestBuildings.armoury;
+		//wanting energy ammo only? look for closer repeater or reactor
+		if(numUpgrades && upgrades[0] == UP_AMMO && BG_Weapon( (weapon_t)self->client->ps.stats[ STAT_WEAPON ] )->usesEnergy)
+		{
+#define DISTANCE(obj) ( self->botMind->closestBuildings.obj.ent ? self->botMind->closestBuildings.obj.distance : INT_MAX )
+			//repeater closest? use that
+			if(DISTANCE(repeater) < DISTANCE(reactor))
+			{
+				if(DISTANCE(repeater) < DISTANCE(armoury))
+					ent = &self->botMind->closestBuildings.repeater;
+			}
+			//reactor closest? use that
+			else if(DISTANCE(reactor) < DISTANCE(armoury))
+				ent = &self->botMind->closestBuildings.reactor;
+		}
+		if(!BotChangeTarget(self, ent->ent, NULL))
 			return TASK_STOPPED;
 	}
 
@@ -701,7 +727,7 @@ botTaskStatus_t BotTaskBuy(gentity_t *self, weapon_t weapon, upgrade_t *upgrades
 		return TASK_STOPPED;
 	}
 
-	if(self->botMind->closestBuildings.armoury.distance > 100) {
+	if(DistanceToGoalSquared(self) > 100 * 100) {
 		BotMoveToGoal(self, botCmdBuffer);
 		return TASK_RUNNING;
 	} else {
