@@ -5454,13 +5454,15 @@ qboolean G_admin_bot( gentity_t *ent ) {
 		if(!Q_stricmp(name, "all")) {
 			G_BotDelAll();
 		}
-
-		if(clientNum == -1) //something went wrong when finding the client Number
+		else if(clientNum == -1) //something went wrong when finding the client Number
 		{
 			ADMP( va( "%s %s %s", QQ( "^3$1$: ^7$2t$" ), "bot", Quote( err ) ) );
 			return qfalse;
 		}
-		G_BotDel(clientNum); //delete the bot
+		else
+		{
+			G_BotDel(clientNum); //delete the bot
+		}
 	} else if(!Q_stricmp(arg1, "spec")) {
 		int clientNum = G_ClientNumberFromString(name,err, sizeof(err));
 		if(!Q_stricmp(name, "all")) {
