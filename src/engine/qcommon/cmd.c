@@ -798,14 +798,14 @@ void Cmd_If_f( void )
 			else if ( !strcmp( op, "!in") ) { v = ( Q_stristr( s2, s1 ) == 0 ) ? vt : vf; }
 			else
 			{
-				Com_Printf(_( "invalid operator in if command. valid operators are = != < > >= <= eq ne in !in\n" ));
+				Com_Printf(_( "invalid relation operator in if command. valid relation operators are = != < > >= <= eq ne in !in\n" ));
 				return;
 			}
 
 			break;
 
 		default:
-			Com_Printf(_( "if <value1> <operator> <value2> <cmdthen> (<cmdelse>) : compares the first two values and executes <cmdthen> if true, <cmdelse> if false\n"
+			Com_Printf(_( "if <number> <relation> <number> <cmdthen> (<cmdelse>) : compares the first two numbers and executes <cmdthen> if true, <cmdelse> if false\n"
 			            "if <modifiers> <cmdthen> (<cmdelse>) : check if modifiers are (not) pressed\n"
 			            "-- modifiers are %s\n"
 			            "-- commands are cvar names unless prefixed with / or \\\n"),
@@ -855,7 +855,7 @@ void Cmd_Math_f( void )
 		}
 		else
 		{
-			Com_Printf(_( "math <variableToSet> = <value1> <operator> <value2>\nmath <variableToSet> <operator> <value1>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * /\n" ));
+			Com_Printf(_( "math <variableToSet> = <number> <operator> <number>\nmath <variableToSet> <operator> <number>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * /\n" ));
 			return;
 		}
 	}
@@ -889,7 +889,7 @@ void Cmd_Math_f( void )
 		}
 		else
 		{
-			Com_Printf(_( "math <variableToSet> = <value1> <operator> <value2>\nmath <variableToSet> <operator> <value1>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * /\n" ));
+			Com_Printf(_( "math <variableToSet> = <number> <operator> <number>\nmath <variableToSet> <operator> <number>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * /\n" ));
 			return;
 		}
 	}
@@ -924,13 +924,13 @@ void Cmd_Math_f( void )
 		}
 		else
 		{
-			Com_Printf(_( "math <variableToSet> = <value1> <operator> <value2>\nmath <variableToSet> <operator> <value1>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * /\n" ));
+			Com_Printf(_( "math <variableToSet> = <number> <operator> <number>\nmath <variableToSet> <operator> <number>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * /\n" ));
 			return;
 		}
 	}
 	else
 	{
-		Com_Printf(_( "math <variableToSet> = <value1> <operator> <value2>\nmath <variableToSet> <operator> <value1>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * /\n" ));
+		Com_Printf(_( "math <variableToSet> = <number> <operator> <number>\nmath <variableToSet> <operator> <number>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * /\n" ));
 		return;
 	}
 }
@@ -1032,7 +1032,7 @@ void Cmd_Calc_f( void )
 
 	if ( Cmd_Argc() < 3 )
 	{
-		Com_Printf(_( "calc <number> <function> <number>, accepted functions: +, -, /, */x\n" ));
+		Com_Printf(_( "calc <number> <operator> <number>, accepted operators: +, -, /, */x\n" ));
 		return;
 	}
 
@@ -1070,12 +1070,13 @@ void Cmd_Calc_f( void )
 	// Multiply
 	else if ( !strcmp( func, "*" ) || !strcmp( func, "x" ) )
 	{
+		//note: ⨉ (n-times operator) is not x (the letter) and might have different rendering with different fonts
 		Com_Printf( "%s ⨉  %s = %f\n", arg1, arg2, ( atof( arg1 ) * atof( arg2 ) ) );
 		return;
 	}
 
 	// Invalid function, help the poor guy out
-	Com_Printf(_( "calc <number> <function> <number>, accepted functions: +, -, /, */x\n" ));
+	Com_Printf(_( "calc <number> <operator> <number>, accepted operators: +, -, /, */x\n" ));
 }
 
 /*
@@ -1235,7 +1236,7 @@ void Cmd_Random_f( void )
 	}
 	else
 	{
-		Com_Printf(_( "random <variableToSet> <value1> <value2>\n" ));
+		Com_Printf(_( "random <variableToSet> <minNumber> <maxNumber>\n" ));
 	}
 }
 
