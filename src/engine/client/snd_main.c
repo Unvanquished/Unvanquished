@@ -126,8 +126,14 @@ void S_StartLocalSound( sfxHandle_t sfx, int channelNum )
 	}
 }
 
+/**
+ * start background track gets used for example for the menu-intro or other background music-tracks
+ */
 void S_StartBackgroundTrack( const char *intro, const char *loop )
 {
+	if( S_IsMuted())
+		return;
+
 	if( si.StartBackgroundTrack )
 	{
 		si.StartBackgroundTrack( intro, loop );
@@ -227,6 +233,7 @@ void S_Update( void )
 	if (S_IsMuted())
 	{
 		S_ClearLoopingSounds(qtrue);
+		S_StopBackgroundTrack();
 	}
 
 	if( si.Update )
