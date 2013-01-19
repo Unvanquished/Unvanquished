@@ -853,7 +853,7 @@ static void Tess_SurfacePolychain( srfPoly_t *p )
 		vec3_t      tangent;
 		vec3_t      binormal;
 		vec3_t      normal;
-		int         *indices;
+		glIndex_t   *indices;
 
 		for ( i = 0; i < numVertexes; i++ )
 		{

@@ -962,7 +962,7 @@ static void UI_BuildServerStatus( qboolean force )
 UI_BuildServerDisplayList
 ==================
 */
-static void UI_BuildServerDisplayList( qboolean force )
+static void UI_BuildServerDisplayList( int force )
 {
 	int        i, count, clients, maxClients, ping, len, visible;
 	char       info[ MAX_STRING_CHARS ];
@@ -5041,7 +5041,7 @@ void UI_ParseVoipInputs( void )
 
 	trap_Cvar_VariableStringBuffer( "s_alAvailableInputDevices", buf, sizeof( buf ) );
 	head = buf;
-	while ( p = strchr( head, '\n' ) )
+	while ( ( p = strchr( head, '\n' ) ) )
 	{
 		*p = '\0';
 		uiInfo.voipInput[ inputs++ ] = String_Alloc( head );
@@ -5059,7 +5059,7 @@ void UI_ParseAlOutputs( void )
 
 	trap_Cvar_VariableStringBuffer( "s_alAvailableDevices", buf, sizeof( buf ) );
 	head = buf;
-	while ( p = strchr( head, '\n' ) )
+	while ( ( p = strchr( head, '\n' ) ) )
 	{
 		*p = '\0';
 		uiInfo.alOutput[ outputs++ ] = String_Alloc( head );

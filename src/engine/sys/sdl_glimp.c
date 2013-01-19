@@ -1822,7 +1822,7 @@ static void reportDriverType( qboolean force )
 	static const char *const drivers[] = {
 		"integrated", "stand-alone", "Voodoo", "OpenGL 3+", "Mesa"
 	};
-	if (glConfig.driverType > GLDRV_UNKNOWN && glConfig.driverType < ARRAY_LEN( drivers ) )
+	if (glConfig.driverType > GLDRV_UNKNOWN && (int) glConfig.driverType < ARRAY_LEN( drivers ) )
 	{
 		ri.Printf( PRINT_ALL, "%s graphics driver class '%s'\n",
 		           force ? "User has forced" : "Detected",
@@ -1836,7 +1836,7 @@ static void reportHardwareType( qboolean force )
 		"generic", "Voodoo", "Riva 128", "Rage Pro", "Permedia 2",
 		"ATI Radeon", "AMD Radeon DX10-class", "nVidia DX10-class"
 	};
-	if (glConfig.hardwareType > GLHW_UNKNOWN && glConfig.driverType < ARRAY_LEN( hardware ) )
+	if (glConfig.hardwareType > GLHW_UNKNOWN && (int) glConfig.hardwareType < ARRAY_LEN( hardware ) )
 	{
 		ri.Printf( PRINT_ALL, "%s graphics hardware class '%s'\n",
 		           force ? "User has forced" : "Detected",
