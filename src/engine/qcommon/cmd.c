@@ -1479,7 +1479,6 @@ void Cmd_Alias_f( void )
 			// Reallocate the exec string
 			Z_Free( alias->exec );
 			alias->exec = CopyString( Cmd_ArgsFrom( 2 ) );
-			Cmd_AddCommand( name, Cmd_RunAlias_f );
 		}
 	}
 
