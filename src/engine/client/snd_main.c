@@ -217,6 +217,18 @@ void S_UpdateEntityPosition( int entityNum, const vec3_t origin )
 
 void S_Update( void )
 {
+	/*
+	 * explicit stop as fix for the DMA backend continuing looping without regard to s_mute-cvars
+	 *
+	 * since this is mostly limited to environment sounds and a restart is prevented either way
+	 * it should not produce any stutter as former solutions did via S_Update
+	 *
+	 */
+	if (S_IsMuted())
+	{
+		S_ClearLoopingSounds(qtrue);
+	}
+
 	if( si.Update )
 	{
 		si.Update( );
