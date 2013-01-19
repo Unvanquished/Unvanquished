@@ -792,7 +792,6 @@ void Cmd_If_f( void )
 			else if ( !strcmp( op, "<=" ) ) { v = ( v1 <= v2 ) ? vt : vf; }
 			else if ( !strcmp( op, ">"  ) ) { v = ( v1 >  v2 ) ? vt : vf; }
 			else if ( !strcmp( op, ">=" ) ) { v = ( v1 >= v2 ) ? vt : vf; }
-			else if ( !strcmp( op, "!=" ) ) { v = ( v1 != v2 ) ? vt : vf; }
 			else if ( !strcmp( op, "eq" ) ) { v = ( Q_stricmp( s1, s2 ) == 0 ) ? vt : vf; }
 			else if ( !strcmp( op, "ne" ) ) { v = ( Q_stricmp( s1, s2 ) != 0 ) ? vt : vf; }
 			else if ( !strcmp( op, "in" ) ) { v = ( Q_stristr( s2, s1 ) != 0 ) ? vt : vf; }
@@ -1064,14 +1063,14 @@ void Cmd_Calc_f( void )
 			return;
 		}
 
-		Com_Printf( "%s %s %s = %f\n", arg1, func, arg2, ( atof( arg1 ) / atof( arg2 ) ) );
+		Com_Printf( "%s ÷ %s = %f\n", arg1, arg2, ( atof( arg1 ) / atof( arg2 ) ) );
 		return;
 	}
 
 	// Multiply
 	else if ( !strcmp( func, "*" ) || !strcmp( func, "x" ) )
 	{
-		Com_Printf( "%s %s %s = %f\n", arg1, func, arg2, ( atof( arg1 ) * atof( arg2 ) ) );
+		Com_Printf( "%s ⨉  %s = %f\n", arg1, arg2, ( atof( arg1 ) * atof( arg2 ) ) );
 		return;
 	}
 
