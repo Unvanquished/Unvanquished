@@ -498,7 +498,7 @@ Inserts the current value of a variable as command text
 */
 void Cmd_Vstr_f( void )
 {
-	char *v;
+	char *variableName;
 
 	if ( Cmd_Argc() != 2 )
 	{
@@ -506,8 +506,8 @@ void Cmd_Vstr_f( void )
 		return;
 	}
 
-	v = Cvar_VariableString( Cmd_Argv( 1 ) );
-	Cbuf_InsertText( va( "%s\n", v ) );
+	variableName = Cvar_VariableString( Cmd_Argv( 1 ) );
+	Cbuf_InsertText( va( "%s\n", variableName ) );
 }
 
 /*
@@ -738,75 +738,77 @@ found:
 ===============
 Cmd_If_f
 
-Compares two values, if true executes the third argument, if false executes the forth
+Compares two numbers, if true executes the third argument, if false executes the forth
 ===============
 */
 void Cmd_If_f( void )
 {
-	char           *v = NULL;
-	int            v1, v2;
-	const char     *s1, *s2;
-	char           *vt;
-	char           *vf = NULL;
-	char           *op;
+	char           *result = NULL;
+	int            firstNumber, secondNumber;
+	const char     *firstString, *secondString;
+	char           *consequent;
+	char           *alternative = NULL;
+	char           *relation;
 #ifndef DEDICATED
 	modifierMask_t mask;
 #endif
-	int            argc;
+	int            argumentCount;
 
-	switch ( argc = Cmd_Argc() )
+	switch ( argumentCount = Cmd_Argc() )
 	{
 		case 4:
-			vf = Cmd_Argv( 3 );
+			alternative = Cmd_Argv( 3 );
+			/* no break */
 
 		case 3:
-			vt = Cmd_Argv( 2 );
+			consequent = Cmd_Argv( 2 );
 #ifdef DEDICATED
 			Com_Printf(_( "if <modifiers>… is not supported on the server — assuming true.\n" ));
-			v = vt;
+			result = consequent;
 #else
-			v = Cmd_Argv( 1 );
-			mask = getModifierMask( v );
+			result = Cmd_Argv( 1 );
+			mask = getModifierMask( result );
 
 			if ( mask.bits == 0 )
 			{
 				return;
 			}
 
-			v = checkKeysDown( mask ) ? vt : vf;
+			result = checkKeysDown( mask ) ? consequent : alternative;
 #endif
 			break;
 
 		case 6:
-			vf = Cmd_Argv( 5 );
+			alternative = Cmd_Argv( 5 );
+			/* no break */
 
 		case 5:
-			vt = Cmd_Argv( 4 );
-			v1 = atoi( s1 = Cmd_Argv( 1 ) );
-			op = Cmd_Argv( 2 );
-			v2 = atoi( s2 = Cmd_Argv( 3 ) );
+			consequent = Cmd_Argv( 4 );
+			firstNumber = atoi( firstString = Cmd_Argv( 1 ) );
+			relation = Cmd_Argv( 2 );
+			secondNumber = atoi( secondString = Cmd_Argv( 3 ) );
 
-			if      ( !strcmp( op, "="  ) ) { v = ( v1 == v2 ) ? vt : vf; }
-			else if ( !strcmp( op, "!=" ) ) { v = ( v1 != v2 ) ? vt : vf; }
-			else if ( !strcmp( op, "<"  ) ) { v = ( v1 <  v2 ) ? vt : vf; }
-			else if ( !strcmp( op, "<=" ) ) { v = ( v1 <= v2 ) ? vt : vf; }
-			else if ( !strcmp( op, ">"  ) ) { v = ( v1 >  v2 ) ? vt : vf; }
-			else if ( !strcmp( op, ">=" ) ) { v = ( v1 >= v2 ) ? vt : vf; }
-			else if ( !strcmp( op, "!=" ) ) { v = ( v1 != v2 ) ? vt : vf; }
-			else if ( !strcmp( op, "eq" ) ) { v = ( Q_stricmp( s1, s2 ) == 0 ) ? vt : vf; }
-			else if ( !strcmp( op, "ne" ) ) { v = ( Q_stricmp( s1, s2 ) != 0 ) ? vt : vf; }
-			else if ( !strcmp( op, "in" ) ) { v = ( Q_stristr( s2, s1 ) != 0 ) ? vt : vf; }
-			else if ( !strcmp( op, "!in") ) { v = ( Q_stristr( s2, s1 ) == 0 ) ? vt : vf; }
+			if      ( !strcmp( relation, "="  ) ) { result = ( firstNumber == secondNumber ) ? consequent : alternative; }
+			else if ( !strcmp( relation, "!=" ) ) { result = ( firstNumber != secondNumber ) ? consequent : alternative; }
+			else if ( !strcmp( relation, "<"  ) ) { result = ( firstNumber <  secondNumber ) ? consequent : alternative; }
+			else if ( !strcmp( relation, "<=" ) ) { result = ( firstNumber <= secondNumber ) ? consequent : alternative; }
+			else if ( !strcmp( relation, ">"  ) ) { result = ( firstNumber >  secondNumber ) ? consequent : alternative; }
+			else if ( !strcmp( relation, ">=" ) ) { result = ( firstNumber >= secondNumber ) ? consequent : alternative; }
+			else if ( !strcmp( relation, "eq" ) ) { result = ( Q_stricmp( firstString, secondString ) == 0 ) ? consequent : alternative; }
+			else if ( !strcmp( relation, "ne" ) ) { result = ( Q_stricmp( firstString, secondString ) != 0 ) ? consequent : alternative; }
+			else if ( !strcmp( relation, "in" ) ) { result = ( Q_stristr( secondString, firstString ) != 0 ) ? consequent : alternative; }
+			else if ( !strcmp( relation, "!in") ) { result = ( Q_stristr( secondString, firstString ) == 0 ) ? consequent : alternative; }
 			else
 			{
-				Com_Printf(_( "invalid operator in if command. valid operators are = != < > >= <= eq ne in !in\n" ));
+				Com_Printf(_( "invalid relation operator in if command. valid relation operators are = != < > >= <= eq ne in !in\n" ));
 				return;
 			}
 
 			break;
 
 		default:
-			Com_Printf(_( "if <value1> <operator> <value2> <cmdthen> (<cmdelse>) : compares the first two values and executes <cmdthen> if true, <cmdelse> if false\n"
+			Com_Printf(_( "if <number> <relation> <number> <cmdthen> (<cmdelse>) : compares the first two numbers and executes <cmdthen> if true, <cmdelse> if false\n"
+
 			            "if <modifiers> <cmdthen> (<cmdelse>) : check if modifiers are (not) pressed\n"
 			            "-- modifiers are %s\n"
 			            "-- commands are cvar names unless prefixed with / or \\\n"),
@@ -814,15 +816,15 @@ void Cmd_If_f( void )
 			return;
 	}
 
-	if ( v && *v )
+	if ( result && *result )
 	{
-		if ( *v == '/' || *v == '\\' )
+		if ( *result == '/' || *result == '\\' )
 		{
-			Cbuf_InsertText( va( "%s\n", v + 1 ) );
+			Cbuf_InsertText( va( "%s\n", result + 1 ) );
 		}
 		else
 		{
-			Cbuf_InsertText( va( "vstr %s\n", v ) );
+			Cbuf_InsertText( va( "vstr %s\n", result ) );
 		}
 	}
 }
@@ -836,102 +838,102 @@ Does math and saves the result to a cvar
 */
 void Cmd_Math_f( void )
 {
-	char *v;
-	char *v1;
-	char *v2;
-	char *op;
+	char *targetVariable;
+	char *firstOperand;
+	char *secondOperand;
+	char *operation;
 
 	if ( Cmd_Argc() == 3 )
 	{
-		v = Cmd_Argv( 1 );
-		op = Cmd_Argv( 2 );
+		targetVariable = Cmd_Argv( 1 );
+		operation = Cmd_Argv( 2 );
 
-		if ( !strcmp( op, "++" ) )
+		if ( !strcmp( operation, "++" ) )
 		{
-			Cvar_SetValueLatched( v, Cvar_VariableValue( v ) + 1 );
+			Cvar_SetValueLatched( targetVariable, Cvar_VariableValue( targetVariable ) + 1 );
 		}
-		else if ( !strcmp( op, "--" ) )
+		else if ( !strcmp( operation, "--" ) )
 		{
-			Cvar_SetValueLatched( v, Cvar_VariableValue( v ) - 1 );
+			Cvar_SetValueLatched( targetVariable, Cvar_VariableValue( targetVariable ) - 1 );
 		}
 		else
 		{
-			Com_Printf(_( "math <variableToSet> = <value1> <operator> <value2>\nmath <variableToSet> <operator> <value1>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * /\n" ));
+			Com_Printf(_( "math <variableToSet> = <number> <operator> <number>\nmath <variableToSet> <operator> <number>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * /\n" ));
 			return;
 		}
 	}
 	else if ( Cmd_Argc() == 4 )
 	{
-		v = Cmd_Argv( 1 );
-		op = Cmd_Argv( 2 );
-		v1 = Cmd_Argv( 3 );
+		targetVariable = Cmd_Argv( 1 );
+		operation = Cmd_Argv( 2 );
+		firstOperand = Cmd_Argv( 3 );
 
-		if ( !strcmp( op, "+" ) )
+		if ( !strcmp( operation, "+" ) )
 		{
-			Cvar_SetValueLatched( v, ( atof( v ) + atof( v1 ) ) );
+			Cvar_SetValueLatched( targetVariable, ( atof( targetVariable ) + atof( firstOperand ) ) );
 		}
-		else if ( !strcmp( op, "-" ) )
+		else if ( !strcmp( operation, "-" ) )
 		{
-			Cvar_SetValueLatched( v, ( atof( v ) - atof( v1 ) ) );
+			Cvar_SetValueLatched( targetVariable, ( atof( targetVariable ) - atof( firstOperand ) ) );
 		}
-		else if ( !strcmp( op, "*" ) )
+		else if ( !strcmp( operation, "*" ) )
 		{
-			Cvar_SetValueLatched( v, ( atof( v ) * atof( v1 ) ) );
+			Cvar_SetValueLatched( targetVariable, ( atof( targetVariable ) * atof( firstOperand ) ) );
 		}
-		else if ( !strcmp( op, "/" ) )
+		else if ( !strcmp( operation, "/" ) )
 		{
-			if ( atof( v1 ) == 0.f )
+			if ( atof( firstOperand ) == 0.f )
 			{
 				Com_Printf(_( "Cannot divide by 0!\n" ));
 				return;
 			}
 
-			Cvar_SetValueLatched( v, ( atof( v ) / atof( v1 ) ) );
+			Cvar_SetValueLatched( targetVariable, ( atof( targetVariable ) / atof( firstOperand ) ) );
 		}
 		else
 		{
-			Com_Printf(_( "math <variableToSet> = <value1> <operator> <value2>\nmath <variableToSet> <operator> <value1>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * /\n" ));
+			Com_Printf(_( "math <variableToSet> = <number> <operator> <number>\nmath <variableToSet> <operator> <number>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * /\n" ));
 			return;
 		}
 	}
 	else if ( Cmd_Argc() == 6 )
 	{
-		v = Cmd_Argv( 1 );
-		v1 = Cmd_Argv( 3 );
-		op = Cmd_Argv( 4 );
-		v2 = Cmd_Argv( 5 );
+		targetVariable = Cmd_Argv( 1 );
+		firstOperand = Cmd_Argv( 3 );
+		operation = Cmd_Argv( 4 );
+		secondOperand = Cmd_Argv( 5 );
 
-		if ( !strcmp( op, "+" ) )
+		if ( !strcmp( operation, "+" ) )
 		{
-			Cvar_SetValueLatched( v, ( atof( v1 ) + atof( v2 ) ) );
+			Cvar_SetValueLatched( targetVariable, ( atof( firstOperand ) + atof( secondOperand ) ) );
 		}
-		else if ( !strcmp( op, "-" ) )
+		else if ( !strcmp( operation, "-" ) )
 		{
-			Cvar_SetValueLatched( v, ( atof( v1 ) - atof( v2 ) ) );
+			Cvar_SetValueLatched( targetVariable, ( atof( firstOperand ) - atof( secondOperand ) ) );
 		}
-		else if ( !strcmp( op, "*" ) )
+		else if ( !strcmp( operation, "*" ) )
 		{
-			Cvar_SetValueLatched( v, ( atof( v1 ) * atof( v2 ) ) );
+			Cvar_SetValueLatched( targetVariable, ( atof( firstOperand ) * atof( secondOperand ) ) );
 		}
-		else if ( !strcmp( op, "/" ) )
+		else if ( !strcmp( operation, "/" ) )
 		{
-			if ( atof( v2 ) == 0.f )
+			if ( atof( secondOperand ) == 0.f )
 			{
 				Com_Printf(_( "Cannot divide by 0!\n" ));
 				return;
 			}
 
-			Cvar_SetValueLatched( v, ( atof( v1 ) / atof( v2 ) ) );
+			Cvar_SetValueLatched( targetVariable, ( atof( firstOperand ) / atof( secondOperand ) ) );
 		}
 		else
 		{
-			Com_Printf(_( "math <variableToSet> = <value1> <operator> <value2>\nmath <variableToSet> <operator> <value1>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * /\n" ));
+			Com_Printf(_( "math <variableToSet> = <number> <operator> <number>\nmath <variableToSet> <operator> <number>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * /\n" ));
 			return;
 		}
 	}
 	else
 	{
-		Com_Printf(_( "math <variableToSet> = <value1> <operator> <value2>\nmath <variableToSet> <operator> <value1>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * /\n" ));
+		Com_Printf(_( "math <variableToSet> = <number> <operator> <number>\nmath <variableToSet> <operator> <number>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * /\n" ));
 		return;
 	}
 }
@@ -945,32 +947,32 @@ Compares two strings, if true executes the third argument, if false executes the
 */
 void Cmd_Strcmp_f( void )
 {
-	char *v;
-	char *v1;
-	char *v2;
-	char *vt;
-	char *vf;
-	char *op;
+	char *result;
+	char *firstString;
+	char *secondString;
+	char *consequent;
+	char *alternative;
+	char *relation;
 
 	if ( ( Cmd_Argc() == 6 ) || ( Cmd_Argc() == 5 ) )
 	{
-		v1 = Cmd_Argv( 1 );
-		op = Cmd_Argv( 2 );
-		v2 = Cmd_Argv( 3 );
-		vt = Cmd_Argv( 4 );
+		firstString = Cmd_Argv( 1 );
+		relation = Cmd_Argv( 2 );
+		secondString = Cmd_Argv( 3 );
+		consequent = Cmd_Argv( 4 );
 
-		if ( ( !strcmp( op, "=" ) && !strcmp( v1, v2 ) ) ||
-		     ( !strcmp( op, "!=" ) && strcmp( v1, v2 ) ) )
+		if ( ( !strcmp( relation, "=" ) && !strcmp( firstString, secondString ) ) ||
+		     ( !strcmp( relation, "!=" ) && strcmp( firstString, secondString ) ) )
 		{
-			v = vt;
+			result = consequent;
 		}
-		else if ( ( !strcmp( op, "=" ) && strcmp( v1, v2 ) ) ||
-		          ( !strcmp( op, "!=" ) && !strcmp( v1, v2 ) ) )
+		else if ( ( !strcmp( relation, "=" ) && strcmp( firstString, secondString ) ) ||
+		          ( !strcmp( relation, "!=" ) && !strcmp( firstString, secondString ) ) )
 		{
 			if ( Cmd_Argc() == 6 )
 			{
-				vf = Cmd_Argv( 5 );
-				v = vf;
+				alternative = Cmd_Argv( 5 );
+				result = alternative;
 			}
 			else
 			{
@@ -985,11 +987,11 @@ void Cmd_Strcmp_f( void )
 	}
 	else
 	{
-		Com_Printf(_( "strcmp <string1> <operator> <string2> <cmdthen> (<cmdelse>) : compares the first two strings and executes <cmdthen> if true, <cmdelse> if false\n" ));
+		Com_Printf(_( "strcmp <string1> <relation> <string2> <cmdthen> (<cmdelse>) : compares the first two strings and executes <cmdthen> if true, <cmdelse> if false\n" ));
 		return;
 	}
 
-	Cbuf_InsertText( va( "%s\n", v ) );
+	Cbuf_InsertText( va( "%s\n", result ) );
 }
 
 /*
@@ -1002,7 +1004,7 @@ concatenates cvars together
 void Cmd_Concat_f( void )
 {
 	int  i;
-	char vc[ MAX_CVAR_VALUE_STRING ] = "";
+	char variableToSet[ MAX_CVAR_VALUE_STRING ] = "";
 
 	if ( Cmd_Argc() < 3 )
 	{
@@ -1012,71 +1014,72 @@ void Cmd_Concat_f( void )
 
 	for ( i = 2; i < Cmd_Argc(); i++ )
 	{
-		Q_strcat( vc, sizeof( vc ), Cvar_VariableString( Cmd_Argv( i ) ) );
+		Q_strcat( variableToSet, sizeof( variableToSet ), Cvar_VariableString( Cmd_Argv( i ) ) );
 	}
 
-	Cvar_Set( Cmd_Argv( 1 ), vc );
+	Cvar_Set( Cmd_Argv( 1 ), variableToSet );
 }
 
 /*
 ===============
 Cmd_Calc_f
 
-Does math and displays the value into the chat/console, this is used for basic math functions
+Does math and displays the value into the chat/console, this is used for basic math operations
 ===============
 */
 void Cmd_Calc_f( void )
 {
-	char *arg1;
-	char *arg2;
-	char *func;
+	char *firstOperand;
+	char *secondOperand;
+	char *operation;
 
 	if ( Cmd_Argc() < 3 )
 	{
-		Com_Printf(_( "calc <number> <function> <number>, accepted functions: +, -, /, */x\n" ));
+		Com_Printf(_( "calc <number> <operator> <number>, accepted operators: +, -, /, */x\n" ));
 		return;
 	}
 
-	arg1 = Cmd_Argv( 1 );
-	func = Cmd_Argv( 2 );
-	arg2 = Cmd_Argv( 3 );
+	firstOperand = Cmd_Argv( 1 );
+	operation = Cmd_Argv( 2 );
+	secondOperand = Cmd_Argv( 3 );
 
 	// Add
-	if ( !strcmp( func, "+" ) )
+	if ( !strcmp( operation, "+" ) )
 	{
-		Com_Printf( "%s %s %s = %f\n", arg1, func, arg2, ( atof( arg1 ) + atof( arg2 ) ) );
+		Com_Printf( "%s %s %s = %f\n", firstOperand, operation, secondOperand, ( atof( firstOperand ) + atof( secondOperand ) ) );
 		return;
 	}
 
 	// Subtract
-	else if ( !strcmp( func, "-" ) )
+	else if ( !strcmp( operation, "-" ) )
 	{
-		Com_Printf( "%s %s %s = %f\n", arg1, func, arg2, ( atof( arg1 ) - atof( arg2 ) ) );
+		Com_Printf( "%s %s %s = %f\n", firstOperand, operation, secondOperand, ( atof( firstOperand ) - atof( secondOperand ) ) );
 		return;
 	}
 
 	// Divide
-	else if ( !strcmp( func, "/" ) )
+	else if ( !strcmp( operation, "/" ) )
 	{
-		if ( atof( arg2 ) == 0.f )
+		if ( atof( secondOperand ) == 0.f )
 		{
 			Com_Printf(_( "Cannot divide by 0!\n" ));
 			return;
 		}
 
-		Com_Printf( "%s %s %s = %f\n", arg1, func, arg2, ( atof( arg1 ) / atof( arg2 ) ) );
+		Com_Printf( "%s ÷ %s = %f\n", firstOperand, secondOperand, ( atof( firstOperand ) / atof( secondOperand ) ) );
 		return;
 	}
 
 	// Multiply
-	else if ( !strcmp( func, "*" ) || !strcmp( func, "x" ) )
+	else if ( !strcmp( operation, "*" ) || !strcmp( operation, "x" ) )
 	{
-		Com_Printf( "%s %s %s = %f\n", arg1, func, arg2, ( atof( arg1 ) * atof( arg2 ) ) );
+		//note: ⨉ (n-times operator) is not x (the letter) and might have different rendering with different fonts
+		Com_Printf( "%s ⨉  %s = %f\n", firstOperand, secondOperand, ( atof( firstOperand ) * atof( secondOperand ) ) );
 		return;
 	}
 
 	// Invalid function, help the poor guy out
-	Com_Printf(_( "calc <number> <function> <number>, accepted functions: +, -, /, */x\n" ));
+	Com_Printf(_( "calc <number> <operator> <number>, accepted operators: +, -, /, */x\n" ));
 }
 
 /*
@@ -1220,23 +1223,23 @@ void Cmd_Delay_f( void )
 ===============
 Cmd_Random_f
 
-Give a random integer
+Print a random integer between minNumber and maxNumber
 ===============
 */
 void Cmd_Random_f( void )
 {
-	int v1;
-	int v2;
+	int minNumber;
+	int maxNumber;
 
 	if ( Cmd_Argc() == 4 )
 	{
-		v1 = atoi( Cmd_Argv( 2 ) );
-		v2 = atoi( Cmd_Argv( 3 ) );
-		Cvar_SetValueLatched( Cmd_Argv( 1 ), ( int )( v1 + rand() / ( double ) RAND_MAX * ( v2 - ( double ) v1 ) ) );
+		minNumber = atoi( Cmd_Argv( 2 ) );
+		maxNumber = atoi( Cmd_Argv( 3 ) );
+		Cvar_SetValueLatched( Cmd_Argv( 1 ), ( int )( minNumber + rand() / ( double ) RAND_MAX * ( maxNumber - ( double ) minNumber ) ) );
 	}
 	else
 	{
-		Com_Printf(_( "random <variableToSet> <value1> <value2>\n" ));
+		Com_Printf(_( "random <variableToSet> <minNumber> <maxNumber>\n" ));
 	}
 }
 
@@ -1479,7 +1482,6 @@ void Cmd_Alias_f( void )
 			// Reallocate the exec string
 			Z_Free( alias->exec );
 			alias->exec = CopyString( Cmd_ArgsFrom( 2 ) );
-			Cmd_AddCommand( name, Cmd_RunAlias_f );
 		}
 	}
 
