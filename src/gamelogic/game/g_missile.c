@@ -102,8 +102,9 @@ static void G_MissileTimePowerReduce( gentity_t *self, int fullPower, int halfLi
 		break;
 
 	case PR_COSINE:
-		travelled = lifetime;
-		divider = cos( travelled * M_PI / 2.0f / ( fullPower + 1 ) );
+		// curve is from -halfLife to fullPower, with a quarter-cycle being 0…fullPower
+		travelled = lifetime - halfLife;
+		divider = cos( travelled * M_PI / 2.0f / ( fullPower + 1 - halfLife ) );
 		divider = MAX( 0.0f, divider );
 		break;
 
@@ -139,7 +140,8 @@ static void G_DoMissileTimePowerReduce( gentity_t *ent )
 	}
 	else if ( !strcmp( ent->classname, "flame" ) )
 	{
-		G_MissileTimePowerReduce( ent, FLAMER_LIFETIME, g_flameFadeout.integer,
+		G_MissileTimePowerReduce( ent, FLAMER_LIFETIME,
+		                               g_flameFadeout.integer ? ( FLAMER_LIFETIME / 5 ) : 0,
 		                               PR_COSINE );
 	}
 }
