@@ -419,7 +419,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define SHOTGUN_REPEAT           1000
 #define SHOTGUN_K_SCALE          1.0f
 #define SHOTGUN_RELOAD           2000
-#define SHOTGUN_SPREAD           700
+#define SHOTGUN_SPREAD           790
 #define SHOTGUN_DMG              HDM(5)
 #define SHOTGUN_RANGE            ( 8192 * 12 )
 
@@ -449,8 +449,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define FLAMER_GAS               175 // 200->175
 #define FLAMER_REPEAT            200
 #define FLAMER_K_SCALE           2.0f
-#define FLAMER_DMG               HDM(15) // 20->15
-#define FLAMER_SPLASHDAMAGE      HDM(7) // 10->7
+#define FLAMER_DMG               HDM(14) // 20->15->14
+#define FLAMER_FLIGHTSPLASHDAMAGE HDM(1)
+#define FLAMER_SPLASHDAMAGE      HDM(6) // 10->7->6
 #define FLAMER_RADIUS            25 //  Radius lowered by 25
 #define FLAMER_SIZE              15 // missile bounding box
 #define FLAMER_LIFETIME          750.0f // Raised by 50.

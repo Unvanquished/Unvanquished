@@ -280,7 +280,7 @@ void CL_ConfigstringModified( void )
 
 	if ( index < 0 || index >= MAX_CONFIGSTRINGS )
 	{
-		Com_Error( ERR_DROP, "configstring > MAX_CONFIGSTRINGS" );
+		Com_Error( ERR_DROP, "CL_ConfigstringModified: bad index %i", index );
 	}
 
 //  s = Cmd_Argv(2);

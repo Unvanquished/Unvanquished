@@ -2955,20 +2955,6 @@ void Cmd_Buy_f( gentity_t *ent )
 			return;
 		}
 
-		//can afford this?
-		if ( BG_Upgrade( upgrade )->price > ( short ) ent->client->pers.credit )
-		{
-			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOFUNDS );
-			return;
-		}
-
-		//have space to carry this?
-		if ( BG_Upgrade( upgrade )->slots & BG_SlotsForInventory( ent->client->ps.stats ) )
-		{
-			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOSLOTS );
-			return;
-		}
-
 		// Only humans can buy stuff
 		if ( BG_Upgrade( upgrade )->team != TEAM_HUMANS )
 		{
@@ -2985,6 +2971,20 @@ void Cmd_Buy_f( gentity_t *ent )
 		if ( !BG_UpgradeAllowedInStage( upgrade, g_humanStage.integer ) || !BG_UpgradeIsAllowed( upgrade ) )
 		{
 			goto cant_buy;
+		}
+
+		//can afford this?
+		if ( BG_Upgrade( upgrade )->price > ( short ) ent->client->pers.credit )
+		{
+			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOFUNDS );
+			return;
+		}
+
+		//have space to carry this?
+		if ( BG_Upgrade( upgrade )->slots & BG_SlotsForInventory( ent->client->ps.stats ) )
+		{
+			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOSLOTS );
+			return;
 		}
 
 		if ( upgrade == UP_AMMO )

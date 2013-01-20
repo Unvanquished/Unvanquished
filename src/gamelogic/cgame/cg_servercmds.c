@@ -1092,7 +1092,7 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 
 		case SAY_PRIVMSG:
 		case SAY_TPRIVMSG:
-			CG_Printf( "%s%s[%s^7 -> %s^7]%s ^%c%s\n",
+			CG_Printf( "%s%s[%s^7 → %s^7]%s ^%c%s\n",
 			           ignore, prefix, name, cgs.clientinfo[ cg.clientNum ].name,
 			           maybeColon, color, text );
 
