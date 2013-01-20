@@ -83,7 +83,7 @@ static float G_MissileTimePowerReduce( gentity_t *self, int fullPower, int halfL
 	// allow disabling via the half-life setting
 	if ( halfLife < 1 )
 	{
-		return;
+		return 1.0f;
 	}
 
 	switch ( type )
