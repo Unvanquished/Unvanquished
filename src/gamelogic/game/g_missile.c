@@ -74,7 +74,7 @@ typedef enum {
 	PR_END             // unused; here so that we can have the comma above for C89
 } powerReduce_t;
 
-static void G_MissileTimePowerReduce( gentity_t *self, int fullPower, int halfLife, powerReduce_t type )
+static float G_MissileTimePowerReduce( gentity_t *self, int fullPower, int halfLife, powerReduce_t type )
 {
 	int lifetime = level.time - self->startTime;
 	float travelled;
@@ -111,10 +111,7 @@ static void G_MissileTimePowerReduce( gentity_t *self, int fullPower, int halfLi
 	case PR_END:; // compiler, do shut up :-)
 	}
 
-	self->damage *= divider;
-	self->splashDamage *= divider;
-
-//	Com_Printf("%s shot travelled for %dms. Power scaled to %.2f%%.\n", self->classname, (int)travelled, divider * 100.0);
+	return divider;
 }
 
 /*
@@ -124,26 +121,28 @@ G_DoMissileTimePowerReduce
 Called on missile explosion or impact if the missile is otherwise not specially handled
 ================
 */
-static void G_DoMissileTimePowerReduce( gentity_t *ent )
+static float G_DoMissileTimePowerReduce( gentity_t *ent )
 {
 	if ( !strcmp( ent->classname, "lcannon" ) )
 	{
-		G_MissileTimePowerReduce( ent, g_luciFullPowerTime.integer,
-		                               g_luciHalfLifeTime.integer,
-		                               PR_INVERSE_SQUARE );
+		return G_MissileTimePowerReduce( ent, g_luciFullPowerTime.integer,
+		                                      g_luciHalfLifeTime.integer,
+		                                      PR_INVERSE_SQUARE );
 	}
 	else if ( !strcmp( ent->classname, "pulse" ) )
 	{
-		G_MissileTimePowerReduce( ent, g_pulseFullPowerTime.integer,
-		                               g_pulseHalfLifeTime.integer,
-		                               PR_INVERSE_SQUARE );
+		return G_MissileTimePowerReduce( ent, g_pulseFullPowerTime.integer,
+		                                      g_pulseHalfLifeTime.integer,
+		                                      PR_INVERSE_SQUARE );
 	}
 	else if ( !strcmp( ent->classname, "flame" ) )
 	{
-		G_MissileTimePowerReduce( ent, FLAMER_LIFETIME,
-		                               g_flameFadeout.integer ? ( FLAMER_LIFETIME / 5 ) : 0,
-		                               PR_COSINE );
+		return G_MissileTimePowerReduce( ent, FLAMER_LIFETIME,
+		                                      g_flameFadeout.integer ? ( FLAMER_LIFETIME / 5 ) : 0,
+		                                      PR_COSINE );
 	}
+
+	return 1.0f;
 }
 
 /*
@@ -176,12 +175,11 @@ void G_ExplodeMissile( gentity_t *ent )
 
 	ent->freeAfterEvent = qtrue;
 
-	G_DoMissileTimePowerReduce( ent );
-
 	// splash damage
 	if ( ent->splashDamage )
 	{
-		G_RadiusDamage( ent->r.currentOrigin, ent->parent, ent->splashDamage,
+		G_RadiusDamage( ent->r.currentOrigin, ent->parent,
+		                ent->splashDamage * G_DoMissileTimePowerReduce( ent ),
 		                ent->splashRadius, ent, ent->splashMethodOfDeath );
 	}
 
@@ -201,6 +199,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 	gentity_t *other, *attacker;
 	qboolean  returnAfterDamage = qfalse;
 	vec3_t    dir;
+	float     power;
 
 	other = &g_entities[ trace->entityNum ];
 	attacker = &g_entities[ ent->r.ownerNum ];
@@ -288,10 +287,8 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 			}
 		}
 	}
-	else
-	{
-		G_DoMissileTimePowerReduce( ent );
-	}
+
+	power = G_DoMissileTimePowerReduce( ent );
 
 	// impact damage
 	if ( other->takedamage )
@@ -308,7 +305,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 				dir[ 2 ] = 1; // stepped on a grenade
 			}
 
-			G_Damage( other, ent, attacker, dir, ent->s.origin, ent->damage,
+			G_Damage( other, ent, attacker, dir, ent->s.origin, ent->damage * power,
 			          DAMAGE_NO_LOCDAMAGE, ent->methodOfDeath );
 		}
 	}
@@ -348,7 +345,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 	// splash damage (doesn't apply to person directly hit)
 	if ( ent->splashDamage )
 	{
-		G_RadiusDamage( trace->endpos, ent->parent, ent->splashDamage, ent->splashRadius,
+		G_RadiusDamage( trace->endpos, ent->parent, ent->splashDamage * power, ent->splashRadius,
 		                other, ent->splashMethodOfDeath );
 	}
 
