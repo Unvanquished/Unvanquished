@@ -433,8 +433,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define FLAMER_GAS               175 // 200->175
 #define FLAMER_REPEAT            200
 #define FLAMER_K_SCALE           2.0f
-#define FLAMER_DMG               HDM(15) // 20->15
-#define FLAMER_SPLASHDAMAGE      HDM(7) // 10->7
+#define FLAMER_DMG               HDM(14) // 20->15->14
+#define FLAMER_FLIGHTSPLASHDAMAGE HDM(1)
+#define FLAMER_SPLASHDAMAGE      HDM(6) // 10->7->6
 #define FLAMER_RADIUS            25 //  Radius lowered by 25
 #define FLAMER_SIZE              15 // missile bounding box
 #define FLAMER_LIFETIME          750.0f // Raised by 50.
