@@ -4291,6 +4291,15 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 		G_SetBuildableAnim( built, BANIM_CONSTRUCT1, qtrue );
 	}
 
+	if ( built->buildableTeam == TEAM_ALIENS )
+	{
+		level.alienBuildPoints -= BG_Buildable( built->s.modelindex )->buildPoints;
+	}
+	else if ( built->buildableTeam == TEAM_HUMANS )
+	{
+		level.humanBuildPoints -= BG_Buildable( built->s.modelindex )->buildPoints;
+	}
+
 	trap_LinkEntity( built );
 
 	if ( builder && builder->client )
