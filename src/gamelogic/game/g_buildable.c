@@ -1419,7 +1419,7 @@ void ALeech_Think( gentity_t *self )
 		{
 			rgs = &g_entities[ entityList[ i ] ];
 
-			if ( ( rgs->s.modelindex == BA_H_MINE || rgs->s.modelindex == BA_A_LEECH ) && rgs != self )
+			if ( rgs->s.eType == ET_BUILDABLE &&  ( rgs->s.modelindex == BA_H_MINE || rgs->s.modelindex == BA_A_LEECH ) && rgs != self )
 			{
 				float factor = Distance( self->s.origin, rgs->s.origin ) / LEECH_RANGE;
 				if ( factor < 1.0f )
@@ -2945,7 +2945,7 @@ void HMine_Think( gentity_t *self )
 		{
 			rgs = &g_entities[ entityList[ i ] ];
 
-			if ( ( rgs->s.modelindex == BA_H_MINE || rgs->s.modelindex == BA_A_LEECH ) && rgs != self )
+			if ( rgs->s.eType == ET_BUILDABLE && ( rgs->s.modelindex == BA_H_MINE || rgs->s.modelindex == BA_A_LEECH ) && rgs != self )
 			{
 				float factor = Distance( self->s.origin, rgs->s.origin ) / MINE_RANGE;
 				if ( factor < 1.0f )
