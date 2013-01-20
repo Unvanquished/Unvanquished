@@ -460,7 +460,8 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 			       tr.models[backEnd.currentEntity->e.hModel]->type == MOD_BSP ) )
 			{
 #if defined( COMPAT_Q3A ) || defined( COMPAT_ET )
-				attribBits |= ATTR_LIGHTCOORD;
+				attribBits |= ATTR_LIGHTCOORD | ATTR_AMBIENTLIGHT
+					| ATTR_DIRECTEDLIGHT | ATTR_LIGHTDIRECTION;
 #else
 				attribBits |= ATTR_LIGHTCOORD | ATTR_PAINTCOLOR | ATTR_LIGHTDIRECTION;
 #endif
@@ -551,6 +552,27 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->ofsPaintColors, tess.numVertexes * sizeof( vec4_t ), tess.paintColors );
 		}
 
+#endif
+		if ( attribBits & ATTR_AMBIENTLIGHT )
+		{
+			if ( r_logFile->integer )
+			{
+				GLimp_LogComment( va( "glBufferSubData( ATTR_AMBIENTLIGHT, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
+			}
+
+			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->ofsAmbientLight, tess.numVertexes * sizeof( vec4_t ), tess.ambientLights );
+		}
+
+		if ( attribBits & ATTR_DIRECTEDLIGHT )
+		{
+			if ( r_logFile->integer )
+			{
+				GLimp_LogComment( va( "glBufferSubData( ATTR_DIRECTEDLIGHT, vbo = '%s', numVertexes = %i )\n", tess.vbo->name, tess.numVertexes ) );
+			}
+
+			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->ofsDirectedLight, tess.numVertexes * sizeof( vec4_t ), tess.directedLights );
+		}
+
 		if ( attribBits & ATTR_LIGHTDIRECTION )
 		{
 			if ( r_logFile->integer )
@@ -561,7 +583,6 @@ void Tess_UpdateVBOs( uint32_t attribBits )
 			glBufferSubData( GL_ARRAY_BUFFER, tess.vbo->ofsLightDirections, tess.numVertexes * sizeof( vec4_t ), tess.lightDirections );
 		}
 
-#endif
 	}
 
 	GL_CheckErrors();
@@ -860,6 +881,11 @@ static void Tess_SurfacePolychain( srfPoly_t *p )
 			VectorClear( tess.tangents[ tess.numVertexes + i ] );
 			VectorClear( tess.binormals[ tess.numVertexes + i ] );
 			VectorClear( tess.normals[ tess.numVertexes + i ] );
+
+			R_LightForPoint( tess.xyz[ tess.numVertexes + i ],
+					 tess.ambientLights[ tess.numVertexes + i ],
+					 tess.directedLights[ tess.numVertexes + i ],
+					 tess.lightDirections[ tess.numVertexes + i ] );
 		}
 
 		for ( i = 0, indices = tess.indexes + tess.numIndexes; i < numIndexes; i += 3, indices += 3 )
