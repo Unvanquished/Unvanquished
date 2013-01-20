@@ -2411,6 +2411,7 @@ const vec3_t cg_shaderColors[ SHC_NUM_SHADER_COLORS ] =
 	{ 0.3f,   0.35f,    0.625f   }, // light blue
 	{ 0.0f,   0.625f,   0.563f   }, // green-cyan
 	{ 0.313f, 0.0f,     0.625f   }, // violet
+	{ 0.54f,  0.0f,     1.0f     }, // indigo
 	{ 0.625f, 0.625f,   0.0f     }, // yellow
 	{ 0.875f, 0.313f,   0.0f     }, // orange
 	{ 0.375f, 0.625f,   0.375f   }, // light green
