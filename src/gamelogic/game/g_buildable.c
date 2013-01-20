@@ -1399,7 +1399,7 @@ void ALeech_Think( gentity_t *self )
 
 	AGeneric_Think( self );
 
-	if ( self->spawned )
+	if ( self->spawned && self->powered )
 	{
 		int       entityList[ MAX_GENTITIES ];
 		vec3_t    range = { LEECH_RANGE, LEECH_RANGE, LEECH_RANGE };
@@ -2925,7 +2925,7 @@ void HMine_Think( gentity_t *self )
 	}
 
 
-	if ( self->spawned )
+	if ( self->spawned && self->powered )
 	{
 		int       entityList[ MAX_GENTITIES ];
 		vec3_t    range = { MINE_RANGE, MINE_RANGE, MINE_RANGE };
