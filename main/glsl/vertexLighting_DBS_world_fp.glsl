@@ -33,9 +33,12 @@ uniform	float		u_LightWrapAround;
 varying vec3		var_Position;
 varying vec4		var_TexDiffuseNormal;
 varying vec2		var_TexSpecular;
-varying vec4		var_LightColor;
-#if !defined(COMPAT_Q3A)
+#if defined(USE_NORMAL_MAPPING)
+//varying vec3		var_AmbientLight;
+varying vec3		var_DirectedLight;
 varying vec3		var_LightDirection;
+#else
+varying vec4		var_LightColor;
 #endif
 varying vec3		var_Tangent;
 varying vec3		var_Binormal;
@@ -114,13 +117,8 @@ void	main()
 	normalize(N);
 	#endif
 
-#if defined(COMPAT_Q3A)
-	// fake bump mapping
- 	vec3 L = N;
-#else
 	// compute light direction in tangent space
 	vec3 L = normalize(objectToTangentMatrix * var_LightDirection);
-#endif
 
  	// compute half angle in tangent space
 	vec3 H = normalize(L + V);
@@ -131,13 +129,13 @@ void	main()
 #else
 	float NL = clamp(dot(N, L), 0.0, 1.0);
 #endif
-	vec3 light = var_LightColor.rgb * NL;
+	vec3 light = /*var_AmbientLight +*/ var_DirectedLight.rgb * NL;
 
 	// compute the specular term
-	vec3 specular = texture2D(u_SpecularMap, texSpecular).rgb * var_LightColor.rgb * pow(clamp(dot(N, H), 0.0, 1.0), r_SpecularExponent) * r_SpecularScale;
+	vec3 specular = texture2D(u_SpecularMap, texSpecular).rgb * var_DirectedLight.rgb * pow(clamp(dot(N, H), 0.0, 1.0), r_SpecularExponent) * r_SpecularScale;
 
 	// compute final color
-	vec4 color = vec4(diffuse.rgb, var_LightColor.a);
+	vec4 color = vec4(diffuse.rgb, 1.0);
 	color.rgb *= light;
 	color.rgb += specular;
 

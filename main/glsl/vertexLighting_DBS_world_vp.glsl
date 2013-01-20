@@ -28,9 +28,9 @@ attribute vec3		attr_Tangent;
 attribute vec3		attr_Binormal;
 attribute vec3		attr_Normal;
 attribute vec4		attr_Color;
-#if !defined(COMPAT_Q3A)
+attribute vec3		attr_AmbientLight;
+attribute vec3		attr_DirectedLight;
 attribute vec3		attr_LightDirection;
-#endif
 
 uniform mat4		u_DiffuseTextureMatrix;
 uniform mat4		u_NormalTextureMatrix;
@@ -45,9 +45,12 @@ uniform vec4		u_Color;
 varying vec3		var_Position;
 varying vec4		var_TexDiffuseNormal;
 varying vec2		var_TexSpecular;
-varying vec4		var_LightColor;
-#if !defined(COMPAT_Q3A)
+#if defined(USE_NORMAL_MAPPING)
+//varying vec3		var_AmbientLight;
+varying vec3		var_DirectedLight;
 varying vec3		var_LightDirection;
+#else
+varying vec4		var_LightColor;
 #endif
 varying vec3		var_Tangent;
 varying vec3		var_Binormal;
@@ -81,15 +84,17 @@ void	main()
 
 	// transform specularmap texture coords
 	var_TexSpecular = (u_SpecularTextureMatrix * attr_TexCoord0).st;
-#endif
 
-#if !defined(COMPAT_Q3A)
+	// assign vertex to light vector in object space
+//	var_AmbientLight = attr_AmbientLight;
+	// assign vertex to light vector in object space
+	var_DirectedLight = attr_DirectedLight;
 	// assign vertex to light vector in object space
 	var_LightDirection = attr_LightDirection;
-#endif
-
+#else
 	// assign color
 	var_LightColor = attr_Color * u_ColorModulate + u_Color;
+#endif
 
 #if defined(USE_NORMAL_MAPPING)
 	var_Tangent = attr_Tangent;
