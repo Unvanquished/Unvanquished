@@ -1074,7 +1074,7 @@ void Cmd_Calc_f( void )
 	else if ( !strcmp( operation, "*" ) || !strcmp( operation, "x" ) )
 	{
 		//note: ⨉ (n-times operator) is not x (the letter) and might have different rendering with different fonts
-		Com_Printf( "%s ⨉  %s = %f\n", firstOperand, secondOperand, ( atof( firstOperand ) * atof( secondOperand ) ) );
+		Com_Printf( "%s ⨉ %s = %f\n", firstOperand, secondOperand, ( atof( firstOperand ) * atof( secondOperand ) ) );
 		return;
 	}
 
