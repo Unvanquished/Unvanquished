@@ -301,6 +301,22 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define HIVE_DIR_CHANGE_PERIOD  500
 #define HIVE_VALUE              ABVM(HIVE_BP)
 
+#define LEECH_BP                 0
+#define LEECH_BT                 20000
+#define LEECH_HEALTH             ABHM(200)
+#define LEECH_REGEN              10
+#define LEECH_SPLASHDAMAGE       30
+#define LEECH_SPLASHRADIUS       200
+#define LEECH_CREEPSIZE          120
+#define LEECH_RANGE              500.0f
+#define LEECH_LIFETIME           3000
+#define LEECH_REPEAT             3000
+#define LEECH_K_SCALE            1.0f
+#define LEECH_DMG                80
+#define LEECH_SPEED              320.0f
+#define LEECH_DIR_CHANGE_PERIOD  500
+#define LEECH_VALUE              ABVM(LEECH_BP)
+
 #define TRAPPER_BP              8
 #define TRAPPER_BT              12000
 #define TRAPPER_HEALTH          ABHM(50)
@@ -542,6 +558,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define MEDISTAT_SPLASHDAMAGE     50
 #define MEDISTAT_SPLASHRADIUS     100
 #define MEDISTAT_VALUE            HBVM(MEDISTAT_BP)
+
+#define MINE_BP               0
+#define MINE_BT               20000
+#define MINE_HEALTH           HBHM(200)
+#define MINE_SPLASHDAMAGE     50
+#define MINE_SPLASHRADIUS     100
+#define MINE_RANGE            500.0f
+#define MINE_VALUE            HBVM(MINE_BP)
 
 #define MGTURRET_BP               8
 #define MGTURRET_BT               10000

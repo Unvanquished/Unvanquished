@@ -291,6 +291,40 @@ static const buildableAttributes_t bg_buildableList[] =
 		0.001f, //float    radarFadeOut;
 	},
 	{
+		BA_A_LEECH, //int       number;
+		"leech", //char      *name;
+		N_( "Leech" ), //char      *humanName;
+		N_( "Leeches minerals and nutrients from the ground" ),
+		"team_alien_leech", //char      *entityName;
+		TR_GRAVITY, //trType_t  traj;
+		0.0, //float     bounce;
+		LEECH_BP, //int       buildPoints;
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		LEECH_HEALTH, //int       health;
+		LEECH_REGEN, //int       regenRate;
+		LEECH_SPLASHDAMAGE, //int       splashDamage;
+		LEECH_SPLASHRADIUS, //int       splashRadius;
+		MOD_ASPAWN, //int       meansOfDeath;
+		TEAM_ALIENS, //int       team;
+		( 1 << WP_ABUILD ) | ( 1 << WP_ABUILD2 ), //weapon_t  buildWeapon;
+		BANIM_IDLE1, //int       idleAnim;
+		500, //int       nextthink;
+		LEECH_BT, //int       buildTime;
+		qfalse, //qboolean  usable;
+		0, //int       turretRange;
+		0, //int       turretFireSpeed;
+		WP_NONE, //weapon_t  turretProjType;
+		0.0f, //float     minNormal;
+		qtrue, //qboolean  invertNormal;
+		qtrue, //qboolean  creepTest;
+		LEECH_CREEPSIZE, //int       creepSize;
+		qfalse, //qboolean  dccTest;
+		qfalse, //qboolean  transparentTest;
+		qfalse, //qboolean  uniqueTest;
+		LEECH_VALUE, //int       value;
+		0.001f, //float    radarFadeOut;
+	},
+	{
 		BA_H_SPAWN, //int       number;
 		"telenode", //char      *name;
 		N_( "Telenode" ), //char      *humanName;
@@ -505,6 +539,40 @@ static const buildableAttributes_t bg_buildableList[] =
 		qtrue, //qboolean  transparentTest;
 		qfalse, //qboolean  uniqueTest;
 		MEDISTAT_VALUE, //int       value;
+		0.0f, //float    radarFadeOut;
+	},
+	{
+		BA_H_MINE, //int       number;
+		"mine", //char      *name;
+		N_( "Mine" ), //char      *humanName;
+		N_( "A structure that mines" ),
+		"team_human_mine", //char      *entityName;
+		TR_GRAVITY, //trType_t  traj;
+		0.0, //float     bounce;
+		MINE_BP, //int       buildPoints;
+		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
+		MINE_HEALTH, //int       health;
+		0, //int       regenRate;
+		MINE_SPLASHDAMAGE, //int       splashDamage;
+		MINE_SPLASHRADIUS, //int       splashRadius;
+		MOD_HSPAWN, //int       meansOfDeath;
+		TEAM_HUMANS, //int       team;
+		( 1 << WP_HBUILD ), //weapon_t  buildWeapon;
+		BANIM_IDLE1, //int       idleAnim;
+		500, //int       nextthink;
+		MINE_BT, //int       buildTime;
+		qfalse, //qboolean  usable;
+		0, //int       turretRange;
+		0, //int       turretFireSpeed;
+		WP_NONE, //weapon_t  turretProjType;
+		0.95f, //float     minNormal;
+		qfalse, //qboolean  invertNormal;
+		qfalse, //qboolean  creepTest;
+		0, //int       creepSize;
+		qfalse, //qboolean  dccTest;
+		qtrue, //qboolean  transparentTest;
+		qfalse, //qboolean  uniqueTest;
+		MINE_VALUE, //int       value;
 		0.0f, //float    radarFadeOut;
 	},
 	{

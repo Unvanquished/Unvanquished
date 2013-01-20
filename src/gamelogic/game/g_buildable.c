@@ -179,7 +179,7 @@ qboolean G_FindPower( gentity_t *self, qboolean searchUnspawned )
 	int       minDistance = REPEATER_BASESIZE + 1;
 	vec3_t    temp_v;
 
-	int buildPoints = g_humanBuildPoints.integer;
+	int buildPoints = 0;
 
 	if ( self->buildableTeam != TEAM_HUMANS )
 	{
@@ -220,14 +220,9 @@ qboolean G_FindPower( gentity_t *self, qboolean searchUnspawned )
 			// Always prefer a reactor if there is one in range
 			if ( ent->s.modelindex == BA_H_REACTOR && distance <= REACTOR_BASESIZE )
 			{
-				// Only power as much BP as the reactor can hold
-				if ( self->s.modelindex != BA_NONE )
+				// Only power as much BP as the reactor can hold (with resources, only limit is resources which are determined at build time.
+				if ( qfalse /*self->s.modelindex != BA_NONE*/ )
 				{
-					if ( g_humanRepeaterBuildPoints.integer )
-					{
-						buildPoints = g_humanBuildPoints.integer;
-					}
-
 					// Scan the buildables in the reactor zone
 					for ( j = MAX_CLIENTS, ent2 = g_entities + j; j < level.num_entities; j++, ent2++ )
 					{
@@ -246,8 +241,6 @@ qboolean G_FindPower( gentity_t *self, qboolean searchUnspawned )
 							buildPoints -= BG_Buildable( ent2->s.modelindex )->buildPoints;
 						}
 					}
-
-					buildPoints -= level.humanBuildPointQueue;
 
 					buildPoints -= BG_Buildable( self->s.modelindex )->buildPoints;
 
@@ -421,21 +414,6 @@ int G_GetBuildPoints( const vec3_t pos, team_t team )
 	}
 	else if ( team == TEAM_HUMANS )
 	{
-		gentity_t *powerPoint = G_PowerEntityForPoint( pos );
-
-		if ( !g_humanRepeaterBuildPoints.integer || powerPoint && powerPoint->s.modelindex == BA_H_REACTOR )
-		{
-			return level.humanBuildPoints;
-		}
-
-		if ( powerPoint && powerPoint->s.modelindex == BA_H_REPEATER &&
-		     powerPoint->usesBuildPointZone && level.buildPointZones[ powerPoint->buildPointZone ].active )
-		{
-			return level.buildPointZones[ powerPoint->buildPointZone ].totalBuildPoints -
-			       level.buildPointZones[ powerPoint->buildPointZone ].queuedBuildPoints;
-		}
-
-		// Return the BP of the main zone by default
 		return level.humanBuildPoints;
 	}
 
@@ -862,7 +840,6 @@ void AGeneric_CreepRecede( gentity_t *self )
 	if ( !( self->s.eFlags & EF_DEAD ) )
 	{
 		self->s.eFlags |= EF_DEAD;
-		G_QueueBuildPoints( self );
 
 		G_RewardAttackers( self );
 
@@ -1412,6 +1389,54 @@ void AAcidTube_Think( gentity_t *self )
 
 /*
 ================
+ALeech_Think
+
+Think function for the Alien Leech.
+================
+*/
+void ALeech_Think( gentity_t *self )
+{
+
+	AGeneric_Think( self );
+
+	if ( self->spawned )
+	{
+		int       entityList[ MAX_GENTITIES ];
+		vec3_t    range = { LEECH_RANGE, LEECH_RANGE, LEECH_RANGE };
+		vec3_t    mins, maxs;
+		int       i, num;
+		float     rate;
+		gentity_t *rgs;
+
+		rate = g_mineRate.value;
+
+		VectorAdd( self->s.origin, range, maxs );
+		VectorSubtract( self->s.origin, range, mins );
+
+		// Check for nearby resource generators for rate adjustments
+		num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
+		for ( i = 0; i < num; i++ )
+		{
+			rgs = &g_entities[ entityList[ i ] ];
+
+			if ( ( rgs->s.modelindex == BA_H_MINE || rgs->s.modelindex == BA_A_LEECH ) && rgs != self )
+			{
+				float factor = Distance( self->s.origin, rgs->s.origin ) / LEECH_RANGE;
+				if ( factor < 1.0f )
+				{
+					rate *= 0.1f / sqrt( -factor + 1 );
+				}
+			}
+		}
+
+		level.queuedAlienPoints += rate;
+	}
+}
+
+//==================================================================================
+
+/*
+================
 AHive_CheckTarget
 
 Returns true and fires the hive missile if the target is valid
@@ -1869,7 +1894,6 @@ think function
 void HSpawn_Disappear( gentity_t *self )
 {
 	self->timestamp = level.time;
-	G_QueueBuildPoints( self );
 	G_RewardAttackers( self );
 
 	G_FreeEntity( self );
@@ -1898,8 +1922,8 @@ void HSpawn_Blast( gentity_t *self )
 	                self->splashRadius, self, self->splashMethodOfDeath );
 
 	// begin freeing build points
-	G_QueueBuildPoints( self );
 	G_RewardAttackers( self );
+
 	// turn into an explosion
 	self->s.eType = ET_EVENTS + EV_HUMAN_BUILDABLE_EXPLOSION;
 	self->freeAfterEvent = qtrue;
@@ -2881,6 +2905,63 @@ void HTeslaGen_Think( gentity_t *self )
 //==================================================================================
 
 /*
+================
+HMine_Think
+
+Think function for the Alien Leech.
+================
+*/
+void HMine_Think( gentity_t *self )
+{
+
+	//make sure we have power
+	self->nextthink = level.time + BG_Buildable( self->s.modelindex )->nextthink;
+
+	self->powered = G_FindPower( self, qfalse );
+
+	if ( G_SuicideIfNoPower( self ) )
+	{
+		return;
+	}
+
+
+	if ( self->spawned )
+	{
+		int       entityList[ MAX_GENTITIES ];
+		vec3_t    range = { MINE_RANGE, MINE_RANGE, MINE_RANGE };
+		vec3_t    mins, maxs;
+		int       i, num;
+		float     rate;
+		gentity_t *rgs;
+
+		rate = g_mineRate.value;
+
+		VectorAdd( self->s.origin, range, maxs );
+		VectorSubtract( self->s.origin, range, mins );
+
+		// Check for nearby resource generators for rate adjustments
+		num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
+		for ( i = 0; i < num; i++ )
+		{
+			rgs = &g_entities[ entityList[ i ] ];
+
+			if ( ( rgs->s.modelindex == BA_H_MINE || rgs->s.modelindex == BA_A_LEECH ) && rgs != self )
+			{
+				float factor = Distance( self->s.origin, rgs->s.origin ) / MINE_RANGE;
+				if ( factor < 1.0f )
+				{
+					rate *= 0.1f / sqrt( -factor + 1 );
+				}
+			}
+		}
+
+		level.queuedHumanPoints += rate;
+	}
+}
+
+//==================================================================================
+
+/*
 ============
 G_QueueValue
 ============
@@ -2916,107 +2997,6 @@ static int G_QueueValue( gentity_t *self )
 
 	queuePoints = ( int )( queueFraction * BG_Buildable( self->s.modelindex )->buildPoints );
 	return queuePoints;
-}
-
-/*
-============
-G_QueueBuildPoints
-============
-*/
-void G_QueueBuildPoints( gentity_t *self )
-{
-	gentity_t *powerEntity;
-	int       queuePoints;
-
-	queuePoints = G_QueueValue( self );
-
-	if ( !queuePoints )
-	{
-		return;
-	}
-
-	switch ( self->buildableTeam )
-	{
-		default:
-		case TEAM_NONE:
-			return;
-
-		case TEAM_ALIENS:
-			if ( !level.alienBuildPointQueue )
-			{
-				level.alienNextQueueTime = level.time + g_alienBuildQueueTime.integer;
-			}
-
-			level.alienBuildPointQueue += queuePoints;
-			break;
-
-		case TEAM_HUMANS:
-			powerEntity = G_PowerEntityForEntity( self );
-
-			if ( powerEntity )
-			{
-				int nqt;
-
-				switch ( powerEntity->s.modelindex )
-				{
-					case BA_H_REACTOR:
-						nqt = G_NextQueueTime( level.humanBuildPointQueue,
-						                       g_humanBuildPoints.integer,
-						                       g_humanBuildQueueTime.integer );
-
-						if ( !level.humanBuildPointQueue ||
-						     level.time + nqt < level.humanNextQueueTime )
-						{
-							level.humanNextQueueTime = level.time + nqt;
-						}
-
-						level.humanBuildPointQueue += queuePoints;
-						break;
-
-					case BA_H_REPEATER:
-						if ( powerEntity->usesBuildPointZone &&
-						     level.buildPointZones[ powerEntity->buildPointZone ].active )
-						{
-							buildPointZone_t *zone = &level.buildPointZones[ powerEntity->buildPointZone ];
-
-							nqt = G_NextQueueTime( zone->queuedBuildPoints,
-							                       zone->totalBuildPoints,
-							                       g_humanRepeaterBuildQueueTime.integer );
-
-							if ( !zone->queuedBuildPoints ||
-							     level.time + nqt < zone->nextQueueTime )
-							{
-								zone->nextQueueTime = level.time + nqt;
-							}
-
-							zone->queuedBuildPoints += queuePoints;
-						}
-
-						break;
-
-					default:
-						break;
-				}
-			}
-	}
-}
-
-/*
-============
-G_NextQueueTime
-============
-*/
-int G_NextQueueTime( int queuedBP, int totalBP, int queueBaseRate )
-{
-	float fractionQueued;
-
-	if ( totalBP == 0 )
-	{
-		return 0;
-	}
-
-	fractionQueued = queuedBP / ( float ) totalBP;
-	return ( 1.0f - fractionQueued ) * queueBaseRate;
 }
 
 /*
@@ -4181,6 +4161,12 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 			built->pain = AGeneric_Pain;
 			break;
 
+		case BA_A_LEECH:
+			built->die = AGeneric_Die;
+			built->think = ALeech_Think;
+			built->pain = AGeneric_Pain;
+			break;
+
 		case BA_A_OVERMIND:
 			built->die = AGeneric_Die;
 			built->think = AOvermind_Think;
@@ -4216,6 +4202,11 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 		case BA_H_MEDISTAT:
 			built->think = HMedistat_Think;
 			built->die = HMedistat_Die;
+			break;
+
+		case BA_H_MINE:
+			built->think = HMine_Think;
+			built->die = HSpawn_Die;
 			break;
 
 		case BA_H_REACTOR:
@@ -5033,31 +5024,18 @@ void G_BuildLogRevert( int id )
 			{
 				int value = log->powerValue;
 
-				if ( BG_Buildable( log->modelindex )->team == TEAM_ALIENS )
+				if ( log->powerSource == BA_H_REPEATER )
 				{
-					level.alienBuildPointQueue =
-					  MAX( 0, level.alienBuildPointQueue - value );
-				}
-				else
-				{
-					if ( log->powerSource == BA_H_REACTOR )
-					{
-						level.humanBuildPointQueue =
-						  MAX( 0, level.humanBuildPointQueue - value );
-					}
-					else if ( log->powerSource == BA_H_REPEATER )
-					{
-						gentity_t        *source;
-						buildPointZone_t *zone;
+					gentity_t        *source;
+					buildPointZone_t *zone;
 
-						source = G_PowerEntityForPoint( log->origin );
+					source = G_PowerEntityForPoint( log->origin );
 
-						if ( source && source->usesBuildPointZone )
-						{
-							zone = &level.buildPointZones[ source->buildPointZone ];
-							zone->queuedBuildPoints =
-							  MAX( 0, zone->queuedBuildPoints - value );
-						}
+					if ( source && source->usesBuildPointZone )
+					{
+						zone = &level.buildPointZones[ source->buildPointZone ];
+						zone->queuedBuildPoints =
+							MAX( 0, zone->queuedBuildPoints - value );
 					}
 				}
 			}

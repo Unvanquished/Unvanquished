@@ -626,12 +626,11 @@ typedef struct
 	int              numLiveAlienClients;
 	int              numLiveHumanClients;
 
+	int              totalResources;
 	int              alienBuildPoints;
-	int              alienBuildPointQueue;
-	int              alienNextQueueTime;
+	float            queuedAlienPoints;
 	int              humanBuildPoints;
-	int              humanBuildPointQueue;
-	int              humanNextQueueTime;
+	float            queuedHumanPoints;
 
 	buildPointZone_t *buildPointZones;
 
@@ -1138,10 +1137,8 @@ extern  vmCvar_t pmove_fixed;
 extern  vmCvar_t pmove_msec;
 extern  vmCvar_t pmove_accurate;
 
-extern  vmCvar_t g_alienBuildPoints;
-extern  vmCvar_t g_alienBuildQueueTime;
-extern  vmCvar_t g_humanBuildPoints;
-extern  vmCvar_t g_humanBuildQueueTime;
+extern  vmCvar_t g_mineRate;
+extern  vmCvar_t g_totalResources;
 extern  vmCvar_t g_humanRepeaterBuildPoints;
 extern  vmCvar_t g_humanRepeaterBuildQueueTime;
 extern  vmCvar_t g_humanRepeaterMaxZones;

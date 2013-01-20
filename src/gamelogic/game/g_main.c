@@ -95,10 +95,8 @@ vmCvar_t           pmove_accurate;
 vmCvar_t           g_minNameChangePeriod;
 vmCvar_t           g_maxNameChanges;
 
-vmCvar_t           g_alienBuildPoints;
-vmCvar_t           g_alienBuildQueueTime;
-vmCvar_t           g_humanBuildPoints;
-vmCvar_t           g_humanBuildQueueTime;
+vmCvar_t           g_mineRate;
+vmCvar_t           g_totalResources;
 vmCvar_t           g_humanRepeaterBuildPoints;
 vmCvar_t           g_humanRepeaterBuildQueueTime;
 vmCvar_t           g_humanRepeaterMaxZones;
@@ -258,10 +256,8 @@ static cvarTable_t gameCvarTable[] =
 	{ &pmove_fixed,                   "pmove_fixed",                   "0",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 	{ &pmove_msec,                    "pmove_msec",                    "8",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 	{ &pmove_accurate,                "pmove_accurate",                "0",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
-	{ &g_alienBuildPoints,            "g_alienBuildPoints",            DEFAULT_ALIEN_BUILDPOINTS,          0,                                               0, qfalse, cv_alienBuildPoints},
-	{ &g_alienBuildQueueTime,         "g_alienBuildQueueTime",         DEFAULT_ALIEN_QUEUE_TIME,           CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_humanBuildPoints,            "g_humanBuildPoints",            DEFAULT_HUMAN_BUILDPOINTS,          0,                                               0, qfalse, cv_humanBuildPoints},
-	{ &g_humanBuildQueueTime,         "g_humanBuildQueueTime",         DEFAULT_HUMAN_QUEUE_TIME,           CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_mineRate,                    "g_mineRate",                    "1",                                CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_totalResources,              "g_totalResources",              "1000",                                CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_humanRepeaterBuildPoints,    "g_humanRepeaterBuildPoints",    DEFAULT_HUMAN_REPEATER_BUILDPOINTS, CVAR_ARCHIVE,                                    0, qfalse, cv_humanRepeaterBuildPoints},
 	{ &g_humanRepeaterMaxZones,       "g_humanRepeaterMaxZones",       DEFAULT_HUMAN_REPEATER_MAX_ZONES,   CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_humanRepeaterBuildQueueTime, "g_humanRepeaterBuildQueueTime", DEFAULT_HUMAN_REPEATER_QUEUE_TIME,  CVAR_ARCHIVE,                                    0, qfalse           },
@@ -1281,25 +1277,8 @@ void G_CalculateBuildPoints( void )
 {
 	int              i;
 	buildable_t      buildable;
-
-	// BP queue updates
-	while ( level.alienBuildPointQueue > 0 &&
-	        level.alienNextQueueTime < level.time )
-	{
-		level.alienBuildPointQueue--;
-		level.alienNextQueueTime += G_NextQueueTime( level.alienBuildPointQueue,
-		                            g_alienBuildPoints.integer,
-		                            g_alienBuildQueueTime.integer );
-	}
-
-	while ( level.humanBuildPointQueue > 0 &&
-	        level.humanNextQueueTime < level.time )
-	{
-		level.humanBuildPointQueue--;
-		level.humanNextQueueTime += G_NextQueueTime( level.humanBuildPointQueue,
-		                            g_humanBuildPoints.integer,
-		                            g_humanBuildQueueTime.integer );
-	}
+	static int       lastTimeAdded = 0;
+	static int       lastTotalResourcesModificationCount = -1;
 
 	// Sudden Death checks
 	if ( G_TimeTilSuddenDeath() <= 0 && level.suddenDeathWarning < TW_PASSED )
@@ -1328,9 +1307,6 @@ void G_CalculateBuildPoints( void )
 		                                G_TimeTilSuddenDeath() / 1000 ) );
 		level.suddenDeathWarning = TW_IMMINENT;
 	}
-
-	level.humanBuildPoints = g_humanBuildPoints.integer - level.humanBuildPointQueue;
-	level.alienBuildPoints = g_alienBuildPoints.integer - level.alienBuildPointQueue;
 
 	// Reset buildPointZones
 	for ( i = 0; i < g_humanRepeaterMaxZones.integer; i++ )
@@ -1363,26 +1339,13 @@ void G_CalculateBuildPoints( void )
 			zone->active = qtrue;
 		}
 
-		// Subtract the BP from the appropriate pool
-		buildable = ent->s.modelindex;
-		cost = BG_Buildable( buildable )->buildPoints;
-
-		if ( ent->buildableTeam == TEAM_ALIENS )
-		{
-			level.alienBuildPoints -= cost;
-		}
-
-		if ( buildable == BA_H_REPEATER )
-		{
-			level.humanBuildPoints -= cost;
-		}
-		else if ( buildable != BA_H_REACTOR )
+		if ( buildable != BA_H_REACTOR )
 		{
 			gentity_t *power = G_PowerEntityForEntity( ent );
 
 			if ( power )
 			{
-				if ( !g_humanRepeaterBuildPoints.integer || power->s.modelindex == BA_H_REACTOR )
+				if ( !g_humanRepeaterBuildPoints.integer )
 				{
 					level.humanBuildPoints -= cost;
 				}
@@ -1416,23 +1379,7 @@ void G_CalculateBuildPoints( void )
 		if ( ent->usesBuildPointZone && level.buildPointZones[ ent->buildPointZone ].active )
 		{
 			buildPointZone_t *zone = &level.buildPointZones[ ent->buildPointZone ];
-
-			if ( G_TimeTilSuddenDeath() > 0 )
-			{
-				// BP queue updates
-				while ( zone->queuedBuildPoints > 0 &&
-				        zone->nextQueueTime < level.time )
-				{
-					zone->queuedBuildPoints--;
-					zone->nextQueueTime += G_NextQueueTime( zone->queuedBuildPoints,
-					                                        zone->totalBuildPoints,
-					                                        g_humanRepeaterBuildQueueTime.integer );
-				}
-			}
-			else
-			{
-				zone->totalBuildPoints = zone->queuedBuildPoints = 0;
-			}
+			zone->totalBuildPoints = zone->queuedBuildPoints = 0;
 		}
 	}
 
@@ -1444,6 +1391,32 @@ void G_CalculateBuildPoints( void )
 	if ( level.alienBuildPoints < 0 )
 	{
 		level.alienBuildPoints = 0;
+	}
+
+	if ( g_totalResources.modificationCount != lastTotalResourcesModificationCount )
+	{
+		lastTotalResourcesModificationCount = g_totalResources.modificationCount;
+		level.totalResources = g_totalResources.integer;
+	}
+
+	// Add queued resources every second.
+	if ( level.time >= lastTimeAdded + 1000 && ( level.totalResources - level.queuedAlienPoints - level.queuedHumanPoints > 0 ) )
+	{
+		if ( (int) level.queuedHumanPoints )
+		{
+			level.humanBuildPoints += (int) level.queuedHumanPoints;
+			level.totalResources -= (int) level.queuedHumanPoints;
+			level.queuedHumanPoints = 0;
+		}
+
+		if ( (int) level.queuedAlienPoints )
+		{
+			level.alienBuildPoints += (int) level.queuedAlienPoints;
+			level.totalResources -= (int) level.queuedAlienPoints;
+			level.queuedAlienPoints = 0;
+		}
+
+		lastTimeAdded = level.time;
 	}
 }
 
@@ -2747,7 +2720,7 @@ void G_RunFrame( int levelTime )
 
 	// generate public-key messages
 	G_admin_pubkey();
-	
+
 
 	// get any cvar changes
 	G_UpdateCvars();
