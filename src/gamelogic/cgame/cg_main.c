@@ -500,16 +500,16 @@ static void CG_SetUIVars( void )
 	switch ( ps->stats[ STAT_TEAM ] )
 	{
 		case TEAM_NONE:
-			trap_Cvar_Set( "p_teamname", "^3Spectator" );
+			trap_Cvar_Set( "p_teamname", "Spectator" );
 			return;
 
 		case TEAM_ALIENS:
-			trap_Cvar_Set( "p_teamname", "^1Alien" );
+			trap_Cvar_Set( "p_teamname", "Alien" );
 			trap_Cvar_Set( "p_stage", va( "%d", cgs.alienStage ) );
 			break;
 
 		case TEAM_HUMANS:
-			trap_Cvar_Set( "p_teamname", "^4Human" );
+			trap_Cvar_Set( "p_teamname", "Human" );
 			trap_Cvar_Set( "p_stage", va( "%d", cgs.humanStage ) );
 			break;
 	}
