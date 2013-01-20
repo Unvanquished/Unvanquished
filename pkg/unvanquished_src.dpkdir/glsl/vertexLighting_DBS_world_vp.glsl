@@ -44,9 +44,9 @@ uniform vec4		u_Color;
 
 varying vec3		var_Position;
 varying vec4		var_TexDiffuseNormal;
-varying vec2		var_TexSpecular;
+//varying vec2		var_TexSpecular;
 #if defined(USE_NORMAL_MAPPING)
-//varying vec3		var_AmbientLight;
+varying vec3		var_AmbientLight;
 varying vec3		var_DirectedLight;
 varying vec3		var_LightDirection;
 #else
@@ -83,10 +83,10 @@ void	main()
 	var_TexDiffuseNormal.pq = (u_NormalTextureMatrix * attr_TexCoord0).st;
 
 	// transform specularmap texture coords
-	var_TexSpecular = (u_SpecularTextureMatrix * attr_TexCoord0).st;
+//	var_TexSpecular = (u_SpecularTextureMatrix * attr_TexCoord0).st;
 
 	// assign vertex to light vector in object space
-//	var_AmbientLight = attr_AmbientLight;
+	var_AmbientLight = attr_AmbientLight;
 	// assign vertex to light vector in object space
 	var_DirectedLight = attr_DirectedLight;
 	// assign vertex to light vector in object space

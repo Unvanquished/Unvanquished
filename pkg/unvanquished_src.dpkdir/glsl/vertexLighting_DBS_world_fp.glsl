@@ -32,9 +32,9 @@ uniform	float		u_LightWrapAround;
 
 varying vec3		var_Position;
 varying vec4		var_TexDiffuseNormal;
-varying vec2		var_TexSpecular;
+//varying vec2		var_TexSpecular;
 #if defined(USE_NORMAL_MAPPING)
-//varying vec3		var_AmbientLight;
+varying vec3		var_AmbientLight;
 varying vec3		var_DirectedLight;
 varying vec3		var_LightDirection;
 #else
@@ -73,7 +73,7 @@ void	main()
 
 	vec2 texDiffuse = var_TexDiffuseNormal.st;
 	vec2 texNormal = var_TexDiffuseNormal.pq;
-	vec2 texSpecular = var_TexSpecular.st;
+	vec2 texSpecular = texNormal; //var_TexSpecular.st;
 
 #if defined(USE_PARALLAX_MAPPING)
 
@@ -118,7 +118,7 @@ void	main()
 	#endif
 
 	// compute light direction in tangent space
-	vec3 L = normalize(objectToTangentMatrix * var_LightDirection);
+	vec3 L = normalize(objectToTangentMatrix * -var_LightDirection);
 
  	// compute half angle in tangent space
 	vec3 H = normalize(L + V);
@@ -129,7 +129,7 @@ void	main()
 #else
 	float NL = clamp(dot(N, L), 0.0, 1.0);
 #endif
-	vec3 light = /*var_AmbientLight +*/ var_DirectedLight.rgb * NL;
+	vec3 light = var_AmbientLight + var_DirectedLight.rgb * NL;
 
 	// compute the specular term
 	vec3 specular = texture2D(u_SpecularMap, texSpecular).rgb * var_DirectedLight.rgb * pow(clamp(dot(N, H), 0.0, 1.0), r_SpecularExponent) * r_SpecularScale;
