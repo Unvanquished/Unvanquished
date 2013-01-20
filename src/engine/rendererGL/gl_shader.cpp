@@ -1349,10 +1349,16 @@ void GLShader::BindAttribLocations( GLuint program ) const
 #if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
 	//if(attribs & ATTR_PAINTCOLOR)
 	glBindAttribLocation( program, ATTR_INDEX_PAINTCOLOR, "attr_PaintColor" );
+#endif
+
+	//if(attribs & ATTR_AMBIENTLIGHT)
+	glBindAttribLocation( program, ATTR_INDEX_AMBIENTLIGHT, "attr_AmbientLight" );
+
+	//if(attribs & ATTR_DIRECTEDLIGHT)
+	glBindAttribLocation( program, ATTR_INDEX_DIRECTEDLIGHT, "attr_DirectedLight" );
 
 	//if(attribs & ATTR_LIGHTDIRECTION)
 	glBindAttribLocation( program, ATTR_INDEX_LIGHTDIRECTION, "attr_LightDirection" );
-#endif
 
 	//if(glConfig2.vboVertexSkinningAvailable)
 	{
@@ -1606,9 +1612,7 @@ void GLShader_vertexLighting_DBS_entity::SetShaderProgramUniforms( shaderProgram
 GLShader_vertexLighting_DBS_world::GLShader_vertexLighting_DBS_world() :
 	GLShader( "vertexLighting_DBS_world",
 	          ATTR_POSITION | ATTR_TEXCOORD | ATTR_NORMAL | ATTR_COLOR
-#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-	          | ATTR_LIGHTDIRECTION
-#endif
+	          | ATTR_AMBIENTLIGHT | ATTR_DIRECTEDLIGHT | ATTR_LIGHTDIRECTION
 	        ),
 	u_DiffuseTextureMatrix( this ),
 	u_NormalTextureMatrix( this ),

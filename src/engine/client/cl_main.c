@@ -151,6 +151,7 @@ cvar_t                 *cl_consoleFont;
 cvar_t                 *cl_consoleFontSize;
 cvar_t                 *cl_consoleFontKerning;
 cvar_t                 *cl_consolePrompt;
+cvar_t                 *cl_consoleCommand; //see also com_consoleCommand for terminal consoles
 
 struct rsa_public_key  public_key;
 struct rsa_private_key private_key;
@@ -166,6 +167,8 @@ cvar_t             *cl_aviMotionJpeg;
 // XreaL END
 
 cvar_t             *cl_allowPaste;
+
+cvar_t             *cl_rate;
 
 clientActive_t     cl;
 clientConnection_t clc;
@@ -554,6 +557,26 @@ void CL_CaptureVoip( void )
 	}
 
 #endif
+
+	// If your data rate is too low, you'll get Connection Interrupted warnings
+	//  when VoIP packets arrive, even if you have a broadband connection.
+	//  This might work on rates lower than 25000, but for safety's sake, we'll
+	//  just demand it. Who doesn't have at least a DSL line now, anyhow? If
+	//  you don't, you don't need VoIP.  :)
+	if ( cl_voip->modified || cl_rate->modified )
+	{
+		if ( ( cl_voip->integer ) && ( Cvar_VariableIntegerValue( "rate" ) < 25000 ) )
+		{
+			Com_Printf( S_COLOR_YELLOW"%s",
+				    _( "Your network rate is too slow for VoIP.\n"
+				       "Set 'Data Rate' to 'LAN/Cable/xDSL' in 'Setup/System/Network' and restart.\n"
+				       "Until then, VoIP is disabled.\n" ));
+			Cvar_Set( "cl_voip", "0" );
+		}
+
+		cl_voip->modified = qfalse;
+		cl_rate->modified = qfalse;
+	}
 
 	if ( !clc.speexInitialized )
 	{
@@ -4470,6 +4493,7 @@ void CL_Init( void )
 	cl_consoleFontSize = Cvar_Get( "cl_consoleFontSize", "16", CVAR_ARCHIVE | CVAR_LATCH );
 	cl_consoleFontKerning = Cvar_Get( "cl_consoleFontKerning", "0", CVAR_ARCHIVE );
 	cl_consolePrompt = Cvar_Get( "cl_consolePrompt", "^3->", CVAR_ARCHIVE );
+	cl_consoleCommand = Cvar_Get( "cl_consoleCommand", "say", CVAR_ARCHIVE );
 
 	cl_gamename = Cvar_Get( "cl_gamename", GAMENAME_FOR_MASTER, CVAR_TEMP );
 	cl_altTab = Cvar_Get( "cl_altTab", "1", CVAR_ARCHIVE );
@@ -4489,7 +4513,7 @@ void CL_Init( void )
 	Cvar_Get( "cl_maxPing", "800", CVAR_ARCHIVE );
 	// userinfo
 	Cvar_Get( "name", UNNAMED_PLAYER, CVAR_USERINFO | CVAR_ARCHIVE );
-	Cvar_Get( "rate", "25000", CVAR_USERINFO | CVAR_ARCHIVE );
+	cl_rate = Cvar_Get( "rate", "25000", CVAR_USERINFO | CVAR_ARCHIVE );
 	Cvar_Get( "snaps", "40", CVAR_USERINFO | CVAR_ARCHIVE );
 //  Cvar_Get ("sex", "male", CVAR_USERINFO | CVAR_ARCHIVE );
 
@@ -4511,22 +4535,9 @@ void CL_Init( void )
 	cl_voipShowSender = Cvar_Get( "cl_voipShowSender", "1", CVAR_ARCHIVE );
 
 	// This is a protocol version number.
-	cl_voip = Cvar_Get( "cl_voip", "1", CVAR_USERINFO | CVAR_ARCHIVE | CVAR_LATCH );
+	cl_voip = Cvar_Get( "cl_voip", "1", CVAR_USERINFO | CVAR_ARCHIVE );
 	Cvar_CheckRange( cl_voip, 0, 1, qtrue );
 
-	// If your data rate is too low, you'll get Connection Interrupted warnings
-	//  when VoIP packets arrive, even if you have a broadband connection.
-	//  This might work on rates lower than 25000, but for safety's sake, we'll
-	//  just demand it. Who doesn't have at least a DSL line now, anyhow? If
-	//  you don't, you don't need VoIP.  :)
-	if ( ( cl_voip->integer ) && ( Cvar_VariableIntegerValue( "rate" ) < 25000 ) )
-	{
-		Com_Printf( S_COLOR_YELLOW"%s",
-		            _( "Your network rate is too slow for VoIP.\n"
-		               "Set 'Data Rate' to 'LAN/Cable/xDSL' in 'Setup/System/Network' and restart.\n"
-		               "Until then, VoIP is disabled.\n" ));
-		Cvar_Set( "cl_voip", "0" );
-	}
 
 #endif
 

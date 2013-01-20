@@ -486,6 +486,13 @@ Examine the serverinfo string
 */
 static void SV_Serverinfo_f( void )
 {
+	// make sure server is running
+	if ( !com_sv_running->integer )
+	{
+		Com_Printf(_( "Server is not running.\n" ));
+		return;
+	}
+
 	Com_Printf(_( "Server info settings:\n" ));
 	Info_Print( Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE ) );
 }
@@ -499,6 +506,13 @@ Examine the systeminfo string
 */
 static void SV_Systeminfo_f( void )
 {
+	// make sure server is running
+	if ( !com_sv_running->integer )
+	{
+		Com_Printf(_( "Server is not running.\n" ));
+		return;
+	}
+
 	Com_Printf(_( "System info settings:\n" ));
 	Info_Print( Cvar_InfoString( CVAR_SYSTEMINFO | CVAR_SERVERINFO_NOUPDATE ) );
 }

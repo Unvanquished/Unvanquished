@@ -129,12 +129,6 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 	},
 
 	{
-		"gametimelimit", G_admin_timelimit,  qfalse, NULL, // but setting requires "gametimelimit"
-		N_("change the time limit for the current game"),
-		N_("[^3minutes^7]")
-	},
-
-	{
 		"flag",          G_admin_flag,       qfalse, "flag",
 		N_("add an admin flag to a player, prefix flag with '-' to disallow the flag. "
 		   "console can use this command on admin levels by prefacing a '*' to the admin level value."),
@@ -145,6 +139,12 @@ static const g_admin_cmd_t     g_admin_cmds[] =
 		"flaglist",      G_admin_flaglist,   qfalse, "flag",
 		N_("list the flags understood by this server"),
 		""
+	},
+
+	{
+		"gametimelimit", G_admin_timelimit,  qfalse, NULL, // but setting requires "gametimelimit"
+		N_("change the time limit for the current game"),
+		N_("[^3minutes^7]")
 	},
 
 	{
@@ -504,8 +504,16 @@ static qboolean admin_permission( char *flags, const char *flag, qboolean *perm 
 
 g_admin_cmd_t *G_admin_cmd( const char *cmd )
 {
-	return bsearch( cmd, g_admin_cmds, adminNumCmds, sizeof( g_admin_cmd_t ),
-	                cmdcmp );
+	const g_admin_cmd_t *cmds = g_admin_cmds;
+	int count = adminNumCmds;
+
+	while ( count && !cmds->keyword )
+	{
+		++cmds;
+		--count;
+	}
+
+	return bsearch( cmd, cmds, count, sizeof( g_admin_cmd_t ), cmdcmp );
 }
 
 g_admin_level_t *G_admin_level( const int l )
@@ -2064,11 +2072,39 @@ qboolean G_admin_readconfig( gentity_t *ent )
 qboolean G_admin_time( gentity_t *ent )
 {
 	qtime_t qt;
+	int gameDuration, timelimitTime, gameMinutes, gameSeconds, remainingMinutes, remainingSeconds;
 
 	trap_RealTime( &qt );
 
-	ADMP( va( "%s %02i %02i %02i", QQ( N_("^3time: ^7local time is $1$:$2$:$3$\n") ),
-	          qt.tm_hour, qt.tm_min, qt.tm_sec ) );
+	gameDuration = (level.time - level.startTime);
+
+	gameMinutes = gameDuration/1000 / 60;
+	gameSeconds = gameDuration/1000 % 60;
+
+	timelimitTime = level.timelimit * 60000; //timelimit is in minutes
+
+	if(gameDuration < level.suddenDeathBeginTime)
+	{
+		remainingMinutes = (level.suddenDeathBeginTime - gameDuration)/1000 / 60;
+		remainingSeconds = (level.suddenDeathBeginTime - gameDuration)/1000 % 60 + 1;
+
+		ADMP( va( "%s %02i %02i %02i %02i %02i %i %02i", QQ( N_("^3time: ^7local time is ^d$1$:$2$:$3$^7 - game runs for ^d$4$:$5$^7 with Sudden Death in ^d$6$:$7$^7\n") ),
+			          qt.tm_hour, qt.tm_min, qt.tm_sec, gameMinutes, gameSeconds, remainingMinutes, remainingSeconds) );
+	}
+	else if(gameDuration < timelimitTime)
+	{
+		remainingMinutes = (timelimitTime - gameDuration)/1000 / 60;
+		remainingSeconds = (timelimitTime - gameDuration)/1000 % 60 + 1;
+
+		ADMP( va( "%s %02i %02i %02i %02i %02i %i %02i", QQ( N_("^3time: ^7local time is ^d$1$:$2$:$3$^7 - game runs for ^d$4$:$5$^7 hitting Timelimit in ^d$6$:$7$^7\n") ),
+	          qt.tm_hour, qt.tm_min, qt.tm_sec, gameMinutes, gameSeconds, remainingMinutes, remainingSeconds ) );
+	}
+	else //requesting time in intermission after the timelimit hit, or timelimit wasn't set (unless pre-sd)
+	{
+		ADMP( va( "%s %02i %02i %02i %02i %02i", QQ( N_("^3time: ^7local time is ^d$1$:$2$:$3$^7 - game time is ^d$4$:$5$^7\n") ),
+			          qt.tm_hour, qt.tm_min, qt.tm_sec, gameMinutes, gameSeconds) );
+	}
+
 	return qtrue;
 }
 
@@ -3682,42 +3718,63 @@ qboolean G_admin_adminhelp( gentity_t *ent )
 	{
 		int i;
 		int count = 0;
-
-		ADMBP_begin();
+		int width = 13;
+		int perline;
+		qboolean perms[ adminNumCmds ];
 
 		for ( i = 0; i < adminNumCmds; i++ )
 		{
-			if ( G_admin_permission( ent, g_admin_cmds[ i ].flag ) )
+			if ( g_admin_cmds[ i ].keyword && G_admin_permission( ent, g_admin_cmds[ i ].flag ) )
 			{
-				ADMBP( va( "^3%-13s", g_admin_cmds[ i ].keyword ) );
-				count++;
+				int thiswidth = strlen( g_admin_cmds[ i ].keyword );
 
-				// show 6 commands per line
-				if ( count % 6 == 0 )
+				if ( width < thiswidth )
 				{
-					ADMBP( "\n" );
+					width = thiswidth;
 				}
+
+				perms[ i ] = qtrue;
+			}
+			else
+			{
+				perms[ i ] = qfalse;
 			}
 		}
 
 		for ( c = g_admin_commands; c; c = c->next )
 		{
-			if ( !G_admin_permission( ent, c->flag ) )
+			if ( G_admin_permission( ent, c->flag ) )
 			{
-				continue;
-			}
+				int thiswidth = strlen( g_admin_cmds[ i ].keyword );
 
-			ADMBP( va( "^1%-13s", c->command ) );
-			count++;
-
-			// show 6 commands per line
-			if ( count % 6 == 0 )
-			{
-				ADMBP( "\n" );
+				if ( width < thiswidth )
+				{
+					width = thiswidth;
+				}
 			}
 		}
 
-		if ( count % 6 )
+		perline = 78 / ( width + 1 ); // allow for curses console border and at least one space between each word
+
+		ADMBP_begin();
+
+		for ( i = 0; i < adminNumCmds; i++ )
+		{
+			if ( perms[ i ] )
+			{
+				ADMBP( va( "^3%-*s%c", width, g_admin_cmds[ i ].keyword, ( ++count % perline == 0 ) ? '\n' : ' ' ) );
+			}
+		}
+
+		for ( c = g_admin_commands; c; c = c->next )
+		{
+			if ( G_admin_permission( ent, c->flag ) )
+			{
+				ADMBP( va( "^1%-*s%c", width, c->command, ( ++count % perline == 0 ) ? '\n' : ' ' ) );
+			}
+		}
+
+		if ( count % perline )
 		{
 			ADMBP( "\n" );
 		}

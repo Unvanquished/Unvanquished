@@ -2773,7 +2773,7 @@ hit splashes
 static void CG_ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int otherEntNum )
 {
 	int     i;
-	float   r, u;
+	float   r, u, a;
 	vec3_t  end;
 	vec3_t  forward, right, up;
 	trace_t tr;
@@ -2787,8 +2787,12 @@ static void CG_ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int othe
 	// generate the "random" spread pattern
 	for ( i = 0; i < SHOTGUN_PELLETS; i++ )
 	{
-		r = Q_crandom( &seed ) * SHOTGUN_SPREAD * 16;
-		u = Q_crandom( &seed ) * SHOTGUN_SPREAD * 16;
+		r = Q_crandom( &seed ) * M_PI;
+		a = sqrt( Q_crandom( &seed ) * SHOTGUN_SPREAD * SHOTGUN_SPREAD * 16 * 16 );
+
+		u = sin( r ) * a;
+		r = cos( r ) * a;
+
 		VectorMA( origin, 8192 * 16, forward, end );
 		VectorMA( end, r, right, end );
 		VectorMA( end, u, up, end );

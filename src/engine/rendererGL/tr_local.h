@@ -550,6 +550,8 @@ extern "C" {
 		uint32_t ofsNormals;
 		uint32_t ofsColors;
 		uint32_t ofsPaintColors; // for advanced terrain blending
+		uint32_t ofsAmbientLight;
+		uint32_t ofsDirectedLight;
 		uint32_t ofsLightDirections;
 		uint32_t ofsBoneIndexes;
 		uint32_t ofsBoneWeights;
@@ -1173,25 +1175,6 @@ extern "C" {
 		struct shader_s *next;
 	} shader_t;
 
-#if 0
-	enum
-	{
-	  ATTR_INDEX_POSITION = 0,
-	  ATTR_INDEX_TEXCOORD0 = 8,
-	  ATTR_INDEX_TEXCOORD1 = 9,
-//  ATTR_INDEX_TEXCOORD2 = 10,
-//  ATTR_INDEX_TEXCOORD3 = 11,
-	  ATTR_INDEX_TANGENT = 12,
-	  ATTR_INDEX_BINORMAL = 13,
-	  ATTR_INDEX_NORMAL = 14,
-	  ATTR_INDEX_COLOR = 15,
-	  ATTR_INDEX_LIGHTCOLOR = 16,
-	  ATTR_INDEX_LIGHTDIRECTION = 17,
-	  ATTR_INDEX_BONE_INDEXES = 10,
-	  ATTR_INDEX_BONE_WEIGHTS = 11,
-	};
-
-#else
 	enum
 	{
 		ATTR_INDEX_POSITION,
@@ -1204,8 +1187,10 @@ extern "C" {
 
 #if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
 		ATTR_INDEX_PAINTCOLOR,
-		ATTR_INDEX_LIGHTDIRECTION,
 #endif
+		ATTR_INDEX_AMBIENTLIGHT,
+		ATTR_INDEX_DIRECTEDLIGHT,
+		ATTR_INDEX_LIGHTDIRECTION,
 
 		// GPU vertex skinning
 		ATTR_INDEX_BONE_INDEXES,
@@ -1217,8 +1202,6 @@ extern "C" {
 		ATTR_INDEX_BINORMAL2,
 		ATTR_INDEX_NORMAL2,
 	};
-
-#endif
 
 // *INDENT-OFF*
 	enum
@@ -1301,27 +1284,29 @@ extern "C" {
 
 	enum
 	{
-	  ATTR_POSITION = BIT( 0 ),
-	  ATTR_TEXCOORD = BIT( 1 ),
-	  ATTR_LIGHTCOORD = BIT( 2 ),
-	  ATTR_TANGENT = BIT( 3 ),
-	  ATTR_BINORMAL = BIT( 4 ),
-	  ATTR_NORMAL = BIT( 5 ),
-	  ATTR_COLOR = BIT( 6 ),
+	  ATTR_POSITION       = BIT( ATTR_INDEX_POSITION ),
+	  ATTR_TEXCOORD       = BIT( ATTR_INDEX_TEXCOORD0 ),
+	  ATTR_LIGHTCOORD     = BIT( ATTR_INDEX_TEXCOORD1 ),
+	  ATTR_TANGENT        = BIT( ATTR_INDEX_TANGENT ),
+	  ATTR_BINORMAL       = BIT( ATTR_INDEX_BINORMAL ),
+	  ATTR_NORMAL         = BIT( ATTR_INDEX_NORMAL ),
+	  ATTR_COLOR          = BIT( ATTR_INDEX_COLOR ),
 
 #if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-	  ATTR_PAINTCOLOR = BIT( 7 ),
-	  ATTR_LIGHTDIRECTION = BIT( 8 ),
+	  ATTR_PAINTCOLOR     = BIT( ATTR_INDEX_PAINTCOLOR ),
 #endif
+	  ATTR_AMBIENTLIGHT   = BIT( ATTR_INDEX_AMBIENTLIGHT ),
+	  ATTR_DIRECTEDLIGHT  = BIT( ATTR_INDEX_DIRECTEDLIGHT ),
+	  ATTR_LIGHTDIRECTION = BIT( ATTR_INDEX_LIGHTDIRECTION ),
 
-	  ATTR_BONE_INDEXES = BIT( 9 ),
-	  ATTR_BONE_WEIGHTS = BIT( 10 ),
+	  ATTR_BONE_INDEXES   = BIT( ATTR_INDEX_BONE_INDEXES ),
+	  ATTR_BONE_WEIGHTS   = BIT( ATTR_INDEX_BONE_WEIGHTS ),
 
 	  // for .md3 interpolation
-	  ATTR_POSITION2 = BIT( 11 ),
-	  ATTR_TANGENT2 = BIT( 12 ),
-	  ATTR_BINORMAL2 = BIT( 13 ),
-	  ATTR_NORMAL2 = BIT( 14 ),
+	  ATTR_POSITION2      = BIT( ATTR_INDEX_POSITION2 ),
+	  ATTR_TANGENT2       = BIT( ATTR_INDEX_TANGENT2 ),
+	  ATTR_BINORMAL2      = BIT( ATTR_INDEX_BINORMAL2 ),
+	  ATTR_NORMAL2        = BIT( ATTR_INDEX_NORMAL2 ),
 
 	  // FIXME XBSP format with ATTR_LIGHTDIRECTION and ATTR_PAINTCOLOR
 	  //ATTR_DEFAULT = ATTR_POSITION | ATTR_TEXCOORD | ATTR_TANGENT | ATTR_BINORMAL | ATTR_COLOR,
@@ -4580,8 +4565,10 @@ extern "C" {
 		vec4_t colors[ SHADER_MAX_VERTEXES ];
 #if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
 		vec4_t paintColors[ SHADER_MAX_VERTEXES ]; // for advanced terrain blending
-		vec4_t lightDirections[ SHADER_MAX_VERTEXES ];
 #endif
+		vec4_t ambientLights[ SHADER_MAX_VERTEXES ];
+		vec4_t directedLights[ SHADER_MAX_VERTEXES ];
+		vec4_t lightDirections[ SHADER_MAX_VERTEXES ];
 
 		glIndex_t   indexes[ SHADER_MAX_INDEXES ];
 

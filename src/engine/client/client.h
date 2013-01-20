@@ -498,6 +498,8 @@ extern  cvar_t *cl_consoleFont;
 extern  cvar_t *cl_consoleFontSize;
 extern  cvar_t *cl_consoleFontKerning;
 extern  cvar_t *cl_consolePrompt;
+extern  cvar_t *cl_consoleCommand;
+
 // XreaL BEGIN
 extern cvar_t  *cl_aviFrameRate;
 extern cvar_t  *cl_aviMotionJpeg;
