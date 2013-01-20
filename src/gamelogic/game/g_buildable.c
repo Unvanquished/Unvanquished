@@ -5004,6 +5004,16 @@ void G_BuildLogRevert( int id )
 							             ( int )( ent - g_entities ), BG_Buildable( ent->s.modelindex )->name );
 						}
 
+						// Give back resources
+						if ( ent->buildableTeam == TEAM_ALIENS )
+						{
+							level.alienBuildPoints += BG_Buildable( ent->s.modelindex )->buildPoints;
+						}
+						else if ( ent->buildableTeam == TEAM_HUMANS )
+						{
+							level.humanBuildPoints += BG_Buildable( ent->s.modelindex )->buildPoints;
+						}
+
 						G_FreeEntity( ent );
 						break;
 					}
