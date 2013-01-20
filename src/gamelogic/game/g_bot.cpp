@@ -329,7 +329,7 @@ void BotFindClosestBuildings(gentity_t *self, botClosestBuildings_t *closest) {
 			case BA_H_REACTOR:
 				if(newDist < closest->reactor.distance || closest->reactor.distance == 0) {
 					closest->reactor.ent = testEnt;
-					closest->reactor.distance = sqrt(newDist);
+					closest->reactor.distance = newDist;
 				}
 				break;
 			case BA_H_REPEATER:
@@ -1551,8 +1551,8 @@ botTaskStatus_t BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
 						usercmdPressButton(botCmdBuffer->buttons, BUTTON_DODGE);
 						botCmdBuffer->forwardmove = 0;
 					}
-				} else {
-					//we should be >= MAX_HUMAN_DANCE_DIST from the enemy
+				} else if (DistanceToGoalSquared(self) >= Square(MAX_HUMAN_DANCE_DIST) && self->client->ps.weapon != WP_PAIN_SAW) {
+	
 					//dont go forward
 					botCmdBuffer->forwardmove = 0;
 
@@ -1732,25 +1732,34 @@ extern "C" qboolean G_BotClearNames(void)
 	return qtrue;
 }
 
-extern "C" int G_BotAddNames(team_t team, int first, int last)
+extern "C" int G_BotAddNames(team_t team, int arg, int last)
 {
 	int  i = botNames[team].count;
-	int  arg = first;
+	int  added = 0;
 	char name[MAX_NAME_LENGTH];
 
 	while (arg < last && i < MAX_CLIENTS)
 	{
-		trap_Argv(arg, name, sizeof(name));
+		int j, t;
+
+		trap_Argv(arg++, name, sizeof(name));
+
+		// name already in the list? (quick check, including colours & invalid)
+		for (t = 1; t < NUM_TEAMS; ++t)
+			for (j = 0; j < botNames[t].count; ++j)
+				if (!Q_stricmp(botNames[t].name[j].name, name))
+					goto next;
 
 		botNames[team].name[i].name = (char *)BG_Alloc(strlen(name) + 1);
 		strcpy(botNames[team].name[i].name, name);
 
-		++arg;
-		++i;
+		botNames[team].count = ++i;
+		++added;
+
+		next:;
 	}
 
-	botNames[team].count = i;
-	return arg - first;
+	return added;
 }
 
 static char *G_BotSelectName(team_t team)
@@ -1890,6 +1899,22 @@ void G_BotDel( int clientNum ) {
 	trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^7 disconnected\n") ),
 		                        Quote( bot->client->pers.netname ) ) );
 	trap_DropClient(clientNum, "disconnected");
+}
+
+extern "C" void G_BotDelAll(void)
+{
+	int i;
+
+	for(i=0;i<MAX_CLIENTS;i++) {
+		if(g_entities[i].r.svFlags & SVF_BOT && level.clients[i].pers.connected != CON_DISCONNECTED)
+			G_BotDel(i);
+	}
+
+	for (i = 0; i < botNames[TEAM_ALIENS].count; ++i)
+		botNames[TEAM_ALIENS].name[i].inUse = qfalse;
+
+	for (i = 0; i < botNames[TEAM_HUMANS].count; ++i)
+		botNames[TEAM_HUMANS].name[i].inUse = qfalse;
 }
 
 void G_BotCmd( gentity_t *master, int clientNum, char *command) {
@@ -2072,3 +2097,17 @@ extern "C" void G_BotIntermissionThink( gclient_t *client )
 	client->readyToExit = qtrue;
 }
 
+
+extern "C" void G_BotCleanup( int restart )
+{
+	if ( !restart )
+	{
+		int i;
+
+		for ( i = 0; i < MAX_CLIENTS; ++i)
+			if ( g_entities[i].r.svFlags & SVF_BOT && level.clients[i].pers.connected != CON_DISCONNECTED )
+				G_BotDel(i);
+
+		G_BotClearNames();
+	}
+}

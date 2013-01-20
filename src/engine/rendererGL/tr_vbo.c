@@ -68,6 +68,8 @@ VBO_t          *R_CreateVBO( const char *name, byte *vertexes, int vertexesSize,
 	vbo->ofsNormals = 0;
 	vbo->ofsColors = 0;
 	vbo->ofsPaintColors = 0;
+	vbo->ofsAmbientLight = 0;
+	vbo->ofsDirectedLight = 0;
 	vbo->ofsLightDirections = 0;
 	vbo->ofsBoneIndexes = 0;
 	vbo->ofsBoneWeights = 0;
@@ -148,6 +150,8 @@ VBO_t          *R_CreateVBO2( const char *name, int numVertexes, srfVert_t *vert
 	vbo->ofsNormals = 0;
 	vbo->ofsColors = 0;
 	vbo->ofsPaintColors = 0;
+	vbo->ofsAmbientLight = 0;
+	vbo->ofsDirectedLight = 0;
 	vbo->ofsLightDirections = 0;
 	vbo->ofsBoneIndexes = 0;
 	vbo->ofsBoneWeights = 0;
@@ -570,9 +574,9 @@ void R_InitVBOs( void )
 	Com_InitGrowList( &tr.ibos, 100 );
 
 #if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-	dataSize = sizeof( vec4_t ) * SHADER_MAX_VERTEXES * 9;
+	dataSize = sizeof( vec4_t ) * SHADER_MAX_VERTEXES * 11;
 #else
-	dataSize = sizeof( vec4_t ) * SHADER_MAX_VERTEXES * 7;
+	dataSize = sizeof( vec4_t ) * SHADER_MAX_VERTEXES * 10;
 #endif
 
 	tess.vbo = R_CreateVBO( "tessVertexArray_VBO", NULL, dataSize, VBO_USAGE_DYNAMIC );
@@ -586,8 +590,11 @@ void R_InitVBOs( void )
 
 #if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
 	tess.vbo->ofsPaintColors = tess.vbo->ofsColors + sizeof( tess.colors );
-	tess.vbo->ofsLightDirections = tess.vbo->ofsPaintColors + sizeof( tess.paintColors );
+	tess.vbo->ofsAmbientLight = tess.vbo->ofsPaintColors + sizeof( tess.PaintColors );
 #endif
+	tess.vbo->ofsAmbientLight = tess.vbo->ofsColors + sizeof( tess.colors );
+	tess.vbo->ofsDirectedLight = tess.vbo->ofsAmbientLight + sizeof( tess.ambientLights );
+	tess.vbo->ofsLightDirections = tess.vbo->ofsDirectedLight + sizeof( tess.directedLights );
 
 	tess.vbo->sizeXYZ = sizeof( tess.xyz );
 	tess.vbo->sizeTangents = sizeof( tess.tangents );

@@ -241,6 +241,9 @@ static inline void BotChangeTask(gentity_t *self, botTask_t task) {
 //how far away we can be before we try to go around an alien when fighting an alien
 #define MIN_HUMAN_DANCE_DIST 100
 
+//how may polys ahead we will look at for invalid path polygons
+#define MAX_PATH_LOOK_AHEAD 5
+
 #define BOT_LEADER_WAIT_RANGE 250 //should be > BOT_FOLLOW_RANGE + BOT_FOLLOW_RANGE_NEGLIGENCE
 #define BOT_FOLLOW_RANGE 100
 #define BOT_FOLLOW_RANGE_NEGLIGENCE 30

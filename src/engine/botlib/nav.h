@@ -76,6 +76,7 @@ enum navPolyFlags
 	POLYFLAGS_POUNCE = 0x10, //Ability to pounce
 	POLYFLAGS_WALLWALK = 0x20, //Ability to wallwalk
 	POLYFLAGS_LADDER = 0x40, //Ability to climb ladders
+	POLYFLAGS_DISABLED = 0x80,
 	POLYFLAGS_ALL = 0xffff // All abilities.
 };
 #endif

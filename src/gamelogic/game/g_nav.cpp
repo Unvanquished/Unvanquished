@@ -259,7 +259,7 @@ extern "C" void G_NavMeshInit() {
 			return;
 		}
 		navFilters[i].setIncludeFlags(POLYFLAGS_WALK);
-		navFilters[i].setExcludeFlags(0);
+		navFilters[i].setExcludeFlags(POLYFLAGS_DISABLED);
 	}
 	for(int i=0;i<MAX_CLIENTS;i++) {
 		if(!pathCorridor[i].init(MAX_PATH_POLYS)) {
@@ -285,6 +285,71 @@ extern "C" void G_NavMeshCleanup(void) {
 	}
 	navMeshLoaded = qfalse;
 }
+
+void BotSetPolyFlags( vec3_t origin, vec3_t mins, vec3_t maxs, unsigned short flags )
+{
+	vec3_t extents;
+	vec3_t realMin, realMax, center;
+
+	// support abs min/max by recalculating the origin and min/max
+	VectorAdd( mins, origin, realMin );
+	VectorAdd( maxs, origin, realMax );
+	VectorAdd( realMin, realMax, center );
+	VectorScale( center, 0.5, center );
+	VectorSubtract( realMax, center, realMax );
+	VectorSubtract( realMin, center, realMin );
+
+	// find extents
+	for ( int j = 0; j < 3; j++ )
+	{
+		extents[ j ] = MAX( fabsf( realMin[ j ] ), fabsf( realMax[ j ] ) );
+	}
+
+	// convert to recast coordinates
+	quake2recast( center );
+	quake2recast( extents );
+
+	// quake2recast conversion makes some components negative
+	extents[ 0 ] = fabsf( extents[ 0 ] );
+	extents[ 1 ] = fabsf( extents[ 1 ] );
+	extents[ 2 ] = fabsf( extents[ 2 ] );
+
+	// setup a filter so our queries include disabled polygons
+	dtQueryFilter filter;
+	filter.setIncludeFlags( POLYFLAGS_WALK | POLYFLAGS_DISABLED );
+	filter.setExcludeFlags( 0 );
+
+	if ( navMeshLoaded )
+	{
+		for ( int i = PCL_NONE + 1; i < PCL_NUM_CLASSES; i++ )
+		{
+			const int maxPolys = 20;
+			int polyCount = 0;
+			dtPolyRef polys[ maxPolys ];
+
+			dtNavMeshQuery *query = navQuerys[ i ];
+			dtNavMesh *mesh = navMeshes[ i ];
+
+			query->queryPolygons( center, extents, &filter, polys, &polyCount, maxPolys );
+
+			for ( int i = 0; i < polyCount; i++ )
+			{
+				mesh->setPolyFlags( polys[ i ], flags );
+			}
+		}
+	}
+}
+
+extern "C" void G_BotDisableArea( vec3_t origin, vec3_t mins, vec3_t maxs )
+{
+	BotSetPolyFlags( origin, mins, maxs, POLYFLAGS_DISABLED );
+}
+
+extern "C" void G_BotEnableArea( vec3_t origin, vec3_t mins, vec3_t maxs )
+{
+	BotSetPolyFlags( origin, mins, maxs, POLYFLAGS_WALK );
+}
+
 /*
 ========================
 Bot Navigation Querys
@@ -294,6 +359,7 @@ Bot Navigation Querys
 void BotGetAgentExtents(gentity_t *ent, vec3_t extents) {
 	VectorSet(extents, ent->r.maxs[0] * 5,  2 * (ent->r.maxs[2] - ent->r.mins[2]), ent->r.maxs[1] * 5);
 }
+
 int DistanceToGoal(gentity_t *self) {
 	vec3_t targetPos;
 	vec3_t selfPos;
@@ -305,6 +371,7 @@ int DistanceToGoal(gentity_t *self) {
 	VectorCopy(self->s.origin,selfPos);
 	return Distance(selfPos,targetPos);
 }
+
 int DistanceToGoalSquared(gentity_t *self) {
 	vec3_t targetPos;
 	vec3_t selfPos;
@@ -786,6 +853,10 @@ void UpdatePathCorridor(gentity_t *self) {
 	self->botMind->pathCorridor->movePosition(selfPos, self->botMind->navQuery, self->botMind->navFilter);
 	self->botMind->pathCorridor->moveTargetPosition(targetPos,self->botMind->navQuery, self->botMind->navFilter);
 
+	if ( !self->botMind->pathCorridor->isValid( MAX_PATH_LOOK_AHEAD, self->botMind->navQuery, self->botMind->navFilter ) )
+	{
+		FindRouteToTarget( self, self->botMind->goal );
+	}
 
 	FindWaypoints(self);
 	dtPolyRef check;

@@ -902,6 +902,52 @@ void GL_VertexAttribsState( uint32_t stateBits )
 		}
 	}
 
+#endif
+
+	if ( diff & ATTR_AMBIENTLIGHT )
+	{
+		if ( stateBits & ATTR_AMBIENTLIGHT )
+		{
+			if ( r_logFile->integer )
+			{
+				GLimp_LogComment( "glEnableVertexAttribArray( ATTR_INDEX_AMBIENTLIGHT )\n" );
+			}
+
+			glEnableVertexAttribArray( ATTR_INDEX_AMBIENTLIGHT );
+		}
+		else
+		{
+			if ( r_logFile->integer )
+			{
+				GLimp_LogComment( "glDisableVertexAttribArray( ATTR_INDEX_AMBIENTLIGHT )\n" );
+			}
+
+			glDisableVertexAttribArray( ATTR_INDEX_AMBIENTLIGHT );
+		}
+	}
+
+	if ( diff & ATTR_DIRECTEDLIGHT )
+	{
+		if ( stateBits & ATTR_DIRECTEDLIGHT )
+		{
+			if ( r_logFile->integer )
+			{
+				GLimp_LogComment( "glEnableVertexAttribArray( ATTR_INDEX_DIRECTEDLIGHT )\n" );
+			}
+
+			glEnableVertexAttribArray( ATTR_INDEX_DIRECTEDLIGHT );
+		}
+		else
+		{
+			if ( r_logFile->integer )
+			{
+				GLimp_LogComment( "glDisableVertexAttribArray( ATTR_INDEX_DIRECTEDLIGHT )\n" );
+			}
+
+			glDisableVertexAttribArray( ATTR_INDEX_DIRECTEDLIGHT );
+		}
+	}
+
 	if ( diff & ATTR_LIGHTDIRECTION )
 	{
 		if ( stateBits & ATTR_LIGHTDIRECTION )
@@ -923,8 +969,6 @@ void GL_VertexAttribsState( uint32_t stateBits )
 			glDisableVertexAttribArray( ATTR_INDEX_LIGHTDIRECTION );
 		}
 	}
-
-#endif
 
 	if ( diff & ATTR_BONE_INDEXES )
 	{
@@ -1169,6 +1213,30 @@ void GL_VertexAttribPointers( uint32_t attribBits )
 		glState.vertexAttribPointersSet |= ATTR_PAINTCOLOR;
 	}
 
+#endif // #if !defined(COMPAT_Q3A) && !defined(COMPAT_ET)
+
+	if ( ( attribBits & ATTR_AMBIENTLIGHT ) )
+	{
+		if ( r_logFile->integer )
+		{
+			GLimp_LogComment( "glVertexAttribPointer( ATTR_INDEX_AMBIENTLIGHT )\n" );
+		}
+
+		glVertexAttribPointer( ATTR_INDEX_AMBIENTLIGHT, 3, GL_FLOAT, 0, 16, BUFFER_OFFSET( glState.currentVBO->ofsAmbientLight ) );
+		glState.vertexAttribPointersSet |= ATTR_AMBIENTLIGHT;
+	}
+
+	if ( ( attribBits & ATTR_DIRECTEDLIGHT ) )
+	{
+		if ( r_logFile->integer )
+		{
+			GLimp_LogComment( "glVertexAttribPointer( ATTR_INDEX_DIRECTEDLIGHT )\n" );
+		}
+
+		glVertexAttribPointer( ATTR_INDEX_DIRECTEDLIGHT, 3, GL_FLOAT, 0, 16, BUFFER_OFFSET( glState.currentVBO->ofsDirectedLight ) );
+		glState.vertexAttribPointersSet |= ATTR_DIRECTEDLIGHT;
+	}
+
 	if ( ( attribBits & ATTR_LIGHTDIRECTION ) )
 	{
 		if ( r_logFile->integer )
@@ -1179,8 +1247,6 @@ void GL_VertexAttribPointers( uint32_t attribBits )
 		glVertexAttribPointer( ATTR_INDEX_LIGHTDIRECTION, 3, GL_FLOAT, 0, 16, BUFFER_OFFSET( glState.currentVBO->ofsLightDirections ) );
 		glState.vertexAttribPointersSet |= ATTR_LIGHTDIRECTION;
 	}
-
-#endif // #if !defined(COMPAT_Q3A) && !defined(COMPAT_ET)
 
 	if ( ( attribBits & ATTR_BONE_INDEXES ) )
 	{

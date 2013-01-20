@@ -331,6 +331,7 @@ struct gentity_s
 	qboolean  takedamage;
 
 	int       damage;
+	int       flightSplashDamage; // quad will increase this without increasing radius
 	int       splashDamage; // quad will increase this without increasing radius
 	int       splashRadius;
 	int       methodOfDeath;
@@ -731,7 +732,7 @@ typedef struct
 	int              num_entities; // MAX_CLIENTS <= num_entities <= ENTITYNUM_MAX_NORMAL
 
 	int              warmupTime; // restart match at this time
-	int              timelimit;
+	int              timelimit; //time in minutes
 
 	fileHandle_t     logFile;
 
@@ -739,11 +740,11 @@ typedef struct
 	int      maxclients;
 
 	int      framenum;
-	int      time; // in msec
+	int      time; // time the map was first started in milliseconds (map restart will update startTime)
 	int      previousTime; // so movers can back up when blocked
 	int      frameMsec; // trap_Milliseconds() at end frame
 
-	int      startTime; // level.time the map was started
+	int      startTime; // level.time the map was last (re)started in milliseconds
 
 	int      lastTeamLocationTime; // last time of client team location update
 
@@ -828,7 +829,7 @@ typedef struct
 
 	team_t           lastWin;
 
-	int              suddenDeathBeginTime;
+	int              suddenDeathBeginTime; // in milliseconds
 	timeWarning_t    suddenDeathWarning;
 	timeWarning_t    timelimitWarning;
 
@@ -899,11 +900,12 @@ void     G_SpawnEntitiesFromString( void );
 char     *G_NewString( const char *string );
 
 //
-// g_cmds.c
+// g_bot.c
 //
 qboolean G_BotAdd( char *name, team_t team, int skill );
 void G_BotSetDefaults( int clientNum, team_t team, int skill );
 void G_BotDel( int clientNum );
+void G_BotDelAll(void);
 void G_BotCmd( gentity_t *master, int clientNum, char *command);
 void G_BotThink(gentity_t *self);
 void G_BotSpectatorThink( gentity_t *self );
@@ -913,7 +915,9 @@ void G_BotLoadBuildLayout();
 void G_BotListNames( gentity_t *ent );
 qboolean G_BotClearNames(void);
 int G_BotAddNames(team_t team, int arg, int last);
-
+void G_BotCleanup(int restart);
+void G_BotDisableArea( vec3_t origin, vec3_t mins, vec3_t maxs );
+void G_BotEnableArea( vec3_t origin, vec3_t mins, vec3_t maxs );
 //
 // g_cmds.c
 //
