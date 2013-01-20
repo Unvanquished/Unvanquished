@@ -687,7 +687,7 @@ void CG_UpdateBuildableRangeMarkerMask( void )
 			else if ( !Q_stricmp( p, "all" ) )
 			{
 				brmMask |= ( 1 << BA_A_OVERMIND ) | ( 1 << BA_A_SPAWN ) |
-				           ( 1 << BA_A_ACIDTUBE ) | ( 1 << BA_A_TRAPPER ) | ( 1 << BA_A_HIVE ) | ( 1 << BA_A_LEECH ) |
+				           ( 1 << BA_A_ACIDTUBE ) | ( 1 << BA_A_TRAPPER ) | ( 1 << BA_A_HIVE ) | ( 1 << BA_A_LEECH ) | ( 1 << BA_A_BOOSTER ) |
 				           ( 1 << BA_H_REACTOR ) | ( 1 << BA_H_REPEATER ) | ( 1 << BA_H_DCC ) |
 				           ( 1 << BA_H_MGTURRET ) | ( 1 << BA_H_TESLAGEN ) | ( 1 << BA_H_MINE );
 			}
@@ -700,7 +700,7 @@ void CG_UpdateBuildableRangeMarkerMask( void )
 				{
 					pp = p + 5;
 					only = ( 1 << BA_A_OVERMIND ) | ( 1 << BA_A_SPAWN ) |
-					       ( 1 << BA_A_ACIDTUBE ) | ( 1 << BA_A_TRAPPER ) | ( 1 << BA_A_HIVE ) | ( 1 << BA_A_LEECH );
+					       ( 1 << BA_A_ACIDTUBE ) | ( 1 << BA_A_TRAPPER ) | ( 1 << BA_A_HIVE ) | ( 1 << BA_A_LEECH ) | ( 1 << BA_A_BOOSTER );
 				}
 				else if ( !Q_stricmpn( p, "human", 5 ) )
 				{
@@ -720,7 +720,7 @@ void CG_UpdateBuildableRangeMarkerMask( void )
 				}
 				else if ( !Q_stricmp( pp, "support" ) )
 				{
-					brmMask |= only & ( ( 1 << BA_A_OVERMIND ) | ( 1 << BA_A_SPAWN ) | ( 1 << BA_A_LEECH ) |
+					brmMask |= only & ( ( 1 << BA_A_OVERMIND ) | ( 1 << BA_A_SPAWN ) | ( 1 << BA_A_LEECH ) | ( 1 << BA_A_BOOSTER ) |
 					                    ( 1 << BA_H_REACTOR ) | ( 1 << BA_H_REPEATER ) | ( 1 << BA_H_DCC ) | ( 1 << BA_H_MINE ) );
 				}
 				else if ( !Q_stricmp( pp, "offensive" ) )

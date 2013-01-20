@@ -636,6 +636,11 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 			shc = SHC_INDIGO;
 			break;
 
+		case BA_A_BOOSTER:
+			*range = REGEN_BOOST_RANGE;
+			shc = SHC_GREY;
+			break;
+
 		case BA_H_MGTURRET:
 			*range = MGTURRET_RANGE;
 			shc = SHC_ORANGE;
