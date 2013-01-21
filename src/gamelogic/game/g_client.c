@@ -126,6 +126,8 @@ void G_AddCreditToClient( gclient_t *client, short credit, qboolean cap )
 
 	// Copy to ps so the client can access it
 	client->ps.persistant[ PERS_CREDIT ] = client->pers.credit;
+
+	client->pers.infoChangeTime = level.time;
 }
 
 /*
