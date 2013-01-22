@@ -4326,6 +4326,10 @@ void Cmd_Share_f( gentity_t *ent )
 		}
 	}
 
+	// mark own team info as updated
+	ent->client->pers.infoChangeTime = level.time;
+
+	// output share info, mark others' team info as updated
 	// FIXME: plural
 	if ( team == TEAM_ALIENS )
 	{
@@ -4335,6 +4339,7 @@ void Cmd_Share_f( gentity_t *ent )
 		{
 			if ( shared[ i ] )
 			{
+				level.clients[ i ].pers.infoChangeTime = level.time;
 				trap_SendServerCommand( i, va( "print_tr " QQ( N_( "You have received $1$ frags from $2$\n" ) ) " %g %s",
 				                               (float)shared[ i ] / (float)ALIEN_CREDITS_PER_KILL, Quote( ent->client->pers.netname ) ) );
 			}
@@ -4348,11 +4353,13 @@ void Cmd_Share_f( gentity_t *ent )
 		{
 			if ( shared[ i ] )
 			{
+				level.clients[ i ].pers.infoChangeTime = level.time;
 				trap_SendServerCommand( i, va( "print_tr " QQ( N_( "You have received $1$ credits from $2$\n" ) ) " %i %s",
 				                               shared[ i ], Quote( ent->client->pers.netname ) ) );
 			}
 		}
 	}
+
 }
 
 /*
@@ -4516,6 +4523,10 @@ void Cmd_Donate_f( gentity_t *ent )
 	// transfer credits
 	ent->client->ps.persistant[ PERS_CREDIT ] = ent->client->pers.credit -= creds;
 	level.clients[ clientNum ].ps.persistant[ PERS_CREDIT ] = level.clients[ clientNum ].pers.credit += creds;
+
+	// mark team info as updated
+	ent->client->pers.infoChangeTime = level.time;
+	level.clients[ clientNum ].pers.infoChangeTime = level.time;
 
 	// FIXME: plural
 	if ( ent->client->pers.teamSelection == TEAM_ALIENS )

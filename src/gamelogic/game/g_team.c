@@ -301,6 +301,7 @@ void G_ChangeTeam( gentity_t *ent, team_t newTeam )
 	G_LeaveTeam( ent );
 	ent->client->pers.teamChangeTime = level.time;
 	ent->client->pers.teamSelection = newTeam;
+	ent->client->pers.teamInfo = level.time;
 	ent->client->pers.classSelection = PCL_NONE;
 	ClientSpawn( ent, NULL, NULL, NULL );
 
@@ -392,7 +393,7 @@ Format:
 */
 void TeamplayInfoMessage( gentity_t *ent )
 {
-	char      entry[ 17 ];
+	char      entry[ 24 ];
 	char      string[ ( MAX_CLIENTS - 1 ) * ( sizeof( entry ) - 1 ) + 1 ];
 	int       i, j;
 	int       team, stringlength;
@@ -428,7 +429,7 @@ void TeamplayInfoMessage( gentity_t *ent )
 		team = ent->client->pers.teamSelection;
 	}
 
-	format = ( team == TEAM_ALIENS ) ? " %i %i %i %i" : " %i %i %i %i %i"; // aliens don't have upgrades
+	format = ( team == TEAM_ALIENS ) ? " %i %i %i %i %i" : " %i %i %i %i %i %i"; // aliens don't have upgrades
 
 	string[ 0 ] = '\0';
 	stringlength = 0;
@@ -494,6 +495,7 @@ void TeamplayInfoMessage( gentity_t *ent )
 		             cl->pers.location,
 		             cl->ps.stats[ STAT_HEALTH ] < 1 ? 0 : cl->ps.stats[ STAT_HEALTH ],
 		             curWeaponClass,
+		             cl->pers.credit,
 		             upgrade );
 
 		j = strlen( entry );
