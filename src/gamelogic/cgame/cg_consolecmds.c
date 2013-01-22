@@ -244,6 +244,7 @@ static void CG_CompleteSell( void )
 		return;
 	}
 
+	trap_CompleteCallback( "all" );
 	trap_CompleteCallback( "weapons" );
 	trap_CompleteCallback( "upgrades" );
 	CG_CompleteBuy( );
