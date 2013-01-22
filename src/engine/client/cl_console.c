@@ -67,9 +67,6 @@ cvar_t    *scr_conUseOld;
 cvar_t    *scr_conBarSize;
 cvar_t    *scr_conHeight;
 
-// DHM - Nerve :: Must hold CTRL + SHIFT + ~ to get console
-cvar_t    *con_restricted;
-
 #define DEFAULT_CONSOLE_WIDTH 78
 #define MAX_CONSOLE_WIDTH   1024
 
@@ -149,11 +146,6 @@ Con_ToggleConsole_f
 void Con_ToggleConsole_f( void )
 {
 	con.acLength = 0;
-
-	if ( con_restricted->integer && ( !keys[ K_CTRL ].down || !keys[ K_SHIFT ].down ) )
-	{
-		return;
-	}
 
 	// ydnar: persistent console input is more useful
 	// Arnout: added cvar
@@ -512,7 +504,6 @@ void Con_Init( void )
 	con_notifytime = Cvar_Get( "con_notifytime", "7", 0 );  // JPW NERVE increased per id req for obits
 	con_conspeed = Cvar_Get( "scr_conspeed", "3", 0 );
 	con_autoclear = Cvar_Get( "con_autoclear", "1", CVAR_ARCHIVE );
-	con_restricted = Cvar_Get( "con_restricted", "0", CVAR_INIT );  // DHM - Nerve
 
 	// Defines cvar for color and alpha for console/bar under console
 	scr_conUseShader = Cvar_Get( "scr_conUseShader", "0", CVAR_ARCHIVE );

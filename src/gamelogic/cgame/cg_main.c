@@ -500,22 +500,35 @@ static void CG_SetUIVars( void )
 	switch ( ps->stats[ STAT_TEAM ] )
 	{
 		case TEAM_NONE:
-			trap_Cvar_Set( "p_teamname", "^3Spectator" );
+			trap_Cvar_Set( "p_teamname", "Spectator" );
+			trap_Cvar_Set( "p_classname", "Spectator" );
+			trap_Cvar_Set( "p_weaponname", "Nothing" );
+
+			/*
+			 * if we were on a team before we would want these to be reset (or they could mess with bindings)
+			 * the only ones, that actually are helpful to hold on to are p_score and p_credits, since these actually
+			 * might be taken over when joining a team again, or be used to look up old values before leaving the game
+			 */
+			trap_Cvar_Set( "p_class" , "0" );
+			trap_Cvar_Set( "p_weapon", "0" );
+			trap_Cvar_Set( "p_stage", "0" );
+			trap_Cvar_Set( "p_hp", "0" );
+			trap_Cvar_Set( "p_maxhp", "0" );
+			trap_Cvar_Set( "p_ammo", "0" );
+			trap_Cvar_Set( "p_clips", "0" );
 			return;
 
 		case TEAM_ALIENS:
-			trap_Cvar_Set( "p_teamname", "^1Alien" );
+			trap_Cvar_Set( "p_teamname", "Alien" );
 			trap_Cvar_Set( "p_stage", va( "%d", cgs.alienStage ) );
 			break;
 
 		case TEAM_HUMANS:
-			trap_Cvar_Set( "p_teamname", "^4Human" );
+			trap_Cvar_Set( "p_teamname", "Human" );
 			trap_Cvar_Set( "p_stage", va( "%d", cgs.humanStage ) );
 			break;
 	}
 
-	trap_Cvar_Set( "p_hp", va( "%d", ps->stats[ STAT_HEALTH ] ) );
-	trap_Cvar_Set( "p_maxhp", va( "%d", ps->stats[ STAT_MAX_HEALTH ] ) );
 	trap_Cvar_Set( "p_class", va( "%d", ps->stats[ STAT_CLASS ] ) );
 
 	switch ( ps->stats[ STAT_CLASS ] )
@@ -566,6 +579,10 @@ static void CG_SetUIVars( void )
 
 		case PCL_HUMAN_BSUIT:
 			trap_Cvar_Set( "p_classname", "Battlesuit" );
+			break;
+
+		case PCL_NONE: //used between death and spawn
+			trap_Cvar_Set( "p_classname", "Ghost" );
 			break;
 
 		default:
@@ -625,6 +642,27 @@ static void CG_SetUIVars( void )
 			trap_Cvar_Set( "p_weaponname", "Grenade" );
 			break;
 
+		case WP_ALEVEL0:
+			trap_Cvar_Set( "p_weaponname", "Teeth" );
+			break;
+
+		case WP_ABUILD:
+		case WP_ABUILD2:
+		case WP_ALEVEL1:
+		case WP_ALEVEL1_UPG:
+		case WP_ALEVEL2:
+		case WP_ALEVEL2_UPG:
+		case WP_ALEVEL3:
+		case WP_ALEVEL3_UPG:
+		case WP_ALEVEL4:
+			trap_Cvar_Set( "p_weaponname", "Claws" );
+			break;
+
+		case WP_NONE:
+			trap_Cvar_Set( "p_weaponname", "Nothing" );
+			break;
+
+
 		default:
 			trap_Cvar_Set( "p_weaponname", "Unknown" );
 			break;
@@ -632,6 +670,9 @@ static void CG_SetUIVars( void )
 
 	trap_Cvar_Set( "p_credits", va( "%d", ps->persistant[ PERS_CREDIT ] ) );
 	trap_Cvar_Set( "p_score", va( "%d", ps->persistant[ PERS_SCORE ] ) );
+
+	trap_Cvar_Set( "p_hp", va( "%d", ps->stats[ STAT_HEALTH ] ) );
+	trap_Cvar_Set( "p_maxhp", va( "%d", ps->stats[ STAT_MAX_HEALTH ] ) );
 	trap_Cvar_Set( "p_ammo", va( "%d", ps->ammo ) );
 	trap_Cvar_Set( "p_clips", va( "%d", ps->clips ) );
 }
