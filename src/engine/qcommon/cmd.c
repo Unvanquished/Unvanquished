@@ -789,18 +789,18 @@ void Cmd_If_f( void )
 			secondNumber = atoi( secondString = Cmd_Argv( 3 ) );
 
 			if      ( !strcmp( relation, "="  ) ) { result = ( firstNumber == secondNumber ) ? consequent : alternative; }
-			else if ( !strcmp( relation, "!=" ) ) { result = ( firstNumber != secondNumber ) ? consequent : alternative; }
+			else if ( !strcmp( relation, "!=" ) || !strcmp( relation, "≠" )) { result = ( firstNumber != secondNumber ) ? consequent : alternative; }
 			else if ( !strcmp( relation, "<"  ) ) { result = ( firstNumber <  secondNumber ) ? consequent : alternative; }
-			else if ( !strcmp( relation, "<=" ) ) { result = ( firstNumber <= secondNumber ) ? consequent : alternative; }
+			else if ( !strcmp( relation, "<=" ) || !strcmp( relation, "≤" )) { result = ( firstNumber <= secondNumber ) ? consequent : alternative; }
 			else if ( !strcmp( relation, ">"  ) ) { result = ( firstNumber >  secondNumber ) ? consequent : alternative; }
-			else if ( !strcmp( relation, ">=" ) ) { result = ( firstNumber >= secondNumber ) ? consequent : alternative; }
+			else if ( !strcmp( relation, ">=" ) || !strcmp( relation, "≥" )) { result = ( firstNumber >= secondNumber ) ? consequent : alternative; }
 			else if ( !strcmp( relation, "eq" ) ) { result = ( Q_stricmp( firstString, secondString ) == 0 ) ? consequent : alternative; }
 			else if ( !strcmp( relation, "ne" ) ) { result = ( Q_stricmp( firstString, secondString ) != 0 ) ? consequent : alternative; }
 			else if ( !strcmp( relation, "in" ) ) { result = ( Q_stristr( secondString, firstString ) != 0 ) ? consequent : alternative; }
 			else if ( !strcmp( relation, "!in") ) { result = ( Q_stristr( secondString, firstString ) == 0 ) ? consequent : alternative; }
 			else
 			{
-				Com_Printf(_( "invalid relation operator in if command. valid relation operators are = != < > >= <= eq ne in !in\n" ));
+				Com_Printf(_( "invalid relation operator in if command. valid relation operators are = != ≠ < > ≥ >= ≤ <= eq ne in !in\n" ));
 				return;
 			}
 
@@ -858,7 +858,7 @@ void Cmd_Math_f( void )
 		}
 		else
 		{
-			Com_Printf(_( "math <variableToSet> = <number> <operator> <number>\nmath <variableToSet> <operator> <number>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * /\n" ));
+			Com_Printf(_( "math <variableToSet> = <number> <operator> <number>\nmath <variableToSet> <operator> <number>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - × * ÷ /\n" ));
 			return;
 		}
 	}
@@ -876,11 +876,11 @@ void Cmd_Math_f( void )
 		{
 			Cvar_SetValueLatched( targetVariable, ( atof( targetVariable ) - atof( firstOperand ) ) );
 		}
-		else if ( !strcmp( operation, "*" ) )
+		else if ( !strcmp( operation, "*" ) || !strcmp( operation, "×" ) || !strcmp( operation, "x" ) )
 		{
 			Cvar_SetValueLatched( targetVariable, ( atof( targetVariable ) * atof( firstOperand ) ) );
 		}
-		else if ( !strcmp( operation, "/" ) )
+		else if ( !strcmp( operation, "/" ) || !strcmp( operation, "÷" ) )
 		{
 			if ( atof( firstOperand ) == 0.f )
 			{
@@ -892,7 +892,7 @@ void Cmd_Math_f( void )
 		}
 		else
 		{
-			Com_Printf(_( "math <variableToSet> = <number> <operator> <number>\nmath <variableToSet> <operator> <number>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * /\n" ));
+			Com_Printf(_( "math <variableToSet> = <number> <operator> <number>\nmath <variableToSet> <operator> <number>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - × * ÷ /\n" ));
 			return;
 		}
 	}
@@ -911,11 +911,11 @@ void Cmd_Math_f( void )
 		{
 			Cvar_SetValueLatched( targetVariable, ( atof( firstOperand ) - atof( secondOperand ) ) );
 		}
-		else if ( !strcmp( operation, "*" ) )
+		else if ( !strcmp( operation, "*" ) || !strcmp( operation, "×" ) || !strcmp( operation, "x" ) )
 		{
 			Cvar_SetValueLatched( targetVariable, ( atof( firstOperand ) * atof( secondOperand ) ) );
 		}
-		else if ( !strcmp( operation, "/" ) )
+		else if ( !strcmp( operation, "/" ) || !strcmp( operation, "÷" ) )
 		{
 			if ( atof( secondOperand ) == 0.f )
 			{
@@ -962,12 +962,12 @@ void Cmd_Strcmp_f( void )
 		consequent = Cmd_Argv( 4 );
 
 		if ( ( !strcmp( relation, "=" ) && !strcmp( firstString, secondString ) ) ||
-		     ( !strcmp( relation, "!=" ) && strcmp( firstString, secondString ) ) )
+		     ( ( !strcmp( relation, "!=" ) || !strcmp( relation, "≠" ) ) && strcmp( firstString, secondString ) ) )
 		{
 			result = consequent;
 		}
 		else if ( ( !strcmp( relation, "=" ) && strcmp( firstString, secondString ) ) ||
-		          ( !strcmp( relation, "!=" ) && !strcmp( firstString, secondString ) ) )
+		          ( ( !strcmp( relation, "!=" ) || !strcmp( relation, "≠" ) )&& !strcmp( firstString, secondString ) ) )
 		{
 			if ( Cmd_Argc() == 6 )
 			{
@@ -981,7 +981,7 @@ void Cmd_Strcmp_f( void )
 		}
 		else
 		{
-			Com_Printf(_( "invalid operator in strcmp command. valid operators are = !=\n" ));
+			Com_Printf(_( "invalid operator in strcmp command. Valid operators are = != ≠\n" ));
 			return;
 		}
 	}
