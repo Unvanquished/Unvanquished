@@ -4067,7 +4067,8 @@ Spawns a buildable
 ================
 */
 static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
-                           const vec3_t origin, const vec3_t normal, const vec3_t angles, int groundEntNum )
+                           const vec3_t origin, const vec3_t normal, const vec3_t angles, int groundEntNum,
+                           qboolean useBuildPoints )
 {
 	gentity_t  *built;
 	char       readable[ MAX_STRING_CHARS ];
@@ -4291,7 +4292,11 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 		G_SetBuildableAnim( built, BANIM_CONSTRUCT1, qtrue );
 	}
 
-	G_QueueResources( built->buildableTeam, -BG_Buildable( buildable )->buildPoints );
+	if ( useBuildPoints )
+	{
+		G_QueueResources( built->buildableTeam, -BG_Buildable( buildable )->buildPoints );
+	}
+
 	trap_LinkEntity( built );
 
 	if ( builder && builder->client )
@@ -4345,7 +4350,7 @@ qboolean G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 	switch ( G_CanBuild( ent, buildable, dist, origin, normal, &groundEntNum ) )
 	{
 		case IBE_NONE:
-			G_Build( ent, buildable, origin, normal, ent->s.apos.trBase, groundEntNum );
+			G_Build( ent, buildable, origin, normal, ent->s.apos.trBase, groundEntNum, qtrue );
 			return qtrue;
 
 		case IBE_NOALIENBP:
@@ -4415,7 +4420,7 @@ Traces down to find where an item should rest, instead of letting them
 free fall from their spawn points
 ================
 */
-static gentity_t *G_FinishSpawningBuildable( gentity_t *ent, qboolean force )
+static gentity_t *G_FinishSpawningBuildable( gentity_t *ent, qboolean force, qboolean useBuildPoints )
 {
 	trace_t     tr;
 	vec3_t      normal, dest;
@@ -4436,7 +4441,7 @@ static gentity_t *G_FinishSpawningBuildable( gentity_t *ent, qboolean force )
 	}
 
 	built = G_Build( ent, buildable, ent->s.pos.trBase,
-	                 normal, ent->s.angles, ENTITYNUM_NONE );
+	                 normal, ent->s.angles, ENTITYNUM_NONE, useBuildPoints );
 
 	built->takedamage = qtrue;
 	built->spawned = qtrue; //map entities are already spawned
@@ -4478,7 +4483,7 @@ Complete spawning a buildable using its placeholder
 */
 static void G_SpawnBuildableThink( gentity_t *ent )
 {
-	G_FinishSpawningBuildable( ent, qfalse );
+	G_FinishSpawningBuildable( ent, qfalse, qtrue );
 	G_FreeEntity( ent );
 }
 
@@ -4943,7 +4948,7 @@ void G_BuildLogRevertThink( gentity_t *ent )
 		}
 	}
 
-	built = G_FinishSpawningBuildable( ent, qtrue );
+	built = G_FinishSpawningBuildable( ent, qtrue, qfalse );
 
 	if ( ( built->deconstruct = ent->deconstruct ) )
 	{
