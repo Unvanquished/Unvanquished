@@ -502,6 +502,20 @@ static void CG_SetUIVars( void )
 		case TEAM_NONE:
 			trap_Cvar_Set( "p_teamname", "Spectator" );
 			trap_Cvar_Set( "p_classname", "Spectator" );
+			trap_Cvar_Set( "p_weaponname", "Nothing" );
+
+			/*
+			 * if we were on a team before we would want these to be reset (or they could mess with bindings)
+			 * the only ones, that actually are helpful to hold on to are p_score and p_credits, since these actually
+			 * might be taken over when joining a team again, or be used to look up old values before leaving the game
+			 */
+			trap_Cvar_Set( "p_class" , "0" );
+			trap_Cvar_Set( "p_weapon", "0" );
+			trap_Cvar_Set( "p_stage", "0" );
+			trap_Cvar_Set( "p_hp", "0" );
+			trap_Cvar_Set( "p_maxhp", "0" );
+			trap_Cvar_Set( "p_ammo", "0" );
+			trap_Cvar_Set( "p_clips", "0" );
 			return;
 
 		case TEAM_ALIENS:
@@ -515,8 +529,6 @@ static void CG_SetUIVars( void )
 			break;
 	}
 
-	trap_Cvar_Set( "p_hp", va( "%d", ps->stats[ STAT_HEALTH ] ) );
-	trap_Cvar_Set( "p_maxhp", va( "%d", ps->stats[ STAT_MAX_HEALTH ] ) );
 	trap_Cvar_Set( "p_class", va( "%d", ps->stats[ STAT_CLASS ] ) );
 
 	switch ( ps->stats[ STAT_CLASS ] )
@@ -658,6 +670,9 @@ static void CG_SetUIVars( void )
 
 	trap_Cvar_Set( "p_credits", va( "%d", ps->persistant[ PERS_CREDIT ] ) );
 	trap_Cvar_Set( "p_score", va( "%d", ps->persistant[ PERS_SCORE ] ) );
+
+	trap_Cvar_Set( "p_hp", va( "%d", ps->stats[ STAT_HEALTH ] ) );
+	trap_Cvar_Set( "p_maxhp", va( "%d", ps->stats[ STAT_MAX_HEALTH ] ) );
 	trap_Cvar_Set( "p_ammo", va( "%d", ps->ammo ) );
 	trap_Cvar_Set( "p_clips", va( "%d", ps->clips ) );
 }
