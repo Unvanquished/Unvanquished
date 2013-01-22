@@ -1058,7 +1058,7 @@ void Cmd_Calc_f( void )
 	}
 
 	// Divide
-	else if ( !strcmp( operation, "/" ) )
+	else if ( !strcmp( operation, "/" ) || !strcmp( operation, "÷" ) )
 	{
 		if ( atof( secondOperand ) == 0.f )
 		{
@@ -1071,7 +1071,7 @@ void Cmd_Calc_f( void )
 	}
 
 	// Multiply
-	else if ( !strcmp( operation, "*" ) || !strcmp( operation, "x" ) )
+	else if ( !strcmp( operation, "*" ) || !strcmp( operation, "x" ) || !strcmp( operation, "×" ) )
 	{
 		//note: × (multiplication operator) is not x (the letter) and might have different rendering with different fonts
 		Com_Printf( "%s × %s = %f\n", firstOperand, secondOperand, ( atof( firstOperand ) * atof( secondOperand ) ) );
