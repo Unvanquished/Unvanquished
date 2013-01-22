@@ -1402,18 +1402,18 @@ void G_CalculateBuildPoints( void )
 	// Add queued resources every second.
 	if ( level.time >= lastTimeAdded + 1000 && ( level.totalResources - level.queuedAlienPoints - level.queuedHumanPoints > 0 ) )
 	{
-		if ( (int) level.queuedHumanPoints )
+		if ( (int) level.queuedHumanPoints > 0 )
 		{
 			level.humanBuildPoints += (int) level.queuedHumanPoints;
 			level.totalResources -= (int) level.queuedHumanPoints;
-			level.queuedHumanPoints = 0;
+			level.queuedHumanPoints -= (int) level.queuedHumanPoints;
 		}
 
-		if ( (int) level.queuedAlienPoints )
+		if ( (int) level.queuedAlienPoints > 0 )
 		{
 			level.alienBuildPoints += (int) level.queuedAlienPoints;
 			level.totalResources -= (int) level.queuedAlienPoints;
-			level.queuedAlienPoints = 0;
+			level.queuedAlienPoints -= (int) level.queuedAlienPoints;
 		}
 
 		lastTimeAdded = level.time;
