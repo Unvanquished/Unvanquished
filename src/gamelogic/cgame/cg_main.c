@@ -625,6 +625,27 @@ static void CG_SetUIVars( void )
 			trap_Cvar_Set( "p_weaponname", "Grenade" );
 			break;
 
+		case WP_ALEVEL0:
+			trap_Cvar_Set( "p_weaponname", "Teeth" );
+			break;
+
+		case WP_ABUILD:
+		case WP_ABUILD2:
+		case WP_ALEVEL1:
+		case WP_ALEVEL1_UPG:
+		case WP_ALEVEL2:
+		case WP_ALEVEL2_UPG:
+		case WP_ALEVEL3:
+		case WP_ALEVEL3_UPG:
+		case WP_ALEVEL4:
+			trap_Cvar_Set( "p_weaponname", "Claws" );
+			break;
+
+		case WP_NONE:
+			trap_Cvar_Set( "p_weaponname", "Nothing" );
+			break;
+
+
 		default:
 			trap_Cvar_Set( "p_weaponname", "Unknown" );
 			break;
