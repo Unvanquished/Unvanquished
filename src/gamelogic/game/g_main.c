@@ -1408,11 +1408,22 @@ void G_CalculateBuildPoints( void )
 			level.totalResources -= (int) level.queuedHumanPoints;
 			level.queuedHumanPoints -= (int) level.queuedHumanPoints;
 		}
+		else if ( (int) level.queuedHumanPoints < 0 )
+		{
+			level.humanBuildPoints += (int) level.queuedHumanPoints;
+			level.queuedHumanPoints -= (int) level.queuedHumanPoints;
+		}
+
 
 		if ( (int) level.queuedAlienPoints > 0 )
 		{
 			level.alienBuildPoints += (int) level.queuedAlienPoints;
 			level.totalResources -= (int) level.queuedAlienPoints;
+			level.queuedAlienPoints -= (int) level.queuedAlienPoints;
+		}
+		else if ( (int) level.queuedAlienPoints < 0 )
+		{
+			level.alienBuildPoints += (int) level.queuedAlienPoints;
 			level.queuedAlienPoints -= (int) level.queuedAlienPoints;
 		}
 

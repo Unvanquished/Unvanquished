@@ -4294,7 +4294,7 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 
 	if ( useBuildPoints )
 	{
-		G_QueueResources( built->buildableTeam, -BG_Buildable( buildable )->buildPoints );
+		G_RemoveResources( built->buildableTeam, BG_Buildable( buildable )->buildPoints );
 	}
 
 	trap_LinkEntity( built );
@@ -4483,7 +4483,7 @@ Complete spawning a buildable using its placeholder
 */
 static void G_SpawnBuildableThink( gentity_t *ent )
 {
-	G_FinishSpawningBuildable( ent, qfalse, qtrue );
+	G_FinishSpawningBuildable( ent, qfalse, qfalse );
 	G_FreeEntity( ent );
 }
 
@@ -5061,6 +5061,20 @@ void G_QueueResources( team_t team, float value )
 
 		case TEAM_HUMANS:
 			level.queuedHumanPoints += value;
+			break;
+	}
+}
+
+void G_RemoveResources( team_t team, int value )
+{
+	switch ( team )
+	{
+		case TEAM_ALIENS:
+			level.alienBuildPoints -= value;
+			break;
+
+		case TEAM_HUMANS:
+			level.humanBuildPoints -= value;
 			break;
 	}
 }
