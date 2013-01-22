@@ -821,6 +821,7 @@ buildLog_t       *G_BuildLogNew( gentity_t *actor, buildFate_t fate );
 void             G_BuildLogSet( buildLog_t *log, gentity_t *ent );
 void             G_BuildLogAuto( gentity_t *actor, gentity_t *buildable, buildFate_t fate );
 void             G_BuildLogRevert( int id );
+void             G_QueueResources( team_t team, float value );
 
 //
 // g_utils.c

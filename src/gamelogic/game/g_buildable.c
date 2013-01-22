@@ -4291,15 +4291,7 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 		G_SetBuildableAnim( built, BANIM_CONSTRUCT1, qtrue );
 	}
 
-	if ( built->buildableTeam == TEAM_ALIENS )
-	{
-		level.alienBuildPoints -= BG_Buildable( built->s.modelindex )->buildPoints;
-	}
-	else if ( built->buildableTeam == TEAM_HUMANS )
-	{
-		level.humanBuildPoints -= BG_Buildable( built->s.modelindex )->buildPoints;
-	}
-
+	G_QueueResources( built->buildableTeam, -BG_Buildable( buildable )->buildPoints );
 	trap_LinkEntity( built );
 
 	if ( builder && builder->client )
@@ -5005,15 +4997,7 @@ void G_BuildLogRevert( int id )
 						}
 
 						// Give back resources
-						if ( ent->buildableTeam == TEAM_ALIENS )
-						{
-							level.alienBuildPoints += BG_Buildable( ent->s.modelindex )->buildPoints;
-						}
-						else if ( ent->buildableTeam == TEAM_HUMANS )
-						{
-							level.humanBuildPoints += BG_Buildable( ent->s.modelindex )->buildPoints;
-						}
-
+						G_QueueResources( ent->buildableTeam, BG_Buildable( ent->s.modelindex )->buildPoints );
 						G_FreeEntity( ent );
 						break;
 					}
@@ -5059,5 +5043,19 @@ void G_BuildLogRevert( int id )
 				}
 			}
 		}
+	}
+}
+
+void G_QueueResources( team_t team, float value )
+{
+	switch ( team )
+	{
+		case TEAM_ALIENS:
+			level.queuedAlienPoints += value;
+			break;
+
+		case TEAM_HUMANS:
+			level.queuedHumanPoints += value;
+			break;
 	}
 }
