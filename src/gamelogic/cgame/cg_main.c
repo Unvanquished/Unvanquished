@@ -501,6 +501,7 @@ static void CG_SetUIVars( void )
 	{
 		case TEAM_NONE:
 			trap_Cvar_Set( "p_teamname", "Spectator" );
+			trap_Cvar_Set( "p_classname", "Spectator" );
 			return;
 
 		case TEAM_ALIENS:
@@ -566,6 +567,10 @@ static void CG_SetUIVars( void )
 
 		case PCL_HUMAN_BSUIT:
 			trap_Cvar_Set( "p_classname", "Battlesuit" );
+			break;
+
+		case PCL_NONE: //used between death and spawn
+			trap_Cvar_Set( "p_classname", "Ghost" );
 			break;
 
 		default:
