@@ -807,7 +807,7 @@ void Cmd_If_f( void )
 			break;
 
 		default:
-			Com_Printf(_( "if <number> <relation> <number> <cmdthen> (<cmdelse>) : compares the first two numbers and executes <cmdthen> if true, <cmdelse> if false\n"
+			Com_Printf(_( "if <number|string> <relation> <number|string> <cmdthen> (<cmdelse>) : compares two numbers or two strings and executes <cmdthen> if true, <cmdelse> if false\n"
 
 			            "if <modifiers> <cmdthen> (<cmdelse>) : check if modifiers are (not) pressed\n"
 			            "-- modifiers are %s\n"
