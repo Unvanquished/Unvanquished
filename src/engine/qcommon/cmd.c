@@ -738,13 +738,14 @@ found:
 ===============
 Cmd_If_f
 
-Compares two numbers, if true executes the third argument, if false executes the forth
+Compares two numbers or strings, if true executes the third argument, if false executes the forth
 ===============
 */
 void Cmd_If_f( void )
 {
 	char           *result = NULL;
 	int            firstNumber, secondNumber;
+	qboolean       isNumericRelation;
 	const char     *firstString, *secondString;
 	char           *consequent;
 	char           *alternative = NULL;
@@ -783,32 +784,54 @@ void Cmd_If_f( void )
 			/* no break */
 
 		case 5:
-			consequent = Cmd_Argv( 4 );
-			firstNumber = atoi( firstString = Cmd_Argv( 1 ) );
+			firstString = Cmd_Argv( 1 );
 			relation = Cmd_Argv( 2 );
-			secondNumber = atoi( secondString = Cmd_Argv( 3 ) );
+			secondString = Cmd_Argv( 3 );
+			consequent = Cmd_Argv( 4 );
 
-			if      ( !strcmp( relation, "="  ) ) { result = ( firstNumber == secondNumber ) ? consequent : alternative; }
-			else if ( !strcmp( relation, "!=" ) || !strcmp( relation, "≠" )) { result = ( firstNumber != secondNumber ) ? consequent : alternative; }
-			else if ( !strcmp( relation, "<"  ) ) { result = ( firstNumber <  secondNumber ) ? consequent : alternative; }
-			else if ( !strcmp( relation, "<=" ) || !strcmp( relation, "≤" )) { result = ( firstNumber <= secondNumber ) ? consequent : alternative; }
-			else if ( !strcmp( relation, ">"  ) ) { result = ( firstNumber >  secondNumber ) ? consequent : alternative; }
-			else if ( !strcmp( relation, ">=" ) || !strcmp( relation, "≥" )) { result = ( firstNumber >= secondNumber ) ? consequent : alternative; }
-			else if ( !strcmp( relation, "eq" ) ) { result = ( Q_stricmp( firstString, secondString ) == 0 ) ? consequent : alternative; }
-			else if ( !strcmp( relation, "ne" ) ) { result = ( Q_stricmp( firstString, secondString ) != 0 ) ? consequent : alternative; }
-			else if ( !strcmp( relation, "in" ) ) { result = ( Q_stristr( secondString, firstString ) != 0 ) ? consequent : alternative; }
-			else if ( !strcmp( relation, "!in") ) { result = ( Q_stristr( secondString, firstString ) == 0 ) ? consequent : alternative; }
+			isNumericRelation = Q_strtoi(firstString, &firstNumber) && Q_strtoi(secondString, &secondNumber);
+
+			if ( !strcmp( relation, "=" ) || !strcmp( relation, "==" ) || !strcmp( relation, "eq" ) )
+			{
+				result = ( isNumericRelation ? firstNumber == secondNumber : !Q_stricmp( firstString, secondString ) ) ? consequent : alternative;
+			}
+			else if ( !strcmp( relation, "!=" ) || !strcmp( relation, "≠" ))
+			{
+				result = ( isNumericRelation ? firstNumber != secondNumber : Q_stricmp( firstString, secondString ) ) ? consequent : alternative;
+			}
+			else if ( !strcmp( relation, "<"  ) )
+			{
+				result = ( firstNumber <  secondNumber ) ? consequent : alternative;
+			}
+			else if ( !strcmp( relation, "<=" ) || !strcmp( relation, "≤" ))
+			{
+				result = ( firstNumber <= secondNumber ) ? consequent : alternative;
+			}
+			else if ( !strcmp( relation, ">"  ) )
+			{
+				result = ( firstNumber >  secondNumber ) ? consequent : alternative;
+			}
+			else if ( !strcmp( relation, ">=" ) || !strcmp( relation, "≥" )) {
+				result = ( firstNumber >= secondNumber ) ? consequent : alternative;
+			}
+			else if ( !strcmp( relation, "in" ) )
+			{
+				result = ( Q_stristr( secondString, firstString ) ) ? consequent : alternative;
+			}
+			else if ( !strcmp( relation, "!in") )
+			{
+				result = ( !Q_stristr( secondString, firstString ) ) ? consequent : alternative;
+			}
 			else
 			{
-				Com_Printf(_( "invalid relation operator in if command. valid relation operators are = != ≠ < > ≥ >= ≤ <= eq ne in !in\n" ));
+				Com_Printf(_( "invalid relation operator in if command. Valid relation operators are = != ≠ < > ≥ >= ≤ <= in !in\n" ));
 				return;
 			}
 
 			break;
 
 		default:
-			Com_Printf(_( "if <number> <relation> <number> <cmdthen> (<cmdelse>) : compares the first two numbers and executes <cmdthen> if true, <cmdelse> if false\n"
-
+			Com_Printf(_( "if <number|string> <relation> <number|string> <cmdthen> (<cmdelse>) : compares the first two numbers or strings and executes <cmdthen> if true, <cmdelse> if false\n"
 			            "if <modifiers> <cmdthen> (<cmdelse>) : check if modifiers are (not) pressed\n"
 			            "-- modifiers are %s\n"
 			            "-- commands are cvar names unless prefixed with / or \\\n"),
@@ -936,62 +959,6 @@ void Cmd_Math_f( void )
 		Com_Printf(_( "math <variableToSet> = <number> <operator> <number>\nmath <variableToSet> <operator> <number>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * /\n" ));
 		return;
 	}
-}
-
-/*
-===============
-Cmd_Strcmp_f
-
-Compares two strings, if true executes the third argument, if false executes the forth
-===============
-*/
-void Cmd_Strcmp_f( void )
-{
-	char *result;
-	char *firstString;
-	char *secondString;
-	char *consequent;
-	char *alternative;
-	char *relation;
-
-	if ( ( Cmd_Argc() == 6 ) || ( Cmd_Argc() == 5 ) )
-	{
-		firstString = Cmd_Argv( 1 );
-		relation = Cmd_Argv( 2 );
-		secondString = Cmd_Argv( 3 );
-		consequent = Cmd_Argv( 4 );
-
-		if ( ( !strcmp( relation, "=" ) && !strcmp( firstString, secondString ) ) ||
-		     ( ( !strcmp( relation, "!=" ) || !strcmp( relation, "≠" ) ) && strcmp( firstString, secondString ) ) )
-		{
-			result = consequent;
-		}
-		else if ( ( !strcmp( relation, "=" ) && strcmp( firstString, secondString ) ) ||
-		          ( ( !strcmp( relation, "!=" ) || !strcmp( relation, "≠" ) )&& !strcmp( firstString, secondString ) ) )
-		{
-			if ( Cmd_Argc() == 6 )
-			{
-				alternative = Cmd_Argv( 5 );
-				result = alternative;
-			}
-			else
-			{
-				return;
-			}
-		}
-		else
-		{
-			Com_Printf(_( "invalid operator in strcmp command. Valid operators are = != ≠\n" ));
-			return;
-		}
-	}
-	else
-	{
-		Com_Printf(_( "strcmp <string1> <relation> <string2> <cmdthen> (<cmdelse>) : compares the first two strings and executes <cmdthen> if true, <cmdelse> if false\n" ));
-		return;
-	}
-
-	Cbuf_InsertText( va( "%s\n", result ) );
 }
 
 /*
@@ -2635,8 +2602,6 @@ void Cmd_Init( void )
 	Cmd_SetCommandCompletionFunc( "math", Cvar_CompleteCvarName );
 	Cmd_AddCommand( "concat", Cmd_Concat_f );
 	Cmd_SetCommandCompletionFunc( "concat", Cmd_CompleteConcat );
-	Cmd_AddCommand( "strcmp", Cmd_Strcmp_f );
-	Cmd_SetCommandCompletionFunc( "strcmp", Cmd_CompleteIf );
 	Cmd_AddCommand( "alias", Cmd_Alias_f );
 	Cmd_SetCommandCompletionFunc( "alias", Cmd_CompleteAliasName );
 	Cmd_AddCommand( "unalias", Cmd_UnAlias_f );
