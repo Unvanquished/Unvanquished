@@ -940,62 +940,6 @@ void Cmd_Math_f( void )
 
 /*
 ===============
-Cmd_Strcmp_f
-
-Compares two strings, if true executes the third argument, if false executes the forth
-===============
-*/
-void Cmd_Strcmp_f( void )
-{
-	char *result;
-	char *firstString;
-	char *secondString;
-	char *consequent;
-	char *alternative;
-	char *relation;
-
-	if ( ( Cmd_Argc() == 6 ) || ( Cmd_Argc() == 5 ) )
-	{
-		firstString = Cmd_Argv( 1 );
-		relation = Cmd_Argv( 2 );
-		secondString = Cmd_Argv( 3 );
-		consequent = Cmd_Argv( 4 );
-
-		if ( ( !strcmp( relation, "=" ) && !strcmp( firstString, secondString ) ) ||
-		     ( ( !strcmp( relation, "!=" ) || !strcmp( relation, "≠" ) ) && strcmp( firstString, secondString ) ) )
-		{
-			result = consequent;
-		}
-		else if ( ( !strcmp( relation, "=" ) && strcmp( firstString, secondString ) ) ||
-		          ( ( !strcmp( relation, "!=" ) || !strcmp( relation, "≠" ) )&& !strcmp( firstString, secondString ) ) )
-		{
-			if ( Cmd_Argc() == 6 )
-			{
-				alternative = Cmd_Argv( 5 );
-				result = alternative;
-			}
-			else
-			{
-				return;
-			}
-		}
-		else
-		{
-			Com_Printf(_( "invalid operator in strcmp command. Valid operators are = != ≠\n" ));
-			return;
-		}
-	}
-	else
-	{
-		Com_Printf(_( "strcmp <string1> <relation> <string2> <cmdthen> (<cmdelse>) : compares the first two strings and executes <cmdthen> if true, <cmdelse> if false\n" ));
-		return;
-	}
-
-	Cbuf_InsertText( va( "%s\n", result ) );
-}
-
-/*
-===============
 Cmd_Concat_f
 
 concatenates cvars together
@@ -2635,8 +2579,6 @@ void Cmd_Init( void )
 	Cmd_SetCommandCompletionFunc( "math", Cvar_CompleteCvarName );
 	Cmd_AddCommand( "concat", Cmd_Concat_f );
 	Cmd_SetCommandCompletionFunc( "concat", Cmd_CompleteConcat );
-	Cmd_AddCommand( "strcmp", Cmd_Strcmp_f );
-	Cmd_SetCommandCompletionFunc( "strcmp", Cmd_CompleteIf );
 	Cmd_AddCommand( "alias", Cmd_Alias_f );
 	Cmd_SetCommandCompletionFunc( "alias", Cmd_CompleteAliasName );
 	Cmd_AddCommand( "unalias", Cmd_UnAlias_f );
