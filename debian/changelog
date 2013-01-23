@@ -1,3 +1,21 @@
+unvanquished (0.11.0-2) unstable; urgency=low
+
+  * Pull in some bug fixes...
+    - “exec autoexec.cfg” missing LF terminator
+    - localisation issues with md5sum (unvanquished-download-paks)
+    - IPv6 socket fix
+    - a few off-by-one fixes
+    - some commands require a server to be running
+    - VOIP: demo fix, server ignoring client move commands
+    - clients can no longer respawn via donedl
+    - correct display of overbright info during startup
+    - /alias no longer changes an existing alias
+  * ... and a feature or two.
+    - mute sound when not focused and/or minimised
+    - enable/disable VOIP without restarting
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Wed, 23 Jan 2013 12:55:28 +0000
+
 unvanquished (0.11.0-1) unstable; urgency=low
 
   * Release of alpha 11.
