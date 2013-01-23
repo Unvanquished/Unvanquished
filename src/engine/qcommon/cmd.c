@@ -738,13 +738,14 @@ found:
 ===============
 Cmd_If_f
 
-Compares two numbers, if true executes the third argument, if false executes the forth
+Compares two numbers or strings, if true executes the third argument, if false executes the forth
 ===============
 */
 void Cmd_If_f( void )
 {
 	char           *result = NULL;
 	int            firstNumber, secondNumber;
+	qboolean       isNumericRelation;
 	const char     *firstString, *secondString;
 	char           *consequent;
 	char           *alternative = NULL;
@@ -783,24 +784,47 @@ void Cmd_If_f( void )
 			/* no break */
 
 		case 5:
-			consequent = Cmd_Argv( 4 );
-			firstNumber = atoi( firstString = Cmd_Argv( 1 ) );
+			firstString = Cmd_Argv( 1 );
 			relation = Cmd_Argv( 2 );
-			secondNumber = atoi( secondString = Cmd_Argv( 3 ) );
+			secondString = Cmd_Argv( 3 );
+			consequent = Cmd_Argv( 4 );
 
-			if      ( !strcmp( relation, "="  ) ) { result = ( firstNumber == secondNumber ) ? consequent : alternative; }
-			else if ( !strcmp( relation, "!=" ) || !strcmp( relation, "≠" )) { result = ( firstNumber != secondNumber ) ? consequent : alternative; }
-			else if ( !strcmp( relation, "<"  ) ) { result = ( firstNumber <  secondNumber ) ? consequent : alternative; }
-			else if ( !strcmp( relation, "<=" ) || !strcmp( relation, "≤" )) { result = ( firstNumber <= secondNumber ) ? consequent : alternative; }
-			else if ( !strcmp( relation, ">"  ) ) { result = ( firstNumber >  secondNumber ) ? consequent : alternative; }
-			else if ( !strcmp( relation, ">=" ) || !strcmp( relation, "≥" )) { result = ( firstNumber >= secondNumber ) ? consequent : alternative; }
-			else if ( !strcmp( relation, "eq" ) ) { result = ( Q_stricmp( firstString, secondString ) == 0 ) ? consequent : alternative; }
-			else if ( !strcmp( relation, "ne" ) ) { result = ( Q_stricmp( firstString, secondString ) != 0 ) ? consequent : alternative; }
-			else if ( !strcmp( relation, "in" ) ) { result = ( Q_stristr( secondString, firstString ) != 0 ) ? consequent : alternative; }
-			else if ( !strcmp( relation, "!in") ) { result = ( Q_stristr( secondString, firstString ) == 0 ) ? consequent : alternative; }
+			isNumericRelation = Q_strtoi(firstString, &firstNumber) && Q_strtoi(secondString, &secondNumber);
+
+			if ( !strcmp( relation, "=" ) || !strcmp( relation, "==" ) || !strcmp( relation, "eq" ) )
+			{
+				result = ( isNumericRelation ? firstNumber == secondNumber : !Q_stricmp( firstString, secondString ) ) ? consequent : alternative;
+			}
+			else if ( !strcmp( relation, "!=" ) || !strcmp( relation, "≠" ))
+			{
+				result = ( isNumericRelation ? firstNumber != secondNumber : Q_stricmp( firstString, secondString ) ) ? consequent : alternative;
+			}
+			else if ( !strcmp( relation, "<"  ) )
+			{
+				result = ( firstNumber <  secondNumber ) ? consequent : alternative;
+			}
+			else if ( !strcmp( relation, "<=" ) || !strcmp( relation, "≤" ))
+			{
+				result = ( firstNumber <= secondNumber ) ? consequent : alternative;
+			}
+			else if ( !strcmp( relation, ">"  ) )
+			{
+				result = ( firstNumber >  secondNumber ) ? consequent : alternative;
+			}
+			else if ( !strcmp( relation, ">=" ) || !strcmp( relation, "≥" )) {
+				result = ( firstNumber >= secondNumber ) ? consequent : alternative;
+			}
+			else if ( !strcmp( relation, "in" ) )
+			{
+				result = ( Q_stristr( secondString, firstString ) ) ? consequent : alternative;
+			}
+			else if ( !strcmp( relation, "!in") )
+			{
+				result = ( !Q_stristr( secondString, firstString ) ) ? consequent : alternative;
+			}
 			else
 			{
-				Com_Printf(_( "invalid relation operator in if command. valid relation operators are = != ≠ < > ≥ >= ≤ <= eq ne in !in\n" ));
+				Com_Printf(_( "invalid relation operator in if command. Valid relation operators are = != ≠ < > ≥ >= ≤ <= in !in\n" ));
 				return;
 			}
 
