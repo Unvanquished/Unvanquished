@@ -657,23 +657,30 @@ Scoring functions for logic
 =======================
 */
 float BotGetBaseRushScore(gentity_t *ent) {
+
 	switch(ent->s.weapon) {
-		case WP_LUCIFER_CANNON: return 1.0f; break;
-		case WP_MACHINEGUN: return 0.5f; break;
-		case WP_PULSE_RIFLE: return 0.7f; break;
-		case WP_LAS_GUN: return 0.7f; break;
-		case WP_SHOTGUN: return 0.2f; break;
+		case WP_GRENADE:	return 0.7f;
+		case WP_BLASTER:	return 0.1f;
+		case WP_LUCIFER_CANNON: return 1.0f;
+		case WP_MACHINEGUN: return 0.5f;
+		case WP_PULSE_RIFLE: return 0.7f;
+		case WP_LAS_GUN: return 0.7f;
+		case WP_SHOTGUN: return 0.2f;
 		case WP_CHAINGUN: if(BG_InventoryContainsUpgrade(UP_BATTLESUIT,ent->client->ps.stats))
 							  return 0.5f;
 						  else
 							  return 0.2f;
-			break;
-		case WP_ALEVEL0: return 0.0f; break;
-		case WP_ALEVEL1: return 0.2f; break;
-		case WP_ALEVEL2: return 0.7f; break;
-		case WP_ALEVEL3: return 0.8f; break;
-		case WP_ALEVEL4: return 1.0f; break;
-		default: return 0.5f; break;
+		case WP_HBUILD: return 0.0f;
+		case WP_ABUILD: return 0.0f;
+		case WP_ABUILD2: return 0.0f;
+		case WP_ALEVEL0: return 0.0f;
+		case WP_ALEVEL1: return 0.2f;
+		case WP_ALEVEL2: return 0.5f;
+		case WP_ALEVEL2_UPG: return 0.7f;
+		case WP_ALEVEL3: return 0.8f;
+		case WP_ALEVEL3_UPG: return 0.9f;
+		case WP_ALEVEL4: return 1.0f;
+		default: return 0.5f;
 	}
 }
 
