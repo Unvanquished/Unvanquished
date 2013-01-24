@@ -34,6 +34,7 @@ Maryland 20850 USA.
 
 // console.c
 
+#include <time.h>
 #include "revision.h"
 #include "client.h"
 
@@ -234,13 +235,24 @@ void Con_Dump_f( void )
 	fileHandle_t f;
 	char         name[ MAX_STRING_CHARS ];
 
-	if ( Cmd_Argc() != 2 )
+	l = Cmd_Argc();
+
+	if ( l > 2 )
 	{
-		Com_Printf("%s", _( "usage: condump <filename>\n" ));
+		Com_Printf("%s", _( "usage: condump [filename]\n" ));
 		return;
 	}
 
-	Q_snprintf( name, sizeof( name ), "condump/%s", Cmd_Argv( 1 ) );
+	if ( l == 1 )
+	{
+		time_t now = time( NULL );
+		strftime( name, sizeof( name ), "condump/%Y%m%d-%H%M%S%z.txt",
+		          localtime( &now ) );
+	}
+	else
+	{
+		Q_snprintf( name, sizeof( name ), "condump/%s", Cmd_Argv( 1 ) );
+	}
 
 	Com_Printf(_( "Dumped console text to %s.\n"), name );
 
