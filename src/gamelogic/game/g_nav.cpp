@@ -678,33 +678,39 @@ qboolean BotFindSteerTarget(gentity_t *self, vec3_t aimPos) {
 	//we couldnt find a new position
 	return qfalse;
 }
-qboolean BotAvoidObstacles(gentity_t *self, vec3_t rVec, usercmd_t *botCmdBuffer) {
+qboolean BotAvoidObstacles(gentity_t *self, vec3_t rVec) {
+	usercmd_t *botCmdBuffer =&self->botMind->cmdBuffer;
+
 	if(!(self && self->client))
 		return qfalse;
 	if(BotGetTeam(self) == TEAM_NONE)
 		return qfalse;
+
 	gentity_t *blocker = BotGetPathBlocker(self);
 	if(blocker) {
-		if(BotShouldJump(self, blocker)) {
+		vec3_t newAimPos;
+		if(BotShouldJump(self, blocker)) 
+		{
 			//jump if we have enough stamina
-			if(self->client->ps.stats[STAT_STAMINA] >= STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE) {
+			if(self->client->ps.stats[STAT_STAMINA] >= STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE)
+			{
 				botCmdBuffer->upmove = 127;
-			} else if(BotGetTeam(self) == BotGetTeam(blocker) || blocker->s.number == ENTITYNUM_WORLD){
-				botCmdBuffer->forwardmove = 0;
-				botCmdBuffer->rightmove = 0;
-			}
+			} 
+
 			return qfalse;
-		} else {
-			vec3_t newAimPos;
-				//we should not jump, try to get around the obstruction
-			if(BotFindSteerTarget(self, newAimPos)) {
-				//found a steer target
-				VectorCopy(newAimPos,rVec);
-				return qtrue;
-			} else {
-				botCmdBuffer->rightmove = BotGetStrafeDirection();
-				botCmdBuffer->forwardmove = -127; //backup
-			}
+		} 
+		else if(BotFindSteerTarget(self, newAimPos)) 
+		{
+			//found a steer target
+			VectorCopy(newAimPos,rVec);
+			return qfalse;
+		} 
+		else
+		{
+			botCmdBuffer->rightmove = BotGetStrafeDirection();
+			botCmdBuffer->forwardmove = -127; //backup
+
+			return qtrue;
 		}
 	}
 	return qfalse;
@@ -733,49 +739,63 @@ qboolean BotOnLadder( gentity_t *self )
 	else
 		return qfalse;
 }
-/*
-BotSteer
-Slows down aiming for waypoints
-Based on Code by Mikko Mononen, but adapted for use in tremz
-*/
-void BotSteer(gentity_t *self, vec3_t target) {
-	vec3_t viewBase;
-	vec3_t aimVec;
-	vec3_t skilledVec;
 
-	if( !(self && self->client) )
-		return;
-	BG_GetClientViewOrigin(&self->client->ps,viewBase);
-	//get the Vector from the bot to the enemy (aim Vector)
-	VectorSubtract( target, viewBase, aimVec );
-	float length = VectorNormalize(aimVec);
+void BotDirectionToUsercmd(gentity_t *self, vec3_t dir, usercmd_t *cmd )
+{
+	vec3_t forward;
+	vec3_t right;
 
-	const int ip0 = 0;
-	const int ip1 = MIN(1,self->botMind->numCorners - 1);
-	vec3_t p0,p1;
-	vec3_t selfPos;
-	VectorCopy(self->s.origin,selfPos);
-	selfPos[2] += self->r.mins[2];
-	VectorCopy(self->botMind->route[ip0],p0);
-	VectorCopy(self->botMind->route[ip1],p1);
-	vec3_t dir0,dir1;
-	VectorSubtract(p0,selfPos,dir0);
-	VectorSubtract(p1,selfPos,dir1);
-	dir0[2] = 0;
-	dir1[2] = 0;
-	float len0 = VectorLength(dir0);
-	float len1 = VectorLength(dir1);
-	if(len1 > 0.001f)
-		VectorScale(dir1,1.0/len1,dir1);
+	float forwardmove;
+	float rightmove;
+	AngleVectors( self->client->ps.viewangles, forward, right, NULL );
+	forward[2] = 0;
+	VectorNormalize(forward);
+	right[2] = 0;
+	VectorNormalize(right);
 
-	skilledVec[0] = dir0[0] - dir1[0]*len0*0.5f;
-	skilledVec[1] = dir0[1] - dir1[1]*len0*0.5f;
-	skilledVec[2] = aimVec[2];
+	// get direction and non-optimal magnitude
+	forwardmove = 127 * DotProduct( forward, dir );
+	rightmove = 127 * DotProduct( right, dir );
 
-	VectorNormalize(skilledVec);
-	VectorScale(skilledVec, length, skilledVec);
-	VectorAdd(viewBase, skilledVec, target);
+	// find optimal magnitude to make speed as high as possible
+	if ( fabsf( forwardmove ) > fabsf( rightmove ) )
+	{
+		float highestforward = forwardmove < 0 ? -127 : 127;
+
+		float highestright = highestforward * rightmove / forwardmove;
+
+		cmd->forwardmove = ClampChar( highestforward );
+		cmd->rightmove = ClampChar( highestright );
+	}
+	else
+	{
+		float highestright = rightmove < 0 ? -127 : 127;
+
+		float highestforward = highestright * forwardmove / rightmove;
+
+		cmd->forwardmove = ClampChar( highestforward );
+		cmd->rightmove = ClampChar( highestright );
+	}
 }
+
+void BotSeek( gentity_t *self, vec3_t seekPos )
+{
+	vec3_t direction;
+	vec3_t viewOrigin;
+
+	BG_GetClientViewOrigin( &self->client->ps, viewOrigin );
+	VectorSubtract( seekPos, viewOrigin, direction );
+
+	VectorNormalize( direction );
+
+	// move directly toward the target
+	BotDirectionToUsercmd( self, direction, &self->botMind->cmdBuffer );
+	
+	// slowly change our aim to point to the target
+	BotSlowAim( self, seekPos, 0.6 );
+	BotAimAtLocation( self, seekPos );
+}
+
 /**BotGoto
 * Used to make the bot travel between waypoints or to the target from the last waypoint
 * Also can be used to make the bot travel other short distances
@@ -783,17 +803,20 @@ void BotSteer(gentity_t *self, vec3_t target) {
 void BotGoto(gentity_t *self, botTarget_t target ) {
 
 	vec3_t tmpVec;
+
 	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
 
-	botCmdBuffer->forwardmove = 127; //max forward speed
 	BotGetIdealAimLocation(self, target, tmpVec);
-	if(BotAvoidObstacles(self, tmpVec, botCmdBuffer)) { //make whatever adjustments we need to make
-		BotSlowAim(self, tmpVec, 0.6);
-	} else {
-		BotSteer(self, tmpVec); //steer to stay on path
-	}
 
-	BotAimAtLocation(self, tmpVec, botCmdBuffer);
+	if ( !BotAvoidObstacles(self, tmpVec ) )
+	{
+		BotSeek( self, tmpVec );
+	}
+	else
+	{
+		BotSlowAim( self, tmpVec, 0.6 );
+		BotAimAtLocation( self, tmpVec );
+	}
 
 	//dont sprint or dodge if we dont have enough stamina and are about to slow
 	if(BotGetTeam(self) == TEAM_HUMANS && self->client->ps.stats[STAT_STAMINA] < STAMINA_SLOW_LEVEL) {
