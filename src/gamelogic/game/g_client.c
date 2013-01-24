@@ -1455,7 +1455,7 @@ char *ClientBotConnect( int clientNum, qboolean firstTime, team_t team )
 	// can happen during reconnection
 	if ( !ent->botMind )
 	{
-		G_BotSetDefaults( clientNum, team, client->sess.botSkill );
+		G_BotSetDefaults( clientNum, team, client->sess.botSkill, client->sess.botTree );
 	}
 
 	G_LogPrintf( "ClientConnect: %i [%s] (%s) \"%s^7\" \"%c%s%c^7\" [BOT]\n",

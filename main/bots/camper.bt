@@ -1,0 +1,24 @@
+selector priority
+{
+	condition not alertedToEnemy
+	{
+		selector priority
+		{
+			condition botTeam eq TEAM_HUMANS
+			{
+				action equip
+			}
+			action heal
+			action flee
+		}
+	}
+	
+	condition alertedToEnemy
+	{
+		selector sequence
+		{
+			condition distanceTo E_ENEMY lt 500 { }
+			action fight
+		}
+	}
+}

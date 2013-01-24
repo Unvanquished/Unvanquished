@@ -227,16 +227,15 @@ bool BotCanEvolveToClass(gentity_t *self, class_t newClass) {
 }
 /*
 ==============================
-BotTaskEvolve
+BotActionEvolve
 ==============================
 */
-botTaskStatus_t BotTaskEvolve ( gentity_t *self, usercmd_t *botCmdBuffer )
+AINodeStatus_t BotActionEvolve ( gentity_t *self, AIActionNode_t *node )
 {
-	if(BotGetTeam(self) != TEAM_ALIENS)
-		return TASK_STOPPED;
-
 	if(!g_bot_evolve.integer)
-		return TASK_STOPPED;
+	{
+		return STATUS_FAILURE;
+	}
 
 	if(BotCanEvolveToClass(self, PCL_ALIEN_LEVEL4) && g_bot_level4.integer) {
 		BotEvolveToClass(self, PCL_ALIEN_LEVEL4);
@@ -255,67 +254,55 @@ botTaskStatus_t BotTaskEvolve ( gentity_t *self, usercmd_t *botCmdBuffer )
 	} else if(BotCanEvolveToClass(self, PCL_ALIEN_LEVEL0)) {
 		BotEvolveToClass(self, PCL_ALIEN_LEVEL0);
 	}
-	return TASK_STOPPED;
-}
-botTaskStatus_t BotTaskBuildA(gentity_t *self, usercmd_t *botCmdBuffer) {
-	return TASK_STOPPED; //TODO: Implement
+	else
+	{
+		return STATUS_FAILURE;
+	}
+	return STATUS_SUCCESS;
 }
 
-botTaskStatus_t BotTaskHealA(gentity_t *self, usercmd_t *botCmdBuffer) {
+AINodeStatus_t BotActionHealA( gentity_t *self, AIActionNode_t *node )
+{
 	const int maxHealth = BG_Class((class_t)self->client->ps.stats[STAT_CLASS])->health;
 	gentity_t *healTarget = NULL;
-	float distToHealTarget = 0;
+	float distToHealer = 0;
 
-	//find best heal target
-	if(!(healTarget = self->botMind->closestBuildings.booster.ent)) {
-		if(!(healTarget = self->botMind->closestBuildings.overmind.ent)) {
-				healTarget = self->botMind->closestBuildings.egg.ent;
-				distToHealTarget = Com_Clamp(0,MAX_HEAL_DIST,self->botMind->closestBuildings.egg.distance);
-		} else {
-			distToHealTarget = Com_Clamp(0,MAX_HEAL_DIST,self->botMind->closestBuildings.overmind.distance);
-		}
-	} else {
-		distToHealTarget = Com_Clamp(0,MAX_HEAL_DIST,self->botMind->closestBuildings.booster.distance);
+	if(self->botMind->closestBuildings[BA_A_BOOSTER].ent) {
+		healTarget = self->botMind->closestBuildings[BA_A_BOOSTER].ent;
+	} else if(self->botMind->closestBuildings[BA_A_OVERMIND].ent) {
+		healTarget = self->botMind->closestBuildings[BA_A_OVERMIND].ent;
+	} else if(self->botMind->closestBuildings[BA_A_SPAWN].ent) {
+		healTarget = self->botMind->closestBuildings[BA_A_SPAWN].ent;
 	}
 
 	if(!healTarget)
-		return TASK_STOPPED;
+		return STATUS_FAILURE;
 
-	if(BotGetTeam(self) != TEAM_ALIENS)
-		return TASK_STOPPED;
+	if(self->client->ps.stats[STAT_TEAM] != TEAM_ALIENS)
+		return STATUS_FAILURE;
 
-		//we are fully healed
-	if(maxHealth == self->health)
-		return TASK_STOPPED;
+		//we are fully healed 
+	if(maxHealth == self->client->ps.stats[STAT_HEALTH])
+		return STATUS_SUCCESS;
 
-	if(self->botMind->bestEnemy.ent) {
-		if(self->botMind->bestEnemy.distance <= BOT_ENGAGE_DIST)
-			return TASK_STOPPED;
-	}
-	//check conditions upon entering task first time
-	if(self->botMind->task != BOT_TASK_HEAL) {
-		float percentHealth = ((float) self->health / maxHealth);
-		if(distToHealTarget * percentHealth > BOT_FUZZY_HEAL_VALUE)
-			return TASK_STOPPED;
-	}
-
-	if(BotRoutePermission(self, BOT_TASK_HEAL)) {
-		if(!BotChangeTarget(self, healTarget,NULL)) {
-			return TASK_STOPPED;
+	if( self->botMind->currentNode != node ) {
+		if( !BotChangeTarget( self, healTarget, NULL ) ) {
+			return STATUS_FAILURE;
 		}
 	}
 
 	if(!BotTargetIsEntity(self->botMind->goal)) {
-		return TASK_STOPPED;
+		return STATUS_FAILURE;
 	}
 
 	//target has died, signal goal is unusable
 	if(self->botMind->goal.ent->health <= 0) {
-		return TASK_STOPPED;
+		return STATUS_FAILURE;
 	}
 
-	if(DistanceToGoalSquared(self) > Square(self->r.maxs[0]+100))
-		BotMoveToGoal(self, botCmdBuffer);
-	return TASK_RUNNING;
+	if ( DistanceToGoalSquared( self ) > Square( 70 ) )
+	{
+		BotMoveToGoal( self );
+	}
+	return STATUS_RUNNING;
 }
-

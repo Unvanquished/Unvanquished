@@ -5450,10 +5450,11 @@ qboolean G_admin_bot( gentity_t *ent ) {
 	char team[MAX_TOKEN_CHARS];
 	char skill[MAX_TOKEN_CHARS];
 	char err[MAX_STRING_CHARS];
+	char behavior[MAX_QPATH];
 	int skill_int;
 	int i;
 
-	static const char bot_usage[] = QQ( N_( "^3bot: ^7usage: bot add [^5name|*^7] [^5aliens|humans^7] (^5skill^7)\n"
+	static const char bot_usage[] = QQ( N_( "^3bot: ^7usage: bot add [^5name|*^7] [^5aliens|humans^7] (^5skill^7) (^5behavior^7)\n"
 	                                        "            bot [^5del|spec|unspec^7] [^5name|all^7]\n"
 	                                        "            bot names [^5aliens|humans^7] [^5names…^7]\n"
 	                                        "            bot names [^5clear|list^7]\n" ) );
@@ -5490,14 +5491,24 @@ qboolean G_admin_bot( gentity_t *ent ) {
 				skill_int = 10; //skill arg too bit, reset to 10
 			}
 		}
+
+		min_args++;
+		if(trap_Argc() < min_args)
+		{
+			Q_strncpyz( behavior, "default", sizeof( behavior ) );
+		}
+		else
+		{
+			trap_Argv( 5, behavior, sizeof( behavior ) );
+		}
 	//choose team
 		if(!Q_stricmp(team, "humans") || !Q_stricmp(team, "h")) {
-			if(!G_BotAdd(name,TEAM_HUMANS,skill_int)) {
+			if(!G_BotAdd(name,TEAM_HUMANS,skill_int,behavior)) {
 				ADMP( QQ( "Can't add a bot\n" ) );
 			return qfalse;
 		}
 		} else if(!Q_stricmp(team, "aliens") || !Q_stricmp(team, "a")) {
-			if(!G_BotAdd(name,TEAM_ALIENS,skill_int)) {
+			if(!G_BotAdd(name,TEAM_ALIENS,skill_int,behavior)) {
 				ADMP( QQ( N_( "Can't add a bot\n" ) ) );
 				return qfalse;
 			}

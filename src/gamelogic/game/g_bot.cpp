@@ -44,6 +44,613 @@ void BotDPrintf(const char* fmt, ...) {
 		trap_Print( text );
 	}
 }
+
+/*
+=======================
+Behavior Tree
+=======================
+*/
+
+#define allocNode( T ) ( T * ) BG_Alloc( sizeof( T ) );
+
+#define stringify( v ) va( #v " %d", v )
+
+AINode_t *ReadNodeList( int handle );
+AINode_t *ReadConditionNode( int handle );
+AINode_t *ReadActionNode( int handle );
+
+void CheckToken( int handle, const char *tokenValueName, const char *nodename, const pc_token_t *token, int requiredType )
+{
+	char filename[ MAX_QPATH ];
+	int line;
+
+	if ( token->type != requiredType )
+	{
+		trap_Parse_SourceFileAndLine( handle, filename, &line );
+		BotDPrintf( S_COLOR_RED "ERROR: When parsing %s, Invalid %s %s after %s on line %d\n", filename, tokenValueName, token->string, nodename, line );
+	}
+}
+
+AINode_t *ReadConditionNode( int handle )
+{
+	pc_token_t token;
+	AICondition_t *condition;
+
+	trap_Parse_ReadToken( handle, &token );
+
+	condition = allocNode( AICondition_t );
+	condition->type = CONDITION_NODE;
+
+	// read not or bool
+	if ( !Q_stricmp( token.string, "not" ) )
+	{
+		condition->op = OP_NOT;
+
+		if ( !trap_Parse_ReadToken( handle, &token ) )
+		{
+			BotDPrintf( S_COLOR_RED "ERROR: no token after operator not\n" );
+		}
+	}
+	else
+	{
+		condition->op = OP_BOOL;
+	}
+
+	if ( !Q_stricmp( token.string, "buildingIsDamaged" ) )
+	{
+		condition->info = CON_DAMAGEDBUILDING;
+	}
+	else if ( !Q_stricmp( token.string, "alertedToEnemy" ) )
+	{
+		condition->info = CON_ENEMY;
+	}
+	else if ( !Q_stricmp( token.string, "haveWeapon" ) )
+	{
+		condition->info = CON_WEAPON;
+
+		trap_Parse_ReadToken( handle, &token );
+
+		CheckToken( handle, "weapon", "condition haveWeapon", &token, TT_NUMBER );
+
+		condition->param1.type = VALUE_INT;
+		condition->param1.value.i = token.intvalue;
+	}
+	else if ( !Q_stricmp( token.string, "haveUpgrade" ) ) 
+	{
+		condition->info = CON_UPGRADE;
+
+		trap_Parse_ReadToken( handle, &token );
+		
+		CheckToken( handle, "upgrade", "condition haveUpgrade", &token, TT_NUMBER );
+
+		condition->param1.type = VALUE_INT;
+		condition->param1.value.i = token.intvalue;
+	}
+	else if ( !Q_stricmp( token.string, "teamateHasWeapon" ) )
+	{
+		condition->info = CON_TEAM_WEAPON;
+		
+		trap_Parse_ReadToken( handle, &token );		
+		
+		CheckToken( handle, "weapon", "condition teamateHasWeapon", &token, TT_NUMBER );
+
+		condition->param1.type = VALUE_INT;
+		condition->param1.value.i = token.intvalue;
+	}
+	else if ( !Q_stricmp( token.string, "botTeam" ) )
+	{
+		condition->info = CON_TEAM;
+
+		trap_Parse_ReadToken( handle, &token );
+
+		CheckToken( handle, "operator", "condition botTeam", &token, TT_NUMBER );
+
+		condition->op = ( AIConditionOperator_t )token.intvalue;
+
+		trap_Parse_ReadToken( handle, &token );
+
+		CheckToken( handle, "team", "condition botTeam", &token, TT_NUMBER );
+
+		condition->param1.type = VALUE_INT;
+		condition->param1.value.i = token.intvalue;
+	}
+	else if ( !Q_stricmp( token.string, "percentHealth" ) )
+	{
+		condition->info = CON_HEALTH;
+
+		trap_Parse_ReadToken( handle, &token );
+
+		CheckToken( handle, "operator", "condition percentHealth", &token, TT_NUMBER );
+
+		condition->op = ( AIConditionOperator_t ) token.intvalue;
+
+		trap_Parse_ReadToken( handle, &token );
+
+		CheckToken( handle, "value", "condition percentHealth", &token, TT_NUMBER );
+
+		condition->param1.type = VALUE_FLOAT;
+		condition->param1.value.f = token.floatvalue;
+	}
+	else if ( !Q_stricmp( token.string, "weapon" ) )
+	{
+		condition->info = CON_CURWEAPON;
+
+		trap_Parse_ReadToken( handle, &token );
+
+		CheckToken( handle, "operator", "condition weapon", &token, TT_NUMBER );
+		condition->op = ( AIConditionOperator_t ) token.intvalue;
+
+		trap_Parse_ReadToken( handle, &token );
+
+		CheckToken( handle, "weapon", "condition weapon", &token, TT_NUMBER );
+
+		condition->param1.type = VALUE_INT;
+		condition->param1.value.i = token.intvalue;
+	}
+	else if ( !Q_stricmp( token.string, "distanceTo" ) )
+	{
+		condition->info = CON_DISTANCE;
+
+		trap_Parse_ReadToken( handle, &token );
+
+		CheckToken( handle, "entity", "condition distanceTo", &token, TT_NUMBER );
+
+		condition->param1.value.i = token.intvalue;
+
+		trap_Parse_ReadToken( handle, &token );
+		
+		CheckToken( handle, "operator", "condition distanceTo", &token, TT_NUMBER );
+
+		condition->op = ( AIConditionOperator_t ) token.intvalue;
+
+		trap_Parse_ReadToken( handle, &token );
+
+		CheckToken( handle, "value", "condition distanceTo", &token, TT_NUMBER );
+
+		condition->param2.value.i = token.intvalue;
+	}
+	else if ( !Q_stricmp ( token.string, "baseRushScore" ) )
+	{
+		condition->info = CON_BASERUSH;
+
+		trap_Parse_ReadToken( handle, &token );
+
+		CheckToken( handle, "operator", "condition baseRushScore", &token, TT_NUMBER );
+
+		condition->op = ( AIConditionOperator_t ) token.intvalue;
+
+		trap_Parse_ReadToken( handle, &token );
+
+		CheckToken( handle, "value", "condition baseRushScore", &token, TT_NUMBER );
+
+		condition->param1.value.f = token.floatvalue;
+	}
+	else if ( !Q_stricmp( token.string, "healScore" ) )
+	{
+		condition->info = CON_HEAL;
+
+		trap_Parse_ReadToken( handle, &token );
+
+		CheckToken( handle, "operator", "condition healScore", &token, TT_NUMBER );
+
+		condition->op = ( AIConditionOperator_t ) token.intvalue;
+
+		trap_Parse_ReadToken( handle, &token );
+
+		CheckToken( handle, "value", "condition healScore", &token, TT_NUMBER );
+		
+		condition->param1.value.f = token.floatvalue;
+	}
+	else
+	{
+		BotDPrintf( S_COLOR_RED "ERROR: unknown condition %s\n", token.string );
+	}
+
+	trap_Parse_ReadToken( handle, &token );
+
+	if ( Q_stricmp( token.string, "{" ) )
+	{
+		int line;
+		char filename[ MAX_QPATH ];
+		trap_Parse_SourceFileAndLine( handle, filename, &line );
+		BotDPrintf( S_COLOR_RED "ERROR: When parsing %s, found %s expecting { on line %d\n", filename, token.string, line );
+	}
+
+	while ( Q_stricmp( token.string, "}" ) )
+	{
+		trap_Parse_ReadToken( handle, &token );
+
+		if ( !Q_stricmp( token.string, "selector" ) )
+		{
+			condition->child = ReadNodeList( handle );
+		}
+		else if ( !Q_stricmp( token.string, "action" ) )
+		{
+			condition->child = ReadActionNode( handle );
+		}
+		else if ( !Q_stricmp( token.string, "condition" ) )
+		{
+			condition->child = ReadConditionNode( handle );
+		}
+		else if ( Q_stricmp( token.string, "}" ) )
+		{
+			char filename[ MAX_QPATH ];
+			int line;
+			trap_Parse_SourceFileAndLine( handle, filename, &line );
+			BotDPrintf( S_COLOR_RED "ERROR: When parsing %s, invalid token on line %d found: %s\n", filename, line, token.string );
+		}
+	}
+	return ( AINode_t * ) condition;
+}
+
+AINode_t *ReadActionNode( int handle )
+{
+	pc_token_t token;
+	AIActionNode_t *node;
+	trap_Parse_ReadToken( handle, &token );
+
+	if ( !Q_stricmp( token.string, "heal" ) )
+	{
+		node = allocNode( AIActionNode_t );
+		node->action = ACTION_HEAL;
+	}
+	else if ( !Q_stricmp( token.string, "fight" ) )
+	{
+		node = allocNode( AIActionNode_t );
+		node->action = ACTION_FIGHT;
+	}
+	else if ( !Q_stricmp( token.string, "roam" ) )
+	{
+		node = allocNode( AIActionNode_t );
+		node->action = ACTION_ROAM;
+	}
+	else if ( !Q_stricmp( token.string, "equip" ) )
+	{
+		AIBuy_t *realAction = allocNode( AIBuy_t );
+		realAction->action = ACTION_BUY;
+		realAction->numUpgrades = 0;
+		realAction->weapon = WP_NONE;
+		node = ( AIActionNode_t * ) realAction;
+	}
+	else if ( !Q_stricmp( token.string, "buy" ) )
+	{
+		AIBuy_t *realAction = allocNode( AIBuy_t );
+		realAction->action = ACTION_BUY;
+		
+		trap_Parse_ReadToken( handle, &token );
+
+		CheckToken( handle, "weapon", "action buy", &token, TT_NUMBER );
+
+		realAction->weapon = ( weapon_t ) token.intvalue;
+		realAction->numUpgrades = 0;
+		node = ( AIActionNode_t * ) realAction;
+	}
+	else if ( !Q_stricmp( token.string, "flee" ) )
+	{
+		node = allocNode( AIActionNode_t );
+		node->action = ACTION_FLEE;
+	}
+	else if ( !Q_stricmp( token.string, "repair" ) )
+	{
+		node = allocNode( AIActionNode_t );
+		node->action = ACTION_REPAIR;
+	}
+	else if ( !Q_stricmp( token.string, "evolve" ) )
+	{
+		node = allocNode( AIActionNode_t );
+		node->action = ACTION_EVOLVE;
+	}
+	else if ( !Q_stricmp( token.string, "rush" ) )
+	{
+		node = allocNode( AIActionNode_t );
+		node->action = ACTION_RUSH;
+	}
+	else
+	{
+		BotDPrintf( S_COLOR_RED "ERROR: Invalid token %s on line %d\n", token.string, token.line );
+	}
+
+	node->type = ACTION_NODE;
+	return ( AINode_t * ) node;
+}
+
+AINode_t *ReadNodeList( int handle )
+{
+	pc_token_t token;
+	AINodeList_t *list;
+
+	trap_Parse_ReadToken( handle, &token );
+
+	list = allocNode( AINodeList_t );
+
+	if ( !Q_stricmp( token.string, "sequence" ) )
+	{
+		list->selector = SELECTOR_SEQUENCE;
+		trap_Parse_ReadToken( handle, &token );
+	}
+	else if ( !Q_stricmp( token.string, "priority" ) )
+	{
+		list->selector = SELECTOR_PRIORITY;
+
+		trap_Parse_ReadToken( handle, &token );
+	}
+	else if ( !Q_stricmp( token.string, "{" ) )
+	{
+		list->selector = SELECTOR_SELECTOR;
+	}
+	else
+	{
+		BotDPrintf( S_COLOR_RED "ERROR: Invalid token %s on line %d\n", token.string, token.line );
+	}
+
+	if ( Q_stricmp( token.string, "{" ) )
+	{
+		BotDPrintf( S_COLOR_RED "ERROR: Invalid token %s on line %d\n", token.string, token.line );
+	}
+
+	while( Q_stricmp( token.string, "}" ) )
+	{
+		trap_Parse_ReadToken( handle, &token );
+
+		if ( !Q_stricmp( token.string, "selector" ) )
+		{
+			list->list[ list->numNodes ] = ReadNodeList( handle );
+			list->numNodes++;
+		}
+		else if ( !Q_stricmp( token.string, "action" ) )
+		{
+			list->list[ list->numNodes ] = ReadActionNode( handle );
+			list->numNodes++;
+		}
+		else if ( !Q_stricmp( token.string, "condition" ) )
+		{
+			list->list[ list->numNodes ] = ReadConditionNode( handle );
+			list->numNodes++;
+		}
+		else if ( Q_stricmp( token.string, "}" ) )
+		{
+			BotDPrintf( S_COLOR_RED "ERROR: Invalid token %s on line %d\n", token.string, token.line );
+		}
+	}
+	list->type = SELECTOR_NODE;
+	return ( AINode_t * ) list;
+}
+
+#define D( T ) trap_Parse_AddGlobalDefine( stringify( T ) )
+
+AITreeList_t treeList;
+
+
+void InitTreeList( AITreeList_t *list )
+{
+	list->trees = ( AIBehaviorTree_t ** ) BG_Alloc( sizeof( AIBehaviorTree_t * ) * 10 );
+	list->maxTrees = 10;
+	list->numTrees = 0;
+}
+void AddTreeToList( AITreeList_t *list, AIBehaviorTree_t *tree )
+{
+	if ( list->maxTrees == list->numTrees )
+	{
+		list->maxTrees *= 2;
+		AIBehaviorTree_t **trees = ( AIBehaviorTree_t ** ) BG_Alloc( sizeof( AIBehaviorTree_t * ) * list->maxTrees );
+		memcpy( trees, list->trees, sizeof( AIBehaviorTree_t * ) * list->numTrees );
+		BG_Free( list->trees );
+		list->trees = trees;
+	}
+
+	list->trees[ list->numTrees ] = tree;
+	list->numTrees++;
+}
+
+void RemoveTreeFromList( AITreeList_t *list, AIBehaviorTree_t *tree )
+{
+	for ( int i = 0; i < list->numTrees; i++ )
+	{
+		AIBehaviorTree_t *testTree = list->trees[ i ];
+		if ( !Q_stricmp( testTree->name, tree->name ) )
+		{
+			if ( i + 1 < list->numTrees )
+			{
+				memmove( &list->trees[ i ], &list->trees[ i + 1 ], sizeof( AIBehaviorTree_t * ) );
+			}
+
+			list->numTrees--;
+		}
+	}
+}
+
+void FreeTreeList( AITreeList_t *list )
+{
+	BG_Free( list->trees );
+	list->maxTrees = 0;
+	list->numTrees = 0;
+}
+
+AIBehaviorTree_t * ReadBehaviorTree( const char *name )
+{
+	for ( int i = 0; i < treeList.numTrees; i++ )
+	{
+		AIBehaviorTree_t *tree = treeList.trees[ i ];
+		if ( !Q_stricmp( tree->name, name ) )
+		{
+			return tree;
+		}
+	}
+
+	// add upgrades
+	D( UP_LIGHTARMOUR );
+	D( UP_HELMET );
+	D( UP_MEDKIT );
+	D( UP_BATTPACK );
+	D( UP_JETPACK );
+	D( UP_BATTLESUIT );
+	D( UP_GRENADE );
+
+	// add weapons
+	D( WP_MACHINEGUN );
+	D( WP_PAIN_SAW );
+	D( WP_SHOTGUN );
+	D( WP_LAS_GUN );
+	D( WP_MASS_DRIVER );
+	D( WP_CHAINGUN );
+	D( WP_FLAMER );
+	D( WP_PULSE_RIFLE );
+	D( WP_LUCIFER_CANNON );
+	D( WP_GRENADE );
+	D( WP_HBUILD );
+
+	// add teams
+	D( TEAM_ALIENS );
+	D( TEAM_HUMANS );
+
+	// add AIEntitys
+	D( E_NONE );
+	D( E_A_SPAWN );
+	D( E_A_OVERMIND );
+	D( E_A_BARRICADE );
+	D( E_A_ACIDTUBE );
+	D( E_A_TRAPPER );
+	D( E_A_BOOSTER );
+	D( E_A_HIVE );
+	D( E_H_SPAWN );
+	D( E_H_MGTURRET );
+	D( E_H_TESLAGEN );
+	D( E_H_ARMOURY );
+	D( E_H_DCC );
+	D( E_H_MEDISTAT );
+	D( E_H_REACTOR );
+	D( E_H_REPEATER );
+	D( E_GOAL );
+	D( E_ENEMY );
+	D( E_DAMAGEDBUILDING );
+
+	// add condition ops
+	trap_Parse_AddGlobalDefine( va( "lt %d", OP_LESSTHAN ) );
+	trap_Parse_AddGlobalDefine( va( "lte %d", OP_LESSTHANEQUAL ) );
+	trap_Parse_AddGlobalDefine( va( "gt %d", OP_GREATERTHAN ) );
+	trap_Parse_AddGlobalDefine( va( "gte %d", OP_GREATERTHANEQUAL ) );
+	trap_Parse_AddGlobalDefine( va( "eq %d", OP_EQUAL ) );
+	trap_Parse_AddGlobalDefine( va( "neq %d", OP_NEQUAL ) );
+
+	char treefilename[ MAX_QPATH ];
+	Q_strncpyz( treefilename, va( "bots/%s.bt", name ), sizeof( treefilename ) );
+
+	int handle = trap_Parse_LoadSource( treefilename );
+	if ( !handle )
+	{
+		G_Printf( S_COLOR_RED "ERROR: Cannot load behavior tree %s: File not found\n", treefilename );
+		return NULL;
+	}
+
+	pc_token_t token;
+	trap_Parse_ReadToken( handle, &token );
+
+	AIBehaviorTree_t *tree;
+	tree = ( AIBehaviorTree_t * ) BG_Alloc( sizeof( AIBehaviorTree_t ) );
+
+	Q_strncpyz( tree->name, name, sizeof( tree->name ) );
+
+	if ( !Q_stricmp( token.string, "selector" ) )
+	{
+		tree->root = ReadNodeList( handle );
+	}
+	else if ( !Q_stricmp( token.string, "condition" ) )
+	{
+		tree->root = ReadConditionNode( handle );
+	}
+	else if ( !Q_stricmp( token.string, "action" ) )
+	{
+		tree->root = ReadActionNode( handle );
+	}
+	else
+	{
+		BotDPrintf( S_COLOR_RED "ERROR: Invalid token %s on line %d\n", token.string, token.line );
+		BG_Free( tree );
+		tree = NULL;
+	}
+
+	if ( tree )
+	{
+		AddTreeToList( &treeList, tree );
+	}
+
+	trap_Parse_FreeSource( handle );
+	return tree;
+}
+
+void FreeNodeList( AINodeList_t *node );
+
+void FreeConditionNode( AICondition_t *node )
+{
+	if ( !node->child )
+	{
+		return;
+	}
+
+	if ( *node->child == SELECTOR_NODE )
+	{
+		FreeNodeList( ( AINodeList_t * )node->child );
+	}
+	else if ( *node->child == CONDITION_NODE )
+	{
+		FreeConditionNode( ( AICondition_t * ) node->child );
+	}
+	else if ( *node->child == ACTION_NODE )
+	{
+		BG_Free( node->child );
+	}
+	BG_Free( node );
+}
+
+void FreeNodeList( AINodeList_t *node )
+{
+	for( int i = 0; i < node->numNodes; i++ )
+	{
+		if ( *node->list[ i ] == SELECTOR_NODE )
+		{
+			FreeNodeList( ( AINodeList_t * )node->list[ i ] );
+		}
+		else if ( *node->list[ i ] == CONDITION_NODE )
+		{
+			FreeConditionNode( ( AICondition_t * ) node->list[ i ] );
+		}
+		else if ( *node->list[ i ] == ACTION_NODE )
+		{
+			BG_Free( node->list[ i ] );
+		}
+	}
+	BG_Free( node );
+}
+
+void FreeBehaviorTree( AIBehaviorTree_t *tree )
+{
+	if ( tree )
+	{
+		if ( *tree->root == SELECTOR_NODE )
+		{
+			FreeNodeList( ( AINodeList_t * ) tree->root );
+		}
+		else if ( *tree->root == CONDITION_NODE )
+		{
+			FreeConditionNode( ( AICondition_t * ) tree->root );
+		}
+		else if ( *tree->root == ACTION_NODE )
+		{
+			BG_Free( tree->root );
+		}
+		else
+		{
+			G_Printf( "ERROR: invalid root node for behavior tree %s\n", tree->name );
+		}
+
+		BG_Free( tree );
+	}
+	else
+	{
+		G_Printf( "WARNING: Attempted to free NULL behavior tree\n" );
+	}
+}
+
 /*
 =======================
 Scoring functions for logic
@@ -68,6 +675,43 @@ float BotGetBaseRushScore(gentity_t *ent) {
 		case WP_ALEVEL4: return 1.0f; break;
 		default: return 0.5f; break;
 	}
+}
+
+float BotGetHealScore( gentity_t *self )
+{
+	float distToHealer = 0;
+	float percentHealth = 0;
+	float maxHealth = BG_Class( ( class_t ) self->client->ps.stats[ STAT_CLASS ] )->health;
+
+	if ( self->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
+	{
+		if( self->botMind->closestBuildings[ BA_A_BOOSTER ].ent )
+		{
+			distToHealer = self->botMind->closestBuildings[ BA_A_BOOSTER ].distance;
+		} 
+		else if( self->botMind->closestBuildings[ BA_A_OVERMIND ].ent )
+		{
+			distToHealer = self->botMind->closestBuildings[ BA_A_OVERMIND ].distance;
+		} 
+		else if( self->botMind->closestBuildings[ BA_A_SPAWN ].ent )
+		{
+			distToHealer = self->botMind->closestBuildings[BA_A_SPAWN].distance;
+		}
+	}
+	else
+	{
+		distToHealer = self->botMind->closestBuildings[ BA_H_MEDISTAT ].distance;
+	}
+
+	percentHealth = ( (float) self->client->ps.stats[STAT_HEALTH] )/ maxHealth;
+
+	distToHealer = MAX( MIN( MAX_HEAL_DIST, distToHealer ), MAX_HEAL_DIST * ( 3.0f / 4.0f ) );
+
+	if ( percentHealth == 1.0f )
+	{
+		return 1.0f;
+	}
+	return percentHealth * distToHealer / MAX_HEAL_DIST;
 }
 
 float BotGetEnemyPriority(gentity_t *self, gentity_t *ent) {
@@ -224,9 +868,9 @@ gentity_t* BotFindBuilding(gentity_t *self, int buildingType) {
 	return closestBuilding;
 }
 
-void BotFindClosestBuildings(gentity_t *self, botClosestBuildings_t *closest) {
+void BotFindClosestBuildings(gentity_t *self, botEntityAndDistance_t *closest) {
 
-	memset(closest,0,sizeof(botClosestBuildings_t));
+	memset(closest, 0, sizeof(botEntityAndDistance_t) * BA_NUM_BUILDABLES );
 
 	for(gentity_t *testEnt = &g_entities[MAX_CLIENTS];testEnt<&g_entities[level.num_entities-1];testEnt++) {
 		float newDist;
@@ -247,97 +891,12 @@ void BotFindClosestBuildings(gentity_t *self, botClosestBuildings_t *closest) {
 			continue;
 
 		newDist = Distance(self->s.origin,testEnt->s.origin);
-		switch(testEnt->s.modelindex) {
-			case BA_A_SPAWN:
-				if(newDist < closest->egg.distance || closest->egg.distance == 0) {
-					closest->egg.ent = testEnt;
-					closest->egg.distance = newDist;
-				}
-				break;
-			case BA_A_OVERMIND:
-				if(newDist < closest->overmind.distance || closest->overmind.distance == 0) {
-					closest->overmind.ent = testEnt;
-					closest->overmind.distance = newDist;
-				}
-				break;
-			case BA_A_BARRICADE:
-				if(newDist < closest->barricade.distance || closest->barricade.distance == 0) {
-					closest->barricade.ent = testEnt;
-					closest->barricade.distance = newDist;
-				}
-				break;
-			case BA_A_ACIDTUBE:
-				if(newDist < closest->acidtube.distance || closest->acidtube.distance == 0) {
-					closest->acidtube.ent = testEnt;
-					closest->acidtube.distance = newDist;
-				}
-				break;
-			case BA_A_TRAPPER:
-				if(newDist < closest->trapper.distance || closest->trapper.distance == 0) {
-					closest->trapper.ent = testEnt;
-					closest->trapper.distance = newDist;
-				}
-				break;
-			case BA_A_BOOSTER:
-				if(newDist < closest->booster.distance || closest->booster.distance == 0) {
-					closest->booster.ent = testEnt;
-					closest->booster.distance = newDist;
-				}
-				break;
-			case BA_A_HIVE:
-				if(newDist < closest->hive.distance || closest->hive.distance == 0) {
-					closest->hive.ent = testEnt;
-					closest->hive.distance = newDist;
-				}
-				break;
-			case BA_H_SPAWN:
-				if(newDist < closest->telenode.distance || closest->telenode.distance == 0) {
-					closest->telenode.ent = testEnt;
-					closest->telenode.distance = newDist;
-				}
-				break;
-			case BA_H_MGTURRET:
-				if(newDist < closest->turret.distance || closest->turret.distance == 0) {
-					closest->turret.ent = testEnt;
-					closest->turret.distance = newDist;
-				}
-				break;
-			case BA_H_TESLAGEN:
-				if(newDist < closest->tesla.distance || closest->tesla.distance == 0) {
-					closest->tesla.ent = testEnt;
-					closest->tesla.distance = newDist;
-				}
-				break;
-			case BA_H_ARMOURY:
-				if(newDist < closest->armoury.distance || closest->armoury.distance == 0) {
-					closest->armoury.ent = testEnt;
-					closest->armoury.distance = newDist;
-				}
-				break;
-			case BA_H_DCC:
-				if(newDist < closest->dcc.distance || closest->dcc.distance == 0) {
-					closest->dcc.ent = testEnt;
-					closest->dcc.distance = newDist;
-				}
-				break;
-			case BA_H_MEDISTAT:
-				if(newDist < closest->medistation.distance || closest->medistation.distance == 0) {
-					closest->medistation.ent = testEnt;
-					closest->medistation.distance = newDist;
-				}
-				break;
-			case BA_H_REACTOR:
-				if(newDist < closest->reactor.distance || closest->reactor.distance == 0) {
-					closest->reactor.ent = testEnt;
-					closest->reactor.distance = newDist;
-				}
-				break;
-			case BA_H_REPEATER:
-				if(newDist < closest->repeater.distance || closest->repeater.distance == 0) {
-					closest->repeater.ent = testEnt;
-					closest->repeater.distance = newDist;
-				}
-				break;
+
+		botEntityAndDistance_t *ent = &closest[ testEnt->s.modelindex ];
+		if ( newDist < ent->distance || ent->distance == 0 )
+		{
+			ent->ent = testEnt;
+			ent->distance = newDist;
 		}
 	}
 }
@@ -439,16 +998,16 @@ botTarget_t BotGetRushTarget(gentity_t *self) {
 	botTarget_t target;
 	gentity_t* rushTarget = NULL;
 	if(BotGetTeam(self) == TEAM_HUMANS) {
-		if(self->botMind->closestBuildings.egg.ent) {
-			rushTarget = self->botMind->closestBuildings.egg.ent;
-		} else if(self->botMind->closestBuildings.overmind.ent) {
-			rushTarget = self->botMind->closestBuildings.overmind.ent;
+		if(self->botMind->closestBuildings[BA_A_SPAWN].ent) {
+			rushTarget = self->botMind->closestBuildings[BA_A_SPAWN].ent;
+		} else if(self->botMind->closestBuildings[BA_A_OVERMIND].ent) {
+			rushTarget = self->botMind->closestBuildings[BA_A_OVERMIND].ent;
 		}
 	} else {//team aliens
-		if(self->botMind->closestBuildings.telenode.ent) {
-			rushTarget = self->botMind->closestBuildings.telenode.ent;
-		} else if(self->botMind->closestBuildings.reactor.ent) {
-			rushTarget = self->botMind->closestBuildings.reactor.ent;
+		if(self->botMind->closestBuildings[BA_H_SPAWN].ent) {
+			rushTarget = self->botMind->closestBuildings[BA_H_SPAWN].ent;
+		} else if(self->botMind->closestBuildings[BA_H_REACTOR].ent) {
+			rushTarget = self->botMind->closestBuildings[BA_H_REACTOR].ent;
 		}
 	}
 	BotSetTarget(&target,rushTarget,NULL);
@@ -460,12 +1019,12 @@ botTarget_t BotGetRetreatTarget(gentity_t *self) {
 	gentity_t* retreatTarget = NULL;
 	//FIXME, this seems like it could be done better...
 	if(self->client->ps.stats[STAT_TEAM] == TEAM_HUMANS) {
-		if(self->botMind->closestBuildings.reactor.ent) {
-			retreatTarget = self->botMind->closestBuildings.reactor.ent;
+		if(self->botMind->closestBuildings[BA_H_REACTOR].ent) {
+			retreatTarget = self->botMind->closestBuildings[BA_H_REACTOR].ent;
 		}
 	} else {
-		if(self->botMind->closestBuildings.overmind.ent) {
-			retreatTarget = self->botMind->closestBuildings.overmind.ent;
+		if(self->botMind->closestBuildings[BA_A_OVERMIND].ent) {
+			retreatTarget = self->botMind->closestBuildings[BA_A_OVERMIND].ent;
 		}
 	}
 	BotSetTarget(&target,retreatTarget,NULL);
@@ -658,38 +1217,17 @@ void BotGetIdealAimLocation(gentity_t *self, botTarget_t target, vec3_t aimLocat
 		aimLocation[2] +=  self->client->ps.viewheight - mins[2] - 8;
 	}
 }
-
-void BotAimAtLocation( gentity_t *self, vec3_t target, usercmd_t *rAngles)
+void BotAimAtLocation( gentity_t *self, vec3_t target )
 {
 	vec3_t aimVec, aimAngles, viewBase;
-	//vec3_t oldAimVec;
-	//vec3_t refNormal, grapplePoint, xNormal, viewBase;
-	//vec3_t highPoint;
-	//float turnAngle;
+
+	usercmd_t *rAngles = &self->botMind->cmdBuffer;
 
 	if( ! (self && self->client) )
 		return;
-	//VectorCopy( self->s.pos.trBase, viewBase );
-	//viewBase[2] += self->client->ps.viewheight;
+
 	BG_GetClientViewOrigin( &self->client->ps, viewBase);
 	VectorSubtract( target, viewBase, aimVec );
-	//VectorCopy(aimVec, oldAimVec);
-
-	//Much of this isnt needed anymore due to BG_GetClientViewOrigin and/or BG_GetClientNormal...
-	//VectorSet(refNormal, 0.0f, 0.0f, 1.0f);
-	// VectorCopy( self->client->ps.grapplePoint, grapplePoint);
-	//cross the reference normal and the surface normal to get the rotation axis
-	//CrossProduct( refNormal, grapplePoint, xNormal );
-	//VectorNormalize( xNormal );
-	// turnAngle = RAD2DEG( acos( DotProduct( refNormal, grapplePoint ) ) );
-	//G_Printf("turn angle: %f\n", turnAngle);
-
-	//if(self->client->ps.stats[ STAT_STATE ] & SS_WALLCLIMBING && self->client->ps.eFlags & EF_WALLCLIMBCEILING) {
-	//NOTE: the grapplePoint is here not an inverted refNormal :(
-	// RotatePointAroundVector( aimVec, grapplePoint, oldAimVec, -180.0);
-	//}
-	//if( turnAngle != 0.0f)
-	//  RotatePointAroundVector( aimVec, xNormal, oldAimVec, -turnAngle);
 
 	vectoangles( aimVec, aimAngles );
 
@@ -778,25 +1316,6 @@ float BotAimNegligence(gentity_t *self, botTarget_t target) {
 Bot Team Querys
 ========================
 */
-qboolean BotTeamateIsInModus(gentity_t *self, botModus_t modus) {
-	gentity_t *testEnt;
-	int botNumbers[MAX_CLIENTS];
-	int numBots = FindBots(botNumbers,MAX_CLIENTS,BotGetTeam(self));
-	//slots 0-MAX_CLIENTS are reserved for clients
-	for(int i=0; i < numBots; i++) {
-		//dont check ourselves
-		if(self->s.number == botNumbers[i])
-			continue;
-		testEnt = &g_entities[botNumbers[i]];
-
-		//bot is in specified modus
-		if(testEnt->botMind->modus == modus) {
-			return qtrue;
-		}
-	}
-	//we havent returned true so there are no bots in that modus
-	return qfalse;
-}
 
 int FindBots(int *botEntityNumbers, int maxBots, team_t team) {
 	gentity_t *testEntity;
@@ -857,6 +1376,21 @@ qboolean PlayersBehindBotInSpawnQueue( gentity_t *self )
 		return qfalse;
 }
 
+qboolean BotTeamateHasWeapon(gentity_t *self, int weapon) {
+	int botNumbers[MAX_CLIENTS];
+	int i;
+	int numBots = FindBots(botNumbers, MAX_CLIENTS, ( team_t ) self->client->ps.stats[STAT_TEAM]);
+
+	for(i=0;i<numBots;i++) {
+		gentity_t *bot = &g_entities[botNumbers[i]];
+		if(bot == self)
+			continue;
+		if(BG_InventoryContainsWeapon(weapon, bot->client->ps.stats))
+			return qtrue;
+	}
+	return qfalse;
+}
+
 /*
 ========================
 Boolean Functions for determining actions
@@ -868,115 +1402,7 @@ qboolean BotWillBuildSomething(gentity_t *self) {
 	buildable_t buildable;
 	return BotGetBuildingToBuild(self, origin, normal, &buildable);
 }
-qboolean BotShouldBuild(gentity_t *self) {
-	if(BotGetTeam(self) != TEAM_HUMANS)
-		return qfalse;
-	if((!g_bot_repair.integer || !self->botMind->closestDamagedBuilding.ent)
-		&& (!g_bot_build.integer || !BotWillBuildSomething(self)))
-		return qfalse;
-	if(self->botMind->modus == BOT_MODUS_BUILD)
-		return qtrue;
 
-	if(BotTeamateIsInModus(self, BOT_MODUS_BUILD)) {
-		return qfalse;
-	} else {
-		return qtrue;
-	}
-}
-
-qboolean BotShouldRushEnemyBase(gentity_t *self) {
-	float totalBaseRushScore = 0;
-	//FIXME: Uncomment when groups are (re)implemented
-	/*int botNumbers[MAX_CLIENTS];
-	int numBotsOnTeam = FindBots(botNumbers,MAX_CLIENTS,(team_t)BotGetTeam(self));
-	for(int i=0;i<numBotsOnTeam;i++) {
-	gentity_t *bot = &g_entities[botNumbers[i]];
-
-	//only care about our followers and ourselves
-	if((bot->botMind->trait == TRAIT_FOLLOWER && bot->botMind->leader == self) || bot == self) {
-	totalBaseRushScore += BotGetBaseRushScore(bot);
-	}
-	}*/
-	totalBaseRushScore += BotGetBaseRushScore(self);
-	//if(((float)totalBaseRushScore / self->botMind->numGroup) > 0.5)
-	if(totalBaseRushScore > 0.5)
-		return qtrue;
-	else
-		return qfalse;
-}
-//This function is unused now with the redesign...
-qboolean BotShouldRetreat(gentity_t *self) {
-	int totalHealth = 0, maxHealth = 0;
-	//int totalAmmo = 1, maxAmmo = 1;
-	//FIXME: Uncomment when groups are (re)implemented
-	/*int botNumbers[MAX_CLIENTS];
-	int numBotsOnTeam = FindBots(botNumbers,MAX_CLIENTS,(team_t)BotGetTeam(self));
-	for(int i=0;i<numBotsOnTeam;i++) {
-	gentity_t *bot = &g_entities[botNumbers[i]];
-
-	//only care about our followers and ourselves
-	if((bot->botMind->trait == TRAIT_FOLLOWER && bot->botMind->leader == self) || bot == self) {
-	totalHealth += bot->health;
-	maxHealth += BG_Class((class_t)bot->client->ps.stats[STAT_CLASS])->health;
-	}
-	}*/
-	totalHealth += self->health;
-	maxHealth += BG_Class((class_t)self->client->ps.stats[STAT_CLASS])->health;
-	//retreat if below health threshold
-	if(((float)totalHealth / maxHealth) < 0.40f)
-		return qtrue;
-
-	//also check ammo counts for humans
-	/*if(BotGetTeam(self) == TEAM_HUMANS && g_bot_buy.integer && BotFindBuilding(self, BA_H_ARMOURY) != ENTITYNUM_NONE) {
-	for(int i=0;i<numBotsOnTeam;i++) {
-	gentity_t *bot = &g_entities[botNumbers[i]];
-
-	//only care about our followers and ourselves
-	if((bot->botMind->trait == TRAIT_FOLLOWER && bot->botMind->leader == self) || bot == self) {
-	const weaponAttributes_t *weapon = BG_Weapon((weapon_t)bot->s.weapon);
-	//skip over infinite ammo weapons
-	if(weapon->infiniteAmmo)
-	continue;
-	totalAmmo += bot->client->ps.ammo + weapon->maxAmmo * bot->client->ps.clips;
-	maxAmmo += weapon->maxAmmo + weapon->maxAmmo * weapon->maxClips;
-	}
-	}
-	if(((float)totalAmmo / maxAmmo) < 0.40f)
-	return qtrue;
-	}*/
-	return qfalse;
-}
-//FIXME: Uncomment when groups are (re)implemeted
-/*
-qboolean GroupIsReady(gentity_t *self) {
-int botNumbers[MAX_CLIENTS];
-int numBotsOnTeam = FindBots(botNumbers,MAX_CLIENTS,(team_t)BotGetTeam(self));
-if(self->botMind->numGroup == 1)
-return qtrue;
-for(int i=0;i<numBotsOnTeam;i++) {
-
-gentity_t *bot = &g_entities[botNumbers[i]];
-//wait for the group if a bot in the bot's group is close enough, not attacking, not on spectators, and not in followleadermode
-if(bot->botMind->trait == TRAIT_FOLLOWER && bot->botMind->leader == self && bot->botMind->currentModus != ATTACK
-&& BotGetTeam(bot) != TEAM_NONE && DistanceSquared(self->s.origin, bot->s.origin) < Square(BOT_LEADER_WAIT_RANGE * self->botMind->numGroup) &&
-DistanceSquared(self->s.origin, bot->s.origin) > Square((BOT_FOLLOW_RANGE + BOT_FOLLOW_RANGE_NEGLIGENCE) * self->botMind->numGroup))
-return qfalse;
-}
-return qtrue;
-}*/
-
-/*botTarget_t BotGetRoamTarget(gentity_t *self) {
-vec3_t point;
-botTarget_t target;
-if(!BotFindRandomPoint(self, point)) {
-target.inuse = qfalse;
-return target;
-}
-BotSetTarget(&target,NULL,&point);
-return target;*/
-//This function is expensive since we check the route first!
-//Pls use with caution
-//returns true if successful, false if unsuccessful
 botTarget_t BotGetRoamTarget(gentity_t *self) {
 	botTarget_t target;
 	int numTiles = 0;
@@ -1016,7 +1442,9 @@ void BotFireWeapon(weaponMode_t mode, usercmd_t *botCmdBuffer) {
 		usercmdPressButton(botCmdBuffer->buttons, BUTTON_USE_HOLDABLE);
 	}
 }
-void BotClassMovement(gentity_t *self, qboolean inAttackRange, usercmd_t *botCmdBuffer) {
+void BotClassMovement(gentity_t *self, qboolean inAttackRange) {
+	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
+
 	switch(self->client->ps.stats[STAT_CLASS]) {
 	case PCL_ALIEN_LEVEL0:
 		BotDodge(self, botCmdBuffer);
@@ -1064,12 +1492,14 @@ void BotClassMovement(gentity_t *self, qboolean inAttackRange, usercmd_t *botCmd
 	default: break;
 	}
 }
-void BotFireWeaponAI(gentity_t *self, usercmd_t *botCmdBuffer) {
+void BotFireWeaponAI(gentity_t *self) {
 	float distance;
 	vec3_t targetPos;
 	vec3_t forward,right,up;
 	vec3_t muzzle;
 	trace_t trace;
+	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
+
 	AngleVectors(self->client->ps.viewangles,forward,right,up);
 	CalcMuzzlePoint(self,forward,right,up,muzzle);
 	BotGetIdealAimLocation(self,self->botMind->goal,targetPos);
@@ -1224,453 +1654,6 @@ void BotSetSkillLevel(gentity_t *self, int skill) {
 	}
 }
 
-extern "C" void G_BotAssignGroups(void) {
-	int humanBots[MAX_CLIENTS];
-	int alienBots[MAX_CLIENTS];
-	int numHumanBots = FindBots(humanBots,MAX_CLIENTS,TEAM_HUMANS);
-	int numAlienBots = FindBots(alienBots,MAX_CLIENTS,TEAM_ALIENS);
-	int maxHumanLeaders = 0;
-	int maxAlienLeaders = 0;
-	int numAlienLeaders = 0;
-	int numHumanLeaders = 0;
-	int maxInGroup = 1;
-
-	if(g_bot_numInGroup.integer > 0)
-		maxInGroup = g_bot_numInGroup.integer;
-
-	maxHumanLeaders = (int)ceilf((float)numHumanBots / maxInGroup);
-	maxAlienLeaders = (int)ceilf((float)numAlienBots / maxInGroup);
-
-	//compute which bots are leaders
-	for(int i=0;i<level.numConnectedClients;i++) {
-		gentity_t *testEntity = &g_entities[level.sortedClients[i]];
-		if(!(testEntity->r.svFlags & SVF_BOT))
-			continue;
-		if(BotGetTeam(testEntity) == TEAM_HUMANS) {
-			if(numHumanLeaders < maxHumanLeaders) {
-				testEntity->botMind->trait = TRAIT_LEADER;
-				testEntity->botMind->numGroup = 1;
-				numHumanLeaders++;
-			} else {
-				testEntity->botMind->trait = TRAIT_FOLLOWER;
-			}
-		} else if(BotGetTeam(testEntity) == TEAM_ALIENS) {
-			if(numAlienLeaders < maxAlienLeaders) {
-				testEntity->botMind->trait = TRAIT_LEADER;
-				testEntity->botMind->numGroup = 1;
-				numAlienLeaders++;
-			} else {
-				testEntity->botMind->trait = TRAIT_FOLLOWER;
-			}
-		}
-	}
-	//compute which human bots are followers
-	for(int i=0;i<numHumanBots;i++) {
-		gentity_t *testEntity = &g_entities[humanBots[i]];
-		//ignore leaders
-		if(testEntity->botMind->trait == TRAIT_LEADER)
-			continue;
-		testEntity->botMind->trait = TRAIT_LEADER; //if there is no leader in range, become a leader
-		for(int n=0;n<numHumanBots;n++) {
-			gentity_t *testLeader = &g_entities[humanBots[n]];
-			//leader should not be spectating
-			if( testLeader->client->sess.spectatorState != SPECTATOR_NOT)
-				continue;
-			if(testLeader->botMind->trait == TRAIT_LEADER) {
-				if(testLeader->botMind->numGroup < g_bot_numInGroup.integer){// && DistanceSquared(testLeader->s.origin,testEntity->s.origin) < Square((BOT_FOLLOW_RANGE + BOT_FOLLOW_RANGE_NEGLIGENCE) * (testLeader->botMind->numGroup + 1))) {
-					testLeader->botMind->numGroup++;
-					testEntity->botMind->trait = TRAIT_FOLLOWER;
-					testEntity->botMind->leader = testLeader;
-					break;
-				}
-			}
-		}
-	}
-	//compute which alien bots are followers
-	for(int i=0;i<numAlienBots;i++) {
-		gentity_t *testEntity = &g_entities[alienBots[i]];
-		//ignore leaders
-		if(testEntity->botMind->trait == TRAIT_LEADER)
-			continue;
-		testEntity->botMind->trait = TRAIT_LEADER; //if there is no leader in range, become a leader
-		for(int n=0;n<numAlienBots;n++) {
-			gentity_t *testLeader = &g_entities[alienBots[n]];
-			//leader should not be spectating
-			if( testLeader->client->sess.spectatorState != SPECTATOR_NOT)
-				continue;
-			if(testLeader->botMind->trait == TRAIT_LEADER) {
-				if(testLeader->botMind->numGroup < g_bot_numInGroup.integer){ //&& DistanceSquared(testLeader->s.origin,testEntity->s.origin) < Square((BOT_FOLLOW_RANGE + BOT_FOLLOW_RANGE_NEGLIGENCE) * (testLeader->botMind->numGroup + 1))) {
-					testLeader->botMind->numGroup++;
-					testEntity->botMind->trait = TRAIT_FOLLOWER;
-					testEntity->botMind->leader = testLeader;
-					break;
-				}
-			}
-		}
-	}
-}
-
-
-/*
-=======================
-Bot Modus
-=======================
-*/
-void EvaluateTasks(gentity_t *self, usercmd_t *botCmdBuffer) {
-	if(self->botMind->task == BOT_TASK_NONE) {
-		//our task stack is empty, lets start it
-		if(!BotBuildModus(self,botCmdBuffer))
-			BotAttackModus(self,botCmdBuffer);
-	} else {
-		//execute the task we are in
-		botTask_t task = self->botMind->task;
-		botTaskStatus_t taskStatus;
-		switch(task) {
-			case BOT_TASK_FIGHT:
-				taskStatus = BotTaskFight(self, botCmdBuffer);
-				break;
-			case BOT_TASK_BUILD:
-				taskStatus = BotTaskBuild(self, botCmdBuffer);
-				break;
-			case BOT_TASK_ROAM:
-				taskStatus = BotTaskRoam(self, botCmdBuffer);
-				break;
-			case BOT_TASK_BUY:
-				taskStatus = BotTaskBuy(self, botCmdBuffer);
-				break;
-			case BOT_TASK_HEAL:
-				taskStatus = BotTaskHeal(self, botCmdBuffer);
-				break;
-			case BOT_TASK_REPAIR:
-				taskStatus = BotTaskRepair(self, botCmdBuffer);
-				break;
-			case BOT_TASK_RUSH:
-				taskStatus = BotTaskRush(self, botCmdBuffer);
-				break;
-			case BOT_TASK_RETREAT:
-				taskStatus = BotTaskRetreat(self, botCmdBuffer);
-				break;
-			default:
-				taskStatus = TASK_STOPPED;
-		}
-		if(taskStatus == TASK_STOPPED) {
-			self->botMind->task = BOT_TASK_NONE; //the task has ended
-			self->botMind->needNewGoal = qtrue;
-		}
-	}
-}
-botModusStatus_t BotAttackModus(gentity_t *self, usercmd_t *botCmdBuffer) {
-	self->botMind->modus = BOT_MODUS_ATTACK;
-	if(BotTaskFight(self, botCmdBuffer)) {
-		BotChangeTask(self, BOT_TASK_FIGHT);
-		return MODUS_RUNNING;
-	} else if(BotTaskHeal(self, botCmdBuffer)) {
-		BotChangeTask(self, BOT_TASK_HEAL);
-		return MODUS_RUNNING;
-	} else if(BotTaskBuy(self, botCmdBuffer)) {
-		BotChangeTask(self, BOT_TASK_BUY);
-		return MODUS_RUNNING;
-	} else if(BotTaskEvolve(self, botCmdBuffer)) {
-		BotChangeTask(self, BOT_TASK_EVOLVE);
-		return MODUS_RUNNING;
-	} else if(BotShouldRushEnemyBase(self) && BotTaskRush(self, botCmdBuffer)) {
-		BotChangeTask(self, BOT_TASK_RUSH);
-		return MODUS_RUNNING;
-	} else if(BotTaskRoam(self, botCmdBuffer)) {
-		BotChangeTask(self, BOT_TASK_ROAM);
-		return MODUS_RUNNING;
-	} else {
-		return MODUS_STOPPED;
-	}
-}
-
-botModusStatus_t BotDefendModus(gentity_t *self, usercmd_t *botCmdBuffer) {
-	return MODUS_STOPPED;
-}
-
-botModusStatus_t BotBuildModus(gentity_t *self, usercmd_t *botCmdBuffer) {
-	if(!BotShouldBuild(self))
-		return MODUS_STOPPED;
-	self->botMind->modus = BOT_MODUS_BUILD;
-
-	if(self->botMind->bestEnemy.ent || level.time - self->botMind->enemyLastSeen <= BOT_RETREAT_TIME) {
-		if(!BG_InventoryContainsWeapon(WP_HBUILD,self->client->ps.stats)) {
-			if(BotTaskFight(self, botCmdBuffer))
-				BotChangeTask(self, BOT_TASK_FIGHT);
-			else
-				goto rest;
-		} else {
-			rest:
-			if(BotTaskRetreat(self, botCmdBuffer)) {
-				BotChangeTask(self, BOT_TASK_RETREAT);
-			} else {
-				BotChangeTask(self, BOT_TASK_FIGHT);
-			}
-		}
-		return MODUS_RUNNING;
-	} else if(BotTaskBuy(self, botCmdBuffer)) {
-		BotChangeTask(self, BOT_TASK_BUY);
-		return MODUS_RUNNING;
-	} else if(BotTaskHeal(self, botCmdBuffer)) {
-		BotChangeTask(self, BOT_TASK_HEAL);
-		return MODUS_RUNNING;
-	} else if(BotTaskBuild(self, botCmdBuffer)) {
-		BotChangeTask(self, BOT_TASK_BUILD);
-		return MODUS_RUNNING;
-	} else if(BotTaskRepair(self, botCmdBuffer)){
-		BotChangeTask(self, BOT_TASK_REPAIR);
-		return MODUS_RUNNING;
-	} else {
-		return MODUS_STOPPED;
-	}
-}
-/*
-=======================
-General Bot Tasks
-
-For specific team tasks, see their respective files
-=======================
-*/
-botTaskStatus_t BotTaskBuild(gentity_t *self, usercmd_t *botCmdBuffer) {
-	if(!g_bot_build.integer)
-		return TASK_STOPPED;
-	switch(BotGetTeam(self)) {
-	case TEAM_HUMANS:
-		return BotTaskBuildH(self, botCmdBuffer);
-		break;
-	case TEAM_ALIENS:
-		return BotTaskBuildA(self, botCmdBuffer);
-		break;
-	default:
-		return TASK_STOPPED;
-		break;
-	}
-}
-botTaskStatus_t BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer) {
-	//don't enter this task until we are given enough time to react to seeing the enemy
-	if(level.time - self->botMind->timeFoundEnemy <= BOT_REACTION_TIME) {
-		if(self->botMind->goal.inuse) {
-			BotMoveToGoal(self, botCmdBuffer); //continue moving to our previous goal
-		}
-		return TASK_RUNNING;
-	}
-
-	if(BotRoutePermission(self,BOT_TASK_FIGHT)) {
-		if(!self->botMind->bestEnemy.ent)
-			return TASK_STOPPED;
-		BotChangeTarget(self, self->botMind->bestEnemy.ent, NULL);
-	}
-
-	//safety check
-	if(!BotTargetIsEntity(self->botMind->goal)) {
-		return TASK_STOPPED; //we dont want to end this task yet incase there is another enemy
-	}
-
-	//enemy has switched teams so signal that the goal is unusable
-	if(BotGetTeam(self->botMind->goal) == BotGetTeam(self) || BotGetTeam(self->botMind->goal) == TEAM_NONE) {
-		return TASK_STOPPED;
-	}
-
-	//enemy has died so signal that the goal is unusable
-	if(self->botMind->goal.ent->health <= 0 ||
-		(BotTargetIsPlayer(self->botMind->goal) && self->botMind->goal.ent->client->ps.pm_type == PM_DEAD))
-	{
-		return TASK_STOPPED;
-	}
-
-	//switch to blaster if we need to
-	if((WeaponIsEmpty((weapon_t)self->client->ps.weapon, self->client->ps)
-		|| self->client->ps.weapon == WP_HBUILD) && BotGetTeam(self) == TEAM_HUMANS)
-		G_ForceWeaponChange( self, WP_BLASTER );
-
-	//aliens have radar so they will always 'see' the enemy if they are in radar range
-	if(BotGetTeam(self) == TEAM_ALIENS && DistanceToGoalSquared(self) <= Square(ALIENSENSE_RANGE)) {
-		self->botMind->enemyLastSeen = level.time;
-	}
-
-	//we can't see our target
-	if(!BotTargetIsVisible(self, self->botMind->goal, MASK_SHOT)) {
-		botTarget_t proposedTarget;
-		BotSetTarget(&proposedTarget, self->botMind->bestEnemy.ent, NULL);
-		//we can see another enemy (not our target)
-		if(self->botMind->bestEnemy.ent && BotPathIsWalkable(self,proposedTarget)) {
-			//change targets
-			return TASK_STOPPED;
-		} else if(level.time - self->botMind->enemyLastSeen >= BOT_ENEMY_CHASETIME) {
-			//we have chased our current (invisible) target for a while, but have not caught sight of him again, so end this task
-			return TASK_STOPPED;
-		} else {
-			//move to the enemy
-			BotMoveToGoal(self, botCmdBuffer);
-		}
-	} else { //we see our target!!
-		qboolean inAttackRange;
-		//record the time we saw him
-		self->botMind->enemyLastSeen = level.time;
-
-		//only enter attacking AI if we can walk in a straight line to the enemy or we can hit him from our current position
-		if((inAttackRange = BotTargetInAttackRange(self, self->botMind->goal)) || self->botMind->numCorners == 1) {
-			vec3_t tmpVec;
-			//update the path corridor
-			UpdatePathCorridor(self);
-			//aim at the enemy
-			BotGetIdealAimLocation(self, self->botMind->goal, tmpVec);
-			BotSlowAim(self, tmpVec, self->botMind->botSkill.aimSlowness);
-			if(BotGetTargetType(self->botMind->goal) != ET_BUILDABLE) {
-				BotShakeAim(self, tmpVec);
-			}
-			BotAimAtLocation(self, tmpVec, botCmdBuffer);
-
-			botCmdBuffer->forwardmove = 127; //move forward
-
-			//fire our weapon if we are in range or have pain saw
-			//TODO: Make this better with BotAimNegligence?
-			if(inAttackRange || self->client->ps.weapon == WP_PAIN_SAW)
-				BotFireWeaponAI(self, botCmdBuffer);
-
-			//human specific attacking AI
-			if(BotGetTeam(self) == TEAM_HUMANS) {
-				//dont back away unless skill > 3 + distance logic
-				if(self->botMind->botSkill.level >= 3 && DistanceToGoalSquared(self) < Square(MAX_HUMAN_DANCE_DIST)
-					&& (DistanceToGoalSquared(self) > Square(MIN_HUMAN_DANCE_DIST) || self->botMind->botSkill.level < 5)
-					&& self->client->ps.weapon != WP_PAIN_SAW)
-				{
-					botCmdBuffer->forwardmove = -127; //max backward speed
-				} else if(DistanceToGoalSquared(self) <= Square(MIN_HUMAN_DANCE_DIST)) { //we wont hit this if skill < 5
-					//we will be moving toward enemy, strafe too
-					//the result: we go around the enemy
-					botCmdBuffer->rightmove = BotGetStrafeDirection();
-
-					//also try to dodge if high enough level
-					//all the conditions are there so we dont stop moving forward when we cant dodge anyway
-					if(self->client->ps.weapon != WP_PAIN_SAW && self->botMind->botSkill.level >= 7
-						&& self->client->ps.stats[STAT_STAMINA] > STAMINA_SLOW_LEVEL + STAMINA_DODGE_TAKE
-						&& !(self->client->ps.pm_flags & ( PMF_TIME_LAND | PMF_CHARGE ))
-						&& self->client->ps.groundEntityNum != ENTITYNUM_NONE)
-					{
-						usercmdPressButton(botCmdBuffer->buttons, BUTTON_DODGE);
-						botCmdBuffer->forwardmove = 0;
-					}
-				} else if (DistanceToGoalSquared(self) >= Square(MAX_HUMAN_DANCE_DIST) && self->client->ps.weapon != WP_PAIN_SAW) {
-	
-					//dont go forward
-					botCmdBuffer->forwardmove = 0;
-
-					//strafe randomly
-					botCmdBuffer->rightmove = BotGetStrafeDirection();
-				}
-
-				//humans should not move if they are targeting, and can hit, a building
-				//FIXME: Maybe add some "move to best attack point" logic here? Bots will be damaged a lot by buildings otherwise...
-				if(BotGetTargetType(self->botMind->goal) == ET_BUILDABLE) {
-					botCmdBuffer->forwardmove = 0;
-					botCmdBuffer->rightmove= 0;
-					botCmdBuffer->upmove = 0;
-				}
-
-
-				if(self->client->ps.stats[STAT_STAMINA] > STAMINA_SLOW_LEVEL && self->botMind->botSkill.level >= 5) {
-					usercmdPressButton(botCmdBuffer->buttons, BUTTON_SPRINT);
-				} else {
-					//dont sprint or dodge, we are about to slow
-					usercmdReleaseButton(botCmdBuffer->buttons, BUTTON_SPRINT);
-					usercmdReleaseButton(botCmdBuffer->buttons, BUTTON_DODGE);
-				}
-
-			} else if(BotGetTeam(self) == TEAM_ALIENS) {
-				//alien specific attacking AI
-
-				BotClassMovement(self,inAttackRange, botCmdBuffer); //FIXME: aliens are so much dumber :'(
-
-				// enable wallwalk for classes that can wallwalk
-				if( BG_ClassHasAbility( (class_t) self->client->ps.stats[STAT_CLASS], SCA_WALLCLIMBER ) )
-					botCmdBuffer->upmove = -1;
-			}
-		} else {
-			//move to the enemy since we cant get to him directly, nor can we attack him from here
-			BotMoveToGoal(self, botCmdBuffer);
-		}
-	}
-	return TASK_RUNNING;
-}
-
-botTaskStatus_t BotTaskGroup(gentity_t *self, usercmd_t *botCmdBuffer) {
-	return TASK_STOPPED;
-}
-
-botTaskStatus_t BotTaskHeal(gentity_t *self, usercmd_t *botCmdBuffer) {
-	if(BotGetTeam(self) == TEAM_HUMANS)
-		return BotTaskHealH(self, botCmdBuffer);
-	else
-		return BotTaskHealA(self, botCmdBuffer);
-}
-botTaskStatus_t BotTaskRetreat(gentity_t *self, usercmd_t *botCmdBuffer) {
-	if(!g_bot_retreat.integer)
-		return TASK_STOPPED;
-
-	if(BotRoutePermission(self, BOT_TASK_RETREAT)) {
-		if(!BotChangeTarget(self, BotGetRetreatTarget(self)))
-			return TASK_STOPPED;
-	}
-	if(!BotTargetIsEntity(self->botMind->goal)) {
-		return TASK_STOPPED;
-	}
-	if(DistanceToGoalSquared(self) > Square(70))
-		BotMoveToGoal(self, botCmdBuffer);
-	else
-		return TASK_STOPPED;
-	return TASK_RUNNING;
-}
-
-botTaskStatus_t BotTaskRush(gentity_t *self, usercmd_t *botCmdBuffer) {
-	if(!g_bot_rush.integer)
-		return TASK_STOPPED;
-
-	//dont start rushing immediately afer spawning to help avoid congestion when bots all take the same path
-	if(self->client->pers.aliveSeconds < 5)
-		return TASK_STOPPED;
-
-	//engage any enemies we find
-	if(self->botMind->bestEnemy.ent) {
-		return TASK_STOPPED;
-	}
-
-	if(BotRoutePermission(self,BOT_TASK_RUSH)) {
-		if(!BotChangeTarget(self, BotGetRushTarget(self)))
-			return TASK_STOPPED;
-	}
-	if(!BotTargetIsEntity(self->botMind->goal)) {
-		return TASK_STOPPED;
-	}
-	if(self->botMind->goal.ent->health <= 0) {
-		return TASK_STOPPED;
-	}
-	if(DistanceToGoalSquared(self) > Square(70)) {
-		BotMoveToGoal(self, botCmdBuffer);
-	} else {
-		return TASK_STOPPED;
-	}
-	return TASK_RUNNING;
-}
-
-botTaskStatus_t BotTaskRoam(gentity_t *self, usercmd_t *botCmdBuffer) {
-	//engage any enemies we find
-	if(self->botMind->bestEnemy.ent) {
-		return TASK_STOPPED;
-	}
-
-	if(BotRoutePermission(self,BOT_TASK_ROAM)) {
-		if( !BotChangeTarget(self, BotGetRoamTarget(self) ) )
-			return TASK_STOPPED;
-	}
-
-	if(DistanceToGoalSquared(self) > Square(70)) {
-		BotMoveToGoal(self, botCmdBuffer);
-	} else {
-		return TASK_STOPPED;
-	}
-	return TASK_RUNNING;
-}
 /*
 =======================
 Bot management functions
@@ -1795,7 +1778,7 @@ static void G_BotNameUsed(team_t team, const char *name, qboolean inUse)
 	}
 }
 
-extern "C" void G_BotSetDefaults( int clientNum, team_t team, int skill )
+extern "C" void G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavior )
 {
 	botMemory_t *botMind;
 
@@ -1803,12 +1786,19 @@ extern "C" void G_BotSetDefaults( int clientNum, team_t team, int skill )
 
 	botMind->enemyLastSeen = 0;
 	botMind->botTeam = team;
-	botMind->command = BOT_AUTO;
-	botMind->spawnItem = WP_HBUILD;
-	botMind->needNewGoal = qtrue;
-	botMind->modus = BOT_MODUS_IDLE;
-	botMind->task = BOT_TASK_NONE;
 	botMind->pathCorridor = &pathCorridor[clientNum];
+	memset( botMind->runningNodes, 0, sizeof( botMind->runningNodes ) );
+	botMind->numRunningNodes = 0;
+	botMind->currentNode = NULL;
+	botMind->numCorners = 0;
+	
+	botMind->behaviorTree = ReadBehaviorTree( behavior );
+
+	if ( !botMind->behaviorTree )
+	{
+		G_Printf( "Problem when loading behavior tree %s, trying default\n", behavior );
+		botMind->behaviorTree = ReadBehaviorTree( behavior );
+	}
 
 	BotSetSkillLevel(&g_entities[clientNum], skill);
 
@@ -1820,7 +1810,7 @@ extern "C" void G_BotSetDefaults( int clientNum, team_t team, int skill )
 	}
 }
 
-qboolean G_BotAdd( char *name, team_t team, int skill ) {
+qboolean G_BotAdd( char *name, team_t team, int skill, const char *behavior ) {
 	int clientNum;
 	char userinfo[MAX_INFO_STRING];
 	const char* s = 0;
@@ -1849,7 +1839,7 @@ qboolean G_BotAdd( char *name, team_t team, int skill ) {
 	}
 
 	//default bot data
-	G_BotSetDefaults( clientNum, team, skill );
+	G_BotSetDefaults( clientNum, team, skill, behavior );
 
 	// register user information
 	userinfo[0] = '\0';
@@ -1901,6 +1891,16 @@ void G_BotDel( int clientNum ) {
 	trap_DropClient(clientNum, "disconnected");
 }
 
+void G_BotFreeBehaviorTrees( void )
+{
+	for ( int i = 0; i < treeList.numTrees; i++ )
+	{
+		AIBehaviorTree_t *tree = treeList.trees[ i ];
+		FreeBehaviorTree( tree );
+	}
+	FreeTreeList( &treeList );
+}
+
 extern "C" void G_BotDelAll(void)
 {
 	int i;
@@ -1915,29 +1915,761 @@ extern "C" void G_BotDelAll(void)
 
 	for (i = 0; i < botNames[TEAM_HUMANS].count; ++i)
 		botNames[TEAM_HUMANS].name[i].inUse = qfalse;
+
+	G_BotFreeBehaviorTrees();
 }
 
-void G_BotCmd( gentity_t *master, int clientNum, char *command) {
-	gentity_t *bot = &g_entities[clientNum];
-	if( !( bot->r.svFlags & SVF_BOT ) || !bot->botMind)
-		return;
+AINodeStatus_t BotActionFight( gentity_t *self, AIActionNode_t *node )
+{
+	team_t myTeam = ( team_t ) self->client->ps.stats[ STAT_TEAM ];
 
-	if( !Q_stricmp( command, "auto" ) )
-		bot->botMind->command = BOT_AUTO;
-	else if( !Q_stricmp( command, "attack" ) )
-		bot->botMind->command = BOT_ATTACK;
-	else if( !Q_stricmp( command, "idle" ) )
-		bot->botMind->command = BOT_IDLE;
-	else if( !Q_stricmp( command, "repair" ) )
-		bot->botMind->command = BOT_REPAIR;
-	else if( !Q_stricmp( command, "spawnrifle" ) )
-		bot->botMind->spawnItem = WP_MACHINEGUN;
-	else if( !Q_stricmp( command, "spawnckit" ) )
-		bot->botMind->spawnItem = WP_HBUILD;
-	else {
-		bot->botMind->command = BOT_AUTO;
+	if ( self->botMind->currentNode != node )
+	{
+		if ( !BotChangeTarget( self, self->botMind->bestEnemy.ent, NULL ) )
+		{
+			return STATUS_FAILURE;
+		}
+		else
+		{
+			return STATUS_RUNNING;
+		}
 	}
-	return;
+
+	if ( !BotTargetIsEntity( self->botMind->goal ) )
+	{
+		return STATUS_FAILURE;
+	}
+
+	if ( BotGetTeam( self->botMind->goal ) == myTeam || BotGetTeam( self->botMind->goal ) == TEAM_NONE )
+	{
+		return STATUS_FAILURE;
+	}
+
+	// the enemy has died
+	if ( self->botMind->goal.ent->health <= 0 )
+	{
+		return STATUS_SUCCESS;
+	}
+
+	if ( self->botMind->goal.ent->client && self->botMind->goal.ent->client->sess.spectatorState != SPECTATOR_NOT )
+	{
+		return STATUS_FAILURE;
+	}
+
+	if ( WeaponIsEmpty( ( weapon_t )self->client->ps.weapon, self->client->ps ) && myTeam == TEAM_HUMANS )
+	{
+		G_ForceWeaponChange( self, WP_BLASTER );
+	}
+
+	if ( self->client->ps.weapon == WP_HBUILD )
+	{
+		G_ForceWeaponChange( self, WP_BLASTER );
+	}
+
+	//aliens have radar so they will always 'see' the enemy if they are in radar range
+	if( myTeam == TEAM_ALIENS && DistanceToGoalSquared( self ) <= Square( ALIENSENSE_RANGE ) ) 
+	{
+		self->botMind->enemyLastSeen = level.time;
+	}
+
+	if ( !BotTargetIsVisible( self, self->botMind->goal, MASK_SHOT ) )
+	{
+		botTarget_t proposedTarget;
+		BotSetTarget( &proposedTarget, self->botMind->bestEnemy.ent, NULL );
+		
+		//we can see another enemy (not our target)
+		if(self->botMind->bestEnemy.ent && self->botMind->goal.ent != self->botMind->bestEnemy.ent && BotPathIsWalkable(self,proposedTarget))
+		{	//change targets
+			return STATUS_FAILURE;
+		}
+		else if ( level.time - self->botMind->enemyLastSeen > BOT_ENEMY_CHASETIME )
+		{
+			return STATUS_FAILURE;
+		}
+		else
+		{
+			BotMoveToGoal( self );
+			return STATUS_RUNNING;
+		}
+	}
+	else
+	{
+		qboolean inAttackRange = BotTargetInAttackRange( self, self->botMind->goal );
+		self->botMind->enemyLastSeen = level.time;
+		
+		if ( ( inAttackRange && myTeam == TEAM_HUMANS ) || self->botMind->numCorners == 1 )
+		{
+			vec3_t aimLoc;
+			
+			BotGetIdealAimLocation( self, self->botMind->goal, aimLoc );
+			BotSlowAim( self, aimLoc, self->botMind->botSkill.aimSlowness );
+			BotAimAtLocation( self, aimLoc );
+		
+			//update the path corridor
+			UpdatePathCorridor(self);
+
+			self->botMind->cmdBuffer.forwardmove = 127;
+
+			if ( inAttackRange || self->client->ps.weapon == WP_PAIN_SAW )
+			{
+				BotFireWeaponAI( self );
+			}
+
+			if ( myTeam == TEAM_HUMANS )
+			{
+				if ( self->botMind->botSkill.level >= 3 && DistanceToGoalSquared( self ) < Square( MAX_HUMAN_DANCE_DIST )
+					&& ( DistanceToGoalSquared( self ) > Square( MIN_HUMAN_DANCE_DIST ) || self->botMind->botSkill.level < 5 )
+					&& self->client->ps.weapon != WP_PAIN_SAW )
+				{
+					self->botMind->cmdBuffer.forwardmove = -127;
+				}
+				else if(DistanceToGoalSquared(self) <= Square(MIN_HUMAN_DANCE_DIST)) { //we wont hit this if skill < 5
+					//we will be moving toward enemy, strafe too
+					//the result: we go around the enemy
+					self->botMind->cmdBuffer.rightmove = BotGetStrafeDirection();
+
+					//also try to dodge if high enough level
+					//all the conditions are there so we dont stop moving forward when we cant dodge anyway
+					if(self->client->ps.weapon != WP_PAIN_SAW && self->botMind->botSkill.level >= 7
+						&& self->client->ps.stats[STAT_STAMINA] > STAMINA_SLOW_LEVEL + STAMINA_DODGE_TAKE
+						&& !(self->client->ps.pm_flags & ( PMF_TIME_LAND | PMF_CHARGE ))
+						&& self->client->ps.groundEntityNum != ENTITYNUM_NONE)
+					{
+						usercmdPressButton(self->botMind->cmdBuffer.buttons, BUTTON_DODGE);
+						self->botMind->cmdBuffer.forwardmove = 0;
+					}
+				} 
+				else if ( DistanceToGoalSquared( self ) >= Square( MAX_HUMAN_DANCE_DIST ) && self->client->ps.weapon != WP_PAIN_SAW ) 
+				{
+					//we should be >= MAX_HUMAN_DANCE_DIST from the enemy
+					//dont go forward
+					self->botMind->cmdBuffer.forwardmove = 0;
+
+					//strafe randomly
+					self->botMind->cmdBuffer.rightmove = BotGetStrafeDirection();
+				}
+
+				if ( inAttackRange && BotGetTargetType( self->botMind->goal ) == ET_BUILDABLE )
+				{
+					self->botMind->cmdBuffer.forwardmove = 0;
+					self->botMind->cmdBuffer.rightmove = 0;
+					self->botMind->cmdBuffer.upmove = 0;
+				}
+
+				if(self->client->ps.stats[STAT_STAMINA] > STAMINA_SLOW_LEVEL && self->botMind->botSkill.level >= 5) 
+				{
+					usercmdPressButton(self->botMind->cmdBuffer.buttons, BUTTON_SPRINT);
+				} 
+				else
+				{
+					//dont sprint or dodge, we are about to slow
+					usercmdReleaseButton(self->botMind->cmdBuffer.buttons, BUTTON_SPRINT);
+					usercmdReleaseButton(self->botMind->cmdBuffer.buttons, BUTTON_DODGE);
+				}
+			}
+			else if ( myTeam == TEAM_ALIENS )
+			{
+				BotClassMovement( self, inAttackRange );
+			}
+		}
+		else
+		{
+			BotMoveToGoal( self );
+		}
+	}
+	return STATUS_RUNNING;
+}
+
+AINodeStatus_t BotActionFlee( gentity_t *self, AIActionNode_t *node )
+{
+	if ( node != self->botMind->currentNode )
+	{
+		if ( !BotChangeTarget( self, BotGetRetreatTarget( self ) ) )
+		{
+			return STATUS_FAILURE;
+		}
+	}
+
+	if( !BotTargetIsEntity( self->botMind->goal ) )
+	{
+		return STATUS_FAILURE;
+	}
+
+	if( DistanceToGoalSquared( self ) < Square( 70 ) )
+	{
+		return STATUS_SUCCESS;
+	}
+	else
+	{
+		BotMoveToGoal(self);
+	}
+
+	return STATUS_RUNNING;
+}
+
+AINodeStatus_t BotActionRoam( gentity_t *self, AIActionNode_t *node )
+{
+	// we are just starting to roam, get a target location
+	if ( node != self->botMind->currentNode )
+	{
+		botTarget_t target = BotGetRoamTarget( self );
+		if ( !BotChangeTarget( self, target ) )
+		{
+			return STATUS_FAILURE;
+		}
+	}
+
+	if ( DistanceToGoalSquared(self) < Square( 70 ) )
+	{
+		return STATUS_SUCCESS;
+	}
+	else
+	{
+		BotMoveToGoal( self );
+	}
+	return STATUS_RUNNING;
+}
+
+botTarget_t BotGetMoveToTarget( gentity_t *self, AIMoveTo_t *node )
+{
+	botTarget_t target;
+	gentity_t *ent = NULL;
+
+	if ( node->ent < BA_NUM_BUILDABLES )
+	{
+		ent = self->botMind->closestBuildings[ node->ent ].ent;
+	}
+	else if ( node->ent == E_ENEMY )
+	{
+		ent = self->botMind->bestEnemy.ent;
+	}
+	else if ( node->ent == E_DAMAGEDBUILDING )
+	{
+		ent = self->botMind->closestDamagedBuilding.ent;
+	}
+
+	BotSetTarget( &target, ent, NULL );
+	return target;
+}
+
+float RadiusFromBounds2D(vec3_t mins, vec3_t maxs) {
+	float rad1 = sqrt(Square(mins[0]) + Square(mins[1]));
+	float rad2 = sqrt(Square(maxs[0]) + Square(maxs[1]));
+	if(rad1 > rad2)
+		return rad1;
+	else
+		return rad2;
+}
+
+float BotGetGoalRadius( gentity_t *self ) {
+	if(BotTargetIsEntity(self->botMind->goal)) {
+		botTarget_t *t = &self->botMind->goal;
+		if(t->ent->s.modelindex == BA_H_MEDISTAT || t->ent->s.modelindex == BA_A_BOOSTER) {
+			return self->r.maxs[0] + t->ent->r.maxs[0];
+		} else {
+			return RadiusFromBounds2D(t->ent->r.mins, t->ent->r.maxs) + RadiusFromBounds2D(self->r.mins, self->r.maxs);
+		}
+	} else {
+		return RadiusFromBounds2D(self->r.mins, self->r.maxs);
+	}
+}
+
+float DistanceToGoal2DSquared( gentity_t *self )
+{
+	vec3_t vec;
+	vec3_t goalPos;
+
+	BotGetTargetPos( self->botMind->goal, goalPos );
+
+	VectorSubtract( goalPos, self->s.origin, vec );
+
+	return Square( vec[ 0 ] ) + Square( vec[ 1 ] );
+}
+
+AINodeStatus_t BotActionMoveTo( gentity_t *self, AIMoveTo_t *node )
+{
+	if ( node != self->botMind->currentNode )
+	{
+		if ( !BotChangeTarget( self, BotGetMoveToTarget( self, node ) ) )
+		{
+			return STATUS_FAILURE;
+		}
+		else
+		{
+			return STATUS_RUNNING;
+		}
+	}
+
+	if ( self->botMind->goal.ent )
+	{
+		// died
+		if ( self->botMind->goal.ent->health < 0 )
+		{
+			return STATUS_FAILURE;
+		}
+	}
+
+	BotMoveToGoal( self );
+
+	float radius;
+	if ( node->range == -1 )
+	{
+		radius = BotGetGoalRadius( self );
+	}
+	else
+	{
+		radius = node->range;
+	}
+	
+	if ( DistanceToGoal2DSquared( self ) <= Square( radius ) && self->botMind->numCorners == 1 )
+	{
+		return STATUS_SUCCESS;
+	}
+
+	return STATUS_RUNNING;
+}
+
+AINodeStatus_t BotActionRush( gentity_t *self, AIActionNode_t *node )
+{
+	if ( self->botMind->currentNode != node )
+	{
+		if ( !BotChangeTarget( self, BotGetRushTarget( self ) ) )
+		{
+			return STATUS_FAILURE;
+		}
+		else
+		{
+			return STATUS_RUNNING;
+		}
+	}
+
+	if ( !BotTargetIsEntity( self->botMind->goal ) )
+	{
+		return STATUS_FAILURE;
+	}
+
+	if ( self->botMind->goal.ent->health <= 0 )
+	{
+		return STATUS_FAILURE;
+	}
+
+	if ( DistanceToGoalSquared( self ) > Square( 100 ) )
+	{
+		BotMoveToGoal( self );
+	}
+	return STATUS_RUNNING;
+}
+
+AINodeStatus_t BotEvaluateNode( gentity_t *self, AINode_t *node );
+
+qboolean NodeIsRunning( gentity_t *self, AINode_t *node )
+{
+	int i;
+	for ( i = 0; i < self->botMind->numRunningNodes; i++ )
+	{
+		if ( self->botMind->runningNodes[ i ] == node )
+		{
+			return qtrue;
+		}
+	}
+	return qfalse;
+}
+
+AINodeStatus_t BotEvaluateNodeList( gentity_t *self, AINodeList_t *nodeList )
+{
+	int i;
+
+	switch ( nodeList->selector )
+	{
+		case SELECTOR_PRIORITY:
+			for( i = 0; i < nodeList->numNodes; i++ )
+			{
+				AINodeStatus_t status = BotEvaluateNode( self, nodeList->list[ i ] );
+				if ( status == STATUS_FAILURE )
+				{
+					continue;
+				}
+				return status;
+			}
+			return STATUS_FAILURE;
+		case SELECTOR_SEQUENCE:
+			i = 0;
+
+			// find a previously running node and start there
+			for ( i = nodeList->numNodes - 1; i > 0; i-- )
+			{
+				if ( NodeIsRunning( self, nodeList->list[ i ] ) )
+				{
+					break;
+				}
+			}
+
+			for( ; i < nodeList->numNodes; i++ )
+			{
+				AINodeStatus_t status = BotEvaluateNode( self, nodeList->list[ i ] );
+				if ( status == STATUS_FAILURE )
+				{
+					return STATUS_FAILURE;
+				}
+
+				if ( status == STATUS_RUNNING )
+				{
+					return STATUS_RUNNING;
+				}
+			}
+			return STATUS_SUCCESS;
+		case SELECTOR_SELECTOR:
+			i = 0;
+
+			// find a previously running node and start there
+			for ( i = nodeList->numNodes - 1; i > 0; i-- )
+			{
+				if ( NodeIsRunning( self, nodeList->list[ i ] ) )
+				{
+					break;
+				}
+			}
+
+			for( ; i < nodeList->numNodes; i++ )
+			{
+				AINodeStatus_t status = BotEvaluateNode( self, nodeList->list[ i ] );
+				if( status == STATUS_FAILURE )
+				{
+					continue;
+				}
+				return status;
+			}
+			return STATUS_FAILURE;
+		case SELECTOR_CONCURRENT:
+			i = 0;
+			{
+				int numSTATUS_FAILURE = 0;
+				for( ; i < nodeList->numNodes; i++ )
+				{
+					AINodeStatus_t status = BotEvaluateNode( self, nodeList->list[ i ] );
+
+					if ( status == STATUS_FAILURE )
+					{
+						numSTATUS_FAILURE++;
+
+						if ( numSTATUS_FAILURE < nodeList->maxFail )
+						{
+							continue;
+						}
+					}
+
+					return status;
+				}
+			}
+			return STATUS_FAILURE;
+		default:
+			return STATUS_FAILURE;
+	}
+}
+
+#define BotCondition( leftValue, rightValue, op, success ) \
+do \
+{\
+	success = qfalse;\
+	switch ( op )\
+	{\
+		case OP_LESSTHAN:\
+			if ( leftValue < rightValue )\
+			{\
+				success = qtrue;\
+			}\
+			break;\
+		case OP_LESSTHANEQUAL:\
+			if ( leftValue <= rightValue )\
+			{\
+				success = qtrue;\
+			}\
+			break;\
+		case OP_GREATERTHAN:\
+			if ( leftValue > rightValue )\
+			{\
+				success = qtrue;\
+			}\
+			break;\
+		case OP_GREATERTHANEQUAL:\
+			if ( leftValue >= rightValue )\
+			{\
+				success = qtrue;\
+			}\
+			break;\
+		case OP_EQUAL:\
+			if ( leftValue == rightValue )\
+			{\
+				success = qtrue;\
+			}\
+			break;\
+		case OP_NEQUAL:\
+			if ( leftValue != rightValue )\
+			{\
+				success = qtrue;\
+			}\
+			break;\
+	}\
+} while ( 0 );
+
+#define BotBoolCondition( left, op, s ) \
+do \
+{ \
+	s = qfalse; \
+	switch( op )\
+	{\
+	case OP_BOOL:\
+		if ( left )\
+		{\
+			s = qtrue;\
+		}\
+		break;\
+	case OP_NOT:\
+		if ( !left )\
+		{\
+			s = qtrue;\
+		}\
+		break;\
+	}\
+} while( 0 );
+AINodeStatus_t BotEvaluateCondition( gentity_t *self, AICondition_t *node )
+{
+	qboolean success = qfalse;
+
+	switch( node->info )
+	{
+		case CON_BUILDING:
+			{
+				gentity_t *building = NULL;
+				building = self->botMind->closestBuildings[ node->param1.value.i ].ent;
+				BotBoolCondition( building, node->op, success );
+			}
+			break;
+		case CON_WEAPON:
+			BotBoolCondition( BG_InventoryContainsWeapon( node->param1.value.i, self->client->ps.stats ), node->op, success );
+			break;
+		case CON_DAMAGEDBUILDING:
+			BotBoolCondition( self->botMind->closestDamagedBuilding.ent, node->op, success );
+			break;
+		case CON_CVAR:
+			BotBoolCondition( ( ( ( vmCvar_t * ) node->param1.value.ptr )->integer ), node->op, success );
+			break;
+		case CON_CURWEAPON:
+			BotCondition( self->client->ps.weapon, node->param1.value.i, node->op, success );
+			break;
+		case CON_TEAM:
+			BotCondition( self->client->ps.stats[ STAT_TEAM ], node->param1.value.i, node->op, success );
+			break;
+		case CON_ENEMY:
+			if ( level.time - self->botMind->timeFoundEnemy <= BOT_REACTION_TIME )
+			{
+				success = qfalse;
+			}
+			else if ( !self->botMind->bestEnemy.ent )
+			{
+				success = qfalse;
+			}
+			else
+			{
+				success = qtrue;
+			}
+
+			if ( node->op == OP_NOT )
+			{
+				success = ( qboolean ) ( ( int ) !success );
+			}
+			break;
+		case CON_UPGRADE:
+			{
+				BotBoolCondition( BG_InventoryContainsUpgrade( node->param1.value.i, self->client->ps.stats ), node->op, success );
+
+				if ( node->op == OP_NOT )
+				{
+					if ( BG_UpgradeIsActive( node->param1.value.i, self->client->ps.stats ) )
+					{
+						success = qfalse;
+					}
+				}
+				else if ( node->op == OP_BOOL )
+				{
+					if ( BG_UpgradeIsActive( node->param1.value.i, self->client->ps.stats ) )
+					{
+						success = qtrue;
+					}
+				}
+			}
+			break;
+		case CON_HEALTH:
+			{
+				float health = self->health;
+				float maxHealth = BG_Class( ( class_t ) self->client->ps.stats[ STAT_CLASS ] )->health;
+
+				BotCondition( ( health / maxHealth ), node->param1.value.f, node->op, success );
+			}
+			break;
+		case CON_AMMO:
+			BotCondition( PercentAmmoRemaining( BG_PrimaryWeapon( self->client->ps.stats ), &self->client->ps ), node->param1.value.f, node->op, success );
+			break;
+		case CON_TEAM_WEAPON:
+			BotBoolCondition( BotTeamateHasWeapon( self, node->param1.value.i ), node->op, success );
+			break;
+		case CON_DISTANCE:
+			{
+				float distance = 0;
+
+				if ( node->param1.value.i < BA_NUM_BUILDABLES )
+				{
+					distance = self->botMind->closestBuildings[ node->param1.value.i ].distance;
+				}
+				else if ( node->param1.value.i == E_GOAL )
+				{
+					distance = DistanceToGoal( self );
+				}
+				else if ( node->param1.value.i == E_ENEMY )
+				{
+					distance = self->botMind->bestEnemy.distance;
+				}
+				else if ( node->param1.value.i == E_DAMAGEDBUILDING )
+				{
+					distance = self->botMind->closestDamagedBuilding.distance;
+				}
+
+				BotCondition( distance, node->param2.value.i, node->op, success );
+			}
+			break;
+		case CON_BASERUSH:
+			{
+				float score = BotGetBaseRushScore( self );
+
+				BotCondition( score, node->param1.value.f, node->op, success );
+			}
+			break;
+		case CON_HEAL:
+			{
+				float score = BotGetHealScore( self );
+				BotCondition( score, node->param1.value.f, node->op, success );
+			}
+			break;
+	}
+
+	if ( success )
+	{
+		if ( node->child )
+		{
+			return BotEvaluateNode( self, node->child );
+		}
+		else
+		{
+			return STATUS_SUCCESS;
+		}
+	}
+
+	return STATUS_FAILURE;
+}
+
+AINodeStatus_t BotEvaluateAction( gentity_t *self, AIActionNode_t *node )
+{
+	AINodeStatus_t status = STATUS_FAILURE;
+
+	switch ( node->action )
+	{
+		case ACTION_ROAM:
+			status = BotActionRoam( self, node );
+			break;
+		case ACTION_BUY:
+			status = BotActionBuy( self, ( AIBuy_t * ) node );
+			break;
+		case ACTION_FIGHT:
+			status = BotActionFight( self, node );
+			break;
+		case ACTION_FLEE:
+			status = BotActionFlee( self, node );
+			break;
+		case ACTION_HEAL:
+			if ( self->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+			{
+				status = BotActionHealH( self, node );
+			}
+			else
+			{
+				status = BotActionHealA( self, node );
+			}
+			break;
+		case ACTION_REPAIR:
+			status = BotActionRepair( self, node );
+			break;
+		case ACTION_EVOLVE:
+			status = BotActionEvolve( self, node );
+			break;
+		case ACTION_MOVETO:
+			status = BotActionMoveTo( self, ( AIMoveTo_t * ) node );
+			break;
+		case ACTION_RUSH:
+			status = BotActionRush( self, node );
+			break;
+		default:
+			status = STATUS_FAILURE;
+			break;
+	}
+
+	if ( status == STATUS_RUNNING )
+	{
+		self->botMind->currentNode = node;
+	}
+
+	if ( self->botMind->currentNode == node && status != STATUS_RUNNING )
+	{
+		self->botMind->currentNode = NULL;
+	}
+
+	return status;
+}
+
+AINodeStatus_t BotEvaluateNode( gentity_t *self, AINode_t *node )
+{
+	AINodeStatus_t status = STATUS_FAILURE;
+	switch ( *node )
+	{
+		case SELECTOR_NODE:
+			status = BotEvaluateNodeList( self, ( AINodeList_t * ) node );
+			break;
+		case ACTION_NODE:
+			status = BotEvaluateAction( self, ( AIActionNode_t * )node );
+			break;
+		case CONDITION_NODE:
+			status = BotEvaluateCondition( self, ( AICondition_t * ) node );
+			break;
+	}
+
+	// reset running information on node success
+	if ( NodeIsRunning( self, node ) && status == STATUS_SUCCESS )
+	{
+		memset( self->botMind->runningNodes, 0, sizeof( self->botMind->runningNodes ) );
+		self->botMind->numRunningNodes = 0;
+	}
+
+	// store running information
+	if ( status == STATUS_RUNNING )
+	{
+		if ( self->botMind->numRunningNodes == MAX_NODE_DEPTH )
+		{
+			G_Printf( "ERROR: MAX_NODE_DEPTH exceeded\n" );
+			return status;
+		}
+
+		// clear out previous running list when we hit a running leaf node
+		if ( *node == ACTION_NODE )
+		{
+			memset( self->botMind->runningNodes, 0, sizeof( self->botMind->runningNodes ) );
+			self->botMind->numRunningNodes = 0;
+		}
+
+		int i = self->botMind->numRunningNodes;
+		self->botMind->numRunningNodes++;
+		self->botMind->runningNodes[ i ] = node;
+	}
+
+	return status;
 }
 
 /*
@@ -1947,7 +2679,8 @@ Bot Thinks
 */
 extern "C" void G_BotThink( gentity_t *self) {
 	char buf[MAX_STRING_CHARS];
-	usercmd_t  botCmdBuffer = self->client->pers.cmd;
+	self->botMind->cmdBuffer = self->client->pers.cmd;
+	usercmd_t &botCmdBuffer = self->botMind->cmdBuffer;
 	vec3_t     nudge;
 
 	//reset command buffer
@@ -1971,8 +2704,10 @@ extern "C" void G_BotThink( gentity_t *self) {
 	//return;
 	//update closest structs
 	gentity_t* bestEnemy = BotFindBestEnemy(self);
+
 	botTarget_t target;
 	BotSetTarget(&target, bestEnemy, NULL);
+
 	//if we do not already have an enemy, and we found an enemy, update the time that we found an enemy
 	if(!self->botMind->bestEnemy.ent && bestEnemy && level.time - self->botMind->enemyLastSeen > BOT_ENEMY_CHASETIME && BotAimNegligence(self,target) > 45) {
 		self->botMind->timeFoundEnemy = level.time;
@@ -1981,7 +2716,7 @@ extern "C" void G_BotThink( gentity_t *self) {
 	self->botMind->bestEnemy.ent = bestEnemy;
 	self->botMind->bestEnemy.distance = (!bestEnemy) ? 0 : Distance(self->s.origin,bestEnemy->s.origin);
 
-	BotFindClosestBuildings(self, &self->botMind->closestBuildings);
+	BotFindClosestBuildings(self, self->botMind->closestBuildings);
 
 	gentity_t* bestDamaged = BotFindDamagedFriendlyStructure(self);
 	self->botMind->closestDamagedBuilding.ent = bestDamaged;
@@ -1997,9 +2732,14 @@ extern "C" void G_BotThink( gentity_t *self) {
 
 	//hacky ping fix
 	self->client->ps.ping = rand() % 50 + 50;
+	
+	if ( !self->botMind->behaviorTree )
+	{
+		G_Printf( "ERROR: NULL behavior tree\n" );
+		return;
+	}
 
-	//Execute the bot's tasks (The actual AI of the bot)
-	EvaluateTasks(self, &botCmdBuffer);
+	BotEvaluateNode( self, self->botMind->behaviorTree->root );
 
 	// if we were nudged...
 	VectorAdd( self->client->ps.velocity, nudge, self->client->ps.velocity );
@@ -2033,34 +2773,15 @@ extern "C" void G_BotSpectatorThink( gentity_t *self ) {
 				G_PushSpawnQueue( sq, self->s.number );
 			}
 		}
-		if(self->client->pers.teamSelection == TEAM_HUMANS) {
-			//we want to spawn with a ckit if we need to build
-			if(BotShouldBuild(self)) {
-				if(self->client->pers.humanItemSelection != WP_HBUILD) {
-					G_RemoveFromSpawnQueue(&level.humanSpawnQueue, self->s.number);
-					self->client->pers.humanItemSelection = WP_HBUILD;
-					G_PushSpawnQueue( &level.humanSpawnQueue, self->s.number);
-				}
-			} else if(self->client->pers.humanItemSelection != WP_MACHINEGUN && g_bot_rifle.integer) {
-				//we should not build, so spawn with a rifle
-				G_RemoveFromSpawnQueue(&level.humanSpawnQueue, self->s.number);
-				self->client->pers.humanItemSelection = WP_MACHINEGUN;
-				G_PushSpawnQueue( &level.humanSpawnQueue, self->s.number);
-			}
-		}
-
 		return;
 	}
 
 	//reset stuff
-	self->botMind->followingRoute = qfalse;
 	BotSetGoal(self, NULL, NULL);
-	self->botMind->modus = BOT_MODUS_IDLE;
-	self->botMind->needNewGoal = qtrue;
 	self->botMind->bestEnemy.ent = NULL;
 	self->botMind->timeFoundEnemy = 0;
 	self->botMind->enemyLastSeen = 0;
-	self->botMind->task = BOT_TASK_NONE;
+
 	if( self->client->sess.restartTeam == TEAM_NONE ) {
 		int teamnum = self->client->pers.teamSelection;
 		int clientNum = self->client->ps.clientNum;
@@ -2071,7 +2792,7 @@ extern "C" void G_BotSpectatorThink( gentity_t *self ) {
 			self->botMind->navQuery = navQuerys[PCL_HUMAN];
 			self->botMind->navFilter = &navFilters[PCL_HUMAN];
 			//we want to spawn with rifle unless it is disabled or we need to build
-			if(g_bot_rifle.integer && !BotShouldBuild(self))
+			if(g_bot_rifle.integer)
 				self->client->pers.humanItemSelection = WP_MACHINEGUN;
 			else
 				self->client->pers.humanItemSelection = WP_HBUILD;
@@ -2097,6 +2818,14 @@ extern "C" void G_BotIntermissionThink( gclient_t *client )
 	client->readyToExit = qtrue;
 }
 
+extern "C" void G_BotInit( void )
+{
+	G_BotNavInit( );
+	if ( treeList.maxTrees == 0 )
+	{
+		InitTreeList( &treeList );
+	}
+}
 
 extern "C" void G_BotCleanup( int restart )
 {
@@ -2110,4 +2839,6 @@ extern "C" void G_BotCleanup( int restart )
 
 		G_BotClearNames();
 	}
+	G_BotFreeBehaviorTrees();
+	G_BotNavCleanup();
 }

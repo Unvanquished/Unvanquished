@@ -1,0 +1,73 @@
+selector priority
+{
+	condition alertedToEnemy
+	{
+		selector priority
+		{
+			condition haveWeapon WP_HBUILD
+			{
+				selector priority
+				{
+					action equip
+					action flee
+				}
+			}
+			
+			action fight
+		}
+	}
+	
+	selector
+	{
+		selector sequence
+		{
+			condition botTeam eq TEAM_ALIENS { }
+			condition healScore lte 0.25 { }
+			action heal
+		}
+		
+		selector sequence
+		{
+			condition botTeam eq TEAM_HUMANS { }
+			condition not haveUpgrade UP_MEDKIT { }
+			condition healScore lte 0.25 { }
+			action heal
+		}
+	}
+	
+	condition botTeam eq TEAM_ALIENS
+	{
+		action evolve
+	}
+	
+	selector sequence
+	{
+		condition botTeam eq TEAM_HUMANS { }
+		condition not teamateHasWeapon WP_HBUILD { }
+		condition buildingIsDamaged { }
+		selector
+		{
+			condition not haveWeapon WP_HBUILD
+			{
+				action buy WP_HBUILD
+			}
+			
+			condition haveWeapon WP_HBUILD
+			{
+				action repair
+			}
+		}
+	}
+	
+	condition botTeam eq TEAM_HUMANS
+	{
+		action equip
+	}
+	
+	condition baseRushScore gt 0.5
+	{
+		action rush
+	}
+	
+	action roam
+}

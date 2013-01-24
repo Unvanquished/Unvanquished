@@ -818,11 +818,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	// load up a custom building layout if there is one
 	G_LayoutLoad();
 
-	  // load a bot layout
-	G_BotLoadBuildLayout();
-
-	// load the navmesh for bots
-	G_NavMeshInit( );
+	// setup bot code
+	G_BotInit();
 
 	// the map might disable some things
 	BG_InitAllowedGameElements();
@@ -941,7 +938,7 @@ void G_ShutdownGame( int restart )
 	G_admin_cleanup();
 	G_namelog_cleanup();
 	G_BotCleanup( restart );
-	G_NavMeshCleanup( );
+
 	G_UnregisterCommands();
 
 	G_ShutdownMapRotations();

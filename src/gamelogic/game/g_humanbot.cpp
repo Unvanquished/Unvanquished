@@ -32,18 +32,18 @@ qboolean WeaponIsEmpty( weapon_t weapon, playerState_t ps)
 		return qfalse;
 }
 
-float PercentAmmoRemaining( weapon_t weapon, int stats[], playerState_t ps ) {
+float PercentAmmoRemaining( weapon_t weapon, playerState_t *ps ) {
 	int maxAmmo, maxClips;
 	float totalMaxAmmo, totalAmmo;
 
 	maxAmmo = BG_Weapon(weapon)->maxAmmo;
 	maxClips = BG_Weapon(weapon)->maxClips;
 	if(!BG_Weapon(weapon)->infiniteAmmo) {
-		if( BG_InventoryContainsUpgrade( UP_BATTPACK, stats ) )
+		if( BG_InventoryContainsUpgrade( UP_BATTPACK, ps->stats ) )
 			maxAmmo = (int)( (float)maxAmmo * BATTPACK_MODIFIER );
 
 		totalMaxAmmo = (float) maxAmmo + maxClips * maxAmmo;
-		totalAmmo = (float) ps.ammo + ps.clips * maxAmmo;
+		totalAmmo = (float) ps->ammo + ps->clips * maxAmmo;
 
 		return (float) totalAmmo / totalMaxAmmo;
 	} else
@@ -293,30 +293,23 @@ int BotValueOfUpgrades(gentity_t *self) {
 	}
 	return worth;
 }
-void BotGetDesiredBuy(gentity_t *self, weapon_t *weapon, upgrade_t (*upgrades)[3], int *numUpgrades) {
+void BotGetDesiredBuy(gentity_t *self, weapon_t *weapon, upgrade_t *upgrades, int *numUpgrades) {
 	int equipmentPrice = BotValueOfWeapons(self) + BotValueOfUpgrades(self);
 	int credits = self->client->ps.persistant[PERS_CREDIT];
 	int usableCapital = credits + equipmentPrice;
 
-	//we want to buy a ckit
-	if(self->botMind->modus == BOT_MODUS_BUILD) {
-		*weapon = WP_HBUILD;
-		*numUpgrades = 0;
-		return;
-	}
-
 	//decide what upgrade(s) to buy
 	if(g_humanStage.integer >= 2 && usableCapital >= (PAINSAW_PRICE + BSUIT_PRICE )) {
-		(*upgrades)[0] = UP_BATTLESUIT;
+		upgrades[0] = UP_BATTLESUIT;
 		*numUpgrades = 1;
 		usableCapital -= BSUIT_PRICE;
 	} else if(g_humanStage.integer >= 1 && usableCapital >= (SHOTGUN_PRICE + LIGHTARMOUR_PRICE + HELMET_PRICE)) {
-		(*upgrades)[0] = UP_LIGHTARMOUR;
-		(*upgrades)[1] = UP_HELMET;
+		upgrades[0] = UP_LIGHTARMOUR;
+		upgrades[1] = UP_HELMET;
 		*numUpgrades = 2;
 		usableCapital = usableCapital - (LIGHTARMOUR_PRICE + HELMET_PRICE);
 	} else if(g_humanStage.integer >= 0 && usableCapital >= (PAINSAW_PRICE + LIGHTARMOUR_PRICE )) {
-		(*upgrades)[0] = UP_LIGHTARMOUR;
+		upgrades[0] = UP_LIGHTARMOUR;
 		*numUpgrades = 1;
 		usableCapital -= LIGHTARMOUR_PRICE;
 	} else {
@@ -327,7 +320,7 @@ void BotGetDesiredBuy(gentity_t *self, weapon_t *weapon, upgrade_t (*upgrades)[3
 	if(g_humanStage.integer >= 2  && usableCapital >= LCANNON_PRICE && g_bot_lcannon.integer) {
 		*weapon = WP_LUCIFER_CANNON;
 		usableCapital -= LCANNON_PRICE;
-	} else if(g_humanStage.integer >= 2 && usableCapital >= CHAINGUN_PRICE && (*upgrades)[0] == UP_BATTLESUIT && g_bot_chaingun.integer) {
+	} else if(g_humanStage.integer >= 2 && usableCapital >= CHAINGUN_PRICE && upgrades[0] == UP_BATTLESUIT && g_bot_chaingun.integer) {
 		*weapon = WP_CHAINGUN;
 		usableCapital -= CHAINGUN_PRICE;
 	} else if(g_humanStage.integer >= 1 && g_alienStage.integer < 2 && usableCapital >= FLAMER_PRICE && g_bot_flamer.integer){
@@ -357,8 +350,8 @@ void BotGetDesiredBuy(gentity_t *self, weapon_t *weapon, upgrade_t (*upgrades)[3
 	}
 
 	//finally, see if we can buy a battpack
-	if(BG_Weapon(*weapon)->usesEnergy && usableCapital >= BATTPACK_PRICE && g_humanStage.integer >= 1 && (*upgrades)[0] != UP_BATTLESUIT) {
-		(*upgrades)[(*numUpgrades)++] = UP_BATTPACK;
+	if(BG_Weapon(*weapon)->usesEnergy && usableCapital >= BATTPACK_PRICE && g_humanStage.integer >= 1 && upgrades[0] != UP_BATTLESUIT) {
+		upgrades[(*numUpgrades)++] = UP_BATTPACK;
 		usableCapital -= BATTPACK_PRICE;
 	}
 
@@ -367,7 +360,7 @@ void BotGetDesiredBuy(gentity_t *self, weapon_t *weapon, upgrade_t (*upgrades)[3
 	if(BG_InventoryContainsWeapon((int)*weapon,self->client->ps.stats)) {
 		int numContain = 0;
 		for(int i=0;i<*numUpgrades;i++) {
-			if(BG_InventoryContainsUpgrade((int)(*upgrades)[i],self->client->ps.stats)) {
+			if(BG_InventoryContainsUpgrade((int)upgrades[i],self->client->ps.stats)) {
 				numContain++;
 			}
 		}
@@ -375,10 +368,10 @@ void BotGetDesiredBuy(gentity_t *self, weapon_t *weapon, upgrade_t (*upgrades)[3
 		if(numContain == *numUpgrades) {
 			*numUpgrades = 0;
 			for(int i=0;i<3;i++) {
-				(*upgrades)[i] = UP_NONE;
+				upgrades[i] = UP_NONE;
 			}
-			if(PercentAmmoRemaining(BG_PrimaryWeapon(self->client->ps.stats),self->client->ps.stats, self->client->ps) < BOT_LOW_AMMO) {
-				(*upgrades)[0] = UP_AMMO;
+			if(PercentAmmoRemaining(BG_PrimaryWeapon(self->client->ps.stats), &self->client->ps) < BOT_LOW_AMMO) {
+				upgrades[0] = UP_AMMO;
 				*numUpgrades = 1;
 			}
 			*weapon = WP_NONE;
@@ -511,183 +504,31 @@ qboolean BotGetBuildingToBuild(gentity_t *self, vec3_t origin, vec3_t normal, bu
 	return qfalse;
 }
 
-botTaskStatus_t BotTaskBuildH(gentity_t *self, usercmd_t *botCmdBuffer) {
+AINodeStatus_t BotActionBuy( gentity_t *self, AIBuy_t *node )
+{
+	weapon_t weapon = node->weapon;
+	upgrade_t *upgrades = node->upgrades;
+	int numUpgrades = node->numUpgrades;
 
-	float dist = BG_Class((class_t) self->client->ps.stats[ STAT_CLASS ] )->buildDist;
-	vec3_t normal;
-	vec3_t forward;
-	trace_t trace;
-	AngleVectors(self->client->ps.viewangles, forward, NULL,NULL);
-	vec3_t mins,maxs;
-	buildable_t building;
-	vec3_t origin;
-
-	//checks
-	if(!BG_InventoryContainsWeapon(WP_HBUILD,self->client->ps.stats))
-		return TASK_STOPPED;
-
-	if(!BotGetBuildingToBuild(self, origin, normal, &building))
-		return TASK_STOPPED;
-
-	if(self->botMind->bestEnemy.ent)
-		return TASK_STOPPED;
-
-	vec3_t targetPos;
-	BotGetTargetPos(self->botMind->goal,targetPos);
-
-	if(self->client->ps.weapon != WP_HBUILD)
-		G_ForceWeaponChange(self, WP_HBUILD);
-
-	BG_BuildableBoundingBox( building, mins, maxs );
-
-	//check for anything blocking the placement of the building
-	trap_Trace(&trace,origin,mins,maxs,origin,-1,MASK_PLAYERSOLID);
-
-
-	int blockingBuildingNum = ENTITYNUM_NONE; //entity number of a blocking building
-	int blockerNum = ENTITYNUM_NONE; //entity number of a non-building blocker
-	qboolean tooClose = qfalse; //flag telling if the bot is too close to where the building will be placed
-
-	if(trace.entityNum < ENTITYNUM_MAX_NORMAL) {
-		gentity_t *ent = &g_entities[trace.entityNum];
-
-		if(ent->s.eType == ET_BUILDABLE && BotGetTeam(ent) == BotGetTeam(self))
-			blockingBuildingNum = trace.entityNum;
-		else if(trace.entityNum == self->s.number)
-			tooClose = qtrue;
-		else
-			blockerNum = trace.entityNum;
-
+	if ( weapon == WP_NONE && numUpgrades == 0 )
+	{
+		BotGetDesiredBuy( self, &weapon, upgrades, &numUpgrades );
 	}
-
-
-
-	//if we dont have enough bp, or we are trying to build a reactor, go and decon something
-	if(G_GetBuildPoints(origin, BotGetTeam(self)) < BG_Buildable(building)->buildPoints || (G_Reactor() && building == BA_H_REACTOR)) {
-
-		int deconNum = ENTITYNUM_NONE;
-		vec3_t targetPos;
-		//set the current goal to best building to decon
-		if(BotRoutePermission(self, BOT_TASK_BUILD)) {
-			//find the best building to decon
-			deconNum = BotFindBestHDecon(self, building,origin);
-			if(!BotChangeTarget(self, &g_entities[deconNum],NULL)) {
-				return TASK_STOPPED;
-			}
-		}
-		deconNum = BotGetTargetEntityNumber(self->botMind->goal);
-
-		//make sure nothing happened to our decon target
-		if(!BotTargetIsEntity(self->botMind->goal)) {
-			return TASK_STOPPED;
-		}
-		BotGetTargetPos(self->botMind->goal,targetPos);
-
-		//head to the building if not close enough to decon
-		if(!BotTargetIsVisible(self,self->botMind->goal,MASK_SHOT) || DistanceToGoalSquared(self) > Square(100))
-			BotMoveToGoal(self, botCmdBuffer);
-		else {
-			BotAimAtLocation(self,targetPos,botCmdBuffer);
-			//only decon if our build timer lets us
-			if(self->client->ps.stats[STAT_MISC] == 0) {
-				gentity_t *block = &g_entities[deconNum];
-
-				//aim at the building and decon it
-
-				if( !g_cheats.integer ) // add a bit to the build timer if cheats arnt enabled
-				{
-					self->client->ps.stats[ STAT_MISC ] +=
-						BG_Buildable((buildable_t) block->s.modelindex )->buildTime / 4;
-				}
-				G_Damage( block, self, self, forward, targetPos,
-					block->health, 0, MOD_DECONSTRUCT );
-				G_FreeEntity(block);
-				self->botMind->needNewGoal = qtrue;
-			}
-		}
-	} else if(!VectorCompare(origin,targetPos) || BotRoutePermission(self, BOT_TASK_BUILD)) {
-		//set the target coordinate where we will place the building
-		if(!BotChangeTarget(self, NULL, &origin))
-			return TASK_STOPPED;
-	} else if(DistanceToGoalSquared(self) > Square(dist)) {
-		//move to where we will place the building until close enough to place it
-		BotMoveToGoal(self, botCmdBuffer);
-	} else if(tooClose){
-		//we are too close to the building placement, back up and move around to try to get out of the way
-		botCmdBuffer->forwardmove = -127;
-		botCmdBuffer->rightmove = ((level.time % 10000) < 5000) ? 127 : -127;
-
-	} else if(blockingBuildingNum != ENTITYNUM_NONE){
-
-		gentity_t *block = &g_entities[blockingBuildingNum];
-		BotAimAtLocation(self,origin,botCmdBuffer);
-		//wait for build timer to run out
-		if(self->client->ps.stats[STAT_MISC] == 0) {
-			//deecon any building in the way
-			if( !g_cheats.integer ) // add a bit to the build timer
-			{
-				self->client->ps.stats[ STAT_MISC ] +=
-					BG_Buildable((buildable_t) block->s.modelindex )->buildTime / 4;
-			}
-			G_Damage( block, self, self, forward, self->s.origin,
-				block->health, 0, MOD_DECONSTRUCT );
-			G_FreeEntity( block);
-		}
-	} else if(blockerNum != ENTITYNUM_NONE) {
-		//no room to place building, wait until block clears
-		BotAimAtLocation(self,origin,botCmdBuffer);
-		botCmdBuffer->forwardmove = 0;
-		botCmdBuffer->upmove = 0;
-		botCmdBuffer->rightmove = 0;
-	} else if(self->client->ps.stats[STAT_MISC] > 0) {
-		//aim at the place we will put the building while we wait for our build timer to go down
-		BotAimAtLocation(self,origin,botCmdBuffer);
-	} else if(self->client->ps.stats[STAT_MISC] == 0) {
-		//build the building
-		BotAimAtLocation(self,origin,botCmdBuffer);
-		if(!g_cheats.integer) {
-			self->client->ps.stats[STAT_MISC] += BG_Buildable(building)->buildTime;
-		}
-		G_Build(self, building, origin,normal,self->client->ps.viewangles);
-		self->botMind->needNewGoal = qtrue;
-	}
-	return TASK_RUNNING;
-}
-botTaskStatus_t BotTaskBuy(gentity_t *self, usercmd_t *botCmdBuffer) {
-	upgrade_t upgrades[3];
-	weapon_t weapon;
-	int numUpgrades;
-	BotGetDesiredBuy(self, &weapon, &upgrades, &numUpgrades);
-	return BotTaskBuy(self, weapon, upgrades, numUpgrades, botCmdBuffer);
-}
-botTaskStatus_t BotTaskBuy(gentity_t *self, weapon_t weapon, upgrade_t *upgrades, int numUpgrades, usercmd_t *botCmdBuffer) {
 
 	if(!g_bot_buy.integer)
-		return TASK_STOPPED;
+		return STATUS_FAILURE;
 	if(BotGetTeam(self) != TEAM_HUMANS)
-		return TASK_STOPPED;
-	if(numUpgrades && upgrades[0] == UP_AMMO && BG_Weapon( (weapon_t)self->client->ps.stats[ STAT_WEAPON ] )->usesEnergy)
-	{
-		if(!self->botMind->closestBuildings.armoury.ent &&
-		   !self->botMind->closestBuildings.repeater.ent &&
-		   !self->botMind->closestBuildings.reactor.ent)
-		{
-			return TASK_STOPPED; //wanted ammo for energy? no armoury, repeater or reactor, so fail
-		}
-	}
-	else if(!self->botMind->closestBuildings.armoury.ent)
-		return TASK_STOPPED; //no armoury, so fail
-	if(self->botMind->bestEnemy.ent) {
-		if(self->botMind->bestEnemy.distance <= BOT_ENGAGE_DIST)
-			return TASK_STOPPED;
-	}
+		return STATUS_FAILURE;
+	if(!self->botMind->closestBuildings[BA_H_ARMOURY].ent)
+		return STATUS_FAILURE; //no armoury, so fail
+
 	//check if we already have everything
 	if(BG_InventoryContainsWeapon(weapon,self->client->ps.stats) || weapon == WP_NONE) {
 		//cant buy more than 3 upgrades
 		if(numUpgrades > 3)
-			return TASK_STOPPED;
+			return STATUS_FAILURE;
 		if(numUpgrades == 0)
-			return TASK_STOPPED;
+			return STATUS_FAILURE;
 		int numContain = 0;
 		for(int i=0;i<numUpgrades;i++) {
 			if(BG_InventoryContainsUpgrade(upgrades[i],self->client->ps.stats)) {
@@ -696,40 +537,24 @@ botTaskStatus_t BotTaskBuy(gentity_t *self, weapon_t weapon, upgrade_t *upgrades
 		}
 		//we have every upgrade we want to buy
 		if(numContain == numUpgrades)
-			return TASK_STOPPED;
+			return STATUS_FAILURE;
 	}
 
-	if(BotRoutePermission(self, BOT_TASK_BUY)) {
-		//default to armoury
-		const botEntityAndDistance_t *ent = &self->botMind->closestBuildings.armoury;
-		//wanting energy ammo only? look for closer repeater or reactor
-		if(numUpgrades && upgrades[0] == UP_AMMO && BG_Weapon( (weapon_t)self->client->ps.stats[ STAT_WEAPON ] )->usesEnergy)
-		{
-#define DISTANCE(obj) ( self->botMind->closestBuildings.obj.ent ? self->botMind->closestBuildings.obj.distance : INT_MAX )
-			//repeater closest? use that
-			if(DISTANCE(repeater) < DISTANCE(reactor))
-			{
-				if(DISTANCE(repeater) < DISTANCE(armoury))
-					ent = &self->botMind->closestBuildings.repeater;
-			}
-			//reactor closest? use that
-			else if(DISTANCE(reactor) < DISTANCE(armoury))
-				ent = &self->botMind->closestBuildings.reactor;
-		}
-		if(!BotChangeTarget(self, ent->ent, NULL))
-			return TASK_STOPPED;
+	if(self->botMind->currentNode != node) {
+		if(!BotChangeTarget(self, self->botMind->closestBuildings[BA_H_ARMOURY].ent, NULL))
+			return STATUS_FAILURE;
 	}
 
 	if(!BotTargetIsEntity(self->botMind->goal)) {
-		return TASK_STOPPED;
+		return STATUS_FAILURE;
 	}
 	if(self->botMind->goal.ent->health <= 0) {
-		return TASK_STOPPED;
+		return STATUS_FAILURE;
 	}
 
-	if(DistanceToGoalSquared(self) > 100 * 100) {
-		BotMoveToGoal(self, botCmdBuffer);
-		return TASK_RUNNING;
+	if(self->botMind->closestBuildings[BA_H_ARMOURY].distance > 100) {
+		BotMoveToGoal(self);
+		return STATUS_RUNNING;
 	} else {
 
 		if(numUpgrades && upgrades[0] != UP_AMMO)
@@ -740,63 +565,46 @@ botTaskStatus_t BotTaskBuy(gentity_t *self, weapon_t weapon, upgrade_t *upgrades
 		for(int i=0;i<numUpgrades;i++)
 			BotBuy(self, upgrades[i]);
 		// make sure that we're not using the blaster
-		G_ForceWeaponChange( self, (weapon_t) self->client->ps.stats[ STAT_WEAPON ] );
+		G_ForceWeaponChange( self, weapon );
 		//we have bought the stuff, return
-		return TASK_STOPPED;
+
+		return STATUS_SUCCESS;
 	}
 }
-botTaskStatus_t BotTaskHealH(gentity_t *self, usercmd_t *botCmdBuffer) {
+
+AINodeStatus_t BotActionHealH( gentity_t *self, AIActionNode_t *node ) {
 	vec3_t targetPos;
 	vec3_t myPos;
 
-	//there is no medi we can use
-	if(!self->botMind->closestBuildings.medistation.ent) {
-		return TASK_STOPPED;
-	}
 	if(self->client->ps.stats[STAT_TEAM] != TEAM_HUMANS)
-		return TASK_STOPPED;
-
-	if(self->botMind->bestEnemy.ent) {
-		if(self->botMind->bestEnemy.distance <= BOT_ENGAGE_DIST)
-			return TASK_STOPPED;
-	}
-
-	//check conditions upon entering task first time
-	if(self->botMind->task != BOT_TASK_HEAL) {
-		int maxHealth = BG_Class((class_t)self->client->ps.stats[STAT_CLASS])->health;
-		float percentHealth = ((float)self->health / maxHealth);
-		float distToMedi = Com_Clamp(0,MAX_HEAL_DIST, self->botMind->closestBuildings.medistation.distance);
-		if(self->health > BOT_USEMEDKIT_HP  && BG_InventoryContainsUpgrade(UP_MEDKIT,self->client->ps.stats))
-			return TASK_STOPPED;
-		if(BG_UpgradeIsActive(UP_MEDKIT, self->client->ps.stats))
-			return TASK_STOPPED;
-		if(percentHealth * distToMedi > BOT_FUZZY_HEAL_VALUE )
-			return TASK_STOPPED;
-	}
+		return STATUS_FAILURE;
 
 	//we are fully healed
 	if(BG_Class((class_t)self->client->ps.stats[STAT_CLASS])->health <= self->health && BG_InventoryContainsUpgrade(UP_MEDKIT, self->client->ps.stats)) {
-		return TASK_STOPPED;
+		return STATUS_SUCCESS;
 	}
 
-	//find a new route if we have to
-	if(BotRoutePermission(self, BOT_TASK_HEAL)) {
-		if(!BotChangeTarget(self, self->botMind->closestBuildings.medistation.ent,NULL))
-			return TASK_STOPPED;
+	if ( self->botMind->currentNode != node )
+	{
+		if ( !BotChangeTarget( self, self->botMind->closestBuildings[ BA_H_MEDISTAT ].ent, NULL ) )
+		{
+			return STATUS_FAILURE;
+		}
 	}
 
 	//safety check
 	if(!BotTargetIsEntity(self->botMind->goal)) {
-		return TASK_STOPPED;
+		return STATUS_FAILURE;
 	}
 
 	//the medi has died so signal that the goal is unusable
 	if(self->botMind->goal.ent->health <= 0) {
-		return TASK_STOPPED;
+		return STATUS_FAILURE;
 	}
+
 	//this medi is no longer powered so signal that the goal is unusable
 	if(!self->botMind->goal.ent->powered) {
-		return TASK_STOPPED;
+		return STATUS_FAILURE;
 	}
 
 	BotGetTargetPos(self->botMind->goal, targetPos);
@@ -806,43 +614,42 @@ botTaskStatus_t BotTaskHealH(gentity_t *self, usercmd_t *botCmdBuffer) {
 
 	//keep moving to the medi until we are on top of it
 	if(DistanceSquared(myPos, targetPos) > Square(BG_BuildableConfig(BA_H_MEDISTAT)->mins[1]))
-		BotMoveToGoal(self, botCmdBuffer);
-	return TASK_RUNNING;
+		BotMoveToGoal(self);
+	return STATUS_RUNNING;
 }
-botTaskStatus_t BotTaskRepair(gentity_t *self, usercmd_t *botCmdBuffer) {
-	vec3_t selfPos,targetPos;
+AINodeStatus_t BotActionRepair( gentity_t *self, AIActionNode_t *node )
+{
 	vec3_t forward;
-	if(!g_bot_repair.integer)
-		return TASK_STOPPED;
+	vec3_t targetPos;
+	vec3_t selfPos;
 
-	if(!self->botMind->closestDamagedBuilding.ent)
-		return TASK_STOPPED;
-
-	if(!BG_InventoryContainsWeapon(WP_HBUILD, self->client->ps.stats))
-		return TASK_STOPPED;
-
-	if(BotRoutePermission(self, BOT_TASK_REPAIR)) {
-		if( !BotChangeTarget(self, self->botMind->closestDamagedBuilding.ent, NULL) )
-			return TASK_STOPPED;
+	if ( node != self->botMind->currentNode )
+	{
+		if ( !BotChangeTarget( self, self->botMind->closestDamagedBuilding.ent, NULL ) )
+		{
+			return STATUS_FAILURE;
+		}
 	}
 
-	//safety check
-	if(!BotTargetIsEntity(self->botMind->goal)) {
-		return TASK_STOPPED;
+	if ( !BotTargetIsEntity( self->botMind->goal ) )
+	{
+		return STATUS_FAILURE;
 	}
 
-	//the target building has died so signal that the goal is unusable
-	if(self->botMind->goal.ent->health <= 0) {
-		return TASK_STOPPED;
+	if ( self->botMind->goal.ent->health <= 0 )
+	{
+		return STATUS_FAILURE;
 	}
 
-	//the target has been healed
-	if(self->botMind->goal.ent->health >= BG_Buildable((buildable_t)self->botMind->goal.ent->s.modelindex)->health) {
-		return TASK_STOPPED;
+	if (self->botMind->goal.ent->health >= BG_Buildable((buildable_t)self->botMind->goal.ent->s.modelindex)->health)
+	{
+		return STATUS_SUCCESS;
 	}
 
-	if(self->client->ps.weapon != WP_HBUILD)
+	if ( self->client->ps.weapon != WP_HBUILD )
+	{
 		G_ForceWeaponChange( self, WP_HBUILD );
+	}
 
 	AngleVectors(self->client->ps.viewangles,forward,NULL,NULL);
 	BotGetTargetPos(self->botMind->goal, targetPos);
@@ -850,15 +657,16 @@ botTaskStatus_t BotTaskRepair(gentity_t *self, usercmd_t *botCmdBuffer) {
 
 	//move to the damaged building until we are in range
 	if(!BotTargetIsVisible(self,self->botMind->goal,MASK_SHOT) || DistanceToGoalSquared(self) > Square(100)) {
-		BotMoveToGoal(self, botCmdBuffer);
+		BotMoveToGoal(self);
 	} else {
 		//aim at the buildable
 		BotSlowAim(self, targetPos, 0.5);
-		BotAimAtLocation(self,targetPos,botCmdBuffer);
+		BotAimAtLocation(self,targetPos);
 		//gpp automatically heals buildable if close enough and aiming at it
 	}
-	return TASK_RUNNING;
+	return STATUS_RUNNING;
 }
+
 gentity_t* BotFindDamagedFriendlyStructure( gentity_t *self )
 {
 	//closest building

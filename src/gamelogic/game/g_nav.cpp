@@ -18,8 +18,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-
-
 #include "g_local.h"
 #include "g_bot.h"
 #include "../../engine/botlib/nav.h"
@@ -32,6 +30,7 @@ dtNavMesh *navMeshes[PCL_NUM_CLASSES];
 
 //tells if all navmeshes loaded successfully
 qboolean navMeshLoaded = qfalse;
+
 /*
 ========================
 Navigation Mesh Loading
@@ -195,10 +194,14 @@ void freeNavParams(dtNavMeshCreateParams *navParams) {
 	free((void*)navParams->detailVerts);
 	free((void*)navParams->detailTris);
 }
-extern "C" void G_NavMeshInit() {
+
+void G_BotNavInit() {
+
 	Com_Printf("==== Bot Navigation Initialization ==== \n");
+
 	memset(navMeshes,0,sizeof(*navMeshes));
 	memset(navQuerys,0,sizeof(*navQuerys));
+
 	for(int i=PCL_NONE+1;i<PCL_NUM_CLASSES;i++) {
 		dtNavMeshCreateParams navParams;
 		unsigned char *navData = NULL;
@@ -268,7 +271,8 @@ extern "C" void G_NavMeshInit() {
 	}
 	navMeshLoaded = qtrue;
 }
-extern "C" void G_NavMeshCleanup(void) {
+
+void G_BotNavCleanup(void) {
 	for(int i=PCL_NONE+1;i<PCL_NUM_CLASSES;i++) {
 		if(navQuerys[i]) {
 			dtFreeNavMeshQuery(navQuerys[i]);
@@ -776,9 +780,11 @@ void BotSteer(gentity_t *self, vec3_t target) {
 * Used to make the bot travel between waypoints or to the target from the last waypoint
 * Also can be used to make the bot travel other short distances
 */
-void BotGoto(gentity_t *self, botTarget_t target, usercmd_t *botCmdBuffer) {
+void BotGoto(gentity_t *self, botTarget_t target ) {
 
 	vec3_t tmpVec;
+	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
+
 	botCmdBuffer->forwardmove = 127; //max forward speed
 	BotGetIdealAimLocation(self, target, tmpVec);
 	if(BotAvoidObstacles(self, tmpVec, botCmdBuffer)) { //make whatever adjustments we need to make
@@ -879,7 +885,7 @@ void UpdatePathCorridor(gentity_t *self) {
 		}
 	}
 }
-qboolean BotMoveToGoal( gentity_t *self, usercmd_t *botCmdBuffer ) {
+qboolean BotMoveToGoal( gentity_t *self ) {
 	botTarget_t target;
 
 	if(!(self && self->client))
@@ -889,7 +895,7 @@ qboolean BotMoveToGoal( gentity_t *self, usercmd_t *botCmdBuffer ) {
 
 	if(self->botMind->numCorners > 0) {
 		BotSetTarget(&target,NULL, &self->botMind->route[0]);
-		BotGoto( self, target, botCmdBuffer );
+		BotGoto( self, target );
 		return qfalse;
 	}
 	return qtrue;
@@ -909,11 +915,11 @@ int FindRouteToTarget( gentity_t *self, botTarget_t target) {
 
 	//dont pathfind too much
 	if(level.time - self->botMind->timeFoundRoute < 200)
-		return STATUS_FAILED;
+		return ROUTE_FAILURE;
 
 	if(!self->botMind->navQuery) {
 		BotDPrintf("Cannot query the Navmesh!\n");
-		return STATUS_FAILED;
+		return ROUTE_FAILURE;
 	}
 
 	self->botMind->timeFoundRoute = level.time;
@@ -926,7 +932,7 @@ int FindRouteToTarget( gentity_t *self, botTarget_t target) {
 
 	if(!BotFindNearestPoly(self, self, &startRef, start)) {
 		BotDPrintf("Failed to find a polygon near the bot\n");
-		return STATUS_FAILED | STATUS_NOPOLYNEARSELF;
+		return ROUTE_FAILURE | ROUTE_NOPOLYNEARSELF;
 	}
 
 	if(BotTargetIsEntity(target)) {
@@ -937,7 +943,7 @@ int FindRouteToTarget( gentity_t *self, botTarget_t target) {
 
 	if(!result) {
 		BotDPrintf("Failed to find a polygon near the target\n");
-		return STATUS_FAILED | STATUS_NOPOLYNEARTARGET;
+		return ROUTE_FAILURE | ROUTE_NOPOLYNEARTARGET;
 	}
 	quake2recast(selfPos);
 	quake2recast(targetPos);
@@ -950,7 +956,7 @@ int FindRouteToTarget( gentity_t *self, botTarget_t target) {
 
 	if(dtStatusFailed(status)) {
 		BotDPrintf("Could not find path\n");
-		return STATUS_FAILED;
+		return ROUTE_FAILURE;
 	}
 	self->botMind->pathCorridor->reset(startRef, selfPos);
 	self->botMind->pathCorridor->setCorridor(targetPos, pathPolys, pathNumPolys);
@@ -958,10 +964,10 @@ int FindRouteToTarget( gentity_t *self, botTarget_t target) {
 	FindWaypoints(self);
 	if(status & DT_PARTIAL_RESULT) {
 		BotDPrintf("Found a partial path\n");
-		return STATUS_SUCCEED | STATUS_PARTIAL;
+		return ROUTE_SUCCESS | ROUTE_PARTIAL;
 	}
 
-	return STATUS_SUCCEED;
+	return ROUTE_SUCCESS;
 }
 
 /*
