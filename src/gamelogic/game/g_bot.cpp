@@ -908,6 +908,13 @@ void BotFindClosestBuildings(gentity_t *self, botEntityAndDistance_t *closest) {
 	}
 }
 
+qboolean BotEntityIsVisible( gentity_t *self, gentity_t *target, int mask )
+{
+	botTarget_t bt;
+	BotSetTarget( &bt, target, NULL );
+	return BotTargetIsVisible( self, bt, mask );
+}
+
 gentity_t* BotFindBestEnemy( gentity_t *self ) {
 	float bestVisibleEnemyScore = 0;
 	float bestInvisibleEnemyScore = 0;
@@ -947,7 +954,7 @@ gentity_t* BotFindBestEnemy( gentity_t *self ) {
 
 		newScore = BotGetEnemyPriority(self, target);
 
-		if(newScore > bestVisibleEnemyScore && G_Visible(self,target,MASK_SHOT)) {
+		if(newScore > bestVisibleEnemyScore && BotEntityIsVisible(self,target,MASK_SHOT)) {
 			//store the new score and the index of the entity
 			bestVisibleEnemyScore = newScore;
 			bestVisibleEnemy = target;
