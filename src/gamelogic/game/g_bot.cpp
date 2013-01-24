@@ -838,7 +838,7 @@ gentity_t* BotFindBuilding(gentity_t *self, int buildingType, int range) {
 	float rangeSquared = Square(range);
 	gentity_t *target = &g_entities[MAX_CLIENTS];
 
-	for(int  i = MAX_CLIENTS; i < ENTITYNUM_MAX_NORMAL; i++, target++ ) {
+	for(int  i = MAX_CLIENTS; i < level.num_entities; i++, target++ ) {
 		if(!target->inuse)
 			continue;
 		if( target->s.eType == ET_BUILDABLE && target->s.modelindex == buildingType && (target->buildableTeam == TEAM_ALIENS || (target->powered && target->spawned)) && target->health > 0) {
@@ -861,7 +861,7 @@ gentity_t* BotFindBuilding(gentity_t *self, int buildingType) {
 	float newDistance;
 	gentity_t *target = &g_entities[MAX_CLIENTS];
 
-	for( int i = MAX_CLIENTS; i < ENTITYNUM_MAX_NORMAL; i++, target++ ) {
+	for( int i = MAX_CLIENTS; i < level.num_entities; i++, target++ ) {
 		if(!target->inuse)
 			continue;
 		if( target->s.eType == ET_BUILDABLE && target->s.modelindex == buildingType && (target->buildableTeam == TEAM_ALIENS || (target->powered && target->spawned)) && target->health > 0) {
