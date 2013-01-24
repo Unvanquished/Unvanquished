@@ -164,6 +164,8 @@ typedef struct{
   AINode_t *runningNodes[ MAX_NODE_DEPTH ];
   int  numRunningNodes;
 
+  	int         futureAimTime;
+	vec3_t      futureAim;
   usercmd_t cmdBuffer;
   //navigation classes
   //not for use outside C++ code

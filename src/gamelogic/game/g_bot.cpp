@@ -1231,6 +1231,65 @@ void BotGetIdealAimLocation(gentity_t *self, botTarget_t target, vec3_t aimLocat
 		aimLocation[2] +=  self->client->ps.viewheight - mins[2] - 8;
 	}
 }
+
+int BotGetAimPredictionTime( gentity_t *self )
+{
+	return ( 10 - self->botMind->botSkill.level ) * 100 * ( ( ( float ) rand() )/ RAND_MAX );
+}
+
+void BotPredictPosition( gentity_t *self, gentity_t *predict, vec3_t pos, int time )
+{
+	botTarget_t target;
+	vec3_t aimLoc;
+	BotSetTarget( &target, predict, NULL );
+	BotGetIdealAimLocation( self, target, aimLoc );
+	VectorMA( aimLoc, time / 1000.0f, predict->s.apos.trDelta, pos );
+}
+
+void BotAimAtEnemy( gentity_t *self )
+{
+	vec3_t desired;
+	vec3_t current;
+	vec3_t steer;
+	vec3_t viewOrigin;
+	vec3_t newAim;
+	vec3_t angles;
+
+	gentity_t *enemy = self->botMind->goal.ent;
+	if ( self->botMind->futureAimTime <= level.time )
+	{
+		int predictTime = BotGetAimPredictionTime( self );
+		BotPredictPosition( self, enemy, self->botMind->futureAim, predictTime );
+		self->botMind->futureAimTime = level.time + predictTime;
+	}
+
+	BG_GetClientViewOrigin( &self->client->ps, viewOrigin );
+	VectorSubtract( self->botMind->futureAim, viewOrigin, desired );
+	VectorNormalize( desired );
+	AngleVectors( self->client->ps.viewangles, current, NULL, NULL );
+
+	VectorSubtract( desired, current, steer );
+
+	float length = VectorNormalize( steer );
+
+	if ( length < 0.1 )
+	{
+		VectorScale( steer, length, steer );
+	}
+	else
+	{
+		VectorScale( steer, 0.1, steer );
+	}
+	VectorAdd( current, steer, newAim );
+
+	vectoangles( newAim, angles );
+
+	for ( int i = 0; i < 3; i++ )
+	{
+		self->botMind->cmdBuffer.angles[ i ] = ANGLE2SHORT( angles[ i ] );
+	}
+}
+
 void BotAimAtLocation( gentity_t *self, vec3_t target )
 {
 	vec3_t aimVec, aimAngles, viewBase;
@@ -2013,11 +2072,8 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIActionNode_t *node )
 		
 		if ( ( inAttackRange && myTeam == TEAM_HUMANS ) || self->botMind->numCorners == 1 )
 		{
-			vec3_t aimLoc;
-			
-			BotGetIdealAimLocation( self, self->botMind->goal, aimLoc );
-			BotSlowAim( self, aimLoc, self->botMind->botSkill.aimSlowness );
-			BotAimAtLocation( self, aimLoc );
+
+			BotAimAtEnemy( self );
 		
 			//update the path corridor
 			UpdatePathCorridor(self);
