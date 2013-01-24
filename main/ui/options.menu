@@ -534,7 +534,7 @@
 	YESNOX	( gsoftware, "Bloom:", "r_bloom",
 			play "sound/misc/menu1.wav"; uiScript glCustom,
 			11 )
-        YESNOX	( gsoftware, "Rim Lighting:", "r_rimlighting",
+    YESNOX	( gsoftware, "Rim Lighting:", "r_rimlighting",
 			play "sound/misc/menu1.wav"; uiScript glCustom,
 			12 )
 
