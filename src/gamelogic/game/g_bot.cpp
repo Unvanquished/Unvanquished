@@ -55,21 +55,7 @@ Behavior Tree
 
 #define stringify( v ) va( #v " %d", v )
 
-AINode_t *ReadNodeList( int handle );
-AINode_t *ReadConditionNode( int handle );
-AINode_t *ReadActionNode( int handle );
-
-void CheckToken( int handle, const char *tokenValueName, const char *nodename, const pc_token_t *token, int requiredType )
-{
-	char filename[ MAX_QPATH ];
-	int line;
-
-	if ( token->type != requiredType )
-	{
-		trap_Parse_SourceFileAndLine( handle, filename, &line );
-		BotDPrintf( S_COLOR_RED "ERROR: When parsing %s, Invalid %s %s after %s on line %d\n", filename, tokenValueName, token->string, nodename, line );
-	}
-}
+#define D( T ) trap_Parse_AddGlobalDefine( stringify( T ) )
 
 #define P_LOGIC_GEQ        7
 #define P_LOGIC_LEQ        8
@@ -80,14 +66,73 @@ void CheckToken( int handle, const char *tokenValueName, const char *nodename, c
 #define P_LOGIC_GREATER    37
 #define P_LOGIC_LESS       38
 
-AIConditionOperator_t ReadConditionOperator( int handle )
+typedef struct pc_token_list_s
 {
 	pc_token_t token;
-	trap_Parse_ReadToken( handle, &token );
+	struct pc_token_list_s *prev;
+	struct pc_token_list_s *next;
+} pc_token_list;
 
-	CheckToken( handle, "operator", "condition", &token, TT_PUNCTUATION );
+pc_token_list *CreateTokenList( int handle )
+{
+	pc_token_t token;
+	char filename[ MAX_QPATH ];
+	pc_token_list *current = NULL;
+	pc_token_list *root = NULL;
 
-	switch( token.subtype )
+	while ( trap_Parse_ReadToken( handle, &token ) )
+	{
+		pc_token_list *list = ( pc_token_list * ) BG_Alloc( sizeof( pc_token_list ) );
+		
+		if ( current )
+		{
+			list->prev = current;
+			current->next = list;
+		}
+		else
+		{
+			list->prev = list;
+			root = list;
+		}
+		
+		current = list;
+		current->next = NULL;
+
+		current->token = token;
+		trap_Parse_SourceFileAndLine( handle, filename, &current->token.line );
+	}
+
+	return root;
+}
+
+void FreeTokenList( pc_token_list *list )
+{
+	pc_token_list *current = list;
+	while( current )
+	{
+		pc_token_list *node = current;
+		current = current->next;
+
+		BG_Free( node );
+	}
+}
+
+AINode_t *ReadNode( pc_token_list **tokenlist );
+
+void CheckToken( const char *tokenValueName, const char *nodename, const pc_token_t *token, int requiredType )
+{
+	if ( token->type != requiredType )
+	{
+		BotDPrintf( S_COLOR_RED "ERROR: Invalid %s %s after %s on line %d\n", tokenValueName, token->string, nodename, token->line );
+	}
+}
+
+AIConditionOperator_t ReadConditionOperator( pc_token_list *tokenlist )
+{
+
+	CheckToken( "operator", "condition", &tokenlist->token, TT_PUNCTUATION );
+
+	switch( tokenlist->token.subtype )
 	{
 		case P_LOGIC_LESS:
 			return OP_LESSTHAN;
@@ -108,22 +153,20 @@ AIConditionOperator_t ReadConditionOperator( int handle )
 	}
 }
 
-AINode_t *ReadConditionNode( int handle )
+AINode_t *ReadConditionNode( pc_token_list **tokenlist )
 {
-	pc_token_t token;
+	pc_token_list *current = *tokenlist;
 	AICondition_t *condition;
-
-	trap_Parse_ReadToken( handle, &token );
 
 	condition = allocNode( AICondition_t );
 	condition->type = CONDITION_NODE;
 
 	// read not or bool
-	if ( token.subtype == P_LOGIC_NOT )
+	if ( current->token.subtype == P_LOGIC_NOT )
 	{
 		condition->op = OP_NOT;
-
-		if ( !trap_Parse_ReadToken( handle, &token ) )
+		current = current->next;
+		if ( !current )
 		{
 			BotDPrintf( S_COLOR_RED "ERROR: no token after operator not\n" );
 		}
@@ -133,192 +176,187 @@ AINode_t *ReadConditionNode( int handle )
 		condition->op = OP_BOOL;
 	}
 
-	if ( !Q_stricmp( token.string, "buildingIsDamaged" ) )
+	if ( !Q_stricmp( current->token.string, "buildingIsDamaged" ) )
 	{
 		condition->info = CON_DAMAGEDBUILDING;
 	}
-	else if ( !Q_stricmp( token.string, "alertedToEnemy" ) )
+	else if ( !Q_stricmp( current->token.string, "alertedToEnemy" ) )
 	{
 		condition->info = CON_ENEMY;
 	}
-	else if ( !Q_stricmp( token.string, "haveWeapon" ) )
+	else if ( !Q_stricmp( current->token.string, "haveWeapon" ) )
 	{
 		condition->info = CON_WEAPON;
 
-		trap_Parse_ReadToken( handle, &token );
+		current = current->next;
 
-		CheckToken( handle, "weapon", "condition haveWeapon", &token, TT_NUMBER );
+		CheckToken( "weapon", "condition haveWeapon", &current->token, TT_NUMBER );
 
 		condition->param1.type = VALUE_INT;
-		condition->param1.value.i = token.intvalue;
+		condition->param1.value.i = current->token.intvalue;
 	}
-	else if ( !Q_stricmp( token.string, "haveUpgrade" ) )
+	else if ( !Q_stricmp( current->token.string, "haveUpgrade" ) )
 	{
 		condition->info = CON_UPGRADE;
 
-		trap_Parse_ReadToken( handle, &token );
+		current = current->next;
 
-		CheckToken( handle, "upgrade", "condition haveUpgrade", &token, TT_NUMBER );
+		CheckToken( "upgrade", "condition haveUpgrade", &current->token, TT_NUMBER );
 
 		condition->param1.type = VALUE_INT;
-		condition->param1.value.i = token.intvalue;
+		condition->param1.value.i = current->token.intvalue;
 	}
-	else if ( !Q_stricmp( token.string, "teamateHasWeapon" ) )
+	else if ( !Q_stricmp( current->token.string, "teamateHasWeapon" ) )
 	{
 		condition->info = CON_TEAM_WEAPON;
 
-		trap_Parse_ReadToken( handle, &token );
+		current = current->next;
 
-		CheckToken( handle, "weapon", "condition teamateHasWeapon", &token, TT_NUMBER );
+		CheckToken( "weapon", "condition teamateHasWeapon", &current->token, TT_NUMBER );
 
 		condition->param1.type = VALUE_INT;
-		condition->param1.value.i = token.intvalue;
+		condition->param1.value.i = current->token.intvalue;
 	}
-	else if ( !Q_stricmp( token.string, "botTeam" ) )
+	else if ( !Q_stricmp( current->token.string, "botTeam" ) )
 	{
 		condition->info = CON_TEAM;
 
-		condition->op = ReadConditionOperator( handle );
+		current = current->next;
+		condition->op = ReadConditionOperator( current );
 
-		trap_Parse_ReadToken( handle, &token );
+		current = current->next;
 
-		CheckToken( handle, "team", "condition botTeam", &token, TT_NUMBER );
+		CheckToken( "team", "condition botTeam", &current->token, TT_NUMBER );
 
 		condition->param1.type = VALUE_INT;
-		condition->param1.value.i = token.intvalue;
+		condition->param1.value.i = current->token.intvalue;
 	}
-	else if ( !Q_stricmp( token.string, "percentHealth" ) )
+	else if ( !Q_stricmp( current->token.string, "percentHealth" ) )
 	{
 		condition->info = CON_HEALTH;
 
-		condition->op = ReadConditionOperator( handle );
+		current = current->next;
+		condition->op = ReadConditionOperator( current );
 
-		trap_Parse_ReadToken( handle, &token );
+		current = current->next;
 
-		CheckToken( handle, "value", "condition percentHealth", &token, TT_NUMBER );
+		CheckToken( "value", "condition percentHealth", &current->token, TT_NUMBER );
 
 		condition->param1.type = VALUE_FLOAT;
-		condition->param1.value.f = token.floatvalue;
+		condition->param1.value.f = current->token.floatvalue;
 	}
-	else if ( !Q_stricmp( token.string, "weapon" ) )
+	else if ( !Q_stricmp( current->token.string, "weapon" ) )
 	{
 		condition->info = CON_CURWEAPON;
 
-		condition->op = ReadConditionOperator( handle );
+		current = current->next;
+		condition->op = ReadConditionOperator( current );
 
-		trap_Parse_ReadToken( handle, &token );
+		current = current->next;
 
-		CheckToken( handle, "weapon", "condition weapon", &token, TT_NUMBER );
+		CheckToken( "weapon", "condition weapon", &current->token, TT_NUMBER );
 
 		condition->param1.type = VALUE_INT;
-		condition->param1.value.i = token.intvalue;
+		condition->param1.value.i = current->token.intvalue;
 	}
-	else if ( !Q_stricmp( token.string, "distanceTo" ) )
+	else if ( !Q_stricmp( current->token.string, "distanceTo" ) )
 	{
 		condition->info = CON_DISTANCE;
 
-		trap_Parse_ReadToken( handle, &token );
+		current = current->next;
 
-		CheckToken( handle, "entity", "condition distanceTo", &token, TT_NUMBER );
+		CheckToken( "entity", "condition distanceTo", &current->token, TT_NUMBER );
 
-		condition->param1.value.i = token.intvalue;
+		condition->param1.value.i = current->token.intvalue;
 
-		condition->op = ReadConditionOperator( handle );
+		current = current->next;
 
-		trap_Parse_ReadToken( handle, &token );
+		condition->op = ReadConditionOperator( current );
 
-		CheckToken( handle, "value", "condition distanceTo", &token, TT_NUMBER );
+		current = current->next;
 
-		condition->param2.value.i = token.intvalue;
+		CheckToken( "value", "condition distanceTo", &current->token, TT_NUMBER );
+
+		condition->param2.value.i = current->token.intvalue;
 	}
-	else if ( !Q_stricmp ( token.string, "baseRushScore" ) )
+	else if ( !Q_stricmp ( current->token.string, "baseRushScore" ) )
 	{
 		condition->info = CON_BASERUSH;
 
-		condition->op = ReadConditionOperator( handle );
+		current = current->next;
 
-		trap_Parse_ReadToken( handle, &token );
+		condition->op = ReadConditionOperator( current );
 
-		CheckToken( handle, "value", "condition baseRushScore", &token, TT_NUMBER );
+		current = current->next;
 
-		condition->param1.value.f = token.floatvalue;
+		CheckToken( "value", "condition baseRushScore", &current->token, TT_NUMBER );
+
+		condition->param1.value.f = current->token.floatvalue;
 	}
-	else if ( !Q_stricmp( token.string, "healScore" ) )
+	else if ( !Q_stricmp( current->token.string, "healScore" ) )
 	{
 		condition->info = CON_HEAL;
 
-		condition->op = ReadConditionOperator( handle );
+		current = current->next;
 
-		trap_Parse_ReadToken( handle, &token );
+		condition->op = ReadConditionOperator( current );
 
-		CheckToken( handle, "value", "condition healScore", &token, TT_NUMBER );
+		current = current->next;
 
-		condition->param1.value.f = token.floatvalue;
+		CheckToken( "value", "condition healScore", &current->token, TT_NUMBER );
+
+		condition->param1.value.f = current->token.floatvalue;
 	}
 	else
 	{
-		BotDPrintf( S_COLOR_RED "ERROR: unknown condition %s\n", token.string );
+		BotDPrintf( S_COLOR_RED "ERROR: unknown condition %s\n", current->token.string );
 	}
 
-	trap_Parse_ReadToken( handle, &token );
+	current = current->next;
 
-	if ( Q_stricmp( token.string, "{" ) )
+	if ( Q_stricmp( current->token.string, "{" ) )
 	{
-		int line;
-		char filename[ MAX_QPATH ];
-		trap_Parse_SourceFileAndLine( handle, filename, &line );
-		BotDPrintf( S_COLOR_RED "ERROR: When parsing %s, found %s expecting { on line %d\n", filename, token.string, line );
+		// this condition node has no child nodes
+		*tokenlist = current;
+		return ( AINode_t * ) condition;
 	}
 
-	while ( Q_stricmp( token.string, "}" ) )
+	current = current->next;
+
+	condition->child = ReadNode( &current );
+
+	if ( Q_stricmp( current->token.string, "}" ) )
 	{
-		trap_Parse_ReadToken( handle, &token );
-
-		if ( !Q_stricmp( token.string, "selector" ) )
-		{
-			condition->child = ReadNodeList( handle );
-		}
-		else if ( !Q_stricmp( token.string, "action" ) )
-		{
-			condition->child = ReadActionNode( handle );
-		}
-		else if ( !Q_stricmp( token.string, "condition" ) )
-		{
-			condition->child = ReadConditionNode( handle );
-		}
-		else if ( Q_stricmp( token.string, "}" ) )
-		{
-			char filename[ MAX_QPATH ];
-			int line;
-			trap_Parse_SourceFileAndLine( handle, filename, &line );
-			BotDPrintf( S_COLOR_RED "ERROR: When parsing %s, invalid token on line %d found: %s\n", filename, line, token.string );
-		}
+		BotDPrintf( S_COLOR_RED "ERROR: invalid token on line %d found %s expected }\n", current->token.line, current->token.string );
 	}
+
+	*tokenlist = current->next;
+
 	return ( AINode_t * ) condition;
 }
 
-AINode_t *ReadActionNode( int handle )
+AINode_t *ReadActionNode( pc_token_list **tokenlist )
 {
-	pc_token_t token;
-	AIActionNode_t *node;
-	trap_Parse_ReadToken( handle, &token );
+	pc_token_list *current = *tokenlist;
 
-	if ( !Q_stricmp( token.string, "heal" ) )
+	AIActionNode_t *node;
+
+	if ( !Q_stricmp( current->token.string, "heal" ) )
 	{
 		node = allocNode( AIActionNode_t );
 		node->action = ACTION_HEAL;
 	}
-	else if ( !Q_stricmp( token.string, "fight" ) )
+	else if ( !Q_stricmp( current->token.string, "fight" ) )
 	{
 		node = allocNode( AIActionNode_t );
 		node->action = ACTION_FIGHT;
 	}
-	else if ( !Q_stricmp( token.string, "roam" ) )
+	else if ( !Q_stricmp( current->token.string, "roam" ) )
 	{
 		node = allocNode( AIActionNode_t );
 		node->action = ACTION_ROAM;
 	}
-	else if ( !Q_stricmp( token.string, "equip" ) )
+	else if ( !Q_stricmp( current->token.string, "equip" ) )
 	{
 		AIBuy_t *realAction = allocNode( AIBuy_t );
 		realAction->action = ACTION_BUY;
@@ -326,114 +364,133 @@ AINode_t *ReadActionNode( int handle )
 		realAction->weapon = WP_NONE;
 		node = ( AIActionNode_t * ) realAction;
 	}
-	else if ( !Q_stricmp( token.string, "buy" ) )
+	else if ( !Q_stricmp( current->token.string, "buy" ) )
 	{
 		AIBuy_t *realAction = allocNode( AIBuy_t );
 		realAction->action = ACTION_BUY;
 
-		trap_Parse_ReadToken( handle, &token );
+		current = current->next;
 
-		CheckToken( handle, "weapon", "action buy", &token, TT_NUMBER );
+		CheckToken( "weapon", "action buy", &current->token, TT_NUMBER );
 
-		realAction->weapon = ( weapon_t ) token.intvalue;
+		realAction->weapon = ( weapon_t ) current->token.intvalue;
 		realAction->numUpgrades = 0;
 		node = ( AIActionNode_t * ) realAction;
 	}
-	else if ( !Q_stricmp( token.string, "flee" ) )
+	else if ( !Q_stricmp( current->token.string, "flee" ) )
 	{
 		node = allocNode( AIActionNode_t );
 		node->action = ACTION_FLEE;
 	}
-	else if ( !Q_stricmp( token.string, "repair" ) )
+	else if ( !Q_stricmp( current->token.string, "repair" ) )
 	{
 		node = allocNode( AIActionNode_t );
 		node->action = ACTION_REPAIR;
 	}
-	else if ( !Q_stricmp( token.string, "evolve" ) )
+	else if ( !Q_stricmp( current->token.string, "evolve" ) )
 	{
 		node = allocNode( AIActionNode_t );
 		node->action = ACTION_EVOLVE;
 	}
-	else if ( !Q_stricmp( token.string, "rush" ) )
+	else if ( !Q_stricmp( current->token.string, "rush" ) )
 	{
 		node = allocNode( AIActionNode_t );
 		node->action = ACTION_RUSH;
 	}
 	else
 	{
-		BotDPrintf( S_COLOR_RED "ERROR: Invalid token %s on line %d\n", token.string, token.line );
+		BotDPrintf( S_COLOR_RED "ERROR: Invalid token %s on line %d\n", current->token.string, current->token.line );
 	}
 
 	node->type = ACTION_NODE;
+	*tokenlist = current->next;
 	return ( AINode_t * ) node;
 }
 
-AINode_t *ReadNodeList( int handle )
+AINode_t *ReadNodeList( pc_token_list **tokenlist )
 {
-	pc_token_t token;
 	AINodeList_t *list;
-
-	trap_Parse_ReadToken( handle, &token );
+	pc_token_list *current = *tokenlist;
 
 	list = allocNode( AINodeList_t );
 
-	if ( !Q_stricmp( token.string, "sequence" ) )
+	if ( !Q_stricmp( current->token.string, "sequence" ) )
 	{
 		list->selector = SELECTOR_SEQUENCE;
-		trap_Parse_ReadToken( handle, &token );
+		current = current->next;
 	}
-	else if ( !Q_stricmp( token.string, "priority" ) )
+	else if ( !Q_stricmp( current->token.string, "priority" ) )
 	{
 		list->selector = SELECTOR_PRIORITY;
-
-		trap_Parse_ReadToken( handle, &token );
+		current = current->next;
 	}
-	else if ( !Q_stricmp( token.string, "{" ) )
+	else if ( !Q_stricmp( current->token.string, "{" ) )
 	{
 		list->selector = SELECTOR_SELECTOR;
 	}
 	else
 	{
-		BotDPrintf( S_COLOR_RED "ERROR: Invalid token %s on line %d\n", token.string, token.line );
+		BotDPrintf( S_COLOR_RED "ERROR: Invalid token %s on line %d\n", current->token.string, current->token.line );
 	}
 
-	if ( Q_stricmp( token.string, "{" ) )
+	if ( Q_stricmp( current->token.string, "{" ) )
 	{
-		BotDPrintf( S_COLOR_RED "ERROR: Invalid token %s on line %d\n", token.string, token.line );
+		BotDPrintf( S_COLOR_RED "ERROR: Invalid token %s on line %d\n", current->token.string, current->token.line );
 	}
 
-	while ( Q_stricmp( token.string, "}" ) )
+	current = current->next;
+
+	while ( Q_stricmp( current->token.string, "}" ) )
 	{
-		trap_Parse_ReadToken( handle, &token );
+		AINode_t *node = ReadNode( &current );
 
-		if ( !Q_stricmp( token.string, "selector" ) )
+		if ( node && list->numNodes >= MAX_NODE_LIST )
 		{
-			list->list[ list->numNodes ] = ReadNodeList( handle );
-			list->numNodes++;
+			BotDPrintf( "ERROR: Max selector children limit exceeded at line %d\n", current->token.line );
 		}
-		else if ( !Q_stricmp( token.string, "action" ) )
+		else if ( node )
 		{
-			list->list[ list->numNodes ] = ReadActionNode( handle );
+			list->list[ list->numNodes ] = node;
 			list->numNodes++;
-		}
-		else if ( !Q_stricmp( token.string, "condition" ) )
-		{
-			list->list[ list->numNodes ] = ReadConditionNode( handle );
-			list->numNodes++;
-		}
-		else if ( Q_stricmp( token.string, "}" ) )
-		{
-			BotDPrintf( S_COLOR_RED "ERROR: Invalid token %s on line %d\n", token.string, token.line );
 		}
 	}
+
 	list->type = SELECTOR_NODE;
+	*tokenlist = current->next;
 	return ( AINode_t * ) list;
 }
 
-#define D( T ) trap_Parse_AddGlobalDefine( stringify( T ) )
+AINode_t *ReadNode( pc_token_list **tokenlist )
+{
+	pc_token_list *current = *tokenlist;
+	AINode_t *node;
+
+	if ( !Q_stricmp( current->token.string, "selector" ) )
+	{
+		current = current->next;
+		node = ReadNodeList( &current );
+	}
+	else if ( !Q_stricmp( current->token.string, "action" ) )
+	{
+		current = current->next;
+		node = ReadActionNode( &current );
+	}
+	else if ( !Q_stricmp( current->token.string, "condition" ) )
+	{
+		current = current->next;
+		node = ReadConditionNode( &current );
+	}
+	else
+	{
+		BotDPrintf( S_COLOR_RED "ERROR: invalid token on line %d found: %s\n", current->token.line, current->token.string );
+		node = NULL;
+	}
+
+	*tokenlist = current;
+	return node;
+}
 
 AITreeList_t treeList;
-
 
 void InitTreeList( AITreeList_t *list )
 {
@@ -548,29 +605,22 @@ AIBehaviorTree_t * ReadBehaviorTree( const char *name )
 		return NULL;
 	}
 
-	pc_token_t token;
-	trap_Parse_ReadToken( handle, &token );
-
+	pc_token_list *list = CreateTokenList( handle );
+	
 	AIBehaviorTree_t *tree;
 	tree = ( AIBehaviorTree_t * ) BG_Alloc( sizeof( AIBehaviorTree_t ) );
 
 	Q_strncpyz( tree->name, name, sizeof( tree->name ) );
 
-	if ( !Q_stricmp( token.string, "selector" ) )
+	pc_token_list *current = list;
+
+	AINode_t *node = ReadNode( &current );
+	if ( node )
 	{
-		tree->root = ReadNodeList( handle );
-	}
-	else if ( !Q_stricmp( token.string, "condition" ) )
-	{
-		tree->root = ReadConditionNode( handle );
-	}
-	else if ( !Q_stricmp( token.string, "action" ) )
-	{
-		tree->root = ReadActionNode( handle );
+		tree->root = node;
 	}
 	else
 	{
-		BotDPrintf( S_COLOR_RED "ERROR: Invalid token %s on line %d\n", token.string, token.line );
 		BG_Free( tree );
 		tree = NULL;
 	}
@@ -580,6 +630,7 @@ AIBehaviorTree_t * ReadBehaviorTree( const char *name )
 		AddTreeToList( &treeList, tree );
 	}
 
+	FreeTokenList( list );
 	trap_Parse_FreeSource( handle );
 	return tree;
 }
@@ -590,6 +641,7 @@ void FreeConditionNode( AICondition_t *node )
 {
 	if ( !node->child )
 	{
+		BG_Free( node );
 		return;
 	}
 

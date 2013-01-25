@@ -21,16 +21,16 @@ selector priority
 	{
 		selector sequence
 		{
-			condition botTeam == TEAM_ALIENS { }
-			condition healScore <= 0.25 { }
+			condition botTeam == TEAM_ALIENS
+			condition healScore <= 0.25
 			action heal
 		}
 		
 		selector sequence
 		{
-			condition botTeam == TEAM_HUMANS { }
-			condition !haveUpgrade UP_MEDKIT { }
-			condition healScore <= 0.25 { }
+			condition botTeam == TEAM_HUMANS
+			condition !haveUpgrade UP_MEDKIT
+			condition healScore <= 0.25
 			action heal
 		}
 	}
@@ -42,9 +42,9 @@ selector priority
 	
 	selector sequence
 	{
-		condition botTeam == TEAM_HUMANS { }
-		condition !teamateHasWeapon WP_HBUILD { }
-		condition buildingIsDamaged { }
+		condition botTeam == TEAM_HUMANS
+		condition !teamateHasWeapon WP_HBUILD
+		condition buildingIsDamaged
 		selector
 		{
 			condition !haveWeapon WP_HBUILD
