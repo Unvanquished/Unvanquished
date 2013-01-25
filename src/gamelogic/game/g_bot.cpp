@@ -21,8 +21,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-
-#include "g_local.h"
 #include "g_bot.h"
 #include "../../engine/botlib/nav.h"
 
@@ -1494,30 +1492,27 @@ void BotClassMovement(gentity_t *self, qboolean inAttackRange) {
 
 	switch(self->client->ps.stats[STAT_CLASS]) {
 	case PCL_ALIEN_LEVEL0:
-		BotDodge(self, botCmdBuffer);
+		BotStrafeDodge( self );
 		break;
 	case PCL_ALIEN_LEVEL1:
 	case PCL_ALIEN_LEVEL1_UPG:
 		if(BotTargetIsPlayer(self->botMind->goal) && (self->botMind->goal.ent->client->ps.stats[STAT_STATE] & SS_GRABBED) && inAttackRange) {
 			if(self->botMind->botSkill.level == 10) {
-				botCmdBuffer->forwardmove = 0;
-				botCmdBuffer->upmove = 0;
-				BotDodge(self, botCmdBuffer); //only move if skill == 10 because otherwise we wont aim fast enough to not lose grab
+				BotStandStill( self );
+				BotStrafeDodge( self );//only move if skill == 10 because otherwise we wont aim fast enough to not lose grab
 			} else {
-				botCmdBuffer->forwardmove = 0;
-				botCmdBuffer->rightmove = 0;
-				botCmdBuffer->upmove = 0;
+				BotStandStill( self );
 			}
 		} else {
-			BotDodge(self, botCmdBuffer);
+			BotStrafeDodge( self );
 		}
 		break;
 	case PCL_ALIEN_LEVEL2:
 	case PCL_ALIEN_LEVEL2_UPG:
 		if(self->botMind->numCorners == 1) {
 			if(self->client->time1000 % 300 == 0)
-				botCmdBuffer->upmove = 127;
-			BotDodge(self, botCmdBuffer);
+				BotJump( self );
+			BotStrafeDodge( self );
 		}
 		break;
 	case PCL_ALIEN_LEVEL3:
@@ -1526,9 +1521,7 @@ void BotClassMovement(gentity_t *self, qboolean inAttackRange) {
 		if(BotGetTargetType(self->botMind->goal) == ET_BUILDABLE && self->client->ps.ammo > 0
 			&& inAttackRange) {
 				//dont move when sniping buildings
-				botCmdBuffer->forwardmove = 0;
-				botCmdBuffer->rightmove = 0;
-				botCmdBuffer->upmove = 0;
+				BotStandStill( self );
 		}
 		break;
 	case PCL_ALIEN_LEVEL4:
@@ -2052,7 +2045,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIActionNode_t *node )
 			//update the path corridor
 			UpdatePathCorridor(self);
 
-			self->botMind->cmdBuffer.forwardmove = 127;
+			BotMoveInDir( self, MOVE_FORWARD );
 
 			if ( inAttackRange || self->client->ps.weapon == WP_PAIN_SAW )
 			{
@@ -2065,51 +2058,31 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIActionNode_t *node )
 					&& ( DistanceToGoalSquared( self ) > Square( MIN_HUMAN_DANCE_DIST ) || self->botMind->botSkill.level < 5 )
 					&& self->client->ps.weapon != WP_PAIN_SAW )
 				{
-					self->botMind->cmdBuffer.forwardmove = -127;
+					BotMoveInDir( self, MOVE_BACKWARD );
 				}
 				else if(DistanceToGoalSquared(self) <= Square(MIN_HUMAN_DANCE_DIST)) { //we wont hit this if skill < 5
 					//we will be moving toward enemy, strafe too
 					//the result: we go around the enemy
-					self->botMind->cmdBuffer.rightmove = BotGetStrafeDirection();
+					BotAlternateStrafe( self );
 
-					//also try to dodge if high enough level
-					//all the conditions are there so we dont stop moving forward when we cant dodge anyway
-					if(self->client->ps.weapon != WP_PAIN_SAW && self->botMind->botSkill.level >= 7
-						&& self->client->ps.stats[STAT_STAMINA] > STAMINA_SLOW_LEVEL + STAMINA_DODGE_TAKE
-						&& !(self->client->ps.pm_flags & ( PMF_TIME_LAND | PMF_CHARGE ))
-						&& self->client->ps.groundEntityNum != ENTITYNUM_NONE)
+					if( self->client->ps.weapon != WP_PAIN_SAW )
 					{
-						usercmdPressButton(self->botMind->cmdBuffer.buttons, BUTTON_DODGE);
-						self->botMind->cmdBuffer.forwardmove = 0;
+						BotDodge( self );
 					}
 				} 
 				else if ( DistanceToGoalSquared( self ) >= Square( MAX_HUMAN_DANCE_DIST ) && self->client->ps.weapon != WP_PAIN_SAW ) 
 				{
-					//we should be >= MAX_HUMAN_DANCE_DIST from the enemy
-					//dont go forward
-					self->botMind->cmdBuffer.forwardmove = 0;
-
-					//strafe randomly
-					self->botMind->cmdBuffer.rightmove = BotGetStrafeDirection();
+					BotStandStill( self );
+					
+					BotStrafeDodge( self );
 				}
 
 				if ( inAttackRange && BotGetTargetType( self->botMind->goal ) == ET_BUILDABLE )
 				{
-					self->botMind->cmdBuffer.forwardmove = 0;
-					self->botMind->cmdBuffer.rightmove = 0;
-					self->botMind->cmdBuffer.upmove = 0;
+					BotStandStill( self );
 				}
 
-				if(self->client->ps.stats[STAT_STAMINA] > STAMINA_SLOW_LEVEL && self->botMind->botSkill.level >= 5) 
-				{
-					usercmdPressButton(self->botMind->cmdBuffer.buttons, BUTTON_SPRINT);
-				} 
-				else
-				{
-					//dont sprint or dodge, we are about to slow
-					usercmdReleaseButton(self->botMind->cmdBuffer.buttons, BUTTON_SPRINT);
-					usercmdReleaseButton(self->botMind->cmdBuffer.buttons, BUTTON_DODGE);
-				}
+				BotSprint( self, qtrue );
 			}
 			else if ( myTeam == TEAM_ALIENS )
 			{
@@ -2387,16 +2360,16 @@ AINodeStatus_t BotEvaluateNodeList( gentity_t *self, AINodeList_t *nodeList )
 		case SELECTOR_CONCURRENT:
 			i = 0;
 			{
-				int numSTATUS_FAILURE = 0;
+				int numFailure = 0;
 				for( ; i < nodeList->numNodes; i++ )
 				{
 					AINodeStatus_t status = BotEvaluateNode( self, nodeList->list[ i ] );
 
 					if ( status == STATUS_FAILURE )
 					{
-						numSTATUS_FAILURE++;
+						numFailure++;
 
-						if ( numSTATUS_FAILURE < nodeList->maxFail )
+						if ( numFailure < nodeList->maxFail )
 						{
 							continue;
 						}

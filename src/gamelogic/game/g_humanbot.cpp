@@ -21,7 +21,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-#include "g_local.h"
 #include "g_bot.h"
 
 qboolean WeaponIsEmpty( weapon_t weapon, playerState_t ps)
@@ -662,7 +661,7 @@ AINodeStatus_t BotActionRepair( gentity_t *self, AIActionNode_t *node )
 		//aim at the buildable
 		BotSlowAim(self, targetPos, 0.5);
 		BotAimAtLocation(self,targetPos);
-		//gpp automatically heals buildable if close enough and aiming at it
+		// we automatically heal a building if close enough and aiming at it
 	}
 	return STATUS_RUNNING;
 }

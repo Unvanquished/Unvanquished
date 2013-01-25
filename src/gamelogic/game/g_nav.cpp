@@ -17,8 +17,6 @@ along with Tremulous; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-
-#include "g_local.h"
 #include "g_bot.h"
 #include "../../engine/botlib/nav.h"
 #include "../../libs/detour/DetourNavMeshBuilder.h"
@@ -400,12 +398,19 @@ qboolean BotNav_Trace(dtNavMeshQuery* navQuery, dtQueryFilter* navFilter, vec3_t
 		extents[1] += 500;
 		status = navQuery->findNearestPoly(start,extents,navFilter,&startRef,nearPoint);
 		if(dtStatusFailed(status) || startRef == 0) {
-			*numHit = 0;
-			*hit = 0;
+			if ( numHit )
+			{
+				*numHit = 0;
+				*hit = 0;
+			}
 			VectorSet(normal,0,0,0);
 			if(maxPolies > 0) {
 				pathPolys[0] = startRef;
-				*numHit = 1;
+
+				if ( numHit )
+				{
+					*numHit = 1;
+				}
 			}
 			return qfalse;
 		}
@@ -495,7 +500,11 @@ qboolean BotFindNearestPoly(gentity_t *self, vec3_t coord, dtPolyRef *nearestPol
 Local Bot Navigation
 ========================
 */
-void BotDodge(gentity_t *self, usercmd_t *botCmdBuffer) {
+
+void BotStrafeDodge( gentity_t *self )
+{
+	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
+
 	if(self->client->time1000 >= 500)
 		botCmdBuffer->rightmove = 127;
 	else
@@ -507,6 +516,156 @@ void BotDodge(gentity_t *self, usercmd_t *botCmdBuffer) {
 	if((self->client->time1000 % 300) >= 100 && (self->client->time10000 % 3000) > 2000)
 		botCmdBuffer->rightmove = 0;
 }
+
+void BotMoveInDir( gentity_t *self, uint32_t dir )
+{
+	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
+	if ( dir & MOVE_FORWARD )
+	{
+		botCmdBuffer->forwardmove = 127;
+	}
+	else if ( dir & MOVE_BACKWARD )
+	{
+		botCmdBuffer->forwardmove = -127;
+	}
+
+	if ( dir & MOVE_RIGHT )
+	{
+		botCmdBuffer->rightmove = 127;
+	}
+	else if ( dir & MOVE_LEFT )
+	{
+		botCmdBuffer->rightmove = -127;
+	}
+}
+
+void BotAlternateStrafe( gentity_t *self )
+{
+	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
+
+	if(level.time % 8000 < 4000) {
+		botCmdBuffer->rightmove = 127;
+	} else {
+		botCmdBuffer->rightmove = -127;
+	}
+}
+
+void BotStandStill( gentity_t *self )
+{
+	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
+
+	botCmdBuffer->forwardmove = 0;
+	botCmdBuffer->rightmove = 0;
+	botCmdBuffer->upmove = 0;
+}
+
+qboolean BotJump( gentity_t *self )
+{
+	if( self->client->ps.stats[STAT_TEAM] == TEAM_HUMANS && self->client->ps.stats[STAT_STAMINA] < STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE ) 
+	{
+		return qfalse;
+	}
+
+	self->botMind->cmdBuffer.upmove = 127;
+	return qtrue;
+}
+
+qboolean BotSprint( gentity_t *self, qboolean enable ) {
+
+	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
+
+	if ( !enable )
+	{
+		usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_SPRINT );
+		return qfalse;
+	}
+
+	if(self->client->ps.stats[STAT_TEAM] == TEAM_HUMANS && self->client->ps.stats[STAT_STAMINA] > STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE && self->botMind->botSkill.level >= 5) {
+		usercmdPressButton( botCmdBuffer->buttons, BUTTON_SPRINT );
+		usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_WALKING );
+		return qtrue;
+	} else {
+		usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_SPRINT );
+		return qfalse;
+	}
+}
+
+
+qboolean BotDodge(gentity_t *self) {
+	vec3_t backward, right, left;
+	vec3_t end;
+	float fracback,fracleft,fracright;
+	float jumpMag;
+	vec3_t normal;
+
+	//see: bg_pmove.c, these conditions prevent use from using dodge
+	if( self->client->ps.stats[STAT_TEAM] != TEAM_HUMANS )
+	{
+		usercmdReleaseButton( self->botMind->cmdBuffer.buttons, BUTTON_DODGE );
+		return qfalse;
+	}
+
+	if( self->client->ps.pm_type != PM_NORMAL || self->client->ps.stats[STAT_STAMINA] > STAMINA_SLOW_LEVEL + STAMINA_DODGE_TAKE ||
+		( self->client->ps.pm_flags & PMF_DUCKED ) )
+	{
+		usercmdReleaseButton( self->botMind->cmdBuffer.buttons, BUTTON_DODGE );
+		return qfalse;
+	}
+
+	if( !(self->client->ps.pm_flags & ( PMF_TIME_LAND | PMF_CHARGE )) && self->client->ps.groundEntityNum != ENTITYNUM_NONE )
+	{
+		usercmdReleaseButton( self->botMind->cmdBuffer.buttons, BUTTON_DODGE );
+		return qfalse;
+	}
+
+	//skill level required to use dodge
+	if( self->botMind->botSkill.level < 7 )
+	{
+		usercmdReleaseButton( self->botMind->cmdBuffer.buttons, BUTTON_DODGE );
+		return qfalse;
+	}
+
+	//find the best direction to dodge in
+	AngleVectors( self->client->ps.viewangles, backward, right, NULL );
+	VectorInverse(backward);
+	backward[2] = 0;
+	VectorNormalize(backward);
+	right[2] = 0;
+	VectorNormalize(right);
+	VectorNegate( right, left );
+
+	jumpMag = BG_Class( ( class_t ) self->client->ps.stats[STAT_CLASS] )->jumpMagnitude;
+
+	//test each direction for navigation mesh collisions
+	//FIXME: this code does not guarentee that we will land safely and on the navigation mesh!
+	VectorMA( self->s.origin, jumpMag, backward, end );
+	BotNav_Trace( self->botMind->navQuery, self->botMind->navFilter, self->s.origin, end, &fracback, normal, NULL, NULL, 0 );
+	VectorMA( self->s.origin, jumpMag, right, end );
+	BotNav_Trace( self->botMind->navQuery, self->botMind->navFilter, self->s.origin, end, &fracright, normal, NULL, NULL, 0 );
+	VectorMA( self->s.origin, jumpMag, left, end );
+	BotNav_Trace( self->botMind->navQuery, self->botMind->navFilter, self->s.origin, end, &fracleft, normal, NULL, NULL, 0 );
+
+	//set the direction to dodge
+	BotStandStill( self );
+
+	if( fracback > fracleft && fracback > fracright )
+	{
+		self->botMind->cmdBuffer.forwardmove = -127;
+	}
+	else if(fracleft > fracright && fracleft > fracback )
+	{
+		self->botMind->cmdBuffer.rightmove = -127;
+	}
+	else
+	{
+		self->botMind->cmdBuffer.rightmove = 127;
+	}
+
+	// dodge
+	usercmdPressButton( self->botMind->cmdBuffer.buttons, BUTTON_DODGE );
+	return qtrue;
+}
+
 gentity_t* BotGetPathBlocker(gentity_t *self) {
 	vec3_t playerMins,playerMaxs;
 	vec3_t end;
@@ -602,13 +761,7 @@ qboolean BotShouldJump(gentity_t *self, gentity_t *blocker) {
 	else
 		return qfalse;
 }
-int BotGetStrafeDirection(void) {
-	if(level.time % 8000 < 4000) {
-		return 127;
-	} else {
-		return -127;
-	}
-}
+
 qboolean BotFindSteerTarget(gentity_t *self, vec3_t aimPos) {
 	vec3_t forward;
 	vec3_t testPoint1,testPoint2;
@@ -691,11 +844,7 @@ qboolean BotAvoidObstacles(gentity_t *self, vec3_t rVec) {
 		vec3_t newAimPos;
 		if(BotShouldJump(self, blocker)) 
 		{
-			//jump if we have enough stamina
-			if(self->client->ps.stats[STAT_STAMINA] >= STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE)
-			{
-				botCmdBuffer->upmove = 127;
-			} 
+			BotJump( self );
 
 			return qfalse;
 		} 
@@ -707,8 +856,8 @@ qboolean BotAvoidObstacles(gentity_t *self, vec3_t rVec) {
 		} 
 		else
 		{
-			botCmdBuffer->rightmove = BotGetStrafeDirection();
-			botCmdBuffer->forwardmove = -127; //backup
+			BotAlternateStrafe( self );
+			BotMoveInDir( self, MOVE_BACKWARD );
 
 			return qtrue;
 		}
@@ -819,7 +968,7 @@ void BotGoto(gentity_t *self, botTarget_t target ) {
 	}
 
 	//dont sprint or dodge if we dont have enough stamina and are about to slow
-	if(BotGetTeam(self) == TEAM_HUMANS && self->client->ps.stats[STAT_STAMINA] < STAMINA_SLOW_LEVEL) {
+	if(self->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS && self->client->ps.stats[STAT_STAMINA] < STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE) {
 		usercmdReleaseButton(botCmdBuffer->buttons, BUTTON_SPRINT);
 		usercmdReleaseButton(botCmdBuffer->buttons, BUTTON_DODGE);
 	}

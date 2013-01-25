@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef __BOT_HEADER
 #define __BOT_HEADER
 #ifdef __cplusplus
+#include "g_local.h"
 #include "../../libs/detour/DetourNavMeshQuery.h"
 #include "../../libs/detour/DetourPathCorridor.h"
 
@@ -65,7 +66,23 @@ bool G_RoomForClassChange( gentity_t *ent, class_t classt, vec3_t newOrigin );
 qboolean BotPathIsWalkable(gentity_t *self, botTarget_t target);
 void UpdatePathCorridor(gentity_t *self);
 qboolean BotMoveToGoal( gentity_t *self );
-void BotDodge(gentity_t *self, usercmd_t *botCmdBuffer);
+
+typedef enum
+{
+	MOVE_FORWARD = BIT( 0 ),
+	MOVE_BACKWARD = BIT( 1 ),
+	MOVE_LEFT = BIT( 2 ),
+	MOVE_RIGHT = BIT( 3 )
+} botMoveDir_t;
+
+qboolean BotDodge( gentity_t *self );
+qboolean BotSprint( gentity_t *self, qboolean enable );
+qboolean BotJump( gentity_t *self );
+void BotStrafeDodge(gentity_t *self);
+void BotAlternateStrafe( gentity_t *self );
+void BotMoveInDir( gentity_t *self, uint32_t moveDir );
+void BotStandStill( gentity_t *self );
+
 int	FindRouteToTarget( gentity_t *self, botTarget_t target );
 int DistanceToGoal(gentity_t *self);
 int DistanceToGoalSquared(gentity_t *self);
