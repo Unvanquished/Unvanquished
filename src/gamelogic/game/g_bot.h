@@ -54,10 +54,6 @@ int FindBots(int *botEntityNumbers, int maxBots, team_t team);
 qboolean WeaponIsEmpty( weapon_t weapon, playerState_t ps);
 float PercentAmmoRemaining( weapon_t weapon, playerState_t *ps );
 gentity_t* BotFindDamagedFriendlyStructure( gentity_t *self );
-qboolean BotNeedsItem(gentity_t *self);
-qboolean BotCanShop(gentity_t *self);
-qboolean BotStructureIsDamaged(team_t team);
-qboolean buildableIsDamaged(gentity_t *building);
 qboolean BotGetBuildingToBuild(gentity_t *self, vec3_t origin, vec3_t normal, buildable_t *building);
 
 //g_alienbot.cpp

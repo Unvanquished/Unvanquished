@@ -854,9 +854,7 @@ void FindWaypoints(gentity_t *self) {
 
 	self->botMind->numCorners = numCorners;
 }
-float Distance2D(vec3_t pos1, vec3_t pos2) {
-	return sqrt(pos1[0] * pos2[0] + pos1[1] * pos2[1]);
-}
+
 void UpdatePathCorridor(gentity_t *self) {
 	vec3_t selfPos, targetPos;
 	if(!self->botMind->pathCorridor->getPathCount()) {
@@ -998,20 +996,7 @@ int FindRouteToTarget( gentity_t *self, botTarget_t target) {
 Misc Bot Nav
 ========================
 */
-extern "C" qboolean addOffMeshConnection(vec3_t start, vec3_t end, const int type) {
-	quake2recast(start);
-	quake2recast(end);
-	//is the type a power of 2?
-	//64 == max flag number
-	if((!(type & (type - 1)) && type && type <= 64)) {
 
-		//TODO: add connection
-
-		return qtrue;
-	}
-	return qfalse;
-
-}
 void PlantEntityOnGround(gentity_t *ent, vec3_t groundPos) {
 	vec3_t mins,maxs;
 	trace_t trace;

@@ -1348,26 +1348,6 @@ void BotSlowAim( gentity_t *self, vec3_t target, float slowAmount) {
 	//now find a point to return, this point will be aimed at
 	VectorMA(viewBase, length, skilledVec,target);
 }
-//blatently ripped from ShotgunPattern() in g_weapon.c :)
-void BotShakeAim( gentity_t *self, vec3_t rVec ){
-	vec3_t forward, right, up, diffVec;
-	int seed;
-	float r,u, length, speedAngle;
-	AngleVectors(self->client->ps.viewangles, forward, right, up);
-	//seed crandom
-	seed = (int) rand() & 255;
-
-	VectorSubtract(rVec,self->s.origin, diffVec);
-
-	length = VectorNormalize(diffVec)/1000;
-
-	speedAngle=RAD2DEG(acos(DotProduct(forward,diffVec)))/100;
-	r = Q_crandom(&seed) * self->botMind->botSkill.aimShake * length * speedAngle;
-	u = Q_crandom(&seed) * self->botMind->botSkill.aimShake * length * speedAngle;
-
-	VectorMA(rVec, r, right, rVec);
-	VectorMA(rVec,u,up,rVec);
-}
 
 float BotAimNegligence(gentity_t *self, botTarget_t target) {
 	vec3_t forward;
@@ -1469,12 +1449,6 @@ qboolean BotTeamateHasWeapon(gentity_t *self, int weapon) {
 Boolean Functions for determining actions
 ========================
 */
-qboolean BotWillBuildSomething(gentity_t *self) {
-	vec3_t origin;
-	vec3_t normal;
-	buildable_t buildable;
-	return BotGetBuildingToBuild(self, origin, normal, &buildable);
-}
 
 botTarget_t BotGetRoamTarget(gentity_t *self) {
 	botTarget_t target;
