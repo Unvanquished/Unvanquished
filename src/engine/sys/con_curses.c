@@ -48,7 +48,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #endif
 #include <curses.h>
 
+#ifdef DEDICATED
+#define TITLE         "^4---[ ^3" CLIENT_WINDOW_TITLE " Server Console ^4]---"
+#else
 #define TITLE         "^4---[ ^3" CLIENT_WINDOW_TITLE " Console ^4]---"
+#endif
 #define PROMPT        "^3-> "
 #define INPUT_SCROLL  15
 #define LOG_SCROLL    5
