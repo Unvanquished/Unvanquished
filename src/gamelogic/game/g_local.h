@@ -85,39 +85,44 @@ typedef enum
 //============================================================================
 #define MAX_BOT_BUILDINGS 300
 
-typedef struct {
-  gentity_t *ent;
-  float distance;
+typedef struct
+{
+	gentity_t *ent;
+	float distance;
 } botEntityAndDistance_t;
 
-typedef struct{
-  buildable_t type;
-  vec3_t normal;
-  vec3_t origin;
+typedef struct
+{
+	buildable_t type;
+	vec3_t normal;
+	vec3_t origin;
 } botBuilding_t;
 
-typedef struct{
-  botBuilding_t buildings[MAX_BOT_BUILDINGS];
-  int numBuildings;
+typedef struct
+{
+	botBuilding_t buildings[ MAX_BOT_BUILDINGS ];
+	int numBuildings;
 } botBuildLayout_t;
 
-typedef struct{
-  gentity_t *ent;
-  vec3_t coord;
-  qboolean inuse;
+typedef struct
+{
+	gentity_t *ent;
+	vec3_t coord;
+	qboolean inuse;
 }botTarget_t;
 
-typedef struct{
-  int level;
-  float aimSlowness;
-  float aimShake;
+typedef struct
+{
+	int level;
+	float aimSlowness;
+	float aimShake;
 } botSkill_t;
 
 typedef enum
 {
-	SELECTOR_NODE,
-	ACTION_NODE,
-	CONDITION_NODE
+  SELECTOR_NODE,
+  ACTION_NODE,
+  CONDITION_NODE
 } AINode_t;
 
 typedef struct
@@ -126,7 +131,8 @@ typedef struct
 	AINode_t *root;
 } AIBehaviorTree_t;
 
-typedef enum{
+typedef enum
+{
   ROUTE_FAILURE	= 0x01,
   ROUTE_NOPOLYNEARSELF	= 0x02,
   ROUTE_NOPOLYNEARTARGET =	0x04,
@@ -138,47 +144,46 @@ typedef enum{
 #define MAX_NODE_DEPTH 20
 
 typedef struct{
+	//when the enemy was last seen
+	int enemyLastSeen;
+	int timeFoundEnemy;
 
-  //when the enemy was last seen
-  int enemyLastSeen;
-  int timeFoundEnemy;
+	//team the bot is on when added
+	team_t botTeam;
 
-  //team the bot is on when added
-  team_t botTeam;
+	//targets
+	botTarget_t goal;
 
-  //targets
-  botTarget_t goal;
+	//pathfinding stuff
+	vec3_t route[ MAX_ROUTE_NODES ];
+	int numCorners;
+	int timeFoundRoute;
 
-  //pathfinding stuff
-  vec3_t route[MAX_ROUTE_NODES];
-  int numCorners;
-  int timeFoundRoute;
+	botSkill_t botSkill;
+	botEntityAndDistance_t bestEnemy;
+	botEntityAndDistance_t closestDamagedBuilding;
+	botEntityAndDistance_t closestBuildings[ BA_NUM_BUILDABLES ];
 
-  botSkill_t botSkill;
-  botEntityAndDistance_t bestEnemy;
-  botEntityAndDistance_t closestDamagedBuilding;
-  botEntityAndDistance_t closestBuildings[ BA_NUM_BUILDABLES ];
-
-  AIBehaviorTree_t *behaviorTree;
-  void *currentNode; //AINode_t *
-  AINode_t *runningNodes[ MAX_NODE_DEPTH ];
-  int  numRunningNodes;
+	AIBehaviorTree_t *behaviorTree;
+	void *currentNode; //AINode_t *
+	AINode_t *runningNodes[ MAX_NODE_DEPTH ];
+	int  numRunningNodes;
 
   	int         futureAimTime;
 	vec3_t      futureAim;
-  usercmd_t cmdBuffer;
-  //navigation classes
-  //not for use outside C++ code
-#ifdef __cplusplus
-  class dtNavMeshQuery* navQuery;
-  class dtQueryFilter*  navFilter;
-  class dtPathCorridor* pathCorridor;
-#else
-  struct dtNavMeshQuery* navQuery;
-  struct dtQueryFilter* navFilter;
-  struct dtPathCorridor* pathCorridor;
-#endif
+	usercmd_t cmdBuffer;
 
+	//navigation classes
+	//not for use outside C++ code
+#ifdef __cplusplus
+	class dtNavMeshQuery* navQuery;
+	class dtQueryFilter*  navFilter;
+	class dtPathCorridor* pathCorridor;
+#else
+	struct dtNavMeshQuery* navQuery;
+	struct dtQueryFilter* navFilter;
+	struct dtPathCorridor* pathCorridor;
+#endif
 } botMemory_t;
 
 struct gentity_s
@@ -828,13 +833,13 @@ char     *G_NewString( const char *string );
 qboolean G_BotAdd( char *name, team_t team, int skill, const char* behavior );
 void G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavior );
 void G_BotDel( int clientNum );
-void G_BotDelAll(void);
-void G_BotThink(gentity_t *self);
+void G_BotDelAll( void );
+void G_BotThink( gentity_t *self );
 void G_BotSpectatorThink( gentity_t *self );
 void G_BotIntermissionThink( gclient_t *client );
-void G_BotLoadBuildLayout();
+void G_BotLoadBuildLayout( void );
 void G_BotListNames( gentity_t *ent );
-qboolean G_BotClearNames(void);
+qboolean G_BotClearNames( void );
 int G_BotAddNames(team_t team, int arg, int last);
 void G_BotDisableArea( vec3_t origin, vec3_t mins, vec3_t maxs );
 void G_BotEnableArea( vec3_t origin, vec3_t mins, vec3_t maxs );
