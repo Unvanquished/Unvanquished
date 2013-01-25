@@ -5,12 +5,12 @@ selector priority
 		action fight
 	}
 	
-	condition botTeam eq TEAM_HUMANS
+	condition botTeam == TEAM_HUMANS
 	{
 		action equip
 	}
 	
-	condition botTeam eq TEAM_ALIENS
+	condition botTeam == TEAM_ALIENS
 	{
 		action evolve
 	}

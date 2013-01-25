@@ -71,6 +71,43 @@ void CheckToken( int handle, const char *tokenValueName, const char *nodename, c
 	}
 }
 
+#define P_LOGIC_GEQ        7
+#define P_LOGIC_LEQ        8
+#define P_LOGIC_EQ         9
+#define P_LOGIC_UNEQ       10
+
+#define P_LOGIC_NOT        36
+#define P_LOGIC_GREATER    37
+#define P_LOGIC_LESS       38
+
+AIConditionOperator_t ReadConditionOperator( int handle )
+{
+	pc_token_t token;
+	trap_Parse_ReadToken( handle, &token );
+
+	CheckToken( handle, "operator", "condition", &token, TT_PUNCTUATION );
+
+	switch( token.subtype )
+	{
+		case P_LOGIC_LESS:
+			return OP_LESSTHAN;
+		case P_LOGIC_LEQ:
+			return OP_LESSTHANEQUAL;
+		case P_LOGIC_GREATER:
+			return OP_GREATERTHAN;
+		case P_LOGIC_GEQ:
+			return OP_GREATERTHANEQUAL;
+		case P_LOGIC_EQ:
+			return OP_EQUAL;
+		case P_LOGIC_UNEQ:
+			return OP_NEQUAL;
+		case P_LOGIC_NOT:
+			return OP_NOT;
+		default:
+			return OP_BOOL;
+	}
+}
+
 AINode_t *ReadConditionNode( int handle )
 {
 	pc_token_t token;
@@ -82,7 +119,7 @@ AINode_t *ReadConditionNode( int handle )
 	condition->type = CONDITION_NODE;
 
 	// read not or bool
-	if ( !Q_stricmp( token.string, "not" ) )
+	if ( token.subtype == P_LOGIC_NOT )
 	{
 		condition->op = OP_NOT;
 
@@ -141,11 +178,7 @@ AINode_t *ReadConditionNode( int handle )
 	{
 		condition->info = CON_TEAM;
 
-		trap_Parse_ReadToken( handle, &token );
-
-		CheckToken( handle, "operator", "condition botTeam", &token, TT_NUMBER );
-
-		condition->op = ( AIConditionOperator_t )token.intvalue;
+		condition->op = ReadConditionOperator( handle );
 
 		trap_Parse_ReadToken( handle, &token );
 
@@ -158,11 +191,7 @@ AINode_t *ReadConditionNode( int handle )
 	{
 		condition->info = CON_HEALTH;
 
-		trap_Parse_ReadToken( handle, &token );
-
-		CheckToken( handle, "operator", "condition percentHealth", &token, TT_NUMBER );
-
-		condition->op = ( AIConditionOperator_t ) token.intvalue;
+		condition->op = ReadConditionOperator( handle );
 
 		trap_Parse_ReadToken( handle, &token );
 
@@ -175,10 +204,7 @@ AINode_t *ReadConditionNode( int handle )
 	{
 		condition->info = CON_CURWEAPON;
 
-		trap_Parse_ReadToken( handle, &token );
-
-		CheckToken( handle, "operator", "condition weapon", &token, TT_NUMBER );
-		condition->op = ( AIConditionOperator_t ) token.intvalue;
+		condition->op = ReadConditionOperator( handle );
 
 		trap_Parse_ReadToken( handle, &token );
 
@@ -197,11 +223,7 @@ AINode_t *ReadConditionNode( int handle )
 
 		condition->param1.value.i = token.intvalue;
 
-		trap_Parse_ReadToken( handle, &token );
-
-		CheckToken( handle, "operator", "condition distanceTo", &token, TT_NUMBER );
-
-		condition->op = ( AIConditionOperator_t ) token.intvalue;
+		condition->op = ReadConditionOperator( handle );
 
 		trap_Parse_ReadToken( handle, &token );
 
@@ -213,11 +235,7 @@ AINode_t *ReadConditionNode( int handle )
 	{
 		condition->info = CON_BASERUSH;
 
-		trap_Parse_ReadToken( handle, &token );
-
-		CheckToken( handle, "operator", "condition baseRushScore", &token, TT_NUMBER );
-
-		condition->op = ( AIConditionOperator_t ) token.intvalue;
+		condition->op = ReadConditionOperator( handle );
 
 		trap_Parse_ReadToken( handle, &token );
 
@@ -229,11 +247,7 @@ AINode_t *ReadConditionNode( int handle )
 	{
 		condition->info = CON_HEAL;
 
-		trap_Parse_ReadToken( handle, &token );
-
-		CheckToken( handle, "operator", "condition healScore", &token, TT_NUMBER );
-
-		condition->op = ( AIConditionOperator_t ) token.intvalue;
+		condition->op = ReadConditionOperator( handle );
 
 		trap_Parse_ReadToken( handle, &token );
 
@@ -523,14 +537,6 @@ AIBehaviorTree_t * ReadBehaviorTree( const char *name )
 	D( E_GOAL );
 	D( E_ENEMY );
 	D( E_DAMAGEDBUILDING );
-
-	// add condition ops
-	trap_Parse_AddGlobalDefine( va( "lt %d", OP_LESSTHAN ) );
-	trap_Parse_AddGlobalDefine( va( "lte %d", OP_LESSTHANEQUAL ) );
-	trap_Parse_AddGlobalDefine( va( "gt %d", OP_GREATERTHAN ) );
-	trap_Parse_AddGlobalDefine( va( "gte %d", OP_GREATERTHANEQUAL ) );
-	trap_Parse_AddGlobalDefine( va( "eq %d", OP_EQUAL ) );
-	trap_Parse_AddGlobalDefine( va( "neq %d", OP_NEQUAL ) );
 
 	char treefilename[ MAX_QPATH ];
 	Q_strncpyz( treefilename, va( "bots/%s.bt", name ), sizeof( treefilename ) );
