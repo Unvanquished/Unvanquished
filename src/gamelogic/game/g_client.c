@@ -1401,7 +1401,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	{
 		ent->client->pers.namelog->strip = qtrue;
 		G_AdminMessage( NULL,
-			va( "^7%s^7 is stripped as %s\n",
+			va( "^7%s^7 is stripped as %s",
 				ent->client->pers.netname[ 0 ] ? ent->client->pers.netname :
 					ent->client->pers.longstrip->name,
 				ent->client->pers.longstrip->name ) );

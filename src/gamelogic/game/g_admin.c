@@ -5884,7 +5884,7 @@ qboolean G_admin_unlongstrip( gentity_t *ent )
 	}
 
 	G_AdminMessage( NULL,
-	                va( "^3unlongstrip: ^7strip #%d for %s^7 has been removed by %s\n",
+	                va( "^3unlongstrip: ^7strip #%d for %s^7 has been removed by %s",
 	                    snum, strip->name,
 	                    ( ent ) ? ent->client->pers.netname : "console" ) );
 
@@ -6009,7 +6009,6 @@ qboolean G_admin_showlongstrips( gentity_t *ent )
 	}
 
 	ADMBP_begin();
-	ADMBP( "\"" );
 
 	for( i = 0, strip = g_admin_longstrips; i < start && strip; i++, strip = strip->next );
 	for( count = 0; count < MAX_ADMIN_SHOWBANS && strip; strip = strip->next )
@@ -6076,7 +6075,7 @@ qboolean G_admin_showlongstrips( gentity_t *ent )
 		           ( name_match[ 0 ] ) ? filter : "" ) );
 	}
 
-	ADMBP( "\n\"" );
+	ADMBP( "\n" );
 	ADMBP_end();
 	return qtrue;
 }

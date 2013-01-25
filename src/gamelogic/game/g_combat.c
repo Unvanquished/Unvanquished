@@ -149,8 +149,9 @@ void DoCheckAutoStrip( gentity_t *self )
 	my_kills = self->client->pers.namelog->damageStats.kills;
 	if ( my_kills < AS_min_kills )
 	{
-		if (AS_debug>0) G_AdminMessage( NULL, va( "::debug info (auto-strip) | my_kills < AS_min_kills (%d < %d)\n",
-									                            my_kills, AS_min_kills) );
+		if (AS_debug>0)
+			G_AdminMessage( NULL, va( "::debug info (auto-strip) | my_kills < AS_min_kills (%d < %d)",
+			                          my_kills, AS_min_kills) );
 		return; // minimal "kill count" condition - not met
 	}
 
@@ -159,8 +160,8 @@ void DoCheckAutoStrip( gentity_t *self )
 		if ( my_kills < AS_allowed_kpm * fGameMinutes )
 		{
 			if ( AS_debug > 0 )
-				 G_AdminMessage( NULL, va ("::debug info (auto-strip) | my_kills < allowed_kpm * game minutes (%d < %f * %f)\n",
-									                my_kills, AS_allowed_kpm, fGameMinutes ) );
+				G_AdminMessage( NULL, va ("::debug info (auto-strip) | my_kills < allowed_kpm * game minutes (%d < %f * %f)",
+				                          my_kills, AS_allowed_kpm, fGameMinutes ) );
 			return; // minimal "allowed kills per minute" condition not exceeded
 		}
 	}
@@ -173,7 +174,7 @@ void DoCheckAutoStrip( gentity_t *self )
 	{
 		if (AS_debug>0)
 		{
-			G_AdminMessage( NULL, va( "::debug info (auto-strip) | my_kill_ratio < AS_min_kill_ratio (%f < %f)\n",
+			G_AdminMessage( NULL, va( "::debug info (auto-strip) | my_kill_ratio < AS_min_kill_ratio (%f < %f)",
 			                          my_kill_ratio, AS_min_kill_ratio) );
 		}
 
@@ -244,7 +245,7 @@ void DoCheckAutoStrip( gentity_t *self )
 				AS_killingSpreeLvl = AS_min_kills;
 
 			if ( AS_debug > 0 )
-				G_AdminMessage( NULL, va( "::debug info (auto-strip) | killing spree = %d, killing spree allowed = %d\n",
+				G_AdminMessage( NULL, va( "::debug info (auto-strip) | killing spree = %d, killing spree allowed = %d",
 				                my_killingSpree, AS_killingSpreeLvl ) );
 
 			if ( my_killingSpree > AS_killingSpreeLvl )
@@ -253,7 +254,7 @@ void DoCheckAutoStrip( gentity_t *self )
 				self->client->pers.namelog->strip = qtrue;
 
 				G_AdminMessage( NULL,
-				                va ( "^7Player %s^7 was auto-stripped (killing spree: %d, killing spree allowed: %d).\n",
+				                va ( "^7Player %s^7 was auto-stripped (killing spree: %d, killing spree allowed: %d).",
 				                     self->client->pers.netname,
 				                     my_killingSpree,
 				                     AS_killingSpreeLvl )
@@ -274,7 +275,7 @@ void DoCheckAutoStrip( gentity_t *self )
 			self->client->pers.namelog->strip = qtrue;
 
 			G_AdminMessage( NULL,
-						va( "^7Player %s^7 was auto-stripped (kills per minute. Kills: %d, allowed: %f).\n",
+						va( "^7Player %s^7 was auto-stripped (kills per minute. Kills: %d, allowed: %f).",
 							self->client->pers.netname,
 							my_kills,
 							(AS_kpm_treshold * fGameMinutes) )
@@ -287,13 +288,13 @@ void DoCheckAutoStrip( gentity_t *self )
 	}
 
 	if ( AS_debug > 0 )
-		G_AdminMessage( NULL, va( "::debug info (auto-strip) | my_team_players = %d, enemy_team_players = %d\n",
+		G_AdminMessage( NULL, va( "::debug info (auto-strip) | my_team_players = %d, enemy_team_players = %d",
 									            my_team_players, enemy_team_players ) );
 
 	if ( my_kills < AS_kills_per_stage * (my_team_stage+1) )
 	{
 		if ( AS_debug > 0 )
-			G_AdminMessage( NULL, va( "::debug info (auto-strip) | my_kills < AS_kills_per_stage * stage (%d < %d)\n",
+			G_AdminMessage( NULL, va( "::debug info (auto-strip) | my_kills < AS_kills_per_stage * stage (%d < %d)",
 			                          my_kills, (AS_kills_per_stage * (my_team_stage+1)) ) );
 		return; // minimal "stage kill count" condition - not met
 	}
@@ -324,7 +325,7 @@ void DoCheckAutoStrip( gentity_t *self )
 
 	if (AS_debug>0)
 		G_AdminMessage( NULL,
-		                va( "::debug info (auto-strip)\n my_team treshold: %f\n enemy_team treshold: %f\n my_kills: %d\n\n",
+		                va( "::debug info (auto-strip)\n my_team treshold: %f\n enemy_team treshold: %f\n my_kills: %d",
 		                    my_team_avg,
 		                    enemy_team_avg,
 		                    my_kills )
@@ -336,7 +337,7 @@ void DoCheckAutoStrip( gentity_t *self )
 		self->client->pers.namelog->strip = qtrue;
 
 		G_AdminMessage( NULL,
-		                va( "^7Player %s^7 was auto-stripped (%s).\n",
+		                va( "^7Player %s^7 was auto-stripped (%s).",
 		                    self->client->pers.netname,
 		                    (my_kills > my_team_avg)?"own team avg":"enemy team avg" )
 		              );
