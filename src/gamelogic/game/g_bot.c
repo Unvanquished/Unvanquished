@@ -2233,7 +2233,7 @@ void G_BotFreeBehaviorTrees( void )
 	FreeTreeList( &treeList );
 }
 
-void G_BotDelAll( void )
+void G_BotDelAllBots( void )
 {
 	int i;
 
@@ -2254,8 +2254,6 @@ void G_BotDelAll( void )
 	{
 		botNames[TEAM_HUMANS].name[i].inUse = qfalse;
 	}
-
-	G_BotFreeBehaviorTrees();
 }
 
 AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )

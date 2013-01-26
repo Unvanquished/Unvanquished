@@ -5541,7 +5541,7 @@ qboolean G_admin_bot( gentity_t *ent )
 		int clientNum = G_ClientNumberFromString( name, err, sizeof( err ) );
 		if ( !Q_stricmp( name, "all" ) )
 		{
-			G_BotDelAll();
+			G_BotDelAllBots();
 		}
 		else if ( clientNum == -1 ) //something went wrong when finding the client Number
 		{
