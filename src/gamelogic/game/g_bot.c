@@ -535,6 +535,7 @@ void RemoveTreeFromList( AITreeList_t *list, AIBehaviorTree_t *tree )
 void FreeTreeList( AITreeList_t *list )
 {
 	BG_Free( list->trees );
+	list->trees = NULL;
 	list->maxTrees = 0;
 	list->numTrees = 0;
 }
