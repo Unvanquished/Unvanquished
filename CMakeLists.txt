@@ -729,9 +729,9 @@ set( GAMEGPP_BASE
 set( GAMEGPP_SO
   ${GAMEGPP_BASE}
   ${GPP_DIR}/game/g_api.c
-  ${GPP_DIR}/game/g_bot.cpp
-  ${GPP_DIR}/game/g_alienbot.cpp
-  ${GPP_DIR}/game/g_humanbot.cpp
+  ${GPP_DIR}/game/g_bot.c
+  ${GPP_DIR}/game/g_alienbot.c
+  ${GPP_DIR}/game/g_humanbot.c
   ${GPP_DIR}/game/g_nav.cpp
   ${GPP_DIR}/game/game.def
 )

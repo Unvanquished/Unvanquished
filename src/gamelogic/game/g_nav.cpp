@@ -20,6 +20,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "g_bot.h"
 #include "../../engine/botlib/nav.h"
 #include "../../libs/detour/DetourNavMeshBuilder.h"
+#include "../../libs/detour/DetourNavMeshQuery.h"
+#include "../../libs/detour/DetourPathCorridor.h"
 
 dtPathCorridor pathCorridor[MAX_CLIENTS];
 dtNavMeshQuery* navQuerys[PCL_NUM_CLASSES];
@@ -381,16 +383,41 @@ extern "C" void G_BotEnableArea( vec3_t origin, vec3_t mins, vec3_t maxs )
 	BotSetPolyFlags( origin, mins, maxs, POLYFLAGS_WALK );
 }
 
+void BotGetAgentExtents( gentity_t *ent, vec3_t extents )
+{
+	VectorSet( extents, ent->r.maxs[0] * 5,  2 * ( ent->r.maxs[2] - ent->r.mins[2] ), ent->r.maxs[1] * 5 );
+}
+
+extern "C" void BotSetNavmesh( gentity_t  *self, class_t newClass )
+{
+	if ( newClass == PCL_NONE )
+	{
+		return;
+	}
+
+	self->botMind->navQuery = navQuerys[ newClass ];
+	self->botMind->navFilter = &navFilters[ newClass ];
+	self->botMind->pathCorridor = &pathCorridor[ self->s.number ];
+
+	// our current path is now invalid so we have to reset the path corridor
+	vec3_t pos;
+	dtPolyRef ref;
+	vec3_t nearpos;
+	vec3_t extents;
+
+	VectorCopy( self->botMind->pathCorridor->getPos(), pos );
+
+	BotGetAgentExtents( self, extents );
+	self->botMind->navQuery->findNearestPoly( pos, extents, self->botMind->navFilter, &ref, nearpos );
+
+	self->botMind->pathCorridor->reset( ref, pos );
+}
+
 /*
 ========================
 Bot Navigation Querys
 ========================
 */
-
-void BotGetAgentExtents( gentity_t *ent, vec3_t extents )
-{
-	VectorSet( extents, ent->r.maxs[0] * 5,  2 * ( ent->r.maxs[2] - ent->r.mins[2] ), ent->r.maxs[1] * 5 );
-}
 
 int DistanceToGoal( gentity_t *self )
 {
@@ -463,7 +490,7 @@ qboolean BotNav_Trace( dtNavMeshQuery* navQuery, dtQueryFilter* navFilter, vec3_
 		return qtrue;
 	}
 }
-qboolean BotPathIsWalkable( gentity_t *self, botTarget_t target )
+extern "C" qboolean BotPathIsWalkable( gentity_t *self, botTarget_t target )
 {
 	dtPolyRef pathPolys[MAX_PATH_POLYS];
 	vec3_t selfPos, targetPos;
@@ -491,6 +518,33 @@ qboolean BotPathIsWalkable( gentity_t *self, botTarget_t target )
 		return qfalse;
 	}
 }
+
+extern "C" void BotFindRandomPointOnMesh( gentity_t *self, vec3_t point )
+{
+	int numTiles = 0;
+	const dtNavMesh *navMesh = self->botMind->navQuery->getAttachedNavMesh();
+	numTiles = navMesh->getMaxTiles();
+	const dtMeshTile *tile;
+	vec3_t targetPos;
+
+	//pick a random tile
+	do
+	{
+		tile = navMesh->getTile( rand() % numTiles );
+	}
+	while ( !tile->header->vertCount );
+
+	//pick a random vertex in the tile
+	int vertStart = 3 * ( rand() % tile->header->vertCount );
+
+	//convert from recast to quake3
+	float *v = &tile->verts[vertStart];
+	VectorCopy( v, targetPos );
+	recast2quake( targetPos );
+
+	VectorCopy( targetPos, point );
+}
+
 qboolean BotFindNearestPoly( gentity_t *self, gentity_t *ent, dtPolyRef *nearestPoly, vec3_t nearPoint )
 {
 	vec3_t extents;
@@ -794,7 +848,7 @@ qboolean BotShouldJump( gentity_t *self, gentity_t *blocker )
 	vec3_t end;
 
 	//blocker is not on our team, so ignore
-	if ( BotGetTeam( self ) != BotGetTeam( blocker ) )
+	if ( BotGetEntityTeam( self ) != BotGetEntityTeam( blocker ) )
 	{
 		return qfalse;
 	}
@@ -932,7 +986,7 @@ qboolean BotAvoidObstacles( gentity_t *self, vec3_t rVec )
 	{
 		return qfalse;
 	}
-	if ( BotGetTeam( self ) == TEAM_NONE )
+	if ( BotGetEntityTeam( self ) == TEAM_NONE )
 	{
 		return qfalse;
 	}

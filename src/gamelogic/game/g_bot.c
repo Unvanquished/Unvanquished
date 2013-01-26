@@ -502,8 +502,8 @@ void AddTreeToList( AITreeList_t *list, AIBehaviorTree_t *tree )
 {
 	if ( list->maxTrees == list->numTrees )
 	{
-		list->maxTrees *= 2;
 		AIBehaviorTree_t **trees = ( AIBehaviorTree_t ** ) BG_Alloc( sizeof( AIBehaviorTree_t * ) * list->maxTrees );
+		list->maxTrees *= 2;
 		memcpy( trees, list->trees, sizeof( AIBehaviorTree_t * ) * list->numTrees );
 		BG_Free( list->trees );
 		list->trees = trees;
@@ -515,7 +515,9 @@ void AddTreeToList( AITreeList_t *list, AIBehaviorTree_t *tree )
 
 void RemoveTreeFromList( AITreeList_t *list, AIBehaviorTree_t *tree )
 {
-	for ( int i = 0; i < list->numTrees; i++ )
+	int i;
+
+	for ( i = 0; i < list->numTrees; i++ )
 	{
 		AIBehaviorTree_t *testTree = list->trees[ i ];
 		if ( !Q_stricmp( testTree->name, tree->name ) )
@@ -539,7 +541,15 @@ void FreeTreeList( AITreeList_t *list )
 
 AIBehaviorTree_t * ReadBehaviorTree( const char *name )
 {
-	for ( int i = 0; i < treeList.numTrees; i++ )
+	int i;
+	char treefilename[ MAX_QPATH ];
+	int handle;
+	pc_token_list *list;
+	AIBehaviorTree_t *tree;
+	pc_token_list *current;
+	AIGenericNode_t *node;
+
+	for ( i = 0; i < treeList.numTrees; i++ )
 	{
 		AIBehaviorTree_t *tree = treeList.trees[ i ];
 		if ( !Q_stricmp( tree->name, name ) )
@@ -595,26 +605,24 @@ AIBehaviorTree_t * ReadBehaviorTree( const char *name )
 	D( E_ENEMY );
 	D( E_DAMAGEDBUILDING );
 
-	char treefilename[ MAX_QPATH ];
 	Q_strncpyz( treefilename, va( "bots/%s.bt", name ), sizeof( treefilename ) );
 
-	int handle = trap_Parse_LoadSource( treefilename );
+	handle = trap_Parse_LoadSource( treefilename );
 	if ( !handle )
 	{
 		G_Printf( S_COLOR_RED "ERROR: Cannot load behavior tree %s: File not found\n", treefilename );
 		return NULL;
 	}
 
-	pc_token_list *list = CreateTokenList( handle );
+	list = CreateTokenList( handle );
 	
-	AIBehaviorTree_t *tree;
 	tree = ( AIBehaviorTree_t * ) BG_Alloc( sizeof( AIBehaviorTree_t ) );
 
 	Q_strncpyz( tree->name, name, sizeof( tree->name ) );
 
-	pc_token_list *current = list;
+	current = list;
 
-	AIGenericNode_t *node = ReadNode( &current );
+	node = ReadNode( &current );
 	if ( node )
 	{
 		tree->root = ( AINode_t * ) node;
@@ -645,7 +653,8 @@ void FreeConditionNode( AIConditionNode_t *node )
 
 void FreeNodeList( AINodeList_t *node )
 {
-	for ( int i = 0; i < node->numNodes; i++ )
+	int i;
+	for ( i = 0; i < node->numNodes; i++ )
 	{
 		FreeNode( node->list[ i ] );
 	}
@@ -909,8 +918,9 @@ gentity_t* BotFindBuilding( gentity_t *self, int buildingType, int range )
 	float newDistance;
 	float rangeSquared = Square( range );
 	gentity_t *target = &g_entities[MAX_CLIENTS];
+	int i;
 
-	for ( int  i = MAX_CLIENTS; i < level.num_entities; i++, target++ )
+	for ( i = MAX_CLIENTS; i < level.num_entities; i++, target++ )
 	{
 		if ( !target->inuse )
 		{
@@ -919,7 +929,7 @@ gentity_t* BotFindBuilding( gentity_t *self, int buildingType, int range )
 		if ( target->s.eType == ET_BUILDABLE && target->s.modelindex == buildingType && ( target->buildableTeam == TEAM_ALIENS || ( target->powered && target->spawned ) ) && target->health > 0 )
 		{
 			newDistance = DistanceSquared( self->s.origin, target->s.origin );
-			if ( newDistance > rangeSquared )
+			if ( range && newDistance > rangeSquared )
 			{
 				continue;
 			}
@@ -933,39 +943,13 @@ gentity_t* BotFindBuilding( gentity_t *self, int buildingType, int range )
 	return closestBuilding;
 }
 
-//overloading FTW
-gentity_t* BotFindBuilding( gentity_t *self, int buildingType )
-{
-	float minDistance = -1;
-	gentity_t* closestBuilding = NULL;
-	float newDistance;
-	gentity_t *target = &g_entities[MAX_CLIENTS];
-
-	for ( int i = MAX_CLIENTS; i < level.num_entities; i++, target++ )
-	{
-		if ( !target->inuse )
-		{
-			continue;
-		}
-		if ( target->s.eType == ET_BUILDABLE && target->s.modelindex == buildingType && ( target->buildableTeam == TEAM_ALIENS || ( target->powered && target->spawned ) ) && target->health > 0 )
-		{
-			newDistance = DistanceSquared( self->s.origin, target->s.origin );
-			if ( newDistance < minDistance || minDistance == -1 )
-			{
-				minDistance = newDistance;
-				closestBuilding = target;
-			}
-		}
-	}
-	return closestBuilding;
-}
-
 void BotFindClosestBuildings( gentity_t *self, botEntityAndDistance_t *closest )
 {
-
+	gentity_t *testEnt;
+	botEntityAndDistance_t *ent;
 	memset( closest, 0, sizeof( botEntityAndDistance_t ) * BA_NUM_BUILDABLES );
 
-	for ( gentity_t *testEnt = &g_entities[MAX_CLIENTS]; testEnt < &g_entities[level.num_entities - 1]; testEnt++ )
+	for ( testEnt = &g_entities[MAX_CLIENTS]; testEnt < &g_entities[level.num_entities - 1]; testEnt++ )
 	{
 		float newDist;
 		//ignore entities that arnt in use
@@ -994,7 +978,7 @@ void BotFindClosestBuildings( gentity_t *self, botEntityAndDistance_t *closest )
 
 		newDist = Distance( self->s.origin, testEnt->s.origin );
 
-		botEntityAndDistance_t *ent = &closest[ testEnt->s.modelindex ];
+		ent = &closest[ testEnt->s.modelindex ];
 		if ( newDist < ent->distance || ent->distance == 0 )
 		{
 			ent->ent = testEnt;
@@ -1016,8 +1000,9 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 	float bestInvisibleEnemyScore = 0;
 	gentity_t *bestVisibleEnemy = NULL;
 	gentity_t *bestInvisibleEnemy = NULL;
+	gentity_t *target;
 
-	for ( gentity_t *target = g_entities; target < &g_entities[level.num_entities - 1]; target++ )
+	for ( target = g_entities; target < &g_entities[level.num_entities - 1]; target++ )
 	{
 		float newScore;
 		//ignore entities that arnt in use
@@ -1039,13 +1024,13 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 		}
 
 		//ignore neutrals
-		if ( BotGetTeam( target ) == TEAM_NONE )
+		if ( BotGetEntityTeam( target ) == TEAM_NONE )
 		{
 			continue;
 		}
 
 		//ignore teamates
-		if ( BotGetTeam( target ) == BotGetTeam( self ) )
+		if ( BotGetEntityTeam( target ) == BotGetEntityTeam( self ) )
 		{
 			continue;
 		}
@@ -1072,13 +1057,13 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 			bestVisibleEnemyScore = newScore;
 			bestVisibleEnemy = target;
 		}
-		else if ( newScore > bestInvisibleEnemyScore && BotGetTeam( self ) == TEAM_ALIENS )
+		else if ( newScore > bestInvisibleEnemyScore && BotGetEntityTeam( self ) == TEAM_ALIENS )
 		{
 			bestInvisibleEnemyScore = newScore;
 			bestInvisibleEnemy = target;
 		}
 	}
-	if ( bestVisibleEnemy || BotGetTeam( self ) == TEAM_HUMANS )
+	if ( bestVisibleEnemy || BotGetEntityTeam( self ) == TEAM_HUMANS )
 	{
 		return bestVisibleEnemy;
 	}
@@ -1092,7 +1077,9 @@ gentity_t* BotFindClosestEnemy( gentity_t *self )
 {
 	gentity_t* closestEnemy = NULL;
 	float minDistance = Square( ALIENSENSE_RANGE );
-	for ( gentity_t *target = g_entities; target < &g_entities[level.num_entities - 1]; target++ )
+	gentity_t *target;
+
+	for ( target = g_entities; target < &g_entities[level.num_entities - 1]; target++ )
 	{
 		float newDistance;
 		//ignore entities that arnt in use
@@ -1114,13 +1101,13 @@ gentity_t* BotFindClosestEnemy( gentity_t *self )
 		}
 
 		//ignore neutrals
-		if ( BotGetTeam( target ) == TEAM_NONE )
+		if ( BotGetEntityTeam( target ) == TEAM_NONE )
 		{
 			continue;
 		}
 
 		//ignore teamates
-		if ( BotGetTeam( target ) == BotGetTeam( self ) )
+		if ( BotGetEntityTeam( target ) == BotGetEntityTeam( self ) )
 		{
 			continue;
 		}
@@ -1147,7 +1134,7 @@ botTarget_t BotGetRushTarget( gentity_t *self )
 {
 	botTarget_t target;
 	gentity_t* rushTarget = NULL;
-	if ( BotGetTeam( self ) == TEAM_HUMANS )
+	if ( BotGetEntityTeam( self ) == TEAM_HUMANS )
 	{
 		if ( self->botMind->closestBuildings[BA_A_SPAWN].ent )
 		{
@@ -1222,11 +1209,6 @@ void BotSetTarget( botTarget_t *target, gentity_t *ent, vec3_t *pos )
 		VectorClear( target->coord );
 		target->inuse = qfalse;
 	}
-}
-
-void BotSetGoal( gentity_t *self, gentity_t *ent, vec3_t *pos )
-{
-	BotSetTarget( &self->botMind->goal, ent, pos );
 }
 
 qboolean BotTargetInAttackRange( gentity_t *self, botTarget_t target )
@@ -1338,7 +1320,7 @@ qboolean BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 
 	trap_Trace( &trace, muzzle, mins, maxs, targetPos, self->s.number, MASK_SHOT );
 
-	if ( self->client->ps.stats[STAT_TEAM] != BotGetTeam( &g_entities[trace.entityNum] ) && Distance( muzzle, trace.endpos ) <= MAX( range, secondaryRange ) )
+	if ( self->client->ps.stats[STAT_TEAM] != BotGetEntityTeam( &g_entities[trace.entityNum] ) && Distance( muzzle, trace.endpos ) <= MAX( range, secondaryRange ) )
 	{
 		return qtrue;
 	}
@@ -1388,14 +1370,14 @@ void BotGetIdealAimLocation( gentity_t *self, botTarget_t target, vec3_t aimLoca
 	//get the position of the target
 	BotGetTargetPos( target, aimLocation );
 
-	if ( BotGetTargetType( target ) != ET_BUILDABLE && BotTargetIsEntity( target ) && BotGetTeam( target ) == TEAM_HUMANS )
+	if ( BotGetTargetType( target ) != ET_BUILDABLE && BotTargetIsEntity( target ) && BotGetTargetTeam( target ) == TEAM_HUMANS )
 	{
 
 		//aim at head
 		aimLocation[2] += target.ent->r.maxs[2] * 0.85;
 
 	}
-	else if ( BotGetTargetType( target ) == ET_BUILDABLE || BotGetTeam( target ) == TEAM_ALIENS )
+	else if ( BotGetTargetType( target ) == ET_BUILDABLE || BotGetTargetTeam( target ) == TEAM_ALIENS )
 	{
 		//make lucifer cannons aim ahead based on the target's velocity
 		if ( self->client->ps.weapon == WP_LUCIFER_CANNON && self->botMind->botSkill.level >= 5 )
@@ -1434,8 +1416,10 @@ void BotAimAtEnemy( gentity_t *self )
 	vec3_t viewOrigin;
 	vec3_t newAim;
 	vec3_t angles;
-
+	float length;
+	int i;
 	gentity_t *enemy = self->botMind->goal.ent;
+
 	if ( self->botMind->futureAimTime <= level.time )
 	{
 		int predictTime = BotGetAimPredictionTime( self );
@@ -1450,7 +1434,7 @@ void BotAimAtEnemy( gentity_t *self )
 
 	VectorSubtract( desired, current, steer );
 
-	float length = VectorNormalize( steer );
+	length = VectorNormalize( steer );
 
 	if ( length < 0.1 )
 	{
@@ -1464,7 +1448,7 @@ void BotAimAtEnemy( gentity_t *self )
 
 	vectoangles( newAim, angles );
 
-	for ( int i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
 		self->botMind->cmdBuffer.angles[ i ] = ANGLE2SHORT( angles[ i ] );
 	}
@@ -1473,7 +1457,7 @@ void BotAimAtEnemy( gentity_t *self )
 void BotAimAtLocation( gentity_t *self, vec3_t target )
 {
 	vec3_t aimVec, aimAngles, viewBase;
-
+	int i;
 	usercmd_t *rAngles = &self->botMind->cmdBuffer;
 
 	if ( ! ( self && self->client ) )
@@ -1488,7 +1472,7 @@ void BotAimAtLocation( gentity_t *self, vec3_t target )
 
 	VectorSet( self->client->ps.delta_angles, 0.0f, 0.0f, 0.0f );
 
-	for ( int i = 0; i < 3; i++ )
+	for ( i = 0; i < 3; i++ )
 	{
 		aimAngles[i] = ANGLE2SHORT( aimAngles[i] );
 	}
@@ -1507,6 +1491,7 @@ void BotSlowAim( gentity_t *self, vec3_t target, float slowAmount )
 	vec3_t skilledVec;
 	float length;
 	float slow;
+	float cosAngle;
 
 	if ( !( self && self->client ) )
 	{
@@ -1525,7 +1510,7 @@ void BotSlowAim( gentity_t *self, vec3_t target, float slowAmount )
 	//take the current aim Vector
 	AngleVectors( self->client->ps.viewangles, forward, NULL, NULL );
 
-	float cosAngle = DotProduct( forward, aimVec );
+	cosAngle = DotProduct( forward, aimVec );
 	cosAngle = ( cosAngle + 1 ) / 2;
 	cosAngle = 1 - cosAngle;
 	cosAngle = Com_Clamp( 0.1, 0.5, cosAngle );
@@ -1561,8 +1546,9 @@ int FindBots( int *botEntityNumbers, int maxBots, team_t team )
 {
 	gentity_t *testEntity;
 	int numBots = 0;
+	int i;
 	memset( botEntityNumbers, 0, sizeof( int )*maxBots );
-	for ( int i = 0; i < MAX_CLIENTS; i++ )
+	for ( i = 0; i < MAX_CLIENTS; i++ )
 	{
 		testEntity = &g_entities[i];
 		if ( testEntity->r.svFlags & SVF_BOT )
@@ -1673,27 +1659,9 @@ Boolean Functions for determining actions
 botTarget_t BotGetRoamTarget( gentity_t *self )
 {
 	botTarget_t target;
-	int numTiles = 0;
-	const dtNavMesh *navMesh = self->botMind->navQuery->getAttachedNavMesh();
-	numTiles = navMesh->getMaxTiles();
-	const dtMeshTile *tile;
 	vec3_t targetPos;
 
-	//pick a random tile
-	do
-	{
-		tile = navMesh->getTile( rand() % numTiles );
-	}
-	while ( !tile->header->vertCount );
-
-	//pick a random vertex in the tile
-	int vertStart = 3 * ( rand() % tile->header->vertCount );
-
-	//convert from recast to quake3
-	float *v = &tile->verts[vertStart];
-	VectorCopy( v, targetPos );
-	recast2quake( targetPos );
-
+	BotFindRandomPointOnMesh( self, targetPos );
 	BotSetTarget( &target, NULL, &targetPos );
 	return target;
 }
@@ -1891,7 +1859,7 @@ void BotFireWeaponAI( gentity_t *self )
 	}
 }
 
-extern "C" void G_BotLoadBuildLayout()
+void G_BotLoadBuildLayout()
 {
 	fileHandle_t f;
 	int len;
@@ -2016,13 +1984,13 @@ static void G_BotListTeamNames( gentity_t *ent, const char *heading, team_t team
 	}
 }
 
-extern "C" void G_BotListNames( gentity_t *ent )
+void G_BotListNames( gentity_t *ent )
 {
 	G_BotListTeamNames( ent, QQ( N_( "^3Alien bot names:\n" ) ), TEAM_ALIENS, "^1*" );
 	G_BotListTeamNames( ent, QQ( N_( "^3Human bot names:\n" ) ), TEAM_HUMANS, "^5*" );
 }
 
-extern "C" qboolean G_BotClearNames( void )
+qboolean G_BotClearNames( void )
 {
 	int i;
 
@@ -2054,7 +2022,7 @@ extern "C" qboolean G_BotClearNames( void )
 	return qtrue;
 }
 
-extern "C" int G_BotAddNames( team_t team, int arg, int last )
+int G_BotAddNames( team_t team, int arg, int last )
 {
 	int  i = botNames[team].count;
 	int  added = 0;
@@ -2124,15 +2092,16 @@ static void G_BotNameUsed( team_t team, const char *name, qboolean inUse )
 	}
 }
 
-extern "C" void G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavior )
+void G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavior )
 {
 	botMemory_t *botMind;
-
-	botMind = g_entities[clientNum].botMind = &g_botMind[clientNum];
+	gentity_t *self = &g_entities[ clientNum ];
+	botMind = self->botMind = &g_botMind[clientNum];
 
 	botMind->enemyLastSeen = 0;
 	botMind->botTeam = team;
-	botMind->pathCorridor = &pathCorridor[clientNum];
+	BotSetNavmesh( self, self->client->ps.stats[ STAT_CLASS ] );
+
 	memset( botMind->runningNodes, 0, sizeof( botMind->runningNodes ) );
 	botMind->numRunningNodes = 0;
 	botMind->currentNode = NULL;
@@ -2162,7 +2131,7 @@ qboolean G_BotAdd( char *name, team_t team, int skill, const char *behavior )
 	char userinfo[MAX_INFO_STRING];
 	const char* s = 0;
 	gentity_t *bot;
-	bool autoname = false;
+	qboolean autoname = qfalse;
 
 	if ( !navMeshLoaded )
 	{
@@ -2243,7 +2212,7 @@ void G_BotDel( int clientNum )
 	autoname = Info_ValueForKey( userinfo, "autoname" );
 	if ( autoname && *autoname )
 	{
-		G_BotNameUsed( BotGetTeam( bot ), autoname, qfalse );
+		G_BotNameUsed( BotGetEntityTeam( bot ), autoname, qfalse );
 	}
 
 	trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_( "$1$^7 disconnected\n" ) ),
@@ -2253,7 +2222,8 @@ void G_BotDel( int clientNum )
 
 void G_BotFreeBehaviorTrees( void )
 {
-	for ( int i = 0; i < treeList.numTrees; i++ )
+	int i;
+	for ( i = 0; i < treeList.numTrees; i++ )
 	{
 		AIBehaviorTree_t *tree = treeList.trees[ i ];
 		FreeBehaviorTree( tree );
@@ -2261,7 +2231,7 @@ void G_BotFreeBehaviorTrees( void )
 	FreeTreeList( &treeList );
 }
 
-extern "C" void G_BotDelAll( void )
+void G_BotDelAll( void )
 {
 	int i;
 
@@ -2292,7 +2262,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 
 	if ( self->botMind->currentNode != node )
 	{
-		if ( !BotChangeTarget( self, self->botMind->bestEnemy.ent, NULL ) )
+		if ( !BotChangeGoalEntity( self, self->botMind->bestEnemy.ent ) )
 		{
 			return STATUS_FAILURE;
 		}
@@ -2307,7 +2277,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_FAILURE;
 	}
 
-	if ( BotGetTeam( self->botMind->goal ) == myTeam || BotGetTeam( self->botMind->goal ) == TEAM_NONE )
+	if ( BotGetTargetTeam( self->botMind->goal ) == myTeam || BotGetTargetTeam( self->botMind->goal ) == TEAM_NONE )
 	{
 		return STATUS_FAILURE;
 	}
@@ -2430,7 +2400,7 @@ AINodeStatus_t BotActionFlee( gentity_t *self, AIGenericNode_t *node )
 {
 	if ( node != self->botMind->currentNode )
 	{
-		if ( !BotChangeTarget( self, BotGetRetreatTarget( self ) ) )
+		if ( !BotChangeGoal( self, BotGetRetreatTarget( self ) ) )
 		{
 			return STATUS_FAILURE;
 		}
@@ -2459,7 +2429,7 @@ AINodeStatus_t BotActionRoam( gentity_t *self, AIGenericNode_t *node )
 	if ( node != self->botMind->currentNode )
 	{
 		botTarget_t target = BotGetRoamTarget( self );
-		if ( !BotChangeTarget( self, target ) )
+		if ( !BotChangeGoal( self, target ) )
 		{
 			return STATUS_FAILURE;
 		}
@@ -2546,10 +2516,11 @@ float DistanceToGoal2DSquared( gentity_t *self )
 
 AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node )
 {
+	float radius;
 	AIMoveToNode_t *moveTo = ( AIMoveToNode_t * ) node;
 	if ( node != self->botMind->currentNode )
 	{
-		if ( !BotChangeTarget( self, BotGetMoveToTarget( self, moveTo ) ) )
+		if ( !BotChangeGoal( self, BotGetMoveToTarget( self, moveTo ) ) )
 		{
 			return STATUS_FAILURE;
 		}
@@ -2570,7 +2541,6 @@ AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node )
 
 	BotMoveToGoal( self );
 
-	float radius;
 	if ( moveTo->range == -1 )
 	{
 		radius = BotGetGoalRadius( self );
@@ -2592,7 +2562,7 @@ AINodeStatus_t BotActionRush( gentity_t *self, AIGenericNode_t *node )
 {
 	if ( self->botMind->currentNode != node )
 	{
-		if ( !BotChangeTarget( self, BotGetRushTarget( self ) ) )
+		if ( !BotChangeGoal( self, BotGetRushTarget( self ) ) )
 		{
 			return STATUS_FAILURE;
 		}
@@ -2993,9 +2963,7 @@ AINodeStatus_t BotEvaluateNode( gentity_t *self, AIGenericNode_t *node )
 			self->botMind->numRunningNodes = 0;
 		}
 
-		int i = self->botMind->numRunningNodes;
-		self->botMind->numRunningNodes++;
-		self->botMind->runningNodes[ i ] = node;
+		self->botMind->runningNodes[ self->botMind->numRunningNodes++ ] = node;
 	}
 
 	return status;
@@ -3006,34 +2974,38 @@ AINodeStatus_t BotEvaluateNode( gentity_t *self, AIGenericNode_t *node )
 Bot Thinks
 =======================
 */
-extern "C" void G_BotThink( gentity_t *self )
+void G_BotThink( gentity_t *self )
 {
 	char buf[MAX_STRING_CHARS];
-	self->botMind->cmdBuffer = self->client->pers.cmd;
-	usercmd_t &botCmdBuffer = self->botMind->cmdBuffer;
+	usercmd_t *botCmdBuffer;
 	vec3_t     nudge;
+	gentity_t *bestEnemy;
+	gentity_t *bestDamaged;
+	botTarget_t target;
+
+	self->botMind->cmdBuffer = self->client->pers.cmd;
+	botCmdBuffer = &self->botMind->cmdBuffer;
 
 	//reset command buffer
-	usercmdClearButtons( botCmdBuffer.buttons );
+	usercmdClearButtons( botCmdBuffer->buttons );
 
 	// for nudges, e.g. spawn blocking
-	nudge[0] = botCmdBuffer.doubleTap ? botCmdBuffer.forwardmove : 0;
-	nudge[1] = botCmdBuffer.doubleTap ? botCmdBuffer.rightmove : 0;
-	nudge[2] = botCmdBuffer.doubleTap ? botCmdBuffer.upmove : 0;
+	nudge[0] = botCmdBuffer->doubleTap ? botCmdBuffer->forwardmove : 0;
+	nudge[1] = botCmdBuffer->doubleTap ? botCmdBuffer->rightmove : 0;
+	nudge[2] = botCmdBuffer->doubleTap ? botCmdBuffer->upmove : 0;
 
-	botCmdBuffer.forwardmove = 0;
-	botCmdBuffer.rightmove = 0;
-	botCmdBuffer.upmove = 0;
-	botCmdBuffer.doubleTap = 0;
+	botCmdBuffer->forwardmove = 0;
+	botCmdBuffer->rightmove = 0;
+	botCmdBuffer->upmove = 0;
+	botCmdBuffer->doubleTap = 0;
 
 	//acknowledge recieved server commands
 	//MUST be done
 	while ( trap_BotGetServerCommand( self->client->ps.clientNum, buf, sizeof( buf ) ) );
 
 	//update closest structs
-	gentity_t* bestEnemy = BotFindBestEnemy( self );
+	bestEnemy = BotFindBestEnemy( self );
 
-	botTarget_t target;
 	BotSetTarget( &target, bestEnemy, NULL );
 
 	//if we do not already have an enemy, and we found an enemy, update the time that we found an enemy
@@ -3047,7 +3019,7 @@ extern "C" void G_BotThink( gentity_t *self )
 
 	BotFindClosestBuildings( self, self->botMind->closestBuildings );
 
-	gentity_t* bestDamaged = BotFindDamagedFriendlyStructure( self );
+	bestDamaged = BotFindDamagedFriendlyStructure( self );
 	self->botMind->closestDamagedBuilding.ent = bestDamaged;
 	self->botMind->closestDamagedBuilding.distance = ( !bestDamaged ) ? 0 :  Distance( self->s.origin, bestDamaged->s.origin );
 
@@ -3077,10 +3049,10 @@ extern "C" void G_BotThink( gentity_t *self )
 	// if we were nudged...
 	VectorAdd( self->client->ps.velocity, nudge, self->client->ps.velocity );
 
-	self->client->pers.cmd = botCmdBuffer;
+	self->client->pers.cmd = self->botMind->cmdBuffer;
 }
 
-extern "C" void G_BotSpectatorThink( gentity_t *self )
+void G_BotSpectatorThink( gentity_t *self )
 {
 	char buf[MAX_STRING_CHARS];
 	//hacky ping fix
@@ -3119,7 +3091,7 @@ extern "C" void G_BotSpectatorThink( gentity_t *self )
 	}
 
 	//reset stuff
-	BotSetGoal( self, NULL, NULL );
+	BotSetTarget( &self->botMind->goal, NULL, NULL );
 	self->botMind->bestEnemy.ent = NULL;
 	self->botMind->timeFoundEnemy = 0;
 	self->botMind->enemyLastSeen = 0;
@@ -3133,8 +3105,7 @@ extern "C" void G_BotSpectatorThink( gentity_t *self )
 		{
 			self->client->pers.classSelection = PCL_HUMAN;
 			self->client->ps.stats[STAT_CLASS] = PCL_HUMAN;
-			self->botMind->navQuery = navQuerys[PCL_HUMAN];
-			self->botMind->navFilter = &navFilters[PCL_HUMAN];
+			BotSetNavmesh( self, PCL_HUMAN );
 			//we want to spawn with rifle unless it is disabled or we need to build
 			if ( g_bot_rifle.integer )
 			{
@@ -3151,8 +3122,7 @@ extern "C" void G_BotSpectatorThink( gentity_t *self )
 		{
 			self->client->pers.classSelection = PCL_ALIEN_LEVEL0;
 			self->client->ps.stats[STAT_CLASS] = PCL_ALIEN_LEVEL0;
-			self->botMind->navQuery = navQuerys[PCL_ALIEN_LEVEL0];
-			self->botMind->navFilter = &navFilters[PCL_ALIEN_LEVEL0];
+			BotSetNavmesh( self, PCL_ALIEN_LEVEL0 );
 			G_PushSpawnQueue( &level.alienSpawnQueue, clientNum );
 		}
 	}
@@ -3163,12 +3133,12 @@ extern "C" void G_BotSpectatorThink( gentity_t *self )
 	}
 }
 
-extern "C" void G_BotIntermissionThink( gclient_t *client )
+void G_BotIntermissionThink( gclient_t *client )
 {
 	client->readyToExit = qtrue;
 }
 
-extern "C" void G_BotInit( void )
+void G_BotInit( void )
 {
 	G_BotNavInit( );
 	if ( treeList.maxTrees == 0 )
@@ -3177,7 +3147,7 @@ extern "C" void G_BotInit( void )
 	}
 }
 
-extern "C" void G_BotCleanup( int restart )
+void G_BotCleanup( int restart )
 {
 	if ( !restart )
 	{

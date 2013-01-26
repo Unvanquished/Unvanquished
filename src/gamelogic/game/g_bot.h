@@ -24,10 +24,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //#include "g_local.h"
 #ifndef __BOT_HEADER
 #define __BOT_HEADER
-#ifdef __cplusplus
 #include "g_local.h"
-#include "../../libs/detour/DetourNavMeshQuery.h"
-#include "../../libs/detour/DetourPathCorridor.h"
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
 //g_bot.cpp
 void BotDPrintf( const char* fmt, ... ) __attribute__( ( format( printf, 1, 2 ) ) );
@@ -35,7 +37,6 @@ gentity_t* BotFindClosestEnemy( gentity_t *self );
 gentity_t* BotFindBestEnemy( gentity_t *self );
 void BotFindClosestBuildings( gentity_t *self, botEntityAndDistance_t *closest );
 gentity_t* BotFindBuilding( gentity_t *self, int buildingType, int range );
-gentity_t* BotFindBuilding( gentity_t *self, int buildingType );
 
 void BotGetIdealAimLocation( gentity_t *self, botTarget_t target, vec3_t aimLocation );
 void BotSlowAim( gentity_t *self, vec3_t target, float slow );
@@ -44,7 +45,6 @@ void BotAimAtLocation( gentity_t *self, vec3_t target );
 float BotAimNegligence( gentity_t *self, botTarget_t target );
 
 void BotSetTarget( botTarget_t *target, gentity_t *ent, vec3_t *pos );
-void BotSetGoal( gentity_t *self, gentity_t *ent, vec3_t *pos );
 
 qboolean BotTargetIsVisible( gentity_t *self, botTarget_t target, int mask );
 
@@ -60,12 +60,14 @@ qboolean BotGetBuildingToBuild( gentity_t *self, vec3_t origin, vec3_t normal, b
 //g_alienbot.cpp
 float CalcPounceAimPitch( gentity_t *self, botTarget_t target );
 float CalcBarbAimPitch( gentity_t *self, botTarget_t target );
-bool G_RoomForClassChange( gentity_t *ent, class_t classt, vec3_t newOrigin );
+qboolean G_RoomForClassChange( gentity_t *ent, class_t classt, vec3_t newOrigin );
 
 //g_nav.cpp
+void BotFindRandomPointOnMesh( gentity_t *self, vec3_t point );
 qboolean BotPathIsWalkable( gentity_t *self, botTarget_t target );
 void UpdatePathCorridor( gentity_t *self );
 qboolean BotMoveToGoal( gentity_t *self );
+void BotSetNavmesh( gentity_t  *ent, class_t newClass );
 
 typedef enum
 {
@@ -91,13 +93,10 @@ void PlantEntityOnGround( gentity_t *ent, vec3_t groundPos );
 void G_BotNavInit( void );
 void G_BotNavCleanup( void );
 
-extern dtNavMeshQuery* navQuerys[PCL_NUM_CLASSES];
-extern dtQueryFilter navFilters[PCL_NUM_CLASSES];
-extern dtPathCorridor pathCorridor[MAX_CLIENTS];
 extern qboolean navMeshLoaded;
 
 //coordinate conversion
-static inline void quake2recast( vec3_t vec )
+static INLINE void quake2recast( vec3_t vec )
 {
 	vec_t temp = vec[1];
 	vec[0] = -vec[0];
@@ -105,7 +104,7 @@ static inline void quake2recast( vec3_t vec )
 	vec[2] = -temp;
 }
 
-static inline void recast2quake( vec3_t vec )
+static INLINE void recast2quake( vec3_t vec )
 {
 	vec_t temp = vec[1];
 	vec[0] = -vec[0];
@@ -114,17 +113,17 @@ static inline void recast2quake( vec3_t vec )
 }
 
 //botTarget_t helpers
-static inline bool BotTargetIsEntity( botTarget_t target )
+static INLINE qboolean BotTargetIsEntity( botTarget_t target )
 {
-	return ( target.ent && target.ent->inuse );
+	return ( qboolean ) ( int ) ( target.ent && target.ent->inuse );
 }
 
-static inline bool BotTargetIsPlayer( botTarget_t target )
+static INLINE qboolean BotTargetIsPlayer( botTarget_t target )
 {
-	return ( target.ent && target.ent->inuse && target.ent->client );
+	return ( qboolean ) ( int ) ( target.ent && target.ent->inuse && target.ent->client );
 }
 
-static inline int BotGetTargetEntityNumber( botTarget_t target )
+static INLINE int BotGetTargetEntityNumber( botTarget_t target )
 {
 	if ( BotTargetIsEntity( target ) )
 	{
@@ -136,7 +135,7 @@ static inline int BotGetTargetEntityNumber( botTarget_t target )
 	}
 }
 
-static inline void BotGetTargetPos( botTarget_t target, vec3_t rVec )
+static INLINE void BotGetTargetPos( botTarget_t target, vec3_t rVec )
 {
 	if ( BotTargetIsEntity( target ) )
 	{
@@ -148,7 +147,7 @@ static inline void BotGetTargetPos( botTarget_t target, vec3_t rVec )
 	}
 }
 
-static inline team_t BotGetTeam( gentity_t *ent )
+static INLINE team_t BotGetEntityTeam( gentity_t *ent )
 {
 	if ( !ent )
 	{
@@ -168,11 +167,11 @@ static inline team_t BotGetTeam( gentity_t *ent )
 	}
 }
 
-static inline team_t BotGetTeam( botTarget_t target )
+static INLINE team_t BotGetTargetTeam( botTarget_t target )
 {
 	if ( BotTargetIsEntity( target ) )
 	{
-		return BotGetTeam( target.ent );
+		return BotGetEntityTeam( target.ent );
 	}
 	else
 	{
@@ -180,7 +179,7 @@ static inline team_t BotGetTeam( botTarget_t target )
 	}
 }
 
-static inline int BotGetTargetType( botTarget_t target )
+static INLINE int BotGetTargetType( botTarget_t target )
 {
 	if ( BotTargetIsEntity( target ) )
 	{
@@ -192,34 +191,33 @@ static inline int BotGetTargetType( botTarget_t target )
 	}
 }
 
-static inline bool BotChangeTarget( gentity_t *self, gentity_t *target, vec3_t *pos )
-{
-	BotSetGoal( self, target, pos );
-	if ( !self->botMind->goal.inuse )
-	{
-		return false;
-	}
-
-	if ( FindRouteToTarget( self, self->botMind->goal ) & ( ROUTE_PARTIAL | ROUTE_FAILURE ) )
-	{
-		return false;
-	}
-	return true;
-}
-
-static inline bool BotChangeTarget( gentity_t *self, botTarget_t target )
+static INLINE qboolean BotChangeGoal( gentity_t *self, botTarget_t target )
 {
 	if ( !target.inuse )
 	{
-		return false;
+		return qfalse;
 	}
 
 	if ( FindRouteToTarget( self, target ) & ( ROUTE_PARTIAL | ROUTE_FAILURE ) )
 	{
-		return false;
+		return qfalse;
 	}
 	self->botMind->goal = target;
-	return true;
+	return qtrue;
+}
+
+static INLINE qboolean BotChangeGoalEntity( gentity_t *self, gentity_t *goal )
+{
+	botTarget_t target;
+	BotSetTarget( &target, goal, NULL );
+	return BotChangeGoal( self, target );
+}
+
+static INLINE qboolean BotChangeGoalPos( gentity_t *self, vec3_t goal )
+{
+	botTarget_t target;
+	BotSetTarget( &target, NULL, ( vec3_t * ) &goal );
+	return BotChangeGoal( self, target );
 }
 
 //configureable constants
@@ -410,13 +408,15 @@ AINodeStatus_t BotActionRoam( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionRush( gentity_t *self, AIGenericNode_t *node );
 
-static inline void BotInitNode( AINode_t type, AINodeRunner func, void *node )
+static INLINE void BotInitNode( AINode_t type, AINodeRunner func, void *node )
 {
 	AIGenericNode_t *n = ( AIGenericNode_t * ) node;
 	n->type = type;
 	n->run = func;
 }
 
+#ifdef __cplusplus
+}
 #endif
 
 #endif

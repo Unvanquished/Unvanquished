@@ -60,7 +60,7 @@ float PercentAmmoRemaining( weapon_t weapon, playerState_t *ps )
 	}
 }
 //Cmd_Buy_f ripoff, weapon version
-void BotBuy( gentity_t *self, weapon_t weapon )
+void BotBuyWeapon( gentity_t *self, weapon_t weapon )
 {
 	if ( weapon != WP_NONE )
 	{
@@ -131,7 +131,7 @@ void BotBuy( gentity_t *self, weapon_t weapon )
 	//update ClientInfo
 	ClientUserinfoChanged( self->client->ps.clientNum, qfalse );
 }
-void BotBuy( gentity_t *self, upgrade_t upgrade )
+void BotBuyUpgrade( gentity_t *self, upgrade_t upgrade )
 {
 	qboolean  energyOnly = qfalse;
 
@@ -207,7 +207,7 @@ void BotBuy( gentity_t *self, upgrade_t upgrade )
 				VectorCopy( newOrigin, self->client->ps.origin );
 				self->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN_BSUIT;
 				self->client->pers.classSelection = PCL_HUMAN_BSUIT;
-				self->botMind->navQuery = navQuerys[PCL_HUMAN_BSUIT];
+				BotSetNavmesh( self, PCL_HUMAN_BSUIT );
 				self->client->ps.eFlags ^= EF_TELEPORT_BIT;
 			}
 
@@ -233,12 +233,14 @@ void BotBuy( gentity_t *self, upgrade_t upgrade )
 }
 void BotSellWeapons( gentity_t *self )
 {
+	weapon_t selected = BG_GetPlayerWeapon( &self->client->ps );
+	int i;
+
 	//no armoury nearby
 	if ( !G_BuildableRange( self->client->ps.origin, 100, BA_H_ARMOURY ) )
 	{
 		return;
 	}
-	weapon_t selected = BG_GetPlayerWeapon( &self->client->ps );
 
 	if ( !BG_PlayerCanChangeWeapon( &self->client->ps ) )
 	{
@@ -246,7 +248,7 @@ void BotSellWeapons( gentity_t *self )
 	}
 
 	//sell weapons
-	for ( int  i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
+	for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
 	{
 		//guard against selling the HBUILD weapons exploit
 		if ( i == WP_HBUILD && self->client->ps.stats[ STAT_MISC ] > 0 )
@@ -272,6 +274,8 @@ void BotSellWeapons( gentity_t *self )
 }
 void BotSellAll( gentity_t *self )
 {
+	int i;
+
 	//no armoury nearby
 	if ( !G_BuildableRange( self->client->ps.origin, 100, BA_H_ARMOURY ) )
 	{
@@ -280,7 +284,7 @@ void BotSellAll( gentity_t *self )
 	BotSellWeapons( self );
 
 	//sell upgrades
-	for ( int i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
+	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
 	{
 		//remove upgrade if carried
 		if ( BG_InventoryContainsUpgrade( i, self->client->ps.stats ) &&
@@ -300,6 +304,7 @@ void BotSellAll( gentity_t *self )
 				self->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN;
 				self->client->pers.classSelection = PCL_HUMAN;
 				self->client->ps.eFlags ^= EF_TELEPORT_BIT;
+				BotSetNavmesh( self, PCL_HUMAN );
 			}
 
 			BG_RemoveUpgradeFromInventory( i, self->client->ps.stats );
@@ -319,7 +324,9 @@ void BotSellAll( gentity_t *self )
 int BotValueOfWeapons( gentity_t *self )
 {
 	int worth = 0;
-	for ( int i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
+	int i;
+
+	for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
 	{
 		if ( BG_InventoryContainsWeapon( i, self->client->ps.stats ) )
 		{
@@ -331,7 +338,9 @@ int BotValueOfWeapons( gentity_t *self )
 int BotValueOfUpgrades( gentity_t *self )
 {
 	int worth = 0;
-	for ( int i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
+	int i;
+
+	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
 	{
 		if ( BG_InventoryContainsUpgrade( i, self->client->ps.stats ) )
 		{
@@ -435,7 +444,9 @@ void BotGetDesiredBuy( gentity_t *self, weapon_t *weapon, upgrade_t *upgrades, i
 	if ( BG_InventoryContainsWeapon( ( int )*weapon, self->client->ps.stats ) )
 	{
 		int numContain = 0;
-		for ( int i = 0; i < *numUpgrades; i++ )
+		int i;
+
+		for ( i = 0; i < *numUpgrades; i++ )
 		{
 			if ( BG_InventoryContainsUpgrade( ( int )upgrades[i], self->client->ps.stats ) )
 			{
@@ -446,7 +457,7 @@ void BotGetDesiredBuy( gentity_t *self, weapon_t *weapon, upgrade_t *upgrades, i
 		if ( numContain == *numUpgrades )
 		{
 			*numUpgrades = 0;
-			for ( int i = 0; i < 3; i++ )
+			for ( i = 0; i < 3; i++ )
 			{
 				upgrades[i] = UP_NONE;
 			}
@@ -466,7 +477,9 @@ int BotFindBuildingNotBuiltByBot( gentity_t *self, int buildingType )
 	int closestBuilding = ENTITYNUM_NONE;
 	float newDistance;
 	gentity_t *target;
-	for ( int i = MAX_CLIENTS; i < level.num_entities; ++i )
+	int i;
+
+	for ( i = MAX_CLIENTS; i < level.num_entities; ++i )
 	{
 		target = &g_entities[i];
 		if ( target->s.eType == ET_BUILDABLE )
@@ -494,8 +507,10 @@ int BotFindBuildingNotBuiltByBot( gentity_t *self, int buildingType )
 int BotFindBuildingsPoweredBy( gentity_t *powerEntity, gentity_t **buildings, int maxBuildings )
 {
 	int numBuildings = 0;
+	int i;
+
 	memset( buildings, 0, sizeof( gentity_t* )*maxBuildings );
-	for ( int i = MAX_CLIENTS; i < level.num_entities; i++ )
+	for ( i = MAX_CLIENTS; i < level.num_entities; i++ )
 	{
 		gentity_t *building = &g_entities[i];
 		if ( building->s.eType != ET_BUILDABLE )
@@ -524,7 +539,9 @@ int BotFindBuildingsPoweredBy( gentity_t *powerEntity, gentity_t **buildings, in
 }
 int BotFindBuildingInList( gentity_t **buildings, int numBuildings, int buildingType )
 {
-	for ( int i = 0; i < numBuildings; i++ )
+	int i;
+
+	for ( i = 0; i < numBuildings; i++ )
 	{
 		gentity_t *building = buildings[i];
 
@@ -541,21 +558,25 @@ int BotFindBestHDecon( gentity_t *self, buildable_t building, vec3_t origin )
 {
 
 	gentity_t* buildings[100];
+	gentity_t *powerEntity;
+	int numBuildings;
+	int bestBuild;
 
 	if ( building == BA_H_REACTOR )
 	{
 		return G_Reactor()->s.number;
 	}
 
-	gentity_t *powerEntity = G_PowerEntityForPoint( origin );
-	int numBuildings = BotFindBuildingsPoweredBy( powerEntity, buildings, 100 );
+	powerEntity = G_PowerEntityForPoint( origin );
+	numBuildings = BotFindBuildingsPoweredBy( powerEntity, buildings, 100 );
+
 	//there is nothing providing power here, nothing to decon
 	if ( powerEntity == NULL )
 	{
 		return ENTITYNUM_NONE;
 	}
 
-	int bestBuild = BotFindBuildingInList( buildings, numBuildings, BA_H_MGTURRET );
+	bestBuild = BotFindBuildingInList( buildings, numBuildings, BA_H_MGTURRET );
 	if ( bestBuild == ENTITYNUM_NONE )
 	{
 		bestBuild = BotFindBuildingInList( buildings, numBuildings, BA_H_TESLAGEN );
@@ -581,6 +602,8 @@ int BotFindBestHDecon( gentity_t *self, buildable_t building, vec3_t origin )
 }
 qboolean BotGetBuildingToBuild( gentity_t *self, vec3_t origin, vec3_t normal, buildable_t *building )
 {
+	int i;
+
 	if ( !level.botBuildLayout.numBuildings )
 	{
 		return qfalse;
@@ -588,9 +611,10 @@ qboolean BotGetBuildingToBuild( gentity_t *self, vec3_t origin, vec3_t normal, b
 	//NOTE: Until alien building is (re)implemented, the only buildings in level.botLayout are ones on the human team
 
 	//check all buildings in the current bot layout and see if we need to build them
-	for ( int i = 0; i < level.botBuildLayout.numBuildings; i++ )
+	for ( i = 0; i < level.botBuildLayout.numBuildings; i++ )
 	{
 		int block = 0;
+		int num;
 		VectorCopy( level.botBuildLayout.buildings[i].origin, origin );
 		VectorCopy( level.botBuildLayout.buildings[i].normal, normal );
 		*building = level.botBuildLayout.buildings[i].type;
@@ -608,7 +632,7 @@ qboolean BotGetBuildingToBuild( gentity_t *self, vec3_t origin, vec3_t normal, b
 		}
 
 		//check if we have enough buildpoints in a location to build something
-		if ( G_GetBuildPoints( origin, BotGetTeam( self ) ) < BG_Buildable( *building )->buildPoints )
+		if ( G_GetBuildPoints( origin, BotGetEntityTeam( self ) ) < BG_Buildable( *building )->buildPoints )
 		{
 			//not enough build points, check if there is something we can decon to make room
 			if ( BotFindBestHDecon( self, *building, origin ) == ENTITYNUM_NONE )
@@ -617,7 +641,7 @@ qboolean BotGetBuildingToBuild( gentity_t *self, vec3_t origin, vec3_t normal, b
 			}
 		}
 
-		int num = trap_EntitiesInBox( origin, origin, &block, 1 );
+		num = trap_EntitiesInBox( origin, origin, &block, 1 );
 		if ( num == 0 || g_entities[block].s.modelindex != *building )
 		{
 			return qtrue;
@@ -633,6 +657,7 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 	weapon_t weapon = buy->weapon;
 	upgrade_t *upgrades = buy->upgrades;
 	int numUpgrades = buy->numUpgrades;
+	int i;
 
 	if ( weapon == WP_NONE && numUpgrades == 0 )
 	{
@@ -643,7 +668,7 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 	{
 		return STATUS_FAILURE;
 	}
-	if ( BotGetTeam( self ) != TEAM_HUMANS )
+	if ( BotGetEntityTeam( self ) != TEAM_HUMANS )
 	{
 		return STATUS_FAILURE;
 	}
@@ -655,17 +680,20 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 	//check if we already have everything
 	if ( BG_InventoryContainsWeapon( weapon, self->client->ps.stats ) || weapon == WP_NONE )
 	{
+		int numContain = 0;
+
 		//cant buy more than 3 upgrades
 		if ( numUpgrades > 3 )
 		{
 			return STATUS_FAILURE;
 		}
+
 		if ( numUpgrades == 0 )
 		{
 			return STATUS_FAILURE;
 		}
-		int numContain = 0;
-		for ( int i = 0; i < numUpgrades; i++ )
+
+		for ( i = 0; i < numUpgrades; i++ )
 		{
 			if ( BG_InventoryContainsUpgrade( upgrades[i], self->client->ps.stats ) )
 			{
@@ -681,7 +709,7 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 
 	if ( self->botMind->currentNode != node )
 	{
-		if ( !BotChangeTarget( self, self->botMind->closestBuildings[BA_H_ARMOURY].ent, NULL ) )
+		if ( !BotChangeGoalEntity( self, self->botMind->closestBuildings[BA_H_ARMOURY].ent ) )
 		{
 			return STATUS_FAILURE;
 		}
@@ -712,15 +740,17 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 		{
 			BotSellWeapons( self );
 		}
-		BotBuy( self, weapon );
-		for ( int i = 0; i < numUpgrades; i++ )
+
+		BotBuyWeapon( self, weapon );
+
+		for ( i = 0; i < numUpgrades; i++ )
 		{
-			BotBuy( self, upgrades[i] );
+			BotBuyUpgrade( self, upgrades[i] );
 		}
+
 		// make sure that we're not using the blaster
 		G_ForceWeaponChange( self, weapon );
-		//we have bought the stuff, return
-
+		
 		return STATUS_SUCCESS;
 	}
 }
@@ -743,7 +773,7 @@ AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node )
 
 	if ( self->botMind->currentNode != node )
 	{
-		if ( !BotChangeTarget( self, self->botMind->closestBuildings[ BA_H_MEDISTAT ].ent, NULL ) )
+		if ( !BotChangeGoalEntity( self, self->botMind->closestBuildings[ BA_H_MEDISTAT ].ent ) )
 		{
 			return STATUS_FAILURE;
 		}
@@ -787,7 +817,7 @@ AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 
 	if ( node != self->botMind->currentNode )
 	{
-		if ( !BotChangeTarget( self, self->botMind->closestDamagedBuilding.ent, NULL ) )
+		if ( !BotChangeGoalEntity( self, self->botMind->closestDamagedBuilding.ent ) )
 		{
 			return STATUS_FAILURE;
 		}
@@ -840,7 +870,9 @@ gentity_t* BotFindDamagedFriendlyStructure( gentity_t *self )
 	//minimum distance found
 	float minDistance = Square( ALIENSENSE_RANGE );
 
-	for ( gentity_t *target = &g_entities[MAX_CLIENTS]; target < &g_entities[level.num_entities - 1]; target++ )
+	gentity_t *target;
+
+	for ( target = &g_entities[MAX_CLIENTS]; target < &g_entities[level.num_entities - 1]; target++ )
 	{
 		float distance;
 

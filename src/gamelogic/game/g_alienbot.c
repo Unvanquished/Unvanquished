@@ -31,6 +31,10 @@ float CalcAimPitch( gentity_t *self, botTarget_t target, vec_t launchSpeed )
 	float initialHeight;
 	vec3_t forward, right, up;
 	vec3_t muzzle;
+	float distance2D;
+	float x, y, v, g;
+	float check;
+	float angle1, angle2, angle;
 
 	BotGetTargetPos( target, targetPos );
 	AngleVectors( self->s.origin, forward, right, up );
@@ -41,17 +45,17 @@ float CalcAimPitch( gentity_t *self, botTarget_t target, vec_t launchSpeed )
 	initialHeight = startPos[2];
 	targetPos[2] -= initialHeight;
 	startPos[2] -= initialHeight;
-	float distance2D = sqrt( Square( startPos[0] - targetPos[0] ) + Square( startPos[1] - targetPos[1] ) );
+	distance2D = sqrt( Square( startPos[0] - targetPos[0] ) + Square( startPos[1] - targetPos[1] ) );
 	targetPos[0] = distance2D;
 
 	//for readability's sake
-	const float x = targetPos[0];
-	const float y = targetPos[2];
-	float v = launchSpeed;
-	const float g = self->client->ps.gravity;
+	x = targetPos[0];
+	y = targetPos[2];
+	v = launchSpeed;
+	g = self->client->ps.gravity;
 
 	//make sure we won't get NaN
-	float check = Square( Square( v ) ) - g * ( g * Square( x ) + 2 * y * Square( v ) );
+	check = Square( Square( v ) ) - g * ( g * Square( x ) + 2 * y * Square( v ) );
 
 	//as long as we will get NaN, increase velocity to compensate
 	//This is better than returning some failure value because it gives us the best launch angle possible, even if it wont hit in the end.
@@ -60,12 +64,13 @@ float CalcAimPitch( gentity_t *self, botTarget_t target, vec_t launchSpeed )
 		v += 5;
 		check = Square( Square( v ) ) - g * ( g * Square( x ) + 2 * y * Square( v ) );
 	}
+	
 	//calculate required angle of launch
-	float angle1 = atan( ( Square( v ) + sqrt( check ) ) / ( g * x ) );
-	float angle2 = atan( ( Square( v ) - sqrt( check ) ) / ( g * x ) );
+	angle1 = atan( ( Square( v ) + sqrt( check ) ) / ( g * x ) );
+	angle2 = atan( ( Square( v ) - sqrt( check ) ) / ( g * x ) );
 
 	//take the smaller angle
-	float angle = ( angle1 < angle2 ) ? angle1 : angle2;
+	angle = ( angle1 < angle2 ) ? angle1 : angle2;
 
 	//convert to degrees (ps.viewangles units)
 	angle = RAD2DEG( angle );
@@ -87,7 +92,7 @@ float CalcBarbAimPitch( gentity_t *self, botTarget_t target )
 	//in usrcmd angles, a positive angle is down, so multiply angle by -1
 	//botCmdBuffer->angles[PITCH] = ANGLE2SHORT(-angle);
 }
-bool G_RoomForClassChange( gentity_t *ent, class_t classt,
+qboolean G_RoomForClassChange( gentity_t *ent, class_t classt,
                            vec3_t newOrigin )
 {
 	vec3_t    fromMins, fromMaxs;
@@ -150,7 +155,8 @@ bool G_RoomForClassChange( gentity_t *ent, class_t classt,
 	//check there is room to evolve
 	return ( !tr.startsolid && tr.fraction == 1.0f );
 }
-bool BotEvolveToClass( gentity_t *ent, class_t newClass )
+
+qboolean BotEvolveToClass( gentity_t *ent, class_t newClass )
 {
 	int clientNum;
 	int i;
@@ -166,7 +172,7 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 
 	if ( ent->client->ps.stats[ STAT_HEALTH ] <= 0 )
 	{
-		return false;
+		return qfalse;
 	}
 
 	clientNum = ent->client - level.clients;
@@ -191,13 +197,13 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 			if ( ( other->client && other->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS ) ||
 			        ( other->s.eType == ET_BUILDABLE && other->buildableTeam == TEAM_HUMANS ) )
 			{
-				return false;
+				return qfalse;
 			}
 		}
 
 		if ( !G_Overmind() )
 		{
-			return false;
+			return qfalse;
 		}
 
 		numLevels = BG_ClassCanEvolveFromTo( currentClass, newClass, ( short )ent->client->ps.persistant[ PERS_CREDIT ], g_alienStage.integer, 0 );
@@ -225,30 +231,29 @@ bool BotEvolveToClass( gentity_t *ent, class_t newClass )
 				//remove credit
 				G_AddCreditToClient( ent->client, -( short )numLevels, qtrue );
 				ent->client->pers.classSelection = newClass;
-				ent->botMind->navQuery = navQuerys[newClass];
-				ent->botMind->navFilter = &navFilters[newClass];
+				BotSetNavmesh( ent, newClass );
 				ClientUserinfoChanged( clientNum, qfalse );
 				VectorCopy( infestOrigin, ent->s.pos.trBase );
 				ClientSpawn( ent, ent, ent->s.pos.trBase, ent->s.apos.trBase );
 
 				//trap_SendServerCommand( -1, va( "print \"evolved to %s\n\"", classname) );
 
-				return true;
+				return qtrue;
 			}
 			else
 				//trap_SendServerCommand( -1, va( "print \"Not enough evos to evolve to %s\n\"", classname) );
 			{
-				return false;
+				return qfalse;
 			}
 		}
 		else
 		{
-			return false;
+			return qfalse;
 		}
 	}
-	return false;
+	return qfalse;
 }
-bool BotCanEvolveToClass( gentity_t *self, class_t newClass )
+qboolean BotCanEvolveToClass( gentity_t *self, class_t newClass )
 {
 	return ( BG_ClassCanEvolveFromTo( ( class_t )self->client->ps.stats[STAT_CLASS], newClass, self->client->ps.persistant[PERS_CREDIT], g_alienStage.integer, 0 ) >= 0 );
 }
@@ -340,7 +345,7 @@ AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node )
 
 	if ( self->botMind->currentNode != node )
 	{
-		if ( !BotChangeTarget( self, healTarget, NULL ) )
+		if ( !BotChangeGoalEntity( self, healTarget ) )
 		{
 			return STATUS_FAILURE;
 		}
