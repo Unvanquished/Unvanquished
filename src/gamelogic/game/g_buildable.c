@@ -475,7 +475,7 @@ int G_GetMarkedBuildPoints( const vec3_t pos, team_t team )
 
 		if ( ent->deconstruct )
 		{
-			sum += BG_Buildable( ent->s.modelindex )->buildPoints;
+			sum += BG_Buildable( ent->s.modelindex )->buildPoints * ( ent->health / (float)BG_Buildable( ent->s.modelindex )->health );
 		}
 	}
 
@@ -3712,7 +3712,7 @@ static itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable,
 
 				if ( ent->powered )
 				{
-					pointsYielded += BG_Buildable( ent->s.modelindex )->buildPoints;
+					pointsYielded += BG_Buildable( ent->s.modelindex )->buildPoints * ( ent->health / (float)BG_Buildable( ent->s.modelindex )->health );
 				}
 
 				level.numBuildablesForRemoval++;
@@ -3723,7 +3723,7 @@ static itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable,
 				// If it's a unique buildable, it must be replaced by the same type
 				if ( ent->powered )
 				{
-					pointsYielded += BG_Buildable( ent->s.modelindex )->buildPoints;
+					pointsYielded += BG_Buildable( ent->s.modelindex )->buildPoints * ( ent->health / (float)BG_Buildable( ent->s.modelindex )->health );
 				}
 
 				level.numBuildablesForRemoval++;
@@ -3765,7 +3765,7 @@ static itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable,
 
 		if ( ent->powered )
 		{
-			pointsYielded += BG_Buildable( ent->s.modelindex )->buildPoints;
+			pointsYielded += BG_Buildable( ent->s.modelindex )->buildPoints * ( ent->health / (float)BG_Buildable( ent->s.modelindex )->health );
 		}
 	}
 
@@ -3782,7 +3782,7 @@ static itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable,
 
 		if ( ent->powered )
 		{
-			pointsUnYielded = BG_Buildable( ent->s.modelindex )->buildPoints;
+			pointsUnYielded = BG_Buildable( ent->s.modelindex )->buildPoints * ( ent->health / (float)BG_Buildable( ent->s.modelindex )->health );
 		}
 
 		if ( pointsYielded - pointsUnYielded >= buildPoints )
@@ -4294,7 +4294,7 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 
 	if ( useBuildPoints )
 	{
-		G_RemoveResources( built->buildableTeam, BG_Buildable( buildable )->buildPoints );
+		G_RemoveResources( built, BG_Buildable( buildable )->buildPoints );
 	}
 
 	trap_LinkEntity( built );
@@ -5065,8 +5065,10 @@ void G_QueueResources( team_t team, float value )
 	}
 }
 
-void G_RemoveResources( team_t team, int value )
+void G_RemoveResources( gentity_t *ent, int value )
 {
+	int    marked = G_GetMarkedBuildPoints( ent->s.origin, ent->buildableTeam );
+	team_t team = ent->buildableTeam;
 	switch ( team )
 	{
 		case TEAM_ALIENS:

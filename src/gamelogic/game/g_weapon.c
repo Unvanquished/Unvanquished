@@ -849,7 +849,7 @@ void CheckCkitRepair( gentity_t *ent )
 		if ( traceEnt->health < bHealth )
 		{
 			traceEnt->health += HBUILD_HEALRATE;
-			G_QueueResources( traceEnt->buildableTeam, ( HBUILD_HEALRATE / bHealth ) * cost );
+			G_QueueResources( traceEnt->buildableTeam, ( HBUILD_HEALRATE / (float)bHealth ) * cost );
 
 			if ( traceEnt->health >= bHealth )
 			{
