@@ -354,14 +354,12 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 	Q_vsnprintf( com_errorMessage, sizeof( com_errorMessage ), fmt, argptr );
 	va_end( argptr );
 
-	if ( code != ERR_DISCONNECT )
-	{
-		Cvar_Set("com_errorMessage", com_errorMessage);
-	}
+	Cvar_Set("com_errorMessage", com_errorMessage);
 
 	if ( code == ERR_SERVERDISCONNECT )
 	{
 		VM_Forced_Unload_Start();
+		Com_Printf( "^7%s\n", com_errorMessage );
 		SV_Shutdown( "Server disconnected" );
 		CL_Disconnect( qtrue );
 		CL_FlushMemory();
@@ -373,17 +371,7 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 	{
 		VM_Forced_Unload_Start();
 		Com_Printf( "^8%s\n", com_errorMessage );
-		CL_Disconnect( qtrue );
-		CL_FlushMemory();
-		VM_Forced_Unload_Done();
-		com_errorEntered = qfalse;
-		longjmp( abortframe, -1 );
-	}
-	else if ( code == ERR_DISCONNECT )
-	{
-		VM_Forced_Unload_Start();
-		Com_Printf(_( "********************\nERROR: %s\n********************\n"), com_errorMessage );
-		SV_Shutdown( va( "Server crashed: %s\n", com_errorMessage ) );
+		SV_Shutdown( va( "********************\nServer crashed: %s\n********************\n", com_errorMessage ) );
 		CL_Disconnect( qtrue );
 		CL_FlushMemory();
 		VM_Forced_Unload_Done();

@@ -370,7 +370,6 @@ extern int memcmp( void *, void *, size_t );
 	  ERR_VID_FATAL, // exit the entire game with a popup window and doesn't delete profile.pid
 	  ERR_DROP, // print to console and disconnect from game
 	  ERR_SERVERDISCONNECT, // don't kill server
-	  ERR_DISCONNECT // client disconnected from the server
 	} errorParm_t;
 
 // font rendering values used by ui and cgame

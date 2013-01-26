@@ -1969,12 +1969,7 @@ CL_Disconnect_f
 */
 void CL_Disconnect_f( void )
 {
-	SCR_StopCinematic();
-
-	if ( cls.state != CA_DISCONNECTED && cls.state != CA_CINEMATIC )
-	{
-		Com_Error( ERR_DISCONNECT, "Disconnected from server" );
-	}
+	CL_Disconnect( qfalse );
 }
 
 /*
