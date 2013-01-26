@@ -2969,7 +2969,7 @@ void Info_RemoveKey( char *s, const char *key, qboolean big )
 
 		if ( !Q_stricmp( key, pkey ) )
 		{
-			memmove( start, s, slen + 1 );
+			memmove( start, s, strlen(s) + 1 );
 			return;
 		}
 
