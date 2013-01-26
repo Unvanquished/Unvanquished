@@ -98,7 +98,7 @@ int UI_ParseInfos( char *buf, int max, char *infos[] )
 				strcpy( token, "<NULL>" );
 			}
 
-			Info_SetValueForKey( info, key, token );
+			Info_SetValueForKey( info, key, token, qfalse );
 		}
 
 		//NOTE: extra space for arena number

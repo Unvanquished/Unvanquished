@@ -1927,9 +1927,9 @@ void CL_RequestMotd( void )
 	Com_sprintf( cls.updateChallenge, sizeof( cls.updateChallenge ),
 	             "%i", ( ( rand() << 16 ) ^ rand() ) ^ Com_Milliseconds() );
 
-	Info_SetValueForKey( info, "challenge", cls.updateChallenge );
-	Info_SetValueForKey( info, "renderer", cls.glconfig.renderer_string );
-	Info_SetValueForKey( info, "version", com_version->string );
+	Info_SetValueForKey( info, "challenge", cls.updateChallenge, qfalse );
+	Info_SetValueForKey( info, "renderer", cls.glconfig.renderer_string, qfalse );
+	Info_SetValueForKey( info, "version", com_version->string, qfalse );
 
 	NET_OutOfBandPrint( NS_CLIENT, cls.updateServer, "getmotd%s", info );
 }
@@ -2510,7 +2510,7 @@ void CL_Clientinfo_f( void )
 	Com_Printf( "state: %i\n", cls.state );
 	Com_Printf( "Server: %s\n", cls.servername );
 	Com_Printf("%s", "User info settings:\n" );
-	Info_Print( Cvar_InfoString( CVAR_USERINFO ) );
+	Info_Print( Cvar_InfoString( CVAR_USERINFO, qfalse ) );
 	Com_Printf("%s", "--------------------------------------\n" );
 }
 
@@ -2885,11 +2885,11 @@ void CL_CheckForResend( void )
 			// sending back the challenge
 			port = Cvar_VariableValue( "net_qport" );
 
-			Q_strncpyz( info, Cvar_InfoString( CVAR_USERINFO ), sizeof( info ) );
-			Info_SetValueForKey( info, "protocol", va( "%i", PROTOCOL_VERSION ) );
-			Info_SetValueForKey( info, "qport", va( "%i", port ) );
-			Info_SetValueForKey( info, "challenge", va( "%i", clc.challenge ) );
-			Info_SetValueForKey( info, "pubkey", key );
+			Q_strncpyz( info, Cvar_InfoString( CVAR_USERINFO, qfalse ), sizeof( info ) );
+			Info_SetValueForKey( info, "protocol", va( "%i", PROTOCOL_VERSION ), qfalse );
+			Info_SetValueForKey( info, "qport", va( "%i", port ), qfalse );
+			Info_SetValueForKey( info, "challenge", va( "%i", clc.challenge ), qfalse );
+			Info_SetValueForKey( info, "pubkey", key, qfalse );
 
 			sprintf( data, "connect %s", Cmd_QuoteString( info ) );
 
@@ -3597,7 +3597,7 @@ void CL_CheckUserinfo( void )
 	if ( cvar_modifiedFlags & CVAR_USERINFO )
 	{
 		cvar_modifiedFlags &= ~CVAR_USERINFO;
-		CL_AddReliableCommand( va( "userinfo %s", Cmd_QuoteString( Cvar_InfoString( CVAR_USERINFO ) ) ) );
+		CL_AddReliableCommand( va( "userinfo %s", Cmd_QuoteString( Cvar_InfoString( CVAR_USERINFO, qfalse ) ) ) );
 	}
 }
 
@@ -4821,7 +4821,7 @@ void CL_ServerInfoPacket( netadr_t from, msg_t *msg )
 					break;
 			}
 
-			Info_SetValueForKey( cl_pinglist[ i ].info, "nettype", va( "%d", type ) );
+			Info_SetValueForKey( cl_pinglist[ i ].info, "nettype", va( "%d", type ), qfalse );
 			CL_SetServerInfoByAddress( from, infoString, cl_pinglist[ i ].time );
 
 			return;

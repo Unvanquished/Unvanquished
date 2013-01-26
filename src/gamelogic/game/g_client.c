@@ -1075,7 +1075,7 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 		{
 			Q_strncpyz( client->pers.netname, *oldname ? oldname : G_UnnamedClientName( client ),
 			            sizeof( client->pers.netname ) );
-			Info_SetValueForKey( userinfo, "name", oldname );
+			Info_SetValueForKey( userinfo, "name", oldname, qfalse );
 			trap_SetUserinfo( clientNum, userinfo );
 		}
 		else
