@@ -1417,6 +1417,7 @@ void BotAimAtEnemy( gentity_t *self )
 	vec3_t newAim;
 	vec3_t angles;
 	float length;
+	const float steerMag = 0.1f;
 	int i;
 	gentity_t *enemy = self->botMind->goal.ent;
 
@@ -1436,16 +1437,17 @@ void BotAimAtEnemy( gentity_t *self )
 
 	length = VectorNormalize( steer );
 
-	if ( length < 0.1 )
+	if ( length < steerMag )
 	{
 		VectorScale( steer, length, steer );
 	}
 	else
 	{
-		VectorScale( steer, 0.1, steer );
+		VectorScale( steer, steerMag, steer );
 	}
-	VectorAdd( current, steer, newAim );
 
+	VectorAdd( current, steer, newAim );
+	VectorSet( self->client->ps.delta_angles, 0, 0, 0 );
 	vectoangles( newAim, angles );
 
 	for ( i = 0; i < 3; i++ )
