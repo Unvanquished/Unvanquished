@@ -936,8 +936,8 @@ void G_ShutdownGame( int restart )
 	G_WriteSessionData();
 
 	G_admin_cleanup();
-	G_namelog_cleanup();
 	G_BotCleanup( restart );
+	G_namelog_cleanup();
 
 	G_UnregisterCommands();
 
