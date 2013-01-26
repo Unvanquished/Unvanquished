@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../libs/detour/DetourNavMeshBuilder.h"
 #include "../../libs/detour/DetourNavMeshQuery.h"
 #include "../../libs/detour/DetourPathCorridor.h"
+#include "../../libs/detour/DetourCommon.h"
 
 dtPathCorridor pathCorridor[MAX_CLIENTS];
 dtNavMeshQuery* navQuerys[PCL_NUM_CLASSES];
@@ -398,19 +399,31 @@ extern "C" void BotSetNavmesh( gentity_t  *self, class_t newClass )
 	self->botMind->navQuery = navQuerys[ newClass ];
 	self->botMind->navFilter = &navFilters[ newClass ];
 	self->botMind->pathCorridor = &pathCorridor[ self->s.number ];
+	self->botMind->needPathReset = qtrue;
+}
 
-	// our current path is now invalid so we have to reset the path corridor
-	vec3_t pos;
+qboolean BotFindNearestPoly( gentity_t *self, gentity_t *ent, dtPolyRef *nearestPoly, vec3_t nearPoint );
+extern "C" void BotCheckCorridor( gentity_t *self )
+{
+	vec3_t point;
 	dtPolyRef ref;
-	vec3_t nearpos;
-	vec3_t extents;
+	if ( self->botMind->needPathReset && BotFindNearestPoly( self, self, &ref, point ) )
+	{
+		quake2recast( point );
+		self->botMind->pathCorridor->reset( ref, point );
 
-	VectorCopy( self->botMind->pathCorridor->getPos(), pos );
-
-	BotGetAgentExtents( self, extents );
-	self->botMind->navQuery->findNearestPoly( pos, extents, self->botMind->navFilter, &ref, nearpos );
-
-	self->botMind->pathCorridor->reset( ref, pos );
+		if ( self->botMind->goal.inuse )
+		{
+			if ( !( FindRouteToTarget( self, self->botMind->goal ) & ( ROUTE_FAILURE | ROUTE_PARTIAL ) ) )
+			{
+				self->botMind->needPathReset = qfalse;
+			}
+		}
+		else
+		{
+			self->botMind->needPathReset = qfalse;
+		}
+	}
 }
 
 /*
@@ -446,6 +459,7 @@ int DistanceToGoalSquared( gentity_t *self )
 	VectorCopy( self->s.origin, selfPos );
 	return DistanceSquared( selfPos, targetPos );
 }
+
 qboolean BotNav_Trace( dtNavMeshQuery* navQuery, dtQueryFilter* navFilter, vec3_t start, vec3_t end, float *hit, vec3_t normal, dtPolyRef *pathPolys, int *numHit, int maxPolies )
 {
 	vec3_t nearPoint;
@@ -1168,6 +1182,34 @@ void FindWaypoints( gentity_t *self )
 	self->botMind->numCorners = numCorners;
 }
 
+qboolean PointInPoly( gentity_t *self, dtPolyRef ref, vec3_t point )
+{
+	const dtPolyRef curRef = ref;
+	const dtMeshTile* curTile = 0;
+	const dtPoly* curPoly = 0;
+	float verts[DT_VERTS_PER_POLYGON*3];
+
+	if ( dtStatusFailed( self->botMind->navQuery->getAttachedNavMesh()->getTileAndPolyByRef(curRef, &curTile, &curPoly) ) )
+	{
+		return qfalse;
+	}
+		
+	const int nverts = curPoly->vertCount;
+	for ( int i = 0; i < nverts; ++i )
+	{
+		VectorCopy( &curTile->verts[curPoly->verts[i]*3], &verts[i*3] );
+	}
+
+	if ( dtPointInPolygon( point, verts, nverts ) )
+	{
+		return qtrue;
+	}
+	else
+	{
+		return qfalse;
+	}
+}
+
 void UpdatePathCorridor( gentity_t *self )
 {
 	vec3_t selfPos, targetPos;
@@ -1176,30 +1218,9 @@ void UpdatePathCorridor( gentity_t *self )
 		BotDPrintf( S_COLOR_RED "ERROR: UpdatePathCorridor called without a path!\n" );
 		return;
 	}
-	if ( BotTargetIsEntity( self->botMind->goal ) )
-	{
-		if ( self->botMind->goal.ent->s.groundEntityNum == -1 || self->botMind->goal.ent->s.groundEntityNum == ENTITYNUM_NONE )
-		{
-			PlantEntityOnGround( self->botMind->goal.ent, targetPos );
-		}
-		else
-		{
-			BotGetTargetPos( self->botMind->goal, targetPos );
-		}
-	}
-	else
-	{
-		BotGetTargetPos( self->botMind->goal, targetPos );
-	}
 
-	if ( self->s.groundEntityNum == -1 || self->s.groundEntityNum == ENTITYNUM_NONE )
-	{
-		PlantEntityOnGround( self, selfPos );
-	}
-	else
-	{
-		VectorCopy( self->s.origin, selfPos );
-	}
+	BotGetTargetPos( self->botMind->goal, targetPos );
+	VectorCopy( self->s.origin, selfPos );
 
 	quake2recast( selfPos );
 	quake2recast( targetPos );
@@ -1209,39 +1230,34 @@ void UpdatePathCorridor( gentity_t *self )
 
 	if ( !self->botMind->pathCorridor->isValid( MAX_PATH_LOOK_AHEAD, self->botMind->navQuery, self->botMind->navFilter ) )
 	{
-		FindRouteToTarget( self, self->botMind->goal );
+		self->botMind->needPathReset = qtrue;
 	}
 
 	FindWaypoints( self );
 	dtPolyRef check;
 	vec3_t pos;
+	dtPolyRef firstPoly = self->botMind->pathCorridor->getFirstPoly();
+	dtPolyRef lastPoly = self->botMind->pathCorridor->getLastPoly();
 
-	//check for replans
-	//THIS STILL DOESNT WORK 100% OF THE TIME GRRRRRRR
-	if ( self->client->time1000 % 500 == 0 )
+	//check for replans caused by inaccurate bot movement or the target going off the path corridor
+
+	if ( !PointInPoly( self, firstPoly, selfPos )  )
 	{
-		if ( BotFindNearestPoly( self, self, &check, pos ) && self->client->ps.groundEntityNum != ENTITYNUM_NONE )
+		self->botMind->needPathReset = qtrue;
+	}
+		
+	if ( BotTargetIsPlayer( self->botMind->goal ) )
+	{
+		if ( self->botMind->goal.ent->client->ps.groundEntityNum != ENTITYNUM_NONE )
 		{
-			if ( check != self->botMind->pathCorridor->getFirstPoly() )
+			if ( !PointInPoly( self, lastPoly, targetPos ) )
 			{
-				FindRouteToTarget( self, self->botMind->goal );
-			}
-		}
-		if ( BotTargetIsPlayer( self->botMind->goal ) )
-		{
-			if ( self->botMind->goal.ent->client->ps.groundEntityNum != ENTITYNUM_NONE )
-			{
-				if ( BotFindNearestPoly( self, self->botMind->goal.ent, &check, pos ) )
-				{
-					if ( check != self->botMind->pathCorridor->getLastPoly() )
-					{
-						FindRouteToTarget( self, self->botMind->goal );
-					}
-				}
+				self->botMind->needPathReset = qtrue;
 			}
 		}
 	}
 }
+
 qboolean BotMoveToGoal( gentity_t *self )
 {
 	botTarget_t target;
@@ -1264,7 +1280,6 @@ qboolean BotMoveToGoal( gentity_t *self )
 
 int FindRouteToTarget( gentity_t *self, botTarget_t target )
 {
-	vec3_t selfPos;
 	vec3_t targetPos;
 	vec3_t start;
 	vec3_t end;
@@ -1273,7 +1288,6 @@ int FindRouteToTarget( gentity_t *self, botTarget_t target )
 	dtStatus status;
 	int pathNumPolys = 512;
 	qboolean result;
-	//int straightNum;
 
 	//dont pathfind too much
 	if ( level.time - self->botMind->timeFoundRoute < 200 )
@@ -1298,11 +1312,8 @@ int FindRouteToTarget( gentity_t *self, botTarget_t target )
 		BotGetTargetPos( target, targetPos );
 	}
 
-	if ( !BotFindNearestPoly( self, self, &startRef, start ) )
-	{
-		BotDPrintf( "Failed to find a polygon near the bot\n" );
-		return ROUTE_FAILURE | ROUTE_NOPOLYNEARSELF;
-	}
+	startRef = self->botMind->pathCorridor->getFirstPoly();
+	VectorCopy( self->botMind->pathCorridor->getPos(), start );
 
 	if ( BotTargetIsEntity( target ) )
 	{
@@ -1318,13 +1329,11 @@ int FindRouteToTarget( gentity_t *self, botTarget_t target )
 		BotDPrintf( "Failed to find a polygon near the target\n" );
 		return ROUTE_FAILURE | ROUTE_NOPOLYNEARTARGET;
 	}
-	quake2recast( selfPos );
-	quake2recast( targetPos );
+
 	self->botMind->numCorners = 0;
 
-	quake2recast( start );
 	quake2recast( end );
-	//trap_Print("Finding path\n");
+	
 	status = self->botMind->navQuery->findPath( startRef, endRef, start, end, self->botMind->navFilter, pathPolys, &pathNumPolys, MAX_PATH_POLYS );
 
 	if ( dtStatusFailed( status ) )
@@ -1332,8 +1341,9 @@ int FindRouteToTarget( gentity_t *self, botTarget_t target )
 		BotDPrintf( "Could not find path\n" );
 		return ROUTE_FAILURE;
 	}
-	self->botMind->pathCorridor->reset( startRef, selfPos );
-	self->botMind->pathCorridor->setCorridor( targetPos, pathPolys, pathNumPolys );
+
+	self->botMind->pathCorridor->reset( startRef, start );
+	self->botMind->pathCorridor->setCorridor( end, pathPolys, pathNumPolys );
 
 	FindWaypoints( self );
 	if ( status & DT_PARTIAL_RESULT )

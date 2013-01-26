@@ -173,6 +173,8 @@ typedef struct{
 	vec3_t      futureAim;
 	usercmd_t cmdBuffer;
 
+	qboolean needPathReset;
+
 	//navigation classes
 	//not for use outside C++ code
 #ifdef __cplusplus

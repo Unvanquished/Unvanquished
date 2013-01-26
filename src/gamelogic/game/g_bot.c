@@ -3046,6 +3046,7 @@ void G_BotThink( gentity_t *self )
 		return;
 	}
 
+	BotCheckCorridor( self );
 	BotEvaluateNode( self, ( AIGenericNode_t * ) self->botMind->behaviorTree->root );
 
 	// if we were nudged...

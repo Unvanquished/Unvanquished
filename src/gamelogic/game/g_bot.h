@@ -68,6 +68,7 @@ qboolean BotPathIsWalkable( gentity_t *self, botTarget_t target );
 void UpdatePathCorridor( gentity_t *self );
 qboolean BotMoveToGoal( gentity_t *self );
 void BotSetNavmesh( gentity_t  *ent, class_t newClass );
+void BotCheckCorridor( gentity_t *self );
 
 typedef enum
 {
