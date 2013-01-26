@@ -373,6 +373,7 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 	{
 		VM_Forced_Unload_Start();
 		Com_Printf( "^8%s\n", com_errorMessage );
+		SV_Shutdown( va( "********************\nServer crashed: %s\n********************\n", com_errorMessage ) );
 		CL_Disconnect( qtrue );
 		CL_FlushMemory();
 		VM_Forced_Unload_Done();
