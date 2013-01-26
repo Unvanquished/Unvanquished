@@ -4592,7 +4592,7 @@ static const char *UI_FeederItemText( int feederID, int index, int column, qhand
 			w = uiInfo.resolutions[ index ].w;
 			h = uiInfo.resolutions[ index ].h;
 
-			Com_sprintf( resolution, sizeof( resolution ), "%dx%d (%s)", w, h,
+			Com_sprintf( resolution, sizeof( resolution ), "%d×%d (%s)", w, h,
 			             UI_DisplayAspectString( w, h ) );
 
 			return resolution;
@@ -4600,7 +4600,7 @@ static const char *UI_FeederItemText( int feederID, int index, int column, qhand
 
 		w = ( int ) trap_Cvar_VariableValue( "r_customwidth" );
 		h = ( int ) trap_Cvar_VariableValue( "r_customheight" );
-		Com_sprintf( resolution, sizeof( resolution ), "Custom (%dx%d)", w, h );
+		Com_sprintf( resolution, sizeof( resolution ), "Custom (%d×%d)", w, h );
 
 		return resolution;
 	}

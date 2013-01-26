@@ -494,11 +494,11 @@ void SVC_Status( netadr_t from )
 		return;
 	}
 
-	strcpy( infostring, Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE ) );
+	strcpy( infostring, Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, qfalse ) );
 
 	// echo back the parameter to status. so master servers can use it as a challenge
 	// to prevent timed spoofed reply packets that add ghost servers
-	Info_SetValueForKey( infostring, "challenge", Cmd_Argv( 1 ) );
+	Info_SetValueForKey( infostring, "challenge", Cmd_Argv( 1 ), qfalse );
 
 	status[ 0 ] = 0;
 	statusLength = 0;
@@ -571,42 +571,42 @@ void SVC_Info( netadr_t from )
 
 	// echo back the parameter to status. so servers can use it as a challenge
 	// to prevent timed spoofed reply packets that add ghost servers
-	Info_SetValueForKey( infostring, "challenge", Cmd_Argv( 1 ) );
-	Info_SetValueForKey( infostring, "protocol", va( "%i", PROTOCOL_VERSION ) );
-	Info_SetValueForKey( infostring, "hostname", sv_hostname->string );
-	Info_SetValueForKey( infostring, "serverload", va( "%i", svs.serverLoad ) );
-	Info_SetValueForKey( infostring, "mapname", sv_mapname->string );
-	Info_SetValueForKey( infostring, "clients", va( "%i", count ) );
-	Info_SetValueForKey( infostring, "sv_maxclients", va( "%i", sv_maxclients->integer - sv_privateClients->integer ) );
-	Info_SetValueForKey( infostring, "pure", va( "%i", sv_pure->integer ) );
+	Info_SetValueForKey( infostring, "challenge", Cmd_Argv( 1 ), qfalse );
+	Info_SetValueForKey( infostring, "protocol", va( "%i", PROTOCOL_VERSION ), qfalse );
+	Info_SetValueForKey( infostring, "hostname", sv_hostname->string, qfalse );
+	Info_SetValueForKey( infostring, "serverload", va( "%i", svs.serverLoad ), qfalse );
+	Info_SetValueForKey( infostring, "mapname", sv_mapname->string, qfalse );
+	Info_SetValueForKey( infostring, "clients", va( "%i", count ), qfalse );
+	Info_SetValueForKey( infostring, "sv_maxclients", va( "%i", sv_maxclients->integer - sv_privateClients->integer ), qfalse );
+	Info_SetValueForKey( infostring, "pure", va( "%i", sv_pure->integer ), qfalse );
 
 #ifdef USE_VOIP
 
 	if ( sv_voip->integer )
 	{
-		Info_SetValueForKey( infostring, "voip", va( "%i", sv_voip->integer ) );
+		Info_SetValueForKey( infostring, "voip", va( "%i", sv_voip->integer ), qfalse );
 	}
 
 #endif
 
 	if ( sv_minPing->integer )
 	{
-		Info_SetValueForKey( infostring, "minPing", va( "%i", sv_minPing->integer ) );
+		Info_SetValueForKey( infostring, "minPing", va( "%i", sv_minPing->integer ), qfalse );
 	}
 
 	if ( sv_maxPing->integer )
 	{
-		Info_SetValueForKey( infostring, "maxPing", va( "%i", sv_maxPing->integer ) );
+		Info_SetValueForKey( infostring, "maxPing", va( "%i", sv_maxPing->integer ), qfalse );
 	}
 
 	gamedir = Cvar_VariableString( "fs_game" );
 
 	if ( *gamedir )
 	{
-		Info_SetValueForKey( infostring, "game", gamedir );
+		Info_SetValueForKey( infostring, "game", gamedir, qfalse );
 	}
 
-	Info_SetValueForKey( infostring, "gamename", GAMENAME_STRING );  // Arnout: to be able to filter out Quake servers
+	Info_SetValueForKey( infostring, "gamename", GAMENAME_STRING, qfalse );  // Arnout: to be able to filter out Quake servers
 
 	NET_OutOfBandPrint( NS_SERVER, from, "infoResponse\n%s", infostring );
 }
@@ -1247,19 +1247,19 @@ void SV_Frame( int msec )
 	// update infostrings if anything has been changed
 	if ( cvar_modifiedFlags & CVAR_SERVERINFO )
 	{
-		SV_SetConfigstring( CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE ) );
+		SV_SetConfigstring( CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, qfalse ) );
 		cvar_modifiedFlags &= ~CVAR_SERVERINFO;
 	}
 
 	if ( cvar_modifiedFlags & CVAR_SERVERINFO_NOUPDATE )
 	{
-		SV_SetConfigstringNoUpdate( CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE ) );
+		SV_SetConfigstringNoUpdate( CS_SERVERINFO, Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, qfalse ) );
 		cvar_modifiedFlags &= ~CVAR_SERVERINFO_NOUPDATE;
 	}
 
 	if ( cvar_modifiedFlags & CVAR_SYSTEMINFO )
 	{
-		SV_SetConfigstring( CS_SYSTEMINFO, Cvar_InfoString_Big( CVAR_SYSTEMINFO ) );
+		SV_SetConfigstring( CS_SYSTEMINFO, Cvar_InfoString( CVAR_SYSTEMINFO, qtrue ) );
 		cvar_modifiedFlags &= ~CVAR_SYSTEMINFO;
 	}
 

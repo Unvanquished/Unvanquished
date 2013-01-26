@@ -4042,7 +4042,7 @@ qboolean G_admin_rename( gentity_t *ent )
 	        Quote( victim->client->pers.netname ),
 	        Quote( newname ),
 	        G_quoted_admin_name( ent ) ) );
-	Info_SetValueForKey( userinfo, "name", newname );
+	Info_SetValueForKey( userinfo, "name", newname, qfalse );
 	trap_SetUserinfo( pid, userinfo );
 	ClientUserinfoChanged( pid, qtrue );
 	return qtrue;

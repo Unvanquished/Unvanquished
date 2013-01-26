@@ -789,25 +789,25 @@ void Cmd_If_f( void )
 			secondNumber = atoi( secondString = Cmd_Argv( 3 ) );
 
 			if      ( !strcmp( relation, "="  ) ) { result = ( firstNumber == secondNumber ) ? consequent : alternative; }
-			else if ( !strcmp( relation, "!=" ) ) { result = ( firstNumber != secondNumber ) ? consequent : alternative; }
+			else if ( !strcmp( relation, "!=" ) || !strcmp( relation, "≠" )) { result = ( firstNumber != secondNumber ) ? consequent : alternative; }
 			else if ( !strcmp( relation, "<"  ) ) { result = ( firstNumber <  secondNumber ) ? consequent : alternative; }
-			else if ( !strcmp( relation, "<=" ) ) { result = ( firstNumber <= secondNumber ) ? consequent : alternative; }
+			else if ( !strcmp( relation, "<=" ) || !strcmp( relation, "≤" )) { result = ( firstNumber <= secondNumber ) ? consequent : alternative; }
 			else if ( !strcmp( relation, ">"  ) ) { result = ( firstNumber >  secondNumber ) ? consequent : alternative; }
-			else if ( !strcmp( relation, ">=" ) ) { result = ( firstNumber >= secondNumber ) ? consequent : alternative; }
+			else if ( !strcmp( relation, ">=" ) || !strcmp( relation, "≥" )) { result = ( firstNumber >= secondNumber ) ? consequent : alternative; }
 			else if ( !strcmp( relation, "eq" ) ) { result = ( Q_stricmp( firstString, secondString ) == 0 ) ? consequent : alternative; }
 			else if ( !strcmp( relation, "ne" ) ) { result = ( Q_stricmp( firstString, secondString ) != 0 ) ? consequent : alternative; }
 			else if ( !strcmp( relation, "in" ) ) { result = ( Q_stristr( secondString, firstString ) != 0 ) ? consequent : alternative; }
 			else if ( !strcmp( relation, "!in") ) { result = ( Q_stristr( secondString, firstString ) == 0 ) ? consequent : alternative; }
 			else
 			{
-				Com_Printf(_( "invalid relation operator in if command. valid relation operators are = != < > >= <= eq ne in !in\n" ));
+				Com_Printf(_( "invalid relation operator in if command. valid relation operators are = != ≠ < > ≥ >= ≤ <= eq ne in !in\n" ));
 				return;
 			}
 
 			break;
 
 		default:
-			Com_Printf(_( "if <number> <relation> <number> <cmdthen> (<cmdelse>) : compares the first two numbers and executes <cmdthen> if true, <cmdelse> if false\n"
+			Com_Printf(_( "if <number|string> <relation> <number|string> <cmdthen> (<cmdelse>) : compares two numbers or two strings and executes <cmdthen> if true, <cmdelse> if false\n"
 
 			            "if <modifiers> <cmdthen> (<cmdelse>) : check if modifiers are (not) pressed\n"
 			            "-- modifiers are %s\n"
@@ -858,7 +858,7 @@ void Cmd_Math_f( void )
 		}
 		else
 		{
-			Com_Printf(_( "math <variableToSet> = <number> <operator> <number>\nmath <variableToSet> <operator> <number>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * /\n" ));
+			Com_Printf(_( "math <variableToSet> = <number> <operator> <number>\nmath <variableToSet> <operator> <number>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - × * ÷ /\n" ));
 			return;
 		}
 	}
@@ -876,11 +876,11 @@ void Cmd_Math_f( void )
 		{
 			Cvar_SetValueLatched( targetVariable, ( atof( targetVariable ) - atof( firstOperand ) ) );
 		}
-		else if ( !strcmp( operation, "*" ) )
+		else if ( !strcmp( operation, "*" ) || !strcmp( operation, "×" ) || !strcmp( operation, "x" ) )
 		{
 			Cvar_SetValueLatched( targetVariable, ( atof( targetVariable ) * atof( firstOperand ) ) );
 		}
-		else if ( !strcmp( operation, "/" ) )
+		else if ( !strcmp( operation, "/" ) || !strcmp( operation, "÷" ) )
 		{
 			if ( atof( firstOperand ) == 0.f )
 			{
@@ -892,7 +892,7 @@ void Cmd_Math_f( void )
 		}
 		else
 		{
-			Com_Printf(_( "math <variableToSet> = <number> <operator> <number>\nmath <variableToSet> <operator> <number>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * /\n" ));
+			Com_Printf(_( "math <variableToSet> = <number> <operator> <number>\nmath <variableToSet> <operator> <number>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - × * ÷ /\n" ));
 			return;
 		}
 	}
@@ -911,11 +911,11 @@ void Cmd_Math_f( void )
 		{
 			Cvar_SetValueLatched( targetVariable, ( atof( firstOperand ) - atof( secondOperand ) ) );
 		}
-		else if ( !strcmp( operation, "*" ) )
+		else if ( !strcmp( operation, "*" ) || !strcmp( operation, "×" ) || !strcmp( operation, "x" ) )
 		{
 			Cvar_SetValueLatched( targetVariable, ( atof( firstOperand ) * atof( secondOperand ) ) );
 		}
-		else if ( !strcmp( operation, "/" ) )
+		else if ( !strcmp( operation, "/" ) || !strcmp( operation, "÷" ) )
 		{
 			if ( atof( secondOperand ) == 0.f )
 			{
@@ -936,62 +936,6 @@ void Cmd_Math_f( void )
 		Com_Printf(_( "math <variableToSet> = <number> <operator> <number>\nmath <variableToSet> <operator> <number>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * /\n" ));
 		return;
 	}
-}
-
-/*
-===============
-Cmd_Strcmp_f
-
-Compares two strings, if true executes the third argument, if false executes the forth
-===============
-*/
-void Cmd_Strcmp_f( void )
-{
-	char *result;
-	char *firstString;
-	char *secondString;
-	char *consequent;
-	char *alternative;
-	char *relation;
-
-	if ( ( Cmd_Argc() == 6 ) || ( Cmd_Argc() == 5 ) )
-	{
-		firstString = Cmd_Argv( 1 );
-		relation = Cmd_Argv( 2 );
-		secondString = Cmd_Argv( 3 );
-		consequent = Cmd_Argv( 4 );
-
-		if ( ( !strcmp( relation, "=" ) && !strcmp( firstString, secondString ) ) ||
-		     ( !strcmp( relation, "!=" ) && strcmp( firstString, secondString ) ) )
-		{
-			result = consequent;
-		}
-		else if ( ( !strcmp( relation, "=" ) && strcmp( firstString, secondString ) ) ||
-		          ( !strcmp( relation, "!=" ) && !strcmp( firstString, secondString ) ) )
-		{
-			if ( Cmd_Argc() == 6 )
-			{
-				alternative = Cmd_Argv( 5 );
-				result = alternative;
-			}
-			else
-			{
-				return;
-			}
-		}
-		else
-		{
-			Com_Printf(_( "invalid operator in strcmp command. valid operators are = !=\n" ));
-			return;
-		}
-	}
-	else
-	{
-		Com_Printf(_( "strcmp <string1> <relation> <string2> <cmdthen> (<cmdelse>) : compares the first two strings and executes <cmdthen> if true, <cmdelse> if false\n" ));
-		return;
-	}
-
-	Cbuf_InsertText( va( "%s\n", result ) );
 }
 
 /*
@@ -1058,7 +1002,7 @@ void Cmd_Calc_f( void )
 	}
 
 	// Divide
-	else if ( !strcmp( operation, "/" ) )
+	else if ( !strcmp( operation, "/" ) || !strcmp( operation, "÷" ) )
 	{
 		if ( atof( secondOperand ) == 0.f )
 		{
@@ -1071,10 +1015,10 @@ void Cmd_Calc_f( void )
 	}
 
 	// Multiply
-	else if ( !strcmp( operation, "*" ) || !strcmp( operation, "x" ) )
+	else if ( !strcmp( operation, "*" ) || !strcmp( operation, "x" ) || !strcmp( operation, "×" ) )
 	{
-		//note: ⨉ (n-times operator) is not x (the letter) and might have different rendering with different fonts
-		Com_Printf( "%s ⨉  %s = %f\n", firstOperand, secondOperand, ( atof( firstOperand ) * atof( secondOperand ) ) );
+		//note: × (multiplication operator) is not x (the letter) and might have different rendering with different fonts
+		Com_Printf( "%s × %s = %f\n", firstOperand, secondOperand, ( atof( firstOperand ) * atof( secondOperand ) ) );
 		return;
 	}
 
@@ -2635,8 +2579,6 @@ void Cmd_Init( void )
 	Cmd_SetCommandCompletionFunc( "math", Cvar_CompleteCvarName );
 	Cmd_AddCommand( "concat", Cmd_Concat_f );
 	Cmd_SetCommandCompletionFunc( "concat", Cmd_CompleteConcat );
-	Cmd_AddCommand( "strcmp", Cmd_Strcmp_f );
-	Cmd_SetCommandCompletionFunc( "strcmp", Cmd_CompleteIf );
 	Cmd_AddCommand( "alias", Cmd_Alias_f );
 	Cmd_SetCommandCompletionFunc( "alias", Cmd_CompleteAliasName );
 	Cmd_AddCommand( "unalias", Cmd_UnAlias_f );
