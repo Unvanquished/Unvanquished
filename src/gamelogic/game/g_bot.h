@@ -287,6 +287,8 @@ typedef enum
 	STATUS_RUNNING
 } AINodeStatus_t;
 
+struct AIGenericNode_s;
+
 typedef AINodeStatus_t ( *AINodeRunner )( gentity_t *, struct AIGenericNode_s * );
 
 // all nodes must conform to this interface
