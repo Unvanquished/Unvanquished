@@ -126,6 +126,8 @@ void G_AddCreditToClient( gclient_t *client, short credit, qboolean cap )
 
 	// Copy to ps so the client can access it
 	client->ps.persistant[ PERS_CREDIT ] = client->pers.credit;
+
+	client->pers.infoChangeTime = level.time;
 }
 
 /*
@@ -1073,7 +1075,7 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 		{
 			Q_strncpyz( client->pers.netname, *oldname ? oldname : G_UnnamedClientName( client ),
 			            sizeof( client->pers.netname ) );
-			Info_SetValueForKey( userinfo, "name", oldname );
+			Info_SetValueForKey( userinfo, "name", oldname, qfalse );
 			trap_SetUserinfo( clientNum, userinfo );
 		}
 		else

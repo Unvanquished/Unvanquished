@@ -720,6 +720,7 @@ typedef struct
 	int      health; // you only get this info about your teammates
 	int      upgrade;
 	int      curWeaponClass; // sends current weapon for H, current class for A
+	int      credit;
 
 	// when clientinfo is changed, the loading of models/skins/sounds
 	// can be deferred until you are dead, to prevent hitches in
