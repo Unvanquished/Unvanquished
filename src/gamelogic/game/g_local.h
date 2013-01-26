@@ -166,7 +166,7 @@ typedef struct{
 
 	AIBehaviorTree_t *behaviorTree;
 	void *currentNode; //AINode_t *
-	AINode_t *runningNodes[ MAX_NODE_DEPTH ];
+	void *runningNodes[ MAX_NODE_DEPTH ]; //AIGenericNode_t *
 	int  numRunningNodes;
 
   	int         futureAimTime;

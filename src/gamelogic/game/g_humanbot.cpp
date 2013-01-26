@@ -626,11 +626,13 @@ qboolean BotGetBuildingToBuild( gentity_t *self, vec3_t origin, vec3_t normal, b
 	return qfalse;
 }
 
-AINodeStatus_t BotActionBuy( gentity_t *self, AIBuy_t *node )
+AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 {
-	weapon_t weapon = node->weapon;
-	upgrade_t *upgrades = node->upgrades;
-	int numUpgrades = node->numUpgrades;
+	AIBuyNode_t *buy = ( AIBuyNode_t * ) node;
+
+	weapon_t weapon = buy->weapon;
+	upgrade_t *upgrades = buy->upgrades;
+	int numUpgrades = buy->numUpgrades;
 
 	if ( weapon == WP_NONE && numUpgrades == 0 )
 	{
@@ -723,7 +725,7 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIBuy_t *node )
 	}
 }
 
-AINodeStatus_t BotActionHealH( gentity_t *self, AIActionNode_t *node )
+AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node )
 {
 	vec3_t targetPos;
 	vec3_t myPos;
@@ -777,7 +779,7 @@ AINodeStatus_t BotActionHealH( gentity_t *self, AIActionNode_t *node )
 	}
 	return STATUS_RUNNING;
 }
-AINodeStatus_t BotActionRepair( gentity_t *self, AIActionNode_t *node )
+AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 {
 	vec3_t forward;
 	vec3_t targetPos;

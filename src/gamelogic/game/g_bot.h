@@ -260,35 +260,6 @@ static inline bool BotChangeTarget( gentity_t *self, botTarget_t target )
 
 typedef enum
 {
-	STATUS_FAILURE = 0,
-	STATUS_SUCCESS,
-	STATUS_RUNNING
-} AINodeStatus_t;
-
-typedef enum
-{
-	ACTION_BUY,
-	ACTION_EVOLVE,
-	ACTION_FIGHT,
-	ACTION_RUSH,
-	ACTION_ROAM,
-	ACTION_FLEE,
-	ACTION_HEAL,
-	ACTION_REPAIR,
-	ACTION_BUILD,
-	ACTION_MOVETO
-} AIAction_t;
-
-typedef enum
-{
-	SELECTOR_PRIORITY,
-	SELECTOR_SEQUENCE,
-	SELECTOR_SELECTOR,
-	SELECTOR_CONCURRENT
-} AISelector_t;
-
-typedef enum
-{
 	E_NONE,
 	E_A_SPAWN,
 	E_A_OVERMIND,
@@ -310,19 +281,28 @@ typedef enum
 	E_DAMAGEDBUILDING
 } AIEntity_t;
 
+typedef enum
+{
+	STATUS_FAILURE = 0,
+	STATUS_SUCCESS,
+	STATUS_RUNNING
+} AINodeStatus_t;
+
+typedef AINodeStatus_t ( *AINodeRunner )( gentity_t *, struct AIGenericNode_s * );
+
+// all nodes must conform to this interface
+typedef struct AIGenericNode_s
+{
+	AINode_t type;
+	AINodeRunner run;
+} AIGenericNode_t;
+
 #define MAX_NODE_LIST 20
-
 typedef struct
 {
 	AINode_t type;
-	AIAction_t action;
-} AIActionNode_t;
-
-typedef struct
-{
-	AINode_t type;
-	AISelector_t selector;
-	AINode_t *list[ MAX_NODE_LIST ];
+	AINodeRunner run;
+	AIGenericNode_t *list[ MAX_NODE_LIST ];
 	int numNodes;
 	int maxFail;
 } AINodeList_t;
@@ -330,19 +310,19 @@ typedef struct
 typedef struct
 {
 	AINode_t type;
-	AIAction_t action;
+	AINodeRunner run;
 	weapon_t weapon;
 	upgrade_t upgrades[ 3 ];
 	int numUpgrades;
-} AIBuy_t;
+} AIBuyNode_t;
 
 typedef struct
 {
 	AINode_t type;
-	AIAction_t action;
+	AINodeRunner run;
 	AIEntity_t ent;
 	float range;
-} AIMoveTo_t;
+} AIMoveToNode_t;
 
 typedef enum
 {
@@ -396,12 +376,13 @@ typedef enum
 typedef struct
 {
 	AINode_t type;
-	AINode_t *child;
+	AINodeRunner run;
+	AIGenericNode_t *child;
 	AIConditionOperator_t op;
 	AIConditionInfo_t info;
 	AIConditionParameter_t param1;
 	AIConditionParameter_t param2;
-} AICondition_t;
+} AIConditionNode_t;
 
 typedef struct
 {
@@ -410,11 +391,32 @@ typedef struct
 	int maxTrees;
 } AITreeList_t;
 
-AINodeStatus_t BotActionBuy( gentity_t *self, AIBuy_t *node );
-AINodeStatus_t BotActionHealH( gentity_t *self, AIActionNode_t *node );
-AINodeStatus_t BotActionRepair( gentity_t *self, AIActionNode_t *node );
-AINodeStatus_t BotActionEvolve ( gentity_t *self, AIActionNode_t *node );
-AINodeStatus_t BotActionHealA( gentity_t *self, AIActionNode_t *node );
+AINodeStatus_t BotConditionNode( gentity_t *self, AIGenericNode_t *node );
+
+AINodeStatus_t BotSelectorNode( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotSequenceNode( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotPriorityNode( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotParallelNode( gentity_t *self, AIGenericNode_t *node );
+
+AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionHeal( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionFlee( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionRoam( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionRush( gentity_t *self, AIGenericNode_t *node );
+
+static inline void BotInitNode( AINode_t type, AINodeRunner func, void *node )
+{
+	AIGenericNode_t *n = ( AIGenericNode_t * ) node;
+	n->type = type;
+	n->run = func;
+}
+
 #endif
 
 #endif

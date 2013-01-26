@@ -257,7 +257,7 @@ bool BotCanEvolveToClass( gentity_t *self, class_t newClass )
 BotActionEvolve
 ==============================
 */
-AINodeStatus_t BotActionEvolve ( gentity_t *self, AIActionNode_t *node )
+AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t *node )
 {
 	if ( !g_bot_evolve.integer )
 	{
@@ -303,7 +303,7 @@ AINodeStatus_t BotActionEvolve ( gentity_t *self, AIActionNode_t *node )
 	return STATUS_SUCCESS;
 }
 
-AINodeStatus_t BotActionHealA( gentity_t *self, AIActionNode_t *node )
+AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node )
 {
 	const int maxHealth = BG_Class( ( class_t )self->client->ps.stats[STAT_CLASS] )->health;
 	gentity_t *healTarget = NULL;
