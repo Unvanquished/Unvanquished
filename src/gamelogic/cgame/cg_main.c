@@ -493,13 +493,14 @@ static void CG_SetUIVars( void )
 
 	trap_Cvar_Set( "ui_carriage", carriageCvar );
 
-	trap_Cvar_Set( "ui_stages", va( "%d %d", cgs.alienStage, cgs.humanStage ) );
 
 	trap_Cvar_Set( "p_team", va( "%d", ps->stats[ STAT_TEAM ] ) );
 
 	switch ( ps->stats[ STAT_TEAM ] )
 	{
 		case TEAM_NONE:
+			trap_Cvar_Set( "ui_stages", va( "%d %d", cgs.alienStage, cgs.humanStage ) );
+
 			trap_Cvar_Set( "p_teamname", "Spectator" );
 			trap_Cvar_Set( "p_classname", "Spectator" );
 			trap_Cvar_Set( "p_weaponname", "Nothing" );
@@ -519,11 +520,17 @@ static void CG_SetUIVars( void )
 			return;
 
 		case TEAM_ALIENS:
+			//dont send human stages to aliens
+			trap_Cvar_Set( "ui_stages", va( "%d %d", cgs.alienStage, -1 ) );
+
 			trap_Cvar_Set( "p_teamname", "Alien" );
 			trap_Cvar_Set( "p_stage", va( "%d", cgs.alienStage ) );
 			break;
 
 		case TEAM_HUMANS:
+			//dont send alien stages to humans
+			trap_Cvar_Set( "ui_stages", va( "%d %d", -1, cgs.humanStage ) );
+
 			trap_Cvar_Set( "p_teamname", "Human" );
 			trap_Cvar_Set( "p_stage", va( "%d", cgs.humanStage ) );
 			break;
