@@ -264,48 +264,70 @@ BotActionEvolve
 */
 AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t *node )
 {
+	AINodeStatus_t status = STATUS_FAILURE;
 	if ( !g_bot_evolve.integer )
 	{
-		return STATUS_FAILURE;
+		return status;
 	}
 
 	if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL4 ) && g_bot_level4.integer )
 	{
-		BotEvolveToClass( self, PCL_ALIEN_LEVEL4 );
+		if ( BotEvolveToClass( self, PCL_ALIEN_LEVEL4 ) )
+		{
+			status = STATUS_SUCCESS;
+		}
 	}
 	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL3_UPG ) && g_bot_level3upg.integer )
 	{
-		BotEvolveToClass( self, PCL_ALIEN_LEVEL3_UPG );
+		if ( BotEvolveToClass( self, PCL_ALIEN_LEVEL3_UPG ) )
+		{
+			status = STATUS_SUCCESS;
+		}
 	}
 	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL3 ) && ( !BG_ClassAllowedInStage( PCL_ALIEN_LEVEL3_UPG, ( stage_t ) g_alienStage.integer ) || !g_bot_level2upg.integer || !g_bot_level3upg.integer ) && g_bot_level3.integer )
 	{
-		BotEvolveToClass( self, PCL_ALIEN_LEVEL3 );
+		if ( BotEvolveToClass( self, PCL_ALIEN_LEVEL3 ) )
+		{
+			status = STATUS_SUCCESS;
+		}
 	}
 	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL2_UPG ) && g_bot_level2upg.integer )
 	{
-		BotEvolveToClass( self, PCL_ALIEN_LEVEL2_UPG );
+		if ( BotEvolveToClass( self, PCL_ALIEN_LEVEL2_UPG ) )
+		{
+			status = STATUS_SUCCESS;
+		}
 	}
 	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL2 ) && g_humanStage.integer == 0 && g_bot_level2.integer )
 	{
-		BotEvolveToClass( self, PCL_ALIEN_LEVEL2 );
+		if ( BotEvolveToClass( self, PCL_ALIEN_LEVEL2 ) )
+		{
+			status = STATUS_SUCCESS;
+		}
 	}
 	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL1_UPG ) && g_humanStage.integer == 0 && g_bot_level1upg.integer )
 	{
-		BotEvolveToClass( self, PCL_ALIEN_LEVEL1_UPG );
+		if ( BotEvolveToClass( self, PCL_ALIEN_LEVEL1_UPG ) )
+		{
+			status = STATUS_SUCCESS;
+		}
 	}
 	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL1 ) && g_humanStage.integer == 0 && g_bot_level1.integer )
 	{
-		BotEvolveToClass( self, PCL_ALIEN_LEVEL1 );
+		if ( BotEvolveToClass( self, PCL_ALIEN_LEVEL1 ) )
+		{
+			status = STATUS_SUCCESS;
+		}
 	}
 	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL0 ) )
 	{
-		BotEvolveToClass( self, PCL_ALIEN_LEVEL0 );
+		if ( BotEvolveToClass( self, PCL_ALIEN_LEVEL0 ) )
+		{
+			status = STATUS_SUCCESS;
+		}
 	}
-	else
-	{
-		return STATUS_FAILURE;
-	}
-	return STATUS_SUCCESS;
+
+	return status;
 }
 
 AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node )
