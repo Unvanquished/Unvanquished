@@ -493,8 +493,12 @@ static void CG_SetUIVars( void )
 
 	trap_Cvar_Set( "ui_carriage", carriageCvar );
 
-
 	trap_Cvar_Set( "p_team", va( "%d", ps->stats[ STAT_TEAM ] ) );
+
+	if ( !( ps->pm_flags & PMF_FOLLOW ) )
+	{
+		trap_Key_SetTeam( ps->stats[ STAT_TEAM ] );
+        }
 
 	switch ( ps->stats[ STAT_TEAM ] )
 	{

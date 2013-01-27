@@ -50,6 +50,8 @@ qboolean key_overstrikeMode;
 int      anykeydown;
 qkey_t   keys[ MAX_KEYS ];
 
+int      bindTeam = 0; // TEAM_NONE
+
 typedef struct
 {
 	const char *name;
@@ -1821,4 +1823,24 @@ void Key_ClearStates( void )
 		keys[ i ].down = 0;
 		keys[ i ].repeats = 0;
 	}
+}
+
+/*
+===================
+Key_SetTeam
+===================
+*/
+void Key_SetTeam( int newTeam )
+{
+	if ( newTeam < TEAM_NONE || newTeam >= NUM_TEAMS )
+	{
+		newTeam = TEAM_NONE;
+	}
+
+	if ( bindTeam != newTeam )
+	{
+		Com_DPrintf( "^2Setting binding team index to %d\n", newTeam );
+	}
+
+	bindTeam = newTeam;
 }

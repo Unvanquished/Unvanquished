@@ -1232,3 +1232,8 @@ qboolean trap_R_inPVVS( const vec3_t p1, const vec3_t p2 )
 {
 	return syscall( CG_R_INPVVS, p1, p2 );
 }
+
+void trap_Key_SetTeam( int newTeam )
+{
+	syscall( CG_KEY_SETTEAM, newTeam );
+}

@@ -44,6 +44,7 @@ typedef struct
 
 extern qboolean key_overstrikeMode;
 extern qkey_t   keys[ MAX_KEYS ];
+extern int      bindTeam;
 
 // NOTE TTimo the declaration of field_t and Field_Clear is now in qcommon/qcommon.h
 
@@ -66,6 +67,8 @@ qboolean        Key_GetOverstrikeMode( void );
 void            Key_SetOverstrikeMode( qboolean state );
 void            Key_ClearStates( void );
 int             Key_GetKey( const char *binding );
+
+void            Key_SetTeam( int newTeam );
 
 #ifndef DEDICATED
 // from cl_input.c

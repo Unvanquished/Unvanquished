@@ -1242,6 +1242,10 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			re.UnregisterFontVM( args[1] );
 			return 0;
 
+		case CG_KEY_SETTEAM:
+			Key_SetTeam( args[1] ); // for binding selection
+			return 0;
+
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );
 	}
