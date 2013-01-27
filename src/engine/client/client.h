@@ -34,7 +34,7 @@ Maryland 20850 USA.
 
 // client.h -- primary header for client
 
-#include "../../../src/engine/qcommon/q_shared.h"
+#include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "../renderer/tr_public.h"
 #include "keys.h"
