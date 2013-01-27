@@ -402,7 +402,7 @@ G_GetBuildPoints
 Get the number of build points from a position
 ==================
 */
-int G_GetBuildPoints( const vec3_t pos, team_t team )
+int G_GetBuildPoints( team_t team )
 {
 	if ( G_TimeTilSuddenDeath() <= 0 )
 	{
@@ -427,7 +427,7 @@ G_GetMarkedBuildPoints
 Get the number of marked build points from a position
 ==================
 */
-int G_GetMarkedBuildPoints( const vec3_t pos, team_t team )
+int G_GetMarkedBuildPoints( team_t team )
 {
 	gentity_t *ent;
 	int       i;
@@ -446,14 +446,6 @@ int G_GetMarkedBuildPoints( const vec3_t pos, team_t team )
 	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 	{
 		if ( ent->s.eType != ET_BUILDABLE )
-		{
-			continue;
-		}
-
-		if ( team == TEAM_HUMANS &&
-		     ent->s.modelindex != BA_H_REACTOR &&
-		     ent->s.modelindex != BA_H_REPEATER &&
-		     ent->parentNode != G_PowerEntityForPoint( pos ) )
 		{
 			continue;
 		}
@@ -3456,13 +3448,18 @@ void G_FreeMarkedBuildables( gentity_t *deconner, char *readable, int rsize,
 
 	for ( i = 0; i < level.numBuildablesForRemoval; i++ )
 	{
+		int cost;
 		ent = level.markedBuildables[ i ];
 		bNum = BG_Buildable( ent->s.modelindex )->number;
+
+		cost = BG_Buildable( ent->s.modelindex )->buildPoints * ( ent->health / (float)BG_Buildable( ent->s.modelindex )->health );
 
 		if ( removalCounts[ bNum ] == 0 )
 		{
 			totalListItems++;
 		}
+
+		G_RemoveResources( ent->buildableTeam, -cost );
 
 		G_Damage( ent, NULL, deconner, NULL, NULL, ent->health, 0, MOD_REPLACE );
 
@@ -3543,7 +3540,7 @@ static itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable,
 
 	if ( team == TEAM_ALIENS )
 	{
-		remainingBP = G_GetBuildPoints( origin, team );
+		remainingBP = G_GetBuildPoints( team );
 		remainingSpawns = level.numAlienSpawns;
 		bpError = IBE_NOALIENBP;
 		spawn = BA_A_SPAWN;
@@ -3557,7 +3554,7 @@ static itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable,
 		}
 		else
 		{
-			remainingBP = G_GetBuildPoints( origin, team );
+			remainingBP = G_GetBuildPoints( team );
 		}
 
 		remainingSpawns = level.numHumanSpawns;
@@ -4067,8 +4064,7 @@ Spawns a buildable
 ================
 */
 static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
-                           const vec3_t origin, const vec3_t normal, const vec3_t angles, int groundEntNum,
-                           qboolean useBuildPoints )
+                           const vec3_t origin, const vec3_t normal, const vec3_t angles, int groundEntNum )
 {
 	gentity_t  *built;
 	char       readable[ MAX_STRING_CHARS ];
@@ -4292,11 +4288,6 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 		G_SetBuildableAnim( built, BANIM_CONSTRUCT1, qtrue );
 	}
 
-	if ( useBuildPoints )
-	{
-		G_RemoveResources( built, BG_Buildable( buildable )->buildPoints );
-	}
-
 	trap_LinkEntity( built );
 
 	if ( builder && builder->client )
@@ -4350,7 +4341,8 @@ qboolean G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 	switch ( G_CanBuild( ent, buildable, dist, origin, normal, &groundEntNum ) )
 	{
 		case IBE_NONE:
-			G_Build( ent, buildable, origin, normal, ent->s.apos.trBase, groundEntNum, qtrue );
+			G_RemoveResources( BG_Buildable( buildable )->team, BG_Buildable( buildable )->buildPoints );
+			G_Build( ent, buildable, origin, normal, ent->s.apos.trBase, groundEntNum );
 			return qtrue;
 
 		case IBE_NOALIENBP:
@@ -4420,7 +4412,7 @@ Traces down to find where an item should rest, instead of letting them
 free fall from their spawn points
 ================
 */
-static gentity_t *G_FinishSpawningBuildable( gentity_t *ent, qboolean force, qboolean useBuildPoints )
+static gentity_t *G_FinishSpawningBuildable( gentity_t *ent, qboolean force )
 {
 	trace_t     tr;
 	vec3_t      normal, dest;
@@ -4441,7 +4433,7 @@ static gentity_t *G_FinishSpawningBuildable( gentity_t *ent, qboolean force, qbo
 	}
 
 	built = G_Build( ent, buildable, ent->s.pos.trBase,
-	                 normal, ent->s.angles, ENTITYNUM_NONE, useBuildPoints );
+	                 normal, ent->s.angles, ENTITYNUM_NONE );
 
 	built->takedamage = qtrue;
 	built->spawned = qtrue; //map entities are already spawned
@@ -4483,7 +4475,7 @@ Complete spawning a buildable using its placeholder
 */
 static void G_SpawnBuildableThink( gentity_t *ent )
 {
-	G_FinishSpawningBuildable( ent, qfalse, qfalse );
+	G_FinishSpawningBuildable( ent, qfalse );
 	G_FreeEntity( ent );
 }
 
@@ -4948,7 +4940,7 @@ void G_BuildLogRevertThink( gentity_t *ent )
 		}
 	}
 
-	built = G_FinishSpawningBuildable( ent, qtrue, qfalse );
+	built = G_FinishSpawningBuildable( ent, qtrue );
 
 	if ( ( built->deconstruct = ent->deconstruct ) )
 	{
@@ -5065,10 +5057,8 @@ void G_QueueResources( team_t team, float value )
 	}
 }
 
-void G_RemoveResources( gentity_t *ent, int value )
+void G_RemoveResources( team_t team, int value )
 {
-	int    marked = G_GetMarkedBuildPoints( ent->s.origin, ent->buildableTeam );
-	team_t team = ent->buildableTeam;
 	switch ( team )
 	{
 		case TEAM_ALIENS:

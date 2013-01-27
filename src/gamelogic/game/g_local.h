@@ -811,8 +811,8 @@ void             G_LayoutLoad( void );
 void             G_BaseSelfDestruct( team_t team );
 int              G_NextQueueTime( int queuedBP, int totalBP, int queueBaseRate );
 void             G_QueueBuildPoints( gentity_t *self );
-int              G_GetBuildPoints( const vec3_t pos, team_t team );
-int              G_GetMarkedBuildPoints( const vec3_t pos, team_t team );
+int              G_GetBuildPoints( team_t team );
+int              G_GetMarkedBuildPoints( team_t team );
 qboolean         G_FindPower( gentity_t *self, qboolean searchUnspawned );
 gentity_t        *G_PowerEntityForPoint( const vec3_t origin );
 gentity_t        *G_PowerEntityForEntity( gentity_t *ent );
@@ -822,7 +822,7 @@ void             G_BuildLogSet( buildLog_t *log, gentity_t *ent );
 void             G_BuildLogAuto( gentity_t *actor, gentity_t *buildable, buildFate_t fate );
 void             G_BuildLogRevert( int id );
 void             G_QueueResources( team_t team, float value );
-void             G_RemoveResources( gentity_t *ent, int value );
+void             G_RemoveResources( team_t team, int value );
 
 //
 // g_utils.c
