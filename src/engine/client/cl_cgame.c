@@ -48,13 +48,13 @@ Maryland 20850 USA.
 static void ( *completer )( const char *s ) = NULL;
 
 // NERVE - SMF
-void                   Key_GetBindingBuf( int keynum, char *buf, int buflen );
+void                   Key_GetBindingBuf( int keynum, int team, char *buf, int buflen );
 void                   Key_KeynumToStringBuf( int keynum, char *buf, int buflen );
 
 // -NERVE - SMF
 
 // ydnar: can we put this in a header, pls?
-void Key_GetBindingByString( const char *binding, int *key1, int *key2 );
+void Key_GetBindingByString( const char *binding, int team, int *key1, int *key2 );
 
 /*
 ====================
@@ -1041,7 +1041,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_KEY_GETKEY:
-			return Key_GetKey( VMA( 1 ) );
+			return Key_GetKey( VMA( 1 ), bindTeam );
 
 		case CG_KEY_GETOVERSTRIKEMODE:
 			return Key_GetOverstrikeMode();
@@ -1103,11 +1103,11 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_KEY_GETBINDINGBUF:
 			VM_CheckBlock( args[2], args[3], "KEYGBB" );
-			Key_GetBindingBuf( args[ 1 ], VMA( 2 ), args[ 3 ] );
+			Key_GetBindingBuf( args[ 1 ], bindTeam, VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case CG_KEY_SETBINDING:
-			Key_SetBinding( args[ 1 ], VMA( 2 ) );
+			Key_SetBinding( args[ 1 ], bindTeam, VMA( 2 ) );
 			return 0;
 
 		case CG_PARSE_ADD_GLOBAL_DEFINE:
@@ -1131,7 +1131,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_KEY_BINDINGTOKEYS:
-			Key_GetBindingByString( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
+			Key_GetBindingByString( VMA( 1 ), bindTeam, VMA( 2 ), VMA( 3 ) );
 			return 0;
 
 		case CG_S_FADEALLSOUNDS:

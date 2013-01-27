@@ -34,12 +34,14 @@ Maryland 20850 USA.
 
 #include "keycodes.h"
 
+#define MAX_TEAMS 4
+
 typedef struct
 {
 	qboolean down;
 	int      repeats; // if > 1, it is autorepeating
-	char     *binding;
-	int      hash;
+	char     *binding[ MAX_TEAMS ];
+	int      hash[ MAX_TEAMS ];
 } qkey_t;
 
 extern qboolean key_overstrikeMode;
@@ -59,14 +61,14 @@ extern int      anykeydown;
 extern qboolean chat_irc;
 
 void            Key_WriteBindings( fileHandle_t f );
-void            Key_SetBinding( int keynum, const char *binding );
-void            Key_GetBindingByString( const char *binding, int *key1, int *key2 );
-const char      *Key_GetBinding( int keynum );
+void            Key_SetBinding( int keynum, int team, const char *binding );
+void            Key_GetBindingByString( const char *binding, int team, int *key1, int *key2 );
+const char      *Key_GetBinding( int keynum, int team );
 qboolean        Key_IsDown( int keynum );
 qboolean        Key_GetOverstrikeMode( void );
 void            Key_SetOverstrikeMode( qboolean state );
 void            Key_ClearStates( void );
-int             Key_GetKey( const char *binding );
+int             Key_GetKey( const char *binding, int team );
 
 void            Key_SetTeam( int newTeam );
 

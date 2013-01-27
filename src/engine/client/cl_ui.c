@@ -40,9 +40,6 @@ Maryland 20850 USA.
 
 vm_t                   *uivm;
 
-// ydnar: can we put this in a header, pls?
-void                   Key_GetBindingByString( const char *binding, int *key1, int *key2 );
-
 /*
 ====================
 GetClientState
@@ -884,7 +881,7 @@ void Key_GetBindingBuf( int keynum, char *buf, int buflen )
 {
 	const char *value;
 
-	value = Key_GetBinding( keynum );
+	value = Key_GetBinding( keynum, bindTeam );
 
 	if ( value )
 	{
@@ -1180,11 +1177,11 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return 0;
 
 		case UI_KEY_SETBINDING:
-			Key_SetBinding( args[ 1 ], VMA( 2 ) );
+			Key_SetBinding( args[ 1 ], bindTeam, VMA( 2 ) );
 			return 0;
 
 		case UI_KEY_BINDINGTOKEYS:
-			Key_GetBindingByString( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
+			Key_GetBindingByString( VMA( 1 ), bindTeam, VMA( 2 ), VMA( 3 ) );
 			return 0;
 
 		case UI_KEY_ISDOWN:

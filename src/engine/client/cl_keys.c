@@ -40,6 +40,7 @@ key up events are sent even if in console mode
 
 */
 
+#define CLIP(t) MAX( 0, MIN( MAX_TEAMS - 1, (t) ) )
 
 field_t  g_consoleField;
 field_t  chatField;
@@ -1123,10 +1124,69 @@ static long generateHashValue( const char *fname )
 
 /*
 ===================
+Key_GetTeam
+Assumes 'three' teams: spectators, aliens, humans
+===================
+*/
+static const char *const teamName[] = { "spec", "aliens", "humans", "others" };
+
+static int Key_GetTeam( const char *arg, const char *cmd )
+{
+	static const struct {
+		char team;
+		char label[11];
+	} labels[] = {
+		{ 0, "s" },
+		{ 0, "spec" },
+		{ 0, "spectators" },
+		{ 0, "d" },
+		{ 0, "default" },
+		{ 1, "h" },
+		{ 1, "humans" },
+		{ 2, "a" },
+		{ 2, "aliens" }
+	};
+	int t;
+
+	for ( t = 0; arg[ t ]; ++t )
+	{
+		if ( !isdigit( arg[ t ] ) )
+		{
+			break;
+		}
+	}
+
+	if ( !arg[ t ] )
+	{
+		t = atoi( arg );
+
+		if ( t != CLIP( t ) )
+		{
+			Com_Printf( _("^3%s:^7 %d is not a valid team number\n"), cmd, t );
+			return -1;
+		}
+
+		return t;
+	}
+
+	for ( t = 0; t < ARRAY_LEN( labels ); ++t )
+	{
+		if ( !Q_stricmp( arg, labels[ t ].label ) )
+		{
+			return labels[ t ].team;
+		}
+	}
+
+	Com_Printf( _("^3%s:^7 '%s^7' is not a valid team name\n"), cmd, arg );
+	return -1;
+}
+
+/*
+===================
 Key_SetBinding
 ===================
 */
-void Key_SetBinding( int keynum, const char *binding )
+void Key_SetBinding( int keynum, int team, const char *binding )
 {
 	char *lcbinding; // fretn - make a copy of our binding lowercase
 	// so name toggle scripts work again: bind x name BzZIfretn?
@@ -1137,25 +1197,27 @@ void Key_SetBinding( int keynum, const char *binding )
 		return;
 	}
 
+	team = CLIP( team );
+
 	// free old bindings
-	if ( keys[ keynum ].binding )
+	if ( keys[ keynum ].binding[ team ] )
 	{
-		Z_Free( keys[ keynum ].binding );
+		Z_Free( keys[ keynum ].binding[ team ] );
 	}
 
 	if ( binding && binding[ 0 ] )
 	{
 		// allocate memory for new binding
-		keys[ keynum ].binding = CopyString( binding );
+		keys[ keynum ].binding[ team ] = CopyString( binding );
 		lcbinding = CopyString( binding );
 		Q_strlwr( lcbinding );  // saves doing it on all the generateHashValues in Key_GetBindingByString
 		Z_Free( lcbinding );
-		keys[ keynum ].hash = generateHashValue( lcbinding );
+		keys[ keynum ].hash[ team ] = generateHashValue( lcbinding );
 	}
 	else
 	{
-		keys[ keynum ].binding = NULL;
-		keys[ keynum ].hash = 0;
+		keys[ keynum ].binding[ team ] = NULL;
+		keys[ keynum ].hash[ team ] = 0;
 	}
 
 	// consider this like modifying an archived cvar, so the
@@ -1168,18 +1230,21 @@ void Key_SetBinding( int keynum, const char *binding )
 Key_GetBinding
 ===================
 */
-const char *Key_GetBinding( int keynum )
+const char *Key_GetBinding( int keynum, int team )
 {
+	const char *bind;
+
 	if ( keynum < 0 || keynum >= MAX_KEYS )
 	{
 		return NULL;
 	}
 
-	return keys[ keynum ].binding;
+	bind = keys[ keynum ].binding[ CLIP( team ) ];
+	return bind ? bind : keys[ keynum ].binding[ 0 ];
 }
 
 // binding MUST be lower case
-void Key_GetBindingByString( const char *binding, int *key1, int *key2 )
+void Key_GetBindingByString( const char *binding, int team, int *key1, int *key2 )
 {
 	int i;
 	int hash = generateHashValue( binding );
@@ -1187,20 +1252,27 @@ void Key_GetBindingByString( const char *binding, int *key1, int *key2 )
 	*key1 = -1;
 	*key2 = -1;
 
-	for ( i = 0; i < MAX_KEYS; i++ )
+	team = CLIP( team );
+
+	while ( team >= 0 )
 	{
-		if ( keys[ i ].hash == hash && !Q_stricmp( binding, keys[ i ].binding ) )
+		for ( i = 0; i < MAX_KEYS; i++ )
 		{
-			if ( *key1 == -1 )
+			if ( keys[ i ].hash[ team ] == hash && !Q_stricmp( binding, keys[ i ].binding[ team ] ) )
 			{
-				*key1 = i;
-			}
-			else if ( *key2 == -1 )
-			{
-				*key2 = i;
-				return;
+				if ( *key1 == -1 )
+				{
+					*key1 = i;
+				}
+				else if ( *key2 == -1 )
+				{
+					*key2 = i;
+					return;
+				}
 			}
 		}
+
+		team = team ? 0 : -1;
 	}
 }
 
@@ -1210,19 +1282,21 @@ Key_GetKey
 ===================
 */
 
-int Key_GetKey( const char *binding )
+int Key_GetKey( const char *binding, int team )
 {
 	int i;
 
-	if ( binding )
+	while ( binding && team >= 0 )
 	{
 		for ( i = 0; i < MAX_KEYS; i++ )
 		{
-			if ( keys[ i ].binding && Q_stricmp( binding, keys[ i ].binding ) == 0 )
+			if ( keys[ i ].binding[ team ] && Q_stricmp( binding, keys[ i ].binding[ team ] ) == 0 )
 			{
 				return i;
 			}
 		}
+
+		team = team ? 0 : -1;
 	}
 
 	return -1;
@@ -1235,15 +1309,26 @@ Key_Unbind_f
 */
 void Key_Unbind_f( void )
 {
-	int b;
+	int b = Cmd_Argc();
+	int team = -1;
 
-	if ( Cmd_Argc() != 2 )
+	if ( b < 2 || b > 3 )
 	{
-		Com_Printf("%s", _( "unbind <key> : remove commands from a key\n" ));
+		Com_Printf("%s", _( "unbind [team] <key>: remove commands from a key\n" ));
 		return;
 	}
 
-	b = Key_StringToKeynum( Cmd_Argv( 1 ) );
+	if ( b > 2 )
+	{
+		team = Key_GetTeam( Cmd_Argv( 1 ), "unbind" );
+
+		if ( team < 0 )
+		{
+			return;
+		}
+	}
+
+	b = Key_StringToKeynum( Cmd_Argv( b - 1 ) );
 
 	if ( b == -1 )
 	{
@@ -1251,7 +1336,17 @@ void Key_Unbind_f( void )
 		return;
 	}
 
-	Key_SetBinding( b, NULL );
+	if ( team < 0 )
+	{
+		for ( team = 0; team < MAX_TEAMS; ++team )
+		{
+			Key_SetBinding( b, team, NULL );
+		}
+	}
+	else
+	{
+		Key_SetBinding( b, team, NULL );
+	}
 }
 
 /*
@@ -1261,13 +1356,16 @@ Key_Unbindall_f
 */
 void Key_Unbindall_f( void )
 {
-	int i;
+	int i, team;
 
 	for ( i = 0; i < MAX_KEYS; i++ )
 	{
-		if ( keys[ i ].binding )
+		for ( team = 0; team < MAX_TEAMS; ++team )
 		{
-			Key_SetBinding( i, NULL );
+			if ( keys[ i ].binding[ team ] )
+			{
+				Key_SetBinding( i, team, NULL );
+			}
 		}
 	}
 }
@@ -1282,20 +1380,33 @@ void Key_Bind_f( void )
 	int        c, b;
 	const char *key;
 	const char *cmd = NULL;
+	int        team = 0;
+
+	int teambind = !Q_stricmp( Cmd_Argv( 0 ), "teambind" );
 
 	c = Cmd_Argc();
 
-	if ( c < 2 )
+	if ( c < 2 + teambind )
 	{
-		Com_Printf("%s", _( "bind <key> [command] : attach a command to a key\n" ));
+		Com_Printf("%s", teambind ? _( "teambind <team> <key> [command] : attach a command to a key\n" ) : _( "bind <key> [command] : attach a command to a key\n" ));
 		return;
 	}
-	else if ( c > 2 )
+	else if ( c > 2 + teambind )
 	{
-		cmd = Cmd_Argv( 2 );
+		cmd = Cmd_Argv( 2 + teambind );
 	}
 
-	key = Cmd_Argv( 1 );
+	if ( teambind )
+	{
+		team = Key_GetTeam( Cmd_Argv( 1 ), teambind ? "teambind" : "bind" );
+
+		if ( team < 0 )
+		{
+			return;
+		}
+	}
+
+	key = Cmd_Argv( 1 + teambind );
 	b = Key_StringToKeynum( key );
 
 	if ( b == -1 )
@@ -1306,26 +1417,50 @@ void Key_Bind_f( void )
 
 	if ( !cmd )
 	{
-		if ( keys[ b ].binding )
+		if ( teambind )
 		{
-			Com_Printf( "\"%s\" = %s\n", key, Cmd_QuoteString( keys[ b ].binding ) );
+			if ( keys[ b ].binding[ team ] )
+			{
+				Com_Printf( "\"%s\"[%s] = %s\n", key, teamName[ team ], Cmd_QuoteString( keys[ b ].binding[ team ] ) );
+			}
+			else
+			{
+				Com_Printf(_( "\"%s\"[%s] is not bound\n"), key, teamName[ team ] );
+			}
 		}
 		else
 		{
-			Com_Printf(_( "\"%s\" is not bound\n"), key );
+			qboolean bound = qfalse;
+			int      i;
+
+			for ( i = 0; i < MAX_TEAMS; ++i )
+			{
+				if ( keys[ b ].binding[ i ] )
+				{
+					Com_Printf( "\"%s\"[%s] = %s\n", key, teamName[ i ], Cmd_QuoteString( keys[ b ].binding[ i ] ) );
+					bound = qtrue;
+				}
+			}
+
+			if ( !bound )
+			{
+				Com_Printf(_( "\"%s\" is not bound\n"), key );
+			}
 		}
+
 
 		return;
 	}
 
-	if ( c <= 3 )
+
+	if ( c <= 3 + teambind )
 	{
-		Key_SetBinding( b, cmd );
+		Key_SetBinding( b, team, cmd );
 	}
 	else
 	{
-		// set to 3rd arg onwards
-		Key_SetBinding( b, Cmd_ArgsFrom( 2 ) );
+		// set to 3rd arg onwards (4th if team binding)
+		Key_SetBinding( b, team, Cmd_ArgsFrom( 2 + teambind ) );
 	}
 }
 
@@ -1340,16 +1475,27 @@ void Key_EditBind_f( void )
 	const char     *key, *binding;
 	const char     *bindq;
 	int            b;
+	int            team = 0;
 
 	b = Cmd_Argc();
 
-	if ( b != 2 )
+	if ( b < 2 || b > 3 )
 	{
-		Com_Printf( "%s\n", _( "usage: editbind <key>" ));
+		Com_Printf( "%s\n", _( "usage: editbind [team] <key>" ));
 		return;
 	}
 
-	key = Cmd_Argv( 1 );
+	if ( b > 2 )
+	{
+		team = Key_GetTeam( Cmd_Argv( 1 ), "editbind" );
+
+		if ( team < 0 )
+		{
+			return;
+		}
+	}
+
+	key = Cmd_Argv( b - 1 );
 	b = Key_StringToKeynum( key );
 
 	if ( b == -1 )
@@ -1358,11 +1504,19 @@ void Key_EditBind_f( void )
 		return;
 	}
 
-	binding = Key_GetBinding( b );
+	binding = Key_GetBinding( b, team );
 
 	bindq = binding ? Cmd_QuoteString( binding ) : "";  // <- static buffer
 	buf = malloc( 8 + strlen( key ) + strlen( bindq ) );
-	sprintf( buf, "/bind %s %s", Key_KeynumToString( b ), bindq );
+
+	if ( team )
+	{
+		sprintf( buf, "/teambind %d %s %s", team, Key_KeynumToString( b ), bindq );
+	}
+	else
+	{
+		sprintf( buf, "/bind %s %s", Key_KeynumToString( b ), bindq );
+	}
 
 	Con_OpenConsole_f();
 	Field_Set( &g_consoleField, buf );
@@ -1378,15 +1532,23 @@ Writes lines containing "bind key value"
 */
 void Key_WriteBindings( fileHandle_t f )
 {
-	int i;
+	int i, team;
 
 	FS_Printf( f,"%s", "unbindall\n" );
 
 	for ( i = 0; i < MAX_KEYS; i++ )
 	{
-		if ( keys[ i ].binding && keys[ i ].binding[ 0 ] )
+		if ( keys[ i ].binding[ 0 ] && keys[ i ].binding[ 0 ][ 0 ] )
 		{
-			FS_Printf( f, "bind %s %s\n", Key_KeynumToString( i ), Cmd_QuoteString( keys[ i ].binding ) );
+			FS_Printf( f, "bind       %s %s\n", Key_KeynumToString( i ), Cmd_QuoteString( keys[ i ].binding[ 0 ] ) );
+		}
+
+		for ( team = 1; team < MAX_TEAMS; ++team )
+		{
+			if ( keys[ i ].binding[ team ] && keys[ i ].binding[ team ][ 0 ] )
+			{
+				FS_Printf( f, "teambind %d %s %s\n", team, Key_KeynumToString( i ), Cmd_QuoteString( keys[ i ].binding[ team ] ) );
+			}
 		}
 	}
 }
@@ -1399,13 +1561,16 @@ Key_Bindlist_f
 */
 void Key_Bindlist_f( void )
 {
-	int i;
+	int i, team;
 
 	for ( i = 0; i < MAX_KEYS; i++ )
 	{
-		if ( keys[ i ].binding && keys[ i ].binding[ 0 ] )
+		for ( team = 0; team < MAX_TEAMS; ++team )
 		{
-			Com_Printf( "%s = %s\n", Key_KeynumToString( i ), keys[ i ].binding );
+			if ( keys[ i ].binding[ team ] && keys[ i ].binding[ team ][ 0 ] )
+			{
+				Com_Printf( "%s[%d] = %s\n", Key_KeynumToString( i ), team, keys[ i ].binding[ team ] );
+			}
 		}
 	}
 }
@@ -1447,32 +1612,43 @@ static void Key_CompleteUnbind( char *args, int argNum )
 /*
 ====================
 Key_CompleteBind
+Key_CompleteTeambind
 ====================
 */
-void Key_CompleteBind( char *args, int argNum )
+static void Key_CompleteBind_Internal( char *args, int argNum, int nameArg )
 {
 	char *p;
 
-	if ( argNum == 2 )
+	if ( argNum == nameArg )
 	{
 		// Skip "bind "
-		p = Com_SkipTokens( args, 1, " " );
+		p = Com_SkipTokens( args, nameArg - 1, " " );
 
 		if ( p > args )
 		{
 			Field_CompleteKeyname();
 		}
 	}
-	else if ( argNum >= 3 )
+	else if ( argNum > nameArg )
 	{
 		// Skip "bind <key> "
-		p = Com_SkipTokens( args, 2, " " );
+		p = Com_SkipTokens( args, nameArg, " " );
 
 		if ( p > args )
 		{
 			Field_CompleteCommand( p, qtrue, qtrue );
 		}
 	}
+}
+
+void Key_CompleteBind( char *args, int argNum )
+{
+	Key_CompleteBind_Internal( args, argNum, 2 );
+}
+
+void Key_CompleteTeambind( char *args, int argNum )
+{
+	Key_CompleteBind_Internal( args, argNum, 3 );
 }
 
 static void Key_CompleteEditbind( char *args, int argNum )
@@ -1497,6 +1673,8 @@ void CL_InitKeyCommands( void )
 	// register our functions
 	Cmd_AddCommand( "bind", Key_Bind_f );
 	Cmd_SetCommandCompletionFunc( "bind", Key_CompleteBind );
+	Cmd_AddCommand( "teambind", Key_Bind_f );
+	Cmd_SetCommandCompletionFunc( "teambind", Key_CompleteTeambind );
 	Cmd_AddCommand( "unbind", Key_Unbind_f );
 	Cmd_SetCommandCompletionFunc( "unbind", Key_CompleteUnbind );
 	Cmd_AddCommand( "unbindall", Key_Unbindall_f );
@@ -1680,7 +1858,9 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	//
 	if ( !down )
 	{
-		kb = keys[ key ].binding;
+		kb = keys[ key ].binding[ bindTeam ]
+		   ? keys[ key ].binding[ bindTeam ] // prefer the team bind
+		   : keys[ key ].binding[ 0 ];       // default to global
 
 		if ( kb && kb[ 0 ] == '+' )
 		{
@@ -1743,7 +1923,9 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	else
 	{
 		// send the bound action
-		kb = keys[ key ].binding;
+		kb = keys[ key ].binding[ bindTeam ]
+		   ? keys[ key ].binding[ bindTeam ] // prefer the team bind
+		   : keys[ key ].binding[ 0 ];       // default to global
 
 		if ( !kb )
 		{
@@ -1832,7 +2014,7 @@ Key_SetTeam
 */
 void Key_SetTeam( int newTeam )
 {
-	if ( newTeam < TEAM_NONE || newTeam >= NUM_TEAMS )
+	if ( newTeam < TEAM_NONE || newTeam >= NUM_TEAMS || newTeam >= MAX_TEAMS )
 	{
 		newTeam = TEAM_NONE;
 	}
