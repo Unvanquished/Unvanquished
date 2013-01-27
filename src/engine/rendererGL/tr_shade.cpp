@@ -163,6 +163,8 @@ void GLSL_InitGPUShaders( void )
 
 #endif // #if !defined(GLSL_COMPILE_STARTUP_ONLY)
 
+	gl_motionblurShader = new GLShader_motionblur();
+
 	endTime = ri.Milliseconds();
 
 #if defined( USE_GLSL_OPTIMIZER )
@@ -394,6 +396,12 @@ void GLSL_ShutdownGPUShaders( void )
 #endif
 
 #endif // #if !defined(GLSL_COMPILE_STARTUP_ONLY)
+
+	if ( gl_motionblurShader )
+	{
+		delete gl_motionblurShader;
+		gl_motionblurShader = NULL;
+	}
 
 	glState.currentProgram = 0;
 
