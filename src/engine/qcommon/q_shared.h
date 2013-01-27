@@ -374,7 +374,6 @@ extern int memcmp( void *, void *, size_t );
 	  ERR_VID_FATAL, // exit the entire game with a popup window and doesn't delete profile.pid
 	  ERR_DROP, // print to console and disconnect from game
 	  ERR_SERVERDISCONNECT, // don't kill server
-	  ERR_DISCONNECT // client disconnected from the server
 	} errorParm_t;
 
 // font rendering values used by ui and cgame
@@ -1501,10 +1500,9 @@ char *Q_UTF8Unstore( int e );
 // key / value info strings
 //
 	char       *Info_ValueForKey( const char *s, const char *key );
-	void       Info_RemoveKey( char *s, const char *key );
+	void       Info_RemoveKey( char *s, const char *key , qboolean big );
 	void       Info_RemoveKey_big( char *s, const char *key );
-	void       Info_SetValueForKey( char *s, const char *key, const char *value );
-	void       Info_SetValueForKey_Big( char *s, const char *key, const char *value );
+	void       Info_SetValueForKey( char *s, const char *key, const char *value , qboolean big );
 	qboolean   Info_Validate( const char *s );
 	void       Info_NextPair( const char **s, char *key, char *value );
 
