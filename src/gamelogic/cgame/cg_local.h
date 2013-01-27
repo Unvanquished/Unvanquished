@@ -1567,6 +1567,8 @@ extern vmCvar_t             cg_animBlend;
 extern vmCvar_t             cg_highPolyPlayerModels;
 extern vmCvar_t             cg_highPolyBuildableModels;
 extern vmCvar_t             cg_highPolyWeaponModels;
+extern vmCvar_t             cg_motionblur;
+extern vmCvar_t             cg_motionblurMinSpeed;
 
 //
 // cg_main.c

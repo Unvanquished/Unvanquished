@@ -1522,6 +1522,9 @@ extern "C" {
 
 		int32_t     u_Time;
 		float       t_Time;
+
+		int32_t     u_blurVec;
+		vec3_t      t_blurVec;
 	} shaderProgram_t;
 
 #define SHADER_PROGRAM_T_OFS(x) ((size_t)&(((shaderProgram_t *)0 )->x ))
@@ -2412,6 +2415,7 @@ extern "C" {
 		float         fov_x, fov_y;
 		vec3_t        vieworg;
 		vec3_t        viewaxis[ 3 ]; // transformation matrix
+		vec3_t        blurVec;
 
 		stereoFrame_t stereoFrame;
 

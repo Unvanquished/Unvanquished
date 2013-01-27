@@ -713,6 +713,16 @@ void NET_SendPacket( netsrc_t sock, int length, const void *data, netadr_t to )
 	}
 }
 
+void inline NET_SetOOBHeader( char *s )
+{
+	byte i;
+
+	for ( i = 0; i < 4; ++i )
+	{
+		s[ i ] = 0xff;
+	}
+}
+
 /*
 ===============
 NET_OutOfBandPrint
@@ -725,11 +735,7 @@ void QDECL PRINTF_LIKE(3) NET_OutOfBandPrint( netsrc_t sock, netadr_t adr, const
 	va_list argptr;
 	char    string[ MAX_MSGLEN ];
 
-	// set the header
-	string[ 0 ] = -1;
-	string[ 1 ] = -1;
-	string[ 2 ] = -1;
-	string[ 3 ] = -1;
+	NET_SetOOBHeader( string );
 
 	va_start( argptr, format );
 	Q_vsnprintf( string + 4, sizeof( string ) - 4, format, argptr );
@@ -741,7 +747,7 @@ void QDECL PRINTF_LIKE(3) NET_OutOfBandPrint( netsrc_t sock, netadr_t adr, const
 
 /*
 ===============
-NET_OutOfBandPrint
+NET_OutOfBandData
 
 Sends a data message in an out-of-band datagram (only used for "connect")
 ================
@@ -752,11 +758,7 @@ void QDECL NET_OutOfBandData( netsrc_t sock, netadr_t adr, byte *format, int len
 	int   i;
 	msg_t mbuf;
 
-	// set the header
-	string[ 0 ] = 0xff;
-	string[ 1 ] = 0xff;
-	string[ 2 ] = 0xff;
-	string[ 3 ] = 0xff;
+	NET_SetOOBHeader( ( char * ) string );
 
 	for ( i = 0; i < len; i++ )
 	{

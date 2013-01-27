@@ -1853,15 +1853,15 @@ qboolean G_BotAdd( char *name, team_t team, int skill ) {
 
 	// register user information
 	userinfo[0] = '\0';
-	Info_SetValueForKey( userinfo, "name", name ? name : "" ); // allow defaulting
-	Info_SetValueForKey( userinfo, "rate", "25000" );
-	Info_SetValueForKey( userinfo, "snaps", "20" );
+	Info_SetValueForKey( userinfo, "name", name ? name : "", qfalse ); // allow defaulting
+	Info_SetValueForKey( userinfo, "rate", "25000", qfalse );
+	Info_SetValueForKey( userinfo, "snaps", "20", qfalse );
 	if (autoname)
-		Info_SetValueForKey( userinfo, "autoname", name );
+		Info_SetValueForKey( userinfo, "autoname", name, qfalse );
 
 	//so we can connect if server is password protected
 	if(g_needpass.integer == 1)
-		Info_SetValueForKey( userinfo, "password", g_password.string);
+		Info_SetValueForKey( userinfo, "password", g_password.string, qfalse);
 
 	trap_SetUserinfo( clientNum, userinfo );
 

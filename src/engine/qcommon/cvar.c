@@ -1296,32 +1296,7 @@ void Cvar_Restart_f( void )
 Cvar_InfoString
 =====================
 */
-char           *Cvar_InfoString( int bit )
-{
-	static char info[ MAX_INFO_STRING ];
-	cvar_t      *var;
-
-	info[ 0 ] = 0;
-
-	for ( var = cvar_vars; var; var = var->next )
-	{
-		if ( var->flags & bit )
-		{
-			Info_SetValueForKey( info, var->name, var->string );
-		}
-	}
-
-	return info;
-}
-
-/*
-=====================
-Cvar_InfoString_Big
-
-  handles large info strings ( CS_SYSTEMINFO )
-=====================
-*/
-char           *Cvar_InfoString_Big( int bit )
+char *Cvar_InfoString( int bit, qboolean big )
 {
 	static char info[ BIG_INFO_STRING ];
 	cvar_t      *var;
@@ -1332,7 +1307,7 @@ char           *Cvar_InfoString_Big( int bit )
 	{
 		if ( var->flags & bit )
 		{
-			Info_SetValueForKey_Big( info, var->name, var->string );
+			Info_SetValueForKey( info, var->name, var->string, big );
 		}
 	}
 
@@ -1346,7 +1321,7 @@ Cvar_InfoStringBuffer
 */
 void Cvar_InfoStringBuffer( int bit, char *buff, int buffsize )
 {
-	Q_strncpyz( buff, Cvar_InfoString( bit ), buffsize );
+	Q_strncpyz( buff, Cvar_InfoString( bit, qfalse ), buffsize );
 }
 
 /*

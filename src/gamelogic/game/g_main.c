@@ -977,9 +977,9 @@ void G_ShutdownGame( int restart )
 	G_WriteSessionData();
 
 	G_admin_cleanup();
-	G_namelog_cleanup();
 	G_BotCleanup( restart );
 	G_NavMeshCleanup( );
+	G_namelog_cleanup();
 	G_UnregisterCommands();
 
 	G_ShutdownMapRotations();
@@ -1322,7 +1322,7 @@ void G_SpawnClients( team_t team )
 		clientNum = G_PeekSpawnQueue( sq );
 		ent = &g_entities[ clientNum ];
 
-		if ( ( spawn = G_SelectTremulousSpawnPoint( team,
+		if ( ( spawn = G_SelectUnvanquishedSpawnPoint( team,
 		               ent->client->pers.lastDeathLocation,
 		               spawn_origin, spawn_angles ) ) )
 		{
