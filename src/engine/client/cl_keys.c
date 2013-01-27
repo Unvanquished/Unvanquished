@@ -1011,7 +1011,10 @@ int Key_StringToKeynum( const char *str )
 
 	if ( !str[ 1 ] )
 	{
-		return str[ 0 ] == '\n' ? -1 : str[ 0 ];
+		// single character; map upper-case ASCII letters to lower case
+		int key = str[ 0 ] == '\n' ? -1 : str[ 0 ];
+
+		return ( key >= 'A' && key <= 'Z' ) ? key + 0x20 : key;
 	}
 
 	// check for hex code
