@@ -47,7 +47,14 @@ static int           freeMem;
 void *BG_Alloc( int size )
 {
 #ifdef DEBUG_VM_ALLOC
-	return malloc( size );
+	void *ptr = malloc( size );
+
+	if ( ptr )
+	{
+		memset( ptr, 0, size );
+	}
+
+	return ptr;
 #else
 	// Find a free block and allocate.
 	// Does two passes, attempts to fill same-sized free slot first.
