@@ -881,7 +881,7 @@ void Key_GetBindingBuf( int keynum, char *buf, int buflen )
 {
 	const char *value;
 
-	value = Key_GetBinding( keynum, bindTeam );
+	value = Key_GetBinding( keynum, 0 ); // FIXME BIND
 
 	if ( value )
 	{
@@ -1177,11 +1177,11 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return 0;
 
 		case UI_KEY_SETBINDING:
-			Key_SetBinding( args[ 1 ], bindTeam, VMA( 2 ) );
+			Key_SetBinding( args[ 1 ], 0, VMA( 2 ) ); // FIXME BIND
 			return 0;
 
 		case UI_KEY_BINDINGTOKEYS:
-			Key_GetBindingByString( VMA( 1 ), bindTeam, VMA( 2 ), VMA( 3 ) );
+			Key_GetBindingByString( VMA( 1 ), 0, VMA( 2 ), VMA( 3 ) ); // FIXME BIND
 			return 0;
 
 		case UI_KEY_ISDOWN:
