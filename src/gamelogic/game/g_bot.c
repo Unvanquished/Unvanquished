@@ -22,7 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "g_bot.h"
-#include "../../engine/botlib/nav.h"
 
 #ifndef RAND_MAX
 #define RAND_MAX 32768

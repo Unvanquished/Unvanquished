@@ -18,11 +18,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 #include "g_bot.h"
-#include "../../engine/botlib/nav.h"
 #include "../../libs/detour/DetourNavMeshBuilder.h"
 #include "../../libs/detour/DetourNavMeshQuery.h"
 #include "../../libs/detour/DetourPathCorridor.h"
 #include "../../libs/detour/DetourCommon.h"
+#include "../../engine/botlib/nav.h"
 
 dtPathCorridor pathCorridor[MAX_CLIENTS];
 dtNavMeshQuery* navQuerys[PCL_NUM_CLASSES];
@@ -37,181 +37,134 @@ qboolean navMeshLoaded = qfalse;
 Navigation Mesh Loading
 ========================
 */
-qboolean G_NavLoad( dtNavMeshCreateParams *navParams, class_t classt )
+qboolean BotLoadNavMesh( const char *filename, dtNavMesh **navMesh )
 {
-	char filename[MAX_QPATH];
-	char mapname[MAX_QPATH];
-	long len;
-	char text[1024 * 1024 * 2]; // plenty of space for those big complicated maps, we hope
-	char *text_p = NULL;
-	fileHandle_t f;
-	NavMeshHeader_t navHeader;
-	char gameName[MAX_STRING_CHARS];
-
-	memset( &navHeader, 0, sizeof( NavMeshHeader_t ) );
+	char mapname[ MAX_QPATH ];
+	char filePath[ MAX_QPATH ];
+	char gameName[ MAX_STRING_CHARS ];
+	fileHandle_t f = 0;
+	dtNavMesh *mesh = NULL;
 
 	trap_Cvar_VariableStringBuffer( "mapname", mapname, sizeof( mapname ) );
 	trap_Cvar_VariableStringBuffer( "fs_game", gameName, sizeof( gameName ) );
-	Com_sprintf( filename, sizeof( filename ), "maps/%s-%s.navMesh", mapname, BG_Class( classt )->name );
-	Com_Printf( " loading navigation mesh file '%s'...", filename );
+	Com_sprintf( filePath, sizeof( filePath ), "maps/%s-%s.navMesh", mapname, filename );
+	Com_Printf( " loading navigation mesh file '%s'...\n", filePath );
 
-	// load the file
-	len = trap_FS_FOpenFile( filename, &f, FS_READ );
+	int len = trap_FS_FOpenFile( filePath, &f, FS_READ );
+
+	if ( !f )
+	{
+		Com_Printf( S_COLOR_RED "ERROR: Cannot open Navigaton Mesh file\n" );
+		return qfalse;
+	}
+
 	if ( len < 0 )
 	{
-		Com_Printf( S_COLOR_RED "ERROR: Negative Length for Navigation Mesh file %s\n", filename );
+		Com_Printf( S_COLOR_RED "ERROR: Negative Length for Navigation Mesh file\n" );
 		return qfalse;
 	}
 
-	if ( len == 0 || len >= sizeof( text ) - 1 )
+	NavMeshSetHeader header;
+	
+	trap_FS_Read( &header, sizeof( header ), f );
+
+	qboolean swapEndian = qfalse;
+
+	if ( header.magic != NAVMESHSET_MAGIC )
 	{
+		swapEndian = qtrue;
+		int i;
+		for ( i = 0; i < sizeof( header ) / sizeof( int ); i ++ )
+		{
+			dtSwapEndian( ( ( int * ) &header ) + i );
+		}
+	}
+
+	if ( header.version != NAVMESHSET_VERSION )
+	{
+		Com_Printf( S_COLOR_RED "ERROR: File is wrong version found: %d want: %d\n", header.version, NAVMESHSET_VERSION );
 		trap_FS_FCloseFile( f );
-		Com_Printf( S_COLOR_RED "ERROR: Navigation Mesh file %s is %s\n", filename,
-		            len == 0 ? "empty" : "too long" );
 		return qfalse;
 	}
 
-	trap_FS_Read( text, len, f );
-	text[ len ] = 0;
+	mesh = dtAllocNavMesh();
+
+	if ( !mesh )
+	{
+		Com_Printf( S_COLOR_RED "ERROR: Unable to allocate nav mesh\n" );
+		trap_FS_FCloseFile( f );
+		return qfalse;
+	}
+
+	*navMesh = mesh;
+	dtStatus status = mesh->init( &header.params );
+
+	if ( dtStatusFailed( status ) )
+	{
+		Com_Printf( S_COLOR_RED "ERROR: Could not init navmesh\n" );
+		dtFreeNavMesh( *navMesh );
+		*navMesh = 0;
+		trap_FS_FCloseFile( f );
+		return qfalse;
+	}
+
+	for ( int i = 0; i < header.numTiles; i++ )
+	{
+		NavMeshTileHeader tileHeader;
+
+		trap_FS_Read( &tileHeader, sizeof( tileHeader ), f );
+
+		if ( swapEndian )
+		{
+			dtSwapEndian( &tileHeader.dataSize );
+			dtSwapEndian( &tileHeader.tileRef );
+		}
+
+		if ( !tileHeader.tileRef || !tileHeader.dataSize )
+		{
+			Com_Printf( S_COLOR_RED "ERROR: NUll Tile in navmesh\n" );
+			dtFreeNavMesh( *navMesh );
+			*navMesh = 0;
+			trap_FS_FCloseFile( f );
+			return qfalse;
+		}
+
+		unsigned char *data = ( unsigned char * ) dtAlloc( tileHeader.dataSize, DT_ALLOC_PERM );
+
+		if ( !data )
+		{
+			Com_Printf( S_COLOR_RED "ERROR: Failed to allocate memory for tile data\n" );
+			dtFreeNavMesh( *navMesh );
+			*navMesh = 0;
+			trap_FS_FCloseFile( f );
+			return qfalse;
+		}
+
+		memset( data, 0, tileHeader.dataSize );
+
+		trap_FS_Read( data, tileHeader.dataSize, f );
+
+		if ( swapEndian )
+		{
+			dtNavMeshHeaderSwapEndian( data, tileHeader.dataSize );
+			dtNavMeshDataSwapEndian( data, tileHeader.dataSize );
+		}
+
+		dtStatus status = mesh->addTile( data, tileHeader.dataSize, DT_TILE_FREE_DATA, tileHeader.tileRef, 0 );
+
+		if ( dtStatusFailed( status ) )
+		{
+			Com_Printf( S_COLOR_RED "ERROR: Failed to add tile to navmesh\n" );
+			dtFree( data );
+			dtFreeNavMesh( *navMesh );
+			*navMesh = 0;
+			trap_FS_FCloseFile( f );
+			return qfalse;
+		}
+	}
+
 	trap_FS_FCloseFile( f );
-
-	// parse the text
-	text_p = text;
-
-	//header
-	navHeader.version = atoi( COM_Parse( &text_p ) );
-
-	//wrong version!!!
-	if ( navHeader.version != 1 )
-	{
-		Com_Printf( S_COLOR_RED "ERROR: The Navigation Mesh is the wrong version!\n" );
-		return qfalse;
-	}
-
-	navHeader.numVerts = atoi( COM_Parse( &text_p ) );
-	navHeader.numPolys = atoi( COM_Parse( &text_p ) );
-	navHeader.numVertsPerPoly = atoi( COM_Parse( &text_p ) );
-	for ( int i = 0; i < 3; i++ )
-	{
-		navHeader.mins[i] = atof( COM_Parse( &text_p ) );
-	}
-	for ( int i = 0; i < 3; i++ )
-	{
-		navHeader.maxs[i] = atof( COM_Parse( &text_p ) );
-	}
-	navHeader.dNumMeshes = atoi( COM_Parse( &text_p ) );
-	navHeader.dNumVerts = atoi( COM_Parse( &text_p ) );
-	navHeader.dNumTris = atoi( COM_Parse( &text_p ) );
-	navHeader.cellSize = atof( COM_Parse( &text_p ) );
-	navHeader.cellHeight = atof( COM_Parse( &text_p ) );
-
-	//load verts
-	int vertsSize = navHeader.numVerts * sizeof ( unsigned short ) * 3;
-	navHeader.data.verts = ( unsigned short * )malloc( vertsSize );
-	for ( int i = 0, j = 0; i < navHeader.numVerts; i++, j += 3 )
-	{
-		for ( int n = 0; n < 3; n++ )
-		{
-			navHeader.data.verts[j + n] = ( unsigned short )atoi( COM_Parse( &text_p ) );
-		}
-	}
-	navParams->vertCount = navHeader.numVerts;
-	navParams->verts = navHeader.data.verts;
-
-	//load polys
-	int polysSize = navHeader.numPolys * sizeof ( unsigned short ) * navHeader.numVertsPerPoly * 2;
-	navHeader.data.polys = ( unsigned short * )malloc( polysSize );
-	for ( int i = 0, k = 0; i < navHeader.numPolys; i++, k += navHeader.numVertsPerPoly * 2 )
-	{
-		for ( int n = 0; n < navHeader.numVertsPerPoly * 2; n++ )
-		{
-			navHeader.data.polys[k + n] = ( unsigned short )atoi( COM_Parse( &text_p ) );
-		}
-	}
-	navParams->polyCount = navHeader.numPolys;
-	navParams->nvp = navHeader.numVertsPerPoly;
-	navParams->polys = navHeader.data.polys;
-
-	//load areas
-	int areasSize = navHeader.numPolys * sizeof ( unsigned char );
-	navHeader.data.areas = ( unsigned char * )malloc( areasSize );
-	for ( int i = 0; i < navHeader.numPolys; i++ )
-	{
-		navHeader.data.areas[i] = ( unsigned char )atoi( COM_Parse( &text_p ) );
-	}
-	navParams->polyAreas = navHeader.data.areas;
-
-	//load flags
-	int flagsSize = navHeader.numPolys * sizeof ( unsigned short );
-	navHeader.data.flags = ( unsigned short * )malloc( flagsSize );
-	for ( int i = 0; i < navHeader.numPolys; i++ )
-	{
-		navHeader.data.flags[i] = ( unsigned short )atoi( COM_Parse( &text_p ) );
-	}
-	navParams->polyFlags = navHeader.data.flags;
-
-	//load detailed meshes
-	int dMeshesSize = navHeader.dNumMeshes * sizeof ( unsigned int ) * 4;
-	navHeader.data.dMeshes = ( unsigned int * )malloc( dMeshesSize );
-	for ( int i = 0, j = 0; i < navHeader.dNumMeshes; i++, j += 4 )
-	{
-		for ( int n = 0; n < 4; n++ )
-		{
-			navHeader.data.dMeshes[j + n] = ( unsigned int )atoi( COM_Parse( &text_p ) );
-		}
-	}
-	navParams->detailMeshes = navHeader.data.dMeshes;
-
-	//load detailed verticies
-	int dVertsSize = navHeader.dNumVerts * sizeof ( float ) * 3;
-	navHeader.data.dVerts = ( float * )malloc( dVertsSize );
-	for ( int i = 0, j = 0; i < navHeader.dNumVerts; i++, j += 3 )
-	{
-		for ( int n = 0; n < 3; n++ )
-		{
-			navHeader.data.dVerts[j + n] = atof( COM_Parse( &text_p ) );
-		}
-	}
-	navParams->detailVertsCount = navHeader.dNumVerts;
-	navParams->detailVerts = navHeader.data.dVerts;
-
-	//load detailed tris
-	int dTrisSize = navHeader.dNumTris * sizeof ( unsigned char ) * 4;
-	navHeader.data.dTris = ( unsigned char * )malloc( dTrisSize );
-	for ( int i = 0, j = 0; i < navHeader.dNumTris; i++, j += 4 )
-	{
-		for ( int n = 0; n < 4; n++ )
-		{
-			navHeader.data.dTris[j + n] = ( unsigned char )atoi( COM_Parse( &text_p ) );
-		}
-	}
-	navParams->detailTriCount = navHeader.dNumTris;
-	navParams->detailTris = navHeader.data.dTris;
-
-	//other parameters
-	navParams->walkableHeight = 48.0f;
-	navParams->walkableRadius = 15.0f;
-	navParams->walkableClimb = STEPSIZE;
-	VectorCopy ( navHeader.mins, navParams->bmin );
-	VectorCopy ( navHeader.maxs, navParams->bmax );
-	navParams->cs = navHeader.cellSize;
-	navParams->ch = navHeader.cellHeight;
-	navParams->offMeshConCount = 0;
-	navParams->buildBvTree = true;
-
-	Com_Printf( " done.\n" );
 	return qtrue;
-}
-
-void freeNavParams( dtNavMeshCreateParams *navParams )
-{
-	free( ( void* )navParams->verts );
-	free( ( void* )navParams->polys );
-	free( ( void* )navParams->polyAreas );
-	free( ( void* )navParams->polyFlags );
-	free( ( void* )navParams->detailMeshes );
-	free( ( void* )navParams->detailVerts );
-	free( ( void* )navParams->detailTris );
 }
 
 void G_BotNavInit()
@@ -224,66 +177,27 @@ void G_BotNavInit()
 
 	for ( int i = PCL_NONE + 1; i < PCL_NUM_CLASSES; i++ )
 	{
-		dtNavMeshCreateParams navParams;
-		unsigned char *navData = NULL;
-		int navDataSize = 0;
-		memset( &navParams, 0, sizeof( dtNavMeshCreateParams ) );
-
-		if ( !G_NavLoad( &navParams, ( class_t )i ) )
+		if ( !BotLoadNavMesh( BG_Class( ( class_t ) i )->name, &navMeshes[ i ] ) )
 		{
-
-			return;
-		}
-
-		if ( !dtCreateNavMeshData ( &navParams, &navData, &navDataSize ) )
-		{
-			Com_Printf ( "Could not build Detour Navigation Mesh Data for class %s\n", BG_Class( ( class_t )i )->name );
-			return;
-		}
-
-		freeNavParams( &navParams );
-
-		navMeshes[i] = dtAllocNavMesh();
-
-		if ( !navMeshes[i] )
-		{
-			dtFree( navData );
-			navData = NULL;
-			Com_Printf ( "Could not allocate Detour Navigation Mesh for class %s\n", BG_Class( ( class_t )i )->name );
-			return;
-		}
-
-		if ( dtStatusFailed( navMeshes[i]->init( navData, navDataSize, DT_TILE_FREE_DATA ) ) )
-		{
-			dtFree( navData );
-			navData = NULL;
-			dtFreeNavMesh( navMeshes[i] );
-			navMeshes[i] = NULL;
-			Com_Printf ( "Could not init Detour Navigation Mesh for class %s\n", BG_Class( ( class_t )i )->name );
+			G_BotNavCleanup();
 			return;
 		}
 
 		navQuerys[i] = dtAllocNavMeshQuery();
 		if ( !navQuerys[i] )
 		{
-			dtFree( navData );
-			navData = NULL;
-			dtFreeNavMesh( navMeshes[i] );
-			navMeshes[i] = NULL;
+			G_BotNavCleanup();
 			Com_Printf( "Could not allocate Detour Navigation Mesh Query for class %s\n", BG_Class( ( class_t )i )->name );
 			return;
 		}
+
 		if ( dtStatusFailed( navQuerys[i]->init( navMeshes[i], 65536 ) ) )
 		{
-			dtFreeNavMeshQuery( navQuerys[i] );
-			navQuerys[i] = NULL;
-			dtFree( navData );
-			navData = NULL;
-			dtFreeNavMesh( navMeshes[i] );
-			navMeshes[i] = NULL;
+			G_BotNavCleanup();
 			Com_Printf( "Could not init Detour Navigation Mesh Query for class %s", BG_Class( ( class_t )i )->name );
 			return;
 		}
+
 		navFilters[i].setIncludeFlags( POLYFLAGS_WALK );
 		navFilters[i].setExcludeFlags( POLYFLAGS_DISABLED );
 	}
@@ -291,7 +205,9 @@ void G_BotNavInit()
 	{
 		if ( !pathCorridor[i].init( MAX_PATH_POLYS ) )
 		{
+			G_BotNavCleanup();
 			Com_Printf( "Could not init the path corridor\n" );
+			return;
 		}
 	}
 	navMeshLoaded = qtrue;

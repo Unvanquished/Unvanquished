@@ -31,32 +31,22 @@ const short STEPSIZE = 18;
 const short MAX_PATH_POLYS = 512;
 const short MAX_CORRIDOR_CORNERS = 5;
 
-typedef struct
-{
-  unsigned short *verts;
-  unsigned short *polys;
-  unsigned char *areas;
-  unsigned short *flags;
-  unsigned int *dMeshes;
-  float *dVerts;
-  unsigned char *dTris;
-} NavMeshData_t;
+static const int NAVMESHSET_MAGIC = 'M'<<24 | 'S'<<16 | 'E'<<8 | 'T'; //'MSET';
+static const int NAVMESHSET_VERSION = 1;
 
-typedef struct
+struct NavMeshSetHeader
 {
-    int version;
-    int numVerts;
-    int numPolys;
-    int numVertsPerPoly;
-    float mins[3];
-    float maxs[3];
-    int dNumMeshes;
-    int dNumVerts;
-    int dNumTris;
-    float cellSize;
-    float cellHeight;
-    NavMeshData_t data;
-} NavMeshHeader_t;
+	int magic;
+	int version;
+	int numTiles;
+	dtNavMeshParams params;
+};
+
+struct NavMeshTileHeader
+{
+	dtTileRef tileRef;
+	int dataSize;
+};
 
 enum navPolyAreas
 {
