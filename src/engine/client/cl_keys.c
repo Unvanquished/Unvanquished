@@ -52,12 +52,12 @@ qkey_t   keys[ MAX_KEYS ];
 
 typedef struct
 {
-	char *name;
-	int  keynum;
+	const char *name;
+	int        keynum;
 } keyname_t;
 
 // names not in this list can either be lowercase ascii, or '0xnn' hex sequences
-keyname_t keynames[] =
+static const keyname_t keynames[] =
 {
 	{ "TAB",                    K_TAB                    },
 	{ "ENTER",                  K_ENTER                  },
@@ -1144,7 +1144,7 @@ to be configured even if they don't have defined names.
 */
 int Key_StringToKeynum( const char *str )
 {
-	keyname_t *kn;
+	const keyname_t *kn;
 
 	if ( !str )
 	{
@@ -1189,7 +1189,7 @@ given keynum.
 */
 const char *Key_KeynumToString( int keynum )
 {
-	keyname_t   *kn;
+	const keyname_t *kn;
 	static char tinystr[ 5 ];
 	int         i, j;
 
