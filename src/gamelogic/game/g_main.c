@@ -1197,7 +1197,7 @@ void G_SpawnClients( team_t team )
 		clientNum = G_PeekSpawnQueue( sq );
 		ent = &g_entities[ clientNum ];
 
-		if ( ( spawn = G_SelectTremulousSpawnPoint( team,
+		if ( ( spawn = G_SelectUnvanquishedSpawnPoint( team,
 		               ent->client->pers.lastDeathLocation,
 		               spawn_origin, spawn_angles ) ) )
 		{
