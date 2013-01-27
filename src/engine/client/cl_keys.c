@@ -1305,7 +1305,7 @@ void Key_SetBinding( int keynum, const char *binding )
 Key_GetBinding
 ===================
 */
-char *Key_GetBinding( int keynum )
+const char *Key_GetBinding( int keynum )
 {
 	if ( keynum < 0 || keynum >= MAX_KEYS )
 	{
@@ -1474,8 +1474,7 @@ Key_EditBind_f
 void Key_EditBind_f( void )
 {
 	char           *buf;
-	/*const*/
-	char *key, *binding;
+	const char     *key, *binding;
 	const char     *bindq;
 	int            b;
 
