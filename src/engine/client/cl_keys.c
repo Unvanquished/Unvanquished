@@ -1280,12 +1280,20 @@ void Key_SetBinding( int keynum, const char *binding )
 		Z_Free( keys[ keynum ].binding );
 	}
 
-	// allocate memory for new binding
-	keys[ keynum ].binding = CopyString( binding );
-	lcbinding = CopyString( binding );
-	Q_strlwr( lcbinding );  // saves doing it on all the generateHashValues in Key_GetBindingByString
-
-	keys[ keynum ].hash = generateHashValue( lcbinding );
+	if ( binding && binding[ 0 ] )
+	{
+		// allocate memory for new binding
+		keys[ keynum ].binding = CopyString( binding );
+		lcbinding = CopyString( binding );
+		Q_strlwr( lcbinding );  // saves doing it on all the generateHashValues in Key_GetBindingByString
+		Z_Free( lcbinding );
+		keys[ keynum ].hash = generateHashValue( lcbinding );
+	}
+	else
+	{
+		keys[ keynum ].binding = NULL;
+		keys[ keynum ].hash = 0;
+	}
 
 	// consider this like modifying an archived cvar, so the
 	// file write will be triggered at the next oportunity
@@ -1301,7 +1309,7 @@ char *Key_GetBinding( int keynum )
 {
 	if ( keynum < 0 || keynum >= MAX_KEYS )
 	{
-		return "";
+		return NULL;
 	}
 
 	return keys[ keynum ].binding;
@@ -1380,7 +1388,7 @@ void Key_Unbind_f( void )
 		return;
 	}
 
-	Key_SetBinding( b, "" );
+	Key_SetBinding( b, NULL );
 }
 
 /*
@@ -1396,7 +1404,7 @@ void Key_Unbindall_f( void )
 	{
 		if ( keys[ i ].binding )
 		{
-			Key_SetBinding( i, "" );
+			Key_SetBinding( i, NULL );
 		}
 	}
 }
