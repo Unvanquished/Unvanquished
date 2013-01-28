@@ -27,6 +27,9 @@ build-64/*
 *.vcxproj.user
 *.kdev4
 
+#ignore vim editor swap files
+.*.swp
+
 #ignore eclipse cdt project files
 .project
 .cproject
