@@ -63,7 +63,6 @@ equ trap_S_FadeAllSound                   -302
 equ trap_Key_KeynumToStringBuf            -303
 equ trap_Key_GetBindingBuf                -304
 equ trap_Key_SetBinding                   -305
-equ trap_Key_KeysForBinding               -306
 equ trap_Key_IsDown                       -307
 equ trap_Key_GetOverstrikeMode            -308
 equ trap_Key_SetOverstrikeMode            -309

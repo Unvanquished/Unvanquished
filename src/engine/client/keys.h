@@ -41,7 +41,6 @@ typedef struct
 	qboolean down;
 	int      repeats; // if > 1, it is autorepeating
 	char     *binding[ MAX_TEAMS ];
-	int      hash[ MAX_TEAMS ];
 } qkey_t;
 
 extern qboolean key_overstrikeMode;

@@ -403,13 +403,6 @@ void trap_Key_SetBinding( int keynum, int team, const char *binding )
 	syscall( UI_KEY_SETBINDING, keynum, team, binding );
 }
 
-//49.
-//Key_GetBindingByString(VMA(1), VMA(2), VMA(3));
-void trap_Key_KeysForBinding( const char *binding, int *key1, int *key2 )
-{
-	syscall( UI_KEY_BINDINGTOKEYS, binding, key1, key2 );
-}
-
 //50.
 //return Key_IsDown(args[1]);
 qboolean trap_Key_IsDown( int keynum )

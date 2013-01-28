@@ -286,7 +286,6 @@ void        trap_S_FadeAllSound( float targetvol, int time, qboolean stopsound )
 void        trap_Key_KeynumToStringBuf( int keynum, char *buf, int buflen );
 void        trap_Key_GetBindingBuf( int keynum, int team, char *buf, int buflen );
 void        trap_Key_SetBinding( int keynum, int team, const char *binding );
-void        trap_Key_KeysForBinding( const char *binding, int *key1, int *key2 );
 qboolean    trap_Key_IsDown( int keynum );
 qboolean    trap_Key_GetOverstrikeMode( void );
 void        trap_Key_SetOverstrikeMode( qboolean state );

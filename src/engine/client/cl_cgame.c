@@ -1130,10 +1130,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Key_KeynumToStringBuf( args[ 1 ], VMA( 2 ), args[ 3 ] );
 			return 0;
 
-		case CG_KEY_BINDINGTOKEYS:
-			Key_GetBindingByString( VMA( 1 ), 0, VMA( 2 ), VMA( 3 ) ); // FIXME BIND
-			return 0;
-
 		case CG_S_FADEALLSOUNDS:
 			// FIXME
 			//S_FadeAllSounds(VMF(1), args[2], args[3]);

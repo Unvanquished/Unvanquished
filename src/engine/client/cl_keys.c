@@ -1097,31 +1097,6 @@ const char *Key_KeynumToString( int keynum )
 	return tinystr;
 }
 
-#define BIND_HASH_SIZE 1024
-
-static long generateHashValue( const char *fname )
-{
-	int  i;
-	long hash;
-
-	if ( !fname )
-	{
-		return 0;
-	}
-
-	hash = 0;
-	i = 0;
-
-	while ( fname[ i ] != '\0' )
-	{
-		hash += ( long )( fname[ i ] ) * ( i + 119 );
-		i++;
-	}
-
-	hash &= ( BIND_HASH_SIZE - 1 );
-	return hash;
-}
-
 /*
 ===================
 Key_GetTeam
@@ -1233,12 +1208,10 @@ void Key_SetBinding( int keynum, int team, const char *binding )
 		lcbinding = CopyString( binding );
 		Q_strlwr( lcbinding );  // saves doing it on all the generateHashValues in Key_GetBindingByString
 		Z_Free( lcbinding );
-		keys[ keynum ].hash[ team ] = generateHashValue( lcbinding );
 	}
 	else
 	{
 		keys[ keynum ].binding[ team ] = NULL;
-		keys[ keynum ].hash[ team ] = 0;
 	}
 
 	// consider this like modifying an archived cvar, so the
@@ -1262,39 +1235,6 @@ const char *Key_GetBinding( int keynum, int team )
 
 	bind = keys[ keynum ].binding[ CLIP( team ) ];
 	return bind ? bind : keys[ keynum ].binding[ 0 ];
-}
-
-// binding MUST be lower case
-void Key_GetBindingByString( const char *binding, int team, int *key1, int *key2 )
-{
-	int i;
-	int hash = generateHashValue( binding );
-
-	*key1 = -1;
-	*key2 = -1;
-
-	team = CLIP( team );
-
-	while ( team >= 0 )
-	{
-		for ( i = 0; i < MAX_KEYS; i++ )
-		{
-			if ( keys[ i ].hash[ team ] == hash && !Q_stricmp( binding, keys[ i ].binding[ team ] ) )
-			{
-				if ( *key1 == -1 )
-				{
-					*key1 = i;
-				}
-				else if ( *key2 == -1 )
-				{
-					*key2 = i;
-					return;
-				}
-			}
-		}
-
-		team = team ? 0 : -1;
-	}
 }
 
 /*

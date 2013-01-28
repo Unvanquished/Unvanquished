@@ -1180,10 +1180,6 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			Key_SetBinding( args[ 1 ], 0, VMA( 2 ) ); // FIXME BIND
 			return 0;
 
-		case UI_KEY_BINDINGTOKEYS:
-			Key_GetBindingByString( VMA( 1 ), 0, VMA( 2 ), VMA( 3 ) ); // FIXME BIND
-			return 0;
-
 		case UI_KEY_ISDOWN:
 			return Key_IsDown( args[ 1 ] );
 

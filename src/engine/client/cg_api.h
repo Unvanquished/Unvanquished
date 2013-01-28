@@ -431,7 +431,6 @@ int             trap_Parse_FreeSource( int handle );
 int             trap_Parse_ReadToken( int handle, pc_token_t *pc_token );
 int             trap_Parse_SourceFileAndLine( int handle, char *filename, int *line );
 void            trap_Key_KeynumToStringBuf( int keynum, char *buf, int buflen );
-void            trap_Key_KeysForBinding( const char *binding, int *key1, int *key2 );
 void            trap_CG_TranslateString( const char *string, char *buf );
 void            trap_S_FadeAllSound( float targetvol, int time, qboolean stopsounds );
 qboolean        trap_R_inPVS( const vec3_t p1, const vec3_t p2 );

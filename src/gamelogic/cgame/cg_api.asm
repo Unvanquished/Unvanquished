@@ -149,7 +149,6 @@ equ trap_Parse_FreeSource                 -387
 equ trap_Parse_ReadToken                  -388
 equ trap_Parse_SourceFileAndLine          -389
 equ trap_Key_KeynumToStringBuf            -390
-equ trap_Key_KeysForBinding               -391
 equ trap_S_FadeAllSound                   -393
 equ trap_R_inPVS                          -394
 equ trap_GetHunkData                      -395

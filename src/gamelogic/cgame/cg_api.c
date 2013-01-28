@@ -1044,13 +1044,6 @@ void trap_Key_KeynumToStringBuf( int keynum, char *buf, int buflen )
 	syscall( CG_KEY_KEYNUMTOSTRINGBUF, keynum, buf, buflen );
 }
 
-//149.
-//Key_GetBindingByString(VMA(1), VMA(2), VMA(3));
-void trap_Key_KeysForBinding( const char *binding, int *key1, int *key2 )
-{
-	syscall( CG_KEY_BINDINGTOKEYS, binding, key1, key2 );
-}
-
 //151.
 //S_FadeAllSounds(VMF(1), args[2], args[3]);
 void trap_S_FadeAllSound( float targetvol, int time, qboolean stopsounds )
