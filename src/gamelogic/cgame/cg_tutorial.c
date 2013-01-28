@@ -635,15 +635,15 @@ const char *CG_TutorialText( void )
 	static char   text[ MAX_TUTORIAL_TEXT ];
 	static int    refreshBindings = 0;
 
+	text[ 0 ] = '\0';
+	ps = &cg.snap->ps;
+
 	if ( refreshBindings == 0 )
 	{
 		CG_GetBindings( ps->stats[ STAT_TEAM ] );
 	}
 
 	refreshBindings = ( refreshBindings + 1 ) % BINDING_REFRESH_INTERVAL;
-
-	text[ 0 ] = '\0';
-	ps = &cg.snap->ps;
 
 	if ( !cg.intermissionStarted && !cg.demoPlayback )
 	{

@@ -1507,11 +1507,11 @@ void Key_EditBind_f( void )
 	binding = Key_GetBinding( b, team );
 
 	bindq = binding ? Cmd_QuoteString( binding ) : "";  // <- static buffer
-	buf = malloc( 8 + strlen( key ) + strlen( bindq ) );
+	buf = malloc( 32 + strlen( key ) + strlen( bindq ) );
 
 	if ( team )
 	{
-		sprintf( buf, "/teambind %d %s %s", team, Key_KeynumToString( b ), bindq );
+		sprintf( buf, "/teambind %s %s %s", teamName[ team ], Key_KeynumToString( b ), bindq );
 	}
 	else
 	{
