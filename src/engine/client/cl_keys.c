@@ -1141,10 +1141,10 @@ static int Key_GetTeam( const char *arg, const char *cmd )
 		{ 0, "spectators" },
 		{ 0, "d" },
 		{ 0, "default" },
-		{ 1, "h" },
-		{ 1, "humans" },
-		{ 2, "a" },
-		{ 2, "aliens" }
+		{ 1, "a" },
+		{ 1, "aliens" },
+		{ 2, "h" },
+		{ 2, "humans" }
 	};
 	int t;
 
