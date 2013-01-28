@@ -1136,17 +1136,17 @@ static int Key_GetTeam( const char *arg, const char *cmd )
 		char team;
 		char label[11];
 	} labels[] = {
-		{ 0, "s" },
-		{ 0, "spec" },
 		{ 0, "spectators" },
-		{ 0, "d" },
 		{ 0, "default" },
-		{ 1, "a" },
 		{ 1, "aliens" },
-		{ 2, "h" },
 		{ 2, "humans" }
 	};
-	int t;
+	int t, l;
+
+	if ( !*arg ) // empty string
+	{
+		goto fail;
+	}
 
 	for ( t = 0; arg[ t ]; ++t )
 	{
@@ -1169,14 +1169,18 @@ static int Key_GetTeam( const char *arg, const char *cmd )
 		return t;
 	}
 
+	l = strlen( arg );
+
 	for ( t = 0; t < ARRAY_LEN( labels ); ++t )
 	{
-		if ( !Q_stricmp( arg, labels[ t ].label ) )
+		// matching initial substring
+		if ( !Q_stricmpn( arg, labels[ t ].label, l ) )
 		{
 			return labels[ t ].team;
 		}
 	}
 
+fail:
 	Com_Printf( _("^3%s:^7 '%s^7' is not a valid team name\n"), cmd, arg );
 	return -1;
 }
