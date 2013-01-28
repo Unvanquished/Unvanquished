@@ -1184,6 +1184,8 @@ static int Key_GetTeam( const char *arg, const char *cmd )
 /*
 ===================
 Key_SetBinding
+
+team == -1 clears all bindings for the key, then sets the spec/global binding
 ===================
 */
 void Key_SetBinding( int keynum, int team, const char *binding )
@@ -1197,14 +1199,29 @@ void Key_SetBinding( int keynum, int team, const char *binding )
 		return;
 	}
 
+	// free old bindings
+	if ( team == -1 )
+	{
+		// just the team-specific ones here
+		for ( team = MAX_TEAMS - 1; team; --team )
+		{
+			if ( keys[ keynum ].binding[ team ] )
+			{
+				Z_Free( keys[ keynum ].binding[ team ] );
+				keys[ keynum ].binding[ team ] = NULL;
+			}
+		}
+		// team == 0...
+	}
+
 	team = CLIP( team );
 
-	// free old bindings
 	if ( keys[ keynum ].binding[ team ] )
 	{
 		Z_Free( keys[ keynum ].binding[ team ] );
 	}
 
+	// set the new binding, if not null/empty
 	if ( binding && binding[ 0 ] )
 	{
 		// allocate memory for new binding
@@ -1336,17 +1353,7 @@ void Key_Unbind_f( void )
 		return;
 	}
 
-	if ( team < 0 )
-	{
-		for ( team = 0; team < MAX_TEAMS; ++team )
-		{
-			Key_SetBinding( b, team, NULL );
-		}
-	}
-	else
-	{
-		Key_SetBinding( b, team, NULL );
-	}
+	Key_SetBinding( b, team, NULL );
 }
 
 /*
@@ -1356,17 +1363,11 @@ Key_Unbindall_f
 */
 void Key_Unbindall_f( void )
 {
-	int i, team;
+	int i;
 
 	for ( i = 0; i < MAX_KEYS; i++ )
 	{
-		for ( team = 0; team < MAX_TEAMS; ++team )
-		{
-			if ( keys[ i ].binding[ team ] )
-			{
-				Key_SetBinding( i, team, NULL );
-			}
-		}
+		Key_SetBinding( i, -1, NULL );
 	}
 }
 
@@ -1380,7 +1381,7 @@ void Key_Bind_f( void )
 	int        c, b;
 	const char *key;
 	const char *cmd = NULL;
-	int        team = 0;
+	int        team = -1;
 
 	int teambind = !Q_stricmp( Cmd_Argv( 0 ), "teambind" );
 
@@ -1475,7 +1476,7 @@ void Key_EditBind_f( void )
 	const char     *key, *binding;
 	const char     *bindq;
 	int            b;
-	int            team = 0;
+	int            team = -1;
 
 	b = Cmd_Argc();
 
@@ -1509,7 +1510,7 @@ void Key_EditBind_f( void )
 	bindq = binding ? Cmd_QuoteString( binding ) : "";  // <- static buffer
 	buf = malloc( 32 + strlen( key ) + strlen( bindq ) );
 
-	if ( team )
+	if ( team >= 0 )
 	{
 		sprintf( buf, "/teambind %s %s %s", teamName[ team ], Key_KeynumToString( b ), bindq );
 	}
