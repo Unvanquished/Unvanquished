@@ -45,7 +45,8 @@ static bind_t bindings[] =
 	{ "buy ammo",       N_( "Buy Ammo" ),                              { -1, -1 } },
 	{ "itemact medkit", N_( "Use Medkit" ),                            { -1, -1 } },
 	{ "+activate",      N_( "Use Structure/Evolve" ),                  { -1, -1 } },
-	{ "deconstruct",    N_( "Deconstruct Structure" ),                 { -1, -1 } },
+	{ "if alt \"/deconstruct marked\" /deconstruct",
+                            N_( "Deconstruct Structure" ),                 { -1, -1 } },
 	{ "weapprev",       N_( "Previous Upgrade" ),                      { -1, -1 } },
 	{ "weapnext",       N_( "Next Upgrade" ),                          { -1, -1 } }
 };
