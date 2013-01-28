@@ -990,16 +990,16 @@ void trap_UI_ClosePopup( const char *arg0 )
 
 //141.
 //Key_GetBindingBuf(args[1], VMA(2), args[3]);
-void trap_Key_GetBindingBuf( int keynum, char *buf, int buflen )
+void trap_Key_GetBindingBuf( int keynum, int team, char *buf, int buflen )
 {
-	syscall( CG_KEY_GETBINDINGBUF, keynum, buf, buflen );
+	syscall( CG_KEY_GETBINDINGBUF, keynum, team, buf, buflen );
 }
 
 //142.
 //Key_SetBinding(args[1], VMA(2));
-void trap_Key_SetBinding( int keynum, const char *binding )
+void trap_Key_SetBinding( int keynum, int team, const char *binding )
 {
-	syscall( CG_KEY_SETBINDING, keynum, binding );
+	syscall( CG_KEY_SETBINDING, keynum, team, binding );
 }
 
 //143.

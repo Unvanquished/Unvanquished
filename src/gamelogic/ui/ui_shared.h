@@ -429,8 +429,8 @@ typedef struct
 	void ( *feederSelection )( int feederID, int index );
 	int ( *feederInitialise )( int feederID );
 	void ( *keynumToStringBuf )( int keynum, char *buf, int buflen );
-	void ( *getBindingBuf )( int keynum, char *buf, int buflen );
-	void ( *setBinding )( int keynum, const char *binding );
+	void ( *getBindingBuf )( int keynum, int team, char *buf, int buflen );
+	void ( *setBinding )( int keynum, int team, const char *binding );
 	void ( *executeText )( int exec_when, const char *text );
 	void ( *Error )( int level, const char *error, ... ) PRINTF_LIKE(2) NORETURN;
 	void ( *Print )( const char *msg, ... ) PRINTF_LIKE(1);

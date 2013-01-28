@@ -57,7 +57,7 @@ static const size_t numBindings = ARRAY_LEN( bindings );
 CG_GetBindings
 =================
 */
-static void CG_GetBindings( void )
+static void CG_GetBindings( team_t team )
 {
 	int  i, j, numKeys;
 	char buffer[ MAX_STRING_CHARS ];
@@ -69,7 +69,12 @@ static void CG_GetBindings( void )
 
 		for ( j = 0; j < K_LAST_KEY; j++ )
 		{
-			trap_Key_GetBindingBuf( j, buffer, MAX_STRING_CHARS );
+			trap_Key_GetBindingBuf( j, team, buffer, MAX_STRING_CHARS );
+
+			if ( team != TEAM_NONE && buffer[ 0 ] == 0 )
+			{
+				trap_Key_GetBindingBuf( j, TEAM_NONE, buffer, MAX_STRING_CHARS );
+			}
 
 			if ( buffer[ 0 ] == 0 )
 			{
@@ -632,7 +637,7 @@ const char *CG_TutorialText( void )
 
 	if ( refreshBindings == 0 )
 	{
-		CG_GetBindings();
+		CG_GetBindings( ps->stats[ STAT_TEAM ] );
 	}
 
 	refreshBindings = ( refreshBindings + 1 ) % BINDING_REFRESH_INTERVAL;

@@ -877,11 +877,11 @@ void Key_KeynumToStringBuf( int keynum, char *buf, int buflen )
 Key_GetBindingBuf
 ====================
 */
-void Key_GetBindingBuf( int keynum, char *buf, int buflen )
+void Key_GetBindingBuf( int keynum, int team, char *buf, int buflen )
 {
 	const char *value;
 
-	value = Key_GetBinding( keynum, 0 ); // FIXME BIND
+	value = Key_GetBinding( keynum, team );
 
 	if ( value )
 	{
@@ -1172,8 +1172,8 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return 0;
 
 		case UI_KEY_GETBINDINGBUF:
-			VM_CheckBlock( args[2], args[3], "KEYGBB" );
-			Key_GetBindingBuf( args[ 1 ], VMA( 2 ), args[ 3 ] );
+			VM_CheckBlock( args[3], args[4], "KEYGBB" );
+			Key_GetBindingBuf( args[ 1 ], args[ 2 ], VMA( 3 ), args[ 4 ] );
 			return 0;
 
 		case UI_KEY_SETBINDING:

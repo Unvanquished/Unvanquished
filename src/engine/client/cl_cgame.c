@@ -1102,8 +1102,8 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_KEY_GETBINDINGBUF:
-			VM_CheckBlock( args[2], args[3], "KEYGBB" );
-			Key_GetBindingBuf( args[ 1 ], 0, VMA( 2 ), args[ 3 ] ); // FIXME BIND
+			VM_CheckBlock( args[3], args[4], "KEYGBB" );
+			Key_GetBindingBuf( args[ 1 ], args[ 2 ], VMA( 3 ), args[ 4 ] );
 			return 0;
 
 		case CG_KEY_SETBINDING:

@@ -4458,9 +4458,9 @@ static void CG_DrawVote( team_t team )
 	if ( cg_tutorial.integer )
 	{
 		Com_sprintf( yeskey, sizeof( yeskey ), "[%s]",
-		             CG_KeyBinding( va( "%svote yes", team == TEAM_NONE ? "" : "team" ) ) );
+		             CG_KeyBinding( va( "%svote yes", team == TEAM_NONE ? "" : "team" ), team ) );
 		Com_sprintf( nokey, sizeof( nokey ), "[%s]",
-		             CG_KeyBinding( va( "%svote no", team == TEAM_NONE ? "" : "team" ) ) );
+		             CG_KeyBinding( va( "%svote no", team == TEAM_NONE ? "" : "team" ), team ) );
 	}
 
 	if ( team != TEAM_NONE )

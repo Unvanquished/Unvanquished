@@ -391,16 +391,16 @@ void trap_Key_KeynumToStringBuf( int keynum, char *buf, int buflen )
 
 //47.
 //Key_GetBindingBuf(args[1], VMA(2), args[3]);
-void trap_Key_GetBindingBuf( int keynum, char *buf, int buflen )
+void trap_Key_GetBindingBuf( int keynum, int team, char *buf, int buflen )
 {
-	syscall( UI_KEY_GETBINDINGBUF, keynum, buf, buflen );
+	syscall( UI_KEY_GETBINDINGBUF, keynum, team, buf, buflen );
 }
 
 //48.
 //Key_SetBinding(args[1], VMA(2));
-void trap_Key_SetBinding( int keynum, const char *binding )
+void trap_Key_SetBinding( int keynum, int team, const char *binding )
 {
-	syscall( UI_KEY_SETBINDING, keynum, binding );
+	syscall( UI_KEY_SETBINDING, keynum, team, binding );
 }
 
 //49.
