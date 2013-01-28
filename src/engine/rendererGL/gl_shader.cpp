@@ -63,6 +63,7 @@ GLShader_liquid                          *gl_liquidShader = NULL;
 GLShader_volumetricFog                   *gl_volumetricFogShader = NULL;
 GLShader_screenSpaceAmbientOcclusion     *gl_screenSpaceAmbientOcclusionShader = NULL;
 GLShader_depthOfField                    *gl_depthOfFieldShader = NULL;
+GLShader_motionblur                      *gl_motionblurShader = NULL;
 
 bool GLCompileMacro_USE_VERTEX_SKINNING::HasConflictingMacros( int permutation, const std::vector< GLCompileMacro * > &macros ) const
 {
@@ -2719,3 +2720,21 @@ void GLShader_depthOfField::SetShaderProgramUniforms( shaderProgram_t *shaderPro
 	glUniform1i( shaderProgram->u_DepthMap, 1 );
 }
 
+GLShader_motionblur::GLShader_motionblur() :
+	GLShader( "motionblur", ATTR_POSITION ),
+	u_blurVec( this )
+{
+	LoadShader();
+}
+
+void GLShader_motionblur::SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram )
+{
+	shaderProgram->u_ColorMap = glGetUniformLocation( shaderProgram->program, "u_ColorMap" );
+	shaderProgram->u_DepthMap = glGetUniformLocation( shaderProgram->program, "u_DepthMap" );
+}
+
+void GLShader_motionblur::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
+{
+	glUniform1i( shaderProgram->u_ColorMap, 0 );
+	glUniform1i( shaderProgram->u_DepthMap, 1 );
+}

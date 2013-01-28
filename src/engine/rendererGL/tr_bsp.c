@@ -9300,8 +9300,6 @@ unsigned int VertexCoordGenerateHash( const vec3_t xyz )
 
 #endif
 
-	hash = ( int ) fabs( xyz[ 3 ] ) / 8;
-
 	hash = hash % ( HASHTABLE_SIZE );
 	return hash;
 }

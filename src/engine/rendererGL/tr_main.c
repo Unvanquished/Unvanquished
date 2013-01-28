@@ -3522,6 +3522,13 @@ void R_RenderView( viewParms_t *parms )
 
 	R_AddLightInteractions();
 
+	if( tr.refdef.blurVec[0] != 0.0f ||
+	    tr.refdef.blurVec[1] != 0.0f ||
+	    tr.refdef.blurVec[2] != 0.0f ) {
+		MatrixTransformNormal2( tr.orientation.viewMatrix,
+					tr.refdef.blurVec );
+	}
+
 	tr.viewParms.drawSurfs = tr.refdef.drawSurfs + firstDrawSurf;
 	tr.viewParms.numDrawSurfs = tr.refdef.numDrawSurfs - firstDrawSurf;
 
