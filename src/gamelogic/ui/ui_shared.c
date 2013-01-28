@@ -6181,8 +6181,7 @@ int BindingIDFromName( const char *name )
 	return -1;
 }
 
-char g_nameBind1[ 32 ];
-char g_nameBind2[ 32 ];
+char g_nameBind[ 96 ];
 
 void BindingFromName( const char *cvar )
 {
@@ -6194,6 +6193,7 @@ void BindingFromName( const char *cvar )
 	{
 		if ( Q_stricmp( cvar, g_bindings[ i ].command ) == 0 )
 		{
+			b2 = g_bindings[ i ].bind2;
 			b1 = g_bindings[ i ].bind1;
 
 			if ( b1 == -1 )
@@ -6201,24 +6201,28 @@ void BindingFromName( const char *cvar )
 				break;
 			}
 
-			DC->keynumToStringBuf( b1, g_nameBind1, 32 );
-			Q_strupr( g_nameBind1 );
-
-			b2 = g_bindings[ i ].bind2;
 
 			if ( b2 != -1 )
 			{
-				DC->keynumToStringBuf( b2, g_nameBind2, 32 );
-				Q_strupr( g_nameBind2 );
-				Q_strcat( g_nameBind1, 32, " or " );
-				strcat( g_nameBind1, g_nameBind2 );
+				char keyName[ 2 ][ 32 ];
+
+				DC->keynumToStringBuf( b1, keyName[ 0 ], sizeof( keyName[ 0 ] ) );
+				DC->keynumToStringBuf( b2, keyName[ 1 ], sizeof( keyName[ 1 ] ) );
+
+				Q_snprintf( g_nameBind, sizeof( g_nameBind ), _("%s or %s"),
+				            Q_strupr( keyName[ 0 ] ), Q_strupr( keyName[ 1 ] ) );
+			}
+			else
+			{
+				DC->keynumToStringBuf( b1, g_nameBind, sizeof( g_nameBind ) );
+				Q_strupr( g_nameBind );
 			}
 
 			return;
 		}
 	}
 
-	strcpy( g_nameBind1, "???" );
+	strcpy( g_nameBind, "???" );
 }
 
 void Item_Slider_Paint( itemDef_t *item )
@@ -6312,7 +6316,7 @@ void Item_Bind_Paint( itemDef_t *item )
 		{
 			BindingFromName( item->cvar );
 			UI_Text_Paint( item->textRect.x + item->textRect.w + ITEM_VALUE_OFFSET, item->textRect.y,
-			               item->textscale, newColor, g_nameBind1, 0, item->textStyle );
+			               item->textscale, newColor, g_nameBind, 0, item->textStyle );
 		}
 	}
 	else

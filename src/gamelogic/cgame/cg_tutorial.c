@@ -99,7 +99,7 @@ static const char *CG_KeyNameForCommand( const char *command )
 	int         i, j;
 	static char buffer[ 2 ][ MAX_STRING_CHARS ];
 	static int  which = 1;
-	int         firstKeyLength;
+	char        keyName[ 2 ][ 32 ];
 
 	which ^= 1;
 
@@ -111,26 +111,20 @@ static const char *CG_KeyNameForCommand( const char *command )
 		{
 			if ( bindings[ i ].keys[ 0 ] != K_NONE )
 			{
-				trap_Key_KeynumToStringBuf( bindings[ i ].keys[ 0 ],
-				                            buffer[ which ], MAX_STRING_CHARS );
-				firstKeyLength = strlen( buffer[ which ] );
-
-				for ( j = 0; j < firstKeyLength; j++ )
-				{
-					buffer[ which ][ j ] = toupper( buffer[ which ][ j ] );
-				}
 
 				if ( bindings[ i ].keys[ 1 ] != K_NONE )
 				{
-					Q_strcat( buffer[ which ], MAX_STRING_CHARS, " or " );
+					trap_Key_KeynumToStringBuf( bindings[ i ].keys[ 0 ],
+					                            keyName[ 0 ], sizeof( keyName[ 0 ] ) );
 					trap_Key_KeynumToStringBuf( bindings[ i ].keys[ 1 ],
-					                            buffer[ which ] + strlen( buffer[ which ] ), MAX_STRING_CHARS - strlen( buffer[ which ] ) );
-
-					for ( j = firstKeyLength + 4; j < strlen( buffer[ which ] ); j++ )
-					{
-						buffer[ which ][ j ] = toupper( buffer[ which ][ j ] );
-					}
+					                            keyName[ 1 ], sizeof( keyName[ 1 ] ) );
+					Q_snprintf( buffer[ which ], sizeof( buffer[ 0 ] ), _("%s or %s"),
+					            Q_strupr( keyName[ 0 ] ), Q_strupr( keyName[ 1 ] ) );
 				}
+				else
+				{
+					Q_strncpyz( buffer[ which ], Q_strupr( keyName[ 0 ] ), sizeof( buffer[ 0 ] ) );
+                                }
 			}
 			else
 			{
