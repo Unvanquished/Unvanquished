@@ -6078,9 +6078,9 @@ static void Controls_GetKeyAssignment( char *command, int *twokeys )
 	twokeys[ 0 ] = twokeys[ 1 ] = -1;
 	count = 0;
 
-	for ( j = 0; j < 256; j++ )
+	for ( j = 0; j < MAX_KEYS; j++ )
 	{
-		DC->getBindingBuf( j, b, 256 );
+		DC->getBindingBuf( j, b, sizeof( b ) );
 
 		if ( *b == 0 )
 		{

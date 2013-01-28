@@ -67,7 +67,7 @@ static void CG_GetBindings( void )
 		bindings[ i ].keys[ 0 ] = bindings[ i ].keys[ 1 ] = K_NONE;
 		numKeys = 0;
 
-		for ( j = 0; j < K_LAST_KEY; j++ )
+		for ( j = 0; j < MAX_KEYS; j++ )
 		{
 			trap_Key_GetBindingBuf( j, buffer, MAX_STRING_CHARS );
 
