@@ -3536,7 +3536,10 @@ static void UI_RunMenuScript( char **args )
 		}
 		else if ( Q_stricmp( name, "RunDemo" ) == 0 )
 		{
-			trap_Cmd_ExecuteText( EXEC_APPEND, va( "demo %s\n", Quote( uiInfo.demoList[ uiInfo.demoIndex ] ) ) );
+			if ( uiInfo.demoCount )
+			{
+				trap_Cmd_ExecuteText( EXEC_APPEND, va( "demo %s\n", Quote( uiInfo.demoList[ uiInfo.demoIndex ] ) ) );
+			}
 		}
 		else if ( Q_stricmp( name, "Tremulous" ) == 0 )
 		{
