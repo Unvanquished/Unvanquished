@@ -112,11 +112,11 @@ static const char *CG_KeyNameForCommand( const char *command )
 		{
 			if ( bindings[ i ].keys[ 0 ] != K_NONE )
 			{
+				trap_Key_KeynumToStringBuf( bindings[ i ].keys[ 0 ],
+				                            keyName[ 0 ], sizeof( keyName[ 0 ] ) );
 
 				if ( bindings[ i ].keys[ 1 ] != K_NONE )
 				{
-					trap_Key_KeynumToStringBuf( bindings[ i ].keys[ 0 ],
-					                            keyName[ 0 ], sizeof( keyName[ 0 ] ) );
 					trap_Key_KeynumToStringBuf( bindings[ i ].keys[ 1 ],
 					                            keyName[ 1 ], sizeof( keyName[ 1 ] ) );
 					Q_snprintf( buffer[ which ], sizeof( buffer[ 0 ] ), _("%s or %s"),
