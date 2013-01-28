@@ -494,7 +494,7 @@ static void SV_Serverinfo_f( void )
 	}
 
 	Com_Printf(_( "Server info settings:\n" ));
-	Info_Print( Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE ) );
+	Info_Print( Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, qfalse ) );
 }
 
 /*
@@ -514,7 +514,7 @@ static void SV_Systeminfo_f( void )
 	}
 
 	Com_Printf(_( "System info settings:\n" ));
-	Info_Print( Cvar_InfoString( CVAR_SYSTEMINFO | CVAR_SERVERINFO_NOUPDATE ) );
+	Info_Print( Cvar_InfoString( CVAR_SYSTEMINFO | CVAR_SERVERINFO_NOUPDATE, qfalse ) );
 }
 
 /*

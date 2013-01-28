@@ -90,7 +90,7 @@ download "$CACHE" "md5sums$VERSION" "md5sums" || download "$CACHE" "md5sums"
 
 # Check that the file is properly formatted
 echo '[33mVerifying md5sums integrity...[m'
-grep -sqve '^[0-9a-f]\{32\}  [^ ]\+$' "$CACHE/md5sums" && exit 1
+grep -sqve '^[0-9a-f]\{32\} [ *][^ ]\+$' "$CACHE/md5sums" && exit 1
 echo '[32mSuccessful.[m'
 
 # List the files whose checksums are listed
@@ -99,7 +99,7 @@ cut -d' ' -f2- <"$CACHE/md5sums"
 
 echo "[33mDownloading missing or updated files...[m"
 # Download those files unless the local copies match the checksums
-(set -e; cd "$DEST_DIR"; md5sum --quiet --binary -c "$CACHE/md5sums" 2>/dev/null) |
+(set -e; cd "$DEST_DIR"; md5sum --quiet -c "$CACHE/md5sums" 2>/dev/null) |
   cut -d: -f1 |
   while read i; do
     download "$DEST_DIR" "$(basename "$i")"
@@ -108,7 +108,7 @@ echo "[33mDownloading missing or updated files...[m"
 if test -f "$CACHE/md5sums.old"; then
   echo "[33mRemoving previously referenced files...[m"
   # Remove files listed in the old md5sums file
-  diff <(cut -d' ' -f3 "$CACHE/md5sums.old") <(cut -d' ' -f3 "$CACHE/md5sums") |
+  diff <(sed -e 's/^.* [ *]//' "$CACHE/md5sums.old") <(sed -e 's/^.* [ *]//' "$CACHE/md5sums") |
     sed -e '/^< /! d; s/^< //' |
     while read i; do
       i="$(basename "$i")"
