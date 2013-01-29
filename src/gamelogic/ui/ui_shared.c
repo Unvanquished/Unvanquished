@@ -6335,10 +6335,10 @@ qboolean Item_Bind_HandleKey( itemDef_t *item, int key, int chr, qboolean down )
 	int id;
 	int i;
 
-	// FIXME: should probably set K_* outside Unicode range
-	if ( chr && !( chr & K_CHAR_FLAG ) )
+	// we handle key symbols, not Unicode code points
+	if ( key == 0 )
 	{
-		key = chr;
+		return qtrue;
 	}
 
 	if ( Rect_ContainsPoint( &item->window.rect, DC->cursorx, DC->cursory ) && !g_waitingForKey )
@@ -6364,7 +6364,6 @@ qboolean Item_Bind_HandleKey( itemDef_t *item, int key, int chr, qboolean down )
 				g_waitingForKey = qfalse;
 				return qtrue;
 
-			case 0:
 			case K_BACKSPACE:
 				id = BindingIDFromName( item->cvar );
 
