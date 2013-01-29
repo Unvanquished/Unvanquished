@@ -478,7 +478,7 @@
 			play "sound/misc/menu1.wav"; uiScript glCustom,
 			9 )
 	MULTIX	( ghardware, "Anisotropic Filtering:", "r_ext_texture_filter_anisotropic",
-			"No" 0 "2×" 2 "4×" 4 "8×" 8,
+			"No" 0 "2×" 2 "4×" 4 "8×" 8 "16×" 16,
 			play "sound/misc/menu1.wav",
 			10 )
 	YESNOX	( ghardware, "Compress Textures:", "r_ext_compressed_textures",
