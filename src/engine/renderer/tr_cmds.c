@@ -699,11 +699,11 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 	//
 	// anisotropic filtering stuff
 	//
-	if ( r_textureAnisotropy->modified )
+	if ( r_ext_texture_filter_anisotropic->modified )
 	{
 		R_SyncRenderThread();
-		GL_TextureAnisotropy( r_textureAnisotropy->value );
-		r_textureAnisotropy->modified = qfalse;
+		GL_TextureAnisotropy( r_ext_texture_filter_anisotropic->value );
+		r_ext_texture_filter_anisotropic->modified = qfalse;
 	}
 
 	//
