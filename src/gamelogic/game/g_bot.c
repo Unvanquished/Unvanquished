@@ -2337,11 +2337,13 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 
 		if ( ( inAttackRange && myTeam == TEAM_HUMANS ) || self->botMind->numCorners == 1 )
 		{
-
+			vec3_t pos;
 			BotAimAtEnemy( self );
 
+			BotGetTargetPos( self->botMind->goal, pos );
+
 			//update the path corridor
-			UpdatePathCorridor( self );
+			trap_BotUpdatePath( self->s.number, self->botMind->route, &self->botMind->numCorners, MAX_ROUTE_NODES, pos );
 
 			BotMoveInDir( self, MOVE_FORWARD );
 
@@ -3044,7 +3046,6 @@ void G_BotThink( gentity_t *self )
 		return;
 	}
 
-	BotCheckCorridor( self );
 	BotEvaluateNode( self, ( AIGenericNode_t * ) self->botMind->behaviorTree->root );
 
 	// if we were nudged...

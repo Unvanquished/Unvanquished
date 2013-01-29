@@ -22,9 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 // g_local.h -- local definitions for game module
-#ifdef __cplusplus
-extern "C" {
-#endif
 #include "../../engine/qcommon/q_shared.h"
 #include "bg_public.h"
 #include "../../engine/server/g_api.h"
@@ -131,15 +128,6 @@ typedef struct
 	AINode_t *root;
 } AIBehaviorTree_t;
 
-typedef enum
-{
-  ROUTE_FAILURE	= 0x01,
-  ROUTE_NOPOLYNEARSELF	= 0x02,
-  ROUTE_NOPOLYNEARTARGET =	0x04,
-  ROUTE_SUCCESS = 0x08,
-  ROUTE_PARTIAL = 0x10
-} botRouteStatusFlags;
-
 #define MAX_ROUTE_NODES 5
 #define MAX_NODE_DEPTH 20
 
@@ -157,7 +145,6 @@ typedef struct{
 	//pathfinding stuff
 	vec3_t route[ MAX_ROUTE_NODES ];
 	int numCorners;
-	int timeFoundRoute;
 
 	botSkill_t botSkill;
 	botEntityAndDistance_t bestEnemy;
@@ -172,20 +159,6 @@ typedef struct{
   	int         futureAimTime;
 	vec3_t      futureAim;
 	usercmd_t cmdBuffer;
-
-	qboolean needPathReset;
-
-	//navigation classes
-	//not for use outside C++ code
-#ifdef __cplusplus
-	class dtNavMeshQuery* navQuery;
-	class dtQueryFilter*  navFilter;
-	class dtPathCorridor* pathCorridor;
-#else
-	struct dtNavMeshQuery* navQuery;
-	struct dtQueryFilter* navFilter;
-	struct dtPathCorridor* pathCorridor;
-#endif
 } botMemory_t;
 
 struct gentity_s
@@ -1467,6 +1440,12 @@ void             trap_GetPlayerPubkey( int clientNum, char *pubkey, int size );
 
 void             trap_GetTimeString( char *buffer, int size, const char *format, const qtime_t *tm );
 
-#ifdef __cplusplus
-}
-#endif
+qboolean         trap_BotSetupNav( const void *botClass /* botClass_t* */, qhandle_t *navHandle );
+void             trap_BotShutdownNav( void );
+void             trap_BotSetNavMesh( int botClientNum, qhandle_t navHandle );
+unsigned int     trap_BotFindRoute( int botClientNum, const vec3_t target );
+void             trap_BotUpdatePath( int botClientNum, vec3_t *corners, int *numCorners, int maxCorners, const vec3_t target );
+qboolean         trap_BotNavTrace( int botClientNum, void *botTrace /*botTrace_t**/, const vec3_t start, const vec3_t end );
+void             trap_BotFindRandomPoint( int botClientNum, vec3_t point );
+void             trap_BotEnableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
+void             trap_BotDisableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );

@@ -25,11 +25,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifndef __NAV_H
 #define __NAV_H
 
+#include "bot_types.h"
+
 // should be the same as in rest of engine
 const short STEPSIZE = 18;
-
-const short MAX_PATH_POLYS = 512;
-const short MAX_CORRIDOR_CORNERS = 5;
 
 static const int NAVMESHSET_MAGIC = 'M'<<24 | 'S'<<16 | 'E'<<8 | 'T'; //'MSET';
 static const int NAVMESHSET_VERSION = 1;
@@ -48,26 +47,5 @@ struct NavMeshTileHeader
 	int dataSize;
 };
 
-enum navPolyAreas
-{
-	POLYAREA_GROUND = 0x01,
-	POLYAREA_WATER = 0x02,
-	POLYAREA_DOOR = 0x04,
-	POLYAREA_JUMPPAD = 0x08,
-	POLYAREA_TELEPORTER = 0x10
-};
-
-enum navPolyFlags
-{
-	POLYFLAGS_WALK = 0x01, // Ability to walk (ground, grass, road)
-	POLYFLAGS_SWIM = 0x02, // Ability to swim (water).
-	POLYFLAGS_DOOR = 0x04, // Ability to move through doors.
-	POLYFLAGS_JUMP = 0x08, // Ability to jump.
-	POLYFLAGS_POUNCE = 0x10, //Ability to pounce
-	POLYFLAGS_WALLWALK = 0x20, //Ability to wallwalk
-	POLYFLAGS_LADDER = 0x40, //Ability to climb ladders
-	POLYFLAGS_DISABLED = 0x80,
-	POLYFLAGS_ALL = 0xffff // All abilities.
-};
 #endif
 
