@@ -444,8 +444,9 @@
 			"Bilinear" GL_LINEAR_MIPMAP_NEAREST "Trilinear" GL_LINEAR_MIPMAP_LINEAR,
 			play "sound/misc/menu1.wav"; uiScript glCustom,
 			9 )
-	YESNOX	( ghardware, "Anisotropic Filtering:", "r_ext_texture_filter_anisotropic",
-			play "sound/misc/menu1.wav"; uiScript glCustom,
+	MULTIX	( ghardware, "Anisotropic Filtering:", "r_ext_texture_filter_anisotropic",
+			"No" 0 "2x" 2 "4x" 4 "8x" 8,
+			play "sound/misc/menu1.wav",
 			10 )
 	YESNOX	( ghardware, "Compress Textures:", "r_ext_compressed_textures",
 			play "sound/misc/menu1.wav"; uiScript glCustom,
