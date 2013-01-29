@@ -485,7 +485,7 @@
 			play "sound/misc/menu1.wav"; uiScript glCustom,
 			11 )
 	MULTIX	( ghardware, "Multisampling:", "r_ext_multisample",
-			"No" 0 "2×" 2 "4×" 4 "6×" 6,
+			"No" 0 "2×" 2 "4×" 4 "8×" 8 "16×" 16,
 			play "sound/misc/menu1.wav",
 			12 )
 	BUTTONX	( ghardware, "APPLY", play "sound/misc/menu1.wav"; exec "vid_restart",
