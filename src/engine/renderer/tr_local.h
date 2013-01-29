@@ -1693,7 +1693,6 @@ extern cvar_t *r_finish;
 extern cvar_t *r_drawBuffer;
 extern cvar_t *r_swapInterval;
 extern cvar_t *r_textureMode;
-extern cvar_t *r_textureAnisotropy;
 extern cvar_t *r_offsetFactor;
 extern cvar_t *r_offsetUnits;
 

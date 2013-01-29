@@ -262,21 +262,18 @@ void GL_TextureAnisotropy( float anisotropy )
 	int     i;
 	image_t *glt;
 
-	if ( r_ext_texture_filter_anisotropic->integer == 1 )
-	{
-		if ( anisotropy < 1.0 || anisotropy > glConfig.maxAnisotropy )
-		{
-			ri.Printf( PRINT_ALL, "anisotropy out of range\n" );
-			return;
-		}
-	}
-
-	gl_anisotropy = anisotropy;
-
 	if ( !glConfig.anisotropicAvailable )
 	{
 		return;
 	}
+
+	if ( anisotropy < 1.0 || anisotropy > glConfig.maxAnisotropy )
+	{
+		ri.Printf( PRINT_ALL, "anisotropy out of range\n" );
+		return;
+	}
+
+	gl_anisotropy = anisotropy;
 
 	// change all the existing texture objects
 	for ( i = 0; i < tr.numImages; i++ )
