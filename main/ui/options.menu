@@ -478,14 +478,14 @@
 			play "sound/misc/menu1.wav"; uiScript glCustom,
 			9 )
 	MULTIX	( ghardware, "Anisotropic Filtering:", "r_ext_texture_filter_anisotropic",
-			"No" 0 "2x" 2 "4x" 4 "8x" 8,
+			"No" 0 "2×" 2 "4×" 4 "8×" 8,
 			play "sound/misc/menu1.wav",
 			10 )
 	YESNOX	( ghardware, "Compress Textures:", "r_ext_compressed_textures",
 			play "sound/misc/menu1.wav"; uiScript glCustom,
 			11 )
 	MULTIX	( ghardware, "Multisampling:", "r_ext_multisample",
-			"No" 0 "2x" 2 "4x" 4 "6x" 6,
+			"No" 0 "2×" 2 "4×" 4 "6×" 6,
 			play "sound/misc/menu1.wav",
 			12 )
 	BUTTONX	( ghardware, "APPLY", play "sound/misc/menu1.wav"; exec "vid_restart",
