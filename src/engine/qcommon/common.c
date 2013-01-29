@@ -3446,12 +3446,16 @@ void Com_ReadFromPipe( void )
 void Com_WriteConfigToFile( const char *filename )
 {
 	fileHandle_t f;
+	char         *tmp = Z_Malloc( strlen( filename ) + 4 );
 
-	f = FS_FOpenFileWrite( filename );
+	sprintf( tmp, "%s.tmp", filename );
+
+	f = FS_FOpenFileWrite( tmp );
 
 	if ( !f )
 	{
 		Com_Printf(_( "Couldn't write %s.\n"), filename );
+		Z_Free( tmp );
 		return;
 	}
 
@@ -3459,6 +3463,10 @@ void Com_WriteConfigToFile( const char *filename )
 	Key_WriteBindings( f );
 	Cvar_WriteVariables( f );
 	FS_FCloseFile( f );
+
+	FS_Rename( tmp, filename ); // will unlink the original
+
+	Z_Free( tmp );
 }
 
 /*

@@ -52,12 +52,12 @@ qkey_t   keys[ MAX_KEYS ];
 
 typedef struct
 {
-	char *name;
-	int  keynum;
+	const char *name;
+	int        keynum;
 } keyname_t;
 
 // names not in this list can either be lowercase ascii, or '0xnn' hex sequences
-keyname_t keynames[] =
+static const keyname_t keynames[] =
 {
 	{ "TAB",                    K_TAB                    },
 	{ "ENTER",                  K_ENTER                  },
@@ -765,148 +765,6 @@ CONSOLE LINE EDITING
 ==============================================================================
 */
 
-#if 0
-static char completionString[ MAX_TOKEN_CHARS ];
-static char currentMatch[ MAX_TOKEN_CHARS ];
-static int  matchCount;
-static int  matchIndex;
-#endif
-
-/*
-===============
-FindMatches
-
-===============
-*/
-#if 0
-static void FindMatches( const char *s )
-{
-	int i;
-
-	if ( Q_stricmpn( s, completionString, strlen( completionString ) ) )
-	{
-		return;
-	}
-
-	matchCount++;
-
-	if ( matchCount == 1 )
-	{
-		Q_strncpyz( currentMatch, s, sizeof( currentMatch ) );
-		return;
-	}
-
-	// cut currentMatch to the amount common with s
-	for ( i = 0; s[ i ]; i++ )
-	{
-		if ( tolower( currentMatch[ i ] ) != tolower( s[ i ] ) )
-		{
-			currentMatch[ i ] = 0;
-		}
-	}
-
-	currentMatch[ i ] = 0;
-}
-
-/*
-===============
-FindIndexMatch
-
-===============
-*/
-static int findMatchIndex;
-static void FindIndexMatch( const char *s )
-{
-	if ( Q_stricmpn( s, completionString, strlen( completionString ) ) )
-	{
-		return;
-	}
-
-	if ( findMatchIndex == matchIndex )
-	{
-		Q_strncpyz( currentMatch, s, sizeof( currentMatch ) );
-	}
-
-	findMatchIndex++;
-}
-
-/*
-===============
-PrintMatches
-
-===============
-*/
-static void PrintMatches( const char *s )
-{
-	if ( !Q_stricmpn( s, currentMatch, strlen( currentMatch ) ) )
-	{
-		Com_Printf("  ^9%s^0\n", s );
-	}
-}
-
-// ydnar: to display cvar values
-static void PrintCvarMatches( const char *s )
-{
-	if ( !Q_stricmpn( s, currentMatch, strlen( currentMatch ) ) )
-	{
-		Com_Printf("  ^9%s = ^5%s^0\n", s, Cvar_VariableString( s ) );
-	}
-}
-
-#endif
-
-#if 0
-static void keyConcatArgs( void )
-{
-	int  i;
-	char *arg;
-
-	for ( i = 1; i < Cmd_Argc(); i++ )
-	{
-		Q_strcat( g_consoleField.buffer, sizeof( g_consoleField.buffer ), " " );
-		arg = Cmd_Argv( i );
-
-		while ( *arg )
-		{
-			if ( *arg == ' ' )
-			{
-				Q_strcat( g_consoleField.buffer, sizeof( g_consoleField.buffer ),  "\"" );
-				break;
-			}
-
-			arg++;
-		}
-
-		Q_strcat( g_consoleField.buffer, sizeof( g_consoleField.buffer ),  Cmd_Argv( i ) );
-
-		if ( *arg == ' ' )
-		{
-			Q_strcat( g_consoleField.buffer, sizeof( g_consoleField.buffer ),  "\"" );
-		}
-	}
-}
-
-#endif
-
-#if 0
-static void ConcatRemaining( const char *src, const char *start )
-{
-	char *str;
-
-	str = strstr( src, start );
-
-	if ( !str )
-	{
-		keyConcatArgs();
-		return;
-	}
-
-	str += strlen( start );
-	Q_strcat( g_consoleField.buffer, sizeof( g_consoleField.buffer ), str );
-}
-
-#endif
-
 /*
 ===============
 CompleteCommand
@@ -1144,7 +1002,7 @@ to be configured even if they don't have defined names.
 */
 int Key_StringToKeynum( const char *str )
 {
-	keyname_t *kn;
+	const keyname_t *kn;
 
 	if ( !str )
 	{
@@ -1153,7 +1011,10 @@ int Key_StringToKeynum( const char *str )
 
 	if ( !str[ 1 ] )
 	{
-		return str[ 0 ] == '\n' ? -1 : str[ 0 ];
+		// single character; map upper-case ASCII letters to lower case
+		int key = str[ 0 ] == '\n' ? -1 : str[ 0 ];
+
+		return ( key >= 'A' && key <= 'Z' ) ? key + 0x20 : key;
 	}
 
 	// check for hex code
@@ -1189,7 +1050,7 @@ given keynum.
 */
 const char *Key_KeynumToString( int keynum )
 {
-	keyname_t   *kn;
+	const keyname_t *kn;
 	static char tinystr[ 5 ];
 	int         i, j;
 
@@ -1280,12 +1141,20 @@ void Key_SetBinding( int keynum, const char *binding )
 		Z_Free( keys[ keynum ].binding );
 	}
 
-	// allocate memory for new binding
-	keys[ keynum ].binding = CopyString( binding );
-	lcbinding = CopyString( binding );
-	Q_strlwr( lcbinding );  // saves doing it on all the generateHashValues in Key_GetBindingByString
-
-	keys[ keynum ].hash = generateHashValue( lcbinding );
+	if ( binding && binding[ 0 ] )
+	{
+		// allocate memory for new binding
+		keys[ keynum ].binding = CopyString( binding );
+		lcbinding = CopyString( binding );
+		Q_strlwr( lcbinding );  // saves doing it on all the generateHashValues in Key_GetBindingByString
+		Z_Free( lcbinding );
+		keys[ keynum ].hash = generateHashValue( lcbinding );
+	}
+	else
+	{
+		keys[ keynum ].binding = NULL;
+		keys[ keynum ].hash = 0;
+	}
 
 	// consider this like modifying an archived cvar, so the
 	// file write will be triggered at the next oportunity
@@ -1297,11 +1166,11 @@ void Key_SetBinding( int keynum, const char *binding )
 Key_GetBinding
 ===================
 */
-char *Key_GetBinding( int keynum )
+const char *Key_GetBinding( int keynum )
 {
 	if ( keynum < 0 || keynum >= MAX_KEYS )
 	{
-		return "";
+		return NULL;
 	}
 
 	return keys[ keynum ].binding;
@@ -1380,7 +1249,7 @@ void Key_Unbind_f( void )
 		return;
 	}
 
-	Key_SetBinding( b, "" );
+	Key_SetBinding( b, NULL );
 }
 
 /*
@@ -1396,7 +1265,7 @@ void Key_Unbindall_f( void )
 	{
 		if ( keys[ i ].binding )
 		{
-			Key_SetBinding( i, "" );
+			Key_SetBinding( i, NULL );
 		}
 	}
 }
@@ -1466,8 +1335,7 @@ Key_EditBind_f
 void Key_EditBind_f( void )
 {
 	char           *buf;
-	/*const*/
-	char *key, *binding;
+	const char     *key, *binding;
 	const char     *bindq;
 	int            b;
 

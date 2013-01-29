@@ -628,6 +628,7 @@ void RE_RenderScene( const refdef_t *fd )
 	VectorCopy( fd->viewaxis[ 0 ], tr.refdef.viewaxis[ 0 ] );
 	VectorCopy( fd->viewaxis[ 1 ], tr.refdef.viewaxis[ 1 ] );
 	VectorCopy( fd->viewaxis[ 2 ], tr.refdef.viewaxis[ 2 ] );
+	VectorCopy( fd->blurVec, tr.refdef.blurVec );
 
 	tr.refdef.time = fd->time;
 	tr.refdef.rdflags = fd->rdflags;

@@ -326,8 +326,7 @@ const char *String_Alloc( const char *p )
 void String_Report( void )
 {
 	float f;
-	Com_Printf("%s", "Memory/String Pool Info\n" );
-	Com_Printf( "----------------\n" );
+	Com_Printf( "Memory/String Pool Info\n----------------\n" );
 	f = strPoolIndex;
 	f /= STRING_POOL_SIZE;
 	f *= 100;
@@ -5272,7 +5271,7 @@ const char *Item_Text_Wrap( const char *text, float scale, float width )
 {
 	// Strings a little short of 32KB have been witnessed coming in from
 	// Item_Text_Wrapped_Paint() near map start-up. Just clip them to the buffer.
-	static char   out[ 4096 ];
+	static char   out[ 4096 - 128 ];
 	int           paint = 0;
 	char          c[ 3 ] = "";
 	const char    *p;
@@ -6078,9 +6077,9 @@ static void Controls_GetKeyAssignment( char *command, int *twokeys )
 	twokeys[ 0 ] = twokeys[ 1 ] = -1;
 	count = 0;
 
-	for ( j = 0; j < 256; j++ )
+	for ( j = 0; j < MAX_KEYS; j++ )
 	{
-		DC->getBindingBuf( j, b, 256 );
+		DC->getBindingBuf( j, b, sizeof( b ) );
 
 		if ( *b == 0 )
 		{
@@ -6181,8 +6180,7 @@ int BindingIDFromName( const char *name )
 	return -1;
 }
 
-char g_nameBind1[ 32 ];
-char g_nameBind2[ 32 ];
+char g_nameBind[ 96 ];
 
 void BindingFromName( const char *cvar )
 {
@@ -6194,6 +6192,7 @@ void BindingFromName( const char *cvar )
 	{
 		if ( Q_stricmp( cvar, g_bindings[ i ].command ) == 0 )
 		{
+			b2 = g_bindings[ i ].bind2;
 			b1 = g_bindings[ i ].bind1;
 
 			if ( b1 == -1 )
@@ -6201,24 +6200,28 @@ void BindingFromName( const char *cvar )
 				break;
 			}
 
-			DC->keynumToStringBuf( b1, g_nameBind1, 32 );
-			Q_strupr( g_nameBind1 );
-
-			b2 = g_bindings[ i ].bind2;
 
 			if ( b2 != -1 )
 			{
-				DC->keynumToStringBuf( b2, g_nameBind2, 32 );
-				Q_strupr( g_nameBind2 );
-				Q_strcat( g_nameBind1, 32, " or " );
-				strcat( g_nameBind1, g_nameBind2 );
+				char keyName[ 2 ][ 32 ];
+
+				DC->keynumToStringBuf( b1, keyName[ 0 ], sizeof( keyName[ 0 ] ) );
+				DC->keynumToStringBuf( b2, keyName[ 1 ], sizeof( keyName[ 1 ] ) );
+
+				Q_snprintf( g_nameBind, sizeof( g_nameBind ), _("%s or %s"),
+				            Q_strupr( keyName[ 0 ] ), Q_strupr( keyName[ 1 ] ) );
+			}
+			else
+			{
+				DC->keynumToStringBuf( b1, g_nameBind, sizeof( g_nameBind ) );
+				Q_strupr( g_nameBind );
 			}
 
 			return;
 		}
 	}
 
-	strcpy( g_nameBind1, "???" );
+	strcpy( g_nameBind, "???" );
 }
 
 void Item_Slider_Paint( itemDef_t *item )
@@ -6312,7 +6315,7 @@ void Item_Bind_Paint( itemDef_t *item )
 		{
 			BindingFromName( item->cvar );
 			UI_Text_Paint( item->textRect.x + item->textRect.w + ITEM_VALUE_OFFSET, item->textRect.y,
-			               item->textscale, newColor, g_nameBind1, 0, item->textStyle );
+			               item->textscale, newColor, g_nameBind, 0, item->textStyle );
 		}
 	}
 	else
@@ -6332,10 +6335,10 @@ qboolean Item_Bind_HandleKey( itemDef_t *item, int key, int chr, qboolean down )
 	int id;
 	int i;
 
-	// FIXME: should probably set K_* outside Unicode range
-	if ( chr && !( chr & K_CHAR_FLAG ) )
+	// we handle key symbols, not Unicode code points
+	if ( key == 0 )
 	{
-		key = chr;
+		return qtrue;
 	}
 
 	if ( Rect_ContainsPoint( &item->window.rect, DC->cursorx, DC->cursory ) && !g_waitingForKey )
@@ -6361,7 +6364,6 @@ qboolean Item_Bind_HandleKey( itemDef_t *item, int key, int chr, qboolean down )
 				g_waitingForKey = qfalse;
 				return qtrue;
 
-			case 0:
 			case K_BACKSPACE:
 				id = BindingIDFromName( item->cvar );
 

@@ -32,7 +32,7 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "../../gamelogic/ui/keycodes.h"
+#include "keycodes.h"
 
 typedef struct
 {
@@ -60,7 +60,7 @@ extern qboolean chat_irc;
 void            Key_WriteBindings( fileHandle_t f );
 void            Key_SetBinding( int keynum, const char *binding );
 void            Key_GetBindingByString( const char *binding, int *key1, int *key2 );
-char            *Key_GetBinding( int keynum );
+const char      *Key_GetBinding( int keynum );
 qboolean        Key_IsDown( int keynum );
 qboolean        Key_GetOverstrikeMode( void );
 void            Key_SetOverstrikeMode( qboolean state );
