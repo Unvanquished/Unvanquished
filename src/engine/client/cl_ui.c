@@ -1177,7 +1177,7 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return 0;
 
 		case UI_KEY_SETBINDING:
-			Key_SetBinding( args[ 1 ], 0, VMA( 2 ) ); // FIXME BIND
+			Key_SetBinding( args[ 1 ], args[ 2 ], VMA( 3 ) ); // FIXME BIND
 			return 0;
 
 		case UI_KEY_ISDOWN:

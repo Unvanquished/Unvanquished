@@ -6136,11 +6136,11 @@ void Controls_SetConfig( qboolean restart )
 	{
 		if ( g_bindings[ i ].bind1 != -1 )
 		{
-			DC->setBinding( g_bindings[ i ].bind1, TEAM_NONE, g_bindings[ i ].command ); // FIXME BIND
+			DC->setBinding( g_bindings[ i ].bind1, TEAM_ALL, g_bindings[ i ].command ); // FIXME BIND
 
 			if ( g_bindings[ i ].bind2 != -1 )
 			{
-				DC->setBinding( g_bindings[ i ].bind2, TEAM_NONE, g_bindings[ i ].command ); // FIXME BIND
+				DC->setBinding( g_bindings[ i ].bind2, TEAM_ALL, g_bindings[ i ].command ); // FIXME BIND
 			}
 		}
 	}
@@ -6407,13 +6407,13 @@ qboolean Item_Bind_HandleKey( itemDef_t *item, int key, int chr, qboolean down )
 		{
 			if ( g_bindings[ id ].bind1 != -1 )
 			{
-				DC->setBinding( g_bindings[ id ].bind1, TEAM_NONE, "" ); // FIXME BIND
+				DC->setBinding( g_bindings[ id ].bind1, TEAM_ALL, "" ); // FIXME BIND
 				g_bindings[ id ].bind1 = -1;
 			}
 
 			if ( g_bindings[ id ].bind2 != -1 )
 			{
-				DC->setBinding( g_bindings[ id ].bind2, TEAM_NONE, "" ); // FIXME BIND
+				DC->setBinding( g_bindings[ id ].bind2, TEAM_ALL, "" ); // FIXME BIND
 				g_bindings[ id ].bind2 = -1;
 			}
 		}
@@ -6427,8 +6427,8 @@ qboolean Item_Bind_HandleKey( itemDef_t *item, int key, int chr, qboolean down )
 		}
 		else
 		{
-			DC->setBinding( g_bindings[ id ].bind1, TEAM_NONE, "" ); // FIXME BIND
-			DC->setBinding( g_bindings[ id ].bind2, TEAM_NONE, "" ); // FIXME BIND
+			DC->setBinding( g_bindings[ id ].bind1, TEAM_ALL, "" ); // FIXME BIND
+			DC->setBinding( g_bindings[ id ].bind2, TEAM_ALL, "" ); // FIXME BIND
 			g_bindings[ id ].bind1 = key;
 			g_bindings[ id ].bind2 = -1;
 		}
