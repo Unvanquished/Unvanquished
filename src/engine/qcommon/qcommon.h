@@ -630,6 +630,9 @@ void       Cvar_CheckRange( cvar_t *cv, float minVal, float maxVal, qboolean sho
 void       Cvar_Restart_f( void );
 
 extern int cvar_modifiedFlags;
+#ifndef DEDICATED
+extern qboolean bindingsModified;
+#endif
 
 // whenever a cvar is modified, its flags will be OR'd into this, so
 // a single check can determine if any CVAR_USERINFO, CVAR_SERVERINFO,

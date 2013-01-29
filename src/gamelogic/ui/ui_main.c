@@ -3914,45 +3914,32 @@ static void UI_RunMenuScript( char **args )
 			// FIXME: make this copying handle all files in the profiles directory
 			if ( Q_stricmp( uiprofile, buff ) )
 			{
-				if ( trap_FS_FOpenFile( va( "profiles/%s/%s", buff, CONFIG_NAME ), &f, FS_WRITE ) >= 0 )
-				{
-					if ( ( len = trap_FS_FOpenFile( va( "profiles/%s/%s", uiprofile, CONFIG_NAME ), &f2, FS_READ ) ) >= 0 )
-					{
-						int             i;
+			        static const char *const toCopy[] = { CONFIG_NAME, "servercache.dat" };
+			        int i;
 
-						for ( i = 0; i < len; i++ )
-						{
-							byte            b;
+			        for ( i = 0; i < ARRAY_LEN( toCopy ); ++i )
+			        {
+                                        if ( trap_FS_FOpenFile( va( "profiles/%s/%s", buff, toCopy[ i ] ), &f, FS_WRITE ) >= 0 )
+                                        {
+                                                if ( ( len = trap_FS_FOpenFile( va( "profiles/%s/%s", uiprofile, toCopy[ i ] ), &f2, FS_READ ) ) >= 0 )
+                                                {
+                                                        char b[ 4096 ];
 
-							trap_FS_Read( &b, 1, f2 );
-							trap_FS_Write( &b, 1, f );
-						}
+                                                        while ( len > 0 )
+                                                        {
+                                                                int count = MIN( sizeof( b ), len );
 
-						trap_FS_FCloseFile( f2 );
-					}
+                                                                trap_FS_Read( &b, count, f2 );
+                                                                trap_FS_Write( &b, count, f );
+                                                                len -= count;
+                                                        }
 
-					trap_FS_FCloseFile( f );
-				}
+                                                        trap_FS_FCloseFile( f2 );
+                                                }
 
-				if ( trap_FS_FOpenFile( va( "profiles/%s/servercache.dat", buff ), &f, FS_WRITE ) >= 0 )
-				{
-					if ( ( len = trap_FS_FOpenFile( va( "profiles/%s/servercache.dat", cl_profile.string ), &f2, FS_READ ) ) >= 0 )
-					{
-						int             i;
-
-						for ( i = 0; i < len; i++ )
-						{
-							byte            b;
-
-							trap_FS_Read( &b, 1, f2 );
-							trap_FS_Write( &b, 1, f );
-						}
-
-						trap_FS_FCloseFile( f2 );
-					}
-
-					trap_FS_FCloseFile( f );
-				}
+                                                trap_FS_FCloseFile( f );
+                                        }
+                                }
 
 				if ( !Q_stricmp( uiprofile, cl_defaultProfile.string ) )
 				{

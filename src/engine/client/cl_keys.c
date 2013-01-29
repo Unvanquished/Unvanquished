@@ -47,6 +47,7 @@ field_t  chatField;
 qboolean chat_irc;
 
 qboolean key_overstrikeMode;
+qboolean bindingsModified;
 
 int      anykeydown;
 qkey_t   keys[ MAX_KEYS ];
@@ -1214,9 +1215,7 @@ void Key_SetBinding( int keynum, int team, const char *binding )
 		keys[ keynum ].binding[ team ] = NULL;
 	}
 
-	// consider this like modifying an archived cvar, so the
-	// file write will be triggered at the next oportunity
-	cvar_modifiedFlags |= CVAR_ARCHIVE;
+	bindingsModified = qtrue;
 }
 
 /*
