@@ -267,11 +267,8 @@ void GL_TextureAnisotropy( float anisotropy )
 		return;
 	}
 
-	if ( anisotropy < 1.0 || anisotropy > glConfig.maxAnisotropy )
-	{
-		ri.Printf( PRINT_ALL, "anisotropy out of range\n" );
-		return;
-	}
+	if      ( anisotropy < 1   )                    anisotropy = 1;
+	else if ( anisotropy > glConfig.maxAnisotropy ) anisotropy = glConfig.maxAnisotropy;
 
 	gl_anisotropy = anisotropy;
 
