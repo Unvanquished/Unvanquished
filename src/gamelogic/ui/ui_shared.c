@@ -5271,7 +5271,7 @@ const char *Item_Text_Wrap( const char *text, float scale, float width )
 {
 	// Strings a little short of 32KB have been witnessed coming in from
 	// Item_Text_Wrapped_Paint() near map start-up. Just clip them to the buffer.
-	static char   out[ 4096 ];
+	static char   out[ 4096 - 128 ];
 	int           paint = 0;
 	char          c[ 3 ] = "";
 	const char    *p;
