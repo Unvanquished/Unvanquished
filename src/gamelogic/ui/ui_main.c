@@ -3195,64 +3195,52 @@ static void UI_Update( const char *name )
 			case 0: // high quality
 				trap_Cvar_SetValue( "r_subdivisions", 4 );
 				trap_Cvar_SetValue( "r_vertexlighting", 0 );
-				trap_Cvar_SetValue( "r_lodbias", 0 );
-				trap_Cvar_SetValue( "r_colorbits", 32 );
-				trap_Cvar_SetValue( "r_depthbits", 24 );
 				trap_Cvar_SetValue( "r_picmip", 0 );
-				trap_Cvar_SetValue( "r_texturebits", 32 );
-				trap_Cvar_SetValue( "r_fastSky", 0 );
 				trap_Cvar_SetValue( "r_inGameVideo", 1 );
 				trap_Cvar_SetValue( "cg_shadows", 1 );
 				trap_Cvar_SetValue( "cg_bounceParticles", 1 );
-				trap_Cvar_SetValue( "r_ext_multisample", 6 );
+				trap_Cvar_SetValue( "r_normalMapping", 1 );				
+				trap_Cvar_SetValue( "r_ext_multisample", 8 );
+				trap_Cvar_SetValue( "r_ext_texture_filter_anisotropic", 8 );
 				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_LINEAR" );
 				break;
 
 			case 1: // intermediate
 				trap_Cvar_SetValue( "r_subdivisions", 12 );
 				trap_Cvar_SetValue( "r_vertexlighting", 0 );
-				trap_Cvar_SetValue( "r_lodbias", 0 );
-				trap_Cvar_SetValue( "r_colorbits", 0 );
-				trap_Cvar_SetValue( "r_depthbits", 24 );
 				trap_Cvar_SetValue( "r_picmip", 1 );
-				trap_Cvar_SetValue( "r_texturebits", 0 );
-				trap_Cvar_SetValue( "r_fastSky", 0 );
 				trap_Cvar_SetValue( "r_inGameVideo", 1 );
 				trap_Cvar_SetValue( "cg_shadows", 0 );
 				trap_Cvar_SetValue( "cg_bounceParticles", 0 );
+				trap_Cvar_SetValue( "r_normalMapping", 1 );
 				trap_Cvar_SetValue( "r_ext_multisample", 4 );
+				trap_Cvar_SetValue( "r_ext_texture_filter_anisotropic", 4 );
 				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_LINEAR" );
 				break;
 
 			case 2: // fast
 				trap_Cvar_SetValue( "r_subdivisions", 8 );
 				trap_Cvar_SetValue( "r_vertexlighting", 0 );
-				trap_Cvar_SetValue( "r_lodbias", 1 );
-				trap_Cvar_SetValue( "r_colorbits", 0 );
-				trap_Cvar_SetValue( "r_depthbits", 0 );
 				trap_Cvar_SetValue( "r_picmip", 1 );
-				trap_Cvar_SetValue( "r_texturebits", 0 );
-				trap_Cvar_SetValue( "r_fastSky", 1 );
 				trap_Cvar_SetValue( "r_inGameVideo", 0 );
 				trap_Cvar_SetValue( "cg_shadows", 0 );
 				trap_Cvar_SetValue( "cg_bounceParticles", 0 );
+				trap_Cvar_SetValue( "r_normalMapping", 0 );
 				trap_Cvar_SetValue( "r_ext_multisample", 2 );
-				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_NEAREST" );
+				trap_Cvar_SetValue( "r_ext_texture_filter_anisotropic", 2 );
+								trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_NEAREST" );
 				break;
 
 			case 3: // fastest
 				trap_Cvar_SetValue( "r_subdivisions", 20 );
 				trap_Cvar_SetValue( "r_vertexlighting", 1 );
-				trap_Cvar_SetValue( "r_lodbias", 2 );
-				trap_Cvar_SetValue( "r_colorbits", 16 );
-				trap_Cvar_SetValue( "r_depthbits", 16 );
 				trap_Cvar_SetValue( "r_picmip", 2 );
-				trap_Cvar_SetValue( "r_texturebits", 16 );
-				trap_Cvar_SetValue( "r_fastSky", 1 );
 				trap_Cvar_SetValue( "r_inGameVideo", 0 );
 				trap_Cvar_SetValue( "cg_shadows", 0 );
 				trap_Cvar_SetValue( "cg_bounceParticles", 0 );
+				trap_Cvar_SetValue( "r_normalMapping", 0 );
 				trap_Cvar_SetValue( "r_ext_multisample", 0 );
+				trap_Cvar_SetValue( "r_ext_texture_filter_anisotropic", 0 );
 				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_NEAREST" );
 				break;
 		}
