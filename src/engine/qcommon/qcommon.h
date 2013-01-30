@@ -875,11 +875,17 @@ typedef struct
     char buffer[ MAX_EDIT_LINE ];
 } field_t;
 
+// Field_Complete{Key,Team}name
+#define FIELD_TEAM            1
+#define FIELD_TEAM_SPECTATORS 2
+#define FIELD_TEAM_DEFAULT    4
+
 void Field_Clear( field_t *edit );
 void Field_Set( field_t *edit, const char *text );
 void Field_WordDelete( field_t *edit );
 void Field_AutoComplete( field_t *edit, const char *prompt );
-void Field_CompleteKeyname( void );
+void Field_CompleteKeyname( int flags );
+void Field_CompleteTeamname( int flags );
 void Field_CompleteCgame( int argNum );
 void Field_CompleteFilename( const char *dir,
                              const char *ext, qboolean stripExt );

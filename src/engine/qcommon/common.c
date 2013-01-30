@@ -4236,21 +4236,65 @@ static qboolean Field_Complete( void )
 
 #ifndef DEDICATED
 
+static void Field_TeamnameCompletion( void ( *callback )( const char *s ), int flags )
+{
+	if ( flags & FIELD_TEAM_SPECTATORS )
+	{
+		callback( "spectators" );
+	}
+
+	if ( flags & FIELD_TEAM_DEFAULT )
+	{
+		callback( "default" );
+	}
+
+	callback( "humans" );
+	callback( "aliens" );
+}
+
 /*
 ===============
 Field_CompleteKeyname
 ===============
 */
-void Field_CompleteKeyname( void )
+void Field_CompleteKeyname( int flags )
 {
 	matchCount = 0;
 	shortestMatch[ 0 ] = 0;
+
+	if ( flags & FIELD_TEAM )
+	{
+		Field_TeamnameCompletion( FindMatches, flags );
+	}
 
 	Key_KeynameCompletion( FindMatches );
 
 	if ( !Field_Complete() )
 	{
+		if ( flags & FIELD_TEAM )
+		{
+			Field_TeamnameCompletion( PrintMatches, flags );
+		}
+
 		Key_KeynameCompletion( PrintMatches );
+	}
+}
+
+/*
+===============
+Field_CompleteTeamname
+===============
+*/
+void Field_CompleteTeamname( int flags )
+{
+	matchCount = 0;
+	shortestMatch[ 0 ] = 0;
+
+	Field_TeamnameCompletion( FindMatches, flags );
+
+	if ( !Field_Complete() )
+	{
+		Field_TeamnameCompletion( PrintMatches, flags );
 	}
 }
 
