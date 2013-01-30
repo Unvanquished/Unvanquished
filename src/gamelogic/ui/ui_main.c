@@ -3914,54 +3914,58 @@ static void UI_RunMenuScript( char **args )
 			// FIXME: make this copying handle all files in the profiles directory
 			if ( Q_stricmp( uiprofile, buff ) )
 			{
-			        static const char *const toCopy[] = { CONFIG_NAME, "servercache.dat" };
-			        int i;
+				int i;
+				char fileList[ MAX_STRING_CHARS ];
+				char *filePtr;
+				int numFiles = trap_FS_GetFileList( va( "profiles/%s", uiprofile ), NULL, fileList,
+					sizeof( fileList ) );
 
-			        for ( i = 0; i < ARRAY_LEN( toCopy ); ++i )
-			        {
-                                        if ( trap_FS_FOpenFile( va( "profiles/%s/%s", buff, toCopy[ i ] ), &f, FS_WRITE ) >= 0 )
-                                        {
-                                                if ( ( len = trap_FS_FOpenFile( va( "profiles/%s/%s", uiprofile, toCopy[ i ] ), &f2, FS_READ ) ) >= 0 )
-                                                {
-                                                        char b[ 4096 ];
-
-                                                        while ( len > 0 )
-                                                        {
-                                                                int count = MIN( sizeof( b ), len );
-
-                                                                trap_FS_Read( &b, count, f2 );
-                                                                trap_FS_Write( &b, count, f );
-                                                                len -= count;
-                                                        }
-
-                                                        trap_FS_FCloseFile( f2 );
-                                                }
-
-                                                trap_FS_FCloseFile( f );
-                                        }
-                                }
-
-				if ( !Q_stricmp( uiprofile, cl_defaultProfile.string ) )
+				filePtr = fileList;
+				for ( i = 0; i < numFiles; i++, filePtr += strlen( filePtr ) + 1 )
 				{
-					// if renaming the default profile, set the default to the new profile
-					trap_Cvar_Set( "cl_defaultProfile", buff );
-
-					if ( trap_FS_FOpenFile( "profiles/defaultprofile.dat", &f, FS_WRITE ) >= 0 )
+					if ( trap_FS_FOpenFile( va( "profiles/%s/%s", buff, filePtr ), &f, FS_WRITE ) >= 0 )
 					{
-						trap_FS_Write( buff, strlen( buff ), f );
+						if ( ( len = trap_FS_FOpenFile( va( "profiles/%s/%s", uiprofile, filePtr ), &f2, FS_READ ) ) >= 0 )
+						{
+							char b[ 4096 ];
+
+							while ( len > 0 )
+							{
+								int count = MIN( sizeof( b ), len );
+
+								trap_FS_Read( &b, count, f2 );
+								trap_FS_Write( &b, count, f );
+								len -= count;
+							}
+
+							trap_FS_FCloseFile( f2 );
+						}
+
 						trap_FS_FCloseFile( f );
 					}
 				}
-
-				// if renaming the active profile, set active to new name
-				if ( !Q_stricmp( uiprofile, cl_profile.string ) )
-				{
-					trap_Cvar_Set( "cl_profile", buff );
-				}
-
-				// delete the old profile
-				trap_FS_Delete( va( "profiles/%s", uiprofile ) );
 			}
+
+			if ( !Q_stricmp( uiprofile, cl_defaultProfile.string ) )
+			{
+				// if renaming the default profile, set the default to the new profile
+				trap_Cvar_Set( "cl_defaultProfile", buff );
+
+				if ( trap_FS_FOpenFile( "profiles/defaultprofile.dat", &f, FS_WRITE ) >= 0 )
+				{
+					trap_FS_Write( buff, strlen( buff ), f );
+					trap_FS_FCloseFile( f );
+				}
+			}
+
+			// if renaming the active profile, set active to new name
+			if ( !Q_stricmp( uiprofile, cl_profile.string ) )
+			{
+				trap_Cvar_Set( "cl_profile", buff );
+			}
+
+			// delete the old profile
+			trap_FS_Delete( va( "profiles/%s", uiprofile ) );
 
 			trap_Cvar_Set( "ui_profile", ui_renameprofileto );
 			trap_Cvar_Set( "ui_profile_renameto", "" );
