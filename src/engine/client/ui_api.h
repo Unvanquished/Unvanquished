@@ -77,7 +77,6 @@ typedef enum uiImport_s
   UI_KEY_KEYNUMTOSTRINGBUF,
   UI_KEY_GETBINDINGBUF,
   UI_KEY_SETBINDING,
-  UI_KEY_BINDINGTOKEYS,
   UI_KEY_ISDOWN,
   UI_KEY_GETOVERSTRIKEMODE,
   UI_KEY_SETOVERSTRIKEMODE,
@@ -284,9 +283,8 @@ sfxHandle_t trap_S_RegisterSound( const char *sample, qboolean compressed );
 void        trap_S_StartLocalSound( sfxHandle_t sfx, int channelNum );
 void        trap_S_FadeAllSound( float targetvol, int time, qboolean stopsound );
 void        trap_Key_KeynumToStringBuf( int keynum, char *buf, int buflen );
-void        trap_Key_GetBindingBuf( int keynum, char *buf, int buflen );
-void        trap_Key_SetBinding( int keynum, const char *binding );
-void        trap_Key_KeysForBinding( const char *binding, int *key1, int *key2 );
+void        trap_Key_GetBindingBuf( int keynum, int team, char *buf, int buflen );
+void        trap_Key_SetBinding( int keynum, int team, const char *binding );
 qboolean    trap_Key_IsDown( int keynum );
 qboolean    trap_Key_GetOverstrikeMode( void );
 void        trap_Key_SetOverstrikeMode( qboolean state );
