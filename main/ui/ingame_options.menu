@@ -380,7 +380,7 @@
 	BINDX	( misc, "Scroll Scores Up:", "scoresUp", 1 )
 	BINDX	( misc, "Scroll Score Down:", "scoresDown", 2 )
 	BINDX	( misc, "Deconstruct Structure:", "if alt \"/deconstruct marked\" /deconstruct", 3 )
-	BINDX	( misc, "Screenshot:", "if shift /screenshotPNG /screenshotJPEG", 4 )
+	BINDX	( misc, "Screenshot:", "if shift /screenshotJPEG /screenshotPNG", 4 )
 
 //////// SYSTEM
 
