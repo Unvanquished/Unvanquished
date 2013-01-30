@@ -205,6 +205,8 @@ extern "C" qboolean BotSetupNav( const botClass_t *botClass, qhandle_t *navHandl
 
 	if ( !numNavData )
 	{
+		vec3_t clearVec = { 0, 0, 0 };
+
 		dtAllocSetCustom( dtAllocCustom, dtFreeCustom );
 
 		for ( int i = 0; i < MAX_CLIENTS; i++ )
@@ -212,9 +214,13 @@ extern "C" qboolean BotSetupNav( const botClass_t *botClass, qhandle_t *navHandl
 			// should only init the corridor once
 			if ( !agents[ i ].corridor.getPath() )
 			{
-				agents[ i ].corridor.init( MAX_BOT_PATH );
+				if ( !agents[ i ].corridor.init( MAX_BOT_PATH ) )
+				{
+					return qfalse;
+				}
 			}
 
+			agents[ i ].corridor.reset( 0, clearVec );
 			agents[ i ].clientNum = i;
 			agents[ i ].needReplan = qtrue;
 			agents[ i ].lastRouteTime = 0;

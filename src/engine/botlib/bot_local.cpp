@@ -126,22 +126,11 @@ unsigned int FindRoute( Bot_t *bot, const vec3_t s, const vec3_t e )
 
 	bot->lastRouteTime = time;
 
-	startRef = bot->corridor.getFirstPoly();
+	result = BotFindNearestPoly( bot, s, &startRef, start );
 
-	if ( !startRef )
+	if ( !result )
 	{
-		result = BotFindNearestPoly( bot, s, &startRef, start );
-
-		if ( !result )
-		{
-			return ROUTE_FAILED;
-		}
-
-		bot->corridor.reset( startRef, start );
-	}
-	else
-	{
-		VectorCopy( bot->corridor.getPos(), start );
+		return ROUTE_FAILED;
 	}
 
 	result = BotFindNearestPoly( bot, e, &endRef, end );
