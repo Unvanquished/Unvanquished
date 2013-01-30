@@ -3206,9 +3206,9 @@ static void UI_Update( const char *name )
 				break;
 
 			case 1: // intermediate
-				trap_Cvar_SetValue( "r_subdivisions", 12 );
+				trap_Cvar_SetValue( "r_subdivisions", 8 );
 				trap_Cvar_SetValue( "r_vertexlighting", 0 );
-				trap_Cvar_SetValue( "r_picmip", 1 );
+				trap_Cvar_SetValue( "r_picmip", 0 );
 				trap_Cvar_SetValue( "r_inGameVideo", 1 );
 				trap_Cvar_SetValue( "cg_shadows", 0 );
 				trap_Cvar_SetValue( "cg_bounceParticles", 0 );
@@ -3219,7 +3219,7 @@ static void UI_Update( const char *name )
 				break;
 
 			case 2: // fast
-				trap_Cvar_SetValue( "r_subdivisions", 8 );
+				trap_Cvar_SetValue( "r_subdivisions", 12 );
 				trap_Cvar_SetValue( "r_vertexlighting", 0 );
 				trap_Cvar_SetValue( "r_picmip", 1 );
 				trap_Cvar_SetValue( "r_inGameVideo", 0 );
@@ -3228,7 +3228,7 @@ static void UI_Update( const char *name )
 				trap_Cvar_SetValue( "r_normalMapping", 0 );
 				trap_Cvar_SetValue( "r_ext_multisample", 2 );
 				trap_Cvar_SetValue( "r_ext_texture_filter_anisotropic", 2 );
-								trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_NEAREST" );
+				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_NEAREST" );
 				break;
 
 			case 3: // fastest
