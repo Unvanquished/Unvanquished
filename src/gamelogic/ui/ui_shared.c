@@ -6025,7 +6025,7 @@ static const char *const g_bind_commands[] =
 	"reload",
 	"scoresDown",
 	"scoresUp",
-	"screenshotJPEG",
+	"if shift /screenshotPNG /screenshotJPEG",
 	"teamvote no",
 	"teamvote yes",
 	"vote no",
