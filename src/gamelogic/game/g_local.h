@@ -806,7 +806,7 @@ char     *G_NewString( const char *string );
 // g_bot.c
 //
 qboolean G_BotAdd( char *name, team_t team, int skill, const char* behavior );
-void G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavior );
+qboolean G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavior );
 void G_BotDel( int clientNum );
 void G_BotDelAllBots( void );
 void G_BotThink( gentity_t *self );

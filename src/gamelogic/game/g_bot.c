@@ -2094,7 +2094,7 @@ static void G_BotNameUsed( team_t team, const char *name, qboolean inUse )
 	}
 }
 
-void G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavior )
+qboolean G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavior )
 {
 	botMemory_t *botMind;
 	gentity_t *self = &g_entities[ clientNum ];
@@ -2114,7 +2114,13 @@ void G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavi
 	if ( !botMind->behaviorTree )
 	{
 		G_Printf( "Problem when loading behavior tree %s, trying default\n", behavior );
-		botMind->behaviorTree = ReadBehaviorTree( behavior );
+		botMind->behaviorTree = ReadBehaviorTree( "default" );
+
+		if ( !botMind->behaviorTree )
+		{
+			G_Printf( "Problem when loading default behavior tree\n" );
+			return qfalse;
+		}
 	}
 
 	BotSetSkillLevel( &g_entities[clientNum], skill );
@@ -2125,6 +2131,8 @@ void G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavi
 	{
 		level.clients[clientNum].sess.restartTeam = team;
 	}
+
+	return qtrue;
 }
 
 qboolean G_BotAdd( char *name, team_t team, int skill, const char *behavior )
@@ -2134,6 +2142,7 @@ qboolean G_BotAdd( char *name, team_t team, int skill, const char *behavior )
 	const char* s = 0;
 	gentity_t *bot;
 	qboolean autoname = qfalse;
+	qboolean okay;
 
 	if ( !navMeshLoaded )
 	{
@@ -2160,7 +2169,7 @@ qboolean G_BotAdd( char *name, team_t team, int skill, const char *behavior )
 	}
 
 	//default bot data
-	G_BotSetDefaults( clientNum, team, skill, behavior );
+	okay = G_BotSetDefaults( clientNum, team, skill, behavior );
 
 	// register user information
 	userinfo[0] = '\0';
@@ -2185,6 +2194,12 @@ qboolean G_BotAdd( char *name, team_t team, int skill, const char *behavior )
 	{
 		// won't let us join
 		trap_Print( s );
+		okay = qfalse;
+	}
+
+	if ( !okay )
+	{
+		G_BotDel( clientNum );
 		return qfalse;
 	}
 
