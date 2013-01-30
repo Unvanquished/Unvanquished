@@ -454,7 +454,8 @@
 			"Light Map (high)" 0 "Vertex (low)" 1,
 			play "sound/misc/menu1.wav"; uiScript glCustom,
 			3 )
-	YESNOX	( ghardware, "Shadows:", "cg_shadows",
+	MULTIX	( ghardware, "Shadows:", "cg_shadows",
+			"No" 0 "Blobs" 1 "Exponential mapping" 3 "Variance mapping" 5 "Exponential variance" 6,
 			play "sound/misc/menu1.wav"; uiScript glCustom,
 			4 )
 	YESNOX	( ghardware, "Compress Textures:", "r_ext_compressed_textures",
