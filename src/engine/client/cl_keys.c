@@ -1221,6 +1221,8 @@ void Key_SetBinding( int keynum, int team, const char *binding )
 /*
 ===================
 Key_GetBinding
+
+-ve team no. = don't return the default binding
 ===================
 */
 const char *Key_GetBinding( int keynum, int team )
@@ -1230,6 +1232,11 @@ const char *Key_GetBinding( int keynum, int team )
 	if ( keynum < 0 || keynum >= MAX_KEYS )
 	{
 		return NULL;
+	}
+
+	if ( team <= 0 )
+	{
+		return keys[ keynum ].binding[ CLIP( -team ) ];
 	}
 
 	bind = keys[ keynum ].binding[ CLIP( team ) ];
@@ -1448,7 +1455,7 @@ void Key_EditBind_f( void )
 		return;
 	}
 
-	binding = Key_GetBinding( b, team );
+	binding = Key_GetBinding( b, -team );
 
 	bindq = binding ? Cmd_QuoteString( binding ) : "";  // <- static buffer
 	buf = malloc( 32 + strlen( key ) + strlen( bindq ) );
