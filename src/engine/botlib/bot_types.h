@@ -60,6 +60,7 @@ enum navPolyFlags
 	POLYFLAGS_DOOR     = 1 << 6,
 	POLYFLAGS_TELEPORT = 1 << 7,
 	POLYFLAGS_CROUCH   = 1 << 8,
+	POLYFLAGS_SWIM     = 1 << 9,
 	POLYFLAGS_ALL      = 0xffff, // All abilities.
 };
 
