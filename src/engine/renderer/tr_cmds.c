@@ -656,7 +656,7 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 			ri.Cvar_Set( "r_measureOverdraw", "0" );
 			r_measureOverdraw->modified = qfalse;
 		}
-		else if ( r_shadows->integer == 2 )
+		else if ( r_shadows->integer >= 2 )
 		{
 			ri.Printf( PRINT_ALL, "Warning: stencil shadows and overdraw measurement are mutually exclusive\n" );
 			ri.Cvar_Set( "r_measureOverdraw", "0" );
