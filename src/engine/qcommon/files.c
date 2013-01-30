@@ -1445,6 +1445,7 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 						     Q_stricmp( filename + l - 6, ".arena" ) != 0 &&
 						     Q_stricmp( filename + l - 5, ".menu" ) != 0 &&
 						     Q_stricmp( filename + l - 3, ".po" ) != 0 &&
+						     Q_stricmp( filename + l - 8, ".navMesh" ) != 0 &&
 						     Q_stricmp( filename, "game.qvm" ) != 0  &&
 						     !FS_CheckUIImageFile( filename ) )
 						{
