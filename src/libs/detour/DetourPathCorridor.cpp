@@ -368,7 +368,7 @@ bool dtPathCorridor::optimizePathTopology(dtNavMeshQuery* navquery, const dtQuer
 	navquery->updateSlicedFindPath(MAX_ITER, 0);
 	dtStatus status = navquery->finalizeSlicedFindPathPartial(m_path, m_npath, res, &nres, MAX_RES);
 	
-	if (status == DT_SUCCESS && nres > 0)
+	if (dtStatusSucceed(status) && nres > 0)
 	{
 		m_npath = dtMergeCorridorStartShortcut(m_path, m_npath, m_maxPath, res, nres);
 		return true;
@@ -508,6 +508,27 @@ void dtPathCorridor::setCorridor(const float* target, const dtPolyRef* path, con
 	dtVcopy(m_target, target);
 	memcpy(m_path, path, sizeof(dtPolyRef)*npath);
 	m_npath = npath;
+}
+
+bool dtPathCorridor::fixPathStart(dtPolyRef safeRef, const float* safePos)
+{
+	dtAssert(m_path);
+
+	dtVcopy(m_pos, safePos);
+	if (m_npath < 3 && m_npath > 0)
+	{
+		m_path[2] = m_path[m_npath-1];
+		m_path[0] = safeRef;
+		m_path[1] = 0;
+		m_npath = 3;
+	}
+	else
+	{
+		m_path[0] = safeRef;
+		m_path[1] = 0;
+	}
+	
+	return true;
 }
 
 bool dtPathCorridor::trimInvalidPath(dtPolyRef safeRef, const float* safePos,

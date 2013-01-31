@@ -87,6 +87,13 @@ enum dtStraightPathFlags
 	DT_STRAIGHTPATH_OFFMESH_CONNECTION = 0x04,	///< The vertex is the start of an off-mesh connection.
 };
 
+/// Options for dtNavMeshQuery::findStraightPath.
+enum dtStraightPathOptions
+{
+	DT_STRAIGHTPATH_AREA_CROSSINGS = 0x01,	///< Add a vertex at every polygon edge crossing where area changes.
+	DT_STRAIGHTPATH_ALL_CROSSINGS = 0x02,	///< Add a vertex at every polygon edge crossing.
+};
+
 /// Flags representing the type of a navigation mesh polygon.
 enum dtPolyTypes
 {
@@ -535,7 +542,7 @@ private:
 	/// Builds internal polygons links for a tile.
 	void connectIntLinks(dtMeshTile* tile);
 	/// Builds internal polygons links for a tile.
-	void connectIntOffMeshLinks(dtMeshTile* tile);
+	void baseOffMeshLinks(dtMeshTile* tile);
 
 	/// Builds external polygon links for a tile.
 	void connectExtLinks(dtMeshTile* tile, dtMeshTile* target, int side);
