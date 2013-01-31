@@ -1623,12 +1623,7 @@ void Key_CompleteTeambind( char *args, int argNum )
 {
 	if ( argNum == 2 )
 	{
-		char *p = Com_SkipTokens( args, 1, " " );
-
-		if ( p > args )
-		{
-			Field_CompleteTeamname( p );
-		}
+		Field_CompleteTeamname( FIELD_TEAM_SPECTATORS | FIELD_TEAM_DEFAULT );
 	}
 	else
 	{
@@ -1640,12 +1635,7 @@ static void Key_CompleteEditbind( char *args, int argNum )
 {
 	if ( argNum < 4 )
 	{
-		char *p = Com_SkipTokens( args, argNum - 1, " " );
-
-		if ( p > args )
-		{
-			Field_CompleteKeyname( argNum > 2 ? 0 : FIELD_TEAM | FIELD_TEAM_SPECTATORS | FIELD_TEAM_DEFAULT );
-		}
+		Field_CompleteKeyname( argNum > 2 ? 0 : FIELD_TEAM | FIELD_TEAM_SPECTATORS | FIELD_TEAM_DEFAULT );
 	}
 }
 
