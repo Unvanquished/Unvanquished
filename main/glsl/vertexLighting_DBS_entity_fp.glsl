@@ -189,12 +189,12 @@ void	main()
 
 // add Rim Lighting to highlight the edges
 #if defined(r_RimLighting)
-	float rim = pow(1.0 - clamp(dot(N, V), 0, 1), r_RimExponent);
+	float rim = pow(1.0 - clamp(dot(N, V), 0.0, 1.0), r_RimExponent);
 	specBase = mix(specBase, vec3(1.0), rim);
-	vec3 emission = u_AmbientColor * rim * rim;
+	vec3 emission = u_AmbientColor * rim * rim * 0.2;
 
-	// gl_FragColor = vec4(emission, 1.0);
-	// return;
+	//gl_FragColor = vec4(emission, 1.0);
+	//return;
 
 #endif
 
