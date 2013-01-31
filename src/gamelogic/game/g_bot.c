@@ -1290,7 +1290,7 @@ qboolean BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 			secondaryRange = 0;
 			break;
 		case WP_FLAMER:
-			range = FLAMER_SPEED * FLAMER_LIFETIME / 1000.0f - 20.0f;
+			range = FLAMER_SPEED * FLAMER_LIFETIME / 1000.0f - 100.0f;
 			secondaryRange = 0;
 			width = height = FLAMER_SIZE;
 			// Correct muzzle so that the missile does not start in the ceiling
