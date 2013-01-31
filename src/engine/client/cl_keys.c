@@ -1516,11 +1516,32 @@ void Key_Bindlist_f( void )
 
 	for ( i = 0; i < MAX_KEYS; i++ )
 	{
-		for ( team = 0; team < MAX_TEAMS; ++team )
+		qboolean teamSpecific = qfalse;
+
+		for ( team = 1; team < MAX_TEAMS; ++team )
 		{
 			if ( keys[ i ].binding[ team ] && keys[ i ].binding[ team ][ 0 ] )
 			{
-				Com_Printf( "%s[%d] = %s\n", Key_KeynumToString( i ), team, keys[ i ].binding[ team ] );
+				teamSpecific = qtrue;
+				break;
+			}
+		}
+
+		if ( !teamSpecific )
+		{
+			if ( keys[ i ].binding[ 0 ] && keys[ i ].binding[ 0 ][ 0 ] )
+			{
+				Com_Printf( "%s = %s\n", Key_KeynumToString( i ), keys[ i ].binding[ 0 ] );
+			}
+		}
+		else
+		{
+			for ( team = 0; team < MAX_TEAMS; ++team )
+			{
+				if ( keys[ i ].binding[ team ] && keys[ i ].binding[ team ][ 0 ] )
+				{
+					Com_Printf( "%s[%s] = %s\n", Key_KeynumToString( i ), teamName[ team ], keys[ i ].binding[ team ] );
+				}
 			}
 		}
 	}
