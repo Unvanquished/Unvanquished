@@ -347,9 +347,6 @@ gentity_t* BotGetPathBlocker( gentity_t *self )
 	forward[0] = cos( DEG2RAD( self->client->ps.viewangles[YAW] ) );
 	forward[1] = sin( DEG2RAD( self->client->ps.viewangles[YAW] ) );
 	forward[2] = 0;
-	//VectorSubtract(target,self->s.origin, moveDir);
-	//moveDir[2] = 0;
-	//VectorNormalize(moveDir);
 	//already normalized
 	VectorCopy( forward, moveDir );
 
@@ -361,8 +358,8 @@ gentity_t* BotGetPathBlocker( gentity_t *self )
 
 	VectorMA( self->s.origin, TRACE_LENGTH, moveDir, end );
 
-	trap_Trace( &trace, self->s.origin, playerMins, playerMaxs, end, self->s.number, CONTENTS_BODY );
-	if ( trace.entityNum != ENTITYNUM_NONE && trace.fraction < 1.0f )
+	trap_Trace( &trace, self->s.origin, playerMins, playerMaxs, end, self->s.number, MASK_SHOT );
+	if ( trace.fraction < 1.0f && trace.plane.normal[ 2 ] < 0.7f )
 	{
 		return &g_entities[trace.entityNum];
 	}

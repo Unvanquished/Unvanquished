@@ -219,7 +219,7 @@ static INLINE qboolean BotChangeGoalPos( gentity_t *self, vec3_t goal )
 //For a reference of how far a number represents, take a look at tremulous.h
 
 //how long our traces are for obstacle avoidence
-#define BOT_OBSTACLE_AVOID_RANGE 50.0f
+#define BOT_OBSTACLE_AVOID_RANGE 5.0f
 
 //how far off can our aim can be from true in order to try to hit the enemy
 #define BOT_AIM_NEGLIGENCE 30.0f
