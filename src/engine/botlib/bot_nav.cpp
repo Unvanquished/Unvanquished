@@ -153,16 +153,13 @@ extern "C" void BotUpdateCorridor( int botClientNum, vec3_t *corners, int *numCo
 
 	if ( bot->needReplan )
 	{
-		vec3_t nearPoint;
-		dtPolyRef nearPoly;
-		if ( BotFindNearestPoly( bot, spos, &nearPoly, nearPoint ) )
+		if ( ! ( FindRoute( bot, spos, epos ) & ( ROUTE_PARTIAL | ROUTE_FAILED ) ) )
 		{
-			bot->corridor.reset( nearPoly, nearPoint );
-
-			if ( ! ( FindRoute( bot, spos, epos ) & ( ROUTE_PARTIAL | ROUTE_FAILED ) ) )
-			{
-				bot->needReplan = qfalse;
-			}
+			bot->needReplan = qfalse;
+		}
+		else if ( !bot->corridor.getPathCount() )
+		{
+			return;
 		}
 	}
 

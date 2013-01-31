@@ -89,7 +89,6 @@ static inline void recast2quake( vec3_t vec )
 // all functions here use detour's coordinate system
 // callers should use quake2recast and recast2quake where appropriate to convert vectors
 void         FindWaypoints( Bot_t *bot, float *corners, unsigned char *cornerFlags, dtPolyRef *cornerPolys, int *numCorners, int maxCorners );
-float        Distance2DSquared( const vec3_t p1, const vec3_t p2 );
 qboolean     PointInPoly( Bot_t *bot, dtPolyRef ref, const vec3_t point );
 qboolean     BotFindNearestPoly( Bot_t *bot, const vec3_t coord, dtPolyRef *nearestPoly, vec3_t nearPoint );
 unsigned int FindRoute( Bot_t *bot, const vec3_t s, const vec3_t e );

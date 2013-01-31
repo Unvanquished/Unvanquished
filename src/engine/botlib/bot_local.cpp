@@ -58,29 +58,30 @@ void FindWaypoints( Bot_t *bot, float *corners, unsigned char *cornerFlags, dtPo
 	*numCorners = bot->corridor.findCorners( corners, cornerFlags, cornerPolys, maxCorners, bot->nav->query, &bot->nav->filter );
 }
 
-float Distance2DSquared( const vec3_t p1, const vec3_t p2 )
-{
-	return Square( p2[ 0 ] - p1[ 0 ] ) + Square( p2[ 2 ] - p1[ 2 ] );
-}
-
 qboolean PointInPoly( Bot_t *bot, dtPolyRef ref, const vec3_t point )
 {
 	vec3_t closest;
-	const float PT_EPSILON = 5.0f;
 
 	if ( dtStatusFailed( bot->nav->query->closestPointOnPolyBoundary( ref, point, closest ) ) )
 	{
 		return qfalse;
 	}
 
-	if ( Distance2DSquared( point, closest ) < Square( PT_EPSILON ) )
-	{
-		return qtrue;
-	}
-	else
+	// use the bot's bbox as an epsilon because the navmesh is always at least that far from a boundry
+	sharedEntity_t *ent = SV_GentityNum( bot->clientNum );
+	float maxRad = MAX( ent->r.maxs[ 0 ], ent->r.maxs[ 1 ] );
+
+	if ( fabsf( point[ 0 ] - closest[ 0 ] ) > maxRad )
 	{
 		return qfalse;
 	}
+
+	if ( fabsf( point[ 2 ] - closest[ 2 ] ) > maxRad )
+	{
+		return qfalse;
+	}
+
+	return qtrue;
 }
 
 qboolean BotFindNearestPoly( Bot_t *bot, const vec3_t coord, dtPolyRef *nearestPoly, vec3_t nearPoint )
