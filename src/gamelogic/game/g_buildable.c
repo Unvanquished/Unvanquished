@@ -271,48 +271,8 @@ qboolean G_FindPower( gentity_t *self, qboolean searchUnspawned )
 
 				if ( self->s.modelindex != BA_NONE )
 				{
-					if ( g_humanRepeaterBuildPoints.integer )
-					{
-						buildPoints = g_humanRepeaterBuildPoints.integer;
-					}
-
-					// Scan the buildables in the repeater zone
-					for ( j = MAX_CLIENTS, ent2 = g_entities + j; j < level.num_entities; j++, ent2++ )
-					{
-						if ( ent2->s.eType != ET_BUILDABLE )
-						{
-							continue;
-						}
-
-						if ( ent2 == self )
-						{
-							continue;
-						}
-
-						if ( ent2->parentNode == ent )
-						{
-							buildPoints -= BG_Buildable( ent2->s.modelindex )->buildPoints;
-						}
-					}
-
-					if ( ent->usesBuildPointZone && level.buildPointZones[ ent->buildPointZone ].active )
-					{
-						buildPoints -= level.buildPointZones[ ent->buildPointZone ].queuedBuildPoints;
-					}
-
-					buildPoints -= BG_Buildable( self->s.modelindex )->buildPoints;
-
-					if ( buildPoints >= 0 )
-					{
-						closestPower = ent;
-						minDistance = distance;
-					}
-					else
-					{
-						// a buildable can still be built if it shares BP from two zones
-
-						// TODO: handle combined power zones here
-					}
+					closestPower = ent;
+					minDistance = distance;
 				}
 				else
 				{
@@ -2044,14 +2004,6 @@ static void HRepeater_Die( gentity_t *self, gentity_t *inflictor, gentity_t *att
 	}
 
 	G_LogDestruction( self, attacker, mod );
-
-	if ( self->usesBuildPointZone )
-	{
-		buildPointZone_t *zone = &level.buildPointZones[ self->buildPointZone ];
-
-		zone->active = qfalse;
-		self->usesBuildPointZone = qfalse;
-	}
 }
 
 /*
@@ -2065,7 +2017,6 @@ void HRepeater_Think( gentity_t *self )
 {
 	int              i;
 	gentity_t        *powerEnt;
-	buildPointZone_t *zone;
 
 	self->powered = G_FindPower( self, qfalse );
 
@@ -2094,31 +2045,6 @@ void HRepeater_Think( gentity_t *self )
 	}
 
 	G_IdlePowerState( self );
-
-	// Initialise the zone once the repeater has spawned
-	if ( self->spawned && ( !self->usesBuildPointZone || !level.buildPointZones[ self->buildPointZone ].active ) )
-	{
-		// See if a free zone exists
-		for ( i = 0; i < g_humanRepeaterMaxZones.integer; i++ )
-		{
-			zone = &level.buildPointZones[ i ];
-
-			if ( !zone->active )
-			{
-				// Initialise the BP queue with no BP queued
-				zone->queuedBuildPoints = 0;
-				zone->totalBuildPoints = g_humanRepeaterBuildPoints.integer;
-				zone->nextQueueTime = level.time;
-				zone->active = qtrue;
-
-				self->buildPointZone = zone - level.buildPointZones;
-				self->usesBuildPointZone = qtrue;
-
-				break;
-			}
-		}
-	}
-
 	self->nextthink = level.time + POWER_REFRESH_TIME;
 }
 
@@ -5019,26 +4945,6 @@ void G_BuildLogRevert( int id )
 
 			// Number of thinks before giving up and killing players in the way
 			builder->suicideTime = 30;
-
-			if ( log->fate == BF_DESTROY || log->fate == BF_TEAMKILL )
-			{
-				int value = log->powerValue;
-
-				if ( log->powerSource == BA_H_REPEATER )
-				{
-					gentity_t        *source;
-					buildPointZone_t *zone;
-
-					source = G_PowerEntityForPoint( log->origin );
-
-					if ( source && source->usesBuildPointZone )
-					{
-						zone = &level.buildPointZones[ source->buildPointZone ];
-						zone->queuedBuildPoints =
-							MAX( 0, zone->queuedBuildPoints - value );
-					}
-				}
-			}
 		}
 	}
 }
