@@ -26,7 +26,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "../../engine/qcommon/q_shared.h"
 #include "../../engine/renderer/tr_types.h"
-#include "keycodes.h"
+#include "../../engine/client/keycodes.h"
 
 #include "../../../main/ui/menudef.h"
 
@@ -429,8 +429,8 @@ typedef struct
 	void ( *feederSelection )( int feederID, int index );
 	int ( *feederInitialise )( int feederID );
 	void ( *keynumToStringBuf )( int keynum, char *buf, int buflen );
-	void ( *getBindingBuf )( int keynum, char *buf, int buflen );
-	void ( *setBinding )( int keynum, const char *binding );
+	void ( *getBindingBuf )( int keynum, int team, char *buf, int buflen );
+	void ( *setBinding )( int keynum, int team, const char *binding );
 	void ( *executeText )( int exec_when, const char *text );
 	void ( *Error )( int level, const char *error, ... ) PRINTF_LIKE(2) NORETURN;
 	void ( *Print )( const char *msg, ... ) PRINTF_LIKE(1);

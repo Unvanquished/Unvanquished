@@ -1421,8 +1421,20 @@ static int CG_CalcViewValues( void )
 	}
 	else
 	{
+		float speed;
+
 		// offset for local bobbing and kicks
 		CG_OffsetFirstPersonView();
+
+		// Compute motion blur vector
+		speed = VectorNormalize2( cg.snap->ps.velocity, cg.refdef.blurVec );
+
+		speed = (speed - cg_motionblurMinSpeed.value);
+		if( speed < 0.0f ) speed = 0.0f;
+
+		VectorScale( cg.refdef.blurVec, speed * cg_motionblur.value,
+			     cg.refdef.blurVec );
+
 	}
 
 	// position eye relative to origin

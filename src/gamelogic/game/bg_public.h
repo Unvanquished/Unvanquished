@@ -23,8 +23,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // bg_public.h -- definitions shared by both the server game and client game modules
 
-//tremulous balance header
-#include "tremulous.h"
+//Unvanquished balance header
+#include "unvanquished.h"
 
 // because games can change separately from the main system version, we need a
 // second version that must match between game and cgame
@@ -49,6 +49,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // player teams
 typedef enum
 {
+  TEAM_ALL = -1,
   TEAM_NONE,
   TEAM_ALIENS,
   TEAM_HUMANS,

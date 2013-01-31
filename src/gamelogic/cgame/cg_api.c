@@ -990,16 +990,16 @@ void trap_UI_ClosePopup( const char *arg0 )
 
 //141.
 //Key_GetBindingBuf(args[1], VMA(2), args[3]);
-void trap_Key_GetBindingBuf( int keynum, char *buf, int buflen )
+void trap_Key_GetBindingBuf( int keynum, int team, char *buf, int buflen )
 {
-	syscall( CG_KEY_GETBINDINGBUF, keynum, buf, buflen );
+	syscall( CG_KEY_GETBINDINGBUF, keynum, team, buf, buflen );
 }
 
 //142.
 //Key_SetBinding(args[1], VMA(2));
-void trap_Key_SetBinding( int keynum, const char *binding )
+void trap_Key_SetBinding( int keynum, int team, const char *binding )
 {
-	syscall( CG_KEY_SETBINDING, keynum, binding );
+	syscall( CG_KEY_SETBINDING, keynum, team, binding );
 }
 
 //143.
@@ -1042,13 +1042,6 @@ int trap_Parse_SourceFileAndLine( int handle, char *filename, int *line )
 void trap_Key_KeynumToStringBuf( int keynum, char *buf, int buflen )
 {
 	syscall( CG_KEY_KEYNUMTOSTRINGBUF, keynum, buf, buflen );
-}
-
-//149.
-//Key_GetBindingByString(VMA(1), VMA(2), VMA(3));
-void trap_Key_KeysForBinding( const char *binding, int *key1, int *key2 )
-{
-	syscall( CG_KEY_BINDINGTOKEYS, binding, key1, key2 );
 }
 
 //151.
@@ -1231,4 +1224,9 @@ void trap_Pgettext( char *buffer, const char *ctxt, const char *msgid, int buffe
 qboolean trap_R_inPVVS( const vec3_t p1, const vec3_t p2 )
 {
 	return syscall( CG_R_INPVVS, p1, p2 );
+}
+
+void trap_Key_SetTeam( int newTeam )
+{
+	syscall( CG_KEY_SETTEAM, newTeam );
 }

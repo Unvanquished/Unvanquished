@@ -421,7 +421,7 @@ qboolean CG_WorldToScreen( vec3_t point, float *x, float *y )
 CG_KeyBinding
 ================
 */
-char *CG_KeyBinding( const char *bind )
+char *CG_KeyBinding( const char *bind, team_t team )
 {
 	static char key[ 32 ];
 	char        bindbuff[ MAX_CVAR_VALUE_STRING ];
@@ -429,10 +429,14 @@ char *CG_KeyBinding( const char *bind )
 
 	key[ 0 ] = '\0';
 
-	// NOTE: change K_LAST_KEY to MAX_KEYS for full key support (eventually)
-	for ( i = 0; i < K_LAST_KEY; i++ )
+	for ( i = 0; i < MAX_KEYS; i++ )
 	{
-		trap_Key_GetBindingBuf( i, bindbuff, sizeof( bindbuff ) );
+		trap_Key_GetBindingBuf( i, team, bindbuff, sizeof( bindbuff ) );
+
+		if ( !bindbuff[0] )
+		{
+			trap_Key_GetBindingBuf( i, TEAM_NONE, bindbuff, sizeof( bindbuff ) );
+		}
 
 		if ( !Q_stricmp( bindbuff, bind ) )
 		{

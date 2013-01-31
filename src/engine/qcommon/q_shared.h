@@ -65,6 +65,7 @@ extern "C" {
 
 #ifndef DEDICATED
 #define CONFIG_NAME             "autogen.cfg"
+#define KEYBINDINGS_NAME        "keybindings.cfg"
 #else
 #define CONFIG_NAME             "autogen_server.cfg"
 #endif

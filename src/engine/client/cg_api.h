@@ -197,8 +197,6 @@ typedef enum cgameImport_s
   CG_PARSE_READ_TOKEN,
   CG_PARSE_SOURCE_FILE_AND_LINE,
   CG_KEY_KEYNUMTOSTRINGBUF,
-  CG_KEY_BINDINGTOKEYS,
-  CG_TRANSLATE_STRING,
   CG_S_FADEALLSOUNDS,
   CG_R_INPVS,
   CG_GETHUNKDATA,
@@ -227,7 +225,8 @@ typedef enum cgameImport_s
   CG_R_GLYPHCHAR,
   CG_R_UREGISTERFONT,
   CG_PGETTEXT,
-  CG_R_INPVVS
+  CG_R_INPVVS,
+  CG_KEY_SETTEAM
 } cgameImport_t;
 
 typedef enum
@@ -422,15 +421,14 @@ void            trap_R_RemapShader( const char *oldShader, const char *newShader
 qboolean        trap_GetEntityToken( char *buffer, int bufferSize );
 void            trap_UI_Popup( int arg0 );
 void            trap_UI_ClosePopup( const char *arg0 );
-void            trap_Key_GetBindingBuf( int keynum, char *buf, int buflen );
-void            trap_Key_SetBinding( int keynum, const char *binding );
+void            trap_Key_GetBindingBuf( int keynum, int team, char *buf, int buflen );
+void            trap_Key_SetBinding( int keynum, int team, const char *binding );
 int             trap_Parse_AddGlobalDefine( const char *define );
 int             trap_Parse_LoadSource( const char *filename );
 int             trap_Parse_FreeSource( int handle );
 int             trap_Parse_ReadToken( int handle, pc_token_t *pc_token );
 int             trap_Parse_SourceFileAndLine( int handle, char *filename, int *line );
 void            trap_Key_KeynumToStringBuf( int keynum, char *buf, int buflen );
-void            trap_Key_KeysForBinding( const char *binding, int *key1, int *key2 );
 void            trap_CG_TranslateString( const char *string, char *buf );
 void            trap_S_FadeAllSound( float targetvol, int time, qboolean stopsounds );
 qboolean        trap_R_inPVS( const vec3_t p1, const vec3_t p2 );
@@ -462,3 +460,5 @@ void            trap_GetClipboardData( char *, int, clipboard_t );
 void            trap_QuoteString( const char *, char*, int );
 void            trap_Gettext( char *buffer, const char *msgid, int bufferLength );
 void            trap_Pgettext( char *buffer, const char *ctxt, const char *msgid, int bufferLength );
+
+void            trap_Key_SetTeam( int newTeam );

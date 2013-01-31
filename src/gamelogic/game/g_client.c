@@ -306,12 +306,12 @@ static gentity_t *G_SelectSpawnBuildable( vec3_t preference, buildable_t buildab
 
 /*
 ===========
-G_SelectTremulousSpawnPoint
+G_SelectUnvanquishedSpawnPoint
 
 Chooses a player start, deathmatch start, etc
 ============
 */
-gentity_t *G_SelectTremulousSpawnPoint( team_t team, vec3_t preference, vec3_t origin, vec3_t angles )
+gentity_t *G_SelectUnvanquishedSpawnPoint( team_t team, vec3_t preference, vec3_t origin, vec3_t angles )
 {
 	gentity_t *spot = NULL;
 

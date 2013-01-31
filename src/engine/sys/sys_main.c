@@ -642,8 +642,8 @@ int main( int argc, char **argv )
 			dynamic = omp_get_dynamic();
 			nested = omp_get_nested();
 
-			Com_Printf( "-----------------------------------\n" );
-			Com_Printf( "-----------------------------------\n" );
+			Com_Printf( "-----------------------------------\n"
+			            "-----------------------------------\n" );
 
 			/* Print environment information */
 			Com_Printf( "Number of processors = %d\n", procs );

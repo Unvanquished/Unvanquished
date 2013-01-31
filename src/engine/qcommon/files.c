@@ -3178,8 +3178,8 @@ void FS_NewDir_f( void )
 
 	if ( Cmd_Argc() < 2 )
 	{
-		Com_Printf(_( "usage: fdir <filter>\n" ));
-		Com_Printf(_( "example: fdir *q3dm*.bsp\n" ));
+		Com_Printf(_( "usage: fdir <filter>\n"
+		              "example: fdir *q3dm*.bsp\n" ));
 		return;
 	}
 
@@ -4757,10 +4757,16 @@ void FS_Restart( int checksumFeed )
 
 				// exec the config
 				Cbuf_AddText( va( "exec profiles/%s/%s\n", cl_profileStr, CONFIG_NAME ) );
+#ifndef DEDICATED
+				Cbuf_AddText( va( "exec profiles/%s/%s\n", cl_profileStr, KEYBINDINGS_NAME ) );
+#endif
 			}
 			else
 			{
 				Cbuf_AddText( va( "exec %s\n", CONFIG_NAME ) );
+#ifndef DEDICATED
+				Cbuf_AddText( va( "exec %s\n", KEYBINDINGS_NAME ) );
+#endif
 			}
 		}
 	}
