@@ -1849,6 +1849,8 @@ void CL_Disconnect( qboolean showMainMenu )
 	{
 		cls.state = CA_DISCONNECTED;
 	}
+
+	Key_SetTeam( TEAM_NONE );
 }
 
 /*

@@ -58,7 +58,7 @@ static const size_t numBindings = ARRAY_LEN( bindings );
 CG_GetBindings
 =================
 */
-static void CG_GetBindings( void )
+static void CG_GetBindings( team_t team )
 {
 	int  i, j, numKeys;
 	char buffer[ MAX_STRING_CHARS ];
@@ -70,7 +70,12 @@ static void CG_GetBindings( void )
 
 		for ( j = 0; j < MAX_KEYS; j++ )
 		{
-			trap_Key_GetBindingBuf( j, buffer, MAX_STRING_CHARS );
+			trap_Key_GetBindingBuf( j, team, buffer, MAX_STRING_CHARS );
+
+			if ( team != TEAM_NONE && buffer[ 0 ] == 0 )
+			{
+				trap_Key_GetBindingBuf( j, TEAM_NONE, buffer, MAX_STRING_CHARS );
+			}
 
 			if ( buffer[ 0 ] == 0 )
 			{
@@ -265,8 +270,9 @@ CG_AlienLevel0Text
 static void CG_AlienLevel0Text( char *text, playerState_t *ps )
 {
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
-	          _( "Touch humans to damage them\n" ) );
-
+	          _( "Touch humans to damage them\n"
+	             "Look at their heads (or jump) to try to bite their heads\n"
+	             "Head-bites cause more damage\n" ) );
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
 	          va( _( "Press %s to walk on walls\n" ),
 	              CG_KeyNameForCommand( "+movedown" ) ) );
@@ -280,7 +286,8 @@ CG_AlienLevel1Text
 static void CG_AlienLevel1Text( char *text, playerState_t *ps )
 {
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
-	          _( "Touch humans to grab them\n" ) );
+	          _( "Touch humans to grab them\n"
+	             "Look at them to maintain the grab\n" ) );
 
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
 	          va( _( "Press %s to swipe\n" ),
@@ -289,7 +296,7 @@ static void CG_AlienLevel1Text( char *text, playerState_t *ps )
 	if ( ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL1_UPG )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( _( "Press %s to spray poisonous gas\n" ),
+		          va( _( "Press %s to spray disorienting gas\n" ),
 		              CG_KeyNameForCommand( "+attack2" ) ) );
 	}
 
@@ -356,7 +363,7 @@ static void CG_AlienLevel4Text( char *text, playerState_t *ps )
 	              CG_KeyNameForCommand( "+attack" ) ) );
 
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
-	          va( _( "Hold down and release %s to trample\n" ),
+	          va( _( "Hold down and release %s while moving forwards to trample\n" ),
 	              CG_KeyNameForCommand( "+attack2" ) ) );
 }
 
@@ -625,15 +632,15 @@ const char *CG_TutorialText( void )
 	static char   text[ MAX_TUTORIAL_TEXT ];
 	static int    refreshBindings = 0;
 
+	text[ 0 ] = '\0';
+	ps = &cg.snap->ps;
+
 	if ( refreshBindings == 0 )
 	{
-		CG_GetBindings();
+		CG_GetBindings( ps->stats[ STAT_TEAM ] );
 	}
 
 	refreshBindings = ( refreshBindings + 1 ) % BINDING_REFRESH_INTERVAL;
-
-	text[ 0 ] = '\0';
-	ps = &cg.snap->ps;
 
 	if ( !cg.intermissionStarted && !cg.demoPlayback )
 	{

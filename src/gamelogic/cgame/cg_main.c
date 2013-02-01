@@ -423,8 +423,8 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_highPolyPlayerModels,        "cg_highPolyPlayerModels",        "1",            CVAR_ARCHIVE | CVAR_LATCH    },
 	{ &cg_highPolyBuildableModels,     "cg_highPolyBuildableModels",     "1",            CVAR_ARCHIVE | CVAR_LATCH    },
 	{ &cg_highPolyWeaponModels,        "cg_highPolyWeaponModels",        "1",            CVAR_ARCHIVE | CVAR_LATCH    },
-	{ &cg_motionblur,                  "cg_motionblur",                  "0.1",          CVAR_ARCHIVE                 },
-	{ &cg_motionblurMinSpeed,          "cg_motionblurMinSpeed",          "450",          CVAR_ARCHIVE                 },
+	{ &cg_motionblur,                  "cg_motionblur",                  "0.01",          CVAR_ARCHIVE                 },
+	{ &cg_motionblurMinSpeed,          "cg_motionblurMinSpeed",          "600",          CVAR_ARCHIVE                 },
 	{ &cg_fov_builder,                 "cg_fov_builder",                 "0",            CVAR_ARCHIVE                 },
 	{ &cg_fov_level0,                  "cg_fov_level0",                  "0",            CVAR_ARCHIVE                 },
 	{ &cg_fov_level1,                  "cg_fov_level1",                  "0",            CVAR_ARCHIVE                 },
@@ -497,8 +497,12 @@ static void CG_SetUIVars( void )
 
 	trap_Cvar_Set( "ui_carriage", carriageCvar );
 
-
 	trap_Cvar_Set( "p_team", va( "%d", ps->stats[ STAT_TEAM ] ) );
+
+	if ( !( ps->pm_flags & PMF_FOLLOW ) )
+	{
+		trap_Key_SetTeam( ps->stats[ STAT_TEAM ] );
+        }
 
 	switch ( ps->stats[ STAT_TEAM ] )
 	{

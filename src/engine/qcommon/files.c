@@ -4758,10 +4758,16 @@ void FS_Restart( int checksumFeed )
 
 				// exec the config
 				Cbuf_AddText( va( "exec profiles/%s/%s\n", cl_profileStr, CONFIG_NAME ) );
+#ifndef DEDICATED
+				Cbuf_AddText( va( "exec profiles/%s/%s\n", cl_profileStr, KEYBINDINGS_NAME ) );
+#endif
 			}
 			else
 			{
 				Cbuf_AddText( va( "exec %s\n", CONFIG_NAME ) );
+#ifndef DEDICATED
+				Cbuf_AddText( va( "exec %s\n", KEYBINDINGS_NAME ) );
+#endif
 			}
 		}
 	}
