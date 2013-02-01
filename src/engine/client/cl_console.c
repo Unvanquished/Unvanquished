@@ -485,14 +485,14 @@ void Con_Init( void )
 	con_height = Cvar_Get( "con_height", "50", CVAR_ARCHIVE );
 	con_colorRed = Cvar_Get( "con_colorRed", "0", CVAR_ARCHIVE );
 	con_colorBlue = Cvar_Get( "con_colorBlue", "0.3", CVAR_ARCHIVE );
-	con_colorGreen = Cvar_Get( "con_colorGreen", "0.23", CVAR_ARCHIVE );
+	con_colorGreen = Cvar_Get( "con_colorGreen", "0.18", CVAR_ARCHIVE );
 	con_colorAlpha = Cvar_Get( "con_colorAlpha", "0.5", CVAR_ARCHIVE );
 
 	con_borderWidth = Cvar_Get( "con_borderWidth", "1", CVAR_ARCHIVE );
 	con_borderColorRed = Cvar_Get( "con_borderColorRed", "1", CVAR_ARCHIVE );
 	con_borderColorBlue = Cvar_Get( "con_borderColorBlue", "1", CVAR_ARCHIVE );
 	con_borderColorGreen = Cvar_Get( "con_borderColorGreen", "1", CVAR_ARCHIVE );
-	con_borderColorAlpha = Cvar_Get( "con_borderColorAlpha", "0.3", CVAR_ARCHIVE );
+	con_borderColorAlpha = Cvar_Get( "con_borderColorAlpha", "0.2", CVAR_ARCHIVE );
 
 	// Done defining cvars for console colors
 
@@ -973,7 +973,7 @@ void Con_DrawSolidConsole( void )
 	Con_DrawAboutText();
 
 	// draw from the bottom up
-	lineDrawPosition = animatedVidConsoleHeight - (consoleState.verticalTextVidMargin * con_height->integer * 0.01) - con_borderWidth->integer; // - floor( vidYMargin * 1.3f )
+	lineDrawPosition = animatedVidConsoleHeight - (floor( vidYMargin * 1.3f + charHeight/4) * con_height->integer * 0.01) - con_borderWidth->integer;
 
 	// draw the text
 	rows = ( animatedVidConsoleHeight - ( 2 * consoleState.verticalTextVidMargin )) / charHeight - 1; // rows of text to draw
