@@ -688,11 +688,11 @@ typedef struct
 	int      scrollbackLengthInLines; // total lines in console scrollback
 
 	/**
-	 * the vertical distanc from the consoletext to the screen in pixel
+	 * the vertical distance from the consoletext to the screen in pixel
 	 */
 	int    verticalTextVidMargin;
 	/**
-	 * the horiztontal distanc from the consoletext to the screen in pixel
+	 * the horiztontal distance from the consoletext to the screen in pixel
 	 */
 	int    horizontalTextVidMargin;
 

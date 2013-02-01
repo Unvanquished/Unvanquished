@@ -908,7 +908,7 @@ Draws the console with the solid background
 */
 void Con_DrawSolidConsole( void )
 {
-	int    i, x, y;
+	int    i, x, lineToDraw;
 	int    rows;
 	int    row;
 	int    currentColor;
@@ -998,12 +998,10 @@ void Con_DrawSolidConsole( void )
 	// draw the text
 	rows = ( animatedVidConsoleHeight ) / SCR_ConsoleFontCharHeight() - 3; // rows of text to draw
 
-	if ( con_useOld->integer > 3)
-	{
-		rows++;
-	}
+	/*if ( con_useOld->integer > 3)
+		rows++;*/
 
-	y = animatedVidConsoleHeight - ( SCR_ConsoleFontCharHeight() * 3 ) + 10;
+	lineToDraw = animatedVidConsoleHeight - ( SCR_ConsoleFontCharHeight() * 3 ) + 10;
 
 	// draw from the bottom up
 
@@ -1019,12 +1017,12 @@ void Con_DrawSolidConsole( void )
 		color[ 3 ] = animationDependendAlphaFactor;
 		re.SetColor( color );
 
-		for ( x = 0; x < consoleState.widthInChars - ( con_useOld->integer > 4 ? 0 : 4 ); x += 4 )
+		for ( x = 0; x < consoleState.widthInChars - con_margin->integer; x += 4 )
 		{
-			SCR_DrawConsoleFontUnichar( virtualMargin + consoleState.horizontalTextVidMargin + ( x + 1 ) * hatWidth, y, '^' );
+			SCR_DrawConsoleFontUnichar( consoleState.horizontalTextVidMargin + ( x + 1 ) * hatWidth, lineToDraw, '^' );
 		}
 
-		y -= charHeight;
+		lineToDraw -= charHeight;
 		rows--;
 	}
 
@@ -1042,7 +1040,7 @@ void Con_DrawSolidConsole( void )
 	color[ 3 ] = animationDependendAlphaFactor;
 	re.SetColor( color );
 
-	for ( i = 0; i < rows; i++, y -= charHeight, row-- )
+	for ( i = 0; i < rows; i++, lineToDraw -= charHeight, row-- )
 	{
 		conChar_t *text;
 
@@ -1073,7 +1071,7 @@ void Con_DrawSolidConsole( void )
 				re.SetColor( color );
 			}
 
-			SCR_DrawConsoleFontUnichar( virtualMargin + consoleState.horizontalTextVidMargin + currentWidthLocation, y, text[ x ].ch );
+			SCR_DrawConsoleFontUnichar( consoleState.horizontalTextVidMargin + currentWidthLocation, lineToDraw, text[ x ].ch );
 			currentWidthLocation += SCR_ConsoleFontUnicharWidth( text[ x ].ch );
 		}
 	}
