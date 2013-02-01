@@ -416,6 +416,7 @@ static void LAN_GetServerInfo( int source, int n, char *buf, int buflen )
 		Info_SetValueForKey( info, "mapname", server->mapName, qfalse );
 		Info_SetValueForKey( info, "label", server->label, qfalse );
 		Info_SetValueForKey( info, "clients", va( "%i", server->clients ), qfalse );
+		Info_SetValueForKey( info, "bots", va( "%i", server->bots ), qfalse );
 		Info_SetValueForKey( info, "sv_maxclients", va( "%i", server->maxClients ), qfalse );
 		Info_SetValueForKey( info, "ping", va( "%i", server->ping ), qfalse );
 		Info_SetValueForKey( info, "minping", va( "%i", server->minPing ), qfalse );
