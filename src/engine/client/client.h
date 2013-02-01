@@ -687,12 +687,19 @@ typedef struct
 	int      widthInChars; // characters across screen
 	int      scrollbackLengthInLines; // total lines in console scrollback
 
-	float    horizontalPadding; // for wide aspect screens
+	/**
+	 * the vertical distanc from the consoletext to the screen in pixel
+	 */
+	int    verticalTextVidMargin;
+	/**
+	 * the horiztontal distanc from the consoletext to the screen in pixel
+	 */
+	int    horizontalTextVidMargin;
 
 	float    currentAnimationFraction; // changes between 0.0 and 1.0 at scr_conspeed
 	qboolean isOpened;
 
-	int      vislines; // in scanlines
+	int      vidConsoleHeight;
 
 	int      times[ NUM_CON_TIMES ]; // cls.realtime time the line was generated
 } console_t;
