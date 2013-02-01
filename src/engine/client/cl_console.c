@@ -154,17 +154,16 @@ void Con_ToggleConsole_f( void )
 
 	Con_ClearNotify();
 
-	if (cls.keyCatchers & KEYCATCH_CONSOLE) {
+	if (consoleState.isOpened) {
 		cls.keyCatchers &= ~KEYCATCH_CONSOLE;
 	} else {
 		cls.keyCatchers |= KEYCATCH_CONSOLE;
 	}
-
 }
 
 void Con_OpenConsole_f( void )
 {
-	if ( !( cls.keyCatchers & KEYCATCH_CONSOLE ) )
+	if ( !consoleState.isOpened )
 	{
 		Con_ToggleConsole_f();
 	}
@@ -601,7 +600,7 @@ void CL_ConsolePrint( char *txt )
 		consoleState.initialized = qtrue;
 	}
 
-	if ( !skipnotify && !( cls.keyCatchers & KEYCATCH_CONSOLE ) && strncmp( txt, "EXCL: ", 6 ) )
+	if ( !skipnotify && !consoleState.isOpened && strncmp( txt, "EXCL: ", 6 ) )
 	{
 		// feed the text to cgame
 		Cmd_SaveCmdContext();
@@ -728,7 +727,7 @@ void Con_DrawInput( void )
 	vec4_t  color;
 	qtime_t realtime;
 
-	if ( cls.state != CA_DISCONNECTED && !( cls.keyCatchers & KEYCATCH_CONSOLE ) )
+	if ( cls.state != CA_DISCONNECTED && !consoleState.isOpened )
 	{
 		return;
 	}
@@ -795,7 +794,7 @@ void Con_DrawNotify( void )
 
 		text = consoleState.text + CON_LINE( i );
 
-		if ( cl.snap.ps.pm_type != PM_INTERMISSION && cls.keyCatchers & ( KEYCATCH_UI | KEYCATCH_CGAME ) )
+		if ( cl.snap.ps.pm_type != PM_INTERMISSION && (cls.keyCatchers & ( KEYCATCH_UI | KEYCATCH_CGAME )) )
 		{
 			continue;
 		}
@@ -941,13 +940,13 @@ void Con_DrawSolidConsole( float currentAnimationFraction )
 		color[ 0 ] = scr_conColorRed->value;
 		color[ 1 ] = scr_conColorGreen->value;
 		color[ 2 ] = scr_conColorBlue->value;
-		color[ 3 ] = ( currentAnimationFraction / consoleState.finalFrac ) * 2 * scr_conColorAlpha->value;
+		color[ 3 ] = scr_conColorAlpha->value * currentAnimationFraction;
 		SCR_FillRect( 10, 10, 620, 460 * scr_conHeight->integer * 0.01, color );
 
 		color[ 0 ] = scr_conBarColorRed->value;
 		color[ 1 ] = scr_conBarColorGreen->value;
 		color[ 2 ] = scr_conBarColorBlue->value;
-		color[ 3 ] = ( currentAnimationFraction / consoleState.finalFrac ) * 2 * scr_conBarColorAlpha->value;
+		color[ 3 ] = scr_conBarColorAlpha->value * currentAnimationFraction;
 		SCR_FillRect( 10, 10, 620, 1, color );  //top
 		SCR_FillRect( 10, 460 * scr_conHeight->integer * 0.01 + 10, 621, 1, color );  //bottom
 		SCR_FillRect( 10, 10, 1, 460 * scr_conHeight->integer * 0.01, color );  //left
@@ -959,7 +958,7 @@ void Con_DrawSolidConsole( float currentAnimationFraction )
 	color[ 0 ] = 1.0f;
 	color[ 1 ] = 1.0f;
 	color[ 2 ] = 1.0f;
-	color[ 3 ] = ( scr_conUseOld->integer ? 0.75f : ( currentAnimationFraction / consoleState.finalFrac ) * 0.75f );
+	color[ 3 ] = ( scr_conUseOld->integer ? 0.75f :  0.75f * currentAnimationFraction);
 	re.SetColor( color );
 
 	i = strlen( Q3_VERSION );
@@ -1021,7 +1020,7 @@ void Con_DrawSolidConsole( float currentAnimationFraction )
 		color[ 0 ] = 1.0f;
 		color[ 1 ] = 0.0f;
 		color[ 2 ] = 0.0f;
-		color[ 3 ] = ( scr_conUseOld->integer ? 1.0f : ( currentAnimationFraction / consoleState.finalFrac ) * 2.0f );
+		color[ 3 ] = ( scr_conUseOld->integer ? 1.0f : currentAnimationFraction );
 		re.SetColor( color );
 
 		for ( x = 0; x < consoleState.widthInChars - ( scr_conUseOld->integer ? 0 : 4 ); x += 4 )
@@ -1044,7 +1043,7 @@ void Con_DrawSolidConsole( float currentAnimationFraction )
 	color[ 0 ] = g_color_table[ currentColor ][ 0 ];
 	color[ 1 ] = g_color_table[ currentColor ][ 1 ];
 	color[ 2 ] = g_color_table[ currentColor ][ 2 ];
-	color[ 3 ] = ( scr_conUseOld->integer ? 1.0f : ( currentAnimationFraction / consoleState.finalFrac ) * 2.0f );
+	color[ 3 ] = ( scr_conUseOld->integer ? 1.0f : currentAnimationFraction );
 	re.SetColor( color );
 
 	for ( i = 0; i < rows; i++, y -= charHeight, row-- )
@@ -1133,40 +1132,24 @@ Scroll it up or down
 */
 void Con_RunConsole( void )
 {
-	// decide on the destination height of the console
-	if ( cls.keyCatchers & KEYCATCH_CONSOLE )
-	{
-		if ( scr_conUseOld->integer )
-		{
-			consoleState.finalFrac = MAX( 0.10, 0.01 * scr_conHeight->integer );  // configured console percentage
-		}
-		else
-		{
-			consoleState.finalFrac = scr_conHeight->integer * .01;
-		}
-	}
-	else
-	{
-		consoleState.finalFrac = 0; // none visible
-	}
+	consoleState.isOpened = cls.keyCatchers & KEYCATCH_CONSOLE;
 
-	// scroll towards the destination height
-	if ( consoleState.finalFrac < consoleState.currentAnimationFraction )
+	if ( consoleState.isOpened < consoleState.currentAnimationFraction )
 	{
 		consoleState.currentAnimationFraction -= con_conspeed->value * cls.realFrametime * 0.001;
 
-		if ( consoleState.finalFrac > consoleState.currentAnimationFraction )
+		if ( consoleState.currentAnimationFraction < 0 )
 		{
-			consoleState.currentAnimationFraction = consoleState.finalFrac;
+			consoleState.currentAnimationFraction = 0;
 		}
 	}
-	else if ( consoleState.finalFrac > consoleState.currentAnimationFraction )
+	else if ( consoleState.isOpened > consoleState.currentAnimationFraction )
 	{
 		consoleState.currentAnimationFraction += con_conspeed->value * cls.realFrametime * 0.001;
 
-		if ( consoleState.finalFrac < consoleState.currentAnimationFraction )
+		if ( consoleState.currentAnimationFraction > 1 )
 		{
-			consoleState.currentAnimationFraction = consoleState.finalFrac;
+			consoleState.currentAnimationFraction = 1;
 		}
 	}
 }
@@ -1216,6 +1199,7 @@ void Con_Close( void )
 	Field_Clear( &g_consoleField );
 	Con_ClearNotify();
 	cls.keyCatchers &= ~KEYCATCH_CONSOLE;
-	consoleState.finalFrac = 0; // none visible
+	consoleState.isOpened = qfalse;
 	consoleState.currentAnimationFraction = 0;
+
 }

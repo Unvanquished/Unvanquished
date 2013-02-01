@@ -688,8 +688,8 @@ typedef struct
 
 	float    xadjust; // for wide aspect screens
 
-	float    currentAnimationFraction; // changes between 0.0 and finalFrac at scr_conspeed
-	float    finalFrac; // 0.0 to 1.0 lines of console to display
+	float    currentAnimationFraction; // changes between 0.0 and 1.0 at scr_conspeed
+	qboolean isOpened;
 
 	int      vislines; // in scanlines
 
