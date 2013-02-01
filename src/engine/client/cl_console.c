@@ -792,7 +792,7 @@ void Con_DrawAboutText( void )
 	color[ 0 ] = 1.0f;
 	color[ 1 ] = 1.0f;
 	color[ 2 ] = 1.0f;
-	color[ 3 ] = 0.75f * animationDependendAlphaFactor;
+	color[ 3 ] = 0.66f * animationDependendAlphaFactor;
 	re.SetColor( color );
 
 	i = strlen( Q3_VERSION );
@@ -948,7 +948,7 @@ void Con_DrawSolidConsole( void )
 	// on wide screens, this will lead to somewhat of a centering of the text
 	consoleState.horizontalTextVidMargin = floor( vidXMargin * 1.3f);
 
-	animatedVirtualConsoleHeight = (SCREEN_HEIGHT - (2 * virtualMargin)) * con_height->integer * 0.01;;
+	animatedVirtualConsoleHeight = ( SCREEN_HEIGHT - ( 2 * virtualMargin ) ) * con_height->integer * 0.01;
 	animationDependendAlphaFactor = ( con_animationType->integer & ANIMATION_TYPE_FADE) ? consoleState.currentAnimationFraction : 1.0f;
 
 	if ( con_animationType->integer & ANIMATION_TYPE_SCROLL_DOWN)
@@ -976,7 +976,7 @@ void Con_DrawSolidConsole( void )
 	lineDrawPosition = animatedVidConsoleHeight - (floor( vidYMargin * 1.3f + charHeight/4) * con_height->integer * 0.01) - con_borderWidth->integer;
 
 	// draw the text
-	rows = ( animatedVidConsoleHeight - ( 2 * consoleState.verticalTextVidMargin )) / charHeight - 1; // rows of text to draw
+	rows = ( animatedVidConsoleHeight - ( 2 * consoleState.verticalTextVidMargin )) / charHeight; // rows of text to draw
 
 	// draw the input prompt, user text, and cursor if desired
 	// moved back here (have observed render issues to do with time taken)
