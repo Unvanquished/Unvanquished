@@ -1442,6 +1442,20 @@ void CL_InitCGame( void )
 //  }
 }
 
+void CL_InitCGameCVars( void )
+{
+	vm_t *cgv_vm = VM_Create( "cgame", CL_CgameSystemCalls, Cvar_VariableValue( "vm_cgame" ) );
+
+	if ( !cgv_vm )
+	{
+		Com_Error( ERR_DROP, "VM_Create on cgame failed" );
+	}
+
+	VM_Call( cgv_vm, CG_INIT_CVARS );
+
+	VM_Free( cgv_vm );
+}
+
 /*
 ====================
 CL_GameCommand

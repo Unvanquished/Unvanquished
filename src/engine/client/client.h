@@ -351,6 +351,8 @@ typedef struct
 	qboolean uiStarted;
 	qboolean cgameStarted;
 
+	qboolean cgameCVarsRegistered;
+
 	int      framecount;
 	int      frametime; // msec since last frame
 
@@ -786,6 +788,7 @@ void          Cin_OGM_Shutdown( void );
 // cl_cgame.c
 //
 void     CL_InitCGame( void );
+void     CL_InitCGameCVars( void );
 void     CL_ShutdownCGame( void );
 qboolean CL_GameCommand( void );
 qboolean CL_GameConsoleText( void );
