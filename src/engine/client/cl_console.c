@@ -880,7 +880,7 @@ void Con_DrawSolidConsole( float currentAnimationFraction )
 	}
 	else
 	{
-		lines = cls.glconfig.vidHeight * currentAnimationFraction;
+		lines = cls.glconfig.vidHeight * currentAnimationFraction * scr_conHeight->integer * 0.01;
 	}
 	lines += charHeight / ( CONSOLE_FONT_VPADDING + 1 );
 
