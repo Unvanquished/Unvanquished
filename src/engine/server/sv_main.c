@@ -563,7 +563,7 @@ void SVC_Info( netadr_t from )
 	{
 		if ( svs.clients[ i ].state >= CS_CONNECTED )
 		{
-			if ( svs.clients[ i ].gentity->r.svFlags & SVF_BOT )
+			if ( svs.clients[ i ].gentity && ( svs.clients[ i ].gentity->r.svFlags & SVF_BOT ) )
 			{
 				++botCount;
 			}
