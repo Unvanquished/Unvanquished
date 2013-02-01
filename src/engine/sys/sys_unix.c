@@ -100,24 +100,32 @@ Sys_Milliseconds
 */
 
 /* base time in seconds, that's our origin
-   timeval:tv_sec is an int:
-   assuming this wraps every 0x7fffffff - ~68 years since the Epoch (1970) - we're safe till 2038
-   using unsigned long data type to work right with Sys_XTimeToSysTime */
+  timeval:tv_sec is an int:
+  assuming this wraps every 0x7fffffff - ~68 years since the Epoch (1970) - we're safe till 2038
+*/
 
-time_t initial_tv_sec = 0;
+unsigned long sys_timeBase = 0;
 
 /* current time in ms, using sys_timeBase as origin
-   NOTE: sys_timeBase*1000 + curtime -> ms since the Epoch
-     0x7fffffff ms - ~24 days
-   although timeval:tv_usec is an int, I'm not sure whether it is actually used as an unsigned int
-     (which would affect the wrap period) */
+  NOTE: sys_timeBase*1000 + curtime -> ms since the Epoch
+    0x7fffffff ms - ~24 days
+  although timeval:tv_usec is an int, I'm not sure wether it is actually used as an unsigned int
+  (which would affect the wrap period)
+*/
+
 int Sys_Milliseconds( void )
 {
 	struct timeval tp;
 
 	gettimeofday( &tp, NULL );
 
-	return ( tp.tv_sec - initial_tv_sec ) * 1000 + tp.tv_usec / 1000;
+	if ( !sys_timeBase )
+	{
+		sys_timeBase = tp.tv_sec;
+		return tp.tv_usec/1000;
+	}
+
+	return ( tp.tv_sec - sys_timeBase ) * 1000 + tp.tv_usec/1000;
 }
 
 /*
@@ -363,15 +371,15 @@ FILE *Sys_Mkfifo( const char *ospath )
 	int	result;
 	int	fn;
 	struct	stat buf;
-	
+
 	// if file already exists AND is a pipefile, remove it
 	if( !stat( ospath, &buf ) && S_ISFIFO( buf.st_mode ) )
 		FS_Remove( ospath );
-	
+
 	result = mkfifo( ospath, 0600 );
 	if( result != 0 )
 		return NULL;
-	
+
 	fn = open( ospath, O_RDWR | O_NONBLOCK );
 	if( fn == -1 )
 		return NULL;
