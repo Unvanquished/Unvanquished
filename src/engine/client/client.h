@@ -324,6 +324,7 @@ typedef struct
 	char     label[ MAX_FEATLABEL_CHARS ]; // for featured servers, NULL otherwise
 	int      netType;
 	int      clients;
+	int      bots;
 	int      maxClients;
 	int      minPing;
 	int      maxPing;

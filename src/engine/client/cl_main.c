@@ -4705,6 +4705,7 @@ static void CL_SetServerInfo( serverInfo_t *server, const char *info, int ping )
 		if ( info )
 		{
 			server->clients = atoi( Info_ValueForKey( info, "clients" ) );
+			server->bots = atoi( Info_ValueForKey( info, "bots" ) );
 			Q_strncpyz( server->hostName, Info_ValueForKey( info, "hostname" ), MAX_NAME_LENGTH );
 			server->load = atoi( Info_ValueForKey( info, "serverload" ) );
 			Q_strncpyz( server->mapName, Info_ValueForKey( info, "mapname" ), MAX_NAME_LENGTH );
