@@ -711,8 +711,8 @@ void             Con_RunConsole( void );
 void             Con_DrawConsole( void );
 void             Con_PageUp( void );
 void             Con_PageDown( void );
-void             Con_Top( void );
-void             Con_Bottom( void );
+void             Con_ScrollToTop( void );
+void             Con_ScrollToBottom( void );
 void             Con_Close( void );
 
 void             CL_LoadConsoleHistory( void );

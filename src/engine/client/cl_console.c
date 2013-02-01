@@ -193,7 +193,7 @@ Con_Clear_f
 void Con_Clear_f( void )
 {
 	Con_Clear();
-	Con_Bottom(); // go to end
+	Con_ScrollToBottom(); // go to end
 }
 
 /*
@@ -849,7 +849,7 @@ Con_DrawSolidConsole
 Draws the console with the solid background
 ================
 */
-void Con_DrawSolidConsole( float currentAnimationFraction )
+void Con_DrawSolidConsole( void )
 {
 	int    i, x, y;
 	int    rows;
@@ -866,7 +866,7 @@ void Con_DrawSolidConsole( float currentAnimationFraction )
 
 	if ( scr_conUseOld->integer )
 	{
-		lines = cls.glconfig.vidHeight * currentAnimationFraction;
+		lines = cls.glconfig.vidHeight * consoleState.currentAnimationFraction;
 
 		if ( lines <= 0 )
 		{
@@ -880,7 +880,7 @@ void Con_DrawSolidConsole( float currentAnimationFraction )
 	}
 	else
 	{
-		lines = cls.glconfig.vidHeight * currentAnimationFraction * scr_conHeight->integer * 0.01;
+		lines = cls.glconfig.vidHeight * consoleState.currentAnimationFraction * scr_conHeight->integer * 0.01;
 	}
 	lines += charHeight / ( CONSOLE_FONT_VPADDING + 1 );
 
@@ -900,7 +900,7 @@ void Con_DrawSolidConsole( float currentAnimationFraction )
 	if ( scr_conUseOld->integer )
 	{
 		yVer = 5 + charHeight;
-		y = currentAnimationFraction * SCREEN_HEIGHT;
+		y = consoleState.currentAnimationFraction * SCREEN_HEIGHT;
 
 		if ( y < 1 )
 		{
@@ -940,13 +940,13 @@ void Con_DrawSolidConsole( float currentAnimationFraction )
 		color[ 0 ] = scr_conColorRed->value;
 		color[ 1 ] = scr_conColorGreen->value;
 		color[ 2 ] = scr_conColorBlue->value;
-		color[ 3 ] = scr_conColorAlpha->value * currentAnimationFraction;
+		color[ 3 ] = scr_conColorAlpha->value * consoleState.currentAnimationFraction;
 		SCR_FillRect( 10, 10, 620, 460 * scr_conHeight->integer * 0.01, color );
 
 		color[ 0 ] = scr_conBarColorRed->value;
 		color[ 1 ] = scr_conBarColorGreen->value;
 		color[ 2 ] = scr_conBarColorBlue->value;
-		color[ 3 ] = scr_conBarColorAlpha->value * currentAnimationFraction;
+		color[ 3 ] = scr_conBarColorAlpha->value * consoleState.currentAnimationFraction;
 		SCR_FillRect( 10, 10, 620, 1, color );  //top
 		SCR_FillRect( 10, 460 * scr_conHeight->integer * 0.01 + 10, 621, 1, color );  //bottom
 		SCR_FillRect( 10, 10, 1, 460 * scr_conHeight->integer * 0.01, color );  //left
@@ -958,7 +958,7 @@ void Con_DrawSolidConsole( float currentAnimationFraction )
 	color[ 0 ] = 1.0f;
 	color[ 1 ] = 1.0f;
 	color[ 2 ] = 1.0f;
-	color[ 3 ] = ( scr_conUseOld->integer ? 0.75f :  0.75f * currentAnimationFraction);
+	color[ 3 ] = ( scr_conUseOld->integer ? 0.75f :  0.75f * consoleState.currentAnimationFraction);
 	re.SetColor( color );
 
 	i = strlen( Q3_VERSION );
@@ -1012,6 +1012,8 @@ void Con_DrawSolidConsole( float currentAnimationFraction )
 	y = lines - ( SCR_ConsoleFontCharHeight() * 3 ) + 10;
 
 	// draw from the bottom up
+
+	// if we scrolled back, give feedback
 	if ( consoleState.bottomDisplayedLine != consoleState.currentLine )
 	{
 		// draw arrows to show the buffer is backscrolled
@@ -1020,7 +1022,7 @@ void Con_DrawSolidConsole( float currentAnimationFraction )
 		color[ 0 ] = 1.0f;
 		color[ 1 ] = 0.0f;
 		color[ 2 ] = 0.0f;
-		color[ 3 ] = ( scr_conUseOld->integer ? 1.0f : currentAnimationFraction );
+		color[ 3 ] = ( scr_conUseOld->integer ? 1.0f : consoleState.currentAnimationFraction );
 		re.SetColor( color );
 
 		for ( x = 0; x < consoleState.widthInChars - ( scr_conUseOld->integer ? 0 : 4 ); x += 4 )
@@ -1043,7 +1045,7 @@ void Con_DrawSolidConsole( float currentAnimationFraction )
 	color[ 0 ] = g_color_table[ currentColor ][ 0 ];
 	color[ 1 ] = g_color_table[ currentColor ][ 1 ];
 	color[ 2 ] = g_color_table[ currentColor ][ 2 ];
-	color[ 3 ] = ( scr_conUseOld->integer ? 1.0f : currentAnimationFraction );
+	color[ 3 ] = ( scr_conUseOld->integer ? 1.0f : consoleState.currentAnimationFraction );
 	re.SetColor( color );
 
 	for ( i = 0; i < rows; i++, y -= charHeight, row-- )
@@ -1073,7 +1075,7 @@ void Con_DrawSolidConsole( float currentAnimationFraction )
 				color[ 0 ] = g_color_table[ currentColor ][ 0 ];
 				color[ 1 ] = g_color_table[ currentColor ][ 1 ];
 				color[ 2 ] = g_color_table[ currentColor ][ 2 ];
-				color[ 3 ] = ( scr_conUseOld->integer ? 1.0f : 1.0f );
+				color[ 3 ] = ( scr_conUseOld->integer ? 1.0f : consoleState.currentAnimationFraction );
 				re.SetColor( color );
 			}
 
@@ -1097,27 +1099,16 @@ void Con_DrawConsole( void )
 	// check for console width changes from a vid mode change
 	Con_CheckResize();
 
-	// if disconnected, render console full screen
-	if ( cls.state == CA_DISCONNECTED )
+	// render console if flag is set, but also in special disconnected states
+	if ( ( cls.state == CA_DISCONNECTED && !( cls.keyCatchers & ( KEYCATCH_UI | KEYCATCH_CGAME ) ) )
+		|| consoleState.isOpened )
 	{
-		if ( !( cls.keyCatchers & ( KEYCATCH_UI | KEYCATCH_CGAME ) ) )
-		{
-			Con_DrawSolidConsole( 1.0 );
-			return;
-		}
+		Con_DrawSolidConsole( );
 	}
-
-	if ( consoleState.currentAnimationFraction )
+	// draw notify lines, but only if console isn't opened
+	else if ( cls.state == CA_ACTIVE && con_drawnotify->integer )
 	{
-		Con_DrawSolidConsole( consoleState.currentAnimationFraction );
-	}
-	else
-	{
-		// draw notify lines
-		if ( cls.state == CA_ACTIVE && con_drawnotify->integer )
-		{
-			Con_DrawNotify();
-		}
+		Con_DrawNotify();
 	}
 }
 
@@ -1127,11 +1118,13 @@ void Con_DrawConsole( void )
 ==================
 Con_RunConsole
 
-Scroll it up or down
+Update the state each frame,
+like scrolling it up or down, or setting the opening flag
 ==================
 */
 void Con_RunConsole( void )
 {
+	//check whether or not the console should be in opened state
 	consoleState.isOpened = cls.keyCatchers & KEYCATCH_CONSOLE;
 
 	if ( consoleState.isOpened < consoleState.currentAnimationFraction )
@@ -1174,7 +1167,7 @@ void Con_PageDown( void )
 	}
 }
 
-void Con_Top( void )
+void Con_ScrollToTop( void )
 {
 	consoleState.bottomDisplayedLine = consoleState.scrollbackLengthInLines;
 
@@ -1184,7 +1177,7 @@ void Con_Top( void )
 	}
 }
 
-void Con_Bottom( void )
+void Con_ScrollToBottom( void )
 {
 	consoleState.bottomDisplayedLine = consoleState.currentLine;
 }
