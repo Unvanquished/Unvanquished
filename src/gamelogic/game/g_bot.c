@@ -1320,7 +1320,9 @@ qboolean BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 
 	trap_Trace( &trace, muzzle, mins, maxs, targetPos, self->s.number, MASK_SHOT );
 
-	if ( self->client->ps.stats[STAT_TEAM] != BotGetEntityTeam( &g_entities[trace.entityNum] ) && Distance( muzzle, trace.endpos ) <= MAX( range, secondaryRange ) )
+	if ( self->client->ps.stats[STAT_TEAM] != BotGetEntityTeam( &g_entities[trace.entityNum] ) 
+		&& BotGetEntityTeam( &g_entities[ trace.entityNum ] ) != TEAM_NONE
+		&& Distance( muzzle, trace.endpos ) <= MAX( range, secondaryRange ) )
 	{
 		return qtrue;
 	}
@@ -1345,7 +1347,14 @@ qboolean BotTargetIsVisible( gentity_t *self, botTarget_t target, int mask )
 		return qfalse;
 	}
 
-	trap_TraceNoEnts( &trace, muzzle, NULL, NULL, targetPos, self->s.number, mask );
+	if ( mask == CONTENTS_SOLID )
+	{
+		trap_TraceNoEnts( &trace, muzzle, NULL, NULL, targetPos, self->s.number, mask );
+	}
+	else
+	{
+		trap_Trace( &trace, muzzle, NULL, NULL, targetPos, self->s.number, mask );
+	}
 
 	if ( trace.surfaceFlags & SURF_NOIMPACT )
 	{
@@ -2324,7 +2333,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		self->botMind->enemyLastSeen = level.time;
 	}
 
-	if ( !BotTargetIsVisible( self, self->botMind->goal, MASK_SHOT ) )
+	if ( !BotTargetIsVisible( self, self->botMind->goal, CONTENTS_SOLID ) )
 	{
 		botTarget_t proposedTarget;
 		BotSetTarget( &proposedTarget, self->botMind->bestEnemy.ent, NULL );
