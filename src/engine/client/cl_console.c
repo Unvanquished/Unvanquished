@@ -49,21 +49,21 @@ cvar_t    *con_animationType;
 cvar_t    *con_notifytime;
 cvar_t    *con_autoclear;
 
-cvar_t    *con_colorAlpha;
-cvar_t    *con_colorRed;
-cvar_t    *con_colorBlue;
-cvar_t    *con_colorGreen;
+cvar_t    *con_margin;
 
-// Color and alpha for bar under console
 cvar_t    *con_borderWidth;
-
 cvar_t    *con_borderColorAlpha;
 cvar_t    *con_borderColorRed;
 cvar_t    *con_borderColorBlue;
 cvar_t    *con_borderColorGreen;
 
-cvar_t    *con_useOld;
 cvar_t    *con_height;
+cvar_t    *con_colorAlpha;
+cvar_t    *con_colorRed;
+cvar_t    *con_colorBlue;
+cvar_t    *con_colorGreen;
+
+cvar_t    *con_useOld;
 
 #define ANIMATION_TYPE_NONE   0
 #define ANIMATION_TYPE_SCROLL_DOWN 1
@@ -445,7 +445,7 @@ void Con_CheckResize( void )
 	}
 	else
 	{
-		SCR_AdjustFrom640( &consoleState.xadjust, NULL, NULL, NULL );
+		SCR_AdjustFrom640( &consoleState.horizontalPadding, NULL, NULL, NULL );
 
 		oldwidth = consoleState.widthInChars;
 		consoleState.widthInChars = width;
@@ -494,21 +494,20 @@ void Con_Init( void )
 	con_animationType = Cvar_Get( "con_animationType", "2", 0 );
 	con_autoclear = Cvar_Get( "con_autoclear", "1", CVAR_ARCHIVE );
 
-	con_colorAlpha = Cvar_Get( "con_colorAlpha", "0.5", CVAR_ARCHIVE );
+	con_margin = Cvar_Get( "con_margin", "10", CVAR_ARCHIVE );
+	con_useOld = Cvar_Get( "con_useOld", "0", CVAR_ARCHIVE );
+
+	con_height = Cvar_Get( "con_height", "50", CVAR_ARCHIVE );
 	con_colorRed = Cvar_Get( "con_colorRed", "0", CVAR_ARCHIVE );
 	con_colorBlue = Cvar_Get( "con_colorBlue", "0.3", CVAR_ARCHIVE );
 	con_colorGreen = Cvar_Get( "con_colorGreen", "0.23", CVAR_ARCHIVE );
+	con_colorAlpha = Cvar_Get( "con_colorAlpha", "0.5", CVAR_ARCHIVE );
 
-	con_useOld = Cvar_Get( "con_useOld", "0", CVAR_ARCHIVE );
-
-	con_borderWidth = Cvar_Get( "con_borderWidth", "2", CVAR_ARCHIVE );
-
-	con_borderColorAlpha = Cvar_Get( "con_borderColorAlpha", "0.3", CVAR_ARCHIVE );
+	con_borderWidth = Cvar_Get( "con_borderWidth", "1", CVAR_ARCHIVE );
 	con_borderColorRed = Cvar_Get( "con_borderColorRed", "1", CVAR_ARCHIVE );
 	con_borderColorBlue = Cvar_Get( "con_borderColorBlue", "1", CVAR_ARCHIVE );
 	con_borderColorGreen = Cvar_Get( "con_borderColorGreen", "1", CVAR_ARCHIVE );
-
-	con_height = Cvar_Get( "con_height", "50", CVAR_ARCHIVE );
+	con_borderColorAlpha = Cvar_Get( "con_borderColorAlpha", "0.3", CVAR_ARCHIVE );
 
 	// Done defining cvars for console colors
 
@@ -741,10 +740,10 @@ void Con_DrawInput( void )
 	color[ 2 ] = 1.0f;
 	color[ 3 ] = ( con_animationType->integer & ANIMATION_TYPE_FADE) ? consoleState.currentAnimationFraction : 1.0f;
 
-	SCR_DrawSmallStringExt( consoleState.xadjust + cl_conXOffset->integer, y + 10, prompt, color, qfalse, qfalse );
+	SCR_DrawSmallStringExt( consoleState.horizontalPadding + cl_conXOffset->integer, y + 10, prompt, color, qfalse, qfalse );
 
 	Q_CleanStr( prompt );
-	Field_Draw( &g_consoleField, consoleState.xadjust + cl_conXOffset->integer + SCR_ConsoleFontStringWidth( prompt, strlen( prompt ) ), y + 10, qtrue, qtrue, color[ 3 ] );
+	Field_Draw( &g_consoleField, consoleState.horizontalPadding + cl_conXOffset->integer + SCR_ConsoleFontStringWidth( prompt, strlen( prompt ) ), y + 10, qtrue, qtrue, color[ 3 ] );
 }
 
 /*
@@ -810,7 +809,7 @@ void Con_DrawNotify( void )
 				re.SetColor( g_color_table[ currentColor ] );
 			}
 
-			SCR_DrawSmallUnichar( cl_conXOffset->integer + consoleState.xadjust + ( x + 1 ) * SMALLCHAR_WIDTH, v, text[ x ].ch );
+			SCR_DrawSmallUnichar( cl_conXOffset->integer + consoleState.horizontalPadding + ( x + 1 ) * SMALLCHAR_WIDTH, v, text[ x ].ch );
 		}
 
 		v += SMALLCHAR_HEIGHT;
@@ -852,48 +851,53 @@ void Con_DrawSolidConsole( void )
 	int    i, x, y;
 	int    rows;
 	int    row;
-	int    currentConsoleHeight;
 //	qhandle_t    conShader;
 	int    currentColor;
 	vec4_t color;
 	float  yVer;
 	float  totalwidth;
 	float  currentWidthLocation = 0;
+	int    vidConsoleHeight;
 	float  animationDependendAlphaFactor;
+
+	const int margin = con_margin->integer;
+	const int consoleWidth = SCREEN_WIDTH - (2 * margin);
+	const int maxConsoleHeight = SCREEN_HEIGHT - (2 * margin);
+	const int consoleHeight = maxConsoleHeight * con_height->integer * 0.01;
 	const int charHeight = SCR_ConsoleFontCharHeight();
 
-	currentConsoleHeight = cls.glconfig.vidHeight * con_height->integer * 0.01;
-	animationDependendAlphaFactor = ( con_animationType->integer & ANIMATION_TYPE_FADE) ? consoleState.currentAnimationFraction : 1.0f;
+	vidConsoleHeight = cls.glconfig.vidHeight * con_height->integer * 0.01;
 
+	animationDependendAlphaFactor = ( con_animationType->integer & ANIMATION_TYPE_FADE) ? consoleState.currentAnimationFraction : 1.0f;
 
 	if ( con_animationType->integer & ANIMATION_TYPE_SCROLL_DOWN)
 	{
-		currentConsoleHeight *= consoleState.currentAnimationFraction;
+		vidConsoleHeight *= consoleState.currentAnimationFraction;
 	}
 
-	if ( currentConsoleHeight <= 0 )
+	if ( vidConsoleHeight <= 0 )
 	{
 		return;
 	}
 
-	if ( currentConsoleHeight > cls.glconfig.vidHeight )
+	if ( vidConsoleHeight > cls.glconfig.vidHeight )
 	{
-		currentConsoleHeight = cls.glconfig.vidHeight;
+		vidConsoleHeight = cls.glconfig.vidHeight;
 	}
 
-	currentConsoleHeight += charHeight / ( CONSOLE_FONT_VPADDING + 1 );
+	vidConsoleHeight += charHeight / ( CONSOLE_FONT_VPADDING + 1 );
 
 	// on wide screens, we will center the text
 	if (!con_useOld->integer)
 	{
-		consoleState.xadjust = 15;
+		consoleState.horizontalPadding = 15;
 	}
 	else
 	{
-		consoleState.xadjust = 0;
+		consoleState.horizontalPadding = 0;
 	}
 
-	SCR_AdjustFrom640 (&consoleState.xadjust, NULL, NULL, NULL);
+	SCR_AdjustFrom640 (&consoleState.horizontalPadding, NULL, NULL, NULL);
 
 	// draw the background
 	color[ 0 ] = con_colorRed->value;
@@ -904,7 +908,7 @@ void Con_DrawSolidConsole( void )
 	if ( con_useOld->integer )
 	{
 		yVer = 5 + charHeight;
-		y = consoleState.currentAnimationFraction * SCREEN_HEIGHT * con_height->integer * 0.01;
+		y = consoleState.currentAnimationFraction * consoleHeight;
 		SCR_FillRect( 0, 0, SCREEN_WIDTH, y, color );
 	}
 	else
@@ -913,7 +917,7 @@ void Con_DrawSolidConsole( void )
 		SCR_AdjustFrom640( NULL, &yVer, NULL, NULL );
 		yVer = floor( yVer + 5 + charHeight );
 
-		SCR_FillRect( 10, 10, 620, 460 * con_height->integer * 0.01, color );
+		SCR_FillRect( margin, margin, consoleWidth, consoleHeight, color );
 	}
 
 	// draw the backgrounds borders
@@ -922,17 +926,18 @@ void Con_DrawSolidConsole( void )
 	color[ 2 ] = con_borderColorBlue->value;
 	color[ 3 ] = con_borderColorAlpha->value * animationDependendAlphaFactor;
 
-	if ( con_useOld->integer )
+	if (margin)
 	{
-		SCR_FillRect( 0, y, SCREEN_WIDTH, con_borderWidth->value, color );
+		SCR_FillRect( margin, margin, consoleWidth, con_borderWidth->value, color );  //top
+		SCR_FillRect( margin, margin, con_borderWidth->value, consoleHeight, color );  //left
+		SCR_FillRect( SCREEN_WIDTH - margin, margin, con_borderWidth->value, consoleHeight, color );  //right
+		SCR_FillRect( margin, consoleHeight + margin, consoleWidth + con_borderWidth->value, con_borderWidth->value, color );  //bottom
 	}
 	else
 	{
-		SCR_FillRect( 10, 10, 620, 1, color );  //top
-		SCR_FillRect( 10, 460 * con_height->integer * 0.01 + 10, 621, 1, color );  //bottom
-		SCR_FillRect( 10, 10, 1, 460 * con_height->integer * 0.01, color );  //left
-		SCR_FillRect( 630, 10, 1, 460 * con_height->integer * 0.01, color );  //right
+		SCR_FillRect( 0, y, SCREEN_WIDTH, con_borderWidth->value, color );
 	}
+
 
 	// draw the version number
 
@@ -982,15 +987,15 @@ void Con_DrawSolidConsole( void )
 	Con_DrawInput();
 
 	// draw the text
-	consoleState.vislines = currentConsoleHeight;
-	rows = ( currentConsoleHeight ) / SCR_ConsoleFontCharHeight() - 3; // rows of text to draw
+	consoleState.vislines = vidConsoleHeight;
+	rows = ( vidConsoleHeight ) / SCR_ConsoleFontCharHeight() - 3; // rows of text to draw
 
 	if ( con_useOld->integer )
 	{
 		rows++;
 	}
 
-	y = currentConsoleHeight - ( SCR_ConsoleFontCharHeight() * 3 ) + 10;
+	y = vidConsoleHeight - ( SCR_ConsoleFontCharHeight() * 3 ) + 10;
 
 	// draw from the bottom up
 
@@ -1008,7 +1013,7 @@ void Con_DrawSolidConsole( void )
 
 		for ( x = 0; x < consoleState.widthInChars - ( con_useOld->integer ? 0 : 4 ); x += 4 )
 		{
-			SCR_DrawConsoleFontUnichar( consoleState.xadjust + ( x + 1 ) * hatWidth, y, '^' );
+			SCR_DrawConsoleFontUnichar( consoleState.horizontalPadding + ( x + 1 ) * hatWidth, y, '^' );
 		}
 
 		y -= charHeight;
@@ -1060,7 +1065,7 @@ void Con_DrawSolidConsole( void )
 				re.SetColor( color );
 			}
 
-			SCR_DrawConsoleFontUnichar( consoleState.xadjust + currentWidthLocation, y, text[ x ].ch );
+			SCR_DrawConsoleFontUnichar( consoleState.horizontalPadding + currentWidthLocation, y, text[ x ].ch );
 			currentWidthLocation += SCR_ConsoleFontUnicharWidth( text[ x ].ch );
 		}
 	}
@@ -1175,6 +1180,6 @@ void Con_Close( void )
 	cls.keyCatchers &= ~KEYCATCH_CONSOLE;
 	consoleState.isOpened = qfalse;
 
-	//instant disappearance, given that this function is not probably not called by the user
+	//instant disappearance, if we need it for situations where this is not called by the user
 	//consoleState.currentAnimationFraction = 0;
 }

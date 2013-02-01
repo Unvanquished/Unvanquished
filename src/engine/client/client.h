@@ -686,7 +686,7 @@ typedef struct
 	int      widthInChars; // characters across screen
 	int      scrollbackLengthInLines; // total lines in console scrollback
 
-	float    xadjust; // for wide aspect screens
+	float    horizontalPadding; // for wide aspect screens
 
 	float    currentAnimationFraction; // changes between 0.0 and 1.0 at scr_conspeed
 	qboolean isOpened;
