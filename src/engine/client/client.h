@@ -699,8 +699,6 @@ typedef struct
 	float    currentAnimationFraction; // changes between 0.0 and 1.0 at scr_conspeed
 	qboolean isOpened;
 
-	int      vidConsoleHeight;
-
 	int      times[ NUM_CON_TIMES ]; // cls.realtime time the line was generated
 } console_t;
 

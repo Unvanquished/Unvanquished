@@ -745,9 +745,8 @@ Con_DrawInput
 Draw the editline after a ] prompt
 ================
 */
-void Con_DrawInput( void )
+void Con_DrawInput( int linePosition )
 {
-	int     bottomPosition;
 	char    prompt[ MAX_STRING_CHARS ];
 	vec4_t  color;
 	qtime_t realtime;
@@ -759,9 +758,6 @@ void Con_DrawInput( void )
 
 	Com_RealTime( &realtime );
 
-	bottomPosition = (consoleState.vidConsoleHeight - ( SCR_ConsoleFontCharHeight() * 2 ) + 2) + 10;
-	//bottomPosition = consoleState.vidConsoleHeight - consoleState.verticalTextVidMargin;
-
 	Com_sprintf( prompt,  sizeof( prompt ), "^0[^3%02d%c%02d^0]^7 %s", realtime.tm_hour, ( realtime.tm_sec & 1 ) ? ':' : ' ', realtime.tm_min, cl_consolePrompt->string );
 
 	color[ 0 ] = 1.0f;
@@ -769,10 +765,10 @@ void Con_DrawInput( void )
 	color[ 2 ] = 1.0f;
 	color[ 3 ] = ( con_animationType->integer & ANIMATION_TYPE_FADE) ? consoleState.currentAnimationFraction : 1.0f;
 
-	SCR_DrawSmallStringExt( con_margin->integer + consoleState.horizontalTextVidMargin + cl_conXOffset->integer, bottomPosition, prompt, color, qfalse, qfalse );
+	SCR_DrawSmallStringExt( consoleState.horizontalTextVidMargin + cl_conXOffset->integer, linePosition, prompt, color, qfalse, qfalse );
 
 	Q_CleanStr( prompt );
-	Field_Draw( &g_consoleField, con_margin->integer + consoleState.horizontalTextVidMargin + cl_conXOffset->integer + SCR_ConsoleFontStringWidth( prompt, strlen( prompt ) ), bottomPosition, qtrue, qtrue, color[ 3 ] );
+	Field_Draw( &g_consoleField, consoleState.horizontalTextVidMargin + cl_conXOffset->integer + SCR_ConsoleFontStringWidth( prompt, strlen( prompt ) ), linePosition, qtrue, qtrue, color[ 3 ] );
 }
 
 /*
@@ -787,8 +783,44 @@ void Con_DrawAboutText( void )
 	int i, x;
 	vec4_t color;
 	float totalwidth;
+	float currentWidthLocation = 0;
 
+	const int charHeight = SCR_ConsoleFontCharHeight();
+	const float  animationDependendAlphaFactor = ( con_animationType->integer & ANIMATION_TYPE_FADE) ? consoleState.currentAnimationFraction : 1.0f;
 
+	// draw the version number
+	color[ 0 ] = 1.0f;
+	color[ 1 ] = 1.0f;
+	color[ 2 ] = 1.0f;
+	color[ 3 ] = 0.75f * animationDependendAlphaFactor;
+	re.SetColor( color );
+
+	i = strlen( Q3_VERSION );
+	totalwidth = SCR_ConsoleFontStringWidth( Q3_VERSION, i ) + cl_conXOffset->integer;
+	totalwidth += consoleState.horizontalTextVidMargin;
+
+	currentWidthLocation = cls.glconfig.vidWidth - totalwidth;
+
+	for ( x = 0; x < i; x++ )
+	{
+		int ch = Q_UTF8CodePoint( &Q3_VERSION[ x ] );
+		SCR_DrawConsoleFontUnichar( currentWidthLocation, consoleState.verticalTextVidMargin, ch );
+		currentWidthLocation += SCR_ConsoleFontUnicharWidth( ch );
+	}
+
+	// engine string
+	i = strlen( Q3_ENGINE );
+	totalwidth = SCR_ConsoleFontStringWidth( Q3_ENGINE, i ) + cl_conXOffset->integer;
+	totalwidth += consoleState.horizontalTextVidMargin;
+
+	currentWidthLocation = cls.glconfig.vidWidth - totalwidth;
+
+	for ( x = 0; x < i; x++ )
+	{
+		int ch = Q_UTF8CodePoint( &Q3_ENGINE[ x ] );
+		SCR_DrawConsoleFontUnichar( currentWidthLocation, consoleState.verticalTextVidMargin + charHeight, ch );
+		currentWidthLocation += SCR_ConsoleFontUnicharWidth( ch );
+	}
 }
 
 /*
@@ -893,12 +925,12 @@ Draws the console with the solid background
 */
 void Con_DrawSolidConsole( void )
 {
-	int    i, x, lineToDraw;
+	int    i, x, lineDrawPosition;
 	int    rows;
 	int    row;
 	int    currentColor;
 	vec4_t color;
-	float  currentWidthLocation = 0, totalwidth;
+	float  currentWidthLocation = 0;
 	float  vidXMargin, vidYMargin;
 	int    animatedVidConsoleHeight;
 	int    animatedVirtualConsoleHeight;
@@ -934,61 +966,22 @@ void Con_DrawSolidConsole( void )
 	{
 		animatedVidConsoleHeight = cls.glconfig.vidHeight;
 	}
-	consoleState.vidConsoleHeight += charHeight / ( CONSOLE_FONT_VPADDING + 1 );
-	consoleState.vidConsoleHeight = animatedVidConsoleHeight;
 
 	Con_DrawBackground( animatedVirtualConsoleHeight );
 
 	// Draw build info, projectname/copyrights, meta informatin or similar
-	//Con_DrawAboutText();
+	Con_DrawAboutText();
 
-	// draw the version number
-	color[ 0 ] = 1.0f;
-	color[ 1 ] = 1.0f;
-	color[ 2 ] = 1.0f;
-	color[ 3 ] = 0.75f * animationDependendAlphaFactor;
-	re.SetColor( color );
+	// draw from the bottom up
+	lineDrawPosition = animatedVidConsoleHeight - (consoleState.verticalTextVidMargin * con_height->integer * 0.01) - con_borderWidth->integer; // - floor( vidYMargin * 1.3f )
 
-	i = strlen( Q3_VERSION );
-	totalwidth = SCR_ConsoleFontStringWidth( Q3_VERSION, i ) + cl_conXOffset->integer;
-	totalwidth += consoleState.horizontalTextVidMargin;
-
-	currentWidthLocation = cls.glconfig.vidWidth - totalwidth;
-
-	for ( x = 0; x < i; x++ )
-	{
-		int ch = Q_UTF8CodePoint( &Q3_VERSION[ x ] );
-		SCR_DrawConsoleFontUnichar( currentWidthLocation, consoleState.verticalTextVidMargin, ch );
-		currentWidthLocation += SCR_ConsoleFontUnicharWidth( ch );
-	}
-
-	// engine string
-	i = strlen( Q3_ENGINE );
-	totalwidth = SCR_ConsoleFontStringWidth( Q3_ENGINE, i ) + cl_conXOffset->integer;
-	totalwidth += consoleState.horizontalTextVidMargin;
-
-	currentWidthLocation = cls.glconfig.vidWidth - totalwidth;
-
-	for ( x = 0; x < i; x++ )
-	{
-		int ch = Q_UTF8CodePoint( &Q3_ENGINE[ x ] );
-		SCR_DrawConsoleFontUnichar( currentWidthLocation, consoleState.verticalTextVidMargin + charHeight, ch );
-		currentWidthLocation += SCR_ConsoleFontUnicharWidth( ch );
-	}
+	// draw the text
+	rows = ( animatedVidConsoleHeight - ( 2 * consoleState.verticalTextVidMargin )) / charHeight - 1; // rows of text to draw
 
 	// draw the input prompt, user text, and cursor if desired
 	// moved back here (have observed render issues to do with time taken)
-	Con_DrawInput();
-
-	// draw the text
-	rows = ( animatedVidConsoleHeight ) / SCR_ConsoleFontCharHeight() - 3; // rows of text to draw
-
-	/*if ( con_useOld->integer > 3)
-		rows++;*/
-
-	lineToDraw = animatedVidConsoleHeight - ( SCR_ConsoleFontCharHeight() * 3 ) + 10;
-
-	// draw from the bottom up
+	Con_DrawInput( lineDrawPosition );
+	lineDrawPosition -= charHeight;
 
 	// if we scrolled back, give feedback
 	if ( consoleState.bottomDisplayedLine != consoleState.currentLine )
@@ -1004,10 +997,10 @@ void Con_DrawSolidConsole( void )
 
 		for ( x = 0; x < consoleState.widthInChars - con_margin->integer; x += 4 )
 		{
-			SCR_DrawConsoleFontUnichar( consoleState.horizontalTextVidMargin + ( x + 1 ) * hatWidth, lineToDraw, '^' );
+			SCR_DrawConsoleFontUnichar( consoleState.horizontalTextVidMargin + ( x + 1 ) * hatWidth, lineDrawPosition, '^' );
 		}
 
-		lineToDraw -= charHeight;
+		lineDrawPosition -= charHeight;
 		rows--;
 	}
 
@@ -1025,7 +1018,7 @@ void Con_DrawSolidConsole( void )
 	color[ 3 ] = animationDependendAlphaFactor;
 	re.SetColor( color );
 
-	for ( i = 0; i < rows; i++, lineToDraw -= charHeight, row-- )
+	for ( i = 0; i < rows; i++, lineDrawPosition -= charHeight, row-- )
 	{
 		conChar_t *text;
 
@@ -1056,7 +1049,7 @@ void Con_DrawSolidConsole( void )
 				re.SetColor( color );
 			}
 
-			SCR_DrawConsoleFontUnichar( consoleState.horizontalTextVidMargin + currentWidthLocation, lineToDraw, text[ x ].ch );
+			SCR_DrawConsoleFontUnichar( consoleState.horizontalTextVidMargin + currentWidthLocation, lineDrawPosition, text[ x ].ch );
 			currentWidthLocation += SCR_ConsoleFontUnicharWidth( text[ x ].ch );
 		}
 	}
