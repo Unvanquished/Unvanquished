@@ -33,7 +33,7 @@ gentity_t* BotFindClosestEnemy( gentity_t *self );
 gentity_t* BotFindBestEnemy( gentity_t *self );
 void BotFindClosestBuildings( gentity_t *self, botEntityAndDistance_t *closest );
 gentity_t* BotFindBuilding( gentity_t *self, int buildingType, int range );
-
+void BotPain( gentity_t *self, gentity_t *attacker, int damage );
 void BotGetIdealAimLocation( gentity_t *self, botTarget_t target, vec3_t aimLocation );
 void BotSlowAim( gentity_t *self, vec3_t target, float slow );
 void BotShakeAim( gentity_t *self, vec3_t rVec );
@@ -220,15 +220,6 @@ static INLINE qboolean BotChangeGoalPos( gentity_t *self, vec3_t goal )
 
 //how long our traces are for obstacle avoidence
 #define BOT_OBSTACLE_AVOID_RANGE 5.0f
-
-//how far off can our aim can be from true in order to try to hit the enemy
-#define BOT_AIM_NEGLIGENCE 30.0f
-
-//How long in milliseconds the bots will chase an enemy if he goes out of their sight (humans) or radar (aliens)
-#define BOT_ENEMY_CHASETIME 5000
-
-//How close does the enemy have to be for the bot to engage him/her when doing a task other than fight/roam
-#define BOT_ENGAGE_DIST 200.0f
 
 //How long in milliseconds it takes the bot to react upon seeing an enemy
 #define BOT_REACTION_TIME 500

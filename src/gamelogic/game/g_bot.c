@@ -1547,6 +1547,7 @@ float BotAimNegligence( gentity_t *self, botTarget_t target )
 	angle = RAD2DEG( acos( angle ) );
 	return angle;
 }
+
 /*
 ========================
 Bot Team Querys
@@ -2141,6 +2142,8 @@ qboolean G_BotSetDefaults( int clientNum, team_t team, int skill, const char* be
 		level.clients[clientNum].sess.restartTeam = team;
 	}
 
+	self->pain = BotPain;
+
 	return qtrue;
 }
 
@@ -2303,17 +2306,20 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 
 	if ( BotGetTargetTeam( self->botMind->goal ) == myTeam || BotGetTargetTeam( self->botMind->goal ) == TEAM_NONE )
 	{
+		self->botMind->bestEnemy.ent = NULL;
 		return STATUS_FAILURE;
 	}
 
 	// the enemy has died
 	if ( self->botMind->goal.ent->health <= 0 )
 	{
+		self->botMind->bestEnemy.ent = NULL;
 		return STATUS_SUCCESS;
 	}
 
 	if ( self->botMind->goal.ent->client && self->botMind->goal.ent->client->sess.spectatorState != SPECTATOR_NOT )
 	{
+		self->botMind->bestEnemy.ent = NULL;
 		return STATUS_FAILURE;
 	}
 
@@ -2342,10 +2348,12 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		if ( self->botMind->bestEnemy.ent && self->botMind->goal.ent != self->botMind->bestEnemy.ent && BotPathIsWalkable( self, proposedTarget ) )
 		{
 			//change targets
-			return STATUS_FAILURE;
+			BotChangeGoal( self, proposedTarget );
+			return STATUS_RUNNING;
 		}
-		else if ( level.time - self->botMind->enemyLastSeen > BOT_ENEMY_CHASETIME )
+		else if ( level.time - self->botMind->enemyLastSeen > g_bot_chasetime.integer )
 		{
+			self->botMind->bestEnemy.ent = NULL;
 			return STATUS_FAILURE;
 		}
 		else
@@ -2397,7 +2405,10 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 				}
 				else if ( DistanceToGoalSquared( self ) >= Square( MAX_HUMAN_DANCE_DIST ) && self->client->ps.weapon != WP_PAIN_SAW )
 				{
-					BotStandStill( self );
+					if ( DistanceToGoalSquared( self ) - Square( MAX_HUMAN_DANCE_DIST ) < 100 )
+					{
+						BotStandStill( self );
+					}
 
 					BotStrafeDodge( self );
 				}
@@ -2840,7 +2851,7 @@ AINodeStatus_t BotConditionNode( gentity_t *self, AIGenericNode_t *node )
 			BotCompare( self->client->ps.stats[ STAT_TEAM ], con->param1.value.i, con->op, success );
 			break;
 		case CON_ENEMY:
-			if ( level.time - self->botMind->timeFoundEnemy <= BOT_REACTION_TIME )
+			if ( level.time - self->botMind->timeFoundEnemy <= g_bot_reactiontime.integer )
 			{
 				success = qfalse;
 			}
@@ -2995,6 +3006,47 @@ AINodeStatus_t BotEvaluateNode( gentity_t *self, AIGenericNode_t *node )
 	return status;
 }
 
+void BotPain( gentity_t *self, gentity_t *attacker, int damage )
+{
+	if ( BotGetEntityTeam( attacker ) != TEAM_NONE && BotGetEntityTeam( attacker ) != self->client->ps.stats[ STAT_TEAM ] )
+	{
+		if ( attacker->s.eType == ET_PLAYER )
+		{
+			self->botMind->bestEnemy.ent = attacker;
+			self->botMind->bestEnemy.distance = Distance( self->s.origin, attacker->s.origin );
+			self->botMind->enemyLastSeen = level.time;
+			self->botMind->timeFoundEnemy = level.time - g_bot_reactiontime.integer; // alert immediately
+		}
+	}
+}
+
+void BotSearchForEnemy( gentity_t *self )
+{
+	if ( !self->botMind->bestEnemy.ent || level.time - self->botMind->enemyLastSeen > g_bot_chasetime.integer )
+	{
+		botTarget_t target;
+		gentity_t *enemy = BotFindBestEnemy( self );
+
+		if ( enemy )
+		{
+			BotSetTarget( &target, enemy, NULL );
+
+			if ( enemy->s.eType != ET_PLAYER || ( enemy->s.eType == ET_PLAYER 
+				&& ( self->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS || BotAimNegligence( self, target ) <= g_bot_fov.value / 2 ) ) )
+			{
+				self->botMind->bestEnemy.ent = enemy;
+				self->botMind->bestEnemy.distance = Distance( self->s.origin, enemy->s.origin );
+				self->botMind->enemyLastSeen = level.time;
+				self->botMind->timeFoundEnemy = level.time;
+			}
+		}
+		else
+		{
+			self->botMind->bestEnemy.ent = NULL;
+		}
+	}
+}
+
 /*
 =======================
 Bot Thinks
@@ -3005,9 +3057,7 @@ void G_BotThink( gentity_t *self )
 	char buf[MAX_STRING_CHARS];
 	usercmd_t *botCmdBuffer;
 	vec3_t     nudge;
-	gentity_t *bestEnemy;
 	gentity_t *bestDamaged;
-	botTarget_t target;
 
 	self->botMind->cmdBuffer = self->client->pers.cmd;
 	botCmdBuffer = &self->botMind->cmdBuffer;
@@ -3029,19 +3079,7 @@ void G_BotThink( gentity_t *self )
 	//MUST be done
 	while ( trap_BotGetServerCommand( self->client->ps.clientNum, buf, sizeof( buf ) ) );
 
-	//update closest structs
-	bestEnemy = BotFindBestEnemy( self );
-
-	BotSetTarget( &target, bestEnemy, NULL );
-
-	//if we do not already have an enemy, and we found an enemy, update the time that we found an enemy
-	if ( !self->botMind->bestEnemy.ent && bestEnemy && level.time - self->botMind->enemyLastSeen > BOT_ENEMY_CHASETIME && BotAimNegligence( self, target ) > 45 )
-	{
-		self->botMind->timeFoundEnemy = level.time;
-	}
-
-	self->botMind->bestEnemy.ent = bestEnemy;
-	self->botMind->bestEnemy.distance = ( !bestEnemy ) ? 0 : Distance( self->s.origin, bestEnemy->s.origin );
+	BotSearchForEnemy( self );
 
 	BotFindClosestBuildings( self, self->botMind->closestBuildings );
 
