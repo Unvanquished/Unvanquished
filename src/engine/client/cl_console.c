@@ -712,6 +712,49 @@ DRAWING
 
 /*
 ================
+Con_DrawBackground
+
+Draws the background of the console (on the virtual 640x480 resolution)
+================
+*/
+void Con_DrawBackground( int virtualHeight )
+{
+	vec4_t color;
+	const int virtualMargin = con_margin->integer;
+	const int virtualConsoleWidth = SCREEN_WIDTH - (2 * virtualMargin);
+	const int virtualConsoleHeight = (SCREEN_HEIGHT - (2 * virtualMargin)) * con_height->integer * 0.01;
+
+	const float animationDependendAlphaFactor = ( con_animationType->integer & ANIMATION_TYPE_FADE) ? consoleState.currentAnimationFraction : 1.0f;
+
+	// draw the background
+	color[ 0 ] = con_colorRed->value;
+	color[ 1 ] = con_colorGreen->value;
+	color[ 2 ] = con_colorBlue->value;
+	color[ 3 ] = con_colorAlpha->value * animationDependendAlphaFactor;
+
+	SCR_FillRect( virtualMargin, virtualMargin, virtualConsoleWidth, virtualHeight, color );
+
+	// draw the backgrounds borders
+	color[ 0 ] = con_borderColorRed->value;
+	color[ 1 ] = con_borderColorGreen->value;
+	color[ 2 ] = con_borderColorBlue->value;
+	color[ 3 ] = con_borderColorAlpha->value * animationDependendAlphaFactor;
+
+	if (virtualMargin)
+	{
+		SCR_FillRect( virtualMargin, virtualMargin, virtualConsoleWidth, con_borderWidth->value, color );  //top
+		SCR_FillRect( virtualMargin, virtualMargin, con_borderWidth->value, virtualHeight, color );  //left
+		SCR_FillRect( SCREEN_WIDTH - virtualMargin, virtualMargin, con_borderWidth->value, virtualHeight, color );  //right
+		SCR_FillRect( virtualMargin, virtualHeight + virtualMargin, virtualConsoleWidth + con_borderWidth->value, con_borderWidth->value, color );  //bottom
+	}
+	else
+	{
+		SCR_FillRect( 0, virtualHeight, SCREEN_WIDTH, con_borderWidth->value, color );
+	}
+}
+
+/*
+================
 Con_DrawInput
 
 Draw the editline after a ] prompt
@@ -731,8 +774,8 @@ void Con_DrawInput( void )
 
 	Com_RealTime( &realtime );
 
-	//bottomPosition = (consoleState.vidConsoleHeight - ( SCR_ConsoleFontCharHeight() * 2 ) + 2) + 10;
-	bottomPosition = consoleState.vidConsoleHeight - consoleState.verticalTextVidMargin;
+	bottomPosition = (consoleState.vidConsoleHeight - ( SCR_ConsoleFontCharHeight() * 2 ) + 2) + 10;
+	//bottomPosition = consoleState.vidConsoleHeight - consoleState.verticalTextVidMargin;
 
 	Com_sprintf( prompt,  sizeof( prompt ), "^0[^3%02d%c%02d^0]^7 %s", realtime.tm_hour, ( realtime.tm_sec & 1 ) ? ':' : ' ', realtime.tm_min, cl_consolePrompt->string );
 
@@ -745,6 +788,22 @@ void Con_DrawInput( void )
 
 	Q_CleanStr( prompt );
 	Field_Draw( &g_consoleField, con_margin->integer + consoleState.horizontalTextVidMargin + cl_conXOffset->integer + SCR_ConsoleFontStringWidth( prompt, strlen( prompt ) ), bottomPosition, qtrue, qtrue, color[ 3 ] );
+}
+
+/*
+================
+Con_DrawAboutText
+
+Draws the build and copyright info onto the console
+================
+*/
+void Con_DrawAboutText( void )
+{
+	int i, x;
+	vec4_t color;
+	float totalwidth;
+
+
 }
 
 /*
@@ -854,16 +913,13 @@ void Con_DrawSolidConsole( void )
 	int    row;
 	int    currentColor;
 	vec4_t color;
-	float  totalwidth;
-	float  currentWidthLocation = 0;
+	float  currentWidthLocation = 0, totalwidth;
 	float  vidXMargin, vidYMargin;
 	int    animatedVidConsoleHeight;
 	int    animatedVirtualConsoleHeight;
 	float  animationDependendAlphaFactor;
 
 	const int virtualMargin = con_margin->integer;
-	const int virtualConsoleWidth = SCREEN_WIDTH - (2 * virtualMargin);
-	const int virtualConsoleHeight = SCREEN_HEIGHT - (2 * virtualMargin) * con_height->integer * 0.01;
 	const int charHeight = SCR_ConsoleFontCharHeight();
 
 	animatedVidConsoleHeight = cls.glconfig.vidHeight * con_height->integer * 0.01;
@@ -875,7 +931,7 @@ void Con_DrawSolidConsole( void )
 	// on wide screens, this will lead to somewhat of a centering of the text
 	consoleState.horizontalTextVidMargin = floor( vidXMargin * 1.3f);
 
-	animatedVirtualConsoleHeight = virtualConsoleHeight;
+	animatedVirtualConsoleHeight = (SCREEN_HEIGHT - (2 * virtualMargin)) * con_height->integer * 0.01;;
 	animationDependendAlphaFactor = ( con_animationType->integer & ANIMATION_TYPE_FADE) ? consoleState.currentAnimationFraction : 1.0f;
 
 	if ( con_animationType->integer & ANIMATION_TYPE_SCROLL_DOWN)
@@ -896,31 +952,10 @@ void Con_DrawSolidConsole( void )
 	consoleState.vidConsoleHeight += charHeight / ( CONSOLE_FONT_VPADDING + 1 );
 	consoleState.vidConsoleHeight = animatedVidConsoleHeight;
 
-	// draw the background
-	color[ 0 ] = con_colorRed->value;
-	color[ 1 ] = con_colorGreen->value;
-	color[ 2 ] = con_colorBlue->value;
-	color[ 3 ] = con_colorAlpha->value * animationDependendAlphaFactor;
+	Con_DrawBackground( animatedVirtualConsoleHeight );
 
-	SCR_FillRect( virtualMargin, virtualMargin, virtualConsoleWidth, animatedVirtualConsoleHeight, color );
-
-	// draw the backgrounds borders
-	color[ 0 ] = con_borderColorRed->value;
-	color[ 1 ] = con_borderColorGreen->value;
-	color[ 2 ] = con_borderColorBlue->value;
-	color[ 3 ] = con_borderColorAlpha->value * animationDependendAlphaFactor;
-
-	if (virtualMargin)
-	{
-		SCR_FillRect( virtualMargin, virtualMargin, virtualConsoleWidth, con_borderWidth->value, color );  //top
-		SCR_FillRect( virtualMargin, virtualMargin, con_borderWidth->value, animatedVirtualConsoleHeight, color );  //left
-		SCR_FillRect( SCREEN_WIDTH - virtualMargin, virtualMargin, con_borderWidth->value, animatedVirtualConsoleHeight, color );  //right
-		SCR_FillRect( virtualMargin, animatedVirtualConsoleHeight + virtualMargin, virtualConsoleWidth + con_borderWidth->value, con_borderWidth->value, color );  //bottom
-	}
-	else
-	{
-		SCR_FillRect( 0, animatedVirtualConsoleHeight, SCREEN_WIDTH, con_borderWidth->value, color );
-	}
+	// Draw build info, projectname/copyrights, meta informatin or similar
+	//Con_DrawAboutText();
 
 	// draw the version number
 	color[ 0 ] = 1.0f;
