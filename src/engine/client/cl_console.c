@@ -44,29 +44,28 @@ int g_console_field_width = 78;
 
 console_t consoleState;
 
-cvar_t    *con_conspeed;
+cvar_t    *con_animationSpeed;
 cvar_t    *con_notifytime;
 cvar_t    *con_autoclear;
 
 // Color and alpha for console
-cvar_t    *scr_conUseShader;
+cvar_t    *con_useShader;
 
-cvar_t    *scr_conColorAlpha;
-cvar_t    *scr_conColorRed;
-cvar_t    *scr_conColorBlue;
-cvar_t    *scr_conColorGreen;
+cvar_t    *con_colorAlpha;
+cvar_t    *con_colorRed;
+cvar_t    *con_colorBlue;
+cvar_t    *con_colorGreen;
 
 // Color and alpha for bar under console
-cvar_t    *scr_conBarHeight;
+cvar_t    *con_borderWidth;
 
-cvar_t    *scr_conBarColorAlpha;
-cvar_t    *scr_conBarColorRed;
-cvar_t    *scr_conBarColorBlue;
-cvar_t    *scr_conBarColorGreen;
+cvar_t    *con_borderColorAlpha;
+cvar_t    *con_borderColorRed;
+cvar_t    *con_borderColorBlue;
+cvar_t    *con_borderColorGreen;
 
-cvar_t    *scr_conUseOld;
-cvar_t    *scr_conBarSize;
-cvar_t    *scr_conHeight;
+cvar_t    *con_useOld;
+cvar_t    *con_height;
 
 #define DEFAULT_CONSOLE_WIDTH 78
 #define MAX_CONSOLE_WIDTH   1024
@@ -409,7 +408,7 @@ void Con_CheckResize( void )
 
 	if ( cls.glconfig.vidWidth )
 	{
-		if ( scr_conUseOld->integer )
+		if ( con_useOld->integer )
 		{
 			width = cls.glconfig.vidWidth / SCR_ConsoleFontUnicharWidth( 'W' );
 		}
@@ -488,29 +487,27 @@ Con_Init
 void Con_Init( void )
 {
 	con_notifytime = Cvar_Get( "con_notifytime", "7", 0 );  // JPW NERVE increased per id req for obits
-	con_conspeed = Cvar_Get( "scr_conspeed", "3", 0 );
+	con_animationSpeed = Cvar_Get( "con_animationSpeed", "3", 0 );
 	con_autoclear = Cvar_Get( "con_autoclear", "1", CVAR_ARCHIVE );
 
 	// Defines cvar for color and alpha for console/bar under console
-	scr_conUseShader = Cvar_Get( "scr_conUseShader", "0", CVAR_ARCHIVE );
+	con_useShader = Cvar_Get( "con_useShader", "0", CVAR_ARCHIVE );
 
-	scr_conColorAlpha = Cvar_Get( "scr_conColorAlpha", "0.5", CVAR_ARCHIVE );
-	scr_conColorRed = Cvar_Get( "scr_conColorRed", "0", CVAR_ARCHIVE );
-	scr_conColorBlue = Cvar_Get( "scr_conColorBlue", "0.3", CVAR_ARCHIVE );
-	scr_conColorGreen = Cvar_Get( "scr_conColorGreen", "0.23", CVAR_ARCHIVE );
+	con_colorAlpha = Cvar_Get( "con_colorAlpha", "0.5", CVAR_ARCHIVE );
+	con_colorRed = Cvar_Get( "con_colorRed", "0", CVAR_ARCHIVE );
+	con_colorBlue = Cvar_Get( "con_colorBlue", "0.3", CVAR_ARCHIVE );
+	con_colorGreen = Cvar_Get( "con_colorGreen", "0.23", CVAR_ARCHIVE );
 
-	scr_conUseOld = Cvar_Get( "scr_conUseOld", "0", CVAR_ARCHIVE );
+	con_useOld = Cvar_Get( "con_useOld", "0", CVAR_ARCHIVE );
 
-	scr_conBarHeight = Cvar_Get( "scr_conBarHeight", "2", CVAR_ARCHIVE );
+	con_borderWidth = Cvar_Get( "con_borderWidth", "2", CVAR_ARCHIVE );
 
-	scr_conBarColorAlpha = Cvar_Get( "scr_conBarColorAlpha", "0.3", CVAR_ARCHIVE );
-	scr_conBarColorRed = Cvar_Get( "scr_conBarColorRed", "1", CVAR_ARCHIVE );
-	scr_conBarColorBlue = Cvar_Get( "scr_conBarColorBlue", "1", CVAR_ARCHIVE );
-	scr_conBarColorGreen = Cvar_Get( "scr_conBarColorGreen", "1", CVAR_ARCHIVE );
+	con_borderColorAlpha = Cvar_Get( "con_borderColorAlpha", "0.3", CVAR_ARCHIVE );
+	con_borderColorRed = Cvar_Get( "con_borderColorRed", "1", CVAR_ARCHIVE );
+	con_borderColorBlue = Cvar_Get( "con_borderColorBlue", "1", CVAR_ARCHIVE );
+	con_borderColorGreen = Cvar_Get( "con_borderColorGreen", "1", CVAR_ARCHIVE );
 
-	scr_conHeight = Cvar_Get( "scr_conHeight", "50", CVAR_ARCHIVE );
-
-	scr_conBarSize = Cvar_Get( "scr_conBarSize", "2", CVAR_ARCHIVE );
+	con_height = Cvar_Get( "con_height", "50", CVAR_ARCHIVE );
 
 	// Done defining cvars for console colors
 
@@ -741,7 +738,7 @@ void Con_DrawInput( void )
 	color[ 0 ] = 1.0f;
 	color[ 1 ] = 1.0f;
 	color[ 2 ] = 1.0f;
-	color[ 3 ] = ( scr_conUseOld->integer ? 1.0f : consoleState.currentAnimationFraction * 2.0f );
+	color[ 3 ] = ( con_useOld->integer ? 1.0f : consoleState.currentAnimationFraction * 2.0f );
 
 	SCR_DrawSmallStringExt( consoleState.xadjust + cl_conXOffset->integer, y + 10, prompt, color, qfalse, qfalse );
 
@@ -864,7 +861,7 @@ void Con_DrawSolidConsole( void )
 
 	const int charHeight = SCR_ConsoleFontCharHeight();
 
-	if ( scr_conUseOld->integer )
+	if ( con_useOld->integer )
 	{
 		currentConsoleHeight = cls.glconfig.vidHeight * consoleState.currentAnimationFraction;
 
@@ -880,12 +877,12 @@ void Con_DrawSolidConsole( void )
 	}
 	else
 	{
-		currentConsoleHeight = cls.glconfig.vidHeight * scr_conHeight->integer * 0.01;
+		currentConsoleHeight = cls.glconfig.vidHeight * con_height->integer * 0.01;
 	}
 	currentConsoleHeight += charHeight / ( CONSOLE_FONT_VPADDING + 1 );
 
 	// on wide screens, we will center the text
-	if (!scr_conUseOld->integer)
+	if (!con_useOld->integer)
 	{
 		consoleState.xadjust = 15;
 	}
@@ -897,7 +894,7 @@ void Con_DrawSolidConsole( void )
 	SCR_AdjustFrom640 (&consoleState.xadjust, NULL, NULL, NULL);
 
 	// draw the background
-	if ( scr_conUseOld->integer )
+	if ( con_useOld->integer )
 	{
 		yVer = 5 + charHeight;
 		y = consoleState.currentAnimationFraction * SCREEN_HEIGHT;
@@ -908,28 +905,28 @@ void Con_DrawSolidConsole( void )
 		}
 		else
 		{
-			if ( scr_conUseShader->integer )
+			if ( con_useShader->integer )
 			{
 				SCR_DrawPic( 0, 0, SCREEN_WIDTH, y, cls.consoleShader );
 			}
 			else
 			{
 				// This will be overwritten, so i'll just abuse it here, no need to define another array
-				color[ 0 ] = scr_conColorRed->value;
-				color[ 1 ] = scr_conColorGreen->value;
-				color[ 2 ] = scr_conColorBlue->value;
-				color[ 3 ] = scr_conColorAlpha->value;
+				color[ 0 ] = con_colorRed->value;
+				color[ 1 ] = con_colorGreen->value;
+				color[ 2 ] = con_colorBlue->value;
+				color[ 3 ] = con_colorAlpha->value;
 
 				SCR_FillRect( 0, 0, SCREEN_WIDTH, y, color );
 			}
 		}
 
-		color[ 0 ] = scr_conBarColorRed->value;
-		color[ 1 ] = scr_conBarColorGreen->value;
-		color[ 2 ] = scr_conBarColorBlue->value;
-		color[ 3 ] = scr_conBarColorAlpha->value;
+		color[ 0 ] = con_borderColorRed->value;
+		color[ 1 ] = con_borderColorGreen->value;
+		color[ 2 ] = con_borderColorBlue->value;
+		color[ 3 ] = con_borderColorAlpha->value;
 
-		SCR_FillRect( 0, y, SCREEN_WIDTH, scr_conBarSize->value, color );
+		SCR_FillRect( 0, y, SCREEN_WIDTH, con_borderWidth->value, color );
 	}
 	else
 	{
@@ -937,20 +934,20 @@ void Con_DrawSolidConsole( void )
 		SCR_AdjustFrom640( NULL, &yVer, NULL, NULL );
 		yVer = floor( yVer + 5 + charHeight );
 
-		color[ 0 ] = scr_conColorRed->value;
-		color[ 1 ] = scr_conColorGreen->value;
-		color[ 2 ] = scr_conColorBlue->value;
-		color[ 3 ] = scr_conColorAlpha->value * consoleState.currentAnimationFraction;
-		SCR_FillRect( 10, 10, 620, 460 * scr_conHeight->integer * 0.01, color );
+		color[ 0 ] = con_colorRed->value;
+		color[ 1 ] = con_colorGreen->value;
+		color[ 2 ] = con_colorBlue->value;
+		color[ 3 ] = con_colorAlpha->value * consoleState.currentAnimationFraction;
+		SCR_FillRect( 10, 10, 620, 460 * con_height->integer * 0.01, color );
 
-		color[ 0 ] = scr_conBarColorRed->value;
-		color[ 1 ] = scr_conBarColorGreen->value;
-		color[ 2 ] = scr_conBarColorBlue->value;
-		color[ 3 ] = scr_conBarColorAlpha->value * consoleState.currentAnimationFraction;
+		color[ 0 ] = con_borderColorRed->value;
+		color[ 1 ] = con_borderColorGreen->value;
+		color[ 2 ] = con_borderColorBlue->value;
+		color[ 3 ] = con_borderColorAlpha->value * consoleState.currentAnimationFraction;
 		SCR_FillRect( 10, 10, 620, 1, color );  //top
-		SCR_FillRect( 10, 460 * scr_conHeight->integer * 0.01 + 10, 621, 1, color );  //bottom
-		SCR_FillRect( 10, 10, 1, 460 * scr_conHeight->integer * 0.01, color );  //left
-		SCR_FillRect( 630, 10, 1, 460 * scr_conHeight->integer * 0.01, color );  //right
+		SCR_FillRect( 10, 460 * con_height->integer * 0.01 + 10, 621, 1, color );  //bottom
+		SCR_FillRect( 10, 10, 1, 460 * con_height->integer * 0.01, color );  //left
+		SCR_FillRect( 630, 10, 1, 460 * con_height->integer * 0.01, color );  //right
 	}
 
 	// draw the version number
@@ -958,13 +955,13 @@ void Con_DrawSolidConsole( void )
 	color[ 0 ] = 1.0f;
 	color[ 1 ] = 1.0f;
 	color[ 2 ] = 1.0f;
-	color[ 3 ] = ( scr_conUseOld->integer ? 0.75f :  0.75f * consoleState.currentAnimationFraction);
+	color[ 3 ] = ( con_useOld->integer ? 0.75f :  0.75f * consoleState.currentAnimationFraction);
 	re.SetColor( color );
 
 	i = strlen( Q3_VERSION );
 	totalwidth = SCR_ConsoleFontStringWidth( Q3_VERSION, i ) + cl_conXOffset->integer;
 
-	if ( !scr_conUseOld->integer )
+	if ( !con_useOld->integer )
 	{
 		totalwidth += 30;
 	}
@@ -982,7 +979,7 @@ void Con_DrawSolidConsole( void )
 	i = strlen( Q3_ENGINE );
 	totalwidth = SCR_ConsoleFontStringWidth( Q3_ENGINE, i ) + cl_conXOffset->integer;
 
-	if ( !scr_conUseOld->integer )
+	if ( !con_useOld->integer )
 	{
 		totalwidth += 30;
 	}
@@ -1004,7 +1001,7 @@ void Con_DrawSolidConsole( void )
 	consoleState.vislines = currentConsoleHeight;
 	rows = ( currentConsoleHeight ) / SCR_ConsoleFontCharHeight() - 3; // rows of text to draw
 
-	if ( scr_conUseOld->integer )
+	if ( con_useOld->integer )
 	{
 		rows++;
 	}
@@ -1022,10 +1019,10 @@ void Con_DrawSolidConsole( void )
 		color[ 0 ] = 1.0f;
 		color[ 1 ] = 0.0f;
 		color[ 2 ] = 0.0f;
-		color[ 3 ] = ( scr_conUseOld->integer ? 1.0f : consoleState.currentAnimationFraction );
+		color[ 3 ] = ( con_useOld->integer ? 1.0f : consoleState.currentAnimationFraction );
 		re.SetColor( color );
 
-		for ( x = 0; x < consoleState.widthInChars - ( scr_conUseOld->integer ? 0 : 4 ); x += 4 )
+		for ( x = 0; x < consoleState.widthInChars - ( con_useOld->integer ? 0 : 4 ); x += 4 )
 		{
 			SCR_DrawConsoleFontUnichar( consoleState.xadjust + ( x + 1 ) * hatWidth, y, '^' );
 		}
@@ -1045,7 +1042,7 @@ void Con_DrawSolidConsole( void )
 	color[ 0 ] = g_color_table[ currentColor ][ 0 ];
 	color[ 1 ] = g_color_table[ currentColor ][ 1 ];
 	color[ 2 ] = g_color_table[ currentColor ][ 2 ];
-	color[ 3 ] = ( scr_conUseOld->integer ? 1.0f : consoleState.currentAnimationFraction );
+	color[ 3 ] = ( con_useOld->integer ? 1.0f : consoleState.currentAnimationFraction );
 	re.SetColor( color );
 
 	for ( i = 0; i < rows; i++, y -= charHeight, row-- )
@@ -1075,7 +1072,7 @@ void Con_DrawSolidConsole( void )
 				color[ 0 ] = g_color_table[ currentColor ][ 0 ];
 				color[ 1 ] = g_color_table[ currentColor ][ 1 ];
 				color[ 2 ] = g_color_table[ currentColor ][ 2 ];
-				color[ 3 ] = ( scr_conUseOld->integer ? 1.0f : consoleState.currentAnimationFraction );
+				color[ 3 ] = ( con_useOld->integer ? 1.0f : consoleState.currentAnimationFraction );
 				re.SetColor( color );
 			}
 
@@ -1129,7 +1126,7 @@ void Con_RunConsole( void )
 
 	if ( consoleState.isOpened < consoleState.currentAnimationFraction )
 	{
-		consoleState.currentAnimationFraction -= con_conspeed->value * cls.realFrametime * 0.001;
+		consoleState.currentAnimationFraction -= con_animationSpeed->value * cls.realFrametime * 0.001;
 
 		if ( consoleState.currentAnimationFraction < 0 )
 		{
@@ -1138,7 +1135,7 @@ void Con_RunConsole( void )
 	}
 	else if ( consoleState.isOpened > consoleState.currentAnimationFraction )
 	{
-		consoleState.currentAnimationFraction += con_conspeed->value * cls.realFrametime * 0.001;
+		consoleState.currentAnimationFraction += con_animationSpeed->value * cls.realFrametime * 0.001;
 
 		if ( consoleState.currentAnimationFraction > 1 )
 		{
