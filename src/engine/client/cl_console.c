@@ -49,9 +49,6 @@ cvar_t    *con_animationType;
 cvar_t    *con_notifytime;
 cvar_t    *con_autoclear;
 
-// Color and alpha for console
-cvar_t    *con_useShader;
-
 cvar_t    *con_colorAlpha;
 cvar_t    *con_colorRed;
 cvar_t    *con_colorBlue;
@@ -497,9 +494,6 @@ void Con_Init( void )
 	con_animationType = Cvar_Get( "con_animationType", "2", 0 );
 	con_autoclear = Cvar_Get( "con_autoclear", "1", CVAR_ARCHIVE );
 
-	// Defines cvar for color and alpha for console/bar under console
-	con_useShader = Cvar_Get( "con_useShader", "0", CVAR_ARCHIVE );
-
 	con_colorAlpha = Cvar_Get( "con_colorAlpha", "0.5", CVAR_ARCHIVE );
 	con_colorRed = Cvar_Get( "con_colorRed", "0", CVAR_ARCHIVE );
 	con_colorBlue = Cvar_Get( "con_colorBlue", "0.3", CVAR_ARCHIVE );
@@ -911,15 +905,7 @@ void Con_DrawSolidConsole( void )
 	{
 		yVer = 5 + charHeight;
 		y = consoleState.currentAnimationFraction * SCREEN_HEIGHT * con_height->integer * 0.01;
-
-		if ( con_useShader->integer )
-		{
-			SCR_DrawPic( 0, 0, SCREEN_WIDTH, y, cls.consoleShader );
-		}
-		else
-		{
-			SCR_FillRect( 0, 0, SCREEN_WIDTH, y, color );
-		}
+		SCR_FillRect( 0, 0, SCREEN_WIDTH, y, color );
 	}
 	else
 	{
