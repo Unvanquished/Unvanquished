@@ -690,15 +690,10 @@ typedef struct
 
 	float    displayFrac; // approaches finalFrac at scr_conspeed
 	float    finalFrac; // 0.0 to 1.0 lines of console to display
-	float    desiredFrac; // ydnar: for variable console heights
 
 	int      vislines; // in scanlines
 
 	int      times[ NUM_CON_TIMES ]; // cls.realtime time the line was generated
-	// for transparent notify lines
-	vec4_t   color;
-
-	int      acLength; // Arnout: autocomplete buffer length
 } console_t;
 
 extern console_t con;

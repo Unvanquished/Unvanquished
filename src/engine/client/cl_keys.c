@@ -814,8 +814,6 @@ void Console_Key( int key )
 	// enter finishes the line
 	if ( key == K_ENTER || key == K_KP_ENTER )
 	{
-		con.acLength = 0;
-
 		// if not in the game explicitly prepend a slash if needed
 		if ( (cls.state != CA_ACTIVE || !cl_consoleCommand->string[0] ) && g_consoleField.buffer[ 0 ] != '\\'
 		     && g_consoleField.buffer[ 0 ] != '/' )
@@ -868,14 +866,6 @@ void Console_Key( int key )
 		return;
 	}
 
-	// clear the autocompletion buffer on a line-editing key input
-	if ( ( key >= K_SPACE && key <= K_BACKSPACE ) || ( key == K_LEFTARROW ) || ( key == K_RIGHTARROW ) ||
-	     ( key >= K_KP_LEFTARROW && key <= K_KP_RIGHTARROW ) ||
-	     ( key >= K_KP_SLASH && key <= K_KP_PLUS ) || ( key >= K_KP_STAR && key <= K_KP_EQUALS ) )
-	{
-		con.acLength = 0;
-	}
-
 	// command history (ctrl-p ctrl-n for unix style)
 
 	//----(SA)  added some mousewheel functionality to the console
@@ -883,7 +873,6 @@ void Console_Key( int key )
 	     ( ( tolower( key ) == 'p' ) && keys[ K_CTRL ].down ) )
 	{
 		Field_Set( &g_consoleField, Hist_Prev() );
-		con.acLength = 0;
 		return;
 	}
 
@@ -902,8 +891,6 @@ void Console_Key( int key )
 			Hist_Add( g_consoleField.buffer );
 			Field_Clear( &g_consoleField );
 		}
-
-		con.acLength = 0;
 		return;
 	}
 

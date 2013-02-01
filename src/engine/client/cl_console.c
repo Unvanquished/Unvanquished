@@ -71,8 +71,6 @@ cvar_t    *scr_conHeight;
 #define DEFAULT_CONSOLE_WIDTH 78
 #define MAX_CONSOLE_WIDTH   1024
 
-static const vec4_t console_highlightcolor = { 0.5, 0.5, 0.2, 0.45 };
-
 #define CON_LINE(y) ( ( (y) % con.totallines ) * con.linewidth )
 
 // Buffer used by line-to-string code. Implementation detail.
@@ -146,10 +144,7 @@ Con_ToggleConsole_f
 */
 void Con_ToggleConsole_f( void )
 {
-	con.acLength = 0;
-
 	// ydnar: persistent console input is more useful
-	// Arnout: added cvar
 	if ( con_autoclear->integer )
 	{
 		Field_Clear( &g_consoleField );
@@ -159,32 +154,12 @@ void Con_ToggleConsole_f( void )
 
 	Con_ClearNotify();
 
-	// ydnar: multiple console size support
-	if ( cls.keyCatchers & KEYCATCH_CONSOLE )
-	{
+	if (cls.keyCatchers & KEYCATCH_CONSOLE) {
 		cls.keyCatchers &= ~KEYCATCH_CONSOLE;
-		con.desiredFrac = 0.0;
-	}
-	else
-	{
+	} else {
 		cls.keyCatchers |= KEYCATCH_CONSOLE;
-
-		// short console
-		if ( keys[ K_CTRL ].down )
-		{
-			con.desiredFrac = ( 5.0 * SMALLCHAR_HEIGHT ) / cls.glconfig.vidHeight;
-		}
-		// full console
-		else if ( keys[ K_ALT ].down )
-		{
-			con.desiredFrac = 1.0;
-		}
-		// half-screen console
-		else
-		{
-			con.desiredFrac = 0.5;
-		}
 	}
+
 }
 
 void Con_OpenConsole_f( void )
@@ -621,7 +596,6 @@ void CL_ConsolePrint( char *txt )
 
 	if ( !con.initialized )
 	{
-		con.color[ 0 ] = con.color[ 1 ] = con.color[ 2 ] = con.color[ 3 ] = 1.0f;
 		con.linewidth = -1;
 		Con_CheckResize();
 		con.initialized = qtrue;
