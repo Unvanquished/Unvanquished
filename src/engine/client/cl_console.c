@@ -63,8 +63,6 @@ cvar_t    *con_colorRed;
 cvar_t    *con_colorBlue;
 cvar_t    *con_colorGreen;
 
-cvar_t    *con_useOld;
-
 #define ANIMATION_TYPE_NONE   0
 #define ANIMATION_TYPE_SCROLL_DOWN 1
 #define ANIMATION_TYPE_FADE   2
@@ -411,17 +409,7 @@ void Con_CheckResize( void )
 
 	if ( cls.glconfig.vidWidth )
 	{
-		if ( con_useOld->integer )
-		{
-			width = cls.glconfig.vidWidth / SCR_ConsoleFontUnicharWidth( 'W' );
-		}
-		else
-		{
-			float adjust = 30;
-			SCR_AdjustFrom640( &adjust, NULL, NULL, NULL );
-			width = ( cls.glconfig.vidWidth - adjust ) / SCR_ConsoleFontUnicharWidth( 'W' );
-		}
-
+		width = ( cls.glconfig.vidWidth - consoleState.horizontalTextVidMargin ) / SCR_ConsoleFontUnicharWidth( 'W' );
 		g_consoleField.widthInChars = width - Q_PrintStrlen( cl_consolePrompt->string ) - 1;
 	}
 	else
@@ -445,8 +433,6 @@ void Con_CheckResize( void )
 	}
 	else
 	{
-		//SCR_AdjustFrom640( &consoleState.horizontalTextPadding, NULL, NULL, NULL );
-
 		oldwidth = consoleState.widthInChars;
 		consoleState.widthInChars = width;
 		oldtotallines = consoleState.scrollbackLengthInLines;
@@ -495,7 +481,6 @@ void Con_Init( void )
 	con_autoclear = Cvar_Get( "con_autoclear", "1", CVAR_ARCHIVE );
 
 	con_margin = Cvar_Get( "con_margin", "10", CVAR_ARCHIVE );
-	con_useOld = Cvar_Get( "con_useOld", "0", CVAR_ARCHIVE );
 
 	con_height = Cvar_Get( "con_height", "50", CVAR_ARCHIVE );
 	con_colorRed = Cvar_Get( "con_colorRed", "0", CVAR_ARCHIVE );
