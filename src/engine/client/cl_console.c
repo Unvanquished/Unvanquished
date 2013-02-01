@@ -465,7 +465,7 @@ void Con_CheckResize( void )
 		consoleState.bottomDisplayedLine = consoleState.currentLine;
 	}
 
-	g_console_field_width = g_consoleField.widthInChars = consoleState.widthInChars - 7 - ( cl_consolePrompt ? Q_UTF8Strlen( cl_consolePrompt->string ) : 0 );
+	g_console_field_width = g_consoleField.widthInChars = consoleState.widthInChars - 8 - ( cl_consolePrompt ? Q_UTF8Strlen( cl_consolePrompt->string ) : 0 );
 }
 
 /*
