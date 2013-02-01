@@ -854,7 +854,7 @@ void Con_DrawSolidConsole( void )
 	int    i, x, y;
 	int    rows;
 	int    row;
-	int    lines;
+	int    currentConsoleHeight;
 //	qhandle_t    conShader;
 	int    currentColor;
 	vec4_t color;
@@ -866,23 +866,23 @@ void Con_DrawSolidConsole( void )
 
 	if ( scr_conUseOld->integer )
 	{
-		lines = cls.glconfig.vidHeight * consoleState.currentAnimationFraction;
+		currentConsoleHeight = cls.glconfig.vidHeight * consoleState.currentAnimationFraction;
 
-		if ( lines <= 0 )
+		if ( currentConsoleHeight <= 0 )
 		{
 			return;
 		}
 
-		if ( lines > cls.glconfig.vidHeight )
+		if ( currentConsoleHeight > cls.glconfig.vidHeight )
 		{
-			lines = cls.glconfig.vidHeight;
+			currentConsoleHeight = cls.glconfig.vidHeight;
 		}
 	}
 	else
 	{
-		lines = cls.glconfig.vidHeight * consoleState.currentAnimationFraction * scr_conHeight->integer * 0.01;
+		currentConsoleHeight = cls.glconfig.vidHeight * scr_conHeight->integer * 0.01;
 	}
-	lines += charHeight / ( CONSOLE_FONT_VPADDING + 1 );
+	currentConsoleHeight += charHeight / ( CONSOLE_FONT_VPADDING + 1 );
 
 	// on wide screens, we will center the text
 	if (!scr_conUseOld->integer)
@@ -1001,15 +1001,15 @@ void Con_DrawSolidConsole( void )
 	Con_DrawInput();
 
 	// draw the text
-	consoleState.vislines = lines;
-	rows = ( lines ) / SCR_ConsoleFontCharHeight() - 3; // rows of text to draw
+	consoleState.vislines = currentConsoleHeight;
+	rows = ( currentConsoleHeight ) / SCR_ConsoleFontCharHeight() - 3; // rows of text to draw
 
 	if ( scr_conUseOld->integer )
 	{
 		rows++;
 	}
 
-	y = lines - ( SCR_ConsoleFontCharHeight() * 3 ) + 10;
+	y = currentConsoleHeight - ( SCR_ConsoleFontCharHeight() * 3 ) + 10;
 
 	// draw from the bottom up
 
@@ -1099,9 +1099,9 @@ void Con_DrawConsole( void )
 	// check for console width changes from a vid mode change
 	Con_CheckResize();
 
-	// render console if flag is set, but also in special disconnected states
+	// render console if flag is set or is within an animation but also in special disconnected states
 	if ( ( cls.state == CA_DISCONNECTED && !( cls.keyCatchers & ( KEYCATCH_UI | KEYCATCH_CGAME ) ) )
-		|| consoleState.isOpened )
+		|| consoleState.isOpened || consoleState.currentAnimationFraction > 0)
 	{
 		Con_DrawSolidConsole( );
 	}
@@ -1193,6 +1193,7 @@ void Con_Close( void )
 	Con_ClearNotify();
 	cls.keyCatchers &= ~KEYCATCH_CONSOLE;
 	consoleState.isOpened = qfalse;
-	consoleState.currentAnimationFraction = 0;
 
+	//instant disappearance, given that this function is not probably not called by the user
+	//consoleState.currentAnimationFraction = 0;
 }
