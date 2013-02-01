@@ -45,6 +45,7 @@ int g_console_field_width = 78;
 console_t consoleState;
 
 cvar_t    *con_animationSpeed;
+cvar_t    *con_animationType;
 cvar_t    *con_notifytime;
 cvar_t    *con_autoclear;
 
@@ -66,6 +67,11 @@ cvar_t    *con_borderColorGreen;
 
 cvar_t    *con_useOld;
 cvar_t    *con_height;
+
+#define ANIMATION_TYPE_NONE   0
+#define ANIMATION_TYPE_SCROLL_DOWN 1
+#define ANIMATION_TYPE_FADE   2
+#define ANIMATION_TYPE_BOTH   3
 
 #define DEFAULT_CONSOLE_WIDTH 78
 #define MAX_CONSOLE_WIDTH   1024
@@ -488,6 +494,7 @@ void Con_Init( void )
 {
 	con_notifytime = Cvar_Get( "con_notifytime", "7", 0 );  // JPW NERVE increased per id req for obits
 	con_animationSpeed = Cvar_Get( "con_animationSpeed", "3", 0 );
+	con_animationType = Cvar_Get( "con_animationType", "2", 0 );
 	con_autoclear = Cvar_Get( "con_autoclear", "1", CVAR_ARCHIVE );
 
 	// Defines cvar for color and alpha for console/bar under console
@@ -738,7 +745,7 @@ void Con_DrawInput( void )
 	color[ 0 ] = 1.0f;
 	color[ 1 ] = 1.0f;
 	color[ 2 ] = 1.0f;
-	color[ 3 ] = ( con_useOld->integer ? 1.0f : consoleState.currentAnimationFraction * 2.0f );
+	color[ 3 ] = ( con_animationType->integer & ANIMATION_TYPE_FADE) ? consoleState.currentAnimationFraction : 1.0f;
 
 	SCR_DrawSmallStringExt( consoleState.xadjust + cl_conXOffset->integer, y + 10, prompt, color, qfalse, qfalse );
 
@@ -858,27 +865,28 @@ void Con_DrawSolidConsole( void )
 	float  yVer;
 	float  totalwidth;
 	float  currentWidthLocation = 0;
-
+	float  animationDependendAlphaFactor;
 	const int charHeight = SCR_ConsoleFontCharHeight();
 
-	if ( con_useOld->integer )
-	{
-		currentConsoleHeight = cls.glconfig.vidHeight * consoleState.currentAnimationFraction;
+	currentConsoleHeight = cls.glconfig.vidHeight * con_height->integer * 0.01;
+	animationDependendAlphaFactor = ( con_animationType->integer & ANIMATION_TYPE_FADE) ? consoleState.currentAnimationFraction : 1.0f;
 
-		if ( currentConsoleHeight <= 0 )
-		{
-			return;
-		}
 
-		if ( currentConsoleHeight > cls.glconfig.vidHeight )
-		{
-			currentConsoleHeight = cls.glconfig.vidHeight;
-		}
-	}
-	else
+	if ( con_animationType->integer & ANIMATION_TYPE_SCROLL_DOWN)
 	{
-		currentConsoleHeight = cls.glconfig.vidHeight * con_height->integer * 0.01;
+		currentConsoleHeight *= consoleState.currentAnimationFraction;
 	}
+
+	if ( currentConsoleHeight <= 0 )
+	{
+		return;
+	}
+
+	if ( currentConsoleHeight > cls.glconfig.vidHeight )
+	{
+		currentConsoleHeight = cls.glconfig.vidHeight;
+	}
+
 	currentConsoleHeight += charHeight / ( CONSOLE_FONT_VPADDING + 1 );
 
 	// on wide screens, we will center the text
@@ -894,39 +902,24 @@ void Con_DrawSolidConsole( void )
 	SCR_AdjustFrom640 (&consoleState.xadjust, NULL, NULL, NULL);
 
 	// draw the background
+	color[ 0 ] = con_colorRed->value;
+	color[ 1 ] = con_colorGreen->value;
+	color[ 2 ] = con_colorBlue->value;
+	color[ 3 ] = con_colorAlpha->value * animationDependendAlphaFactor;
+
 	if ( con_useOld->integer )
 	{
 		yVer = 5 + charHeight;
-		y = consoleState.currentAnimationFraction * SCREEN_HEIGHT;
+		y = consoleState.currentAnimationFraction * SCREEN_HEIGHT * con_height->integer * 0.01;
 
-		if ( y < 1 )
+		if ( con_useShader->integer )
 		{
-			y = 0;
+			SCR_DrawPic( 0, 0, SCREEN_WIDTH, y, cls.consoleShader );
 		}
 		else
 		{
-			if ( con_useShader->integer )
-			{
-				SCR_DrawPic( 0, 0, SCREEN_WIDTH, y, cls.consoleShader );
-			}
-			else
-			{
-				// This will be overwritten, so i'll just abuse it here, no need to define another array
-				color[ 0 ] = con_colorRed->value;
-				color[ 1 ] = con_colorGreen->value;
-				color[ 2 ] = con_colorBlue->value;
-				color[ 3 ] = con_colorAlpha->value;
-
-				SCR_FillRect( 0, 0, SCREEN_WIDTH, y, color );
-			}
+			SCR_FillRect( 0, 0, SCREEN_WIDTH, y, color );
 		}
-
-		color[ 0 ] = con_borderColorRed->value;
-		color[ 1 ] = con_borderColorGreen->value;
-		color[ 2 ] = con_borderColorBlue->value;
-		color[ 3 ] = con_borderColorAlpha->value;
-
-		SCR_FillRect( 0, y, SCREEN_WIDTH, con_borderWidth->value, color );
 	}
 	else
 	{
@@ -934,16 +927,21 @@ void Con_DrawSolidConsole( void )
 		SCR_AdjustFrom640( NULL, &yVer, NULL, NULL );
 		yVer = floor( yVer + 5 + charHeight );
 
-		color[ 0 ] = con_colorRed->value;
-		color[ 1 ] = con_colorGreen->value;
-		color[ 2 ] = con_colorBlue->value;
-		color[ 3 ] = con_colorAlpha->value * consoleState.currentAnimationFraction;
 		SCR_FillRect( 10, 10, 620, 460 * con_height->integer * 0.01, color );
+	}
 
-		color[ 0 ] = con_borderColorRed->value;
-		color[ 1 ] = con_borderColorGreen->value;
-		color[ 2 ] = con_borderColorBlue->value;
-		color[ 3 ] = con_borderColorAlpha->value * consoleState.currentAnimationFraction;
+	// draw the backgrounds borders
+	color[ 0 ] = con_borderColorRed->value;
+	color[ 1 ] = con_borderColorGreen->value;
+	color[ 2 ] = con_borderColorBlue->value;
+	color[ 3 ] = con_borderColorAlpha->value * animationDependendAlphaFactor;
+
+	if ( con_useOld->integer )
+	{
+		SCR_FillRect( 0, y, SCREEN_WIDTH, con_borderWidth->value, color );
+	}
+	else
+	{
 		SCR_FillRect( 10, 10, 620, 1, color );  //top
 		SCR_FillRect( 10, 460 * con_height->integer * 0.01 + 10, 621, 1, color );  //bottom
 		SCR_FillRect( 10, 10, 1, 460 * con_height->integer * 0.01, color );  //left
@@ -955,7 +953,7 @@ void Con_DrawSolidConsole( void )
 	color[ 0 ] = 1.0f;
 	color[ 1 ] = 1.0f;
 	color[ 2 ] = 1.0f;
-	color[ 3 ] = ( con_useOld->integer ? 0.75f :  0.75f * consoleState.currentAnimationFraction);
+	color[ 3 ] = 0.75f * animationDependendAlphaFactor;
 	re.SetColor( color );
 
 	i = strlen( Q3_VERSION );
@@ -1019,7 +1017,7 @@ void Con_DrawSolidConsole( void )
 		color[ 0 ] = 1.0f;
 		color[ 1 ] = 0.0f;
 		color[ 2 ] = 0.0f;
-		color[ 3 ] = ( con_useOld->integer ? 1.0f : consoleState.currentAnimationFraction );
+		color[ 3 ] = animationDependendAlphaFactor;
 		re.SetColor( color );
 
 		for ( x = 0; x < consoleState.widthInChars - ( con_useOld->integer ? 0 : 4 ); x += 4 )
@@ -1042,7 +1040,7 @@ void Con_DrawSolidConsole( void )
 	color[ 0 ] = g_color_table[ currentColor ][ 0 ];
 	color[ 1 ] = g_color_table[ currentColor ][ 1 ];
 	color[ 2 ] = g_color_table[ currentColor ][ 2 ];
-	color[ 3 ] = ( con_useOld->integer ? 1.0f : consoleState.currentAnimationFraction );
+	color[ 3 ] = animationDependendAlphaFactor;
 	re.SetColor( color );
 
 	for ( i = 0; i < rows; i++, y -= charHeight, row-- )
@@ -1072,7 +1070,7 @@ void Con_DrawSolidConsole( void )
 				color[ 0 ] = g_color_table[ currentColor ][ 0 ];
 				color[ 1 ] = g_color_table[ currentColor ][ 1 ];
 				color[ 2 ] = g_color_table[ currentColor ][ 2 ];
-				color[ 3 ] = ( con_useOld->integer ? 1.0f : consoleState.currentAnimationFraction );
+				color[ 3 ] = animationDependendAlphaFactor;
 				re.SetColor( color );
 			}
 
