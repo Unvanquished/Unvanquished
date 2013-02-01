@@ -324,9 +324,6 @@ struct gentity_s
 
 	qboolean    pointAgainstWorld; // don't use the bbox for map collisions
 
-	int         buildPointZone; // index for zone
-	int         usesBuildPointZone; // does it use a zone?
-
 	botMemory_t *botMind;
 };
 
@@ -542,16 +539,6 @@ void     G_PrintSpawnQueue( spawnQueue_t *sq );
 #define MAX_DAMAGE_REGION_TEXT 8192
 #define MAX_DAMAGE_REGIONS     16
 
-// build point zone
-typedef struct
-{
-	int active;
-
-	int totalBuildPoints;
-	int queuedBuildPoints;
-	int nextQueueTime;
-} buildPointZone_t;
-
 // store locational damage regions
 typedef struct damageRegion_s
 {
@@ -711,14 +698,11 @@ typedef struct
 	int              numLiveAlienClients;
 	int              numLiveHumanClients;
 
+	int              totalResources;
 	int              alienBuildPoints;
-	int              alienBuildPointQueue;
-	int              alienNextQueueTime;
+	float            queuedAlienPoints;
 	int              humanBuildPoints;
-	int              humanBuildPointQueue;
-	int              humanNextQueueTime;
-
-	buildPointZone_t *buildPointZones;
+	float            queuedHumanPoints;
 
 	gentity_t        *markedBuildables[ MAX_GENTITIES ];
 	int              numBuildablesForRemoval;
@@ -900,7 +884,7 @@ gentity_t        *G_Reactor( void );
 gentity_t        *G_Overmind( void );
 qboolean         G_FindCreep( gentity_t *self );
 gentity_t        *G_Build( gentity_t *builder, buildable_t buildable,
-                           const vec3_t origin, const vec3_t normal, const vec3_t angles );
+                           const vec3_t origin, const vec3_t normal, const vec3_t angles, int groundEntityNum );
 void             G_BuildableThink( gentity_t *ent, int msec );
 qboolean         G_BuildableRange( vec3_t origin, float r, buildable_t buildable );
 void             G_ClearDeconMarks( void );
@@ -918,8 +902,8 @@ void             G_LayoutLoad( void );
 void             G_BaseSelfDestruct( team_t team );
 int              G_NextQueueTime( int queuedBP, int totalBP, int queueBaseRate );
 void             G_QueueBuildPoints( gentity_t *self );
-int              G_GetBuildPoints( const vec3_t pos, team_t team );
-int              G_GetMarkedBuildPoints( const vec3_t pos, team_t team );
+int              G_GetBuildPoints( team_t team );
+int              G_GetMarkedBuildPoints( team_t team );
 qboolean         G_FindPower( gentity_t *self, qboolean searchUnspawned );
 gentity_t        *G_PowerEntityForPoint( const vec3_t origin );
 gentity_t        *G_PowerEntityForEntity( gentity_t *ent );
@@ -928,6 +912,8 @@ buildLog_t       *G_BuildLogNew( gentity_t *actor, buildFate_t fate );
 void             G_BuildLogSet( buildLog_t *log, gentity_t *ent );
 void             G_BuildLogAuto( gentity_t *actor, gentity_t *buildable, buildFate_t fate );
 void             G_BuildLogRevert( int id );
+void             G_QueueResources( team_t team, float value );
+void             G_RemoveResources( team_t team, int value );
 
 //
 // g_utils.c
@@ -1246,13 +1232,8 @@ extern  vmCvar_t pmove_fixed;
 extern  vmCvar_t pmove_msec;
 extern  vmCvar_t pmove_accurate;
 
-extern  vmCvar_t g_alienBuildPoints;
-extern  vmCvar_t g_alienBuildQueueTime;
-extern  vmCvar_t g_humanBuildPoints;
-extern  vmCvar_t g_humanBuildQueueTime;
-extern  vmCvar_t g_humanRepeaterBuildPoints;
-extern  vmCvar_t g_humanRepeaterBuildQueueTime;
-extern  vmCvar_t g_humanRepeaterMaxZones;
+extern  vmCvar_t g_mineRate;
+extern  vmCvar_t g_totalResources;
 extern  vmCvar_t g_humanStage;
 extern  vmCvar_t g_humanCredits;
 extern  vmCvar_t g_humanMaxStage;

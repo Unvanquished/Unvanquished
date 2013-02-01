@@ -631,6 +631,11 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 			shc = SHC_YELLOW;
 			break;
 
+		case BA_A_LEECH:
+			*range = LEECH_RANGE;
+			shc = SHC_INDIGO;
+			break;
+
 		case BA_A_BOOSTER:
 			*range = REGEN_BOOST_RANGE;
 			shc = SHC_GREY;
@@ -651,6 +656,11 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 			shc = SHC_GREEN_CYAN;
 			break;
 
+		case BA_H_DRILL:
+			*range = DRILL_RANGE;
+			shc = SHC_INDIGO;
+			break;
+
 		case BA_H_REACTOR:
 			*range = REACTOR_BASESIZE;
 			shc = SHC_DARK_BLUE;
@@ -660,6 +670,7 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 			*range = REPEATER_BASESIZE;
 			shc = SHC_LIGHT_BLUE;
 			break;
+
 
 		default:
 			return qfalse;

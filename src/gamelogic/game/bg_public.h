@@ -409,6 +409,7 @@ typedef enum
   BA_A_TRAPPER,
   BA_A_BOOSTER,
   BA_A_HIVE,
+  BA_A_LEECH,
 
   BA_H_SPAWN,
 
@@ -418,6 +419,7 @@ typedef enum
   BA_H_ARMOURY,
   BA_H_DCC,
   BA_H_MEDISTAT,
+  BA_H_DRILL,
 
   BA_H_REACTOR,
   BA_H_REPEATER,
