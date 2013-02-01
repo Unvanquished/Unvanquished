@@ -851,13 +851,13 @@ void Con_DrawSolidConsole( void )
 	int    i, x, y;
 	int    rows;
 	int    row;
-//	qhandle_t    conShader;
 	int    currentColor;
 	vec4_t color;
 	float  yVer;
 	float  totalwidth;
 	float  currentWidthLocation = 0;
 	int    vidConsoleHeight;
+	int    animatedConsoleHeight;
 	float  animationDependendAlphaFactor;
 
 	const int margin = con_margin->integer;
@@ -867,12 +867,14 @@ void Con_DrawSolidConsole( void )
 	const int charHeight = SCR_ConsoleFontCharHeight();
 
 	vidConsoleHeight = cls.glconfig.vidHeight * con_height->integer * 0.01;
+	animatedConsoleHeight = consoleHeight;
 
 	animationDependendAlphaFactor = ( con_animationType->integer & ANIMATION_TYPE_FADE) ? consoleState.currentAnimationFraction : 1.0f;
 
 	if ( con_animationType->integer & ANIMATION_TYPE_SCROLL_DOWN)
 	{
 		vidConsoleHeight *= consoleState.currentAnimationFraction;
+		animatedConsoleHeight *= consoleState.currentAnimationFraction;
 	}
 
 	if ( vidConsoleHeight <= 0 )
@@ -908,8 +910,6 @@ void Con_DrawSolidConsole( void )
 	if ( con_useOld->integer )
 	{
 		yVer = 5 + charHeight;
-		y = consoleState.currentAnimationFraction * consoleHeight;
-		SCR_FillRect( 0, 0, SCREEN_WIDTH, y, color );
 	}
 	else
 	{
@@ -917,8 +917,9 @@ void Con_DrawSolidConsole( void )
 		SCR_AdjustFrom640( NULL, &yVer, NULL, NULL );
 		yVer = floor( yVer + 5 + charHeight );
 
-		SCR_FillRect( margin, margin, consoleWidth, consoleHeight, color );
 	}
+
+	SCR_FillRect( margin, margin, consoleWidth, animatedConsoleHeight, color );
 
 	// draw the backgrounds borders
 	color[ 0 ] = con_borderColorRed->value;
@@ -929,13 +930,13 @@ void Con_DrawSolidConsole( void )
 	if (margin)
 	{
 		SCR_FillRect( margin, margin, consoleWidth, con_borderWidth->value, color );  //top
-		SCR_FillRect( margin, margin, con_borderWidth->value, consoleHeight, color );  //left
-		SCR_FillRect( SCREEN_WIDTH - margin, margin, con_borderWidth->value, consoleHeight, color );  //right
-		SCR_FillRect( margin, consoleHeight + margin, consoleWidth + con_borderWidth->value, con_borderWidth->value, color );  //bottom
+		SCR_FillRect( margin, margin, con_borderWidth->value, animatedConsoleHeight, color );  //left
+		SCR_FillRect( SCREEN_WIDTH - margin, margin, con_borderWidth->value, animatedConsoleHeight, color );  //right
+		SCR_FillRect( margin, animatedConsoleHeight + margin, consoleWidth + con_borderWidth->value, con_borderWidth->value, color );  //bottom
 	}
 	else
 	{
-		SCR_FillRect( 0, y, SCREEN_WIDTH, con_borderWidth->value, color );
+		SCR_FillRect( 0, animatedConsoleHeight, SCREEN_WIDTH, con_borderWidth->value, color );
 	}
 
 
