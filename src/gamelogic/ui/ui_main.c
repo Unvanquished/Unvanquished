@@ -4815,16 +4815,25 @@ static int UI_FeederInitialise( int feederID )
 	{
 		int i;
 		char lang[25];
+		char *underscore;
 
 		trap_Cvar_VariableStringBuffer( "language", lang, sizeof( lang ) );
 
-		for ( i = 0; i < uiInfo.numLanguages; i++ )
+		do
 		{
-			if( !Q_stricmp( lang, uiInfo.languages[ i ].lang ) )
+			for ( i = 0; i < uiInfo.numLanguages; i++ )
 			{
-				return i;
+				if( !Q_stricmp( lang, uiInfo.languages[ i ].lang ) )
+				{
+					return i;
+				}
 			}
-		}
+
+			if ( ( underscore = strrchr( lang, '_' ) ) )
+			{
+				*underscore = 0;
+			}
+		} while ( underscore );
 	}
 
 	if ( feederID == FEEDER_VOIPINPUT )
