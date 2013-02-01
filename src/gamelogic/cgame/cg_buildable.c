@@ -656,8 +656,8 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 			shc = SHC_GREEN_CYAN;
 			break;
 
-		case BA_H_MINE:
-			*range = MINE_RANGE;
+		case BA_H_DRILL:
+			*range = DRILL_RANGE;
 			shc = SHC_INDIGO;
 			break;
 

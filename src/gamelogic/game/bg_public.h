@@ -419,7 +419,7 @@ typedef enum
   BA_H_ARMOURY,
   BA_H_DCC,
   BA_H_MEDISTAT,
-  BA_H_MINE,
+  BA_H_DRILL,
 
   BA_H_REACTOR,
   BA_H_REPEATER,

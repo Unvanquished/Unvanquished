@@ -1371,7 +1371,7 @@ void ALeech_Think( gentity_t *self )
 		{
 			rgs = &g_entities[ entityList[ i ] ];
 
-			if ( rgs->s.eType == ET_BUILDABLE &&  ( rgs->s.modelindex == BA_H_MINE || rgs->s.modelindex == BA_A_LEECH ) && rgs != self )
+			if ( rgs->s.eType == ET_BUILDABLE &&  ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH ) && rgs != self )
 			{
 				float factor = Distance( self->s.origin, rgs->s.origin ) / LEECH_RANGE;
 				if ( factor < 1.0f )
@@ -2824,12 +2824,12 @@ void HTeslaGen_Think( gentity_t *self )
 
 /*
 ================
-HMine_Think
+HDrill_Think
 
 Think function for the Alien Leech.
 ================
 */
-void HMine_Think( gentity_t *self )
+void HDrill_Think( gentity_t *self )
 {
 
 	//make sure we have power
@@ -2846,7 +2846,7 @@ void HMine_Think( gentity_t *self )
 	if ( self->spawned && self->powered )
 	{
 		int       entityList[ MAX_GENTITIES ];
-		vec3_t    range = { MINE_RANGE, MINE_RANGE, MINE_RANGE };
+		vec3_t    range = { DRILL_RANGE, DRILL_RANGE, DRILL_RANGE };
 		vec3_t    mins, maxs;
 		int       i, num;
 		float     rate;
@@ -2863,9 +2863,9 @@ void HMine_Think( gentity_t *self )
 		{
 			rgs = &g_entities[ entityList[ i ] ];
 
-			if ( rgs->s.eType == ET_BUILDABLE && ( rgs->s.modelindex == BA_H_MINE || rgs->s.modelindex == BA_A_LEECH ) && rgs != self )
+			if ( rgs->s.eType == ET_BUILDABLE && ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH ) && rgs != self )
 			{
-				float factor = Distance( self->s.origin, rgs->s.origin ) / MINE_RANGE;
+				float factor = Distance( self->s.origin, rgs->s.origin ) / DRILL_RANGE;
 				if ( factor < 1.0f )
 				{
 					rate *= 0.1f / sqrt( -factor + 1 );
@@ -4127,8 +4127,8 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 			built->die = HMedistat_Die;
 			break;
 
-		case BA_H_MINE:
-			built->think = HMine_Think;
+		case BA_H_DRILL:
+			built->think = HDrill_Think;
 			built->die = HSpawn_Die;
 			break;
 

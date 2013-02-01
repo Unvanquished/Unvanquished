@@ -560,13 +560,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define MEDISTAT_SPLASHRADIUS     100
 #define MEDISTAT_VALUE            HBVM(MEDISTAT_BP)
 
-#define MINE_BP               0
-#define MINE_BT               20000
-#define MINE_HEALTH           HBHM(200)
-#define MINE_SPLASHDAMAGE     50
-#define MINE_SPLASHRADIUS     100
-#define MINE_RANGE            500.0f
-#define MINE_VALUE            HBVM(MINE_BP)
+#define DRILL_BP               0
+#define DRILL_BT               20000
+#define DRILL_HEALTH           HBHM(200)
+#define DRILL_SPLASHDAMAGE     50
+#define DRILL_SPLASHRADIUS     100
+#define DRILL_RANGE            500.0f
+#define DRILL_VALUE            HBVM(DRILL_BP)
 
 #define MGTURRET_BP               8
 #define MGTURRET_BT               10000

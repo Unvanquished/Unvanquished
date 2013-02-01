@@ -542,25 +542,25 @@ static const buildableAttributes_t bg_buildableList[] =
 		0.0f, //float    radarFadeOut;
 	},
 	{
-		BA_H_MINE, //int       number;
-		"mine", //char      *name;
-		N_( "Mine" ), //char      *humanName;
-		N_( "A structure that mines" ),
-		"team_human_mine", //char      *entityName;
+		BA_H_DRILL, //int       number;
+		"drill", //char      *name;
+		N_( "Drill" ), //char      *humanName;
+		N_( "A structure that drills for resources" ),
+		"team_human_drill", //char      *entityName;
 		TR_GRAVITY, //trType_t  traj;
 		0.0, //float     bounce;
-		MINE_BP, //int       buildPoints;
+		DRILL_BP, //int       buildPoints;
 		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		MINE_HEALTH, //int       health;
+		DRILL_HEALTH, //int       health;
 		0, //int       regenRate;
-		MINE_SPLASHDAMAGE, //int       splashDamage;
-		MINE_SPLASHRADIUS, //int       splashRadius;
+		DRILL_SPLASHDAMAGE, //int       splashDamage;
+		DRILL_SPLASHRADIUS, //int       splashRadius;
 		MOD_HSPAWN, //int       meansOfDeath;
 		TEAM_HUMANS, //int       team;
 		( 1 << WP_HBUILD ), //weapon_t  buildWeapon;
 		BANIM_IDLE1, //int       idleAnim;
 		500, //int       nextthink;
-		MINE_BT, //int       buildTime;
+		DRILL_BT, //int       buildTime;
 		qfalse, //qboolean  usable;
 		0, //int       turretRange;
 		0, //int       turretFireSpeed;
@@ -572,7 +572,7 @@ static const buildableAttributes_t bg_buildableList[] =
 		qfalse, //qboolean  dccTest;
 		qtrue, //qboolean  transparentTest;
 		qfalse, //qboolean  uniqueTest;
-		MINE_VALUE, //int       value;
+		DRILL_VALUE, //int       value;
 		0.0f, //float    radarFadeOut;
 	},
 	{
