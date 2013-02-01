@@ -378,7 +378,7 @@ void Con_Grep_f( void )
 				// allocate in 16K chunks - more than adequate
 				pbAlloc = ( pbLength + i + 1 + 16383) & ~16383;
 				nb = Z_Malloc( pbAlloc );
-				if( printbuf ) 
+				if( printbuf )
 				{
 					strcpy( nb, printbuf );
 					Z_Free( printbuf );
@@ -390,7 +390,7 @@ void Con_Grep_f( void )
 		}
 	}
 
-	if( printbuf ) 
+	if( printbuf )
 	{
 		char tmpbuf[ MAXPRINTMSG ];
 		int i;
@@ -893,7 +893,7 @@ void Con_DrawSolidConsole( float frac )
 
 	if ( scr_conUseOld->integer )
 	{
-		lines = cls.glconfig.vidHeight * frac;
+		lines = cls.glconfig.vidHeight * frac * scr_conHeight->integer / 50;
 
 		if ( lines <= 0 )
 		{
@@ -902,12 +902,12 @@ void Con_DrawSolidConsole( float frac )
 
 		if ( lines > cls.glconfig.vidHeight )
 		{
-			lines = cls.glconfig.vidHeight;
+			lines = cls.glconfig.vidHeight * scr_conHeight->integer / 50;
 		}
 	}
 	else
 	{
-		lines = cls.glconfig.vidHeight * frac;
+		lines = cls.glconfig.vidHeight * frac * scr_conHeight->integer / 50;
 	}
 	lines += charHeight / ( CONSOLE_FONT_VPADDING + 1 );
 
