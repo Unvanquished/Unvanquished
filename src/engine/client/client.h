@@ -679,16 +679,16 @@ typedef struct
 
 	conChar_t text[ CON_TEXTSIZE ];
 
-	int      current; // line where next message will be printed
+	int      currentLine; // line where next message will be printed
 	int      x; // offset in current line for next print
-	int      display; // bottom of console displays this line
+	int      bottomDisplayedLine; // bottom of console displays this line
 
-	int      linewidth; // characters across screen
-	int      totallines; // total lines in console scrollback
+	int      widthInChars; // characters across screen
+	int      scrollbackLengthInLines; // total lines in console scrollback
 
 	float    xadjust; // for wide aspect screens
 
-	float    displayFrac; // approaches finalFrac at scr_conspeed
+	float    currentAnimationFraction; // changes between 0.0 and finalFrac at scr_conspeed
 	float    finalFrac; // 0.0 to 1.0 lines of console to display
 
 	int      vislines; // in scanlines
@@ -696,7 +696,7 @@ typedef struct
 	int      times[ NUM_CON_TIMES ]; // cls.realtime time the line was generated
 } console_t;
 
-extern console_t con;
+extern console_t consoleState;
 
 void             Con_DrawCharacter( int cx, int line, int num );
 

@@ -42,7 +42,7 @@ int g_console_field_width = 78;
 
 #define CONSOLE_COLOR COLOR_WHITE //COLOR_BLACK
 
-console_t con;
+console_t consoleState;
 
 cvar_t    *con_conspeed;
 cvar_t    *con_notifytime;
@@ -71,17 +71,17 @@ cvar_t    *scr_conHeight;
 #define DEFAULT_CONSOLE_WIDTH 78
 #define MAX_CONSOLE_WIDTH   1024
 
-#define CON_LINE(y) ( ( (y) % con.totallines ) * con.linewidth )
+#define CON_LINE(line) ( ( (line) % consoleState.scrollbackLengthInLines ) * consoleState.widthInChars )
 
 // Buffer used by line-to-string code. Implementation detail.
 static char lineString[ MAX_CONSOLE_WIDTH * 6 + 4 ];
 
 static const char *Con_LineToString( int lineno, qboolean lf )
 {
-	const conChar_t *line = con.text + CON_LINE( lineno );
+	const conChar_t *line = consoleState.text + CON_LINE( lineno );
 	int              s, d;
 
-	for ( s = d = 0; line[ s ].ch && s < con.linewidth; ++s )
+	for ( s = d = 0; line[ s ].ch && s < consoleState.widthInChars; ++s )
 	{
 		if ( line[ s ].ch < 0x80 )
 		{
@@ -105,10 +105,10 @@ static const char *Con_LineToString( int lineno, qboolean lf )
 
 static const char *Con_LineToColouredString( int lineno, qboolean lf )
 {
-	const conChar_t *line = con.text + CON_LINE( lineno );
+	const conChar_t *line = consoleState.text + CON_LINE( lineno );
 	int              s, d, colour = 7;
 
-	for ( s = d = 0; line[ s ].ch && s < con.linewidth; ++s )
+	for ( s = d = 0; line[ s ].ch && s < consoleState.widthInChars; ++s )
 	{
 		if ( line[ s ].ink != colour )
 		{
@@ -182,7 +182,7 @@ static INLINE void Con_Clear( void )
 
 	for ( i = 0; i < CON_TEXTSIZE; ++i )
 	{
-		con.text[i] = fill;
+		consoleState.text[i] = fill;
 	}
 }
 
@@ -240,16 +240,16 @@ void Con_Dump_f( void )
 	}
 
 	// skip empty lines
-	for ( l = con.current - con.totallines + 1; l <= con.current; l++ )
+	for ( l = consoleState.currentLine - consoleState.scrollbackLengthInLines + 1; l <= consoleState.currentLine; l++ )
 	{
-		if ( con.text[ CON_LINE( l ) ].ch )
+		if ( consoleState.text[ CON_LINE( l ) ].ch )
 		{
 			break;
 		}
 	}
 
 	// write the remaining lines
-	for ( ; l <= con.current; l++ )
+	for ( ; l <= consoleState.currentLine; l++ )
 	{
 		const char *buffer = Con_LineToString( l, qtrue );
 		FS_Write( buffer, strlen( buffer ), f );
@@ -280,7 +280,7 @@ void Con_Search_f( void )
 	direction = Q_stricmp( Cmd_Argv( 0 ), "searchDown" ) ? -1 : 1;
 
 	// check the lines
-	for ( l = con.display - 1 + direction; l <= con.current && con.current - l < con.totallines; l += direction )
+	for ( l = consoleState.bottomDisplayedLine - 1 + direction; l <= consoleState.currentLine && consoleState.currentLine - l < consoleState.scrollbackLengthInLines; l += direction )
 	{
 		const char *buffer = Con_LineToString( l, qtrue );
 
@@ -289,11 +289,11 @@ void Con_Search_f( void )
 		{
 			if ( Q_stristr( buffer, Cmd_Argv( i ) ) )
 			{
-				con.display = l + 1;
+				consoleState.bottomDisplayedLine = l + 1;
 
-				if ( con.display > con.current )
+				if ( consoleState.bottomDisplayedLine > consoleState.currentLine )
 				{
-					con.display = con.current;
+					consoleState.bottomDisplayedLine = consoleState.currentLine;
 				}
 
 				return;
@@ -324,9 +324,9 @@ void Con_Grep_f( void )
 	}
 
 	// skip empty lines
-	for ( l = con.current - con.totallines + 1; l <= con.current; l++ )
+	for ( l = consoleState.currentLine - consoleState.scrollbackLengthInLines + 1; l <= consoleState.currentLine; l++ )
 	{
-		if ( con.text[ CON_LINE( l ) ].ch )
+		if ( consoleState.text[ CON_LINE( l ) ].ch )
 		{
 			break;
 		}
@@ -336,7 +336,7 @@ void Con_Grep_f( void )
 	search = Cmd_Argv( 1 );
 	lastcolor = 7;
 
-	for ( ; l <= con.current; l++ )
+	for ( ; l <= consoleState.currentLine; l++ )
 	{
 		const char *buffer = Con_LineToString( l, qfalse );
 
@@ -392,7 +392,7 @@ void Con_ClearNotify( void )
 
 	for ( i = 0; i < NUM_CON_TIMES; i++ )
 	{
-		con.times[ i ] = 0;
+		consoleState.times[ i ] = 0;
 	}
 }
 
@@ -428,57 +428,57 @@ void Con_CheckResize( void )
 		width = 0;
 	}
 
-	if ( width == con.linewidth )
+	if ( width == consoleState.widthInChars )
 	{
 		// nothing
 	}
 	else if ( width < 1 ) // video hasn't been initialized yet
 	{
 		width = DEFAULT_CONSOLE_WIDTH;
-		con.linewidth = width;
-		con.totallines = CON_TEXTSIZE / con.linewidth;
+		consoleState.widthInChars = width;
+		consoleState.scrollbackLengthInLines = CON_TEXTSIZE / consoleState.widthInChars;
 		Con_Clear();
 
-		con.current = con.totallines - 1;
-		con.display = con.current;
+		consoleState.currentLine = consoleState.scrollbackLengthInLines - 1;
+		consoleState.bottomDisplayedLine = consoleState.currentLine;
 	}
 	else
 	{
-		SCR_AdjustFrom640( &con.xadjust, NULL, NULL, NULL );
+		SCR_AdjustFrom640( &consoleState.xadjust, NULL, NULL, NULL );
 
-		oldwidth = con.linewidth;
-		con.linewidth = width;
-		oldtotallines = con.totallines;
-		con.totallines = CON_TEXTSIZE / con.linewidth;
+		oldwidth = consoleState.widthInChars;
+		consoleState.widthInChars = width;
+		oldtotallines = consoleState.scrollbackLengthInLines;
+		consoleState.scrollbackLengthInLines = CON_TEXTSIZE / consoleState.widthInChars;
 		numlines = oldtotallines;
 
-		if ( con.totallines < numlines )
+		if ( consoleState.scrollbackLengthInLines < numlines )
 		{
-			numlines = con.totallines;
+			numlines = consoleState.scrollbackLengthInLines;
 		}
 
 		numchars = oldwidth;
 
-		if ( con.linewidth < numchars )
+		if ( consoleState.widthInChars < numchars )
 		{
-			numchars = con.linewidth;
+			numchars = consoleState.widthInChars;
 		}
 
-		Com_Memcpy( buf, con.text, sizeof( con.text ) );
+		Com_Memcpy( buf, consoleState.text, sizeof( consoleState.text ) );
 		Con_Clear();
 
 		for ( i = 0; i < numlines; i++ )
 		{
-			memcpy( con.text + ( con.totallines - 1 - i ) * con.linewidth,
-			        buf + ( ( con.current - i + oldtotallines ) % oldtotallines ) * oldwidth,
+			memcpy( consoleState.text + ( consoleState.scrollbackLengthInLines - 1 - i ) * consoleState.widthInChars,
+			        buf + ( ( consoleState.currentLine - i + oldtotallines ) % oldtotallines ) * oldwidth,
 			        numchars * sizeof( conChar_t ) );
 		}
 
-		con.current = con.totallines - 1;
-		con.display = con.current;
+		consoleState.currentLine = consoleState.scrollbackLengthInLines - 1;
+		consoleState.bottomDisplayedLine = consoleState.currentLine;
 	}
 
-	g_console_field_width = g_consoleField.widthInChars = con.linewidth - 7 - ( cl_consolePrompt ? Q_UTF8Strlen( cl_consolePrompt->string ) : 0 );
+	g_console_field_width = g_consoleField.widthInChars = consoleState.widthInChars - 7 - ( cl_consolePrompt ? Q_UTF8Strlen( cl_consolePrompt->string ) : 0 );
 }
 
 /*
@@ -538,23 +538,23 @@ void Con_Linefeed( qboolean skipnotify )
 	const conChar_t blank = { 0, ColorIndex( CONSOLE_COLOR ) };
 
 	// mark time for transparent overlay
-	if ( con.current >= 0 )
+	if ( consoleState.currentLine >= 0 )
 	{
-		con.times[ con.current % NUM_CON_TIMES ] = skipnotify ? 0 : cls.realtime;
+		consoleState.times[ consoleState.currentLine % NUM_CON_TIMES ] = skipnotify ? 0 : cls.realtime;
 	}
 
-	con.x = 0;
+	consoleState.x = 0;
 
-	if ( con.display == con.current )
+	if ( consoleState.bottomDisplayedLine == consoleState.currentLine )
 	{
-		con.display++;
+		consoleState.bottomDisplayedLine++;
 	}
 
-	con.current++;
+	consoleState.currentLine++;
 
-	line = con.text + CON_LINE( con.current );
+	line = consoleState.text + CON_LINE( consoleState.currentLine );
 
-	for ( i = 0; i < con.linewidth; ++i )
+	for ( i = 0; i < consoleState.widthInChars; ++i )
 	{
 		line[ i ] = blank;
 	}
@@ -594,11 +594,11 @@ void CL_ConsolePrint( char *txt )
 		return;
 	}
 
-	if ( !con.initialized )
+	if ( !consoleState.initialized )
 	{
-		con.linewidth = -1;
+		consoleState.widthInChars = -1;
 		Con_CheckResize();
-		con.initialized = qtrue;
+		consoleState.initialized = qtrue;
 	}
 
 	if ( !skipnotify && !( cls.keyCatchers & KEYCATCH_CONSOLE ) && strncmp( txt, "EXCL: ", 6 ) )
@@ -622,7 +622,7 @@ void CL_ConsolePrint( char *txt )
 		}
 
 		// count word length
-		for ( i = l = 0; l < con.linewidth; ++l )
+		for ( i = l = 0; l < consoleState.widthInChars; ++l )
 		{
 			if ( txt[ i ] <= ' ' && txt[ i ] >= 0 )
 			{
@@ -638,7 +638,7 @@ void CL_ConsolePrint( char *txt )
 		}
 
 		// word wrap
-		if ( l != con.linewidth && ( con.x + l >= con.linewidth ) )
+		if ( l != consoleState.widthInChars && ( consoleState.x + l >= consoleState.widthInChars ) )
 		{
 			Con_Linefeed( skipnotify );
 		}
@@ -650,7 +650,7 @@ void CL_ConsolePrint( char *txt )
 				break;
 
 			case '\r':
-				con.x = 0;
+				consoleState.x = 0;
 				break;
 
 			case Q_COLOR_ESCAPE:
@@ -660,17 +660,17 @@ void CL_ConsolePrint( char *txt )
 				}
 
 			default: // display character and advance
-				y = con.current % con.totallines;
+				y = consoleState.currentLine % consoleState.scrollbackLengthInLines;
 				// rain - sign extension caused the character to carry over
 				// into the color info for high ascii chars; casting c to unsigned
-				con.text[ y * con.linewidth + con.x ].ch = Q_UTF8CodePoint( txt );
-				con.text[ y * con.linewidth + con.x ].ink = color;
-				++con.x;
+				consoleState.text[ y * consoleState.widthInChars + consoleState.x ].ch = Q_UTF8CodePoint( txt );
+				consoleState.text[ y * consoleState.widthInChars + consoleState.x ].ink = color;
+				++consoleState.x;
 
-				if ( con.x >= con.linewidth )
+				if ( consoleState.x >= consoleState.widthInChars )
 				{
 					Con_Linefeed( skipnotify );
-					con.x = 0;
+					consoleState.x = 0;
 				}
 
 				break;
@@ -680,24 +680,24 @@ void CL_ConsolePrint( char *txt )
 	}
 
 	// mark time for transparent overlay
-	if ( con.current >= 0 )
+	if ( consoleState.currentLine >= 0 )
 	{
 		// NERVE - SMF
 		if ( skipnotify )
 		{
-			prev = con.current % NUM_CON_TIMES - 1;
+			prev = consoleState.currentLine % NUM_CON_TIMES - 1;
 
 			if ( prev < 0 )
 			{
 				prev = NUM_CON_TIMES - 1;
 			}
 
-			con.times[ prev ] = 0;
+			consoleState.times[ prev ] = 0;
 		}
 		else
 		{
 			// -NERVE - SMF
-			con.times[ con.current % NUM_CON_TIMES ] = cls.realtime;
+			consoleState.times[ consoleState.currentLine % NUM_CON_TIMES ] = cls.realtime;
 		}
 	}
 }
@@ -735,19 +735,19 @@ void Con_DrawInput( void )
 
 	Com_RealTime( &realtime );
 
-	y = con.vislines - ( SCR_ConsoleFontCharHeight() * 2 ) + 2;
+	y = consoleState.vislines - ( SCR_ConsoleFontCharHeight() * 2 ) + 2;
 
 	Com_sprintf( prompt,  sizeof( prompt ), "^0[^3%02d%c%02d^0]^7 %s", realtime.tm_hour, ( realtime.tm_sec & 1 ) ? ':' : ' ', realtime.tm_min, cl_consolePrompt->string );
 
 	color[ 0 ] = 1.0f;
 	color[ 1 ] = 1.0f;
 	color[ 2 ] = 1.0f;
-	color[ 3 ] = ( scr_conUseOld->integer ? 1.0f : con.displayFrac * 2.0f );
+	color[ 3 ] = ( scr_conUseOld->integer ? 1.0f : consoleState.currentAnimationFraction * 2.0f );
 
-	SCR_DrawSmallStringExt( con.xadjust + cl_conXOffset->integer, y + 10, prompt, color, qfalse, qfalse );
+	SCR_DrawSmallStringExt( consoleState.xadjust + cl_conXOffset->integer, y + 10, prompt, color, qfalse, qfalse );
 
 	Q_CleanStr( prompt );
-	Field_Draw( &g_consoleField, con.xadjust + cl_conXOffset->integer + SCR_ConsoleFontStringWidth( prompt, strlen( prompt ) ), y + 10, qtrue, qtrue, color[ 3 ] );
+	Field_Draw( &g_consoleField, consoleState.xadjust + cl_conXOffset->integer + SCR_ConsoleFontStringWidth( prompt, strlen( prompt ) ), y + 10, qtrue, qtrue, color[ 3 ] );
 }
 
 /*
@@ -772,14 +772,14 @@ void Con_DrawNotify( void )
 
 	v = 0;
 
-	for ( i = con.current - NUM_CON_TIMES + 1; i <= con.current; i++ )
+	for ( i = consoleState.currentLine - NUM_CON_TIMES + 1; i <= consoleState.currentLine; i++ )
 	{
 		if ( i < 0 )
 		{
 			continue;
 		}
 
-		time = con.times[ i % NUM_CON_TIMES ];
+		time = consoleState.times[ i % NUM_CON_TIMES ];
 
 		if ( time == 0 )
 		{
@@ -793,14 +793,14 @@ void Con_DrawNotify( void )
 			continue;
 		}
 
-		text = con.text + CON_LINE( i );
+		text = consoleState.text + CON_LINE( i );
 
 		if ( cl.snap.ps.pm_type != PM_INTERMISSION && cls.keyCatchers & ( KEYCATCH_UI | KEYCATCH_CGAME ) )
 		{
 			continue;
 		}
 
-		for ( x = 0; x < con.linewidth && text[ x ].ch; ++x )
+		for ( x = 0; x < consoleState.widthInChars && text[ x ].ch; ++x )
 		{
 			if ( text[ x ].ch == ' ' )
 			{
@@ -813,7 +813,7 @@ void Con_DrawNotify( void )
 				re.SetColor( g_color_table[ currentColor ] );
 			}
 
-			SCR_DrawSmallUnichar( cl_conXOffset->integer + con.xadjust + ( x + 1 ) * SMALLCHAR_WIDTH, v, text[ x ].ch );
+			SCR_DrawSmallUnichar( cl_conXOffset->integer + consoleState.xadjust + ( x + 1 ) * SMALLCHAR_WIDTH, v, text[ x ].ch );
 		}
 
 		v += SMALLCHAR_HEIGHT;
@@ -850,7 +850,7 @@ Con_DrawSolidConsole
 Draws the console with the solid background
 ================
 */
-void Con_DrawSolidConsole( float frac )
+void Con_DrawSolidConsole( float currentAnimationFraction )
 {
 	int    i, x, y;
 	int    rows;
@@ -867,7 +867,7 @@ void Con_DrawSolidConsole( float frac )
 
 	if ( scr_conUseOld->integer )
 	{
-		lines = cls.glconfig.vidHeight * frac;
+		lines = cls.glconfig.vidHeight * currentAnimationFraction;
 
 		if ( lines <= 0 )
 		{
@@ -881,27 +881,27 @@ void Con_DrawSolidConsole( float frac )
 	}
 	else
 	{
-		lines = cls.glconfig.vidHeight * frac;
+		lines = cls.glconfig.vidHeight * currentAnimationFraction;
 	}
 	lines += charHeight / ( CONSOLE_FONT_VPADDING + 1 );
 
 	// on wide screens, we will center the text
 	if (!scr_conUseOld->integer)
 	{
-		con.xadjust = 15;
+		consoleState.xadjust = 15;
 	}
 	else
 	{
-		con.xadjust = 0;
+		consoleState.xadjust = 0;
 	}
 
-	SCR_AdjustFrom640 (&con.xadjust, NULL, NULL, NULL);
+	SCR_AdjustFrom640 (&consoleState.xadjust, NULL, NULL, NULL);
 
 	// draw the background
 	if ( scr_conUseOld->integer )
 	{
 		yVer = 5 + charHeight;
-		y = frac * SCREEN_HEIGHT;
+		y = currentAnimationFraction * SCREEN_HEIGHT;
 
 		if ( y < 1 )
 		{
@@ -941,13 +941,13 @@ void Con_DrawSolidConsole( float frac )
 		color[ 0 ] = scr_conColorRed->value;
 		color[ 1 ] = scr_conColorGreen->value;
 		color[ 2 ] = scr_conColorBlue->value;
-		color[ 3 ] = ( frac / con.finalFrac ) * 2 * scr_conColorAlpha->value;
+		color[ 3 ] = ( currentAnimationFraction / consoleState.finalFrac ) * 2 * scr_conColorAlpha->value;
 		SCR_FillRect( 10, 10, 620, 460 * scr_conHeight->integer * 0.01, color );
 
 		color[ 0 ] = scr_conBarColorRed->value;
 		color[ 1 ] = scr_conBarColorGreen->value;
 		color[ 2 ] = scr_conBarColorBlue->value;
-		color[ 3 ] = ( frac / con.finalFrac ) * 2 * scr_conBarColorAlpha->value;
+		color[ 3 ] = ( currentAnimationFraction / consoleState.finalFrac ) * 2 * scr_conBarColorAlpha->value;
 		SCR_FillRect( 10, 10, 620, 1, color );  //top
 		SCR_FillRect( 10, 460 * scr_conHeight->integer * 0.01 + 10, 621, 1, color );  //bottom
 		SCR_FillRect( 10, 10, 1, 460 * scr_conHeight->integer * 0.01, color );  //left
@@ -959,7 +959,7 @@ void Con_DrawSolidConsole( float frac )
 	color[ 0 ] = 1.0f;
 	color[ 1 ] = 1.0f;
 	color[ 2 ] = 1.0f;
-	color[ 3 ] = ( scr_conUseOld->integer ? 0.75f : ( frac / con.finalFrac ) * 0.75f );
+	color[ 3 ] = ( scr_conUseOld->integer ? 0.75f : ( currentAnimationFraction / consoleState.finalFrac ) * 0.75f );
 	re.SetColor( color );
 
 	i = strlen( Q3_VERSION );
@@ -1002,7 +1002,7 @@ void Con_DrawSolidConsole( float frac )
 	Con_DrawInput();
 
 	// draw the text
-	con.vislines = lines;
+	consoleState.vislines = lines;
 	rows = ( lines ) / SCR_ConsoleFontCharHeight() - 3; // rows of text to draw
 
 	if ( scr_conUseOld->integer )
@@ -1013,7 +1013,7 @@ void Con_DrawSolidConsole( float frac )
 	y = lines - ( SCR_ConsoleFontCharHeight() * 3 ) + 10;
 
 	// draw from the bottom up
-	if ( con.display != con.current )
+	if ( consoleState.bottomDisplayedLine != consoleState.currentLine )
 	{
 		// draw arrows to show the buffer is backscrolled
 		const int hatWidth = SCR_ConsoleFontUnicharWidth( '^' );
@@ -1021,21 +1021,21 @@ void Con_DrawSolidConsole( float frac )
 		color[ 0 ] = 1.0f;
 		color[ 1 ] = 0.0f;
 		color[ 2 ] = 0.0f;
-		color[ 3 ] = ( scr_conUseOld->integer ? 1.0f : ( frac / con.finalFrac ) * 2.0f );
+		color[ 3 ] = ( scr_conUseOld->integer ? 1.0f : ( currentAnimationFraction / consoleState.finalFrac ) * 2.0f );
 		re.SetColor( color );
 
-		for ( x = 0; x < con.linewidth - ( scr_conUseOld->integer ? 0 : 4 ); x += 4 )
+		for ( x = 0; x < consoleState.widthInChars - ( scr_conUseOld->integer ? 0 : 4 ); x += 4 )
 		{
-			SCR_DrawConsoleFontUnichar( con.xadjust + ( x + 1 ) * hatWidth, y, '^' );
+			SCR_DrawConsoleFontUnichar( consoleState.xadjust + ( x + 1 ) * hatWidth, y, '^' );
 		}
 
 		y -= charHeight;
 		rows--;
 	}
 
-	row = con.display;
+	row = consoleState.bottomDisplayedLine;
 
-	if ( con.x == 0 )
+	if ( consoleState.x == 0 )
 	{
 		row--;
 	}
@@ -1044,7 +1044,7 @@ void Con_DrawSolidConsole( float frac )
 	color[ 0 ] = g_color_table[ currentColor ][ 0 ];
 	color[ 1 ] = g_color_table[ currentColor ][ 1 ];
 	color[ 2 ] = g_color_table[ currentColor ][ 2 ];
-	color[ 3 ] = ( scr_conUseOld->integer ? 1.0f : ( frac / con.finalFrac ) * 2.0f );
+	color[ 3 ] = ( scr_conUseOld->integer ? 1.0f : ( currentAnimationFraction / consoleState.finalFrac ) * 2.0f );
 	re.SetColor( color );
 
 	for ( i = 0; i < rows; i++, y -= charHeight, row-- )
@@ -1056,17 +1056,17 @@ void Con_DrawSolidConsole( float frac )
 			break;
 		}
 
-		if ( con.current - row >= con.totallines )
+		if ( consoleState.currentLine - row >= consoleState.scrollbackLengthInLines )
 		{
 			// past scrollback wrap point
 			continue;
 		}
 
-		text = con.text + CON_LINE( row );
+		text = consoleState.text + CON_LINE( row );
 
 		currentWidthLocation = cl_conXOffset->integer;
 
-		for ( x = 0; x < con.linewidth && text[x].ch; ++x )
+		for ( x = 0; x < consoleState.widthInChars && text[x].ch; ++x )
 		{
 			if ( text[ x ].ink != currentColor )
 			{
@@ -1078,7 +1078,7 @@ void Con_DrawSolidConsole( float frac )
 				re.SetColor( color );
 			}
 
-			SCR_DrawConsoleFontUnichar( con.xadjust + currentWidthLocation, y, text[ x ].ch );
+			SCR_DrawConsoleFontUnichar( consoleState.xadjust + currentWidthLocation, y, text[ x ].ch );
 			currentWidthLocation += SCR_ConsoleFontUnicharWidth( text[ x ].ch );
 		}
 	}
@@ -1108,9 +1108,9 @@ void Con_DrawConsole( void )
 		}
 	}
 
-	if ( con.displayFrac )
+	if ( consoleState.currentAnimationFraction )
 	{
-		Con_DrawSolidConsole( con.displayFrac );
+		Con_DrawSolidConsole( consoleState.currentAnimationFraction );
 	}
 	else
 	{
@@ -1138,72 +1138,72 @@ void Con_RunConsole( void )
 	{
 		if ( scr_conUseOld->integer )
 		{
-			con.finalFrac = MAX( 0.10, 0.01 * scr_conHeight->integer );  // configured console percentage
+			consoleState.finalFrac = MAX( 0.10, 0.01 * scr_conHeight->integer );  // configured console percentage
 		}
 		else
 		{
-			con.finalFrac = scr_conHeight->integer * .01;
+			consoleState.finalFrac = scr_conHeight->integer * .01;
 		}
 	}
 	else
 	{
-		con.finalFrac = 0; // none visible
+		consoleState.finalFrac = 0; // none visible
 	}
 
 	// scroll towards the destination height
-	if ( con.finalFrac < con.displayFrac )
+	if ( consoleState.finalFrac < consoleState.currentAnimationFraction )
 	{
-		con.displayFrac -= con_conspeed->value * cls.realFrametime * 0.001;
+		consoleState.currentAnimationFraction -= con_conspeed->value * cls.realFrametime * 0.001;
 
-		if ( con.finalFrac > con.displayFrac )
+		if ( consoleState.finalFrac > consoleState.currentAnimationFraction )
 		{
-			con.displayFrac = con.finalFrac;
+			consoleState.currentAnimationFraction = consoleState.finalFrac;
 		}
 	}
-	else if ( con.finalFrac > con.displayFrac )
+	else if ( consoleState.finalFrac > consoleState.currentAnimationFraction )
 	{
-		con.displayFrac += con_conspeed->value * cls.realFrametime * 0.001;
+		consoleState.currentAnimationFraction += con_conspeed->value * cls.realFrametime * 0.001;
 
-		if ( con.finalFrac < con.displayFrac )
+		if ( consoleState.finalFrac < consoleState.currentAnimationFraction )
 		{
-			con.displayFrac = con.finalFrac;
+			consoleState.currentAnimationFraction = consoleState.finalFrac;
 		}
 	}
 }
 
 void Con_PageUp( void )
 {
-	con.display -= 2;
+	consoleState.bottomDisplayedLine -= 2;
 
-	if ( con.current - con.display >= con.totallines )
+	if ( consoleState.currentLine - consoleState.bottomDisplayedLine >= consoleState.scrollbackLengthInLines )
 	{
-		con.display = con.current - con.totallines + 1;
+		consoleState.bottomDisplayedLine = consoleState.currentLine - consoleState.scrollbackLengthInLines + 1;
 	}
 }
 
 void Con_PageDown( void )
 {
-	con.display += 2;
+	consoleState.bottomDisplayedLine += 2;
 
-	if ( con.display > con.current )
+	if ( consoleState.bottomDisplayedLine > consoleState.currentLine )
 	{
-		con.display = con.current;
+		consoleState.bottomDisplayedLine = consoleState.currentLine;
 	}
 }
 
 void Con_Top( void )
 {
-	con.display = con.totallines;
+	consoleState.bottomDisplayedLine = consoleState.scrollbackLengthInLines;
 
-	if ( con.current - con.display >= con.totallines )
+	if ( consoleState.currentLine - consoleState.bottomDisplayedLine >= consoleState.scrollbackLengthInLines )
 	{
-		con.display = con.current - con.totallines + 1;
+		consoleState.bottomDisplayedLine = consoleState.currentLine - consoleState.scrollbackLengthInLines + 1;
 	}
 }
 
 void Con_Bottom( void )
 {
-	con.display = con.current;
+	consoleState.bottomDisplayedLine = consoleState.currentLine;
 }
 
 void Con_Close( void )
@@ -1216,6 +1216,6 @@ void Con_Close( void )
 	Field_Clear( &g_consoleField );
 	Con_ClearNotify();
 	cls.keyCatchers &= ~KEYCATCH_CONSOLE;
-	con.finalFrac = 0; // none visible
-	con.displayFrac = 0;
+	consoleState.finalFrac = 0; // none visible
+	consoleState.currentAnimationFraction = 0;
 }
