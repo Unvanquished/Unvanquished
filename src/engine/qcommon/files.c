@@ -441,6 +441,11 @@ int FS_filelength( fileHandle_t f )
 	int end;
 	FILE *h;
 
+	if ( fsh[ f ].zipFile )
+	{
+		return fsh[ f ].fileSize;
+	}
+
 	h = FS_FileForHandle( f );
 	pos = ftell( h );
 	fseek( h, 0, SEEK_END );
