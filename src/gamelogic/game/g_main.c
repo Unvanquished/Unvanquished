@@ -1809,7 +1809,7 @@ void FindIntermissionPoint( void )
 		// if it has a target, look towards it
 		if ( ent->targets[ 0 ] )
 		{
-			target = G_PickTarget( ent );
+			target = G_PickTargetFor( ent );
 
 			if ( target )
 			{

@@ -203,19 +203,19 @@ gentity_t *G_Find( gentity_t *from, int fieldofs, const char *match )
 	return NULL;
 }
 
-gentity_t *G_TargetFind(gentity_t *targ, int *tIx, int *tnIx, gentity_t *self)
+gentity_t *G_TargetFind(gentity_t *target, int *targetIndex, int *targetNameIndex, gentity_t *self)
 {
-	if (targ)
+	if (target)
 		goto cont;
 
-	for (*tIx = 0; self->targets[*tIx]; ++(*tIx))
+	for (*targetIndex = 0; self->targets[*targetIndex]; ++(*targetIndex))
 	{
-		for( targ = &g_entities[ 0 ]; targ < &g_entities[ level.num_entities ]; ++targ )
+		for( target = &g_entities[ 0 ]; target < &g_entities[ level.num_entities ]; ++target )
 		{
-			for (*tnIx = 0; targ->targetnames[*tnIx]; ++(*tnIx))
+			for (*targetNameIndex = 0; target->targetnames[*targetNameIndex]; ++(*targetNameIndex))
 			{
-				if (!Q_stricmp(self->targets[*tIx], targ->targetnames[*tnIx]))
-					return targ;
+				if (!Q_stricmp(self->targets[*targetIndex], target->targetnames[*targetNameIndex]))
+					return target;
 				cont: ;
 			}
 		}
@@ -232,27 +232,28 @@ Selects a random entity from among the targets
 */
 #define MAXCHOICES 32
 
-//gentity_t *G_PickTarget( const char *targetname )
-gentity_t *G_PickTarget( gentity_t *self )
+gentity_t *G_PickTargetFor( gentity_t *self )
 {
 	int       i, j;
-	gentity_t *t = NULL;
-	int       num_choices = 0;
-	gentity_t *choice[ MAX_GENTITIES ];
+	gentity_t *foundTarget = NULL;
+	int       totalChoiceCount = 0;
+	gentity_t *choices[ MAX_GENTITIES ];
 
-	while( ( t = G_TargetFind( t, &i, &j, self ) ) != NULL )
-		choice[ num_choices++ ] = t;
+	//collects the targets
+	while( ( foundTarget = G_TargetFind( foundTarget, &i, &j, self ) ) != NULL )
+		choices[ totalChoiceCount++ ] = foundTarget;
 
-	if ( !num_choices )
+	if ( !totalChoiceCount )
 	{
-		G_Printf( "G_PickTarget: none of the following targets were found:" );
+		G_Printf( "G_PickTargetFor: none of the following targets were found:" );
 		for( i = 0; self->targets[ i ]; ++i )
 		  G_Printf( "%s %s", ( i == 0 ? "" : "," ), self->targets[ i ] );
 		G_Printf( "\n" );
 		return NULL;
 	}
 
-	return choice[ rand() / ( RAND_MAX / num_choices + 1 ) ];
+	//return a random one from among the choices
+	return choices[ rand() / ( RAND_MAX / totalChoiceCount + 1 ) ];
 }
 
 /*

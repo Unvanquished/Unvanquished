@@ -240,7 +240,7 @@ void target_teleporter_use( gentity_t *self, gentity_t *other, gentity_t *activa
 		return;
 	}
 
-	dest = G_PickTarget( self );
+	dest = G_PickTargetFor( self );
 
 	if ( !dest )
 	{
@@ -291,7 +291,7 @@ void target_relay_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 	{
 		gentity_t *ent;
 
-		ent = G_PickTarget( self );
+		ent = G_PickTargetFor( self );
 
 		if ( ent && ent->use )
 		{
