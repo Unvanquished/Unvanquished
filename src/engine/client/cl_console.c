@@ -485,7 +485,7 @@ void Con_Init( void )
 
 	con_prompt = Cvar_Get( "con_prompt", "^3->", CVAR_ARCHIVE );
 
-	con_margin = Cvar_Get( "con_margin", "10", CVAR_ARCHIVE );
+	con_margin = Cvar_Get( "con_margin", "22", CVAR_ARCHIVE );
 
 	con_height = Cvar_Get( "con_height", "50", CVAR_ARCHIVE );
 	con_colorRed = Cvar_Get( "con_colorRed", "0", CVAR_ARCHIVE );
@@ -789,6 +789,10 @@ void Con_DrawAboutText( void )
 	float currentWidthLocation = 0;
 
 	const int charHeight = SCR_ConsoleFontCharHeight();
+	const int positionFromTop =	consoleState.verticalVidMargin
+								+ consoleState.verticalVidPadding
+								+ con_borderWidth->integer
+								+ charHeight;
 
 	// draw the version number
 	color[ 0 ] = 1.0f;
@@ -805,7 +809,7 @@ void Con_DrawAboutText( void )
 	for ( x = 0; x < i; x++ )
 	{
 		int ch = Q_UTF8CodePoint( &Q3_VERSION[ x ] );
-		SCR_DrawConsoleFontUnichar( currentWidthLocation, consoleState.verticalVidMargin + consoleState.verticalVidPadding, ch );
+		SCR_DrawConsoleFontUnichar( currentWidthLocation, positionFromTop, ch );
 		currentWidthLocation += SCR_ConsoleFontUnicharWidth( ch );
 	}
 
@@ -818,7 +822,7 @@ void Con_DrawAboutText( void )
 	for ( x = 0; x < i; x++ )
 	{
 		int ch = Q_UTF8CodePoint( &Q3_ENGINE[ x ] );
-		SCR_DrawConsoleFontUnichar( currentWidthLocation, consoleState.verticalVidMargin + consoleState.verticalVidPadding + charHeight, ch );
+		SCR_DrawConsoleFontUnichar( currentWidthLocation, positionFromTop + charHeight, ch );
 		currentWidthLocation += SCR_ConsoleFontUnicharWidth( ch );
 	}
 }
@@ -856,7 +860,7 @@ void Con_DrawConsoleContent( int currentConsoleVidHeight )
 {
 	float  currentWidthLocation = 0;
 	int    i, x, lineDrawPosition;
-	int    rows;
+	int    visibleAmountOfLines;
 	int    row;
 	int    currentColor;
 	vec4_t color;
@@ -867,13 +871,12 @@ void Con_DrawConsoleContent( int currentConsoleVidHeight )
 	lineDrawPosition = currentConsoleVidHeight
 			+ consoleState.verticalVidMargin
 			- consoleState.verticalVidPadding
-			+ charHeight
 			- 2 * con_borderWidth->integer;
 
 	// draw the text
-	rows = currentConsoleVidHeight - 2 * consoleState.verticalVidPadding;
-	rows /= charHeight; //rowheight in pixel -> amount of rows
-	rows++; //counting the first line too
+	visibleAmountOfLines = currentConsoleVidHeight - 2 * consoleState.verticalVidPadding;
+	visibleAmountOfLines /= charHeight; //rowheight in pixel -> amount of rows
+	visibleAmountOfLines--;
 
 	// draw the input prompt, user text, and cursor if desired
 	// moved back here (have observed render issues to do with time taken)
@@ -886,7 +889,7 @@ void Con_DrawConsoleContent( int currentConsoleVidHeight )
 		// draw arrows to show the buffer is backscrolled
 		Con_DrawConsoleScrollbackIndicator( lineDrawPosition );
 		lineDrawPosition -= charHeight;
-		rows--;
+		visibleAmountOfLines--;
 	}
 
 	row = consoleState.bottomDisplayedLine;
@@ -903,7 +906,7 @@ void Con_DrawConsoleContent( int currentConsoleVidHeight )
 	color[ 3 ] = consoleState.currentAlphaFactor;
 	re.SetColor( color );
 
-	for ( i = 0; i < rows; i++, lineDrawPosition -= charHeight, row-- )
+	for ( i = 0; i < visibleAmountOfLines; i++, lineDrawPosition -= charHeight, row-- )
 	{
 		conChar_t *text;
 
@@ -973,7 +976,7 @@ void Con_DrawAnimatedConsole( void )
 
 	consoleState.verticalVidMargin = vidYMargin;
 	consoleState.horizontalVidMargin = vidXMargin;
-	consoleState.verticalVidPadding = floor( vidYMargin * 0.3f + charHeight );
+	consoleState.verticalVidPadding = floor( vidYMargin * 0.3f );
 
 	// on wide screens, this will lead to somewhat of a centering of the text
 	if(con_horizontalPadding->integer)
