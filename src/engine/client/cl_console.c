@@ -871,6 +871,7 @@ void Con_DrawConsoleContent( int currentConsoleVidHeight )
 	// draw the text
 	rows = currentConsoleVidHeight - 2 * consoleState.verticalVidPadding;
 	rows /= charHeight; //rowheight in pixel -> amount of rows
+	rows++; //counting the first line too
 
 	// draw the input prompt, user text, and cursor if desired
 	// moved back here (have observed render issues to do with time taken)
@@ -952,7 +953,6 @@ void Con_DrawAnimatedConsole( void )
 	int    animatedConsoleVidHeight;
 	int    animatedConsoleVirtualHeight;
 
-	const int virtualMargin = con_margin->integer;
 	const int charHeight = SCR_ConsoleFontCharHeight();
 
 	if ( consoleState.currentAnimationFraction <= 0 )
@@ -960,8 +960,8 @@ void Con_DrawAnimatedConsole( void )
 		return;
 	}
 
-	vidXMargin = virtualMargin;
-	vidYMargin = virtualMargin;
+	vidXMargin = con_margin->value;
+	vidYMargin = con_margin->value;
 	SCR_AdjustFrom640( &vidXMargin, &vidYMargin, NULL, NULL );
 	consoleState.verticalVidMargin = vidYMargin;
 	consoleState.horizontalVidMargin = vidXMargin;
@@ -971,7 +971,7 @@ void Con_DrawAnimatedConsole( void )
 	// on wide screens, this will lead to somewhat of a centering of the text
 	if(con_horizontalPadding->integer)
 	{
-		float horizontalVidPadding = con_horizontalPadding->integer;
+		float horizontalVidPadding = con_horizontalPadding->value;
 		SCR_AdjustFrom640( &horizontalVidPadding, NULL, NULL, NULL );
 		consoleState.horizontalVidPadding = horizontalVidPadding;
 	}
@@ -980,7 +980,7 @@ void Con_DrawAnimatedConsole( void )
 		consoleState.horizontalVidPadding = floor( vidXMargin * 0.3f );
 	}
 
-	animatedConsoleVirtualHeight = ( SCREEN_HEIGHT * con_height->integer * 0.01 ) - ( 2 * virtualMargin );
+	animatedConsoleVirtualHeight = ( SCREEN_HEIGHT * con_height->integer * 0.01 ) - ( 2 * con_margin->value );
 	animatedConsoleVidHeight = ( cls.glconfig.vidHeight * con_height->integer * 0.01) - 2 * consoleState.verticalVidMargin;
 
 	//only do scroll animation if the type is set
