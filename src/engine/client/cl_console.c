@@ -413,8 +413,7 @@ void Con_CheckResize( void )
 
 	if ( cls.glconfig.vidWidth )
 	{
-		width = ( cls.glconfig.vidWidth - consoleState.horizontalVidMargin - consoleState.horizontalVidPadding ) / SCR_ConsoleFontUnicharWidth( 'W' );
-		g_consoleField.widthInChars = width - Q_PrintStrlen( con_prompt->string ) - 1;
+		width = ( cls.glconfig.vidWidth - 2 * (consoleState.horizontalVidMargin + consoleState.horizontalVidPadding ) ) / SCR_ConsoleFontUnicharWidth( 'W' );
 	}
 	else
 	{
@@ -763,7 +762,6 @@ void Con_DrawInput( int linePosition )
 	}
 
 	Com_RealTime( &realtime );
-
 	Com_sprintf( prompt,  sizeof( prompt ), "^0[^3%02d%c%02d^0]^7 %s", realtime.tm_hour, ( realtime.tm_sec & 1 ) ? ':' : ' ', realtime.tm_min, con_prompt->string );
 
 	color[ 0 ] = 1.0f;
