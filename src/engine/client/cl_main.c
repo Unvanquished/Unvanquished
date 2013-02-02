@@ -126,7 +126,6 @@ cvar_t *cl_motdString;
 
 cvar_t *cl_allowDownload;
 cvar_t *cl_wwwDownload;
-cvar_t *cl_conXOffset;
 cvar_t *cl_inGameVideo;
 
 cvar_t *cl_serverStatusResendTime;
@@ -4467,7 +4466,6 @@ void CL_Init( void )
 	cl_profile = Cvar_Get( "cl_profile", "", CVAR_ROM );
 	cl_defaultProfile = Cvar_Get( "cl_defaultProfile", "", CVAR_ROM );
 
-	cl_conXOffset = Cvar_Get( "cl_conXOffset", "3", 0 );
 	cl_inGameVideo = Cvar_Get( "r_inGameVideo", "1", CVAR_ARCHIVE );
 
 	cl_serverStatusResendTime = Cvar_Get( "cl_serverStatusResendTime", "750", 0 );

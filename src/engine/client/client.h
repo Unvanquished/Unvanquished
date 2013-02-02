@@ -686,17 +686,17 @@ typedef struct
 	int      x; // offset in current line for next print
 	int      bottomDisplayedLine; // bottom of console displays this line
 
-	int      widthInChars; // characters across screen
+	int      textWidthInChars; // characters across screen
 	int      scrollbackLengthInLines; // total lines in console scrollback
 
 	/**
-	 * the vertical distance from the consoletext to the screen in pixel
+	 * the vertical distance from the consoletext to the border in pixel
 	 */
-	int    verticalTextVidMargin;
+	int    verticalVidPadding;
 	/**
-	 * the horiztontal distance from the consoletext to the screen in pixel
+	 * the horiztontal distance from the consoletext to the border in pixel
 	 */
-	int    horizontalTextVidMargin;
+	int    horizontalVidPadding;
 	/**
 	 * the vertical distance from the console to the screen in pixel
 	 */
@@ -704,7 +704,7 @@ typedef struct
 	/**
 	 * the horiztontal distance from the console to the screen in pixel
 	 */
-	//int	   vidXMargin;
+	int	   horizontalVidMargin;
 
 	float    currentAnimationFraction; // changes between 0.0 and 1.0 at scr_conspeed
 	qboolean isOpened;

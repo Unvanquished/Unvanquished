@@ -57,6 +57,8 @@ cvar_t    *con_borderColorRed;
 cvar_t    *con_borderColorBlue;
 cvar_t    *con_borderColorGreen;
 
+cvar_t    *con_horizontalPadding;
+
 cvar_t    *con_height;
 cvar_t    *con_colorAlpha;
 cvar_t    *con_colorRed;
@@ -71,7 +73,7 @@ cvar_t    *con_colorGreen;
 #define DEFAULT_CONSOLE_WIDTH 78
 #define MAX_CONSOLE_WIDTH   1024
 
-#define CON_LINE(line) ( ( (line) % consoleState.scrollbackLengthInLines ) * consoleState.widthInChars )
+#define CON_LINE(line) ( ( (line) % consoleState.scrollbackLengthInLines ) * consoleState.textWidthInChars )
 
 // Buffer used by line-to-string code. Implementation detail.
 static char lineString[ MAX_CONSOLE_WIDTH * 6 + 4 ];
@@ -81,7 +83,7 @@ static const char *Con_LineToString( int lineno, qboolean lf )
 	const conChar_t *line = consoleState.text + CON_LINE( lineno );
 	int              s, d;
 
-	for ( s = d = 0; line[ s ].ch && s < consoleState.widthInChars; ++s )
+	for ( s = d = 0; line[ s ].ch && s < consoleState.textWidthInChars; ++s )
 	{
 		if ( line[ s ].ch < 0x80 )
 		{
@@ -108,7 +110,7 @@ static const char *Con_LineToColouredString( int lineno, qboolean lf )
 	const conChar_t *line = consoleState.text + CON_LINE( lineno );
 	int              s, d, colour = 7;
 
-	for ( s = d = 0; line[ s ].ch && s < consoleState.widthInChars; ++s )
+	for ( s = d = 0; line[ s ].ch && s < consoleState.textWidthInChars; ++s )
 	{
 		if ( line[ s ].ink != colour )
 		{
@@ -409,7 +411,7 @@ void Con_CheckResize( void )
 
 	if ( cls.glconfig.vidWidth )
 	{
-		width = ( cls.glconfig.vidWidth - consoleState.horizontalTextVidMargin ) / SCR_ConsoleFontUnicharWidth( 'W' );
+		width = ( cls.glconfig.vidWidth - consoleState.horizontalVidMargin - consoleState.horizontalVidPadding ) / SCR_ConsoleFontUnicharWidth( 'W' );
 		g_consoleField.widthInChars = width - Q_PrintStrlen( cl_consolePrompt->string ) - 1;
 	}
 	else
@@ -417,15 +419,15 @@ void Con_CheckResize( void )
 		width = 0;
 	}
 
-	if ( width == consoleState.widthInChars )
+	if ( width == consoleState.textWidthInChars )
 	{
 		// nothing
 	}
 	else if ( width < 1 ) // video hasn't been initialized yet
 	{
 		width = DEFAULT_CONSOLE_WIDTH;
-		consoleState.widthInChars = width;
-		consoleState.scrollbackLengthInLines = CON_TEXTSIZE / consoleState.widthInChars;
+		consoleState.textWidthInChars = width;
+		consoleState.scrollbackLengthInLines = CON_TEXTSIZE / consoleState.textWidthInChars;
 		Con_Clear();
 
 		consoleState.currentLine = consoleState.scrollbackLengthInLines - 1;
@@ -433,10 +435,10 @@ void Con_CheckResize( void )
 	}
 	else
 	{
-		oldwidth = consoleState.widthInChars;
-		consoleState.widthInChars = width;
+		oldwidth = consoleState.textWidthInChars;
+		consoleState.textWidthInChars = width;
 		oldtotallines = consoleState.scrollbackLengthInLines;
-		consoleState.scrollbackLengthInLines = CON_TEXTSIZE / consoleState.widthInChars;
+		consoleState.scrollbackLengthInLines = CON_TEXTSIZE / consoleState.textWidthInChars;
 		numlines = oldtotallines;
 
 		if ( consoleState.scrollbackLengthInLines < numlines )
@@ -446,9 +448,9 @@ void Con_CheckResize( void )
 
 		numchars = oldwidth;
 
-		if ( consoleState.widthInChars < numchars )
+		if ( consoleState.textWidthInChars < numchars )
 		{
-			numchars = consoleState.widthInChars;
+			numchars = consoleState.textWidthInChars;
 		}
 
 		Com_Memcpy( buf, consoleState.text, sizeof( consoleState.text ) );
@@ -456,7 +458,7 @@ void Con_CheckResize( void )
 
 		for ( i = 0; i < numlines; i++ )
 		{
-			memcpy( consoleState.text + ( consoleState.scrollbackLengthInLines - 1 - i ) * consoleState.widthInChars,
+			memcpy( consoleState.text + ( consoleState.scrollbackLengthInLines - 1 - i ) * consoleState.textWidthInChars,
 			        buf + ( ( consoleState.currentLine - i + oldtotallines ) % oldtotallines ) * oldwidth,
 			        numchars * sizeof( conChar_t ) );
 		}
@@ -465,7 +467,7 @@ void Con_CheckResize( void )
 		consoleState.bottomDisplayedLine = consoleState.currentLine;
 	}
 
-	g_console_field_width = g_consoleField.widthInChars = consoleState.widthInChars - 8 - ( cl_consolePrompt ? Q_UTF8Strlen( cl_consolePrompt->string ) : 0 );
+	g_console_field_width = g_consoleField.widthInChars = consoleState.textWidthInChars - 8 - ( cl_consolePrompt ? Q_UTF8Strlen( cl_consolePrompt->string ) : 0 );
 }
 
 /*
@@ -487,6 +489,8 @@ void Con_Init( void )
 	con_colorBlue = Cvar_Get( "con_colorBlue", "0.3", CVAR_ARCHIVE );
 	con_colorGreen = Cvar_Get( "con_colorGreen", "0.18", CVAR_ARCHIVE );
 	con_colorAlpha = Cvar_Get( "con_colorAlpha", "0.5", CVAR_ARCHIVE );
+
+	con_horizontalPadding = Cvar_Get( "con_horizontalPadding", "0", CVAR_ARCHIVE );
 
 	con_borderWidth = Cvar_Get( "con_borderWidth", "1", CVAR_ARCHIVE );
 	con_borderColorRed = Cvar_Get( "con_borderColorRed", "1", CVAR_ARCHIVE );
@@ -535,7 +539,7 @@ void Con_Linefeed( qboolean skipnotify )
 
 	line = consoleState.text + CON_LINE( consoleState.currentLine );
 
-	for ( i = 0; i < consoleState.widthInChars; ++i )
+	for ( i = 0; i < consoleState.textWidthInChars; ++i )
 	{
 		line[ i ] = blank;
 	}
@@ -577,7 +581,7 @@ void CL_ConsolePrint( char *txt )
 
 	if ( !consoleState.initialized )
 	{
-		consoleState.widthInChars = -1;
+		consoleState.textWidthInChars = -1;
 		Con_CheckResize();
 		consoleState.initialized = qtrue;
 	}
@@ -603,7 +607,7 @@ void CL_ConsolePrint( char *txt )
 		}
 
 		// count word length
-		for ( i = l = 0; l < consoleState.widthInChars; ++l )
+		for ( i = l = 0; l < consoleState.textWidthInChars; ++l )
 		{
 			if ( txt[ i ] <= ' ' && txt[ i ] >= 0 )
 			{
@@ -619,7 +623,7 @@ void CL_ConsolePrint( char *txt )
 		}
 
 		// word wrap
-		if ( l != consoleState.widthInChars && ( consoleState.x + l >= consoleState.widthInChars ) )
+		if ( l != consoleState.textWidthInChars && ( consoleState.x + l >= consoleState.textWidthInChars ) )
 		{
 			Con_Linefeed( skipnotify );
 		}
@@ -644,11 +648,11 @@ void CL_ConsolePrint( char *txt )
 				y = consoleState.currentLine % consoleState.scrollbackLengthInLines;
 				// rain - sign extension caused the character to carry over
 				// into the color info for high ascii chars; casting c to unsigned
-				consoleState.text[ y * consoleState.widthInChars + consoleState.x ].ch = Q_UTF8CodePoint( txt );
-				consoleState.text[ y * consoleState.widthInChars + consoleState.x ].ink = color;
+				consoleState.text[ y * consoleState.textWidthInChars + consoleState.x ].ch = Q_UTF8CodePoint( txt );
+				consoleState.text[ y * consoleState.textWidthInChars + consoleState.x ].ink = color;
 				++consoleState.x;
 
-				if ( consoleState.x >= consoleState.widthInChars )
+				if ( consoleState.x >= consoleState.textWidthInChars )
 				{
 					Con_Linefeed( skipnotify );
 					consoleState.x = 0;
@@ -763,10 +767,10 @@ void Con_DrawInput( int linePosition )
 	color[ 2 ] = 1.0f;
 	color[ 3 ] = consoleState.currentAlphaFactor;
 
-	SCR_DrawSmallStringExt( consoleState.horizontalTextVidMargin + cl_conXOffset->integer, linePosition, prompt, color, qfalse, qfalse );
+	SCR_DrawSmallStringExt( consoleState.horizontalVidMargin + consoleState.horizontalVidPadding, linePosition, prompt, color, qfalse, qfalse );
 
 	Q_CleanStr( prompt );
-	Field_Draw( &g_consoleField, consoleState.horizontalTextVidMargin + cl_conXOffset->integer + SCR_ConsoleFontStringWidth( prompt, strlen( prompt ) ), linePosition, qtrue, qtrue, color[ 3 ] );
+	Field_Draw( &g_consoleField, consoleState.horizontalVidMargin + consoleState.horizontalVidPadding + SCR_ConsoleFontStringWidth( prompt, strlen( prompt ) ), linePosition, qtrue, qtrue, color[ 3 ] );
 }
 
 /*
@@ -780,7 +784,6 @@ void Con_DrawAboutText( void )
 {
 	int i, x;
 	vec4_t color;
-	float totalwidth;
 	float currentWidthLocation = 0;
 
 	const int charHeight = SCR_ConsoleFontCharHeight();
@@ -793,29 +796,27 @@ void Con_DrawAboutText( void )
 	re.SetColor( color );
 
 	i = strlen( Q3_VERSION );
-	totalwidth = SCR_ConsoleFontStringWidth( Q3_VERSION, i ) + cl_conXOffset->integer;
-	totalwidth += consoleState.horizontalTextVidMargin;
-
-	currentWidthLocation = cls.glconfig.vidWidth - totalwidth;
+	currentWidthLocation = cls.glconfig.vidWidth
+			- SCR_ConsoleFontStringWidth( Q3_VERSION, i )
+			- consoleState.horizontalVidMargin - consoleState.horizontalVidPadding;
 
 	for ( x = 0; x < i; x++ )
 	{
 		int ch = Q_UTF8CodePoint( &Q3_VERSION[ x ] );
-		SCR_DrawConsoleFontUnichar( currentWidthLocation, consoleState.verticalTextVidMargin, ch );
+		SCR_DrawConsoleFontUnichar( currentWidthLocation, consoleState.verticalVidMargin + consoleState.verticalVidPadding, ch );
 		currentWidthLocation += SCR_ConsoleFontUnicharWidth( ch );
 	}
 
 	// engine string
 	i = strlen( Q3_ENGINE );
-	totalwidth = SCR_ConsoleFontStringWidth( Q3_ENGINE, i ) + cl_conXOffset->integer;
-	totalwidth += consoleState.horizontalTextVidMargin;
-
-	currentWidthLocation = cls.glconfig.vidWidth - totalwidth;
+	currentWidthLocation = cls.glconfig.vidWidth
+			- SCR_ConsoleFontStringWidth( Q3_ENGINE, i )
+			- consoleState.horizontalVidMargin - consoleState.horizontalVidPadding;
 
 	for ( x = 0; x < i; x++ )
 	{
 		int ch = Q_UTF8CodePoint( &Q3_ENGINE[ x ] );
-		SCR_DrawConsoleFontUnichar( currentWidthLocation, consoleState.verticalTextVidMargin + charHeight, ch );
+		SCR_DrawConsoleFontUnichar( currentWidthLocation, consoleState.verticalVidMargin + consoleState.verticalVidPadding + charHeight, ch );
 		currentWidthLocation += SCR_ConsoleFontUnicharWidth( ch );
 	}
 }
@@ -838,9 +839,9 @@ void Con_DrawConsoleScrollbackIndicator( int lineDrawPosition )
 	color[ 3 ] = consoleState.currentAlphaFactor;
 	re.SetColor( color );
 
-	for ( i = 0; i < consoleState.widthInChars - con_margin->integer; i += 4 )
+	for ( i = 0; i < consoleState.textWidthInChars; i += 4 )
 	{
-		SCR_DrawConsoleFontUnichar( consoleState.horizontalTextVidMargin + ( i + 1 ) * hatWidth, lineDrawPosition, '^' );
+		SCR_DrawConsoleFontUnichar( consoleState.horizontalVidMargin + consoleState.horizontalVidPadding + ( i + 1 ) * hatWidth, lineDrawPosition, '^' );
 	}
 }
 
@@ -849,7 +850,7 @@ void Con_DrawConsoleScrollbackIndicator( int lineDrawPosition )
 Con_DrawConsoleContent
 ================
 */
-void Con_DrawConsoleContent( int animatedVidConsoleHeight )
+void Con_DrawConsoleContent( int currentConsoleVidHeight )
 {
 	float  currentWidthLocation = 0;
 	int    i, x, lineDrawPosition;
@@ -861,10 +862,15 @@ void Con_DrawConsoleContent( int animatedVidConsoleHeight )
 	const int charHeight = SCR_ConsoleFontCharHeight();
 
 	// draw from the bottom up
-	lineDrawPosition = animatedVidConsoleHeight - ( floor( consoleState.verticalVidMargin * 1.3f + ( charHeight / 4 ) ) * con_height->integer * 0.01) - con_borderWidth->integer;
+	lineDrawPosition = currentConsoleVidHeight
+			+ consoleState.verticalVidMargin
+			- consoleState.verticalVidPadding
+			+ charHeight
+			- 2 * con_borderWidth->integer;
 
 	// draw the text
-	rows = ( animatedVidConsoleHeight - ( 2 * consoleState.verticalTextVidMargin )) / charHeight; // rows of text to draw
+	rows = currentConsoleVidHeight - 2 * consoleState.verticalVidPadding;
+	rows /= charHeight; //rowheight in pixel -> amount of rows
 
 	// draw the input prompt, user text, and cursor if desired
 	// moved back here (have observed render issues to do with time taken)
@@ -911,9 +917,9 @@ void Con_DrawConsoleContent( int animatedVidConsoleHeight )
 
 		text = consoleState.text + CON_LINE( row );
 
-		currentWidthLocation = cl_conXOffset->integer;
+		currentWidthLocation = consoleState.horizontalVidMargin + consoleState.horizontalVidPadding;
 
-		for ( x = 0; x < consoleState.widthInChars && text[x].ch; ++x )
+		for ( x = 0; x < consoleState.textWidthInChars && text[x].ch; ++x )
 		{
 			if ( text[ x ].ink != currentColor )
 			{
@@ -925,7 +931,7 @@ void Con_DrawConsoleContent( int animatedVidConsoleHeight )
 				re.SetColor( color );
 			}
 
-			SCR_DrawConsoleFontUnichar( consoleState.horizontalTextVidMargin + currentWidthLocation, lineDrawPosition, text[ x ].ch );
+			SCR_DrawConsoleFontUnichar( currentWidthLocation, lineDrawPosition, text[ x ].ch );
 			currentWidthLocation += SCR_ConsoleFontUnicharWidth( text[ x ].ch );
 		}
 	}
@@ -943,51 +949,63 @@ Draws the console with the solid background
 void Con_DrawAnimatedConsole( void )
 {
 	float  vidXMargin, vidYMargin;
-	int    animatedVidConsoleHeight;
-	int    animatedVirtualConsoleHeight;
+	int    animatedConsoleVidHeight;
+	int    animatedConsoleVirtualHeight;
 
 	const int virtualMargin = con_margin->integer;
 	const int charHeight = SCR_ConsoleFontCharHeight();
 
-	animatedVidConsoleHeight = cls.glconfig.vidHeight * con_height->integer * 0.01;
+	if ( consoleState.currentAnimationFraction <= 0 )
+	{
+		return;
+	}
+
 	vidXMargin = virtualMargin;
 	vidYMargin = virtualMargin;
 	SCR_AdjustFrom640( &vidXMargin, &vidYMargin, NULL, NULL );
-
-	consoleState.verticalTextVidMargin = floor( vidYMargin * 1.3f + charHeight );
-	// on wide screens, this will lead to somewhat of a centering of the text
-	consoleState.horizontalTextVidMargin = floor( vidXMargin * 1.3f);
 	consoleState.verticalVidMargin = vidYMargin;
+	consoleState.horizontalVidMargin = vidXMargin;
 
-	animatedVirtualConsoleHeight = ( SCREEN_HEIGHT - ( 2 * virtualMargin ) ) * con_height->integer * 0.01;
+	consoleState.verticalVidPadding = floor( vidYMargin * 0.3f + charHeight );
+
+	// on wide screens, this will lead to somewhat of a centering of the text
+	if(con_horizontalPadding->integer)
+	{
+		float horizontalVidPadding = con_horizontalPadding->integer;
+		SCR_AdjustFrom640( &horizontalVidPadding, NULL, NULL, NULL );
+		consoleState.horizontalVidPadding = horizontalVidPadding;
+	}
+	else
+	{
+		consoleState.horizontalVidPadding = floor( vidXMargin * 0.3f );
+	}
+
+	animatedConsoleVirtualHeight = ( SCREEN_HEIGHT * con_height->integer * 0.01 ) - ( 2 * virtualMargin );
+	animatedConsoleVidHeight = ( cls.glconfig.vidHeight * con_height->integer * 0.01) - 2 * consoleState.verticalVidMargin;
 
 	//only do scroll animation if the type is set
 	if ( con_animationType->integer & ANIMATION_TYPE_SCROLL_DOWN)
 	{
-		animatedVidConsoleHeight *= consoleState.currentAnimationFraction;
-		animatedVirtualConsoleHeight *= consoleState.currentAnimationFraction;
+		animatedConsoleVidHeight *= consoleState.currentAnimationFraction;
+		animatedConsoleVirtualHeight *= consoleState.currentAnimationFraction;
 	}
 
-	if ( animatedVidConsoleHeight <= 0 )
+	if ( animatedConsoleVidHeight > cls.glconfig.vidHeight )
 	{
-		return;
-	}
-	if ( animatedVidConsoleHeight > cls.glconfig.vidHeight )
-	{
-		animatedVidConsoleHeight = cls.glconfig.vidHeight;
+		animatedConsoleVidHeight = cls.glconfig.vidHeight;
 	}
 
 	//only do fade animation if the type is set
 	consoleState.currentAlphaFactor = ( con_animationType->integer & ANIMATION_TYPE_FADE ) ? consoleState.currentAnimationFraction : 1.0f;
 
 	//now do the actual drawing
-	Con_DrawBackground( animatedVirtualConsoleHeight );
+	Con_DrawBackground( animatedConsoleVirtualHeight );
 
 	//build info, projectname/copyrights, meta informatin or similar
 	Con_DrawAboutText();
 
 	//input, scrollbackindicator, scrollback text
-	Con_DrawConsoleContent( animatedVidConsoleHeight );
+	Con_DrawConsoleContent( animatedConsoleVidHeight );
 }
 
 extern cvar_t *con_drawnotify;
@@ -1042,7 +1060,7 @@ void Con_DrawNotify( void )
 			continue;
 		}
 
-		for ( x = 0; x < consoleState.widthInChars && text[ x ].ch; ++x )
+		for ( x = 0; x < consoleState.textWidthInChars && text[ x ].ch; ++x )
 		{
 			if ( text[ x ].ch == ' ' )
 			{
@@ -1055,7 +1073,7 @@ void Con_DrawNotify( void )
 				re.SetColor( g_color_table[ currentColor ] );
 			}
 
-			SCR_DrawSmallUnichar( cl_conXOffset->integer + consoleState.horizontalTextVidMargin + ( x + 1 ) * SMALLCHAR_WIDTH, v, text[ x ].ch );
+			SCR_DrawSmallUnichar( consoleState.horizontalVidMargin + consoleState.horizontalVidPadding + ( x + 1 ) * SMALLCHAR_WIDTH, v, text[ x ].ch );
 		}
 
 		v += SMALLCHAR_HEIGHT;
@@ -1097,7 +1115,7 @@ void Con_DrawConsole( void )
 	Con_CheckResize();
 
 	// render console if flag is set or is within an animation but also in special disconnected states
-	if ( ( cls.state == CA_DISCONNECTED && !( cls.keyCatchers & ( KEYCATCH_UI | KEYCATCH_CGAME ) ) )
+	if (( cls.state == CA_DISCONNECTED && !( cls.keyCatchers & ( KEYCATCH_UI | KEYCATCH_CGAME ) ) )
 		|| consoleState.isOpened || consoleState.currentAnimationFraction > 0)
 	{
 		Con_DrawAnimatedConsole( );
