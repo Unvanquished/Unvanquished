@@ -695,9 +695,25 @@ typedef struct
 	 * the horiztontal distance from the consoletext to the screen in pixel
 	 */
 	int    horizontalTextVidMargin;
+	/**
+	 * the vertical distance from the console to the screen in pixel
+	 */
+	int	   verticalVidMargin;
+	/**
+	 * the horiztontal distance from the console to the screen in pixel
+	 */
+	//int	   vidXMargin;
 
 	float    currentAnimationFraction; // changes between 0.0 and 1.0 at scr_conspeed
 	qboolean isOpened;
+
+	/**
+	 * changes between 0.0 and 1.0 correlated with currentAnimationFraction
+	 * if the animation of type fade is active
+	 * it gets multiplied with the alpha of practically anything that gets rendered to allow fading in and out the
+	 * console as a whole
+	 */
+	float    currentAlphaFactor;
 
 	int      times[ NUM_CON_TIMES ]; // cls.realtime time the line was generated
 } console_t;

@@ -709,13 +709,11 @@ void Con_DrawBackground( int virtualHeight )
 	const int virtualConsoleWidth = SCREEN_WIDTH - (2 * virtualMargin);
 	const int virtualConsoleHeight = (SCREEN_HEIGHT - (2 * virtualMargin)) * con_height->integer * 0.01;
 
-	const float animationDependendAlphaFactor = ( con_animationType->integer & ANIMATION_TYPE_FADE) ? consoleState.currentAnimationFraction : 1.0f;
-
 	// draw the background
 	color[ 0 ] = con_colorRed->value;
 	color[ 1 ] = con_colorGreen->value;
 	color[ 2 ] = con_colorBlue->value;
-	color[ 3 ] = con_colorAlpha->value * animationDependendAlphaFactor;
+	color[ 3 ] = con_colorAlpha->value * consoleState.currentAlphaFactor;
 
 	SCR_FillRect( virtualMargin, virtualMargin, virtualConsoleWidth, virtualHeight, color );
 
@@ -723,7 +721,7 @@ void Con_DrawBackground( int virtualHeight )
 	color[ 0 ] = con_borderColorRed->value;
 	color[ 1 ] = con_borderColorGreen->value;
 	color[ 2 ] = con_borderColorBlue->value;
-	color[ 3 ] = con_borderColorAlpha->value * animationDependendAlphaFactor;
+	color[ 3 ] = con_borderColorAlpha->value * consoleState.currentAlphaFactor;
 
 	if (virtualMargin)
 	{
@@ -763,7 +761,7 @@ void Con_DrawInput( int linePosition )
 	color[ 0 ] = 1.0f;
 	color[ 1 ] = 1.0f;
 	color[ 2 ] = 1.0f;
-	color[ 3 ] = ( con_animationType->integer & ANIMATION_TYPE_FADE) ? consoleState.currentAnimationFraction : 1.0f;
+	color[ 3 ] = consoleState.currentAlphaFactor;
 
 	SCR_DrawSmallStringExt( consoleState.horizontalTextVidMargin + cl_conXOffset->integer, linePosition, prompt, color, qfalse, qfalse );
 
@@ -786,13 +784,12 @@ void Con_DrawAboutText( void )
 	float currentWidthLocation = 0;
 
 	const int charHeight = SCR_ConsoleFontCharHeight();
-	const float  animationDependendAlphaFactor = ( con_animationType->integer & ANIMATION_TYPE_FADE) ? consoleState.currentAnimationFraction : 1.0f;
 
 	// draw the version number
 	color[ 0 ] = 1.0f;
 	color[ 1 ] = 1.0f;
 	color[ 2 ] = 1.0f;
-	color[ 3 ] = 0.66f * animationDependendAlphaFactor;
+	color[ 3 ] = 0.66f * consoleState.currentAlphaFactor;
 	re.SetColor( color );
 
 	i = strlen( Q3_VERSION );
@@ -822,6 +819,178 @@ void Con_DrawAboutText( void )
 		currentWidthLocation += SCR_ConsoleFontUnicharWidth( ch );
 	}
 }
+
+/*
+================
+Con_DrawConsoleScrollbackIndicator
+================
+*/
+void Con_DrawConsoleScrollbackIndicator( int lineDrawPosition )
+{
+	int i;
+	vec4_t color;
+	// draw arrows to show the buffer is backscrolled
+	const int hatWidth = SCR_ConsoleFontUnicharWidth( '^' );
+
+	color[ 0 ] = 1.0f;
+	color[ 1 ] = 0.0f;
+	color[ 2 ] = 0.0f;
+	color[ 3 ] = consoleState.currentAlphaFactor;
+	re.SetColor( color );
+
+	for ( i = 0; i < consoleState.widthInChars - con_margin->integer; i += 4 )
+	{
+		SCR_DrawConsoleFontUnichar( consoleState.horizontalTextVidMargin + ( i + 1 ) * hatWidth, lineDrawPosition, '^' );
+	}
+}
+
+/*
+================
+Con_DrawConsoleContent
+================
+*/
+void Con_DrawConsoleContent( int animatedVidConsoleHeight )
+{
+	float  currentWidthLocation = 0;
+	int    i, x, lineDrawPosition;
+	int    rows;
+	int    row;
+	int    currentColor;
+	vec4_t color;
+
+	const int charHeight = SCR_ConsoleFontCharHeight();
+
+	// draw from the bottom up
+	lineDrawPosition = animatedVidConsoleHeight - ( floor( consoleState.verticalVidMargin * 1.3f + ( charHeight / 4 ) ) * con_height->integer * 0.01) - con_borderWidth->integer;
+
+	// draw the text
+	rows = ( animatedVidConsoleHeight - ( 2 * consoleState.verticalTextVidMargin )) / charHeight; // rows of text to draw
+
+	// draw the input prompt, user text, and cursor if desired
+	// moved back here (have observed render issues to do with time taken)
+	Con_DrawInput( lineDrawPosition );
+	lineDrawPosition -= charHeight;
+
+	// if we scrolled back, give feedback
+	if ( consoleState.bottomDisplayedLine != consoleState.currentLine )
+	{
+		// draw arrows to show the buffer is backscrolled
+		Con_DrawConsoleScrollbackIndicator( lineDrawPosition );
+		lineDrawPosition -= charHeight;
+		rows--;
+	}
+
+	row = consoleState.bottomDisplayedLine;
+
+	if ( consoleState.x == 0 )
+	{
+		row--;
+	}
+
+	currentColor = 7;
+	color[ 0 ] = g_color_table[ currentColor ][ 0 ];
+	color[ 1 ] = g_color_table[ currentColor ][ 1 ];
+	color[ 2 ] = g_color_table[ currentColor ][ 2 ];
+	color[ 3 ] = consoleState.currentAlphaFactor;
+	re.SetColor( color );
+
+	for ( i = 0; i < rows; i++, lineDrawPosition -= charHeight, row-- )
+	{
+		conChar_t *text;
+
+		if ( row < 0 )
+		{
+			break;
+		}
+
+		if ( consoleState.currentLine - row >= consoleState.scrollbackLengthInLines )
+		{
+			// past scrollback wrap point
+			continue;
+		}
+
+		text = consoleState.text + CON_LINE( row );
+
+		currentWidthLocation = cl_conXOffset->integer;
+
+		for ( x = 0; x < consoleState.widthInChars && text[x].ch; ++x )
+		{
+			if ( text[ x ].ink != currentColor )
+			{
+				currentColor = text[ x ].ink;
+				color[ 0 ] = g_color_table[ currentColor ][ 0 ];
+				color[ 1 ] = g_color_table[ currentColor ][ 1 ];
+				color[ 2 ] = g_color_table[ currentColor ][ 2 ];
+				color[ 3 ] = consoleState.currentAlphaFactor;
+				re.SetColor( color );
+			}
+
+			SCR_DrawConsoleFontUnichar( consoleState.horizontalTextVidMargin + currentWidthLocation, lineDrawPosition, text[ x ].ch );
+			currentWidthLocation += SCR_ConsoleFontUnicharWidth( text[ x ].ch );
+		}
+	}
+
+	re.SetColor( NULL );
+}
+
+/*
+================
+Con_DrawSolidConsole
+
+Draws the console with the solid background
+================
+*/
+void Con_DrawAnimatedConsole( void )
+{
+	float  vidXMargin, vidYMargin;
+	int    animatedVidConsoleHeight;
+	int    animatedVirtualConsoleHeight;
+
+	const int virtualMargin = con_margin->integer;
+	const int charHeight = SCR_ConsoleFontCharHeight();
+
+	animatedVidConsoleHeight = cls.glconfig.vidHeight * con_height->integer * 0.01;
+	vidXMargin = virtualMargin;
+	vidYMargin = virtualMargin;
+	SCR_AdjustFrom640( &vidXMargin, &vidYMargin, NULL, NULL );
+
+	consoleState.verticalTextVidMargin = floor( vidYMargin * 1.3f + charHeight );
+	// on wide screens, this will lead to somewhat of a centering of the text
+	consoleState.horizontalTextVidMargin = floor( vidXMargin * 1.3f);
+	consoleState.verticalVidMargin = vidYMargin;
+
+	animatedVirtualConsoleHeight = ( SCREEN_HEIGHT - ( 2 * virtualMargin ) ) * con_height->integer * 0.01;
+
+	//only do scroll animation if the type is set
+	if ( con_animationType->integer & ANIMATION_TYPE_SCROLL_DOWN)
+	{
+		animatedVidConsoleHeight *= consoleState.currentAnimationFraction;
+		animatedVirtualConsoleHeight *= consoleState.currentAnimationFraction;
+	}
+
+	if ( animatedVidConsoleHeight <= 0 )
+	{
+		return;
+	}
+	if ( animatedVidConsoleHeight > cls.glconfig.vidHeight )
+	{
+		animatedVidConsoleHeight = cls.glconfig.vidHeight;
+	}
+
+	//only do fade animation if the type is set
+	consoleState.currentAlphaFactor = ( con_animationType->integer & ANIMATION_TYPE_FADE ) ? consoleState.currentAnimationFraction : 1.0f;
+
+	//now do the actual drawing
+	Con_DrawBackground( animatedVirtualConsoleHeight );
+
+	//build info, projectname/copyrights, meta informatin or similar
+	Con_DrawAboutText();
+
+	//input, scrollbackindicator, scrollback text
+	Con_DrawConsoleContent( animatedVidConsoleHeight );
+}
+
+extern cvar_t *con_drawnotify;
 
 /*
 ================
@@ -916,148 +1085,6 @@ void Con_DrawNotify( void )
 	}
 }
 
-/*
-================
-Con_DrawSolidConsole
-
-Draws the console with the solid background
-================
-*/
-void Con_DrawSolidConsole( void )
-{
-	int    i, x, lineDrawPosition;
-	int    rows;
-	int    row;
-	int    currentColor;
-	vec4_t color;
-	float  currentWidthLocation = 0;
-	float  vidXMargin, vidYMargin;
-	int    animatedVidConsoleHeight;
-	int    animatedVirtualConsoleHeight;
-	float  animationDependendAlphaFactor;
-
-	const int virtualMargin = con_margin->integer;
-	const int charHeight = SCR_ConsoleFontCharHeight();
-
-	animatedVidConsoleHeight = cls.glconfig.vidHeight * con_height->integer * 0.01;
-	vidXMargin = virtualMargin;
-	vidYMargin = virtualMargin;
-	SCR_AdjustFrom640( &vidXMargin, &vidYMargin, NULL, NULL );
-
-	consoleState.verticalTextVidMargin = floor( vidYMargin * 1.3f + charHeight );
-	// on wide screens, this will lead to somewhat of a centering of the text
-	consoleState.horizontalTextVidMargin = floor( vidXMargin * 1.3f);
-
-	animatedVirtualConsoleHeight = ( SCREEN_HEIGHT - ( 2 * virtualMargin ) ) * con_height->integer * 0.01;
-	animationDependendAlphaFactor = ( con_animationType->integer & ANIMATION_TYPE_FADE) ? consoleState.currentAnimationFraction : 1.0f;
-
-	if ( con_animationType->integer & ANIMATION_TYPE_SCROLL_DOWN)
-	{
-		animatedVidConsoleHeight *= consoleState.currentAnimationFraction;
-		animatedVirtualConsoleHeight *= consoleState.currentAnimationFraction;
-	}
-
-	if ( animatedVidConsoleHeight <= 0 )
-	{
-		return;
-	}
-
-	if ( animatedVidConsoleHeight > cls.glconfig.vidHeight )
-	{
-		animatedVidConsoleHeight = cls.glconfig.vidHeight;
-	}
-
-	Con_DrawBackground( animatedVirtualConsoleHeight );
-
-	// Draw build info, projectname/copyrights, meta informatin or similar
-	Con_DrawAboutText();
-
-	// draw from the bottom up
-	lineDrawPosition = animatedVidConsoleHeight - (floor( vidYMargin * 1.3f + charHeight/4) * con_height->integer * 0.01) - con_borderWidth->integer;
-
-	// draw the text
-	rows = ( animatedVidConsoleHeight - ( 2 * consoleState.verticalTextVidMargin )) / charHeight; // rows of text to draw
-
-	// draw the input prompt, user text, and cursor if desired
-	// moved back here (have observed render issues to do with time taken)
-	Con_DrawInput( lineDrawPosition );
-	lineDrawPosition -= charHeight;
-
-	// if we scrolled back, give feedback
-	if ( consoleState.bottomDisplayedLine != consoleState.currentLine )
-	{
-		// draw arrows to show the buffer is backscrolled
-		const int hatWidth = SCR_ConsoleFontUnicharWidth( '^' );
-
-		color[ 0 ] = 1.0f;
-		color[ 1 ] = 0.0f;
-		color[ 2 ] = 0.0f;
-		color[ 3 ] = animationDependendAlphaFactor;
-		re.SetColor( color );
-
-		for ( x = 0; x < consoleState.widthInChars - con_margin->integer; x += 4 )
-		{
-			SCR_DrawConsoleFontUnichar( consoleState.horizontalTextVidMargin + ( x + 1 ) * hatWidth, lineDrawPosition, '^' );
-		}
-
-		lineDrawPosition -= charHeight;
-		rows--;
-	}
-
-	row = consoleState.bottomDisplayedLine;
-
-	if ( consoleState.x == 0 )
-	{
-		row--;
-	}
-
-	currentColor = 7;
-	color[ 0 ] = g_color_table[ currentColor ][ 0 ];
-	color[ 1 ] = g_color_table[ currentColor ][ 1 ];
-	color[ 2 ] = g_color_table[ currentColor ][ 2 ];
-	color[ 3 ] = animationDependendAlphaFactor;
-	re.SetColor( color );
-
-	for ( i = 0; i < rows; i++, lineDrawPosition -= charHeight, row-- )
-	{
-		conChar_t *text;
-
-		if ( row < 0 )
-		{
-			break;
-		}
-
-		if ( consoleState.currentLine - row >= consoleState.scrollbackLengthInLines )
-		{
-			// past scrollback wrap point
-			continue;
-		}
-
-		text = consoleState.text + CON_LINE( row );
-
-		currentWidthLocation = cl_conXOffset->integer;
-
-		for ( x = 0; x < consoleState.widthInChars && text[x].ch; ++x )
-		{
-			if ( text[ x ].ink != currentColor )
-			{
-				currentColor = text[ x ].ink;
-				color[ 0 ] = g_color_table[ currentColor ][ 0 ];
-				color[ 1 ] = g_color_table[ currentColor ][ 1 ];
-				color[ 2 ] = g_color_table[ currentColor ][ 2 ];
-				color[ 3 ] = animationDependendAlphaFactor;
-				re.SetColor( color );
-			}
-
-			SCR_DrawConsoleFontUnichar( consoleState.horizontalTextVidMargin + currentWidthLocation, lineDrawPosition, text[ x ].ch );
-			currentWidthLocation += SCR_ConsoleFontUnicharWidth( text[ x ].ch );
-		}
-	}
-
-	re.SetColor( NULL );
-}
-
-extern cvar_t *con_drawnotify;
 
 /*
 ==================
@@ -1073,12 +1100,12 @@ void Con_DrawConsole( void )
 	if ( ( cls.state == CA_DISCONNECTED && !( cls.keyCatchers & ( KEYCATCH_UI | KEYCATCH_CGAME ) ) )
 		|| consoleState.isOpened || consoleState.currentAnimationFraction > 0)
 	{
-		Con_DrawSolidConsole( );
+		Con_DrawAnimatedConsole( );
 	}
 	// draw notify lines, but only if console isn't opened
 	else if ( cls.state == CA_ACTIVE && con_drawnotify->integer )
 	{
-		Con_DrawNotify();
+		Con_DrawNotify( );
 	}
 }
 
