@@ -960,12 +960,17 @@ void Con_DrawAnimatedConsole( void )
 		return;
 	}
 
-	vidXMargin = con_margin->value;
-	vidYMargin = con_margin->value;
+	if(con_margin->value > 0) {
+		vidXMargin = con_margin->value;
+		vidYMargin = con_margin->value;
+	} else {
+		vidXMargin = - con_margin->value;
+		vidYMargin = 0;
+	}
 	SCR_AdjustFrom640( &vidXMargin, &vidYMargin, NULL, NULL );
+
 	consoleState.verticalVidMargin = vidYMargin;
 	consoleState.horizontalVidMargin = vidXMargin;
-
 	consoleState.verticalVidPadding = floor( vidYMargin * 0.3f + charHeight );
 
 	// on wide screens, this will lead to somewhat of a centering of the text
