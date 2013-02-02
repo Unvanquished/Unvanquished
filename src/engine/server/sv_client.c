@@ -186,7 +186,7 @@ void SV_DirectConnect( netadr_t from )
 		return;
 	}
 
-	Info_SetValueForKey( userinfo, "ip", ip );
+	Info_SetValueForKey( userinfo, "ip", ip, qfalse );
 
 	// see if the challenge is valid (local clients don't need to challenge)
 	if ( !NET_IsLocalAddress( from ) )
@@ -211,7 +211,7 @@ void SV_DirectConnect( netadr_t from )
 		}
 
 		// force the IP address key/value pair, so the game can filter based on it
-		Info_SetValueForKey( userinfo, "ip", NET_AdrToString( from ) );
+		Info_SetValueForKey( userinfo, "ip", NET_AdrToString( from ), qfalse );
 
 		if ( svs.challenges[ i ].firstPing == 0 )
 		{
@@ -247,7 +247,7 @@ void SV_DirectConnect( netadr_t from )
 	else
 	{
 		// force the "ip" info key to "localhost"
-		Info_SetValueForKey( userinfo, "ip", "localhost" );
+		Info_SetValueForKey( userinfo, "ip", "localhost", qfalse );
 	}
 
 	newcl = &temp;
@@ -372,7 +372,7 @@ gotnewcl:
 
 	// Save the pubkey
 	Q_strncpyz( newcl->pubkey, Info_ValueForKey( userinfo, "pubkey" ), sizeof( newcl->pubkey ) );
-	Info_RemoveKey( userinfo, "pubkey" );
+	Info_RemoveKey( userinfo, "pubkey", qfalse );
 	// save the userinfo
 	Q_strncpyz( newcl->userinfo, userinfo, sizeof( newcl->userinfo ) );
 
@@ -734,6 +734,11 @@ Downloads are finished
 */
 void SV_DoneDownload_f( client_t *cl )
 {
+	if ( cl->state == CS_ACTIVE )
+	{
+		return;
+	}
+
 	Com_DPrintf( "clientDownload: %s^7 Done\n", cl->name );
 	// resend the game state to update any clients that entered during the download
 	SV_SendClientGameState( cl );
@@ -1530,12 +1535,12 @@ void SV_UserinfoChanged( client_t *cl )
 	//Com_DPrintf("Maintain IP address in userinfo for '%s'\n", cl->name);
 	if ( !NET_IsLocalAddress( cl->netchan.remoteAddress ) )
 	{
-		Info_SetValueForKey( cl->userinfo, "ip", NET_AdrToString( cl->netchan.remoteAddress ) );
+		Info_SetValueForKey( cl->userinfo, "ip", NET_AdrToString( cl->netchan.remoteAddress ), qfalse );
 	}
 	else
 	{
 		// force the "ip" info key to "localhost" for local clients
-		Info_SetValueForKey( cl->userinfo, "ip", "localhost" );
+		Info_SetValueForKey( cl->userinfo, "ip", "localhost", qfalse );
 	}
 
 	// TTimo
@@ -2234,6 +2239,14 @@ void SV_ExecuteClientMessage( client_t *cl, msg_t *msg )
 	}
 	while ( 1 );
 
+	if ( c == clc_voip )
+	{
+#ifdef USE_VOIP
+		SV_UserVoip( cl, msg );
+		c = MSG_ReadByte( msg );
+#endif
+	}
+
 	// read the usercmd_t
 	if ( c == clc_move )
 	{
@@ -2242,12 +2255,6 @@ void SV_ExecuteClientMessage( client_t *cl, msg_t *msg )
 	else if ( c == clc_moveNoDelta )
 	{
 		SV_UserMove( cl, msg, qfalse );
-	}
-	else if ( c == clc_voip )
-	{
-#ifdef USE_VOIP
-		SV_UserVoip( cl, msg );
-#endif
 	}
 	else if ( c != clc_EOF )
 	{

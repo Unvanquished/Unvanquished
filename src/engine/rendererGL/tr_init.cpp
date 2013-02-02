@@ -411,10 +411,6 @@ extern "C" {
 		R_InitCommandBuffers();
 		GL_CheckErrors();
 
-		// print info
-		GfxInfo_f();
-		GL_CheckErrors();
-
 		// set default state
 		GL_SetDefaultState();
 		GL_CheckErrors();
@@ -1604,7 +1600,7 @@ extern "C" {
 		r_forceSpecular = ri.Cvar_Get( "r_forceSpecular", "0", CVAR_CHEAT );
 		r_specularExponent = ri.Cvar_Get( "r_specularExponent", "16", CVAR_CHEAT | CVAR_SHADER );
 		r_specularExponent2 = ri.Cvar_Get( "r_specularExponent2", "3", CVAR_CHEAT | CVAR_SHADER );
-		r_specularScale = ri.Cvar_Get( "r_specularScale", "1.4", CVAR_CHEAT );
+		r_specularScale = ri.Cvar_Get( "r_specularScale", "1.4", CVAR_CHEAT | CVAR_SHADER );
 		r_normalScale = ri.Cvar_Get( "r_normalScale", "1.1", CVAR_CHEAT );
 		r_normalMapping = ri.Cvar_Get( "r_normalMapping", "1", CVAR_ARCHIVE );
 		r_parallaxDepthScale = ri.Cvar_Get( "r_parallaxDepthScale", "0.03", CVAR_CHEAT );
@@ -2124,6 +2120,10 @@ extern "C" {
 			glGenQueries( MAX_OCCLUSION_QUERIES, tr.occlusionQueryObjects );
 		}
 
+		GL_CheckErrors();
+
+		// print info
+		GfxInfo_f();
 		GL_CheckErrors();
 
 		ri.Printf( PRINT_DEVELOPER, "----- finished R_Init -----\n" );

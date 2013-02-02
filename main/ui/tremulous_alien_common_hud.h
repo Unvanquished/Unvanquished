@@ -47,7 +47,7 @@ itemDef
 itemDef
 {
 	name "poison"
-	rect 464 399 179 83
+	rect 450 409 29 47
 	aspectBias ALIGN_RIGHT
 	visible MENU_TRUE
 	decoration
@@ -150,7 +150,7 @@ itemDef
 	aspectBias ALIGN_RIGHT
 	visible MENU_TRUE
 	decoration
-	forecolor .54 .11 .17 .7
+	forecolor .54 .11 .17 .4
 	backcolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0
 	background "ui/assets/alien/poison.tga"
 	ownerdraw CG_PLAYER_BOOSTED
@@ -293,7 +293,7 @@ itemDef
 itemDef
 {
 	name "teamoverlay"
-	rect BORDER 175 200 128
+	rect BORDER 175 250 128
 	style WINDOW_STYLE_EMPTY
 	visible MENU_TRUE
 	decoration

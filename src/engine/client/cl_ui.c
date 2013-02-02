@@ -40,9 +40,6 @@ Maryland 20850 USA.
 
 vm_t                   *uivm;
 
-// ydnar: can we put this in a header, pls?
-void                   Key_GetBindingByString( const char *binding, int *key1, int *key2 );
-
 /*
 ====================
 GetClientState
@@ -414,21 +411,22 @@ static void LAN_GetServerInfo( int source, int n, char *buf, int buflen )
 	if ( server && buf )
 	{
 		buf[ 0 ] = '\0';
-		Info_SetValueForKey( info, "hostname", server->hostName );
-		Info_SetValueForKey( info, "serverload", va( "%i", server->load ) );
-		Info_SetValueForKey( info, "mapname", server->mapName );
-		Info_SetValueForKey( info, "label", server->label );
-		Info_SetValueForKey( info, "clients", va( "%i", server->clients ) );
-		Info_SetValueForKey( info, "sv_maxclients", va( "%i", server->maxClients ) );
-		Info_SetValueForKey( info, "ping", va( "%i", server->ping ) );
-		Info_SetValueForKey( info, "minping", va( "%i", server->minPing ) );
-		Info_SetValueForKey( info, "maxping", va( "%i", server->maxPing ) );
-		Info_SetValueForKey( info, "game", server->game );
-		Info_SetValueForKey( info, "nettype", va( "%i", server->netType ) );
-		Info_SetValueForKey( info, "addr", NET_AdrToStringwPort( server->adr ) );
-		Info_SetValueForKey( info, "friendlyFire", va( "%i", server->friendlyFire ) );   // NERVE - SMF
-		Info_SetValueForKey( info, "needpass", va( "%i", server->needpass ) );   // NERVE - SMF
-		Info_SetValueForKey( info, "gamename", server->gameName );  // Arnout
+		Info_SetValueForKey( info, "hostname", server->hostName, qfalse );
+		Info_SetValueForKey( info, "serverload", va( "%i", server->load ), qfalse );
+		Info_SetValueForKey( info, "mapname", server->mapName, qfalse );
+		Info_SetValueForKey( info, "label", server->label, qfalse );
+		Info_SetValueForKey( info, "clients", va( "%i", server->clients ), qfalse );
+		Info_SetValueForKey( info, "bots", va( "%i", server->bots ), qfalse );
+		Info_SetValueForKey( info, "sv_maxclients", va( "%i", server->maxClients ), qfalse );
+		Info_SetValueForKey( info, "ping", va( "%i", server->ping ), qfalse );
+		Info_SetValueForKey( info, "minping", va( "%i", server->minPing ), qfalse );
+		Info_SetValueForKey( info, "maxping", va( "%i", server->maxPing ), qfalse );
+		Info_SetValueForKey( info, "game", server->game, qfalse );
+		Info_SetValueForKey( info, "nettype", va( "%i", server->netType ), qfalse );
+		Info_SetValueForKey( info, "addr", NET_AdrToStringwPort( server->adr ), qfalse );
+		Info_SetValueForKey( info, "friendlyFire", va( "%i", server->friendlyFire ), qfalse );   // NERVE - SMF
+		Info_SetValueForKey( info, "needpass", va( "%i", server->needpass ), qfalse );   // NERVE - SMF
+		Info_SetValueForKey( info, "gamename", server->gameName, qfalse );  // Arnout
 		Q_strncpyz( buf, info, buflen );
 	}
 	else
@@ -880,11 +878,11 @@ void Key_KeynumToStringBuf( int keynum, char *buf, int buflen )
 Key_GetBindingBuf
 ====================
 */
-void Key_GetBindingBuf( int keynum, char *buf, int buflen )
+void Key_GetBindingBuf( int keynum, int team, char *buf, int buflen )
 {
-	char *value;
+	const char *value;
 
-	value = Key_GetBinding( keynum );
+	value = Key_GetBinding( keynum, team );
 
 	if ( value )
 	{
@@ -1175,16 +1173,12 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return 0;
 
 		case UI_KEY_GETBINDINGBUF:
-			VM_CheckBlock( args[2], args[3], "KEYGBB" );
-			Key_GetBindingBuf( args[ 1 ], VMA( 2 ), args[ 3 ] );
+			VM_CheckBlock( args[3], args[4], "KEYGBB" );
+			Key_GetBindingBuf( args[ 1 ], args[ 2 ], VMA( 3 ), args[ 4 ] );
 			return 0;
 
 		case UI_KEY_SETBINDING:
-			Key_SetBinding( args[ 1 ], VMA( 2 ) );
-			return 0;
-
-		case UI_KEY_BINDINGTOKEYS:
-			Key_GetBindingByString( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
+			Key_SetBinding( args[ 1 ], args[ 2 ], VMA( 3 ) ); // FIXME BIND
 			return 0;
 
 		case UI_KEY_ISDOWN:

@@ -178,7 +178,7 @@ void S_ChannelSetup( void )
 
 	* ( channel_t ** ) q = NULL;
 	freelist = p + MAX_CHANNELS - 1;
-	Com_DPrintf("%s", _( "Channel memory manager started\n" ));
+	Com_DPrintf( "Channel memory manager started\n" );
 }
 
 // =======================================================================

@@ -400,7 +400,7 @@ static fileHandle_t FS_HandleForFile( void )
 
 static FILE *FS_FileForHandle( fileHandle_t f )
 {
-	if ( f < 0 || f > MAX_FILE_HANDLES )
+	if ( f < 1 || f >= MAX_FILE_HANDLES )
 	{
 		Com_Error( ERR_DROP, "FS_FileForHandle: %d out of range", f );
 	}
@@ -3178,8 +3178,8 @@ void FS_NewDir_f( void )
 
 	if ( Cmd_Argc() < 2 )
 	{
-		Com_Printf(_( "usage: fdir <filter>\n" ));
-		Com_Printf(_( "example: fdir *q3dm*.bsp\n" ));
+		Com_Printf(_( "usage: fdir <filter>\n"
+		              "example: fdir *q3dm*.bsp\n" ));
 		return;
 	}
 
@@ -3362,12 +3362,12 @@ void FS_AddGameDirectory( const char *path, const char *dir )
 	searchpath_t *search;
 	pack_t       *pak;
 	char         *pakfile;
-	int          numfiles;
+	int          numfiles, usedfiles = 0;
 	char         **pakfiles;
 //	char            *sorted[MAX_PAKFILES];
 	int          pakfilesi = 0;
 //	char     **pakfilestmp;
-	int          numdirs;
+	int          numdirs, useddirs = 0;
 	char         **pakdirs;
 	int          pakdirsi = 0;
 // JPW NERVE
@@ -3419,12 +3419,6 @@ void FS_AddGameDirectory( const char *path, const char *dir )
 
 	qsort( pakfiles, numfiles, sizeof( char * ), paksort );
 	qsort( pakdirs, numdirs, sizeof( char * ), paksort );
-
-	// Log may not be initialized at this point, but it will still show in the console.
-	if ( !com_fullyInitialized )
-	{
-		Com_Printf( "FS_AddGameDirectory(\"%s\", \"%s\") found %d .pk3 and %d .pk3dir\n", path, dir, numfiles, numdirs );
-	}
 
 #if 0
 	for ( ; ( pakfilesi + pakdirsi ) < ( numfiles + numdirs ); )
@@ -3542,6 +3536,7 @@ void FS_AddGameDirectory( const char *path, const char *dir )
 		fs_searchpaths = search;
 
 		pakfilesi++;
+		++usedfiles;
 	}
 
 	while ( pakdirsi < numdirs )
@@ -3574,6 +3569,13 @@ void FS_AddGameDirectory( const char *path, const char *dir )
 		fs_searchpaths = search;
 
 		pakdirsi++;
+		++useddirs;
+	}
+
+	// Log may not be initialized at this point, but it will still show in the console.
+	if ( !com_fullyInitialized )
+	{
+		Com_Printf( "FS_AddGameDirectory(\"%s\", \"%s\") found %d .pk3 and %d .pk3dir\n", path, dir, usedfiles, useddirs );
 	}
 
 	// done
@@ -4716,7 +4718,7 @@ void FS_Restart( int checksumFeed )
 		{
 			FS_PureServerSetLoadedPaks( "", "" );
 			Cvar_Set( "fs_basepath", lastValidBase );
-			Cvar_Set( "fs_gamedirvar", lastValidGame );
+			Cvar_Set( "fs_game", lastValidGame );
 			lastValidBase[ 0 ] = '\0';
 			lastValidGame[ 0 ] = '\0';
 			FS_Restart( checksumFeed );
@@ -4755,10 +4757,16 @@ void FS_Restart( int checksumFeed )
 
 				// exec the config
 				Cbuf_AddText( va( "exec profiles/%s/%s\n", cl_profileStr, CONFIG_NAME ) );
+#ifndef DEDICATED
+				Cbuf_AddText( va( "exec profiles/%s/%s\n", cl_profileStr, KEYBINDINGS_NAME ) );
+#endif
 			}
 			else
 			{
 				Cbuf_AddText( va( "exec %s\n", CONFIG_NAME ) );
+#ifndef DEDICATED
+				Cbuf_AddText( va( "exec %s\n", KEYBINDINGS_NAME ) );
+#endif
 			}
 		}
 	}

@@ -34,6 +34,7 @@ Maryland 20850 USA.
 
 // console.c
 
+#include <time.h>
 #include "revision.h"
 #include "client.h"
 
@@ -66,9 +67,6 @@ cvar_t    *scr_conBarColorGreen;
 cvar_t    *scr_conUseOld;
 cvar_t    *scr_conBarSize;
 cvar_t    *scr_conHeight;
-
-// DHM - Nerve :: Must hold CTRL + SHIFT + ~ to get console
-cvar_t    *con_restricted;
 
 #define DEFAULT_CONSOLE_WIDTH 78
 #define MAX_CONSOLE_WIDTH   1024
@@ -149,11 +147,6 @@ Con_ToggleConsole_f
 void Con_ToggleConsole_f( void )
 {
 	con.acLength = 0;
-
-	if ( con_restricted->integer && ( !keys[ K_CTRL ].down || !keys[ K_SHIFT ].down ) )
-	{
-		return;
-	}
 
 	// ydnar: persistent console input is more useful
 	// Arnout: added cvar
@@ -242,13 +235,24 @@ void Con_Dump_f( void )
 	fileHandle_t f;
 	char         name[ MAX_STRING_CHARS ];
 
-	if ( Cmd_Argc() != 2 )
+	l = Cmd_Argc();
+
+	if ( l > 2 )
 	{
-		Com_Printf("%s", _( "usage: condump <filename>\n" ));
+		Com_Printf("%s", _( "usage: condump [filename]\n" ));
 		return;
 	}
 
-	Q_snprintf( name, sizeof( name ), "condump/%s", Cmd_Argv( 1 ) );
+	if ( l == 1 )
+	{
+		time_t now = time( NULL );
+		strftime( name, sizeof( name ), "condump/%Y%m%d-%H%M%S%z.txt",
+		          localtime( &now ) );
+	}
+	else
+	{
+		Q_snprintf( name, sizeof( name ), "condump/%s", Cmd_Argv( 1 ) );
+	}
 
 	Com_Printf(_( "Dumped console text to %s.\n"), name );
 
@@ -374,7 +378,7 @@ void Con_Grep_f( void )
 				// allocate in 16K chunks - more than adequate
 				pbAlloc = ( pbLength + i + 1 + 16383) & ~16383;
 				nb = Z_Malloc( pbAlloc );
-				if( printbuf ) 
+				if( printbuf )
 				{
 					strcpy( nb, printbuf );
 					Z_Free( printbuf );
@@ -386,7 +390,7 @@ void Con_Grep_f( void )
 		}
 	}
 
-	if( printbuf ) 
+	if( printbuf )
 	{
 		char tmpbuf[ MAXPRINTMSG ];
 		int i;
@@ -512,7 +516,6 @@ void Con_Init( void )
 	con_notifytime = Cvar_Get( "con_notifytime", "7", 0 );  // JPW NERVE increased per id req for obits
 	con_conspeed = Cvar_Get( "scr_conspeed", "3", 0 );
 	con_autoclear = Cvar_Get( "con_autoclear", "1", CVAR_ARCHIVE );
-	con_restricted = Cvar_Get( "con_restricted", "0", CVAR_INIT );  // DHM - Nerve
 
 	// Defines cvar for color and alpha for console/bar under console
 	scr_conUseShader = Cvar_Get( "scr_conUseShader", "0", CVAR_ARCHIVE );
@@ -964,13 +967,13 @@ void Con_DrawSolidConsole( float frac )
 		color[ 0 ] = scr_conColorRed->value;
 		color[ 1 ] = scr_conColorGreen->value;
 		color[ 2 ] = scr_conColorBlue->value;
-		color[ 3 ] = frac * 2 * scr_conColorAlpha->value;
+		color[ 3 ] = ( frac / con.finalFrac ) * 2 * scr_conColorAlpha->value;
 		SCR_FillRect( 10, 10, 620, 460 * scr_conHeight->integer * 0.01, color );
 
 		color[ 0 ] = scr_conBarColorRed->value;
 		color[ 1 ] = scr_conBarColorGreen->value;
 		color[ 2 ] = scr_conBarColorBlue->value;
-		color[ 3 ] = frac * 2 * scr_conBarColorAlpha->value;
+		color[ 3 ] = ( frac / con.finalFrac ) * 2 * scr_conBarColorAlpha->value;
 		SCR_FillRect( 10, 10, 620, 1, color );  //top
 		SCR_FillRect( 10, 460 * scr_conHeight->integer * 0.01 + 10, 621, 1, color );  //bottom
 		SCR_FillRect( 10, 10, 1, 460 * scr_conHeight->integer * 0.01, color );  //left
@@ -982,7 +985,7 @@ void Con_DrawSolidConsole( float frac )
 	color[ 0 ] = 1.0f;
 	color[ 1 ] = 1.0f;
 	color[ 2 ] = 1.0f;
-	color[ 3 ] = ( scr_conUseOld->integer ? 0.75f : frac * 0.75f );
+	color[ 3 ] = ( scr_conUseOld->integer ? 0.75f : ( frac / con.finalFrac ) * 0.75f );
 	re.SetColor( color );
 
 	i = strlen( Q3_VERSION );
@@ -1044,7 +1047,7 @@ void Con_DrawSolidConsole( float frac )
 		color[ 0 ] = 1.0f;
 		color[ 1 ] = 0.0f;
 		color[ 2 ] = 0.0f;
-		color[ 3 ] = ( scr_conUseOld->integer ? 1.0f : frac * 2.0f );
+		color[ 3 ] = ( scr_conUseOld->integer ? 1.0f : ( frac / con.finalFrac ) * 2.0f );
 		re.SetColor( color );
 
 		for ( x = 0; x < con.linewidth - ( scr_conUseOld->integer ? 0 : 4 ); x += 4 )
@@ -1067,7 +1070,7 @@ void Con_DrawSolidConsole( float frac )
 	color[ 0 ] = g_color_table[ currentColor ][ 0 ];
 	color[ 1 ] = g_color_table[ currentColor ][ 1 ];
 	color[ 2 ] = g_color_table[ currentColor ][ 2 ];
-	color[ 3 ] = ( scr_conUseOld->integer ? 1.0f : frac * 2.0f );
+	color[ 3 ] = ( scr_conUseOld->integer ? 1.0f : ( frac / con.finalFrac ) * 2.0f );
 	re.SetColor( color );
 
 	for ( i = 0; i < rows; i++, y -= charHeight, row-- )
@@ -1097,7 +1100,7 @@ void Con_DrawSolidConsole( float frac )
 				color[ 0 ] = g_color_table[ currentColor ][ 0 ];
 				color[ 1 ] = g_color_table[ currentColor ][ 1 ];
 				color[ 2 ] = g_color_table[ currentColor ][ 2 ];
-				color[ 3 ] = ( scr_conUseOld->integer ? 1.0f : frac * 2.0f );
+				color[ 3 ] = ( scr_conUseOld->integer ? 1.0f : 1.0f );
 				re.SetColor( color );
 			}
 
@@ -1165,7 +1168,7 @@ void Con_RunConsole( void )
 		}
 		else
 		{
-			con.finalFrac = 0.5;
+			con.finalFrac = scr_conHeight->integer * .01;
 		}
 	}
 	else

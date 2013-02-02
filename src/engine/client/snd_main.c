@@ -2,18 +2,18 @@
 ===========================================================================
 This file is part of Daemon.
 
-OpenTrem is free software; you can redistribute it
+Daemon is free software; you can redistribute it
 and/or modify it under the terms of the GNU General Public License as
 published by the Free Software Foundation; either version 2 of the License,
 or (at your option) any later version.
 
-OpenTrem is distributed in the hope that it will be
+Daemon is distributed in the hope that it will be
 useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Tremulous; if not, write to the Free Software
+along with Daemon; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
@@ -126,8 +126,14 @@ void S_StartLocalSound( sfxHandle_t sfx, int channelNum )
 	}
 }
 
+/**
+ * start background track gets used for example for the menu-intro or other background music-tracks
+ */
 void S_StartBackgroundTrack( const char *intro, const char *loop )
 {
+	if( S_IsMuted())
+		return;
+
 	if( si.StartBackgroundTrack )
 	{
 		si.StartBackgroundTrack( intro, loop );
@@ -217,6 +223,19 @@ void S_UpdateEntityPosition( int entityNum, const vec3_t origin )
 
 void S_Update( void )
 {
+	/*
+	 * explicit stop as fix for the DMA backend continuing looping without regard to s_mute-cvars
+	 *
+	 * since this is mostly limited to environment sounds and a restart is prevented either way
+	 * it should not produce any stutter as former solutions did via S_Update
+	 *
+	 */
+	if (S_IsMuted())
+	{
+		S_ClearLoopingSounds(qtrue);
+		S_StopBackgroundTrack();
+	}
+
 	if( si.Update )
 	{
 		si.Update( );

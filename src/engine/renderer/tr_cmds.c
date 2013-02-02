@@ -691,7 +691,7 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 			ri.Cvar_Set( "r_measureOverdraw", "0" );
 			r_measureOverdraw->modified = qfalse;
 		}
-		else if ( r_shadows->integer == 2 )
+		else if ( r_shadows->integer >= 2 )
 		{
 			ri.Printf( PRINT_ALL, "Warning: stencil shadows and overdraw measurement are mutually exclusive\n" );
 			ri.Cvar_Set( "r_measureOverdraw", "0" );
@@ -734,11 +734,11 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 	//
 	// anisotropic filtering stuff
 	//
-	if ( r_textureAnisotropy->modified )
+	if ( r_ext_texture_filter_anisotropic->modified )
 	{
 		R_SyncRenderThread();
-		GL_TextureAnisotropy( r_textureAnisotropy->value );
-		r_textureAnisotropy->modified = qfalse;
+		GL_TextureAnisotropy( r_ext_texture_filter_anisotropic->value );
+		r_ext_texture_filter_anisotropic->modified = qfalse;
 	}
 
 	//

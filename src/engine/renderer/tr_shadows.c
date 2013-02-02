@@ -304,7 +304,7 @@ overlap and double darken.
 */
 void RB_ShadowFinish( void )
 {
-	if ( r_shadows->integer != 2 )
+	if ( r_shadows->integer < 2 )
 	{
 		return;
 	}

@@ -34,7 +34,7 @@ Maryland 20850 USA.
 
 // client.h -- primary header for client
 
-#include "../../../src/engine/qcommon/q_shared.h"
+#include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "../renderer/tr_public.h"
 #include "keys.h"
@@ -330,6 +330,7 @@ typedef struct
 	char     label[ MAX_FEATLABEL_CHARS ]; // for featured servers, NULL otherwise
 	int      netType;
 	int      clients;
+	int      bots;
 	int      maxClients;
 	int      minPing;
 	int      maxPing;
@@ -355,6 +356,8 @@ typedef struct
 	qboolean soundRegistered;
 	qboolean uiStarted;
 	qboolean cgameStarted;
+
+	qboolean cgameCVarsRegistered;
 
 	int      framecount;
 	int      frametime; // msec since last frame
@@ -504,6 +507,8 @@ extern  cvar_t *cl_consoleFont;
 extern  cvar_t *cl_consoleFontSize;
 extern  cvar_t *cl_consoleFontKerning;
 extern  cvar_t *cl_consolePrompt;
+extern  cvar_t *cl_consoleCommand;
+
 // XreaL BEGIN
 extern cvar_t  *cl_aviFrameRate;
 extern cvar_t  *cl_aviMotionJpeg;
@@ -789,6 +794,7 @@ void          Cin_OGM_Shutdown( void );
 // cl_cgame.c
 //
 void     CL_InitCGame( void );
+void     CL_InitCGameCVars( void );
 void     CL_ShutdownCGame( void );
 qboolean CL_GameCommand( void );
 qboolean CL_GameConsoleText( void );

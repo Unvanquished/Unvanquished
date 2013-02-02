@@ -32,18 +32,20 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "../../gamelogic/ui/keycodes.h"
+#include "keycodes.h"
+
+#define MAX_TEAMS 4
 
 typedef struct
 {
 	qboolean down;
 	int      repeats; // if > 1, it is autorepeating
-	char     *binding;
-	int      hash;
+	char     *binding[ MAX_TEAMS ];
 } qkey_t;
 
 extern qboolean key_overstrikeMode;
 extern qkey_t   keys[ MAX_KEYS ];
+extern int      bindTeam;
 
 // NOTE TTimo the declaration of field_t and Field_Clear is now in qcommon/qcommon.h
 
@@ -58,14 +60,16 @@ extern int      anykeydown;
 extern qboolean chat_irc;
 
 void            Key_WriteBindings( fileHandle_t f );
-void            Key_SetBinding( int keynum, const char *binding );
-void            Key_GetBindingByString( const char *binding, int *key1, int *key2 );
-char            *Key_GetBinding( int keynum );
+void            Key_SetBinding( int keynum, int team, const char *binding );
+void            Key_GetBindingByString( const char *binding, int team, int *key1, int *key2 );
+const char      *Key_GetBinding( int keynum, int team );
 qboolean        Key_IsDown( int keynum );
 qboolean        Key_GetOverstrikeMode( void );
 void            Key_SetOverstrikeMode( qboolean state );
 void            Key_ClearStates( void );
-int             Key_GetKey( const char *binding );
+int             Key_GetKey( const char *binding, int team );
+
+void            Key_SetTeam( int newTeam );
 
 #ifndef DEDICATED
 // from cl_input.c

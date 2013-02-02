@@ -423,7 +423,7 @@ int G_GetBuildPoints( const vec3_t pos, team_t team )
 	{
 		gentity_t *powerPoint = G_PowerEntityForPoint( pos );
 
-		if ( !g_humanRepeaterBuildPoints.integer || powerPoint && powerPoint->s.modelindex == BA_H_REACTOR )
+		if ( !g_humanRepeaterBuildPoints.integer || ( powerPoint && powerPoint->s.modelindex == BA_H_REACTOR ) )
 		{
 			return level.humanBuildPoints;
 		}

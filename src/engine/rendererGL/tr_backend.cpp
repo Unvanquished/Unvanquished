@@ -902,6 +902,52 @@ void GL_VertexAttribsState( uint32_t stateBits )
 		}
 	}
 
+#endif
+
+	if ( diff & ATTR_AMBIENTLIGHT )
+	{
+		if ( stateBits & ATTR_AMBIENTLIGHT )
+		{
+			if ( r_logFile->integer )
+			{
+				GLimp_LogComment( "glEnableVertexAttribArray( ATTR_INDEX_AMBIENTLIGHT )\n" );
+			}
+
+			glEnableVertexAttribArray( ATTR_INDEX_AMBIENTLIGHT );
+		}
+		else
+		{
+			if ( r_logFile->integer )
+			{
+				GLimp_LogComment( "glDisableVertexAttribArray( ATTR_INDEX_AMBIENTLIGHT )\n" );
+			}
+
+			glDisableVertexAttribArray( ATTR_INDEX_AMBIENTLIGHT );
+		}
+	}
+
+	if ( diff & ATTR_DIRECTEDLIGHT )
+	{
+		if ( stateBits & ATTR_DIRECTEDLIGHT )
+		{
+			if ( r_logFile->integer )
+			{
+				GLimp_LogComment( "glEnableVertexAttribArray( ATTR_INDEX_DIRECTEDLIGHT )\n" );
+			}
+
+			glEnableVertexAttribArray( ATTR_INDEX_DIRECTEDLIGHT );
+		}
+		else
+		{
+			if ( r_logFile->integer )
+			{
+				GLimp_LogComment( "glDisableVertexAttribArray( ATTR_INDEX_DIRECTEDLIGHT )\n" );
+			}
+
+			glDisableVertexAttribArray( ATTR_INDEX_DIRECTEDLIGHT );
+		}
+	}
+
 	if ( diff & ATTR_LIGHTDIRECTION )
 	{
 		if ( stateBits & ATTR_LIGHTDIRECTION )
@@ -923,8 +969,6 @@ void GL_VertexAttribsState( uint32_t stateBits )
 			glDisableVertexAttribArray( ATTR_INDEX_LIGHTDIRECTION );
 		}
 	}
-
-#endif
 
 	if ( diff & ATTR_BONE_INDEXES )
 	{
@@ -1169,6 +1213,30 @@ void GL_VertexAttribPointers( uint32_t attribBits )
 		glState.vertexAttribPointersSet |= ATTR_PAINTCOLOR;
 	}
 
+#endif // #if !defined(COMPAT_Q3A) && !defined(COMPAT_ET)
+
+	if ( ( attribBits & ATTR_AMBIENTLIGHT ) )
+	{
+		if ( r_logFile->integer )
+		{
+			GLimp_LogComment( "glVertexAttribPointer( ATTR_INDEX_AMBIENTLIGHT )\n" );
+		}
+
+		glVertexAttribPointer( ATTR_INDEX_AMBIENTLIGHT, 3, GL_FLOAT, 0, 16, BUFFER_OFFSET( glState.currentVBO->ofsAmbientLight ) );
+		glState.vertexAttribPointersSet |= ATTR_AMBIENTLIGHT;
+	}
+
+	if ( ( attribBits & ATTR_DIRECTEDLIGHT ) )
+	{
+		if ( r_logFile->integer )
+		{
+			GLimp_LogComment( "glVertexAttribPointer( ATTR_INDEX_DIRECTEDLIGHT )\n" );
+		}
+
+		glVertexAttribPointer( ATTR_INDEX_DIRECTEDLIGHT, 3, GL_FLOAT, 0, 16, BUFFER_OFFSET( glState.currentVBO->ofsDirectedLight ) );
+		glState.vertexAttribPointersSet |= ATTR_DIRECTEDLIGHT;
+	}
+
 	if ( ( attribBits & ATTR_LIGHTDIRECTION ) )
 	{
 		if ( r_logFile->integer )
@@ -1179,8 +1247,6 @@ void GL_VertexAttribPointers( uint32_t attribBits )
 		glVertexAttribPointer( ATTR_INDEX_LIGHTDIRECTION, 3, GL_FLOAT, 0, 16, BUFFER_OFFSET( glState.currentVBO->ofsLightDirections ) );
 		glState.vertexAttribPointersSet |= ATTR_LIGHTDIRECTION;
 	}
-
-#endif // #if !defined(COMPAT_Q3A) && !defined(COMPAT_ET)
 
 	if ( ( attribBits & ATTR_BONE_INDEXES ) )
 	{
@@ -1344,11 +1410,15 @@ static void RB_SetGL2D( void )
 	backEnd.refdef.floatTime = backEnd.refdef.time * 0.001f;
 }
 
+// used as bitfield
 enum renderDrawSurfaces_e
 {
-  DRAWSURFACES_WORLD_ONLY,
-  DRAWSURFACES_ENTITIES_ONLY,
-  DRAWSURFACES_ALL
+  DRAWSURFACES_WORLD         = 1,
+  DRAWSURFACES_FAR_ENTITIES  = 2,
+  DRAWSURFACES_ALL_FAR       = 3,
+  DRAWSURFACES_NEAR_ENTITIES = 4,
+  DRAWSURFACES_ALL_ENTITIES  = 6,
+  DRAWSURFACES_ALL           = 7
 };
 
 static void RB_RenderDrawSurfaces( bool opaque, bool depthFill, renderDrawSurfaces_e drawSurfFilter )
@@ -1380,27 +1450,16 @@ static void RB_RenderDrawSurfaces( bool opaque, bool depthFill, renderDrawSurfac
 		lightmapNum = drawSurf->lightmapNum;
 		fogNum = drawSurf->fogNum;
 
-		switch ( drawSurfFilter )
-		{
-			case DRAWSURFACES_WORLD_ONLY:
-				if ( entity != &tr.worldEntity )
-				{
-					continue;
-				}
-
-				break;
-
-			case DRAWSURFACES_ENTITIES_ONLY:
-				if ( entity == &tr.worldEntity )
-				{
-					continue;
-				}
-
-				break;
-
-			case DRAWSURFACES_ALL:
-				break;
-		};
+		if( entity == &tr.worldEntity ) {
+			if( !( drawSurfFilter & DRAWSURFACES_WORLD ) )
+				continue;
+		} else if( !( entity->e.renderfx & RF_DEPTHHACK ) ) {
+			if( !( drawSurfFilter & DRAWSURFACES_FAR_ENTITIES ) )
+				continue;
+		} else {
+			if( !( drawSurfFilter & DRAWSURFACES_NEAR_ENTITIES ) )
+				continue;
+		}
 
 		if ( glConfig2.occlusionQueryBits && glConfig.driverType != GLDRV_MESA && r_dynamicEntityOcclusionCulling->integer && !entity->occlusionQuerySamples )
 		{
@@ -6935,6 +6994,50 @@ void RB_RenderBloom()
 	GL_CheckErrors();
 }
 
+void RB_RenderMotionBlur( void )
+{
+	static vec4_t quadVerts[4] = {
+		{ -1.0f, -1.0f, 0.0f, 1.0f },
+		{  1.0f, -1.0f, 0.0f, 1.0f },
+		{  1.0f,  1.0f, 0.0f, 1.0f },
+		{ -1.0f,  1.0f, 0.0f, 1.0f }
+	};
+
+	GLimp_LogComment( "--- RB_RenderMotionBlur ---\n" );
+
+	if ( ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) || backEnd.viewParms.isPortal || !glConfig2.framebufferObjectAvailable )
+	{
+		return;
+	}
+
+	GL_State( GLS_DEPTHTEST_DISABLE );
+	GL_Cull( CT_TWO_SIDED );
+
+	GL_SelectTexture( 0 );
+	GL_Bind( tr.currentRenderImage );
+	glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0,
+			     tr.currentRenderImage->uploadWidth,
+			     tr.currentRenderImage->uploadHeight );
+
+	GL_Bind( tr.depthRenderImage );
+	glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, 0,
+			     tr.depthRenderImage->uploadWidth,
+			     tr.depthRenderImage->uploadHeight );
+
+	gl_motionblurShader->BindProgram();
+	gl_motionblurShader->SetUniform_blurVec(tr.refdef.blurVec);
+
+	GL_SelectTexture( 0 );
+	GL_Bind( tr.currentRenderImage );
+	GL_SelectTexture( 1 );
+	GL_Bind( tr.depthRenderImage );
+
+	// draw quad
+	Tess_InstantQuad( quadVerts );
+
+	GL_CheckErrors();
+}
+
 void RB_RenderRotoscope( void )
 {
 #if 0 //!defined(GLSL_COMPILE_STARTUP_ONLY)
@@ -10851,13 +10954,25 @@ static void RB_RenderView( void )
 		{
 			// draw everything from world that is opaque into black so we can benefit from early-z rejections later
 			//RB_RenderOpaqueSurfacesIntoDepth(true);
-			RB_RenderDrawSurfaces( true, false, DRAWSURFACES_WORLD_ONLY );
+			RB_RenderDrawSurfaces( true, false, DRAWSURFACES_WORLD );
 
 			// try to cull entities using hardware occlusion queries
 			RB_RenderEntityOcclusionQueries();
 
 			// draw everything that is opaque
-			RB_RenderDrawSurfaces( true, false, DRAWSURFACES_ENTITIES_ONLY );
+			RB_RenderDrawSurfaces( true, false, DRAWSURFACES_ALL_ENTITIES );
+		}
+		else if( tr.refdef.blurVec[0] != 0.0f ||
+			 tr.refdef.blurVec[1] != 0.0f ||
+			 tr.refdef.blurVec[2] != 0.0f )
+		{
+			// draw everything that is not the gun
+			RB_RenderDrawSurfaces( true, false, DRAWSURFACES_ALL_FAR );
+
+			RB_RenderMotionBlur();
+
+			// draw the gun and other "near" stuff
+			RB_RenderDrawSurfaces( true, false, DRAWSURFACES_NEAR_ENTITIES );
 		}
 		else
 		{

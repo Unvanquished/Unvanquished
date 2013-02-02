@@ -235,7 +235,7 @@ itemDef
 itemDef
 {
 	name "teamoverlay"
-	rect BORDER 175 200 128
+	rect BORDER 175 250 128
 	style WINDOW_STYLE_EMPTY
 	visible MENU_TRUE
 	decoration

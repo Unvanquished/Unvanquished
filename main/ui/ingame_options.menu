@@ -380,7 +380,7 @@
 	BINDX	( misc, "Scroll Scores Up:", "scoresUp", 1 )
 	BINDX	( misc, "Scroll Score Down:", "scoresDown", 2 )
 	BINDX	( misc, "Deconstruct Structure:", "if alt \"/deconstruct marked\" /deconstruct", 3 )
-	BINDX	( misc, "Screenshot:", "screenshotJPEG", 4 )
+	BINDX	( misc, "Screenshot:", "if shift /screenshotJPEG /screenshotPNG", 4 )
 
 //////// SYSTEM
 
@@ -412,50 +412,40 @@
 			"High" 0 "Intermediate" 1 "Low" 2 "Very Low" 3 "Custom" 4,
 			play "sound/misc/menu1.wav"; uiScript update "ui_glCustom",
 			0 )
-	YESNOX	( ghardware, "GL Extensions:", "r_allowExtensions",
-			play "sound/misc/menu1.wav",
-			1 )
 	COMBOX	( ghardware, "Video Mode:", FEEDER_RESOLUTIONS,
-			2 )
-	MULTIX	( ghardware, "Color Depth:", "r_colorbits",
-			"Default" 0 "16 bit" 16 "32 bit" 32,
-			play "sound/misc/menu1.wav"; uiScript glCustom; uiScript update "r_colorbits",
-			3 )
+			1 )
 	YESNOX	( ghardware, "Fullscreen:", "r_fullscreen",
 			play "sound/misc/menu1.wav"; uiScript glCustom,
-			4 )
+			2 )
 	MULTIX	( ghardware, "Lighting:", "r_vertexLighting",
 			"Light Map (high)" 0 "Vertex (low)" 1,
 			play "sound/misc/menu1.wav"; uiScript glCustom,
+			3 )
+	MULTIX	( ghardware, "Shadows:", "cg_shadows",
+			"No" 0 "Blobs" 1 "Exponential mapping" 3 "Variance mapping" 5 "Exponential variance" 6,
+			play "sound/misc/menu1.wav"; uiScript glCustom,
+			4 )
+	YESNOX	( ghardware, "Compress Textures:", "r_ext_compressed_textures",
+			play "sound/misc/menu1.wav"; uiScript glCustom,
 			5 )
-	MULTIX	( ghardware, "Geometric Detail:", "r_lodbias",
-			"High" 0 "Medium" 1 "Low" 2,
-			play "sound/misc/menu1.wav"; uiScript glCustom; uiScript update "r_lodbias",
-			6 )
 	MULTIX	( ghardware, "Texture Detail:", "r_picmip",
 			"Low" 2 "Intermediate" 1 "High" 0,
 			play "sound/misc/menu1.wav"; uiScript glCustom,
-			7 )
-	MULTIX	( ghardware, "Texture Quality:", "r_texturebits",
-			"Default" 0 "16 bit" 16 "32 bit" 32,
-			play "sound/misc/menu1.wav",
-			8 )
+			6 )
 	MULTIX	( ghardware, "Texture Filter:", "r_texturemode",
 			"Bilinear" GL_LINEAR_MIPMAP_NEAREST "Trilinear" GL_LINEAR_MIPMAP_LINEAR,
 			play "sound/misc/menu1.wav"; uiScript glCustom,
-			9 )
-	YESNOX	( ghardware, "Anisotropic Filtering:", "r_ext_texture_filter_anisotropic",
-			play "sound/misc/menu1.wav"; uiScript glCustom,
-			10 )
-	YESNOX	( ghardware, "Compress Textures:", "r_ext_compressed_textures",
-			play "sound/misc/menu1.wav"; uiScript glCustom,
-			11 )
+			7 )
 	MULTIX	( ghardware, "Multisampling:", "r_ext_multisample",
-			"No" 0 "2x" 2 "4x" 4 "6x" 6,
-			play "sound/misc/menu1.wav",
-			12 )
+			"No" 0 "2×" 2 "4×" 4 "8×" 8 "16×" 16,
+			play "sound/misc/menu1.wav"; uiScript glCustom,
+			8 )
+	MULTIX	( ghardware, "Anisotropic Filtering:", "r_ext_texture_filter_anisotropic",
+			"No" 0 "2×" 2 "4×" 4 "8×" 8 "16×" 16,
+			play "sound/misc/menu1.wav"; uiScript glCustom,
+			9 )
 	BUTTONX	( ghardware, "APPLY", play "sound/misc/menu1.wav"; exec "vid_restart",
-			13 )
+			10 )
 
 //////// GFX SOFTWARE
 
@@ -486,19 +476,21 @@
 	YESNOX	( gsoftware, "Mark On Walls:", "cg_marks", play "sound/misc/menu1.wav", 2 )
 	YESNOX	( gsoftware, "Dynamic Lights:", "r_dynamiclight", play "sound/misc/menu1.wav", 3 )
 	YESNOX	( gsoftware, "Draw Gun:", "cg_drawGun", play "sound/misc/menu1.wav", 4 )
-	YESNOX	( gsoftware, "Low Quality Sky:", "r_fastsky", play "sound/misc/menu1.wav", 5 )
-	YESNOX	( gsoftware, "Sync Every Frame:", "r_swapinterval", play "sound/misc/menu1.wav", 6 )
-	YESNOX	( gsoftware, "In Game Videos:", "r_inGameVideo", play "sound/misc/menu1.wav", 7 )
-	YESNOX	( gsoftware, "Depth Sort Particles:", "cg_depthSortParticles", play "sound/misc/menu1.wav", 8 )
+	YESNOX	( gsoftware, "Sync Every Frame:", "r_swapinterval", play "sound/misc/menu1.wav", 5 )
+	YESNOX	( gsoftware, "In Game Videos:", "r_inGameVideo", play "sound/misc/menu1.wav", 6 )
+	YESNOX	( gsoftware, "Depth Sort Particles:", "cg_depthSortParticles", play "sound/misc/menu1.wav", 7 )
 	MULTIX	( gsoftware, "Particle Physics:", "cg_bounceParticles",
 			"Low Quality" 0 "High Quality" 1,
 			play "sound/misc/menu1.wav",
-			9 )
+			8 )
 	MULTIX	( gsoftware, "Light Flares:", "cg_lightFlare",
 			"Off" 0 "No Fade" 1 "Timed Fade" 2 "Real Fade" 3,
 			play "sound/misc/menu1.wav",
-			10 )
+			9 )
 	YESNOX	( gsoftware, "Bloom:", "r_bloom",
+			play "sound/misc/menu1.wav"; uiScript glCustom,
+			10 )
+    YESNOX	( gsoftware, "Rim Lighting:", "r_rimlighting",
 			play "sound/misc/menu1.wav"; uiScript glCustom,
 			11 )
 

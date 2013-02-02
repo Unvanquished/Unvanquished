@@ -326,8 +326,7 @@ const char *String_Alloc( const char *p )
 void String_Report( void )
 {
 	float f;
-	Com_Printf("%s", "Memory/String Pool Info\n" );
-	Com_Printf( "----------------\n" );
+	Com_Printf( "Memory/String Pool Info\n----------------\n" );
 	f = strPoolIndex;
 	f /= STRING_POOL_SIZE;
 	f *= 100;
@@ -2558,6 +2557,7 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 	int         emoticonWidth;
 	float       cursorX = -1, cursorW = EDIT_CURSOR_WIDTH;
 	float       startX = x;
+	int         notColour = 0;
 
 	const fontMetrics_t *font;
 
@@ -2597,23 +2597,39 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 			break;
 		}
 
-		if ( cursorPos < 0 )
+		if ( !notColour && Q_IsColorString( s ) )
 		{
-			if ( Q_IsColorString( s ) )
+			memcpy( newColor, g_color_table[ ColorIndex( * ( s + 1 ) ) ],
+				sizeof( newColor ) );
+			newColor[ 3 ] = color[ 3 ];
+			DC->setColor( newColor );
+
+			if ( cursorPos < 0 )
 			{
-				memcpy( newColor, g_color_table[ ColorIndex( * ( s + 1 ) ) ],
-				        sizeof( newColor ) );
-				newColor[ 3 ] = color[ 3 ];
-				DC->setColor( newColor );
 				s += 2;
 				continue;
 			}
+		}
 
-			if ( *s == Q_COLOR_ESCAPE && s[1] == Q_COLOR_ESCAPE )
+		if ( !notColour && *s == Q_COLOR_ESCAPE && s[1] == Q_COLOR_ESCAPE )
+		{
+			if ( cursorPos < 0 )
 			{
 				++s;
 			}
+			else
+			{
+				notColour = 2;
+			}
+		}
 
+		if ( notColour )
+		{
+			--notColour;
+		}
+
+		if ( cursorPos < 0 )
+		{
 			if ( *s == INDENT_MARKER )
 			{
 				s++;
@@ -5255,7 +5271,7 @@ const char *Item_Text_Wrap( const char *text, float scale, float width )
 {
 	// Strings a little short of 32KB have been witnessed coming in from
 	// Item_Text_Wrapped_Paint() near map start-up. Just clip them to the buffer.
-	static char   out[ 4096 ];
+	static char   out[ 4096 - 128 ];
 	int           paint = 0;
 	char          c[ 3 ] = "";
 	const char    *p;
@@ -5963,96 +5979,69 @@ void Item_Cycle_Paint( itemDef_t *item )
 
 typedef struct
 {
-	char *command;
-	int  id;
-	int  defaultbind1;
-	int  defaultbind2;
-	int  bind1;
-	int  bind2;
-}
-
-bind_t;
-
-typedef struct
-{
 	char  *name;
 	float defaultvalue;
 	float value;
 }
-
 configcvar_t;
 
-static bind_t g_bindings[] =
+static const char *const g_bind_commands[] =
 {
-	{ "+scores",        K_TAB,              -1,            -1, -1 },
-	{ "+useitem",       K_ENTER,            -1,            -1, -1 },
-	{ "+speed",         K_SHIFT,            -1,            -1, -1 },
-	{ "+dodge",         'z',                -1,            -1, -1 }, // human dodging
-	{ "+sprint",        'x',                -1,            -1, -1 },
-	{ "+forward",       K_UPARROW,          -1,            -1, -1 },
-	{ "+back",          K_DOWNARROW,        -1,            -1, -1 },
-	{ "+moveleft",      ',',                -1,            -1, -1 },
-	{ "+moveright",     '.',                -1,            -1, -1 },
-	{ "+moveup",        K_SPACE,            -1,            -1, -1 },
-	{ "+movedown",      'c',                -1,            -1, -1 },
-	{ "+left",          K_LEFTARROW,        -1,            -1, -1 },
-	{ "+right",         K_RIGHTARROW,       -1,            -1, -1 },
-	{ "+strafe",        K_ALT,              -1,            -1, -1 },
-	{ "+lookup",        K_PGDN,             -1,            -1, -1 },
-	{ "+lookdown",      K_DEL,              -1,            -1, -1 },
-	{ "+mlook",         '/',                -1,            -1, -1 },
-	{ "centerview",     K_END,              -1,            -1, -1 },
-	{ "+zoom",          -1,                 -1,            -1, -1 },
-	{ "+voiprecord",    'n',                -1,            -1, -1 },
-	{ "weapon 1",       '1',                -1,            -1, -1 },
-	{ "weapon 2",       '2',                -1,            -1, -1 },
-	{ "weapon 3",       '3',                -1,            -1, -1 },
-	{ "weapon 4",       '4',                -1,            -1, -1 },
-	{ "weapon 5",       '5',                -1,            -1, -1 },
-	{ "weapon 6",       '6',                -1,            -1, -1 },
-	{ "weapon 7",       '7',                -1,            -1, -1 },
-	{ "weapon 8",       '8',                -1,            -1, -1 },
-	{ "weapon 9",       '9',                -1,            -1, -1 },
-	{ "weapon 10",      '0',                -1,            -1, -1 },
-	{ "weapon 11",      -1,                 -1,            -1, -1 },
-	{ "weapon 12",      -1,                 -1,            -1, -1 },
-	{ "weapon 13",      -1,                 -1,            -1, -1 },
-	{ "+attack",        K_MOUSE1,           -1,            -1, -1 },
-	{ "+attack2",       K_MOUSE2,           -1,            -1, -1 }, // secondary attack
-	{ "reload",         'r',                -1,            -1, -1 }, // reload
-	{ "buy ammo",       'b',                -1,            -1, -1 }, // buy ammo
-	{ "itemact medkit", 'm',                -1,            -1, -1 }, // use medkit
-	{ "+activate",      'q',                -1,            -1, -1 }, // buildable use
-	{ "if alt \"/deconstruct marked\" /deconstruct",
-	                    'e',                -1,            -1, -1 }, // buildable destroy
-	{ "weapprev",       '[',                -1,            -1, -1 },
-	{ "weapnext",       ']',                -1,            -1, -1 },
-	{ "+taunt",         K_MOUSE3,           -1,            -1, -1 },
-	{ "+rally",         'g',                -1,            -1, -1 },
-	{ "vote yes",       K_F1,               -1,            -1, -1 },
-	{ "vote no",        K_F2,               -1,            -1, -1 },
-	{ "teamvote yes",   K_F3,               -1,            -1, -1 },
-	{ "teamvote no",    K_F4,               -1,            -1, -1 },
-	{ "menu vsay_top",  'o',                -1,            -1, -1 },
-	{ "menu voip",      'p',                -1,            -1, -1 },
-	{ "scoresUp",       K_KP_PGUP,          -1,            -1, -1 },
-	{ "scoresDown",     K_KP_PGDN,          -1,            -1, -1 },
-	{ "screenshotJPEG", -1,                 -1,            -1, -1 },
-	{ "messagemode",    -1,                 -1,            -1, -1 },
-	{ "messagemode2",   -1,                 -1,            -1, -1 },
-	{ "messagemode3",   -1,                 -1,            -1, -1 },
-	{ "messagemode4",   -1,                 -1,            -1, -1 },
-	{ "messagemodec",   -1,                 -1,            -1, -1 }
+	"+activate",
+	"+attack",
+	"+attack2",
+	"+back",
+	"+dodge",
+	"+forward",
+	"+left",
+	"+lookdown",
+	"+lookup",
+	"+mlook",
+	"+movedown",
+	"+moveleft",
+	"+moveright",
+	"+moveup",
+	"+rally",
+	"+right",
+	"+scores",
+	"+speed",
+	"+sprint",
+	"+strafe",
+	"+taunt",
+	"+useitem",
+	"+voiprecord",
+	"buy ammo",
+	"centerview",
+	"if alt \"/deconstruct marked\" /deconstruct",
+	"itemact medkit",
+	"menu voip",
+	"menu vsay_top",
+	"messagemode",
+	"messagemode2",
+	"messagemode3",
+	"messagemode4",
+	"messagemodec"
+	"reload",
+	"scoresDown",
+	"scoresUp",
+	"if shift /screenshotJPEG /screenshotPNG",
+	"teamvote no",
+	"teamvote yes",
+	"vote no",
+	"vote yes",
+	"weapnext",
+	"weapprev",
 };
+#define g_bindCount ARRAY_LEN( g_bind_commands )
 
-static const size_t g_bindCount = ARRAY_LEN( g_bindings );
+static int g_bind_keys[ g_bindCount ][ 2 ];
 
 /*
 =================
 Controls_GetKeyAssignment
 =================
 */
-static void Controls_GetKeyAssignment( char *command, int *twokeys )
+static void Controls_GetKeyAssignment( const char *command, int *twokeys )
 {
 	int  count;
 	int  j;
@@ -6061,9 +6050,9 @@ static void Controls_GetKeyAssignment( char *command, int *twokeys )
 	twokeys[ 0 ] = twokeys[ 1 ] = -1;
 	count = 0;
 
-	for ( j = 0; j < 256; j++ )
+	for ( j = 0; j < MAX_KEYS; j++ )
 	{
-		DC->getBindingBuf( j, b, 256 );
+		DC->getBindingBuf( j, TEAM_NONE, b, sizeof( b ) ); // FIXME BIND
 
 		if ( *b == 0 )
 		{
@@ -6091,16 +6080,12 @@ Controls_GetConfig
 void Controls_GetConfig( void )
 {
 	int i;
-	int twokeys[ 2 ];
 
 	// iterate each command, get its numeric binding
 
 	for ( i = 0; i < g_bindCount; i++ )
 	{
-		Controls_GetKeyAssignment( g_bindings[ i ].command, twokeys );
-
-		g_bindings[ i ].bind1 = twokeys[ 0 ];
-		g_bindings[ i ].bind2 = twokeys[ 1 ];
+		Controls_GetKeyAssignment( g_bind_commands[ i ], g_bind_keys[ i ] );
 	}
 }
 
@@ -6117,13 +6102,13 @@ void Controls_SetConfig( qboolean restart )
 
 	for ( i = 0; i < g_bindCount; i++ )
 	{
-		if ( g_bindings[ i ].bind1 != -1 )
+		if ( g_bind_keys[ i ][ 0 ] != -1 )
 		{
-			DC->setBinding( g_bindings[ i ].bind1, g_bindings[ i ].command );
+			DC->setBinding( g_bind_keys[ i ][ 0 ], TEAM_ALL, g_bind_commands[ i ] ); // FIXME BIND
 
-			if ( g_bindings[ i ].bind2 != -1 )
+			if ( g_bind_keys[ i ][ 1 ] != -1 )
 			{
-				DC->setBinding( g_bindings[ i ].bind2, g_bindings[ i ].command );
+				DC->setBinding( g_bind_keys[ i ][ 1 ], TEAM_ALL, g_bind_commands[ i ] ); // FIXME BIND
 			}
 		}
 	}
@@ -6144,8 +6129,8 @@ void Controls_SetDefaults( void )
 
 	for ( i = 0; i < g_bindCount; i++ )
 	{
-		g_bindings[ i ].bind1 = g_bindings[ i ].defaultbind1;
-		g_bindings[ i ].bind2 = g_bindings[ i ].defaultbind2;
+		g_bind_keys[ i ][ 0 ] = -1;
+		g_bind_keys[ i ][ 1 ] = -1;
 	}
 }
 
@@ -6155,7 +6140,7 @@ int BindingIDFromName( const char *name )
 
 	for ( i = 0; i < g_bindCount; i++ )
 	{
-		if ( Q_stricmp( name, g_bindings[ i ].command ) == 0 )
+		if ( Q_stricmp( name, g_bind_commands[ i ] ) == 0 )
 		{
 			return i;
 		}
@@ -6164,8 +6149,7 @@ int BindingIDFromName( const char *name )
 	return -1;
 }
 
-char g_nameBind1[ 32 ];
-char g_nameBind2[ 32 ];
+char g_nameBind[ 96 ];
 
 void BindingFromName( const char *cvar )
 {
@@ -6175,33 +6159,37 @@ void BindingFromName( const char *cvar )
 
 	for ( i = 0; i < g_bindCount; i++ )
 	{
-		if ( Q_stricmp( cvar, g_bindings[ i ].command ) == 0 )
+		if ( Q_stricmp( cvar, g_bind_commands[ i ] ) == 0 )
 		{
-			b1 = g_bindings[ i ].bind1;
+			b2 = g_bind_keys[ i ][ 1 ];
+			b1 = g_bind_keys[ i ][ 0 ];
 
 			if ( b1 == -1 )
 			{
 				break;
 			}
 
-			DC->keynumToStringBuf( b1, g_nameBind1, 32 );
-			Q_strupr( g_nameBind1 );
-
-			b2 = g_bindings[ i ].bind2;
-
 			if ( b2 != -1 )
 			{
-				DC->keynumToStringBuf( b2, g_nameBind2, 32 );
-				Q_strupr( g_nameBind2 );
-				Q_strcat( g_nameBind1, 32, " or " );
-				strcat( g_nameBind1, g_nameBind2 );
+				char keyName[ 2 ][ 32 ];
+
+				DC->keynumToStringBuf( b1, keyName[ 0 ], sizeof( keyName[ 0 ] ) );
+				DC->keynumToStringBuf( b2, keyName[ 1 ], sizeof( keyName[ 1 ] ) );
+
+				Q_snprintf( g_nameBind, sizeof( g_nameBind ), _("%s or %s"),
+				            Q_strupr( keyName[ 0 ] ), Q_strupr( keyName[ 1 ] ) );
+			}
+			else
+			{
+				DC->keynumToStringBuf( b1, g_nameBind, sizeof( g_nameBind ) );
+				Q_strupr( g_nameBind );
 			}
 
 			return;
 		}
 	}
 
-	strcpy( g_nameBind1, "???" );
+	strcpy( g_nameBind, "???" );
 }
 
 void Item_Slider_Paint( itemDef_t *item )
@@ -6295,7 +6283,7 @@ void Item_Bind_Paint( itemDef_t *item )
 		{
 			BindingFromName( item->cvar );
 			UI_Text_Paint( item->textRect.x + item->textRect.w + ITEM_VALUE_OFFSET, item->textRect.y,
-			               item->textscale, newColor, g_nameBind1, 0, item->textStyle );
+			               item->textscale, newColor, g_nameBind, 0, item->textStyle );
 		}
 	}
 	else
@@ -6315,10 +6303,10 @@ qboolean Item_Bind_HandleKey( itemDef_t *item, int key, int chr, qboolean down )
 	int id;
 	int i;
 
-	// FIXME: should probably set K_* outside Unicode range
-	if ( chr && !( chr & K_CHAR_FLAG ) )
+	// we handle key symbols, not Unicode code points
+	if ( key == 0 )
 	{
-		key = chr;
+		return qtrue;
 	}
 
 	if ( Rect_ContainsPoint( &item->window.rect, DC->cursorx, DC->cursory ) && !g_waitingForKey )
@@ -6344,14 +6332,13 @@ qboolean Item_Bind_HandleKey( itemDef_t *item, int key, int chr, qboolean down )
 				g_waitingForKey = qfalse;
 				return qtrue;
 
-			case 0:
 			case K_BACKSPACE:
 				id = BindingIDFromName( item->cvar );
 
 				if ( id != -1 )
 				{
-					g_bindings[ id ].bind1 = -1;
-					g_bindings[ id ].bind2 = -1;
+					g_bind_keys[ id ][ 0 ] = -1;
+					g_bind_keys[ id ][ 1 ] = -1;
 				}
 
 				Controls_SetConfig( qtrue );
@@ -6365,15 +6352,15 @@ qboolean Item_Bind_HandleKey( itemDef_t *item, int key, int chr, qboolean down )
 	{
 		for ( i = 0; i < g_bindCount; i++ )
 		{
-			if ( g_bindings[ i ].bind2 == key )
+			if ( g_bind_keys[ i ][ 1 ] == key )
 			{
-				g_bindings[ i ].bind2 = -1;
+				g_bind_keys[ i ][ 1 ] = -1;
 			}
 
-			if ( g_bindings[ i ].bind1 == key )
+			if ( g_bind_keys[ i ][ 0 ] == key )
 			{
-				g_bindings[ i ].bind1 = g_bindings[ i ].bind2;
-				g_bindings[ i ].bind2 = -1;
+				g_bind_keys[ i ][ 0 ] = g_bind_keys[ i ][ 1 ];
+				g_bind_keys[ i ][ 1 ] = -1;
 			}
 		}
 	}
@@ -6384,32 +6371,32 @@ qboolean Item_Bind_HandleKey( itemDef_t *item, int key, int chr, qboolean down )
 	{
 		if ( key == -1 )
 		{
-			if ( g_bindings[ id ].bind1 != -1 )
+			if ( g_bind_keys[ id ][ 0 ] != -1 )
 			{
-				DC->setBinding( g_bindings[ id ].bind1, "" );
-				g_bindings[ id ].bind1 = -1;
+				DC->setBinding( g_bind_keys[ id ][ 0 ], TEAM_ALL, "" ); // FIXME BIND
+				g_bind_keys[ id ][ 0 ] = -1;
 			}
 
-			if ( g_bindings[ id ].bind2 != -1 )
+			if ( g_bind_keys[ id ][ 1 ] != -1 )
 			{
-				DC->setBinding( g_bindings[ id ].bind2, "" );
-				g_bindings[ id ].bind2 = -1;
+				DC->setBinding( g_bind_keys[ id ][ 1 ], TEAM_ALL, "" ); // FIXME BIND
+				g_bind_keys[ id ][ 1 ] = -1;
 			}
 		}
-		else if ( g_bindings[ id ].bind1 == -1 )
+		else if ( g_bind_keys[ id ][ 0 ] == -1 )
 		{
-			g_bindings[ id ].bind1 = key;
+			g_bind_keys[ id ][ 0 ] = key;
 		}
-		else if ( g_bindings[ id ].bind1 != key && g_bindings[ id ].bind2 == -1 )
+		else if ( g_bind_keys[ id ][ 0 ] != key && g_bind_keys[ id ][ 1 ] == -1 )
 		{
-			g_bindings[ id ].bind2 = key;
+			g_bind_keys[ id ][ 1 ] = key;
 		}
 		else
 		{
-			DC->setBinding( g_bindings[ id ].bind1, "" );
-			DC->setBinding( g_bindings[ id ].bind2, "" );
-			g_bindings[ id ].bind1 = key;
-			g_bindings[ id ].bind2 = -1;
+			DC->setBinding( g_bind_keys[ id ][ 0 ], TEAM_ALL, "" ); // FIXME BIND
+			DC->setBinding( g_bind_keys[ id ][ 1 ], TEAM_ALL, "" ); // FIXME BIND
+			g_bind_keys[ id ][ 0 ] = key;
+			g_bind_keys[ id ][ 1 ] = -1;
 		}
 	}
 
