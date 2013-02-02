@@ -149,7 +149,6 @@ cvar_t                 *cl_consoleKeys;
 cvar_t                 *cl_consoleFont;
 cvar_t                 *cl_consoleFontSize;
 cvar_t                 *cl_consoleFontKerning;
-cvar_t                 *cl_consolePrompt;
 cvar_t                 *cl_consoleCommand; //see also com_consoleCommand for terminal consoles
 
 struct rsa_public_key  public_key;
@@ -4497,7 +4496,6 @@ void CL_Init( void )
 	cl_consoleFont = Cvar_Get( "cl_consoleFont", "fonts/unifont.ttf", CVAR_ARCHIVE | CVAR_LATCH );
 	cl_consoleFontSize = Cvar_Get( "cl_consoleFontSize", "16", CVAR_ARCHIVE | CVAR_LATCH );
 	cl_consoleFontKerning = Cvar_Get( "cl_consoleFontKerning", "0", CVAR_ARCHIVE );
-	cl_consolePrompt = Cvar_Get( "cl_consolePrompt", "^3->", CVAR_ARCHIVE );
 	cl_consoleCommand = Cvar_Get( "cl_consoleCommand", "say", CVAR_ARCHIVE );
 
 	cl_gamename = Cvar_Get( "cl_gamename", GAMENAME_FOR_MASTER, CVAR_TEMP );

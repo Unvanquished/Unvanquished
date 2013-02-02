@@ -49,6 +49,8 @@ cvar_t    *con_animationType;
 cvar_t    *con_notifytime;
 cvar_t    *con_autoclear;
 
+cvar_t	  *con_prompt;
+
 cvar_t    *con_margin;
 
 cvar_t    *con_borderWidth;
@@ -412,7 +414,7 @@ void Con_CheckResize( void )
 	if ( cls.glconfig.vidWidth )
 	{
 		width = ( cls.glconfig.vidWidth - consoleState.horizontalVidMargin - consoleState.horizontalVidPadding ) / SCR_ConsoleFontUnicharWidth( 'W' );
-		g_consoleField.widthInChars = width - Q_PrintStrlen( cl_consolePrompt->string ) - 1;
+		g_consoleField.widthInChars = width - Q_PrintStrlen( con_prompt->string ) - 1;
 	}
 	else
 	{
@@ -467,7 +469,7 @@ void Con_CheckResize( void )
 		consoleState.bottomDisplayedLine = consoleState.currentLine;
 	}
 
-	g_console_field_width = g_consoleField.widthInChars = consoleState.textWidthInChars - 8 - ( cl_consolePrompt ? Q_UTF8Strlen( cl_consolePrompt->string ) : 0 );
+	g_console_field_width = g_consoleField.widthInChars = consoleState.textWidthInChars - 8 - ( con_prompt ? Q_UTF8Strlen( con_prompt->string ) : 0 );
 }
 
 /*
@@ -481,6 +483,8 @@ void Con_Init( void )
 	con_animationSpeed = Cvar_Get( "con_animationSpeed", "3", 0 );
 	con_animationType = Cvar_Get( "con_animationType", "2", 0 );
 	con_autoclear = Cvar_Get( "con_autoclear", "1", CVAR_ARCHIVE );
+
+	con_prompt = Cvar_Get( "con_prompt", "^3->", CVAR_ARCHIVE );
 
 	con_margin = Cvar_Get( "con_margin", "10", CVAR_ARCHIVE );
 
@@ -760,7 +764,7 @@ void Con_DrawInput( int linePosition )
 
 	Com_RealTime( &realtime );
 
-	Com_sprintf( prompt,  sizeof( prompt ), "^0[^3%02d%c%02d^0]^7 %s", realtime.tm_hour, ( realtime.tm_sec & 1 ) ? ':' : ' ', realtime.tm_min, cl_consolePrompt->string );
+	Com_sprintf( prompt,  sizeof( prompt ), "^0[^3%02d%c%02d^0]^7 %s", realtime.tm_hour, ( realtime.tm_sec & 1 ) ? ':' : ' ', realtime.tm_min, con_prompt->string );
 
 	color[ 0 ] = 1.0f;
 	color[ 1 ] = 1.0f;
