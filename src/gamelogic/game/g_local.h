@@ -45,6 +45,9 @@ typedef struct gclient_s gclient_t;
 #define FL_NO_HUMANS               0x00004000 // spawn point just for bots
 #define FL_FORCE_GESTURE           0x00008000
 
+#define MAX_TARGETS       4 //note: if you increase these,
+#define MAX_TARGETNAMES   4 //then also change g_spawn.c to spawn extras
+
 #define N_( text )             text
 // FIXME: CLIENT PLURAL
 #define P_( one, many, count ) ( ( count ) == 1 ? ( one ) : ( many ) )
@@ -137,8 +140,8 @@ struct gentity_s
 	int          timestamp; // body queue sinking, etc
 	int          startTime; // currently for the diminishing missile damage
 
-	char         *target;
-	char         *targetname;
+	char         *targets[ MAX_TARGETS + 1 ];
+	char         *targetnames[ MAX_TARGETNAMES + 1 ];
 	char         *team;
 	char         *targetShaderName;
 	char         *targetShaderNewName;
@@ -836,7 +839,8 @@ int        G_ModelIndex( const char *name );
 int        G_SoundIndex( const char *name );
 void       G_KillBox( gentity_t *ent );
 gentity_t  *G_Find( gentity_t *from, int fieldofs, const char *match );
-gentity_t  *G_PickTarget( const char *targetname );
+gentity_t  *G_TargetFind( gentity_t *targ, int *tIx, int *tnIx, gentity_t *self );
+gentity_t  *G_PickTarget( gentity_t *self );
 void       G_UseTargets( gentity_t *ent, gentity_t *activator );
 void       G_SetMovedir( vec3_t angles, vec3_t movedir );
 

@@ -144,7 +144,7 @@ void locateCamera( gentity_t *ent )
 	gentity_t *target;
 	gentity_t *owner;
 
-	owner = G_PickTarget( ent->target );
+	owner = G_PickTarget( ent );
 
 	if ( !owner )
 	{
@@ -182,7 +182,7 @@ void locateCamera( gentity_t *ent )
 	VectorCopy( owner->s.origin, ent->s.origin2 );
 
 	// see if the portal_camera has a target
-	target = G_PickTarget( owner->target );
+	target = G_PickTarget( owner );
 
 	if ( target )
 	{
@@ -210,7 +210,7 @@ void SP_misc_portal_surface( gentity_t *ent )
 	ent->r.svFlags = SVF_PORTAL;
 	ent->s.eType = ET_PORTAL;
 
-	if ( !ent->target )
+	if ( !ent->targets[ 0 ] )
 	{
 		VectorCopy( ent->s.origin, ent->s.origin2 );
 	}

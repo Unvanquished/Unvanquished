@@ -188,7 +188,7 @@ void AimAtTarget( gentity_t *self )
 	VectorAdd( self->r.absmin, self->r.absmax, origin );
 	VectorScale( origin, 0.5, origin );
 
-	ent = G_PickTarget( self->target );
+	ent = G_PickTarget( self );
 
 	if ( !ent )
 	{
@@ -264,7 +264,7 @@ void SP_target_push( gentity_t *self )
 	G_SetMovedir( self->s.angles, self->s.origin2 );
 	VectorScale( self->s.origin2, self->speed, self->s.origin2 );
 
-	if ( self->target )
+	if ( self )
 	{
 		VectorCopy( self->s.origin, self->r.absmin );
 		VectorCopy( self->s.origin, self->r.absmax );
@@ -309,7 +309,7 @@ void trigger_teleporter_touch( gentity_t *self, gentity_t *other, trace_t *trace
 		return;
 	}
 
-	dest = G_PickTarget( self->target );
+	dest = G_PickTarget( self );
 
 	if ( !dest )
 	{

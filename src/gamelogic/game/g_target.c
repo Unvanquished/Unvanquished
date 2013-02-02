@@ -240,7 +240,7 @@ void target_teleporter_use( gentity_t *self, gentity_t *other, gentity_t *activa
 		return;
 	}
 
-	dest = G_PickTarget( self->target );
+	dest = G_PickTarget( self );
 
 	if ( !dest )
 	{
@@ -256,7 +256,7 @@ The activator will be teleported away.
 */
 void SP_target_teleporter( gentity_t *self )
 {
-	if ( !self->targetname )
+	if ( !self->targetnames[ 0 ] )
 	{
 		G_Printf( "untargeted %s at %s\n", self->classname, vtos( self->s.origin ) );
 	}
@@ -291,7 +291,7 @@ void target_relay_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 	{
 		gentity_t *ent;
 
-		ent = G_PickTarget( self->target );
+		ent = G_PickTarget( self );
 
 		if ( ent && ent->use )
 		{
@@ -453,7 +453,7 @@ SP_target_rumble
 */
 void SP_target_rumble( gentity_t *self )
 {
-	if ( !self->targetname )
+	if ( !self->targetnames[ 0 ] )
 	{
 		G_Printf( S_COLOR_YELLOW "WARNING: untargeted %s at %s\n", self->classname,
 		          vtos( self->s.origin ) );
@@ -542,7 +542,7 @@ SP_target_hurt
 */
 void SP_target_hurt( gentity_t *self )
 {
-	if ( !self->targetname )
+	if ( !self->targetnames[ 0 ] )
 	{
 		G_Printf( S_COLOR_YELLOW "WARNING: untargeted %s at %s\n", self->classname,
 		          vtos( self->s.origin ) );
