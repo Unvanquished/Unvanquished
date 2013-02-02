@@ -1158,7 +1158,7 @@ void Con_RunConsole( void )
 	{
 		consoleState.currentAnimationFraction -= con_animationSpeed->value * cls.realFrametime * 0.001;
 
-		if ( consoleState.currentAnimationFraction < 0 )
+		if ( consoleState.currentAnimationFraction < 0  || !con_animationType->integer)
 		{
 			consoleState.currentAnimationFraction = 0;
 		}
@@ -1167,7 +1167,7 @@ void Con_RunConsole( void )
 	{
 		consoleState.currentAnimationFraction += con_animationSpeed->value * cls.realFrametime * 0.001;
 
-		if ( consoleState.currentAnimationFraction > 1 )
+		if ( consoleState.currentAnimationFraction > 1  || !con_animationType->integer)
 		{
 			consoleState.currentAnimationFraction = 1;
 		}
