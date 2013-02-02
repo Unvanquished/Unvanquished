@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 displayContextDef_t cgDC;
 
 void                CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum );
+void                CG_RegisterCvars( void );
 void                CG_Shutdown( void );
 static char         *CG_VoIPString( void );
 
@@ -49,6 +50,12 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 	{
 		case CG_INIT:
 			CG_Init( arg0, arg1, arg2 );
+			return 0;
+
+		case CG_INIT_CVARS:
+			trap_SyscallABIVersion( SYSCALL_ABI_VERSION_MAJOR, SYSCALL_ABI_VERSION_MINOR );
+			CG_RegisterCvars();
+			CG_Shutdown();
 			return 0;
 
 		case CG_SHUTDOWN:

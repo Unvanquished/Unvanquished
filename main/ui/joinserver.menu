@@ -37,8 +37,8 @@
 #define SERVER_C    0.45
 #define GAME_C      0.15
 #define MAP_C       0.2
-#define PLAYERS_C   0.1
-#define PING_C      0.1
+#define PLAYERS_C   0.125
+#define PING_C      0.075
 #define LIST_W      (W-(2*BORDER))
 #define LIST_H      (H-((3*BORDER)+TOP_H+BOT_H+BCJ_H))
 #define LIST_X      BORDER

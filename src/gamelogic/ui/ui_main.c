@@ -964,7 +964,7 @@ UI_BuildServerDisplayList
 */
 static void UI_BuildServerDisplayList( int force )
 {
-	int        i, count, clients, maxClients, ping, len, visible;
+	int        i, count, clients, bots, maxClients, ping, len, visible;
 	char       info[ MAX_STRING_CHARS ];
 	static int numinvisible;
 
@@ -1033,12 +1033,13 @@ static void UI_BuildServerDisplayList( int force )
 		{
 			trap_LAN_GetServerInfo( ui_netSource.integer, i, info, MAX_STRING_CHARS );
 
+			bots = atoi( Info_ValueForKey( info, "bots" ) );
 			clients = atoi( Info_ValueForKey( info, "clients" ) );
 			uiInfo.serverStatus.numPlayersOnServers += clients;
 
 			if ( ui_browserShowEmpty.integer == 0 )
 			{
-				if ( clients == 0 )
+				if ( clients == 0 && bots == 0 )
 				{
 					trap_LAN_MarkServerVisible( ui_netSource.integer, i, qfalse );
 					continue;
@@ -1049,7 +1050,7 @@ static void UI_BuildServerDisplayList( int force )
 			{
 				maxClients = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
 
-				if ( clients == maxClients )
+				if ( clients + bots == maxClients )
 				{
 					trap_LAN_MarkServerVisible( ui_netSource.integer, i, qfalse );
 					continue;
@@ -4362,8 +4363,21 @@ static const char *UI_FeederItemText( int feederID, int index, int column, qhand
 					return Info_ValueForKey( info, "mapname" );
 
 				case SORT_CLIENTS:
-					Com_sprintf( clientBuff, sizeof( clientBuff ), "%s (%s)",
-					             Info_ValueForKey( info, "clients" ), Info_ValueForKey( info, "sv_maxclients" ) );
+					{
+						int bots = atoi( Info_ValueForKey( info, "bots" ) );
+
+						if ( bots )
+						{
+							Com_sprintf( clientBuff, sizeof( clientBuff ), "%s+%d (%s)",
+							             Info_ValueForKey( info, "clients" ), bots, Info_ValueForKey( info, "sv_maxclients" ) );
+						}
+						else
+						{
+							Com_sprintf( clientBuff, sizeof( clientBuff ), "%s (%s)",
+							             Info_ValueForKey( info, "clients" ), Info_ValueForKey( info, "sv_maxclients" ) );
+						}
+					}
+
 					return clientBuff;
 
 				case SORT_PING:
@@ -4815,16 +4829,25 @@ static int UI_FeederInitialise( int feederID )
 	{
 		int i;
 		char lang[25];
+		char *underscore;
 
 		trap_Cvar_VariableStringBuffer( "language", lang, sizeof( lang ) );
 
-		for ( i = 0; i < uiInfo.numLanguages; i++ )
+		do
 		{
-			if( !Q_stricmp( lang, uiInfo.languages[ i ].lang ) )
+			for ( i = 0; i < uiInfo.numLanguages; i++ )
 			{
-				return i;
+				if( !Q_stricmp( lang, uiInfo.languages[ i ].lang ) )
+				{
+					return i;
+				}
 			}
-		}
+
+			if ( ( underscore = strrchr( lang, '_' ) ) )
+			{
+				*underscore = 0;
+			}
+		} while ( underscore );
 	}
 
 	if ( feederID == FEEDER_VOIPINPUT )

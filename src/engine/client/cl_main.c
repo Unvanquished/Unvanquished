@@ -1574,6 +1574,7 @@ void CL_ShutdownAll( void )
 	cls.uiStarted = qfalse;
 	cls.cgameStarted = qfalse;
 	cls.rendererStarted = qfalse;
+	cls.cgameCVarsRegistered = qfalse;
 	cls.soundRegistered = qfalse;
 
 	// Gordon: stop recording on map change etc, demos aren't valid over map changes anyway
@@ -2361,6 +2362,7 @@ void CL_Vid_Restart_f( void )
 	cls.rendererStarted = qfalse;
 	cls.uiStarted = qfalse;
 	cls.cgameStarted = qfalse;
+	cls.cgameCVarsRegistered = qfalse;
 	cls.soundRegistered = qfalse;
 
 	// unpause so the cgame definitely gets a snapshot and renders a frame
@@ -2394,6 +2396,7 @@ void CL_Vid_Restart_f( void )
 	if ( cls.state > CA_CONNECTED && cls.state != CA_CINEMATIC )
 	{
 		cls.cgameStarted = qtrue;
+		cls.cgameCVarsRegistered = qtrue;
 		CL_InitCGame();
 		// send pure checksums
 		CL_SendPureChecksums();
@@ -2685,6 +2688,7 @@ void CL_DownloadsComplete( void )
 
 	// initialize the CGame
 	cls.cgameStarted = qtrue;
+	cls.cgameCVarsRegistered = qtrue;
 	CL_InitCGame();
 
 	// set pure checksums
@@ -4155,6 +4159,12 @@ void CL_StartHunkUsers( void )
 		S_BeginRegistration();
 	}
 
+	if ( !cls.cgameStarted && !cls.cgameCVarsRegistered )
+	{
+		cls.cgameCVarsRegistered = qtrue;
+		CL_InitCGameCVars();
+	}
+
 	if ( !cls.uiStarted )
 	{
 		cls.uiStarted = qtrue;
@@ -4705,6 +4715,7 @@ static void CL_SetServerInfo( serverInfo_t *server, const char *info, int ping )
 		if ( info )
 		{
 			server->clients = atoi( Info_ValueForKey( info, "clients" ) );
+			server->bots = atoi( Info_ValueForKey( info, "bots" ) );
 			Q_strncpyz( server->hostName, Info_ValueForKey( info, "hostname" ), MAX_NAME_LENGTH );
 			server->load = atoi( Info_ValueForKey( info, "serverload" ) );
 			Q_strncpyz( server->mapName, Info_ValueForKey( info, "mapname" ), MAX_NAME_LENGTH );
