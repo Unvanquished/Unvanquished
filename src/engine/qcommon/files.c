@@ -1974,14 +1974,12 @@ int FS_Seek( fileHandle_t f, long offset, int origin )
 		byte buffer[ PK3_SEEK_BUFFER_SIZE ];
 		int  remainder = offset;
 
-		if ( offset < 0 || origin == FS_SEEK_END )
-		{
-			Com_Error( ERR_FATAL, "Negative offsets and FS_SEEK_END not implemented "
-			           "for FS_Seek on pk3 file contents" );
-		}
-
 		switch ( origin )
 		{
+			case FS_SEEK_END:
+				remainder = fsh[ f ].fileSize + offset;
+				//fallthrough
+
 			case FS_SEEK_SET:
 				unzSetOffset( fsh[ f ].handleFiles.file.z, fsh[ f ].zipFilePos );
 				unzOpenCurrentFile( fsh[ f ].handleFiles.file.z );
