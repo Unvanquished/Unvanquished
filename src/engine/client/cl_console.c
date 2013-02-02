@@ -767,7 +767,8 @@ void Con_DrawInput( int linePosition )
 	color[ 0 ] = 1.0f;
 	color[ 1 ] = 1.0f;
 	color[ 2 ] = 1.0f;
-	color[ 3 ] = consoleState.currentAlphaFactor;
+	//ANIMATION_TYPE_FADE but also ANIMATION_TYPE_SCROLL needs this, latter, since it might otherwise scroll out the console
+	color[ 3 ] = consoleState.currentAnimationFraction;
 
 	SCR_DrawSmallStringExt( consoleState.horizontalVidMargin + consoleState.horizontalVidPadding, linePosition, prompt, color, qfalse, qfalse );
 
@@ -798,7 +799,8 @@ void Con_DrawAboutText( void )
 	color[ 0 ] = 1.0f;
 	color[ 1 ] = 1.0f;
 	color[ 2 ] = 1.0f;
-	color[ 3 ] = 0.66f * consoleState.currentAlphaFactor;
+	//ANIMATION_TYPE_FADE but also ANIMATION_TYPE_SCROLL needs this, latter, since it might otherwise scroll out the console
+	color[ 3 ] = 0.66f * consoleState.currentAnimationFraction;
 	re.SetColor( color );
 
 	i = strlen( Q3_VERSION );
