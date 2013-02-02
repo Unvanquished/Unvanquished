@@ -1983,6 +1983,7 @@ int FS_Seek( fileHandle_t f, long offset, int origin )
 		{
 			case FS_SEEK_END:
 				remainder = fsh[ f ].fileSize + offset;
+				offset *= -1;
 				//fallthrough
 
 			case FS_SEEK_SET:
