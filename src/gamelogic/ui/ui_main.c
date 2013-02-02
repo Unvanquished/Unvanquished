@@ -4368,8 +4368,8 @@ static const char *UI_FeederItemText( int feederID, int index, int column, qhand
 
 						if ( bots )
 						{
-							Com_sprintf( clientBuff, sizeof( clientBuff ), "%s (%s)",
-							             Info_ValueForKey( info, "clients" ), Info_ValueForKey( info, "sv_maxclients" ) );
+							Com_sprintf( clientBuff, sizeof( clientBuff ), "%s+%d (%s)",
+							             Info_ValueForKey( info, "clients" ), bots, Info_ValueForKey( info, "sv_maxclients" ) );
 						}
 						else
 						{

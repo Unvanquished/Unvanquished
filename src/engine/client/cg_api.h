@@ -277,10 +277,13 @@ typedef enum
 // char *(*CG_VoIPString)( void );
 // returns a string of comma-delimited clientnums based on cl_voipSendTarget
 
-  CG_COMPLETE_COMMAND
+  CG_COMPLETE_COMMAND,
 // char (*CG_CompleteCommand)( int argNum );
 // will callback on all availible completions
 // use Cmd_Argc() / Cmd_Argv() to read the command
+
+  CG_INIT_CVARS,
+// registers cvars only then shuts down; call instead of CG_INIT for this purpose
 } cgameExport_t;
 
 void            trap_Print( const char *string );
