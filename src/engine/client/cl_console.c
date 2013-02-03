@@ -806,7 +806,7 @@ void Con_DrawAboutText( void )
 
 	const int charHeight = SCR_ConsoleFontCharHeight();
 	const int positionFromTop = consoleState.verticalVidMargin
-	                          + consoleState.verticalVidPadding
+	                          + consoleState.verticalVidPaddingTop
 	                          + consoleState.topBorderWidth
 	                          + charHeight;
 
@@ -891,14 +891,14 @@ void Con_DrawConsoleContent( int currentConsoleVidHeight, int currentConsoleVirt
 	const int charHeight = SCR_ConsoleFontCharHeight();
 	const int charPadding = SCR_ConsoleFontCharVPadding();
 	const int textDistanceToTop = consoleState.verticalVidMargin
-	                            + consoleState.verticalVidPadding
+	                            + consoleState.verticalVidPaddingTop
 	                            + consoleState.topBorderWidth
 	                            - charPadding - 1;
 
 	// draw from the bottom up
 	lineDrawPosition = currentConsoleVidHeight
 	                 + consoleState.verticalVidMargin
-	                 - consoleState.verticalVidPadding
+	                 - consoleState.verticalVidPaddingBottom
 	                 - consoleState.topBorderWidth
 	                 - charPadding - 1;
 
@@ -976,6 +976,7 @@ void Con_DrawAnimatedConsole( void )
 	float  vidXMargin, vidYMargin;
 	int    animatedConsoleVidHeight;
 	float  animatedConsoleVirtualHeight;
+	int    animatedConsoleVerticalPaddingTotal;
 
 	const int charHeight = SCR_ConsoleFontCharHeight();
 	const int charPadding = SCR_ConsoleFontCharVPadding();
@@ -1000,7 +1001,10 @@ void Con_DrawAnimatedConsole( void )
 
 	consoleState.verticalVidMargin = vidYMargin;
 	consoleState.horizontalVidMargin = vidXMargin;
-	consoleState.verticalVidPadding = floor( vidYMargin * 0.3f );
+	consoleState.verticalVidPaddingTop = floor( vidYMargin * 0.3f );
+	consoleState.verticalVidPaddingBottom = MAX( 3, consoleState.verticalVidPaddingTop );
+
+	animatedConsoleVerticalPaddingTotal = consoleState.verticalVidPaddingTop + consoleState.verticalVidPaddingBottom;
 
 	// on wide screens, this will lead to somewhat of a centering of the text
 	if(con_horizontalPadding->integer)
@@ -1016,9 +1020,9 @@ void Con_DrawAnimatedConsole( void )
 
 	animatedConsoleVidHeight = ( cls.glconfig.vidHeight - 2 * consoleState.verticalVidMargin ) * con_height->integer * 0.01;
 	// clip to a multiple of the character height, plus padding
-	animatedConsoleVidHeight -= ( animatedConsoleVidHeight - 2 * consoleState.verticalVidPadding - charPadding ) % charHeight;
+	animatedConsoleVidHeight -= ( animatedConsoleVidHeight - animatedConsoleVerticalPaddingTotal - charPadding ) % charHeight;
 	// ... and ensure that at least three lines are visible
-	animatedConsoleVidHeight = MAX( 3 * charHeight + 2 * consoleState.verticalVidPadding, animatedConsoleVidHeight );
+	animatedConsoleVidHeight = MAX( 3 * charHeight + animatedConsoleVerticalPaddingTotal, animatedConsoleVidHeight );
 
 	animatedConsoleVirtualHeight = animatedConsoleVidHeight * SCREEN_HEIGHT / cls.glconfig.vidHeight;
 
@@ -1037,7 +1041,7 @@ void Con_DrawAnimatedConsole( void )
 	//only do fade animation if the type is set
 	consoleState.currentAlphaFactor = ( con_animationType->integer & ANIMATION_TYPE_FADE ) ? consoleState.currentAnimationFraction : 1.0f;
 
-	consoleState.visibleAmountOfLines = ( animatedConsoleVidHeight - 2 * consoleState.verticalVidPadding )
+	consoleState.visibleAmountOfLines = ( animatedConsoleVidHeight - animatedConsoleVerticalPaddingTotal )
 	                                    / charHeight //rowheight in pixel -> amount of rows
 	                                    - 1 ; // sine we work with points but use charHeight spaces
 
