@@ -886,6 +886,9 @@ void Con_DrawConsoleContent( int currentConsoleVidHeight, int currentConsoleVirt
 	vec4_t color;
 
 	const int charHeight = SCR_ConsoleFontCharHeight();
+	const int textDistanceToTop = consoleState.verticalVidMargin
+	                    + consoleState.verticalVidPadding
+	                    + con_borderWidth->integer;
 
 	// draw from the bottom up
 	lineDrawPosition = currentConsoleVidHeight
@@ -895,7 +898,7 @@ void Con_DrawConsoleContent( int currentConsoleVidHeight, int currentConsoleVirt
 
 	// draw the input prompt, user text, and cursor if desired
 	// moved back here (have observed render issues to do with time taken)
-	Con_DrawInput( lineDrawPosition, Con_MarginFadeAlpha( 1, lineDrawPosition, topMargin, charHeight ) );
+	Con_DrawInput( lineDrawPosition, Con_MarginFadeAlpha( 1, lineDrawPosition, textDistanceToTop, charHeight ) );
 	lineDrawPosition -= charHeight;
 
 	// if we scrolled back, give feedback
@@ -919,14 +922,9 @@ void Con_DrawConsoleContent( int currentConsoleVidHeight, int currentConsoleVirt
 	color[ 1 ] = g_color_table[ currentColor ][ 1 ];
 	color[ 2 ] = g_color_table[ currentColor ][ 2 ];
 
-	for ( i = 0; i < consoleState.visibleAmountOfLines; i++, lineDrawPosition -= charHeight, row-- )
+	for ( ; row >= 0 && lineDrawPosition > textDistanceToTop; lineDrawPosition -= charHeight, row-- )
 	{
 		conChar_t *text;
-
-		if ( row < 0 )
-		{
-			break;
-		}
 
 		if ( consoleState.currentLine - row >= consoleState.scrollbackLengthInLines )
 		{
@@ -948,7 +946,7 @@ void Con_DrawConsoleContent( int currentConsoleVidHeight, int currentConsoleVirt
 				color[ 2 ] = g_color_table[ currentColor ][ 2 ];
 			}
 
-			color[ 3 ] = Con_MarginFadeAlpha( consoleState.currentAlphaFactor, lineDrawPosition, topMargin, charHeight );
+			color[ 3 ] = Con_MarginFadeAlpha( consoleState.currentAlphaFactor, lineDrawPosition, textDistanceToTop, charHeight );
 			re.SetColor( color );
 
 			SCR_DrawConsoleFontUnichar( currentWidthLocation, lineDrawPosition, text[ x ].ch );
@@ -1006,8 +1004,9 @@ void Con_DrawAnimatedConsole( void )
 
 	animatedConsoleVidHeight = ( cls.glconfig.vidHeight - 2 * consoleState.verticalVidMargin ) * con_height->integer * 0.01;
 	// clip to a multiple of the character height, plus padding
-	animatedConsoleVidHeight -= ( animatedConsoleVidHeight - 2 * consoleState.verticalVidPadding - 2 * consoleState.verticalVidMargin )
-	                            % (int) SCR_ConsoleFontCharHeight();
+	animatedConsoleVidHeight -= ( animatedConsoleVidHeight - 2 * consoleState.verticalVidPadding ) % charHeight;
+	// ... and ensure that at least three lines are visible
+	animatedConsoleVidHeight = MAX( 3 * charHeight + 2 * consoleState.verticalVidPadding, animatedConsoleVidHeight );
 
 	animatedConsoleVirtualHeight = animatedConsoleVidHeight * SCREEN_HEIGHT / cls.glconfig.vidHeight;
 
