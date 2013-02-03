@@ -778,8 +778,8 @@ void Con_DrawAboutTextLine( const int positionFromTop, const char* text )
 
 	i = strlen( text );
 	currentWidthLocation = cls.glconfig.vidWidth
-			- SCR_ConsoleFontStringWidth( text, i )
-			- consoleState.horizontalVidMargin - consoleState.horizontalVidPadding;
+	                     - SCR_ConsoleFontStringWidth( text, i )
+	                     - consoleState.horizontalVidMargin - consoleState.horizontalVidPadding;
 
 	for ( x = 0; x < i; x++ )
 	{
@@ -803,10 +803,10 @@ void Con_DrawAboutText( void )
 	float currentWidthLocation = 0;
 
 	const int charHeight = SCR_ConsoleFontCharHeight();
-	const int positionFromTop =	consoleState.verticalVidMargin
-								+ consoleState.verticalVidPadding
-								+ con_borderWidth->integer
-								+ charHeight;
+	const int positionFromTop = consoleState.verticalVidMargin
+	                          + consoleState.verticalVidPadding
+	                          + con_borderWidth->integer
+	                          + charHeight;
 
 	// draw the version number
 	color[ 0 ] = 1.0f;
@@ -862,9 +862,9 @@ void Con_DrawConsoleContent( int currentConsoleVidHeight )
 
 	// draw from the bottom up
 	lineDrawPosition = currentConsoleVidHeight
-			+ consoleState.verticalVidMargin
-			- consoleState.verticalVidPadding
-			- 2 * con_borderWidth->integer;
+	                 + consoleState.verticalVidMargin
+	                 - consoleState.verticalVidPadding
+	                 - 2 * con_borderWidth->integer;
 
 	// draw the text
 	visibleAmountOfLines = currentConsoleVidHeight - 2 * consoleState.verticalVidPadding;
