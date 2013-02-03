@@ -441,6 +441,11 @@ int FS_filelength( fileHandle_t f )
 	int end;
 	FILE *h;
 
+	if ( fsh[ f ].zipFile )
+	{
+		return fsh[ f ].fileSize;
+	}
+
 	h = FS_FileForHandle( f );
 	pos = ftell( h );
 	fseek( h, 0, SEEK_END );
@@ -1974,14 +1979,13 @@ int FS_Seek( fileHandle_t f, long offset, int origin )
 		byte buffer[ PK3_SEEK_BUFFER_SIZE ];
 		int  remainder = offset;
 
-		if ( offset < 0 || origin == FS_SEEK_END )
-		{
-			Com_Error( ERR_FATAL, "Negative offsets and FS_SEEK_END not implemented "
-			           "for FS_Seek on pk3 file contents" );
-		}
-
 		switch ( origin )
 		{
+			case FS_SEEK_END:
+				remainder = fsh[ f ].fileSize + offset;
+				offset *= -1;
+				//fallthrough
+
 			case FS_SEEK_SET:
 				unzSetOffset( fsh[ f ].handleFiles.file.z, fsh[ f ].zipFilePos );
 				unzOpenCurrentFile( fsh[ f ].handleFiles.file.z );
@@ -3178,8 +3182,8 @@ void FS_NewDir_f( void )
 
 	if ( Cmd_Argc() < 2 )
 	{
-		Com_Printf(_( "usage: fdir <filter>\n" ));
-		Com_Printf(_( "example: fdir *q3dm*.bsp\n" ));
+		Com_Printf(_( "usage: fdir <filter>\n"
+		              "example: fdir *q3dm*.bsp\n" ));
 		return;
 	}
 
@@ -3362,12 +3366,12 @@ void FS_AddGameDirectory( const char *path, const char *dir )
 	searchpath_t *search;
 	pack_t       *pak;
 	char         *pakfile;
-	int          numfiles;
+	int          numfiles, usedfiles = 0;
 	char         **pakfiles;
 //	char            *sorted[MAX_PAKFILES];
 	int          pakfilesi = 0;
 //	char     **pakfilestmp;
-	int          numdirs;
+	int          numdirs, useddirs = 0;
 	char         **pakdirs;
 	int          pakdirsi = 0;
 // JPW NERVE
@@ -3419,12 +3423,6 @@ void FS_AddGameDirectory( const char *path, const char *dir )
 
 	qsort( pakfiles, numfiles, sizeof( char * ), paksort );
 	qsort( pakdirs, numdirs, sizeof( char * ), paksort );
-
-	// Log may not be initialized at this point, but it will still show in the console.
-	if ( !com_fullyInitialized )
-	{
-		Com_Printf( "FS_AddGameDirectory(\"%s\", \"%s\") found %d .pk3 and %d .pk3dir\n", path, dir, numfiles, numdirs );
-	}
 
 #if 0
 	for ( ; ( pakfilesi + pakdirsi ) < ( numfiles + numdirs ); )
@@ -3542,6 +3540,7 @@ void FS_AddGameDirectory( const char *path, const char *dir )
 		fs_searchpaths = search;
 
 		pakfilesi++;
+		++usedfiles;
 	}
 
 	while ( pakdirsi < numdirs )
@@ -3574,6 +3573,13 @@ void FS_AddGameDirectory( const char *path, const char *dir )
 		fs_searchpaths = search;
 
 		pakdirsi++;
+		++useddirs;
+	}
+
+	// Log may not be initialized at this point, but it will still show in the console.
+	if ( !com_fullyInitialized )
+	{
+		Com_Printf( "FS_AddGameDirectory(\"%s\", \"%s\") found %d .pk3 and %d .pk3dir\n", path, dir, usedfiles, useddirs );
 	}
 
 	// done
@@ -4168,8 +4174,8 @@ more details are in unix/dedicated-only.txt
 
 // our target faked checksums
 // those don't need to be encrypted or anything, that's what you see in the +set developer 1
-static const char *pak_checksums = "-137448799 131270674 125907563 -1023558518 764840216 1886207346";
-static const char *pak_names = "mp_pak4 mp_pak3 mp_pak2 mp_pak1 mp_pak0 pak0";
+static const char *const pak_checksums = "-137448799 131270674 125907563 -1023558518 764840216 1886207346";
+static const char *const pak_names = "mp_pak4 mp_pak3 mp_pak2 mp_pak1 mp_pak0 pak0";
 
 /*
 this is the pure checksum string for a constant value of fs_checksumFeed we have chosen (see SV_SpawnServer)
@@ -4205,7 +4211,7 @@ static const int feeds[ 5 ] =
 
 // shifted strings, so that it's not directly scannable from exe
 // see FS_RandChecksumFeed to generate them
-static const char *pak_purechecksums[ 5 ] =
+static const char *const pak_purechecksums[ 5 ] =
 {
 	// rain - escaped ?s to prevent parsing as trigraph
 	":C@>=BE?@C->A@F>F>ECE-:>DBEB@BD\?\?-:>>=FC@FE@=-:DBC@A?A?B-:?C=BBF@A",
@@ -4755,10 +4761,16 @@ void FS_Restart( int checksumFeed )
 
 				// exec the config
 				Cbuf_AddText( va( "exec profiles/%s/%s\n", cl_profileStr, CONFIG_NAME ) );
+#ifndef DEDICATED
+				Cbuf_AddText( va( "exec profiles/%s/%s\n", cl_profileStr, KEYBINDINGS_NAME ) );
+#endif
 			}
 			else
 			{
 				Cbuf_AddText( va( "exec %s\n", CONFIG_NAME ) );
+#ifndef DEDICATED
+				Cbuf_AddText( va( "exec %s\n", KEYBINDINGS_NAME ) );
+#endif
 			}
 		}
 	}

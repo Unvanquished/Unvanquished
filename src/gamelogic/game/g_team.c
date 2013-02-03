@@ -301,6 +301,7 @@ void G_ChangeTeam( gentity_t *ent, team_t newTeam )
 	G_LeaveTeam( ent );
 	ent->client->pers.teamChangeTime = level.time;
 	ent->client->pers.teamSelection = newTeam;
+	ent->client->pers.teamInfo = level.time;
 	ent->client->pers.classSelection = PCL_NONE;
 	ClientSpawn( ent, NULL, NULL, NULL );
 
@@ -392,15 +393,15 @@ Format:
 */
 void TeamplayInfoMessage( gentity_t *ent )
 {
-	char      entry[ 19 ], string[ 1143 ];
+	char      entry[ 24 ];
+	char      string[ ( MAX_CLIENTS - 1 ) * ( sizeof( entry ) - 1 ) + 1 ];
 	int       i, j;
 	int       team, stringlength;
-	int       sent = 0;
 	gentity_t *player;
 	gclient_t *cl;
 	upgrade_t upgrade = UP_NONE;
 	int       curWeaponClass = WP_NONE; // sends weapon for humans, class for aliens
-	char      *tmp;
+	char      *format;
 
 	if ( !g_allowTeamOverlay.integer )
 	{
@@ -428,16 +429,24 @@ void TeamplayInfoMessage( gentity_t *ent )
 		team = ent->client->pers.teamSelection;
 	}
 
+	format = ( team == TEAM_ALIENS ) ? " %i %i %i %i %i" : " %i %i %i %i %i %i"; // aliens don't have upgrades
+
 	string[ 0 ] = '\0';
 	stringlength = 0;
 
-	for ( i = 0; i < MAX_CLIENTS; i++ )
+	for ( i = 0; i < level.maxclients; i++ )
 	{
 		player = g_entities + i;
 		cl = player->client;
 
 		if ( ent == player || !cl || team != cl->pers.teamSelection ||
 		     !player->inuse )
+		{
+			continue;
+		}
+
+		// only update if changed since last time
+		if ( cl->pers.infoChangeTime <= ent->client->pers.teamInfo )
 		{
 			continue;
 		}
@@ -482,25 +491,16 @@ void TeamplayInfoMessage( gentity_t *ent )
 			upgrade = UP_NONE;
 		}
 
-		tmp = va( "%i %i %i %i",
-		          player->client->pers.location,
-		          player->client->ps.stats[ STAT_HEALTH ] < 1 ? 0 :
-		          player->client->ps.stats[ STAT_HEALTH ],
-		          curWeaponClass,
-		          upgrade );
-
-		if ( !strcmp( ent->client->pers.cinfo[ i ], tmp ) )
-		{
-			continue;
-		}
-
-		Q_strncpyz( ent->client->pers.cinfo[ i ], tmp,
-		            sizeof( ent->client->pers.cinfo[ i ] ) );
-
-		Com_sprintf( entry, sizeof( entry ), " %i %s", i, tmp );
+		Com_sprintf( entry, sizeof( entry ), format, i,
+		             cl->pers.location,
+		             cl->ps.stats[ STAT_HEALTH ] < 1 ? 0 : cl->ps.stats[ STAT_HEALTH ],
+		             curWeaponClass,
+		             cl->pers.credit,
+		             upgrade );
 
 		j = strlen( entry );
 
+		// this should not happen if entry and string sizes are correct
 		if ( stringlength + j >= sizeof( string ) )
 		{
 			break;
@@ -508,15 +508,13 @@ void TeamplayInfoMessage( gentity_t *ent )
 
 		strcpy( string + stringlength, entry );
 		stringlength += j;
-		sent++;
 	}
 
-	if ( !sent )
+	if( string[ 0 ] )
 	{
-		return;
+		trap_SendServerCommand( ent - g_entities, va( "tinfo%s", string ) );
+		ent->client->pers.teamInfo = level.time;
 	}
-
-	trap_SendServerCommand( ent - g_entities, va( "tinfo%s", string ) );
 }
 
 void CheckTeamStatus( void )
@@ -544,10 +542,15 @@ void CheckTeamStatus( void )
 
 				if ( loc )
 				{
-					ent->client->pers.location = loc->s.generic1;
+					if( ent->client->pers.location != loc->s.generic1 )
+					{
+						ent->client->pers.infoChangeTime = level.time;
+						ent->client->pers.location = loc->s.generic1;
+					}
 				}
-				else
+				else if ( ent->client->pers.location != 0 )
 				{
+					ent->client->pers.infoChangeTime = level.time;
 					ent->client->pers.location = 0;
 				}
 			}

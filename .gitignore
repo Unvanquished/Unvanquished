@@ -1,3 +1,6 @@
+# use 'git ls-files -i --exclude-standard' for checking
+# which already committed files are matched against these rules
+
 *~
 build/*
 lcc/*
@@ -23,3 +26,21 @@ build-32/*
 build-64/*
 *.vcxproj.user
 *.kdev4
+
+#ignore editor temporary files
+.*.swp
+.#*
+
+#ignore patch-generated
+*.orig
+*.rej
+
+#ignore eclipse cdt project files
+.project
+.cproject
+.settings/
+
+#never ignore these in subdirectories by accident
+!.gitattributes
+!.gitignore
+

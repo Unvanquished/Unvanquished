@@ -51,9 +51,8 @@ Maryland 20850 USA.
 
 #include <jpeglib.h>
 #include <png.h>
-#ifdef USE_WEBP
 #include <webp/decode.h>
-#endif
+
 static void          LoadWEBP( const char *name, byte **pic, int *width, int *height );
 static void          LoadBMP( const char *name, byte **pic, int *width, int *height );
 static void          LoadTGA( const char *name, byte **pic, int *width, int *height );
@@ -262,21 +261,15 @@ void GL_TextureAnisotropy( float anisotropy )
 	int     i;
 	image_t *glt;
 
-	if ( r_ext_texture_filter_anisotropic->integer == 1 )
-	{
-		if ( anisotropy < 1.0 || anisotropy > glConfig.maxAnisotropy )
-		{
-			ri.Printf( PRINT_ALL, "anisotropy out of range\n" );
-			return;
-		}
-	}
-
-	gl_anisotropy = anisotropy;
-
 	if ( !glConfig.anisotropicAvailable )
 	{
 		return;
 	}
+
+	if      ( anisotropy < 1   )                    anisotropy = 1;
+	else if ( anisotropy > glConfig.maxAnisotropy ) anisotropy = glConfig.maxAnisotropy;
+
+	gl_anisotropy = anisotropy;
 
 	// change all the existing texture objects
 	for ( i = 0; i < tr.numImages; i++ )
@@ -2400,15 +2393,11 @@ void R_LoadImage( const char *name, byte **pic, int *width, int *height )
 
 	ext = COM_GetExtension( name );
 
-#ifdef USE_WEBP
-
 	if ( !Q_stricmp( ext, "webp" ) )
 	{
 		LoadWEBP( name, pic, width, height );
 	}
-	else
-#endif
-	if ( !Q_stricmp( ext, "jpg" ) )
+	else if ( !Q_stricmp( ext, "jpg" ) )
 	{
 		LoadJPG( name, pic, width, height );
 	}
@@ -2441,12 +2430,10 @@ void R_LoadImage( const char *name, byte **pic, int *width, int *height )
 		char filename[ MAX_QPATH ];
 
 		COM_StripExtension3( name, filename, MAX_QPATH );
-#ifdef USE_WEBP
 		LoadWEBP( va( "%s.%s", filename, "webp" ), pic, width, height );
 
 		if ( *pic ) { return; }
 
-#endif
 		LoadDDS( va( "%s.%s", filename, "dds" ), pic, width, height );
 
 		if ( *pic ) { return; }

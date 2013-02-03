@@ -84,7 +84,7 @@ void DL_InitDownload( void )
 
 	dl_multi = curl_multi_init();
 
-	Com_DPrintf(_( "Client download subsystem initialized\n" ));
+	Com_DPrintf( "Client download subsystem initialized\n" );
 	dl_initialized = 1;
 }
 

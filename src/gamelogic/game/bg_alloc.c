@@ -24,6 +24,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../engine/qcommon/q_shared.h"
 #include "bg_public.h"
 
+#ifdef DEBUG_VM_ALLOC
+#include <stdlib.h>
+#endif
+
 #define  POOLSIZE      ( 2048 * 1024 )
 
 #define  FREEMEMCOOKIE ((int)0xDEADBE3F ) // Any unlikely to be used value
@@ -42,6 +46,16 @@ static int           freeMem;
 
 void *BG_Alloc( int size )
 {
+#ifdef DEBUG_VM_ALLOC
+	void *ptr = malloc( size );
+
+	if ( ptr )
+	{
+		memset( ptr, 0, size );
+	}
+
+	return ptr;
+#else
 	// Find a free block and allocate.
 	// Does two passes, attempts to fill same-sized free slot first.
 
@@ -121,10 +135,14 @@ void *BG_Alloc( int size )
 
 	Com_Error( ERR_DROP, "BG_Alloc: failed on allocation of %i bytes", size );
 	return ( NULL );
+#endif
 }
 
 void BG_Free( void *ptr )
 {
+#ifdef DEBUG_VM_ALLOC
+	free( ptr );
+#else
 	// Release allocated memory, add it to the free list.
 
 	freeMemNode_t *fmn;
@@ -158,10 +176,12 @@ void BG_Free( void *ptr )
 	fmn->next = freeHead;
 	freeHead->prev = fmn;
 	freeHead = fmn;
+#endif
 }
 
 void BG_InitMemory( void )
 {
+#ifndef DEBUG_VM_ALLOC
 	// Set up the initial node
 
 	freeHead = ( freeMemNode_t * ) memoryPool;
@@ -170,10 +190,12 @@ void BG_InitMemory( void )
 	freeHead->next = NULL;
 	freeHead->prev = NULL;
 	freeMem = sizeof( memoryPool );
+#endif
 }
 
 void BG_DefragmentMemory( void )
 {
+#ifndef DEBUG_VM_ALLOC
 	// If there's a frenzy of deallocation and we want to
 	// allocate something big, this is useful. Otherwise...
 	// not much use.
@@ -225,10 +247,14 @@ void BG_DefragmentMemory( void )
 			startfmn = startfmn->next; // endfmn acts as a 'restart' flag here
 		}
 	}
+#endif
 }
 
 void BG_MemoryInfo( void )
 {
+#ifdef DEBUG_VM_ALLOC
+	Com_Printf( "Using malloc/free (DEBUG_VM_ALLOC).\n" );
+#else
 	// Give a breakdown of memory
 
 	freeMemNode_t *fmn = ( freeMemNode_t * ) memoryPool;
@@ -271,4 +297,5 @@ void BG_MemoryInfo( void )
 			Com_Printf( "  %p: %d bytes allocated (%d chunks)\n", p, size, chunks );
 		}
 	}
+#endif
 }

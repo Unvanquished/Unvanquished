@@ -46,6 +46,7 @@ typedef struct gclient_s gclient_t;
 #define FL_FORCE_GESTURE           0x00008000
 
 #define N_( text )             text
+// FIXME: CLIENT PLURAL
 #define P_( one, many, count ) ( ( count ) == 1 ? ( one ) : ( many ) )
 
 // decon types for g_markDeconstruct
@@ -172,6 +173,7 @@ struct gentity_s
 	qboolean  takedamage;
 
 	int       damage;
+	int       flightSplashDamage; // quad will increase this without increasing radius
 	int       splashDamage; // quad will increase this without increasing radius
 	int       splashRadius;
 	int       methodOfDeath;
@@ -201,7 +203,7 @@ struct gentity_s
 	gentity_t   *parentNode; // for creep and defence/spawn dependencies
 	qboolean    active; // for power repeater, but could be useful elsewhere
 	qboolean    powered; // for human buildables
-	int         builtBy; // clientNum of person that built this
+	struct namelog_s *builtBy; // clientNum of person that built this
 	int         dcc; // number of controlling dccs
 	qboolean    spawned; // whether or not this buildable has finished spawning
 	int         shrunkTime; // time when a barricade shrunk or zero
@@ -310,7 +312,7 @@ typedef struct
 	char              netname[ MAX_NAME_LENGTH ];
 	int               enterTime; // level.time the client entered the game
 	int               location; // player locations
-	qboolean          teamInfo; // send team overlay updates?
+	int               teamInfo; // level.time of team overlay update (disabled = 0)
 	float             flySpeed; // for spectator/noclip moves
 	qboolean          disableBlueprintErrors; // should the buildable blueprint never be hidden from the players?
 
@@ -342,8 +344,9 @@ typedef struct
 	char     voice[ MAX_VOICE_NAME_LEN ];
 	qboolean useUnlagged;
 	int      pubkey_authenticated; // -1 = does not have pubkey, 0 = not authenticated, 1 = authenticated
-	// keep track of other players' info for tinfo
-	char cinfo[ MAX_CLIENTS ][ 16 ];
+
+	// level.time when teamoverlay info changed so we know to tell other players.
+	int                 infoChangeTime;
 } clientPersistant_t;
 
 #define MAX_UNLAGGED_MARKERS 256
@@ -501,6 +504,7 @@ typedef struct
 	int         time;
 	buildFate_t fate;
 	namelog_t   *actor;
+	namelog_t   *builtBy;
 	buildable_t modelindex;
 	qboolean    deconstruct;
 	int         deconstructTime;
@@ -547,7 +551,7 @@ typedef struct
 	int              num_entities; // MAX_CLIENTS <= num_entities <= ENTITYNUM_MAX_NORMAL
 
 	int              warmupTime; // restart match at this time
-	int              timelimit;
+	int              timelimit; //time in minutes
 
 	fileHandle_t     logFile;
 
@@ -555,11 +559,11 @@ typedef struct
 	int      maxclients;
 
 	int      framenum;
-	int      time; // in msec
+	int      time; // time the map was first started in milliseconds (map restart will update startTime)
 	int      previousTime; // so movers can back up when blocked
 	int      frameMsec; // trap_Milliseconds() at end frame
 
-	int      startTime; // level.time the map was started
+	int      startTime; // level.time the map was last (re)started in milliseconds
 
 	int      lastTeamLocationTime; // last time of client team location update
 
@@ -644,7 +648,7 @@ typedef struct
 
 	team_t           lastWin;
 
-	int              suddenDeathBeginTime;
+	int              suddenDeathBeginTime; // in milliseconds
 	timeWarning_t    suddenDeathWarning;
 	timeWarning_t    timelimitWarning;
 
@@ -960,7 +964,7 @@ void     G_ClearPlayerZapEffects( gentity_t *player );
 //
 void      G_AddCreditToClient( gclient_t *client, short credit, qboolean cap );
 void      G_SetClientViewAngle( gentity_t *ent, const vec3_t angle );
-gentity_t *G_SelectTremulousSpawnPoint( team_t team, vec3_t preference, vec3_t origin, vec3_t angles );
+gentity_t *G_SelectUnvanquishedSpawnPoint( team_t team, vec3_t preference, vec3_t origin, vec3_t angles );
 gentity_t *G_SelectRandomFurthestSpawnPoint( vec3_t avoidPoint, vec3_t origin, vec3_t angles );
 gentity_t *G_SelectAlienLockSpawnPoint( vec3_t origin, vec3_t angles );
 gentity_t *G_SelectHumanLockSpawnPoint( vec3_t origin, vec3_t angles );

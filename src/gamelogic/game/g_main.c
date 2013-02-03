@@ -337,7 +337,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_combatCooldown,              "g_combatCooldown",              "15",                               CVAR_ARCHIVE,                                    0, qfalse           }
 };
 
-static int         gameCvarTableSize = ARRAY_LEN( gameCvarTable );
+static const size_t gameCvarTableSize = ARRAY_LEN( gameCvarTable );
 
 void               G_InitGame( int levelTime, int randomSeed, int restart );
 void               G_RunFrame( int levelTime );
@@ -1197,7 +1197,7 @@ void G_SpawnClients( team_t team )
 		clientNum = G_PeekSpawnQueue( sq );
 		ent = &g_entities[ clientNum ];
 
-		if ( ( spawn = G_SelectTremulousSpawnPoint( team,
+		if ( ( spawn = G_SelectUnvanquishedSpawnPoint( team,
 		               ent->client->pers.lastDeathLocation,
 		               spawn_origin, spawn_angles ) ) )
 		{

@@ -165,7 +165,6 @@ itemDef
       rect 574 464 45 11.25
 textscale .35
       textalign ALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_TRUE
       decoration
     }

@@ -198,12 +198,7 @@ static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p 
 	{
 		token = COM_Parse( text_p );
 
-		if ( !token )
-		{
-			break;
-		}
-
-		if ( !Q_stricmp( token, "" ) )
+		if ( !*token )
 		{
 			return qfalse;
 		}
@@ -784,12 +779,7 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 	{
 		token = COM_Parse( &text_p );
 
-		if ( !token )
-		{
-			break;
-		}
-
-		if ( !Q_stricmp( token, "" ) )
+		if ( !*token )
 		{
 			break;
 		}
@@ -1590,7 +1580,10 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	if ( !noGunModel )
 	{
 		CG_PositionEntityOnTag( &gun, parent, parent->hModel, "tag_weapon" );
-		CG_WeaponAnimation( cent, &gun.oldframe, &gun.frame, &gun.backlerp );
+		if ( ps )
+		{
+			CG_WeaponAnimation( cent, &gun.oldframe, &gun.frame, &gun.backlerp );
+		}
 
 		if ( weapon->md5 )
 		{
@@ -2783,7 +2776,7 @@ hit splashes
 static void CG_ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int otherEntNum )
 {
 	int     i;
-	float   r, u;
+	float   r, u, a;
 	vec3_t  end;
 	vec3_t  forward, right, up;
 	trace_t tr;
@@ -2797,8 +2790,12 @@ static void CG_ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int othe
 	// generate the "random" spread pattern
 	for ( i = 0; i < SHOTGUN_PELLETS; i++ )
 	{
-		r = Q_crandom( &seed ) * SHOTGUN_SPREAD * 16;
-		u = Q_crandom( &seed ) * SHOTGUN_SPREAD * 16;
+		r = Q_crandom( &seed ) * M_PI;
+		a = sqrt( Q_crandom( &seed ) * SHOTGUN_SPREAD * SHOTGUN_SPREAD * 16 * 16 );
+
+		u = sin( r ) * a;
+		r = cos( r ) * a;
+
 		VectorMA( origin, 8192 * 16, forward, end );
 		VectorMA( end, r, right, end );
 		VectorMA( end, u, up, end );

@@ -34,7 +34,7 @@ Maryland 20850 USA.
 
 // client.h -- primary header for client
 
-#include "../../../src/engine/qcommon/q_shared.h"
+#include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "../renderer/tr_public.h"
 #include "keys.h"
@@ -324,6 +324,7 @@ typedef struct
 	char     label[ MAX_FEATLABEL_CHARS ]; // for featured servers, NULL otherwise
 	int      netType;
 	int      clients;
+	int      bots;
 	int      maxClients;
 	int      minPing;
 	int      maxPing;
@@ -349,6 +350,8 @@ typedef struct
 	qboolean soundRegistered;
 	qboolean uiStarted;
 	qboolean cgameStarted;
+
+	qboolean cgameCVarsRegistered;
 
 	int      framecount;
 	int      frametime; // msec since last frame
@@ -497,7 +500,8 @@ extern cvar_t  *cl_consoleKeys;
 extern  cvar_t *cl_consoleFont;
 extern  cvar_t *cl_consoleFontSize;
 extern  cvar_t *cl_consoleFontKerning;
-extern  cvar_t *cl_consolePrompt;
+extern  cvar_t *cl_consoleCommand;
+
 // XreaL BEGIN
 extern cvar_t  *cl_aviFrameRate;
 extern cvar_t  *cl_aviMotionJpeg;
@@ -677,29 +681,51 @@ typedef struct
 
 	conChar_t text[ CON_TEXTSIZE ];
 
-	int      current; // line where next message will be printed
+	int      currentLine; // line where next message will be printed
 	int      x; // offset in current line for next print
-	int      display; // bottom of console displays this line
+	int      bottomDisplayedLine; // bottom of console displays this line
 
-	int      linewidth; // characters across screen
-	int      totallines; // total lines in console scrollback
+	int      textWidthInChars; // characters across screen
+	int      scrollbackLengthInLines; // total lines in console scrollback
 
-	float    xadjust; // for wide aspect screens
+	/**
+	 * the amount of lines that fit onto the screen
+	 */
+	int 	visibleAmountOfLines;
+	/**
+	 * the vertical distance from the consoletext to the border in pixel
+	 */
+	int      verticalVidPaddingTop, verticalVidPaddingBottom;
+	/**
+	 * the horiztontal distance from the consoletext to the border in pixel
+	 */
+	int    horizontalVidPadding;
+	/**
+	 * the vertical distance from the console to the screen in pixel
+	 */
+	int	   verticalVidMargin;
+	/**
+	 * the horiztontal distance from the console to the screen in pixel
+	 */
+	int	   horizontalVidMargin;
 
-	float    displayFrac; // approaches finalFrac at scr_conspeed
-	float    finalFrac; // 0.0 to 1.0 lines of console to display
-	float    desiredFrac; // ydnar: for variable console heights
+	int      borderWidth, topBorderWidth;
 
-	int      vislines; // in scanlines
+	float    currentAnimationFraction; // changes between 0.0 and 1.0 at scr_conspeed
+	qboolean isOpened;
+
+	/**
+	 * changes between 0.0 and 1.0 correlated with currentAnimationFraction
+	 * if the animation of type fade is active
+	 * it gets multiplied with the alpha of practically anything that gets rendered to allow fading in and out the
+	 * console as a whole
+	 */
+	float    currentAlphaFactor;
 
 	int      times[ NUM_CON_TIMES ]; // cls.realtime time the line was generated
-	// for transparent notify lines
-	vec4_t   color;
-
-	int      acLength; // Arnout: autocomplete buffer length
 } console_t;
 
-extern console_t con;
+extern console_t consoleState;
 
 void             Con_DrawCharacter( int cx, int line, int num );
 
@@ -714,8 +740,8 @@ void             Con_RunConsole( void );
 void             Con_DrawConsole( void );
 void             Con_PageUp( void );
 void             Con_PageDown( void );
-void             Con_Top( void );
-void             Con_Bottom( void );
+void             Con_ScrollToTop( void );
+void             Con_ScrollToBottom( void );
 void             Con_Close( void );
 
 void             CL_LoadConsoleHistory( void );
@@ -745,6 +771,7 @@ void  SCR_DrawConsoleFontUnichar( float x, float y, int ch );
 float SCR_ConsoleFontCharWidth( const char *s );
 float SCR_ConsoleFontUnicharWidth( int ch );
 float SCR_ConsoleFontCharHeight( void );
+float SCR_ConsoleFontCharVPadding( void );
 float SCR_ConsoleFontStringWidth( const char *s, int len );
 
 //
@@ -783,6 +810,7 @@ void          Cin_OGM_Shutdown( void );
 // cl_cgame.c
 //
 void     CL_InitCGame( void );
+void     CL_InitCGameCVars( void );
 void     CL_ShutdownCGame( void );
 qboolean CL_GameCommand( void );
 qboolean CL_GameConsoleText( void );

@@ -983,20 +983,13 @@ void Cvar_Set_f( void )
 	free( value );
 }
 
-/*
-============
-Cvar_SetU_f
-
-As Cvar_Set, but also flags it as serverinfo
-============
-*/
-void Cvar_SetU_f( void )
+static void Cvar_Set_Flagged( int flag )
 {
 	cvar_t *v;
 
-	if ( Cmd_Argc() != 3 && Cmd_Argc() != 4 )
+	if ( Cmd_Argc() < 3 )
 	{
-		Com_Printf(_( "usage: setu <variable> <value> [unsafe]\n" ));
+		Com_Printf(_( "usage: %s <variable> <value> [unsafe]\n" ), Cmd_Argv( 0 ) );
 		return;
 	}
 
@@ -1008,7 +1001,19 @@ void Cvar_SetU_f( void )
 		return;
 	}
 
-	v->flags |= CVAR_USERINFO;
+	v->flags |= flag;
+}
+
+/*
+============
+Cvar_SetU_f
+
+As Cvar_Set, but also flags it as userinfo
+============
+*/
+void Cvar_SetU_f( void )
+{
+	Cvar_Set_Flagged( CVAR_USERINFO );
 }
 
 /*
@@ -1020,23 +1025,7 @@ As Cvar_Set, but also flags it as serverinfo
 */
 void Cvar_SetS_f( void )
 {
-	cvar_t *v;
-
-	if ( Cmd_Argc() != 3 && Cmd_Argc() != 4 )
-	{
-		Com_Printf(_( "usage: sets <variable> <value> [unsafe]\n" ));
-		return;
-	}
-
-	Cvar_Set_f();
-	v = Cvar_FindVar( Cmd_Argv( 1 ) );
-
-	if ( !v )
-	{
-		return;
-	}
-
-	v->flags |= CVAR_SERVERINFO;
+	Cvar_Set_Flagged( CVAR_SERVERINFO );
 }
 
 /*
@@ -1048,23 +1037,7 @@ As Cvar_Set, but also flags it as archived
 */
 void Cvar_SetA_f( void )
 {
-	cvar_t *v;
-
-	if ( Cmd_Argc() != 3 && Cmd_Argc() != 4 )
-	{
-		Com_Printf(_( "usage: seta <variable> <value> [unsafe]\n" ));
-		return;
-	}
-
-	Cvar_Set_f();
-	v = Cvar_FindVar( Cmd_Argv( 1 ) );
-
-	if ( !v )
-	{
-		return;
-	}
-
-	v->flags |= CVAR_ARCHIVE;
+	Cvar_Set_Flagged( CVAR_ARCHIVE );
 }
 
 /*
@@ -1323,32 +1296,7 @@ void Cvar_Restart_f( void )
 Cvar_InfoString
 =====================
 */
-char           *Cvar_InfoString( int bit )
-{
-	static char info[ MAX_INFO_STRING ];
-	cvar_t      *var;
-
-	info[ 0 ] = 0;
-
-	for ( var = cvar_vars; var; var = var->next )
-	{
-		if ( var->flags & bit )
-		{
-			Info_SetValueForKey( info, var->name, var->string );
-		}
-	}
-
-	return info;
-}
-
-/*
-=====================
-Cvar_InfoString_Big
-
-  handles large info strings ( CS_SYSTEMINFO )
-=====================
-*/
-char           *Cvar_InfoString_Big( int bit )
+char *Cvar_InfoString( int bit, qboolean big )
 {
 	static char info[ BIG_INFO_STRING ];
 	cvar_t      *var;
@@ -1359,7 +1307,7 @@ char           *Cvar_InfoString_Big( int bit )
 	{
 		if ( var->flags & bit )
 		{
-			Info_SetValueForKey_Big( info, var->name, var->string );
+			Info_SetValueForKey( info, var->name, var->string, big );
 		}
 	}
 
@@ -1373,7 +1321,7 @@ Cvar_InfoStringBuffer
 */
 void Cvar_InfoStringBuffer( int bit, char *buff, int buffsize )
 {
-	Q_strncpyz( buff, Cvar_InfoString( bit ), buffsize );
+	Q_strncpyz( buff, Cvar_InfoString( bit, qfalse ), buffsize );
 }
 
 /*

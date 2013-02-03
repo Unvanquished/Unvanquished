@@ -63,6 +63,7 @@ GLShader_liquid                          *gl_liquidShader = NULL;
 GLShader_volumetricFog                   *gl_volumetricFogShader = NULL;
 GLShader_screenSpaceAmbientOcclusion     *gl_screenSpaceAmbientOcclusionShader = NULL;
 GLShader_depthOfField                    *gl_depthOfFieldShader = NULL;
+GLShader_motionblur                      *gl_motionblurShader = NULL;
 
 bool GLCompileMacro_USE_VERTEX_SKINNING::HasConflictingMacros( int permutation, const std::vector< GLCompileMacro * > &macros ) const
 {
@@ -655,7 +656,6 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 		if ( r_rimLighting->integer )
 		{
 			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_RimLighting\n#define r_RimLighting 1\n#endif\n" );
-			Q_strcat( bufferExtra, sizeof( bufferExtra ), "#ifndef r_RimColor\n#define r_RimColor vec4(0.26, 0.19, 0.16, 0.0)\n#endif\n" );
 			Q_strcat( bufferExtra, sizeof( bufferExtra ), va( "#ifndef r_RimExponent\n#define r_RimExponent %f\n#endif\n",
 			          r_rimExponent->value ) );
 		}
@@ -1350,10 +1350,16 @@ void GLShader::BindAttribLocations( GLuint program ) const
 #if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
 	//if(attribs & ATTR_PAINTCOLOR)
 	glBindAttribLocation( program, ATTR_INDEX_PAINTCOLOR, "attr_PaintColor" );
+#endif
+
+	//if(attribs & ATTR_AMBIENTLIGHT)
+	glBindAttribLocation( program, ATTR_INDEX_AMBIENTLIGHT, "attr_AmbientLight" );
+
+	//if(attribs & ATTR_DIRECTEDLIGHT)
+	glBindAttribLocation( program, ATTR_INDEX_DIRECTEDLIGHT, "attr_DirectedLight" );
 
 	//if(attribs & ATTR_LIGHTDIRECTION)
 	glBindAttribLocation( program, ATTR_INDEX_LIGHTDIRECTION, "attr_LightDirection" );
-#endif
 
 	//if(glConfig2.vboVertexSkinningAvailable)
 	{
@@ -1607,9 +1613,7 @@ void GLShader_vertexLighting_DBS_entity::SetShaderProgramUniforms( shaderProgram
 GLShader_vertexLighting_DBS_world::GLShader_vertexLighting_DBS_world() :
 	GLShader( "vertexLighting_DBS_world",
 	          ATTR_POSITION | ATTR_TEXCOORD | ATTR_NORMAL | ATTR_COLOR
-#if !defined( COMPAT_Q3A ) && !defined( COMPAT_ET )
-	          | ATTR_LIGHTDIRECTION
-#endif
+	          | ATTR_AMBIENTLIGHT | ATTR_DIRECTEDLIGHT | ATTR_LIGHTDIRECTION
 	        ),
 	u_DiffuseTextureMatrix( this ),
 	u_NormalTextureMatrix( this ),
@@ -2716,3 +2720,21 @@ void GLShader_depthOfField::SetShaderProgramUniforms( shaderProgram_t *shaderPro
 	glUniform1i( shaderProgram->u_DepthMap, 1 );
 }
 
+GLShader_motionblur::GLShader_motionblur() :
+	GLShader( "motionblur", ATTR_POSITION ),
+	u_blurVec( this )
+{
+	LoadShader();
+}
+
+void GLShader_motionblur::SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram )
+{
+	shaderProgram->u_ColorMap = glGetUniformLocation( shaderProgram->program, "u_ColorMap" );
+	shaderProgram->u_DepthMap = glGetUniformLocation( shaderProgram->program, "u_DepthMap" );
+}
+
+void GLShader_motionblur::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
+{
+	glUniform1i( shaderProgram->u_ColorMap, 0 );
+	glUniform1i( shaderProgram->u_DepthMap, 1 );
+}

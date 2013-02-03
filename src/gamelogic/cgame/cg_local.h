@@ -720,6 +720,7 @@ typedef struct
 	int      health; // you only get this info about your teammates
 	int      upgrade;
 	int      curWeaponClass; // sends current weapon for H, current class for A
+	int      credit;
 
 	// when clientinfo is changed, the loading of models/skins/sounds
 	// can be deferred until you are dead, to prevent hitches in
@@ -1006,7 +1007,6 @@ typedef struct
 	// view rendering
 	refdef_t refdef;
 	vec3_t   refdefViewAngles; // will be converted to refdef.viewaxis
-	int      fov; // custom fov
 
 	// zoom key
 	qboolean zoomed;
@@ -1566,6 +1566,8 @@ extern vmCvar_t             cg_animBlend;
 extern vmCvar_t             cg_highPolyPlayerModels;
 extern vmCvar_t             cg_highPolyBuildableModels;
 extern vmCvar_t             cg_highPolyWeaponModels;
+extern vmCvar_t             cg_motionblur;
+extern vmCvar_t             cg_motionblurMinSpeed;
 
 //
 // cg_main.c
@@ -1633,7 +1635,7 @@ void     CG_DrawRect( float x, float y, float width, float height, float size, c
 void     CG_DrawSides( float x, float y, float w, float h, float size );
 void     CG_DrawTopBottom( float x, float y, float w, float h, float size );
 qboolean CG_WorldToScreen( vec3_t point, float *x, float *y );
-char     *CG_KeyBinding( const char *bind );
+char     *CG_KeyBinding( const char *bind, team_t team );
 char     CG_GetColorCharForHealth( int clientnum );
 void     CG_DrawSphere( const vec3_t center, float radius, int customShader, const float *shaderRGBA );
 void     CG_DrawSphericalCone( const vec3_t tip, const vec3_t rotation, float radius,
@@ -1898,3 +1900,8 @@ typedef enum
   DT_COMMAND, // You must be alive/human/spec/etc.
   DT_MISC_CP, // Misc errors which may be centre-printed but not hidden
 } dialogType_t;
+
+//
+// cg_utils.c
+//
+qboolean CG_ParseColor( byte *c, char **text_p );

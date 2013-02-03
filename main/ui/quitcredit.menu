@@ -9,7 +9,7 @@
     visible MENU_FALSE
     fullscreen MENU_TRUE
     rect 0 0 640 480
-    focusColor 1 .75 0 1
+    focusColor 0.45 0.45 0.45 1.0
     style WINDOW_STYLE_FILLED
     border WINDOW_BORDER_NONE
     aspectBias ASPECT_NONE
@@ -71,7 +71,6 @@
       textscale   0.75
       textstyle   ITEM_TEXTSTYLE_PLAIN
       text        "CREDITS"
-      forecolor   1 1 1 1
       backcolor   1 0 0 1
       visible     1
       decoration
@@ -88,7 +87,6 @@
       textscale   0.50
       textstyle   ITEM_TEXTSTYLE_PLAIN
       text        "Tim 'Timbo' Angus"
-      forecolor   1 1 1 1
       backcolor   1 0 0 1
       visible     1
       decoration
@@ -104,7 +102,6 @@
       textscale   0.50
       textstyle   ITEM_TEXTSTYLE_PLAIN
       text        "Programming and Direction"
-      forecolor   1 1 1 1
       backcolor   0 1 0 1
       visible     1
       decoration
@@ -121,7 +118,6 @@
       textscale   0.50
       textstyle   ITEM_TEXTSTYLE_PLAIN
       text        "Nick 'jex' Jansens"
-      forecolor   1 1 1 1
       backcolor   1 0 0 1
       visible     1
       decoration
@@ -137,7 +133,6 @@
       textscale   0.50
       textstyle   ITEM_TEXTSTYLE_PLAIN
       text        "Mapping, texturing and 2D artwork"
-      forecolor   1 1 1 1
       backcolor   0 1 0 1
       visible     1
       decoration
@@ -154,7 +149,6 @@
       textscale   0.50
       textstyle   ITEM_TEXTSTYLE_PLAIN
       text        "Robin 'OverFlow' Marshall"
-      forecolor   1 1 1 1
       backcolor   1 0 0 1
       visible     1
       decoration
@@ -170,7 +164,6 @@
       textscale   0.50
       textstyle   ITEM_TEXTSTYLE_PLAIN
       text        "Modelling, animation and mapping"
-      forecolor   1 1 1 1
       backcolor   0 1 0 1
       visible     1
       decoration
@@ -187,7 +180,6 @@
       textscale   0.50
       textstyle   ITEM_TEXTSTYLE_PLAIN
       text        "Jan 'Stannum' van der Weg"
-      forecolor   1 1 1 1
       backcolor   1 0 0 1
       visible     1
       decoration
@@ -203,7 +195,6 @@
       textscale   0.50
       textstyle   ITEM_TEXTSTYLE_PLAIN
       text        "Texturing and mapping"
-      forecolor   1 1 1 1
       backcolor   0 1 0 1
       visible     1
       decoration
@@ -220,7 +211,6 @@
       textscale   0.50
       textstyle   ITEM_TEXTSTYLE_PLAIN
       text        "Mike 'Veda' McInerney"
-      forecolor   1 1 1 1
       backcolor   1 0 0 1
       visible     1
       decoration
@@ -236,7 +226,6 @@
       textscale   0.50
       textstyle   ITEM_TEXTSTYLE_PLAIN
       text        "Modelling, animation and texturing"
-      forecolor   1 1 1 1
       backcolor   0 1 0 1
       visible     1
       decoration
@@ -253,7 +242,6 @@
       textscale   0.50
       textstyle   ITEM_TEXTSTYLE_PLAIN
       text        "Gordon 'Godmil' Miller"
-      forecolor   1 1 1 1
       backcolor   1 0 0 1
       visible     1
       decoration
@@ -269,7 +257,6 @@
       textscale   0.50
       textstyle   ITEM_TEXTSTYLE_PLAIN
       text        "Mapping"
-      forecolor   1 1 1 1
       backcolor   0 1 0 1
       visible     1
       decoration
@@ -286,7 +273,6 @@
       textscale   0.50
       textstyle   ITEM_TEXTSTYLE_PLAIN
       text        "'Who-[Soup]'"
-      forecolor   1 1 1 1
       backcolor   1 0 0 1
       visible     1
       decoration
@@ -302,7 +288,6 @@
       textscale   0.50
       textstyle   ITEM_TEXTSTYLE_PLAIN
       text        "Mapping"
-      forecolor   1 1 1 1
       backcolor   0 1 0 1
       visible     1
       decoration
@@ -319,7 +304,6 @@
       textscale   0.50
       textstyle   ITEM_TEXTSTYLE_PLAIN
       text        "Tristan 'jhrx' Blease"
-      forecolor   1 1 1 1
       backcolor   1 0 0 1
       visible     1
       decoration
@@ -335,7 +319,6 @@
       textscale   0.50
       textstyle   ITEM_TEXTSTYLE_PLAIN
       text        "Mapping"
-      forecolor   1 1 1 1
       backcolor   0 1 0 1
       visible     1
       decoration
@@ -352,7 +335,6 @@
       textscale   0.50
       textstyle   ITEM_TEXTSTYLE_PLAIN
       text        "Paul 'MoP' Greveson"
-      forecolor   1 1 1 1
       backcolor   1 0 0 1
       visible     1
       decoration
@@ -368,7 +350,6 @@
       textscale   0.50
       textstyle   ITEM_TEXTSTYLE_PLAIN
       text        "Modelling and texturing"
-      forecolor   1 1 1 1
       backcolor   0 1 0 1
       visible     1
       decoration
@@ -385,7 +366,6 @@
       textscale   0.50
       textstyle   ITEM_TEXTSTYLE_PLAIN
       text        "Chris 'Dolby' McCarthy"
-      forecolor   1 1 1 1
       backcolor   1 0 0 1
       visible     1
       decoration
@@ -401,7 +381,6 @@
       textscale   0.50
       textstyle   ITEM_TEXTSTYLE_PLAIN
       text        "Sound"
-      forecolor   1 1 1 1
       backcolor   0 1 0 1
       visible     1
       decoration

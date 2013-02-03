@@ -63,7 +63,7 @@ int  Com_Printf( const char *fmt, ... ) PRINTF_LIKE(1);
 void Com_Error( int code, const char *fmt, ... ) PRINTF_LIKE(2) NORETURN;    // watch out, we don't define ERR_FATAL and stuff
 void Cvar_SetValue( const char *var_name, float value );
 void Cvar_Set( const char *var_name, const char *value );
-char *va( char *format, ... ) PRINTF_LIKE(1);
+char *va( const char *format, ... ) PRINTF_LIKE(1);
 
 #ifdef WIN32
 #define Q_stricmp stricmp

@@ -47,7 +47,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #       include "../renderer/tr_local.h"
 #endif
 
-#include "../client/client.h"
 #include "../sys/sys_local.h"
 #include "sdl_icon.h"
 #include "SDL_syswm.h"
@@ -1688,14 +1687,14 @@ static void GLimp_XreaLInitExtensions( void )
 	{
 		ri.Printf( PRINT_ALL, "...using GL_ARB_get_program_binary\n");
 		glConfig2.getProgramBinaryAvailable = qtrue;
-	} 
+	}
 	else
 #endif
 	{
 		ri.Printf( PRINT_ALL, "...GL_ARB_get_program_binary not found\n");
 		glConfig2.getProgramBinaryAvailable = qfalse;
 	}
-	
+
 }
 
 #endif
@@ -1823,7 +1822,7 @@ static void reportDriverType( qboolean force )
 	static const char *const drivers[] = {
 		"integrated", "stand-alone", "Voodoo", "OpenGL 3+", "Mesa"
 	};
-	if (glConfig.driverType > GLDRV_UNKNOWN && glConfig.driverType < ARRAY_LEN( drivers ) )
+	if (glConfig.driverType > GLDRV_UNKNOWN && (int) glConfig.driverType < ARRAY_LEN( drivers ) )
 	{
 		ri.Printf( PRINT_ALL, "%s graphics driver class '%s'\n",
 		           force ? "User has forced" : "Detected",
@@ -1837,7 +1836,7 @@ static void reportHardwareType( qboolean force )
 		"generic", "Voodoo", "Riva 128", "Rage Pro", "Permedia 2",
 		"ATI Radeon", "AMD Radeon DX10-class", "nVidia DX10-class"
 	};
-	if (glConfig.hardwareType > GLHW_UNKNOWN && glConfig.driverType < ARRAY_LEN( hardware ) )
+	if (glConfig.hardwareType > GLHW_UNKNOWN && (int) glConfig.hardwareType < ARRAY_LEN( hardware ) )
 	{
 		ri.Printf( PRINT_ALL, "%s graphics hardware class '%s'\n",
 		           force ? "User has forced" : "Detected",
@@ -1856,6 +1855,7 @@ of OpenGL
 qboolean GLimp_Init( void )
 {
 	//qboolean        success = qtrue;
+	qboolean swRenderer = qfalse;
 
 	glConfig.driverType = GLDRV_ICD;
 
@@ -2061,6 +2061,37 @@ success:
 	reportDriverType( qfalse );
 	reportHardwareType( qfalse );
 
+	// software renderer...?
+	if ( glConfig.driverType == GLDRV_MESA )
+	{
+		swRenderer = !!getenv( "LIBGL_ALWAYS_SOFTWARE" );
+	}
+
+	if ( !swRenderer )
+	{
+		int i;
+		// known software renderer names go here
+		static const char *const names[] = {
+			"softpipe",
+			"llvmpipe", // has SOME hw acceleration
+			"GDI Generic",
+		};
+
+		for ( i = 0; i < ARRAY_LEN( names ); ++i )
+		{
+			if ( Q_stristr( glConfig.renderer_string, names[ i ] ) )
+			{
+				swRenderer = qtrue;
+				break;
+			}
+		}
+	}
+
+	if ( swRenderer )
+	{
+		ri.Printf( PRINT_WARNING, "WARNING: software renderer detected! Very low frame rates are possible.\n" );
+	}
+
 	{ // allow overriding where the user really does know better
 		cvar_t          *forceGL;
 		glDriverType_t   driverType   = GLDRV_UNKNOWN;
@@ -2215,13 +2246,14 @@ void GLimp_EndFrame( void )
 
 			// Is the state we want different from the current state?
 			needToToggle = !!r_fullscreen->integer != fullscreen;
-
+#ifdef __linux__
 			if ( needToToggle )
 			{
 				sdlToggled = SDL_WM_ToggleFullScreen( s );
 			}
+#endif
 		}
-
+#ifdef __linux__
 		if ( needToToggle )
 		{
 			// SDL_WM_ToggleFullScreen didn't work, so do it the slow way
@@ -2232,6 +2264,7 @@ void GLimp_EndFrame( void )
 
 			ri.IN_Restart();
 		}
+#endif
 
 		r_fullscreen->modified = qfalse;
 	}

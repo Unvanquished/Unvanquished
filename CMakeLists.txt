@@ -101,6 +101,7 @@ cmake_dependent_option( USE_SDL_ICONV        "Compile with SDL's iconv implement
 cmake_dependent_option( HAVE_BZIP2           "Compile with BZip2 support"                            0 "HAVE_BZIP2"                   0 )
 
 cmake_dependent_option( BUILD_GAME_GPP       "Build Tremulous GPP game logic"              1 "GAME_LIB OR GAME_QVM" 0 )
+cmake_dependent_option( DEBUG_VM_ALLOC       "Debug some allocations (VM as native code)"  0 GAME_LIB         0 )
 cmake_dependent_option( GAME_LIB_LLVM        "Use LLVM, not shared libs, for game logic"   0 GAME_LIB         0 )
 
 cmake_dependent_option( USE_OPENAL_DLOPEN    "Use dlopen to load OpenAL"                   1 USE_OPENAL       0 )
@@ -675,6 +676,7 @@ set( CGAMEGPP_BASE
   ${GPP_DIR}/cgame/cg_trails.c
   ${GPP_DIR}/cgame/cg_particles.c
   ${GPP_DIR}/cgame/cg_tutorial.c
+  ${GPP_DIR}/cgame/cg_utils.c
   ${GPP_DIR}/ui/ui_shared.c
   ${GPP_DIR}/ui/ui_utf8.c
   ${MOUNT_DIR}/engine/qcommon/q_math.c
@@ -1063,6 +1065,10 @@ function( GAMELIB )
       set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_MINSIZEREL "MinSizeRel/${GAMELIB_OUTPUT_DIR}" )
       set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELWITHDEBINFO "RelWithDebInfo/${GAMELIB_OUTPUT_DIR}" )
     endif()
+    set( GAMELIB_COMPILE_DEF_NATIVE ${GAMELIB_COMPILE_DEF} )
+    if( DEBUG_VM_ALLOC )
+      set( GAMELIB_COMPILE_DEF_NATIVE ${GAMELIB_COMPILE_DEF} DEBUG_VM_ALLOC )
+    endif()
 
     if( GAME_LIB_LLVM )
       add_library( ${GAMELIB_LIB_NAME} SHARED ${GAMELIB_LIB_FILES} ${GAME_VM_COMMON} )
@@ -1077,7 +1083,7 @@ function( GAMELIB )
       LIBRARY_OUTPUT_DIRECTORY ${GAMELIB_OUTPUT_DIR}
       RUNTIME_OUTPUT_DIRECTORY ${GAMELIB_OUTPUT_DIR}
       ARCHIVE_OUTPUT_DIRECTORY ${GAMELIB_OUTPUT_DIR}
-      COMPILE_DEFINITIONS "${GAMELIB_COMPILE_DEF}"
+      COMPILE_DEFINITIONS "${GAMELIB_COMPILE_DEF_NATIVE}"
     )
 
     if( GAME_LIB_LLVM )
@@ -1265,7 +1271,7 @@ if( BUILD_OLD_RENDERER )
   target_link_libraries( renderer ${PNG_LIBRARIES} ${SDL_LIBRARY} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} )
 
   find_package( WebP REQUIRED )
-  set_property( TARGET renderer APPEND PROPERTY COMPILE_DEFINITIONS USE_WEBP )
+  set_property( TARGET renderer APPEND PROPERTY COMPILE_DEFINITIONS )
   include_directories( ${WEBP_INCLUDE_DIRS} )
   target_link_libraries( renderer ${WEBP_LIBRARIES} )
 
@@ -1302,7 +1308,7 @@ if( BUILD_NEW_RENDERER )
   target_link_libraries( rendererGL ${PNG_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} ${SDL_LIBRARY} )
 
   find_package( WebP REQUIRED )
-  set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS USE_WEBP )
+  set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS )
   include_directories( ${WEBP_INCLUDE_DIRS} )
   target_link_libraries( rendererGL ${WEBP_LIBRARIES} )
 

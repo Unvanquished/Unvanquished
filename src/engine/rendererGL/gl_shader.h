@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // *INDENT-OFF*
 static const int MAX_SHADER_MACROS = 9;
-static const unsigned int GL_SHADER_VERSION = 2;
+static const unsigned int GL_SHADER_VERSION = 3;
 
 struct GLShaderHeader
 {
@@ -2673,6 +2673,52 @@ public:
 	}
 };
 
+class u_blurVec :
+	GLUniform
+{
+public:
+	u_blurVec( GLShader *shader ) :
+		GLUniform( shader )
+	{
+	}
+
+	const char *GetName() const
+	{
+		return "u_blurVec";
+	}
+
+	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
+	{
+		shaderProgram->u_blurVec = glGetUniformLocation( shaderProgram->program, GetName() );
+	}
+
+	void SetUniform_blurVec( vec3_t value )
+	{
+		shaderProgram_t *program = _shader->GetProgram();
+
+#if defined( USE_UNIFORM_FIREWALL )
+
+		if ( VectorCompare( program->t_blurVec, value ) )
+		{
+			return;
+		}
+
+		VectorCopy( value, program->t_blurVec );
+#endif
+
+#if defined( LOG_GLSL_UNIFORMS )
+
+		if ( r_logFile->integer )
+		{
+			GLimp_LogComment( va( "--- SetUniform_blurVec( program = %s, value = %f %f %f ) ---\n", program->name, value[0], value[1], value[2] ) );
+		}
+
+#endif
+
+		glUniform3fv( program->u_blurVec, 1, value );
+	}
+};
+
 class GLShader_generic :
 	public GLShader,
 	public u_ColorMap,
@@ -3355,6 +3401,15 @@ public:
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
+class GLShader_motionblur :
+	public GLShader,
+	public u_blurVec
+{
+public:
+	GLShader_motionblur();
+	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
+	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
+};
 
 extern GLShader_generic                         *gl_genericShader;
 extern GLShader_lightMapping                    *gl_lightMappingShader;
@@ -3388,6 +3443,7 @@ extern GLShader_liquid                          *gl_liquidShader;
 extern GLShader_volumetricFog                   *gl_volumetricFogShader;
 extern GLShader_screenSpaceAmbientOcclusion     *gl_screenSpaceAmbientOcclusionShader;
 extern GLShader_depthOfField                    *gl_depthOfFieldShader;
+extern GLShader_motionblur                      *gl_motionblurShader;
 
 #ifdef USE_GLSL_OPTIMIZER
 extern struct glslopt_ctx *s_glslOptimizer;

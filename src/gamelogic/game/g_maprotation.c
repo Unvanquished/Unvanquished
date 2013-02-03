@@ -214,11 +214,6 @@ static qboolean G_ParseMapCommandSection( node_t *node, char **text_p )
 			break;
 		}
 
-		if ( !Q_stricmp( token, "" ) )
-		{
-			return qfalse;
-		}
-
 		if ( !Q_stricmp( token, "}" ) )
 		{
 			if ( commandLength > 0 )
@@ -448,11 +443,6 @@ static qboolean G_ParseMapRotation( mapRotation_t *mr, char **text_p )
 			break;
 		}
 
-		if ( !Q_stricmp( token, "" ) )
-		{
-			return qfalse;
-		}
-
 		if ( !Q_stricmp( token, "{" ) )
 		{
 			if ( node == NULL )
@@ -541,11 +531,6 @@ static qboolean G_ParseMapRotationFile( const char *fileName )
 		token = COM_Parse( &text_p );
 
 		if ( !*token )
-		{
-			break;
-		}
-
-		if ( !Q_stricmp( token, "" ) )
 		{
 			break;
 		}
@@ -785,7 +770,6 @@ void G_PrintCurrentRotation( gentity_t *ent )
 	trap_Cvar_VariableStringBuffer( "mapname", currentMapName, sizeof( currentMapName ) );
 
 	ADMBP_begin();
-	ADMBP( "\"" );
 	ADMBP( va( "%s:\n", mapRotation->name ) );
 
 	while ( ( node = mapRotation->nodes[ i++ ] ) )
@@ -844,7 +828,7 @@ void G_PrintCurrentRotation( gentity_t *ent )
 	{
 		ADMBP( va( "^7The next map has been set to %s\n", g_nextMap.string ) );
 	}
-	ADMBP( "\"" );
+
 	ADMBP_end();
 }
 

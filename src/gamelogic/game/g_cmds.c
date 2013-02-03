@@ -1725,7 +1725,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		break;
 
 	case VOTE_REMAIN:
-		if ( level.time - level.startTime < ( level.timelimit - voteInfo[voteId].specialCvar->integer / 2 ) * 60000 )
+		if ( !level.timelimit || level.time - level.startTime < ( level.timelimit - voteInfo[voteId].specialCvar->integer / 2 ) * 60000 )
 		{
 			trap_SendServerCommand( ent - g_entities,
 			                        va( "print_tr %s %s %d", QQ( N_("'$1$' votes are only allowed with less than $2$ minutes remaining\n") ),
@@ -2203,7 +2203,7 @@ static qboolean G_RoomForClassChange( gentity_t *ent, class_t class,
 	BG_ClassBoundingBox( oldClass, fromMins, fromMaxs, NULL, NULL, NULL );
 	BG_ClassBoundingBox( class, toMins, toMaxs, NULL, NULL, NULL );
 
-	VectorCopy( ent->s.origin, newOrigin );
+	VectorCopy( ent->client->ps.origin, newOrigin );
 
 	// find max x/y diff
 	maxHorizGrowth = toMaxs[ 0 ] - fromMaxs[ 0 ];
@@ -2894,22 +2894,19 @@ void Cmd_Buy_f( gentity_t *ent )
 		// Only humans can buy stuff
 		if ( BG_Weapon( weapon )->team != TEAM_HUMANS )
 		{
-			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't buy alien items\n") "\"" );
-			return;
+			goto not_alien;
 		}
 
 		//are we /allowed/ to buy this?
 		if ( !BG_Weapon( weapon )->purchasable )
 		{
-			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't buy this item\n") "\"" );
-			return;
+			goto cant_buy;
 		}
 
 		//are we /allowed/ to buy this?
 		if ( !BG_WeaponAllowedInStage( weapon, g_humanStage.integer ) || !BG_WeaponIsAllowed( weapon ) )
 		{
-			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't buy this item\n") "\"" );
-			return;
+			goto cant_buy;
 		}
 
 		//can afford this?
@@ -2959,6 +2956,24 @@ void Cmd_Buy_f( gentity_t *ent )
 			return;
 		}
 
+		// Only humans can buy stuff
+		if ( BG_Upgrade( upgrade )->team != TEAM_HUMANS )
+		{
+			goto not_alien;
+		}
+
+		//are we /allowed/ to buy this?
+		if ( !BG_Upgrade( upgrade )->purchasable )
+		{
+			goto cant_buy;
+		}
+
+		//are we /allowed/ to buy this?
+		if ( !BG_UpgradeAllowedInStage( upgrade, g_humanStage.integer ) || !BG_UpgradeIsAllowed( upgrade ) )
+		{
+			goto cant_buy;
+		}
+
 		//can afford this?
 		if ( BG_Upgrade( upgrade )->price > ( short ) ent->client->pers.credit )
 		{
@@ -2970,27 +2985,6 @@ void Cmd_Buy_f( gentity_t *ent )
 		if ( BG_Upgrade( upgrade )->slots & BG_SlotsForInventory( ent->client->ps.stats ) )
 		{
 			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOSLOTS );
-			return;
-		}
-
-		// Only humans can buy stuff
-		if ( BG_Upgrade( upgrade )->team != TEAM_HUMANS )
-		{
-			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't buy alien items\n") "\"" );
-			return;
-		}
-
-		//are we /allowed/ to buy this?
-		if ( !BG_Upgrade( upgrade )->purchasable )
-		{
-			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't buy this item\n") "\"" );
-			return;
-		}
-
-		//are we /allowed/ to buy this?
-		if ( !BG_UpgradeAllowedInStage( upgrade, g_humanStage.integer ) || !BG_UpgradeIsAllowed( upgrade ) )
-		{
-			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't buy this item\n") "\"" );
 			return;
 		}
 
@@ -3031,10 +3025,22 @@ void Cmd_Buy_f( gentity_t *ent )
 	else
 	{
 		G_TriggerMenu( ent->client->ps.clientNum, MN_H_UNKNOWNITEM );
+		return;
 	}
 
 	//update ClientInfo
 	ClientUserinfoChanged( ent->client->ps.clientNum, qfalse );
+	ent->client->pers.infoChangeTime = level.time;
+
+	return;
+
+cant_buy:
+	trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't buy this item\n") "\"" );
+	return;
+
+not_alien:
+	trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't buy alien items\n") "\"" );
+	return;
 }
 
 /*
@@ -3042,10 +3048,85 @@ void Cmd_Buy_f( gentity_t *ent )
 Cmd_Sell_f
 =================
 */
+static void Cmd_Sell_weapons( gentity_t *ent )
+{
+	int      i;
+	weapon_t selected = BG_GetPlayerWeapon( &ent->client->ps );
+
+	if ( !BG_PlayerCanChangeWeapon( &ent->client->ps ) )
+	{
+		return;
+	}
+
+	for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
+	{
+		// guard against selling the HBUILD weapons exploit
+		if ( i == WP_HBUILD && ent->client->ps.stats[ STAT_MISC ] > 0 )
+		{
+			G_TriggerMenu( ent->client->ps.clientNum, MN_H_ARMOURYBUILDTIMER );
+			continue;
+		}
+
+		if ( BG_InventoryContainsWeapon( i, ent->client->ps.stats ) &&
+		     BG_Weapon( i )->purchasable )
+		{
+			ent->client->ps.stats[ STAT_WEAPON ] = WP_NONE;
+
+			// add to funds
+			G_AddCreditToClient( ent->client, ( short ) BG_Weapon( i )->price, qfalse );
+		}
+
+		// if we have this weapon selected, force a new selection
+		if ( i == selected )
+		{
+			G_ForceWeaponChange( ent, WP_NONE );
+		}
+	}
+}
+
+static void Cmd_Sell_upgrades( gentity_t *ent )
+{
+	int      i;
+
+	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
+	{
+		// remove upgrade if carried
+		if ( BG_InventoryContainsUpgrade( i, ent->client->ps.stats ) &&
+		     BG_Upgrade( i )->purchasable )
+		{
+			// shouldn't really need to test for this, but just to be safe
+			if ( i == UP_BATTLESUIT )
+			{
+				vec3_t newOrigin;
+
+				if ( !G_RoomForClassChange( ent, PCL_HUMAN, newOrigin ) )
+				{
+					G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMBSUITOFF );
+					continue;
+				}
+
+				VectorCopy( newOrigin, ent->client->ps.origin );
+				ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN;
+				ent->client->pers.classSelection = PCL_HUMAN;
+				ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
+			}
+
+			BG_RemoveUpgradeFromInventory( i, ent->client->ps.stats );
+
+			if ( i == UP_BATTPACK )
+			{
+				G_GiveClientMaxAmmo( ent, qtrue );
+			}
+
+			// add to funds
+			G_AddCreditToClient( ent->client, ( short ) BG_Upgrade( i )->price, qfalse );
+		}
+	}
+}
+
 void Cmd_Sell_f( gentity_t *ent )
 {
 	char      s[ MAX_TOKEN_CHARS ];
-	int       i;
 	weapon_t  weapon;
 	upgrade_t upgrade;
 
@@ -3152,82 +3233,26 @@ void Cmd_Sell_f( gentity_t *ent )
 	}
 	else if ( !Q_stricmp( s, "weapons" ) )
 	{
-		weapon_t selected = BG_GetPlayerWeapon( &ent->client->ps );
-
-		if ( !BG_PlayerCanChangeWeapon( &ent->client->ps ) )
-		{
-			return;
-		}
-
-		for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
-		{
-			//guard against selling the HBUILD weapons exploit
-			if ( i == WP_HBUILD && ent->client->ps.stats[ STAT_MISC ] > 0 )
-			{
-				G_TriggerMenu( ent->client->ps.clientNum, MN_H_ARMOURYBUILDTIMER );
-				continue;
-			}
-
-			if ( BG_InventoryContainsWeapon( i, ent->client->ps.stats ) &&
-			     BG_Weapon( i )->purchasable )
-			{
-				ent->client->ps.stats[ STAT_WEAPON ] = WP_NONE;
-
-				//add to funds
-				G_AddCreditToClient( ent->client, ( short ) BG_Weapon( i )->price, qfalse );
-			}
-
-			//if we have this weapon selected, force a new selection
-			if ( i == selected )
-			{
-				G_ForceWeaponChange( ent, WP_NONE );
-			}
-		}
+		Cmd_Sell_weapons( ent );
 	}
 	else if ( !Q_stricmp( s, "upgrades" ) )
 	{
-		for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
-		{
-			//remove upgrade if carried
-			if ( BG_InventoryContainsUpgrade( i, ent->client->ps.stats ) &&
-			     BG_Upgrade( i )->purchasable )
-			{
-				// shouldn't really need to test for this, but just to be safe
-				if ( i == UP_BATTLESUIT )
-				{
-					vec3_t newOrigin;
-
-					if ( !G_RoomForClassChange( ent, PCL_HUMAN, newOrigin ) )
-					{
-						G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMBSUITOFF );
-						continue;
-					}
-
-					VectorCopy( newOrigin, ent->client->ps.origin );
-					ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN;
-					ent->client->pers.classSelection = PCL_HUMAN;
-					ent->client->ps.eFlags ^= EF_TELEPORT_BIT;
-				}
-
-				BG_RemoveUpgradeFromInventory( i, ent->client->ps.stats );
-
-				if ( i == UP_BATTPACK )
-				{
-					G_GiveClientMaxAmmo( ent, qtrue );
-				}
-
-				//add to funds
-				G_AddCreditToClient( ent->client, ( short ) BG_Upgrade( i )->price, qfalse );
-			}
-		}
+		Cmd_Sell_upgrades( ent );
+	}
+	else if ( !Q_stricmp( s, "all" ) )
+	{
+		Cmd_Sell_weapons( ent );
+		Cmd_Sell_upgrades( ent );
 	}
 	else
 	{
 		G_TriggerMenu( ent->client->ps.clientNum, MN_H_UNKNOWNITEM );
+		return;
 	}
 
 	//update ClientInfo
 	ClientUserinfoChanged( ent->client->ps.clientNum, qfalse );
+	ent->client->pers.infoChangeTime = level.time;
 }
 
 /*
@@ -3917,7 +3942,6 @@ void Cmd_ListMaps_f( gentity_t *ent )
 	}
 
 	ADMBP_begin();
-	ADMBP( "\"" );
 
 	for ( row = 0; row < rows; row++ )
 	{
@@ -3937,7 +3961,7 @@ void Cmd_ListMaps_f( gentity_t *ent )
 
 		ADMBP( "\n" );
 	}
-	ADMBP( "\"" );
+
 	ADMBP_end();
 
 	if ( search[ 0 ] )
@@ -4074,8 +4098,7 @@ void Cmd_MapLog_f( gentity_t *ent )
 	ptr = maplog;
 
 	ADMP( "\"" N_("^3maplog: ^7recent map results, newest first\n") "\"" );
-	ADMBP_begin( );
-	ADMBP( "\"" );
+	ADMBP_begin();
 
 	while( *ptr )
 	{
@@ -4125,7 +4148,6 @@ void Cmd_MapLog_f( gentity_t *ent )
 		           ptr, clock, result ) );
 		ptr = end;
 	}
-	ADMBP( "\"" );
 	ADMBP_end();
 }
 
@@ -4537,9 +4559,10 @@ void Cmd_PrivateMessage_f( gentity_t *ent )
 		ADMP( va( "%s %c %s", QQ( N_("^$1$Private message: ^7$2$\n") ), color, Quote( text ) ) );
 		// remove trailing ", "
 		recipients[ strlen( recipients ) - 2 ] = '\0';
-		ADMP( va( "%s %c %i %s", P_( QQ( N_("^$1$sent to $2$ player: ^7$3$\n" ) ),
-		                             QQ( N_( "^$1$sent to $2$ players: ^7$3$\n" ) ),
-                                     count ),
+		// FIXME PLURAL
+		ADMP( va( "%s %c %i %s",
+		          Quote( P_( "^$1$sent to $2$ player: ^7$3$\n",
+		                     "^$1$sent to $2$ players: ^7$3$\n", count ) ),
 		          color, count, Quote( recipients ) ) );
 
 		G_LogPrintf( "%s: %d \"%s" S_COLOR_WHITE "\" \"%s\": ^%c%s\n",

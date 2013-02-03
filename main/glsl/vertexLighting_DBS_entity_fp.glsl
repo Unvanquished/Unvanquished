@@ -126,16 +126,16 @@ void	main()
 	// compute the specular term
 #if defined(USE_REFLECTIVE_SPECULAR)
 
-	vec3 specular = texture2D(u_SpecularMap, texSpecular).rgb;
+	vec3 specBase = texture2D(u_SpecularMap, texSpecular).rgb;
 
 	vec4 envColor0 = textureCube(u_EnvironmentMap0, reflect(-V, N)).rgba;
 	vec4 envColor1 = textureCube(u_EnvironmentMap1, reflect(-V, N)).rgba;
 
-	specular *= mix(envColor0, envColor1, u_EnvironmentInterpolation).rgb;
+	specBase *= mix(envColor0, envColor1, u_EnvironmentInterpolation).rgb;
 
 	// Blinn-Phong
 	float NH = clamp(dot(N, H), 0, 1);
-	specular *= u_LightColor * pow(NH, r_SpecularExponent2) * r_SpecularScale;
+	vec3 specMult = u_LightColor * pow(NH, r_SpecularExponent2) * r_SpecularScale;
 
 #if 0
 	gl_FragColor = vec4(specular, 1.0);
@@ -148,7 +148,8 @@ void	main()
 
 	// simple Blinn-Phong
 	float NH = clamp(dot(N, H), 0, 1);
-	vec3 specular = texture2D(u_SpecularMap, texSpecular).rgb * u_LightColor * pow(NH, r_SpecularExponent) * r_SpecularScale;
+	vec3 specBase = texture2D(u_SpecularMap, texSpecular).rgb;
+	vec3 specMult = u_LightColor * pow(NH, r_SpecularExponent) * r_SpecularScale;
 
 #endif // USE_REFLECTIVE_SPECULAR
 
@@ -170,7 +171,8 @@ void	main()
 		N = normalize(var_Normal);
 	}
 
-	vec3 specular = vec3(0.0);
+	vec3 specBase = vec3(0.0);
+	vec3 specMult = vec3(0.0);
 
 #endif // USE_NORMAL_MAPPING
 
@@ -187,11 +189,12 @@ void	main()
 
 // add Rim Lighting to highlight the edges
 #if defined(r_RimLighting)
-	float rim = 1.0 - clamp(dot(N, V), 0, 1);
-    vec3 emission = r_RimColor.rgb * pow(rim, r_RimExponent);
+	float rim = pow(1.0 - clamp(dot(N, V), 0.0, 1.0), r_RimExponent);
+	specBase = mix(specBase, vec3(1.0), rim);
+	vec3 emission = u_AmbientColor * rim * rim * 0.2;
 
-	// gl_FragColor = vec4(emission, 1.0);
-	// return;
+	//gl_FragColor = vec4(emission, 1.0);
+	//return;
 
 #endif
 
@@ -212,9 +215,9 @@ void	main()
 	// compute final color
 	vec4 color = diffuse;
 	color.rgb *= light;
-	color.rgb += specular;
+	color.rgb += specBase * specMult;
 #if defined(r_RimLighting)
-	color.rgb += emission;
+	color.rgb += 0.7 * emission;
 #endif
 
 	// convert normal to [0,1] color space

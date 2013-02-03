@@ -403,13 +403,12 @@ static void SV_Status_f( void )
 
 	avg = 1000 * svs.stats.latched_active / STATFRAMES;
 
-	Com_Printf( "cpu utilization  : %3i%%\n", ( int ) cpu );
-	Com_Printf( "avg response time: %i ms\n", ( int ) avg );
-
-	Com_Printf( "map: %s\n", sv_mapname->string );
-
-	Com_Printf( "num score ping name            lastmsg address               qport rate\n" );
-	Com_Printf( "--- ----- ---- --------------- ------- --------------------- ----- -----\n" );
+	Com_Printf( "cpu utilization  : %3i%%\n"
+	            "avg response time: %i ms\n"
+	            "map: %s\n"
+	            "num score ping name            lastmsg address               qport rate\n"
+	            "--- ----- ---- --------------- ------- --------------------- ----- -----\n",
+	           ( int ) cpu, ( int ) avg, sv_mapname->string );
 
 	for ( i = 0, cl = svs.clients; i < sv_maxclients->integer; i++, cl++ )
 	{
@@ -494,7 +493,7 @@ static void SV_Serverinfo_f( void )
 	}
 
 	Com_Printf(_( "Server info settings:\n" ));
-	Info_Print( Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE ) );
+	Info_Print( Cvar_InfoString( CVAR_SERVERINFO | CVAR_SERVERINFO_NOUPDATE, qfalse ) );
 }
 
 /*
@@ -514,7 +513,7 @@ static void SV_Systeminfo_f( void )
 	}
 
 	Com_Printf(_( "System info settings:\n" ));
-	Info_Print( Cvar_InfoString( CVAR_SYSTEMINFO | CVAR_SERVERINFO_NOUPDATE ) );
+	Info_Print( Cvar_InfoString( CVAR_SYSTEMINFO | CVAR_SERVERINFO_NOUPDATE, qfalse ) );
 }
 
 /*

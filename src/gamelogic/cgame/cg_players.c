@@ -3187,11 +3187,6 @@ void CG_Player( centity_t *cent )
 		// add a water splash if partially in and out of water
 		CG_PlayerSplash( cent, class );
 
-		if ( cg_shadows.integer == 3 && shadow )
-		{
-			renderfx |= RF_SHADOW_PLANE;
-		}
-
 		renderfx |= RF_LIGHTING_ORIGIN; // use the same origin for all
 
 		// add the body
@@ -3429,11 +3424,6 @@ void CG_Player( centity_t *cent )
 
 	// add a water splash if partially in and out of water
 	CG_PlayerSplash( cent, class );
-
-	if ( cg_shadows.integer == 3 && shadow )
-	{
-		renderfx |= RF_SHADOW_PLANE;
-	}
 
 	renderfx |= RF_LIGHTING_ORIGIN; // use the same origin for all
 
@@ -3747,14 +3737,7 @@ void CG_Corpse( centity_t *cent )
 	shadow = CG_PlayerShadow( cent, &shadowPlane, es->clientNum );
 
 	// get the player model information
-	renderfx = 0;
-
-	if ( cg_shadows.integer == 3 && shadow )
-	{
-		renderfx |= RF_SHADOW_PLANE;
-	}
-
-	renderfx |= RF_LIGHTING_ORIGIN; // use the same origin for all
+	renderfx = RF_LIGHTING_ORIGIN; // use the same origin for all
 
 	//
 	// add the legs

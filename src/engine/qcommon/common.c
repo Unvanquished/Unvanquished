@@ -93,6 +93,8 @@ cvar_t *com_version;
 cvar_t *con_drawnotify;
 cvar_t *com_ansiColor;
 
+cvar_t *com_consoleCommand;
+
 cvar_t *com_unfocused;
 cvar_t *com_maxfpsUnfocused;
 cvar_t *com_minimized;
@@ -140,6 +142,7 @@ qboolean com_fullyInitialized;
 char     com_errorMessage[ MAXPRINTMSG ];
 
 void     Com_WriteConfig_f( void );
+void     Com_WriteBindings_f( void );
 void     CIN_CloseAllVideos( void );
 
 //============================================================================
@@ -352,14 +355,12 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 	Q_vsnprintf( com_errorMessage, sizeof( com_errorMessage ), fmt, argptr );
 	va_end( argptr );
 
-	if ( code != ERR_DISCONNECT )
-	{
-		Cvar_Set("com_errorMessage", com_errorMessage);
-	}
+	Cvar_Set("com_errorMessage", com_errorMessage);
 
 	if ( code == ERR_SERVERDISCONNECT )
 	{
 		VM_Forced_Unload_Start();
+		Com_Printf( "^7%s\n", com_errorMessage );
 		SV_Shutdown( "Server disconnected" );
 		CL_Disconnect( qtrue );
 		CL_FlushMemory();
@@ -371,17 +372,7 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 	{
 		VM_Forced_Unload_Start();
 		Com_Printf( "^8%s\n", com_errorMessage );
-		CL_Disconnect( qtrue );
-		CL_FlushMemory();
-		VM_Forced_Unload_Done();
-		com_errorEntered = qfalse;
-		longjmp( abortframe, -1 );
-	}
-	else if ( code == ERR_DISCONNECT )
-	{
-		VM_Forced_Unload_Start();
-		Com_Printf(_( "********************\nERROR: %s\n********************\n"), com_errorMessage );
-		SV_Shutdown( va( "Server crashed: %s\n", com_errorMessage ) );
+		SV_Shutdown( va( "********************\nServer crashed: %s\n********************\n", com_errorMessage ) );
 		CL_Disconnect( qtrue );
 		CL_FlushMemory();
 		VM_Forced_Unload_Done();
@@ -1403,10 +1394,10 @@ typedef struct memstatic_s
 } memstatic_t;
 
 // bk001204 - initializer brackets
-memstatic_t emptystring = { { ( sizeof( memblock_t ) + 2 + 3 ) &~3, TAG_STATIC, NULL, NULL, ZONEID }
+static const memstatic_t emptystring = { { ( sizeof( memblock_t ) + 2 + 3 ) &~3, TAG_STATIC, NULL, NULL, ZONEID }
 	, { '\0',                            '\0' }
 };
-memstatic_t numberstring[] =
+static const memstatic_t numberstring[] =
 {
 	{	{ ( sizeof( memstatic_t ) + 3 ) &~3, TAG_STATIC, NULL, NULL, ZONEID }
 		, { '0', '\0' }
@@ -2796,9 +2787,29 @@ int Com_EventLoop( void )
 				break;
 
 			case SE_CONSOLE:
-				Cbuf_AddText( ( char * ) ev.evPtr );
-				Cbuf_AddText( "\n" );
+			{
+				char *cmd = (char *) ev.evPtr;
+
+				if (cmd[0] == '/' || cmd[0] == '\\')
+				{
+					//make sure, explicit commands are not getting handled with com_consoleCommand
+					Cbuf_AddText( cmd + 1);
+					Cbuf_AddText( "\n" );
+				}
+				else
+				{
+					/*
+					 * when there was no command prefix, execute the command prefixed by com_consoleCommand
+					 * if the cvar is empty, it will interpret the text as command direclty
+					 * (and will so for DEDICATED)
+					 *
+					 * the additional space gets trimmed by the parser
+					 */
+					Cbuf_AddText( va("%s %s\n", com_consoleCommand->string, cmd) );
+				}
+
 				break;
+			}
 
 			case SE_PACKET:
 
@@ -3191,11 +3202,13 @@ void Com_Init( char *commandLine )
 
 			// exec the config
 			Cbuf_AddText( va( "exec profiles/%s/%s\n", cl_profileStr, CONFIG_NAME ) );
+			Cbuf_AddText( va( "exec profiles/%s/%s\n", cl_profileStr, KEYBINDINGS_NAME ) );
 			Cbuf_AddText( va( "exec profiles/%s/autoexec.cfg\n", cl_profileStr ) );
 		}
 		else
 		{
 			Cbuf_AddText( va( "exec %s\n", CONFIG_NAME ) );
+			Cbuf_AddText( va( "exec %s\n", KEYBINDINGS_NAME ) );
 			Cbuf_AddText( "exec autoexec.cfg\n" );
 		}
 	}
@@ -3258,6 +3271,10 @@ void Com_Init( char *commandLine )
 
 	con_drawnotify = Cvar_Get( "con_drawnotify", "0", CVAR_CHEAT );
 
+	//on a server, commands have to be used a lot more often than say
+	//we could differentiate server and client, but would change the default behavior many might be used to
+	com_consoleCommand = Cvar_Get( "com_consoleCommand", "", CVAR_ARCHIVE );
+
 	com_introPlayed = Cvar_Get( "com_introplayed", "0", CVAR_ARCHIVE );
 	com_ansiColor = Cvar_Get( "com_ansiColor", "0", CVAR_ARCHIVE );
 	com_logosPlaying = Cvar_Get( "com_logosPlaying", "0", CVAR_ROM );
@@ -3292,6 +3309,9 @@ void Com_Init( char *commandLine )
 
 	Cmd_AddCommand( "quit", Com_Quit_f );
 	Cmd_AddCommand( "writeconfig", Com_WriteConfig_f );
+#ifndef DEDICATED
+	Cmd_AddCommand( "writebindings", Com_WriteBindings_f );
+#endif
 
 	s = va( "%s %s %s", Q3_VERSION, ARCH_STRING, __DATE__ );
 	com_version = Cvar_Get( "version", s, CVAR_ROM | CVAR_SERVERINFO );
@@ -3357,7 +3377,11 @@ void Com_Init( char *commandLine )
 		   } */
 	}
 #ifndef _WIN32
+# ifdef DEDICATED
+	com_pipefile = Cvar_Get( "com_pipefile", "svpipe", CVAR_ARCHIVE | CVAR_LATCH );
+# else
 	com_pipefile = Cvar_Get( "com_pipefile", "pipe", CVAR_ARCHIVE | CVAR_LATCH );
+# endif
 #else
 	com_pipefile = Cvar_Get( "com_pipefile", "", CVAR_ARCHIVE | CVAR_LATCH );
 #endif
@@ -3425,11 +3449,14 @@ void Com_ReadFromPipe( void )
 
 //==================================================================
 
-void Com_WriteConfigToFile( const char *filename )
+void Com_WriteConfigToFile( const char *filename, void (*writeConfig)( fileHandle_t ) )
 {
 	fileHandle_t f;
+	char         tmp[ MAX_QPATH + 5 ];
 
-	f = FS_FOpenFileWrite( filename );
+	Com_sprintf( tmp, sizeof( tmp ), "%s.tmp", filename );
+
+	f = FS_FOpenFileWrite( tmp );
 
 	if ( !f )
 	{
@@ -3438,9 +3465,11 @@ void Com_WriteConfigToFile( const char *filename )
 	}
 
 	FS_Printf( f, "// generated by Unvanquished, do not modify\n" );
-	Key_WriteBindings( f );
-	Cvar_WriteVariables( f );
+//	Key_WriteBindings( f );
+	writeConfig( f );
 	FS_FCloseFile( f );
+
+	FS_Rename( tmp, filename ); // will unlink the original
 }
 
 /*
@@ -3461,21 +3490,35 @@ void Com_WriteConfiguration( void )
 		return;
 	}
 
-	if ( !( cvar_modifiedFlags & CVAR_ARCHIVE ) )
+	if ( cvar_modifiedFlags & CVAR_ARCHIVE )
 	{
-		return;
+		cvar_modifiedFlags &= ~CVAR_ARCHIVE;
+
+		if ( cl_profileStr[ 0 ] )
+		{
+			Com_WriteConfigToFile( va( "profiles/%s/%s", cl_profileStr, CONFIG_NAME ), Cvar_WriteVariables );
+		}
+		else
+		{
+			Com_WriteConfigToFile( CONFIG_NAME, Cvar_WriteVariables );
+		}
 	}
 
-	cvar_modifiedFlags &= ~CVAR_ARCHIVE;
+#ifndef DEDICATED
+	if ( bindingsModified )
+	{
+		bindingsModified = qfalse;
 
-	if ( cl_profileStr[ 0 ] )
-	{
-		Com_WriteConfigToFile( va( "profiles/%s/%s", cl_profileStr, CONFIG_NAME ) );
+		if ( cl_profileStr[ 0 ] )
+		{
+			Com_WriteConfigToFile( va( "profiles/%s/%s", cl_profileStr, KEYBINDINGS_NAME ), Key_WriteBindings );
+		}
+		else
+		{
+			Com_WriteConfigToFile( KEYBINDINGS_NAME, Key_WriteBindings );
+		}
 	}
-	else
-	{
-		Com_WriteConfigToFile( CONFIG_NAME );
-	}
+#endif
 }
 
 /*
@@ -3498,8 +3541,33 @@ void Com_WriteConfig_f( void )
 	Q_strncpyz( filename, Cmd_Argv( 1 ), sizeof( filename ) );
 	COM_DefaultExtension( filename, sizeof( filename ), ".cfg" );
 	Com_Printf(_( "Writing %s.\n"), filename );
-	Com_WriteConfigToFile( filename );
+	Com_WriteConfigToFile( filename, Cvar_WriteVariables );
 }
+
+/*
+===============
+Com_WriteBindings_f
+
+Write the key bindings file to a specific name
+===============
+*/
+#ifndef DEDICATED
+void Com_WriteBindings_f( void )
+{
+	char filename[ MAX_QPATH ];
+
+	if ( Cmd_Argc() != 2 )
+	{
+		Com_Printf(_( "Usage: writebindings <filename>\n" ));
+		return;
+	}
+
+	Q_strncpyz( filename, Cmd_Argv( 1 ), sizeof( filename ) );
+	COM_DefaultExtension( filename, sizeof( filename ), ".cfg" );
+	Com_Printf(_( "Writing %s.\n"), filename );
+	Com_WriteConfigToFile( filename, Key_WriteBindings );
+}
+#endif
 
 /*
 ================
@@ -4165,21 +4233,65 @@ static qboolean Field_Complete( void )
 
 #ifndef DEDICATED
 
+static void Field_TeamnameCompletion( void ( *callback )( const char *s ), int flags )
+{
+	if ( flags & FIELD_TEAM_SPECTATORS )
+	{
+		callback( "spectators" );
+	}
+
+	if ( flags & FIELD_TEAM_DEFAULT )
+	{
+		callback( "default" );
+	}
+
+	callback( "humans" );
+	callback( "aliens" );
+}
+
 /*
 ===============
 Field_CompleteKeyname
 ===============
 */
-void Field_CompleteKeyname( void )
+void Field_CompleteKeyname( int flags )
 {
 	matchCount = 0;
 	shortestMatch[ 0 ] = 0;
+
+	if ( flags & FIELD_TEAM )
+	{
+		Field_TeamnameCompletion( FindMatches, flags );
+	}
 
 	Key_KeynameCompletion( FindMatches );
 
 	if ( !Field_Complete() )
 	{
+		if ( flags & FIELD_TEAM )
+		{
+			Field_TeamnameCompletion( PrintMatches, flags );
+		}
+
 		Key_KeynameCompletion( PrintMatches );
+	}
+}
+
+/*
+===============
+Field_CompleteTeamname
+===============
+*/
+void Field_CompleteTeamname( int flags )
+{
+	matchCount = 0;
+	shortestMatch[ 0 ] = 0;
+
+	Field_TeamnameCompletion( FindMatches, flags );
+
+	if ( !Field_Complete() )
+	{
+		Field_TeamnameCompletion( PrintMatches, flags );
 	}
 }
 

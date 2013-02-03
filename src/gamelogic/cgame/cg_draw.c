@@ -2543,9 +2543,12 @@ static void CG_DrawTeamOverlay( rectDef_t *rect, float scale, vec4_t color )
 				}
 			}
 
-			s = va( " [^%c%3d^7] ^7%s",
+			s = va( " [^%c%3d^7] %s ^7%s",
 			        CG_GetColorCharForHealth( displayClients[ i ] ),
 			        ci->health,
+			        ( ci->team == TEAM_ALIENS )
+			          ? va( "₠%.1f", (float) ci->credit / ALIEN_CREDITS_PER_KILL )
+			          : va( "₢%d", ci->credit ),
 			        CG_ConfigString( CS_LOCATIONS + ci->location ) );
 		}
 
@@ -4455,9 +4458,9 @@ static void CG_DrawVote( team_t team )
 	if ( cg_tutorial.integer )
 	{
 		Com_sprintf( yeskey, sizeof( yeskey ), "[%s]",
-		             CG_KeyBinding( va( "%svote yes", team == TEAM_NONE ? "" : "team" ) ) );
+		             CG_KeyBinding( va( "%svote yes", team == TEAM_NONE ? "" : "team" ), team ) );
 		Com_sprintf( nokey, sizeof( nokey ), "[%s]",
-		             CG_KeyBinding( va( "%svote no", team == TEAM_NONE ? "" : "team" ) ) );
+		             CG_KeyBinding( va( "%svote no", team == TEAM_NONE ? "" : "team" ), team ) );
 	}
 
 	if ( team != TEAM_NONE )
@@ -4502,6 +4505,8 @@ static qboolean CG_DrawScoreboard( void )
 		firstTime = qtrue;
 		return qfalse;
 	}
+
+	CG_RequestScores();
 
 	if ( menuScoreboard == NULL )
 	{
@@ -4588,7 +4593,7 @@ static qboolean CG_DrawQueue( void )
 	else
 	{
 		Com_sprintf( buffer, MAX_STRING_CHARS,
-		             P_( _("There is 1 spawn remaining"), _("There are %d spawns remaining"),
+		             P_( "There is 1 spawn remaining", "There are %d spawns remaining",
 		                cg.snap->ps.persistant[ PERS_SPAWNS ]),
 		             cg.snap->ps.persistant[ PERS_SPAWNS ] );
 	}

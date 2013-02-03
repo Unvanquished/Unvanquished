@@ -107,28 +107,12 @@ static void CG_ScoresDown_f( void )
 	{
 		Menu_SetFeederSelection( menuScoreboard, FEEDER_ALIENTEAM_LIST, 0, NULL );
 		Menu_SetFeederSelection( menuScoreboard, FEEDER_HUMANTEAM_LIST, 0, NULL );
-	}
-
-	if ( CG_RequestScores() )
-	{
-		// leave the current scores up if they were already
-		// displayed, but if this is the first hit, clear them out
-		if ( !cg.showScores )
-		{
-			if ( cg_debugRandom.integer )
-			{
-				CG_Printf( "CG_ScoresDown_f: scores out of date\n" );
-			}
-
-			cg.showScores = qtrue;
-			cg.numScores = 0;
-		}
+		cg.showScores = qtrue;
 	}
 	else
 	{
-		// show the cached contents even if they just pressed if it
-		// is within two seconds
-		cg.showScores = qtrue;
+		cg.showScores = qfalse;
+		cg.numScores = 0;
 	}
 }
 
@@ -260,6 +244,7 @@ static void CG_CompleteSell( void )
 		return;
 	}
 
+	trap_CompleteCallback( "all" );
 	trap_CompleteCallback( "weapons" );
 	trap_CompleteCallback( "upgrades" );
 	CG_CompleteBuy( );

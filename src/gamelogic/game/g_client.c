@@ -126,6 +126,8 @@ void G_AddCreditToClient( gclient_t *client, short credit, qboolean cap )
 
 	// Copy to ps so the client can access it
 	client->ps.persistant[ PERS_CREDIT ] = client->pers.credit;
+
+	client->pers.infoChangeTime = level.time;
 }
 
 /*
@@ -304,12 +306,12 @@ static gentity_t *G_SelectSpawnBuildable( vec3_t preference, buildable_t buildab
 
 /*
 ===========
-G_SelectTremulousSpawnPoint
+G_SelectUnvanquishedSpawnPoint
 
 Chooses a player start, deathmatch start, etc
 ============
 */
-gentity_t *G_SelectTremulousSpawnPoint( team_t team, vec3_t preference, vec3_t origin, vec3_t angles )
+gentity_t *G_SelectUnvanquishedSpawnPoint( team_t team, vec3_t preference, vec3_t origin, vec3_t angles )
 {
 	gentity_t *spot = NULL;
 
@@ -1073,7 +1075,7 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 		{
 			Q_strncpyz( client->pers.netname, *oldname ? oldname : G_UnnamedClientName( client ),
 			            sizeof( client->pers.netname ) );
-			Info_SetValueForKey( userinfo, "name", oldname );
+			Info_SetValueForKey( userinfo, "name", oldname, qfalse );
 			trap_SetUserinfo( clientNum, userinfo );
 		}
 		else
@@ -1199,11 +1201,15 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 
 	if ( atoi( s ) != 0 )
 	{
-		client->pers.teamInfo = qtrue;
+		// teamoverlay was enabled so we need an update
+		if ( client->pers.teamInfo == 0 )
+		{
+			client->pers.teamInfo = 1;
+		}
 	}
 	else
 	{
-		client->pers.teamInfo = qfalse;
+		client->pers.teamInfo = 0;
 	}
 
 	s = Info_ValueForKey( userinfo, "cg_unlagged" );
@@ -1635,7 +1641,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	ent->s.groundEntityNum = ENTITYNUM_NONE;
 	ent->client = &level.clients[ index ];
-	ent->takedamage = qtrue;
+	ent->takedamage = teamLocal != TEAM_NONE && client->sess.spectatorState == SPECTATOR_NOT; //qtrue;
 	ent->classname = "player";
 	if ( client->noclip )
 	{
@@ -1846,6 +1852,8 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 	// clear entity state values
 	BG_PlayerStateToEntityState( &client->ps, &ent->s, qtrue );
+
+	client->pers.infoChangeTime = level.time;
 }
 
 /*

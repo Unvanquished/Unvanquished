@@ -1,6 +1,7 @@
 #include "ui/menudef.h"
 #include "ui/main.h"
 
+
 {
   assetGlobalDef
   {
@@ -27,7 +28,7 @@
     focusColor 1 1 1 1        // Menu focus color for text and items
     TITLE_BACKGROUND
 
-    onOpen { uiScript stopRefresh ; playlooped "sound/ui/heartbeat.ogg" }
+    onOpen { uiScript stopRefresh ; playrandom 3 "sound/ui/heartbeat.ogg" 1 "sound/ui/heartbeat1.ogg" 1 "sound/ui/heartbeat2.ogg"  }
     onESC { open quit_popmenu }
 
     itemDef
@@ -55,7 +56,7 @@
       nostretch
     }
 
-#define X      234 
+#define X      234
 #define Y      170 //190
 #define W      150
 #define ELEM_H 24
@@ -66,11 +67,11 @@
 	MMBUTTON( "Help", open help, 1 )
 // 	MMBUTTON( "News", open news_menu, 1 )
 //	MMBUTTON( "Profiles", open profiles, 2 )
-	MMBUTTON( "Options", open simple_options, 2 )
+	MMBUTTON( "Options", open options, 2 )
 	MMBUTTON( "Demos", open demo, 3 )
 	MMBUTTON( "Mods", open mod, 4 )
 	MMBUTTON( "Quit", open quit_popmenu, 5 )
-	
+
 	TITLE_LAYOUT
 
     itemDef

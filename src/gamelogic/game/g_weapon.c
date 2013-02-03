@@ -151,7 +151,7 @@ static void G_WideTrace( trace_t *tr, gentity_t *ent, float range,
 	vec3_t end;
 
 	VectorSet( mins, -width, -width, -height );
-	VectorSet( maxs, width, width, width );
+	VectorSet( maxs, width, width, height );
 
 	*target = NULL;
 
@@ -431,7 +431,7 @@ SHOTGUN
 void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, gentity_t *ent )
 {
 	int       i;
-	float     r, u;
+	float     r, u, a;
 	vec3_t    end;
 	vec3_t    forward, right, up;
 	trace_t   tr;
@@ -446,8 +446,12 @@ void ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, gentity_t *ent )
 	// generate the "random" spread pattern
 	for ( i = 0; i < SHOTGUN_PELLETS; i++ )
 	{
-		r = Q_crandom( &seed ) * SHOTGUN_SPREAD * 16;
-		u = Q_crandom( &seed ) * SHOTGUN_SPREAD * 16;
+		r = Q_crandom( &seed ) * M_PI;
+		a = sqrt( Q_crandom( &seed ) * SHOTGUN_SPREAD * SHOTGUN_SPREAD * 16 * 16 );
+
+		u = sin( r ) * a;
+		r = cos( r ) * a;
+
 		VectorMA( origin, SHOTGUN_RANGE, forward, end );
 		VectorMA( end, r, right, end );
 		VectorMA( end, u, up, end );

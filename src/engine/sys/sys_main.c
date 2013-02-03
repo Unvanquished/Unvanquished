@@ -642,8 +642,8 @@ int main( int argc, char **argv )
 			dynamic = omp_get_dynamic();
 			nested = omp_get_nested();
 
-			Com_Printf( "-----------------------------------\n" );
-			Com_Printf( "-----------------------------------\n" );
+			Com_Printf( "-----------------------------------\n"
+			            "-----------------------------------\n" );
 
 			/* Print environment information */
 			Com_Printf( "Number of processors = %d\n", procs );
@@ -688,8 +688,6 @@ int main( int argc, char **argv )
 		Q_strcat( commandLine, sizeof( commandLine ), " " );
 	}
 
-	Com_Init( commandLine );
-	NET_Init();
 #ifdef USE_CURSES
 
 	if ( nocurses )
@@ -704,6 +702,9 @@ int main( int argc, char **argv )
 #else
 	CON_Init();
 #endif
+
+	Com_Init( commandLine );
+	NET_Init();
 
 #ifdef NDEBUG
 	signal( SIGILL, Sys_SigHandler );

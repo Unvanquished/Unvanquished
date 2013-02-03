@@ -21,7 +21,7 @@
     fullscreen MENU_FALSE
     outOfBoundsClick
     rect (320-(W/2)) (240-(H/2)) W H
-    focusColor 1 .75 0 1
+    focusColor 0.45 0.45 0.45 1.0
     style WINDOW_STYLE_EMPTY
     popup
 
@@ -51,7 +51,6 @@
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
       textscale .4
-      forecolor 1 1 1 1
       backcolor .5 0 0 .25
       visible MENU_TRUE
       decoration
@@ -69,7 +68,6 @@
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
       textscale .33
-      forecolor 1 1 1 1
       backcolor .5 0 0 .25
       visible MENU_TRUE
       decoration
@@ -85,7 +83,6 @@
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
       textscale .4
-      forecolor 1 1 1 1
       backcolor .5 0 0 .25
       visible MENU_TRUE
       action

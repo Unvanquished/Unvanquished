@@ -73,15 +73,15 @@ Maryland 20850 USA.
 //
 typedef struct
 {
-	qboolean allowoverflow; // if false, do a Com_Error
-	qboolean overflowed; // set to true if the buffer size failed (with allowoverflow set)
-	qboolean oob; // set to true if the buffer size failed (with allowoverflow set)
-	byte     *data;
-	int      maxsize;
-	int      cursize;
-	int      uncompsize; // NERVE - SMF - net debugging
-	int      readcount;
-	int      bit; // for bitwise reads and writes
+    qboolean allowoverflow; // if false, do a Com_Error
+    qboolean overflowed; // set to true if the buffer size failed (with allowoverflow set)
+    qboolean oob; // set to true if the buffer size failed (with allowoverflow set)
+    byte     *data;
+    int      maxsize;
+    int      cursize;
+    int      uncompsize; // NERVE - SMF - net debugging
+    int      readcount;
+    int      bit; // for bitwise reads and writes
 } msg_t;
 
 void MSG_Init( msg_t *buf, byte *data, int length );
@@ -200,13 +200,13 @@ typedef enum
 #define NET_ADDRSTRMAXLEN 48 // maximum length of an IPv6 address string including trailing '\0'
 typedef struct
 {
-	netadrtype_t   type;
+    netadrtype_t   type;
 
-	byte           ip[ 4 ];
-	byte           ip6[ 16 ];
+    byte           ip[ 4 ];
+    byte           ip6[ 16 ];
 
-	unsigned short port;
-	unsigned long  scope_id; // Needed for IPv6 link-local addresses
+    unsigned short port;
+    unsigned long  scope_id; // Needed for IPv6 link-local addresses
 } netadr_t;
 
 void       NET_Init( void );
@@ -243,28 +243,28 @@ Netchan handles packet fragmentation and out of order / duplicate suppression
 
 typedef struct
 {
-	netsrc_t sock;
+    netsrc_t sock;
 
-	int      dropped; // between last packet and previous
+    int      dropped; // between last packet and previous
 
-	netadr_t remoteAddress;
-	int      qport; // qport value to write when transmitting
+    netadr_t remoteAddress;
+    int      qport; // qport value to write when transmitting
 
-	// sequencing variables
-	int incomingSequence;
-	int outgoingSequence;
+    // sequencing variables
+    int incomingSequence;
+    int outgoingSequence;
 
-	// incoming fragment assembly buffer
-	int  fragmentSequence;
-	int  fragmentLength;
-	byte fragmentBuffer[ MAX_MSGLEN ];
+    // incoming fragment assembly buffer
+    int  fragmentSequence;
+    int  fragmentLength;
+    byte fragmentBuffer[ MAX_MSGLEN ];
 
-	// outgoing fragment buffer
-	// we need to space out the sending of large fragmented messages
-	qboolean unsentFragments;
-	int      unsentFragmentStart;
-	int      unsentLength;
-	byte     unsentBuffer[ MAX_MSGLEN ];
+    // outgoing fragment buffer
+    // we need to space out the sending of large fragmented messages
+    qboolean unsentFragments;
+    int      unsentFragmentStart;
+    int      unsentLength;
+    byte     unsentBuffer[ MAX_MSGLEN ];
 } netchan_t;
 
 void     Netchan_Init( int qport );
@@ -398,9 +398,9 @@ intptr_t       VM_SystemCall( intptr_t *args ); // common system calls
 #define VMA(x) VM_ArgPtr(args[ x ])
 static INLINE float _vmf( intptr_t x )
 {
-	floatint_t fi;
-	fi.i = ( int ) x;
-	return fi.f;
+    floatint_t fi;
+    fi.i = ( int ) x;
+    return fi.f;
 }
 
 #define VMF(x) _vmf(args[ x ])
@@ -620,8 +620,7 @@ void Cvar_WriteVariables( fileHandle_t f );
 void Cvar_CompleteCvarName( char *args, int argNum );
 void Cvar_Init( void );
 
-char *Cvar_InfoString( int bit );
-char *Cvar_InfoString_Big( int bit );
+char *Cvar_InfoString( int bit, qboolean big );
 
 // returns an info string containing all the cvars that have the given bit set
 // in their flags ( CVAR_USERINFO, CVAR_SERVERINFO, CVAR_SYSTEMINFO, etc )
@@ -631,6 +630,9 @@ void       Cvar_CheckRange( cvar_t *cv, float minVal, float maxVal, qboolean sho
 void       Cvar_Restart_f( void );
 
 extern int cvar_modifiedFlags;
+#ifndef DEDICATED
+extern qboolean bindingsModified;
+#endif
 
 // whenever a cvar is modified, its flags will be OR'd into this, so
 // a single check can determine if any CVAR_USERINFO, CVAR_SERVERINFO,
@@ -867,17 +869,23 @@ Edit fields and command line history/completion
 #define MAX_EDIT_LINE 256
 typedef struct
 {
-	int  cursor;
-	int  scroll;
-	int  widthInChars;
-	char buffer[ MAX_EDIT_LINE ];
+    int  cursor;
+    int  scroll;
+    int  widthInChars;
+    char buffer[ MAX_EDIT_LINE ];
 } field_t;
+
+// Field_Complete{Key,Team}name
+#define FIELD_TEAM            1
+#define FIELD_TEAM_SPECTATORS 2
+#define FIELD_TEAM_DEFAULT    4
 
 void Field_Clear( field_t *edit );
 void Field_Set( field_t *edit, const char *text );
 void Field_WordDelete( field_t *edit );
 void Field_AutoComplete( field_t *edit, const char *prompt );
-void Field_CompleteKeyname( void );
+void Field_CompleteKeyname( int flags );
+void Field_CompleteTeamname( int flags );
 void Field_CompleteCgame( int argNum );
 void Field_CompleteFilename( const char *dir,
                              const char *ext, qboolean stripExt );
@@ -940,7 +948,7 @@ int        Com_EventLoop( void );
 int        Com_Milliseconds( void );  // will be journaled properly
 unsigned   Com_BlockChecksum( const void *buffer, int length );
 char       *Com_MD5File( const char *filename, int length );
-void       Com_MD5Buffer( const char *pubkey, int size, char *buffer, int bufsize ); 
+void       Com_MD5Buffer( const char *pubkey, int size, char *buffer, int bufsize );
 int        Com_Filter( char *filter, char *name, int casesensitive );
 int        Com_FilterPath( char *filter, char *name, int casesensitive );
 int        Com_RealTime( qtime_t *qtime );
@@ -974,6 +982,8 @@ extern cvar_t       *com_sv_running;
 extern cvar_t       *com_cl_running;
 extern cvar_t       *com_viewlog; // 0 = hidden, 1 = visible, 2 = minimized
 extern cvar_t       *com_version;
+
+extern cvar_t       *com_consoleCommand;
 
 extern cvar_t       *com_journal;
 extern cvar_t       *com_ansiColor;
@@ -1214,11 +1224,11 @@ typedef enum
 
 typedef struct
 {
-	int            evTime;
-	sysEventType_t evType;
-	int            evValue, evValue2;
-	int            evPtrLength; // bytes of data pointed to by evPtr, for journaling
-	void           *evPtr; // this must be manually freed if not NULL
+    int            evTime;
+    sysEventType_t evType;
+    int            evValue, evValue2;
+    int            evPtrLength; // bytes of data pointed to by evPtr, for journaling
+    void           *evPtr; // this must be manually freed if not NULL
 } sysEvent_t;
 
 void       Com_QueueEvent( int time, sysEventType_t type, int value, int value2, int ptrLength, void *ptr );
@@ -1327,37 +1337,37 @@ const char *Hist_Prev( void );
 
 typedef struct nodetype
 {
-	struct nodetype *left, *right, *parent; /* tree structure */
+    struct nodetype *left, *right, *parent; /* tree structure */
 
-	struct nodetype *next, *prev; /* doubly-linked list */
+    struct nodetype *next, *prev; /* doubly-linked list */
 
-	struct nodetype **head; /* highest ranked node in block */
+    struct nodetype **head; /* highest ranked node in block */
 
-	int             weight;
-	int             symbol;
+    int             weight;
+    int             symbol;
 } node_t;
 
 #define HMAX 256 /* Maximum symbol */
 
 typedef struct
 {
-	int    blocNode;
-	int    blocPtrs;
+    int    blocNode;
+    int    blocPtrs;
 
-	node_t *tree;
-	node_t *lhead;
-	node_t *ltail;
-	node_t *loc[ HMAX + 1 ];
-	node_t **freelist;
+    node_t *tree;
+    node_t *lhead;
+    node_t *ltail;
+    node_t *loc[ HMAX + 1 ];
+    node_t **freelist;
 
-	node_t nodeList[ 768 ];
-	node_t *nodePtrs[ 768 ];
+    node_t nodeList[ 768 ];
+    node_t *nodePtrs[ 768 ];
 } huff_t;
 
 typedef struct
 {
-	huff_t compressor;
-	huff_t decompressor;
+    huff_t compressor;
+    huff_t decompressor;
 } huffman_t;
 
 void             Huff_Compress( msg_t *buf, int offset );

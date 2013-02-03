@@ -86,14 +86,16 @@ static void CG_ParseTeamInfo( void )
 	int i;
 	int count;
 	int client;
+	int fields;
 
-	count = ( trap_Argc() - 1 ) / 5;
+	fields = ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_ALIENS ) ? 5 : 6; // aliens don't have upgrades
+	count = ( trap_Argc( ) - 1 ) / fields;
 
 	cgs.teamInfoReceived = qtrue;
 
 	for ( i = 0; i < count; i++ )
 	{
-		client = atoi( CG_Argv( i * 5 + 1 ) );
+		client = atoi( CG_Argv( i * fields + 1 ) );
 
 		if ( client < 0 || client >= MAX_CLIENTS )
 		{
@@ -101,10 +103,14 @@ static void CG_ParseTeamInfo( void )
 			return;
 		}
 
-		cgs.clientinfo[ client ].location = atoi( CG_Argv( i * 5 + 2 ) );
-		cgs.clientinfo[ client ].health = atoi( CG_Argv( i * 5 + 3 ) );
-		cgs.clientinfo[ client ].curWeaponClass = atoi( CG_Argv( i * 5 + 4 ) );
-		cgs.clientinfo[ client ].upgrade = atoi( CG_Argv( i * 5 + 5 ) );
+		cgs.clientinfo[ client ].location = atoi( CG_Argv( i * fields + 2 ) );
+		cgs.clientinfo[ client ].health = atoi( CG_Argv( i * fields + 3 ) );
+		cgs.clientinfo[ client ].curWeaponClass = atoi( CG_Argv( i * fields + 4 ) );
+		cgs.clientinfo[ client ].credit = atoi( CG_Argv( i * fields + 5 ) );
+		if( cg.snap->ps.stats[ STAT_TEAM ] != TEAM_ALIENS )
+		{
+			cgs.clientinfo[ client ].upgrade = atoi( CG_Argv( i * fields + 6 ) );
+        }
 	}
 }
 
@@ -1087,7 +1093,7 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 
 		case SAY_PRIVMSG:
 		case SAY_TPRIVMSG:
-			CG_Printf( "%s%s[%s^7 -> %s^7]%s ^%c%s\n",
+			CG_Printf( "%s%s[%s^7 → %s^7]%s ^%c%s\n",
 			           ignore, prefix, name, cgs.clientinfo[ cg.clientNum ].name,
 			           maybeColon, color, text );
 
@@ -1358,9 +1364,10 @@ static void CG_PrintTR_f( void )
 	char        str[ MAX_STRING_CHARS ];
 	char        buf[ MAX_STRING_CHARS ];
 	const char  *in;
-	char        number[2];
-	int         i=0, j=0;
+	char        number[2] = { 0 };
+	int         i=0, j=0, totalArgs;
 
+	totalArgs = trap_Argc();
 	Q_strncpyz( buf, _( CG_Argv( 1 ) ), sizeof( buf ) );
 	in = buf;
 	memset( &str, 0, sizeof( str ) );
@@ -1384,7 +1391,7 @@ static void CG_PrintTR_f( void )
 				if( *in == 't' && *(in+1) == '$' )
 				{
 					int num = atoi( number );
-					if( num <= 0 || num > 99 )
+					if( num < 0 || num > totalArgs - 1 )
 					{
 						in += 2;
 						break;
@@ -1406,7 +1413,7 @@ static void CG_PrintTR_f( void )
 				else if( *in == '$' )
 				{
 					int num = atoi( number );
-					if( num <= 0 || num > 99 )
+					if( num < 0 || num > totalArgs - 1 )
 					{
 						in++;
 						break;
