@@ -749,7 +749,7 @@ Con_DrawInput
 Draw the editline after a ] prompt
 ================
 */
-void Con_DrawInput( int linePosition )
+void Con_DrawInput( int linePosition, float overrideAlpha )
 {
 	char    prompt[ MAX_STRING_CHARS ];
 	vec4_t  color;
@@ -761,8 +761,7 @@ void Con_DrawInput( int linePosition )
 	color[ 0 ] = 1.0f;
 	color[ 1 ] = 1.0f;
 	color[ 2 ] = 1.0f;
-	//ANIMATION_TYPE_FADE but also ANIMATION_TYPE_SCROLL_DOWN needs this, latter, since it might otherwise scroll out the console
-	color[ 3 ] = consoleState.currentAnimationFraction;
+	color[ 3 ] = consoleState.currentAlphaFactor * overrideAlpha;
 
 	SCR_DrawSmallStringExt( consoleState.horizontalVidMargin + consoleState.horizontalVidPadding, linePosition, prompt, color, qfalse, qfalse );
 
@@ -859,6 +858,22 @@ void Con_DrawConsoleScrollbar( int virtualHeight )
 
 /*
 ================
+Con_MarginFadeAlpha
+================
+*/
+static float Con_MarginFadeAlpha( float alpha, int lineDrawPosition, int topMargin, int charHeight )
+{
+	if ( lineDrawPosition < topMargin || lineDrawPosition >= topMargin + charHeight )
+	{
+		return alpha;
+	}
+
+	return alpha * (float)( lineDrawPosition - topMargin ) / (float) charHeight;
+}
+
+
+/*
+================
 Con_DrawConsoleContent
 ================
 */
@@ -880,7 +895,7 @@ void Con_DrawConsoleContent( int currentConsoleVidHeight, int currentConsoleVirt
 
 	// draw the input prompt, user text, and cursor if desired
 	// moved back here (have observed render issues to do with time taken)
-	Con_DrawInput( lineDrawPosition );
+	Con_DrawInput( lineDrawPosition, Con_MarginFadeAlpha( 1, lineDrawPosition, topMargin, charHeight ) );
 	lineDrawPosition -= charHeight;
 
 	// if we scrolled back, give feedback
@@ -903,8 +918,6 @@ void Con_DrawConsoleContent( int currentConsoleVidHeight, int currentConsoleVirt
 	color[ 0 ] = g_color_table[ currentColor ][ 0 ];
 	color[ 1 ] = g_color_table[ currentColor ][ 1 ];
 	color[ 2 ] = g_color_table[ currentColor ][ 2 ];
-	color[ 3 ] = consoleState.currentAlphaFactor;
-	re.SetColor( color );
 
 	for ( i = 0; i < consoleState.visibleAmountOfLines; i++, lineDrawPosition -= charHeight, row-- )
 	{
@@ -933,9 +946,10 @@ void Con_DrawConsoleContent( int currentConsoleVidHeight, int currentConsoleVirt
 				color[ 0 ] = g_color_table[ currentColor ][ 0 ];
 				color[ 1 ] = g_color_table[ currentColor ][ 1 ];
 				color[ 2 ] = g_color_table[ currentColor ][ 2 ];
-				color[ 3 ] = consoleState.currentAlphaFactor;
-				re.SetColor( color );
 			}
+
+			color[ 3 ] = Con_MarginFadeAlpha( consoleState.currentAlphaFactor, lineDrawPosition, topMargin, charHeight );
+			re.SetColor( color );
 
 			SCR_DrawConsoleFontUnichar( currentWidthLocation, lineDrawPosition, text[ x ].ch );
 			currentWidthLocation += SCR_ConsoleFontUnicharWidth( text[ x ].ch );
