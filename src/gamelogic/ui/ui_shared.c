@@ -2120,8 +2120,9 @@ void Script_playRandom( itemDef_t *item, char **args )
 	if ( Int_Parse( args, &numValues ) )
 	{
 		int selected = rand() % numValues;
+		int i;
 
-		for( numValues = 0; numValues < selected; ++numValues )
+		for( i = 0; i < selected; ++i )
 		{
 			String_Parse( args, &val );
 			Int_Parse( args, &numValues ); // Throw away value to stop preprocessor from combining strings
