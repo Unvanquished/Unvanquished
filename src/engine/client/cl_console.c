@@ -897,14 +897,29 @@ void Con_DrawConsoleScrollbar( int virtualHeight )
 			con_borderWidth->value, scrollBarLength, color );
 
 	//draw the handle
-	color[ 0 ] = 0.5f;
-	color[ 1 ] = 0.5f;
-	color[ 2 ] = 0.5f;
-	color[ 3 ] = consoleState.currentAlphaFactor;
+	if(scrollHandlePostition >= 0)
+	{
+		color[ 0 ] = 0.5f;
+		color[ 1 ] = 0.5f;
+		color[ 2 ] = 0.5f;
+		color[ 3 ] = consoleState.currentAlphaFactor;
 
-	SCR_FillRect( SCREEN_WIDTH - con_margin->integer - con_horizontalPadding->integer - 2 * con_borderWidth->integer,
-			con_margin->value + con_borderWidth->value + virtualHeight * 0.10f + scrollHandlePostition,
-			con_borderWidth->value, scrollHandleLength, color );
+		SCR_FillRect( SCREEN_WIDTH - con_margin->integer - con_horizontalPadding->integer - 2 * con_borderWidth->integer,
+				con_margin->value + con_borderWidth->value + virtualHeight * 0.10f + scrollHandlePostition,
+				con_borderWidth->value, scrollHandleLength, color );
+	}
+	else //this happens when line appending gets us over the top position in a roll-lock situation (scrolling itself won't do that)
+	{
+		color[ 0 ] = (-scrollHandlePostition * 5.0f)/10;
+		color[ 1 ] = 0.5f;
+		color[ 2 ] = 0.5f;
+		color[ 3 ] = consoleState.currentAlphaFactor;
+
+		SCR_FillRect( SCREEN_WIDTH - con_margin->integer - con_horizontalPadding->integer - 2 * con_borderWidth->integer,
+				con_margin->value + con_borderWidth->value + virtualHeight * 0.10f,
+				con_borderWidth->value, scrollHandleLength, color );
+	}
+
 }
 
 /*
