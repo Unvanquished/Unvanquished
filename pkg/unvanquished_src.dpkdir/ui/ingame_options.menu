@@ -1,4 +1,4 @@
-#include "ui/menudef.h"
+	#include "ui/menudef.h"
 #include "ui/options.h"
 
 {
@@ -40,17 +40,21 @@
     fullscreen MENU_FALSE
     outOfBoundsClick      // this closes the window if it gets a click out of the rectangle
     rect X Y W H
-    focusColor 1 .75 0 1
+    focusColor 0.45 0.45 0.45 1.0
     aspectBias ALIGN_LEFT
     onopen
     {
       hide optionsGrp;
+      hide controlGrp;
+      hide systemGrp;
       show player;
 
-      setitemcolor playerBtn    forecolor 0.2 0.2 0.2 1.0;
-      setitemcolor hudBtn       forecolor 1.0 1.0 1.0 1.0;
-      setitemcolor controlsBtn  forecolor 1.0 1.0 1.0 1.0;
-      setitemcolor systemBtn    forecolor 1.0 1.0 1.0 1.0
+      setitemcolor player              forecolor 1.0 1.0 1.0 1.0; 
+      setitemcolor hud                 forecolor 1.0 1.0 1.0 1.0;
+      setitemcolor playerBtn           forecolor 1.0 1.0 1.0 1.0; 
+      setitemcolor hudBtn              forecolor 0.14 0.8 0.8 1.0;
+      setitemcolor controlsBtn         forecolor 0.14 0.8 0.8 1.0;
+      setitemcolor systemBtn           forecolor 0.14 0.8 0.8 1.0
     }
 
     itemDef
@@ -80,18 +84,19 @@
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
       textscale .35
-      forecolor 1 1 1 1
       visible MENU_TRUE
       action
       {
         play "sound/misc/menu1.wav";
         hide optionsGrp;
+        hide controlGrp;
+        hide systemGrp;
         show player;
 
-        setitemcolor playerBtn    forecolor 0.2 0.2 0.2 1.0;
-        setitemcolor hudBtn       forecolor 1.0 1.0 1.0 1.0;
-        setitemcolor controlsBtn  forecolor 1.0 1.0 1.0 1.0;
-        setitemcolor systemBtn    forecolor 1.0 1.0 1.0 1.0
+        setitemcolor playerBtn           forecolor 1.0 1.0 1.0 1.0; 
+        setitemcolor hudBtn              forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor controlsBtn         forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemBtn           forecolor 0.14 0.8 0.8 1.0
       }
     }
     itemDef
@@ -105,18 +110,19 @@
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
       textscale .35
-      forecolor 1 1 1 1
       visible MENU_TRUE
       action
       {
         play "sound/misc/menu1.wav";
         hide optionsGrp;
+        hide controlGrp;
+        hide systemGrp;
         show hud;
 
-        setitemcolor playerBtn    forecolor 1.0 1.0 1.0 1.0;
-        setitemcolor hudBtn       forecolor 0.2 0.2 0.2 1.0;
-        setitemcolor controlsBtn  forecolor 1.0 1.0 1.0 1.0;
-        setitemcolor systemBtn    forecolor 1.0 1.0 1.0 1.0
+        setitemcolor playerBtn           forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor hudBtn              forecolor 1.0 1.0 1.0 1.0; 
+        setitemcolor controlsBtn         forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemBtn           forecolor 0.14 0.8 0.8 1.0
       }
     }
 
@@ -131,19 +137,24 @@
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
       textscale .35
-      forecolor 1 1 1 1
       visible MENU_TRUE
       action
       {
         play "sound/misc/menu1.wav";
         hide optionsGrp;
-        show controls;
+        hide systemGrp;
+        show controlGrp;
         show look;
 
-        setitemcolor playerBtn    forecolor 1.0 1.0 1.0 1.0;
-        setitemcolor hudBtn       forecolor 1.0 1.0 1.0 1.0;
-        setitemcolor controlsBtn  forecolor 0.2 0.2 0.2 1.0;
-        setitemcolor systemBtn    forecolor 1.0 1.0 1.0 1.0
+        setitemcolor playerBtn           forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor hudBtn              forecolor 0.14 0.8 0.8 1.0; 
+        setitemcolor controlsBtn         forecolor 1.0 1.0 1.0 1.0;
+        setitemcolor systemBtn           forecolor 0.14 0.8 0.8 1.0
+        setitemcolor controlsLook        forecolor 1.0 1.0 1.0 1.0;
+        setitemcolor controlsMove        forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor controlsUp          forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor controlsChat        forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor controlsMisc        forecolor 0.14 0.8 0.8 1.0
       }
     }
 
@@ -158,19 +169,48 @@
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
       textscale .35
-      forecolor 1 1 1 1
       visible MENU_TRUE
       action
       {
         play "sound/misc/menu1.wav";
         hide optionsGrp;
+        hide controlGrp;
+        show systemGrp;
         show system;
-        show ghardware;
+        show gdisplay;
 
-        setitemcolor playerBtn    forecolor 1.0 1.0 1.0 1.0;
-        setitemcolor hudBtn       forecolor 1.0 1.0 1.0 1.0;
-        setitemcolor controlsBtn  forecolor 1.0 1.0 1.0 1.0;
-        setitemcolor systemBtn    forecolor 0.2 0.2 0.2 1.0
+        setitemcolor playerBtn           forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor hudBtn              forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor controlsBtn         forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemBtn           forecolor 1.0 1.0 1.0 1.0;
+        setitemcolor systemDisplay       forecolor 1.0 1.0 1.0 1.0;
+		setitemcolor systemEffects       forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemSoft          forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemGL            forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemNet           forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemVoip          forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemRange         forecolor 0.14 0.8 0.8 1.0
+
+      }
+    }
+
+    itemDef
+    {
+      name closeBtn
+      text "Close"
+      group menuGrp
+      style WINDOW_STYLE_EMPTY
+      rect (W-BUTT_W) (H-BUTT_H) BUTT_W BUTT_H
+      type ITEM_TYPE_BUTTON
+      textalign ALIGN_CENTER
+      textvalign VALIGN_CENTER
+      textscale .25
+      forecolor 0.14 0.8 0.8 1.0
+      visible MENU_TRUE
+      action
+      {
+        play "sound/misc/menu3.wav";
+		close ingame_options
       }
     }
 
@@ -210,23 +250,29 @@
     //Controls menu
     itemDef
     {
-      name controls
+      name controlsLook
       text "Look"
-      group optionsGrp
+      group controlGrp
       style WINDOW_STYLE_EMPTY
       rect 0 ((2*BORDER)+TOPBUTT_H+(0*SIDEBUTT_H)) SIDEBUTT_W SIDEBUTT_H
       type ITEM_TYPE_BUTTON
       textalign ALIGN_RIGHT
       textvalign VALIGN_CENTER
       textscale .25
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
         play "sound/misc/menu1.wav";
         hide optionsGrp;
         show controls;
-        show look
+        show look;
+
+        setitemcolor controlsLook        forecolor 1.0 1.0 1.0 1.0;
+        setitemcolor controlsMove        forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor controlsUp          forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor controlsChat        forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor controlsMisc        forecolor 0.14 0.8 0.8 1.0
+         
       }
     }
 
@@ -247,23 +293,29 @@
 
     itemDef
     {
-      name controls
+      name controlsMove
       text "Move"
-      group optionsGrp
+      group controlGrp
       style WINDOW_STYLE_EMPTY
       rect 0 ((2*BORDER)+TOPBUTT_H+(1*SIDEBUTT_H)) SIDEBUTT_W SIDEBUTT_H
       type ITEM_TYPE_BUTTON
       textalign ALIGN_RIGHT
       textvalign VALIGN_CENTER
       textscale .25
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
         play "sound/misc/menu1.wav";
         hide optionsGrp;
         show controls;
-        show move
+        show move;
+
+        setitemcolor controlsLook        forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor controlsMove        forecolor 1.0 1.0 1.0 1.0;
+        setitemcolor controlsUp          forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor controlsChat        forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor controlsMisc        forecolor 0.14 0.8 0.8 1.0
+
       }
     }
 
@@ -284,23 +336,29 @@
 
     itemDef
     {
-      name controls
+      name controlsUp
       text "Upgrades"
-      group optionsGrp
+      group controlGrp
       style WINDOW_STYLE_EMPTY
       rect 0 ((2*BORDER)+TOPBUTT_H+(2*SIDEBUTT_H)) SIDEBUTT_W SIDEBUTT_H
       type ITEM_TYPE_BUTTON
       textalign ALIGN_RIGHT
       textvalign VALIGN_CENTER
       textscale .25
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
         play "sound/misc/menu1.wav";
         hide optionsGrp;
         show controls;
-        show upgrades
+        show upgrades;
+
+        setitemcolor controlsLook        forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor controlsMove        forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor controlsUp          forecolor 1.0 1.0 1.0 1.0;
+        setitemcolor controlsChat        forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor controlsMisc        forecolor 0.14 0.8 0.8 1.0
+
       }
     }
 
@@ -318,26 +376,32 @@
 
     itemDef
     {
-      name controls
+      name controlsChat
       text "Chat & Vote"
-      group optionsGrp
+      group controlGrp
       style WINDOW_STYLE_EMPTY
       rect 0 ((2*BORDER)+TOPBUTT_H+(3*SIDEBUTT_H)) SIDEBUTT_W SIDEBUTT_H
       type ITEM_TYPE_BUTTON
       textalign ALIGN_RIGHT
       textvalign VALIGN_CENTER
       textscale .25
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
         play "sound/misc/menu1.wav";
         hide optionsGrp;
         show controls;
-        show communication
-      }
-    }
+        show communication;
 
+        setitemcolor controlsLook        forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor controlsMove        forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor controlsUp          forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor controlsChat        forecolor 1.0 1.0 1.0 1.0;
+        setitemcolor controlsMisc        forecolor 0.14 0.8 0.8 1.0
+
+      }
+
+    }
 	BINDX	( communication, "Gesture:", "+taunt", 0 )
 	BINDX   ( communication, "Rally:", "+rally", 1 )
 	BINDX	( communication, "Chat:", "messagemode", 2 )
@@ -356,23 +420,29 @@
 
     itemDef
     {
-      name controls
+      name controlsMisc
       text "Misc"
-      group optionsGrp
+      group controlGrp
       style WINDOW_STYLE_EMPTY
       rect 0 ((2*BORDER)+TOPBUTT_H+(4*SIDEBUTT_H)) SIDEBUTT_W SIDEBUTT_H
       type ITEM_TYPE_BUTTON
       textalign ALIGN_RIGHT
       textvalign VALIGN_CENTER
       textscale .25
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
         play "sound/misc/menu1.wav";
         hide optionsGrp;
         show controls;
-        show misc
+        show misc;
+
+        setitemcolor controlsLook        forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor controlsMove        forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor controlsUp          forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor controlsChat        forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor controlsMisc        forecolor 1.0 1.0 1.0 1.0
+
       }
     }
 
@@ -387,134 +457,214 @@
     //System menu
     itemDef
     {
-      name system
-      text "GFX Hardware"
-      group optionsGrp
+      name systemDisplay
+      text "Display"
+      group systemGrp
       style WINDOW_STYLE_EMPTY
       rect 0 ((2*BORDER)+TOPBUTT_H+(0*SIDEBUTT_H)) SIDEBUTT_W SIDEBUTT_H
       type ITEM_TYPE_BUTTON
       textalign ALIGN_RIGHT
       textvalign VALIGN_CENTER
       textscale .25
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
         play "sound/misc/menu1.wav";
         hide optionsGrp;
         show system;
-        show ghardware
+        show gdisplay;
+
+        setitemcolor systemDisplay       forecolor 1.0 1.0 1.0 1.0;
+		setitemcolor systemEffects       forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemSoft          forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemGL            forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemNet           forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemVoip          forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemRange         forecolor 0.14 0.8 0.8 1.0
+
       }
     }
 
-//////// GFX HARDWARE
-	MULTIX	( ghardware, "Quality:", "ui_glCustom",
+//////// Display
+	MULTIX	( gdisplay, "Quality:", "ui_glCustom",
 			"High" 0 "Intermediate" 1 "Low" 2 "Very Low" 3 "Custom" 4,
 			play "sound/misc/menu1.wav"; uiScript update "ui_glCustom",
 			0 )
-	COMBOX	( ghardware, "Video Mode:", FEEDER_RESOLUTIONS,
+	COMBOX	( gdisplay, "Video Mode:", FEEDER_RESOLUTIONS,
 			1 )
-	YESNOX	( ghardware, "Fullscreen:", "r_fullscreen",
-			play "sound/misc/menu1.wav"; uiScript glCustom,
-			2 )
-	MULTIX	( ghardware, "Lighting:", "r_vertexLighting",
-			"Light Map (high)" 0 "Vertex (low)" 1,
+	YESNOX	( gdisplay, "Sync Every Frame:", "r_swapinterval",
+			play "sound/misc/menu1.wav",
+			2 )			
+	YESNOX	( gdisplay, "Fullscreen:", "r_fullscreen",
 			play "sound/misc/menu1.wav"; uiScript glCustom,
 			3 )
-	MULTIX	( ghardware, "Shadows:", "cg_shadows",
-			"No" 0 "Blobs" 1 "Exponential mapping" 3 "Variance mapping" 5 "Exponential variance" 6,
+	MULTIX	( gdisplay, "Multisampling:", "r_ext_multisample",
+			"No" 0 "2×" 2 "4×" 4 "8×" 8 "16×" 16,
 			play "sound/misc/menu1.wav"; uiScript glCustom,
 			4 )
-	YESNOX	( ghardware, "Compress Textures:", "r_ext_compressed_textures",
+	MULTIX	( gdisplay, "Anisotropic Filtering:", "r_ext_texture_filter_anisotropic",
+			"No" 0 "2×" 2 "4×" 4 "8×" 8 "16×" 16,
 			play "sound/misc/menu1.wav"; uiScript glCustom,
 			5 )
-	MULTIX	( ghardware, "Texture Detail:", "r_picmip",
-			"Low" 2 "Intermediate" 1 "High" 0,
-			play "sound/misc/menu1.wav"; uiScript glCustom,
+	BUTTONX	( gdisplay, "APPLY",
+			play "sound/misc/menu1.wav"; exec "vid_restart",
 			6 )
-	MULTIX	( ghardware, "Texture Filter:", "r_texturemode",
-			"Bilinear" GL_LINEAR_MIPMAP_NEAREST "Trilinear" GL_LINEAR_MIPMAP_LINEAR,
-			play "sound/misc/menu1.wav"; uiScript glCustom,
-			7 )
-	MULTIX	( ghardware, "Multisampling:", "r_ext_multisample",
-			"No" 0 "2×" 2 "4×" 4 "8×" 8 "16×" 16,
-			play "sound/misc/menu1.wav"; uiScript glCustom,
-			8 )
-	MULTIX	( ghardware, "Anisotropic Filtering:", "r_ext_texture_filter_anisotropic",
-			"No" 0 "2×" 2 "4×" 4 "8×" 8 "16×" 16,
-			play "sound/misc/menu1.wav"; uiScript glCustom,
-			9 )
-	BUTTONX	( ghardware, "APPLY", play "sound/misc/menu1.wav"; exec "vid_restart",
-			10 )
-
-//////// GFX SOFTWARE
 
     itemDef
     {
-      name system
-      text "GFX Software"
-      group optionsGrp
+      name systemEffects
+      text "Effects"
+      group systemGrp
       style WINDOW_STYLE_EMPTY
       rect 0 ((2*BORDER)+TOPBUTT_H+(1*SIDEBUTT_H)) SIDEBUTT_W SIDEBUTT_H
       type ITEM_TYPE_BUTTON
       textalign ALIGN_RIGHT
       textvalign VALIGN_CENTER
       textscale .25
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
         play "sound/misc/menu1.wav";
         hide optionsGrp;
         show system;
-        show gsoftware
+        show geffects;
+
+        setitemcolor systemDisplay       forecolor 0.14 0.8 0.8 1.0;
+		setitemcolor systemEffects       forecolor 1.0 1.0 1.0 1.0;
+        setitemcolor systemSoft          forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemGL            forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemNet           forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemVoip          forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemRange         forecolor 0.14 0.8 0.8 1.0
+
       }
     }
 
-	SLIDERX	( gsoftware, "Brightness:", "r_gamma", 1, .5, 2, 0 )
-	SLIDERX	( gsoftware, "Screen Size:", "cg_viewsize", 100, 30, 100, 1 )
-	YESNOX	( gsoftware, "Mark On Walls:", "cg_marks", play "sound/misc/menu1.wav", 2 )
-	YESNOX	( gsoftware, "Dynamic Lights:", "r_dynamiclight", play "sound/misc/menu1.wav", 3 )
-	YESNOX	( gsoftware, "Draw Gun:", "cg_drawGun", play "sound/misc/menu1.wav", 4 )
-	YESNOX	( gsoftware, "Sync Every Frame:", "r_swapinterval", play "sound/misc/menu1.wav", 5 )
-	YESNOX	( gsoftware, "In Game Videos:", "r_inGameVideo", play "sound/misc/menu1.wav", 6 )
-	YESNOX	( gsoftware, "Depth Sort Particles:", "cg_depthSortParticles", play "sound/misc/menu1.wav", 7 )
-	MULTIX	( gsoftware, "Particle Physics:", "cg_bounceParticles",
-			"Low Quality" 0 "High Quality" 1,
-			play "sound/misc/menu1.wav",
-			8 )
-	MULTIX	( gsoftware, "Light Flares:", "cg_lightFlare",
-			"Off" 0 "No Fade" 1 "Timed Fade" 2 "Real Fade" 3,
-			play "sound/misc/menu1.wav",
-			9 )
-	YESNOX	( gsoftware, "Bloom:", "r_bloom",
+	
+//////// Effects	
+	MULTIX	( geffects, "Lighting:", "r_vertexLighting",
+			"Light Map (high)" 0 "Vertex (low)" 1,
 			play "sound/misc/menu1.wav"; uiScript glCustom,
+			0 )
+	YESNOX	( geffects, "Dynamic Lights:", "r_dynamiclight", 
+			play "sound/misc/menu1.wav"; uiScript glCustom,
+			1 )
+	MULTIX	( geffects, "Shadows:", "cg_shadows",
+			"No" 0 "Blobs" 1 "Exponential mapping" 3 "Variance mapping" 5 "Exponential variance" 6,
+			play "sound/misc/menu1.wav"; uiScript glCustom,
+			2 )
+	YESNOX	( geffects, "Compress Textures:", "r_ext_compressed_textures",
+			play "sound/misc/menu1.wav"; uiScript glCustom,
+			3 )
+	MULTIX	( geffects, "Texture Detail:", "r_picmip",
+			"Low" 2 "Intermediate" 1 "High" 0,
+			play "sound/misc/menu1.wav"; uiScript glCustom,
+			4 )
+	MULTIX	( geffects, "Texture Filter:", "r_texturemode",
+			"Bilinear" GL_LINEAR_MIPMAP_NEAREST "Trilinear" GL_LINEAR_MIPMAP_LINEAR,
+			play "sound/misc/menu1.wav"; uiScript glCustom,
+			5 )
+	YESNOX	( geffects, "Normal Mapping:", "r_normalMapping",
+			play "sound/misc/menu1.wav"; uiScript glCustom,
+			6 )		
+	YESNOX	( geffects, "Bloom:", "r_bloom",
+			play "sound/misc/menu1.wav"; uiScript glCustom,
+			7 )
+    YESNOX	( geffects, "Rim Lighting:", "r_rimlighting",
+			play "sound/misc/menu1.wav"; uiScript glCustom,
+			8 )				
+    YESNOX	( geffects, "Motion Blur:", "cg_motionblur",
+			play "sound/misc/menu1.wav"; uiScript glCustom,
+			9 )		
+	BUTTONX	( geffects, "APPLY",
+			play "sound/misc/menu1.wav"; exec "vid_restart",
 			10 )
-    YESNOX	( gsoftware, "Rim Lighting:", "r_rimlighting",
-			play "sound/misc/menu1.wav"; uiScript glCustom,
-			11 )
-
-//////// GL INFO
-
+			
     itemDef
     {
-      name system
-      text "OpenGL Info"
-      group optionsGrp
+      name systemSoft
+      text "GFX Software"
+      group systemGrp
       style WINDOW_STYLE_EMPTY
       rect 0 ((2*BORDER)+TOPBUTT_H+(2*SIDEBUTT_H)) SIDEBUTT_W SIDEBUTT_H
       type ITEM_TYPE_BUTTON
       textalign ALIGN_RIGHT
       textvalign VALIGN_CENTER
       textscale .25
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
         play "sound/misc/menu1.wav";
         hide optionsGrp;
         show system;
-        show glinfo
+        show gsoftware;
+
+        setitemcolor systemDisplay       forecolor 0.14 0.8 0.8 1.0;
+		setitemcolor systemEffects       forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemSoft          forecolor 1.0 1.0 1.0 1.0;
+        setitemcolor systemGL            forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemNet           forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemVoip          forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemRange         forecolor 0.14 0.8 0.8 1.0
+
+      }
+    }
+
+//////// GFX SOFTWARE
+	SLIDERX	( gsoftware, "Brightness:", "r_gamma",
+			1, .5, 2,
+			0 )
+	YESNOX	( gsoftware, "Draw Gun:", "cg_drawGun",
+			play "sound/misc/menu1.wav",
+			1 )
+	YESNOX	( gsoftware, "Mark On Walls:", "cg_marks",
+			play "sound/misc/menu1.wav",
+			2 )
+	YESNOX	( gsoftware, "In Game Videos:", "r_inGameVideo",
+			play "sound/misc/menu1.wav",
+			3 )
+	YESNOX	( gsoftware, "Depth Sort Particles:", "cg_depthSortParticles", 
+			play "sound/misc/menu1.wav", 
+			4 )
+	MULTIX	( gsoftware, "Particle Physics:", "cg_bounceParticles",
+			"Low Quality" 0 "High Quality" 1,
+			play "sound/misc/menu1.wav"; uiScript glCustom,
+			5 )
+	MULTIX	( gsoftware, "Light Flares:", "cg_lightFlare",
+			"Off" 0 "No Fade" 1 "Timed Fade" 2 "Real Fade" 3,
+			play "sound/misc/menu1.wav",
+			6 )
+
+
+//////// GL INFO
+
+    itemDef
+    {
+      name systemGL
+      text "OpenGL Info"
+      group systemGrp
+      style WINDOW_STYLE_EMPTY
+      rect 0 ((2*BORDER)+TOPBUTT_H+(3*SIDEBUTT_H)) SIDEBUTT_W SIDEBUTT_H
+      type ITEM_TYPE_BUTTON
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textscale .25
+      visible MENU_FALSE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        hide optionsGrp;
+        show system;
+        show glinfo;
+
+        setitemcolor systemDisplay       forecolor 0.14 0.8 0.8 1.0;
+		setitemcolor systemEffects       forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemSoft          forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemGL            forecolor 1.0 1.0 1.0 1.0;
+        setitemcolor systemNet           forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemVoip          forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemRange         forecolor 0.14 0.8 0.8 1.0
+
       }
     }
 
@@ -529,34 +679,41 @@
       textvalign VALIGN_TOP
       textalignx 4
       textaligny 4
-      forecolor 1 1 1 1
       visible MENU_FALSE
       decoration
     }
 
-    //////// NET & SOUND
+//////// NET & SOUND
 
-itemDef
+    itemDef
     {
-		name system
-		text "Net & Sound"
-		group optionsGrp
-		style WINDOW_STYLE_EMPTY
-		rect 0 ((2*BORDER)+TOPBUTT_H+(3*SIDEBUTT_H)) SIDEBUTT_W SIDEBUTT_H
-		type ITEM_TYPE_BUTTON
-		textalign ALIGN_RIGHT
-		textvalign VALIGN_CENTER
-		textscale .25
-		forecolor 1 1 1 1
-			visible MENU_FALSE
-			action
-			{
-				play "sound/misc/menu1.wav";
-				hide optionsGrp;
-				show system;
-				show netsound
-			}
-	}
+      name systemNet
+      text "Net & Sound"
+      group systemGrp
+      style WINDOW_STYLE_EMPTY
+      rect 0 ((2*BORDER)+TOPBUTT_H+(4*SIDEBUTT_H)) SIDEBUTT_W SIDEBUTT_H
+      type ITEM_TYPE_BUTTON
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textscale .25
+      visible MENU_FALSE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        hide optionsGrp;
+        show system;
+        show netsound;
+
+        setitemcolor systemDisplay       forecolor 0.14 0.8 0.8 1.0;
+		setitemcolor systemEffects       forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemSoft          forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemGL            forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemNet           forecolor 1.0 1.0 1.0 1.0;
+        setitemcolor systemVoip          forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemRange         forecolor 0.14 0.8 0.8 1.0
+
+      }
+    }
 
 	TEXTX	( netsound, "Sound", 0 )
 	SLIDERX	( netsound, "Effects Volume:", "s_volume", .7, 0, 1, 1 )
@@ -568,34 +725,42 @@ itemDef
 	YESNOX	( netsound, "Doppler Sound:", "s_doppler", play "sound/misc/menu1.wav", 7 )
 	TEXTX	( netsound, "Network", 9 )
 	MULTIX	( netsound, "Net Data Rate:", "rate",
-			  "<=28.8k" 2500 "33.6k" 3000 "56k" 4000 "ISDN" 5000 "LAN/CABLE/xDSl" 25000,
-		  play "sound/misc/menu1.wav",
-		  10 )
+			"<=28.8k" 2500 "33.6k" 3000 "56k" 4000 "ISDN" 5000 "LAN/CABLE/xDSl" 25000,
+			play "sound/misc/menu1.wav",
+			10 )
 	BUTTONX	( netsound, APPLY, play "sound/misc/menu1.wav"; exec "snd_restart", 12 )
 
 //////// VOIP
 
-	itemDef
-	{
-		name system
-		text "VoIP"
-		group optionsGrp
-		style WINDOW_STYLE_EMPTY
-		rect 0 ((2*BORDER)+TOPBUTT_H+(4*SIDEBUTT_H)) SIDEBUTT_W SIDEBUTT_H
-		type ITEM_TYPE_BUTTON
-		textalign ALIGN_RIGHT
-		textvalign VALIGN_CENTER
-		textscale .25
-		forecolor 1 1 1 1
-			visible MENU_FALSE
-			action
-			{
-				play "sound/misc/menu1.wav";
-				hide optionsGrp;
-				show system;
-				show voip
-			}
-	}
+    itemDef
+    {
+      name systemVoip
+      text "VoIP"
+      group systemGrp
+      style WINDOW_STYLE_EMPTY
+      rect 0 ((2*BORDER)+TOPBUTT_H+(5*SIDEBUTT_H)) SIDEBUTT_W SIDEBUTT_H
+      type ITEM_TYPE_BUTTON
+      textalign ALIGN_RIGHT
+      textvalign VALIGN_CENTER
+      textscale .25
+      visible MENU_FALSE
+      action
+      {
+        play "sound/misc/menu1.wav";
+        hide optionsGrp;
+        show system;
+        show voip;
+
+        setitemcolor systemDisplay       forecolor 0.14 0.8 0.8 1.0;
+		setitemcolor systemEffects       forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemSoft          forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemGL            forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemNet           forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemVoip          forecolor 1.0 1.0 1.0 1.0;
+        setitemcolor systemRange         forecolor 0.14 0.8 0.8 1.0
+
+      }
+    }
 
 	TEXTX   ( voip, "VoIP", 0 )
 	YESNOX  ( voip, "Enable VoIP:", "cl_voip", play "sound/misc/menu1.wav", 1 )
@@ -607,27 +772,37 @@ itemDef
 	YESNOX  ( voip, "Voice Activation Detection:", "cl_voipUseVAD", play "sound/misc/menu1.wav", 6 )
 	SLIDERX ( voip, "VAD Threshold:", "cl_voipVADThreshold", 0, 0.25, 1, 7 )
 
+
+
 //////// RANGE MARKERS
 
     itemDef
     {
-      name system
+      name systemRange
       text "Range Markers"
-      group optionsGrp
+      group systemGrp
       style WINDOW_STYLE_EMPTY
-      rect 0 ((2*BORDER)+TOPBUTT_H+(5*SIDEBUTT_H)) SIDEBUTT_W SIDEBUTT_H
+      rect 0 ((2*BORDER)+TOPBUTT_H+(6*SIDEBUTT_H)) SIDEBUTT_W SIDEBUTT_H
       type ITEM_TYPE_BUTTON
       textalign ALIGN_RIGHT
       textvalign VALIGN_CENTER
       textscale .25
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
         play "sound/misc/menu1.wav";
         hide optionsGrp;
         show system;
-        show rangemarkers
+        show rangemarkers;
+
+        setitemcolor systemDisplay       forecolor 0.14 0.8 0.8 1.0;
+		setitemcolor systemEffects       forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemSoft          forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemGL            forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemNet           forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemVoip          forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemRange         forecolor 1.0 1.0 1.0 1.0
+
       }
     }
 
@@ -648,9 +823,10 @@ itemDef
 	YESNOX	( rangemarkers, "Draw Surface:", "cg_rangeMarkerDrawSurface", play "sound/misc/menu1.wav", 2 )
 	YESNOX	( rangemarkers, "Draw Intersection:", "cg_rangeMarkerDrawIntersection", play "sound/misc/menu1.wav", 3 )
 	YESNOX	( rangemarkers, "Draw Frontline:", "cg_rangeMarkerDrawFrontline", play "sound/misc/menu1.wav", 4 )
-	SLIDERX ( rangemarkers, "Surface Opacity:", "cg_rangeMarkerSurfaceOpacity", .08, .0325, .3, 5 )
-    SLIDERX ( rangemarkers, "Line Opacity:", "cg_rangeMarkerLineOpacity", .4, .0675, 1, 6 )
-    SLIDERX ( rangemarkers, "Line Thickness:", "cg_rangeMarkerLineThickness", 4, .75, 11, 7 )
-    SLIDERX ( rangemarkers, "Binary Shader Screen Scale:", "cg_binaryShaderScreenScale", 1, .0025, 1, 8 )  }
+	SLIDERX	( rangemarkers, "Surface Opacity:", "cg_rangeMarkerSurfaceOpacity", .08, .035, .3, 5 )
+	SLIDERX	( rangemarkers, "Line Opacity:", "cg_rangeMarkerLineOpacity", .4, .075, 1, 6 )
+	SLIDERX	( rangemarkers, "Line Thickness:", "cg_rangeMarkerLineThickness", 4, 1, 11, 7 )
+	SLIDERX	( rangemarkers, "Binary Shader Screen Scale:", "cg_binaryShaderScreenScale", 1, .005, 1, 8 )
+  }
  }
 }

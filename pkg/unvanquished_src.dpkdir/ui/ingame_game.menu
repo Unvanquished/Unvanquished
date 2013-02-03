@@ -66,20 +66,24 @@
     fullscreen MENU_FALSE
     outOfBoundsClick      // this closes the window if it gets a click out of the rectangle
     rect X Y W H
-    focusColor 1 .75 0 1
+    focusColor 0.45 0.45 0.45 1.0
     aspectBias ALIGN_LEFT
     onopen
     {
       uiScript InitIgnoreList;
       uiScript loadArenas;
       uiScript loadServerInfo;
-      hide gameGrp;
-      show vote;
-      show mapvote;
-
-      setitemcolor voteBtn       forecolor 0.2 0.2 0.2 1.0;
-      setitemcolor ignoreBtn     forecolor 1.0 1.0 1.0 1.0;
-      setitemcolor infoBtn      forecolor 1.0 1.0 1.0 1.0
+	  hide ignore
+	  hide info
+      show voteGrp;
+	  show mapvote;
+	  
+      setitemcolor voteBtn       forecolor 1.0 1.0 1.0 1.0;
+      setitemcolor ignoreBtn     forecolor 0.14 0.8 0.8 1.0;
+      setitemcolor infoBtn       forecolor 0.14 0.8 0.8 1.0
+      setitemcolor voteMap       forecolor 1.0 1.0 1.0 1.0;
+      setitemcolor votePlayers   forecolor 0.14 0.8 0.8 1.0
+      setitemcolor voteTeam      forecolor 0.14 0.8 0.8 1.0
     }
 
     itemDef
@@ -91,7 +95,6 @@
       forecolor MENU_TEAL_TRANS
       visible MENU_TRUE
       decoration
-
       border WINDOW_BORDER_KCGRADIENT
       borderSize 1.0
       borderColor 1 1 1 1
@@ -109,18 +112,21 @@
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
       textscale .35
-      forecolor 1 1 1 1
       visible MENU_TRUE
       action
       {
-        play "sound/misc/menu1.wav";
-        hide gameGrp;
-        show vote;
-        show mapvote;
-
-        setitemcolor infoBtn      forecolor 1.0 1.0 1.0 1.0;
-        setitemcolor voteBtn  forecolor 0.2 0.2 0.2 1.0;
-        setitemcolor ignoreBtn    forecolor 1.0 1.0 1.0 1.0
+      play "sound/misc/menu1.wav";
+	  hide ignore
+	  hide info
+      show voteGrp;
+	  show mapvote;
+	  
+      setitemcolor voteBtn       forecolor 1.0 1.0 1.0 1.0;
+      setitemcolor ignoreBtn     forecolor 0.14 0.8 0.8 1.0;
+      setitemcolor infoBtn       forecolor 0.14 0.8 0.8 1.0
+      setitemcolor voteMap       forecolor 1.0 1.0 1.0 1.0;
+      setitemcolor votePlayers   forecolor 0.14 0.8 0.8 1.0;
+      setitemcolor voteTeam      forecolor 0.14 0.8 0.8 1.0
       }
     }
 
@@ -135,17 +141,17 @@
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
       textscale .35
-      forecolor 1 1 1 1
       visible MENU_TRUE
       action
       {
         play "sound/misc/menu1.wav";
         hide gameGrp;
+		hide voteGrp;
         show ignore;
 
-        setitemcolor infoBtn      forecolor 1.0 1.0 1.0 1.0;
-        setitemcolor voteBtn  forecolor 1.0 1.0 1.0 1.0;
-        setitemcolor ignoreBtn    forecolor 0.2 0.2 0.2 1.0
+        setitemcolor voteBtn       forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor ignoreBtn     forecolor 1.0 1.0 1.0 1.0;
+        setitemcolor infoBtn       forecolor 0.14 0.8 0.8 1.0
       }
     }
 
@@ -160,7 +166,6 @@
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
       textscale .35
-      forecolor 1 1 1 1
       visible MENU_TRUE
       action
       {
@@ -168,9 +173,10 @@
         hide gameGrp;
         show info;
 
-        setitemcolor infoBtn      forecolor 0.2 0.2 0.2 1.0;
-        setitemcolor voteBtn  forecolor 1.0 1.0 1.0 1.0;
-        setitemcolor ignoreBtn    forecolor 1.0 1.0 1.0 1.0
+        setitemcolor voteBtn       forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor ignoreBtn     forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor infoBtn       forecolor 1.0 1.0 1.0 1.0
+
       }
     }
 
@@ -180,38 +186,38 @@
     //Vote menu
     itemDef
     {
-      name vote
+      name voteMap
       text "Map"
-      group gameGrp
+      group voteGrp
       style WINDOW_STYLE_EMPTY
       rect 0 ((2*BORDER)+TOPBUTT_H) SIDEBUTT_W SIDEBUTT_H
       type ITEM_TYPE_BUTTON
       textalign ALIGN_RIGHT
       textvalign VALIGN_CENTER
       textscale .25
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
         play "sound/misc/menu1.wav";
         hide gameGrp;
         show mapvote;
-        show vote;
+		setitemcolor voteMap       forecolor 1.0 1.0 1.0 1.0;
+		setitemcolor votePlayers   forecolor 0.14 0.8 0.8 1.0;
+		setitemcolor voteTeam      forecolor 0.14 0.8 0.8 1.0
       }
     }
 
     itemDef
     {
-      name vote
+      name votePlayers
       text "Players"
-      group gameGrp
+      group voteGrp
       style WINDOW_STYLE_EMPTY
       rect 0 ((2*BORDER)+TOPBUTT_H+SIDEBUTT_H) SIDEBUTT_W SIDEBUTT_H
       type ITEM_TYPE_BUTTON
       textalign ALIGN_RIGHT
       textvalign VALIGN_CENTER
       textscale .25
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
@@ -219,21 +225,23 @@
         hide gameGrp;
         show playervote;
         show vote;
+		setitemcolor voteMap       forecolor 0.14 0.8 0.8 1.0;
+		setitemcolor votePlayers   forecolor 1.0 1.0 1.0 1.0;
+		setitemcolor voteTeam      forecolor 0.14 0.8 0.8 1.0	
       }
     }
 
     itemDef
     {
-      name vote
+      name voteTeam
       text "Team"
-      group gameGrp
+      group voteGrp
       style WINDOW_STYLE_EMPTY
       rect 0 ((2*BORDER)+TOPBUTT_H+(2*SIDEBUTT_H)) SIDEBUTT_W SIDEBUTT_H
       type ITEM_TYPE_BUTTON
       textalign ALIGN_RIGHT
       textvalign VALIGN_CENTER
       textscale .25
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
@@ -241,6 +249,9 @@
         hide gameGrp;
         show teamvote;
         show vote;
+		setitemcolor voteMap       forecolor 0.14 0.8 0.8 1.0;
+		setitemcolor votePlayers   forecolor 0.14 0.8 0.8 1.0;
+		setitemcolor voteTeam      forecolor 1.0 1.0 1.0 1.0	
       }
     }
 
@@ -261,7 +272,6 @@
       textscale .25
       outlinecolor .2 .2 .2 .5
       backcolor 0 0 0 0
-      forecolor 1 1 1 1
       border WINDOW_BORDER_NONE
       bordercolor 0 0 0 0
       visible MENU_FALSE
@@ -277,7 +287,6 @@
       rect PBUTT_X (H/2+PBUTT_H/2) PBUTT_W PBUTT_H
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
@@ -296,7 +305,6 @@
       rect PBUTT_X (H/2+PBUTT_H/2) PBUTT_W PBUTT_H
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
@@ -315,7 +323,6 @@
       rect PBUTT_X (H/2+PBUTT_H/2) PBUTT_W PBUTT_H
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
@@ -334,7 +341,6 @@
       rect PBUTT_X (H/2+PBUTT_H/2) PBUTT_W PBUTT_H
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
@@ -353,7 +359,6 @@
       rect PBUTT_X (H/2+PBUTT_H/2) PBUTT_W PBUTT_H
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
@@ -372,7 +377,6 @@
       rect PBUTT_X (H/2+PBUTT_H/2) PBUTT_W PBUTT_H
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
@@ -391,7 +395,6 @@
       rect PBUTT_X (H/2+PBUTT_H/2) PBUTT_W PBUTT_H
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
@@ -427,7 +430,6 @@
       feeder FEEDER_MAPS
       border WINDOW_BORDER_KCGRADIENT
       bordercolor   0.5 0.5 0.5 0.5
-      forecolor     1   1   1   1
       backcolor     0.2 0.2 0.2 1
       outlinecolor  0.1 0.1 0.1 0.5
       visible MENU_FALSE
@@ -449,7 +451,6 @@
       rect MAPBUTT_X MAPBUTT_Y MAPBUTT_W MAPBUTT_H
       textalign ALIGN_LEFT
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
@@ -469,7 +470,6 @@
       rect MAPBUTT_X (MAPBUTT_Y+MAPBUTT_H) MAPBUTT_W MAPBUTT_H
       textalign ALIGN_LEFT
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
@@ -489,7 +489,6 @@
       rect MAPBUTT_X (MAPBUTT_Y+(2*MAPBUTT_H)) MAPBUTT_W MAPBUTT_H
       textalign ALIGN_LEFT
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
@@ -509,7 +508,6 @@
       rect MAPBUTT_X (MAPBUTT_Y+(3*MAPBUTT_H)) MAPBUTT_W MAPBUTT_H
       textalign ALIGN_LEFT
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
@@ -532,7 +530,6 @@
       rect MAPBUTT_X (MAPBUTT_Y+(4*MAPBUTT_H)) MAPBUTT_W MAPBUTT_H
       textalign ALIGN_LEFT
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
@@ -556,7 +553,6 @@
       rect MAPBUTT_X (MAPBUTT_Y+(4*MAPBUTT_H)) MAPBUTT_W MAPBUTT_H
       textalign ALIGN_LEFT
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
@@ -581,7 +577,6 @@
       feeder FEEDER_PLAYER_LIST
       border WINDOW_BORDER_KCGRADIENT
       bordercolor   0.5 0.5 0.5 0.5
-      forecolor     1   1   1   1
       backcolor     0.2 0.2 0.2 1
       outlinecolor  0.1 0.1 0.1 0.5
       visible MENU_FALSE
@@ -597,7 +592,6 @@
       rect PBUTT_X PBUTT_Y VBUTT_W VBUTT_H
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
@@ -618,7 +612,6 @@
       rect PBUTT_X (PBUTT_Y+VBUTT_H) VBUTT_W VBUTT_H
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
@@ -638,7 +631,6 @@
       rect (PBUTT_X+VBUTT_W) PBUTT_Y VBUTT_W VBUTT_H
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
@@ -659,7 +651,6 @@
       rect (PBUTT_X+VBUTT_W) (PBUTT_Y+VBUTT_H) VBUTT_W VBUTT_H
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
@@ -686,7 +677,6 @@
       feeder FEEDER_TEAM_LIST
       border WINDOW_BORDER_KCGRADIENT
       bordercolor   0.5 0.5 0.5 0.5
-      forecolor     1   1   1   1
       backcolor     0.2 0.2 0.2 1
       outlinecolor  0.1 0.1 0.1 0.5
       visible MENU_FALSE
@@ -702,7 +692,6 @@
       rect PBUTT_X PBUTT_Y VBUTT_W VBUTT_H
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
@@ -724,7 +713,6 @@
       rect PBUTT_X (PBUTT_Y+VBUTT_H) VBUTT_W VBUTT_H
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
@@ -744,7 +732,6 @@
       rect (PBUTT_X+VBUTT_W) PBUTT_Y VBUTT_W VBUTT_H
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
@@ -765,7 +752,6 @@
       rect (PBUTT_X+VBUTT_W) (PBUTT_Y+VBUTT_H) VBUTT_W VBUTT_H
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
@@ -786,7 +772,6 @@
       rect (PBUTT_X+VBUTT_W/2) (PBUTT_Y+PBUTT_H) VBUTT_W VBUTT_H
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
@@ -847,7 +832,6 @@
       border WINDOW_BORDER_KCGRADIENT
       bordersize 1
       bordercolor .5 .5 .5 1
-      forecolor 1 1 1 1
       backcolor     0.2 0.2 0.2 1
       outlinecolor  0.1 0.1 0.1 0.5
       elementtype LISTBOX_TEXT
@@ -875,7 +859,6 @@
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
       textscale .25
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
@@ -895,7 +878,6 @@
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
       textscale .25
-      forecolor 1 1 1 1
       visible MENU_FALSE
       action
       {
@@ -919,7 +901,6 @@
       textvalign VALIGN_CENTER
       textalignx INFO_OFF
       textscale .25
-      forecolor 1 1 1 1
       visible MENU_FALSE
       decoration
     }
@@ -937,7 +918,6 @@
       textvalign VALIGN_CENTER
       textalignx INFO_OFF
       textscale .25
-      forecolor 1 1 1 1
       visible MENU_FALSE
       decoration
     }
@@ -955,7 +935,6 @@
       textvalign VALIGN_CENTER
       textalignx INFO_OFF
       textscale .25
-      forecolor 1 1 1 1
       visible MENU_FALSE
       decoration
     }
@@ -973,7 +952,6 @@
       textvalign VALIGN_CENTER
       textalignx INFO_OFF
       textscale .25
-      forecolor 1 1 1 1
       visible MENU_FALSE
       decoration
     }
@@ -991,7 +969,6 @@
       textvalign VALIGN_CENTER
       textalignx INFO_OFF
       textscale .25
-      forecolor 1 1 1 1
       visible MENU_FALSE
       decoration
     }
@@ -1009,7 +986,6 @@
       textvalign VALIGN_CENTER
       textalignx INFO_OFF
       textscale .25
-      forecolor 1 1 1 1
       visible MENU_FALSE
       decoration
     }
@@ -1027,7 +1003,6 @@
       textvalign VALIGN_CENTER
       textalignx INFO_OFF
       textscale .25
-      forecolor 1 1 1 1
       visible MENU_FALSE
       decoration
     }
@@ -1045,7 +1020,6 @@
       textvalign VALIGN_CENTER
       textalignx INFO_OFF
       textscale .25
-      forecolor 1 1 1 1
       visible MENU_FALSE
       decoration
     }
@@ -1063,7 +1037,6 @@
       textvalign VALIGN_CENTER
       textalignx INFO_OFF
       textscale .25
-      forecolor 1 1 1 1
       visible MENU_FALSE
       decoration
     }
