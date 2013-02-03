@@ -24,7 +24,6 @@
       name "spectatortext"
       text "SPECTATOR"
       rect 200 415 240 25
-      foreColor 1 1 1 1
       aspectBias ALIGN_CENTER
       textalign ALIGN_CENTER
       textvalign VALIGN_TOP

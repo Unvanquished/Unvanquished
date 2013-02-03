@@ -4496,6 +4496,7 @@ void CL_Init( void )
 	cl_consoleFont = Cvar_Get( "cl_consoleFont", "fonts/unifont.ttf", CVAR_ARCHIVE | CVAR_LATCH );
 	cl_consoleFontSize = Cvar_Get( "cl_consoleFontSize", "16", CVAR_ARCHIVE | CVAR_LATCH );
 	cl_consoleFontKerning = Cvar_Get( "cl_consoleFontKerning", "0", CVAR_ARCHIVE );
+
 	cl_consoleCommand = Cvar_Get( "cl_consoleCommand", "say", CVAR_ARCHIVE );
 
 	cl_gamename = Cvar_Get( "cl_gamename", GAMENAME_FOR_MASTER, CVAR_TEMP );
