@@ -881,7 +881,29 @@ void Con_DrawConsoleScrollbackIndicator( int lineDrawPosition )
 void Con_DrawConsoleScrollbar( int virtualHeight )
 {
 	vec4_t color;
+	const float scrollBarLength = virtualHeight * 0.80f;
+	const float scrollHandleLength = (scrollBarLength/consoleState.currentLine) * consoleState.visibleAmountOfLines;
+	const float scrollHandlePostition = ((scrollBarLength - scrollHandleLength)/consoleState.currentLine) * consoleState.bottomDisplayedLine;
 
+	//draw the scrollBar
+	color[ 0 ] = 0.2f;
+	color[ 1 ] = 0.2f;
+	color[ 2 ] = 0.2f;
+	color[ 3 ] = 0.75f * consoleState.currentAlphaFactor;
+
+	SCR_FillRect( SCREEN_WIDTH - con_margin->integer - con_horizontalPadding->integer - 2 * con_borderWidth->integer,
+			con_margin->value + con_borderWidth->value + virtualHeight * 0.10f,
+			con_borderWidth->value, scrollBarLength, color );
+
+	//draw the handle
+	color[ 0 ] = 0.5f;
+	color[ 1 ] = 0.5f;
+	color[ 2 ] = 0.5f;
+	color[ 3 ] = consoleState.currentAlphaFactor;
+
+	SCR_FillRect( SCREEN_WIDTH - con_margin->integer - con_horizontalPadding->integer - 2 * con_borderWidth->integer,
+			con_margin->value + con_borderWidth->value + virtualHeight * 0.10f + scrollHandlePostition,
+			con_borderWidth->value, scrollHandleLength, color );
 }
 
 /*
