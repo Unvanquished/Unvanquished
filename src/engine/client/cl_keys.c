@@ -432,12 +432,12 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
 	// draw the cursor
 	if ( showCursor )
 	{
+		float xpos, width, height;
+
 		supportElementsColor[0] = 1.0f;
 		supportElementsColor[1] = 1.0f;
 		supportElementsColor[2] = 1.0f;
 		supportElementsColor[3] = 0.66f * consoleState.currentAlphaFactor;
-
-		float xpos, width, height;
 
 		if ( ( int )( cls.realtime >> 8 ) & 1 )
 		{
