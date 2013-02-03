@@ -430,7 +430,7 @@ void Con_CheckResize( void )
 			Cvar_Reset(con_height->name);
 		}
 
-		if (con_height->value < con_margin->value || consoleState.visibleAmountOfLines < 1)
+		if (con_height->value < con_margin->value || ( consoleState.visibleAmountOfLines < 1 && consoleState.currentAnimationFraction == 1.0f ) )
 		{
 			Cvar_Reset(con_height->name);
 			Cvar_Reset(con_margin->name);
