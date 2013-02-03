@@ -73,11 +73,11 @@
       uiScript InitIgnoreList;
       uiScript loadArenas;
       uiScript loadServerInfo;
-	  hide ignore
-	  hide info
+      hide ignore
+      hide info
       show voteGrp;
-	  show mapvote;
-	  
+      show mapvote;
+  
       setitemcolor voteBtn       forecolor 1.0 1.0 1.0 1.0;
       setitemcolor ignoreBtn     forecolor 0.14 0.8 0.8 1.0;
       setitemcolor infoBtn       forecolor 0.14 0.8 0.8 1.0
@@ -116,10 +116,10 @@
       action
       {
       play "sound/misc/menu1.wav";
-	  hide ignore
-	  hide info
+      hide ignore
+      hide info
       show voteGrp;
-	  show mapvote;
+      show mapvote;
 	  
       setitemcolor voteBtn       forecolor 1.0 1.0 1.0 1.0;
       setitemcolor ignoreBtn     forecolor 0.14 0.8 0.8 1.0;
@@ -146,7 +146,7 @@
       {
         play "sound/misc/menu1.wav";
         hide gameGrp;
-		hide voteGrp;
+        hide voteGrp;
         show ignore;
 
         setitemcolor voteBtn       forecolor 0.14 0.8 0.8 1.0;
@@ -225,9 +225,9 @@
         hide gameGrp;
         show playervote;
         show vote;
-		setitemcolor voteMap       forecolor 0.14 0.8 0.8 1.0;
-		setitemcolor votePlayers   forecolor 1.0 1.0 1.0 1.0;
-		setitemcolor voteTeam      forecolor 0.14 0.8 0.8 1.0	
+        setitemcolor voteMap       forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor votePlayers   forecolor 1.0 1.0 1.0 1.0;
+        setitemcolor voteTeam      forecolor 0.14 0.8 0.8 1.0	
       }
     }
 
@@ -249,9 +249,9 @@
         hide gameGrp;
         show teamvote;
         show vote;
-		setitemcolor voteMap       forecolor 0.14 0.8 0.8 1.0;
-		setitemcolor votePlayers   forecolor 0.14 0.8 0.8 1.0;
-		setitemcolor voteTeam      forecolor 1.0 1.0 1.0 1.0	
+        setitemcolor voteMap       forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor votePlayers   forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor voteTeam      forecolor 1.0 1.0 1.0 1.0	
       }
     }
 
