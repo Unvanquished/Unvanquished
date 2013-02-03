@@ -882,8 +882,9 @@ void Con_DrawConsoleScrollbar( int virtualHeight )
 {
 	vec4_t color;
 	const float scrollBarLength = virtualHeight * 0.80f;
-	const float scrollHandleLength = (scrollBarLength/consoleState.currentLine) * consoleState.visibleAmountOfLines;
-	const float scrollHandlePostition = ((scrollBarLength - scrollHandleLength)/consoleState.currentLine) * consoleState.bottomDisplayedLine;
+	const float scrollHandleLength = (scrollBarLength/consoleState.scrollbackLengthInLines) * consoleState.visibleAmountOfLines;
+	const float scrollHandlePostition = ((scrollBarLength - scrollHandleLength)/consoleState.scrollbackLengthInLines)
+			* (consoleState.bottomDisplayedLine - (consoleState.currentLine - consoleState.scrollbackLengthInLines));
 
 	//draw the scrollBar
 	color[ 0 ] = 0.2f;
