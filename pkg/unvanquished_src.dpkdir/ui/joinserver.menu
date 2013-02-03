@@ -37,8 +37,8 @@
 #define SERVER_C    0.45
 #define GAME_C      0.15
 #define MAP_C       0.2
-#define PLAYERS_C   0.1
-#define PING_C      0.1
+#define PLAYERS_C   0.125
+#define PING_C      0.075
 #define LIST_W      (W-(2*BORDER))
 #define LIST_H      (H-((3*BORDER)+TOP_H+BOT_H+BCJ_H))
 #define LIST_X      BORDER
@@ -227,7 +227,7 @@
       textvalign VALIGN_CENTER
       textalignx LIST_TOFF
       border WINDOW_BORDER_FULL
-      bordercolor   1 1 1 1
+      bordercolor   1 1 1 1
       backcolor     0   0   0   0
       outlinecolor  0.1 0.1 0.1 0.5
       visible MENU_TRUE
@@ -270,7 +270,7 @@
       textvalign VALIGN_CENTER
       textalignx LIST_TOFF
       border WINDOW_BORDER_FULL
-      bordercolor   1 1 1 1
+      bordercolor   1 1 1 1
       backcolor     0   0   0   0
       outlinecolor  0.1 0.1 0.1 0.5
       visible MENU_TRUE
@@ -313,7 +313,7 @@
       textvalign VALIGN_CENTER
       textalignx LIST_TOFF
       border WINDOW_BORDER_FULL
-      bordercolor   1 1 1 1
+      bordercolor   1 1 1 1
       backcolor     0   0   0   0
       outlinecolor  0.1 0.1 0.1 0.5
       visible MENU_TRUE
@@ -356,7 +356,7 @@
       textvalign VALIGN_CENTER
       textalignx LIST_TOFF
       border WINDOW_BORDER_FULL
-      bordercolor   1 1 1 1
+      bordercolor   1 1 1 1
       backcolor     0   0   0   0
       outlinecolor  0.1 0.1 0.1 0.5
       visible MENU_TRUE
@@ -399,7 +399,7 @@
       textvalign VALIGN_CENTER
       textalignx LIST_TOFF
       border WINDOW_BORDER_FULL
-      bordercolor   1 1 1 1
+      bordercolor   1 1 1 1
       backcolor     0.3 1   1   0.3
       outlinecolor  0.1 0.1 0.1 0.5
       visible MENU_TRUE
@@ -443,7 +443,7 @@
       elementtype LISTBOX_TEXT
       feeder FEEDER_SERVERS
       border WINDOW_BORDER_FULL
-      bordercolor   1 1 1 1
+      bordercolor   1 1 1 1
       backcolor     0.2 0.2 0.2 1
       outlinecolor  0.1 0.3 0.3 0.4
       visible MENU_TRUE
