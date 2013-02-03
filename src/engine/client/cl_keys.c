@@ -353,6 +353,7 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
                              qboolean noColorEscape, float alpha )
 {
 	int  len;
+	vec4_t supportElementsColor;
 	int  drawLen;
 	int  prestep;
 	char str[ MAX_STRING_CHARS ];
@@ -431,7 +432,11 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
 	// draw the cursor
 	if ( showCursor )
 	{
-		static const float cyan[] = { 0, 1, 1, 0.5 };
+		supportElementsColor[0] = 1.0f;
+		supportElementsColor[1] = 1.0f;
+		supportElementsColor[2] = 1.0f;
+		supportElementsColor[3] = 0.66f * consoleState.currentAlphaFactor;
+
 		float xpos, width, height;
 
 		if ( ( int )( cls.realtime >> 8 ) & 1 )
@@ -439,7 +444,7 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
 			return; // off blink
 		}
 
-		re.SetColor( cyan );
+		re.SetColor( supportElementsColor );
 
 		if ( size == SMALLCHAR_WIDTH )
 		{

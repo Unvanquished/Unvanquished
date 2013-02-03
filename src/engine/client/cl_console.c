@@ -839,9 +839,9 @@ void Con_DrawConsoleScrollbackIndicator( int lineDrawPosition )
 	const int scrollBarLength = (virtualHeight - 2 * charHeight);
 
 	color[ 0 ] = 1.0f;
-	color[ 1 ] = 0.0f;
-	color[ 2 ] = 0.0f;
-	color[ 3 ] = consoleState.currentAlphaFactor;
+	color[ 1 ] = 1.0f;
+	color[ 2 ] = 1.0f;
+	color[ 3 ] = 0.66f * consoleState.currentAlphaFactor;
 	re.SetColor( color );
 
 	for ( i = 0; i < consoleState.textWidthInChars; i += 4 )
