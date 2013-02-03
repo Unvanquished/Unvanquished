@@ -110,7 +110,6 @@
       rect 25 200 400 100
       visible MENU_TRUE
       decoration
-      forecolor 1 1 1 1
       aspectBias ALIGN_LEFT
       textstyle ITEM_TEXTSTYLE_SHADOWED
       textscale 0.4
@@ -125,7 +124,6 @@
       rect 80 413 400 25
       visible MENU_TRUE
       decoration
-      forecolor 1 1 1 1
       aspectBias ALIGN_LEFT
       textstyle ITEM_TEXTSTYLE_SHADOWED
       textscale .25
@@ -140,7 +138,6 @@
       rect 80 400 400 25
       visible MENU_TRUE
       decoration
-      forecolor 1 1 1 1
       aspectBias ALIGN_LEFT
       textstyle ITEM_TEXTSTYLE_SHADOWED
       textscale .25

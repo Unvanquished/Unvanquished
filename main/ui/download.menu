@@ -9,7 +9,7 @@
     visible MENU_FALSE
     fullscreen MENU_FALSE
     rect 158 80 320 320
-    focusColor 1 .75 0 1
+    focusColor 0.45 0.45 0.45 1.0
     style WINDOW_STYLE_FILLED
     border WINDOW_BORDER_FULL
     popup
@@ -48,7 +48,6 @@
       textalign ALIGN_CENTER
       textstyle ITEM_TEXTSTYLE_SHADOWEDMORE
       textscale .333
-      forecolor 1 1 1 1
       visible MENU_TRUE
       decoration
     }
@@ -65,7 +64,6 @@
       textalign ALIGN_CENTER
       textvalign VALIGN_TOP
       textscale .25
-      forecolor 1 1 1 1
       visible MENU_TRUE
       decoration
     }
@@ -84,7 +82,6 @@
       style WINDOW_STYLE_EMPTY
       rect 60 250 200 15
       textalign ALIGN_CENTER
-      forecolor 1 1 1 1
       backcolor .37 .1 .1 1
       visible MENU_TRUE
       cvarTest "ui_serverinfo_allowdl"
@@ -107,7 +104,6 @@
       style WINDOW_STYLE_EMPTY
       rect 60 265 200 15
       textalign ALIGN_CENTER
-      forecolor 1 1 1 1
       backcolor .37 .1 .1 1
       visible MENU_TRUE
       cvarTest "ui_serverinfo_allowdl"
@@ -130,7 +126,6 @@
       style WINDOW_STYLE_EMPTY
       rect 60 280 200 15
       textalign ALIGN_CENTER
-      forecolor 1 1 1 1
       backcolor .37 .1 .1 1
       visible MENU_TRUE
       cvarTest "sv_pure"
@@ -153,7 +148,6 @@
       style WINDOW_STYLE_EMPTY
       rect 60 295 200 15
       textalign ALIGN_CENTER
-      forecolor 1 1 1 1
       backcolor .37 .1 .1 1
       visible 1
       action

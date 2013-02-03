@@ -3,7 +3,7 @@
 {
   \\ score_menu \\
 
-#define W         600
+#define W         500
 #define H         338
 #define BORDER    10
 
@@ -22,7 +22,7 @@
     visible MENU_FALSE
     fullscreen MENU_FALSE
     rect (320-(W/2)) (240-(H/2)) W H
-    focusColor 1 .75 0 1
+    focusColor 1.0 1.0 1.0 1.0
     style WINDOW_STYLE_EMPTY
 
     // TEAM NAME  //
@@ -35,7 +35,6 @@
       border WINDOW_BORDER_FULL
       borderSize 1.0
       bordercolor .5 .5 .5 1
-      forecolor 1 1 1 1
       backcolor 0 0 0 .8
       visible MENU_TRUE
       decoration
@@ -49,7 +48,6 @@
       textalignx TOFF
       textscale 0.4
       rect 0 0 (W/3) BAR_H
-      forecolor 1 1 1 1
       decoration
       visible MENU_TRUE
       ownerdraw CG_ALIENS_SCORE_LABEL
@@ -62,7 +60,6 @@
       textvalign VALIGN_CENTER
       textscale 0.33
       rect (W/3) 0 (W/3) BAR_H
-      forecolor 1 1 1 1
       decoration
       visible MENU_TRUE
       ownerdraw CG_STAGE_REPORT_TEXT
@@ -76,7 +73,6 @@
       textalignx -TOFF
       textscale 0.4
       rect ((2*W)/3) 0 (W/3) BAR_H
-      forecolor 1 1 1 1
       decoration
       visible MENU_TRUE
       ownerdraw CG_HUMANS_SCORE_LABEL
@@ -92,7 +88,6 @@
       border WINDOW_BORDER_FULL
       borderSize 1.0
       bordercolor .5 .5 .5 1
-      forecolor 1 1 1 1
       backcolor 0 0 0 .8
       visible MENU_TRUE
       decoration
@@ -106,7 +101,6 @@
       border WINDOW_BORDER_FULL
       borderSize 1.0
       bordercolor .5 .5 .5 1
-      forecolor 1 1 1 1
       backcolor 0 0 0 .8
       visible MENU_TRUE
       decoration
@@ -125,7 +119,7 @@
       textalign ALIGN_LEFT
       textvalign VALIGN_CENTER
       backcolor 0 0 0 0
-      forecolor 1 .75 0 1
+      forecolor 1.0 1.0 1.0 1.0
       decoration
       visible MENU_TRUE
     }
@@ -136,11 +130,11 @@
       text "Name"
       textscale .33
       style WINDOW_STYLE_EMPTY
-      rect (LLIST_L+60) (BAR_H+BORDER) 1 BAR_H
+      rect (LLIST_L+50) (BAR_H+BORDER) 1 BAR_H
       textalign ALIGN_LEFT
       textvalign VALIGN_CENTER
       backcolor 0 0 0 0
-      forecolor 1 .75 0 1
+      forecolor 1.0 1.0 1.0 1.0
       decoration
       visible MENU_TRUE
     }
@@ -155,7 +149,7 @@
       textalign ALIGN_RIGHT
       textvalign VALIGN_CENTER
       backcolor 0 0 0 0
-      forecolor 1 .75 0 1
+      forecolor 1.0 1.0 1.0 1.0
       decoration
       visible MENU_TRUE
     }
@@ -170,7 +164,7 @@
       textalign ALIGN_RIGHT
       textvalign VALIGN_CENTER
       backcolor 0 0 0 0
-      forecolor 1 .75 0 1
+      forecolor 1.0 1.0 1.0 1.0
       decoration
       visible MENU_TRUE
     }
@@ -185,7 +179,7 @@
       textalign ALIGN_RIGHT
       textvalign VALIGN_CENTER
       backcolor 0 0 0 0
-      forecolor 1 .75 0 1
+      forecolor 1.0 1.0 1.0 1.0
       decoration
       visible MENU_TRUE
     }
@@ -200,7 +194,7 @@
       textalign ALIGN_LEFT
       textvalign VALIGN_CENTER
       backcolor 0 0 0 0
-      forecolor 1 .75 0 1
+      forecolor 1.0 1.0 1.0 1.0
       decoration
       visible MENU_TRUE
     }
@@ -211,11 +205,11 @@
       text "Name"
       textscale .33
       style WINDOW_STYLE_EMPTY
-      rect (RLIST_L+60) (BAR_H+BORDER) 1 BAR_H
+      rect (RLIST_L+50) (BAR_H+BORDER) 1 BAR_H
       textalign ALIGN_LEFT
       textvalign VALIGN_CENTER
       backcolor 0 0 0 0
-      forecolor 1 .75 0 1
+      forecolor 1.0 1.0 1.0 1.0
       decoration
       visible MENU_TRUE
     }
@@ -230,7 +224,7 @@
       textalign ALIGN_RIGHT
       textvalign VALIGN_CENTER
       backcolor 0 0 0 0
-      forecolor 1 .75 0 1
+      forecolor 1.0 1.0 1.0 1.0
       decoration
       visible MENU_TRUE
     }
@@ -245,7 +239,7 @@
       textalign ALIGN_RIGHT
       textvalign VALIGN_CENTER
       backcolor 0 0 0 0
-      forecolor 1 .75 0 1
+      forecolor 1.0 1.0 1.0 1.0
       decoration
       visible MENU_TRUE
     }
@@ -260,7 +254,7 @@
       textalign ALIGN_RIGHT
       textvalign VALIGN_CENTER
       backcolor 0 0 0 0
-      forecolor 1 .75 0 1
+      forecolor 1.0 1.0 1.0 1.0
       decoration
       visible MENU_TRUE
     }
@@ -288,8 +282,8 @@
         5             15            ALIGN_LEFT
         21            15            ALIGN_LEFT
         7             30            ALIGN_LEFT
-        55            ((W/2)-200)   ALIGN_LEFT
-        ((W/2)-140)   40            ALIGN_RIGHT
+        45            ((W/2)-170)   ALIGN_LEFT
+        ((W/2)-120)   20            ALIGN_RIGHT
         ((W/2)-80)    20            ALIGN_RIGHT
         ((W/2)-40)    20            ALIGN_RIGHT
     }
@@ -317,8 +311,8 @@
         5             15            ALIGN_LEFT
         21            15            ALIGN_LEFT
         7             30            ALIGN_LEFT
-        55            ((W/2)-200)   ALIGN_LEFT
-        ((W/2)-140)   40            ALIGN_RIGHT
+        45            ((W/2)-170)   ALIGN_LEFT
+        ((W/2)-120)   20            ALIGN_RIGHT
         ((W/2)-80)    20            ALIGN_RIGHT
         ((W/2)-40)    20            ALIGN_RIGHT
     }
@@ -346,7 +340,6 @@
       text "Spectating:"
       rect 0 (H-BAR_H) SPEC_W BAR_H
       style WINDOW_STYLE_FILLED
-      forecolor 1 1 1 1
       textscale .33
       textalign ALIGN_LEFT
       textvalign VALIGN_CENTER
@@ -360,7 +353,6 @@
       name window
       rect SPEC_W (H-BAR_H) (W-SPEC_W) BAR_H
       style WINDOW_STYLE_FILLED
-      forecolor 1 1 1 1
       textscale .33
       textvalign VALIGN_CENTER
       visible MENU_TRUE
@@ -374,7 +366,6 @@
       type ITEM_TYPE_TEXT
       rect (W/2) (H+BAR_H) 0 0
       style WINDOW_STYLE_EMPTY
-      forecolor 1 1 1 1
       textscale 0.5
       textalign ALIGN_CENTER
       textvalign VALIGN_TOP

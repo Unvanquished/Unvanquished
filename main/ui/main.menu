@@ -1,6 +1,7 @@
 #include "ui/menudef.h"
 #include "ui/main.h"
 
+
 {
   assetGlobalDef
   {
@@ -66,7 +67,7 @@
 	MMBUTTON( "Help", open help, 1 )
 // 	MMBUTTON( "News", open news_menu, 1 )
 //	MMBUTTON( "Profiles", open profiles, 2 )
-	MMBUTTON( "Options", open simple_options, 2 )
+	MMBUTTON( "Options", open options, 2 )
 	MMBUTTON( "Demos", open demo, 3 )
 	MMBUTTON( "Mods", open mod, 4 )
 	MMBUTTON( "Quit", open quit_popmenu, 5 )

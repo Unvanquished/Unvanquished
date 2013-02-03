@@ -431,7 +431,7 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
 	// draw the cursor
 	if ( showCursor )
 	{
-		static const float yellow[] = { 1, 1, 0, 0.5 };
+		static const float cyan[] = { 0, 1, 1, 0.5 };
 		float xpos, width, height;
 
 		if ( ( int )( cls.realtime >> 8 ) & 1 )
@@ -439,7 +439,7 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
 			return; // off blink
 		}
 
-		re.SetColor( yellow );
+		re.SetColor( cyan );
 
 		if ( size == SMALLCHAR_WIDTH )
 		{
