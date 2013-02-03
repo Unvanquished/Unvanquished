@@ -485,9 +485,9 @@ void Con_Init( void )
 
 	con_prompt = Cvar_Get( "con_prompt", "^3->", CVAR_ARCHIVE );
 
-	con_margin = Cvar_Get( "con_margin", "22", CVAR_ARCHIVE );
+	con_margin = Cvar_Get( "con_margin", "10", CVAR_ARCHIVE );
 
-	con_height = Cvar_Get( "con_height", "50", CVAR_ARCHIVE );
+	con_height = Cvar_Get( "con_height", "55", CVAR_ARCHIVE );
 	con_colorRed = Cvar_Get( "con_colorRed", "0", CVAR_ARCHIVE );
 	con_colorBlue = Cvar_Get( "con_colorBlue", "0.3", CVAR_ARCHIVE );
 	con_colorGreen = Cvar_Get( "con_colorGreen", "0.18", CVAR_ARCHIVE );
@@ -701,7 +701,6 @@ DRAWING
 
 ==============================================================================
 */
-
 /*
 ================
 Con_DrawBackground
@@ -756,24 +755,38 @@ void Con_DrawInput( int linePosition )
 	vec4_t  color;
 	qtime_t realtime;
 
-	if ( cls.state != CA_DISCONNECTED && !consoleState.isOpened )
-	{
-		return;
-	}
-
 	Com_RealTime( &realtime );
 	Com_sprintf( prompt,  sizeof( prompt ), "^0[^3%02d%c%02d^0]^7 %s", realtime.tm_hour, ( realtime.tm_sec & 1 ) ? ':' : ' ', realtime.tm_min, con_prompt->string );
 
 	color[ 0 ] = 1.0f;
 	color[ 1 ] = 1.0f;
 	color[ 2 ] = 1.0f;
-	//ANIMATION_TYPE_FADE but also ANIMATION_TYPE_SCROLL needs this, latter, since it might otherwise scroll out the console
+	//ANIMATION_TYPE_FADE but also ANIMATION_TYPE_SCROLL_DOWN needs this, latter, since it might otherwise scroll out the console
 	color[ 3 ] = consoleState.currentAnimationFraction;
 
 	SCR_DrawSmallStringExt( consoleState.horizontalVidMargin + consoleState.horizontalVidPadding, linePosition, prompt, color, qfalse, qfalse );
 
 	Q_CleanStr( prompt );
 	Field_Draw( &g_consoleField, consoleState.horizontalVidMargin + consoleState.horizontalVidPadding + SCR_ConsoleFontStringWidth( prompt, strlen( prompt ) ), linePosition, qtrue, qtrue, color[ 3 ] );
+}
+
+void Con_DrawAboutTextLine( const int positionFromTop, const char* text )
+{
+	int i, x;
+	float currentWidthLocation = 0;
+	const int charHeight = SCR_ConsoleFontCharHeight();
+
+	i = strlen( text );
+	currentWidthLocation = cls.glconfig.vidWidth
+			- SCR_ConsoleFontStringWidth( text, i )
+			- consoleState.horizontalVidMargin - consoleState.horizontalVidPadding;
+
+	for ( x = 0; x < i; x++ )
+	{
+		int ch = Q_UTF8CodePoint( &text[ x ] );
+		SCR_DrawConsoleFontUnichar( currentWidthLocation, positionFromTop, ch );
+		currentWidthLocation += SCR_ConsoleFontUnicharWidth( ch );
+	}
 }
 
 /*
@@ -799,34 +812,12 @@ void Con_DrawAboutText( void )
 	color[ 0 ] = 1.0f;
 	color[ 1 ] = 1.0f;
 	color[ 2 ] = 1.0f;
-	//ANIMATION_TYPE_FADE but also ANIMATION_TYPE_SCROLL needs this, latter, since it might otherwise scroll out the console
+	//ANIMATION_TYPE_FADE but also ANIMATION_TYPE_SCROLL_DOWN needs this, latter, since it might otherwise scroll out the console
 	color[ 3 ] = 0.66f * consoleState.currentAnimationFraction;
 	re.SetColor( color );
 
-	i = strlen( Q3_VERSION );
-	currentWidthLocation = cls.glconfig.vidWidth
-			- SCR_ConsoleFontStringWidth( Q3_VERSION, i )
-			- consoleState.horizontalVidMargin - consoleState.horizontalVidPadding;
-
-	for ( x = 0; x < i; x++ )
-	{
-		int ch = Q_UTF8CodePoint( &Q3_VERSION[ x ] );
-		SCR_DrawConsoleFontUnichar( currentWidthLocation, positionFromTop, ch );
-		currentWidthLocation += SCR_ConsoleFontUnicharWidth( ch );
-	}
-
-	// engine string
-	i = strlen( Q3_ENGINE );
-	currentWidthLocation = cls.glconfig.vidWidth
-			- SCR_ConsoleFontStringWidth( Q3_ENGINE, i )
-			- consoleState.horizontalVidMargin - consoleState.horizontalVidPadding;
-
-	for ( x = 0; x < i; x++ )
-	{
-		int ch = Q_UTF8CodePoint( &Q3_ENGINE[ x ] );
-		SCR_DrawConsoleFontUnichar( currentWidthLocation, positionFromTop + charHeight, ch );
-		currentWidthLocation += SCR_ConsoleFontUnicharWidth( ch );
-	}
+	Con_DrawAboutTextLine( positionFromTop, Q3_VERSION );
+	Con_DrawAboutTextLine( positionFromTop + charHeight, Q3_ENGINE );
 }
 
 /*
@@ -1158,7 +1149,7 @@ void Con_RunConsole( void )
 	{
 		consoleState.currentAnimationFraction -= con_animationSpeed->value * cls.realFrametime * 0.001;
 
-		if ( consoleState.currentAnimationFraction < 0  || !con_animationType->integer)
+		if ( consoleState.currentAnimationFraction < 0  || con_animationType->integer == ANIMATION_TYPE_NONE )
 		{
 			consoleState.currentAnimationFraction = 0;
 		}
@@ -1167,7 +1158,7 @@ void Con_RunConsole( void )
 	{
 		consoleState.currentAnimationFraction += con_animationSpeed->value * cls.realFrametime * 0.001;
 
-		if ( consoleState.currentAnimationFraction > 1  || !con_animationType->integer)
+		if ( consoleState.currentAnimationFraction > 1  || con_animationType->integer == ANIMATION_TYPE_NONE  )
 		{
 			consoleState.currentAnimationFraction = 1;
 		}
