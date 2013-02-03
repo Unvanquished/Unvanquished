@@ -949,7 +949,7 @@ void Con_DrawAnimatedConsole( void )
 {
 	float  vidXMargin, vidYMargin;
 	int    animatedConsoleVidHeight;
-	int    animatedConsoleVirtualHeight;
+	float  animatedConsoleVirtualHeight;
 
 	const int charHeight = SCR_ConsoleFontCharHeight();
 
@@ -983,8 +983,12 @@ void Con_DrawAnimatedConsole( void )
 		consoleState.horizontalVidPadding = floor( vidXMargin * 0.3f );
 	}
 
-	animatedConsoleVirtualHeight = ( SCREEN_HEIGHT * con_height->integer * 0.01 ) - ( 2 * con_margin->value );
-	animatedConsoleVidHeight = ( cls.glconfig.vidHeight * con_height->integer * 0.01) - 2 * consoleState.verticalVidMargin;
+	animatedConsoleVidHeight = ( cls.glconfig.vidHeight - 2 * consoleState.verticalVidMargin ) * con_height->integer * 0.01;
+	// clip to a multiple of the character height, plus padding
+	animatedConsoleVidHeight -= ( animatedConsoleVidHeight - 2 * consoleState.verticalVidPadding - 2 * consoleState.verticalVidMargin )
+	                            % (int) SCR_ConsoleFontCharHeight();
+
+	animatedConsoleVirtualHeight = animatedConsoleVidHeight * SCREEN_HEIGHT / cls.glconfig.vidHeight;
 
 	//only do scroll animation if the type is set
 	if ( con_animationType->integer & ANIMATION_TYPE_SCROLL_DOWN)
