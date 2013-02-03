@@ -56,7 +56,7 @@
       nostretch
     }
 
-#define X      234 
+#define X      234
 #define Y      170 //190
 #define W      150
 #define ELEM_H 24
@@ -71,7 +71,7 @@
 	MMBUTTON( "Demos", open demo, 3 )
 	MMBUTTON( "Mods", open mod, 4 )
 	MMBUTTON( "Quit", open quit_popmenu, 5 )
-	
+
 	TITLE_LAYOUT
 
     itemDef
