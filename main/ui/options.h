@@ -13,7 +13,6 @@
       textvalign VALIGN_CENTER \
       textalignx CONTENT_OFF \
       textscale .25 \
-      forecolor 1 1 1 1 \
       visible MENU_FALSE \
     }
 
@@ -31,7 +30,6 @@
       textvalign VALIGN_CENTER \
       textalignx CONTENT_OFF \
       textscale .25 \
-      forecolor 1 1 1 1 \
       visible MENU_FALSE \
 	  action { ACTION } \
     }
@@ -47,7 +45,6 @@
       textalign ALIGN_RIGHT \
       textvalign VALIGN_CENTER \
       textscale .25 \
-      forecolor 1 1 1 1 \
       visible MENU_TRUE \
       decoration \
     } \
@@ -66,7 +63,6 @@
       feeder FEEDER \
       border WINDOW_BORDER_FULL \
       borderColor 1 1 1 1 \
-      forecolor 1 1 1 1 \
       backcolor MENU_TEAL_TRANS \
       outlinecolor 0.1 0.1 0.1 0.5 \
       visible MENU_TRUE \
@@ -89,7 +85,6 @@
       textvalign VALIGN_CENTER \
       textalignx CONTENT_OFF \
       textscale .25 \
-      forecolor 1 1 1 1 \
       visible MENU_FALSE \
     }
 
@@ -106,7 +101,6 @@
       textvalign VALIGN_CENTER \
       textalignx CONTENT_OFF \
       textscale .25 \
-      forecolor 1 1 1 1 \
       visible MENU_FALSE \
 	  action { ACTION } \
     }
@@ -124,7 +118,6 @@
       textvalign VALIGN_CENTER \
       textalignx CONTENT_OFF \
       textscale .25 \
-      forecolor 1 1 1 1 \
       visible MENU_FALSE \
       action \
       { \
@@ -144,7 +137,6 @@
       textalign ALIGN_CENTER \
       textvalign VALIGN_CENTER \
       textscale .3 \
-      forecolor 1 1 1 1 \
       visible MENU_FALSE \
       action { ACTION } \
     }
@@ -165,7 +157,6 @@
       textvalign VALIGN_CENTER \
       textalignx SCONTENT_OFF \
       textscale .25 \
-      forecolor 1 1 1 1 \
       visible MENU_FALSE \
 	  action { ACTION } \
     }
@@ -181,7 +172,6 @@
       textalign ALIGN_RIGHT \
       textvalign VALIGN_CENTER \
       textscale .25 \
-      forecolor 1 1 1 1 \
       visible MENU_TRUE \
     } \
     itemDef \
@@ -199,7 +189,6 @@
       feeder FEEDER \
       border WINDOW_BORDER_FULL \
       borderColor 1 1 1 1 \
-      forecolor 1 1 1 1 \
       backcolor MENU_TEAL_TRANS \
       outlinecolor 0.1 0.1 0.1 0.5 \
       visible MENU_TRUE \
@@ -222,7 +211,6 @@
       textvalign VALIGN_CENTER \
       textalignx SCONTENT_OFF \
       textscale .25 \
-      forecolor 1 1 1 1 \
       visible MENU_FALSE \
     }
 
@@ -239,7 +227,6 @@
       textvalign VALIGN_CENTER \
       textalignx SCONTENT_OFF \
       textscale .25 \
-      forecolor 1 1 1 1 \
       visible MENU_FALSE \
 	  action { ACTION } \
     }
@@ -257,7 +244,6 @@
       textvalign VALIGN_CENTER \
       textalignx SCONTENT_OFF \
       textscale .25 \
-      forecolor 1 1 1 1 \
       visible MENU_FALSE \
       action \
       { \
@@ -277,7 +263,6 @@
       rect SCONTENT_X (SCONTENT_Y+(POS*ELEM_H)) SCONTENT_W ELEM_H \
       textalign ALIGN_CENTER \
       textvalign VALIGN_CENTER \
-      forecolor 1 1 1 1 \
       visible MENU_FALSE \
       action { ACTION } \
     }
@@ -294,7 +279,6 @@
       textalign ALIGN_CENTER \
       textvalign VALIGN_CENTER \
       textscale .25 \
-      forecolor 1 1 1 1 \
       visible MENU_FALSE \
       decoration \
       action \

@@ -41,7 +41,6 @@
       rect 0 5 W 20
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_TRUE
       decoration
     }		
@@ -78,7 +77,6 @@
       rect 0 (H-60) W 10
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_TRUE
       decoration
     }
@@ -93,7 +91,6 @@
       rect (W-(2*BUTT_W)) (H-BUTT_H) BUTT_W BUTT_H
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_TRUE
       action
       {
