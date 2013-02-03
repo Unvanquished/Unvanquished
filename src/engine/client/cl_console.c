@@ -889,15 +889,18 @@ void Con_DrawConsoleContent( int currentConsoleVidHeight, int currentConsoleVirt
 	vec4_t color;
 
 	const int charHeight = SCR_ConsoleFontCharHeight();
+	const int charPadding = SCR_ConsoleFontCharVPadding();
 	const int textDistanceToTop = consoleState.verticalVidMargin
 	                    + consoleState.verticalVidPadding
-	                    + consoleState.topBorderWidth;
+	                    + consoleState.topBorderWidth
+	                    - charPadding - 1;
 
 	// draw from the bottom up
 	lineDrawPosition = currentConsoleVidHeight
 	                 + consoleState.verticalVidMargin
 	                 - consoleState.verticalVidPadding
-	                 - consoleState.topBorderWidth;
+	                 - consoleState.topBorderWidth
+	                 - charPadding - 1;
 
 
 	// draw the input prompt, user text, and cursor if desired
@@ -975,6 +978,7 @@ void Con_DrawAnimatedConsole( void )
 	float  animatedConsoleVirtualHeight;
 
 	const int charHeight = SCR_ConsoleFontCharHeight();
+	const int charPadding = SCR_ConsoleFontCharVPadding();
 
 	if ( consoleState.currentAnimationFraction <= 0 )
 	{
@@ -1012,7 +1016,7 @@ void Con_DrawAnimatedConsole( void )
 
 	animatedConsoleVidHeight = ( cls.glconfig.vidHeight - 2 * consoleState.verticalVidMargin ) * con_height->integer * 0.01;
 	// clip to a multiple of the character height, plus padding
-	animatedConsoleVidHeight -= ( animatedConsoleVidHeight - 2 * consoleState.verticalVidPadding ) % charHeight;
+	animatedConsoleVidHeight -= ( animatedConsoleVidHeight - 2 * consoleState.verticalVidPadding - charPadding ) % charHeight;
 	// ... and ensure that at least three lines are visible
 	animatedConsoleVidHeight = MAX( 3 * charHeight + 2 * consoleState.verticalVidPadding, animatedConsoleVidHeight );
 

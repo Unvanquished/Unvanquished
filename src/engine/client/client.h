@@ -771,6 +771,7 @@ void  SCR_DrawConsoleFontUnichar( float x, float y, int ch );
 float SCR_ConsoleFontCharWidth( const char *s );
 float SCR_ConsoleFontUnicharWidth( int ch );
 float SCR_ConsoleFontCharHeight( void );
+float SCR_ConsoleFontCharVPadding( void );
 float SCR_ConsoleFontStringWidth( const char *s, int len );
 
 //
