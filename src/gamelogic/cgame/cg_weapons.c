@@ -1580,7 +1580,10 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 	if ( !noGunModel )
 	{
 		CG_PositionEntityOnTag( &gun, parent, parent->hModel, "tag_weapon" );
-		CG_WeaponAnimation( cent, &gun.oldframe, &gun.frame, &gun.backlerp );
+		if ( ps )
+		{
+			CG_WeaponAnimation( cent, &gun.oldframe, &gun.frame, &gun.backlerp );
+		}
 
 		if ( weapon->md5 )
 		{

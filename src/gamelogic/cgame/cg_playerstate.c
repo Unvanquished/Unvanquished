@@ -169,22 +169,6 @@ void CG_Respawn( void )
 	// select the weapon the server says we are using
 	cg.weaponSelect = cg.snap->ps.weapon;
 
-	// Update the new fov. This prevents fov binds.
-	if ( ( cg.fov = trap_Cvar_VariableIntegerValue( BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->fovCvar ) ) )
-	{
-		if ( cg.fov < 80 )
-		{
-			cg.fov = 80;
-		}
-		else if ( cg.fov >= 140 )
-		{
-			cg.fov = 140;
-		}
-	}
-	else
-	{
-		cg.fov = BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->fov;
-	}
 	CG_ResetPainBlend();
 }
 
