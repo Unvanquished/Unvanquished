@@ -3204,7 +3204,7 @@ static void UI_Update( const char *name )
 				trap_Cvar_SetValue( "r_normalMapping", 1 );
 				trap_Cvar_SetValue( "r_bloom", 1 );
 				trap_Cvar_SetValue( "r_rimlighting", 1 );
-				trap_Cvar_SetValue( "cg_motionblur", 1 );
+				trap_Cvar_SetValue( "cg_motionblur", 0.01 );
 				trap_Cvar_SetValue( "r_ext_multisample", 8 );
 				trap_Cvar_SetValue( "r_ext_texture_filter_anisotropic", 8 );
 				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_LINEAR" );
