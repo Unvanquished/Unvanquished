@@ -891,9 +891,9 @@ void Con_DrawConsoleContent( int currentConsoleVidHeight, int currentConsoleVirt
 	const int charHeight = SCR_ConsoleFontCharHeight();
 	const int charPadding = SCR_ConsoleFontCharVPadding();
 	const int textDistanceToTop = consoleState.verticalVidMargin
-	                    + consoleState.verticalVidPadding
-	                    + consoleState.topBorderWidth
-	                    - charPadding - 1;
+	                            + consoleState.verticalVidPadding
+	                            + consoleState.topBorderWidth
+	                            - charPadding - 1;
 
 	// draw from the bottom up
 	lineDrawPosition = currentConsoleVidHeight
@@ -1038,8 +1038,8 @@ void Con_DrawAnimatedConsole( void )
 	consoleState.currentAlphaFactor = ( con_animationType->integer & ANIMATION_TYPE_FADE ) ? consoleState.currentAnimationFraction : 1.0f;
 
 	consoleState.visibleAmountOfLines = ( animatedConsoleVidHeight - 2 * consoleState.verticalVidPadding )
-										/ charHeight //rowheight in pixel -> amount of rows
-										- 1 ; // sine we work with points but use charHeight spaces
+	                                    / charHeight //rowheight in pixel -> amount of rows
+	                                    - 1 ; // sine we work with points but use charHeight spaces
 
 	//now do the actual drawing
 	Con_DrawBackground( animatedConsoleVirtualHeight );
