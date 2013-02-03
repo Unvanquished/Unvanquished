@@ -324,6 +324,7 @@ typedef struct
 	char     label[ MAX_FEATLABEL_CHARS ]; // for featured servers, NULL otherwise
 	int      netType;
 	int      clients;
+	int      bots;
 	int      maxClients;
 	int      minPing;
 	int      maxPing;
@@ -349,6 +350,8 @@ typedef struct
 	qboolean soundRegistered;
 	qboolean uiStarted;
 	qboolean cgameStarted;
+
+	qboolean cgameCVarsRegistered;
 
 	int      framecount;
 	int      frametime; // msec since last frame
@@ -785,6 +788,7 @@ void          Cin_OGM_Shutdown( void );
 // cl_cgame.c
 //
 void     CL_InitCGame( void );
+void     CL_InitCGameCVars( void );
 void     CL_ShutdownCGame( void );
 qboolean CL_GameCommand( void );
 qboolean CL_GameConsoleText( void );

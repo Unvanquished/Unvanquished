@@ -1687,14 +1687,14 @@ static void GLimp_XreaLInitExtensions( void )
 	{
 		ri.Printf( PRINT_ALL, "...using GL_ARB_get_program_binary\n");
 		glConfig2.getProgramBinaryAvailable = qtrue;
-	} 
+	}
 	else
 #endif
 	{
 		ri.Printf( PRINT_ALL, "...GL_ARB_get_program_binary not found\n");
 		glConfig2.getProgramBinaryAvailable = qfalse;
 	}
-	
+
 }
 
 #endif
@@ -2246,13 +2246,14 @@ void GLimp_EndFrame( void )
 
 			// Is the state we want different from the current state?
 			needToToggle = !!r_fullscreen->integer != fullscreen;
-
+#ifdef __linux__
 			if ( needToToggle )
 			{
 				sdlToggled = SDL_WM_ToggleFullScreen( s );
 			}
+#endif
 		}
-
+#ifdef __linux__
 		if ( needToToggle )
 		{
 			// SDL_WM_ToggleFullScreen didn't work, so do it the slow way
@@ -2263,6 +2264,7 @@ void GLimp_EndFrame( void )
 
 			ri.IN_Restart();
 		}
+#endif
 
 		r_fullscreen->modified = qfalse;
 	}
