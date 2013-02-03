@@ -689,6 +689,10 @@ typedef struct
 	int      scrollbackLengthInLines; // total lines in console scrollback
 
 	/**
+	 * the amount of lines that fit onto the screen
+	 */
+	int 	visibleAmountOfLines;
+	/**
 	 * the vertical distance from the consoletext to the border in pixel
 	 */
 	int    verticalVidPadding;

@@ -831,6 +831,10 @@ void Con_DrawConsoleScrollbackIndicator( int lineDrawPosition )
 	vec4_t color;
 	// draw arrows to show the buffer is backscrolled
 	const int hatWidth = SCR_ConsoleFontUnicharWidth( '^' );
+	const int charHeight = SCR_ConsoleFontCharHeight();
+
+	const int virtualHeight = (SCREEN_HEIGHT - con_margin->integer) * con_height->integer * 0.01;
+	const int scrollBarLength = (virtualHeight - 2 * charHeight);
 
 	color[ 0 ] = 1.0f;
 	color[ 1 ] = 0.0f;
@@ -844,16 +848,24 @@ void Con_DrawConsoleScrollbackIndicator( int lineDrawPosition )
 	}
 }
 
+/**
+ * @param virtualHeight height in  640x480 virtual resolution
+ */
+void Con_DrawConsoleScrollbar( int virtualHeight )
+{
+	vec4_t color;
+
+}
+
 /*
 ================
 Con_DrawConsoleContent
 ================
 */
-void Con_DrawConsoleContent( int currentConsoleVidHeight )
+void Con_DrawConsoleContent( int currentConsoleVidHeight, int currentConsoleVirtualHeight )
 {
 	float  currentWidthLocation = 0;
 	int    i, x, lineDrawPosition;
-	int    visibleAmountOfLines;
 	int    row;
 	int    currentColor;
 	vec4_t color;
@@ -866,11 +878,6 @@ void Con_DrawConsoleContent( int currentConsoleVidHeight )
 	                 - consoleState.verticalVidPadding
 	                 - 2 * con_borderWidth->integer;
 
-	// draw the text
-	visibleAmountOfLines = currentConsoleVidHeight - 2 * consoleState.verticalVidPadding;
-	visibleAmountOfLines /= charHeight; //rowheight in pixel -> amount of rows
-	visibleAmountOfLines--;
-
 	// draw the input prompt, user text, and cursor if desired
 	// moved back here (have observed render issues to do with time taken)
 	Con_DrawInput( lineDrawPosition );
@@ -882,7 +889,7 @@ void Con_DrawConsoleContent( int currentConsoleVidHeight )
 		// draw arrows to show the buffer is backscrolled
 		Con_DrawConsoleScrollbackIndicator( lineDrawPosition );
 		lineDrawPosition -= charHeight;
-		visibleAmountOfLines--;
+		Con_DrawConsoleScrollbar( currentConsoleVirtualHeight );
 	}
 
 	row = consoleState.bottomDisplayedLine;
@@ -899,7 +906,7 @@ void Con_DrawConsoleContent( int currentConsoleVidHeight )
 	color[ 3 ] = consoleState.currentAlphaFactor;
 	re.SetColor( color );
 
-	for ( i = 0; i < visibleAmountOfLines; i++, lineDrawPosition -= charHeight, row-- )
+	for ( i = 0; i < consoleState.visibleAmountOfLines; i++, lineDrawPosition -= charHeight, row-- )
 	{
 		conChar_t *text;
 
@@ -1005,6 +1012,10 @@ void Con_DrawAnimatedConsole( void )
 	//only do fade animation if the type is set
 	consoleState.currentAlphaFactor = ( con_animationType->integer & ANIMATION_TYPE_FADE ) ? consoleState.currentAnimationFraction : 1.0f;
 
+	consoleState.visibleAmountOfLines = ( animatedConsoleVidHeight - 2 * consoleState.verticalVidPadding )
+										/ charHeight //rowheight in pixel -> amount of rows
+										- 1 ; // sine we work with points but use charHeight spaces
+
 	//now do the actual drawing
 	Con_DrawBackground( animatedConsoleVirtualHeight );
 
@@ -1012,7 +1023,7 @@ void Con_DrawAnimatedConsole( void )
 	Con_DrawAboutText();
 
 	//input, scrollbackindicator, scrollback text
-	Con_DrawConsoleContent( animatedConsoleVidHeight );
+	Con_DrawConsoleContent( animatedConsoleVidHeight, animatedConsoleVirtualHeight );
 }
 
 extern cvar_t *con_drawnotify;
