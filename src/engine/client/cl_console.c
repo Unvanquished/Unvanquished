@@ -711,9 +711,8 @@ Draws the background of the console (on the virtual 640x480 resolution)
 void Con_DrawBackground( int virtualHeight )
 {
 	vec4_t color;
-	const int virtualMargin = con_margin->integer;
+	const int virtualMargin = MAX( 0, con_margin->integer );
 	const int virtualConsoleWidth = SCREEN_WIDTH - (2 * virtualMargin);
-	const int virtualConsoleHeight = (SCREEN_HEIGHT - (2 * virtualMargin)) * con_height->integer * 0.01;
 
 	// draw the background
 	color[ 0 ] = con_colorRed->value;
@@ -731,14 +730,18 @@ void Con_DrawBackground( int virtualHeight )
 
 	if (virtualMargin)
 	{
-		SCR_FillRect( virtualMargin, virtualMargin, virtualConsoleWidth, con_borderWidth->value, color );  //top
-		SCR_FillRect( virtualMargin, virtualMargin, con_borderWidth->value, virtualHeight, color );  //left
-		SCR_FillRect( SCREEN_WIDTH - virtualMargin, virtualMargin, con_borderWidth->value, virtualHeight, color );  //right
-		SCR_FillRect( virtualMargin, virtualHeight + virtualMargin, virtualConsoleWidth + con_borderWidth->value, con_borderWidth->value, color );  //bottom
+		SCR_FillRect( virtualMargin - consoleState.borderWidth, virtualMargin - consoleState.borderWidth,
+		              virtualConsoleWidth + consoleState.borderWidth, consoleState.borderWidth, color );  //top
+		SCR_FillRect( virtualMargin - consoleState.borderWidth, virtualMargin,
+		              consoleState.borderWidth, virtualHeight + consoleState.borderWidth, color );  //left
+		SCR_FillRect( SCREEN_WIDTH - virtualMargin, virtualMargin - consoleState.borderWidth,
+		              consoleState.borderWidth, virtualHeight + consoleState.borderWidth, color );  //right
+		SCR_FillRect( virtualMargin, virtualHeight + virtualMargin,
+		              virtualConsoleWidth + consoleState.borderWidth, consoleState.borderWidth, color );  //bottom
 	}
 	else
 	{
-		SCR_FillRect( 0, virtualHeight, SCREEN_WIDTH, con_borderWidth->value, color );
+		SCR_FillRect( 0, virtualHeight, SCREEN_WIDTH, consoleState.borderWidth, color );
 	}
 }
 
@@ -804,7 +807,7 @@ void Con_DrawAboutText( void )
 	const int charHeight = SCR_ConsoleFontCharHeight();
 	const int positionFromTop = consoleState.verticalVidMargin
 	                          + consoleState.verticalVidPadding
-	                          + con_borderWidth->integer
+	                          + consoleState.topBorderWidth
 	                          + charHeight;
 
 	// draw the version number
@@ -888,13 +891,14 @@ void Con_DrawConsoleContent( int currentConsoleVidHeight, int currentConsoleVirt
 	const int charHeight = SCR_ConsoleFontCharHeight();
 	const int textDistanceToTop = consoleState.verticalVidMargin
 	                    + consoleState.verticalVidPadding
-	                    + con_borderWidth->integer;
+	                    + consoleState.topBorderWidth;
 
 	// draw from the bottom up
 	lineDrawPosition = currentConsoleVidHeight
 	                 + consoleState.verticalVidMargin
 	                 - consoleState.verticalVidPadding
-	                 - 2 * con_borderWidth->integer;
+	                 - consoleState.topBorderWidth;
+
 
 	// draw the input prompt, user text, and cursor if desired
 	// moved back here (have observed render issues to do with time taken)
@@ -977,12 +981,16 @@ void Con_DrawAnimatedConsole( void )
 		return;
 	}
 
+	consoleState.borderWidth = MAX( 0, con_borderWidth->integer );
+
 	if(con_margin->value > 0) {
 		vidXMargin = con_margin->value;
 		vidYMargin = con_margin->value;
+		consoleState.topBorderWidth = consoleState.borderWidth;
 	} else {
 		vidXMargin = - con_margin->value;
 		vidYMargin = 0;
+		consoleState.topBorderWidth = 0;
 	}
 	SCR_AdjustFrom640( &vidXMargin, &vidYMargin, NULL, NULL );
 

@@ -709,6 +709,8 @@ typedef struct
 	 */
 	int	   horizontalVidMargin;
 
+	int      borderWidth, topBorderWidth;
+
 	float    currentAnimationFraction; // changes between 0.0 and 1.0 at scr_conspeed
 	qboolean isOpened;
 
