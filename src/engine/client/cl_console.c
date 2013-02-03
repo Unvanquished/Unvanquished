@@ -902,11 +902,20 @@ void Con_DrawConsoleContent( int currentConsoleVidHeight, int currentConsoleVirt
 	                 - consoleState.topBorderWidth
 	                 - charPadding - 1;
 
+	if (lineDrawPosition <= textDistanceToTop)
+	{
+		return;
+	}
 
 	// draw the input prompt, user text, and cursor if desired
 	// moved back here (have observed render issues to do with time taken)
 	Con_DrawInput( lineDrawPosition, Con_MarginFadeAlpha( 1, lineDrawPosition, textDistanceToTop, charHeight ) );
 	lineDrawPosition -= charHeight;
+
+	if (lineDrawPosition <= textDistanceToTop)
+	{
+		return;
+	}
 
 	// if we scrolled back, give feedback
 	if ( consoleState.bottomDisplayedLine != consoleState.currentLine )
