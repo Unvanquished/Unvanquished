@@ -408,26 +408,51 @@ If the line width has changed, reformat the buffer.
 */
 void Con_CheckResize( void )
 {
-	int   i, width, oldwidth, oldtotallines, numlines, numchars;
+	int   i, textWidthInChars, oldwidth, oldtotallines, numlines, numchars;
 	conChar_t buf[ CON_TEXTSIZE ];
 
 	if ( cls.glconfig.vidWidth )
 	{
-		width = ( cls.glconfig.vidWidth - 2 * (consoleState.horizontalVidMargin + consoleState.horizontalVidPadding ) ) / SCR_ConsoleFontUnicharWidth( 'W' );
+		const int consoleVidWidth = cls.glconfig.vidWidth - 2 * (consoleState.horizontalVidMargin + consoleState.horizontalVidPadding );
+		textWidthInChars = consoleVidWidth / SCR_ConsoleFontUnicharWidth( 'W' );
+
+		if( 2 * con_horizontalPadding->value >= consoleVidWidth )
+		{
+			Cvar_Reset(con_horizontalPadding->name);
+
+			//to be sure, its not the caus of this happening and resulting in a loop
+			Cvar_Reset(con_borderWidth->name);
+			Cvar_Reset(con_margin->name);
+		}
+
+		if (con_height->value > 100.0f || con_height->value < 1.0f )
+		{
+			Cvar_Reset(con_height->name);
+		}
+
+		if (con_height->value < con_margin->value || consoleState.visibleAmountOfLines < 1)
+		{
+			Cvar_Reset(con_height->name);
+			Cvar_Reset(con_margin->name);
+		}
+
+		if (con_animationSpeed->value <= 0.0f)
+		{
+			Cvar_Reset(con_animationSpeed->name);
+		}
 	}
 	else
 	{
-		width = 0;
+		textWidthInChars = 0;
 	}
 
-	if ( width == consoleState.textWidthInChars )
+	if ( textWidthInChars == consoleState.textWidthInChars )
 	{
 		// nothing
 	}
-	else if ( width < 1 ) // video hasn't been initialized yet
+	else if ( textWidthInChars < 1 ) // video hasn't been initialized yet
 	{
-		width = DEFAULT_CONSOLE_WIDTH;
-		consoleState.textWidthInChars = width;
+		consoleState.textWidthInChars = DEFAULT_CONSOLE_WIDTH;
 		consoleState.scrollbackLengthInLines = CON_TEXTSIZE / consoleState.textWidthInChars;
 		Con_Clear();
 
@@ -437,7 +462,7 @@ void Con_CheckResize( void )
 	else
 	{
 		oldwidth = consoleState.textWidthInChars;
-		consoleState.textWidthInChars = width;
+		consoleState.textWidthInChars = textWidthInChars;
 		oldtotallines = consoleState.scrollbackLengthInLines;
 		consoleState.scrollbackLengthInLines = CON_TEXTSIZE / consoleState.textWidthInChars;
 		numlines = oldtotallines;
