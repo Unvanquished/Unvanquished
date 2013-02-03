@@ -3216,8 +3216,8 @@ static void UI_Update( const char *name )
 				trap_Cvar_SetValue( "r_picmip", 0 );
 				trap_Cvar_SetValue( "r_inGameVideo", 1 );
 				trap_Cvar_SetValue( "cg_shadows", 0 );
-				trap_Cvar_SetValue( "r_dynamiclight", 1 )
-				trap_Cvar_SetValue( "cg_bounceParticles", 0 );;				
+				trap_Cvar_SetValue( "r_dynamiclight", 1 );
+				trap_Cvar_SetValue( "cg_bounceParticles", 0 );
 				trap_Cvar_SetValue( "r_normalMapping", 1 );
 				trap_Cvar_SetValue( "r_bloom", 1 );
 				trap_Cvar_SetValue( "r_rimlighting", 1 );
