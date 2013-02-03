@@ -695,7 +695,7 @@ typedef struct
 	/**
 	 * the vertical distance from the consoletext to the border in pixel
 	 */
-	int    verticalVidPadding;
+	int      verticalVidPaddingTop, verticalVidPaddingBottom;
 	/**
 	 * the horiztontal distance from the consoletext to the border in pixel
 	 */
