@@ -31,7 +31,7 @@
     fullscreen MENU_FALSE
     outOfBoundsClick
     rect (320-(W/2)) (240-(H/2)) W H
-    focusColor 1 .75 0 1
+    focusColor 0.45 0.45 0.45 1.0
     style WINDOW_STYLE_FILLED
     popup
     onOpen
@@ -69,7 +69,6 @@
       feeder FEEDER_TREMHUMANARMOURYBUY
       border WINDOW_BORDER_KCGRADIENT
       bordercolor   1   1   1   1
-      forecolor     1   1   1   1
       backcolor     0.2 0.2 0.2 1
       outlinecolor  0.1 0.1 0.1 0.5
       visible MENU_TRUE
@@ -94,7 +93,6 @@
       feeder FEEDER_TREMHUMANARMOURYSELL
       border WINDOW_BORDER_KCGRADIENT
       bordercolor   1   1   1   1
-      forecolor     1   1   1   1
       backcolor     0.2 0.2 0.2 1
       outlinecolor  0.1 0.1 0.1 0.5
       visible MENU_TRUE
@@ -120,7 +118,6 @@
       textaligny INFO_TOFF
       border WINDOW_BORDER_KCGRADIENT
       bordercolor   1   1   1   1
-      forecolor     1   1   1   1
       backcolor     0.2 0.2 0.2 1
       outlinecolor  0.1 0.1 0.1 0.5
       visible MENU_TRUE
@@ -137,7 +134,6 @@
       textalign ALIGN_LEFT
       textvalign VALIGN_CENTER
       textscale .4
-      forecolor 1 1 1 1
       backcolor .5 0 0 .25
       visible MENU_TRUE
       action
@@ -157,7 +153,6 @@
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
       textscale .4
-      forecolor 1 1 1 1
       backcolor .5 0 0 .25
       visible MENU_TRUE
       action
@@ -177,7 +172,6 @@
       textalign ALIGN_RIGHT
       textvalign VALIGN_CENTER
       textscale .4
-      forecolor 1 1 1 1
       backcolor .5 0 0 .25
       visible MENU_TRUE
       action

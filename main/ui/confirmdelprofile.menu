@@ -53,7 +53,6 @@
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
       decoration
-      forecolor 1 1 1 1
       visible MENU_TRUE
     }
 
@@ -67,7 +66,6 @@
       rect 0 (H/3) (W/2) ((2*H)/3)
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_TRUE
       action
       {
@@ -88,7 +86,6 @@
       rect (W/2) (H/3) (W/2) ((2*H)/3)
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_TRUE
       action
       {

@@ -763,7 +763,7 @@ void Con_DrawInput( void )
 
 	y = con.vislines - ( SCR_ConsoleFontCharHeight() * 2 ) + 2;
 
-	Com_sprintf( prompt,  sizeof( prompt ), "^0[^3%02d%c%02d^0]^7 %s", realtime.tm_hour, ( realtime.tm_sec & 1 ) ? ':' : ' ', realtime.tm_min, cl_consolePrompt->string );
+	Com_sprintf( prompt,  sizeof( prompt ), "^0[^5%02d%c%02d^0]^7 %s", realtime.tm_hour, ( realtime.tm_sec & 1 ) ? ':' : ' ', realtime.tm_min, cl_consolePrompt->string );
 
 	color[ 0 ] = 1.0f;
 	color[ 1 ] = 1.0f;

@@ -441,6 +441,11 @@ int FS_filelength( fileHandle_t f )
 	int end;
 	FILE *h;
 
+	if ( fsh[ f ].zipFile )
+	{
+		return fsh[ f ].fileSize;
+	}
+
 	h = FS_FileForHandle( f );
 	pos = ftell( h );
 	fseek( h, 0, SEEK_END );
@@ -1978,6 +1983,7 @@ int FS_Seek( fileHandle_t f, long offset, int origin )
 		{
 			case FS_SEEK_END:
 				remainder = fsh[ f ].fileSize + offset;
+				offset *= -1;
 				//fallthrough
 
 			case FS_SEEK_SET:
