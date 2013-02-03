@@ -2241,7 +2241,7 @@ static qboolean IRC_InitialiseUser( const char *name )
 	}
 
 	// Set static address
-	strcpy( IRC_User.email, "mymail@mail.com" );
+	strcpy( IRC_User.email, "unvanquished@example.com" );
 
 	return ( IRC_User.nicklen > 0 && replaced < IRC_User.nicklen / 2 );
 }
