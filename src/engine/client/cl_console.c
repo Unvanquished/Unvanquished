@@ -1217,5 +1217,5 @@ void Con_Close( void )
 	consoleState.isOpened = qfalse;
 
 	//instant disappearance, if we need it for situations where this is not called by the user
-	//consoleState.currentAnimationFraction = 0;
+	consoleState.currentAnimationFraction = 0;
 }
