@@ -475,7 +475,7 @@
         show gdisplay;
 
         setitemcolor systemDisplay       forecolor 1.0 1.0 1.0 1.0;
-		setitemcolor systemEffects       forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemEffects       forecolor 0.14 0.8 0.8 1.0;
         setitemcolor systemSoft          forecolor 0.14 0.8 0.8 1.0;
         setitemcolor systemGL            forecolor 0.14 0.8 0.8 1.0;
         setitemcolor systemNet           forecolor 0.14 0.8 0.8 1.0;
@@ -530,7 +530,7 @@
         show geffects;
 
         setitemcolor systemDisplay       forecolor 0.14 0.8 0.8 1.0;
-		setitemcolor systemEffects       forecolor 1.0 1.0 1.0 1.0;
+        setitemcolor systemEffects       forecolor 1.0 1.0 1.0 1.0;
         setitemcolor systemSoft          forecolor 0.14 0.8 0.8 1.0;
         setitemcolor systemGL            forecolor 0.14 0.8 0.8 1.0;
         setitemcolor systemNet           forecolor 0.14 0.8 0.8 1.0;
@@ -600,7 +600,7 @@
         show gsoftware;
 
         setitemcolor systemDisplay       forecolor 0.14 0.8 0.8 1.0;
-		setitemcolor systemEffects       forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemEffects       forecolor 0.14 0.8 0.8 1.0;
         setitemcolor systemSoft          forecolor 1.0 1.0 1.0 1.0;
         setitemcolor systemGL            forecolor 0.14 0.8 0.8 1.0;
         setitemcolor systemNet           forecolor 0.14 0.8 0.8 1.0;
@@ -658,7 +658,7 @@
         show glinfo;
 
         setitemcolor systemDisplay       forecolor 0.14 0.8 0.8 1.0;
-		setitemcolor systemEffects       forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemEffects       forecolor 0.14 0.8 0.8 1.0;
         setitemcolor systemSoft          forecolor 0.14 0.8 0.8 1.0;
         setitemcolor systemGL            forecolor 1.0 1.0 1.0 1.0;
         setitemcolor systemNet           forecolor 0.14 0.8 0.8 1.0;
@@ -705,7 +705,7 @@
         show netsound;
 
         setitemcolor systemDisplay       forecolor 0.14 0.8 0.8 1.0;
-		setitemcolor systemEffects       forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemEffects       forecolor 0.14 0.8 0.8 1.0;
         setitemcolor systemSoft          forecolor 0.14 0.8 0.8 1.0;
         setitemcolor systemGL            forecolor 0.14 0.8 0.8 1.0;
         setitemcolor systemNet           forecolor 1.0 1.0 1.0 1.0;
@@ -752,7 +752,7 @@
         show voip;
 
         setitemcolor systemDisplay       forecolor 0.14 0.8 0.8 1.0;
-		setitemcolor systemEffects       forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemEffects       forecolor 0.14 0.8 0.8 1.0;
         setitemcolor systemSoft          forecolor 0.14 0.8 0.8 1.0;
         setitemcolor systemGL            forecolor 0.14 0.8 0.8 1.0;
         setitemcolor systemNet           forecolor 0.14 0.8 0.8 1.0;
@@ -796,7 +796,7 @@
         show rangemarkers;
 
         setitemcolor systemDisplay       forecolor 0.14 0.8 0.8 1.0;
-		setitemcolor systemEffects       forecolor 0.14 0.8 0.8 1.0;
+        setitemcolor systemEffects       forecolor 0.14 0.8 0.8 1.0;
         setitemcolor systemSoft          forecolor 0.14 0.8 0.8 1.0;
         setitemcolor systemGL            forecolor 0.14 0.8 0.8 1.0;
         setitemcolor systemNet           forecolor 0.14 0.8 0.8 1.0;
