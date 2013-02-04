@@ -36,8 +36,7 @@
 		type ITEM_TYPE_TEXT \
 		text #KEY "." \
 		textstyle ITEM_TEXTSTYLE_SHADOWED \
-		textscale .375 \
-		forecolor 1 1 1 1 \
+		textscale .375 \f
 		visible MENU_TRUE \
 		decoration \
 	} \
@@ -50,7 +49,6 @@
 		text TEXT \
 		textstyle ITEM_TEXTSTYLE_SHADOWED \
 		textscale .5 \
-		forecolor 1 1 1 1 \
 		visible MENU_TRUE \
 		decoration \
 	} \
