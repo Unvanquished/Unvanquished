@@ -972,7 +972,22 @@ static int CG_CalcFov( void )
 	else
 	{
 		// don't lock the fov globally - we need to be able to change it
-		attribFov = 0.75 * cg.fov;
+		if ( attribFov = trap_Cvar_VariableIntegerValue( BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->fovCvar ) )
+		{
+			if ( attribFov < 80 )
+			{
+				attribFov = 80;
+			}
+			else if ( attribFov >= 140 )
+			{
+				attribFov = 140;
+			}
+		}
+		else
+		{
+			attribFov = BG_Class( cg.predictedPlayerState.stats[ STAT_CLASS ] )->fov;
+		}
+		attribFov *= 0.75;
 		fov_y = attribFov;
 
 		if ( fov_y < 1.0f )

@@ -964,7 +964,7 @@ UI_BuildServerDisplayList
 */
 static void UI_BuildServerDisplayList( int force )
 {
-	int        i, count, clients, maxClients, ping, len, visible;
+	int        i, count, clients, bots, maxClients, ping, len, visible;
 	char       info[ MAX_STRING_CHARS ];
 	static int numinvisible;
 
@@ -1033,12 +1033,13 @@ static void UI_BuildServerDisplayList( int force )
 		{
 			trap_LAN_GetServerInfo( ui_netSource.integer, i, info, MAX_STRING_CHARS );
 
+			bots = atoi( Info_ValueForKey( info, "bots" ) );
 			clients = atoi( Info_ValueForKey( info, "clients" ) );
 			uiInfo.serverStatus.numPlayersOnServers += clients;
 
 			if ( ui_browserShowEmpty.integer == 0 )
 			{
-				if ( clients == 0 )
+				if ( clients == 0 && bots == 0 )
 				{
 					trap_LAN_MarkServerVisible( ui_netSource.integer, i, qfalse );
 					continue;
@@ -1049,7 +1050,7 @@ static void UI_BuildServerDisplayList( int force )
 			{
 				maxClients = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
 
-				if ( clients == maxClients )
+				if ( clients + bots == maxClients )
 				{
 					trap_LAN_MarkServerVisible( ui_netSource.integer, i, qfalse );
 					continue;
@@ -3197,9 +3198,13 @@ static void UI_Update( const char *name )
 				trap_Cvar_SetValue( "r_vertexlighting", 0 );
 				trap_Cvar_SetValue( "r_picmip", 0 );
 				trap_Cvar_SetValue( "r_inGameVideo", 1 );
-				trap_Cvar_SetValue( "cg_shadows", 1 );
+				trap_Cvar_SetValue( "cg_shadows", 4 );
+				trap_Cvar_SetValue( "r_dynamiclight", 1 );
 				trap_Cvar_SetValue( "cg_bounceParticles", 1 );
-				trap_Cvar_SetValue( "r_normalMapping", 1 );				
+				trap_Cvar_SetValue( "r_normalMapping", 1 );
+				trap_Cvar_SetValue( "r_bloom", 1 );
+				trap_Cvar_SetValue( "r_rimlighting", 1 );
+				trap_Cvar_SetValue( "cg_motionblur", 0.05 );
 				trap_Cvar_SetValue( "r_ext_multisample", 8 );
 				trap_Cvar_SetValue( "r_ext_texture_filter_anisotropic", 8 );
 				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_LINEAR" );
@@ -3210,9 +3215,13 @@ static void UI_Update( const char *name )
 				trap_Cvar_SetValue( "r_vertexlighting", 0 );
 				trap_Cvar_SetValue( "r_picmip", 0 );
 				trap_Cvar_SetValue( "r_inGameVideo", 1 );
-				trap_Cvar_SetValue( "cg_shadows", 0 );
+				trap_Cvar_SetValue( "cg_shadows", 1 );
+				trap_Cvar_SetValue( "r_dynamiclight", 1 );
 				trap_Cvar_SetValue( "cg_bounceParticles", 0 );
 				trap_Cvar_SetValue( "r_normalMapping", 1 );
+				trap_Cvar_SetValue( "r_bloom", 1 );
+				trap_Cvar_SetValue( "r_rimlighting", 1 );
+				trap_Cvar_SetValue( "cg_motionblur", 0 );
 				trap_Cvar_SetValue( "r_ext_multisample", 4 );
 				trap_Cvar_SetValue( "r_ext_texture_filter_anisotropic", 4 );
 				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_LINEAR" );
@@ -3224,8 +3233,12 @@ static void UI_Update( const char *name )
 				trap_Cvar_SetValue( "r_picmip", 1 );
 				trap_Cvar_SetValue( "r_inGameVideo", 0 );
 				trap_Cvar_SetValue( "cg_shadows", 0 );
+				trap_Cvar_SetValue( "r_dynamiclight", 0 );
 				trap_Cvar_SetValue( "cg_bounceParticles", 0 );
 				trap_Cvar_SetValue( "r_normalMapping", 0 );
+				trap_Cvar_SetValue( "r_bloom", 1 );
+				trap_Cvar_SetValue( "r_rimlighting", 1 );
+				trap_Cvar_SetValue( "cg_motionblur", 0 );
 				trap_Cvar_SetValue( "r_ext_multisample", 2 );
 				trap_Cvar_SetValue( "r_ext_texture_filter_anisotropic", 2 );
 				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_NEAREST" );
@@ -3237,8 +3250,12 @@ static void UI_Update( const char *name )
 				trap_Cvar_SetValue( "r_picmip", 2 );
 				trap_Cvar_SetValue( "r_inGameVideo", 0 );
 				trap_Cvar_SetValue( "cg_shadows", 0 );
+				trap_Cvar_SetValue( "r_dynamiclight", 0 );
 				trap_Cvar_SetValue( "cg_bounceParticles", 0 );
 				trap_Cvar_SetValue( "r_normalMapping", 0 );
+				trap_Cvar_SetValue( "r_bloom", 0 );
+				trap_Cvar_SetValue( "r_rimlighting", 0 );
+				trap_Cvar_SetValue( "cg_motionblur", 0 );
 				trap_Cvar_SetValue( "r_ext_multisample", 0 );
 				trap_Cvar_SetValue( "r_ext_texture_filter_anisotropic", 0 );
 				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_NEAREST" );
@@ -4362,8 +4379,21 @@ static const char *UI_FeederItemText( int feederID, int index, int column, qhand
 					return Info_ValueForKey( info, "mapname" );
 
 				case SORT_CLIENTS:
-					Com_sprintf( clientBuff, sizeof( clientBuff ), "%s (%s)",
-					             Info_ValueForKey( info, "clients" ), Info_ValueForKey( info, "sv_maxclients" ) );
+					{
+						int bots = atoi( Info_ValueForKey( info, "bots" ) );
+
+						if ( bots )
+						{
+							Com_sprintf( clientBuff, sizeof( clientBuff ), "%s+%d (%s)",
+							             Info_ValueForKey( info, "clients" ), bots, Info_ValueForKey( info, "sv_maxclients" ) );
+						}
+						else
+						{
+							Com_sprintf( clientBuff, sizeof( clientBuff ), "%s (%s)",
+							             Info_ValueForKey( info, "clients" ), Info_ValueForKey( info, "sv_maxclients" ) );
+						}
+					}
+
 					return clientBuff;
 
 				case SORT_PING:

@@ -1309,7 +1309,7 @@ if( BUILD_OLD_RENDERER )
   target_link_libraries( renderer ${PNG_LIBRARIES} ${SDL_LIBRARY} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} )
 
   find_package( WebP REQUIRED )
-  set_property( TARGET renderer APPEND PROPERTY COMPILE_DEFINITIONS USE_WEBP )
+  set_property( TARGET renderer APPEND PROPERTY COMPILE_DEFINITIONS )
   include_directories( ${WEBP_INCLUDE_DIRS} )
   target_link_libraries( renderer ${WEBP_LIBRARIES} )
 
@@ -1346,7 +1346,7 @@ if( BUILD_NEW_RENDERER )
   target_link_libraries( rendererGL ${PNG_LIBRARIES} ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES} ${JPEG_LIBRARIES} ${FREETYPE_LIBRARIES} ${SDL_LIBRARY} )
 
   find_package( WebP REQUIRED )
-  set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS USE_WEBP )
+  set_property( TARGET rendererGL APPEND PROPERTY COMPILE_DEFINITIONS )
   include_directories( ${WEBP_INCLUDE_DIRS} )
   target_link_libraries( rendererGL ${WEBP_LIBRARIES} )
 

@@ -21,9 +21,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 // tr_image.c
 #include "tr_local.h"
-
-#ifdef USE_WEBP
-
 #include <webp/decode.h>
 
 /*
@@ -75,5 +72,3 @@ void LoadWEBP( const char *filename, unsigned char **pic, int *width, int *heigh
 	ri.FS_FreeFile( fbuffer.v );
 	*pic = out;
 }
-
-#endif
