@@ -496,6 +496,9 @@ set( RENDERERGLLIST
 )
 
 set( SERVERLIST
+  ${MOUNT_DIR}/engine/botlib/bot_local.cpp
+  ${MOUNT_DIR}/engine/botlib/bot_nav.cpp
+  ${MOUNT_DIR}/engine/botlib/bot_load.cpp
   ${MOUNT_DIR}/engine/server/sv_bot.c
   ${MOUNT_DIR}/engine/server/sv_ccmds.c
   ${MOUNT_DIR}/engine/server/sv_client.c
@@ -729,10 +732,10 @@ set( GAMEGPP_BASE
 set( GAMEGPP_SO
   ${GAMEGPP_BASE}
   ${GPP_DIR}/game/g_api.c
-  ${GPP_DIR}/game/g_bot.cpp
-  ${GPP_DIR}/game/g_alienbot.cpp
-  ${GPP_DIR}/game/g_humanbot.cpp
-  ${GPP_DIR}/game/g_nav.cpp
+  ${GPP_DIR}/game/g_bot.c
+  ${GPP_DIR}/game/g_alienbot.c
+  ${GPP_DIR}/game/g_humanbot.c
+  ${GPP_DIR}/game/g_nav.c
   ${GPP_DIR}/game/game.def
 )
 
@@ -1226,7 +1229,7 @@ GAMELIB( LIB_NAME gppgame
   OUTPUT_NAME game
   OUTPUT_DIR main
   COMPILE_DEF GAME GAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM
-  LIB_FILES ${GAMEGPP_SO} ${GPP_DIR} ${RECASTLIST} ${DETOURLIST}
+  LIB_FILES ${GAMEGPP_SO} ${GPP_DIR}
 # temporarily disabled due to build failure with bots code
 #  QVM_FILES ${GAMEGPP_BASE}
 #  QVM_ASM ${GAMEGPP_QVM}
@@ -1386,7 +1389,7 @@ endif()
 
 if( BUILD_CLIENT )
   # Setup target client
-  add_executable( client ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST}
+  add_executable( client ${DETOURLIST} ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST}
     ${CPUINFOLIST} ${SDLLIST} ${QCOMMONLIST} ${SHAREDLIST} ${CRYPTOLIST} ${TINYGETTEXT_LIST}
     ${DATABASELIST} ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c ${SPEEXLIST} ${WIN_RC} )
   add_dependencies( client rendererGL )
@@ -1536,7 +1539,7 @@ endif()
 
 if( BUILD_SERVER )
   # Setup the target Server
-  add_executable( server ${SERVERLIST} ${SDLBASELIST} ${CPUINFOLIST}
+  add_executable( server ${DETOURLIST} ${SERVERLIST} ${SDLBASELIST} ${CPUINFOLIST}
     ${QCOMMONLIST} ${SHAREDLIST} ${DATABASELIST} ${CRYPTOLIST}
     ${MOUNT_DIR}/engine/null/null_client.c ${TINYGETTEXT_LIST}
     ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c

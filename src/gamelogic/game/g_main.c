@@ -223,6 +223,9 @@ vmCvar_t g_bot_rush;
 vmCvar_t g_bot_repair;
 vmCvar_t g_bot_build;
 vmCvar_t g_bot_retreat;
+vmCvar_t g_bot_fov;
+vmCvar_t g_bot_chasetime;
+vmCvar_t g_bot_reactiontime;
 vmCvar_t g_bot_infinite_funds;
 vmCvar_t g_bot_numInGroup;
 vmCvar_t g_bot_persistent;
@@ -443,6 +446,9 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_bot_repair, "g_bot_repair", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
 	{ &g_bot_build, "g_bot_build", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
 	{ &g_bot_retreat, "g_bot_retreat", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_fov, "g_bot_fov", "125", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_chasetime, "g_bot_chasetime", "5000", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
+	{ &g_bot_reactiontime, "g_bot_reactiontime", "500", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
 	{ &g_bot_infinite_funds, "g_bot_infinite_funds", "0", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
 	{ &g_bot_numInGroup, "g_bot_numInGroup", "3", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
 	{ &g_bot_debug, "g_bot_debug", "0", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
@@ -856,11 +862,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	// load up a custom building layout if there is one
 	G_LayoutLoad();
 
-	  // load a bot layout
-	G_BotLoadBuildLayout();
-
-	// load the navmesh for bots
-	G_NavMeshInit( );
+	// setup bot code
+	G_BotInit();
 
 	// the map might disable some things
 	BG_InitAllowedGameElements();
@@ -978,8 +981,8 @@ void G_ShutdownGame( int restart )
 
 	G_admin_cleanup();
 	G_BotCleanup( restart );
-	G_NavMeshCleanup( );
 	G_namelog_cleanup();
+
 	G_UnregisterCommands();
 
 	G_ShutdownMapRotations();

@@ -20,6 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <float.h>
 #include "DetourNavMesh.h"
 #include "DetourCommon.h"
 #include "DetourNavMeshBuilder.h"
@@ -237,6 +238,7 @@ static unsigned char classifyOffMeshPoint(const float* pt, const float* bmin, co
 	case ZM: return 6;
 	case XP|ZM: return 7;
 	};
+
 	return 0xff;	
 }
 
@@ -274,10 +276,50 @@ bool dtCreateNavMeshData(dtNavMeshCreateParams* params, unsigned char** outData,
 		if (!offMeshConClass)
 			return false;
 
+		// Find tight heigh bounds, used for culling out off-mesh start locations.
+		float hmin = FLT_MAX;
+		float hmax = -FLT_MAX;
+		
+		if (params->detailVerts && params->detailVertsCount)
+		{
+			for (int i = 0; i < params->detailVertsCount; ++i)
+			{
+				const float h = params->detailVerts[i*3+1];
+				hmin = dtMin(hmin,h);
+				hmax = dtMax(hmax,h);
+			}
+		}
+		else
+		{
+			for (int i = 0; i < params->vertCount; ++i)
+			{
+				const unsigned short* iv = &params->verts[i*3];
+				const float h = params->bmin[1] + iv[1] * params->ch;
+				hmin = dtMin(hmin,h);
+				hmax = dtMax(hmax,h);
+			}
+		}
+		hmin -= params->walkableClimb;
+		hmax += params->walkableClimb;
+		float bmin[3], bmax[3];
+		dtVcopy(bmin, params->bmin);
+		dtVcopy(bmax, params->bmax);
+		bmin[1] = hmin;
+		bmax[1] = hmax;
+
 		for (int i = 0; i < params->offMeshConCount; ++i)
 		{
-			offMeshConClass[i*2+0] = classifyOffMeshPoint(&params->offMeshConVerts[(i*2+0)*3], params->bmin, params->bmax);
-			offMeshConClass[i*2+1] = classifyOffMeshPoint(&params->offMeshConVerts[(i*2+1)*3], params->bmin, params->bmax);
+			const float* p0 = &params->offMeshConVerts[(i*2+0)*3];
+			const float* p1 = &params->offMeshConVerts[(i*2+1)*3];
+			offMeshConClass[i*2+0] = classifyOffMeshPoint(p0, bmin, bmax);
+			offMeshConClass[i*2+1] = classifyOffMeshPoint(p1, bmin, bmax);
+
+			// Zero out off-mesh start positions which are not even potentially touching the mesh.
+			if (offMeshConClass[i*2+0] == 0xff)
+			{
+				if (p0[1] < bmin[1] || p0[1] > bmax[1])
+					offMeshConClass[i*2+0] = 0;
+			}
 
 			// Cound how many links should be allocated for off-mesh connections.
 			if (offMeshConClass[i*2+0] == 0xff)
@@ -590,51 +632,14 @@ bool dtCreateNavMeshData(dtNavMeshCreateParams* params, unsigned char** outData,
 	return true;
 }
 
-inline void swapByte(unsigned char* a, unsigned char* b)
-{
-	unsigned char tmp = *a;
-	*a = *b;
-	*b = tmp;
-}
-
-inline void swapEndian(unsigned short* v)
-{
-	unsigned char* x = (unsigned char*)v;
-	swapByte(x+0, x+1);
-}
-
-inline void swapEndian(short* v)
-{
-	unsigned char* x = (unsigned char*)v;
-	swapByte(x+0, x+1);
-}
-
-inline void swapEndian(unsigned int* v)
-{
-	unsigned char* x = (unsigned char*)v;
-	swapByte(x+0, x+3); swapByte(x+1, x+2);
-}
-
-inline void swapEndian(int* v)
-{
-	unsigned char* x = (unsigned char*)v;
-	swapByte(x+0, x+3); swapByte(x+1, x+2);
-}
-
-inline void swapEndian(float* v)
-{
-	unsigned char* x = (unsigned char*)v;
-	swapByte(x+0, x+3); swapByte(x+1, x+2);
-}
-
 bool dtNavMeshHeaderSwapEndian(unsigned char* data, const int /*dataSize*/)
 {
 	dtMeshHeader* header = (dtMeshHeader*)data;
 	
 	int swappedMagic = DT_NAVMESH_MAGIC;
 	int swappedVersion = DT_NAVMESH_VERSION;
-	swapEndian(&swappedMagic);
-	swapEndian(&swappedVersion);
+	dtSwapEndian(&swappedMagic);
+	dtSwapEndian(&swappedVersion);
 	
 	if ((header->magic != DT_NAVMESH_MAGIC || header->version != DT_NAVMESH_VERSION) &&
 		(header->magic != swappedMagic || header->version != swappedVersion))
@@ -642,31 +647,31 @@ bool dtNavMeshHeaderSwapEndian(unsigned char* data, const int /*dataSize*/)
 		return false;
 	}
 		
-	swapEndian(&header->magic);
-	swapEndian(&header->version);
-	swapEndian(&header->x);
-	swapEndian(&header->y);
-	swapEndian(&header->layer);
-	swapEndian(&header->userId);
-	swapEndian(&header->polyCount);
-	swapEndian(&header->vertCount);
-	swapEndian(&header->maxLinkCount);
-	swapEndian(&header->detailMeshCount);
-	swapEndian(&header->detailVertCount);
-	swapEndian(&header->detailTriCount);
-	swapEndian(&header->bvNodeCount);
-	swapEndian(&header->offMeshConCount);
-	swapEndian(&header->offMeshBase);
-	swapEndian(&header->walkableHeight);
-	swapEndian(&header->walkableRadius);
-	swapEndian(&header->walkableClimb);
-	swapEndian(&header->bmin[0]);
-	swapEndian(&header->bmin[1]);
-	swapEndian(&header->bmin[2]);
-	swapEndian(&header->bmax[0]);
-	swapEndian(&header->bmax[1]);
-	swapEndian(&header->bmax[2]);
-	swapEndian(&header->bvQuantFactor);
+	dtSwapEndian(&header->magic);
+	dtSwapEndian(&header->version);
+	dtSwapEndian(&header->x);
+	dtSwapEndian(&header->y);
+	dtSwapEndian(&header->layer);
+	dtSwapEndian(&header->userId);
+	dtSwapEndian(&header->polyCount);
+	dtSwapEndian(&header->vertCount);
+	dtSwapEndian(&header->maxLinkCount);
+	dtSwapEndian(&header->detailMeshCount);
+	dtSwapEndian(&header->detailVertCount);
+	dtSwapEndian(&header->detailTriCount);
+	dtSwapEndian(&header->bvNodeCount);
+	dtSwapEndian(&header->offMeshConCount);
+	dtSwapEndian(&header->offMeshBase);
+	dtSwapEndian(&header->walkableHeight);
+	dtSwapEndian(&header->walkableRadius);
+	dtSwapEndian(&header->walkableClimb);
+	dtSwapEndian(&header->bmin[0]);
+	dtSwapEndian(&header->bmin[1]);
+	dtSwapEndian(&header->bmin[2]);
+	dtSwapEndian(&header->bmax[0]);
+	dtSwapEndian(&header->bmax[1]);
+	dtSwapEndian(&header->bmax[2]);
+	dtSwapEndian(&header->bvQuantFactor);
 
 	// Freelist index and pointers are updated when tile is added, no need to swap.
 
@@ -712,7 +717,7 @@ bool dtNavMeshDataSwapEndian(unsigned char* data, const int /*dataSize*/)
 	// Vertices
 	for (int i = 0; i < header->vertCount*3; ++i)
 	{
-		swapEndian(&verts[i]);
+		dtSwapEndian(&verts[i]);
 	}
 
 	// Polys
@@ -722,10 +727,10 @@ bool dtNavMeshDataSwapEndian(unsigned char* data, const int /*dataSize*/)
 		// poly->firstLink is update when tile is added, no need to swap.
 		for (int j = 0; j < DT_VERTS_PER_POLYGON; ++j)
 		{
-			swapEndian(&p->verts[j]);
-			swapEndian(&p->neis[j]);
+			dtSwapEndian(&p->verts[j]);
+			dtSwapEndian(&p->neis[j]);
 		}
-		swapEndian(&p->flags);
+		dtSwapEndian(&p->flags);
 	}
 
 	// Links are rebuild when tile is added, no need to swap.
@@ -734,14 +739,14 @@ bool dtNavMeshDataSwapEndian(unsigned char* data, const int /*dataSize*/)
 	for (int i = 0; i < header->detailMeshCount; ++i)
 	{
 		dtPolyDetail* pd = &detailMeshes[i];
-		swapEndian(&pd->vertBase);
-		swapEndian(&pd->triBase);
+		dtSwapEndian(&pd->vertBase);
+		dtSwapEndian(&pd->triBase);
 	}
 	
 	// Detail verts
 	for (int i = 0; i < header->detailVertCount*3; ++i)
 	{
-		swapEndian(&detailVerts[i]);
+		dtSwapEndian(&detailVerts[i]);
 	}
 
 	// BV-tree
@@ -750,10 +755,10 @@ bool dtNavMeshDataSwapEndian(unsigned char* data, const int /*dataSize*/)
 		dtBVNode* node = &bvTree[i];
 		for (int j = 0; j < 3; ++j)
 		{
-			swapEndian(&node->bmin[j]);
-			swapEndian(&node->bmax[j]);
+			dtSwapEndian(&node->bmin[j]);
+			dtSwapEndian(&node->bmax[j]);
 		}
-		swapEndian(&node->i);
+		dtSwapEndian(&node->i);
 	}
 
 	// Off-mesh Connections.
@@ -761,9 +766,9 @@ bool dtNavMeshDataSwapEndian(unsigned char* data, const int /*dataSize*/)
 	{
 		dtOffMeshConnection* con = &offMeshCons[i];
 		for (int j = 0; j < 6; ++j)
-			swapEndian(&con->pos[j]);
-		swapEndian(&con->rad);
-		swapEndian(&con->poly);
+			dtSwapEndian(&con->pos[j]);
+		dtSwapEndian(&con->rad);
+		dtSwapEndian(&con->poly);
 	}
 	
 	return true;

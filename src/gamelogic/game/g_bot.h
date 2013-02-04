@@ -24,99 +24,83 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //#include "g_local.h"
 #ifndef __BOT_HEADER
 #define __BOT_HEADER
-#ifdef __cplusplus
-#include "../../libs/detour/DetourNavMeshQuery.h"
-#include "../../libs/detour/DetourPathCorridor.h"
-
-typedef enum {
-	TASK_STOPPED = 0,
-	TASK_RUNNING
-} botTaskStatus_t;
-
-typedef enum {
-	MODUS_STOPPED = 0,
-	MODUS_RUNNING
-} botModusStatus_t;
+#include "g_local.h"
+#include "../../engine/botlib/bot_types.h"
 
 //g_bot.cpp
-void BotDPrintf(const char* fmt, ... ) __attribute__(( format( printf, 1, 2 ) ));
+void BotDPrintf( const char* fmt, ... ) __attribute__( ( format( printf, 1, 2 ) ) );
 gentity_t* BotFindClosestEnemy( gentity_t *self );
 gentity_t* BotFindBestEnemy( gentity_t *self );
-void BotFindClosestBuildings(gentity_t *self, botClosestBuildings_t *closest);
-gentity_t* BotFindBuilding(gentity_t *self, int buildingType, int range);
-gentity_t* BotFindBuilding(gentity_t *self, int buildingType);
-
-void BotGetIdealAimLocation(gentity_t *self, botTarget_t target, vec3_t aimLocation);
-void BotSlowAim( gentity_t *self, vec3_t target, float slow);
+void BotFindClosestBuildings( gentity_t *self, botEntityAndDistance_t *closest );
+gentity_t* BotFindBuilding( gentity_t *self, int buildingType, int range );
+void BotPain( gentity_t *self, gentity_t *attacker, int damage );
+void BotGetIdealAimLocation( gentity_t *self, botTarget_t target, vec3_t aimLocation );
+void BotSlowAim( gentity_t *self, vec3_t target, float slow );
 void BotShakeAim( gentity_t *self, vec3_t rVec );
-void BotAimAtLocation( gentity_t *self, vec3_t target , usercmd_t *rAngles);
-float BotAimNegligence(gentity_t *self, botTarget_t target);
+void BotAimAtLocation( gentity_t *self, vec3_t target );
+float BotAimNegligence( gentity_t *self, botTarget_t target );
 
-void BotSetTarget(botTarget_t *target, gentity_t *ent, vec3_t *pos);
-void BotSetGoal(gentity_t *self, gentity_t *ent, vec3_t *pos);
+void BotSetTarget( botTarget_t *target, gentity_t *ent, vec3_t *pos );
 
 qboolean BotTargetIsVisible( gentity_t *self, botTarget_t target, int mask );
 
-qboolean BotTargetInAttackRange(gentity_t *self, botTarget_t target);
-botModusStatus_t BotAttackModus(gentity_t *self, usercmd_t *botCmdBuffer);
-botModusStatus_t BotBuildModus(gentity_t *self, usercmd_t *botCmdBuffer);
-botTaskStatus_t BotTaskBuild(gentity_t *self, usercmd_t *botCmdBuffer);
-botTaskStatus_t BotTaskFight(gentity_t *self, usercmd_t *botCmdBuffer);
-botTaskStatus_t BotTaskHeal(gentity_t *self, usercmd_t *botCmdBuffer);
-botTaskStatus_t BotTaskRetreat(gentity_t *self, usercmd_t *botCmdBuffer);
-botTaskStatus_t BotTaskRush(gentity_t *self, usercmd_t *botCmdBuffer);
-botTaskStatus_t BotTaskRoam(gentity_t *self, usercmd_t *botCmdBuffer);
-qboolean BotTeamateIsInModus(gentity_t *self, botModus_t modus);
-int FindBots(int *botEntityNumbers, int maxBots, team_t team);
+qboolean BotTargetInAttackRange( gentity_t *self, botTarget_t target );
+int FindBots( int *botEntityNumbers, int maxBots, team_t team );
 
 //g_humanbot.cpp
-qboolean WeaponIsEmpty( weapon_t weapon, playerState_t ps);
-float PercentAmmoRemaining( weapon_t weapon, int stats[], playerState_t ps );
+qboolean WeaponIsEmpty( weapon_t weapon, playerState_t ps );
+float PercentAmmoRemaining( weapon_t weapon, playerState_t *ps );
 gentity_t* BotFindDamagedFriendlyStructure( gentity_t *self );
-qboolean BotNeedsItem(gentity_t *self);
-qboolean BotCanShop(gentity_t *self);
-qboolean BotStructureIsDamaged(team_t team);
-qboolean buildableIsDamaged(gentity_t *building);
-qboolean BotGetBuildingToBuild(gentity_t *self, vec3_t origin, vec3_t normal, buildable_t *building);
-botTaskStatus_t BotTaskBuildH(gentity_t *self, usercmd_t *botCmdBuffer);
-botTaskStatus_t BotTaskBuy(gentity_t *self, usercmd_t *botCmdBuffer);
-botTaskStatus_t BotTaskBuy(gentity_t *self, weapon_t weapon, upgrade_t *upgrades,int numUpgrades, usercmd_t *botCmdBuffer);
-botTaskStatus_t BotTaskHealH(gentity_t *self, usercmd_t *botCmdBuffer);
-botTaskStatus_t BotTaskRepair(gentity_t *self, usercmd_t *botCmdBuffer);
+qboolean BotGetBuildingToBuild( gentity_t *self, vec3_t origin, vec3_t normal, buildable_t *building );
 
 //g_alienbot.cpp
-float CalcPounceAimPitch(gentity_t *self, botTarget_t target);
-float CalcBarbAimPitch(gentity_t *self, botTarget_t target);
-botTaskStatus_t BotTaskEvolve( gentity_t *self , usercmd_t *botCmdBuffer);
-bool G_RoomForClassChange( gentity_t *ent, class_t classt, vec3_t newOrigin );
-botTaskStatus_t BotTaskBuildA(gentity_t *self, usercmd_t *botCmdBuffer);
-botTaskStatus_t BotTaskHealA(gentity_t *self, usercmd_t *botCmdBuffer);
+float CalcPounceAimPitch( gentity_t *self, botTarget_t target );
+float CalcBarbAimPitch( gentity_t *self, botTarget_t target );
+qboolean G_RoomForClassChange( gentity_t *ent, class_t classt, vec3_t newOrigin );
 
 //g_nav.cpp
-qboolean BotPathIsWalkable(gentity_t *self, botTarget_t target);
-void UpdatePathCorridor(gentity_t *self);
-qboolean BotMoveToGoal( gentity_t *self, usercmd_t *botCmdBuffer );
-void BotDodge(gentity_t *self, usercmd_t *botCmdBuffer);
-int	FindRouteToTarget( gentity_t *self, botTarget_t target );
-int DistanceToGoal(gentity_t *self);
-int DistanceToGoalSquared(gentity_t *self);
-int BotGetStrafeDirection(void);
-void PlantEntityOnGround(gentity_t *ent, vec3_t groundPos);
+void BotFindRandomPointOnMesh( gentity_t *self, vec3_t point );
+qboolean BotPathIsWalkable( gentity_t *self, botTarget_t target );
+qboolean BotMoveToGoal( gentity_t *self );
+void BotSetNavmesh( gentity_t  *ent, class_t newClass );
 
-extern dtNavMeshQuery* navQuerys[PCL_NUM_CLASSES];
-extern dtQueryFilter navFilters[PCL_NUM_CLASSES];
-extern dtPathCorridor pathCorridor[MAX_CLIENTS];
+typedef enum
+{
+	MOVE_FORWARD = BIT( 0 ),
+	MOVE_BACKWARD = BIT( 1 ),
+	MOVE_LEFT = BIT( 2 ),
+	MOVE_RIGHT = BIT( 3 )
+} botMoveDir_t;
+
+qboolean BotDodge( gentity_t *self );
+qboolean BotSprint( gentity_t *self, qboolean enable );
+qboolean BotJump( gentity_t *self );
+void BotStrafeDodge( gentity_t *self );
+void BotAlternateStrafe( gentity_t *self );
+void BotMoveInDir( gentity_t *self, uint32_t moveDir );
+void BotStandStill( gentity_t *self );
+
+unsigned int FindRouteToTarget( gentity_t *self, botTarget_t target );
+int DistanceToGoal( gentity_t *self );
+int DistanceToGoalSquared( gentity_t *self );
+int BotGetStrafeDirection( void );
+void PlantEntityOnGround( gentity_t *ent, vec3_t groundPos );
+void G_BotNavInit( void );
+void G_BotNavCleanup( void );
+
 extern qboolean navMeshLoaded;
 
 //coordinate conversion
-static inline void quake2recast(vec3_t vec) {
+static INLINE void quake2recast( vec3_t vec )
+{
 	vec_t temp = vec[1];
 	vec[0] = -vec[0];
 	vec[1] = vec[2];
 	vec[2] = -temp;
 }
 
-static inline void recast2quake(vec3_t vec) {
+static INLINE void recast2quake( vec3_t vec )
+{
 	vec_t temp = vec[1];
 	vec[0] = -vec[0];
 	vec[1] = -vec[2];
@@ -124,97 +108,118 @@ static inline void recast2quake(vec3_t vec) {
 }
 
 //botTarget_t helpers
-static inline bool BotTargetIsEntity(botTarget_t target) {
-	return (target.ent && target.ent->inuse);
+static INLINE qboolean BotTargetIsEntity( botTarget_t target )
+{
+	return ( qboolean ) ( int ) ( target.ent && target.ent->inuse );
 }
 
-static inline bool BotTargetIsPlayer(botTarget_t target) {
-	return (target.ent && target.ent->inuse && target.ent->client);
+static INLINE qboolean BotTargetIsPlayer( botTarget_t target )
+{
+	return ( qboolean ) ( int ) ( target.ent && target.ent->inuse && target.ent->client );
 }
 
-static inline int BotGetTargetEntityNumber(botTarget_t target) {
-	if(BotTargetIsEntity(target)) 
+static INLINE int BotGetTargetEntityNumber( botTarget_t target )
+{
+	if ( BotTargetIsEntity( target ) )
+	{
 		return target.ent->s.number;
+	}
 	else
+	{
 		return ENTITYNUM_NONE;
+	}
 }
 
-static inline void BotGetTargetPos(botTarget_t target, vec3_t rVec) {
-	if(BotTargetIsEntity(target))
-		VectorCopy( target.ent->s.origin, rVec);
+static INLINE void BotGetTargetPos( botTarget_t target, vec3_t rVec )
+{
+	if ( BotTargetIsEntity( target ) )
+	{
+		VectorCopy( target.ent->s.origin, rVec );
+	}
 	else
-		VectorCopy(target.coord, rVec);
+	{
+		VectorCopy( target.coord, rVec );
+	}
 }
 
-static inline team_t BotGetTeam(gentity_t *ent) {
-	if(!ent)
+static INLINE team_t BotGetEntityTeam( gentity_t *ent )
+{
+	if ( !ent )
+	{
 		return TEAM_NONE;
-	if(ent->client) {
-		return (team_t)ent->client->ps.stats[STAT_TEAM];
-	} else if(ent->s.eType == ET_BUILDABLE) {
+	}
+	if ( ent->client )
+	{
+		return ( team_t )ent->client->ps.stats[STAT_TEAM];
+	}
+	else if ( ent->s.eType == ET_BUILDABLE )
+	{
 		return ent->buildableTeam;
-	} else {
-		return TEAM_NONE;
 	}
-}
-
-static inline team_t BotGetTeam( botTarget_t target) {
-	if(BotTargetIsEntity(target)) {
-		return BotGetTeam(target.ent);
-	} else
-		return TEAM_NONE;
-}
-
-static inline int BotGetTargetType( botTarget_t target) {
-	if(BotTargetIsEntity(target))
-		return target.ent->s.eType;
 	else
+	{
+		return TEAM_NONE;
+	}
+}
+
+static INLINE team_t BotGetTargetTeam( botTarget_t target )
+{
+	if ( BotTargetIsEntity( target ) )
+	{
+		return BotGetEntityTeam( target.ent );
+	}
+	else
+	{
+		return TEAM_NONE;
+	}
+}
+
+static INLINE int BotGetTargetType( botTarget_t target )
+{
+	if ( BotTargetIsEntity( target ) )
+	{
+		return target.ent->s.eType;
+	}
+	else
+	{
 		return -1;
-}
-
-static inline bool BotRoutePermission(gentity_t *self, botTask_t task) {
-	return (!self->botMind->goal.inuse || self->botMind->needNewGoal || self->botMind->task != task);
-}
-
-static inline bool BotChangeTarget(gentity_t *self, gentity_t *target, vec3_t *pos) {
-	BotSetGoal(self, target, pos);
-	if( !self->botMind->goal.inuse )
-		return false;
-	if( FindRouteToTarget(self, self->botMind->goal) & (STATUS_PARTIAL|STATUS_FAILED) ) {
-		return false;
 	}
-	self->botMind->needNewGoal = qfalse;
-	return true;
 }
 
-static inline bool BotChangeTarget(gentity_t *self, botTarget_t target) {
-	if( !target.inuse )
-		return false;
-	if( FindRouteToTarget(self, target) & (STATUS_PARTIAL | STATUS_FAILED)) {
-		return false;
+static INLINE qboolean BotChangeGoal( gentity_t *self, botTarget_t target )
+{
+	if ( !target.inuse )
+	{
+		return qfalse;
 	}
-	self->botMind->needNewGoal = qfalse;
+
+	if ( FindRouteToTarget( self, target ) & ( ROUTE_PARTIAL | ROUTE_FAILED ) )
+	{
+		return qfalse;
+	}
 	self->botMind->goal = target;
-	return true;
+	return qtrue;
 }
 
-static inline void BotChangeTask(gentity_t *self, botTask_t task) {
-	self->botMind->task = task;
+static INLINE qboolean BotChangeGoalEntity( gentity_t *self, gentity_t *goal )
+{
+	botTarget_t target;
+	BotSetTarget( &target, goal, NULL );
+	return BotChangeGoal( self, target );
 }
+
+static INLINE qboolean BotChangeGoalPos( gentity_t *self, vec3_t goal )
+{
+	botTarget_t target;
+	BotSetTarget( &target, NULL, ( vec3_t * ) &goal );
+	return BotChangeGoal( self, target );
+}
+
 //configureable constants
 //For a reference of how far a number represents, take a look at tremulous.h
 
 //how long our traces are for obstacle avoidence
-#define BOT_OBSTACLE_AVOID_RANGE 50.0f
-
-//how far off can our aim can be from true in order to try to hit the enemy
-#define BOT_AIM_NEGLIGENCE 30.0f
-
-//How long in milliseconds the bots will chase an enemy if he goes out of their sight (humans) or radar (aliens)
-#define BOT_ENEMY_CHASETIME 5000
-
-//How close does the enemy have to be for the bot to engage him/her when doing a task other than fight/roam
-#define BOT_ENGAGE_DIST 200
+#define BOT_OBSTACLE_AVOID_RANGE 5.0f
 
 //How long in milliseconds it takes the bot to react upon seeing an enemy
 #define BOT_REACTION_TIME 500
@@ -226,28 +231,177 @@ static inline void BotChangeTask(gentity_t *self, botTask_t task) {
 #define BOT_LOW_AMMO 0.50f
 
 //used for clamping distance to heal structure when deciding whether to go heal
-#define MAX_HEAL_DIST 2000
-
-//compared to heal logic value to decide if the bot should return to base to heal
-//heal logic value <= BOT_FUZZY_HEAL_VALUE means bot will go heal
-#define BOT_FUZZY_HEAL_VALUE MAX_HEAL_DIST / 4
-
-//how long the bot will continue retreating after loseing sight of the enemy
-#define BOT_RETREAT_TIME 5000
+#define MAX_HEAL_DIST 2000.0f
 
 //how far away we can be before we stop going forward when fighting an alien
-#define MAX_HUMAN_DANCE_DIST 300
+#define MAX_HUMAN_DANCE_DIST 300.0f
 
 //how far away we can be before we try to go around an alien when fighting an alien
-#define MIN_HUMAN_DANCE_DIST 100
+#define MIN_HUMAN_DANCE_DIST 100.0f
 
 //how may polys ahead we will look at for invalid path polygons
 #define MAX_PATH_LOOK_AHEAD 5
 
-#define BOT_LEADER_WAIT_RANGE 250 //should be > BOT_FOLLOW_RANGE + BOT_FOLLOW_RANGE_NEGLIGENCE
-#define BOT_FOLLOW_RANGE 100
-#define BOT_FOLLOW_RANGE_NEGLIGENCE 30
-#endif
+typedef enum
+{
+	E_NONE,
+	E_A_SPAWN,
+	E_A_OVERMIND,
+	E_A_BARRICADE,
+	E_A_ACIDTUBE,
+	E_A_TRAPPER,
+	E_A_BOOSTER,
+	E_A_HIVE,
+	E_H_SPAWN,
+	E_H_MGTURRET,
+	E_H_TESLAGEN,
+	E_H_ARMOURY,
+	E_H_DCC,
+	E_H_MEDISTAT,
+	E_H_REACTOR,
+	E_H_REPEATER,
+	E_GOAL,
+	E_ENEMY,
+	E_DAMAGEDBUILDING
+} AIEntity_t;
+
+typedef enum
+{
+	STATUS_FAILURE = 0,
+	STATUS_SUCCESS,
+	STATUS_RUNNING
+} AINodeStatus_t;
+
+struct AIGenericNode_s;
+
+typedef AINodeStatus_t ( *AINodeRunner )( gentity_t *, struct AIGenericNode_s * );
+
+// all nodes must conform to this interface
+typedef struct AIGenericNode_s
+{
+	AINode_t type;
+	AINodeRunner run;
+} AIGenericNode_t;
+
+#define MAX_NODE_LIST 20
+typedef struct
+{
+	AINode_t type;
+	AINodeRunner run;
+	AIGenericNode_t *list[ MAX_NODE_LIST ];
+	int numNodes;
+	int maxFail;
+} AINodeList_t;
+
+typedef struct
+{
+	AINode_t type;
+	AINodeRunner run;
+	weapon_t weapon;
+	upgrade_t upgrades[ 3 ];
+	int numUpgrades;
+} AIBuyNode_t;
+
+typedef struct
+{
+	AINode_t type;
+	AINodeRunner run;
+	AIEntity_t ent;
+	float range;
+} AIMoveToNode_t;
+
+typedef enum
+{
+	CON_BUILDING,
+	CON_DAMAGEDBUILDING,
+	CON_CVAR,
+	CON_WEAPON,
+	CON_UPGRADE,
+	CON_CURWEAPON,
+	CON_TEAM,
+	CON_ENEMY,
+	CON_HEALTH,
+	CON_AMMO,
+	CON_TEAM_WEAPON,
+	CON_DISTANCE,
+	CON_BASERUSH,
+	CON_HEAL
+} AIConditionInfo_t;
+
+typedef enum
+{
+	VALUE_FLOAT,
+	VALUE_INT,
+	VALUE_PTR
+} AIConditionValue_t;
+
+typedef struct
+{
+	AIConditionValue_t type;
+	union
+	{
+		float f;
+		int   i;
+		void *ptr;
+	} value;
+} AIConditionParameter_t;
+
+typedef enum
+{
+	OP_NONE,
+	OP_LESSTHAN,
+	OP_LESSTHANEQUAL,
+	OP_GREATERTHAN,
+	OP_GREATERTHANEQUAL,
+	OP_EQUAL,
+	OP_NEQUAL,
+	OP_NOT,
+	OP_BOOL
+} AIConditionOperator_t;
+
+typedef struct
+{
+	AINode_t type;
+	AINodeRunner run;
+	AIGenericNode_t *child;
+	AIConditionOperator_t op;
+	AIConditionInfo_t info;
+	AIConditionParameter_t param1;
+	AIConditionParameter_t param2;
+} AIConditionNode_t;
+
+typedef struct
+{
+	AIBehaviorTree_t **trees;
+	int numTrees;
+	int maxTrees;
+} AITreeList_t;
+
+AINodeStatus_t BotConditionNode( gentity_t *self, AIGenericNode_t *node );
+
+AINodeStatus_t BotSelectorNode( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotSequenceNode( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotPriorityNode( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotParallelNode( gentity_t *self, AIGenericNode_t *node );
+
+AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionHeal( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionFlee( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionRoam( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionRush( gentity_t *self, AIGenericNode_t *node );
+
+static INLINE void BotInitNode( AINode_t type, AINodeRunner func, void *node )
+{
+	AIGenericNode_t *n = ( AIGenericNode_t * ) node;
+	n->type = type;
+	n->run = func;
+}
 
 #endif
 

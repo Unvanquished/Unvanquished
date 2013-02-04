@@ -738,11 +738,34 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			SV_GetPlayerPubkey( args[ 1 ], VMA( 2 ), args[ 3 ] );
 			return 0;
 
-                case G_GETTIMESTRING:
-		        VM_CheckBlock( args[1], args[2], "STRFTIME" );
+        case G_GETTIMESTRING:
+			VM_CheckBlock( args[1], args[2], "STRFTIME" );
 			SV_GetTimeString( VMA( 1 ), args[ 2 ], VMA( 3 ), VMA( 4 ) );
 			return 0;
-			
+		case BOT_NAV_SETUP:
+			return BotSetupNav( VMA( 1 ), VMA( 2 ) );
+		case BOT_NAV_SHUTDOWN:
+			BotShutdownNav();
+			return 0;
+		case BOT_SET_NAVMESH:
+			BotSetNavMesh( args[ 1 ], args[ 2 ] );
+			return 0;
+		case BOT_FIND_ROUTE:
+			return BotFindRouteExt( args[ 1 ], VMA( 2 ) );
+		case BOT_UPDATE_PATH:
+			BotUpdateCorridor( args[ 1 ], VMA( 2 ), VMA( 3 ), args[ 4 ], VMA( 5 ) );
+			return 0;
+		case BOT_NAV_RAYCAST:
+			return BotNavTrace( args[ 1 ], VMA( 2 ), VMA( 3 ), VMA( 4 ) );
+		case BOT_NAV_RANDOMPOINT:
+			BotFindRandomPoint( args[ 1 ], VMA( 2 ) );
+			return 0;
+		case BOT_ENABLE_AREA:
+			BotEnableArea( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
+			return 0;
+		case BOT_DISABLE_AREA:
+			BotDisableArea( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
+			return 0;
 		default:
 			Com_Error( ERR_DROP, "Bad game system trap: %ld", ( long int ) args[ 0 ] );
 	}
