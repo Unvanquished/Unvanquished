@@ -280,7 +280,7 @@ Cbuf_Execute
 */
 void Cbuf_Execute( void )
 {
-	int  i;
+	int  i, ws;
 	char *text;
 	char line[ MAX_CMD_LINE ];
 	int  quotes;
@@ -300,7 +300,13 @@ void Cbuf_Execute( void )
 
 		quotes = 0;
 
-		for ( i = 0; i < cmd_text.cursize; i++ )
+		// skip whitespace here, since other code assumes that there's no leading white space
+		for ( ws = 0; ws < cmd_text.cursize && ( text[ ws ] == ' ' || text[ ws ] == '\t' || text[ ws ] == '\n' ); ++ws )
+		{
+			// lots going on here
+		}
+
+		for ( i = ws; i < cmd_text.cursize; i++ )
 		{
 			if ( text[ i ] == '\\' && text[ i + 1 ] )
 			{
@@ -329,8 +335,8 @@ void Cbuf_Execute( void )
 			i = MAX_CMD_LINE - 1;
 		}
 
-		memcpy( line, text, i );
-		line[ i ] = 0;
+		memcpy( line, text + ws, i - ws );
+		line[ i - ws ] = 0;
 
 // delete the text from the command buffer and move remaining commands down
 // this is necessary because commands (exec) can insert data at the

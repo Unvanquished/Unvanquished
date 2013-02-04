@@ -1364,9 +1364,10 @@ static void CG_PrintTR_f( void )
 	char        str[ MAX_STRING_CHARS ];
 	char        buf[ MAX_STRING_CHARS ];
 	const char  *in;
-	char        number[2];
-	int         i=0, j=0;
+	char        number[2] = { 0 };
+	int         i=0, j=0, totalArgs;
 
+	totalArgs = trap_Argc();
 	Q_strncpyz( buf, _( CG_Argv( 1 ) ), sizeof( buf ) );
 	in = buf;
 	memset( &str, 0, sizeof( str ) );
@@ -1390,7 +1391,7 @@ static void CG_PrintTR_f( void )
 				if( *in == 't' && *(in+1) == '$' )
 				{
 					int num = atoi( number );
-					if( num <= 0 || num > 99 )
+					if( num < 0 || num > totalArgs - 1 )
 					{
 						in += 2;
 						break;
@@ -1412,7 +1413,7 @@ static void CG_PrintTR_f( void )
 				else if( *in == '$' )
 				{
 					int num = atoi( number );
-					if( num <= 0 || num > 99 )
+					if( num < 0 || num > totalArgs - 1 )
 					{
 						in++;
 						break;

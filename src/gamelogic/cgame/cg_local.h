@@ -1007,7 +1007,6 @@ typedef struct
 	// view rendering
 	refdef_t refdef;
 	vec3_t   refdefViewAngles; // will be converted to refdef.viewaxis
-	int      fov; // custom fov
 
 	// zoom key
 	qboolean zoomed;
@@ -1636,7 +1635,7 @@ void     CG_DrawRect( float x, float y, float width, float height, float size, c
 void     CG_DrawSides( float x, float y, float w, float h, float size );
 void     CG_DrawTopBottom( float x, float y, float w, float h, float size );
 qboolean CG_WorldToScreen( vec3_t point, float *x, float *y );
-char     *CG_KeyBinding( const char *bind );
+char     *CG_KeyBinding( const char *bind, team_t team );
 char     CG_GetColorCharForHealth( int clientnum );
 void     CG_DrawSphere( const vec3_t center, float radius, int customShader, const float *shaderRGBA );
 void     CG_DrawSphericalCone( const vec3_t tip, const vec3_t rotation, float radius,

@@ -40,9 +40,6 @@ Maryland 20850 USA.
 
 vm_t                   *uivm;
 
-// ydnar: can we put this in a header, pls?
-void                   Key_GetBindingByString( const char *binding, int *key1, int *key2 );
-
 /*
 ====================
 GetClientState
@@ -419,6 +416,7 @@ static void LAN_GetServerInfo( int source, int n, char *buf, int buflen )
 		Info_SetValueForKey( info, "mapname", server->mapName, qfalse );
 		Info_SetValueForKey( info, "label", server->label, qfalse );
 		Info_SetValueForKey( info, "clients", va( "%i", server->clients ), qfalse );
+		Info_SetValueForKey( info, "bots", va( "%i", server->bots ), qfalse );
 		Info_SetValueForKey( info, "sv_maxclients", va( "%i", server->maxClients ), qfalse );
 		Info_SetValueForKey( info, "ping", va( "%i", server->ping ), qfalse );
 		Info_SetValueForKey( info, "minping", va( "%i", server->minPing ), qfalse );
@@ -880,11 +878,11 @@ void Key_KeynumToStringBuf( int keynum, char *buf, int buflen )
 Key_GetBindingBuf
 ====================
 */
-void Key_GetBindingBuf( int keynum, char *buf, int buflen )
+void Key_GetBindingBuf( int keynum, int team, char *buf, int buflen )
 {
 	const char *value;
 
-	value = Key_GetBinding( keynum );
+	value = Key_GetBinding( keynum, team );
 
 	if ( value )
 	{
@@ -1175,16 +1173,12 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return 0;
 
 		case UI_KEY_GETBINDINGBUF:
-			VM_CheckBlock( args[2], args[3], "KEYGBB" );
-			Key_GetBindingBuf( args[ 1 ], VMA( 2 ), args[ 3 ] );
+			VM_CheckBlock( args[3], args[4], "KEYGBB" );
+			Key_GetBindingBuf( args[ 1 ], args[ 2 ], VMA( 3 ), args[ 4 ] );
 			return 0;
 
 		case UI_KEY_SETBINDING:
-			Key_SetBinding( args[ 1 ], VMA( 2 ) );
-			return 0;
-
-		case UI_KEY_BINDINGTOKEYS:
-			Key_GetBindingByString( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
+			Key_SetBinding( args[ 1 ], args[ 2 ], VMA( 3 ) ); // FIXME BIND
 			return 0;
 
 		case UI_KEY_ISDOWN:

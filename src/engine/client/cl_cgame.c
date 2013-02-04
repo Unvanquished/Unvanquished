@@ -48,13 +48,13 @@ Maryland 20850 USA.
 static void ( *completer )( const char *s ) = NULL;
 
 // NERVE - SMF
-void                   Key_GetBindingBuf( int keynum, char *buf, int buflen );
+void                   Key_GetBindingBuf( int keynum, int team, char *buf, int buflen );
 void                   Key_KeynumToStringBuf( int keynum, char *buf, int buflen );
 
 // -NERVE - SMF
 
 // ydnar: can we put this in a header, pls?
-void Key_GetBindingByString( const char *binding, int *key1, int *key2 );
+void Key_GetBindingByString( const char *binding, int team, int *key1, int *key2 );
 
 /*
 ====================
@@ -1041,7 +1041,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_KEY_GETKEY:
-			return Key_GetKey( VMA( 1 ) );
+			return Key_GetKey( VMA( 1 ), 0 ); // FIXME BIND
 
 		case CG_KEY_GETOVERSTRIKEMODE:
 			return Key_GetOverstrikeMode();
@@ -1102,12 +1102,12 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_KEY_GETBINDINGBUF:
-			VM_CheckBlock( args[2], args[3], "KEYGBB" );
-			Key_GetBindingBuf( args[ 1 ], VMA( 2 ), args[ 3 ] );
+			VM_CheckBlock( args[3], args[4], "KEYGBB" );
+			Key_GetBindingBuf( args[ 1 ], args[ 2 ], VMA( 3 ), args[ 4 ] );
 			return 0;
 
 		case CG_KEY_SETBINDING:
-			Key_SetBinding( args[ 1 ], VMA( 2 ) );
+			Key_SetBinding( args[ 1 ], args[ 2 ], VMA( 3 ) ); // FIXME BIND
 			return 0;
 
 		case CG_PARSE_ADD_GLOBAL_DEFINE:
@@ -1128,10 +1128,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_KEY_KEYNUMTOSTRINGBUF:
 			VM_CheckBlock( args[2], args[3], "KEYNTSB" );
 			Key_KeynumToStringBuf( args[ 1 ], VMA( 2 ), args[ 3 ] );
-			return 0;
-
-		case CG_KEY_BINDINGTOKEYS:
-			Key_GetBindingByString( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
 			return 0;
 
 		case CG_S_FADEALLSOUNDS:
@@ -1240,6 +1236,10 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_R_UREGISTERFONT:
 			re.UnregisterFontVM( args[1] );
+			return 0;
+
+		case CG_KEY_SETTEAM:
+			Key_SetTeam( args[1] ); // for binding selection
 			return 0;
 
 		default:
@@ -1440,6 +1440,20 @@ void CL_InitCGame( void )
 //  if( cl_autorecord->integer ) {
 //      Cvar_Set( "g_synchronousClients", "1" );
 //  }
+}
+
+void CL_InitCGameCVars( void )
+{
+	vm_t *cgv_vm = VM_Create( "cgame", CL_CgameSystemCalls, Cvar_VariableValue( "vm_cgame" ) );
+
+	if ( !cgv_vm )
+	{
+		Com_Error( ERR_DROP, "VM_Create on cgame failed" );
+	}
+
+	VM_Call( cgv_vm, CG_INIT_CVARS );
+
+	VM_Free( cgv_vm );
 }
 
 /*

@@ -45,7 +45,8 @@ static bind_t bindings[] =
 	{ "buy ammo",       N_( "Buy Ammo" ),                              { -1, -1 } },
 	{ "itemact medkit", N_( "Use Medkit" ),                            { -1, -1 } },
 	{ "+activate",      N_( "Use Structure/Evolve" ),                  { -1, -1 } },
-	{ "deconstruct",    N_( "Deconstruct Structure" ),                 { -1, -1 } },
+	{ "if alt \"/deconstruct marked\" /deconstruct",
+                            N_( "Deconstruct Structure" ),                 { -1, -1 } },
 	{ "weapprev",       N_( "Previous Upgrade" ),                      { -1, -1 } },
 	{ "weapnext",       N_( "Next Upgrade" ),                          { -1, -1 } }
 };
@@ -57,7 +58,7 @@ static const size_t numBindings = ARRAY_LEN( bindings );
 CG_GetBindings
 =================
 */
-static void CG_GetBindings( void )
+static void CG_GetBindings( team_t team )
 {
 	int  i, j, numKeys;
 	char buffer[ MAX_STRING_CHARS ];
@@ -67,9 +68,14 @@ static void CG_GetBindings( void )
 		bindings[ i ].keys[ 0 ] = bindings[ i ].keys[ 1 ] = K_NONE;
 		numKeys = 0;
 
-		for ( j = 0; j < K_LAST_KEY; j++ )
+		for ( j = 0; j < MAX_KEYS; j++ )
 		{
-			trap_Key_GetBindingBuf( j, buffer, MAX_STRING_CHARS );
+			trap_Key_GetBindingBuf( j, team, buffer, MAX_STRING_CHARS );
+
+			if ( team != TEAM_NONE && buffer[ 0 ] == 0 )
+			{
+				trap_Key_GetBindingBuf( j, TEAM_NONE, buffer, MAX_STRING_CHARS );
+			}
 
 			if ( buffer[ 0 ] == 0 )
 			{
@@ -99,7 +105,7 @@ static const char *CG_KeyNameForCommand( const char *command )
 	int         i, j;
 	static char buffer[ 2 ][ MAX_STRING_CHARS ];
 	static int  which = 1;
-	int         firstKeyLength;
+	char        keyName[ 2 ][ 32 ];
 
 	which ^= 1;
 
@@ -112,25 +118,19 @@ static const char *CG_KeyNameForCommand( const char *command )
 			if ( bindings[ i ].keys[ 0 ] != K_NONE )
 			{
 				trap_Key_KeynumToStringBuf( bindings[ i ].keys[ 0 ],
-				                            buffer[ which ], MAX_STRING_CHARS );
-				firstKeyLength = strlen( buffer[ which ] );
-
-				for ( j = 0; j < firstKeyLength; j++ )
-				{
-					buffer[ which ][ j ] = toupper( buffer[ which ][ j ] );
-				}
+				                            keyName[ 0 ], sizeof( keyName[ 0 ] ) );
 
 				if ( bindings[ i ].keys[ 1 ] != K_NONE )
 				{
-					Q_strcat( buffer[ which ], MAX_STRING_CHARS, " or " );
 					trap_Key_KeynumToStringBuf( bindings[ i ].keys[ 1 ],
-					                            buffer[ which ] + strlen( buffer[ which ] ), MAX_STRING_CHARS - strlen( buffer[ which ] ) );
-
-					for ( j = firstKeyLength + 4; j < strlen( buffer[ which ] ); j++ )
-					{
-						buffer[ which ][ j ] = toupper( buffer[ which ][ j ] );
-					}
+					                            keyName[ 1 ], sizeof( keyName[ 1 ] ) );
+					Q_snprintf( buffer[ which ], sizeof( buffer[ 0 ] ), _("%s or %s"),
+					            Q_strupr( keyName[ 0 ] ), Q_strupr( keyName[ 1 ] ) );
 				}
+				else
+				{
+					Q_strncpyz( buffer[ which ], Q_strupr( keyName[ 0 ] ), sizeof( buffer[ 0 ] ) );
+                                }
 			}
 			else
 			{
@@ -142,7 +142,7 @@ static const char *CG_KeyNameForCommand( const char *command )
 		}
 	}
 
-	return "";
+	return "(⚠ BUG)"; // shouldn't happen: if it does, BUG
 }
 
 #define MAX_TUTORIAL_TEXT 4096
@@ -270,8 +270,9 @@ CG_AlienLevel0Text
 static void CG_AlienLevel0Text( char *text, playerState_t *ps )
 {
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
-	          _( "Touch humans to damage them\n" ) );
-
+	          _( "Touch humans to damage them\n"
+	             "Look at their heads (or jump) to try to bite their heads\n"
+	             "Head-bites cause more damage\n" ) );
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
 	          va( _( "Press %s to walk on walls\n" ),
 	              CG_KeyNameForCommand( "+movedown" ) ) );
@@ -285,7 +286,8 @@ CG_AlienLevel1Text
 static void CG_AlienLevel1Text( char *text, playerState_t *ps )
 {
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
-	          _( "Touch humans to grab them\n" ) );
+	          _( "Touch humans to grab them\n"
+	             "Look at them to maintain the grab\n" ) );
 
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
 	          va( _( "Press %s to swipe\n" ),
@@ -294,7 +296,7 @@ static void CG_AlienLevel1Text( char *text, playerState_t *ps )
 	if ( ps->stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL1_UPG )
 	{
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( _( "Press %s to spray poisonous gas\n" ),
+		          va( _( "Press %s to spray disorienting gas\n" ),
 		              CG_KeyNameForCommand( "+attack2" ) ) );
 	}
 
@@ -361,7 +363,7 @@ static void CG_AlienLevel4Text( char *text, playerState_t *ps )
 	              CG_KeyNameForCommand( "+attack" ) ) );
 
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
-	          va( _( "Hold down and release %s to trample\n" ),
+	          va( _( "Hold down and release %s while moving forwards to trample\n" ),
 	              CG_KeyNameForCommand( "+attack2" ) ) );
 }
 
@@ -630,15 +632,15 @@ const char *CG_TutorialText( void )
 	static char   text[ MAX_TUTORIAL_TEXT ];
 	static int    refreshBindings = 0;
 
+	text[ 0 ] = '\0';
+	ps = &cg.snap->ps;
+
 	if ( refreshBindings == 0 )
 	{
-		CG_GetBindings();
+		CG_GetBindings( ps->stats[ STAT_TEAM ] );
 	}
 
 	refreshBindings = ( refreshBindings + 1 ) % BINDING_REFRESH_INTERVAL;
-
-	text[ 0 ] = '\0';
-	ps = &cg.snap->ps;
 
 	if ( !cg.intermissionStarted && !cg.demoPlayback )
 	{

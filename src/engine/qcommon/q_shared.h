@@ -45,10 +45,10 @@ extern "C" {
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.11.0"
+#define PRODUCT_VERSION         "0.12.0"
 
 #define ENGINE_NAME             "Daemon Engine"
-#define ENGINE_VERSION          "0.11.0"
+#define ENGINE_VERSION          "0.12.0"
 
 #ifdef REVISION
 # define Q3_VERSION             PRODUCT_NAME " " PRODUCT_VERSION " " REVISION
@@ -65,6 +65,7 @@ extern "C" {
 
 #ifndef DEDICATED
 #define CONFIG_NAME             "autogen.cfg"
+#define KEYBINDINGS_NAME        "keybindings.cfg"
 #else
 #define CONFIG_NAME             "autogen_server.cfg"
 #endif

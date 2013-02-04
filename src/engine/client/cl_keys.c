@@ -40,15 +40,19 @@ key up events are sent even if in console mode
 
 */
 
+#define CLIP(t) MAX( 0, MIN( MAX_TEAMS - 1, (t) ) )
 
 field_t  g_consoleField;
 field_t  chatField;
 qboolean chat_irc;
 
 qboolean key_overstrikeMode;
+qboolean bindingsModified;
 
 int      anykeydown;
 qkey_t   keys[ MAX_KEYS ];
+
+int      bindTeam = 0; // TEAM_NONE
 
 typedef struct
 {
@@ -349,6 +353,7 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
                              qboolean noColorEscape, float alpha )
 {
 	int  len;
+	vec4_t supportElementsColor;
 	int  drawLen;
 	int  prestep;
 	char str[ MAX_STRING_CHARS ];
@@ -427,15 +432,19 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
 	// draw the cursor
 	if ( showCursor )
 	{
-		static const float yellow[] = { 1, 1, 0, 0.5 };
 		float xpos, width, height;
+
+		supportElementsColor[0] = 1.0f;
+		supportElementsColor[1] = 1.0f;
+		supportElementsColor[2] = 1.0f;
+		supportElementsColor[3] = 0.66f * consoleState.currentAlphaFactor;
 
 		if ( ( int )( cls.realtime >> 8 ) & 1 )
 		{
 			return; // off blink
 		}
 
-		re.SetColor( yellow );
+		re.SetColor( supportElementsColor );
 
 		if ( size == SMALLCHAR_WIDTH )
 		{
@@ -810,8 +819,6 @@ void Console_Key( int key )
 	// enter finishes the line
 	if ( key == K_ENTER || key == K_KP_ENTER )
 	{
-		con.acLength = 0;
-
 		// if not in the game explicitly prepend a slash if needed
 		if ( (cls.state != CA_ACTIVE || !cl_consoleCommand->string[0] ) && g_consoleField.buffer[ 0 ] != '\\'
 		     && g_consoleField.buffer[ 0 ] != '/' )
@@ -864,14 +871,6 @@ void Console_Key( int key )
 		return;
 	}
 
-	// clear the autocompletion buffer on a line-editing key input
-	if ( ( key >= K_SPACE && key <= K_BACKSPACE ) || ( key == K_LEFTARROW ) || ( key == K_RIGHTARROW ) ||
-	     ( key >= K_KP_LEFTARROW && key <= K_KP_RIGHTARROW ) ||
-	     ( key >= K_KP_SLASH && key <= K_KP_PLUS ) || ( key >= K_KP_STAR && key <= K_KP_EQUALS ) )
-	{
-		con.acLength = 0;
-	}
-
 	// command history (ctrl-p ctrl-n for unix style)
 
 	//----(SA)  added some mousewheel functionality to the console
@@ -879,7 +878,6 @@ void Console_Key( int key )
 	     ( ( tolower( key ) == 'p' ) && keys[ K_CTRL ].down ) )
 	{
 		Field_Set( &g_consoleField, Hist_Prev() );
-		con.acLength = 0;
 		return;
 	}
 
@@ -898,8 +896,6 @@ void Console_Key( int key )
 			Hist_Add( g_consoleField.buffer );
 			Field_Clear( &g_consoleField );
 		}
-
-		con.acLength = 0;
 		return;
 	}
 
@@ -945,14 +941,14 @@ void Console_Key( int key )
 	// ctrl-home = top of console
 	if ( ( key == K_HOME || key == K_KP_HOME ) && keys[ K_CTRL ].down )
 	{
-		Con_Top();
+		Con_ScrollToTop();
 		return;
 	}
 
 	// ctrl-end = bottom of console
 	if ( ( key == K_END || key == K_KP_END ) && keys[ K_CTRL ].down )
 	{
-		Con_Bottom();
+		Con_ScrollToBottom();
 		return;
 	}
 
@@ -1094,37 +1090,77 @@ const char *Key_KeynumToString( int keynum )
 	return tinystr;
 }
 
-#define BIND_HASH_SIZE 1024
+/*
+===================
+Key_GetTeam
+Assumes 'three' teams: spectators, aliens, humans
+===================
+*/
+static const char *const teamName[] = { "default", "aliens", "humans", "others" };
 
-static long generateHashValue( const char *fname )
+static int Key_GetTeam( const char *arg, const char *cmd )
 {
-	int  i;
-	long hash;
+	static const struct {
+		char team;
+		char label[11];
+	} labels[] = {
+		{ 0, "spectators" },
+		{ 0, "default" },
+		{ 1, "aliens" },
+		{ 2, "humans" }
+	};
+	int t, l;
 
-	if ( !fname )
+	if ( !*arg ) // empty string
 	{
-		return 0;
+		goto fail;
 	}
 
-	hash = 0;
-	i = 0;
-
-	while ( fname[ i ] != '\0' )
+	for ( t = 0; arg[ t ]; ++t )
 	{
-		hash += ( long )( fname[ i ] ) * ( i + 119 );
-		i++;
+		if ( !isdigit( arg[ t ] ) )
+		{
+			break;
+		}
 	}
 
-	hash &= ( BIND_HASH_SIZE - 1 );
-	return hash;
+	if ( !arg[ t ] )
+	{
+		t = atoi( arg );
+
+		if ( t != CLIP( t ) )
+		{
+			Com_Printf( _("^3%s:^7 %d is not a valid team number\n"), cmd, t );
+			return -1;
+		}
+
+		return t;
+	}
+
+	l = strlen( arg );
+
+	for ( t = 0; t < ARRAY_LEN( labels ); ++t )
+	{
+		// matching initial substring
+		if ( !Q_stricmpn( arg, labels[ t ].label, l ) )
+		{
+			return labels[ t ].team;
+		}
+	}
+
+fail:
+	Com_Printf( _("^3%s:^7 '%s^7' is not a valid team name\n"), cmd, arg );
+	return -1;
 }
 
 /*
 ===================
 Key_SetBinding
+
+team == -1 clears all bindings for the key, then sets the spec/global binding
 ===================
 */
-void Key_SetBinding( int keynum, const char *binding )
+void Key_SetBinding( int keynum, int team, const char *binding )
 {
 	char *lcbinding; // fretn - make a copy of our binding lowercase
 	// so name toggle scripts work again: bind x name BzZIfretn?
@@ -1136,70 +1172,67 @@ void Key_SetBinding( int keynum, const char *binding )
 	}
 
 	// free old bindings
-	if ( keys[ keynum ].binding )
+	if ( team == -1 )
 	{
-		Z_Free( keys[ keynum ].binding );
+		// just the team-specific ones here
+		for ( team = MAX_TEAMS - 1; team; --team )
+		{
+			if ( keys[ keynum ].binding[ team ] )
+			{
+				Z_Free( keys[ keynum ].binding[ team ] );
+				keys[ keynum ].binding[ team ] = NULL;
+			}
+		}
+		// team == 0...
 	}
 
+	team = CLIP( team );
+
+	if ( keys[ keynum ].binding[ team ] )
+	{
+		Z_Free( keys[ keynum ].binding[ team ] );
+	}
+
+	// set the new binding, if not null/empty
 	if ( binding && binding[ 0 ] )
 	{
 		// allocate memory for new binding
-		keys[ keynum ].binding = CopyString( binding );
+		keys[ keynum ].binding[ team ] = CopyString( binding );
 		lcbinding = CopyString( binding );
 		Q_strlwr( lcbinding );  // saves doing it on all the generateHashValues in Key_GetBindingByString
 		Z_Free( lcbinding );
-		keys[ keynum ].hash = generateHashValue( lcbinding );
 	}
 	else
 	{
-		keys[ keynum ].binding = NULL;
-		keys[ keynum ].hash = 0;
+		keys[ keynum ].binding[ team ] = NULL;
 	}
 
-	// consider this like modifying an archived cvar, so the
-	// file write will be triggered at the next oportunity
-	cvar_modifiedFlags |= CVAR_ARCHIVE;
+	bindingsModified = qtrue;
 }
 
 /*
 ===================
 Key_GetBinding
+
+-ve team no. = don't return the default binding
 ===================
 */
-const char *Key_GetBinding( int keynum )
+const char *Key_GetBinding( int keynum, int team )
 {
+	const char *bind;
+
 	if ( keynum < 0 || keynum >= MAX_KEYS )
 	{
 		return NULL;
 	}
 
-	return keys[ keynum ].binding;
-}
-
-// binding MUST be lower case
-void Key_GetBindingByString( const char *binding, int *key1, int *key2 )
-{
-	int i;
-	int hash = generateHashValue( binding );
-
-	*key1 = -1;
-	*key2 = -1;
-
-	for ( i = 0; i < MAX_KEYS; i++ )
+	if ( team <= 0 )
 	{
-		if ( keys[ i ].hash == hash && !Q_stricmp( binding, keys[ i ].binding ) )
-		{
-			if ( *key1 == -1 )
-			{
-				*key1 = i;
-			}
-			else if ( *key2 == -1 )
-			{
-				*key2 = i;
-				return;
-			}
-		}
+		return keys[ keynum ].binding[ CLIP( -team ) ];
 	}
+
+	bind = keys[ keynum ].binding[ CLIP( team ) ];
+	return bind ? bind : keys[ keynum ].binding[ 0 ];
 }
 
 /*
@@ -1208,19 +1241,21 @@ Key_GetKey
 ===================
 */
 
-int Key_GetKey( const char *binding )
+int Key_GetKey( const char *binding, int team )
 {
 	int i;
 
-	if ( binding )
+	while ( binding && team >= 0 )
 	{
 		for ( i = 0; i < MAX_KEYS; i++ )
 		{
-			if ( keys[ i ].binding && Q_stricmp( binding, keys[ i ].binding ) == 0 )
+			if ( keys[ i ].binding[ team ] && Q_stricmp( binding, keys[ i ].binding[ team ] ) == 0 )
 			{
 				return i;
 			}
 		}
+
+		team = team ? 0 : -1;
 	}
 
 	return -1;
@@ -1233,15 +1268,26 @@ Key_Unbind_f
 */
 void Key_Unbind_f( void )
 {
-	int b;
+	int b = Cmd_Argc();
+	int team = -1;
 
-	if ( Cmd_Argc() != 2 )
+	if ( b < 2 || b > 3 )
 	{
-		Com_Printf("%s", _( "unbind <key> : remove commands from a key\n" ));
+		Com_Printf("%s", _( "unbind [team] <key>: remove commands from a key\n" ));
 		return;
 	}
 
-	b = Key_StringToKeynum( Cmd_Argv( 1 ) );
+	if ( b > 2 )
+	{
+		team = Key_GetTeam( Cmd_Argv( 1 ), "unbind" );
+
+		if ( team < 0 )
+		{
+			return;
+		}
+	}
+
+	b = Key_StringToKeynum( Cmd_Argv( b - 1 ) );
 
 	if ( b == -1 )
 	{
@@ -1249,7 +1295,7 @@ void Key_Unbind_f( void )
 		return;
 	}
 
-	Key_SetBinding( b, NULL );
+	Key_SetBinding( b, team, NULL );
 }
 
 /*
@@ -1263,10 +1309,7 @@ void Key_Unbindall_f( void )
 
 	for ( i = 0; i < MAX_KEYS; i++ )
 	{
-		if ( keys[ i ].binding )
-		{
-			Key_SetBinding( i, NULL );
-		}
+		Key_SetBinding( i, -1, NULL );
 	}
 }
 
@@ -1280,20 +1323,33 @@ void Key_Bind_f( void )
 	int        c, b;
 	const char *key;
 	const char *cmd = NULL;
+	int        team = -1;
+
+	int teambind = !Q_stricmp( Cmd_Argv( 0 ), "teambind" );
 
 	c = Cmd_Argc();
 
-	if ( c < 2 )
+	if ( c < 2 + teambind )
 	{
-		Com_Printf("%s", _( "bind <key> [command] : attach a command to a key\n" ));
+		Com_Printf("%s", teambind ? _( "teambind <team> <key> [command] : attach a command to a key\n" ) : _( "bind <key> [command] : attach a command to a key\n" ));
 		return;
 	}
-	else if ( c > 2 )
+	else if ( c > 2 + teambind )
 	{
-		cmd = Cmd_Argv( 2 );
+		cmd = Cmd_Argv( 2 + teambind );
 	}
 
-	key = Cmd_Argv( 1 );
+	if ( teambind )
+	{
+		team = Key_GetTeam( Cmd_Argv( 1 ), teambind ? "teambind" : "bind" );
+
+		if ( team < 0 )
+		{
+			return;
+		}
+	}
+
+	key = Cmd_Argv( 1 + teambind );
 	b = Key_StringToKeynum( key );
 
 	if ( b == -1 )
@@ -1304,26 +1360,50 @@ void Key_Bind_f( void )
 
 	if ( !cmd )
 	{
-		if ( keys[ b ].binding )
+		if ( teambind )
 		{
-			Com_Printf( "\"%s\" = %s\n", key, Cmd_QuoteString( keys[ b ].binding ) );
+			if ( keys[ b ].binding[ team ] )
+			{
+				Com_Printf( "\"%s\"[%s] = %s\n", key, teamName[ team ], Cmd_QuoteString( keys[ b ].binding[ team ] ) );
+			}
+			else
+			{
+				Com_Printf(_( "\"%s\"[%s] is not bound\n"), key, teamName[ team ] );
+			}
 		}
 		else
 		{
-			Com_Printf(_( "\"%s\" is not bound\n"), key );
+			qboolean bound = qfalse;
+			int      i;
+
+			for ( i = 0; i < MAX_TEAMS; ++i )
+			{
+				if ( keys[ b ].binding[ i ] )
+				{
+					Com_Printf( "\"%s\"[%s] = %s\n", key, teamName[ i ], Cmd_QuoteString( keys[ b ].binding[ i ] ) );
+					bound = qtrue;
+				}
+			}
+
+			if ( !bound )
+			{
+				Com_Printf(_( "\"%s\" is not bound\n"), key );
+			}
 		}
+
 
 		return;
 	}
 
-	if ( c <= 3 )
+
+	if ( c <= 3 + teambind )
 	{
-		Key_SetBinding( b, cmd );
+		Key_SetBinding( b, team, cmd );
 	}
 	else
 	{
-		// set to 3rd arg onwards
-		Key_SetBinding( b, Cmd_ArgsFrom( 2 ) );
+		// set to 3rd arg onwards (4th if team binding)
+		Key_SetBinding( b, team, Cmd_ArgsFrom( 2 + teambind ) );
 	}
 }
 
@@ -1338,16 +1418,27 @@ void Key_EditBind_f( void )
 	const char     *key, *binding;
 	const char     *bindq;
 	int            b;
+	int            team = -1;
 
 	b = Cmd_Argc();
 
-	if ( b != 2 )
+	if ( b < 2 || b > 3 )
 	{
-		Com_Printf( "%s\n", _( "usage: editbind <key>" ));
+		Com_Printf( "%s\n", _( "usage: editbind [team] <key>" ));
 		return;
 	}
 
-	key = Cmd_Argv( 1 );
+	if ( b > 2 )
+	{
+		team = Key_GetTeam( Cmd_Argv( 1 ), "editbind" );
+
+		if ( team < 0 )
+		{
+			return;
+		}
+	}
+
+	key = Cmd_Argv( b - 1 );
 	b = Key_StringToKeynum( key );
 
 	if ( b == -1 )
@@ -1356,11 +1447,19 @@ void Key_EditBind_f( void )
 		return;
 	}
 
-	binding = Key_GetBinding( b );
+	binding = Key_GetBinding( b, -team );
 
 	bindq = binding ? Cmd_QuoteString( binding ) : "";  // <- static buffer
-	buf = malloc( 8 + strlen( key ) + strlen( bindq ) );
-	sprintf( buf, "/bind %s %s", Key_KeynumToString( b ), bindq );
+	buf = malloc( 32 + strlen( key ) + strlen( bindq ) );
+
+	if ( team >= 0 )
+	{
+		sprintf( buf, "/teambind %s %s %s", teamName[ team ], Key_KeynumToString( b ), bindq );
+	}
+	else
+	{
+		sprintf( buf, "/bind %s %s", Key_KeynumToString( b ), bindq );
+	}
 
 	Con_OpenConsole_f();
 	Field_Set( &g_consoleField, buf );
@@ -1376,15 +1475,23 @@ Writes lines containing "bind key value"
 */
 void Key_WriteBindings( fileHandle_t f )
 {
-	int i;
+	int i, team;
 
 	FS_Printf( f,"%s", "unbindall\n" );
 
 	for ( i = 0; i < MAX_KEYS; i++ )
 	{
-		if ( keys[ i ].binding && keys[ i ].binding[ 0 ] )
+		if ( keys[ i ].binding[ 0 ] && keys[ i ].binding[ 0 ][ 0 ] )
 		{
-			FS_Printf( f, "bind %s %s\n", Key_KeynumToString( i ), Cmd_QuoteString( keys[ i ].binding ) );
+			FS_Printf( f, "bind       %s %s\n", Key_KeynumToString( i ), Cmd_QuoteString( keys[ i ].binding[ 0 ] ) );
+		}
+
+		for ( team = 1; team < MAX_TEAMS; ++team )
+		{
+			if ( keys[ i ].binding[ team ] && keys[ i ].binding[ team ][ 0 ] )
+			{
+				FS_Printf( f, "teambind %d %s %s\n", team, Key_KeynumToString( i ), Cmd_QuoteString( keys[ i ].binding[ team ] ) );
+			}
 		}
 	}
 }
@@ -1397,13 +1504,37 @@ Key_Bindlist_f
 */
 void Key_Bindlist_f( void )
 {
-	int i;
+	int i, team;
 
 	for ( i = 0; i < MAX_KEYS; i++ )
 	{
-		if ( keys[ i ].binding && keys[ i ].binding[ 0 ] )
+		qboolean teamSpecific = qfalse;
+
+		for ( team = 1; team < MAX_TEAMS; ++team )
 		{
-			Com_Printf( "%s = %s\n", Key_KeynumToString( i ), keys[ i ].binding );
+			if ( keys[ i ].binding[ team ] && keys[ i ].binding[ team ][ 0 ] )
+			{
+				teamSpecific = qtrue;
+				break;
+			}
+		}
+
+		if ( !teamSpecific )
+		{
+			if ( keys[ i ].binding[ 0 ] && keys[ i ].binding[ 0 ][ 0 ] )
+			{
+				Com_Printf( "%s = %s\n", Key_KeynumToString( i ), keys[ i ].binding[ 0 ] );
+			}
+		}
+		else
+		{
+			for ( team = 0; team < MAX_TEAMS; ++team )
+			{
+				if ( keys[ i ].binding[ team ] && keys[ i ].binding[ team ][ 0 ] )
+				{
+					Com_Printf( "%s[%s] = %s\n", Key_KeynumToString( i ), teamName[ team ], keys[ i ].binding[ team ] );
+				}
+			}
 		}
 	}
 }
@@ -1430,14 +1561,14 @@ Key_CompleteUnbind
 */
 static void Key_CompleteUnbind( char *args, int argNum )
 {
-	if ( argNum == 2 )
+	if ( argNum < 4 )
 	{
 		// Skip "unbind "
 		char *p = Com_SkipTokens( args, 1, " " );
 
 		if ( p > args )
 		{
-			Field_CompleteKeyname();
+			Field_CompleteKeyname( argNum > 2 ? 0 : FIELD_TEAM | FIELD_TEAM_SPECTATORS | FIELD_TEAM_DEFAULT );
 		}
 	}
 }
@@ -1445,26 +1576,28 @@ static void Key_CompleteUnbind( char *args, int argNum )
 /*
 ====================
 Key_CompleteBind
+Key_CompleteTeambind
 ====================
 */
-void Key_CompleteBind( char *args, int argNum )
+static void Key_CompleteBind_Internal( char *args, int argNum, int nameArg )
 {
+	// assumption: nameArg is 2 or 3
 	char *p;
 
-	if ( argNum == 2 )
+	if ( argNum == nameArg )
 	{
 		// Skip "bind "
-		p = Com_SkipTokens( args, 1, " " );
+		p = Com_SkipTokens( args, nameArg - 1, " " );
 
 		if ( p > args )
 		{
-			Field_CompleteKeyname();
+			Field_CompleteKeyname( 0 );
 		}
 	}
-	else if ( argNum >= 3 )
+	else if ( argNum > nameArg )
 	{
 		// Skip "bind <key> "
-		p = Com_SkipTokens( args, 2, " " );
+		p = Com_SkipTokens( args, nameArg, " " );
 
 		if ( p > args )
 		{
@@ -1473,15 +1606,28 @@ void Key_CompleteBind( char *args, int argNum )
 	}
 }
 
+void Key_CompleteBind( char *args, int argNum )
+{
+	Key_CompleteBind_Internal( args, argNum, 2 );
+}
+
+void Key_CompleteTeambind( char *args, int argNum )
+{
+	if ( argNum == 2 )
+	{
+		Field_CompleteTeamname( FIELD_TEAM_SPECTATORS | FIELD_TEAM_DEFAULT );
+	}
+	else
+	{
+		Key_CompleteBind_Internal( args, argNum, 3 );
+	}
+}
+
 static void Key_CompleteEditbind( char *args, int argNum )
 {
-	char *p;
-
-	p = Com_SkipTokens( args, 1, " " );
-
-	if ( p > args )
+	if ( argNum < 4 )
 	{
-		Field_CompleteKeyname();
+		Field_CompleteKeyname( argNum > 2 ? 0 : FIELD_TEAM | FIELD_TEAM_SPECTATORS | FIELD_TEAM_DEFAULT );
 	}
 }
 
@@ -1495,6 +1641,8 @@ void CL_InitKeyCommands( void )
 	// register our functions
 	Cmd_AddCommand( "bind", Key_Bind_f );
 	Cmd_SetCommandCompletionFunc( "bind", Key_CompleteBind );
+	Cmd_AddCommand( "teambind", Key_Bind_f );
+	Cmd_SetCommandCompletionFunc( "teambind", Key_CompleteTeambind );
 	Cmd_AddCommand( "unbind", Key_Unbind_f );
 	Cmd_SetCommandCompletionFunc( "unbind", Key_CompleteUnbind );
 	Cmd_AddCommand( "unbindall", Key_Unbindall_f );
@@ -1678,7 +1826,9 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	//
 	if ( !down )
 	{
-		kb = keys[ key ].binding;
+		kb = keys[ key ].binding[ bindTeam ]
+		   ? keys[ key ].binding[ bindTeam ] // prefer the team bind
+		   : keys[ key ].binding[ 0 ];       // default to global
 
 		if ( kb && kb[ 0 ] == '+' )
 		{
@@ -1741,7 +1891,9 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	else
 	{
 		// send the bound action
-		kb = keys[ key ].binding;
+		kb = keys[ key ].binding[ bindTeam ]
+		   ? keys[ key ].binding[ bindTeam ] // prefer the team bind
+		   : keys[ key ].binding[ 0 ];       // default to global
 
 		if ( !kb )
 		{
@@ -1821,4 +1973,24 @@ void Key_ClearStates( void )
 		keys[ i ].down = 0;
 		keys[ i ].repeats = 0;
 	}
+}
+
+/*
+===================
+Key_SetTeam
+===================
+*/
+void Key_SetTeam( int newTeam )
+{
+	if ( newTeam < TEAM_NONE || newTeam >= NUM_TEAMS || newTeam >= MAX_TEAMS )
+	{
+		newTeam = TEAM_NONE;
+	}
+
+	if ( bindTeam != newTeam )
+	{
+		Com_DPrintf( "^2Setting binding team index to %d\n", newTeam );
+	}
+
+	bindTeam = newTeam;
 }

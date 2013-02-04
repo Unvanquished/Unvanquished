@@ -964,7 +964,7 @@ UI_BuildServerDisplayList
 */
 static void UI_BuildServerDisplayList( int force )
 {
-	int        i, count, clients, maxClients, ping, len, visible;
+	int        i, count, clients, bots, maxClients, ping, len, visible;
 	char       info[ MAX_STRING_CHARS ];
 	static int numinvisible;
 
@@ -1033,12 +1033,13 @@ static void UI_BuildServerDisplayList( int force )
 		{
 			trap_LAN_GetServerInfo( ui_netSource.integer, i, info, MAX_STRING_CHARS );
 
+			bots = atoi( Info_ValueForKey( info, "bots" ) );
 			clients = atoi( Info_ValueForKey( info, "clients" ) );
 			uiInfo.serverStatus.numPlayersOnServers += clients;
 
 			if ( ui_browserShowEmpty.integer == 0 )
 			{
-				if ( clients == 0 )
+				if ( clients == 0 && bots == 0 )
 				{
 					trap_LAN_MarkServerVisible( ui_netSource.integer, i, qfalse );
 					continue;
@@ -1049,7 +1050,7 @@ static void UI_BuildServerDisplayList( int force )
 			{
 				maxClients = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
 
-				if ( clients == maxClients )
+				if ( clients + bots == maxClients )
 				{
 					trap_LAN_MarkServerVisible( ui_netSource.integer, i, qfalse );
 					continue;
@@ -3195,64 +3196,68 @@ static void UI_Update( const char *name )
 			case 0: // high quality
 				trap_Cvar_SetValue( "r_subdivisions", 4 );
 				trap_Cvar_SetValue( "r_vertexlighting", 0 );
-				trap_Cvar_SetValue( "r_lodbias", 0 );
-				trap_Cvar_SetValue( "r_colorbits", 32 );
-				trap_Cvar_SetValue( "r_depthbits", 24 );
 				trap_Cvar_SetValue( "r_picmip", 0 );
-				trap_Cvar_SetValue( "r_texturebits", 32 );
-				trap_Cvar_SetValue( "r_fastSky", 0 );
 				trap_Cvar_SetValue( "r_inGameVideo", 1 );
-				trap_Cvar_SetValue( "cg_shadows", 1 );
+				trap_Cvar_SetValue( "cg_shadows", 4 );
+				trap_Cvar_SetValue( "r_dynamiclight", 1 );
 				trap_Cvar_SetValue( "cg_bounceParticles", 1 );
-				trap_Cvar_SetValue( "r_ext_multisample", 6 );
+				trap_Cvar_SetValue( "r_normalMapping", 1 );
+				trap_Cvar_SetValue( "r_bloom", 1 );
+				trap_Cvar_SetValue( "r_rimlighting", 1 );
+				trap_Cvar_SetValue( "cg_motionblur", 0.05 );
+				trap_Cvar_SetValue( "r_ext_multisample", 8 );
+				trap_Cvar_SetValue( "r_ext_texture_filter_anisotropic", 8 );
 				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_LINEAR" );
 				break;
 
 			case 1: // intermediate
-				trap_Cvar_SetValue( "r_subdivisions", 12 );
+				trap_Cvar_SetValue( "r_subdivisions", 8 );
 				trap_Cvar_SetValue( "r_vertexlighting", 0 );
-				trap_Cvar_SetValue( "r_lodbias", 0 );
-				trap_Cvar_SetValue( "r_colorbits", 0 );
-				trap_Cvar_SetValue( "r_depthbits", 24 );
-				trap_Cvar_SetValue( "r_picmip", 1 );
-				trap_Cvar_SetValue( "r_texturebits", 0 );
-				trap_Cvar_SetValue( "r_fastSky", 0 );
+				trap_Cvar_SetValue( "r_picmip", 0 );
 				trap_Cvar_SetValue( "r_inGameVideo", 1 );
-				trap_Cvar_SetValue( "cg_shadows", 0 );
+				trap_Cvar_SetValue( "cg_shadows", 1 );
+				trap_Cvar_SetValue( "r_dynamiclight", 1 );
 				trap_Cvar_SetValue( "cg_bounceParticles", 0 );
+				trap_Cvar_SetValue( "r_normalMapping", 1 );
+				trap_Cvar_SetValue( "r_bloom", 1 );
+				trap_Cvar_SetValue( "r_rimlighting", 1 );
+				trap_Cvar_SetValue( "cg_motionblur", 0 );
 				trap_Cvar_SetValue( "r_ext_multisample", 4 );
+				trap_Cvar_SetValue( "r_ext_texture_filter_anisotropic", 4 );
 				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_LINEAR" );
 				break;
 
 			case 2: // fast
-				trap_Cvar_SetValue( "r_subdivisions", 8 );
+				trap_Cvar_SetValue( "r_subdivisions", 12 );
 				trap_Cvar_SetValue( "r_vertexlighting", 0 );
-				trap_Cvar_SetValue( "r_lodbias", 1 );
-				trap_Cvar_SetValue( "r_colorbits", 0 );
-				trap_Cvar_SetValue( "r_depthbits", 0 );
 				trap_Cvar_SetValue( "r_picmip", 1 );
-				trap_Cvar_SetValue( "r_texturebits", 0 );
-				trap_Cvar_SetValue( "r_fastSky", 1 );
 				trap_Cvar_SetValue( "r_inGameVideo", 0 );
 				trap_Cvar_SetValue( "cg_shadows", 0 );
+				trap_Cvar_SetValue( "r_dynamiclight", 0 );
 				trap_Cvar_SetValue( "cg_bounceParticles", 0 );
+				trap_Cvar_SetValue( "r_normalMapping", 0 );
+				trap_Cvar_SetValue( "r_bloom", 1 );
+				trap_Cvar_SetValue( "r_rimlighting", 1 );
+				trap_Cvar_SetValue( "cg_motionblur", 0 );
 				trap_Cvar_SetValue( "r_ext_multisample", 2 );
+				trap_Cvar_SetValue( "r_ext_texture_filter_anisotropic", 2 );
 				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_NEAREST" );
 				break;
 
 			case 3: // fastest
 				trap_Cvar_SetValue( "r_subdivisions", 20 );
 				trap_Cvar_SetValue( "r_vertexlighting", 1 );
-				trap_Cvar_SetValue( "r_lodbias", 2 );
-				trap_Cvar_SetValue( "r_colorbits", 16 );
-				trap_Cvar_SetValue( "r_depthbits", 16 );
 				trap_Cvar_SetValue( "r_picmip", 2 );
-				trap_Cvar_SetValue( "r_texturebits", 16 );
-				trap_Cvar_SetValue( "r_fastSky", 1 );
 				trap_Cvar_SetValue( "r_inGameVideo", 0 );
 				trap_Cvar_SetValue( "cg_shadows", 0 );
+				trap_Cvar_SetValue( "r_dynamiclight", 0 );
 				trap_Cvar_SetValue( "cg_bounceParticles", 0 );
+				trap_Cvar_SetValue( "r_normalMapping", 0 );
+				trap_Cvar_SetValue( "r_bloom", 0 );
+				trap_Cvar_SetValue( "r_rimlighting", 0 );
+				trap_Cvar_SetValue( "cg_motionblur", 0 );
 				trap_Cvar_SetValue( "r_ext_multisample", 0 );
+				trap_Cvar_SetValue( "r_ext_texture_filter_anisotropic", 0 );
 				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_NEAREST" );
 				break;
 		}
@@ -3536,7 +3541,10 @@ static void UI_RunMenuScript( char **args )
 		}
 		else if ( Q_stricmp( name, "RunDemo" ) == 0 )
 		{
-			trap_Cmd_ExecuteText( EXEC_APPEND, va( "demo %s\n", Quote( uiInfo.demoList[ uiInfo.demoIndex ] ) ) );
+			if ( uiInfo.demoCount )
+			{
+				trap_Cmd_ExecuteText( EXEC_APPEND, va( "demo %s\n", Quote( uiInfo.demoList[ uiInfo.demoIndex ] ) ) );
+			}
 		}
 		else if ( Q_stricmp( name, "Tremulous" ) == 0 )
 		{
@@ -3911,67 +3919,58 @@ static void UI_RunMenuScript( char **args )
 			// FIXME: make this copying handle all files in the profiles directory
 			if ( Q_stricmp( uiprofile, buff ) )
 			{
-				if ( trap_FS_FOpenFile( va( "profiles/%s/%s", buff, CONFIG_NAME ), &f, FS_WRITE ) >= 0 )
+				int i;
+				char fileList[ MAX_STRING_CHARS ];
+				char *filePtr;
+				int numFiles = trap_FS_GetFileList( va( "profiles/%s", uiprofile ), NULL, fileList,
+					sizeof( fileList ) );
+
+				filePtr = fileList;
+				for ( i = 0; i < numFiles; i++, filePtr += strlen( filePtr ) + 1 )
 				{
-					if ( ( len = trap_FS_FOpenFile( va( "profiles/%s/%s", uiprofile, CONFIG_NAME ), &f2, FS_READ ) ) >= 0 )
+					if ( trap_FS_FOpenFile( va( "profiles/%s/%s", buff, filePtr ), &f, FS_WRITE ) >= 0 )
 					{
-						int             i;
-
-						for ( i = 0; i < len; i++ )
+						if ( ( len = trap_FS_FOpenFile( va( "profiles/%s/%s", uiprofile, filePtr ), &f2, FS_READ ) ) >= 0 )
 						{
-							byte            b;
+							char b[ 4096 ];
 
-							trap_FS_Read( &b, 1, f2 );
-							trap_FS_Write( &b, 1, f );
+							while ( len > 0 )
+							{
+								int count = MIN( sizeof( b ), len );
+
+								trap_FS_Read( &b, count, f2 );
+								trap_FS_Write( &b, count, f );
+								len -= count;
+							}
+
+							trap_FS_FCloseFile( f2 );
 						}
 
-						trap_FS_FCloseFile( f2 );
-					}
-
-					trap_FS_FCloseFile( f );
-				}
-
-				if ( trap_FS_FOpenFile( va( "profiles/%s/servercache.dat", buff ), &f, FS_WRITE ) >= 0 )
-				{
-					if ( ( len = trap_FS_FOpenFile( va( "profiles/%s/servercache.dat", cl_profile.string ), &f2, FS_READ ) ) >= 0 )
-					{
-						int             i;
-
-						for ( i = 0; i < len; i++ )
-						{
-							byte            b;
-
-							trap_FS_Read( &b, 1, f2 );
-							trap_FS_Write( &b, 1, f );
-						}
-
-						trap_FS_FCloseFile( f2 );
-					}
-
-					trap_FS_FCloseFile( f );
-				}
-
-				if ( !Q_stricmp( uiprofile, cl_defaultProfile.string ) )
-				{
-					// if renaming the default profile, set the default to the new profile
-					trap_Cvar_Set( "cl_defaultProfile", buff );
-
-					if ( trap_FS_FOpenFile( "profiles/defaultprofile.dat", &f, FS_WRITE ) >= 0 )
-					{
-						trap_FS_Write( buff, strlen( buff ), f );
 						trap_FS_FCloseFile( f );
 					}
 				}
-
-				// if renaming the active profile, set active to new name
-				if ( !Q_stricmp( uiprofile, cl_profile.string ) )
-				{
-					trap_Cvar_Set( "cl_profile", buff );
-				}
-
-				// delete the old profile
-				trap_FS_Delete( va( "profiles/%s", uiprofile ) );
 			}
+
+			if ( !Q_stricmp( uiprofile, cl_defaultProfile.string ) )
+			{
+				// if renaming the default profile, set the default to the new profile
+				trap_Cvar_Set( "cl_defaultProfile", buff );
+
+				if ( trap_FS_FOpenFile( "profiles/defaultprofile.dat", &f, FS_WRITE ) >= 0 )
+				{
+					trap_FS_Write( buff, strlen( buff ), f );
+					trap_FS_FCloseFile( f );
+				}
+			}
+
+			// if renaming the active profile, set active to new name
+			if ( !Q_stricmp( uiprofile, cl_profile.string ) )
+			{
+				trap_Cvar_Set( "cl_profile", buff );
+			}
+
+			// delete the old profile
+			trap_FS_Delete( va( "profiles/%s", uiprofile ) );
 
 			trap_Cvar_Set( "ui_profile", ui_renameprofileto );
 			trap_Cvar_Set( "ui_profile_renameto", "" );
@@ -4380,8 +4379,21 @@ static const char *UI_FeederItemText( int feederID, int index, int column, qhand
 					return Info_ValueForKey( info, "mapname" );
 
 				case SORT_CLIENTS:
-					Com_sprintf( clientBuff, sizeof( clientBuff ), "%s (%s)",
-					             Info_ValueForKey( info, "clients" ), Info_ValueForKey( info, "sv_maxclients" ) );
+					{
+						int bots = atoi( Info_ValueForKey( info, "bots" ) );
+
+						if ( bots )
+						{
+							Com_sprintf( clientBuff, sizeof( clientBuff ), "%s+%d (%s)",
+							             Info_ValueForKey( info, "clients" ), bots, Info_ValueForKey( info, "sv_maxclients" ) );
+						}
+						else
+						{
+							Com_sprintf( clientBuff, sizeof( clientBuff ), "%s (%s)",
+							             Info_ValueForKey( info, "clients" ), Info_ValueForKey( info, "sv_maxclients" ) );
+						}
+					}
+
 					return clientBuff;
 
 				case SORT_PING:
@@ -4833,16 +4845,25 @@ static int UI_FeederInitialise( int feederID )
 	{
 		int i;
 		char lang[25];
+		char *underscore;
 
 		trap_Cvar_VariableStringBuffer( "language", lang, sizeof( lang ) );
 
-		for ( i = 0; i < uiInfo.numLanguages; i++ )
+		do
 		{
-			if( !Q_stricmp( lang, uiInfo.languages[ i ].lang ) )
+			for ( i = 0; i < uiInfo.numLanguages; i++ )
 			{
-				return i;
+				if( !Q_stricmp( lang, uiInfo.languages[ i ].lang ) )
+				{
+					return i;
+				}
 			}
-		}
+
+			if ( ( underscore = strrchr( lang, '_' ) ) )
+			{
+				*underscore = 0;
+			}
+		} while ( underscore );
 	}
 
 	if ( feederID == FEEDER_VOIPINPUT )

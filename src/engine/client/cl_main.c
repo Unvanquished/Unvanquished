@@ -126,7 +126,6 @@ cvar_t *cl_motdString;
 
 cvar_t *cl_allowDownload;
 cvar_t *cl_wwwDownload;
-cvar_t *cl_conXOffset;
 cvar_t *cl_inGameVideo;
 
 cvar_t *cl_serverStatusResendTime;
@@ -150,7 +149,6 @@ cvar_t                 *cl_consoleKeys;
 cvar_t                 *cl_consoleFont;
 cvar_t                 *cl_consoleFontSize;
 cvar_t                 *cl_consoleFontKerning;
-cvar_t                 *cl_consolePrompt;
 cvar_t                 *cl_consoleCommand; //see also com_consoleCommand for terminal consoles
 
 struct rsa_public_key  public_key;
@@ -1574,6 +1572,7 @@ void CL_ShutdownAll( void )
 	cls.uiStarted = qfalse;
 	cls.cgameStarted = qfalse;
 	cls.rendererStarted = qfalse;
+	cls.cgameCVarsRegistered = qfalse;
 	cls.soundRegistered = qfalse;
 
 	// Gordon: stop recording on map change etc, demos aren't valid over map changes anyway
@@ -1849,6 +1848,8 @@ void CL_Disconnect( qboolean showMainMenu )
 	{
 		cls.state = CA_DISCONNECTED;
 	}
+
+	Key_SetTeam( TEAM_NONE );
 }
 
 /*
@@ -1919,7 +1920,7 @@ void CL_RequestMotd( void )
 			break;
 	}
 
-	Com_DPrintf(_( "%s resolved to %s\n"), MASTER_SERVER_NAME,
+	Com_DPrintf( "%s resolved to %s\n", MASTER_SERVER_NAME,
 	             NET_AdrToStringwPort( cls.updateServer ) );
 
 	info[ 0 ] = 0;
@@ -2093,7 +2094,7 @@ void CL_Connect_f( void )
 
 	serverString = NET_AdrToStringwPort( clc.serverAddress );
 
-	Com_DPrintf(_( "%s resolved to %s\n"), cls.servername, serverString );
+	Com_DPrintf( "%s resolved to %s\n", cls.servername, serverString );
 
 	// if we aren't playing on a LAN, we need to authenticate
 	// with the cd key
@@ -2359,6 +2360,7 @@ void CL_Vid_Restart_f( void )
 	cls.rendererStarted = qfalse;
 	cls.uiStarted = qfalse;
 	cls.cgameStarted = qfalse;
+	cls.cgameCVarsRegistered = qfalse;
 	cls.soundRegistered = qfalse;
 
 	// unpause so the cgame definitely gets a snapshot and renders a frame
@@ -2392,6 +2394,7 @@ void CL_Vid_Restart_f( void )
 	if ( cls.state > CA_CONNECTED && cls.state != CA_CINEMATIC )
 	{
 		cls.cgameStarted = qtrue;
+		cls.cgameCVarsRegistered = qtrue;
 		CL_InitCGame();
 		// send pure checksums
 		CL_SendPureChecksums();
@@ -2683,6 +2686,7 @@ void CL_DownloadsComplete( void )
 
 	// initialize the CGame
 	cls.cgameStarted = qtrue;
+	cls.cgameCVarsRegistered = qtrue;
 	CL_InitCGame();
 
 	// set pure checksums
@@ -3718,7 +3722,7 @@ qboolean CL_WWWBadChecksum( const char *pakname )
 
 		strcat( clc.badChecksumList, "@" );
 		strcat( clc.badChecksumList, pakname );
-		Com_DPrintf(_( "bad checksums: %s\n"), clc.badChecksumList );
+		Com_DPrintf( "bad checksums: %s\n", clc.badChecksumList );
 		return qtrue;
 	}
 
@@ -4153,6 +4157,12 @@ void CL_StartHunkUsers( void )
 		S_BeginRegistration();
 	}
 
+	if ( !cls.cgameStarted && !cls.cgameCVarsRegistered )
+	{
+		cls.cgameCVarsRegistered = qtrue;
+		CL_InitCGameCVars();
+	}
+
 	if ( !cls.uiStarted )
 	{
 		cls.uiStarted = qtrue;
@@ -4455,7 +4465,6 @@ void CL_Init( void )
 	cl_profile = Cvar_Get( "cl_profile", "", CVAR_ROM );
 	cl_defaultProfile = Cvar_Get( "cl_defaultProfile", "", CVAR_ROM );
 
-	cl_conXOffset = Cvar_Get( "cl_conXOffset", "3", 0 );
 	cl_inGameVideo = Cvar_Get( "r_inGameVideo", "1", CVAR_ARCHIVE );
 
 	cl_serverStatusResendTime = Cvar_Get( "cl_serverStatusResendTime", "750", 0 );
@@ -4487,7 +4496,7 @@ void CL_Init( void )
 	cl_consoleFont = Cvar_Get( "cl_consoleFont", "fonts/unifont.ttf", CVAR_ARCHIVE | CVAR_LATCH );
 	cl_consoleFontSize = Cvar_Get( "cl_consoleFontSize", "16", CVAR_ARCHIVE | CVAR_LATCH );
 	cl_consoleFontKerning = Cvar_Get( "cl_consoleFontKerning", "0", CVAR_ARCHIVE );
-	cl_consolePrompt = Cvar_Get( "cl_consolePrompt", "^3->", CVAR_ARCHIVE );
+
 	cl_consoleCommand = Cvar_Get( "cl_consoleCommand", "say", CVAR_ARCHIVE );
 
 	cl_gamename = Cvar_Get( "cl_gamename", GAMENAME_FOR_MASTER, CVAR_TEMP );
@@ -4620,7 +4629,7 @@ void CL_Shutdown( void )
 		return;
 	}
 
-	Com_DPrintf("%s", _( "----- CL_Shutdown -----\n" ));
+	Com_DPrintf( "----- CL_Shutdown -----\n" );
 
 	if ( recursive )
 	{
@@ -4703,6 +4712,7 @@ static void CL_SetServerInfo( serverInfo_t *server, const char *info, int ping )
 		if ( info )
 		{
 			server->clients = atoi( Info_ValueForKey( info, "clients" ) );
+			server->bots = atoi( Info_ValueForKey( info, "bots" ) );
 			Q_strncpyz( server->hostName, Info_ValueForKey( info, "hostname" ), MAX_NAME_LENGTH );
 			server->load = atoi( Info_ValueForKey( info, "serverload" ) );
 			Q_strncpyz( server->mapName, Info_ValueForKey( info, "mapname" ), MAX_NAME_LENGTH );
@@ -5147,7 +5157,7 @@ void CL_LocalServers_f( void )
 	int      i, j;
 	netadr_t to;
 
-	Com_DPrintf("%s", _( "Scanning for servers on the local network…\n" ));
+	Com_DPrintf( "Scanning for servers on the local network…\n" );
 
 	// reset the list, waiting for response
 	cls.numlocalservers = 0;

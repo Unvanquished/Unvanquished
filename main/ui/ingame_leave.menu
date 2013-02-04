@@ -24,7 +24,7 @@
     fullScreen 0
     outOfBoundsClick      // this closes the window if it gets a click out of the rectangle
     rect X Y W H
-    focusColor 1 .75 0 1
+    focusColor 0.45 0.45 0.45 1.0
     aspectBias ALIGN_LEFT
     onOpen
     {
@@ -58,7 +58,6 @@
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
       textscale .25
-      forecolor 1 1 1 1
       visible MENU_TRUE
       action
       {
@@ -105,7 +104,6 @@
       textvalign VALIGN_CENTER
       textscale .25
       decoration
-      forecolor 1 1 1 1
       visible MENU_TRUE
     }
 
@@ -120,7 +118,6 @@
       rect L2_X L2_Y (L2_W/2) L2_H
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_TRUE
       action
       {
@@ -140,7 +137,6 @@
       rect (L2_X+(L2_W/2)) L2_Y (L2_W/2) L2_H
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_TRUE
       action
       {
@@ -161,7 +157,6 @@
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
       textscale .25
-      forecolor 1 1 1 1
       decoration
       visible MENU_TRUE
     }
@@ -177,7 +172,6 @@
       rect L2_X L2_Y (L2_W/2) L2_H
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_TRUE
       action
       {
@@ -197,7 +191,6 @@
       rect (L2_X+(L2_W/2)) L2_Y (L2_W/2) L2_H
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_TRUE
       action
       {

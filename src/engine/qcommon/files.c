@@ -441,6 +441,11 @@ int FS_filelength( fileHandle_t f )
 	int end;
 	FILE *h;
 
+	if ( fsh[ f ].zipFile )
+	{
+		return fsh[ f ].fileSize;
+	}
+
 	h = FS_FileForHandle( f );
 	pos = ftell( h );
 	fseek( h, 0, SEEK_END );
@@ -1974,14 +1979,13 @@ int FS_Seek( fileHandle_t f, long offset, int origin )
 		byte buffer[ PK3_SEEK_BUFFER_SIZE ];
 		int  remainder = offset;
 
-		if ( offset < 0 || origin == FS_SEEK_END )
-		{
-			Com_Error( ERR_FATAL, "Negative offsets and FS_SEEK_END not implemented "
-			           "for FS_Seek on pk3 file contents" );
-		}
-
 		switch ( origin )
 		{
+			case FS_SEEK_END:
+				remainder = fsh[ f ].fileSize + offset;
+				offset *= -1;
+				//fallthrough
+
 			case FS_SEEK_SET:
 				unzSetOffset( fsh[ f ].handleFiles.file.z, fsh[ f ].zipFilePos );
 				unzOpenCurrentFile( fsh[ f ].handleFiles.file.z );
@@ -3178,8 +3182,8 @@ void FS_NewDir_f( void )
 
 	if ( Cmd_Argc() < 2 )
 	{
-		Com_Printf(_( "usage: fdir <filter>\n" ));
-		Com_Printf(_( "example: fdir *q3dm*.bsp\n" ));
+		Com_Printf(_( "usage: fdir <filter>\n"
+		              "example: fdir *q3dm*.bsp\n" ));
 		return;
 	}
 
@@ -4757,10 +4761,16 @@ void FS_Restart( int checksumFeed )
 
 				// exec the config
 				Cbuf_AddText( va( "exec profiles/%s/%s\n", cl_profileStr, CONFIG_NAME ) );
+#ifndef DEDICATED
+				Cbuf_AddText( va( "exec profiles/%s/%s\n", cl_profileStr, KEYBINDINGS_NAME ) );
+#endif
 			}
 			else
 			{
 				Cbuf_AddText( va( "exec %s\n", CONFIG_NAME ) );
+#ifndef DEDICATED
+				Cbuf_AddText( va( "exec %s\n", KEYBINDINGS_NAME ) );
+#endif
 			}
 		}
 	}
