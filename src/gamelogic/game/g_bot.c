@@ -882,6 +882,9 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 			case BA_H_DCC:
 				enemyScore = 0.5;
 				break;
+			case BA_H_DRILL:
+				enemyScore = 0.7;
+				break;
 			case BA_A_ACIDTUBE:
 				enemyScore = 0.7;
 				break;
@@ -899,6 +902,9 @@ float BotGetEnemyPriority( gentity_t *self, gentity_t *ent )
 				break;
 			case BA_A_TRAPPER:
 				enemyScore = 0.8;
+				break;
+			case BA_A_LEECH:
+				enemyScore = 0.7;
 				break;
 			default:
 				enemyScore = 0.5;
