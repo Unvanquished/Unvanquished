@@ -916,6 +916,13 @@ float SCR_ConsoleFontCharHeight( void )
 	       : cls.consoleFont.glyphBlock[0]['I'].imageHeight + CONSOLE_FONT_VPADDING * cl_consoleFontSize->value;
 }
 
+float SCR_ConsoleFontCharVPadding( void )
+{
+	return cls.useLegacyConsoleFont
+	       ? 0
+	       : MAX( 0, -cls.consoleFont.glyphBlock[0]['g'].bottom >> 6);
+}
+
 float SCR_ConsoleFontStringWidth( const char* s, int len )
 {
 	float width = 0;

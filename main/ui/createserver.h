@@ -11,7 +11,6 @@
       textvalign VALIGN_CENTER \
       textalignx ELEM_OFF_X \
       textscale .36 \
-      forecolor 1 1 1 1 \
       visible MENU_TRUE \
     }
 
@@ -34,7 +33,6 @@
       textvalign VALIGN_CENTER \
       textalignx ELEM_OFF_X \
       textscale .36 \
-      forecolor 1 1 1 1 \
       visible MENU_TRUE \
           action { ACTION } \
     }
@@ -51,7 +49,6 @@
       textvalign VALIGN_CENTER \
       textalignx ELEM_OFF_X \
       textscale .36 \
-      forecolor 1 1 1 1 \
       visible MENU_TRUE \
           action { ACTION } \
     }

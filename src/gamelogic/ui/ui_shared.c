@@ -2112,6 +2112,28 @@ void Script_playLooped( itemDef_t *item, char **args )
 	}
 }
 
+void Script_playRandom( itemDef_t *item, char **args )
+{
+	const char *val;
+	int         numValues;
+
+	if ( Int_Parse( args, &numValues ) )
+	{
+		int selected = rand() % numValues;
+		int i;
+
+		for( i = 0; i < selected; ++i )
+		{
+			String_Parse( args, &val );
+			Int_Parse( args, &numValues ); // Throw away value to stop preprocessor from combining strings
+		}
+
+		Script_playLooped( item, args );
+		while ( String_Parse( args, &val ) );
+	}
+}
+
+
 glyphInfo_t *UI_GlyphCP( const fontMetrics_t *font, int ch )
 {
 	static glyphInfo_t glyphs[8];
@@ -2812,6 +2834,7 @@ static const commandDef_t commandList[] =
 	{ "orbit",           &Script_Orbit           }, // group/name
 	{ "play",            &Script_Play            }, // group/name
 	{ "playlooped",      &Script_playLooped      }, // group/name
+	{ "playrandom",      &Script_playRandom      }, // Plays a random track out of the given
 	{ "reset",           &Script_Reset           }, // resets the state of the item argument
 	{ "setasset",        &Script_SetAsset        }, // works on this
 	{ "setbackground",   &Script_SetBackground   }, // works on this

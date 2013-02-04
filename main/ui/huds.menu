@@ -15,7 +15,7 @@
     visible MENU_FALSE
     fullscreen MENU_FALSE
     rect (320-(W/2)) (240-(H/2)) W H
-    focusColor 1 .75 0 1
+    focusColor 0.14 0.8 0.8 1.0
     style WINDOW_STYLE_FILLED
     border WINDOW_BORDER_FULL
     popup
@@ -53,7 +53,7 @@
 		rect 115 -77.5 200 100
 		textscale .4
 		visible MENU_TRUE
-		forecolor 1 1 1 1
+		forecolor 0.14 0.8 0.8 1.0
 		decoration
 	}
 
@@ -76,7 +76,6 @@
 		rect BORDER ((2*H/3)-7) (3*H/5) 10
 		textalign ALIGN_CENTER
 		textscale .25
-		forecolor 1 1 1 1
 		visible MENU_TRUE
 		action
 		{
@@ -98,7 +97,6 @@
       textaligny 14
       border WINDOW_BORDER_KCGRADIENT
       bordercolor   0.5 0.5 0.5 0.5
-      forecolor     1   1   1   1
       backcolor     0.2 0.2 0.2 1
       outlinecolor  0.1 0.1 0.1 0.5
       visible MENU_TRUE
@@ -117,7 +115,6 @@
       rect (W-(2*BUTT_W)) (H-BUTT_H) BUTT_W BUTT_H
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_TRUE
       action
       {
@@ -137,7 +134,7 @@
       rect (W-BUTT_W) (H-BUTT_H) BUTT_W BUTT_H
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
+      forecolor 0.14 0.8 0.8 1.0
       visible MENU_TRUE
       action
       {

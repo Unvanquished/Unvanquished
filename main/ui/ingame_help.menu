@@ -26,7 +26,7 @@
     fullscreen MENU_FALSE
     outOfBoundsClick      // this closes the window if it gets a click out of the rectangle
     rect X Y W H
-    focusColor 1 .75 0 1
+    focusColor 0.14 0.8 0.8 1.0
     aspectBias ALIGN_LEFT
     onOpen {
       setFocus list;
@@ -60,7 +60,6 @@
       feeder FEEDER_HELP_LIST
       border WINDOW_BORDER_KCGRADIENT
       bordercolor   0.5 0.5 0.5 0.5
-      forecolor     1   1   1   1
       backcolor     0.2 0.2 0.2 1
       outlinecolor  0.1 0.1 0.1 0.5
       visible MENU_TRUE
@@ -80,7 +79,6 @@
       textaligny INFO_TOFF
       border WINDOW_BORDER_KCGRADIENT
       bordercolor   0.5 0.5 0.5 0.5
-      forecolor     1   1   1   1
       backcolor     0.2 0.2 0.2 1
       visible MENU_TRUE
       decoration
