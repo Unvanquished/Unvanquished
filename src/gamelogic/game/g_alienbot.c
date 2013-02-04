@@ -298,7 +298,7 @@ AINodeStatus_t BotActionEvolve ( gentity_t *self, AIGenericNode_t *node )
 			status = STATUS_SUCCESS;
 		}
 	}
-	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL2 ) && g_humanStage.integer == 0 && g_bot_level2.integer )
+	else if ( BotCanEvolveToClass( self, PCL_ALIEN_LEVEL2 ) && ( g_humanStage.integer == 0 || !g_bot_level2upg.integer )  && g_bot_level2.integer )
 	{
 		if ( BotEvolveToClass( self, PCL_ALIEN_LEVEL2 ) )
 		{
