@@ -1,5 +1,5 @@
-{
-  "^3Welcome^7"
+﻿{
+  "^5Welcome^7"
   {
     "In this section you will find a summary of major changes since Tremulous 1.1. It is "
     "not a complete list. In general, all things have been tweaked for balance in "

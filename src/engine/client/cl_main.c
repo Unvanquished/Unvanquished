@@ -126,7 +126,6 @@ cvar_t *cl_motdString;
 
 cvar_t *cl_allowDownload;
 cvar_t *cl_wwwDownload;
-cvar_t *cl_conXOffset;
 cvar_t *cl_inGameVideo;
 
 cvar_t *cl_serverStatusResendTime;
@@ -150,7 +149,6 @@ cvar_t                 *cl_consoleKeys;
 cvar_t                 *cl_consoleFont;
 cvar_t                 *cl_consoleFontSize;
 cvar_t                 *cl_consoleFontKerning;
-cvar_t                 *cl_consolePrompt;
 cvar_t                 *cl_consoleCommand; //see also com_consoleCommand for terminal consoles
 
 struct rsa_public_key  public_key;
@@ -4467,7 +4465,6 @@ void CL_Init( void )
 	cl_profile = Cvar_Get( "cl_profile", "", CVAR_ROM );
 	cl_defaultProfile = Cvar_Get( "cl_defaultProfile", "", CVAR_ROM );
 
-	cl_conXOffset = Cvar_Get( "cl_conXOffset", "3", 0 );
 	cl_inGameVideo = Cvar_Get( "r_inGameVideo", "1", CVAR_ARCHIVE );
 
 	cl_serverStatusResendTime = Cvar_Get( "cl_serverStatusResendTime", "750", 0 );
@@ -4499,7 +4496,7 @@ void CL_Init( void )
 	cl_consoleFont = Cvar_Get( "cl_consoleFont", "fonts/unifont.ttf", CVAR_ARCHIVE | CVAR_LATCH );
 	cl_consoleFontSize = Cvar_Get( "cl_consoleFontSize", "16", CVAR_ARCHIVE | CVAR_LATCH );
 	cl_consoleFontKerning = Cvar_Get( "cl_consoleFontKerning", "0", CVAR_ARCHIVE );
-	cl_consolePrompt = Cvar_Get( "cl_consolePrompt", "^3->", CVAR_ARCHIVE );
+
 	cl_consoleCommand = Cvar_Get( "cl_consoleCommand", "say", CVAR_ARCHIVE );
 
 	cl_gamename = Cvar_Get( "cl_gamename", GAMENAME_FOR_MASTER, CVAR_TEMP );

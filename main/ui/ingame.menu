@@ -1,5 +1,13 @@
 #include "ui/menudef.h"
+#include "ui/options.h"
 {
+
+
+#define W             320
+#define H             290
+#define X             10
+#define Y             60
+#define BORDER        10
 
 #define BUTT_BAR_X  25
 #define BUTT_BAR_Y  0
@@ -17,6 +25,8 @@
     cursor "ui/assets/3_cursor3"      // cursor
     gradientBar "ui/assets/gradientbar2.tga"  // gradient bar
     itemFocusSound "sound/misc/menu2.wav"   // sound for item getting focus (via keyboard or mouse )
+    
+
 
     fadeClamp 1.0         // sets the fadeup alpha
     fadeCycle 1         // how often fade happens in milliseconds
@@ -36,7 +46,7 @@
     fullScreen 0
     outOfBoundsClick      // this closes the window if it gets a click out of the rectangle
     rect 0 0 1280 56
-    focusColor 1 .75 0 1
+    focusColor 0.45 0.45 0.45 1.0 
     disableColor .5 .5 .5 1
     backColor 0 0 0 0
     aspectBias ALIGN_LEFT
@@ -70,7 +80,6 @@
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
       textscale .4
-      forecolor 1 1 1 1
       visible MENU_TRUE
       action
       {
@@ -89,7 +98,6 @@
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
       textscale .4
-      forecolor 1 1 1 1
       visible MENU_TRUE
       action
       {
@@ -108,7 +116,6 @@
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
       textscale .4
-      forecolor 1 1 1 1
       visible MENU_TRUE
       action
       {
@@ -127,7 +134,6 @@
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
       textscale .4
-      forecolor 1 1 1 1
       visible MENU_TRUE
       action
       {

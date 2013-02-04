@@ -21,7 +21,7 @@
     visible MENU_FALSE
     fullscreen MENU_FALSE
     rect (320-(W/2)) (240-(H/2)) W H
-    focusColor 1 .75 0 1
+    focusColor 0.45 0.45 0.45 1.0
     style WINDOW_STYLE_FILLED
     border WINDOW_BORDER_FULL
     popup
@@ -65,7 +65,6 @@
       textscale .3
       outlinecolor .2 .2 .2 .5
       backcolor 0 0 0 0
-      forecolor 1 1 1 1
       border WINDOW_BORDER_NONE
       bordercolor 0 0 0 0
       action { ui_script FindPlayer }
@@ -82,7 +81,6 @@
       rect (W-(BORDER+BUTT_W)) BORDER BUTT_W SEARCH_H
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_TRUE
       action
       {
@@ -145,7 +143,6 @@
       rect (W-(2*BUTT_W)) (H-BUTT_H) BUTT_W BUTT_H
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_TRUE
       action { ui_script FoundPlayerJoinServer }
     }
@@ -160,7 +157,6 @@
       rect (W-BUTT_W) (H-BUTT_H) BUTT_W BUTT_H
       textalign ALIGN_CENTER
       textvalign VALIGN_CENTER
-      forecolor 1 1 1 1
       visible MENU_TRUE
       action
       {
