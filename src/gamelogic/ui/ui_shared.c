@@ -6043,7 +6043,7 @@ static const char *const g_bind_commands[] =
 	"messagemode2",
 	"messagemode3",
 	"messagemode4",
-	"messagemodec"
+	"messagemodec",
 	"reload",
 	"scoresDown",
 	"scoresUp",
