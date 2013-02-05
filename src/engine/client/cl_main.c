@@ -4335,6 +4335,7 @@ qboolean CL_InitRef( const char *renderer )
 
 	ri.Sys_GLimpSafeInit = Sys_GLimpSafeInit;
 	ri.Sys_GLimpInit = Sys_GLimpInit;
+	ri.Bot_DrawDebugMesh = BotDebugDrawMesh;
 
 	Com_Printf("%s", _( "Calling GetRefAPI…\n" ));
 	ret = GetRefAPI( REF_API_VERSION, &ri );

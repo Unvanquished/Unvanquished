@@ -36,7 +36,6 @@ extern "C"
 {
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
-#include "../server/server.h"
 }
 
 #include "../../libs/detour/DetourNavMeshBuilder.h"

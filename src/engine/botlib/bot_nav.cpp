@@ -31,6 +31,10 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
+extern "C"
+{
+	#include "../server/server.h"
+}
 
 #include "bot_local.h"
 

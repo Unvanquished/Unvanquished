@@ -576,6 +576,7 @@ if( USE_PHYSICS )
 endif()
 
 set( CLIENTLIST
+  ${MOUNT_DIR}/engine/botlib/bot_debug.cpp
   ${MOUNT_DIR}/engine/client/cin_ogm.c
   ${MOUNT_DIR}/engine/client/cl_avi.c
   ${MOUNT_DIR}/engine/client/cl_cgame.c
@@ -866,7 +867,8 @@ set( DETOURLIST
   ${MOUNT_DIR}/libs/detour/DetourNode.cpp
 #   ${MOUNT_DIR}/libs/detour/DetourObstacleAvoidance.cpp
   ${MOUNT_DIR}/libs/detour/DetourPathCorridor.cpp
-#   ${MOUNT_DIR}/libs/detour/DetourProximityGrid.cpp
+  ${MOUNT_DIR}/libs/detour/DetourDebugDraw.cpp
+  ${MOUNT_DIR}/libs/detour/DebugDraw.cpp
 )
 
 set( RECASTLIST
