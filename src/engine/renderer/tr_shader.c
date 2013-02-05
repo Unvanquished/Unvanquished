@@ -5156,7 +5156,10 @@ shader_t       *R_FindShader( const char *name, int lightmapIndex, qboolean mipR
 	// ydnar: default to no implicit mappings
 	implicitMap[ 0 ] = '\0';
 	implicitStateBits = GLS_DEFAULT;
-	implicitCullType = CT_FRONT_SIDED;
+	if( shader.lightmapIndex == LIGHTMAP_2D )
+		implicitCullType = CT_TWO_SIDED;
+	else
+		implicitCullType = CT_FRONT_SIDED;
 
 	// attempt to define shader from an explicit parameter file
 	shaderText = FindShaderInShaderText( strippedName );
