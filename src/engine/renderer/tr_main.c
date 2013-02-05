@@ -2058,6 +2058,7 @@ void R_DebugGraphics( void )
 
 	GL_Bind( tr.whiteImage );
 	GL_Cull( CT_FRONT_SIDED );
+	GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
 	ri.CM_DrawDebugSurface( R_DebugPolygon );
 	ri.Bot_DrawDebugMesh( &bi );
 	R_FogOn();
