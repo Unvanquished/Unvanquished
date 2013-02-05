@@ -41,6 +41,7 @@ Maryland 20850 USA.
 
 #include "../sys/sys_loadlib.h"
 #include "../sys/sys_local.h"
+#include "../botlib/bot_debug.h"
 
 cvar_t *cl_wavefilerecord;
 

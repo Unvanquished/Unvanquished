@@ -16,5 +16,5 @@ typedef struct
 	void ( *DebugDrawEnd ) ();
 } BotDebugInterface_t;
 
-void     BotDebugDrawMesh(BotDebugInterface_t in);
+void     BotDebugDrawMesh(BotDebugInterface_t *in);
 #endif

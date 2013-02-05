@@ -76,9 +76,10 @@ void DebugDrawQuake::end()
 	re->DebugDrawEnd();
 }
 
+extern "C"
 void BotDebugDrawMesh( BotDebugInterface_t *in )
 {
-	int navMeshNum = cl.snap.ps.stats[ 5 ] - 1;
+	int navMeshNum = cl.snap.ps.stats[ STAT_CLASS ] - 1;
 
 	if ( navMeshNum < 0 || navMeshNum > numNavData )
 	{
