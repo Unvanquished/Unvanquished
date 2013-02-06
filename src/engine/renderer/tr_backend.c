@@ -1268,9 +1268,10 @@ const void     *RB_Draw2dPolysIndexed( const void *data )
 
 	for ( i = 0; i < cmd->numverts; i++ )
 	{
-		tess.xyz[ tess.numVertexes ].v[ 0 ] = cmd->verts[ i ].xyz[ 0 ];
-		tess.xyz[ tess.numVertexes ].v[ 1 ] = cmd->verts[ i ].xyz[ 1 ];
+		tess.xyz[ tess.numVertexes ].v[ 0 ] = cmd->verts[ i ].xyz[ 0 ] + cmd->translation[ 0 ];
+		tess.xyz[ tess.numVertexes ].v[ 1 ] = cmd->verts[ i ].xyz[ 1 ] + cmd->translation[ 1 ];
 		tess.xyz[ tess.numVertexes ].v[ 2 ] = 0;
+		tess.xyz[ tess.numVertexes ].v[ 3 ] = 1;
 
 		tess.texCoords0[ tess.numVertexes ].v[ 0 ] = cmd->verts[ i ].st[ 0 ];
 		tess.texCoords0[ tess.numVertexes ].v[ 1 ] = cmd->verts[ i ].st[ 1 ];
