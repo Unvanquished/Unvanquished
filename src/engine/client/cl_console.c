@@ -67,6 +67,12 @@ cvar_t    *con_colorRed;
 cvar_t    *con_colorBlue;
 cvar_t    *con_colorGreen;
 
+/**
+ * allows for debugging the console without using the consoles scrollback,
+ * which might otherwise end in loops or unnecessary verbose output
+ */
+cvar_t    *con_debug;
+
 #define ANIMATION_TYPE_NONE   0
 #define ANIMATION_TYPE_SCROLL_DOWN 1
 #define ANIMATION_TYPE_FADE   2
@@ -526,6 +532,8 @@ void Con_Init( void )
 	con_borderColorGreen = Cvar_Get( "con_borderColorGreen", "1", CVAR_ARCHIVE );
 	con_borderColorAlpha = Cvar_Get( "con_borderColorAlpha", "0.2", CVAR_ARCHIVE );
 
+	con_debug = Cvar_Get( "con_debug", "0", 0 );
+
 	// Done defining cvars for console colors
 
 	Field_Clear( &g_consoleField );
@@ -797,21 +805,28 @@ void Con_DrawInput( int linePosition, float overrideAlpha )
 	Field_Draw( &g_consoleField, consoleState.horizontalVidMargin + consoleState.horizontalVidPadding + SCR_ConsoleFontStringWidth( prompt, strlen( prompt ) ), linePosition, qtrue, qtrue, color[ 3 ] );
 }
 
-void Con_DrawAboutTextLine( const int positionFromTop, const char* text )
+void Con_DrawRightFloatingTextLine( const int linePosition, const float *color, const char* text )
 {
 	int i, x;
 	float currentWidthLocation = 0;
+
 	const int charHeight = SCR_ConsoleFontCharHeight();
+	const int positionFromTop = consoleState.verticalVidMargin
+	                          + consoleState.verticalVidPaddingTop
+	                          + consoleState.topBorderWidth
+	                          + charHeight;
 
 	i = strlen( text );
 	currentWidthLocation = cls.glconfig.vidWidth
 	                     - SCR_ConsoleFontStringWidth( text, i )
 	                     - consoleState.horizontalVidMargin - consoleState.horizontalVidPadding;
 
+	re.SetColor( color );
+
 	for ( x = 0; x < i; x++ )
 	{
 		int ch = Q_UTF8CodePoint( &text[ x ] );
-		SCR_DrawConsoleFontUnichar( currentWidthLocation, positionFromTop, ch );
+		SCR_DrawConsoleFontUnichar( currentWidthLocation, positionFromTop + ( linePosition * charHeight ), ch );
 		currentWidthLocation += SCR_ConsoleFontUnicharWidth( ch );
 	}
 }
@@ -825,15 +840,7 @@ Draws the build and copyright info onto the console
 */
 void Con_DrawAboutText( void )
 {
-	int i, x;
 	vec4_t color;
-	float currentWidthLocation = 0;
-
-	const int charHeight = SCR_ConsoleFontCharHeight();
-	const int positionFromTop = consoleState.verticalVidMargin
-	                          + consoleState.verticalVidPaddingTop
-	                          + consoleState.topBorderWidth
-	                          + charHeight;
 
 	// draw the version number
 	color[ 0 ] = 1.0f;
@@ -841,10 +848,9 @@ void Con_DrawAboutText( void )
 	color[ 2 ] = 1.0f;
 	//ANIMATION_TYPE_FADE but also ANIMATION_TYPE_SCROLL_DOWN needs this, latter, since it might otherwise scroll out the console
 	color[ 3 ] = 0.66f * consoleState.currentAnimationFraction;
-	re.SetColor( color );
 
-	Con_DrawAboutTextLine( positionFromTop, Q3_VERSION );
-	Con_DrawAboutTextLine( positionFromTop + charHeight, Q3_ENGINE );
+	Con_DrawRightFloatingTextLine( 0, color, Q3_VERSION );
+	Con_DrawRightFloatingTextLine( 1, color, Q3_ENGINE );
 }
 
 /*
@@ -858,10 +864,6 @@ void Con_DrawConsoleScrollbackIndicator( int lineDrawPosition )
 	vec4_t color;
 	// draw arrows to show the buffer is backscrolled
 	const int hatWidth = SCR_ConsoleFontUnicharWidth( '^' );
-	const int charHeight = SCR_ConsoleFontCharHeight();
-
-	const int virtualHeight = (SCREEN_HEIGHT - con_margin->integer) * con_height->integer * 0.01;
-	const int scrollBarLength = (virtualHeight - 2 * charHeight);
 
 	color[ 0 ] = 1.0f;
 	color[ 1 ] = 1.0f;
@@ -920,6 +922,9 @@ void Con_DrawConsoleScrollbar( int virtualHeight )
 				con_borderWidth->value, scrollHandleLength, color );
 	}
 
+	if(con_debug->integer) {
+		Con_DrawRightFloatingTextLine( 6, NULL, va( "Scrollbar (px): Size %d HandleSize %d Position %d", (int) scrollBarLength, (int) scrollHandleLength, (int) scrollHandlePostition ) );
+	}
 }
 
 /*
@@ -946,7 +951,7 @@ Con_DrawConsoleContent
 void Con_DrawConsoleContent( int currentConsoleVidHeight, int currentConsoleVirtualHeight )
 {
 	float  currentWidthLocation = 0;
-	int    i, x, lineDrawPosition;
+	int    x, lineDrawPosition;
 	int    row;
 	int    currentColor;
 	vec4_t color;
@@ -978,6 +983,11 @@ void Con_DrawConsoleContent( int currentConsoleVidHeight, int currentConsoleVirt
 	if (lineDrawPosition <= textDistanceToTop)
 	{
 		return;
+	}
+
+	if(con_debug->integer) {
+		Con_DrawRightFloatingTextLine( 3, NULL, va( "Buffer (lines): ScrollbackSize %d CurrentLine %d", consoleState.scrollbackLengthInLines, consoleState.currentLine) );
+		Con_DrawRightFloatingTextLine( 4, NULL, va( "Display (lines): From %d to %d (%d a %i px)", consoleState.currentLine-consoleState.scrollbackLengthInLines, consoleState.bottomDisplayedLine, consoleState.visibleAmountOfLines, charHeight ) );
 	}
 
 	// if we scrolled back, give feedback
@@ -1033,7 +1043,7 @@ void Con_DrawConsoleContent( int currentConsoleVidHeight, int currentConsoleVirt
 		}
 	}
 
-	re.SetColor( NULL );
+	re.SetColor( NULL ); //set back to white
 }
 
 /*
@@ -1122,6 +1132,10 @@ void Con_DrawAnimatedConsole( void )
 
 	//build info, projectname/copyrights, meta informatin or similar
 	Con_DrawAboutText();
+
+	if(con_debug->integer) {
+			Con_DrawRightFloatingTextLine( 8, NULL, va( "Animation: target %d current fraction %f alpha %f", (int) consoleState.isOpened, consoleState.currentAnimationFraction, consoleState.currentAlphaFactor) );
+	}
 
 	//input, scrollbackindicator, scrollback text
 	Con_DrawConsoleContent( animatedConsoleVidHeight, animatedConsoleVirtualHeight );
