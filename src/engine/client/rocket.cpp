@@ -152,7 +152,7 @@ public:
 	{
 		polyVert_t *verts;
 		verts = ( polyVert_t * ) Z_Malloc( sizeof( polyVert_t ) * numVerticies );
-		
+
 		for ( int i = 0; i < numVerticies; i++ )
 		{
 			polyVert_t &polyVert = verts[ i ];
@@ -167,7 +167,7 @@ public:
 			Vector2Copy( vert.tex_coord, polyVert.st );
 		}
 
-		re.Add2dPolysIndexed( verts, numVerticies, indices, numIndicies, ( qhandle_t ) texture );
+		re.Add2dPolysIndexed( verts, numVerticies, indices, numIndicies, translation.x, translation.y, ( qhandle_t ) texture );
 
 		Z_Free( verts );
 	}
@@ -388,7 +388,7 @@ extern "C" void Rocket_Init( void )
 
 	//Rocket::Debugger::Initialise(context);
 
-	
+
 
 	Rocket::Core::ElementDocument* document = context->LoadDocument( "demo.rml" );
 

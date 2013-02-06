@@ -1352,12 +1352,12 @@ static void SetViewportAndScissor( void )
 		c[1] = DotProduct( backEnd.viewParms.portalPlane.normal, backEnd.viewParms.orientation.axis[2] );
 		c[2] = -DotProduct( backEnd.viewParms.portalPlane.normal, backEnd.viewParms.orientation.axis[0] );
 		c[3] = DotProduct( backEnd.viewParms.portalPlane.normal, backEnd.viewParms.orientation.origin ) - backEnd.viewParms.portalPlane.dist;
-		
+
 		q[0] = (c[0] < 0.0f ? -1.0f : 1.0f) / mat[0];
 		q[1] = (c[1] < 0.0f ? -1.0f : 1.0f) / mat[5];
 		q[2] = -1.0f;
 		q[3] = (1.0f + mat[10]) / mat[14];
-		
+
 		scale = 2.0f / (DotProduct( c, q ) + c[3] * q[3]);
 		mat[2]  = c[0] * scale;
 		mat[6]  = c[1] * scale;
@@ -11617,8 +11617,8 @@ const void     *RB_Draw2dPolysIndexed( const void *data )
 
 	for ( i = 0; i < cmd->numverts; i++ )
 	{
-		tess.xyz[ tess.numVertexes ][ 0 ] = cmd->verts[ i ].xyz[ 0 ];
-		tess.xyz[ tess.numVertexes ][ 1 ] = cmd->verts[ i ].xyz[ 1 ];
+		tess.xyz[ tess.numVertexes ][ 0 ] = cmd->verts[ i ].xyz[ 0 ] + cmd->translation[ 0 ];
+		tess.xyz[ tess.numVertexes ][ 1 ] = cmd->verts[ i ].xyz[ 1 ] + cmd->translation[ 1 ];
 		tess.xyz[ tess.numVertexes ][ 2 ] = 0;
 		tess.xyz[ tess.numVertexes ][ 3 ] = 1;
 

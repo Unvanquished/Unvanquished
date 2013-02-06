@@ -547,7 +547,7 @@ void RE_2DPolyies( polyVert_t *verts, int numverts, qhandle_t hShader )
 	r_numPolyVerts += numverts;
 }
 
-void RE_2DPolyiesIndexed( polyVert_t *verts, int numverts, int *indexes, int numindexes, qhandle_t hShader )
+void RE_2DPolyiesIndexed( polyVert_t *verts, int numverts, int *indexes, int numindexes, int trans_x, int trans_y, qhandle_t hShader )
 {
 	poly2dIndexedCommand_t *cmd;
 
@@ -576,6 +576,8 @@ void RE_2DPolyiesIndexed( polyVert_t *verts, int numverts, int *indexes, int num
 	cmd->indexes = &backEndData[ tr.smpFrame ]->polyIndexes[ r_numPolyIndexes ];
 	memcpy( cmd->indexes, indexes, sizeof( int ) * numindexes );
 	cmd->numIndexes = numindexes;
+	cmd->translation[ 0 ] = trans_x;
+	cmd->translation[ 1 ] = trans_y;
 
 	r_numPolyVerts += numverts;
 	r_numPolyIndexes += numindexes;

@@ -5070,6 +5070,7 @@ extern "C" {
 		int        *indexes;
 		int        numIndexes;
 		shader_t   *shader;
+		int         translation[2];
 	} poly2dIndexedCommand_t;
 
 	typedef struct
@@ -5191,7 +5192,7 @@ extern "C" {
 	    float s1, float t1, float s2, float t2, qhandle_t hShader, const float *gradientColor,
 	    int gradientType );
 	void                                RE_2DPolyies( polyVert_t *verts, int numverts, qhandle_t hShader );
-	void                                RE_2DPolyiesIndexed( polyVert_t *verts, int numverts, int *indexes, int numindexes, qhandle_t hShader );
+	void                                RE_2DPolyiesIndexed( polyVert_t *verts, int numverts, int *indexes, int numindexes, int trans_x, int trans_y, qhandle_t hShader );
 	void                                RE_BeginFrame( stereoFrame_t stereoFrame );
 	void                                RE_EndFrame( int *frontEndMsec, int *backEndMsec );
 

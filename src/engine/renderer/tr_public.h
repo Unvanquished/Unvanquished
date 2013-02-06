@@ -187,7 +187,7 @@ typedef struct
 #endif
 
 	void ( *GetTextureSize )( int textureID, int *width, int *height );
-	void ( *Add2dPolysIndexed ) ( polyVert_t *polys, int numverts, int *indexes, int numindexes, qhandle_t shader );
+	void ( *Add2dPolysIndexed ) ( polyVert_t *polys, int numverts, int *indexes, int numindexes, int trans_x, int trans_y, qhandle_t shader );
 	// XreaL END
 } refexport_t;
 
