@@ -754,8 +754,6 @@ This will be called twice if rendering in stereo mode
 */
 void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 {
-	extern qboolean mouseActive; // see sdl_input.c
-
 	re.BeginFrame( stereoFrame );
 
 	// wide aspect ratio screens need to have the sides cleared
@@ -824,6 +822,11 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 	{
 		VM_Call( uivm, UI_REFRESH, cls.realtime );
 	}
+}
+
+void SCR_DrawConsoleAndPointer( void )
+{
+	extern qboolean mouseActive; // see sdl_input.c
 
 	// console draws next
 	Con_DrawConsole();
@@ -877,12 +880,15 @@ void SCR_UpdateScreen( void )
 		if ( cls.glconfig.stereoEnabled )
 		{
 			SCR_DrawScreenField( STEREO_LEFT );
+			SCR_DrawConsoleAndPointer();
 			SCR_DrawScreenField( STEREO_RIGHT );
+			SCR_DrawConsoleAndPointer();
 		}
 		else
 		{
 			SCR_DrawScreenField( STEREO_CENTER );
 			Rocket_Render();
+			SCR_DrawConsoleAndPointer();
 		}
 
 		if ( com_speeds->integer )
