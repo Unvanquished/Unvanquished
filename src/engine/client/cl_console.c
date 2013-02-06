@@ -892,6 +892,8 @@ void Con_DrawConsoleScrollbackIndicator( int lineDrawPosition )
 void Con_DrawConsoleScrollbar( int virtualHeight )
 {
 	vec4_t color;
+	const float scrollBarX = SCREEN_WIDTH - con_margin->integer - con_horizontalPadding->integer - 2 * con_borderWidth->integer;
+	const float scrollBarY = con_margin->value + con_borderWidth->value + virtualHeight * 0.10f;
 	const float scrollBarLength = virtualHeight * 0.80f;
 	const float scrollHandleLength = (scrollBarLength/MAX(consoleState.usedScrollbackLengthInLines, consoleState.visibleAmountOfLines * 2))
 			* consoleState.visibleAmountOfLines;
@@ -904,9 +906,7 @@ void Con_DrawConsoleScrollbar( int virtualHeight )
 	color[ 2 ] = 0.2f;
 	color[ 3 ] = 0.75f * consoleState.currentAlphaFactor;
 
-	SCR_FillRect( SCREEN_WIDTH - con_margin->integer - con_horizontalPadding->integer - 2 * con_borderWidth->integer,
-			con_margin->value + con_borderWidth->value + virtualHeight * 0.10f,
-			con_borderWidth->value, scrollBarLength, color );
+	SCR_FillRect( scrollBarX, scrollBarY, con_borderWidth->value, scrollBarLength, color );
 
 	//draw the handle
 	if(scrollHandlePostition >= 0)
@@ -916,9 +916,7 @@ void Con_DrawConsoleScrollbar( int virtualHeight )
 		color[ 2 ] = 0.5f;
 		color[ 3 ] = consoleState.currentAlphaFactor;
 
-		SCR_FillRect( SCREEN_WIDTH - con_margin->integer - con_horizontalPadding->integer - 2 * con_borderWidth->integer,
-				con_margin->value + con_borderWidth->value + virtualHeight * 0.10f + scrollHandlePostition,
-				con_borderWidth->value, scrollHandleLength, color );
+		SCR_FillRect( scrollBarX, scrollBarY + scrollHandlePostition, con_borderWidth->value, scrollHandleLength, color );
 	}
 	else //this happens when line appending gets us over the top position in a roll-lock situation (scrolling itself won't do that)
 	{
@@ -927,9 +925,7 @@ void Con_DrawConsoleScrollbar( int virtualHeight )
 		color[ 2 ] = 0.5f;
 		color[ 3 ] = consoleState.currentAlphaFactor;
 
-		SCR_FillRect( SCREEN_WIDTH - con_margin->integer - con_horizontalPadding->integer - 2 * con_borderWidth->integer,
-				con_margin->value + con_borderWidth->value + virtualHeight * 0.10f,
-				con_borderWidth->value, scrollHandleLength, color );
+		SCR_FillRect( scrollBarX, scrollBarY, con_borderWidth->value, scrollHandleLength, color );
 	}
 
 	if(con_debug->integer) {
