@@ -656,7 +656,7 @@ static const char *IN_TranslateSDLToQ3Key( SDL_keysym *keysym,
 	else if ( delete )
 	{
 		*buf = CTRL( 'h' );
-	}		
+	}
 	else
 	{
 		memcpy( buf, Q_UTF8Encode( keysym->unicode ), sizeof( buf ) );
@@ -1585,6 +1585,7 @@ static void IN_Xbox360ControllerMove( void )
 IN_ProcessEvents
 ===============
 */
+void InjectRocket( SDL_Event e );
 static void IN_ProcessEvents( void )
 {
 	SDL_Event  e;
@@ -1610,6 +1611,7 @@ static void IN_ProcessEvents( void )
 
 	while ( SDL_PollEvent( &e ) )
 	{
+		InjectRocket( e );
 		switch ( e.type )
 		{
 			case SDL_KEYDOWN:
@@ -1753,6 +1755,7 @@ void IN_Frame( void )
 	}
 
 	IN_ProcessEvents();
+	Rocket_Update();
 
 	// If not DISCONNECTED (main menu) or ACTIVE (in game), we're loading
 	loading = ( cls.state != CA_DISCONNECTED && cls.state != CA_ACTIVE );
