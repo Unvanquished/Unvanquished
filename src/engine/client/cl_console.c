@@ -893,7 +893,8 @@ void Con_DrawConsoleScrollbar( int virtualHeight )
 {
 	vec4_t color;
 	const float scrollBarLength = virtualHeight * 0.80f;
-	const float scrollHandleLength = (scrollBarLength/consoleState.usedScrollbackLengthInLines) * consoleState.visibleAmountOfLines;
+	const float scrollHandleLength = (scrollBarLength/MAX(consoleState.usedScrollbackLengthInLines, consoleState.visibleAmountOfLines * 2))
+			* consoleState.visibleAmountOfLines;
 	const float scrollHandlePostition = ((scrollBarLength - scrollHandleLength)/consoleState.usedScrollbackLengthInLines)
 			* (consoleState.bottomDisplayedLine - (consoleState.currentLine - consoleState.usedScrollbackLengthInLines));
 
@@ -1306,6 +1307,10 @@ void Con_RunConsole( void )
 
 void Con_PageUp( void )
 {
+	//do not scroll if there isn't enough to scroll
+	if(consoleState.usedScrollbackLengthInLines < consoleState.visibleAmountOfLines)
+		return;
+
 	consoleState.bottomDisplayedLine -= 2;
 
 	if ( consoleState.currentLine - consoleState.bottomDisplayedLine >= consoleState.usedScrollbackLengthInLines )
