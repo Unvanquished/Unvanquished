@@ -182,6 +182,12 @@ public:
 		// find the size of the texture
 		int textureID = re.GetTextureId( temp );
 
+		// GL1 renderer doesn't strip off .ext, so re-check
+		if ( textureID == -1 )
+		{
+			textureID = re.GetTextureId( source.CString() );
+		}
+
 		re.GetTextureSize( textureID, &textureDimensions.x, &textureDimensions.y );
 
 		textureHandle = ( Rocket::Core::TextureHandle ) shaderHandle;
