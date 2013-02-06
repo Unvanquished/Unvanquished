@@ -882,6 +882,7 @@ void SCR_UpdateScreen( void )
 		else
 		{
 			SCR_DrawScreenField( STEREO_CENTER );
+			Rocket_Render();
 		}
 
 		if ( com_speeds->integer )

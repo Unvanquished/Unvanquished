@@ -4633,6 +4633,7 @@ void CL_Shutdown( void )
 	}
 
 	Com_DPrintf( "----- CL_Shutdown -----\n" );
+	Rocket_Shutdown();
 
 	if ( recursive )
 	{
