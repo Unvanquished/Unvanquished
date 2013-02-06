@@ -23,6 +23,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "ui_shared.h"
 
+#define MAX_TEAMS 4 // keep in sync with src/engine/client/keys.h"
+
 #ifdef CGAME
 #include "../cgame/cg_local.h"
 #elif defined UI
@@ -2120,8 +2122,9 @@ void Script_playRandom( itemDef_t *item, char **args )
 	if ( Int_Parse( args, &numValues ) )
 	{
 		int selected = rand() % numValues;
+		int i;
 
-		for( numValues = 0; numValues < selected; ++numValues )
+		for( i = 0; i < selected; ++i )
 		{
 			String_Parse( args, &val );
 			Int_Parse( args, &numValues ); // Throw away value to stop preprocessor from combining strings
@@ -6007,6 +6010,9 @@ typedef struct
 }
 configcvar_t;
 
+#define TEAMBIND_MARKER '-'
+#define TEAMBIND(KEY, DEF, ALIEN, HUMAN) "-" KEY "\0" DEF "\0" ALIEN "\0" HUMAN "\0\0"
+
 static const char *const g_bind_commands[] =
 {
 	"+activate",
@@ -6032,18 +6038,14 @@ static const char *const g_bind_commands[] =
 	"+taunt",
 	"+useitem",
 	"+voiprecord",
-	"buy ammo",
 	"centerview",
 	"if alt \"/deconstruct marked\" /deconstruct",
-	"itemact medkit",
 	"menu voip",
-	"menu vsay_top",
 	"messagemode",
 	"messagemode2",
 	"messagemode3",
 	"messagemode4",
-	"messagemodec"
-	"reload",
+	"messagemodec",
 	"scoresDown",
 	"scoresUp",
 	"if shift /screenshotJPEG /screenshotPNG",
@@ -6053,6 +6055,10 @@ static const char *const g_bind_commands[] =
 	"vote yes",
 	"weapnext",
 	"weapprev",
+	TEAMBIND( "ammo",   "", "",              "buy ammo" ),
+	TEAMBIND( "medkit", "", "",              "itemact medkit" ),
+	TEAMBIND( "vsay",   "", "menu vsay_top", "menu vsay_top" ),
+	TEAMBIND( "reload", "", "",              "reload" ),
 };
 #define g_bindCount ARRAY_LEN( g_bind_commands )
 
@@ -6066,7 +6072,7 @@ Controls_GetKeyAssignment
 static void Controls_GetKeyAssignment( const char *command, int *twokeys )
 {
 	int  count;
-	int  j;
+	int  j, team;
 	char b[ 256 ];
 
 	twokeys[ 0 ] = twokeys[ 1 ] = -1;
@@ -6074,21 +6080,55 @@ static void Controls_GetKeyAssignment( const char *command, int *twokeys )
 
 	for ( j = 0; j < MAX_KEYS; j++ )
 	{
-		DC->getBindingBuf( j, TEAM_NONE, b, sizeof( b ) ); // FIXME BIND
-
-		if ( *b == 0 )
+		if ( *command == TEAMBIND_MARKER )
 		{
-			continue;
-		}
+			const char *bind = command + strlen( command ) + 1;
+			int        matches = 0;
 
-		if ( !Q_stricmp( b, command ) )
-		{
-			twokeys[ count ] = j;
-			count++;
-
-			if ( count == 2 )
+			for ( team = 0; team < MAX_TEAMS; ++team )
 			{
-				break;
+				if ( *bind )
+				{
+					DC->getBindingBuf( j, team, b, sizeof( b ) );
+
+					if ( *b && !Q_stricmp( b, bind ) )
+					{
+						++matches;
+					}
+
+					bind += strlen( bind ) + 1;
+				}
+				else
+				{
+					++matches; // count null (in the supplied command) as matching
+					++bind;
+				}
+			}
+
+			if ( matches == MAX_TEAMS )
+			{
+				twokeys[ count ] = j;
+				count++;
+
+				if ( count == 2 )
+				{
+					break;
+				}
+			}
+		}
+		else
+		{
+			DC->getBindingBuf( j, team, b, sizeof( b ) );
+
+			if ( *b && !Q_stricmp( b, command ) )
+			{
+				twokeys[ count ] = j;
+				count++;
+
+				if ( count == 2 )
+				{
+					break;
+				}
 			}
 		}
 	}
@@ -6118,7 +6158,7 @@ Controls_SetConfig
 */
 void Controls_SetConfig( qboolean restart )
 {
-	int i;
+	int i, team;
 
 	// iterate each command, get its numeric binding
 
@@ -6126,11 +6166,30 @@ void Controls_SetConfig( qboolean restart )
 	{
 		if ( g_bind_keys[ i ][ 0 ] != -1 )
 		{
-			DC->setBinding( g_bind_keys[ i ][ 0 ], TEAM_ALL, g_bind_commands[ i ] ); // FIXME BIND
-
-			if ( g_bind_keys[ i ][ 1 ] != -1 )
+			if ( g_bind_commands[ i ][ 0 ] == TEAMBIND_MARKER )
 			{
-				DC->setBinding( g_bind_keys[ i ][ 1 ], TEAM_ALL, g_bind_commands[ i ] ); // FIXME BIND
+				const char *bind = g_bind_commands[ i ] + strlen( g_bind_commands[ i ] ) + 1;
+
+				for ( team = 0; team < MAX_TEAMS; ++team )
+				{
+					DC->setBinding( g_bind_keys[ i ][ 0 ], team, bind );
+
+					if ( g_bind_keys[ i ][ 1 ] != -1 )
+					{
+						DC->setBinding( g_bind_keys[ i ][ 1 ], team, bind );
+					}
+
+					bind += strlen( bind ) + 1;
+				}
+			}
+			else
+			{
+				DC->setBinding( g_bind_keys[ i ][ 0 ], TEAM_ALL, g_bind_commands[ i ] );
+
+				if ( g_bind_keys[ i ][ 1 ] != -1 )
+				{
+					DC->setBinding( g_bind_keys[ i ][ 1 ], TEAM_ALL, g_bind_commands[ i ] );
+				}
 			}
 		}
 	}
@@ -6395,13 +6454,13 @@ qboolean Item_Bind_HandleKey( itemDef_t *item, int key, int chr, qboolean down )
 		{
 			if ( g_bind_keys[ id ][ 0 ] != -1 )
 			{
-				DC->setBinding( g_bind_keys[ id ][ 0 ], TEAM_ALL, "" ); // FIXME BIND
+				DC->setBinding( g_bind_keys[ id ][ 0 ], TEAM_ALL, "" );
 				g_bind_keys[ id ][ 0 ] = -1;
 			}
 
 			if ( g_bind_keys[ id ][ 1 ] != -1 )
 			{
-				DC->setBinding( g_bind_keys[ id ][ 1 ], TEAM_ALL, "" ); // FIXME BIND
+				DC->setBinding( g_bind_keys[ id ][ 1 ], TEAM_ALL, "" );
 				g_bind_keys[ id ][ 1 ] = -1;
 			}
 		}
@@ -6415,8 +6474,8 @@ qboolean Item_Bind_HandleKey( itemDef_t *item, int key, int chr, qboolean down )
 		}
 		else
 		{
-			DC->setBinding( g_bind_keys[ id ][ 0 ], TEAM_ALL, "" ); // FIXME BIND
-			DC->setBinding( g_bind_keys[ id ][ 1 ], TEAM_ALL, "" ); // FIXME BIND
+			DC->setBinding( g_bind_keys[ id ][ 0 ], TEAM_ALL, "" );
+			DC->setBinding( g_bind_keys[ id ][ 1 ], TEAM_ALL, "" );
 			g_bind_keys[ id ][ 0 ] = key;
 			g_bind_keys[ id ][ 1 ] = -1;
 		}

@@ -430,7 +430,7 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_highPolyPlayerModels,        "cg_highPolyPlayerModels",        "1",            CVAR_ARCHIVE | CVAR_LATCH    },
 	{ &cg_highPolyBuildableModels,     "cg_highPolyBuildableModels",     "1",            CVAR_ARCHIVE | CVAR_LATCH    },
 	{ &cg_highPolyWeaponModels,        "cg_highPolyWeaponModels",        "1",            CVAR_ARCHIVE | CVAR_LATCH    },
-	{ &cg_motionblur,                  "cg_motionblur",                  "0.01",          CVAR_ARCHIVE                 },
+	{ &cg_motionblur,                  "cg_motionblur",                  "0.05",          CVAR_ARCHIVE                 },
 	{ &cg_motionblurMinSpeed,          "cg_motionblurMinSpeed",          "600",          CVAR_ARCHIVE                 },
 	{ &cg_fov_builder,                 "cg_fov_builder",                 "0",            CVAR_ARCHIVE                 },
 	{ &cg_fov_level0,                  "cg_fov_level0",                  "0",            CVAR_ARCHIVE                 },
@@ -753,6 +753,10 @@ void CG_UpdateBuildableRangeMarkerMask( void )
 				           ( 1 << BA_A_ACIDTUBE ) | ( 1 << BA_A_TRAPPER ) | ( 1 << BA_A_HIVE ) | ( 1 << BA_A_BOOSTER ) |
 				           ( 1 << BA_H_REACTOR ) | ( 1 << BA_H_REPEATER ) | ( 1 << BA_H_DCC ) |
 				           ( 1 << BA_H_MGTURRET ) | ( 1 << BA_H_TESLAGEN );
+			}
+			else if ( !Q_stricmp( p, "none" ) )
+			{
+				brmMask = 0;
 			}
 			else
 			{
