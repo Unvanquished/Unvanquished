@@ -893,9 +893,9 @@ void Con_DrawConsoleScrollbar( int virtualHeight )
 {
 	vec4_t color;
 	const float scrollBarLength = virtualHeight * 0.80f;
-	const float scrollHandleLength = (scrollBarLength/consoleState.maxScrollbackLengthInLines) * consoleState.visibleAmountOfLines;
-	const float scrollHandlePostition = ((scrollBarLength - scrollHandleLength)/consoleState.maxScrollbackLengthInLines)
-			* (consoleState.bottomDisplayedLine - (consoleState.currentLine - consoleState.maxScrollbackLengthInLines));
+	const float scrollHandleLength = (scrollBarLength/consoleState.usedScrollbackLengthInLines) * consoleState.visibleAmountOfLines;
+	const float scrollHandlePostition = ((scrollBarLength - scrollHandleLength)/consoleState.usedScrollbackLengthInLines)
+			* (consoleState.bottomDisplayedLine - (consoleState.currentLine - consoleState.usedScrollbackLengthInLines));
 
 	//draw the scrollBar
 	color[ 0 ] = 0.2f;
@@ -1308,9 +1308,9 @@ void Con_PageUp( void )
 {
 	consoleState.bottomDisplayedLine -= 2;
 
-	if ( consoleState.currentLine - consoleState.bottomDisplayedLine >= consoleState.maxScrollbackLengthInLines )
+	if ( consoleState.currentLine - consoleState.bottomDisplayedLine >= consoleState.usedScrollbackLengthInLines )
 	{
-		consoleState.bottomDisplayedLine = consoleState.currentLine - consoleState.maxScrollbackLengthInLines + 1;
+		consoleState.bottomDisplayedLine = consoleState.currentLine - consoleState.usedScrollbackLengthInLines + 1;
 	}
 }
 
@@ -1326,11 +1326,11 @@ void Con_PageDown( void )
 
 void Con_ScrollToTop( void )
 {
-	consoleState.bottomDisplayedLine = consoleState.maxScrollbackLengthInLines;
+	consoleState.bottomDisplayedLine = consoleState.usedScrollbackLengthInLines;
 
-	if ( consoleState.currentLine - consoleState.bottomDisplayedLine >= consoleState.maxScrollbackLengthInLines )
+	if ( consoleState.currentLine - consoleState.bottomDisplayedLine >= consoleState.usedScrollbackLengthInLines )
 	{
-		consoleState.bottomDisplayedLine = consoleState.currentLine - consoleState.maxScrollbackLengthInLines + 1;
+		consoleState.bottomDisplayedLine = consoleState.currentLine - consoleState.usedScrollbackLengthInLines + 1;
 	}
 }
 
