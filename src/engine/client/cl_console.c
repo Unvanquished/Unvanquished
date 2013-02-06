@@ -81,7 +81,7 @@ cvar_t    *con_debug;
 #define DEFAULT_CONSOLE_WIDTH 78
 #define MAX_CONSOLE_WIDTH   1024
 
-#define CON_LINE(line) ( ( (line) % consoleState.scrollbackLengthInLines ) * consoleState.textWidthInChars )
+#define CON_LINE(line) ( ( (line) % consoleState.maxScrollbackLengthInLines ) * consoleState.textWidthInChars )
 
 // Buffer used by line-to-string code. Implementation detail.
 static char lineString[ MAX_CONSOLE_WIDTH * 6 + 4 ];
@@ -193,6 +193,8 @@ static INLINE void Con_Clear( void )
 	{
 		consoleState.text[i] = fill;
 	}
+
+	consoleState.usedScrollbackLengthInLines = 0;
 }
 
 /*
@@ -249,7 +251,7 @@ void Con_Dump_f( void )
 	}
 
 	// skip empty lines
-	for ( l = consoleState.currentLine - consoleState.scrollbackLengthInLines + 1; l <= consoleState.currentLine; l++ )
+	for ( l = consoleState.currentLine - consoleState.maxScrollbackLengthInLines + 1; l <= consoleState.currentLine; l++ )
 	{
 		if ( consoleState.text[ CON_LINE( l ) ].ch )
 		{
@@ -289,7 +291,7 @@ void Con_Search_f( void )
 	direction = Q_stricmp( Cmd_Argv( 0 ), "searchDown" ) ? -1 : 1;
 
 	// check the lines
-	for ( l = consoleState.bottomDisplayedLine - 1 + direction; l <= consoleState.currentLine && consoleState.currentLine - l < consoleState.scrollbackLengthInLines; l += direction )
+	for ( l = consoleState.bottomDisplayedLine - 1 + direction; l <= consoleState.currentLine && consoleState.currentLine - l < consoleState.maxScrollbackLengthInLines; l += direction )
 	{
 		const char *buffer = Con_LineToString( l, qtrue );
 
@@ -333,7 +335,7 @@ void Con_Grep_f( void )
 	}
 
 	// skip empty lines
-	for ( l = consoleState.currentLine - consoleState.scrollbackLengthInLines + 1; l <= consoleState.currentLine; l++ )
+	for ( l = consoleState.currentLine - consoleState.maxScrollbackLengthInLines + 1; l <= consoleState.currentLine; l++ )
 	{
 		if ( consoleState.text[ CON_LINE( l ) ].ch )
 		{
@@ -459,23 +461,23 @@ void Con_CheckResize( void )
 	else if ( textWidthInChars < 1 ) // video hasn't been initialized yet
 	{
 		consoleState.textWidthInChars = DEFAULT_CONSOLE_WIDTH;
-		consoleState.scrollbackLengthInLines = CON_TEXTSIZE / consoleState.textWidthInChars;
+		consoleState.maxScrollbackLengthInLines = CON_TEXTSIZE / consoleState.textWidthInChars;
 		Con_Clear();
 
-		consoleState.currentLine = consoleState.scrollbackLengthInLines - 1;
+		consoleState.currentLine = consoleState.maxScrollbackLengthInLines - 1;
 		consoleState.bottomDisplayedLine = consoleState.currentLine;
 	}
 	else
 	{
 		oldwidth = consoleState.textWidthInChars;
 		consoleState.textWidthInChars = textWidthInChars;
-		oldtotallines = consoleState.scrollbackLengthInLines;
-		consoleState.scrollbackLengthInLines = CON_TEXTSIZE / consoleState.textWidthInChars;
+		oldtotallines = consoleState.maxScrollbackLengthInLines;
+		consoleState.maxScrollbackLengthInLines = CON_TEXTSIZE / consoleState.textWidthInChars;
 		numlines = oldtotallines;
 
-		if ( consoleState.scrollbackLengthInLines < numlines )
+		if ( consoleState.maxScrollbackLengthInLines < numlines )
 		{
-			numlines = consoleState.scrollbackLengthInLines;
+			numlines = consoleState.maxScrollbackLengthInLines;
 		}
 
 		numchars = oldwidth;
@@ -490,12 +492,16 @@ void Con_CheckResize( void )
 
 		for ( i = 0; i < numlines; i++ )
 		{
-			memcpy( consoleState.text + ( consoleState.scrollbackLengthInLines - 1 - i ) * consoleState.textWidthInChars,
+			conChar_t* destination = consoleState.text + ( consoleState.maxScrollbackLengthInLines - 1 - i ) * consoleState.textWidthInChars;
+			memcpy( destination,
 			        buf + ( ( consoleState.currentLine - i + oldtotallines ) % oldtotallines ) * oldwidth,
 			        numchars * sizeof( conChar_t ) );
+
+			if( destination[0].ch )
+				consoleState.usedScrollbackLengthInLines++;
 		}
 
-		consoleState.currentLine = consoleState.scrollbackLengthInLines - 1;
+		consoleState.currentLine = consoleState.maxScrollbackLengthInLines - 1;
 		consoleState.bottomDisplayedLine = consoleState.currentLine;
 	}
 
@@ -572,6 +578,9 @@ void Con_Linefeed( qboolean skipnotify )
 	}
 
 	consoleState.currentLine++;
+
+	if( consoleState.usedScrollbackLengthInLines < consoleState.maxScrollbackLengthInLines )
+		consoleState.usedScrollbackLengthInLines++;
 
 	line = consoleState.text + CON_LINE( consoleState.currentLine );
 
@@ -681,7 +690,7 @@ void CL_ConsolePrint( char *txt )
 				}
 
 			default: // display character and advance
-				y = consoleState.currentLine % consoleState.scrollbackLengthInLines;
+				y = consoleState.currentLine % consoleState.maxScrollbackLengthInLines;
 				// rain - sign extension caused the character to carry over
 				// into the color info for high ascii chars; casting c to unsigned
 				consoleState.text[ y * consoleState.textWidthInChars + consoleState.x ].ch = Q_UTF8CodePoint( txt );
@@ -884,9 +893,9 @@ void Con_DrawConsoleScrollbar( int virtualHeight )
 {
 	vec4_t color;
 	const float scrollBarLength = virtualHeight * 0.80f;
-	const float scrollHandleLength = (scrollBarLength/consoleState.scrollbackLengthInLines) * consoleState.visibleAmountOfLines;
-	const float scrollHandlePostition = ((scrollBarLength - scrollHandleLength)/consoleState.scrollbackLengthInLines)
-			* (consoleState.bottomDisplayedLine - (consoleState.currentLine - consoleState.scrollbackLengthInLines));
+	const float scrollHandleLength = (scrollBarLength/consoleState.maxScrollbackLengthInLines) * consoleState.visibleAmountOfLines;
+	const float scrollHandlePostition = ((scrollBarLength - scrollHandleLength)/consoleState.maxScrollbackLengthInLines)
+			* (consoleState.bottomDisplayedLine - (consoleState.currentLine - consoleState.maxScrollbackLengthInLines));
 
 	//draw the scrollBar
 	color[ 0 ] = 0.2f;
@@ -986,8 +995,8 @@ void Con_DrawConsoleContent( int currentConsoleVidHeight, int currentConsoleVirt
 	}
 
 	if(con_debug->integer) {
-		Con_DrawRightFloatingTextLine( 3, NULL, va( "Buffer (lines): ScrollbackSize %d CurrentLine %d", consoleState.scrollbackLengthInLines, consoleState.currentLine) );
-		Con_DrawRightFloatingTextLine( 4, NULL, va( "Display (lines): From %d to %d (%d a %i px)", consoleState.currentLine-consoleState.scrollbackLengthInLines, consoleState.bottomDisplayedLine, consoleState.visibleAmountOfLines, charHeight ) );
+		Con_DrawRightFloatingTextLine( 3, NULL, va( "Buffer (lines): ScrollbackLength %d/%d  CurrentIndex %d", consoleState.usedScrollbackLengthInLines, consoleState.maxScrollbackLengthInLines, consoleState.currentLine) );
+		Con_DrawRightFloatingTextLine( 4, NULL, va( "Display (lines): From %d to %d (%d a %i px)", consoleState.currentLine-consoleState.maxScrollbackLengthInLines, consoleState.bottomDisplayedLine, consoleState.visibleAmountOfLines, charHeight ) );
 	}
 
 	// if we scrolled back, give feedback
@@ -1015,7 +1024,7 @@ void Con_DrawConsoleContent( int currentConsoleVidHeight, int currentConsoleVirt
 	{
 		conChar_t *text;
 
-		if ( consoleState.currentLine - row >= consoleState.scrollbackLengthInLines )
+		if ( consoleState.currentLine - row >= consoleState.maxScrollbackLengthInLines )
 		{
 			// past scrollback wrap point
 			continue;
@@ -1299,9 +1308,9 @@ void Con_PageUp( void )
 {
 	consoleState.bottomDisplayedLine -= 2;
 
-	if ( consoleState.currentLine - consoleState.bottomDisplayedLine >= consoleState.scrollbackLengthInLines )
+	if ( consoleState.currentLine - consoleState.bottomDisplayedLine >= consoleState.maxScrollbackLengthInLines )
 	{
-		consoleState.bottomDisplayedLine = consoleState.currentLine - consoleState.scrollbackLengthInLines + 1;
+		consoleState.bottomDisplayedLine = consoleState.currentLine - consoleState.maxScrollbackLengthInLines + 1;
 	}
 }
 
@@ -1317,11 +1326,11 @@ void Con_PageDown( void )
 
 void Con_ScrollToTop( void )
 {
-	consoleState.bottomDisplayedLine = consoleState.scrollbackLengthInLines;
+	consoleState.bottomDisplayedLine = consoleState.maxScrollbackLengthInLines;
 
-	if ( consoleState.currentLine - consoleState.bottomDisplayedLine >= consoleState.scrollbackLengthInLines )
+	if ( consoleState.currentLine - consoleState.bottomDisplayedLine >= consoleState.maxScrollbackLengthInLines )
 	{
-		consoleState.bottomDisplayedLine = consoleState.currentLine - consoleState.scrollbackLengthInLines + 1;
+		consoleState.bottomDisplayedLine = consoleState.currentLine - consoleState.maxScrollbackLengthInLines + 1;
 	}
 }
 
