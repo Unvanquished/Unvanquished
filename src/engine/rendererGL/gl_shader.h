@@ -30,7 +30,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // *INDENT-OFF*
 static const int MAX_SHADER_MACROS = 9;
-static const unsigned int GL_SHADER_VERSION = 2;
+static const unsigned int GL_SHADER_VERSION = 3;
 
 struct GLShaderHeader
 {

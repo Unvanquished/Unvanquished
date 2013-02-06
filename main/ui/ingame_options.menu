@@ -49,9 +49,9 @@
       hide systemGrp;
       show player;
 
-      setitemcolor player              forecolor 1.0 1.0 1.0 1.0; 
+      setitemcolor player              forecolor 1.0 1.0 1.0 1.0;
       setitemcolor hud                 forecolor 1.0 1.0 1.0 1.0;
-      setitemcolor playerBtn           forecolor 1.0 1.0 1.0 1.0; 
+      setitemcolor playerBtn           forecolor 1.0 1.0 1.0 1.0;
       setitemcolor hudBtn              forecolor 0.14 0.8 0.8 1.0;
       setitemcolor controlsBtn         forecolor 0.14 0.8 0.8 1.0;
       setitemcolor systemBtn           forecolor 0.14 0.8 0.8 1.0
@@ -93,7 +93,7 @@
         hide systemGrp;
         show player;
 
-        setitemcolor playerBtn           forecolor 1.0 1.0 1.0 1.0; 
+        setitemcolor playerBtn           forecolor 1.0 1.0 1.0 1.0;
         setitemcolor hudBtn              forecolor 0.14 0.8 0.8 1.0;
         setitemcolor controlsBtn         forecolor 0.14 0.8 0.8 1.0;
         setitemcolor systemBtn           forecolor 0.14 0.8 0.8 1.0
@@ -120,7 +120,7 @@
         show hud;
 
         setitemcolor playerBtn           forecolor 0.14 0.8 0.8 1.0;
-        setitemcolor hudBtn              forecolor 1.0 1.0 1.0 1.0; 
+        setitemcolor hudBtn              forecolor 1.0 1.0 1.0 1.0;
         setitemcolor controlsBtn         forecolor 0.14 0.8 0.8 1.0;
         setitemcolor systemBtn           forecolor 0.14 0.8 0.8 1.0
       }
@@ -147,7 +147,7 @@
         show look;
 
         setitemcolor playerBtn           forecolor 0.14 0.8 0.8 1.0;
-        setitemcolor hudBtn              forecolor 0.14 0.8 0.8 1.0; 
+        setitemcolor hudBtn              forecolor 0.14 0.8 0.8 1.0;
         setitemcolor controlsBtn         forecolor 1.0 1.0 1.0 1.0;
         setitemcolor systemBtn           forecolor 0.14 0.8 0.8 1.0
         setitemcolor controlsLook        forecolor 1.0 1.0 1.0 1.0;
@@ -272,7 +272,7 @@
         setitemcolor controlsUp          forecolor 0.14 0.8 0.8 1.0;
         setitemcolor controlsChat        forecolor 0.14 0.8 0.8 1.0;
         setitemcolor controlsMisc        forecolor 0.14 0.8 0.8 1.0
-         
+
       }
     }
 
@@ -367,9 +367,9 @@
 	BINDX	( upgrades, "Previous Upgrade:", "weapprev", 2 )
 	BINDX	( upgrades, "Next Upgrade:", "weapnext", 3 )
 	BINDX	( upgrades, "Activate Upgrade:", "+useitem", 4 )
-	BINDX	( upgrades, "Reload:", "reload", 5 )
-	BINDX	( upgrades, "Buy Ammo:", "buy ammo", 6 )
-	BINDX	( upgrades, "Use Medkit:", "itemact medkit", 7 )
+	BINDX	( upgrades, "Reload:", "-reload", 5 )
+	BINDX	( upgrades, "Buy Ammo:", "-ammo", 6 )
+	BINDX	( upgrades, "Use Medkit:", "-medkit", 7 )
 	BINDX	( upgrades, "Use Structure/Evolve:", "+activate", 8 )
 
 //////// COMMUNICATION
@@ -413,7 +413,7 @@
 	BINDX	( communication, "Vote No:", "vote no", 8 )
 	BINDX	( communication, "Team Vote Yes:", "teamvote yes", 9 )
 	BINDX	( communication, "Team Vote No:", "teamvote no", 10 )
-	BINDX	( communication, "Voice Say Menu:", "menu vsay_top", 11 )
+	BINDX	( communication, "Voice Say Menu:", "-vsay", 11 )
 	BINDX	( communication, "VoIP Menu:", "menu voip", 12 )
 
 //////// MISC
@@ -494,7 +494,7 @@
 			1 )
 	YESNOX	( gdisplay, "Sync Every Frame:", "r_swapinterval",
 			play "sound/misc/menu1.wav",
-			2 )			
+			2 )
 	YESNOX	( gdisplay, "Fullscreen:", "r_fullscreen",
 			play "sound/misc/menu1.wav"; uiScript glCustom,
 			3 )
@@ -540,13 +540,13 @@
       }
     }
 
-	
-//////// Effects	
+
+//////// Effects
 	MULTIX	( geffects, "Lighting:", "r_vertexLighting",
 			"Light Map (high)" 0 "Vertex (low)" 1,
 			play "sound/misc/menu1.wav"; uiScript glCustom,
 			0 )
-	YESNOX	( geffects, "Dynamic Lights:", "r_dynamiclight", 
+	YESNOX	( geffects, "Dynamic Lights:", "r_dynamiclight",
 			play "sound/misc/menu1.wav"; uiScript glCustom,
 			1 )
 	MULTIX	( geffects, "Shadows:", "cg_shadows",
@@ -566,20 +566,20 @@
 			5 )
 	YESNOX	( geffects, "Normal Mapping:", "r_normalMapping",
 			play "sound/misc/menu1.wav"; uiScript glCustom,
-			6 )		
+			6 )
 	YESNOX	( geffects, "Bloom:", "r_bloom",
 			play "sound/misc/menu1.wav"; uiScript glCustom,
 			7 )
     YESNOX	( geffects, "Rim Lighting:", "r_rimlighting",
 			play "sound/misc/menu1.wav"; uiScript glCustom,
-			8 )				
-    YESNOX	( geffects, "Motion Blur:", "cg_motionblur",
-			play "sound/misc/menu1.wav"; uiScript glCustom,
-			9 )		
+			8 )
+	MULTIX	( geffects, "Motion Blur:", "cg_motionblur",
+			  "Yes" 0.05 "No" 0, play "sound/misc/menu1.wav"; uiScript glCustom,
+		  9 )
 	BUTTONX	( geffects, "APPLY",
 			play "sound/misc/menu1.wav"; exec "vid_restart",
 			10 )
-			
+
     itemDef
     {
       name systemSoft
@@ -623,8 +623,8 @@
 	YESNOX	( gsoftware, "In Game Videos:", "r_inGameVideo",
 			play "sound/misc/menu1.wav",
 			3 )
-	YESNOX	( gsoftware, "Depth Sort Particles:", "cg_depthSortParticles", 
-			play "sound/misc/menu1.wav", 
+	YESNOX	( gsoftware, "Depth Sort Particles:", "cg_depthSortParticles",
+			play "sound/misc/menu1.wav",
 			4 )
 	MULTIX	( gsoftware, "Particle Physics:", "cg_bounceParticles",
 			"Low Quality" 0 "High Quality" 1,

@@ -2029,9 +2029,7 @@ typedef struct
 // when there are multiple images of different formats available
 static const imageExtToLoaderMap_t imageLoaders[] =
 {
-#ifdef USE_WEBP
 	{ "webp", LoadWEBP },
-#endif
 	{ "png",  LoadPNG  },
 	{ "tga",  LoadTGA  },
 	{ "jpg",  LoadJPG  },

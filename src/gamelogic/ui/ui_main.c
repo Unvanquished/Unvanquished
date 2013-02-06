@@ -3198,13 +3198,13 @@ static void UI_Update( const char *name )
 				trap_Cvar_SetValue( "r_vertexlighting", 0 );
 				trap_Cvar_SetValue( "r_picmip", 0 );
 				trap_Cvar_SetValue( "r_inGameVideo", 1 );
-				trap_Cvar_SetValue( "cg_shadows", 1 );
+				trap_Cvar_SetValue( "cg_shadows", 4 );
 				trap_Cvar_SetValue( "r_dynamiclight", 1 );
 				trap_Cvar_SetValue( "cg_bounceParticles", 1 );
 				trap_Cvar_SetValue( "r_normalMapping", 1 );
 				trap_Cvar_SetValue( "r_bloom", 1 );
 				trap_Cvar_SetValue( "r_rimlighting", 1 );
-				trap_Cvar_SetValue( "cg_motionblur", 1 );
+				trap_Cvar_SetValue( "cg_motionblur", 0.05 );
 				trap_Cvar_SetValue( "r_ext_multisample", 8 );
 				trap_Cvar_SetValue( "r_ext_texture_filter_anisotropic", 8 );
 				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_LINEAR" );
@@ -3215,7 +3215,7 @@ static void UI_Update( const char *name )
 				trap_Cvar_SetValue( "r_vertexlighting", 0 );
 				trap_Cvar_SetValue( "r_picmip", 0 );
 				trap_Cvar_SetValue( "r_inGameVideo", 1 );
-				trap_Cvar_SetValue( "cg_shadows", 0 );
+				trap_Cvar_SetValue( "cg_shadows", 1 );
 				trap_Cvar_SetValue( "r_dynamiclight", 1 );
 				trap_Cvar_SetValue( "cg_bounceParticles", 0 );
 				trap_Cvar_SetValue( "r_normalMapping", 1 );

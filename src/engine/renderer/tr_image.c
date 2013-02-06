@@ -51,9 +51,8 @@ Maryland 20850 USA.
 
 #include <jpeglib.h>
 #include <png.h>
-#ifdef USE_WEBP
 #include <webp/decode.h>
-#endif
+
 static void          LoadWEBP( const char *name, byte **pic, int *width, int *height );
 static void          LoadBMP( const char *name, byte **pic, int *width, int *height );
 static void          LoadTGA( const char *name, byte **pic, int *width, int *height );
@@ -2394,15 +2393,11 @@ void R_LoadImage( const char *name, byte **pic, int *width, int *height )
 
 	ext = COM_GetExtension( name );
 
-#ifdef USE_WEBP
-
 	if ( !Q_stricmp( ext, "webp" ) )
 	{
 		LoadWEBP( name, pic, width, height );
 	}
-	else
-#endif
-	if ( !Q_stricmp( ext, "jpg" ) )
+	else if ( !Q_stricmp( ext, "jpg" ) )
 	{
 		LoadJPG( name, pic, width, height );
 	}
@@ -2435,12 +2430,10 @@ void R_LoadImage( const char *name, byte **pic, int *width, int *height )
 		char filename[ MAX_QPATH ];
 
 		COM_StripExtension3( name, filename, MAX_QPATH );
-#ifdef USE_WEBP
 		LoadWEBP( va( "%s.%s", filename, "webp" ), pic, width, height );
 
 		if ( *pic ) { return; }
 
-#endif
 		LoadDDS( va( "%s.%s", filename, "dds" ), pic, width, height );
 
 		if ( *pic ) { return; }

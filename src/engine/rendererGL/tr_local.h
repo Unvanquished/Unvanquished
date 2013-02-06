@@ -5204,10 +5204,7 @@ extern "C" {
 	void                                LoadPNG( const char *name, byte **pic, int *width, int *height, byte alphaByte );
 	void                                SavePNG( const char *name, const byte *pic, int width, int height, int numBytes, qboolean flip );
 
-#ifdef USE_WEBP
 	void                                LoadWEBP( const char *name, byte **pic, int *width, int *height, byte alphaByte );
-
-#endif
 
 // video stuff
 	const void *RB_TakeVideoFrameCmd( const void *data );

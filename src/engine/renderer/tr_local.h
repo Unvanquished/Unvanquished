@@ -2458,10 +2458,6 @@ int                                 SaveJPGToBuffer( byte *buffer, size_t bufSiz
 void                                SaveJPG( char *filename, int quality, int image_width, int image_height, unsigned char *image_buffer );
 void                                SavePNG( const char *name, const byte *pic, int width, int height, int numBytes, qboolean flip );
 
-#ifndef USE_WEBP
-#define LoadWEBP(n,p,w,h) /* nothing doing */
-#endif
-
 // video stuff
 const void *RB_TakeVideoFrameCmd( const void *data );
 void       RE_TakeVideoFrame( int width, int height, byte *captureBuffer, byte *encodeBuffer, qboolean motionJpeg );

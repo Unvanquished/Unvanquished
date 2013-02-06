@@ -353,6 +353,7 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
                              qboolean noColorEscape, float alpha )
 {
 	int  len;
+	vec4_t supportElementsColor;
 	int  drawLen;
 	int  prestep;
 	char str[ MAX_STRING_CHARS ];
@@ -431,15 +432,19 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
 	// draw the cursor
 	if ( showCursor )
 	{
-		static const float cyan[] = { 0, 1, 1, 0.5 };
 		float xpos, width, height;
+
+		supportElementsColor[0] = 1.0f;
+		supportElementsColor[1] = 1.0f;
+		supportElementsColor[2] = 1.0f;
+		supportElementsColor[3] = 0.66f * consoleState.currentAlphaFactor;
 
 		if ( ( int )( cls.realtime >> 8 ) & 1 )
 		{
 			return; // off blink
 		}
 
-		re.SetColor( cyan );
+		re.SetColor( supportElementsColor );
 
 		if ( size == SMALLCHAR_WIDTH )
 		{
@@ -814,8 +819,6 @@ void Console_Key( int key )
 	// enter finishes the line
 	if ( key == K_ENTER || key == K_KP_ENTER )
 	{
-		con.acLength = 0;
-
 		// if not in the game explicitly prepend a slash if needed
 		if ( (cls.state != CA_ACTIVE || !cl_consoleCommand->string[0] ) && g_consoleField.buffer[ 0 ] != '\\'
 		     && g_consoleField.buffer[ 0 ] != '/' )
@@ -868,14 +871,6 @@ void Console_Key( int key )
 		return;
 	}
 
-	// clear the autocompletion buffer on a line-editing key input
-	if ( ( key >= K_SPACE && key <= K_BACKSPACE ) || ( key == K_LEFTARROW ) || ( key == K_RIGHTARROW ) ||
-	     ( key >= K_KP_LEFTARROW && key <= K_KP_RIGHTARROW ) ||
-	     ( key >= K_KP_SLASH && key <= K_KP_PLUS ) || ( key >= K_KP_STAR && key <= K_KP_EQUALS ) )
-	{
-		con.acLength = 0;
-	}
-
 	// command history (ctrl-p ctrl-n for unix style)
 
 	//----(SA)  added some mousewheel functionality to the console
@@ -883,7 +878,6 @@ void Console_Key( int key )
 	     ( ( tolower( key ) == 'p' ) && keys[ K_CTRL ].down ) )
 	{
 		Field_Set( &g_consoleField, Hist_Prev() );
-		con.acLength = 0;
 		return;
 	}
 
@@ -902,8 +896,6 @@ void Console_Key( int key )
 			Hist_Add( g_consoleField.buffer );
 			Field_Clear( &g_consoleField );
 		}
-
-		con.acLength = 0;
 		return;
 	}
 
@@ -949,14 +941,14 @@ void Console_Key( int key )
 	// ctrl-home = top of console
 	if ( ( key == K_HOME || key == K_KP_HOME ) && keys[ K_CTRL ].down )
 	{
-		Con_Top();
+		Con_ScrollToTop();
 		return;
 	}
 
 	// ctrl-end = bottom of console
 	if ( ( key == K_END || key == K_KP_END ) && keys[ K_CTRL ].down )
 	{
-		Con_Bottom();
+		Con_ScrollToBottom();
 		return;
 	}
 
