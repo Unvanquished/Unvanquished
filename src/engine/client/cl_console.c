@@ -1023,11 +1023,6 @@ void Con_DrawAnimatedConsole( void )
 	const int charHeight = SCR_ConsoleFontCharHeight();
 	const int charPadding = SCR_ConsoleFontCharVPadding();
 
-	if ( consoleState.currentAnimationFraction <= 0 )
-	{
-		return;
-	}
-
 	consoleState.borderWidth = MAX( 0, con_borderWidth->integer );
 
 	if(con_margin->value > 0) {
@@ -1101,22 +1096,23 @@ void Con_DrawAnimatedConsole( void )
 	Con_DrawConsoleContent( animatedConsoleVidHeight, animatedConsoleVirtualHeight );
 }
 
+
 /*
 ==================
 Con_DrawConsole
+runs each render-frame
 ==================
 */
 void Con_DrawConsole( void )
 {
-	// check for console width changes from a vid mode change
-	Con_CheckResize();
+	// render console only if flag is set or is within an animation but also in special disconnected states
+	if ( !consoleState.isOpened && consoleState.currentAnimationFraction <= 0
+		&& !( cls.state == CA_DISCONNECTED && !( cls.keyCatchers & ( KEYCATCH_UI | KEYCATCH_CGAME ) ) ) )
+		return;
 
-	// render console if flag is set or is within an animation but also in special disconnected states
-	if (( cls.state == CA_DISCONNECTED && !( cls.keyCatchers & ( KEYCATCH_UI | KEYCATCH_CGAME ) ) )
-		|| consoleState.isOpened || consoleState.currentAnimationFraction > 0)
-	{
-		Con_DrawAnimatedConsole( );
-	}
+	// check for console width changes from a vid mode change
+	Con_CheckResize( );
+	Con_DrawAnimatedConsole( );
 }
 
 //================================================================
