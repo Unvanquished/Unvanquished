@@ -405,31 +405,6 @@ void Con_CheckResize( void )
 	{
 		const int consoleVidWidth = cls.glconfig.vidWidth - 2 * (consoleState.margin.sides + consoleState.padding.sides );
 		textWidthInChars = consoleVidWidth / SCR_ConsoleFontUnicharWidth( 'W' );
-
-		if( 2 * con_horizontalPadding->value >= consoleVidWidth )
-		{
-			Cvar_Reset(con_horizontalPadding->name);
-
-			//to be sure, its not the caus of this happening and resulting in a loop
-			Cvar_Reset(con_borderWidth->name);
-			Cvar_Reset(con_margin->name);
-		}
-
-		if (con_height->value > 100.0f || con_height->value < 1.0f )
-		{
-			Cvar_Reset(con_height->name);
-		}
-
-		if (con_height->value < con_margin->value || ( consoleState.visibleAmountOfLines < 1 && consoleState.currentAnimationFraction == 1.0f ) )
-		{
-			Cvar_Reset(con_height->name);
-			Cvar_Reset(con_margin->name);
-		}
-
-		if (con_animationSpeed->value <= 0.0f)
-		{
-			Cvar_Reset(con_animationSpeed->name);
-		}
 	}
 	else
 	{
@@ -1019,55 +994,18 @@ Draws the console with the solid background
 */
 void Con_DrawAnimatedConsole( void )
 {
-	float  vidXMargin, vidYMargin;
 	int    animatedConsoleVidHeight;
 	float  animatedConsoleVirtualHeight;
-	int    animatedConsoleVerticalPaddingTotal;
 
 	const int charHeight = SCR_ConsoleFontCharHeight();
 	const int charPadding = SCR_ConsoleFontCharVPadding();
-
-	//FIXME this has to be replaced with properly calculated borders
-	consoleState.border.sides = MAX( 0, con_borderWidth->integer );
-	consoleState.border.bottom = MAX( 0, con_borderWidth->integer );
-
-	if(con_margin->value > 0) {
-		vidXMargin = con_margin->value;
-		vidYMargin = con_margin->value;
-		consoleState.border.top = consoleState.border.bottom;
-	} else {
-		vidXMargin = - con_margin->value;
-		vidYMargin = 0;
-		consoleState.border.top = 0;
-	}
-	SCR_AdjustFrom640( &vidXMargin, &vidYMargin, NULL, NULL );
-
-	consoleState.margin.top = vidYMargin;
-	consoleState.margin.bottom = vidYMargin;
-	consoleState.margin.sides = vidXMargin;
-
-	consoleState.padding.top = floor( vidYMargin * 0.3f );
-	consoleState.padding.bottom = MAX( 3, consoleState.padding.top );
-
-	// on wide screens, this will lead to somewhat of a centering of the text
-	if(con_horizontalPadding->integer)
-	{
-		float horizontalVidPadding = con_horizontalPadding->value;
-		SCR_AdjustFrom640( &horizontalVidPadding, NULL, NULL, NULL );
-		consoleState.padding.sides = horizontalVidPadding;
-	}
-	else
-	{
-		consoleState.padding.sides = floor( vidXMargin * 0.3f );
-	}
-
-	animatedConsoleVerticalPaddingTotal = consoleState.padding.top + consoleState.padding.bottom;
+	const int totalVerticalPadding = consoleState.padding.top + consoleState.padding.bottom;
 
 	animatedConsoleVidHeight = ( cls.glconfig.vidHeight - consoleState.margin.top - consoleState.margin.bottom ) * con_height->integer * 0.01;
 	// clip to a multiple of the character height, plus padding
-	animatedConsoleVidHeight -= ( animatedConsoleVidHeight - animatedConsoleVerticalPaddingTotal - charPadding ) % charHeight;
+	animatedConsoleVidHeight -= ( animatedConsoleVidHeight - totalVerticalPadding - charPadding ) % charHeight;
 	// ... and ensure that at least three lines are visible
-	animatedConsoleVidHeight = MAX( 3 * charHeight + animatedConsoleVerticalPaddingTotal, animatedConsoleVidHeight );
+	animatedConsoleVidHeight = MAX( 3 * charHeight + totalVerticalPadding, animatedConsoleVidHeight );
 
 	animatedConsoleVirtualHeight = animatedConsoleVidHeight * SCREEN_HEIGHT / cls.glconfig.vidHeight;
 
@@ -1083,10 +1021,7 @@ void Con_DrawAnimatedConsole( void )
 		animatedConsoleVidHeight = cls.glconfig.vidHeight;
 	}
 
-	//only do fade animation if the type is set
-	consoleState.currentAlphaFactor = ( con_animationType->integer & ANIMATION_TYPE_FADE ) ? consoleState.currentAnimationFraction : 1.0f;
-
-	consoleState.visibleAmountOfLines = ( animatedConsoleVidHeight - animatedConsoleVerticalPaddingTotal )
+	consoleState.visibleAmountOfLines = ( animatedConsoleVidHeight - totalVerticalPadding )
 	                                    / charHeight //rowheight in pixel -> amount of rows
 	                                    - 2 ; // since we work with points but use charHeight spaces
 
@@ -1104,11 +1039,111 @@ void Con_DrawAnimatedConsole( void )
 	Con_DrawConsoleContent( animatedConsoleVidHeight, animatedConsoleVirtualHeight );
 }
 
+/*
+==================
+Con_UpdateConsoleState
+updates the consoleState
+==================
+*/
+void Con_UpdateConsoleState( void )
+{
+	float  horizontalMargin, verticalMargin;
+
+	/*
+	 * calculate margin and border
+	 */
+
+	//FIXME this has to be replaced with properly calculated borders
+	consoleState.border.sides = MAX( 0, con_borderWidth->integer );
+	consoleState.border.bottom = MAX( 0, con_borderWidth->integer );
+
+	if(con_margin->value > 0) {
+		horizontalMargin = con_margin->value;
+		verticalMargin = con_margin->value;
+		consoleState.border.top = consoleState.border.bottom;
+	} else {
+		horizontalMargin = - con_margin->value;
+		verticalMargin = 0;
+		consoleState.border.top = 0;
+	}
+	SCR_AdjustFrom640( &horizontalMargin, &verticalMargin, NULL, NULL );
+
+	consoleState.margin.top = verticalMargin;
+	consoleState.margin.bottom = verticalMargin;
+	consoleState.margin.sides = horizontalMargin;
+
+	/*
+	 * calculate padding
+	 */
+	consoleState.padding.top = floor( verticalMargin * 0.3f );
+	consoleState.padding.bottom = MAX( 3, consoleState.padding.top );
+
+	// on wide screens, this will lead to somewhat of a centering of the text
+	if(con_horizontalPadding->integer)
+	{
+		float horizontalVidPadding = con_horizontalPadding->value;
+		SCR_AdjustFrom640( &horizontalVidPadding, NULL, NULL, NULL );
+		consoleState.padding.sides = horizontalVidPadding;
+	}
+	else
+	{
+		consoleState.padding.sides = floor( horizontalMargin * 0.3f );
+	}
+
+	/*
+	 * calculate global alpha factor
+	 */
+	//only do fade animation if the type is set
+	consoleState.currentAlphaFactor = ( con_animationType->integer & ANIMATION_TYPE_FADE ) ? consoleState.currentAnimationFraction : 1.0f;
+}
+
+/*
+==================
+Con_RunAnimatedConsole
+runs each render-frame to update the console state accordingly
+==================
+*/
+void Con_RunAnimatedConsole( void )
+{
+	if (con_height->value > 100.0f || con_height->value < 1.0f )
+	{
+		Cvar_Reset(con_height->name);
+	}
+	if (con_animationSpeed->value <= 0.0f)
+	{
+		Cvar_Reset(con_animationSpeed->name);
+	}
+
+	Con_UpdateConsoleState( );
+
+	//now check everything that is depending on the consolestate
+	if (con_height->value < con_margin->value || ( consoleState.visibleAmountOfLines < 1 && consoleState.currentAnimationFraction == 1.0f ) )
+	{
+		Cvar_Reset(con_height->name);
+		Cvar_Reset(con_margin->name);
+		Con_UpdateConsoleState( ); //recalculate
+	}
+
+	const int consoleVidWidth = cls.glconfig.vidWidth - 2 * (consoleState.margin.sides + consoleState.padding.sides );
+	if( 2 * con_horizontalPadding->value >= consoleVidWidth )
+	{
+		Cvar_Reset(con_horizontalPadding->name);
+
+		//to be sure, its not the caus of this happening and resulting in a loop
+		Cvar_Reset(con_borderWidth->name);
+		Cvar_Reset(con_margin->name);
+		Con_UpdateConsoleState( );  //recalculate
+	}
+
+	// check for console width changes from a vid mode change
+	Con_CheckResize( );
+}
+
 
 /*
 ==================
 Con_DrawConsole
-runs each render-frame
+runs each render-frame (possibly twice with stereo enabled)
 ==================
 */
 void Con_DrawConsole( void )
@@ -1118,8 +1153,8 @@ void Con_DrawConsole( void )
 		&& !( cls.state == CA_DISCONNECTED && !( cls.keyCatchers & ( KEYCATCH_UI | KEYCATCH_CGAME ) ) ) )
 		return;
 
-	// check for console width changes from a vid mode change
-	Con_CheckResize( );
+
+	Con_RunAnimatedConsole( );
 	Con_DrawAnimatedConsole( );
 }
 
@@ -1129,8 +1164,7 @@ void Con_DrawConsole( void )
 ==================
 Con_RunConsole
 
-Update the state each frame,
-like scrolling it up or down, or setting the opening flag
+runs each frame once independend wheter or not the console is going to be rendered or not
 ==================
 */
 void Con_RunConsole( void )
