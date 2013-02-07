@@ -485,3 +485,15 @@ extern "C" void InjectRocket( SDL_Event event )
 	}
 }
 
+extern "C" void Rocket_InjectMouseMotion( int x, int y )
+{
+
+	if ( context )
+	{
+		int mousepos = VM_Call( uivm, UI_MOUSE_POSITION, 0 );
+		int cursorx = mousepos & 0xFFFF;
+		int cursory = mousepos >> 16;
+
+		context->ProcessMouseMove( x+cursorx, cursory+y, RocketConvertSDLmod( SDL_GetModState() ) );
+	}
+}

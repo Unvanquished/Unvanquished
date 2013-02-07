@@ -41,6 +41,7 @@ void Rocket_Init( void );
 void Rocket_Shutdown( void );
 void Rocket_Render( void );
 void Rocket_Update( void );
+void Rocket_InjectMouseMotion( int x, int y );
 
 #if defined( __cplusplus )
 }

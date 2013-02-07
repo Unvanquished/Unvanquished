@@ -2711,6 +2711,7 @@ Returns last event time
 
 #ifndef DEDICATED
 extern qboolean consoleButtonWasPressed;
+void Rocket_InjectMouseMotion( int x , int y );
 #endif
 
 int Com_EventLoop( void )
@@ -2780,6 +2781,9 @@ int Com_EventLoop( void )
 
 			case SE_MOUSE:
 				CL_MouseEvent( ev.evValue, ev.evValue2, ev.evTime );
+#ifndef DEDICATED
+				Rocket_InjectMouseMotion( ev.evValue, ev.evValue2 );
+#endif
 				break;
 
 			case SE_JOYSTICK_AXIS:
