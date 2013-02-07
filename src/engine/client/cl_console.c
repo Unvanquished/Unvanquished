@@ -882,7 +882,7 @@ void Con_DrawConsoleScrollbackIndicator( int lineDrawPosition )
 
 	for ( i = 0; i < consoleState.textWidthInChars; i += 4 )
 	{
-		SCR_DrawConsoleFontUnichar( consoleState.horizontalVidMargin + consoleState.horizontalVidPadding + ( i + 1 ) * hatWidth, lineDrawPosition, '^' );
+		SCR_DrawConsoleFontUnichar( consoleState.horizontalVidMargin + consoleState.horizontalVidPadding + ( i + 1.5 ) * hatWidth, lineDrawPosition, '^' );
 	}
 }
 
