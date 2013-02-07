@@ -661,8 +661,6 @@ qboolean CL_UpdateVisiblePings_f( int source );
 //
 // console
 //
-#define NUM_CON_TIMES    4
-
 //#define       CON_TEXTSIZE    32768
 #define     CON_TEXTSIZE 65536 // (SA) DM wants more console...
 #define     CON_LINECOUNT  512
@@ -727,8 +725,6 @@ typedef struct
 	 * console as a whole
 	 */
 	float    currentAlphaFactor;
-
-	int      times[ NUM_CON_TIMES ]; // cls.realtime time the line was generated
 } console_t;
 
 extern console_t consoleState;
@@ -740,8 +736,6 @@ void             Con_Init( void );
 void             Con_Clear_f( void );
 void             Con_ToggleConsole_f( void );
 void             Con_OpenConsole_f( void );
-void             Con_DrawNotify( void );
-void             Con_ClearNotify( void );
 void             Con_RunConsole( void );
 void             Con_DrawConsole( void );
 void             Con_PageUp( void );

@@ -46,7 +46,6 @@ console_t consoleState;
 
 cvar_t    *con_animationSpeed;
 cvar_t    *con_animationType;
-cvar_t    *con_notifytime;
 cvar_t    *con_autoclear;
 
 cvar_t	  *con_prompt;
@@ -161,8 +160,6 @@ void Con_ToggleConsole_f( void )
 	}
 
 	g_consoleField.widthInChars = g_console_field_width;
-
-	Con_ClearNotify();
 
 	if (consoleState.isOpened) {
 		cls.keyCatchers &= ~KEYCATCH_CONSOLE;
@@ -394,21 +391,6 @@ void Con_Grep_f( void )
 
 /*
 ================
-Con_ClearNotify
-================
-*/
-void Con_ClearNotify( void )
-{
-	int i;
-
-	for ( i = 0; i < NUM_CON_TIMES; i++ )
-	{
-		consoleState.times[ i ] = 0;
-	}
-}
-
-/*
-================
 Con_CheckResize
 
 If the line width has changed, reformat the buffer.
@@ -515,7 +497,6 @@ Con_Init
 */
 void Con_Init( void )
 {
-	con_notifytime = Cvar_Get( "con_notifytime", "7", 0 );  // JPW NERVE increased per id req for obits
 	con_animationSpeed = Cvar_Get( "con_animationSpeed", "3", 0 );
 	con_animationType = Cvar_Get( "con_animationType", "2", 0 );
 	con_autoclear = Cvar_Get( "con_autoclear", "1", CVAR_ARCHIVE );
@@ -558,17 +539,11 @@ void Con_Init( void )
 Con_Linefeed
 ===============
 */
-void Con_Linefeed( qboolean skipnotify )
+void Con_Linefeed( void )
 {
 	int             i;
 	conChar_t       *line;
 	const conChar_t blank = { 0, ColorIndex( CONSOLE_COLOR ) };
-
-	// mark time for transparent overlay
-	if ( consoleState.currentLine >= 0 )
-	{
-		consoleState.times[ consoleState.currentLine % NUM_CON_TIMES ] = skipnotify ? 0 : cls.realtime;
-	}
 
 	consoleState.x = 0;
 
@@ -608,15 +583,6 @@ void CL_ConsolePrint( char *txt )
 	int      y;
 	int      c, i, l;
 	int      color;
-	qboolean skipnotify = qfalse; // NERVE - SMF
-	int      prev; // NERVE - SMF
-
-	// NERVE - SMF - work around for text that shows up in console but not in notify
-	if ( !Q_strncmp( txt, "[skipnotify]", 12 ) )
-	{
-		skipnotify = qtrue;
-		txt += 12;
-	}
 
 	// for some demos we don't want to ever show anything on the console
 	if ( cl_noprint && cl_noprint->integer )
@@ -631,7 +597,12 @@ void CL_ConsolePrint( char *txt )
 		consoleState.initialized = qtrue;
 	}
 
-	if ( !skipnotify && !consoleState.isOpened && strncmp( txt, "EXCL: ", 6 ) )
+	// NERVE - SMF - work around for text that shows up in console but not in notify
+	if ( !Q_strncmp( txt, "[skipnotify]", 12 ) )
+	{
+			txt += 12;
+	}
+	else if ( !consoleState.isOpened && strncmp( txt, "EXCL: ", 6 ) )
 	{
 		// feed the text to cgame
 		Cmd_SaveCmdContext();
@@ -670,13 +641,13 @@ void CL_ConsolePrint( char *txt )
 		// word wrap
 		if ( l != consoleState.textWidthInChars && ( consoleState.x + l >= consoleState.textWidthInChars ) )
 		{
-			Con_Linefeed( skipnotify );
+			Con_Linefeed( );
 		}
 
 		switch ( c )
 		{
 			case '\n':
-				Con_Linefeed( skipnotify );
+				Con_Linefeed( );
 				break;
 
 			case '\r':
@@ -699,7 +670,7 @@ void CL_ConsolePrint( char *txt )
 
 				if ( consoleState.x >= consoleState.textWidthInChars )
 				{
-					Con_Linefeed( skipnotify );
+					Con_Linefeed( );
 					consoleState.x = 0;
 				}
 
@@ -707,28 +678,6 @@ void CL_ConsolePrint( char *txt )
 		}
 
 		txt += Q_UTF8Width( txt );
-	}
-
-	// mark time for transparent overlay
-	if ( consoleState.currentLine >= 0 )
-	{
-		// NERVE - SMF
-		if ( skipnotify )
-		{
-			prev = consoleState.currentLine % NUM_CON_TIMES - 1;
-
-			if ( prev < 0 )
-			{
-				prev = NUM_CON_TIMES - 1;
-			}
-
-			consoleState.times[ prev ] = 0;
-		}
-		else
-		{
-			// -NERVE - SMF
-			consoleState.times[ consoleState.currentLine % NUM_CON_TIMES ] = cls.realtime;
-		}
 	}
 }
 
@@ -1152,102 +1101,6 @@ void Con_DrawAnimatedConsole( void )
 	Con_DrawConsoleContent( animatedConsoleVidHeight, animatedConsoleVirtualHeight );
 }
 
-extern cvar_t *con_drawnotify;
-
-/*
-================
-Con_DrawNotify
-
-Draws the last few lines of output transparently over the game top
-================
-*/
-void Con_DrawNotify( void )
-{
-	int   x, v;
-	int   i;
-	int   time;
-	int   skip = 0;
-	int   currentColor;
-
-	conChar_t *text;
-
-	currentColor = 7;
-	re.SetColor( g_color_table[ currentColor ] );
-
-	v = 0;
-
-	for ( i = consoleState.currentLine - NUM_CON_TIMES + 1; i <= consoleState.currentLine; i++ )
-	{
-		if ( i < 0 )
-		{
-			continue;
-		}
-
-		time = consoleState.times[ i % NUM_CON_TIMES ];
-
-		if ( time == 0 )
-		{
-			continue;
-		}
-
-		time = cls.realtime - time;
-
-		if ( time > con_notifytime->value * 1000 )
-		{
-			continue;
-		}
-
-		text = consoleState.text + CON_LINE( i );
-
-		if ( cl.snap.ps.pm_type != PM_INTERMISSION && (cls.keyCatchers & ( KEYCATCH_UI | KEYCATCH_CGAME )) )
-		{
-			continue;
-		}
-
-		for ( x = 0; x < consoleState.textWidthInChars && text[ x ].ch; ++x )
-		{
-			if ( text[ x ].ch == ' ' )
-			{
-				continue;
-			}
-
-			if ( text[ x ].ink != currentColor )
-			{
-				currentColor = text[ x ].ink;
-				re.SetColor( g_color_table[ currentColor ] );
-			}
-
-			SCR_DrawSmallUnichar( consoleState.horizontalVidMargin + consoleState.horizontalVidPadding + ( x + 1 ) * SMALLCHAR_WIDTH, v, text[ x ].ch );
-		}
-
-		v += SMALLCHAR_HEIGHT;
-	}
-
-	re.SetColor( NULL );
-
-	if ( cls.keyCatchers & ( KEYCATCH_UI | KEYCATCH_CGAME ) )
-	{
-		return;
-	}
-
-	// draw the chat line
-	if ( cls.keyCatchers & KEYCATCH_MESSAGE )
-	{
-		if ( chat_irc )
-		{
-			char buf[ 128 ];
-
-			SCR_DrawBigString( 8, v, "say_irc:", 1.0f, qfalse );
-			skip = strlen( buf ) + 2;
-		}
-
-		Field_BigDraw( &chatField, skip * BIGCHAR_WIDTH, 232, qtrue, qtrue );
-
-		v += BIGCHAR_HEIGHT;
-	}
-}
-
-
 /*
 ==================
 Con_DrawConsole
@@ -1263,11 +1116,6 @@ void Con_DrawConsole( void )
 		|| consoleState.isOpened || consoleState.currentAnimationFraction > 0)
 	{
 		Con_DrawAnimatedConsole( );
-	}
-	// draw notify lines, but only if console isn't opened
-	else if ( cls.state == CA_ACTIVE && con_drawnotify->integer )
-	{
-		Con_DrawNotify( );
 	}
 }
 
@@ -1353,7 +1201,6 @@ void Con_Close( void )
 	}
 
 	Field_Clear( &g_consoleField );
-	Con_ClearNotify();
 	cls.keyCatchers &= ~KEYCATCH_CONSOLE;
 	consoleState.isOpened = qfalse;
 

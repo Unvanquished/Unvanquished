@@ -442,9 +442,8 @@ rescan:
 
 	if ( !strcmp( cmd, "map_restart" ) )
 	{
-		// clear notify lines and outgoing commands before passing
+		// clear outgoing commands before passing
 		// the restart to the cgame
-		Con_ClearNotify();
 		memset( cl.cmds, 0, sizeof( cl.cmds ) );
 		return qtrue;
 	}
@@ -1430,9 +1429,6 @@ void CL_InitCGame( void )
 	{
 		Com_TouchMemory();
 	}
-
-	// clear anything that got printed
-	Con_ClearNotify();
 
 	// Ridah, update the memory usage file
 	CL_UpdateLevelHunkUsage();
