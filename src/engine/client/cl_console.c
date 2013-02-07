@@ -1224,9 +1224,10 @@ void Con_PageUp( void )
 
 	consoleState.bottomDisplayedLine -= 2;
 
-	if ( consoleState.currentLine - consoleState.bottomDisplayedLine >= consoleState.usedScrollbackLengthInLines )
+	if ( consoleState.bottomDisplayedLine < consoleState.currentLine - consoleState.usedScrollbackLengthInLines
+			+ MIN(consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines) )
 	{
-		consoleState.bottomDisplayedLine = consoleState.currentLine - consoleState.usedScrollbackLengthInLines + 1;
+		Con_ScrollToTop( );
 	}
 }
 
@@ -1242,12 +1243,9 @@ void Con_PageDown( void )
 
 void Con_ScrollToTop( void )
 {
-	consoleState.bottomDisplayedLine = consoleState.usedScrollbackLengthInLines;
-
-	if ( consoleState.currentLine - consoleState.bottomDisplayedLine >= consoleState.usedScrollbackLengthInLines )
-	{
-		consoleState.bottomDisplayedLine = consoleState.currentLine - consoleState.usedScrollbackLengthInLines + 1;
-	}
+	consoleState.bottomDisplayedLine = consoleState.currentLine
+			- consoleState.usedScrollbackLengthInLines
+			+ MIN(consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines);
 }
 
 void Con_ScrollToBottom( void )
