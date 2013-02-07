@@ -717,6 +717,11 @@ typedef struct
 	 */
 	consoleBoxWidth_t padding;
 
+	/**
+	 * current console-content height in pixel from border to border (paddings are part of the content)
+	 */
+	int height;
+
 	float    currentAnimationFraction; // changes between 0.0 and 1.0 at scr_conspeed
 	qboolean isOpened;
 

@@ -886,7 +886,7 @@ static float Con_MarginFadeAlpha( float alpha, int lineDrawPosition, int topMarg
 Con_DrawConsoleContent
 ================
 */
-void Con_DrawConsoleContent( int currentConsoleVidHeight, int currentConsoleVirtualHeight )
+void Con_DrawConsoleContent( int currentConsoleVirtualHeight )
 {
 	float  currentWidthLocation = 0;
 	int    x, lineDrawPosition;
@@ -902,7 +902,7 @@ void Con_DrawConsoleContent( int currentConsoleVidHeight, int currentConsoleVirt
 	                            - charPadding - 1;
 
 	// draw from the bottom up
-	lineDrawPosition = currentConsoleVidHeight
+	lineDrawPosition = consoleState.height
 	                 + consoleState.margin.top
 	                 - consoleState.padding.bottom
 	                 - consoleState.border.top
@@ -994,36 +994,7 @@ Draws the console with the solid background
 */
 void Con_DrawAnimatedConsole( void )
 {
-	int    animatedConsoleVidHeight;
-	float  animatedConsoleVirtualHeight;
-
-	const int charHeight = SCR_ConsoleFontCharHeight();
-	const int charPadding = SCR_ConsoleFontCharVPadding();
-	const int totalVerticalPadding = consoleState.padding.top + consoleState.padding.bottom;
-
-	animatedConsoleVidHeight = ( cls.glconfig.vidHeight - consoleState.margin.top - consoleState.margin.bottom ) * con_height->integer * 0.01;
-	// clip to a multiple of the character height, plus padding
-	animatedConsoleVidHeight -= ( animatedConsoleVidHeight - totalVerticalPadding - charPadding ) % charHeight;
-	// ... and ensure that at least three lines are visible
-	animatedConsoleVidHeight = MAX( 3 * charHeight + totalVerticalPadding, animatedConsoleVidHeight );
-
-	animatedConsoleVirtualHeight = animatedConsoleVidHeight * SCREEN_HEIGHT / cls.glconfig.vidHeight;
-
-	//only do scroll animation if the type is set
-	if ( con_animationType->integer & ANIMATION_TYPE_SCROLL_DOWN)
-	{
-		animatedConsoleVidHeight *= consoleState.currentAnimationFraction;
-		animatedConsoleVirtualHeight *= consoleState.currentAnimationFraction;
-	}
-
-	if ( animatedConsoleVidHeight > cls.glconfig.vidHeight )
-	{
-		animatedConsoleVidHeight = cls.glconfig.vidHeight;
-	}
-
-	consoleState.visibleAmountOfLines = ( animatedConsoleVidHeight - totalVerticalPadding )
-	                                    / charHeight //rowheight in pixel -> amount of rows
-	                                    - 2 ; // since we work with points but use charHeight spaces
+	const float  animatedConsoleVirtualHeight = consoleState.height * SCREEN_HEIGHT / cls.glconfig.vidHeight;
 
 	//now do the actual drawing
 	Con_DrawBackground( animatedConsoleVirtualHeight );
@@ -1036,7 +1007,7 @@ void Con_DrawAnimatedConsole( void )
 	}
 
 	//input, scrollbackindicator, scrollback text
-	Con_DrawConsoleContent( animatedConsoleVidHeight, animatedConsoleVirtualHeight );
+	Con_DrawConsoleContent( animatedConsoleVirtualHeight );
 }
 
 /*
@@ -1048,6 +1019,9 @@ updates the consoleState
 void Con_UpdateConsoleState( void )
 {
 	float  horizontalMargin, verticalMargin;
+
+	const int charHeight = SCR_ConsoleFontCharHeight();
+	const int charPadding = SCR_ConsoleFontCharVPadding();
 
 	/*
 	 * calculate margin and border
@@ -1093,8 +1067,44 @@ void Con_UpdateConsoleState( void )
 	/*
 	 * calculate global alpha factor
 	 */
-	//only do fade animation if the type is set
+	//do fade animation if the type is set, otherwise remain completly visible
 	consoleState.currentAlphaFactor = ( con_animationType->integer & ANIMATION_TYPE_FADE ) ? consoleState.currentAnimationFraction : 1.0f;
+
+	/*
+	 * calculate current console height
+	 */
+	consoleState.height = con_height->integer * 0.01 * (cls.glconfig.vidHeight
+						- consoleState.margin.top - consoleState.margin.bottom
+						- consoleState.border.top - consoleState.border.bottom
+						);
+
+	const int totalVerticalPadding = consoleState.padding.top + consoleState.padding.bottom;
+
+	// clip to a multiple of the character height, plus padding
+	consoleState.height -= ( consoleState.height - totalVerticalPadding - charPadding ) % charHeight;
+	// ... and ensure that at least three lines are visible
+	consoleState.height = MAX( 3 * charHeight + totalVerticalPadding, consoleState.height );
+
+
+	//animate via scroll animation if the type is set
+	if ( con_animationType->integer & ANIMATION_TYPE_SCROLL_DOWN)
+	{
+		consoleState.height *= consoleState.currentAnimationFraction;
+	}
+
+	if ( consoleState.height > cls.glconfig.vidHeight )
+	{
+		consoleState.height = cls.glconfig.vidHeight;
+	}
+
+	/*
+	 * calculate current amount of visible lines after we learned about the current height
+	 */
+
+	consoleState.visibleAmountOfLines = ( consoleState.height - consoleState.padding.top - consoleState.padding.bottom )
+	                                    / charHeight //rowheight in pixel -> amount of rows
+	                                    - 2 ; // dont count the input and the scrollbackindicator
+
 }
 
 /*
