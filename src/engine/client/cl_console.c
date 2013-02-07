@@ -895,10 +895,14 @@ void Con_DrawConsoleScrollbar( int virtualHeight )
 	const float scrollBarX = SCREEN_WIDTH - con_margin->integer - con_horizontalPadding->integer - 2 * con_borderWidth->integer;
 	const float scrollBarY = con_margin->value + con_borderWidth->value + virtualHeight * 0.10f;
 	const float scrollBarLength = virtualHeight * 0.80f;
-	const float scrollHandleLength = (scrollBarLength/MAX(consoleState.usedScrollbackLengthInLines, consoleState.visibleAmountOfLines * 2))
-			* consoleState.visibleAmountOfLines;
-	const float scrollHandlePostition = ((scrollBarLength - scrollHandleLength)/consoleState.usedScrollbackLengthInLines)
-			* (consoleState.bottomDisplayedLine - (consoleState.currentLine - consoleState.usedScrollbackLengthInLines));
+	const int   scrollBarLinesRepresented = consoleState.usedScrollbackLengthInLines + consoleState.visibleAmountOfLines - 1;
+	const float scrollHandleLength = consoleState.usedScrollbackLengthInLines
+	                                 ? scrollBarLength * MIN( 1.0f, (float) consoleState.visibleAmountOfLines / scrollBarLinesRepresented )
+	                                 : 0;
+	const float scrollHandlePostition = ( consoleState.usedScrollbackLengthInLines > 1 )
+	                                    ? ( scrollBarLength - scrollHandleLength ) / ( consoleState.usedScrollbackLengthInLines - 1 )
+	                                      * ( consoleState.bottomDisplayedLine - ( consoleState.currentLine - consoleState.usedScrollbackLengthInLines ) - 1 )
+	                                    : 0;
 
 	//draw the scrollBar
 	color[ 0 ] = 0.2f;
@@ -909,7 +913,7 @@ void Con_DrawConsoleScrollbar( int virtualHeight )
 	SCR_FillRect( scrollBarX, scrollBarY, con_borderWidth->value, scrollBarLength, color );
 
 	//draw the handle
-	if(scrollHandlePostition >= 0)
+	if ( scrollHandlePostition >= 0 && scrollHandleLength > 0 )
 	{
 		color[ 0 ] = 0.5f;
 		color[ 1 ] = 0.5f;
@@ -918,7 +922,7 @@ void Con_DrawConsoleScrollbar( int virtualHeight )
 
 		SCR_FillRect( scrollBarX, scrollBarY + scrollHandlePostition, con_borderWidth->value, scrollHandleLength, color );
 	}
-	else //this happens when line appending gets us over the top position in a roll-lock situation (scrolling itself won't do that)
+	else if ( consoleState.usedScrollbackLengthInLines ) //this happens when line appending gets us over the top position in a roll-lock situation (scrolling itself won't do that)
 	{
 		color[ 0 ] = (-scrollHandlePostition * 5.0f)/10;
 		color[ 1 ] = 0.5f;
