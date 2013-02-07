@@ -46,7 +46,6 @@ console_t consoleState;
 
 cvar_t    *con_animationSpeed;
 cvar_t    *con_animationType;
-cvar_t    *con_notifytime;
 cvar_t    *con_autoclear;
 
 cvar_t	  *con_prompt;
@@ -67,6 +66,12 @@ cvar_t    *con_colorRed;
 cvar_t    *con_colorBlue;
 cvar_t    *con_colorGreen;
 
+/**
+ * allows for debugging the console without using the consoles scrollback,
+ * which might otherwise end in loops or unnecessary verbose output
+ */
+cvar_t    *con_debug;
+
 #define ANIMATION_TYPE_NONE   0
 #define ANIMATION_TYPE_SCROLL_DOWN 1
 #define ANIMATION_TYPE_FADE   2
@@ -75,7 +80,7 @@ cvar_t    *con_colorGreen;
 #define DEFAULT_CONSOLE_WIDTH 78
 #define MAX_CONSOLE_WIDTH   1024
 
-#define CON_LINE(line) ( ( (line) % consoleState.scrollbackLengthInLines ) * consoleState.textWidthInChars )
+#define CON_LINE(line) ( ( (line) % consoleState.maxScrollbackLengthInLines ) * consoleState.textWidthInChars )
 
 // Buffer used by line-to-string code. Implementation detail.
 static char lineString[ MAX_CONSOLE_WIDTH * 6 + 4 ];
@@ -156,8 +161,6 @@ void Con_ToggleConsole_f( void )
 
 	g_consoleField.widthInChars = g_console_field_width;
 
-	Con_ClearNotify();
-
 	if (consoleState.isOpened) {
 		cls.keyCatchers &= ~KEYCATCH_CONSOLE;
 	} else {
@@ -187,6 +190,8 @@ static INLINE void Con_Clear( void )
 	{
 		consoleState.text[i] = fill;
 	}
+
+	consoleState.usedScrollbackLengthInLines = 0;
 }
 
 /*
@@ -243,7 +248,7 @@ void Con_Dump_f( void )
 	}
 
 	// skip empty lines
-	for ( l = consoleState.currentLine - consoleState.scrollbackLengthInLines + 1; l <= consoleState.currentLine; l++ )
+	for ( l = consoleState.currentLine - consoleState.maxScrollbackLengthInLines + 1; l <= consoleState.currentLine; l++ )
 	{
 		if ( consoleState.text[ CON_LINE( l ) ].ch )
 		{
@@ -283,7 +288,7 @@ void Con_Search_f( void )
 	direction = Q_stricmp( Cmd_Argv( 0 ), "searchDown" ) ? -1 : 1;
 
 	// check the lines
-	for ( l = consoleState.bottomDisplayedLine - 1 + direction; l <= consoleState.currentLine && consoleState.currentLine - l < consoleState.scrollbackLengthInLines; l += direction )
+	for ( l = consoleState.bottomDisplayedLine - 1 + direction; l <= consoleState.currentLine && consoleState.currentLine - l < consoleState.maxScrollbackLengthInLines; l += direction )
 	{
 		const char *buffer = Con_LineToString( l, qtrue );
 
@@ -327,7 +332,7 @@ void Con_Grep_f( void )
 	}
 
 	// skip empty lines
-	for ( l = consoleState.currentLine - consoleState.scrollbackLengthInLines + 1; l <= consoleState.currentLine; l++ )
+	for ( l = consoleState.currentLine - consoleState.maxScrollbackLengthInLines + 1; l <= consoleState.currentLine; l++ )
 	{
 		if ( consoleState.text[ CON_LINE( l ) ].ch )
 		{
@@ -386,21 +391,6 @@ void Con_Grep_f( void )
 
 /*
 ================
-Con_ClearNotify
-================
-*/
-void Con_ClearNotify( void )
-{
-	int i;
-
-	for ( i = 0; i < NUM_CON_TIMES; i++ )
-	{
-		consoleState.times[ i ] = 0;
-	}
-}
-
-/*
-================
 Con_CheckResize
 
 If the line width has changed, reformat the buffer.
@@ -453,23 +443,23 @@ void Con_CheckResize( void )
 	else if ( textWidthInChars < 1 ) // video hasn't been initialized yet
 	{
 		consoleState.textWidthInChars = DEFAULT_CONSOLE_WIDTH;
-		consoleState.scrollbackLengthInLines = CON_TEXTSIZE / consoleState.textWidthInChars;
+		consoleState.maxScrollbackLengthInLines = CON_TEXTSIZE / consoleState.textWidthInChars;
 		Con_Clear();
 
-		consoleState.currentLine = consoleState.scrollbackLengthInLines - 1;
+		consoleState.currentLine = consoleState.maxScrollbackLengthInLines - 1;
 		consoleState.bottomDisplayedLine = consoleState.currentLine;
 	}
 	else
 	{
 		oldwidth = consoleState.textWidthInChars;
 		consoleState.textWidthInChars = textWidthInChars;
-		oldtotallines = consoleState.scrollbackLengthInLines;
-		consoleState.scrollbackLengthInLines = CON_TEXTSIZE / consoleState.textWidthInChars;
+		oldtotallines = consoleState.maxScrollbackLengthInLines;
+		consoleState.maxScrollbackLengthInLines = CON_TEXTSIZE / consoleState.textWidthInChars;
 		numlines = oldtotallines;
 
-		if ( consoleState.scrollbackLengthInLines < numlines )
+		if ( consoleState.maxScrollbackLengthInLines < numlines )
 		{
-			numlines = consoleState.scrollbackLengthInLines;
+			numlines = consoleState.maxScrollbackLengthInLines;
 		}
 
 		numchars = oldwidth;
@@ -484,12 +474,16 @@ void Con_CheckResize( void )
 
 		for ( i = 0; i < numlines; i++ )
 		{
-			memcpy( consoleState.text + ( consoleState.scrollbackLengthInLines - 1 - i ) * consoleState.textWidthInChars,
+			conChar_t* destination = consoleState.text + ( consoleState.maxScrollbackLengthInLines - 1 - i ) * consoleState.textWidthInChars;
+			memcpy( destination,
 			        buf + ( ( consoleState.currentLine - i + oldtotallines ) % oldtotallines ) * oldwidth,
 			        numchars * sizeof( conChar_t ) );
+
+			if( destination[0].ch )
+				consoleState.usedScrollbackLengthInLines++;
 		}
 
-		consoleState.currentLine = consoleState.scrollbackLengthInLines - 1;
+		consoleState.currentLine = consoleState.maxScrollbackLengthInLines - 1;
 		consoleState.bottomDisplayedLine = consoleState.currentLine;
 	}
 
@@ -503,7 +497,6 @@ Con_Init
 */
 void Con_Init( void )
 {
-	con_notifytime = Cvar_Get( "con_notifytime", "7", 0 );  // JPW NERVE increased per id req for obits
 	con_animationSpeed = Cvar_Get( "con_animationSpeed", "3", 0 );
 	con_animationType = Cvar_Get( "con_animationType", "2", 0 );
 	con_autoclear = Cvar_Get( "con_autoclear", "1", CVAR_ARCHIVE );
@@ -526,6 +519,8 @@ void Con_Init( void )
 	con_borderColorGreen = Cvar_Get( "con_borderColorGreen", "1", CVAR_ARCHIVE );
 	con_borderColorAlpha = Cvar_Get( "con_borderColorAlpha", "0.2", CVAR_ARCHIVE );
 
+	con_debug = Cvar_Get( "con_debug", "0", 0 );
+
 	// Done defining cvars for console colors
 
 	Field_Clear( &g_consoleField );
@@ -544,17 +539,11 @@ void Con_Init( void )
 Con_Linefeed
 ===============
 */
-void Con_Linefeed( qboolean skipnotify )
+void Con_Linefeed( void )
 {
 	int             i;
 	conChar_t       *line;
 	const conChar_t blank = { 0, ColorIndex( CONSOLE_COLOR ) };
-
-	// mark time for transparent overlay
-	if ( consoleState.currentLine >= 0 )
-	{
-		consoleState.times[ consoleState.currentLine % NUM_CON_TIMES ] = skipnotify ? 0 : cls.realtime;
-	}
 
 	consoleState.x = 0;
 
@@ -564,6 +553,9 @@ void Con_Linefeed( qboolean skipnotify )
 	}
 
 	consoleState.currentLine++;
+
+	if( consoleState.usedScrollbackLengthInLines < consoleState.maxScrollbackLengthInLines )
+		consoleState.usedScrollbackLengthInLines++;
 
 	line = consoleState.text + CON_LINE( consoleState.currentLine );
 
@@ -591,15 +583,6 @@ void CL_ConsolePrint( char *txt )
 	int      y;
 	int      c, i, l;
 	int      color;
-	qboolean skipnotify = qfalse; // NERVE - SMF
-	int      prev; // NERVE - SMF
-
-	// NERVE - SMF - work around for text that shows up in console but not in notify
-	if ( !Q_strncmp( txt, "[skipnotify]", 12 ) )
-	{
-		skipnotify = qtrue;
-		txt += 12;
-	}
 
 	// for some demos we don't want to ever show anything on the console
 	if ( cl_noprint && cl_noprint->integer )
@@ -614,7 +597,12 @@ void CL_ConsolePrint( char *txt )
 		consoleState.initialized = qtrue;
 	}
 
-	if ( !skipnotify && !consoleState.isOpened && strncmp( txt, "EXCL: ", 6 ) )
+	// NERVE - SMF - work around for text that shows up in console but not in notify
+	if ( !Q_strncmp( txt, "[skipnotify]", 12 ) )
+	{
+			txt += 12;
+	}
+	else if ( !consoleState.isOpened && strncmp( txt, "EXCL: ", 6 ) )
 	{
 		// feed the text to cgame
 		Cmd_SaveCmdContext();
@@ -653,13 +641,13 @@ void CL_ConsolePrint( char *txt )
 		// word wrap
 		if ( l != consoleState.textWidthInChars && ( consoleState.x + l >= consoleState.textWidthInChars ) )
 		{
-			Con_Linefeed( skipnotify );
+			Con_Linefeed( );
 		}
 
 		switch ( c )
 		{
 			case '\n':
-				Con_Linefeed( skipnotify );
+				Con_Linefeed( );
 				break;
 
 			case '\r':
@@ -673,7 +661,7 @@ void CL_ConsolePrint( char *txt )
 				}
 
 			default: // display character and advance
-				y = consoleState.currentLine % consoleState.scrollbackLengthInLines;
+				y = consoleState.currentLine % consoleState.maxScrollbackLengthInLines;
 				// rain - sign extension caused the character to carry over
 				// into the color info for high ascii chars; casting c to unsigned
 				consoleState.text[ y * consoleState.textWidthInChars + consoleState.x ].ch = Q_UTF8CodePoint( txt );
@@ -682,7 +670,7 @@ void CL_ConsolePrint( char *txt )
 
 				if ( consoleState.x >= consoleState.textWidthInChars )
 				{
-					Con_Linefeed( skipnotify );
+					Con_Linefeed( );
 					consoleState.x = 0;
 				}
 
@@ -690,28 +678,6 @@ void CL_ConsolePrint( char *txt )
 		}
 
 		txt += Q_UTF8Width( txt );
-	}
-
-	// mark time for transparent overlay
-	if ( consoleState.currentLine >= 0 )
-	{
-		// NERVE - SMF
-		if ( skipnotify )
-		{
-			prev = consoleState.currentLine % NUM_CON_TIMES - 1;
-
-			if ( prev < 0 )
-			{
-				prev = NUM_CON_TIMES - 1;
-			}
-
-			consoleState.times[ prev ] = 0;
-		}
-		else
-		{
-			// -NERVE - SMF
-			consoleState.times[ consoleState.currentLine % NUM_CON_TIMES ] = cls.realtime;
-		}
 	}
 }
 
@@ -797,21 +763,28 @@ void Con_DrawInput( int linePosition, float overrideAlpha )
 	Field_Draw( &g_consoleField, consoleState.horizontalVidMargin + consoleState.horizontalVidPadding + SCR_ConsoleFontStringWidth( prompt, strlen( prompt ) ), linePosition, qtrue, qtrue, color[ 3 ] );
 }
 
-void Con_DrawAboutTextLine( const int positionFromTop, const char* text )
+void Con_DrawRightFloatingTextLine( const int linePosition, const float *color, const char* text )
 {
 	int i, x;
 	float currentWidthLocation = 0;
+
 	const int charHeight = SCR_ConsoleFontCharHeight();
+	const int positionFromTop = consoleState.verticalVidMargin
+	                          + consoleState.verticalVidPaddingTop
+	                          + consoleState.topBorderWidth
+	                          + charHeight;
 
 	i = strlen( text );
 	currentWidthLocation = cls.glconfig.vidWidth
 	                     - SCR_ConsoleFontStringWidth( text, i )
 	                     - consoleState.horizontalVidMargin - consoleState.horizontalVidPadding;
 
+	re.SetColor( color );
+
 	for ( x = 0; x < i; x++ )
 	{
 		int ch = Q_UTF8CodePoint( &text[ x ] );
-		SCR_DrawConsoleFontUnichar( currentWidthLocation, positionFromTop, ch );
+		SCR_DrawConsoleFontUnichar( currentWidthLocation, positionFromTop + ( linePosition * charHeight ), ch );
 		currentWidthLocation += SCR_ConsoleFontUnicharWidth( ch );
 	}
 }
@@ -825,15 +798,7 @@ Draws the build and copyright info onto the console
 */
 void Con_DrawAboutText( void )
 {
-	int i, x;
 	vec4_t color;
-	float currentWidthLocation = 0;
-
-	const int charHeight = SCR_ConsoleFontCharHeight();
-	const int positionFromTop = consoleState.verticalVidMargin
-	                          + consoleState.verticalVidPaddingTop
-	                          + consoleState.topBorderWidth
-	                          + charHeight;
 
 	// draw the version number
 	color[ 0 ] = 1.0f;
@@ -841,10 +806,9 @@ void Con_DrawAboutText( void )
 	color[ 2 ] = 1.0f;
 	//ANIMATION_TYPE_FADE but also ANIMATION_TYPE_SCROLL_DOWN needs this, latter, since it might otherwise scroll out the console
 	color[ 3 ] = 0.66f * consoleState.currentAnimationFraction;
-	re.SetColor( color );
 
-	Con_DrawAboutTextLine( positionFromTop, Q3_VERSION );
-	Con_DrawAboutTextLine( positionFromTop + charHeight, Q3_ENGINE );
+	Con_DrawRightFloatingTextLine( 0, color, Q3_VERSION );
+	Con_DrawRightFloatingTextLine( 1, color, Q3_ENGINE );
 }
 
 /*
@@ -858,10 +822,6 @@ void Con_DrawConsoleScrollbackIndicator( int lineDrawPosition )
 	vec4_t color;
 	// draw arrows to show the buffer is backscrolled
 	const int hatWidth = SCR_ConsoleFontUnicharWidth( '^' );
-	const int charHeight = SCR_ConsoleFontCharHeight();
-
-	const int virtualHeight = (SCREEN_HEIGHT - con_margin->integer) * con_height->integer * 0.01;
-	const int scrollBarLength = (virtualHeight - 2 * charHeight);
 
 	color[ 0 ] = 1.0f;
 	color[ 1 ] = 1.0f;
@@ -871,7 +831,7 @@ void Con_DrawConsoleScrollbackIndicator( int lineDrawPosition )
 
 	for ( i = 0; i < consoleState.textWidthInChars; i += 4 )
 	{
-		SCR_DrawConsoleFontUnichar( consoleState.horizontalVidMargin + consoleState.horizontalVidPadding + ( i + 1 ) * hatWidth, lineDrawPosition, '^' );
+		SCR_DrawConsoleFontUnichar( consoleState.horizontalVidMargin + consoleState.horizontalVidPadding + ( i + 1.5 ) * hatWidth, lineDrawPosition, '^' );
 	}
 }
 
@@ -881,7 +841,49 @@ void Con_DrawConsoleScrollbackIndicator( int lineDrawPosition )
 void Con_DrawConsoleScrollbar( int virtualHeight )
 {
 	vec4_t color;
+	const float scrollBarX = SCREEN_WIDTH - con_margin->integer - con_horizontalPadding->integer - 2 * con_borderWidth->integer;
+	const float scrollBarY = con_margin->value + con_borderWidth->value + virtualHeight * 0.10f;
+	const float scrollBarLength = virtualHeight * 0.80f;
+	const int   scrollBarLinesRepresented = consoleState.usedScrollbackLengthInLines + consoleState.visibleAmountOfLines - 1;
+	const float scrollHandleLength = consoleState.usedScrollbackLengthInLines
+	                                 ? scrollBarLength * MIN( 1.0f, (float) consoleState.visibleAmountOfLines / scrollBarLinesRepresented )
+	                                 : 0;
+	const float scrollHandlePostition = ( consoleState.usedScrollbackLengthInLines > 1 )
+	                                    ? ( scrollBarLength - scrollHandleLength ) / ( consoleState.usedScrollbackLengthInLines - 1 )
+	                                      * ( consoleState.bottomDisplayedLine - ( consoleState.currentLine - consoleState.usedScrollbackLengthInLines ) - 1 )
+	                                    : 0;
 
+	//draw the scrollBar
+	color[ 0 ] = 0.2f;
+	color[ 1 ] = 0.2f;
+	color[ 2 ] = 0.2f;
+	color[ 3 ] = 0.75f * consoleState.currentAlphaFactor;
+
+	SCR_FillRect( scrollBarX, scrollBarY, con_borderWidth->value, scrollBarLength, color );
+
+	//draw the handle
+	if ( scrollHandlePostition >= 0 && scrollHandleLength > 0 )
+	{
+		color[ 0 ] = 0.5f;
+		color[ 1 ] = 0.5f;
+		color[ 2 ] = 0.5f;
+		color[ 3 ] = consoleState.currentAlphaFactor;
+
+		SCR_FillRect( scrollBarX, scrollBarY + scrollHandlePostition, con_borderWidth->value, scrollHandleLength, color );
+	}
+	else if ( consoleState.usedScrollbackLengthInLines ) //this happens when line appending gets us over the top position in a roll-lock situation (scrolling itself won't do that)
+	{
+		color[ 0 ] = (-scrollHandlePostition * 5.0f)/10;
+		color[ 1 ] = 0.5f;
+		color[ 2 ] = 0.5f;
+		color[ 3 ] = consoleState.currentAlphaFactor;
+
+		SCR_FillRect( scrollBarX, scrollBarY, con_borderWidth->value, scrollHandleLength, color );
+	}
+
+	if(con_debug->integer) {
+		Con_DrawRightFloatingTextLine( 6, NULL, va( "Scrollbar (px): Size %d HandleSize %d Position %d", (int) scrollBarLength, (int) scrollHandleLength, (int) scrollHandlePostition ) );
+	}
 }
 
 /*
@@ -908,7 +910,7 @@ Con_DrawConsoleContent
 void Con_DrawConsoleContent( int currentConsoleVidHeight, int currentConsoleVirtualHeight )
 {
 	float  currentWidthLocation = 0;
-	int    i, x, lineDrawPosition;
+	int    x, lineDrawPosition;
 	int    row;
 	int    currentColor;
 	vec4_t color;
@@ -942,14 +944,20 @@ void Con_DrawConsoleContent( int currentConsoleVidHeight, int currentConsoleVirt
 		return;
 	}
 
+	if(con_debug->integer) {
+		Con_DrawRightFloatingTextLine( 3, NULL, va( "Buffer (lines): ScrollbackLength %d/%d  CurrentIndex %d", consoleState.usedScrollbackLengthInLines, consoleState.maxScrollbackLengthInLines, consoleState.currentLine) );
+		Con_DrawRightFloatingTextLine( 4, NULL, va( "Display (lines): From %d to %d (%d a %i px)", consoleState.currentLine-consoleState.maxScrollbackLengthInLines, consoleState.bottomDisplayedLine, consoleState.visibleAmountOfLines, charHeight ) );
+	}
+
 	// if we scrolled back, give feedback
 	if ( consoleState.bottomDisplayedLine != consoleState.currentLine )
 	{
 		// draw arrows to show the buffer is backscrolled
 		Con_DrawConsoleScrollbackIndicator( lineDrawPosition );
-		lineDrawPosition -= charHeight;
-		Con_DrawConsoleScrollbar( currentConsoleVirtualHeight );
 	}
+
+	lineDrawPosition -= charHeight;
+	Con_DrawConsoleScrollbar( currentConsoleVirtualHeight );
 
 	row = consoleState.bottomDisplayedLine;
 
@@ -967,7 +975,7 @@ void Con_DrawConsoleContent( int currentConsoleVidHeight, int currentConsoleVirt
 	{
 		conChar_t *text;
 
-		if ( consoleState.currentLine - row >= consoleState.scrollbackLengthInLines )
+		if ( consoleState.currentLine - row >= consoleState.maxScrollbackLengthInLines )
 		{
 			// past scrollback wrap point
 			continue;
@@ -995,7 +1003,7 @@ void Con_DrawConsoleContent( int currentConsoleVidHeight, int currentConsoleVirt
 		}
 	}
 
-	re.SetColor( NULL );
+	re.SetColor( NULL ); //set back to white
 }
 
 /*
@@ -1014,11 +1022,6 @@ void Con_DrawAnimatedConsole( void )
 
 	const int charHeight = SCR_ConsoleFontCharHeight();
 	const int charPadding = SCR_ConsoleFontCharVPadding();
-
-	if ( consoleState.currentAnimationFraction <= 0 )
-	{
-		return;
-	}
 
 	consoleState.borderWidth = MAX( 0, con_borderWidth->integer );
 
@@ -1077,7 +1080,7 @@ void Con_DrawAnimatedConsole( void )
 
 	consoleState.visibleAmountOfLines = ( animatedConsoleVidHeight - animatedConsoleVerticalPaddingTotal )
 	                                    / charHeight //rowheight in pixel -> amount of rows
-	                                    - 1 ; // sine we work with points but use charHeight spaces
+	                                    - 2 ; // since we work with points but use charHeight spaces
 
 	//now do the actual drawing
 	Con_DrawBackground( animatedConsoleVirtualHeight );
@@ -1085,127 +1088,31 @@ void Con_DrawAnimatedConsole( void )
 	//build info, projectname/copyrights, meta informatin or similar
 	Con_DrawAboutText();
 
+	if(con_debug->integer) {
+			Con_DrawRightFloatingTextLine( 8, NULL, va( "Animation: target %d current fraction %f alpha %f", (int) consoleState.isOpened, consoleState.currentAnimationFraction, consoleState.currentAlphaFactor) );
+	}
+
 	//input, scrollbackindicator, scrollback text
 	Con_DrawConsoleContent( animatedConsoleVidHeight, animatedConsoleVirtualHeight );
-}
-
-extern cvar_t *con_drawnotify;
-
-/*
-================
-Con_DrawNotify
-
-Draws the last few lines of output transparently over the game top
-================
-*/
-void Con_DrawNotify( void )
-{
-	int   x, v;
-	int   i;
-	int   time;
-	int   skip = 0;
-	int   currentColor;
-
-	conChar_t *text;
-
-	currentColor = 7;
-	re.SetColor( g_color_table[ currentColor ] );
-
-	v = 0;
-
-	for ( i = consoleState.currentLine - NUM_CON_TIMES + 1; i <= consoleState.currentLine; i++ )
-	{
-		if ( i < 0 )
-		{
-			continue;
-		}
-
-		time = consoleState.times[ i % NUM_CON_TIMES ];
-
-		if ( time == 0 )
-		{
-			continue;
-		}
-
-		time = cls.realtime - time;
-
-		if ( time > con_notifytime->value * 1000 )
-		{
-			continue;
-		}
-
-		text = consoleState.text + CON_LINE( i );
-
-		if ( cl.snap.ps.pm_type != PM_INTERMISSION && (cls.keyCatchers & ( KEYCATCH_UI | KEYCATCH_CGAME )) )
-		{
-			continue;
-		}
-
-		for ( x = 0; x < consoleState.textWidthInChars && text[ x ].ch; ++x )
-		{
-			if ( text[ x ].ch == ' ' )
-			{
-				continue;
-			}
-
-			if ( text[ x ].ink != currentColor )
-			{
-				currentColor = text[ x ].ink;
-				re.SetColor( g_color_table[ currentColor ] );
-			}
-
-			SCR_DrawSmallUnichar( consoleState.horizontalVidMargin + consoleState.horizontalVidPadding + ( x + 1 ) * SMALLCHAR_WIDTH, v, text[ x ].ch );
-		}
-
-		v += SMALLCHAR_HEIGHT;
-	}
-
-	re.SetColor( NULL );
-
-	if ( cls.keyCatchers & ( KEYCATCH_UI | KEYCATCH_CGAME ) )
-	{
-		return;
-	}
-
-	// draw the chat line
-	if ( cls.keyCatchers & KEYCATCH_MESSAGE )
-	{
-		if ( chat_irc )
-		{
-			char buf[ 128 ];
-
-			SCR_DrawBigString( 8, v, "say_irc:", 1.0f, qfalse );
-			skip = strlen( buf ) + 2;
-		}
-
-		Field_BigDraw( &chatField, skip * BIGCHAR_WIDTH, 232, qtrue, qtrue );
-
-		v += BIGCHAR_HEIGHT;
-	}
 }
 
 
 /*
 ==================
 Con_DrawConsole
+runs each render-frame
 ==================
 */
 void Con_DrawConsole( void )
 {
-	// check for console width changes from a vid mode change
-	Con_CheckResize();
+	// render console only if flag is set or is within an animation but also in special disconnected states
+	if ( !consoleState.isOpened && consoleState.currentAnimationFraction <= 0
+		&& !( cls.state == CA_DISCONNECTED && !( cls.keyCatchers & ( KEYCATCH_UI | KEYCATCH_CGAME ) ) ) )
+		return;
 
-	// render console if flag is set or is within an animation but also in special disconnected states
-	if (( cls.state == CA_DISCONNECTED && !( cls.keyCatchers & ( KEYCATCH_UI | KEYCATCH_CGAME ) ) )
-		|| consoleState.isOpened || consoleState.currentAnimationFraction > 0)
-	{
-		Con_DrawAnimatedConsole( );
-	}
-	// draw notify lines, but only if console isn't opened
-	else if ( cls.state == CA_ACTIVE && con_drawnotify->integer )
-	{
-		Con_DrawNotify( );
-	}
+	// check for console width changes from a vid mode change
+	Con_CheckResize( );
+	Con_DrawAnimatedConsole( );
 }
 
 //================================================================
@@ -1245,11 +1152,15 @@ void Con_RunConsole( void )
 
 void Con_PageUp( void )
 {
+	//do not scroll if there isn't enough to scroll
+	if(consoleState.usedScrollbackLengthInLines < consoleState.visibleAmountOfLines)
+		return;
+
 	consoleState.bottomDisplayedLine -= 2;
 
-	if ( consoleState.currentLine - consoleState.bottomDisplayedLine >= consoleState.scrollbackLengthInLines )
+	if ( consoleState.currentLine - consoleState.bottomDisplayedLine >= consoleState.usedScrollbackLengthInLines )
 	{
-		consoleState.bottomDisplayedLine = consoleState.currentLine - consoleState.scrollbackLengthInLines + 1;
+		consoleState.bottomDisplayedLine = consoleState.currentLine - consoleState.usedScrollbackLengthInLines + 1;
 	}
 }
 
@@ -1265,11 +1176,11 @@ void Con_PageDown( void )
 
 void Con_ScrollToTop( void )
 {
-	consoleState.bottomDisplayedLine = consoleState.scrollbackLengthInLines;
+	consoleState.bottomDisplayedLine = consoleState.usedScrollbackLengthInLines;
 
-	if ( consoleState.currentLine - consoleState.bottomDisplayedLine >= consoleState.scrollbackLengthInLines )
+	if ( consoleState.currentLine - consoleState.bottomDisplayedLine >= consoleState.usedScrollbackLengthInLines )
 	{
-		consoleState.bottomDisplayedLine = consoleState.currentLine - consoleState.scrollbackLengthInLines + 1;
+		consoleState.bottomDisplayedLine = consoleState.currentLine - consoleState.usedScrollbackLengthInLines + 1;
 	}
 }
 
@@ -1286,7 +1197,6 @@ void Con_Close( void )
 	}
 
 	Field_Clear( &g_consoleField );
-	Con_ClearNotify();
 	cls.keyCatchers &= ~KEYCATCH_CONSOLE;
 	consoleState.isOpened = qfalse;
 

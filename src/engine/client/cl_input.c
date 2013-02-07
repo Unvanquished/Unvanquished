@@ -65,7 +65,7 @@ static kbutton_t  kb[ NUM_BUTTONS ];
 // FIXME: should be registered by cgame code
 static kbuttons_t dtmapping[] =
 {
-	-1, // DT_NONE
+	KB_BUTTONS, // DT_NONE
 	KB_MOVELEFT, // DT_MOVELEFT
 	KB_MOVERIGHT, // DT_MOVERIGHT
 	KB_FORWARD, // DT_FORWARD
@@ -432,7 +432,7 @@ void CL_KeyMove( usercmd_t *cmd )
 
 		for ( i = 1; i < DT_NUM; i++ )
 		{
-			key_down = dtmapping[ i ] == -1 || kb[ dtmapping[ i ] ].active || kb[ dtmapping[ i ] ].wasPressed;
+			key_down = dtmapping[ i ] == KB_BUTTONS || kb[ dtmapping[ i ] ].active || kb[ dtmapping[ i ] ].wasPressed;
 
 			if ( key_down && !cl.doubleTap.pressedTime[ i ] )
 			{
@@ -751,7 +751,7 @@ void CL_CmdButtons( usercmd_t *cmd )
 	// Arnout: clear 'waspressed' from double tap buttons
 	for ( i = 1; i < DT_NUM; i++ )
 	{
-		if ( dtmapping[ i ] != -1 )
+		if ( dtmapping[ i ] != KB_BUTTONS )
 		{
 			kb[ dtmapping[ i ] ].wasPressed = qfalse;
 		}
