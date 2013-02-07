@@ -403,7 +403,7 @@ void Con_CheckResize( void )
 
 	if ( cls.glconfig.vidWidth )
 	{
-		const int consoleVidWidth = cls.glconfig.vidWidth - 2 * (consoleState.horizontalVidMargin + consoleState.horizontalVidPadding );
+		const int consoleVidWidth = cls.glconfig.vidWidth - 2 * (consoleState.margin.sides + consoleState.padding.sides );
 		textWidthInChars = consoleVidWidth / SCR_ConsoleFontUnicharWidth( 'W' );
 
 		if( 2 * con_horizontalPadding->value >= consoleVidWidth )
@@ -545,7 +545,7 @@ void Con_Linefeed( void )
 	conChar_t       *line;
 	const conChar_t blank = { 0, ColorIndex( CONSOLE_COLOR ) };
 
-	consoleState.x = 0;
+	consoleState.horizontalCharOffset = 0;
 
 	if ( consoleState.bottomDisplayedLine == consoleState.currentLine )
 	{
@@ -639,7 +639,7 @@ void CL_ConsolePrint( char *txt )
 		}
 
 		// word wrap
-		if ( l != consoleState.textWidthInChars && ( consoleState.x + l >= consoleState.textWidthInChars ) )
+		if ( l != consoleState.textWidthInChars && ( consoleState.horizontalCharOffset + l >= consoleState.textWidthInChars ) )
 		{
 			Con_Linefeed( );
 		}
@@ -651,7 +651,7 @@ void CL_ConsolePrint( char *txt )
 				break;
 
 			case '\r':
-				consoleState.x = 0;
+				consoleState.horizontalCharOffset = 0;
 				break;
 
 			case Q_COLOR_ESCAPE:
@@ -664,14 +664,14 @@ void CL_ConsolePrint( char *txt )
 				y = consoleState.currentLine % consoleState.maxScrollbackLengthInLines;
 				// rain - sign extension caused the character to carry over
 				// into the color info for high ascii chars; casting c to unsigned
-				consoleState.text[ y * consoleState.textWidthInChars + consoleState.x ].ch = Q_UTF8CodePoint( txt );
-				consoleState.text[ y * consoleState.textWidthInChars + consoleState.x ].ink = color;
-				++consoleState.x;
+				consoleState.text[ y * consoleState.textWidthInChars + consoleState.horizontalCharOffset ].ch = Q_UTF8CodePoint( txt );
+				consoleState.text[ y * consoleState.textWidthInChars + consoleState.horizontalCharOffset ].ink = color;
+				++consoleState.horizontalCharOffset;
 
-				if ( consoleState.x >= consoleState.textWidthInChars )
+				if ( consoleState.horizontalCharOffset >= consoleState.textWidthInChars )
 				{
 					Con_Linefeed( );
-					consoleState.x = 0;
+					consoleState.horizontalCharOffset = 0;
 				}
 
 				break;
@@ -721,18 +721,22 @@ void Con_DrawBackground( int virtualHeight )
 
 	if (virtualMargin)
 	{
-		SCR_FillRect( virtualMargin - consoleState.borderWidth, virtualMargin - consoleState.borderWidth,
-		              virtualConsoleWidth + consoleState.borderWidth, consoleState.borderWidth, color );  //top
-		SCR_FillRect( virtualMargin - consoleState.borderWidth, virtualMargin,
-		              consoleState.borderWidth, virtualHeight + consoleState.borderWidth, color );  //left
-		SCR_FillRect( SCREEN_WIDTH - virtualMargin, virtualMargin - consoleState.borderWidth,
-		              consoleState.borderWidth, virtualHeight + consoleState.borderWidth, color );  //right
+		//FIXME dont mix pixel borders with virtual positions (that is, after the other related FIXME was fixed)
+		//FIXME and replace then this borderWidth with the correct values
+		const int borderWidth = consoleState.border.sides;
+
+		SCR_FillRect( virtualMargin - borderWidth, virtualMargin - borderWidth,
+		              virtualConsoleWidth + borderWidth, consoleState.border.top, color );  //top
+		SCR_FillRect( virtualMargin - borderWidth, virtualMargin,
+		              consoleState.border.sides, virtualHeight + borderWidth, color );  //left
+		SCR_FillRect( SCREEN_WIDTH - virtualMargin, virtualMargin - borderWidth,
+		              consoleState.border.sides, virtualHeight + borderWidth, color );  //right
 		SCR_FillRect( virtualMargin, virtualHeight + virtualMargin,
-		              virtualConsoleWidth + consoleState.borderWidth, consoleState.borderWidth, color );  //bottom
+		              virtualConsoleWidth + borderWidth, consoleState.border.bottom, color );  //bottom
 	}
 	else
 	{
-		SCR_FillRect( 0, virtualHeight, SCREEN_WIDTH, consoleState.borderWidth, color );
+		SCR_FillRect( 0, virtualHeight, SCREEN_WIDTH, consoleState.border.bottom, color );
 	}
 }
 
@@ -757,10 +761,10 @@ void Con_DrawInput( int linePosition, float overrideAlpha )
 	color[ 2 ] = 1.0f;
 	color[ 3 ] = consoleState.currentAlphaFactor * overrideAlpha;
 
-	SCR_DrawSmallStringExt( consoleState.horizontalVidMargin + consoleState.horizontalVidPadding, linePosition, prompt, color, qfalse, qfalse );
+	SCR_DrawSmallStringExt( consoleState.margin.sides + consoleState.padding.sides, linePosition, prompt, color, qfalse, qfalse );
 
 	Q_CleanStr( prompt );
-	Field_Draw( &g_consoleField, consoleState.horizontalVidMargin + consoleState.horizontalVidPadding + SCR_ConsoleFontStringWidth( prompt, strlen( prompt ) ), linePosition, qtrue, qtrue, color[ 3 ] );
+	Field_Draw( &g_consoleField, consoleState.margin.sides + consoleState.padding.sides + SCR_ConsoleFontStringWidth( prompt, strlen( prompt ) ), linePosition, qtrue, qtrue, color[ 3 ] );
 }
 
 void Con_DrawRightFloatingTextLine( const int linePosition, const float *color, const char* text )
@@ -769,15 +773,15 @@ void Con_DrawRightFloatingTextLine( const int linePosition, const float *color, 
 	float currentWidthLocation = 0;
 
 	const int charHeight = SCR_ConsoleFontCharHeight();
-	const int positionFromTop = consoleState.verticalVidMargin
-	                          + consoleState.verticalVidPaddingTop
-	                          + consoleState.topBorderWidth
+	const int positionFromTop = consoleState.margin.top
+	                          + consoleState.border.top
+	                          + consoleState.padding.top
 	                          + charHeight;
 
 	i = strlen( text );
 	currentWidthLocation = cls.glconfig.vidWidth
 	                     - SCR_ConsoleFontStringWidth( text, i )
-	                     - consoleState.horizontalVidMargin - consoleState.horizontalVidPadding;
+	                     - consoleState.margin.sides - consoleState.padding.sides;
 
 	re.SetColor( color );
 
@@ -831,7 +835,7 @@ void Con_DrawConsoleScrollbackIndicator( int lineDrawPosition )
 
 	for ( i = 0; i < consoleState.textWidthInChars; i += 4 )
 	{
-		SCR_DrawConsoleFontUnichar( consoleState.horizontalVidMargin + consoleState.horizontalVidPadding + ( i + 1.5 ) * hatWidth, lineDrawPosition, '^' );
+		SCR_DrawConsoleFontUnichar( consoleState.margin.sides + consoleState.padding.sides + ( i + 1.5 ) * hatWidth, lineDrawPosition, '^' );
 	}
 }
 
@@ -917,16 +921,16 @@ void Con_DrawConsoleContent( int currentConsoleVidHeight, int currentConsoleVirt
 
 	const int charHeight = SCR_ConsoleFontCharHeight();
 	const int charPadding = SCR_ConsoleFontCharVPadding();
-	const int textDistanceToTop = consoleState.verticalVidMargin
-	                            + consoleState.verticalVidPaddingTop
-	                            + consoleState.topBorderWidth
+	const int textDistanceToTop = consoleState.margin.top
+	                            + consoleState.padding.top
+	                            + consoleState.border.top
 	                            - charPadding - 1;
 
 	// draw from the bottom up
 	lineDrawPosition = currentConsoleVidHeight
-	                 + consoleState.verticalVidMargin
-	                 - consoleState.verticalVidPaddingBottom
-	                 - consoleState.topBorderWidth
+	                 + consoleState.margin.top
+	                 - consoleState.padding.bottom
+	                 - consoleState.border.top
 	                 - charPadding - 1;
 
 	if (lineDrawPosition <= textDistanceToTop)
@@ -961,7 +965,7 @@ void Con_DrawConsoleContent( int currentConsoleVidHeight, int currentConsoleVirt
 
 	row = consoleState.bottomDisplayedLine;
 
-	if ( consoleState.x == 0 )
+	if ( consoleState.horizontalCharOffset == 0 )
 	{
 		row--;
 	}
@@ -983,7 +987,7 @@ void Con_DrawConsoleContent( int currentConsoleVidHeight, int currentConsoleVirt
 
 		text = consoleState.text + CON_LINE( row );
 
-		currentWidthLocation = consoleState.horizontalVidMargin + consoleState.horizontalVidPadding;
+		currentWidthLocation = consoleState.margin.sides + consoleState.padding.sides;
 
 		for ( x = 0; x < consoleState.textWidthInChars && text[x].ch; ++x )
 		{
@@ -1023,39 +1027,43 @@ void Con_DrawAnimatedConsole( void )
 	const int charHeight = SCR_ConsoleFontCharHeight();
 	const int charPadding = SCR_ConsoleFontCharVPadding();
 
-	consoleState.borderWidth = MAX( 0, con_borderWidth->integer );
+	//FIXME this has to be replaced with properly calculated borders
+	consoleState.border.sides = MAX( 0, con_borderWidth->integer );
+	consoleState.border.bottom = MAX( 0, con_borderWidth->integer );
 
 	if(con_margin->value > 0) {
 		vidXMargin = con_margin->value;
 		vidYMargin = con_margin->value;
-		consoleState.topBorderWidth = consoleState.borderWidth;
+		consoleState.border.top = consoleState.border.bottom;
 	} else {
 		vidXMargin = - con_margin->value;
 		vidYMargin = 0;
-		consoleState.topBorderWidth = 0;
+		consoleState.border.top = 0;
 	}
 	SCR_AdjustFrom640( &vidXMargin, &vidYMargin, NULL, NULL );
 
-	consoleState.verticalVidMargin = vidYMargin;
-	consoleState.horizontalVidMargin = vidXMargin;
-	consoleState.verticalVidPaddingTop = floor( vidYMargin * 0.3f );
-	consoleState.verticalVidPaddingBottom = MAX( 3, consoleState.verticalVidPaddingTop );
+	consoleState.margin.top = vidYMargin;
+	consoleState.margin.bottom = vidYMargin;
+	consoleState.margin.sides = vidXMargin;
 
-	animatedConsoleVerticalPaddingTotal = consoleState.verticalVidPaddingTop + consoleState.verticalVidPaddingBottom;
+	consoleState.padding.top = floor( vidYMargin * 0.3f );
+	consoleState.padding.bottom = MAX( 3, consoleState.padding.top );
 
 	// on wide screens, this will lead to somewhat of a centering of the text
 	if(con_horizontalPadding->integer)
 	{
 		float horizontalVidPadding = con_horizontalPadding->value;
 		SCR_AdjustFrom640( &horizontalVidPadding, NULL, NULL, NULL );
-		consoleState.horizontalVidPadding = horizontalVidPadding;
+		consoleState.padding.sides = horizontalVidPadding;
 	}
 	else
 	{
-		consoleState.horizontalVidPadding = floor( vidXMargin * 0.3f );
+		consoleState.padding.sides = floor( vidXMargin * 0.3f );
 	}
 
-	animatedConsoleVidHeight = ( cls.glconfig.vidHeight - 2 * consoleState.verticalVidMargin ) * con_height->integer * 0.01;
+	animatedConsoleVerticalPaddingTotal = consoleState.padding.top + consoleState.padding.bottom;
+
+	animatedConsoleVidHeight = ( cls.glconfig.vidHeight - consoleState.margin.top - consoleState.margin.bottom ) * con_height->integer * 0.01;
 	// clip to a multiple of the character height, plus padding
 	animatedConsoleVidHeight -= ( animatedConsoleVidHeight - animatedConsoleVerticalPaddingTotal - charPadding ) % charHeight;
 	// ... and ensure that at least three lines are visible

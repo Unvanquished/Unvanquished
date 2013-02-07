@@ -661,10 +661,7 @@ qboolean CL_UpdateVisiblePings_f( int source );
 //
 // console
 //
-//#define       CON_TEXTSIZE    32768
-#define     CON_TEXTSIZE 65536 // (SA) DM wants more console...
-#define     CON_LINECOUNT  512
-
+#define     CON_TEXTSIZE 65536
 #define     CONSOLE_FONT_VPADDING 0.3
 
 typedef struct
@@ -675,12 +672,20 @@ typedef struct
 
 typedef struct
 {
+	int top;
+	int bottom;
+	/* the sides of the console always get treated equally */
+	int sides;
+} consoleBoxWidth_t;
+
+typedef struct
+{
 	qboolean initialized;
 
 	conChar_t text[ CON_TEXTSIZE ];
 
 	int      currentLine; // line where next message will be printed
-	int      x; // offset in current line for next print
+	int      horizontalCharOffset; // offset in current line for next print
 	int      bottomDisplayedLine; // bottom of console displays this line
 
 	int      textWidthInChars; // characters across screen
@@ -696,24 +701,21 @@ typedef struct
 	 * the amount of lines that fit onto the screen
 	 */
 	int      visibleAmountOfLines;
-	/**
-	 * the vertical distance from the consoletext to the border in pixel
-	 */
-	int      verticalVidPaddingTop, verticalVidPaddingBottom;
-	/**
-	 * the horiztontal distance from the consoletext to the border in pixel
-	 */
-	int      horizontalVidPadding;
-	/**
-	 * the vertical distance from the console to the screen in pixel
-	 */
-	int      verticalVidMargin;
-	/**
-	 * the horiztontal distance from the console to the screen in pixel
-	 */
-	int      horizontalVidMargin;
 
-	int      borderWidth, topBorderWidth;
+	/**
+	 * the distances from the consoleborder to the screen in pixel
+	 */
+	consoleBoxWidth_t margin;
+
+	/**
+	 * the (optionally colored) gap between margin and padding
+	 */
+	consoleBoxWidth_t border;
+
+	/**
+	 * the distances from the consoletext to the border in pixel
+	 */
+	consoleBoxWidth_t padding;
 
 	float    currentAnimationFraction; // changes between 0.0 and 1.0 at scr_conspeed
 	qboolean isOpened;
@@ -736,8 +738,9 @@ void             Con_Init( void );
 void             Con_Clear_f( void );
 void             Con_ToggleConsole_f( void );
 void             Con_OpenConsole_f( void );
-void             Con_RunConsole( void );
+void             Con_DrawRightFloatingTextLine( const int linePosition, const float *color, const char* text );
 void             Con_DrawConsole( void );
+void             Con_RunConsole( void );
 void             Con_PageUp( void );
 void             Con_PageDown( void );
 void             Con_ScrollToTop( void );
