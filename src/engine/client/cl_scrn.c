@@ -117,13 +117,23 @@ SCR_FillRect
 Coordinates are 640*480 virtual values
 =================
 */
+void SCR_FillAdjustedRect( float x, float y, float width, float height, const float *color )
+{
+	SCR_AdjustFrom640( &x, &y, &width, &height );
+	SCR_FillRect( x, y, width, height, color );
+}
+
+/*
+================
+SCR_FillRect
+
+Coordinates are the current screen resolution
+=================
+*/
 void SCR_FillRect( float x, float y, float width, float height, const float *color )
 {
 	re.SetColor( color );
-
-	SCR_AdjustFrom640( &x, &y, &width, &height );
 	re.DrawStretchPic( x, y, width, height, 0, 0, 0, 0, cls.whiteShader );
-
 	re.SetColor( NULL );
 }
 

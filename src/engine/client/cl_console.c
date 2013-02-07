@@ -686,7 +686,7 @@ void Con_DrawBackground( int virtualHeight )
 	color[ 2 ] = con_colorBlue->value;
 	color[ 3 ] = con_colorAlpha->value * consoleState.currentAlphaFactor;
 
-	SCR_FillRect( virtualMargin, virtualMargin, virtualConsoleWidth, virtualHeight, color );
+	SCR_FillAdjustedRect( virtualMargin, virtualMargin, virtualConsoleWidth, virtualHeight, color );
 
 	// draw the backgrounds borders
 	color[ 0 ] = con_borderColorRed->value;
@@ -700,18 +700,18 @@ void Con_DrawBackground( int virtualHeight )
 		//FIXME and replace then this borderWidth with the correct values
 		const int borderWidth = consoleState.border.sides;
 
-		SCR_FillRect( virtualMargin - borderWidth, virtualMargin - borderWidth,
+		SCR_FillAdjustedRect( virtualMargin - borderWidth, virtualMargin - borderWidth,
 		              virtualConsoleWidth + borderWidth, consoleState.border.top, color );  //top
-		SCR_FillRect( virtualMargin - borderWidth, virtualMargin,
+		SCR_FillAdjustedRect( virtualMargin - borderWidth, virtualMargin,
 		              consoleState.border.sides, virtualHeight + borderWidth, color );  //left
-		SCR_FillRect( SCREEN_WIDTH - virtualMargin, virtualMargin - borderWidth,
+		SCR_FillAdjustedRect( SCREEN_WIDTH - virtualMargin, virtualMargin - borderWidth,
 		              consoleState.border.sides, virtualHeight + borderWidth, color );  //right
-		SCR_FillRect( virtualMargin, virtualHeight + virtualMargin,
+		SCR_FillAdjustedRect( virtualMargin, virtualHeight + virtualMargin,
 		              virtualConsoleWidth + borderWidth, consoleState.border.bottom, color );  //bottom
 	}
 	else
 	{
-		SCR_FillRect( 0, virtualHeight, SCREEN_WIDTH, consoleState.border.bottom, color );
+		SCR_FillAdjustedRect( 0, virtualHeight, SCREEN_WIDTH, consoleState.border.bottom, color );
 	}
 }
 
@@ -838,7 +838,7 @@ void Con_DrawConsoleScrollbar( int virtualHeight )
 	color[ 2 ] = 0.2f;
 	color[ 3 ] = 0.75f * consoleState.currentAlphaFactor;
 
-	SCR_FillRect( scrollBarX, scrollBarY, con_borderWidth->value, scrollBarLength, color );
+	SCR_FillAdjustedRect( scrollBarX, scrollBarY, con_borderWidth->value, scrollBarLength, color );
 
 	//draw the handle
 	if ( scrollHandlePostition >= 0 && scrollHandleLength > 0 )
@@ -848,7 +848,7 @@ void Con_DrawConsoleScrollbar( int virtualHeight )
 		color[ 2 ] = 0.5f;
 		color[ 3 ] = consoleState.currentAlphaFactor;
 
-		SCR_FillRect( scrollBarX, scrollBarY + scrollHandlePostition, con_borderWidth->value, scrollHandleLength, color );
+		SCR_FillAdjustedRect( scrollBarX, scrollBarY + scrollHandlePostition, con_borderWidth->value, scrollHandleLength, color );
 	}
 	else if ( consoleState.usedScrollbackLengthInLines ) //this happens when line appending gets us over the top position in a roll-lock situation (scrolling itself won't do that)
 	{
@@ -857,7 +857,7 @@ void Con_DrawConsoleScrollbar( int virtualHeight )
 		color[ 2 ] = 0.5f;
 		color[ 3 ] = consoleState.currentAlphaFactor;
 
-		SCR_FillRect( scrollBarX, scrollBarY, con_borderWidth->value, scrollHandleLength, color );
+		SCR_FillAdjustedRect( scrollBarX, scrollBarY, con_borderWidth->value, scrollHandleLength, color );
 	}
 
 	if(con_debug->integer) {
@@ -1066,8 +1066,8 @@ void Con_UpdateConsoleState( void )
 
 	/*
 	 * calculate global alpha factor
+	 * apply the fade animation if the type is set, otherwise remain completly visible
 	 */
-	//do fade animation if the type is set, otherwise remain completly visible
 	consoleState.currentAlphaFactor = ( con_animationType->integer & ANIMATION_TYPE_FADE ) ? consoleState.currentAnimationFraction : 1.0f;
 
 	/*
