@@ -674,11 +674,10 @@ Con_DrawBackground
 Draws the background of the console (on the virtual 640x480 resolution)
 ================
 */
-void Con_DrawBackground( int virtualHeight )
+void Con_DrawBackground( void )
 {
 	vec4_t color;
-	const int virtualMargin = MAX( 0, con_margin->integer );
-	const int virtualConsoleWidth = SCREEN_WIDTH - (2 * virtualMargin);
+	const int consoleWidth = cls.glconfig.vidWidth - 2 * consoleState.margin.sides;
 
 	// draw the background
 	color[ 0 ] = con_colorRed->value;
@@ -686,7 +685,7 @@ void Con_DrawBackground( int virtualHeight )
 	color[ 2 ] = con_colorBlue->value;
 	color[ 3 ] = con_colorAlpha->value * consoleState.currentAlphaFactor;
 
-	SCR_FillAdjustedRect( virtualMargin, virtualMargin, virtualConsoleWidth, virtualHeight, color );
+	SCR_FillRect( consoleState.margin.sides, consoleState.margin.top, consoleWidth, consoleState.height, color );
 
 	// draw the backgrounds borders
 	color[ 0 ] = con_borderColorRed->value;
@@ -694,24 +693,28 @@ void Con_DrawBackground( int virtualHeight )
 	color[ 2 ] = con_borderColorBlue->value;
 	color[ 3 ] = con_borderColorAlpha->value * consoleState.currentAlphaFactor;
 
-	if (virtualMargin)
+	if ( con_margin->integer )
 	{
-		//FIXME dont mix pixel borders with virtual positions (that is, after the other related FIXME was fixed)
-		//FIXME and replace then this borderWidth with the correct values
-		const int borderWidth = consoleState.border.sides;
+		//top border
+		SCR_FillRect( consoleState.margin.sides - consoleState.border.sides,
+		              consoleState.margin.top - consoleState.border.top,
+		              consoleWidth + consoleState.border.sides, consoleState.border.top, color );
+		//left border
+		SCR_FillRect( consoleState.margin.sides - consoleState.border.sides, consoleState.margin.top,
+		              consoleState.border.sides, consoleState.height + consoleState.border.bottom, color );
 
-		SCR_FillAdjustedRect( virtualMargin - borderWidth, virtualMargin - borderWidth,
-		              virtualConsoleWidth + borderWidth, consoleState.border.top, color );  //top
-		SCR_FillAdjustedRect( virtualMargin - borderWidth, virtualMargin,
-		              consoleState.border.sides, virtualHeight + borderWidth, color );  //left
-		SCR_FillAdjustedRect( SCREEN_WIDTH - virtualMargin, virtualMargin - borderWidth,
-		              consoleState.border.sides, virtualHeight + borderWidth, color );  //right
-		SCR_FillAdjustedRect( virtualMargin, virtualHeight + virtualMargin,
-		              virtualConsoleWidth + borderWidth, consoleState.border.bottom, color );  //bottom
+		//right border
+		SCR_FillRect( cls.glconfig.vidWidth - consoleState.margin.sides, consoleState.margin.top - consoleState.border.top,
+		              consoleState.border.sides, consoleState.border.top + consoleState.height, color );
+
+		//bottom border
+		SCR_FillRect( consoleState.margin.sides, consoleState.height + consoleState.margin.top + consoleState.border.top - consoleState.border.bottom,
+		              consoleWidth + consoleState.border.sides, consoleState.border.bottom, color );
 	}
 	else
 	{
-		SCR_FillAdjustedRect( 0, virtualHeight, SCREEN_WIDTH, consoleState.border.bottom, color );
+		//bottom border
+		SCR_FillRect( 0, consoleState.height, consoleWidth, consoleState.border.bottom, color );
 	}
 }
 
@@ -814,14 +817,12 @@ void Con_DrawConsoleScrollbackIndicator( int lineDrawPosition )
 	}
 }
 
-/**
- * @param virtualHeight height in  640x480 virtual resolution
- */
-void Con_DrawConsoleScrollbar( int virtualHeight )
+void Con_DrawConsoleScrollbar( void )
 {
 	vec4_t color;
-	const float scrollBarX = SCREEN_WIDTH - con_margin->integer - con_horizontalPadding->integer - 2 * con_borderWidth->integer;
-	const float scrollBarY = con_margin->value + con_borderWidth->value + virtualHeight * 0.10f;
+	const float virtualHeight = consoleState.height * SCREEN_HEIGHT / cls.glconfig.vidHeight;
+	const float scrollBarX = SCREEN_WIDTH - con_margin->integer - con_horizontalPadding->integer - 2 * consoleState.border.sides;
+	const float scrollBarY = con_margin->value + consoleState.border.top + virtualHeight * 0.10f;
 	const float scrollBarLength = virtualHeight * 0.80f;
 	const int   scrollBarLinesRepresented = consoleState.usedScrollbackLengthInLines + consoleState.visibleAmountOfLines - 1;
 	const float scrollHandleLength = consoleState.usedScrollbackLengthInLines
@@ -886,7 +887,7 @@ static float Con_MarginFadeAlpha( float alpha, int lineDrawPosition, int topMarg
 Con_DrawConsoleContent
 ================
 */
-void Con_DrawConsoleContent( int currentConsoleVirtualHeight )
+void Con_DrawConsoleContent( void )
 {
 	float  currentWidthLocation = 0;
 	int    x, lineDrawPosition;
@@ -936,7 +937,7 @@ void Con_DrawConsoleContent( int currentConsoleVirtualHeight )
 	}
 
 	lineDrawPosition -= charHeight;
-	Con_DrawConsoleScrollbar( currentConsoleVirtualHeight );
+	Con_DrawConsoleScrollbar( );
 
 	row = consoleState.bottomDisplayedLine;
 
@@ -994,10 +995,8 @@ Draws the console with the solid background
 */
 void Con_DrawAnimatedConsole( void )
 {
-	const float  animatedConsoleVirtualHeight = consoleState.height * SCREEN_HEIGHT / cls.glconfig.vidHeight;
-
 	//now do the actual drawing
-	Con_DrawBackground( animatedConsoleVirtualHeight );
+	Con_DrawBackground( );
 
 	//build info, projectname/copyrights, meta informatin or similar
 	Con_DrawAboutText();
@@ -1007,7 +1006,7 @@ void Con_DrawAnimatedConsole( void )
 	}
 
 	//input, scrollbackindicator, scrollback text
-	Con_DrawConsoleContent( animatedConsoleVirtualHeight );
+	Con_DrawConsoleContent( );
 }
 
 /*
@@ -1025,21 +1024,25 @@ void Con_UpdateConsoleState( void )
 
 	/*
 	 * calculate margin and border
+	 * we will treat the border in pixel (as opposed to margins and paddings)
+	 * to allow for nice looking 1px borders, as well as to prevent
+	 * different widths for horizontal and vertical borders due to different resolution-ratios
+	 * since that isn't as nice looking as with areas
 	 */
-
-	//FIXME this has to be replaced with properly calculated borders
-	consoleState.border.sides = MAX( 0, con_borderWidth->integer );
 	consoleState.border.bottom = MAX( 0, con_borderWidth->integer );
 
 	if(con_margin->value > 0) {
 		horizontalMargin = con_margin->value;
 		verticalMargin = con_margin->value;
+		consoleState.border.sides = consoleState.border.bottom;
 		consoleState.border.top = consoleState.border.bottom;
 	} else {
 		horizontalMargin = - con_margin->value;
 		verticalMargin = 0;
+		consoleState.border.sides = 0;
 		consoleState.border.top = 0;
 	}
+
 	SCR_AdjustFrom640( &horizontalMargin, &verticalMargin, NULL, NULL );
 
 	consoleState.margin.top = verticalMargin;
