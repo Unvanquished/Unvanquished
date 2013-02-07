@@ -995,8 +995,17 @@ Draws the console with the solid background
 */
 void Con_DrawAnimatedConsole( void )
 {
-	//now do the actual drawing
 	Con_DrawBackground( );
+
+	vec4_t contentClipping;
+
+	//clip about text and content to the console
+	contentClipping [ 0 ] = consoleState.margin.sides + consoleState.border.sides; //x
+	contentClipping [ 1 ] = consoleState.margin.top + consoleState.border.top; //y
+	contentClipping [ 2 ] = cls.glconfig.vidWidth - consoleState.margin.sides - consoleState.border.sides; //x-end
+	contentClipping [ 3 ] = consoleState.margin.top + consoleState.border.top + consoleState.height ; //y-end
+	re.SetClipRegion( contentClipping );
+
 
 	//build info, projectname/copyrights, meta informatin or similar
 	Con_DrawAboutText();
@@ -1007,6 +1016,8 @@ void Con_DrawAnimatedConsole( void )
 
 	//input, scrollbackindicator, scrollback text
 	Con_DrawConsoleContent( );
+
+	re.SetClipRegion( NULL ); //unclip
 }
 
 /*
