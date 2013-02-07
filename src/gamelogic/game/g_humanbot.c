@@ -672,7 +672,16 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 	{
 		return STATUS_FAILURE;
 	}
-	if ( !self->botMind->closestBuildings[BA_H_ARMOURY].ent )
+	if ( numUpgrades && upgrades[0] == UP_AMMO && BG_Weapon( (weapon_t)self->client->ps.stats[ STAT_WEAPON ] )->usesEnergy )
+	{
+		if ( !self->botMind->closestBuildings[ BA_H_ARMOURY ].ent &&
+		     !self->botMind->closestBuildings[ BA_H_REPEATER ].ent &&
+		     !self->botMind->closestBuildings[ BA_H_REACTOR ].ent )
+		{
+			return STATUS_FAILURE; //wanted ammo for energy? no armoury, repeater or reactor, so fail
+		}
+	}
+	else if ( !self->botMind->closestBuildings[BA_H_ARMOURY].ent )
 	{
 		return STATUS_FAILURE;    //no armoury, so fail
 	}
@@ -709,7 +718,28 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 
 	if ( self->botMind->currentNode != node )
 	{
-		if ( !BotChangeGoalEntity( self, self->botMind->closestBuildings[BA_H_ARMOURY].ent ) )
+		//default to armoury
+		const botEntityAndDistance_t *ent = &self->botMind->closestBuildings[ BA_H_ARMOURY ];
+
+		//wanting energy ammo only? look for closer repeater or reactor
+		if ( numUpgrades && upgrades[0] == UP_AMMO && BG_Weapon( (weapon_t)self->client->ps.stats[ STAT_WEAPON ] )->usesEnergy)
+		{
+#define DISTANCE(obj) ( self->botMind->closestBuildings[ obj ].ent ? self->botMind->closestBuildings[ obj ].distance : INT_MAX )
+			//repeater closest? use that
+			if ( DISTANCE( BA_H_REPEATER ) < DISTANCE( BA_H_REACTOR ) )
+			{
+				if ( DISTANCE( BA_H_REPEATER ) < DISTANCE( BA_H_ARMOURY ) )
+				{
+					ent = &self->botMind->closestBuildings[ BA_H_REPEATER ];
+				}
+			}
+			//reactor closest? use that
+			else if ( DISTANCE( BA_H_REACTOR ) < DISTANCE( BA_H_ARMOURY ) )
+			{
+				ent = &self->botMind->closestBuildings[ BA_H_REACTOR ];
+			}
+		}
+		if ( !BotChangeGoalEntity( self, ent->ent ) )
 		{
 			return STATUS_FAILURE;
 		}
@@ -724,7 +754,7 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_FAILURE;
 	}
 
-	if ( self->botMind->closestBuildings[BA_H_ARMOURY].distance > 100 )
+	if ( DistanceToGoalSquared( self ) > 100 * 100 )
 	{
 		BotMoveToGoal( self );
 		return STATUS_RUNNING;
