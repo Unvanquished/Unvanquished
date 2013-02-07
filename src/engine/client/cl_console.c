@@ -1001,9 +1001,10 @@ void Con_DrawConsoleContent( int currentConsoleVidHeight, int currentConsoleVirt
 	{
 		// draw arrows to show the buffer is backscrolled
 		Con_DrawConsoleScrollbackIndicator( lineDrawPosition );
-		lineDrawPosition -= charHeight;
-		Con_DrawConsoleScrollbar( currentConsoleVirtualHeight );
 	}
+
+	lineDrawPosition -= charHeight;
+	Con_DrawConsoleScrollbar( currentConsoleVirtualHeight );
 
 	row = consoleState.bottomDisplayedLine;
 
@@ -1131,7 +1132,7 @@ void Con_DrawAnimatedConsole( void )
 
 	consoleState.visibleAmountOfLines = ( animatedConsoleVidHeight - animatedConsoleVerticalPaddingTotal )
 	                                    / charHeight //rowheight in pixel -> amount of rows
-	                                    - 1 ; // sine we work with points but use charHeight spaces
+	                                    - 2 ; // since we work with points but use charHeight spaces
 
 	//now do the actual drawing
 	Con_DrawBackground( animatedConsoleVirtualHeight );
