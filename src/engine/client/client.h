@@ -661,8 +661,6 @@ qboolean CL_UpdateVisiblePings_f( int source );
 //
 // console
 //
-#define NUM_CON_TIMES    4
-
 //#define       CON_TEXTSIZE    32768
 #define     CON_TEXTSIZE 65536 // (SA) DM wants more console...
 #define     CON_LINECOUNT  512
@@ -686,12 +684,18 @@ typedef struct
 	int      bottomDisplayedLine; // bottom of console displays this line
 
 	int      textWidthInChars; // characters across screen
-	int      scrollbackLengthInLines; // total lines in console scrollback
+	int      maxScrollbackLengthInLines; // total lines in console scrollback
+
+	/**
+	 * amount of lines in the scrollback that are filled with text,
+	 * so we e.g. can keep track how far it makes sense to scroll back
+	 */
+	int      usedScrollbackLengthInLines;
 
 	/**
 	 * the amount of lines that fit onto the screen
 	 */
-	int 	visibleAmountOfLines;
+	int      visibleAmountOfLines;
 	/**
 	 * the vertical distance from the consoletext to the border in pixel
 	 */
@@ -699,15 +703,15 @@ typedef struct
 	/**
 	 * the horiztontal distance from the consoletext to the border in pixel
 	 */
-	int    horizontalVidPadding;
+	int      horizontalVidPadding;
 	/**
 	 * the vertical distance from the console to the screen in pixel
 	 */
-	int	   verticalVidMargin;
+	int      verticalVidMargin;
 	/**
 	 * the horiztontal distance from the console to the screen in pixel
 	 */
-	int	   horizontalVidMargin;
+	int      horizontalVidMargin;
 
 	int      borderWidth, topBorderWidth;
 
@@ -721,8 +725,6 @@ typedef struct
 	 * console as a whole
 	 */
 	float    currentAlphaFactor;
-
-	int      times[ NUM_CON_TIMES ]; // cls.realtime time the line was generated
 } console_t;
 
 extern console_t consoleState;
@@ -734,8 +736,6 @@ void             Con_Init( void );
 void             Con_Clear_f( void );
 void             Con_ToggleConsole_f( void );
 void             Con_OpenConsole_f( void );
-void             Con_DrawNotify( void );
-void             Con_ClearNotify( void );
 void             Con_RunConsole( void );
 void             Con_DrawConsole( void );
 void             Con_PageUp( void );
