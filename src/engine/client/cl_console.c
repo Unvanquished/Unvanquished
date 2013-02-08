@@ -1231,10 +1231,10 @@ void Con_RunConsole( void )
 
 	if(consoleState.currentAnimationFraction > 0)
 	{
-		const int scrollDifference = consoleState.bottomDisplayedLine - consoleState.scrollLineIndex;
+		const int scrollDifference = MAX( 1, abs( consoleState.bottomDisplayedLine - consoleState.scrollLineIndex ) );
 		if( consoleState.bottomDisplayedLine < consoleState.scrollLineIndex )
 		{
-			consoleState.bottomDisplayedLine += con_animationSpeed->value * cls.realFrametime * 0.005 * (- scrollDifference);
+			consoleState.bottomDisplayedLine += con_animationSpeed->value * cls.realFrametime * 0.005 * scrollDifference;
 			if( consoleState.bottomDisplayedLine > consoleState.scrollLineIndex || con_animationType->integer == ANIMATION_TYPE_NONE )
 			{
 				consoleState.bottomDisplayedLine = consoleState.scrollLineIndex;
