@@ -1758,15 +1758,16 @@ const char *Com_ClearForeignCharacters( const char *str )
 	size = strlen( str );
 	clean = (char*)Com_Allocate ( size + 1 ); // guaranteed sufficient
 
-	i = j = 0;
+	i = -1;
+	j = 0;
 
-	while ( str[ i ] != '\0' )
+	while ( str[ ++i ] != '\0' )
 	{
 		int c = str[i] & 0xFF;
 		if ( c < 0x80 )
 		{
 			if ( j == size )                 break; // out of buffer space
-			clean[ j++ ] = str[ i++ ];
+			clean[ j++ ] = str[ i ];
 		}
 		else if ( c >= 0xC2 && c <= 0xF4 )
 		{
@@ -1791,7 +1792,7 @@ const char *Com_ClearForeignCharacters( const char *str )
 			case 4: clean[ j++ ] = str[ i++ ];
 			case 3: clean[ j++ ] = str[ i++ ];
 			case 2: clean[ j++ ] = str[ i++ ];
-			case 1: clean[ j++ ] = str[ i++ ];
+			case 1: clean[ j++ ] = str[ i ];
 			}
 		}
 		// else invalid
