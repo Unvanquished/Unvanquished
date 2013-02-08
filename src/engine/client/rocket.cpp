@@ -445,6 +445,12 @@ extern "C" void Rocket_Update( void )
 extern "C" void InjectRocket( SDL_Event event )
 {
 	using Rocket::Core::Input::KeyIdentifier;
+
+	if ( !context )
+	{
+		return;
+	}
+
 	switch( event.type )
 	{
 		case SDL_KEYDOWN:
