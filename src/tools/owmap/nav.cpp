@@ -1,8 +1,6 @@
 /*
 ===========================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2006-2011 Robert Beckebans <trebor_7@users.sourceforge.net>
-Copyright (C) 2009 Peter McNeill <n27@bigpond.net.au>
+Copyright (C) 2012 Unvanquished Developers
 
 This file is part of Daemon source code.
 
@@ -28,116 +26,43 @@ extern "C" {
 #include "../common/surfaceflags.h"
 }
 
-#include "../recast/Recast.h"
-#include "../recast/RecastAlloc.h"
-#include "../recast/RecastAssert.h"
-#include "../detour/DetourCommon.h"
-#include "../detour/DetourNavMesh.h"
-#include "../detour/DetourNavMeshBuilder.h"
-
 #include <vector>
 #include <queue>
-#include "../../engine/botlib/nav.h"
+#include "navgen.h"
 
-vec3_t mapmins;
-vec3_t mapmaxs;
+Geometry geo;
 
-// Load triangles
-std::vector<int> tris;
-int numtris = 0;
-
-// Load vertices
-std::vector<float> verts;
-int numverts = 0;
-
-float cellHeight = 0.5;
+float cellHeight = 2.0f;
 float stepSize = STEPSIZE;
+int   tileSize = 128;
 
-typedef struct {
-	char* name;   //appended to filename
-	short radius; //radius of agents (BBox maxs[0] or BBox maxs[1])
-	short height; //height of agents (BBox maxs[2] - BBox mins[2])
-} tremClass_t;
-
-const tremClass_t tremClasses[] = {
-	{
-		"builder",
-		20,
-		40,
-	},
-	{
-		"builderupg",
-		20,
-		40,
-	},
-	{
-		"human_base",
-		15,
-		56,
-	},
-	{
-		"human_bsuit",
-		15,
-		76,
-	},
-	{
-		"level0",
-		15,
-		30,
-	},
-	{
-		"level1",
-		18,
-		36
-	},
-	{
-		"level1upg",
-		21,
-		42
-	},
-	{
-		"level2",
-		23,
-		36
-	},
-	{
-		"level2upg",
-		25,
-		40
-	},
-	{
-		"level3",
-		26,
-		55
-	},
-	{
-		"level3upg",
-		26,
-		66
-	},
-	{
-		"level4",
-		32,
-		92
-	}
+struct Character
+{
+	char *name;   //appended to filename
+	float radius; //radius of agents (BBox maxs[0] or BBox maxs[1])
+	float height; //height of agents (BBox maxs[2] - BBox mins[2])
 };
 
-
-//flag for optional median filter of walkable surfaces
-static qboolean median = qfalse;
-
-//flag for optimistic walkableclimb projection
-static qboolean optimistic = qfalse;
+const Character characters[] = {
+	{ "builder",     20, 40 },
+	{ "builderupg",  20, 40 },
+	{ "human_base",  15, 56 },
+	{ "human_bsuit", 15, 76 },
+	{ "level0",      15, 30 },
+	{ "level1",      18, 36 },
+	{ "level1upg",   21, 42 },
+	{ "level2",      23, 36 },
+	{ "level2upg",   25, 40 },
+	{ "level3",      26, 55 },
+	{ "level3upg",   26, 66 },
+	{ "level4",      32, 92 }
+};
 
 //flag for excluding caulk surfaces
 static qboolean excludeCaulk = qtrue;
 
 //flag for adding new walkable spans so bots can walk over small gaps
 static qboolean filterGaps = qtrue;
-
-//flag for faster but generally worse Monotone Partitioning
-//Monotone partitioning will result in more navmesh polygons than the default algorithm
-static qboolean fastGen = qfalse;
 
 //copied from cm_patch.c
 static const int MAX_GRID_SIZE = 129;
@@ -154,29 +79,17 @@ typedef struct
 	vec3_t   points[ MAX_GRID_SIZE ][ MAX_GRID_SIZE ]; // [width][height]
 } cGrid_t;
 
-struct spanStruct {
-	int idx;
-	int x;
-	int y;
-};
-
-static void quake2recast(vec3_t vec) {
-	vec_t temp = vec[1];
-	vec[0] = -vec[0];
-	vec[1] = vec[2];
-	vec[2] = -temp;
-}
-
-static void WriteNavMeshToDisk(const char* agentname, const dtNavMesh* navMesh) {
+static void WriteNavMeshFile( const char* agentname, const dtTileCache *tileCache, const dtNavMeshParams *params ) {
 	int numTiles = 0;
 	FILE *file = NULL;
 	char filename[ 1024 ];
 	NavMeshSetHeader header;
 	qboolean swapEndian = qfalse;
+	const int maxTiles = tileCache->getTileCount();
 
-	for( int i = 0; i < navMesh->getMaxTiles(); i++ )
+	for( int i = 0; i < maxTiles; i++ )
 	{
-		const dtMeshTile *tile = navMesh->getTile( i );
+		const dtCompressedTile *tile = tileCache->getTile( i );
 		if ( !tile || !tile->header || !tile->dataSize ) 
 		{
 			continue;
@@ -192,7 +105,8 @@ static void WriteNavMeshToDisk(const char* agentname, const dtNavMesh* navMesh) 
 	header.magic = NAVMESHSET_MAGIC;
 	header.version = NAVMESHSET_VERSION;
 	header.numTiles = numTiles;
-	memcpy( &header.params, navMesh->getParams(), sizeof( header.params ) );
+	memcpy( &header.cacheParams, tileCache->getParams(), sizeof( header.cacheParams ) );
+	memcpy( &header.params, params, sizeof( header.params ) );
 
 	SwapBlock( ( int * ) &header, sizeof( header ) );
 
@@ -209,9 +123,9 @@ static void WriteNavMeshToDisk(const char* agentname, const dtNavMesh* navMesh) 
 
 	fwrite( &header, sizeof( header ), 1, file );
 
-	for( int i = 0; i < navMesh->getMaxTiles(); i++ )
+	for( int i = 0; i < maxTiles; i++ )
 	{
-		const dtMeshTile *tile = navMesh->getTile( i );
+		const dtCompressedTile *tile = tileCache->getTile( i );
 
 		if ( !tile || !tile->header || !tile->dataSize )
 		{
@@ -219,7 +133,7 @@ static void WriteNavMeshToDisk(const char* agentname, const dtNavMesh* navMesh) 
 		}
 
 		NavMeshTileHeader tileHeader;
-		tileHeader.tileRef = navMesh->getTileRef( tile );
+		tileHeader.tileRef = tileCache->getTileRef( tile );
 		tileHeader.dataSize = tile->dataSize;
 
 		SwapBlock( ( int * ) &tileHeader, sizeof( tileHeader ) );
@@ -231,8 +145,7 @@ static void WriteNavMeshToDisk(const char* agentname, const dtNavMesh* navMesh) 
 		memcpy( data, tile->data, tile->dataSize );
 		if ( swapEndian )
 		{
-			dtNavMeshDataSwapEndian( data, tile->dataSize );
-			dtNavMeshHeaderSwapEndian( data, tile->dataSize );
+			dtTileCacheHeaderSwapEndian( data, tile->dataSize );
 		}
 
 		fwrite( data, tile->dataSize, 1, file );
@@ -687,28 +600,30 @@ static void LoadPatchTris(std::vector<float> &verts, std::vector<int> &tris) {
 }
 static void LoadGeometry()
 {
+	std::vector<float> verts;
+	std::vector<int> tris;
+
 	Sys_Printf("loading geometry...\n");
+	int numVerts, numTris;
 
 	//count surfaces
 	LoadBrushTris( verts, tris );
 	LoadPatchTris( verts, tris );
 
-	numtris = tris.size() / 3;
-	numverts = verts.size() / 3;
-	Sys_Printf("Using %d triangles\n", numtris);
-	Sys_Printf("Using %d vertices\n", numverts);
+	numTris = tris.size() / 3;
+	numVerts = verts.size() / 3;
 
-	// find bounds
-	ClearBounds( mapmins, mapmaxs );
-	for(int i=0;i<numverts;i++) {
-		vec3_t vert;
-		VectorSet(vert,verts[i*3],verts[i*3+1],verts[i*3+2]);
-		AddPointToBounds(vert, mapmins, mapmaxs);
-	}
+	Sys_Printf("Using %d triangles\n", numTris);
+	Sys_Printf("Using %d vertices\n", numVerts);
+
+	geo.init( &verts[ 0 ], numVerts, &tris[ 0 ], numTris );
+
+	const float *mins = geo.getMins();
+	const float *maxs = geo.getMaxs();
 
 	Sys_Printf("set recast world bounds to\n");
-	Sys_Printf("min: %f %f %f\n", mapmins[0], mapmins[1], mapmins[2]);
-	Sys_Printf("max: %f %f %f\n", mapmaxs[0], mapmaxs[1], mapmaxs[2]);
+	Sys_Printf("min: %f %f %f\n", mins[0], mins[1], mins[2]);
+	Sys_Printf("max: %f %f %f\n", maxs[0], maxs[1], maxs[2]);
 }
 
 // Modified version of Recast's rcErodeWalkableArea that uses an AABB instead of a cylindrical radius
@@ -900,130 +815,6 @@ static bool rcErodeWalkableAreaByBox(rcContext* ctx, int boxRadius, rcCompactHei
 }
 
 /*
-FloodSpans
-
-Does a flood fill through spans that are open to one another
-*/
-static void FloodSpans(int cx, int cy, int spanIdx, int radius, unsigned char area, rcCompactHeightfield &chf) {
-	const int w =chf.width;
-	const int h = chf.height;
-	const int mins[2] = {rcMax(cx - radius,0), rcMax(cy - radius,0)};
-	const int maxs[2] = {rcMin(cx + radius,w-1), rcMin(cy + radius,h-1)};
-
-	std::queue<spanStruct> queue;
-	spanStruct span;
-	span.idx = spanIdx;
-	span.x = cx;
-	span.y = cy;
-	queue.push(span);
-
-	std::vector<int> closed;
-	closed.reserve(radius*radius);
-	chf.areas[spanIdx] = UCHAR_MAX;
-
-	while(!queue.empty()) {
-		const spanStruct span = queue.front();
-		queue.pop();
-		const rcCompactSpan &s = chf.spans[span.idx];
-
-		for(int dir=0;dir<4;dir++) {
-			spanStruct ns;
-			ns.x = span.x + rcGetDirOffsetX(dir);
-			ns.y = span.y + rcGetDirOffsetY(dir);
-
-			//skip span if past bounds
-			if(ns.x < mins[0] || ns.y < mins[1])
-				continue;
-			if(ns.x > maxs[0] || ns.y > maxs[1])
-				continue;
-
-			rcCompactCell &c = chf.cells[ns.x + ns.y*w];
-			for(int i=(int)c.index,ni = (int)(c.index+c.count);i<ni;i++) {
-				rcCompactSpan &nns = chf.spans[i];
-
-				//skip span if it is not within current span's z bounds
-				//if(nns.y < s.y && (nns.y+nns.h) > (s.y + s.h))
-					//continue;
-				//if(nns.y > s.y && nns.y > (s.y + s.h))
-				if(nns.y > (s.y + s.h))
-					continue;
-				if((nns.y + nns.h) < s.y)
-					continue;
-				ns.idx = i;
-				if(chf.areas[ns.idx] != UCHAR_MAX) {
-					chf.areas[ns.idx] = UCHAR_MAX;
-					queue.push(ns);
-				}
-			}
-		}
-		closed.push_back(span.idx);
-	}
-	for(int i=0;i<closed.size();i++) {
-		chf.areas[closed[i]] = area;
-	}
-}
-
-char floodEntities[][17] = {"team_human_spawn", "team_alien_spawn"};
-
-static bool inEntityList(entity_t *e) {
-	for(int i=0;i<sizeof(floodEntities)/sizeof(floodEntities[0]);i++) {
-		if(!Q_stricmp(ValueForKey(e,"classname"), floodEntities[i]))
-			return true;
-	}
-	return false;
-}
-
-static void RemoveUnreachableSpans(rcCompactHeightfield &chf) {
-	int radius = rcMax(chf.width, chf.height);
-
-	//copy over current span areas
-	unsigned char *prevAreas = new unsigned char[chf.spanCount];
-	memcpy(prevAreas, chf.areas, chf.spanCount);
-
-	//go over the entities and flood fill from them in the compact heightfield
-	for(int i=1;i<numEntities;i++) {
-		entity_t *e = &entities[i];
-		if(!inEntityList(e))
-			continue;
-		vec3_t origin;
-		GetVectorForKey(e, "origin", origin);
-		quake2recast(origin);
-
-		//find voxel cordinate for the origin
-		int x = (origin[0] - chf.bmin[0]) / chf.cs;
-		int y = (origin[1] - chf.bmin[1]) / chf.ch;
-		int z = (origin[2] - chf.bmin[2]) / chf.cs;
-
-		//now find a walkableSpan closest to the origin
-		rcCompactCell &c = chf.cells[x+z*chf.width];
-		int bestDist = INT_MAX;
-		int spanIdx = -1;
-		for(int i = (int)c.index, ni = (int)(c.index + c.count); i < ni; i++) {
-			if(chf.areas[i] == RC_NULL_AREA)
-				continue;
-			rcCompactSpan &s = chf.spans[i];
-			if(rcAbs(s.y - y) < bestDist) {
-				spanIdx = i;
-				bestDist = rcAbs(s.y - y);
-			}
-		}
-
-		//flood fill spans that are open to one another
-		if(spanIdx > -1)
-			FloodSpans(x, z, spanIdx, radius, UCHAR_MAX, chf);
-	}
-
-	//now we go through the areas and only use the ones that we flooded to
-	for(int i=0;i<chf.spanCount;i++) {
-		if(chf.areas[i] == UCHAR_MAX)
-			chf.areas[i] = prevAreas[i];
-		else
-			chf.areas[i] = RC_NULL_AREA;
-	}
-	delete[] prevAreas;
-}
-
-/*
 rcFilterGaps
 
 Does a super simple sampling of ledges to detect and fix
@@ -1059,12 +850,21 @@ static void rcFilterGaps(rcContext *ctx, int walkableRadius, int walkableClimb, 
 						bool freeSpace = false;
 						bool stop = false;
 
+						if ( dx >= w || dy >= h )
+						{
+							continue;
+						}
+
 						//keep going the direction for walkableRadius * 2 - 1 spans
 						//because we can walk as long as at least part of our bbox is on a solid surface
 						for(int i=1;i<walkableRadius*2;i++) {
 							dx = dx + dirx;
 							dy = dy + diry;
-							if(dx < 0 || dy < 0 || dx >= w || dy >= h) {
+							if(dx < 0 || dy < 0 || dx >= w || dy >= h)
+							{
+								i--;
+								freeSpace = false;
+								stop = false;
 								break;
 							}
 
@@ -1127,198 +927,279 @@ static void rcFilterGaps(rcContext *ctx, int walkableRadius, int walkableClimb, 
 	}
 }
 
-static unsigned char* buildTile( int characterNum, vec3_t mapmins, vec3_t mapmaxs, int *dataSize )
+static int rasterizeTileLayers( rcContext &context, int tx, int ty, const rcConfig &mcfg, TileCacheData *data, int maxLayers )
 {
-	float agentHeight = tremClasses[ characterNum ].height;
-	float agentRadius = tremClasses[ characterNum ].radius;
-	rcHeightfield *heightField;
-	rcCompactHeightfield *compHeightField;
-	rcContourSet *contours;
 	rcConfig cfg;
-	rcPolyMesh *polyMesh;
-	rcPolyMeshDetail *detailedPolyMesh;
 
-	memset (&cfg, 0, sizeof (cfg));
-	VectorCopy (mapmaxs, cfg.bmax);
-	VectorCopy (mapmins, cfg.bmin);
+	FastLZCompressor comp;
+	RasterizationContext rc;
 
-	cfg.cs = agentRadius / 4.0f; // evenly divide agent radius
-	cfg.ch = cellHeight;
-	cfg.walkableSlopeAngle = 45.5729959991941f; //retrieved via RAD2DEG(acos(MIN_WALK_NORMAL))
-	cfg.maxEdgeLen = 200;
-	cfg.maxSimplificationError = 1.3;
-	cfg.maxVertsPerPoly = 6;
-	cfg.detailSampleDist = cfg.cs * 6.0f;
-	cfg.detailSampleMaxError = cfg.ch * 1.0f;
-	cfg.minRegionArea = rcSqr(25);
-	cfg.mergeRegionArea = rcSqr(50);
-	cfg.walkableHeight = (int) ceilf(agentHeight / cfg.ch);
-	cfg.walkableClimb = (int) floorf(stepSize/cfg.ch);
-	cfg.walkableRadius = (int) ceilf(agentRadius / cfg.cs);
+	const float tcs = mcfg.tileSize * mcfg.cs;
 
-	rcCalcGridSize (cfg.bmin, cfg.bmax, cfg.cs, &cfg.width, &cfg.height);
+	memcpy( &cfg, &mcfg, sizeof( cfg ) );
 
-	class rcContext context(false);
+	// find tile bounds
+	cfg.bmin[ 0 ] = mcfg.bmin[ 0 ] + tx * tcs;
+	cfg.bmin[ 1 ] = mcfg.bmin[ 1 ];
+	cfg.bmin[ 2 ] = mcfg.bmin[ 2 ] + ty * tcs;
 
-	heightField = rcAllocHeightfield();
+	cfg.bmax[ 0 ] = mcfg.bmin[ 0 ] + ( tx + 1 ) * tcs;
+	cfg.bmax[ 1 ] = mcfg.bmax[ 1 ];
+	cfg.bmax[ 2 ] = mcfg.bmin[ 2 ] + ( ty + 1 ) * tcs;
 
-	if ( !rcCreateHeightfield (&context, *heightField, cfg.width, cfg.height, cfg.bmin, cfg.bmax, cfg.cs, cfg.ch) )
+	// expand bounds by border size
+	cfg.bmin[ 0 ] -= cfg.borderSize * cfg.cs;
+	cfg.bmin[ 2 ] -= cfg.borderSize * cfg.cs;
+
+	cfg.bmax[ 0 ] += cfg.borderSize * cfg.cs;
+	cfg.bmax[ 2 ] += cfg.borderSize * cfg.cs;
+
+	rc.solid = rcAllocHeightfield();
+
+	if ( !rcCreateHeightfield( &context, *rc.solid, cfg.width, cfg.height, cfg.bmin, cfg.bmax, cfg.cs, cfg.ch ) )
 	{
 		Error ("Failed to create heightfield for navigation mesh.\n");
 	}
 
-	unsigned char *triareas = new unsigned char[numtris];
-	memset (triareas, 0, numtris);
+	const float *verts = geo.getVerts();
+	const int nverts = geo.getNumVerts();
+	const rcChunkyTriMesh *chunkyMesh = geo.getChunkyMesh();
 
-	rcMarkWalkableTriangles (&context, cfg.walkableSlopeAngle, &verts[ 0 ], numverts, &tris[ 0 ], numtris, triareas);
-	rcRasterizeTriangles (&context, &verts[ 0 ], triareas, numtris, *heightField, cfg.walkableClimb);
-	delete[] triareas;
-	triareas = NULL;
+	rc.triareas = new unsigned char[ chunkyMesh->maxTrisPerChunk ];
+	if ( !rc.triareas )
+	{
+		Error( "Out of memory rc.triareas\n" );
+	}
 
-	rcFilterLowHangingWalkableObstacles (&context, cfg.walkableClimb, *heightField);
+	float tbmin[ 2 ], tbmax[ 2 ];
+
+	tbmin[ 0 ] = cfg.bmin[ 0 ];
+	tbmin[ 1 ] = cfg.bmin[ 2 ];
+	tbmax[ 0 ] = cfg.bmax[ 0 ];
+	tbmax[ 1 ] = cfg.bmax[ 2 ];
+
+	int *cid = new int[ chunkyMesh->nnodes ];
+
+	const int ncid = rcGetChunksOverlappingRect( chunkyMesh, tbmin, tbmax, cid, chunkyMesh->nnodes );
+	if ( !ncid )
+	{
+		delete[] cid;
+		return 0;
+	}
+
+	for ( int i = 0; i < ncid; i++ )
+	{
+		const rcChunkyTriMeshNode &node = chunkyMesh->nodes[ cid[ i ] ];
+		const int *tris = &chunkyMesh->tris[ node.i * 3 ];
+		const int ntris = node.n;
+
+		memset( rc.triareas, 0, ntris * sizeof( unsigned char ) );
+
+		rcMarkWalkableTriangles( &context, cfg.walkableSlopeAngle, verts, nverts, tris, ntris, rc.triareas );
+		rcRasterizeTriangles( &context, verts, nverts, tris, rc.triareas, ntris, *rc.solid, cfg.walkableClimb );
+	}
+
+	delete[] cid;
+
+	rcFilterLowHangingWalkableObstacles( &context, cfg.walkableClimb, *rc.solid );
 
 	//dont filter ledge spans since characters CAN walk on ledges due to using a bbox for movement collision
-	//rcFilterLedgeSpans (&context, cfg.walkableHeight, cfg.walkableClimb, *heightField);
+	//rcFilterLedgeSpans (&context, cfg.walkableHeight, cfg.walkableClimb, *rc.solid);
 
-	rcFilterWalkableLowHeightSpans (&context, cfg.walkableHeight, *heightField);
+	rcFilterWalkableLowHeightSpans( &context, cfg.walkableHeight, *rc.solid );
 	
 	if(filterGaps)
 	{
-		rcFilterGaps(&context, cfg.walkableRadius, cfg.walkableClimb, cfg.walkableHeight, *heightField);
+		rcFilterGaps( &context, cfg.walkableRadius, cfg.walkableClimb, cfg.walkableHeight, *rc.solid );
 	}
-	
-	compHeightField = rcAllocCompactHeightfield();
-	if ( !rcBuildCompactHeightfield (&context, cfg.walkableHeight, cfg.walkableClimb, *heightField, *compHeightField) )
+
+	rc.chf = rcAllocCompactHeightfield();
+
+	if ( !rcBuildCompactHeightfield( &context, cfg.walkableHeight, cfg.walkableClimb, *rc.solid, *rc.chf ) )
 	{
 		Error ("Failed to create compact heightfield for navigation mesh.\n");
 	}
 
-	rcFreeHeightField( heightField );
-
-	if( median ) {
-		if(!rcMedianFilterWalkableArea(&context, *compHeightField))
-		{
-			Error ("Failed to apply Median filter to walkable areas.\n");
-		}
-	}
-
-	if ( !rcErodeWalkableAreaByBox(&context, cfg.walkableRadius, *compHeightField) )
+	if ( !rcErodeWalkableAreaByBox(&context, cfg.walkableRadius, *rc.chf) )
 	{
 		Error ("Unable to erode walkable surfaces.\n");
 	}
 
-	//remove unreachable spans ( examples: roof of map, inside closed spaces such as boxes ) so we don't have to build a navmesh for them
-	RemoveUnreachableSpans( *compHeightField );
+	rc.lset = rcAllocHeightfieldLayerSet();
 
-	if(fastGen)
+	if ( !rc.lset )
 	{
-		if ( !rcBuildRegionsMonotone (&context, *compHeightField, cfg.borderSize, cfg.minRegionArea, cfg.mergeRegionArea) )
+		Error( "Out of memory heightfield layer set\n" );
+	}
+
+	if ( !rcBuildHeightfieldLayers( &context, *rc.chf, cfg.borderSize, cfg.walkableHeight, *rc.lset ) )
+	{
+		Error( "Could not build heightfield layers\n" );
+	}
+
+	rc.ntiles = 0;
+
+	for ( int i = 0; i < rcMin( rc.lset->nlayers, MAX_LAYERS ); i++ )
+	{
+		TileCacheData *tile = &rc.tiles[ rc.ntiles++ ];
+		const rcHeightfieldLayer *layer = &rc.lset->layers[ i ];
+
+		dtTileCacheLayerHeader header;
+		header.magic = DT_TILECACHE_MAGIC;
+		header.version = DT_TILECACHE_VERSION;
+
+		header.tx = tx;
+		header.ty = ty;
+		header.tlayer = i;
+		dtVcopy( header.bmin, layer->bmin );
+		dtVcopy( header.bmax, layer->bmax );
+
+		header.width = ( unsigned char ) layer->width;
+		header.height = ( unsigned char ) layer->height;
+		header.minx = ( unsigned char ) layer->minx;
+		header.maxx = ( unsigned char ) layer->maxx;
+		header.miny = ( unsigned char ) layer->miny;
+		header.maxy = ( unsigned char ) layer->maxy;
+		header.hmin = ( unsigned short ) layer->hmin;
+		header.hmax = ( unsigned short ) layer->hmax;
+
+		dtStatus status = dtBuildTileCacheLayer( &comp, &header, layer->heights, layer->areas, layer->cons, &tile->data, &tile->dataSize );
+
+		if ( dtStatusFailed( status ) )
 		{
-			Error ("Failed to build regions for navigation mesh.\n");
-		}
-	} 
-	else
-	{
-		if ( !rcBuildDistanceField (&context, *compHeightField) )
-		{
-			Error ("Failed to build distance field for navigation mesh.\n");
-		}
-
-		if ( !rcBuildRegions (&context, *compHeightField, cfg.borderSize, cfg.minRegionArea, cfg.mergeRegionArea) )
-		{
-			Error ("Failed to build regions for navigation mesh.\n");
+			return 0;
 		}
 	}
 
-	contours = rcAllocContourSet();
-	if ( !rcBuildContours (&context, *compHeightField, cfg.maxSimplificationError, cfg.maxEdgeLen, *contours) )
+	// transfer tile data over to caller
+	int n = 0;
+	for ( int i = 0; i < rcMin( rc.ntiles, maxLayers ); i++ )
 	{
-		Error ("Failed to create contour set for navigation mesh.\n");
+		data[ n++ ] = rc.tiles[ i ];
+		rc.tiles[ i ].data = 0;
+		rc.tiles[ i ].dataSize = 0;
 	}
 
-	polyMesh = rcAllocPolyMesh();
-	if ( !rcBuildPolyMesh (&context, *contours, cfg.maxVertsPerPoly, *polyMesh) )
-	{
-		Error ("Failed to triangulate contours.\n");
-	}
-	rcFreeContourSet (contours);
-
-	detailedPolyMesh = rcAllocPolyMeshDetail();
-	if ( !rcBuildPolyMeshDetail (&context, *polyMesh, *compHeightField, cfg.detailSampleDist, cfg.detailSampleMaxError, *detailedPolyMesh) )
-	{
-		Error ("Failed to create detail mesh for navigation mesh.\n");
-	}
-
-	rcFreeCompactHeightfield (compHeightField);
-
-	// Update poly flags from areas.
-	for (int i = 0; i < polyMesh->npolys; ++i)
-	{
-		if (polyMesh->areas[i] == RC_WALKABLE_AREA) {
-			polyMesh->areas[i] = POLYAREA_GROUND;
-			polyMesh->flags[i] = POLYFLAGS_WALK;
-		} else if (polyMesh->areas[i] == POLYAREA_WATER) {
-			polyMesh->flags[i] = POLYFLAGS_SWIM;
-		}
-		else if (polyMesh->areas[i] == POLYAREA_DOOR) {
-			polyMesh->flags[i] = POLYFLAGS_WALK | POLYFLAGS_DOOR;
-		}
-	}
-
-	dtNavMeshCreateParams params;
-	memset(&params, 0, sizeof(params));
-	params.verts = polyMesh->verts;
-	params.vertCount = polyMesh->nverts;
-	params.polys = polyMesh->polys;
-	params.polyAreas = polyMesh->areas;
-	params.polyFlags = polyMesh->flags;
-	params.polyCount = polyMesh->npolys;
-	params.nvp = polyMesh->nvp;
-	params.detailMeshes = detailedPolyMesh->meshes;
-	params.detailVerts = detailedPolyMesh->verts;
-	params.detailVertsCount = detailedPolyMesh->nverts;
-	params.detailTris = detailedPolyMesh->tris;
-	params.detailTriCount = detailedPolyMesh->ntris;
-	params.walkableHeight = cfg.walkableHeight * cfg.ch;
-	params.walkableRadius = cfg.walkableRadius * cfg.cs;
-	params.walkableClimb =  cfg.walkableClimb  * cfg.ch;
-	params.tileX = 0;
-	params.tileY = 0;
-	VectorCopy(polyMesh->bmin, params.bmin);
-	VectorCopy(polyMesh->bmax, params.bmax);
-	params.cs = cfg.cs;
-	params.ch = cfg.ch;
-	params.buildBvTree = true;
-
-	unsigned char* navData = NULL;
-	int navDataSize = 0;
-	if(!dtCreateNavMeshData(&params, &navData, &navDataSize)) {
-		Error ("Could not build Detour navmesh.\n");
-	}
-	*dataSize = navDataSize;
-	rcFreePolyMesh(polyMesh);
-	rcFreePolyMeshDetail(detailedPolyMesh);
-	return navData;
+	return n;
 }
 
-static void BuildSoloMesh( int characterNum ) {
-	int dataSize;
-	const char *name = tremClasses[ characterNum ].name;
-	unsigned char *navData = buildTile( characterNum, mapmins, mapmaxs, &dataSize );
+static void BuildNavMesh( int characterNum )
+{
+	const Character &agent = characters[ characterNum ];
 
-	dtNavMesh *navMesh = dtAllocNavMesh();
-	if ( !navMesh )
+	dtTileCache *tileCache;
+	const float *bmin = geo.getMins();
+	const float *bmax = geo.getMaxs();
+	int gw = 0, gh = 0;
+	const float cellSize = agent.radius / 4.0f;
+
+	rcCalcGridSize( bmin, bmax, cellSize, &gw, &gh );
+
+	const int ts = tileSize;
+	const int tw = ( gw + ts - 1 ) / ts;
+	const int th = ( gh + ts - 1 ) / ts;
+
+	rcConfig cfg;
+	memset( &cfg, 0, sizeof ( cfg ) );
+
+	cfg.cs = cellSize;
+	cfg.ch = cellHeight;
+	cfg.walkableSlopeAngle = RAD2DEG( acosf( MIN_WALK_NORMAL ) );
+	cfg.walkableHeight = ( int ) ceilf( agent.height / cfg.ch );
+	cfg.walkableClimb = ( int ) floorf( stepSize / cfg.ch );
+	cfg.walkableRadius = ( int ) ceilf( agent.radius / cfg.cs );
+	cfg.maxEdgeLen = 0;
+	cfg.maxSimplificationError = 1.3f;
+	cfg.minRegionArea = rcSqr( 25 );
+	cfg.mergeRegionArea = rcSqr( 50 );
+	cfg.maxVertsPerPoly = 6;
+	cfg.tileSize = ts;
+	cfg.borderSize = cfg.walkableRadius + 3;
+	cfg.width = cfg.tileSize + cfg.borderSize * 2;
+	cfg.height = cfg.tileSize + cfg.borderSize * 2;
+	cfg.detailSampleDist = cfg.cs * 6.0f;
+	cfg.detailSampleMaxError = cfg.ch * 1.0f;
+
+	rcVcopy( cfg.bmin, bmin );
+	rcVcopy( cfg.bmax, bmax );
+
+	dtTileCacheParams tcparams;
+	memset( &tcparams, 0, sizeof( tcparams ) );
+	rcVcopy( tcparams.orig, bmin );
+	tcparams.cs = cellSize;
+	tcparams.ch = cellHeight;
+	tcparams.width = ts;
+	tcparams.height = ts;
+	tcparams.walkableHeight = agent.height;
+	tcparams.walkableRadius = agent.radius;
+	tcparams.walkableClimb = stepSize;
+	tcparams.maxSimplificationError = 1.3;
+	tcparams.maxTiles = tw * th * EXPECTED_LAYERS_PER_TILE;
+	tcparams.maxObstacles = 256;
+	
+	tileCache = dtAllocTileCache();
+
+	if ( !tileCache )
 	{
-		Error ( "Could not allocate memory for navmesh for character %s\n", name );
+		Error( "Could not allocate tile cache\n" );
 	}
 
-	if( dtStatusFailed( navMesh->init( navData, dataSize, DT_TILE_FREE_DATA ) ) )
+	LinearAllocator alloc( 32000 );
+	FastLZCompressor comp;
+	MeshProcess proc;
+
+	dtStatus status = tileCache->init( &tcparams, &alloc, &comp, &proc );
+
+	if ( dtStatusFailed( status ) )
 	{
-		Error ( "Failed to init navmesh for character %s\n", name );
+		if ( dtStatusDetail( status, DT_INVALID_PARAM ) )
+		{
+			Error( "Could not init tile cache: Invalid parameter\n" );
+		}
+		else
+		{
+			Error( "Could not init tile cache\n" );
+		}
 	}
 
-	WriteNavMeshToDisk( tremClasses[ characterNum ].name, navMesh );
-	dtFreeNavMesh( navMesh );
+	rcContext context( false );
+
+	for ( int y = 0; y < th; y++ )
+	{
+		for ( int x = 0; x < tw; x++ )
+		{
+			TileCacheData tiles[ MAX_LAYERS ];
+			memset( tiles, 0, sizeof( tiles ) );
+
+			int ntiles = rasterizeTileLayers( context, x, y, cfg, tiles, MAX_LAYERS );
+			
+			for ( int i = 0; i < ntiles; i++ )
+			{
+				TileCacheData *tile = &tiles[ i ];
+				status = tileCache->addTile( tile->data, tile->dataSize, DT_COMPRESSEDTILE_FREE_DATA, 0 );
+				if ( dtStatusFailed( status ) )
+				{
+					dtFree( tile->data );
+					tile->data = 0;
+					continue;
+				}
+			}
+		}
+	}
+
+	// there are 22 bits to store a tile and its polys
+	int tileBits = rcMin( ( int ) dtIlog2( dtNextPow2( tcparams.maxTiles ) ), 14 );
+	int polyBits = 22 - tileBits;
+
+	dtNavMeshParams params;
+	dtVcopy( params.orig, tcparams.orig );
+	params.tileHeight = ts * cfg.cs;
+	params.tileWidth = ts * cfg.cs;
+	params.maxTiles = 1 << tileBits;
+	params.maxPolys = 1 << polyBits;
+
+	WriteNavMeshFile( agent.name, tileCache, &params );
+	dtFreeTileCache( tileCache );
 }
 
 /*
@@ -1348,13 +1229,8 @@ extern "C" int NavMain(int argc, char **argv)
 
 		} else if (!Q_stricmp(argv[i], "-optimistic")){
 			stepSize = 20;
-		} else if(!Q_stricmp(argv[i], "-median")) {
-			median = qtrue;
-		} else if(!Q_stricmp(argv[i], "-nogaps")) {
+		} else if(!Q_stricmp(argv[i], "-nogapfilter")) {
 			filterGaps = qfalse;
-		} else if(!Q_stricmp(argv[i], "-fast")) {
-			filterGaps = qfalse;
-			fastGen = qtrue;
 		} else {
 			Sys_Printf("WARNING: Unknown option \"%s\"\n", argv[i]);
 		}
@@ -1370,13 +1246,11 @@ extern "C" int NavMain(int argc, char **argv)
 
 	LoadBSPFile(source);
 
-	/* parse bsp entities */
 	ParseEntities();
 
-	/* get the data into recast */
 	LoadGeometry();
 
-	float height = rcAbs(mapmaxs[1]) + rcAbs(mapmins[1]);
+	float height = rcAbs(geo.getMaxs()[1]) + rcAbs(geo.getMins()[1]);
 	if(height / cellHeight > RC_SPAN_MAX_HEIGHT) {
 		Sys_Printf("WARNING: Map geometry is too tall for specified cell height. Increasing cell height to compensate. This may cause a less accurate navmesh.\n");
 		float prevCellHeight = cellHeight;
@@ -1385,7 +1259,7 @@ extern "C" int NavMain(int argc, char **argv)
 		Sys_Printf("New cellheight: %f\n", cellHeight);
 	}
 
-	RunThreadsOnIndividual( sizeof( tremClasses ) / sizeof( tremClasses[ 0 ] ), qtrue, BuildSoloMesh );
+	RunThreadsOnIndividual( sizeof( characters ) / sizeof( characters[ 0 ] ), qtrue, BuildNavMesh );
 
 	return 0;
 }

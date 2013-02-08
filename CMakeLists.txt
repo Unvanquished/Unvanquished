@@ -857,18 +857,23 @@ set( DAEMONMAPLIST
   ${MOUNT_DIR}/libs/zlib/zutil.c
 )
 
+set( FASTLZLIST 
+	${MOUNT_DIR}/libs/fastlz/fastlz.c
+)
+
 set( DETOURLIST
+  ${FASTLZLIST}
   ${MOUNT_DIR}/libs/detour/DetourAlloc.cpp
   ${MOUNT_DIR}/libs/detour/DetourCommon.cpp
-#   ${MOUNT_DIR}/libs/detour/DetourLocalBoundary.cpp
   ${MOUNT_DIR}/libs/detour/DetourNavMeshBuilder.cpp
   ${MOUNT_DIR}/libs/detour/DetourNavMesh.cpp
   ${MOUNT_DIR}/libs/detour/DetourNavMeshQuery.cpp
   ${MOUNT_DIR}/libs/detour/DetourNode.cpp
-#   ${MOUNT_DIR}/libs/detour/DetourObstacleAvoidance.cpp
   ${MOUNT_DIR}/libs/detour/DetourPathCorridor.cpp
   ${MOUNT_DIR}/libs/detour/DetourDebugDraw.cpp
   ${MOUNT_DIR}/libs/detour/DebugDraw.cpp
+  ${MOUNT_DIR}/libs/detour/DetourTileCache.cpp
+  ${MOUNT_DIR}/libs/detour/DetourTileCacheBuilder.cpp
 )
 
 set( RECASTLIST
@@ -882,9 +887,8 @@ set( RECASTLIST
   ${MOUNT_DIR}/libs/recast/RecastMeshDetail.cpp
   ${MOUNT_DIR}/libs/recast/RecastRasterization.cpp
   ${MOUNT_DIR}/libs/recast/RecastRegion.cpp
+  ${MOUNT_DIR}/libs/recast/ChunkyTriMesh.cpp
 )
-
-
 
 if( USE_VOIP AND USE_INTERNAL_SPEEX )
     set( SPEEXLIST

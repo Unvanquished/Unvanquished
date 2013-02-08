@@ -13,6 +13,9 @@ unsigned int BotFindRouteExt( int botClientNum, const vec3_t target );
 void         BotUpdateCorridor( int botClientNum, vec3_t *corners, int *numCorners, int maxCorners, const vec3_t target );
 void         BotFindRandomPoint( int botClientNum, vec3_t point );
 qboolean     BotNavTrace( int botClientNum, botTrace_t *trace, const vec3_t start, const vec3_t end );
+void         BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *obstacleHandle );
+void         BotRemoveObstacle( qhandle_t obstacleHandle );
+void         BotUpdateObstacles();
 #ifdef __cplusplus
 }
 #endif

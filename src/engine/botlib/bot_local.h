@@ -42,7 +42,9 @@ extern "C"
 #include "../../libs/detour/DetourNavMeshQuery.h"
 #include "../../libs/detour/DetourPathCorridor.h"
 #include "../../libs/detour/DetourCommon.h"
-#include "nav.h"
+#include "../../libs/detour/DetourTileCache.h"
+#include "../../libs/detour/DetourTileCacheBuilder.h"
+
 #include "bot_types.h"
 #include "bot_api.h"
 
@@ -50,13 +52,16 @@ const int MAX_NAV_DATA = 16;
 const int MAX_BOT_PATH = 512;
 const int MAX_PATH_LOOKAHEAD = 5;
 
-typedef struct {
+typedef struct
+{
+	dtTileCache      *cache;
 	dtNavMesh        *mesh;
 	dtNavMeshQuery   *query;
 	dtQueryFilter    filter;
-}  NavData_t;
+} NavData_t;
 
-typedef struct {
+typedef struct
+{
 	NavData_t         *nav;
 	dtPathCorridor    corridor;
 	int               clientNum;
@@ -65,7 +70,7 @@ typedef struct {
 } Bot_t;
 
 extern int numNavData;
-extern NavData_t  BotNavData[ MAX_NAV_DATA ];
+extern NavData_t BotNavData[ MAX_NAV_DATA ];
 extern Bot_t agents[ MAX_CLIENTS ];
 
 //coordinate conversion

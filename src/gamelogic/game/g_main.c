@@ -3004,5 +3004,6 @@ void G_RunFrame( int levelTime )
 		G_CheckVote( i );
 	}
 
+	trap_BotUpdateObstacles();
 	level.frameMsec = trap_Milliseconds();
 }
