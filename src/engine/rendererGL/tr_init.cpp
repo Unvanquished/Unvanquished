@@ -2437,6 +2437,7 @@ extern "C" {
 
 		re.GetTextureSize = RE_GetTextureSize;
 		re.Add2dPolysIndexed = RE_2DPolyiesIndexed;
+		re.GenerateTexture = RE_GenerateTexture;
 		// XreaL END
 
 		return &re;

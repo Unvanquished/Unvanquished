@@ -1599,6 +1599,7 @@ extern "C" {
 		re.DrawStretchPicGradient = RE_StretchPicGradient;
 		re.Add2dPolys = RE_2DPolyies;
 		re.Add2dPolysIndexed = RE_2DPolyiesIndexed;
+		re.GenerateTexture = RE_GenerateTexture;
 		re.DrawStretchRaw = RE_StretchRaw;
 		re.UploadCinematic = RE_UploadCinematic;
 		re.BeginFrame = RE_BeginFrame;

@@ -6102,6 +6102,7 @@ qhandle_t RE_RegisterShaderFromImage( const char *name, image_t *image, qboolean
 	Com_Memset( &stages, 0, sizeof( stages ) );
 	Q_strncpyz( shader.name, name, sizeof( shader.name ) );
 	shader.type = SHADER_2D;
+	shader.cullType = CT_TWO_SIDED;
 
 	for ( i = 0; i < MAX_SHADER_STAGES; i++ )
 	{

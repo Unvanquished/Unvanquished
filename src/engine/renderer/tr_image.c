@@ -1267,6 +1267,14 @@ image_t *R_CreateGlyph( const char *name, const byte *pic, int width, int height
 	return image;
 }
 
+int numTextures = 0;
+
+qhandle_t RE_GenerateTexture( const byte *pic, int width, int height )
+{
+	const char *name = va( "rocket%d", numTextures++ );
+	return RE_RegisterShaderFromImage( name, LIGHTMAP_2D, R_CreateImage( name, pic, width, height, qfalse, qfalse, GL_CLAMP ), qfalse );
+}
+
 
 
 

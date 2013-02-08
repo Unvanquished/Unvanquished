@@ -196,10 +196,15 @@ public:
 
 	bool GenerateTexture( Rocket::Core::TextureHandle& textureHandle, const Rocket::Core::byte* source, const Rocket::Core::Vector2i& sourceDimensions )
 	{
-		// used for libRocket font system
-		// TODO:
-		textureHandle = 1;
-		return true;
+
+		textureHandle = re.GenerateTexture( (const byte* )source, sourceDimensions.x, sourceDimensions.y );
+		Com_Printf( "RE_GenerateTexture [ %lu ( %d x %d )]\n", textureHandle, sourceDimensions.x, sourceDimensions.y );
+		if ( textureHandle > 0 )
+		{
+			return true;
+		}
+
+		return false;
 	}
 
 	void ReleaseTexture( Rocket::Core::TextureHandle textureHandle )
@@ -388,7 +393,7 @@ extern "C" void Rocket_Init( void )
 	InitSDLtoRocketKeymap();
 
 	// won't work until required render interface stuff is done
-	//Rocket::Core::FontDatabase::LoadFontFace( "fonts/unifont.ttf" );
+	Rocket::Core::FontDatabase::LoadFontFace( "assets/Delicious-Roman.otf" );
 
 	context = Rocket::Core::CreateContext( "default", Rocket::Core::Vector2i( cls.glconfig.vidWidth, cls.glconfig.vidHeight ) );
 
@@ -396,7 +401,7 @@ extern "C" void Rocket_Init( void )
 
 
 
-	Rocket::Core::ElementDocument* document = context->LoadDocument( "demo.rml" );
+	Rocket::Core::ElementDocument* document = context->LoadDocument( "help.rml" );
 
 	if( document )
 	{

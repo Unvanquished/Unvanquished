@@ -1647,6 +1647,14 @@ image_t *R_CreateGlyph( const char *name, const byte *pic, int width, int height
 	return image;
 }
 
+int numTextures = 0;
+
+qhandle_t RE_GenerateTexture( const byte *pic, int width, int height )
+{
+	const char *name = va( "rocket%d", numTextures++ );
+	return RE_RegisterShaderFromImage( name, R_CreateImage( name, pic, width, height, IF_NOCOMPRESSION | IF_NOPICMIP, FT_LINEAR, WT_CLAMP ), qfalse );
+}
+
 /*
 ================
 R_CreateCubeImage
