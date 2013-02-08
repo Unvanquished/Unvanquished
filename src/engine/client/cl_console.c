@@ -880,8 +880,13 @@ void Con_DrawConsoleScrollbar( void )
 Con_MarginFadeAlpha
 ================
 */
-static float Con_MarginFadeAlpha( float alpha, float lineDrawPosition, int topMargin, int charHeight )
+static float Con_MarginFadeAlpha( float alpha, float lineDrawPosition, int topMargin, int bottomMargin, int charHeight )
 {
+	if ( lineDrawPosition > bottomMargin && lineDrawPosition <= bottomMargin + charHeight )
+	{
+		return alpha * (float)( bottomMargin + charHeight - lineDrawPosition ) / (float) charHeight;
+	}
+
 	if ( lineDrawPosition < topMargin || lineDrawPosition >= topMargin + charHeight )
 	{
 		return alpha;
@@ -900,7 +905,7 @@ void Con_DrawConsoleContent( void )
 {
 	float  currentWidthLocation = 0;
 	int    x;
-	float  lineDrawPosition;
+	float  lineDrawPosition, lineDrawLowestPosition;
 	int    row;
 	int    currentColor;
 	vec4_t color;
@@ -926,7 +931,7 @@ void Con_DrawConsoleContent( void )
 
 	// draw the input prompt, user text, and cursor if desired
 	// moved back here (have observed render issues to do with time taken)
-	Con_DrawInput( lineDrawPosition, Con_MarginFadeAlpha( 1, lineDrawPosition, textDistanceToTop, charHeight ) );
+	Con_DrawInput( lineDrawPosition, Con_MarginFadeAlpha( 1, lineDrawPosition, textDistanceToTop, lineDrawPosition, charHeight ) );
 	lineDrawPosition -= charHeight;
 
 	if (lineDrawPosition <= textDistanceToTop)
@@ -940,20 +945,27 @@ void Con_DrawConsoleContent( void )
 	}
 
 	// if we scrolled back, give feedback
-	if ( consoleState.bottomDisplayedLine != consoleState.currentLine )
+	if ( floor( consoleState.bottomDisplayedLine + 0.5f ) != consoleState.currentLine )
 	{
 		// draw arrows to show the buffer is backscrolled
 		Con_DrawConsoleScrollbackIndicator( lineDrawPosition );
 	}
 
 	lineDrawPosition -= charHeight;
-	Con_DrawConsoleScrollbar( );
 
 	row = consoleState.bottomDisplayedLine;
 
 	if ( consoleState.horizontalCharOffset == 0 )
 	{
 		row--;
+	}
+
+	lineDrawLowestPosition = lineDrawPosition;
+
+	if ( consoleState.bottomDisplayedLine - floor( consoleState.bottomDisplayedLine ) != 0.0f )
+	{
+		lineDrawPosition += charHeight - ( consoleState.bottomDisplayedLine - floor( consoleState.bottomDisplayedLine ) ) * charHeight;
+		++row;
 	}
 
 	currentColor = 7;
@@ -985,13 +997,15 @@ void Con_DrawConsoleContent( void )
 				color[ 2 ] = g_color_table[ currentColor ][ 2 ];
 			}
 
-			color[ 3 ] = Con_MarginFadeAlpha( consoleState.currentAlphaFactor, lineDrawPosition, textDistanceToTop, charHeight );
+			color[ 3 ] = Con_MarginFadeAlpha( consoleState.currentAlphaFactor, lineDrawPosition, textDistanceToTop, lineDrawLowestPosition, charHeight );
 			re.SetColor( color );
 
 			SCR_DrawConsoleFontUnichar( currentWidthLocation, lineDrawPosition, text[ x ].ch );
 			currentWidthLocation += SCR_ConsoleFontUnicharWidth( text[ x ].ch );
 		}
 	}
+
+	Con_DrawConsoleScrollbar( );
 
 	re.SetColor( NULL ); //set back to white
 }
