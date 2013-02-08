@@ -464,7 +464,15 @@ void Con_CheckResize( void )
 		consoleState.scrollLineIndex = consoleState.currentLine;
 	}
 
-	g_console_field_width = g_consoleField.widthInChars = consoleState.textWidthInChars - 8 - ( con_prompt ? Q_UTF8Strlen( con_prompt->string ) : 0 );
+	if ( con_prompt )
+	{
+		char prompt[ MAX_STRING_CHARS ];
+
+		Q_strncpyz( prompt, con_prompt->string, sizeof( prompt ) );
+		Q_CleanStr( prompt );
+
+		g_console_field_width = g_consoleField.widthInChars = consoleState.textWidthInChars - 8 - Q_UTF8Strlen( prompt );
+	}
 }
 
 /*
