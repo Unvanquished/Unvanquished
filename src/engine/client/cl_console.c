@@ -833,11 +833,14 @@ void Con_DrawConsoleScrollbar( void )
 	                                 : 0;
 
 	const float scrollBarLengthPerLine = ( scrollBarLength - scrollHandleLength ) / ( consoleState.usedScrollbackLengthInLines - consoleState.visibleAmountOfLines );
+	// that may result in -NaN
 
 	const float relativeScrollLineIndex = consoleState.currentLine - consoleState.usedScrollbackLengthInLines
 				+ MIN(consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines);
 
-	const float scrollHandlePostition = scrollBarLengthPerLine 	* ( consoleState.bottomDisplayedLine - relativeScrollLineIndex );
+	const float scrollHandlePostition = ( scrollBarLengthPerLine == scrollBarLengthPerLine )
+	                                  ? scrollBarLengthPerLine * ( consoleState.bottomDisplayedLine - relativeScrollLineIndex )
+	                                  : 0; // we may get this: +/- NaN is never equal to itself
 
 	//draw the scrollBar
 	color[ 0 ] = 0.2f;
