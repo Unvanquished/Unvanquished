@@ -288,7 +288,7 @@ void Con_Search_f( void )
 	direction = Q_stricmp( Cmd_Argv( 0 ), "searchDown" ) ? -1 : 1;
 
 	// check the lines
-	for ( l = consoleState.bottomDisplayedLine - 1 + direction; l <= consoleState.currentLine && consoleState.currentLine - l < consoleState.maxScrollbackLengthInLines; l += direction )
+	for ( l = consoleState.scrollLineIndex - 1 + direction; l <= consoleState.currentLine && consoleState.currentLine - l < consoleState.maxScrollbackLengthInLines; l += direction )
 	{
 		const char *buffer = Con_LineToString( l, qtrue );
 
@@ -297,9 +297,9 @@ void Con_Search_f( void )
 		{
 			if ( Q_stristr( buffer, Cmd_Argv( i ) ) )
 			{
-				consoleState.bottomDisplayedLine = l + 1;
+				consoleState.scrollLineIndex = l + 1;
 
-				if ( consoleState.bottomDisplayedLine > consoleState.currentLine )
+				if ( consoleState.scrollLineIndex > consoleState.currentLine )
 				{
 					consoleState.bottomDisplayedLine = consoleState.currentLine;
 				}
@@ -423,6 +423,7 @@ void Con_CheckResize( void )
 
 		consoleState.currentLine = consoleState.maxScrollbackLengthInLines - 1;
 		consoleState.bottomDisplayedLine = consoleState.currentLine;
+		consoleState.scrollLineIndex = consoleState.currentLine;
 	}
 	else
 	{
@@ -460,6 +461,7 @@ void Con_CheckResize( void )
 
 		consoleState.currentLine = consoleState.maxScrollbackLengthInLines - 1;
 		consoleState.bottomDisplayedLine = consoleState.currentLine;
+		consoleState.scrollLineIndex = consoleState.currentLine;
 	}
 
 	g_console_field_width = g_consoleField.widthInChars = consoleState.textWidthInChars - 8 - ( con_prompt ? Q_UTF8Strlen( con_prompt->string ) : 0 );
@@ -522,9 +524,9 @@ void Con_Linefeed( void )
 
 	consoleState.horizontalCharOffset = 0;
 
-	if ( consoleState.bottomDisplayedLine == consoleState.currentLine )
+	if ( consoleState.scrollLineIndex >= consoleState.currentLine )
 	{
-		consoleState.bottomDisplayedLine++;
+		consoleState.scrollLineIndex++;
 	}
 
 	consoleState.currentLine++;
@@ -930,7 +932,7 @@ void Con_DrawConsoleContent( void )
 	}
 
 	// if we scrolled back, give feedback
-	if ( consoleState.bottomDisplayedLine != consoleState.currentLine )
+	if ( consoleState.scrollLineIndex != consoleState.currentLine )
 	{
 		// draw arrows to show the buffer is backscrolled
 		Con_DrawConsoleScrollbackIndicator( lineDrawPosition );
@@ -1214,6 +1216,27 @@ void Con_RunConsole( void )
 			consoleState.currentAnimationFraction = 1;
 		}
 	}
+
+	if(consoleState.currentAnimationFraction > 0)
+	{
+		const int scrollDifference = consoleState.bottomDisplayedLine - consoleState.scrollLineIndex;
+		if( consoleState.bottomDisplayedLine < consoleState.scrollLineIndex )
+		{
+			consoleState.bottomDisplayedLine += con_animationSpeed->value * cls.realFrametime * 0.005 * (- scrollDifference);
+			if( consoleState.bottomDisplayedLine > consoleState.scrollLineIndex || con_animationType->integer == ANIMATION_TYPE_NONE )
+			{
+				consoleState.bottomDisplayedLine = consoleState.scrollLineIndex;
+			}
+		}
+		else if ( consoleState.bottomDisplayedLine > consoleState.scrollLineIndex )
+		{
+			consoleState.bottomDisplayedLine -= con_animationSpeed->value * cls.realFrametime * 0.005 * scrollDifference;
+			if( consoleState.bottomDisplayedLine < consoleState.scrollLineIndex || con_animationType->integer == ANIMATION_TYPE_NONE )
+			{
+				consoleState.bottomDisplayedLine = consoleState.scrollLineIndex;
+			}
+		}
+	}
 }
 
 void Con_PageUp( void )
@@ -1222,9 +1245,9 @@ void Con_PageUp( void )
 	if(consoleState.usedScrollbackLengthInLines < consoleState.visibleAmountOfLines)
 		return;
 
-	consoleState.bottomDisplayedLine -= 2;
+	consoleState.scrollLineIndex -= consoleState.visibleAmountOfLines/2;
 
-	if ( consoleState.bottomDisplayedLine < consoleState.currentLine - consoleState.usedScrollbackLengthInLines
+	if ( consoleState.scrollLineIndex < consoleState.currentLine - consoleState.usedScrollbackLengthInLines
 			+ MIN(consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines) )
 	{
 		Con_ScrollToTop( );
@@ -1233,24 +1256,26 @@ void Con_PageUp( void )
 
 void Con_PageDown( void )
 {
-	consoleState.bottomDisplayedLine += 2;
+	consoleState.scrollLineIndex += consoleState.visibleAmountOfLines/2;
 
-	if ( consoleState.bottomDisplayedLine > consoleState.currentLine )
+	if ( consoleState.scrollLineIndex > consoleState.currentLine )
 	{
-		consoleState.bottomDisplayedLine = consoleState.currentLine;
+		consoleState.scrollLineIndex = consoleState.currentLine;
 	}
 }
 
 void Con_ScrollToTop( void )
 {
-	consoleState.bottomDisplayedLine = consoleState.currentLine
+	consoleState.scrollLineIndex = consoleState.currentLine
 			- consoleState.usedScrollbackLengthInLines
 			+ MIN(consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines);
+	//consoleState.bottomDisplayedLine = consoleState.scrollLineIndex;
 }
 
 void Con_ScrollToBottom( void )
 {
-	consoleState.bottomDisplayedLine = consoleState.currentLine;
+	//consoleState.bottomDisplayedLine = consoleState.currentLine;
+	consoleState.scrollLineIndex = consoleState.currentLine;
 }
 
 void Con_Close( void )
