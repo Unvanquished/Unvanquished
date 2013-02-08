@@ -502,12 +502,12 @@ static void SetViewportAndScissor( void )
 		c[1] = DotProduct( backEnd.viewParms.portalPlane.normal, backEnd.viewParms.orientation.axis[2] );
 		c[2] = -DotProduct( backEnd.viewParms.portalPlane.normal, backEnd.viewParms.orientation.axis[0] );
 		c[3] = DotProduct( backEnd.viewParms.portalPlane.normal, backEnd.viewParms.orientation.origin ) - backEnd.viewParms.portalPlane.dist;
-		
+
 		q[0] = (c[0] < 0.0f ? -1.0f : 1.0f) / mat[0];
 		q[1] = (c[1] < 0.0f ? -1.0f : 1.0f) / mat[5];
 		q[2] = -1.0f;
 		q[3] = (1.0f + mat[10]) / mat[14];
-		
+
 		scale = 2.0f / (DotProduct( c, q ) + c[3] * q[3]);
 		mat[2]  = c[0] * scale;
 		mat[6]  = c[1] * scale;
@@ -1232,6 +1232,48 @@ const void     *RB_Draw2dPolys( const void *data )
 	return ( const void * )( cmd + 1 );
 }
 
+const void     *RB_ScissorEnable( const void *data )
+{
+	const scissorEnableCommand_t *cmd;
+
+	cmd = ( const scissorEnableCommand_t * ) data;
+
+	tr.scissor.status = cmd->enable;
+
+	if ( !cmd->enable )
+	{
+		glScissor( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
+	}
+	else
+	{
+		glScissor( tr.scissor.x, tr.scissor.y, tr.scissor.w, tr.scissor.h );
+	}
+
+	return ( const void * )( cmd + 1 );
+}
+
+
+const void     *RB_ScissorSet( const void *data )
+{
+	const scissorSetCommand_t *cmd;
+
+	cmd = ( const scissorSetCommand_t * ) data;
+
+	if ( tr.scissor.x == cmd->x && tr.scissor.y == cmd->y && tr.scissor.w == cmd->w && tr.scissor.h == cmd->h )
+	{
+		return ( const void * )( cmd + 1 );
+	}
+
+	tr.scissor.x = cmd->x;
+	tr.scissor.y = cmd->y;
+	tr.scissor.w = cmd->w;
+	tr.scissor.h = cmd->h;
+
+	glScissor( cmd->x, cmd->y, cmd->w, cmd->h );
+
+	return ( const void * )( cmd + 1 );
+}
+
 const void     *RB_Draw2dPolysIndexed( const void *data )
 {
 	const poly2dIndexedCommand_t *cmd;
@@ -1282,6 +1324,8 @@ const void     *RB_Draw2dPolysIndexed( const void *data )
 		tess.vertexColors[ tess.numVertexes ].v[ 3 ] = cmd->verts[ i ].modulate[ 3 ];
 		tess.numVertexes++;
 	}
+
+	RB_EndSurface();
 
 	return ( const void * )( cmd + 1 );
 }
@@ -1806,6 +1850,14 @@ void RB_ExecuteRenderCommands( const void *data )
 				//bani
 			case RC_FINISH:
 				data = RB_Finish( data );
+				break;
+
+			case RC_SCISSORENABLE:
+				data = RB_ScissorEnable( data );
+				break;
+
+			case RC_SCISSORSET:
+				data = RB_ScissorSet( data );
 				break;
 
 			case RC_END_OF_LIST:

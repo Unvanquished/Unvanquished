@@ -523,6 +523,49 @@ void RE_2DPolyiesIndexed( polyVert_t *verts, int numverts, int *indexes, int num
 }
 
 /*
+================
+RE_ScissorEnable
+================
+*/
+void RE_ScissorEnable( qboolean enable )
+{
+	scissorEnableCommand_t *cmd;
+
+	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
+
+	if ( !cmd )
+	{
+		return;
+	}
+
+	cmd->commandId = RC_SCISSORENABLE;
+	cmd->enable = enable;
+}
+
+/*
+=============
+RE_ScissorSet
+=============
+*/
+void RE_ScissorSet( int x, int y, int w, int h )
+{
+	scissorSetCommand_t *cmd;
+
+	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
+
+	if ( !cmd )
+	{
+		return;
+	}
+
+	cmd->commandId = RC_SCISSORSET;
+	cmd->x = x;
+	cmd->y = y;
+	cmd->w = w;
+	cmd->h = h;
+}
+
+/*
 =============
 RE_RotatedPic
 =============

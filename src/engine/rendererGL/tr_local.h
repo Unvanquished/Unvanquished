@@ -3745,6 +3745,15 @@ extern "C" {
 	class GLShader_vertexLighting_DBS_entity;
 #endif
 
+	typedef struct
+	{
+		qboolean status;
+		int       x;
+		int       y;
+		int       w;
+		int       h;
+	} scissorState_t;
+
 	/*
 	** trGlobals_t
 	**
@@ -3962,8 +3971,9 @@ extern "C" {
 		float         inverseSawToothTable[ FUNCTABLE_SIZE ];
 		float         fogTable[ FOG_TABLE_SIZE ];
 
-		uint32_t      occlusionQueryObjects[ MAX_OCCLUSION_QUERIES ];
-		int           numUsedOcclusionQueryObjects;
+		uint32_t       occlusionQueryObjects[ MAX_OCCLUSION_QUERIES ];
+		int            numUsedOcclusionQueryObjects;
+		scissorState_t scissor;
 	} trGlobals_t;
 
 	extern const matrix_t quakeToOpenGLMatrix;
@@ -5076,6 +5086,21 @@ extern "C" {
 
 	typedef struct
 	{
+		int       commandId;
+		qboolean  enable;
+	} scissorEnableCommand_t;
+
+	typedef struct
+	{
+		int       commandId;
+		int       x;
+		int       y;
+		int       w;
+		int       h;
+	} scissorSetCommand_t;
+
+	typedef struct
+	{
 		int         commandId;
 		trRefdef_t  refdef;
 		viewParms_t viewParms;
@@ -5131,6 +5156,8 @@ extern "C" {
 	  RC_STRETCH_PIC,
 	  RC_2DPOLYS,
 	  RC_2DPOLYSINDEXED,
+	  RC_SCISSORENABLE,
+	  RC_SCISSORSET,
 	  RC_ROTATED_PIC,
 	  RC_STRETCH_PIC_GRADIENT, // (SA) added
 	  RC_DRAW_VIEW,
@@ -5194,6 +5221,8 @@ extern "C" {
 	    int gradientType );
 	void                                RE_2DPolyies( polyVert_t *verts, int numverts, qhandle_t hShader );
 	void                                RE_2DPolyiesIndexed( polyVert_t *verts, int numverts, int *indexes, int numindexes, int trans_x, int trans_y, qhandle_t hShader );
+	void                                RE_ScissorEnable( qboolean enable );
+	void                                RE_ScissorSet( int x, int y, int w, int h );
 	void                                RE_BeginFrame( stereoFrame_t stereoFrame );
 	void                                RE_EndFrame( int *frontEndMsec, int *backEndMsec );
 

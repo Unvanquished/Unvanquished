@@ -189,6 +189,8 @@ typedef struct
 	void ( *GetTextureSize )( int textureID, int *width, int *height );
 	void ( *Add2dPolysIndexed ) ( polyVert_t *polys, int numverts, int *indexes, int numindexes, int trans_x, int trans_y, qhandle_t shader );
 	qhandle_t ( *GenerateTexture ) ( const byte *pic, int width, int height );
+	void ( *ScissorEnable ) ( qboolean enable );
+	void ( *ScissorSet ) ( int x, int y, int w, int h );
 	// XreaL END
 } refexport_t;
 

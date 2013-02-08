@@ -11581,6 +11581,48 @@ const void     *RB_Draw2dPolys( const void *data )
 	return ( const void * )( cmd + 1 );
 }
 
+const void     *RB_ScissorEnable( const void *data )
+{
+	const scissorEnableCommand_t *cmd;
+
+	cmd = ( const scissorEnableCommand_t * ) data;
+
+	tr.scissor.status = cmd->enable;
+
+	if ( !cmd->enable )
+	{
+		GL_Scissor( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
+	}
+	else
+	{
+		GL_Scissor( tr.scissor.x, tr.scissor.y, tr.scissor.w, tr.scissor.h );
+	}
+
+	return ( const void * )( cmd + 1 );
+}
+
+
+const void     *RB_ScissorSet( const void *data )
+{
+	const scissorSetCommand_t *cmd;
+
+	cmd = ( const scissorSetCommand_t * ) data;
+
+	if ( tr.scissor.x == cmd->x && tr.scissor.y == cmd->y && tr.scissor.w == cmd->w && tr.scissor.h == cmd->h )
+	{
+		return ( const void * )( cmd + 1 );
+	}
+
+	tr.scissor.x = cmd->x;
+	tr.scissor.y = cmd->y;
+	tr.scissor.w = cmd->w;
+	tr.scissor.h = cmd->h;
+
+	GL_Scissor( cmd->x, cmd->y, cmd->w, cmd->h );
+
+	return ( const void * )( cmd + 1 );
+}
+
 const void     *RB_Draw2dPolysIndexed( const void *data )
 {
 	const poly2dIndexedCommand_t *cmd;
@@ -11614,6 +11656,10 @@ const void     *RB_Draw2dPolysIndexed( const void *data )
 		tess.indexes[ tess.numIndexes + i ] = tess.numVertexes + cmd->indexes[ i ];
 	}
 	tess.numIndexes += cmd->numIndexes;
+	if ( tr.scissor.status )
+	{
+		GL_Scissor( tr.scissor.x, tr.scissor.y, tr.scissor.w, tr.scissor.h );
+	}
 
 	for ( i = 0; i < cmd->numverts; i++ )
 	{
@@ -11631,6 +11677,8 @@ const void     *RB_Draw2dPolysIndexed( const void *data )
 		tess.colors[ tess.numVertexes ][ 3 ] = cmd->verts[ i ].modulate[ 3 ] * ( 1.0 / 255.0f );
 		tess.numVertexes++;
 	}
+
+	Tess_End();
 
 	return ( const void * )( cmd + 1 );
 }
@@ -12162,6 +12210,14 @@ void RB_ExecuteRenderCommands( const void *data )
 
 			case RC_FINISH:
 				data = RB_Finish( data );
+				break;
+
+			case RC_SCISSORENABLE:
+				data = RB_ScissorEnable( data );
+				break;
+
+			case RC_SCISSORSET:
+				data = RB_ScissorSet( data );
 				break;
 
 			case RC_END_OF_LIST:

@@ -3926,7 +3926,7 @@ int RE_GetTextureId( const char *name )
 	int     i;
 	image_t *image;
 
-	ri.Printf( PRINT_ALL, S_COLOR_YELLOW "RE_GetTextureId [%s].\n", name );
+	ri.Printf( PRINT_DEVELOPER, S_COLOR_YELLOW "RE_GetTextureId [%s].\n", name );
 
 	for ( i = 0; i < tr.images.currentElements; i++ )
 	{

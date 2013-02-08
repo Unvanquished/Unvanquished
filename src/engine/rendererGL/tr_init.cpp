@@ -2438,6 +2438,8 @@ extern "C" {
 		re.GetTextureSize = RE_GetTextureSize;
 		re.Add2dPolysIndexed = RE_2DPolyiesIndexed;
 		re.GenerateTexture = RE_GenerateTexture;
+		re.ScissorEnable = RE_ScissorEnable;
+		re.ScissorSet = RE_ScissorSet;
 		// XreaL END
 
 		return &re;

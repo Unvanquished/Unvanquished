@@ -198,7 +198,7 @@ public:
 	{
 
 		textureHandle = re.GenerateTexture( (const byte* )source, sourceDimensions.x, sourceDimensions.y );
-		Com_Printf( "RE_GenerateTexture [ %lu ( %d x %d )]\n", textureHandle, sourceDimensions.x, sourceDimensions.y );
+		Com_DPrintf( "RE_GenerateTexture [ %lu ( %d x %d )]\n", textureHandle, sourceDimensions.x, sourceDimensions.y );
 		if ( textureHandle > 0 )
 		{
 			return true;
@@ -220,12 +220,15 @@ public:
 		   else
 		    glDisable( GL_SCISSOR_TEST );
 		*/
+		re.ScissorEnable( enable ? qtrue :  qfalse );
+
 	}
 
 	void SetScissorRegion( int x, int y, int width, int height )
 	{
 		//TODO
 		//glScissor( x, glConfig.vidHeight - ( y + height ), width, height );
+		re.ScissorSet( x, cls.glconfig.vidHeight - ( y + height ), width, height );
 	}
 };
 

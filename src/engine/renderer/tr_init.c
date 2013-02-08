@@ -1600,6 +1600,8 @@ extern "C" {
 		re.Add2dPolys = RE_2DPolyies;
 		re.Add2dPolysIndexed = RE_2DPolyiesIndexed;
 		re.GenerateTexture = RE_GenerateTexture;
+		re.ScissorEnable = RE_ScissorEnable;
+		re.ScissorSet = RE_ScissorSet;
 		re.DrawStretchRaw = RE_StretchRaw;
 		re.UploadCinematic = RE_UploadCinematic;
 		re.BeginFrame = RE_BeginFrame;
