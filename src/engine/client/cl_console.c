@@ -940,7 +940,7 @@ void Con_DrawConsoleContent( void )
 	}
 
 	// if we scrolled back, give feedback
-	if ( consoleState.scrollLineIndex != consoleState.currentLine )
+	if ( consoleState.bottomDisplayedLine != consoleState.currentLine )
 	{
 		// draw arrows to show the buffer is backscrolled
 		Con_DrawConsoleScrollbackIndicator( lineDrawPosition );
