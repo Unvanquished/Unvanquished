@@ -1494,6 +1494,8 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 					unzOpenCurrentFile( fsh[ *file ].handleFiles.file.z );
 					fsh[ *file ].zipFilePos = pakFile->pos;
 
+					fsh[ *file ].fileSize = pakFile->len;
+
 					if ( fs_debug->integer )
 					{
 						Com_Printf( "FS_FOpenFileRead: %s (found in '%s')\n",

@@ -396,7 +396,7 @@ extern "C" void Rocket_Init( void )
 	InitSDLtoRocketKeymap();
 
 	// won't work until required render interface stuff is done
-	Rocket::Core::FontDatabase::LoadFontFace( "assets/Delicious-Roman.otf" );
+	Rocket::Core::FontDatabase::LoadFontFace( "fonts/unifont.ttf" );
 
 	context = Rocket::Core::CreateContext( "default", Rocket::Core::Vector2i( cls.glconfig.vidWidth, cls.glconfig.vidHeight ) );
 
