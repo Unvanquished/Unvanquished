@@ -1002,9 +1002,9 @@ Draws the console with the solid background
 */
 void Con_DrawAnimatedConsole( void )
 {
-	Con_DrawBackground( );
-
 	vec4_t contentClipping;
+
+	Con_DrawBackground( );
 
 	//clip about text and content to the console
 	contentClipping [ 0 ] = consoleState.margin.sides + consoleState.border.sides; //x
@@ -1036,6 +1036,7 @@ updates the consoleState
 void Con_UpdateConsoleState( void )
 {
 	float  horizontalMargin, verticalMargin;
+	int    totalVerticalPadding;
 
 	const int charHeight = SCR_ConsoleFontCharHeight();
 	const int charPadding = SCR_ConsoleFontCharVPadding();
@@ -1099,7 +1100,7 @@ void Con_UpdateConsoleState( void )
 						- consoleState.border.top - consoleState.border.bottom
 						);
 
-	const int totalVerticalPadding = consoleState.padding.top + consoleState.padding.bottom;
+	totalVerticalPadding = consoleState.padding.top + consoleState.padding.bottom;
 
 	// clip to a multiple of the character height, plus padding
 	consoleState.height -= ( consoleState.height - totalVerticalPadding - charPadding ) % charHeight;
@@ -1136,6 +1137,8 @@ runs each render-frame to update the console state accordingly
 */
 void Con_RunAnimatedConsole( void )
 {
+	int consoleVidWidth;
+
 	if (con_height->value > 100.0f || con_height->value < 1.0f )
 	{
 		Cvar_Reset(con_height->name);
@@ -1155,7 +1158,8 @@ void Con_RunAnimatedConsole( void )
 		Con_UpdateConsoleState( ); //recalculate
 	}
 
-	const int consoleVidWidth = cls.glconfig.vidWidth - 2 * (consoleState.margin.sides + consoleState.padding.sides );
+	consoleVidWidth = cls.glconfig.vidWidth - 2 * (consoleState.margin.sides + consoleState.padding.sides );
+
 	if( 2 * con_horizontalPadding->value >= consoleVidWidth )
 	{
 		Cvar_Reset(con_horizontalPadding->name);
