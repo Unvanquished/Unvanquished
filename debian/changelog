@@ -1,3 +1,10 @@
+unvanquished (0.12.0-2) unstable; urgency=low
+
+  * Bug fixes (git 872020d..4ff3974) and console updates.
+    Some bugs may still occur: downloaded VM code may not have relevant fixes.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Fri, 08 Feb 2013 15:09:46 +0000
+
 unvanquished (0.12.0-1) unstable; urgency=low
 
   * Release of alpha 12.
