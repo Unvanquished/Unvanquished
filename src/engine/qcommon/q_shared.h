@@ -121,7 +121,12 @@ extern "C" {
 #pragma warning(disable : 4133) // 'function' : incompatible types - from 'unsigned long *' to 'const time_t *'
 #pragma warning(disable : 4127) // conditional expression is constant
 #pragma warning(disable : 4389) // '==' : signed/unsigned mismatch
+
+#elif defined __clang__
+#pragma clang diagnostic fatal "-Wdeclaration-after-statement"
 #endif
+
+
 
 #if defined( ppc ) || defined( __ppc ) || defined( __ppc__ ) || defined( __POWERPC__ )
 #define idppc 1

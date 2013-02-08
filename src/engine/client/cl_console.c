@@ -952,8 +952,12 @@ void Con_DrawConsoleContent( void )
 		Con_DrawRightFloatingTextLine( 4, NULL, va( "Display (lines): From %d to %d (%d a %i px)", consoleState.currentLine-consoleState.maxScrollbackLengthInLines, consoleState.scrollLineIndex, consoleState.visibleAmountOfLines, charHeight ) );
 	}
 
-	// if we scrolled back, give feedback
-	if ( floor( consoleState.bottomDisplayedLine + 0.5f ) != consoleState.currentLine )
+	/*
+	 * if we scrolled back, give feedback,
+	 * unless it's the last line (which will be rendered partly transparent anyway)
+	 * so that we dont indicate scrollback each time a single line gets added
+	 */
+	if ( floor( consoleState.bottomDisplayedLine ) < consoleState.currentLine - 1 )
 	{
 		// draw arrows to show the buffer is backscrolled
 		Con_DrawConsoleScrollbackIndicator( lineDrawPosition );
