@@ -259,33 +259,42 @@ extern "C" qboolean BotNavTrace( int botClientNum, botTrace_t *trace, const vec3
 
 extern "C" void BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *obstacleHandle )
 {
-	vec3_t pos;
-	float radius;
-	float height;
-	VectorCopy( mins, pos );
-	VectorAdd( mins, maxs, pos );
-	VectorScale( pos, 0.5, pos );
-	pos[ 2 ] = mins[ 2 ];
-	pos[ 2 ] -= 5;
-	quake2recast( pos );
+	vec3_t p1, p2;
+	vec3_t bmin, bmax;
+	VectorCopy( mins, p1 );
+	VectorCopy( maxs, p2 );
 
-	height = maxs[ 2 ] - mins[ 2 ];
-	float rad1 = ( maxs[ 0 ] - mins[ 0 ] ) / 2;
-	float rad2 = ( maxs[ 1 ] - mins[ 1 ] ) / 2;
-	radius = sqrtf( rad1 * rad1 + rad2 * rad2 );
+	quake2recast( p1 );
+	quake2recast( p2 );
+
+	// bounds do not convert right when using quake2recast, so recalculate them
+	ClearBounds( bmin, bmax );
+	AddPointToBounds( p1, bmin, bmax );
+	AddPointToBounds( p2, bmin, bmax );
 
 	// offset height down a bit so obstacles placed on slopes are handled correctly
-	pos[ 1 ] -= ( radius );
+	bmin[ 1 ] -= ( bmax[ 2 ] - bmin[ 2 ] );
 
 	for ( int i = 0; i < numNavData; i++ )
 	{
 		dtObstacleRef ref;
 		NavData_t *nav = &BotNavData[ i ];
 
-		// add mesh radius to obstacle radius so we are guarenteed not to hit the obstacle
-		float realRad = radius + nav->cache->getParams()->walkableRadius * M_SQRT2;
+		vec3_t realBmin, realBmax;
 
-		nav->cache->addObstacle( pos, radius, height, &ref );
+		VectorCopy( bmin, realBmin );
+		VectorCopy( bmax, realBmax );
+
+		float offset = nav->cache->getParams()->walkableRadius;
+
+		// offset bbox by agent radius like the navigation mesh was originally made
+		realBmin[ 0 ] -= offset;
+		realBmin[ 2 ] -= offset;
+
+		realBmax[ 0 ] += offset;
+		realBmax[ 2 ] += offset;
+		
+		nav->cache->addObstacle( realBmin, realBmax, &ref );
 		*obstacleHandle = ref;
 	}
 }

@@ -16,6 +16,8 @@
 // 3. This notice may not be removed or altered from any source distribution.
 //
 
+// This file was altered to support Box shaped obstacles
+
 #ifndef DETOURTILECACHEBUILDER_H
 #define DETOURTILECACHEBUILDER_H
 
@@ -124,6 +126,9 @@ void dtFreeTileCachePolyMesh(dtTileCacheAlloc* alloc, dtTileCachePolyMesh* lmesh
 
 dtStatus dtMarkCylinderArea(dtTileCacheLayer& layer, const float* orig, const float cs, const float ch,
 							const float* pos, const float radius, const float height, const unsigned char areaId);
+
+dtStatus dtMarkBoxArea(dtTileCacheLayer& layer, const float* orig, const float cs, const float ch,
+					   const float* bmin, const float* bmax, const unsigned char areaId);
 
 dtStatus dtBuildTileCacheRegions(dtTileCacheAlloc* alloc,
 								 dtTileCacheLayer& layer,
