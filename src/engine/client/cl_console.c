@@ -822,18 +822,22 @@ void Con_DrawConsoleScrollbackIndicator( int lineDrawPosition )
 void Con_DrawConsoleScrollbar( void )
 {
 	vec4_t color;
-	const float virtualHeight = consoleState.height * SCREEN_HEIGHT / cls.glconfig.vidHeight;
-	const float scrollBarX = SCREEN_WIDTH - con_margin->integer - con_horizontalPadding->integer - 2 * consoleState.border.sides;
-	const float scrollBarY = con_margin->value + consoleState.border.top + virtualHeight * 0.10f;
-	const float scrollBarLength = virtualHeight * 0.80f;
-	const int   scrollBarLinesRepresented = consoleState.usedScrollbackLengthInLines + consoleState.visibleAmountOfLines - 1;
+	const int	freeConsoleHeight = consoleState.height - consoleState.padding.top - consoleState.padding.bottom;
+	const float scrollBarX = cls.glconfig.vidWidth - consoleState.margin.sides - consoleState.padding.sides - 2 * consoleState.border.sides;
+	const float scrollBarY = consoleState.margin.top + consoleState.border.top + consoleState.padding.top + freeConsoleHeight * 0.10f;
+	const float scrollBarLength = freeConsoleHeight * 0.80f;
+	const float scrollBarWidth = consoleState.border.sides * 2;
+
 	const float scrollHandleLength = consoleState.usedScrollbackLengthInLines
-	                                 ? scrollBarLength * MIN( 1.0f, (float) consoleState.visibleAmountOfLines / scrollBarLinesRepresented )
+	                                 ? scrollBarLength * MIN( 1.0f, (float) consoleState.visibleAmountOfLines / consoleState.usedScrollbackLengthInLines )
 	                                 : 0;
-	const float scrollHandlePostition = ( consoleState.usedScrollbackLengthInLines > 1 )
-	                                    ? ( scrollBarLength - scrollHandleLength ) / ( consoleState.usedScrollbackLengthInLines - 1 )
-	                                      * ( consoleState.bottomDisplayedLine - ( consoleState.currentLine - consoleState.usedScrollbackLengthInLines ) - 1 )
-	                                    : 0;
+
+	const float scrollBarLengthPerLine = ( scrollBarLength - scrollHandleLength ) / ( consoleState.usedScrollbackLengthInLines - consoleState.visibleAmountOfLines );
+
+	const float relativeScrollLineIndex = consoleState.currentLine - consoleState.usedScrollbackLengthInLines
+				+ MIN(consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines);
+
+	const float scrollHandlePostition = scrollBarLengthPerLine 	* ( consoleState.bottomDisplayedLine - relativeScrollLineIndex );
 
 	//draw the scrollBar
 	color[ 0 ] = 0.2f;
@@ -841,7 +845,7 @@ void Con_DrawConsoleScrollbar( void )
 	color[ 2 ] = 0.2f;
 	color[ 3 ] = 0.75f * consoleState.currentAlphaFactor;
 
-	SCR_FillAdjustedRect( scrollBarX, scrollBarY, con_borderWidth->value, scrollBarLength, color );
+	SCR_FillRect( scrollBarX, scrollBarY, scrollBarWidth, scrollBarLength, color );
 
 	//draw the handle
 	if ( scrollHandlePostition >= 0 && scrollHandleLength > 0 )
@@ -851,7 +855,7 @@ void Con_DrawConsoleScrollbar( void )
 		color[ 2 ] = 0.5f;
 		color[ 3 ] = consoleState.currentAlphaFactor;
 
-		SCR_FillAdjustedRect( scrollBarX, scrollBarY + scrollHandlePostition, con_borderWidth->value, scrollHandleLength, color );
+		SCR_FillRect( scrollBarX, scrollBarY + scrollHandlePostition, scrollBarWidth, scrollHandleLength, color );
 	}
 	else if ( consoleState.usedScrollbackLengthInLines ) //this happens when line appending gets us over the top position in a roll-lock situation (scrolling itself won't do that)
 	{
@@ -860,7 +864,7 @@ void Con_DrawConsoleScrollbar( void )
 		color[ 2 ] = 0.5f;
 		color[ 3 ] = consoleState.currentAlphaFactor;
 
-		SCR_FillAdjustedRect( scrollBarX, scrollBarY, con_borderWidth->value, scrollHandleLength, color );
+		SCR_FillRect( scrollBarX, scrollBarY, scrollBarWidth, scrollHandleLength, color );
 	}
 
 	if(con_debug->integer) {
@@ -873,7 +877,7 @@ void Con_DrawConsoleScrollbar( void )
 Con_MarginFadeAlpha
 ================
 */
-static float Con_MarginFadeAlpha( float alpha, int lineDrawPosition, int topMargin, int charHeight )
+static float Con_MarginFadeAlpha( float alpha, float lineDrawPosition, int topMargin, int charHeight )
 {
 	if ( lineDrawPosition < topMargin || lineDrawPosition >= topMargin + charHeight )
 	{
@@ -892,7 +896,8 @@ Con_DrawConsoleContent
 void Con_DrawConsoleContent( void )
 {
 	float  currentWidthLocation = 0;
-	int    x, lineDrawPosition;
+	int    x;
+	float  lineDrawPosition;
 	int    row;
 	int    currentColor;
 	vec4_t color;
@@ -928,7 +933,7 @@ void Con_DrawConsoleContent( void )
 
 	if(con_debug->integer) {
 		Con_DrawRightFloatingTextLine( 3, NULL, va( "Buffer (lines): ScrollbackLength %d/%d  CurrentIndex %d", consoleState.usedScrollbackLengthInLines, consoleState.maxScrollbackLengthInLines, consoleState.currentLine) );
-		Con_DrawRightFloatingTextLine( 4, NULL, va( "Display (lines): From %d to %d (%d a %i px)", consoleState.currentLine-consoleState.maxScrollbackLengthInLines, consoleState.bottomDisplayedLine, consoleState.visibleAmountOfLines, charHeight ) );
+		Con_DrawRightFloatingTextLine( 4, NULL, va( "Display (lines): From %d to %d (%d a %i px)", consoleState.currentLine-consoleState.maxScrollbackLengthInLines, consoleState.scrollLineIndex, consoleState.visibleAmountOfLines, charHeight ) );
 	}
 
 	// if we scrolled back, give feedback
