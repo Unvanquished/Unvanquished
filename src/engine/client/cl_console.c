@@ -1245,7 +1245,7 @@ void Con_RunConsole( void )
 
 	if(consoleState.currentAnimationFraction > 0)
 	{
-		const int scrollDifference = MAX( 1, abs( consoleState.bottomDisplayedLine - consoleState.scrollLineIndex ) );
+		const float scrollDifference = MAX( 0.5f, fabs( consoleState.bottomDisplayedLine - consoleState.scrollLineIndex ) );
 		if( consoleState.bottomDisplayedLine < consoleState.scrollLineIndex )
 		{
 			consoleState.bottomDisplayedLine += con_animationSpeed->value * cls.realFrametime * 0.005 * scrollDifference;
