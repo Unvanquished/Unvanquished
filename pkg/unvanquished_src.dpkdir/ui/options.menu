@@ -379,9 +379,9 @@
 	BINDX	( upgrades, "Previous Upgrade:", "weapprev", 2 )
 	BINDX	( upgrades, "Next Upgrade:", "weapnext", 3 )
 	BINDX	( upgrades, "Activate Upgrade:", "+useitem", 4 )
-	BINDX	( upgrades, "Reload:", "reload", 5 )
-	BINDX	( upgrades, "Buy Ammo:", "buy ammo", 6 )
-	BINDX	( upgrades, "Use Medkit:", "itemact medkit", 7 )
+	BINDX	( upgrades, "Reload:", "-reload", 5 )
+	BINDX	( upgrades, "Buy Ammo:", "-ammo", 6 )
+	BINDX	( upgrades, "Use Medkit:", "-medkit", 7 )
 	BINDX	( upgrades, "Use Structure/Evolve:", "+activate", 8 )
 
 //////// COMMUNICATION
@@ -425,7 +425,7 @@
 	BINDX	( communication, "Vote No:", "vote no", 8 )
 	BINDX	( communication, "Team Vote Yes:", "teamvote yes", 9 )
 	BINDX	( communication, "Team Vote No:", "teamvote no", 10 )
-	BINDX	( communication, "Voice Say Menu:", "menu vsay_top", 11 )
+	BINDX	( communication, "Voice Say Menu:", "-vsay", 11 )
 	BINDX	( communication, "VoIP Menu:", "menu voip", 12 )
 
 
