@@ -301,7 +301,7 @@ void G_ChangeTeam( gentity_t *ent, team_t newTeam )
 	G_LeaveTeam( ent );
 	ent->client->pers.teamChangeTime = level.time;
 	ent->client->pers.teamSelection = newTeam;
-	ent->client->pers.teamInfo = level.time;
+	ent->client->pers.teamInfo = level.startTime - 1;
 	ent->client->pers.classSelection = PCL_NONE;
 	ClientSpawn( ent, NULL, NULL, NULL );
 
