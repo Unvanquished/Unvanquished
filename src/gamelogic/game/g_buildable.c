@@ -4106,6 +4106,15 @@ gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 			built->die = AGeneric_Die;
 			built->think = AOvermind_Think;
 			built->pain = AGeneric_Pain;
+			{
+				vec3_t mins;
+				vec3_t maxs;
+				VectorCopy( built->r.mins, mins );
+				VectorCopy( built->r.maxs, maxs );
+				VectorAdd( mins, origin, mins );
+				VectorAdd( maxs, origin, maxs );
+				trap_BotAddObstacle( mins, maxs, &built->obstacleHandle );
+			}
 			break;
 
 		case BA_H_SPAWN:
@@ -4121,17 +4130,44 @@ gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 		case BA_H_TESLAGEN:
 			built->die = HSpawn_Die;
 			built->think = HTeslaGen_Think;
+						{
+				vec3_t mins;
+				vec3_t maxs;
+				VectorCopy( built->r.mins, mins );
+				VectorCopy( built->r.maxs, maxs );
+				VectorAdd( mins, origin, mins );
+				VectorAdd( maxs, origin, maxs );
+				trap_BotAddObstacle( mins, maxs, &built->obstacleHandle );
+			}
 			break;
 
 		case BA_H_ARMOURY:
 			built->think = HArmoury_Think;
 			built->die = HSpawn_Die;
 			built->use = HArmoury_Activate;
+						{
+				vec3_t mins;
+				vec3_t maxs;
+				VectorCopy( built->r.mins, mins );
+				VectorCopy( built->r.maxs, maxs );
+				VectorAdd( mins, origin, mins );
+				VectorAdd( maxs, origin, maxs );
+				trap_BotAddObstacle( mins, maxs, &built->obstacleHandle );
+			}
 			break;
 
 		case BA_H_DCC:
 			built->think = HDCC_Think;
 			built->die = HSpawn_Die;
+						{
+				vec3_t mins;
+				vec3_t maxs;
+				VectorCopy( built->r.mins, mins );
+				VectorCopy( built->r.maxs, maxs );
+				VectorAdd( mins, origin, mins );
+				VectorAdd( maxs, origin, maxs );
+				trap_BotAddObstacle( mins, maxs, &built->obstacleHandle );
+			}
 			break;
 
 		case BA_H_MEDISTAT:
@@ -4149,6 +4185,15 @@ gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 			built->die = HSpawn_Die;
 			built->use = HRepeater_Use;
 			built->powered = built->active = qtrue;
+			{
+				vec3_t mins;
+				vec3_t maxs;
+				VectorCopy( built->r.mins, mins );
+				VectorCopy( built->r.maxs, maxs );
+				VectorAdd( mins, origin, mins );
+				VectorAdd( maxs, origin, maxs );
+				trap_BotAddObstacle( mins, maxs, &built->obstacleHandle );
+			}
 			break;
 
 		case BA_H_REPEATER:

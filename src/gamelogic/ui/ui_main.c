@@ -1703,7 +1703,7 @@ qboolean UI_LoadMenus( const char *menuFile, qboolean reset )
 	return qtrue;
 }
 
-void UI_LoadHelp( const char *helpFile )
+qboolean UI_LoadHelp( const char *helpFile )
 {
 	pc_token_t token;
 	int        handle, start;
@@ -1717,7 +1717,7 @@ void UI_LoadHelp( const char *helpFile )
 	{
 		Com_Printf( S_COLOR_YELLOW  "WARNING: help file '%s' not found!\n",
 		            helpFile );
-		return;
+		return qfalse;
 	}
 
 	if ( !trap_Parse_ReadToken( handle, &token ) ||
@@ -1725,7 +1725,7 @@ void UI_LoadHelp( const char *helpFile )
 	{
 		Com_Printf( S_COLOR_YELLOW  "WARNING: help file '%s' does not start with "
 		            "'{'\n", helpFile );
-		return;
+		return qfalse;
 	}
 
 	uiInfo.helpCount = 0;
@@ -1767,6 +1767,7 @@ void UI_LoadHelp( const char *helpFile )
 
 	// Com_Printf(_( "UI help file '%s' loaded in %d msec (%d infopanes)\n"),
 	//             helpFile, trap_Milliseconds() - start, uiInfo.helpCount );
+	return qtrue;
 }
 
 /*
@@ -5213,7 +5214,17 @@ void UI_Init( void )
 			trap_Error( va( S_COLOR_RED "menu list '%s' not found, unable to continue!", ui_teamFiles.string ) );
 		}
 	}
-	UI_LoadHelp( ui_helpFiles.string );
+	if ( !UI_LoadHelp( ui_helpFiles.string ) )
+	{
+		Com_Printf( "^3WARNING: %s not found. Attempting to load default value...\n", ui_teamFiles.string );
+		trap_Cvar_Reset( "ui_helpFiles" );
+		trap_Cvar_Update( &ui_helpFiles );
+
+		if ( !UI_LoadHelp( ui_helpFiles.string ) )
+		{
+			trap_Error( va( S_COLOR_RED "help text '%s' not found, unable to continue!", ui_teamFiles.string ) );
+		}
+	}
 
 	Menus_CloseAll();
 

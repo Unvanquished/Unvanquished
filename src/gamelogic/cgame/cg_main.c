@@ -754,6 +754,10 @@ void CG_UpdateBuildableRangeMarkerMask( void )
 				           ( 1 << BA_H_REACTOR ) | ( 1 << BA_H_REPEATER ) | ( 1 << BA_H_DCC ) |
 				           ( 1 << BA_H_MGTURRET ) | ( 1 << BA_H_TESLAGEN ) | ( 1 << BA_H_DRILL );
 			}
+			else if ( !Q_stricmp( p, "none" ) )
+			{
+				brmMask = 0;
+			}
 			else
 			{
 				char *pp;

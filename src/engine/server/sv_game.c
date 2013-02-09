@@ -766,6 +766,15 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 		case BOT_DISABLE_AREA:
 			BotDisableArea( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
 			return 0;
+		case BOT_ADD_OBSTACLE:
+			BotAddObstacle( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
+			return 0;
+		case BOT_REMOVE_OBSTACLE:
+			BotRemoveObstacle( args[ 1 ] );
+			return 0;
+		case BOT_UPDATE_OBSTACLES:
+			BotUpdateObstacles();
+			return 0;
 		default:
 			Com_Error( ERR_DROP, "Bad game system trap: %ld", ( long int ) args[ 0 ] );
 	}

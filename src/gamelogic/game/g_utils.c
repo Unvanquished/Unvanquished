@@ -494,6 +494,11 @@ void G_FreeEntity( gentity_t *ent )
 	{
 		return;
 	}
+	
+	if ( ent->obstacleHandle )
+	{
+		trap_BotRemoveObstacle( ent->obstacleHandle );
+	}
 
 	memset( ent, 0, sizeof( *ent ) );
 	ent->classname = "freent";

@@ -324,6 +324,7 @@ struct gentity_s
 
 	qboolean    pointAgainstWorld; // don't use the bbox for map collisions
 
+	qhandle_t   obstacleHandle;
 	botMemory_t *botMind;
 };
 
@@ -1433,3 +1434,6 @@ qboolean         trap_BotNavTrace( int botClientNum, void *botTrace /*botTrace_t
 void             trap_BotFindRandomPoint( int botClientNum, vec3_t point );
 void             trap_BotEnableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
 void             trap_BotDisableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
+void             trap_BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *handle );
+void             trap_BotRemoveObstacle( qhandle_t handle );
+void             trap_BotUpdateObstacles( void );

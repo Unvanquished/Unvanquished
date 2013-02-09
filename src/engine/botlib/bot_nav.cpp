@@ -31,6 +31,10 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
+extern "C"
+{
+	#include "../server/server.h"
+}
 
 #include "bot_local.h"
 
@@ -199,32 +203,21 @@ extern "C" void BotUpdateCorridor( int botClientNum, vec3_t *corners, int *numCo
 	}
 }
 
+float frand()
+{
+	return ( float ) rand() / RAND_MAX;
+}
 
 extern "C" void BotFindRandomPoint( int botClientNum, vec3_t point )
 {
 	int numTiles = 0;
+	vec3_t randPoint;
+	dtPolyRef randRef;
 	Bot_t *bot = &agents[ botClientNum ];
-	const dtNavMesh *navMesh = bot->nav->mesh;
-	numTiles = navMesh->getMaxTiles();
-	const dtMeshTile *tile;
-	vec3_t targetPos;
-
-	//pick a random tile
-	do
-	{
-		tile = navMesh->getTile( rand() % numTiles );
-	}
-	while ( !tile->header->vertCount );
-
-	//pick a random vertex in the tile
-	int vertStart = 3 * ( rand() % tile->header->vertCount );
-
-	//convert from recast to quake3
-	float *v = &tile->verts[ vertStart ];
-	VectorCopy( v, targetPos );
-	recast2quake( targetPos );
-
-	VectorCopy( targetPos, point );
+	bot->nav->query->findRandomPoint( &bot->nav->filter, frand, &randRef, randPoint );
+	
+	VectorCopy( randPoint, point );
+	recast2quake( point );
 }
 
 extern "C" qboolean BotNavTrace( int botClientNum, botTrace_t *trace, const vec3_t start, const vec3_t end )
@@ -261,5 +254,69 @@ extern "C" qboolean BotNavTrace( int botClientNum, botTrace_t *trace, const vec3
 	else
 	{
 		return qtrue;
+	}
+}
+
+extern "C" void BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *obstacleHandle )
+{
+	vec3_t p1, p2;
+	vec3_t bmin, bmax;
+	VectorCopy( mins, p1 );
+	VectorCopy( maxs, p2 );
+
+	quake2recast( p1 );
+	quake2recast( p2 );
+
+	// bounds do not convert right when using quake2recast, so recalculate them
+	ClearBounds( bmin, bmax );
+	AddPointToBounds( p1, bmin, bmax );
+	AddPointToBounds( p2, bmin, bmax );
+
+	// offset height down a bit so obstacles placed on slopes are handled correctly
+	bmin[ 1 ] -= ( bmax[ 2 ] - bmin[ 2 ] );
+
+	for ( int i = 0; i < numNavData; i++ )
+	{
+		dtObstacleRef ref;
+		NavData_t *nav = &BotNavData[ i ];
+
+		vec3_t realBmin, realBmax;
+
+		VectorCopy( bmin, realBmin );
+		VectorCopy( bmax, realBmax );
+
+		float offset = nav->cache->getParams()->walkableRadius;
+
+		// offset bbox by agent radius like the navigation mesh was originally made
+		realBmin[ 0 ] -= offset;
+		realBmin[ 2 ] -= offset;
+
+		realBmax[ 0 ] += offset;
+		realBmax[ 2 ] += offset;
+		
+		nav->cache->addObstacle( realBmin, realBmax, &ref );
+		*obstacleHandle = ref;
+	}
+}
+
+extern "C" void BotRemoveObstacle( qhandle_t obstacleHandle )
+{
+	for ( int i = 0; i < numNavData; i++ )
+	{
+		NavData_t *nav = &BotNavData[ i ];
+		if ( nav->cache->getObstacleCount() <= 0 )
+		{
+			continue;
+		}
+		nav->cache->removeObstacle( obstacleHandle );
+	}
+}
+
+extern "C" void BotUpdateObstacles()
+{
+	for ( int i = 0; i < numNavData; i++ )
+	{
+		NavData_t *nav = &BotNavData[ i ];
+		nav->cache->update( 0, nav->mesh );
 	}
 }

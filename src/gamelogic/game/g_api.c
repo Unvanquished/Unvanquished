@@ -618,4 +618,18 @@ void trap_BotDisableArea( const vec3_t origin, const vec3_t mins, const vec3_t m
 	syscall( BOT_DISABLE_AREA, origin, mins, maxs );
 }
 
+void trap_BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *handle )
+{
+	syscall( BOT_ADD_OBSTACLE, mins, maxs, handle );
+}
+
+void trap_BotRemoveObstacle( qhandle_t handle )
+{
+	syscall( BOT_REMOVE_OBSTACLE, handle );
+}
+
+void trap_BotUpdateObstacles( void )
+{
+	syscall( BOT_UPDATE_OBSTACLES );
+}
 

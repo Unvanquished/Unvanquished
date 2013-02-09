@@ -176,7 +176,10 @@ typedef enum gameImport_s
   BOT_NAV_RAYCAST,
   BOT_NAV_RANDOMPOINT,
   BOT_ENABLE_AREA,
-  BOT_DISABLE_AREA
+  BOT_DISABLE_AREA,
+  BOT_ADD_OBSTACLE,
+  BOT_REMOVE_OBSTACLE,
+  BOT_UPDATE_OBSTACLES
 } gameImport_t;
 
 // engine-to-game-module calls

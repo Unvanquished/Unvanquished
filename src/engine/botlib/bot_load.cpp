@@ -33,17 +33,23 @@ Maryland 20850 USA.
 */
 
 #include "bot_local.h"
+#include "nav.h"
 
 int numNavData = 0;
 NavData_t BotNavData[ MAX_NAV_DATA ];
 
-qboolean BotLoadNavMesh( const char *filename, dtNavMesh **navMesh )
+LinearAllocator alloc( 1024 * 1024 * 16 );
+MeshProcess process;
+FastLZCompressor comp;
+
+qboolean BotLoadNavMesh( const char *filename, dtNavMesh **navMesh, dtTileCache **tileCache )
 {
 	char mapname[ MAX_QPATH ];
 	char filePath[ MAX_QPATH ];
 	char gameName[ MAX_STRING_CHARS ];
 	fileHandle_t f = 0;
 	dtNavMesh *&mesh = *navMesh;
+	dtTileCache *&cache = *tileCache;
 
 	Cvar_VariableStringBuffer( "mapname", mapname, sizeof( mapname ) );
 	Cvar_VariableStringBuffer( "fs_game", gameName, sizeof( gameName ) );
@@ -107,6 +113,30 @@ qboolean BotLoadNavMesh( const char *filename, dtNavMesh **navMesh )
 		return qfalse;
 	}
 
+	cache = dtAllocTileCache();
+
+	if ( !cache )
+	{
+		Com_Printf( S_COLOR_RED "ERROR: Could not allocate tile cache\n" );
+		dtFreeNavMesh( mesh );
+		mesh = NULL;
+		FS_FCloseFile( f );
+		return qfalse;
+	}
+
+	status = cache->init( &header.cacheParams, &alloc, &comp, &process );
+
+	if ( dtStatusFailed( status ) )
+	{
+		Com_Printf( S_COLOR_RED "ERROR: Could not init tile cache\n" );
+		dtFreeNavMesh( mesh );
+		dtFreeTileCache( cache );
+		mesh = NULL;
+		cache = NULL;
+		FS_FCloseFile( f );
+		return qfalse;
+	}
+
 	for ( int i = 0; i < header.numTiles; i++ )
 	{
 		NavMeshTileHeader tileHeader;
@@ -123,6 +153,8 @@ qboolean BotLoadNavMesh( const char *filename, dtNavMesh **navMesh )
 		{
 			Com_Printf( S_COLOR_RED "ERROR: NUll Tile in navmesh\n" );
 			dtFreeNavMesh( mesh );
+			dtFreeTileCache( cache );
+			cache = NULL;
 			mesh = NULL;
 			FS_FCloseFile( f );
 			return qfalse;
@@ -134,6 +166,8 @@ qboolean BotLoadNavMesh( const char *filename, dtNavMesh **navMesh )
 		{
 			Com_Printf( S_COLOR_RED "ERROR: Failed to allocate memory for tile data\n" );
 			dtFreeNavMesh( mesh );
+			dtFreeTileCache( cache );
+			cache = NULL;
 			mesh = NULL;
 			FS_FCloseFile( f );
 			return qfalse;
@@ -145,20 +179,27 @@ qboolean BotLoadNavMesh( const char *filename, dtNavMesh **navMesh )
 
 		if ( swapEndian )
 		{
-			dtNavMeshHeaderSwapEndian( data, tileHeader.dataSize );
-			dtNavMeshDataSwapEndian( data, tileHeader.dataSize );
+			dtTileCacheHeaderSwapEndian( data, tileHeader.dataSize );
 		}
 
-		dtStatus status = mesh->addTile( data, tileHeader.dataSize, DT_TILE_FREE_DATA, tileHeader.tileRef, 0 );
+		dtCompressedTileRef tile = 0;
+		dtStatus status = cache->addTile( data, tileHeader.dataSize, DT_TILE_FREE_DATA, &tile );
 
 		if ( dtStatusFailed( status ) )
 		{
 			Com_Printf( S_COLOR_RED "ERROR: Failed to add tile to navmesh\n" );
 			dtFree( data );
+			dtFreeTileCache( cache );
 			dtFreeNavMesh( mesh );
+			cache = NULL;
 			mesh = NULL;
 			FS_FCloseFile( f );
 			return qfalse;
+		}
+
+		if ( tile )
+		{
+			cache->buildNavMeshTile( tile, mesh );
 		}
 	}
 
@@ -182,12 +223,17 @@ extern "C" void BotShutdownNav( void )
 	{
 		NavData_t *nav = &BotNavData[ i ];
 
+		if ( nav->cache )
+		{
+			dtFreeTileCache( nav->cache );
+			nav->cache = 0;
+		}
+
 		if ( nav->mesh )
 		{
 			dtFreeNavMesh( nav->mesh );
+			nav->mesh = 0;
 		}
-
-		nav->mesh = 0;
 
 		if ( nav->query )
 		{
@@ -237,7 +283,7 @@ extern "C" qboolean BotSetupNav( const botClass_t *botClass, qhandle_t *navHandl
 	NavData_t *nav = &BotNavData[ numNavData ];
 	const char *filename = botClass->name;
 
-	if ( !BotLoadNavMesh( filename, &nav->mesh ) )
+	if ( !BotLoadNavMesh( filename, &nav->mesh, &nav->cache ) )
 	{
 		BotShutdownNav();
 		return qfalse;

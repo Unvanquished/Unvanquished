@@ -41,6 +41,7 @@ Maryland 20850 USA.
 
 #include "../sys/sys_loadlib.h"
 #include "../sys/sys_local.h"
+#include "../botlib/bot_debug.h"
 
 cvar_t *cl_wavefilerecord;
 
@@ -4335,6 +4336,7 @@ qboolean CL_InitRef( const char *renderer )
 
 	ri.Sys_GLimpSafeInit = Sys_GLimpSafeInit;
 	ri.Sys_GLimpInit = Sys_GLimpInit;
+	ri.Bot_DrawDebugMesh = BotDebugDrawMesh;
 
 	Com_Printf("%s", _( "Calling GetRefAPI…\n" ));
 	ret = GetRefAPI( REF_API_VERSION, &ri );

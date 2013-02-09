@@ -10439,6 +10439,126 @@ static void RB_RenderDebugUtils()
 	GL_CheckErrors();
 }
 
+static unsigned int drawMode;
+static debugDrawMode_t currentDebugDrawMode;
+static int maxDebugVerts;
+static float currentDebugSize;
+
+extern "C" void DebugDrawBegin( debugDrawMode_t mode, float size ) {
+
+	if ( tess.numVertexes )
+	{
+		Tess_End();
+	}
+
+	const vec4_t colorClear = { 0, 0, 0, 0 };
+	currentDebugDrawMode = mode;
+	currentDebugSize = size;
+	switch(mode) {
+		case D_DRAW_POINTS:
+			glPointSize( size );
+			drawMode = GL_POINTS;
+			maxDebugVerts = SHADER_MAX_VERTEXES - 1;
+			break;
+		case D_DRAW_LINES:
+			glLineWidth( size );
+			drawMode = GL_LINES;
+			maxDebugVerts = ( SHADER_MAX_VERTEXES - 1 )/2*2;
+			break;
+		case D_DRAW_TRIS:
+			drawMode = GL_TRIANGLES;
+			maxDebugVerts = ( SHADER_MAX_VERTEXES - 1 )/3*3;
+			break;
+		case D_DRAW_QUADS:
+			drawMode = GL_QUADS;
+			maxDebugVerts = ( SHADER_MAX_VERTEXES - 1 )/4*4;
+			break;
+	}
+
+	gl_genericShader->DisableVertexSkinning();
+	gl_genericShader->DisableVertexAnimation();
+	gl_genericShader->DisableDeformVertexes();
+	gl_genericShader->DisableTCGenEnvironment();
+	gl_genericShader->DisableTCGenLightmap();
+	gl_genericShader->BindProgram();
+
+	// set uniforms
+	gl_genericShader->SetUniform_ColorModulate( CGEN_VERTEX, AGEN_VERTEX );
+	gl_genericShader->SetUniform_Color( colorClear );
+
+	gl_genericShader->SetRequiredVertexPointers();
+
+	// bind u_ColorMap
+	GL_SelectTexture( 0 );
+	GL_Bind( tr.whiteImage );
+	gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
+
+	// render in world space
+	backEnd.orientation = backEnd.viewParms.world;
+	GL_LoadProjectionMatrix( backEnd.viewParms.projectionMatrix );
+	GL_LoadModelViewMatrix( backEnd.viewParms.world.modelViewMatrix );
+	gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+
+	GL_CheckErrors();
+
+	//Tess_Begin( Tess_StageIteratorDebug, NULL, NULL, qtrue, qfalse, -1, 0 );
+}
+
+extern "C" void DebugDrawDepthMask(qboolean state)
+{
+	GL_DepthMask( state ? GL_TRUE : GL_FALSE );
+}
+
+extern "C" void DebugDrawVertex(const vec3_t pos, unsigned int color, const vec2_t uv) {
+	vec4_t colors = {color & 0xFF, (color >> 8) & 0xFF, (color >> 16) & 0xFF, (color >> 24) & 0xFF};
+	Vector4Scale(colors, 1.0f/255.0f, colors);
+	//we have reached the maximum number of verts we can batch
+	if( tess.numVertexes == maxDebugVerts ) {
+		//draw the geometry we already have
+		DebugDrawEnd();
+		//start drawing again
+		DebugDrawBegin(currentDebugDrawMode, currentDebugSize);
+	}
+
+	tess.xyz[ tess.numVertexes ][ 0 ] = pos[ 0 ];
+	tess.xyz[ tess.numVertexes ][ 1 ] = pos[ 1 ];
+	tess.xyz[ tess.numVertexes ][ 2 ] = pos[ 2 ];
+	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
+	Vector4Copy(colors, tess.colors[ tess.numVertexes ]);
+	if( uv ) {
+		tess.texCoords[ tess.numVertexes ][ 0 ] = uv[ 0 ];
+		tess.texCoords[ tess.numVertexes ][ 1 ] = uv[ 1 ];
+		tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
+		tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
+	}
+	tess.indexes[ tess.numIndexes ] = tess.numVertexes;
+	tess.numVertexes++;
+	tess.numIndexes++;
+}
+
+extern "C" void DebugDrawEnd( void ) {
+
+	Tess_UpdateVBOs( ATTR_POSITION | ATTR_TEXCOORD | ATTR_COLOR );
+
+	if ( glState.currentVBO && glState.currentIBO )
+	{
+		glDrawElements( drawMode, tess.numIndexes, GL_INDEX_TYPE, BUFFER_OFFSET( 0 ) );
+
+		backEnd.pc.c_drawElements++;
+
+		backEnd.pc.c_vboVertexes += tess.numVertexes;
+		backEnd.pc.c_vboIndexes += tess.numIndexes;
+
+		backEnd.pc.c_indexes += tess.numIndexes;
+		backEnd.pc.c_vertexes += tess.numVertexes;
+	}
+	tess.numVertexes = 0;
+	tess.numIndexes = 0;
+	//Tess_End();
+	glLineWidth( 1.0f );
+	glPointSize( 1.0f );
+}
+
 /*
 ==================
 RB_RenderView
