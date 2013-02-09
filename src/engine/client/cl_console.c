@@ -1274,6 +1274,12 @@ void Con_RunConsole( void )
 				consoleState.bottomDisplayedLine = consoleState.scrollLineIndex;
 			}
 		}
+	} else {
+		/*
+		 * if we are not visible, its better to do an instant update
+		 * skipping it entirely would lead to retrospective/delayed scrolling on opening
+		 */
+		consoleState.bottomDisplayedLine = consoleState.scrollLineIndex;
 	}
 }
 
