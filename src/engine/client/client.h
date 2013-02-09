@@ -687,6 +687,7 @@ typedef struct
 	int      currentLine; // line where next message will be printed
 	int      horizontalCharOffset; // offset in current line for next print
 
+	int      lastReadLineIndex; // keep track fo the last read line, so we can show the user, what was added since he last opened the console
 	int      scrollLineIndex; // bottom of console is supposed displays this line
 	float    bottomDisplayedLine; // bottom of console displays this line, is trying to move towards:
 

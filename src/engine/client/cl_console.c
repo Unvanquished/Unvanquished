@@ -883,6 +883,24 @@ void Con_DrawConsoleScrollbar( void )
 	}
 }
 
+void Con_DrawScrollbackMarkerline( int lineDrawPosition )
+{
+	vec4_t color;
+
+	//to not run into the scrollbar
+	const int scrollBarImpliedPadding = 2 * consoleState.padding.sides + 2 * consoleState.border.sides;
+
+	color[ 0 ] = 0.8f;
+	color[ 1 ] = 0.0f;
+	color[ 2 ] = 0.0f;
+	color[ 3 ] = 0.5f * consoleState.currentAlphaFactor;
+
+	SCR_FillRect(	consoleState.margin.sides + consoleState.border.sides + consoleState.padding.sides/2,
+					lineDrawPosition + SCR_ConsoleFontCharVPadding(),
+					cls.glconfig.vidWidth - 2 * consoleState.margin.sides - 2 * consoleState.border.sides - consoleState.padding.sides/2 - scrollBarImpliedPadding,
+					1, color );
+}
+
 /*
 ================
 Con_MarginFadeAlpha
@@ -993,6 +1011,11 @@ void Con_DrawConsoleContent( void )
 		{
 			// past scrollback wrap point
 			continue;
+		}
+
+		if ( row == consoleState.lastReadLineIndex-1 && consoleState.lastReadLineIndex != consoleState.currentLine )
+		{
+			Con_DrawScrollbackMarkerline( lineDrawPosition );
 		}
 
 		text = consoleState.text + CON_LINE( row );
@@ -1240,9 +1263,10 @@ void Con_RunConsole( void )
 	{
 		consoleState.currentAnimationFraction -= con_animationSpeed->value * cls.realFrametime * 0.001;
 
-		if ( consoleState.currentAnimationFraction < 0  || con_animationType->integer == ANIMATION_TYPE_NONE )
-		{
+		if ( consoleState.currentAnimationFraction <= 0  || con_animationType->integer == ANIMATION_TYPE_NONE )
+		{	//we are closed, do some last onClose work
 			consoleState.currentAnimationFraction = 0;
+			consoleState.lastReadLineIndex = consoleState.currentLine;
 		}
 	}
 	else if ( consoleState.isOpened > consoleState.currentAnimationFraction )
