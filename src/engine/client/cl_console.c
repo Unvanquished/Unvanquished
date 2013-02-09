@@ -1309,11 +1309,21 @@ void Con_RunConsole( void )
 
 void Con_PageUp( void )
 {
+	Con_ScrollUp( consoleState.visibleAmountOfLines/2 );
+}
+
+void Con_PageDown( void )
+{
+	Con_ScrollDown( consoleState.visibleAmountOfLines/2 );
+}
+
+void Con_ScrollUp( int lines )
+{
 	//do not scroll if there isn't enough to scroll
 	if(consoleState.usedScrollbackLengthInLines < consoleState.visibleAmountOfLines)
 		return;
 
-	consoleState.scrollLineIndex -= consoleState.visibleAmountOfLines/2;
+	consoleState.scrollLineIndex -= lines;
 
 	if ( consoleState.scrollLineIndex < consoleState.currentLine - consoleState.usedScrollbackLengthInLines
 			+ MIN(consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines) )
@@ -1322,9 +1332,9 @@ void Con_PageUp( void )
 	}
 }
 
-void Con_PageDown( void )
+void Con_ScrollDown( int lines )
 {
-	consoleState.scrollLineIndex += consoleState.visibleAmountOfLines/2;
+	consoleState.scrollLineIndex += lines;
 
 	if ( consoleState.scrollLineIndex > consoleState.currentLine )
 	{

@@ -752,6 +752,8 @@ void             Con_RunConsole( void );
 void             Con_PageUp( void );
 void             Con_PageDown( void );
 void             Con_JumpUp( void );
+void             Con_ScrollUp( int lines );
+void             Con_ScrollDown( int lines );
 void             Con_ScrollToMarkerLine( void );
 void             Con_ScrollToTop( void );
 void             Con_ScrollToBottom( void );

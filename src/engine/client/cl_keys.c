@@ -918,8 +918,7 @@ void Console_Key( int key )
 
 		if ( keys[ K_CTRL ].down ) // hold <ctrl> to accelerate scrolling
 		{
-			Con_PageUp();
-			Con_PageUp();
+			Con_ScrollUp( consoleState.visibleAmountOfLines );
 		}
 
 		return;
@@ -931,8 +930,7 @@ void Console_Key( int key )
 
 		if ( keys[ K_CTRL ].down ) // hold <ctrl> to accelerate scrolling
 		{
-			Con_PageDown();
-			Con_PageDown();
+			Con_ScrollDown( consoleState.visibleAmountOfLines );
 		}
 
 		return;
