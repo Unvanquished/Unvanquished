@@ -941,7 +941,7 @@ void Console_Key( int key )
 	// ctrl-home = top of console
 	if ( ( key == K_HOME || key == K_KP_HOME ) && keys[ K_CTRL ].down )
 	{
-		Con_ScrollToTop();
+		Con_JumpUp();
 		return;
 	}
 

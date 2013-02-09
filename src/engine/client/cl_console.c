@@ -1332,6 +1332,13 @@ void Con_PageDown( void )
 	}
 }
 
+void Con_ScrollToMarkerLine( void )
+{
+	consoleState.scrollLineIndex = consoleState.lastReadLineIndex
+			+ MIN(consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines);
+	//consoleState.bottomDisplayedLine = consoleState.scrollLineIndex;
+}
+
 void Con_ScrollToTop( void )
 {
 	consoleState.scrollLineIndex = consoleState.currentLine
@@ -1342,8 +1349,24 @@ void Con_ScrollToTop( void )
 
 void Con_ScrollToBottom( void )
 {
-	//consoleState.bottomDisplayedLine = consoleState.currentLine;
 	consoleState.scrollLineIndex = consoleState.currentLine;
+	//consoleState.bottomDisplayedLine = consoleState.currentLine;
+}
+
+void Con_JumpUp( void )
+{
+	if ( consoleState.lastReadLineIndex &&
+		 consoleState.scrollLineIndex > consoleState.lastReadLineIndex + MIN(consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines)
+	   //&& consoleState.currentLine - consoleState.lastReadLineIndex > consoleState.visibleAmountOfLines
+	   )
+	{
+		Con_ScrollToMarkerLine( );
+	}
+	else
+	{
+		Con_ScrollToTop( );
+	}
+
 }
 
 void Con_Close( void )
