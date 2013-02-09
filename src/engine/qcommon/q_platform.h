@@ -427,7 +427,7 @@ float FloatSwap( float f );
 
 #define LittleShort(x) ShortSwap(x)
 #define LittleLong(x)  LongSwap(x)
-#define LittleFloat(x) FloatSwap(&x)
+#define LittleFloat(x) FloatSwap(x)
 #define BigShort
 #define BigLong
 #define BigFloat
@@ -439,7 +439,7 @@ float FloatSwap( float f );
 #define LittleFloat
 #define BigShort(x) ShortSwap(x)
 #define BigLong(x)  LongSwap(x)
-#define BigFloat(x) FloatSwap(&x)
+#define BigFloat(x) FloatSwap(x)
 
 #elif defined( Q3_VM )
 
