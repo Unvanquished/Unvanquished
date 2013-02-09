@@ -1334,7 +1334,7 @@ void Con_PageDown( void )
 
 void Con_ScrollToMarkerLine( void )
 {
-	consoleState.scrollLineIndex = consoleState.lastReadLineIndex
+	consoleState.scrollLineIndex = MAX(consoleState.lastReadLineIndex, consoleState.currentLine - consoleState.usedScrollbackLengthInLines)
 			+ MIN(consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines);
 	//consoleState.bottomDisplayedLine = consoleState.scrollLineIndex;
 }
