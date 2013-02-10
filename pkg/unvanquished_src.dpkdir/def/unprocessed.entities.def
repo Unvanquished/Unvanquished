@@ -539,17 +539,6 @@ NOSOUND: if set, no sound is played at all
 To make a jump pad or launch ramp, create a trigger_multiple where the jump must originate. Place the target_push directly above the trigger_multiple and place the target_position entity at the highest point of the jump. Target the trigger_multiple to the target_push and target the target_push to the target_position/info_notnull (or set the target_push's "angles" key). Note that the "angle" key also works.
 */
 //=============================================================================
-/*QUAKED target_relay (0 .7 .7) (-8 -8 -8) (8 8 8) HUMAN_ONLY ALIEN_ONLY RANDOM
-This can only be activated by other triggers which will cause it in turn to activate its own targets.
--------- KEYS --------
-targetname: activating trigger points to this.
-target: this points to entities to activate when this entity is triggered.
--------- SPAWNFLAGS --------
-HUMAN_ONLY: only human team players can activate trigger.
-ALIEN_ONLY: only alien team players can activate trigger.
-RANDOM: one one of the targeted entities will be triggered at random.
-*/
-//=============================================================================
 /*QUAKED target_score (0 .5 0) (-8 -8 -8) (8 8 8)
 This is used to automatically give frag points to the player who activates this. A spawn location entity like info_player_* or CTF respawn points can target this entity to give points to the player when he spawns in the game. Or a trigger can also be used to activate this. The activator of the trigger will get the points.
 -------- KEYS --------
