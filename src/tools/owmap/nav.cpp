@@ -850,7 +850,7 @@ static void rcFilterGaps(rcContext *ctx, int walkableRadius, int walkableClimb, 
 						bool freeSpace = false;
 						bool stop = false;
 
-						if ( dx >= w || dy >= h )
+						if ( dx < 0 || dy < 0 || dx >= w || dy >= h )
 						{
 							continue;
 						}
@@ -877,7 +877,7 @@ static void rcFilterGaps(rcContext *ctx, int walkableRadius, int walkableClimb, 
 								int nstop = (ns->next) ? (ns->next->smin) : MAX_HEIGHT;
 
 								//if there is a span within walkableClimb of the base span, we have reached the end of the gap (if any)
-								if(rcAbs(sbot - nsbot) <= walkableClimb) {
+								if(rcAbs(sbot - nsbot) <= walkableClimb && ns->area != RC_NULL_AREA) {
 									//set flag telling us to stop
 									stop = true;
 
