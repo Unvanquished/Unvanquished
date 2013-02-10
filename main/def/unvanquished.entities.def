@@ -10,12 +10,6 @@
  *
  *	entity definition file
  *	
- *	contains 2 formats:
- *	idtech3 "quake-edit" semantic information within the comments
- *	and idtech4 style entity-definitions
- *
- *	each type of editor should be able to ignore the other type
- *
  */
 
 /**
@@ -77,47 +71,6 @@ _layers OR layers: Integer value is the number unique root shaders that will be 
 _shader OR shader: Path to the metashader used to assign textures to the terrain entity. Note: Omit the "textures/" prefix.
 */
 
-entityDef worldspawn
-{
-	"editor_color"					"0 0 0"
-	"editor_mins"					"?"
-	"editor_maxs"					"?"
-
-	"editor_usage"					"Used for game-world global options."
-	
-	"editor_var message"			"Text to print during connection process. Used for the name of level."
-	"editor_var music"				"path/name of looping .wav file used for level's music"
-	"editor_var gravity"			"level gravity [g_gravity]"
-	
-	"editor_var gridsize"           "Dynamic Light Granularity - granularity of the lightgrid created by q3map. Value is three integers separated by spaces, representing number of units between grid points in X Y Z. Default gridsize value is 128 128 256. Use larger powers of 2 to reduce BSP size and compile time on very large maps."
-	"editor_var _blocksize"         "BSP Block Size - q3map always splits the BSP tree along the planes X=_blocksize*n and Y=_blocksize*n. Default _blocksize value is 1024. Increase the blocksize using larger powers of 2 to reduce compile times on very large maps with a low structural brush density."
-	"editor_float _lightmapscale"   "Lightmap Scale: Floating point value scaling the resolution of lightmaps on brushes/patches in the world. Can be overridden in func_group (or other entities) (default 1.0)."
-
-/* not checked for existance yet
-	"editor_var _floodlight"		"Ambient Occlusion: The parameters work as follow: the first three numbers select the color of the lighting. The fourth number sets a distance to trace, and the last number sets the intensity of the floodlight."
-	"editor_var _castshadows"		"Shadow Caster Level: Allows per-entity control over shadow casting. Defaults to 0 on entities, 1 on world. 0 = no shadow casting. 1 = cast shadows on world. > 1 = cast shadows on entities with _rs (or _receiveshadows) with the corresponding value, AND world. Negative values imply same, but DO NOT cast shadows on world."
-	"editor_var _receiveshadows" 	"Shadow Receiver Level: Allows per-entity control over shadow reception. Defaults to 1 on everything (world shadows). 0 = receives NO shadows. > 1 = receive shadows only from corresponding keyed entities (see above) and world. &lt; 1 = receive shadows ONLY from corresponding keyed entities."
-*/
-	
-	"message"						""
-	"music"							""
-	"gravity"						"800"
-	
-	"gridsize"						"0"
-	"_blocksize"					"0"
-	"_lightmapscale"				"1.0"
-
-/* not checked for existance yet
-	"ambientColor"					"0 0 0"
-	"fogColor"						"0 0 0"
-	"fogDensity"					"0"
-	"perPolyCollision"				"0"
-	"_floodlight"					"240 240 255 1024 512"
-	"_castshadows"					"0"
-	"_receiveshadows"				"1"
-*/
-
-}
 
 /**
  *
