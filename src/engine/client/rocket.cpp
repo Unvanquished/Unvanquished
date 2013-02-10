@@ -66,11 +66,6 @@ public:
 		return ( size_t ) FS_Read( buffer, (int)size, ( fileHandle_t ) file );
 	}
 
-	/*
-	Returns true on success, false if something went wrong
-	Not sure if the return value is 100% correct, but other code using FS_Seek does this
-	FIXME: FS_Seek may need support for FS_SEEK_END and failure return values when reading files from zip files
-	*/
 	bool Seek( Rocket::Core::FileHandle file, long offset, int origin )
 	{
 		int ret = FS_Seek( ( fileHandle_t ) file, offset, origin );
@@ -147,7 +142,6 @@ class DaemonRenderInterface : public Rocket::Core::RenderInterface
 public:
 	DaemonRenderInterface() {};
 
-	//TODO: translation support
 	void RenderGeometry( Rocket::Core::Vertex *verticies,  int numVerticies, int *indices, int numIndicies, Rocket::Core::TextureHandle texture, const Rocket::Core::Vector2f& translation )
 	{
 		polyVert_t *verts;
@@ -214,20 +208,12 @@ public:
 
 	void EnableScissorRegion( bool enable )
 	{
-		//TODO
-		/* if ( enable )
-			glEnable( GL_SCISSOR_TEST );
-		   else
-		    glDisable( GL_SCISSOR_TEST );
-		*/
 		re.ScissorEnable( enable ? qtrue :  qfalse );
 
 	}
 
 	void SetScissorRegion( int x, int y, int width, int height )
 	{
-		//TODO
-		//glScissor( x, glConfig.vidHeight - ( y + height ), width, height );
 		re.ScissorSet( x, cls.glconfig.vidHeight - ( y + height ), width, height );
 	}
 };
@@ -437,7 +423,6 @@ extern "C" void Rocket_Render( void )
 
 extern "C" void Rocket_Update( void )
 {
-	//TODO: add mouse/key events
 	if ( context )
 	{
 		context->Update();
@@ -467,16 +452,12 @@ extern "C" void InjectRocket( SDL_Event event )
 
 			if( event.key.keysym.unicode != 0 && event.key.keysym.unicode != 8 )
 				context->ProcessTextInput( c );
-
-// 			std::wcout << "Rocket: " << key << " " << "SDL: " << SDL_GetKeyName( event.key.keysym.sym )
-// 			<< " SDL unicode: " << event.key.keysym.unicode << " " << c << std::endl;
 		}
 		break;
 		case SDL_KEYUP:
 			context->ProcessKeyUp( KeyIdentifier( event.key.keysym.scancode ), RocketConvertSDLmod( event.key.keysym.mod ) );
 			break;
 		case SDL_MOUSEMOTION:
-// 			Com_Printf("x:%d y:%d\n", event.motion.x, event.motion.y);
 			context->ProcessMouseMove( event.motion.x, event.motion.y, RocketConvertSDLmod( SDL_GetModState() ) );
 			break;
 		case SDL_MOUSEBUTTONDOWN:
