@@ -203,6 +203,26 @@ gentity_t *G_Find( gentity_t *from, int fieldofs, const char *match )
 	return NULL;
 }
 
+gentity_t *G_TargetFind(gentity_t *target, int *targetIndex, int *targetNameIndex, gentity_t *self)
+{
+	if (target)
+		goto cont;
+
+	for (*targetIndex = 0; self->targets[*targetIndex]; ++(*targetIndex))
+	{
+		for( target = &g_entities[ 0 ]; target < &g_entities[ level.num_entities ]; ++target )
+		{
+			for (*targetNameIndex = 0; target->targetnames[*targetNameIndex]; ++(*targetNameIndex))
+			{
+				if (!Q_stricmp(self->targets[*targetIndex], target->targetnames[*targetNameIndex]))
+					return target;
+				cont: ;
+			}
+		}
+	}
+	return NULL;
+}
+
 /*
 =============
 G_PickTarget
@@ -212,42 +232,28 @@ Selects a random entity from among the targets
 */
 #define MAXCHOICES 32
 
-gentity_t *G_PickTarget( const char *targetname )
+gentity_t *G_PickTargetFor( gentity_t *self )
 {
-	gentity_t *ent = NULL;
-	int       num_choices = 0;
-	gentity_t *choice[ MAXCHOICES ];
+	int       i, j;
+	gentity_t *foundTarget = NULL;
+	int       totalChoiceCount = 0;
+	gentity_t *choices[ MAX_GENTITIES ];
 
-	if ( !targetname )
+	//collects the targets
+	while( ( foundTarget = G_TargetFind( foundTarget, &i, &j, self ) ) != NULL )
+		choices[ totalChoiceCount++ ] = foundTarget;
+
+	if ( !totalChoiceCount )
 	{
-		G_Printf( "G_PickTarget called with NULL targetname\n" );
+		G_Printf( "G_PickTargetFor: none of the following targets were found:" );
+		for( i = 0; self->targets[ i ]; ++i )
+		  G_Printf( "%s %s", ( i == 0 ? "" : "," ), self->targets[ i ] );
+		G_Printf( "\n" );
 		return NULL;
 	}
 
-	while ( 1 )
-	{
-		ent = G_Find( ent, FOFS( targetname ), targetname );
-
-		if ( !ent )
-		{
-			break;
-		}
-
-		choice[ num_choices++ ] = ent;
-
-		if ( num_choices == MAXCHOICES )
-		{
-			break;
-		}
-	}
-
-	if ( !num_choices )
-	{
-		G_Printf( "G_PickTarget: target %s not found\n", targetname );
-		return NULL;
-	}
-
-	return choice[ rand() / ( RAND_MAX / num_choices + 1 ) ];
+	//return a random one from among the choices
+	return choices[ rand() / ( RAND_MAX / totalChoiceCount + 1 ) ];
 }
 
 /*
@@ -256,14 +262,14 @@ G_UseTargets
 
 "activator" should be set to the entity that initiated the firing.
 
-Search for (string)targetname in all entities that
-match (string)self.target and call their .use function
-
+For all t in the entities, where t.targetnames[i] matches
+ent.targets[j] for any (i,j) pairs, call the t.use function.
 ==============================
 */
 void G_UseTargets( gentity_t *ent, gentity_t *activator )
 {
-	gentity_t *t;
+	gentity_t *t = NULL;
+	int i, j;
 
 	if ( ent->targetShaderName && ent->targetShaderNewName )
 	{
@@ -272,25 +278,11 @@ void G_UseTargets( gentity_t *ent, gentity_t *activator )
 		trap_SetConfigstring( CS_SHADERSTATE, BuildShaderStateConfig() );
 	}
 
-	if ( !ent->target )
+	while( ( t = G_TargetFind( t, &i, &j, ent ) ) != NULL )
 	{
-		return;
-	}
-
-	t = NULL;
-
-	while ( ( t = G_Find( t, FOFS( targetname ), ent->target ) ) != NULL )
-	{
-		if ( t == ent )
+		if ( t->use )
 		{
-			G_Printf( "WARNING: Entity used itself.\n" );
-		}
-		else
-		{
-			if ( t->use )
-			{
-				t->use( t, ent, activator );
-			}
+			t->use( t, ent, activator );
 		}
 
 		if ( !ent->inuse )

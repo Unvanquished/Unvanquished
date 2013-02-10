@@ -448,7 +448,7 @@ All but the last will have the teamchain field set to the next one
 void G_FindTeams( void )
 {
 	gentity_t *e, *e2;
-	int       i, j;
+	int       i, j, k;
 	int       c, c2;
 
 	c = 0;
@@ -491,10 +491,10 @@ void G_FindTeams( void )
 				e2->flags |= FL_TEAMSLAVE;
 
 				// make sure that targets only point at the master
-				if ( e2->targetname )
+				for (k = 0; e2->targetnames[k]; k++)
 				{
-					e->targetname = e2->targetname;
-					e2->targetname = NULL;
+					e->targetnames[k] = e2->targetnames[k];
+					e2->targetnames[k] = NULL;
 				}
 			}
 		}
@@ -1807,9 +1807,9 @@ void FindIntermissionPoint( void )
 		VectorCopy( ent->s.angles, level.intermission_angle );
 
 		// if it has a target, look towards it
-		if ( ent->target )
+		if ( ent->targets[ 0 ] )
 		{
-			target = G_PickTarget( ent->target );
+			target = G_PickTargetFor( ent );
 
 			if ( target )
 			{

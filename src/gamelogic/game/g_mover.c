@@ -922,7 +922,7 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
 	moverState_t teamState;
 
 	// if this is a non-client-usable door return
-	if ( ent->targetname && other && other->client )
+	if ( ent->targetnames[ 0 ] && other && other->client )
 	{
 		return;
 	}
@@ -1494,7 +1494,7 @@ void manualTriggerSpectator( gentity_t *trigger, gentity_t *player )
 {
 	gentity_t *t = NULL;
 	gentity_t *targets[ MAX_GENTITIES ];
-	int       i = 0, j;
+	int       i = 0, j, k;
 	float     minDistance;
 
 	//restrict this hack to trigger_multiple only for now
@@ -1503,13 +1503,8 @@ void manualTriggerSpectator( gentity_t *trigger, gentity_t *player )
 		return;
 	}
 
-	if ( !trigger->target )
-	{
-		return;
-	}
-
 	//create a list of door entities this trigger targets
-	while ( ( t = G_Find( t, FOFS( targetname ), trigger->target ) ) != NULL )
+	while( ( t = G_TargetFind( t, &j, &k, trigger ) ) != NULL )
 	{
 		if ( !strcmp( t->classname, "func_door" ) )
 		{
@@ -1733,7 +1728,7 @@ void SP_func_door( gentity_t *ent )
 		ent->takedamage = qtrue;
 	}
 
-	if ( ent->targetname || health )
+	if ( ent->targetnames[ 0 ] || health )
 	{
 		// non touch/shoot doors
 		ent->think = Think_MatchTeam;
@@ -1871,7 +1866,7 @@ void SP_func_door_rotating( gentity_t *ent )
 		ent->takedamage = qtrue;
 	}
 
-	if ( ent->targetname || health )
+	if ( ent->targetnames[ 0 ] || health )
 	{
 		// non touch/shoot doors
 		ent->think = Think_MatchTeam;
@@ -2045,7 +2040,7 @@ void SP_func_door_model( gentity_t *ent )
 		ent->takedamage = qtrue;
 	}
 
-	if ( !( ent->targetname || health ) )
+	if ( !( ent->targetnames[ 0 ] || health ) )
 	{
 		ent->nextthink = level.time + FRAMETIME;
 		ent->think = Think_SpawnNewDoorTrigger;
@@ -2214,7 +2209,7 @@ void SP_func_plat( gentity_t *ent )
 	ent->parent = ent; // so it can be treated as a door
 
 	// spawn the trigger if one hasn't been custom made
-	if ( !ent->targetname )
+	if ( !ent->targetnames [ 0 ] )
 	{
 		SpawnPlatTrigger( ent );
 	}
@@ -2487,8 +2482,9 @@ Link all the corners together
 void Think_SetupTrainTargets( gentity_t *ent )
 {
 	gentity_t *path, *next, *start;
+	int i, j;
 
-	ent->nextTrain = G_Find( NULL, FOFS( targetname ), ent->target );
+	ent->nextTrain = G_TargetFind( NULL, &i, &j, ent );
 
 	if ( !ent->nextTrain )
 	{
@@ -2506,7 +2502,7 @@ void Think_SetupTrainTargets( gentity_t *ent )
 			start = path;
 		}
 
-		if ( !path->target )
+		if ( !path->targets[ 0 ] )
 		{
 			G_Printf( "Train corner at %s without a target\n",
 			          vtos( path->s.origin ) );
@@ -2520,7 +2516,7 @@ void Think_SetupTrainTargets( gentity_t *ent )
 
 		do
 		{
-			next = G_Find( next, FOFS( targetname ), path->target );
+			next = G_TargetFind( next, &i, &j, path );
 
 			if ( !next )
 			{
@@ -2555,7 +2551,7 @@ Setting the wait key to -1 will not make the train stop on the path corner, it w
 */
 void SP_path_corner( gentity_t *self )
 {
-	if ( !self->targetname )
+	if (!self->targetnames[ 0 ])
 	{
 		G_Printf( "path_corner with no targetname at %s\n", vtos( self->s.origin ) );
 		G_FreeEntity( self );
@@ -2649,7 +2645,7 @@ void SP_func_train( gentity_t *self )
 		self->speed = 100;
 	}
 
-	if ( !self->target )
+	if ( !self->targets[ 0 ] )
 	{
 		G_Printf( "func_train without a target at %s\n", vtos( self->r.absmin ) );
 		G_FreeEntity( self );

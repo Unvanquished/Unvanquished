@@ -129,8 +129,14 @@ static const field_t fields[] =
 	{ "rotatorAngle",        FOFS( rotatorAngle ),        F_FLOAT     },
 	{ "spawnflags",          FOFS( spawnflags ),          F_INT       },
 	{ "speed",               FOFS( speed ),               F_FLOAT     },
-	{ "target",              FOFS( target ),              F_STRING    },
-	{ "targetname",          FOFS( targetname ),          F_STRING    },
+	{ "target",				 FOFS( targets[ 0 ] ),		  F_STRING	  },
+	{ "target2", 			 FOFS( targets[ 1 ] ),		  F_STRING	  },
+	{ "target3",			 FOFS( targets[ 2 ] ),		  F_STRING	  },
+	{ "target4",			 FOFS( targets[ 3 ] ),		  F_STRING	  },
+	{ "targetname",			 FOFS( targetnames[ 0 ] ),	  F_STRING	  },
+	{ "targetname2",		 FOFS( targetnames[ 1 ] ),	  F_STRING	  },
+	{ "targetname3",		 FOFS( targetnames[ 2 ] ),	  F_STRING	  },
+	{ "targetname4",		 FOFS( targetnames[ 3 ] ),	  F_STRING	  },
 	{ "targetShaderName",    FOFS( targetShaderName ),    F_STRING    },
 	{ "targetShaderNewName", FOFS( targetShaderNewName ), F_STRING    },
 	{ "wait",                FOFS( wait ),                F_FLOAT     }
@@ -408,7 +414,7 @@ level.spawnVars[], then call the class specfic spawn function
 */
 void G_SpawnGEntityFromSpawnVars( void )
 {
-	int       i;
+	int       i, j;
 	gentity_t *ent;
 
 	// get the next free entity
@@ -430,6 +436,24 @@ void G_SpawnGEntityFromSpawnVars( void )
 	// move editor origin to pos
 	VectorCopy( ent->s.origin, ent->s.pos.trBase );
 	VectorCopy( ent->s.origin, ent->r.currentOrigin );
+
+	// don't leave any "gaps" between multiple targets
+	j = 0;
+	for (i = 0; i < MAX_TARGETS; ++i)
+	{
+		if (ent->targets[i])
+			ent->targets[j++] = ent->targets[i];
+	}
+	ent->targets[ j ] = NULL;
+
+	// don't leave any "gaps" between multiple targetnames
+	j = 0;
+	for (i = 0; i < MAX_TARGETNAMES; ++i)
+	{
+		if (ent->targetnames[i])
+			ent->targetnames[j++] = ent->targetnames[i];
+	}
+	ent->targetnames[ j ] = NULL;
 
 	// if we didn't get a classname, don't bother spawning anything
 	if ( !G_CallSpawn( ent ) )

@@ -502,6 +502,8 @@ extern  cvar_t *cl_consoleFontSize;
 extern  cvar_t *cl_consoleFontKerning;
 extern  cvar_t *cl_consoleCommand;
 
+extern	cvar_t	*cl_logs;
+
 // XreaL BEGIN
 extern cvar_t  *cl_aviFrameRate;
 extern cvar_t  *cl_aviMotionJpeg;
@@ -874,3 +876,11 @@ qboolean CL_VideoRecording( void );
 void CL_WriteDemoMessage( msg_t *msg, int headerBytes );
 void CL_RequestMotd( void );
 void CL_GetClipboardData( char *, int, clipboard_t );
+
+//
+// cl_logs.c
+//
+void CL_OpenClientLog(void);
+void CL_CloseClientLog(void);
+void CL_WriteClientLog( char *text );
+void CL_WriteClientChatLog( char *text );
