@@ -568,6 +568,8 @@ void CL_ConsolePrint( char *txt )
 	int      y;
 	int      c, i, l;
 	int      color;
+	
+	CL_WriteClientChatLog( txt );
 
 	// for some demos we don't want to ever show anything on the console
 	if ( cl_noprint && cl_noprint->integer )
