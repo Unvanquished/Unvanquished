@@ -38,8 +38,7 @@ disabledEquipment: A comma delimited list of human weapons or upgrades to disabl
 disabledClasses: A comma delimited list of alien classes to disable for this map. [g_disabledClasses ()]
 disabledBuildables: A comma delimited list of buildables to disable for this map. [g_disabledBuildables ()]
 
-Daemonmap Keys
----------------
+-------- Q3MAP2 KEYS --------
 _ambient OR ambient: Adds a constant value to overall lighting. Use is not recommended. Ambient light will have a tendency to flatten out variations in light and shade.
 _color: RGB value for ambient light color (default is 0 0 0).
 gridsize: Dynamic Light Granularity - granularity of the lightgrid created by q3map. Value is three integers separated by spaces, representing number of units between grid points in X Y Z. Default gridsize value is 128 128 256. Use larger powers of 2 to reduce BSP size and compile time on very large maps.
@@ -51,6 +50,17 @@ _lightmapscale OR lightmapscale OR _ls: Lightmap Scale - Floating point value sc
 _keeplights: Keep light entities in the BSP. Normally stripped out by the BSP process and read from the .map file by the lighting phase.
 
 _celshader: Sets the cel shader used for this geometry. Note: omit the "textures/" prefix. Overridable in entities.
+_foghull: Shader to use for "fog hull." Foghull shader should be a sky shader. Omit the "textures/" prefix.
+_cs OR _castshadows: Allows per-entity control over shadow casting. Defaults to 0 on entities, 1 on world. 0 = no shadow casting. 1 = cast shadows on world. > 1 = cast shadows on entities with _rs (or _receiveshadows) with the corresponding value, AND world. Negative values imply same, but DO NOT cast shadows on world.
+_rs OR _receiveshadows: Allows per-entity control over shadow reception. Defaults to 1 on everything (world shadows). 0 = receives NO shadows. > 1 = receive shadows only from corresponding keyed entities (see above) and world. < 1 = receive shadows ONLY from corresponding keyed entities.
+
+_blocksize: BSP Block Size - q3map always splits the BSP tree along the planes X=_blocksize*n and Y=_blocksize*n. Default _blocksize value is 1024. Increase the blocksize using larger powers of 2 to reduce compile times on very large maps with a low structural brush density.
+_farplanedist: Limit on how many units the vis phase of compilation can see. Used in combination with level-wide fog, it can help reduce r_speeds on large, open maps.
+
+-------- Q3MAP2 TERRAIN KEYS --------
+_indexmap OR alphamap: Path/name for the art file used to guide the mapping of textures on the terrain surface.
+_layers OR layers: Integer value is the number unique root shaders that will be use on the terrain.
+_shader OR shader: Path to the metashader used to assign textures to the terrain entity. Note: Omit the "textures/" prefix.
 
 Reserved or Currently unused
 ----------------------------
@@ -58,17 +68,6 @@ humanStage2Threshold: The number of kills the humans must aquire to advance to s
 humanStage3Threshold: The number of kills the humans must aquire to advance to stage 3. Defaults to [g_humanStage3Threshold].
 alienStage2Threshold: The number of kills the aliens must aquire to advance to stage 2. Defaults to [g_alienStage2Threshold].
 alienStage3Threshold: The number of kills the aliens must aquire to advance to stage 3. Defaults to [g_alienStage3Threshold].
-
-Yet Unchecked Daemonmap Keys
-----------------------------
-_blocksize: BSP Block Size - q3map always splits the BSP tree along the planes X=_blocksize*n and Y=_blocksize*n. Default _blocksize value is 1024. Increase the blocksize using larger powers of 2 to reduce compile times on very large maps with a low structural brush density.
-_farplanedist: Limit on how many units the vis phase of compilation can see. Used in combination with level-wide fog, it can help reduce r_speeds on large, open maps.
-_foghull: Shader to use for "fog hull." Foghull shader should be a sky shader. Omit the "textures/" prefix.
-_cs OR _castshadows: Allows per-entity control over shadow casting. Defaults to 0 on entities, 1 on world. 0 = no shadow casting. 1 = cast shadows on world. > 1 = cast shadows on entities with _rs (or _receiveshadows) with the corresponding value, AND world. Negative values imply same, but DO NOT cast shadows on world.
-_rs OR _receiveshadows: Allows per-entity control over shadow reception. Defaults to 1 on everything (world shadows). 0 = receives NO shadows. > 1 = receive shadows only from corresponding keyed entities (see above) and world. < 1 = receive shadows ONLY from corresponding keyed entities.
-_indexmap OR alphamap: Path/name for the art file used to guide the mapping of textures on the terrain surface.
-_layers OR layers: Integer value is the number unique root shaders that will be use on the terrain.
-_shader OR shader: Path to the metashader used to assign textures to the terrain entity. Note: Omit the "textures/" prefix.
 */
 
 
@@ -91,15 +90,39 @@ targetname: [required] the train following the path or the previous path_corner 
 speed: speed of func_train while moving to the next path corner. This will override the speed value of the train.
 wait: number of seconds func_train will pause on path corner before moving to next path corner (default 0 - see Notes).
 
-Notes
------
+-------- NOTES --------
 Setting the wait key to -1 will not make the train stop on the path corner, it will simply default to 0.
 */
 
 /**
  *
- * 	Target Entities
- * 	===============
+ *	Functional entities - func_*
+ *	============================
+ *
+ */
+
+/*QUAKED func_group (0 .5 .8) ?
+This is not an entity as such. It is strictly an editor utility to group world brushes and patches together for convenience (selecting, moving, copying, etc).
+You cannot group entities with this. Groups are turned into whole brushes by the utilities.
+
+-------- Q3MAP2 KEYS --------
+_lightmapscale: Floating point value scaling the resolution of lightmaps on brushes/patches in this entity (default 1.0).
+_cs OR _castshadows: Allows per-entity control over shadow casting. Defaults to 0 on entities, 1 on world. 0 = no shadow casting. 1 = cast shadows on world. > 1 = cast shadows on entities with _rs (or _receiveshadows) with the corresponding value, AND world. Negative values imply same, but DO NOT cast shadows on world.
+_rs OR _receiveshadows: Allows per-entity control over shadow reception. Defaults to 1 on everything (world shadows). 0 = receives NO shadows. > 1 = receive shadows only from corresponding keyed entities (see above) and world. < 1 = receive shadows ONLY from corresponding keyed entities.
+_celshader: Sets the cel shader used for this geometry. Note: omit the "textures/" prefix.
+-------- Q3MAP2 TERRAIN KEYS --------
+_indexmap OR alphamap: Path/name for the art file used to guide the mapping of textures on the terrain surface.
+_layers OR layers: Integer value is the number unique root shaders that will be use on the terrain.
+_shader OR shader: Path to the metashader used to assign textures to the terrain entity. Note: Omit the "textures/" prefix.
+
+-------- NOTES --------
+The TAB key can be used to flip through the component pieces of a selected func_group entity, isolating individual components. To make a func_group into a terrain entity, refer to the Terrain Construction documentation.
+*/
+
+/**
+ *
+ * 	Target Entities - target_*
+ * 	============================
  * 	Targets perform no action by themselves.
  *	Instead they are targeted by other entities,
  *	like being triggered by a trigger_ entity.
@@ -113,15 +136,14 @@ might use it for aiming.
 
 targetname: the name the entity that requires an aiming direction can reference
 
-Note
-----
+-------- NOTES --------
 To make a jump pad, place this entity at the highest point of the jump and target it with a trigger_push entity.
 */
 
 /**
  *
- *	Trigger
- *	=======
+ *	Trigger Entities - trigger_*
+ *	============================
  *	Triggers are brush objects that cause an effect when contacted
  *	by a living player, usually involving firing targets.
  *	While almost everything could be done with
