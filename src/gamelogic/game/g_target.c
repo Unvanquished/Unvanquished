@@ -268,10 +268,18 @@ void SP_target_teleporter( gentity_t *self )
 
 //==========================================================
 
-/*QUAKED target_relay (.5 .5 .5) (-8 -8 -8) (8 8 8) RED_ONLY BLUE_ONLY RANDOM
-This doesn't perform any actions except fire its targets.
-The activator can be forced to be from a certain team.
-if RANDOM is checked, only one of the targets will be fired, not all of them
+/**
+ * Warning: The following comment contains information, that might be parsed and used by radiator based mapeditors.
+ */
+/*QUAKED target_relay (0 .7 .7) (-8 -8 -8) (8 8 8) HUMAN_ONLY ALIEN_ONLY RANDOM
+This can only be activated by other triggers which will cause it in turn to activate its own targets.
+-------- KEYS --------
+targetname, targetname2, targetname3, targetname3: activating trigger points to one of these.
+target, target2, target3, target4: this points to entities to activate when this entity is triggered. RANDOM chooses whether all gets executed or one gets selected Randomly.
+-------- SPAWNFLAGS --------
+HUMAN_ONLY: only human team players can activate trigger.
+ALIEN_ONLY: only alien team players can activate trigger.
+RANDOM: one one of the targeted entities will be triggered at random.
 */
 void target_relay_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
@@ -337,10 +345,9 @@ Used as a positional target for in-game calculation.
 Other entities like light, misc_portal_camera and trigger_push (jump pads)
 might use it for aiming.
 
-targetname: the name the entity that requires an aiming direction can reference
+targetname, targetname2, targetname3, targetname3: the names under which this position can be referenced
 
-Note
-----
+-------- NOTES --------
 To make a jump pad, place this entity at the highest point of the jump and target it with a trigger_push entity.
 */
 void SP_target_position( gentity_t *self )

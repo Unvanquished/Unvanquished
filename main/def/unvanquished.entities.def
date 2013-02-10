@@ -85,8 +85,8 @@ alienStage3Threshold: The number of kills the aliens must aquire to advance to s
 /*QUAKED path_corner (.5 .3 0) (-8 -8 -8) (8 8 8)
 Path corner entity that func_trains can be made to follow.
 
-target: point to next path_corner in the path and/or other targets to fire when the path corner is reached
-targetname: [required] the train following the path or the previous path_corner in the path points to this.
+target, target2, target3, target4: point to next path_corner in the path and/or other targets to fire when the path corner is reached
+targetname, targetname2, targetname3, targetname3: the train following the path or the previous path_corner in the path has to point to one of these.
 speed: speed of func_train while moving to the next path corner. This will override the speed value of the train.
 wait: number of seconds func_train will pause on path corner before moving to next path corner (default 0 - see Notes).
 
@@ -134,10 +134,21 @@ Used as a positional target for in-game calculation.
 Other entities like light, misc_portal_camera and trigger_push (jump pads)
 might use it for aiming.
 
-targetname: the name the entity that requires an aiming direction can reference
+targetname, targetname2, targetname3, targetname3: the names under which this position can be referenced
 
 -------- NOTES --------
 To make a jump pad, place this entity at the highest point of the jump and target it with a trigger_push entity.
+*/
+
+/*QUAKED target_relay (0 .7 .7) (-8 -8 -8) (8 8 8) HUMAN_ONLY ALIEN_ONLY RANDOM
+This can only be activated by other triggers which will cause it in turn to activate its own targets.
+-------- KEYS --------
+targetname, targetname2, targetname3, targetname3: activating trigger points to one of these.
+target, target2, target3, target4: this points to entities to activate when this entity is triggered. RANDOM chooses whether all gets executed or one gets selected Randomly.
+-------- SPAWNFLAGS --------
+HUMAN_ONLY: only human team players can activate trigger.
+ALIEN_ONLY: only alien team players can activate trigger.
+RANDOM: one one of the targeted entities will be triggered at random.
 */
 
 /**
@@ -155,5 +166,5 @@ To make a jump pad, place this entity at the highest point of the jump and targe
 /*QUAKED trigger_always (.5 .5 .5) (-8 -8 -8) (8 8 8)
 Automatic trigger. It will fire the entities it targets as soon as it spawns in the game.
 
-target: this points to the entity to activate.
+target, target2, target3, target4: trigger any entity matching one of these references.
 */
