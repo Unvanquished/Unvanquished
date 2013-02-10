@@ -158,12 +158,18 @@ static const spawn_t spawns[] =
 	{ "func_timer",               SP_func_timer               }, // rename trigger_timer?
 	{ "func_train",               SP_func_train               },
 
-	// info entities don't do anything at all, but provide positional
-	// information for things controlled by other processes
+	/**
+	 *
+	 *	Information entities
+	 *	====================
+	 *	info entities don't do anything at all, but provide positional
+	 *	information for things controlled by other processes
+	 *
+	 */
 	{ "info_alien_intermission",  SP_info_alien_intermission  },
 	{ "info_human_intermission",  SP_info_human_intermission  },
-	{ "info_notnull",             SP_info_notnull             }, // use target_position instead
-	{ "info_null",                SP_info_null                },
+	{ "info_notnull",             SP_info_notnull             }, //@Deprecated use target_position instead
+	{ "info_null",                SP_info_null                }, //@Deprecated use target_position instead
 	{ "info_player_deathmatch",   SP_info_player_deathmatch   },
 	{ "info_player_intermission", SP_info_player_intermission },
 	{ "info_player_start",        SP_info_player_start        },
@@ -177,8 +183,15 @@ static const spawn_t spawns[] =
 	{ "misc_teleporter_dest",     SP_misc_teleporter_dest     },
 	{ "path_corner",              SP_path_corner              },
 
-	// targets perform no action by themselves, but must be triggered
-	// by another entity
+	/**
+	 *
+	 * 	Target Entities
+	 * 	===============
+	 * 	Targets perform no action by themselves.
+	 *	Instead they are targeted by other entities,
+	 *	like being triggered by a trigger_ entity.
+	 *
+	 */
 	{ "target_alien_win",         SP_target_alien_win         },
 	{ "target_delay",             SP_target_delay             },
 	{ "target_human_win",         SP_target_human_win         },
@@ -194,11 +207,17 @@ static const spawn_t spawns[] =
 	{ "target_speaker",           SP_target_speaker           },
 	{ "target_teleporter",        SP_target_teleporter        },
 
-	// Triggers are brush objects that cause an effect when contacted
-	// by a living player, usually involving firing targets.
-	// While almost everything could be done with
-	// a single trigger class and different targets, triggered effects
-	// could not be client side predicted (push and teleport).
+	/**
+	 *
+	 *	Trigger
+	 *	=======
+	 *	Triggers are brush objects that cause an effect when contacted
+	 *	by a living player, usually involving firing targets.
+	 *	While almost everything could be done with
+	 *	a single trigger class and different targets, triggered effects
+	 *	could not be client side predicted (push and teleport).
+	 *
+	 */
 	{ "trigger_always",           SP_trigger_always           },
 	{ "trigger_ammo",             SP_trigger_ammo             },
 	{ "trigger_buildable",        SP_trigger_buildable        },

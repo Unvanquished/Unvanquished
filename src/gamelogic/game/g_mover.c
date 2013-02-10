@@ -2538,11 +2538,20 @@ void Think_SetupTrainTargets( gentity_t *ent )
 	Reached_Train( ent );
 }
 
+/**
+ * Warning: The following comment contains information, that might be parsed and used by radiator based mapeditors.
+ */
 /*QUAKED path_corner (.5 .3 0) (-8 -8 -8) (8 8 8)
-Train path corners.
-Target: next path corner and other targets to fire
-"speed" speed to move to the next corner
-"wait" seconds to wait before behining move to next corner
+Path corner entity that func_trains can be made to follow.
+
+target: point to next path_corner in the path and/or other targets to fire when the path corner is reached
+targetname: [required] the train following the path or the previous path_corner in the path points to this.
+speed: speed of func_train while moving to the next path corner. This will override the speed value of the train.
+wait: number of seconds func_train will pause on path corner before moving to next path corner (default 0 - see Notes).
+
+Notes
+-----
+Setting the wait key to -1 will not make the train stop on the path corner, it will simply default to 0.
 */
 void SP_path_corner( gentity_t *self )
 {

@@ -145,8 +145,13 @@ void trigger_always_think( gentity_t *ent )
 	G_FreeEntity( ent );
 }
 
+/**
+ * Warning: The following comment contains information, that might be parsed and used by radiator based mapeditors.
+ */
 /*QUAKED trigger_always (.5 .5 .5) (-8 -8 -8) (8 8 8)
-This trigger will always fire.  It is activated by the world.
+Automatic trigger. It will fire the entities it targets as soon as it spawns in the game.
+
+target: this points to the entity to activate.
 */
 void SP_trigger_always( gentity_t *ent )
 {

@@ -329,8 +329,19 @@ void SP_target_kill( gentity_t *self )
 	self->use = target_kill_use;
 }
 
-/*QUAKED target_position (0 0.5 0) (-4 -4 -4) (4 4 4)
-Used as a positional target for in-game calculation, like jumppad targets.
+/**
+ * Warning: The following comment contains information, that might be parsed and used by radiator based mapeditors.
+ */
+/*QUAKED target_position (0 .5 0) (-8 -8 -8) (8 8 8)
+Used as a positional target for in-game calculation.
+Other entities like light, misc_portal_camera and trigger_push (jump pads)
+might use it for aiming.
+
+targetname: the name the entity that requires an aiming direction can reference
+
+Note
+----
+To make a jump pad, place this entity at the highest point of the jump and target it with a trigger_push entity.
 */
 void SP_target_position( gentity_t *self )
 {
