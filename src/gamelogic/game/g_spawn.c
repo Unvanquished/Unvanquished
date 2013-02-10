@@ -512,12 +512,26 @@ qboolean G_ParseSpawnVars( void )
 	return qtrue;
 }
 
+/**
+ * Warning: The following comment contains information, that might be parsed and used by radiator based mapeditors.
+ */
 /*QUAKED worldspawn (0 0 0) ?
+Every map should have exactly one worldspawn, which is used for global options.
 
-Every map should have exactly one worldspawn.
-"music"   music wav file
-"gravity" 800 is default gravity
-"message" Text to print during connection process
+message: Text to print during connection process. Used for the name of level.
+music: path/name of looping .wav file used for level's music (eg. music/sonic5.wav).
+gravity: level gravity [g_gravity (800)]
+
+humanBuildPoints: maximum amount of power the humans can use. [g_humanBuildPoints]
+humanRepeaterBuildPoints: maximum amount of power the humans can use around each repeater. [g_humanRepeaterBuildPoints]
+alienBuildPoints: maximum amount of sentience available to the overmind. [g_alienBuildPoints]
+
+humanMaxStage: The highest stage the humans are allowed to use (0/1/2). [g_alienMaxStage (2)]
+alienMaxStage: The highest stage the aliens are allowed to use (0/1/2). [g_humanMaxStage (2)]
+
+disabledEquipment: A comma delimited list of human weapons or upgrades to disable for this map. [g_disabledEquipment ()]
+disabledClasses: A comma delimited list of alien classes to disable for this map. [g_disabledClasses ()]
+disabledBuildables: A comma delimited list of buildables to disable for this map. [g_disabledBuildables ()]
 */
 void SP_worldspawn( void )
 {
