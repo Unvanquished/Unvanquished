@@ -146,7 +146,7 @@ void trigger_always_think( gentity_t *ent )
 }
 
 /**
- * Warning: The following comment contains information, that might be parsed and used by radiator based mapeditors.
+ * Warning: The following comment contains information, that might be parsed and used by radiant based mapeditors.
  */
 /*QUAKED trigger_always (.5 .5 .5) (-8 -8 -8) (8 8 8)
 Automatic trigger. It will fire the entities it targets as soon as it spawns in the game.
@@ -501,6 +501,9 @@ void trigger_timer_use( gentity_t *self, gentity_t *other, gentity_t *activator 
 	trigger_timer_think( self );
 }
 
+/**
+ * Warning: The following comment contains information, that might be parsed and used by radiant based mapeditors.
+ */
 /*QUAKED trigger_timer (0 .5 .8) (-8 -8 -8) (8 8 8) START_ON
 Time delay trigger that will continuously fire its targets after a preset time delay. The time delay can also be randomized. When triggered, the timer will toggle on/off.
 Formerly known as func_timer.
@@ -1227,12 +1230,12 @@ void trigger_ammo_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 
 	weapon = BG_PrimaryWeapon( other->client->ps.stats );
 
-	if ( BG_Weapon( weapon )->usesEnergy && self->spawnflags & 2 )
+	if ( BG_Weapon( weapon )->usesEnergy && ( self->spawnflags & 2 ) )
 	{
 		return;
 	}
 
-	if ( !BG_Weapon( weapon )->usesEnergy && self->spawnflags & 4 )
+	if ( !BG_Weapon( weapon )->usesEnergy && ( self->spawnflags & 4 ) )
 	{
 		return;
 	}

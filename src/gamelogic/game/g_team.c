@@ -266,7 +266,7 @@ void G_LeaveTeam( gentity_t *self )
 		if ( ent->client && ent->client->pers.connected == CON_CONNECTED )
 		{
 			// cure poison
-			if ( ent->client->ps.stats[ STAT_STATE ] & SS_POISONED &&
+			if ( ( ent->client->ps.stats[ STAT_STATE ] & SS_POISONED ) &&
 			     ent->client->lastPoisonClient == self )
 			{
 				ent->client->ps.stats[ STAT_STATE ] &= ~SS_POISONED;

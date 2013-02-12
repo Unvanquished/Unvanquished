@@ -25,14 +25,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "g_spawn.h"
 
 /**
- * Warning: The following comment contains information, that might be parsed and used by radiator based mapeditors.
+ * Warning: The following comment contains information, that might be parsed and used by radiant based mapeditors.
  */
 /*QUAKED func_group (0 0 0) ?
 Used to group brushes together just for editor convenience.  Groups are turned into whole brushes by the utilities.
 */
 
 /**
- * Warning: The following comment contains information, that might be parsed and used by radiator based mapeditors.
+ * Warning: The following comment contains information, that might be parsed and used by radiant based mapeditors.
  */
 /*QUAKED info_null (0 0.5 0) (-4 -4 -4) (4 4 4)
 Used as a positional target for calculations in the utilities (spotlights, etc), but removed during gameplay.
@@ -44,7 +44,7 @@ void SP_info_null( gentity_t *self )
 }
 
 /**
- * Warning: The following comment contains information, that might be parsed and used by radiator based mapeditors.
+ * Warning: The following comment contains information, that might be parsed and used by radiant based mapeditors.
  */
 /*QUAKED info_notnull (0 0.5 0) (-4 -4 -4) (4 4 4)
 Used as a positional target for in-game calculation, like jumppad targets.

@@ -2535,7 +2535,7 @@ void Think_SetupTrainTargets( gentity_t *ent )
 }
 
 /**
- * Warning: The following comment contains information, that might be parsed and used by radiator based mapeditors.
+ * Warning: The following comment contains information, that might be parsed and used by radiant based mapeditors.
  */
 /*QUAKED path_corner (.5 .3 0) (-8 -8 -8) (8 8 8)
 Path corner entity that func_trains can be made to follow.

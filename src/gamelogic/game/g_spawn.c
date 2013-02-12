@@ -559,7 +559,7 @@ qboolean G_ParseSpawnVars( void )
 }
 
 /**
- * Warning: The following comment contains information, that might be parsed and used by radiator based mapeditors.
+ * Warning: The following comment contains information, that might be parsed and used by radiant based mapeditors.
  */
 /*QUAKED worldspawn (0 0 0) ?
 Every map should have exactly one worldspawn, which is used for global options.
