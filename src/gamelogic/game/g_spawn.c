@@ -199,7 +199,7 @@ static const spawn_t spawns[] =
 	 *
 	 */
 	{ "target_alien_win",         SP_target_alien_win         },
-	{ "target_delay",             SP_target_delay             },
+	{ "target_delay",             SP_target_relay             }, //@Deprecated use target_relay instead
 	{ "target_human_win",         SP_target_human_win         },
 	{ "target_hurt",              SP_target_hurt              },
 	{ "target_kill",              SP_target_kill              },

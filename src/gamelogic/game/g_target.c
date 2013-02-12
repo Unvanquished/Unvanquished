@@ -26,40 +26,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 //==========================================================
 
-/*QUAKED target_delay (1 0 0) (-8 -8 -8) (8 8 8)
-"wait" seconds to pause before firing targets.
-"random" delay variance, total delay = delay +/- random seconds
-*/
-void Think_Target_Delay( gentity_t *ent )
-{
-	G_UseTargets( ent, ent->activator );
-}
-
-void Use_Target_Delay( gentity_t *ent, gentity_t *other, gentity_t *activator )
-{
-	ent->nextthink = level.time + ( ent->wait + ent->random * crandom() ) * 1000;
-	ent->think = Think_Target_Delay;
-	ent->activator = activator;
-}
-
-void SP_target_delay( gentity_t *ent )
-{
-	// check delay for backwards compatibility
-	if ( !G_SpawnFloat( "delay", "0", &ent->wait ) )
-	{
-		G_SpawnFloat( "wait", "1", &ent->wait );
-	}
-
-	if ( !ent->wait )
-	{
-		ent->wait = 1;
-	}
-
-	ent->use = Use_Target_Delay;
-}
-
-//==========================================================
-
 /*QUAKED target_score (1 0 0) (-8 -8 -8) (8 8 8)
 "count" number of points to add, default 1
 
@@ -275,19 +241,11 @@ void SP_target_teleporter( gentity_t *self )
 
 //==========================================================
 
-/**
- * Warning: The following comment contains information, that might be parsed and used by radiant based mapeditors.
- */
-/*QUAKED target_relay (0 .7 .7) (-8 -8 -8) (8 8 8) HUMAN_ONLY ALIEN_ONLY RANDOM
-This can only be activated by other triggers which will cause it in turn to activate its own targets.
--------- KEYS --------
-targetname, targetname2, targetname3, targetname3: activating trigger points to one of these.
-target, target2, target3, target4: this points to entities to activate when this entity is triggered. RANDOM chooses whether all gets executed or one gets selected Randomly.
--------- SPAWNFLAGS --------
-HUMAN_ONLY: only human team players can activate trigger.
-ALIEN_ONLY: only alien team players can activate trigger.
-RANDOM: one one of the targeted entities will be triggered at random.
-*/
+void target_relay_think_ifDelayed( gentity_t *ent )
+{
+	G_UseTargets( ent, ent->activator );
+}
+
 void target_relay_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	if ( ( self->spawnflags & 1 ) && activator && activator->client &&
@@ -316,11 +274,51 @@ void target_relay_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 		return;
 	}
 
-	G_UseTargets( self, activator );
+	if ( !self->wait && !self->random )
+	{
+		G_UseTargets( self, activator );
+	}
+	else
+	{
+		self->nextthink = level.time + ( self->wait + self->random * crandom() ) * 1000;
+		self->think = target_relay_think_ifDelayed;
+		self->activator = activator;
+	}
 }
 
+/**
+ * Warning: The following comment contains information, that might be parsed and used by radiant based mapeditors.
+ */
+/*QUAKED target_relay (0 .7 .7) (-8 -8 -8) (8 8 8) HUMAN_ONLY ALIEN_ONLY RANDOM
+This can only be activated by other triggers which will cause it in turn to activate its own targets.
+-------- KEYS --------
+targetname, targetname2, targetname3, targetname3: activating trigger points to one of these.
+target, target2, target3, target4: this points to entities to activate when this entity is triggered. RANDOM chooses whether all gets executed or one gets selected Randomly.
+-------- SPAWNFLAGS --------
+HUMAN_ONLY: only human team players can activate trigger.
+ALIEN_ONLY: only alien team players can activate trigger.
+RANDOM: one one of the targeted entities will be triggered at random.
+*/
 void SP_target_relay( gentity_t *self )
 {
+	// check delay for backwards compatibility
+	if ( !G_SpawnFloat( "delay", "0", &self->wait ) )
+	{
+		G_SpawnFloat( "wait", "0", &self->wait );
+	}
+
+	if ( !Q_stricmp(self->classname, "target_delay") )
+	{
+
+		if ( !self->wait )
+		{
+			self->wait = 1;
+		}
+
+		G_Printf( "^3WARNING: ^7reference by deprecated classname ^5%s^7 found - use ^5%s^7 instead\n", self->classname, "target_relay" );
+		self->classname = "target_relay";
+	}
+
 	self->use = target_relay_use;
 }
 

@@ -526,7 +526,7 @@ void SP_trigger_timer( gentity_t *self )
 	G_SpawnFloat( "wait", "1", &self->wait );
 
 	if(!Q_stricmp(self->classname, "func_timer")) {
-		G_Printf( "^3WARNING: ^7reference by deprecated classname ^5%s^7 found - use ^5trigger_timer^7 instead\n", self->classname );
+		G_Printf( "^3WARNING: ^7reference by deprecated classname ^5%s^7 found - use ^5%s^7 instead\n", self->classname, "trigger_timer" );
 		self->classname = "trigger_timer";
 	}
 

@@ -39,10 +39,10 @@ void    SP_func_door( gentity_t *ent );
 void    SP_func_door_rotating( gentity_t *ent );
 void    SP_func_door_model( gentity_t *ent );
 void    SP_func_train( gentity_t *ent );
-void    SP_trigger_timer( gentity_t *self );
 
 void    SP_trigger_always( gentity_t *ent );
 void    SP_trigger_multiple( gentity_t *ent );
+void    SP_trigger_timer( gentity_t *self );
 void    SP_trigger_push( gentity_t *ent );
 void    SP_trigger_teleport( gentity_t *ent );
 void    SP_trigger_hurt( gentity_t *ent );
@@ -55,7 +55,6 @@ void    SP_trigger_gravity( gentity_t *ent );
 void    SP_trigger_heal( gentity_t *ent );
 void    SP_trigger_ammo( gentity_t *ent );
 
-void    SP_target_delay( gentity_t *ent );
 void    SP_target_speaker( gentity_t *ent );
 void    SP_target_print( gentity_t *ent );
 void    SP_target_score( gentity_t *ent );
