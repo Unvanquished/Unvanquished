@@ -432,17 +432,7 @@ When triggered, this initiates a level-wide rumble effect. All players are affec
 speed: severity of the quake (default: 100)
 count: duration of the quake (default: 10)
 */
-/*QUAKED target_delay (0 .7 .7) (-8 -8 -8) (8 8 8)
-Time delay trigger intermediary. Like a target_relay, this can only be fired by other triggers which will cause it in turn to fire its own targets.
--------- KEYS --------
-targetname: activating trigger points to this.
-target: this points to entities to activate when this entity is triggered.
-wait: delay in seconds from when this gets triggered to when it fires its own targets (default approx. 1).
-delay: same as wait? replaces it? WTF?...I'm confused now.
-random: random time variance in seconds added or subtracted from "wait" delay (default 0 - see Notes).
--------- NOTES --------
-When the random key is set, its value is used to calculate a minimum and a maximum delay. The final time delay will be a random value anywhere between the minimum and maximum values: (min delay = wait - random) (max delay = wait + random).
-*/
+
 //=============================================================================
 /*QUAKED target_kill (0 .5 0) (-8 -8 -8) (8 8 8)
 This will kill the player who activates the trigger that fires this target.
