@@ -479,25 +479,14 @@ timer
 ==============================================================================
 */
 
-/*QUAKED func_timer (0.3 0.1 0.6) (-8 -8 -8) (8 8 8) START_ON
-This should be renamed trigger_timer...
-Repeatedly fires its targets.
-Can be turned on or off by using.
-
-"wait"      base time between triggering all targets, default is 1
-"random"    wait variance, default is 0
-so, the basic time between firing is a random time between
-(wait - random) and (wait + random)
-
-*/
-void func_timer_think( gentity_t *self )
+void trigger_timer_think( gentity_t *self )
 {
 	G_UseTargets( self, self->activator );
 	// set time before next firing
 	self->nextthink = level.time + 1000 * ( self->wait + crandom() * self->random );
 }
 
-void func_timer_use( gentity_t *self, gentity_t *other, gentity_t *activator )
+void trigger_timer_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	self->activator = activator;
 
@@ -509,16 +498,31 @@ void func_timer_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 	}
 
 	// turn it on
-	func_timer_think( self );
+	trigger_timer_think( self );
 }
 
-void SP_func_timer( gentity_t *self )
+/*QUAKED func_timer (0 .5 .8) (-8 -8 -8) (8 8 8) START_ON
+Time delay trigger that will continuously fire its targets after a preset time delay. The time delay can also be randomized. When triggered, the timer will toggle on/off.
+
+wait: delay in seconds between each triggering of its targets (default 1).
+random: random time variance in seconds added or subtracted from "wait" delay (default 0 - see Notes).
+target, target2, target3, target4: this points to the entities to trigger.
+targetname, targetname2, targetname3, targetname3: any triggering entity that targets one of these names will toggle the timer on/off when activated.
+
+-------- SPAWNFLAGS --------
+START_ON: timer will start on in the game and continuously fire its targets.
+
+-------- NOTES --------
+When the random key is set, its value is used to calculate a minimum and a maximum delay.
+The final time delay will be a random value anywhere between the minimum and maximum values: (min delay = wait - random) (max delay = wait + random).
+*/
+void SP_trigger_timer( gentity_t *self )
 {
 	G_SpawnFloat( "random", "1", &self->random );
 	G_SpawnFloat( "wait", "1", &self->wait );
 
-	self->use = func_timer_use;
-	self->think = func_timer_think;
+	self->use = trigger_timer_use;
+	self->think = trigger_timer_think;
 
 	if ( self->random >= self->wait )
 	{

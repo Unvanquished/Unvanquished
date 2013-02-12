@@ -161,7 +161,7 @@ static const spawn_t spawns[] =
 	{ "func_plat",                SP_func_plat                },
 	{ "func_rotating",            SP_func_rotating            },
 	{ "func_static",              SP_func_static              },
-	{ "func_timer",               SP_func_timer               }, // rename trigger_timer?
+	{ "func_timer",               SP_trigger_timer            }, //FIXME rename to trigger_timer
 	{ "func_train",               SP_func_train               },
 
 	/**
@@ -217,8 +217,10 @@ static const spawn_t spawns[] =
 	 *
 	 *	Trigger
 	 *	=======
-	 *	Triggers are brush objects that cause an effect when contacted
-	 *	by a living player, usually involving firing targets.
+	 *	Triggers are either special conditions or brush objects that
+	 *	cause an effect when contacted by a living player,
+	 *	usually involving firing targets.
+	 *
 	 *	While almost everything could be done with
 	 *	a single trigger class and different targets, triggered effects
 	 *	could not be client side predicted (push and teleport).
