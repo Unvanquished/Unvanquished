@@ -218,8 +218,9 @@ Automatic trigger. It will fire the entities it targets as soon as it spawns in 
 target, target2, target3, target4: trigger any entity matching one of these references.
 */
 
-/*QUAKED func_timer (0 .5 .8) (-8 -8 -8) (8 8 8) START_ON
+/*QUAKED trigger_timer (0 .5 .8) (-8 -8 -8) (8 8 8) START_ON
 Time delay trigger that will continuously fire its targets after a preset time delay. The time delay can also be randomized. When triggered, the timer will toggle on/off.
+Formerly known as func_timer.
 
 wait: delay in seconds between each triggering of its targets (default 1).
 random: random time variance in seconds added or subtracted from "wait" delay (default 0 - see Notes).
