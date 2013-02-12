@@ -1219,6 +1219,11 @@ void trap_Pgettext( char *buffer, const char *ctxt, const char *msgid, int buffe
 	syscall( CG_PGETTEXT, buffer, ctxt, msgid, bufferLength );
 }
 
+void trap_GettextPlural( char *buffer, const char *msgid, const char *msgid2, int number, int bufferLength )
+{
+	syscall( CG_GETTEXT_PLURAL, buffer, msgid, msgid2, number, bufferLength );
+}
+
 //181.
 //return re.inPVVS(VMA(1), VMA(2));
 qboolean trap_R_inPVVS( const vec3_t p1, const vec3_t p2 )

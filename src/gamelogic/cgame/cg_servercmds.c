@@ -1359,14 +1359,20 @@ static void CG_Print_f( void )
 CG_PrintTR_f
 =================
 */
-#define TRANSLATE_FUNC _
+#define TRANSLATE_FUNC        _
+#define PLURAL_TRANSLATE_FUNC P_
 #define Cmd_Argv CG_Argv
 #define Cmd_Argc trap_Argc
 #include "../../engine/qcommon/print_translated.h"
 
 static void CG_PrintTR_f( void )
 {
-	PrintTranslatedText_Internal();
+	PrintTranslatedText_Internal( qfalse );
+}
+
+static void CG_PrintTR_plural_f( void )
+{
+	PrintTranslatedText_Internal( qtrue );
 }
 
 /*
@@ -1510,6 +1516,7 @@ static const consoleCommand_t svcommands[] =
 	{ "poisoncloud",      CG_PoisonCloud_f        },
 	{ "print",            CG_Print_f              },
 	{ "print_tr",         CG_PrintTR_f            },
+	{ "print_tr_p",       CG_PrintTR_plural_f     },
 	{ "scores",           CG_ParseScores          },
 	{ "serverclosemenus", CG_ServerCloseMenus_f   },
 	{ "servermenu",       CG_ServerMenu_f         },

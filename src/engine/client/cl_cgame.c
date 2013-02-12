@@ -44,6 +44,7 @@ Maryland 20850 USA.
 
 #define __(x) Trans_GettextGame(x)
 #define C__(x, y) Trans_PgettextGame(x, y)
+#define P__(x, y, c) Trans_GettextGamePlural(x, y, c)
 
 static void ( *completer )( const char *s ) = NULL;
 
@@ -1226,6 +1227,11 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_PGETTEXT:
 			VM_CheckBlock( args[ 1 ], args[ 4 ], "CGPGETTEXT" );
 			strncpy( VMA( 1 ), C__( VMA( 2 ), VMA( 3 ) ), args[ 4 ] );
+			return 0;
+
+		case CG_GETTEXT_PLURAL:
+			VM_CheckBlock( args[ 1 ], args[ 5 ], "CGGETTEXTP" );
+			strncpy( VMA( 1 ), P__( VMA( 2 ), VMA( 3 ), args[ 4 ] ), args[ 5 ] );
 			return 0;
 
 		case CG_R_GLYPH:

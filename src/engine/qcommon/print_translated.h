@@ -24,24 +24,39 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // Function body for translated text printing from cgame/ui & server code
 // Macros required:
 //   TRANSLATE_FUNC            - name of the translation function, called from this code
+//   PLURAL_TRANSLATE_FUNC     - name of the translation function for plurals, called from this code
 // If needed:
 //   Cmd_Argv
 //   Cmd_Argc
 
-#ifndef TRANSLATE_FUNC
+#if !defined TRANSLATE_FUNC && !defined PLURAL_TRANSLATE_FUNC
 #error No translation function? Fail!
 #endif
 
-static void PrintTranslatedText_Internal( void )
+static void PrintTranslatedText_Internal( qboolean plural )
 {
 	char        str[ MAX_STRING_CHARS ];
 	char        buf[ MAX_STRING_CHARS ];
 	const char  *in;
 	int         c, i = 0, totalArgs;
+	int         firstTextArg;
 
 	totalArgs = Cmd_Argc();
 
-	Q_strncpyz( buf, TRANSLATE_FUNC( Cmd_Argv( 1 ) ), sizeof( buf ) );
+	if ( plural )
+	{
+		int        number = atoi( Cmd_Argv( 1 ) );
+		const char *text = Cmd_Argv( 2 );
+
+		firstTextArg = 2;
+		Q_strncpyz( buf, PLURAL_TRANSLATE_FUNC( text, text, number ), sizeof( buf ) );
+	}
+	else
+	{
+		firstTextArg = 1;
+		Q_strncpyz( buf, TRANSLATE_FUNC( Cmd_Argv( 1 ) ), sizeof( buf ) );
+	}
+
 	in = buf;
 	memset( &str, 0, sizeof( str ) );
 
@@ -70,7 +85,7 @@ static void PrintTranslatedText_Internal( void )
 
 						if( num >= 0 && num < totalArgs )
 						{
-							const char *translated = TRANSLATE_FUNC( Cmd_Argv( num + 1 ) );
+							const char *translated = TRANSLATE_FUNC( Cmd_Argv( num + firstTextArg ) );
 							int         length = strlen( translated );
 
 							i += length;
@@ -94,7 +109,7 @@ static void PrintTranslatedText_Internal( void )
 
 						if( num >= 0 && num < totalArgs )
 						{
-							const char *translated = TRANSLATE_FUNC( Cmd_Argv( num + 1 ) );
+							const char *translated = TRANSLATE_FUNC( Cmd_Argv( num + firstTextArg ) );
 							int         length = strlen( translated );
 
 							i += length;

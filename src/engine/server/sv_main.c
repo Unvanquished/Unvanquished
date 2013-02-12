@@ -209,7 +209,11 @@ void QDECL PRINTF_LIKE(2) SV_SendServerCommand( client_t *cl, const char *fmt, .
 
 	if ( com_dedicated->integer && !strncmp( ( char * ) message, "print_tr ", 9 ) )
 	{
-		SV_PrintTranslatedText( ( const char * ) message, qtrue );
+		SV_PrintTranslatedText( ( const char * ) message, qtrue, qfalse );
+	}
+	else if ( com_dedicated->integer && !strncmp( ( char * ) message, "print_tr_p ", 9 ) )
+	{
+		SV_PrintTranslatedText( ( const char * ) message, qtrue, qtrue );
 	}
 
 	// hack to echo broadcast prints to console
@@ -1464,10 +1468,11 @@ int SV_LoadTag( const char *mod_name )
  SV_PrintTranslatedText
 ========================
  */
-#define TRANSLATE_FUNC Trans_GettextGame
+#define TRANSLATE_FUNC        Trans_GettextGame
+#define PLURAL_TRANSLATE_FUNC Trans_GettextGamePlural
 #include "../qcommon/print_translated.h"
 
-void SV_PrintTranslatedText( const char *text, qboolean broadcast )
+void SV_PrintTranslatedText( const char *text, qboolean broadcast, qboolean plural )
 {
 	Cmd_SaveCmdContext();
 	Cmd_TokenizeString( text );
@@ -1477,7 +1482,7 @@ void SV_PrintTranslatedText( const char *text, qboolean broadcast )
 		Com_Printf( "Broadcast: " );
 	}
 
-	PrintTranslatedText_Internal();
+	PrintTranslatedText_Internal( plural );
 
 	Cmd_RestoreCmdContext();
 }
