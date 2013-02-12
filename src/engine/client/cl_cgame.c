@@ -1214,14 +1214,17 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_QUOTESTRING:
+			VM_CheckBlock( args[ 1 ], args[ 3 ], "QUOTE" );
 			Cmd_QuoteStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case CG_GETTEXT:
+			VM_CheckBlock( args[ 1 ], args[ 3 ], "CGGETTEXT" );
 			strncpy( VMA(1), __(VMA(2)), args[3] );
 			return 0;
 
 		case CG_PGETTEXT:
+			VM_CheckBlock( args[ 1 ], args[ 4 ], "CGPGETTEXT" );
 			strncpy( VMA( 1 ), C__( VMA( 2 ), VMA( 3 ) ), args[ 4 ] );
 			return 0;
 

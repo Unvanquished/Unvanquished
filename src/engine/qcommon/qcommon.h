@@ -1408,7 +1408,9 @@ void Com_RandomBytes( byte *string, int len );
 void Trans_Init( void );
 const char* Trans_Gettext( const char *msgid ) __attribute__((__format_arg__(1)));
 const char* Trans_Pgettext( const char *ctxt, const char *msgid ) __attribute__((__format_arg__(2)));
+const char* Trans_GettextPlural( const char *msgid, const char *msgid_plural, int num ) __attribute__((__format_arg__(1))) __attribute__((__format_arg__(2)));
 const char* Trans_GettextGame( const char *msgid ) __attribute__((__format_arg__(1)));
 const char* Trans_PgettextGame( const char *ctxt, const char *msgid ) __attribute__((__format_arg__(2)));
+const char* Trans_GettextGamePlural( const char *msgid, const char *msgid_plural, int num ) __attribute__((__format_arg__(1))) __attribute__((__format_arg__(2)));
 
 #endif // _QCOMMON_H_
