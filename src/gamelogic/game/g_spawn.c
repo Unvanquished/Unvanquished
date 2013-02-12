@@ -161,7 +161,7 @@ static const spawn_t spawns[] =
 	{ "func_plat",                SP_func_plat                },
 	{ "func_rotating",            SP_func_rotating            },
 	{ "func_static",              SP_func_static              },
-	{ "func_timer",               SP_trigger_timer            }, //FIXME rename to trigger_timer
+	{ "func_timer",               SP_trigger_timer            }, //@Deprecated use trigger_timer instead
 	{ "func_train",               SP_func_train               },
 
 	/**
@@ -238,6 +238,7 @@ static const spawn_t spawns[] =
 	{ "trigger_push",             SP_trigger_push             },
 	{ "trigger_stage",            SP_trigger_stage            },
 	{ "trigger_teleport",         SP_trigger_teleport         },
+	{ "trigger_timer",            SP_trigger_timer            },
 	{ "trigger_win",              SP_trigger_win              }
 };
 

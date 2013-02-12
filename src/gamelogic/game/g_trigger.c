@@ -501,8 +501,9 @@ void trigger_timer_use( gentity_t *self, gentity_t *other, gentity_t *activator 
 	trigger_timer_think( self );
 }
 
-/*QUAKED func_timer (0 .5 .8) (-8 -8 -8) (8 8 8) START_ON
+/*QUAKED trigger_timer (0 .5 .8) (-8 -8 -8) (8 8 8) START_ON
 Time delay trigger that will continuously fire its targets after a preset time delay. The time delay can also be randomized. When triggered, the timer will toggle on/off.
+Formerly known as func_timer.
 
 wait: delay in seconds between each triggering of its targets (default 1).
 random: random time variance in seconds added or subtracted from "wait" delay (default 0 - see Notes).
@@ -521,13 +522,18 @@ void SP_trigger_timer( gentity_t *self )
 	G_SpawnFloat( "random", "1", &self->random );
 	G_SpawnFloat( "wait", "1", &self->wait );
 
+	if(!Q_stricmp(self->classname, "func_timer")) {
+		G_Printf( "^3WARNING: ^7reference by deprecated classname ^5%s^7 found - use ^5trigger_timer^7 instead\n", self->classname );
+		self->classname = "trigger_timer";
+	}
+
 	self->use = trigger_timer_use;
 	self->think = trigger_timer_think;
 
 	if ( self->random >= self->wait )
 	{
 		self->random = self->wait - FRAMETIME;
-		G_Printf( "func_timer at %s has random >= wait\n", vtos( self->s.origin ) );
+		G_Printf( "trigger_timer at %s has random >= wait\n", vtos( self->s.origin ) );
 	}
 
 	if ( self->spawnflags & 1 )
