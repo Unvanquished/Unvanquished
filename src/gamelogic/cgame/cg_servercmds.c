@@ -1359,107 +1359,14 @@ static void CG_Print_f( void )
 CG_PrintTR_f
 =================
 */
+#define TRANSLATE_FUNC _
+#define Cmd_Argv CG_Argv
+#define Cmd_Argc trap_Argc
+#include "../../engine/qcommon/print_translated.h"
+
 static void CG_PrintTR_f( void )
 {
-	char        str[ MAX_STRING_CHARS ];
-	char        buf[ MAX_STRING_CHARS ];
-	const char  *in;
-	char        number[2] = { 0 };
-	int         i=0, j=0, totalArgs;
-
-	totalArgs = trap_Argc();
-	Q_strncpyz( buf, _( CG_Argv( 1 ) ), sizeof( buf ) );
-	in = buf;
-	memset( &str, 0, sizeof( str ) );
-
-	while( *in )
-	{
-		if( *in == '$' )
-		{
-			in++;
-
-			if( *in == '$' )
-			{
-				str[ i++ ] = *in;
-				in++;
-			}
-			else if( isdigit( *in ) )
-			{
-				number[ j++ ] = *in;
-				in++;
-
-				if( *in == 't' && *(in+1) == '$' )
-				{
-					int num = atoi( number );
-					if( num < 0 || num > totalArgs - 1 )
-					{
-						in += 2;
-						break;
-					}
-
-					i += strlen( _( CG_Argv( num + 1 ) ) );
-
-					if( i >= MAX_STRING_CHARS )
-					{
-						Com_Printf( "%s", str );
-						memset( &str, 0, sizeof( str ) );
-						i = strlen( _( CG_Argv( num + 1 ) ) );
-					}
-
-					Q_strcat( str, sizeof( str ), _( CG_Argv( num + 1 ) ) );
-					in += 2;
-					j = 0;
-				}
-				else if( *in == '$' )
-				{
-					int num = atoi( number );
-					if( num < 0 || num > totalArgs - 1 )
-					{
-						in++;
-						break;
-					}
-					i += strlen( CG_Argv( num + 1 ) );
-
-					if( i >= MAX_STRING_CHARS )
-					{
-						Com_Printf( "%s", str );
-						memset( &str, 0, sizeof( str ) );
-						i = strlen( _( CG_Argv( num + 1 ) ) );
-					}
-
-					Q_strcat( str, sizeof( str ), CG_Argv( num + 1 ) );
-					in++;
-					j = 0;
-				}
-				else
-                                {
-                                        // invalid sequence
-                                        str[ i++ ] = '$';
-                                }
-                        }
-                        else
-                        {
-                                // invalid sequence
-                                str[ i++ ] = '$';
-			}
-		}
-		else
-		{
-			if( i < MAX_STRING_CHARS )
-			{
-				str[ i++ ] = *in;
-				in++;
-			}
-			else
-			{
-				Com_Printf( "%s", str );
-				memset( &str, 0, sizeof( str ) );
-				i = 0;
-			}
-		}
-	}
-
-	Com_Printf( "%s", str );
+	PrintTranslatedText_Internal();
 }
 
 /*
