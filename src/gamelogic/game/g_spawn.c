@@ -172,8 +172,8 @@ static const spawn_t spawns[] =
 	 *	information for things controlled by other processes
 	 *
 	 */
-	{ "info_alien_intermission",  SP_info_alien_intermission  },
-	{ "info_human_intermission",  SP_info_human_intermission  },
+	{ "info_alien_intermission",  SP_info_player_intermission },
+	{ "info_human_intermission",  SP_info_player_intermission },
 	{ "info_notnull",             SP_target_position          }, //@Deprecated use target_position instead
 	{ "info_null",                SP_NULL                     }, //@Deprecated don't use it
 	{ "info_player_deathmatch",   SP_info_player_deathmatch   },
@@ -186,7 +186,7 @@ static const spawn_t spawns[] =
 	{ "misc_particle_system",     SP_misc_particle_system     },
 	{ "misc_portal_camera",       SP_misc_portal_camera       },
 	{ "misc_portal_surface",      SP_misc_portal_surface      },
-	{ "misc_teleporter_dest",     SP_misc_teleporter_dest     },
+	{ "misc_teleporter_dest",     SP_target_position          }, //@Deprecated use target_position instead (This will be the first entity to be removed)
 	{ "path_corner",              SP_path_corner              },
 
 	/**

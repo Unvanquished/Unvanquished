@@ -64,24 +64,16 @@ void SP_info_player_start( gentity_t *ent )
 	SP_info_player_deathmatch( ent );
 }
 
+/*QUAKED info_alien_intermission (1 0 1) (-16 -16 -24) (16 16 32)
+The intermission will be viewed from this point.  Target an info_notnull for the view direction.
+*/
+/*QUAKED info_human_intermission (1 0 1) (-16 -16 -24) (16 16 32)
+The intermission will be viewed from this point.  Target an info_notnull for the view direction.
+*/
 /*QUAKED info_player_intermission (1 0 1) (-16 -16 -24) (16 16 32)
 The intermission will be viewed from this point.  Target an info_notnull for the view direction.
 */
 void SP_info_player_intermission( gentity_t *ent )
-{
-}
-
-/*QUAKED info_alien_intermission (1 0 1) (-16 -16 -24) (16 16 32)
-The intermission will be viewed from this point.  Target an info_notnull for the view direction.
-*/
-void SP_info_alien_intermission( gentity_t *ent )
-{
-}
-
-/*QUAKED info_human_intermission (1 0 1) (-16 -16 -24) (16 16 32)
-The intermission will be viewed from this point.  Target an info_notnull for the view direction.
-*/
-void SP_info_human_intermission( gentity_t *ent )
 {
 }
 

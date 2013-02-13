@@ -356,10 +356,11 @@ To make a jump pad, place this entity at the highest point of the jump and targe
 */
 void SP_target_position( gentity_t *self )
 {
-	if ( !Q_stricmp(self->classname, "info_notnull") )
+	if (Q_stricmp(self->classname, "target_position") )
 	{
-		G_Entitiy_Deprecation_Alias(self, "info_notnull");
+		G_Entitiy_Deprecation_Alias(self, "target_position");
 	}
+
 	G_SetOrigin( self, self->s.origin );
 }
 

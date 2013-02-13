@@ -42,7 +42,6 @@ void SP_NULL( gentity_t *self )
 	G_FreeEntity( self );
 }
 
-
 /*
 =================================================================================
 
@@ -93,14 +92,6 @@ void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, float spee
 	}
 }
 
-/*QUAKED misc_teleporter_dest (1 0 0) (-32 -32 -24) (32 32 -16)
-Point teleporters at these.
-Now that we don't have teleport destination pads, this is just
-an info_notnull
-*/
-void SP_misc_teleporter_dest( gentity_t *ent )
-{
-}
 
 //===========================================================
 

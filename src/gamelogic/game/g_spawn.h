@@ -25,9 +25,6 @@ void    SP_info_player_start( gentity_t *ent );
 void    SP_info_player_deathmatch( gentity_t *ent );
 void    SP_info_player_intermission( gentity_t *ent );
 
-void    SP_info_alien_intermission( gentity_t *ent );
-void    SP_info_human_intermission( gentity_t *ent );
-
 void    SP_func_plat( gentity_t *ent );
 void    SP_func_static( gentity_t *ent );
 void    SP_func_dynamic( gentity_t *ent );
@@ -69,12 +66,9 @@ void    SP_target_alien_win( gentity_t *ent );
 void    SP_target_human_win( gentity_t *ent );
 void    SP_target_hurt( gentity_t *ent );
 
-void    SP_light( gentity_t *self );
 void    SP_NULL( gentity_t *self );
-void    SP_info_notnull( gentity_t *self );
 void    SP_path_corner( gentity_t *self );
 
-void    SP_misc_teleporter_dest( gentity_t *self );
 void    SP_misc_model( gentity_t *ent );
 void    SP_misc_portal_camera( gentity_t *ent );
 void    SP_misc_portal_surface( gentity_t *ent );
