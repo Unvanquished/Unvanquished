@@ -525,10 +525,7 @@ void SP_trigger_timer( gentity_t *self )
 	G_SpawnFloat( "random", "1", &self->random );
 	G_SpawnFloat( "wait", "1", &self->wait );
 
-	if(!Q_stricmp(self->classname, "func_timer"))
-	{
-		G_Entitiy_Deprecation_Alias(self, "trigger_timer");
-	}
+	G_Handle_Deprecated_Entity_Aliases(self, "trigger_timer");
 
 	self->use = trigger_timer_use;
 	self->think = trigger_timer_think;

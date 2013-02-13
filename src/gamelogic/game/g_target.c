@@ -309,14 +309,13 @@ void SP_target_relay( gentity_t *self )
 
 	if ( !Q_stricmp(self->classname, "target_delay") )
 	{
-
 		if ( !self->wait )
 		{
 			self->wait = 1;
 		}
-
-		G_Entitiy_Deprecation_Alias(self, "target_relay");
 	}
+
+	G_Handle_Deprecated_Entity_Aliases(self, "target_relay");
 
 	self->use = target_relay_use;
 }
@@ -356,11 +355,7 @@ To make a jump pad, place this entity at the highest point of the jump and targe
 */
 void SP_target_position( gentity_t *self )
 {
-	if (Q_stricmp(self->classname, "target_position") )
-	{
-		G_Entitiy_Deprecation_Alias(self, "target_position");
-	}
-
+	G_Handle_Deprecated_Entity_Aliases(self, "target_position");
 	G_SetOrigin( self, self->s.origin );
 }
 

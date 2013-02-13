@@ -465,10 +465,15 @@ void G_SpawnGEntityFromSpawnVars( void )
 	}
 }
 
-void G_Entitiy_Deprecation_Alias( gentity_t *entity, const char *replacement )
+qboolean G_Handle_Deprecated_Entity_Aliases( gentity_t *entity, const char *expectedClassname )
 {
-	G_Printf( "^3WARNING: ^7reference by deprecated classname ^5%s^7 found - use ^5%s^7 instead\n", entity->classname, replacement );
-	entity->classname = replacement;
+	if ( !Q_stricmp(entity->classname, expectedClassname) )
+		return qfalse;
+
+	G_Printf( "^3WARNING: ^7reference by deprecated classname ^5%s^7 found - use ^5%s^7 instead\n", entity->classname, expectedClassname );
+	entity->classname = expectedClassname;
+
+	return qtrue;
 }
 
 /*

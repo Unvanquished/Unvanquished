@@ -77,7 +77,10 @@ void    SP_misc_particle_system( gentity_t *ent );
 void    SP_misc_anim_model( gentity_t *ent );
 void    SP_misc_light_flare( gentity_t *ent );
 
-void	G_Entitiy_Deprecation_Alias( gentity_t *entity, const char *replacement );
+/**
+ * @return qtrue if a deprecated entity alias was found and handled, qfalse otherwise
+ */
+qboolean G_Handle_Deprecated_Entity_Aliases( gentity_t *entity, const char *expectedClassname );
 
 // Init functions
 void    SP_target_init( void );
