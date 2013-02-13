@@ -156,7 +156,7 @@ static const spawn_t spawns[] =
 	{ "func_door_model",          SP_func_door_model          },
 	{ "func_door_rotating",       SP_func_door_rotating       },
 	{ "func_dynamic",             SP_func_dynamic             },
-	{ "func_group",               SP_info_null                },
+	{ "func_group",               SP_NULL                     },
 	{ "func_pendulum",            SP_func_pendulum            },
 	{ "func_plat",                SP_func_plat                },
 	{ "func_rotating",            SP_func_rotating            },
@@ -174,12 +174,12 @@ static const spawn_t spawns[] =
 	 */
 	{ "info_alien_intermission",  SP_info_alien_intermission  },
 	{ "info_human_intermission",  SP_info_human_intermission  },
-	{ "info_notnull",             SP_info_notnull             }, //@Deprecated use target_position instead
-	{ "info_null",                SP_info_null                }, //@Deprecated use target_position instead
+	{ "info_notnull",             SP_target_position          }, //@Deprecated use target_position instead
+	{ "info_null",                SP_NULL                     }, //@Deprecated don't use it
 	{ "info_player_deathmatch",   SP_info_player_deathmatch   },
 	{ "info_player_intermission", SP_info_player_intermission },
 	{ "info_player_start",        SP_info_player_start        },
-	{ "light",                    SP_light                    },
+	{ "light",                    SP_NULL                     },
 	{ "misc_anim_model",          SP_misc_anim_model          },
 	{ "misc_light_flare",         SP_misc_light_flare         },
 	{ "misc_model",               SP_misc_model               },

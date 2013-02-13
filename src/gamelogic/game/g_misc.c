@@ -30,43 +30,18 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 /*QUAKED func_group (0 0 0) ?
 Used to group brushes together just for editor convenience.  Groups are turned into whole brushes by the utilities.
 */
-
-/**
- * Warning: The following comment contains information, that might be parsed and used by radiant based mapeditors.
- */
+/*QUAKED light (.65 .65 1) (-8 -8 -8) (8 8 8) LINEAR NOANGLE UNUSED1 UNUSED2 NOGRIDLIGHT
+Non-displayed point light source. The -pointscale and -scale arguments to Q3Map2 affect the brightness of these lights. The -skyscale argument affects brightness of entity sun lights.
+Especially a target_position is well suited for targeting.
+*/
 /*QUAKED info_null (0 0.5 0) (-4 -4 -4) (4 4 4)
 Used as a positional target for calculations in the utilities (spotlights, etc), but removed during gameplay.
-@Deprecated: use target_position instead
 */
-void SP_info_null( gentity_t *self )
+void SP_NULL( gentity_t *self )
 {
 	G_FreeEntity( self );
 }
 
-/**
- * Warning: The following comment contains information, that might be parsed and used by radiant based mapeditors.
- */
-/*QUAKED info_notnull (0 0.5 0) (-4 -4 -4) (4 4 4)
-Used as a positional target for in-game calculation, like jumppad targets.
-target_position does the same thing
-@Deprecated: use target_position instead
-*/
-void SP_info_notnull( gentity_t *self )
-{
-	G_SetOrigin( self, self->s.origin );
-}
-
-/*QUAKED light (0 1 0) (-8 -8 -8) (8 8 8) linear
-Non-displayed light.
-"light" overrides the default 300 intensity.
-Linear checkbox gives linear falloff instead of inverse square
-Lights pointed at a target will be spotlights.
-"radius" overrides the default 64 unit radius of a spotlight at the target point.
-*/
-void SP_light( gentity_t *self )
-{
-	G_FreeEntity( self );
-}
 
 /*
 =================================================================================

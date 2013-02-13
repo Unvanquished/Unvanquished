@@ -70,7 +70,7 @@ void    SP_target_human_win( gentity_t *ent );
 void    SP_target_hurt( gentity_t *ent );
 
 void    SP_light( gentity_t *self );
-void    SP_info_null( gentity_t *self );
+void    SP_NULL( gentity_t *self );
 void    SP_info_notnull( gentity_t *self );
 void    SP_path_corner( gentity_t *self );
 

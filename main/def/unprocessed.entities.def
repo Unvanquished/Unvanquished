@@ -318,21 +318,21 @@ INFO_* ENTITIES
 Camera for intermission screen between matches. Can be aimed by setting the "angles" key or targeting an pointing to an aiming entity. Use only one per level.
 -------- KEYS --------
 angles: alternate "pitch, yaw, roll" angles method of aiming intermission camera (default 0 0 0).
-target: point this to an info_notnull or target_position entity to set the camera's pointing angles.
+target: point this to an target_position entity to set the camera's pointing angles.
 */
 //=============================================================================
 /*QUAKED info_alien_intermission (1 0 1) (-8 -8 -8) (8 8 8)
 Camera for aliens before they spawn. Can be aimed by setting the "angles" key or targeting an pointing to an aiming entity. Use one per level.
 -------- KEYS --------
 angles: alternate "pitch, yaw, roll" angles method of aiming intermission camera (default 0 0 0).
-target: point this to an info_notnull or target_position entity to set the camera's pointing angles.
+target: point this to an target_position entity to set the camera's pointing angles.
 */
 //=============================================================================
 /*QUAKED info_human_intermission (1 0 1) (-8 -8 -8) (8 8 8)
 Camera for humans before they spawn. Can be aimed by setting the "angles" key or targeting an pointing to an aiming entity. Use one per level.
 -------- KEYS --------
 angles: alternate "pitch, yaw, roll" angles method of aiming intermission camera (default 0 0 0).
-target: point this to an info_notnull or target_position entity to set the camera's pointing angles.
+target: point this to an target_position entity to set the camera's pointing angles.
 */
 //=============================================================================
 MISC_* ENTITIES
@@ -395,7 +395,7 @@ Triggering this entity toggles it.
 */
 //=============================================================================
 /*QUAKED misc_portal_camera (1 .5 .25) (-8 -8 -8) (8 8 8) SLOWROTATE FASTROTATE
-Portal camera. This camera is used to project its view onto a portal surface in the level through the intermediary of a misc_portal_surface entity. Use the "angles" key or target a target_position or info_notnull entity to set the camera's pointing direction.
+Portal camera. This camera is used to project its view onto a portal surface in the level through the intermediary of a misc_portal_surface entity. Use the "angles" key or target a target_position entity to set the camera's pointing direction.
 -------- KEYS --------
 angles: this sets the pitch and yaw aiming angles of the portal camera (default 0 0). Use "roll" key to set roll angle.
 target: point this to a target_position entity to set the camera's pointing direction.
@@ -467,7 +467,7 @@ PRIVATE: only the player that activates the target will see the message.
 */
 //=============================================================================
 /*QUAKED target_push (.5 .5 .5) (-8 -8 -8) (8 8 8) BOUNCEPAD NOSOUND
-This can be used to create jump pads and launch ramps. The direction of push can be set by the "angles" key or pointing to a target_position or info_notnull entity. Unlike trigger_push, this is NOT client side predicted and must be activated by a trigger.
+This can be used to create jump pads and launch ramps. The direction of push can be set by the "angles" key or pointing to a target_position entity. Unlike trigger_push, this is NOT client side predicted and must be activated by a trigger.
 -------- KEYS --------
 angles: this sets the pitch and yaw aiming angles of push entity (default 0 0). The roll angle does not apply.
 speed: speed of push (default 1000). Has no effect if entity targets an aiming entity.
@@ -477,7 +477,7 @@ target: this points to the aiming entity to which the player will jump.
 BOUNCEPAD: if set, trigger will play bounce noise instead of beep noise when activated (recommended).
 NOSOUND: if set, no sound is played at all
 -------- NOTES --------
-To make a jump pad or launch ramp, create a trigger_multiple where the jump must originate. Place the target_push directly above the trigger_multiple and place the target_position entity at the highest point of the jump. Target the trigger_multiple to the target_push and target the target_push to the target_position/info_notnull (or set the target_push's "angles" key). Note that the "angle" key also works.
+To make a jump pad or launch ramp, create a trigger_multiple where the jump must originate. Place the target_push directly above the trigger_multiple and place the target_position entity at the highest point of the jump. Target the trigger_multiple to the target_push and target the target_push to the target_position (or set the target_push's "angles" key). Note that the "angle" key also works.
 */
 //=============================================================================
 /*QUAKED target_score (0 .5 0) (-8 -8 -8) (8 8 8)
@@ -619,11 +619,11 @@ When the random key is set, its value is used to calculate a minimum and a maxim
 */
 //=============================================================================
 /*QUAKED trigger_push (.5 .5 .5) ?
-This is used to create jump pads and launch ramps. It MUST point to a target_position or info_notnull entity to work. Unlike target_push, this is client side predicted.
+This is used to create jump pads and launch ramps. It MUST point to a target_position entity to work. Unlike target_push, this is client side predicted.
 -------- KEYS --------
 target: this points to the target_position to which the player will jump.
 -------- NOTES --------
-To make a jump pad or launch ramp, place the target_position/info_notnull entity at the highest point of the jump and target it with this entity.
+To make a jump pad or launch ramp, place the target_position entity at the highest point of the jump and target it with this entity.
 */
 //=============================================================================
 /*QUAKED trigger_teleport (.5 .5 .5) ? SPECTATOR SPAWN_DISABLED
