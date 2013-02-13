@@ -315,8 +315,7 @@ void SP_target_relay( gentity_t *self )
 			self->wait = 1;
 		}
 
-		G_Printf( "^3WARNING: ^7reference by deprecated classname ^5%s^7 found - use ^5%s^7 instead\n", self->classname, "target_relay" );
-		self->classname = "target_relay";
+		G_Entitiy_Deprecation_Alias(self, "target_relay");
 	}
 
 	self->use = target_relay_use;

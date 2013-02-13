@@ -465,6 +465,12 @@ void G_SpawnGEntityFromSpawnVars( void )
 	}
 }
 
+void G_Entitiy_Deprecation_Alias( gentity_t *entity, const char *replacement )
+{
+	G_Printf( "^3WARNING: ^7reference by deprecated classname ^5%s^7 found - use ^5%s^7 instead\n", entity->classname, replacement );
+	entity->classname = replacement;
+}
+
 /*
 ====================
 G_AddSpawnVarToken
