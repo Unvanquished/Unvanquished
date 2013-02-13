@@ -1404,6 +1404,7 @@ void Com_RandomBytes( byte *string, int len );
 #define _(x) Trans_Gettext(x)
 #define C_(x, y) Trans_Pgettext(x, y)
 #define N_(x) (x)
+#define P_(x, y, c) Trans_GettextPlural(x, y, c)
 
 void Trans_Init( void );
 const char* Trans_Gettext( const char *msgid ) __attribute__((__format_arg__(1)));

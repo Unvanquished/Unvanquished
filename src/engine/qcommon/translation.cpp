@@ -337,7 +337,7 @@ extern "C" void Trans_Init( void )
 
 	Trans_SetLanguage( language->string );
 
-	Com_Printf( _( "Loaded %lu language(s)\n" ), ( unsigned long )langs.size() );
+	Com_Printf( P_( "Loaded %u language\n", "Loaded %u languages\n", langs.size() ), ( int )langs.size() );
 }
 
 const char* Trans_Gettext_Internal( const char *msgid, DictionaryManager& manager )
