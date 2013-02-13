@@ -830,6 +830,12 @@ void Console_Key( int key )
 			g_consoleField.cursor++;
 		}
 
+		//scroll lock state 1 or smaller will scroll down on own output
+		if(con_scrollLock->integer <= 1)
+		{
+			consoleState.scrollLineIndex = consoleState.currentLine;
+		}
+
 		Com_Printf( "]%s\n", g_consoleField.buffer );
 
 		// leading slash is an explicit command

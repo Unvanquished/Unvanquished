@@ -46,7 +46,16 @@ console_t consoleState;
 
 cvar_t    *con_animationSpeed;
 cvar_t    *con_animationType;
+
 cvar_t    *con_autoclear;
+
+/**
+ * 0: no scroll lock at all, scroll down on any message ariving
+ * 1: lock scrolling if in scrollback, but scroll down for send message/entered commands
+ * 2: lock scrolling if in scrollback, even for own output
+ * 3: always lock scrolling
+ */
+cvar_t    *con_scrollLock;
 
 cvar_t	  *con_prompt;
 
@@ -484,7 +493,9 @@ void Con_Init( void )
 {
 	con_animationSpeed = Cvar_Get( "con_animationSpeed", "3", 0 );
 	con_animationType = Cvar_Get( "con_animationType", "2", 0 );
+
 	con_autoclear = Cvar_Get( "con_autoclear", "1", CVAR_ARCHIVE );
+	con_scrollLock = Cvar_Get( "con_scrollLock", "2", CVAR_ARCHIVE );
 
 	con_prompt = Cvar_Get( "con_prompt", "^3->", CVAR_ARCHIVE );
 
@@ -529,10 +540,18 @@ void Con_Linefeed( void )
 	int             i;
 	conChar_t       *line;
 	const conChar_t blank = { 0, ColorIndex( CONSOLE_COLOR ) };
+	const int scrollLockMode = con_scrollLock ? con_scrollLock->integer : 0;
 
 	consoleState.horizontalCharOffset = 0;
 
-	if ( consoleState.scrollLineIndex >= consoleState.currentLine )
+	//fall down to input line if scroll lock is configured to do so
+	if(scrollLockMode <= 0)
+	{
+		consoleState.scrollLineIndex = consoleState.currentLine;
+	}
+
+	//dont scroll a line down on a scrollock configured to do so
+	if ( consoleState.scrollLineIndex >= consoleState.currentLine && scrollLockMode < 3 )
 	{
 		consoleState.scrollLineIndex++;
 	}
