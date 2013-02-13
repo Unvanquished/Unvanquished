@@ -416,14 +416,6 @@ target: point this to a misc_portal_camera that "sees" the view you want to disp
 The entity must be no farther than 64 units away from the portal surface to lock onto it. To make a mirror, apply the common/mirror shader to the surface, place this entity near it but don't target a misc_portal_camera.
 */
 //=============================================================================
-/*QUAKED misc_teleporter_dest (1 .5 .25) (-32 -32 -24) (32 32 -16)
-Teleport destination location point for trigger_teleporter entities.
--------- KEYS --------
-angle: direction in which player will look when teleported.
-targetname: make the trigger_teleporter point to this.
-*/
-
-//=============================================================================
 TARGET_* ENTITIES
 //=============================================================================
 /*QUAKED target_rumble (1 0 0) (-8 -8 -8) (8 8 8)
