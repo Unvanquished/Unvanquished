@@ -493,27 +493,29 @@ extern cvar_t *cl_altTab;
 
 // -NERVE - SMF
 
-extern cvar_t  *cl_profile;
-extern cvar_t  *cl_defaultProfile;
+extern cvar_t *cl_profile;
+extern cvar_t *cl_defaultProfile;
 
-extern cvar_t  *cl_consoleKeys;
-extern  cvar_t *cl_consoleFont;
-extern  cvar_t *cl_consoleFontSize;
-extern  cvar_t *cl_consoleFontKerning;
-extern  cvar_t *cl_consoleCommand;
+extern cvar_t *cl_consoleKeys;
+extern cvar_t *cl_consoleFont;
+extern cvar_t *cl_consoleFontSize;
+extern cvar_t *cl_consoleFontKerning;
+extern cvar_t *cl_consoleCommand;
 
-extern	cvar_t	*cl_logs;
+extern cvar_t *cl_logs;
+
+extern cvar_t *con_scrollLock;
 
 // XreaL BEGIN
-extern cvar_t  *cl_aviFrameRate;
-extern cvar_t  *cl_aviMotionJpeg;
+extern cvar_t *cl_aviFrameRate;
+extern cvar_t *cl_aviMotionJpeg;
 // XreaL END
 
-extern cvar_t  *cl_allowPaste;
+extern cvar_t *cl_allowPaste;
 
 #ifdef USE_MUMBLE
-extern cvar_t  *cl_useMumble;
-extern cvar_t  *cl_mumbleScale;
+extern cvar_t *cl_useMumble;
+extern cvar_t *cl_mumbleScale;
 #endif
 
 #if defined(USE_VOIP) && !defined(DEDICATED)
