@@ -98,7 +98,7 @@ typedef enum
   F_STRING,
   F_VECTOR,
   F_VECTOR4,
-  F_ANGLEHACK
+  F_YAW
 } fieldtype_t;
 
 typedef struct
@@ -112,7 +112,7 @@ static const field_t fields[] =
 {
 	{ "acceleration",        FOFS( acceleration ),        F_VECTOR    },
 	{ "alpha",               FOFS( pos1 ),                F_VECTOR    },
-	{ "angle",               FOFS( s.angles ),            F_ANGLEHACK },
+	{ "angle",               FOFS( s.angles ),            F_YAW       },
 	{ "angles",              FOFS( s.angles ),            F_VECTOR    },
 	{ "animation",           FOFS( animation ),           F_VECTOR4   },
 	{ "bounce",              FOFS( physicsBounce ),       F_FLOAT     },
@@ -398,7 +398,7 @@ void G_ParseField( const char *key, const char *value, gentity_t *ent )
 			* ( float * )( b + f->ofs ) = atof( value );
 			break;
 
-		case F_ANGLEHACK:
+		case F_YAW:
 			v = atof( value );
 			( ( float * )( b + f->ofs ) ) [ 0 ] = 0;
 			( ( float * )( b + f->ofs ) ) [ 1 ] = v;
@@ -465,12 +465,12 @@ void G_SpawnGEntityFromSpawnVars( void )
 	}
 }
 
-qboolean G_Handle_Deprecated_Entity_Aliases( gentity_t *entity, const char *expectedClassname )
+qboolean G_HandleDeprecatedEntityAliases( gentity_t *entity, const char *expectedClassname )
 {
 	if ( !Q_stricmp(entity->classname, expectedClassname) )
 		return qfalse;
 
-	G_Printf( "^3WARNING: ^7reference by deprecated classname ^5%s^7 found - use ^5%s^7 instead\n", entity->classname, expectedClassname );
+	G_Printf( "^3WARNING: ^7reference by deprecated classname ^5%s^7 found — use ^5%s^7 instead\n", entity->classname, expectedClassname );
 	entity->classname = expectedClassname;
 
 	return qtrue;
