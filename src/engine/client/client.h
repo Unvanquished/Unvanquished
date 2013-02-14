@@ -493,25 +493,29 @@ extern cvar_t *cl_altTab;
 
 // -NERVE - SMF
 
-extern cvar_t  *cl_profile;
-extern cvar_t  *cl_defaultProfile;
+extern cvar_t *cl_profile;
+extern cvar_t *cl_defaultProfile;
 
-extern cvar_t  *cl_consoleKeys;
-extern  cvar_t *cl_consoleFont;
-extern  cvar_t *cl_consoleFontSize;
-extern  cvar_t *cl_consoleFontKerning;
-extern  cvar_t *cl_consoleCommand;
+extern cvar_t *cl_consoleKeys;
+extern cvar_t *cl_consoleFont;
+extern cvar_t *cl_consoleFontSize;
+extern cvar_t *cl_consoleFontKerning;
+extern cvar_t *cl_consoleCommand;
+
+extern cvar_t *cl_logs;
+
+extern cvar_t *con_scrollLock;
 
 // XreaL BEGIN
-extern cvar_t  *cl_aviFrameRate;
-extern cvar_t  *cl_aviMotionJpeg;
+extern cvar_t *cl_aviFrameRate;
+extern cvar_t *cl_aviMotionJpeg;
 // XreaL END
 
-extern cvar_t  *cl_allowPaste;
+extern cvar_t *cl_allowPaste;
 
 #ifdef USE_MUMBLE
-extern cvar_t  *cl_useMumble;
-extern cvar_t  *cl_mumbleScale;
+extern cvar_t *cl_useMumble;
+extern cvar_t *cl_mumbleScale;
 #endif
 
 #if defined(USE_VOIP) && !defined(DEDICATED)
@@ -661,12 +665,7 @@ qboolean CL_UpdateVisiblePings_f( int source );
 //
 // console
 //
-#define NUM_CON_TIMES    4
-
-//#define       CON_TEXTSIZE    32768
-#define     CON_TEXTSIZE 65536 // (SA) DM wants more console...
-#define     CON_LINECOUNT  512
-
+#define     CON_TEXTSIZE 65536
 #define     CONSOLE_FONT_VPADDING 0.3
 
 typedef struct
@@ -677,39 +676,58 @@ typedef struct
 
 typedef struct
 {
+	int top;
+	int bottom;
+	/* the sides of the console always get treated equally */
+	int sides;
+} consoleBoxWidth_t;
+
+typedef struct
+{
 	qboolean initialized;
 
 	conChar_t text[ CON_TEXTSIZE ];
 
 	int      currentLine; // line where next message will be printed
-	int      x; // offset in current line for next print
-	int      bottomDisplayedLine; // bottom of console displays this line
+	int      horizontalCharOffset; // offset in current line for next print
+
+	int      lastReadLineIndex; // keep track fo the last read line, so we can show the user, what was added since he last opened the console
+	int      scrollLineIndex; // bottom of console is supposed displays this line
+	float    bottomDisplayedLine; // bottom of console displays this line, is trying to move towards:
 
 	int      textWidthInChars; // characters across screen
-	int      scrollbackLengthInLines; // total lines in console scrollback
+	int      maxScrollbackLengthInLines; // total lines in console scrollback
+
+	/**
+	 * amount of lines in the scrollback that are filled with text,
+	 * so we e.g. can keep track how far it makes sense to scroll back
+	 */
+	int      usedScrollbackLengthInLines;
 
 	/**
 	 * the amount of lines that fit onto the screen
 	 */
-	int 	visibleAmountOfLines;
-	/**
-	 * the vertical distance from the consoletext to the border in pixel
-	 */
-	int      verticalVidPaddingTop, verticalVidPaddingBottom;
-	/**
-	 * the horiztontal distance from the consoletext to the border in pixel
-	 */
-	int    horizontalVidPadding;
-	/**
-	 * the vertical distance from the console to the screen in pixel
-	 */
-	int	   verticalVidMargin;
-	/**
-	 * the horiztontal distance from the console to the screen in pixel
-	 */
-	int	   horizontalVidMargin;
+	int      visibleAmountOfLines;
 
-	int      borderWidth, topBorderWidth;
+	/**
+	 * the distances from the consoleborder to the screen in pixel
+	 */
+	consoleBoxWidth_t margin;
+
+	/**
+	 * the (optionally colored) gap between margin and padding
+	 */
+	consoleBoxWidth_t border;
+
+	/**
+	 * the distances from the consoletext to the border in pixel
+	 */
+	consoleBoxWidth_t padding;
+
+	/**
+	 * current console-content height in pixel from border to border (paddings are part of the content)
+	 */
+	int height;
 
 	float    currentAnimationFraction; // changes between 0.0 and 1.0 at scr_conspeed
 	qboolean isOpened;
@@ -721,8 +739,6 @@ typedef struct
 	 * console as a whole
 	 */
 	float    currentAlphaFactor;
-
-	int      times[ NUM_CON_TIMES ]; // cls.realtime time the line was generated
 } console_t;
 
 extern console_t consoleState;
@@ -734,12 +750,15 @@ void             Con_Init( void );
 void             Con_Clear_f( void );
 void             Con_ToggleConsole_f( void );
 void             Con_OpenConsole_f( void );
-void             Con_DrawNotify( void );
-void             Con_ClearNotify( void );
-void             Con_RunConsole( void );
+void             Con_DrawRightFloatingTextLine( const int linePosition, const float *color, const char* text );
 void             Con_DrawConsole( void );
+void             Con_RunConsole( void );
 void             Con_PageUp( void );
 void             Con_PageDown( void );
+void             Con_JumpUp( void );
+void             Con_ScrollUp( int lines );
+void             Con_ScrollDown( int lines );
+void             Con_ScrollToMarkerLine( void );
 void             Con_ScrollToTop( void );
 void             Con_ScrollToBottom( void );
 void             Con_Close( void );
@@ -758,6 +777,7 @@ void  SCR_DebugGraph( float value, int color );
 int   SCR_GetBigStringWidth( const char *str );  // returns in virtual 640x480 coordinates
 
 void  SCR_AdjustFrom640( float *x, float *y, float *w, float *h );
+void  SCR_FillAdjustedRect( float x, float y, float width, float height, const float *color );
 void  SCR_FillRect( float x, float y, float width, float height, const float *color );
 void  SCR_DrawPic( float x, float y, float width, float height, qhandle_t hShader );
 void  SCR_DrawNamedPic( float x, float y, float width, float height, const char *picname );
@@ -858,3 +878,11 @@ qboolean CL_VideoRecording( void );
 void CL_WriteDemoMessage( msg_t *msg, int headerBytes );
 void CL_RequestMotd( void );
 void CL_GetClipboardData( char *, int, clipboard_t );
+
+//
+// cl_logs.c
+//
+void CL_OpenClientLog(void);
+void CL_CloseClientLog(void);
+void CL_WriteClientLog( char *text );
+void CL_WriteClientChatLog( char *text );

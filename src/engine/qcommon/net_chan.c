@@ -713,7 +713,7 @@ void NET_SendPacket( netsrc_t sock, int length, const void *data, netadr_t to )
 	}
 }
 
-void INLINE NET_SetOOBHeader( char *s )
+static INLINE void NET_SetOOBHeader( char *s )
 {
 	byte i;
 

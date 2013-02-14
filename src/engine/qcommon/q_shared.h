@@ -121,7 +121,12 @@ extern "C" {
 #pragma warning(disable : 4133) // 'function' : incompatible types - from 'unsigned long *' to 'const time_t *'
 #pragma warning(disable : 4127) // conditional expression is constant
 #pragma warning(disable : 4389) // '==' : signed/unsigned mismatch
+
+#elif defined __clang__
+#pragma clang diagnostic fatal "-Wdeclaration-after-statement"
 #endif
+
+
 
 #if defined( ppc ) || defined( __ppc ) || defined( __ppc__ ) || defined( __POWERPC__ )
 #define idppc 1
@@ -172,7 +177,8 @@ extern int memcmp( void *, void *, size_t );
 #define _GNU_SOURCE
 #define _BSD_SOURCE
 #define _XOPEN_SOURCE_EXTENDED
-#ifndef __APPLE__ // defining the following breaks things on Mac OS X
+#if !(defined(__APPLE__) || defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || defined(__DragonFly__))
+// defining the following breaks things on BSD-esque OSes
 #undef _XOPEN_SOURCE
 #undef _POSIX_C_SOURCE
 #define _XOPEN_SOURCE 500

@@ -830,6 +830,12 @@ void Console_Key( int key )
 			g_consoleField.cursor++;
 		}
 
+		//scroll lock state 1 or smaller will scroll down on own output
+		if(con_scrollLock->integer <= 1)
+		{
+			consoleState.scrollLineIndex = consoleState.currentLine;
+		}
+
 		Com_Printf( "]%s\n", g_consoleField.buffer );
 
 		// leading slash is an explicit command
@@ -918,8 +924,7 @@ void Console_Key( int key )
 
 		if ( keys[ K_CTRL ].down ) // hold <ctrl> to accelerate scrolling
 		{
-			Con_PageUp();
-			Con_PageUp();
+			Con_ScrollUp( consoleState.visibleAmountOfLines );
 		}
 
 		return;
@@ -931,8 +936,7 @@ void Console_Key( int key )
 
 		if ( keys[ K_CTRL ].down ) // hold <ctrl> to accelerate scrolling
 		{
-			Con_PageDown();
-			Con_PageDown();
+			Con_ScrollDown( consoleState.visibleAmountOfLines );
 		}
 
 		return;
@@ -941,7 +945,7 @@ void Console_Key( int key )
 	// ctrl-home = top of console
 	if ( ( key == K_HOME || key == K_KP_HOME ) && keys[ K_CTRL ].down )
 	{
-		Con_ScrollToTop();
+		Con_JumpUp();
 		return;
 	}
 
