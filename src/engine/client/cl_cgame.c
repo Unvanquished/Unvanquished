@@ -1432,6 +1432,8 @@ void CL_InitCGame( void )
 
 	// Ridah, update the memory usage file
 	CL_UpdateLevelHunkUsage();
+	
+	CL_WriteClientLog( va("`~=-----------------=~`\n MAP: %s \n`~=-----------------=~`\n", mapname ) );
 
 //  if( cl_autorecord->integer ) {
 //      Cvar_Set( "g_synchronousClients", "1" );

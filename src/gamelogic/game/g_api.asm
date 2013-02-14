@@ -13,6 +13,7 @@ equ atan2                                 -10
 equ sqrt                                  -11
 equ floor                                 -12
 equ ceil                                  -13
+equ exp                                   -14
 equ trap_SyscallABIVersion                -256
 equ trap_Print                            -257
 equ trap_Error                            -258

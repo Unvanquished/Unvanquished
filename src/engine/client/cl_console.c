@@ -46,7 +46,16 @@ console_t consoleState;
 
 cvar_t    *con_animationSpeed;
 cvar_t    *con_animationType;
+
 cvar_t    *con_autoclear;
+
+/**
+ * 0: no scroll lock at all, scroll down on any message ariving
+ * 1: lock scrolling if in scrollback, but scroll down for send message/entered commands
+ * 2: lock scrolling if in scrollback, even for own output
+ * 3: always lock scrolling
+ */
+cvar_t    *con_scrollLock;
 
 cvar_t	  *con_prompt;
 
@@ -484,7 +493,9 @@ void Con_Init( void )
 {
 	con_animationSpeed = Cvar_Get( "con_animationSpeed", "3", 0 );
 	con_animationType = Cvar_Get( "con_animationType", "2", 0 );
+
 	con_autoclear = Cvar_Get( "con_autoclear", "1", CVAR_ARCHIVE );
+	con_scrollLock = Cvar_Get( "con_scrollLock", "2", CVAR_ARCHIVE );
 
 	con_prompt = Cvar_Get( "con_prompt", "^3->", CVAR_ARCHIVE );
 
@@ -529,10 +540,18 @@ void Con_Linefeed( void )
 	int             i;
 	conChar_t       *line;
 	const conChar_t blank = { 0, ColorIndex( CONSOLE_COLOR ) };
+	const int scrollLockMode = con_scrollLock ? con_scrollLock->integer : 0;
 
 	consoleState.horizontalCharOffset = 0;
 
-	if ( consoleState.scrollLineIndex >= consoleState.currentLine )
+	//fall down to input line if scroll lock is configured to do so
+	if(scrollLockMode <= 0)
+	{
+		consoleState.scrollLineIndex = consoleState.currentLine;
+	}
+
+	//dont scroll a line down on a scrollock configured to do so
+	if ( consoleState.scrollLineIndex >= consoleState.currentLine && scrollLockMode < 3 )
 	{
 		consoleState.scrollLineIndex++;
 	}
@@ -568,6 +587,8 @@ void CL_ConsolePrint( char *txt )
 	int      y;
 	int      c, i, l;
 	int      color;
+	
+	CL_WriteClientChatLog( txt );
 
 	// for some demos we don't want to ever show anything on the console
 	if ( cl_noprint && cl_noprint->integer )
@@ -883,6 +904,24 @@ void Con_DrawConsoleScrollbar( void )
 	}
 }
 
+void Con_DrawScrollbackMarkerline( int lineDrawPosition )
+{
+	vec4_t color;
+
+	//to not run into the scrollbar
+	const int scrollBarImpliedPadding = 2 * consoleState.padding.sides + 2 * consoleState.border.sides;
+
+	color[ 0 ] = 0.8f;
+	color[ 1 ] = 0.0f;
+	color[ 2 ] = 0.0f;
+	color[ 3 ] = 0.5f * consoleState.currentAlphaFactor;
+
+	SCR_FillRect(	consoleState.margin.sides + consoleState.border.sides + consoleState.padding.sides/2,
+					lineDrawPosition + SCR_ConsoleFontCharVPadding(),
+					cls.glconfig.vidWidth - 2 * consoleState.margin.sides - 2 * consoleState.border.sides - consoleState.padding.sides/2 - scrollBarImpliedPadding,
+					1, color );
+}
+
 /*
 ================
 Con_MarginFadeAlpha
@@ -993,6 +1032,13 @@ void Con_DrawConsoleContent( void )
 		{
 			// past scrollback wrap point
 			continue;
+		}
+
+		if ( row == consoleState.lastReadLineIndex - 1
+			&& consoleState.lastReadLineIndex != consoleState.currentLine
+			&& consoleState.currentLine - consoleState.lastReadLineIndex < consoleState.usedScrollbackLengthInLines)
+		{
+			Con_DrawScrollbackMarkerline( lineDrawPosition );
 		}
 
 		text = consoleState.text + CON_LINE( row );
@@ -1240,9 +1286,10 @@ void Con_RunConsole( void )
 	{
 		consoleState.currentAnimationFraction -= con_animationSpeed->value * cls.realFrametime * 0.001;
 
-		if ( consoleState.currentAnimationFraction < 0  || con_animationType->integer == ANIMATION_TYPE_NONE )
-		{
+		if ( consoleState.currentAnimationFraction <= 0  || con_animationType->integer == ANIMATION_TYPE_NONE )
+		{	//we are closed, do some last onClose work
 			consoleState.currentAnimationFraction = 0;
+			consoleState.lastReadLineIndex = consoleState.currentLine;
 		}
 	}
 	else if ( consoleState.isOpened > consoleState.currentAnimationFraction )
@@ -1274,16 +1321,32 @@ void Con_RunConsole( void )
 				consoleState.bottomDisplayedLine = consoleState.scrollLineIndex;
 			}
 		}
+	} else {
+		/*
+		 * if we are not visible, its better to do an instant update
+		 * skipping it entirely would lead to retrospective/delayed scrolling on opening
+		 */
+		consoleState.bottomDisplayedLine = consoleState.scrollLineIndex;
 	}
 }
 
 void Con_PageUp( void )
 {
+	Con_ScrollUp( consoleState.visibleAmountOfLines/2 );
+}
+
+void Con_PageDown( void )
+{
+	Con_ScrollDown( consoleState.visibleAmountOfLines/2 );
+}
+
+void Con_ScrollUp( int lines )
+{
 	//do not scroll if there isn't enough to scroll
 	if(consoleState.usedScrollbackLengthInLines < consoleState.visibleAmountOfLines)
 		return;
 
-	consoleState.scrollLineIndex -= consoleState.visibleAmountOfLines/2;
+	consoleState.scrollLineIndex -= lines;
 
 	if ( consoleState.scrollLineIndex < consoleState.currentLine - consoleState.usedScrollbackLengthInLines
 			+ MIN(consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines) )
@@ -1292,14 +1355,21 @@ void Con_PageUp( void )
 	}
 }
 
-void Con_PageDown( void )
+void Con_ScrollDown( int lines )
 {
-	consoleState.scrollLineIndex += consoleState.visibleAmountOfLines/2;
+	consoleState.scrollLineIndex += lines;
 
 	if ( consoleState.scrollLineIndex > consoleState.currentLine )
 	{
 		consoleState.scrollLineIndex = consoleState.currentLine;
 	}
+}
+
+void Con_ScrollToMarkerLine( void )
+{
+	consoleState.scrollLineIndex = MAX(consoleState.lastReadLineIndex, consoleState.currentLine - consoleState.usedScrollbackLengthInLines)
+			+ MIN(consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines);
+	//consoleState.bottomDisplayedLine = consoleState.scrollLineIndex;
 }
 
 void Con_ScrollToTop( void )
@@ -1312,8 +1382,24 @@ void Con_ScrollToTop( void )
 
 void Con_ScrollToBottom( void )
 {
-	//consoleState.bottomDisplayedLine = consoleState.currentLine;
 	consoleState.scrollLineIndex = consoleState.currentLine;
+	//consoleState.bottomDisplayedLine = consoleState.currentLine;
+}
+
+void Con_JumpUp( void )
+{
+	if ( consoleState.lastReadLineIndex &&
+		 consoleState.scrollLineIndex > consoleState.lastReadLineIndex + MIN(consoleState.visibleAmountOfLines, consoleState.usedScrollbackLengthInLines)
+	   //&& consoleState.currentLine - consoleState.lastReadLineIndex > consoleState.visibleAmountOfLines
+	   )
+	{
+		Con_ScrollToMarkerLine( );
+	}
+	else
+	{
+		Con_ScrollToTop( );
+	}
+
 }
 
 void Con_Close( void )

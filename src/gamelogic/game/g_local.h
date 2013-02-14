@@ -699,11 +699,11 @@ typedef struct
 	int              numLiveAlienClients;
 	int              numLiveHumanClients;
 
-	int              totalResources;
 	int              alienBuildPoints;
 	float            queuedAlienPoints;
 	int              humanBuildPoints;
 	float            queuedHumanPoints;
+	float            mineRate;
 
 	gentity_t        *markedBuildables[ MAX_GENTITIES ];
 	int              numBuildablesForRemoval;
@@ -1233,8 +1233,6 @@ extern  vmCvar_t pmove_fixed;
 extern  vmCvar_t pmove_msec;
 extern  vmCvar_t pmove_accurate;
 
-extern  vmCvar_t g_mineRate;
-extern  vmCvar_t g_totalResources;
 extern  vmCvar_t g_humanStage;
 extern  vmCvar_t g_humanCredits;
 extern  vmCvar_t g_humanMaxStage;
