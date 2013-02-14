@@ -1215,6 +1215,12 @@ extern "C" int NavMain(int argc, char **argv)
 	/* note it */
 	Sys_Printf("--- Nav ---\n");
 
+	if(argc < 2)
+	{
+		Sys_Printf("Usage: owmap -nav [-cellheight f] [-stepsize f] [-includecaulk] [-nogapfilter] <mapname>\n");
+		return 0;
+	}
+
 	/* process arguments */
 	for(i = 1; i < (argc - 1); i++)
 	{
@@ -1226,9 +1232,16 @@ extern "C" int NavMain(int argc, char **argv)
 					cellHeight = temp;
 				}
 			}
-
-		} else if (!Q_stricmp(argv[i], "-optimistic")){
-			stepSize = 20;
+		} else if (!Q_stricmp(argv[i], "-stepsize")) {
+			i++;
+			if(i<(argc - 1)) {
+				temp = atof(argv[i]);
+				if(temp > 0) {
+					stepSize = temp;
+				}
+			}
+		} else if(!Q_stricmp(argv[i], "-includecaulk")) {
+			excludeCaulk = qfalse;
 		} else if(!Q_stricmp(argv[i], "-nogapfilter")) {
 			filterGaps = qfalse;
 		} else {
