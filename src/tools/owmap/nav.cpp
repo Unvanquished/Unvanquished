@@ -1254,7 +1254,21 @@ extern "C" int NavMain(int argc, char **argv)
 	if(height / cellHeight > RC_SPAN_MAX_HEIGHT) {
 		Sys_Printf("WARNING: Map geometry is too tall for specified cell height. Increasing cell height to compensate. This may cause a less accurate navmesh.\n");
 		float prevCellHeight = cellHeight;
-		cellHeight = height / RC_SPAN_MAX_HEIGHT + 0.1;
+		float minCellHeight = height / RC_SPAN_MAX_HEIGHT;
+
+		int divisor = ( int ) stepSize;
+
+		while ( divisor && cellHeight < minCellHeight )
+		{
+			cellHeight = stepSize / divisor;
+			divisor--;
+		}
+
+		if ( !divisor )
+		{
+			Error( "ERROR: Map is too tall to generate a navigation mesh\n" );
+		}
+
 		Sys_Printf("Previous cellheight: %f\n", prevCellHeight);
 		Sys_Printf("New cellheight: %f\n", cellHeight);
 	}
