@@ -1360,7 +1360,7 @@ void ALeech_Think( gentity_t *self )
 		float     rate;
 		gentity_t *rgs;
 
-		rate = g_mineRate.value;
+		rate = level.mineRate;
 
 		VectorAdd( self->s.origin, range, maxs );
 		VectorSubtract( self->s.origin, range, mins );
@@ -2852,7 +2852,7 @@ void HDrill_Think( gentity_t *self )
 		float     rate;
 		gentity_t *rgs;
 
-		rate = g_mineRate.value;
+		rate = level.mineRate;
 
 		VectorAdd( self->s.origin, range, maxs );
 		VectorSubtract( self->s.origin, range, mins );
