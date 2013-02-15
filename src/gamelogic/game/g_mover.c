@@ -2180,8 +2180,10 @@ void SP_func_plat( gentity_t *ent )
 
 	G_SpawnFloat( "speed", "200", &ent->speed );
 	G_SpawnInt( "dmg", "2", &ent->damage );
-	G_SpawnFloat( "wait", "1", &ent->wait );
 	G_SpawnFloat( "lip", "8", &lip );
+
+	if(!ent->wait)
+		ent->wait = 1.0f;
 
 	ent->wait = 1000;
 

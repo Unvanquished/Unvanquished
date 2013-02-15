@@ -115,8 +115,8 @@ so, the basic time between firing is a random time between
 */
 void SP_trigger_multiple( gentity_t *ent )
 {
-	G_SpawnFloat( "wait", "0.5", &ent->wait );
-	G_SpawnFloat( "random", "0", &ent->waitVariance );
+	if (!ent->wait)
+		ent->wait = 0.5f;
 
 	if ( ent->waitVariance >= ent->wait && ent->wait >= 0 )
 	{
@@ -522,8 +522,11 @@ The final time delay will be a random value anywhere between the minimum and max
 */
 void SP_trigger_timer( gentity_t *self )
 {
-	G_SpawnFloat( "random", "1", &self->waitVariance );
-	G_SpawnFloat( "wait", "1", &self->wait );
+	if (!self->wait)
+		self->wait = 1.0f;
+
+	if (!self->waitVariance)
+		self->waitVariance = 1.0f;
 
 	G_HandleDeprecatedEntityAliases(self, "trigger_timer");
 
@@ -719,8 +722,8 @@ void SP_trigger_buildable( gentity_t *self )
 {
 	char *buffer;
 
-	G_SpawnFloat( "wait", "0.5", &self->wait );
-	G_SpawnFloat( "random", "0", &self->waitVariance );
+	if (!self->wait)
+		self->wait = 0.5f;
 
 	if ( self->waitVariance >= self->wait && self->wait >= 0 )
 	{
@@ -868,8 +871,8 @@ void SP_trigger_class( gentity_t *self )
 {
 	char *buffer;
 
-	G_SpawnFloat( "wait", "0.5", &self->wait );
-	G_SpawnFloat( "random", "0", &self->waitVariance );
+	if (!self->wait)
+		self->wait = 0.5f;
 
 	if ( self->waitVariance >= self->wait && self->wait >= 0 )
 	{
@@ -1025,8 +1028,8 @@ void SP_trigger_equipment( gentity_t *self )
 {
 	char *buffer;
 
-	G_SpawnFloat( "wait", "0.5", &self->wait );
-	G_SpawnFloat( "random", "0", &self->waitVariance );
+	if (!self->wait)
+		self->wait = 0.5f;
 
 	if ( self->waitVariance >= self->wait && self->wait >= 0 )
 	{
