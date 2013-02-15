@@ -1174,7 +1174,7 @@ static void BuildNavMesh( int characterNum )
 	cfg.mergeRegionArea = rcSqr( 50 );
 	cfg.maxVertsPerPoly = 6;
 	cfg.tileSize = ts;
-	cfg.borderSize = cfg.walkableRadius + 3;
+	cfg.borderSize = cfg.walkableRadius * 2;
 	cfg.width = cfg.tileSize + cfg.borderSize * 2;
 	cfg.height = cfg.tileSize + cfg.borderSize * 2;
 	cfg.detailSampleDist = cfg.cs * 6.0f;
