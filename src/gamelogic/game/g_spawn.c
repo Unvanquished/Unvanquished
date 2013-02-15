@@ -104,7 +104,7 @@ typedef enum
 typedef struct
 {
 	const char  *name;
-	size_t      ofs;
+	size_t      offset;
 	fieldtype_t type;
 } field_t;
 
@@ -359,60 +359,60 @@ Takes a key/value pair and sets the binary values
 in a gentity
 ===============
 */
-void G_ParseField( const char *key, const char *value, gentity_t *ent )
+void G_ParseField( const char *key, const char *value, gentity_t *entity )
 {
-	field_t *f;
-	byte    *b;
+	field_t *resultingField;
+	byte    *entityData;
 	float   v;
 	vec3_t  vec;
 	vec4_t  vec4;
 
-	f = bsearch( key, fields, ARRAY_LEN( fields ),
+	resultingField = bsearch( key, fields, ARRAY_LEN( fields ),
 	             sizeof( field_t ), cmdcmp );
 
-	if ( !f )
+	if ( !resultingField )
 	{
 		return;
 	}
 
-	b = ( byte * ) ent;
+	entityData = ( byte * ) entity;
 
-	switch ( f->type )
+	switch ( resultingField->type )
 	{
 		case F_STRING:
-			* ( char ** )( b + f->ofs ) = G_NewString( value );
+			* ( char ** )( entityData + resultingField->offset ) = G_NewString( value );
 			break;
 
 		case F_VECTOR:
 			sscanf( value, "%f %f %f", &vec[ 0 ], &vec[ 1 ], &vec[ 2 ] );
 
-			( ( float * )( b + f->ofs ) ) [ 0 ] = vec[ 0 ];
-			( ( float * )( b + f->ofs ) ) [ 1 ] = vec[ 1 ];
-			( ( float * )( b + f->ofs ) ) [ 2 ] = vec[ 2 ];
+			( ( float * )( entityData + resultingField->offset ) ) [ 0 ] = vec[ 0 ];
+			( ( float * )( entityData + resultingField->offset ) ) [ 1 ] = vec[ 1 ];
+			( ( float * )( entityData + resultingField->offset ) ) [ 2 ] = vec[ 2 ];
 			break;
 
 		case F_VECTOR4:
 			sscanf( value, "%f %f %f %f", &vec4[ 0 ], &vec4[ 1 ], &vec4[ 2 ], &vec4[ 3 ] );
 
-			( ( float * )( b + f->ofs ) ) [ 0 ] = vec4[ 0 ];
-			( ( float * )( b + f->ofs ) ) [ 1 ] = vec4[ 1 ];
-			( ( float * )( b + f->ofs ) ) [ 2 ] = vec4[ 2 ];
-			( ( float * )( b + f->ofs ) ) [ 3 ] = vec4[ 3 ];
+			( ( float * )( entityData + resultingField->offset ) ) [ 0 ] = vec4[ 0 ];
+			( ( float * )( entityData + resultingField->offset ) ) [ 1 ] = vec4[ 1 ];
+			( ( float * )( entityData + resultingField->offset ) ) [ 2 ] = vec4[ 2 ];
+			( ( float * )( entityData + resultingField->offset ) ) [ 3 ] = vec4[ 3 ];
 			break;
 
 		case F_INT:
-			* ( int * )( b + f->ofs ) = atoi( value );
+			* ( int * )( entityData + resultingField->offset ) = atoi( value );
 			break;
 
 		case F_FLOAT:
-			* ( float * )( b + f->ofs ) = atof( value );
+			* ( float * )( entityData + resultingField->offset ) = atof( value );
 			break;
 
 		case F_YAW:
 			v = atof( value );
-			( ( float * )( b + f->ofs ) ) [ 0 ] = 0;
-			( ( float * )( b + f->ofs ) ) [ 1 ] = v;
-			( ( float * )( b + f->ofs ) ) [ 2 ] = 0;
+			( ( float * )( entityData + resultingField->offset ) ) [ 0 ] = 0;
+			( ( float * )( entityData + resultingField->offset ) ) [ 1 ] = v;
+			( ( float * )( entityData + resultingField->offset ) ) [ 2 ] = 0;
 			break;
 	}
 }
