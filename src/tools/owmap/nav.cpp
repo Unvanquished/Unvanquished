@@ -187,7 +187,7 @@ static void LoadBrushTris(std::vector<float> &verts, std::vector<int> &tris) {
 		int firstSide = bspBrushes[i].firstSide;
 		bspShader_t *brushShader = &bspShaders[bspBrushes[i].shaderNum];
 
-		if(!(brushShader->contentFlags & (CONTENTS_SOLID | CONTENTS_PLAYERCLIP | CONTENTS_BODY | CONTENTS_BOTCLIP)))
+		if(!(brushShader->contentFlags & (CONTENTS_SOLID | CONTENTS_PLAYERCLIP)))
 				continue;
 		/* walk the list of brush sides */
 		for(int p = 0; p < numSides; p++)
