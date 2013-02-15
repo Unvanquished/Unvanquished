@@ -534,7 +534,49 @@ static void CM_SubdivideGridColumns( cGrid_t *grid )
 		// or subdivided farther, so don't advance i
 	}
 }
+
+static qboolean BoundsIntersect( const vec3_t mins, const vec3_t maxs, const vec3_t mins2, const vec3_t maxs2 )
+{
+	if ( maxs[ 0 ] < mins2[ 0 ] ||
+	     maxs[ 1 ] < mins2[ 1 ] || maxs[ 2 ] < mins2[ 2 ] || mins[ 0 ] > maxs2[ 0 ] || mins[ 1 ] > maxs2[ 1 ] || mins[ 2 ] > maxs2[ 2 ] )
+	{
+		return qfalse;
+	}
+
+	return qtrue;
+}
+
 static void LoadPatchTris(std::vector<float> &verts, std::vector<int> &tris) {
+	
+	vec3_t mins, maxs;
+	
+	/* 
+		Patches are not used during the bsp building process where
+		the generated portals are flooded through from all entity positions
+		if even one entity reaches the void, the map will not be compiled
+		Therefore, we can assume that any patch which lies outside the collective
+		bounds of the brushes cannot be reached by entitys
+	*/
+
+	// calculate bounds of all verts
+	rcCalcBounds( &verts[ 0 ], verts.size() / 3, mins, maxs );
+
+	// convert from recast to quake3 coordinates
+	recast2quake( mins );
+	recast2quake( maxs );
+
+	vec3_t tmin, tmax;
+
+	// need to recalculate mins and maxs because they no longer represent 
+	// the minimum and maximum vector components respectively
+	ClearBounds( tmin, tmax );
+
+	AddPointToBounds( mins, tmin, tmax );
+	AddPointToBounds( maxs, tmin, tmax );
+
+	VectorCopy( tmin, mins );
+	VectorCopy( tmax, maxs );
+
 	/* get model, index 0 is worldspawn entity */
 	const bspModel_t *model = &bspModels[0];
 	for ( int k = model->firstBSPSurface, n = 0; n < model->numBSPSurfaces; k++,n++)
@@ -561,9 +603,27 @@ static void LoadPatchTris(std::vector<float> &verts, std::vector<int> &tris) {
 		grid.wrapWidth = qfalse;
 
 		bspDrawVert_t *curveVerts = &bspDrawVerts[surface->firstVert];
+
+		// make sure the patch intersects the bounds of the brushes
+		ClearBounds( tmin, tmax );
+
 		for (int x = 0; x < grid.width; x++ )
 		{
-			for ( int y=0;y < grid.height;y++)
+			for (int y = 0; y < grid.height; y++)
+			{
+				AddPointToBounds( curveVerts[ y * grid.width + x ].xyz, tmin, tmax );
+			}
+		}
+
+		if (!BoundsIntersect( tmin, tmax, mins, maxs ))
+		{
+			// we can safely ignore this patch surface
+			continue;
+		}
+
+		for (int x = 0; x < grid.width; x++ )
+		{
+			for (int y = 0; y < grid.height; y++)
 			{
 				VectorCopy( curveVerts[ y * grid.width + x ].xyz, grid.points[ x ][ y ] );
 			}
