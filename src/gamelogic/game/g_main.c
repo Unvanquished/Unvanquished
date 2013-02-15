@@ -2180,7 +2180,7 @@ void LogExit( const char *string )
 
 		if ( !Q_stricmp( ent->classname, "trigger_win" ) )
 		{
-			if ( level.lastWin == ent->stageTeam )
+			if ( level.lastWin == ent->conditions.team )
 			{
 				ent->use( ent, ent, ent );
 			}

@@ -569,7 +569,7 @@ void G_Checktrigger_stages( team_t team, stage_t stage )
 
 		if ( !Q_stricmp( ent->classname, "trigger_stage" ) )
 		{
-			if ( team == ent->stageTeam && stage == ent->stageStage )
+			if ( team == ent->conditions.team && stage == ent->conditions.stage )
 			{
 				ent->use( ent, ent, ent );
 			}
@@ -589,8 +589,8 @@ void trigger_stage_use( gentity_t *self, gentity_t *other, gentity_t *activator 
 
 void SP_trigger_stage( gentity_t *self )
 {
-	G_SpawnInt( "team", "0", ( int * ) &self->stageTeam );
-	G_SpawnInt( "stage", "0", ( int * ) &self->stageStage );
+	G_SpawnInt( "team", "0", ( int * ) &self->conditions.team );
+	G_SpawnInt( "stage", "0", ( int * ) &self->conditions.stage );
 
 	self->use = trigger_stage_use;
 
@@ -609,7 +609,7 @@ void trigger_win( gentity_t *self, gentity_t *other, gentity_t *activator )
 
 void SP_trigger_win( gentity_t *self )
 {
-	G_SpawnInt( "team", "0", ( int * ) &self->stageTeam );
+	G_SpawnInt( "team", "0", ( int * ) &self->conditions.team );
 
 	self->use = trigger_win;
 
@@ -631,16 +631,16 @@ qboolean trigger_buildable_match( gentity_t *self, gentity_t *activator )
 	}
 
 	//if there is no buildable list every buildable triggers
-	if ( self->bTriggers[ i ] == BA_NONE )
+	if ( self->conditions.buildables[ i ] == BA_NONE )
 	{
 		return qtrue;
 	}
 	else
 	{
 		//otherwise check against the list
-		for ( i = 0; self->bTriggers[ i ] != BA_NONE; i++ )
+		for ( i = 0; self->conditions.buildables[ i ] != BA_NONE; i++ )
 		{
-			if ( activator->s.modelindex == self->bTriggers[ i ] )
+			if ( activator->s.modelindex == self->conditions.buildables[ i ] )
 			{
 				return qtrue;
 			}
@@ -733,7 +733,7 @@ void SP_trigger_buildable( gentity_t *self )
 
 	G_SpawnString( "buildables", "", &buffer );
 
-	BG_ParseCSVBuildableList( buffer, self->bTriggers, BA_NUM_BUILDABLES );
+	BG_ParseCSVBuildableList( buffer, self->conditions.buildables, BA_NUM_BUILDABLES );
 
 	self->touch = trigger_buildable_touch;
 	self->use = trigger_buildable_use;
@@ -769,16 +769,16 @@ qboolean trigger_class_match( gentity_t *self, gentity_t *activator )
 	}
 
 	//if there is no class list every class triggers (stupid case)
-	if ( self->cTriggers[ i ] == PCL_NONE )
+	if ( self->conditions.classes[ i ] == PCL_NONE )
 	{
 		return qtrue;
 	}
 	else
 	{
 		//otherwise check against the list
-		for ( i = 0; self->cTriggers[ i ] != PCL_NONE; i++ )
+		for ( i = 0; self->conditions.classes[ i ] != PCL_NONE; i++ )
 		{
-			if ( activator->client->ps.stats[ STAT_CLASS ] == self->cTriggers[ i ] )
+			if ( activator->client->ps.stats[ STAT_CLASS ] == self->conditions.classes[ i ] )
 			{
 				return qtrue;
 			}
@@ -882,7 +882,7 @@ void SP_trigger_class( gentity_t *self )
 
 	G_SpawnString( "classes", "", &buffer );
 
-	BG_ParseCSVClassList( buffer, self->cTriggers, PCL_NUM_CLASSES );
+	BG_ParseCSVClassList( buffer, self->conditions.classes, PCL_NUM_CLASSES );
 
 	self->touch = trigger_class_touch;
 	self->use = trigger_class_use;
@@ -918,24 +918,24 @@ qboolean trigger_equipment_match( gentity_t *self, gentity_t *activator )
 	}
 
 	//if there is no equipment list all equipment triggers (stupid case)
-	if ( self->wTriggers[ i ] == WP_NONE && self->uTriggers[ i ] == UP_NONE )
+	if ( self->conditions.weapons[ i ] == WP_NONE && self->conditions.upgrades[ i ] == UP_NONE )
 	{
 		return qtrue;
 	}
 	else
 	{
 		//otherwise check against the lists
-		for ( i = 0; self->wTriggers[ i ] != WP_NONE; i++ )
+		for ( i = 0; self->conditions.weapons[ i ] != WP_NONE; i++ )
 		{
-			if ( BG_InventoryContainsWeapon( self->wTriggers[ i ], activator->client->ps.stats ) )
+			if ( BG_InventoryContainsWeapon( self->conditions.weapons[ i ], activator->client->ps.stats ) )
 			{
 				return qtrue;
 			}
 		}
 
-		for ( i = 0; self->uTriggers[ i ] != UP_NONE; i++ )
+		for ( i = 0; self->conditions.upgrades[ i ] != UP_NONE; i++ )
 		{
-			if ( BG_InventoryContainsUpgrade( self->uTriggers[ i ], activator->client->ps.stats ) )
+			if ( BG_InventoryContainsUpgrade( self->conditions.upgrades[ i ], activator->client->ps.stats ) )
 			{
 				return qtrue;
 			}
@@ -1039,8 +1039,8 @@ void SP_trigger_equipment( gentity_t *self )
 
 	G_SpawnString( "equipment", "", &buffer );
 
-	BG_ParseCSVEquipmentList( buffer, self->wTriggers, WP_NUM_WEAPONS,
-	                          self->uTriggers, UP_NUM_UPGRADES );
+	BG_ParseCSVEquipmentList( buffer, self->conditions.weapons, WP_NUM_WEAPONS,
+	                          self->conditions.upgrades, UP_NUM_UPGRADES );
 
 	self->touch = trigger_equipment_touch;
 	self->use = trigger_equipment_use;

@@ -101,6 +101,21 @@ typedef enum
   MODEL_2TO1
 } moverState_t;
 
+/**
+ * in the context of a target, this describes the conditions to create or to act within
+ * while as part of trigger or most other types, it will be used as filtering condition that needs to be fulfilled to trigger, or to act directly
+ */
+typedef struct
+{
+	team_t   team;
+	stage_t  stage;
+
+	class_t     classes[ PCL_NUM_CLASSES ];
+	weapon_t    weapons[ WP_NUM_WEAPONS ];
+	upgrade_t   upgrades[ UP_NUM_UPGRADES ];
+	buildable_t buildables[ BA_NUM_BUILDABLES ];
+} gentityConditions_t;
+
 //============================================================================
 
 struct gentity_s
@@ -128,9 +143,13 @@ struct gentity_s
 	char         *targetnames[ MAX_TARGETNAMES + 1 ];
 	gentity_t    *activator;
 
+
 	// targeting-timing variables
 	float        wait;
 	float        waitVariance;
+
+	//conditions as trigger-filter or target-goal
+	gentityConditions_t conditions;
 
 	// entity groups
 	char         *groupName;
@@ -224,9 +243,6 @@ struct gentity_s
 
 	int       noise_index;
 
-	team_t      stageTeam;
-	stage_t     stageStage;
-
 	team_t      buildableTeam; // buildable item team
 	gentity_t   *parentNode; // for creep and defence/spawn dependencies
 	qboolean    active; // for power repeater, but could be useful elsewhere
@@ -258,11 +274,6 @@ struct gentity_s
 	vec4_t      animation; // animated map objects
 
 	qboolean    nonSegModel; // this entity uses a nonsegmented player model
-
-	buildable_t bTriggers[ BA_NUM_BUILDABLES ]; // which buildables are triggers
-	class_t     cTriggers[ PCL_NUM_CLASSES ]; // which classes are triggers
-	weapon_t    wTriggers[ WP_NUM_WEAPONS ]; // which weapons are triggers
-	upgrade_t   uTriggers[ UP_NUM_UPGRADES ]; // which upgrades are triggers
 
 	int         triggerGravity; // gravity for this trigger
 
