@@ -175,14 +175,14 @@ static const spawn_t spawns[] =
 	{ "info_alien_intermission",  SP_info_player_intermission },
 	{ "info_human_intermission",  SP_info_player_intermission },
 	{ "info_notnull",             SP_target_position          }, //@Deprecated use target_position instead
-	{ "info_null",                SP_NULL                     }, //@Deprecated don't use it
+	{ "info_null",                SP_NULL                     },
 	{ "info_player_deathmatch",   SP_info_player_deathmatch   },
 	{ "info_player_intermission", SP_info_player_intermission },
 	{ "info_player_start",        SP_info_player_start        },
 	{ "light",                    SP_NULL                     },
 	{ "misc_anim_model",          SP_misc_anim_model          },
 	{ "misc_light_flare",         SP_misc_light_flare         },
-	{ "misc_model",               SP_misc_model               },
+	{ "misc_model",               SP_NULL                     },
 	{ "misc_particle_system",     SP_misc_particle_system     },
 	{ "misc_portal_camera",       SP_misc_portal_camera       },
 	{ "misc_portal_surface",      SP_misc_portal_surface      },
