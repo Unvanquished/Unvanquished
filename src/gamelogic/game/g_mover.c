@@ -2185,7 +2185,7 @@ void SP_func_plat( gentity_t *ent )
 	if(!ent->wait)
 		ent->wait = 1.0f;
 
-	ent->wait = 1000;
+	ent->wait *= 1000;
 
 	// create second position
 	trap_SetBrushModel( ent, ent->model );
