@@ -528,8 +528,6 @@ void SP_trigger_timer( gentity_t *self )
 	if (!self->waitVariance)
 		self->waitVariance = 1.0f;
 
-	G_HandleDeprecatedEntityAliases(self, "trigger_timer");
-
 	self->use = trigger_timer_use;
 	self->think = trigger_timer_think;
 
