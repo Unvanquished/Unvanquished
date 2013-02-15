@@ -484,7 +484,7 @@ qboolean G_HandleDeprecatedEntityAliases( gentity_t *entity, const char *expecte
 	if ( !Q_stricmp(entity->classname, expectedClassname) )
 		return qfalse;
 
-	G_Printf( "^3WARNING: ^7reference by deprecated classname ^5%s^7 found — use ^5%s^7 instead\n", entity->classname, expectedClassname );
+	G_Printf( "^3WARNING: ^deprecated entity classname ^5%s^7 found — use ^5%s^7 instead\n", entity->classname, expectedClassname );
 	entity->classname = expectedClassname;
 
 	return qtrue;
@@ -495,7 +495,7 @@ qboolean G_WarnAboutDeprecatedEntityField( const char *expectedFieldname, const 
 	if ( !Q_stricmp(expectedFieldname, actualFieldname) )
 		return qfalse;
 
-	G_Printf( "^3WARNING: ^7deprecated entity fieldname usage ^5%s^7 found — use ^5%s^7 instead\n", actualFieldname, expectedFieldname );
+	G_Printf( "^3WARNING: ^7deprecated entity fieldname ^5%s^7 found — use ^5%s^7 instead\n", actualFieldname, expectedFieldname );
 
 	return qtrue;
 }
