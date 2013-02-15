@@ -1827,6 +1827,8 @@ void SP_func_door_rotating( gentity_t *ent )
 		VectorNegate( ent->movedir, ent->movedir );
 	}
 
+	G_SpawnFloat( "rotatorAngle", "0", &ent->rotatorAngle );
+
 	// default distance of 90 degrees. This is something the mapper should not
 	// leave out, so we'll tell him if he does.
 	if ( !ent->rotatorAngle )

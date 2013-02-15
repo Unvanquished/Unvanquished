@@ -128,7 +128,6 @@ static const field_t fields[] =
 	{ "origin",              FOFS( s.origin ),            F_VECTOR    },
 	{ "radius",              FOFS( pos2 ),                F_VECTOR    },
 	{ "random",              FOFS( waitVariance ),        F_FLOAT,    "waitVariance" }, //Deprecated
-	{ "rotatorAngle",        FOFS( rotatorAngle ),        F_FLOAT     },
 	{ "spawnflags",          FOFS( spawnflags ),          F_INT       },
 	{ "speed",               FOFS( speed ),               F_FLOAT     },
 	{ "target",				 FOFS( targets[ 0 ] ),		  F_STRING	  },
