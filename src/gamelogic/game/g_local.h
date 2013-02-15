@@ -39,7 +39,7 @@ typedef struct gclient_s gclient_t;
 // gentity->flags
 #define FL_GODMODE                 0x00000010
 #define FL_NOTARGET                0x00000020
-#define FL_TEAMSLAVE               0x00000400 // not the first on the team
+#define FL_GROUPSLAVE              0x00000400 // not the first on the group
 #define FL_NO_KNOCKBACK            0x00000800
 #define FL_NO_BOTS                 0x00002000 // spawn point not for bot use
 #define FL_NO_HUMANS               0x00004000 // spawn point just for bots
@@ -115,17 +115,35 @@ struct gentity_s
 	struct gclient_s *client; // NULL if not a client
 
 	qboolean         inuse;
-
-	const char       *classname; // set in QuakeEd
-	int              spawnflags; // set in QuakeEd
-
 	qboolean         neverFree; // if true, FreeEntity will only unlink
 	// bodyque uses this
 
 	int      flags; // FL_* variables
 
+	const char   *classname;
+	int          spawnflags;
+
+	// targeting
+	char         *targets[ MAX_TARGETS + 1 ];
+	char         *targetnames[ MAX_TARGETNAMES + 1 ];
+	gentity_t    *activator;
+
+	// targeting-timing variables
+	float        wait;
+	float        waitVariance;
+
+	// entity groups
+	char         *groupName;
+	gentity_t    *groupChain; // next entity in group
+	gentity_t    *groupMaster; // master of the group
+
+	// path chaining
+	gentity_t    *nextPathSegment;
+	gentity_t    *prevPathSegment;
+
 	char     *model;
 	char     *model2;
+
 	int      freetime; // level.time when the object was freed
 
 	int      eventTime; // events will be cleared EVENT_VALID_MSEC after set
@@ -147,8 +165,7 @@ struct gentity_s
 	int          soundPos2;
 	int          soundLoop;
 	gentity_t    *parent;
-	gentity_t    *nextTrain;
-	gentity_t    *prevTrain;
+
 	vec3_t       pos1, pos2;
 	float        rotatorAngle;
 	gentity_t    *clipBrush; // clipping brush for model doors
@@ -158,9 +175,6 @@ struct gentity_s
 	int          timestamp; // body queue sinking, etc
 	int          startTime; // currently for the diminishing missile damage
 
-	char         *targets[ MAX_TARGETS + 1 ];
-	char         *targetnames[ MAX_TARGETNAMES + 1 ];
-	char         *team;
 	char         *targetShaderName;
 	char         *targetShaderNewName;
 	gentity_t    *target_ent;
@@ -204,18 +218,11 @@ struct gentity_s
 
 	gentity_t *chain;
 	gentity_t *enemy;
-	gentity_t *activator;
-	gentity_t *teamchain; // next entity in team
-	gentity_t *teammaster; // master of the team
 
 	int       watertype;
 	int       waterlevel;
 
 	int       noise_index;
-
-	// timing variables
-	float       wait;
-	float       random;
 
 	team_t      stageTeam;
 	stage_t     stageStage;

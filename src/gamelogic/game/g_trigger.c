@@ -47,7 +47,7 @@ void trigger_check_wait( gentity_t *self )
 	if ( self->wait > 0 )
 	{
 		self->think = multi_wait;
-		self->nextthink = level.time + ( self->wait + self->random * crandom() ) * 1000;
+		self->nextthink = level.time + ( self->wait + self->waitVariance * crandom() ) * 1000;
 	}
 	else
 	{
@@ -116,11 +116,11 @@ so, the basic time between firing is a random time between
 void SP_trigger_multiple( gentity_t *ent )
 {
 	G_SpawnFloat( "wait", "0.5", &ent->wait );
-	G_SpawnFloat( "random", "0", &ent->random );
+	G_SpawnFloat( "random", "0", &ent->waitVariance );
 
-	if ( ent->random >= ent->wait && ent->wait >= 0 )
+	if ( ent->waitVariance >= ent->wait && ent->wait >= 0 )
 	{
-		ent->random = ent->wait - FRAMETIME;
+		ent->waitVariance = ent->wait - FRAMETIME;
 		G_Printf( "trigger_multiple has random >= wait\n" );
 	}
 
@@ -483,7 +483,7 @@ void trigger_timer_think( gentity_t *self )
 {
 	G_UseTargets( self, self->activator );
 	// set time before next firing
-	self->nextthink = level.time + 1000 * ( self->wait + crandom() * self->random );
+	self->nextthink = level.time + 1000 * ( self->wait + crandom() * self->waitVariance );
 }
 
 void trigger_timer_use( gentity_t *self, gentity_t *other, gentity_t *activator )
@@ -522,7 +522,7 @@ The final time delay will be a random value anywhere between the minimum and max
 */
 void SP_trigger_timer( gentity_t *self )
 {
-	G_SpawnFloat( "random", "1", &self->random );
+	G_SpawnFloat( "random", "1", &self->waitVariance );
 	G_SpawnFloat( "wait", "1", &self->wait );
 
 	G_HandleDeprecatedEntityAliases(self, "trigger_timer");
@@ -530,9 +530,9 @@ void SP_trigger_timer( gentity_t *self )
 	self->use = trigger_timer_use;
 	self->think = trigger_timer_think;
 
-	if ( self->random >= self->wait )
+	if ( self->waitVariance >= self->wait )
 	{
-		self->random = self->wait - FRAMETIME;
+		self->waitVariance = self->wait - FRAMETIME;
 		G_Printf( "trigger_timer at %s has random >= wait\n", vtos( self->s.origin ) );
 	}
 
@@ -720,11 +720,11 @@ void SP_trigger_buildable( gentity_t *self )
 	char *buffer;
 
 	G_SpawnFloat( "wait", "0.5", &self->wait );
-	G_SpawnFloat( "random", "0", &self->random );
+	G_SpawnFloat( "random", "0", &self->waitVariance );
 
-	if ( self->random >= self->wait && self->wait >= 0 )
+	if ( self->waitVariance >= self->wait && self->wait >= 0 )
 	{
-		self->random = self->wait - FRAMETIME;
+		self->waitVariance = self->wait - FRAMETIME;
 		G_Printf( S_COLOR_YELLOW "WARNING: trigger_buildable has random >= wait\n" );
 	}
 
@@ -869,11 +869,11 @@ void SP_trigger_class( gentity_t *self )
 	char *buffer;
 
 	G_SpawnFloat( "wait", "0.5", &self->wait );
-	G_SpawnFloat( "random", "0", &self->random );
+	G_SpawnFloat( "random", "0", &self->waitVariance );
 
-	if ( self->random >= self->wait && self->wait >= 0 )
+	if ( self->waitVariance >= self->wait && self->wait >= 0 )
 	{
-		self->random = self->wait - FRAMETIME;
+		self->waitVariance = self->wait - FRAMETIME;
 		G_Printf( S_COLOR_YELLOW "WARNING: trigger_class has random >= wait\n" );
 	}
 
@@ -1026,11 +1026,11 @@ void SP_trigger_equipment( gentity_t *self )
 	char *buffer;
 
 	G_SpawnFloat( "wait", "0.5", &self->wait );
-	G_SpawnFloat( "random", "0", &self->random );
+	G_SpawnFloat( "random", "0", &self->waitVariance );
 
-	if ( self->random >= self->wait && self->wait >= 0 )
+	if ( self->waitVariance >= self->wait && self->wait >= 0 )
 	{
-		self->random = self->wait - FRAMETIME;
+		self->waitVariance = self->wait - FRAMETIME;
 		G_Printf( S_COLOR_YELLOW "WARNING: trigger_equipment has random >= wait\n" );
 	}
 

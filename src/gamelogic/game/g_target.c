@@ -150,7 +150,7 @@ void SP_target_speaker( gentity_t *ent )
 	char buffer[ MAX_QPATH ];
 	char *s;
 
-	G_SpawnFloat( "random", "0", &ent->random );
+	G_SpawnFloat( "random", "0", &ent->waitVariance );
 
 	if ( !G_SpawnString( "noise", "NOSOUND", &s ) )
 	{
@@ -179,7 +179,7 @@ void SP_target_speaker( gentity_t *ent )
 	ent->s.eType = ET_SPEAKER;
 	ent->s.eventParm = ent->noise_index;
 	ent->s.frame = ent->wait * 10;
-	ent->s.clientNum = ent->random * 10;
+	ent->s.clientNum = ent->waitVariance * 10;
 
 	// check for prestarted looping sound
 	if ( ent->spawnflags & 1 )
@@ -273,13 +273,13 @@ void target_relay_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 		return;
 	}
 
-	if ( !self->wait && !self->random )
+	if ( !self->wait && !self->waitVariance )
 	{
 		G_UseTargets( self, activator );
 	}
 	else
 	{
-		self->nextthink = level.time + ( self->wait + self->random * crandom() ) * 1000;
+		self->nextthink = level.time + ( self->wait + self->waitVariance * crandom() ) * 1000;
 		self->think = target_relay_think_ifDelayed;
 		self->activator = activator;
 	}
@@ -399,7 +399,7 @@ void SP_target_location( gentity_t *self )
 	}
 
 	trap_SetConfigstring( CS_LOCATIONS + SP_target_counter, message );
-	self->nextTrain = level.locationHead;
+	self->nextPathSegment = level.locationHead;
 	self->s.generic1 = SP_target_counter; // use for location marking
 	level.locationHead = self;
 	SP_target_counter++;

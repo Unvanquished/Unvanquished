@@ -386,10 +386,10 @@ qboolean G_MoverPush( gentity_t *pusher, vec3_t move, vec3_t amove, gentity_t **
 
 /*
 =================
-G_MoverTeam
+G_MoverGroup
 =================
 */
-void G_MoverTeam( gentity_t *ent )
+void G_MoverGroup( gentity_t *ent )
 {
 	vec3_t    move, amove;
 	gentity_t *part, *obstacle;
@@ -397,12 +397,12 @@ void G_MoverTeam( gentity_t *ent )
 
 	obstacle = NULL;
 
-	// make sure all team slaves can move before commiting
+	// make sure all group slaves can move before commiting
 	// any moves or calling any think functions
 	// if the move is blocked, all moved objects will be backed out
 	pushed_p = pushed;
 
-	for ( part = ent; part; part = part->teamchain )
+	for ( part = ent; part; part = part->groupChain )
 	{
 		if ( part->s.pos.trType == TR_STATIONARY &&
 		     part->s.apos.trType == TR_STATIONARY )
@@ -425,7 +425,7 @@ void G_MoverTeam( gentity_t *ent )
 	if ( part )
 	{
 		// go back to the previous position
-		for ( part = ent; part; part = part->teamchain )
+		for ( part = ent; part; part = part->groupChain )
 		{
 			if ( part->s.pos.trType == TR_STATIONARY &&
 			     part->s.apos.trType == TR_STATIONARY )
@@ -450,7 +450,7 @@ void G_MoverTeam( gentity_t *ent )
 	}
 
 	// the move succeeded
-	for ( part = ent; part; part = part->teamchain )
+	for ( part = ent; part; part = part->groupChain )
 	{
 		// call the reached function if time is at or past end point
 		if ( part->s.pos.trType == TR_LINEAR_STOP )
@@ -485,14 +485,14 @@ G_RunMover
 */
 void G_RunMover( gentity_t *ent )
 {
-	// if not a team captain, don't do anything, because
-	// the captain will handle everything
-	if ( ent->flags & FL_TEAMSLAVE )
+	// if not a groupmaster, don't do anything, because
+	// the master will handle everything
+	if ( ent->flags & FL_GROUPSLAVE )
 	{
 		return;
 	}
 
-	G_MoverTeam( ent );
+	G_MoverGroup( ent );
 
 	// check think function
 	G_RunThink( ent );
@@ -602,16 +602,16 @@ void SetMoverState( gentity_t *ent, moverState_t moverState, int time )
 
 /*
 ================
-MatchTeam
+MatchGroup
 
-All entities in a mover team will move from pos1 to pos2
+All entities in a mover group will move from pos1 to pos2
 ================
 */
-void MatchTeam( gentity_t *teamLeader, int moverState, int time )
+void MatchGroup( gentity_t *groupLeader, int moverState, int time )
 {
 	gentity_t *slave;
 
-	for ( slave = teamLeader; slave; slave = slave->teamchain )
+	for ( slave = groupLeader; slave; slave = slave->groupChain )
 	{
 		SetMoverState( slave, moverState, time );
 	}
@@ -624,9 +624,9 @@ MasterOf
 */
 gentity_t *MasterOf( gentity_t *ent )
 {
-	if ( ent->teammaster )
+	if ( ent->groupMaster )
 	{
-		return ent->teammaster;
+		return ent->groupMaster;
 	}
 	else
 	{
@@ -636,17 +636,17 @@ gentity_t *MasterOf( gentity_t *ent )
 
 /*
 ================
-GetMoverTeamState
+GetMoverGroupState
 
 Returns a MOVER_* value representing the phase (either one
- of pos1, 1to2, pos2, or 2to1) of a mover team as a whole.
+ of pos1, 1to2, pos2, or 2to1) of a mover group as a whole.
 ================
 */
-moverState_t GetMoverTeamState( gentity_t *ent )
+moverState_t GetMoverGroupState( gentity_t *ent )
 {
 	qboolean pos1 = qfalse;
 
-	for ( ent = MasterOf( ent ); ent; ent = ent->teamchain )
+	for ( ent = MasterOf( ent ); ent; ent = ent->groupChain )
 	{
 		if ( ent->moverState == MOVER_POS1 || ent->moverState == ROTATOR_POS1 )
 		{
@@ -684,9 +684,9 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator );
 
 void ReturnToPos1orApos1( gentity_t *ent )
 {
-	if ( GetMoverTeamState( ent ) != MOVER_POS2 )
+	if ( GetMoverGroupState( ent ) != MOVER_POS2 )
 	{
-		return; // not every mover in the team has reached its endpoint yet
+		return; // not every mover in the group has reached its endpoint yet
 	}
 
 	Use_BinaryMover( ent, ent, ent->activator );
@@ -706,7 +706,7 @@ void Think_ClosedModelDoor( gentity_t *ent )
 	}
 
 	// close areaportals
-	if ( ent->teammaster == ent || !ent->teammaster )
+	if ( ent->groupMaster == ent || !ent->groupMaster )
 	{
 		trap_AdjustAreaPortalState( ent, qfalse );
 	}
@@ -858,7 +858,7 @@ void Reached_BinaryMover( gentity_t *ent )
 		}
 
 		// close areaportals
-		if ( ent->teammaster == ent || !ent->teammaster )
+		if ( ent->groupMaster == ent || !ent->groupMaster )
 		{
 			trap_AdjustAreaPortalState( ent, qfalse );
 		}
@@ -898,7 +898,7 @@ void Reached_BinaryMover( gentity_t *ent )
 		}
 
 		// close areaportals
-		if ( ent->teammaster == ent || !ent->teammaster )
+		if ( ent->groupMaster == ent || !ent->groupMaster )
 		{
 			trap_AdjustAreaPortalState( ent, qfalse );
 		}
@@ -919,7 +919,7 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
 	int total;
 	int partial;
 	gentity_t *master;
-	moverState_t teamState;
+	moverState_t groupState;
 
 	// if this is a non-client-usable door return
 	if ( ent->targetnames[ 0 ] && other && other->client )
@@ -928,18 +928,18 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
 	}
 
 	// only the master should be used
-	if ( ent->flags & FL_TEAMSLAVE )
+	if ( ent->flags & FL_GROUPSLAVE )
 	{
-		Use_BinaryMover( ent->teammaster, other, activator );
+		Use_BinaryMover( ent->groupMaster, other, activator );
 		return;
 	}
 
 	ent->activator = activator;
 
 	master = MasterOf( ent );
-	teamState = GetMoverTeamState( ent );
+	groupState = GetMoverGroupState( ent );
 
-	for ( ent = master; ent; ent = ent->teamchain )
+	for ( ent = master; ent; ent = ent->groupChain )
 	{
 	//ind
 	if ( ent->moverState == MOVER_POS1 )
@@ -958,20 +958,20 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
 		ent->s.loopSound = ent->soundLoop;
 
 		// open areaportal
-		if ( ent->teammaster == ent || !ent->teammaster )
+		if ( ent->groupMaster == ent || !ent->groupMaster )
 		{
 			trap_AdjustAreaPortalState( ent, qtrue );
 		}
 	}
 	else if ( ent->moverState == MOVER_POS2 &&
-	          !( teamState == MOVER_1TO2 || other == master ) )
+	          !( groupState == MOVER_1TO2 || other == master ) )
 	{
 		// if all the way up, just delay before coming down
 		master->think = ReturnToPos1orApos1;
 		master->nextthink = MAX( master->nextthink, level.time + ent->wait );
 	}
 	else if ( ent->moverState == MOVER_POS2 &&
-	          ( teamState == MOVER_1TO2 || other == master ) )
+	          ( groupState == MOVER_1TO2 || other == master ) )
 	{
 		// start moving 50 msec later, because if this was player-
 		// triggered, level.time hasn't been advanced yet
@@ -985,7 +985,7 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
 		ent->s.loopSound = ent->soundLoop;
 
 		// open areaportal
-		if ( ent->teammaster == ent || !ent->teammaster )
+		if ( ent->groupMaster == ent || !ent->groupMaster )
 			trap_AdjustAreaPortalState( ent, qtrue );
 	}
 	else if ( ent->moverState == MOVER_2TO1 )
@@ -1040,20 +1040,20 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
 		ent->s.loopSound = ent->soundLoop;
 
 		// open areaportal
-		if ( ent->teammaster == ent || !ent->teammaster )
+		if ( ent->groupMaster == ent || !ent->groupMaster )
 		{
 			trap_AdjustAreaPortalState( ent, qtrue );
 		}
 	}
 	else if ( ent->moverState == ROTATOR_POS2 &&
-	          !( teamState == MOVER_1TO2 || other == master ) )
+	          !( groupState == MOVER_1TO2 || other == master ) )
 	{
 		// if all the way up, just delay before coming down
 		master->think = ReturnToPos1orApos1;
 		master->nextthink = MAX( master->nextthink, level.time + ent->wait );
 	}
 	else if ( ent->moverState == ROTATOR_POS2 &&
-	          ( teamState == MOVER_1TO2 || other == master ) )
+	          ( groupState == MOVER_1TO2 || other == master ) )
 	{
 		// start moving 50 msec later, because if this was player-
 		// triggered, level.time hasn't been advanced yet
@@ -1067,7 +1067,7 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
 		ent->s.loopSound = ent->soundLoop;
 
 		// open areaportal
-		if ( ent->teammaster == ent || !ent->teammaster )
+		if ( ent->groupMaster == ent || !ent->groupMaster )
 			trap_AdjustAreaPortalState( ent, qtrue );
 	}
 	else if ( ent->moverState == ROTATOR_2TO1 )
@@ -1124,7 +1124,7 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
 		ent->s.loopSound = ent->soundLoop;
 
 		// open areaportal
-		if ( ent->teammaster == ent || !ent->teammaster )
+		if ( ent->groupMaster == ent || !ent->groupMaster )
 		{
 			trap_AdjustAreaPortalState( ent, qtrue );
 		}
@@ -1156,7 +1156,7 @@ void InitMover( gentity_t *ent )
 	vec3_t   color;
 	qboolean lightSet, colorSet;
 	char     *sound;
-	char     *team;
+	char     *groupName;
 
 	// if the "model2" key is set, use a separate model
 	// for drawing, but clip against the brushes
@@ -1213,9 +1213,9 @@ void InitMover( gentity_t *ent )
 	ent->use = Use_BinaryMover;
 	ent->reached = Reached_BinaryMover;
 
-	if ( G_SpawnString( "team", "", &team ) )
+	if ( G_SpawnString( "team", "", &groupName ) )
 	{
-		ent->team = G_CopyString( team );
+		ent->groupName = G_CopyString( groupName );
 	}
 
 	ent->moverState = MOVER_POS1;
@@ -1260,7 +1260,7 @@ void InitRotator( gentity_t *ent )
 	vec3_t   color;
 	qboolean lightSet, colorSet;
 	char     *sound;
-	char     *team;
+	char     *groupName;
 
 	// if the "model2" key is set, use a separate model
 	// for drawing, but clip against the brushes
@@ -1317,9 +1317,9 @@ void InitRotator( gentity_t *ent )
 	ent->use = Use_BinaryMover;
 	ent->reached = Reached_BinaryMover;
 
-	if ( G_SpawnString( "team", "", &team ) )
+	if ( G_SpawnString( "team", "", &groupName ) )
 	{
-		ent->team = G_CopyString( team );
+		ent->groupName = G_CopyString( groupName );
 	}
 
 	ent->moverState = ROTATOR_POS1;
@@ -1452,11 +1452,11 @@ static void manualDoorTriggerSpectator( gentity_t *door, gentity_t *player )
 		return;
 	}
 
-	// find the bounds of everything on the team
+	// find the bounds of everything on the group
 	VectorCopy( door->r.absmin, mins );
 	VectorCopy( door->r.absmax, maxs );
 
-	for ( other = door->teamchain; other; other = other->teamchain )
+	for ( other = door->groupChain; other; other = other->groupChain )
 	{
 		AddPointToBounds( other->r.absmin, mins, maxs );
 		AddPointToBounds( other->r.absmax, mins, maxs );
@@ -1541,7 +1541,7 @@ Touch_DoorTrigger
 */
 void Touch_DoorTrigger( gentity_t *ent, gentity_t *other, trace_t *trace )
 {
-	moverState_t teamState;
+	moverState_t groupState;
 
 	//buildables don't trigger movers
 	if ( other->s.eType == ET_BUILDABLE )
@@ -1549,29 +1549,29 @@ void Touch_DoorTrigger( gentity_t *ent, gentity_t *other, trace_t *trace )
 		return;
 	}
 
-	teamState = GetMoverTeamState( ent->parent );
+	groupState = GetMoverGroupState( ent->parent );
 
 	if ( other->client && other->client->sess.spectatorState != SPECTATOR_NOT )
 	{
 		// if the door is not open and not opening
-		if ( teamState != MOVER_POS2 && teamState != MOVER_1TO2 )
+		if ( groupState != MOVER_POS2 && groupState != MOVER_1TO2 )
 		{
 			Touch_DoorTriggerSpectator( ent, other, trace );
 		}
 	}
-	else if ( teamState != MOVER_1TO2 )
+	else if ( groupState != MOVER_1TO2 )
 	{
 		Use_BinaryMover( ent->parent, ent, other );
 	}
 }
 
-void Think_MatchTeam( gentity_t *ent )
+void Think_MatchGroup( gentity_t *ent )
 {
-	if ( ent->flags & FL_TEAMSLAVE )
+	if ( ent->flags & FL_GROUPSLAVE )
 	{
 		return;
 	}
-	MatchTeam( ent, ent->moverState, level.time );
+	MatchGroup( ent, ent->moverState, level.time );
 }
 
 /*
@@ -1588,11 +1588,11 @@ void Think_SpawnNewDoorTrigger( gentity_t *ent )
 	vec3_t    mins, maxs;
 	int       i, best;
 
-	// find the bounds of everything on the team
+	// find the bounds of everything on the group
 	VectorCopy( ent->r.absmin, mins );
 	VectorCopy( ent->r.absmax, maxs );
 
-	for ( other = ent->teamchain; other; other = other->teamchain )
+	for ( other = ent->groupChain; other; other = other->groupChain )
 	{
 		AddPointToBounds( other->r.absmin, mins, maxs );
 		AddPointToBounds( other->r.absmax, mins, maxs );
@@ -1626,7 +1626,7 @@ void Think_SpawnNewDoorTrigger( gentity_t *ent )
 
 	if ( ent->moverState < MODEL_POS1 )
 	{
-		Think_MatchTeam( ent );
+		Think_MatchGroup( ent );
 	}
 }
 
@@ -1731,7 +1731,7 @@ void SP_func_door( gentity_t *ent )
 	if ( ent->targetnames[ 0 ] || health )
 	{
 		// non touch/shoot doors
-		ent->think = Think_MatchTeam;
+		ent->think = Think_MatchGroup;
 	}
 	else
 	{
@@ -1869,7 +1869,7 @@ void SP_func_door_rotating( gentity_t *ent )
 	if ( ent->targetnames[ 0 ] || health )
 	{
 		// non touch/shoot doors
-		ent->think = Think_MatchTeam;
+		ent->think = Think_MatchGroup;
 	}
 	else
 	{
@@ -2345,9 +2345,9 @@ void Reached_Train( gentity_t *ent )
 	float     length;
 
 	// copy the appropriate values
-	next = ent->nextTrain;
+	next = ent->nextPathSegment;
 
-	if ( !next || !next->nextTrain )
+	if ( !next || !next->nextPathSegment )
 	{
 		return; // just stop
 	}
@@ -2356,9 +2356,9 @@ void Reached_Train( gentity_t *ent )
 	G_UseTargets( next, NULL );
 
 	// set the new trajectory
-	ent->nextTrain = next->nextTrain;
+	ent->nextPathSegment = next->nextPathSegment;
 	VectorCopy( next->s.origin, ent->pos1 );
-	VectorCopy( next->nextTrain->s.origin, ent->pos2 );
+	VectorCopy( next->nextPathSegment->s.origin, ent->pos2 );
 
 	// if the path_corner has a speed, use that
 	if ( next->speed )
@@ -2484,9 +2484,9 @@ void Think_SetupTrainTargets( gentity_t *ent )
 	gentity_t *path, *next, *start;
 	int i, j;
 
-	ent->nextTrain = G_TargetFind( NULL, &i, &j, ent );
+	ent->nextPathSegment = G_TargetFind( NULL, &i, &j, ent );
 
-	if ( !ent->nextTrain )
+	if ( !ent->nextPathSegment )
 	{
 		G_Printf( "func_train at %s with an unfound target\n",
 		          vtos( ent->r.absmin ) );
@@ -2495,7 +2495,7 @@ void Think_SetupTrainTargets( gentity_t *ent )
 
 	start = NULL;
 
-	for ( path = ent->nextTrain; path != start; path = next )
+	for ( path = ent->nextPathSegment; path != start; path = next )
 	{
 		if ( !start )
 		{
@@ -2527,7 +2527,7 @@ void Think_SetupTrainTargets( gentity_t *ent )
 		}
 		while ( strcmp( next->classname, "path_corner" ) );
 
-		path->nextTrain = next;
+		path->nextPathSegment = next;
 	}
 
 	// start the train moving from the first corner
@@ -2696,7 +2696,7 @@ void SP_func_dynamic( gentity_t *ent )
 
 	InitMover( ent );
 
-	ent->flags |= FL_TEAMSLAVE;
+	ent->flags |= FL_GROUPSLAVE;
 
 	trap_UnlinkEntity( ent );  // was linked in InitMover
 	trap_AddPhysicsEntity( ent );

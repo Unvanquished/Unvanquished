@@ -125,7 +125,7 @@ static const field_t fields[] =
 	{ "model2",              FOFS( model2 ),              F_STRING    },
 	{ "origin",              FOFS( s.origin ),            F_VECTOR    },
 	{ "radius",              FOFS( pos2 ),                F_VECTOR    },
-	{ "random",              FOFS( random ),              F_FLOAT     },
+	{ "random",              FOFS( waitVariance ),        F_FLOAT     },
 	{ "rotatorAngle",        FOFS( rotatorAngle ),        F_FLOAT     },
 	{ "spawnflags",          FOFS( spawnflags ),          F_INT       },
 	{ "speed",               FOFS( speed ),               F_FLOAT     },

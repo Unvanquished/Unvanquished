@@ -436,71 +436,71 @@ void QDECL PRINTF_LIKE(1) NORETURN G_Error( const char *fmt, ... )
 
 /*
 ================
-G_FindTeams
+G_FindEntityGroups
 
-Chain together all entities with a matching team field.
-Entity teams are used for item groups and multi-entity mover groups.
+Chain together all entities with a matching groupName field.
+Entity groups are used for item groups and multi-entity mover groups.
 
-All but the first will have the FL_TEAMSLAVE flag set and teammaster field set
-All but the last will have the teamchain field set to the next one
+All but the first will have the FL_GROUPSLAVE flag set and groupMaster field set
+All but the last will have the groupChain field set to the next one
 ================
 */
-void G_FindTeams( void )
+void G_FindEntityGroups( void )
 {
-	gentity_t *e, *e2;
+	gentity_t *masterEntity, *comparedEntity;
 	int       i, j, k;
-	int       c, c2;
+	int       groupCount, entityCount;
 
-	c = 0;
-	c2 = 0;
+	groupCount = 0;
+	entityCount = 0;
 
-	for ( i = MAX_CLIENTS, e = g_entities + i; i < level.num_entities; i++, e++ )
+	for ( i = MAX_CLIENTS, masterEntity = g_entities + i; i < level.num_entities; i++, masterEntity++ )
 	{
-		if ( !e->team )
+		if ( !masterEntity->groupName )
 		{
 			continue;
 		}
 
-		if ( e->flags & FL_TEAMSLAVE )
+		if ( masterEntity->flags & FL_GROUPSLAVE )
 		{
 			continue;
 		}
 
-		e->teammaster = e;
-		c++;
-		c2++;
+		masterEntity->groupMaster = masterEntity;
+		groupCount++;
+		entityCount++;
 
-		for ( j = i + 1, e2 = e + 1; j < level.num_entities; j++, e2++ )
+		for ( j = i + 1, comparedEntity = masterEntity + 1; j < level.num_entities; j++, comparedEntity++ )
 		{
-			if ( !e2->team )
+			if ( !comparedEntity->groupName )
 			{
 				continue;
 			}
 
-			if ( e2->flags & FL_TEAMSLAVE )
+			if ( comparedEntity->flags & FL_GROUPSLAVE )
 			{
 				continue;
 			}
 
-			if ( !strcmp( e->team, e2->team ) )
+			if ( !strcmp( masterEntity->groupName, comparedEntity->groupName ) )
 			{
-				c2++;
-				e2->teamchain = e->teamchain;
-				e->teamchain = e2;
-				e2->teammaster = e;
-				e2->flags |= FL_TEAMSLAVE;
+				entityCount++;
+				comparedEntity->groupChain = masterEntity->groupChain;
+				masterEntity->groupChain = comparedEntity;
+				comparedEntity->groupMaster = masterEntity;
+				comparedEntity->flags |= FL_GROUPSLAVE;
 
 				// make sure that targets only point at the master
-				for (k = 0; e2->targetnames[k]; k++)
+				for (k = 0; comparedEntity->targetnames[k]; k++)
 				{
-					e->targetnames[k] = e2->targetnames[k];
-					e2->targetnames[k] = NULL;
+					masterEntity->targetnames[k] = comparedEntity->targetnames[k];
+					comparedEntity->targetnames[k] = NULL;
 				}
 			}
 		}
 	}
 
-	G_Printf( "%i teams with %i entities\n", c, c2 );
+	G_Printf( "%i groups with %i entities\n", groupCount, entityCount );
 }
 
 /*
@@ -511,21 +511,21 @@ G_RegisterCvars
 void G_RegisterCvars( void )
 {
 	int         i;
-	cvarTable_t *cv;
+	cvarTable_t *cvarTable;
 
-	for ( i = 0, cv = gameCvarTable; i < gameCvarTableSize; i++, cv++ )
+	for ( i = 0, cvarTable = gameCvarTable; i < gameCvarTableSize; i++, cvarTable++ )
 	{
-		trap_Cvar_Register( cv->vmCvar, cv->cvarName,
-		                    cv->defaultString, cv->cvarFlags );
+		trap_Cvar_Register( cvarTable->vmCvar, cvarTable->cvarName,
+		                    cvarTable->defaultString, cvarTable->cvarFlags );
 
-		if ( cv->vmCvar )
+		if ( cvarTable->vmCvar )
 		{
-			cv->modificationCount = cv->vmCvar->modificationCount;
+			cvarTable->modificationCount = cvarTable->vmCvar->modificationCount;
 		}
 
-		if ( cv->explicit )
+		if ( cvarTable->explicit )
 		{
-			strcpy( cv->explicit, cv->vmCvar->string );
+			strcpy( cvarTable->explicit, cvarTable->vmCvar->string );
 		}
 	}
 }
@@ -743,7 +743,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	BG_InitAllowedGameElements();
 
 	// general initialization
-	G_FindTeams();
+	G_FindEntityGroups();
 
 	BG_InitClassConfigs();
 	BG_InitBuildableConfigs();

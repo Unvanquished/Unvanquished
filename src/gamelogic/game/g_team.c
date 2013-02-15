@@ -359,7 +359,7 @@ gentity_t *Team_GetLocation( gentity_t *ent )
 	best = NULL;
 	bestlen = 3.0f * 8192.0f * 8192.0f;
 
-	for ( eloc = level.locationHead; eloc; eloc = eloc->nextTrain )
+	for ( eloc = level.locationHead; eloc; eloc = eloc->nextPathSegment )
 	{
 		len = DistanceSquared( ent->r.currentOrigin, eloc->r.currentOrigin );
 
