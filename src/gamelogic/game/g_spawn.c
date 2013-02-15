@@ -305,7 +305,15 @@ qboolean G_CallSpawn( gentity_t *ent )
 		return qtrue;
 	}
 
-	G_Printf( "%s doesn't have a spawn function\n", ent->classname );
+	if (!Q_stricmp("worldspawn", ent->classname))
+	{
+		G_Printf( "^1ERROR: ^5%s ^7is not the first entity – we are unable to spawn it.\n", ent->classname );
+	}
+	else
+	{
+		G_Printf( "^1ERROR: ^5%s ^7doesn't have a spawn function. We have to skip it.\n", ent->classname );
+	}
+
 	return qfalse;
 }
 
