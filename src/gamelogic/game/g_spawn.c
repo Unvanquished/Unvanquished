@@ -106,6 +106,7 @@ typedef struct
 	const char  *name;
 	size_t      offset;
 	fieldtype_t type;
+	const char  *replacement;
 } field_t;
 
 static const field_t fields[] =
@@ -415,6 +416,9 @@ void G_ParseField( const char *key, const char *value, gentity_t *entity )
 			( ( float * )( entityData + resultingField->offset ) ) [ 2 ] = 0;
 			break;
 	}
+
+	if ( resultingField->replacement )
+		G_WarnAboutDeprecatedEntityField( resultingField->replacement, key);
 }
 
 /*
@@ -482,6 +486,16 @@ qboolean G_HandleDeprecatedEntityAliases( gentity_t *entity, const char *expecte
 
 	G_Printf( "^3WARNING: ^7reference by deprecated classname ^5%s^7 found — use ^5%s^7 instead\n", entity->classname, expectedClassname );
 	entity->classname = expectedClassname;
+
+	return qtrue;
+}
+
+qboolean G_WarnAboutDeprecatedEntityField( const char *expectedFieldname, const char *actualFieldname  )
+{
+	if ( !Q_stricmp(expectedFieldname, actualFieldname) )
+		return qfalse;
+
+	G_Printf( "^3WARNING: ^7deprecated entity fieldname usage ^5%s^7 found — use ^5%s^7 instead\n", actualFieldname, expectedFieldname );
 
 	return qtrue;
 }
