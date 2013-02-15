@@ -1034,7 +1034,9 @@ void Con_DrawConsoleContent( void )
 			continue;
 		}
 
-		if ( row == consoleState.lastReadLineIndex-1 && consoleState.lastReadLineIndex != consoleState.currentLine )
+		if ( row == consoleState.lastReadLineIndex - 1
+			&& consoleState.lastReadLineIndex != consoleState.currentLine
+			&& consoleState.currentLine - consoleState.lastReadLineIndex < consoleState.usedScrollbackLengthInLines)
 		{
 			Con_DrawScrollbackMarkerline( lineDrawPosition );
 		}
