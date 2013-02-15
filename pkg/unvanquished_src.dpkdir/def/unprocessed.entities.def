@@ -555,14 +555,6 @@ Activating this will teleport players to the location of the targeted misc_telep
 ; target: this must point to a misc_teleporter_dest entity.
 */
 
-/*QUAKED target_alien_win (1 0 0) (-8 -8 -8) (8 8 8)
-When triggered, this causes an unconditional win for the alien team.
-*/
-
-/*QUAKED target_human_win (1 0 0) (-8 -8 -8) (8 8 8)
-When triggered, this causes an unconditional win for the human team.
-*/
-
 /*QUAKED target_hurt (1 0 0) (-8 -8 -8) (8 8 8)
 When triggered, this hurts the entity that caused the trigger.
 
