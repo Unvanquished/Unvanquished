@@ -347,7 +347,8 @@ void SP_trigger_teleport( gentity_t *self )
 {
 	InitTrigger( self );
 
-	G_SpawnFloat( "speed", "400", &self->speed );
+	if( !self->speed )
+		self->speed = 400;
 
 	// unlike other triggers, we need to send this one to the client
 	// unless is a spectator trigger
@@ -588,7 +589,6 @@ void trigger_stage_use( gentity_t *self, gentity_t *other, gentity_t *activator 
 void SP_trigger_stage( gentity_t *self )
 {
 	G_SpawnInt( "team", "0", ( int * ) &self->conditions.team );
-	G_SpawnInt( "stage", "0", ( int * ) &self->conditions.stage );
 
 	self->use = trigger_stage_use;
 

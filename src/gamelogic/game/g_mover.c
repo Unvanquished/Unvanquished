@@ -1693,7 +1693,8 @@ void SP_func_door( gentity_t *ent )
 	G_SpawnFloat( "lip", "8", &lip );
 
 	// default damage of 2 points
-	G_SpawnInt( "dmg", "2", &ent->damage );
+	if( !ent->damage )
+		ent->damage = 2;
 
 	// first position at start
 	VectorCopy( ent->s.origin, ent->pos1 );
@@ -2180,9 +2181,12 @@ void SP_func_plat( gentity_t *ent )
 
 	VectorClear( ent->s.angles );
 
-	G_SpawnFloat( "speed", "200", &ent->speed );
-	G_SpawnInt( "dmg", "2", &ent->damage );
+	if( !ent->speed )
+		ent->speed = 400;
 	G_SpawnFloat( "lip", "8", &lip );
+
+	if( !ent->damage )
+		ent->damage = 2;
 
 	if(!ent->wait)
 		ent->wait = 1.0f;
@@ -2787,10 +2791,14 @@ void SP_func_bobbing( gentity_t *ent )
 	float height;
 	float phase;
 
-	G_SpawnFloat( "speed", "4", &ent->speed );
+	if( !ent->speed )
+		ent->speed = 4;
+
 	G_SpawnFloat( "height", "32", &height );
-	G_SpawnInt( "dmg", "2", &ent->damage );
 	G_SpawnFloat( "phase", "0", &phase );
+
+	if( !ent->damage )
+		ent->damage = 2;
 
 	trap_SetBrushModel( ent, ent->model );
 	InitMover( ent );
@@ -2841,11 +2849,14 @@ void SP_func_pendulum( gentity_t *ent )
 	float freq;
 	float length;
 	float phase;
-	float speed;
 
-	G_SpawnFloat( "speed", "30", &speed );
-	G_SpawnInt( "dmg", "2", &ent->damage );
+	if( !ent->speed )
+		ent->speed = 30;
+
 	G_SpawnFloat( "phase", "0", &phase );
+
+	if( !ent->damage )
+		ent->damage = 2;
 
 	trap_SetBrushModel( ent, ent->model );
 
@@ -2871,5 +2882,5 @@ void SP_func_pendulum( gentity_t *ent )
 	ent->s.apos.trDuration = 1000 / freq;
 	ent->s.apos.trTime = ent->s.apos.trDuration * phase;
 	ent->s.apos.trType = TR_SINE;
-	ent->s.apos.trDelta[ 2 ] = speed;
+	ent->s.apos.trDelta[ 2 ] = ent->speed;
 }

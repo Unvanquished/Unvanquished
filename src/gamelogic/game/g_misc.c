@@ -404,7 +404,9 @@ void SP_misc_light_flare( gentity_t *self )
 
 	self->use = SP_use_light_flare;
 
-	G_SpawnFloat( "speed", "200", &self->speed );
+	if( !self->speed )
+		self->speed = 200;
+
 	self->s.time = self->speed;
 
 	G_SpawnInt( "mindist", "0", &self->s.generic1 );

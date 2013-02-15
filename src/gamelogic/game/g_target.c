@@ -231,7 +231,8 @@ void SP_target_teleporter( gentity_t *self )
 		G_Printf( "untargeted %s at %s\n", self->classname, vtos( self->s.origin ) );
 	}
 
-	G_SpawnFloat( "speed", "400", &self->speed );
+	if( !self->speed )
+		self->speed = 400;
 
 	self->use = target_teleporter_use;
 }
