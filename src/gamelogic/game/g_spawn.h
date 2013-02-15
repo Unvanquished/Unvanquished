@@ -81,7 +81,7 @@ void    SP_misc_light_flare( gentity_t *ent );
  * @return qtrue if a deprecated entity alias was found and handled, qfalse otherwise
  */
 qboolean G_HandleDeprecatedEntityAliases( gentity_t *entity, const char *expectedClassname );
-qboolean G_WarnAboutDeprecatedEntityField( const char *expectedFieldname, const char *actualFieldname );
+qboolean G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFieldname, const char *actualFieldname );
 
 // Init functions
 void    SP_target_init( void );

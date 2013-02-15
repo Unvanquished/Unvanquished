@@ -419,7 +419,7 @@ void G_ParseField( const char *key, const char *value, gentity_t *entity )
 	}
 
 	if ( resultingField->replacement )
-		G_WarnAboutDeprecatedEntityField( resultingField->replacement, key);
+		G_WarnAboutDeprecatedEntityField(entity, resultingField->replacement, key);
 }
 
 /*
@@ -485,18 +485,18 @@ qboolean G_HandleDeprecatedEntityAliases( gentity_t *entity, const char *expecte
 	if ( !Q_stricmp(entity->classname, expectedClassname) )
 		return qfalse;
 
-	G_Printf( "^3WARNING: ^deprecated entity classname ^5%s^7 found — use ^5%s^7 instead\n", entity->classname, expectedClassname );
+	G_Printf( "^3WARNING: ^7deprecated entity classname ^5%s^7 found — use ^5%s^7 instead\n", entity->classname, expectedClassname );
 	entity->classname = expectedClassname;
 
 	return qtrue;
 }
 
-qboolean G_WarnAboutDeprecatedEntityField( const char *expectedFieldname, const char *actualFieldname  )
+qboolean G_WarnAboutDeprecatedEntityField(gentity_t *entity, const char *expectedFieldname, const char *actualFieldname  )
 {
 	if ( !Q_stricmp(expectedFieldname, actualFieldname) )
 		return qfalse;
 
-	G_Printf( "^3WARNING: ^7deprecated entity fieldname ^5%s^7 found — use ^5%s^7 instead\n", actualFieldname, expectedFieldname );
+	G_Printf( "^3WARNING: ^7deprecated entity fieldname ^5%s^7 in ^5%s^7 found — use ^5%s^7 instead\n", actualFieldname, entity->classname, expectedFieldname );
 
 	return qtrue;
 }
