@@ -150,7 +150,6 @@ void SP_target_speaker( gentity_t *ent )
 	char buffer[ MAX_QPATH ];
 	char *s;
 
-	G_SpawnFloat( "wait", "0", &ent->wait );
 	G_SpawnFloat( "random", "0", &ent->random );
 
 	if ( !G_SpawnString( "noise", "NOSOUND", &s ) )
@@ -301,15 +300,12 @@ RANDOM: one one of the targeted entities will be triggered at random.
 */
 void SP_target_relay( gentity_t *self )
 {
-	// check delay for backwards compatibility
-	if ( !G_SpawnFloat( "delay", "0", &self->wait ) )
-	{
-		G_SpawnFloat( "wait", "0", &self->wait );
-	}
+	if ( !self->wait ) {
+		// check delay for backwards compatibility
+		G_SpawnFloat( "delay", "0", &self->wait );
 
-	if ( !Q_stricmp(self->classname, "target_delay") )
-	{
-		if ( !self->wait )
+		//target delay had previously a default of 1 instead of 0
+		if ( !self->wait && !Q_stricmp(self->classname, "target_delay") )
 		{
 			self->wait = 1;
 		}

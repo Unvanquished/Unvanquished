@@ -265,7 +265,6 @@ void SP_misc_particle_system( gentity_t *self )
 	VectorCopy( self->s.angles, self->s.apos.trBase );
 
 	G_SpawnString( "psName", "", &s );
-	G_SpawnFloat( "wait", "0", &self->wait );
 
 	//add the particle system to the client precache list
 	self->s.modelindex = G_ParticleSystemIndex( s );
