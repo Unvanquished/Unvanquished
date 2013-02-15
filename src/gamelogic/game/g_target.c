@@ -309,8 +309,6 @@ void SP_target_relay( gentity_t *self )
 		}
 	}
 
-	G_HandleDeprecatedEntityAliases(self, "target_relay");
-
 	self->use = target_relay_use;
 }
 
@@ -349,7 +347,6 @@ To make a jump pad, place this entity at the highest point of the jump and targe
 */
 void SP_target_position( gentity_t *self )
 {
-	G_HandleDeprecatedEntityAliases(self, "target_position");
 	G_SetOrigin( self, self->s.origin );
 }
 
@@ -509,7 +506,6 @@ SP_target_alien_win
 */
 void SP_target_alien_win( gentity_t *self )
 {
-	G_HandleDeprecatedEntityAliases(self, "target_win");
 	self->conditions.team = TEAM_ALIENS;
 	self->use = target_win_use;
 }
@@ -521,7 +517,6 @@ SP_target_human_win
 */
 void SP_target_human_win( gentity_t *self )
 {
-	G_HandleDeprecatedEntityAliases(self, "target_win");
 	self->conditions.team = TEAM_HUMANS;
 	self->use = target_win_use;
 }

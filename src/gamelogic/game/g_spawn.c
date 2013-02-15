@@ -146,6 +146,7 @@ typedef struct
 {
 	const char *name;
 	void      ( *spawn )( gentity_t *ent );
+	const char  *replacement;
 } spawn_t;
 
 static const spawn_t spawns[] =
@@ -161,7 +162,7 @@ static const spawn_t spawns[] =
 	{ "func_plat",                SP_func_plat                },
 	{ "func_rotating",            SP_func_rotating            },
 	{ "func_static",              SP_func_static              },
-	{ "func_timer",               SP_trigger_timer            }, //@Deprecated use trigger_timer instead
+	{ "func_timer",               SP_trigger_timer,           "trigger_timer" }, //Deprecated
 	{ "func_train",               SP_func_train               },
 
 	/**
@@ -174,7 +175,7 @@ static const spawn_t spawns[] =
 	 */
 	{ "info_alien_intermission",  SP_info_player_intermission },
 	{ "info_human_intermission",  SP_info_player_intermission },
-	{ "info_notnull",             SP_target_position          }, //@Deprecated use target_position instead
+	{ "info_notnull",             SP_target_position,         "target_position" }, //Deprecated
 	{ "info_null",                SP_NULL                     },
 	{ "info_player_deathmatch",   SP_info_player_deathmatch   },
 	{ "info_player_intermission", SP_info_player_intermission },
@@ -186,7 +187,7 @@ static const spawn_t spawns[] =
 	{ "misc_particle_system",     SP_misc_particle_system     },
 	{ "misc_portal_camera",       SP_misc_portal_camera       },
 	{ "misc_portal_surface",      SP_misc_portal_surface      },
-	{ "misc_teleporter_dest",     SP_target_position          }, //@Deprecated use target_position instead (This will be the first entity to be removed)
+	{ "misc_teleporter_dest",     SP_target_position,         "target_position" }, //Deprecated (This will be the first entity to be removed)
 	{ "path_corner",              SP_path_corner              },
 
 	/**
@@ -198,9 +199,9 @@ static const spawn_t spawns[] =
 	 *	like being triggered by a trigger_ entity.
 	 *
 	 */
-	{ "target_alien_win",         SP_target_alien_win         }, //@Deprecated use target_win instead
-	{ "target_delay",             SP_target_relay             }, //@Deprecated use target_relay instead
-	{ "target_human_win",         SP_target_human_win         }, //@Deprecated use target_win instead
+	{ "target_alien_win",         SP_target_alien_win,        "target_win" }, //Deprecated
+	{ "target_delay",             SP_target_relay,            "target_relay" }, //Deprecated
+	{ "target_human_win",         SP_target_human_win,        "target_win" }, //Deprecated
 	{ "target_hurt",              SP_target_hurt              },
 	{ "target_kill",              SP_target_kill              },
 	{ "target_location",          SP_target_location          },
@@ -288,9 +289,17 @@ qboolean G_CallSpawn( gentity_t *ent )
 	             sizeof( spawn_t ), cmdcmp );
 
 	if ( s )
-	{
-		// found it
+	{ // found it
+
 		s->spawn( ent );
+
+		/*
+		 *  to allow each spawn function to test and handle for itself,
+		 *  we handle it automatically after the spawn (but before it's use)
+		 */
+		if ( s->replacement )
+			G_HandleDeprecatedEntityAliases( ent, s->replacement );
+
 		return qtrue;
 	}
 
