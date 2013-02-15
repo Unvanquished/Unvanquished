@@ -126,7 +126,7 @@ static const field_t fields[] =
 	{ "model2",              FOFS( model2 ),              F_STRING    },
 	{ "origin",              FOFS( s.origin ),            F_VECTOR    },
 	{ "radius",              FOFS( pos2 ),                F_VECTOR    },
-	{ "random",              FOFS( waitVariance ),        F_FLOAT     },
+	{ "random",              FOFS( waitVariance ),        F_FLOAT,    "waitVariance" }, //Deprecated
 	{ "rotatorAngle",        FOFS( rotatorAngle ),        F_FLOAT     },
 	{ "spawnflags",          FOFS( spawnflags ),          F_INT       },
 	{ "speed",               FOFS( speed ),               F_FLOAT     },
@@ -140,7 +140,8 @@ static const field_t fields[] =
 	{ "targetname4",		 FOFS( targetnames[ 3 ] ),	  F_STRING	  },
 	{ "targetShaderName",    FOFS( targetShaderName ),    F_STRING    },
 	{ "targetShaderNewName", FOFS( targetShaderNewName ), F_STRING    },
-	{ "wait",                FOFS( wait ),                F_FLOAT     }
+	{ "wait",                FOFS( wait ),                F_FLOAT     },
+	{ "waitVariance",        FOFS( waitVariance ),        F_FLOAT     },
 };
 
 typedef struct
