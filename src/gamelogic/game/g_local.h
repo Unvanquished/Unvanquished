@@ -699,8 +699,8 @@ typedef struct
 	int              humanStage2Time;
 	int              humanStage3Time;
 
-	qboolean         uncondAlienWin;
-	qboolean         uncondHumanWin;
+	team_t           unconditionalWin;
+
 	qboolean         alienTeamLocked;
 	qboolean         humanTeamLocked;
 	int              pausedTime;

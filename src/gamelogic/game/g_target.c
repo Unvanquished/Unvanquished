@@ -491,14 +491,14 @@ void SP_target_rumble( gentity_t *self )
 
 /*
 ===============
-target_alien_win_use
+target_win_use
 ===============
 */
-void target_alien_win_use( gentity_t *self, gentity_t *other, gentity_t *activator )
+void target_win_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
-	if ( !level.uncondHumanWin )
+	if ( level.unconditionalWin == TEAM_NONE ) // only if not yet triggered
 	{
-		level.uncondAlienWin = qtrue;
+		level.unconditionalWin = self->conditions.team;
 	}
 }
 
@@ -509,20 +509,9 @@ SP_target_alien_win
 */
 void SP_target_alien_win( gentity_t *self )
 {
-	self->use = target_alien_win_use;
-}
-
-/*
-===============
-target_human_win_use
-===============
-*/
-void target_human_win_use( gentity_t *self, gentity_t *other, gentity_t *activator )
-{
-	if ( !level.uncondAlienWin )
-	{
-		level.uncondHumanWin = qtrue;
-	}
+	G_HandleDeprecatedEntityAliases(self, "target_win");
+	self->conditions.team = TEAM_ALIENS;
+	self->use = target_win_use;
 }
 
 /*
@@ -532,7 +521,20 @@ SP_target_human_win
 */
 void SP_target_human_win( gentity_t *self )
 {
-	self->use = target_human_win_use;
+	G_HandleDeprecatedEntityAliases(self, "target_win");
+	self->conditions.team = TEAM_HUMANS;
+	self->use = target_win_use;
+}
+
+/*
+===============
+SP_target_win
+===============
+*/
+void SP_target_win( gentity_t *self )
+{
+	G_SpawnInt( "team", "0", ( int * ) &self->conditions.team );
+	self->use = target_win_use;
 }
 
 /*

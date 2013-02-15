@@ -64,6 +64,7 @@ void    SP_target_push( gentity_t *ent );
 void    SP_target_rumble( gentity_t *ent );
 void    SP_target_alien_win( gentity_t *ent );
 void    SP_target_human_win( gentity_t *ent );
+void    SP_target_win( gentity_t *ent );
 void    SP_target_hurt( gentity_t *ent );
 
 void    SP_NULL( gentity_t *self );

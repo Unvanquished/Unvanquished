@@ -198,9 +198,9 @@ static const spawn_t spawns[] =
 	 *	like being triggered by a trigger_ entity.
 	 *
 	 */
-	{ "target_alien_win",         SP_target_alien_win         },
+	{ "target_alien_win",         SP_target_alien_win         }, //@Deprecated use target_win instead
 	{ "target_delay",             SP_target_relay             }, //@Deprecated use target_relay instead
-	{ "target_human_win",         SP_target_human_win         },
+	{ "target_human_win",         SP_target_human_win         }, //@Deprecated use target_win instead
 	{ "target_hurt",              SP_target_hurt              },
 	{ "target_kill",              SP_target_kill              },
 	{ "target_location",          SP_target_location          },
@@ -212,6 +212,7 @@ static const spawn_t spawns[] =
 	{ "target_score",             SP_target_score             },
 	{ "target_speaker",           SP_target_speaker           },
 	{ "target_teleporter",        SP_target_teleporter        },
+	{ "target_win",               SP_target_win               },
 
 	/**
 	 *

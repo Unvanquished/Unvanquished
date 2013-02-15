@@ -2367,8 +2367,8 @@ void CheckExitRules( void )
 		}
 	}
 
-	if ( level.uncondHumanWin ||
-	     ( !level.uncondAlienWin &&
+	if ( level.unconditionalWin == TEAM_HUMANS ||
+	     ( level.unconditionalWin != TEAM_ALIENS &&
 	       ( level.time > level.startTime + 1000 ) &&
 	       ( level.numAlienSpawns == 0 ) &&
 	       ( level.numLiveAlienClients == 0 ) ) )
@@ -2380,8 +2380,9 @@ void CheckExitRules( void )
 		LogExit( "Humans win." );
 		G_MapLog_Result( 'h' );
 	}
-	else if ( level.uncondAlienWin ||
-	          ( ( level.time > level.startTime + 1000 ) &&
+	else if ( level.unconditionalWin == TEAM_ALIENS ||
+	          ( level.unconditionalWin != TEAM_HUMANS &&
+	            ( level.time > level.startTime + 1000 ) &&
 	            ( level.numHumanSpawns == 0 ) &&
 	            ( level.numLiveHumanClients == 0 ) ) )
 	{
