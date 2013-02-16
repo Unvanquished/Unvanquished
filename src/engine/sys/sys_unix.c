@@ -344,6 +344,24 @@ char *Sys_Dirname( char *path )
 }
 
 /*
+==============
+Sys_FOpen
+==============
+*/
+FILE *Sys_FOpen( const char *ospath, const char *mode )
+{
+	struct stat buf;
+
+	// check if path exists and is a directory
+	if ( !stat( ospath, &buf ) && S_ISDIR( buf.st_mode ) )
+	{
+		return NULL;
+	}
+
+	return fopen( ospath, mode );
+}
+
+/*
 ==================
 Sys_Mkdir
 ==================

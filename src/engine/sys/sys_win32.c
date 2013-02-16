@@ -315,6 +315,16 @@ char *Sys_Dirname( char *path )
 
 /*
 ==============
+Sys_FOpen
+==============
+*/
+FILE *Sys_FOpen( const char *ospath, const char *mode )
+{
+	return fopen( ospath, mode );
+}
+
+/*
+==============
 Sys_Mkdir
 ==============
 */
