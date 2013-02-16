@@ -37,16 +37,16 @@ void InitTrigger( gentity_t *self )
 }
 
 // the wait time has passed, so set back up for another activation
-void multi_wait( gentity_t *ent )
+void trigger_checkWaitForReactivation_think( gentity_t *ent )
 {
 	ent->nextthink = 0;
 }
 
-void trigger_check_wait( gentity_t *self )
+void trigger_checkWaitForReactivation( gentity_t *self )
 {
 	if ( self->wait > 0 )
 	{
-		self->think = multi_wait;
+		self->think = trigger_checkWaitForReactivation_think;
 		self->nextthink = level.time + ( self->wait + self->waitVariance * crandom() ) * 1000;
 	}
 	else
@@ -59,11 +59,10 @@ void trigger_check_wait( gentity_t *self )
 	}
 }
 
-
 // the trigger was just activated
 // ent->activator should be set to the activator so it can be held through a delay
 // so wait for the delay time before firing
-void multi_trigger( gentity_t *ent, gentity_t *activator )
+void trigger_multiple_trigger( gentity_t *ent, gentity_t *activator )
 {
 	ent->activator = activator;
 
@@ -88,22 +87,22 @@ void multi_trigger( gentity_t *ent, gentity_t *activator )
 	}
 
 	G_UseTargets( ent, ent->activator );
-	trigger_check_wait( ent );
+	trigger_checkWaitForReactivation( ent );
 }
 
-void Use_Multi( gentity_t *ent, gentity_t *other, gentity_t *activator )
+void trigger_multiple_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
 {
-	multi_trigger( ent, activator );
+	trigger_multiple_trigger( ent, other );
 }
 
-void Touch_Multi( gentity_t *self, gentity_t *other, trace_t *trace )
+void trigger_multiple_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 {
 	if ( !other->client && other->s.eType != ET_BUILDABLE )
 	{
 		return;
 	}
 
-	multi_trigger( self, other );
+	trigger_multiple_trigger( self, other );
 }
 
 /*QUAKED trigger_multiple (.5 .5 .5) ?
@@ -124,8 +123,8 @@ void SP_trigger_multiple( gentity_t *ent )
 		G_Printf( "trigger_multiple has random >= wait\n" );
 	}
 
-	ent->touch = Touch_Multi;
-	ent->use = Use_Multi;
+	ent->touch = trigger_multiple_touch;
+	ent->use = trigger_multiple_use;
 
 	InitTrigger( ent );
 	trap_LinkEntity( ent );
@@ -240,7 +239,7 @@ void SP_trigger_push( gentity_t *self )
 	trap_LinkEntity( self );
 }
 
-void Use_target_push( gentity_t *self, gentity_t *other, gentity_t *activator )
+void target_push_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	if ( !activator || !activator->client )
 	{
@@ -277,7 +276,7 @@ void SP_target_push( gentity_t *self )
 		self->nextthink = level.time + FRAMETIME;
 	}
 
-	self->use = Use_target_push;
+	self->use = target_push_use;
 }
 
 /*
@@ -600,7 +599,7 @@ void SP_trigger_stage( gentity_t *self )
 trigger_win
 ===============
 */
-void trigger_win( gentity_t *self, gentity_t *other, gentity_t *activator )
+void trigger_win_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	G_UseTargets( self, self );
 }
@@ -609,7 +608,7 @@ void SP_trigger_win( gentity_t *self )
 {
 	G_SpawnInt( "team", "0", ( int * ) &self->conditions.team );
 
-	self->use = trigger_win;
+	self->use = trigger_win_use;
 
 	self->r.svFlags = SVF_NOCLIENT;
 }
@@ -672,7 +671,7 @@ void trigger_buildable_trigger( gentity_t *self, gentity_t *activator )
 		if ( !trigger_buildable_match( self, activator ) )
 		{
 			G_UseTargets( self, activator );
-			trigger_check_wait( self );
+			trigger_checkWaitForReactivation( self );
 		}
 	}
 	else
@@ -680,7 +679,7 @@ void trigger_buildable_trigger( gentity_t *self, gentity_t *activator )
 		if ( trigger_buildable_match( self, activator ) )
 		{
 			G_UseTargets( self, activator );
-			trigger_check_wait( self );
+			trigger_checkWaitForReactivation( self );
 		}
 	}
 }
@@ -821,7 +820,7 @@ void trigger_class_trigger( gentity_t *self, gentity_t *activator )
 		if ( !trigger_class_match( self, activator ) )
 		{
 			G_UseTargets( self, activator );
-			trigger_check_wait( self );
+			trigger_checkWaitForReactivation( self );
 		}
 	}
 	else
@@ -829,7 +828,7 @@ void trigger_class_trigger( gentity_t *self, gentity_t *activator )
 		if ( trigger_class_match( self, activator ) )
 		{
 			G_UseTargets( self, activator );
-			trigger_check_wait( self );
+			trigger_checkWaitForReactivation( self );
 		}
 	}
 }
@@ -978,7 +977,7 @@ void trigger_equipment_trigger( gentity_t *self, gentity_t *activator )
 		if ( !trigger_equipment_match( self, activator ) )
 		{
 			G_UseTargets( self, activator );
-			trigger_check_wait( self );
+			trigger_checkWaitForReactivation( self );
 		}
 	}
 	else
@@ -986,7 +985,7 @@ void trigger_equipment_trigger( gentity_t *self, gentity_t *activator )
 		if ( trigger_equipment_match( self, activator ) )
 		{
 			G_UseTargets( self, activator );
-			trigger_check_wait( self );
+			trigger_checkWaitForReactivation( self );
 		}
 	}
 }
@@ -1057,6 +1056,12 @@ void SP_trigger_equipment( gentity_t *self )
 
 	InitTrigger( self );
 	trap_LinkEntity( self );
+}
+
+
+void SP_trigger_playercondition( gentity_t *self )
+{
+
 }
 
 /*
