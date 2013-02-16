@@ -649,6 +649,82 @@ qboolean trigger_buildable_match( gentity_t *self, gentity_t *activator )
 
 /*
 ===============
+trigger_class_match
+===============
+*/
+qboolean trigger_class_match( gentity_t *self, gentity_t *activator )
+{
+	int i = 0;
+
+	if ( !activator )
+	{
+		return qfalse;
+	}
+
+	//if there is no class list every class triggers (stupid case)
+	if ( self->conditions.classes[ i ] == PCL_NONE )
+	{
+		return qtrue;
+	}
+	else
+	{
+		//otherwise check against the list
+		for ( i = 0; self->conditions.classes[ i ] != PCL_NONE; i++ )
+		{
+			if ( activator->client->ps.stats[ STAT_CLASS ] == self->conditions.classes[ i ] )
+			{
+				return qtrue;
+			}
+		}
+	}
+
+	return qfalse;
+}
+
+/*
+===============
+trigger_equipment_match
+===============
+*/
+qboolean trigger_equipment_match( gentity_t *self, gentity_t *activator )
+{
+	int i = 0;
+
+	if ( !activator )
+	{
+		return qfalse;
+	}
+
+	if ( self->conditions.weapons[ i ] == WP_NONE && self->conditions.upgrades[ i ] == UP_NONE )
+	{
+		//if there is no equipment list all equipment triggers for the old behavior of target_equipment, but not the new or different one
+		return qtrue;
+	}
+	else
+	{
+		//otherwise check against the lists
+		for ( i = 0; self->conditions.weapons[ i ] != WP_NONE; i++ )
+		{
+			if ( BG_InventoryContainsWeapon( self->conditions.weapons[ i ], activator->client->ps.stats ) )
+			{
+				return qtrue;
+			}
+		}
+
+		for ( i = 0; self->conditions.upgrades[ i ] != UP_NONE; i++ )
+		{
+			if ( BG_InventoryContainsUpgrade( self->conditions.upgrades[ i ], activator->client->ps.stats ) )
+			{
+				return qtrue;
+			}
+		}
+	}
+
+	return qfalse;
+}
+
+/*
+===============
 trigger_buildable_trigger
 ===============
 */
@@ -686,285 +762,20 @@ void trigger_buildable_trigger( gentity_t *self, gentity_t *activator )
 
 /*
 ===============
-trigger_buildable_touch
-===============
-*/
-void trigger_buildable_touch( gentity_t *ent, gentity_t *other, trace_t *trace )
-{
-	//only triggered by buildables
-	if ( other->s.eType != ET_BUILDABLE )
-	{
-		return;
-	}
-
-	trigger_buildable_trigger( ent, other );
-}
-
-/*
-===============
-trigger_buildable_use
-===============
-*/
-void trigger_buildable_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
-{
-	ent->s.eFlags ^= EF_NODRAW;
-}
-
-/*
-===============
-SP_trigger_buildable
-===============
-*/
-void SP_trigger_buildable( gentity_t *self )
-{
-	char *buffer;
-
-	if (!self->wait)
-		self->wait = 0.5f;
-
-	if ( self->waitVariance >= self->wait && self->wait >= 0 )
-	{
-		self->waitVariance = self->wait - FRAMETIME;
-		G_Printf( S_COLOR_YELLOW "WARNING: trigger_buildable has random >= wait\n" );
-	}
-
-	G_SpawnString( "buildables", "", &buffer );
-
-	BG_ParseCSVBuildableList( buffer, self->conditions.buildables, BA_NUM_BUILDABLES );
-
-	self->touch = trigger_buildable_touch;
-	self->use = trigger_buildable_use;
-
-	// SPAWN_DISABLED
-	if ( self->spawnflags & 1 )
-	{
-		self->s.eFlags |= EF_NODRAW;
-	}
-
-	// NEGATE
-	if ( self->spawnflags & 2 )
-	{
-		self->s.eFlags |= EF_DEAD;
-	}
-
-	InitTrigger( self );
-	trap_LinkEntity( self );
-}
-
-/*
-===============
-trigger_class_match
-===============
-*/
-qboolean trigger_class_match( gentity_t *self, gentity_t *activator )
-{
-	int i = 0;
-
-	if ( !activator )
-	{
-		return qfalse;
-	}
-
-	//if there is no class list every class triggers (stupid case)
-	if ( self->conditions.classes[ i ] == PCL_NONE )
-	{
-		return qtrue;
-	}
-	else
-	{
-		//otherwise check against the list
-		for ( i = 0; self->conditions.classes[ i ] != PCL_NONE; i++ )
-		{
-			if ( activator->client->ps.stats[ STAT_CLASS ] == self->conditions.classes[ i ] )
-			{
-				return qtrue;
-			}
-		}
-	}
-
-	return qfalse;
-}
-
-/*
-===============
-trigger_class_trigger
-===============
-*/
-void trigger_class_trigger( gentity_t *self, gentity_t *activator )
-{
-	//sanity check
-	if ( !activator || !activator->client )
-	{
-		return;
-	}
-
-	if ( activator->client->ps.stats[ STAT_TEAM ] != TEAM_ALIENS )
-	{
-		return;
-	}
-
-	if ( self->s.eFlags & EF_NODRAW )
-	{
-		return;
-	}
-
-	self->activator = activator;
-
-	if ( self->nextthink )
-	{
-		return; // can't retrigger until the wait is over
-	}
-
-	if ( self->s.eFlags & EF_DEAD )
-	{
-		if ( !trigger_class_match( self, activator ) )
-		{
-			G_UseTargets( self, activator );
-			trigger_checkWaitForReactivation( self );
-		}
-	}
-	else
-	{
-		if ( trigger_class_match( self, activator ) )
-		{
-			G_UseTargets( self, activator );
-			trigger_checkWaitForReactivation( self );
-		}
-	}
-}
-
-/*
-===============
-trigger_class_touch
-===============
-*/
-void trigger_class_touch( gentity_t *ent, gentity_t *other, trace_t *trace )
-{
-	//only triggered by clients
-	if ( !other->client )
-	{
-		return;
-	}
-
-	trigger_class_trigger( ent, other );
-}
-
-/*
-===============
-trigger_class_use
-===============
-*/
-void trigger_class_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
-{
-	ent->s.eFlags ^= EF_NODRAW;
-}
-
-/*
-===============
-SP_trigger_class
-===============
-*/
-void SP_trigger_class( gentity_t *self )
-{
-	char *buffer;
-
-	if (!self->wait)
-		self->wait = 0.5f;
-
-	if ( self->waitVariance >= self->wait && self->wait >= 0 )
-	{
-		self->waitVariance = self->wait - FRAMETIME;
-		G_Printf( S_COLOR_YELLOW "WARNING: trigger_class has random >= wait\n" );
-	}
-
-	G_SpawnString( "classes", "", &buffer );
-
-	BG_ParseCSVClassList( buffer, self->conditions.classes, PCL_NUM_CLASSES );
-
-	self->touch = trigger_class_touch;
-	self->use = trigger_class_use;
-
-	// SPAWN_DISABLED
-	if ( self->spawnflags & 1 )
-	{
-		self->s.eFlags |= EF_NODRAW;
-	}
-
-	// NEGATE
-	if ( self->spawnflags & 2 )
-	{
-		self->s.eFlags |= EF_DEAD;
-	}
-
-	InitTrigger( self );
-	trap_LinkEntity( self );
-}
-
-/*
-===============
-trigger_equipment_match
-===============
-*/
-qboolean trigger_equipment_match( gentity_t *self, gentity_t *activator )
-{
-	int i = 0;
-
-	if ( !activator )
-	{
-		return qfalse;
-	}
-
-	//if there is no equipment list all equipment triggers (stupid case)
-	if ( self->conditions.weapons[ i ] == WP_NONE && self->conditions.upgrades[ i ] == UP_NONE )
-	{
-		return qtrue;
-	}
-	else
-	{
-		//otherwise check against the lists
-		for ( i = 0; self->conditions.weapons[ i ] != WP_NONE; i++ )
-		{
-			if ( BG_InventoryContainsWeapon( self->conditions.weapons[ i ], activator->client->ps.stats ) )
-			{
-				return qtrue;
-			}
-		}
-
-		for ( i = 0; self->conditions.upgrades[ i ] != UP_NONE; i++ )
-		{
-			if ( BG_InventoryContainsUpgrade( self->conditions.upgrades[ i ], activator->client->ps.stats ) )
-			{
-				return qtrue;
-			}
-		}
-	}
-
-	return qfalse;
-}
-
-/*
-===============
 trigger_equipment_trigger
 ===============
 */
-void trigger_equipment_trigger( gentity_t *self, gentity_t *activator )
+void trigger_client_trigger( gentity_t *self, gentity_t *activator )
 {
 	//sanity check
 	if ( !activator || !activator->client )
 	{
 		return;
 	}
-
-	if ( activator->client->ps.stats[ STAT_TEAM ] != TEAM_HUMANS )
-	{
-		return;
-	}
-
 	if ( self->s.eFlags & EF_NODRAW )
 	{
 		return;
 	}
-
 	self->activator = activator;
 
 	if ( self->nextthink )
@@ -972,75 +783,89 @@ void trigger_equipment_trigger( gentity_t *self, gentity_t *activator )
 		return; // can't retrigger until the wait is over
 	}
 
-	if ( self->s.eFlags & EF_DEAD )
+	if ( ( self->conditions.upgrades[0] || self->conditions.weapons[0] ) && activator->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
 	{
-		if ( !trigger_equipment_match( self, activator ) )
+		if ( self->s.eFlags & EF_DEAD )
 		{
-			G_UseTargets( self, activator );
-			trigger_checkWaitForReactivation( self );
+			if ( !trigger_equipment_match( self, activator ) )
+			{
+				G_UseTargets( self, activator );
+				trigger_checkWaitForReactivation( self );
+			}
+		}
+		else
+		{
+			if ( trigger_equipment_match( self, activator ) )
+			{
+				G_UseTargets( self, activator );
+				trigger_checkWaitForReactivation( self );
+			}
 		}
 	}
-	else
+	else if ( self->conditions.classes[0] && activator->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
 	{
-		if ( trigger_equipment_match( self, activator ) )
+		if ( self->s.eFlags & EF_DEAD )
 		{
-			G_UseTargets( self, activator );
-			trigger_checkWaitForReactivation( self );
+			if ( !trigger_class_match( self, activator ) )
+			{
+				G_UseTargets( self, activator );
+				trigger_checkWaitForReactivation( self );
+			}
+		}
+		else
+		{
+			if ( trigger_class_match( self, activator ) )
+			{
+				G_UseTargets( self, activator );
+				trigger_checkWaitForReactivation( self );
+			}
 		}
 	}
 }
 
-/*
-===============
-trigger_equipment_touch
-===============
-*/
-void trigger_equipment_touch( gentity_t *ent, gentity_t *other, trace_t *trace )
+void trigger_player_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 {
-	//only triggered by clients
-	if ( !other->client )
+	if ( self->conditions.buildables[0] && other->s.eType == ET_BUILDABLE )
 	{
-		return;
+		trigger_buildable_trigger( self, other );
 	}
-
-	trigger_equipment_trigger( ent, other );
+	else if ( other->client )
+	{
+		trigger_client_trigger( self, other );
+	}
 }
 
-/*
-===============
-trigger_equipment_use
-===============
-*/
-void trigger_equipment_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
+void trigger_touch_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
 {
 	ent->s.eFlags ^= EF_NODRAW;
 }
 
-/*
-===============
-SP_trigger_equipment
-===============
-*/
-void SP_trigger_equipment( gentity_t *self )
+//for compatibility
+void SP_trigger_touch_compat( gentity_t *entity )
 {
-	char *buffer;
+	if (!entity->wait)
+		entity->wait = 0.5f;
 
-	if (!self->wait)
-		self->wait = 0.5f;
-
-	if ( self->waitVariance >= self->wait && self->wait >= 0 )
+	if ( entity->waitVariance >= entity->wait && entity->wait >= 0 )
 	{
-		self->waitVariance = self->wait - FRAMETIME;
-		G_Printf( S_COLOR_YELLOW "WARNING: trigger_equipment has random >= wait\n" );
+		entity->waitVariance = entity->wait - FRAMETIME;
+		G_Printf( "^3WARNING: ^7%s has waitVariance >= wait\n", entity->classname );
 	}
 
-	G_SpawnString( "equipment", "", &buffer );
+	SP_trigger_touch( entity );
+}
 
-	BG_ParseCSVEquipmentList( buffer, self->conditions.weapons, WP_NUM_WEAPONS,
-	                          self->conditions.upgrades, UP_NUM_UPGRADES );
+/*
+===============
+SP_trigger_player
+===============
+*/
+void SP_trigger_touch( gentity_t *self )
+{
+	entity_ParseConditions( self );
 
-	self->touch = trigger_equipment_touch;
-	self->use = trigger_equipment_use;
+	self->touch = trigger_player_touch;
+	self->use = trigger_touch_use;
 
 	// SPAWN_DISABLED
 	if ( self->spawnflags & 1 )
@@ -1056,12 +881,6 @@ void SP_trigger_equipment( gentity_t *self )
 
 	InitTrigger( self );
 	trap_LinkEntity( self );
-}
-
-
-void SP_trigger_playercondition( gentity_t *self )
-{
-
 }
 
 /*

@@ -45,9 +45,8 @@ void    SP_trigger_teleport( gentity_t *ent );
 void    SP_trigger_hurt( gentity_t *ent );
 void    SP_trigger_stage( gentity_t *ent );
 void    SP_trigger_win( gentity_t *ent );
-void    SP_trigger_buildable( gentity_t *ent );
-void    SP_trigger_class( gentity_t *ent );
-void    SP_trigger_equipment( gentity_t *ent );
+void    SP_trigger_touch( gentity_t *ent );
+void    SP_trigger_touch_compat( gentity_t *ent );
 void    SP_trigger_gravity( gentity_t *ent );
 void    SP_trigger_heal( gentity_t *ent );
 void    SP_trigger_ammo( gentity_t *ent );
@@ -87,6 +86,8 @@ qboolean G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expect
  * predefined field-interpretation
  */
 void     entity_SetNextthink( gentity_t *self );
+void     entity_ParseConditions( gentity_t *self );
+
 
 // Init functions
 void    SP_target_init( void );

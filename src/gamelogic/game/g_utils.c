@@ -299,6 +299,21 @@ void entity_SetNextthink( gentity_t *self ) {
 	self->nextthink = level.time + ( self->wait + self->waitVariance * crandom() ) * 1000;
 }
 
+void entity_ParseConditions( gentity_t *self ) {
+	char *buffer;
+
+	if ( G_SpawnString( "buildables", "", &buffer ) )
+		BG_ParseCSVBuildableList( buffer, self->conditions.buildables, BA_NUM_BUILDABLES );
+
+	if ( G_SpawnString( "classes", "", &buffer ) )
+		BG_ParseCSVClassList( buffer, self->conditions.classes, PCL_NUM_CLASSES );
+
+	if ( G_SpawnString( "equipment", "", &buffer ) )
+		BG_ParseCSVEquipmentList( buffer, self->conditions.weapons, WP_NUM_WEAPONS,
+	                          self->conditions.upgrades, UP_NUM_UPGRADES );
+
+}
+
 /*
 =============
 VectorToString
