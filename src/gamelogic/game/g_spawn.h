@@ -83,5 +83,10 @@ void    SP_misc_light_flare( gentity_t *ent );
 qboolean G_HandleDeprecatedEntityAliases( gentity_t *entity, const char *expectedClassname );
 qboolean G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFieldname, const char *actualFieldname );
 
+/**
+ * predefined field-interpretation
+ */
+void     entity_SetNextthink( gentity_t *self );
+
 // Init functions
 void    SP_target_init( void );

@@ -292,6 +292,12 @@ void G_UseTargets( gentity_t *ent, gentity_t *activator )
 		}
 	}
 }
+/**
+ * predefined field interpretations
+ */
+void entity_SetNextthink( gentity_t *self ) {
+	self->nextthink = level.time + ( self->wait + self->waitVariance * crandom() ) * 1000;
+}
 
 /*
 =============

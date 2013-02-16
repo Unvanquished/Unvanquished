@@ -47,7 +47,7 @@ void trigger_checkWaitForReactivation( gentity_t *self )
 	if ( self->wait > 0 )
 	{
 		self->think = trigger_checkWaitForReactivation_think;
-		self->nextthink = level.time + ( self->wait + self->waitVariance * crandom() ) * 1000;
+		entity_SetNextthink( self );
 	}
 	else
 	{
@@ -483,7 +483,7 @@ void trigger_timer_think( gentity_t *self )
 {
 	G_UseTargets( self, self->activator );
 	// set time before next firing
-	self->nextthink = level.time + 1000 * ( self->wait + crandom() * self->waitVariance );
+	entity_SetNextthink( self );
 }
 
 void trigger_timer_use( gentity_t *self, gentity_t *other, gentity_t *activator )

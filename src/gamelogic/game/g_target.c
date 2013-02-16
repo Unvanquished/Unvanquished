@@ -278,7 +278,7 @@ void target_relay_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 	}
 	else
 	{
-		self->nextthink = level.time + ( self->wait + self->waitVariance * crandom() ) * 1000;
+		entity_SetNextthink( self );
 		self->think = target_relay_think_ifDelayed;
 		self->activator = activator;
 	}
