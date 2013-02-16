@@ -81,10 +81,10 @@ Normal sliding door entity. By default, the door will activate when player walks
 ; speed: determines how fast the door moves (default 100).
 ; wait: number of seconds before door returns (default 2, -1 = return immediately)
 ; lip: lip remaining at end of move (default 8)
-targetname: if set, a func_button or trigger is required to activate the door.
+; targetname, targetname2, targetname3, targetname4: if set, a func_button or trigger is required to activate the door.
 ; health: (default 0) if set to any non-zero value, the door must take damage (any amount) to activate.
 ; dmg: damage to inflict on player when he blocks operation of door (default 4). Door will reverse direction when blocked unless CRUSHER spawnflag is set.
-; team: assign the same team name to multiple doors that should operate together (see Notes).
+; groupname: assign the same groupname to multiple doors that should operate together (see Notes).
 ; light: constantLight radius of .md3 model included with entity. Has no effect on the entity's brushes (default 0).
 ; color: constantLight color of .md3 model included with entity. Has no effect on the entity's brushes (default 1 1 1).
 ; model2: path/name of model to include (eg: models/mapobjects/pipe/pipe02.md3).
@@ -111,7 +111,7 @@ targetname: if set, a func_button or trigger is required to activate the door.
 ; CRUSHER: door will not reverse direction when blocked and will keep damaging player until he dies or gets out of the way.
 
 === NOTES ===
-Unlike in Quake 2, doors that touch are NOT automatically teamed. If you want doors to operate together, you have to team them manually by assigning the same team name to all of them. Setting the origin key is simply an alternate method to using an origin brush. When using the model2 key, the origin point of the model will correspond to the origin point defined by either the origin brush or the origin coordinate value.
+Unlike in Quake 2, doors that touch are NOT automatically grouped. If you want doors to operate together, you have to group them manually by assigning the same groupname to all of them. Setting the origin key is simply an alternate method to using an origin brush. When using the model2 key, the origin point of the model will correspond to the origin point defined by either the origin brush or the origin coordinate value.
 Target this entity with a misc_model to have the model attached to the entity (set the model's "target" key to the same value as this entity's "targetname").
 */
 
@@ -121,9 +121,9 @@ A model based door entity. By default, the door will activate when player walks 
 === KEYS ===
 ; speed: determines the time taken for the door to change state in msec (default 200).
 ; wait: number of seconds before door returns (default 2)
-; targetname: if set, a func_button or trigger is required to activate the door.
+; targetname, targetname2, targetname3, targetname4: if set, a func_button or trigger is required to activate the door.
 ; health: (default 0) if set to any non-zero value, the door must take damage (any amount) to activate.
-; team: assign the same team name to multiple doors that should operate together (see Notes).
+; groupname: assign the same groupname to multiple doors that should operate together (see Notes).
 ; light: constantLight radius of .md3 model included with entity. Has no effect on the entity's brushes (default 0).
 ; color: constantLight color of .md3 model included with entity. Has no effect on the entity's brushes (default 1 1 1).
 ; model2: path/name of the door model (eg: models/mapobjects/pipe/pipe02.md3).
@@ -158,10 +158,10 @@ Rotating door entity. By default, the door will activate when player walks close
 ; speed: determines how fast the door moves (in degrees/second).
 ; rotatorAngle: the number of degrees through which to rotate (default 90).
 ; wait: number of seconds before door returns (default 2)
-; targetname: if set, a func_button or trigger is required to activate the door.
+; targetname, targetname2, targetname3, targetname4: if set, a func_button or trigger is required to activate the door.
 ; health: (default 0) if set to any non-zero value, the door must take damage (any amount) to activate.
 ; dmg: damage to inflict on player when he blocks operation of door (default 4). Door will reverse direction when blocked unless CRUSHER spawnflag is set.
-; team: assign the same team name to multiple doors that should operate together (see Notes).
+; groupname: assign the same groupname to multiple doors that should operate together (see Notes).
 ; light: constantLight radius of .md3 model included with entity. Has no effect on the entity's brushes (default 0).
 ; color: constantLight color of .md3 model included with entity. Has no effect on the entity's brushes (default 1 1 1).
 ; model2: path/name of model to include (eg: models/mapobjects/pipe/pipe02.md3).
@@ -191,7 +191,7 @@ Rotating door entity. By default, the door will activate when player walks close
 ; Y_AXIS: rotate on the Y axis instead of the Z.
 
 === NOTES ===
-Unlike in Quake 2, doors that touch are NOT automatically teamed. If you want doors to operate together, you have to team them manually by assigning the same team name to all of them. Setting the origin key is simply an alternate method to using an origin brush. When using the model2 key, the origin point of the model will correspond to the origin point defined by either the origin brush or the origin coordinate value.
+Unlike in Quake 2, doors that touch are NOT automatically grouped. If you want doors to operate together, you have to group them manually by assigning the same groupname to all of them. Setting the origin key is simply an alternate method to using an origin brush. When using the model2 key, the origin point of the model will correspond to the origin point defined by either the origin brush or the origin coordinate value.
 Target this entity with a misc_model to have the model attached to the entity (set the model's "target" key to the same value as this entity's "targetname").
 You need to have an origin brush as part of this entity.  The center of that brush will be the point around which it is rotated. It will rotate around the Z axis by default.  You can check either the X_AXIS or Y_AXIS box to change that.
 */
@@ -234,7 +234,7 @@ Rising platform the player can ride to reach higher places. Plats must always be
 ; lip: lip remaining at end of move (default 16). Has no effect if "height" is set.
 ; height: if set, this will determine the total amount of vertical travel of the plat.
 ; dmg: damage to inflict on player when he blocks operation of plat (default 4). Plat will reverse direction when blocked.
-; targetname: if set, the trigger that points to this will raise the plat each time it fires. The plat raises and comes back down a second later if no player is on it.
+; targetname, targetname2, targetname3, targetname4: if set, the trigger that points to this will raise the plat each time it fires. The plat raises and comes back down a second later if no player is on it.
 ; light: constantLight radius of .md3 model included with entity. Has no effect on the entity's brushes (default 0).
 ; color: constantLight color of .md3 model included with entity. Has no effect on the entity's brushes (default 1 1 1).
 ; model2: path/name of model to include (eg: models/mapobjects/pipe/pipe02.md3).
@@ -383,30 +383,6 @@ Camera for humans before they spawn. Can be aimed by setting the "angles" key or
 ; target: point this to an target_position entity to set the camera's pointing angles.
 */
 
-/*QUAKED misc_model (1 .5 .25) (-16 -16 -16) (16 16 16) CASTSHADOW AUtOCLIP FORCEMETA
-; Generic placeholder for inserting MD3 models in game. Requires compilation of map geometry to be added to level. If the map is compiled with Q3Map2, then ASE, 3DS, OBJ and other model formats are supported.
-
-=== KEYS ===
-; angle: direction in which model will be oriented.
-; model: path/name of model to use (eg: models/mapobjects/teleporter/teleporter.md3).
-
-=== Q3MAP2 KEYS ===
-; angles: Individual control of PITCH, YAW, and ROLL (default 0 0 0).
-; modelscale: Floating-point value used to scale a model up or down (default 1.0).
-; modelscale_vec: Floating-point vector used to scale a model's axes individually (default 1.0 1.0 1.0).
-; _remap: Used to remap textures/shaders in the model. To remap all shaders to a given shader, use "*;models/mymodel/mytexture". To remap a specific shader, use "models/mymodel/old;models/mymodel/new".
-; target: Used to attach the misc_model to a brush entity, where its "targetname" key is the same value.
-; _lightmapscale: Floating point value scaling the resolution of lightmaps on this model (if model is using lightmapped shaders) (default 1.0).
-; _cs OR _castshadows: Allows per-entity control over shadow casting. Defaults to 0 on entities, 1 on world. 0 = no shadow casting. 1 = cast shadows on world. > 1 = cast shadows on entities with _rs (or _receiveshadows) with the corresponding value, AND world. Negative values imply same, but DO NOT cast shadows on world.
-; _rs OR _receiveshadows: Allows per-entity control over shadow reception. Defaults to 1 on everything (world shadows). 0 = receives NO shadows. > 1 = receive shadows only from corresponding keyed entities (see above) and world. < 1 = receive shadows ONLY from corresponding keyed entities.
-; _celshader: Sets the cel shader used for this geometry. Note: omit the "textures/" prefix.
-
-=== SPAWNFLAGS ===
-; CASTSHADOW: Toggles the model casting shadows on the map surfaces.
-; AUTOCLIP: Sets the autoclipping spawnflag, automatically assigning q3map_clipmodel to any shaders used by the model. Use of Q3Map2 autoclipping for models is only recommended for large models with relatively few triangles in their mesh (i.e. terrain). The Q3Map2 autoclipping algorithm is a bit of a hack, and can hurt in-game performance (as well as produce erroneous clipping results) when used on small, dense models.
-; FORCEMETA: Sets the forcemeta spawnflag, automatically adding q3map_forcemeta to any shaders used by the model (which, in turn, allows the model to become lightmapped). This, effectively, is the "lightmapped model" spawnflag.
-*/
-
 /*QUAKED misc_anim_model (1 .5 .25) (-16 -16 -16) (16 16 16) TRIGGER_TOGGLE
 A little like misc_model except that it is a game entity and does not become part of the map geometry. An instance of this entity will draw an arbituary md3 in the world with an arbituary frame or with an animation.
 
@@ -457,7 +433,7 @@ Portal camera. This camera is used to project its view onto a portal surface in 
 === KEYS ===
 ; angles: this sets the pitch and yaw aiming angles of the portal camera (default 0 0). Use "roll" key to set roll angle.
 ; target: point this to a target_position entity to set the camera's pointing direction.
-; targetname: a misc_portal_surface portal surface indicator must point to this.
+; targetname, targetname2, targetname3, targetname4: a misc_portal_surface portal surface indicator must point to this.
 ; roll: roll angle of camera. A value of 0 is upside down and 180 is the same as the player's view.
 
 === SPAWNFLAGS ===
@@ -490,7 +466,7 @@ When triggered, this initiates a level-wide rumble effect. All players are affec
 This will kill the player who activates the trigger that fires this target.
 
 === KEYS ===
-; targetname: the activating trigger points to this.
+; targetname, targetname2, targetname3, targetname4: the activating trigger points to this.
 */
 
 /*QUAKED target_location (0 .5 0) (-8 -8 -8) (8 8 8)
@@ -514,7 +490,7 @@ This will print a message on the center of the screen when triggered. By default
 
 === KEYS ===
 ; message: text string to print on screen.
-; targetname: the activating trigger points to this.
+; targetname, targetname2, targetname3, targetname4: the activating trigger points to this.
 
 === SPAWNFLAGS ===
 ; HUMAN_TEAM: only the human team players will see the message.
@@ -528,7 +504,7 @@ This can be used to create jump pads and launch ramps. The direction of push can
 === KEYS ===
 ; angles: this sets the pitch and yaw aiming angles of push entity (default 0 0). The roll angle does not apply.
 ; speed: speed of push (default 1000). Has no effect if entity targets an aiming entity.
-; targetname: the activating trigger points to this. Push originates from the location of the trigger.
+; targetname, targetname2, targetname3, targetname4: the activating trigger points to this. Push originates from the location of the trigger.
 ; target: this points to the aiming entity to which the player will jump.
 
 === SPAWNFLAGS ===
@@ -543,16 +519,16 @@ This can be used to create jump pads and launch ramps. The direction of push can
 This is used to automatically give frag points to the player who activates this. A spawn location entity like info_player_* or CTF respawn points can target this entity to give points to the player when he spawns in the game. Or a trigger can also be used to activate this. The activator of the trigger will get the points.
 
 === KEYS ===
-; targetname: ativating entity points to this.
+; targetname, targetname2, targetname3, targetname4: ativating entity points to this.
 ; count: number of frag points to give to player (default 1).
 */
 
 /*QUAKED target_teleporter (0 .5 0) (-8 -8 -8) (8 8 8)
-Activating this will teleport players to the location of the targeted misc_teleporter_dest entity. Unlike trigger_teleport, this entity must be activated by a trigger and does NOT allow client prediction of events.
+Activating this will teleport players to the location of the targeted target_position or any other targeted entity. Unlike trigger_teleport, this entity must be activated by a trigger and does NOT allow client prediction of events.
 
 === KEYS ===
-; targetname: activating trigger points to this.
-; target: this must point to a misc_teleporter_dest entity.
+; targetname, targetname2, targetname3, targetname4: activating trigger points to this.
+; target, target2, target3, target4: one of these gets selected as destination.
 */
 
 /*QUAKED target_hurt (1 0 0) (-8 -8 -8) (8 8 8)
@@ -599,10 +575,10 @@ NOT THROUGHLY TESTED: please report whether or not this works for you.
 NOT THROUGHLY TESTED: please report whether or not this works for you.
 
 === KEYS ===
-; target: this points to the entity to activate.
+; target, target2, target3, target4: this points to the entity to activate.
 ; buildables: a comma delimited list of buildables which will trigger this entity.
 ; wait: time in seconds until trigger becomes re-triggerable after it's been touched (default 0.2, -1 = trigger once).
-; random: random time variance in seconds added or subtracted from "wait" delay (default 0 - see Notes).
+; waitVariance: random time variance in seconds added or subtracted from "wait" delay (default 0 - see Notes).
 
 === SPAWNFLAGS ===
 ; SPAWN_DISABLED: needs to be triggered (toggle) to activate.
@@ -614,10 +590,10 @@ NOT THROUGHLY TESTED: please report whether or not this works for you.
 NOT THROUGHLY TESTED: please report whether or not this works for you.
 
 === KEYS ===
-; target: this points to the entity to activate.
+; target, target2, target3, target4: this points to the entity to activate.
 ; classes: a comma delimited list of classes which will trigger this entity.
 ; wait: time in seconds until trigger becomes re-triggerable after it's been touched (default 0.2, -1 = trigger once).
-; random: random time variance in seconds added or subtracted from "wait" delay (default 0 - see Notes).
+; waitVariance: random time variance in seconds added or subtracted from "wait" delay (default 0 - see Notes).
 
 === SPAWNFLAGS ===
 ; SPAWN_DISABLED: needs to be triggered (toggle) to activate.
@@ -630,10 +606,10 @@ Targetting this entity toggles it.
 NOT THROUGHLY TESTED: please report whether or not this works for you.
 
 === KEYS ===
-; target: this points to the entity to activate.
+; target, target2, target3, target4: this points to the entity to activate.
 ; equipment: a comma delimited list of equipment which will trigger this entity.
 ; wait: time in seconds until trigger becomes re-triggerable after it's been touched (default 0.2, -1 = trigger once).
-; random: random time variance in seconds added or subtracted from "wait" delay (default 0 - see Notes).
+; waitVariance: random time variance in seconds added or subtracted from "wait" delay (default 0 - see Notes).
 
 === SPAWNFLAGS ===
 ; SPAWN_DISABLED: needs to be triggered (toggle) to activate.
@@ -645,7 +621,7 @@ Fires its targets when the team key reaches stage key.
 NOT THROUGHLY TESTED: please report whether or not this works for you.
 
 === KEYS ===
-; target: this points to the entity to activate.
+; target, target2, target3, target4: this points to the entity to activate.
 ; team: the team which triggers this entity; 1 for aliens, 2 for humans
 ; stage: the stage at which this entity is triggered; 1 for stage 2, 2 for stage 3
 */
@@ -655,7 +631,7 @@ Fires its targets when the team key wins.
 NOT THROUGHLY TESTED: please report whether or not this works for you.
 
 === KEYS ===
-; target: this points to the entity to activate.
+; target, target2, target3, target4: this points to the entity to activate.
 ; team: the team which triggers this entity; 1 for aliens, 2 for humans
 */
 
@@ -679,10 +655,10 @@ Any player that touches this will be hurt by "dmg" points of damage once per ser
 Variable size repeatable trigger. It will fire the entities it targets when touched by player. Can be made to operate like a trigger_once entity by setting the "wait" key to -1. It can also be activated by another trigger that targets it.
 
 === KEYS ===
-; target: this points to the entity to activate.
-; targetname: activating trigger points to this.
+; target, target2, target3, target4: this points to the entity to activate.
+; targetname, targetname2, targetname3, targetname4: activating trigger points to this.
 ; wait: time in seconds until trigger becomes re-triggerable after it's been touched (default 0.2, -1 = trigger once).
-; random: random time variance in seconds added or subtracted from "wait" delay (default 0 - see Notes).
+; waitVariance: random time variance in seconds added or subtracted from "wait" delay (default 0 - see Notes).
 
 === NOTES ===
 ; When the random key is set, its value is used to calculate a minimum and a maximum delay. The final time delay will be a random value anywhere between the minimum and maximum values: (min delay = wait - random) (max delay = wait + random).

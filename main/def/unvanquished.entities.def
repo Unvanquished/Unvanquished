@@ -122,6 +122,32 @@ Especially a target_position is well suited for targeting.
 Non-displayed point light source THAT ONLY AFFECTS ENTITIES (lightgrid). The -pointscale and -scale arguments to Q3Map2 affect the brightness of these lights. The -skyscale argument affects brightness of entity sun lights.
 Especially a target_position is well suited for targeting.
 
+//
+// Misc
+//
+
+/*QUAKED misc_model (1 .5 .25) (-16 -16 -16) (16 16 16) CASTSHADOW AUtOCLIP FORCEMETA
+Generic placeholder for inserting MD3 models in game. Requires compilation of map geometry to be added to level. If the map is compiled with Q3Map2, then ASE, 3DS, OBJ and other model formats are supported.
+
+=== Q3MAP2 KEYS ===
+; angle: direction in which model will be oriented.
+; model: path/name of model to use (eg: models/mapobjects/teleporter/teleporter.md3).
+; angles: Individual control of PITCH, YAW, and ROLL (default 0 0 0).
+; modelscale: Floating-point value used to scale a model up or down (default 1.0).
+; modelscale_vec: Floating-point vector used to scale a model's axes individually (default 1.0 1.0 1.0).
+; _remap: Used to remap textures/shaders in the model. To remap all shaders to a given shader, use "*;models/mymodel/mytexture". To remap a specific shader, use "models/mymodel/old;models/mymodel/new".
+; target: Used to attach the misc_model to a brush entity, where its "targetname" key is the same value.
+; _lightmapscale: Floating point value scaling the resolution of lightmaps on this model (if model is using lightmapped shaders) (default 1.0).
+; _cs OR _castshadows: Allows per-entity control over shadow casting. Defaults to 0 on entities, 1 on world. 0 = no shadow casting. 1 = cast shadows on world. > 1 = cast shadows on entities with _rs (or _receiveshadows) with the corresponding value, AND world. Negative values imply same, but DO NOT cast shadows on world.
+; _rs OR _receiveshadows: Allows per-entity control over shadow reception. Defaults to 1 on everything (world shadows). 0 = receives NO shadows. > 1 = receive shadows only from corresponding keyed entities (see above) and world. < 1 = receive shadows ONLY from corresponding keyed entities.
+; _celshader: Sets the cel shader used for this geometry. Note: omit the "textures/" prefix.
+
+=== SPAWNFLAGS ===
+; CASTSHADOW: Toggles the model casting shadows on the map surfaces.
+; AUTOCLIP: Sets the autoclipping spawnflag, automatically assigning q3map_clipmodel to any shaders used by the model. Use of Q3Map2 autoclipping for models is only recommended for large models with relatively few triangles in their mesh (i.e. terrain). The Q3Map2 autoclipping algorithm is a bit of a hack, and can hurt in-game performance (as well as produce erroneous clipping results) when used on small, dense models.
+; FORCEMETA: Sets the forcemeta spawnflag, automatically adding q3map_forcemeta to any shaders used by the model (which, in turn, allows the model to become lightmapped). This, effectively, is the "lightmapped model" spawnflag.
+*/
+
 === Q3MAP2 KEYS ===
 ; target: Lights pointed at a target will be spotlights. This will only take targetname and not the multi-targetnames into account
 ; radius: overrides the default 64 unit radius of a spotlight at the target point.
@@ -193,8 +219,8 @@ If wait, delay or the random time variance is set, it will wait until it is rela
 
 ; targetname, targetname2, targetname3, targetname3: activating trigger points to one of these.
 ; target, target2, target3, target4: this points to entities to activate when this entity is triggered. RANDOM chooses whether all gets executed or one gets selected Randomly.
-; wait OR delay: delay in seconds from when this gets triggered to when it fires its own targets (default approx. 1).
-; random: random time variance in seconds added or subtracted from "wait" delay (default 0 - see Notes).
+; wait: delay in seconds from when this gets triggered to when it fires its own targets (default approx. 1).
+; waitVariance: random time variance in seconds added or subtracted from "wait" delay (default 0 - see Notes).
 
 === SPAWNFLAGS ===
 ; HUMAN_ONLY: only human team players can activate trigger.
@@ -210,7 +236,7 @@ Sound generating entity that plays .wav files. Normal non-looping sounds play ea
 
 ; noise: path/name of .wav file to play (eg. sound/world/growl1.wav - see Notes).
 ; wait: delay in seconds between each time the sound is played ("random" key must be set - see Notes).
-; random: random time variance in seconds added or subtracted from "wait" delay ("wait" key must be set - see Notes).
+; waitVariance: random time variance in seconds added or subtracted from "wait" delay ("wait" key must be set - see Notes).
 ; targetname, targetname2, targetname3, targetname3: the activating button or trigger points to one of these.
 
 === SPAWNFLAGS ===
@@ -256,7 +282,7 @@ Time delay trigger that will continuously fire its targets after a preset time d
 Formerly known as func_timer.
 
 ; wait: delay in seconds between each triggering of its targets (default 1).
-; random: random time variance in seconds added or subtracted from "wait" delay (default 0 - see Notes).
+; waitVariance: random time variance in seconds added or subtracted from "wait" delay (default 0 - see Notes).
 ; target, target2, target3, target4: this points to the entities to trigger.
 ; targetname, targetname2, targetname3, targetname3: any triggering entity that targets one of these names will toggle the timer on/off when activated.
 
