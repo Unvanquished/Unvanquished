@@ -178,13 +178,15 @@ struct gentity_s
 	// when moving.  items and corpses do not collide against
 	// players, for instance
 
+	//sound index, used by movers as well as target_speaker e.g. for looping sounds
+	int          soundIndex;
+
 	// movers
 	moverState_t moverState;
 	int          soundPos1;
 	int          sound1to2;
 	int          sound2to1;
 	int          soundPos2;
-	int          soundLoop;
 	gentity_t    *parent;
 
 	vec3_t       pos1, pos2;
@@ -242,8 +244,6 @@ struct gentity_s
 
 	int       watertype;
 	int       waterlevel;
-
-	int       noise_index;
 
 	team_t      buildableTeam; // buildable item team
 	gentity_t   *parentNode; // for creep and defence/spawn dependencies

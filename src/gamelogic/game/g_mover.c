@@ -955,7 +955,7 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
 		}
 
 		// looping sound
-		ent->s.loopSound = ent->soundLoop;
+		ent->s.loopSound = ent->soundIndex;
 
 		// open areaportal
 		if ( ent->groupMaster == ent || !ent->groupMaster )
@@ -982,7 +982,7 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
 			G_AddEvent( ent, EV_GENERAL_SOUND, ent->sound2to1 );
 
 		// looping sound
-		ent->s.loopSound = ent->soundLoop;
+		ent->s.loopSound = ent->soundIndex;
 
 		// open areaportal
 		if ( ent->groupMaster == ent || !ent->groupMaster )
@@ -1037,7 +1037,7 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
 		}
 
 		// looping sound
-		ent->s.loopSound = ent->soundLoop;
+		ent->s.loopSound = ent->soundIndex;
 
 		// open areaportal
 		if ( ent->groupMaster == ent || !ent->groupMaster )
@@ -1064,7 +1064,7 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
 			G_AddEvent( ent, EV_GENERAL_SOUND, ent->sound2to1 );
 
 		// looping sound
-		ent->s.loopSound = ent->soundLoop;
+		ent->s.loopSound = ent->soundIndex;
 
 		// open areaportal
 		if ( ent->groupMaster == ent || !ent->groupMaster )
@@ -1121,7 +1121,7 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
 		}
 
 		// looping sound
-		ent->s.loopSound = ent->soundLoop;
+		ent->s.loopSound = ent->soundIndex;
 
 		// open areaportal
 		if ( ent->groupMaster == ent || !ent->groupMaster )
@@ -1168,7 +1168,7 @@ void InitMover( gentity_t *ent )
 	// if the "noise" key is set, use a constant looping sound when moving
 	if ( G_SpawnString( "noise", "", &sound ) )
 	{
-		ent->soundLoop = G_SoundIndex( sound );
+		ent->soundIndex = G_SoundIndex( sound );
 	}
 
 	// if the "color" or "light" keys are set, setup constantLight
@@ -1272,7 +1272,7 @@ void InitRotator( gentity_t *ent )
 	// if the "noise" key is set, use a constant looping sound when moving
 	if ( G_SpawnString( "noise", "", &sound ) )
 	{
-		ent->soundLoop = G_SoundIndex( sound );
+		ent->soundIndex = G_SoundIndex( sound );
 	}
 
 	// if the "color" or "light" keys are set, setup constantLight
@@ -1967,7 +1967,7 @@ void SP_func_door_model( gentity_t *ent )
 	// if the "noise" key is set, use a constant looping sound when moving
 	if ( G_SpawnString( "noise", "", &sound ) )
 	{
-		ent->soundLoop = G_SoundIndex( sound );
+		ent->soundIndex = G_SoundIndex( sound );
 	}
 
 	// if the "color" or "light" keys are set, setup constantLight
@@ -2406,7 +2406,7 @@ void Reached_Train( gentity_t *ent )
 	}
 
 	// looping sound
-	ent->s.loopSound = next->soundLoop;
+	ent->s.loopSound = next->soundIndex;
 
 	// start it going
 	SetMoverState( ent, MOVER_1TO2, level.time );

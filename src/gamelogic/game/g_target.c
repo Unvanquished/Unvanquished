@@ -105,7 +105,7 @@ void Use_Target_Speaker( gentity_t *ent, gentity_t *other, gentity_t *activator 
 		}
 		else
 		{
-			ent->s.loopSound = ent->noise_index; // start it
+			ent->s.loopSound = ent->soundIndex; // start it
 		}
 	}
 	else
@@ -113,15 +113,15 @@ void Use_Target_Speaker( gentity_t *ent, gentity_t *other, gentity_t *activator 
 		// one-time sound
 		if ( (ent->spawnflags & 8) && activator )
 		{
-			G_AddEvent( activator, EV_GENERAL_SOUND, ent->noise_index );
+			G_AddEvent( activator, EV_GENERAL_SOUND, ent->soundIndex );
 		}
 		else if ( ent->spawnflags & 4 )
 		{
-			G_AddEvent( ent, EV_GLOBAL_SOUND, ent->noise_index );
+			G_AddEvent( ent, EV_GLOBAL_SOUND, ent->soundIndex );
 		}
 		else
 		{
-			G_AddEvent( ent, EV_GENERAL_SOUND, ent->noise_index );
+			G_AddEvent( ent, EV_GENERAL_SOUND, ent->soundIndex );
 		}
 	}
 }
@@ -171,18 +171,18 @@ void SP_target_speaker( gentity_t *ent )
 		Q_strncpyz( buffer, s, sizeof( buffer ) );
 	}
 
-	ent->noise_index = G_SoundIndex( buffer );
+	ent->soundIndex = G_SoundIndex( buffer );
 
 	// a repeating speaker can be done completely client side
 	ent->s.eType = ET_SPEAKER;
-	ent->s.eventParm = ent->noise_index;
+	ent->s.eventParm = ent->soundIndex;
 	ent->s.frame = ent->wait * 10;
 	ent->s.clientNum = ent->waitVariance * 10;
 
 	// check for prestarted looping sound
 	if ( ent->spawnflags & 1 )
 	{
-		ent->s.loopSound = ent->noise_index;
+		ent->s.loopSound = ent->soundIndex;
 	}
 
 	ent->use = Use_Target_Speaker;

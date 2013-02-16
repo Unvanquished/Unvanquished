@@ -432,7 +432,7 @@ void hurt_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 	// play sound
 	if ( !( self->spawnflags & 4 ) )
 	{
-		G_Sound( other, CHAN_AUTO, self->noise_index );
+		G_Sound( other, CHAN_AUTO, self->soundIndex );
 	}
 
 	if ( self->spawnflags & 8 )
@@ -451,7 +451,7 @@ void SP_trigger_hurt( gentity_t *self )
 {
 	InitTrigger( self );
 
-	self->noise_index = G_SoundIndex( "sound/misc/electro.wav" );
+	self->soundIndex = G_SoundIndex( "sound/misc/electro.wav" );
 	self->touch = hurt_touch;
 
 	if ( self->damage <= 0 )
