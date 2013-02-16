@@ -229,7 +229,7 @@ static const spawn_t spawns[] =
 	 *	could not be client side predicted (push and teleport).
 	 *
 	 */
-	{ "trigger_always",           SP_trigger_always           },
+	{ "trigger_always",           SP_trigger_start             , "trigger_start"},
 	{ "trigger_ammo",             SP_trigger_ammo             },
 	{ "trigger_buildable",        SP_trigger_touch_compat      , "trigger_touch"},
 	{ "trigger_class",            SP_trigger_touch_compat      , "trigger_touch"},
@@ -241,6 +241,7 @@ static const spawn_t spawns[] =
 	{ "trigger_touch",            SP_trigger_touch            },
 	{ "trigger_push",             SP_trigger_push             },
 	{ "trigger_stage",            SP_trigger_stage            },
+	{ "trigger_start",            SP_trigger_start            },
 	{ "trigger_teleport",         SP_trigger_teleport         },
 	{ "trigger_timer",            SP_trigger_timer            },
 	{ "trigger_win",              SP_trigger_win              }

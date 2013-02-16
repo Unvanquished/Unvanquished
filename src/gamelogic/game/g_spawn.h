@@ -37,7 +37,7 @@ void    SP_func_door_rotating( gentity_t *ent );
 void    SP_func_door_model( gentity_t *ent );
 void    SP_func_train( gentity_t *ent );
 
-void    SP_trigger_always( gentity_t *ent );
+void    SP_trigger_start( gentity_t *ent );
 void    SP_trigger_multiple( gentity_t *ent );
 void    SP_trigger_timer( gentity_t *self );
 void    SP_trigger_push( gentity_t *ent );

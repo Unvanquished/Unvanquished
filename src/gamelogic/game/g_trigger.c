@@ -133,12 +133,12 @@ void SP_trigger_multiple( gentity_t *ent )
 /*
 ==============================================================================
 
-trigger_always
+trigger_start
 
 ==============================================================================
 */
 
-void trigger_always_think( gentity_t *ent )
+void trigger_start_think( gentity_t *ent )
 {
 	G_UseTargets( ent, ent );
 	G_FreeEntity( ent );
@@ -152,11 +152,11 @@ Automatic trigger. It will fire the entities it targets as soon as it spawns in 
 
 target: this points to the entity to activate.
 */
-void SP_trigger_always( gentity_t *ent )
+void SP_trigger_start( gentity_t *ent )
 {
 	// we must have some delay to make sure our use targets are present
 	ent->nextthink = level.time + 300;
-	ent->think = trigger_always_think;
+	ent->think = trigger_start_think;
 }
 
 /*
