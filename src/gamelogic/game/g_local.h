@@ -143,10 +143,12 @@ struct gentity_s
 	char         *targetnames[ MAX_TARGETNAMES + 1 ];
 	gentity_t    *activator;
 
-
 	// targeting-timing variables
 	float        wait;
 	float        waitVariance;
+
+	// trigger "range"
+	int          triggerRange;
 
 	//conditions as trigger-filter or target-goal
 	gentityConditions_t conditions;

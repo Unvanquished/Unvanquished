@@ -1609,8 +1609,8 @@ void Think_SpawnNewDoorTrigger( gentity_t *ent )
 		}
 	}
 
-	maxs[ best ] += ent->noise_index; // noise_index contains the trigger range
-	mins[ best ] -= ent->noise_index;
+	maxs[ best ] += ent->triggerRange;
+	mins[ best ] -= ent->triggerRange;
 
 	// create a trigger with this size
 	other = G_Spawn();
@@ -1682,11 +1682,11 @@ void SP_func_door( gentity_t *ent )
 	ent->wait *= 1000;
 
 	// default trigger range of 72 units (saved in noise_index)
-	G_SpawnInt( "range", "72", &ent->noise_index );
+	G_SpawnInt( "range", "72", &ent->triggerRange );
 
-	if ( ent->noise_index < 0 )
+	if ( ent->triggerRange < 0 )
 	{
-		ent->noise_index = 72;
+		ent->triggerRange = 72;
 	}
 
 	// default lip of 8 units
@@ -1798,11 +1798,11 @@ void SP_func_door_rotating( gentity_t *ent )
 	ent->wait *= 1000;
 
 	// default trigger range of 72 units (saved in noise_index)
-	G_SpawnInt( "range", "72", &ent->noise_index );
+	G_SpawnInt( "range", "72", &ent->triggerRange );
 
-	if ( ent->noise_index < 0 )
+	if ( ent->triggerRange < 0 )
 	{
-		ent->noise_index = 72;
+		ent->triggerRange = 72;
 	}
 
 	// set the axis of rotation
@@ -1928,11 +1928,11 @@ void SP_func_door_model( gentity_t *ent )
 	ent->wait *= 1000;
 
 	// default trigger range of 72 units (saved in noise_index)
-	G_SpawnInt( "range", "72", &ent->noise_index );
+	G_SpawnInt( "range", "72", &ent->triggerRange );
 
-	if ( ent->noise_index < 0 )
+	if ( ent->triggerRange < 0 )
 	{
-		ent->noise_index = 72;
+		ent->triggerRange = 72;
 	}
 
 	//brush model
