@@ -1213,9 +1213,14 @@ void InitMover( gentity_t *ent )
 	ent->use = Use_BinaryMover;
 	ent->reached = Reached_BinaryMover;
 
-	if ( !ent->groupName && G_SpawnString( "team", "", &ent->groupName ) )
+	if ( G_SpawnString( "groupname", "", &groupName ) )
+	{
+		ent->groupName = G_CopyString( groupName );
+	}
+	else if ( G_SpawnString( "team", "", &groupName ) )
 	{
 		G_WarnAboutDeprecatedEntityField( ent, "groupname", "team" );
+		ent->groupName = G_CopyString( groupName );
 	}
 
 	ent->moverState = MOVER_POS1;
@@ -1317,9 +1322,14 @@ void InitRotator( gentity_t *ent )
 	ent->use = Use_BinaryMover;
 	ent->reached = Reached_BinaryMover;
 
-	if ( !ent->groupName && G_SpawnString( "team", "", &ent->groupName ) )
+	if ( G_SpawnString( "groupname", "", &groupName ) )
+	{
+		ent->groupName = G_CopyString( groupName );
+	}
+	else if ( G_SpawnString( "team", "", &groupName ) )
 	{
 		G_WarnAboutDeprecatedEntityField( ent, "groupname", "team" );
+		ent->groupName = G_CopyString( groupName );
 	}
 
 	ent->moverState = ROTATOR_POS1;
