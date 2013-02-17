@@ -2175,21 +2175,7 @@ void LogExit( const char *string )
 		             cl->pers.netname );
 	}
 
-	for ( i = 1, ent = g_entities + i; i < level.num_entities; i++, ent++ )
-	{
-		if ( !ent->inuse )
-		{
-			continue;
-		}
-
-		if ( !Q_stricmp( ent->classname, "trigger_win" ) )
-		{
-			if ( level.lastWin == ent->conditions.team )
-			{
-				ent->use( ent, ent, ent );
-			}
-		}
-	}
+	G_notify_sensor_win( );
 
 	G_SendGameStat( level.lastWin );
 }

@@ -308,6 +308,31 @@ void sensor_win_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 	}
 }
 
+
+
+void G_notify_sensor_win( )
+{
+	int       i;
+	gentity_t *ent;
+
+	for ( i = 1, ent = g_entities + i; i < level.num_entities; i++, ent++ )
+	{
+		if ( !ent->inuse )
+		{
+			continue;
+		}
+
+		if ( !Q_stricmp( ent->classname, "sensor_win" ) )
+		{
+			if ( level.lastWin == ent->conditions.team )
+			{
+				G_UseTargets( ent, ent );
+			}
+		}
+	}
+}
+
+
 void SP_sensor_win( gentity_t *self )
 {
 	G_SpawnInt( "team", "0", ( int * ) &self->conditions.team );
