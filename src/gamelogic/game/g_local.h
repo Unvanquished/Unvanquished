@@ -963,7 +963,7 @@ void manualTriggerSpectator( gentity_t *trigger, gentity_t *player );
 // g_trigger.c
 //
 void trigger_teleporter_touch( gentity_t *self, gentity_t *other, trace_t *trace );
-void G_Checktrigger_stages( team_t team, stage_t stage );
+void G_notify_sensor_stage( team_t team, stage_t stage );
 
 //
 // g_misc.c

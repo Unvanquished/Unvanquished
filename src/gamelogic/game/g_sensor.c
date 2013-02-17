@@ -237,12 +237,12 @@ void SP_sensor_timer( gentity_t *self )
 
 /*
 ===============
-G_Checktrigger_stages
+G_notify_sensor_stage
 
 Called when stages change
 ===============
 */
-void G_Checktrigger_stages( team_t team, stage_t stage )
+void G_notify_sensor_stage( team_t team, stage_t stage )
 {
 	int       i;
 	gentity_t *ent;
@@ -254,11 +254,11 @@ void G_Checktrigger_stages( team_t team, stage_t stage )
 			continue;
 		}
 
-		if ( !Q_stricmp( ent->classname, "trigger_stage" ) )
+		if ( !Q_stricmp( ent->classname, "sensor_stage" ) )
 		{
 			if ( team == ent->conditions.team && stage == ent->conditions.stage )
 			{
-				ent->use( ent, ent, ent );
+				G_UseTargets( ent, ent );
 			}
 		}
 	}
