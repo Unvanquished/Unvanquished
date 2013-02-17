@@ -248,6 +248,31 @@ static const spawn_t spawns[] =
 	{ "trigger_win",              SP_trigger_win              }
 };
 
+qboolean G_HandleEntityVersions( spawn_t *spawnDescription, gentity_t *entity )
+{
+	if ( spawnDescription->versionState == ENT_V_CURRENT ) // we don't need to handle anything
+		return qtrue;
+
+	if ( !spawnDescription->replacement || !Q_stricmp(entity->classname, spawnDescription->replacement))
+	{
+		if ( g_debugEntities.integer > -2 )
+			G_Printf( "^1ERROR: ^7entity ^5%s ^7has been marked deprecated but no replacement has been supplied\n", entity->classname );
+
+		return qfalse;
+	}
+
+	if ( g_debugEntities.integer >= 0 ) //dont't warn about anything with -1 or lower
+	{
+		if( spawnDescription->versionState < ENT_V_TMPORARY
+		|| ( g_debugEntities.integer >= 1 && spawnDescription->versionState >= ENT_V_TMPORARY) )
+		{
+			G_Printf( "^3WARNING: ^7deprecated entity classname ^5%s^7 found — use ^5%s^7 instead\n", entity->classname, spawnDescription->replacement );
+		}
+	}
+	entity->classname = spawnDescription->replacement;
+	return qtrue;
+}
+
 /*
 ===============
 G_CallSpawn
@@ -301,10 +326,7 @@ qboolean G_CallSpawn( gentity_t *ent )
 		 *  to allow each spawn function to test and handle for itself,
 		 *  we handle it automatically *after* the spawn (but before it's use)
 		 */
-		if ( s->versionState != ENT_V_CURRENT && s->replacement )
-			G_HandleDeprecatedEntityAliases( ent, s->replacement );
-
-		return qtrue;
+		return G_HandleEntityVersions( s, ent );
 	}
 
 	//don't even warn about spawning-errors with -2 (maps might still work at least partly if we ignore these willingly)
@@ -494,20 +516,7 @@ void G_SpawnGEntityFromSpawnVars( void )
 	}
 }
 
-qboolean G_HandleDeprecatedEntityAliases( gentity_t *entity, const char *expectedClassname )
-{
-	if ( !Q_stricmp(entity->classname, expectedClassname) )
-		return qfalse;
-
-	if ( g_debugEntities.integer >= 0 ) //dont't warn about these with -1 or lower
-		G_Printf( "^3WARNING: ^7deprecated entity classname ^5%s^7 found — use ^5%s^7 instead\n", entity->classname, expectedClassname );
-
-	entity->classname = expectedClassname;
-
-	return qtrue;
-}
-
-qboolean G_WarnAboutDeprecatedEntityField(gentity_t *entity, const char *expectedFieldname, const char *actualFieldname  )
+qboolean G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFieldname, const char *actualFieldname  )
 {
 	if ( !Q_stricmp(expectedFieldname, actualFieldname) )
 		return qfalse;

@@ -91,9 +91,8 @@ void    SP_misc_light_flare( gentity_t *ent );
 #define ENT_V_TMPNAME  33
 
 /**
- * @return qtrue if a deprecated entity alias was found and handled, qfalse otherwise
+ * @return qtrue if a deprecated field was found, qfalse otherwise
  */
-qboolean G_HandleDeprecatedEntityAliases( gentity_t *entity, const char *expectedClassname );
 qboolean G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFieldname, const char *actualFieldname );
 
 /*
