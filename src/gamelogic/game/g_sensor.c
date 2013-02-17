@@ -94,6 +94,11 @@ void trigger_multiple_trigger( gentity_t *ent, gentity_t *activator )
 void trigger_multiple_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
 {
 	trigger_multiple_trigger( ent, other );
+
+	if ( g_debugEntities.integer >= -1 ) //dont't warn about anything with -1 or lower
+	{
+		G_Printf( "^3ERROR: ^7It appears as if ^5%s^7 is targeted by ^5%s^7 to enforce firing, which is undefined behavior — stop doing that! This WILL break in future releases and toggle the sensor instead.\n", ent->classname, activator->classname );
+	}
 }
 
 void trigger_multiple_touch( gentity_t *self, gentity_t *other, trace_t *trace )
@@ -272,6 +277,11 @@ sensor_stage_use
 void sensor_stage_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	G_UseTargets( self, self );
+
+	if ( g_debugEntities.integer >= -1 ) //dont't warn about anything with -1 or lower
+	{
+		G_Printf( "^3ERROR: ^7It appears as if ^5%s^7 is targeted by ^5%s^7 to enforce firing, which is undefined behavior — stop doing that! This WILL break in future releases and toggle the sensor instead.\n", self->classname, activator->classname );
+	}
 }
 
 void SP_sensor_stage( gentity_t *self )
@@ -291,6 +301,11 @@ sensor_win_use
 void sensor_win_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	G_UseTargets( self, self );
+
+	if ( g_debugEntities.integer >= -1 ) //dont't warn about anything with -1 or lower
+	{
+		G_Printf( "^3ERROR: ^7It appears as if ^5%s^7 is targeted by ^5%s^7 to enforce firing, which is undefined behavior — stop doing that! This WILL break in future releases and toggle the sensor instead.\n", self->classname, activator->classname );
+	}
 }
 
 void SP_sensor_win( gentity_t *self )
