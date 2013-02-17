@@ -165,7 +165,7 @@ static const spawn_t spawns[] =
 	{ "func_plat",                SP_func_plat                },
 	{ "func_rotating",            SP_func_rotating            },
 	{ "func_static",              SP_func_static              },
-	{ "func_timer",               SP_trigger_timer,           ENT_V_RENAMED, "trigger_timer" },
+	{ "func_timer",               SP_sensor_timer,            ENT_V_TMPNAME, "sensor_timer" },
 	{ "func_train",               SP_func_train               },
 
 	/**
@@ -192,6 +192,21 @@ static const spawn_t spawns[] =
 	{ "misc_portal_surface",      SP_misc_portal_surface      },
 	{ "misc_teleporter_dest",     SP_target_position,         ENT_V_TMPNAME, "target_position" },
 	{ "path_corner",              SP_path_corner              },
+
+	/**
+	 *  Sensors
+	 *  =======
+	 *  Sensor fire an event (usually towards targets) when aware
+	 *  of another entity, event, or gamestate (timer and start being aware of the game start).
+	 *  Sensors often can be targeted to toggle (activate or deactivate)
+	 *  their function of perceiving other entities.
+	 */
+
+	{ "sensor_stage",            SP_sensor_stage              },
+	{ "sensor_start",            SP_sensor_start              },
+	{ "sensor_timer",            SP_sensor_timer              },
+	{ "sensor_touch",            SP_sensor_touch              },
+	{ "sensor_win",              SP_sensor_win                },
 
 	/**
 	 *
@@ -222,31 +237,28 @@ static const spawn_t spawns[] =
 	 *
 	 *	Trigger
 	 *	=======
-	 *	Triggers are either special conditions or brush objects that
-	 *	cause an effect when contacted by a living player,
-	 *	usually involving firing targets.
+	 *	Triggers cause a defined effect when aware of another entity, event, or gamestate.
+	 *	In that sense it's like an integration of a sensor and a target
+	 *	and might in some cases be modeled by a combination of them.
 	 *
-	 *	While almost everything could be done with
-	 *	a single trigger class and different targets, triggered effects
-	 *	could not be client side predicted (push and teleport).
+	 *	Triggers carry often the benefit of being predicted client-side
+	 *	(since no entity chains have to be resolved first)
+	 *	such as trigger_push and trigger_teleport.
 	 *
 	 */
-	{ "trigger_always",           SP_trigger_start,           ENT_V_RENAMED, "trigger_start" },
+	{ "trigger_always",           SP_sensor_start,           ENT_V_RENAMED, "sensor_start" },
 	{ "trigger_ammo",             SP_trigger_ammo             },
-	{ "trigger_buildable",        SP_trigger_touch_compat,    ENT_V_TMPNAME, "trigger_touch" },
-	{ "trigger_class",            SP_trigger_touch_compat,    ENT_V_TMPNAME, "trigger_touch" },
-	{ "trigger_equipment",        SP_trigger_touch_compat,    ENT_V_TMPNAME, "trigger_touch" },
+	{ "trigger_buildable",        SP_sensor_touch_compat,    ENT_V_TMPNAME, "sensor_touch" },
+	{ "trigger_class",            SP_sensor_touch_compat,    ENT_V_TMPNAME, "sensor_touch" },
+	{ "trigger_equipment",        SP_sensor_touch_compat,    ENT_V_TMPNAME, "sensor_touch" },
 	{ "trigger_gravity",          SP_trigger_gravity          },
 	{ "trigger_heal",             SP_trigger_heal             },
 	{ "trigger_hurt",             SP_trigger_hurt             },
 	{ "trigger_multiple",         SP_trigger_multiple         },
 	{ "trigger_push",             SP_trigger_push             },
-	{ "trigger_stage",            SP_trigger_stage            },
-	{ "trigger_start",            SP_trigger_start            },
+	{ "trigger_stage",            SP_sensor_stage,           ENT_V_RENAMED, "sensor_stage" },
 	{ "trigger_teleport",         SP_trigger_teleport         },
-	{ "trigger_timer",            SP_trigger_timer            },
-	{ "trigger_touch",            SP_trigger_touch            },
-	{ "trigger_win",              SP_trigger_win              }
+	{ "trigger_win",              SP_sensor_win,             ENT_V_TMPNAME, "sensor_win" }
 };
 
 qboolean G_HandleEntityVersions( spawn_t *spawnDescription, gentity_t *entity )

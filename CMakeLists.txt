@@ -711,6 +711,7 @@ set( GAMEGPP_BASE
   ${GPP_DIR}/game/g_misc.c
   ${GPP_DIR}/game/g_missile.c
   ${GPP_DIR}/game/g_mover.c
+  ${GPP_DIR}/game/g_sensor.c
   ${GPP_DIR}/game/g_session.c
   ${GPP_DIR}/game/g_spawn.c
   ${GPP_DIR}/game/g_svcmds.c
