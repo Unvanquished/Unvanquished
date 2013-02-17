@@ -306,13 +306,17 @@ qboolean G_CallSpawn( gentity_t *ent )
 		return qtrue;
 	}
 
-	if (!Q_stricmp("worldspawn", ent->classname))
+	//don't even warn about spawning-errors with -2 (maps might still work at least partly if we ignore these willingly)
+	if ( g_debugEntities.integer > -2 )
 	{
-		G_Printf( "^1ERROR: ^5%s ^7is not the first entity – we are unable to spawn it.\n", ent->classname );
-	}
-	else
-	{
-		G_Printf( "^1ERROR: ^5%s ^7doesn't have a spawn function. We have to skip it.\n", ent->classname );
+		if (!Q_stricmp("worldspawn", ent->classname))
+		{
+			G_Printf( "^1ERROR: ^5%s ^7is not the first entity – we are unable to spawn it.\n", ent->classname );
+		}
+		else
+		{
+			G_Printf( "^1ERROR: ^5%s ^7doesn't have a spawn function. We have to skip it.\n", ent->classname );
+		}
 	}
 
 	return qfalse;
@@ -494,7 +498,9 @@ qboolean G_HandleDeprecatedEntityAliases( gentity_t *entity, const char *expecte
 	if ( !Q_stricmp(entity->classname, expectedClassname) )
 		return qfalse;
 
-	G_Printf( "^3WARNING: ^7deprecated entity classname ^5%s^7 found — use ^5%s^7 instead\n", entity->classname, expectedClassname );
+	if ( g_debugEntities.integer >= 0 ) //dont't warn about these with -1 or lower
+		G_Printf( "^3WARNING: ^7deprecated entity classname ^5%s^7 found — use ^5%s^7 instead\n", entity->classname, expectedClassname );
+
 	entity->classname = expectedClassname;
 
 	return qtrue;
@@ -505,7 +511,8 @@ qboolean G_WarnAboutDeprecatedEntityField(gentity_t *entity, const char *expecte
 	if ( !Q_stricmp(expectedFieldname, actualFieldname) )
 		return qfalse;
 
-	G_Printf( "^3WARNING: ^7deprecated entity fieldname ^5%s^7 in ^5%s^7 found — use ^5%s^7 instead\n", actualFieldname, entity->classname, expectedFieldname );
+	if ( g_debugEntities.integer >= 0 ) //dont't warn about these with -1 or lower
+		G_Printf( "^3WARNING: ^7deprecated entity fieldname ^5%s^7 in ^5%s^7 found — use ^5%s^7 instead\n", actualFieldname, entity->classname, expectedFieldname );
 
 	return qtrue;
 }
