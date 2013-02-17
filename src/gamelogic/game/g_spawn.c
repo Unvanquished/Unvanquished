@@ -106,6 +106,7 @@ typedef struct
 	const char  *name;
 	size_t      offset;
 	fieldtype_t type;
+	const int	versionState;
 	const char  *replacement;
 } field_t;
 
@@ -126,7 +127,7 @@ static const field_t fields[] =
 	{ "model2",              FOFS( model2 ),              F_STRING    },
 	{ "origin",              FOFS( s.origin ),            F_VECTOR    },
 	{ "radius",              FOFS( pos2 ),                F_VECTOR    },
-	{ "random",              FOFS( waitVariance ),        F_FLOAT,    "waitVariance" }, //Deprecated
+	{ "random",              FOFS( waitVariance ),        F_FLOAT,    ENT_V_TMPNAME, "waitVariance" },
 	{ "spawnflags",          FOFS( spawnflags ),          F_INT       },
 	{ "speed",               FOFS( speed ),               F_FLOAT     },
 	{ "target",				 FOFS( targets[ 0 ] ),		  F_STRING	  },
@@ -454,8 +455,8 @@ void G_ParseField( const char *key, const char *value, gentity_t *entity )
 			break;
 	}
 
-	if ( resultingField->replacement )
-		G_WarnAboutDeprecatedEntityField(entity, resultingField->replacement, key);
+	if ( resultingField->replacement && resultingField->versionState )
+		G_WarnAboutDeprecatedEntityField(entity, resultingField->replacement, key, resultingField->versionState );
 }
 
 /*
@@ -516,13 +517,19 @@ void G_SpawnGEntityFromSpawnVars( void )
 	}
 }
 
-qboolean G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFieldname, const char *actualFieldname  )
+qboolean G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFieldname, const char *actualFieldname, const int typeOfDeprecation  )
 {
-	if ( !Q_stricmp(expectedFieldname, actualFieldname) )
+	if ( !Q_stricmp(expectedFieldname, actualFieldname) || typeOfDeprecation == ENT_V_CURRENT )
 		return qfalse;
 
-	if ( g_debugEntities.integer >= 0 ) //dont't warn about these with -1 or lower
-		G_Printf( "^3WARNING: ^7deprecated entity fieldname ^5%s^7 in ^5%s^7 found — use ^5%s^7 instead\n", actualFieldname, entity->classname, expectedFieldname );
+	if ( g_debugEntities.integer >= 0 ) //dont't warn about anything with -1 or lower
+	{
+		if( typeOfDeprecation < ENT_V_TMPORARY
+		|| ( g_debugEntities.integer >= 1 && typeOfDeprecation >= ENT_V_TMPORARY) )
+		{
+			G_Printf( "^3WARNING: ^7deprecated entity fieldname ^5%s^7 in ^5%s^7 found — use ^5%s^7 instead\n", actualFieldname, entity->classname, expectedFieldname );
+		}
+	}
 
 	return qtrue;
 }

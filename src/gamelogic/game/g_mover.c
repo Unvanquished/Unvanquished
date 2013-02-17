@@ -1219,7 +1219,7 @@ void InitMover( gentity_t *ent )
 	}
 	else if ( G_SpawnString( "team", "", &groupName ) )
 	{
-		G_WarnAboutDeprecatedEntityField( ent, "groupname", "team" );
+		G_WarnAboutDeprecatedEntityField( ent, "groupname", "team", ENT_V_RENAMED );
 		ent->groupName = G_CopyString( groupName );
 	}
 
@@ -1328,7 +1328,7 @@ void InitRotator( gentity_t *ent )
 	}
 	else if ( G_SpawnString( "team", "", &groupName ) )
 	{
-		G_WarnAboutDeprecatedEntityField( ent, "groupname", "team" );
+		G_WarnAboutDeprecatedEntityField( ent, "groupname", "team", ENT_V_RENAMED );
 		ent->groupName = G_CopyString( groupName );
 	}
 

@@ -93,7 +93,7 @@ void    SP_misc_light_flare( gentity_t *ent );
 /**
  * @return qtrue if a deprecated field was found, qfalse otherwise
  */
-qboolean G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFieldname, const char *actualFieldname );
+qboolean G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFieldname, const char *actualFieldname, const int typeOfDeprecation );
 
 /*
  * Standardized entity management
