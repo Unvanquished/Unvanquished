@@ -239,12 +239,12 @@ static const spawn_t spawns[] =
 	{ "trigger_heal",             SP_trigger_heal             },
 	{ "trigger_hurt",             SP_trigger_hurt             },
 	{ "trigger_multiple",         SP_trigger_multiple         },
-	{ "trigger_touch",            SP_trigger_touch            },
 	{ "trigger_push",             SP_trigger_push             },
 	{ "trigger_stage",            SP_trigger_stage            },
 	{ "trigger_start",            SP_trigger_start            },
 	{ "trigger_teleport",         SP_trigger_teleport         },
 	{ "trigger_timer",            SP_trigger_timer            },
+	{ "trigger_touch",            SP_trigger_touch            },
 	{ "trigger_win",              SP_trigger_win              }
 };
 
