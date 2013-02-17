@@ -147,6 +147,7 @@ typedef struct
 {
 	const char *name;
 	void      ( *spawn )( gentity_t *ent );
+	const int	versionState;
 	const char  *replacement;
 } spawn_t;
 
@@ -163,7 +164,7 @@ static const spawn_t spawns[] =
 	{ "func_plat",                SP_func_plat                },
 	{ "func_rotating",            SP_func_rotating            },
 	{ "func_static",              SP_func_static              },
-	{ "func_timer",               SP_trigger_timer,           "trigger_timer" }, //Deprecated
+	{ "func_timer",               SP_trigger_timer,           ENT_V_RENAMED, "trigger_timer" },
 	{ "func_train",               SP_func_train               },
 
 	/**
@@ -176,7 +177,7 @@ static const spawn_t spawns[] =
 	 */
 	{ "info_alien_intermission",  SP_info_player_intermission },
 	{ "info_human_intermission",  SP_info_player_intermission },
-	{ "info_notnull",             SP_target_position,         "target_position" }, //Deprecated
+	{ "info_notnull",             SP_target_position,         ENT_V_TMPNAME, "target_position" },
 	{ "info_null",                SP_NULL                     },
 	{ "info_player_deathmatch",   SP_info_player_deathmatch   },
 	{ "info_player_intermission", SP_info_player_intermission },
@@ -188,7 +189,7 @@ static const spawn_t spawns[] =
 	{ "misc_particle_system",     SP_misc_particle_system     },
 	{ "misc_portal_camera",       SP_misc_portal_camera       },
 	{ "misc_portal_surface",      SP_misc_portal_surface      },
-	{ "misc_teleporter_dest",     SP_target_position,         "target_position" }, //Deprecated (This will be the first entity to be removed)
+	{ "misc_teleporter_dest",     SP_target_position,         ENT_V_TMPNAME, "target_position" },
 	{ "path_corner",              SP_path_corner              },
 
 	/**
@@ -200,9 +201,9 @@ static const spawn_t spawns[] =
 	 *	like being triggered by a trigger_ entity.
 	 *
 	 */
-	{ "target_alien_win",         SP_target_alien_win,        "target_win" }, //Deprecated
-	{ "target_delay",             SP_target_relay,            "target_relay" }, //Deprecated
-	{ "target_human_win",         SP_target_human_win,        "target_win" }, //Deprecated
+	{ "target_alien_win",         SP_target_alien_win,        ENT_V_TMPNAME, "target_win" },
+	{ "target_delay",             SP_target_relay,            ENT_V_TMPNAME, "target_relay" },
+	{ "target_human_win",         SP_target_human_win,        ENT_V_TMPNAME, "target_win" },
 	{ "target_hurt",              SP_target_hurt              },
 	{ "target_kill",              SP_target_kill              },
 	{ "target_location",          SP_target_location          },
@@ -229,11 +230,11 @@ static const spawn_t spawns[] =
 	 *	could not be client side predicted (push and teleport).
 	 *
 	 */
-	{ "trigger_always",           SP_trigger_start             , "trigger_start"},
+	{ "trigger_always",           SP_trigger_start,           ENT_V_RENAMED, "trigger_start" },
 	{ "trigger_ammo",             SP_trigger_ammo             },
-	{ "trigger_buildable",        SP_trigger_touch_compat      , "trigger_touch"},
-	{ "trigger_class",            SP_trigger_touch_compat      , "trigger_touch"},
-	{ "trigger_equipment",        SP_trigger_touch_compat      , "trigger_touch"},
+	{ "trigger_buildable",        SP_trigger_touch_compat,    ENT_V_TMPNAME, "trigger_touch" },
+	{ "trigger_class",            SP_trigger_touch_compat,    ENT_V_TMPNAME, "trigger_touch" },
+	{ "trigger_equipment",        SP_trigger_touch_compat,    ENT_V_TMPNAME, "trigger_touch" },
 	{ "trigger_gravity",          SP_trigger_gravity          },
 	{ "trigger_heal",             SP_trigger_heal             },
 	{ "trigger_hurt",             SP_trigger_hurt             },
@@ -298,9 +299,9 @@ qboolean G_CallSpawn( gentity_t *ent )
 
 		/*
 		 *  to allow each spawn function to test and handle for itself,
-		 *  we handle it automatically after the spawn (but before it's use)
+		 *  we handle it automatically *after* the spawn (but before it's use)
 		 */
-		if ( s->replacement )
+		if ( s->versionState != ENT_V_CURRENT && s->replacement )
 			G_HandleDeprecatedEntityAliases( ent, s->replacement );
 
 		return qtrue;

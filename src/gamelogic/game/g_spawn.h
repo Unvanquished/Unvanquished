@@ -76,11 +76,29 @@ void    SP_misc_particle_system( gentity_t *ent );
 void    SP_misc_anim_model( gentity_t *ent );
 void    SP_misc_light_flare( gentity_t *ent );
 
+/*
+ * everything around entity versioning and deprecation
+ */
+#define ENT_V_CURRENT  0
+#define ENT_V_RENAMED  1
+#define ENT_V_EXTENDED 2
+#define ENT_V_COMBINED 3
+#define ENT_V_STRIPPED 4
+#define ENT_V_SPLITUP  5
+#define ENT_V_REMOVED  8
+
+#define ENT_V_TMPORARY 32
+#define ENT_V_TMPNAME  33
+
 /**
  * @return qtrue if a deprecated entity alias was found and handled, qfalse otherwise
  */
 qboolean G_HandleDeprecatedEntityAliases( gentity_t *entity, const char *expectedClassname );
 qboolean G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFieldname, const char *actualFieldname );
+
+/*
+ * Standardized entity management
+ */
 
 /**
  * predefined field-interpretation
