@@ -333,6 +333,7 @@ static void Svcmd_Evacuation_f( void )
 	trap_SendServerCommand( -1, "print_tr \"" N_("Evacuation ordered\n") "\"" );
 	level.lastWin = TEAM_NONE;
 	trap_SetConfigstring( CS_WINNER, "Evacuation" );
+	G_notify_sensor_win( TEAM_NONE );
 	LogExit( "Evacuation." );
 	G_MapLog_Result( 'd' );
 }

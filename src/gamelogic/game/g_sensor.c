@@ -310,7 +310,7 @@ void sensor_win_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 
 
 
-void G_notify_sensor_win( )
+void G_notify_sensor_win( team_t winningTeam )
 {
 	int       i;
 	gentity_t *ent;
@@ -324,7 +324,7 @@ void G_notify_sensor_win( )
 
 		if ( !Q_stricmp( ent->classname, "sensor_win" ) )
 		{
-			if ( level.lastWin == ent->conditions.team )
+			if ( winningTeam == ent->conditions.team )
 			{
 				G_UseTargets( ent, ent );
 			}

@@ -2175,8 +2175,6 @@ void LogExit( const char *string )
 		             cl->pers.netname );
 	}
 
-	G_notify_sensor_win( );
-
 	G_SendGameStat( level.lastWin );
 }
 
@@ -2339,6 +2337,7 @@ void CheckExitRules( void )
 			level.lastWin = TEAM_NONE;
 			trap_SendServerCommand( -1, "print_tr \"" N_("Timelimit hit\n") "\"" );
 			trap_SetConfigstring( CS_WINNER, "Stalemate" );
+			G_notify_sensor_win( TEAM_NONE );
 			LogExit( "Timelimit hit." );
 			G_MapLog_Result( 't' );
 			return;
@@ -2367,6 +2366,7 @@ void CheckExitRules( void )
 		level.lastWin = TEAM_HUMANS;
 		trap_SendServerCommand( -1, "print_tr \"" N_("Humans win\n") "\"" );
 		trap_SetConfigstring( CS_WINNER, "Humans Win" );
+		G_notify_sensor_win( TEAM_HUMANS );
 		LogExit( "Humans win." );
 		G_MapLog_Result( 'h' );
 	}
@@ -2380,6 +2380,7 @@ void CheckExitRules( void )
 		level.lastWin = TEAM_ALIENS;
 		trap_SendServerCommand( -1, "print_tr \"" N_("Aliens win\n") "\"" );
 		trap_SetConfigstring( CS_WINNER, "Aliens Win" );
+		G_notify_sensor_win( TEAM_ALIENS );
 		LogExit( "Aliens win." );
 		G_MapLog_Result( 'a' );
 	}
