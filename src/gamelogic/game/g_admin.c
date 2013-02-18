@@ -4183,7 +4183,7 @@ qboolean G_admin_nextmap( gentity_t *ent )
 	        G_quoted_admin_name( ent ) ) );
 	level.lastWin = TEAM_NONE;
 	trap_SetConfigstring( CS_WINNER, "Evacuation" );
-	G_notify_sensor_win( TEAM_NONE );
+	G_notify_sensor_end( TEAM_NONE );
 	LogExit( va( "nextmap was run by %s", G_admin_name( ent ) ) );
 	G_MapLog_Result( 'N' );
 	return qtrue;
