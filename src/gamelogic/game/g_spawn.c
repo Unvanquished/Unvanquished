@@ -154,6 +154,30 @@ typedef struct
 
 static const spawn_t spawns[] =
 {
+	/**
+	 *
+	 *	Environment entities
+	 *	====================
+	 *
+	 */
+	{ "env_particle_system",      SP_env_particle_system      },
+	{ "env_rumble",               SP_env_rumble               },
+	{ "env_speaker",              SP_env_speaker              },
+
+	/**
+	 *
+	 *	Flow entities
+	 *	=============
+	 *
+	 */
+	{ "flow_relay",               SP_flow_relay               },
+
+	/**
+	 *
+	 *	Functional entities
+	 *	====================
+	 *
+	 */
 	{ "func_bobbing",             SP_func_bobbing             },
 	{ "func_button",              SP_func_button              },
 	{ "func_door",                SP_func_door                },
@@ -187,7 +211,7 @@ static const spawn_t spawns[] =
 	{ "misc_anim_model",          SP_misc_anim_model          },
 	{ "misc_light_flare",         SP_misc_light_flare         },
 	{ "misc_model",               SP_NULL                     },
-	{ "misc_particle_system",     SP_misc_particle_system     },
+	{ "misc_particle_system",     SP_env_particle_system,     ENT_V_TMPNAME, "env_particle_system"},
 	{ "misc_portal_camera",       SP_misc_portal_camera       },
 	{ "misc_portal_surface",      SP_misc_portal_surface      },
 	{ "misc_teleporter_dest",     SP_target_position,         ENT_V_TMPNAME, "target_position" },
@@ -218,7 +242,7 @@ static const spawn_t spawns[] =
 	 *
 	 */
 	{ "target_alien_win",         SP_target_alien_win,        ENT_V_TMPNAME, "target_win" },
-	{ "target_delay",             SP_target_relay,            ENT_V_TMPNAME, "target_relay" },
+	{ "target_delay",             SP_flow_relay,              ENT_V_TMPNAME, "flow_relay" },
 	{ "target_human_win",         SP_target_human_win,        ENT_V_TMPNAME, "target_win" },
 	{ "target_hurt",              SP_target_hurt              },
 	{ "target_kill",              SP_target_kill              },
@@ -226,10 +250,10 @@ static const spawn_t spawns[] =
 	{ "target_position",          SP_target_position          },
 	{ "target_print",             SP_target_print             },
 	{ "target_push",              SP_target_push              },
-	{ "target_relay",             SP_target_relay             },
-	{ "target_rumble",            SP_target_rumble            },
+	{ "target_relay",             SP_flow_relay,              ENT_V_TMPNAME, "flow_relay" },
+	{ "target_rumble",            SP_env_rumble,              ENT_V_TMPNAME, "env_rumble" },
 	{ "target_score",             SP_target_score             },
-	{ "target_speaker",           SP_target_speaker           },
+	{ "target_speaker",           SP_env_speaker,             ENT_V_TMPNAME, "env_speaker" },
 	{ "target_teleporter",        SP_target_teleporter        },
 	{ "target_win",               SP_target_win               },
 

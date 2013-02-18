@@ -197,69 +197,6 @@ void SP_misc_portal_camera( gentity_t *ent )
 }
 
 /*
-======================================================================
-
-  NEAT EFFECTS AND STUFF FOR TREMULOUS
-
-======================================================================
-*/
-
-void SP_toggle_particle_system( gentity_t *self )
-{
-	//toggle EF_NODRAW
-	self->s.eFlags ^= EF_NODRAW;
-
-	self->nextthink = 0;
-}
-
-/*
-===============
-SP_use_particle_system
-
-Use function for particle_system
-===============
-*/
-void SP_use_particle_system( gentity_t *self, gentity_t *other, gentity_t *activator )
-{
-	SP_toggle_particle_system( self );
-
-	if ( self->wait > 0.0f )
-	{
-		self->think = SP_toggle_particle_system;
-		self->nextthink = level.time + ( int )( self->wait * 1000 );
-	}
-}
-
-/*
-===============
-SP_spawn_particle_system
-
-Spawn function for particle system
-===============
-*/
-void SP_misc_particle_system( gentity_t *self )
-{
-	char *s;
-
-	G_SetOrigin( self, self->s.origin );
-	VectorCopy( self->s.angles, self->s.apos.trBase );
-
-	G_SpawnString( "psName", "", &s );
-
-	//add the particle system to the client precache list
-	self->s.modelindex = G_ParticleSystemIndex( s );
-
-	if ( self->spawnflags & 1 )
-	{
-		self->s.eFlags |= EF_NODRAW;
-	}
-
-	self->use = SP_use_particle_system;
-	self->s.eType = ET_PARTICLE_SYSTEM;
-	trap_LinkEntity( self );
-}
-
-/*
 ===============
 SP_use_anim_model
 

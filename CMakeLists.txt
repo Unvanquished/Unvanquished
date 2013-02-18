@@ -706,6 +706,8 @@ set( GAMEGPP_BASE
   ${GPP_DIR}/game/g_client.c
   ${GPP_DIR}/game/g_cmds.c
   ${GPP_DIR}/game/g_combat.c
+  ${GPP_DIR}/game/g_environment.c
+  ${GPP_DIR}/game/g_flow.c
   ${GPP_DIR}/game/g_physics.c
   ${GPP_DIR}/game/g_buildable.c
   ${GPP_DIR}/game/g_misc.c

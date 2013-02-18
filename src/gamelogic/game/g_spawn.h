@@ -51,16 +51,16 @@ void    SP_trigger_gravity( gentity_t *ent );
 void    SP_trigger_heal( gentity_t *ent );
 void    SP_trigger_ammo( gentity_t *ent );
 
-void    SP_target_speaker( gentity_t *ent );
+void    SP_env_speaker( gentity_t *ent );
 void    SP_target_print( gentity_t *ent );
 void    SP_target_score( gentity_t *ent );
 void    SP_target_teleporter( gentity_t *ent );
-void    SP_target_relay( gentity_t *ent );
+void    SP_flow_relay( gentity_t *ent );
 void    SP_target_kill( gentity_t *ent );
 void    SP_target_position( gentity_t *ent );
 void    SP_target_location( gentity_t *ent );
 void    SP_target_push( gentity_t *ent );
-void    SP_target_rumble( gentity_t *ent );
+void    SP_env_rumble( gentity_t *ent );
 void    SP_target_alien_win( gentity_t *ent );
 void    SP_target_human_win( gentity_t *ent );
 void    SP_target_win( gentity_t *ent );
@@ -72,7 +72,7 @@ void    SP_path_corner( gentity_t *self );
 void    SP_misc_portal_camera( gentity_t *ent );
 void    SP_misc_portal_surface( gentity_t *ent );
 
-void    SP_misc_particle_system( gentity_t *ent );
+void    SP_env_particle_system( gentity_t *ent );
 void    SP_misc_anim_model( gentity_t *ent );
 void    SP_misc_light_flare( gentity_t *ent );
 
