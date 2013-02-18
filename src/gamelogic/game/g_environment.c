@@ -276,3 +276,93 @@ void SP_env_particle_system( gentity_t *self )
 	trap_LinkEntity( self );
 }
 
+/*
+===============
+SP_use_light_flare
+
+Use function for light flare
+===============
+*/
+void env_lens_flare_toggle( gentity_t *self, gentity_t *other, gentity_t *activator )
+{
+	self->s.eFlags ^= EF_NODRAW;
+}
+
+/*
+===============
+findEmptySpot
+
+Finds an empty spot radius units from origin
+==============
+*/
+static void findEmptySpot( vec3_t origin, float radius, vec3_t spot )
+{
+	int     i, j, k;
+	vec3_t  delta, test, total;
+	trace_t tr;
+
+	VectorClear( total );
+
+	//54(!) traces to test for empty spots
+	for ( i = -1; i <= 1; i++ )
+	{
+		for ( j = -1; j <= 1; j++ )
+		{
+			for ( k = -1; k <= 1; k++ )
+			{
+				VectorSet( delta, ( i * radius ),
+				           ( j * radius ),
+				           ( k * radius ) );
+
+				VectorAdd( origin, delta, test );
+
+				trap_Trace( &tr, test, NULL, NULL, test, -1, MASK_SOLID );
+
+				if ( !tr.allsolid )
+				{
+					trap_Trace( &tr, test, NULL, NULL, origin, -1, MASK_SOLID );
+					VectorScale( delta, tr.fraction, delta );
+					VectorAdd( total, delta, total );
+				}
+			}
+		}
+	}
+
+	VectorNormalize( total );
+	VectorScale( total, radius, total );
+	VectorAdd( origin, total, spot );
+}
+
+/*
+===============
+SP_misc_light_flare
+
+Spawn function for light flare
+===============
+*/
+void SP_env_lens_flare( gentity_t *self )
+{
+	self->s.eType = ET_LIGHTFLARE;
+	self->s.modelindex = G_ShaderIndex( self->targetShaderName );
+	VectorCopy( self->pos2, self->s.origin2 );
+
+	//try to find a spot near to the flare which is empty. This
+	//is used to facilitate visibility testing
+	findEmptySpot( self->s.origin, 8.0f, self->s.angles2 );
+
+	self->use = env_lens_flare_toggle;
+
+	if( !self->speed )
+		self->speed = 200;
+
+	self->s.time = self->speed;
+
+	G_SpawnInt( "mindist", "0", &self->s.generic1 );
+
+	if ( self->spawnflags & 1 )
+	{
+		self->s.eFlags |= EF_NODRAW;
+	}
+
+	trap_LinkEntity( self );
+}

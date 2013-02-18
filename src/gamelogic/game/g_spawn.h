@@ -74,7 +74,7 @@ void    SP_misc_portal_surface( gentity_t *ent );
 
 void    SP_env_particle_system( gentity_t *ent );
 void    SP_misc_anim_model( gentity_t *ent );
-void    SP_misc_light_flare( gentity_t *ent );
+void    SP_env_lens_flare( gentity_t *ent );
 
 /*
  * everything around entity versioning and deprecation
