@@ -23,7 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 extern "C" {
 #include "q3map2.h"
-#include "../common/surfaceflags.h"
 }
 
 #include <vector>
@@ -178,6 +177,14 @@ static void AddTri(std::vector<float> &verts, std::vector<int> &tris, vec3_t v1,
 
 static void LoadBrushTris(std::vector<float> &verts, std::vector<int> &tris) {
 	int             j;
+
+	int solidFlags = 0;
+	int temp = 0;
+
+	ApplySurfaceParm( "default", &solidFlags, NULL, NULL );
+	ApplySurfaceParm( "playerclip", &temp, NULL, NULL );
+	solidFlags |= temp;
+
 	/* get model, index 0 is worldspawn entity */
 	bspModel_t *model = &bspModels[0];
 
@@ -187,7 +194,7 @@ static void LoadBrushTris(std::vector<float> &verts, std::vector<int> &tris) {
 		int firstSide = bspBrushes[i].firstSide;
 		bspShader_t *brushShader = &bspShaders[bspBrushes[i].shaderNum];
 
-		if(!(brushShader->contentFlags & (CONTENTS_SOLID | CONTENTS_PLAYERCLIP)))
+		if(!(brushShader->contentFlags & solidFlags))
 				continue;
 		/* walk the list of brush sides */
 		for(int p = 0; p < numSides; p++)
@@ -549,7 +556,13 @@ static qboolean BoundsIntersect( const vec3_t mins, const vec3_t maxs, const vec
 static void LoadPatchTris(std::vector<float> &verts, std::vector<int> &tris) {
 	
 	vec3_t mins, maxs;
-	
+	int solidFlags = 0;
+	int temp = 0;
+
+	ApplySurfaceParm( "default", &solidFlags, NULL, NULL );
+	ApplySurfaceParm( "playerclip", &temp, NULL, NULL );
+	solidFlags |= temp;
+
 	/* 
 		Patches are not used during the bsp building process where
 		the generated portals are flooded through from all entity positions
@@ -583,7 +596,7 @@ static void LoadPatchTris(std::vector<float> &verts, std::vector<int> &tris) {
 	{
 		const bspDrawSurface_t *surface = &bspDrawSurfaces[k];
 
-		if ( !( bspShaders[surface->shaderNum].contentFlags & ( CONTENTS_SOLID | CONTENTS_PLAYERCLIP ) ) ) {
+		if ( !( bspShaders[surface->shaderNum].contentFlags & solidFlags ) ) {
 			continue;
 		}
 
