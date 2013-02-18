@@ -236,11 +236,11 @@ static const spawn_t spawns[] =
 	 *  their function of perceiving other entities.
 	 */
 
+	{ "sensor_end",              SP_sensor_end                },
 	{ "sensor_stage",            SP_sensor_stage              },
 	{ "sensor_start",            SP_sensor_start              },
 	{ "sensor_timer",            SP_sensor_timer              },
 	{ "sensor_touch",            SP_sensor_touch              },
-	{ "sensor_win",              SP_sensor_win                },
 
 	/**
 	 *
@@ -292,7 +292,7 @@ static const spawn_t spawns[] =
 	{ "trigger_push",             SP_trigger_push             },
 	{ "trigger_stage",            SP_sensor_stage,            ENT_V_RENAMED, "sensor_stage" },
 	{ "trigger_teleport",         SP_trigger_teleport         },
-	{ "trigger_win",              SP_sensor_win,              ENT_V_TMPNAME, "sensor_win" }
+	{ "trigger_win",              SP_sensor_end,              ENT_V_TMPNAME, "sensor_end" }
 };
 
 qboolean G_HandleEntityVersions( spawn_t *spawnDescription, gentity_t *entity )

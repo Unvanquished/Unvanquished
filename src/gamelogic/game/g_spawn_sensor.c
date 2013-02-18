@@ -333,7 +333,7 @@ void G_notify_sensor_win( team_t winningTeam )
 }
 
 
-void SP_sensor_win( gentity_t *self )
+void SP_sensor_end( gentity_t *self )
 {
 	G_SpawnInt( "team", "0", ( int * ) &self->conditions.team );
 

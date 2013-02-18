@@ -44,7 +44,7 @@ void    SP_trigger_push( gentity_t *ent );
 void    SP_trigger_teleport( gentity_t *ent );
 void    SP_trigger_hurt( gentity_t *ent );
 void    SP_sensor_stage( gentity_t *ent );
-void    SP_sensor_win( gentity_t *ent );
+void    SP_sensor_end( gentity_t *ent );
 void    SP_sensor_touch( gentity_t *ent );
 void    SP_sensor_touch_compat( gentity_t *ent );
 void    SP_trigger_gravity( gentity_t *ent );
