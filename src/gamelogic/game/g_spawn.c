@@ -195,6 +195,15 @@ static const spawn_t spawns[] =
 
 	/**
 	 *
+	 *	Game entities
+	 *	=============
+	 *
+	 */
+	{ "game_score",               SP_game_score               },
+	{ "game_end",                 SP_game_end                 },
+
+	/**
+	 *
 	 *	Information entities
 	 *	====================
 	 *	info entities don't do anything at all, but provide positional
@@ -242,9 +251,9 @@ static const spawn_t spawns[] =
 	 *	like being triggered by a trigger_ entity.
 	 *
 	 */
-	{ "target_alien_win",         SP_target_alien_win,        ENT_V_TMPNAME, "target_win" },
+	{ "target_alien_win",         SP_target_alien_win,        ENT_V_TMPNAME, "game_end" },
 	{ "target_delay",             SP_flow_relay,              ENT_V_TMPNAME, "flow_relay" },
-	{ "target_human_win",         SP_target_human_win,        ENT_V_TMPNAME, "target_win" },
+	{ "target_human_win",         SP_target_human_win,        ENT_V_TMPNAME, "game_end" },
 	{ "target_hurt",              SP_target_hurt              },
 	{ "target_kill",              SP_target_kill              },
 	{ "target_location",          SP_target_location          },
@@ -253,10 +262,10 @@ static const spawn_t spawns[] =
 	{ "target_push",              SP_target_push              },
 	{ "target_relay",             SP_flow_relay,              ENT_V_TMPNAME, "flow_relay" },
 	{ "target_rumble",            SP_env_rumble,              ENT_V_TMPNAME, "env_rumble" },
-	{ "target_score",             SP_target_score             },
+	{ "target_score",             SP_game_score,              ENT_V_TMPNAME, "game_score" },
 	{ "target_speaker",           SP_env_speaker,             ENT_V_TMPNAME, "env_speaker" },
 	{ "target_teleporter",        SP_target_teleporter        },
-	{ "target_win",               SP_target_win               },
+	{ "target_win",               SP_game_end,                ENT_V_TMPNAME, "game_end" },
 
 	/**
 	 *
@@ -271,19 +280,19 @@ static const spawn_t spawns[] =
 	 *	such as trigger_push and trigger_teleport.
 	 *
 	 */
-	{ "trigger_always",           SP_sensor_start,           ENT_V_RENAMED, "sensor_start" },
+	{ "trigger_always",           SP_sensor_start,            ENT_V_RENAMED, "sensor_start" },
 	{ "trigger_ammo",             SP_trigger_ammo             },
-	{ "trigger_buildable",        SP_sensor_touch_compat,    ENT_V_TMPNAME, "sensor_touch" },
-	{ "trigger_class",            SP_sensor_touch_compat,    ENT_V_TMPNAME, "sensor_touch" },
-	{ "trigger_equipment",        SP_sensor_touch_compat,    ENT_V_TMPNAME, "sensor_touch" },
+	{ "trigger_buildable",        SP_sensor_touch_compat,     ENT_V_TMPNAME, "sensor_touch" },
+	{ "trigger_class",            SP_sensor_touch_compat,     ENT_V_TMPNAME, "sensor_touch" },
+	{ "trigger_equipment",        SP_sensor_touch_compat,     ENT_V_TMPNAME, "sensor_touch" },
 	{ "trigger_gravity",          SP_trigger_gravity          },
 	{ "trigger_heal",             SP_trigger_heal             },
 	{ "trigger_hurt",             SP_trigger_hurt             },
 	{ "trigger_multiple",         SP_trigger_multiple         },
 	{ "trigger_push",             SP_trigger_push             },
-	{ "trigger_stage",            SP_sensor_stage,           ENT_V_RENAMED, "sensor_stage" },
+	{ "trigger_stage",            SP_sensor_stage,            ENT_V_RENAMED, "sensor_stage" },
 	{ "trigger_teleport",         SP_trigger_teleport         },
-	{ "trigger_win",              SP_sensor_win,             ENT_V_TMPNAME, "sensor_win" }
+	{ "trigger_win",              SP_sensor_win,              ENT_V_TMPNAME, "sensor_win" }
 };
 
 qboolean G_HandleEntityVersions( spawn_t *spawnDescription, gentity_t *entity )

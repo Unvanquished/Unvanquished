@@ -24,35 +24,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "g_local.h"
 #include "g_spawn.h"
 
-//==========================================================
-
-/*QUAKED target_score (1 0 0) (-8 -8 -8) (8 8 8)
-"count" number of points to add, default 1
-
-The activator is given this many points.
-*/
-void Use_Target_Score( gentity_t *ent, gentity_t *other, gentity_t *activator )
-{
-	if ( !activator )
-	{
-		return;
-	}
-
-	AddScore( activator, ent->count );
-}
-
-void SP_target_score( gentity_t *ent )
-{
-	if ( !ent->count )
-	{
-		ent->count = 1;
-	}
-
-	ent->use = Use_Target_Score;
-}
-
-//==========================================================
-
 /*QUAKED target_print (1 0 0) (-8 -8 -8) (8 8 8) humanteam alienteam private
 "message" text to print
 If "private", only the activator gets the message.  If no checks, all clients get the message.
@@ -218,52 +189,6 @@ void SP_target_location( gentity_t *self )
 	SP_target_counter++;
 
 	G_SetOrigin( self, self->s.origin );
-}
-
-/*
-===============
-target_win_use
-===============
-*/
-void target_win_use( gentity_t *self, gentity_t *other, gentity_t *activator )
-{
-	if ( level.unconditionalWin == TEAM_NONE ) // only if not yet triggered
-	{
-		level.unconditionalWin = self->conditions.team;
-	}
-}
-
-/*
-===============
-SP_target_alien_win
-===============
-*/
-void SP_target_alien_win( gentity_t *self )
-{
-	self->conditions.team = TEAM_ALIENS;
-	self->use = target_win_use;
-}
-
-/*
-===============
-SP_target_human_win
-===============
-*/
-void SP_target_human_win( gentity_t *self )
-{
-	self->conditions.team = TEAM_HUMANS;
-	self->use = target_win_use;
-}
-
-/*
-===============
-SP_target_win
-===============
-*/
-void SP_target_win( gentity_t *self )
-{
-	G_SpawnInt( "team", "0", ( int * ) &self->conditions.team );
-	self->use = target_win_use;
 }
 
 /*

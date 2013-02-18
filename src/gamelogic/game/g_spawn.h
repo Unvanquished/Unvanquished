@@ -53,7 +53,7 @@ void    SP_trigger_ammo( gentity_t *ent );
 
 void    SP_env_speaker( gentity_t *ent );
 void    SP_target_print( gentity_t *ent );
-void    SP_target_score( gentity_t *ent );
+void    SP_game_score( gentity_t *ent );
 void    SP_target_teleporter( gentity_t *ent );
 void    SP_flow_relay( gentity_t *ent );
 void    SP_target_kill( gentity_t *ent );
@@ -63,7 +63,7 @@ void    SP_target_push( gentity_t *ent );
 void    SP_env_rumble( gentity_t *ent );
 void    SP_target_alien_win( gentity_t *ent );
 void    SP_target_human_win( gentity_t *ent );
-void    SP_target_win( gentity_t *ent );
+void    SP_game_end( gentity_t *ent );
 void    SP_target_hurt( gentity_t *ent );
 
 void    SP_NULL( gentity_t *self );
