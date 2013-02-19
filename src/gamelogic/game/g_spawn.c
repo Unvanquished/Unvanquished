@@ -160,7 +160,7 @@ static const spawn_t spawns[] =
 	 *	====================
 	 *
 	 */
-	{ "env_lens_flare",           SP_env_lens_flare,          ENT_V_TMPNAME, "env_lens_flare"},
+	{ "env_lens_flare",           SP_env_lens_flare,          },
 	{ "env_particle_system",      SP_env_particle_system      },
 	{ "env_rumble",               SP_env_rumble               },
 	{ "env_speaker",              SP_env_speaker              },
