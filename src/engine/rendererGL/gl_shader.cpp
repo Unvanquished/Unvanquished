@@ -1229,33 +1229,40 @@ void GLShader::PrintInfoLog( GLuint object, bool developerOnly ) const
 	int         maxLength = 0;
 	int         i;
 
-	glGetShaderiv( object, GL_INFO_LOG_LENGTH, &maxLength );
+	printParm_t print = ( developerOnly ) ? PRINT_DEVELOPER : PRINT_ALL;
 
-	msg = ( char * ) ri.Hunk_AllocateTempMemory( maxLength );
-
-	glGetShaderInfoLog( object, maxLength, &maxLength, msg );
-
-	if ( developerOnly )
+	if ( glIsShader( object ) )
 	{
-		ri.Printf( PRINT_DEVELOPER, "compile log:\n" );
+		glGetShaderiv( object, GL_INFO_LOG_LENGTH, &maxLength );
+	}
+	else if ( glIsProgram( object ) )
+	{
+		glGetProgramiv( object, GL_INFO_LOG_LENGTH, &maxLength );
 	}
 	else
 	{
-		ri.Printf( PRINT_ALL, "compile log:\n" );
+		ri.Printf( print, "object is not a shader or program\n" );
+		return;
+	}
+
+	msg = ( char * ) ri.Hunk_AllocateTempMemory( maxLength );
+
+	if ( glIsShader( object ) )
+	{
+		glGetShaderInfoLog( object, maxLength, &maxLength, msg );
+		ri.Printf( print, "compile log:\n" );
+	}
+	else if ( glIsProgram( object ) )
+	{
+		glGetProgramInfoLog( object, maxLength, &maxLength, msg );
+		ri.Printf( print, "link log:\n" );
 	}
 
 	for ( i = 0; i < maxLength; i += 1024 )
 	{
 		Q_strncpyz( msgPart, msg + i, sizeof( msgPart ) );
 
-		if ( developerOnly )
-		{
-			ri.Printf( PRINT_DEVELOPER, "%s\n", msgPart );
-		}
-		else
-		{
-			ri.Printf( PRINT_ALL, "%s\n", msgPart );
-		}
+		ri.Printf( print, "%s\n", msgPart );
 	}
 
 	ri.Hunk_FreeTempMemory( msg );
