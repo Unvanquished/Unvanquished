@@ -219,11 +219,13 @@ int Q_rand( int *seed )
 	return *seed;
 }
 
+// Range of [0,1]
 float Q_random( int *seed )
 {
 	return ( Q_rand( seed ) & 0xffff ) / ( float ) 0x10000;
 }
 
+// Range of [-1,1]
 float Q_crandom( int *seed )
 {
 	return 2.0 * ( Q_random( seed ) - 0.5 );
