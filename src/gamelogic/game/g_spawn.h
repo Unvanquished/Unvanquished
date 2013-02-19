@@ -56,6 +56,7 @@ void    SP_target_print( gentity_t *ent );
 void    SP_game_score( gentity_t *ent );
 void    SP_target_teleporter( gentity_t *ent );
 void    SP_flow_relay( gentity_t *ent );
+void    SP_flow_limited( gentity_t *ent );
 void    SP_target_kill( gentity_t *ent );
 void    SP_target_position( gentity_t *ent );
 void    SP_target_location( gentity_t *ent );

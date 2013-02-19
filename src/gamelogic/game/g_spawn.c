@@ -174,7 +174,9 @@ static const spawn_t spawns[] =
 	 *	=============
 	 *
 	 */
+	{ "flow_limited",             SP_flow_limited             },
 	{ "flow_relay",               SP_flow_relay               },
+
 
 	/**
 	 *

@@ -97,3 +97,25 @@ void SP_flow_relay( gentity_t *self )
 
 	self->use = flow_relay_use;
 }
+
+void flow_limited_use( gentity_t *self, gentity_t *other, gentity_t *activator )
+{
+	G_UseTargets( self, activator );
+
+	if ( self->count <= 1 )
+	{
+		G_FreeEntity( self );
+	}
+	else
+	{
+		self->count--;
+	}
+}
+
+void SP_flow_limited( gentity_t *self )
+{
+	if ( self->count < 1 )
+		self->count = 1;
+
+	self->use = flow_limited_use;
+}
