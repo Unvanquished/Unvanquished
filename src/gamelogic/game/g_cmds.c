@@ -2409,7 +2409,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 
 				if ( ( other->client && other->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS ) ||
 				     ( other->s.eType == ET_BUILDABLE && other->buildableTeam == TEAM_HUMANS &&
-				       other->powered ) )
+				       other->operative ) )
 				{
 					if ( report )
 					{

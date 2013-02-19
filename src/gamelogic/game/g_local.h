@@ -138,6 +138,20 @@ struct gentity_s
 	const char   *classname;
 	int          spawnflags;
 
+	/*
+	 * is the entity considered active?
+	 * as in 'currently doing something'
+	 * e.g. used for buildables (e.g. medi-stations or hives can be in an active state or being inactive)
+	 */
+	qboolean     active;
+
+	/**
+	 * is the entity able to become active?
+	 * e.g. used for buildables to indicate being powered, or linked to the overmind
+	 * or for sensors to indicate being able to sense other entities and fire events
+	 */
+	qboolean     operative;
+
 	// targeting
 	char         *targets[ MAX_TARGETS + 1 ];
 	char         *targetnames[ MAX_TARGETNAMES + 1 ];
@@ -247,8 +261,6 @@ struct gentity_s
 
 	team_t      buildableTeam; // buildable item team
 	gentity_t   *parentNode; // for creep and defence/spawn dependencies
-	qboolean    active; // for power repeater, but could be useful elsewhere
-	qboolean    powered; // for human buildables
 	struct namelog_s *builtBy; // clientNum of person that built this
 	int         dcc; // number of controlling dccs
 	qboolean    spawned; // whether or not this buildable has finished spawning

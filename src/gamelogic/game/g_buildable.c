@@ -212,7 +212,7 @@ qboolean G_FindPower( gentity_t *self, qboolean searchUnspawned )
 
 		// If entity is a power item calculate the distance to it
 		if ( ( ent->s.modelindex == BA_H_REACTOR || ent->s.modelindex == BA_H_REPEATER ) &&
-		     ( searchUnspawned || ent->spawned ) && ent->powered && ent->health > 0 )
+		     ( searchUnspawned || ent->spawned ) && ent->operative && ent->health > 0 )
 		{
 			VectorSubtract( self->s.origin, ent->s.origin, temp_v );
 			distance = VectorLength( temp_v );
@@ -546,7 +546,7 @@ gentity_t *G_InPowerZone( gentity_t *self )
 
 		// if entity is a power item calculate the distance to it
 		if ( ( ent->s.modelindex == BA_H_REACTOR || ent->s.modelindex == BA_H_REPEATER ) &&
-		     ent->spawned && ent->powered )
+		     ent->spawned && ent->operative )
 		{
 			VectorSubtract( self->s.origin, ent->s.origin, temp_v );
 			distance = VectorLength( temp_v );
@@ -599,7 +599,7 @@ int G_FindDCC( gentity_t *self )
 			VectorSubtract( self->s.origin, ent->s.origin, temp_v );
 			distance = VectorLength( temp_v );
 
-			if ( distance < DC_RANGE && ent->powered )
+			if ( distance < DC_RANGE && ent->operative )
 			{
 				foundDCC++;
 			}
@@ -938,7 +938,7 @@ void AGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 	self->killedBy = attacker - g_entities;
 	self->think = AGeneric_Blast;
 	self->s.eFlags &= ~EF_FIRING; //prevent any firing effects
-	self->powered = qfalse;
+	self->operative = qfalse;
 
 	if ( self->spawned && damage < BG_Buildable( self->s.modelindex )->health )
 	{
@@ -992,7 +992,7 @@ A generic think function for Alien buildables
 */
 void AGeneric_Think( gentity_t *self )
 {
-	self->powered = G_Overmind() != NULL;
+	self->operative = G_Overmind() != NULL;
 	self->nextthink = level.time + BG_Buildable( self->s.modelindex )->nextthink;
 	AGeneric_CreepCheck( self );
 }
@@ -1312,7 +1312,7 @@ void ABarricade_Think( gentity_t *self )
 	AGeneric_Think( self );
 
 	// Shrink if unpowered
-	ABarricade_Shrink( self, !self->powered );
+	ABarricade_Shrink( self, !self->operative );
 }
 
 /*
@@ -1371,7 +1371,7 @@ void AAcidTube_Think( gentity_t *self )
 	VectorSubtract( self->s.origin, range, mins );
 
 	// attack nearby humans
-	if ( self->spawned && self->health > 0 && self->powered )
+	if ( self->spawned && self->health > 0 && self->operative )
 	{
 		num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
 
@@ -1485,7 +1485,7 @@ void AHive_Think( gentity_t *self )
 	}
 
 	// Find a target to attack
-	if ( self->spawned && !self->active && self->powered )
+	if ( self->spawned && !self->active && self->operative )
 	{
 		int    i, num, entityList[ MAX_GENTITIES ];
 		vec3_t mins, maxs,
@@ -1522,7 +1522,7 @@ pain function for Alien Hive
 */
 void AHive_Pain( gentity_t *self, gentity_t *attacker, int damage )
 {
-	if ( self->spawned && self->powered && !self->active )
+	if ( self->spawned && self->operative && !self->active )
 	{
 		AHive_CheckTarget( self, attacker );
 	}
@@ -1543,7 +1543,7 @@ void ABooster_Touch( gentity_t *self, gentity_t *other, trace_t *trace )
 {
 	gclient_t *client = other->client;
 
-	if ( !self->spawned || !self->powered || self->health <= 0 )
+	if ( !self->spawned || !self->operative || self->health <= 0 )
 	{
 		return;
 	}
@@ -1763,7 +1763,7 @@ void ATrapper_Think( gentity_t *self )
 
 	AGeneric_Think( self );
 
-	if ( self->spawned && self->powered )
+	if ( self->spawned && self->operative )
 	{
 		//if the current target is not valid find a new one
 		if ( !ATrapper_CheckTarget( self, self->enemy, range ) )
@@ -1801,7 +1801,7 @@ static qboolean G_SuicideIfNoPower( gentity_t *self )
 		return qfalse;
 	}
 
-	if ( !self->powered )
+	if ( !self->operative )
 	{
 		// if the power hasn't reached this buildable for some time, then destroy the buildable
 		if ( self->count == 0 )
@@ -1840,7 +1840,7 @@ Set buildable idle animation to match power state
 */
 static void G_IdlePowerState( gentity_t *self )
 {
-	if ( self->powered )
+	if ( self->operative )
 	{
 		if ( self->s.torsoAnim == BANIM_IDLE3 )
 		{
@@ -1920,7 +1920,7 @@ void HSpawn_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 
 	self->die = nullDieFunction;
 	self->killedBy = attacker - g_entities;
-	self->powered = qfalse; //free up power
+	self->operative = qfalse; //free up power
 	self->s.eFlags &= ~EF_FIRING; //prevent any firing effects
 
 	if ( self->spawned )
@@ -1949,7 +1949,7 @@ void HSpawn_Think( gentity_t *self )
 	gentity_t *ent;
 
 	// set parentNode
-	self->powered = G_FindPower( self, qfalse );
+	self->operative = G_FindPower( self, qfalse );
 
 	if ( G_SuicideIfNoPower( self ) )
 	{
@@ -2013,7 +2013,7 @@ static void HRepeater_Die( gentity_t *self, gentity_t *inflictor, gentity_t *att
 
 	self->die = nullDieFunction;
 	self->killedBy = attacker - g_entities;
-	self->powered = qfalse; //free up power
+	self->operative = qfalse; //free up power
 	self->s.eFlags &= ~EF_FIRING; //prevent any firing effects
 
 	if ( self->spawned )
@@ -2051,7 +2051,7 @@ void HRepeater_Think( gentity_t *self )
 	gentity_t        *powerEnt;
 	buildPointZone_t *zone;
 
-	self->powered = G_FindPower( self, qfalse );
+	self->operative = G_FindPower( self, qfalse );
 
 	if ( G_SuicideIfNoPower( self ) )
 	{
@@ -2240,7 +2240,7 @@ void HArmoury_Activate( gentity_t *self, gentity_t *other, gentity_t *activator 
 		}
 
 		//if this is powered then call the armoury menu
-		if ( self->powered )
+		if ( self->operative )
 		{
 			G_TriggerMenu( activator->client->ps.clientNum, MN_H_ARMOURY );
 		}
@@ -2263,7 +2263,7 @@ void HArmoury_Think( gentity_t *self )
 	//make sure we have power
 	self->nextthink = level.time + POWER_REFRESH_TIME;
 
-	self->powered = G_FindPower( self, qfalse );
+	self->operative = G_FindPower( self, qfalse );
 
 	G_SuicideIfNoPower( self );
 }
@@ -2282,7 +2282,7 @@ void HDCC_Think( gentity_t *self )
 	//make sure we have power
 	self->nextthink = level.time + POWER_REFRESH_TIME;
 
-	self->powered = G_FindPower( self, qfalse );
+	self->operative = G_FindPower( self, qfalse );
 
 	G_SuicideIfNoPower( self );
 }
@@ -2325,7 +2325,7 @@ void HMedistat_Think( gentity_t *self )
 
 	self->nextthink = level.time + BG_Buildable( self->s.modelindex )->nextthink;
 
-	self->powered = G_FindPower( self, qfalse );
+	self->operative = G_FindPower( self, qfalse );
 
 	if ( G_SuicideIfNoPower( self ) )
 	{
@@ -2341,7 +2341,7 @@ void HMedistat_Think( gentity_t *self )
 	}
 
 	//make sure we have power
-	if ( !self->powered )
+	if ( !self->operative )
 	{
 		if ( self->active )
 		{
@@ -2719,7 +2719,7 @@ void HMGTurret_Think( gentity_t *self )
 	// Turn off client side muzzle flashes
 	self->s.eFlags &= ~EF_FIRING;
 
-	self->powered = G_FindPower( self, qfalse );
+	self->operative = G_FindPower( self, qfalse );
 
 	if ( G_SuicideIfNoPower( self ) )
 	{
@@ -2729,7 +2729,7 @@ void HMGTurret_Think( gentity_t *self )
 	G_IdlePowerState( self );
 
 	// If not powered or spawned don't do anything
-	if ( !self->powered )
+	if ( !self->operative )
 	{
 		// if power loss drop turret
 		if ( self->spawned &&
@@ -2812,7 +2812,7 @@ void HTeslaGen_Think( gentity_t *self )
 {
 	self->nextthink = level.time + BG_Buildable( self->s.modelindex )->nextthink;
 
-	self->powered = G_FindPower( self, qfalse );
+	self->operative = G_FindPower( self, qfalse );
 
 	if ( G_SuicideIfNoPower( self ) )
 	{
@@ -2822,7 +2822,7 @@ void HTeslaGen_Think( gentity_t *self )
 	G_IdlePowerState( self );
 
 	//if not powered don't do anything and check again for power next think
-	if ( !self->powered )
+	if ( !self->operative )
 	{
 		self->s.eFlags &= ~EF_FIRING;
 		self->nextthink = level.time + POWER_REFRESH_TIME;
@@ -3171,7 +3171,7 @@ void G_BuildableThink( gentity_t *ent, int msec )
 	// Set flags
 	ent->s.eFlags &= ~( EF_B_POWERED | EF_B_SPAWNED | EF_B_MARKED );
 
-	if ( ent->powered )
+	if ( ent->operative )
 	{
 		ent->s.eFlags |= EF_B_POWERED;
 	}
@@ -3223,7 +3223,7 @@ qboolean G_BuildableRange( vec3_t origin, float r, buildable_t buildable )
 			continue;
 		}
 
-		if ( ent->buildableTeam == TEAM_HUMANS && !ent->powered )
+		if ( ent->buildableTeam == TEAM_HUMANS && !ent->operative )
 		{
 			continue;
 		}
@@ -3703,7 +3703,7 @@ static itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable,
 		}
 
 		// Don't include unpowered buildables
-		if ( !collision && !ent->powered )
+		if ( !collision && !ent->operative )
 		{
 			continue;
 		}
@@ -3730,7 +3730,7 @@ static itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable,
 					repeaterInRangeCount--;
 				}
 
-				if ( ent->powered )
+				if ( ent->operative )
 				{
 					pointsYielded += BG_Buildable( ent->s.modelindex )->buildPoints;
 				}
@@ -3741,7 +3741,7 @@ static itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable,
 			          ent->s.modelindex == buildable )
 			{
 				// If it's a unique buildable, it must be replaced by the same type
-				if ( ent->powered )
+				if ( ent->operative )
 				{
 					pointsYielded += BG_Buildable( ent->s.modelindex )->buildPoints;
 				}
@@ -3783,7 +3783,7 @@ static itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable,
 	{
 		ent = level.markedBuildables[ level.numBuildablesForRemoval ];
 
-		if ( ent->powered )
+		if ( ent->operative )
 		{
 			pointsYielded += BG_Buildable( ent->s.modelindex )->buildPoints;
 		}
@@ -3800,7 +3800,7 @@ static itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable,
 		changed = qfalse;
 		ent = level.markedBuildables[ numRequired ];
 
-		if ( ent->powered )
+		if ( ent->operative )
 		{
 			pointsUnYielded = BG_Buildable( ent->s.modelindex )->buildPoints;
 		}
@@ -4222,7 +4222,7 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 			built->think = HReactor_Think;
 			built->die = HSpawn_Die;
 			built->use = HRepeater_Use;
-			built->powered = built->active = qtrue;
+			built->operative = built->active = qtrue;
 			break;
 
 		case BA_H_REPEATER:
@@ -4279,10 +4279,10 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 
 	if ( BG_Buildable( buildable )->team == TEAM_ALIENS )
 	{
-		built->powered = qtrue;
+		built->operative = qtrue;
 		built->s.eFlags |= EF_B_POWERED;
 	}
-	else if ( ( built->powered = G_FindPower( built, qfalse ) ) )
+	else if ( ( built->operative = G_FindPower( built, qfalse ) ) )
 	{
 		built->s.eFlags |= EF_B_POWERED;
 	}
