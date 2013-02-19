@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 "message" text to print
 If "private", only the activator gets the message.  If no checks, all clients get the message.
 */
-void Use_Target_Print( gentity_t *ent, gentity_t *other, gentity_t *activator )
+void target_trint_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
 {
 	if ( ent->spawnflags & 4 )
 	{
@@ -60,7 +60,7 @@ void Use_Target_Print( gentity_t *ent, gentity_t *other, gentity_t *activator )
 
 void SP_target_print( gentity_t *ent )
 {
-	ent->use = Use_Target_Print;
+	ent->use = target_trint_use;
 }
 
 //==========================================================
@@ -147,7 +147,7 @@ Set "count" to 0-7 for color.
 Closest target_location in sight used for the location, if none
 in site, closest in distance
 */
-static int SP_target_counter = 1;
+static int target_location_counter = 1;
 
 void SP_target_location( gentity_t *self )
 {
@@ -156,7 +156,7 @@ void SP_target_location( gentity_t *self )
 	self->r.svFlags = SVF_BROADCAST;
 	trap_LinkEntity( self );  // make the server send them to the clients
 
-	if ( SP_target_counter == MAX_LOCATIONS )
+	if ( target_location_counter == MAX_LOCATIONS )
 	{
 		G_Printf( S_COLOR_YELLOW "too many target_locations\n" );
 		return;
@@ -182,11 +182,11 @@ void SP_target_location( gentity_t *self )
 		message = self->message;
 	}
 
-	trap_SetConfigstring( CS_LOCATIONS + SP_target_counter, message );
+	trap_SetConfigstring( CS_LOCATIONS + target_location_counter, message );
 	self->nextPathSegment = level.locationHead;
-	self->s.generic1 = SP_target_counter; // use for location marking
+	self->s.generic1 = target_location_counter; // use for location marking
 	level.locationHead = self;
-	SP_target_counter++;
+	target_location_counter++;
 
 	G_SetOrigin( self, self->s.origin );
 }
@@ -231,5 +231,5 @@ void SP_target_hurt( gentity_t *self )
 /* Init */
 void SP_target_init( void )
 {
-	SP_target_counter = 1;
+	target_location_counter = 1;
 }
