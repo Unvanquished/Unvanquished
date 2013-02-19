@@ -752,7 +752,7 @@ static qboolean GLimp_InitOpenGL3xContext( void )
 
 #endif
 
-	if ( GLmajor < 2 )
+	if ( GLmajor < 2 || ( GLmajor == 2 && GLminor < 1 ) )
 	{
 		// missing shader support, switch to 1.x renderer
 		return qfalse;

@@ -1169,6 +1169,11 @@ void GLShader::CompileGPUShader( GLuint program, const char *programName, const 
 	{
 		PrintShaderSource( shader );
 		PrintInfoLog( shader, qfalse );
+#ifdef NDEBUG
+		// In a release build, GLSL shader compiliation usually means that the hardware does
+		// not support GLSL shaders and should rely on vanilla instead. 
+		ri.Cvar_Set( "cl_renderer", "GL" );		
+#endif
 		ri.Error( ERR_DROP, "Couldn't compile %s %s", ( shaderType == GL_VERTEX_SHADER ? "vertex shader" : "fragment shader" ), programName );
 	}
 
