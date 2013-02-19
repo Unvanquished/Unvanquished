@@ -2210,7 +2210,7 @@ void Cmd_SetViewpos_f( gentity_t *ent )
 
 #define AS_OVER_RT3 (( ALIENSENSE_RANGE * 0.5f ) / M_ROOT3 )
 
-static qboolean G_RoomForClassChange( gentity_t *ent, class_t class,
+qboolean G_RoomForClassChange( gentity_t *ent, class_t class,
                                       vec3_t newOrigin )
 {
 	vec3_t  fromMins, fromMaxs;

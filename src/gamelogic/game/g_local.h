@@ -853,6 +853,7 @@ void     G_ListCommands( gentity_t *ent );
 void     G_LoadCensors( void );
 void     G_CensorString( char *out, const char *in, int len, gentity_t *ent );
 qboolean G_CheckStopVote( team_t );
+qboolean G_RoomForClassChange( gentity_t *ent, class_t class, vec3_t newOrigin );
 
 //
 // g_physics.c

@@ -56,7 +56,6 @@ qboolean BotGetBuildingToBuild( gentity_t *self, vec3_t origin, vec3_t normal, b
 //g_alienbot.cpp
 float CalcPounceAimPitch( gentity_t *self, botTarget_t target );
 float CalcBarbAimPitch( gentity_t *self, botTarget_t target );
-qboolean G_RoomForClassChange( gentity_t *ent, class_t classt, vec3_t newOrigin );
 
 //g_nav.cpp
 void BotFindRandomPointOnMesh( gentity_t *self, vec3_t point );
