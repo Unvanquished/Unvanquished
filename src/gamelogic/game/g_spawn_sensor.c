@@ -37,8 +37,20 @@ void InitBrushSensor( gentity_t *self )
 	self->r.svFlags = SVF_NOCLIENT;
 }
 
+//some old sensors/triggers used to propagate use-events, this is deprecated behavior
+void trigger_propagation_compat_use( gentity_t *self, gentity_t *other, gentity_t *activator )
+{
+	G_UseTargets( self, self );
+
+	if ( g_debugEntities.integer >= -1 ) //dont't warn about anything with -1 or lower
+	{
+		G_Printf( "^3ERROR: ^7It appears as if ^5%s^7 is targeted by ^5%s^7 to enforce firing, which is undefined behavior — stop doing that! This WILL break in future releases and toggle the sensor instead.\n", self->classname, activator->classname );
+	}
+}
+
+
 // the wait time has passed, so set back up for another activation
-void trigger_checkWaitForReactivation_think( gentity_t *ent )
+void sensor_checkWaitForReactivation_think( gentity_t *ent )
 {
 	ent->nextthink = 0;
 }
@@ -47,7 +59,7 @@ void trigger_checkWaitForReactivation( gentity_t *self )
 {
 	if ( self->wait > 0 )
 	{
-		self->think = trigger_checkWaitForReactivation_think;
+		self->think = sensor_checkWaitForReactivation_think;
 		entity_SetNextthink( self );
 	}
 	else
@@ -91,13 +103,13 @@ void trigger_multiple_trigger( gentity_t *ent, gentity_t *activator )
 	trigger_checkWaitForReactivation( ent );
 }
 
-void trigger_multiple_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
+void trigger_multiple_propagation_compat_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
-	trigger_multiple_trigger( ent, other );
+	trigger_multiple_trigger( self, self );
 
 	if ( g_debugEntities.integer >= -1 ) //dont't warn about anything with -1 or lower
 	{
-		G_Printf( "^3ERROR: ^7It appears as if ^5%s^7 is targeted by ^5%s^7 to enforce firing, which is undefined behavior — stop doing that! This WILL break in future releases and toggle the sensor instead.\n", ent->classname, activator->classname );
+		G_Printf( "^3ERROR: ^7It appears as if ^5%s^7 is targeted by ^5%s^7 to enforce firing, which is undefined behavior — stop doing that! This WILL break in future releases and toggle the sensor instead.\n", self->classname, activator->classname );
 	}
 }
 
@@ -130,7 +142,7 @@ void SP_trigger_multiple( gentity_t *ent )
 	}
 
 	ent->touch = trigger_multiple_touch;
-	ent->use = trigger_multiple_use;
+	ent->use = trigger_multiple_propagation_compat_use;
 
 	InitBrushSensor( ent );
 	trap_LinkEntity( ent );
@@ -269,48 +281,16 @@ void G_notify_sensor_stage( team_t team, stage_t stage )
 	}
 }
 
-/*
-===============
-sensor_stage_use
-===============
-*/
-void sensor_stage_use( gentity_t *self, gentity_t *other, gentity_t *activator )
-{
-	G_UseTargets( self, self );
-
-	if ( g_debugEntities.integer >= -1 ) //dont't warn about anything with -1 or lower
-	{
-		G_Printf( "^3ERROR: ^7It appears as if ^5%s^7 is targeted by ^5%s^7 to enforce firing, which is undefined behavior — stop doing that! This WILL break in future releases and toggle the sensor instead.\n", self->classname, activator->classname );
-	}
-}
-
 void SP_sensor_stage( gentity_t *self )
 {
 	G_SpawnInt( "team", "0", ( int * ) &self->conditions.team );
 
-	self->use = sensor_stage_use;
+	self->use = trigger_propagation_compat_use;
 
 	self->r.svFlags = SVF_NOCLIENT;
 }
 
-/*
-===============
-sensor_win_use
-===============
-*/
-void sensor_win_use( gentity_t *self, gentity_t *other, gentity_t *activator )
-{
-	G_UseTargets( self, self );
-
-	if ( g_debugEntities.integer >= -1 ) //dont't warn about anything with -1 or lower
-	{
-		G_Printf( "^3ERROR: ^7It appears as if ^5%s^7 is targeted by ^5%s^7 to enforce firing, which is undefined behavior — stop doing that! This WILL break in future releases and toggle the sensor instead.\n", self->classname, activator->classname );
-	}
-}
-
-
-
-void G_notify_sensor_win( team_t winningTeam )
+void G_notify_sensor_end( team_t winningTeam )
 {
 	int       i;
 	gentity_t *ent;
@@ -322,7 +302,7 @@ void G_notify_sensor_win( team_t winningTeam )
 			continue;
 		}
 
-		if ( !Q_stricmp( ent->classname, "sensor_win" ) )
+		if ( !Q_stricmp( ent->classname, "sensor_end" ) )
 		{
 			if ( winningTeam == ent->conditions.team )
 			{
@@ -337,7 +317,7 @@ void SP_sensor_end( gentity_t *self )
 {
 	G_SpawnInt( "team", "0", ( int * ) &self->conditions.team );
 
-	self->use = sensor_win_use;
+	self->use = trigger_propagation_compat_use;
 
 	self->r.svFlags = SVF_NOCLIENT;
 }
