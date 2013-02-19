@@ -69,11 +69,11 @@ void    SP_target_hurt( gentity_t *ent );
 void    SP_NULL( gentity_t *self );
 void    SP_path_corner( gentity_t *self );
 
-void    SP_misc_portal_camera( gentity_t *ent );
-void    SP_misc_portal_surface( gentity_t *ent );
+void    SP_env_portal_camera( gentity_t *ent );
+void    SP_env_portal_surface( gentity_t *ent );
 
 void    SP_env_particle_system( gentity_t *ent );
-void    SP_misc_anim_model( gentity_t *ent );
+void    SP_env_animated_model( gentity_t *ent );
 void    SP_env_lens_flare( gentity_t *ent );
 
 /*
