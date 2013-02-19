@@ -160,8 +160,11 @@ static const spawn_t spawns[] =
 	 *	====================
 	 *
 	 */
-	{ "env_lens_flare",           SP_env_lens_flare,          },
+	{ "env_animated_model",       SP_env_animated_model       },
+	{ "env_lens_flare",           SP_env_lens_flare           },
 	{ "env_particle_system",      SP_env_particle_system      },
+	{ "env_portal_camera",        SP_env_portal_camera        },
+	{ "env_portal_surface",       SP_env_portal_surface       },
 	{ "env_rumble",               SP_env_rumble               },
 	{ "env_speaker",              SP_env_speaker              },
 
@@ -218,12 +221,12 @@ static const spawn_t spawns[] =
 	{ "info_player_intermission", SP_info_player_intermission },
 	{ "info_player_start",        SP_info_player_start        },
 	{ "light",                    SP_NULL                     },
-	{ "misc_anim_model",          SP_env_animated_model          },
+	{ "misc_anim_model",          SP_env_animated_model,      ENT_V_TMPNAME, "env_animated_model" },
 	{ "misc_light_flare",         SP_env_lens_flare,          ENT_V_TMPNAME, "env_lens_flare"},
 	{ "misc_model",               SP_NULL                     },
 	{ "misc_particle_system",     SP_env_particle_system,     ENT_V_TMPNAME, "env_particle_system"},
-	{ "misc_portal_camera",       SP_env_portal_camera       },
-	{ "misc_portal_surface",      SP_env_portal_surface      },
+	{ "misc_portal_camera",       SP_env_portal_camera,       ENT_V_TMPNAME, "env_portal_camera" },
+	{ "misc_portal_surface",      SP_env_portal_surface,      ENT_V_TMPNAME, "env_portal_surface" },
 	{ "misc_teleporter_dest",     SP_target_position,         ENT_V_TMPNAME, "target_position" },
 	{ "path_corner",              SP_path_corner              },
 
