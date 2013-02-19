@@ -2208,6 +2208,7 @@ qboolean G_BotAdd( char *name, team_t team, int skill, const char *behavior )
 	}
 
 	ClientBegin( clientNum );
+	bot->pain = BotPain; // ClientBegin resets the pain function
 	return qtrue;
 }
 
