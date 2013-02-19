@@ -2673,7 +2673,7 @@ static void RB_RenderInteractionsShadowMapped()
 									CrossProduct( side, lightDirection, up );
 									VectorNormalize( up );
 
-									VectorToAngles( lightDirection, angles );
+									vectoangles( lightDirection, angles );
 									MatrixFromAngles( rotationMatrix, angles[ PITCH ], angles[ YAW ], angles[ ROLL ] );
 									AngleVectors( angles, forward, side, up );
 
@@ -2906,7 +2906,7 @@ static void RB_RenderInteractionsShadowMapped()
 
 									// Quake -> OpenGL view matrix from light perspective
 #if 1
-									VectorToAngles( lightDirection, angles );
+									vectoangles( lightDirection, angles );
 									MatrixFromAngles( rotationMatrix, angles[ PITCH ], angles[ YAW ], angles[ ROLL ] );
 									MatrixSetupTransformFromRotation( transformMatrix, rotationMatrix, backEnd.viewParms.orientation.origin );
 									MatrixAffineInverse( transformMatrix, viewMatrix );
@@ -4726,7 +4726,7 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 									VectorNormalize( up );
 
 #if 0
-									VectorToAngles( lightDirection, angles );
+									vectoangles( lightDirection, angles );
 									MatrixFromAngles( rotationMatrix, angles[ PITCH ], angles[ YAW ], angles[ ROLL ] );
 									AngleVectors( angles, forward, side, up );
 #endif
@@ -5087,7 +5087,7 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 										CrossProduct( side, lightDirection, up );
 										VectorNormalize( up );
 
-										VectorToAngles( lightDirection, angles );
+										vectoangles( lightDirection, angles );
 										MatrixFromAngles( rotationMatrix, angles[ PITCH ], angles[ YAW ], angles[ ROLL ] );
 										AngleVectors( angles, forward, side, up );
 
@@ -5310,7 +5310,7 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 
 										// Quake -> OpenGL view matrix from light perspective
 #if 1
-										VectorToAngles( lightDirection, angles );
+										vectoangles( lightDirection, angles );
 										MatrixFromAngles( rotationMatrix, angles[ PITCH ], angles[ YAW ], angles[ ROLL ] );
 										MatrixSetupTransformFromRotation( transformMatrix, rotationMatrix, backEnd.viewParms.orientation.origin );
 										MatrixAffineInverse( transformMatrix, viewMatrix );
@@ -10095,7 +10095,7 @@ static void RB_RenderDebugUtils()
 
 						// Quake -> OpenGL view matrix from light perspective
 #if 0
-						VectorToAngles( lightDirection, angles );
+						vectoangles( lightDirection, angles );
 						MatrixFromAngles( rotationMatrix, angles[ PITCH ], angles[ YAW ], angles[ ROLL ] );
 						MatrixSetupTransformFromRotation( transformMatrix, rotationMatrix, backEnd.viewParms.orientation.origin );
 						MatrixAffineInverse( transformMatrix, viewMatrix );
