@@ -114,6 +114,8 @@ typedef struct
 	weapon_t    weapons[ WP_NUM_WEAPONS ];
 	upgrade_t   upgrades[ UP_NUM_UPGRADES ];
 	buildable_t buildables[ BA_NUM_BUILDABLES ];
+
+	qboolean negated;
 } gentityConditions_t;
 
 //============================================================================

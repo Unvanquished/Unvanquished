@@ -456,33 +456,10 @@ trigger_buildable_trigger
 */
 void sensor_buildable_trigger( gentity_t *self, gentity_t *activator )
 {
-	self->activator = activator;
-
-	if ( !self->operative )
+	if( sensor_buildable_match( self, activator ) == !self->conditions.negated )
 	{
-		return;
-	}
-
-	if ( self->nextthink )
-	{
-		return; // can't retrigger until the wait is over
-	}
-
-	if ( self->s.eFlags & EF_DEAD )
-	{
-		if ( !sensor_buildable_match( self, activator ) )
-		{
-			G_UseTargets( self, activator );
-			trigger_checkWaitForReactivation( self );
-		}
-	}
-	else
-	{
-		if ( sensor_buildable_match( self, activator ) )
-		{
-			G_UseTargets( self, activator );
-			trigger_checkWaitForReactivation( self );
-		}
+		G_UseTargets( self, activator );
+		trigger_checkWaitForReactivation( self );
 	}
 }
 
@@ -493,8 +470,28 @@ trigger_equipment_trigger
 */
 void sensor_client_trigger( gentity_t *self, gentity_t *activator )
 {
+	qboolean shouldFire;
+
+	if ( ( self->conditions.upgrades[0] || self->conditions.weapons[0] ) && activator->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+	{
+		shouldFire = sensor_equipment_match( self, activator );
+	}
+	else if ( self->conditions.classes[0] && activator->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
+	{
+		shouldFire = sensor_class_match( self, activator );
+	}
+
+	if( shouldFire == !self->conditions.negated )
+	{
+		G_UseTargets( self, activator );
+		trigger_checkWaitForReactivation( self );
+	}
+}
+
+void sensor_player_touch( gentity_t *self, gentity_t *activator, trace_t *trace )
+{
 	//sanity check
-	if ( !activator || !activator->client || !self->operative )
+	if ( !activator || !self->operative )
 	{
 		return;
 	}
@@ -506,55 +503,13 @@ void sensor_client_trigger( gentity_t *self, gentity_t *activator )
 		return; // can't retrigger until the wait is over
 	}
 
-	if ( ( self->conditions.upgrades[0] || self->conditions.weapons[0] ) && activator->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+	if ( self->conditions.buildables[0] && activator->s.eType == ET_BUILDABLE )
 	{
-		if ( self->s.eFlags & EF_DEAD )
-		{
-			if ( !sensor_equipment_match( self, activator ) )
-			{
-				G_UseTargets( self, activator );
-				trigger_checkWaitForReactivation( self );
-			}
-		}
-		else
-		{
-			if ( sensor_equipment_match( self, activator ) )
-			{
-				G_UseTargets( self, activator );
-				trigger_checkWaitForReactivation( self );
-			}
-		}
+		sensor_buildable_trigger( self, activator );
 	}
-	else if ( self->conditions.classes[0] && activator->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
+	else if ( activator->client )
 	{
-		if ( self->s.eFlags & EF_DEAD )
-		{
-			if ( !sensor_class_match( self, activator ) )
-			{
-				G_UseTargets( self, activator );
-				trigger_checkWaitForReactivation( self );
-			}
-		}
-		else
-		{
-			if ( sensor_class_match( self, activator ) )
-			{
-				G_UseTargets( self, activator );
-				trigger_checkWaitForReactivation( self );
-			}
-		}
-	}
-}
-
-void sensor_player_touch( gentity_t *self, gentity_t *other, trace_t *trace )
-{
-	if ( self->conditions.buildables[0] && other->s.eType == ET_BUILDABLE )
-	{
-		sensor_buildable_trigger( self, other );
-	}
-	else if ( other->client )
-	{
-		sensor_client_trigger( self, other );
+		sensor_client_trigger( self, activator );
 	}
 }
 
@@ -594,7 +549,7 @@ void SP_sensor_touch( gentity_t *self )
 	// NEGATE
 	if ( self->spawnflags & 2 )
 	{
-		self->s.eFlags |= EF_DEAD;
+		self->conditions.negated = qtrue;
 	}
 
 	InitBrushSensor( self );
