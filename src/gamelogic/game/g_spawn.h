@@ -37,34 +37,35 @@ void    SP_func_door_rotating( gentity_t *ent );
 void    SP_func_door_model( gentity_t *ent );
 void    SP_func_train( gentity_t *ent );
 
+void    SP_flow_relay( gentity_t *ent );
+void    SP_flow_limited( gentity_t *ent );
+
+void    SP_game_score( gentity_t *ent );
+void    SP_game_end( gentity_t *ent );
+
 void    SP_sensor_start( gentity_t *ent );
-void    SP_trigger_multiple( gentity_t *ent );
-void    SP_sensor_timer( gentity_t *self );
-void    SP_trigger_push( gentity_t *ent );
-void    SP_trigger_teleport( gentity_t *ent );
-void    SP_trigger_hurt( gentity_t *ent );
 void    SP_sensor_stage( gentity_t *ent );
 void    SP_sensor_end( gentity_t *ent );
 void    SP_sensor_touch( gentity_t *ent );
 void    SP_sensor_touch_compat( gentity_t *ent );
+void    SP_sensor_timer( gentity_t *self );
+
+void    SP_trigger_multiple( gentity_t *ent );
+void    SP_trigger_push( gentity_t *ent );
+void    SP_trigger_teleport( gentity_t *ent );
+void    SP_trigger_hurt( gentity_t *ent );
 void    SP_trigger_gravity( gentity_t *ent );
 void    SP_trigger_heal( gentity_t *ent );
 void    SP_trigger_ammo( gentity_t *ent );
 
-void    SP_env_speaker( gentity_t *ent );
 void    SP_target_print( gentity_t *ent );
-void    SP_game_score( gentity_t *ent );
 void    SP_target_teleporter( gentity_t *ent );
-void    SP_flow_relay( gentity_t *ent );
-void    SP_flow_limited( gentity_t *ent );
 void    SP_target_kill( gentity_t *ent );
 void    SP_target_position( gentity_t *ent );
 void    SP_target_location( gentity_t *ent );
 void    SP_target_push( gentity_t *ent );
-void    SP_env_rumble( gentity_t *ent );
 void    SP_target_alien_win( gentity_t *ent );
 void    SP_target_human_win( gentity_t *ent );
-void    SP_game_end( gentity_t *ent );
 void    SP_target_hurt( gentity_t *ent );
 
 void    SP_NULL( gentity_t *self );
@@ -73,6 +74,8 @@ void    SP_path_corner( gentity_t *self );
 void    SP_env_portal_camera( gentity_t *ent );
 void    SP_env_portal_surface( gentity_t *ent );
 
+void    SP_env_rumble( gentity_t *ent );
+void    SP_env_speaker( gentity_t *ent );
 void    SP_env_particle_system( gentity_t *ent );
 void    SP_env_animated_model( gentity_t *ent );
 void    SP_env_lens_flare( gentity_t *ent );
