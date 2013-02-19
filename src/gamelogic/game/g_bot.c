@@ -2838,7 +2838,7 @@ AINodeStatus_t BotConditionNode( gentity_t *self, AIGenericNode_t *node )
 			BotCompare( self->client->ps.stats[ STAT_TEAM ], con->param1.value.i, con->op, success );
 			break;
 		case CON_ENEMY:
-			if ( level.time - self->botMind->timeFoundEnemy <= g_bot_reactiontime.integer )
+			if ( level.time - self->botMind->timeFoundEnemy < g_bot_reactiontime.integer )
 			{
 				success = qfalse;
 			}
