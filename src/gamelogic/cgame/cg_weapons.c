@@ -2791,7 +2791,7 @@ static void CG_ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int othe
 	for ( i = 0; i < SHOTGUN_PELLETS; i++ )
 	{
 		r = Q_crandom( &seed ) * M_PI;
-		a = sqrt( Q_crandom( &seed ) * SHOTGUN_SPREAD * SHOTGUN_SPREAD * 16 * 16 );
+		a = Q_random( &seed ) * SHOTGUN_SPREAD * 16;
 
 		u = sin( r ) * a;
 		r = cos( r ) * a;
