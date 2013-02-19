@@ -37,8 +37,16 @@ void InitBrushSensor( gentity_t *self )
 	self->r.svFlags = SVF_NOCLIENT;
 }
 
+void sensor_toggle( gentity_t *self, gentity_t *other, gentity_t *activator  )
+{
+	// if we wanted to tell the cgame about our deactivation, this would be the way to do it
+	// self->s.eFlags ^= EF_NODRAW;
+	// but unless we have to, we rather not share the information, so "patched" clients cannot do anything with it either
+	self->operative = !self->operative;
+}
+
 //some old sensors/triggers used to propagate use-events, this is deprecated behavior
-void trigger_propagation_compat_use( gentity_t *self, gentity_t *other, gentity_t *activator )
+void trigger_compat_propagation_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	G_UseTargets( self, self );
 
@@ -72,6 +80,9 @@ void trigger_checkWaitForReactivation( gentity_t *self )
 	}
 }
 
+/*
+ * old trigger_multiple functions for backward compatbility
+ */
 // the trigger was just activated
 // ent->activator should be set to the activator so it can be held through a delay
 // so wait for the delay time before firing
@@ -266,7 +277,7 @@ void G_notify_sensor_stage( team_t team, stage_t stage )
 
 	for ( i = 1, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 	{
-		if ( !ent->inuse )
+		if ( !ent->inuse || !ent->operative )
 		{
 			continue;
 		}
@@ -285,7 +296,10 @@ void SP_sensor_stage( gentity_t *self )
 {
 	G_SpawnInt( "team", "0", ( int * ) &self->conditions.team );
 
-	self->use = trigger_propagation_compat_use;
+	if(self->classname[0] == 't')
+		self->use = trigger_compat_propagation_use;
+	else
+		self->use = sensor_toggle;
 
 	self->r.svFlags = SVF_NOCLIENT;
 }
@@ -297,7 +311,7 @@ void G_notify_sensor_end( team_t winningTeam )
 
 	for ( i = 1, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 	{
-		if ( !ent->inuse )
+		if ( !ent->inuse || !ent->operative )
 		{
 			continue;
 		}
@@ -317,7 +331,10 @@ void SP_sensor_end( gentity_t *self )
 {
 	G_SpawnInt( "team", "0", ( int * ) &self->conditions.team );
 
-	self->use = trigger_propagation_compat_use;
+	if(self->classname[0] == 't')
+		self->use = trigger_compat_propagation_use;
+	else
+		self->use = sensor_toggle;
 
 	self->r.svFlags = SVF_NOCLIENT;
 }
@@ -441,7 +458,7 @@ void sensor_buildable_trigger( gentity_t *self, gentity_t *activator )
 {
 	self->activator = activator;
 
-	if ( self->s.eFlags & EF_NODRAW )
+	if ( !self->operative )
 	{
 		return;
 	}
@@ -477,14 +494,11 @@ trigger_equipment_trigger
 void sensor_client_trigger( gentity_t *self, gentity_t *activator )
 {
 	//sanity check
-	if ( !activator || !activator->client )
+	if ( !activator || !activator->client || !self->operative )
 	{
 		return;
 	}
-	if ( self->s.eFlags & EF_NODRAW )
-	{
-		return;
-	}
+
 	self->activator = activator;
 
 	if ( self->nextthink )
@@ -544,11 +558,6 @@ void sensor_player_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 	}
 }
 
-void sensor_touch_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
-{
-	ent->s.eFlags ^= EF_NODRAW;
-}
-
 //for compatibility
 void SP_sensor_touch_compat( gentity_t *entity )
 {
@@ -574,12 +583,12 @@ void SP_sensor_touch( gentity_t *self )
 	entity_ParseConditions( self );
 
 	self->touch = sensor_player_touch;
-	self->use = sensor_touch_use;
+	self->use = sensor_toggle;
 
 	// SPAWN_DISABLED
 	if ( self->spawnflags & 1 )
 	{
-		self->s.eFlags |= EF_NODRAW;
+		self->operative = qfalse;
 	}
 
 	// NEGATE
