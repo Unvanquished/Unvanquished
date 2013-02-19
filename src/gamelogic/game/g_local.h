@@ -157,6 +157,7 @@ typedef struct{
 	int  numRunningNodes;
 
   	int         futureAimTime;
+	int         futureAimTimeInterval;
 	vec3_t      futureAim;
 	usercmd_t cmdBuffer;
 } botMemory_t;

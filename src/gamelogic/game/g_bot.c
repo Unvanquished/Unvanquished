@@ -1405,7 +1405,7 @@ void BotGetIdealAimLocation( gentity_t *self, botTarget_t target, vec3_t aimLoca
 
 int BotGetAimPredictionTime( gentity_t *self )
 {
-	return ( 10 - self->botMind->botSkill.level ) * 100 * ( ( ( float ) rand() ) / RAND_MAX );
+	return ( 10 - self->botMind->botSkill.level ) * 100 * MAX( ( ( float ) rand() ) / RAND_MAX, 0.5f );
 }
 
 void BotPredictPosition( gentity_t *self, gentity_t *predict, vec3_t pos, int time )
@@ -1421,18 +1421,16 @@ void BotAimAtEnemy( gentity_t *self )
 {
 	vec3_t desired;
 	vec3_t current;
-	vec3_t steer;
 	vec3_t viewOrigin;
 	vec3_t newAim;
 	vec3_t angles;
-	float length;
-	const float steerMag = 0.1f;
 	int i;
+	float frac;
 	gentity_t *enemy = self->botMind->goal.ent;
 
-	if ( self->botMind->futureAimTime <= level.time )
+	if ( self->botMind->futureAimTime < level.time )
 	{
-		int predictTime = BotGetAimPredictionTime( self );
+		int predictTime = self->botMind->futureAimTimeInterval = BotGetAimPredictionTime( self );
 		BotPredictPosition( self, enemy, self->botMind->futureAim, predictTime );
 		self->botMind->futureAimTime = level.time + predictTime;
 	}
@@ -1442,20 +1440,9 @@ void BotAimAtEnemy( gentity_t *self )
 	VectorNormalize( desired );
 	AngleVectors( self->client->ps.viewangles, current, NULL, NULL );
 
-	VectorSubtract( desired, current, steer );
+	frac = ( 1.0f - ( ( float ) ( self->botMind->futureAimTime - level.time ) ) / self->botMind->futureAimTimeInterval );
+	VectorLerp( current, desired, frac, newAim );
 
-	length = VectorNormalize( steer );
-
-	if ( length < steerMag )
-	{
-		VectorScale( steer, length, steer );
-	}
-	else
-	{
-		VectorScale( steer, steerMag, steer );
-	}
-
-	VectorAdd( current, steer, newAim );
 	VectorSet( self->client->ps.delta_angles, 0, 0, 0 );
 	vectoangles( newAim, angles );
 
