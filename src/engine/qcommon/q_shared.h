@@ -295,11 +295,7 @@ extern int memcmp( void *, void *, size_t );
 #define PADP(base, alignment)   ((void *) PAD((intptr_t) ( base ), ( alignment )))
 
 #ifndef NULL
-#ifdef __cplusplus
-#define NULL ( 0L )
-#else
 #define NULL ( (void *)0 )
-#endif
 #endif
 
 #define STRING(s)  #s

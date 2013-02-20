@@ -690,7 +690,6 @@ set( CGAMEGPP_BASE
 set( CGAMEGPP_SO
   ${CGAMEGPP_BASE}
   ${GPP_DIR}/cgame/cg_api.c
-#   ${GPP_DIR}/cgame/cg_nav.c
   ${GPP_DIR}/cgame/cgame.def
 )
 
@@ -1236,9 +1235,8 @@ GAMELIB( LIB_NAME gppgame
   OUTPUT_DIR main
   COMPILE_DEF GAME GAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM
   LIB_FILES ${GAMEGPP_SO} ${GPP_DIR}
-# temporarily disabled due to build failure with bots code
-   QVM_FILES ${GAMEGPP_BASE}
-   QVM_ASM ${GAMEGPP_QVM}
+  QVM_FILES ${GAMEGPP_BASE}
+  QVM_ASM ${GAMEGPP_QVM}
 )
 
 GAMELIB( LIB_NAME gpptrem
