@@ -275,7 +275,7 @@ void G_notify_sensor_stage( team_t team, stage_t stage )
 	int       i;
 	gentity_t *ent;
 
-	for ( i = 1, ent = g_entities + i; i < level.num_entities; i++, ent++ )
+	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 	{
 		if ( !ent->inuse || !ent->operative )
 		{
@@ -309,7 +309,7 @@ void G_notify_sensor_end( team_t winningTeam )
 	int       i;
 	gentity_t *ent;
 
-	for ( i = 1, ent = g_entities + i; i < level.num_entities; i++, ent++ )
+	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 	{
 		if ( !ent->inuse || !ent->operative )
 		{

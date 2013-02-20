@@ -3854,7 +3854,7 @@ static void G_SetBuildableLinkState( qboolean link )
 	int       i;
 	gentity_t *ent;
 
-	for ( i = 1, ent = g_entities + i; i < level.num_entities; i++, ent++ )
+	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 	{
 		if ( ent->s.eType != ET_BUILDABLE )
 		{
