@@ -963,7 +963,12 @@ void GLShader::CompileAndLinkGPUShaderProgram( shaderProgram_t *program,
 		fragmentHeader += "#define gl_FragColor out_Color\n";
 
 		vertexHeader += "#define textureCube texture\n";
+		vertexHeader += "#define texture2D texture\n";
+		vertexHeader += "#define texture2DProj textureProj\n";
+
 		fragmentHeader += "#define textureCube texture\n";
+		fragmentHeader += "#define texture2D texture\n";
+		fragmentHeader += "#define texture2DProj textureProj\n";
 	}
 	else
 	{
