@@ -50,6 +50,13 @@ Behavior Tree
 =======================
 */
 
+static void BotInitNode( AINode_t type, AINodeRunner func, void *node )
+{
+	AIGenericNode_t *n = ( AIGenericNode_t * ) node;
+	n->type = type;
+	n->run = func;
+}
+
 #define allocNode( T ) ( T * ) BG_Alloc( sizeof( T ) );
 
 #define stringify( v ) va( #v " %d", v )
@@ -1209,6 +1216,113 @@ void BotSetTarget( botTarget_t *target, gentity_t *ent, vec3_t *pos )
 		VectorClear( target->coord );
 		target->inuse = qfalse;
 	}
+}
+
+qboolean BotTargetIsEntity( botTarget_t target )
+{
+	return ( target.ent && target.ent->inuse );
+}
+
+qboolean BotTargetIsPlayer( botTarget_t target )
+{
+	return ( target.ent && target.ent->inuse && target.ent->client );
+}
+
+int BotGetTargetEntityNumber( botTarget_t target )
+{
+	if ( BotTargetIsEntity( target ) )
+	{
+		return target.ent->s.number;
+	}
+	else
+	{
+		return ENTITYNUM_NONE;
+	}
+}
+
+void BotGetTargetPos( botTarget_t target, vec3_t rVec )
+{
+	if ( BotTargetIsEntity( target ) )
+	{
+		VectorCopy( target.ent->s.origin, rVec );
+	}
+	else
+	{
+		VectorCopy( target.coord, rVec );
+	}
+}
+
+team_t BotGetEntityTeam( gentity_t *ent )
+{
+	if ( !ent )
+	{
+		return TEAM_NONE;
+	}
+	if ( ent->client )
+	{
+		return ( team_t )ent->client->ps.stats[STAT_TEAM];
+	}
+	else if ( ent->s.eType == ET_BUILDABLE )
+	{
+		return ent->buildableTeam;
+	}
+	else
+	{
+		return TEAM_NONE;
+	}
+}
+
+team_t BotGetTargetTeam( botTarget_t target )
+{
+	if ( BotTargetIsEntity( target ) )
+	{
+		return BotGetEntityTeam( target.ent );
+	}
+	else
+	{
+		return TEAM_NONE;
+	}
+}
+
+int BotGetTargetType( botTarget_t target )
+{
+	if ( BotTargetIsEntity( target ) )
+	{
+		return target.ent->s.eType;
+	}
+	else
+	{
+		return -1;
+	}
+}
+
+qboolean BotChangeGoal( gentity_t *self, botTarget_t target )
+{
+	if ( !target.inuse )
+	{
+		return qfalse;
+	}
+
+	if ( FindRouteToTarget( self, target ) & ( ROUTE_PARTIAL | ROUTE_FAILED ) )
+	{
+		return qfalse;
+	}
+	self->botMind->goal = target;
+	return qtrue;
+}
+
+qboolean BotChangeGoalEntity( gentity_t *self, gentity_t *goal )
+{
+	botTarget_t target;
+	BotSetTarget( &target, goal, NULL );
+	return BotChangeGoal( self, target );
+}
+
+qboolean BotChangeGoalPos( gentity_t *self, vec3_t goal )
+{
+	botTarget_t target;
+	BotSetTarget( &target, NULL, ( vec3_t * ) &goal );
+	return BotChangeGoal( self, target );
 }
 
 qboolean BotTargetInAttackRange( gentity_t *self, botTarget_t target )

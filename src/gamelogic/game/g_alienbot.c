@@ -66,8 +66,8 @@ float CalcAimPitch( gentity_t *self, botTarget_t target, vec_t launchSpeed )
 	}
 	
 	//calculate required angle of launch
-	angle1 = atan( ( Square( v ) + sqrt( check ) ) / ( g * x ) );
-	angle2 = atan( ( Square( v ) - sqrt( check ) ) / ( g * x ) );
+	angle1 = atanf( ( Square( v ) + sqrt( check ) ) / ( g * x ) );
+	angle2 = atanf( ( Square( v ) - sqrt( check ) ) / ( g * x ) );
 
 	//take the smaller angle
 	angle = ( angle1 < angle2 ) ? angle1 : angle2;
