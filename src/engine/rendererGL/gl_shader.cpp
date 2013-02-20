@@ -698,75 +698,7 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 		}
 #endif
 
-#if 0
-
-		if ( optimize )
-		{
-			static char         msgPart[ 1024 ];
-			int                 length = 0;
-			int                 i;
-
-			glslopt_shader_type glsloptShaderType;
-
-			if ( shaderType == GL_FRAGMENT_SHADER )
-			{
-				glsloptShaderType = kGlslOptShaderFragment;
-			}
-			else
-			{
-				glsloptShaderType = kGlslOptShaderVertex;
-			}
-
-			glslopt_shader *shaderOptimized = glslopt_optimize( s_glslOptimizer,
-			                                  glsloptShaderType, bufferFinal, 0 );
-
-			if ( glslopt_get_status( shaderOptimized ) )
-			{
-				const char *newSource = glslopt_get_output( shaderOptimized );
-
-				ri.Printf( PRINT_DEVELOPER, "----------------------------------------------------------\n" );
-				ri.Printf( PRINT_DEVELOPER, "OPTIMIZED shader '%s' ----------\n", filename );
-				ri.Printf( PRINT_DEVELOPER, " BEGIN ---------------------------------------------------\n" );
-
-				length = strlen( newSource );
-
-				for ( i = 0; i < length; i += 1024 )
-				{
-					Q_strncpyz( msgPart, newSource + i, sizeof( msgPart ) );
-					ri.Printf( PRINT_WARNING, "%s", msgPart );
-				}
-
-				ri.Printf( PRINT_DEVELOPER, " END-- ---------------------------------------------------\n" );
-				shaderText = std::string( newSource, length );
-			}
-			else
-			{
-				const char *errorLog = glslopt_get_log( shaderOptimized );
-
-				//ri.Printf(PRINT_WARNING, "Couldn't optimize '%s'\n", filename);
-
-				length = strlen( errorLog );
-
-				for ( i = 0; i < length; i += 1024 )
-				{
-					Q_strncpyz( msgPart, errorLog + i, sizeof( msgPart ) );
-					ri.Printf( PRINT_ALL, "%s", msgPart );
-				}
-
-				ri.Printf( PRINT_ALL, "^1Couldn't optimize %s\n", filename );
-				shaderText = std::string( bufferFinal, sizeFinal );
-			}
-
-			glslopt_shader_delete( shaderOptimized );
-		}
-		else
-		{
-			shaderText = std::string( bufferFinal, sizeFinal );
-		}
-
-#else
 		shaderText = std::string( bufferFinal, sizeFinal );
-#endif
 
 		ri.Hunk_FreeTempMemory( bufferFinal );
 	}
