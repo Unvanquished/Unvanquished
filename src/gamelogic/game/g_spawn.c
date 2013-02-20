@@ -186,6 +186,7 @@ static const spawn_t spawns[] =
 	 */
 	{ "func_bobbing",             SP_func_bobbing             },
 	{ "func_button",              SP_func_button              },
+	{ "func_destructable",        SP_func_destructable        },
 	{ "func_door",                SP_func_door                },
 	{ "func_door_model",          SP_func_door_model          },
 	{ "func_door_rotating",       SP_func_door_rotating       },
@@ -194,6 +195,7 @@ static const spawn_t spawns[] =
 	{ "func_pendulum",            SP_func_pendulum            },
 	{ "func_plat",                SP_func_plat                },
 	{ "func_rotating",            SP_func_rotating            },
+	{ "func_spawn",               SP_func_spawn               },
 	{ "func_static",              SP_func_static              },
 	{ "func_timer",               SP_sensor_timer,            ENT_V_TMPNAME, "sensor_timer" },
 	{ "func_train",               SP_func_train               },

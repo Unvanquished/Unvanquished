@@ -2894,3 +2894,149 @@ void SP_func_pendulum( gentity_t *ent )
 	ent->s.apos.trType = TR_SINE;
 	ent->s.apos.trDelta[ 2 ] = ent->speed;
 }
+
+/*
+====================
+G_KillBrushModel
+====================
+*/
+void G_KillBrushModel( gentity_t *ent, gentity_t *activator )
+{
+  gentity_t *e;
+  vec3_t mins, maxs;
+  trace_t tr;
+
+  for( e = &g_entities[ 0 ]; e < &g_entities[ level.num_entities ]; ++e )
+  {
+    if( !e->takedamage || !e->r.linked || !e->clipmask || ( e->client && e->client->noclip ) )
+      continue;
+
+    VectorAdd( e->r.currentOrigin, e->r.mins, mins );
+    VectorAdd( e->r.currentOrigin, e->r.maxs, maxs );
+
+    if( !trap_EntityContact( mins, maxs, ent ) )
+      continue;
+
+    trap_Trace( &tr, e->r.currentOrigin, e->r.mins, e->r.maxs,
+                e->r.currentOrigin, e->s.number, e->clipmask );
+
+    if( tr.entityNum != ENTITYNUM_NONE )
+      G_Damage( e, ent, activator, NULL, NULL, 100000, DAMAGE_NO_PROTECTION, MOD_CRUSH );
+  }
+}
+
+/*
+====================
+Use_func_spawn
+====================
+*/
+void Use_func_spawn( gentity_t *ent, gentity_t *other, gentity_t *activator )
+{
+  if( ent->r.linked )
+    trap_UnlinkEntity( ent );
+  else
+  {
+    trap_LinkEntity( ent );
+    if( !( ent->spawnflags & 2 ) )
+      G_KillBrushModel( ent, activator );
+  }
+}
+
+/*
+====================
+SP_func_spawn
+====================
+*/
+void SP_func_spawn( gentity_t *ent )
+{
+  //ent->r.svFlags = SVF_USE_CURRENT_ORIGIN;
+  ent->s.eType = ET_MOVER;
+  ent->moverState = MOVER_POS1;
+  VectorCopy( ent->s.origin, ent->pos1 );
+
+  if( ent->model[ 0 ] == '*' )
+    trap_SetBrushModel( ent, ent->model );
+  else
+  {
+    ent->s.modelindex = G_ModelIndex( ent->model );
+    VectorCopy( ent->s.angles, ent->s.apos.trBase );
+  }
+
+  ent->use = Use_func_spawn;
+
+  if( ent->spawnflags & 1 )
+    trap_LinkEntity( ent );
+  else
+    trap_UnlinkEntity( ent );
+}
+
+/*
+====================
+Use_func_destructable
+====================
+*/
+void Use_func_destructable( gentity_t *ent, gentity_t *other, gentity_t *activator )
+{
+  if( ent->r.linked )
+  {
+    ent->takedamage = qfalse;
+    trap_UnlinkEntity( ent );
+    if( ent->health <= 0 )
+    {
+      G_RadiusDamage( ent->pos1, activator, ent->splashDamage, ent->splashRadius, ent, MOD_TRIGGER_HURT );
+      G_UseTargets( ent, activator );
+    }
+  }
+  else
+  {
+    trap_LinkEntity( ent );
+    G_KillBrushModel( ent, activator );
+    ent->health = ent->resetValue;
+    ent->takedamage = qtrue;
+  }
+}
+
+/*
+====================
+SP_func_destructable
+====================
+*/
+void SP_func_destructable( gentity_t *ent )
+{
+  char *s;
+
+  G_SpawnString( "equipment", "", &s );
+  BG_ParseCSVEquipmentList( s, ent->conditions.weapons, WP_NUM_WEAPONS, ent->conditions.upgrades, UP_NUM_UPGRADES );
+  G_SpawnString( "classes", "", &s );
+  BG_ParseCSVClassList( s, ent->conditions.classes, PCL_NUM_CLASSES );
+
+  G_SpawnInt( "damage", "0", &ent->splashDamage );
+  G_SpawnInt( "radius", "0", &ent->splashRadius );
+  G_SpawnInt( "health", "100", &ent->resetValue );
+  if( ent->resetValue < 1 )
+    ent->resetValue = 1;
+
+  //ent->r.svFlags = SVF_USE_CURRENT_ORIGIN;
+  ent->s.eType = ET_MOVER;
+  ent->moverState = MOVER_POS1;
+  VectorCopy( ent->s.origin, ent->pos1 );
+
+  if( ent->model[ 0 ] == '*' )
+    trap_SetBrushModel( ent, ent->model );
+  else
+  {
+    ent->s.modelindex = G_ModelIndex( ent->model );
+    VectorCopy( ent->s.angles, ent->s.apos.trBase );
+  }
+
+  ent->use = Use_func_destructable;
+
+  if( ent->spawnflags & 1 )
+    trap_UnlinkEntity( ent );
+  else
+  {
+    trap_LinkEntity( ent );
+    ent->health = ent->resetValue;
+    ent->takedamage = qtrue;
+  }
+}

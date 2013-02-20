@@ -254,6 +254,7 @@ struct gentity_s
 	int       splashMethodOfDeath;
 
 	int       count;
+	int       resetValue;
 
 	gentity_t *chain;
 	gentity_t *enemy;

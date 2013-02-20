@@ -37,6 +37,9 @@ void    SP_func_door_rotating( gentity_t *ent );
 void    SP_func_door_model( gentity_t *ent );
 void    SP_func_train( gentity_t *ent );
 
+void    SP_func_destructable( gentity_t *self );
+void    SP_func_spawn( gentity_t *self );
+
 void    SP_flow_relay( gentity_t *ent );
 void    SP_flow_limited( gentity_t *ent );
 
