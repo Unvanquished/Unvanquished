@@ -207,12 +207,12 @@ static qboolean BG_VoiceParseTrack( int handle, voiceTrack_t *voiceTrack )
 			{
 				found = qtrue;
 
-				if ( voiceTrack->class < 0 )
+				if ( voiceTrack->pClass < 0 )
 				{
-					voiceTrack->class = 0;
+					voiceTrack->pClass = 0;
 				}
 
-				voiceTrack->class |= ( 1 << token.intvalue );
+				voiceTrack->pClass |= ( 1 << token.intvalue );
 				foundToken = trap_Parse_ReadToken( handle, &token );
 			}
 
@@ -345,7 +345,7 @@ static voiceTrack_t *BG_VoiceParseCommand( int handle )
 		}
 
 		voiceTracks->team = -1;
-		voiceTracks->class = -1;
+		voiceTracks->pClass = -1;
 		voiceTracks->weapon = -1;
 		voiceTracks->enthusiasm = 0;
 		voiceTracks->text = NULL;
@@ -503,7 +503,7 @@ void BG_PrintVoices( voice_t *voices, int debugLevel )
 				if ( debugLevel > 2 )
 				{
 					Com_Printf( "    team -> %d\n", voiceTrack->team );
-					Com_Printf( "    class -> %d\n", voiceTrack->class );
+					Com_Printf( "    class -> %d\n", voiceTrack->pClass );
 					Com_Printf( "    weapon -> %d\n", voiceTrack->weapon );
 					Com_Printf( "    enthusiasm -> %d\n", voiceTrack->enthusiasm );
 #ifdef CGAME
@@ -651,7 +651,7 @@ voiceTrack_t *BG_VoiceTrackFind( voiceTrack_t *head, team_t team,
 	while ( vt )
 	{
 		if ( ( vt->team >= 0 && !( vt->team  & ( 1 << team ) ) ) ||
-		     ( vt->class >= 0 && !( vt->class & ( 1 << class ) ) ) ||
+		     ( vt->pClass >= 0 && !( vt->pClass & ( 1 << class ) ) ) ||
 		     vt->enthusiasm > enthusiasm )
 		{
 			vt = vt->next;
@@ -688,7 +688,7 @@ voiceTrack_t *BG_VoiceTrackFind( voiceTrack_t *head, team_t team,
 		j++;
 
 		if ( ( vt->team >= 0 && !( vt->team  & ( 1 << team ) ) ) ||
-		     ( vt->class >= 0 && !( vt->class & ( 1 << class ) ) ) ||
+		     ( vt->pClass >= 0 && !( vt->pClass & ( 1 << class ) ) ) ||
 		     vt->enthusiasm != highestMatch )
 		{
 			vt = vt->next;
