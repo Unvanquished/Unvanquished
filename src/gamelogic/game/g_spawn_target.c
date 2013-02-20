@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 "message" text to print
 If "private", only the activator gets the message.  If no checks, all clients get the message.
 */
-void target_trint_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
+void target_print_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
 {
 	if ( ent->spawnflags & 4 )
 	{
@@ -60,7 +60,7 @@ void target_trint_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
 
 void SP_target_print( gentity_t *ent )
 {
-	ent->use = target_trint_use;
+	ent->use = target_print_use;
 }
 
 //==========================================================
