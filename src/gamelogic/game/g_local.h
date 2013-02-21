@@ -118,6 +118,13 @@ typedef struct
 	qboolean negated;
 } gentityConditions_t;
 
+
+typedef struct
+{
+	char  *name;
+	char  *action;
+} target_t;
+
 //============================================================================
 
 struct gentity_s
@@ -155,7 +162,7 @@ struct gentity_s
 	qboolean     operative;
 
 	// targeting
-	char         *targets[ MAX_TARGETS + 1 ];
+	target_t     targets[ MAX_TARGETS + 1 ];
 	char         *targetnames[ MAX_TARGETNAMES + 1 ];
 	gentity_t    *activator;
 

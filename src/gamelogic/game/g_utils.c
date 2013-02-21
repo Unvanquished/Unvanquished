@@ -208,13 +208,13 @@ gentity_t *G_TargetFind(gentity_t *target, int *targetIndex, int *targetNameInde
 	if (target)
 		goto cont;
 
-	for (*targetIndex = 0; self->targets[*targetIndex]; ++(*targetIndex))
+	for (*targetIndex = 0; self->targets[*targetIndex].name; ++(*targetIndex))
 	{
 		for( target = &g_entities[ 0 ]; target < &g_entities[ level.num_entities ]; ++target )
 		{
 			for (*targetNameIndex = 0; target->targetnames[*targetNameIndex]; ++(*targetNameIndex))
 			{
-				if (!Q_stricmp(self->targets[*targetIndex], target->targetnames[*targetNameIndex]))
+				if (!Q_stricmp(self->targets[*targetIndex].name, target->targetnames[*targetNameIndex]))
 					return target;
 				cont: ;
 			}
@@ -246,8 +246,8 @@ gentity_t *G_PickTargetFor( gentity_t *self )
 	if ( !totalChoiceCount )
 	{
 		G_Printf( "G_PickTargetFor: none of the following targets were found:" );
-		for( i = 0; self->targets[ i ]; ++i )
-		  G_Printf( "%s %s", ( i == 0 ? "" : "," ), self->targets[ i ] );
+		for( i = 0; self->targets[ i ].name; ++i )
+		  G_Printf( "%s %s", ( i == 0 ? "" : "," ), self->targets[ i ].name );
 		G_Printf( "\n" );
 		return NULL;
 	}

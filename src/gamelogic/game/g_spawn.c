@@ -96,6 +96,7 @@ typedef enum
   F_INT,
   F_FLOAT,
   F_STRING,
+  F_TARGET,
   F_VECTOR,
   F_VECTOR4,
   F_YAW
@@ -130,10 +131,10 @@ static const field_t fields[] =
 	{ "random",              FOFS( waitVariance ),        F_FLOAT,    ENT_V_TMPNAME, "waitVariance" },
 	{ "spawnflags",          FOFS( spawnflags ),          F_INT       },
 	{ "speed",               FOFS( speed ),               F_FLOAT     },
-	{ "target",				 FOFS( targets[ 0 ] ),		  F_STRING	  },
-	{ "target2", 			 FOFS( targets[ 1 ] ),		  F_STRING	  },
-	{ "target3",			 FOFS( targets[ 2 ] ),		  F_STRING	  },
-	{ "target4",			 FOFS( targets[ 3 ] ),		  F_STRING	  },
+	{ "target",				 FOFS( targets[ 0 ] ),		  F_TARGET	  },
+	{ "target2", 			 FOFS( targets[ 1 ] ),		  F_TARGET	  },
+	{ "target3",			 FOFS( targets[ 2 ] ),		  F_TARGET	  },
+	{ "target4",			 FOFS( targets[ 3 ] ),		  F_TARGET	  },
 	{ "targetname",			 FOFS( targetnames[ 0 ] ),	  F_STRING	  },
 	{ "targetname2",		 FOFS( targetnames[ 1 ] ),	  F_STRING	  },
 	{ "targetname3",		 FOFS( targetnames[ 2 ] ),	  F_STRING	  },
@@ -444,6 +445,38 @@ char *G_NewString( const char *string )
 }
 
 /*
+=============
+G_NewTarget
+=============
+*/
+target_t G_NewTarget( const char *string )
+{
+	char *stringPointer;
+	int  i, stringLength;
+	target_t newTarget = { NULL, NULL };
+
+	stringLength = strlen( string ) + 1;
+	if(stringLength == 1)
+		return newTarget;
+
+	stringPointer = BG_Alloc( stringLength );
+	newTarget.name = stringPointer;
+
+	for ( i = 0; i < stringLength; i++ )
+	{
+		if ( string[ i ] == ':' && !newTarget.action )
+		{
+			*stringPointer++ = '\0';
+			newTarget.action = stringPointer;
+			continue;
+		}
+		*stringPointer++ = string[ i ];
+	}
+
+	return newTarget;
+}
+
+/*
 ===============
 G_ParseField
 
@@ -473,6 +506,10 @@ void G_ParseField( const char *key, const char *value, gentity_t *entity )
 	{
 		case F_STRING:
 			* ( char ** )( entityData + resultingField->offset ) = G_NewString( value );
+			break;
+
+		case F_TARGET:
+			* ( target_t * )( entityData + resultingField->offset ) = G_NewTarget( value );
 			break;
 
 		case F_VECTOR:
@@ -549,10 +586,14 @@ void G_SpawnGEntityFromSpawnVars( void )
 	j = 0;
 	for (i = 0; i < MAX_TARGETS; ++i)
 	{
-		if (ent->targets[i])
-			ent->targets[j++] = ent->targets[i];
+		if (ent->targets[i].name) {
+			ent->targets[j].name = ent->targets[i].name;
+			ent->targets[j].action = ent->targets[i].action;
+			j++;
+		}
 	}
-	ent->targets[ j ] = NULL;
+	ent->targets[ j ].name = NULL;
+	ent->targets[ j ].action = NULL;
 
 	// don't leave any "gaps" between multiple targetnames
 	j = 0;

@@ -1811,7 +1811,7 @@ void FindIntermissionPoint( void )
 		VectorCopy( ent->s.angles, level.intermission_angle );
 
 		// if it has a target, look towards it
-		if ( ent->targets[ 0 ] )
+		if ( ent->targets[ 0 ].name )
 		{
 			target = G_PickTargetFor( ent );
 

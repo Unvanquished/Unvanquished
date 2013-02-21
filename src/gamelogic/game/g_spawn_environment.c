@@ -402,7 +402,7 @@ void SP_env_portal_surface( gentity_t *ent )
 	ent->r.svFlags = SVF_PORTAL;
 	ent->s.eType = ET_PORTAL;
 
-	if ( !ent->targets[ 0 ] )
+	if ( !ent->targets[ 0 ].name )
 	{
 		VectorCopy( ent->s.origin, ent->s.origin2 );
 	}

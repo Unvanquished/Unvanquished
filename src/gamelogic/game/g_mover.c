@@ -2520,7 +2520,7 @@ void Think_SetupTrainTargets( gentity_t *ent )
 			start = path;
 		}
 
-		if ( !path->targets[ 0 ] )
+		if ( !path->targets[ 0 ].name )
 		{
 			G_Printf( "Train corner at %s without a target\n",
 			          vtos( path->s.origin ) );
@@ -2663,7 +2663,7 @@ void SP_func_train( gentity_t *self )
 		self->speed = 100;
 	}
 
-	if ( !self->targets[ 0 ] )
+	if ( !self->targets[ 0 ].name )
 	{
 		G_Printf( "func_train without a target at %s\n", vtos( self->r.absmin ) );
 		G_FreeEntity( self );
