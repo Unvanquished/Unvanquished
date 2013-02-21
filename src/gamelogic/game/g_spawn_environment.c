@@ -174,7 +174,7 @@ void env_rumble_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 
 void SP_env_rumble( gentity_t *self )
 {
-	if ( !self->targetnames[ 0 ] )
+	if ( !self->names[ 0 ] )
 	{
 		G_Printf( S_COLOR_YELLOW "WARNING: untargeted %s at %s\n", self->classname,
 		          vtos( self->s.origin ) );

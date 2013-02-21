@@ -922,7 +922,7 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
 	moverState_t groupState;
 
 	// if this is a non-client-usable door return
-	if ( ent->targetnames[ 0 ] && other && other->client )
+	if ( ent->names[ 0 ] && other && other->client )
 	{
 		return;
 	}
@@ -1739,7 +1739,7 @@ void SP_func_door( gentity_t *ent )
 		ent->takedamage = qtrue;
 	}
 
-	if ( ent->targetnames[ 0 ] || health )
+	if ( ent->names[ 0 ] || health )
 	{
 		// non touch/shoot doors
 		ent->think = Think_MatchGroup;
@@ -1879,7 +1879,7 @@ void SP_func_door_rotating( gentity_t *ent )
 		ent->takedamage = qtrue;
 	}
 
-	if ( ent->targetnames[ 0 ] || health )
+	if ( ent->names[ 0 ] || health )
 	{
 		// non touch/shoot doors
 		ent->think = Think_MatchGroup;
@@ -2053,7 +2053,7 @@ void SP_func_door_model( gentity_t *ent )
 		ent->takedamage = qtrue;
 	}
 
-	if ( !( ent->targetnames[ 0 ] || health ) )
+	if ( !( ent->names[ 0 ] || health ) )
 	{
 		ent->nextthink = level.time + FRAMETIME;
 		ent->think = Think_SpawnNewDoorTrigger;
@@ -2227,7 +2227,7 @@ void SP_func_plat( gentity_t *ent )
 	ent->parent = ent; // so it can be treated as a door
 
 	// spawn the trigger if one hasn't been custom made
-	if ( !ent->targetnames [ 0 ] )
+	if ( !ent->names [ 0 ] )
 	{
 		SpawnPlatTrigger( ent );
 	}
@@ -2569,7 +2569,7 @@ Setting the wait key to -1 will not make the train stop on the path corner, it w
 */
 void SP_path_corner( gentity_t *self )
 {
-	if (!self->targetnames[ 0 ])
+	if (!self->names[ 0 ])
 	{
 		G_Printf( "path_corner with no targetname at %s\n", vtos( self->s.origin ) );
 		G_FreeEntity( self );

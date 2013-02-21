@@ -495,10 +495,10 @@ void G_FindEntityGroups( void )
 				comparedEntity->flags |= FL_GROUPSLAVE;
 
 				// make sure that targets only point at the master
-				for (k = 0; comparedEntity->targetnames[k]; k++)
+				for (k = 0; comparedEntity->names[k]; k++)
 				{
-					masterEntity->targetnames[k] = comparedEntity->targetnames[k];
-					comparedEntity->targetnames[k] = NULL;
+					masterEntity->names[k] = comparedEntity->names[k];
+					comparedEntity->names[k] = NULL;
 				}
 			}
 		}

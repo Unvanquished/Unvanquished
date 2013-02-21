@@ -212,9 +212,9 @@ gentity_t *G_TargetFind(gentity_t *target, int *targetIndex, int *targetNameInde
 	{
 		for( target = &g_entities[ 0 ]; target < &g_entities[ level.num_entities ]; ++target )
 		{
-			for (*targetNameIndex = 0; target->targetnames[*targetNameIndex]; ++(*targetNameIndex))
+			for (*targetNameIndex = 0; target->names[*targetNameIndex]; ++(*targetNameIndex))
 			{
-				if (!Q_stricmp(self->targets[*targetIndex].name, target->targetnames[*targetNameIndex]))
+				if (!Q_stricmp(self->targets[*targetIndex].name, target->names[*targetNameIndex]))
 					return target;
 				cont: ;
 			}

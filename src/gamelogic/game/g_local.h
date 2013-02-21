@@ -64,7 +64,7 @@ typedef struct gclient_s gclient_t;
  * @see fields[] (where you should spawn additional ones)
  * @see G_SpawnGEntityFromSpawnVars()
  */
-#define MAX_TARGETNAMES   4
+#define MAX_ALIASES 	3
 
 #define N_( text )             text
 // FIXME: CLIENT PLURAL
@@ -147,6 +147,7 @@ struct gentity_s
 	const char   *classname;
 	int          spawnflags;
 
+	char         *names[ MAX_ALIASES + 1 ];
 	/*
 	 * is the entity considered active?
 	 * as in 'currently doing something'
@@ -163,7 +164,6 @@ struct gentity_s
 
 	// targeting
 	target_t     targets[ MAX_TARGETS + 1 ];
-	char         *targetnames[ MAX_TARGETNAMES + 1 ];
 	gentity_t    *activator;
 
 	// targeting-timing variables

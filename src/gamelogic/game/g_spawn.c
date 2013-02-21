@@ -114,6 +114,7 @@ typedef struct
 static const field_t fields[] =
 {
 	{ "acceleration",        FOFS( acceleration ),        F_VECTOR    },
+	{ "alias",               FOFS( names[ 2 ] ),          F_STRING    },
 	{ "alpha",               FOFS( pos1 ),                F_VECTOR    },
 	{ "angle",               FOFS( s.angles ),            F_YAW       },
 	{ "angles",              FOFS( s.angles ),            F_VECTOR    },
@@ -126,19 +127,17 @@ static const field_t fields[] =
 	{ "message",             FOFS( message ),             F_STRING    },
 	{ "model",               FOFS( model ),               F_STRING    },
 	{ "model2",              FOFS( model2 ),              F_STRING    },
+	{ "name",	        	 FOFS( names[ 0 ] ),          F_STRING	  },
 	{ "origin",              FOFS( s.origin ),            F_VECTOR    },
 	{ "radius",              FOFS( pos2 ),                F_VECTOR    },
 	{ "random",              FOFS( waitVariance ),        F_FLOAT,    ENT_V_TMPNAME, "waitVariance" },
 	{ "spawnflags",          FOFS( spawnflags ),          F_INT       },
 	{ "speed",               FOFS( speed ),               F_FLOAT     },
-	{ "target",				 FOFS( targets[ 0 ] ),		  F_TARGET	  },
-	{ "target2", 			 FOFS( targets[ 1 ] ),		  F_TARGET	  },
-	{ "target3",			 FOFS( targets[ 2 ] ),		  F_TARGET	  },
-	{ "target4",			 FOFS( targets[ 3 ] ),		  F_TARGET	  },
-	{ "targetname",			 FOFS( targetnames[ 0 ] ),	  F_STRING	  },
-	{ "targetname2",		 FOFS( targetnames[ 1 ] ),	  F_STRING	  },
-	{ "targetname3",		 FOFS( targetnames[ 2 ] ),	  F_STRING	  },
-	{ "targetname4",		 FOFS( targetnames[ 3 ] ),	  F_STRING	  },
+	{ "target",			     FOFS( targets[ 0 ] ),        F_TARGET	  },
+	{ "target2", 			 FOFS( targets[ 1 ] ),        F_TARGET	  },
+	{ "target3",			 FOFS( targets[ 2 ] ),        F_TARGET	  },
+	{ "target4",			 FOFS( targets[ 3 ] ),        F_TARGET	  },
+	{ "targetname",			 FOFS( names[ 1 ] ),          F_STRING,	  ENT_V_RENAMED, "name"},
 	{ "targetShaderName",    FOFS( targetShaderName ),    F_STRING    },
 	{ "targetShaderNewName", FOFS( targetShaderNewName ), F_STRING    },
 	{ "wait",                FOFS( wait ),                F_FLOAT     },
@@ -597,12 +596,12 @@ void G_SpawnGEntityFromSpawnVars( void )
 
 	// don't leave any "gaps" between multiple targetnames
 	j = 0;
-	for (i = 0; i < MAX_TARGETNAMES; ++i)
+	for (i = 0; i < MAX_ALIASES; ++i)
 	{
-		if (ent->targetnames[i])
-			ent->targetnames[j++] = ent->targetnames[i];
+		if (ent->names[i])
+			ent->names[j++] = ent->names[i];
 	}
-	ent->targetnames[ j ] = NULL;
+	ent->names[ j ] = NULL;
 
 	// if we didn't get a classname, don't bother spawning anything
 	if ( !G_CallSpawn( ent ) )
