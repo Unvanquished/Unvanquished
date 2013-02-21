@@ -99,7 +99,7 @@ static void CG_LoadCustomCrosshairs( void )
 	
 	if ( len == 0 || len >= sizeof( text ) - 1 )
 	{
-		CG_Printf( len == 0 ? "File %s is empty\n" : "File %s too long\n", cg_crosshairFile.string );
+		CG_Printf( len == 0 ? "File %s is empty\n" : "File %s is too long\n", cg_crosshairFile.string );
 		trap_FS_FCloseFile( f );
 		return;
 	}
@@ -113,6 +113,7 @@ static void CG_LoadCustomCrosshairs( void )
 	
 	while ( 1 )
 	{
+		qhandle_t shader;
 		token = COM_Parse2( &text_p );
 
 		if ( !*token )
@@ -120,7 +121,7 @@ static void CG_LoadCustomCrosshairs( void )
 			break;
 		}
 		
-		if ( weapon = BG_WeaponByName( token )->number )
+		if ( ( weapon = BG_WeaponByName( token )->number ) )
 		{
 			token = COM_Parse( &text_p );
 			
@@ -143,14 +144,14 @@ static void CG_LoadCustomCrosshairs( void )
 				break;
 			}
 			
-			len = trap_R_RegisterShader( token );
+			shader = trap_R_RegisterShader( token );
 			
-			if ( !len )
+			if ( !shader )
 			{
 				continue;
 			}
 			
-			cg_weapons[ weapon ].crossHair = len;
+			cg_weapons[ weapon ].crossHair = shader;
 			cg_weapons[ weapon ].crossHairSize = size;
 		}
 	}
