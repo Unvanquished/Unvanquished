@@ -75,6 +75,88 @@ void CG_RegisterUpgrade( int upgradeNum )
 }
 
 /*
+=======================
+CG_LoadCustomCrosshairs
+
+Load custom crosshairs specified by the user
+=======================
+*/
+
+static void CG_LoadCustomCrosshairs( void )
+{
+	char         *text_p, *token;
+	char         text[ 20000 ];
+	int          len, size;
+	fileHandle_t f;
+	weapon_t     weapon;
+	
+	len = trap_FS_FOpenFile( cg_crosshairFile.string, &f, FS_READ );
+	
+	if ( len < 0 )
+	{
+		return;
+	}
+	
+	if ( len == 0 || len >= sizeof( text ) - 1 )
+	{
+		CG_Printf( len == 0 ? "File %s is empty\n" : "File %s too long\n", cg_crosshairFile.string );
+		trap_FS_FCloseFile( f );
+		return;
+	}
+	
+	trap_FS_Read( text, len, f );
+	text[ len ] = 0;
+	trap_FS_FCloseFile( f );
+	
+	// parse the text
+	text_p = text;
+	
+	while ( 1 )
+	{
+		token = COM_Parse2( &text_p );
+
+		if ( !*token )
+		{
+			break;
+		}
+		
+		if ( weapon = BG_WeaponByName( token )->number )
+		{
+			token = COM_Parse( &text_p );
+			
+			if ( !*token )
+			{
+				break;
+			}
+			
+			size = atoi( token );
+			
+			if ( size < 0 )
+			{
+				size = 0;
+			}
+			
+			token = COM_Parse( &text_p );
+			
+			if ( !*token )
+			{
+				break;
+			}
+			
+			len = trap_R_RegisterShader( token );
+			
+			if ( !len )
+			{
+				continue;
+			}
+			
+			cg_weapons[ weapon ].crossHair = len;
+			cg_weapons[ weapon ].crossHairSize = size;
+		}
+	}
+}
+
+/*
 ===============
 CG_InitUpgrades
 
@@ -90,6 +172,11 @@ void CG_InitUpgrades( void )
 	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
 	{
 		CG_RegisterUpgrade( i );
+	}
+	
+	if ( cg_crosshairFile.string[0] )
+	{
+		CG_LoadCustomCrosshairs();
 	}
 }
 

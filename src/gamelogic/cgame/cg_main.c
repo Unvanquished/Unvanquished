@@ -135,6 +135,7 @@ vmCvar_t        cg_drawCrosshair;
 vmCvar_t        cg_drawCrosshairNames;
 vmCvar_t        cg_drawBuildableHealth;
 vmCvar_t        cg_crosshairSize;
+vmCvar_t        cg_crosshairFile;
 vmCvar_t        cg_draw2D;
 vmCvar_t        cg_animSpeed;
 vmCvar_t        cg_debugAnim;
@@ -295,6 +296,7 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_drawCrosshairNames,          "cg_drawCrosshairNames",          "1",            CVAR_ARCHIVE                 },
 	{ &cg_drawBuildableHealth,         "cg_drawBuildableHealth",         "1",            CVAR_ARCHIVE                 },
 	{ &cg_crosshairSize,               "cg_crosshairSize",               "1",            CVAR_ARCHIVE                 },
+	{ &cg_crosshairFile,               "cg_crosshairFile",               "",             CVAR_ARCHIVE                 },
 	{ &cg_addMarks,                    "cg_marks",                       "1",            CVAR_ARCHIVE                 },
 	{ &cg_lagometer,                   "cg_lagometer",                   "0",            CVAR_ARCHIVE                 },
 	{ &cg_drawSpeed,                   "cg_drawSpeed",                   "0",            CVAR_ARCHIVE                 },
