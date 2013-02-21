@@ -24,9 +24,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "g_local.h"
 #include "g_spawn.h"
 
-/*QUAKED target_print (1 0 0) (-8 -8 -8) (8 8 8) humanteam alienteam private
-"message" text to print
-If "private", only the activator gets the message.  If no checks, all clients get the message.
+/*
+=================================================================================
+
+target_print
+
+=================================================================================
 */
 void target_print_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
 {
@@ -63,8 +66,13 @@ void SP_target_print( gentity_t *ent )
 	ent->use = target_print_use;
 }
 
-//==========================================================
+/*
+=================================================================================
 
+target_teleporter
+
+=================================================================================
+*/
 void target_teleporter_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	gentity_t *dest;
@@ -85,9 +93,6 @@ void target_teleporter_use( gentity_t *self, gentity_t *other, gentity_t *activa
 	TeleportPlayer( activator, dest->s.origin, dest->s.angles, self->speed );
 }
 
-/*QUAKED target_teleporter (1 0 0) (-8 -8 -8) (8 8 8)
-The activator will be teleported away.
-*/
 void SP_target_teleporter( gentity_t *self )
 {
 	if ( !self->targetnames[ 0 ] )
@@ -101,10 +106,12 @@ void SP_target_teleporter( gentity_t *self )
 	self->use = target_teleporter_use;
 }
 
-//==========================================================
+/*
+=================================================================================
 
-/*QUAKED target_kill (.5 .5 .5) (-8 -8 -8) (8 8 8)
-Kills the activator.
+target_kill
+
+=================================================================================
 */
 void target_kill_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
@@ -121,31 +128,24 @@ void SP_target_kill( gentity_t *self )
 	self->use = target_kill_use;
 }
 
-/**
- * Warning: The following comment contains information, that might be parsed and used by radiant based mapeditors.
- */
-/*QUAKED target_position (0 .5 0) (-8 -8 -8) (8 8 8)
-Used as a positional target for in-game calculation.
-Other entities like light, misc_portal_camera and trigger_push (jump pads)
-might use it for aiming.
+/*
+=================================================================================
 
-targetname, targetname2, targetname3, targetname3: the names under which this position can be referenced
+target_position
 
--------- NOTES --------
-To make a jump pad, place this entity at the highest point of the jump and target it with a trigger_push entity.
+=================================================================================
 */
 void SP_target_position( gentity_t *self )
 {
 	G_SetOrigin( self, self->s.origin );
 }
 
-/*QUAKED target_location (0 0.5 0) (-8 -8 -8) (8 8 8)
-Set "message" to the name of this location.
-Set "count" to 0-7 for color.
-0:white 1:red 2:green 3:yellow 4:blue 5:cyan 6:magenta 7:white
+/*
+=================================================================================
 
-Closest target_location in sight used for the location, if none
-in site, closest in distance
+target_location
+
+=================================================================================
 */
 static int target_location_counter = 1;
 
@@ -192,9 +192,11 @@ void SP_target_location( gentity_t *self )
 }
 
 /*
-===============
-target_hurt_use
-===============
+=================================================================================
+
+target_hurt
+
+=================================================================================
 */
 void target_hurt_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
@@ -207,11 +209,6 @@ void target_hurt_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 	G_Damage( activator, self, self, NULL, NULL, self->damage, 0, MOD_TRIGGER_HURT );
 }
 
-/*
-===============
-SP_target_hurt
-===============
-*/
 void SP_target_hurt( gentity_t *self )
 {
 	if ( !self->targetnames[ 0 ] )
@@ -228,7 +225,14 @@ void SP_target_hurt( gentity_t *self )
 	self->use = target_hurt_use;
 }
 
-/* Init */
+/*
+=================================================================================
+
+init
+
+=================================================================================
+*/
+
 void SP_target_init( void )
 {
 	target_location_counter = 1;

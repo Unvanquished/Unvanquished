@@ -24,6 +24,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "g_local.h"
 #include "g_spawn.h"
 
+/*
+=================================================================================
+
+env_speaker
+
+=================================================================================
+*/
+
 void env_speaker_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
 {
 	if ( ent->spawnflags & 3 )
@@ -56,25 +64,6 @@ void env_speaker_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
 	}
 }
 
-/**
- * Warning: The following comment contains information, that might be parsed and used by radiant based mapeditors.
- */
-/*QUAKED target_speaker (0 .7 .7) (-8 -8 -8) (8 8 8) LOOPED_ON LOOPED_OFF GLOBAL ACTIVATOR
-Sound generating entity that plays .wav files. Normal non-looping sounds play each time the target_speaker is triggered. Looping sounds can be set to play by themselves (no activating trigger) or be toggled on/off by a trigger.
--------- KEYS --------
-noise: path/name of .wav file to play (eg. sound/world/growl1.wav - see Notes).
-wait: delay in seconds between each time the sound is played ("random" key must be set - see Notes).
-random: random time variance in seconds added or subtracted from "wait" delay ("wait" key must be set - see Notes).
-targetname, targetname2, targetname3, targetname3: the activating button or trigger points to one of these.
--------- SPAWNFLAGS --------
-LOOPED_ON: sound will loop and initially start on in level (will toggle on/off when triggered).
-LOOPED_OFF: sound will loop and initially start off in level (will toggle on/off when triggered).
-GLOBAL: sound will play full volume throughout the level.
-ACTIVATOR: sound will play only for the player that activated the target.
--------- NOTES --------
-The path portion value of the "noise" key can be replaced by the implicit folder character "*" for triggered sounds that belong to a particular player model. For example, if you want to create a "bottomless pit" in which the player screams and dies when he falls into, you would place a trigger_multiple over the floor of the pit and target a target_speaker with it. Then, you would set the "noise" key to "*falling1.wav". The * character means the current player model's sound folder. So if your current player model is Visor, * = sound/player/visor, if your current player model is Sarge, * = sound/player/sarge, etc. This cool feature provides an excellent way to create "player-specific" triggered sounds in your levels.
-The combination of the "wait" and "random" keys can be used to play non-looping sounds without requiring an activating trigger but both keys must be used together. The value of the "random" key is used to calculate a minimum and a maximum delay. The final time delay will be a random value anywhere between the minimum and maximum values: (min delay = wait - random) (max delay = wait + random).
-*/
 void SP_env_speaker( gentity_t *ent )
 {
 	char buffer[ MAX_QPATH ];
@@ -130,9 +119,11 @@ void SP_env_speaker( gentity_t *ent )
 }
 
 /*
-===============
-target_rumble_think
-===============
+=================================================================================
+
+env_rumble
+
+=================================================================================
 */
 void env_rumble_think( gentity_t *self )
 {
@@ -173,11 +164,6 @@ void env_rumble_think( gentity_t *self )
 	}
 }
 
-/*
-===============
-target_rumble_use
-===============
-*/
 void env_rumble_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	self->timestamp = level.time + ( self->count * FRAMETIME );
@@ -186,11 +172,6 @@ void env_rumble_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 	self->last_move_time = 0;
 }
 
-/*
-===============
-SP_target_rumble
-===============
-*/
 void SP_env_rumble( gentity_t *self )
 {
 	if ( !self->targetnames[ 0 ] )
@@ -229,13 +210,6 @@ void env_particle_system_toggle( gentity_t *self )
 	self->nextthink = 0;
 }
 
-/*
-===============
-SP_use_particle_system
-
-Use function for particle_system
-===============
-*/
 void env_particle_system_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	env_particle_system_toggle( self );
@@ -247,13 +221,6 @@ void env_particle_system_use( gentity_t *self, gentity_t *other, gentity_t *acti
 	}
 }
 
-/*
-===============
-SP_spawn_particle_system
-
-Spawn function for particle system
-===============
-*/
 void SP_env_particle_system( gentity_t *self )
 {
 	char *s;
@@ -277,11 +244,11 @@ void SP_env_particle_system( gentity_t *self )
 }
 
 /*
-===============
-SP_use_light_flare
+=================================================================================
 
-Use function for light flare
-===============
+env_lens_flare
+
+=================================================================================
 */
 void env_lens_flare_toggle( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
@@ -333,13 +300,6 @@ static void findEmptySpot( vec3_t origin, float radius, vec3_t spot )
 	VectorAdd( origin, total, spot );
 }
 
-/*
-===============
-SP_misc_light_flare
-
-Spawn function for light flare
-===============
-*/
 void SP_env_lens_flare( gentity_t *self )
 {
 	self->s.eType = ET_LIGHTFLARE;
@@ -367,8 +327,13 @@ void SP_env_lens_flare( gentity_t *self )
 	trap_LinkEntity( self );
 }
 
-//===========================================================
+/*
+=================================================================================
 
+env_portal_*
+
+=================================================================================
+*/
 void env_portal_locateCamera( gentity_t *ent )
 {
 	vec3_t    dir;
@@ -428,10 +393,6 @@ void env_portal_locateCamera( gentity_t *ent )
 	ent->s.eventParm = DirToByte( dir );
 }
 
-/*QUAKED misc_portal_surface (0 0 1) (-8 -8 -8) (8 8 8)
-The portal surface nearest this entity will show a view from the targeted misc_portal_camera, or a mirror view if untargeted.
-This must be within 64 world units of the surface!
-*/
 void SP_env_portal_surface( gentity_t *ent )
 {
 	VectorClear( ent->r.mins );
@@ -452,11 +413,6 @@ void SP_env_portal_surface( gentity_t *ent )
 	}
 }
 
-/*QUAKED misc_portal_camera (0 0 1) (-8 -8 -8) (8 8 8) slowrotate fastrotate noswing
-
-The target for a misc_portal_director.  You can set either angles or target another entity to determine the direction of view.
-"roll" an angle modifier to orient the camera around the target vector;
-*/
 void SP_env_portal_camera( gentity_t *ent )
 {
 	float roll;
@@ -471,11 +427,11 @@ void SP_env_portal_camera( gentity_t *ent )
 }
 
 /*
-===============
-SP_use_anim_model
+=================================================================================
 
-Use function for anim model
-===============
+env_animated_model
+
+=================================================================================
 */
 void env_animated_model( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
@@ -507,13 +463,6 @@ void env_animated_model( gentity_t *self, gentity_t *other, gentity_t *activator
 	}
 }
 
-/*
-===============
-SP_misc_anim_model
-
-Spawn function for anim model
-===============
-*/
 void SP_env_animated_model( gentity_t *self )
 {
 	self->s.misc = ( int ) self->animation[ 0 ];

@@ -24,6 +24,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "g_local.h"
 #include "g_spawn.h"
 
+
+/*
+=================================================================================
+
+flow_relay
+
+=================================================================================
+*/
+
 void flow_relay_think_ifDelayed( gentity_t *ent )
 {
 	G_UseTargets( ent, ent->activator );
@@ -69,19 +78,6 @@ void flow_relay_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 	}
 }
 
-/**
- * Warning: The following comment contains information, that might be parsed and used by radiant based mapeditors.
- */
-/*QUAKED target_relay (0 .7 .7) (-8 -8 -8) (8 8 8) HUMAN_ONLY ALIEN_ONLY RANDOM
-This can only be activated by other triggers which will cause it in turn to activate its own targets.
--------- KEYS --------
-targetname, targetname2, targetname3, targetname3: activating trigger points to one of these.
-target, target2, target3, target4: this points to entities to activate when this entity is triggered. RANDOM chooses whether all gets executed or one gets selected Randomly.
--------- SPAWNFLAGS --------
-HUMAN_ONLY: only human team players can activate trigger.
-ALIEN_ONLY: only alien team players can activate trigger.
-RANDOM: one one of the targeted entities will be triggered at random.
-*/
 void SP_flow_relay( gentity_t *self )
 {
 	if ( !self->wait ) {
@@ -97,6 +93,14 @@ void SP_flow_relay( gentity_t *self )
 
 	self->use = flow_relay_use;
 }
+
+/*
+=================================================================================
+
+flow_limited
+
+=================================================================================
+*/
 
 void flow_limited_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {

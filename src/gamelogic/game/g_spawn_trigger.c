@@ -98,10 +98,6 @@ void AimAtTarget( gentity_t *self )
 	self->s.origin2[ 2 ] = time * gravity;
 }
 
-/*QUAKED trigger_push (.5 .5 .5) ?
-Must point at a target_position, which will be the apex of the leap.
-This will be client side predicted, unlike target_push
-*/
 void SP_trigger_push( gentity_t *self )
 {
 	InitTrigger( self );
@@ -131,10 +127,6 @@ void target_push_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 	VectorCopy( self->s.origin2, activator->client->ps.velocity );
 }
 
-/*QUAKED target_push (.5 .5 .5) (-8 -8 -8) (8 8 8)
-Pushes the activator in the direction.of angle, or towards a target apex.
-"speed"   defaults to 1000
-*/
 void SP_target_push( gentity_t *self )
 {
 	if ( !self->speed )
@@ -201,24 +193,11 @@ void trigger_teleporter_touch( gentity_t *self, gentity_t *other, trace_t *trace
 	TeleportPlayer( other, dest->s.origin, dest->s.angles, self->speed );
 }
 
-/*
-===============
-trigger_teleport_use
-===============
-*/
 void trigger_teleporter_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
 {
 	ent->s.eFlags ^= EF_NODRAW;
 }
 
-/*QUAKED trigger_teleport (.5 .5 .5) ? SPECTATOR SPAWN_DISABLED
-Allows client side prediction of teleportation events.
-Must point at a target_position, which will be the teleport destination.
-
-If spectator is set, only spectators can use this teleport
-Spectator teleporters are not usually placed in the editor, but are created
-automatically near doors to allow spectators to move through them
-*/
 void SP_trigger_teleport( gentity_t *self )
 {
 	InitTrigger( self );
@@ -258,18 +237,6 @@ trigger_hurt
 ==============================================================================
 */
 
-/*QUAKED trigger_hurt (.5 .5 .5) ? START_OFF - SILENT NO_PROTECTION SLOW
-Any entity that touches this will be hurt.
-It does dmg points of damage each server frame
-Targeting the trigger will toggle its on / off state.
-
-SILENT      supresses playing the sound
-SLOW      changes the damage rate to once per second
-NO_PROTECTION *nothing* stops the damage
-
-"dmg"     default 5 (whole numbers only)
-
-*/
 void hurt_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	if ( self->r.linked )
@@ -349,9 +316,11 @@ void SP_trigger_hurt( gentity_t *self )
 }
 
 /*
-===============
-trigger_gravity_touch
-===============
+=================================================================================
+
+trigger_gravity
+
+=================================================================================
 */
 void trigger_gravity_touch( gentity_t *ent, gentity_t *other, trace_t *trace )
 {
@@ -364,11 +333,6 @@ void trigger_gravity_touch( gentity_t *ent, gentity_t *other, trace_t *trace )
 	other->client->ps.gravity = ent->triggerGravity;
 }
 
-/*
-===============
-trigger_gravity_use
-===============
-*/
 void trigger_gravity_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
 {
 	if ( ent->r.linked )
@@ -398,9 +362,11 @@ void SP_trigger_gravity( gentity_t *self )
 }
 
 /*
-===============
-trigger_heal_use
-===============
+=================================================================================
+
+trigger_heal
+
+=================================================================================
 */
 void trigger_heal_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
@@ -414,11 +380,6 @@ void trigger_heal_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 	}
 }
 
-/*
-===============
-trigger_heal_touch
-===============
-*/
 void trigger_heal_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 {
 	int max;
@@ -486,9 +447,11 @@ void SP_trigger_heal( gentity_t *self )
 }
 
 /*
-===============
-trigger_ammo_touch
-===============
+=================================================================================
+
+trigger_ammo
+
+=================================================================================
 */
 void trigger_ammo_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 {

@@ -134,13 +134,6 @@ void trigger_multiple_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 	trigger_multiple_trigger( self, other );
 }
 
-/*QUAKED trigger_multiple (.5 .5 .5) ?
-"wait" : Seconds between triggerings, 0.5 default, -1 = one time only.
-"random"  wait variance, default is 0
-Variable sized repeatable trigger.  Must be targeted at one or more entities.
-so, the basic time between firing is a random time between
-(wait - random) and (wait + random)
-*/
 void SP_trigger_multiple( gentity_t *ent )
 {
 	if (!ent->wait)
@@ -162,7 +155,7 @@ void SP_trigger_multiple( gentity_t *ent )
 /*
 ==============================================================================
 
-trigger_start
+sensor_start
 
 ==============================================================================
 */
@@ -173,14 +166,6 @@ void sensor_start_think( gentity_t *ent )
 	G_FreeEntity( ent );
 }
 
-/**
- * Warning: The following comment contains information, that might be parsed and used by radiant based mapeditors.
- */
-/*QUAKED trigger_always (.5 .5 .5) (-8 -8 -8) (8 8 8)
-Automatic trigger. It will fire the entities it targets as soon as it spawns in the game.
-
-target: this points to the entity to activate.
-*/
 void SP_sensor_start( gentity_t *ent )
 {
 	// we must have some delay to make sure our use targets are present
@@ -218,25 +203,6 @@ void sensor_timer_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 	sensor_timer_think( self );
 }
 
-/**
- * Warning: The following comment contains information, that might be parsed and used by radiant based mapeditors.
- */
-/*QUAKED trigger_timer (0 .5 .8) (-8 -8 -8) (8 8 8) START_ON
-Time delay trigger that will continuously fire its targets after a preset time delay. The time delay can also be randomized. When triggered, the timer will toggle on/off.
-Formerly known as func_timer.
-
-wait: delay in seconds between each triggering of its targets (default 1).
-random: random time variance in seconds added or subtracted from "wait" delay (default 0 - see Notes).
-target, target2, target3, target4: this points to the entities to trigger.
-targetname, targetname2, targetname3, targetname3: any triggering entity that targets one of these names will toggle the timer on/off when activated.
-
--------- SPAWNFLAGS --------
-START_ON: timer will start on in the game and continuously fire its targets.
-
--------- NOTES --------
-When the random key is set, its value is used to calculate a minimum and a maximum delay.
-The final time delay will be a random value anywhere between the minimum and maximum values: (min delay = wait - random) (max delay = wait + random).
-*/
 void SP_sensor_timer( gentity_t *self )
 {
 	if (!self->wait)
@@ -262,6 +228,14 @@ void SP_sensor_timer( gentity_t *self )
 
 	self->r.svFlags = SVF_NOCLIENT;
 }
+
+/*
+=================================================================================
+
+sensor_stage
+
+=================================================================================
+*/
 
 /*
 ===============
@@ -304,6 +278,14 @@ void SP_sensor_stage( gentity_t *self )
 	self->r.svFlags = SVF_NOCLIENT;
 }
 
+/*
+=================================================================================
+
+sensor_end
+
+=================================================================================
+*/
+
 void G_notify_sensor_end( team_t winningTeam )
 {
 	int       i;
@@ -340,10 +322,13 @@ void SP_sensor_end( gentity_t *self )
 }
 
 /*
-===============
-sensor_buildable_match
-===============
+=================================================================================
+
+sensor_touch
+
+=================================================================================
 */
+
 qboolean sensor_buildable_match( gentity_t *self, gentity_t *activator )
 {
 	int i = 0;
@@ -528,11 +513,6 @@ void SP_sensor_touch_compat( gentity_t *entity )
 	SP_sensor_touch( entity );
 }
 
-/*
-===============
-SP_sensor_touch
-===============
-*/
 void SP_sensor_touch( gentity_t *self )
 {
 	entity_ParseConditions( self );

@@ -24,13 +24,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "g_local.h"
 #include "g_spawn.h"
 
-//==========================================================
+/*
+=================================================================================
 
-/*QUAKED target_score (1 0 0) (-8 -8 -8) (8 8 8)
-"count" number of points to add, default 1
+game_score
 
-The activator is given this many points.
+=================================================================================
 */
+
 void game_score_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
 {
 	if ( !activator )
@@ -52,9 +53,11 @@ void SP_game_score( gentity_t *ent )
 }
 
 /*
-===============
-target_win_use
-===============
+=================================================================================
+
+game_end
+
+=================================================================================
 */
 void game_end_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
@@ -64,33 +67,18 @@ void game_end_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 	}
 }
 
-/*
-===============
-SP_target_alien_win
-===============
-*/
 void SP_target_alien_win( gentity_t *self )
 {
 	self->conditions.team = TEAM_ALIENS;
 	self->use = game_end_use;
 }
 
-/*
-===============
-SP_target_human_win
-===============
-*/
 void SP_target_human_win( gentity_t *self )
 {
 	self->conditions.team = TEAM_HUMANS;
 	self->use = game_end_use;
 }
 
-/*
-===============
-SP_target_win
-===============
-*/
 void SP_game_end( gentity_t *self )
 {
 	G_SpawnInt( "team", "0", ( int * ) &self->conditions.team );
