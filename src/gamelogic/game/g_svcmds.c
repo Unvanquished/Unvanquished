@@ -138,7 +138,15 @@ void  Svcmd_EntityList_f( void )
 
 		if ( check->classname )
 		{
-			G_Printf( "%s", check->classname );
+			G_Printf( "%-24s ", check->classname );
+			if ( check->names[0] )
+			{
+				G_Printf( "\"%s\"", check->names[0] );
+				if ( check->names[1] )
+				{
+					G_Printf( ", \"%s\"", check->names[1] );
+				}
+			}
 		}
 
 		G_Printf( "\n" );
