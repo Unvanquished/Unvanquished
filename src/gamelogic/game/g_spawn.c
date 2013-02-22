@@ -545,7 +545,7 @@ void G_ParseField( const char *key, const char *value, gentity_t *entity )
 	}
 
 	if ( resultingField->replacement && resultingField->versionState )
-		G_WarnAboutDeprecatedEntityField(entity, resultingField->replacement, key, resultingField->versionState );
+		G_WarnAboutDeprecatedEntityField(NULL, resultingField->replacement, key, resultingField->versionState );
 }
 
 /*
@@ -620,7 +620,7 @@ qboolean G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expect
 		if( typeOfDeprecation < ENT_V_TMPORARY
 		|| ( g_debugEntities.integer >= 1 && typeOfDeprecation >= ENT_V_TMPORARY) )
 		{
-			G_Printf( "^3WARNING: ^7deprecated entity fieldname ^5%s^7 in ^5%s^7 found — use ^5%s^7 instead\n", actualFieldname, entity->classname, expectedFieldname );
+			G_Printf( "^3WARNING: ^7deprecated entity fieldname ^5%s^7 in ^5%s^7 found — use ^5%s^7 instead\n", actualFieldname, entity ? entity->classname : "unknown class", expectedFieldname );
 		}
 	}
 
