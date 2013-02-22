@@ -277,14 +277,7 @@ void G_FireRandomTargetOf( gentity_t *entity, gentity_t *activator )
 	if (!selectedCall)
 		return;
 
-	if ( selectedCall->recipient->act )
-	{
-		selectedCall->recipient->act( selectedCall->target, selectedCall->recipient, entity, activator );
-	}
-	else if ( selectedCall->recipient->use )
-	{
-		selectedCall->recipient->use( selectedCall->recipient, entity, activator );
-	}
+	G_FireTarget( selectedCall->target, selectedCall->recipient, entity, activator );
 }
 
 /*
@@ -311,14 +304,7 @@ void G_FireAllTargetsOf( gentity_t *self, gentity_t *activator )
 
 	while( ( currentTarget = G_FindNextTarget( currentTarget, &targetIndex, &nameIndex, self ) ) != NULL )
 	{
-		if ( currentTarget->act )
-		{
-			currentTarget->act( &self->targets[ targetIndex ], currentTarget, self, activator );
-		}
-		else if ( currentTarget->use )
-		{
-			currentTarget->use( currentTarget, self, activator );
-		}
+		G_FireTarget( &self->targets[ targetIndex ], currentTarget, self, activator );
 
 		if ( !self->inuse )
 		{
@@ -327,6 +313,20 @@ void G_FireAllTargetsOf( gentity_t *self, gentity_t *activator )
 		}
 	}
 }
+
+void G_FireTarget( target_t *target, gentity_t *targetedEntity, gentity_t *other, gentity_t *activator )
+{
+	if ( targetedEntity->act )
+	{
+		targetedEntity->act( target, targetedEntity, other, activator );
+	}
+	//call use only as a means of backward compatibility for now, tuntil everything we need has an proper act function
+	else if ( targetedEntity->use )
+	{
+		targetedEntity->use( targetedEntity, other, activator );
+	}
+}
+
 /**
  * predefined field interpretations
  */
