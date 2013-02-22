@@ -234,20 +234,20 @@ Selects a random entity from among the targets
 
 gentity_t *G_PickRandomTargetFor( gentity_t *self )
 {
-	int       i, j;
+	int       targetIndex, nameIndex;
 	gentity_t *foundTarget = NULL;
 	int       totalChoiceCount = 0;
 	gentity_t *choices[ MAX_GENTITIES ];
 
 	//collects the targets
-	while( ( foundTarget = G_FindNextTarget( foundTarget, &i, &j, self ) ) != NULL )
+	while( ( foundTarget = G_FindNextTarget( foundTarget, &targetIndex, &nameIndex, self ) ) != NULL )
 		choices[ totalChoiceCount++ ] = foundTarget;
 
 	if ( !totalChoiceCount )
 	{
 		G_Printf( "G_PickTargetFor: none of the following targets were found:" );
-		for( i = 0; self->targets[ i ].name; ++i )
-		  G_Printf( "%s %s", ( i == 0 ? "" : "," ), self->targets[ i ].name );
+		for( targetIndex = 0; self->targets[ targetIndex ].name; ++targetIndex )
+		  G_Printf( "%s %s", ( targetIndex == 0 ? "" : "," ), self->targets[ targetIndex ].name );
 		G_Printf( "\n" );
 		return NULL;
 	}
@@ -262,7 +262,7 @@ void G_FireRandomTargetOf( gentity_t *entity, gentity_t *activator )
 	gentity_t *possbileTarget = NULL;
 	int       totalChoiceCount = 0;
 	gentityCall_t *choices[ MAX_GENTITIES ];
-	gentityCall_t *selection;
+	gentityCall_t *selectedCall;
 
 	//collects the targets
 	while( ( possbileTarget = G_FindNextTarget( possbileTarget, &targetIndex, &nameIndex, entity ) ) != NULL )
@@ -273,13 +273,17 @@ void G_FireRandomTargetOf( gentity_t *entity, gentity_t *activator )
 	}
 
 	//return a random one from among the choices
-	selection = choices[ rand() / ( RAND_MAX / totalChoiceCount + 1 ) ];
-	if (!selection)
+	selectedCall = choices[ rand() / ( RAND_MAX / totalChoiceCount + 1 ) ];
+	if (!selectedCall)
 		return;
 
-	if ( selection->recipient->use )
+	if ( selectedCall->recipient->act )
 	{
-		selection->recipient->use( selection->recipient, entity, activator );
+		selectedCall->recipient->act( selectedCall->target, selectedCall->recipient, entity, activator );
+	}
+	else if ( selectedCall->recipient->use )
+	{
+		selectedCall->recipient->use( selectedCall->recipient, entity, activator );
 	}
 }
 
@@ -307,7 +311,11 @@ void G_FireAllTargetsOf( gentity_t *self, gentity_t *activator )
 
 	while( ( currentTarget = G_FindNextTarget( currentTarget, &targetIndex, &nameIndex, self ) ) != NULL )
 	{
-		if ( currentTarget->use )
+		if ( currentTarget->act )
+		{
+			currentTarget->act( &self->targets[ targetIndex ], currentTarget, self, activator );
+		}
+		else if ( currentTarget->use )
 		{
 			currentTarget->use( currentTarget, self, activator );
 		}
