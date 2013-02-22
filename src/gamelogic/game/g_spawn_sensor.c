@@ -48,7 +48,7 @@ void sensor_toggle( gentity_t *self, gentity_t *other, gentity_t *activator  )
 //some old sensors/triggers used to propagate use-events, this is deprecated behavior
 void trigger_compat_propagation_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
-	G_UseAllTargetsOf( self, self );
+	G_FireAllTargetsOf( self, self );
 
 	if ( g_debugEntities.integer >= -1 ) //dont't warn about anything with -1 or lower
 	{
@@ -110,7 +110,7 @@ void trigger_multiple_trigger( gentity_t *ent, gentity_t *activator )
 		}
 	}
 
-	G_UseAllTargetsOf( ent, ent->activator );
+	G_FireAllTargetsOf( ent, ent->activator );
 	trigger_checkWaitForReactivation( ent );
 }
 
@@ -162,7 +162,7 @@ sensor_start
 
 void sensor_start_think( gentity_t *ent )
 {
-	G_UseAllTargetsOf( ent, ent );
+	G_FireAllTargetsOf( ent, ent );
 	G_FreeEntity( ent );
 }
 
@@ -183,7 +183,7 @@ timer
 
 void sensor_timer_think( gentity_t *self )
 {
-	G_UseAllTargetsOf( self, self->activator );
+	G_FireAllTargetsOf( self, self->activator );
 	// set time before next firing
 	entity_SetNextthink( self );
 }
@@ -260,7 +260,7 @@ void G_notify_sensor_stage( team_t team, stage_t stage )
 		{
 			if ( team == ent->conditions.team && stage == ent->conditions.stage )
 			{
-				G_UseAllTargetsOf( ent, ent );
+				G_FireAllTargetsOf( ent, ent );
 			}
 		}
 	}
@@ -302,7 +302,7 @@ void G_notify_sensor_end( team_t winningTeam )
 		{
 			if ( winningTeam == ent->conditions.team )
 			{
-				G_UseAllTargetsOf( ent, ent );
+				G_FireAllTargetsOf( ent, ent );
 			}
 		}
 	}
@@ -443,7 +443,7 @@ void sensor_buildable_trigger( gentity_t *self, gentity_t *activator )
 {
 	if( sensor_buildable_match( self, activator ) == !self->conditions.negated )
 	{
-		G_UseAllTargetsOf( self, activator );
+		G_FireAllTargetsOf( self, activator );
 		trigger_checkWaitForReactivation( self );
 	}
 }
@@ -468,7 +468,7 @@ void sensor_client_trigger( gentity_t *self, gentity_t *activator )
 
 	if( shouldFire == !self->conditions.negated )
 	{
-		G_UseAllTargetsOf( self, activator );
+		G_FireAllTargetsOf( self, activator );
 		trigger_checkWaitForReactivation( self );
 	}
 }

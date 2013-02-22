@@ -153,7 +153,7 @@ void Svcmd_EntityFire_f( void )
 	event = atoi( argument );
 
 	G_Printf( "firing %s/%-3i with %i event\n", selection->classname, entityId, event);
-	G_UseAllTargetsOf( selection, &g_entities[ ENTITYNUM_NONE ]);
+	G_FireAllTargetsOf( selection, &g_entities[ ENTITYNUM_NONE ]);
 
 }
 

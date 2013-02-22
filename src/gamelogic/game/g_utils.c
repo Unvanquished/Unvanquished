@@ -258,7 +258,7 @@ gentity_t *G_PickRandomTargetFor( gentity_t *self )
 
 /*
 ==============================
-G_UseTargets
+G_FireAllTargetsOf
 
 "activator" should be set to the entity that initiated the firing.
 
@@ -266,7 +266,7 @@ For all t in the entities, where t.targetnames[i] matches
 ent.targets[j] for any (i,j) pairs, call the t.use function.
 ==============================
 */
-void G_UseAllTargetsOf( gentity_t *self, gentity_t *activator )
+void G_FireAllTargetsOf( gentity_t *self, gentity_t *activator )
 {
 	gentity_t *currentTarget = NULL;
 	int targetIndex, nameIndex;
