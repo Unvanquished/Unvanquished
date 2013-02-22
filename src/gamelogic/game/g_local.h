@@ -903,9 +903,6 @@ int        G_ShaderIndex( const char *name );
 int        G_ModelIndex( const char *name );
 int        G_SoundIndex( const char *name );
 void       G_KillBox( gentity_t *ent );
-gentity_t  *G_Find( gentity_t *from, int fieldofs, const char *match );
-gentity_t  *G_FindNextTarget( gentity_t *targ, int *tIx, int *tnIx, gentity_t *self );
-gentity_t  *G_PickRandomTargetFor( gentity_t *self );
 void       G_FireAllTargetsOf( gentity_t *ent, gentity_t *activator );
 void       G_SetMovedir( vec3_t angles, vec3_t movedir );
 
@@ -917,6 +914,10 @@ void       G_FreeEntity( gentity_t *e );
 qboolean   G_EntitiesFree( void );
 char       *G_CopyString( const char *str );
 
+gentity_t  *G_Find( gentity_t *from, int fieldofs, const char *match );
+gentity_t  *G_FindNextTarget( gentity_t *targ, int *tIx, int *tnIx, gentity_t *self );
+gentity_t  *G_PickRandomTargetFor( gentity_t *self );
+void       G_FireRandomTargetsOf( gentity_t *self, gentity_t *activator );
 void       G_TouchTriggers( gentity_t *ent );
 
 char       *vtos( const vec3_t v );

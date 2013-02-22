@@ -256,6 +256,18 @@ gentity_t *G_PickRandomTargetFor( gentity_t *self )
 	return choices[ rand() / ( RAND_MAX / totalChoiceCount + 1 ) ];
 }
 
+void G_FireRandomTargetsOf( gentity_t *self, gentity_t *activator )
+{
+	const gentity_t *ent = G_PickRandomTargetFor( self );
+	if (!ent)
+		return;
+
+	if ( ent->use )
+	{
+		ent->use( ent, self, activator );
+	}
+}
+
 /*
 ==============================
 G_FireAllTargetsOf

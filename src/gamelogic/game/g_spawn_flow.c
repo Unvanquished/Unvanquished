@@ -54,15 +54,7 @@ void flow_relay_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 
 	if ( self->spawnflags & 4 )
 	{
-		gentity_t *ent;
-
-		ent = G_PickRandomTargetFor( self );
-
-		if ( ent && ent->use )
-		{
-			ent->use( ent, self, activator );
-		}
-
+		G_FireRandomTargetsOf( self, activator );
 		return;
 	}
 
