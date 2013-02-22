@@ -459,7 +459,7 @@ target_t G_NewTarget( const char *string )
 {
 	char *stringPointer;
 	int  i, stringLength;
-	target_t newTarget = { NULL, NULL, E_USE_DEFAULT };
+	target_t newTarget = { NULL, NULL, E_ACT_DEFAULT };
 
 	stringLength = strlen( string ) + 1;
 	if(stringLength == 1)
@@ -608,10 +608,23 @@ void G_SpawnGEntityFromSpawnVars( void )
 
 static targetAction_t targetActionFor( char* action )
 {
+	char *lcaseAction;
 	if(!action)
-		return E_USE_DEFAULT;
+		return E_ACT_DEFAULT;
 
-	return E_USE_CUSTOM;
+	lcaseAction = Q_strlwr(action);
+
+	//TODO replace this with a table as soon as it gets larger
+	if(!Q_stricmp(lcaseAction, "free"))
+		return E_ACT_FREE;
+
+	if(!Q_stricmp(lcaseAction, "reset"))
+		return E_ACT_RESET;
+
+	if(!Q_stricmp(lcaseAction, "toggle"))
+		return E_ACT_TOGGLE;
+
+	return E_ACT_CUSTOM;
 }
 
 void G_CleanUpSpawnedTargets( gentity_t *ent )
@@ -630,7 +643,7 @@ void G_CleanUpSpawnedTargets( gentity_t *ent )
 	}
 	ent->targets[ j ].name = NULL;
 	ent->targets[ j ].action = NULL;
-	ent->targets[ j ].actionType = E_USE_DEFAULT;
+	ent->targets[ j ].actionType = E_ACT_DEFAULT;
 }
 
 qboolean G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFieldname, const char *actualFieldname, const int typeOfDeprecation  )
