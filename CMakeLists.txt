@@ -691,7 +691,6 @@ set( CGAMEGPP_BASE
 set( CGAMEGPP_SO
   ${CGAMEGPP_BASE}
   ${GPP_DIR}/cgame/cg_api.c
-#   ${GPP_DIR}/cgame/cg_nav.c
   ${GPP_DIR}/cgame/cgame.def
 )
 
@@ -727,6 +726,10 @@ set( GAMEGPP_BASE
   ${GPP_DIR}/game/g_weapon.c
   ${GPP_DIR}/game/g_admin.c
   ${GPP_DIR}/game/g_namelog.c
+  ${GPP_DIR}/game/g_bot.c
+  ${GPP_DIR}/game/g_alienbot.c
+  ${GPP_DIR}/game/g_humanbot.c
+  ${GPP_DIR}/game/g_nav.c
   ${MOUNT_DIR}/engine/qcommon/q_math.c
   ${MOUNT_DIR}/engine/qcommon/q_shared.c
 )
@@ -734,10 +737,6 @@ set( GAMEGPP_BASE
 set( GAMEGPP_SO
   ${GAMEGPP_BASE}
   ${GPP_DIR}/game/g_api.c
-  ${GPP_DIR}/game/g_bot.c
-  ${GPP_DIR}/game/g_alienbot.c
-  ${GPP_DIR}/game/g_humanbot.c
-  ${GPP_DIR}/game/g_nav.c
   ${GPP_DIR}/game/game.def
 )
 
@@ -1237,9 +1236,8 @@ GAMELIB( LIB_NAME gppgame
   OUTPUT_DIR main
   COMPILE_DEF GAME GAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM
   LIB_FILES ${GAMEGPP_SO} ${GPP_DIR}
-# temporarily disabled due to build failure with bots code
-#  QVM_FILES ${GAMEGPP_BASE}
-#  QVM_ASM ${GAMEGPP_QVM}
+  QVM_FILES ${GAMEGPP_BASE}
+  QVM_ASM ${GAMEGPP_QVM}
 )
 
 GAMELIB( LIB_NAME gpptrem

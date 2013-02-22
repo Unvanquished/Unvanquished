@@ -127,7 +127,7 @@ qboolean BotPathIsWalkable( gentity_t *self, botTarget_t target )
 		return qfalse;
 	}
 
-	if ( trace.frac == FLT_MAX )
+	if ( trace.frac >= 1.0f )
 	{
 		return qtrue;
 	}
@@ -601,7 +601,7 @@ void BotDirectionToUsercmd( gentity_t *self, vec3_t dir, usercmd_t *cmd )
 	rightmove = 127 * DotProduct( right, dir );
 
 	// find optimal magnitude to make speed as high as possible
-	if ( fabsf( forwardmove ) > fabsf( rightmove ) )
+	if ( Q_fabs( forwardmove ) > Q_fabs( rightmove ) )
 	{
 		float highestforward = forwardmove < 0 ? -127 : 127;
 

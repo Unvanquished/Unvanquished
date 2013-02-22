@@ -75,7 +75,7 @@ enum navPolyAreas
 };
 
 //route status flags
-static const unsigned int ROUTE_FAILED = 1u << 31;
-static const unsigned int ROUTE_SUCCEED = 1u << 30;
-static const unsigned int ROUTE_PARTIAL = 1 << 6;
+#define ROUTE_FAILED  ( 1u << 31 )
+#define	ROUTE_SUCCEED ( 1u << 30 )
+#define	ROUTE_PARTIAL ( 1 << 6 )
 #endif

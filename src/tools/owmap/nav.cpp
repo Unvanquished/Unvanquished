@@ -23,7 +23,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 extern "C" {
 #include "q3map2.h"
-#include "../common/surfaceflags.h"
 }
 
 #include <vector>
@@ -178,6 +177,14 @@ static void AddTri(std::vector<float> &verts, std::vector<int> &tris, vec3_t v1,
 
 static void LoadBrushTris(std::vector<float> &verts, std::vector<int> &tris) {
 	int             j;
+
+	int solidFlags = 0;
+	int temp = 0;
+
+	ApplySurfaceParm( "default", &solidFlags, NULL, NULL );
+	ApplySurfaceParm( "playerclip", &temp, NULL, NULL );
+	solidFlags |= temp;
+
 	/* get model, index 0 is worldspawn entity */
 	bspModel_t *model = &bspModels[0];
 
@@ -187,7 +194,7 @@ static void LoadBrushTris(std::vector<float> &verts, std::vector<int> &tris) {
 		int firstSide = bspBrushes[i].firstSide;
 		bspShader_t *brushShader = &bspShaders[bspBrushes[i].shaderNum];
 
-		if(!(brushShader->contentFlags & (CONTENTS_SOLID | CONTENTS_PLAYERCLIP | CONTENTS_BODY | CONTENTS_BOTCLIP)))
+		if(!(brushShader->contentFlags & solidFlags))
 				continue;
 		/* walk the list of brush sides */
 		for(int p = 0; p < numSides; p++)
@@ -534,14 +541,62 @@ static void CM_SubdivideGridColumns( cGrid_t *grid )
 		// or subdivided farther, so don't advance i
 	}
 }
+
+static qboolean BoundsIntersect( const vec3_t mins, const vec3_t maxs, const vec3_t mins2, const vec3_t maxs2 )
+{
+	if ( maxs[ 0 ] < mins2[ 0 ] ||
+	     maxs[ 1 ] < mins2[ 1 ] || maxs[ 2 ] < mins2[ 2 ] || mins[ 0 ] > maxs2[ 0 ] || mins[ 1 ] > maxs2[ 1 ] || mins[ 2 ] > maxs2[ 2 ] )
+	{
+		return qfalse;
+	}
+
+	return qtrue;
+}
+
 static void LoadPatchTris(std::vector<float> &verts, std::vector<int> &tris) {
+	
+	vec3_t mins, maxs;
+	int solidFlags = 0;
+	int temp = 0;
+
+	ApplySurfaceParm( "default", &solidFlags, NULL, NULL );
+	ApplySurfaceParm( "playerclip", &temp, NULL, NULL );
+	solidFlags |= temp;
+
+	/* 
+		Patches are not used during the bsp building process where
+		the generated portals are flooded through from all entity positions
+		if even one entity reaches the void, the map will not be compiled
+		Therefore, we can assume that any patch which lies outside the collective
+		bounds of the brushes cannot be reached by entitys
+	*/
+
+	// calculate bounds of all verts
+	rcCalcBounds( &verts[ 0 ], verts.size() / 3, mins, maxs );
+
+	// convert from recast to quake3 coordinates
+	recast2quake( mins );
+	recast2quake( maxs );
+
+	vec3_t tmin, tmax;
+
+	// need to recalculate mins and maxs because they no longer represent 
+	// the minimum and maximum vector components respectively
+	ClearBounds( tmin, tmax );
+
+	AddPointToBounds( mins, tmin, tmax );
+	AddPointToBounds( maxs, tmin, tmax );
+
+	VectorCopy( tmin, mins );
+	VectorCopy( tmax, maxs );
+
 	/* get model, index 0 is worldspawn entity */
 	const bspModel_t *model = &bspModels[0];
 	for ( int k = model->firstBSPSurface, n = 0; n < model->numBSPSurfaces; k++,n++)
 	{
 		const bspDrawSurface_t *surface = &bspDrawSurfaces[k];
 
-		if ( !( bspShaders[surface->shaderNum].contentFlags & ( CONTENTS_SOLID | CONTENTS_PLAYERCLIP ) ) ) {
+		if ( !( bspShaders[surface->shaderNum].contentFlags & solidFlags ) ) {
 			continue;
 		}
 
@@ -561,9 +616,27 @@ static void LoadPatchTris(std::vector<float> &verts, std::vector<int> &tris) {
 		grid.wrapWidth = qfalse;
 
 		bspDrawVert_t *curveVerts = &bspDrawVerts[surface->firstVert];
+
+		// make sure the patch intersects the bounds of the brushes
+		ClearBounds( tmin, tmax );
+
 		for (int x = 0; x < grid.width; x++ )
 		{
-			for ( int y=0;y < grid.height;y++)
+			for (int y = 0; y < grid.height; y++)
+			{
+				AddPointToBounds( curveVerts[ y * grid.width + x ].xyz, tmin, tmax );
+			}
+		}
+
+		if (!BoundsIntersect( tmin, tmax, mins, maxs ))
+		{
+			// we can safely ignore this patch surface
+			continue;
+		}
+
+		for (int x = 0; x < grid.width; x++ )
+		{
+			for (int y = 0; y < grid.height; y++)
 			{
 				VectorCopy( curveVerts[ y * grid.width + x ].xyz, grid.points[ x ][ y ] );
 			}
@@ -850,7 +923,7 @@ static void rcFilterGaps(rcContext *ctx, int walkableRadius, int walkableClimb, 
 						bool freeSpace = false;
 						bool stop = false;
 
-						if ( dx >= w || dy >= h )
+						if ( dx < 0 || dy < 0 || dx >= w || dy >= h )
 						{
 							continue;
 						}
@@ -877,7 +950,7 @@ static void rcFilterGaps(rcContext *ctx, int walkableRadius, int walkableClimb, 
 								int nstop = (ns->next) ? (ns->next->smin) : MAX_HEIGHT;
 
 								//if there is a span within walkableClimb of the base span, we have reached the end of the gap (if any)
-								if(rcAbs(sbot - nsbot) <= walkableClimb) {
+								if(rcAbs(sbot - nsbot) <= walkableClimb && ns->area != RC_NULL_AREA) {
 									//set flag telling us to stop
 									stop = true;
 
@@ -1114,7 +1187,7 @@ static void BuildNavMesh( int characterNum )
 	cfg.mergeRegionArea = rcSqr( 50 );
 	cfg.maxVertsPerPoly = 6;
 	cfg.tileSize = ts;
-	cfg.borderSize = cfg.walkableRadius + 3;
+	cfg.borderSize = cfg.walkableRadius * 2;
 	cfg.width = cfg.tileSize + cfg.borderSize * 2;
 	cfg.height = cfg.tileSize + cfg.borderSize * 2;
 	cfg.detailSampleDist = cfg.cs * 6.0f;
@@ -1215,6 +1288,12 @@ extern "C" int NavMain(int argc, char **argv)
 	/* note it */
 	Sys_Printf("--- Nav ---\n");
 
+	if(argc < 2)
+	{
+		Sys_Printf("Usage: owmap -nav [-cellheight f] [-stepsize f] [-includecaulk] [-nogapfilter] <mapname>\n");
+		return 0;
+	}
+
 	/* process arguments */
 	for(i = 1; i < (argc - 1); i++)
 	{
@@ -1226,9 +1305,16 @@ extern "C" int NavMain(int argc, char **argv)
 					cellHeight = temp;
 				}
 			}
-
-		} else if (!Q_stricmp(argv[i], "-optimistic")){
-			stepSize = 20;
+		} else if (!Q_stricmp(argv[i], "-stepsize")) {
+			i++;
+			if(i<(argc - 1)) {
+				temp = atof(argv[i]);
+				if(temp > 0) {
+					stepSize = temp;
+				}
+			}
+		} else if(!Q_stricmp(argv[i], "-includecaulk")) {
+			excludeCaulk = qfalse;
 		} else if(!Q_stricmp(argv[i], "-nogapfilter")) {
 			filterGaps = qfalse;
 		} else {
@@ -1254,7 +1340,21 @@ extern "C" int NavMain(int argc, char **argv)
 	if(height / cellHeight > RC_SPAN_MAX_HEIGHT) {
 		Sys_Printf("WARNING: Map geometry is too tall for specified cell height. Increasing cell height to compensate. This may cause a less accurate navmesh.\n");
 		float prevCellHeight = cellHeight;
-		cellHeight = height / RC_SPAN_MAX_HEIGHT + 0.1;
+		float minCellHeight = height / RC_SPAN_MAX_HEIGHT;
+
+		int divisor = ( int ) stepSize;
+
+		while ( divisor && cellHeight < minCellHeight )
+		{
+			cellHeight = stepSize / divisor;
+			divisor--;
+		}
+
+		if ( !divisor )
+		{
+			Error( "ERROR: Map is too tall to generate a navigation mesh\n" );
+		}
+
 		Sys_Printf("Previous cellheight: %f\n", prevCellHeight);
 		Sys_Printf("New cellheight: %f\n", cellHeight);
 	}

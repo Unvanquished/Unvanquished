@@ -50,6 +50,13 @@ Behavior Tree
 =======================
 */
 
+static void BotInitNode( AINode_t type, AINodeRunner func, void *node )
+{
+	AIGenericNode_t *n = ( AIGenericNode_t * ) node;
+	n->type = type;
+	n->run = func;
+}
+
 #define allocNode( T ) ( T * ) BG_Alloc( sizeof( T ) );
 
 #define stringify( v ) va( #v " %d", v )
@@ -1219,6 +1226,113 @@ void BotSetTarget( botTarget_t *target, gentity_t *ent, vec3_t *pos )
 	}
 }
 
+qboolean BotTargetIsEntity( botTarget_t target )
+{
+	return ( target.ent && target.ent->inuse );
+}
+
+qboolean BotTargetIsPlayer( botTarget_t target )
+{
+	return ( target.ent && target.ent->inuse && target.ent->client );
+}
+
+int BotGetTargetEntityNumber( botTarget_t target )
+{
+	if ( BotTargetIsEntity( target ) )
+	{
+		return target.ent->s.number;
+	}
+	else
+	{
+		return ENTITYNUM_NONE;
+	}
+}
+
+void BotGetTargetPos( botTarget_t target, vec3_t rVec )
+{
+	if ( BotTargetIsEntity( target ) )
+	{
+		VectorCopy( target.ent->s.origin, rVec );
+	}
+	else
+	{
+		VectorCopy( target.coord, rVec );
+	}
+}
+
+team_t BotGetEntityTeam( gentity_t *ent )
+{
+	if ( !ent )
+	{
+		return TEAM_NONE;
+	}
+	if ( ent->client )
+	{
+		return ( team_t )ent->client->ps.stats[STAT_TEAM];
+	}
+	else if ( ent->s.eType == ET_BUILDABLE )
+	{
+		return ent->buildableTeam;
+	}
+	else
+	{
+		return TEAM_NONE;
+	}
+}
+
+team_t BotGetTargetTeam( botTarget_t target )
+{
+	if ( BotTargetIsEntity( target ) )
+	{
+		return BotGetEntityTeam( target.ent );
+	}
+	else
+	{
+		return TEAM_NONE;
+	}
+}
+
+int BotGetTargetType( botTarget_t target )
+{
+	if ( BotTargetIsEntity( target ) )
+	{
+		return target.ent->s.eType;
+	}
+	else
+	{
+		return -1;
+	}
+}
+
+qboolean BotChangeGoal( gentity_t *self, botTarget_t target )
+{
+	if ( !target.inuse )
+	{
+		return qfalse;
+	}
+
+	if ( FindRouteToTarget( self, target ) & ( ROUTE_PARTIAL | ROUTE_FAILED ) )
+	{
+		return qfalse;
+	}
+	self->botMind->goal = target;
+	return qtrue;
+}
+
+qboolean BotChangeGoalEntity( gentity_t *self, gentity_t *goal )
+{
+	botTarget_t target;
+	BotSetTarget( &target, goal, NULL );
+	return BotChangeGoal( self, target );
+}
+
+qboolean BotChangeGoalPos( gentity_t *self, vec3_t goal )
+{
+	botTarget_t target;
+	BotSetTarget( &target, NULL, ( vec3_t * ) &goal );
+	return BotChangeGoal( self, target );
+}
+
 qboolean BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 {
 	float range, secondaryRange;
@@ -1413,7 +1527,7 @@ void BotGetIdealAimLocation( gentity_t *self, botTarget_t target, vec3_t aimLoca
 
 int BotGetAimPredictionTime( gentity_t *self )
 {
-	return ( 10 - self->botMind->botSkill.level ) * 100 * ( ( ( float ) rand() ) / RAND_MAX );
+	return ( 10 - self->botMind->botSkill.level ) * 100 * MAX( ( ( float ) rand() ) / RAND_MAX, 0.5f );
 }
 
 void BotPredictPosition( gentity_t *self, gentity_t *predict, vec3_t pos, int time )
@@ -1429,18 +1543,16 @@ void BotAimAtEnemy( gentity_t *self )
 {
 	vec3_t desired;
 	vec3_t current;
-	vec3_t steer;
 	vec3_t viewOrigin;
 	vec3_t newAim;
 	vec3_t angles;
-	float length;
-	const float steerMag = 0.1f;
 	int i;
+	float frac;
 	gentity_t *enemy = self->botMind->goal.ent;
 
-	if ( self->botMind->futureAimTime <= level.time )
+	if ( self->botMind->futureAimTime < level.time )
 	{
-		int predictTime = BotGetAimPredictionTime( self );
+		int predictTime = self->botMind->futureAimTimeInterval = BotGetAimPredictionTime( self );
 		BotPredictPosition( self, enemy, self->botMind->futureAim, predictTime );
 		self->botMind->futureAimTime = level.time + predictTime;
 	}
@@ -1450,20 +1562,9 @@ void BotAimAtEnemy( gentity_t *self )
 	VectorNormalize( desired );
 	AngleVectors( self->client->ps.viewangles, current, NULL, NULL );
 
-	VectorSubtract( desired, current, steer );
+	frac = ( 1.0f - ( ( float ) ( self->botMind->futureAimTime - level.time ) ) / self->botMind->futureAimTimeInterval );
+	VectorLerp( current, desired, frac, newAim );
 
-	length = VectorNormalize( steer );
-
-	if ( length < steerMag )
-	{
-		VectorScale( steer, length, steer );
-	}
-	else
-	{
-		VectorScale( steer, steerMag, steer );
-	}
-
-	VectorAdd( current, steer, newAim );
 	VectorSet( self->client->ps.delta_angles, 0, 0, 0 );
 	vectoangles( newAim, angles );
 
@@ -2229,6 +2330,7 @@ qboolean G_BotAdd( char *name, team_t team, int skill, const char *behavior )
 	}
 
 	ClientBegin( clientNum );
+	bot->pain = BotPain; // ClientBegin resets the pain function
 	return qtrue;
 }
 
@@ -2859,7 +2961,7 @@ AINodeStatus_t BotConditionNode( gentity_t *self, AIGenericNode_t *node )
 			BotCompare( self->client->ps.stats[ STAT_TEAM ], con->param1.value.i, con->op, success );
 			break;
 		case CON_ENEMY:
-			if ( level.time - self->botMind->timeFoundEnemy <= g_bot_reactiontime.integer )
+			if ( level.time - self->botMind->timeFoundEnemy < g_bot_reactiontime.integer )
 			{
 				success = qfalse;
 			}

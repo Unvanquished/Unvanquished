@@ -66,8 +66,8 @@ float CalcAimPitch( gentity_t *self, botTarget_t target, vec_t launchSpeed )
 	}
 	
 	//calculate required angle of launch
-	angle1 = atan( ( Square( v ) + sqrt( check ) ) / ( g * x ) );
-	angle2 = atan( ( Square( v ) - sqrt( check ) ) / ( g * x ) );
+	angle1 = atanf( ( Square( v ) + sqrt( check ) ) / ( g * x ) );
+	angle2 = atanf( ( Square( v ) - sqrt( check ) ) / ( g * x ) );
 
 	//take the smaller angle
 	angle = ( angle1 < angle2 ) ? angle1 : angle2;
@@ -91,69 +91,6 @@ float CalcBarbAimPitch( gentity_t *self, botTarget_t target )
 
 	//in usrcmd angles, a positive angle is down, so multiply angle by -1
 	//botCmdBuffer->angles[PITCH] = ANGLE2SHORT(-angle);
-}
-qboolean G_RoomForClassChange( gentity_t *ent, class_t classt,
-                           vec3_t newOrigin )
-{
-	vec3_t    fromMins, fromMaxs;
-	vec3_t    toMins, toMaxs;
-	vec3_t    temp;
-	trace_t   tr;
-	float     nudgeHeight;
-	float     maxHorizGrowth;
-	class_t   oldClass = ( class_t )ent->client->ps.stats[ STAT_CLASS ];
-
-	BG_ClassBoundingBox( oldClass, fromMins, fromMaxs, NULL, NULL, NULL );
-	BG_ClassBoundingBox( classt, toMins, toMaxs, NULL, NULL, NULL );
-
-	VectorCopy( ent->s.origin, newOrigin );
-
-	// find max x/y diff
-	maxHorizGrowth = toMaxs[ 0 ] - fromMaxs[ 0 ];
-	if ( toMaxs[ 1 ] - fromMaxs[ 1 ] > maxHorizGrowth )
-	{
-		maxHorizGrowth = toMaxs[ 1 ] - fromMaxs[ 1 ];
-	}
-	if ( toMins[ 0 ] - fromMins[ 0 ] > -maxHorizGrowth )
-	{
-		maxHorizGrowth = -( toMins[ 0 ] - fromMins[ 0 ] );
-	}
-	if ( toMins[ 1 ] - fromMins[ 1 ] > -maxHorizGrowth )
-	{
-		maxHorizGrowth = -( toMins[ 1 ] - fromMins[ 1 ] );
-	}
-
-	if ( maxHorizGrowth > 0.0f )
-	{
-		// test by moving the player up the max required on a 60 degree slope
-		nudgeHeight = maxHorizGrowth * 2.0f;
-	}
-	else
-	{
-		// player is shrinking, so there's no need to nudge them upwards
-		nudgeHeight = 0.0f;
-	}
-
-	// find what the new origin would be on a level surface
-	newOrigin[ 2 ] -= toMins[ 2 ] - fromMins[ 2 ];
-
-	//compute a place up in the air to start the real trace
-	VectorCopy( newOrigin, temp );
-	temp[ 2 ] += nudgeHeight;
-	trap_Trace( &tr, newOrigin, toMins, toMaxs, temp, ent->s.number, MASK_PLAYERSOLID );
-
-	//trace down to the ground so that we can evolve on slopes
-	VectorCopy( newOrigin, temp );
-	temp[ 2 ] += ( nudgeHeight * tr.fraction );
-	trap_Trace( &tr, temp, toMins, toMaxs, newOrigin, ent->s.number, MASK_PLAYERSOLID );
-	VectorCopy( tr.endpos, newOrigin );
-
-	//make REALLY sure
-	trap_Trace( &tr, newOrigin, toMins, toMaxs, newOrigin,
-	            ent->s.number, MASK_PLAYERSOLID );
-
-	//check there is room to evolve
-	return ( !tr.startsolid && tr.fraction == 1.0f );
 }
 
 qboolean BotEvolveToClass( gentity_t *ent, class_t newClass )
