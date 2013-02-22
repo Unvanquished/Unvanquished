@@ -1802,7 +1802,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 		// fire the targets of the spawn point
 		if ( !spawn && spawnPoint )
 		{
-			G_UseTargets( spawnPoint, ent );
+			G_UseAllTargetsOf( spawnPoint, ent );
 		}
 
 		// select the highest weapon number available, after any

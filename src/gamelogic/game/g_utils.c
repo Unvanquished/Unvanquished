@@ -266,26 +266,26 @@ For all t in the entities, where t.targetnames[i] matches
 ent.targets[j] for any (i,j) pairs, call the t.use function.
 ==============================
 */
-void G_UseTargets( gentity_t *ent, gentity_t *activator )
+void G_UseAllTargetsOf( gentity_t *entity, gentity_t *activator )
 {
 	gentity_t *t = NULL;
 	int i, j;
 
-	if ( ent->targetShaderName && ent->targetShaderNewName )
+	if ( entity->targetShaderName && entity->targetShaderNewName )
 	{
 		float f = level.time * 0.001;
-		AddRemap( ent->targetShaderName, ent->targetShaderNewName, f );
+		AddRemap( entity->targetShaderName, entity->targetShaderNewName, f );
 		trap_SetConfigstring( CS_SHADERSTATE, BuildShaderStateConfig() );
 	}
 
-	while( ( t = G_TargetFind( t, &i, &j, ent ) ) != NULL )
+	while( ( t = G_TargetFind( t, &i, &j, entity ) ) != NULL )
 	{
 		if ( t->use )
 		{
-			t->use( t, ent, activator );
+			t->use( t, entity, activator );
 		}
 
-		if ( !ent->inuse )
+		if ( !entity->inuse )
 		{
 			G_Printf( "entity was removed while using targets\n" );
 			return;

@@ -35,7 +35,7 @@ flow_relay
 
 void flow_relay_think_ifDelayed( gentity_t *ent )
 {
-	G_UseTargets( ent, ent->activator );
+	G_UseAllTargetsOf( ent, ent->activator );
 }
 
 void flow_relay_use( gentity_t *self, gentity_t *other, gentity_t *activator )
@@ -68,7 +68,7 @@ void flow_relay_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 
 	if ( !self->wait && !self->waitVariance )
 	{
-		G_UseTargets( self, activator );
+		G_UseAllTargetsOf( self, activator );
 	}
 	else
 	{
@@ -104,7 +104,7 @@ flow_limited
 
 void flow_limited_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
-	G_UseTargets( self, activator );
+	G_UseAllTargetsOf( self, activator );
 
 	if ( self->count <= 1 )
 	{
