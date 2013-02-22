@@ -144,6 +144,23 @@ static const field_t fields[] =
 	{ "waitVariance",        FOFS( waitVariance ),        F_FLOAT     },
 };
 
+
+typedef struct
+{
+	const char *alias;
+	targetAction_t action;
+} entityActionDescription_t;
+
+
+static const entityActionDescription_t actionDescriptions[] =
+{
+		{ "free",   E_ACT_FREE   },
+		{ "off",    E_ACT_OFF    },
+		{ "on",     E_ACT_ON     },
+		{ "reset",  E_ACT_RESET  },
+		{ "toggle", E_ACT_TOGGLE },
+};
+
 typedef struct
 {
 	const char *name;
@@ -608,21 +625,16 @@ void G_SpawnGEntityFromSpawnVars( void )
 
 static targetAction_t targetActionFor( char* action )
 {
-	char *lcaseAction;
+	entityActionDescription_t *foundDescription;
+
 	if(!action)
 		return E_ACT_DEFAULT;
 
-	lcaseAction = Q_strlwr(action);
+	foundDescription = bsearch( Q_strlwr(action), actionDescriptions, ARRAY_LEN( actionDescriptions ),
+		             sizeof( entityActionDescription_t ), cmdcmp );
 
-	//TODO replace this with a table as soon as it gets larger
-	if(!Q_stricmp(lcaseAction, "free"))
-		return E_ACT_FREE;
-
-	if(!Q_stricmp(lcaseAction, "reset"))
-		return E_ACT_RESET;
-
-	if(!Q_stricmp(lcaseAction, "toggle"))
-		return E_ACT_TOGGLE;
+	if(!foundDescription && !foundDescription->alias)
+		return foundDescription->action;
 
 	return E_ACT_CUSTOM;
 }
