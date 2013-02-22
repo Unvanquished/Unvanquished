@@ -203,19 +203,19 @@ gentity_t *G_Find( gentity_t *from, int fieldofs, const char *match )
 	return NULL;
 }
 
-gentity_t *G_TargetFind(gentity_t *target, int *targetIndex, int *targetNameIndex, gentity_t *self)
+gentity_t *G_FindNextTarget(gentity_t *currentTarget, int *targetIndex, int *nameIndex, gentity_t *self)
 {
-	if (target)
+	if (currentTarget)
 		goto cont;
 
 	for (*targetIndex = 0; self->targets[*targetIndex].name; ++(*targetIndex))
 	{
-		for( target = &g_entities[ 0 ]; target < &g_entities[ level.num_entities ]; ++target )
+		for( currentTarget = &g_entities[ 0 ]; currentTarget < &g_entities[ level.num_entities ]; ++currentTarget )
 		{
-			for (*targetNameIndex = 0; target->names[*targetNameIndex]; ++(*targetNameIndex))
+			for (*nameIndex = 0; currentTarget->names[*nameIndex]; ++(*nameIndex))
 			{
-				if (!Q_stricmp(self->targets[*targetIndex].name, target->names[*targetNameIndex]))
-					return target;
+				if (!Q_stricmp(self->targets[*targetIndex].name, currentTarget->names[*nameIndex]))
+					return currentTarget;
 				cont: ;
 			}
 		}
@@ -240,7 +240,7 @@ gentity_t *G_PickRandomTargetFor( gentity_t *self )
 	gentity_t *choices[ MAX_GENTITIES ];
 
 	//collects the targets
-	while( ( foundTarget = G_TargetFind( foundTarget, &i, &j, self ) ) != NULL )
+	while( ( foundTarget = G_FindNextTarget( foundTarget, &i, &j, self ) ) != NULL )
 		choices[ totalChoiceCount++ ] = foundTarget;
 
 	if ( !totalChoiceCount )
@@ -266,26 +266,26 @@ For all t in the entities, where t.targetnames[i] matches
 ent.targets[j] for any (i,j) pairs, call the t.use function.
 ==============================
 */
-void G_UseAllTargetsOf( gentity_t *entity, gentity_t *activator )
+void G_UseAllTargetsOf( gentity_t *self, gentity_t *activator )
 {
-	gentity_t *t = NULL;
-	int i, j;
+	gentity_t *currentTarget = NULL;
+	int targetIndex, nameIndex;
 
-	if ( entity->targetShaderName && entity->targetShaderNewName )
+	if ( self->targetShaderName && self->targetShaderNewName )
 	{
 		float f = level.time * 0.001;
-		AddRemap( entity->targetShaderName, entity->targetShaderNewName, f );
+		AddRemap( self->targetShaderName, self->targetShaderNewName, f );
 		trap_SetConfigstring( CS_SHADERSTATE, BuildShaderStateConfig() );
 	}
 
-	while( ( t = G_TargetFind( t, &i, &j, entity ) ) != NULL )
+	while( ( currentTarget = G_FindNextTarget( currentTarget, &targetIndex, &nameIndex, self ) ) != NULL )
 	{
-		if ( t->use )
+		if ( currentTarget->use )
 		{
-			t->use( t, entity, activator );
+			currentTarget->use( currentTarget, self, activator );
 		}
 
-		if ( !entity->inuse )
+		if ( !self->inuse )
 		{
 			G_Printf( "entity was removed while using targets\n" );
 			return;

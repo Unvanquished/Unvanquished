@@ -1502,9 +1502,9 @@ Trip to skip the closest door targeted by trigger
 */
 void manualTriggerSpectator( gentity_t *trigger, gentity_t *player )
 {
-	gentity_t *t = NULL;
+	gentity_t *currentTarget = NULL;
 	gentity_t *targets[ MAX_GENTITIES ];
-	int       i = 0, j, k;
+	int       i = 0, targetIndex, nameIndex;
 	float     minDistance;
 
 	//restrict this hack to trigger_multiple only for now
@@ -1514,11 +1514,11 @@ void manualTriggerSpectator( gentity_t *trigger, gentity_t *player )
 	}
 
 	//create a list of door entities this trigger targets
-	while( ( t = G_TargetFind( t, &j, &k, trigger ) ) != NULL )
+	while( ( currentTarget = G_FindNextTarget( currentTarget, &targetIndex, &nameIndex, trigger ) ) != NULL )
 	{
-		if ( !strcmp( t->classname, "func_door" ) )
+		if ( !strcmp( currentTarget->classname, "func_door" ) )
 		{
-			targets[ i++ ] = t;
+			targets[ i++ ] = currentTarget;
 		}
 	}
 
@@ -1528,14 +1528,14 @@ void manualTriggerSpectator( gentity_t *trigger, gentity_t *player )
 		gentity_t *closest = NULL;
 
 		//pick the closest door
-		for ( j = 0; j < i; j++ )
+		for ( targetIndex = 0; targetIndex < i; targetIndex++ )
 		{
-			float d = DistanceSquared( player->r.currentOrigin, targets[ j ]->r.currentOrigin );
+			float d = DistanceSquared( player->r.currentOrigin, targets[ targetIndex ]->r.currentOrigin );
 
 			if ( closest == NULL || d < minDistance )
 			{
 				minDistance = d;
-				closest = targets[ j ];
+				closest = targets[ targetIndex ];
 			}
 		}
 
@@ -2500,9 +2500,9 @@ Link all the corners together
 void Think_SetupTrainTargets( gentity_t *ent )
 {
 	gentity_t *path, *next, *start;
-	int i, j;
+	int targetIndex, nameIndex;
 
-	ent->nextPathSegment = G_TargetFind( NULL, &i, &j, ent );
+	ent->nextPathSegment = G_FindNextTarget( NULL, &targetIndex, &nameIndex, ent );
 
 	if ( !ent->nextPathSegment )
 	{
@@ -2534,7 +2534,7 @@ void Think_SetupTrainTargets( gentity_t *ent )
 
 		do
 		{
-			next = G_TargetFind( next, &i, &j, path );
+			next = G_FindNextTarget( next, &targetIndex, &nameIndex, path );
 
 			if ( !next )
 			{
