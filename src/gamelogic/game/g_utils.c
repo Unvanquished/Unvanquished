@@ -256,15 +256,30 @@ gentity_t *G_PickRandomTargetFor( gentity_t *self )
 	return choices[ rand() / ( RAND_MAX / totalChoiceCount + 1 ) ];
 }
 
-void G_FireRandomTargetsOf( gentity_t *self, gentity_t *activator )
+void G_FireRandomTargetOf( gentity_t *entity, gentity_t *activator )
 {
-	const gentity_t *ent = G_PickRandomTargetFor( self );
-	if (!ent)
+	int       targetIndex, nameIndex;
+	gentity_t *possbileTarget = NULL;
+	int       totalChoiceCount = 0;
+	gentityCall_t *choices[ MAX_GENTITIES ];
+	gentityCall_t *selection;
+
+	//collects the targets
+	while( ( possbileTarget = G_FindNextTarget( possbileTarget, &targetIndex, &nameIndex, entity ) ) != NULL )
+	{
+		choices[ totalChoiceCount ]->recipient = possbileTarget;
+		choices[ totalChoiceCount ]->target = &entity->targets[targetIndex];
+		totalChoiceCount++;
+	}
+
+	//return a random one from among the choices
+	selection = choices[ rand() / ( RAND_MAX / totalChoiceCount + 1 ) ];
+	if (!selection)
 		return;
 
-	if ( ent->use )
+	if ( selection->recipient->use )
 	{
-		ent->use( ent, self, activator );
+		selection->recipient->use( selection->recipient, entity, activator );
 	}
 }
 

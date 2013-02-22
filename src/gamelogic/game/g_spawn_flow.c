@@ -54,7 +54,7 @@ void flow_relay_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 
 	if ( self->spawnflags & 4 )
 	{
-		G_FireRandomTargetsOf( self, activator );
+		G_FireRandomTargetOf( self, activator );
 		return;
 	}
 

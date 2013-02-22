@@ -316,6 +316,13 @@ struct gentity_s
 	int         usesBuildPointZone; // does it use a zone?
 };
 
+
+typedef struct
+{
+	target_t *target;
+	gentity_t *recipient;
+} gentityCall_t;
+
 typedef enum
 {
   CON_DISCONNECTED,
@@ -917,7 +924,7 @@ char       *G_CopyString( const char *str );
 gentity_t  *G_Find( gentity_t *from, int fieldofs, const char *match );
 gentity_t  *G_FindNextTarget( gentity_t *targ, int *tIx, int *tnIx, gentity_t *self );
 gentity_t  *G_PickRandomTargetFor( gentity_t *self );
-void       G_FireRandomTargetsOf( gentity_t *self, gentity_t *activator );
+void       G_FireRandomTargetOf( gentity_t *entity, gentity_t *activator );
 void       G_TouchTriggers( gentity_t *ent );
 
 char       *vtos( const vec3_t v );
