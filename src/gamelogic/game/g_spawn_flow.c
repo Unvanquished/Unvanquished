@@ -56,7 +56,7 @@ void flow_relay_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 	{
 		gentity_t *ent;
 
-		ent = G_PickTargetFor( self );
+		ent = G_PickRandomTargetFor( self );
 
 		if ( ent && ent->use )
 		{

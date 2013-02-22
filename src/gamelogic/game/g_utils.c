@@ -232,7 +232,7 @@ Selects a random entity from among the targets
 */
 #define MAXCHOICES 32
 
-gentity_t *G_PickTargetFor( gentity_t *self )
+gentity_t *G_PickRandomTargetFor( gentity_t *self )
 {
 	int       i, j;
 	gentity_t *foundTarget = NULL;

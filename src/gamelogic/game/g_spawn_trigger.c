@@ -69,7 +69,7 @@ void AimAtTarget( gentity_t *self )
 	VectorAdd( self->r.absmin, self->r.absmax, origin );
 	VectorScale( origin, 0.5, origin );
 
-	ent = G_PickTargetFor( self );
+	ent = G_PickRandomTargetFor( self );
 
 	if ( !ent )
 	{
@@ -182,7 +182,7 @@ void trigger_teleporter_touch( gentity_t *self, gentity_t *other, trace_t *trace
 		return;
 	}
 
-	dest = G_PickTargetFor( self );
+	dest = G_PickRandomTargetFor( self );
 
 	if ( !dest )
 	{

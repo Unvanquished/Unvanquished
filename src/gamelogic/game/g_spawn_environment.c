@@ -340,7 +340,7 @@ void env_portal_locateCamera( gentity_t *ent )
 	gentity_t *target;
 	gentity_t *owner;
 
-	owner = G_PickTargetFor( ent );
+	owner = G_PickRandomTargetFor( ent );
 
 	if ( !owner )
 	{
@@ -378,7 +378,7 @@ void env_portal_locateCamera( gentity_t *ent )
 	VectorCopy( owner->s.origin, ent->s.origin2 );
 
 	// see if the portal_camera has a target
-	target = G_PickTargetFor( owner );
+	target = G_PickRandomTargetFor( owner );
 
 	if ( target )
 	{

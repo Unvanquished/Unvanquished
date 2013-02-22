@@ -899,7 +899,7 @@ int        G_SoundIndex( const char *name );
 void       G_KillBox( gentity_t *ent );
 gentity_t  *G_Find( gentity_t *from, int fieldofs, const char *match );
 gentity_t  *G_TargetFind( gentity_t *targ, int *tIx, int *tnIx, gentity_t *self );
-gentity_t  *G_PickTargetFor( gentity_t *self );
+gentity_t  *G_PickRandomTargetFor( gentity_t *self );
 void       G_UseAllTargetsOf( gentity_t *ent, gentity_t *activator );
 void       G_SetMovedir( vec3_t angles, vec3_t movedir );
 

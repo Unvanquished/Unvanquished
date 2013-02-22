@@ -82,7 +82,7 @@ void target_teleporter_use( gentity_t *self, gentity_t *other, gentity_t *activa
 		return;
 	}
 
-	dest = G_PickTargetFor( self );
+	dest = G_PickRandomTargetFor( self );
 
 	if ( !dest )
 	{
