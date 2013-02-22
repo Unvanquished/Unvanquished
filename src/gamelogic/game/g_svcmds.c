@@ -25,6 +25,163 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "g_local.h"
 
+
+static void PrintEntityType( gentity_t *entity )
+{
+	if(!entity)
+		return;
+
+	switch ( entity->s.eType )
+	{
+		case ET_GENERAL:
+			G_Printf( "ET_GENERAL          " );
+			break;
+
+		case ET_PLAYER:
+			G_Printf( "ET_PLAYER           " );
+			break;
+
+		case ET_ITEM:
+			G_Printf( "ET_ITEM             " );
+			break;
+
+		case ET_BUILDABLE:
+			G_Printf( "ET_BUILDABLE        " );
+			break;
+
+		case ET_LOCATION:
+			G_Printf( "ET_LOCATION         " );
+			break;
+
+		case ET_MISSILE:
+			G_Printf( "ET_MISSILE          " );
+			break;
+
+		case ET_MOVER:
+			G_Printf( "ET_MOVER            " );
+			break;
+
+		case ET_BEAM:
+			G_Printf( "ET_BEAM             " );
+			break;
+
+		case ET_PORTAL:
+			G_Printf( "ET_PORTAL           " );
+			break;
+
+		case ET_SPEAKER:
+			G_Printf( "ET_SPEAKER          " );
+			break;
+
+		case ET_PUSH_TRIGGER:
+			G_Printf( "ET_PUSH_TRIGGER     " );
+			break;
+
+		case ET_TELEPORT_TRIGGER:
+			G_Printf( "ET_TELEPORT_TRIGGER " );
+			break;
+
+		case ET_INVISIBLE:
+			G_Printf( "ET_INVISIBLE        " );
+			break;
+
+		case ET_GRAPPLE:
+			G_Printf( "ET_GRAPPLE          " );
+			break;
+
+		case ET_CORPSE:
+			G_Printf( "ET_CORPSE           " );
+			break;
+
+		case ET_PARTICLE_SYSTEM:
+			G_Printf( "ET_PARTICLE_SYSTEM  " );
+			break;
+
+		case ET_ANIMMAPOBJ:
+			G_Printf( "ET_ANIMMAPOBJ       " );
+			break;
+
+		case ET_MODELDOOR:
+			G_Printf( "ET_MODELDOOR        " );
+			break;
+
+		case ET_LIGHTFLARE:
+			G_Printf( "ET_LIGHTFLARE       " );
+			break;
+
+		case ET_LEV2_ZAP_CHAIN:
+			G_Printf( "ET_LEV2_ZAP_CHAIN   " );
+			break;
+
+		default:
+			G_Printf( "%-3i                 ", entity->s.eType );
+			break;
+	}
+}
+
+/*
+===================
+Svcmd_EntityShow_f
+===================
+*/
+void Svcmd_EntityShow_f( void )
+{
+	int       i, entityId;
+	gentity_t *selection;
+	char argument[ 4 ];
+
+
+	if (trap_Argc() != 2)
+	{
+		G_Printf("usage: entityShow <entityId>\n");
+		return;
+	}
+
+	trap_Argv( 1, argument, sizeof( argument ) );
+	entityId = atoi( argument );
+
+	if (entityId >= level.num_entities || entityId < MAX_CLIENTS)
+	{
+		G_Printf("entityId %d is out of range\n", entityId);
+		return;
+	}
+
+	selection = &g_entities[entityId];
+
+	if (!selection || !selection->inuse)
+	{
+		G_Printf("entity slot %d is unused/free\n", entityId);
+		return;
+	}
+
+	G_Printf( "------------------------\n" );
+	G_Printf( "%3i:", entityId );
+	PrintEntityType( selection );
+	G_Printf( "\n------------------------\n" );
+	G_Printf( "Classname: %s\n", selection->classname );
+	G_Printf( "Capabilities: %s%s%s\n", selection->think ? "thinks " : "", selection->touch ? "touchable " : "", selection->use ? "useable " : "");
+
+	if (selection->names[0])
+	{
+		G_Printf( "Name:");
+		for( i = 0; selection->names[ i ]; ++i )
+			G_Printf("%s %s", ( i == 0 ? "" : "," ), selection->names[i]);
+		G_Printf( "\n" );
+	}
+
+	if (selection->groupName)
+	{
+		G_Printf("Member of Group: %s %s\n", selection->groupName, !selection->groupMaster ? "[master]" : "");
+	}
+
+	if(selection->targets[0].name)
+	{
+		G_Printf( "Targets:\n");
+		for( i = 0; selection->targets[ i ].name; ++i )
+			G_Printf( " ⇨ %s :%s\n", selection->targets[ i ].name, selection->targets[ i ].action ? selection->targets[ i ].action : "default" );
+	}
+}
+
 /*
 ===================
 Svcmd_EntityList_f
@@ -32,13 +189,13 @@ Svcmd_EntityList_f
 */
 void  Svcmd_EntityList_f( void )
 {
-	int       e;
+	int       entity;
 	int currentEntityCount;
 	gentity_t *check;
 
 	check = g_entities;
 
-	for ( e = 0, currentEntityCount = 0; e < level.num_entities; e++, check++ )
+	for ( entity = 0, currentEntityCount = 0; entity < level.num_entities; entity++, check++ )
 	{
 		if ( !check->inuse )
 		{
@@ -47,94 +204,8 @@ void  Svcmd_EntityList_f( void )
 
 		currentEntityCount++;
 
-		G_Printf( "%3i:", e );
-
-		switch ( check->s.eType )
-		{
-			case ET_GENERAL:
-				G_Printf( "ET_GENERAL          " );
-				break;
-
-			case ET_PLAYER:
-				G_Printf( "ET_PLAYER           " );
-				break;
-
-			case ET_ITEM:
-				G_Printf( "ET_ITEM             " );
-				break;
-
-			case ET_BUILDABLE:
-				G_Printf( "ET_BUILDABLE        " );
-				break;
-
-			case ET_LOCATION:
-				G_Printf( "ET_LOCATION         " );
-				break;
-
-			case ET_MISSILE:
-				G_Printf( "ET_MISSILE          " );
-				break;
-
-			case ET_MOVER:
-				G_Printf( "ET_MOVER            " );
-				break;
-
-			case ET_BEAM:
-				G_Printf( "ET_BEAM             " );
-				break;
-
-			case ET_PORTAL:
-				G_Printf( "ET_PORTAL           " );
-				break;
-
-			case ET_SPEAKER:
-				G_Printf( "ET_SPEAKER          " );
-				break;
-
-			case ET_PUSH_TRIGGER:
-				G_Printf( "ET_PUSH_TRIGGER     " );
-				break;
-
-			case ET_TELEPORT_TRIGGER:
-				G_Printf( "ET_TELEPORT_TRIGGER " );
-				break;
-
-			case ET_INVISIBLE:
-				G_Printf( "ET_INVISIBLE        " );
-				break;
-
-			case ET_GRAPPLE:
-				G_Printf( "ET_GRAPPLE          " );
-				break;
-
-			case ET_CORPSE:
-				G_Printf( "ET_CORPSE           " );
-				break;
-
-			case ET_PARTICLE_SYSTEM:
-				G_Printf( "ET_PARTICLE_SYSTEM  " );
-				break;
-
-			case ET_ANIMMAPOBJ:
-				G_Printf( "ET_ANIMMAPOBJ       " );
-				break;
-
-			case ET_MODELDOOR:
-				G_Printf( "ET_MODELDOOR        " );
-				break;
-
-			case ET_LIGHTFLARE:
-				G_Printf( "ET_LIGHTFLARE       " );
-				break;
-
-			case ET_LEV2_ZAP_CHAIN:
-				G_Printf( "ET_LEV2_ZAP_CHAIN   " );
-				break;
-
-			default:
-				G_Printf( "%-3i                 ", check->s.eType );
-				break;
-		}
+		G_Printf( "%3i:", entity );
+		PrintEntityType( check );
 
 		if ( check->classname )
 		{
@@ -624,6 +695,7 @@ static const struct svcmd
 	{ "dumpuser",           qfalse, Svcmd_DumpUser_f             },
 	{ "eject",              qfalse, Svcmd_EjectClient_f          },
 	{ "entityList",         qfalse, Svcmd_EntityList_f           },
+	{ "entityShow",         qfalse, Svcmd_EntityShow_f           },
 	{ "evacuation",         qfalse, Svcmd_Evacuation_f           },
 	{ "forceTeam",          qfalse, Svcmd_ForceTeam_f            },
 	{ "game_memory",        qfalse, BG_MemoryInfo                },
