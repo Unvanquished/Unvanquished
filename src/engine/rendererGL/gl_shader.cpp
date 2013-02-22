@@ -698,75 +698,7 @@ std::string     GLShader::BuildGPUShaderText( const char *mainShaderName,
 		}
 #endif
 
-#if 0
-
-		if ( optimize )
-		{
-			static char         msgPart[ 1024 ];
-			int                 length = 0;
-			int                 i;
-
-			glslopt_shader_type glsloptShaderType;
-
-			if ( shaderType == GL_FRAGMENT_SHADER )
-			{
-				glsloptShaderType = kGlslOptShaderFragment;
-			}
-			else
-			{
-				glsloptShaderType = kGlslOptShaderVertex;
-			}
-
-			glslopt_shader *shaderOptimized = glslopt_optimize( s_glslOptimizer,
-			                                  glsloptShaderType, bufferFinal, 0 );
-
-			if ( glslopt_get_status( shaderOptimized ) )
-			{
-				const char *newSource = glslopt_get_output( shaderOptimized );
-
-				ri.Printf( PRINT_DEVELOPER, "----------------------------------------------------------\n" );
-				ri.Printf( PRINT_DEVELOPER, "OPTIMIZED shader '%s' ----------\n", filename );
-				ri.Printf( PRINT_DEVELOPER, " BEGIN ---------------------------------------------------\n" );
-
-				length = strlen( newSource );
-
-				for ( i = 0; i < length; i += 1024 )
-				{
-					Q_strncpyz( msgPart, newSource + i, sizeof( msgPart ) );
-					ri.Printf( PRINT_WARNING, "%s", msgPart );
-				}
-
-				ri.Printf( PRINT_DEVELOPER, " END-- ---------------------------------------------------\n" );
-				shaderText = std::string( newSource, length );
-			}
-			else
-			{
-				const char *errorLog = glslopt_get_log( shaderOptimized );
-
-				//ri.Printf(PRINT_WARNING, "Couldn't optimize '%s'\n", filename);
-
-				length = strlen( errorLog );
-
-				for ( i = 0; i < length; i += 1024 )
-				{
-					Q_strncpyz( msgPart, errorLog + i, sizeof( msgPart ) );
-					ri.Printf( PRINT_ALL, "%s", msgPart );
-				}
-
-				ri.Printf( PRINT_ALL, "^1Couldn't optimize %s\n", filename );
-				shaderText = std::string( bufferFinal, sizeFinal );
-			}
-
-			glslopt_shader_delete( shaderOptimized );
-		}
-		else
-		{
-			shaderText = std::string( bufferFinal, sizeFinal );
-		}
-
-#else
 		shaderText = std::string( bufferFinal, sizeFinal );
-#endif
 
 		ri.Hunk_FreeTempMemory( bufferFinal );
 	}
@@ -1031,7 +963,12 @@ void GLShader::CompileAndLinkGPUShaderProgram( shaderProgram_t *program,
 		fragmentHeader += "#define gl_FragColor out_Color\n";
 
 		vertexHeader += "#define textureCube texture\n";
+		vertexHeader += "#define texture2D texture\n";
+		vertexHeader += "#define texture2DProj textureProj\n";
+
 		fragmentHeader += "#define textureCube texture\n";
+		fragmentHeader += "#define texture2D texture\n";
+		fragmentHeader += "#define texture2DProj textureProj\n";
 	}
 	else
 	{
@@ -1169,6 +1106,11 @@ void GLShader::CompileGPUShader( GLuint program, const char *programName, const 
 	{
 		PrintShaderSource( shader );
 		PrintInfoLog( shader, qfalse );
+#ifdef NDEBUG
+		// In a release build, GLSL shader compiliation usually means that the hardware does
+		// not support GLSL shaders and should rely on vanilla instead. 
+		ri.Cvar_Set( "cl_renderer", "GL" );		
+#endif
 		ri.Error( ERR_DROP, "Couldn't compile %s %s", ( shaderType == GL_VERTEX_SHADER ? "vertex shader" : "fragment shader" ), programName );
 	}
 
@@ -1224,33 +1166,40 @@ void GLShader::PrintInfoLog( GLuint object, bool developerOnly ) const
 	int         maxLength = 0;
 	int         i;
 
-	glGetShaderiv( object, GL_INFO_LOG_LENGTH, &maxLength );
+	printParm_t print = ( developerOnly ) ? PRINT_DEVELOPER : PRINT_ALL;
 
-	msg = ( char * ) ri.Hunk_AllocateTempMemory( maxLength );
-
-	glGetShaderInfoLog( object, maxLength, &maxLength, msg );
-
-	if ( developerOnly )
+	if ( glIsShader( object ) )
 	{
-		ri.Printf( PRINT_DEVELOPER, "compile log:\n" );
+		glGetShaderiv( object, GL_INFO_LOG_LENGTH, &maxLength );
+	}
+	else if ( glIsProgram( object ) )
+	{
+		glGetProgramiv( object, GL_INFO_LOG_LENGTH, &maxLength );
 	}
 	else
 	{
-		ri.Printf( PRINT_ALL, "compile log:\n" );
+		ri.Printf( print, "object is not a shader or program\n" );
+		return;
+	}
+
+	msg = ( char * ) ri.Hunk_AllocateTempMemory( maxLength );
+
+	if ( glIsShader( object ) )
+	{
+		glGetShaderInfoLog( object, maxLength, &maxLength, msg );
+		ri.Printf( print, "compile log:\n" );
+	}
+	else if ( glIsProgram( object ) )
+	{
+		glGetProgramInfoLog( object, maxLength, &maxLength, msg );
+		ri.Printf( print, "link log:\n" );
 	}
 
 	for ( i = 0; i < maxLength; i += 1024 )
 	{
 		Q_strncpyz( msgPart, msg + i, sizeof( msgPart ) );
 
-		if ( developerOnly )
-		{
-			ri.Printf( PRINT_DEVELOPER, "%s\n", msgPart );
-		}
-		else
-		{
-			ri.Printf( PRINT_ALL, "%s\n", msgPart );
-		}
+		ri.Printf( print, "%s\n", msgPart );
 	}
 
 	ri.Hunk_FreeTempMemory( msg );
