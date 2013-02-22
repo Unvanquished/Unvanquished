@@ -378,9 +378,16 @@ qboolean G_CallSpawn( gentity_t *ent )
 
 		/*
 		 *  to allow each spawn function to test and handle for itself,
-		 *  we handle it automatically *after* the spawn (but before it's use)
+		 *  we handle it automatically *after* the spawn (but before it's use/reset)
 		 */
-		return G_HandleEntityVersions( s, ent );
+		if(!G_HandleEntityVersions( s, ent ))
+			return qfalse;
+
+		//initial set
+		if(ent->reset)
+			ent->reset( ent );
+
+		return qtrue;
 	}
 
 	//don't even warn about spawning-errors with -2 (maps might still work at least partly if we ignore these willingly)

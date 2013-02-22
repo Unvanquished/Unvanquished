@@ -242,6 +242,7 @@ struct gentity_s
 
 	int       nextthink;
 	void ( *think )( gentity_t *self );
+	void ( *reset )( gentity_t *self );
 	void ( *reached )( gentity_t *self );       // movers call this when hitting endpoint
 	void ( *blocked )( gentity_t *self, gentity_t *other );
 	void ( *touch )( gentity_t *self, gentity_t *other, trace_t *trace );
