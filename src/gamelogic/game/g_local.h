@@ -1125,6 +1125,8 @@ extern  vmCvar_t pmove_fixed;
 extern  vmCvar_t pmove_msec;
 extern  vmCvar_t pmove_accurate;
 
+extern  vmCvar_t g_initialMineRate;
+extern  vmCvar_t g_mineRateHalfLife;
 extern  vmCvar_t g_humanStage;
 extern  vmCvar_t g_humanCredits;
 extern  vmCvar_t g_humanMaxStage;
