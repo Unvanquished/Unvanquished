@@ -452,7 +452,7 @@ target_t G_NewTarget( const char *string )
 {
 	char *stringPointer;
 	int  i, stringLength;
-	target_t newTarget = { NULL, NULL };
+	target_t newTarget = { NULL, NULL, E_USE_DEFAULT };
 
 	stringLength = strlen( string ) + 1;
 	if(stringLength == 1)
@@ -581,20 +581,9 @@ void G_SpawnGEntityFromSpawnVars( void )
 	VectorCopy( ent->s.origin, ent->s.pos.trBase );
 	VectorCopy( ent->s.origin, ent->r.currentOrigin );
 
-	// don't leave any "gaps" between multiple targets
-	j = 0;
-	for (i = 0; i < MAX_TARGETS; ++i)
-	{
-		if (ent->targets[i].name) {
-			ent->targets[j].name = ent->targets[i].name;
-			ent->targets[j].action = ent->targets[i].action;
-			j++;
-		}
-	}
-	ent->targets[ j ].name = NULL;
-	ent->targets[ j ].action = NULL;
+	G_CleanUpSpawnedTargets( ent );
 
-	// don't leave any "gaps" between multiple targetnames
+	// don't leave any "gaps" between multiple names
 	j = 0;
 	for (i = 0; i < MAX_ALIASES; ++i)
 	{
@@ -608,6 +597,33 @@ void G_SpawnGEntityFromSpawnVars( void )
 	{
 		G_FreeEntity( ent );
 	}
+}
+
+static targetAction_t targetActionFor( char* action )
+{
+	if(!action)
+		return E_USE_DEFAULT;
+
+	return E_USE_CUSTOM;
+}
+
+void G_CleanUpSpawnedTargets( gentity_t *ent )
+{
+	int i, j;
+	// don't leave any "gaps" between multiple targets
+	j = 0;
+	for (i = 0; i < MAX_TARGETS; ++i)
+	{
+		if (ent->targets[i].name) {
+			ent->targets[j].name = ent->targets[i].name;
+			ent->targets[j].action = ent->targets[i].action;
+			ent->targets[j].actionType = targetActionFor(ent->targets[i].action);
+			j++;
+		}
+	}
+	ent->targets[ j ].name = NULL;
+	ent->targets[ j ].action = NULL;
+	ent->targets[ j ].actionType = E_USE_DEFAULT;
 }
 
 qboolean G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFieldname, const char *actualFieldname, const int typeOfDeprecation  )

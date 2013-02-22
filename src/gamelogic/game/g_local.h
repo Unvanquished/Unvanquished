@@ -118,11 +118,17 @@ typedef struct
 	qboolean negated;
 } gentityConditions_t;
 
+typedef enum
+{
+	E_USE_DEFAULT,
+	E_USE_CUSTOM
+} targetAction_t;
 
 typedef struct
 {
 	char  *name;
 	char  *action;
+	targetAction_t actionType;
 } target_t;
 
 struct gentity_s
@@ -774,6 +780,7 @@ qboolean G_SpawnFloat( const char *key, const char *defaultString, float *out );
 qboolean G_SpawnInt( const char *key, const char *defaultString, int *out );
 qboolean G_SpawnVector( const char *key, const char *defaultString, float *out );
 void     G_SpawnEntitiesFromString( void );
+void     G_CleanUpSpawnedTargets( gentity_t *ent );
 char     *G_NewString( const char *string );
 
 //
