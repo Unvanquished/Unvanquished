@@ -75,6 +75,89 @@ void CG_RegisterUpgrade( int upgradeNum )
 }
 
 /*
+=======================
+CG_LoadCustomCrosshairs
+
+Load custom crosshairs specified by the user
+=======================
+*/
+
+static void CG_LoadCustomCrosshairs( void )
+{
+	char         *text_p, *token;
+	char         text[ 20000 ];
+	int          len, size;
+	fileHandle_t f;
+	weapon_t     weapon;
+	
+	len = trap_FS_FOpenFile( cg_crosshairFile.string, &f, FS_READ );
+	
+	if ( len < 0 )
+	{
+		return;
+	}
+	
+	if ( len == 0 || len >= sizeof( text ) - 1 )
+	{
+		CG_Printf( len == 0 ? "File %s is empty\n" : "File %s is too long\n", cg_crosshairFile.string );
+		trap_FS_FCloseFile( f );
+		return;
+	}
+	
+	trap_FS_Read( text, len, f );
+	text[ len ] = 0;
+	trap_FS_FCloseFile( f );
+	
+	// parse the text
+	text_p = text;
+	
+	while ( 1 )
+	{
+		qhandle_t shader;
+		token = COM_Parse2( &text_p );
+
+		if ( !*token )
+		{
+			break;
+		}
+		
+		if ( ( weapon = BG_WeaponByName( token )->number ) )
+		{
+			token = COM_Parse( &text_p );
+			
+			if ( !*token )
+			{
+				break;
+			}
+			
+			size = atoi( token );
+			
+			if ( size < 0 )
+			{
+				size = 0;
+			}
+			
+			token = COM_Parse( &text_p );
+			
+			if ( !*token )
+			{
+				break;
+			}
+			
+			shader = trap_R_RegisterShader( token );
+			
+			if ( !shader )
+			{
+				continue;
+			}
+			
+			cg_weapons[ weapon ].crossHair = shader;
+			cg_weapons[ weapon ].crossHairSize = size;
+		}
+	}
+}
+
+/*
 ===============
 CG_InitUpgrades
 
@@ -90,6 +173,11 @@ void CG_InitUpgrades( void )
 	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
 	{
 		CG_RegisterUpgrade( i );
+	}
+	
+	if ( cg_crosshairFile.string[0] )
+	{
+		CG_LoadCustomCrosshairs();
 	}
 }
 
@@ -2791,7 +2879,7 @@ static void CG_ShotgunPattern( vec3_t origin, vec3_t origin2, int seed, int othe
 	for ( i = 0; i < SHOTGUN_PELLETS; i++ )
 	{
 		r = Q_crandom( &seed ) * M_PI;
-		a = sqrt( Q_crandom( &seed ) * SHOTGUN_SPREAD * SHOTGUN_SPREAD * 16 * 16 );
+		a = Q_random( &seed ) * SHOTGUN_SPREAD * 16;
 
 		u = sin( r ) * a;
 		r = cos( r ) * a;

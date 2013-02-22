@@ -63,7 +63,6 @@ cvar_t *cl_IRC_channel;
 cvar_t *cl_IRC_port;
 cvar_t *cl_IRC_override_nickname;
 cvar_t *cl_IRC_nickname;
-cvar_t *cl_IRC_kick_rejoin;
 cvar_t *cl_IRC_reconnect_delay;
 
 /*
@@ -1729,18 +1728,9 @@ static int IRCH_Kick( void )
 	if ( !strcmp( IRC_String( arg_values[ 1 ] ), IRC_User.nick ) )
 	{
 		IRC_Display( IRC_MakeEvent( KICK, 1 ), IRC_String( pfx_nickOrServer ), IRC_String( arg_values[ 2 ] ) );
-
-		if ( cl_IRC_kick_rejoin->integer > 0 )
-		{
-			IRC_ThreadStatus = IRC_THREAD_CONNECTED;
-			IRC_SetTimeout( &IRC_JoinChannel, cl_IRC_kick_rejoin->integer );
-		}
-		else
-		{
-			IRC_Display( IRC_MakeEvent( QUIT, 1 ), "", "kicked from channel..\n" );
-			IRC_Send( "QUIT :b&!\n" );
-			return IRC_CMD_FATAL;
-		}
+		IRC_Display( IRC_MakeEvent( QUIT, 1 ), "", "kicked from channel..\n" );
+		IRC_Send( "QUIT :b&!\n" );
+		return IRC_CMD_FATAL;
 	}
 	else
 	{
@@ -2693,7 +2683,6 @@ void CL_IRCSetup( void )
 	cl_IRC_port = Cvar_Get( "cl_IRC_port", "6667", CVAR_ARCHIVE );
 	cl_IRC_override_nickname = Cvar_Get( "cl_IRC_override_nickname", "0", CVAR_ARCHIVE );
 	cl_IRC_nickname = Cvar_Get( "cl_IRC_nickname", "", CVAR_ARCHIVE );
-	cl_IRC_kick_rejoin = Cvar_Get( "cl_IRC_kick_rejoin", "0", CVAR_ARCHIVE );
 	cl_IRC_reconnect_delay = Cvar_Get( "cl_IRC_reconnect_delay", "100", CVAR_ARCHIVE );
 
 	if ( cl_IRC_connect_at_startup->value )
