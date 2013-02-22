@@ -1201,9 +1201,9 @@ extern "C" {
 			"fullscreen"
 		};
 
-		ri.Printf( PRINT_DEVELOPER, "\nGL_VENDOR: %s\n", glConfig.vendor_string );
-		ri.Printf( PRINT_DEVELOPER, "GL_RENDERER: %s\n", glConfig.renderer_string );
-		ri.Printf( PRINT_DEVELOPER, "GL_VERSION: %s\n", glConfig.version_string );
+		ri.Printf( PRINT_ALL, "\nGL_VENDOR: %s\n", glConfig.vendor_string );
+		ri.Printf( PRINT_ALL, "GL_RENDERER: %s\n", glConfig.renderer_string );
+		ri.Printf( PRINT_ALL, "GL_VERSION: %s\n", glConfig.version_string );
 		ri.Printf( PRINT_DEVELOPER, "GL_EXTENSIONS: %s\n", glConfig.extensions_string );
 		ri.Printf( PRINT_DEVELOPER, "GL_MAX_TEXTURE_SIZE: %d\n", glConfig.maxTextureSize );
 
@@ -1219,9 +1219,9 @@ extern "C" {
 		   }
 		 */
 
-		ri.Printf( PRINT_DEVELOPER, "GL_SHADING_LANGUAGE_VERSION: %s\n", glConfig2.shadingLanguageVersion );
+		ri.Printf( PRINT_ALL, "GL_SHADING_LANGUAGE_VERSION: %s\n", glConfig2.shadingLanguageVersion );
 
-		ri.Printf( PRINT_DEVELOPER, "GL_MAX_VERTEX_UNIFORM_COMPONENTS %d\n", glConfig2.maxVertexUniforms );
+		ri.Printf( PRINT_ALL, "GL_MAX_VERTEX_UNIFORM_COMPONENTS %d\n", glConfig2.maxVertexUniforms );
 //	ri.Printf(PRINT_ALL, "GL_MAX_VARYING_FLOATS %d\n", glConfig2.maxVaryingFloats);
 		ri.Printf( PRINT_DEVELOPER, "GL_MAX_VERTEX_ATTRIBS %d\n", glConfig2.maxVertexAttribs );
 
@@ -1276,7 +1276,7 @@ extern "C" {
 		{
 			int contextFlags, profile;
 
-			ri.Printf( PRINT_DEVELOPER, S_COLOR_GREEN "Using OpenGL 3.x context\n" );
+			ri.Printf( PRINT_ALL, S_COLOR_GREEN "Using OpenGL 3.x context\n" );
 
 			// check if we have a core-profile
 			glGetIntegerv( GL_CONTEXT_PROFILE_MASK, &profile );
@@ -1331,7 +1331,7 @@ extern "C" {
 
 		if ( glConfig2.vboVertexSkinningAvailable )
 		{
-			ri.Printf( PRINT_DEVELOPER, "Using GPU vertex skinning with max %i bones in a single pass\n", glConfig2.maxVertexSkinningBones );
+			ri.Printf( PRINT_ALL, "Using GPU vertex skinning with max %i bones in a single pass\n", glConfig2.maxVertexSkinningBones );
 		}
 
 		if ( glConfig.smpActive )

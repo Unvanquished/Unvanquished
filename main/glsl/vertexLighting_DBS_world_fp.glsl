@@ -37,9 +37,8 @@ varying vec4		var_TexDiffuseNormal;
 varying vec3		var_AmbientLight;
 varying vec3		var_DirectedLight;
 varying vec3		var_LightDirection;
-#else
-varying vec4		var_LightColor;
 #endif
+varying vec4		var_LightColor;
 varying vec3		var_Tangent;
 varying vec3		var_Binormal;
 varying vec3		var_Normal;

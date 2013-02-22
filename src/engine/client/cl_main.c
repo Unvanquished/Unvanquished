@@ -151,6 +151,8 @@ cvar_t                 *cl_consoleFontSize;
 cvar_t                 *cl_consoleFontKerning;
 cvar_t                 *cl_consoleCommand; //see also com_consoleCommand for terminal consoles
 
+cvar_t	*cl_logs;
+
 struct rsa_public_key  public_key;
 struct rsa_private_key private_key;
 
@@ -4501,6 +4503,8 @@ void CL_Init( void )
 	cl_consoleFontKerning = Cvar_Get( "cl_consoleFontKerning", "0", CVAR_ARCHIVE );
 
 	cl_consoleCommand = Cvar_Get( "cl_consoleCommand", "say", CVAR_ARCHIVE );
+	
+	cl_logs = Cvar_Get ("cl_logs", "0", CVAR_ARCHIVE);
 
 	cl_gamename = Cvar_Get( "cl_gamename", GAMENAME_FOR_MASTER, CVAR_TEMP );
 	cl_altTab = Cvar_Get( "cl_altTab", "1", CVAR_ARCHIVE );
@@ -4612,6 +4616,9 @@ void CL_Init( void )
 
 	Cvar_Set( "cl_running", "1" );
 	CL_GenerateRSAKey();
+	
+	CL_OpenClientLog();
+	CL_WriteClientLog( "`~-     Client Opened     -~`\n" );
 
 	Com_Printf("%s", _( "----- Client Initialization Complete -----\n" ));
 }
@@ -4698,6 +4705,9 @@ void CL_Shutdown( void )
 	// done.
 
 	CL_IRCWaitShutdown();
+	
+	CL_WriteClientLog( "`~-     Client Closed     -~`\n" );
+	CL_CloseClientLog();
 
 	Cvar_Set( "cl_running", "0" );
 
