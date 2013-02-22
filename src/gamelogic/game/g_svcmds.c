@@ -119,6 +119,45 @@ static void PrintEntityType( gentity_t *entity )
 	}
 }
 
+void Svcmd_EntityFire_f( void )
+{
+	char argument[ 4 ];
+	int  entityId;
+	int  event;
+	gentity_t *selection;
+
+	if ( trap_Argc() != 3 )
+	{
+		G_Printf( "usage: entityFire <entityNum> <event>\n" );
+		return;
+	}
+
+	trap_Argv( 1, argument, sizeof( argument ) );
+	entityId = atoi( argument );
+
+	if ( entityId >= level.num_entities || entityId < MAX_CLIENTS )
+	{
+		G_Printf( "invalid entityId %d\n", entityId );
+		return;
+	}
+
+	selection = &g_entities[entityId];
+
+	if (!selection || !selection->inuse)
+	{
+		G_Printf("entity slot %d is unused/free\n", entityId);
+		return;
+	}
+
+	trap_Argv( 2, argument, sizeof( argument ) );
+	event = atoi( argument );
+
+	G_Printf( "firing %s/%-3i with %i event\n", selection->classname, entityId, event);
+	G_UseTargets( selection, &g_entities[ ENTITYNUM_NONE ]);
+
+}
+
+
 /*
 ===================
 Svcmd_EntityShow_f
@@ -694,6 +733,7 @@ static const struct svcmd
 	{ "cp",                 qtrue,  Svcmd_CenterPrint_f          },
 	{ "dumpuser",           qfalse, Svcmd_DumpUser_f             },
 	{ "eject",              qfalse, Svcmd_EjectClient_f          },
+	{ "entityFire",         qfalse, Svcmd_EntityFire_f           },
 	{ "entityList",         qfalse, Svcmd_EntityList_f           },
 	{ "entityShow",         qfalse, Svcmd_EntityShow_f           },
 	{ "evacuation",         qfalse, Svcmd_Evacuation_f           },
