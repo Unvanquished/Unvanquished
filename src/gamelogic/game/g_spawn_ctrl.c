@@ -28,17 +28,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 /*
 =================================================================================
 
-flow_relay
+ctrl_relay
 
 =================================================================================
 */
 
-void flow_relay_think_ifDelayed( gentity_t *ent )
+void ctrl_relay_think_ifDelayed( gentity_t *ent )
 {
 	G_FireAllTargetsOf( ent, ent->activator );
 }
 
-void flow_relay_use( gentity_t *self, gentity_t *other, gentity_t *activator )
+void ctrl_relay_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	if ( ( self->spawnflags & 1 ) && activator && activator->client &&
 	     activator->client->ps.stats[ STAT_TEAM ] != TEAM_HUMANS )
@@ -65,12 +65,12 @@ void flow_relay_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 	else
 	{
 		entity_SetNextthink( self );
-		self->think = flow_relay_think_ifDelayed;
+		self->think = ctrl_relay_think_ifDelayed;
 		self->activator = activator;
 	}
 }
 
-void SP_flow_relay( gentity_t *self )
+void SP_ctrl_relay( gentity_t *self )
 {
 	if ( !self->wait ) {
 		// check delay for backwards compatibility
@@ -83,18 +83,18 @@ void SP_flow_relay( gentity_t *self )
 		}
 	}
 
-	self->use = flow_relay_use;
+	self->use = ctrl_relay_use;
 }
 
 /*
 =================================================================================
 
-flow_limited
+ctrl_limited
 
 =================================================================================
 */
 
-void flow_limited_use( gentity_t *self, gentity_t *other, gentity_t *activator )
+void ctrl_limited_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	G_FireAllTargetsOf( self, activator );
 
@@ -108,10 +108,10 @@ void flow_limited_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 	}
 }
 
-void SP_flow_limited( gentity_t *self )
+void SP_ctrl_limited( gentity_t *self )
 {
 	if ( self->count < 1 )
 		self->count = 1;
 
-	self->use = flow_limited_use;
+	self->use = ctrl_limited_use;
 }

@@ -175,6 +175,15 @@ static const spawn_t spawns[] =
 {
 	/**
 	 *
+	 *	Control entities
+	 *	================
+	 *
+	 */
+	{ "ctrl_limited",             SP_ctrl_limited             },
+	{ "ctrl_relay",               SP_ctrl_relay               },
+
+	/**
+	 *
 	 *	Environment entities
 	 *	====================
 	 *
@@ -186,16 +195,6 @@ static const spawn_t spawns[] =
 	{ "env_portal_surface",       SP_env_portal_surface       },
 	{ "env_rumble",               SP_env_rumble               },
 	{ "env_speaker",              SP_env_speaker              },
-
-	/**
-	 *
-	 *	Flow entities
-	 *	=============
-	 *
-	 */
-	{ "flow_limited",             SP_flow_limited             },
-	{ "flow_relay",               SP_flow_relay               },
-
 
 	/**
 	 *
@@ -278,7 +277,7 @@ static const spawn_t spawns[] =
 	 *
 	 */
 	{ "target_alien_win",         SP_target_alien_win,        ENT_V_TMPNAME, "game_end" },
-	{ "target_delay",             SP_flow_relay,              ENT_V_TMPNAME, "flow_relay" },
+	{ "target_delay",             SP_ctrl_relay,              ENT_V_TMPNAME, "ctrl_relay" },
 	{ "target_human_win",         SP_target_human_win,        ENT_V_TMPNAME, "game_end" },
 	{ "target_hurt",              SP_target_hurt              },
 	{ "target_kill",              SP_target_kill              },
@@ -286,7 +285,7 @@ static const spawn_t spawns[] =
 	{ "target_position",          SP_target_position          },
 	{ "target_print",             SP_target_print             },
 	{ "target_push",              SP_target_push              },
-	{ "target_relay",             SP_flow_relay,              ENT_V_TMPNAME, "flow_relay" },
+	{ "target_relay",             SP_ctrl_relay,              ENT_V_TMPNAME, "ctrl_relay" },
 	{ "target_rumble",            SP_env_rumble,              ENT_V_TMPNAME, "env_rumble" },
 	{ "target_score",             SP_game_score,              ENT_V_TMPNAME, "game_score" },
 	{ "target_speaker",           SP_env_speaker,             ENT_V_TMPNAME, "env_speaker" },
