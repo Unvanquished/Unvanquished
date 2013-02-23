@@ -120,18 +120,18 @@ typedef struct
 
 typedef enum
 {
-	E_ACT_DEFAULT = 0,
-	E_ACT_CUSTOM,
+	ETA_DEFAULT = 0,
+	ETA_CUSTOM,
 
-	E_ACT_FREE,
-	E_ACT_PROPAGATE,
+	ETA_FREE,
+	ETA_PROPAGATE,
 
-	E_ACT_ACT, //yea, i know... gonna refactor that later
-	E_ACT_RESET,
+	ETA_ACT,
+	ETA_RESET,
 
-	E_ACT_ON,
-	E_ACT_OFF,
-	E_ACT_TOGGLE
+	ETA_ON,
+	ETA_OFF,
+	ETA_TOGGLE
 
 } targetAction_t;
 

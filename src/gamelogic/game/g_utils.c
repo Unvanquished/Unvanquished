@@ -319,19 +319,19 @@ void G_FireTarget(target_t *target, gentity_t *targetedEntity, gentity_t *other,
 {
 	switch (target->actionType)
 	{
-	case E_ACT_FREE:
+	case ETA_FREE:
 		G_FreeEntity(targetedEntity);
 		return;
 
-	case E_ACT_PROPAGATE:
+	case ETA_PROPAGATE:
 		G_FireAllTargetsOf( targetedEntity, activator);
 		break;
 
-	case E_ACT_RESET:
+	case ETA_RESET:
 		if (targetedEntity->reset)
 			targetedEntity->reset(targetedEntity);
 		break;
-	case E_ACT_ACT:
+	case ETA_ACT:
 	default:
 		if (targetedEntity->act)
 			targetedEntity->act(target, targetedEntity, other, activator);

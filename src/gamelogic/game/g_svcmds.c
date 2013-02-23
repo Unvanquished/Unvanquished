@@ -158,7 +158,7 @@ void Svcmd_EntityFire_f( void )
 	if(selection->names[0])
 		target->name = selection->names[0];
 
-	target->actionType = E_ACT_DEFAULT;
+	target->actionType = ETA_DEFAULT;
 
 	G_FireTarget( target, selection, &g_entities[ ENTITYNUM_NONE ], &g_entities[ ENTITYNUM_NONE ] );
 }

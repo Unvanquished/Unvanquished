@@ -154,13 +154,13 @@ typedef struct
 
 static const entityActionDescription_t actionDescriptions[] =
 {
-		{ "act",     E_ACT_ACT       },
-		{ "free",    E_ACT_FREE      },
-		{ "off",     E_ACT_OFF       },
-		{ "on",      E_ACT_ON        },
-		{ "reset",   E_ACT_RESET     },
-		{ "toggle",  E_ACT_TOGGLE    },
-		{ "trigger", E_ACT_PROPAGATE },
+		{ "act",     ETA_ACT       },
+		{ "free",    ETA_FREE      },
+		{ "off",     ETA_OFF       },
+		{ "on",      ETA_ON        },
+		{ "reset",   ETA_RESET     },
+		{ "toggle",  ETA_TOGGLE    },
+		{ "trigger", ETA_PROPAGATE },
 };
 
 typedef struct
@@ -478,7 +478,7 @@ target_t G_NewTarget( const char *string )
 {
 	char *stringPointer;
 	int  i, stringLength;
-	target_t newTarget = { NULL, NULL, E_ACT_DEFAULT };
+	target_t newTarget = { NULL, NULL, ETA_DEFAULT };
 
 	stringLength = strlen( string ) + 1;
 	if(stringLength == 1)
@@ -630,7 +630,7 @@ targetAction_t G_GetTargetActionFor( char* action )
 	entityActionDescription_t *foundDescription;
 
 	if(!action)
-		return E_ACT_DEFAULT;
+		return ETA_DEFAULT;
 
 	foundDescription = bsearch( Q_strlwr(action), actionDescriptions, ARRAY_LEN( actionDescriptions ),
 		             sizeof( entityActionDescription_t ), cmdcmp );
@@ -638,7 +638,7 @@ targetAction_t G_GetTargetActionFor( char* action )
 	if(!foundDescription && !foundDescription->alias)
 		return foundDescription->action;
 
-	return E_ACT_CUSTOM;
+	return ETA_CUSTOM;
 }
 
 void G_CleanUpSpawnedTargets( gentity_t *ent )
@@ -657,7 +657,7 @@ void G_CleanUpSpawnedTargets( gentity_t *ent )
 	}
 	ent->targets[ j ].name = NULL;
 	ent->targets[ j ].action = NULL;
-	ent->targets[ j ].actionType = E_ACT_DEFAULT;
+	ent->targets[ j ].actionType = ETA_DEFAULT;
 }
 
 qboolean G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFieldname, const char *actualFieldname, const int typeOfDeprecation  )
