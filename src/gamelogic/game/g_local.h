@@ -120,7 +120,7 @@ typedef struct
 
 typedef enum
 {
-	E_ACT_DEFAULT,
+	E_ACT_DEFAULT = 0,
 	E_ACT_CUSTOM,
 
 	E_ACT_FREE,
@@ -802,6 +802,7 @@ qboolean G_SpawnVector( const char *key, const char *defaultString, float *out )
 void     G_SpawnEntitiesFromString( void );
 void     G_CleanUpSpawnedTargets( gentity_t *ent );
 char     *G_NewString( const char *string );
+targetAction_t G_GetTargetActionFor( char* action );
 
 //
 // g_cmds.c

@@ -625,7 +625,7 @@ void G_SpawnGEntityFromSpawnVars( void )
 	}
 }
 
-static targetAction_t targetActionFor( char* action )
+targetAction_t G_GetTargetActionFor( char* action )
 {
 	entityActionDescription_t *foundDescription;
 
@@ -651,7 +651,7 @@ void G_CleanUpSpawnedTargets( gentity_t *ent )
 		if (ent->targets[i].name) {
 			ent->targets[j].name = ent->targets[i].name;
 			ent->targets[j].action = ent->targets[i].action;
-			ent->targets[j].actionType = targetActionFor(ent->targets[i].action);
+			ent->targets[j].actionType = G_GetTargetActionFor(ent->targets[i].action);
 			j++;
 		}
 	}
