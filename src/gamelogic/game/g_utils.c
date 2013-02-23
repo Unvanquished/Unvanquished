@@ -337,6 +337,10 @@ void G_FireTarget(target_t *target, gentity_t *targetedEntity, gentity_t *other,
 		targetedEntity->operative = !targetedEntity->operative;
 		break;
 
+	case ETA_USE:
+		if (targetedEntity->use)
+			targetedEntity->use(targetedEntity, other, activator);
+		return;
 	case ETA_RESET:
 		if (targetedEntity->reset)
 			targetedEntity->reset(targetedEntity);

@@ -127,6 +127,7 @@ typedef enum
 	ETA_PROPAGATE,
 
 	ETA_ACT,
+	ETA_USE,
 	ETA_RESET,
 
 	ETA_ON,
