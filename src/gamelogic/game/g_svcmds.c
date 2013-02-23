@@ -121,7 +121,7 @@ static void PrintEntityType( gentity_t *entity )
 
 void Svcmd_EntityFire_f( void )
 {
-	char argument[ 4 ];
+	char argument[ 6 ];
 	int  entityId;
 	int  actionType;
 	gentity_t *selection;
@@ -173,7 +173,7 @@ void Svcmd_EntityShow_f( void )
 {
 	int       i, entityId;
 	gentity_t *selection;
-	char argument[ 4 ];
+	char argument[ 6 ];
 
 
 	if (trap_Argc() != 2)
