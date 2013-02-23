@@ -314,16 +314,31 @@ void G_FireAllTargetsOf( gentity_t *self, gentity_t *activator )
 	}
 }
 
-void G_FireTarget( target_t *target, gentity_t *targetedEntity, gentity_t *other, gentity_t *activator )
+void G_FireTarget(target_t *target, gentity_t *targetedEntity, gentity_t *other,
+		gentity_t *activator)
 {
-	if ( targetedEntity->act )
+	switch (target->actionType)
 	{
-		targetedEntity->act( target, targetedEntity, other, activator );
-	}
-	//call use only as a means of backward compatibility for now, tuntil everything we need has an proper act function
-	else if ( targetedEntity->use )
-	{
-		targetedEntity->use( targetedEntity, other, activator );
+	case E_ACT_FREE:
+		G_FreeEntity(targetedEntity);
+		return;
+
+	case E_ACT_PROPAGATE:
+		G_FireAllTargetsOf( targetedEntity, activator);
+		break;
+
+	case E_ACT_RESET:
+		if (targetedEntity->reset)
+			targetedEntity->reset(targetedEntity);
+		break;
+	case E_ACT_ACT:
+	default:
+		if (targetedEntity->act)
+			targetedEntity->act(target, targetedEntity, other, activator);
+		//call use only as a means of backward compatibility for now, tuntil everything we need has an proper act function
+		else if (targetedEntity->use)
+			targetedEntity->use(targetedEntity, other, activator);
+		break;
 	}
 }
 
