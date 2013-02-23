@@ -610,7 +610,7 @@ void G_SpawnGEntityFromSpawnVars( void )
 
 	// don't leave any "gaps" between multiple names
 	j = 0;
-	for (i = 0; i < MAX_ALIASES; ++i)
+	for (i = 0; i < MAX_ENTITY_ALIASES; ++i)
 	{
 		if (ent->names[i])
 			ent->names[j++] = ent->names[i];
@@ -645,7 +645,7 @@ void G_CleanUpSpawnedTargets( gentity_t *ent )
 	int i, j;
 	// don't leave any "gaps" between multiple targets
 	j = 0;
-	for (i = 0; i < MAX_TARGETS; ++i)
+	for (i = 0; i < MAX_ENTITY_TARGETS; ++i)
 	{
 		if (ent->targets[i].name) {
 			ent->targets[j].name = ent->targets[i].name;
