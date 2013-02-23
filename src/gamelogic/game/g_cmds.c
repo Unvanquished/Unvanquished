@@ -2467,7 +2467,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 			{
 				trap_SendServerCommand( ent-g_entities,
 					"print \"^3This class is currently denied to stripped players.\n\"" );
-				return;
+				return qfalse;
 			}
 
 			cost = BG_ClassCanEvolveFromTo( currentClass, newClass,
@@ -4205,8 +4205,8 @@ void Cmd_Share_f( gentity_t *ent )
 {
 	int      i, teamCount = 0;
 	int      creds, maxCreds;
-	int      totalShared = 0, shared[ MAX_CLIENTS ] = {};
-	qboolean teamMap[ MAX_CLIENTS ] = {};
+	int      totalShared = 0, shared[ MAX_CLIENTS ] = { 0 };
+	qboolean teamMap[ MAX_CLIENTS ] = { qfalse };
 	qboolean noSpawns, done = qfalse;
 	char     arg[ MAX_TOKEN_CHARS ];
 	team_t   team;
