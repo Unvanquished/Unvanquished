@@ -746,7 +746,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	G_FindTeams();
 
 	BG_InitClassConfigs();
-	BG_InitBuildableConfigs();
+	BG_InitBuildableModelConfigs();
 	G_InitDamageLocations();
 	G_InitMapRotations();
 	G_InitSpawnQueue( &level.alienSpawnQueue );

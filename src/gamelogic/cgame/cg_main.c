@@ -2308,7 +2308,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 
 	// load overrides
 	BG_InitClassConfigs();
-	BG_InitBuildableConfigs();
+	BG_InitBuildableModelConfigs();
 	BG_InitAllowedGameElements();
 
 	// Dynamic memory

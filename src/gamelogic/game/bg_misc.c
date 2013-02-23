@@ -656,16 +656,16 @@ qboolean BG_BuildableAllowedInStage( buildable_t buildable,
 	}
 }
 
-static buildableConfig_t bg_buildableConfigList[ BA_NUM_BUILDABLES ];
+static buildableModelConfig_t bg_buildableModelConfigList[ BA_NUM_BUILDABLES ];
 
 /*
 ==============
-BG_BuildableConfig
+BG_BuildableModelConfig
 ==============
 */
-buildableConfig_t *BG_BuildableConfig( buildable_t buildable )
+buildableModelConfig_t *BG_BuildableModelConfig( buildable_t buildable )
 {
-	return &bg_buildableConfigList[ buildable ];
+	return &bg_buildableModelConfigList[ buildable ];
 }
 
 /*
@@ -676,27 +676,27 @@ BG_BuildableBoundingBox
 void BG_BuildableBoundingBox( buildable_t buildable,
                               vec3_t mins, vec3_t maxs )
 {
-	buildableConfig_t *buildableConfig = BG_BuildableConfig( buildable );
+	buildableModelConfig_t *buildableModelConfig = BG_BuildableModelConfig( buildable );
 
 	if ( mins != NULL )
 	{
-		VectorCopy( buildableConfig->mins, mins );
+		VectorCopy( buildableModelConfig->mins, mins );
 	}
 
 	if ( maxs != NULL )
 	{
-		VectorCopy( buildableConfig->maxs, maxs );
+		VectorCopy( buildableModelConfig->maxs, maxs );
 	}
 }
 
 /*
 ======================
-BG_ParseBuildableFile
+BG_ParseBuildableModelFile
 
-Parses a configuration file describing a buildable
+Parses a configuration file describing the model of a buildable
 ======================
 */
-static qboolean BG_ParseBuildableFile( const char *filename, buildableConfig_t *bc )
+static qboolean BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_t *bc )
 {
 	char         *text_p;
 	int          i;
@@ -918,20 +918,20 @@ static qboolean BG_ParseBuildableFile( const char *filename, buildableConfig_t *
 
 /*
 ===============
-BG_InitBuildableConfigs
+BG_InitBuildableModelConfigs
 ===============
 */
-void BG_InitBuildableConfigs( void )
+void BG_InitBuildableModelConfigs( void )
 {
 	int               i;
-	buildableConfig_t *bc;
+	buildableModelConfig_t *bc;
 
 	for ( i = BA_NONE + 1; i < BA_NUM_BUILDABLES; i++ )
 	{
-		bc = BG_BuildableConfig( i );
-		Com_Memset( bc, 0, sizeof( buildableConfig_t ) );
+		bc = BG_BuildableModelConfig( i );
+		Com_Memset( bc, 0, sizeof( buildableModelConfig_t ) );
 
-		BG_ParseBuildableFile( va( "configs/buildables/%s.cfg",
+		BG_ParseBuildableModelFile( va( "configs/buildables/%s.model.cfg",
 		                           BG_Buildable( i )->name ), bc );
 	}
 }

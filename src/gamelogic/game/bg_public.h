@@ -1054,7 +1054,7 @@ typedef struct
 	float  zOffset;
 	float  oldScale;
 	float  oldOffset;
-} buildableConfig_t;
+} buildableModelConfig_t;
 
 // weapon record
 typedef struct
@@ -1147,10 +1147,10 @@ const buildableAttributes_t *BG_Buildable( buildable_t buildable );
 qboolean                    BG_BuildableAllowedInStage( buildable_t buildable,
     stage_t stage );
 
-buildableConfig_t           *BG_BuildableConfig( buildable_t buildable );
+buildableModelConfig_t      *BG_BuildableModelConfig( buildable_t buildable );
 void                        BG_BuildableBoundingBox( buildable_t buildable,
     vec3_t mins, vec3_t maxs );
-void                        BG_InitBuildableConfigs( void );
+void                        BG_InitBuildableModelConfigs( void );
 
 const classAttributes_t     *BG_ClassByName( const char *name );
 
