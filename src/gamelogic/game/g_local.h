@@ -154,14 +154,19 @@ struct gentity_s
 
 	struct gclient_s *client; // NULL if not a client
 
-	qboolean         inuse;
-	qboolean         neverFree; // if true, FreeEntity will only unlink
-	// bodyque uses this
+	qboolean     inuse;
+	qboolean     neverFree; // if true, FreeEntity will only unlink
+	int          freetime; // level.time when the object was freed
+	int          eventTime; // events will be cleared EVENT_VALID_MSEC after set
+	qboolean     freeAfterEvent;
+	qboolean     unlinkAfterEvent;
 
-	int      flags; // FL_* variables
+	int          flags; // FL_* variables
 
 	const char   *classname;
 	int          spawnflags;
+
+	qboolean     spawned; // whether or not this has finished spawning
 
 	char         *names[ MAX_ALIASES + 1 ];
 	/*
@@ -210,14 +215,14 @@ struct gentity_s
 	gentity_t    *nextPathSegment;
 	gentity_t    *prevPathSegment;
 
+	//additional unclear chaining
+	gentity_t    *parent;
+	gentity_t    *parentNode; // for creep and defence/spawn dependencies
+	gentity_t    *target_ent;
+	gentity_t    *enemy;
+
 	char     *model;
 	char     *model2;
-
-	int      freetime; // level.time when the object was freed
-
-	int      eventTime; // events will be cleared EVENT_VALID_MSEC after set
-	qboolean freeAfterEvent;
-	qboolean unlinkAfterEvent;
 
 	qboolean physicsObject; // if true, it can be pushed by movers and fall off edges
 	// all game items are physicsObjects,
@@ -231,11 +236,8 @@ struct gentity_s
 
 	// movers
 	moverState_t moverState;
-	int          soundPos1;
-	int          sound1to2;
-	int          sound2to1;
-	int          soundPos2;
-	gentity_t    *parent;
+	int          soundPos1, soundPos2;
+	int          sound1to2, sound2to1;
 
 	vec3_t       pos1, pos2;
 	float        rotatorAngle;
@@ -243,16 +245,15 @@ struct gentity_s
 
 	char         *message;
 
-	int          timestamp; // body queue sinking, etc
-	int          startTime; // currently for the diminishing missile damage
-
 	char         *targetShaderName;
 	char         *targetShaderNewName;
-	gentity_t    *target_ent;
+
+	int          health;
+	int          lastHealth;
+	int          resetValue;
 
 	float        speed;
 	float        lastSpeed; // used by trains that have been restarted
-	vec3_t       movedir;
 
 	// acceleration evaluation
 	qboolean  evaluateAcceleration;
@@ -260,6 +261,8 @@ struct gentity_s
 	vec3_t    acceleration;
 	vec3_t    oldAccel;
 	vec3_t    jerk;
+
+	vec3_t       movedir;
 
 	int       nextthink;
 	void ( *think )( gentity_t *self );
@@ -272,12 +275,6 @@ struct gentity_s
 	void ( *pain )( gentity_t *self, gentity_t *attacker, int damage );
 	void ( *die )( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod );
 
-	int       pain_debounce_time;
-	int       last_move_time;
-
-	int       health;
-	int       lastHealth; // currently only used for overmind
-
 	qboolean  takedamage;
 
 	int       damage;
@@ -288,23 +285,24 @@ struct gentity_s
 	int       splashMethodOfDeath;
 
 	int       count;
-	int       resetValue;
-
-	gentity_t *enemy;
 
 	int       watertype;
 	int       waterlevel;
 
 	team_t      buildableTeam; // buildable item team
-	gentity_t   *parentNode; // for creep and defence/spawn dependencies
 	struct namelog_s *builtBy; // clientNum of person that built this
 	int         dcc; // number of controlling dccs
-	qboolean    spawned; // whether or not this buildable has finished spawning
+	qboolean    deconstruct; // deconstruct if no BP left
+
+	// a lot of times pretty sure theres some duplication in there to find
+	int         pain_debounce_time;
+	int         last_move_time;
+	int         timestamp; // body queue sinking, etc
+	int         startTime; // currently for the diminishing missile damage
 	int         shrunkTime; // time when a barricade shrunk or zero
 	int         buildTime; // when this buildable was built
 	int         animTime; // last animation change
 	int         time1000; // timer evaluated every second
-	qboolean    deconstruct; // deconstruct if no BP left
 	int         deconstructTime; // time at which structure marked
 	int         overmindAttackTimer;
 	int         overmindDyingTimer;
@@ -313,24 +311,22 @@ struct gentity_s
 	// every single frame.. so only do it periodically
 	int         clientSpawnTime; // the time until this spawn can spawn a client
 	int         spawnBlockTime; // timer for anti spawn-block
+	int         turretSpinupTime; // spinup delay for norfenturrets
+	int         suicideTime; // when the client will suicide
+	int         lastDamageTime;
+	int         nextRegenTime;
 
 	int         credits[ MAX_CLIENTS ]; // human credits for each client
-	int         killedBy; // clientNum of killer
 
+	int         killedBy; // clientNum of killer
 	gentity_t   *targeted; // true if the player is currently a valid target of a turret
 	vec3_t      turretAim; // aim vector for turrets
-	int         turretSpinupTime; // spinup delay for norfenturrets
 
 	vec4_t      animation; // animated map objects
 
 	qboolean    nonSegModel; // this entity uses a nonsegmented player model
 
 	int         triggerGravity; // gravity for this trigger
-
-	int         suicideTime; // when the client will suicide
-
-	int         lastDamageTime;
-	int         nextRegenTime;
 
 	qboolean    pointAgainstWorld; // don't use the bbox for map collisions
 
