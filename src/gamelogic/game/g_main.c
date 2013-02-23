@@ -95,6 +95,8 @@ vmCvar_t           pmove_accurate;
 vmCvar_t           g_minNameChangePeriod;
 vmCvar_t           g_maxNameChanges;
 
+vmCvar_t           g_initialMineRate;
+vmCvar_t           g_mineRateHalfLife;
 vmCvar_t           g_humanStage;
 vmCvar_t           g_humanCredits;
 vmCvar_t           g_humanMaxStage;
@@ -293,6 +295,8 @@ static cvarTable_t gameCvarTable[] =
 	{ &pmove_fixed,                   "pmove_fixed",                   "0",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 	{ &pmove_msec,                    "pmove_msec",                    "8",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 	{ &pmove_accurate,                "pmove_accurate",                "0",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
+	{ &g_initialMineRate,             "g_initialMineRate",            "15",                                CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_mineRateHalfLife,            "g_mineRateHalfLife",           "10",                                CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_humanStage,                  "g_humanStage",                  "0",                                0,                                               0, qfalse           },
 	{ &g_humanCredits,                "g_humanCredits",                "0",                                0,                                               0, qfalse           },
 	{ &g_humanMaxStage,               "g_humanMaxStage",               DEFAULT_HUMAN_MAX_STAGE,            0,                                               0, qfalse, cv_humanMaxStage},
@@ -1357,6 +1361,7 @@ void G_CalculateBuildPoints( void )
 	int              i;
 	buildable_t      buildable;
 	static int       lastTimeAdded = 0;
+	static int       time = 0;
 
 	// Sudden Death checks
 	if ( G_TimeTilSuddenDeath() <= 0 && level.suddenDeathWarning < TW_PASSED )
@@ -1396,6 +1401,8 @@ void G_CalculateBuildPoints( void )
 		level.alienBuildPoints = 0;
 	}
 
+	time += level.time - level.previousTime;
+
 	// Add queued resources every second.
 	if ( level.time >= lastTimeAdded + 1000 )
 	{
@@ -1421,8 +1428,8 @@ void G_CalculateBuildPoints( void )
 			level.alienBuildPoints += (int) level.queuedAlienPoints;
 			level.queuedAlienPoints -= (int) level.queuedAlienPoints;
 		}
-		
-		level.mineRate = 15 * exp( -level.time / 1000 / 60 / 15 );
+
+		level.mineRate = g_initialMineRate.value * exp( -time / ( 60000.0f * g_mineRateHalfLife.value ) );
 
 		lastTimeAdded = level.time;
 	}

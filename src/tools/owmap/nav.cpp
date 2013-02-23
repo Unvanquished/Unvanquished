@@ -60,6 +60,9 @@ const Character characters[] = {
 //flag for excluding caulk surfaces
 static qboolean excludeCaulk = qtrue;
 
+//flag for excluding surfaces with surfaceparm sky from navmesh generation
+static qboolean excludeSky = qtrue;
+
 //flag for adding new walkable spans so bots can walk over small gaps
 static qboolean filterGaps = qtrue;
 
@@ -180,10 +183,16 @@ static void LoadBrushTris(std::vector<float> &verts, std::vector<int> &tris) {
 
 	int solidFlags = 0;
 	int temp = 0;
+	int surfaceSkip = 0;
 
 	ApplySurfaceParm( "default", &solidFlags, NULL, NULL );
 	ApplySurfaceParm( "playerclip", &temp, NULL, NULL );
 	solidFlags |= temp;
+
+	if ( excludeSky )
+	{
+		ApplySurfaceParm( "sky", NULL, &surfaceSkip, NULL );
+	}
 
 	/* get model, index 0 is worldspawn entity */
 	bspModel_t *model = &bspModels[0];
@@ -203,6 +212,11 @@ static void LoadBrushTris(std::vector<float> &verts, std::vector<int> &tris) {
 			bspBrushSide_t *side = &bspBrushSides[p+firstSide];
 			bspPlane_t *plane = &bspPlanes[side->planeNum];
 			bspShader_t *shader = &bspShaders[side->shaderNum];
+
+			if ( shader->surfaceFlags & surfaceSkip )
+			{
+				continue;
+			}
 
 			if(excludeCaulk && !Q_stricmp(shader->shader, "textures/common/caulk"))
 				continue;
@@ -1290,7 +1304,7 @@ extern "C" int NavMain(int argc, char **argv)
 
 	if(argc < 2)
 	{
-		Sys_Printf("Usage: owmap -nav [-cellheight f] [-stepsize f] [-includecaulk] [-nogapfilter] <mapname>\n");
+		Sys_Printf("Usage: owmap -nav [-cellheight f] [-stepsize f] [-includecaulk] [-includesky] [-nogapfilter] <mapname>\n");
 		return 0;
 	}
 
@@ -1315,6 +1329,8 @@ extern "C" int NavMain(int argc, char **argv)
 			}
 		} else if(!Q_stricmp(argv[i], "-includecaulk")) {
 			excludeCaulk = qfalse;
+		} else if(!Q_stricmp(argv[i], "-includesky")) {
+			excludeSky = qfalse;
 		} else if(!Q_stricmp(argv[i], "-nogapfilter")) {
 			filterGaps = qfalse;
 		} else {
