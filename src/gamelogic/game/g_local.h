@@ -173,10 +173,19 @@ struct gentity_s
 
 	/**
 	 * is the entity able to become active?
-	 * e.g. used for buildables to indicate being powered, or linked to the overmind
+	 * e.g. used for buildables to indicate being useable or a stationary weapon being "live"
 	 * or for sensors to indicate being able to sense other entities and fire events
 	 */
-	qboolean     operative;
+	qboolean     enabled;
+
+	/**
+	 * is the buildable getting support by reactor or overmind?
+	 * this is tightly coupled with enabled
+	 * but buildables might be disabled indpendently of rc/om support
+	 * unpowered buildables are expected to be disabled though
+	 * other entities might also consider the powergrid for behavior changes
+	 */
+	qboolean     powered;
 
 	// targeting
 	target_t     targets[ MAX_TARGETS + 1 ];

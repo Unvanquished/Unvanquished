@@ -328,13 +328,13 @@ void G_FireTarget(target_t *target, gentity_t *targetedEntity, gentity_t *other,
 		return;
 
 	case ETA_ON:
-		targetedEntity->operative = qtrue;
+		targetedEntity->enabled = qtrue;
 		break;
 	case ETA_OFF:
-		targetedEntity->operative = qfalse;
+		targetedEntity->enabled = qfalse;
 		break;
 	case ETA_TOGGLE:
-		targetedEntity->operative = !targetedEntity->operative;
+		targetedEntity->enabled = !targetedEntity->enabled;
 		break;
 
 	case ETA_USE:

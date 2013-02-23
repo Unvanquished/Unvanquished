@@ -50,7 +50,7 @@ void sensor_act(target_t* target, gentity_t *self, gentity_t *other, gentity_t *
 		// if we wanted to tell the cgame about our deactivation, this would be the way to do it
 		// self->s.eFlags ^= EF_NODRAW;
 		// but unless we have to, we rather not share the information, so "patched" clients cannot do anything with it either
-		self->operative = !self->operative;
+		self->enabled = !self->enabled;
 		break;
 	}
 }
@@ -256,7 +256,7 @@ void G_notify_sensor_stage( team_t team, stage_t stage )
 
 	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 	{
-		if ( !ent->inuse || !ent->operative )
+		if ( !ent->inuse || !ent->enabled )
 		{
 			continue;
 		}
@@ -298,7 +298,7 @@ void G_notify_sensor_end( team_t winningTeam )
 
 	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 	{
-		if ( !ent->inuse || !ent->operative )
+		if ( !ent->inuse || !ent->enabled )
 		{
 			continue;
 		}
@@ -481,7 +481,7 @@ void sensor_client_trigger( gentity_t *self, gentity_t *activator )
 void sensor_player_touch( gentity_t *self, gentity_t *activator, trace_t *trace )
 {
 	//sanity check
-	if ( !activator || !self->operative )
+	if ( !activator || !self->enabled )
 	{
 		return;
 	}
@@ -528,7 +528,7 @@ void SP_sensor_touch( gentity_t *self )
 	// SPAWN_DISABLED
 	if ( self->spawnflags & 1 )
 	{
-		self->operative = qfalse;
+		self->enabled = qfalse;
 	}
 
 	// NEGATE
