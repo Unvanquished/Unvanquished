@@ -325,21 +325,28 @@ void G_FireTarget(target_t *target, gentity_t *targetedEntity, gentity_t *other,
 
 	case ETA_PROPAGATE:
 		G_FireAllTargetsOf( targetedEntity, activator);
-		break;
+		return;
 
 	case ETA_RESET:
 		if (targetedEntity->reset)
 			targetedEntity->reset(targetedEntity);
-		break;
+		return;
+
 	case ETA_ACT:
 	default:
-		if (targetedEntity->act)
-			targetedEntity->act(target, targetedEntity, other, activator);
-		//call use only as a means of backward compatibility for now, tuntil everything we need has an proper act function
-		else if (targetedEntity->use)
-			targetedEntity->use(targetedEntity, other, activator);
 		break;
 	}
+
+	/*
+	 * putting this outside the switch allows us to handle some cases and still
+	 * pass them additionally to the targets act function
+	 */
+	if (targetedEntity->act)
+		targetedEntity->act(target, targetedEntity, other, activator);
+	//call use only as a means of backward compatibility for now, tuntil everything we need has an proper act function
+	else if (targetedEntity->use)
+		targetedEntity->use(targetedEntity, other, activator);
+
 }
 
 /**
