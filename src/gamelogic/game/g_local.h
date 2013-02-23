@@ -157,6 +157,7 @@ typedef struct{
 	int  numRunningNodes;
 
   	int         futureAimTime;
+	int         futureAimTimeInterval;
 	vec3_t      futureAim;
 	usercmd_t cmdBuffer;
 } botMemory_t;
@@ -327,6 +328,7 @@ struct gentity_s
 	int         buildPointZone; // index for zone
 	int         usesBuildPointZone; // does it use a zone?
 
+	qhandle_t   obstacleHandle;
 	botMemory_t *botMind;
 };
 
@@ -870,6 +872,7 @@ void     G_ListCommands( gentity_t *ent );
 void     G_LoadCensors( void );
 void     G_CensorString( char *out, const char *in, int len, gentity_t *ent );
 qboolean G_CheckStopVote( team_t );
+qboolean G_RoomForClassChange( gentity_t *ent, class_t class, vec3_t newOrigin );
 
 //
 // g_physics.c
@@ -1490,3 +1493,6 @@ qboolean         trap_BotNavTrace( int botClientNum, void *botTrace /*botTrace_t
 void             trap_BotFindRandomPoint( int botClientNum, vec3_t point );
 void             trap_BotEnableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
 void             trap_BotDisableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
+void             trap_BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *handle );
+void             trap_BotRemoveObstacle( qhandle_t handle );
+void             trap_BotUpdateObstacles( void );

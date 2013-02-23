@@ -576,6 +576,7 @@ if( USE_PHYSICS )
 endif()
 
 set( CLIENTLIST
+  ${MOUNT_DIR}/engine/botlib/bot_debug.cpp
   ${MOUNT_DIR}/engine/client/cin_ogm.c
   ${MOUNT_DIR}/engine/client/cl_avi.c
   ${MOUNT_DIR}/engine/client/cl_cgame.c
@@ -689,7 +690,6 @@ set( CGAMEGPP_BASE
 set( CGAMEGPP_SO
   ${CGAMEGPP_BASE}
   ${GPP_DIR}/cgame/cg_api.c
-#   ${GPP_DIR}/cgame/cg_nav.c
   ${GPP_DIR}/cgame/cgame.def
 )
 
@@ -725,6 +725,10 @@ set( GAMEGPP_BASE
   ${GPP_DIR}/game/g_weapon.c
   ${GPP_DIR}/game/g_admin.c
   ${GPP_DIR}/game/g_namelog.c
+  ${GPP_DIR}/game/g_bot.c
+  ${GPP_DIR}/game/g_alienbot.c
+  ${GPP_DIR}/game/g_humanbot.c
+  ${GPP_DIR}/game/g_nav.c
   ${MOUNT_DIR}/engine/qcommon/q_math.c
   ${MOUNT_DIR}/engine/qcommon/q_shared.c
 )
@@ -732,10 +736,6 @@ set( GAMEGPP_BASE
 set( GAMEGPP_SO
   ${GAMEGPP_BASE}
   ${GPP_DIR}/game/g_api.c
-  ${GPP_DIR}/game/g_bot.c
-  ${GPP_DIR}/game/g_alienbot.c
-  ${GPP_DIR}/game/g_humanbot.c
-  ${GPP_DIR}/game/g_nav.c
   ${GPP_DIR}/game/game.def
 )
 
@@ -856,17 +856,23 @@ set( DAEMONMAPLIST
   ${MOUNT_DIR}/libs/zlib/zutil.c
 )
 
+set( FASTLZLIST 
+	${MOUNT_DIR}/libs/fastlz/fastlz.c
+)
+
 set( DETOURLIST
+  ${FASTLZLIST}
   ${MOUNT_DIR}/libs/detour/DetourAlloc.cpp
   ${MOUNT_DIR}/libs/detour/DetourCommon.cpp
-#   ${MOUNT_DIR}/libs/detour/DetourLocalBoundary.cpp
   ${MOUNT_DIR}/libs/detour/DetourNavMeshBuilder.cpp
   ${MOUNT_DIR}/libs/detour/DetourNavMesh.cpp
   ${MOUNT_DIR}/libs/detour/DetourNavMeshQuery.cpp
   ${MOUNT_DIR}/libs/detour/DetourNode.cpp
-#   ${MOUNT_DIR}/libs/detour/DetourObstacleAvoidance.cpp
   ${MOUNT_DIR}/libs/detour/DetourPathCorridor.cpp
-#   ${MOUNT_DIR}/libs/detour/DetourProximityGrid.cpp
+  ${MOUNT_DIR}/libs/detour/DetourDebugDraw.cpp
+  ${MOUNT_DIR}/libs/detour/DebugDraw.cpp
+  ${MOUNT_DIR}/libs/detour/DetourTileCache.cpp
+  ${MOUNT_DIR}/libs/detour/DetourTileCacheBuilder.cpp
 )
 
 set( RECASTLIST
@@ -880,9 +886,8 @@ set( RECASTLIST
   ${MOUNT_DIR}/libs/recast/RecastMeshDetail.cpp
   ${MOUNT_DIR}/libs/recast/RecastRasterization.cpp
   ${MOUNT_DIR}/libs/recast/RecastRegion.cpp
+  ${MOUNT_DIR}/libs/recast/ChunkyTriMesh.cpp
 )
-
-
 
 if( USE_VOIP AND USE_INTERNAL_SPEEX )
     set( SPEEXLIST
@@ -1230,9 +1235,8 @@ GAMELIB( LIB_NAME gppgame
   OUTPUT_DIR main
   COMPILE_DEF GAME GAMEDLL GPP USE_REFENTITY_ANIMATIONSYSTEM
   LIB_FILES ${GAMEGPP_SO} ${GPP_DIR}
-# temporarily disabled due to build failure with bots code
-#  QVM_FILES ${GAMEGPP_BASE}
-#  QVM_ASM ${GAMEGPP_QVM}
+  QVM_FILES ${GAMEGPP_BASE}
+  QVM_ASM ${GAMEGPP_QVM}
 )
 
 GAMELIB( LIB_NAME gpptrem

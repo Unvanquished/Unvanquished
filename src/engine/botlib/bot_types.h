@@ -66,15 +66,16 @@ enum navPolyFlags
 
 enum navPolyAreas
 {
-	POLYAREA_GROUND = 0x01,
-	POLYAREA_WATER = 0x02,
-	POLYAREA_DOOR = 0x04,
-	POLYAREA_JUMPPAD = 0x08,
-	POLYAREA_TELEPORTER = 0x10
+	POLYAREA_GROUND = 1 << 0,
+	POLYAREA_LADDER = 1 << 1,
+	POLYAREA_WATER = 1 << 2,
+	POLYAREA_DOOR = 1 << 3,
+	POLYAREA_JUMPPAD = 1 << 4,
+	POLYAREA_TELEPORTER = 1 << 5
 };
 
 //route status flags
-static const unsigned int ROUTE_FAILED = 1u << 31;
-static const unsigned int ROUTE_SUCCEED = 1u << 30;
-static const unsigned int ROUTE_PARTIAL = 1 << 6;
+#define ROUTE_FAILED  ( 1u << 31 )
+#define	ROUTE_SUCCEED ( 1u << 30 )
+#define	ROUTE_PARTIAL ( 1 << 6 )
 #endif

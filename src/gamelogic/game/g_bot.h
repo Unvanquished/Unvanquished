@@ -41,6 +41,17 @@ void BotAimAtLocation( gentity_t *self, vec3_t target );
 float BotAimNegligence( gentity_t *self, botTarget_t target );
 
 void BotSetTarget( botTarget_t *target, gentity_t *ent, vec3_t *pos );
+qboolean BotChangeGoalEntity( gentity_t *self, gentity_t *goal );
+qboolean BotTargetIsEntity( botTarget_t target );
+qboolean BotTargetIsPlayer( botTarget_t target );
+int BotGetTargetEntityNumber( botTarget_t target );
+void BotGetTargetPos( botTarget_t target, vec3_t rVec );
+team_t BotGetEntityTeam( gentity_t *ent );
+team_t BotGetTargetTeam( botTarget_t target );
+int BotGetTargetType( botTarget_t target );
+qboolean BotChangeGoal( gentity_t *self, botTarget_t target );
+qboolean BotChangeGoalEntity( gentity_t *self, gentity_t *goal );
+qboolean BotChangeGoalPos( gentity_t *self, vec3_t goal );
 
 qboolean BotTargetIsVisible( gentity_t *self, botTarget_t target, int mask );
 
@@ -56,7 +67,6 @@ qboolean BotGetBuildingToBuild( gentity_t *self, vec3_t origin, vec3_t normal, b
 //g_alienbot.cpp
 float CalcPounceAimPitch( gentity_t *self, botTarget_t target );
 float CalcBarbAimPitch( gentity_t *self, botTarget_t target );
-qboolean G_RoomForClassChange( gentity_t *ent, class_t classt, vec3_t newOrigin );
 
 //g_nav.cpp
 void BotFindRandomPointOnMesh( gentity_t *self, vec3_t point );
@@ -89,131 +99,6 @@ void G_BotNavInit( void );
 void G_BotNavCleanup( void );
 
 extern qboolean navMeshLoaded;
-
-//coordinate conversion
-static INLINE void quake2recast( vec3_t vec )
-{
-	vec_t temp = vec[1];
-	vec[0] = -vec[0];
-	vec[1] = vec[2];
-	vec[2] = -temp;
-}
-
-static INLINE void recast2quake( vec3_t vec )
-{
-	vec_t temp = vec[1];
-	vec[0] = -vec[0];
-	vec[1] = -vec[2];
-	vec[2] = temp;
-}
-
-//botTarget_t helpers
-static INLINE qboolean BotTargetIsEntity( botTarget_t target )
-{
-	return ( qboolean ) ( int ) ( target.ent && target.ent->inuse );
-}
-
-static INLINE qboolean BotTargetIsPlayer( botTarget_t target )
-{
-	return ( qboolean ) ( int ) ( target.ent && target.ent->inuse && target.ent->client );
-}
-
-static INLINE int BotGetTargetEntityNumber( botTarget_t target )
-{
-	if ( BotTargetIsEntity( target ) )
-	{
-		return target.ent->s.number;
-	}
-	else
-	{
-		return ENTITYNUM_NONE;
-	}
-}
-
-static INLINE void BotGetTargetPos( botTarget_t target, vec3_t rVec )
-{
-	if ( BotTargetIsEntity( target ) )
-	{
-		VectorCopy( target.ent->s.origin, rVec );
-	}
-	else
-	{
-		VectorCopy( target.coord, rVec );
-	}
-}
-
-static INLINE team_t BotGetEntityTeam( gentity_t *ent )
-{
-	if ( !ent )
-	{
-		return TEAM_NONE;
-	}
-	if ( ent->client )
-	{
-		return ( team_t )ent->client->ps.stats[STAT_TEAM];
-	}
-	else if ( ent->s.eType == ET_BUILDABLE )
-	{
-		return ent->buildableTeam;
-	}
-	else
-	{
-		return TEAM_NONE;
-	}
-}
-
-static INLINE team_t BotGetTargetTeam( botTarget_t target )
-{
-	if ( BotTargetIsEntity( target ) )
-	{
-		return BotGetEntityTeam( target.ent );
-	}
-	else
-	{
-		return TEAM_NONE;
-	}
-}
-
-static INLINE int BotGetTargetType( botTarget_t target )
-{
-	if ( BotTargetIsEntity( target ) )
-	{
-		return target.ent->s.eType;
-	}
-	else
-	{
-		return -1;
-	}
-}
-
-static INLINE qboolean BotChangeGoal( gentity_t *self, botTarget_t target )
-{
-	if ( !target.inuse )
-	{
-		return qfalse;
-	}
-
-	if ( FindRouteToTarget( self, target ) & ( ROUTE_PARTIAL | ROUTE_FAILED ) )
-	{
-		return qfalse;
-	}
-	self->botMind->goal = target;
-	return qtrue;
-}
-
-static INLINE qboolean BotChangeGoalEntity( gentity_t *self, gentity_t *goal )
-{
-	botTarget_t target;
-	BotSetTarget( &target, goal, NULL );
-	return BotChangeGoal( self, target );
-}
-
-static INLINE qboolean BotChangeGoalPos( gentity_t *self, vec3_t goal )
-{
-	botTarget_t target;
-	BotSetTarget( &target, NULL, ( vec3_t * ) &goal );
-	return BotChangeGoal( self, target );
-}
 
 //configureable constants
 //For a reference of how far a number represents, take a look at tremulous.h
@@ -395,13 +280,4 @@ AINodeStatus_t BotActionFlee( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionRoam( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionRush( gentity_t *self, AIGenericNode_t *node );
-
-static INLINE void BotInitNode( AINode_t type, AINodeRunner func, void *node )
-{
-	AIGenericNode_t *n = ( AIGenericNode_t * ) node;
-	n->type = type;
-	n->run = func;
-}
-
 #endif
-

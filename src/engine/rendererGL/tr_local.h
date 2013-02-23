@@ -4364,6 +4364,10 @@ extern "C" {
 	void     R_DebugPolygon( int color, int numPoints, float *points );
 	void     R_DebugText( const vec3_t org, float r, float g, float b, const char *text, qboolean neverOcclude );
 
+	void     DebugDrawVertex(const vec3_t pos, unsigned int color, const vec2_t uv);
+	void     DebugDrawBegin( debugDrawMode_t mode, float size );
+	void     DebugDrawDepthMask(qboolean state);
+	void     DebugDrawEnd( void );
 	/*
 	====================================================================
 

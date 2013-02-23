@@ -531,7 +531,10 @@ void SetMoverState( gentity_t *ent, moverState_t moverState, int time )
 
 			if ( !Q_stricmp( ent->classname, "func_door" ) && ( ent->targetname || ent->takedamage  ) )
 			{
-				G_BotDisableArea( ent->pos1, ent->r.mins, ent->r.maxs );
+				vec3_t mins, maxs;
+				VectorAdd( ent->pos1, ent->r.mins, mins );
+				VectorAdd( ent->pos1, ent->r.maxs, maxs );
+				trap_BotAddObstacle( mins, maxs, &ent->obstacleHandle );
 			}
 			break;
 
@@ -541,7 +544,11 @@ void SetMoverState( gentity_t *ent, moverState_t moverState, int time )
 
 			if ( !Q_stricmp( ent->classname, "func_door" ) && ( ent->targetname || ent->takedamage ) )
 			{
-				G_BotEnableArea( ent->pos1, ent->r.mins, ent->r.maxs );
+				if ( ent->obstacleHandle )
+				{
+					trap_BotRemoveObstacle( ent->obstacleHandle );
+					ent->obstacleHandle = 0;
+				}
 			}
 			break;
 
