@@ -127,11 +127,6 @@ void trigger_multiple_trigger( gentity_t *ent, gentity_t *activator )
 void trigger_multiple_propagation_compat_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	trigger_multiple_trigger( self, self );
-
-	if ( g_debugEntities.integer >= -1 ) //dont't warn about anything with -1 or lower
-	{
-		G_Printf( "^3ERROR: ^7It appears as if ^5%s^7 is targeted by ^5%s^7 to enforce firing, which is undefined behavior — stop doing that! This WILL break in future releases and toggle the sensor instead.\n", self->classname, activator->classname );
-	}
 }
 
 void trigger_multiple_touch( gentity_t *self, gentity_t *other, trace_t *trace )
