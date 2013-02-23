@@ -194,13 +194,13 @@ Parses a configuration file describing the attributes of a buildable
 
 static qboolean BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t *ba )
 {
-	char         *text_p;
-	int          i;
-	int          len;
-	char         *token;
-	char         text[ 20000 ];
+	char *text_p;
+	int i;
+	int len;
+	char *token;
+	char text[ 20000 ];
 	fileHandle_t f;
-	int          defined = 0;
+	int defined = 0;
 	enum
 	{
 	  HUMANNAME = 1 << 1,
