@@ -154,11 +154,13 @@ typedef struct
 
 static const entityActionDescription_t actionDescriptions[] =
 {
-		{ "free",   E_ACT_FREE   },
-		{ "off",    E_ACT_OFF    },
-		{ "on",     E_ACT_ON     },
-		{ "reset",  E_ACT_RESET  },
-		{ "toggle", E_ACT_TOGGLE },
+		{ "act",     E_ACT_ACT       },
+		{ "free",    E_ACT_FREE      },
+		{ "off",     E_ACT_OFF       },
+		{ "on",      E_ACT_ON        },
+		{ "reset",   E_ACT_RESET     },
+		{ "toggle",  E_ACT_TOGGLE    },
+		{ "trigger", E_ACT_PROPAGATE },
 };
 
 typedef struct

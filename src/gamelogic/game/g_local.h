@@ -124,7 +124,9 @@ typedef enum
 	E_ACT_CUSTOM,
 
 	E_ACT_FREE,
+	E_ACT_PROPAGATE,
 
+	E_ACT_ACT, //yea, i know... gonna refactor that later
 	E_ACT_RESET,
 
 	E_ACT_ON,
