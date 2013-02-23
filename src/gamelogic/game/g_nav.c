@@ -329,13 +329,11 @@ qboolean BotDodge( gentity_t *self )
 }
 
 #define STEPSIZE 18.0f
-gentity_t* BotGetPathBlocker( gentity_t *self )
+gentity_t* BotGetPathBlocker( gentity_t *self, const vec3_t dir )
 {
 	vec3_t playerMins, playerMaxs;
 	vec3_t end;
-	vec3_t forward;
 	trace_t trace;
-	vec3_t moveDir;
 	const int TRACE_LENGTH = BOT_OBSTACLE_AVOID_RANGE;
 
 	if ( !( self && self->client ) )
@@ -343,20 +341,13 @@ gentity_t* BotGetPathBlocker( gentity_t *self )
 		return NULL;
 	}
 
-	//get the forward vector, ignoring pitch
-	forward[0] = cos( DEG2RAD( self->client->ps.viewangles[YAW] ) );
-	forward[1] = sin( DEG2RAD( self->client->ps.viewangles[YAW] ) );
-	forward[2] = 0;
-	//already normalized
-	VectorCopy( forward, moveDir );
-
 	BG_ClassBoundingBox( ( class_t ) self->client->ps.stats[STAT_CLASS], playerMins, playerMaxs, NULL, NULL, NULL );
 
 	//account for how large we can step
 	playerMins[2] += STEPSIZE;
 	playerMaxs[2] += STEPSIZE;
 
-	VectorMA( self->s.origin, TRACE_LENGTH, moveDir, end );
+	VectorMA( self->s.origin, TRACE_LENGTH, dir, end );
 
 	trap_Trace( &trace, self->s.origin, playerMins, playerMaxs, end, self->s.number, MASK_SHOT );
 	if ( trace.fraction < 1.0f && trace.plane.normal[ 2 ] < 0.7f )
@@ -369,15 +360,13 @@ gentity_t* BotGetPathBlocker( gentity_t *self )
 	}
 }
 
-qboolean BotShouldJump( gentity_t *self, gentity_t *blocker )
+qboolean BotShouldJump( gentity_t *self, gentity_t *blocker, const vec3_t dir )
 {
 	vec3_t playerMins;
 	vec3_t playerMaxs;
-	vec3_t moveDir;
 	float jumpMagnitude;
 	trace_t trace;
 	const int TRACE_LENGTH = BOT_OBSTACLE_AVOID_RANGE;
-	vec3_t forward;
 	vec3_t end;
 
 	//blocker is not on our team, so ignore
@@ -386,16 +375,8 @@ qboolean BotShouldJump( gentity_t *self, gentity_t *blocker )
 		return qfalse;
 	}
 
-	VectorSubtract( self->botMind->route[0], self->s.origin, forward );
-	//get the forward vector, ignoring z axis
-	/*forward[0] = cos(DEG2RAD(self->client->ps.viewangles[YAW]));
-	forward[1] = sin(DEG2RAD(self->client->ps.viewangles[YAW]));
-	forward[2] = 0;*/
-	forward[2] = 0;
-	VectorNormalize( forward );
-
 	//already normalized
-	VectorCopy( forward, moveDir );
+	
 	BG_ClassBoundingBox( ( class_t ) self->client->ps.stats[STAT_CLASS], playerMins, playerMaxs, NULL, NULL, NULL );
 
 	playerMins[2] += STEPSIZE;
@@ -403,7 +384,7 @@ qboolean BotShouldJump( gentity_t *self, gentity_t *blocker )
 
 
 	//trap_Print(vtos(self->movedir));
-	VectorMA( self->s.origin, TRACE_LENGTH, moveDir, end );
+	VectorMA( self->s.origin, TRACE_LENGTH, dir, end );
 
 	//make sure we are moving into a block
 	trap_Trace( &trace, self->s.origin, playerMins, playerMaxs, end, self->s.number, MASK_SHOT );
@@ -436,7 +417,7 @@ qboolean BotShouldJump( gentity_t *self, gentity_t *blocker )
 	}
 }
 
-qboolean BotFindSteerTarget( gentity_t *self, vec3_t aimPos )
+qboolean BotFindSteerTarget( gentity_t *self, vec3_t dir )
 {
 	vec3_t forward;
 	vec3_t testPoint1, testPoint2;
@@ -444,6 +425,7 @@ qboolean BotFindSteerTarget( gentity_t *self, vec3_t aimPos )
 	float yaw1, yaw2;
 	trace_t trace1, trace2;
 	int i;
+	vec3_t angles;
 
 	if ( !( self && self->client ) )
 	{
@@ -458,15 +440,15 @@ qboolean BotFindSteerTarget( gentity_t *self, vec3_t aimPos )
 	playerMaxs[2] += STEPSIZE;
 
 	//get the yaw (left/right) we dont care about up/down
-	yaw1 = self->client->ps.viewangles[YAW];
-	yaw2 = self->client->ps.viewangles[YAW];
+	vectoangles( dir, angles );
+	yaw1 = yaw2 = angles[ YAW ];
 
 	//directly infront of us is blocked, so dont test it
 	yaw1 -= 15;
 	yaw2 += 15;
 
 	//forward vector is 2D
-	forward[2] = 0;
+	forward[ 2 ] = 0;
 
 	//find an unobstructed position
 	//we check the full 180 degrees in front of us
@@ -485,8 +467,7 @@ qboolean BotFindSteerTarget( gentity_t *self, vec3_t aimPos )
 		//check if unobstructed
 		if ( trace1.fraction >= 1.0f )
 		{
-			VectorCopy( testPoint1, aimPos );
-			aimPos[2] += self->client->ps.viewheight;
+			VectorCopy( forward, dir );
 			return qtrue;
 		}
 
@@ -503,8 +484,7 @@ qboolean BotFindSteerTarget( gentity_t *self, vec3_t aimPos )
 		//check if unobstructed
 		if ( trace2.fraction >= 1.0f )
 		{
-			VectorCopy( testPoint2, aimPos );
-			aimPos[2] += self->client->ps.viewheight;
+			VectorCopy( forward, dir );
 			return qtrue;
 		}
 	}
@@ -512,43 +492,39 @@ qboolean BotFindSteerTarget( gentity_t *self, vec3_t aimPos )
 	//we couldnt find a new position
 	return qfalse;
 }
-qboolean BotAvoidObstacles( gentity_t *self, vec3_t rVec )
+qboolean BotAvoidObstacles( gentity_t *self, vec3_t dir )
 {
 	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
 	gentity_t *blocker;
 
-	if ( !( self && self->client ) )
-	{
-		return qfalse;
-	}
-	if ( BotGetEntityTeam( self ) == TEAM_NONE )
-	{
-		return qfalse;
-	}
+	blocker = BotGetPathBlocker( self, dir );
 
-	blocker = BotGetPathBlocker( self );
 	if ( blocker )
 	{
-		vec3_t newAimPos;
-		if ( BotShouldJump( self, blocker ) )
+		if ( BotShouldJump( self, blocker, dir ) )
 		{
 			BotJump( self );
-
 			return qfalse;
 		}
-		else if ( BotFindSteerTarget( self, newAimPos ) )
+		else if ( !BotFindSteerTarget( self, dir ) )
 		{
-			//found a steer target
-			VectorCopy( newAimPos, rVec );
-			return qfalse;
-		}
-		else
-		{
-			BotAlternateStrafe( self );
-			BotMoveInDir( self, MOVE_BACKWARD );
+			vec3_t angles;
+			vec3_t right;
+			vectoangles( dir, angles );
+			AngleVectors( angles, dir, right, NULL );
 
-			return qtrue;
+			if ( ( self->client->time10000 % 2000 ) < 1000 )
+			{
+				VectorCopy( right, dir );
+			}
+			else
+			{
+				VectorNegate( right, dir );
+			}
+			dir[ 2 ] = 0;
+			VectorNormalize( dir );
 		}
+		return qtrue;
 	}
 	return qfalse;
 }
@@ -621,53 +597,49 @@ void BotDirectionToUsercmd( gentity_t *self, vec3_t dir, usercmd_t *cmd )
 	}
 }
 
-void BotSeek( gentity_t *self, vec3_t seekPos )
+void BotSeek( gentity_t *self, vec3_t direction )
 {
-	vec3_t direction;
 	vec3_t viewOrigin;
+	vec3_t seekPos;
 
 	BG_GetClientViewOrigin( &self->client->ps, viewOrigin );
-	VectorSubtract( seekPos, viewOrigin, direction );
 
 	VectorNormalize( direction );
 
 	// move directly toward the target
 	BotDirectionToUsercmd( self, direction, &self->botMind->cmdBuffer );
 
+	VectorMA( viewOrigin, 100, direction, seekPos );
+
 	// slowly change our aim to point to the target
 	BotSlowAim( self, seekPos, 0.6 );
 	BotAimAtLocation( self, seekPos );
 }
 
-/**BotGoto
-* Used to make the bot travel between waypoints or to the target from the last waypoint
-* Also can be used to make the bot travel other short distances
-*/
-void BotGoto( gentity_t *self, botTarget_t target )
+void BotCalcSteerDir( gentity_t *self, vec3_t dir )
 {
+	const int ip0 = 0;
+	const int ip1 = MIN(1, self->botMind->numCorners-1);
+	const float* p0 = self->botMind->route[ ip0 ];
+	const float* p1 = self->botMind->route[ ip1 ];
+	vec3_t dir0, dir1;
+	float len0, len1;
 
-	vec3_t tmpVec;
+	VectorSubtract( p0, self->s.origin, dir0 );
+	VectorSubtract( p1, self->s.origin, dir1 );
+	dir0[2] = 0;
+	dir1[2] = 0;
+	
+	len0 = VectorLength(dir0);
+	len1 = VectorLength(dir1);
+	if (len1 > 0.001f)
+		VectorScale(dir1, 1.0f/len1, dir1);
+	
+	dir[0] = dir0[0] - dir1[0]*len0*0.5f;
+	dir[1] = dir0[1] - dir1[1]*len0*0.5f;
+	dir[2] = 0;
 
-	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
-
-	BotGetIdealAimLocation( self, target, tmpVec );
-
-	if ( !BotAvoidObstacles( self, tmpVec ) )
-	{
-		BotSeek( self, tmpVec );
-	}
-	else
-	{
-		BotSlowAim( self, tmpVec, 0.6 );
-		BotAimAtLocation( self, tmpVec );
-	}
-
-	//dont sprint or dodge if we dont have enough stamina and are about to slow
-	if ( self->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS && self->client->ps.stats[STAT_STAMINA] < STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE )
-	{
-		usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_SPRINT );
-		usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_DODGE );
-	}
+	VectorNormalize( dir );
 }
 
 /*
@@ -678,8 +650,8 @@ Global Bot Navigation
 
 qboolean BotMoveToGoal( gentity_t *self )
 {
-	botTarget_t target;
 	vec3_t pos;
+
 	if ( !( self && self->client ) )
 	{
 		return qfalse;
@@ -690,8 +662,30 @@ qboolean BotMoveToGoal( gentity_t *self )
 
 	if ( self->botMind->numCorners > 0 )
 	{
-		BotSetTarget( &target, NULL, &self->botMind->route[0] );
-		BotGoto( self, target );
+		vec3_t dir;
+
+		BotCalcSteerDir( self, dir );
+		if ( !BotAvoidObstacles( self, dir ) )
+		{
+			BotSeek( self, dir );
+		}
+		else
+		{
+			vec3_t pos;
+			BG_GetClientViewOrigin( &self->client->ps, pos );
+			VectorMA( pos, 100, dir, pos );
+			BotSlowAim( self, pos, 0.5f );
+			BotAimAtLocation( self, pos );
+			BotMoveInDir( self, MOVE_FORWARD );
+		}
+
+		//dont sprint or dodge if we dont have enough stamina and are about to slow
+		if ( self->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS && self->client->ps.stats[STAT_STAMINA] < STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE )
+		{
+			usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
+			usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_SPRINT );
+			usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_DODGE );
+		}
 		return qfalse;
 	}
 	return qtrue;
