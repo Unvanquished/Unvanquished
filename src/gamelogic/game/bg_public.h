@@ -997,10 +997,10 @@ typedef struct
 {
 	buildable_t number;
 
-	const char  *name;
-	const char  *humanName;
-	const char  *info;
-	const char  *entityName;
+	char  name[ MAX_STRING_CHARS ];
+	char  humanName[ MAX_STRING_CHARS ];
+	char  info[ MAX_STRING_CHARS ];
+	char  entityName[ MAX_STRING_CHARS ];
 
 	trType_t    traj;
 	float       bounce;
@@ -1146,6 +1146,7 @@ const buildableAttributes_t *BG_BuildableByEntityName( const char *name );
 const buildableAttributes_t *BG_Buildable( buildable_t buildable );
 qboolean                    BG_BuildableAllowedInStage( buildable_t buildable,
     stage_t stage );
+void                        BG_InitBuildableAttributes( void );
 
 buildableModelConfig_t      *BG_BuildableModelConfig( buildable_t buildable );
 void                        BG_BuildableBoundingBox( buildable_t buildable,

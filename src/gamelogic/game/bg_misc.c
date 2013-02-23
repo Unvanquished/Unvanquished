@@ -36,552 +36,80 @@ void                               trap_FS_Seek( fileHandle_t f, long offset, fs
 int                                trap_FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize );
 void                               trap_QuoteString( const char *, char *, int );
 
-static const buildableAttributes_t bg_buildableList[] =
+typedef struct
+{
+    buildable_t number;
+    const char* name;
+} buildableName_t;
+
+static const buildableName_t bg_buildableNameList[] =
 {
 	{
-		BA_A_SPAWN, //int       number;
-		"eggpod", //char      *name;
-		N_( "Egg" ), //char      *humanName;
-		N_( "The most basic alien structure. It allows aliens to spawn "
-		"and protect the Overmind. Without any of these, the Overmind "
-		"is left nearly defenseless and defeat is imminent." ),
-		"team_alien_spawn", //char      *entityName;
-		TR_GRAVITY, //trType_t  traj;
-		0.0, //float     bounce;
-		ASPAWN_BP, //int       buildPoints;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		ASPAWN_HEALTH, //int       health;
-		ASPAWN_REGEN, //int       regenRate;
-		ASPAWN_SPLASHDAMAGE, //int       splashDamage;
-		ASPAWN_SPLASHRADIUS, //int       splashRadius;
-		MOD_ASPAWN, //int       meansOfDeath;
-		TEAM_ALIENS, //int       team;
-		( 1 << WP_ABUILD ) | ( 1 << WP_ABUILD2 ), //weapon_t  buildWeapon;
-		BANIM_IDLE1, //int       idleAnim;
-		100, //int       nextthink;
-		ASPAWN_BT, //int       buildTime;
-		qfalse, //qboolean  usable;
-		0, //int       turretRange;
-		0, //int       turretFireSpeed;
-		WP_NONE, //weapon_t  turretProjType;
-		0.5f, //float     minNormal;
-		qtrue, //qboolean  invertNormal;
-		qfalse, //qboolean  creepTest;
-		ASPAWN_CREEPSIZE, //int       creepSize;
-		qfalse, //qboolean  dccTest;
-		qfalse, //qboolean  transparentTest;
-		qfalse, //qboolean  uniqueTest;
-		ASPAWN_VALUE, //int       value;
-		0.0f, //float    radarFadeOut;
+		BA_A_SPAWN,
+		"eggpod",
 	},
 	{
-		BA_A_OVERMIND, //int       number;
-		"overmind", //char      *name;
-		N_( "Overmind" ), //char      *humanName;
-		N_( "A collective consciousness that controls all the alien structures "
-		"in its vicinity. It must be protected at all costs, since its "
-		"death will render alien structures defenseless." ),
-		"team_alien_overmind", //char      *entityName;
-		TR_GRAVITY, //trType_t  traj;
-		0.0, //float     bounce;
-		OVERMIND_BP, //int       buildPoints;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		OVERMIND_HEALTH, //int       health;
-		OVERMIND_REGEN, //int       regenRate;
-		OVERMIND_SPLASHDAMAGE, //int       splashDamage;
-		OVERMIND_SPLASHRADIUS, //int       splashRadius;
-		MOD_ASPAWN, //int       meansOfDeath;
-		TEAM_ALIENS, //int       team;
-		( 1 << WP_ABUILD ) | ( 1 << WP_ABUILD2 ), //weapon_t  buildWeapon;
-		BANIM_IDLE1, //int       idleAnim;
-		OVERMIND_ATTACK_REPEAT, //int       nextthink;
-		OVERMIND_BT, //int       buildTime;
-		qfalse, //qboolean  usable;
-		0, //int       turretRange;
-		0, //int       turretFireSpeed;
-		WP_NONE, //weapon_t  turretProjType;
-		0.95f, //float     minNormal;
-		qfalse, //qboolean  invertNormal;
-		qfalse, //qboolean  creepTest;
-		OVERMIND_CREEPSIZE, //int       creepSize;
-		qfalse, //qboolean  dccTest;
-		qfalse, //qboolean  transparentTest;
-		qtrue, //qboolean  uniqueTest;
-		OVERMIND_VALUE, //int       value;
-		0.0f, //float    radarFadeOut;
+		BA_A_OVERMIND,
+		"overmind",
 	},
 	{
-		BA_A_BARRICADE, //int       number;
-		"barricade", //char      *name;
-		N_( "Barricade" ), //char      *humanName;
-		N_( "Used to obstruct corridors and doorways, hindering humans from "
-		"threatening the spawns and Overmind. Barricades will shrink "
-		"to allow aliens to pass over them, however." ),
-		"team_alien_barricade", //char      *entityName;
-		TR_GRAVITY, //trType_t  traj;
-		0.0, //float     bounce;
-		BARRICADE_BP, //int       buildPoints;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		BARRICADE_HEALTH, //int       health;
-		BARRICADE_REGEN, //int       regenRate;
-		BARRICADE_SPLASHDAMAGE, //int       splashDamage;
-		BARRICADE_SPLASHRADIUS, //int       splashRadius;
-		MOD_ASPAWN, //int       meansOfDeath;
-		TEAM_ALIENS, //int       team;
-		( 1 << WP_ABUILD ) | ( 1 << WP_ABUILD2 ), //weapon_t  buildWeapon;
-		BANIM_IDLE1, //int       idleAnim;
-		100, //int       nextthink;
-		BARRICADE_BT, //int       buildTime;
-		qfalse, //qboolean  usable;
-		0, //int       turretRange;
-		0, //int       turretFireSpeed;
-		WP_NONE, //weapon_t  turretProjType;
-		0.707f, //float     minNormal;
-		qfalse, //qboolean  invertNormal;
-		qtrue, //qboolean  creepTest;
-		BARRICADE_CREEPSIZE, //int       creepSize;
-		qfalse, //qboolean  dccTest;
-		qfalse, //qboolean  transparentTest;
-		qfalse, //qboolean  uniqueTest;
-		BARRICADE_VALUE, //int       value;
-		0.001f, //float    radarFadeOut;
+		BA_A_BARRICADE,
+		"barricade",
 	},
 	{
-		BA_A_ACIDTUBE, //int       number;
-		"acid_tube", //char      *name;
-		N_( "Acid Tube" ), //char      *humanName;
-		N_( "Ejects lethal poisonous acid at an approaching human. These "
-		"are highly effective when used in conjunction with a trapper "
-		"to hold the victim in place." ),
-		"team_alien_acid_tube", //char      *entityName;
-		TR_GRAVITY, //trType_t  traj;
-		0.0, //float     bounce;
-		ACIDTUBE_BP, //int       buildPoints;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		ACIDTUBE_HEALTH, //int       health;
-		ACIDTUBE_REGEN, //int       regenRate;
-		ACIDTUBE_SPLASHDAMAGE, //int       splashDamage;
-		ACIDTUBE_SPLASHRADIUS, //int       splashRadius;
-		MOD_ASPAWN, //int       meansOfDeath;
-		TEAM_ALIENS, //int       team;
-		( 1 << WP_ABUILD ) | ( 1 << WP_ABUILD2 ), //weapon_t  buildWeapon;
-		BANIM_IDLE1, //int       idleAnim;
-		200, //int       nextthink;
-		ACIDTUBE_BT, //int       buildTime;
-		qfalse, //qboolean  usable;
-		0, //int       turretRange;
-		0, //int       turretFireSpeed;
-		WP_NONE, //weapon_t  turretProjType;
-		0.0f, //float     minNormal;
-		qtrue, //qboolean  invertNormal;
-		qtrue, //qboolean  creepTest;
-		ACIDTUBE_CREEPSIZE, //int       creepSize;
-		qfalse, //qboolean  dccTest;
-		qfalse, //qboolean  transparentTest;
-		qfalse, //qboolean  uniqueTest;
-		ACIDTUBE_VALUE, //int       value;
-		0.001f, //float    radarFadeOut;
+		BA_A_ACIDTUBE,
+		"acid_tube",
 	},
 	{
-		BA_A_TRAPPER, //int       number;
-		"trapper", //char      *name;
-		N_( "Trapper" ), //char      *humanName;
-		N_( "Fires a blob of adhesive spit at any non-alien in its line of "
-		"sight. This hinders their movement, making them an easy target "
-		"for other defensive structures or aliens." ),
-		"team_alien_trapper", //char      *entityName;
-		TR_GRAVITY, //trType_t  traj;
-		0.0, //float     bounce;
-		TRAPPER_BP, //int       buildPoints;
-		( 1 << S2 ) | ( 1 << S3 ), //int  stages; //NEEDS ADV BUILDER SO S2 AND UP
-		TRAPPER_HEALTH, //int       health;
-		TRAPPER_REGEN, //int       regenRate;
-		TRAPPER_SPLASHDAMAGE, //int       splashDamage;
-		TRAPPER_SPLASHRADIUS, //int       splashRadius;
-		MOD_ASPAWN, //int       meansOfDeath;
-		TEAM_ALIENS, //int       team;
-		( 1 << WP_ABUILD2 ), //weapon_t  buildWeapon;
-		BANIM_IDLE1, //int       idleAnim;
-		100, //int       nextthink;
-		TRAPPER_BT, //int       buildTime;
-		qfalse, //qboolean  usable;
-		TRAPPER_RANGE, //int       turretRange;
-		TRAPPER_REPEAT, //int       turretFireSpeed;
-		WP_LOCKBLOB_LAUNCHER, //weapon_t  turretProjType;
-		0.0f, //float     minNormal;
-		qtrue, //qboolean  invertNormal;
-		qtrue, //qboolean  creepTest;
-		TRAPPER_CREEPSIZE, //int       creepSize;
-		qfalse, //qboolean  dccTest;
-		qtrue, //qboolean  transparentTest;
-		qfalse, //qboolean  uniqueTest;
-		TRAPPER_VALUE, //int       value;
-		0.001f, //float    radarFadeOut;
+		BA_A_TRAPPER,
+		"trapper",
 	},
 	{
-		BA_A_BOOSTER, //int       number;
-		"booster", //char      *name;
-		N_( "Booster" ), //char      *humanName;
-		N_( "Laces the attacks of any alien that touches it with a poison "
-		"that will gradually deal damage to any humans exposed to it. "
-		"The booster also increases the rate of health regeneration for "
-		"any nearby aliens." ),
-		"team_alien_booster", //char      *entityName;
-		TR_GRAVITY, //trType_t  traj;
-		0.0, //float     bounce;
-		BOOSTER_BP, //int       buildPoints;
-		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		BOOSTER_HEALTH, //int       health;
-		BOOSTER_REGEN, //int       regenRate;
-		BOOSTER_SPLASHDAMAGE, //int       splashDamage;
-		BOOSTER_SPLASHRADIUS, //int       splashRadius;
-		MOD_ASPAWN, //int       meansOfDeath;
-		TEAM_ALIENS, //int       team;
-		( 1 << WP_ABUILD2 ), //weapon_t  buildWeapon;
-		BANIM_IDLE1, //int       idleAnim;
-		100, //int       nextthink;
-		BOOSTER_BT, //int       buildTime;
-		qfalse, //qboolean  usable;
-		0, //int       turretRange;
-		0, //int       turretFireSpeed;
-		WP_NONE, //weapon_t  turretProjType;
-		0.707f, //float     minNormal;
-		qfalse, //qboolean  invertNormal;
-		qtrue, //qboolean  creepTest;
-		BOOSTER_CREEPSIZE, //int       creepSize;
-		qfalse, //qboolean  dccTest;
-		qtrue, //qboolean  transparentTest;
-		qfalse, //qboolean  uniqueTest;
-		BOOSTER_VALUE, //int       value;
-		0.0f, //float    radarFadeOut;
+		BA_A_BOOSTER,
+		"booster",
 	},
 	{
-		BA_A_HIVE, //int       number;
-		"hive", //char      *name;
-		N_( "Hive" ), //char      *humanName;
-		N_( "Houses millions of tiny insectoid aliens. When a human "
-		"approaches this structure, the insectoids attack." ),
-		"team_alien_hive", //char      *entityName;
-		TR_GRAVITY, //trType_t  traj;
-		0.0, //float     bounce;
-		HIVE_BP, //int       buildPoints;
-		( 1 << S3 ), //int  stages;
-		HIVE_HEALTH, //int       health;
-		HIVE_REGEN, //int       regenRate;
-		HIVE_SPLASHDAMAGE, //int       splashDamage;
-		HIVE_SPLASHRADIUS, //int       splashRadius;
-		MOD_ASPAWN, //int       meansOfDeath;
-		TEAM_ALIENS, //int       team;
-		( 1 << WP_ABUILD2 ), //weapon_t  buildWeapon;
-		BANIM_IDLE1, //int       idleAnim;
-		500, //int       nextthink;
-		HIVE_BT, //int       buildTime;
-		qfalse, //qboolean  usable;
-		0, //int       turretRange;
-		0, //int       turretFireSpeed;
-		WP_HIVE, //weapon_t  turretProjType;
-		0.0f, //float     minNormal;
-		qtrue, //qboolean  invertNormal;
-		qtrue, //qboolean  creepTest;
-		HIVE_CREEPSIZE, //int       creepSize;
-		qfalse, //qboolean  dccTest;
-		qfalse, //qboolean  transparentTest;
-		qfalse, //qboolean  uniqueTest;
-		HIVE_VALUE, //int       value;
-		0.001f, //float    radarFadeOut;
+		BA_A_HIVE,
+		"hive",
 	},
 	{
-		BA_H_SPAWN, //int       number;
-		"telenode", //char      *name;
-		N_( "Telenode" ), //char      *humanName;
-		N_( "The most basic human structure. It provides a means for humans "
-		"to enter the battle arena. Without any of these the humans "
-		"cannot spawn and defeat is imminent." ),
-		"team_human_spawn", //char      *entityName;
-		TR_GRAVITY, //trType_t  traj;
-		0.0, //float     bounce;
-		HSPAWN_BP, //int       buildPoints;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		HSPAWN_HEALTH, //int       health;
-		0, //int       regenRate;
-		HSPAWN_SPLASHDAMAGE, //int       splashDamage;
-		HSPAWN_SPLASHRADIUS, //int       splashRadius;
-		MOD_HSPAWN, //int       meansOfDeath;
-		TEAM_HUMANS, //int       team;
-		( 1 << WP_HBUILD ), //weapon_t  buildWeapon;
-		BANIM_IDLE1, //int       idleAnim;
-		100, //int       nextthink;
-		HSPAWN_BT, //int       buildTime;
-		qfalse, //qboolean  usable;
-		0, //int       turretRange;
-		0, //int       turretFireSpeed;
-		WP_NONE, //weapon_t  turretProjType;
-		0.95f, //float     minNormal;
-		qfalse, //qboolean  invertNormal;
-		qfalse, //qboolean  creepTest;
-		0, //int       creepSize;
-		qfalse, //qboolean  dccTest;
-		qtrue, //qboolean  transparentTest;
-		qfalse, //qboolean  uniqueTest;
-		HSPAWN_VALUE, //int       value;
-		0.0f, //float    radarFadeOut;
+		BA_H_SPAWN,
+		"telenode",
 	},
 	{
-		BA_H_MGTURRET, //int       number;
-		"mgturret", //char      *name;
-		N_( "Machinegun Turret" ), //char      *humanName;
-		N_( "Automated base defense that is effective against large targets "
-		"but slow to begin firing. Should always be "
-		"backed up by physical support." ),
-		"team_human_mgturret", //char      *entityName;
-		TR_GRAVITY, //trType_t  traj;
-		0.0, //float     bounce;
-		MGTURRET_BP, //int       buildPoints;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		MGTURRET_HEALTH, //int       health;
-		0, //int       regenRate;
-		MGTURRET_SPLASHDAMAGE, //int       splashDamage;
-		MGTURRET_SPLASHRADIUS, //int       splashRadius;
-		MOD_HSPAWN, //int       meansOfDeath;
-		TEAM_HUMANS, //int       team;
-		( 1 << WP_HBUILD ), //weapon_t  buildWeapon;
-		BANIM_IDLE1, //int       idleAnim;
-		50, //int       nextthink;
-		MGTURRET_BT, //int       buildTime;
-		qfalse, //qboolean  usable;
-		MGTURRET_RANGE, //int       turretRange;
-		MGTURRET_REPEAT, //int       turretFireSpeed;
-		WP_MGTURRET, //weapon_t  turretProjType;
-		0.95f, //float     minNormal;
-		qfalse, //qboolean  invertNormal;
-		qfalse, //qboolean  creepTest;
-		0, //int       creepSize;
-		qfalse, //qboolean  dccTest;
-		qtrue, //qboolean  transparentTest;
-		qfalse, //qboolean  uniqueTest;
-		MGTURRET_VALUE, //int       value;
-		0.001f, //float    radarFadeOut;
+		BA_H_MGTURRET,
+		"mgturret",
 	},
 	{
-		BA_H_TESLAGEN, //int       number;
-		"tesla", //char      *name;
-		N_( "Tesla Generator" ), //char      *humanName;
-		N_( "A structure equipped with a strong electrical attack that fires "
-		"instantly and always hits its target. It is effective against smaller "
-		"aliens and for consolidating basic defense." ),
-		"team_human_tesla", //char      *entityName;
-		TR_GRAVITY, //trType_t  traj;
-		0.0, //float     bounce;
-		TESLAGEN_BP, //int       buildPoints;
-		( 1 << S3 ), //int       stages;
-		TESLAGEN_HEALTH, //int       health;
-		0, //int       regenRate;
-		TESLAGEN_SPLASHDAMAGE, //int       splashDamage;
-		TESLAGEN_SPLASHRADIUS, //int       splashRadius;
-		MOD_HSPAWN, //int       meansOfDeath;
-		TEAM_HUMANS, //int       team;
-		( 1 << WP_HBUILD ), //weapon_t  buildWeapon;
-		BANIM_IDLE1, //int       idleAnim;
-		150, //int       nextthink;
-		TESLAGEN_BT, //int       buildTime;
-		qfalse, //qboolean  usable;
-		TESLAGEN_RANGE, //int       turretRange;
-		TESLAGEN_REPEAT, //int       turretFireSpeed;
-		WP_TESLAGEN, //weapon_t  turretProjType;
-		0.95f, //float     minNormal;
-		qfalse, //qboolean  invertNormal;
-		qfalse, //qboolean  creepTest;
-		0, //int       creepSize;
-		qfalse, //qboolean  dccTest;
-		qtrue, //qboolean  transparentTest;
-		qfalse, //qboolean  uniqueTest;
-		TESLAGEN_VALUE, //int       value;
-		0.001f, //float    radarFadeOut;
+		BA_H_TESLAGEN,
+		"tesla",
 	},
 	{
-		BA_H_ARMOURY, //int       number;
-		"arm", //char      *name;
-		N_( "Armoury" ), //char      *humanName;
-		N_( "An essential part of the human base, providing a means "
-		"to upgrade the basic human equipment. A range of upgrades "
-		"and weapons are available for sale from the armoury." ),
-		"team_human_armoury", //char      *entityName;
-		TR_GRAVITY, //trType_t  traj;
-		0.0, //float     bounce;
-		ARMOURY_BP, //int       buildPoints;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		ARMOURY_HEALTH, //int       health;
-		0, //int       regenRate;
-		ARMOURY_SPLASHDAMAGE, //int       splashDamage;
-		ARMOURY_SPLASHRADIUS, //int       splashRadius;
-		MOD_HSPAWN, //int       meansOfDeath;
-		TEAM_HUMANS, //int       team;
-		( 1 << WP_HBUILD ), //weapon_t  buildWeapon;
-		BANIM_IDLE1, //int       idleAnim;
-		100, //int       nextthink;
-		ARMOURY_BT, //int       buildTime;
-		qtrue, //qboolean  usable;
-		0, //int       turretRange;
-		0, //int       turretFireSpeed;
-		WP_NONE, //weapon_t  turretProjType;
-		0.95f, //float     minNormal;
-		qfalse, //qboolean  invertNormal;
-		qfalse, //qboolean  creepTest;
-		0, //int       creepSize;
-		qfalse, //qboolean  dccTest;
-		qfalse, //qboolean  transparentTest;
-		qfalse, //qboolean  uniqueTest;
-		ARMOURY_VALUE, //int       value;
-		0.0f, //float    radarFadeOut;
+		BA_H_ARMOURY,
+		"arm",
 	},
 	{
-		BA_H_DCC, //int       number;
-		"dcc", //char      *name;
-		N_( "Defence Computer" ), //char      *humanName;
-		N_( "A structure that enables self-repair functionality in "
-		"human structures. Each Defence Computer built increases "
-		"repair rate slightly." ),
-		"team_human_dcc", //char      *entityName;
-		TR_GRAVITY, //trType_t  traj;
-		0.0, //float     bounce;
-		DC_BP, //int       buildPoints;
-		( 1 << S2 ) | ( 1 << S3 ), //int       stages;
-		DC_HEALTH, //int       health;
-		0, //int       regenRate;
-		DC_SPLASHDAMAGE, //int       splashDamage;
-		DC_SPLASHRADIUS, //int       splashRadius;
-		MOD_HSPAWN, //int       meansOfDeath;
-		TEAM_HUMANS, //int       team;
-		( 1 << WP_HBUILD ), //weapon_t  buildWeapon;
-		BANIM_IDLE1, //int       idleAnim;
-		100, //int       nextthink;
-		DC_BT, //int       buildTime;
-		qfalse, //qboolean  usable;
-		0, //int       turretRange;
-		0, //int       turretFireSpeed;
-		WP_NONE, //weapon_t  turretProjType;
-		0.95f, //float     minNormal;
-		qfalse, //qboolean  invertNormal;
-		qfalse, //qboolean  creepTest;
-		0, //int       creepSize;
-		qfalse, //qboolean  dccTest;
-		qfalse, //qboolean  transparentTest;
-		qfalse, //qboolean  uniqueTest;
-		DC_VALUE, //int       value;
-		0.0f, //float    radarFadeOut;
+		BA_H_DCC,
+		"dcc",
 	},
 	{
-		BA_H_MEDISTAT, //int       number;
-		"medistat", //char      *name;
-		N_( "Medistation" ), //char      *humanName;
-		N_( "A structure that automatically restores "
-		"the health and stamina of any human that stands on it. "
-		"It may only be used by one person at a time. This structure "
-		"also issues medkits." ),
-		"team_human_medistat", //char      *entityName;
-		TR_GRAVITY, //trType_t  traj;
-		0.0, //float     bounce;
-		MEDISTAT_BP, //int       buildPoints;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		MEDISTAT_HEALTH, //int       health;
-		0, //int       regenRate;
-		MEDISTAT_SPLASHDAMAGE, //int       splashDamage;
-		MEDISTAT_SPLASHRADIUS, //int       splashRadius;
-		MOD_HSPAWN, //int       meansOfDeath;
-		TEAM_HUMANS, //int       team;
-		( 1 << WP_HBUILD ), //weapon_t  buildWeapon;
-		BANIM_IDLE1, //int       idleAnim;
-		100, //int       nextthink;
-		MEDISTAT_BT, //int       buildTime;
-		qfalse, //qboolean  usable;
-		0, //int       turretRange;
-		0, //int       turretFireSpeed;
-		WP_NONE, //weapon_t  turretProjType;
-		0.95f, //float     minNormal;
-		qfalse, //qboolean  invertNormal;
-		qfalse, //qboolean  creepTest;
-		0, //int       creepSize;
-		qfalse, //qboolean  dccTest;
-		qtrue, //qboolean  transparentTest;
-		qfalse, //qboolean  uniqueTest;
-		MEDISTAT_VALUE, //int       value;
-		0.0f, //float    radarFadeOut;
+		BA_H_MEDISTAT,
+		"medistat",
 	},
 	{
-		BA_H_REACTOR, //int       number;
-		"reactor", //char      *name;
-		N_( "Reactor" ), //char      *humanName;
-		N_( "All structures except the telenode rely on a reactor to operate. "
-		"The reactor provides power for all the human structures either "
-		"directly or via repeaters. Only one reactor can be built at a time." ),
-		"team_human_reactor", //char      *entityName;
-		TR_GRAVITY, //trType_t  traj;
-		0.0, //float     bounce;
-		REACTOR_BP, //int       buildPoints;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		REACTOR_HEALTH, //int       health;
-		0, //int       regenRate;
-		REACTOR_SPLASHDAMAGE, //int       splashDamage;
-		REACTOR_SPLASHRADIUS, //int       splashRadius;
-		MOD_HSPAWN, //int       meansOfDeath;
-		TEAM_HUMANS, //int       team;
-		( 1 << WP_HBUILD ), //weapon_t  buildWeapon;
-		BANIM_IDLE1, //int       idleAnim;
-		REACTOR_ATTACK_DCC_REPEAT, //int       nextthink;
-		REACTOR_BT, //int       buildTime;
-		qtrue, //qboolean  usable;
-		0, //int       turretRange;
-		0, //int       turretFireSpeed;
-		WP_NONE, //weapon_t  turretProjType;
-		0.95f, //float     minNormal;
-		qfalse, //qboolean  invertNormal;
-		qfalse, //qboolean  creepTest;
-		0, //int       creepSize;
-		qfalse, //qboolean  dccTest;
-		qfalse, //qboolean  transparentTest;
-		qtrue, //qboolean  uniqueTest;
-		REACTOR_VALUE, //int       value;
-		0.0f, //float    radarFadeOut;
+		BA_H_REACTOR,
+		"reactor",
 	},
 	{
-		BA_H_REPEATER, //int       number;
-		"repeater", //char      *name;
-		N_( "Repeater" ), //char      *humanName;
-		N_( "A power distributor that transmits power from the reactor "
-		"to remote locations, so that bases may be built far "
-		"from the reactor." ),
-		"team_human_repeater", //char      *entityName;
-		TR_GRAVITY, //trType_t  traj;
-		0.0, //float     bounce;
-		REPEATER_BP, //int       buildPoints;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		REPEATER_HEALTH, //int       health;
-		0, //int       regenRate;
-		REPEATER_SPLASHDAMAGE, //int       splashDamage;
-		REPEATER_SPLASHRADIUS, //int       splashRadius;
-		MOD_HSPAWN, //int       meansOfDeath;
-		TEAM_HUMANS, //int       team;
-		( 1 << WP_HBUILD ), //weapon_t  buildWeapon;
-		BANIM_IDLE1, //int       idleAnim;
-		100, //int       nextthink;
-		REPEATER_BT, //int       buildTime;
-		qtrue, //qboolean  usable;
-		0, //int       turretRange;
-		0, //int       turretFireSpeed;
-		WP_NONE, //weapon_t  turretProjType;
-		0.95f, //float     minNormal;
-		qfalse, //qboolean  invertNormal;
-		qfalse, //qboolean  creepTest;
-		0, //int       creepSize;
-		qfalse, //qboolean  dccTest;
-		qfalse, //qboolean  transparentTest;
-		qfalse, //qboolean  uniqueTest;
-		REPEATER_VALUE, //int       value;
-		0.0f, //float    radarFadeOut;
+		BA_H_REPEATER,
+		"repeater",
 	}
 };
 
-static const size_t bg_numBuildables = ARRAY_LEN( bg_buildableList );
+static const size_t bg_numBuildables = ARRAY_LEN( bg_buildableNameList );
+
+//It would be better to put the exa ct number of entry here
+static buildableAttributes_t bg_buildableList[BA_NUM_BUILDABLES];
 
 static const buildableAttributes_t nullBuildable = { 0 };
 
@@ -655,6 +183,484 @@ qboolean BG_BuildableAllowedInStage( buildable_t buildable,
 		return qfalse;
 	}
 }
+
+/*
+======================
+BG_ParseBuildableAttributeFile
+
+Parses a configuration file describing the attributes of a buildable
+======================
+*/
+
+static qboolean BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t *ba )
+{
+	char         *text_p;
+	int          i;
+	int          len;
+	char         *token;
+	char         text[ 20000 ];
+	fileHandle_t f;
+	int          defined = 0;
+	enum
+	{
+	  HUMANNAME = 1 << 1,
+	  DESCRIPTION = 1 << 2,
+	  ENTITYNAME = 1 << 3,
+	  BUILDPOINTS = 1 << 4,
+	  STAGE = 1 << 5,
+	  HEALTH = 1 << 6,
+	  DEATHMOD = 1 << 7,
+	  TEAM = 1 << 8,
+	  BUILDWEAPON = 1 << 9,
+	  BUILDTIME = 1 << 10,
+	  VALUE = 1 << 11,
+	  RADAR = 1 << 12,
+	  NORMAL = 1 << 13,
+	};
+
+	// load the file
+	len = trap_FS_FOpenFile( filename, &f, FS_READ );
+
+	if ( len < 0 )
+	{
+		Com_Printf( S_COLOR_RED "ERROR: Buildable file %s doesn't exist\n", filename );
+		return qfalse;
+	}
+
+	if ( len == 0 || len >= sizeof( text ) - 1 )
+	{
+		trap_FS_FCloseFile( f );
+		Com_Printf( S_COLOR_RED "ERROR: Buildable file %s is %s\n", filename,
+		            len == 0 ? "empty" : "too long" );
+		return qfalse;
+	}
+
+	trap_FS_Read( text, len, f );
+	text[ len ] = 0;
+	trap_FS_FCloseFile( f );
+
+    // parse the text
+	text_p = text;
+
+	while ( 1 )
+	{
+		token = COM_Parse( &text_p );
+
+		if ( !*token )
+		{
+			break;
+		}
+
+        if ( !Q_stricmp( token, "humanName" ) )
+        {
+            token = COM_Parse( &text_p );
+
+            if ( !token )
+            {
+                break;
+            }
+
+            Q_strncpyz( ba->humanName, token, sizeof( ba->humanName ) );
+
+            defined |= HUMANNAME;
+        }
+        else if ( !Q_stricmp( token, "description" ) )
+        {
+            token = COM_Parse( &text_p );
+
+            if ( !token )
+            {
+                break;
+            }
+
+            Q_strncpyz( ba->info, token, sizeof( ba->info ) );
+
+            defined |= DESCRIPTION;
+        }
+        else if ( !Q_stricmp( token, "entityName" ) )
+        {
+            token = COM_Parse( &text_p );
+
+            if ( !token )
+            {
+                break;
+            }
+
+            Q_strncpyz( ba->entityName, token, sizeof( ba->entityName ) );
+
+            defined |= ENTITYNAME;
+        }
+        else if ( !Q_stricmp( token, "buildPoints" ) )
+        {
+            token = COM_Parse( &text_p );
+
+            if ( !token )
+            {
+                break;
+            }
+
+            ba->buildPoints = atoi(token);
+
+            defined |= BUILDPOINTS;
+        }
+        else if ( !Q_stricmp( token, "stage" ) )
+        {
+            token = COM_Parse( &text_p );
+
+            if ( !token )
+            {
+                break;
+            }
+
+            //It depends heavily on the definition of S1 S2 S3
+            ba->stages = (1 << (S1 + atoi(token))) - 1;
+
+            defined |= STAGE;
+        }
+        else if ( !Q_stricmp( token, "health" ) )
+        {
+            token = COM_Parse( &text_p );
+
+            if ( !token )
+            {
+                break;
+            }
+
+            ba->health = atoi(token);
+
+            defined |= HEALTH;
+        }
+        else if ( !Q_stricmp( token, "regen" ) )
+        {
+            token = COM_Parse( &text_p );
+
+            if ( !token )
+            {
+                break;
+            }
+
+            ba->regenRate = atoi(token);
+        }
+        else if ( !Q_stricmp( token, "splashDamage" ) )
+        {
+            token = COM_Parse( &text_p );
+
+            if ( !token )
+            {
+                break;
+            }
+
+            ba->splashDamage = atoi(token);
+        }
+        else if ( !Q_stricmp( token, "splashRadius" ) )
+        {
+            token = COM_Parse( &text_p );
+
+            if ( !token )
+            {
+                break;
+            }
+
+            ba->splashRadius = atoi(token);
+        }
+        else if ( !Q_stricmp( token, "meanOfDeath" ) )
+        {
+            token = COM_Parse( &text_p );
+
+            if ( !token )
+            {
+                break;
+            }
+
+            if ( !Q_stricmp( token, "alienBuildable" ) )
+            {
+                ba->meansOfDeath = MOD_ASPAWN;
+            }
+            else if ( !Q_stricmp( token, "humanBuildable" ) )
+            {
+                ba->meansOfDeath = MOD_HSPAWN;
+            }
+            else
+            {
+		        Com_Printf( S_COLOR_RED "ERROR: unknown meanOfDeath value '%s'\n", token );
+                break;
+            }
+
+            defined |= DEATHMOD;
+        }
+        else if ( !Q_stricmp( token, "team" ) )
+        {
+            token = COM_Parse( &text_p );
+
+            if ( !token )
+            {
+                break;
+            }
+
+            if ( !Q_stricmp( token, "aliens" ) )
+            {
+                ba->team = TEAM_ALIENS;
+            }
+            else if ( !Q_stricmp( token, "humans" ) )
+            {
+                ba->team = TEAM_HUMANS;
+            }
+            else
+            {
+		        Com_Printf( S_COLOR_RED "ERROR: unknown team value '%s'\n", token );
+                break;
+            }
+
+            defined |= TEAM;
+        }
+        else if ( !Q_stricmp( token, "buildWeapon" ) )
+        {
+            token = COM_Parse( &text_p );
+
+            if ( !token )
+            {
+                break;
+            }
+
+            if ( !Q_stricmp( token, "allAlien" ) )
+            {
+                ba->buildWeapon = ( 1 << WP_ABUILD ) | ( 1 << WP_ABUILD2 );
+            }
+            else if ( !Q_stricmp( token, "advAlien" ) )
+            {
+                ba->buildWeapon = ( 1 << WP_ABUILD2 );
+            }
+            else if ( !Q_stricmp( token, "human" ) )
+            {
+                ba->buildWeapon = ( 1 << WP_HBUILD );
+            }
+            else
+            {
+		        Com_Printf( S_COLOR_RED "ERROR: unknown buildWeapon value '%s'\n", token );
+                break;
+            }
+
+            defined |= BUILDWEAPON;
+        }
+        else if ( !Q_stricmp( token, "thinkPeriod" ) )
+        {
+            token = COM_Parse( &text_p );
+
+            if ( !token )
+            {
+                break;
+            }
+
+            ba->nextthink = atoi(token);
+        }
+        else if ( !Q_stricmp( token, "buildTime" ) )
+        {
+            token = COM_Parse( &text_p );
+
+            if ( !token )
+            {
+                break;
+            }
+
+            ba->buildTime = atoi(token);
+
+            defined |= BUILDTIME;
+        }
+        else if ( !Q_stricmp( token, "usable" ) )
+        {
+            ba->usable = qtrue;
+        }
+        else if ( !Q_stricmp( token, "attackRange" ) )
+        {
+            token = COM_Parse( &text_p );
+
+            if ( !token )
+            {
+                break;
+            }
+
+            ba->turretRange = atoi(token);
+        }
+        else if ( !Q_stricmp( token, "attackSpeed" ) )
+        {
+            token = COM_Parse( &text_p );
+
+            if ( !token )
+            {
+                break;
+            }
+
+            ba->turretFireSpeed = atoi(token);
+        }
+        else if ( !Q_stricmp( token, "attackType" ) )
+        {
+            token = COM_Parse( &text_p );
+
+            if ( !token )
+            {
+                break;
+            }
+
+            if ( !Q_stricmp( token, "none" ) )
+            {
+                ba->turretProjType = WP_NONE;
+            }
+            else if ( !Q_stricmp( token, "lockBlob" ) )
+            {
+                ba->turretProjType = WP_LOCKBLOB_LAUNCHER;
+            }
+            else if ( !Q_stricmp( token, "hive" ) )
+            {
+                ba->turretProjType = WP_HIVE;
+            }
+            else if ( !Q_stricmp( token, "mgturret" ) )
+            {
+                ba->turretProjType = WP_MGTURRET;
+            }
+            else if ( !Q_stricmp( token, "tesla" ) )
+            {
+                ba->turretProjType = WP_TESLAGEN;
+            }
+            else
+            {
+		        Com_Printf( S_COLOR_RED "ERROR: unknown attackType value '%s'\n", token );
+                break;
+            }
+        }
+        else if ( !Q_stricmp( token, "minNormal" ) )
+        {
+            token = COM_Parse( &text_p );
+
+            if ( !token )
+            {
+                break;
+            }
+
+            ba->minNormal = atof(token);
+            defined |= NORMAL;
+        }
+
+        else if ( !Q_stricmp( token, "allowInvertNormal" ) )
+        {
+            ba->invertNormal = qtrue;
+        }
+        else if ( !Q_stricmp( token, "creepTest" ) )
+        {
+            ba->creepTest = qtrue;
+        }
+        else if ( !Q_stricmp( token, "creepSize" ) )
+        {
+            token = COM_Parse( &text_p );
+
+            if ( !token )
+            {
+                break;
+            }
+
+            ba->creepSize = atoi(token);
+        }
+        else if ( !Q_stricmp( token, "dccTest" ) )
+        {
+            ba->dccTest = qtrue;
+        }
+        else if ( !Q_stricmp( token, "transparentTest" ) )
+        {
+            ba->transparentTest = qtrue;
+        }
+        else if ( !Q_stricmp( token, "unique" ) )
+        {
+            ba->uniqueTest = qtrue;
+        }
+        else if ( !Q_stricmp( token, "value" ) )
+        {
+            token = COM_Parse( &text_p );
+
+            if ( !token )
+            {
+                break;
+            }
+
+            ba->value = atoi(token);
+
+            defined |= VALUE;
+        }
+        else if ( !Q_stricmp( token, "radarFadeOut" ) )
+        {
+            token = COM_Parse( &text_p );
+
+            if ( !token )
+            {
+                break;
+            }
+
+            ba->value = atof(token);
+            defined |= RADAR;
+        }
+        else
+        {
+            Com_Printf( S_COLOR_RED "ERROR: unknown token '%s'\n", token );
+            return qfalse;
+        }
+	}
+
+    if ( !( defined & HUMANNAME) ) { token = "humanName"; }
+    else if ( !( defined & DESCRIPTION) ) { token = "description"; }
+    else if ( !( defined & ENTITYNAME) ) { token = "entityName"; }
+    else if ( !( defined & BUILDPOINTS) ) { token = "buildPoints"; }
+    else if ( !( defined & STAGE) ) { token = "stage"; }
+    else if ( !( defined & HEALTH) ) { token = "health"; }
+    else if ( !( defined & DEATHMOD) ) { token = "meanOfDeath"; }
+    else if ( !( defined & TEAM) ) { token = "team"; }
+    else if ( !( defined & BUILDWEAPON) ) { token = "buildWeapon"; }
+    else if ( !( defined & BUILDTIME) ) { token = "buildTime"; }
+    else if ( !( defined & VALUE) ) { token = "value"; }
+    else if ( !( defined & RADAR) ) { token = "radarFadeOut"; }
+    else if ( !( defined & NORMAL) ) { token = "minNormal"; }
+
+    if ( strlen( token ) > 0 )
+	{
+		Com_Printf( S_COLOR_RED "ERROR: %s not defined in %s\n",
+		            token, filename );
+		return qfalse;
+	}
+
+	return qtrue;
+}
+
+/*
+===============
+BG_InitBuildableAttributes
+===============
+*/
+void BG_InitBuildableAttributes( void )
+{
+	int i;
+	const buildableName_t *bh;
+	buildableAttributes_t *ba;
+
+    for ( i = 0; i < bg_numBuildables; i++ )
+	{
+	    bh = &bg_buildableNameList[i];
+        ba = &bg_buildableList[i];
+
+	    //Initialise default values for buildables
+	    Com_Memset( ba, 0, sizeof( buildableAttributes_t ) );
+
+        ba->number = bh->number;
+        Q_strncpyz( ba->name, bh->name, sizeof(ba->name) );
+
+        ba->idleAnim = BANIM_IDLE1;
+        ba->traj = TR_GRAVITY;
+        ba->bounce = 0.0;
+        ba->nextthink = 100;
+        ba->turretProjType = WP_NONE;
+        ba->minNormal = 0.0;
+
+        BG_ParseBuildableAttributeFile( va( "configs/buildables/%s.attr.cfg", ba->name ), ba );
+	}
+}
+
+
 
 static buildableModelConfig_t bg_buildableModelConfigList[ BA_NUM_BUILDABLES ];
 
