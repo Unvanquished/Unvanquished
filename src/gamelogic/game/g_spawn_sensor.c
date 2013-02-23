@@ -37,12 +37,24 @@ void InitBrushSensor( gentity_t *self )
 	self->r.svFlags = SVF_NOCLIENT;
 }
 
-void sensor_toggle( gentity_t *self, gentity_t *other, gentity_t *activator  )
+void sensor_act(target_t* target, gentity_t *self, gentity_t *other, gentity_t *activator)
 {
-	// if we wanted to tell the cgame about our deactivation, this would be the way to do it
-	// self->s.eFlags ^= EF_NODRAW;
-	// but unless we have to, we rather not share the information, so "patched" clients cannot do anything with it either
-	self->operative = !self->operative;
+	switch (target->actionType)
+	{
+	case ETA_ON:
+		self->operative = qtrue;
+		break;
+	case ETA_OFF:
+		self->operative = qfalse;
+		break;
+	case ETA_TOGGLE:
+	default:
+		// if we wanted to tell the cgame about our deactivation, this would be the way to do it
+		// self->s.eFlags ^= EF_NODRAW;
+		// but unless we have to, we rather not share the information, so "patched" clients cannot do anything with it either
+		self->operative = !self->operative;
+		break;
+	}
 }
 
 //some old sensors/triggers used to propagate use-events, this is deprecated behavior
@@ -273,7 +285,7 @@ void SP_sensor_stage( gentity_t *self )
 	if(self->classname[0] == 't')
 		self->use = trigger_compat_propagation_use;
 	else
-		self->use = sensor_toggle;
+		self->act = sensor_act;
 
 	self->r.svFlags = SVF_NOCLIENT;
 }
@@ -316,7 +328,7 @@ void SP_sensor_end( gentity_t *self )
 	if(self->classname[0] == 't')
 		self->use = trigger_compat_propagation_use;
 	else
-		self->use = sensor_toggle;
+		self->act = sensor_act;
 
 	self->r.svFlags = SVF_NOCLIENT;
 }
@@ -518,7 +530,7 @@ void SP_sensor_touch( gentity_t *self )
 	entity_ParseConditions( self );
 
 	self->touch = sensor_player_touch;
-	self->use = sensor_toggle;
+	self->act = sensor_act;
 
 	// SPAWN_DISABLED
 	if ( self->spawnflags & 1 )
