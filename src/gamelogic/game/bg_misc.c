@@ -40,6 +40,7 @@ typedef struct
 {
     buildable_t number;
     const char* name;
+    const char* classname;
 } buildableName_t;
 
 static const buildableName_t bg_buildableNameList[] =
@@ -47,62 +48,77 @@ static const buildableName_t bg_buildableNameList[] =
 	{
 		BA_A_SPAWN,
 		"eggpod",
+		"team_alien_spawn",
 	},
 	{
 		BA_A_OVERMIND,
 		"overmind",
+		"team_alien_overmind",
 	},
 	{
 		BA_A_BARRICADE,
 		"barricade",
+		"team_alien_barricade",
 	},
 	{
 		BA_A_ACIDTUBE,
 		"acid_tube",
+		"team_alien_acid_tube",
 	},
 	{
 		BA_A_TRAPPER,
 		"trapper",
+		"team_alien_trapper",
 	},
 	{
 		BA_A_BOOSTER,
 		"booster",
+		"team_alien_booster",
 	},
 	{
 		BA_A_HIVE,
 		"hive",
+		"team_alien_hive",
 	},
 	{
 		BA_H_SPAWN,
 		"telenode",
+		"team_human_spawn",
 	},
 	{
 		BA_H_MGTURRET,
 		"mgturret",
+		"team_human_mgturret",
 	},
 	{
 		BA_H_TESLAGEN,
 		"tesla",
+		"team_human_tesla",
 	},
 	{
 		BA_H_ARMOURY,
 		"arm",
+		"team_human_armoury",
 	},
 	{
 		BA_H_DCC,
 		"dcc",
+		"team_human_dcc",
 	},
 	{
 		BA_H_MEDISTAT,
 		"medistat",
+		"team_human_medistat",
 	},
 	{
 		BA_H_REACTOR,
 		"reactor",
+		"team_human_reactor",
 	},
 	{
 		BA_H_REPEATER,
 		"repeater",
+		"team_human_repeater",
 	}
 };
 
@@ -205,7 +221,7 @@ static qboolean BG_ParseBuildableAttributeFile( const char *filename, buildableA
 	{
 	  HUMANNAME = 1 << 1,
 	  DESCRIPTION = 1 << 2,
-	  ENTITYNAME = 1 << 3,
+	  NORMAL = 1 << 3,
 	  BUILDPOINTS = 1 << 4,
 	  STAGE = 1 << 5,
 	  HEALTH = 1 << 6,
@@ -215,7 +231,6 @@ static qboolean BG_ParseBuildableAttributeFile( const char *filename, buildableA
 	  BUILDTIME = 1 << 10,
 	  VALUE = 1 << 11,
 	  RADAR = 1 << 12,
-	  NORMAL = 1 << 13,
 	};
 
 	// load the file
@@ -276,19 +291,6 @@ static qboolean BG_ParseBuildableAttributeFile( const char *filename, buildableA
             Q_strncpyz( ba->info, token, sizeof( ba->info ) );
 
             defined |= DESCRIPTION;
-        }
-        else if ( !Q_stricmp( token, "entityName" ) )
-        {
-            token = COM_Parse( &text_p );
-
-            if ( !token )
-            {
-                break;
-            }
-
-            Q_strncpyz( ba->entityName, token, sizeof( ba->entityName ) );
-
-            defined |= ENTITYNAME;
         }
         else if ( !Q_stricmp( token, "buildPoints" ) )
         {
@@ -605,7 +607,6 @@ static qboolean BG_ParseBuildableAttributeFile( const char *filename, buildableA
 
     if ( !( defined & HUMANNAME) ) { token = "humanName"; }
     else if ( !( defined & DESCRIPTION) ) { token = "description"; }
-    else if ( !( defined & ENTITYNAME) ) { token = "entityName"; }
     else if ( !( defined & BUILDPOINTS) ) { token = "buildPoints"; }
     else if ( !( defined & STAGE) ) { token = "stage"; }
     else if ( !( defined & HEALTH) ) { token = "health"; }
@@ -648,6 +649,7 @@ void BG_InitBuildableAttributes( void )
 
         ba->number = bh->number;
         Q_strncpyz( ba->name, bh->name, sizeof(ba->name) );
+        Q_strncpyz( ba->entityName, bh->classname, sizeof(ba->entityName) );
 
         ba->idleAnim = BANIM_IDLE1;
         ba->traj = TR_GRAVITY;
