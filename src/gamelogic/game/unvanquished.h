@@ -215,21 +215,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 /*
  * ALIEN buildables
  *
- * _BP            - build points required for this buildable
- * _BT            - build time required for this buildable
- * _REGEN         - the amount of health per second regained
- * _SPLASHDAMGE   - the amount of damage caused by this buildable when melting
- * _SPLASHRADIUS  - the radius around which it does this damage
- *
  * CREEP_BASESIZE - the maximum distance a buildable can be from an egg/overmind
- * ALIEN_BHLTH_MODIFIER - overall health modifier for coarse tuning
  *
  */
-
-#define ALIEN_BHLTH_MODIFIER    1.0f
-#define ABHM(h) ((int)((float)h * ALIEN_BHLTH_MODIFIER ))
-#define ALIEN_BVALUE_MODIFIER   90.0f
-#define ABVM(h) ((int)((float)h * ALIEN_BVALUE_MODIFIER ))
 
 #define CREEP_BASESIZE          700
 #define CREEP_TIMEOUT           1000
@@ -240,58 +228,20 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define PCLOUD_MODIFIER         0.5f
 #define PCLOUD_ARMOUR_MODIFIER  0.75f
 
-#define ASPAWN_BP               10
-#define ASPAWN_BT               15000
-#define ASPAWN_HEALTH           ABHM(250)
-#define ASPAWN_REGEN            8
-#define ASPAWN_SPLASHDAMAGE     50
-#define ASPAWN_SPLASHRADIUS     100
-#define ASPAWN_CREEPSIZE        120
-#define ASPAWN_VALUE            ABVM(ASPAWN_BP)
-
-#define BARRICADE_BP            8
-#define BARRICADE_BT            20000
-#define BARRICADE_HEALTH        ABHM(300)
-#define BARRICADE_REGEN         14
-#define BARRICADE_SPLASHDAMAGE  50
-#define BARRICADE_SPLASHRADIUS  100
-#define BARRICADE_CREEPSIZE     120
 #define BARRICADE_SHRINKPROP    0.25f
 #define BARRICADE_SHRINKTIMEOUT 500
-#define BARRICADE_VALUE         ABVM(BARRICADE_BP)
 
-#define BOOSTER_BP              12
-#define BOOSTER_BT              15000
-#define BOOSTER_HEALTH          ABHM(150)
-#define BOOSTER_REGEN           8
-#define BOOSTER_SPLASHDAMAGE    50
-#define BOOSTER_SPLASHRADIUS    100
-#define BOOSTER_CREEPSIZE       120
 #define BOOSTER_REGEN_MOD       3.0f
-#define BOOSTER_VALUE           ABVM(BOOSTER_BP)
 #define BOOST_TIME              20000
 #define BOOST_WARN_TIME         15000
 
-#define ACIDTUBE_BP             8
-#define ACIDTUBE_BT             15000
-#define ACIDTUBE_HEALTH         ABHM(125)
-#define ACIDTUBE_REGEN          10
-#define ACIDTUBE_SPLASHDAMAGE   50
-#define ACIDTUBE_SPLASHRADIUS   100
-#define ACIDTUBE_CREEPSIZE      120
 #define ACIDTUBE_DAMAGE         8
 #define ACIDTUBE_RANGE          300.0f
 #define ACIDTUBE_REPEAT         300
 #define ACIDTUBE_REPEAT_ANIM    2000
-#define ACIDTUBE_VALUE          ABVM(ACIDTUBE_BP)
 
-#define HIVE_BP                 12
-#define HIVE_BT                 20000
-#define HIVE_HEALTH             ABHM(125)
-#define HIVE_REGEN              10
-#define HIVE_SPLASHDAMAGE       30
-#define HIVE_SPLASHRADIUS       200
-#define HIVE_CREEPSIZE          120
+#define TRAPPER_RANGE           400
+
 #define HIVE_SENSE_RANGE        500.0f
 #define HIVE_LIFETIME           3000
 #define HIVE_REPEAT             3000
@@ -299,33 +249,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define HIVE_DMG                80
 #define HIVE_SPEED              320.0f
 #define HIVE_DIR_CHANGE_PERIOD  500
-#define HIVE_VALUE              ABVM(HIVE_BP)
 
-#define TRAPPER_BP              8
-#define TRAPPER_BT              12000
-#define TRAPPER_HEALTH          ABHM(50)
-#define TRAPPER_REGEN           6
-#define TRAPPER_SPLASHDAMAGE    15
-#define TRAPPER_SPLASHRADIUS    100
-#define TRAPPER_CREEPSIZE       30
-#define TRAPPER_RANGE           400
-#define TRAPPER_REPEAT          1000
-#define TRAPPER_VALUE           ABVM(TRAPPER_BP)
 #define LOCKBLOB_SPEED          500.0f
 #define LOCKBLOB_LOCKTIME       5000
 #define LOCKBLOB_DOT            0.85f // max angle = acos( LOCKBLOB_DOT )
 #define LOCKBLOB_K_SCALE        1.0f
 
-#define OVERMIND_BP             0
-#define OVERMIND_BT             30000
-#define OVERMIND_HEALTH         ABHM(750)
-#define OVERMIND_REGEN          6
-#define OVERMIND_SPLASHDAMAGE   15
-#define OVERMIND_SPLASHRADIUS   300
-#define OVERMIND_CREEPSIZE      120
+#define OVERMIND_HEALTH         750
 #define OVERMIND_ATTACK_RANGE   150.0f
-#define OVERMIND_ATTACK_REPEAT  1000
-#define OVERMIND_VALUE          ABVM(30)
 
 /*
  * ALIEN misc
@@ -510,103 +441,40 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 /*
  * HUMAN buildables
  *
- * _BP            - build points required for this buildable
- * _BT            - build time required for this buildable
- * _SPLASHDAMGE   - the amount of damage caused by this buildable when it blows up
- * _SPLASHRADIUS  - the radius around which it does this damage
- *
  * REACTOR_BASESIZE - the maximum distance a buildable can be from a reactor
  * REPEATER_BASESIZE - the maximum distance a buildable can be from a repeater
- * HUMAN_BHLTH_MODIFIER - overall health modifier for coarse tuning
  *
  */
-
-#define HUMAN_BHLTH_MODIFIER      1.0f
-#define HBHM(h) ((int)((float)h * HUMAN_BHLTH_MODIFIER ))
-#define HUMAN_BVALUE_MODIFIER     240.0f
-#define HBVM(h) ((int)((float)h * (float)HUMAN_BVALUE_MODIFIER )) // remember these are measured in credits not frags (c.f. ALIEN_CREDITS_PER_KILL)
 
 #define REACTOR_BASESIZE          1000
 #define REPEATER_BASESIZE         500
 #define HUMAN_DETONATION_DELAY    5000
 
-#define HSPAWN_BP                 10
-#define HSPAWN_BT                 10000
-#define HSPAWN_HEALTH             HBHM(310)
-#define HSPAWN_SPLASHDAMAGE       50
-#define HSPAWN_SPLASHRADIUS       100
-#define HSPAWN_VALUE              HBVM(HSPAWN_BP)
-
-#define MEDISTAT_BP               8
-#define MEDISTAT_BT               10000
-#define MEDISTAT_HEALTH           HBHM(190)
-#define MEDISTAT_SPLASHDAMAGE     50
-#define MEDISTAT_SPLASHRADIUS     100
-#define MEDISTAT_VALUE            HBVM(MEDISTAT_BP)
-
-#define MGTURRET_BP               8
-#define MGTURRET_BT               10000
-#define MGTURRET_HEALTH           HBHM(190)
-#define MGTURRET_SPLASHDAMAGE     100
-#define MGTURRET_SPLASHRADIUS     100
+#define MGTURRET_RANGE            400.0
+#define MGTURRET_REPEAT           150.0
 #define MGTURRET_ANGULARSPEED     12
 #define MGTURRET_ACCURACY_TO_FIRE 0
 #define MGTURRET_VERTICALCAP      30 // +/- maximum pitch
-#define MGTURRET_REPEAT           150
 #define MGTURRET_K_SCALE          1.0f
-#define MGTURRET_RANGE            400.0f
 #define MGTURRET_SPREAD           200
 #define MGTURRET_DMG              HDM(8)
 #define MGTURRET_SPINUP_TIME      750 // time between target sighted and fire
-#define MGTURRET_VALUE            HBVM(MGTURRET_BP)
 
-#define TESLAGEN_BP               10
-#define TESLAGEN_BT               15000
-#define TESLAGEN_HEALTH           HBHM(220)
-#define TESLAGEN_SPLASHDAMAGE     50
-#define TESLAGEN_SPLASHRADIUS     100
-#define TESLAGEN_REPEAT           250
+#define TESLAGEN_RANGE            250.0
+#define TESLAGEN_REPEAT           200.0
 #define TESLAGEN_K_SCALE          4.0f
-#define TESLAGEN_RANGE            200
 #define TESLAGEN_DMG              HDM(10)
-#define TESLAGEN_VALUE            HBVM(TESLAGEN_BP)
 
-#define DC_BP                     8
-#define DC_BT                     10000
-#define DC_HEALTH                 HBHM(190)
-#define DC_SPLASHDAMAGE           50
-#define DC_SPLASHRADIUS           100
 #define DC_ATTACK_PERIOD          10000 // how often to spam "under attack"
 #define DC_HEALRATE               4
 #define DC_RANGE                  1000
-#define DC_VALUE                  HBVM(DC_BP)
 
-#define ARMOURY_BP                10
-#define ARMOURY_BT                10000
-#define ARMOURY_HEALTH            HBHM(420)
-#define ARMOURY_SPLASHDAMAGE      50
-#define ARMOURY_SPLASHRADIUS      100
-#define ARMOURY_VALUE             HBVM(ARMOURY_BP)
-
-#define REACTOR_BP                0
-#define REACTOR_BT                20000
-#define REACTOR_HEALTH            HBHM(930)
-#define REACTOR_SPLASHDAMAGE      200
-#define REACTOR_SPLASHRADIUS      300
 #define REACTOR_ATTACK_RANGE      100.0f
 #define REACTOR_ATTACK_REPEAT     1000
 #define REACTOR_ATTACK_DAMAGE     40
 #define REACTOR_ATTACK_DCC_REPEAT 1000
 #define REACTOR_ATTACK_DCC_RANGE  150.0f
 #define REACTOR_ATTACK_DCC_DAMAGE 40
-#define REACTOR_VALUE             HBVM(30)
-
-#define REPEATER_BP               4
-#define REPEATER_BT               10000
-#define REPEATER_HEALTH           HBHM(250)
-#define REPEATER_SPLASHDAMAGE     50
-#define REPEATER_SPLASHRADIUS     100
-#define REPEATER_VALUE            HBVM(REPEATER_BP)
 
 /*
  * HUMAN misc
