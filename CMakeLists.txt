@@ -709,12 +709,12 @@ set( GAMEGPP_BASE
   ${GPP_DIR}/game/g_physics.c
   ${GPP_DIR}/game/g_buildable.c
   ${GPP_DIR}/game/g_missile.c
-  ${GPP_DIR}/game/g_mover.c
   ${GPP_DIR}/game/g_session.c
   ${GPP_DIR}/game/g_spawn_environment.c
   ${GPP_DIR}/game/g_spawn_flow.c
   ${GPP_DIR}/game/g_spawn_game.c
   ${GPP_DIR}/game/g_spawn_misc.c
+  ${GPP_DIR}/game/g_spawn_mover.c
   ${GPP_DIR}/game/g_spawn_sensor.c
   ${GPP_DIR}/game/g_spawn_target.c
   ${GPP_DIR}/game/g_spawn_trigger.c
