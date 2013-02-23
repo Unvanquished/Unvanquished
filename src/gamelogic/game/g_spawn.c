@@ -635,7 +635,7 @@ targetAction_t G_GetTargetActionFor( char* action )
 	foundDescription = bsearch( Q_strlwr(action), actionDescriptions, ARRAY_LEN( actionDescriptions ),
 		             sizeof( entityActionDescription_t ), cmdcmp );
 
-	if(!foundDescription && !foundDescription->alias)
+	if(foundDescription && foundDescription->alias)
 		return foundDescription->action;
 
 	return ETA_CUSTOM;
