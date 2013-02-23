@@ -121,15 +121,14 @@ static void PrintEntityType( gentity_t *entity )
 
 void Svcmd_EntityFire_f( void )
 {
-	char argument[ 6 ];
+	char argument[ MAX_STRING_CHARS ];
 	int  entityId;
-	int  actionType;
 	gentity_t *selection;
-	target_t *target;
+	target_t target = { NULL, NULL, ETA_DEFAULT };
 
-	if ( trap_Argc() != 3 )
+	if ( trap_Argc() < 2 || trap_Argc() > 3 )
 	{
-		G_Printf( "usage: entityFire <entityNum> <event>\n" );
+		G_Printf( "usage: entityFire <entityNum> [action]\n" );
 		return;
 	}
 
@@ -150,17 +149,19 @@ void Svcmd_EntityFire_f( void )
 		return;
 	}
 
-	trap_Argv( 2, argument, sizeof( argument ) );
-	actionType = atoi( argument );
+	if( trap_Argc() >= 3 )
+	{
+		trap_Argv( 2, argument, sizeof( argument ) );
+		target.action = G_CopyString( argument );
+		target.actionType = G_GetTargetActionFor( target.action );
+	}
 
-	G_Printf( "firing %s/%-3i with %i event\n", selection->classname, entityId, actionType);
+	G_Printf( "firing <%s{%i}>:%s\n", selection->classname, entityId, target.action ? target.action : "default");
 
 	if(selection->names[0])
-		target->name = selection->names[0];
+		target.name = selection->names[0];
 
-	target->actionType = ETA_DEFAULT;
-
-	G_FireTarget( target, selection, &g_entities[ ENTITYNUM_NONE ], &g_entities[ ENTITYNUM_NONE ] );
+	G_FireTarget( &target, selection, &g_entities[ ENTITYNUM_NONE ], &g_entities[ ENTITYNUM_NONE ] );
 }
 
 
