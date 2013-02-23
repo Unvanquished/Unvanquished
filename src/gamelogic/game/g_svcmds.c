@@ -202,10 +202,10 @@ void Svcmd_EntityShow_f( void )
 		return;
 	}
 
-	G_Printf( "------------------------\n" );
+	G_Printf( "⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼\n" );
 	G_Printf( "%3i:", entityId );
 	PrintEntityType( selection );
-	G_Printf( "\n------------------------\n" );
+	G_Printf( "\n⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼\n" );
 	G_Printf( "Classname: %s\n", selection->classname );
 	G_Printf( "Capabilities: %s%s%s%s%s%s\n",
 			selection->act ? "acts " : "",
@@ -219,13 +219,13 @@ void Svcmd_EntityShow_f( void )
 	{
 		G_Printf( "Name:");
 		for( i = 0; selection->names[ i ]; ++i )
-			G_Printf("%s %s", ( i == 0 ? "" : "," ), selection->names[i]);
+			G_Printf("%s%s", ( i == 0 ? "" : ", " ), selection->names[i]);
 		G_Printf( "\n" );
 	}
 
 	if (selection->groupName)
 	{
-		G_Printf("Member of Group: %s %s\n", selection->groupName, !selection->groupMaster ? "[master]" : "");
+		G_Printf("Member of Group: %s%s\n", selection->groupName, !selection->groupMaster ? " [master]" : "");
 	}
 
 	if(selection->targets[0].name)
@@ -238,11 +238,11 @@ void Svcmd_EntityShow_f( void )
 
 			if(lastTargetIndex != targetIndex)
 			{
-				G_Printf(" ⇨ %s:%s\n", selection->targets[targetIndex].name, selection->targets[targetIndex].action ? selection->targets[targetIndex].action : "default");
+				G_Printf(" • \"%s:%s\"\n", selection->targets[targetIndex].name, selection->targets[targetIndex].action ? selection->targets[targetIndex].action : "default");
 				lastTargetIndex = targetIndex;
 			}
 
-			G_Printf("   ⇒ %-3i: %-24s \"%s\" {", possbileTarget->s.number, possbileTarget->classname, possbileTarget->names[nameIndex]);
+			G_Printf("   ⇨ %-3i: %-24s \"%s\" {", possbileTarget->s.number, possbileTarget->classname, possbileTarget->names[nameIndex]);
 			for (i = 0; possbileTarget->names[i]; ++i)
 				G_Printf("%s\"%s\"", (i == 0 ? "" : ", "), possbileTarget->names[i]);
 			G_Printf("}\n");
