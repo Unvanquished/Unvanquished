@@ -123,8 +123,9 @@ void Svcmd_EntityFire_f( void )
 {
 	char argument[ 4 ];
 	int  entityId;
-	int  event;
+	int  actionType;
 	gentity_t *selection;
+	target_t *target;
 
 	if ( trap_Argc() != 3 )
 	{
@@ -150,11 +151,16 @@ void Svcmd_EntityFire_f( void )
 	}
 
 	trap_Argv( 2, argument, sizeof( argument ) );
-	event = atoi( argument );
+	actionType = atoi( argument );
 
-	G_Printf( "firing %s/%-3i with %i event\n", selection->classname, entityId, event);
-	G_FireAllTargetsOf( selection, &g_entities[ ENTITYNUM_NONE ]);
+	G_Printf( "firing %s/%-3i with %i event\n", selection->classname, entityId, actionType);
 
+	if(selection->names[0])
+		target->name = selection->names[0];
+
+	target->actionType = E_ACT_DEFAULT;
+
+	G_FireTarget( target, selection, &g_entities[ ENTITYNUM_NONE ], &g_entities[ ENTITYNUM_NONE ] );
 }
 
 
