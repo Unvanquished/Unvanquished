@@ -363,7 +363,7 @@ static qboolean BG_ParseBuildableAttributeFile( const char *filename, buildableA
 
             ba->splashRadius = atoi(token);
         }
-        else if ( !Q_stricmp( token, "meanOfDeath" ) )
+        else if ( !Q_stricmp( token, "meansOfDeath" ) )
         {
             token = COM_Parse( &text_p );
 
@@ -544,7 +544,7 @@ static qboolean BG_ParseBuildableAttributeFile( const char *filename, buildableA
         {
             ba->invertNormal = qtrue;
         }
-        else if ( !Q_stricmp( token, "creepTest" ) )
+        else if ( !Q_stricmp( token, "needsCreep" ) )
         {
             ba->creepTest = qtrue;
         }
@@ -571,7 +571,7 @@ static qboolean BG_ParseBuildableAttributeFile( const char *filename, buildableA
         {
             ba->uniqueTest = qtrue;
         }
-        else if ( !Q_stricmp( token, "value" ) )
+        else if ( !Q_stricmp( token, "reward" ) )
         {
             token = COM_Parse( &text_p );
 
@@ -609,11 +609,11 @@ static qboolean BG_ParseBuildableAttributeFile( const char *filename, buildableA
     else if ( !( defined & BUILDPOINTS) ) { token = "buildPoints"; }
     else if ( !( defined & STAGE) ) { token = "stage"; }
     else if ( !( defined & HEALTH) ) { token = "health"; }
-    else if ( !( defined & DEATHMOD) ) { token = "meanOfDeath"; }
+    else if ( !( defined & DEATHMOD) ) { token = "meansOfDeath"; }
     else if ( !( defined & TEAM) ) { token = "team"; }
     else if ( !( defined & BUILDWEAPON) ) { token = "buildWeapon"; }
     else if ( !( defined & BUILDTIME) ) { token = "buildTime"; }
-    else if ( !( defined & VALUE) ) { token = "value"; }
+    else if ( !( defined & VALUE) ) { token = "reward"; }
     else if ( !( defined & RADAR) ) { token = "radarFadeOut"; }
     else if ( !( defined & NORMAL) ) { token = "minNormal"; }
 
