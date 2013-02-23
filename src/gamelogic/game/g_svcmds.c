@@ -173,7 +173,9 @@ Svcmd_EntityShow_f
 void Svcmd_EntityShow_f( void )
 {
 	int       i, entityId;
+	int       lastTargetIndex, targetIndex, nameIndex;
 	gentity_t *selection;
+	gentity_t *possbileTarget = NULL;
 	char argument[ 6 ];
 
 
@@ -205,7 +207,13 @@ void Svcmd_EntityShow_f( void )
 	PrintEntityType( selection );
 	G_Printf( "\n------------------------\n" );
 	G_Printf( "Classname: %s\n", selection->classname );
-	G_Printf( "Capabilities: %s%s%s\n", selection->think ? "thinks " : "", selection->touch ? "touchable " : "", selection->use ? "useable " : "");
+	G_Printf( "Capabilities: %s%s%s%s%s%s\n",
+			selection->act ? "acts " : "",
+			selection->think ? "thinks " : "",
+			selection->pain ? "pains " : "",
+			selection->die ? "dies " : "",
+			selection->touch ? "touchable " : "",
+			selection->use ? "useable " : "");
 
 	if (selection->names[0])
 	{
@@ -223,8 +231,22 @@ void Svcmd_EntityShow_f( void )
 	if(selection->targets[0].name)
 	{
 		G_Printf( "Targets:\n");
-		for( i = 0; selection->targets[ i ].name; ++i )
-			G_Printf( " ⇨ %s :%s\n", selection->targets[ i ].name, selection->targets[ i ].action ? selection->targets[ i ].action : "default" );
+
+		lastTargetIndex = -1;
+		while ((possbileTarget = G_FindNextTarget(possbileTarget, &targetIndex,	&nameIndex, selection)) != NULL )
+		{
+
+			if(lastTargetIndex != targetIndex)
+			{
+				G_Printf(" ⇨ %s:%s\n", selection->targets[targetIndex].name, selection->targets[targetIndex].action ? selection->targets[targetIndex].action : "default");
+				lastTargetIndex = targetIndex;
+			}
+
+			G_Printf("   ⇒ %-3i: %-24s \"%s\" {", possbileTarget->s.number, possbileTarget->classname, possbileTarget->names[nameIndex]);
+			for (i = 0; possbileTarget->names[i]; ++i)
+				G_Printf("%s\"%s\"", (i == 0 ? "" : ", "), possbileTarget->names[i]);
+			G_Printf("}\n");
+		}
 	}
 }
 
