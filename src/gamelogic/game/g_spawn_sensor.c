@@ -267,21 +267,14 @@ void G_notify_sensor_stage( team_t team, stage_t stage )
 	int       i;
 	gentity_t *ent;
 
-	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
+	ent = &g_entities[MAX_CLIENTS]; //start after the reserved player slots
+	while ((ent = G_Find(ent, FOFS( classname ), "sensor_stage")) != NULL )
 	{
-		if ( !ent->inuse || !ent->enabled )
+		if (((!ent->conditions.stage || stage == ent->conditions.stage)
+				&& (!ent->conditions.team || team == ent->conditions.team))
+				!= ent->conditions.negated)
 		{
-			continue;
-		}
-
-		if ( !Q_stricmp( ent->classname, "sensor_stage" ) )
-		{
-			if ( ( ( !ent->conditions.stage || stage == ent->conditions.stage )
-					&& ( !ent->conditions.team || team == ent->conditions.team ) )
-				!= ent->conditions.negated )
-			{
-				G_FireAllTargetsOf( ent, ent );
-			}
+			G_FireAllTargetsOf(ent, ent);
 		}
 	}
 }
@@ -313,20 +306,11 @@ void G_notify_sensor_end( team_t winningTeam )
 	int       i;
 	gentity_t *ent;
 
-	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
+	ent = &g_entities[MAX_CLIENTS]; //start after the reserved player slots
+	while ((ent = G_Find(ent, FOFS( classname ), "sensor_stage")) != NULL )
 	{
-		if ( !ent->inuse || !ent->enabled )
-		{
-			continue;
-		}
-
-		if ( !Q_stricmp( ent->classname, "sensor_end" ) )
-		{
-			if ( ( winningTeam == ent->conditions.team ) != ent->conditions.negated )
-			{
-				G_FireAllTargetsOf( ent, ent );
-			}
-		}
+		if ((winningTeam == ent->conditions.team) != ent->conditions.negated)
+			G_FireAllTargetsOf(ent, ent);
 	}
 }
 
