@@ -276,7 +276,9 @@ void G_notify_sensor_stage( team_t team, stage_t stage )
 
 		if ( !Q_stricmp( ent->classname, "sensor_stage" ) )
 		{
-			if ( team == ent->conditions.team && stage == ent->conditions.stage )
+			if ( ( ( !ent->conditions.stage || stage == ent->conditions.stage )
+					&& ( !ent->conditions.team || team == ent->conditions.team ) )
+				!= ent->conditions.negated )
 			{
 				G_FireAllTargetsOf( ent, ent );
 			}
@@ -292,6 +294,8 @@ void SP_sensor_stage( gentity_t *self )
 		self->use = trigger_compat_propagation_use;
 	else
 		self->act = sensor_act;
+
+	self->reset = sensor_reset;
 
 	self->r.svFlags = SVF_NOCLIENT;
 }
