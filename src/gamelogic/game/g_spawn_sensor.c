@@ -322,7 +322,7 @@ void G_notify_sensor_end( team_t winningTeam )
 
 		if ( !Q_stricmp( ent->classname, "sensor_end" ) )
 		{
-			if ( winningTeam == ent->conditions.team )
+			if ( ( winningTeam == ent->conditions.team ) != ent->conditions.negated )
 			{
 				G_FireAllTargetsOf( ent, ent );
 			}
@@ -339,6 +339,8 @@ void SP_sensor_end( gentity_t *self )
 		self->use = trigger_compat_propagation_use;
 	else
 		self->act = sensor_act;
+
+	self->reset = sensor_reset;
 
 	self->r.svFlags = SVF_NOCLIENT;
 }
