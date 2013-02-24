@@ -230,6 +230,13 @@ gentity_t *G_PickRandomEntity( int fieldofs, const char *match  )
 	int       totalChoiceCount = 0;
 	gentity_t *choices[ MAX_GENTITIES - 2 - MAX_CLIENTS ];
 
+	/*
+	 * we either want to pick a random player or non-player
+	 * if we actually want a player, we need another dedicated function for it anyway
+	 * so lets skip the playerslots
+	 */
+	foundEntity = &g_entities[ MAX_CLIENTS - 1 ];
+
 	//collects the targets
 	while( ( foundEntity = G_FindNextEntity( foundEntity, fieldofs, match ) ) != NULL )
 		choices[ totalChoiceCount++ ] = foundEntity;
