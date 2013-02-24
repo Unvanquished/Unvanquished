@@ -55,6 +55,15 @@ void sensor_act(target_t* target, gentity_t *self, gentity_t *other, gentity_t *
 	}
 }
 
+void sensor_reset( gentity_t *self )
+{
+	// SPAWN_DISABLED?
+	self->enabled = !(self->spawnflags & 1);
+
+	// NEGATE?
+	self->conditions.negated = ( self->spawnflags & 2 );
+}
+
 //some old sensors/triggers used to propagate use-events, this is deprecated behavior
 void trigger_compat_propagation_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
@@ -528,18 +537,7 @@ void SP_sensor_touch( gentity_t *self )
 
 	self->touch = sensor_player_touch;
 	self->act = sensor_act;
-
-	// SPAWN_DISABLED
-	if ( self->spawnflags & 1 )
-	{
-		self->enabled = qfalse;
-	}
-
-	// NEGATE
-	if ( self->spawnflags & 2 )
-	{
-		self->conditions.negated = qtrue;
-	}
+	self->reset = sensor_reset;
 
 	InitBrushSensor( self );
 	trap_LinkEntity( self );
