@@ -328,7 +328,7 @@ qboolean G_HandleEntityVersions( spawn_t *spawnDescription, gentity_t *entity )
 	if ( !spawnDescription->replacement || !Q_stricmp(entity->classname, spawnDescription->replacement))
 	{
 		if ( g_debugEntities.integer > -2 )
-			G_Printf( "^1ERROR: ^7entity ^5%s ^7has been marked deprecated but no replacement has been supplied\n", entity->classname );
+			G_Printf( "^1ERROR: ^7Entity ^5#%i ^7 of type ^5%s ^7has been marked deprecated but no replacement has been supplied\n", entity->s.number, entity->classname );
 
 		return qfalse;
 	}
@@ -338,7 +338,7 @@ qboolean G_HandleEntityVersions( spawn_t *spawnDescription, gentity_t *entity )
 		if( spawnDescription->versionState < ENT_V_TMPORARY
 		|| ( g_debugEntities.integer >= 1 && spawnDescription->versionState >= ENT_V_TMPORARY) )
 		{
-			G_Printf( "^3WARNING: ^7deprecated entity classname ^5%s^7 found — use ^5%s^7 instead\n", entity->classname, spawnDescription->replacement );
+			G_Printf( "^3WARNING: ^7Entity ^5#%i ^7is of deprecated type ^5%s^7 — use ^5%s^7 instead\n", entity->s.number, entity->classname, spawnDescription->replacement );
 		}
 	}
 	entity->classname = spawnDescription->replacement;
@@ -415,11 +415,11 @@ qboolean G_CallSpawn( gentity_t *ent )
 	{
 		if (!Q_stricmp("worldspawn", ent->classname))
 		{
-			G_Printf( "^1ERROR: ^5%s ^7is not the first entity – we are unable to spawn it.\n", ent->classname );
+			G_Printf( "^1ERROR: ^5%s ^7is not the first but the ^5#%i^7 entity – we are unable to spawn it.\n", ent->classname, ent->s.number );
 		}
 		else
 		{
-			G_Printf( "^1ERROR: ^5%s ^7doesn't have a spawn function. We have to skip it.\n", ent->classname );
+			G_Printf( "^1ERROR: \"^5%s^7\" doesn't have a spawn function. We have to skip it.\n", ent->classname );
 		}
 	}
 
@@ -572,7 +572,7 @@ void G_ParseField( const char *key, const char *value, gentity_t *entity )
 	}
 
 	if ( resultingField->replacement && resultingField->versionState )
-		G_WarnAboutDeprecatedEntityField(NULL, resultingField->replacement, key, resultingField->versionState );
+		G_WarnAboutDeprecatedEntityField(entity, resultingField->replacement, key, resultingField->versionState );
 }
 
 /*
@@ -671,7 +671,7 @@ qboolean G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expect
 		if( typeOfDeprecation < ENT_V_TMPORARY
 		|| ( g_debugEntities.integer >= 1 && typeOfDeprecation >= ENT_V_TMPORARY) )
 		{
-			G_Printf( "^3WARNING: ^7deprecated entity fieldname ^5%s^7 in ^5%s^7 found — use ^5%s^7 instead\n", actualFieldname, entity ? entity->classname : "unknown class", expectedFieldname );
+			G_Printf( "^3WARNING: ^7Entity ^5#%i^7 contains deprecated field ^5%s^7 — use ^5%s^7 instead\n", entity->s.number, actualFieldname, expectedFieldname );
 		}
 	}
 
