@@ -96,32 +96,19 @@ void trigger_checkWaitForReactivation( gentity_t *self )
 // the trigger was just activated
 // ent->activator should be set to the activator so it can be held through a delay
 // so wait for the delay time before firing
-void trigger_multiple_trigger( gentity_t *ent, gentity_t *activator )
+void trigger_multiple_trigger( gentity_t *self, gentity_t *activator )
 {
-	ent->activator = activator;
+	self->activator = activator;
 
-	if ( ent->nextthink )
-	{
+	if ( self->nextthink )
 		return; // can't retrigger until the wait is over
-	}
 
-	if ( activator && activator->client )
-	{
-		if ( ( ent->spawnflags & 1 ) &&
-		     activator->client->ps.stats[ STAT_TEAM ] != TEAM_HUMANS )
-		{
-			return;
-		}
+	if ( activator && activator->client && self->conditions.team &&
+	   ( activator->client->ps.stats[ STAT_TEAM ] != self->conditions.team ) )
+		return;
 
-		if ( ( ent->spawnflags & 2 ) &&
-		     activator->client->ps.stats[ STAT_TEAM ] != TEAM_ALIENS )
-		{
-			return;
-		}
-	}
-
-	G_FireAllTargetsOf( ent, ent->activator );
-	trigger_checkWaitForReactivation( ent );
+	G_FireAllTargetsOf( self, self->activator );
+	trigger_checkWaitForReactivation( self );
 }
 
 void trigger_multiple_propagation_compat_use( gentity_t *self, gentity_t *other, gentity_t *activator )
@@ -139,6 +126,22 @@ void trigger_multiple_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 	trigger_multiple_trigger( self, other );
 }
 
+void trigger_multiple_compat_reset( gentity_t *self )
+{
+	if (( self->spawnflags & 1 ) != ( self->spawnflags & 2 )) //if both are set or none are set we assume TEAM_ALL
+	{
+		if ( self->spawnflags & 1 )
+			self->conditions.team = TEAM_HUMANS;
+		else if ( self->spawnflags & 2 )
+			self->conditions.team = TEAM_ALIENS;
+	}
+
+	if ( self->spawnflags && g_debugEntities.integer >= -1 ) //dont't warn about anything with -1 or lower
+	{
+		G_Printf( "^3ERROR: ^7It appears as if ^5%s^7 has set spawnflags that were not defined behavior of the entities.def; this is likly to break in the future\n", self->classname);
+	}
+}
+
 void SP_trigger_multiple( gentity_t *ent )
 {
 	if (!ent->wait)
@@ -152,6 +155,7 @@ void SP_trigger_multiple( gentity_t *ent )
 
 	ent->touch = trigger_multiple_touch;
 	ent->use = trigger_multiple_propagation_compat_use;
+	ent->reset = trigger_multiple_compat_reset;
 
 	InitBrushSensor( ent );
 	trap_LinkEntity( ent );
