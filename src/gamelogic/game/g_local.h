@@ -239,7 +239,7 @@ struct gentity_s
 	int          soundPos1, soundPos2;
 	int          sound1to2, sound2to1;
 
-	vec3_t       pos1, pos2;
+	vec3_t       restingPosition, activatedPosition;
 	float        rotatorAngle;
 	gentity_t    *clipBrush; // clipping brush for model doors
 
@@ -250,7 +250,7 @@ struct gentity_s
 
 	int          health;
 	int          lastHealth;
-	int          resetValue;
+	int          originalHealth;
 
 	float        speed;
 	float        lastSpeed; // used by trains that have been restarted
@@ -277,17 +277,19 @@ struct gentity_s
 
 	qboolean  takedamage;
 
-	int       damage;
 	int       flightSplashDamage; // quad will increase this without increasing radius
 	int       splashDamage; // quad will increase this without increasing radius
 	int       splashRadius;
 	int       methodOfDeath;
 	int       splashMethodOfDeath;
 
-	int       count;
-
 	int       watertype;
 	int       waterlevel;
+
+	// variables that got randomly semantically abused by everyone
+	int       damage;
+	int       count;
+
 
 	team_t      buildableTeam; // buildable item team
 	struct namelog_s *builtBy; // clientNum of person that built this

@@ -115,7 +115,7 @@ static const field_t fields[] =
 {
 	{ "acceleration",        FOFS( acceleration ),        F_VECTOR    },
 	{ "alias",               FOFS( names[ 2 ] ),          F_STRING    },
-	{ "alpha",               FOFS( pos1 ),                F_VECTOR    },
+	{ "alpha",               FOFS( restingPosition ),     F_VECTOR    }, // What's with the variable abuse everytime?
 	{ "angle",               FOFS( s.angles ),            F_YAW       },
 	{ "angles",              FOFS( s.angles ),            F_VECTOR    },
 	{ "animation",           FOFS( animation ),           F_VECTOR4   },
@@ -129,7 +129,7 @@ static const field_t fields[] =
 	{ "model2",              FOFS( model2 ),              F_STRING    },
 	{ "name",	        	 FOFS( names[ 0 ] ),          F_STRING	  },
 	{ "origin",              FOFS( s.origin ),            F_VECTOR    },
-	{ "radius",              FOFS( pos2 ),                F_VECTOR    },
+	{ "radius",              FOFS( activatedPosition ),   F_VECTOR    }, // What's with the variable abuse everytime?
 	{ "random",              FOFS( waitVariance ),        F_FLOAT,    ENT_V_TMPNAME, "waitVariance" },
 	{ "spawnflags",          FOFS( spawnflags ),          F_INT       },
 	{ "speed",               FOFS( speed ),               F_FLOAT     },

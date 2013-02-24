@@ -526,52 +526,52 @@ void SetMoverState( gentity_t *ent, moverState_t moverState, int time )
 	switch ( moverState )
 	{
 		case MOVER_POS1:
-			VectorCopy( ent->pos1, ent->s.pos.trBase );
+			VectorCopy( ent->restingPosition, ent->s.pos.trBase );
 			ent->s.pos.trType = TR_STATIONARY;
 			break;
 
 		case MOVER_POS2:
-			VectorCopy( ent->pos2, ent->s.pos.trBase );
+			VectorCopy( ent->activatedPosition, ent->s.pos.trBase );
 			ent->s.pos.trType = TR_STATIONARY;
 			break;
 
 		case MOVER_1TO2:
-			VectorCopy( ent->pos1, ent->s.pos.trBase );
-			VectorSubtract( ent->pos2, ent->pos1, delta );
+			VectorCopy( ent->restingPosition, ent->s.pos.trBase );
+			VectorSubtract( ent->activatedPosition, ent->restingPosition, delta );
 			f = 1000.0 / ent->s.pos.trDuration;
 			VectorScale( delta, f, ent->s.pos.trDelta );
 			ent->s.pos.trType = TR_LINEAR_STOP;
 			break;
 
 		case MOVER_2TO1:
-			VectorCopy( ent->pos2, ent->s.pos.trBase );
-			VectorSubtract( ent->pos1, ent->pos2, delta );
+			VectorCopy( ent->activatedPosition, ent->s.pos.trBase );
+			VectorSubtract( ent->restingPosition, ent->activatedPosition, delta );
 			f = 1000.0 / ent->s.pos.trDuration;
 			VectorScale( delta, f, ent->s.pos.trDelta );
 			ent->s.pos.trType = TR_LINEAR_STOP;
 			break;
 
 		case ROTATOR_POS1:
-			VectorCopy( ent->pos1, ent->s.apos.trBase );
+			VectorCopy( ent->restingPosition, ent->s.apos.trBase );
 			ent->s.apos.trType = TR_STATIONARY;
 			break;
 
 		case ROTATOR_POS2:
-			VectorCopy( ent->pos2, ent->s.apos.trBase );
+			VectorCopy( ent->activatedPosition, ent->s.apos.trBase );
 			ent->s.apos.trType = TR_STATIONARY;
 			break;
 
 		case ROTATOR_1TO2:
-			VectorCopy( ent->pos1, ent->s.apos.trBase );
-			VectorSubtract( ent->pos2, ent->pos1, delta );
+			VectorCopy( ent->restingPosition, ent->s.apos.trBase );
+			VectorSubtract( ent->activatedPosition, ent->restingPosition, delta );
 			f = 1000.0 / ent->s.apos.trDuration;
 			VectorScale( delta, f, ent->s.apos.trDelta );
 			ent->s.apos.trType = TR_LINEAR_STOP;
 			break;
 
 		case ROTATOR_2TO1:
-			VectorCopy( ent->pos2, ent->s.apos.trBase );
-			VectorSubtract( ent->pos1, ent->pos2, delta );
+			VectorCopy( ent->activatedPosition, ent->s.apos.trBase );
+			VectorSubtract( ent->restingPosition, ent->activatedPosition, delta );
 			f = 1000.0 / ent->s.apos.trDuration;
 			VectorScale( delta, f, ent->s.apos.trDelta );
 			ent->s.apos.trType = TR_LINEAR_STOP;
@@ -644,13 +644,13 @@ Returns a MOVER_* value representing the phase (either one
 */
 moverState_t GetMoverGroupState( gentity_t *ent )
 {
-	qboolean pos1 = qfalse;
+	qboolean restingPosition = qfalse;
 
 	for ( ent = MasterOf( ent ); ent; ent = ent->groupChain )
 	{
 		if ( ent->moverState == MOVER_POS1 || ent->moverState == ROTATOR_POS1 )
 		{
-			pos1 = qtrue;
+			restingPosition = qtrue;
 		}
 		else if ( ent->moverState == MOVER_1TO2 || ent->moverState == ROTATOR_1TO2 )
 		{
@@ -662,7 +662,7 @@ moverState_t GetMoverGroupState( gentity_t *ent )
 		}
 	}
 
-	if ( pos1 )
+	if ( restingPosition )
 	{
 		return MOVER_POS1;
 	}
@@ -1225,14 +1225,14 @@ void InitMover( gentity_t *ent )
 
 	ent->moverState = MOVER_POS1;
 	ent->s.eType = ET_MOVER;
-	VectorCopy( ent->pos1, ent->r.currentOrigin );
+	VectorCopy( ent->restingPosition, ent->r.currentOrigin );
 	trap_LinkEntity( ent );
 
 	ent->s.pos.trType = TR_STATIONARY;
-	VectorCopy( ent->pos1, ent->s.pos.trBase );
+	VectorCopy( ent->restingPosition, ent->s.pos.trBase );
 
 	// calculate time to reach second position from speed
-	VectorSubtract( ent->pos2, ent->pos1, move );
+	VectorSubtract( ent->activatedPosition, ent->restingPosition, move );
 	distance = VectorLength( move );
 
 	if ( !ent->speed )
@@ -1334,14 +1334,14 @@ void InitRotator( gentity_t *ent )
 
 	ent->moverState = ROTATOR_POS1;
 	ent->s.eType = ET_MOVER;
-	VectorCopy( ent->pos1, ent->r.currentAngles );
+	VectorCopy( ent->restingPosition, ent->r.currentAngles );
 	trap_LinkEntity( ent );
 
 	ent->s.apos.trType = TR_STATIONARY;
-	VectorCopy( ent->pos1, ent->s.apos.trBase );
+	VectorCopy( ent->restingPosition, ent->s.apos.trBase );
 
 	// calculate time to reach second position from speed
-	VectorSubtract( ent->pos2, ent->pos1, move );
+	VectorSubtract( ent->activatedPosition, ent->restingPosition, move );
 	angle = VectorLength( move );
 
 	if ( !ent->speed )
@@ -1707,7 +1707,7 @@ void SP_func_door( gentity_t *ent )
 		ent->damage = 2;
 
 	// first position at start
-	VectorCopy( ent->s.origin, ent->pos1 );
+	VectorCopy( ent->s.origin, ent->restingPosition );
 
 	// calculate second position
 	trap_SetBrushModel( ent, ent->model );
@@ -1717,16 +1717,16 @@ void SP_func_door( gentity_t *ent )
 	abs_movedir[ 2 ] = fabs( ent->movedir[ 2 ] );
 	VectorSubtract( ent->r.maxs, ent->r.mins, size );
 	distance = DotProduct( abs_movedir, size ) - lip;
-	VectorMA( ent->pos1, distance, ent->movedir, ent->pos2 );
+	VectorMA( ent->restingPosition, distance, ent->movedir, ent->activatedPosition );
 
 	// if "start_open", reverse position 1 and 2
 	if ( ent->spawnflags & 1 )
 	{
 		vec3_t temp;
 
-		VectorCopy( ent->pos2, temp );
-		VectorCopy( ent->s.origin, ent->pos2 );
-		VectorCopy( temp, ent->pos1 );
+		VectorCopy( ent->activatedPosition, temp );
+		VectorCopy( ent->s.origin, ent->activatedPosition );
+		VectorCopy( temp, ent->restingPosition );
 	}
 
 	InitMover( ent );
@@ -1850,18 +1850,18 @@ void SP_func_door_rotating( gentity_t *ent )
 		ent->rotatorAngle = 90.0;
 	}
 
-	VectorCopy( ent->s.angles, ent->pos1 );
+	VectorCopy( ent->s.angles, ent->restingPosition );
 	trap_SetBrushModel( ent, ent->model );
-	VectorMA( ent->pos1, ent->rotatorAngle, ent->movedir, ent->pos2 );
+	VectorMA( ent->restingPosition, ent->rotatorAngle, ent->movedir, ent->activatedPosition );
 
 	// if "start_open", reverse position 1 and 2
 	if ( ent->spawnflags & 1 )
 	{
 		vec3_t temp;
 
-		VectorCopy( ent->pos2, temp );
-		VectorCopy( ent->s.angles, ent->pos2 );
-		VectorCopy( temp, ent->pos1 );
+		VectorCopy( ent->activatedPosition, temp );
+		VectorCopy( ent->s.angles, ent->activatedPosition );
+		VectorCopy( temp, ent->restingPosition );
 		VectorNegate( ent->movedir, ent->movedir );
 	}
 
@@ -2137,23 +2137,23 @@ void SpawnPlatTrigger( gentity_t *ent )
 	trigger->r.contents = CONTENTS_TRIGGER;
 	trigger->parent = ent;
 
-	tmin[ 0 ] = ent->pos1[ 0 ] + ent->r.mins[ 0 ] + 33;
-	tmin[ 1 ] = ent->pos1[ 1 ] + ent->r.mins[ 1 ] + 33;
-	tmin[ 2 ] = ent->pos1[ 2 ] + ent->r.mins[ 2 ];
+	tmin[ 0 ] = ent->restingPosition[ 0 ] + ent->r.mins[ 0 ] + 33;
+	tmin[ 1 ] = ent->restingPosition[ 1 ] + ent->r.mins[ 1 ] + 33;
+	tmin[ 2 ] = ent->restingPosition[ 2 ] + ent->r.mins[ 2 ];
 
-	tmax[ 0 ] = ent->pos1[ 0 ] + ent->r.maxs[ 0 ] - 33;
-	tmax[ 1 ] = ent->pos1[ 1 ] + ent->r.maxs[ 1 ] - 33;
-	tmax[ 2 ] = ent->pos1[ 2 ] + ent->r.maxs[ 2 ] + 8;
+	tmax[ 0 ] = ent->restingPosition[ 0 ] + ent->r.maxs[ 0 ] - 33;
+	tmax[ 1 ] = ent->restingPosition[ 1 ] + ent->r.maxs[ 1 ] - 33;
+	tmax[ 2 ] = ent->restingPosition[ 2 ] + ent->r.maxs[ 2 ] + 8;
 
 	if ( tmax[ 0 ] <= tmin[ 0 ] )
 	{
-		tmin[ 0 ] = ent->pos1[ 0 ] + ( ent->r.mins[ 0 ] + ent->r.maxs[ 0 ] ) * 0.5;
+		tmin[ 0 ] = ent->restingPosition[ 0 ] + ( ent->r.mins[ 0 ] + ent->r.maxs[ 0 ] ) * 0.5;
 		tmax[ 0 ] = tmin[ 0 ] + 1;
 	}
 
 	if ( tmax[ 1 ] <= tmin[ 1 ] )
 	{
-		tmin[ 1 ] = ent->pos1[ 1 ] + ( ent->r.mins[ 1 ] + ent->r.maxs[ 1 ] ) * 0.5;
+		tmin[ 1 ] = ent->restingPosition[ 1 ] + ( ent->r.mins[ 1 ] + ent->r.maxs[ 1 ] ) * 0.5;
 		tmax[ 1 ] = tmin[ 1 ] + 1;
 	}
 
@@ -2212,9 +2212,9 @@ void SP_func_plat( gentity_t *ent )
 	}
 
 	// pos1 is the rest (bottom) position, pos2 is the top
-	VectorCopy( ent->s.origin, ent->pos2 );
-	VectorCopy( ent->pos2, ent->pos1 );
-	ent->pos1[ 2 ] -= height;
+	VectorCopy( ent->s.origin, ent->activatedPosition );
+	VectorCopy( ent->activatedPosition, ent->restingPosition );
+	ent->restingPosition[ 2 ] -= height;
 
 	InitMover( ent );
 
@@ -2297,7 +2297,7 @@ void SP_func_button( gentity_t *ent )
 	ent->wait *= 1000;
 
 	// first position
-	VectorCopy( ent->s.origin, ent->pos1 );
+	VectorCopy( ent->s.origin, ent->restingPosition );
 
 	// calculate second position
 	trap_SetBrushModel( ent, ent->model );
@@ -2310,7 +2310,7 @@ void SP_func_button( gentity_t *ent )
 	abs_movedir[ 2 ] = fabs( ent->movedir[ 2 ] );
 	VectorSubtract( ent->r.maxs, ent->r.mins, size );
 	distance = abs_movedir[ 0 ] * size[ 0 ] + abs_movedir[ 1 ] * size[ 1 ] + abs_movedir[ 2 ] * size[ 2 ] - lip;
-	VectorMA( ent->pos1, distance, ent->movedir, ent->pos2 );
+	VectorMA( ent->restingPosition, distance, ent->movedir, ent->activatedPosition );
 
 	if ( ent->health )
 	{
@@ -2375,8 +2375,8 @@ void Reached_Train( gentity_t *ent )
 
 	// set the new trajectory
 	ent->nextPathSegment = next->nextPathSegment;
-	VectorCopy( next->s.origin, ent->pos1 );
-	VectorCopy( next->nextPathSegment->s.origin, ent->pos2 );
+	VectorCopy( next->s.origin, ent->restingPosition );
+	VectorCopy( next->nextPathSegment->s.origin, ent->activatedPosition );
 
 	// if the path_corner has a speed, use that
 	if ( next->speed )
@@ -2397,7 +2397,7 @@ void Reached_Train( gentity_t *ent )
 	ent->lastSpeed = speed;
 
 	// calculate duration
-	VectorSubtract( ent->pos2, ent->pos1, move );
+	VectorSubtract( ent->activatedPosition, ent->restingPosition, move );
 	length = VectorLength( move );
 
 	ent->s.pos.trDuration = length * 1000 / speed;
@@ -2447,7 +2447,7 @@ void Start_Train( gentity_t *ent, gentity_t *other, gentity_t *activator )
 
 	//recalculate duration as the mover is highly
 	//unlikely to be right on a path_corner
-	VectorSubtract( ent->pos2, ent->pos1, move );
+	VectorSubtract( ent->activatedPosition, ent->restingPosition, move );
 	ent->s.pos.trDuration = VectorLength( move ) * 1000 / ent->lastSpeed;
 	SetMoverState( ent, MOVER_1TO2, level.time );
 
@@ -2465,7 +2465,7 @@ void Stop_Train( gentity_t *ent, gentity_t *other, gentity_t *activator )
 
 	//get current origin
 	BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
-	VectorCopy( origin, ent->pos1 );
+	VectorCopy( origin, ent->restingPosition );
 	SetMoverState( ent, MOVER_POS1, level.time );
 
 	ent->spawnflags |= TRAIN_START_OFF;
@@ -2952,7 +2952,7 @@ void SP_func_spawn( gentity_t *ent )
   //ent->r.svFlags = SVF_USE_CURRENT_ORIGIN;
   ent->s.eType = ET_MOVER;
   ent->moverState = MOVER_POS1;
-  VectorCopy( ent->s.origin, ent->pos1 );
+  VectorCopy( ent->s.origin, ent->restingPosition );
 
   if( ent->model[ 0 ] == '*' )
     trap_SetBrushModel( ent, ent->model );
@@ -2983,7 +2983,7 @@ void Use_func_destructable( gentity_t *ent, gentity_t *other, gentity_t *activat
     trap_UnlinkEntity( ent );
     if( ent->health <= 0 )
     {
-      G_RadiusDamage( ent->pos1, activator, ent->splashDamage, ent->splashRadius, ent, MOD_TRIGGER_HURT );
+      G_RadiusDamage( ent->restingPosition, activator, ent->splashDamage, ent->splashRadius, ent, MOD_TRIGGER_HURT );
       G_FireAllTargetsOf( ent, activator );
     }
   }
@@ -2991,7 +2991,7 @@ void Use_func_destructable( gentity_t *ent, gentity_t *other, gentity_t *activat
   {
     trap_LinkEntity( ent );
     G_KillBrushModel( ent, activator );
-    ent->health = ent->resetValue;
+    ent->health = ent->originalHealth;
     ent->takedamage = qtrue;
   }
 }
@@ -3012,14 +3012,14 @@ void SP_func_destructable( gentity_t *ent )
 
   G_SpawnInt( "damage", "0", &ent->splashDamage );
   G_SpawnInt( "radius", "0", &ent->splashRadius );
-  G_SpawnInt( "health", "100", &ent->resetValue );
-  if( ent->resetValue < 1 )
-    ent->resetValue = 1;
+  G_SpawnInt( "health", "100", &ent->originalHealth );
+  if( ent->originalHealth < 1 )
+    ent->originalHealth = 1;
 
   //ent->r.svFlags = SVF_USE_CURRENT_ORIGIN;
   ent->s.eType = ET_MOVER;
   ent->moverState = MOVER_POS1;
-  VectorCopy( ent->s.origin, ent->pos1 );
+  VectorCopy( ent->s.origin, ent->restingPosition );
 
   if( ent->model[ 0 ] == '*' )
     trap_SetBrushModel( ent, ent->model );
@@ -3036,7 +3036,7 @@ void SP_func_destructable( gentity_t *ent )
   else
   {
     trap_LinkEntity( ent );
-    ent->health = ent->resetValue;
+    ent->health = ent->originalHealth;
     ent->takedamage = qtrue;
   }
 }

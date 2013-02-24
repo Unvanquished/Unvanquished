@@ -304,7 +304,7 @@ void SP_env_lens_flare( gentity_t *self )
 {
 	self->s.eType = ET_LIGHTFLARE;
 	self->s.modelindex = G_ShaderIndex( self->targetShaderName );
-	VectorCopy( self->pos2, self->s.origin2 );
+	VectorCopy( self->activatedPosition, self->s.origin2 );
 
 	//try to find a spot near to the flare which is empty. This
 	//is used to facilitate visibility testing
@@ -470,7 +470,7 @@ void SP_env_animated_model( gentity_t *self )
 	self->s.torsoAnim = ( int ) self->animation[ 2 ];
 	self->s.legsAnim = ( int ) self->animation[ 3 ];
 
-	self->s.angles2[ 0 ] = self->pos2[ 0 ];
+	self->s.angles2[ 0 ] = self->activatedPosition[ 0 ];
 
 	//add the model to the client precache list
 	self->s.modelindex = G_ModelIndex( self->model );
