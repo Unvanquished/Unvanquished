@@ -1798,7 +1798,8 @@ void FindIntermissionPoint( void )
 	vec3_t    dir;
 
 	// find the intermission spot
-	ent = G_Find( NULL, FOFS( classname ), "info_player_intermission" );
+	ent = &g_entities[MAX_CLIENTS]; //start after the reserved player slots
+	ent = G_Find( ent, FOFS( classname ), "info_player_intermission" );
 
 	if ( !ent )
 	{

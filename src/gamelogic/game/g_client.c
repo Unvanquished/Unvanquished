@@ -170,7 +170,7 @@ gentity_t *G_SelectRandomFurthestSpawnPoint( vec3_t avoidPoint, vec3_t origin, v
 	int       numSpots, rnd, i, j;
 
 	numSpots = 0;
-	spot = NULL;
+	spot = &g_entities[MAX_CLIENTS]; //start after the reserved player slots
 
 	while ( ( spot = G_Find( spot, FOFS( classname ), "info_player_deathmatch" ) ) != NULL )
 	{
@@ -220,7 +220,7 @@ gentity_t *G_SelectRandomFurthestSpawnPoint( vec3_t avoidPoint, vec3_t origin, v
 
 	if ( !numSpots )
 	{
-		spot = G_Find( NULL, FOFS( classname ), "info_player_deathmatch" );
+		spot = G_Find( &g_entities[MAX_CLIENTS], FOFS( classname ), "info_player_deathmatch" );
 
 		if ( !spot )
 		{
@@ -255,7 +255,8 @@ static gentity_t *G_SelectSpawnBuildable( vec3_t preference, buildable_t buildab
 {
 	gentity_t *search, *spot;
 
-	search = spot = NULL;
+	spot = NULL;
+	search = &g_entities[MAX_CLIENTS]; //start after the reserved player slots
 
 	while ( ( search = G_Find( search, FOFS( classname ),
 	                           BG_Buildable( buildable )->entityName ) ) != NULL )
@@ -375,7 +376,7 @@ gentity_t *G_SelectAlienLockSpawnPoint( vec3_t origin, vec3_t angles )
 {
 	gentity_t *spot;
 
-	spot = NULL;
+	spot = &g_entities[MAX_CLIENTS]; //start after the reserved player slots
 	spot = G_Find( spot, FOFS( classname ), "info_alien_intermission" );
 
 	if ( !spot )
@@ -401,7 +402,7 @@ gentity_t *G_SelectHumanLockSpawnPoint( vec3_t origin, vec3_t angles )
 {
 	gentity_t *spot;
 
-	spot = NULL;
+	spot = &g_entities[MAX_CLIENTS]; //start after the reserved player slots
 	spot = G_Find( spot, FOFS( classname ), "info_human_intermission" );
 
 	if ( !spot )
