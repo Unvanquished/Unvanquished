@@ -268,7 +268,7 @@ void G_notify_sensor_stage( team_t team, stage_t stage )
 	gentity_t *ent;
 
 	ent = &g_entities[MAX_CLIENTS]; //start after the reserved player slots
-	while ((ent = G_Find(ent, FOFS( classname ), "sensor_stage")) != NULL )
+	while ((ent = G_FindNextEntity(ent, FOFS( classname ), "sensor_stage")) != NULL )
 	{
 		if (((!ent->conditions.stage || stage == ent->conditions.stage)
 				&& (!ent->conditions.team || team == ent->conditions.team))
@@ -307,7 +307,7 @@ void G_notify_sensor_end( team_t winningTeam )
 	gentity_t *ent;
 
 	ent = &g_entities[MAX_CLIENTS]; //start after the reserved player slots
-	while ((ent = G_Find(ent, FOFS( classname ), "sensor_stage")) != NULL )
+	while ((ent = G_FindNextEntity(ent, FOFS( classname ), "sensor_stage")) != NULL )
 	{
 		if ((winningTeam == ent->conditions.team) != ent->conditions.negated)
 			G_FireAllTargetsOf(ent, ent);

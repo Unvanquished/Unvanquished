@@ -167,7 +167,7 @@ NULL will be returned if the end of the list is reached.
 
 =============
 */
-gentity_t *G_Find( gentity_t *from, int fieldofs, const char *match )
+gentity_t *G_FindNextEntity( gentity_t *from, int fieldofs, const char *match )
 {
 	char *s;
 
