@@ -244,15 +244,10 @@ gentity_t *G_PickRandomEntity( int fieldofs, const char *match  )
 	return choices[ rand() / ( RAND_MAX / totalChoiceCount + 1 ) ];
 }
 
-/*
-=============
-G_PickTarget
-
-Selects a random entity from among the targets
-=============
-*/
-#define MAXCHOICES 32
-
+/**
+ * G_PickRandomTargetFor
+ * Selects a random entity from among the targets
+ */
 gentity_t *G_PickRandomTargetFor( gentity_t *self )
 {
 	int       targetIndex, nameIndex;
@@ -266,7 +261,7 @@ gentity_t *G_PickRandomTargetFor( gentity_t *self )
 
 	if ( !totalChoiceCount )
 	{
-		G_Printf( "G_PickTargetFor: none of the following targets were found:" );
+		G_Printf( "G_PickRandomTargetFor: none of the following targets were found:" );
 		for( targetIndex = 0; self->targets[ targetIndex ].name; ++targetIndex )
 		  G_Printf( "%s %s", ( targetIndex == 0 ? "" : "," ), self->targets[ targetIndex ].name );
 		G_Printf( "\n" );
