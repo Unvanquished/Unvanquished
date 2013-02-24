@@ -4448,6 +4448,7 @@ static gentity_t *G_FinishSpawningBuildable( gentity_t *ent, qboolean force )
 
 	built->takedamage = qtrue;
 	built->spawned = qtrue; //map entities are already spawned
+	built->enabled = qtrue;
 	built->health = BG_Buildable( buildable )->health;
 	built->s.eFlags |= EF_B_SPAWNED;
 

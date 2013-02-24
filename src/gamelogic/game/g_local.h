@@ -168,7 +168,6 @@ struct gentity_s
 
 	//entity creation time, i.e. when a building was build or a missile was fired (for diminishing missile damage)
 	int          creationTime;
-	qboolean     spawned; // whether or not this has finished spawning
 
 	char         *names[ MAX_ENTITY_ALIASES + 1 ];
 	/*
@@ -182,8 +181,18 @@ struct gentity_s
 	 * is the entity able to become active?
 	 * e.g. used for buildables to indicate being useable or a stationary weapon being "live"
 	 * or for sensors to indicate being able to sense other entities and fire events
+	 *
+	 * as a resasonable assumption we default to entities being enabled directly after they are spawned,
+	 * since most of the time we want them to be
 	 */
 	qboolean     enabled;
+
+	/**
+	 * for entities taking a longer time to spawn,
+	 * this boolean indicates when this spawn process was finished
+	 * this can e.g. be indicated by an animation
+	 */
+	qboolean     spawned;
 
 	/**
 	 * is the buildable getting support by reactor or overmind?

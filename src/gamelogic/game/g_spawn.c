@@ -393,6 +393,8 @@ qboolean G_CallSpawn( gentity_t *ent )
 	{ // found it
 
 		s->spawn( ent );
+		ent->enabled = qtrue;
+		ent->spawned = qtrue;
 
 		/*
 		 *  to allow each spawn function to test and handle for itself,
