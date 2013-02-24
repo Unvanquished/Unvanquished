@@ -170,7 +170,7 @@ gentity_t *G_SelectRandomFurthestSpawnPoint( vec3_t avoidPoint, vec3_t origin, v
 	int       numSpots, rnd, i, j;
 
 	numSpots = 0;
-	spot = &g_entities[MAX_CLIENTS]; //start after the reserved player slots
+	spot = &g_entities[MAX_CLIENTS - 1]; //start after the reserved player slots
 
 	while ( ( spot = G_FindNextEntity( spot, FOFS( classname ), "info_player_deathmatch" ) ) != NULL )
 	{
@@ -256,7 +256,7 @@ static gentity_t *G_SelectSpawnBuildable( vec3_t preference, buildable_t buildab
 	gentity_t *search, *spot;
 
 	spot = NULL;
-	search = &g_entities[MAX_CLIENTS]; //start after the reserved player slots
+	search = &g_entities[MAX_CLIENTS - 1]; //start after the reserved player slots
 
 	while ( ( search = G_FindNextEntity( search, FOFS( classname ),
 	                           BG_Buildable( buildable )->entityName ) ) != NULL )
