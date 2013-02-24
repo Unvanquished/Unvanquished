@@ -180,7 +180,7 @@ float G_RewardAttackers( gentity_t *self )
 		// only give partial credits for a buildable not yet completed
 		if ( !self->spawned )
 		{
-			value *= ( float )( level.time - self->buildTime ) /
+			value *= ( float )( level.time - self->creationTime ) /
 			         BG_Buildable( self->s.modelindex )->buildTime;
 		}
 

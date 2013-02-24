@@ -876,7 +876,7 @@ void AGeneric_CreepRecede( gentity_t *self )
 		{
 			self->s.time = - ( level.time -
 			                   ( int )( ( float ) CREEP_SCALEDOWN_TIME *
-			                            ( 1.0f - ( ( float )( level.time - self->buildTime ) /
+			                            ( 1.0f - ( ( float )( level.time - self->creationTime ) /
 			                                       ( float ) BG_Buildable( self->s.modelindex )->buildTime ) ) ) );
 		}
 	}
@@ -3105,7 +3105,7 @@ void G_BuildableThink( gentity_t *ent, int msec )
 	//toggle spawned flag for buildables
 	if ( !ent->spawned && ent->health > 0 && !level.pausedTime )
 	{
-		if ( ent->buildTime + buildTime < level.time )
+		if ( ent->creationTime + buildTime < level.time )
 		{
 			ent->spawned = qtrue;
 
@@ -4128,13 +4128,13 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 
 	built->takedamage = qtrue;
 	built->spawned = qfalse;
-	built->buildTime = built->s.time = level.time;
+	built->creationTime = built->s.time = level.time;
 
 	// build instantly in cheat mode
 	if ( builder->client && g_cheats.integer )
 	{
 		built->health = BG_Buildable( buildable )->health;
-		built->buildTime = built->s.time =
+		built->creationTime = built->s.time =
 		                     level.time - BG_Buildable( buildable )->buildTime;
 	}
 
@@ -4958,7 +4958,7 @@ void G_BuildLogRevertThink( gentity_t *ent )
 		built->deconstructTime = ent->deconstructTime;
 	}
 
-	built->buildTime = built->s.time = 0;
+	built->creationTime = built->s.time = 0;
 	G_KillBox( built );
 
 	G_LogPrintf( "revert: restore %d %s\n",

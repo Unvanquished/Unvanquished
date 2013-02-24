@@ -166,6 +166,8 @@ struct gentity_s
 	const char   *classname;
 	int          spawnflags;
 
+	//entity creation time, i.e. when a building was build or a missile was fired (for diminishing missile damage)
+	int          creationTime;
 	qboolean     spawned; // whether or not this has finished spawning
 
 	char         *names[ MAX_ENTITY_ALIASES + 1 ];
@@ -300,9 +302,7 @@ struct gentity_s
 	int         pain_debounce_time;
 	int         last_move_time;
 	int         timestamp; // body queue sinking, etc
-	int         startTime; // currently for the diminishing missile damage
 	int         shrunkTime; // time when a barricade shrunk or zero
-	int         buildTime; // when this buildable was built
 	int         animTime; // last animation change
 	int         time1000; // timer evaluated every second
 	int         deconstructTime; // time at which structure marked
