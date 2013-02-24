@@ -223,6 +223,27 @@ gentity_t *G_FindNextTarget(gentity_t *currentTarget, int *targetIndex, int *nam
 	return NULL;
 }
 
+gentity_t *G_PickRandomEntity( int fieldofs, const char *match  )
+{
+	int       targetIndex, nameIndex;
+	gentity_t *foundEntity = NULL;
+	int       totalChoiceCount = 0;
+	gentity_t *choices[ MAX_GENTITIES - 2 - MAX_CLIENTS ];
+
+	//collects the targets
+	while( ( foundEntity = G_FindNextEntity( foundEntity, fieldofs, match ) ) != NULL )
+		choices[ totalChoiceCount++ ] = foundEntity;
+
+	if ( !totalChoiceCount )
+	{
+		G_Printf( "G_PickRandomEntity: no entity matching %s was found.\n", match );
+		return NULL;
+	}
+
+	//return a random one from among the choices
+	return choices[ rand() / ( RAND_MAX / totalChoiceCount + 1 ) ];
+}
+
 /*
 =============
 G_PickTarget

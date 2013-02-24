@@ -954,6 +954,7 @@ char       *G_CopyString( const char *str );
 void       G_FireTarget( target_t *target, gentity_t *targetedEntity, gentity_t *other, gentity_t *activator );
 gentity_t  *G_FindNextEntity( gentity_t *from, int fieldofs, const char *match );
 gentity_t  *G_FindNextTarget( gentity_t *targ, int *tIx, int *tnIx, gentity_t *self );
+gentity_t  *G_PickRandomEntity( int fieldofs, const char *match );
 gentity_t  *G_PickRandomTargetFor( gentity_t *self );
 void       G_FireRandomTargetOf( gentity_t *entity, gentity_t *activator );
 void       G_TouchTriggers( gentity_t *ent );
