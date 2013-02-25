@@ -1629,7 +1629,7 @@ void ATrapper_FireOnEnemy( gentity_t *self, int firespeed, float range )
 	//fire at target
 	FireWeapon( self );
 	G_SetBuildableAnim( self, BANIM_ATTACK1, qfalse );
-	self->count = level.time + firespeed;
+	self->customNumber = level.time + firespeed;
 }
 
 /*
@@ -1778,7 +1778,7 @@ void ATrapper_Think( gentity_t *self )
 		}
 
 		//if we are pointing at our target and we can fire shoot it
-		if ( self->count < level.time )
+		if ( self->customNumber < level.time )
 		{
 			ATrapper_FireOnEnemy( self, firespeed, range );
 		}
@@ -1804,11 +1804,11 @@ static qboolean G_SuicideIfNoPower( gentity_t *self )
 	if ( !self->powered )
 	{
 		// if the power hasn't reached this buildable for some time, then destroy the buildable
-		if ( self->count == 0 )
+		if ( self->customNumber == 0 )
 		{
-			self->count = level.time;
+			self->customNumber = level.time;
 		}
-		else if ( ( level.time - self->count ) >= HUMAN_BUILDABLE_INACTIVE_TIME )
+		else if ( ( level.time - self->customNumber ) >= HUMAN_BUILDABLE_INACTIVE_TIME )
 		{
 			if ( self->parentNode )
 			{
@@ -1825,7 +1825,7 @@ static qboolean G_SuicideIfNoPower( gentity_t *self )
 	}
 	else
 	{
-		self->count = 0;
+		self->customNumber = 0;
 	}
 
 	return qfalse;
@@ -4229,7 +4229,7 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 			built->think = HRepeater_Think;
 			built->die = HRepeater_Die;
 			built->use = HRepeater_Use;
-			built->count = -1;
+			built->customNumber = -1;
 			break;
 
 		default:

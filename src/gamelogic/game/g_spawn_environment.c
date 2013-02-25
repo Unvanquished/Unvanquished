@@ -166,7 +166,7 @@ void env_rumble_think( gentity_t *self )
 
 void env_rumble_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
-	self->timestamp = level.time + ( self->count * FRAMETIME );
+	self->timestamp = level.time + ( self->customNumber * FRAMETIME );
 	self->nextthink = level.time + FRAMETIME;
 	self->activator = activator;
 	self->last_move_time = 0;
@@ -180,9 +180,9 @@ void SP_env_rumble( gentity_t *self )
 		          vtos( self->s.origin ) );
 	}
 
-	if ( !self->count )
+	if ( !self->customNumber )
 	{
-		self->count = 10;
+		self->customNumber = 10;
 	}
 
 	if ( !self->speed )

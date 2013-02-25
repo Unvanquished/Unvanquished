@@ -1407,7 +1407,7 @@ static void Touch_DoorTriggerSpectator( gentity_t *ent, gentity_t *other, trace_
 	int    i, axis;
 	vec3_t origin, dir, angles;
 
-	axis = ent->count;
+	axis = ent->customNumber;
 	VectorClear( dir );
 
 	if ( fabs( other->s.origin[ axis ] - ent->r.absmax[ axis ] ) <
@@ -1488,7 +1488,7 @@ static void manualDoorTriggerSpectator( gentity_t *door, gentity_t *player )
 
 	VectorCopy( mins, triggerHull.r.absmin );
 	VectorCopy( maxs, triggerHull.r.absmax );
-	triggerHull.count = best;
+	triggerHull.customNumber = best;
 
 	Touch_DoorTriggerSpectator( &triggerHull, player, NULL );
 }
@@ -1631,7 +1631,7 @@ void Think_SpawnNewDoorTrigger( gentity_t *ent )
 	other->r.contents = CONTENTS_TRIGGER;
 	other->touch = Touch_DoorTrigger;
 	// remember the thinnest axis
-	other->count = best;
+	other->customNumber = best;
 	trap_LinkEntity( other );
 
 	if ( ent->moverState < MODEL_POS1 )

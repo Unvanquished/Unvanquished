@@ -299,7 +299,7 @@ struct gentity_s
 
 	// variables that got randomly semantically abused by everyone
 	int       damage;
-	int       count;
+	int       customNumber;
 
 
 	team_t      buildableTeam; // buildable item team

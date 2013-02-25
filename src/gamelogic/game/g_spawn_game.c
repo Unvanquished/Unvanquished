@@ -39,14 +39,14 @@ void game_score_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
 		return;
 	}
 
-	AddScore( activator, ent->count );
+	AddScore( activator, ent->customNumber );
 }
 
 void SP_game_score( gentity_t *ent )
 {
-	if ( !ent->count )
+	if ( !ent->customNumber )
 	{
-		ent->count = 1;
+		ent->customNumber = 1;
 	}
 
 	ent->use = game_score_use;

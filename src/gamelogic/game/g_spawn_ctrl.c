@@ -98,20 +98,20 @@ void ctrl_limited_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	G_FireAllTargetsOf( self, activator );
 
-	if ( self->count <= 1 )
+	if ( self->customNumber <= 1 )
 	{
 		G_FreeEntity( self );
 	}
 	else
 	{
-		self->count--;
+		self->customNumber--;
 	}
 }
 
 void SP_ctrl_limited( gentity_t *self )
 {
-	if ( self->count < 1 )
-		self->count = 1;
+	if ( self->customNumber < 1 )
+		self->customNumber = 1;
 
 	self->use = ctrl_limited_use;
 }

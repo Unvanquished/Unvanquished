@@ -162,19 +162,19 @@ void SP_target_location( gentity_t *self )
 		return;
 	}
 
-	if ( self->count )
+	if ( self->customNumber )
 	{
-		if ( self->count < 0 )
+		if ( self->customNumber < 0 )
 		{
-			self->count = 0;
+			self->customNumber = 0;
 		}
 
-		if ( self->count > 7 )
+		if ( self->customNumber > 7 )
 		{
-			self->count = 7;
+			self->customNumber = 7;
 		}
 
-		message = va( "%c%c%s" S_COLOR_WHITE, Q_COLOR_ESCAPE, self->count + '0',
+		message = va( "%c%c%s" S_COLOR_WHITE, Q_COLOR_ESCAPE, self->customNumber + '0',
 		              self->message );
 	}
 	else
