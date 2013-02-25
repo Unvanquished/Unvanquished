@@ -59,3 +59,24 @@ void SP_ConditionFields( gentity_t *self ) {
 	                          self->conditions.upgrades, UP_NUM_UPGRADES );
 
 }
+
+void SP_WaitFields( gentity_t *self, float defaultWait, float defaultWaitVariance ) {
+	if (!self->wait)
+		self->wait = defaultWait;
+
+	if (!self->waitVariance)
+		self->waitVariance = defaultWaitVariance;
+
+	if ( self->waitVariance >= self->wait )
+	{
+		self->waitVariance = self->wait - FRAMETIME;
+
+		if( g_debugEntities.integer > -1)
+		{
+			G_Printf( "^3WARNING: ^7Entity ^5#%i ^7of type ^5%s^7 has waitWariance >= wait\n", self->s.number, self->classname );
+		}
+	}
+}
+
+
+

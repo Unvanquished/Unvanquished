@@ -117,6 +117,7 @@ void     think_fireDelayed( gentity_t *ent );
  */
 void     entity_SetNextthink( gentity_t *self );
 void     SP_ConditionFields( gentity_t *self );
+void     SP_WaitFields( gentity_t *self, float defaultWait, float defaultWaitVariance );
 
 
 // Init functions

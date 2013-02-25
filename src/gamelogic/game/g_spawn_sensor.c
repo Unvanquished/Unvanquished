@@ -153,14 +153,7 @@ void trigger_multiple_compat_reset( gentity_t *self )
 
 void SP_trigger_multiple( gentity_t *ent )
 {
-	if (!ent->wait)
-		ent->wait = 0.5f;
-
-	if ( ent->waitVariance >= ent->wait && ent->wait >= 0 )
-	{
-		ent->waitVariance = ent->wait - FRAMETIME;
-		G_Printf( "trigger_multiple has random >= wait\n" );
-	}
+	SP_WaitFields(ent, 0.5f, 0);
 
 	ent->touch = trigger_multiple_touch;
 	ent->use = trigger_multiple_propagation_compat_use;
@@ -223,20 +216,10 @@ void sensor_timer_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 
 void SP_sensor_timer( gentity_t *self )
 {
-	if (!self->wait)
-		self->wait = 1.0f;
-
-	if (!self->waitVariance)
-		self->waitVariance = 1.0f;
+	SP_WaitFields(self, 1.0f, (self->classname[0] == 'f') ? 1.0f : 0.0f); //wait variance default only for func_timer
 
 	self->use = sensor_timer_use;
 	self->think = sensor_timer_think;
-
-	if ( self->waitVariance >= self->wait )
-	{
-		self->waitVariance = self->wait - FRAMETIME;
-		G_Printf( "trigger_timer at %s has random >= wait\n", vtos( self->s.origin ) );
-	}
 
 	if ( self->spawnflags & 1 )
 	{
@@ -509,15 +492,7 @@ void sensor_player_touch( gentity_t *self, gentity_t *activator, trace_t *trace 
 //for compatibility
 void SP_sensor_touch_compat( gentity_t *entity )
 {
-	if (!entity->wait)
-		entity->wait = 0.5f;
-
-	if ( entity->waitVariance >= entity->wait && entity->wait >= 0 )
-	{
-		entity->waitVariance = entity->wait - FRAMETIME;
-		G_Printf( "^3WARNING: ^7%s has waitVariance >= wait\n", entity->classname );
-	}
-
+	SP_WaitFields(entity, 0.5f, 0);
 	SP_sensor_touch( entity );
 }
 

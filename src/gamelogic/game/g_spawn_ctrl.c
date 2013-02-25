@@ -52,7 +52,7 @@ void ctrl_relay_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 		return;
 	}
 
-	if ( !self->wait && !self->waitVariance )
+	if ( !self->wait )
 	{
 		G_FireAllTargetsOf( self, activator );
 	}
@@ -76,6 +76,8 @@ void SP_ctrl_relay( gentity_t *self )
 			self->wait = 1;
 		}
 	}
+
+	SP_WaitFields(self, 0, 0 );
 
 	self->use = ctrl_relay_use;
 }
