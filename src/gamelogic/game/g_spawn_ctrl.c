@@ -94,17 +94,27 @@ ctrl_limited
 =================================================================================
 */
 
-void ctrl_limited_use( gentity_t *self, gentity_t *other, gentity_t *activator )
+void ctrl_limited_act(target_t* target, gentity_t *self, gentity_t *other, gentity_t *activator)
 {
-	G_FireAllTargetsOf( self, activator );
+	switch (target->actionType)
+	{
+	case ETA_ON:
+	case ETA_OFF:
+	case ETA_TOGGLE:
+		break;//already handled
 
-	if ( self->count.current <= 1 )
-	{
-		G_FreeEntity( self );
-	}
-	else
-	{
+	default:
+		if (!self->enabled)
+			return;
+
+		G_FireAllTargetsOf( self, activator );
+		if ( self->count.current <= 1 )
+		{
+			G_FreeEntity( self );
+			return;
+		}
 		self->count.current--;
+		break;
 	}
 }
 
@@ -118,6 +128,6 @@ void SP_ctrl_limited( gentity_t *self )
 	if ( self->count.previous < 1 )
 		self->count.previous = 1;
 
-	self->use = ctrl_limited_use;
-	self->reset = ctrl_limited_use;
+	self->act = ctrl_limited_act;
+	self->reset = ctrl_limited_reset;
 }
