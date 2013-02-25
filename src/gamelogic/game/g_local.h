@@ -942,6 +942,7 @@ int        G_SoundIndex( const char *name );
 void       G_KillBox( gentity_t *ent );
 void       G_FireAllTargetsOf( gentity_t *ent, gentity_t *activator );
 void       G_SetMovedir( vec3_t angles, vec3_t movedir );
+void       G_TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, float speed );
 
 void       G_InitGentity( gentity_t *e );
 gentity_t  *G_Spawn( void );
@@ -1036,11 +1037,6 @@ void G_notify_sensor_end( team_t winningTeam );
 // g_trigger.c
 //
 void trigger_teleporter_touch( gentity_t *self, gentity_t *other, trace_t *trace );
-
-//
-// g_misc.c
-//
-void G_TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, float speed );
 
 //
 // g_weapon.c
