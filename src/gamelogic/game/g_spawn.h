@@ -107,10 +107,16 @@ qboolean G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expect
  */
 
 /**
+ * shared entity functions
+ */
+
+void     think_fireDelayed( gentity_t *ent );
+
+/**
  * predefined field-interpretation
  */
 void     entity_SetNextthink( gentity_t *self );
-void     entity_ParseConditions( gentity_t *self );
+void     SP_ConditionFields( gentity_t *self );
 
 
 // Init functions

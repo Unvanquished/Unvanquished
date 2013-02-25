@@ -24,7 +24,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "g_local.h"
 #include "g_spawn.h"
 
-
 /*
 =================================================================================
 
@@ -32,11 +31,6 @@ ctrl_relay
 
 =================================================================================
 */
-
-void ctrl_relay_think_ifDelayed( gentity_t *ent )
-{
-	G_FireAllTargetsOf( ent, ent->activator );
-}
 
 void ctrl_relay_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
@@ -65,7 +59,7 @@ void ctrl_relay_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 	else
 	{
 		entity_SetNextthink( self );
-		self->think = ctrl_relay_think_ifDelayed;
+		self->think = think_fireDelayed;
 		self->activator = activator;
 	}
 }

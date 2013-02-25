@@ -523,7 +523,7 @@ void SP_sensor_touch_compat( gentity_t *entity )
 
 void SP_sensor_touch( gentity_t *self )
 {
-	entity_ParseConditions( self );
+	SP_ConditionFields( self );
 
 	self->touch = sensor_player_touch;
 	self->act = sensor_act;
