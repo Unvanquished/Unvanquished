@@ -116,7 +116,7 @@ static const field_t fields[] =
 	{ "acceleration",        FOFS( acceleration ),        F_VECTOR    },
 	{ "alias",               FOFS( names[ 2 ] ),          F_STRING    },
 	{ "alpha",               FOFS( restingPosition ),     F_VECTOR    }, // What's with the variable abuse everytime?
-	{ "angle",               FOFS( s.angles ),            F_YAW       },
+	{ "angle",               FOFS( s.angles ),            F_YAW,      ENT_V_RENAMED, "yaw"},
 	{ "angles",              FOFS( s.angles ),            F_VECTOR    },
 	{ "animation",           FOFS( animation ),           F_VECTOR4   },
 	{ "bounce",              FOFS( physicsBounce ),       F_FLOAT     },
@@ -142,6 +142,7 @@ static const field_t fields[] =
 	{ "targetShaderNewName", FOFS( targetShaderNewName ), F_STRING    },
 	{ "wait",                FOFS( wait ),                F_FLOAT     },
 	{ "waitVariance",        FOFS( waitVariance ),        F_FLOAT     },
+	{ "yaw",                 FOFS( s.angles ),            F_YAW       },
 };
 
 
