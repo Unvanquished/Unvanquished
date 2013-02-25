@@ -123,7 +123,7 @@ static const field_t fields[] =
 	{ "classname",           FOFS( classname ),           F_STRING    },
 	{ "count",               FOFS( customNumber ),        F_INT       },
 	{ "dmg",                 FOFS( damage ),              F_INT       },
-	{ "health",              FOFS( health ),              F_INT       },
+	{ "health",              FOFS( health.previous ),     F_INT       },
 	{ "message",             FOFS( message ),             F_STRING    },
 	{ "model",               FOFS( model ),               F_STRING    },
 	{ "model2",              FOFS( model2 ),              F_STRING    },
@@ -132,7 +132,7 @@ static const field_t fields[] =
 	{ "radius",              FOFS( activatedPosition ),   F_VECTOR    }, // What's with the variable abuse everytime?
 	{ "random",              FOFS( waitVariance ),        F_FLOAT,    ENT_V_TMPNAME, "waitVariance" },
 	{ "spawnflags",          FOFS( spawnflags ),          F_INT       },
-	{ "speed",               FOFS( speed ),               F_FLOAT     },
+	{ "speed",               FOFS( speed_current ),       F_FLOAT     },
 	{ "target",			     FOFS( targets[ 0 ] ),        F_TARGET	  },
 	{ "target2", 			 FOFS( targets[ 1 ] ),        F_TARGET	  },
 	{ "target3",			 FOFS( targets[ 2 ] ),        F_TARGET	  },

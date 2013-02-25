@@ -1238,7 +1238,7 @@ void G_CountSpawns( void )
 
 	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 	{
-		if ( !ent->inuse || ent->s.eType != ET_BUILDABLE || ent->health <= 0 )
+		if ( !ent->inuse || ent->s.eType != ET_BUILDABLE || ent->health_current <= 0 )
 		{
 			continue;
 		}
@@ -1858,7 +1858,7 @@ void BeginIntermission( void )
 		}
 
 		// respawn if dead
-		if ( client->health <= 0 )
+		if ( client->health_current <= 0 )
 		{
 			respawn( client );
 		}

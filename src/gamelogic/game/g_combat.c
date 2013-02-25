@@ -347,7 +347,7 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 		{
 			trap_SendServerCommand( self - g_entities, va( "print_tr %s %s %3i", QQ( N_("Your killer, $1$^7, had $2$ HP.\n") ),
 			                        Quote( killerName ),
-			                        attacker->health ) );
+			                        attacker->health_current ) );
 		}
 	}
 	else if ( attacker->s.eType != ET_BUILDABLE )
@@ -1083,7 +1083,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	int       knockback;
 
 	// Can't deal damage sometimes
-	if ( !targ->takedamage || targ->health <= 0 || level.intermissionQueued )
+	if ( !targ->takedamage || targ->health_current <= 0 || level.intermissionQueued )
 	{
 		return;
 	}
@@ -1269,7 +1269,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	}
 
 	// add to the attacker's hit counter
-	if ( attacker->client && targ != attacker && targ->health > 0
+	if ( attacker->client && targ != attacker && targ->health_current > 0
 	     && targ->s.eType != ET_MISSILE
 	     && targ->s.eType != ET_GENERAL )
 	{
@@ -1341,17 +1341,17 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	if ( g_debugDamage.integer )
 	{
 		G_Printf( "%i: client:%i health:%i damage:%i armor:%i\n", level.time, targ->s.number,
-		          targ->health, take, asave );
+		          targ->health_current, take, asave );
 	}
 
 	// do the damage
 	if ( take )
 	{
-		targ->health = targ->health - take;
+		targ->health_current = targ->health_current - take;
 
 		if ( targ->client )
 		{
-			targ->client->ps.stats[ STAT_HEALTH ] = targ->health;
+			targ->client->ps.stats[ STAT_HEALTH ] = targ->health_current;
 			targ->client->pers.infoChangeTime = level.time;
 		}
 
@@ -1364,16 +1364,16 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			targ->credits[ attacker->client->ps.clientNum ] += take;
 		}
 
-		if ( targ->health <= 0 )
+		if ( targ->health_current <= 0 )
 		{
 			if ( client )
 			{
 				targ->flags |= FL_NO_KNOCKBACK;
 			}
 
-			if ( targ->health < -999 )
+			if ( targ->health_current < -999 )
 			{
-				targ->health = -999;
+				targ->health_current = -999;
 			}
 
 			targ->enemy = attacker;

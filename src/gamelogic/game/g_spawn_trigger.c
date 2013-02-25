@@ -129,13 +129,13 @@ void target_push_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 
 void SP_target_push( gentity_t *self )
 {
-	if ( !self->speed )
+	if ( !self->speed_current )
 	{
-		self->speed = 1000;
+		self->speed_current = 1000;
 	}
 
 	G_SetMovedir( self->s.angles, self->s.origin2 );
-	VectorScale( self->s.origin2, self->speed, self->s.origin2 );
+	VectorScale( self->s.origin2, self->speed_current, self->s.origin2 );
 
 	if ( self )
 	{
@@ -190,7 +190,7 @@ void trigger_teleporter_touch( gentity_t *self, gentity_t *other, trace_t *trace
 		return;
 	}
 
-	G_TeleportPlayer( other, dest->s.origin, dest->s.angles, self->speed );
+	G_TeleportPlayer( other, dest->s.origin, dest->s.angles, self->speed_current );
 }
 
 void trigger_teleporter_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
@@ -202,8 +202,8 @@ void SP_trigger_teleport( gentity_t *self )
 {
 	InitTrigger( self );
 
-	if( !self->speed )
-		self->speed = 400;
+	if( !self->speed_current )
+		self->speed_current = 400;
 
 	// unlike other triggers, we need to send this one to the client
 	// unless is a spectator trigger
@@ -405,14 +405,14 @@ void trigger_heal_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 
 	max = other->client->ps.stats[ STAT_MAX_HEALTH ];
 
-	other->health += self->damage;
+	other->health_current += self->damage;
 
-	if ( other->health > max )
+	if ( other->health_current > max )
 	{
-		other->health = max;
+		other->health_current = max;
 	}
 
-	other->client->ps.stats[ STAT_HEALTH ] = other->health;
+	other->client->ps.stats[ STAT_HEALTH ] = other->health_current;
 }
 
 /*

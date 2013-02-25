@@ -249,7 +249,7 @@ static void BloodSpurt( gentity_t *attacker, gentity_t *victim, trace_t *tr )
 		return;
 	}
 
-	if ( victim->health <= 0 )
+	if ( victim->health_current <= 0 )
 	{
 		return;
 	}
@@ -279,7 +279,7 @@ static void WideBloodSpurt( gentity_t *attacker, gentity_t *victim, trace_t *tr 
 		return;
 	}
 
-	if ( victim->health <= 0 )
+	if ( victim->health_current <= 0 )
 	{
 		return;
 	}
@@ -840,18 +840,18 @@ void CheckCkitRepair( gentity_t *ent )
 	trap_Trace( &tr, viewOrigin, NULL, NULL, end, ent->s.number, MASK_PLAYERSOLID );
 	traceEnt = &g_entities[ tr.entityNum ];
 
-	if ( tr.fraction < 1.0f && traceEnt->spawned && traceEnt->health > 0 &&
+	if ( tr.fraction < 1.0f && traceEnt->spawned && traceEnt->health_current > 0 &&
 	     traceEnt->s.eType == ET_BUILDABLE && traceEnt->buildableTeam == TEAM_HUMANS )
 	{
 		bHealth = BG_Buildable( traceEnt->s.modelindex )->health;
 
-		if ( traceEnt->health < bHealth )
+		if ( traceEnt->health_current < bHealth )
 		{
-			traceEnt->health += HBUILD_HEALRATE;
+			traceEnt->health_current += HBUILD_HEALRATE;
 
-			if ( traceEnt->health >= bHealth )
+			if ( traceEnt->health_current >= bHealth )
 			{
-				traceEnt->health = bHealth;
+				traceEnt->health_current = bHealth;
 				G_AddEvent( ent, EV_BUILD_REPAIRED, 0 );
 			}
 			else
@@ -967,7 +967,7 @@ qboolean CheckVenomAttack( gentity_t *ent )
 		return qfalse;
 	}
 
-	if ( traceEnt->health <= 0 )
+	if ( traceEnt->health_current <= 0 )
 	{
 		return qfalse;
 	}
@@ -1194,7 +1194,7 @@ static void G_FindZapChainTargets( zap_t *zap )
 		         enemy->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS ) ||
 		       ( enemy->s.eType == ET_BUILDABLE &&
 		         BG_Buildable( enemy->s.modelindex )->team == TEAM_HUMANS ) ) &&
-		     enemy->health > 0 && // only chain to living targets
+		     enemy->health_current > 0 && // only chain to living targets
 		     distance <= LEVEL2_AREAZAP_CHAIN_RANGE )
 		{
 			// world-LOS check: trace against the world, ignoring other BODY entities
@@ -1267,7 +1267,7 @@ static void G_CreateNewZap( gentity_t *creator, gentity_t *target )
 		zap->numTargets = 1;
 
 		// the zap chains only through living entities
-		if ( target->health > 0 )
+		if ( target->health_current > 0 )
 		{
 			G_Damage( target, creator, creator, forward,
 			          target->s.origin, LEVEL2_AREAZAP_DMG,

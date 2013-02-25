@@ -558,7 +558,7 @@ void Cmd_Give_f( gentity_t *ent )
 
 	if ( give_all || Q_stricmp( name, "health" ) == 0 )
 	{
-		ent->health = ent->client->ps.stats[ STAT_MAX_HEALTH ];
+		ent->health_current = ent->client->ps.stats[ STAT_MAX_HEALTH ];
 		BG_AddUpgradeToInventory( UP_MEDKIT, ent->client->ps.stats );
 	}
 
@@ -707,7 +707,7 @@ void Cmd_Kill_f( gentity_t *ent )
 {
 	if ( g_cheats.integer )
 	{
-		ent->client->ps.stats[ STAT_HEALTH ] = ent->health = 0;
+		ent->client->ps.stats[ STAT_HEALTH ] = ent->health_current = 0;
 		player_die( ent, ent, ent, 100000, MOD_SUICIDE );
 	}
 	else
@@ -763,7 +763,7 @@ void Cmd_Team_f( gentity_t *ent )
 	     g_combatCooldown.integer &&
 	     ent->client->lastCombatTime &&
 	     ent->client->sess.spectatorState == SPECTATOR_NOT &&
-	     ent->health > 0 &&
+	     ent->health_current > 0 &&
 	     ent->client->lastCombatTime + g_combatCooldown.integer * 1000 > level.time )
 	{
 		float remaining = ( ( ent->client->lastCombatTime + g_combatCooldown.integer * 1000 ) - level.time ) / 1000;
@@ -2389,7 +2389,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 		return qfalse;
 	}
 
-	if ( ent->health <= 0 )
+	if ( ent->health_current <= 0 )
 	{
 		return qtrue; // dead, can't evolve; no point in trying other classes (if any listed)
 	}
@@ -2602,7 +2602,7 @@ void Cmd_Destroy_f( gentity_t *ent )
 	       ( ent->client->ps.weapon <= WP_HBUILD ) ) )
 	{
 		// Always let the builder prevent the explosion
-		if ( traceEnt->health <= 0 )
+		if ( traceEnt->health_current <= 0 )
 		{
 			G_QueueBuildPoints( traceEnt );
 			G_RewardAttackers( traceEnt );
@@ -2663,12 +2663,12 @@ void Cmd_Destroy_f( gentity_t *ent )
 				break;
 		}
 
-		if ( traceEnt->health > 0 )
+		if ( traceEnt->health_current > 0 )
 		{
 			if ( !deconstruct )
 			{
 				G_Damage( traceEnt, ent, ent, forward, tr.endpos,
-				          traceEnt->health, 0, MOD_SUICIDE );
+				          traceEnt->health_current, 0, MOD_SUICIDE );
 			}
 			else if ( lastSpawn && !g_cheats.integer )
 			{
@@ -2727,7 +2727,7 @@ fail_lastSpawn:
 	}
 
 	G_Damage( traceEnt, ent, ent, forward, tr.endpos,
-		  traceEnt->health, 0, MOD_DECONSTRUCT );
+		  traceEnt->health_current, 0, MOD_DECONSTRUCT );
 	G_FreeEntity( traceEnt );
 }
 

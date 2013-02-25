@@ -155,7 +155,7 @@ void env_rumble_think( gentity_t *self )
 		ent->client->ps.groundEntityNum = ENTITYNUM_NONE;
 		ent->client->ps.velocity[ 0 ] += crandom() * 150;
 		ent->client->ps.velocity[ 1 ] += crandom() * 150;
-		ent->client->ps.velocity[ 2 ] = self->speed;
+		ent->client->ps.velocity[ 2 ] = self->speed_current;
 	}
 
 	if ( level.time < self->timestamp )
@@ -185,9 +185,9 @@ void SP_env_rumble( gentity_t *self )
 		self->customNumber = 10;
 	}
 
-	if ( !self->speed )
+	if ( !self->speed_current )
 	{
-		self->speed = 100;
+		self->speed_current = 100;
 	}
 
 	self->think = env_rumble_think;
@@ -312,10 +312,10 @@ void SP_env_lens_flare( gentity_t *self )
 
 	self->use = env_lens_flare_toggle;
 
-	if( !self->speed )
-		self->speed = 200;
+	if( !self->speed_current )
+		self->speed_current = 200;
 
-	self->s.time = self->speed;
+	self->s.time = self->speed_current;
 
 	G_SpawnInt( "mindist", "0", &self->s.generic1 );
 

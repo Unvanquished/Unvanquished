@@ -81,7 +81,7 @@ void P_DamageFeedback( gentity_t *player )
 	if ( ( level.time > player->pain_debounce_time ) && !( player->flags & FL_GODMODE ) )
 	{
 		player->pain_debounce_time = level.time + 700;
-		G_AddEvent( player, EV_PAIN, player->health > 255 ? 255 : player->health );
+		G_AddEvent( player, EV_PAIN, player->health_current > 255 ? 255 : player->health_current );
 		client->ps.damageEvent++;
 	}
 
@@ -125,7 +125,7 @@ void P_WorldEffects( gentity_t *ent )
 			// drown!
 			ent->client->airOutTime += 1000;
 
-			if ( ent->health > 0 )
+			if ( ent->health_current > 0 )
 			{
 				// take more damage the longer underwater
 				ent->damage += 2;
@@ -136,7 +136,7 @@ void P_WorldEffects( gentity_t *ent )
 				}
 
 				// play a gurp sound instead of a general pain sound
-				if ( ent->health <= ent->damage )
+				if ( ent->health_current <= ent->damage )
 				{
 					G_Sound( ent, CHAN_VOICE, G_SoundIndex( "*drown.wav" ) );
 				}
@@ -169,7 +169,7 @@ void P_WorldEffects( gentity_t *ent )
 	if ( waterlevel &&
 	     ( ent->watertype & ( CONTENTS_LAVA | CONTENTS_SLIME ) ) )
 	{
-		if ( ent->health > 0 &&
+		if ( ent->health_current > 0 &&
 		     ent->pain_debounce_time <= level.time )
 		{
 			if ( ent->watertype & CONTENTS_LAVA )
@@ -826,12 +826,12 @@ void ClientTimerActions( gentity_t *ent, int msec )
 
 			if ( remainingStartupTime < 0 )
 			{
-				if ( ent->health < ent->client->ps.stats[ STAT_MAX_HEALTH ] &&
+				if ( ent->health_current < ent->client->ps.stats[ STAT_MAX_HEALTH ] &&
 				     ent->client->medKitHealthToRestore &&
 				     ent->client->ps.pm_type != PM_DEAD )
 				{
 					ent->client->medKitHealthToRestore--;
-					ent->health++;
+					ent->health_current++;
 				}
 				else
 				{
@@ -840,7 +840,7 @@ void ClientTimerActions( gentity_t *ent, int msec )
 			}
 			else
 			{
-				if ( ent->health < ent->client->ps.stats[ STAT_MAX_HEALTH ] &&
+				if ( ent->health_current < ent->client->ps.stats[ STAT_MAX_HEALTH ] &&
 				     ent->client->medKitHealthToRestore &&
 				     ent->client->ps.pm_type != PM_DEAD )
 				{
@@ -848,7 +848,7 @@ void ClientTimerActions( gentity_t *ent, int msec )
 					if ( level.time > client->medKitIncrementTime )
 					{
 						ent->client->medKitHealthToRestore--;
-						ent->health++;
+						ent->health_current++;
 
 						client->medKitIncrementTime = level.time +
 						                              ( remainingStartupTime / MEDKIT_STARTUP_SPEED );
@@ -1723,7 +1723,7 @@ void ClientThink_real( gentity_t *ent )
 		float regenRate =
 		  BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->regenRate;
 
-		if ( ent->health <= 0 || ent->nextRegenTime < 0 || regenRate == 0 )
+		if ( ent->health_current <= 0 || ent->nextRegenTime < 0 || regenRate == 0 )
 		{
 			ent->nextRegenTime = -1; // no regen
 		}
@@ -1753,7 +1753,7 @@ void ClientThink_real( gentity_t *ent )
 
 				if ( modifier < BOOSTER_REGEN_MOD && boost->s.eType == ET_BUILDABLE &&
 				     boost->s.modelindex == BA_A_BOOSTER && boost->spawned &&
-				     boost->health > 0 && boost->powered )
+				     boost->health_current > 0 && boost->powered )
 				{
 					modifier = BOOSTER_REGEN_MOD;
 					continue;
@@ -1761,7 +1761,7 @@ void ClientThink_real( gentity_t *ent )
 
 				if ( boost->s.eType == ET_PLAYER && boost->client &&
 				     boost->client->pers.teamSelection ==
-				     ent->client->pers.teamSelection && boost->health > 0 )
+				     ent->client->pers.teamSelection && boost->health_current > 0 )
 				{
 					class_t  class = boost->client->ps.stats[ STAT_CLASS ];
 					qboolean didBoost = qfalse;
@@ -1778,7 +1778,7 @@ void ClientThink_real( gentity_t *ent )
 						didBoost = qtrue;
 					}
 
-					if ( didBoost && ent->health < client->ps.stats[ STAT_MAX_HEALTH ] )
+					if ( didBoost && ent->health_current < client->ps.stats[ STAT_MAX_HEALTH ] )
 					{
 						boost->client->pers.hasHealed = qtrue;
 					}
@@ -1807,13 +1807,13 @@ void ClientThink_real( gentity_t *ent )
 			// if recovery interval is less than frametime, compensate
 			count = 1 + ( level.time - ent->nextRegenTime ) / interval;
 
-			ent->health += count;
+			ent->health_current += count;
 			ent->nextRegenTime += count * interval;
 
 			// if at max health, clear damage counters
-			if ( ent->health >= client->ps.stats[ STAT_MAX_HEALTH ] )
+			if ( ent->health_current >= client->ps.stats[ STAT_MAX_HEALTH ] )
 			{
-				ent->health = client->ps.stats[ STAT_MAX_HEALTH ];
+				ent->health_current = client->ps.stats[ STAT_MAX_HEALTH ];
 
 				for ( i = 0; i < MAX_CLIENTS; i++ )
 				{
@@ -2106,7 +2106,7 @@ void ClientThink_real( gentity_t *ent )
 
 	if ( ent->suicideTime > 0 && ent->suicideTime < level.time )
 	{
-		ent->client->ps.stats[ STAT_HEALTH ] = ent->health = 0;
+		ent->client->ps.stats[ STAT_HEALTH ] = ent->health_current = 0;
 		player_die( ent, ent, ent, 100000, MOD_SUICIDE );
 
 		ent->suicideTime = 0;
@@ -2234,9 +2234,9 @@ void ClientEndFrame( gentity_t *ent )
 		ent->client->ps.eFlags &= ~EF_CONNECTION;
 	}
 
-	if( ent->client->ps.stats[ STAT_HEALTH ] != ent->health )
+	if( ent->client->ps.stats[ STAT_HEALTH ] != ent->health_current )
 	{
-		ent->client->ps.stats[ STAT_HEALTH ] = ent->health; // FIXME: get rid of ent->health...
+		ent->client->ps.stats[ STAT_HEALTH ] = ent->health_current; // FIXME: get rid of ent->health...
 		ent->client->pers.infoChangeTime = level.time;
 	}
 

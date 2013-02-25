@@ -82,6 +82,18 @@ typedef struct gclient_s gclient_t;
 #define DECON_OPTION_PROTECT       32
 #define DECON_OPTION_CHECK(option) ( g_markDeconstruct.integer & DECON_OPTION_##option )
 
+typedef struct
+{
+	int previous;
+	int current;
+} transStateInt_t;
+
+typedef struct
+{
+	float previous;
+	float current;
+} transStateFloat_t;
+
 // movers are things like doors, plats, buttons, etc
 typedef enum
 {
@@ -259,12 +271,11 @@ struct gentity_s
 	char         *targetShaderName;
 	char         *targetShaderNewName;
 
-	int          health;
-	int          lastHealth;
-	int          originalHealth;
+	transStateInt_t health;
+	int          health_current; //TODO refactor to use health.current instead
 
-	float        speed;
-	float        lastSpeed; // used by trains that have been restarted
+	transStateFloat_t speed; // previous especially used by trains that have been restarted
+	float        speed_current; //TODO refactor to use speed.current instead
 
 	// acceleration evaluation
 	qboolean  evaluateAcceleration;
