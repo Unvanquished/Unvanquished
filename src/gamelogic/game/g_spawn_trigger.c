@@ -190,7 +190,7 @@ void trigger_teleporter_touch( gentity_t *self, gentity_t *other, trace_t *trace
 		return;
 	}
 
-	TeleportPlayer( other, dest->s.origin, dest->s.angles, self->speed );
+	G_TeleportPlayer( other, dest->s.origin, dest->s.angles, self->speed );
 }
 
 void trigger_teleporter_use( gentity_t *ent, gentity_t *other, gentity_t *activator )

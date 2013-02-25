@@ -2207,7 +2207,7 @@ void Cmd_SetViewpos_f( gentity_t *ent )
 		}
 	}
 
-	TeleportPlayer( ent, origin, angles, 0.0f );
+	G_TeleportPlayer( ent, origin, angles, 0.0f );
 }
 
 #define AS_OVER_RT3 (( ALIENSENSE_RANGE * 0.5f ) / M_ROOT3 )
@@ -3529,7 +3529,7 @@ void G_StopFollowing( gentity_t *ent )
 		BG_GetClientViewOrigin( &ent->client->ps, viewOrigin );
 		VectorCopy( ent->client->ps.viewangles, angles );
 		angles[ ROLL ] = 0;
-		TeleportPlayer( ent, viewOrigin, angles, qfalse );
+		G_TeleportPlayer( ent, viewOrigin, angles, qfalse );
 	}
 
 	CalculateRanks();

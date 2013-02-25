@@ -1040,7 +1040,7 @@ void trigger_teleporter_touch( gentity_t *self, gentity_t *other, trace_t *trace
 //
 // g_misc.c
 //
-void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, float speed );
+void G_TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, float speed );
 
 //
 // g_weapon.c

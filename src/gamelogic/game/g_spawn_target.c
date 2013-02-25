@@ -90,7 +90,7 @@ void target_teleporter_use( gentity_t *self, gentity_t *other, gentity_t *activa
 		return;
 	}
 
-	TeleportPlayer( activator, dest->s.origin, dest->s.angles, self->speed );
+	G_TeleportPlayer( activator, dest->s.origin, dest->s.angles, self->speed );
 }
 
 void SP_target_teleporter( gentity_t *self )
