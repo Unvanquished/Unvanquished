@@ -202,19 +202,25 @@ void Svcmd_EntityShow_f( void )
 		return;
 	}
 
-	G_Printf( "⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼\n" );
-	G_Printf( "%3i:", entityId );
+	G_Printf( "⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼\n" );
+	G_Printf( "#%3i:", entityId );
 	PrintEntityType( selection );
-	G_Printf( "\n⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼\n" );
+	if (selection->s.origin)
+	{
+		G_Printf("%25s", vtos( selection->s.origin ) );
+	}
+	G_Printf( "\n" );
+	G_Printf( "⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼\n" );
 	G_Printf( "Classname: %s\n", selection->classname );
-	G_Printf( "Capabilities: %s%s%s%s%s%s\n",
+	G_Printf( "Capabilities: %s%s%s%s%s%s%s\n",
 			selection->act ? "acts " : "",
 			selection->think ? "thinks " : "",
 			selection->pain ? "pains " : "",
 			selection->die ? "dies " : "",
+			selection->reset ? "resets " : "",
 			selection->touch ? "touchable " : "",
 			selection->use ? "useable " : "");
-
+	G_Printf( "\n" );
 	if (selection->names[0])
 	{
 		G_Printf( "Name:");
@@ -223,10 +229,13 @@ void Svcmd_EntityShow_f( void )
 		G_Printf( "\n" );
 	}
 
+	G_Printf("State: %s\n", selection->enabled ? "enabled" : "disabled");
+
 	if (selection->groupName)
 	{
 		G_Printf("Member of Group: %s%s\n", selection->groupName, !selection->groupMaster ? " [master]" : "");
 	}
+
 
 	if(selection->targets[0].name)
 	{
@@ -248,6 +257,7 @@ void Svcmd_EntityShow_f( void )
 			G_Printf("}\n");
 		}
 	}
+	G_Printf( "\n" );
 }
 
 /*
