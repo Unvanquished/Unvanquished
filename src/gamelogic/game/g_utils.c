@@ -243,7 +243,10 @@ gentity_t *G_PickRandomEntity( int fieldofs, const char *match  )
 
 	if ( !totalChoiceCount )
 	{
-		G_Printf( "G_PickRandomEntity: no entity matching %s was found.\n", match );
+
+		if ( g_debugEntities.integer > -1 )
+			G_Printf( "^3WARNING: ^7Could not find any entity matching \"^5%s^7\"", match );
+
 		return NULL;
 	}
 
@@ -268,10 +271,14 @@ gentity_t *G_PickRandomTargetFor( gentity_t *self )
 
 	if ( !totalChoiceCount )
 	{
-		G_Printf( "G_PickRandomTargetFor: none of the following targets were found:" );
-		for( targetIndex = 0; self->targets[ targetIndex ].name; ++targetIndex )
-		  G_Printf( "%s %s", ( targetIndex == 0 ? "" : "," ), self->targets[ targetIndex ].name );
-		G_Printf( "\n" );
+		if ( g_debugEntities.integer > -1 )
+		{
+			G_Printf( "^3WARNING: ^7none of the following targets could be resolved for Entity ^5#%i^7:", self->s.number );
+
+			for( targetIndex = 0; self->targets[ targetIndex ].name; ++targetIndex )
+			  G_Printf( "%s%s", ( targetIndex == 0 ? "" : ", " ), self->targets[ targetIndex ].name );
+			G_Printf( "\n" );
+		}
 		return NULL;
 	}
 

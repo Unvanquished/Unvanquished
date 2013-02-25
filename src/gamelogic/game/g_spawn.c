@@ -362,7 +362,9 @@ qboolean G_CallSpawn( gentity_t *ent )
 
 	if ( !ent->classname )
 	{
-		G_Printf( "G_CallSpawn: NULL classname\n" );
+		//don't even warn about spawning-errors with -2 (maps might still work at least partly if we ignore these willingly)
+		if ( g_debugEntities.integer > -2 )
+			G_Printf( "^1ERROR: Entity ^5#%i^7 is missing classname – we are unable to spawn it.\n", ent->s.number );
 		return qfalse;
 	}
 

@@ -344,7 +344,6 @@ void env_portal_locateCamera( gentity_t *ent )
 
 	if ( !owner )
 	{
-		G_Printf( "Couldn't find target for env_portal_surface\n" );
 		G_FreeEntity( ent );
 		return;
 	}

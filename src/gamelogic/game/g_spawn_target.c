@@ -85,10 +85,7 @@ void target_teleporter_use( gentity_t *self, gentity_t *other, gentity_t *activa
 	dest = G_PickRandomTargetFor( self );
 
 	if ( !dest )
-	{
-		G_Printf( "Couldn't find teleporter destination\n" );
 		return;
-	}
 
 	G_TeleportPlayer( activator, dest->s.origin, dest->s.angles, self->speed_current );
 }
@@ -158,7 +155,8 @@ void SP_target_location( gentity_t *self )
 
 	if ( target_location_counter == MAX_LOCATIONS )
 	{
-		G_Printf( S_COLOR_YELLOW "too many target_locations\n" );
+		if(g_debugEntities.integer > -1)
+			G_Printf( "^3WARNING: ^7too many locations set\n" );
 		return;
 	}
 

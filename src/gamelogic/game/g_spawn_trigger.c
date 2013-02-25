@@ -185,10 +185,7 @@ void trigger_teleporter_touch( gentity_t *self, gentity_t *other, trace_t *trace
 	dest = G_PickRandomTargetFor( self );
 
 	if ( !dest )
-	{
-		G_Printf( "Couldn't find teleporter destination\n" );
 		return;
-	}
 
 	G_TeleportPlayer( other, dest->s.origin, dest->s.angles, self->speed_current );
 }
