@@ -277,6 +277,8 @@ struct gentity_s
 	transStateFloat_t speed; // previous especially used by trains that have been restarted
 	float        speed_current; //TODO refactor to use speed.current instead
 
+	transStateInt_t count;
+
 	// acceleration evaluation
 	qboolean  evaluateAcceleration;
 	vec3_t    oldVelocity;

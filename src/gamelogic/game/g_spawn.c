@@ -116,6 +116,7 @@ static const field_t fields[] =
 	{ "acceleration",        FOFS( acceleration ),        F_VECTOR    },
 	{ "alias",               FOFS( names[ 2 ] ),          F_STRING    },
 	{ "alpha",               FOFS( restingPosition ),     F_VECTOR    }, // What's with the variable abuse everytime?
+	{ "amount",              FOFS( count.previous ),      F_INT       },
 	{ "angle",               FOFS( s.angles ),            F_YAW,      ENT_V_RENAMED, "yaw"},
 	{ "angles",              FOFS( s.angles ),            F_VECTOR    },
 	{ "animation",           FOFS( animation ),           F_VECTOR4   },
