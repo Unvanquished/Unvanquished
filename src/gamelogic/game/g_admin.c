@@ -2083,15 +2083,7 @@ qboolean G_admin_time( gentity_t *ent )
 
 	timelimitTime = level.timelimit * 60000; //timelimit is in minutes
 
-	if(gameDuration < level.suddenDeathBeginTime)
-	{
-		remainingMinutes = (level.suddenDeathBeginTime - gameDuration)/1000 / 60;
-		remainingSeconds = (level.suddenDeathBeginTime - gameDuration)/1000 % 60 + 1;
-
-		ADMP( va( "%s %02i %02i %02i %02i %02i %i %02i", QQ( N_("^3time: ^7local time is ^d$1$:$2$:$3$^7 - game runs for ^d$4$:$5$^7 with Sudden Death in ^d$6$:$7$^7\n") ),
-			          qt.tm_hour, qt.tm_min, qt.tm_sec, gameMinutes, gameSeconds, remainingMinutes, remainingSeconds) );
-	}
-	else if(gameDuration < timelimitTime)
+	if(gameDuration < timelimitTime)
 	{
 		remainingMinutes = (timelimitTime - gameDuration)/1000 / 60;
 		remainingSeconds = (timelimitTime - gameDuration)/1000 % 60 + 1;

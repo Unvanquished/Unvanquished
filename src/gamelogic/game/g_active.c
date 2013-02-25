@@ -920,16 +920,13 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		     client->pers.aliveSeconds % g_freeFundPeriod.integer == 0 )
 		{
 			// Give clients some credit periodically
-			if ( G_TimeTilSuddenDeath() > 0 )
+			if ( client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
 			{
-				if ( client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
-				{
-					G_AddCreditToClient( client, FREEKILL_ALIEN, qtrue );
-				}
-				else if ( client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
-				{
-					G_AddCreditToClient( client, FREEKILL_HUMAN, qtrue );
-				}
+				G_AddCreditToClient( client, FREEKILL_ALIEN, qtrue );
+			}
+			else if ( client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+			{
+				G_AddCreditToClient( client, FREEKILL_HUMAN, qtrue );
 			}
 		}
 	}

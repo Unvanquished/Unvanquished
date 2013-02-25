@@ -582,17 +582,6 @@ static void Svcmd_MapLogWrapper( void )
 	Cmd_MapLog_f( NULL );
 }
 
-static void Svcmd_SuddenDeath_f( void )
-{
-	char secs[ 5 ];
-	int  offset;
-	trap_Argv( 1, secs, sizeof( secs ) );
-	offset = atoi( secs );
-
-	level.suddenDeathBeginTime = level.time - level.startTime + offset * 1000;
-	trap_SendServerCommand( -1, va( "cp \"Sudden Death will begin in %ds\"", offset ) );
-}
-
 static void Svcmd_G_AdvanceMapRotation_f( void )
 {
 	G_AdvanceMapRotation( 0 );
@@ -632,7 +621,6 @@ static const struct svcmd
 	{ "say",                qtrue,  Svcmd_MessageWrapper         },
 	{ "say_team",           qtrue,  Svcmd_TeamMessage_f          },
 	{ "stopMapRotation",    qfalse, G_StopMapRotation            },
-	{ "suddendeath",        qfalse, Svcmd_SuddenDeath_f          }
 };
 
 /*

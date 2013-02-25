@@ -1553,7 +1553,6 @@ static const struct {
 		VOTE_BEFORE, // within the first N minutes
 		VOTE_AFTER,  // not within the first N minutes
 		VOTE_REMAIN, // within N/2 minutes before SD
-		VOTE_NOT_SD, // doesn't make sense during SD
 		VOTE_NO_AUTO,// don't automatically vote 'yes'
 	}               special;
 	const vmCvar_t *specialCvar;
@@ -1564,9 +1563,8 @@ static const struct {
 	{ "spectate",     qfalse, V_ANY,    T_PLAYER,  qtrue,   qtrue,  &g_kickVotesPercent },
 	{ "mute",         qtrue,  V_PUBLIC, T_PLAYER,  qtrue,   qtrue,  &g_denyVotesPercent },
 	{ "unmute",       qtrue,  V_PUBLIC, T_PLAYER,  qfalse,  qfalse, &g_denyVotesPercent },
-	{ "denybuild",    qtrue,  V_TEAM,   T_PLAYER,  qtrue,   qtrue,  &g_denyVotesPercent,        VOTE_NOT_SD },
-	{ "allowbuild",   qtrue,  V_TEAM,   T_PLAYER,  qfalse,  qfalse, &g_denyVotesPercent,        VOTE_NOT_SD },
-	{ "sudden_death", qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_suddenDeathVotePercent,  VOTE_NOT_SD },
+	{ "denybuild",    qtrue,  V_TEAM,   T_PLAYER,  qtrue,   qtrue,  &g_denyVotesPercent },
+	{ "allowbuild",   qtrue,  V_TEAM,   T_PLAYER,  qfalse,  qfalse, &g_denyVotesPercent },
 	{ "extend",       qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_extendVotesPercent,      VOTE_REMAIN, &g_extendVotesTime },
 	{ "admitdefeat",  qtrue,  V_TEAM,   T_NONE,    qfalse,  qfalse, &g_admitDefeatVotesPercent },
 	{ "draw",         qtrue,  V_PUBLIC, T_NONE,    qtrue,   qtrue,  &g_drawVotesPercent,        VOTE_AFTER,  &g_drawVotesAfter,  &g_drawVoteReasonRequired },
@@ -1735,24 +1733,6 @@ void Cmd_CallVote_f( gentity_t *ent )
 
 		break;
 
-	case VOTE_NOT_SD:
-		if ( G_TimeTilSuddenDeath() <= 0 )
-		{
-			trap_SendServerCommand( ent - g_entities,
-			                        "print_tr \"" N_("Sudden Death has already begun\n") "\"" );
-			return;
-		}
-
-		if ( level.suddenDeathBeginTime > 0 &&
-		     G_TimeTilSuddenDeath() <= g_suddenDeathVoteDelay.integer * 1000 )
-		{
-			trap_SendServerCommand( ent - g_entities,
-			                        "print_tr \"" N_("Sudden Death is imminent — this vote may have no effect\n") "\"" );
-			// DON'T stop the vote. It might pass or fail before SD starts.
-		}
-
-		break;
-
 	default:;
 	}
 
@@ -1910,21 +1890,6 @@ void Cmd_CallVote_f( gentity_t *ent )
 		Com_sprintf( level.voteDisplayString[ team ],
 		             sizeof( level.voteDisplayString[ team ] ),
 		             "Allow '%s' to build", name );
-		break;
-
-	case VOTE_SUDDEN_DEATH:
-		id = strtol( arg, NULL, 10 );
-
-		if ( id <= 0 )
-		{
-			id = g_suddenDeathVoteDelay.integer;
-		}
-
-		Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ),
-		             "suddendeath %d", id );
-		Com_sprintf( level.voteDisplayString[ team ],
-		             sizeof( level.voteDisplayString[ team ] ),
-		             "Begin sudden death in %d seconds", id );
 		break;
 
 	case VOTE_EXTEND:
@@ -2612,13 +2577,6 @@ void Cmd_Destroy_f( gentity_t *ent )
 			}
 		}
 
-		// Don't allow destruction of buildables that cannot be rebuilt
-		if ( G_TimeTilSuddenDeath() <= 0 )
-		{
-			G_TriggerMenu( ent->client->ps.clientNum, MN_B_SUDDENDEATH );
-			return;
-		}
-
 		// Not marked for decon ⇒ can't do explicit instant decon
 		if ( !traceEnt->deconstruct )
 		{
@@ -3283,12 +3241,6 @@ void Cmd_Build_f( gentity_t *ent )
 	trap_Argv( 1, s, sizeof( s ) );
 
 	buildable = BG_BuildableByName( s )->number;
-
-	if ( G_TimeTilSuddenDeath() <= 0 )
-	{
-		G_TriggerMenu( ent->client->ps.clientNum, MN_B_SUDDENDEATH );
-		return;
-	}
 
 	team = ent->client->ps.stats[ STAT_TEAM ];
 

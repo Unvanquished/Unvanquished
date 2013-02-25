@@ -364,11 +364,7 @@ Get the number of build points from a position
 */
 int G_GetBuildPoints( team_t team )
 {
-	if ( G_TimeTilSuddenDeath() <= 0 )
-	{
-		return 0;
-	}
-	else if ( team == TEAM_ALIENS )
+	if ( team == TEAM_ALIENS )
 	{
 		return level.alienBuildPoints;
 	}
@@ -392,11 +388,6 @@ int G_GetMarkedBuildPoints( team_t team )
 	gentity_t *ent;
 	int       i;
 	int       sum = 0;
-
-	if ( G_TimeTilSuddenDeath() <= 0 )
-	{
-		return 0;
-	}
 
 	if ( DECON_MARK_CHECK( INSTANT ) )
 	{
@@ -1071,7 +1062,7 @@ void AOvermind_Think( gentity_t *self )
 			}
 
 			// aliens now know they have no eggs, but they're screwed, so stfu
-			if ( !haveBuilder || G_TimeTilSuddenDeath() <= 0 )
+			if ( !haveBuilder )
 			{
 				level.overmindMuted = qtrue;
 			}
