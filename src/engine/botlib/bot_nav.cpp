@@ -277,13 +277,10 @@ extern "C" void BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t 
 	quake2recast( p1 );
 	quake2recast( p2 );
 
-	// bounds do not convert right when using quake2recast, so recalculate them
+	// bounds do not convert correctly when using quake2recast, so recalculate them
 	ClearBounds( bmin, bmax );
 	AddPointToBounds( p1, bmin, bmax );
 	AddPointToBounds( p2, bmin, bmax );
-
-	// offset height down a bit so obstacles placed on slopes are handled correctly
-	bmin[ 1 ] -= ( bmax[ 2 ] - bmin[ 2 ] );
 
 	for ( int i = 0; i < numNavData; i++ )
 	{
@@ -295,7 +292,8 @@ extern "C" void BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t 
 		VectorCopy( bmin, realBmin );
 		VectorCopy( bmax, realBmax );
 
-		float offset = nav->cache->getParams()->walkableRadius;
+		const dtTileCacheParams *params = nav->cache->getParams();
+		float offset = params->walkableRadius;
 
 		// offset bbox by agent radius like the navigation mesh was originally made
 		realBmin[ 0 ] -= offset;
@@ -304,6 +302,9 @@ extern "C" void BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t 
 		realBmax[ 0 ] += offset;
 		realBmax[ 2 ] += offset;
 		
+		// offset mins down by agent height so obstacles placed on ledges are handled correctly
+		realBmin[ 1 ] -= params->walkableHeight;
+
 		nav->cache->addObstacle( realBmin, realBmax, &ref );
 		*obstacleHandle = ref;
 	}
