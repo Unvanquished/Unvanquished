@@ -616,32 +616,6 @@ void BotSeek( gentity_t *self, vec3_t direction )
 	BotAimAtLocation( self, seekPos );
 }
 
-void BotCalcSteerDir( gentity_t *self, vec3_t dir )
-{
-	const int ip0 = 0;
-	const int ip1 = MIN(1, self->botMind->numCorners-1);
-	const float* p0 = self->botMind->route[ ip0 ];
-	const float* p1 = self->botMind->route[ ip1 ];
-	vec3_t dir0, dir1;
-	float len0, len1;
-
-	VectorSubtract( p0, self->s.origin, dir0 );
-	VectorSubtract( p1, self->s.origin, dir1 );
-	dir0[2] = 0;
-	dir1[2] = 0;
-	
-	len0 = VectorLength(dir0);
-	len1 = VectorLength(dir1);
-	if (len1 > 0.001f)
-		VectorScale(dir1, 1.0f/len1, dir1);
-	
-	dir[0] = dir0[0] - dir1[0]*len0*0.5f;
-	dir[1] = dir0[1] - dir1[1]*len0*0.5f;
-	dir[2] = 0;
-
-	VectorNormalize( dir );
-}
-
 /*
 =========================
 Global Bot Navigation
@@ -651,6 +625,7 @@ Global Bot Navigation
 qboolean BotMoveToGoal( gentity_t *self )
 {
 	vec3_t pos;
+	vec3_t dir;
 
 	if ( !( self && self->client ) )
 	{
@@ -658,13 +633,15 @@ qboolean BotMoveToGoal( gentity_t *self )
 	}
 
 	BotGetTargetPos( self->botMind->goal, pos );
-	trap_BotUpdatePath( self->s.number, self->botMind->route, &self->botMind->numCorners, MAX_ROUTE_NODES, pos );
 
-	if ( self->botMind->numCorners > 0 )
+	if ( trap_BotUpdatePath( self->s.number, pos, dir, &self->botMind->directPathToGoal ) )
 	{
-		vec3_t dir;
+		if ( dir[ 2 ] < 0 )
+		{
+			dir[ 2 ] = 0;
+			VectorNormalize( dir );
+		}
 
-		BotCalcSteerDir( self, dir );
 		if ( !BotAvoidObstacles( self, dir ) )
 		{
 			BotSeek( self, dir );
@@ -686,9 +663,9 @@ qboolean BotMoveToGoal( gentity_t *self )
 			usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_SPRINT );
 			usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_DODGE );
 		}
-		return qfalse;
+		return qtrue;
 	}
-	return qtrue;
+	return qfalse;
 }
 
 unsigned int FindRouteToTarget( gentity_t *self, botTarget_t target )

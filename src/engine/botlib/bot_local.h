@@ -51,6 +51,7 @@ extern "C"
 const int MAX_NAV_DATA = 16;
 const int MAX_BOT_PATH = 512;
 const int MAX_PATH_LOOKAHEAD = 5;
+const int MAX_CORNERS = 5;
 
 typedef struct
 {
@@ -67,6 +68,10 @@ typedef struct
 	int               clientNum;
 	qboolean          needReplan;
 	int               lastRouteTime;
+	float             cornerVerts[ MAX_CORNERS * 3 ];
+	unsigned char     cornerFlags[ MAX_CORNERS ];
+	dtPolyRef         cornerPolys[ MAX_CORNERS ];
+	int               numCorners;
 } Bot_t;
 
 extern int numNavData;
@@ -92,6 +97,7 @@ static inline void recast2quake( vec3_t vec )
 
 // all functions here use detour's coordinate system
 // callers should use quake2recast and recast2quake where appropriate to convert vectors
+void         BotCalcSteerDir( Bot_t *bot, vec3_t dir );
 void         FindWaypoints( Bot_t *bot, float *corners, unsigned char *cornerFlags, dtPolyRef *cornerPolys, int *numCorners, int maxCorners );
 qboolean     PointInPoly( Bot_t *bot, dtPolyRef ref, const vec3_t point );
 qboolean     BotFindNearestPoly( Bot_t *bot, const vec3_t coord, dtPolyRef *nearestPoly, vec3_t nearPoint );

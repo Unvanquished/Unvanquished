@@ -49,6 +49,38 @@ make sure the vectors use the same coordinate system
 ====================
 */
 
+void BotCalcSteerDir( Bot_t *bot, vec3_t dir )
+{
+	const int ip0 = 0;
+	const int ip1 = MIN( 1, bot->numCorners - 1 );
+	const float* p0 = &bot->cornerVerts[ ip0 * 3 ];
+	const float* p1 = &bot->cornerVerts[ ip1 * 3 ];
+	vec3_t dir0, dir1;
+	float len0, len1;
+	vec3_t spos;
+
+	VectorCopy( SV_GentityNum( bot->clientNum )->s.origin, spos );
+	quake2recast( spos );
+
+	VectorSubtract( p0, spos, dir0 );
+	VectorSubtract( p1, spos, dir1 );
+	dir0[ 1 ] = 0;
+	dir1[ 1 ] = 0;
+	
+	len0 = VectorLength( dir0 );
+	len1 = VectorLength( dir1 );
+	if ( len1 > 0.001f )
+	{
+		VectorScale(dir1, 1.0f / len1, dir1);
+	}
+	
+	dir[ 0 ] = dir0[ 0 ] - dir1[ 0 ]*len0*0.5f;
+	dir[ 1 ] = 0;
+	dir[ 2 ] = dir0[ 2 ] - dir1[ 2 ]*len0*0.5f;
+
+	VectorNormalize( dir );
+}
+
 void FindWaypoints( Bot_t *bot, float *corners, unsigned char *cornerFlags, dtPolyRef *cornerPolys, int *numCorners, int maxCorners )
 {
 	if ( !bot->corridor.getPathCount() )

@@ -141,7 +141,7 @@ extern "C" unsigned int BotFindRouteExt( int botClientNum, const vec3_t target )
 	return FindRoute( bot, start, end );
 }
 
-extern "C" void BotUpdateCorridor( int botClientNum, vec3_t *corners, int *numCorners, int maxCorners, const vec3_t target )
+extern "C" qboolean BotUpdateCorridor( int botClientNum, const vec3_t target, vec3_t dir, qboolean *directPathToGoal )
 {
 	vec3_t spos;
 	vec3_t epos;
@@ -155,6 +155,11 @@ extern "C" void BotUpdateCorridor( int botClientNum, vec3_t *corners, int *numCo
 	VectorCopy( target, epos );
 	quake2recast( epos );
 
+	if ( directPathToGoal )
+	{
+		*directPathToGoal = qfalse;
+	}
+
 	if ( bot->needReplan )
 	{
 		if ( ! ( FindRoute( bot, spos, epos ) & ( ROUTE_PARTIAL | ROUTE_FAILED ) ) )
@@ -163,7 +168,7 @@ extern "C" void BotUpdateCorridor( int botClientNum, vec3_t *corners, int *numCo
 		}
 		else if ( !bot->corridor.getPathCount() )
 		{
-			return;
+			return qfalse;
 		}
 	}
 
@@ -176,17 +181,7 @@ extern "C" void BotUpdateCorridor( int botClientNum, vec3_t *corners, int *numCo
 		bot->needReplan = qtrue;
 	}
 
-	unsigned char *cornerFlags = ( unsigned char* ) dtAlloc( sizeof( unsigned char ) * maxCorners * 3, DT_ALLOC_TEMP ); 
-	dtPolyRef *cornerPolys = ( dtPolyRef* ) dtAlloc( sizeof( dtPolyRef ) * maxCorners, DT_ALLOC_TEMP );
-	FindWaypoints( bot, ( float * ) corners, cornerFlags, cornerPolys, numCorners, maxCorners );
-	dtFree( cornerFlags );
-	dtFree( cornerPolys );
-
-	// convert points
-	for ( int i = 0; i < *numCorners; i++ )
-	{
-		recast2quake( corners[ i ] );
-	}
+	FindWaypoints( bot, bot->cornerVerts, bot->cornerFlags, bot->cornerPolys, &bot->numCorners, MAX_CORNERS );
 
 	dtPolyRef firstPoly = bot->corridor.getFirstPoly();
 	dtPolyRef lastPoly = bot->corridor.getLastPoly();
@@ -201,6 +196,21 @@ extern "C" void BotUpdateCorridor( int botClientNum, vec3_t *corners, int *numCo
 	{
 		bot->needReplan = qtrue;
 	}
+
+	if ( dir )
+	{
+		vec3_t rdir;
+		BotCalcSteerDir( bot, rdir );
+		recast2quake( rdir );
+		VectorCopy( rdir, dir );
+	}
+
+	if ( directPathToGoal )
+	{
+		*directPathToGoal = ( qboolean )( ( int ) bot->numCorners == 1 );
+	}
+
+	return qtrue;
 }
 
 float frand()
