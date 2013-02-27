@@ -123,7 +123,7 @@ qboolean BG_ParseBuildableAttributeFile( const char *filename, buildableAttribut
         {
             PARSE(text, token);
 
-            Q_strncpyz( ba->humanName, token, sizeof( ba->humanName ) );
+            ba->humanName = strdup( token );
 
             defined |= HUMANNAME;
         }
@@ -131,7 +131,7 @@ qboolean BG_ParseBuildableAttributeFile( const char *filename, buildableAttribut
         {
             PARSE(text, token);
 
-            Q_strncpyz( ba->info, token, sizeof( ba->info ) );
+            ba->info = strdup( token );
 
             defined |= DESCRIPTION;
         }
@@ -193,7 +193,6 @@ qboolean BG_ParseBuildableAttributeFile( const char *filename, buildableAttribut
             else
             {
                 Com_Printf( S_COLOR_RED "ERROR: unknown meanOfDeath value '%s'\n", token );
-                break;
             }
 
             defined |= DEATHMOD;
@@ -213,7 +212,6 @@ qboolean BG_ParseBuildableAttributeFile( const char *filename, buildableAttribut
             else
             {
                 Com_Printf( S_COLOR_RED "ERROR: unknown team value '%s'\n", token );
-                break;
             }
 
             defined |= TEAM;
@@ -237,7 +235,6 @@ qboolean BG_ParseBuildableAttributeFile( const char *filename, buildableAttribut
             else
             {
                 Com_Printf( S_COLOR_RED "ERROR: unknown buildWeapon value '%s'\n", token );
-                break;
             }
 
             defined |= BUILDWEAPON;
@@ -299,7 +296,6 @@ qboolean BG_ParseBuildableAttributeFile( const char *filename, buildableAttribut
             else
             {
                 Com_Printf( S_COLOR_RED "ERROR: unknown attackType value '%s'\n", token );
-                break;
             }
         }
         else if ( !Q_stricmp( token, "minNormal" ) )
@@ -354,7 +350,6 @@ qboolean BG_ParseBuildableAttributeFile( const char *filename, buildableAttribut
         else
         {
             Com_Printf( S_COLOR_RED "ERROR: unknown token '%s'\n", token );
-            return qfalse;
         }
     }
 

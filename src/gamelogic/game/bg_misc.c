@@ -220,8 +220,8 @@ void BG_InitBuildableAttributes( void )
 	    Com_Memset( ba, 0, sizeof( buildableAttributes_t ) );
 
         ba->number = bh->number;
-        Q_strncpyz( ba->name, bh->name, sizeof(ba->name) );
-        Q_strncpyz( ba->entityName, bh->classname, sizeof(ba->entityName) );
+        ba->name = strdup( bh->name );
+        ba->entityName = strdup( bh->classname );
 
         ba->idleAnim = BANIM_IDLE1;
         ba->traj = TR_GRAVITY;

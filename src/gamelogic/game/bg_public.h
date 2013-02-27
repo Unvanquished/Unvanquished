@@ -997,10 +997,10 @@ typedef struct
 {
 	buildable_t number;
 
-	char  name[ MAX_STRING_CHARS ];
-	char  humanName[ MAX_STRING_CHARS ];
-	char  info[ MAX_STRING_CHARS ];
-	char  entityName[ MAX_STRING_CHARS ];
+	char  *name;
+	char  *humanName;
+	char  *info;
+	char  *entityName;
 
 	trType_t    traj;
 	float       bounce;
