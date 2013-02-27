@@ -900,7 +900,7 @@ void BG_InitClassModelConfigs( void )
 	{
 		cc = BG_ClassModelConfig( i );
 
-		BG_ParseClassModelFile( va( "configs/classes/%s.cfg",
+		BG_ParseClassModelFile( va( "configs/classes/%s.model.cfg",
 		                       BG_Class( i )->name ), cc );
 	}
 }
