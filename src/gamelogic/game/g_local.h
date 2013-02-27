@@ -285,6 +285,12 @@ struct gentity_s
 	transStateFloat_t speed; // previous especially used by trains that have been restarted
 	float        speed_current; //TODO refactor to use speed.current instead
 
+	/*
+	 * do not abuse this variable/struct (again) for anything but actual representing a count
+	 *
+	 * add your own number with correct semantic information to gentity_t or
+	 * if you really have to use customNumber
+	 */
 	transStateInt_t count;
 
 	// acceleration evaluation
@@ -318,7 +324,13 @@ struct gentity_s
 	int       watertype;
 	int       waterlevel;
 
-	// variables that got randomly semantically abused by everyone
+	/*
+	 * variables that got randomly semantically abused by everyone
+	 * so now we rather name them to indicate the fact, that we cannot imply any meaning by the name
+	 *
+	 * please try not to use them for new things if you can avoid it
+	 * but prefer them over semantically abusing other variables if you are into that sort of thing
+	 */
 	int       damage;
 	int       customNumber;
 
