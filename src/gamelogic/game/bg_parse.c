@@ -28,11 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 int                                trap_FS_FOpenFile( const char *qpath, fileHandle_t *f, fsMode_t mode );
 void                               trap_FS_Read( void *buffer, int len, fileHandle_t f );
-void                               trap_FS_Write( const void *buffer, int len, fileHandle_t f );
 void                               trap_FS_FCloseFile( fileHandle_t f );
-void                               trap_FS_Seek( fileHandle_t f, long offset, fsOrigin_t origin );  // fsOrigin_t
-int                                trap_FS_GetFileList( const char *path, const char *extension, char *listbuf, int bufsize );
-void                               trap_QuoteString( const char *, char *, int );
 
 #define PARSE(text, token) \
     (token) = COM_Parse( &(text) ); \
@@ -85,9 +81,8 @@ Parses a configuration file describing the attributes of a buildable
 ======================
 */
 
-qboolean BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t *ba )
+void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t *ba )
 {
-    int i;
     char *token;
     char text_buffer[ 20000 ];
     char* text;
@@ -110,7 +105,7 @@ qboolean BG_ParseBuildableAttributeFile( const char *filename, buildableAttribut
 
     if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
     {
-        return qfalse;
+        return;
     }
 
     text = text_buffer;
@@ -370,10 +365,7 @@ qboolean BG_ParseBuildableAttributeFile( const char *filename, buildableAttribut
     {
         Com_Printf( S_COLOR_RED "ERROR: %s not defined in %s\n",
                     token, filename );
-        return qfalse;
     }
-
-    return qtrue;
 }
 
 /*
@@ -383,14 +375,12 @@ BG_ParseBuildableModelFile
 Parses a configuration file describing the model of a buildable
 ======================
 */
-qboolean BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_t *bc )
+void BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_t *bc )
 {
-    int i;
     char *token;
     char text_buffer[ 20000 ];
     char* text;
     int defined = 0;
-    float scale;
     enum
     {
       MODEL = 1 << 0,
@@ -404,7 +394,7 @@ qboolean BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_
 
     if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
     {
-        return qfalse;
+        return;
     }
 
     text = text_buffer;
@@ -436,10 +426,11 @@ qboolean BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_
             Q_strncpyz( bc->models[ index ], token, sizeof( bc->models[ 0 ] ) );
 
             defined |= MODEL;
-            continue;
         }
         else if ( !Q_stricmp( token, "modelScale" ) )
         {
+            float scale;
+
             PARSE(text, token);
 
             scale = atof( token );
@@ -452,10 +443,11 @@ qboolean BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_
             bc->modelScale = scale;
 
             defined |= MODELSCALE;
-            continue;
         }
         else if ( !Q_stricmp( token, "mins" ) )
         {
+            int i;
+
             for ( i = 0; i <= 2; i++ )
             {
                 PARSE(text, token);
@@ -464,10 +456,11 @@ qboolean BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_
             }
 
             defined |= MINS;
-            continue;
         }
         else if ( !Q_stricmp( token, "maxs" ) )
         {
+            int i;
+
             for ( i = 0; i <= 2; i++ )
             {
                 PARSE(text, token);
@@ -476,50 +469,35 @@ qboolean BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_
             }
 
             defined |= MAXS;
-            continue;
         }
         else if ( !Q_stricmp( token, "zOffset" ) )
         {
-            float offset;
-
             PARSE(text, token);
 
-            offset = atof( token );
-
-            bc->zOffset = offset;
+            bc->zOffset = atof( token );
 
             defined |= ZOFFSET;
-            continue;
         }
         else if ( !Q_stricmp( token, "oldScale" ) )
         {
-            float scale;
-
             PARSE(text, token);
 
-            scale = atof( token );
-
-            bc->oldScale = scale;
+            bc->oldScale = atof( token );
 
             defined |= OLDSCALE;
-            continue;
         }
         else if ( !Q_stricmp( token, "oldOffset" ) )
         {
-            float offset;
-
             PARSE(text, token);
 
-            offset = atof( token );
-
-            bc->oldOffset = offset;
+            bc->oldOffset = atof( token );
 
             defined |= OLDOFFSET;
-            continue;
         }
-
-        Com_Printf( S_COLOR_RED "ERROR: unknown token '%s'\n", token );
-        return qfalse;
+        else
+        {
+            Com_Printf( S_COLOR_RED "ERROR: unknown token '%s'\n", token );
+        }
     }
 
     if ( !( defined & MODEL ) ) { token = "model"; }
@@ -533,8 +511,5 @@ qboolean BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_
     {
         Com_Printf( S_COLOR_RED "ERROR: %s not defined in %s\n",
                     token, filename );
-        return qfalse;
     }
-
-    return qtrue;
 }
