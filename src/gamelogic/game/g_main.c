@@ -317,6 +317,8 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_layouts,                     "g_layouts",                     "",                                 CVAR_LATCH,                                      0, qfalse           },
 	{ &g_layoutAuto,                  "g_layoutAuto",                  "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
 
+	{ &g_debugEntities,               "g_debugEntities",               "0",                                0,                                               0, qfalse           },
+
 	{ &g_emoticonsAllowedInNames,     "g_emoticonsAllowedInNames",     "1",                                CVAR_LATCH | CVAR_ARCHIVE,                       0, qfalse           },
 	{ &g_unnamedNumbering,            "g_unnamedNumbering",            "-1",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_unnamedNamePrefix,           "g_unnamedNamePrefix",           UNNAMED_PLAYER"#",                  CVAR_ARCHIVE,                                    0, qfalse           },
@@ -336,9 +338,8 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_tag,                         "g_tag",                         "gpp",                              CVAR_INIT,                                       0, qfalse           },
 
 	{ &g_showKillerHP,                "g_showKillerHP",                "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_combatCooldown,              "g_combatCooldown",              "15",                               CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_combatCooldown,              "g_combatCooldown",              "15",                               CVAR_ARCHIVE,                                    0, qfalse           }
 
-	{ &g_debugEntities,               "g_debugEntities",               "0",                                0,                                               0, qfalse           }
 };
 
 static const size_t gameCvarTableSize = ARRAY_LEN( gameCvarTable );
