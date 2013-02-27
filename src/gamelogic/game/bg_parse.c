@@ -513,3 +513,246 @@ void BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_t *b
                     token, filename );
     }
 }
+
+/*
+======================
+BG_ParseClassModelFile
+
+Parses a configuration file describing the model of a class
+======================
+*/
+void BG_ParseClassModelFile( const char *filename, classModelConfig_t *cc )
+{
+    char *token;
+    char text_buffer[ 20000 ];
+    char* text;
+    int defined = 0;
+    enum
+    {
+      MODEL = 1 << 0,
+      SKIN = 1 << 1,
+      HUD = 1 << 2,
+      MODELSCALE = 1 << 3,
+      SHADOWSCALE = 1 << 4,
+      MINS = 1 << 5,
+      MAXS = 1 << 6,
+      DEADMINS = 1 << 7,
+      DEADMAXS = 1 << 8,
+      CROUCHMAXS = 1 << 9,
+      VIEWHEIGHT = 1 << 10,
+      CVIEWHEIGHT = 1 << 11,
+      ZOFFSET = 1 << 12,
+      NAME = 1 << 13,
+      SHOULDEROFFSETS = 1 << 14
+    };
+
+    if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
+    {
+        return;
+    }
+
+    text = text_buffer;
+
+    // read optional parameters
+    while ( 1 )
+    {
+        PARSE(text, token);
+
+        if ( !Q_stricmp( token, "model" ) )
+        {
+            PARSE(text, token);
+
+            Q_strncpyz( cc->modelName, token, sizeof( cc->modelName ) );
+
+            defined |= MODEL;
+        }
+        else if ( !Q_stricmp( token, "skin" ) )
+        {
+            PARSE(text, token);
+
+            Q_strncpyz( cc->skinName, token, sizeof( cc->skinName ) );
+
+            defined |= SKIN;
+        }
+        else if ( !Q_stricmp( token, "hud" ) )
+        {
+            PARSE(text, token);
+
+            Q_strncpyz( cc->hudName, token, sizeof( cc->hudName ) );
+
+            defined |= HUD;
+        }
+        else if ( !Q_stricmp( token, "modelScale" ) )
+        {
+            float scale;
+
+            PARSE(text, token);
+
+            scale = atof( token );
+
+            if ( scale < 0.0f )
+            {
+                scale = 0.0f;
+            }
+
+            cc->modelScale = scale;
+
+            defined |= MODELSCALE;
+        }
+        else if ( !Q_stricmp( token, "shadowScale" ) )
+        {
+            float scale;
+
+            PARSE(text, token);
+
+            scale = atof( token );
+
+            if ( scale < 0.0f )
+            {
+                scale = 0.0f;
+            }
+
+            cc->shadowScale = scale;
+
+            defined |= SHADOWSCALE;
+        }
+        else if ( !Q_stricmp( token, "mins" ) )
+        {
+            int i;
+
+            for ( i = 0; i <= 2; i++ )
+            {
+                PARSE(text, token);
+
+                cc->mins[ i ] = atof( token );
+            }
+
+            defined |= MINS;
+        }
+        else if ( !Q_stricmp( token, "maxs" ) )
+        {
+            int i;
+
+            for ( i = 0; i <= 2; i++ )
+            {
+                PARSE(text, token);
+
+                cc->maxs[ i ] = atof( token );
+            }
+
+            defined |= MAXS;
+        }
+        else if ( !Q_stricmp( token, "deadMins" ) )
+        {
+            int i;
+
+            for ( i = 0; i <= 2; i++ )
+            {
+                PARSE(text, token);
+
+                cc->deadMins[ i ] = atof( token );
+            }
+
+            defined |= DEADMINS;
+        }
+        else if ( !Q_stricmp( token, "deadMaxs" ) )
+        {
+            int i;
+
+            for ( i = 0; i <= 2; i++ )
+            {
+                PARSE(text, token);
+
+                cc->deadMaxs[ i ] = atof( token );
+            }
+
+            defined |= DEADMAXS;
+        }
+        else if ( !Q_stricmp( token, "crouchMaxs" ) )
+        {
+            int i;
+
+            for ( i = 0; i <= 2; i++ )
+            {
+                PARSE(text, token);
+
+                cc->crouchMaxs[ i ] = atof( token );
+            }
+
+            defined |= CROUCHMAXS;
+        }
+        else if ( !Q_stricmp( token, "viewheight" ) )
+        {
+            PARSE(text, token);
+
+            cc->viewheight = atoi( token );
+
+            defined |= VIEWHEIGHT;
+        }
+        else if ( !Q_stricmp( token, "crouchViewheight" ) )
+        {
+            PARSE(text, token);
+
+            cc->crouchViewheight = atoi( token );
+
+            defined |= CVIEWHEIGHT;
+        }
+        else if ( !Q_stricmp( token, "zOffset" ) )
+        {
+            PARSE(text, token);
+
+            cc->zOffset = atof( token );
+
+            defined |= ZOFFSET;
+        }
+        else if ( !Q_stricmp( token, "name" ) )
+        {
+            PARSE(text, token);
+
+            cc->humanName = strdup( token );
+
+            defined |= NAME;
+        }
+        else if ( !Q_stricmp( token, "shoulderOffsets" ) )
+        {
+            int i;
+
+            for ( i = 0; i <= 2; i++ )
+            {
+                PARSE(text, token);
+
+                cc->shoulderOffsets[ i ] = atof( token );
+            }
+
+            defined |= SHOULDEROFFSETS;
+        }
+        else
+        {
+            Com_Printf( S_COLOR_RED "ERROR: unknown token '%s'\n", token );
+        }
+    }
+
+    if ( !( defined & MODEL ) ) { token = "model"; }
+    else if ( !( defined & SKIN ) ) { token = "skin"; }
+    else if ( !( defined & HUD ) ) { token = "hud"; }
+    else if ( !( defined & MODELSCALE ) ) { token = "modelScale"; }
+    else if ( !( defined & SHADOWSCALE ) ) { token = "shadowScale"; }
+    else if ( !( defined & MINS ) ) { token = "mins"; }
+    else if ( !( defined & MAXS ) ) { token = "maxs"; }
+    else if ( !( defined & DEADMINS ) ) { token = "deadMins"; }
+    else if ( !( defined & DEADMAXS ) ) { token = "deadMaxs"; }
+    else if ( !( defined & CROUCHMAXS ) ) { token = "crouchMaxs"; }
+    else if ( !( defined & VIEWHEIGHT ) ) { token = "viewheight"; }
+    else if ( !( defined & CVIEWHEIGHT ) ) { token = "crouchViewheight"; }
+    else if ( !( defined & ZOFFSET ) ) { token = "zOffset"; }
+    else if ( !( defined & NAME ) ) { token = "name"; }
+    else if ( !( defined & SHOULDEROFFSETS ) ) { token = "shoulderOffsets"; }
+    else { token = ""; }
+
+    if ( strlen( token ) > 0 )
+    {
+        Com_Printf( S_COLOR_RED "ERROR: %s not defined in %s\n",
+                    token, filename );
+    }
+}
+

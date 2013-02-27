@@ -969,7 +969,7 @@ typedef struct
 	char   skinName[ MAX_QPATH ];
 	float  shadowScale;
 	char   hudName[ MAX_QPATH ];
-	char   humanName[ MAX_STRING_CHARS ];
+	char   *humanName;
 
 	vec3_t mins;
 	vec3_t maxs;
@@ -1187,6 +1187,7 @@ qboolean                  BG_UpgradeAllowedInStage( upgrade_t upgrade,
 qboolean                  BG_ReadWholeFile( const char *filename, char *buffer, int size);
 void                      BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t *ba );
 void                      BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_t *bc );
+void                      BG_ParseClassModelFile( const char *filename, classModelConfig_t *cc );
 
 // content masks
 #define MASK_ALL         ( -1 )
