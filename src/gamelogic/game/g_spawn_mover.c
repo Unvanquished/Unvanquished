@@ -3005,10 +3005,7 @@ void SP_func_destructable( gentity_t *ent )
 {
   char *s;
 
-  G_SpawnString( "equipment", "", &s );
-  BG_ParseCSVEquipmentList( s, ent->conditions.weapons, WP_NUM_WEAPONS, ent->conditions.upgrades, UP_NUM_UPGRADES );
-  G_SpawnString( "classes", "", &s );
-  BG_ParseCSVClassList( s, ent->conditions.classes, PCL_NUM_CLASSES );
+  SP_ConditionFields( ent );
 
   G_SpawnInt( "damage", "0", &ent->splashDamage );
   G_SpawnInt( "radius", "0", &ent->splashRadius );
