@@ -1183,6 +1183,11 @@ const upgradeAttributes_t *BG_Upgrade( upgrade_t upgrade );
 qboolean                  BG_UpgradeAllowedInStage( upgrade_t upgrade,
     stage_t stage );
 
+// Parsers
+qboolean                  BG_ReadWholeFile( const char *filename, char *buffer, int size);
+qboolean                  BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t *ba );
+qboolean                  BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_t *bc );
+
 // content masks
 #define MASK_ALL         ( -1 )
 #define MASK_SOLID       ( CONTENTS_SOLID )
