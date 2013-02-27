@@ -124,7 +124,7 @@ static const field_t fields[] =
 	{ "classname",           FOFS( classname ),           F_STRING    },
 	{ "count",               FOFS( customNumber ),        F_INT       },
 	{ "dmg",                 FOFS( damage ),              F_INT       },
-	{ "health",              FOFS( health.previous ),     F_INT       },
+	{ "health",              FOFS( resetableHealth.previous ),     F_INT       },
 	{ "message",             FOFS( message ),             F_STRING    },
 	{ "model",               FOFS( model ),               F_STRING    },
 	{ "model2",              FOFS( model2 ),              F_STRING    },

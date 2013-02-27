@@ -747,7 +747,7 @@ void AHive_SearchAndDestroy( gentity_t *self )
 		}
 
 		if ( ent->client &&
-		     ent->health_current > 0 &&
+		     ent->health > 0 &&
 		     ent->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS &&
 		     nearest > ( d = DistanceSquared( ent->r.currentOrigin, self->r.currentOrigin ) ) )
 		{

@@ -279,8 +279,8 @@ struct gentity_s
 	char         *targetShaderName;
 	char         *targetShaderNewName;
 
-	transStateInt_t health;
-	int          health_current; //TODO refactor to use health.current instead
+	transStateInt_t resetableHealth;
+	int          health; //TODO refactor to use health.current instead
 
 	transStateFloat_t speed; // previous especially used by trains that have been restarted
 	float        speed_current; //TODO refactor to use speed.current instead

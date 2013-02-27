@@ -402,14 +402,14 @@ void trigger_heal_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 
 	max = other->client->ps.stats[ STAT_MAX_HEALTH ];
 
-	other->health_current += self->damage;
+	other->health += self->damage;
 
-	if ( other->health_current > max )
+	if ( other->health > max )
 	{
-		other->health_current = max;
+		other->health = max;
 	}
 
-	other->client->ps.stats[ STAT_HEALTH ] = other->health_current;
+	other->client->ps.stats[ STAT_HEALTH ] = other->health;
 }
 
 /*
