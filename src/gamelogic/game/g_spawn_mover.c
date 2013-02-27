@@ -774,7 +774,7 @@ void Think_CloseModelDoor( gentity_t *ent )
 	ent->moverState = MODEL_2TO1;
 
 	ent->think = Think_ClosedModelDoor;
-	ent->nextthink = level.time + ent->speed_current;
+	ent->nextthink = level.time + ent->speed.current;
 }
 
 /*
@@ -1112,7 +1112,7 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
 		ent->s.legsAnim = qtrue;
 
 		ent->think = Think_OpenModelDoor;
-		ent->nextthink = level.time + ent->speed_current;
+		ent->nextthink = level.time + ent->speed.current;
 
 		// starting sound
 		if ( ent->sound1to2 )
@@ -1235,13 +1235,13 @@ void InitMover( gentity_t *ent )
 	VectorSubtract( ent->activatedPosition, ent->restingPosition, move );
 	distance = VectorLength( move );
 
-	if ( !ent->speed_current )
+	if ( !ent->speed.current )
 	{
-		ent->speed_current = 100;
+		ent->speed.current = 100;
 	}
 
-	VectorScale( move, ent->speed_current, ent->s.pos.trDelta );
-	ent->s.pos.trDuration = distance * 1000 / ent->speed_current;
+	VectorScale( move, ent->speed.current, ent->s.pos.trDelta );
+	ent->s.pos.trDuration = distance * 1000 / ent->speed.current;
 
 	if ( ent->s.pos.trDuration <= 0 )
 	{
@@ -1344,13 +1344,13 @@ void InitRotator( gentity_t *ent )
 	VectorSubtract( ent->activatedPosition, ent->restingPosition, move );
 	angle = VectorLength( move );
 
-	if ( !ent->speed_current )
+	if ( !ent->speed.current )
 	{
-		ent->speed_current = 120;
+		ent->speed.current = 120;
 	}
 
-	VectorScale( move, ent->speed_current, ent->s.apos.trDelta );
-	ent->s.apos.trDuration = angle * 1000 / ent->speed_current;
+	VectorScale( move, ent->speed.current, ent->s.apos.trDelta );
+	ent->s.apos.trDuration = angle * 1000 / ent->speed.current;
 
 	if ( ent->s.apos.trDuration <= 0 )
 	{
@@ -1678,9 +1678,9 @@ void SP_func_door( gentity_t *ent )
 	ent->blocked = Blocked_Door;
 
 	// default speed of 400
-	if ( !ent->speed_current )
+	if ( !ent->speed.current )
 	{
-		ent->speed_current = 400;
+		ent->speed.current = 400;
 	}
 
 	// default wait of 2 seconds
@@ -1787,15 +1787,15 @@ void SP_func_door_rotating( gentity_t *ent )
 	ent->blocked = Blocked_Door;
 
 	//default speed of 120
-	if ( !ent->speed_current )
+	if ( !ent->speed.current )
 	{
-		ent->speed_current = 120;
+		ent->speed.current = 120;
 	}
 
 	// if speed is negative, positize it and add reverse flag
-	if ( ent->speed_current < 0 )
+	if ( ent->speed.current < 0 )
 	{
-		ent->speed_current *= -1;
+		ent->speed.current *= -1;
 		ent->spawnflags |= 8;
 	}
 
@@ -1924,9 +1924,9 @@ void SP_func_door_model( gentity_t *ent )
 	ent->soundPos1 = G_SoundIndex( s );
 
 	//default speed of 100ms
-	if ( !ent->speed_current )
+	if ( !ent->speed.current )
 	{
-		ent->speed_current = 200;
+		ent->speed.current = 200;
 	}
 
 	//default wait of 2 seconds
@@ -2043,7 +2043,7 @@ void SP_func_door_model( gentity_t *ent )
 		ent->s.weapon = 1;
 	}
 
-	ent->s.torsoAnim = ent->s.weapon * ( 1000.0f / ent->speed_current ); //framerate
+	ent->s.torsoAnim = ent->s.weapon * ( 1000.0f / ent->speed.current ); //framerate
 
 	trap_LinkEntity( ent );
 
@@ -2191,8 +2191,8 @@ void SP_func_plat( gentity_t *ent )
 
 	VectorClear( ent->s.angles );
 
-	if( !ent->speed_current )
-		ent->speed_current = 400;
+	if( !ent->speed.current )
+		ent->speed.current = 400;
 	G_SpawnFloat( "lip", "8", &lip );
 
 	if( !ent->damage )
@@ -2284,9 +2284,9 @@ void SP_func_button( gentity_t *ent )
 	G_SpawnString( "sound1to2", "sound/movers/switches/button1.wav", &s );
 	ent->sound1to2 = G_SoundIndex( s );
 
-	if ( !ent->speed_current )
+	if ( !ent->speed.current )
 	{
-		ent->speed_current = 40;
+		ent->speed.current = 40;
 	}
 
 	if ( !ent->wait )
@@ -2379,14 +2379,14 @@ void Reached_Train( gentity_t *ent )
 	VectorCopy( next->nextPathSegment->s.origin, ent->activatedPosition );
 
 	// if the path_corner has a speed, use that
-	if ( next->speed_current )
+	if ( next->speed.current )
 	{
-		speed = next->speed_current;
+		speed = next->speed.current;
 	}
 	else
 	{
 		// otherwise use the train's speed
-		speed = ent->speed_current;
+		speed = ent->speed.current;
 	}
 
 	if ( speed < 1 )
@@ -2658,9 +2658,9 @@ void SP_func_train( gentity_t *self )
 		self->damage = 2;
 	}
 
-	if ( !self->speed_current )
+	if ( !self->speed.current )
 	{
-		self->speed_current = 100;
+		self->speed.current = 100;
 	}
 
 	if ( !self->targets[ 0 ].name )
@@ -2742,9 +2742,9 @@ check either the X_AXIS or Y_AXIS box to change that.
 */
 void SP_func_rotating( gentity_t *ent )
 {
-	if ( !ent->speed_current )
+	if ( !ent->speed.current )
 	{
-		ent->speed_current = 100;
+		ent->speed.current = 100;
 	}
 
 	// set the axis of rotation
@@ -2752,15 +2752,15 @@ void SP_func_rotating( gentity_t *ent )
 
 	if ( ent->spawnflags & 4 )
 	{
-		ent->s.apos.trDelta[ 2 ] = ent->speed_current;
+		ent->s.apos.trDelta[ 2 ] = ent->speed.current;
 	}
 	else if ( ent->spawnflags & 8 )
 	{
-		ent->s.apos.trDelta[ 0 ] = ent->speed_current;
+		ent->s.apos.trDelta[ 0 ] = ent->speed.current;
 	}
 	else
 	{
-		ent->s.apos.trDelta[ 1 ] = ent->speed_current;
+		ent->s.apos.trDelta[ 1 ] = ent->speed.current;
 	}
 
 	if ( !ent->damage )
@@ -2801,8 +2801,8 @@ void SP_func_bobbing( gentity_t *ent )
 	float height;
 	float phase;
 
-	if( !ent->speed_current )
-		ent->speed_current = 4;
+	if( !ent->speed.current )
+		ent->speed.current = 4;
 
 	G_SpawnFloat( "height", "32", &height );
 	G_SpawnFloat( "phase", "0", &phase );
@@ -2816,7 +2816,7 @@ void SP_func_bobbing( gentity_t *ent )
 	VectorCopy( ent->s.origin, ent->s.pos.trBase );
 	VectorCopy( ent->s.origin, ent->r.currentOrigin );
 
-	ent->s.pos.trDuration = ent->speed_current * 1000;
+	ent->s.pos.trDuration = ent->speed.current * 1000;
 	ent->s.pos.trTime = ent->s.pos.trDuration * phase;
 	ent->s.pos.trType = TR_SINE;
 
@@ -2860,8 +2860,8 @@ void SP_func_pendulum( gentity_t *ent )
 	float length;
 	float phase;
 
-	if( !ent->speed_current )
-		ent->speed_current = 30;
+	if( !ent->speed.current )
+		ent->speed.current = 30;
 
 	G_SpawnFloat( "phase", "0", &phase );
 
@@ -2892,7 +2892,7 @@ void SP_func_pendulum( gentity_t *ent )
 	ent->s.apos.trDuration = 1000 / freq;
 	ent->s.apos.trTime = ent->s.apos.trDuration * phase;
 	ent->s.apos.trType = TR_SINE;
-	ent->s.apos.trDelta[ 2 ] = ent->speed_current;
+	ent->s.apos.trDelta[ 2 ] = ent->speed.current;
 }
 
 /*

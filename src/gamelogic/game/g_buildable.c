@@ -2670,16 +2670,16 @@ static qboolean HMGTurret_State( gentity_t *self, int state )
 		{
 			if ( self->waterlevel != MGT_STATE_DROP )
 			{
-				self->speed_current = 0.25f;
+				self->speed.current = 0.25f;
 				self->waterlevel = MGT_STATE_DROP;
 			}
 			else
 			{
-				self->speed_current *= 1.25f;
+				self->speed.current *= 1.25f;
 			}
 
 			self->s.angles2[ PITCH ] =
-			  MIN( MGTURRET_VERTICALCAP, angle + self->speed_current );
+			  MIN( MGTURRET_VERTICALCAP, angle + self->speed.current );
 			return qtrue;
 		}
 		else

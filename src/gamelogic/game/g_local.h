@@ -280,10 +280,9 @@ struct gentity_s
 	char         *targetShaderNewName;
 
 	transStateInt_t resetableHealth;
-	int          health; //TODO refactor to use health.current instead
+	int          health; //TODO lets see if we can somehow refactor that with resetableHealth
 
-	transStateFloat_t speed; // previous especially used by trains that have been restarted
-	float        speed_current; //TODO refactor to use speed.current instead
+	transStateFloat_t speed;
 
 	/*
 	 * do not abuse this variable/struct (again) for anything but actual representing a count
