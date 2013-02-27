@@ -162,7 +162,7 @@ static const entityActionDescription_t actionDescriptions[] =
 		{ "on",      ETA_ON        },
 		{ "reset",   ETA_RESET     },
 		{ "toggle",  ETA_TOGGLE    },
-		{ "trigger", ETA_PROPAGATE },
+		{ "propagate", ETA_PROPAGATE },
 };
 
 typedef struct
