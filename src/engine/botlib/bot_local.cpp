@@ -59,8 +59,7 @@ void BotCalcSteerDir( Bot_t *bot, vec3_t dir )
 	float len0, len1;
 	vec3_t spos;
 
-	VectorCopy( SV_GentityNum( bot->clientNum )->s.origin, spos );
-	quake2recast( spos );
+	VectorCopy( bot->corridor.getPos(), spos );
 
 	VectorSubtract( p0, spos, dir0 );
 	VectorSubtract( p1, spos, dir1 );
