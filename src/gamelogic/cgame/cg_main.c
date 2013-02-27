@@ -1367,8 +1367,8 @@ static void CG_RegisterClients( void )
 	//precache all the models/sounds/etc
 	for ( i = PCL_NONE + 1; i < PCL_NUM_CLASSES; i++ )
 	{
-		CG_PrecacheClientInfo( i, BG_ClassConfig( i )->modelName,
-		                       BG_ClassConfig( i )->skinName );
+		CG_PrecacheClientInfo( i, BG_ClassModelConfig( i )->modelName,
+		                       BG_ClassModelConfig( i )->skinName );
 
 		cg.charModelFraction = ( float ) i / ( float ) PCL_NUM_CLASSES;
 		trap_UpdateScreen();
@@ -2307,7 +2307,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	cgs.media.outlineShader = trap_R_RegisterShader( "outline" );
 
 	// load overrides
-	BG_InitClassConfigs();
+	BG_InitClassModelConfigs();
 	BG_InitBuildableAttributes();
 	BG_InitBuildableModelConfigs();
 	BG_InitAllowedGameElements();

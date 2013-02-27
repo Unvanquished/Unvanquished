@@ -980,7 +980,7 @@ typedef struct
 	int    crouchViewheight;
 	float  zOffset;
 	vec3_t shoulderOffsets;
-} classConfig_t;
+} classModelConfig_t;
 
 //stages
 typedef enum
@@ -1159,7 +1159,7 @@ const classAttributes_t     *BG_Class( class_t class );
 qboolean                    BG_ClassAllowedInStage( class_t class,
     stage_t stage );
 
-classConfig_t               *BG_ClassConfig( class_t class );
+classModelConfig_t          *BG_ClassModelConfig( class_t class );
 
 void                        BG_ClassBoundingBox( class_t class, vec3_t mins,
     vec3_t maxs, vec3_t cmaxs,
@@ -1171,7 +1171,7 @@ int                         BG_ClassCanEvolveFromTo( class_t fclass,
 
 qboolean                  BG_AlienCanEvolve( class_t class, int credits, int alienStage );
 
-void                      BG_InitClassConfigs( void );
+void                      BG_InitClassModelConfigs( void );
 
 const weaponAttributes_t  *BG_WeaponByName( const char *name );
 const weaponAttributes_t  *BG_Weapon( weapon_t weapon );

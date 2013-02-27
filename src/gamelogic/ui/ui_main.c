@@ -1835,13 +1835,13 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 			if ( value < 1 )
 			{
 				s = va( "%s\n\n%s",
-				        _( BG_ClassConfig( item->v.pclass )->humanName ),
+				        _( BG_ClassModelConfig( item->v.pclass )->humanName ),
 				        _( BG_Class( item->v.pclass )->info ) );
 			}
 			else
 			{
 				s = va( _("%s\n\n%s\n\nFrags: %d"),
-				        _( BG_ClassConfig( item->v.pclass )->humanName ),
+				        _( BG_ClassModelConfig( item->v.pclass )->humanName ),
 				        _( BG_Class( item->v.pclass )->info ),
 				        value );
 			}
@@ -2504,7 +2504,7 @@ UI_AddClass
 static void UI_AddClass( class_t class )
 {
 	uiInfo.alienClassList[ uiInfo.alienClassCount ].text =
-	  BG_ClassConfig( class )->humanName;
+	  BG_ClassModelConfig( class )->humanName;
 	uiInfo.alienClassList[ uiInfo.alienClassCount ].cmd =
 	  String_Alloc( va( "cmd class %s\n", BG_Class( class )->name ) );
 	uiInfo.alienClassList[ uiInfo.alienClassCount ].type = INFOTYPE_CLASS;
@@ -2798,7 +2798,7 @@ static void UI_LoadAlienUpgrades( void )
 	{
 		if ( BG_ClassCanEvolveFromTo( class, i, credits, stage, 0 ) >= 0 )
 		{
-			uiInfo.alienUpgradeList[ j ].text = BG_ClassConfig( i )->humanName;
+			uiInfo.alienUpgradeList[ j ].text = BG_ClassModelConfig( i )->humanName;
 			uiInfo.alienUpgradeList[ j ].cmd =
 			  String_Alloc( va( "cmd class %s\n", BG_Class( i )->name ) );
 			uiInfo.alienUpgradeList[ j ].type = INFOTYPE_CLASS;
@@ -5102,7 +5102,7 @@ void UI_Init( void )
 
 	trap_SyscallABIVersion( SYSCALL_ABI_VERSION_MAJOR, SYSCALL_ABI_VERSION_MINOR );
 
-	BG_InitClassConfigs();
+	BG_InitClassModelConfigs();
 	BG_InitBuildableAttributes();
 	BG_InitAllowedGameElements();
 

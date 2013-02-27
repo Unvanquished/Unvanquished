@@ -726,16 +726,16 @@ qboolean BG_ClassAllowedInStage( class_t class,
 	return stages & ( 1 << stage );
 }
 
-static classConfig_t bg_classConfigList[ PCL_NUM_CLASSES ];
+static classModelConfig_t bg_classModelConfigList[ PCL_NUM_CLASSES ];
 
 /*
 ==============
-BG_ClassConfig
+BG_ClassModelConfig
 ==============
 */
-classConfig_t *BG_ClassConfig( class_t class )
+classModelConfig_t *BG_ClassModelConfig( class_t class )
 {
-	return &bg_classConfigList[ class ];
+	return &bg_classModelConfigList[ class ];
 }
 
 /*
@@ -747,31 +747,31 @@ void BG_ClassBoundingBox( class_t class,
                           vec3_t mins, vec3_t maxs,
                           vec3_t cmaxs, vec3_t dmins, vec3_t dmaxs )
 {
-	classConfig_t *classConfig = BG_ClassConfig( class );
+	classModelConfig_t *classModelConfig = BG_ClassModelConfig( class );
 
 	if ( mins != NULL )
 	{
-		VectorCopy( classConfig->mins, mins );
+		VectorCopy( classModelConfig->mins, mins );
 	}
 
 	if ( maxs != NULL )
 	{
-		VectorCopy( classConfig->maxs, maxs );
+		VectorCopy( classModelConfig->maxs, maxs );
 	}
 
 	if ( cmaxs != NULL )
 	{
-		VectorCopy( classConfig->crouchMaxs, cmaxs );
+		VectorCopy( classModelConfig->crouchMaxs, cmaxs );
 	}
 
 	if ( dmins != NULL )
 	{
-		VectorCopy( classConfig->deadMins, dmins );
+		VectorCopy( classModelConfig->deadMins, dmins );
 	}
 
 	if ( dmaxs != NULL )
 	{
-		VectorCopy( classConfig->deadMaxs, dmaxs );
+		VectorCopy( classModelConfig->deadMaxs, dmaxs );
 	}
 }
 
@@ -888,12 +888,12 @@ qboolean BG_AlienCanEvolve( class_t class, int credits, int stage )
 
 /*
 ======================
-BG_ParseClassFile
+BG_ParseClassModelFile
 
 Parses a configuration file describing a class
 ======================
 */
-static qboolean BG_ParseClassFile( const char *filename, classConfig_t *cc )
+static qboolean BG_ParseClassModelFile( const char *filename, classModelConfig_t *cc )
 {
 	char         *text_p;
 	int          i;
@@ -1221,19 +1221,19 @@ static qboolean BG_ParseClassFile( const char *filename, classConfig_t *cc )
 
 /*
 ===============
-BG_InitClassConfigs
+BG_InitClassModelConfigs
 ===============
 */
-void BG_InitClassConfigs( void )
+void BG_InitClassModelConfigs( void )
 {
 	int           i;
-	classConfig_t *cc;
+	classModelConfig_t *cc;
 
 	for ( i = PCL_NONE; i < PCL_NUM_CLASSES; i++ )
 	{
-		cc = BG_ClassConfig( i );
+		cc = BG_ClassModelConfig( i );
 
-		BG_ParseClassFile( va( "configs/classes/%s.cfg",
+		BG_ParseClassModelFile( va( "configs/classes/%s.cfg",
 		                       BG_Class( i )->name ), cc );
 	}
 }
