@@ -1454,7 +1454,7 @@ double rint( double x );
 	int      Q_strncasecmp( const char *s1, const char *s2, int n );
 	qboolean Q_strreplace( char *dest, int destsize, const char *find, const char *replace );
 
-	int      Com_Filter( char *filter, char *name, int casesensitive );
+	int      Com_Filter( const char *filter, const char *name, int casesensitive );
 
 // strlen that discounts Quake color sequences
 	int      Q_PrintStrlen( const char *string );

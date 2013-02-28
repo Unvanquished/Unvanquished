@@ -2274,7 +2274,7 @@ const char *Q_stristr( const char *s, const char *find )
 Com_StringContains
 ============
 */
-char           *Com_StringContains( char *str1, char *str2, int casesensitive )
+const char *Com_StringContains( const char *str1, const char *str2, int casesensitive )
 {
 	int len, i, j;
 
@@ -2315,10 +2315,10 @@ Com_Filter
 String comparison with wildcard support and optional casesensitivity
 ============
 */
-int Com_Filter( char *filter, char *name, int casesensitive )
+int Com_Filter( const char *filter, const char *name, int casesensitive )
 {
 	char buf[ MAX_TOKEN_CHARS ];
-	char *ptr;
+	const char *ptr;
 	int  i, found;
 
 	while ( *filter )
