@@ -272,9 +272,14 @@ static void PrintEntityOverviewLine( gentity_t *entity )
 
 	G_Printf( "%3i:", entity->s.number );
 	PrintEntityType( entity );
-	G_Printf( "%-24s ", entity->classname );
-	for (i = 0; i < MAX_ENTITY_ALIASES && entity->names[i]; ++i)
-		G_Printf( "%s\"%s\"", i == 0 ? "": ", ", entity->names[i] );
+	G_Printf( "%-25s", entity->classname );
+	G_Printf( "%s", vtos( entity->s.origin ) );
+	if(entity->names[0])
+	{
+		G_Printf("\n    ");
+		for (i = 0; i < MAX_ENTITY_ALIASES && entity->names[i]; ++i)
+			G_Printf("%s%s", i == 0 ? "": ", ", entity->names[i] );
+	}
 	G_Printf( "\n" );
 }
 
