@@ -265,40 +265,59 @@ void Svcmd_EntityShow_f( void )
 Svcmd_EntityList_f
 ===================
 */
+
+static void PrintEntityOverviewLine( gentity_t *entity )
+{
+	int i;
+
+	G_Printf( "%3i:", entity->s.number );
+	PrintEntityType( entity );
+	G_Printf( "%-24s ", entity->classname );
+	for (i = 0; i < MAX_ENTITY_ALIASES && entity->names[i]; ++i)
+		G_Printf( "%s\"%s\"", i == 0 ? "": ", ", entity->names[i] );
+	G_Printf( "\n" );
+}
+
 void  Svcmd_EntityList_f( void )
 {
-	int       entity;
+	int       entityNum;
+	int i;
 	int currentEntityCount;
-	gentity_t *check;
+	gentity_t *displayedEntity;
+	char* filter;
 
-	check = g_entities;
+	displayedEntity = g_entities;
 
-	for ( entity = 0, currentEntityCount = 0; entity < level.num_entities; entity++, check++ )
+	if(trap_Argc() > 1)
 	{
-		if ( !check->inuse )
+		filter = ConcatArgs( 1 );
+	}
+	else
+	{
+		filter = NULL;
+	}
+
+	for ( entityNum = 0, currentEntityCount = 0; entityNum < level.num_entities; entityNum++, displayedEntity++ )
+	{
+		if ( !displayedEntity->inuse )
 		{
 			continue;
 		}
-
 		currentEntityCount++;
 
-		G_Printf( "%3i:", entity );
-		PrintEntityType( check );
-
-		if ( check->classname )
+		if(filter && !Com_Filter(filter, displayedEntity->classname, qfalse) )
 		{
-			G_Printf( "%-24s ", check->classname );
-			if ( check->names[0] )
+			for (i = 0; i < MAX_ENTITY_ALIASES; ++i)
 			{
-				G_Printf( "\"%s\"", check->names[0] );
-				if ( check->names[1] )
+				if( Com_Filter(filter, displayedEntity->names[i], qfalse) )
 				{
-					G_Printf( ", \"%s\"", check->names[1] );
+					PrintEntityOverviewLine( displayedEntity );
+					break;
 				}
 			}
+			continue;
 		}
-
-		G_Printf( "\n" );
+		PrintEntityOverviewLine( displayedEntity );
 	}
 
 	G_Printf( "A total of %i entities are currently in use.\n", currentEntityCount);
