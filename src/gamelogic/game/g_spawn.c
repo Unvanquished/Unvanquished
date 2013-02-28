@@ -165,15 +165,7 @@ static const entityActionDescription_t actionDescriptions[] =
 		{ "propagate", ETA_PROPAGATE },
 };
 
-typedef struct
-{
-	const char *name;
-	void      ( *spawn )( gentity_t *ent );
-	const int	versionState;
-	const char  *replacement;
-} spawn_t;
-
-static const spawn_t spawns[] =
+static const entityClass_t entityClasses[] =
 {
 	/**
 	 *
@@ -322,7 +314,7 @@ static const spawn_t spawns[] =
 	{ "trigger_win",              SP_sensor_end,              ENT_V_TMPNAME, "sensor_end" }
 };
 
-qboolean G_HandleEntityVersions( spawn_t *spawnDescription, gentity_t *entity )
+qboolean G_HandleEntityVersions( entityClass_t *spawnDescription, gentity_t *entity )
 {
 	if ( spawnDescription->versionState == ENT_V_CURRENT ) // we don't need to handle anything
 		return qtrue;
@@ -355,21 +347,21 @@ Finds the spawn function for the entity and calls it,
 returning qfalse if not found
 ===============
 */
-qboolean G_CallSpawn( gentity_t *ent )
+qboolean G_CallSpawn( gentity_t *spawnedEntity )
 {
-	spawn_t     *s;
+	entityClass_t     *spawnedClass;
 	buildable_t buildable;
 
-	if ( !ent->classname )
+	if ( !spawnedEntity->classname )
 	{
 		//don't even warn about spawning-errors with -2 (maps might still work at least partly if we ignore these willingly)
 		if ( g_debugEntities.integer > -2 )
-			G_Printf( "^1ERROR: Entity ^5#%i^7 is missing classname – we are unable to spawn it.\n", ent->s.number );
+			G_Printf( "^1ERROR: Entity ^5#%i^7 is missing classname – we are unable to spawn it.\n", spawnedEntity->s.number );
 		return qfalse;
 	}
 
 	//check buildable spawn functions
-	buildable = BG_BuildableByEntityName( ent->classname )->number;
+	buildable = BG_BuildableByEntityName( spawnedEntity->classname )->number;
 
 	if ( buildable != BA_NONE )
 	{
@@ -381,35 +373,41 @@ qboolean G_CallSpawn( gentity_t *ent )
 
 		if ( buildable == BA_A_SPAWN || buildable == BA_H_SPAWN )
 		{
-			ent->s.angles[ YAW ] += 180.0f;
-			AngleNormalize360( ent->s.angles[ YAW ] );
+			spawnedEntity->s.angles[ YAW ] += 180.0f;
+			AngleNormalize360( spawnedEntity->s.angles[ YAW ] );
 		}
 
-		G_SpawnBuildable( ent, buildable );
+		G_SpawnBuildable( spawnedEntity, buildable );
 		return qtrue;
 	}
 
 	// check the spawn functions for other classes
-	s = bsearch( ent->classname, spawns, ARRAY_LEN( spawns ),
-	             sizeof( spawn_t ), cmdcmp );
+	spawnedClass = bsearch( spawnedEntity->classname, entityClasses, ARRAY_LEN( entityClasses ),
+	             sizeof( entityClass_t ), cmdcmp );
 
-	if ( s )
+	if ( spawnedClass )
 	{ // found it
 
-		s->spawn( ent );
-		ent->enabled = qtrue;
-		ent->spawned = qtrue;
+		spawnedEntity->eclass = spawnedClass;
+		spawnedClass->instanceCounter++;
+		spawnedClass->spawn( spawnedEntity );
+		spawnedEntity->enabled = qtrue;
+		spawnedEntity->spawned = qtrue;
+
+		if ( g_debugEntities.integer > 2 )
+			G_Printf("Debug: Sucessfully Spawned Entity ^5#%i^7 as ^3%i^7th instance of ^5%s\n",
+					spawnedEntity->s.number, spawnedClass->instanceCounter, spawnedClass->name);
 
 		/*
 		 *  to allow each spawn function to test and handle for itself,
 		 *  we handle it automatically *after* the spawn (but before it's use/reset)
 		 */
-		if(!G_HandleEntityVersions( s, ent ))
+		if(!G_HandleEntityVersions( spawnedClass, spawnedEntity ))
 			return qfalse;
 
 		//initial set
-		if(ent->reset)
-			ent->reset( ent );
+		if(spawnedEntity->reset)
+			spawnedEntity->reset( spawnedEntity );
 
 		return qtrue;
 	}
@@ -417,13 +415,13 @@ qboolean G_CallSpawn( gentity_t *ent )
 	//don't even warn about spawning-errors with -2 (maps might still work at least partly if we ignore these willingly)
 	if ( g_debugEntities.integer > -2 )
 	{
-		if (!Q_stricmp("worldspawn", ent->classname))
+		if (!Q_stricmp("worldspawn", spawnedEntity->classname))
 		{
-			G_Printf( "^1ERROR: ^5%s ^7is not the first but the ^5#%i^7 entity – we are unable to spawn it.\n", ent->classname, ent->s.number );
+			G_Printf( "^1ERROR: ^5%s ^7is not the first but the ^5#%i^7 entity – we are unable to spawn it.\n", spawnedEntity->classname, spawnedEntity->s.number );
 		}
 		else
 		{
-			G_Printf( "^1ERROR: \"^5%s^7\" doesn't have a spawn function. We have to skip it.\n", ent->classname );
+			G_Printf( "^1ERROR: \"^5%s^7\" doesn't have a spawn function. We have to skip it.\n", spawnedEntity->classname );
 		}
 	}
 

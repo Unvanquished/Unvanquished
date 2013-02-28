@@ -155,6 +155,17 @@ typedef struct
 	targetAction_t actionType;
 } target_t;
 
+typedef struct
+{
+	const char *name;
+	void ( *spawn )( gentity_t *entityToSpawn );
+
+	const int	versionState;
+	const char  *replacement;
+
+	int instanceCounter;
+} entityClass_t;
+
 struct gentity_s
 {
 	entityState_t  s; // communicated by server to clients
@@ -182,6 +193,12 @@ struct gentity_s
 	qboolean     unlinkAfterEvent;
 
 	int          flags; // FL_* variables
+
+	/*
+	 * the class of the entity
+	 * this is shared among all instances of this type
+	 */
+	const entityClass_t *eclass;
 
 	const char   *classname;
 	int          spawnflags;
