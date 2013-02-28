@@ -1190,6 +1190,8 @@ extern  vmCvar_t g_censorship;
 extern  vmCvar_t g_showKillerHP;
 extern  vmCvar_t g_combatCooldown;
 
+extern  vmCvar_t g_debugEntities;
+
 void             trap_Print( const char *string );
 void             trap_Error( const char *string ) NORETURN;
 int              trap_Milliseconds( void );

@@ -166,6 +166,8 @@ vmCvar_t           g_tag;
 vmCvar_t           g_showKillerHP;
 vmCvar_t           g_combatCooldown;
 
+vmCvar_t           g_debugEntities;
+
 // copy cvars that can be set in worldspawn so they can be restored later
 static char        cv_gravity[ MAX_CVAR_VALUE_STRING ];
 static char        cv_humanMaxStage[ MAX_CVAR_VALUE_STRING ];
@@ -298,6 +300,8 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_layouts,                     "g_layouts",                     "",                                 CVAR_LATCH,                                      0, qfalse           },
 	{ &g_layoutAuto,                  "g_layoutAuto",                  "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
 
+	{ &g_debugEntities,               "g_debugEntities",               "0",                                0,                                               0, qfalse           },
+
 	{ &g_emoticonsAllowedInNames,     "g_emoticonsAllowedInNames",     "1",                                CVAR_LATCH | CVAR_ARCHIVE,                       0, qfalse           },
 	{ &g_unnamedNumbering,            "g_unnamedNumbering",            "-1",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_unnamedNamePrefix,           "g_unnamedNamePrefix",           UNNAMED_PLAYER"#",                  CVAR_ARCHIVE,                                    0, qfalse           },
@@ -318,6 +322,7 @@ static cvarTable_t gameCvarTable[] =
 
 	{ &g_showKillerHP,                "g_showKillerHP",                "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_combatCooldown,              "g_combatCooldown",              "15",                               CVAR_ARCHIVE,                                    0, qfalse           }
+
 };
 
 static const size_t gameCvarTableSize = ARRAY_LEN( gameCvarTable );
