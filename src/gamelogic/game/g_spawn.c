@@ -165,7 +165,7 @@ static const entityActionDescription_t actionDescriptions[] =
 		{ "propagate", ETA_PROPAGATE },
 };
 
-static const entityClass_t entityClasses[] =
+static entityClass_t entityClasses[] =
 {
 	/**
 	 *
@@ -427,7 +427,7 @@ qboolean G_CallSpawn( gentity_t *spawnedEntity )
 	{ // found it
 
 		spawnedEntity->eclass = spawnedClass;
-		spawnedClass->instanceCounter++;
+		spawnedEntity->eclass->instanceCounter++;
 
 		if(!G_ValidateEntity( spawnedClass, spawnedEntity ))
 			return qfalse; // results in freeing the entity

@@ -182,7 +182,7 @@ typedef enum
 typedef struct
 {
 	const char *name;
-	chainType_t chainType;
+	const chainType_t chainType;
 	void ( *spawn )( gentity_t *entityToSpawn );
 
 
