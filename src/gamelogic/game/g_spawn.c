@@ -392,6 +392,9 @@ qboolean G_CallSpawn( gentity_t *spawnedEntity )
 		//don't even warn about spawning-errors with -2 (maps might still work at least partly if we ignore these willingly)
 		if ( g_debugEntities.integer > -2 )
 			G_Printf( "^1ERROR: Entity ^5#%i^7 is missing classname – we are unable to spawn it.\n", spawnedEntity->s.number );
+
+		spawnedEntity->classname = "MissingClassname";
+
 		return qfalse;
 	}
 
@@ -665,7 +668,7 @@ void G_SpawnGEntityFromSpawnVars( void )
 	{
 		if(( g_debugEntities.integer > -2 ) )
 		{
-			G_Printf( "^1ERROR: ^7Some unknown entity was force-removed during spawn because it was missing necessary fields.\nPlease check, that everything has a classname, and take previous warnings into consideration.\n");
+			G_Printf( "^1ERROR: ^7Some entity of type ^5%s^7 was force-removed during spawn, probably because it was failing validation.\nPlease check, that everything has a classname, and take previous warnings into consideration.\n", ent->classname);
 		}
 		G_FreeEntity( ent );
 	}
