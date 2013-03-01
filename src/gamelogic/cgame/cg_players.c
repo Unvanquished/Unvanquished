@@ -3333,6 +3333,17 @@ void CG_Player( centity_t *cent )
 				QuatMultiply0( body.skeleton.bones[ boneIndex ].rotation, rotation );
 			}
 
+			// HACK: limit angle (avoids worst of the gun clipping through the body)
+			// Needs some proper animation fixes...
+			if ( cent->lerpAngles[ 0 ] > 60 )
+			{
+				cent->lerpAngles[ 0 ] = 60;
+			}
+			else if ( cent->lerpAngles[ 0 ] < -60 )
+			{
+				cent->lerpAngles[ 0 ] = -60;
+			}
+
 			QuatFromAngles( rotation, -cent->lerpAngles[ 0 ], 0, 0 );
 			QuatMultiply0( body.skeleton.bones[ ci->rightShoulderBone ].rotation, rotation );
 
