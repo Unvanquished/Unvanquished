@@ -339,6 +339,41 @@ qboolean G_HandleEntityVersions( entityClass_t *spawnDescription, gentity_t *ent
 	return qtrue;
 }
 
+qboolean G_ValidateEntity( entityClass_t *entityClass, gentity_t *entity )
+{
+	switch (entityClass->chainType) {
+		case CHAIN_ACTIVE:
+			if(!entity->targets[0].name)
+			{
+				if( g_debugEntities.integer > -2 )
+					G_Printf( "^3WARNING: ^7Entity ^5#%i^7 of type ^5%s^7 needs to target to something.\n", entity->s.number, entity->classname );
+				return qfalse;
+			}
+			break;
+		case CHAIN_TARGET:
+		case CHAIN_PASSIV:
+			if(!entity->names[0])
+			{
+				if( g_debugEntities.integer > -2 )
+					G_Printf( "^3WARNING: ^7Entity ^5#%i^7 of type ^5%s^7 needs a name, so other entities can target it.\n", entity->s.number, entity->classname );
+				return qfalse;
+			}
+			break;
+		case CHAIN_RELAY:
+			if(!entity->targets[0].name || !entity->names[0])
+			{
+				if( g_debugEntities.integer > -2 )
+					G_Printf( "^3WARNING: ^7Entity ^5#%i^7 of type ^5%s^7 needs a name as well as a target to conditionally relay the firing.\n", entity->s.number, entity->classname );
+				return qfalse;
+			}
+			break;
+		default:
+			break;
+	}
+
+	return qtrue;
+}
+
 /*
 ===============
 G_CallSpawn
@@ -389,6 +424,10 @@ qboolean G_CallSpawn( gentity_t *spawnedEntity )
 	{ // found it
 
 		spawnedEntity->eclass = spawnedClass;
+
+		if(!G_ValidateEntity( spawnedClass, spawnedEntity ))
+			return qfalse; // results in freeing the entity
+
 		spawnedClass->instanceCounter++;
 		spawnedClass->spawn( spawnedEntity );
 		spawnedEntity->enabled = qtrue;
