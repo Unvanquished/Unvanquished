@@ -621,9 +621,13 @@ void G_SpawnGEntityFromSpawnVars( void )
 	}
 	ent->names[ j ] = NULL;
 
-	// if we didn't get a classname, don't bother spawning anything
+	// if we didn't get necessary fields (like the classname), don't bother spawning anything
 	if ( !G_CallSpawn( ent ) )
 	{
+		if(( g_debugEntities.integer > -2 ) )
+		{
+			G_Printf( "^1ERROR: ^7Some unknown entity was force-removed during spawn because it was missing necessary fields.\nPlease check, that everything has a classname, and take previous warnings into consideration.\n");
+		}
 		G_FreeEntity( ent );
 	}
 }
