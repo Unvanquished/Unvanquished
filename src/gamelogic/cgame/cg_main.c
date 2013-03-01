@@ -2307,6 +2307,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	cgs.media.outlineShader = trap_R_RegisterShader( "outline" );
 
 	// load overrides
+	BG_InitClassAttributes();
 	BG_InitClassModelConfigs();
 	BG_InitBuildableAttributes();
 	BG_InitBuildableModelConfigs();

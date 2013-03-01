@@ -748,6 +748,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	// general initialization
 	G_FindTeams();
 
+	BG_InitClassAttributes();
 	BG_InitClassModelConfigs();
 	BG_InitBuildableModelConfigs();
 	G_InitDamageLocations();

@@ -926,9 +926,9 @@ typedef struct
 {
 	class_t  number;
 
-	const char *name;
-	const char *info;
-	const char *fovCvar;
+	char *name;
+	char *info;
+	char *fovCvar;
 
 	int      stages;
 
@@ -1171,6 +1171,7 @@ int                         BG_ClassCanEvolveFromTo( class_t fclass,
 
 qboolean                  BG_AlienCanEvolve( class_t class, int credits, int alienStage );
 
+void                      BG_InitClassAttributes( void );
 void                      BG_InitClassModelConfigs( void );
 
 const weaponAttributes_t  *BG_WeaponByName( const char *name );
@@ -1187,6 +1188,7 @@ qboolean                  BG_UpgradeAllowedInStage( upgrade_t upgrade,
 qboolean                  BG_ReadWholeFile( const char *filename, char *buffer, int size);
 void                      BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t *ba );
 void                      BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_t *bc );
+void                      BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca );
 void                      BG_ParseClassModelFile( const char *filename, classModelConfig_t *cc );
 
 // content masks

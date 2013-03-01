@@ -28,6 +28,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 int                                trap_FS_FOpenFile( const char *qpath, fileHandle_t *f, fsMode_t mode );
 void                               trap_FS_Read( void *buffer, int len, fileHandle_t f );
+void                               trap_FS_Write( const void *buffer, int len, fileHandle_t f );
 void                               trap_FS_FCloseFile( fileHandle_t f );
 
 #define PARSE(text, token) \
@@ -71,6 +72,24 @@ qboolean BG_ReadWholeFile( const char *filename, char *buffer, int size)
     trap_FS_FCloseFile( f );
 
     return qtrue;
+}
+
+static int BG_StageFromNumber( int i )
+{
+    if( i == 1 )
+    {
+        return S1 | S2 | S3;
+    }
+    if( i == 2 )
+    {
+        return S2 | S3;
+    }
+    if( i == 3 )
+    {
+        return S3;
+    }
+
+    return 0;
 }
 
 /*
@@ -143,7 +162,7 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
             PARSE(text, token);
 
             //It depends heavily on the definition of S1 S2 S3
-            ba->stages = (1 << (S1 + atoi(token))) - 1;
+            ba->stages = BG_StageFromNumber( atoi(token) );
 
             defined |= STAGE;
         }
@@ -505,6 +524,288 @@ void BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_t *b
     else if ( !( defined & MINS ) ) { token = "mins"; }
     else if ( !( defined & MAXS ) ) { token = "maxs"; }
     else if ( !( defined & ZOFFSET ) ) { token = "zOffset"; }
+    else { token = ""; }
+
+    if ( strlen( token ) > 0 )
+    {
+        Com_Printf( S_COLOR_RED "ERROR: %s not defined in %s\n",
+                    token, filename );
+    }
+}
+
+/*
+======================
+BG_ParseClassAttributeFile
+
+Parses a configuration file describing the attributes of a class
+======================
+*/
+
+void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
+{
+    char *token;
+    char text_buffer[ 20000 ];
+    char* text;
+    int defined = 0;
+    enum
+    {
+      INFO = 1 << 0,
+      FOVCVAR = 1 << 1,
+      STAGE = 1 << 2,
+      HEALTH = 1 << 3,
+      FALLDAMAGE = 1 << 4,
+      REGEN = 1 << 5,
+      FOV = 1 << 6,
+      STEPTIME = 1 << 7,
+      SPEED = 1 << 8,
+      ACCELERATION = 1 << 9,
+      AIRACCELERATION = 1 << 10,
+      FRICTION = 1 << 11,
+      STOPSPEED = 1 << 12,
+      JUMPMAGNITUDE = 1 << 13,
+      KNOCKBACKSCALE = 1 << 14,
+      COST = 1 << 15,
+      VALUE = 1 << 16,
+      RADAR = 1 << 17,
+    };
+
+    if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
+    {
+        return;
+    }
+
+    text = text_buffer;
+
+    // read optional parameters
+    while ( 1 )
+    {
+        PARSE(text, token);
+
+        if ( !Q_stricmp( token, "description" ) )
+        {
+            PARSE(text, token);
+
+            if ( !Q_stricmp( token, "null" ) )
+            {
+                ca->info = "";
+            }
+            else
+            {
+                ca->info = strdup(token);
+            }
+
+            defined |= INFO;
+        }
+        else if ( !Q_stricmp( token, "fovCvar" ) )
+        {
+            PARSE(text, token);
+
+            if ( !Q_stricmp( token, "null" ) )
+            {
+                ca->fovCvar = "";
+            }
+            else
+            {
+                ca->fovCvar = strdup(token);
+            }
+
+            defined |= FOVCVAR;
+        }
+        else if ( !Q_stricmp( token, "stage" ) )
+        {
+            PARSE(text, token);
+
+            ca->stages = BG_StageFromNumber( atoi(token) );
+
+            defined |= STAGE;
+        }
+        else if ( !Q_stricmp( token, "health" ) )
+        {
+            PARSE(text, token);
+
+            ca->health = atoi( token );
+
+            defined |= HEALTH;
+        }
+        else if ( !Q_stricmp( token, "fallDamage" ) )
+        {
+            PARSE(text, token);
+
+            ca->fallDamage = atof( token );
+
+            defined |= FALLDAMAGE;
+        }
+        else if ( !Q_stricmp( token, "regen" ) )
+        {
+            PARSE(text, token);
+
+            ca->regenRate = atof( token );
+
+            defined |= REGEN;
+        }
+        //Abilities ...
+        else if ( !Q_stricmp( token, "wallClimber" ) )
+        {
+            ca->abilities |= SCA_WALLCLIMBER;
+        }
+        else if ( !Q_stricmp( token, "takesFallDamage" ) )
+        {
+            ca->abilities |= SCA_TAKESFALLDAMAGE;
+        }
+        else if ( !Q_stricmp( token, "fovWarps" ) )
+        {
+            ca->abilities |= SCA_FOVWARPS;
+        }
+        else if ( !Q_stricmp( token, "alienSense" ) )
+        {
+            ca->abilities |= SCA_ALIENSENSE;
+        }
+        else if ( !Q_stricmp( token, "canUseLadders" ) )
+        {
+            ca->abilities |= SCA_CANUSELADDERS;
+        }
+        else if ( !Q_stricmp( token, "wallJumper" ) )
+        {
+            ca->abilities |= SCA_WALLJUMPER;
+        }
+        else if ( !Q_stricmp( token, "buildDistance" ) )
+        {
+            PARSE(text, token);
+
+            ca->buildDist = atof( token );
+        }
+        else if ( !Q_stricmp( token, "fov" ) )
+        {
+            PARSE(text, token);
+
+            ca->fov = atoi( token );
+
+            defined |= FOV;
+        }
+        else if ( !Q_stricmp( token, "bob" ) )
+        {
+            PARSE(text, token);
+
+            ca->bob = atof( token );
+        }
+        else if ( !Q_stricmp( token, "bobCycle" ) )
+        {
+            PARSE(text, token);
+
+            ca->bobCycle = atof( token );
+        }
+        else if ( !Q_stricmp( token, "stepTime" ) )
+        {
+            PARSE(text, token);
+
+            ca->steptime = atoi( token );
+
+            defined |= STEPTIME;
+        }
+        else if ( !Q_stricmp( token, "speed" ) )
+        {
+            PARSE(text, token);
+
+            ca->speed = atof( token );
+
+            defined |= SPEED;
+        }
+        else if ( !Q_stricmp( token, "acceleration" ) )
+        {
+            PARSE(text, token);
+
+            ca->acceleration = atof( token );
+
+            defined |= ACCELERATION;
+        }
+        else if ( !Q_stricmp( token, "airAcceleration" ) )
+        {
+            PARSE(text, token);
+
+            ca->acceleration = atof( token );
+
+            defined |= AIRACCELERATION;
+        }
+        else if ( !Q_stricmp( token, "friction" ) )
+        {
+            PARSE(text, token);
+
+            ca->friction = atof( token );
+
+            defined |= FRICTION;
+        }
+        else if ( !Q_stricmp( token, "stopSpeed" ) )
+        {
+            PARSE(text, token);
+
+            ca->stopSpeed = atof( token );
+
+            defined |= STOPSPEED;
+        }
+        else if ( !Q_stricmp( token, "jumpMagnitude" ) )
+        {
+            PARSE(text, token);
+
+            ca->jumpMagnitude = atof( token );
+
+            defined |= JUMPMAGNITUDE;
+        }
+        else if ( !Q_stricmp( token, "knockbackScale" ) )
+        {
+            PARSE(text, token);
+
+            ca->knockbackScale = atof( token );
+
+            defined |= KNOCKBACKSCALE;
+        }
+        else if ( !Q_stricmp( token, "cost" ) )
+        {
+            PARSE(text, token);
+
+            ca->cost = atoi( token );
+
+            defined |= COST;
+        }
+        else if ( !Q_stricmp( token, "value" ) )
+        {
+            PARSE(text, token);
+
+            ca->value = atoi( token );
+
+            defined |= VALUE;
+        }
+        else if ( !Q_stricmp( token, "radarFadeOut" ) )
+        {
+            PARSE(text, token);
+
+            ca->radarFadeOut = atof( token );
+
+            defined |= RADAR;
+        }
+        else
+        {
+            Com_Printf( S_COLOR_RED "ERROR: unknown token '%s'\n", token );
+        }
+    }
+
+    if ( !( defined & INFO ) ) { token = "description"; }
+    else if ( !( defined & FOVCVAR ) ) { token = "fovCvar"; }
+    else if ( !( defined & STAGE ) ) { token = "stage"; }
+    else if ( !( defined & HEALTH ) ) { token = "health"; }
+    else if ( !( defined & FALLDAMAGE ) ) { token = "fallDamage"; }
+    else if ( !( defined & REGEN ) ) { token = "regen"; }
+    else if ( !( defined & FOV ) ) { token = "fov"; }
+    else if ( !( defined & STEPTIME ) ) { token = "stepTime"; }
+    else if ( !( defined & SPEED ) ) { token = "speed"; }
+    else if ( !( defined & ACCELERATION ) ) { token = "acceleration"; }
+    else if ( !( defined & AIRACCELERATION ) ) { token = "airAcceleration"; }
+    else if ( !( defined & FRICTION ) ) { token = "friction"; }
+    else if ( !( defined & STOPSPEED ) ) { token = "stopSpeed"; }
+    else if ( !( defined & JUMPMAGNITUDE ) ) { token = "jumpMagnitude"; }
+    else if ( !( defined & KNOCKBACKSCALE ) ) { token = "knockbackScale"; }
+    else if ( !( defined & COST ) ) { token = "cost"; }
+    else if ( !( defined & VALUE ) ) { token = "value"; }
+    else if ( !( defined & RADAR ) ) { token = "radarFadeOut"; }
     else { token = ""; }
 
     if ( strlen( token ) > 0 )

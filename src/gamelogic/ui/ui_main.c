@@ -5102,6 +5102,7 @@ void UI_Init( void )
 
 	trap_SyscallABIVersion( SYSCALL_ABI_VERSION_MAJOR, SYSCALL_ABI_VERSION_MINOR );
 
+	BG_InitClassAttributes();
 	BG_InitClassModelConfigs();
 	BG_InitBuildableAttributes();
 	BG_InitAllowedGameElements();

@@ -124,7 +124,7 @@ static const buildableName_t bg_buildableNameList[] =
 
 static const size_t bg_numBuildables = ARRAY_LEN( bg_buildableNameList );
 
-//It would be better to put the exa ct number of entry here
+//It would be better to put the exact number of entry here
 static buildableAttributes_t bg_buildableList[BA_NUM_BUILDABLES];
 
 static const buildableAttributes_t nullBuildable = { 0 };
@@ -234,8 +234,6 @@ void BG_InitBuildableAttributes( void )
 	}
 }
 
-
-
 static buildableModelConfig_t bg_buildableModelConfigList[ BA_NUM_BUILDABLES ];
 
 /*
@@ -290,395 +288,99 @@ void BG_InitBuildableModelConfigs( void )
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+typedef struct
+{
+    class_t number;
+    const char* name;
+    weapon_t startWeapon;
+    int children[ 3 ];
+} classData_t;
 
-static const classAttributes_t bg_classList[] =
+static classData_t bg_classData[] =
 {
 	{
 		PCL_NONE, //int     number;
 		"spectator", //char    *name;
-		"",
-		"", // const char* fovCvar
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		0, //int     health;
-		0.0f, //float   fallDamage;
-		0.0f, //float   regenRate;
-		0, //int     abilities;
 		WP_NONE, //weapon_t  startWeapon;
-		0.0f, //float   buildDist;
-		90, //int     fov;
-		0.000f, //float   bob;
-		1.0f, //float   bobCycle;
-		0, //int     steptime;
-		600, //float   speed;
-		10.0f, //float   acceleration;
-		1.0f, //float   airAcceleration;
-		6.5f, //float   friction;
-		100.0f, //float   stopSpeed;
-		270.0f, //float   jumpMagnitude;
-		1.0f, //float   knockbackScale;
 		{ PCL_NONE,               PCL_NONE,             PCL_NONE }, //int     children[ 3 ];
-		0, //int     cost;
-		0, //int     value;
-		0.0f, //float    radarFadeOut;
 	},
 	{
 		PCL_ALIEN_BUILDER0, //int     number;
 		"builder", //char    *name;
-		N_( "Responsible for building and maintaining all the alien structures. "
-		"Has a weak melee slash attack." ),
-		"cg_fov_builder",  // const char* fovCvar
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		ABUILDER_HEALTH, //int     health;
-		0.2f, //float   fallDamage;
-		ABUILDER_REGEN, //float   regenRate;
-		SCA_TAKESFALLDAMAGE | SCA_FOVWARPS | SCA_ALIENSENSE, //int     abilities;
 		WP_ABUILD, //weapon_t  startWeapon;
-		95.0f, //float   buildDist;
-		110, //int     fov;
-		0.001f, //float   bob;
-		2.0f, //float   bobCycle;
-		150, //int     steptime;
-		ABUILDER_SPEED, //float   speed;
-		10.0f, //float   acceleration;
-		1.0f, //float   airAcceleration;
-		6.5f, //float   friction;
-		100.0f, //float   stopSpeed;
-		195.0f, //float   jumpMagnitude;
-		1.0f, //float   knockbackScale;
 		{ PCL_ALIEN_BUILDER0_UPG, PCL_ALIEN_LEVEL0,     PCL_NONE }, //int     children[ 3 ];
-		ABUILDER_COST, //int     cost;
-		ABUILDER_VALUE, //int     value;
-		0.001f, //float    radarFadeOut;
 	},
 	{
 		PCL_ALIEN_BUILDER0_UPG, //int     number;
 		"builderupg", //char    *name;
-		N_( "Similar to the base Granger, except that in addition to "
-		"being able to build structures it has a spit attack "
-		"that slows victims and the ability to crawl on walls." ),
-		"cg_fov_builder",  // const char* fovCvar
-		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		ABUILDER_UPG_HEALTH, //int     health;
-		0.2f, //float   fallDamage;
-		ABUILDER_UPG_REGEN, //float   regenRate;
-		SCA_TAKESFALLDAMAGE | SCA_FOVWARPS | SCA_WALLCLIMBER | SCA_ALIENSENSE, //int     abilities;
 		WP_ABUILD2, //weapon_t  startWeapon;
-		105.0f, //float   buildDist;
-		110, //int     fov;
-		0.001f, //float   bob;
-		2.0f, //float   bobCycle;
-		100, //int     steptime;
-		ABUILDER_UPG_SPEED, //float   speed;
-		10.0f, //float   acceleration;
-		1.0f, //float   airAcceleration;
-		6.5f, //float   friction;
-		100.0f, //float   stopSpeed;
-		270.0f, //float   jumpMagnitude;
-		1.0f, //float   knockbackScale;
 		{ PCL_ALIEN_LEVEL0,       PCL_NONE,             PCL_NONE }, //int     children[ 3 ];
-		ABUILDER_UPG_COST, //int     cost;
-		ABUILDER_UPG_VALUE, //int     value;
-		0.001f, //float    radarFadeOut;
 	},
 	{
 		PCL_ALIEN_LEVEL0, //int     number;
 		"level0", //char    *name;
-		N_( "Has a lethal reflexive bite and the ability to crawl on "
-		"walls and ceilings." ),
-		"cg_fov_level0",  // const char* fovCvar
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		LEVEL0_HEALTH, //int     health;
-		0.0f, //float   fallDamage;
-		LEVEL0_REGEN, //float   regenRate;
-		SCA_WALLCLIMBER | SCA_FOVWARPS | SCA_ALIENSENSE, //int     abilities;
 		WP_ALEVEL0, //weapon_t  startWeapon;
-		0.0f, //float   buildDist;
-		140, //int     fov;
-		0.0f, //float   bob;
-		2.5f, //float   bobCycle;
-		25, //int     steptime;
-		LEVEL0_SPEED, //float   speed;
-		10.0f, //float   acceleration;
-		1.0f, //float   airAcceleration;
-		6.5f, //float   friction;
-		400.0f, //float   stopSpeed;
-		250.0f, //float   jumpMagnitude;
-		2.0f, //float   knockbackScale;
 		{ PCL_ALIEN_LEVEL1,       PCL_NONE,             PCL_NONE }, //int     children[ 3 ];
-		LEVEL0_COST, //int     cost;
-		LEVEL0_VALUE, //int     value;
-		0.001f, //float    radarFadeOut;
 	},
 	{
 		PCL_ALIEN_LEVEL1, //int     number;
 		"level1", //char    *name;
-		N_( "A support class able to crawl on walls and ceilings. Its melee "
-		"attack is most effective when combined with the ability to grab "
-		"and hold its victims in place. Provides a weak healing aura "
-		"that accelerates the healing rate of nearby aliens." ),
-		"cg_fov_level1",  // const char* fovCvar
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		LEVEL1_HEALTH, //int     health;
-		0.0f, //float   fallDamage;
-		LEVEL1_REGEN, //float   regenRate;
-		SCA_FOVWARPS | SCA_WALLCLIMBER | SCA_ALIENSENSE, //int     abilities;
 		WP_ALEVEL1, //weapon_t  startWeapon;
-		0.0f, //float   buildDist;
-		120, //int     fov;
-		0.001f, //float   bob;
-		1.8f, //float   bobCycle;
-		60, //int     steptime;
-		LEVEL1_SPEED, //float   speed;
-		10.0f, //float   acceleration;
-		1.0f, //float   airAcceleration;
-		6.5f, //float   friction;
-		300.0f, //float   stopSpeed;
-		310.0f, //float   jumpMagnitude;
-		1.2f, //float   knockbackScale;
 		{ PCL_ALIEN_LEVEL2,       PCL_ALIEN_LEVEL1_UPG, PCL_NONE }, //int     children[ 3 ];
-		LEVEL1_COST, //int     cost;
-		LEVEL1_VALUE, //int     value;
-		0.001f, //float    radarFadeOut;
 	},
 	{
 		PCL_ALIEN_LEVEL1_UPG, //int     number;
 		"level1upg", //char    *name;
-		N_( "In addition to the basic Basilisk abilities, the Advanced "
-		"Basilisk sprays a poisonous gas which disorients any "
-		"nearby humans. Has a strong healing aura that "
-		"that accelerates the healing rate of nearby aliens." ),
-		"cg_fov_level1",  // const char* fovCvar
-		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		LEVEL1_UPG_HEALTH, //int     health;
-		0.0f, //float   fallDamage;
-		LEVEL1_UPG_REGEN, //float   regenRate;
-		SCA_FOVWARPS | SCA_WALLCLIMBER | SCA_ALIENSENSE, //int     abilities;
 		WP_ALEVEL1_UPG, //weapon_t  startWeapon;
-		0.0f, //float   buildDist;
-		120, //int     fov;
-		0.001f, //float   bob;
-		1.8f, //float   bobCycle;
-		60, //int     steptime;
-		LEVEL1_UPG_SPEED, //float   speed;
-		10.0f, //float   acceleration;
-		1.0f, //float   airAcceleration;
-		6.5f, //float   friction;
-		300.0f, //float   stopSpeed;
-		310.0f, //float   jumpMagnitude;
-		1.1f, //float   knockbackScale;
 		{ PCL_ALIEN_LEVEL2,       PCL_NONE,             PCL_NONE }, //int     children[ 3 ];
-		LEVEL1_UPG_COST, //int     cost;
-		LEVEL1_UPG_VALUE, //int     value;
-		0.001f, //float    radarFadeOut;
 	},
 	{
 		PCL_ALIEN_LEVEL2, //int     number;
 		"level2", //char    *name;
-		N_( "Has a melee attack and the ability to jump off walls. This "
-		"allows the Marauder to gather great speed in enclosed areas." ),
-		"cg_fov_level2",  // const char* fovCvar
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		LEVEL2_HEALTH, //int     health;
-		0.0f, //float   fallDamage;
-		LEVEL2_REGEN, //float   regenRate;
-		SCA_WALLJUMPER | SCA_FOVWARPS | SCA_ALIENSENSE, //int     abilities;
 		WP_ALEVEL2, //weapon_t  startWeapon;
-		0.0f, //float   buildDist;
-		90, //int     fov;
-		0.001f, //float   bob;
-		1.5f, //float   bobCycle;
-		80, //int     steptime;
-		LEVEL2_SPEED, //float   speed;
-		10.0f, //float   acceleration;
-		3.0f, //float   airAcceleration;
-		6.5f, //float   friction;
-		100.0f, //float   stopSpeed;
-		340.0f, //float   jumpMagnitude; 380 -> 340
-		0.8f, //float   knockbackScale;
 		{ PCL_ALIEN_LEVEL3,       PCL_ALIEN_LEVEL2_UPG, PCL_NONE }, //int     children[ 3 ];
-		LEVEL2_COST, //int     cost;
-		LEVEL2_VALUE, //int     value;
-		0.001f, //float    radarFadeOut;
 	},
 	{
 		PCL_ALIEN_LEVEL2_UPG, //int     number;
 		"level2upg", //char    *name;
-		N_( "The Advanced Marauder has all the abilities of the basic Marauder "
-		"with the addition of an area effect electric shock attack." ),
-		"cg_fov_level2",  // const char* fovCvar
-		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		LEVEL2_UPG_HEALTH, //int     health;
-		0.0f, //float   fallDamage;
-		LEVEL2_UPG_REGEN, //float   regenRate;
-		SCA_WALLJUMPER | SCA_FOVWARPS | SCA_ALIENSENSE, //int     abilities;
 		WP_ALEVEL2_UPG, //weapon_t  startWeapon;
-		0.0f, //float   buildDist;
-		90, //int     fov;
-		0.001f, //float   bob;
-		1.5f, //float   bobCycle;
-		80, //int     steptime;
-		LEVEL2_UPG_SPEED, //float   speed;
-		10.0f, //float   acceleration;
-		3.0f, //float   airAcceleration;
-		6.5f, //float   friction;
-		100.0f, //float   stopSpeed;
-		340.0f, //float   jumpMagnitude; // 380 -> 340
-		0.7f, //float   knockbackScale;
 		{ PCL_ALIEN_LEVEL3,       PCL_NONE,             PCL_NONE }, //int     children[ 3 ];
-		LEVEL2_UPG_COST, //int     cost;
-		LEVEL2_UPG_VALUE, //int     value;
-		0.001f, //float    radarFadeOut;
 	},
 	{
 		PCL_ALIEN_LEVEL3, //int     number;
 		"level3", //char    *name;
-		N_( "Possesses a melee attack and the pounce ability, which may "
-		"be used as both an attack and a means to reach remote "
-		"locations inaccessible from the ground." ),
-		"cg_fov_level3",  // const char* fovCvar
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		LEVEL3_HEALTH, //int     health;
-		0.0f, //float   fallDamage;
-		LEVEL3_REGEN, //float   regenRate;
-		SCA_FOVWARPS | SCA_ALIENSENSE, //int     abilities;
 		WP_ALEVEL3, //weapon_t  startWeapon;
-		0.0f, //float   buildDist;
-		110, //int     fov;
-		0.0005f, //float   bob;
-		1.3f, //float   bobCycle;
-		90, //int     steptime;
-		LEVEL3_SPEED, //float   speed;
-		10.0f, //float   acceleration;
-		1.0f, //float   airAcceleration;
-		6.5f, //float   friction;
-		200.0f, //float   stopSpeed;
-		270.0f, //float   jumpMagnitude;
-		0.5f, //float   knockbackScale;
 		{ PCL_ALIEN_LEVEL4,       PCL_ALIEN_LEVEL3_UPG, PCL_NONE }, //int     children[ 3 ];
-		LEVEL3_COST, //int     cost;
-		LEVEL3_VALUE, //int     value;
-		0.001f, //float    radarFadeOut;
 	},
 	{
 		PCL_ALIEN_LEVEL3_UPG, //int     number;
 		"level3upg", //char    *name;
-		N_( "In addition to the basic Dragoon abilities, the Advanced "
-		"Dragoon has 3 barbs which may be used to attack humans "
-		"from a distance." ),
-		"cg_fov_level3",  // const char* fovCvar
-		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		LEVEL3_UPG_HEALTH, //int     health;
-		0.0f, //float   fallDamage;
-		LEVEL3_UPG_REGEN, //float   regenRate;
-		SCA_FOVWARPS | SCA_ALIENSENSE, //int     abilities;
 		WP_ALEVEL3_UPG, //weapon_t  startWeapon;
-		0.0f, //float   buildDist;
-		110, //int     fov;
-		0.0005f, //float   bob;
-		1.3f, //float   bobCycle;
-		90, //int     steptime;
-		LEVEL3_UPG_SPEED, //float   speed;
-		10.0f, //float   acceleration;
-		1.0f, //float   airAcceleration;
-		6.5f, //float   friction;
-		200.0f, //float   stopSpeed;
-		270.0f, //float   jumpMagnitude;
-		0.4f, //float   knockbackScale;
 		{ PCL_ALIEN_LEVEL4,       PCL_NONE,             PCL_NONE }, //int     children[ 3 ];
-		LEVEL3_UPG_COST, //int     cost;
-		LEVEL3_UPG_VALUE, //int     value;
-		0.001f, //float    radarFadeOut;
 	},
 	{
 		PCL_ALIEN_LEVEL4, //int     number;
 		"level4", //char    *name;
-		N_( "A large alien with a strong melee attack, this class can "
-		"also charge at enemy humans and structures, inflicting "
-		"great damage. Any humans or their structures caught under "
-		"a falling Tyrant will be crushed by its weight." ),
-		"cg_fov_level4",  // const char* fovCvar
-		( 1 << S3 ), //int  stages;
-		LEVEL4_HEALTH, //int     health;
-		0.0f, //float   fallDamage;
-		LEVEL4_REGEN, //float   regenRate;
-		SCA_FOVWARPS | SCA_ALIENSENSE, //int     abilities;
 		WP_ALEVEL4, //weapon_t  startWeapon;
-		0.0f, //float   buildDist;
-		90, //int     fov;
-		0.001f, //float   bob;
-		1.1f, //float   bobCycle;
-		100, //int     steptime;
-		LEVEL4_SPEED, //float   speed;
-		10.0f, //float   acceleration;
-		1.0f, //float   airAcceleration;
-		6.5f, //float   friction;
-		100.0f, //float   stopSpeed;
-		170.0f, //float   jumpMagnitude;
-		0.1f, //float   knockbackScale;
 		{ PCL_NONE,               PCL_NONE,             PCL_NONE }, //int     children[ 3 ];
-		LEVEL4_COST, //int     cost;
-		LEVEL4_VALUE, //int     value;
-		0.001f, //float    radarFadeOut;
 	},
 	{
 		PCL_HUMAN, //int     number;
 		"human_base", //char    *name;
-		"",
-		"cg_fov_human",  // const char* fovCvar
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		100, //int     health;
-		1.0f, //float   fallDamage;
-		0.0f, //float   regenRate;
-		SCA_TAKESFALLDAMAGE | SCA_CANUSELADDERS, //int     abilities;
 		WP_NONE, //special-cased in g_client.c          //weapon_t  startWeapon;
-		110.0f, //float   buildDist;
-		90, //int     fov;
-		0.002f, //float   bob;
-		1.0f, //float   bobCycle;
-		100, //int     steptime;
-		1.0f, //float   speed;
-		10.0f, //float   acceleration;
-		1.0f, //float   airAcceleration;
-		6.5f, //float   friction;
-		100.0f, //float   stopSpeed;
-		220.0f, //float   jumpMagnitude;
-		1.0f, //float   knockbackScale;
 		{ PCL_NONE,               PCL_NONE,             PCL_NONE }, //int     children[ 3 ];
-		0, //int     cost;
-		ALIEN_CREDITS_PER_KILL, //int     value;
-		0.001f, //float    radarFadeOut;
 	},
 	{
 		PCL_HUMAN_BSUIT, //int     number;
 		"human_bsuit", //char    *name;
-		"",
-		"cg_fov_human",  // const char* fovCvar
-		( 1 << S3 ), //int  stages;
-		100, //int     health;
-		1.0f, //float   fallDamage;
-		0.0f, //float   regenRate;
-		SCA_TAKESFALLDAMAGE | SCA_CANUSELADDERS, //int     abilities;
 		WP_NONE, //special-cased in g_client.c          //weapon_t  startWeapon;
-		110.0f, //float   buildDist;
-		90, //int     fov;
-		0.002f, //float   bob;
-		1.0f, //float   bobCycle;
-		100, //int     steptime;
-		1.0f, //float   speed;
-		10.0f, //float   acceleration;
-		1.0f, //float   airAcceleration;
-		6.5f, //float   friction;
-		100.0f, //float   stopSpeed;
-		220.0f, //float   jumpMagnitude;
-		1.0f, //float   knockbackScale;
 		{ PCL_NONE,               PCL_NONE,             PCL_NONE }, //int     children[ 3 ];
-		0, //int     cost;
-		ALIEN_CREDITS_PER_KILL, //int     value;
-		0.001f, //float    radarFadeOut;
 	}
 };
 
-static const size_t bg_numClasses = ARRAY_LEN( bg_classList );
+static const size_t bg_numClasses = ARRAY_LEN( bg_classData );
+
+static classAttributes_t bg_classList[PCL_NUM_CLASSES];
 
 static const classAttributes_t nullClass = { 0 };
 
@@ -884,6 +586,38 @@ qboolean BG_AlienCanEvolve( class_t class, int credits, int stage )
 
 	Com_Printf( S_COLOR_YELLOW "WARNING: fallthrough in BG_AlienCanEvolve\n" );
 	return qfalse;
+}
+
+/*
+===============
+BG_InitClassAttributes
+===============
+*/
+void BG_InitClassAttributes( void )
+{
+	int i;
+	const classData_t *cd;
+	classAttributes_t *ca;
+
+    for ( i = 0; i < bg_numClasses; i++ )
+	{
+        cd = &bg_classData[i];
+        ca = &bg_classList[i];
+
+        ca->number = cd->number;
+        ca->name = strdup( cd->name );
+        ca->startWeapon = cd->startWeapon;
+        ca->children[0] = cd->children[0];
+        ca->children[1] = cd->children[1];
+        ca->children[2] = cd->children[2];
+
+        ca->buildDist = 0.0f;
+        ca->bob = 0.0f;
+        ca->bobCycle = 0.0f;
+        ca->abilities = 0;
+
+        BG_ParseClassAttributeFile( va( "configs/classes/%s.attr.cfg", ca->name ), ca );
+	}
 }
 
 /*
