@@ -86,6 +86,7 @@ void    SP_env_lens_flare( gentity_t *ent );
 /*
  * everything around entity versioning and deprecation
  */
+#define ENT_V_UNCLEAR  0
 #define ENT_V_CURRENT  0
 #define ENT_V_RENAMED  1
 #define ENT_V_EXTENDED 2

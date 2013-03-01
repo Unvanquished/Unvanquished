@@ -173,8 +173,8 @@ static const entityClass_t entityClasses[] =
 	 *	================
 	 *
 	 */
-	{ "ctrl_limited",             CHAIN_RELAY, SP_ctrl_limited },
-	{ "ctrl_relay",               CHAIN_RELAY, SP_ctrl_relay },
+	{ "ctrl_limited",             CHAIN_RELAY, SP_ctrl_limited,                  ENT_V_CURRENT, NULL  },
+	{ "ctrl_relay",               CHAIN_RELAY, SP_ctrl_relay,                    ENT_V_CURRENT, NULL  },
 
 	/**
 	 *
@@ -182,13 +182,13 @@ static const entityClass_t entityClasses[] =
 	 *	====================
 	 *
 	 */
-	{ "env_animated_model",       CHAIN_AUTONOMOUS, SP_env_animated_model },
-	{ "env_lens_flare",           CHAIN_AUTONOMOUS, SP_env_lens_flare },
-	{ "env_particle_system",      CHAIN_AUTONOMOUS, SP_env_particle_system },
-	{ "env_portal_camera",        CHAIN_TARGET,     SP_env_portal_camera },
-	{ "env_portal_surface",       CHAIN_AUTONOMOUS, SP_env_portal_surface },
-	{ "env_rumble",               CHAIN_PASSIV,     SP_env_rumble },
-	{ "env_speaker",              CHAIN_AUTONOMOUS, SP_env_speaker },
+	{ "env_animated_model",       CHAIN_AUTONOMOUS, SP_env_animated_model,       ENT_V_UNCLEAR, NULL },
+	{ "env_lens_flare",           CHAIN_AUTONOMOUS, SP_env_lens_flare,           ENT_V_UNCLEAR, NULL },
+	{ "env_particle_system",      CHAIN_AUTONOMOUS, SP_env_particle_system,      ENT_V_UNCLEAR, NULL },
+	{ "env_portal_camera",        CHAIN_TARGET,     SP_env_portal_camera,        ENT_V_UNCLEAR, NULL },
+	{ "env_portal_surface",       CHAIN_AUTONOMOUS, SP_env_portal_surface,       ENT_V_UNCLEAR, NULL },
+	{ "env_rumble",               CHAIN_PASSIV,     SP_env_rumble,               ENT_V_UNCLEAR, NULL },
+	{ "env_speaker",              CHAIN_AUTONOMOUS, SP_env_speaker,              ENT_V_UNCLEAR, NULL },
 
 	/**
 	 *
@@ -196,21 +196,21 @@ static const entityClass_t entityClasses[] =
 	 *	====================
 	 *
 	 */
-	{ "func_bobbing",             CHAIN_AUTONOMOUS, SP_func_bobbing             },
-	{ "func_button",              CHAIN_ACTIVE,     SP_func_button              },
-	{ "func_destructable",        CHAIN_AUTONOMOUS, SP_func_destructable        },
-	{ "func_door",                CHAIN_AUTONOMOUS, SP_func_door                },
-	{ "func_door_model",          CHAIN_AUTONOMOUS, SP_func_door_model          },
-	{ "func_door_rotating",       CHAIN_AUTONOMOUS, SP_func_door_rotating       },
-	{ "func_dynamic",             CHAIN_AUTONOMOUS, SP_func_dynamic             },
-	{ "func_group",               0,                G_FreeEntity                },
-	{ "func_pendulum",            CHAIN_AUTONOMOUS, SP_func_pendulum            },
-	{ "func_plat",                CHAIN_AUTONOMOUS, SP_func_plat                },
-	{ "func_rotating",            CHAIN_AUTONOMOUS, SP_func_rotating            },
-	{ "func_spawn",               CHAIN_PASSIV,     SP_func_spawn               },
-	{ "func_static",              CHAIN_AUTONOMOUS, SP_func_static              },
+	{ "func_bobbing",             CHAIN_AUTONOMOUS, SP_func_bobbing,             ENT_V_UNCLEAR, NULL },
+	{ "func_button",              CHAIN_ACTIVE,     SP_func_button,              ENT_V_UNCLEAR, NULL },
+	{ "func_destructable",        CHAIN_AUTONOMOUS, SP_func_destructable,        ENT_V_UNCLEAR, NULL },
+	{ "func_door",                CHAIN_AUTONOMOUS, SP_func_door,                ENT_V_UNCLEAR, NULL },
+	{ "func_door_model",          CHAIN_AUTONOMOUS, SP_func_door_model,          ENT_V_UNCLEAR, NULL },
+	{ "func_door_rotating",       CHAIN_AUTONOMOUS, SP_func_door_rotating,       ENT_V_UNCLEAR, NULL },
+	{ "func_dynamic",             CHAIN_AUTONOMOUS, SP_func_dynamic,             ENT_V_UNCLEAR, NULL },
+	{ "func_group",               0,                G_FreeEntity,                ENT_V_UNCLEAR, NULL },
+	{ "func_pendulum",            CHAIN_AUTONOMOUS, SP_func_pendulum,            ENT_V_UNCLEAR, NULL },
+	{ "func_plat",                CHAIN_AUTONOMOUS, SP_func_plat,                ENT_V_UNCLEAR, NULL },
+	{ "func_rotating",            CHAIN_AUTONOMOUS, SP_func_rotating,            ENT_V_UNCLEAR, NULL },
+	{ "func_spawn",               CHAIN_PASSIV,     SP_func_spawn,               ENT_V_UNCLEAR, NULL },
+	{ "func_static",              CHAIN_AUTONOMOUS, SP_func_static,              ENT_V_UNCLEAR, NULL },
 	{ "func_timer",               CHAIN_ACTIVE,     SP_sensor_timer,			 ENT_V_TMPNAME,	"sensor_timer" },
-	{ "func_train",               CHAIN_ACTIVE,     SP_func_train               },
+	{ "func_train",               CHAIN_ACTIVE,     SP_func_train,               ENT_V_UNCLEAR, NULL },
 
 	/**
 	 *
@@ -218,8 +218,8 @@ static const entityClass_t entityClasses[] =
 	 *	=============
 	 *
 	 */
-	{ "game_score",               CHAIN_PASSIV,     SP_game_score, },
-	{ "game_end",                 CHAIN_PASSIV,     SP_game_end, },
+	{ "game_score",               CHAIN_PASSIV,     SP_game_score,               ENT_V_CURRENT, NULL },
+	{ "game_end",                 CHAIN_PASSIV,     SP_game_end,                 ENT_V_CURRENT, NULL },
 
 	/**
 	 *
@@ -229,22 +229,22 @@ static const entityClass_t entityClasses[] =
 	 *	information for things controlled by other processes
 	 *
 	 */
-	{ "info_alien_intermission",  CHAIN_AUTONOMOUS, SP_info_player_intermission, },
-	{ "info_human_intermission",  CHAIN_AUTONOMOUS, SP_info_player_intermission, },
-	{ "info_notnull",             CHAIN_TARGET,     SP_target_position,         ENT_V_TMPNAME, "target_position" },
-	{ "info_null",                0,                G_FreeEntity                },
-	{ "info_player_deathmatch",   CHAIN_AUTONOMOUS, SP_info_player_deathmatch, },
-	{ "info_player_intermission", CHAIN_AUTONOMOUS, SP_info_player_intermission, },
-	{ "info_player_start",        CHAIN_AUTONOMOUS, SP_info_player_start, },
-	{ "light",                    0,                G_FreeEntity                },
-	{ "misc_anim_model",          CHAIN_AUTONOMOUS, SP_env_animated_model,      ENT_V_TMPNAME, "env_animated_model" },
-	{ "misc_light_flare",         CHAIN_AUTONOMOUS, SP_env_lens_flare,          ENT_V_TMPNAME, "env_lens_flare"},
-	{ "misc_model",               0,                G_FreeEntity                },
-	{ "misc_particle_system",     CHAIN_AUTONOMOUS, SP_env_particle_system,     ENT_V_TMPNAME, "env_particle_system"},
-	{ "misc_portal_camera",       CHAIN_TARGET,     SP_env_portal_camera,       ENT_V_TMPNAME, "env_portal_camera" },
-	{ "misc_portal_surface",      CHAIN_ACTIVE,     SP_env_portal_surface,      ENT_V_TMPNAME, "env_portal_surface" },
-	{ "misc_teleporter_dest",     CHAIN_TARGET,     SP_target_position,         ENT_V_TMPNAME, "target_position" },
-	{ "path_corner",              CHAIN_TARGET,     SP_path_corner              },
+	{ "info_alien_intermission",  CHAIN_AUTONOMOUS, SP_info_player_intermission, ENT_V_UNCLEAR, NULL  },
+	{ "info_human_intermission",  CHAIN_AUTONOMOUS, SP_info_player_intermission, ENT_V_UNCLEAR, NULL  },
+	{ "info_notnull",             CHAIN_TARGET,     SP_target_position,          ENT_V_TMPNAME, "target_position" },
+	{ "info_null",                0,                G_FreeEntity,                ENT_V_UNCLEAR, NULL },
+	{ "info_player_deathmatch",   CHAIN_AUTONOMOUS, SP_info_player_deathmatch,   ENT_V_UNCLEAR, NULL },
+	{ "info_player_intermission", CHAIN_AUTONOMOUS, SP_info_player_intermission, ENT_V_UNCLEAR, NULL },
+	{ "info_player_start",        CHAIN_AUTONOMOUS, SP_info_player_start,        ENT_V_UNCLEAR, NULL },
+	{ "light",                    0,                G_FreeEntity,                ENT_V_UNCLEAR, NULL },
+	{ "misc_anim_model",          CHAIN_AUTONOMOUS, SP_env_animated_model,       ENT_V_TMPNAME, "env_animated_model" },
+	{ "misc_light_flare",         CHAIN_AUTONOMOUS, SP_env_lens_flare,           ENT_V_TMPNAME, "env_lens_flare"},
+	{ "misc_model",               0,                G_FreeEntity,                ENT_V_UNCLEAR, NULL },
+	{ "misc_particle_system",     CHAIN_AUTONOMOUS, SP_env_particle_system,      ENT_V_TMPNAME, "env_particle_system"},
+	{ "misc_portal_camera",       CHAIN_TARGET,     SP_env_portal_camera,        ENT_V_TMPNAME, "env_portal_camera" },
+	{ "misc_portal_surface",      CHAIN_ACTIVE,     SP_env_portal_surface,       ENT_V_TMPNAME, "env_portal_surface" },
+	{ "misc_teleporter_dest",     CHAIN_TARGET,     SP_target_position,          ENT_V_TMPNAME, "target_position" },
+	{ "path_corner",              CHAIN_TARGET,     SP_path_corner,              ENT_V_UNCLEAR, NULL },
 
 	/**
 	 *  Sensors
@@ -255,11 +255,11 @@ static const entityClass_t entityClasses[] =
 	 *  their function of perceiving other entities.
 	 */
 
-	{ "sensor_end",               CHAIN_ACTIVE,     SP_sensor_end,               },
-	{ "sensor_stage",             CHAIN_ACTIVE,     SP_sensor_stage,             },
-	{ "sensor_start",             CHAIN_ACTIVE,     SP_sensor_start              },
-	{ "sensor_timer",             CHAIN_ACTIVE,     SP_sensor_timer              },
-	{ "sensor_touch",             CHAIN_ACTIVE,     SP_sensor_touch              },
+	{ "sensor_end",               CHAIN_ACTIVE,     SP_sensor_end,               ENT_V_CURRENT, NULL },
+	{ "sensor_stage",             CHAIN_ACTIVE,     SP_sensor_stage,             ENT_V_CURRENT, NULL },
+	{ "sensor_start",             CHAIN_ACTIVE,     SP_sensor_start,             ENT_V_CURRENT, NULL },
+	{ "sensor_timer",             CHAIN_ACTIVE,     SP_sensor_timer,             ENT_V_UNCLEAR, NULL },
+	{ "sensor_touch",             CHAIN_ACTIVE,     SP_sensor_touch,             ENT_V_UNCLEAR, NULL },
 
 	/**
 	 *
@@ -270,21 +270,21 @@ static const entityClass_t entityClasses[] =
 	 *	like being triggered by a trigger_ entity.
 	 *
 	 */
-	{ "target_alien_win",         CHAIN_ACTIVE,     SP_target_alien_win,        ENT_V_TMPNAME, "game_end" },
-	{ "target_delay",             CHAIN_ACTIVE,     SP_ctrl_relay,              ENT_V_TMPNAME, "ctrl_relay" },
-	{ "target_human_win",         CHAIN_PASSIV,     SP_target_human_win,        ENT_V_TMPNAME, "game_end" },
-	{ "target_hurt",              CHAIN_PASSIV,     SP_target_hurt              },
-	{ "target_kill",              CHAIN_PASSIV,     SP_target_kill              },
-	{ "target_location",          CHAIN_AUTONOMOUS, SP_target_location          },
-	{ "target_position",          CHAIN_TARGET,     SP_target_position          },
-	{ "target_print",             CHAIN_PASSIV,     SP_target_print             },
-	{ "target_push",              CHAIN_PASSIV,     SP_target_push              },
-	{ "target_relay",             CHAIN_RELAY,      SP_ctrl_relay,              ENT_V_TMPNAME, "ctrl_relay" },
-	{ "target_rumble",            CHAIN_PASSIV,     SP_env_rumble,              ENT_V_TMPNAME, "env_rumble" },
-	{ "target_score",             CHAIN_PASSIV,     SP_game_score,              ENT_V_TMPNAME, "game_score" },
-	{ "target_speaker",           CHAIN_AUTONOMOUS, SP_env_speaker,             ENT_V_TMPNAME, "env_speaker" },
-	{ "target_teleporter",        CHAIN_PASSIV,     SP_target_teleporter        },
-	{ "target_win",               CHAIN_PASSIV,     SP_game_end,                ENT_V_TMPNAME, "game_end" },
+	{ "target_alien_win",         CHAIN_ACTIVE,     SP_target_alien_win,         ENT_V_TMPNAME, "game_end" },
+	{ "target_delay",             CHAIN_ACTIVE,     SP_ctrl_relay,               ENT_V_TMPNAME, "ctrl_relay" },
+	{ "target_human_win",         CHAIN_PASSIV,     SP_target_human_win,         ENT_V_TMPNAME, "game_end" },
+	{ "target_hurt",              CHAIN_PASSIV,     SP_target_hurt,              ENT_V_UNCLEAR, NULL },
+	{ "target_kill",              CHAIN_PASSIV,     SP_target_kill,              ENT_V_UNCLEAR, NULL },
+	{ "target_location",          CHAIN_AUTONOMOUS, SP_target_location,          ENT_V_UNCLEAR, NULL },
+	{ "target_position",          CHAIN_TARGET,     SP_target_position,          ENT_V_UNCLEAR, NULL },
+	{ "target_print",             CHAIN_PASSIV,     SP_target_print,             ENT_V_UNCLEAR, NULL },
+	{ "target_push",              CHAIN_PASSIV,     SP_target_push,              ENT_V_UNCLEAR, NULL },
+	{ "target_relay",             CHAIN_RELAY,      SP_ctrl_relay,               ENT_V_TMPNAME, "ctrl_relay" },
+	{ "target_rumble",            CHAIN_PASSIV,     SP_env_rumble,               ENT_V_TMPNAME, "env_rumble" },
+	{ "target_score",             CHAIN_PASSIV,     SP_game_score,               ENT_V_TMPNAME, "game_score" },
+	{ "target_speaker",           CHAIN_AUTONOMOUS, SP_env_speaker,              ENT_V_TMPNAME, "env_speaker" },
+	{ "target_teleporter",        CHAIN_PASSIV,     SP_target_teleporter,        ENT_V_UNCLEAR, NULL },
+	{ "target_win",               CHAIN_PASSIV,     SP_game_end,                 ENT_V_TMPNAME, "game_end" },
 
 	/**
 	 *
@@ -299,19 +299,19 @@ static const entityClass_t entityClasses[] =
 	 *	such as trigger_push and trigger_teleport.
 	 *
 	 */
-	{ "trigger_always",           CHAIN_ACTIVE,     SP_sensor_start,            ENT_V_RENAMED, "sensor_start" },
-	{ "trigger_ammo",             CHAIN_AUTONOMOUS, SP_trigger_ammo             },
-	{ "trigger_buildable",        CHAIN_ACTIVE,     SP_sensor_touch_compat,     ENT_V_TMPNAME, "sensor_touch" },
-	{ "trigger_class",            CHAIN_ACTIVE,     SP_sensor_touch_compat,     ENT_V_TMPNAME, "sensor_touch" },
-	{ "trigger_equipment",        CHAIN_ACTIVE,     SP_sensor_touch_compat,     ENT_V_TMPNAME, "sensor_touch" },
-	{ "trigger_gravity",          CHAIN_AUTONOMOUS, SP_trigger_gravity          },
-	{ "trigger_heal",             CHAIN_AUTONOMOUS, SP_trigger_heal             },
-	{ "trigger_hurt",             CHAIN_AUTONOMOUS, SP_trigger_hurt             },
-	{ "trigger_multiple",         CHAIN_ACTIVE,     SP_trigger_multiple         },
-	{ "trigger_push",             CHAIN_AUTONOMOUS, SP_trigger_push             },
-	{ "trigger_stage",            CHAIN_ACTIVE,     SP_sensor_stage,            ENT_V_RENAMED, "sensor_stage" },
-	{ "trigger_teleport",         CHAIN_AUTONOMOUS, SP_trigger_teleport         },
-	{ "trigger_win",              CHAIN_ACTIVE,     SP_sensor_end,              ENT_V_TMPNAME, "sensor_end" }
+	{ "trigger_always",           CHAIN_ACTIVE,     SP_sensor_start,             ENT_V_RENAMED, "sensor_start" },
+	{ "trigger_ammo",             CHAIN_AUTONOMOUS, SP_trigger_ammo,             ENT_V_UNCLEAR, NULL },
+	{ "trigger_buildable",        CHAIN_ACTIVE,     SP_sensor_touch_compat,      ENT_V_TMPNAME, "sensor_touch" },
+	{ "trigger_class",            CHAIN_ACTIVE,     SP_sensor_touch_compat,      ENT_V_TMPNAME, "sensor_touch" },
+	{ "trigger_equipment",        CHAIN_ACTIVE,     SP_sensor_touch_compat,      ENT_V_TMPNAME, "sensor_touch" },
+	{ "trigger_gravity",          CHAIN_AUTONOMOUS, SP_trigger_gravity,          ENT_V_UNCLEAR, NULL },
+	{ "trigger_heal",             CHAIN_AUTONOMOUS, SP_trigger_heal,             ENT_V_UNCLEAR, NULL },
+	{ "trigger_hurt",             CHAIN_AUTONOMOUS, SP_trigger_hurt,             ENT_V_UNCLEAR, NULL },
+	{ "trigger_multiple",         CHAIN_ACTIVE,     SP_trigger_multiple ,        ENT_V_UNCLEAR, NULL },
+	{ "trigger_push",             CHAIN_AUTONOMOUS, SP_trigger_push,             ENT_V_UNCLEAR, NULL },
+	{ "trigger_stage",            CHAIN_ACTIVE,     SP_sensor_stage,             ENT_V_RENAMED, "sensor_stage" },
+	{ "trigger_teleport",         CHAIN_AUTONOMOUS, SP_trigger_teleport,         ENT_V_UNCLEAR, NULL },
+	{ "trigger_win",              CHAIN_ACTIVE,     SP_sensor_end,               ENT_V_TMPNAME, "sensor_end" }
 };
 
 qboolean G_HandleEntityVersions( entityClass_t *spawnDescription, gentity_t *entity )
