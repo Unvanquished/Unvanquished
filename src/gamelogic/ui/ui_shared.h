@@ -108,8 +108,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define N_( text )             text
 #define C_( ctxt, text )       Pgettext( ctxt, text )
 #define G_( text )             Pgettext( Trans_GenderContext( gender ), text )
-// FIXME: CLIENT PLURAL (use tinygettext plural handling)
-#define P_( one, many, count ) Gettext( ( count ) == 1 ? ( one ) : ( many ) )
+#define P_( one, many, count ) GettextPlural( (one), (many), (count) )
 
 typedef struct
 {
@@ -575,4 +574,5 @@ int ui_CursorToOffset( const char *buf, int cursor );
 int ui_OffsetToCursor( const char *buf, int offset );
 const char *Gettext( const char *msgid ) __attribute__((__format_arg__(1)));
 const char *Pgettext( const char *ctxt, const char *msgid ) __attribute__((__format_arg__(2)));
+const char *GettextPlural( const char *msgid, const char *msgid2, int number ) __attribute__((__format_arg__(1))) __attribute__((__format_arg__(2)));
 #endif
