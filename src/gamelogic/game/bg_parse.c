@@ -562,7 +562,15 @@ void BG_ParseClassModelFile( const char *filename, classModelConfig_t *cc )
         {
             PARSE(text, token);
 
-            Q_strncpyz( cc->modelName, token, sizeof( cc->modelName ) );
+            //Allow spectator to have an empty model
+            if ( !Q_stricmp( token, "null" ) )
+            {
+                cc->modelName[0] = '\0';
+            }
+            else
+            {
+                Q_strncpyz( cc->modelName, token, sizeof( cc->modelName ) );
+            }
 
             defined |= MODEL;
         }
@@ -570,7 +578,14 @@ void BG_ParseClassModelFile( const char *filename, classModelConfig_t *cc )
         {
             PARSE(text, token);
 
-            Q_strncpyz( cc->skinName, token, sizeof( cc->skinName ) );
+            if ( !Q_stricmp( token, "null" ) )
+            {
+                cc->skinName[0] = '\0';
+            }
+            else
+            {
+                Q_strncpyz( cc->skinName, token, sizeof( cc->skinName ) );
+            }
 
             defined |= SKIN;
         }
@@ -578,7 +593,14 @@ void BG_ParseClassModelFile( const char *filename, classModelConfig_t *cc )
         {
             PARSE(text, token);
 
-            Q_strncpyz( cc->hudName, token, sizeof( cc->hudName ) );
+            if ( !Q_stricmp( token, "null" ) )
+            {
+                cc->hudName[0] = '\0';
+            }
+            else
+            {
+                Q_strncpyz( cc->hudName, token, sizeof( cc->hudName ) );
+            }
 
             defined |= HUD;
         }
