@@ -247,7 +247,6 @@ Called when stages change
 */
 void G_notify_sensor_stage( team_t team, stage_t stage )
 {
-	int       i;
 	gentity_t *ent;
 
 	ent = &g_entities[MAX_CLIENTS - 1]; //start after the reserved player slots
@@ -286,7 +285,6 @@ sensor_end
 
 void G_notify_sensor_end( team_t winningTeam )
 {
-	int       i;
 	gentity_t *ent;
 
 	ent = &g_entities[MAX_CLIENTS - 1]; //start after the reserved player slots
@@ -455,6 +453,10 @@ void sensor_client_trigger( gentity_t *self, gentity_t *activator )
 	else if ( self->conditions.classes[0] && activator->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
 	{
 		shouldFire = sensor_class_match( self, activator );
+	}
+	else
+	{
+		shouldFire = qfalse;
 	}
 
 	if( shouldFire == !self->conditions.negated )
