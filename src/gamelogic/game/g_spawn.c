@@ -427,11 +427,11 @@ qboolean G_CallSpawn( gentity_t *spawnedEntity )
 	{ // found it
 
 		spawnedEntity->eclass = spawnedClass;
+		spawnedClass->instanceCounter++;
 
 		if(!G_ValidateEntity( spawnedClass, spawnedEntity ))
 			return qfalse; // results in freeing the entity
 
-		spawnedClass->instanceCounter++;
 		spawnedClass->spawn( spawnedEntity );
 		spawnedEntity->enabled = qtrue;
 		spawnedEntity->spawned = qtrue;

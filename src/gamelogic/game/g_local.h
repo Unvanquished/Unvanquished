@@ -226,7 +226,7 @@ struct gentity_s
 	 * the class of the entity
 	 * this is shared among all instances of this type
 	 */
-	const entityClass_t *eclass;
+	entityClass_t *eclass;
 
 	const char   *classname;
 	int          spawnflags;

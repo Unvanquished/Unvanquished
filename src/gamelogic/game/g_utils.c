@@ -642,6 +642,9 @@ void G_FreeEntity( gentity_t *ent )
 		return;
 	}
 
+	if( ent->eclass && ent->eclass->instanceCounter > 0)
+		ent->eclass->instanceCounter--;
+
 	memset( ent, 0, sizeof( *ent ) );
 	ent->classname = "freent";
 	ent->freetime = level.time;
