@@ -124,8 +124,7 @@ static const buildableName_t bg_buildableNameList[] =
 
 static const size_t bg_numBuildables = ARRAY_LEN( bg_buildableNameList );
 
-//It would be better to put the exact number of entry here
-static buildableAttributes_t bg_buildableList[BA_NUM_BUILDABLES];
+static buildableAttributes_t bg_buildableList[ ARRAY_LEN( bg_buildableNameList ) ];
 
 static const buildableAttributes_t nullBuildable = { 0 };
 
@@ -380,7 +379,7 @@ static classData_t bg_classData[] =
 
 static const size_t bg_numClasses = ARRAY_LEN( bg_classData );
 
-static classAttributes_t bg_classList[PCL_NUM_CLASSES];
+static classAttributes_t bg_classList[ ARRAY_LEN( bg_classData ) ];
 
 static const classAttributes_t nullClass = { 0 };
 
