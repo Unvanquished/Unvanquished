@@ -36,7 +36,7 @@ Maryland 20850 USA.
 
 #define __(x) Trans_GettextGame(x)
 #define C__(x, y) Trans_PgettextGame(x, y)
-
+#define P__(x, y, c) Trans_GettextGamePlural(x, y, c)
 
 vm_t                   *uivm;
 
@@ -1406,6 +1406,11 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 		case UI_PGETTEXT:
 			VM_CheckBlock( args[ 1 ], args[ 4 ], "UIPGETTEXT" );
 			Q_strncpyz( VMA( 1 ), C__( VMA( 2 ), VMA( 3 ) ), args[ 4 ] );
+			return 0;
+
+		case UI_GETTEXT_PLURAL:
+			VM_CheckBlock( args[ 1 ], args[ 5 ], "UIGETTEXTP" );
+			Q_strncpyz( VMA( 1 ), P__( VMA( 2 ), VMA( 3 ), args[ 4 ] ), args[ 5 ] );
 			return 0;
 
 		default:

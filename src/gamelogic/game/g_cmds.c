@@ -3989,11 +3989,11 @@ void Cmd_ListMaps_f( gentity_t *ent )
 
 	if ( search[ 0 ] )
 	{
-		ADMP( va( "%s %d %s", QQ( N_("^3listmaps: ^7found $1$ map(s) matching '$2$^7'") ), count, Quote( search ) ) );
+		ADMP_P( va( "%s %d %s", Quote( P_("^3listmaps: ^7found $1$ map matching '$2$^7'", "^3listmaps: ^7found $1$ maps matching '$2$^7'", count) ), count, Quote( search ) ), count );
 	}
 	else
 	{
-		ADMP( va( "%s %d %d", QQ( N_("^3listmaps: ^7listing $1$ of $2$ map(s)") ), shown, count ) );
+		ADMP_P( va( "%s %d %d", Quote( P_("^3listmaps: ^7listing $1$ of $2$ map", "^3listmaps: ^7listing $1$ of $2$ maps", count) ), shown, count ), count );
 	}
 
 	if ( pages > 1 )

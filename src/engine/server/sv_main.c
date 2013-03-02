@@ -209,7 +209,11 @@ void QDECL PRINTF_LIKE(2) SV_SendServerCommand( client_t *cl, const char *fmt, .
 
 	if ( com_dedicated->integer && !strncmp( ( char * ) message, "print_tr ", 9 ) )
 	{
-		SV_PrintTranslatedText( ( const char * ) message, qtrue );
+		SV_PrintTranslatedText( ( const char * ) message, qtrue, qfalse );
+	}
+	else if ( com_dedicated->integer && !strncmp( ( char * ) message, "print_tr_p ", 9 ) )
+	{
+		SV_PrintTranslatedText( ( const char * ) message, qtrue, qtrue );
 	}
 
 	// hack to echo broadcast prints to console
@@ -1464,114 +1468,21 @@ int SV_LoadTag( const char *mod_name )
  SV_PrintTranslatedText
 ========================
  */
+#define TRANSLATE_FUNC        Trans_GettextGame
+#define PLURAL_TRANSLATE_FUNC Trans_GettextGamePlural
+#include "../qcommon/print_translated.h"
 
-void SV_PrintTranslatedText( const char *text, qboolean broadcast )
+void SV_PrintTranslatedText( const char *text, qboolean broadcast, qboolean plural )
 {
-	char        str[ MAX_STRING_CHARS ];
-	char        buf[ MAX_STRING_CHARS ];
-	const char  *in;
-	int         i = 0;
-
 	Cmd_SaveCmdContext();
 	Cmd_TokenizeString( text );
 
-	Q_strncpyz( buf, Trans_GettextGame( Cmd_Argv( 1 ) ), sizeof( buf ) );
-	in = buf;
-	memset( &str, 0, sizeof( str ) );
-	while( *in )
+	if ( broadcast )
 	{
-		const char *inOld = in;
-
-		if( *in == '$' )
-		{
-			const char *number = ++in;
-
-			while( *in )
-			{
-				if( *in == '$' )
-				{
-					str[ i++ ] = *in;
-					in++;
-					break;
-				}
-
-				if( isdigit( *in ) )
-				{
-					in++;
-
-					if( *in == 't' && *(in+1) == '$' )
-					{
-						int num = atoi( number );
-						if( num <= 0 || num > 99 )
-						{
-							in++;
-							break;
-						}
-
-						i += strlen( Trans_GettextGame( Cmd_Argv( num + 1 ) ) );
-
-						if( i >= MAX_STRING_CHARS )
-						{
-							Com_Printf( "%s", str );
-							memset( &str, 0, sizeof( str ) );
-							i = strlen( Trans_GettextGame( Cmd_Argv( num + 1 ) ) );
-						}
-
-						Q_strcat( str, sizeof( str ), Trans_GettextGame( Cmd_Argv( num + 1 ) ) );
-						in += 2;
-
-						break;
-					}
-					else if( *in == '$' )
-					{
-						int num = atoi( number );
-						if( num <= 0 || num > 99 )
-						{
-							in++;
-							break;
-						}
-						i += strlen( Cmd_Argv( num + 1 ) );
-
-						if( i >= MAX_STRING_CHARS )
-						{
-							Com_Printf( "%s", str );
-							memset( &str, 0, sizeof( str ) );
-							i = strlen( Trans_GettextGame( Cmd_Argv( num + 1 ) ) );
-						}
-
-						Q_strcat( str, sizeof( str ), Cmd_Argv( num + 1 ) );
-						in++;
-
-						break;
-					}
-				}
-				else
-				{
-					in = inOld;
-					goto broken;
-				}
-			}
-		}
-		else
-		{
-			broken:
-			if( i < MAX_STRING_CHARS )
-			{
-				str[ i++ ] = *in;
-				in++;
-			}
-			else
-			{
-				Com_Printf( "%s", str );
-				memset( &str, 0, sizeof( str ) );
-				i = 0;
-			}
-		}
+		Com_Printf( "Broadcast: " );
 	}
 
-	Com_Printf( "%s%s",
-		broadcast ? "Broadcast: " : "",
-		str );
+	PrintTranslatedText_Internal( plural );
 
 	Cmd_RestoreCmdContext();
 }
