@@ -147,12 +147,12 @@ Dictionary::translate_ctxt_plural(const std::string& msgctxt,
 }
 
 void
-Dictionary::add_translation(const std::string& msgid, const std::string& ,
+Dictionary::add_translation(const std::string& msgid, const std::string& msgid2,
                             const std::vector<std::string>& msgstrs)
 {
-  // Do we need msgid2 for anything? its after all supplied to the
-  // translate call, so we just throw it away here
-  entries[msgid] = msgstrs;
+  // msgid may not be available when looking up a translation
+  // so we need to be able to look up via msgid2
+  entries[msgid] = entries[msgid2] = msgstrs;
 }
 
 void
