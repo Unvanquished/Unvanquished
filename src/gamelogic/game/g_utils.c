@@ -357,10 +357,10 @@ void G_FireTarget(target_t *target, gentity_t *targetedEntity, gentity_t *other,
 		G_FireAllTargetsOf( targetedEntity, activator);
 		return;
 
-	case ETA_ON:
+	case ETA_ENABLE:
 		targetedEntity->enabled = qtrue;
 		break;
-	case ETA_OFF:
+	case ETA_DISABLE:
 		targetedEntity->enabled = qfalse;
 		break;
 	case ETA_TOGGLE:

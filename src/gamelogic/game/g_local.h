@@ -142,8 +142,8 @@ typedef enum
 	ETA_USE,
 	ETA_RESET,
 
-	ETA_ON,
-	ETA_OFF,
+	ETA_ENABLE,
+	ETA_DISABLE,
 	ETA_TOGGLE
 
 } targetAction_t;

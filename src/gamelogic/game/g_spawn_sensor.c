@@ -41,8 +41,8 @@ void sensor_act(target_t* target, gentity_t *self, gentity_t *other, gentity_t *
 {
 	switch (target->actionType)
 	{
-	case ETA_ON:
-	case ETA_OFF:
+	case ETA_ENABLE:
+	case ETA_DISABLE:
 	case ETA_TOGGLE:
 		break;//already handled
 
