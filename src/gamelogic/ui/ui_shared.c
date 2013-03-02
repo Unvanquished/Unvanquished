@@ -9729,3 +9729,15 @@ const char *Pgettext( const char *ctxt, const char *msgid )
 	trap_Pgettext( buf, ctxt, msgid, sizeof( buffer ) );
 	return buf;
 }
+
+const char *GettextPlural( const char *msgid, const char *msgid2, int number )
+{
+	static char buffer[ 4 ][ MAX_STRING_CHARS ];
+	static int index = -1;
+	char *buf;
+
+	index = ( index + 1 ) & 3;
+	buf = buffer[ index ];
+	trap_GettextPlural( buf, msgid, msgid2, number, sizeof( buffer[ 0 ] ) );
+	return buf;
+}

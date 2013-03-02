@@ -493,25 +493,29 @@ extern cvar_t *cl_altTab;
 
 // -NERVE - SMF
 
-extern cvar_t  *cl_profile;
-extern cvar_t  *cl_defaultProfile;
+extern cvar_t *cl_profile;
+extern cvar_t *cl_defaultProfile;
 
-extern cvar_t  *cl_consoleKeys;
-extern  cvar_t *cl_consoleFont;
-extern  cvar_t *cl_consoleFontSize;
-extern  cvar_t *cl_consoleFontKerning;
-extern  cvar_t *cl_consoleCommand;
+extern cvar_t *cl_consoleKeys;
+extern cvar_t *cl_consoleFont;
+extern cvar_t *cl_consoleFontSize;
+extern cvar_t *cl_consoleFontKerning;
+extern cvar_t *cl_consoleCommand;
+
+extern cvar_t *cl_logs;
+
+extern cvar_t *con_scrollLock;
 
 // XreaL BEGIN
-extern cvar_t  *cl_aviFrameRate;
-extern cvar_t  *cl_aviMotionJpeg;
+extern cvar_t *cl_aviFrameRate;
+extern cvar_t *cl_aviMotionJpeg;
 // XreaL END
 
-extern cvar_t  *cl_allowPaste;
+extern cvar_t *cl_allowPaste;
 
 #ifdef USE_MUMBLE
-extern cvar_t  *cl_useMumble;
-extern cvar_t  *cl_mumbleScale;
+extern cvar_t *cl_useMumble;
+extern cvar_t *cl_mumbleScale;
 #endif
 
 #if defined(USE_VOIP) && !defined(DEDICATED)
@@ -687,6 +691,7 @@ typedef struct
 	int      currentLine; // line where next message will be printed
 	int      horizontalCharOffset; // offset in current line for next print
 
+	int      lastReadLineIndex; // keep track fo the last read line, so we can show the user, what was added since he last opened the console
 	int      scrollLineIndex; // bottom of console is supposed displays this line
 	float    bottomDisplayedLine; // bottom of console displays this line, is trying to move towards:
 
@@ -750,6 +755,10 @@ void             Con_DrawConsole( void );
 void             Con_RunConsole( void );
 void             Con_PageUp( void );
 void             Con_PageDown( void );
+void             Con_JumpUp( void );
+void             Con_ScrollUp( int lines );
+void             Con_ScrollDown( int lines );
+void             Con_ScrollToMarkerLine( void );
 void             Con_ScrollToTop( void );
 void             Con_ScrollToBottom( void );
 void             Con_Close( void );
@@ -869,3 +878,11 @@ qboolean CL_VideoRecording( void );
 void CL_WriteDemoMessage( msg_t *msg, int headerBytes );
 void CL_RequestMotd( void );
 void CL_GetClipboardData( char *, int, clipboard_t );
+
+//
+// cl_logs.c
+//
+void CL_OpenClientLog(void);
+void CL_CloseClientLog(void);
+void CL_WriteClientLog( char *text );
+void CL_WriteClientChatLog( char *text );

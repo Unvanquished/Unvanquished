@@ -141,7 +141,7 @@ extern "C" unsigned int BotFindRouteExt( int botClientNum, const vec3_t target )
 	return FindRoute( bot, start, end );
 }
 
-extern "C" void BotUpdateCorridor( int botClientNum, vec3_t *corners, int *numCorners, int maxCorners, const vec3_t target )
+extern "C" qboolean BotUpdateCorridor( int botClientNum, const vec3_t target, vec3_t dir, qboolean *directPathToGoal )
 {
 	vec3_t spos;
 	vec3_t epos;
@@ -155,6 +155,11 @@ extern "C" void BotUpdateCorridor( int botClientNum, vec3_t *corners, int *numCo
 	VectorCopy( target, epos );
 	quake2recast( epos );
 
+	if ( directPathToGoal )
+	{
+		*directPathToGoal = qfalse;
+	}
+
 	if ( bot->needReplan )
 	{
 		if ( ! ( FindRoute( bot, spos, epos ) & ( ROUTE_PARTIAL | ROUTE_FAILED ) ) )
@@ -163,7 +168,7 @@ extern "C" void BotUpdateCorridor( int botClientNum, vec3_t *corners, int *numCo
 		}
 		else if ( !bot->corridor.getPathCount() )
 		{
-			return;
+			return qfalse;
 		}
 	}
 
@@ -176,17 +181,7 @@ extern "C" void BotUpdateCorridor( int botClientNum, vec3_t *corners, int *numCo
 		bot->needReplan = qtrue;
 	}
 
-	unsigned char *cornerFlags = ( unsigned char* ) dtAlloc( sizeof( unsigned char ) * maxCorners * 3, DT_ALLOC_TEMP ); 
-	dtPolyRef *cornerPolys = ( dtPolyRef* ) dtAlloc( sizeof( dtPolyRef ) * maxCorners, DT_ALLOC_TEMP );
-	FindWaypoints( bot, ( float * ) corners, cornerFlags, cornerPolys, numCorners, maxCorners );
-	dtFree( cornerFlags );
-	dtFree( cornerPolys );
-
-	// convert points
-	for ( int i = 0; i < *numCorners; i++ )
-	{
-		recast2quake( corners[ i ] );
-	}
+	FindWaypoints( bot, bot->cornerVerts, bot->cornerFlags, bot->cornerPolys, &bot->numCorners, MAX_CORNERS );
 
 	dtPolyRef firstPoly = bot->corridor.getFirstPoly();
 	dtPolyRef lastPoly = bot->corridor.getLastPoly();
@@ -201,6 +196,21 @@ extern "C" void BotUpdateCorridor( int botClientNum, vec3_t *corners, int *numCo
 	{
 		bot->needReplan = qtrue;
 	}
+
+	if ( dir )
+	{
+		vec3_t rdir;
+		BotCalcSteerDir( bot, rdir );
+		recast2quake( rdir );
+		VectorCopy( rdir, dir );
+	}
+
+	if ( directPathToGoal )
+	{
+		*directPathToGoal = ( qboolean )( ( int ) bot->numCorners == 1 );
+	}
+
+	return qtrue;
 }
 
 float frand()
@@ -267,13 +277,10 @@ extern "C" void BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t 
 	quake2recast( p1 );
 	quake2recast( p2 );
 
-	// bounds do not convert right when using quake2recast, so recalculate them
+	// bounds do not convert correctly when using quake2recast, so recalculate them
 	ClearBounds( bmin, bmax );
 	AddPointToBounds( p1, bmin, bmax );
 	AddPointToBounds( p2, bmin, bmax );
-
-	// offset height down a bit so obstacles placed on slopes are handled correctly
-	bmin[ 1 ] -= ( bmax[ 2 ] - bmin[ 2 ] );
 
 	for ( int i = 0; i < numNavData; i++ )
 	{
@@ -285,7 +292,8 @@ extern "C" void BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t 
 		VectorCopy( bmin, realBmin );
 		VectorCopy( bmax, realBmax );
 
-		float offset = nav->cache->getParams()->walkableRadius;
+		const dtTileCacheParams *params = nav->cache->getParams();
+		float offset = params->walkableRadius;
 
 		// offset bbox by agent radius like the navigation mesh was originally made
 		realBmin[ 0 ] -= offset;
@@ -294,6 +302,9 @@ extern "C" void BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t 
 		realBmax[ 0 ] += offset;
 		realBmax[ 2 ] += offset;
 		
+		// offset mins down by agent height so obstacles placed on ledges are handled correctly
+		realBmin[ 1 ] -= params->walkableHeight;
+
 		nav->cache->addObstacle( realBmin, realBmax, &ref );
 		*obstacleHandle = ref;
 	}

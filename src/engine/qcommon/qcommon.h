@@ -949,7 +949,6 @@ int        Com_Milliseconds( void );  // will be journaled properly
 unsigned   Com_BlockChecksum( const void *buffer, int length );
 char       *Com_MD5File( const char *filename, int length );
 void       Com_MD5Buffer( const char *pubkey, int size, char *buffer, int bufsize );
-int        Com_Filter( char *filter, char *name, int casesensitive );
 int        Com_FilterPath( char *filter, char *name, int casesensitive );
 int        Com_RealTime( qtime_t *qtime );
 qboolean   Com_SafeMode( void );
@@ -1404,11 +1403,14 @@ void Com_RandomBytes( byte *string, int len );
 #define _(x) Trans_Gettext(x)
 #define C_(x, y) Trans_Pgettext(x, y)
 #define N_(x) (x)
+#define P_(x, y, c) Trans_GettextPlural(x, y, c)
 
 void Trans_Init( void );
 const char* Trans_Gettext( const char *msgid ) __attribute__((__format_arg__(1)));
 const char* Trans_Pgettext( const char *ctxt, const char *msgid ) __attribute__((__format_arg__(2)));
+const char* Trans_GettextPlural( const char *msgid, const char *msgid_plural, int num ) __attribute__((__format_arg__(1))) __attribute__((__format_arg__(2)));
 const char* Trans_GettextGame( const char *msgid ) __attribute__((__format_arg__(1)));
 const char* Trans_PgettextGame( const char *ctxt, const char *msgid ) __attribute__((__format_arg__(2)));
+const char* Trans_GettextGamePlural( const char *msgid, const char *msgid_plural, int num ) __attribute__((__format_arg__(1))) __attribute__((__format_arg__(2)));
 
 #endif // _QCOMMON_H_

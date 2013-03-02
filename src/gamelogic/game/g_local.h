@@ -131,7 +131,8 @@ typedef struct
 #define MAX_ROUTE_NODES 5
 #define MAX_NODE_DEPTH 20
 
-typedef struct{
+typedef struct 
+{
 	//when the enemy was last seen
 	int enemyLastSeen;
 	int timeFoundEnemy;
@@ -142,9 +143,7 @@ typedef struct{
 	//targets
 	botTarget_t goal;
 
-	//pathfinding stuff
-	vec3_t route[ MAX_ROUTE_NODES ];
-	int numCorners;
+	qboolean directPathToGoal;
 
 	botSkill_t botSkill;
 	botEntityAndDistance_t bestEnemy;
@@ -159,7 +158,7 @@ typedef struct{
   	int         futureAimTime;
 	int         futureAimTimeInterval;
 	vec3_t      futureAim;
-	usercmd_t cmdBuffer;
+	usercmd_t   cmdBuffer;
 } botMemory_t;
 
 struct gentity_s
@@ -1364,6 +1363,8 @@ extern  vmCvar_t  g_AutoStrip_KillingSpreeStageDif;
 extern  vmCvar_t  g_AutoStrip_kpmAllowed;
 extern  vmCvar_t  g_AutoStrip_kpmTreshold;
 
+extern  vmCvar_t g_debugEntities;
+
 // <bot stuff>
 // bot buy cvars
 extern vmCvar_t g_bot_buy;
@@ -1488,7 +1489,7 @@ qboolean         trap_BotSetupNav( const void *botClass /* botClass_t* */, qhand
 void             trap_BotShutdownNav( void );
 void             trap_BotSetNavMesh( int botClientNum, qhandle_t navHandle );
 unsigned int     trap_BotFindRoute( int botClientNum, const vec3_t target );
-void             trap_BotUpdatePath( int botClientNum, vec3_t *corners, int *numCorners, int maxCorners, const vec3_t target );
+qboolean         trap_BotUpdatePath( int botClientNum, const vec3_t target, vec3_t dir, qboolean *directPathToGoal );
 qboolean         trap_BotNavTrace( int botClientNum, void *botTrace /*botTrace_t**/, const vec3_t start, const vec3_t end );
 void             trap_BotFindRandomPoint( int botClientNum, vec3_t point );
 void             trap_BotEnableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );

@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define CP(x)         trap_SendServerCommand(ent - g_entities, x)
 #define CPx(x, y)     trap_SendServerCommand(x, y)
 #define ADMP(x)       G_admin_print(ent, x)
+#define ADMP_P(x,c)   G_admin_print_plural(ent, x, c)
 #define ADMBP(x)      G_admin_buffer_print(ent, x)
 #define ADMBP_begin() G_admin_buffer_begin()
 #define ADMBP_end()   G_admin_buffer_end(ent)
@@ -245,6 +246,7 @@ qboolean        G_admin_unregister( gentity_t *ent );  // AA-QVM 1.2
 qboolean        G_admin_bot( gentity_t *ent );
 
 void            G_admin_print( gentity_t *ent, const char *m );
+void            G_admin_print_plural( gentity_t *ent, const char *m, int number );
 void            G_admin_buffer_print( gentity_t *ent, const char *m );
 void            G_admin_buffer_begin( void );
 void            G_admin_buffer_end( gentity_t *ent );

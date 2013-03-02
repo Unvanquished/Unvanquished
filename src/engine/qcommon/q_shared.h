@@ -45,10 +45,10 @@ extern "C" {
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.12.0"
+#define PRODUCT_VERSION         "0.13.0"
 
 #define ENGINE_NAME             "Daemon Engine"
-#define ENGINE_VERSION          "0.12.0"
+#define ENGINE_VERSION          "0.13.0"
 
 #ifdef REVISION
 # define Q3_VERSION             PRODUCT_NAME " " PRODUCT_VERSION " " REVISION
@@ -121,9 +121,6 @@ extern "C" {
 #pragma warning(disable : 4133) // 'function' : incompatible types - from 'unsigned long *' to 'const time_t *'
 #pragma warning(disable : 4127) // conditional expression is constant
 #pragma warning(disable : 4389) // '==' : signed/unsigned mismatch
-
-#elif defined __clang__
-#pragma clang diagnostic fatal "-Wdeclaration-after-statement"
 #endif
 
 
@@ -942,10 +939,6 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 	}
 #endif
 
-#define VectorLerp4( f, s, e, r ) (( r )[ 0 ] = ( s )[ 0 ] + ( f ) * (( e )[ 0 ] - ( s )[ 0 ] ), \
-                                   ( r )[ 1 ] = ( s )[ 1 ] + ( f ) * (( e )[ 1 ] - ( s )[ 1 ] ), \
-                                   ( r )[ 2 ] = ( s )[ 2 ] + ( f ) * (( e )[ 2 ] - ( s )[ 2 ] ))
-
 	STATIC_INLINE int VectorCompareEpsilon( const vec3_t v1, const vec3_t v2, float epsilon ) IFDECLARE
 #ifdef Q3_VM_INSTANTIATE
 	{
@@ -992,8 +985,6 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 
 	void vectoangles( const vec3_t value1, vec3_t angles );
 
-#define VectorToAngles(value1, angles) vectoangles( (value1), (angles) )
-
 	float vectoyaw( const vec3_t vec );
 
 	void  AnglesToAxis( const vec3_t angles, vec3_t axis[ 3 ] );
@@ -1026,8 +1017,6 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 	float AngleBetweenVectors( const vec3_t a, const vec3_t b );
 	void  AngleVectors( const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up );
 
-#define AnglesToVector(angles, out) AngleVectors( (angles), (out), NULL, NULL )
-
 	vec_t PlaneNormalize( vec4_t plane );  // returns normal length
 
 	/* greebo: This calculates the intersection point of three planes.
@@ -1055,7 +1044,6 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 // It is important for mod developers to do this change as well or they risk a memory corruption by using
 // the other MatrixMultiply function.
 	void  AxisMultiply( float in1[ 3 ][ 3 ], float in2[ 3 ][ 3 ], float out[ 3 ][ 3 ] );
-	void  AngleVectors( const vec3_t angles, vec3_t forward, vec3_t right, vec3_t up );
 	void  PerpendicularVector( vec3_t dst, const vec3_t src );
 
 // Ridah
@@ -1466,6 +1454,8 @@ double rint( double x );
 	int      Q_strncasecmp( const char *s1, const char *s2, int n );
 	qboolean Q_strreplace( char *dest, int destsize, const char *find, const char *replace );
 
+	int      Com_Filter( const char *filter, const char *name, int casesensitive );
+
 // strlen that discounts Quake color sequences
 	int      Q_PrintStrlen( const char *string );
 
@@ -1670,8 +1660,6 @@ char *Q_UTF8Unstore( int e );
 
 	  TT_NUM_TRACE_TYPES
 	} traceType_t;
-
-#define CPLANE
 
 // a trace is returned when a box is swept through the world
 	typedef struct

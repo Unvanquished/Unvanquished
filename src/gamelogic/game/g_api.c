@@ -593,9 +593,9 @@ unsigned int trap_BotFindRoute( int botClientNum, const vec3_t target )
 	return syscall( BOT_FIND_ROUTE, botClientNum, target );
 }
 
-void trap_BotUpdatePath( int botClientNum, vec3_t *corners, int *numCorners, int maxCorners, const vec3_t target )
+qboolean trap_BotUpdatePath( int botClientNum, const vec3_t target, vec3_t dir, qboolean *directPathToGoal )
 {
-	syscall( BOT_UPDATE_PATH, botClientNum, corners, numCorners, maxCorners, target );
+	return syscall( BOT_UPDATE_PATH, botClientNum, target, dir, directPathToGoal );
 }
 
 qboolean trap_BotNavTrace( int botClientNum, void *botTrace /*botTrace_t**/, const vec3_t start, const vec3_t end )

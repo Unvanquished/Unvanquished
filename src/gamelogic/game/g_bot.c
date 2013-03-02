@@ -1307,7 +1307,9 @@ qboolean BotChangeGoal( gentity_t *self, botTarget_t target )
 	{
 		return qfalse;
 	}
+
 	self->botMind->goal = target;
+	self->botMind->directPathToGoal = qfalse;
 	return qtrue;
 }
 
@@ -1489,7 +1491,6 @@ Bot Aiming
 */
 void BotGetIdealAimLocation( gentity_t *self, botTarget_t target, vec3_t aimLocation )
 {
-	vec3_t mins;
 	//get the position of the target
 	BotGetTargetPos( target, aimLocation );
 
@@ -1507,13 +1508,6 @@ void BotGetIdealAimLocation( gentity_t *self, botTarget_t target, vec3_t aimLoca
 		{
 			VectorMA( aimLocation, Distance( self->s.origin, aimLocation ) / LCANNON_SPEED, target.ent->s.pos.trDelta, aimLocation );
 		}
-	}
-	else
-	{
-		//get rid of 'bobing' motion when aiming at waypoints by making the aimlocation the same height above ground as our viewheight
-		VectorCopy( self->botMind->route[0], aimLocation );
-		VectorCopy( BG_ClassConfig( ( class_t ) self->client->ps.stats[STAT_CLASS] )->mins, mins );
-		aimLocation[2] +=  self->client->ps.viewheight - mins[2] - 8;
 	}
 }
 
@@ -1829,7 +1823,7 @@ void BotClassMovement( gentity_t *self, qboolean inAttackRange )
 			break;
 		case PCL_ALIEN_LEVEL2:
 		case PCL_ALIEN_LEVEL2_UPG:
-			if ( self->botMind->numCorners == 1 )
+			if ( self->botMind->directPathToGoal )
 			{
 				if ( self->client->time1000 % 300 == 0 )
 				{
@@ -2218,7 +2212,7 @@ qboolean G_BotSetDefaults( int clientNum, team_t team, int skill, const char* be
 	memset( botMind->runningNodes, 0, sizeof( botMind->runningNodes ) );
 	botMind->numRunningNodes = 0;
 	botMind->currentNode = NULL;
-	botMind->numCorners = 0;
+	botMind->directPathToGoal = qfalse;
 
 	botMind->behaviorTree = ReadBehaviorTree( behavior );
 
@@ -2469,7 +2463,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		qboolean inAttackRange = BotTargetInAttackRange( self, self->botMind->goal );
 		self->botMind->enemyLastSeen = level.time;
 
-		if ( ( inAttackRange && myTeam == TEAM_HUMANS ) || self->botMind->numCorners == 1 )
+		if ( ( inAttackRange && myTeam == TEAM_HUMANS ) || self->botMind->directPathToGoal )
 		{
 			vec3_t pos;
 			BotAimAtEnemy( self );
@@ -2477,7 +2471,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 			BotGetTargetPos( self->botMind->goal, pos );
 
 			//update the path corridor
-			trap_BotUpdatePath( self->s.number, self->botMind->route, &self->botMind->numCorners, MAX_ROUTE_NODES, pos );
+			trap_BotUpdatePath( self->s.number, pos, NULL, &self->botMind->directPathToGoal );
 
 			BotMoveInDir( self, MOVE_FORWARD );
 
@@ -2689,7 +2683,7 @@ AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node )
 		radius = moveTo->range;
 	}
 
-	if ( DistanceToGoal2DSquared( self ) <= Square( radius ) && self->botMind->numCorners == 1 )
+	if ( DistanceToGoal2DSquared( self ) <= Square( radius ) && self->botMind->directPathToGoal )
 	{
 		return STATUS_SUCCESS;
 	}

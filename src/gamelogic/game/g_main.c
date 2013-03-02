@@ -192,6 +192,8 @@ vmCvar_t           g_AutoStrip_KillingSpreeStageDif;
 vmCvar_t           g_AutoStrip_kpmAllowed;
 vmCvar_t           g_AutoStrip_kpmTreshold;
 
+vmCvar_t           g_debugEntities;
+
 // <bot stuff>
 
 // bot buy cvars
@@ -375,6 +377,8 @@ static cvarTable_t gameCvarTable[] =
 
 	{ &g_layouts,                     "g_layouts",                     "",                                 CVAR_LATCH,                                      0, qfalse           },
 	{ &g_layoutAuto,                  "g_layoutAuto",                  "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
+
+	{ &g_debugEntities,               "g_debugEntities",               "0",                                0,                                               0, qfalse           },
 
 	{ &g_emoticonsAllowedInNames,     "g_emoticonsAllowedInNames",     "1",                                CVAR_LATCH | CVAR_ARCHIVE,                       0, qfalse           },
 	{ &g_unnamedNumbering,            "g_unnamedNumbering",            "-1",                               CVAR_ARCHIVE,                                    0, qfalse           },
