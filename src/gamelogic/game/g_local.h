@@ -1325,6 +1325,8 @@ extern  vmCvar_t g_censorship;
 extern  vmCvar_t g_showKillerHP;
 extern  vmCvar_t g_combatCooldown;
 
+extern  vmCvar_t g_debugEntities;
+
 // <bot stuff>
 // bot buy cvars
 extern vmCvar_t g_bot_buy;

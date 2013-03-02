@@ -5362,6 +5362,18 @@ void G_admin_print( gentity_t *ent, const char *m )
 	}
 }
 
+void G_admin_print_plural( gentity_t *ent, const char *m, int number )
+{
+	if ( ent )
+	{
+		trap_SendServerCommand( ent - level.gentities, va( "print_tr_p %d %s", number, m ) );
+	}
+	else
+	{
+		trap_SendServerCommand( -2, va( "print_tr_p %d %s", number, m ) );
+	}
+}
+
 /*
 ================
  G_admin_buffer_begin, G_admin_buffer_print, G_admin_buffer_end,

@@ -33,16 +33,19 @@ Svcmd_EntityList_f
 void  Svcmd_EntityList_f( void )
 {
 	int       e;
+	int currentEntityCount;
 	gentity_t *check;
 
 	check = g_entities;
 
-	for ( e = 0; e < level.num_entities; e++, check++ )
+	for ( e = 0, currentEntityCount = 0; e < level.num_entities; e++, check++ )
 	{
 		if ( !check->inuse )
 		{
 			continue;
 		}
+
+		currentEntityCount++;
 
 		G_Printf( "%3i:", e );
 
@@ -140,6 +143,8 @@ void  Svcmd_EntityList_f( void )
 
 		G_Printf( "\n" );
 	}
+
+	G_Printf( "A total of %i entities are currently in use.\n", currentEntityCount);
 }
 
 static gclient_t *ClientForString( char *s )
