@@ -1,3 +1,9 @@
+unvanquished (0.13.0-1) unstable; urgency=low
+
+  * Release of alpha 13.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Sat, 02 Mar 2013 03:30:35 +0000
+
 unvanquished (0.12.0-2) unstable; urgency=low
 
   * Bug fixes (git 872020d..4ff3974) and console updates.
