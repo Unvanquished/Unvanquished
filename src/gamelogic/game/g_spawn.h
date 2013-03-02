@@ -71,7 +71,6 @@ void    SP_target_alien_win( gentity_t *ent );
 void    SP_target_human_win( gentity_t *ent );
 void    SP_target_hurt( gentity_t *ent );
 
-void    SP_NULL( gentity_t *self );
 void    SP_path_corner( gentity_t *self );
 
 void    SP_env_portal_camera( gentity_t *ent );
@@ -112,6 +111,9 @@ qboolean G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expect
  */
 
 void     think_fireDelayed( gentity_t *ent );
+
+void     SP_RemoveSelf( gentity_t *self );
+void     SP_Nothing( gentity_t *self );
 
 /**
  * predefined field-interpretation
