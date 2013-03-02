@@ -117,7 +117,7 @@ static const field_t fields[] =
 	{ "alias",               FOFS( names[ 2 ] ),          F_STRING    },
 	{ "alpha",               FOFS( restingPosition ),     F_VECTOR    }, // What's with the variable abuse everytime?
 	{ "amount",              FOFS( count.previous ),      F_INT       },
-	{ "angle",               FOFS( s.angles ),            F_YAW,      ENT_V_RENAMED, "yaw"},
+	{ "angle",               FOFS( s.angles ),            F_YAW,      ENT_V_TMPNAME, "yaw"}, //radiants ui sadly strongly encourages the "angle" keyword
 	{ "angles",              FOFS( s.angles ),            F_VECTOR    },
 	{ "animation",           FOFS( animation ),           F_VECTOR4   },
 	{ "bounce",              FOFS( physicsBounce ),       F_FLOAT     },
