@@ -346,7 +346,7 @@ qboolean G_ValidateEntity( entityClass_t *entityClass, gentity_t *entity )
 			if(!entity->targets[0].name)
 			{
 				if( g_debugEntities.integer > -2 )
-					G_Printf( "^3WARNING: ^7Entity ^5#%i^7 of type ^5%s^7 needs to target to something.\n", entity->s.number, entity->classname );
+					G_Printf( "^3WARNING: ^7Entity ^5#%i^7 of type ^5%s^7 needs to target to something — Removing it.\n", entity->s.number, entity->classname );
 				return qfalse;
 			}
 			break;
@@ -355,7 +355,7 @@ qboolean G_ValidateEntity( entityClass_t *entityClass, gentity_t *entity )
 			if(!entity->names[0])
 			{
 				if( g_debugEntities.integer > -2 )
-					G_Printf( "^3WARNING: ^7Entity ^5#%i^7 of type ^5%s^7 needs a name, so other entities can target it.\n", entity->s.number, entity->classname );
+					G_Printf( "^3WARNING: ^7Entity ^5#%i^7 of type ^5%s^7 needs a name, so other entities can target it — Removing it.\n", entity->s.number, entity->classname );
 				return qfalse;
 			}
 			break;
@@ -363,7 +363,7 @@ qboolean G_ValidateEntity( entityClass_t *entityClass, gentity_t *entity )
 			if(!entity->targets[0].name || !entity->names[0])
 			{
 				if( g_debugEntities.integer > -2 )
-					G_Printf( "^3WARNING: ^7Entity ^5#%i^7 of type ^5%s^7 needs a name as well as a target to conditionally relay the firing.\n", entity->s.number, entity->classname );
+					G_Printf( "^3WARNING: ^7Entity ^5#%i^7 of type ^5%s^7 needs a name as well as a target to conditionally relay the firing — Removing it.\n", entity->s.number, entity->classname );
 				return qfalse;
 			}
 			break;
@@ -392,9 +392,6 @@ qboolean G_CallSpawn( gentity_t *spawnedEntity )
 		//don't even warn about spawning-errors with -2 (maps might still work at least partly if we ignore these willingly)
 		if ( g_debugEntities.integer > -2 )
 			G_Printf( "^1ERROR: Entity ^5#%i^7 is missing classname – we are unable to spawn it.\n", spawnedEntity->s.number );
-
-		spawnedEntity->classname = "MissingClassname";
-
 		return qfalse;
 	}
 
@@ -666,10 +663,6 @@ void G_SpawnGEntityFromSpawnVars( void )
 	// if we didn't get necessary fields (like the classname), don't bother spawning anything
 	if ( !G_CallSpawn( ent ) )
 	{
-		if(( g_debugEntities.integer > -2 ) )
-		{
-			G_Printf( "^1ERROR: ^7Some entity of type ^5%s^7 was force-removed during spawn, probably because it was failing validation.\nPlease check, that everything has a classname, and take previous warnings into consideration.\n", ent->classname);
-		}
 		G_FreeEntity( ent );
 	}
 }
