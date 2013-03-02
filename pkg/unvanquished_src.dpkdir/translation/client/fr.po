@@ -22,20 +22,20 @@ msgstr ""
 
 #: src/engine/server/sv_init.c:576
 msgid "------ Server Initialization ------\n"
-msgstr ""
+msgstr "------ Initialisation du serveur ------\n"
 
 #: src/engine/server/sv_init.c:577
 #, c-format
 msgid "Server: %s\n"
-msgstr ""
+msgstr "Serveur : %s\n"
 
 #: src/engine/server/sv_init.c:766
 msgid "WARNING: sv_pure set but no PK3 files loaded\n"
-msgstr ""
+msgstr "ATTENTION: sv_pure actif mais pas de fichiers KP3 chargés\n"
 
 #: src/engine/server/sv_init.c:964
 msgid "----- Server Shutdown -----\n"
-msgstr ""
+msgstr "------ Extinction du serveur ------\n"
 
 #: src/engine/server/sv_client.c:226
 #, c-format
@@ -86,7 +86,7 @@ msgstr ""
 #: src/engine/server/sv_client.c:1032
 #, c-format
 msgid "ERROR: Client '%s': couldn't extract file size for %s\n"
-msgstr ""
+msgstr "ERREUR: Client '%s': ne peut extraire la taille du fichier pour %s\n"
 
 #: src/engine/server/sv_client.c:1045
 #, c-format
@@ -96,7 +96,7 @@ msgstr ""
 #: src/engine/server/sv_client.c:1056
 #, c-format
 msgid "Client '%s' is not configured for www download\n"
-msgstr ""
+msgstr "Client '%s' n’est pas configuré pour le téléchargement web"
 
 #: src/engine/server/sv_client.c:1066
 #, c-format
@@ -121,7 +121,7 @@ msgstr ""
 #: src/engine/server/sv_client.c:2079
 #, c-format
 msgid "Too many VoIP packets queued for client #%d\n"
-msgstr ""
+msgstr "Trop de packets VoIP en attente pour le client #%d\n"
 
 #: src/engine/server/sv_client.c:2254
 #, c-format
@@ -130,39 +130,39 @@ msgstr ""
 
 #: src/engine/server/sv_main.c:161
 msgid "===== pending server commands =====\n"
-msgstr ""
+msgstr "====== en attente des commandes du serveur ======\n"
 
 #: src/engine/server/sv_main.c:306
 #, c-format
 msgid "Resolving %s (IPv4)\n"
-msgstr ""
+msgstr "Résoud %s (IPv4)\n"
 
 #: src/engine/server/sv_main.c:317 src/engine/server/sv_main.c:338
 #: src/engine/server/sv_main.c:424 src/engine/client/cl_main.c:1899
 #: src/engine/client/cl_main.c:2078
 #, c-format
 msgid "%s resolved to %s\n"
-msgstr ""
+msgstr "%s résolu comme %s\n"
 
 #: src/engine/server/sv_main.c:321
 #, c-format
 msgid "%s has no IPv4 address.\n"
-msgstr ""
+msgstr "%s n'a pas d'adresse IPv4.\n"
 
 #: src/engine/server/sv_main.c:327
 #, c-format
 msgid "Resolving %s (IPv6)\n"
-msgstr ""
+msgstr "Résoud %s (IPv6)\n"
 
 #: src/engine/server/sv_main.c:342
 #, c-format
 msgid "%s has no IPv6 address.\n"
-msgstr ""
+msgstr "%s n'a pas d'adresse IPv6\n"
 
 #: src/engine/server/sv_main.c:350
 #, c-format
 msgid "Couldn't resolve address: %s\n"
-msgstr ""
+msgstr "Ne peut résoudre l’adresse : %s\n"
 
 #: src/engine/server/sv_main.c:357
 #, c-format
@@ -172,7 +172,7 @@ msgstr ""
 #: src/engine/server/sv_main.c:409
 #, c-format
 msgid "Resolving %s\n"
-msgstr ""
+msgstr "Résoud %s\n"
 
 #: src/engine/server/sv_main.c:414
 #, c-format
@@ -219,12 +219,12 @@ msgstr ""
 
 #: src/engine/server/sv_ccmds.c:68 src/engine/server/sv_ccmds.c:125
 msgid "No player specified.\n"
-msgstr ""
+msgstr "Pas de joueur indiqué"
 
 #: src/engine/server/sv_ccmds.c:96
 #, c-format
 msgid "Player %s is not on the server\n"
-msgstr ""
+msgstr "Joueur %s n’est pas sur le serveur\n"
 
 #: src/engine/server/sv_ccmds.c:135
 #, c-format
@@ -248,7 +248,7 @@ msgstr ""
 
 #: src/engine/server/sv_ccmds.c:263 src/engine/server/sv_ccmds.c:393
 msgid "Server is not running.\n"
-msgstr ""
+msgstr "Le serveur n'est pas en fonctionnement\n"
 
 #: src/engine/server/sv_ccmds.c:283
 msgid "sv_maxclients variable change — restarting.\n"
@@ -268,22 +268,22 @@ msgstr ""
 
 #: src/engine/client/snd_dma.c:108
 msgid "the sound system is not started\n"
-msgstr ""
+msgstr "le système sonore n'est pas démarré\n"
 
 #: src/engine/client/snd_dma.c:112
 #, c-format
 msgid "%5d stereo\n"
-msgstr ""
+msgstr "%5d stéréo\n"
 
 #: src/engine/client/snd_dma.c:113
 #, c-format
 msgid "%5d samples\n"
-msgstr ""
+msgstr "%5d échantillons\n"
 
 #: src/engine/client/snd_dma.c:114
 #, c-format
 msgid "%5d samplebits\n"
-msgstr ""
+msgstr "%5d bits d'échantillon\n"
 
 #: src/engine/client/snd_dma.c:115
 #, c-format
@@ -315,12 +315,12 @@ msgstr ""
 
 #: src/engine/client/snd_dma.c:405
 msgid "Sound name exceeds MAX_QPATH\n"
-msgstr ""
+msgstr "Nom du son dépasse MAX_QPATH\n"
 
 #: src/engine/client/snd_dma.c:415 src/engine/client/snd_dma.c:429
 #, c-format
 msgid "WARNING: could not find %s — using default\n"
-msgstr ""
+msgstr "ATTENTION : ne peut trouver %s - utilise celui par défaut"
 
 #: src/engine/client/snd_dma.c:558
 #, c-format
@@ -362,43 +362,43 @@ msgstr ""
 #: src/engine/client/cl_main.c:288
 #, c-format
 msgid "VoIP: Now ignoring player #%d\n"
-msgstr ""
+msgstr "VoIP : Ignore désormais le joueur #%d\n"
 
 #: src/engine/client/cl_main.c:288
 #, c-format
 msgid "VoIP: No longer ignoring player #%d\n"
-msgstr ""
+msgstr "VoIP : N'ignore plus le joueur #%d\n"
 
 #: src/engine/client/cl_main.c:293 src/engine/client/cl_main.c:365
 msgid "VoIP: invalid player ID#\n"
-msgstr ""
+msgstr "VoIP : ID# de joueur invalide\n"
 
 #: src/engine/client/cl_main.c:311
 #, c-format
 msgid "VoIP: player #%d gain now set to %f\n"
-msgstr ""
+msgstr "VoIP : le volume du joueur #%d est désormais positionné à %f\n"
 
 #: src/engine/client/cl_main.c:336
 #, c-format
 msgid "VoIP: command ignored: %s\n"
-msgstr ""
+msgstr "VoIP : commande ignorée : %s\n"
 
 #: src/engine/client/cl_main.c:360
 #, c-format
 msgid "VoIP: current gain for player #%d is %f\n"
-msgstr ""
+msgstr "VoIP : le volume actuel du joueur #%d est %f\n"
 
 #: src/engine/client/cl_main.c:370
 msgid "usage: voip gain <playerID#> [value]\n"
-msgstr ""
+msgstr "utilisation : voip gain <playerID#> [valeur]\n"
 
 #: src/engine/client/cl_main.c:375
 msgid "VoIP: muting incoming voice\n"
-msgstr ""
+msgstr "VoIP : coupe les voix entrantes\n"
 
 #: src/engine/client/cl_main.c:381
 msgid "VoIP: unmuting incoming voice\n"
-msgstr ""
+msgstr "VoIP : rétabli les voix entrantes\n"
 
 #: src/engine/client/cl_main.c:387
 msgid ""
@@ -406,19 +406,22 @@ msgid ""
 "       voip [un]muteall\n"
 "       voip gain <playerID#> [value]\n"
 msgstr ""
+"utilisation : voip [un]ignore <playerID#>\n"
+"              voip [un]muteall\n"
+"              voip gain <playerID#> [valeur]\n"
 
 #: src/engine/client/cl_main.c:476 src/engine/client/cl_main.c:521
 #, c-format
 msgid "WARNING: VoIP target %d is not a valid client number\n"
-msgstr ""
+msgstr "ATTENTION : la cible VoIP %d n’est pas un numéro de client valide\n"
 
 #: src/engine/client/cl_main.c:850
 msgid "Not recording a demo.\n"
-msgstr ""
+msgstr "N’enregistre pas une démo.\n"
 
 #: src/engine/client/cl_main.c:865
 msgid "Stopped demo.\n"
-msgstr ""
+msgstr "Démo arrêtée"
 
 #: src/engine/client/cl_main.c:903
 msgid "record <demoname>\n"
@@ -426,7 +429,7 @@ msgstr ""
 
 #: src/engine/client/cl_main.c:909
 msgid "Already recording.\n"
-msgstr ""
+msgstr "Déjà en train d’enregistrer\n"
 
 #: src/engine/client/cl_main.c:915
 msgid "You must be in a level to record.\n"
@@ -441,7 +444,7 @@ msgstr ""
 #: src/engine/client/cl_main.c:966 src/engine/client/cl_main.c:1286
 #, c-format
 msgid "recording to %s.\n"
-msgstr ""
+msgstr "enregistre vers %s.\n"
 
 #: src/engine/client/cl_main.c:971 src/engine/client/cl_console.c:259
 msgid "ERROR: couldn't open.\n"
@@ -454,7 +457,7 @@ msgstr ""
 
 #: src/engine/client/cl_main.c:1146
 msgid "Demo file was truncated.\n"
-msgstr ""
+msgstr "Le fichier de démo a été tronqué.\n"
 
 #: src/engine/client/cl_main.c:1247
 msgid "wav_record <wavname>\n"
@@ -462,16 +465,16 @@ msgstr ""
 
 #: src/engine/client/cl_main.c:1253 src/engine/client/cl_main.c:2504
 msgid "Already recording a wav file\n"
-msgstr ""
+msgstr "Déjà en train d'enregistrer un fichier wav\n"
 
 #: src/engine/client/cl_main.c:1291
 #, c-format
 msgid "ERROR: couldn't open %s for writing.\n"
-msgstr ""
+msgstr "ERREUR : ne peut ouvrir %s pour écrire.\n"
 
 #: src/engine/client/cl_main.c:1307
 msgid "Stopped recording\n"
-msgstr ""
+msgstr "Enregistrement terminé\n"
 
 #: src/engine/client/cl_main.c:1354
 msgid "playdemo <demoname>\n"
@@ -484,7 +487,7 @@ msgstr ""
 #: src/engine/client/cl_main.c:1854
 #, c-format
 msgid "Unknown command \"%s\"\n"
-msgstr ""
+msgstr "Commande inconnue \"%s\"\n"
 
 #: src/engine/client/cl_main.c:1889
 msgid "Couldn't resolve master address\n"
@@ -493,24 +496,24 @@ msgstr ""
 #: src/engine/client/cl_main.c:1931 src/engine/client/cl_main.c:2462
 #: src/engine/client/cl_main.c:5713
 msgid "Not connected to a server.\n"
-msgstr ""
+msgstr "Non connecté à un serveur.\n"
 
 #: src/engine/client/cl_main.c:1967
 msgid "Can't reconnect to localhost.\n"
-msgstr ""
+msgstr "Ne peut se reconnecter à localhost.\n"
 
 #: src/engine/client/cl_main.c:1990
 msgid "usage: connect [-4|-6] server\n"
-msgstr ""
+msgstr "utilisation : connect [-4|-6] serveur\n"
 
 #: src/engine/client/cl_main.c:2010 src/engine/client/cl_main.c:5533
 #: src/engine/client/cl_main.c:5741
 msgid "warning: only -4 or -6 as address type understood.\n"
-msgstr ""
+msgstr "attention : seulement -4 ou -6 est compris comme type d'adresse.\n"
 
 #: src/engine/client/cl_main.c:2065
 msgid "Bad server address\n"
-msgstr ""
+msgstr "Mauvaise adresse de serveur\n"
 
 #: src/engine/client/cl_main.c:2126
 msgid ""
@@ -548,7 +551,7 @@ msgstr ""
 
 #: src/engine/client/cl_main.c:2521
 msgid "Not recording a wav file\n"
-msgstr ""
+msgstr "N’enregistre pas un fichier wav\n"
 
 #: src/engine/client/cl_main.c:2549
 msgid "The video command can only be used when playing back demos\n"
@@ -561,7 +564,7 @@ msgstr ""
 #: src/engine/client/cl_main.c:3658 src/engine/client/cl_main.c:3667
 #, c-format
 msgid "Download failure while getting '%s'\n"
-msgstr ""
+msgstr "Échec de téléchargement lors de la récupération de '%s'\n"
 
 #: src/engine/client/cl_main.c:3692
 #, c-format
@@ -569,15 +572,18 @@ msgid ""
 "WARNING: file %s obtained through download redirect has wrong checksum\n"
 "         this likely means the server configuration is broken\n"
 msgstr ""
+"ATTENTION : le fichier %s téléchargé avec redirection a une somme de\n"
+"            contrôle faussee, cela signifie probablement que la\n"
+"            configuration du serveur est cassée\n"
 
 #: src/engine/client/cl_main.c:3703
 #, c-format
 msgid "bad checksums: %s\n"
-msgstr ""
+msgstr "somme de contrôle erronée : %s\n"
 
 #: src/engine/client/cl_main.c:4081
 msgid "----- Initializing Renderer ----\n"
-msgstr ""
+msgstr "------ Initialisation du moteur de rendu ------\n"
 
 #: src/engine/client/cl_main.c:4311
 msgid "Calling GetRefAPI…\n"
@@ -585,7 +591,7 @@ msgstr ""
 
 #: src/engine/client/cl_main.c:4361
 msgid "----- Client Initialization -----\n"
-msgstr ""
+msgstr "------ Initialisation du client ------\n"
 
 #: src/engine/client/cl_main.c:4467 src/engine/qcommon/translation.cpp:270
 msgid "~ ` 0x7e 0x60"
@@ -600,7 +606,7 @@ msgstr ""
 
 #: src/engine/client/cl_main.c:4598
 msgid "----- Client Initialization Complete -----\n"
-msgstr ""
+msgstr "------ Initialisation du client complétée ------\n"
 
 #: src/engine/client/cl_main.c:4617
 msgid "----- CL_Shutdown -----\n"
@@ -608,13 +614,15 @@ msgstr ""
 
 #: src/engine/client/cl_main.c:5037
 msgid "Server settings:\n"
-msgstr ""
+msgstr "Configuration du serveur :\n"
 
 #: src/engine/client/cl_main.c:5087
 msgid ""
 "\n"
 "Players:\n"
 msgstr ""
+"\n"
+"Joueurs :\n"
 
 #: src/engine/client/cl_main.c:5088
 msgid "num: score: ping: name:\n"
@@ -650,30 +658,31 @@ msgstr ""
 
 #: src/engine/client/cl_main.c:5513
 msgid "usage: ping [-4|-6] server\n"
-msgstr ""
+msgstr "utilisation : ping [-4|-6] serveur\n"
 
 #: src/engine/client/cl_main.c:5714
 msgid "usage: serverstatus [-4|-6] server\n"
-msgstr ""
+msgstr "utilisation : serverstatus [-4|-6] serveur\n"
 
 #: src/engine/client/cl_parse.c:671
 msgid "Server sending download, but no download was requested\n"
-msgstr ""
+msgstr "Serveur envoie un téléchargement, mais aucun téléchargement n'a "
+"été demandé"
 
 #: src/engine/client/cl_parse.c:699
 #, c-format
 msgid "refusing redirect to %s by server (bad checksum)\n"
-msgstr ""
+msgstr "redirection vers %s refusée par le serveur (somme de contrôle erronée)"
 
 #: src/engine/client/cl_parse.c:718
 #, c-format
 msgid "Failed to initialize download for '%s'\n"
-msgstr ""
+msgstr "Échec de l'initialisation du téléchargement pour '%s'\n"
 
 #: src/engine/client/cl_parse.c:777
 #, c-format
 msgid "Could not create %s\n"
-msgstr ""
+msgstr "Ne peut créer %s\n"
 
 #: src/engine/client/cl_console.c:247
 msgid "usage: condump <filename>\n"
