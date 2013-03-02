@@ -642,6 +642,9 @@ void G_FreeEntity( gentity_t *ent )
 		return;
 	}
 
+	if ( g_debugEntities.integer > 2 )
+		G_Printf("Debug: Freeing Entity ^5#%i^7 of type ^5%s\n", ent->s.number, ent->classname);
+
 	if( ent->eclass && ent->eclass->instanceCounter > 0)
 		ent->eclass->instanceCounter--;
 
