@@ -45,7 +45,6 @@ gentity_t          g_entities[ MAX_GENTITIES ];
 gclient_t          g_clients[ MAX_CLIENTS ];
 
 vmCvar_t           g_timelimit;
-vmCvar_t           g_suddenDeathTime;
 vmCvar_t           g_friendlyFire;
 vmCvar_t           g_friendlyBuildableFire;
 vmCvar_t           g_dretchPunt;
@@ -71,8 +70,6 @@ vmCvar_t           g_logFile;
 vmCvar_t           g_logFileSync;
 vmCvar_t           g_allowVote;
 vmCvar_t           g_voteLimit;
-vmCvar_t           g_suddenDeathVotePercent;
-vmCvar_t           g_suddenDeathVoteDelay;
 vmCvar_t           g_extendVotesPercent;
 vmCvar_t           g_extendVotesTime;
 vmCvar_t           g_extendVotesCount;
@@ -169,6 +166,8 @@ vmCvar_t           g_tag;
 vmCvar_t           g_showKillerHP;
 vmCvar_t           g_combatCooldown;
 
+vmCvar_t           g_debugEntities;
+
 // <bot stuff>
 
 // bot buy cvars
@@ -242,7 +241,6 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_maxGameClients,              "g_maxGameClients",              "0",                                CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qfalse           },
 
 	{ &g_timelimit,                   "timelimit",                     "0",                                CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue            },
-	{ &g_suddenDeathTime,             "g_suddenDeathTime",             "0",                                CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue            },
 
 	{ &g_synchronousClients,          "g_synchronousClients",          "0",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 
@@ -273,8 +271,6 @@ static cvarTable_t gameCvarTable[] =
 
 	{ &g_allowVote,                   "g_allowVote",                   "1",                                CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_voteLimit,                   "g_voteLimit",                   "5",                                CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_suddenDeathVotePercent,      "g_suddenDeathVotePercent",      "74",                               CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_suddenDeathVoteDelay,        "g_suddenDeathVoteDelay",        "180",                              CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_extendVotesPercent,          "g_extendVotesPercent",          "74",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_extendVotesTime,             "g_extendVotesTime",             "10",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_extendVotesCount,            "g_extendVotesCount",            "2",                                CVAR_ARCHIVE,                                    0, qfalse           },
@@ -347,6 +343,8 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_layouts,                     "g_layouts",                     "",                                 CVAR_LATCH,                                      0, qfalse           },
 	{ &g_layoutAuto,                  "g_layoutAuto",                  "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
 
+	{ &g_debugEntities,               "g_debugEntities",               "0",                                0,                                               0, qfalse           },
+
 	{ &g_emoticonsAllowedInNames,     "g_emoticonsAllowedInNames",     "1",                                CVAR_LATCH | CVAR_ARCHIVE,                       0, qfalse           },
 	{ &g_unnamedNumbering,            "g_unnamedNumbering",            "-1",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_unnamedNamePrefix,           "g_unnamedNamePrefix",           UNNAMED_PLAYER"#",                  CVAR_ARCHIVE,                                    0, qfalse           },
@@ -367,6 +365,7 @@ static cvarTable_t gameCvarTable[] =
 
 	{ &g_showKillerHP,                "g_showKillerHP",                "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_combatCooldown,              "g_combatCooldown",              "15",                               CVAR_ARCHIVE,                                    0, qfalse           },
+
 	// <bot stuff>
 	// bot buy cvars
 	{ &g_bot_buy, "g_bot_buy", "1", CVAR_ARCHIVE | CVAR_NORESTART, 0, qfalse },
@@ -842,7 +841,6 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	trap_Cvar_Set( "g_humanStage", va( "%d", S1 ) );
 	trap_Cvar_Set( "g_alienCredits", 0 );
 	trap_Cvar_Set( "g_humanCredits", 0 );
-	level.suddenDeathBeginTime = g_suddenDeathTime.integer * 60000;
 
 	G_Printf( "-----------------------------------\n" );
 
@@ -1330,23 +1328,6 @@ void G_CountSpawns( void )
 	}
 }
 
-/*
-============
-G_TimeTilSuddenDeath
-============
-*/
-#define SUDDENDEATHWARNING 60000
-int G_TimeTilSuddenDeath( void )
-{
-	if ( ( !g_suddenDeathTime.integer && level.suddenDeathBeginTime == 0 ) ||
-	     ( level.suddenDeathBeginTime < 0 ) )
-	{
-		return SUDDENDEATHWARNING + 1; // Always some time away
-	}
-
-	return ( ( level.suddenDeathBeginTime ) - ( level.time - level.startTime ) );
-}
-
 #define PLAYER_COUNT_MOD 5.0f
 
 /*
@@ -1362,34 +1343,6 @@ void G_CalculateBuildPoints( void )
 	buildable_t      buildable;
 	static int       lastTimeAdded = 0;
 	static int       time = 0;
-
-	// Sudden Death checks
-	if ( G_TimeTilSuddenDeath() <= 0 && level.suddenDeathWarning < TW_PASSED )
-	{
-		G_LogPrintf( "Beginning Sudden Death\n" );
-		trap_SendServerCommand( -1, "cp \"Sudden Death!\"" );
-		trap_SendServerCommand( -1, "print_tr \"" N_("Beginning Sudden Death.\n") "\"" );
-		level.suddenDeathWarning = TW_PASSED;
-		G_ClearDeconMarks();
-
-		// Clear blueprints, or else structs that cost 0 BP can still be built after SD
-		for ( i = 0; i < level.maxclients; i++ )
-		{
-			if ( g_entities[ i ].client->ps.stats[ STAT_BUILDABLE ] != BA_NONE )
-			{
-				g_entities[ i ].client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
-			}
-		}
-	}
-	else if ( G_TimeTilSuddenDeath() <= SUDDENDEATHWARNING &&
-	          level.suddenDeathWarning < TW_IMMINENT )
-	{
-		trap_SendServerCommand( -1, va( "cp \"Sudden Death in %d seconds!\"",
-		                                G_TimeTilSuddenDeath() / 1000 ) );
-		trap_SendServerCommand( -1, va( "print_tr %s %d", QQ( N_("Sudden Death will begin in $1$ seconds.\n") ),
-		                                G_TimeTilSuddenDeath() / 1000 ) );
-		level.suddenDeathWarning = TW_IMMINENT;
-	}
 
 	if ( level.humanBuildPoints < 0 )
 	{
@@ -2059,7 +2012,7 @@ void G_SendGameStat( team_t team )
 	}
 
 	Com_sprintf( data, BIG_INFO_STRING,
-	             "%s %s T:%c A:%f H:%f M:%s D:%d SD:%d AS:%d AS2T:%d AS3T:%d HS:%d HS2T:%d HS3T:%d CL:%d",
+	             "%s %s T:%c A:%f H:%f M:%s D:%d AS:%d AS2T:%d AS3T:%d HS:%d HS2T:%d HS3T:%d CL:%d",
 	             Q3_VERSION,
 	             g_tag.string,
 	             teamChar,
@@ -2067,7 +2020,6 @@ void G_SendGameStat( team_t team )
 	             level.averageNumHumanClients,
 	             map,
 	             level.time - level.startTime,
-	             G_TimeTilSuddenDeath(),
 	             g_alienStage.integer,
 	             level.alienStage2Time - level.startTime,
 	             level.alienStage3Time - level.startTime,
@@ -2586,7 +2538,6 @@ void CheckCvars( void )
 {
 	static int lastPasswordModCount = -1;
 	static int lastMarkDeconModCount = -1;
-	static int lastSDTimeModCount = -1;
 	static int lastNumZones = 0;
 
 	if ( g_password.modificationCount != lastPasswordModCount )
@@ -2609,14 +2560,6 @@ void CheckCvars( void )
 	{
 		lastMarkDeconModCount = g_markDeconstruct.modificationCount;
 		G_ClearDeconMarks();
-	}
-
-	// If we change g_suddenDeathTime during a map, we need to update
-	// when sd will begin
-	if ( g_suddenDeathTime.modificationCount != lastSDTimeModCount )
-	{
-		lastSDTimeModCount = g_suddenDeathTime.modificationCount;
-		level.suddenDeathBeginTime = g_suddenDeathTime.integer * 60000;
 	}
 
 	level.frameMsec = trap_Milliseconds();

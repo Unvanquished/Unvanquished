@@ -131,7 +131,8 @@ typedef struct
 #define MAX_ROUTE_NODES 5
 #define MAX_NODE_DEPTH 20
 
-typedef struct{
+typedef struct 
+{
 	//when the enemy was last seen
 	int enemyLastSeen;
 	int timeFoundEnemy;
@@ -142,9 +143,7 @@ typedef struct{
 	//targets
 	botTarget_t goal;
 
-	//pathfinding stuff
-	vec3_t route[ MAX_ROUTE_NODES ];
-	int numCorners;
+	qboolean directPathToGoal;
 
 	botSkill_t botSkill;
 	botEntityAndDistance_t bestEnemy;
@@ -159,7 +158,7 @@ typedef struct{
   	int         futureAimTime;
 	int         futureAimTimeInterval;
 	vec3_t      futureAim;
-	usercmd_t cmdBuffer;
+	usercmd_t   cmdBuffer;
 } botMemory_t;
 
 struct gentity_s
@@ -595,7 +594,6 @@ typedef enum {
 	VOTE_UNMUTE,
 	VOTE_DENYBUILD,
 	VOTE_ALLOWBUILD,
-	VOTE_SUDDEN_DEATH,
 	VOTE_EXTEND,
 	VOTE_ADMIT_DEFEAT,
 	VOTE_DRAW,
@@ -718,8 +716,6 @@ typedef struct
 
 	team_t           lastWin;
 
-	int              suddenDeathBeginTime; // in milliseconds
-	timeWarning_t    suddenDeathWarning;
 	timeWarning_t    timelimitWarning;
 
 	spawnQueue_t     alienSpawnQueue;
@@ -1102,7 +1098,6 @@ void       G_Vote( gentity_t *ent, team_t team, qboolean voting );
 void       G_ExecuteVote( team_t team );
 void       G_CheckVote( team_t team );
 void       LogExit( const char *string );
-int        G_TimeTilSuddenDeath( void );
 
 //
 // g_client.c
@@ -1196,7 +1191,6 @@ extern  vmCvar_t g_minNameChangePeriod;
 extern  vmCvar_t g_maxNameChanges;
 
 extern  vmCvar_t g_timelimit;
-extern  vmCvar_t g_suddenDeathTime;
 extern  vmCvar_t g_friendlyFire;
 extern  vmCvar_t g_friendlyBuildableFire;
 extern  vmCvar_t g_dretchPunt;
@@ -1214,8 +1208,6 @@ extern  vmCvar_t g_warmup;
 extern  vmCvar_t g_doWarmup;
 extern  vmCvar_t g_allowVote;
 extern  vmCvar_t g_voteLimit;
-extern  vmCvar_t g_suddenDeathVotePercent;
-extern  vmCvar_t g_suddenDeathVoteDelay;
 extern  vmCvar_t g_extendVotesPercent;
 extern  vmCvar_t g_extendVotesTime;
 extern  vmCvar_t g_extendVotesCount;
@@ -1306,6 +1298,8 @@ extern  vmCvar_t g_censorship;
 
 extern  vmCvar_t g_showKillerHP;
 extern  vmCvar_t g_combatCooldown;
+
+extern  vmCvar_t g_debugEntities;
 
 // <bot stuff>
 // bot buy cvars
@@ -1431,7 +1425,7 @@ qboolean         trap_BotSetupNav( const void *botClass /* botClass_t* */, qhand
 void             trap_BotShutdownNav( void );
 void             trap_BotSetNavMesh( int botClientNum, qhandle_t navHandle );
 unsigned int     trap_BotFindRoute( int botClientNum, const vec3_t target );
-void             trap_BotUpdatePath( int botClientNum, vec3_t *corners, int *numCorners, int maxCorners, const vec3_t target );
+qboolean         trap_BotUpdatePath( int botClientNum, const vec3_t target, vec3_t dir, qboolean *directPathToGoal );
 qboolean         trap_BotNavTrace( int botClientNum, void *botTrace /*botTrace_t**/, const vec3_t start, const vec3_t end );
 void             trap_BotFindRandomPoint( int botClientNum, vec3_t point );
 void             trap_BotEnableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
