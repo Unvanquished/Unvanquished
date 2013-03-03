@@ -198,19 +198,11 @@ struct gentity_s
 	entityState_t  s; // communicated by server to clients
 	entityShared_t r; // shared by both the server system and game
 
-	/*
-	 * DO NOT MODIFY ANYTHING ABOVE THIS, THE SERVER
-	 * EXPECTS THE FIELDS IN THAT ORDER!
-	 * ================================
-	 * It Expects the playerstate next:
-	 */
-	struct gclient_s *client; // NULL if not a client
+	// DO NOT MODIFY ANYTHING ABOVE THIS, THE SERVER
+	// EXPECTS THE FIELDS IN THAT ORDER!
+	//================================
 
-	/* which happens to be in gclient_s.
-	 * Other fields in gclient_s
-	 * may be modified as long as the
-	 * playerstate is the first element
-	 * ================================*/
+	struct gclient_s *client; // NULL if not a client
 
 	qboolean     inuse;
 	qboolean     neverFree; // if true, FreeEntity will only unlink
