@@ -350,6 +350,14 @@ struct gentity_s
 	 * notify about an event or undertaken action, so each entity can decide to undertake special actions as result
 	 */
 	void ( *notify )( gentity_t *targetedEntity, target_t *calledTarget );
+
+	/**
+	 * the entry function for calls to the entity;
+	 * especially previous chain members will indirectly call this when firing against the given entity
+	 * @returns qtrue if the call was handled by the given function and doesnt need default handling anymore or qfalse otherwise
+	 */
+	qboolean ( *handleCall )( gentity_t *self, target_t *target, gentity_t *other, gentity_t *activator );
+
 	int       nextthink;
 	void ( *think )( gentity_t *self );
 	void ( *reset )( gentity_t *self );

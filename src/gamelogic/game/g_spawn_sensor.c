@@ -39,16 +39,10 @@ void InitBrushSensor( gentity_t *self )
 
 void sensor_act(target_t* target, gentity_t *self, gentity_t *other, gentity_t *activator)
 {
-	switch (target->actionType)
-	{
-	case ETA_ACT:
-	default:
-		// if we wanted to tell the cgame about our deactivation, this would be the way to do it
-		// self->s.eFlags ^= EF_NODRAW;
-		// but unless we have to, we rather not share the information, so "patched" clients cannot do anything with it either
-		self->enabled = !self->enabled;
-		break;
-	}
+	// if we wanted to tell the cgame about our deactivation, this would be the way to do it
+	// self->s.eFlags ^= EF_NODRAW;
+	// but unless we have to, we rather not share the information, so "patched" clients cannot do anything with it either
+	self->enabled = !self->enabled;
 }
 
 void sensor_reset( gentity_t *self )

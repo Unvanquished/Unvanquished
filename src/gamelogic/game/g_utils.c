@@ -347,48 +347,50 @@ void G_FireAllTargetsOf( gentity_t *self, gentity_t *activator )
 void G_FireTarget(target_t *target, gentity_t *targetedEntity, gentity_t *other,
 		gentity_t *activator)
 {
-	switch (target->actionType)
+	if(!targetedEntity->handleCall || !targetedEntity->handleCall(targetedEntity, target, other, activator))
 	{
-	case ETA_FREE:
-		G_FreeEntity(targetedEntity);
-		return; //we have to handle notification differently in the free-case
+		switch (target->actionType)
+		{
+		case ETA_FREE:
+			G_FreeEntity(targetedEntity);
+			return; //we have to handle notification differently in the free-case
 
-	case ETA_PROPAGATE:
-		G_FireAllTargetsOf( targetedEntity, activator);
-		break;
+		case ETA_PROPAGATE:
+			G_FireAllTargetsOf( targetedEntity, activator);
+			break;
 
-	case ETA_ENABLE:
-		targetedEntity->enabled = qtrue;
-		break;
-	case ETA_DISABLE:
-		targetedEntity->enabled = qfalse;
-		break;
-	case ETA_TOGGLE:
-		targetedEntity->enabled = !targetedEntity->enabled;
-		break;
+		case ETA_ENABLE:
+			targetedEntity->enabled = qtrue;
+			break;
+		case ETA_DISABLE:
+			targetedEntity->enabled = qfalse;
+			break;
+		case ETA_TOGGLE:
+			targetedEntity->enabled = !targetedEntity->enabled;
+			break;
 
-	case ETA_USE:
-		if (targetedEntity->use)
-			targetedEntity->use(targetedEntity, other, activator);
-		break;
-	case ETA_RESET:
-		if (targetedEntity->reset)
-			targetedEntity->reset(targetedEntity);
-		break;
-	case ETA_ACT:
-		if (targetedEntity->act)
-			targetedEntity->act(target, targetedEntity, other, activator);
-		break;
+		case ETA_USE:
+			if (targetedEntity->use)
+				targetedEntity->use(targetedEntity, other, activator);
+			break;
+		case ETA_RESET:
+			if (targetedEntity->reset)
+				targetedEntity->reset(targetedEntity);
+			break;
+		case ETA_ACT:
+			if (targetedEntity->act)
+				targetedEntity->act(target, targetedEntity, other, activator);
+			break;
 
-	default:
-		//by default call act, or fall back to use as a means of backward compatibility, until everything we need has a proper act function
-		if (targetedEntity->act)
-			targetedEntity->act(target, targetedEntity, other, activator);
-		else if (targetedEntity->use)
-			targetedEntity->use(targetedEntity, other, activator);
-		break;
+		default:
+			//by default call act, or fall back to use as a means of backward compatibility, until everything we need has a proper act function
+			if (targetedEntity->act)
+				targetedEntity->act(target, targetedEntity, other, activator);
+			else if (targetedEntity->use)
+				targetedEntity->use(targetedEntity, other, activator);
+			break;
+		}
 	}
-
 	if(targetedEntity->notify)
 		targetedEntity->notify( targetedEntity, target );
 }

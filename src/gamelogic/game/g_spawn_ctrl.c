@@ -92,22 +92,16 @@ ctrl_limited
 
 void ctrl_limited_act(target_t* target, gentity_t *self, gentity_t *other, gentity_t *activator)
 {
-	switch (target->actionType)
-	{
-	case ETA_ACT:
-	default:
-		if (!self->enabled)
-			return;
+	if (!self->enabled)
+		return;
 
-		G_FireAllTargetsOf( self, activator );
-		if ( self->count.current <= 1 )
-		{
-			G_FreeEntity( self );
-			return;
-		}
-		self->count.current--;
-		break;
+	G_FireAllTargetsOf( self, activator );
+	if ( self->count.current <= 1 )
+	{
+		G_FreeEntity( self );
+		return;
 	}
+	self->count.current--;
 }
 
 void ctrl_limited_reset( gentity_t *self )
