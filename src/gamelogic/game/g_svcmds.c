@@ -156,7 +156,9 @@ void Svcmd_EntityFire_f( void )
 		target.actionType = G_GetTargetActionFor( target.action );
 	}
 
-	G_Printf( "firing <%s{%i}>:%s\n", selection->classname, entityId, target.action ? target.action : "default");
+	G_Printf( "firing ");
+	G_DebugPrintEntitiy( selection );
+	G_Printf( "\n");
 
 	if(selection->names[0])
 		target.name = selection->names[0];
@@ -203,7 +205,7 @@ void Svcmd_EntityShow_f( void )
 	}
 
 	G_Printf( "⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼\n" );
-	G_Printf( "#%3i:", entityId );
+	G_Printf( "^5#%3i^7:", entityId );
 	PrintEntityType( selection );
 	if (selection->s.origin)
 	{
@@ -211,7 +213,7 @@ void Svcmd_EntityShow_f( void )
 	}
 	G_Printf( "\n" );
 	G_Printf( "⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼\n" );
-	G_Printf( "Classname: %s\n", selection->classname );
+	G_Printf( "Classname: ^5%s^7\n", selection->classname );
 	G_Printf( "Capabilities: %s%s%s%s%s%s%s\n",
 			selection->act ? "acts " : "",
 			selection->think ? "thinks " : "",
@@ -251,10 +253,16 @@ void Svcmd_EntityShow_f( void )
 				lastTargetIndex = targetIndex;
 			}
 
-			G_Printf("   ⇨ %-3i: %-24s \"%s\" {", possbileTarget->s.number, possbileTarget->classname, possbileTarget->names[nameIndex]);
-			for (i = 0; possbileTarget->names[i]; ++i)
-				G_Printf("%s\"%s\"", (i == 0 ? "" : ", "), possbileTarget->names[i]);
-			G_Printf("}\n");
+			G_Printf("   ⇨ ");
+			G_DebugPrintEntitiy( possbileTarget );
+			if(possbileTarget->names[1])
+			{
+				G_Printf(" using \"%s\" ∈ {", possbileTarget->names[nameIndex]);
+				for (i = 0; possbileTarget->names[i]; ++i)
+					G_Printf("%s\"%s\"", (i == 0 ? "" : ", "), possbileTarget->names[i]);
+				G_Printf("}");
+			}
+			G_Printf("\n");
 		}
 	}
 	G_Printf( "\n" );
