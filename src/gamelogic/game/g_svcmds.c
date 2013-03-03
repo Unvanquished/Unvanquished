@@ -152,7 +152,7 @@ void Svcmd_EntityFire_f( void )
 	if( trap_Argc() >= 3 )
 	{
 		trap_Argv( 2, argument, sizeof( argument ) );
-		target.action = G_CopyString( argument );
+		target.action = argument;
 		target.actionType = G_GetTargetActionFor( target.action );
 	}
 
