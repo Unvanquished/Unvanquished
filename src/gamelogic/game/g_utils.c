@@ -290,19 +290,19 @@ void G_FireRandomTargetOf( gentity_t *entity, gentity_t *activator )
 	int       targetIndex, nameIndex;
 	gentity_t *possbileTarget = NULL;
 	int       totalChoiceCount = 0;
-	gentityCall_t *choices[ MAX_GENTITIES ];
+	gentityCall_t choices[ MAX_GENTITIES ];
 	gentityCall_t *selectedCall;
 
 	//collects the targets
 	while( ( possbileTarget = G_FindNextTarget( possbileTarget, &targetIndex, &nameIndex, entity ) ) != NULL )
 	{
-		choices[ totalChoiceCount ]->recipient = possbileTarget;
-		choices[ totalChoiceCount ]->target = &entity->targets[targetIndex];
+		choices[ totalChoiceCount ].recipient = possbileTarget;
+		choices[ totalChoiceCount ].target = &entity->targets[targetIndex];
 		totalChoiceCount++;
 	}
 
 	//return a random one from among the choices
-	selectedCall = choices[ rand() / ( RAND_MAX / totalChoiceCount + 1 ) ];
+	selectedCall = &choices[ rand() / ( RAND_MAX / totalChoiceCount + 1 ) ];
 	if (!selectedCall)
 		return;
 
