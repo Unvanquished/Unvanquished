@@ -351,11 +351,11 @@ void G_FireTarget(target_t *target, gentity_t *targetedEntity, gentity_t *other,
 	{
 	case ETA_FREE:
 		G_FreeEntity(targetedEntity);
-		return;
+		return; //we have to handle notification differently in the free-case
 
 	case ETA_PROPAGATE:
 		G_FireAllTargetsOf( targetedEntity, activator);
-		return;
+		break;
 
 	case ETA_ENABLE:
 		targetedEntity->enabled = qtrue;
@@ -370,27 +370,27 @@ void G_FireTarget(target_t *target, gentity_t *targetedEntity, gentity_t *other,
 	case ETA_USE:
 		if (targetedEntity->use)
 			targetedEntity->use(targetedEntity, other, activator);
-		return;
+		break;
 	case ETA_RESET:
 		if (targetedEntity->reset)
 			targetedEntity->reset(targetedEntity);
-		return;
-
+		break;
 	case ETA_ACT:
+		if (targetedEntity->act)
+			targetedEntity->act(target, targetedEntity, other, activator);
+		break;
+
 	default:
+		//by default call act, or fall back to use as a means of backward compatibility, until everything we need has a proper act function
+		if (targetedEntity->act)
+			targetedEntity->act(target, targetedEntity, other, activator);
+		else if (targetedEntity->use)
+			targetedEntity->use(targetedEntity, other, activator);
 		break;
 	}
 
-	/*
-	 * putting this outside the switch allows us to handle some cases and still
-	 * pass them additionally to the targets act function
-	 */
-	if (targetedEntity->act)
-		targetedEntity->act(target, targetedEntity, other, activator);
-	//call use only as a means of backward compatibility for now, tuntil everything we need has an proper act function
-	else if (targetedEntity->use)
-		targetedEntity->use(targetedEntity, other, activator);
-
+	if(targetedEntity->notify)
+		targetedEntity->notify( targetedEntity, target );
 }
 
 /**

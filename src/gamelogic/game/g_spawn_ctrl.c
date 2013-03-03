@@ -94,11 +94,7 @@ void ctrl_limited_act(target_t* target, gentity_t *self, gentity_t *other, genti
 {
 	switch (target->actionType)
 	{
-	case ETA_ENABLE:
-	case ETA_DISABLE:
-	case ETA_TOGGLE:
-		break;//already handled
-
+	case ETA_ACT:
 	default:
 		if (!self->enabled)
 			return;

@@ -41,11 +41,7 @@ void sensor_act(target_t* target, gentity_t *self, gentity_t *other, gentity_t *
 {
 	switch (target->actionType)
 	{
-	case ETA_ENABLE:
-	case ETA_DISABLE:
-	case ETA_TOGGLE:
-		break;//already handled
-
+	case ETA_ACT:
 	default:
 		// if we wanted to tell the cgame about our deactivation, this would be the way to do it
 		// self->s.eFlags ^= EF_NODRAW;

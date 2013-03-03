@@ -345,6 +345,11 @@ struct gentity_s
 
 	vec3_t       movedir;
 
+
+	/*
+	 * notify about an event or undertaken action, so each entity can decide to undertake special actions as result
+	 */
+	void ( *notify )( gentity_t *targetedEntity, target_t *calledTarget );
 	int       nextthink;
 	void ( *think )( gentity_t *self );
 	void ( *reset )( gentity_t *self );
