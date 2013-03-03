@@ -434,7 +434,7 @@ qboolean G_CallSpawn( gentity_t *spawnedEntity )
 		spawnedEntity->spawned = qtrue;
 
 		if ( g_debugEntities.integer > 2 )
-			G_Printf("Debug: Sucessfully Spawned Entity ^5#%i^7 as ^3%i^7th instance of ^5%s\n",
+			G_Printf("Debug: Successfully spawned entity ^5#%i^7 as ^3%i^7th instance of ^5%s\n",
 					spawnedEntity->s.number, spawnedClass->instanceCounter, spawnedClass->name);
 
 		/*
@@ -456,11 +456,11 @@ qboolean G_CallSpawn( gentity_t *spawnedEntity )
 	{
 		if (!Q_stricmp("worldspawn", spawnedEntity->classname))
 		{
-			G_Printf( "^1ERROR: ^5%s ^7is not the first but the ^5#%i^7 entity – we are unable to spawn it.\n", spawnedEntity->classname, spawnedEntity->s.number );
+			G_Printf( "^1ERROR: ^5%s ^7is not the first but the ^5#%i^7 entry in the spawn string – Some map configurations will not be set.\n", spawnedEntity->classname, spawnedEntity->s.number );
 		}
 		else
 		{
-			G_Printf( "^1ERROR: \"^5%s^7\" doesn't have a spawn function. We have to skip it.\n", spawnedEntity->classname );
+			G_Printf( "^1ERROR: Unknown entity class \"^5%s^7\".\n", spawnedEntity->classname );
 		}
 	}
 
@@ -667,7 +667,7 @@ void G_SpawnGEntityFromSpawnVars( void )
 	}
 }
 
-targetAction_t G_GetTargetActionFor( char* action )
+targetAction_t G_GetTargetActionFor( const char* action )
 {
 	entityActionDescription_t *foundDescription;
 
@@ -691,8 +691,7 @@ void G_CleanUpSpawnedTargets( gentity_t *ent )
 	for (i = 0; i < MAX_ENTITY_TARGETS; ++i)
 	{
 		if (ent->targets[i].name) {
-			ent->targets[j].name = ent->targets[i].name;
-			ent->targets[j].action = ent->targets[i].action;
+			ent->targets[j] = ent->targets[i];
 			ent->targets[j].actionType = G_GetTargetActionFor(ent->targets[i].action);
 			j++;
 		}

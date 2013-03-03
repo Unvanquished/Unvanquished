@@ -167,7 +167,7 @@ NULL will be returned if the end of the list is reached.
 
 =============
 */
-gentity_t *G_FindNextEntity( gentity_t *from, int fieldofs, const char *match )
+gentity_t *G_FindNextEntity( gentity_t *from, size_t fieldofs, const char *match )
 {
 	char *s;
 
@@ -223,9 +223,9 @@ gentity_t *G_FindNextTarget(gentity_t *currentTarget, int *targetIndex, int *nam
 	return NULL;
 }
 
-gentity_t *G_PickRandomEntity( int fieldofs, const char *match  )
+gentity_t *G_PickRandomEntity( size_t fieldofs, const char *match  )
 {
-	gentity_t *foundEntity = NULL;
+	gentity_t *foundEntity;
 	int       totalChoiceCount = 0;
 	gentity_t *choices[ MAX_GENTITIES - 2 - MAX_CLIENTS ];
 

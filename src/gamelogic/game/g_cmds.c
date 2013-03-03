@@ -2175,9 +2175,9 @@ void Cmd_SetViewpos_f( gentity_t *ent )
 			return;
 		}
 		selection = &g_entities[entityId];
-		if (!selection || !selection->inuse)
+		if (!selection->inuse)
 		{
-			G_Printf("entity slot %d is unused/free\n", entityId);
+			G_Printf("entity slot %d is not in use\n", entityId);
 			return;
 		}
 

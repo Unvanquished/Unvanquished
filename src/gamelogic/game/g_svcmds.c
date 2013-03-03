@@ -122,30 +122,30 @@ static void PrintEntityType( gentity_t *entity )
 void Svcmd_EntityFire_f( void )
 {
 	char argument[ MAX_STRING_CHARS ];
-	int  entityId;
+	int  entityNum;
 	gentity_t *selection;
 	target_t target = { NULL, NULL, ETA_DEFAULT };
 
 	if ( trap_Argc() < 2 || trap_Argc() > 3 )
 	{
-		G_Printf( "usage: entityFire <entityNum> [action]\n" );
+		G_Printf( "usage: entityFire <entityNum> [<action>]\n" );
 		return;
 	}
 
 	trap_Argv( 1, argument, sizeof( argument ) );
-	entityId = atoi( argument );
+	entityNum = atoi( argument );
 
-	if ( entityId >= level.num_entities || entityId < MAX_CLIENTS )
+	if ( entityNum >= level.num_entities || entityNum < MAX_CLIENTS )
 	{
-		G_Printf( "invalid entityId %d\n", entityId );
+		G_Printf( "invalid entityId %d\n", entityNum );
 		return;
 	}
 
-	selection = &g_entities[entityId];
+	selection = &g_entities[entityNum];
 
-	if (!selection || !selection->inuse)
+	if (!selection->inuse)
 	{
-		G_Printf("entity slot %d is unused/free\n", entityId);
+		G_Printf("entity slot %d is not in use\n", entityNum);
 		return;
 	}
 
@@ -174,7 +174,7 @@ Svcmd_EntityShow_f
 */
 void Svcmd_EntityShow_f( void )
 {
-	int       i, entityId;
+	int       i, entityNum;
 	int       lastTargetIndex, targetIndex, nameIndex;
 	gentity_t *selection;
 	gentity_t *possbileTarget = NULL;
@@ -188,24 +188,24 @@ void Svcmd_EntityShow_f( void )
 	}
 
 	trap_Argv( 1, argument, sizeof( argument ) );
-	entityId = atoi( argument );
+	entityNum = atoi( argument );
 
-	if (entityId >= level.num_entities || entityId < MAX_CLIENTS)
+	if (entityNum >= level.num_entities || entityNum < MAX_CLIENTS)
 	{
-		G_Printf("entityId %d is out of range\n", entityId);
+		G_Printf("entityId %d is out of range\n", entityNum);
 		return;
 	}
 
-	selection = &g_entities[entityId];
+	selection = &g_entities[entityNum];
 
 	if (!selection || !selection->inuse)
 	{
-		G_Printf("entity slot %d is unused/free\n", entityId);
+		G_Printf("entity slot %d is unused/free\n", entityNum);
 		return;
 	}
 
 	G_Printf( "⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼\n" );
-	G_Printf( "^5#%3i^7:", entityId );
+	G_Printf( "^5#%3i^7:", entityNum );
 	PrintEntityType( selection );
 	if (selection->s.origin)
 	{
@@ -214,14 +214,14 @@ void Svcmd_EntityShow_f( void )
 	G_Printf( "\n" );
 	G_Printf( "⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼\n" );
 	G_Printf( "Classname: ^5%s^7\n", selection->classname );
-	G_Printf( "Capabilities: %s%s%s%s%s%s%s\n",
-			selection->act ? "acts " : "",
-			selection->think ? "thinks " : "",
-			selection->pain ? "pains " : "",
-			selection->die ? "dies " : "",
-			selection->reset ? "resets " : "",
-			selection->touch ? "touchable " : "",
-			selection->use ? "useable " : "");
+	G_Printf( "Capabilities:%s%s%s%s%s%s%s\n",
+			selection->act ? " acts" : "",
+			selection->think ? " thinks" : "",
+			selection->pain ? " pains" : "",
+			selection->die ? " dies" : "",
+			selection->reset ? " resets" : "",
+			selection->touch ? " touchable" : "",
+			selection->use ? " usable" : "");
 	G_Printf( "\n" );
 	if (selection->names[0])
 	{

@@ -51,7 +51,7 @@ void sensor_reset( gentity_t *self )
 	self->enabled = !(self->spawnflags & 1);
 
 	// NEGATE?
-	self->conditions.negated = ( self->spawnflags & 2 );
+	self->conditions.negated = !!( self->spawnflags & 2 );
 }
 
 //some old sensors/triggers used to propagate use-events, this is deprecated behavior
