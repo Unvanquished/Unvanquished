@@ -225,7 +225,6 @@ gentity_t *G_FindNextTarget(gentity_t *currentTarget, int *targetIndex, int *nam
 
 gentity_t *G_PickRandomEntity( int fieldofs, const char *match  )
 {
-	int       targetIndex, nameIndex;
 	gentity_t *foundEntity = NULL;
 	int       totalChoiceCount = 0;
 	gentity_t *choices[ MAX_GENTITIES - 2 - MAX_CLIENTS ];
@@ -344,10 +343,34 @@ void G_FireAllTargetsOf( gentity_t *self, gentity_t *activator )
 	}
 }
 
-void G_FireTarget(target_t *target, gentity_t *targetedEntity, gentity_t *other,
-		gentity_t *activator)
+void G_DebugPrintEntitiy(gentity_t *entity)
 {
-	if(!targetedEntity->handleCall || !targetedEntity->handleCall(targetedEntity, target, other, activator))
+	if(!entity)
+	{
+		G_Printf("<NULL>");
+		return;
+	}
+
+	if(entity->names[0])
+		G_Printf("%s ", entity->names[0]);
+
+	G_Printf("^7(^5%s^7|^5#%i^7)", entity->classname, entity->s.number);
+}
+
+void G_FireTarget(target_t *target, gentity_t *targetedEntity, gentity_t *caller, gentity_t *activator)
+{
+	if ( g_debugEntities.integer > 1 )
+	{
+		G_Printf("Debug: [");
+		G_DebugPrintEntitiy(activator);
+		G_Printf("] ");
+		G_DebugPrintEntitiy(caller);
+		G_Printf(" → ");
+		G_DebugPrintEntitiy(targetedEntity);
+		G_Printf(":%s\n", target && target->action ? target->action : "default");
+	}
+
+	if(!targetedEntity->handleCall || !targetedEntity->handleCall(targetedEntity, target, caller, activator))
 	{
 		switch (target->actionType)
 		{
@@ -371,7 +394,7 @@ void G_FireTarget(target_t *target, gentity_t *targetedEntity, gentity_t *other,
 
 		case ETA_USE:
 			if (targetedEntity->use)
-				targetedEntity->use(targetedEntity, other, activator);
+				targetedEntity->use(targetedEntity, caller, activator);
 			break;
 		case ETA_RESET:
 			if (targetedEntity->reset)
@@ -379,15 +402,15 @@ void G_FireTarget(target_t *target, gentity_t *targetedEntity, gentity_t *other,
 			break;
 		case ETA_ACT:
 			if (targetedEntity->act)
-				targetedEntity->act(target, targetedEntity, other, activator);
+				targetedEntity->act(target, targetedEntity, caller, activator);
 			break;
 
 		default:
 			//by default call act, or fall back to use as a means of backward compatibility, until everything we need has a proper act function
 			if (targetedEntity->act)
-				targetedEntity->act(target, targetedEntity, other, activator);
+				targetedEntity->act(target, targetedEntity, caller, activator);
 			else if (targetedEntity->use)
-				targetedEntity->use(targetedEntity, other, activator);
+				targetedEntity->use(targetedEntity, caller, activator);
 			break;
 		}
 	}
