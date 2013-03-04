@@ -347,6 +347,32 @@ void R_AddDrawViewCmd( void )
 
 /*
 =============
+R_AddRunVisTestsCmd
+
+=============
+*/
+void R_AddRunVisTestsCmd( visTest_t **visTests, int numVisTests )
+{
+	runVisTestsCommand_t *cmd;
+
+	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
+
+	if ( !cmd )
+	{
+		return;
+	}
+
+	cmd->commandId = RC_RUN_VISTESTS;
+
+	cmd->visTests = visTests;
+	cmd->numVisTests = numVisTests;
+
+	cmd->refdef = tr.refdef;
+	cmd->viewParms = tr.viewParms;
+}
+
+/*
+=============
 RE_SetColor
 
 Passing NULL will set the color to white
