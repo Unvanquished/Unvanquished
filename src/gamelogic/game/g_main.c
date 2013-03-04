@@ -93,6 +93,7 @@ vmCvar_t           g_minNameChangePeriod;
 vmCvar_t           g_maxNameChanges;
 
 vmCvar_t           g_initialMineRate;
+vmCvar_t           g_initialBuildPoints;
 vmCvar_t           g_mineRateHalfLife;
 vmCvar_t           g_humanStage;
 vmCvar_t           g_humanCredits;
@@ -249,6 +250,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &pmove_msec,                    "pmove_msec",                    "8",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 	{ &pmove_accurate,                "pmove_accurate",                "0",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 	{ &g_initialMineRate,             "g_initialMineRate",            "15",                                CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_initialBuildPoints,          "g_initialBuildPoints",         "75",                                CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_mineRateHalfLife,            "g_mineRateHalfLife",           "10",                                CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_humanStage,                  "g_humanStage",                  "0",                                0,                                               0, qfalse           },
 	{ &g_humanCredits,                "g_humanCredits",                "0",                                0,                                               0, qfalse           },
@@ -753,6 +755,9 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	trap_Cvar_Set( "g_humanStage", va( "%d", S1 ) );
 	trap_Cvar_Set( "g_alienCredits", 0 );
 	trap_Cvar_Set( "g_humanCredits", 0 );
+
+	// Give both teams some build points to start out with.
+	level.humanBuildPoints = level.alienBuildPoints = g_initialBuildPoints.integer;
 
 	G_Printf( "-----------------------------------\n" );
 
