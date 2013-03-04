@@ -301,7 +301,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define HIVE_DIR_CHANGE_PERIOD  500
 #define HIVE_VALUE              ABVM(HIVE_BP)
 
-#define LEECH_BP                 0
+#define LEECH_BP                 4
 #define LEECH_BT                 20000
 #define LEECH_HEALTH             ABHM(200)
 #define LEECH_REGEN              10
@@ -560,7 +560,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define MEDISTAT_SPLASHRADIUS     100
 #define MEDISTAT_VALUE            HBVM(MEDISTAT_BP)
 
-#define DRILL_BP               0
+#define DRILL_BP               4
 #define DRILL_BT               20000
 #define DRILL_HEALTH           HBHM(200)
 #define DRILL_SPLASHDAMAGE     50
