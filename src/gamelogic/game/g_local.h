@@ -181,17 +181,8 @@ typedef enum
 
 typedef struct
 {
-	const char *name;
-	void ( *spawn )( gentity_t *entityToSpawn );
-	const chainType_t chainType;
-
-	//optional spawn-time data
-	const int	versionState;
-	const char  *replacement;
-
-	//dynamic data, that doesn't get set at spawn-time
 	int instanceCounter;
-} entityClassDescriptor_t;
+} entityClass_t;
 
 struct gentity_s
 {
@@ -217,7 +208,7 @@ struct gentity_s
 	 * the class of the entity
 	 * this is shared among all instances of this type
 	 */
-	entityClassDescriptor_t *eclass;
+	entityClass_t *eclass;
 
 	const char   *classname;
 	int          spawnflags;

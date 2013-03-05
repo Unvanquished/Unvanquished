@@ -165,7 +165,19 @@ static const entityActionDescription_t actionDescriptions[] =
 		{ "propagate", ETA_PROPAGATE },
 };
 
-static entityClassDescriptor_t entityClassDescriptions[] =
+typedef struct
+{
+	const char *name;
+	void ( *spawn )( gentity_t *entityToSpawn );
+	const chainType_t chainType;
+
+	//optional spawn-time data
+	const int	versionState;
+	const char  *replacement;
+} entityClassDescriptor_t;
+
+
+static const entityClassDescriptor_t entityClassDescriptions[] =
 {
 	/**
 	 *
@@ -374,6 +386,8 @@ qboolean G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *enti
 	return qtrue;
 }
 
+static entityClass_t entityClasses[ARRAY_LEN(entityClassDescriptions)];
+
 /*
 ===============
 G_CallSpawn
@@ -423,7 +437,7 @@ qboolean G_CallSpawn( gentity_t *spawnedEntity )
 	if ( spawnedClass )
 	{ // found it
 
-		spawnedEntity->eclass = spawnedClass;
+		spawnedEntity->eclass = &entityClasses[(int) (spawnedClass-entityClassDescriptions)];
 		spawnedEntity->eclass->instanceCounter++;
 
 		if(!G_ValidateEntity( spawnedClass, spawnedEntity ))
