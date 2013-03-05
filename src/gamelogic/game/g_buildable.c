@@ -1348,7 +1348,7 @@ void ALeech_Think( gentity_t *self )
 		vec3_t    range = { LEECH_RANGE, LEECH_RANGE, LEECH_RANGE };
 		vec3_t    mins, maxs;
 		int       i, num;
-		float     rate;
+		float     rate, d, dr, q;
 		gentity_t *rgs;
 
 		rate = level.mineRate;
@@ -1362,18 +1362,30 @@ void ALeech_Think( gentity_t *self )
 		{
 			rgs = &g_entities[ entityList[ i ] ];
 
-			if ( rgs->s.eType == ET_BUILDABLE &&  ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH ) && rgs != self )
+			if ( rgs->s.eType == ET_BUILDABLE && ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH ) && rgs != self )
 			{
-				float factor = Distance( self->s.origin, rgs->s.origin ) / LEECH_RANGE;
-				if ( factor < 1.0f )
+				d = Distance( self->s.origin, rgs->s.origin );
+
+				// Discard RGS not in 2 * LEECH_RANGE and prevent divisin by zero on LEECH_RANGE = 0
+				if ( 2 * LEECH_RANGE - d < 0 )
 				{
-					rate *= 0.1f / sqrt( -factor + 1 );
+					continue;
 				}
+
+				// q is the ratio of the part of a sphere with radius r that intersects with
+				// another sphere of equal size and distance d
+				dr = d / LEECH_RANGE;
+				q = ((dr * dr * dr) - 12.0f * dr + 16.0f) / 16.0f;
+
+				// Two rgs together should mine at a rate proportional to the volume of the
+				// union of their areas of effect. If more RGS intersect, this is just an
+				// approximation that tends to punish cluttering of RGS.
+				rate = rate * (1.0f - q) + 0.5f * rate * q;
 			}
 		}
 
-		// HACK: Save mine rate per minute in entityState.weaponAnim
-		self->s.weaponAnim = ( int )(rate * 120.0f);
+		// HACK: Save efficiency in percent in entityState.weaponAnim
+		self->s.weaponAnim = ( int )( (rate / level.mineRate) * 100.0f );
 
 		level.queuedAlienPoints += rate;
 	}
@@ -2820,7 +2832,7 @@ void HTeslaGen_Think( gentity_t *self )
 ================
 HDrill_Think
 
-Think function for the Alien Leech.
+Think function for the Human Drill.
 ================
 */
 void HDrill_Think( gentity_t *self )
@@ -2843,14 +2855,14 @@ void HDrill_Think( gentity_t *self )
 		vec3_t    range = { DRILL_RANGE, DRILL_RANGE, DRILL_RANGE };
 		vec3_t    mins, maxs;
 		int       i, num;
-		float     rate;
+		float     rate, d, dr, q;
 		gentity_t *rgs;
 
 		rate = level.mineRate;
 
 		VectorAdd( self->s.origin, range, maxs );
 		VectorSubtract( self->s.origin, range, mins );
-
+		
 		// Check for nearby resource generators for rate adjustments
 		num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
 		for ( i = 0; i < num; i++ )
@@ -2859,16 +2871,28 @@ void HDrill_Think( gentity_t *self )
 
 			if ( rgs->s.eType == ET_BUILDABLE && ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH ) && rgs != self )
 			{
-				float factor = Distance( self->s.origin, rgs->s.origin ) / DRILL_RANGE;
-				if ( factor < 1.0f )
+				d = Distance( self->s.origin, rgs->s.origin );
+
+				// Discard RGS not in 2 * DRILL_RANGE and prevent divisin by zero on DRILL_RANGE = 0
+				if ( 2 * DRILL_RANGE - d < 0 )
 				{
-					rate *= 0.1f / sqrt( -factor + 1 );
+					continue;
 				}
+
+				// q is the ratio of the part of a sphere with radius r that intersects with
+				// another sphere of equal size and distance d
+				dr = d / DRILL_RANGE;
+				q = ((dr * dr * dr) - 12.0f * dr + 16.0f) / 16.0f;
+
+				// Two rgs together should mine at a rate proportional to the volume of the
+				// union of their areas of effect. If more RGS intersect, this is just an
+				// approximation that tends to punish cluttering of RGS.
+				rate = rate * (1.0f - q) + 0.5f * rate * q;
 			}
 		}
 
-		// HACK: Save mine rate per minute in entityState.weaponAnim
-		self->s.weaponAnim = ( int )(rate * 120.0f);
+		// HACK: Save efficiency in percent in entityState.weaponAnim
+		self->s.weaponAnim = ( int )( (rate / level.mineRate) * 100.0f );
 
 		level.queuedHumanPoints += rate;
 	}
