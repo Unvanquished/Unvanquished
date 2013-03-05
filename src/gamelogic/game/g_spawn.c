@@ -165,7 +165,7 @@ static const entityActionDescription_t actionDescriptions[] =
 		{ "propagate", ETA_PROPAGATE },
 };
 
-static entityClass_t entityClasses[] =
+static entityClassDescriptor_t entityClassDescriptions[] =
 {
 	/**
 	 *
@@ -314,7 +314,7 @@ static entityClass_t entityClasses[] =
 	{ "trigger_win",              SP_sensor_end,             CHAIN_ACTIVE,     ENT_V_TMPNAME, "sensor_end" }
 };
 
-qboolean G_HandleEntityVersions( entityClass_t *spawnDescription, gentity_t *entity )
+qboolean G_HandleEntityVersions( entityClassDescriptor_t *spawnDescription, gentity_t *entity )
 {
 	if ( spawnDescription->versionState == ENT_V_CURRENT ) // we don't need to handle anything
 		return qtrue;
@@ -339,7 +339,7 @@ qboolean G_HandleEntityVersions( entityClass_t *spawnDescription, gentity_t *ent
 	return qtrue;
 }
 
-qboolean G_ValidateEntity( entityClass_t *entityClass, gentity_t *entity )
+qboolean G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *entity )
 {
 	switch (entityClass->chainType) {
 		case CHAIN_ACTIVE:
@@ -384,7 +384,7 @@ returning qfalse if not found
 */
 qboolean G_CallSpawn( gentity_t *spawnedEntity )
 {
-	entityClass_t     *spawnedClass;
+	entityClassDescriptor_t     *spawnedClass;
 	buildable_t buildable;
 
 	if ( !spawnedEntity->classname )
@@ -417,8 +417,8 @@ qboolean G_CallSpawn( gentity_t *spawnedEntity )
 	}
 
 	// check the spawn functions for other classes
-	spawnedClass = bsearch( spawnedEntity->classname, entityClasses, ARRAY_LEN( entityClasses ),
-	             sizeof( entityClass_t ), cmdcmp );
+	spawnedClass = bsearch( spawnedEntity->classname, entityClassDescriptions, ARRAY_LEN( entityClassDescriptions ),
+	             sizeof( entityClassDescriptor_t ), cmdcmp );
 
 	if ( spawnedClass )
 	{ // found it
@@ -435,7 +435,7 @@ qboolean G_CallSpawn( gentity_t *spawnedEntity )
 
 		if ( g_debugEntities.integer > 2 )
 			G_Printf("Debug: Successfully spawned entity ^5#%i^7 as ^3%i^7th instance of ^5%s\n",
-					spawnedEntity->s.number, spawnedClass->instanceCounter, spawnedClass->name);
+					spawnedEntity->s.number, spawnedEntity->eclass->instanceCounter, spawnedClass->name);
 
 		/*
 		 *  to allow each spawn function to test and handle for itself,

@@ -191,7 +191,7 @@ typedef struct
 
 	//dynamic data, that doesn't get set at spawn-time
 	int instanceCounter;
-} entityClass_t;
+} entityClassDescriptor_t;
 
 struct gentity_s
 {
@@ -217,7 +217,7 @@ struct gentity_s
 	 * the class of the entity
 	 * this is shared among all instances of this type
 	 */
-	entityClass_t *eclass;
+	entityClassDescriptor_t *eclass;
 
 	const char   *classname;
 	int          spawnflags;
