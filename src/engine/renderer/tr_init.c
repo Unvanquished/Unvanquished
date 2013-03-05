@@ -1648,6 +1648,11 @@ extern "C" {
 		re.AnimFrameRate = RE_AnimFrameRate;
 #endif
 
+		re.RegisterVisTest = RE_RegisterVisTest;
+		re.AddVisTestToScene = RE_AddVisTestToScene;
+		re.CheckVisibility = RE_CheckVisibility;
+		re.UnregisterVisTest = RE_UnregisterVisTest;
+
 		return &re;
 	}
 

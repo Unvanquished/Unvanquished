@@ -1363,6 +1363,7 @@ intptr_t CL_UISystemCalls( intptr_t *args )
 			return 0;
 
 		case UI_QUOTESTRING:
+			VM_CheckBlock( args[ 2 ], args[ 3 ], "QUOTE" );
 			Cmd_QuoteStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 			return 0;
 

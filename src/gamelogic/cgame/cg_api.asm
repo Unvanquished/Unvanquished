@@ -179,3 +179,7 @@ equ trap_Pgettext                         -416
 equ trap_R_inPVVS                         -417
 equ trap_Key_SetTeam                      -418
 equ trap_GettextPlural                    -419
+equ trap_RegisterVisTest                  -420
+equ trap_AddVisTestToScene                -421
+equ trap_CheckVisibility                  -422
+equ trap_UnregisterVisTest                -423
