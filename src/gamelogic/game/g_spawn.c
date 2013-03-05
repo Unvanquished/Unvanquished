@@ -153,7 +153,6 @@ typedef struct
 	targetAction_t action;
 } entityActionDescription_t;
 
-
 static const entityActionDescription_t actionDescriptions[] =
 {
 		{ "act",       ETA_ACT       },
@@ -165,11 +164,35 @@ static const entityActionDescription_t actionDescriptions[] =
 		{ "propagate", ETA_PROPAGATE },
 };
 
+typedef enum
+{
+	/*
+	 * self sufficent, it might possibly be fired at, but it can do as well on its own, so won't be freed automaticly
+	 */
+	CHAIN_AUTONOMOUS,
+	/*
+	 * needs something to fire at, or it has no reason to exist in this <world> and will be freed
+	 */
+	CHAIN_ACTIVE,
+	/*
+	 * needs something to fire at it in order to fullfill any task given to it, or will be freed otherwise
+	 */
+	CHAIN_PASSIV,
+	/*
+	 * needs something to fire at it, and something to relay that fire to (under whatever conditions given), or will be freed otherwise
+	 */
+	CHAIN_RELAY,
+	/*
+	 * will be aimed at by something, but no firing needs to be involved at all, if not aimed at, it will be freed
+	 */
+	CHAIN_TARGET,
+} entityChainType_t;
+
 typedef struct
 {
 	const char *name;
 	void ( *spawn )( gentity_t *entityToSpawn );
-	const chainType_t chainType;
+	const entityChainType_t chainType;
 
 	//optional spawn-time data
 	const int	versionState;
