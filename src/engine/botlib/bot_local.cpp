@@ -151,15 +151,13 @@ unsigned int FindRoute( Bot_t *bot, const vec3_t s, const vec3_t e )
 	dtStatus status;
 	int pathNumPolys;
 	qboolean result;
-	int time = Sys_Milliseconds();
+	int time = svs.time;
 
 	//dont pathfind too much
 	if ( time - bot->lastRouteTime < 200 )
 	{
 		return ROUTE_FAILED;
 	}
-
-	bot->lastRouteTime = time;
 
 	result = BotFindNearestPoly( bot, s, &startRef, start );
 
@@ -175,6 +173,7 @@ unsigned int FindRoute( Bot_t *bot, const vec3_t s, const vec3_t e )
 		return ROUTE_FAILED;
 	}
 	
+	bot->lastRouteTime = time;
 	status = bot->nav->query->findPath( startRef, endRef, start, end, &bot->nav->filter, pathPolys, &pathNumPolys, MAX_BOT_PATH );
 
 	if ( dtStatusFailed( status ) )
@@ -185,7 +184,7 @@ unsigned int FindRoute( Bot_t *bot, const vec3_t s, const vec3_t e )
 	bot->corridor.reset( startRef, start );
 	bot->corridor.setCorridor( end, pathPolys, pathNumPolys );
 
-	if ( status & DT_PARTIAL_RESULT )
+	if ( dtStatusDetail( status, DT_PARTIAL_RESULT ) )
 	{
 		return ROUTE_SUCCEED | ROUTE_PARTIAL;
 	}
