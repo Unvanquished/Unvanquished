@@ -1372,6 +1372,9 @@ void ALeech_Think( gentity_t *self )
 			}
 		}
 
+		// HACK: Save mine rate per minute in entityState.weaponAnim
+		self->s.weaponAnim = ( int )(rate * 120.0f);
+
 		level.queuedAlienPoints += rate;
 	}
 }
@@ -2863,6 +2866,9 @@ void HDrill_Think( gentity_t *self )
 				}
 			}
 		}
+
+		// HACK: Save mine rate per minute in entityState.weaponAnim
+		self->s.weaponAnim = ( int )(rate * 120.0f);
 
 		level.queuedHumanPoints += rate;
 	}
