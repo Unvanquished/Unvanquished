@@ -142,7 +142,7 @@ qboolean BotFindNearestPoly( Bot_t *bot, const vec3_t coord, dtPolyRef *nearestP
 	return qtrue;
 }
 
-unsigned int FindRoute( Bot_t *bot, const vec3_t s, const vec3_t e )
+unsigned int FindRoute( Bot_t *bot, const vec3_t s, const botRouteTarget_t *rtarget )
 {
 	vec3_t start;
 	vec3_t end;
@@ -166,9 +166,10 @@ unsigned int FindRoute( Bot_t *bot, const vec3_t s, const vec3_t e )
 		return ROUTE_FAILED;
 	}
 
-	result = BotFindNearestPoly( bot, e, &endRef, end );
+	status = bot->nav->query->findNearestPoly( rtarget->pos, rtarget->extents, 
+	                                           &bot->nav->filter, &endRef, end ); 
 
-	if ( !result )
+	if ( dtStatusFailed( status ) || !endRef )
 	{
 		return ROUTE_FAILED;
 	}

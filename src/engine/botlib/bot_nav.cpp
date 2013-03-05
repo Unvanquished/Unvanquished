@@ -128,32 +128,45 @@ extern "C" void BotSetNavMesh( int botClientNum, qhandle_t nav )
 	bot->needReplan = qtrue;
 }
 
-extern "C" unsigned int BotFindRouteExt( int botClientNum, const vec3_t target )
+extern "C" unsigned int BotFindRouteExt( int botClientNum, const botRouteTarget_t *target )
 {
 	vec3_t start;
-	vec3_t end;
+	botRouteTarget_t rtarget;
 	Bot_t *bot = &agents[ botClientNum ];
-	VectorCopy( target, end );
+	rtarget = *target;
 
 	VectorCopy( SV_GentityNum( botClientNum )->s.origin, start );
-	quake2recast( end );
+	quake2recast( rtarget.pos );
+	quake2recast( rtarget.extents );
+	rtarget.extents[ 0 ] = fabsf( rtarget.extents[ 0 ] );
+	rtarget.extents[ 1 ] = fabsf( rtarget.extents[ 1 ] );
+	rtarget.extents[ 2 ] = fabsf( rtarget.extents[ 2 ] );
 	quake2recast( start );
-	return FindRoute( bot, start, end );
+	return FindRoute( bot, start, &rtarget );
 }
 
-extern "C" qboolean BotUpdateCorridor( int botClientNum, const vec3_t target, vec3_t dir, qboolean *directPathToGoal )
+extern "C" qboolean BotUpdateCorridor( int botClientNum, const botRouteTarget_t *target, vec3_t dir, qboolean *directPathToGoal )
 {
 	vec3_t spos;
 	vec3_t epos;
 	Bot_t *bot = &agents[ botClientNum ];
+	botRouteTarget_t rtarget;
 
 	sharedEntity_t * ent = SV_GentityNum( botClientNum );
 
 	VectorCopy( ent->s.origin, spos );
 	quake2recast( spos );
 
-	VectorCopy( target, epos );
-	quake2recast( epos );
+	rtarget = *target;
+	quake2recast( rtarget.pos );
+	VectorCopy( rtarget.pos, epos );
+
+	quake2recast( rtarget.extents );
+
+	for ( int i = 0; i < 3; i++ )
+	{
+		rtarget.extents[ i ] = fabsf( rtarget.extents[ i ] );
+	}
 
 	if ( directPathToGoal )
 	{
@@ -162,7 +175,7 @@ extern "C" qboolean BotUpdateCorridor( int botClientNum, const vec3_t target, ve
 
 	if ( bot->needReplan )
 	{
-		if ( ! ( FindRoute( bot, spos, epos ) & ( ROUTE_PARTIAL | ROUTE_FAILED ) ) )
+		if ( ! ( FindRoute( bot, spos, &rtarget ) & ( ROUTE_PARTIAL | ROUTE_FAILED ) ) )
 		{
 			bot->needReplan = qfalse;
 		}

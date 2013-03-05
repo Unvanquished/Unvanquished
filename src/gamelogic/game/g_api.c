@@ -588,12 +588,12 @@ void trap_BotSetNavMesh( int botClientNum, qhandle_t navHandle )
 	syscall( BOT_SET_NAVMESH, botClientNum, navHandle );
 }
 
-unsigned int trap_BotFindRoute( int botClientNum, const vec3_t target )
+unsigned int trap_BotFindRoute( int botClientNum, const void *target /*botRouteTarget_t*/ )
 {
 	return syscall( BOT_FIND_ROUTE, botClientNum, target );
 }
 
-qboolean trap_BotUpdatePath( int botClientNum, const vec3_t target, vec3_t dir, qboolean *directPathToGoal )
+qboolean trap_BotUpdatePath( int botClientNum, const void *target /*botRouteTarget_t*/, vec3_t dir, qboolean *directPathToGoal )
 {
 	return syscall( BOT_UPDATE_PATH, botClientNum, target, dir, directPathToGoal );
 }

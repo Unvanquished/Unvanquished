@@ -1450,8 +1450,8 @@ void             trap_GetTimeString( char *buffer, int size, const char *format,
 qboolean         trap_BotSetupNav( const void *botClass /* botClass_t* */, qhandle_t *navHandle );
 void             trap_BotShutdownNav( void );
 void             trap_BotSetNavMesh( int botClientNum, qhandle_t navHandle );
-unsigned int     trap_BotFindRoute( int botClientNum, const vec3_t target );
-qboolean         trap_BotUpdatePath( int botClientNum, const vec3_t target, vec3_t dir, qboolean *directPathToGoal );
+unsigned int     trap_BotFindRoute( int botClientNum, const void *target /*botRotueTarget_t*/ );
+qboolean         trap_BotUpdatePath( int botClientNum, const void *target /*botRouteTarget_t*/, vec3_t dir, qboolean *directPathToGoal );
 qboolean         trap_BotNavTrace( int botClientNum, void *botTrace /*botTrace_t**/, const vec3_t start, const vec3_t end );
 void             trap_BotFindRandomPoint( int botClientNum, vec3_t point );
 void             trap_BotEnableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );

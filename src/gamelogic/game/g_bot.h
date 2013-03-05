@@ -44,6 +44,7 @@ void BotSetTarget( botTarget_t *target, gentity_t *ent, vec3_t *pos );
 qboolean BotChangeGoalEntity( gentity_t *self, gentity_t *goal );
 qboolean BotTargetIsEntity( botTarget_t target );
 qboolean BotTargetIsPlayer( botTarget_t target );
+void BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget_t *routeTarget );
 int BotGetTargetEntityNumber( botTarget_t target );
 void BotGetTargetPos( botTarget_t target, vec3_t rVec );
 team_t BotGetEntityTeam( gentity_t *ent );
