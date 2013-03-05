@@ -97,8 +97,8 @@ typedef enum
   F_FLOAT,
   F_STRING,
   F_TARGET,
-  F_VECTOR,
-  F_VECTOR4,
+  F_3D_VECTOR,
+  F_4D_VECTOR,
   F_YAW
 } fieldtype_t;
 
@@ -113,13 +113,13 @@ typedef struct
 
 static const field_t fields[] =
 {
-	{ "acceleration",        FOFS( acceleration ),        F_VECTOR    },
+	{ "acceleration",        FOFS( acceleration ),        F_3D_VECTOR },
 	{ "alias",               FOFS( names[ 2 ] ),          F_STRING    },
-	{ "alpha",               FOFS( restingPosition ),     F_VECTOR    }, // What's with the variable abuse everytime?
+	{ "alpha",               FOFS( restingPosition ),     F_3D_VECTOR }, // What's with the variable abuse everytime?
 	{ "amount",              FOFS( count.previous ),      F_INT       },
 	{ "angle",               FOFS( s.angles ),            F_YAW,      ENT_V_TMPNAME, "yaw"}, //radiants ui sadly strongly encourages the "angle" keyword
-	{ "angles",              FOFS( s.angles ),            F_VECTOR    },
-	{ "animation",           FOFS( animation ),           F_VECTOR4   },
+	{ "angles",              FOFS( s.angles ),            F_3D_VECTOR },
+	{ "animation",           FOFS( animation ),           F_4D_VECTOR },
 	{ "bounce",              FOFS( physicsBounce ),       F_FLOAT     },
 	{ "classname",           FOFS( classname ),           F_STRING    },
 	{ "count",               FOFS( customNumber ),        F_INT       },
@@ -129,8 +129,8 @@ static const field_t fields[] =
 	{ "model",               FOFS( model ),               F_STRING    },
 	{ "model2",              FOFS( model2 ),              F_STRING    },
 	{ "name",	        	 FOFS( names[ 0 ] ),          F_STRING	  },
-	{ "origin",              FOFS( s.origin ),            F_VECTOR    },
-	{ "radius",              FOFS( activatedPosition ),   F_VECTOR    }, // What's with the variable abuse everytime?
+	{ "origin",              FOFS( s.origin ),            F_3D_VECTOR },
+	{ "radius",              FOFS( activatedPosition ),   F_3D_VECTOR }, // What's with the variable abuse everytime?
 	{ "random",              FOFS( waitVariance ),        F_FLOAT,    ENT_V_TMPNAME, "waitVariance" },
 	{ "spawnflags",          FOFS( spawnflags ),          F_INT       },
 	{ "speed",               FOFS( speed.current ),       F_FLOAT     },
@@ -588,16 +588,13 @@ Takes a key/value pair and sets the binary values
 in a gentity
 ===============
 */
-void G_ParseField( const char *key, const char *value, gentity_t *entity )
+void G_ParseField( const char *key, const char *rawString, gentity_t *entity )
 {
 	field_t *resultingField;
 	byte    *entityData;
-	float   v;
-	vec3_t  vec;
-	vec4_t  vec4;
+	vec4_t  tmpFloatData;
 
-	resultingField = bsearch( key, fields, ARRAY_LEN( fields ),
-	             sizeof( field_t ), cmdcmp );
+	resultingField = bsearch( key, fields, ARRAY_LEN( fields ), sizeof( field_t ), cmdcmp );
 
 	if ( !resultingField )
 	{
@@ -609,43 +606,46 @@ void G_ParseField( const char *key, const char *value, gentity_t *entity )
 	switch ( resultingField->type )
 	{
 		case F_STRING:
-			* ( char ** )( entityData + resultingField->offset ) = G_NewString( value );
+			* ( char ** )( entityData + resultingField->offset ) = G_NewString( rawString );
 			break;
 
 		case F_TARGET:
-			* ( target_t * )( entityData + resultingField->offset ) = G_NewTarget( value );
+			* ( target_t * )( entityData + resultingField->offset ) = G_NewTarget( rawString );
 			break;
 
-		case F_VECTOR:
-			sscanf( value, "%f %f %f", &vec[ 0 ], &vec[ 1 ], &vec[ 2 ] );
+		case F_3D_VECTOR:
+			sscanf( rawString, "%f %f %f", &tmpFloatData[ 0 ], &tmpFloatData[ 1 ], &tmpFloatData[ 2 ] );
 
-			( ( float * )( entityData + resultingField->offset ) ) [ 0 ] = vec[ 0 ];
-			( ( float * )( entityData + resultingField->offset ) ) [ 1 ] = vec[ 1 ];
-			( ( float * )( entityData + resultingField->offset ) ) [ 2 ] = vec[ 2 ];
+			( ( float * )( entityData + resultingField->offset ) ) [ 0 ] = tmpFloatData[ 0 ];
+			( ( float * )( entityData + resultingField->offset ) ) [ 1 ] = tmpFloatData[ 1 ];
+			( ( float * )( entityData + resultingField->offset ) ) [ 2 ] = tmpFloatData[ 2 ];
 			break;
 
-		case F_VECTOR4:
-			sscanf( value, "%f %f %f %f", &vec4[ 0 ], &vec4[ 1 ], &vec4[ 2 ], &vec4[ 3 ] );
+		case F_4D_VECTOR:
+			sscanf( rawString, "%f %f %f %f", &tmpFloatData[ 0 ], &tmpFloatData[ 1 ], &tmpFloatData[ 2 ], &tmpFloatData[ 3 ] );
 
-			( ( float * )( entityData + resultingField->offset ) ) [ 0 ] = vec4[ 0 ];
-			( ( float * )( entityData + resultingField->offset ) ) [ 1 ] = vec4[ 1 ];
-			( ( float * )( entityData + resultingField->offset ) ) [ 2 ] = vec4[ 2 ];
-			( ( float * )( entityData + resultingField->offset ) ) [ 3 ] = vec4[ 3 ];
+			( ( float * )( entityData + resultingField->offset ) ) [ 0 ] = tmpFloatData[ 0 ];
+			( ( float * )( entityData + resultingField->offset ) ) [ 1 ] = tmpFloatData[ 1 ];
+			( ( float * )( entityData + resultingField->offset ) ) [ 2 ] = tmpFloatData[ 2 ];
+			( ( float * )( entityData + resultingField->offset ) ) [ 3 ] = tmpFloatData[ 3 ];
 			break;
 
 		case F_INT:
-			* ( int * )( entityData + resultingField->offset ) = atoi( value );
+			* ( int * )( entityData + resultingField->offset ) = atoi( rawString );
 			break;
 
 		case F_FLOAT:
-			* ( float * )( entityData + resultingField->offset ) = atof( value );
+			* ( float * )( entityData + resultingField->offset ) = atof( rawString );
 			break;
 
 		case F_YAW:
-			v = atof( value );
 			( ( float * )( entityData + resultingField->offset ) ) [ 0 ] = 0;
-			( ( float * )( entityData + resultingField->offset ) ) [ 1 ] = v;
+			( ( float * )( entityData + resultingField->offset ) ) [ 1 ] = atof( rawString );
 			( ( float * )( entityData + resultingField->offset ) ) [ 2 ] = 0;
+			break;
+
+		default:
+			G_Printf( "^3ERROR: unknown datatype %i for field %s\n", resultingField->type, resultingField->name );
 			break;
 	}
 
