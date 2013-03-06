@@ -337,7 +337,7 @@ extern "C" void Trans_Init( void )
 
 	Trans_SetLanguage( language->string );
 
-	Com_Printf( _( "Loaded %lu language(s)\n" ), ( unsigned long )langs.size() );
+	Com_Printf( P_( "Loaded %u language\n", "Loaded %u languages\n", langs.size() ), ( int )langs.size() );
 }
 
 const char* Trans_Gettext_Internal( const char *msgid, DictionaryManager& manager )
@@ -354,10 +354,10 @@ const char* Trans_Pgettext_Internal( const char *ctxt, const char *msgid, Dictio
 	return gettextbuffer[ num ];
 }
 
-const char* Trans_GettextPlural_Internal( const char *msgid, const char *msgid_plural, int num, DictionaryManager& manager )
+const char* Trans_GettextPlural_Internal( const char *msgid, const char *msgid_plural, int number, DictionaryManager& manager )
 {
 	num = ( num + 1 ) & 3;
-	Q_strncpyz( gettextbuffer[ num ], manager.get_dictionary().translate_plural( msgid, msgid_plural, num ).c_str(), sizeof( gettextbuffer[ num ] ) );
+	Q_strncpyz( gettextbuffer[ num ], manager.get_dictionary().translate_plural( msgid, msgid_plural, number ).c_str(), sizeof( gettextbuffer[ num ] ) );
 	return gettextbuffer[ num ];
 }
 

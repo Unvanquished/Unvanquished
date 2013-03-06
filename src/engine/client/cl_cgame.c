@@ -44,6 +44,7 @@ Maryland 20850 USA.
 
 #define __(x) Trans_GettextGame(x)
 #define C__(x, y) Trans_PgettextGame(x, y)
+#define P__(x, y, c) Trans_GettextGamePlural(x, y, c)
 
 static void ( *completer )( const char *s ) = NULL;
 
@@ -1214,15 +1215,23 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_QUOTESTRING:
+			VM_CheckBlock( args[ 2 ], args[ 3 ], "QUOTE" );
 			Cmd_QuoteStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 			return 0;
 
 		case CG_GETTEXT:
+			VM_CheckBlock( args[ 1 ], args[ 3 ], "CGGETTEXT" );
 			strncpy( VMA(1), __(VMA(2)), args[3] );
 			return 0;
 
 		case CG_PGETTEXT:
+			VM_CheckBlock( args[ 1 ], args[ 4 ], "CGPGETTEXT" );
 			strncpy( VMA( 1 ), C__( VMA( 2 ), VMA( 3 ) ), args[ 4 ] );
+			return 0;
+
+		case CG_GETTEXT_PLURAL:
+			VM_CheckBlock( args[ 1 ], args[ 5 ], "CGGETTEXTP" );
+			strncpy( VMA( 1 ), P__( VMA( 2 ), VMA( 3 ), args[ 4 ] ), args[ 5 ] );
 			return 0;
 
 		case CG_R_GLYPH:
@@ -1239,6 +1248,20 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_KEY_SETTEAM:
 			Key_SetTeam( args[1] ); // for binding selection
+			return 0;
+
+		case CG_REGISTERVISTEST:
+			return re.RegisterVisTest();
+
+		case CG_ADDVISTESTTOSCENE:
+			re.AddVisTestToScene( args[1], VMA(2), VMF(3) );
+			return 0;
+
+		case CG_CHECKVISIBILITY:
+			return re.CheckVisibility( args[1] );
+
+		case CG_UNREGISTERVISTEST:
+			re.UnregisterVisTest( args[1] );
 			return 0;
 
 		default:

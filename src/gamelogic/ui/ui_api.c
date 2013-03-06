@@ -854,3 +854,8 @@ void trap_Pgettext( char *buffer, const char *ctxt, const char *msgid, int buffe
 {
 	syscall( UI_PGETTEXT, buffer, ctxt, msgid, bufferLength );
 }
+
+void trap_GettextPlural( char *buffer, const char *msgid, const char *msgid2, int number, int bufferLength )
+{
+	syscall( UI_GETTEXT_PLURAL, buffer, msgid, msgid2, number, bufferLength );
+}
