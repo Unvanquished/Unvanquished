@@ -244,7 +244,7 @@ gentity_t *G_PickRandomEntity( size_t fieldofs, const char *match  )
 	{
 
 		if ( g_debugEntities.integer > -1 )
-			G_Printf( "^3WARNING: ^7Could not find any entity matching \"^5%s^7\"", match );
+			G_Printf( "^3WARNING: ^7Could not find any entity matching \"^5%s^7\"\n", match );
 
 		return NULL;
 	}
