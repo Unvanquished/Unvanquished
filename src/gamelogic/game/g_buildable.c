@@ -1362,7 +1362,8 @@ void ALeech_Think( gentity_t *self )
 		{
 			rgs = &g_entities[ entityList[ i ] ];
 
-			if ( rgs->s.eType == ET_BUILDABLE && ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH ) && rgs != self )
+			if ( rgs->s.eType == ET_BUILDABLE && ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH )
+			     && rgs != self && rgs->spawned && rgs->powered && rgs->health > 0 )
 			{
 				d = Distance( self->s.origin, rgs->s.origin );
 
@@ -2869,7 +2870,8 @@ void HDrill_Think( gentity_t *self )
 		{
 			rgs = &g_entities[ entityList[ i ] ];
 
-			if ( rgs->s.eType == ET_BUILDABLE && ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH ) && rgs != self )
+			if ( rgs->s.eType == ET_BUILDABLE && ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH )
+			     && rgs != self && rgs->spawned && rgs->powered && rgs->health > 0 )
 			{
 				d = Distance( self->s.origin, rgs->s.origin );
 
