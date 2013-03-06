@@ -722,7 +722,7 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
         {
             PARSE(text, token);
 
-            ca->acceleration = atof( token );
+            ca->airAcceleration = atof( token );
 
             defined |= AIRACCELERATION;
         }
