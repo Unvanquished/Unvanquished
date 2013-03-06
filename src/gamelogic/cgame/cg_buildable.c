@@ -1351,7 +1351,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 	int           health;
 	float         x, y;
 	vec4_t        color;
-	qboolean      powered, marked;
+	qboolean      powered, marked, miner;
 	trace_t       tr;
 	float         d;
 	buildStat_t   *bs;
@@ -1546,6 +1546,8 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 
 		powered = es->eFlags & EF_B_POWERED;
 		marked = es->eFlags & EF_B_MARKED;
+		miner = (BG_Buildable( es->modelindex )->number == BA_A_LEECH
+		      || BG_Buildable( es->modelindex )->number == BA_H_DRILL);
 
 		picH *= scale;
 		picW *= scale;
@@ -1657,7 +1659,14 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 				healthPoints = 1;
 			}
 
-			nX = picX + ( picW * 0.5f ) - 2.0f - ( ( subH * 4 ) * 0.5f );
+			if (miner)
+			{
+				nX = picX + ( picW * 0.33f ) - 2.0f - ( ( subH * 4 ) * 0.5f );
+			}
+			else
+			{
+				nX = picX + ( picW * 0.5f ) - 2.0f - ( ( subH * 4 ) * 0.5f );
+			}
 
 			if ( healthPoints > 999 )
 			{
@@ -1677,6 +1686,42 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			}
 
 			CG_DrawField( nX, subY, 4, subH, subH, healthPoints );
+		}
+
+		// show mine rate for resource generating structures
+		if ( miner )
+		{
+			float rX, rY;
+			int   mineRate;
+
+			mineRate = es->weaponAnim;
+
+			if (mineRate < 0)
+			{
+				mineRate = 0;
+			}
+
+			rX = picX + ( picW * 0.66f ) - 2.0f - ( ( subH * 4 ) * 0.5f );
+			rY = subY;
+
+			if ( mineRate > 999 )
+			{
+				rX -= 0.0f;
+			}
+			else if ( mineRate > 99 )
+			{
+				rX -= subH * 0.5f;
+			}
+			else if ( mineRate > 9 )
+			{
+				rX -= subH * 1.0f;
+			}
+			else
+			{
+				rX -= subH * 1.5f;
+			}
+
+			CG_DrawField( rX, rY, 4, subH, subH, mineRate );
 		}
 
 		trap_R_SetColor( NULL );

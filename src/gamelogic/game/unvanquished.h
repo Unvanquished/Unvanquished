@@ -301,14 +301,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define HIVE_DIR_CHANGE_PERIOD  500
 #define HIVE_VALUE              ABVM(HIVE_BP)
 
-#define LEECH_BP                 0
+#define LEECH_BP                 4
 #define LEECH_BT                 20000
 #define LEECH_HEALTH             ABHM(200)
 #define LEECH_REGEN              10
 #define LEECH_SPLASHDAMAGE       30
 #define LEECH_SPLASHRADIUS       200
 #define LEECH_CREEPSIZE          120
-#define LEECH_RANGE              500.0f
+#define LEECH_RANGE              1000.0f
 #define LEECH_LIFETIME           3000
 #define LEECH_REPEAT             3000
 #define LEECH_K_SCALE            1.0f
@@ -560,12 +560,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define MEDISTAT_SPLASHRADIUS     100
 #define MEDISTAT_VALUE            HBVM(MEDISTAT_BP)
 
-#define DRILL_BP               0
+#define DRILL_BP               4
 #define DRILL_BT               20000
 #define DRILL_HEALTH           HBHM(200)
 #define DRILL_SPLASHDAMAGE     50
 #define DRILL_SPLASHRADIUS     100
-#define DRILL_RANGE            500.0f
+#define DRILL_RANGE            1000.0f
 #define DRILL_VALUE            HBVM(DRILL_BP)
 
 #define MGTURRET_BP               8
