@@ -1362,7 +1362,8 @@ void ALeech_Think( gentity_t *self )
 		{
 			rgs = &g_entities[ entityList[ i ] ];
 
-			if ( rgs->s.eType == ET_BUILDABLE && ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH ) && rgs != self )
+			if ( rgs->s.eType == ET_BUILDABLE && ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH )
+			     && rgs != self && rgs->spawned && rgs->powered && rgs->health > 0 )
 			{
 				d = Distance( self->s.origin, rgs->s.origin );
 
@@ -1388,7 +1389,22 @@ void ALeech_Think( gentity_t *self )
 		self->s.weaponAnim = ( int )( (rate / level.mineRate) * 100.0f );
 
 		level.queuedAlienPoints += rate;
+	} else {
+		self->s.weaponAnim = 0;
 	}
+}
+
+/*
+================
+ALeech_Die
+
+Called when an alien leech dies
+================
+*/
+void ALeech_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod )
+{
+	AGeneric_Die( self, inflictor, attacker, damage, mod );
+	self->s.weaponAnim = 0;
 }
 
 //==================================================================================
@@ -2869,7 +2885,8 @@ void HDrill_Think( gentity_t *self )
 		{
 			rgs = &g_entities[ entityList[ i ] ];
 
-			if ( rgs->s.eType == ET_BUILDABLE && ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH ) && rgs != self )
+			if ( rgs->s.eType == ET_BUILDABLE && ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH )
+			     && rgs != self && rgs->spawned && rgs->powered && rgs->health > 0 )
 			{
 				d = Distance( self->s.origin, rgs->s.origin );
 
@@ -2895,7 +2912,22 @@ void HDrill_Think( gentity_t *self )
 		self->s.weaponAnim = ( int )( (rate / level.mineRate) * 100.0f );
 
 		level.queuedHumanPoints += rate;
+	} else {
+		self->s.weaponAnim = 0;
 	}
+}
+
+/*
+================
+HDrill_Die
+
+Called when a human drill dies
+================
+*/
+void HDrill_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod )
+{
+	HSpawn_Die( self, inflictor, attacker, damage, mod );
+	self->s.weaponAnim = 0;
 }
 
 //==================================================================================
@@ -4109,7 +4141,7 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 			break;
 
 		case BA_A_LEECH:
-			built->die = AGeneric_Die;
+			built->die = ALeech_Die;
 			built->think = ALeech_Think;
 			built->pain = AGeneric_Pain;
 			break;
@@ -4153,7 +4185,7 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 
 		case BA_H_DRILL:
 			built->think = HDrill_Think;
-			built->die = HSpawn_Die;
+			built->die = HDrill_Die;
 			break;
 
 		case BA_H_REACTOR:
