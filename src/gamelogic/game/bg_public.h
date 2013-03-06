@@ -926,9 +926,9 @@ typedef struct
 {
 	class_t  number;
 
-	const char *name;
-	const char *info;
-	const char *fovCvar;
+	char *name;
+	char *info;
+	char *fovCvar;
 
 	int      stages;
 
@@ -969,7 +969,7 @@ typedef struct
 	char   skinName[ MAX_QPATH ];
 	float  shadowScale;
 	char   hudName[ MAX_QPATH ];
-	char   humanName[ MAX_STRING_CHARS ];
+	char   *humanName;
 
 	vec3_t mins;
 	vec3_t maxs;
@@ -980,7 +980,7 @@ typedef struct
 	int    crouchViewheight;
 	float  zOffset;
 	vec3_t shoulderOffsets;
-} classConfig_t;
+} classModelConfig_t;
 
 //stages
 typedef enum
@@ -997,10 +997,10 @@ typedef struct
 {
 	buildable_t number;
 
-	const char  *name;
-	const char  *humanName;
-	const char  *info;
-	const char  *entityName;
+	char  *name;
+	char  *humanName;
+	char  *info;
+	char  *entityName;
 
 	trType_t    traj;
 	float       bounce;
@@ -1054,7 +1054,7 @@ typedef struct
 	float  zOffset;
 	float  oldScale;
 	float  oldOffset;
-} buildableConfig_t;
+} buildableModelConfig_t;
 
 // weapon record
 typedef struct
@@ -1146,11 +1146,12 @@ const buildableAttributes_t *BG_BuildableByEntityName( const char *name );
 const buildableAttributes_t *BG_Buildable( buildable_t buildable );
 qboolean                    BG_BuildableAllowedInStage( buildable_t buildable,
     stage_t stage );
+void                        BG_InitBuildableAttributes( void );
 
-buildableConfig_t           *BG_BuildableConfig( buildable_t buildable );
+buildableModelConfig_t      *BG_BuildableModelConfig( buildable_t buildable );
 void                        BG_BuildableBoundingBox( buildable_t buildable,
     vec3_t mins, vec3_t maxs );
-void                        BG_InitBuildableConfigs( void );
+void                        BG_InitBuildableModelConfigs( void );
 
 const classAttributes_t     *BG_ClassByName( const char *name );
 
@@ -1158,7 +1159,7 @@ const classAttributes_t     *BG_Class( class_t class );
 qboolean                    BG_ClassAllowedInStage( class_t class,
     stage_t stage );
 
-classConfig_t               *BG_ClassConfig( class_t class );
+classModelConfig_t          *BG_ClassModelConfig( class_t class );
 
 void                        BG_ClassBoundingBox( class_t class, vec3_t mins,
     vec3_t maxs, vec3_t cmaxs,
@@ -1170,7 +1171,8 @@ int                         BG_ClassCanEvolveFromTo( class_t fclass,
 
 qboolean                  BG_AlienCanEvolve( class_t class, int credits, int alienStage );
 
-void                      BG_InitClassConfigs( void );
+void                      BG_InitClassAttributes( void );
+void                      BG_InitClassModelConfigs( void );
 
 const weaponAttributes_t  *BG_WeaponByName( const char *name );
 const weaponAttributes_t  *BG_Weapon( weapon_t weapon );
@@ -1181,6 +1183,13 @@ const upgradeAttributes_t *BG_UpgradeByName( const char *name );
 const upgradeAttributes_t *BG_Upgrade( upgrade_t upgrade );
 qboolean                  BG_UpgradeAllowedInStage( upgrade_t upgrade,
     stage_t stage );
+
+// Parsers
+qboolean                  BG_ReadWholeFile( const char *filename, char *buffer, int size);
+void                      BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t *ba );
+void                      BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_t *bc );
+void                      BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca );
+void                      BG_ParseClassModelFile( const char *filename, classModelConfig_t *cc );
 
 // content masks
 #define MASK_ALL         ( -1 )
