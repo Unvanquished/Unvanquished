@@ -3312,6 +3312,19 @@ static int G_CompareBuildablesForRemoval( const void *a, const void *b )
 			return 1;
 		}
 
+		// Prefer the entity that is in the same power zone
+		aMatches = ( buildableA->parentNode == powerEntity );
+		bMatches = ( buildableB->parentNode == powerEntity );
+
+		if ( aMatches && !bMatches )
+		{
+			return -1;
+		}
+		else if ( !aMatches && bMatches )
+		{
+			return 1;
+		}
+
 		// Pick the one marked earliest
 		return buildableA->deconstructTime - buildableB->deconstructTime;
 	}
@@ -3583,16 +3596,6 @@ static itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable,
 		else
 		{
 			repeaterInRange = qfalse;
-		}
-
-		// Don't allow marked buildables to be replaced in another zone,
-		// unless the marked buildable isn't in a zone (and thus unpowered)
-		if ( team == TEAM_HUMANS &&
-		     buildable != BA_H_REACTOR &&
-		     buildable != BA_H_REPEATER &&
-		     ent->parentNode != G_PowerEntityForPoint( origin ) )
-		{
-			continue;
 		}
 
 		if ( !ent->inuse )
