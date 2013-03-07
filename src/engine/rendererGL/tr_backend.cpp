@@ -11922,97 +11922,6 @@ const void     *RB_DrawView( const void *data )
 
 /*
 =============
-RB_RunVisTests
-
-=============
-*/
-const void *RB_RunVisTests( const void *data )
-{
-	const runVisTestsCommand_t *cmd;
-	int i;
-
-	// finish any 2D drawing if needed
-	if ( tess.numIndexes )
-	{
-		Tess_End();
-	}
-
-	cmd = ( const runVisTestsCommand_t * ) data;
-
-	backEnd.refdef = cmd->refdef;
-	backEnd.viewParms = cmd->viewParms;
-
-	for( i = 0; i < cmd->numVisTests; i++ ) {
-		visTest_t *test = cmd->visTests[ i ];
-		vec3_t     diff;
-
-		if( test->running ) {
-			GLint  available;
-			GLuint result;
-
-			glGetQueryObjectiv( test->hQuery,
-					    GL_QUERY_RESULT_AVAILABLE,
-					    &available );
-			if( !available )
-				continue;
-
-			glGetQueryObjectuiv( test->hQuery, GL_QUERY_RESULT,
-					     &result );
-
-			test->lastResult = (qboolean)(result > 0);
-			test->running = qfalse;
-		}
-
-		VectorSubtract( backEnd.orientation.viewOrigin,
-				test->position, diff );
-		VectorNormalize( diff );
-		VectorMA( test->position, test->depthAdjust, diff, tess.xyz[0] );
-		tess.xyz[0][4] = 1.0f;
-		tess.numVertexes = 1;
-
-		tess.indexes[0] = 0;
-		tess.numIndexes = 1;
-
-		gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
-
-		gl_genericShader->DisableVertexSkinning();
-		gl_genericShader->DisableVertexAnimation();
-
-		gl_genericShader->DisableDeformVertexes();
-		gl_genericShader->DisableTCGenEnvironment();
-		gl_genericShader->DisableTCGenLightmap();
-
-		gl_genericShader->BindProgram();
-
-		GL_State( GLS_DEPTHMASK_TRUE );
-		GL_VertexAttribsState( ATTR_POSITION );
-
-		gl_genericShader->SetUniform_Color( colorWhite );
-
-		gl_genericShader->SetUniform_ColorModulate( CGEN_CONST, AGEN_CONST );
-
-		gl_genericShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
-		gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-
-		// bind u_ColorMap
-		GL_SelectTexture( 0 );
-		GL_Bind( tr.whiteImage );
-		gl_genericShader->SetUniform_ColorTextureMatrix( tess.svars.texMatrices[ TB_COLORMAP ] );
-
-		Tess_UpdateVBOs( ATTR_POSITION );
-
-		glBeginQuery( GL_SAMPLES_PASSED, test->hQuery );
-		glDrawArrays( GL_POINTS, 0, 1 );
-		glEndQuery( GL_SAMPLES_PASSED );
-
-		test->running = qtrue;
-       }
-
-       return ( const void * )( cmd + 1 );
-}
-
-/*
-=============
 RB_DrawBuffer
 =============
 */
@@ -12293,10 +12202,6 @@ void RB_ExecuteRenderCommands( const void *data )
 
 			case RC_DRAW_VIEW:
 				data = RB_DrawView( data );
-				break;
-
-			case RC_RUN_VISTESTS:
-				data = RB_RunVisTests( data );
 				break;
 
 			case RC_DRAW_BUFFER:

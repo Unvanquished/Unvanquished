@@ -1235,23 +1235,3 @@ void trap_Key_SetTeam( int newTeam )
 {
 	syscall( CG_KEY_SETTEAM, newTeam );
 }
-
-qhandle_t trap_RegisterVisTest( void )
-{
-	return syscall( CG_REGISTERVISTEST );
-}
-
-void trap_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust )
-{
-	syscall( CG_ADDVISTESTTOSCENE, hTest, pos, PASSFLOAT( depthAdjust ) );
-}
-
-qboolean trap_CheckVisibility( qhandle_t hTest )
-{
-	return syscall( CG_CHECKVISIBILITY, hTest );
-}
-
-void trap_UnregisterVisTest( qhandle_t hTest )
-{
-	syscall( CG_UNREGISTERVISTEST, hTest );
-}

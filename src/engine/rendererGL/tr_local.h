@@ -80,11 +80,6 @@ extern "C" {
 
 //#define USE_BSP_CLUSTERSURFACE_MERGING 1
 
-// visibility tests: check if a 3D-point is visible
-// results may be delayed, but for visual effect like flares this
-// shouldn't matter
-#define MAX_VISTESTS          256
-
 	typedef enum
 	{
 		DS_DISABLED, // traditional Doom 3 style rendering
@@ -2468,9 +2463,6 @@ extern "C" {
 #if defined( COMPAT_ET )
 		glfog_t glFog; // (SA) added (needed to pass fog infos into the portal sky scene)
 #endif
-
-		int                    numVisTests;
-		struct visTest_s       **visTests;
 	} trRefdef_t;
 
 //=================================================================================
@@ -3742,16 +3734,6 @@ extern "C" {
 		trRefEntity_t     entity2D; // currentEntity will point at this when doing 2D rendering
 	} backEndState_t;
 
-	typedef struct visTest_s
-	{
-		vec3_t            position;
-		float             depthAdjust; // move position this distance to camera
-		GLuint            hQuery;
-		qboolean          registered;
-		qboolean          running;
-		qboolean          lastResult;
-	} visTest_t;
-
 	typedef struct
 	{
 		vec3_t  origin;
@@ -3972,9 +3954,6 @@ extern "C" {
 
 		int           numTables;
 		shaderTable_t *shaderTables[ MAX_SHADER_TABLES ];
-
-		int           numVisTests;
-		visTest_t     *visTests[ MAX_VISTESTS ];
 
 		float         sinTable[ FUNCTABLE_SIZE ];
 		float         squareTable[ FUNCTABLE_SIZE ];
@@ -4922,11 +4901,6 @@ extern "C" {
 	void RE_SaveViewParms( void );
 	void RE_RestoreViewParms( void );
 
-	qhandle_t RE_RegisterVisTest( void );
-	void RE_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust );
-	qboolean RE_CheckVisibility( qhandle_t hTest );
-	void RE_UnregisterVisTest( qhandle_t hTest );
-	void R_ShutdownVisTests( void );
 	/*
 	=============================================================
 
@@ -5109,15 +5083,6 @@ extern "C" {
 		int     h;
 	} renderToTextureCommand_t;
 
-	typedef struct
-	{
-		int         commandId;
-		trRefdef_t  refdef;
-		viewParms_t viewParms;
-		visTest_t   **visTests;
-		int         numVisTests;
-	} runVisTestsCommand_t;
-
 	typedef enum
 	{
 	  SSF_TGA,
@@ -5161,7 +5126,6 @@ extern "C" {
 	  RC_STRETCH_PIC_GRADIENT, // (SA) added
 	  RC_DRAW_VIEW,
 	  RC_DRAW_BUFFER,
-	  RC_RUN_VISTESTS,
 	  RC_SWAP_BUFFERS,
 	  RC_SCREENSHOT,
 	  RC_VIDEOFRAME,
@@ -5194,8 +5158,6 @@ extern "C" {
 		decalProjector_t    decalProjectors[ MAX_DECAL_PROJECTORS ];
 		srfDecal_t          decals[ MAX_DECALS ];
 
-		visTest_t           *visTests[ MAX_VISTESTS ];
-
 		renderCommandList_t commands;
 	} backEndData_t;
 
@@ -5214,7 +5176,6 @@ extern "C" {
 	void                                R_AddDrawViewCmd( void );
 
 	void                                RE_SetColor( const float *rgba );
-	void                                R_AddRunVisTestsCmd( visTest_t **visTests, int numVisTests );
 	void                                RE_SetClipRegion( const float *region );
 	void                                RE_StretchPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader );
 	void                                RE_RotatedPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, float angle );  // NERVE - SMF
