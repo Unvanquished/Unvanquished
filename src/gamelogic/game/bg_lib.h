@@ -164,4 +164,6 @@ double acos( double x );
 float  powf( float x, float y );
 double rint( double v );
 
+double exp( double ); // trap call
+
 #endif // BG_LIB_H
