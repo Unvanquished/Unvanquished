@@ -405,10 +405,11 @@ Con_CheckResize
 If the line width has changed, reformat the buffer.
 ================
 */
-void Con_CheckResize( void )
+qboolean Con_CheckResize( void )
 {
 	int   i, textWidthInChars, oldwidth, oldtotallines, numlines, numchars;
 	conChar_t buf[ CON_TEXTSIZE ];
+	qboolean  ret = qtrue;
 
 	if ( cls.glconfig.vidWidth )
 	{
@@ -433,6 +434,8 @@ void Con_CheckResize( void )
 		consoleState.currentLine = consoleState.maxScrollbackLengthInLines - 1;
 		consoleState.bottomDisplayedLine = consoleState.currentLine;
 		consoleState.scrollLineIndex = consoleState.currentLine;
+
+		ret = qfalse;
 	}
 	else
 	{
@@ -440,7 +443,7 @@ void Con_CheckResize( void )
 		consoleState.textWidthInChars = textWidthInChars;
 		oldtotallines = consoleState.maxScrollbackLengthInLines;
 		consoleState.maxScrollbackLengthInLines = CON_TEXTSIZE / consoleState.textWidthInChars;
-		numlines = oldtotallines;
+		numlines = oldwidth < 0 ? 0 : oldtotallines;
 
 		if ( consoleState.maxScrollbackLengthInLines < numlines )
 		{
@@ -482,6 +485,8 @@ void Con_CheckResize( void )
 
 		g_console_field_width = g_consoleField.widthInChars = consoleState.textWidthInChars - 8 - Q_UTF8Strlen( prompt );
 	}
+
+	return ret;
 }
 
 /*
@@ -599,8 +604,7 @@ void CL_ConsolePrint( char *txt )
 	if ( !consoleState.initialized )
 	{
 		consoleState.textWidthInChars = -1;
-		Con_CheckResize();
-		consoleState.initialized = qtrue;
+		consoleState.initialized = Con_CheckResize();
 	}
 
 	// NERVE - SMF - work around for text that shows up in console but not in notify
