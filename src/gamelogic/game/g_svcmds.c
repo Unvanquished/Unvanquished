@@ -320,7 +320,7 @@ void  Svcmd_EntityList_f( void )
 
 		if(filter && !Com_Filter(filter, displayedEntity->classname, qfalse) )
 		{
-			for (i = 0; i < MAX_ENTITY_ALIASES; ++i)
+			for (i = 0; i < MAX_ENTITY_ALIASES && displayedEntity->names[i]; ++i)
 			{
 				if( Com_Filter(filter, displayedEntity->names[i], qfalse) )
 				{
