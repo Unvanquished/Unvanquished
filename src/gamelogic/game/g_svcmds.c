@@ -198,7 +198,7 @@ void Svcmd_EntityShow_f( void )
 
 	selection = &g_entities[entityNum];
 
-	if (!selection || !selection->inuse)
+	if (!selection->inuse)
 	{
 		G_Printf("entity slot %d is unused/free\n", entityNum);
 		return;
