@@ -158,7 +158,7 @@ void Svcmd_EntityFire_f( void )
 
 	G_Printf( "firing ");
 	G_DebugPrintEntitiy( selection );
-	G_Printf( "\n");
+	G_Printf( ":%s\n", target.action ? target.action : "default" );
 
 	if(selection->names[0])
 		target.name = selection->names[0];
