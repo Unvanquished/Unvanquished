@@ -3108,6 +3108,7 @@ void G_BuildableThink( gentity_t *ent, int msec )
 		if ( ent->creationTime + buildTime < level.time )
 		{
 			ent->spawned = qtrue;
+			ent->enabled = qtrue;
 
 			if ( ent->s.modelindex == BA_A_OVERMIND )
 			{
@@ -4127,6 +4128,7 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 	built->nextthink = BG_Buildable( buildable )->nextthink;
 
 	built->takedamage = qtrue;
+	built->enabled = qfalse;
 	built->spawned = qfalse;
 	built->creationTime = built->s.time = level.time;
 
