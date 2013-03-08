@@ -1666,7 +1666,7 @@ static void CG_DrawLevelMineRate( rectDef_t *rect, float text_x, float text_y,
 			sscanf( CG_ConfigString( CS_ALIEN_MINE_RATE ), "%f %d", &levelRate, &totalRate );
 			break;
 		case WP_HBUILD:
-			sscanf( CG_ConfigString( CS_ALIEN_MINE_RATE ), "%f %d", &levelRate, &totalRate );
+			sscanf( CG_ConfigString( CS_HUMAN_MINE_RATE ), "%f %d", &levelRate, &totalRate );
 			break;
 	}
 
