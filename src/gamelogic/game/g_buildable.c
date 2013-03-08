@@ -1387,7 +1387,6 @@ void ALeech_Think( gentity_t *self )
 
 		// HACK: Save efficiency in percent in entityState.weaponAnim
 		self->s.weaponAnim = ( int )( (rate / level.mineRate) * 100.0f );
-		level.alienMineEfficiency += self->s.weaponAnim;
 
 		level.queuedAlienPoints += rate;
 	} else {
@@ -2911,7 +2910,6 @@ void HDrill_Think( gentity_t *self )
 
 		// HACK: Save efficiency in percent in entityState.weaponAnim
 		self->s.weaponAnim = ( int )( (rate / level.mineRate) * 100.0f );
-		level.humanMineEfficiency += self->s.weaponAnim;
 
 		level.queuedHumanPoints += rate;
 	} else {
