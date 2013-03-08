@@ -1303,7 +1303,8 @@ void G_CalculateBuildPoints( void )
 			level.queuedAlienPoints -= (int) level.queuedAlienPoints;
 		}
 
-		level.mineRate = g_initialMineRate.value * exp( -time / ( 60000.0f * g_mineRateHalfLife.value ) );
+		// ln(2) ~= 0.6931472 
+		level.mineRate = g_initialMineRate.value * exp( ( 0.6931472f / ( 60000.0f * g_mineRateHalfLife.value ) ) * -time );
 
 		lastTimeAdded = level.time;
 	}
