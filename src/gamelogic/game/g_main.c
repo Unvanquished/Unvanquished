@@ -1259,19 +1259,8 @@ void G_CalculateBuildPoints( void )
 	static int       lastTimeAdded = 0;
 	static int       time = 0;
 
-	if ( level.humanBuildPoints < 0 )
-	{
-		level.humanBuildPoints = 0;
-	}
-
-	if ( level.alienBuildPoints < 0 )
-	{
-		level.alienBuildPoints = 0;
-	}
-
 	time += level.time - level.previousTime;
 
-	// Add queued resources every second.
 	if ( level.time >= lastTimeAdded + 1000 )
 	{
 		// Send total mine efficiencies and level mine rate to clients
@@ -1302,29 +1291,30 @@ void G_CalculateBuildPoints( void )
 		trap_SetConfigstring( CS_HUMAN_MINE_RATE, va( "%f %d", level.mineRate, level.humanMineEfficiency ) );
 
 		// Add queued resources
-		if ( (int) level.queuedHumanPoints > 0 )
-		{
-			level.humanBuildPoints += (int) level.queuedHumanPoints;
-			level.queuedHumanPoints -= (int) level.queuedHumanPoints;
-		}
-		else if ( (int) level.queuedHumanPoints < 0 )
+		if ( (int) level.queuedHumanPoints != 0 )
 		{
 			level.humanBuildPoints += (int) level.queuedHumanPoints;
 			level.queuedHumanPoints -= (int) level.queuedHumanPoints;
 		}
 
-		if ( (int) level.queuedAlienPoints > 0 )
-		{
-			level.alienBuildPoints += (int) level.queuedAlienPoints;
-			level.queuedAlienPoints -= (int) level.queuedAlienPoints;
-		}
-		else if ( (int) level.queuedAlienPoints < 0 )
+		if ( (int) level.queuedAlienPoints != 0 )
 		{
 			level.alienBuildPoints += (int) level.queuedAlienPoints;
 			level.queuedAlienPoints -= (int) level.queuedAlienPoints;
 		}
 
 		lastTimeAdded = level.time;
+	}
+
+	// Sanity check build points
+	if ( level.humanBuildPoints < 0 )
+	{
+		level.humanBuildPoints = 0;
+	}
+
+	if ( level.alienBuildPoints < 0 )
+	{
+		level.alienBuildPoints = 0;
 	}
 }
 
