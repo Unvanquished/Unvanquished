@@ -156,12 +156,12 @@ typedef struct
 static const entityActionDescription_t actionDescriptions[] =
 {
 		{ "act",       ETA_ACT       },
+		{ "disable",   ETA_DISABLE   },
+		{ "enable",    ETA_ENABLE    },
 		{ "free",      ETA_FREE      },
-		{ "enable",    ETA_DISABLE   },
-		{ "disable",   ETA_ENABLE    },
+		{ "propagate", ETA_PROPAGATE },
 		{ "reset",     ETA_RESET     },
 		{ "toggle",    ETA_TOGGLE    },
-		{ "propagate", ETA_PROPAGATE },
 };
 
 typedef enum
