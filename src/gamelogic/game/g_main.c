@@ -1274,6 +1274,12 @@ void G_CalculateBuildPoints( void )
 	// Add queued resources every second.
 	if ( level.time >= lastTimeAdded + 1000 )
 	{
+		trap_SetConfigstring( CS_ALIEN_MINE_RATE, va( "%f %d", level.mineRate, level.alienMineEfficiency ) );
+		trap_SetConfigstring( CS_HUMAN_MINE_RATE, va( "%f %d", level.mineRate, level.humanMineEfficiency ) );
+
+		// reset efficiency so it can be recalculated
+		level.humanMineEfficiency = level.alienMineEfficiency = 0;
+
 		if ( (int) level.queuedHumanPoints > 0 )
 		{
 			level.humanBuildPoints += (int) level.queuedHumanPoints;

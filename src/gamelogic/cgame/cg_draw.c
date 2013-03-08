@@ -1649,6 +1649,33 @@ static void CG_DrawPlayerBoostedMeter( rectDef_t *rect, int align, vec4_t foreCo
 
 }
 
+static void CG_DrawLevelMineRate( rectDef_t *rect, float text_x, float text_y,
+								vec4_t color, float scale, int textalign, int textvalign, int textStyle )
+{
+	char s[ MAX_TOKEN_CHARS ];
+	float tx, ty, levelRate;
+	weapon_t weapon;
+	int totalRate;
+
+	weapon = BG_GetPlayerWeapon( &cg.snap->ps );
+
+	switch ( weapon )
+	{
+		case WP_ABUILD:
+		case WP_ABUILD2:
+			sscanf( CG_ConfigString( CS_ALIEN_MINE_RATE ), "%f %d", &levelRate, &totalRate );
+			break;
+		case WP_HBUILD:
+			sscanf( CG_ConfigString( CS_ALIEN_MINE_RATE ), "%f %d", &levelRate, &totalRate );
+			break;
+	}
+
+	Com_sprintf( s, MAX_TOKEN_CHARS, _("Level Rate: %.1f Total Rate: %.1f"), levelRate * 120, ( totalRate / 100.0f ) * levelRate * 60 );
+	CG_AlignText( rect, s, scale, 0.0f, 0.0f, textalign, textvalign, &tx, &ty );
+	UI_Text_Paint( text_x + tx, text_y + ty, scale, color, s, 0, textStyle );
+}
+
+
 static void CG_DrawProgressLabel( rectDef_t *rect, float text_x, float text_y, vec4_t color,
                                   float scale, int textalign, int textvalign,
                                   const char *s, float fraction )
@@ -4058,6 +4085,10 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
 
 		case CG_HUMANS_SCORE_LABEL:
 			CG_DrawTeamLabel( rect, TEAM_HUMANS, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
+			break;
+
+		case CG_LEVEL_MINE_RATE:
+			CG_DrawLevelMineRate( rect, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
 			break;
 
 			//loading screen
