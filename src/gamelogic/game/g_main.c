@@ -1255,7 +1255,7 @@ Recalculate the quantity of building points available to the teams
 void G_CalculateBuildPoints( void )
 {
 	int              i;
-	buildable_t      buildable;
+	gentity_t        *ent;
 	static int       lastTimeAdded = 0;
 	static int       time = 0;
 
@@ -1274,12 +1274,34 @@ void G_CalculateBuildPoints( void )
 	// Add queued resources every second.
 	if ( level.time >= lastTimeAdded + 1000 )
 	{
+		// Send total mine efficiencies and level mine rate to clients
+		level.humanMineEfficiency = level.alienMineEfficiency = 0;
+
+		for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
+		{
+			if ( ent->s.eType != ET_BUILDABLE )
+			{
+				continue;
+			}
+
+			if ( ent->s.modelindex == BA_H_DRILL )
+			{
+				level.humanMineEfficiency += ent->s.weaponAnim;
+			}
+
+			else if ( ent->s.modelindex == BA_A_LEECH )
+			{
+				level.alienMineEfficiency += ent->s.weaponAnim;
+			}
+		}
+
+		// ln(2) ~= 0.6931472
+		level.mineRate = g_initialMineRate.value * exp( ( 0.6931472f / ( 60000.0f * g_mineRateHalfLife.value ) ) * -time );
+
 		trap_SetConfigstring( CS_ALIEN_MINE_RATE, va( "%f %d", level.mineRate, level.alienMineEfficiency ) );
 		trap_SetConfigstring( CS_HUMAN_MINE_RATE, va( "%f %d", level.mineRate, level.humanMineEfficiency ) );
 
-		// reset efficiency so it can be recalculated
-		level.humanMineEfficiency = level.alienMineEfficiency = 0;
-
+		// Add queued resources
 		if ( (int) level.queuedHumanPoints > 0 )
 		{
 			level.humanBuildPoints += (int) level.queuedHumanPoints;
@@ -1291,7 +1313,6 @@ void G_CalculateBuildPoints( void )
 			level.queuedHumanPoints -= (int) level.queuedHumanPoints;
 		}
 
-
 		if ( (int) level.queuedAlienPoints > 0 )
 		{
 			level.alienBuildPoints += (int) level.queuedAlienPoints;
@@ -1302,9 +1323,6 @@ void G_CalculateBuildPoints( void )
 			level.alienBuildPoints += (int) level.queuedAlienPoints;
 			level.queuedAlienPoints -= (int) level.queuedAlienPoints;
 		}
-
-		// ln(2) ~= 0.6931472 
-		level.mineRate = g_initialMineRate.value * exp( ( 0.6931472f / ( 60000.0f * g_mineRateHalfLife.value ) ) * -time );
 
 		lastTimeAdded = level.time;
 	}
