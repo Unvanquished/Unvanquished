@@ -92,6 +92,22 @@ static int BG_StageFromNumber( int i )
     return 0;
 }
 
+static int BG_ParseTeam(char* token){
+    if ( !Q_stricmp( token, "aliens" ) )
+    {
+        return TEAM_ALIENS;
+    }
+    else if ( !Q_stricmp( token, "humans" ) )
+    {
+        return TEAM_HUMANS;
+    }
+    else
+    {
+        Com_Printf( S_COLOR_RED "ERROR: unknown team value '%s'\n", token );
+        return -1;
+    }
+}
+
 /*
 ======================
 BG_ParseBuildableAttributeFile
@@ -215,18 +231,7 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
         {
             PARSE(text, token);
 
-            if ( !Q_stricmp( token, "aliens" ) )
-            {
-                ba->team = TEAM_ALIENS;
-            }
-            else if ( !Q_stricmp( token, "humans" ) )
-            {
-                ba->team = TEAM_HUMANS;
-            }
-            else
-            {
-                Com_Printf( S_COLOR_RED "ERROR: unknown team value '%s'\n", token );
-            }
+            ba->team = BG_ParseTeam(token);
 
             defined |= TEAM;
         }
