@@ -1666,11 +1666,11 @@ static void CG_DrawLevelMineRate( rectDef_t *rect, float text_x, float text_y,
 			sscanf( CG_ConfigString( CS_ALIEN_MINE_RATE ), "%f %d", &levelRate, &totalRate );
 			break;
 		case WP_HBUILD:
-			sscanf( CG_ConfigString( CS_ALIEN_MINE_RATE ), "%f %d", &levelRate, &totalRate );
+			sscanf( CG_ConfigString( CS_HUMAN_MINE_RATE ), "%f %d", &levelRate, &totalRate );
 			break;
 	}
 
-	Com_sprintf( s, MAX_TOKEN_CHARS, _("Level Rate: %.1f Total Rate: %.1f (%d%)"), ( levelRate * 120 ), ( ( totalRate / 100.0f ) * levelRate * 60 ), ( totalRate / 2 ) );
+	Com_sprintf( s, MAX_TOKEN_CHARS, _("Level Rate: %.1f Total Rate: %.1f (%d%)"), ( levelRate * 120 ), ( ( totalRate / 100.0f ) * levelRate * 120 ), totalRate );
 	CG_AlignText( rect, s, scale, 0.0f, 0.0f, textalign, textvalign, &tx, &ty );
 	UI_Text_Paint( text_x + tx, text_y + ty, scale, color, s, 0, textStyle );
 }
