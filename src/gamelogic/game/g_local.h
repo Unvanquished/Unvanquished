@@ -700,8 +700,10 @@ typedef struct
 
 	int              alienBuildPoints;
 	float            queuedAlienPoints;
+	int              alienMineEfficiency;
 	int              humanBuildPoints;
 	float            queuedHumanPoints;
+	int              humanMineEfficiency;
 	float            mineRate;
 
 	gentity_t        *markedBuildables[ MAX_GENTITIES ];
