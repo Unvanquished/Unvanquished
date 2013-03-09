@@ -123,7 +123,6 @@ static const field_t fields[] =
 	{ "animation",           FOFS( animation ),           F_4D_VECTOR },
 	{ "bounce",              FOFS( physicsBounce ),       F_FLOAT     },
 	{ "classname",           FOFS( classname ),           F_STRING    },
-	{ "count",               FOFS( customNumber ),        F_INT       },
 	{ "dmg",                 FOFS( damage ),              F_INT       },
 	{ "health",              FOFS( config.health ),       F_INT       },
 	{ "message",             FOFS( message ),             F_STRING    },

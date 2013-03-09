@@ -39,17 +39,24 @@ void game_score_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
 		return;
 	}
 
-	AddScore( activator, ent->customNumber );
+	AddScore( activator, ent->config.amount );
 }
 
-void SP_game_score( gentity_t *ent )
+void SP_game_score( gentity_t *self )
 {
-	if ( !ent->customNumber )
+	if ( !self->config.amount )
 	{
-		ent->customNumber = 1;
+		if( G_SpawnInt( "count", "0", &self->config.amount) )
+		{
+			G_WarnAboutDeprecatedEntityField( self, "amount", "count", ENT_V_RENAMED );
+		}
+		else
+		{
+			self->config.amount = 1;
+		}
 	}
 
-	ent->use = game_score_use;
+	self->use = game_score_use;
 }
 
 /*

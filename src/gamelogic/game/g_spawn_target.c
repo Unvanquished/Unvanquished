@@ -160,7 +160,7 @@ void SP_target_location( gentity_t *self )
 		return;
 	}
 
-	if ( self->customNumber )
+	if ( G_SpawnInt( "count", "", &self->customNumber) )
 	{
 		if ( self->customNumber < 0 )
 		{
