@@ -32,14 +32,14 @@ game_score
 =================================================================================
 */
 
-void game_score_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
+void game_score_act( target_t* target, gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	if ( !activator )
 	{
 		return;
 	}
 
-	AddScore( activator, ent->config.amount );
+	AddScore( activator, self->config.amount );
 }
 
 void SP_game_score( gentity_t *self )
@@ -56,7 +56,7 @@ void SP_game_score( gentity_t *self )
 		}
 	}
 
-	self->use = game_score_use;
+	self->act = game_score_act;
 }
 
 /*
@@ -66,7 +66,7 @@ game_end
 
 =================================================================================
 */
-void game_end_use( gentity_t *self, gentity_t *other, gentity_t *activator )
+void game_end_act( target_t* target, gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	if ( level.unconditionalWin == TEAM_NONE ) // only if not yet triggered
 	{
@@ -77,17 +77,17 @@ void game_end_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 void SP_target_alien_win( gentity_t *self )
 {
 	self->conditions.team = TEAM_ALIENS;
-	self->use = game_end_use;
+	self->use = game_end_act;
 }
 
 void SP_target_human_win( gentity_t *self )
 {
 	self->conditions.team = TEAM_HUMANS;
-	self->use = game_end_use;
+	self->use = game_end_act;
 }
 
 void SP_game_end( gentity_t *self )
 {
 	G_SpawnInt( "team", "0", ( int * ) &self->conditions.team );
-	self->use = game_end_use;
+	self->use = game_end_act;
 }

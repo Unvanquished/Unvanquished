@@ -32,7 +32,7 @@ ctrl_relay
 =================================================================================
 */
 
-void ctrl_relay_use( gentity_t *self, gentity_t *other, gentity_t *activator )
+void ctrl_relay_act( target_t* target, gentity_t *self, gentity_t *caller, gentity_t *activator )
 {
 	if ( ( self->spawnflags & 1 ) && activator && activator->client &&
 	     activator->client->ps.stats[ STAT_TEAM ] != TEAM_HUMANS )
@@ -79,7 +79,7 @@ void SP_ctrl_relay( gentity_t *self )
 
 	SP_WaitFields(self, 0, 0 );
 
-	self->use = ctrl_relay_use;
+	self->act = ctrl_relay_act;
 }
 
 /*
