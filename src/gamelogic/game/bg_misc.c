@@ -640,677 +640,123 @@ void BG_InitClassModelConfigs( void )
 
 ////////////////////////////////////////////////////////////////////////////////
 
-static const weaponAttributes_t bg_weapons[] =
+typedef struct
+{
+    int number;
+    const char* name;
+} weaponData_t;
+
+static const weaponData_t bg_weaponsData[] =
 {
 	{
 		WP_ALEVEL0, //int       number;
-		0, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		SLOT_WEAPON, //int       slots;
 		"level0", //char      *name;
-		"Bite", //char      *humanName;
-		"",
-		0, //int       maxAmmo;
-		0, //int       maxClips;
-		qtrue, //int       infiniteAmmo;
-		qfalse, //int       usesEnergy;
-		LEVEL0_BITE_REPEAT, //int       repeatRate1;
-		0, //int       repeatRate2;
-		0, //int       repeatRate3;
-		0, //int       reloadTime;
-		LEVEL0_BITE_K_SCALE, //float     knockbackScale;
-		qfalse, //qboolean  hasAltMode;
-		qfalse, //qboolean  hasThirdMode;
-		qfalse, //qboolean  canZoom;
-		90.0f, //float     zoomFov;
-		qfalse, //qboolean  purchasable;
-		qfalse, //qboolean  longRanged;
-		TEAM_ALIENS //team_t    team;
 	},
 	{
 		WP_ALEVEL1, //int       number;
-		0, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		SLOT_WEAPON, //int       slots;
 		"level1", //char      *name;
-		"Claws", //char      *humanName;
-		"",
-		0, //int       maxAmmo;
-		0, //int       maxClips;
-		qtrue, //int       infiniteAmmo;
-		qfalse, //int       usesEnergy;
-		LEVEL1_CLAW_REPEAT, //int       repeatRate1;
-		0, //int       repeatRate2;
-		0, //int       repeatRate3;
-		0, //int       reloadTime;
-		LEVEL1_CLAW_K_SCALE, //float     knockbackScale;
-		qfalse, //qboolean  hasAltMode;
-		qfalse, //qboolean  hasThirdMode;
-		qfalse, //qboolean  canZoom;
-		90.0f, //float     zoomFov;
-		qfalse, //qboolean  purchasable;
-		qfalse, //qboolean  longRanged;
-		TEAM_ALIENS //team_t    team;
 	},
 	{
 		WP_ALEVEL1_UPG, //int       number;
-		0, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		SLOT_WEAPON, //int       slots;
 		"level1upg", //char      *name;
-		"Claws Upgrade", //char      *humanName;
-		"",
-		0, //int       maxAmmo;
-		0, //int       maxClips;
-		qtrue, //int       infiniteAmmo;
-		qfalse, //int       usesEnergy;
-		LEVEL1_CLAW_U_REPEAT, //int       repeatRate1;
-		LEVEL1_PCLOUD_REPEAT, //int       repeatRate2;
-		0, //int       repeatRate3;
-		0, //int       reloadTime;
-		LEVEL1_CLAW_U_K_SCALE, //float     knockbackScale;
-		qtrue, //qboolean  hasAltMode;
-		qfalse, //qboolean  hasThirdMode;
-		qfalse, //qboolean  canZoom;
-		90.0f, //float     zoomFov;
-		qfalse, //qboolean  purchasable;
-		qtrue, //qboolean  longRanged;
-		TEAM_ALIENS //team_t    team;
 	},
 	{
 		WP_ALEVEL2, //int       number;
-		0, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		SLOT_WEAPON, //int       slots;
 		"level2", //char      *name;
-		"Bite", //char      *humanName;
-		"",
-		0, //int       maxAmmo;
-		0, //int       maxClips;
-		qtrue, //int       infiniteAmmo;
-		qfalse, //int       usesEnergy;
-		LEVEL2_CLAW_REPEAT, //int       repeatRate1;
-		0, //int       repeatRate2;
-		0, //int       repeatRate3;
-		0, //int       reloadTime;
-		LEVEL2_CLAW_K_SCALE, //float     knockbackScale;
-		qfalse, //qboolean  hasAltMode;
-		qfalse, //qboolean  hasThirdMode;
-		qfalse, //qboolean  canZoom;
-		90.0f, //float     zoomFov;
-		qfalse, //qboolean  purchasable;
-		qfalse, //qboolean  longRanged;
-		TEAM_ALIENS //team_t    team;
 	},
 	{
 		WP_ALEVEL2_UPG, //int       number;
-		0, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		SLOT_WEAPON, //int       slots;
 		"level2upg", //char      *name;
-		"Zap", //char      *humanName;
-		"",
-		0, //int       maxAmmo;
-		0, //int       maxClips;
-		qtrue, //int       infiniteAmmo;
-		qfalse, //int       usesEnergy;
-		LEVEL2_CLAW_U_REPEAT, //int       repeatRate1;
-		LEVEL2_AREAZAP_REPEAT, //int       repeatRate2;
-		0, //int       repeatRate3;
-		0, //int       reloadTime;
-		LEVEL2_CLAW_U_K_SCALE, //float     knockbackScale;
-		qtrue, //qboolean  hasAltMode;
-		qfalse, //qboolean  hasThirdMode;
-		qfalse, //qboolean  canZoom;
-		90.0f, //float     zoomFov;
-		qfalse, //qboolean  purchasable;
-		qfalse, //qboolean  longRanged;
-		TEAM_ALIENS //team_t    team;
 	},
 	{
 		WP_ALEVEL3, //int       number;
-		0, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		SLOT_WEAPON, //int       slots;
 		"level3", //char      *name;
-		"Pounce", //char      *humanName;
-		"",
-		0, //int       maxAmmo;
-		0, //int       maxClips;
-		qtrue, //int       infiniteAmmo;
-		qfalse, //int       usesEnergy;
-		LEVEL3_CLAW_REPEAT, //int       repeatRate1;
-		0, //int       repeatRate2;
-		0, //int       repeatRate3;
-		0, //int       reloadTime;
-		LEVEL3_CLAW_K_SCALE, //float     knockbackScale;
-		qfalse, //qboolean  hasAltMode;
-		qfalse, //qboolean  hasThirdMode;
-		qfalse, //qboolean  canZoom;
-		90.0f, //float     zoomFov;
-		qfalse, //qboolean  purchasable;
-		qfalse, //qboolean  longRanged;
-		TEAM_ALIENS //team_t    team;
 	},
 	{
 		WP_ALEVEL3_UPG, //int       number;
-		0, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		SLOT_WEAPON, //int       slots;
 		"level3upg", //char      *name;
-		"Pounce (upgrade)", //char      *humanName;
-		"",
-		3, //int       maxAmmo;
-		0, //int       maxClips;
-		qtrue, //int       infiniteAmmo;
-		qfalse, //int       usesEnergy;
-		LEVEL3_CLAW_U_REPEAT, //int       repeatRate1;
-		0, //int       repeatRate2;
-		LEVEL3_BOUNCEBALL_REPEAT, //int       repeatRate3;
-		0, //int       reloadTime;
-		LEVEL3_CLAW_U_K_SCALE, //float     knockbackScale;
-		qfalse, //qboolean  hasAltMode;
-		qtrue, //qboolean  hasThirdMode;
-		qfalse, //qboolean  canZoom;
-		90.0f, //float     zoomFov;
-		qfalse, //qboolean  purchasable;
-		qtrue, //qboolean  longRanged;
-		TEAM_ALIENS //team_t    team;
 	},
 	{
 		WP_ALEVEL4, //int       number;
-		0, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		SLOT_WEAPON, //int       slots;
 		"level4", //char      *name;
-		"Charge", //char      *humanName;
-		"",
-		0, //int       maxAmmo;
-		0, //int       maxClips;
-		qtrue, //int       infiniteAmmo;
-		qfalse, //int       usesEnergy;
-		LEVEL4_CLAW_REPEAT, //int       repeatRate1;
-		0, //int       repeatRate2;
-		0, //int       repeatRate3;
-		0, //int       reloadTime;
-		LEVEL4_CLAW_K_SCALE, //float     knockbackScale;
-		qfalse, //qboolean  hasAltMode;
-		qfalse, //qboolean  hasThirdMode;
-		qfalse, //qboolean  canZoom;
-		90.0f, //float     zoomFov;
-		qfalse, //qboolean  purchasable;
-		qfalse, //qboolean  longRanged;
-		TEAM_ALIENS //team_t    team;
 	},
 	{
 		WP_BLASTER, //int       number;
-		0, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		0, //int       slots;
 		"blaster", //char      *name;
-		N_( "Blaster" ), //char      *humanName;
-		"",
-		0, //int       maxAmmo;
-		0, //int       maxClips;
-		qtrue, //int       infiniteAmmo;
-		qfalse, //int       usesEnergy;
-		BLASTER_REPEAT, //int       repeatRate1;
-		0, //int       repeatRate2;
-		0, //int       repeatRate3;
-		0, //int       reloadTime;
-		BLASTER_K_SCALE, //float     knockbackScale;
-		qfalse, //qboolean  hasAltMode;
-		qfalse, //qboolean  hasThirdMode;
-		qfalse, //qboolean  canZoom;
-		90.0f, //float     zoomFov;
-		qfalse, //qboolean  purchasable;
-		qtrue, //qboolean  longRanged;
-		TEAM_HUMANS //team_t    team;
 	},
 	{
 		WP_MACHINEGUN, //int       number;
-		RIFLE_PRICE, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		SLOT_WEAPON, //int       slots;
 		"rifle", //char      *name;
-		N_( "Rifle" ), //char      *humanName;
-		N_( "Basic weapon. Cased projectile weapon, with a slow clip based "
-		"reload system." ),
-		RIFLE_CLIPSIZE, //int       maxAmmo;
-		RIFLE_MAXCLIPS, //int       maxClips;
-		qfalse, //int       infiniteAmmo;
-		qfalse, //int       usesEnergy;
-		RIFLE_REPEAT, //int       repeatRate1;
-		0, //int       repeatRate2;
-		0, //int       repeatRate3;
-		RIFLE_RELOAD, //int       reloadTime;
-		RIFLE_K_SCALE, //float     knockbackScale;
-		qfalse, //qboolean  hasAltMode;
-		qfalse, //qboolean  hasThirdMode;
-		qfalse, //qboolean  canZoom;
-		90.0f, //float     zoomFov;
-		qtrue, //qboolean  purchasable;
-		qtrue, //qboolean  longRanged;
-		TEAM_HUMANS //team_t    team;
 	},
 	{
 		WP_PAIN_SAW, //int       number;
-		PAINSAW_PRICE, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		SLOT_WEAPON, //int       slots;
 		"psaw", //char      *name;
-		N_( "Pain Saw" ), //char      *humanName;
-		N_( "Similar to a chainsaw, but instead of a chain it has an "
-		"electric arc capable of dealing a great deal of damage at "
-		"close range." ),
-		0, //int       maxAmmo;
-		0, //int       maxClips;
-		qtrue, //int       infiniteAmmo;
-		qfalse, //int       usesEnergy;
-		PAINSAW_REPEAT, //int       repeatRate1;
-		0, //int       repeatRate2;
-		0, //int       repeatRate3;
-		0, //int       reloadTime;
-		PAINSAW_K_SCALE, //float     knockbackScale;
-		qfalse, //qboolean  hasAltMode;
-		qfalse, //qboolean  hasThirdMode;
-		qfalse, //qboolean  canZoom;
-		90.0f, //float     zoomFov;
-		qtrue, //qboolean  purchasable;
-		qfalse, //qboolean  longRanged;
-		TEAM_HUMANS //team_t    team;
 	},
 	{
 		WP_SHOTGUN, //int       number;
-		SHOTGUN_PRICE, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		SLOT_WEAPON, //int       slots;
 		"shotgun", //char      *name;
-		N_( "Shotgun" ), //char      *humanName;
-		N_( "Close range weapon that is useful against larger foes. "
-		"It has a slow repeat rate, but can be devastatingly "
-		"effective." ),
-		SHOTGUN_SHELLS, //int       maxAmmo;
-		SHOTGUN_MAXCLIPS, //int       maxClips;
-		qfalse, //int       infiniteAmmo;
-		qfalse, //int       usesEnergy;
-		SHOTGUN_REPEAT, //int       repeatRate1;
-		0, //int       repeatRate2;
-		0, //int       repeatRate3;
-		SHOTGUN_RELOAD, //int       reloadTime;
-		SHOTGUN_K_SCALE, //float     knockbackScale;
-		qfalse, //qboolean  hasAltMode;
-		qfalse, //qboolean  hasThirdMode;
-		qfalse, //qboolean  canZoom;
-		90.0f, //float     zoomFov;
-		qtrue, //qboolean  purchasable;
-		qtrue, //qboolean  longRanged;
-		TEAM_HUMANS //team_t    team;
 	},
 	{
 		WP_LAS_GUN, //int       number;
-		LASGUN_PRICE, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		SLOT_WEAPON, //int       slots;
 		"lgun", //char      *name;
-		N_( "Las Gun" ), //char      *humanName;
-		N_( "Slightly more powerful than the basic rifle, rapidly fires "
-		"small packets of energy." ),
-		LASGUN_AMMO, //int       maxAmmo;
-		0, //int       maxClips;
-		qfalse, //int       infiniteAmmo;
-		qtrue, //int       usesEnergy;
-		LASGUN_REPEAT, //int       repeatRate1;
-		0, //int       repeatRate2;
-		0, //int       repeatRate3;
-		LASGUN_RELOAD, //int       reloadTime;
-		LASGUN_K_SCALE, //float     knockbackScale;
-		qfalse, //qboolean  hasAltMode;
-		qfalse, //qboolean  hasThirdMode;
-		qfalse, //qboolean  canZoom;
-		90.0f, //float     zoomFov;
-		qtrue, //qboolean  purchasable;
-		qtrue, //qboolean  longRanged;
-		TEAM_HUMANS //team_t    team;
 	},
 	{
 		WP_MASS_DRIVER, //int       number;
-		MDRIVER_PRICE, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		SLOT_WEAPON, //int       slots;
 		"mdriver", //char      *name;
-		N_( "Mass Driver" ), //char      *humanName;
-		N_( "A portable particle accelerator which causes minor nuclear "
-		"reactions at the point of impact. It has a very large "
-		"payload, but fires slowly." ),
-		MDRIVER_CLIPSIZE, //int       maxAmmo;
-		MDRIVER_MAXCLIPS, //int       maxClips;
-		qfalse, //int       infiniteAmmo;
-		qtrue, //int       usesEnergy;
-		MDRIVER_REPEAT, //int       repeatRate1;
-		0, //int       repeatRate2;
-		0, //int       repeatRate3;
-		MDRIVER_RELOAD, //int       reloadTime;
-		MDRIVER_K_SCALE, //float     knockbackScale;
-		qfalse, //qboolean  hasAltMode;
-		qfalse, //qboolean  hasThirdMode;
-		qtrue, //qboolean  canZoom;
-		20.0f, //float     zoomFov;
-		qtrue, //qboolean  purchasable;
-		qtrue, //qboolean  longRanged;
-		TEAM_HUMANS //team_t    team;
 	},
 	{
 		WP_CHAINGUN, //int       number;
-		CHAINGUN_PRICE, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		SLOT_WEAPON, //int       slots;
 		"chaingun", //char      *name;
-		N_( "Chaingun" ), //char      *humanName;
-		N_( "Belt drive, cased projectile weapon. It has a high repeat "
-		"rate but a wide firing angle and is therefore relatively "
-		"inaccurate." ),
-		CHAINGUN_BULLETS, //int       maxAmmo;
-		0, //int       maxClips;
-		qfalse, //int       infiniteAmmo;
-		qfalse, //int       usesEnergy;
-		CHAINGUN_REPEAT, //int       repeatRate1;
-		0, //int       repeatRate2;
-		0, //int       repeatRate3;
-		0, //int       reloadTime;
-		CHAINGUN_K_SCALE, //float     knockbackScale;
-		qfalse, //qboolean  hasAltMode;
-		qfalse, //qboolean  hasThirdMode;
-		qfalse, //qboolean  canZoom;
-		90.0f, //float     zoomFov;
-		qtrue, //qboolean  purchasable;
-		qtrue, //qboolean  longRanged;
-		TEAM_HUMANS //team_t    team;
 	},
 	{
 		WP_FLAMER, //int       number;
-		FLAMER_PRICE, //int       price;
-		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		SLOT_WEAPON, //int       slots;
 		"flamer", //char      *name;
-		N_( "Flame Thrower" ), //char      *humanName;
-		N_( "Sprays fire at its target. It is powered by compressed "
-		"gas. The relatively low rate of fire means this weapon is most "
-		"effective against static targets." ),
-		FLAMER_GAS, //int       maxAmmo;
-		0, //int       maxClips;
-		qfalse, //int       infiniteAmmo;
-		qfalse, //int       usesEnergy;
-		FLAMER_REPEAT, //int       repeatRate1;
-		0, //int       repeatRate2;
-		0, //int       repeatRate3;
-		0, //int       reloadTime;
-		FLAMER_K_SCALE, //float     knockbackScale;
-		qfalse, //qboolean  hasAltMode;
-		qfalse, //qboolean  hasThirdMode;
-		qfalse, //qboolean  canZoom;
-		90.0f, //float     zoomFov;
-		qtrue, //qboolean  purchasable;
-		qtrue, //qboolean  longRanged;
-		TEAM_HUMANS //team_t    team;
 	},
 	{
 		WP_PULSE_RIFLE, //int       number;
-		PRIFLE_PRICE, //int       price;
-		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		SLOT_WEAPON, //int       slots;
 		"prifle", //char      *name;
-		N_( "Pulse Rifle" ), //char      *humanName;
-		N_( "An energy weapon that fires rapid pulses of concentrated energy." ),
-		PRIFLE_CLIPS, //int       maxAmmo;
-		PRIFLE_MAXCLIPS, //int       maxClips;
-		qfalse, //int       infiniteAmmo;
-		qtrue, //int       usesEnergy;
-		PRIFLE_REPEAT, //int       repeatRate1;
-		0, //int       repeatRate2;
-		0, //int       repeatRate3;
-		PRIFLE_RELOAD, //int       reloadTime;
-		PRIFLE_K_SCALE, //float     knockbackScale;
-		qfalse, //qboolean  hasAltMode;
-		qfalse, //qboolean  hasThirdMode;
-		qfalse, //qboolean  canZoom;
-		90.0f, //float     zoomFov;
-		qtrue, //qboolean  purchasable;
-		qtrue, //qboolean  longRanged;
-		TEAM_HUMANS //team_t    team;
 	},
 	{
 		WP_LUCIFER_CANNON, //int       number;
-		LCANNON_PRICE, //int       price;
-		( 1 << S3 ), //int  stages;
-		SLOT_WEAPON, //int       slots;
 		"lcannon", //char      *name;
-		N_( "Lucifer Cannon" ), //char      *humanName;
-		N_( "Blaster technology scaled up to deliver devastating power. "
-		"Primary fire must be charged before firing. It has a quick "
-		"secondary attack that does not require charging." ),
-		LCANNON_AMMO, //int       maxAmmo;
-		0, //int       maxClips;
-		qfalse, //int       infiniteAmmo;
-		qtrue, //int       usesEnergy;
-		LCANNON_REPEAT, //int       repeatRate1;
-		LCANNON_SECONDARY_REPEAT, //int       repeatRate2;
-		0, //int       repeatRate3;
-		LCANNON_RELOAD, //int       reloadTime;
-		LCANNON_K_SCALE, //float     knockbackScale;
-		qtrue, //qboolean  hasAltMode;
-		qfalse, //qboolean  hasThirdMode;
-		qfalse, //qboolean  canZoom;
-		90.0f, //float     zoomFov;
-		qtrue, //qboolean  purchasable;
-		qtrue, //qboolean  longRanged;
-		TEAM_HUMANS //team_t    team;
 	},
 	{
 		WP_GRENADE, //int       number;
-		GRENADE_PRICE, //int       price;
-		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		SLOT_NONE, //int       slots;
 		"grenade", //char      *name;
-		N_( "Grenade" ), //char      *humanName;
-		"",
-		1, //int       maxAmmo;
-		0, //int       maxClips;
-		qfalse, //int       infiniteAmmo;
-		qfalse, //int       usesEnergy;
-		GRENADE_REPEAT, //int       repeatRate1;
-		0, //int       repeatRate2;
-		0, //int       repeatRate3;
-		0, //int       reloadTime;
-		GRENADE_K_SCALE, //float     knockbackScale;
-		qfalse, //qboolean  hasAltMode;
-		qfalse, //qboolean  hasThirdMode;
-		qfalse, //qboolean  canZoom;
-		90.0f, //float     zoomFov;
-		qfalse, //qboolean  purchasable;
-		qfalse, //qboolean  longRanged;
-		TEAM_HUMANS //team_t    team;
 	},
 	{
 		WP_LOCKBLOB_LAUNCHER, //int       number;
-		0, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		SLOT_WEAPON, //int       slots;
 		"lockblob", //char      *name;
-		"Lock Blob", //char      *humanName;
-		"",
-		0, //int       maxAmmo;
-		0, //int       maxClips;
-		qtrue, //int       infiniteAmmo;
-		qfalse, //int       usesEnergy;
-		500, //int       repeatRate1;
-		500, //int       repeatRate2;
-		500, //int       repeatRate3;
-		0, //int       reloadTime;
-		LOCKBLOB_K_SCALE, //float     knockbackScale;
-		qfalse, //qboolean  hasAltMode;
-		qfalse, //qboolean  hasThirdMode;
-		qfalse, //qboolean  canZoom;
-		90.0f, //float     zoomFov;
-		qfalse, //qboolean  purchasable;
-		qfalse, //qboolean  longRanged;
-		TEAM_ALIENS //team_t    team;
 	},
 	{
 		WP_HIVE, //int       number;
-		0, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		SLOT_WEAPON, //int       slots;
 		"hive", //char      *name;
-		N_( "Hive" ), //char      *humanName;
-		"",
-		0, //int       maxAmmo;
-		0, //int       maxClips;
-		qtrue, //int       infiniteAmmo;
-		qfalse, //int       usesEnergy;
-		500, //int       repeatRate1;
-		500, //int       repeatRate2;
-		500, //int       repeatRate3;
-		0, //int       reloadTime;
-		HIVE_K_SCALE, //float     knockbackScale;
-		qfalse, //qboolean  hasAltMode;
-		qfalse, //qboolean  hasThirdMode;
-		qfalse, //qboolean  canZoom;
-		90.0f, //float     zoomFov;
-		qfalse, //qboolean  purchasable;
-		qfalse, //qboolean  longRanged;
-		TEAM_ALIENS //team_t    team;
 	},
 	{
 		WP_TESLAGEN, //int       number;
-		0, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		SLOT_WEAPON, //int       slots;
 		"teslagen", //char      *name;
-		N_( "Tesla Generator" ), //char      *humanName;
-		"",
-		0, //int       maxAmmo;
-		0, //int       maxClips;
-		qtrue, //int       infiniteAmmo;
-		qtrue, //int       usesEnergy;
-		500, //int       repeatRate1;
-		500, //int       repeatRate2;
-		500, //int       repeatRate3;
-		0, //int       reloadTime;
-		TESLAGEN_K_SCALE, //float     knockbackScale;
-		qfalse, //qboolean  hasAltMode;
-		qfalse, //qboolean  hasThirdMode;
-		qfalse, //qboolean  canZoom;
-		90.0f, //float     zoomFov;
-		qfalse, //qboolean  purchasable;
-		qfalse, //qboolean  longRanged;
-		TEAM_HUMANS //team_t    team;
 	},
 	{
 		WP_MGTURRET, //int       number;
-		0, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		SLOT_WEAPON, //int       slots;
 		"mgturret", //char      *name;
-		N_( "Machinegun Turret" ), //char      *humanName;
-		"",
-		0, //int       maxAmmo;
-		0, //int       maxClips;
-		qtrue, //int       infiniteAmmo;
-		qfalse, //int       usesEnergy;
-		0, //int       repeatRate1;
-		0, //int       repeatRate2;
-		0, //int       repeatRate3;
-		0, //int       reloadTime;
-		MGTURRET_K_SCALE, //float     knockbackScale;
-		qfalse, //qboolean  hasAltMode;
-		qfalse, //qboolean  hasThirdMode;
-		qfalse, //qboolean  canZoom;
-		90.0f, //float     zoomFov;
-		qfalse, //qboolean  purchasable;
-		qfalse, //qboolean  longRanged;
-		TEAM_HUMANS //team_t    team;
 	},
 	{
 		WP_ABUILD, //int       number;
-		0, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		SLOT_WEAPON, //int       slots;
 		"abuild", //char      *name;
-		"Alien build weapon", //char      *humanName;
-		"",
-		0, //int       maxAmmo;
-		0, //int       maxClips;
-		qtrue, //int       infiniteAmmo;
-		qfalse, //int       usesEnergy;
-		ABUILDER_BUILD_REPEAT, //int       repeatRate1;
-		ABUILDER_CLAW_REPEAT, //int       repeatRate2;
-		0, //int       repeatRate3;
-		0, //int       reloadTime;
-		ABUILDER_CLAW_K_SCALE, //float     knockbackScale;
-		qtrue, //qboolean  hasAltMode;
-		qfalse, //qboolean  hasThirdMode;
-		qfalse, //qboolean  canZoom;
-		90.0f, //float     zoomFov;
-		qtrue, //qboolean  purchasable;
-		qfalse, //qboolean  longRanged;
-		TEAM_ALIENS //team_t    team;
 	},
 	{
 		WP_ABUILD2, //int       number;
-		0, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		SLOT_WEAPON, //int       slots;
 		"abuildupg", //char      *name;
-		"Alien build weapon2", //char      *humanName;
-		"",
-		0, //int       maxAmmo;
-		0, //int       maxClips;
-		qtrue, //int       infiniteAmmo;
-		qfalse, //int       usesEnergy;
-		ABUILDER_BUILD_REPEAT, //int       repeatRate1;
-		ABUILDER_CLAW_REPEAT, //int       repeatRate2;
-		ABUILDER_BLOB_REPEAT, //int       repeatRate3;
-		0, //int       reloadTime;
-		ABUILDER_CLAW_K_SCALE, //float     knockbackScale;
-		qtrue, //qboolean  hasAltMode;
-		qtrue, //qboolean  hasThirdMode;
-		qfalse, //qboolean  canZoom;
-		90.0f, //float     zoomFov;
-		qtrue, //qboolean  purchasable;
-		qfalse, //qboolean  longRanged;
-		TEAM_ALIENS //team_t    team;
 	},
 	{
 		WP_HBUILD, //int       number;
-		HBUILD_PRICE, //int       price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		SLOT_WEAPON, //int       slots;
 		"ckit", //char      *name;
-		N_( "Construction Kit" ), //char      *humanName;
-		N_( "Used for building structures. This includes "
-		"spawns, power and basic defense. More structures become "
-		"available with new stages." ),
-		0, //int       maxAmmo;
-		0, //int       maxClips;
-		qtrue, //int       infiniteAmmo;
-		qfalse, //int       usesEnergy;
-		HBUILD_REPEAT, //int       repeatRate1;
-		0, //int       repeatRate2;
-		0, //int       repeatRate3;
-		0, //int       reloadTime;
-		0.0f, //float     knockbackScale;
-		qtrue, //qboolean  hasAltMode;
-		qfalse, //qboolean  hasThirdMode;
-		qfalse, //qboolean  canZoom;
-		90.0f, //float     zoomFov;
-		qtrue, //qboolean  purchasable;
-		qfalse, //qboolean  longRanged;
-		TEAM_HUMANS //team_t    team;
 	}
 };
 
-static const size_t bg_numWeapons = ARRAY_LEN( bg_weapons );
+static const size_t bg_numWeapons = ARRAY_LEN( bg_weaponsData );
+
+static weaponAttributes_t bg_weapons[ ARRAY_LEN( bg_weaponsData ) ];
 
 static const weaponAttributes_t nullWeapon = { 0 };
 
@@ -1356,6 +802,35 @@ qboolean BG_WeaponAllowedInStage( weapon_t weapon, stage_t stage )
 
 	return stages & ( 1 << stage );
 }
+
+/*
+===============
+BG_InitWeaponAttributes
+===============
+*/
+void BG_InitWeaponAttributes( void )
+{
+    int i;
+    weaponData_t *wd;
+    weaponAttributes_t *wa;
+
+    for ( i = 0; i < bg_numWeapons; i++ )
+    {
+        wd = &bg_weaponsData[i];
+        wa = &bg_weapons[i];
+
+        //Initialise default values for buildables
+        Com_Memset( wa, 0, sizeof( weaponAttributes_t ) );
+
+        wa->number = wd->number;
+        wa->name = wd->name;
+        wa->knockbackScale = 0.0f;
+
+        BG_ParseWeaponAttributeFile( va( "configs/weapon/%s.attr.cfg", wa->name ), wa );
+    }
+}
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 

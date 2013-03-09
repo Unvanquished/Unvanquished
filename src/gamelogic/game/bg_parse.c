@@ -92,7 +92,8 @@ static int BG_StageFromNumber( int i )
     return 0;
 }
 
-static int BG_ParseTeam(char* token){
+static int BG_ParseTeam(char* token)
+{
     if ( !Q_stricmp( token, "aliens" ) )
     {
         return TEAM_ALIENS;
@@ -106,6 +107,67 @@ static int BG_ParseTeam(char* token){
         Com_Printf( S_COLOR_RED "ERROR: unknown team value '%s'\n", token );
         return -1;
     }
+}
+
+static int BG_ParseSlotList(char** text)
+{
+    int slots = 0;
+    char* token;
+    int count;
+
+    token = COM_Parse( text );
+
+    if ( !*token )
+    {
+        return slots;
+    }
+
+    count = atoi( token );
+
+    while ( count --> 0 )
+    {
+        token = COM_Parse( text );
+
+        if ( !*token )
+        {
+            return slots;
+        }
+
+        if ( !Q_stricmp( token, "head" ) )
+        {
+            slots |= SLOT_HEAD;
+        }
+        else if ( !Q_stricmp( token, "torso" ) )
+        {
+            slots |= SLOT_TORSO;
+        }
+        else if ( !Q_stricmp( token, "arms" ) )
+        {
+            slots |= SLOT_ARMS;
+        }
+        else if ( !Q_stricmp( token, "legs" ) )
+        {
+            slots |= SLOT_LEGS;
+        }
+        else if ( !Q_stricmp( token, "backpack" ) )
+        {
+            slots |= SLOT_BACKPACK;
+        }
+        else if ( !Q_stricmp( token, "weapon" ) )
+        {
+            slots |= SLOT_WEAPON;
+        }
+        else if ( !Q_stricmp( token, "sidearm" ) )
+        {
+            slots |= SLOT_SIDEARM;
+        }
+        else
+        {
+            Com_Printf( S_COLOR_RED "ERROR: unknown slot '%s'\n", token );
+        }
+    }
+
+    return slots;
 }
 
 /*
@@ -1075,6 +1137,197 @@ void BG_ParseClassModelFile( const char *filename, classModelConfig_t *cc )
     else if ( !( defined & ZOFFSET ) ) { token = "zOffset"; }
     else if ( !( defined & NAME ) ) { token = "name"; }
     else if ( !( defined & SHOULDEROFFSETS ) ) { token = "shoulderOffsets"; }
+    else { token = ""; }
+
+    if ( strlen( token ) > 0 )
+    {
+        Com_Printf( S_COLOR_RED "ERROR: %s not defined in %s\n",
+                    token, filename );
+    }
+}
+
+/*
+======================
+BG_ParseWeaponAttributeFile
+
+Parses a configuration file describing the attributes of a weapon
+======================
+*/
+void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
+{
+    char *token;
+    char text_buffer[ 20000 ];
+    char* text;
+    int defined = 0;
+    enum
+    {
+      NAME = 1 << 0,
+      INFO = 1 << 1,
+      STAGE = 1 << 2,
+      PRICE = 1 << 3,
+      RATE = 1 << 4,
+      AMMO = 1 << 5,
+      TEAM = 1 << 6,
+    };
+
+    if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
+    {
+        return;
+    }
+
+    text = text_buffer;
+
+    // read optional parameters
+    while ( 1 )
+    {
+        PARSE(text, token);
+
+        if ( !Q_stricmp( token, "humanName" ) )
+        {
+            PARSE(text, token);
+
+            wa->humanName = strdup( token );
+
+            defined |= NAME;
+        }
+        else if ( !Q_stricmp( token, "description" ) )
+        {
+            PARSE(text, token);
+
+            if ( !Q_stricmp( token, "null" ) )
+            {
+                wa->info = "";
+            }
+            else
+            {
+                wa->info = strdup(token);
+            }
+
+            defined |= INFO;
+        }
+        else if ( !Q_stricmp( token, "stage" ) )
+        {
+            PARSE(text, token);
+
+            wa->stages = BG_StageFromNumber( atoi( token ) );
+
+            defined |= STAGE;
+        }
+        else if ( !Q_stricmp( token, "usedSlots" ) )
+        {
+            wa->slots = BG_ParseSlotList( &text );
+        }
+        else if ( !Q_stricmp( token, "price" ) )
+        {
+            PARSE(text, token);
+
+            wa->price = atoi( token );
+
+            defined |= PRICE;
+        }
+        else if ( !Q_stricmp( token, "infiniteAmmo" ) )
+        {
+            wa->infiniteAmmo = qtrue;
+
+            defined |= AMMO;
+        }
+        else if ( !Q_stricmp( token, "maxAmmo" ) )
+        {
+            PARSE(text, token);
+
+            wa->maxAmmo = atoi( token );
+
+            defined |= AMMO;
+        }
+        else if ( !Q_stricmp( token, "maxClips" ) )
+        {
+            PARSE(text, token);
+
+            wa->maxClips = atoi( token );
+        }
+        else if ( !Q_stricmp( token, "usesEnergy" ) )
+        {
+            wa->usesEnergy = qtrue;
+        }
+        else if ( !Q_stricmp( token, "primaryAttackRate" ) )
+        {
+            PARSE(text, token);
+
+            wa->repeatRate1 = atoi( token );
+
+            defined |= RATE;
+        }
+        else if ( !Q_stricmp( token, "secondaryAttackRate" ) )
+        {
+            PARSE(text, token);
+
+            wa->repeatRate2 = atoi( token );
+        }
+        else if ( !Q_stricmp( token, "tertiaryAttackRate" ) )
+        {
+            PARSE(text, token);
+
+            wa->repeatRate3 = atoi( token );
+        }
+        else if ( !Q_stricmp( token, "reloadTime" ) )
+        {
+            PARSE(text, token);
+
+            wa->reloadTime = atoi( token );
+        }
+        else if ( !Q_stricmp( token, "knockback" ) )
+        {
+            PARSE(text, token);
+
+            wa->knockbackScale = atof( token );
+        }
+        else if ( !Q_stricmp( token, "hasAltMode" ) )
+        {
+            wa->hasAltMode = qtrue;
+        }
+        else if ( !Q_stricmp( token, "hasThirdMode" ) )
+        {
+            wa->hasThirdMode = qtrue;
+        }
+        else if ( !Q_stricmp( token, "isPurchasable" ) )
+        {
+            wa->purchasable = qtrue;
+        }
+        else if ( !Q_stricmp( token, "isLongRanged" ) )
+        {
+            wa->longRanged = qtrue;
+        }
+        else if ( !Q_stricmp( token, "canZoom" ) )
+        {
+            wa->canZoom = qtrue;
+        }
+        else if ( !Q_stricmp( token, "zoomFov" ) )
+        {
+            PARSE(text, token);
+
+            wa->zoomFov = atof( token );
+        }
+        else if ( !Q_stricmp( token, "team" ) )
+        {
+            PARSE(text, token);
+
+            wa->team = BG_ParseTeam( token );
+
+            defined |= TEAM;
+        }
+        else
+        {
+            Com_Printf( S_COLOR_RED "ERROR: unknown token '%s'\n", token );
+        }
+    }
+
+    if ( !( defined & NAME ) ) { token = "humanName"; }
+    else if ( !( defined & INFO ) ) { token = "description"; }
+    else if ( !( defined & STAGE ) ) { token = "stage"; }
+    else if ( !( defined & PRICE ) ) { token = "price"; }
+    else if ( !( defined & RATE ) ) { token = "primaryAttackRate"; }
+    else if ( !( defined & AMMO ) ) { token = "maxAmmo or infiniteAmmo"; }
+    else if ( !( defined & TEAM ) ) { token = "team"; }
     else { token = ""; }
 
     if ( strlen( token ) > 0 )

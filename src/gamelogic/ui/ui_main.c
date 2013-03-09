@@ -5105,6 +5105,7 @@ void UI_Init( void )
 	BG_InitClassAttributes();
 	BG_InitClassModelConfigs();
 	BG_InitBuildableAttributes();
+	BG_InitWeaponAttributes();
 	BG_InitAllowedGameElements();
 
 	UI_RegisterCvars();
