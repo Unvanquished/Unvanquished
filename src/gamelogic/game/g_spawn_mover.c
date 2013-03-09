@@ -2566,13 +2566,6 @@ Setting the wait key to -1 will not make the train stop on the path corner, it w
 */
 void SP_path_corner( gentity_t *self )
 {
-	if (!self->names[ 0 ])
-	{
-		G_Printf( "path_corner with no targetname at %s\n", vtos( self->s.origin ) );
-		G_FreeEntity( self );
-		return;
-	}
-
 	// path corners don't need to be linked in
 }
 
@@ -2658,13 +2651,6 @@ void SP_func_train( gentity_t *self )
 	if ( !self->config.speed )
 	{
 		self->config.speed = 100;
-	}
-
-	if ( !self->targets[ 0 ].name )
-	{
-		G_Printf( "func_train without a target at %s\n", vtos( self->r.absmin ) );
-		G_FreeEntity( self );
-		return;
 	}
 
 	trap_SetBrushModel( self, self->model );

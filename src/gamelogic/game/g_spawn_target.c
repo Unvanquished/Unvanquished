@@ -92,11 +92,6 @@ void target_teleporter_use( gentity_t *self, gentity_t *other, gentity_t *activa
 
 void SP_target_teleporter( gentity_t *self )
 {
-	if ( !self->names[ 0 ] )
-	{
-		G_Printf( "untargeted %s at %s\n", self->classname, vtos( self->s.origin ) );
-	}
-
 	if( !self->config.speed )
 		self->config.speed = 400;
 
@@ -209,12 +204,6 @@ void target_hurt_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 
 void SP_target_hurt( gentity_t *self )
 {
-	if ( !self->names[ 0 ] )
-	{
-		G_Printf( S_COLOR_YELLOW "WARNING: untargeted %s at %s\n", self->classname,
-		          vtos( self->s.origin ) );
-	}
-
 	if ( !self->damage )
 	{
 		self->damage = 5;
