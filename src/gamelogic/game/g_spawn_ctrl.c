@@ -106,14 +106,19 @@ void ctrl_limited_act(target_t* target, gentity_t *self, gentity_t *other, genti
 
 void ctrl_limited_reset( gentity_t *self )
 {
-	self->count = self->config.amount;
+	if(self->config.amount)
+		self->count = self->config.amount;
+	else if (self->eclass->config.amount)
+		self->count = self->eclass->config.amount;
+	else
+		self->count = 1;
+
+	if(self->count < 1)
+		self->count = 1;
 }
 
 void SP_ctrl_limited( gentity_t *self )
 {
-	if ( self->config.amount < 1 )
-		self->config.amount = 1;
-
 	self->act = ctrl_limited_act;
 	self->reset = ctrl_limited_reset;
 }
