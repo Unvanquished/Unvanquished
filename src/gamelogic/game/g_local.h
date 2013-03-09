@@ -237,8 +237,7 @@ struct gentity_s
 	gentity_t    *activator;
 
 	// targeting-timing variables
-	float        wait;
-	float        waitVariance;
+	variatingTime_t wait;
 
 	// trigger "range"
 	int          triggerRange;

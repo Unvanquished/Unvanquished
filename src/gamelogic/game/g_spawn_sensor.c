@@ -74,7 +74,7 @@ void sensor_checkWaitForReactivation_think( gentity_t *ent )
 
 void trigger_checkWaitForReactivation( gentity_t *self )
 {
-	if ( self->wait > 0 )
+	if ( self->wait.time > 0 )
 	{
 		self->think = sensor_checkWaitForReactivation_think;
 		entity_SetNextthink( self );

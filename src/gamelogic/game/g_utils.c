@@ -422,7 +422,7 @@ void G_FireTarget(target_t *target, gentity_t *targetedEntity, gentity_t *caller
  * predefined field interpretations
  */
 void entity_SetNextthink( gentity_t *self ) {
-	self->nextthink = level.time + ( self->wait + self->waitVariance * crandom() ) * 1000;
+	self->nextthink = level.time + ( self->wait.time + self->wait.variance * crandom() ) * 1000;
 }
 
 /*

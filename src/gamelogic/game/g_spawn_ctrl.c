@@ -52,7 +52,7 @@ void ctrl_relay_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 		return;
 	}
 
-	if ( !self->wait )
+	if ( !self->wait.time )
 	{
 		G_FireAllTargetsOf( self, activator );
 	}
@@ -66,14 +66,14 @@ void ctrl_relay_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 
 void SP_ctrl_relay( gentity_t *self )
 {
-	if ( !self->wait ) {
+	if ( !self->wait.time ) {
 		// check delay for backwards compatibility
-		G_SpawnFloat( "delay", "0", &self->wait );
+		G_SpawnFloat( "delay", "0", &self->wait.time );
 
 		//target delay had previously a default of 1 instead of 0
-		if ( !self->wait && !Q_stricmp(self->classname, "target_delay") )
+		if ( !self->wait.time && !Q_stricmp(self->classname, "target_delay") )
 		{
-			self->wait = 1;
+			self->wait.time = 1;
 		}
 	}
 
