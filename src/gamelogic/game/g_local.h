@@ -169,6 +169,11 @@ typedef struct
 typedef struct
 {
 	int instanceCounter;
+	/*
+	 * default config
+	 * entities might fallback to their classwide config if their individual is not set
+	 */
+	gentityConfig_t config;
 } entityClass_t;
 
 struct gentity_s
