@@ -106,6 +106,9 @@ void ctrl_limited_act(target_t* target, gentity_t *self, gentity_t *other, genti
 
 void ctrl_limited_reset( gentity_t *self )
 {
+	// spawn disabled?
+	self->enabled = !(self->spawnflags & 1);
+
 	if(self->config.amount)
 		self->count = self->config.amount;
 	else if (self->eclass->config.amount)
