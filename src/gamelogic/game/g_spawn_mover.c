@@ -2312,7 +2312,7 @@ void SP_func_button( gentity_t *ent )
 	distance = abs_movedir[ 0 ] * size[ 0 ] + abs_movedir[ 1 ] * size[ 1 ] + abs_movedir[ 2 ] * size[ 2 ] - lip;
 	VectorMA( ent->restingPosition, distance, ent->movedir, ent->activatedPosition );
 
-	if ( ent->resetableHealth.current )
+	if ( ent->config.health )
 	{
 		// shootable button
 		ent->takedamage = qtrue;
@@ -2981,7 +2981,7 @@ void Use_func_destructable( gentity_t *ent, gentity_t *other, gentity_t *activat
   {
     ent->takedamage = qfalse;
     trap_UnlinkEntity( ent );
-    if( ent->resetableHealth.current <= 0 )
+    if( ent->health <= 0 )
     {
       G_RadiusDamage( ent->restingPosition, activator, ent->splashDamage, ent->splashRadius, ent, MOD_TRIGGER_HURT );
       G_FireAllTargetsOf( ent, activator );
@@ -2991,7 +2991,7 @@ void Use_func_destructable( gentity_t *ent, gentity_t *other, gentity_t *activat
   {
     trap_LinkEntity( ent );
     G_KillBrushModel( ent, activator );
-    ent->resetableHealth.current = ent->resetableHealth.previous;
+    ent->health = ent->config.health;
     ent->takedamage = qtrue;
   }
 }
@@ -3010,8 +3010,8 @@ void SP_func_destructable( gentity_t *ent )
   G_SpawnInt( "damage", "0", &ent->splashDamage );
   G_SpawnInt( "radius", "0", &ent->splashRadius );
 
-  if(ent->resetableHealth.previous < 1)
-	  ent->resetableHealth.previous = 100;
+  if(ent->config.health < 1)
+	  ent->config.health = 100;
 
   //ent->r.svFlags = SVF_USE_CURRENT_ORIGIN;
   ent->s.eType = ET_MOVER;
@@ -3033,7 +3033,7 @@ void SP_func_destructable( gentity_t *ent )
   else
   {
     trap_LinkEntity( ent );
-    ent->resetableHealth.current = ent->resetableHealth.previous;
+    ent->health = ent->config.health;
     ent->takedamage = qtrue;
   }
 }

@@ -1156,13 +1156,13 @@ void AOvermind_Think( gentity_t *self )
 		}
 
 		//overmind under attack
-		if ( self->health < self->resetableHealth.previous && level.time > self->overmindAttackTimer )
+		if ( self->health < self->lastHealth && level.time > self->overmindAttackTimer )
 		{
 			self->overmindAttackTimer = level.time + OVERMIND_ATTACK_PERIOD;
 			G_BroadcastEvent( EV_OVERMIND_ATTACK, 0 );
 		}
 
-		self->resetableHealth.previous = self->health;
+		self->lastHealth = self->health;
 	}
 	else
 	{

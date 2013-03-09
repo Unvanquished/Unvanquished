@@ -84,12 +84,6 @@ typedef struct gclient_s gclient_t;
 
 typedef struct
 {
-	int previous;
-	int current;
-} transStateInt_t;
-
-typedef struct
-{
 	float previous;
 	float current;
 } transStateFloat_t;
@@ -168,6 +162,8 @@ typedef struct
 {
 	/* amount of a context depended size for this entity */
 	int amount;
+
+	int health;
 
 	variatingTime_t wait;
 
@@ -301,8 +297,8 @@ struct gentity_s
 	char         *targetShaderName;
 	char         *targetShaderNewName;
 
-	transStateInt_t resetableHealth;
-	int          health; //TODO lets see if we can somehow refactor that with resetableHealth
+	int          lastHealth;
+	int          health;
 
 	transStateFloat_t speed;
 
