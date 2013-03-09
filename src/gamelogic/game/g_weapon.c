@@ -846,7 +846,7 @@ void CheckCkitRepair( gentity_t *ent )
 		bHealth = BG_Buildable( traceEnt->s.modelindex )->health;
 		cost = -BG_Buildable( traceEnt->s.modelindex )->buildPoints;
 
-		if ( traceEnt->health < bHealth && -cost > level.humanBuildPoints )
+		if ( traceEnt->health < bHealth && -cost <= level.humanBuildPoints )
 		{
 			traceEnt->health += HBUILD_HEALRATE;
 			G_QueueResources( traceEnt->buildableTeam, ( HBUILD_HEALRATE / (float)bHealth ) * cost );
