@@ -1505,7 +1505,9 @@ void manualTriggerSpectator( gentity_t *trigger, gentity_t *player )
 	gentity_t *currentTarget;
 	gentity_t *targets[ MAX_GENTITIES ];
 	int       i = 0, targetIndex, nameIndex;
-	float     minDistance;
+	float     minDistance, currentDistance;
+
+
 
 	//restrict this hack to trigger_multiple only for now
 	if ( strcmp( trigger->classname, "trigger_multiple" ) )
@@ -1527,15 +1529,16 @@ void manualTriggerSpectator( gentity_t *trigger, gentity_t *player )
 	if ( i > 0 )
 	{
 		gentity_t *closest = NULL;
+		minDistance = 0; //will be set to something higher as long as closest is NULL yet
 
 		//pick the closest door
 		for ( targetIndex = 0; targetIndex < i; targetIndex++ )
 		{
-			float d = DistanceSquared( player->r.currentOrigin, targets[ targetIndex ]->r.currentOrigin );
+			currentDistance = DistanceSquared( player->r.currentOrigin, targets[ targetIndex ]->r.currentOrigin );
 
-			if ( closest == NULL || d < minDistance )
+			if ( closest == NULL || currentDistance < minDistance )
 			{
-				minDistance = d;
+				minDistance = currentDistance;
 				closest = targets[ targetIndex ];
 			}
 		}
@@ -2987,8 +2990,6 @@ SP_func_destructable
 */
 void SP_func_destructable( gentity_t *ent )
 {
-  char *s;
-
   SP_ConditionFields( ent );
 
   G_SpawnInt( "damage", "0", &ent->splashDamage );
