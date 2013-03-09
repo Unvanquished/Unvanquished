@@ -58,8 +58,8 @@ itemDef
 	aspectBias ALIGN_LEFT
 	visible MENU_TRUE
 	decoration
-	forecolor 1 0 .11 .48 
-	backColor .51 1 .93 .32 
+	forecolor 1 0 .11 .48
+	backColor .51 1 .93 .32
 	background "ui/assets/human/buildstat/health.tga"
 	ownerdraw CG_PLAYER_HEALTH_BAR
 }
@@ -72,7 +72,7 @@ itemDef
 	aspectBias ALIGN_LEFT
 	visible MENU_TRUE
 	decoration
-	forecolor .51 1 .93 .32 
+	forecolor .51 1 .93 .32
 	backColor 0 0 0 0
 	background "ui/assets/human/buildstat/health.tga"
 	ownerdraw CG_PLAYER_STAMINA
@@ -86,7 +86,7 @@ itemDef
 	aspectBias ALIGN_RIGHT
 	visible MENU_TRUE
 	decoration
-	forecolor .29 .57 .56 .5  
+	forecolor .29 .57 .56 .5
 	backColor 0 0 0 0
 	background "ui/assets/human/buildstat/health.tga"
 	ownerdraw CG_PLAYER_AMMO_STACK
@@ -100,7 +100,7 @@ itemDef
 	aspectBias ALIGN_RIGHT
 	visible MENU_TRUE
 	decoration
-	forecolor .51 1 .93 .32 
+	forecolor .51 1 .93 .32
 	backColor 0 0 0 0
 	background "ui/assets/human/buildstat/health.tga"
 	ownerdraw CG_PLAYER_BUILD_TIMER_BAR
@@ -134,8 +134,8 @@ itemDef
       aspectBias ALIGN_LEFT
       visible MENU_TRUE
       decoration
-      forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.8 
-	backColor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.2 
+      forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.8
+	backColor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.2
       background "ui/assets/human/stamina.tga"
 	ownerdraw CG_PLAYER_STAMINA_BOLT
     }
@@ -150,7 +150,7 @@ itemDef
 	background "ui/assets/human/clip.tga"
       decoration
       style WINDOW_STYLE_SHADER
-      forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B .7 
+      forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B .7
     }
 
 
@@ -194,7 +194,7 @@ textscale .35
       visible MENU_TRUE
 	textscale .5
       decoration
-      forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1 
+      forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1
       ownerdraw CG_PLAYER_CREDITS_VALUE
     }
 
@@ -208,7 +208,7 @@ textscale .35
       aspectBias ALIGN_RIGHT
       visible MENU_TRUE
       decoration
-      forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1 
+      forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1
       ownerdraw CG_PLAYER_WEAPONICON
     }
 
@@ -238,7 +238,7 @@ itemDef
 	aspectBias ALIGN_RIGHT
 	visible MENU_TRUE
 	decoration
-	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1 
+	forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1
 	ownerdraw CG_PLAYER_AMMO_VALUE
 }
 
@@ -265,7 +265,7 @@ itemDef
       aspectBias ALIGN_RIGHT
       visible MENU_TRUE
       decoration
-      forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1 
+      forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1
       ownerdraw CG_PLAYER_CLIPS_VALUE
     }
 
@@ -347,7 +347,7 @@ itemDef
 //       background "ui/assets/neutral/charge_bg_h.tga"
 //     }
 
-   
+
 
     //TEAM OVERLAY
     itemDef
@@ -404,5 +404,19 @@ itemDef
       background "ui/assets/neutral/crescent_right.tga"
       ownerdraw CG_PLAYER_CLIPS_METER
     }
+
+    //MINE RATE
+    itemDef
+    {
+		name "mine rate"
+		rect 330 430 0 20
+		aspectBias ALIGN_LEFT
+		textstyle ITEM_TEXTSTYLE_PLAIN
+		textscale 0.35
+		forecolor .51 .51 .51 .8
+			ownerdraw CG_LEVEL_MINE_RATE
+			visible MENU_TRUE
+			decoration
+	}
   }
 }
