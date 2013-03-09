@@ -94,6 +94,12 @@ typedef struct
 	float current;
 } transStateFloat_t;
 
+typedef struct
+{
+	float time;
+	float variance;
+} variatingTime_t;
+
 // movers are things like doors, plats, buttons, etc
 typedef enum
 {

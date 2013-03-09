@@ -97,6 +97,7 @@ typedef enum
   F_FLOAT,
   F_STRING,
   F_TARGET,
+  F_TIME,
   F_3D_VECTOR,
   F_4D_VECTOR,
   F_YAW
@@ -593,6 +594,7 @@ void G_ParseField( const char *key, const char *rawString, gentity_t *entity )
 	field_t *resultingField;
 	byte    *entityData;
 	vec4_t  tmpFloatData;
+	variatingTime_t varTime = {0, 0};
 
 	resultingField = bsearch( key, fields, ARRAY_LEN( fields ), sizeof( field_t ), cmdcmp );
 
@@ -611,6 +613,11 @@ void G_ParseField( const char *key, const char *rawString, gentity_t *entity )
 
 		case F_TARGET:
 			* ( target_t * )( entityData + resultingField->offset ) = G_NewTarget( rawString );
+			break;
+
+		case F_TIME:
+			sscanf( rawString, "%f %f", &varTime.time, &varTime.variance );
+			* ( variatingTime_t * )( entityData + resultingField->offset ) = varTime;
 			break;
 
 		case F_3D_VECTOR:
