@@ -811,7 +811,7 @@ BG_InitWeaponAttributes
 void BG_InitWeaponAttributes( void )
 {
     int i;
-    weaponData_t *wd;
+    const weaponData_t *wd;
     weaponAttributes_t *wa;
 
     for ( i = 0; i < bg_numWeapons; i++ )
