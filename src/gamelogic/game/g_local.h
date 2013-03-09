@@ -84,12 +84,6 @@ typedef struct gclient_s gclient_t;
 
 typedef struct
 {
-	float previous;
-	float current;
-} transStateFloat_t;
-
-typedef struct
-{
 	float time;
 	float variance;
 } variatingTime_t;
@@ -164,6 +158,7 @@ typedef struct
 	int amount;
 
 	int health;
+	float speed;
 
 	variatingTime_t wait;
 
@@ -300,7 +295,7 @@ struct gentity_s
 	int          lastHealth;
 	int          health;
 
-	transStateFloat_t speed;
+	float        speed;
 
 	/*
 	 * do not abuse this variable (again) for anything but actual representing a count

@@ -87,7 +87,7 @@ void target_teleporter_use( gentity_t *self, gentity_t *other, gentity_t *activa
 	if ( !dest )
 		return;
 
-	G_TeleportPlayer( activator, dest->s.origin, dest->s.angles, self->speed.current );
+	G_TeleportPlayer( activator, dest->s.origin, dest->s.angles, self->config.speed );
 }
 
 void SP_target_teleporter( gentity_t *self )
@@ -97,8 +97,8 @@ void SP_target_teleporter( gentity_t *self )
 		G_Printf( "untargeted %s at %s\n", self->classname, vtos( self->s.origin ) );
 	}
 
-	if( !self->speed.current )
-		self->speed.current = 400;
+	if( !self->config.speed )
+		self->config.speed = 400;
 
 	self->use = target_teleporter_use;
 }

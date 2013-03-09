@@ -134,7 +134,7 @@ static const field_t fields[] =
 	{ "radius",              FOFS( activatedPosition ),   F_3D_VECTOR }, // What's with the variable abuse everytime?
 	{ "random",              FOFS( config.wait.variance ),F_FLOAT,    ENT_V_COMBINED, "wait" },
 	{ "spawnflags",          FOFS( spawnflags ),          F_INT       },
-	{ "speed",               FOFS( speed.current ),       F_FLOAT     },
+	{ "speed",               FOFS( config.speed ),        F_FLOAT     },
 	{ "target",			     FOFS( targets[ 0 ] ),        F_TARGET	  },
 	{ "target2", 			 FOFS( targets[ 1 ] ),        F_TARGET	  },
 	{ "target3",			 FOFS( targets[ 2 ] ),        F_TARGET	  },

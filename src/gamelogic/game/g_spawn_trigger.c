@@ -129,13 +129,13 @@ void target_push_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 
 void SP_target_push( gentity_t *self )
 {
-	if ( !self->speed.current )
+	if ( !self->config.speed)
 	{
-		self->speed.current = 1000;
+		self->config.speed = 1000;
 	}
 
 	G_SetMovedir( self->s.angles, self->s.origin2 );
-	VectorScale( self->s.origin2, self->speed.current, self->s.origin2 );
+	VectorScale( self->s.origin2, self->config.speed, self->s.origin2 );
 
 	if ( self )
 	{
@@ -187,7 +187,7 @@ void trigger_teleporter_touch( gentity_t *self, gentity_t *other, trace_t *trace
 	if ( !dest )
 		return;
 
-	G_TeleportPlayer( other, dest->s.origin, dest->s.angles, self->speed.current );
+	G_TeleportPlayer( other, dest->s.origin, dest->s.angles, self->config.speed );
 }
 
 void trigger_teleporter_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
@@ -199,8 +199,8 @@ void SP_trigger_teleport( gentity_t *self )
 {
 	InitTrigger( self );
 
-	if( !self->speed.current )
-		self->speed.current = 400;
+	if( !self->config.speed )
+		self->config.speed = 400;
 
 	// unlike other triggers, we need to send this one to the client
 	// unless is a spectator trigger
