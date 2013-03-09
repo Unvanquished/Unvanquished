@@ -34,14 +34,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define ALIEN_WDMG_MODIFIER           1.0f
 #define ADM(d) ((int)((float)d * ALIEN_WDMG_MODIFIER ))
 
-#define ABUILDER_BUILD_REPEAT         500
 #define ABUILDER_CLAW_DMG             ADM(20)
 #define ABUILDER_CLAW_RANGE           64.0f
 #define ABUILDER_CLAW_WIDTH           4.0f
-#define ABUILDER_CLAW_REPEAT          1000
-#define ABUILDER_CLAW_K_SCALE         1.0f
 #define ABUILDER_BLOB_DMG             ADM(4)
-#define ABUILDER_BLOB_REPEAT          1000
 #define ABUILDER_BLOB_SPEED           800.0f
 #define ABUILDER_BLOB_SPEED_MOD       0.5f
 #define ABUILDER_BLOB_TIME            2000
@@ -50,23 +46,18 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LEVEL0_BITE_RANGE             64.0f
 #define LEVEL0_BITE_WIDTH             6.0f
 #define LEVEL0_BITE_REPEAT            500
-#define LEVEL0_BITE_K_SCALE           1.0f
 
 #define LEVEL1_CLAW_DMG               ADM(32)
 #define LEVEL1_CLAW_RANGE             80.0f // Claw and grab range normalized. Not sure on this one, but it was pretty widely requested.
 #define LEVEL1_CLAW_U_RANGE           LEVEL1_CLAW_RANGE + 3.0f
 #define LEVEL1_CLAW_WIDTH             10.0f
-#define LEVEL1_CLAW_REPEAT            600
-#define LEVEL1_CLAW_U_REPEAT          500
 #define LEVEL1_CLAW_K_SCALE           1.0f
-#define LEVEL1_CLAW_U_K_SCALE         1.0f
 #define LEVEL1_GRAB_RANGE             80.0f // Claw and grab range normalized.
 #define LEVEL1_GRAB_U_RANGE           LEVEL1_GRAB_RANGE + 3.0f
 #define LEVEL1_GRAB_TIME              300
 #define LEVEL1_GRAB_U_TIME            300
 #define LEVEL1_PCLOUD_DMG             ADM(4)
 #define LEVEL1_PCLOUD_RANGE           120.0f
-#define LEVEL1_PCLOUD_REPEAT          2000
 #define LEVEL1_PCLOUD_TIME            10000
 #define LEVEL1_REGEN_MOD              2.0f
 #define LEVEL1_UPG_REGEN_MOD          3.0f
@@ -77,16 +68,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LEVEL2_CLAW_RANGE             80.0f
 #define LEVEL2_CLAW_U_RANGE           LEVEL2_CLAW_RANGE + 2.0f
 #define LEVEL2_CLAW_WIDTH             14.0f
-#define LEVEL2_CLAW_REPEAT            500
-#define LEVEL2_CLAW_K_SCALE           1.0f
-#define LEVEL2_CLAW_U_REPEAT          400
-#define LEVEL2_CLAW_U_K_SCALE         1.0f
 #define LEVEL2_AREAZAP_DMG            ADM(60)
 #define LEVEL2_AREAZAP_RANGE          200.0f
 #define LEVEL2_AREAZAP_CHAIN_RANGE    150.0f
 #define LEVEL2_AREAZAP_CHAIN_FALLOFF  8.0f
 #define LEVEL2_AREAZAP_WIDTH          15.0f
-#define LEVEL2_AREAZAP_REPEAT         1500
 #define LEVEL2_AREAZAP_TIME           1000
 #define LEVEL2_AREAZAP_MAX_TARGETS    5
 #define LEVEL2_WALLJUMP_MAXSPEED      1000.0f
@@ -95,10 +81,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LEVEL3_CLAW_RANGE             80.0f // Increased claw range
 #define LEVEL3_CLAW_UPG_RANGE         LEVEL3_CLAW_RANGE + 3.0f
 #define LEVEL3_CLAW_WIDTH             11.0f //
-#define LEVEL3_CLAW_REPEAT            750 // Lowered repeat
-#define LEVEL3_CLAW_K_SCALE           1.0f
-#define LEVEL3_CLAW_U_REPEAT          700 // Lowered repeat for Adv. Goon. Standard value is 100ms below standard goon, but 650 is a bit fast for my taste.
-#define LEVEL3_CLAW_U_K_SCALE         0.75f
 #define LEVEL3_POUNCE_DMG             ADM(75) // Reduced damage. Pounce is very powerful as it is.
 #define LEVEL3_POUNCE_RANGE           55.0f // Pounce range raised by 7.0. May need to be nerfed, still want to test like this though.
 #define LEVEL3_POUNCE_UPG_RANGE       LEVEL3_POUNCE_RANGE + 3.0f
@@ -111,7 +93,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LEVEL3_POUNCE_JUMP_MAG        750 // Raised by 50,
 #define LEVEL3_POUNCE_JUMP_MAG_UPG    850 // Raised by 50.
 #define LEVEL3_BOUNCEBALL_DMG         ADM(110)
-#define LEVEL3_BOUNCEBALL_REPEAT      1200
 #define LEVEL3_BOUNCEBALL_SPEED       1000.0f
 #define LEVEL3_BOUNCEBALL_RADIUS      75
 #define LEVEL3_BOUNCEBALL_REGEN       12500 // Reduced regen time.
@@ -120,8 +101,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LEVEL4_CLAW_RANGE             100.0f
 #define LEVEL4_CLAW_WIDTH             14.0f
 #define LEVEL4_CLAW_HEIGHT            20.0f
-#define LEVEL4_CLAW_REPEAT            800
-#define LEVEL4_CLAW_K_SCALE           0.7f
 
 #define LEVEL4_TRAMPLE_DMG            ADM(85) // 111 -> 85
 #define LEVEL4_TRAMPLE_SPEED          2.0f
@@ -245,7 +224,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define HIVE_SENSE_RANGE        500.0f
 #define HIVE_LIFETIME           3000
 #define HIVE_REPEAT             3000
-#define HIVE_K_SCALE            1.0f
 #define HIVE_DMG                80
 #define HIVE_SPEED              320.0f
 #define HIVE_DIR_CHANGE_PERIOD  500
@@ -253,7 +231,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LOCKBLOB_SPEED          500.0f
 #define LOCKBLOB_LOCKTIME       5000
 #define LOCKBLOB_DOT            0.85f // max angle = acos( LOCKBLOB_DOT )
-#define LOCKBLOB_K_SCALE        1.0f
 
 #define OVERMIND_HEALTH         750
 #define OVERMIND_ATTACK_RANGE   150.0f
@@ -296,74 +273,47 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define HUMAN_WDMG_MODIFIER      1.0f
 #define HDM(d) ((int)((float)d * HUMAN_WDMG_MODIFIER ))
 
-#define BLASTER_REPEAT           600
-#define BLASTER_K_SCALE          1.0f
 #define BLASTER_SPREAD           200
 #define BLASTER_SPEED            1400
 #define BLASTER_DMG              HDM(10)
 #define BLASTER_SIZE             5
 
-#define RIFLE_CLIPSIZE           30
-#define RIFLE_MAXCLIPS           6
-#define RIFLE_REPEAT             80 // Lowered by 10
-#define RIFLE_K_SCALE            1.0f
-#define RIFLE_RELOAD             2000
 #define RIFLE_PRICE              0
 #define RIFLE_SPREAD             250 // Raised by 50.
 #define RIFLE_DMG                HDM(5)
 
 #define PAINSAW_PRICE            100
-#define PAINSAW_REPEAT           75
-#define PAINSAW_K_SCALE          1.0f
 #define PAINSAW_DAMAGE           HDM(11)
 #define PAINSAW_RANGE            64.0f
 #define PAINSAW_WIDTH            0.0f
 #define PAINSAW_HEIGHT           8.0f
 
 #define GRENADE_PRICE            200
-#define GRENADE_REPEAT           0
-#define GRENADE_K_SCALE          1.0f
 #define GRENADE_DAMAGE           HDM(310)
 #define GRENADE_RANGE            192.0f
 #define GRENADE_SPEED            400.0f
 
 #define SHOTGUN_PRICE            150
-#define SHOTGUN_SHELLS           8
 #define SHOTGUN_PELLETS          11 //used to sync server and client side
-#define SHOTGUN_MAXCLIPS         3
-#define SHOTGUN_REPEAT           1000
-#define SHOTGUN_K_SCALE          1.0f
-#define SHOTGUN_RELOAD           2000
 #define SHOTGUN_SPREAD           790
 #define SHOTGUN_DMG              HDM(5)
 #define SHOTGUN_RANGE            ( 8192 * 12 )
 
 #define LASGUN_PRICE             250
-#define LASGUN_AMMO              200
 #define LASGUN_REPEAT            200
 #define LASGUN_K_SCALE           1.0f
-#define LASGUN_RELOAD            2000
 #define LASGUN_DAMAGE            HDM(9)
 
 #define MDRIVER_PRICE            350
-#define MDRIVER_CLIPSIZE         5
-#define MDRIVER_MAXCLIPS         4
 #define MDRIVER_DMG              HDM(40)
 #define MDRIVER_REPEAT           1000
 #define MDRIVER_K_SCALE          1.0f
-#define MDRIVER_RELOAD           2000
 
 #define CHAINGUN_PRICE           400
-#define CHAINGUN_BULLETS         300
-#define CHAINGUN_REPEAT          88 // Changed 80 -> 88
-#define CHAINGUN_K_SCALE         1.0f
 #define CHAINGUN_SPREAD          900
 #define CHAINGUN_DMG             HDM(6)
 
 #define FLAMER_PRICE             450 // 400->450
-#define FLAMER_GAS               175 // 200->175
-#define FLAMER_REPEAT            200
-#define FLAMER_K_SCALE           2.0f
 #define FLAMER_DMG               HDM(14) // 20->15->14
 #define FLAMER_FLIGHTSPLASHDAMAGE HDM(1)
 #define FLAMER_SPLASHDAMAGE      HDM(6) // 10->7->6
@@ -374,20 +324,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define FLAMER_LAG               0.65f // the amount of player velocity that is added to the fireball
 
 #define PRIFLE_PRICE             450
-#define PRIFLE_CLIPS             40
-#define PRIFLE_MAXCLIPS          5
-#define PRIFLE_REPEAT            100
-#define PRIFLE_K_SCALE           1.0f
-#define PRIFLE_RELOAD            2000
 #define PRIFLE_DMG               HDM(9)
 #define PRIFLE_SPEED             1200
 #define PRIFLE_SIZE              5
 
 #define LCANNON_PRICE            600
-#define LCANNON_AMMO             80
-#define LCANNON_K_SCALE          1.0f
-#define LCANNON_REPEAT           500
-#define LCANNON_RELOAD           0
 #define LCANNON_DAMAGE           HDM(265)
 #define LCANNON_RADIUS           150 // primary splash damage radius
 #define LCANNON_SIZE             5 // missile bounding box radius
@@ -395,7 +336,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LCANNON_SECONDARY_RADIUS 75 // secondary splash damage radius
 #define LCANNON_SECONDARY_SPEED  1400
 #define LCANNON_SECONDARY_RELOAD 2000
-#define LCANNON_SECONDARY_REPEAT 1000
 #define LCANNON_SPEED            700
 #define LCANNON_CHARGE_TIME_MAX  3000
 #define LCANNON_CHARGE_TIME_MIN  100
@@ -403,7 +343,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LCANNON_CHARGE_AMMO      10 // ammo cost of a full charge shot
 
 #define HBUILD_PRICE             0
-#define HBUILD_REPEAT            1000
 #define HBUILD_HEALRATE          18
 
 /*
@@ -455,14 +394,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define MGTURRET_ANGULARSPEED     12
 #define MGTURRET_ACCURACY_TO_FIRE 0
 #define MGTURRET_VERTICALCAP      30 // +/- maximum pitch
-#define MGTURRET_K_SCALE          1.0f
 #define MGTURRET_SPREAD           200
 #define MGTURRET_DMG              HDM(8)
 #define MGTURRET_SPINUP_TIME      750 // time between target sighted and fire
 
 #define TESLAGEN_RANGE            250.0
 #define TESLAGEN_REPEAT           200.0
-#define TESLAGEN_K_SCALE          4.0f
 #define TESLAGEN_DMG              HDM(10)
 
 #define DC_ATTACK_PERIOD          10000 // how often to spam "under attack"
