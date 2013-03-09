@@ -96,23 +96,23 @@ void ctrl_limited_act(target_t* target, gentity_t *self, gentity_t *other, genti
 		return;
 
 	G_FireAllTargetsOf( self, activator );
-	if ( self->count.current <= 1 )
+	if ( self->count <= 1 )
 	{
 		G_FreeEntity( self );
 		return;
 	}
-	self->count.current--;
+	self->count--;
 }
 
 void ctrl_limited_reset( gentity_t *self )
 {
-	self->count.current = self->count.previous;
+	self->count = self->config.amount;
 }
 
 void SP_ctrl_limited( gentity_t *self )
 {
-	if ( self->count.previous < 1 )
-		self->count.previous = 1;
+	if ( self->config.amount < 1 )
+		self->config.amount = 1;
 
 	self->act = ctrl_limited_act;
 	self->reset = ctrl_limited_reset;

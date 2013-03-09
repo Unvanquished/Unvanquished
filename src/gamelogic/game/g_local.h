@@ -307,12 +307,12 @@ struct gentity_s
 	transStateFloat_t speed;
 
 	/*
-	 * do not abuse this variable/struct (again) for anything but actual representing a count
+	 * do not abuse this variable (again) for anything but actual representing a count
 	 *
 	 * add your own number with correct semantic information to gentity_t or
 	 * if you really have to use customNumber
 	 */
-	transStateInt_t count;
+	int count;
 
 	// acceleration evaluation
 	qboolean  evaluateAcceleration;
