@@ -161,6 +161,20 @@ typedef struct
 	targetAction_t actionType;
 } target_t;
 
+/*
+ * struct containing the configuration data of a gentity opposed to its state data
+ */
+typedef struct
+{
+	/* amount of a context depended size for this entity */
+	int amount;
+
+	variatingTime_t wait;
+
+	// trigger "range"
+	int triggerRange;
+} gentityConfig_t;
+
 typedef struct
 {
 	int instanceCounter;
@@ -236,11 +250,11 @@ struct gentity_s
 	target_t     targets[ MAX_ENTITY_TARGETS + 1 ];
 	gentity_t    *activator;
 
-	// targeting-timing variables
-	variatingTime_t wait;
-
-	// trigger "range"
-	int          triggerRange;
+	/*
+	 * configuration, as supplied by the spawn string, external spawn scripts etc.
+	 * as opposed to state data as placed everywhere else
+	 */
+	gentityConfig_t config;
 
 	//conditions as trigger-filter or target-goal
 	gentityConditions_t conditions;

@@ -95,8 +95,8 @@ void SP_env_speaker( gentity_t *ent )
 	// a repeating speaker can be done completely client side
 	ent->s.eType = ET_SPEAKER;
 	ent->s.eventParm = ent->soundIndex;
-	ent->s.frame = ent->wait.time * 10;
-	ent->s.clientNum = ent->wait.variance * 10;
+	ent->s.frame = ent->config.wait.time * 10;
+	ent->s.clientNum = ent->config.wait.variance * 10;
 
 	// check for prestarted looping sound
 	if ( ent->spawnflags & 1 )
@@ -214,10 +214,10 @@ void env_particle_system_use( gentity_t *self, gentity_t *other, gentity_t *acti
 {
 	env_particle_system_toggle( self );
 
-	if ( self->wait.time > 0.0f )
+	if ( self->config.wait.time > 0.0f )
 	{
 		self->think = env_particle_system_toggle;
-		self->nextthink = level.time + ( int )( self->wait.time * 1000 );
+		self->nextthink = level.time + ( int )( self->config.wait.time * 1000 );
 	}
 }
 

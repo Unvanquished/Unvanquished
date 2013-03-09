@@ -132,7 +132,7 @@ static const field_t fields[] =
 	{ "name",	        	 FOFS( names[ 0 ] ),          F_STRING	  },
 	{ "origin",              FOFS( s.origin ),            F_3D_VECTOR },
 	{ "radius",              FOFS( activatedPosition ),   F_3D_VECTOR }, // What's with the variable abuse everytime?
-	{ "random",              FOFS( wait.variance ),       F_FLOAT,    ENT_V_COMBINED, "wait" },
+	{ "random",              FOFS( config.wait.variance ),F_FLOAT,    ENT_V_COMBINED, "wait" },
 	{ "spawnflags",          FOFS( spawnflags ),          F_INT       },
 	{ "speed",               FOFS( speed.current ),       F_FLOAT     },
 	{ "target",			     FOFS( targets[ 0 ] ),        F_TARGET	  },
@@ -142,7 +142,7 @@ static const field_t fields[] =
 	{ "targetname",			 FOFS( names[ 1 ] ),          F_STRING,	  ENT_V_RENAMED, "name"},
 	{ "targetShaderName",    FOFS( targetShaderName ),    F_STRING    },
 	{ "targetShaderNewName", FOFS( targetShaderNewName ), F_STRING    },
-	{ "wait",                FOFS( wait ),                F_TIME      },
+	{ "wait",                FOFS( config.wait ),         F_TIME      },
 	{ "yaw",                 FOFS( s.angles ),            F_YAW       },
 };
 

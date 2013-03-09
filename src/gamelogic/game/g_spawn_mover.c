@@ -758,7 +758,7 @@ void Think_CloseModelDoor( gentity_t *ent )
 		//set brush non-solid
 		trap_UnlinkEntity( ent->clipBrush );
 
-		ent->nextthink = level.time + ent->wait.time;
+		ent->nextthink = level.time + ent->config.wait.time;
 		return;
 	}
 
@@ -800,7 +800,7 @@ void Think_OpenModelDoor( gentity_t *ent )
 
 	// return to pos1 after a delay
 	ent->think = Think_CloseModelDoor;
-	ent->nextthink = level.time + ent->wait.time;
+	ent->nextthink = level.time + ent->config.wait.time;
 
 	// fire targets
 	if ( !ent->activator )
@@ -836,7 +836,7 @@ void Reached_BinaryMover( gentity_t *ent )
 
 		// return to pos1 after a delay
 		master->think = ReturnToPos1orApos1;
-		master->nextthink = MAX( master->nextthink, level.time + ent->wait.time );
+		master->nextthink = MAX( master->nextthink, level.time + ent->config.wait.time );
 
 		// fire targets
 		if ( !ent->activator )
@@ -876,7 +876,7 @@ void Reached_BinaryMover( gentity_t *ent )
 
 		// return to apos1 after a delay
 		master->think = ReturnToPos1orApos1;
-		master->nextthink = MAX( master->nextthink, level.time + ent->wait.time );
+		master->nextthink = MAX( master->nextthink, level.time + ent->config.wait.time );
 
 		// fire targets
 		if ( !ent->activator )
@@ -968,7 +968,7 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
 	{
 		// if all the way up, just delay before coming down
 		master->think = ReturnToPos1orApos1;
-		master->nextthink = MAX( master->nextthink, level.time + ent->wait.time );
+		master->nextthink = MAX( master->nextthink, level.time + ent->config.wait.time );
 	}
 	else if ( ent->moverState == MOVER_POS2 &&
 	          ( groupState == MOVER_1TO2 || other == master ) )
@@ -1050,7 +1050,7 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
 	{
 		// if all the way up, just delay before coming down
 		master->think = ReturnToPos1orApos1;
-		master->nextthink = MAX( master->nextthink, level.time + ent->wait.time );
+		master->nextthink = MAX( master->nextthink, level.time + ent->config.wait.time );
 	}
 	else if ( ent->moverState == ROTATOR_POS2 &&
 	          ( groupState == MOVER_1TO2 || other == master ) )
@@ -1134,7 +1134,7 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
 	else if ( ent->moverState == MODEL_POS2 )
 	{
 		// if all the way up, just delay before coming down
-		ent->nextthink = level.time + ent->wait.time;
+		ent->nextthink = level.time + ent->config.wait.time;
 	}
 	//outd
 	}
@@ -1619,8 +1619,8 @@ void Think_SpawnNewDoorTrigger( gentity_t *ent )
 		}
 	}
 
-	maxs[ best ] += ent->triggerRange;
-	mins[ best ] -= ent->triggerRange;
+	maxs[ best ] += ent->config.triggerRange;
+	mins[ best ] -= ent->config.triggerRange;
 
 	// create a trigger with this size
 	other = G_Spawn();
@@ -1684,19 +1684,19 @@ void SP_func_door( gentity_t *ent )
 	}
 
 	// default wait of 2 seconds
-	if ( !ent->wait.time )
+	if ( !ent->config.wait.time )
 	{
-		ent->wait.time = 2;
+		ent->config.wait.time = 2;
 	}
 
-	ent->wait.time *= 1000;
+	ent->config.wait.time *= 1000;
 
 	// default trigger range of 72 units (saved in noise_index)
-	G_SpawnInt( "range", "72", &ent->triggerRange );
+	G_SpawnInt( "range", "72", &ent->config.triggerRange );
 
-	if ( ent->triggerRange < 0 )
+	if ( ent->config.triggerRange < 0 )
 	{
-		ent->triggerRange = 72;
+		ent->config.triggerRange = 72;
 	}
 
 	// default lip of 8 units
@@ -1800,19 +1800,19 @@ void SP_func_door_rotating( gentity_t *ent )
 	}
 
 	// default of 2 seconds
-	if ( !ent->wait.time )
+	if ( !ent->config.wait.time )
 	{
-		ent->wait.time = 2;
+		ent->config.wait.time = 2;
 	}
 
-	ent->wait.time *= 1000;
+	ent->config.wait.time *= 1000;
 
 	// default trigger range of 72 units (saved in noise_index)
-	G_SpawnInt( "range", "72", &ent->triggerRange );
+	G_SpawnInt( "range", "72", &ent->config.triggerRange );
 
-	if ( ent->triggerRange < 0 )
+	if ( ent->config.triggerRange < 0 )
 	{
-		ent->triggerRange = 72;
+		ent->config.triggerRange = 72;
 	}
 
 	// set the axis of rotation
@@ -1930,19 +1930,19 @@ void SP_func_door_model( gentity_t *ent )
 	}
 
 	//default wait of 2 seconds
-	if ( ent->wait.time <= 0 )
+	if ( ent->config.wait.time <= 0 )
 	{
-		ent->wait.time = 2;
+		ent->config.wait.time = 2;
 	}
 
-	ent->wait.time *= 1000;
+	ent->config.wait.time *= 1000;
 
 	// default trigger range of 72 units (saved in noise_index)
-	G_SpawnInt( "range", "72", &ent->triggerRange );
+	G_SpawnInt( "range", "72", &ent->config.triggerRange );
 
-	if ( ent->triggerRange < 0 )
+	if ( ent->config.triggerRange < 0 )
 	{
-		ent->triggerRange = 72;
+		ent->config.triggerRange = 72;
 	}
 
 	//brush model
@@ -2198,10 +2198,10 @@ void SP_func_plat( gentity_t *ent )
 	if( !ent->damage )
 		ent->damage = 2;
 
-	if(!ent->wait.time)
-		ent->wait.time = 1.0f;
+	if(!ent->config.wait.time)
+		ent->config.wait.time = 1.0f;
 
-	ent->wait.time *= 1000;
+	ent->config.wait.time *= 1000;
 
 	// create second position
 	trap_SetBrushModel( ent, ent->model );
@@ -2289,12 +2289,12 @@ void SP_func_button( gentity_t *ent )
 		ent->speed.current = 40;
 	}
 
-	if ( !ent->wait.time )
+	if ( !ent->config.wait.time )
 	{
-		ent->wait.time = 1;
+		ent->config.wait.time = 1;
 	}
 
-	ent->wait.time *= 1000;
+	ent->config.wait.time *= 1000;
 
 	// first position
 	VectorCopy( ent->s.origin, ent->restingPosition );
@@ -2428,9 +2428,9 @@ void Reached_Train( gentity_t *ent )
 	}
 
 	// if there is a "wait" value on the target, don't start moving yet
-	if ( next->wait.time )
+	if ( next->config.wait.time )
 	{
-		ent->nextthink = level.time + next->wait.time * 1000;
+		ent->nextthink = level.time + next->config.wait.time * 1000;
 		ent->think = Think_BeginMoving;
 		ent->s.pos.trType = TR_STATIONARY;
 	}

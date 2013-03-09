@@ -76,15 +76,15 @@ void SP_ConditionFields( gentity_t *self ) {
 }
 
 void SP_WaitFields( gentity_t *self, float defaultWait, float defaultWaitVariance ) {
-	if (!self->wait.time)
-		self->wait.time = defaultWait;
+	if (!self->config.wait.time)
+		self->config.wait.time = defaultWait;
 
-	if (!self->wait.variance)
-		self->wait.variance = defaultWaitVariance;
+	if (!self->config.wait.variance)
+		self->config.wait.variance = defaultWaitVariance;
 
-	if ( self->wait.variance >= self->wait.time )
+	if ( self->config.wait.variance >= self->config.wait.time )
 	{
-		self->wait.variance = self->wait.time - FRAMETIME;
+		self->config.wait.variance = self->config.wait.time - FRAMETIME;
 
 		if( g_debugEntities.integer > -1)
 		{
