@@ -746,6 +746,7 @@ set( UIGPP_BASE
   ${GPP_DIR}/game/bg_misc.c
   ${GPP_DIR}/game/bg_parse.c
   ${GPP_DIR}/game/bg_lib.c
+  ${GPP_DIR}/game/bg_alloc.c
   ${MOUNT_DIR}/engine/qcommon/q_math.c
   ${MOUNT_DIR}/engine/qcommon/q_shared.c
   ${GPP_DIR}/ui/ui_utf8.c
