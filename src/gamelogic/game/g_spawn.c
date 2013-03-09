@@ -480,10 +480,6 @@ qboolean G_CallSpawn( gentity_t *spawnedEntity )
 		if(!G_HandleEntityVersions( spawnedClass, spawnedEntity ))
 			return qfalse;
 
-		//initial set
-		if(spawnedEntity->reset)
-			spawnedEntity->reset( spawnedEntity );
-
 		return qtrue;
 	}
 
@@ -669,43 +665,48 @@ level.spawnVars[], then call the class specfic spawn function
 void G_SpawnGEntityFromSpawnVars( void )
 {
 	int       i, j;
-	gentity_t *ent;
+	gentity_t *spawningEntity;
 
 	// get the next free entity
-	ent = G_Spawn();
+	spawningEntity = G_Spawn();
 
 	for ( i = 0; i < level.numSpawnVars; i++ )
 	{
-		G_ParseField( level.spawnVars[ i ][ 0 ], level.spawnVars[ i ][ 1 ], ent );
+		G_ParseField( level.spawnVars[ i ][ 0 ], level.spawnVars[ i ][ 1 ], spawningEntity );
 	}
 
 	G_SpawnInt( "notq3a", "0", &i );
 
 	if ( i )
 	{
-		G_FreeEntity( ent );
+		G_FreeEntity( spawningEntity );
 		return;
 	}
 
 	// move editor origin to pos
-	VectorCopy( ent->s.origin, ent->s.pos.trBase );
-	VectorCopy( ent->s.origin, ent->r.currentOrigin );
+	VectorCopy( spawningEntity->s.origin, spawningEntity->s.pos.trBase );
+	VectorCopy( spawningEntity->s.origin, spawningEntity->r.currentOrigin );
 
-	G_CleanUpSpawnedTargets( ent );
+	G_CleanUpSpawnedTargets( spawningEntity );
 
 	// don't leave any "gaps" between multiple names
 	j = 0;
 	for (i = 0; i < MAX_ENTITY_ALIASES; ++i)
 	{
-		if (ent->names[i])
-			ent->names[j++] = ent->names[i];
+		if (spawningEntity->names[i])
+			spawningEntity->names[j++] = spawningEntity->names[i];
 	}
-	ent->names[ j ] = NULL;
+	spawningEntity->names[ j ] = NULL;
 
 	// if we didn't get necessary fields (like the classname), don't bother spawning anything
-	if ( !G_CallSpawn( ent ) )
+	if ( !G_CallSpawn( spawningEntity ) )
 	{
-		G_FreeEntity( ent );
+		G_FreeEntity( spawningEntity );
+	}
+	else //call reset if available as an initial set
+	{
+		if(spawningEntity->reset)
+			spawningEntity->reset( spawningEntity );
 	}
 }
 
