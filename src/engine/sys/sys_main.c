@@ -53,7 +53,7 @@ Maryland 20850 USA.
 #include <omp.h>
 #endif
 
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 #include <SDL.h>
 #endif
 
@@ -169,7 +169,7 @@ static void NORETURN Sys_Exit( int exitCode )
 {
 	CON_Shutdown();
 
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 	SDL_Quit();
 #endif
 
@@ -555,7 +555,7 @@ void NORETURN Sys_SigHandler( int signal )
 	{
 		signalcaught = qtrue;
 		VM_Forced_Unload_Start();
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 		CL_Shutdown();
 #endif
 		SV_Shutdown( va( "Received signal %d", signal ) );
@@ -582,7 +582,7 @@ int main( int argc, char **argv )
 	int  i;
 	char commandLine[ MAX_STRING_CHARS ] = { 0 };
 
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 	// Run time
 	const SDL_version *ver = SDL_Linked_Version();
 #endif
@@ -591,7 +591,7 @@ int main( int argc, char **argv )
 	int nthreads, tid, procs, maxt, inpar, dynamic, nested;
 #endif
 
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 	// SDL version check
 
 	// Compile time

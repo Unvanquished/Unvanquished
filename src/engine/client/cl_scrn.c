@@ -762,6 +762,7 @@ SCR_DrawScreenField
 This will be called twice if rendering in stereo mode
 ==================
 */
+#ifndef BUILD_TTY_CLIENT
 void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 {
 	extern qboolean mouseActive; // see sdl_input.c
@@ -849,7 +850,11 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 		SCR_DrawDebugGraph();
 	}
 }
-
+#else
+void SCR_DrawScreenField( stereoFrame_t stereoFrame )
+{
+}
+#endif
 /*
 ==================
 SCR_UpdateScreen
