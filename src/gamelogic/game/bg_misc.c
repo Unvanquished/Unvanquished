@@ -834,124 +834,52 @@ void BG_InitWeaponAttributes( void )
 
 ////////////////////////////////////////////////////////////////////////////////
 
-static const upgradeAttributes_t bg_upgrades[] =
+typedef struct
+{
+    int number;
+    const char* name;
+} upgradeData_t;
+
+
+static const upgradeData_t bg_upgradesData[] =
 {
 	{
 		UP_LIGHTARMOUR, //int   number;
-		LIGHTARMOUR_PRICE, //int   price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		SLOT_TORSO | SLOT_ARMS | SLOT_LEGS, //int   slots;
 		"larmour", //char  *name;
-		N_( "Light Armour" ), //char  *humanName;
-		N_( "Protective armour that helps to defend against light alien melee "
-		"attacks." ),
-		"icons/iconu_larmour",
-		qtrue, //qboolean purchasable;
-		qfalse, //qboolean usable;
-		TEAM_HUMANS //team_t  team;
 	},
 	{
 		UP_HELMET, //int   number;
-		HELMET_PRICE, //int   price;
-		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		SLOT_HEAD, //int   slots;
 		"helmet", //char  *name;
-		N_( "Helmet" ), //char  *humanName;
-		N_( "In addition to protecting your head, the helmet provides a "
-		"scanner indicating the presence of any friendly or hostile "
-		"lifeforms and structures in your immediate vicinity." ),
-		"icons/iconu_helmet",
-		qtrue, //qboolean purchasable;
-		qfalse, //qboolean usable;
-		TEAM_HUMANS //team_t  team;
 	},
 	{
 		UP_MEDKIT, //int   number;
-		MEDKIT_PRICE, //int   price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		SLOT_NONE, //int   slots;
 		"medkit", //char  *name;
-		N_("Medkit"), //char  *humanName;
-		"",
-		"icons/iconu_atoxin",
-		qfalse, //qboolean purchasable;
-		qtrue, //qboolean usable;
-		TEAM_HUMANS //team_t  team;
 	},
 	{
 		UP_BATTPACK, //int   number;
-		BATTPACK_PRICE, //int   price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		SLOT_BACKPACK, //int   slots;
 		"battpack", //char  *name;
-		N_("Battery Pack"), //char  *humanName;
-		N_( "Back-mounted battery pack that permits storage of one and a half "
-		"times as much energy capacity for energy weapons." ),
-		"icons/iconu_battpack",
-		qtrue, //qboolean purchasable;
-		qfalse, //qboolean usable;
-		TEAM_HUMANS //team_t  team;
 	},
 	{
 		UP_JETPACK, //int   number;
-		JETPACK_PRICE, //int   price;
-		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		SLOT_BACKPACK, //int   slots;
 		"jetpack", //char  *name;
-		N_( "Jet Pack" ), //char  *humanName;
-		N_( "Back-mounted jet pack that enables the user to fly to remote "
-		"locations. It is very useful against alien spawns in hard "
-		"to reach spots." ),
-		"icons/iconu_jetpack",
-		qtrue, //qboolean purchasable;
-		qtrue, //qboolean usable;
-		TEAM_HUMANS //team_t  team;
 	},
 	{
 		UP_BATTLESUIT, //int   number;
-		BSUIT_PRICE, //int   price;
-		( 1 << S3 ), //int  stages;
-		SLOT_HEAD | SLOT_TORSO | SLOT_ARMS | SLOT_LEGS | SLOT_BACKPACK, //int   slots;
 		"bsuit", //char  *name;
-		N_( "Battlesuit" ), //char  *humanName;
-		N_( "A full body armour that is highly effective at repelling alien attacks. "
-		"It allows the user to enter hostile situations with a greater degree "
-		"of confidence." ),
-		"icons/iconu_bsuit",
-		qtrue, //qboolean purchasable;
-		qfalse, //qboolean usable;
-		TEAM_HUMANS //team_t  team;
 	},
 	{
 		UP_GRENADE, //int   number;
-		GRENADE_PRICE, //int   price;
-		( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		SLOT_NONE, //int   slots;
 		"gren", //char  *name;
-		N_( "Grenade" ), //char  *humanName;
-		N_( "A small incendinary device ideal for damaging tightly packed "
-		"alien structures. Has a five second timer." ),
-		0,
-		qtrue, //qboolean purchasable;
-		qtrue, //qboolean usable;
-		TEAM_HUMANS //team_t  team;
 	},
 	{
 		UP_AMMO, //int   number;
-		0, //int   price;
-		( 1 << S1 ) | ( 1 << S2 ) | ( 1 << S3 ), //int  stages;
-		SLOT_NONE, //int   slots;
 		"ammo", //char  *name;
-		N_( "Ammunition" ), //char  *humanName;
-		N_( "Ammunition for the currently held weapon." ),
-		0,
-		qtrue, //qboolean purchasable;
-		qfalse, //qboolean usable;
-		TEAM_HUMANS //team_t  team;
 	}
 };
 
-static const size_t bg_numUpgrades = ARRAY_LEN( bg_upgrades );
+static const size_t bg_numUpgrades = ARRAY_LEN( bg_upgradesData );
+
+static upgradeAttributes_t bg_upgrades[ ARRAY_LEN( bg_upgradesData ) ];
 
 static const upgradeAttributes_t nullUpgrade = { 0 };
 
@@ -996,6 +924,32 @@ qboolean BG_UpgradeAllowedInStage( upgrade_t upgrade, stage_t stage )
 	int stages = BG_Upgrade( upgrade )->stages;
 
 	return stages & ( 1 << stage );
+}
+
+/*
+===============
+BG_InitUpgradeAttributes
+===============
+*/
+void BG_InitUpgradeAttributes( void )
+{
+    int i;
+    const upgradeData_t *ud;
+    upgradeAttributes_t *ua;
+
+    for ( i = 0; i < bg_numUpgrades; i++ )
+    {
+        ud = &bg_upgradesData[i];
+        ua = &bg_upgrades[i];
+
+        //Initialise default values for buildables
+        Com_Memset( ua, 0, sizeof( upgradeAttributes_t ) );
+
+        ua->number = ud->number;
+        ua->name = ud->name;
+
+        BG_ParseUpgradeAttributeFile( va( "configs/upgrades/%s.attr.cfg", ua->name ), ua );
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

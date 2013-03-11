@@ -278,42 +278,34 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define BLASTER_DMG              HDM(10)
 #define BLASTER_SIZE             5
 
-#define RIFLE_PRICE              0
 #define RIFLE_SPREAD             250 // Raised by 50.
 #define RIFLE_DMG                HDM(5)
 
-#define PAINSAW_PRICE            100
 #define PAINSAW_DAMAGE           HDM(11)
 #define PAINSAW_RANGE            64.0f
 #define PAINSAW_WIDTH            0.0f
 #define PAINSAW_HEIGHT           8.0f
 
-#define GRENADE_PRICE            200
 #define GRENADE_DAMAGE           HDM(310)
 #define GRENADE_RANGE            192.0f
 #define GRENADE_SPEED            400.0f
 
-#define SHOTGUN_PRICE            150
 #define SHOTGUN_PELLETS          11 //used to sync server and client side
 #define SHOTGUN_SPREAD           790
 #define SHOTGUN_DMG              HDM(5)
 #define SHOTGUN_RANGE            ( 8192 * 12 )
 
-#define LASGUN_PRICE             250
 #define LASGUN_REPEAT            200
 #define LASGUN_K_SCALE           1.0f
 #define LASGUN_DAMAGE            HDM(9)
 
-#define MDRIVER_PRICE            350
 #define MDRIVER_DMG              HDM(40)
 #define MDRIVER_REPEAT           1000
 #define MDRIVER_K_SCALE          1.0f
 
-#define CHAINGUN_PRICE           400
 #define CHAINGUN_SPREAD          900
 #define CHAINGUN_DMG             HDM(6)
 
-#define FLAMER_PRICE             450 // 400->450
 #define FLAMER_DMG               HDM(14) // 20->15->14
 #define FLAMER_FLIGHTSPLASHDAMAGE HDM(1)
 #define FLAMER_SPLASHDAMAGE      HDM(6) // 10->7->6
@@ -323,12 +315,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define FLAMER_SPEED             500.0f
 #define FLAMER_LAG               0.65f // the amount of player velocity that is added to the fireball
 
-#define PRIFLE_PRICE             450
 #define PRIFLE_DMG               HDM(9)
 #define PRIFLE_SPEED             1200
 #define PRIFLE_SIZE              5
 
-#define LCANNON_PRICE            600
 #define LCANNON_DAMAGE           HDM(265)
 #define LCANNON_RADIUS           150 // primary splash damage radius
 #define LCANNON_SIZE             5 // missile bounding box radius
@@ -342,28 +332,22 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LCANNON_CHARGE_TIME_WARN 2000
 #define LCANNON_CHARGE_AMMO      10 // ammo cost of a full charge shot
 
-#define HBUILD_PRICE             0
 #define HBUILD_HEALRATE          18
 
 /*
  * HUMAN upgrades
  */
 
-#define LIGHTARMOUR_PRICE             70
 #define LIGHTARMOUR_POISON_PROTECTION 1
 #define LIGHTARMOUR_PCLOUD_PROTECTION 1000
 
-#define HELMET_PRICE                  90
 #define HELMET_RANGE                  1000.0f
 #define HELMET_POISON_PROTECTION      1
 #define HELMET_PCLOUD_PROTECTION      1000
 
-#define MEDKIT_PRICE                  0
-
 #define BATTPACK_PRICE                100
 #define BATTPACK_MODIFIER             1.5f //modifier for extra energy storage available
 
-#define JETPACK_PRICE                 120
 #define JETPACK_FLOAT_SPEED           128.0f //up movement speed
 #define JETPACK_SINK_SPEED            192.0f //down movement speed
 #define JETPACK_DISABLE_TIME          1000 //time to disable the jetpack when player damaged

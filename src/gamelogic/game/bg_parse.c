@@ -1337,3 +1337,134 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
     }
 }
 
+/*
+======================
+BG_ParseUpgradeAttributeFile
+
+Parses a configuration file describing the attributes of an upgrade
+======================
+*/
+void BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua )
+{
+    char *token;
+    char text_buffer[ 20000 ];
+    char* text;
+    int defined = 0;
+    enum
+    {
+      NAME = 1 << 0,
+      PRICE = 1 << 1,
+      INFO = 1 << 2,
+      STAGE = 1 << 3,
+      ICON = 1 << 4,
+      TEAM = 1 << 5,
+    };
+
+    if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
+    {
+        return;
+    }
+
+    text = text_buffer;
+
+    // read optional parameters
+    while ( 1 )
+    {
+        PARSE(text, token);
+
+        if ( !Q_stricmp( token, "humanName" ) )
+        {
+            PARSE(text, token);
+
+            ua->humanName = strdup( token );
+
+            defined |= NAME;
+        }
+        else if ( !Q_stricmp( token, "description" ) )
+        {
+            PARSE(text, token);
+
+            if ( !Q_stricmp( token, "null" ) )
+            {
+                ua->info = "";
+            }
+            else
+            {
+                ua->info = strdup(token);
+            }
+
+            defined |= INFO;
+        }
+        else if ( !Q_stricmp( token, "stage" ) )
+        {
+            PARSE(text, token);
+
+            ua->stages = BG_StageFromNumber( atoi( token ) );
+
+            defined |= STAGE;
+        }
+        else if ( !Q_stricmp( token, "usedSlots" ) )
+        {
+            ua->slots = BG_ParseSlotList( &text );
+        }
+        else if ( !Q_stricmp( token, "icon" ) )
+        {
+            PARSE(text, token);
+
+            if ( !Q_stricmp( token, "null" ) )
+            {
+                ua->icon = NULL;
+            }
+            else
+            {
+                ua->icon = strdup(token);
+            }
+
+            defined |= ICON;
+        }
+        else if ( !Q_stricmp( token, "price" ) )
+        {
+            PARSE(text, token);
+
+            ua->price = atoi( token );
+
+            defined |= PRICE;
+        }
+        else if ( !Q_stricmp( token, "team" ) )
+        {
+            PARSE(text, token);
+
+            ua->team = BG_ParseTeam( token );
+
+            defined |= TEAM;
+        }
+        else if ( !Q_stricmp( token, "isPurchasable" ) )
+        {
+            ua->purchasable = qtrue;
+        }
+        else if ( !Q_stricmp( token, "isUsable" ) )
+        {
+            ua->usable = qtrue;
+        }
+        else
+        {
+            Com_Printf( S_COLOR_RED "ERROR: unknown token '%s'\n", token );
+        }
+    }
+
+    if ( !( defined & NAME ) ) { token = "humanName"; }
+    else if ( !( defined & INFO ) ) { token = "description"; }
+    else if ( !( defined & STAGE ) ) { token = "stage"; }
+    else if ( !( defined & PRICE ) ) { token = "price"; }
+    else if ( !( defined & ICON ) ) { token = "icon"; }
+    else if ( !( defined & TEAM ) ) { token = "team"; }
+    else { token = ""; }
+
+    if ( strlen( token ) > 0 )
+    {
+        Com_Printf( S_COLOR_RED "ERROR: %s not defined in %s\n",
+                    token, filename );
+    }
+}
+
+
