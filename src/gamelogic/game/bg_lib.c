@@ -355,13 +355,14 @@ char *strstr( const char *string, const char *strCharSet )
 	return ( char * ) 0;
 }
 
+void *BG_Alloc( int size );
 char *strdup( const char *string )
 {
     size_t length;
     char *copy;
 
     length = strlen(string) + 1;
-    copy = BG_Alloc(length);
+    copy = (char *)BG_Alloc(length);
 
     if(copy == NULL)
     {

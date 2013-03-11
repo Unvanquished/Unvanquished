@@ -1178,11 +1178,13 @@ const weaponAttributes_t  *BG_WeaponByName( const char *name );
 const weaponAttributes_t  *BG_Weapon( weapon_t weapon );
 qboolean                  BG_WeaponAllowedInStage( weapon_t weapon,
     stage_t stage );
+void                      BG_InitWeaponAttributes( void );
 
 const upgradeAttributes_t *BG_UpgradeByName( const char *name );
 const upgradeAttributes_t *BG_Upgrade( upgrade_t upgrade );
 qboolean                  BG_UpgradeAllowedInStage( upgrade_t upgrade,
     stage_t stage );
+void                      BG_InitUpgradeAttributes( void );
 
 // Parsers
 qboolean                  BG_ReadWholeFile( const char *filename, char *buffer, int size);
@@ -1190,6 +1192,8 @@ void                      BG_ParseBuildableAttributeFile( const char *filename, 
 void                      BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_t *bc );
 void                      BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca );
 void                      BG_ParseClassModelFile( const char *filename, classModelConfig_t *cc );
+void                      BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa );
+void                      BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua );
 
 // content masks
 #define MASK_ALL         ( -1 )

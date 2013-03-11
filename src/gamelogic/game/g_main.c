@@ -756,6 +756,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	BG_InitClassAttributes();
 	BG_InitClassModelConfigs();
 	BG_InitBuildableModelConfigs();
+	BG_InitWeaponAttributes();
+	BG_InitUpgradeAttributes();
 	G_InitDamageLocations();
 	G_InitMapRotations();
 	G_InitSpawnQueue( &level.alienSpawnQueue );

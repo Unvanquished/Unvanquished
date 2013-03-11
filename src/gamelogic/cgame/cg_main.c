@@ -2311,6 +2311,8 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	BG_InitClassModelConfigs();
 	BG_InitBuildableAttributes();
 	BG_InitBuildableModelConfigs();
+	BG_InitWeaponAttributes();
+	BG_InitUpgradeAttributes();
 	BG_InitAllowedGameElements();
 
 	// Dynamic memory
