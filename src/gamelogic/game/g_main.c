@@ -251,7 +251,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &pmove_accurate,                "pmove_accurate",                "0",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 	{ &g_initialMineRate,             "g_initialMineRate",            "15",                                CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_initialBuildPoints,          "g_initialBuildPoints",         "75",                                CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_mineRateHalfLife,            "g_mineRateHalfLife",           "10",                                CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_mineRateHalfLife,            "g_mineRateHalfLife",           "15",                                CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_humanStage,                  "g_humanStage",                  "0",                                0,                                               0, qfalse           },
 	{ &g_humanCredits,                "g_humanCredits",                "0",                                0,                                               0, qfalse           },
 	{ &g_humanMaxStage,               "g_humanMaxStage",               DEFAULT_HUMAN_MAX_STAGE,            0,                                               0, qfalse, cv_humanMaxStage},
