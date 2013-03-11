@@ -78,15 +78,15 @@ static int BG_StageFromNumber( int i )
 {
     if( i == 1 )
     {
-        return S1 | S2 | S3;
+        return (1 << S1) | (1 << S2) | (1 << S3);
     }
     if( i == 2 )
     {
-        return S2 | S3;
+        return (1 << S2) | (1 << S3);
     }
     if( i == 3 )
     {
-        return S3;
+        return 1 << S3;
     }
 
     return 0;
