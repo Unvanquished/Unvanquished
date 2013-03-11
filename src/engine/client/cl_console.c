@@ -92,7 +92,7 @@ cvar_t    *con_debug;
 #define CON_LINE(line) ( ( (line) % consoleState.maxScrollbackLengthInLines ) * consoleState.textWidthInChars )
 
 // Buffer used by line-to-string code. Implementation detail.
-static char lineString[ MAX_CONSOLE_WIDTH * 6 + 4 ];
+static char lineString[ MAX_CONSOLE_WIDTH * 6 + 5 ];
 
 static const char *Con_LineToString( int lineno, qboolean lf )
 {
@@ -114,6 +114,9 @@ static const char *Con_LineToString( int lineno, qboolean lf )
 
 	if ( lf )
 	{
+#ifdef _WIN32
+		lineString[ d++ ] = '\r';
+#endif
 		lineString[ d++ ] = '\n';
 	}
 
