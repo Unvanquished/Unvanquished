@@ -335,7 +335,7 @@ static cvarTable_t gameCvarTable[] =
 
 	{ &g_censorship,                  "g_censorship",                  "",                                 CVAR_ARCHIVE,                                    0, qfalse           },
 
-	{ &g_tag,                         "g_tag",                         "gpp",                              CVAR_INIT,                                       0, qfalse           },
+	{ &g_tag,                         "g_tag",                         "unv",                              CVAR_INIT,                                       0, qfalse           },
 
 	{ &g_showKillerHP,                "g_showKillerHP",                "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_combatCooldown,              "g_combatCooldown",              "15",                               CVAR_ARCHIVE,                                    0, qfalse           }
@@ -756,6 +756,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	BG_InitClassAttributes();
 	BG_InitClassModelConfigs();
 	BG_InitBuildableModelConfigs();
+	BG_InitWeaponAttributes();
+	BG_InitUpgradeAttributes();
 	G_InitDamageLocations();
 	G_InitMapRotations();
 	G_InitSpawnQueue( &level.alienSpawnQueue );
@@ -2756,7 +2758,7 @@ void G_RunFrame( int levelTime )
 
 	// generate public-key messages
 	G_admin_pubkey();
-	
+
 
 	// get any cvar changes
 	G_UpdateCvars();

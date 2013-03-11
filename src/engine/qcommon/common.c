@@ -420,7 +420,7 @@ void NORETURN Com_Quit_f( void )
 		VM_Forced_Unload_Start();
 		SV_Shutdown( p[ 0 ] ? p : "Server quit\n" );
 //bani
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 		CL_ShutdownCGame();
 #endif
 		CL_Shutdown();
@@ -1880,12 +1880,12 @@ The server calls this before shutting down or loading a new map
 */
 void Hunk_Clear( void )
 {
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 	CL_ShutdownCGame();
 	CL_ShutdownUI();
 #endif
 	SV_ShutdownGameProgs();
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 	CIN_CloseAllVideos();
 #endif
 	hunk_low.mark = 0;
@@ -2523,7 +2523,7 @@ Returns last event time
 =================
 */
 
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 extern qboolean consoleButtonWasPressed;
 #endif
 
@@ -2575,7 +2575,7 @@ int Com_EventLoop( void )
 				break;
 
 			case SE_CHAR:
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 
 				// fretn
 				// we just pressed the console button,
@@ -2968,7 +2968,7 @@ void Com_Init( char *commandLine )
 
 	Cbuf_AddText( "exec default.cfg\n" );
 
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 	// skip the q3config.cfg if "safe" is on the command line
 	if ( !Com_SafeMode() )
 	{
@@ -3040,7 +3040,7 @@ void Com_Init( char *commandLine )
 	// override anything from the config files with command line args
 	Com_StartupVariable( NULL );
 
-#ifdef DEDICATED
+#if defined(DEDICATED)
 	// TTimo: default to Internet dedicated, not LAN dedicated
 	com_dedicated = Cvar_Get( "dedicated", "2", CVAR_ROM );
 	Cvar_CheckRange( com_dedicated, 1, 2, qtrue );
@@ -3123,7 +3123,7 @@ void Com_Init( char *commandLine )
 
 	Cmd_AddCommand( "quit", Com_Quit_f );
 	Cmd_AddCommand( "writeconfig", Com_WriteConfig_f );
-#ifndef DEDICATED
+#if !defined(DEDICATED)
 	Cmd_AddCommand( "writebindings", Com_WriteBindings_f );
 #endif
 
@@ -3318,7 +3318,7 @@ void Com_WriteConfiguration( void )
 		}
 	}
 
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 	if ( bindingsModified )
 	{
 		bindingsModified = qfalse;
@@ -3365,7 +3365,7 @@ Com_WriteBindings_f
 Write the key bindings file to a specific name
 ===============
 */
-#ifndef DEDICATED
+#if !defined(DEDICATED)
 void Com_WriteBindings_f( void )
 {
 	char filename[ MAX_QPATH ];
@@ -4045,7 +4045,7 @@ static qboolean Field_Complete( void )
 	return qfalse;
 }
 
-#ifndef DEDICATED
+#if !defined(DEDICATED)
 
 static void Field_TeamnameCompletion( void ( *callback )( const char *s ), int flags )
 {
@@ -4211,7 +4211,7 @@ void Field_CompleteCommand( char *cmd,
 		completionString = Cmd_Argv( completionArgument - 1 );
 	}
 
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 
 	// Unconditionally add a '\' to the start of the buffer
 	if ( completionField->buffer[ 0 ] &&
@@ -4242,7 +4242,7 @@ void Field_CompleteCommand( char *cmd,
 		const char *baseCmd = Cmd_Argv( 0 );
 		char       *p;
 
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 
 		// This should always be true
 		if ( baseCmd[ 0 ] == '\\' || baseCmd[ 0 ] == '/' )

@@ -56,7 +56,7 @@ Maryland 20850 USA.
 // Used to determine where to store user-specific files
 static char homePath[ MAX_OSPATH ] = { 0 };
 
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 static UINT timerResolution = 0;
 #endif
 
@@ -754,7 +754,7 @@ dialogResult_t Sys_Dialog( dialogType_t type, const char *message, const char *t
 	}
 }
 
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 static qboolean SDL_VIDEODRIVER_externallySet = qfalse;
 #endif
 
@@ -767,7 +767,7 @@ Windows specific "safe" GL implementation initialisation
 */
 void Sys_GLimpSafeInit( void )
 {
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 
 	if ( !SDL_VIDEODRIVER_externallySet )
 	{
@@ -788,7 +788,7 @@ Windows specific GL implementation initialisation
 */
 void Sys_GLimpInit( void )
 {
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 
 	if ( !SDL_VIDEODRIVER_externallySet )
 	{
@@ -820,14 +820,14 @@ Windows specific initialisation
 */
 void Sys_PlatformInit( void )
 {
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 	TIMECAPS ptc;
 	const char *SDL_VIDEODRIVER = getenv( "SDL_VIDEODRIVER" );
 #endif
 
 	Sys_SetFloatEnv();
 
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 
 	if ( SDL_VIDEODRIVER )
 	{
@@ -840,7 +840,7 @@ void Sys_PlatformInit( void )
 		SDL_VIDEODRIVER_externallySet = qfalse;
 	}
 
-	
+
 	if(timeGetDevCaps(&ptc, sizeof(ptc)) == MMSYSERR_NOERROR)
 	{
 		timerResolution = ptc.wPeriodMin;
@@ -865,7 +865,7 @@ Windows specific deinitialisation
 */
 void Sys_PlatformExit( void )
 {
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 	if(timerResolution)
 		timeEndPeriod(timerResolution);
 #endif
@@ -1030,7 +1030,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	Com_Init( sys_cmdline );
 	NET_Init();
 
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 	IN_Init(); // fretn - directinput must be inited after video etc
 #endif
 
