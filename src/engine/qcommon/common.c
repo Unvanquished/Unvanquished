@@ -3040,7 +3040,7 @@ void Com_Init( char *commandLine )
 	// override anything from the config files with command line args
 	Com_StartupVariable( NULL );
 
-#if defined(DEDICATED) || defined(BUILD_TTY_CLIENT)
+#if defined(DEDICATED)
 	// TTimo: default to Internet dedicated, not LAN dedicated
 	com_dedicated = Cvar_Get( "dedicated", "2", CVAR_ROM );
 	Cvar_CheckRange( com_dedicated, 1, 2, qtrue );
@@ -3123,7 +3123,7 @@ void Com_Init( char *commandLine )
 
 	Cmd_AddCommand( "quit", Com_Quit_f );
 	Cmd_AddCommand( "writeconfig", Com_WriteConfig_f );
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#if !defined(DEDICATED)
 	Cmd_AddCommand( "writebindings", Com_WriteBindings_f );
 #endif
 
@@ -3365,7 +3365,7 @@ Com_WriteBindings_f
 Write the key bindings file to a specific name
 ===============
 */
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
+#if !defined(DEDICATED)
 void Com_WriteBindings_f( void )
 {
 	char filename[ MAX_QPATH ];

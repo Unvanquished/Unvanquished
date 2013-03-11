@@ -1624,10 +1624,10 @@ if( BUILD_TTY_CLIENT )
     ${QCOMMONLIST} ${SHAREDLIST} ${DATABASELIST} ${CRYPTOLIST}
     ${TINYGETTEXT_LIST}
     ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c ${WIN_RC}
-    ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c )
+    ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c ${MOUNT_DIR}/engine/null/null_renderer.c )
   include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )
   target_link_libraries( ttyclient ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
-  set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS COMPAT_ET BUILD_TTY_CLIENT )
+  set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS COMPAT_ET BUILD_TTY_CLIENT REF_HARD_LINKED )
   set_target_properties( ttyclient PROPERTIES OUTPUT_NAME "daemon-tty" PREFIX "" LINKER_LANGUAGE CXX )
 
   # Setup CPack for target server
