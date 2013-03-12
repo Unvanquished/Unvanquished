@@ -1260,6 +1260,44 @@ void BotGetTargetPos( botTarget_t target, vec3_t rVec )
 	}
 }
 
+void BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget_t *routeTarget )
+{
+	vec3_t mins, maxs;
+	int i;
+
+	if ( BotTargetIsEntity( target ) )
+	{
+		VectorCopy( target.ent->r.mins, mins );
+		VectorCopy( target.ent->r.maxs, maxs );
+	}
+	else
+	{
+		VectorSet( maxs, 640, 640, 96 );
+		VectorSet( mins, -640, -640, 96 );
+	}
+
+	for ( i = 0; i < 3; i++ )
+	{
+		mins[ i ] = Q_fabs( mins[ i ] );
+	}
+	
+	for ( i = 0; i < 3; i++ )
+	{
+		routeTarget->extents[ i ] = MAX( mins[ i ], maxs[ i ] );
+	}
+
+	BotGetTargetPos( target, routeTarget->pos );
+
+	// move center a bit lower so we don't get polys above the object 
+	// and get polys below the object on a slope
+	routeTarget->pos[ 2 ] -= routeTarget->extents[ 2 ] / 2;
+
+	// increase extents a little to account for obstacles cutting into the navmesh
+	// also accounts for navmesh erosion at mesh boundrys
+	routeTarget->extents[ 0 ] += self->r.maxs[ 0 ] + 10;
+	routeTarget->extents[ 1 ] += self->r.maxs[ 1 ] + 10;
+}
+
 team_t BotGetEntityTeam( gentity_t *ent )
 {
 	if ( !ent )
@@ -2473,13 +2511,13 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 
 		if ( ( inAttackRange && myTeam == TEAM_HUMANS ) || self->botMind->directPathToGoal )
 		{
-			vec3_t pos;
+			botRouteTarget_t routeTarget;
 			BotAimAtEnemy( self );
 
-			BotGetTargetPos( self->botMind->goal, pos );
+			BotTargetToRouteTarget( self, self->botMind->goal, &routeTarget );
 
 			//update the path corridor
-			trap_BotUpdatePath( self->s.number, pos, NULL, &self->botMind->directPathToGoal );
+			trap_BotUpdatePath( self->s.number, &routeTarget, NULL, &self->botMind->directPathToGoal );
 
 			BotMoveInDir( self, MOVE_FORWARD );
 

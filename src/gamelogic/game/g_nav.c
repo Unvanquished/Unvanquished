@@ -670,60 +670,8 @@ qboolean BotMoveToGoal( gentity_t *self )
 
 unsigned int FindRouteToTarget( gentity_t *self, botTarget_t target )
 {
-	vec3_t targetPos;
+	botRouteTarget_t routeTarget;
 
-	if ( BotTargetIsEntity( target ) )
-	{
-		PlantEntityOnGround( target.ent, targetPos );
-	}
-	else
-	{
-		BotGetTargetPos( target, targetPos );
-	}
-
-	return trap_BotFindRoute( self->s.number, targetPos );
-}
-
-/*
-========================
-Misc Bot Nav
-========================
-*/
-
-void PlantEntityOnGround( gentity_t *ent, vec3_t groundPos )
-{
-	vec3_t mins, maxs;
-	trace_t trace;
-	vec3_t realPos;
-	const int traceLength = 1000;
-	vec3_t endPos;
-	vec3_t traceDir;
-	if ( ent->client )
-	{
-		BG_ClassBoundingBox( ( class_t )ent->client->ps.stats[STAT_CLASS], mins, maxs, NULL, NULL, NULL );
-	}
-	else if ( ent->s.eType == ET_BUILDABLE )
-	{
-		BG_BuildableBoundingBox( ( buildable_t )ent->s.modelindex, mins, maxs );
-	}
-	else
-	{
-		VectorCopy( ent->r.mins, mins );
-		VectorCopy( ent->r.maxs, maxs );
-	}
-
-	VectorSet( traceDir, 0, 0, -1 );
-	VectorCopy( ent->s.origin, realPos );
-	VectorMA( realPos, traceLength, traceDir, endPos );
-	trap_Trace( &trace, ent->s.origin, mins, maxs, endPos, ent->s.number, CONTENTS_SOLID );
-	if ( trace.fraction != 1.0f )
-	{
-		VectorCopy( trace.endpos, groundPos );
-	}
-	else
-	{
-		VectorCopy( realPos, groundPos );
-		groundPos[2] += mins[2];
-
-	}
+	BotTargetToRouteTarget( self, target, &routeTarget );
+	return trap_BotFindRoute( self->s.number, &routeTarget );
 }

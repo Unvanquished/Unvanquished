@@ -101,4 +101,4 @@ void         BotCalcSteerDir( Bot_t *bot, vec3_t dir );
 void         FindWaypoints( Bot_t *bot, float *corners, unsigned char *cornerFlags, dtPolyRef *cornerPolys, int *numCorners, int maxCorners );
 qboolean     PointInPoly( Bot_t *bot, dtPolyRef ref, const vec3_t point );
 qboolean     BotFindNearestPoly( Bot_t *bot, const vec3_t coord, dtPolyRef *nearestPoly, vec3_t nearPoint );
-unsigned int FindRoute( Bot_t *bot, const vec3_t s, const vec3_t e );
+unsigned int FindRoute( Bot_t *bot, const vec3_t s, const botRouteTarget_t *target );

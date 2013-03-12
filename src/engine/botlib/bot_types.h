@@ -48,6 +48,14 @@ typedef struct
 	vec3_t normal;
 } botTrace_t;
 
+// if the target is not within extents of a navmesh polygon 
+// then the bot will not be able to find a route to it
+typedef struct
+{
+	vec3_t pos;
+	vec3_t extents;
+} botRouteTarget_t;
+
 enum navPolyFlags
 {
 	POLYFLAGS_DISABLED = 0,

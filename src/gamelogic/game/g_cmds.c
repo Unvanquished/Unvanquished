@@ -2531,6 +2531,7 @@ void Cmd_Destroy_f( gentity_t *ent )
 	qboolean  protect;
 	qboolean  lastSpawn = qfalse;
 	qboolean  prevDeconstruct;
+	const buildableAttributes_t *attr;
 
 	if ( ent->client->pers.namelog->denyBuild )
 	{
@@ -2564,6 +2565,8 @@ void Cmd_Destroy_f( gentity_t *ent )
 	     ( ( ent->client->ps.weapon >= WP_ABUILD ) &&
 	       ( ent->client->ps.weapon <= WP_HBUILD ) ) )
 	{
+		attr = BG_Buildable( traceEnt->s.modelindex );
+
 		// Always let the builder prevent the explosion
 		if ( traceEnt->health <= 0 )
 		{
@@ -2677,9 +2680,11 @@ fail_lastSpawn:
 
 	if ( !g_cheats.integer ) // add a bit to the build timer
 	{
-		ent->client->ps.stats[ STAT_MISC ] +=
-		  BG_Buildable( traceEnt->s.modelindex )->buildTime / 4;
+		ent->client->ps.stats[ STAT_MISC ] += attr->buildTime / 4;
 	}
+
+	// return BP
+	G_RemoveResources( traceEnt->buildableTeam, -( int )( attr->buildPoints * ( traceEnt->health / ( float )attr->health ) ) );
 
 	G_Damage( traceEnt, ent, ent, forward, tr.endpos,
 		  traceEnt->health, 0, MOD_DECONSTRUCT );
