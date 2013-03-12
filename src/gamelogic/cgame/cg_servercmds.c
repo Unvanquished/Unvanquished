@@ -86,16 +86,18 @@ static void CG_ParseTeamInfo( void )
 	int i;
 	int count;
 	int client;
-	int fields;
 
-	fields = ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_ALIENS ) ? 5 : 6; // aliens don't have upgrades
-	count = ( trap_Argc( ) - 1 ) / fields;
+	count = trap_Argc();
 
-	cgs.teamInfoReceived = qtrue;
-
-	for ( i = 0; i < count; i++ )
+	for ( i = 1; i < count; ++i ) // i is also incremented when writing into cgs.clientinfo
 	{
-		client = atoi( CG_Argv( i * fields + 1 ) );
+		client = atoi( CG_Argv( i ) );
+
+		// wrong team? skip to the next one
+		if ( cgs.clientinfo[ client ].team != cg.snap->ps.stats[ STAT_TEAM ] )
+		{
+			return;
+		}
 
 		if ( client < 0 || client >= MAX_CLIENTS )
 		{
@@ -103,15 +105,18 @@ static void CG_ParseTeamInfo( void )
 			return;
 		}
 
-		cgs.clientinfo[ client ].location = atoi( CG_Argv( i * fields + 2 ) );
-		cgs.clientinfo[ client ].health = atoi( CG_Argv( i * fields + 3 ) );
-		cgs.clientinfo[ client ].curWeaponClass = atoi( CG_Argv( i * fields + 4 ) );
-		cgs.clientinfo[ client ].credit = atoi( CG_Argv( i * fields + 5 ) );
+		cgs.clientinfo[ client ].location       = atoi( CG_Argv( ++i ) );
+		cgs.clientinfo[ client ].health         = atoi( CG_Argv( ++i ) );
+		cgs.clientinfo[ client ].curWeaponClass = atoi( CG_Argv( ++i ) );
+		cgs.clientinfo[ client ].credit         = atoi( CG_Argv( ++i ) );
+
 		if( cg.snap->ps.stats[ STAT_TEAM ] != TEAM_ALIENS )
 		{
-			cgs.clientinfo[ client ].upgrade = atoi( CG_Argv( i * fields + 6 ) );
-        }
+			cgs.clientinfo[ client ].upgrade = atoi( CG_Argv( ++i ) );
+		}
 	}
+
+	cgs.teamInfoReceived = qtrue;
 }
 
 /*
