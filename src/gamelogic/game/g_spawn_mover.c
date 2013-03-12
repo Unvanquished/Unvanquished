@@ -1644,6 +1644,14 @@ void Think_SpawnNewDoorTrigger( gentity_t *ent )
 	}
 }
 
+void reset_func_door( gentity_t *self )
+{
+	reset_floatField(&self->speed, self->config.speed, self->eclass->config.speed, 400);
+	reset_intField(&self->health, self->config.health, self->eclass->config.health, 0);
+
+	self->takedamage = !!self->health;
+}
+
 void SP_func_door( gentity_t *ent )
 {
 	vec3_t abs_movedir;
@@ -1651,7 +1659,6 @@ void SP_func_door( gentity_t *ent )
 	vec3_t size;
 	float  lip;
 	char   *s;
-	int    health;
 
 	G_SpawnString( "sound2to1", "sound/movers/doors/dr1_strt.wav", &s );
 	ent->sound2to1 = G_SoundIndex( s );
@@ -1664,12 +1671,7 @@ void SP_func_door( gentity_t *ent )
 	ent->soundPos1 = G_SoundIndex( s );
 
 	ent->blocked = Blocked_Door;
-
-	// default speed of 400
-	if ( !ent->config.speed )
-	{
-		ent->config.speed = 400;
-	}
+	ent->reset = reset_func_door;
 
 	// default wait of 2 seconds
 	if ( !ent->config.wait.time )
@@ -1721,13 +1723,7 @@ void SP_func_door( gentity_t *ent )
 
 	ent->nextthink = level.time + FRAMETIME;
 
-	G_SpawnInt( "health", "0", &health );
-	if ( health )
-	{
-		ent->takedamage = qtrue;
-	}
-
-	if ( ent->names[ 0 ] || health )
+	if ( ent->names[ 0 ] || ent->config.health ) //FIXME wont work yet with class fallbacks
 	{
 		// non touch/shoot doors
 		ent->think = Think_MatchGroup;
@@ -1738,10 +1734,17 @@ void SP_func_door( gentity_t *ent )
 	}
 }
 
+void reset_func_door_rotating( gentity_t *self )
+{
+	reset_floatField(&self->speed, self->config.speed, self->eclass->config.speed, 120);
+	reset_intField(&self->health, self->config.health, self->eclass->config.health, 0);
+
+	self->takedamage = !!self->health;
+}
+
 void SP_func_door_rotating( gentity_t *ent )
 {
 	char *s;
-	int  health;
 
 	G_SpawnString( "sound2to1", "sound/movers/doors/dr1_strt.wav", &s );
 	ent->sound2to1 = G_SoundIndex( s );
@@ -1754,12 +1757,7 @@ void SP_func_door_rotating( gentity_t *ent )
 	ent->soundPos1 = G_SoundIndex( s );
 
 	ent->blocked = Blocked_Door;
-
-	//default speed of 120
-	if ( !ent->config.speed )
-	{
-		ent->config.speed = 120;
-	}
+	ent->reset = reset_func_door_rotating;
 
 	// if speed is negative, positize it and add reverse flag
 	if ( ent->config.speed < 0 )
@@ -1842,13 +1840,7 @@ void SP_func_door_rotating( gentity_t *ent )
 
 	ent->nextthink = level.time + FRAMETIME;
 
-	G_SpawnInt( "health", "0", &health );
-	if ( health )
-	{
-		ent->takedamage = qtrue;
-	}
-
-	if ( ent->names[ 0 ] || health )
+	if ( ent->names[ 0 ] || ent->config.health ) //FIXME wont work yet with class fallbacks
 	{
 		// non touch/shoot doors
 		ent->think = Think_MatchGroup;
@@ -1859,6 +1851,14 @@ void SP_func_door_rotating( gentity_t *ent )
 	}
 }
 
+void reset_func_door_model( gentity_t *self )
+{
+	reset_floatField(&self->speed, self->config.speed, self->eclass->config.speed, 200);
+	reset_intField(&self->health, self->config.health, self->eclass->config.health, 0);
+
+	self->takedamage = !!self->health;
+}
+
 void SP_func_door_model( gentity_t *ent )
 {
 	char      *s;
@@ -1867,7 +1867,6 @@ void SP_func_door_model( gentity_t *ent )
 	qboolean  lightSet, colorSet;
 	char      *sound;
 	gentity_t *clipBrush;
-	int       health;
 
 	G_SpawnString( "sound2to1", "sound/movers/doors/dr1_strt.wav", &s );
 	ent->sound2to1 = G_SoundIndex( s );
@@ -1879,11 +1878,7 @@ void SP_func_door_model( gentity_t *ent )
 	G_SpawnString( "soundPos1", "sound/movers/doors/dr1_end.wav", &s );
 	ent->soundPos1 = G_SoundIndex( s );
 
-	//default speed of 100ms
-	if ( !ent->config.speed )
-	{
-		ent->config.speed = 200;
-	}
+	ent->reset = reset_func_door_model;
 
 	//default wait of 2 seconds
 	if ( ent->config.wait.time <= 0 )
@@ -2003,13 +1998,7 @@ void SP_func_door_model( gentity_t *ent )
 
 	trap_LinkEntity( ent );
 
-	G_SpawnInt( "health", "0", &health );
-	if ( health )
-	{
-		ent->takedamage = qtrue;
-	}
-
-	if ( !( ent->names[ 0 ] || health ) )
+	if ( !( ent->names[ 0 ] || ent->config.health ) ) //FIXME wont work yet with class fallbacks
 	{
 		ent->nextthink = level.time + FRAMETIME;
 		ent->think = Think_SpawnNewDoorTrigger;
@@ -2199,6 +2188,14 @@ void Touch_Button( gentity_t *ent, gentity_t *other, trace_t *trace )
 	}
 }
 
+void reset_func_button( gentity_t *self )
+{
+	reset_floatField(&self->speed, self->config.speed, self->eclass->config.speed, 40);
+	reset_intField(&self->health, self->config.health, self->eclass->config.health, 0);
+
+	self->takedamage = !!self->health;
+}
+
 void SP_func_button( gentity_t *ent )
 {
 	vec3_t abs_movedir;
@@ -2210,10 +2207,7 @@ void SP_func_button( gentity_t *ent )
 	G_SpawnString( "sound1to2", "sound/movers/switches/button1.wav", &s );
 	ent->sound1to2 = G_SoundIndex( s );
 
-	if ( !ent->config.speed )
-	{
-		ent->config.speed = 40;
-	}
+	ent->reset = reset_func_button;
 
 	if ( !ent->config.wait.time )
 	{
@@ -2238,12 +2232,7 @@ void SP_func_button( gentity_t *ent )
 	distance = abs_movedir[ 0 ] * size[ 0 ] + abs_movedir[ 1 ] * size[ 1 ] + abs_movedir[ 2 ] * size[ 2 ] - lip;
 	VectorMA( ent->restingPosition, distance, ent->movedir, ent->activatedPosition );
 
-	if ( ent->config.health )
-	{
-		// shootable button
-		ent->takedamage = qtrue;
-	}
-	else
+	if ( !ent->config.health ) //FIXME wont work yet with class fallbacks
 	{
 		// touchable button
 		ent->touch = Touch_Button;
@@ -2648,13 +2637,17 @@ BOBBING
 ===============================================================================
 */
 
+void reset_func_bobbing( gentity_t *self )
+{
+	reset_floatField(&self->speed, self->config.speed, self->eclass->config.speed, 4);
+}
+
 void SP_func_bobbing( gentity_t *ent )
 {
 	float height;
 	float phase;
 
-	if( !ent->config.speed )
-		ent->config.speed = 4;
+	ent->reset = reset_func_bobbing;
 
 	G_SpawnFloat( "height", "32", &height );
 	G_SpawnFloat( "phase", "0", &phase );
