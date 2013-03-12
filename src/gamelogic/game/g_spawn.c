@@ -134,6 +134,7 @@ static const field_t fields[] =
 	{ "random",              FOFS( config.wait.variance ),F_FLOAT,    ENT_V_COMBINED, "wait" },
 	{ "spawnflags",          FOFS( spawnflags ),          F_INT       },
 	{ "speed",               FOFS( config.speed ),        F_FLOAT     },
+	{ "stage",               FOFS( conditions.stage ),    F_INT       },
 	{ "target",			     FOFS( targets[ 0 ] ),        F_TARGET	  },
 	{ "target2", 			 FOFS( targets[ 1 ] ),        F_TARGET	  },
 	{ "target3",			 FOFS( targets[ 2 ] ),        F_TARGET	  },
