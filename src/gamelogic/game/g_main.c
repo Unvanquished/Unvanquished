@@ -507,6 +507,24 @@ void G_FindEntityGroups( void )
 
 	G_Printf( "%i groups with %i entities\n", groupCount, entityCount );
 }
+/*
+================
+G_InitSetEntities
+goes through all entities and concludes the spawn
+by calling their reset function as initiation if available
+================
+*/
+void G_InitSetEntities( void )
+{
+	int i;
+	gentity_t *entity;
+
+	for ( i = MAX_CLIENTS, entity = g_entities + i; i < level.num_entities; i++, entity++ )
+	{
+		if(entity->inuse && entity->reset)
+			entity->reset( entity );
+	}
+}
 
 /*
 =================
@@ -749,6 +767,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 
 	// general initialization
 	G_FindEntityGroups();
+	G_InitSetEntities();
 
 	BG_InitClassConfigs();
 	BG_InitBuildableConfigs();

@@ -703,11 +703,6 @@ void G_SpawnGEntityFromSpawnVars( void )
 	{
 		G_FreeEntity( spawningEntity );
 	}
-	else //call reset if available as an initial set
-	{
-		if(spawningEntity->reset)
-			spawningEntity->reset( spawningEntity );
-	}
 }
 
 targetAction_t G_GetTargetActionFor( const char* action )
