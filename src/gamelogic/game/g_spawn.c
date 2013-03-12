@@ -319,7 +319,6 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ "target_score",             SP_game_score,             CHAIN_PASSIV,     ENT_V_TMPNAME, "game_score" },
 	{ "target_speaker",           SP_env_speaker,            CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_speaker" },
 	{ "target_teleporter",        SP_target_teleporter,      CHAIN_PASSIV,     ENT_V_UNCLEAR, NULL },
-	{ "target_win",               SP_game_end,               CHAIN_PASSIV,     ENT_V_TMPNAME, "game_end" },
 
 	/**
 	 *
