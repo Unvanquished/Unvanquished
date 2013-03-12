@@ -239,6 +239,9 @@ void G_notify_sensor_stage( team_t team, stage_t stage )
 {
 	gentity_t *ent;
 
+	if( g_debugEntities.integer >= 2 )
+		G_Printf( "DEBUG: Notification of team %i staging up to %i (0-2).\n", team, stage );
+
 	ent = &g_entities[MAX_CLIENTS - 1]; //start after the reserved player slots
 	while ((ent = G_FindNextEntity(ent, FOFS( classname ), "sensor_stage")) != NULL )
 	{
@@ -276,6 +279,9 @@ sensor_end
 void G_notify_sensor_end( team_t winningTeam )
 {
 	gentity_t *ent;
+
+	if( g_debugEntities.integer >= 2 )
+		G_Printf( "DEBUG: Notification of game end. Winning team %i.\n", winningTeam );
 
 	ent = &g_entities[MAX_CLIENTS - 1]; //start after the reserved player slots
 	while ((ent = G_FindNextEntity(ent, FOFS( classname ), "sensor_stage")) != NULL )
