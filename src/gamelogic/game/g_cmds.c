@@ -2664,6 +2664,7 @@ fail_lastSpawn:
 
 	// return BP
 	G_RemoveResources( traceEnt->buildableTeam, -( int )( attr->buildPoints * ( traceEnt->health / ( float )attr->health ) ) );
+	G_QueueResources( traceEnt->buildableTeam, ( attr->buildPoints * ( traceEnt->health / ( float )attr->health ) ) - ( int )( attr->buildPoints * ( traceEnt->health / ( float )attr->health ) ) );
 
 	G_Damage( traceEnt, ent, ent, forward, tr.endpos,
 		  traceEnt->health, 0, MOD_DECONSTRUCT );
