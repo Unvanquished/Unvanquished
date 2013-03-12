@@ -29,13 +29,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 static const vec3_t playerMins = { -15, -15, -24 };
 static const vec3_t playerMaxs = { 15, 15, 32 };
 
-/*QUAKED info_player_deathmatch (1 0 1) (-16 -16 -24) (16 16 32) initial
-potential spawning position for deathmatch games.
-The first time a player enters the game, they will be at an 'initial' spot.
-Targets will be fired when someone spawns in on them.
-"nobots" will prevent bots from using this spot.
-"nohumans" will prevent non-bots from using this spot.
-*/
 void SP_info_player_deathmatch( gentity_t *ent )
 {
 	int i;
@@ -55,9 +48,6 @@ void SP_info_player_deathmatch( gentity_t *ent )
 	}
 }
 
-/*QUAKED info_player_start (1 0 0) (-16 -16 -24) (16 16 32)
-equivelant to info_player_deathmatch
-*/
 void SP_info_player_start( gentity_t *ent )
 {
 	ent->classname = "info_player_deathmatch";
