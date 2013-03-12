@@ -127,7 +127,7 @@ void trigger_multiple_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 
 void trigger_multiple_compat_reset( gentity_t *self )
 {
-	if (( self->spawnflags & 1 ) != ( self->spawnflags & 2 )) //if both are set or none are set we assume TEAM_ALL
+	if (!!( self->spawnflags & 1 ) != !!( self->spawnflags & 2 )) //if both are set or none are set we assume TEAM_ALL
 	{
 		if ( self->spawnflags & 1 )
 			self->conditions.team = TEAM_HUMANS;
