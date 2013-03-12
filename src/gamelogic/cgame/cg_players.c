@@ -3300,7 +3300,7 @@ void CG_Player( centity_t *cent )
 				// while spectating (switching between players on the human team)
 				// - don't treat as fatal, but doing so will (briefly?) cause rendering
 				// glitches if chasing; also, brief spam
-				CG_Printf( "WARNING: cent->pe.legs.skeleton.numBones != cent->pe.torso.skeleton.numBones" );
+				CG_Printf( "[skipnotify]WARNING: cent->pe.legs.skeleton.numBones != cent->pe.torso.skeleton.numBones\n" );
 			}
 
 			// combine legs and torso skeletons
