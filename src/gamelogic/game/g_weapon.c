@@ -825,7 +825,8 @@ void CheckCkitRepair( gentity_t *ent )
 	vec3_t    viewOrigin, forward, end;
 	trace_t   tr;
 	gentity_t *traceEnt;
-	int       bHealth, cost;
+	int       bHealth;
+	float     cost;
 
 	if ( ent->client->ps.weaponTime > 0 ||
 	     ent->client->ps.stats[ STAT_MISC ] > 0 )
@@ -844,12 +845,12 @@ void CheckCkitRepair( gentity_t *ent )
 	     traceEnt->s.eType == ET_BUILDABLE && traceEnt->buildableTeam == TEAM_HUMANS )
 	{
 		bHealth = BG_Buildable( traceEnt->s.modelindex )->health;
-		cost = -BG_Buildable( traceEnt->s.modelindex )->buildPoints;
+		cost = BG_Buildable( traceEnt->s.modelindex )->buildPoints / 2;
 
-		if ( traceEnt->health < bHealth && -cost <= level.humanBuildPoints )
+		if ( traceEnt->health < bHealth && ( HBUILD_HEALRATE / (float)bHealth ) * cost <= level.humanBuildPoints )
 		{
 			traceEnt->health += HBUILD_HEALRATE;
-			G_QueueResources( traceEnt->buildableTeam, ( HBUILD_HEALRATE / (float)bHealth ) * cost );
+			G_QueueResources( traceEnt->buildableTeam, ( HBUILD_HEALRATE / (float)bHealth ) * -cost );
 
 			if ( traceEnt->health >= bHealth )
 			{
