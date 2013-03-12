@@ -102,10 +102,6 @@ void    SP_env_lens_flare( gentity_t *ent );
  */
 qboolean G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFieldname, const char *actualFieldname, const int typeOfDeprecation );
 
-/*
- * Standardized entity management
- */
-
 /**
  * shared entity functions
  */
@@ -115,9 +111,13 @@ void     think_fireDelayed( gentity_t *ent );
 void     SP_RemoveSelf( gentity_t *self );
 void     SP_Nothing( gentity_t *self );
 
-/**
- * predefined field-interpretation
+/*
+ * Shared and standardized entity management
  */
+
+void     reset_intField( int* target, int instanceField, int classField, int fallback );
+void     reset_floatField( float* target, float instanceField, float classField, float fallback );
+
 void     entity_SetNextthink( gentity_t *self );
 void     SP_ConditionFields( gentity_t *self );
 void     SP_WaitFields( gentity_t *self, float defaultWait, float defaultWaitVariance );
@@ -125,3 +125,4 @@ void     SP_WaitFields( gentity_t *self, float defaultWait, float defaultWaitVar
 
 // Init functions
 void    SP_target_init( void );
+

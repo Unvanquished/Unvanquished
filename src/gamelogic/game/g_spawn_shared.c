@@ -40,6 +40,46 @@ void think_fireDelayed( gentity_t *ent )
 /*
 =================================================================================
 
+shared reset functions
+
+=================================================================================
+*/
+
+void reset_intField( int* target, int instanceField, int classField, int fallback )
+{
+	if(instanceField)
+	{
+		*target = instanceField;
+	}
+	else if (classField)
+	{
+		*target = classField;
+	}
+	else
+	{
+		*target = fallback;
+	}
+}
+
+void reset_floatField( float* target, float instanceField, float classField, float fallback )
+{
+	if(instanceField)
+	{
+		*target = instanceField;
+	}
+	else if (classField)
+	{
+		*target = classField;
+	}
+	else
+	{
+		*target = fallback;
+	}
+}
+
+/*
+=================================================================================
+
 shared class spawn functions
 
 =================================================================================
