@@ -284,7 +284,7 @@ void G_notify_sensor_end( team_t winningTeam )
 		G_Printf( "DEBUG: Notification of game end. Winning team %i.\n", winningTeam );
 
 	ent = &g_entities[MAX_CLIENTS - 1]; //start after the reserved player slots
-	while ((ent = G_FindNextEntity(ent, FOFS( classname ), "sensor_stage")) != NULL )
+	while ((ent = G_FindNextEntity(ent, FOFS( classname ), "sensor_end")) != NULL )
 	{
 		if ((winningTeam == ent->conditions.team) == !ent->conditions.negated)
 			G_FireAllTargetsOf(ent, ent);
