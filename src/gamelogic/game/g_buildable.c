@@ -357,37 +357,43 @@ buildable_t G_IsPowered( vec3_t origin )
 
 /*
 ==================
-G_GetBuildPoints
+G_GetBuildPointsInt
 
-Get the number of build points from a position
+Get the number of build points for a team
 ==================
 */
-int G_GetBuildPoints( team_t team )
+int G_GetBuildPointsInt( team_t team )
 {
-	if ( team == TEAM_ALIENS )
+	float *bp;
+
+	switch ( team )
 	{
-		return level.alienBuildPoints;
-	}
-	else if ( team == TEAM_HUMANS )
-	{
-		return level.humanBuildPoints;
+		case TEAM_ALIENS:
+			bp = &level.alienBuildPoints;
+			break;
+		case TEAM_HUMANS:
+			bp = &level.humanBuildPoints;
+			break;
+		default:
+			return 0;
 	}
 
-	return 0;
+	return (int)*bp;
 }
 
 /*
 ==================
-G_GetMarkedBuildPoints
+G_GetMarkedBuildPointsInt
 
-Get the number of marked build points from a position
+Get the number of marked build points for a team
 ==================
 */
-int G_GetMarkedBuildPoints( team_t team )
+int G_GetMarkedBuildPointsInt( team_t team )
 {
 	gentity_t *ent;
 	int       i;
 	int       sum = 0;
+	const buildableAttributes_t *attr;
 
 	if ( DECON_MARK_CHECK( INSTANT ) )
 	{
@@ -396,30 +402,13 @@ int G_GetMarkedBuildPoints( team_t team )
 
 	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 	{
-		if ( ent->s.eType != ET_BUILDABLE )
+		if ( ent->s.eType != ET_BUILDABLE || !ent->inuse || ent->health <= 0 || ent->buildableTeam != team || !ent->deconstruct )
 		{
 			continue;
 		}
 
-		if ( !ent->inuse )
-		{
-			continue;
-		}
-
-		if ( ent->health <= 0 )
-		{
-			continue;
-		}
-
-		if ( ent->buildableTeam != team )
-		{
-			continue;
-		}
-
-		if ( ent->deconstruct )
-		{
-			sum += BG_Buildable( ent->s.modelindex )->buildPoints * ( ent->health / (float)BG_Buildable( ent->s.modelindex )->health );
-		}
+		attr = BG_Buildable( ent->s.modelindex );
+		sum += attr->buildPoints * ( ent->health / (float)attr->health );
 	}
 
 	return sum;
@@ -1388,7 +1377,7 @@ void ALeech_Think( gentity_t *self )
 		// HACK: Save efficiency in percent in entityState.weaponAnim
 		self->s.weaponAnim = ( int )( (rate / level.mineRate) * 100.0f );
 
-		level.queuedAlienPoints += ( rate / 120.0f );
+		G_ModifyBuildPoints( TEAM_ALIENS, rate / 60.0f );
 	} else {
 		self->s.weaponAnim = 0;
 	}
@@ -2911,7 +2900,7 @@ void HDrill_Think( gentity_t *self )
 		// HACK: Save efficiency in percent in entityState.weaponAnim
 		self->s.weaponAnim = ( int )( (rate / level.mineRate) * 100.0f );
 
-		level.queuedHumanPoints += ( rate / 120.0f );
+		G_ModifyBuildPoints( TEAM_HUMANS, rate / 60.0f );
 	} else {
 		self->s.weaponAnim = 0;
 	}
@@ -3422,6 +3411,8 @@ void G_FreeMarkedBuildables( gentity_t *deconner, char *readable, int rsize,
 	int       totalListItems = 0;
 	gentity_t *ent;
 	int       removalCounts[ BA_NUM_BUILDABLES ] = { 0 };
+	int       refund;
+	const buildableAttributes_t *attr;
 
 	if ( readable && rsize )
 	{
@@ -3440,18 +3431,17 @@ void G_FreeMarkedBuildables( gentity_t *deconner, char *readable, int rsize,
 
 	for ( i = 0; i < level.numBuildablesForRemoval; i++ )
 	{
-		int cost;
 		ent = level.markedBuildables[ i ];
-		bNum = BG_Buildable( ent->s.modelindex )->number;
-
-		cost = BG_Buildable( ent->s.modelindex )->buildPoints * ( ent->health / (float)BG_Buildable( ent->s.modelindex )->health );
+		attr = BG_Buildable( ent->s.modelindex );
+		bNum = attr->number;
+		refund = attr->buildPoints * ( ent->health / (float)attr->health );
 
 		if ( removalCounts[ bNum ] == 0 )
 		{
 			totalListItems++;
 		}
 
-		G_RemoveResources( ent->buildableTeam, -cost );
+		G_ModifyBuildPoints( ent->buildableTeam, refund );
 
 		G_Damage( ent, NULL, deconner, NULL, NULL, ent->health, 0, MOD_REPLACE );
 
@@ -3532,7 +3522,7 @@ static itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable,
 
 	if ( team == TEAM_ALIENS )
 	{
-		remainingBP = G_GetBuildPoints( team );
+		remainingBP = G_GetBuildPointsInt( team );
 		remainingSpawns = level.numAlienSpawns;
 		bpError = IBE_NOALIENBP;
 		spawn = BA_A_SPAWN;
@@ -3546,7 +3536,7 @@ static itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable,
 		}
 		else
 		{
-			remainingBP = G_GetBuildPoints( team );
+			remainingBP = G_GetBuildPointsInt( team );
 		}
 
 		remainingSpawns = level.numHumanSpawns;
@@ -4323,8 +4313,8 @@ qboolean G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 	switch ( G_CanBuild( ent, buildable, dist, origin, normal, &groundEntNum ) )
 	{
 		case IBE_NONE:
-			G_RemoveResources( BG_Buildable( buildable )->team, BG_Buildable( buildable )->buildPoints );
 			G_Build( ent, buildable, origin, normal, ent->s.apos.trBase, groundEntNum );
+			G_ModifyBuildPoints( BG_Buildable( buildable )->team, -BG_Buildable( buildable )->buildPoints );
 			return qtrue;
 
 		case IBE_NOALIENBP:
@@ -4976,7 +4966,7 @@ void G_BuildLogRevert( int id )
 						}
 
 						// Give back resources
-						G_RemoveResources( ent->buildableTeam, -BG_Buildable( ent->s.modelindex )->buildPoints );
+						G_ModifyBuildPoints( ent->buildableTeam, BG_Buildable( ent->s.modelindex )->buildPoints );
 						G_FreeEntity( ent );
 						break;
 					}
@@ -5005,30 +4995,71 @@ void G_BuildLogRevert( int id )
 	}
 }
 
-void G_QueueResources( team_t team, float value )
+/*
+================
+G_CanAffordBuildPoints
+
+Tests wether a team can afford an amont of build points.
+The sign of amount is discarded.
+================
+*/
+qboolean G_CanAffordBuildPoints( team_t team, float amount )
 {
+	float *bp;
+
 	switch ( team )
 	{
 		case TEAM_ALIENS:
-			level.queuedAlienPoints += value;
+			bp = &level.alienBuildPoints;
 			break;
-
 		case TEAM_HUMANS:
-			level.queuedHumanPoints += value;
+			bp = &level.humanBuildPoints;
 			break;
+		default:
+			return;
+	}
+
+	if ( fabs( amount ) > *bp )
+	{
+		return qfalse;
+	}
+	else
+	{
+		return qtrue;
 	}
 }
 
-void G_RemoveResources( team_t team, int value )
+/*
+================
+G_ModifyBuildPoints
+
+Adds or removes build points from a team.
+================
+*/
+void G_ModifyBuildPoints( team_t team, float amount )
 {
+	float *bp, newbp;
+
 	switch ( team )
 	{
 		case TEAM_ALIENS:
-			level.alienBuildPoints -= value;
+			bp = &level.alienBuildPoints;
 			break;
-
 		case TEAM_HUMANS:
-			level.humanBuildPoints -= value;
+			bp = &level.humanBuildPoints;
 			break;
+		default:
+			return;
+	}
+
+	newbp = *bp + amount;
+
+	if ( newbp < 0.0f )
+	{
+		*bp = 0.0f;
+	}
+	else
+	{
+		*bp = newbp;
 	}
 }
