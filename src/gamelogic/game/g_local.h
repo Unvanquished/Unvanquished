@@ -613,11 +613,9 @@ typedef struct
 	int              numLiveAlienClients;
 	int              numLiveHumanClients;
 
-	int              alienBuildPoints;
-	float            queuedAlienPoints;
+	float            alienBuildPoints;
+	float            humanBuildPoints;
 	int              alienMineEfficiency;
-	int              humanBuildPoints;
-	float            queuedHumanPoints;
 	int              humanMineEfficiency;
 	float            mineRate;
 
@@ -795,8 +793,8 @@ void             G_LayoutLoad( void );
 void             G_BaseSelfDestruct( team_t team );
 int              G_NextQueueTime( int queuedBP, int totalBP, int queueBaseRate );
 void             G_QueueBuildPoints( gentity_t *self );
-int              G_GetBuildPoints( team_t team );
-int              G_GetMarkedBuildPoints( team_t team );
+int              G_GetBuildPointsInt( team_t team );
+int              G_GetMarkedBuildPointsInt( team_t team );
 qboolean         G_FindPower( gentity_t *self, qboolean searchUnspawned );
 gentity_t        *G_PowerEntityForPoint( const vec3_t origin );
 gentity_t        *G_PowerEntityForEntity( gentity_t *ent );
@@ -805,8 +803,8 @@ buildLog_t       *G_BuildLogNew( gentity_t *actor, buildFate_t fate );
 void             G_BuildLogSet( buildLog_t *log, gentity_t *ent );
 void             G_BuildLogAuto( gentity_t *actor, gentity_t *buildable, buildFate_t fate );
 void             G_BuildLogRevert( int id );
-void             G_QueueResources( team_t team, float value );
-void             G_RemoveResources( team_t team, int value );
+qboolean         G_CanAffordBuildPoints( team_t team, float amount );
+void             G_ModifyBuildPoints( team_t team, float amount );
 
 //
 // g_utils.c

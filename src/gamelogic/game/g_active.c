@@ -2088,8 +2088,8 @@ void ClientThink_real( gentity_t *ent )
 		}
 	}
 
-	client->ps.persistant[ PERS_BP ] = G_GetBuildPoints( client->ps.stats[ STAT_TEAM ] );
-	client->ps.persistant[ PERS_MARKEDBP ] = G_GetMarkedBuildPoints( client->ps.stats[ STAT_TEAM ] );
+	client->ps.persistant[ PERS_BP ] = G_GetBuildPointsInt( client->ps.stats[ STAT_TEAM ] );
+	client->ps.persistant[ PERS_MARKEDBP ] = G_GetMarkedBuildPointsInt( client->ps.stats[ STAT_TEAM ] );
 
 	if ( client->ps.persistant[ PERS_BP ] < 0 )
 	{
