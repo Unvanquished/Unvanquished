@@ -1510,7 +1510,7 @@ void manualTriggerSpectator( gentity_t *trigger, gentity_t *player )
 
 
 	//restrict this hack to trigger_multiple only for now
-	if ( strcmp( trigger->classname, "trigger_multiple" ) )
+	if ( strcmp( trigger->classname, "sensor_player" ) )
 	{
 		return;
 	}
