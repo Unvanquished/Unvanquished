@@ -21,10 +21,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-void    SP_info_player_start( gentity_t *ent );
-void    SP_info_player_deathmatch( gentity_t *ent );
-void    SP_info_player_intermission( gentity_t *ent );
-
 void    SP_func_plat( gentity_t *ent );
 void    SP_func_static( gentity_t *ent );
 void    SP_func_dynamic( gentity_t *ent );
@@ -46,6 +42,13 @@ void    SP_ctrl_limited( gentity_t *ent );
 void    SP_game_score( gentity_t *ent );
 void    SP_game_end( gentity_t *ent );
 
+void    SP_path_corner( gentity_t *self );
+void    SP_pos_player_start( gentity_t *ent );
+void    SP_pos_player_deathmatch( gentity_t *ent );
+void    SP_pos_player_intermission( gentity_t *ent );
+void    SP_pos_target( gentity_t *ent );
+void    SP_pos_location( gentity_t *ent );
+
 void    SP_sensor_start( gentity_t *ent );
 void    SP_sensor_stage( gentity_t *ent );
 void    SP_sensor_end( gentity_t *ent );
@@ -56,14 +59,10 @@ void    SP_sensor_timer( gentity_t *self );
 void    SP_target_print( gentity_t *ent );
 void    SP_target_teleporter( gentity_t *ent );
 void    SP_target_kill( gentity_t *ent );
-void    SP_target_position( gentity_t *ent );
-void    SP_target_location( gentity_t *ent );
 void    SP_target_push( gentity_t *ent );
 void    SP_target_alien_win( gentity_t *ent );
 void    SP_target_human_win( gentity_t *ent );
 void    SP_target_hurt( gentity_t *ent );
-
-void    SP_path_corner( gentity_t *self );
 
 void    SP_env_afx_push( gentity_t *ent );
 void    SP_env_afx_teleport( gentity_t *ent );
@@ -124,5 +123,5 @@ void     SP_WaitFields( gentity_t *self, float defaultWait, float defaultWaitVar
 
 
 // Init functions
-void    SP_target_init( void );
+void    SP_position_init( void );
 

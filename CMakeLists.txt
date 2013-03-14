@@ -715,6 +715,7 @@ set( GAMEGPP_BASE
   ${GPP_DIR}/game/g_spawn_environment.c
   ${GPP_DIR}/game/g_spawn_game.c
   ${GPP_DIR}/game/g_spawn_mover.c
+  ${GPP_DIR}/game/g_spawn_position.c
   ${GPP_DIR}/game/g_spawn_sensor.c
   ${GPP_DIR}/game/g_spawn_shared.c
   ${GPP_DIR}/game/g_spawn_target.c

@@ -1818,7 +1818,7 @@ void FindIntermissionPoint( void )
 	vec3_t    dir;
 
 	// find the intermission spot
-	ent = G_PickRandomEntity( FOFS( classname ), "info_player_intermission" );
+	ent = G_PickRandomEntity( FOFS( classname ), "pos_player_intermission" );
 
 	if ( !ent )
 	{

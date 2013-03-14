@@ -263,20 +263,15 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ "game_end",                 SP_game_end,               CHAIN_PASSIV,     ENT_V_CURRENT, NULL },
 
 	/**
-	 *
-	 *	Information entities
-	 *	====================
-	 *	info entities don't do anything at all, but provide positional
-	 *	information for things controlled by other processes
-	 *
+	 * former information and misc entities
 	 */
-	{ "info_alien_intermission",  SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL  },
-	{ "info_human_intermission",  SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL  },
-	{ "info_notnull",             SP_target_position,        CHAIN_TARGET,     ENT_V_TMPNAME, "target_position" },
+	{ "info_alien_intermission",  SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "pos_alien_intermission"  },
+	{ "info_human_intermission",  SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "pos_human_intermission"  },
+	{ "info_notnull",             SP_pos_target,             CHAIN_TARGET,     ENT_V_TMPNAME, "pos_target" },
 	{ "info_null",                SP_RemoveSelf,             0,                ENT_V_UNCLEAR, NULL },
-	{ "info_player_deathmatch",   SP_info_player_deathmatch, CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ "info_player_intermission", SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ "info_player_start",        SP_info_player_start,      CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "info_player_deathmatch",   SP_pos_player_deathmatch,  CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "pos_player_deathmatch" },
+	{ "info_player_intermission", SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "pos_player_intermission" },
+	{ "info_player_start",        SP_pos_player_start,       CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "pos_player_start" },
 	{ "light",                    SP_RemoveSelf,             0,                ENT_V_UNCLEAR, NULL },
 	{ "misc_anim_model",          SP_env_animated_model,     CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_animated_model" },
 	{ "misc_light_flare",         SP_env_lens_flare,         CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_lens_flare"},
@@ -284,8 +279,24 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ "misc_particle_system",     SP_env_particle_system,    CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_particle_system"},
 	{ "misc_portal_camera",       SP_env_portal_camera,      CHAIN_TARGET,     ENT_V_TMPNAME, "env_portal_camera" },
 	{ "misc_portal_surface",      SP_env_portal_surface,     CHAIN_ACTIVE,     ENT_V_TMPNAME, "env_portal_surface" },
-	{ "misc_teleporter_dest",     SP_target_position,        CHAIN_TARGET,     ENT_V_TMPNAME, "target_position" },
+	{ "misc_teleporter_dest",     SP_pos_target,             CHAIN_TARGET,     ENT_V_TMPNAME, "pos_target" },
+
+	/**
+	 *  Position entities
+	 *  =================
+	 *  position entities may get used by other entities or other processes as provider for positional data
+	 *
+	 *  positions may or may not have an additional direction attached to them
+	 *  they may also target to another position to indicate that direction
+	 */
 	{ "path_corner",              SP_path_corner,            CHAIN_TARGET,     ENT_V_UNCLEAR, NULL },
+	{ "pos_alien_intermission",   SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "pos_human_intermission",   SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "pos_location",             SP_pos_location,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "pos_player_deathmatch",    SP_pos_player_deathmatch,  CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "pos_player_intermission",  SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "pos_player_start",         SP_pos_player_start,       CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "pos_position",             SP_pos_target,             CHAIN_TARGET,     ENT_V_UNCLEAR, NULL },
 
 	/**
 	 *  Sensors
@@ -317,8 +328,8 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ "target_human_win",         SP_target_human_win,       CHAIN_PASSIV,     ENT_V_TMPNAME, "game_end" },
 	{ "target_hurt",              SP_target_hurt,            CHAIN_PASSIV,     ENT_V_UNCLEAR, NULL },
 	{ "target_kill",              SP_target_kill,            CHAIN_PASSIV,     ENT_V_UNCLEAR, NULL },
-	{ "target_location",          SP_target_location,        CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ "target_position",          SP_target_position,        CHAIN_TARGET,     ENT_V_UNCLEAR, NULL },
+	{ "target_location",          SP_pos_location,           CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "pos_location" },
+	{ "target_position",          SP_pos_target,             CHAIN_TARGET,     ENT_V_TMPNAME, "pos_target" },
 	{ "target_print",             SP_target_print,           CHAIN_PASSIV,     ENT_V_UNCLEAR, NULL },
 	{ "target_push",              SP_target_push,            CHAIN_PASSIV,     ENT_V_UNCLEAR, NULL },
 	{ "target_relay",             SP_ctrl_relay,             CHAIN_RELAY,      ENT_V_TMPNAME, "ctrl_relay" },
@@ -966,7 +977,7 @@ void G_SpawnEntitiesFromString( void )
 		G_Error( "SpawnEntities: no entities" );
 	}
 
-	SP_target_init();
+	SP_position_init();
 	SP_worldspawn();
 
 	// parse ents

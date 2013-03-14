@@ -29,31 +29,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 static const vec3_t playerMins = { -15, -15, -24 };
 static const vec3_t playerMaxs = { 15, 15, 32 };
 
-void SP_info_player_deathmatch( gentity_t *ent )
-{
-	int i;
-
-	G_SpawnInt( "nobots", "0", &i );
-
-	if ( i )
-	{
-		ent->flags |= FL_NO_BOTS;
-	}
-
-	G_SpawnInt( "nohumans", "0", &i );
-
-	if ( i )
-	{
-		ent->flags |= FL_NO_HUMANS;
-	}
-}
-
-void SP_info_player_start( gentity_t *ent )
-{
-	ent->classname = "info_player_deathmatch";
-	SP_info_player_deathmatch( ent );
-}
-
 /*
 ===============
 G_AddCreditToClient
@@ -149,7 +124,7 @@ gentity_t *G_SelectRandomFurthestSpawnPoint( vec3_t avoidPoint, vec3_t origin, v
 	numSpots = 0;
 	spot = &g_entities[MAX_CLIENTS - 1]; //start after the reserved player slots
 
-	while ( ( spot = G_FindNextEntity( spot, FOFS( classname ), "info_player_deathmatch" ) ) != NULL )
+	while ( ( spot = G_FindNextEntity( spot, FOFS( classname ), "pos_player_deathmatch" ) ) != NULL )
 	{
 		if ( SpotWouldTelefrag( spot ) )
 		{
@@ -197,7 +172,7 @@ gentity_t *G_SelectRandomFurthestSpawnPoint( vec3_t avoidPoint, vec3_t origin, v
 
 	if ( !numSpots )
 	{
-		spot = G_FindNextEntity( &g_entities[MAX_CLIENTS], FOFS( classname ), "info_player_deathmatch" );
+		spot = G_FindNextEntity( &g_entities[MAX_CLIENTS], FOFS( classname ), "pos_player_deathmatch" );
 
 		if ( !spot )
 		{
@@ -354,7 +329,7 @@ gentity_t *G_SelectAlienLockSpawnPoint( vec3_t origin, vec3_t angles )
 	gentity_t *spot;
 
 	spot = &g_entities[MAX_CLIENTS]; //start after the reserved player slots
-	spot = G_PickRandomEntity( FOFS( classname ), "info_alien_intermission" );
+	spot = G_PickRandomEntity( FOFS( classname ), "pos_alien_intermission" );
 
 	if ( !spot )
 	{
@@ -380,7 +355,7 @@ gentity_t *G_SelectHumanLockSpawnPoint( vec3_t origin, vec3_t angles )
 	gentity_t *spot;
 
 	spot = &g_entities[MAX_CLIENTS]; //start after the reserved player slots
-	spot = G_PickRandomEntity( FOFS( classname ), "info_human_intermission" );
+	spot = G_PickRandomEntity( FOFS( classname ), "pos_human_intermission" );
 
 	if ( !spot )
 	{

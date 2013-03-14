@@ -167,70 +167,6 @@ void SP_target_kill( gentity_t *self )
 /*
 =================================================================================
 
-target_position
-
-=================================================================================
-*/
-void SP_target_position( gentity_t *self )
-{
-	G_SetOrigin( self, self->s.origin );
-}
-
-/*
-=================================================================================
-
-target_location
-
-=================================================================================
-*/
-static int target_location_counter = 1;
-
-void SP_target_location( gentity_t *self )
-{
-	char       *message;
-	self->s.eType = ET_LOCATION;
-	self->r.svFlags = SVF_BROADCAST;
-	trap_LinkEntity( self );  // make the server send them to the clients
-
-	if ( target_location_counter == MAX_LOCATIONS )
-	{
-		if(g_debugEntities.integer > -1)
-			G_Printf( "^3WARNING: ^7too many locations set\n" );
-		return;
-	}
-
-	if ( G_SpawnInt( "count", "", &self->customNumber) )
-	{
-		if ( self->customNumber < 0 )
-		{
-			self->customNumber = 0;
-		}
-
-		if ( self->customNumber > 7 )
-		{
-			self->customNumber = 7;
-		}
-
-		message = va( "%c%c%s" S_COLOR_WHITE, Q_COLOR_ESCAPE, self->customNumber + '0',
-		              self->message );
-	}
-	else
-	{
-		message = self->message;
-	}
-
-	trap_SetConfigstring( CS_LOCATIONS + target_location_counter, message );
-	self->nextPathSegment = level.locationHead;
-	self->s.generic1 = target_location_counter; // use for location marking
-	level.locationHead = self;
-	target_location_counter++;
-
-	G_SetOrigin( self, self->s.origin );
-}
-
-/*
-=================================================================================
-
 target_hurt
 
 =================================================================================
@@ -256,15 +192,3 @@ void SP_target_hurt( gentity_t *self )
 	self->use = target_hurt_use;
 }
 
-/*
-=================================================================================
-
-init
-
-=================================================================================
-*/
-
-void SP_target_init( void )
-{
-	target_location_counter = 1;
-}
