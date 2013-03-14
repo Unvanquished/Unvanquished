@@ -632,7 +632,7 @@ qboolean BotGetBuildingToBuild( gentity_t *self, vec3_t origin, vec3_t normal, b
 		}
 
 		//check if we have enough buildpoints in a location to build something
-		if ( G_GetBuildPoints( BotGetEntityTeam( self ) ) < BG_Buildable( *building )->buildPoints )
+		if ( G_GetBuildPointsInt( BotGetEntityTeam( self ) ) < BG_Buildable( *building )->buildPoints )
 		{
 			//not enough build points, check if there is something we can decon to make room
 			if ( BotFindBestHDecon( self, *building, origin ) == ENTITYNUM_NONE )
