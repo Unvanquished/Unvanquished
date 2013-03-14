@@ -5016,7 +5016,7 @@ qboolean G_CanAffordBuildPoints( team_t team, float amount )
 			bp = &level.humanBuildPoints;
 			break;
 		default:
-			return;
+			return qfalse;
 	}
 
 	if ( fabs( amount ) > *bp )
