@@ -1140,6 +1140,27 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
 	}
 }
 
+void reset_mover( gentity_t *self )
+{
+	vec3_t   move;
+	float    distance;
+
+	// calculate time to reach second position from speed
+	VectorSubtract( self->activatedPosition, self->restingPosition, move );
+	distance = VectorLength( move );
+
+	if(!self->speed)
+		G_Error("No default speed was set for entity #%i of type %s before calling the shared reset function.\n", self->s.number, self->classname);
+
+	VectorScale( move, self->speed, self->s.pos.trDelta );
+	self->s.pos.trDuration = distance * 1000 / self->speed;
+
+	if ( self->s.pos.trDuration <= 0 )
+	{
+		self->s.pos.trDuration = 1;
+	}
+}
+
 /*
 ================
 InitMover
@@ -1150,8 +1171,6 @@ so the movement delta can be calculated
 */
 void InitMover( gentity_t *ent )
 {
-	vec3_t   move;
-	float    distance;
 	float    light;
 	vec3_t   color;
 	qboolean lightSet, colorSet;
@@ -1230,22 +1249,26 @@ void InitMover( gentity_t *ent )
 
 	ent->s.pos.trType = TR_STATIONARY;
 	VectorCopy( ent->restingPosition, ent->s.pos.trBase );
+}
+
+void reset_rotator( gentity_t *self )
+{
+	vec3_t   move;
+	float    angle;
 
 	// calculate time to reach second position from speed
-	VectorSubtract( ent->activatedPosition, ent->restingPosition, move );
-	distance = VectorLength( move );
+	VectorSubtract( self->activatedPosition, self->restingPosition, move );
+	angle = VectorLength( move );
 
-	if ( !ent->config.speed )
+	if(!self->speed)
+		G_Error("No default speed was set for entity #%i of type %s before calling the shared reset function.\n", self->s.number, self->classname);
+
+	VectorScale( move, self->speed, self->s.apos.trDelta );
+	self->s.apos.trDuration = angle * 1000 / self->speed;
+
+	if ( self->s.apos.trDuration <= 0 )
 	{
-		ent->config.speed = 100;
-	}
-
-	VectorScale( move, ent->config.speed, ent->s.pos.trDelta );
-	ent->s.pos.trDuration = distance * 1000 / ent->config.speed;
-
-	if ( ent->s.pos.trDuration <= 0 )
-	{
-		ent->s.pos.trDuration = 1;
+		self->s.apos.trDuration = 1;
 	}
 }
 
@@ -1259,8 +1282,6 @@ so the movement delta can be calculated
 */
 void InitRotator( gentity_t *ent )
 {
-	vec3_t   move;
-	float    angle;
 	float    light;
 	vec3_t   color;
 	qboolean lightSet, colorSet;
@@ -1339,23 +1360,6 @@ void InitRotator( gentity_t *ent )
 
 	ent->s.apos.trType = TR_STATIONARY;
 	VectorCopy( ent->restingPosition, ent->s.apos.trBase );
-
-	// calculate time to reach second position from speed
-	VectorSubtract( ent->activatedPosition, ent->restingPosition, move );
-	angle = VectorLength( move );
-
-	if ( !ent->config.speed )
-	{
-		ent->config.speed = 120;
-	}
-
-	VectorScale( move, ent->config.speed, ent->s.apos.trDelta );
-	ent->s.apos.trDuration = angle * 1000 / ent->config.speed;
-
-	if ( ent->s.apos.trDuration <= 0 )
-	{
-		ent->s.apos.trDuration = 1;
-	}
 }
 
 /*
@@ -1650,6 +1654,8 @@ void reset_func_door( gentity_t *self )
 	reset_intField(&self->health, self->config.health, self->eclass->config.health, 0);
 
 	self->takedamage = !!self->health;
+
+	reset_mover( self );
 }
 
 void SP_func_door( gentity_t *ent )
@@ -1740,6 +1746,8 @@ void reset_func_door_rotating( gentity_t *self )
 	reset_intField(&self->health, self->config.health, self->eclass->config.health, 0);
 
 	self->takedamage = !!self->health;
+
+	reset_rotator( self );
 }
 
 void SP_func_door_rotating( gentity_t *ent )
@@ -2125,8 +2133,8 @@ void SP_func_plat( gentity_t *ent )
 
 	VectorClear( ent->s.angles );
 
-	if( !ent->config.speed )
-		ent->config.speed = 400;
+	reset_floatField(&ent->speed, ent->config.speed, ent->eclass->config.speed, 400);
+
 	G_SpawnFloat( "lip", "8", &lip );
 
 	if( !ent->damage )
@@ -2151,6 +2159,7 @@ void SP_func_plat( gentity_t *ent )
 	ent->restingPosition[ 2 ] -= height;
 
 	InitMover( ent );
+	reset_mover( ent );
 
 	// touch function keeps the plat from returning while
 	// a live player is standing on it
@@ -2194,6 +2203,8 @@ void reset_func_button( gentity_t *self )
 	reset_intField(&self->health, self->config.health, self->eclass->config.health, 0);
 
 	self->takedamage = !!self->health;
+
+	reset_mover( self );
 }
 
 void SP_func_button( gentity_t *ent )
@@ -2531,13 +2542,11 @@ void SP_func_train( gentity_t *self )
 		self->damage = 2;
 	}
 
-	if ( !self->config.speed )
-	{
-		self->config.speed = 100;
-	}
+	reset_floatField(&self->speed, self->config.speed, self->eclass->config.speed, 100);
 
 	trap_SetBrushModel( self, self->model );
 	InitMover( self );
+	reset_mover( self );
 
 	self->reached = Reached_Train;
 	self->use = Use_Train;
@@ -2561,6 +2570,7 @@ void SP_func_static( gentity_t *ent )
 {
 	trap_SetBrushModel( ent, ent->model );
 	InitMover( ent );
+	reset_mover( ent );
 	VectorCopy( ent->s.origin, ent->s.pos.trBase );
 	VectorCopy( ent->s.origin, ent->r.currentOrigin );
 }
@@ -2570,6 +2580,7 @@ void SP_func_dynamic( gentity_t *ent )
 	trap_SetBrushModel( ent, ent->model );
 
 	InitMover( ent );
+	reset_mover( ent );
 
 	ent->flags |= FL_GROUPSLAVE;
 
@@ -2588,10 +2599,7 @@ ROTATING
 
 void SP_func_rotating( gentity_t *ent )
 {
-	if ( !ent->config.speed )
-	{
-		ent->config.speed = 100;
-	}
+	reset_floatField(&ent->speed, ent->config.speed, ent->eclass->config.speed, 400);
 
 	// set the axis of rotation
 	ent->s.apos.trType = TR_LINEAR;
@@ -2616,6 +2624,7 @@ void SP_func_rotating( gentity_t *ent )
 
 	trap_SetBrushModel( ent, ent->model );
 	InitMover( ent );
+	reset_mover( ent );
 
 	VectorCopy( ent->s.origin, ent->s.pos.trBase );
 	VectorCopy( ent->s.pos.trBase, ent->r.currentOrigin );
@@ -2635,6 +2644,7 @@ BOBBING
 void reset_func_bobbing( gentity_t *self )
 {
 	reset_floatField(&self->speed, self->config.speed, self->eclass->config.speed, 4);
+	reset_mover( self );
 }
 
 void SP_func_bobbing( gentity_t *ent )
@@ -2689,8 +2699,7 @@ void SP_func_pendulum( gentity_t *ent )
 	float length;
 	float phase;
 
-	if( !ent->config.speed )
-		ent->config.speed = 30;
+	reset_floatField(&ent->speed, ent->config.speed, ent->eclass->config.speed, 30);
 
 	G_SpawnFloat( "phase", "0", &phase );
 
@@ -2712,6 +2721,7 @@ void SP_func_pendulum( gentity_t *ent )
 	ent->s.pos.trDuration = ( 1000 / freq );
 
 	InitMover( ent );
+	reset_mover( ent );
 
 	VectorCopy( ent->s.origin, ent->s.pos.trBase );
 	VectorCopy( ent->s.origin, ent->r.currentOrigin );
