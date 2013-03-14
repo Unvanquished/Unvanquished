@@ -845,6 +845,8 @@ AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 	vec3_t targetPos;
 	vec3_t selfPos;
 
+	const buildableAttributes_t *buildable;
+
 	if ( node != self->botMind->currentNode )
 	{
 		if ( !BotChangeGoalEntity( self, self->botMind->closestDamagedBuilding.ent ) )
@@ -863,7 +865,14 @@ AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_FAILURE;
 	}
 
-	if ( self->botMind->goal.ent->health >= BG_Buildable( ( buildable_t )self->botMind->goal.ent->s.modelindex )->health )
+	buildable = BG_Buildable( ( buildable_t )self->botMind->goal.ent->s.modelindex );
+
+	if ( !G_CanAffordBuildPoints( TEAM_HUMANS, G_GetRepairCostForBuilding( buildable ) ) )
+	{
+		return STATUS_FAILURE;
+	}
+
+	if ( self->botMind->goal.ent->health >= buildable->health )
 	{
 		return STATUS_SUCCESS;
 	}
@@ -905,6 +914,7 @@ gentity_t* BotFindDamagedFriendlyStructure( gentity_t *self )
 	for ( target = &g_entities[MAX_CLIENTS]; target < &g_entities[level.num_entities - 1]; target++ )
 	{
 		float distance;
+		const buildableAttributes_t *buildable;
 
 		if ( target->s.eType != ET_BUILDABLE )
 		{
@@ -914,7 +924,8 @@ gentity_t* BotFindDamagedFriendlyStructure( gentity_t *self )
 		{
 			continue;
 		}
-		if ( target->health >= BG_Buildable( ( buildable_t )target->s.modelindex )->health )
+		buildable = BG_Buildable( ( buildable_t )target->s.modelindex );
+		if ( target->health >= buildable->health )
 		{
 			continue;
 		}
@@ -926,7 +937,10 @@ gentity_t* BotFindDamagedFriendlyStructure( gentity_t *self )
 		{
 			continue;
 		}
-
+		if ( !G_CanAffordBuildPoints( TEAM_HUMANS, G_GetRepairCostForBuilding( buildable ) ) )
+		{
+			continue;
+		}
 		distance = DistanceSquared( self->s.origin, target->s.origin );
 		if ( distance <= minDistance )
 		{
