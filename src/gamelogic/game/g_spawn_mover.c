@@ -2464,11 +2464,6 @@ void Think_SetupTrainTargets( gentity_t *ent )
 	Reached_Train( ent );
 }
 
-void SP_path_corner( gentity_t *self )
-{
-	// path corners don't need to be linked in
-}
-
 /*
 ================
 Blocked_Train

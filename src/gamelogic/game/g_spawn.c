@@ -289,7 +289,7 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	 *  positions may or may not have an additional direction attached to them
 	 *  they may also target to another position to indicate that direction
 	 */
-	{ "path_corner",              SP_path_corner,            CHAIN_TARGET,     ENT_V_UNCLEAR, NULL },
+	{ "path_corner",              SP_Nothing,                CHAIN_TARGET,     ENT_V_UNCLEAR, NULL },
 	{ "pos_alien_intermission",   SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "pos_human_intermission",   SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "pos_location",             SP_pos_location,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
