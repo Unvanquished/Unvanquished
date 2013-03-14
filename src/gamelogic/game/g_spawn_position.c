@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "g_local.h"
 #include "g_spawn.h"
 
-void SP_pos_player_deathmatch( gentity_t *ent )
+void SP_pos_player_spawn( gentity_t *ent )
 {
 	int i;
 
@@ -41,12 +41,6 @@ void SP_pos_player_deathmatch( gentity_t *ent )
 	{
 		ent->flags |= FL_NO_HUMANS;
 	}
-}
-
-void SP_pos_player_start( gentity_t *ent )
-{
-	ent->classname = "info_player_deathmatch";
-	SP_pos_player_deathmatch( ent );
 }
 
 /*

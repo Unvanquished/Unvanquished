@@ -43,8 +43,7 @@ void    SP_game_score( gentity_t *ent );
 void    SP_game_end( gentity_t *ent );
 
 void    SP_path_corner( gentity_t *self );
-void    SP_pos_player_start( gentity_t *ent );
-void    SP_pos_player_deathmatch( gentity_t *ent );
+void    SP_pos_player_spawn( gentity_t *ent );
 void    SP_pos_player_intermission( gentity_t *ent );
 void    SP_pos_target( gentity_t *ent );
 void    SP_pos_location( gentity_t *ent );

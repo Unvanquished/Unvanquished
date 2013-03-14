@@ -269,9 +269,9 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ "info_human_intermission",  SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "pos_human_intermission"  },
 	{ "info_notnull",             SP_pos_target,             CHAIN_TARGET,     ENT_V_TMPNAME, "pos_target" },
 	{ "info_null",                SP_RemoveSelf,             0,                ENT_V_UNCLEAR, NULL },
-	{ "info_player_deathmatch",   SP_pos_player_deathmatch,  CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "pos_player_deathmatch" },
+	{ "info_player_deathmatch",   SP_pos_player_spawn,       CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "pos_player_spawn" },
 	{ "info_player_intermission", SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "pos_player_intermission" },
-	{ "info_player_start",        SP_pos_player_start,       CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "pos_player_start" },
+	{ "info_player_start",        SP_pos_player_spawn,       CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "pos_player_spawn" },
 	{ "light",                    SP_RemoveSelf,             0,                ENT_V_UNCLEAR, NULL },
 	{ "misc_anim_model",          SP_env_animated_model,     CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_animated_model" },
 	{ "misc_light_flare",         SP_env_lens_flare,         CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_lens_flare"},
@@ -293,9 +293,8 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ "pos_alien_intermission",   SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "pos_human_intermission",   SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "pos_location",             SP_pos_location,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ "pos_player_deathmatch",    SP_pos_player_deathmatch,  CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "pos_player_intermission",  SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ "pos_player_start",         SP_pos_player_start,       CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "pos_player_spawn",         SP_pos_player_spawn,       CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "pos_position",             SP_pos_target,             CHAIN_TARGET,     ENT_V_UNCLEAR, NULL },
 
 	/**

@@ -124,7 +124,7 @@ gentity_t *G_SelectRandomFurthestSpawnPoint( vec3_t avoidPoint, vec3_t origin, v
 	numSpots = 0;
 	spot = &g_entities[MAX_CLIENTS - 1]; //start after the reserved player slots
 
-	while ( ( spot = G_FindNextEntity( spot, FOFS( classname ), "pos_player_deathmatch" ) ) != NULL )
+	while ( ( spot = G_FindNextEntity( spot, FOFS( classname ), "pos_player_spawn" ) ) != NULL )
 	{
 		if ( SpotWouldTelefrag( spot ) )
 		{
@@ -172,7 +172,7 @@ gentity_t *G_SelectRandomFurthestSpawnPoint( vec3_t avoidPoint, vec3_t origin, v
 
 	if ( !numSpots )
 	{
-		spot = G_FindNextEntity( &g_entities[MAX_CLIENTS], FOFS( classname ), "pos_player_deathmatch" );
+		spot = G_FindNextEntity( &g_entities[MAX_CLIENTS], FOFS( classname ), "pos_player_spawn" );
 
 		if ( !spot )
 		{
