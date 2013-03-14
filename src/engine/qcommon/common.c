@@ -420,7 +420,7 @@ void NORETURN Com_Quit_f( void )
 		VM_Forced_Unload_Start();
 		SV_Shutdown( p[ 0 ] ? p : "Server quit\n" );
 //bani
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 		CL_ShutdownCGame();
 #endif
 		CL_Shutdown();
@@ -648,192 +648,6 @@ void Info_Print( const char *s )
 
 		Com_Printf( "%s\n", value );
 	}
-}
-
-/*
-============
-Com_StringContains
-============
-*/
-char           *Com_StringContains( char *str1, char *str2, int casesensitive )
-{
-	int len, i, j;
-
-	len = strlen( str1 ) - strlen( str2 );
-
-	for ( i = 0; i <= len; i++, str1++ )
-	{
-		for ( j = 0; str2[ j ]; j++ )
-		{
-			if ( casesensitive )
-			{
-				if ( str1[ j ] != str2[ j ] )
-				{
-					break;
-				}
-			}
-			else
-			{
-				if ( toupper( str1[ j ] ) != toupper( str2[ j ] ) )
-				{
-					break;
-				}
-			}
-		}
-
-		if ( !str2[ j ] )
-		{
-			return str1;
-		}
-	}
-
-	return NULL;
-}
-
-/*
-============
-Com_Filter
-============
-*/
-int Com_Filter( char *filter, char *name, int casesensitive )
-{
-	char buf[ MAX_TOKEN_CHARS ];
-	char *ptr;
-	int  i, found;
-
-	while ( *filter )
-	{
-		if ( *filter == '*' )
-		{
-			filter++;
-
-			for ( i = 0; *filter; i++ )
-			{
-				if ( *filter == '*' || *filter == '?' )
-				{
-					break;
-				}
-
-				buf[ i ] = *filter;
-				filter++;
-			}
-
-			buf[ i ] = '\0';
-
-			if ( strlen( buf ) )
-			{
-				ptr = Com_StringContains( name, buf, casesensitive );
-
-				if ( !ptr )
-				{
-					return qfalse;
-				}
-
-				name = ptr + strlen( buf );
-			}
-		}
-		else if ( *filter == '?' )
-		{
-			filter++;
-			name++;
-		}
-		else if ( *filter == '[' && * ( filter + 1 ) == '[' )
-		{
-			filter++;
-		}
-		else if ( *filter == '[' )
-		{
-			filter++;
-			found = qfalse;
-
-			while ( *filter && !found )
-			{
-				if ( *filter == ']' && * ( filter + 1 ) != ']' )
-				{
-					break;
-				}
-
-				if ( * ( filter + 1 ) == '-' && * ( filter + 2 ) && ( * ( filter + 2 ) != ']' || * ( filter + 3 ) == ']' ) )
-				{
-					if ( casesensitive )
-					{
-						if ( *name >= *filter && *name <= * ( filter + 2 ) )
-						{
-							found = qtrue;
-						}
-					}
-					else
-					{
-						if ( toupper( *name ) >= toupper( *filter ) && toupper( *name ) <= toupper( * ( filter + 2 ) ) )
-						{
-							found = qtrue;
-						}
-					}
-
-					filter += 3;
-				}
-				else
-				{
-					if ( casesensitive )
-					{
-						if ( *filter == *name )
-						{
-							found = qtrue;
-						}
-					}
-					else
-					{
-						if ( toupper( *filter ) == toupper( *name ) )
-						{
-							found = qtrue;
-						}
-					}
-
-					filter++;
-				}
-			}
-
-			if ( !found )
-			{
-				return qfalse;
-			}
-
-			while ( *filter )
-			{
-				if ( *filter == ']' && * ( filter + 1 ) != ']' )
-				{
-					break;
-				}
-
-				filter++;
-			}
-
-			filter++;
-			name++;
-		}
-		else
-		{
-			if ( casesensitive )
-			{
-				if ( *filter != *name )
-				{
-					return qfalse;
-				}
-			}
-			else
-			{
-				if ( toupper( *filter ) != toupper( *name ) )
-				{
-					return qfalse;
-				}
-			}
-
-			filter++;
-			name++;
-		}
-	}
-
-	return qtrue;
 }
 
 /*
@@ -2066,12 +1880,12 @@ The server calls this before shutting down or loading a new map
 */
 void Hunk_Clear( void )
 {
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 	CL_ShutdownCGame();
 	CL_ShutdownUI();
 #endif
 	SV_ShutdownGameProgs();
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 	CIN_CloseAllVideos();
 #endif
 	hunk_low.mark = 0;
@@ -2709,7 +2523,7 @@ Returns last event time
 =================
 */
 
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 extern qboolean consoleButtonWasPressed;
 void Rocket_InjectMouseMotion( int x , int y );
 #endif
@@ -2762,7 +2576,7 @@ int Com_EventLoop( void )
 				break;
 
 			case SE_CHAR:
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 
 				// fretn
 				// we just pressed the console button,
@@ -2781,7 +2595,7 @@ int Com_EventLoop( void )
 
 			case SE_MOUSE:
 				CL_MouseEvent( ev.evValue, ev.evValue2, ev.evTime );
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 				Rocket_InjectMouseMotion( ev.evValue, ev.evValue2 );
 #endif
 				break;
@@ -3158,7 +2972,7 @@ void Com_Init( char *commandLine )
 
 	Cbuf_AddText( "exec default.cfg\n" );
 
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 	// skip the q3config.cfg if "safe" is on the command line
 	if ( !Com_SafeMode() )
 	{
@@ -3230,7 +3044,7 @@ void Com_Init( char *commandLine )
 	// override anything from the config files with command line args
 	Com_StartupVariable( NULL );
 
-#ifdef DEDICATED
+#if defined(DEDICATED)
 	// TTimo: default to Internet dedicated, not LAN dedicated
 	com_dedicated = Cvar_Get( "dedicated", "2", CVAR_ROM );
 	Cvar_CheckRange( com_dedicated, 1, 2, qtrue );
@@ -3313,7 +3127,7 @@ void Com_Init( char *commandLine )
 
 	Cmd_AddCommand( "quit", Com_Quit_f );
 	Cmd_AddCommand( "writeconfig", Com_WriteConfig_f );
-#ifndef DEDICATED
+#if !defined(DEDICATED)
 	Cmd_AddCommand( "writebindings", Com_WriteBindings_f );
 #endif
 
@@ -3508,7 +3322,7 @@ void Com_WriteConfiguration( void )
 		}
 	}
 
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 	if ( bindingsModified )
 	{
 		bindingsModified = qfalse;
@@ -3555,7 +3369,7 @@ Com_WriteBindings_f
 Write the key bindings file to a specific name
 ===============
 */
-#ifndef DEDICATED
+#if !defined(DEDICATED)
 void Com_WriteBindings_f( void )
 {
 	char filename[ MAX_QPATH ];
@@ -4235,7 +4049,7 @@ static qboolean Field_Complete( void )
 	return qfalse;
 }
 
-#ifndef DEDICATED
+#if !defined(DEDICATED)
 
 static void Field_TeamnameCompletion( void ( *callback )( const char *s ), int flags )
 {
@@ -4401,7 +4215,7 @@ void Field_CompleteCommand( char *cmd,
 		completionString = Cmd_Argv( completionArgument - 1 );
 	}
 
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 
 	// Unconditionally add a '\' to the start of the buffer
 	if ( completionField->buffer[ 0 ] &&
@@ -4432,7 +4246,7 @@ void Field_CompleteCommand( char *cmd,
 		const char *baseCmd = Cmd_Argv( 0 );
 		char       *p;
 
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 
 		// This should always be true
 		if ( baseCmd[ 0 ] == '\\' || baseCmd[ 0 ] == '/' )

@@ -102,7 +102,7 @@ void SV_GameSendServerCommand( int clientNum, const char *text )
 	}
 	else if ( clientNum == -2 )
 	{
-		SV_PrintTranslatedText( text, qfalse );
+		SV_PrintTranslatedText( text, qfalse, qfalse );
 	}
 	else
 	{
@@ -727,6 +727,7 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return SV_RSAGenMsg( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
 
 		case G_QUOTESTRING:
+			VM_CheckBlock( args[ 2 ], args[ 3 ], "QUOTE" );
 			Cmd_QuoteStringBuffer( VMA( 1 ), VMA( 2 ), args[ 3 ] );
 			return 0;
 

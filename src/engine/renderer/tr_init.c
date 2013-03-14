@@ -908,6 +908,16 @@ void GL_SetDefaultState( void )
 	glDisable( GL_CULL_FACE );
 	glDisable( GL_BLEND );
 
+	glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
+	glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
+	glClearDepth( 1.0 );
+
+	glDrawBuffer( GL_FRONT );
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
+
+	glDrawBuffer( GL_BACK );
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
+
 //----(SA)  added.
 #if 0
 
@@ -1653,6 +1663,12 @@ extern "C" {
 #endif
 
 		re.GetTextureSize = R_GetTextureSize;
+
+		re.RegisterVisTest = RE_RegisterVisTest;
+		re.AddVisTestToScene = RE_AddVisTestToScene;
+		re.CheckVisibility = RE_CheckVisibility;
+		re.UnregisterVisTest = RE_UnregisterVisTest;
+
 		return &re;
 	}
 

@@ -92,7 +92,7 @@ cvar_t    *con_debug;
 #define CON_LINE(line) ( ( (line) % consoleState.maxScrollbackLengthInLines ) * consoleState.textWidthInChars )
 
 // Buffer used by line-to-string code. Implementation detail.
-static char lineString[ MAX_CONSOLE_WIDTH * 6 + 4 ];
+static char lineString[ MAX_CONSOLE_WIDTH * 6 + 5 ];
 
 static const char *Con_LineToString( int lineno, qboolean lf )
 {
@@ -114,6 +114,9 @@ static const char *Con_LineToString( int lineno, qboolean lf )
 
 	if ( lf )
 	{
+#ifdef _WIN32
+		lineString[ d++ ] = '\r';
+#endif
 		lineString[ d++ ] = '\n';
 	}
 
@@ -201,6 +204,17 @@ static INLINE void Con_Clear( void )
 	}
 
 	consoleState.usedScrollbackLengthInLines = 0;
+}
+
+/*
+===================
+Con_ToggleMenu_f
+===================
+*/
+void Con_ToggleMenu_f( void )
+{
+	CL_KeyEvent( K_ESCAPE, qtrue, Sys_Milliseconds() );
+	CL_KeyEvent( K_ESCAPE, qfalse, Sys_Milliseconds() );
 }
 
 /*
@@ -523,6 +537,7 @@ void Con_Init( void )
 	g_consoleField.widthInChars = g_console_field_width;
 
 	Cmd_AddCommand( "toggleConsole", Con_ToggleConsole_f );
+	Cmd_AddCommand( "toggleMenu", Con_ToggleMenu_f );
 	Cmd_AddCommand( "clear", Con_Clear_f );
 	Cmd_AddCommand( "condump", Con_Dump_f );
 	Cmd_AddCommand( "search", Con_Search_f );

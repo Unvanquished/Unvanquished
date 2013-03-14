@@ -45,10 +45,10 @@ extern "C" {
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.12.0"
+#define PRODUCT_VERSION         "0.13.0"
 
 #define ENGINE_NAME             "Daemon Engine"
-#define ENGINE_VERSION          "0.12.0"
+#define ENGINE_VERSION          "0.13.0"
 
 #ifdef REVISION
 # define Q3_VERSION             PRODUCT_NAME " " PRODUCT_VERSION " " REVISION
@@ -121,9 +121,6 @@ extern "C" {
 #pragma warning(disable : 4133) // 'function' : incompatible types - from 'unsigned long *' to 'const time_t *'
 #pragma warning(disable : 4127) // conditional expression is constant
 #pragma warning(disable : 4389) // '==' : signed/unsigned mismatch
-
-#elif defined __clang__
-#pragma clang diagnostic fatal "-Wdeclaration-after-statement"
 #endif
 
 
@@ -1456,6 +1453,8 @@ double rint( double x );
 	int      Q_strcasecmp( const char *s1, const char *s2 );
 	int      Q_strncasecmp( const char *s1, const char *s2, int n );
 	qboolean Q_strreplace( char *dest, int destsize, const char *find, const char *replace );
+
+	int      Com_Filter( const char *filter, const char *name, int casesensitive );
 
 // strlen that discounts Quake color sequences
 	int      Q_PrintStrlen( const char *string );

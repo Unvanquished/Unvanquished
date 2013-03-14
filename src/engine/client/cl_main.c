@@ -1559,9 +1559,9 @@ void CL_ShutdownAll( void )
 	CL_ShutdownCGame();
 	// shutdown UI
 	CL_ShutdownUI();
-
+#ifndef BUILD_TTY_CLIENT
 	Rocket_Shutdown();
-
+#endif
 	// shutdown the renderer
 	if ( re.Shutdown )
 	{
@@ -4170,7 +4170,9 @@ void CL_StartHunkUsers( void )
 	if ( !cls.uiStarted )
 	{
 		cls.uiStarted = qtrue;
+#ifndef BUILD_TTY_CLIENT
 		Rocket_Init();
+#endif
 		CL_InitUI();
 	}
 }
@@ -4503,7 +4505,7 @@ void CL_Init( void )
 	cl_consoleFontKerning = Cvar_Get( "cl_consoleFontKerning", "0", CVAR_ARCHIVE );
 
 	cl_consoleCommand = Cvar_Get( "cl_consoleCommand", "say", CVAR_ARCHIVE );
-	
+
 	cl_logs = Cvar_Get ("cl_logs", "0", CVAR_ARCHIVE);
 
 	cl_gamename = Cvar_Get( "cl_gamename", GAMENAME_FOR_MASTER, CVAR_TEMP );
@@ -4616,7 +4618,7 @@ void CL_Init( void )
 
 	Cvar_Set( "cl_running", "1" );
 	CL_GenerateRSAKey();
-	
+
 	CL_OpenClientLog();
 	CL_WriteClientLog( "`~-     Client Opened     -~`\n" );
 
@@ -4640,8 +4642,9 @@ void CL_Shutdown( void )
 	}
 
 	Com_DPrintf( "----- CL_Shutdown -----\n" );
+#ifndef BUILD_TTY_CLIENT
 	Rocket_Shutdown();
-
+#endif
 	if ( recursive )
 	{
 		printf( "recursive shutdown\n" );
@@ -4705,7 +4708,7 @@ void CL_Shutdown( void )
 	// done.
 
 	CL_IRCWaitShutdown();
-	
+
 	CL_WriteClientLog( "`~-     Client Closed     -~`\n" );
 	CL_CloseClientLog();
 

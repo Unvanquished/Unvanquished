@@ -226,7 +226,12 @@ typedef enum cgameImport_s
   CG_R_UREGISTERFONT,
   CG_PGETTEXT,
   CG_R_INPVVS,
-  CG_KEY_SETTEAM
+  CG_KEY_SETTEAM,
+  CG_GETTEXT_PLURAL,
+  CG_REGISTERVISTEST,
+  CG_ADDVISTESTTOSCENE,
+  CG_CHECKVISIBILITY,
+  CG_UNREGISTERVISTEST
 } cgameImport_t;
 
 typedef enum
@@ -463,5 +468,12 @@ void            trap_GetClipboardData( char *, int, clipboard_t );
 void            trap_QuoteString( const char *, char*, int );
 void            trap_Gettext( char *buffer, const char *msgid, int bufferLength );
 void            trap_Pgettext( char *buffer, const char *ctxt, const char *msgid, int bufferLength );
+void            trap_GettextPlural( char *buffer, const char *msgid, const char *msgid2, int number, int bufferLength );
 
 void            trap_Key_SetTeam( int newTeam );
+
+qhandle_t       trap_RegisterVisTest();
+void            trap_AddVisTestToScene( qhandle_t hTest, vec3_t pos,
+					float depthAdjust );
+qboolean        trap_CheckVisibility( qhandle_t hTest );
+void            trap_UnregisterVisTest( qhandle_t hTest );

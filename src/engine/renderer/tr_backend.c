@@ -1537,6 +1537,84 @@ const void     *RB_DrawSurfs( const void *data )
 
 /*
 =============
+RB_RunVisTests
+
+=============
+*/
+const void     *RB_RunVisTests( const void *data )
+{
+	const runVisTestsCommand_t *cmd;
+	int i, j;
+	vec4_t eye, clip;
+	float depth, *modelMatrix, *projectionMatrix;
+	int windowX, windowY;
+
+	// finish any 2D drawing if needed
+	if ( tess.numIndexes )
+	{
+		RB_EndSurface();
+	}
+
+	cmd = ( const runVisTestsCommand_t * ) data;
+
+	backEnd.refdef = cmd->refdef;
+	backEnd.viewParms = cmd->viewParms;
+
+	modelMatrix = backEnd.orientation.modelMatrix;
+	projectionMatrix = backEnd.viewParms.projectionMatrix;
+
+	for( i = 0; i < cmd->numVisTests; i++ ) {
+		visTest_t *test = cmd->visTests[ i ];
+		float      len;
+
+		// transfer flare to eyespace, adjust distance and then
+		// transform to clip space
+		for( j = 0; j < 4; j++ ) {
+			eye[ j ] =
+				test->position[ 0 ] * modelMatrix[ j + 0 * 4 ] +
+				test->position[ 1 ] * modelMatrix[ j + 1 * 4 ] +
+				test->position[ 2 ] * modelMatrix[ j + 2 * 4 ] +
+				1.0f                * modelMatrix[ j + 3 * 4 ];
+		}
+
+		len = VectorNormalize( eye );
+		VectorScale( eye, len - test->depthAdjust, eye );
+
+		for( j = 0; j < 4; j++ ) {
+			clip[ j ] =
+				eye[ 0 ] * projectionMatrix[ j + 0 * 4 ] +
+				eye[ 1 ] * projectionMatrix[ j + 1 * 4 ] +
+				eye[ 2 ] * projectionMatrix[ j + 2 * 4 ] +
+				eye[ 3 ] * projectionMatrix[ j + 3 * 4 ];
+
+		}
+
+		if( fabsf( clip[ 0 ] ) > clip[ 3 ] ||
+		    fabsf( clip[ 1 ] ) > clip[ 3 ] ||
+		    fabsf( clip[ 2 ] ) > clip[ 3 ] ) {
+			test->lastResult = qfalse;
+			continue;
+		}
+
+		clip[ 3 ] = 1.0f / clip[3];
+		clip[ 0 ] *= clip[ 3 ];
+		clip[ 1 ] *= clip[ 3 ];
+		clip[ 2 ] *= clip[ 3 ];
+
+		windowX = (int)(( 0.5f * clip[ 0 ] + 0.5f ) * backEnd.viewParms.viewportWidth);
+		windowY = (int)(( 0.5f * clip[ 1 ] + 0.5f ) * backEnd.viewParms.viewportHeight);
+
+		glReadPixels( windowX, windowY, 1, 1, GL_DEPTH_COMPONENT,
+			      GL_FLOAT, &depth );
+
+		test->lastResult = ( depth >= 0.5f * clip[ 2 ] + 0.5f );
+	}
+
+	return ( const void * )( cmd + 1 );
+}
+
+/*
+=============
 RB_DrawBuffer
 
 =============
@@ -1828,6 +1906,10 @@ void RB_ExecuteRenderCommands( const void *data )
 
 			case RC_DRAW_SURFS:
 				data = RB_DrawSurfs( data );
+				break;
+
+			case RC_RUN_VISTESTS:
+				data = RB_RunVisTests( data );
 				break;
 
 			case RC_DRAW_BUFFER:

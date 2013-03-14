@@ -31,7 +31,7 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-
+#ifndef BUILD_TTY_CLIENT
 extern "C"
 {
 	#include <SDL.h>
@@ -492,3 +492,4 @@ extern "C" void Rocket_InjectMouseMotion( int x, int y )
 		context->ProcessMouseMove( x+cursorx, cursory+y, RocketConvertSDLmod( SDL_GetModState() ) );
 	}
 }
+#endif

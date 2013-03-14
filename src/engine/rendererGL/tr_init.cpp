@@ -1172,6 +1172,16 @@ extern "C" {
 		glEnable( GL_SCISSOR_TEST );
 		glDisable( GL_BLEND );
 
+		glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
+		glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
+		glClearDepth( 1.0 );
+
+		glDrawBuffer( GL_FRONT );
+		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
+
+		glDrawBuffer( GL_BACK );
+		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
+
 		GL_CheckErrors();
 
 		glState.stackIndex = 0;
@@ -2167,6 +2177,7 @@ extern "C" {
 			R_ShutdownImages();
 			R_ShutdownVBOs();
 			R_ShutdownFBOs();
+			R_ShutdownVisTests();
 
 			if ( glConfig.driverType == GLDRV_OPENGL3 )
 			{
@@ -2441,6 +2452,11 @@ extern "C" {
 		re.ScissorEnable = RE_ScissorEnable;
 		re.ScissorSet = RE_ScissorSet;
 		// XreaL END
+
+		re.RegisterVisTest = RE_RegisterVisTest;
+		re.AddVisTestToScene = RE_AddVisTestToScene;
+		re.CheckVisibility = RE_CheckVisibility;
+		re.UnregisterVisTest = RE_UnregisterVisTest;
 
 		return &re;
 	}

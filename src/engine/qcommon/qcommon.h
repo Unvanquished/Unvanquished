@@ -133,9 +133,6 @@ float MSG_ReadAngle16( msg_t *sb );
 void  MSG_ReadData( msg_t *sb, void *buffer, int size );
 int   MSG_LookaheadByte( msg_t *msg );
 
-void  MSG_WriteDeltaUsercmd( msg_t *msg, struct usercmd_s *from, struct usercmd_s *to );
-void  MSG_ReadDeltaUsercmd( msg_t *msg, struct usercmd_s *from, struct usercmd_s *to );
-
 void  MSG_WriteDeltaUsercmdKey( msg_t *msg, int key, usercmd_t *from, usercmd_t *to );
 void  MSG_ReadDeltaUsercmdKey( msg_t *msg, int key, usercmd_t *from, usercmd_t *to );
 
@@ -949,7 +946,6 @@ int        Com_Milliseconds( void );  // will be journaled properly
 unsigned   Com_BlockChecksum( const void *buffer, int length );
 char       *Com_MD5File( const char *filename, int length );
 void       Com_MD5Buffer( const char *pubkey, int size, char *buffer, int bufsize );
-int        Com_Filter( char *filter, char *name, int casesensitive );
 int        Com_FilterPath( char *filter, char *name, int casesensitive );
 int        Com_RealTime( qtime_t *qtime );
 qboolean   Com_SafeMode( void );
@@ -1279,6 +1275,7 @@ qboolean      Sys_StringToAdr( const char *s, netadr_t *a, netadrtype_t family )
 qboolean Sys_IsLANAddress( netadr_t adr );
 void     Sys_ShowIP( void );
 
+FILE     *Sys_FOpen( const char *ospath, const char *mode );
 qboolean Sys_Mkdir( const char *path );
 FILE     *Sys_Mkfifo( const char *ospath );
 char     *Sys_Cwd( void );
@@ -1404,11 +1401,14 @@ void Com_RandomBytes( byte *string, int len );
 #define _(x) Trans_Gettext(x)
 #define C_(x, y) Trans_Pgettext(x, y)
 #define N_(x) (x)
+#define P_(x, y, c) Trans_GettextPlural(x, y, c)
 
 void Trans_Init( void );
 const char* Trans_Gettext( const char *msgid ) __attribute__((__format_arg__(1)));
 const char* Trans_Pgettext( const char *ctxt, const char *msgid ) __attribute__((__format_arg__(2)));
+const char* Trans_GettextPlural( const char *msgid, const char *msgid_plural, int num ) __attribute__((__format_arg__(1))) __attribute__((__format_arg__(2)));
 const char* Trans_GettextGame( const char *msgid ) __attribute__((__format_arg__(1)));
 const char* Trans_PgettextGame( const char *ctxt, const char *msgid ) __attribute__((__format_arg__(2)));
+const char* Trans_GettextGamePlural( const char *msgid, const char *msgid_plural, int num ) __attribute__((__format_arg__(1))) __attribute__((__format_arg__(2)));
 
 #endif // _QCOMMON_H_

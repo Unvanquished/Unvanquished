@@ -61,6 +61,9 @@ int r_numDecalProjectors;
 int r_firstSceneDecal;
 int r_numDecals;
 
+int r_numVisTests;
+int r_firstSceneVisTest;
+
 int skyboxportal;
 
 /*
@@ -110,6 +113,9 @@ void R_ToggleSmpFrame( void )
 	r_firstSceneDecalProjector = 0;
 	r_numDecals = 0;
 	r_firstSceneDecal = 0;
+
+	r_numVisTests = 0;
+	r_firstSceneVisTest = 0;
 }
 
 /*
@@ -136,6 +142,7 @@ void RE_ClearScene( void )
 	r_firstSceneCorona = r_numcoronas;
 	r_firstSceneEntity = r_numentities;
 	r_firstScenePoly = r_numpolys;
+	r_firstSceneVisTest = r_numVisTests;
 }
 
 /*
@@ -672,6 +679,9 @@ void RE_RenderScene( const refdef_t *fd )
 	tr.refdef.numDecals = r_numDecals - r_firstSceneDecal;
 	tr.refdef.decals = &backEndData[ tr.smpFrame ]->decals[ r_firstSceneDecal ];
 
+	tr.refdef.numVisTests = r_numVisTests - r_firstSceneVisTest;
+	tr.refdef.visTests = &backEndData[ tr.smpFrame ]->visTests[ r_firstSceneVisTest ];
+
 	// turn off dynamic lighting globally by clearing all the
 	// dlights if using permedia hw
 	if ( glConfig.hardwareType == GLHW_PERMEDIA2 )
@@ -755,4 +765,91 @@ void RE_RestoreViewParms( void )
 {
 	// This was killing the LOD computation
 	tr.viewParms = g_oldViewParms;
+}
+
+/*
+================
+RE_RegisterVisTest
+
+Reserves a VisTest handle. This can be used to query the visibility
+of a 3D-point in the scene. The engine will try not to stall the GPU,
+so the result may be available delayed.
+================
+*/
+qhandle_t RE_RegisterVisTest( void )
+{
+	int hTest;
+	visTest_t *test;
+
+	for( hTest = 0; hTest < tr.numVisTests; hTest++ ) {
+		test = tr.visTests[ hTest ];
+		if( !test->registered )
+			break;
+	}
+
+	if( hTest >= tr.numVisTests ) {
+		if( tr.numVisTests == MAX_VISTESTS ) {
+			ri.Printf( PRINT_WARNING, "WARNING: RE_RegisterVisTest - MAX_VISTESTS hit\n" );
+			return 0;
+		}
+
+		hTest = tr.numVisTests++;
+		test = (visTest_t *)ri.Hunk_Alloc( sizeof( visTest_t ), h_low );
+		tr.visTests[ hTest ] = test;
+	}
+
+	memset( test, 0, sizeof( visTest_t ) );
+	test->registered = qtrue;
+
+	return hTest + 1;
+}
+
+/*
+================
+RE_AddVisTestToScene
+
+Add a VisTest to the current scene. If the VisTest is still
+running from a prior scene, just noop.
+================
+*/
+void RE_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust )
+{
+	visTest_t *test;
+
+	if( r_numVisTests == MAX_VISTESTS ) {
+		ri.Printf( PRINT_WARNING, "WARNING: RE_AddVisTestToScene - MAX_VISTESTS hit\n" );
+		return;
+	}
+
+	if( hTest <= 0 || hTest > MAX_VISTESTS ||
+	    !(test = tr.visTests[ hTest - 1 ] ) )
+		return;
+
+	VectorCopy( pos, test->position );
+	test->depthAdjust = depthAdjust;
+
+	backEndData[ tr.smpFrame ]->visTests[ r_numVisTests++ ] = test;
+}
+
+/*
+================
+RE_CheckVisibility
+
+Query the last available result of a VisTest.
+================
+*/
+qboolean RE_CheckVisibility( qhandle_t hTest )
+{
+	if( hTest <= 0 || hTest > MAX_VISTESTS || !tr.visTests[ hTest - 1 ] )
+		return qfalse;
+
+	return tr.visTests[ hTest - 1 ]->lastResult;
+}
+
+void RE_UnregisterVisTest( qhandle_t hTest )
+{
+	if( hTest <= 0 || hTest > tr.numVisTests || !tr.visTests[ hTest - 1 ] )
+		return;
+
+	tr.visTests[ hTest - 1 ]->registered = qfalse;
 }

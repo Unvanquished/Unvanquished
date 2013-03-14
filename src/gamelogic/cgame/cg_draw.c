@@ -2543,8 +2543,9 @@ static void CG_DrawTeamOverlay( rectDef_t *rect, float scale, vec4_t color )
 				}
 			}
 
-			s = va( " [^%c%3d^7] %s ^7%s",
+			s = va( " [^%c%s%d^7] %s ^7%s",
 			        CG_GetColorCharForHealth( displayClients[ i ] ),
+			        "  " + ( ci->health >= 100 ? 6 : ci->health >= 10 ? 3 : 0 ), // these are figure spaces, 3 bytes each
 			        ci->health,
 			        ( ci->team == TEAM_ALIENS )
 			          ? va( "₠%.1f", (float) ci->credit / ALIEN_CREDITS_PER_KILL )

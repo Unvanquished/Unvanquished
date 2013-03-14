@@ -86,16 +86,18 @@ static void CG_ParseTeamInfo( void )
 	int i;
 	int count;
 	int client;
-	int fields;
 
-	fields = ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_ALIENS ) ? 5 : 6; // aliens don't have upgrades
-	count = ( trap_Argc( ) - 1 ) / fields;
+	count = trap_Argc();
 
-	cgs.teamInfoReceived = qtrue;
-
-	for ( i = 0; i < count; i++ )
+	for ( i = 1; i < count; ++i ) // i is also incremented when writing into cgs.clientinfo
 	{
-		client = atoi( CG_Argv( i * fields + 1 ) );
+		client = atoi( CG_Argv( i ) );
+
+		// wrong team? skip to the next one
+		if ( cgs.clientinfo[ client ].team != cg.snap->ps.stats[ STAT_TEAM ] )
+		{
+			return;
+		}
 
 		if ( client < 0 || client >= MAX_CLIENTS )
 		{
@@ -103,15 +105,18 @@ static void CG_ParseTeamInfo( void )
 			return;
 		}
 
-		cgs.clientinfo[ client ].location = atoi( CG_Argv( i * fields + 2 ) );
-		cgs.clientinfo[ client ].health = atoi( CG_Argv( i * fields + 3 ) );
-		cgs.clientinfo[ client ].curWeaponClass = atoi( CG_Argv( i * fields + 4 ) );
-		cgs.clientinfo[ client ].credit = atoi( CG_Argv( i * fields + 5 ) );
+		cgs.clientinfo[ client ].location       = atoi( CG_Argv( ++i ) );
+		cgs.clientinfo[ client ].health         = atoi( CG_Argv( ++i ) );
+		cgs.clientinfo[ client ].curWeaponClass = atoi( CG_Argv( ++i ) );
+		cgs.clientinfo[ client ].credit         = atoi( CG_Argv( ++i ) );
+
 		if( cg.snap->ps.stats[ STAT_TEAM ] != TEAM_ALIENS )
 		{
-			cgs.clientinfo[ client ].upgrade = atoi( CG_Argv( i * fields + 6 ) );
-        }
+			cgs.clientinfo[ client ].upgrade = atoi( CG_Argv( ++i ) );
+		}
 	}
+
+	cgs.teamInfoReceived = qtrue;
 }
 
 /*
@@ -1359,107 +1364,20 @@ static void CG_Print_f( void )
 CG_PrintTR_f
 =================
 */
+#define TRANSLATE_FUNC        _
+#define PLURAL_TRANSLATE_FUNC P_
+#define Cmd_Argv CG_Argv
+#define Cmd_Argc trap_Argc
+#include "../../engine/qcommon/print_translated.h"
+
 static void CG_PrintTR_f( void )
 {
-	char        str[ MAX_STRING_CHARS ];
-	char        buf[ MAX_STRING_CHARS ];
-	const char  *in;
-	char        number[2] = { 0 };
-	int         i=0, j=0, totalArgs;
+	PrintTranslatedText_Internal( qfalse );
+}
 
-	totalArgs = trap_Argc();
-	Q_strncpyz( buf, _( CG_Argv( 1 ) ), sizeof( buf ) );
-	in = buf;
-	memset( &str, 0, sizeof( str ) );
-
-	while( *in )
-	{
-		if( *in == '$' )
-		{
-			in++;
-
-			if( *in == '$' )
-			{
-				str[ i++ ] = *in;
-				in++;
-			}
-			else if( isdigit( *in ) )
-			{
-				number[ j++ ] = *in;
-				in++;
-
-				if( *in == 't' && *(in+1) == '$' )
-				{
-					int num = atoi( number );
-					if( num < 0 || num > totalArgs - 1 )
-					{
-						in += 2;
-						break;
-					}
-
-					i += strlen( _( CG_Argv( num + 1 ) ) );
-
-					if( i >= MAX_STRING_CHARS )
-					{
-						Com_Printf( "%s", str );
-						memset( &str, 0, sizeof( str ) );
-						i = strlen( _( CG_Argv( num + 1 ) ) );
-					}
-
-					Q_strcat( str, sizeof( str ), _( CG_Argv( num + 1 ) ) );
-					in += 2;
-					j = 0;
-				}
-				else if( *in == '$' )
-				{
-					int num = atoi( number );
-					if( num < 0 || num > totalArgs - 1 )
-					{
-						in++;
-						break;
-					}
-					i += strlen( CG_Argv( num + 1 ) );
-
-					if( i >= MAX_STRING_CHARS )
-					{
-						Com_Printf( "%s", str );
-						memset( &str, 0, sizeof( str ) );
-						i = strlen( _( CG_Argv( num + 1 ) ) );
-					}
-
-					Q_strcat( str, sizeof( str ), CG_Argv( num + 1 ) );
-					in++;
-					j = 0;
-				}
-				else
-                                {
-                                        // invalid sequence
-                                        str[ i++ ] = '$';
-                                }
-                        }
-                        else
-                        {
-                                // invalid sequence
-                                str[ i++ ] = '$';
-			}
-		}
-		else
-		{
-			if( i < MAX_STRING_CHARS )
-			{
-				str[ i++ ] = *in;
-				in++;
-			}
-			else
-			{
-				Com_Printf( "%s", str );
-				memset( &str, 0, sizeof( str ) );
-				i = 0;
-			}
-		}
-	}
-
-	Com_Printf( "%s", str );
+static void CG_PrintTR_plural_f( void )
+{
+	PrintTranslatedText_Internal( qtrue );
 }
 
 /*
@@ -1603,6 +1521,7 @@ static const consoleCommand_t svcommands[] =
 	{ "poisoncloud",      CG_PoisonCloud_f        },
 	{ "print",            CG_Print_f              },
 	{ "print_tr",         CG_PrintTR_f            },
+	{ "print_tr_p",       CG_PrintTR_plural_f     },
 	{ "scores",           CG_ParseScores          },
 	{ "serverclosemenus", CG_ServerCloseMenus_f   },
 	{ "servermenu",       CG_ServerMenu_f         },

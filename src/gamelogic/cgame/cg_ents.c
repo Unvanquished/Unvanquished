@@ -708,6 +708,7 @@ static void CG_LightFlare( centity_t *cent )
 	vec3_t        mins, maxs, start, end;
 	float         srcRadius, srLocal, ratio = 1.0f;
 	int           entityNum;
+	qboolean      newStatus;
 
 	es = &cent->currentState;
 
@@ -732,15 +733,9 @@ static void CG_LightFlare( centity_t *cent )
 		return;
 	}
 
-	CG_Trace( &tr, cg.refdef.vieworg, NULL, NULL, es->angles2,
-	          entityNum, MASK_SHOT );
+	newStatus = trap_CheckVisibility( cent->lfs.hTest );
 
-	//if there is no LOS between the view and the flare source
-	//it definitely cannot be seen
-	if ( tr.fraction < 1.0f || tr.allsolid )
-	{
-		return;
-	}
+	trap_AddVisTestToScene( cent->lfs.hTest, es->origin, 8.0f );
 
 	memset( &flare, 0, sizeof( flare ) );
 
@@ -773,118 +768,85 @@ static void CG_LightFlare( centity_t *cent )
 		return;
 	}
 
-	//only recalculate radius and ratio every three frames
-	if ( !( cg.clientFrame % 2 ) )
+	//can only see the flare when in front of it
+	flare.radius = len / es->origin2[ 0 ];
+
+	if ( es->origin2[ 2 ] == 0 )
 	{
-		//can only see the flare when in front of it
-		flare.radius = len / es->origin2[ 0 ];
+		srcRadius = srLocal = flare.radius / 2.0f;
+	}
+	else
+	{
+		srcRadius = srLocal = len / es->origin2[ 2 ];
+	}
 
-		if ( es->origin2[ 2 ] == 0 )
+	maxAngle = es->origin2[ 1 ];
+
+	if ( maxAngle > 0.0f )
+	{
+		float radiusMod = 1.0f - ( 180.0f - RAD2DEG(
+						   acos( DotProduct( delta, forward ) ) ) ) / maxAngle;
+
+		if ( radiusMod < 0.0f )
 		{
-			srcRadius = srLocal = flare.radius / 2.0f;
+			radiusMod = 0.0f;
 		}
-		else
+
+		flare.radius *= radiusMod;
+	}
+
+	if ( flare.radius < 0.0f )
+	{
+		flare.radius = 0.0f;
+	}
+
+	VectorMA( flare.origin, -flare.radius, delta, end );
+	VectorMA( cg.refdef.vieworg, flare.radius, delta, start );
+
+	if ( cg_lightFlare.integer == FLARE_TIMEFADE )
+	{
+		//draw timed flares
+		if ( !newStatus && cent->lfs.status )
 		{
-			srcRadius = srLocal = len / es->origin2[ 2 ];
+			cent->lfs.status = qfalse;
+			cent->lfs.lastTime = cg.time;
+		}
+		else if ( newStatus && !cent->lfs.status )
+		{
+			cent->lfs.status = qtrue;
+			cent->lfs.lastTime = cg.time;
 		}
 
-		maxAngle = es->origin2[ 1 ];
-
-		if ( maxAngle > 0.0f )
+		//fade flare up
+		if ( cent->lfs.status )
 		{
-			float radiusMod = 1.0f - ( 180.0f - RAD2DEG(
-			                             acos( DotProduct( delta, forward ) ) ) ) / maxAngle;
-
-			if ( radiusMod < 0.0f )
+			if ( cent->lfs.lastTime + es->time > cg.time )
 			{
-				radiusMod = 0.0f;
+				ratio = ( float )( cg.time - cent->lfs.lastTime ) / es->time;
 			}
-
-			flare.radius *= radiusMod;
 		}
 
-		if ( flare.radius < 0.0f )
+		//fade flare down
+		if ( !cent->lfs.status )
 		{
-			flare.radius = 0.0f;
-		}
-
-		VectorMA( flare.origin, -flare.radius, delta, end );
-		VectorMA( cg.refdef.vieworg, flare.radius, delta, start );
-
-		if ( cg_lightFlare.integer == FLARE_REALFADE )
-		{
-			//"correct" flares
-			CG_BiSphereTrace( &tr, cg.refdef.vieworg, end,
-			                  1.0f, srcRadius, entityNum, MASK_SHOT );
-
-			if ( tr.fraction < 1.0f )
+			if ( cent->lfs.lastTime + es->time > cg.time )
 			{
-				ratio = tr.lateralFraction;
+				ratio = ( float )( cg.time - cent->lfs.lastTime ) / es->time;
+				ratio = 1.0f - ratio;
 			}
 			else
-			{
-				ratio = 1.0f;
-			}
-		}
-		else if ( cg_lightFlare.integer == FLARE_TIMEFADE )
-		{
-			//draw timed flares
-			SETBOUNDS( mins, maxs, srcRadius );
-			CG_Trace( &tr, start, mins, maxs, end,
-			          entityNum, MASK_SHOT );
-
-			if ( ( tr.fraction < 1.0f || tr.startsolid ) && cent->lfs.status )
-			{
-				cent->lfs.status = qfalse;
-				cent->lfs.lastTime = cg.time;
-			}
-			else if ( ( tr.fraction == 1.0f && !tr.startsolid ) && !cent->lfs.status )
-			{
-				cent->lfs.status = qtrue;
-				cent->lfs.lastTime = cg.time;
-			}
-
-			//fade flare up
-			if ( cent->lfs.status )
-			{
-				if ( cent->lfs.lastTime + es->time > cg.time )
-				{
-					ratio = ( float )( cg.time - cent->lfs.lastTime ) / es->time;
-				}
-			}
-
-			//fade flare down
-			if ( !cent->lfs.status )
-			{
-				if ( cent->lfs.lastTime + es->time > cg.time )
-				{
-					ratio = ( float )( cg.time - cent->lfs.lastTime ) / es->time;
-					ratio = 1.0f - ratio;
-				}
-				else
-				{
-					ratio = 0.0f;
-				}
-			}
-		}
-		else if ( cg_lightFlare.integer == FLARE_NOFADE )
-		{
-			//draw nofade flares
-			SETBOUNDS( mins, maxs, srcRadius );
-			CG_Trace( &tr, start, mins, maxs, end,
-			          entityNum, MASK_SHOT );
-
-			//flare source occluded
-			if ( ( tr.fraction < 1.0f || tr.startsolid ) )
 			{
 				ratio = 0.0f;
 			}
 		}
 	}
-	else
+	else if ( cg_lightFlare.integer == FLARE_NOFADE )
 	{
-		ratio = cent->lfs.lastRatio;
-		flare.radius = cent->lfs.lastRadius;
+		//flare source occluded
+		if ( !newStatus )
+		{
+			ratio = 0.0f;
+		}
 	}
 
 	cent->lfs.lastRatio = ratio;
@@ -1133,6 +1095,10 @@ static void CG_CEntityPVSEnter( centity_t *cent )
 			cent->lastBuildableHealth = es->generic1;
 			break;
 
+		case ET_LIGHTFLARE:
+			cent->lfs.hTest = trap_RegisterVisTest();
+			break;
+
 		default:
 			break;
 	}
@@ -1179,6 +1145,11 @@ static void CG_CEntityPVSLeave( centity_t *cent )
 					CG_DestroyTrailSystem( &cent->level2ZapTS[ i ] );
 				}
 			}
+			break;
+
+		case ET_LIGHTFLARE:
+			trap_UnregisterVisTest( cent->lfs.hTest );
+			cent->lfs.hTest = 0;
 			break;
 
 		default:

@@ -192,6 +192,12 @@ typedef struct
 	void ( *ScissorEnable ) ( qboolean enable );
 	void ( *ScissorSet ) ( int x, int y, int w, int h );
 	// XreaL END
+
+	// VisTest API
+	qhandle_t ( *RegisterVisTest ) ();
+	void      ( *AddVisTestToScene ) ( qhandle_t hTest, vec3_t pos, float depthAdjust );
+	qboolean  ( *CheckVisibility ) ( qhandle_t hTest );
+	void      ( *UnregisterVisTest ) ( qhandle_t hTest );
 } refexport_t;
 
 //
