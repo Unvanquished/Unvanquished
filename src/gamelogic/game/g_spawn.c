@@ -295,7 +295,7 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ "pos_location",             SP_pos_location,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "pos_player_intermission",  SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "pos_player_spawn",         SP_pos_player_spawn,       CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ "pos_position",             SP_pos_target,             CHAIN_TARGET,     ENT_V_UNCLEAR, NULL },
+	{ "pos_target",               SP_pos_target,             CHAIN_TARGET,     ENT_V_UNCLEAR, NULL },
 
 	/**
 	 *  Sensors
