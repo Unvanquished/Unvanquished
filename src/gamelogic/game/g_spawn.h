@@ -53,13 +53,6 @@ void    SP_sensor_player( gentity_t *ent );
 void    SP_sensor_buildable( gentity_t *ent );
 void    SP_sensor_timer( gentity_t *self );
 
-void    SP_trigger_push( gentity_t *ent );
-void    SP_trigger_teleport( gentity_t *ent );
-void    SP_trigger_hurt( gentity_t *ent );
-void    SP_trigger_gravity( gentity_t *ent );
-void    SP_trigger_heal( gentity_t *ent );
-void    SP_trigger_ammo( gentity_t *ent );
-
 void    SP_target_print( gentity_t *ent );
 void    SP_target_teleporter( gentity_t *ent );
 void    SP_target_kill( gentity_t *ent );
@@ -72,14 +65,21 @@ void    SP_target_hurt( gentity_t *ent );
 
 void    SP_path_corner( gentity_t *self );
 
-void    SP_env_portal_camera( gentity_t *ent );
-void    SP_env_portal_surface( gentity_t *ent );
+void    SP_env_afx_push( gentity_t *ent );
+void    SP_env_afx_teleport( gentity_t *ent );
+void    SP_env_afx_hurt( gentity_t *ent );
+void    SP_env_afx_gravity( gentity_t *ent );
+void    SP_env_afx_heal( gentity_t *ent );
+void    SP_env_afx_ammo( gentity_t *ent );
 
 void    SP_env_rumble( gentity_t *ent );
 void    SP_env_speaker( gentity_t *ent );
 void    SP_env_particle_system( gentity_t *ent );
 void    SP_env_animated_model( gentity_t *ent );
 void    SP_env_lens_flare( gentity_t *ent );
+
+void    SP_env_portal_camera( gentity_t *ent );
+void    SP_env_portal_surface( gentity_t *ent );
 
 /*
  * everything around entity versioning and deprecation
@@ -106,6 +106,7 @@ qboolean G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expect
  */
 
 void     think_fireDelayed( gentity_t *ent );
+void     think_aimAtTarget( gentity_t *ent );
 
 void     SP_RemoveSelf( gentity_t *self );
 void     SP_Nothing( gentity_t *self );

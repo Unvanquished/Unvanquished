@@ -69,6 +69,50 @@ void SP_target_print( gentity_t *ent )
 /*
 =================================================================================
 
+target_push
+
+=================================================================================
+*/
+
+void target_push_use( gentity_t *self, gentity_t *other, gentity_t *activator )
+{
+	if ( !activator || !activator->client )
+	{
+		return;
+	}
+
+	if ( activator->client->ps.pm_type != PM_NORMAL )
+	{
+		return;
+	}
+
+	VectorCopy( self->s.origin2, activator->client->ps.velocity );
+}
+
+void SP_target_push( gentity_t *self )
+{
+	if ( !self->config.speed)
+	{
+		self->config.speed = 1000;
+	}
+
+	G_SetMovedir( self->s.angles, self->s.origin2 );
+	VectorScale( self->s.origin2, self->config.speed, self->s.origin2 );
+
+	if ( self )
+	{
+		VectorCopy( self->s.origin, self->r.absmin );
+		VectorCopy( self->s.origin, self->r.absmax );
+		self->think = think_aimAtTarget;
+		self->nextthink = level.time + FRAMETIME;
+	}
+
+	self->use = target_push_use;
+}
+
+/*
+=================================================================================
+
 target_teleporter
 
 =================================================================================

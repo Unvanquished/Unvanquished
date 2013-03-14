@@ -38,6 +38,52 @@ void think_fireDelayed( gentity_t *ent )
 }
 
 /*
+=================
+AimAtTarget
+
+Calculate origin2 so the target apogee will be hit
+=================
+*/
+void think_aimAtTarget( gentity_t *self )
+{
+	gentity_t *ent;
+	vec3_t    origin;
+	float     height, gravity, time, forward;
+	float     dist;
+
+	VectorAdd( self->r.absmin, self->r.absmax, origin );
+	VectorScale( origin, 0.5, origin );
+
+	ent = G_PickRandomTargetFor( self );
+
+	if ( !ent )
+	{
+		G_FreeEntity( self );
+		return;
+	}
+
+	height = ent->s.origin[ 2 ] - origin[ 2 ];
+	gravity = g_gravity.value;
+	time = sqrt( height / ( 0.5 * gravity ) );
+
+	if ( !time )
+	{
+		G_FreeEntity( self );
+		return;
+	}
+
+	// set s.origin2 to the push velocity
+	VectorSubtract( ent->s.origin, origin, self->s.origin2 );
+	self->s.origin2[ 2 ] = 0;
+	dist = VectorNormalize( self->s.origin2 );
+
+	forward = dist / time;
+	VectorScale( self->s.origin2, forward, self->s.origin2 );
+
+	self->s.origin2[ 2 ] = time * gravity;
+}
+
+/*
 =================================================================================
 
 shared reset functions

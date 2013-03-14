@@ -1100,7 +1100,7 @@ void G_notify_sensor_end( team_t winningTeam );
 //
 // g_trigger.c
 //
-void trigger_teleporter_touch( gentity_t *self, gentity_t *other, trace_t *trace );
+void env_afx_teleporter_touch( gentity_t *self, gentity_t *other, trace_t *trace );
 
 //
 // g_weapon.c

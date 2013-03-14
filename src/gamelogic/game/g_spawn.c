@@ -215,8 +215,14 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	 *
 	 *	Environment entities
 	 *	====================
-	 *
+	 *  the afx subgroup describes environment area effects, which in most cases should be client predictable
 	 */
+	{ "env_afx_ammo",             SP_env_afx_ammo,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "env_afx_gravity",          SP_env_afx_gravity,        CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "env_afx_heal",             SP_env_afx_heal,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "env_afx_hurt",             SP_env_afx_hurt,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "env_afx_push",             SP_env_afx_push,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "env_afx_teleport",         SP_env_afx_teleport,       CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "env_animated_model",       SP_env_animated_model,     CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "env_lens_flare",           SP_env_lens_flare,         CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "env_particle_system",      SP_env_particle_system,    CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
@@ -322,30 +328,20 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ "target_teleporter",        SP_target_teleporter,      CHAIN_PASSIV,     ENT_V_UNCLEAR, NULL },
 
 	/**
-	 *
-	 *	Trigger
-	 *	=======
-	 *	Triggers cause a defined effect when aware of another entity, event, or gamestate.
-	 *	In that sense it's like an integration of a sensor and a target
-	 *	and might in some cases be modeled by a combination of them.
-	 *
-	 *	Triggers carry often the benefit of being predicted client-side
-	 *	(since no entity chains have to be resolved first)
-	 *	such as trigger_push and trigger_teleport.
-	 *
+	 * former trigger
 	 */
 	{ "trigger_always",           SP_sensor_start,           CHAIN_ACTIVE,     ENT_V_RENAMED, "sensor_start" },
-	{ "trigger_ammo",             SP_trigger_ammo,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "trigger_ammo",             SP_env_afx_ammo,           CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_afx_ammo" },
 	{ "trigger_buildable",        SP_sensor_buildable,       CHAIN_ACTIVE,     ENT_V_TMPNAME, "sensor_buildable" },
 	{ "trigger_class",            SP_sensor_player,          CHAIN_ACTIVE,     ENT_V_TMPNAME, "sensor_player" },
 	{ "trigger_equipment",        SP_sensor_player,          CHAIN_ACTIVE,     ENT_V_TMPNAME, "sensor_player" },
-	{ "trigger_gravity",          SP_trigger_gravity,        CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ "trigger_heal",             SP_trigger_heal,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ "trigger_hurt",             SP_trigger_hurt,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ "trigger_multiple",         SP_sensor_player,          CHAIN_ACTIVE,     ENT_V_UNCLEAR, "sensor_player" },
-	{ "trigger_push",             SP_trigger_push,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "trigger_gravity",          SP_env_afx_gravity,        CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_afx_gravity" },
+	{ "trigger_heal",             SP_env_afx_heal,           CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_afx_heal" },
+	{ "trigger_hurt",             SP_env_afx_hurt,           CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_afx_hurt" },
+	{ "trigger_multiple",         SP_sensor_player,          CHAIN_ACTIVE,     ENT_V_TMPNAME, "sensor_player" },
+	{ "trigger_push",             SP_env_afx_push,           CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_afx_push" },
 	{ "trigger_stage",            SP_sensor_stage,           CHAIN_ACTIVE,     ENT_V_RENAMED, "sensor_stage" },
-	{ "trigger_teleport",         SP_trigger_teleport,       CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "trigger_teleport",         SP_env_afx_teleport,       CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_afx_teleport" },
 	{ "trigger_win",              SP_sensor_end,             CHAIN_ACTIVE,     ENT_V_TMPNAME, "sensor_end" }
 };
 

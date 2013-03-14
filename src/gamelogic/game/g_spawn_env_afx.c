@@ -24,7 +24,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "g_local.h"
 #include "g_spawn.h"
 
-void InitTrigger( gentity_t *self )
+void InitEnvAFXEntity( gentity_t *self )
 {
 	if ( !VectorCompare( self->s.angles, vec3_origin ) )
 	{
@@ -36,6 +36,18 @@ void InitTrigger( gentity_t *self )
 	self->r.svFlags = SVF_NOCLIENT;
 }
 
+void env_afx_toggle( gentity_t *self, gentity_t *other, gentity_t *activator )
+{
+	if ( self->r.linked )
+	{
+		trap_UnlinkEntity( self );
+	}
+	else
+	{
+		trap_LinkEntity( self );
+	}
+}
+
 /*
 ==============================================================================
 
@@ -44,108 +56,22 @@ trigger_push
 ==============================================================================
 */
 
-void trigger_push_touch( gentity_t *self, gentity_t *other, trace_t *trace )
+void env_afx_push_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 {
-	if ( !other->client )
-	{
-		return;
-	}
 }
 
-/*
-=================
-AimAtTarget
-
-Calculate origin2 so the target apogee will be hit
-=================
-*/
-void AimAtTarget( gentity_t *self )
+void SP_env_afx_push( gentity_t *self )
 {
-	gentity_t *ent;
-	vec3_t    origin;
-	float     height, gravity, time, forward;
-	float     dist;
-
-	VectorAdd( self->r.absmin, self->r.absmax, origin );
-	VectorScale( origin, 0.5, origin );
-
-	ent = G_PickRandomTargetFor( self );
-
-	if ( !ent )
-	{
-		G_FreeEntity( self );
-		return;
-	}
-
-	height = ent->s.origin[ 2 ] - origin[ 2 ];
-	gravity = g_gravity.value;
-	time = sqrt( height / ( 0.5 * gravity ) );
-
-	if ( !time )
-	{
-		G_FreeEntity( self );
-		return;
-	}
-
-	// set s.origin2 to the push velocity
-	VectorSubtract( ent->s.origin, origin, self->s.origin2 );
-	self->s.origin2[ 2 ] = 0;
-	dist = VectorNormalize( self->s.origin2 );
-
-	forward = dist / time;
-	VectorScale( self->s.origin2, forward, self->s.origin2 );
-
-	self->s.origin2[ 2 ] = time * gravity;
-}
-
-void SP_trigger_push( gentity_t *self )
-{
-	InitTrigger( self );
+	InitEnvAFXEntity( self );
 
 	// unlike other triggers, we need to send this one to the client
 	self->r.svFlags &= ~SVF_NOCLIENT;
 
 	self->s.eType = ET_PUSH_TRIGGER;
-	self->touch = trigger_push_touch;
-	self->think = AimAtTarget;
+	self->touch = env_afx_push_touch;
+	self->think = think_aimAtTarget;
 	self->nextthink = level.time + FRAMETIME;
 	trap_LinkEntity( self );
-}
-
-void target_push_use( gentity_t *self, gentity_t *other, gentity_t *activator )
-{
-	if ( !activator || !activator->client )
-	{
-		return;
-	}
-
-	if ( activator->client->ps.pm_type != PM_NORMAL )
-	{
-		return;
-	}
-
-	VectorCopy( self->s.origin2, activator->client->ps.velocity );
-}
-
-void SP_target_push( gentity_t *self )
-{
-	if ( !self->config.speed)
-	{
-		self->config.speed = 1000;
-	}
-
-	G_SetMovedir( self->s.angles, self->s.origin2 );
-	VectorScale( self->s.origin2, self->config.speed, self->s.origin2 );
-
-	if ( self )
-	{
-		VectorCopy( self->s.origin, self->r.absmin );
-		VectorCopy( self->s.origin, self->r.absmax );
-		self->think = AimAtTarget;
-		self->nextthink = level.time + FRAMETIME;
-	}
-
-	self->use = target_push_use;
 }
 
 /*
@@ -156,7 +82,7 @@ trigger_teleport
 ==============================================================================
 */
 
-void trigger_teleporter_touch( gentity_t *self, gentity_t *other, trace_t *trace )
+void env_afx_teleporter_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 {
 	gentity_t *dest;
 
@@ -190,14 +116,14 @@ void trigger_teleporter_touch( gentity_t *self, gentity_t *other, trace_t *trace
 	G_TeleportPlayer( other, dest->s.origin, dest->s.angles, self->config.speed );
 }
 
-void trigger_teleporter_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
+void env_afx_teleporter_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
 {
 	ent->s.eFlags ^= EF_NODRAW;
 }
 
-void SP_trigger_teleport( gentity_t *self )
+void SP_env_afx_teleport( gentity_t *self )
 {
-	InitTrigger( self );
+	InitEnvAFXEntity( self );
 
 	if( !self->config.speed )
 		self->config.speed = 400;
@@ -220,8 +146,8 @@ void SP_trigger_teleport( gentity_t *self )
 	}
 
 	self->s.eType = ET_TELEPORT_TRIGGER;
-	self->touch = trigger_teleporter_touch;
-	self->use = trigger_teleporter_use;
+	self->touch = env_afx_teleporter_touch;
+	self->use = env_afx_teleporter_use;
 
 	trap_LinkEntity( self );
 }
@@ -234,19 +160,7 @@ trigger_hurt
 ==============================================================================
 */
 
-void hurt_use( gentity_t *self, gentity_t *other, gentity_t *activator )
-{
-	if ( self->r.linked )
-	{
-		trap_UnlinkEntity( self );
-	}
-	else
-	{
-		trap_LinkEntity( self );
-	}
-}
-
-void hurt_touch( gentity_t *self, gentity_t *other, trace_t *trace )
+void env_afx_hurt_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 {
 	int dflags;
 
@@ -287,19 +201,19 @@ void hurt_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 	G_Damage( other, self, self, NULL, NULL, self->damage, dflags, MOD_TRIGGER_HURT );
 }
 
-void SP_trigger_hurt( gentity_t *self )
+void SP_env_afx_hurt( gentity_t *self )
 {
-	InitTrigger( self );
+	InitEnvAFXEntity( self );
 
 	self->soundIndex = G_SoundIndex( "sound/misc/electro.wav" );
-	self->touch = hurt_touch;
+	self->touch = env_afx_hurt_touch;
 
 	if ( self->damage <= 0 )
 	{
 		self->damage = 5;
 	}
 
-	self->use = hurt_use;
+	self->use = env_afx_toggle;
 
 	// link in to the world if starting active
 	if ( self->spawnflags & 1 )
@@ -319,7 +233,7 @@ trigger_gravity
 
 =================================================================================
 */
-void trigger_gravity_touch( gentity_t *ent, gentity_t *other, trace_t *trace )
+void env_afx_gravity_touch( gentity_t *ent, gentity_t *other, trace_t *trace )
 {
 	//only triggered by clients
 	if ( !other->client )
@@ -330,31 +244,19 @@ void trigger_gravity_touch( gentity_t *ent, gentity_t *other, trace_t *trace )
 	other->client->ps.gravity = ent->triggerGravity;
 }
 
-void trigger_gravity_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
-{
-	if ( ent->r.linked )
-	{
-		trap_UnlinkEntity( ent );
-	}
-	else
-	{
-		trap_LinkEntity( ent );
-	}
-}
-
 /*
 ===============
 SP_trigger_gravity
 ===============
 */
-void SP_trigger_gravity( gentity_t *self )
+void SP_env_afx_gravity( gentity_t *self )
 {
 	G_SpawnInt( "gravity", "800", &self->triggerGravity );
 
-	self->touch = trigger_gravity_touch;
-	self->use = trigger_gravity_use;
+	self->touch = env_afx_gravity_touch;
+	self->use = env_afx_toggle;
 
-	InitTrigger( self );
+	InitEnvAFXEntity( self );
 	trap_LinkEntity( self );
 }
 
@@ -365,19 +267,8 @@ trigger_heal
 
 =================================================================================
 */
-void trigger_heal_use( gentity_t *self, gentity_t *other, gentity_t *activator )
-{
-	if ( self->r.linked )
-	{
-		trap_UnlinkEntity( self );
-	}
-	else
-	{
-		trap_LinkEntity( self );
-	}
-}
 
-void trigger_heal_touch( gentity_t *self, gentity_t *other, trace_t *trace )
+void env_afx_heal_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 {
 	int max;
 
@@ -417,7 +308,7 @@ void trigger_heal_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 SP_trigger_heal
 ===============
 */
-void SP_trigger_heal( gentity_t *self )
+void SP_env_afx_heal( gentity_t *self )
 {
 	G_SpawnInt( "heal", "5", &self->damage );
 
@@ -427,10 +318,10 @@ void SP_trigger_heal( gentity_t *self )
 		G_Printf( S_COLOR_YELLOW "WARNING: trigger_heal with negative damage key\n" );
 	}
 
-	self->touch = trigger_heal_touch;
-	self->use = trigger_heal_use;
+	self->touch = env_afx_heal_touch;
+	self->use = env_afx_toggle;
 
-	InitTrigger( self );
+	InitEnvAFXEntity( self );
 
 	// link in to the world if starting active
 	if ( self->spawnflags & 1 )
@@ -450,7 +341,7 @@ trigger_ammo
 
 =================================================================================
 */
-void trigger_ammo_touch( gentity_t *self, gentity_t *other, trace_t *trace )
+void env_afx_ammo_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 {
 	int      maxClips, maxAmmo;
 	weapon_t weapon;
@@ -522,7 +413,7 @@ void trigger_ammo_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 SP_trigger_ammo
 ===============
 */
-void SP_trigger_ammo( gentity_t *self )
+void SP_env_afx_ammo( gentity_t *self )
 {
 	G_SpawnInt( "ammo", "1", &self->damage );
 
@@ -532,8 +423,8 @@ void SP_trigger_ammo( gentity_t *self )
 		G_Printf( S_COLOR_YELLOW "WARNING: trigger_ammo with negative ammo key\n" );
 	}
 
-	self->touch = trigger_ammo_touch;
+	self->touch = env_afx_ammo_touch;
 
-	InitTrigger( self );
+	InitEnvAFXEntity( self );
 	trap_LinkEntity( self );
 }
