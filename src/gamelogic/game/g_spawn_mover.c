@@ -2691,7 +2691,7 @@ PENDULUM
 
 void SP_func_pendulum( gentity_t *ent )
 {
-	float freq;
+	float frequency;
 	float length;
 	float phase;
 
@@ -2710,10 +2710,6 @@ void SP_func_pendulum( gentity_t *ent )
 		length = 8;
 	}
 
-	freq = 1 / ( M_PI * 2 ) * sqrt( g_gravity.value / ( 3 * length ) );
-
-	ent->s.pos.trDuration = ( 1000 / freq );
-
 	InitMover( ent );
 	reset_moverspeed( ent, 30 );
 
@@ -2722,7 +2718,8 @@ void SP_func_pendulum( gentity_t *ent )
 
 	VectorCopy( ent->s.angles, ent->s.apos.trBase );
 
-	ent->s.apos.trDuration = 1000 / freq;
+	frequency = 1 / ( M_PI * 2 ) * sqrt( g_gravity.value / ( 3 * length ) );
+	ent->s.apos.trDuration = 1000 / frequency;
 	ent->s.apos.trTime = ent->s.apos.trDuration * phase;
 	ent->s.apos.trType = TR_SINE;
 	ent->s.apos.trDelta[ 2 ] = ent->config.speed;
