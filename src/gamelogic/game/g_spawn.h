@@ -49,8 +49,8 @@ void    SP_game_end( gentity_t *ent );
 void    SP_sensor_start( gentity_t *ent );
 void    SP_sensor_stage( gentity_t *ent );
 void    SP_sensor_end( gentity_t *ent );
-void    SP_sensor_touch( gentity_t *ent );
-void    SP_sensor_touch_compat( gentity_t *ent );
+void    SP_sensor_player( gentity_t *ent );
+void    SP_sensor_buildable( gentity_t *ent );
 void    SP_sensor_timer( gentity_t *self );
 
 void    SP_trigger_multiple( gentity_t *ent );

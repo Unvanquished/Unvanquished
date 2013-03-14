@@ -309,7 +309,7 @@ void SP_sensor_end( gentity_t *self )
 /*
 =================================================================================
 
-sensor_touch
+sensor_buildable
 
 =================================================================================
 */
@@ -342,6 +342,49 @@ qboolean sensor_buildable_match( gentity_t *self, gentity_t *activator )
 
 	return qfalse;
 }
+
+void sensor_buildable_touch( gentity_t *self, gentity_t *activator, trace_t *trace )
+{
+	//sanity check
+	if ( !activator || !self->enabled || !(activator->s.eType == ET_BUILDABLE) )
+	{
+		return;
+	}
+
+	self->activator = activator;
+
+	if ( self->nextthink )
+	{
+		return; // can't retrigger until the wait is over
+	}
+
+	if( sensor_buildable_match( self, activator ) == !self->conditions.negated )
+	{
+		G_FireAllTargetsOf( self, activator );
+		trigger_checkWaitForReactivation( self );
+	}
+}
+
+void SP_sensor_buildable( gentity_t *self )
+{
+	SP_WaitFields(self, 0.5f, 0);
+	SP_ConditionFields( self );
+
+	self->touch = sensor_buildable_touch;
+	self->act = sensor_act;
+	self->reset = sensor_reset;
+
+	InitBrushSensor( self );
+	trap_LinkEntity( self );
+}
+
+/*
+=================================================================================
+
+sensor_player
+
+=================================================================================
+*/
 
 /*
 ===============
@@ -419,28 +462,22 @@ qboolean sensor_equipment_match( gentity_t *self, gentity_t *activator )
 	return qfalse;
 }
 
-/*
-===============
-trigger_buildable_trigger
-===============
-*/
-void sensor_buildable_trigger( gentity_t *self, gentity_t *activator )
-{
-	if( sensor_buildable_match( self, activator ) == !self->conditions.negated )
-	{
-		G_FireAllTargetsOf( self, activator );
-		trigger_checkWaitForReactivation( self );
-	}
-}
-
-/*
-===============
-trigger_equipment_trigger
-===============
-*/
-void sensor_client_trigger( gentity_t *self, gentity_t *activator )
+void sensor_player_touch( gentity_t *self, gentity_t *activator, trace_t *trace )
 {
 	qboolean shouldFire;
+
+	//sanity check
+	if ( !activator || !self->enabled || !activator->client )
+	{
+		return;
+	}
+
+	self->activator = activator;
+
+	if ( self->nextthink )
+	{
+		return; // can't retrigger until the wait is over
+	}
 
 	if ( ( self->conditions.upgrades[0] || self->conditions.weapons[0] ) && activator->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
 	{
@@ -462,40 +499,9 @@ void sensor_client_trigger( gentity_t *self, gentity_t *activator )
 	}
 }
 
-void sensor_player_touch( gentity_t *self, gentity_t *activator, trace_t *trace )
+void SP_sensor_player( gentity_t *self )
 {
-	//sanity check
-	if ( !activator || !self->enabled )
-	{
-		return;
-	}
-
-	self->activator = activator;
-
-	if ( self->nextthink )
-	{
-		return; // can't retrigger until the wait is over
-	}
-
-	if ( self->conditions.buildables[0] && activator->s.eType == ET_BUILDABLE )
-	{
-		sensor_buildable_trigger( self, activator );
-	}
-	else if ( activator->client )
-	{
-		sensor_client_trigger( self, activator );
-	}
-}
-
-//for compatibility
-void SP_sensor_touch_compat( gentity_t *entity )
-{
-	SP_WaitFields(entity, 0.5f, 0);
-	SP_sensor_touch( entity );
-}
-
-void SP_sensor_touch( gentity_t *self )
-{
+	SP_WaitFields(self, 0.5f, 0);
 	SP_ConditionFields( self );
 
 	self->touch = sensor_player_touch;

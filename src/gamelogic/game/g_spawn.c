@@ -290,11 +290,12 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	 *  their function of perceiving other entities.
 	 */
 
+	{ "sensor_buildable",         SP_sensor_buildable,       CHAIN_ACTIVE,     ENT_V_UNCLEAR, NULL },
 	{ "sensor_end",               SP_sensor_end,             CHAIN_ACTIVE,     ENT_V_CURRENT, NULL },
+	{ "sensor_player",            SP_sensor_player,          CHAIN_ACTIVE,     ENT_V_UNCLEAR, NULL },
 	{ "sensor_stage",             SP_sensor_stage,           CHAIN_ACTIVE,     ENT_V_CURRENT, NULL },
 	{ "sensor_start",             SP_sensor_start,           CHAIN_ACTIVE,     ENT_V_CURRENT, NULL },
 	{ "sensor_timer",             SP_sensor_timer,           CHAIN_ACTIVE,     ENT_V_UNCLEAR, NULL },
-	{ "sensor_touch",             SP_sensor_touch,           CHAIN_ACTIVE,     ENT_V_UNCLEAR, NULL },
 
 	/**
 	 *
@@ -335,9 +336,9 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	 */
 	{ "trigger_always",           SP_sensor_start,           CHAIN_ACTIVE,     ENT_V_RENAMED, "sensor_start" },
 	{ "trigger_ammo",             SP_trigger_ammo,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ "trigger_buildable",        SP_sensor_touch_compat,    CHAIN_ACTIVE,     ENT_V_TMPNAME, "sensor_touch" },
-	{ "trigger_class",            SP_sensor_touch_compat,    CHAIN_ACTIVE,     ENT_V_TMPNAME, "sensor_touch" },
-	{ "trigger_equipment",        SP_sensor_touch_compat,    CHAIN_ACTIVE,     ENT_V_TMPNAME, "sensor_touch" },
+	{ "trigger_buildable",        SP_sensor_buildable,       CHAIN_ACTIVE,     ENT_V_TMPNAME, "sensor_buildable" },
+	{ "trigger_class",            SP_sensor_player,          CHAIN_ACTIVE,     ENT_V_TMPNAME, "sensor_player" },
+	{ "trigger_equipment",        SP_sensor_player,          CHAIN_ACTIVE,     ENT_V_TMPNAME, "sensor_player" },
 	{ "trigger_gravity",          SP_trigger_gravity,        CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "trigger_heal",             SP_trigger_heal,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "trigger_hurt",             SP_trigger_hurt,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
