@@ -820,12 +820,16 @@ BUILD GUN
 
 ======================================================================
 */
+float G_GetRepairCostForBuilding( const buildableAttributes_t *buildable )
+{
+	return ( HBUILD_HEALRATE / (float) buildable->health ) * ( buildable->buildPoints / 2.0f );
+}
+
 void CheckCkitRepair( gentity_t *ent )
 {
 	vec3_t    viewOrigin, forward, end;
 	trace_t   tr;
 	gentity_t *traceEnt;
-	int       bHealth;
 	float     cost;
 
 	if ( ent->client->ps.weaponTime > 0 ||
@@ -844,18 +848,20 @@ void CheckCkitRepair( gentity_t *ent )
 	if ( tr.fraction < 1.0f && traceEnt->spawned && traceEnt->health > 0 &&
 	     traceEnt->s.eType == ET_BUILDABLE && traceEnt->buildableTeam == TEAM_HUMANS )
 	{
-		bHealth = BG_Buildable( traceEnt->s.modelindex )->health;
-		cost = ( HBUILD_HEALRATE / (float)bHealth ) * ( BG_Buildable( traceEnt->s.modelindex )->buildPoints / 2.0f );
+		const buildableAttributes_t *buildable;
 
-		if ( traceEnt->health < bHealth && G_CanAffordBuildPoints( TEAM_HUMANS, cost ) )
+		buildable = BG_Buildable( traceEnt->s.modelindex );
+		cost = G_GetRepairCostForBuilding( buildable );
+
+		if ( traceEnt->health < buildable->health && G_CanAffordBuildPoints( TEAM_HUMANS, cost ) )
 		{
 			traceEnt->health += HBUILD_HEALRATE;
 
 			G_ModifyBuildPoints( traceEnt->buildableTeam, -cost );
 
-			if ( traceEnt->health >= bHealth )
+			if ( traceEnt->health >= buildable->health )
 			{
-				traceEnt->health = bHealth;
+				traceEnt->health = buildable->health;
 				G_AddEvent( ent, EV_BUILD_REPAIRED, 0 );
 			}
 			else
