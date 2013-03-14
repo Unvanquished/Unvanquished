@@ -53,7 +53,6 @@ void    SP_sensor_player( gentity_t *ent );
 void    SP_sensor_buildable( gentity_t *ent );
 void    SP_sensor_timer( gentity_t *self );
 
-void    SP_trigger_multiple( gentity_t *ent );
 void    SP_trigger_push( gentity_t *ent );
 void    SP_trigger_teleport( gentity_t *ent );
 void    SP_trigger_hurt( gentity_t *ent );

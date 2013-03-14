@@ -342,7 +342,7 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ "trigger_gravity",          SP_trigger_gravity,        CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "trigger_heal",             SP_trigger_heal,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "trigger_hurt",             SP_trigger_hurt,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ "trigger_multiple",         SP_trigger_multiple,       CHAIN_ACTIVE,     ENT_V_UNCLEAR, NULL },
+	{ "trigger_multiple",         SP_sensor_player,          CHAIN_ACTIVE,     ENT_V_UNCLEAR, "sensor_player" },
 	{ "trigger_push",             SP_trigger_push,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "trigger_stage",            SP_sensor_stage,           CHAIN_ACTIVE,     ENT_V_RENAMED, "sensor_stage" },
 	{ "trigger_teleport",         SP_trigger_teleport,       CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },

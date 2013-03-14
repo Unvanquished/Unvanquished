@@ -65,7 +65,6 @@ void trigger_compat_propagation_use( gentity_t *self, gentity_t *other, gentity_
 	}
 }
 
-
 // the wait time has passed, so set back up for another activation
 void sensor_checkWaitForReactivation_think( gentity_t *ent )
 {
@@ -95,7 +94,7 @@ void trigger_checkWaitForReactivation( gentity_t *self )
 // the trigger was just activated
 // ent->activator should be set to the activator so it can be held through a delay
 // so wait for the delay time before firing
-void trigger_multiple_trigger( gentity_t *self, gentity_t *activator )
+void trigger_multiple_use( gentity_t *self, gentity_t *caller, gentity_t *activator )
 {
 	self->activator = activator;
 
@@ -110,19 +109,9 @@ void trigger_multiple_trigger( gentity_t *self, gentity_t *activator )
 	trigger_checkWaitForReactivation( self );
 }
 
-void trigger_multiple_propagation_compat_use( gentity_t *self, gentity_t *other, gentity_t *activator )
-{
-	trigger_multiple_trigger( self, self );
-}
-
 void trigger_multiple_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 {
-	if ( !other->client && other->s.eType != ET_BUILDABLE )
-	{
-		return;
-	}
-
-	trigger_multiple_trigger( self, other );
+	trigger_multiple_use( self, other, other );
 }
 
 void trigger_multiple_compat_reset( gentity_t *self )
@@ -141,17 +130,6 @@ void trigger_multiple_compat_reset( gentity_t *self )
 	}
 }
 
-void SP_trigger_multiple( gentity_t *ent )
-{
-	SP_WaitFields(ent, 0.5f, 0);
-
-	ent->touch = trigger_multiple_touch;
-	ent->use = trigger_multiple_propagation_compat_use;
-	ent->reset = trigger_multiple_compat_reset;
-
-	InitBrushSensor( ent );
-	trap_LinkEntity( ent );
-}
 
 /*
 ==============================================================================
@@ -504,9 +482,16 @@ void SP_sensor_player( gentity_t *self )
 	SP_WaitFields(self, 0.5f, 0);
 	SP_ConditionFields( self );
 
-	self->touch = sensor_player_touch;
-	self->act = sensor_act;
-	self->reset = sensor_reset;
+	if(!Q_stricmp(self->classname, "trigger_multiple"))
+	{
+		self->touch = trigger_multiple_touch;
+		self->use = trigger_multiple_use;
+		self->reset = trigger_multiple_compat_reset;
+	} else {
+		self->touch = sensor_player_touch;
+		self->act = sensor_act;
+		self->reset = sensor_reset;
+	}
 
 	InitBrushSensor( self );
 	trap_LinkEntity( self );
