@@ -241,11 +241,11 @@ int QDECL VPRINTF_LIKE(1) Com_VPrintf( const char *fmt, va_list argptr )
 
 			if ( com_logfile->integer != 3 )
 			{
-				logfile = FS_FOpenFileWrite( "etconsole.log" );
+				logfile = FS_FOpenFileWrite( "unvconsole.log" );
 			}
 			else
 			{
-				logfile = FS_FOpenFileAppend( "etconsole.log" );
+				logfile = FS_FOpenFileAppend( "unvconsole.log" );
 			}
 
 			Com_Printf(_( "logfile opened on %s\n"), asctime( newtime ) );
