@@ -1655,6 +1655,7 @@ void Think_SpawnNewDoorTrigger( gentity_t *ent )
 void reset_func_door( gentity_t *self )
 {
 	reset_intField(&self->health, self->config.health, self->eclass->config.health, 0);
+	reset_intField(&self->damage, self->config.damage, self->eclass->config.damage, 2);
 
 	self->takedamage = !!self->health;
 
@@ -1700,10 +1701,6 @@ void SP_func_door( gentity_t *ent )
 
 	// default lip of 8 units
 	G_SpawnFloat( "lip", "8", &lip );
-
-	// default damage of 2 points
-	if( !ent->damage )
-		ent->damage = 2;
 
 	// first position at start
 	VectorCopy( ent->s.origin, ent->restingPosition );
@@ -2137,8 +2134,7 @@ void SP_func_plat( gentity_t *ent )
 
 	G_SpawnFloat( "lip", "8", &lip );
 
-	if( !ent->damage )
-		ent->damage = 2;
+	reset_intField(&ent->damage, ent->config.damage, ent->eclass->config.damage, 2);
 
 	if(!ent->config.wait.time)
 		ent->config.wait.time = 1.0f;
@@ -2536,9 +2532,9 @@ void SP_func_train( gentity_t *self )
 	{
 		self->damage = 0;
 	}
-	else if ( !self->damage )
+	else
 	{
-		self->damage = 2;
+		reset_intField(&self->damage, self->config.damage, self->eclass->config.damage, 2);
 	}
 
 	trap_SetBrushModel( self, self->model );
@@ -2614,10 +2610,7 @@ void SP_func_rotating( gentity_t *ent )
 		ent->s.apos.trDelta[ 1 ] = ent->config.speed;
 	}
 
-	if ( !ent->damage )
-	{
-		ent->damage = 2;
-	}
+	reset_intField(&ent->damage, ent->config.damage, ent->eclass->config.damage, 2);
 
 	trap_SetBrushModel( ent, ent->model );
 	InitMover( ent );
@@ -2653,8 +2646,7 @@ void SP_func_bobbing( gentity_t *ent )
 	G_SpawnFloat( "height", "32", &height );
 	G_SpawnFloat( "phase", "0", &phase );
 
-	if( !ent->damage )
-		ent->damage = 2;
+	reset_intField(&ent->damage, ent->config.damage, ent->eclass->config.damage, 2);
 
 	trap_SetBrushModel( ent, ent->model );
 	InitMover( ent );
@@ -2697,8 +2689,7 @@ void SP_func_pendulum( gentity_t *ent )
 
 	G_SpawnFloat( "phase", "0", &phase );
 
-	if( !ent->damage )
-		ent->damage = 2;
+	reset_intField(&ent->damage, ent->config.damage, ent->eclass->config.damage, 2);
 
 	trap_SetBrushModel( ent, ent->model );
 

@@ -159,6 +159,7 @@ typedef struct
 
 	int health;
 	float speed;
+	int damage;
 
 	variatingTime_t wait;
 

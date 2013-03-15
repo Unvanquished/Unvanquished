@@ -184,11 +184,7 @@ void target_hurt_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 
 void SP_target_hurt( gentity_t *self )
 {
-	if ( !self->damage )
-	{
-		self->damage = 5;
-	}
-
+	reset_intField(&self->damage, self->config.damage, self->eclass->config.damage, 5);
 	self->use = target_hurt_use;
 }
 
