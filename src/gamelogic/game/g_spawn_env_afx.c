@@ -416,12 +416,12 @@ SP_trigger_ammo
 */
 void SP_env_afx_ammo( gentity_t *self )
 {
-	G_SpawnInt( "ammo", "1", &self->damage );
+	G_SpawnInt( "ammo", "1", &self->config.amount );
 
-	if ( self->damage <= 0 )
+	if ( self->config.amount <= 0 )
 	{
-		self->damage = 1;
-		G_Printf( S_COLOR_YELLOW "WARNING: trigger_ammo with negative ammo key\n" );
+		self->config.amount = 1;
+		G_Printf( S_COLOR_YELLOW "WARNING: ^5%s ^7with negative or unset ammo amount key\n", self->classname );
 	}
 
 	self->touch = env_afx_ammo_touch;
