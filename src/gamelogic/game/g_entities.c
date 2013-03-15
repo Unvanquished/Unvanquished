@@ -500,33 +500,33 @@ void G_FireTarget(target_t *target, gentity_t *targetedEntity, gentity_t *caller
 	{
 		switch (target->actionType)
 		{
-		case ETA_FREE:
+		case ECA_FREE:
 			G_FreeEntity(targetedEntity);
 			return; //we have to handle notification differently in the free-case
 
-		case ETA_PROPAGATE:
+		case ECA_PROPAGATE:
 			G_FireAllTargetsOf( targetedEntity, activator);
 			break;
 
-		case ETA_ENABLE:
+		case ECA_ENABLE:
 			targetedEntity->enabled = qtrue;
 			break;
-		case ETA_DISABLE:
+		case ECA_DISABLE:
 			targetedEntity->enabled = qfalse;
 			break;
-		case ETA_TOGGLE:
+		case ECA_TOGGLE:
 			targetedEntity->enabled = !targetedEntity->enabled;
 			break;
 
-		case ETA_USE:
+		case ECA_USE:
 			if (targetedEntity->use)
 				targetedEntity->use(targetedEntity, caller, activator);
 			break;
-		case ETA_RESET:
+		case ECA_RESET:
 			if (targetedEntity->reset)
 				targetedEntity->reset(targetedEntity);
 			break;
-		case ETA_ACT:
+		case ECA_ACT:
 			if (targetedEntity->act)
 				targetedEntity->act(target, targetedEntity, caller, activator);
 			break;

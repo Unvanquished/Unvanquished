@@ -126,27 +126,27 @@ typedef struct
 
 typedef enum
 {
-	ETA_DEFAULT = 0,
-	ETA_CUSTOM,
+	ECA_DEFAULT = 0,
+	ECA_CUSTOM,
 
-	ETA_FREE,
-	ETA_PROPAGATE,
+	ECA_FREE,
+	ECA_PROPAGATE,
 
-	ETA_ACT,
-	ETA_USE,
-	ETA_RESET,
+	ECA_ACT,
+	ECA_USE,
+	ECA_RESET,
 
-	ETA_ENABLE,
-	ETA_DISABLE,
-	ETA_TOGGLE
+	ECA_ENABLE,
+	ECA_DISABLE,
+	ECA_TOGGLE
 
-} targetAction_t;
+} gentityCallAction_t;
 
 typedef struct
 {
 	char  *name;
 	char  *action;
-	targetAction_t actionType;
+	gentityCallAction_t actionType;
 } target_t;
 
 /*
@@ -876,7 +876,7 @@ qboolean G_SpawnVector( const char *key, const char *defaultString, float *out )
 void     G_SpawnEntitiesFromString( void );
 void     G_CleanUpSpawnedTargets( gentity_t *ent );
 char     *G_NewString( const char *string );
-targetAction_t G_GetTargetActionFor( const char* action );
+gentityCallAction_t G_GetTargetActionFor( const char* action );
 
 //
 // g_cmds.c

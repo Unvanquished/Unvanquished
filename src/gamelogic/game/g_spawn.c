@@ -151,18 +151,18 @@ static const field_t fields[] =
 typedef struct
 {
 	const char *alias;
-	targetAction_t action;
+	gentityCallAction_t action;
 } entityActionDescription_t;
 
 static const entityActionDescription_t actionDescriptions[] =
 {
-		{ "act",       ETA_ACT       },
-		{ "disable",   ETA_DISABLE   },
-		{ "enable",    ETA_ENABLE    },
-		{ "free",      ETA_FREE      },
-		{ "propagate", ETA_PROPAGATE },
-		{ "reset",     ETA_RESET     },
-		{ "toggle",    ETA_TOGGLE    },
+		{ "act",       ECA_ACT       },
+		{ "disable",   ECA_DISABLE   },
+		{ "enable",    ECA_ENABLE    },
+		{ "free",      ECA_FREE      },
+		{ "propagate", ECA_PROPAGATE },
+		{ "reset",     ECA_RESET     },
+		{ "toggle",    ECA_TOGGLE    },
 };
 
 typedef enum
@@ -560,7 +560,7 @@ target_t G_NewTarget( const char *string )
 {
 	char *stringPointer;
 	int  i, stringLength;
-	target_t newTarget = { NULL, NULL, ETA_DEFAULT };
+	target_t newTarget = { NULL, NULL, ECA_DEFAULT };
 
 	stringLength = strlen( string ) + 1;
 	if(stringLength == 1)
@@ -713,12 +713,12 @@ void G_SpawnGEntityFromSpawnVars( void )
 	}
 }
 
-targetAction_t G_GetTargetActionFor( const char* action )
+gentityCallAction_t G_GetTargetActionFor( const char* action )
 {
 	entityActionDescription_t *foundDescription;
 
 	if(!action)
-		return ETA_DEFAULT;
+		return ECA_DEFAULT;
 
 	foundDescription = bsearch(action, actionDescriptions, ARRAY_LEN( actionDescriptions ),
 		             sizeof( entityActionDescription_t ), cmdcmp );
@@ -726,7 +726,7 @@ targetAction_t G_GetTargetActionFor( const char* action )
 	if(foundDescription && foundDescription->alias)
 		return foundDescription->action;
 
-	return ETA_CUSTOM;
+	return ECA_CUSTOM;
 }
 
 void G_CleanUpSpawnedTargets( gentity_t *ent )
@@ -744,7 +744,7 @@ void G_CleanUpSpawnedTargets( gentity_t *ent )
 	}
 	ent->targets[ j ].name = NULL;
 	ent->targets[ j ].action = NULL;
-	ent->targets[ j ].actionType = ETA_DEFAULT;
+	ent->targets[ j ].actionType = ECA_DEFAULT;
 }
 
 qboolean G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFieldname, const char *actualFieldname, const int typeOfDeprecation  )
