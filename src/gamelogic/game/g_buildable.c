@@ -1476,7 +1476,7 @@ void ALeech_Think( gentity_t *self )
 
 	if ( active )
 	{
-		G_ModifyBuildPoints( TEAM_HUMANS, self->s.weapon / 60000.0f );
+		G_ModifyBuildPoints( TEAM_ALIENS, self->s.weapon / 60000.0f );
 	}
 }
 
