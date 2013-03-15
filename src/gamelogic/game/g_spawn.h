@@ -116,10 +116,8 @@ void     SP_Nothing( gentity_t *self );
 void     reset_intField( int* target, int instanceField, int classField, int fallback );
 void     reset_floatField( float* target, float instanceField, float classField, float fallback );
 
-void     entity_SetNextthink( gentity_t *self );
 void     SP_ConditionFields( gentity_t *self );
 void     SP_WaitFields( gentity_t *self, float defaultWait, float defaultWaitVariance );
-
 
 // Init functions
 void    SP_position_init( void );
