@@ -142,6 +142,7 @@ static const field_t fields[] =
 	{ "targetname",			 FOFS( names[ 1 ] ),          F_STRING,	  ENT_V_RENAMED, "name"},
 	{ "targetShaderName",    FOFS( targetShaderName ),    F_STRING    },
 	{ "targetShaderNewName", FOFS( targetShaderNewName ), F_STRING    },
+	{ "team",                FOFS( conditions.team ),     F_INT       },
 	{ "wait",                FOFS( config.wait ),         F_TIME      },
 	{ "yaw",                 FOFS( s.angles ),            F_YAW       },
 };

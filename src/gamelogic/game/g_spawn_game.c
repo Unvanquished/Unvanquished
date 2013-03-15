@@ -88,6 +88,5 @@ void SP_target_human_win( gentity_t *self )
 
 void SP_game_end( gentity_t *self )
 {
-	G_SpawnInt( "team", "0", ( int * ) &self->conditions.team );
 	self->act = game_end_act;
 }

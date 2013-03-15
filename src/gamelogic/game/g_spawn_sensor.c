@@ -234,8 +234,6 @@ void G_notify_sensor_stage( team_t team, stage_t stage )
 
 void SP_sensor_stage( gentity_t *self )
 {
-	G_SpawnInt( "team", "0", ( int * ) &self->conditions.team );
-
 	if(self->classname[0] == 't')
 		self->use = trigger_compat_propagation_use;
 	else
@@ -272,8 +270,6 @@ void G_notify_sensor_end( team_t winningTeam )
 
 void SP_sensor_end( gentity_t *self )
 {
-	G_SpawnInt( "team", "0", ( int * ) &self->conditions.team );
-
 	if(self->classname[0] == 't')
 		self->use = trigger_compat_propagation_use;
 	else
