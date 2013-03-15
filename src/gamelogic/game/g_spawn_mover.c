@@ -2763,6 +2763,13 @@ void Use_func_spawn( gentity_t *ent, gentity_t *other, gentity_t *activator )
   }
 }
 
+void reset_func_spawn( gentity_t *self )
+{
+	if( self->spawnflags & 1 )
+		trap_LinkEntity( self );
+	else
+		trap_UnlinkEntity( self );
+}
 /*
 ====================
 SP_func_spawn
@@ -2784,11 +2791,7 @@ void SP_func_spawn( gentity_t *ent )
   }
 
   ent->use = Use_func_spawn;
-
-  if( ent->spawnflags & 1 )
-    trap_LinkEntity( ent );
-  else
-    trap_UnlinkEntity( ent );
+  ent->reset = reset_func_spawn;
 }
 
 void die_func_destructable( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod )
