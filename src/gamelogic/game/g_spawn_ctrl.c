@@ -58,7 +58,7 @@ void ctrl_relay_act( target_t* target, gentity_t *self, gentity_t *caller, genti
 	}
 	else
 	{
-		entity_SetNextthink( self );
+		G_SetNextthink( self );
 		self->think = think_fireDelayed;
 		self->activator = activator;
 	}

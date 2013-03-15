@@ -1084,7 +1084,7 @@ void       G_FireAllTargetsOf( gentity_t *ent, gentity_t *activator );
 //configure
 void       G_SetMovedir( vec3_t angles, vec3_t movedir );
 void       G_SetOrigin( gentity_t *ent, const vec3_t origin );
-void       entity_SetNextthink( gentity_t *self );
+void       G_SetNextthink( gentity_t *self );
 
 //
 // g_missile.c

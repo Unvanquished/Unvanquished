@@ -76,7 +76,7 @@ void trigger_checkWaitForReactivation( gentity_t *self )
 	if ( self->config.wait.time > 0 )
 	{
 		self->think = sensor_checkWaitForReactivation_think;
-		entity_SetNextthink( self );
+		G_SetNextthink( self );
 	}
 	else
 	{
@@ -164,7 +164,7 @@ void sensor_timer_think( gentity_t *self )
 {
 	G_FireAllTargetsOf( self, self->activator );
 	// set time before next firing
-	entity_SetNextthink( self );
+	G_SetNextthink( self );
 }
 
 void sensor_timer_use( gentity_t *self, gentity_t *other, gentity_t *activator )

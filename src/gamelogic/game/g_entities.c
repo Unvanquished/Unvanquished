@@ -653,6 +653,6 @@ void G_SetOrigin( gentity_t *ent, const vec3_t origin )
 /**
  * predefined field interpretations
  */
-void entity_SetNextthink( gentity_t *self ) {
+void G_SetNextthink( gentity_t *self ) {
 	self->nextthink = level.time + ( self->config.wait.time + self->config.wait.variance * crandom() ) * 1000;
 }
