@@ -2818,7 +2818,7 @@ void reset_func_destructable( gentity_t *self )
 Use_func_destructable
 ====================
 */
-void act_func_destructable( target_t* target, gentity_t *self, gentity_t *caller, gentity_t *activator )
+void act_func_destructable( gentityCallDefinition_t* target, gentity_t *self, gentity_t *caller, gentity_t *activator )
 {
   if( self->r.linked )
   {

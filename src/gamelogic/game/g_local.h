@@ -147,7 +147,7 @@ typedef struct
 	char  *name;
 	char  *action;
 	gentityCallAction_t actionType;
-} target_t;
+} gentityCallDefinition_t;
 
 /*
  * struct containing the configuration data of a gentity opposed to its state data
@@ -244,7 +244,7 @@ struct gentity_s
 	qboolean     powered;
 
 	// targeting
-	target_t     targets[ MAX_ENTITY_TARGETS + 1 ];
+	gentityCallDefinition_t targets[ MAX_ENTITY_TARGETS + 1 ];
 	gentity_t    *activator;
 
 	/*
@@ -324,14 +324,14 @@ struct gentity_s
 	/*
 	 * notify about an event or undertaken action, so each entity can decide to undertake special actions as result
 	 */
-	void ( *notify )( gentity_t *targetedEntity, target_t *calledTarget );
+	void ( *notify )( gentity_t *targetedEntity, gentityCallDefinition_t *calledTarget );
 
 	/**
 	 * the entry function for calls to the entity;
 	 * especially previous chain members will indirectly call this when firing against the given entity
 	 * @returns qtrue if the call was handled by the given function and doesnt need default handling anymore or qfalse otherwise
 	 */
-	qboolean ( *handleCall )( gentity_t *self, target_t *target, gentity_t *other, gentity_t *activator );
+	qboolean ( *handleCall )( gentity_t *self, gentityCallDefinition_t *target, gentity_t *other, gentity_t *activator );
 
 	int       nextthink;
 	void ( *think )( gentity_t *self );
@@ -340,7 +340,7 @@ struct gentity_s
 	void ( *blocked )( gentity_t *self, gentity_t *other );
 	void ( *touch )( gentity_t *self, gentity_t *other, trace_t *trace );
 	void ( *use )( gentity_t *self, gentity_t *other, gentity_t *activator );
-	void ( *act )( target_t *target, gentity_t *self, gentity_t *other, gentity_t *activator );
+	void ( *act )( gentityCallDefinition_t *target, gentity_t *self, gentity_t *other, gentity_t *activator );
 	void ( *pain )( gentity_t *self, gentity_t *attacker, int damage );
 	void ( *die )( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod );
 
@@ -1069,7 +1069,7 @@ qboolean   G_EntitiesFree( void );
 
 //chain
 gentity_t  *G_FindNextTarget( gentity_t *targ, int *tIx, int *tnIx, gentity_t *self );
-void       G_FireTarget( target_t *target, gentity_t *targetedEntity, gentity_t *other, gentity_t *activator );
+void       G_FireTarget( gentityCallDefinition_t *target, gentity_t *targetedEntity, gentity_t *other, gentity_t *activator );
 gentity_t  *G_PickRandomTargetFor( gentity_t *self );
 void       G_FireRandomTargetOf( gentity_t *entity, gentity_t *activator );
 void       G_FireAllTargetsOf( gentity_t *ent, gentity_t *activator );

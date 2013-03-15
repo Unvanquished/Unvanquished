@@ -421,7 +421,7 @@ gentity_t *G_PickRandomTargetFor( gentity_t *self )
 
 typedef struct
 {
-	target_t *target;
+	gentityCallDefinition_t *target;
 	gentity_t *recipient;
 } gentityTargetChoice_t;
 
@@ -483,7 +483,7 @@ void G_FireAllTargetsOf( gentity_t *self, gentity_t *activator )
 	}
 }
 
-void G_FireTarget(target_t *target, gentity_t *targetedEntity, gentity_t *caller, gentity_t *activator)
+void G_FireTarget(gentityCallDefinition_t *target, gentity_t *targetedEntity, gentity_t *caller, gentity_t *activator)
 {
 	if ( g_debugEntities.integer > 1 )
 	{

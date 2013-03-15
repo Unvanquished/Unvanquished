@@ -37,7 +37,7 @@ void InitBrushSensor( gentity_t *self )
 	self->r.svFlags = SVF_NOCLIENT;
 }
 
-void sensor_act(target_t* target, gentity_t *self, gentity_t *other, gentity_t *activator)
+void sensor_act(gentityCallDefinition_t* target, gentity_t *self, gentity_t *other, gentity_t *activator)
 {
 	// if we wanted to tell the cgame about our deactivation, this would be the way to do it
 	// self->s.eFlags ^= EF_NODRAW;

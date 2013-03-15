@@ -556,11 +556,11 @@ char *G_NewString( const char *string )
 G_NewTarget
 =============
 */
-target_t G_NewTarget( const char *string )
+gentityCallDefinition_t G_NewTarget( const char *string )
 {
 	char *stringPointer;
 	int  i, stringLength;
-	target_t newTarget = { NULL, NULL, ECA_DEFAULT };
+	gentityCallDefinition_t newTarget = { NULL, NULL, ECA_DEFAULT };
 
 	stringLength = strlen( string ) + 1;
 	if(stringLength == 1)
@@ -614,7 +614,7 @@ void G_ParseField( const char *key, const char *rawString, gentity_t *entity )
 			break;
 
 		case F_TARGET:
-			* ( target_t * )( entityData + resultingField->offset ) = G_NewTarget( rawString );
+			* ( gentityCallDefinition_t * )( entityData + resultingField->offset ) = G_NewTarget( rawString );
 			break;
 
 		case F_TIME:

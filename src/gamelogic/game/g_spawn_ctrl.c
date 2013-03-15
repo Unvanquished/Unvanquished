@@ -32,7 +32,7 @@ ctrl_relay
 =================================================================================
 */
 
-void ctrl_relay_act( target_t* target, gentity_t *self, gentity_t *caller, gentity_t *activator )
+void ctrl_relay_act( gentityCallDefinition_t* target, gentity_t *self, gentity_t *caller, gentity_t *activator )
 {
 	if ( ( self->spawnflags & 1 ) && activator && activator->client &&
 	     activator->client->ps.stats[ STAT_TEAM ] != TEAM_HUMANS )
@@ -90,7 +90,7 @@ ctrl_limited
 =================================================================================
 */
 
-void ctrl_limited_act(target_t* target, gentity_t *self, gentity_t *other, gentity_t *activator)
+void ctrl_limited_act(gentityCallDefinition_t* target, gentity_t *self, gentity_t *other, gentity_t *activator)
 {
 	if (!self->enabled)
 		return;

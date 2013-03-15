@@ -124,7 +124,7 @@ void Svcmd_EntityFire_f( void )
 	char argument[ MAX_STRING_CHARS ];
 	int  entityNum;
 	gentity_t *selection;
-	target_t target = { NULL, NULL, ECA_DEFAULT };
+	gentityCallDefinition_t target = { NULL, NULL, ECA_DEFAULT };
 
 	if ( trap_Argc() < 2 || trap_Argc() > 3 )
 	{
