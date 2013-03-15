@@ -2802,6 +2802,9 @@ void SP_func_spawn( gentity_t *ent )
 
 void die_func_destructable( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod )
 {
+	self->takedamage = qfalse;
+	trap_UnlinkEntity( self );
+
 	G_RadiusDamage( self->restingPosition, attacker, self->splashDamage, self->splashRadius, self, MOD_TRIGGER_HURT );
 	G_FireAllTargetsOf( self, attacker );
 }
