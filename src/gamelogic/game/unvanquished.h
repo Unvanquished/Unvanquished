@@ -308,7 +308,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LEECH_SPLASHDAMAGE       30
 #define LEECH_SPLASHRADIUS       200
 #define LEECH_CREEPSIZE          120
-#define LEECH_RANGE              800.0f
+#define LEECH_RANGE              750.0f
 #define LEECH_LIFETIME           3000
 #define LEECH_REPEAT             3000
 #define LEECH_K_SCALE            1.0f
@@ -565,7 +565,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define DRILL_HEALTH           HBHM(200)
 #define DRILL_SPLASHDAMAGE     50
 #define DRILL_SPLASHRADIUS     100
-#define DRILL_RANGE            800.0f
+#define DRILL_RANGE            750.0f
 #define DRILL_VALUE            HBVM(DRILL_BP)
 
 #define MGTURRET_BP               8
@@ -683,7 +683,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define DEFAULT_ALIEN_BUILDPOINTS          "150"
 #define DEFAULT_ALIEN_QUEUE_TIME           "12000"
 #define DEFAULT_ALIEN_STAGE2_THRESH        "400"
-#define DEFAULT_ALIEN_STAGE3_THRESH        "600"
+#define DEFAULT_ALIEN_STAGE3_THRESH        "550"
 #define DEFAULT_ALIEN_MAX_STAGE            "2"
 #define DEFAULT_HUMAN_BUILDPOINTS          "100"
 #define DEFAULT_HUMAN_QUEUE_TIME           "8000"
@@ -691,7 +691,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define DEFAULT_HUMAN_REPEATER_QUEUE_TIME  "2000"
 #define DEFAULT_HUMAN_REPEATER_MAX_ZONES   "500"
 #define DEFAULT_HUMAN_STAGE2_THRESH        "400"
-#define DEFAULT_HUMAN_STAGE3_THRESH        "600"
+#define DEFAULT_HUMAN_STAGE3_THRESH        "550"
 #define DEFAULT_HUMAN_MAX_STAGE            "2"
 
 #define DAMAGE_FRACTION_FOR_KILL           0.5f //how much damage players (versus structures) need to
