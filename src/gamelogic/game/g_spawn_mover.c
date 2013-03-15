@@ -2800,29 +2800,44 @@ void SP_func_spawn( gentity_t *ent )
     trap_UnlinkEntity( ent );
 }
 
+void die_func_destructable( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod )
+{
+	G_RadiusDamage( self->restingPosition, attacker, self->splashDamage, self->splashRadius, self, MOD_TRIGGER_HURT );
+	G_FireAllTargetsOf( self, attacker );
+}
+
+
+void reset_func_destructable( gentity_t *self )
+{
+	reset_intField(&self->health, self->config.health, self->eclass->config.health, 100);
+	if(self->health < 0)
+		self->health = 1;
+
+	self->takedamage = qtrue;
+}
+
 /*
 ====================
 Use_func_destructable
 ====================
 */
-void Use_func_destructable( gentity_t *ent, gentity_t *other, gentity_t *activator )
+void act_func_destructable( target_t* target, gentity_t *self, gentity_t *caller, gentity_t *activator )
 {
-  if( ent->r.linked )
+  if( self->r.linked )
   {
-    ent->takedamage = qfalse;
-    trap_UnlinkEntity( ent );
-    if( ent->health <= 0 )
+	self->takedamage = qfalse;
+    trap_UnlinkEntity( self );
+    if( self->health <= 0 )
     {
-      G_RadiusDamage( ent->restingPosition, activator, ent->splashDamage, ent->splashRadius, ent, MOD_TRIGGER_HURT );
-      G_FireAllTargetsOf( ent, activator );
+    	die_func_destructable( self, caller, activator, 0, MOD_UNKNOWN );
     }
   }
   else
   {
-    trap_LinkEntity( ent );
-    G_KillBrushModel( ent, activator );
-    ent->health = ent->config.health;
-    ent->takedamage = qtrue;
+    trap_LinkEntity( self );
+    G_KillBrushModel( self, activator );
+		reset_func_destructable ( self );
+    self->takedamage = qtrue;
   }
 }
 
@@ -2838,9 +2853,6 @@ void SP_func_destructable( gentity_t *ent )
   G_SpawnInt( "damage", "0", &ent->splashDamage );
   G_SpawnInt( "radius", "0", &ent->splashRadius );
 
-  if(ent->config.health < 1)
-	  ent->config.health = 100;
-
   //ent->r.svFlags = SVF_USE_CURRENT_ORIGIN;
   ent->s.eType = ET_MOVER;
   ent->moverState = MOVER_POS1;
@@ -2854,14 +2866,15 @@ void SP_func_destructable( gentity_t *ent )
     VectorCopy( ent->s.angles, ent->s.apos.trBase );
   }
 
-  ent->use = Use_func_destructable;
+  ent->reset = reset_func_destructable;
+  ent->die = die_func_destructable;
+  ent->act = act_func_destructable;
 
   if( ent->spawnflags & 1 )
     trap_UnlinkEntity( ent );
   else
   {
     trap_LinkEntity( ent );
-    ent->health = ent->config.health;
     ent->takedamage = qtrue;
   }
 }
