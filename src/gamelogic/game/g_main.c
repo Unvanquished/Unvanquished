@@ -103,6 +103,7 @@ vmCvar_t           g_alienStage;
 vmCvar_t           g_alienMaxStage;
 vmCvar_t           g_alienStage2Threshold;
 vmCvar_t           g_alienStage3Threshold;
+vmCvar_t           g_stageHysteresisFactor;
 vmCvar_t           g_teamImbalanceWarnings;
 vmCvar_t           g_freeFundPeriod;
 
@@ -258,6 +259,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_alienMaxStage,               "g_alienMaxStage",               DEFAULT_ALIEN_MAX_STAGE,            0,                                               0, qfalse, cv_alienMaxStage},
 	{ &g_alienStage2Threshold,        "g_alienStage2Threshold",        DEFAULT_ALIEN_STAGE2_THRESH,        0,                                               0, qfalse           },
 	{ &g_alienStage3Threshold,        "g_alienStage3Threshold",        DEFAULT_ALIEN_STAGE3_THRESH,        0,                                               0, qfalse           },
+	{ &g_stageHysteresisFactor,       "g_stageHysteresisFactor",       DEFAULT_STAGE_HYSTERESIS_FACTOR,    0,                                               0, qfalse           },
 	{ &g_teamImbalanceWarnings,       "g_teamImbalanceWarnings",       "30",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_freeFundPeriod,              "g_freeFundPeriod",              DEFAULT_FREEKILL_PERIOD,            CVAR_ARCHIVE,                                    0, qtrue            },
 
@@ -1315,6 +1317,11 @@ void G_CalculateStages( void )
 		return;
 	}
 
+	if ( g_stageHysteresisFactor.integer < 0 )
+	{
+		g_stageHysteresisFactor.integer = 0;
+	}
+
 	for ( team = NUM_TEAMS - 1; team > TEAM_NONE; team-- )
 	{
 		switch ( team )
@@ -1349,8 +1356,13 @@ void G_CalculateStages( void )
 				continue;
 		}
 
-		if ( mineEfficiency >= S3Threshold && stage != S3 && maxStage >= S3 )
+		if ( mineEfficiency >= S3Threshold )
 		{
+			if ( stage == S3 || maxStage < S3 )
+			{
+				continue;
+			}
+
 			newStage = S3;
 			nextThreshold = -1;
 
@@ -1359,8 +1371,17 @@ void G_CalculateStages( void )
 				*S3Time = level.time;
 			}
 		}
-		else if ( mineEfficiency < S3Threshold && mineEfficiency >= S2Threshold && stage != S2 && maxStage >= S2 )
+		else if ( mineEfficiency >= S3Threshold - g_stageHysteresisFactor.integer && stage > S2 )
 		{
+			continue;
+		}
+		else if ( mineEfficiency >= S2Threshold )
+		{
+			if ( stage == S2 || maxStage < S2 )
+			{
+				continue;
+			}
+
 			newStage = S2;
 			nextThreshold = S3Threshold;
 
@@ -1369,7 +1390,11 @@ void G_CalculateStages( void )
 				*S2Time = level.time;
 			}
 		}
-		else if ( mineEfficiency < S2Threshold && stage != S1 )
+		else if ( mineEfficiency >= S2Threshold - g_stageHysteresisFactor.integer && stage > S1 )
+		{
+			continue;
+		}
+		else if ( stage != S1 )
 		{
 			newStage = S1;
 			nextThreshold = S2Threshold;

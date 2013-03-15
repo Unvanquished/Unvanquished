@@ -1131,6 +1131,7 @@ extern  vmCvar_t g_alienStage;
 extern  vmCvar_t g_alienMaxStage;
 extern  vmCvar_t g_alienStage2Threshold;
 extern  vmCvar_t g_alienStage3Threshold;
+extern  vmCvar_t g_stageHysteresisFactor;
 extern  vmCvar_t g_teamImbalanceWarnings;
 extern  vmCvar_t g_freeFundPeriod;
 
