@@ -409,13 +409,6 @@ struct gentity_s
 	int         usesBuildPointZone; // does it use a zone?
 };
 
-
-typedef struct
-{
-	target_t *target;
-	gentity_t *recipient;
-} gentityCall_t;
-
 typedef enum
 {
   CON_DISCONNECTED,

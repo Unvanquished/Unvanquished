@@ -419,14 +419,19 @@ gentity_t *G_PickRandomTargetFor( gentity_t *self )
 	return choices[ rand() / ( RAND_MAX / totalChoiceCount + 1 ) ];
 }
 
+typedef struct
+{
+	target_t *target;
+	gentity_t *recipient;
+} gentityTargetChoice_t;
 
 void G_FireRandomTargetOf( gentity_t *entity, gentity_t *activator )
 {
 	int       targetIndex, nameIndex;
 	gentity_t *possbileTarget = NULL;
 	int       totalChoiceCount = 0;
-	gentityCall_t choices[ MAX_GENTITIES ];
-	gentityCall_t *selectedCall;
+	gentityTargetChoice_t choices[ MAX_GENTITIES ];
+	gentityTargetChoice_t *selectedChoice;
 
 	//collects the targets
 	while( ( possbileTarget = G_FindNextTarget( possbileTarget, &targetIndex, &nameIndex, entity ) ) != NULL )
@@ -437,11 +442,11 @@ void G_FireRandomTargetOf( gentity_t *entity, gentity_t *activator )
 	}
 
 	//return a random one from among the choices
-	selectedCall = &choices[ rand() / ( RAND_MAX / totalChoiceCount + 1 ) ];
-	if (!selectedCall)
+	selectedChoice = &choices[ rand() / ( RAND_MAX / totalChoiceCount + 1 ) ];
+	if (!selectedChoice)
 		return;
 
-	G_FireTarget( selectedCall->target, selectedCall->recipient, entity, activator );
+	G_FireTarget( selectedChoice->target, selectedChoice->recipient, entity, activator );
 }
 
 /*
