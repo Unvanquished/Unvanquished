@@ -748,6 +748,137 @@ static void G_CreepSlow( gentity_t *self )
 
 /*
 ================
+G_RGSAdjustRate
+
+Adjust the rate of a RGS
+================
+*/
+void G_RGSCalculateRate( gentity_t *self )
+{
+	int             neighbor, numNeighbors, neighbors[ MAX_GENTITIES ];
+	vec3_t          range, mins, maxs;
+	gentity_t       *rgs;
+	float           rate, d, dr, q;
+
+	if ( self->s.modelindex == BA_A_LEECH )
+	{
+		range[ 0 ] = range[ 1 ] = range[ 2 ] = LEECH_RANGE;
+	}
+	else if ( self->s.modelindex == BA_H_DRILL )
+	{
+		range[ 0 ] = range[ 1 ] = range[ 2 ] = DRILL_RANGE;
+	}
+	else
+	{
+		return;
+	}
+
+	if ( !self->spawned || !self->powered )
+	{
+		// HACK: Save rate and efficiency entityState.weapon and entityState.weaponAnim
+		self->s.weapon = 0;
+		self->s.weaponAnim = 0;
+	}
+	else
+	{
+		rate = level.mineRate;
+
+		VectorAdd( self->s.origin, range, maxs );
+		VectorSubtract( self->s.origin, range, mins );
+		numNeighbors = trap_EntitiesInBox( mins, maxs, neighbors, MAX_GENTITIES );
+
+		for ( neighbor = 0; neighbor < numNeighbors; neighbor++ )
+		{
+			rgs = &g_entities[ neighbors[ neighbor ] ];
+
+			if ( rgs->s.eType == ET_BUILDABLE && ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH )
+				 && rgs != self && rgs->spawned && rgs->powered && rgs->health > 0 )
+			{
+				d = Distance( self->s.origin, rgs->s.origin );
+
+				// Discard RGS not in 2 * range and prevent divisin by zero on LEECH_RANGE = 0
+				if ( 2 * range[ 0 ] - d < 0 )
+				{
+					continue;
+				}
+
+				// q is the ratio of the part of a sphere with radius r that intersects with
+				// another sphere of equal size and distance d
+				dr = d / range[ 0 ];
+				q = ((dr * dr * dr) - 12.0f * dr + 16.0f) / 16.0f;
+
+				// Two rgs together should mine at a rate proportional to the volume of the
+				// union of their areas of effect. If more RGS intersect, this is just an
+				// approximation that tends to punish cluttering of RGS.
+				rate = rate * (1.0f - q) + 0.5f * rate * q;
+			}
+		}
+
+		// HACK: Save rate and efficiency entityState.weapon and entityState.weaponAnim
+		self->s.weapon = ( int )( rate * 1000.0f );
+		self->s.weaponAnim = ( int )( (rate / level.mineRate) * 100.0f );
+
+		// The rate must be positive to indicate that the RGS is active
+		if ( self->s.weapon < 1 )
+		{
+			self->s.weapon = 1;
+		}
+	}
+}
+
+/*
+================
+G_RGSInformNeighbors
+
+Adjust the rate of all interfering neighbors of a RGS
+================
+*/
+void G_RGSInformNeighbors( gentity_t *self )
+{
+	int             neighbor, numNeighbors, neighbors[ MAX_GENTITIES ];
+	vec3_t          range, mins, maxs;
+	gentity_t       *rgs;
+	float           d;
+
+	if ( self->s.modelindex == BA_A_LEECH )
+	{
+		range[ 0 ] = range[ 1 ] = range[ 2 ] = LEECH_RANGE;
+	}
+	else if ( self->s.modelindex == BA_H_DRILL )
+	{
+		range[ 0 ] = range[ 1 ] = range[ 2 ] = DRILL_RANGE;
+	}
+	else
+	{
+		return;
+	}
+
+	VectorAdd( self->s.origin, range, maxs );
+	VectorSubtract( self->s.origin, range, mins );
+	numNeighbors = trap_EntitiesInBox( mins, maxs, neighbors, MAX_GENTITIES );
+
+	for ( neighbor = 0; neighbor < numNeighbors; neighbor++ )
+	{
+		rgs = &g_entities[ neighbors[ neighbor ] ];
+
+		if ( rgs->s.eType == ET_BUILDABLE && ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH )
+			 && rgs != self && rgs->spawned && rgs->powered && rgs->health > 0 )
+		{
+			d = Distance( self->s.origin, rgs->s.origin );
+
+			// Discard RGS not in 2 * LEECH_RANGE
+			if ( 2 * range[ 0 ] - d < 0 )
+			{
+				continue;
+			}
+
+			G_RGSCalculateRate( rgs );
+		}
+	}
+}
+
+/*
+================
 nullDieFunction
 
 hack to prevent compilers complaining about function pointer -> NULL conversion
@@ -1328,58 +1459,24 @@ Think function for the Alien Leech.
 */
 void ALeech_Think( gentity_t *self )
 {
+	qboolean active, lastThinkActive;
 
 	AGeneric_Think( self );
 
-	if ( self->spawned && self->powered )
+	active = self->spawned & self->powered;
+	lastThinkActive = self->s.weapon > 0;
+
+	if ( active ^ lastThinkActive )
 	{
-		int       entityList[ MAX_GENTITIES ];
-		vec3_t    range = { LEECH_RANGE, LEECH_RANGE, LEECH_RANGE };
-		vec3_t    mins, maxs;
-		int       i, num;
-		float     rate, d, dr, q;
-		gentity_t *rgs;
+		// If the state of this RGS has changed, adjust own rate and inform
+		// active closeby RGS so they can adjust their rate immediately.
+		G_RGSCalculateRate( self );
+		G_RGSInformNeighbors( self );
+	}
 
-		rate = level.mineRate;
-
-		VectorAdd( self->s.origin, range, maxs );
-		VectorSubtract( self->s.origin, range, mins );
-
-		// Check for nearby resource generators for rate adjustments
-		num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
-		for ( i = 0; i < num; i++ )
-		{
-			rgs = &g_entities[ entityList[ i ] ];
-
-			if ( rgs->s.eType == ET_BUILDABLE && ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH )
-			     && rgs != self && rgs->spawned && rgs->powered && rgs->health > 0 )
-			{
-				d = Distance( self->s.origin, rgs->s.origin );
-
-				// Discard RGS not in 2 * LEECH_RANGE and prevent divisin by zero on LEECH_RANGE = 0
-				if ( 2 * LEECH_RANGE - d < 0 )
-				{
-					continue;
-				}
-
-				// q is the ratio of the part of a sphere with radius r that intersects with
-				// another sphere of equal size and distance d
-				dr = d / LEECH_RANGE;
-				q = ((dr * dr * dr) - 12.0f * dr + 16.0f) / 16.0f;
-
-				// Two rgs together should mine at a rate proportional to the volume of the
-				// union of their areas of effect. If more RGS intersect, this is just an
-				// approximation that tends to punish cluttering of RGS.
-				rate = rate * (1.0f - q) + 0.5f * rate * q;
-			}
-		}
-
-		// HACK: Save efficiency in percent in entityState.weaponAnim
-		self->s.weaponAnim = ( int )( (rate / level.mineRate) * 100.0f );
-
-		G_ModifyBuildPoints( TEAM_ALIENS, rate / 60.0f );
-	} else {
-		self->s.weaponAnim = 0;
+	if ( active )
+	{
+		G_ModifyBuildPoints( TEAM_HUMANS, self->s.weapon / 60000.0f );
 	}
 }
 
@@ -1387,13 +1484,18 @@ void ALeech_Think( gentity_t *self )
 ================
 ALeech_Die
 
-Called when an alien leech dies
+Called when a Alien Leech dies
 ================
 */
 void ALeech_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod )
 {
 	AGeneric_Die( self, inflictor, attacker, damage, mod );
+
+	self->s.weapon = 0;
 	self->s.weaponAnim = 0;
+
+	// Assume our state has changed and inform closeby RGS
+	G_RGSInformNeighbors( self );
 }
 
 //==================================================================================
@@ -2842,67 +2944,25 @@ Think function for the Human Drill.
 */
 void HDrill_Think( gentity_t *self )
 {
+	qboolean active, lastThinkActive;
 
-	//make sure we have power
 	self->nextthink = level.time + BG_Buildable( self->s.modelindex )->nextthink;
-
 	self->powered = G_FindPower( self, qfalse );
 
-	if ( G_SuicideIfNoPower( self ) )
+	active = self->spawned & self->powered;
+	lastThinkActive = self->s.weapon > 0;
+
+	if ( active ^ lastThinkActive )
 	{
-		return;
+		// If the state of this RGS has changed, adjust own rate and inform
+		// active closeby RGS so they can adjust their rate immediately.
+		G_RGSCalculateRate( self );
+		G_RGSInformNeighbors( self );
 	}
 
-
-	if ( self->spawned && self->powered )
+	if ( active )
 	{
-		int       entityList[ MAX_GENTITIES ];
-		vec3_t    range = { DRILL_RANGE, DRILL_RANGE, DRILL_RANGE };
-		vec3_t    mins, maxs;
-		int       i, num;
-		float     rate, d, dr, q;
-		gentity_t *rgs;
-
-		rate = level.mineRate;
-
-		VectorAdd( self->s.origin, range, maxs );
-		VectorSubtract( self->s.origin, range, mins );
-
-		// Check for nearby resource generators for rate adjustments
-		num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
-		for ( i = 0; i < num; i++ )
-		{
-			rgs = &g_entities[ entityList[ i ] ];
-
-			if ( rgs->s.eType == ET_BUILDABLE && ( rgs->s.modelindex == BA_H_DRILL || rgs->s.modelindex == BA_A_LEECH )
-			     && rgs != self && rgs->spawned && rgs->powered && rgs->health > 0 )
-			{
-				d = Distance( self->s.origin, rgs->s.origin );
-
-				// Discard RGS not in 2 * DRILL_RANGE and prevent divisin by zero on DRILL_RANGE = 0
-				if ( 2 * DRILL_RANGE - d < 0 )
-				{
-					continue;
-				}
-
-				// q is the ratio of the part of a sphere with radius r that intersects with
-				// another sphere of equal size and distance d
-				dr = d / DRILL_RANGE;
-				q = ((dr * dr * dr) - 12.0f * dr + 16.0f) / 16.0f;
-
-				// Two rgs together should mine at a rate proportional to the volume of the
-				// union of their areas of effect. If more RGS intersect, this is just an
-				// approximation that tends to punish cluttering of RGS.
-				rate = rate * (1.0f - q) + 0.5f * rate * q;
-			}
-		}
-
-		// HACK: Save efficiency in percent in entityState.weaponAnim
-		self->s.weaponAnim = ( int )( (rate / level.mineRate) * 100.0f );
-
-		G_ModifyBuildPoints( TEAM_HUMANS, rate / 60.0f );
-	} else {
-		self->s.weaponAnim = 0;
+		G_ModifyBuildPoints( TEAM_HUMANS, self->s.weapon / 60000.0f );
 	}
 }
 
@@ -2910,13 +2970,18 @@ void HDrill_Think( gentity_t *self )
 ================
 HDrill_Die
 
-Called when a human drill dies
+Called when a Human Drill dies
 ================
 */
 void HDrill_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod )
 {
 	HSpawn_Die( self, inflictor, attacker, damage, mod );
+
+	self->s.weapon = 0;
 	self->s.weaponAnim = 0;
+
+	// Assume our state has changed and inform closeby RGS
+	G_RGSInformNeighbors( self );
 }
 
 //==================================================================================

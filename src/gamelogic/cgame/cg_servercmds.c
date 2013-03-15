@@ -165,22 +165,20 @@ void CG_SetConfigValues( void )
 
 	if ( alienStages[ 0 ] )
 	{
-		sscanf( alienStages, "%d %d %d", &cgs.alienStage, &cgs.alienCredits,
-		        &cgs.alienNextStageThreshold );
+		sscanf( alienStages, "%d %d", &cgs.alienStage, &cgs.alienNextStageThreshold );
 	}
 	else
 	{
-		cgs.alienStage = cgs.alienCredits = cgs.alienNextStageThreshold = 0;
+		cgs.alienStage = cgs.alienNextStageThreshold = 0;
 	}
 
 	if ( humanStages[ 0 ] )
 	{
-		sscanf( humanStages, "%d %d %d", &cgs.humanStage, &cgs.humanCredits,
-		        &cgs.humanNextStageThreshold );
+		sscanf( humanStages, "%d %d", &cgs.humanStage, &cgs.humanNextStageThreshold );
 	}
 	else
 	{
-		cgs.humanStage = cgs.humanCredits = cgs.humanNextStageThreshold = 0;
+		cgs.humanStage = cgs.humanNextStageThreshold = 0;
 	}
 
 	cgs.levelStartTime = atoi( CG_ConfigString( CS_LEVEL_START_TIME ) );
@@ -253,8 +251,16 @@ static void CG_AnnounceAlienStageTransition( stage_t from, stage_t to )
 		return;
 	}
 
-	trap_S_StartLocalSound( cgs.media.alienStageTransition, CHAN_ANNOUNCER );
-	CG_CenterPrint( _("We have evolved!"), 200, GIANTCHAR_WIDTH * 4 );
+	if ( to > from )
+	{
+		trap_S_StartLocalSound( cgs.media.alienStageTransition, CHAN_ANNOUNCER );
+		CG_CenterPrint( _("We have evolved!"), 200, GIANTCHAR_WIDTH * 4 );
+	}
+	else if ( to < from )
+	{
+		trap_S_StartLocalSound( cgs.media.alienStageTransition, CHAN_ANNOUNCER ); // TODO: Add alien stage down sound
+		CG_CenterPrint( _("We have devolved!"), 200, GIANTCHAR_WIDTH * 4 );
+	}
 }
 
 /*
@@ -269,8 +275,16 @@ static void CG_AnnounceHumanStageTransition( stage_t from, stage_t to )
 		return;
 	}
 
-	trap_S_StartLocalSound( cgs.media.humanStageTransition, CHAN_ANNOUNCER );
-	CG_CenterPrint( _("Reinforcements have arrived!"), 200, GIANTCHAR_WIDTH * 4 );
+	if ( to > from )
+	{
+		trap_S_StartLocalSound( cgs.media.humanStageTransition, CHAN_ANNOUNCER );
+		CG_CenterPrint( _("Reinforcements have arrived!"), 200, GIANTCHAR_WIDTH * 4 );
+	}
+	else if ( to < from )
+	{
+		trap_S_StartLocalSound( cgs.media.humanStageTransition, CHAN_ANNOUNCER ); // TODO: Add human stage down sound
+		CG_CenterPrint( _("Reinforcements are lost!"), 200, GIANTCHAR_WIDTH * 4 );
+	}
 }
 
 /*
@@ -312,8 +326,7 @@ static void CG_ConfigStringModified( void )
 
 		if ( str[ 0 ] )
 		{
-			sscanf( str, "%d %d %d", &cgs.alienStage, &cgs.alienCredits,
-			        &cgs.alienNextStageThreshold );
+			sscanf( str, "%d %d", &cgs.alienStage, &cgs.alienNextStageThreshold );
 
 			if ( cgs.alienStage != oldAlienStage )
 			{
@@ -322,7 +335,7 @@ static void CG_ConfigStringModified( void )
 		}
 		else
 		{
-			cgs.alienStage = cgs.alienCredits = cgs.alienNextStageThreshold = 0;
+			cgs.alienStage = cgs.alienNextStageThreshold = 0;
 		}
 	}
 	else if ( num == CS_HUMAN_STAGES )
@@ -331,8 +344,7 @@ static void CG_ConfigStringModified( void )
 
 		if ( str[ 0 ] )
 		{
-			sscanf( str, "%d %d %d", &cgs.humanStage, &cgs.humanCredits,
-			        &cgs.humanNextStageThreshold );
+			sscanf( str, "%d %d", &cgs.humanStage, &cgs.humanNextStageThreshold );
 
 			if ( cgs.humanStage != oldHumanStage )
 			{
@@ -341,7 +353,7 @@ static void CG_ConfigStringModified( void )
 		}
 		else
 		{
-			cgs.humanStage = cgs.humanCredits = cgs.humanNextStageThreshold = 0;
+			cgs.humanStage = cgs.humanNextStageThreshold = 0;
 		}
 	}
 	else if ( num == CS_LEVEL_START_TIME )

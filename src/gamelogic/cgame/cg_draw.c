@@ -2100,6 +2100,8 @@ static void CG_DrawStageReport( rectDef_t *rect, float text_x, float text_y,
 {
 	char  s[ MAX_TOKEN_CHARS ];
 	float tx, ty;
+	float levelMineRate;
+	int   mineEfficiency, neededEfficiency;
 
 	if ( cg.intermissionStarted )
 	{
@@ -2113,50 +2115,46 @@ static void CG_DrawStageReport( rectDef_t *rect, float text_x, float text_y,
 
 	if ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
 	{
-		int kills = ceil( ( float )( cgs.alienNextStageThreshold - cgs.alienCredits ) / ALIEN_CREDITS_PER_KILL );
+		// TODO: Store CS_ALIEN_MINE_RATE in cgs
+		sscanf( CG_ConfigString( CS_ALIEN_MINE_RATE ), "%f %d", &levelMineRate, &mineEfficiency );
 
-		if ( kills < 0 )
+		neededEfficiency = cgs.alienNextStageThreshold - mineEfficiency;
+
+		if ( neededEfficiency < 0 )
 		{
-			kills = 0;
+			neededEfficiency = 0;
 		}
 
 		if ( cgs.alienNextStageThreshold < 0 )
 		{
 			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d"), cgs.alienStage + 1 );
 		}
-		else if ( kills == 1 )
-		{
-			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, 1 frag for next stage"),
-			             cgs.alienStage + 1 );
-		}
 		else
 		{
-			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %d frags for next stage"),
-			             cgs.alienStage + 1, kills );
+			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, Add %d%% to your leech rate"),
+			             cgs.alienStage + 1, neededEfficiency );
 		}
 	}
 	else if ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
 	{
-		int credits = cgs.humanNextStageThreshold - cgs.humanCredits;
+		// TODO: Store CS_HUMAN_MINE_RATE in cgs
+		sscanf( CG_ConfigString( CS_HUMAN_MINE_RATE ), "%f %d", &levelMineRate, &mineEfficiency );
 
-		if ( credits < 0 )
+		neededEfficiency = cgs.humanNextStageThreshold - mineEfficiency;
+
+		if ( neededEfficiency < 0 )
 		{
-			credits = 0;
+			neededEfficiency = 0;
 		}
 
 		if ( cgs.humanNextStageThreshold < 0 )
 		{
 			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d"), cgs.humanStage + 1 );
 		}
-		else if ( credits == 1 )
-		{
-			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, 1 credit for next stage"),
-			             cgs.humanStage + 1 );
-		}
 		else
 		{
-			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %d credits for next stage"),
-			             cgs.humanStage + 1, credits );
+			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, Add %d%% to your mine rate"),
+			             cgs.humanStage + 1, neededEfficiency );
 		}
 	}
 
