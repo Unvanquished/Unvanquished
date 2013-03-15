@@ -1061,7 +1061,6 @@ void       G_InitGentity( gentity_t *e );
 gentity_t  *G_Spawn( void );
 gentity_t  *G_TempEntity( const vec3_t origin, int event );
 void       G_FreeEntity( gentity_t *e );
-qboolean   G_EntitiesFree( void );
 
 //debug
 void       G_DebugPrintEntitiy(gentity_t *entity);
@@ -1073,6 +1072,7 @@ gentity_t  *G_ClosestEnt( vec3_t origin, gentity_t **entities, int numEntities )
 
 //test
 qboolean   G_Visible( gentity_t *ent1, gentity_t *ent2, int contents );
+qboolean   G_EntitiesFree( void );
 
 //chain
 gentity_t  *G_FindNextTarget( gentity_t *targ, int *tIx, int *tnIx, gentity_t *self );

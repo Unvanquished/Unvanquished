@@ -116,32 +116,6 @@ gentity_t *G_Spawn( void )
 
 /*
 =================
-G_EntitiesFree
-=================
-*/
-qboolean G_EntitiesFree( void )
-{
-	int       i;
-	gentity_t *e;
-
-	e = &g_entities[ MAX_CLIENTS ];
-
-	for ( i = MAX_CLIENTS; i < level.num_entities; i++, e++ )
-	{
-		if ( e->inuse )
-		{
-			continue;
-		}
-
-		// slot available
-		return qtrue;
-	}
-
-	return qfalse;
-}
-
-/*
-=================
 G_FreeEntity
 
 Marks the entity as free
@@ -572,6 +546,32 @@ gentity testing/querying
 
 =================================================================================
 */
+
+/*
+=================
+G_EntitiesFree
+=================
+*/
+qboolean G_EntitiesFree( void )
+{
+	int       i;
+	gentity_t *e;
+
+	e = &g_entities[ MAX_CLIENTS ];
+
+	for ( i = MAX_CLIENTS; i < level.num_entities; i++, e++ )
+	{
+		if ( e->inuse )
+		{
+			continue;
+		}
+
+		// slot available
+		return qtrue;
+	}
+
+	return qfalse;
+}
 
 /*
 ===============
