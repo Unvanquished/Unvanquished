@@ -1652,7 +1652,7 @@ void Think_SpawnNewDoorTrigger( gentity_t *ent )
 	}
 }
 
-void reset_func_door( gentity_t *self )
+void func_door_reset( gentity_t *self )
 {
 	reset_intField(&self->health, self->config.health, self->eclass->config.health, 0);
 	reset_intField(&self->damage, self->config.damage, self->eclass->config.damage, 2);
@@ -1681,7 +1681,7 @@ void SP_func_door( gentity_t *ent )
 	ent->soundPos1 = G_SoundIndex( s );
 
 	ent->blocked = Blocked_Door;
-	ent->reset = reset_func_door;
+	ent->reset = func_door_reset;
 
 	// default wait of 2 seconds
 	if ( !ent->config.wait.time )
@@ -1740,7 +1740,7 @@ void SP_func_door( gentity_t *ent )
 	}
 }
 
-void reset_func_door_rotating( gentity_t *self )
+void func_door_rotating_reset( gentity_t *self )
 {
 	reset_intField(&self->health, self->config.health, self->eclass->config.health, 0);
 
@@ -1764,7 +1764,7 @@ void SP_func_door_rotating( gentity_t *ent )
 	ent->soundPos1 = G_SoundIndex( s );
 
 	ent->blocked = Blocked_Door;
-	ent->reset = reset_func_door_rotating;
+	ent->reset = func_door_rotating_reset;
 
 	// if speed is negative, positize it and add reverse flag
 	if ( ent->config.speed < 0 )
@@ -1858,7 +1858,7 @@ void SP_func_door_rotating( gentity_t *ent )
 	}
 }
 
-void reset_func_door_model( gentity_t *self )
+void func_door_model_reset( gentity_t *self )
 {
 	reset_floatField(&self->speed, self->config.speed, self->eclass->config.speed, 200);
 	reset_intField(&self->health, self->config.health, self->eclass->config.health, 0);
@@ -1885,7 +1885,7 @@ void SP_func_door_model( gentity_t *ent )
 	G_SpawnString( "soundPos1", "sound/movers/doors/dr1_end.wav", &s );
 	ent->soundPos1 = G_SoundIndex( s );
 
-	ent->reset = reset_func_door_model;
+	ent->reset = func_door_model_reset;
 
 	//default wait of 2 seconds
 	if ( ent->config.wait.time <= 0 )
@@ -2193,7 +2193,7 @@ void Touch_Button( gentity_t *ent, gentity_t *other, trace_t *trace )
 	}
 }
 
-void reset_func_button( gentity_t *self )
+void func_button_reset( gentity_t *self )
 {
 	reset_intField(&self->health, self->config.health, self->eclass->config.health, 0);
 
@@ -2213,7 +2213,7 @@ void SP_func_button( gentity_t *ent )
 	G_SpawnString( "sound1to2", "sound/movers/switches/button1.wav", &s );
 	ent->sound1to2 = G_SoundIndex( s );
 
-	ent->reset = reset_func_button;
+	ent->reset = func_button_reset;
 
 	if ( !ent->config.wait.time )
 	{
@@ -2631,7 +2631,7 @@ BOBBING
 ===============================================================================
 */
 
-void reset_func_bobbing( gentity_t *self )
+void func_bobbing_reset( gentity_t *self )
 {
 	reset_moverspeed( self, 4 );
 }
@@ -2641,7 +2641,7 @@ void SP_func_bobbing( gentity_t *ent )
 	float height;
 	float phase;
 
-	ent->reset = reset_func_bobbing;
+	ent->reset = func_bobbing_reset;
 
 	G_SpawnFloat( "height", "32", &height );
 	G_SpawnFloat( "phase", "0", &phase );
@@ -2763,7 +2763,7 @@ void Use_func_spawn( gentity_t *ent, gentity_t *other, gentity_t *activator )
   }
 }
 
-void reset_func_spawn( gentity_t *self )
+void func_spawn_reset( gentity_t *self )
 {
 	if( self->spawnflags & 1 )
 		trap_LinkEntity( self );
@@ -2791,10 +2791,10 @@ void SP_func_spawn( gentity_t *ent )
   }
 
   ent->use = Use_func_spawn;
-  ent->reset = reset_func_spawn;
+  ent->reset = func_spawn_reset;
 }
 
-void die_func_destructable( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod )
+void func_destructable_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod )
 {
 	self->takedamage = qfalse;
 	trap_UnlinkEntity( self );
@@ -2804,7 +2804,7 @@ void die_func_destructable( gentity_t *self, gentity_t *inflictor, gentity_t *at
 }
 
 
-void reset_func_destructable( gentity_t *self )
+void func_destructable_reset( gentity_t *self )
 {
 	reset_intField(&self->health, self->config.health, self->eclass->config.health, 100);
 	if(self->health < 0)
@@ -2818,7 +2818,7 @@ void reset_func_destructable( gentity_t *self )
 Use_func_destructable
 ====================
 */
-void act_func_destructable( gentityCallDefinition_t* target, gentity_t *self, gentity_t *caller, gentity_t *activator )
+void func_destructable_act( gentityCallDefinition_t* target, gentity_t *self, gentity_t *caller, gentity_t *activator )
 {
   if( self->r.linked )
   {
@@ -2826,14 +2826,14 @@ void act_func_destructable( gentityCallDefinition_t* target, gentity_t *self, ge
     trap_UnlinkEntity( self );
     if( self->health <= 0 )
     {
-    	die_func_destructable( self, caller, activator, 0, MOD_UNKNOWN );
+    	func_destructable_die( self, caller, activator, 0, MOD_UNKNOWN );
     }
   }
   else
   {
     trap_LinkEntity( self );
     G_KillBrushModel( self, activator );
-		reset_func_destructable ( self );
+		func_destructable_reset ( self );
     self->takedamage = qtrue;
   }
 }
@@ -2863,9 +2863,9 @@ void SP_func_destructable( gentity_t *ent )
     VectorCopy( ent->s.angles, ent->s.apos.trBase );
   }
 
-  ent->reset = reset_func_destructable;
-  ent->die = die_func_destructable;
-  ent->act = act_func_destructable;
+  ent->reset = func_destructable_reset;
+  ent->die = func_destructable_die;
+  ent->act = func_destructable_act;
 
   if( ent->spawnflags & 1 )
     trap_UnlinkEntity( ent );
