@@ -1356,9 +1356,9 @@ void G_CalculateStages( void )
 				continue;
 		}
 
-		if ( mineEfficiency >= S3Threshold )
+		if ( mineEfficiency >= S3Threshold && maxStage >= S3 )
 		{
-			if ( stage == S3 || maxStage < S3 )
+			if ( stage == S3 )
 			{
 				continue;
 			}
@@ -1368,16 +1368,23 @@ void G_CalculateStages( void )
 
 			if ( *S3Time == level.startTime )
 			{
+				if ( *S2Time == level.startTime )
+				{
+					*S2Time = level.time;
+					G_Checktrigger_stages( team, S2 );
+				}
+
 				*S3Time = level.time;
+				G_Checktrigger_stages( team, S3 );
 			}
 		}
 		else if ( mineEfficiency >= S3Threshold - g_stageHysteresisFactor.integer && stage > S2 )
 		{
 			continue;
 		}
-		else if ( mineEfficiency >= S2Threshold )
+		else if ( mineEfficiency >= S2Threshold && maxStage >= S2 )
 		{
-			if ( stage == S2 || maxStage < S2 )
+			if ( stage == S2 )
 			{
 				continue;
 			}
@@ -1388,6 +1395,7 @@ void G_CalculateStages( void )
 			if ( *S2Time == level.startTime )
 			{
 				*S2Time = level.time;
+				G_Checktrigger_stages( team, S2 );
 			}
 		}
 		else if ( mineEfficiency >= S2Threshold - g_stageHysteresisFactor.integer && stage > S1 )
