@@ -45,6 +45,7 @@ basic gentity lifecycle handling
 void G_InitGentity( gentity_t *e )
 {
 	e->inuse = qtrue;
+	e->enabled = qtrue;
 	e->classname = "noclass";
 	e->s.number = e - g_entities;
 	e->r.ownerNum = ENTITYNUM_NONE;

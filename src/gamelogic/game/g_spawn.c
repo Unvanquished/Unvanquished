@@ -485,7 +485,6 @@ qboolean G_CallSpawn( gentity_t *spawnedEntity )
 			return qfalse; // results in freeing the entity
 
 		spawnedClass->spawn( spawnedEntity );
-		spawnedEntity->enabled = qtrue;
 		spawnedEntity->spawned = qtrue;
 
 		if ( g_debugEntities.integer > 2 )
@@ -498,6 +497,7 @@ qboolean G_CallSpawn( gentity_t *spawnedEntity )
 		 */
 		if(!G_HandleEntityVersions( spawnedClass, spawnedEntity ))
 			return qfalse;
+
 
 		return qtrue;
 	}
