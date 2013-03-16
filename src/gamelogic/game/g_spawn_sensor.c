@@ -331,7 +331,7 @@ qboolean sensor_buildable_match( gentity_t *self, gentity_t *activator )
 void sensor_buildable_touch( gentity_t *self, gentity_t *activator, trace_t *trace )
 {
 	//sanity check
-	if ( !activator || !self->enabled || !(activator->s.eType == ET_BUILDABLE) )
+	if ( !activator || !(activator->s.eType == ET_BUILDABLE) )
 	{
 		return;
 	}
@@ -452,7 +452,7 @@ void sensor_player_touch( gentity_t *self, gentity_t *activator, trace_t *trace 
 	qboolean shouldFire;
 
 	//sanity check
-	if ( !activator || !self->enabled || !activator->client )
+	if ( !activator || !activator->client )
 	{
 		return;
 	}

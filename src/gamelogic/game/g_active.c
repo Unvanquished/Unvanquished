@@ -416,6 +416,11 @@ void  G_TouchTriggers( gentity_t *ent )
 			continue;
 		}
 
+		if ( !hit->enabled )
+		{
+			continue;
+		}
+
 		// ignore most entities if a spectator
 		if ( ent->client->sess.spectatorState != SPECTATOR_NOT )
 		{
