@@ -120,10 +120,7 @@ void ctrl_limited_reset( gentity_t *self )
 	// spawn disabled?
 	self->enabled = !(self->spawnflags & 1);
 
-	reset_intField(&self->count, self->config.amount, self->eclass->config.amount, 1);
-
-	if(self->count < 1)
-		self->count = 1;
+	reset_intField(&self->count, self->config.amount, self->eclass->config.amount, 1, qtrue);
 }
 
 void SP_ctrl_limited( gentity_t *self )

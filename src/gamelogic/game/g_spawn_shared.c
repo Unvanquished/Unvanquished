@@ -102,13 +102,13 @@ shared reset functions
 =================================================================================
 */
 
-void reset_intField( int* target, int instanceField, int classField, int fallback )
+void reset_intField( int* target, int instanceField, int classField, int fallback, qboolean fallbackIfNegative )
 {
-	if(instanceField)
+	if(instanceField && (instanceField > 0 || !fallbackIfNegative))
 	{
 		*target = instanceField;
 	}
-	else if (classField)
+	else if (classField && (classField > 0 || !fallbackIfNegative))
 	{
 		*target = classField;
 	}
@@ -118,13 +118,13 @@ void reset_intField( int* target, int instanceField, int classField, int fallbac
 	}
 }
 
-void reset_floatField( float* target, float instanceField, float classField, float fallback )
+void reset_floatField( float* target, float instanceField, float classField, float fallback, qboolean fallbackIfNegative )
 {
-	if(instanceField)
+	if(instanceField && (instanceField > 0 || !fallbackIfNegative))
 	{
 		*target = instanceField;
 	}
-	else if (classField)
+	else if (classField && (classField > 0 || !fallbackIfNegative))
 	{
 		*target = classField;
 	}

@@ -219,11 +219,7 @@ void SP_env_afx_hurt( gentity_t *self )
 	self->soundIndex = G_SoundIndex( "sound/misc/electro.wav" );
 	self->touch = env_afx_hurt_touch;
 
-	reset_intField(&self->damage, self->config.damage, self->eclass->config.damage, 5);
-	if ( self->damage < 0 )
-	{
-		self->damage = 5;
-	}
+	reset_intField(&self->damage, self->config.damage, self->eclass->config.damage, 5, qtrue);
 
 	self->use = env_afx_toggle;
 

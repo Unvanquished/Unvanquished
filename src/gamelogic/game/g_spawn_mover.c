@@ -1159,7 +1159,7 @@ void reset_moverspeed( gentity_t *self, float fallbackSpeed )
 	if(!fallbackSpeed)
 		G_Error("No default speed was supplied to reset_moverspeed for entity #%i of type %s.\n", self->s.number, self->classname);
 
-	reset_floatField(&self->speed, self->config.speed, self->eclass->config.speed, fallbackSpeed);
+	reset_floatField(&self->speed, self->config.speed, self->eclass->config.speed, fallbackSpeed, qtrue);
 
 	// calculate time to reach second position from speed
 	VectorSubtract( self->activatedPosition, self->restingPosition, move );
@@ -1276,7 +1276,7 @@ void reset_rotatorspeed( gentity_t *self, float fallbackSpeed )
 	VectorSubtract( self->activatedPosition, self->restingPosition, move );
 	angle = VectorLength( move );
 
-	reset_floatField(&self->speed, self->config.speed, self->eclass->config.speed, fallbackSpeed);
+	reset_floatField(&self->speed, self->config.speed, self->eclass->config.speed, fallbackSpeed, qfalse);
 
 	VectorScale( move, self->speed, self->s.apos.trDelta );
 	self->s.apos.trDuration = angle * 1000 / self->speed;
@@ -1665,8 +1665,8 @@ void Think_SpawnNewDoorTrigger( gentity_t *ent )
 
 void func_door_reset( gentity_t *self )
 {
-	reset_intField(&self->health, self->config.health, self->eclass->config.health, 0);
-	reset_intField(&self->damage, self->config.damage, self->eclass->config.damage, 2);
+	reset_intField(&self->health, self->config.health, self->eclass->config.health, 0, qtrue);
+	reset_intField(&self->damage, self->config.damage, self->eclass->config.damage, 2, qtrue);
 
 	self->takedamage = !!self->health;
 
@@ -1753,7 +1753,7 @@ void SP_func_door( gentity_t *ent )
 
 void func_door_rotating_reset( gentity_t *self )
 {
-	reset_intField(&self->health, self->config.health, self->eclass->config.health, 0);
+	reset_intField(&self->health, self->config.health, self->eclass->config.health, 0, qtrue);
 
 	self->takedamage = !!self->health;
 
@@ -1871,8 +1871,8 @@ void SP_func_door_rotating( gentity_t *ent )
 
 void func_door_model_reset( gentity_t *self )
 {
-	reset_floatField(&self->speed, self->config.speed, self->eclass->config.speed, 200);
-	reset_intField(&self->health, self->config.health, self->eclass->config.health, 0);
+	reset_floatField(&self->speed, self->config.speed, self->eclass->config.speed, 200, qtrue);
+	reset_intField(&self->health, self->config.health, self->eclass->config.health, 0, qtrue);
 
 	self->takedamage = !!self->health;
 }
@@ -2145,7 +2145,7 @@ void SP_func_plat( gentity_t *ent )
 
 	G_SpawnFloat( "lip", "8", &lip );
 
-	reset_intField(&ent->damage, ent->config.damage, ent->eclass->config.damage, 2);
+	reset_intField(&ent->damage, ent->config.damage, ent->eclass->config.damage, 2, qtrue);
 
 	if(!ent->config.wait.time)
 		ent->config.wait.time = 1.0f;
@@ -2206,7 +2206,7 @@ void Touch_Button( gentity_t *ent, gentity_t *other, trace_t *trace )
 
 void func_button_reset( gentity_t *self )
 {
-	reset_intField(&self->health, self->config.health, self->eclass->config.health, 0);
+	reset_intField(&self->health, self->config.health, self->eclass->config.health, 0, qtrue);
 
 	self->takedamage = !!self->health;
 
@@ -2545,7 +2545,7 @@ void SP_func_train( gentity_t *self )
 	}
 	else
 	{
-		reset_intField(&self->damage, self->config.damage, self->eclass->config.damage, 2);
+		reset_intField(&self->damage, self->config.damage, self->eclass->config.damage, 2, qtrue);
 	}
 
 	trap_SetBrushModel( self, self->model );
@@ -2603,7 +2603,7 @@ ROTATING
 
 void SP_func_rotating( gentity_t *ent )
 {
-	reset_floatField(&ent->speed, ent->config.speed, ent->eclass->config.speed, 400);
+	reset_floatField(&ent->speed, ent->config.speed, ent->eclass->config.speed, 400, qfalse);
 
 	// set the axis of rotation
 	ent->s.apos.trType = TR_LINEAR;
@@ -2621,7 +2621,7 @@ void SP_func_rotating( gentity_t *ent )
 		ent->s.apos.trDelta[ 1 ] = ent->config.speed;
 	}
 
-	reset_intField(&ent->damage, ent->config.damage, ent->eclass->config.damage, 2);
+	reset_intField(&ent->damage, ent->config.damage, ent->eclass->config.damage, 2, qtrue);
 
 	trap_SetBrushModel( ent, ent->model );
 	InitMover( ent );
@@ -2657,7 +2657,7 @@ void SP_func_bobbing( gentity_t *ent )
 	G_SpawnFloat( "height", "32", &height );
 	G_SpawnFloat( "phase", "0", &phase );
 
-	reset_intField(&ent->damage, ent->config.damage, ent->eclass->config.damage, 2);
+	reset_intField(&ent->damage, ent->config.damage, ent->eclass->config.damage, 2, qtrue);
 
 	trap_SetBrushModel( ent, ent->model );
 	InitMover( ent );
@@ -2700,7 +2700,7 @@ void SP_func_pendulum( gentity_t *ent )
 
 	G_SpawnFloat( "phase", "0", &phase );
 
-	reset_intField(&ent->damage, ent->config.damage, ent->eclass->config.damage, 2);
+	reset_intField(&ent->damage, ent->config.damage, ent->eclass->config.damage, 2, qtrue);
 
 	trap_SetBrushModel( ent, ent->model );
 
@@ -2817,10 +2817,7 @@ void func_destructable_die( gentity_t *self, gentity_t *inflictor, gentity_t *at
 
 void func_destructable_reset( gentity_t *self )
 {
-	reset_intField(&self->health, self->config.health, self->eclass->config.health, 100);
-	if(self->health < 0)
-		self->health = 1;
-
+	reset_intField(&self->health, self->config.health, self->eclass->config.health, 100, qtrue);
 	self->takedamage = qtrue;
 }
 
