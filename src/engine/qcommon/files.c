@@ -558,7 +558,7 @@ void FS_CopyFile( char *fromOSPath, char *toOSPath )
 		return;
 	}
 
-	f = fopen( fromOSPath, "rb" );
+	f = Sys_FOpen( fromOSPath, "rb" );
 
 	if ( !f )
 	{
@@ -584,7 +584,7 @@ void FS_CopyFile( char *fromOSPath, char *toOSPath )
 		return;
 	}
 
-	f = fopen( toOSPath, "wb" );
+	f = Sys_FOpen( toOSPath, "wb" );
 
 	if ( !f )
 	{
@@ -662,7 +662,7 @@ qboolean FS_FileExists( const char *file )
 
 	testpath = FS_BuildOSPath( fs_homepath->string, fs_gamedir, file );
 
-	f = fopen( testpath, "rb" );
+	f = Sys_FOpen( testpath, "rb" );
 
 	if ( f )
 	{
@@ -688,7 +688,7 @@ qboolean FS_SV_FileExists( const char *file )
 	testpath = FS_BuildOSPath( fs_homepath->string, file, "" );
 	testpath[ strlen( testpath ) - 1 ] = '\0';
 
-	f = fopen( testpath, "rb" );
+	f = Sys_FOpen( testpath, "rb" );
 
 	if ( f )
 	{
@@ -702,7 +702,7 @@ qboolean FS_SV_FileExists( const char *file )
 qboolean FS_OS_FileExists( const char *file )
 {
 	FILE *f;
-	f = fopen( file, "rb" );
+	f = Sys_FOpen( file, "rb" );
 
 	if ( f )
 	{
@@ -746,7 +746,7 @@ fileHandle_t FS_SV_FOpenFileWrite( const char *filename )
 	}
 
 	Com_DPrintf( "writing to: %s\n", ospath );
-	fsh[ f ].handleFiles.file.o = fopen( ospath, "wb" );
+	fsh[ f ].handleFiles.file.o = Sys_FOpen( ospath, "wb" );
 
 	Q_strncpyz( fsh[ f ].name, filename, sizeof( fsh[ f ].name ) );
 
@@ -795,7 +795,7 @@ int FS_SV_FOpenFileRead( const char *filename, fileHandle_t *fp )
 		Com_Printf( "FS_SV_FOpenFileRead (fs_homepath): %s\n", ospath );
 	}
 
-	fsh[ f ].handleFiles.file.o = fopen( ospath, "rb" );
+	fsh[ f ].handleFiles.file.o = Sys_FOpen( ospath, "rb" );
 	fsh[ f ].handleSync = qfalse;
 
 	if ( !fsh[ f ].handleFiles.file.o )
@@ -812,7 +812,7 @@ int FS_SV_FOpenFileRead( const char *filename, fileHandle_t *fp )
 				Com_Printf( "FS_SV_FOpenFileRead (fs_basepath): %s\n", ospath );
 			}
 
-			fsh[ f ].handleFiles.file.o = fopen( ospath, "rb" );
+			fsh[ f ].handleFiles.file.o = Sys_FOpen( ospath, "rb" );
 			fsh[ f ].handleSync = qfalse;
 		}
 
@@ -980,7 +980,7 @@ fileHandle_t FS_FOpenFileWrite( const char *filename )
 	// enabling the following line causes a recursive function call loop
 	// when running with +set logfile 1 +set developer 1
 	//Com_DPrintf( "writing to: %s\n", ospath );
-	fsh[ f ].handleFiles.file.o = fopen( ospath, "wb" );
+	fsh[ f ].handleFiles.file.o = Sys_FOpen( ospath, "wb" );
 
 	Q_strncpyz( fsh[ f ].name, filename, sizeof( fsh[ f ].name ) );
 
@@ -1030,7 +1030,7 @@ fileHandle_t FS_FOpenFileAppend( const char *filename )
 		return 0;
 	}
 
-	fsh[ f ].handleFiles.file.o = fopen( ospath, "ab" );
+	fsh[ f ].handleFiles.file.o = Sys_FOpen( ospath, "ab" );
 	fsh[ f ].handleSync = qfalse;
 
 	if ( !fsh[ f ].handleFiles.file.o )
@@ -1070,7 +1070,7 @@ int FS_FOpenFileDirect( const char *filename, fileHandle_t *f )
 	// enabling the following line causes a recursive function call loop
 	// when running with +set logfile 1 +set developer 1
 	//Com_DPrintf( "writing to: %s\n", ospath );
-	fsh[ *f ].handleFiles.file.o = fopen( ospath, "rb" );
+	fsh[ *f ].handleFiles.file.o = Sys_FOpen( ospath, "rb" );
 
 	if ( !fsh[ *f ].handleFiles.file.o )
 	{
@@ -1118,7 +1118,7 @@ fileHandle_t FS_FOpenFileUpdate( const char *filename, int *length )
 	// enabling the following line causes a recursive function call loop
 	// when running with +set logfile 1 +set developer 1
 	//Com_DPrintf( "writing to: %s\n", ospath );
-	fsh[ f ].handleFiles.file.o = fopen( ospath, "wb" );
+	fsh[ f ].handleFiles.file.o = Sys_FOpen( ospath, "wb" );
 
 	if ( !fsh[ f ].handleFiles.file.o )
 	{
@@ -1347,7 +1347,7 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 				dir = search->dir;
 
 				netpath = FS_BuildOSPath( dir->path, dir->gamedir, filename );
-				temp = fopen( netpath, "rb" );
+				temp = Sys_FOpen( netpath, "rb" );
 
 				if ( !temp )
 				{
@@ -1543,7 +1543,7 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 			dir = search->dir;
 
 			netpath = FS_BuildOSPath( dir->path, dir->gamedir, filename );
-			fsh[ *file ].handleFiles.file.o = fopen( netpath, "rb" );
+			fsh[ *file ].handleFiles.file.o = Sys_FOpen( netpath, "rb" );
 
 			if ( !fsh[ *file ].handleFiles.file.o )
 			{
@@ -3321,7 +3321,7 @@ void FS_Which_f( void )
 			dir = search->dir;
 
 			netpath = FS_BuildOSPath( dir->path, dir->gamedir, filename );
-			temp = fopen( netpath, "rb" );
+			temp = Sys_FOpen( netpath, "rb" );
 
 			if ( !temp )
 			{

@@ -35,6 +35,9 @@
     "Go ahead and build a new buildable somewhere else and the old one will "
     "be removed automatically. Buildables that are about to be removed by "
     "constructing the selected buildable glow red."
+    "\n\n"
+    "Depending on server configuration, it may be possible to deconstruct "
+    "some marked buildings."
   }
   "Alien Buildables"
   {
@@ -62,24 +65,28 @@
     "The Lucifer Cannon projectile can be fired faster but now takes longer "
     "to charge. You will be able to hear your teammates overcharge "
     "their Lucifer Cannon.\n"
+    "Luci balls and pulse rifle shots may lose power as they travel.\n"
     "The Flamer projectile now gains more of the velocity of its wielder, "
     "making it easier to chase down aliens without burning yourself to a "
-    "crisp. Other weapons also have smaller changes."
+    "crisp. It does less damage on impact; however, it causes heat damage "
+    "to nearby buildings or players while in flight.\n"
+    "Other weapons also have smaller changes."
   }
   "Lag Correction"
   {
-    "While the Unvanquished implementation of Neil Toronto's unlagged is "
-    "becoming widely accepted, we also implement client-side improvements "
-    "not possible in 1.1 servers. For those who insist on leading their "
+    "While the Unvanquished implementation of Neil Toronto's unlagged has "
+    "become widely accepted in Tremulous GPP, we also implement client-side "
+    "improvements not possible in 1.1 servers. "
+    "For those who insist on leading their "
     "attacks, setting cg_unlagged to 0 will disable backward reconcilliation "
     "on your hitscan weapons."
   }
   "Sprint"
   {
-    "The sprint bind has changed from \"boost\" to \"+sprint\"; you can bind it "
+    "The sprint bind has changed from “boost” to “+sprint”; you can bind it "
     "in the options menu or in the console (\\bind shift +sprint). Now, instead "
     "of tapping the button while moving to start sprinting, just hold it down "
-    "and let go to stop. Alternately, you can change this to a toggle behavior "
+    "and let go to stop. Alternatively, you can change this to a toggle behavior "
     "with cg_sprintToggle."
   }
   "Dodge"
@@ -105,7 +112,7 @@
   "Basilisk"
   {
     "Basilisks provide regeneration boosting auras to nearby teammates: 2× "
-    "from regular and 3x from advanced basilisks. Their footsteps are also "
+    "from regular and 3× from advanced basilisks. Their footsteps are also "
     "silent for greater stealth."
   }
   "Marauder"

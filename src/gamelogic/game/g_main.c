@@ -96,15 +96,14 @@ vmCvar_t           g_initialMineRate;
 vmCvar_t           g_initialBuildPoints;
 vmCvar_t           g_mineRateHalfLife;
 vmCvar_t           g_humanStage;
-vmCvar_t           g_humanCredits;
 vmCvar_t           g_humanMaxStage;
 vmCvar_t           g_humanStage2Threshold;
 vmCvar_t           g_humanStage3Threshold;
 vmCvar_t           g_alienStage;
-vmCvar_t           g_alienCredits;
 vmCvar_t           g_alienMaxStage;
 vmCvar_t           g_alienStage2Threshold;
 vmCvar_t           g_alienStage3Threshold;
+vmCvar_t           g_stageHysteresisFactor;
 vmCvar_t           g_teamImbalanceWarnings;
 vmCvar_t           g_freeFundPeriod;
 
@@ -292,19 +291,18 @@ static cvarTable_t gameCvarTable[] =
 	{ &pmove_fixed,                   "pmove_fixed",                   "0",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 	{ &pmove_msec,                    "pmove_msec",                    "8",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 	{ &pmove_accurate,                "pmove_accurate",                "0",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
-	{ &g_initialMineRate,             "g_initialMineRate",            "15",                                CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_initialBuildPoints,          "g_initialBuildPoints",         "75",                                CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_initialMineRate,             "g_initialMineRate",            "10",                                CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_initialBuildPoints,          "g_initialBuildPoints",         "50",                                CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_mineRateHalfLife,            "g_mineRateHalfLife",           "15",                                CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_humanStage,                  "g_humanStage",                  "0",                                0,                                               0, qfalse           },
-	{ &g_humanCredits,                "g_humanCredits",                "0",                                0,                                               0, qfalse           },
 	{ &g_humanMaxStage,               "g_humanMaxStage",               DEFAULT_HUMAN_MAX_STAGE,            0,                                               0, qfalse, cv_humanMaxStage},
 	{ &g_humanStage2Threshold,        "g_humanStage2Threshold",        DEFAULT_HUMAN_STAGE2_THRESH,        0,                                               0, qfalse           },
 	{ &g_humanStage3Threshold,        "g_humanStage3Threshold",        DEFAULT_HUMAN_STAGE3_THRESH,        0,                                               0, qfalse           },
 	{ &g_alienStage,                  "g_alienStage",                  "0",                                0,                                               0, qfalse           },
-	{ &g_alienCredits,                "g_alienCredits",                "0",                                0,                                               0, qfalse           },
 	{ &g_alienMaxStage,               "g_alienMaxStage",               DEFAULT_ALIEN_MAX_STAGE,            0,                                               0, qfalse, cv_alienMaxStage},
 	{ &g_alienStage2Threshold,        "g_alienStage2Threshold",        DEFAULT_ALIEN_STAGE2_THRESH,        0,                                               0, qfalse           },
 	{ &g_alienStage3Threshold,        "g_alienStage3Threshold",        DEFAULT_ALIEN_STAGE3_THRESH,        0,                                               0, qfalse           },
+	{ &g_stageHysteresisFactor,       "g_stageHysteresisFactor",       DEFAULT_STAGE_HYSTERESIS_FACTOR,    0,                                               0, qfalse           },
 	{ &g_teamImbalanceWarnings,       "g_teamImbalanceWarnings",       "30",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_freeFundPeriod,              "g_freeFundPeriod",              DEFAULT_FREEKILL_PERIOD,            CVAR_ARCHIVE,                                    0, qtrue            },
 
@@ -363,7 +361,7 @@ static cvarTable_t gameCvarTable[] =
 
 	{ &g_censorship,                  "g_censorship",                  "",                                 CVAR_ARCHIVE,                                    0, qfalse           },
 
-	{ &g_tag,                         "g_tag",                         "gpp",                              CVAR_INIT,                                       0, qfalse           },
+	{ &g_tag,                         "g_tag",                         "unv",                              CVAR_INIT,                                       0, qfalse           },
 
 	{ &g_showKillerHP,                "g_showKillerHP",                "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_combatCooldown,              "g_combatCooldown",              "15",                               CVAR_ARCHIVE,                                    0, qfalse           },
@@ -838,11 +836,9 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	level.voices = BG_VoiceInit();
 	BG_PrintVoices( level.voices, g_debugVoices.integer );
 
-	//reset stages
+	// reset stages
 	trap_Cvar_Set( "g_alienStage", va( "%d", S1 ) );
 	trap_Cvar_Set( "g_humanStage", va( "%d", S1 ) );
-	trap_Cvar_Set( "g_alienCredits", 0 );
-	trap_Cvar_Set( "g_humanCredits", 0 );
 
 	// Give both teams some build points to start out with.
 	level.humanBuildPoints = level.alienBuildPoints = g_initialBuildPoints.integer;
@@ -1390,146 +1386,136 @@ G_CalculateStages
 */
 void G_CalculateStages( void )
 {
-	float      alienPlayerCountMod = level.averageNumAlienClients / PLAYER_COUNT_MOD;
-	float      humanPlayerCountMod = level.averageNumHumanClients / PLAYER_COUNT_MOD;
-	int        alienNextStageThreshold, humanNextStageThreshold;
-	static int lastAlienStageModCount = 1;
-	static int lastHumanStageModCount = 1;
-	static int alienTriggerStage = 0;
-	static int humanTriggerStage = 0;
+	team_t     team;
+	int        mineEfficiency,
+	           stage,
+	           stageModCount,
+	           maxStage,
+	           S2Threshold,
+	           S3Threshold,
+	           *S2Time,
+	           *S3Time,
+	           CSStages,
+	           newStage,
+	           nextThreshold;
+	const char *stageCVar,
+	           *teamName;
+	static int nextCalculation = 0;
 
-	if ( alienPlayerCountMod < 0.1f )
+	if ( level.time < nextCalculation )
 	{
-		alienPlayerCountMod = 0.1f;
+		return;
 	}
 
-	if ( humanPlayerCountMod < 0.1f )
+	if ( g_stageHysteresisFactor.integer < 0 )
 	{
-		humanPlayerCountMod = 0.1f;
+		g_stageHysteresisFactor.integer = 0;
 	}
 
-	if ( g_alienCredits.integer >=
-	     ( int )( ceil( ( float ) g_alienStage2Threshold.integer * alienPlayerCountMod ) ) &&
-	     g_alienStage.integer == S1 && g_alienMaxStage.integer > S1 )
+	for ( team = NUM_TEAMS - 1; team > TEAM_NONE; team-- )
 	{
-		trap_Cvar_Set( "g_alienStage", va( "%d", S2 ) );
-		level.alienStage2Time = level.time;
-		lastAlienStageModCount = g_alienStage.modificationCount;
-		G_LogPrintf( "Stage: A 2: Aliens reached Stage 2\n" );
-	}
-
-	if ( g_alienCredits.integer >=
-	     ( int )( ceil( ( float ) g_alienStage3Threshold.integer * alienPlayerCountMod ) ) &&
-	     g_alienStage.integer == S2 && g_alienMaxStage.integer > S2 )
-	{
-		trap_Cvar_Set( "g_alienStage", va( "%d", S3 ) );
-		level.alienStage3Time = level.time;
-		lastAlienStageModCount = g_alienStage.modificationCount;
-		G_LogPrintf( "Stage: A 3: Aliens reached Stage 3\n" );
-	}
-
-	if ( g_humanCredits.integer >=
-	     ( int )( ceil( ( float ) g_humanStage2Threshold.integer * humanPlayerCountMod ) ) &&
-	     g_humanStage.integer == S1 && g_humanMaxStage.integer > S1 )
-	{
-		trap_Cvar_Set( "g_humanStage", va( "%d", S2 ) );
-		level.humanStage2Time = level.time;
-		lastHumanStageModCount = g_humanStage.modificationCount;
-		G_LogPrintf( "Stage: H 2: Humans reached Stage 2\n" );
-	}
-
-	if ( g_humanCredits.integer >=
-	     ( int )( ceil( ( float ) g_humanStage3Threshold.integer * humanPlayerCountMod ) ) &&
-	     g_humanStage.integer == S2 && g_humanMaxStage.integer > S2 )
-	{
-		trap_Cvar_Set( "g_humanStage", va( "%d", S3 ) );
-		level.humanStage3Time = level.time;
-		lastHumanStageModCount = g_humanStage.modificationCount;
-		G_LogPrintf( "Stage: H 3: Humans reached Stage 3\n" );
-	}
-
-	if ( g_alienStage.modificationCount > lastAlienStageModCount )
-	{
-		while ( alienTriggerStage < MIN( g_alienStage.integer, S3 ) )
+		switch ( team )
 		{
-			G_Checktrigger_stages( TEAM_ALIENS, ++alienTriggerStage );
+			case TEAM_ALIENS:
+				mineEfficiency = level.alienMineEfficiency;
+				stage          = g_alienStage.integer;
+				stageModCount  = g_alienStage.modificationCount;
+				maxStage       = g_alienMaxStage.integer;
+				S2Threshold    = g_alienStage2Threshold.integer;
+				S3Threshold    = g_alienStage3Threshold.integer;
+				S2Time         = &level.alienStage2Time;
+				S3Time         = &level.alienStage3Time;
+				stageCVar      = "g_alienStage";
+				teamName       = "Aliens";
+				CSStages       = CS_ALIEN_STAGES;
+				break;
+			case TEAM_HUMANS:
+				mineEfficiency = level.humanMineEfficiency;
+				stage          = g_humanStage.integer;
+				stageModCount  = g_humanStage.modificationCount;
+				maxStage       = g_humanMaxStage.integer;
+				S2Threshold    = g_humanStage2Threshold.integer;
+				S3Threshold    = g_humanStage3Threshold.integer;
+				S2Time         = &level.humanStage2Time;
+				S3Time         = &level.humanStage3Time;
+				stageCVar      = "g_humanStage";
+				teamName       = "Humans";
+				CSStages       = CS_HUMAN_STAGES;
+				break;
+			default:
+				continue;
 		}
 
-		if ( g_alienStage.integer == S2 )
+		if ( mineEfficiency >= S3Threshold && maxStage >= S3 )
 		{
-			level.alienStage2Time = level.time;
+			if ( stage == S3 )
+			{
+				continue;
+			}
+
+			newStage = S3;
+			nextThreshold = -1;
+
+			if ( *S3Time == level.startTime )
+			{
+				if ( *S2Time == level.startTime )
+				{
+					*S2Time = level.time;
+					G_Checktrigger_stages( team, S2 );
+				}
+
+				*S3Time = level.time;
+				G_Checktrigger_stages( team, S3 );
+			}
 		}
-		else if ( g_alienStage.integer == S3 )
+		else if ( mineEfficiency >= S3Threshold - g_stageHysteresisFactor.integer && stage > S2 )
 		{
-			level.alienStage3Time = level.time;
+			continue;
 		}
-
-		lastAlienStageModCount = g_alienStage.modificationCount;
-	}
-
-	if ( g_humanStage.modificationCount > lastHumanStageModCount )
-	{
-		while ( humanTriggerStage < MIN( g_humanStage.integer, S3 ) )
+		else if ( mineEfficiency >= S2Threshold && maxStage >= S2 )
 		{
-			G_Checktrigger_stages( TEAM_HUMANS, ++humanTriggerStage );
-		}
+			if ( stage == S2 )
+			{
+				continue;
+			}
 
-		if ( g_humanStage.integer == S2 )
+			newStage = S2;
+			nextThreshold = S3Threshold;
+
+			if ( *S2Time == level.startTime )
+			{
+				*S2Time = level.time;
+				G_Checktrigger_stages( team, S2 );
+			}
+		}
+		else if ( mineEfficiency >= S2Threshold - g_stageHysteresisFactor.integer && stage > S1 )
 		{
-			level.humanStage2Time = level.time;
+			continue;
 		}
-		else if ( g_humanStage.integer == S3 )
+		else if ( stage != S1 )
 		{
-			level.humanStage3Time = level.time;
+			newStage = S1;
+			nextThreshold = S2Threshold;
+		}
+		else if ( nextCalculation == 0 )
+		{
+			trap_SetConfigstring( CSStages, va( "%d %d", S1, S2Threshold ) );
+			continue;
+		}
+		else
+		{
+			continue;
 		}
 
-		lastHumanStageModCount = g_humanStage.modificationCount;
+		trap_Cvar_Set( stageCVar, va( "%d", newStage ) );
+		trap_SetConfigstring( CSStages, va( "%d %d", newStage, nextThreshold ) );
+
+		newStage++; // convert to human readable
+
+		G_LogPrintf( "Stage: %c %d: %s are on Stage %d\n", teamName[0], newStage, teamName, newStage );
 	}
 
-	if ( g_alienStage.integer == S1 && g_alienMaxStage.integer > S1 )
-	{
-		alienNextStageThreshold = ( int )( ceil( ( float ) g_alienStage2Threshold.integer * alienPlayerCountMod ) );
-	}
-	else if ( g_alienStage.integer == S2 && g_alienMaxStage.integer > S2 )
-	{
-		alienNextStageThreshold = ( int )( ceil( ( float ) g_alienStage3Threshold.integer * alienPlayerCountMod ) );
-	}
-	else
-	{
-		alienNextStageThreshold = -1;
-	}
-
-	if ( g_humanStage.integer == S1 && g_humanMaxStage.integer > S1 )
-	{
-		humanNextStageThreshold = ( int )( ceil( ( float ) g_humanStage2Threshold.integer * humanPlayerCountMod ) );
-	}
-	else if ( g_humanStage.integer == S2 && g_humanMaxStage.integer > S2 )
-	{
-		humanNextStageThreshold = ( int )( ceil( ( float ) g_humanStage3Threshold.integer * humanPlayerCountMod ) );
-	}
-	else
-	{
-		humanNextStageThreshold = -1;
-	}
-
-	// save a lot of bandwidth by rounding thresholds up to the nearest 100
-	if ( alienNextStageThreshold > 0 )
-	{
-		alienNextStageThreshold = ceil( ( float ) alienNextStageThreshold / 100 ) * 100;
-	}
-
-	if ( humanNextStageThreshold > 0 )
-	{
-		humanNextStageThreshold = ceil( ( float ) humanNextStageThreshold / 100 ) * 100;
-	}
-
-	trap_SetConfigstring( CS_ALIEN_STAGES, va( "%d %d %d",
-	                      g_alienStage.integer, g_alienCredits.integer,
-	                      alienNextStageThreshold ) );
-
-	trap_SetConfigstring( CS_HUMAN_STAGES, va( "%d %d %d",
-	                      g_humanStage.integer, g_humanCredits.integer,
-	                      humanNextStageThreshold ) );
+	nextCalculation = level.time + 1000;
 }
 
 /*
@@ -1547,13 +1533,11 @@ void G_CalculateAvgPlayers( void )
 	if ( !level.numAlienClients )
 	{
 		level.numAlienSamples = 0;
-		trap_Cvar_Set( "g_alienCredits", "0" );
 	}
 
 	if ( !level.numHumanClients )
 	{
 		level.numHumanSamples = 0;
-		trap_Cvar_Set( "g_humanCredits", "0" );
 	}
 
 	//calculate average number of clients for stats

@@ -86,16 +86,18 @@ static void CG_ParseTeamInfo( void )
 	int i;
 	int count;
 	int client;
-	int fields;
 
-	fields = ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_ALIENS ) ? 5 : 6; // aliens don't have upgrades
-	count = ( trap_Argc( ) - 1 ) / fields;
+	count = trap_Argc();
 
-	cgs.teamInfoReceived = qtrue;
-
-	for ( i = 0; i < count; i++ )
+	for ( i = 1; i < count; ++i ) // i is also incremented when writing into cgs.clientinfo
 	{
-		client = atoi( CG_Argv( i * fields + 1 ) );
+		client = atoi( CG_Argv( i ) );
+
+		// wrong team? skip to the next one
+		if ( cgs.clientinfo[ client ].team != cg.snap->ps.stats[ STAT_TEAM ] )
+		{
+			return;
+		}
 
 		if ( client < 0 || client >= MAX_CLIENTS )
 		{
@@ -103,15 +105,18 @@ static void CG_ParseTeamInfo( void )
 			return;
 		}
 
-		cgs.clientinfo[ client ].location = atoi( CG_Argv( i * fields + 2 ) );
-		cgs.clientinfo[ client ].health = atoi( CG_Argv( i * fields + 3 ) );
-		cgs.clientinfo[ client ].curWeaponClass = atoi( CG_Argv( i * fields + 4 ) );
-		cgs.clientinfo[ client ].credit = atoi( CG_Argv( i * fields + 5 ) );
+		cgs.clientinfo[ client ].location       = atoi( CG_Argv( ++i ) );
+		cgs.clientinfo[ client ].health         = atoi( CG_Argv( ++i ) );
+		cgs.clientinfo[ client ].curWeaponClass = atoi( CG_Argv( ++i ) );
+		cgs.clientinfo[ client ].credit         = atoi( CG_Argv( ++i ) );
+
 		if( cg.snap->ps.stats[ STAT_TEAM ] != TEAM_ALIENS )
 		{
-			cgs.clientinfo[ client ].upgrade = atoi( CG_Argv( i * fields + 6 ) );
-        }
+			cgs.clientinfo[ client ].upgrade = atoi( CG_Argv( ++i ) );
+		}
 	}
+
+	cgs.teamInfoReceived = qtrue;
 }
 
 /*
@@ -165,22 +170,20 @@ void CG_SetConfigValues( void )
 
 	if ( alienStages[ 0 ] )
 	{
-		sscanf( alienStages, "%d %d %d", &cgs.alienStage, &cgs.alienCredits,
-		        &cgs.alienNextStageThreshold );
+		sscanf( alienStages, "%d %d", &cgs.alienStage, &cgs.alienNextStageThreshold );
 	}
 	else
 	{
-		cgs.alienStage = cgs.alienCredits = cgs.alienNextStageThreshold = 0;
+		cgs.alienStage = cgs.alienNextStageThreshold = 0;
 	}
 
 	if ( humanStages[ 0 ] )
 	{
-		sscanf( humanStages, "%d %d %d", &cgs.humanStage, &cgs.humanCredits,
-		        &cgs.humanNextStageThreshold );
+		sscanf( humanStages, "%d %d", &cgs.humanStage, &cgs.humanNextStageThreshold );
 	}
 	else
 	{
-		cgs.humanStage = cgs.humanCredits = cgs.humanNextStageThreshold = 0;
+		cgs.humanStage = cgs.humanNextStageThreshold = 0;
 	}
 
 	cgs.levelStartTime = atoi( CG_ConfigString( CS_LEVEL_START_TIME ) );
@@ -253,8 +256,16 @@ static void CG_AnnounceAlienStageTransition( stage_t from, stage_t to )
 		return;
 	}
 
-	trap_S_StartLocalSound( cgs.media.alienStageTransition, CHAN_ANNOUNCER );
-	CG_CenterPrint( _("We have evolved!"), 200, GIANTCHAR_WIDTH * 4 );
+	if ( to > from )
+	{
+		trap_S_StartLocalSound( cgs.media.alienStageTransition, CHAN_ANNOUNCER );
+		CG_CenterPrint( _("We have evolved!"), 200, GIANTCHAR_WIDTH * 4 );
+	}
+	else if ( to < from )
+	{
+		trap_S_StartLocalSound( cgs.media.alienStageTransition, CHAN_ANNOUNCER ); // TODO: Add alien stage down sound
+		CG_CenterPrint( _("We have devolved!"), 200, GIANTCHAR_WIDTH * 4 );
+	}
 }
 
 /*
@@ -269,8 +280,16 @@ static void CG_AnnounceHumanStageTransition( stage_t from, stage_t to )
 		return;
 	}
 
-	trap_S_StartLocalSound( cgs.media.humanStageTransition, CHAN_ANNOUNCER );
-	CG_CenterPrint( _("Reinforcements have arrived!"), 200, GIANTCHAR_WIDTH * 4 );
+	if ( to > from )
+	{
+		trap_S_StartLocalSound( cgs.media.humanStageTransition, CHAN_ANNOUNCER );
+		CG_CenterPrint( _("Reinforcements have arrived!"), 200, GIANTCHAR_WIDTH * 4 );
+	}
+	else if ( to < from )
+	{
+		trap_S_StartLocalSound( cgs.media.humanStageTransition, CHAN_ANNOUNCER ); // TODO: Add human stage down sound
+		CG_CenterPrint( _("Reinforcements are lost!"), 200, GIANTCHAR_WIDTH * 4 );
+	}
 }
 
 /*
@@ -312,8 +331,7 @@ static void CG_ConfigStringModified( void )
 
 		if ( str[ 0 ] )
 		{
-			sscanf( str, "%d %d %d", &cgs.alienStage, &cgs.alienCredits,
-			        &cgs.alienNextStageThreshold );
+			sscanf( str, "%d %d", &cgs.alienStage, &cgs.alienNextStageThreshold );
 
 			if ( cgs.alienStage != oldAlienStage )
 			{
@@ -322,7 +340,7 @@ static void CG_ConfigStringModified( void )
 		}
 		else
 		{
-			cgs.alienStage = cgs.alienCredits = cgs.alienNextStageThreshold = 0;
+			cgs.alienStage = cgs.alienNextStageThreshold = 0;
 		}
 	}
 	else if ( num == CS_HUMAN_STAGES )
@@ -331,8 +349,7 @@ static void CG_ConfigStringModified( void )
 
 		if ( str[ 0 ] )
 		{
-			sscanf( str, "%d %d %d", &cgs.humanStage, &cgs.humanCredits,
-			        &cgs.humanNextStageThreshold );
+			sscanf( str, "%d %d", &cgs.humanStage, &cgs.humanNextStageThreshold );
 
 			if ( cgs.humanStage != oldHumanStage )
 			{
@@ -341,7 +358,7 @@ static void CG_ConfigStringModified( void )
 		}
 		else
 		{
-			cgs.humanStage = cgs.humanCredits = cgs.humanNextStageThreshold = 0;
+			cgs.humanStage = cgs.humanNextStageThreshold = 0;
 		}
 	}
 	else if ( num == CS_LEVEL_START_TIME )
