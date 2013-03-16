@@ -511,6 +511,15 @@ void G_FireTarget(gentityCallDefinition_t *target, gentity_t *targetedEntity, ge
 	{
 		switch (target->actionType)
 		{
+		case ECA_CUSTOM:
+			if ( g_debugEntities.integer > -1 )
+			{
+				G_Printf("^3Warning:^7 Unknown action \"%s\" for ", target->action) ;
+				G_DebugPrintEntitiy(targetedEntity);
+				G_Printf("\n");
+			}
+			return;
+
 		case ECA_FREE:
 			G_FreeEntity(targetedEntity);
 			return; //we have to handle notification differently in the free-case
