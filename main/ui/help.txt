@@ -2,11 +2,35 @@
   "^5Welcome^7"
   {
     "In this section you will find a summary of major changes since Tremulous 1.1. It is "
-    "not a complete list. In general, all things have been tweaked for balance in "
-    "some way.\n\n"
+    "not a complete list. In general, things have been tweaked for balance in "
+    "some way and some things are changed significantly.\n\n"
     "We hope you enjoy playing. Your support gives us valuable data and "
     "feedback as we work to bring you Unvanquished 1.0. Please report all bugs. Thank "
     "you."
+  }
+  "Resources"
+  {
+    "^1In development^7\n\n"
+    "Build points are acquired via two structures – for the humans, [drill] drills, "
+    "and for the aliens, [leech] leeches. These buildings need to be spread out for "
+    "efficiency. "
+    "Builders will see two numbers for drills or leeches. The right-hand number "
+    "is this generator's % efficiency."
+    "\n\n"
+    "Build points are initially acquired fairly rapidly, but this slows over time. "
+    "The teams hava an initial, small, pool of build points."
+    "\n\n"
+    "[repeater] Repeaters no longer provide their own pools of build points."
+  }
+  "Stage changes"
+  {
+    "^1In development^7\n\n"
+    "Stages are gained through map control – the more resource generation "
+    "capacity your team has, the more weapons, buildings and/or classes are "
+    "available to you. ^3However,^7 if you lose enough of that capacity, you "
+    "will go back down a stage or more – you will lose access to anything new "
+    "of whatever the lost stage(s) provided, but existing buildings, purchased "
+    "upgrades and higher alien forms remain functional."
   }
   "Alien Healing"
   {
@@ -18,23 +42,21 @@
     "creep. If you are near a booster or basilisk, you will see two "
     "(2× healing) or four (3× healing) barbs around the health cross."
   }
-  "Build-point Changes"
-  {
-    "Structures destroyed by enemy players will not immediately become available "
-    "for reuse, but instead enter a queue. Build points will gradually leave the "
-    "queue to become available again, at a rate proportional to the amount of "
-    "points in the queue.\n\n Repeaters can be built at any stage and come with 20 "
-    "BP that can only be used nearby to facilitate making small outposts. Aliens "
-    "do not have a structure that provides additional buildpoints, but they have 150 "
-    "overall BP to compensate."
-  }
-  "Marked Deconstruction"
+  "Deconstruction"
   {
     "The deconstruction method has changed. Buildables are no longer instantly "
     "deconstructed. Instead, a deconstruct mark appears on the health bar. "
     "Go ahead and build a new buildable somewhere else and the old one will "
     "be removed automatically. Buildables that are about to be removed by "
     "constructing the selected buildable glow red."
+    "\n\n"
+    "Deconstructing a damaged building returns only some of the build points "
+    "used when constructing it. "
+  }
+  "Construction kits"
+  {
+    "Repair using construction kits uses build points. Full repair from zero "
+    "health, were it possible, would be cheaper than replacing the building."
   }
   "Alien Buildables"
   {
