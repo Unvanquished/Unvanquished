@@ -2891,6 +2891,8 @@ void HDrill_Think( gentity_t *self )
 	{
 		G_ModifyBuildPoints( TEAM_HUMANS, self->s.weapon / 60000.0f );
 	}
+
+	G_IdlePowerState( self );
 }
 
 /*
