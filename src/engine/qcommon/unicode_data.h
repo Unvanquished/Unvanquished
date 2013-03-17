@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define __Q_UNICODE_H
 
 typedef struct {
-  uint32_t c1:16, c2:16;
+  uint32_t c1, c2;
 } ucs2_pair_t;
 
 static const ucs2_pair_t uc_prop_uppercase[] = {
