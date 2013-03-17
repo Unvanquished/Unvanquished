@@ -3295,7 +3295,12 @@ void CG_Player( centity_t *cent )
 			body.skeleton = torsoSkeleton;
 			if ( torsoSkeleton.numBones != legsSkeleton.numBones )
 			{
-				CG_Error( "cent->pe.legs.skeleton.numBones != cent->pe.torso.skeleton.numBones" );
+
+				// seems only to happen when switching from an MD3 model to an MD5 model
+				// while spectating (switching between players on the human team)
+				// - don't treat as fatal, but doing so will (briefly?) cause rendering
+				// glitches if chasing; also, brief spam
+				CG_Printf( "[skipnotify]WARNING: cent->pe.legs.skeleton.numBones != cent->pe.torso.skeleton.numBones\n" );
 			}
 
 			// combine legs and torso skeletons
