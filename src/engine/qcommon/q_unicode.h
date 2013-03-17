@@ -29,3 +29,13 @@ unsigned long Q_UTF8_CodePoint( const char *str );
 char *Q_UTF8_Encode( unsigned long codepoint );
 int Q_UTF8_Store( const char *s );
 char *Q_UTF8_Unstore( int e );
+
+qboolean Q_Unicode_IsAlpha( int ch );
+qboolean Q_Unicode_IsUpper( int ch );
+qboolean Q_Unicode_IsLower( int ch );
+qboolean Q_Unicode_IsIdeo( int ch );
+qboolean Q_Unicode_IsAlphaOrIdeo( int ch );
+qboolean Q_Unicode_IsAlphaOrIdeoOrDigit( int ch );
+
+int Q_Unicode_ToUpper( int ch );
+int Q_Unicode_ToLower( int ch );

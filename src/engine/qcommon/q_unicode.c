@@ -290,3 +290,54 @@ char *Q_UTF8_Unstore( int e )
 
   return buf;
 }
+
+
+#include "unicode_data.h"
+
+static int uc_search_range( const void *chp, const void *memb )
+{
+  int ch = *(int *)chp;
+  const ucs2_pair_t *item = memb;
+
+  return ( ch < item->c1 ) ? -1 : ( ch >= item->c2 ) ? 1 : 0;
+}
+
+#define Q_UC_IS(label, array) \
+  qboolean Q_Unicode_Is##label( int ch ) \
+  { \
+    return bsearch( &ch, array, ARRAY_LEN( array ), sizeof( array[ 0 ] ), uc_search_range ) ? qtrue : qfalse; \
+  }
+
+Q_UC_IS( Alpha, uc_prop_alphabetic  )
+Q_UC_IS( Upper, uc_prop_uppercase   )
+Q_UC_IS( Lower, uc_prop_lowercase   )
+Q_UC_IS( Ideo,  uc_prop_ideographic )
+Q_UC_IS( Digit, uc_prop_digit       )
+
+qboolean Q_Unicode_IsAlphaOrIdeo( int ch )
+{
+  return Q_Unicode_IsAlpha( ch ) || Q_Unicode_IsIdeo( ch );
+}
+
+qboolean Q_Unicode_IsAlphaOrIdeoOrDigit( int ch )
+{
+  return Q_Unicode_IsAlpha( ch ) || Q_Unicode_IsIdeo( ch ) || Q_Unicode_IsDigit( ch );
+}
+
+static int uc_search_cp( const void *chp, const void *memb )
+{
+  int ch = *(int *)chp;
+  const ucs2_pair_t *item = memb;
+
+  return ( ch < item->c1 ) ? -1 : ( ch > item->c1 ) ? 1 : 0;
+}
+
+#define Q_UC_TO(label, array) \
+  int Q_Unicode_To##label( int ch ) \
+  { \
+    const ucs2_pair_t *converted = bsearch( &ch, array, ARRAY_LEN( array ), sizeof( array[ 0 ] ), uc_search_cp ); \
+    return converted ? converted->c2 : ch; \
+  }
+
+Q_UC_TO( Upper, uc_case_upper )
+Q_UC_TO( Lower, uc_case_lower )
