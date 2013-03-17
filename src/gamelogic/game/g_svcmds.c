@@ -36,6 +36,8 @@ Maryland 20850 USA.
 
 #include "g_local.h"
 
+#define IS_NON_NULL_VEC3(vec3tor) (vec3tor[0] || vec3tor[1] || vec3tor[2])
+
 void Svcmd_EntityFire_f( void )
 {
 	char argument[ MAX_STRING_CHARS ];
@@ -83,7 +85,6 @@ void Svcmd_EntityFire_f( void )
 	G_FireTarget( &target, selection, &g_entities[ ENTITYNUM_NONE ], &g_entities[ ENTITYNUM_NONE ] );
 }
 
-
 /*
 ===================
 Svcmd_EntityShow_f
@@ -123,7 +124,7 @@ void Svcmd_EntityShow_f( void )
 
 	G_Printf( "⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼\n" );
 	G_Printf( S_COLOR_CYAN "#%3i" S_COLOR_WHITE ": %16s", entityNum, Com_EntityTypeName( selection->s.eType ) );
-	if (selection->s.origin)
+	if (IS_NON_NULL_VEC3(selection->s.origin))
 	{
 		G_Printf("%26s", vtos( selection->s.origin ) );
 	}
@@ -196,7 +197,7 @@ static void PrintEntityOverviewLine( gentity_t *entity )
 
 	G_Printf( "%3i: %16s/" S_COLOR_CYAN "%-24s" S_COLOR_WHITE "%s",
 			entity->s.number, Com_EntityTypeName( entity->s.eType ), entity->classname,
-			vtos( entity->s.origin ));
+			IS_NON_NULL_VEC3(entity->s.origin) ? vtos( entity->s.origin ) : "");
 
 	if(entity->names[0])
 	{
