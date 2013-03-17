@@ -3494,8 +3494,8 @@ static void CG_DrawCrosshairNames( rectDef_t *rect, float scale, int textStyle )
 
 	if( cg_drawEntityInfo.integer )
 	{
-		name = va( "(" S_COLOR_CYAN "ET_%d" S_COLOR_WHITE "|" S_COLOR_CYAN "#%d" S_COLOR_WHITE ")",
-				cg_entities[cg.crosshairClientNum].currentState.eType, cg.crosshairClientNum );
+		name = va( "(" S_COLOR_CYAN "%s" S_COLOR_WHITE "|" S_COLOR_CYAN "#%d" S_COLOR_WHITE ")",
+				Com_EntityTypeName( cg_entities[cg.crosshairClientNum].currentState.eType ), cg.crosshairClientNum );
 	} else {
 		name = cgs.clientinfo[ cg.crosshairClientNum ].name;
 	}
