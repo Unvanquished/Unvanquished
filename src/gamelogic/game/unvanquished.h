@@ -680,20 +680,21 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define FREEKILL_ALIEN                     ALIEN_CREDITS_PER_KILL
 #define FREEKILL_HUMAN                     LEVEL0_VALUE
 
-#define DEFAULT_ALIEN_BUILDPOINTS          "150"
-#define DEFAULT_ALIEN_QUEUE_TIME           "12000"
-#define DEFAULT_ALIEN_STAGE2_THRESH        "400"
-#define DEFAULT_ALIEN_STAGE3_THRESH        "550"
+#define DEFAULT_INITIAL_BUILD_POINTS       "50"
+#define DEFAULT_INITIAL_MINE_RATE          "10"
+#define DEFAULT_MINE_RATE_HALF_LIFE        "15"
+
+#define DEFAULT_ALIEN_STAGE1_BELOW         "350"
+#define DEFAULT_ALIEN_STAGE2_ABOVE         "400"
+#define DEFAULT_ALIEN_STAGE2_BELOW         "500"
+#define DEFAULT_ALIEN_STAGE3_ABOVE         "550"
 #define DEFAULT_ALIEN_MAX_STAGE            "2"
-#define DEFAULT_HUMAN_BUILDPOINTS          "100"
-#define DEFAULT_HUMAN_QUEUE_TIME           "8000"
-#define DEFAULT_HUMAN_REPEATER_BUILDPOINTS "20"
-#define DEFAULT_HUMAN_REPEATER_QUEUE_TIME  "2000"
-#define DEFAULT_HUMAN_REPEATER_MAX_ZONES   "500"
-#define DEFAULT_HUMAN_STAGE2_THRESH        "400"
-#define DEFAULT_HUMAN_STAGE3_THRESH        "550"
+
+#define DEFAULT_HUMAN_STAGE1_BELOW         "350"
+#define DEFAULT_HUMAN_STAGE2_ABOVE         "400"
+#define DEFAULT_HUMAN_STAGE2_BELOW         "500"
+#define DEFAULT_HUMAN_STAGE3_ABOVE         "550"
 #define DEFAULT_HUMAN_MAX_STAGE            "2"
-#define DEFAULT_STAGE_HYSTERESIS_FACTOR    "50"
 
 #define DAMAGE_FRACTION_FOR_KILL           0.5f //how much damage players (versus structures) need to
 //do to increment the stage kill counters
