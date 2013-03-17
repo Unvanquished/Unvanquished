@@ -189,7 +189,7 @@ qboolean G_FindPower( gentity_t *self, qboolean searchUnspawned )
 	// Reactor is always powered
 	if ( self->s.modelindex == BA_H_REACTOR )
 	{
-		self->parentNode = self;
+		self->powerSource = self;
 
 		return qtrue;
 	}
@@ -197,9 +197,9 @@ qboolean G_FindPower( gentity_t *self, qboolean searchUnspawned )
 	// Handle repeaters
 	if ( self->s.modelindex == BA_H_REPEATER )
 	{
-		self->parentNode = G_Reactor();
+		self->powerSource = G_Reactor();
 
-		return self->parentNode != NULL;
+		return self->powerSource != NULL;
 	}
 
 	// Iterate through entities
@@ -241,7 +241,7 @@ qboolean G_FindPower( gentity_t *self, qboolean searchUnspawned )
 							continue;
 						}
 
-						if ( ent2->parentNode == ent )
+						if ( ent2->powerSource == ent )
 						{
 							buildPoints -= BG_Buildable( ent2->s.modelindex )->buildPoints;
 						}
@@ -253,7 +253,7 @@ qboolean G_FindPower( gentity_t *self, qboolean searchUnspawned )
 
 					if ( buildPoints >= 0 )
 					{
-						self->parentNode = ent;
+						self->powerSource = ent;
 						return qtrue;
 					}
 					else
@@ -267,7 +267,7 @@ qboolean G_FindPower( gentity_t *self, qboolean searchUnspawned )
 				// Dummy buildables don't need to look for zones
 				else
 				{
-					self->parentNode = ent;
+					self->powerSource = ent;
 					return qtrue;
 				}
 			}
@@ -296,7 +296,7 @@ qboolean G_FindPower( gentity_t *self, qboolean searchUnspawned )
 							continue;
 						}
 
-						if ( ent2->parentNode == ent )
+						if ( ent2->powerSource == ent )
 						{
 							buildPoints -= BG_Buildable( ent2->s.modelindex )->buildPoints;
 						}
@@ -331,8 +331,8 @@ qboolean G_FindPower( gentity_t *self, qboolean searchUnspawned )
 		}
 	}
 
-	self->parentNode = closestPower;
-	return self->parentNode != NULL;
+	self->powerSource = closestPower;
+	return self->powerSource != NULL;
 }
 
 /*
@@ -347,14 +347,14 @@ gentity_t *G_PowerEntityForPoint( const vec3_t origin )
 {
 	gentity_t dummy;
 
-	dummy.parentNode = NULL;
+	dummy.powerSource = NULL;
 	dummy.buildableTeam = TEAM_HUMANS;
 	dummy.s.modelindex = BA_NONE;
 	VectorCopy( origin, dummy.s.origin );
 
 	if ( G_FindPower( &dummy, qfalse ) )
 	{
-		return dummy.parentNode;
+		return dummy.powerSource;
 	}
 	else
 	{
@@ -374,7 +374,7 @@ gentity_t *G_PowerEntityForEntity( gentity_t *ent )
 {
 	if ( G_FindPower( ent, qfalse ) )
 	{
-		return ent->parentNode;
+		return ent->powerSource;
 	}
 
 	return NULL;
@@ -475,7 +475,7 @@ int G_GetMarkedBuildPoints( const vec3_t pos, team_t team )
 		if ( team == TEAM_HUMANS &&
 		     ent->s.modelindex != BA_H_REACTOR &&
 		     ent->s.modelindex != BA_H_REPEATER &&
-		     ent->parentNode != G_PowerEntityForPoint( pos ) )
+		     ent->powerSource != G_PowerEntityForPoint( pos ) )
 		{
 			continue;
 		}
@@ -724,8 +724,8 @@ qboolean G_FindCreep( gentity_t *self )
 	}
 
 	//if self does not have a parentNode or its parentNode is invalid find a new one
-	if ( self->client || self->parentNode == NULL || !self->parentNode->inuse ||
-	     self->parentNode->health <= 0 )
+	if ( self->client || self->powerSource == NULL || !self->powerSource->inuse ||
+	     self->powerSource->health <= 0 )
 	{
 		for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 		{
@@ -753,7 +753,7 @@ qboolean G_FindCreep( gentity_t *self )
 		{
 			if ( !self->client )
 			{
-				self->parentNode = closestSpawn;
+				self->powerSource = closestSpawn;
 			}
 
 			return qtrue;
@@ -786,7 +786,7 @@ static qboolean G_IsCreepHere( vec3_t origin )
 
 	memset( &dummy, 0, sizeof( gentity_t ) );
 
-	dummy.parentNode = NULL;
+	dummy.powerSource = NULL;
 	dummy.s.modelindex = BA_NONE;
 	VectorCopy( origin, dummy.s.origin );
 
@@ -963,7 +963,7 @@ void AGeneric_CreepCheck( gentity_t *self )
 {
 	gentity_t *spawn;
 
-	spawn = self->parentNode;
+	spawn = self->powerSource;
 
 	if ( !G_FindCreep( self ) )
 	{
@@ -1810,9 +1810,9 @@ static qboolean G_SuicideIfNoPower( gentity_t *self )
 		}
 		else if ( ( level.time - self->customNumber ) >= HUMAN_BUILDABLE_INACTIVE_TIME )
 		{
-			if ( self->parentNode )
+			if ( self->powerSource )
 			{
-				G_Damage( self, NULL, g_entities + self->parentNode->killedBy,
+				G_Damage( self, NULL, g_entities + self->powerSource->killedBy,
 				          NULL, NULL, self->health, 0, MOD_NOCREEP );
 			}
 			else
@@ -3667,7 +3667,7 @@ static itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable,
 		if ( team == TEAM_HUMANS &&
 		     buildable != BA_H_REACTOR &&
 		     buildable != BA_H_REPEATER &&
-		     ent->parentNode != G_PowerEntityForPoint( origin ) )
+		     ent->powerSource != G_PowerEntityForPoint( origin ) )
 		{
 			continue;
 		}
@@ -4902,7 +4902,7 @@ void G_BuildLogSet( buildLog_t *log, gentity_t *ent )
 	VectorCopy( ent->s.angles, log->angles );
 	VectorCopy( ent->s.origin2, log->origin2 );
 	VectorCopy( ent->s.angles2, log->angles2 );
-	log->powerSource = ent->parentNode ? ent->parentNode->s.modelindex : BA_NONE;
+	log->powerSource = ent->powerSource ? ent->powerSource->s.modelindex : BA_NONE;
 	log->powerValue = G_QueueValue( ent );
 }
 

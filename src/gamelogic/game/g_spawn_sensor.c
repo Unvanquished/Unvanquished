@@ -464,6 +464,9 @@ void sensor_player_touch( gentity_t *self, gentity_t *activator, trace_t *trace 
 		return; // can't retrigger until the wait is over
 	}
 
+	if ( self->conditions.team && ( activator->client->ps.stats[ STAT_TEAM ] != self->conditions.team ) )
+		return;
+
 	if ( ( self->conditions.upgrades[0] || self->conditions.weapons[0] ) && activator->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
 	{
 		shouldFire = sensor_equipment_match( self, activator );

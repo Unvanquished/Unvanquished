@@ -244,7 +244,7 @@ struct gentity_s
 	 * this can e.g. be indicated by an animation
 	 */
 	qboolean     spawned;
-
+	gentity_t    *parent; // the gentity that spawned this one
 	/**
 	 * is the buildable getting support by reactor or overmind?
 	 * this is tightly coupled with enabled
@@ -253,6 +253,7 @@ struct gentity_s
 	 * other entities might also consider the powergrid for behavior changes
 	 */
 	qboolean     powered;
+	gentity_t    *powerSource;
 
 	// targeting
 	gentityCallDefinition_t targets[ MAX_ENTITY_TARGETS + 1 ];
@@ -277,8 +278,6 @@ struct gentity_s
 	gentity_t    *prevPathSegment;
 
 	//additional unclear chaining
-	gentity_t    *parent;
-	gentity_t    *parentNode; // for creep and defence/spawn dependencies
 	gentity_t    *target_ent;
 	gentity_t    *enemy;
 
