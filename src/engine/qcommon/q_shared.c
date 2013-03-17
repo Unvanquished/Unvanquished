@@ -713,7 +713,7 @@ const char *Com_EntityTypeName(entityType_t entityType)
 	case ET_LIGHTFLARE:       return "LIGHTFLARE";
 	case ET_LEV2_ZAP_CHAIN:   return "LEV2_ZAP_CHAIN";
 	default:
-		if(entityType > ET_EVENTS)
+		if(entityType >= ET_EVENTS)
 			return "EVENT";
 		return NULL;
 	}
