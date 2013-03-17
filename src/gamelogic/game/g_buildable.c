@@ -760,15 +760,7 @@ void G_RGSCalculateRate( gentity_t *self )
 	gentity_t       *rgs;
 	float           rate, d, dr, q;
 
-	if ( self->s.modelindex == BA_A_LEECH )
-	{
-		range[ 0 ] = range[ 1 ] = range[ 2 ] = LEECH_RANGE;
-	}
-	else if ( self->s.modelindex == BA_H_DRILL )
-	{
-		range[ 0 ] = range[ 1 ] = range[ 2 ] = DRILL_RANGE;
-	}
-	else
+	if ( !self->s.modelindex == BA_A_LEECH && !self->s.modelindex == BA_H_DRILL )
 	{
 		return;
 	}
@@ -783,6 +775,7 @@ void G_RGSCalculateRate( gentity_t *self )
 	{
 		rate = level.mineRate;
 
+		range[ 0 ] = range[ 1 ] = range[ 2 ] = RGS_RANGE * 2.0f; // own range plus neighbor range
 		VectorAdd( self->s.origin, range, maxs );
 		VectorSubtract( self->s.origin, range, mins );
 		numNeighbors = trap_EntitiesInBox( mins, maxs, neighbors, MAX_GENTITIES );
@@ -796,15 +789,15 @@ void G_RGSCalculateRate( gentity_t *self )
 			{
 				d = Distance( self->s.origin, rgs->s.origin );
 
-				// Discard RGS not in 2 * range and prevent divisin by zero on LEECH_RANGE = 0
-				if ( 2 * range[ 0 ] - d < 0 )
+				// Discard RGS not in range and prevent divisin by zero on RGS_RANGE = 0
+				if ( range[ 0 ] - d < 0 )
 				{
 					continue;
 				}
 
 				// q is the ratio of the part of a sphere with radius r that intersects with
 				// another sphere of equal size and distance d
-				dr = d / range[ 0 ];
+				dr = d / RGS_RANGE;
 				q = ((dr * dr * dr) - 12.0f * dr + 16.0f) / 16.0f;
 
 				// Two rgs together should mine at a rate proportional to the volume of the
@@ -830,7 +823,7 @@ void G_RGSCalculateRate( gentity_t *self )
 ================
 G_RGSInformNeighbors
 
-Adjust the rate of all interfering neighbors of a RGS
+Adjust the rate of all RGS in range
 ================
 */
 void G_RGSInformNeighbors( gentity_t *self )
@@ -840,19 +833,12 @@ void G_RGSInformNeighbors( gentity_t *self )
 	gentity_t       *rgs;
 	float           d;
 
-	if ( self->s.modelindex == BA_A_LEECH )
-	{
-		range[ 0 ] = range[ 1 ] = range[ 2 ] = LEECH_RANGE;
-	}
-	else if ( self->s.modelindex == BA_H_DRILL )
-	{
-		range[ 0 ] = range[ 1 ] = range[ 2 ] = DRILL_RANGE;
-	}
-	else
+	if ( !self->s.modelindex == BA_A_LEECH && !self->s.modelindex == BA_H_DRILL )
 	{
 		return;
 	}
 
+	range[ 0 ] = range[ 1 ] = range[ 2 ] = RGS_RANGE * 2.0f; // own range plus neighbor range
 	VectorAdd( self->s.origin, range, maxs );
 	VectorSubtract( self->s.origin, range, mins );
 	numNeighbors = trap_EntitiesInBox( mins, maxs, neighbors, MAX_GENTITIES );
@@ -866,8 +852,8 @@ void G_RGSInformNeighbors( gentity_t *self )
 		{
 			d = Distance( self->s.origin, rgs->s.origin );
 
-			// Discard RGS not in 2 * LEECH_RANGE
-			if ( 2 * range[ 0 ] - d < 0 )
+			// Discard RGS not in range
+			if ( range[ 0 ] - d < 0 )
 			{
 				continue;
 			}

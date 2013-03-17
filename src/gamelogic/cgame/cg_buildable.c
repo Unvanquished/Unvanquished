@@ -632,7 +632,7 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 			break;
 
 		case BA_A_LEECH:
-			*range = LEECH_RANGE;
+			*range = RGS_RANGE;
 			shc = SHC_INDIGO;
 			break;
 
@@ -657,7 +657,7 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 			break;
 
 		case BA_H_DRILL:
-			*range = DRILL_RANGE;
+			*range = RGS_RANGE;
 			shc = SHC_INDIGO;
 			break;
 

@@ -308,7 +308,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LEECH_SPLASHDAMAGE       30
 #define LEECH_SPLASHRADIUS       200
 #define LEECH_CREEPSIZE          120
-#define LEECH_RANGE              750.0f
 #define LEECH_LIFETIME           3000
 #define LEECH_REPEAT             3000
 #define LEECH_K_SCALE            1.0f
@@ -565,7 +564,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define DRILL_HEALTH           HBHM(200)
 #define DRILL_SPLASHDAMAGE     50
 #define DRILL_SPLASHRADIUS     100
-#define DRILL_RANGE            750.0f
 #define DRILL_VALUE            HBVM(DRILL_BP)
 
 #define MGTURRET_BP               8
@@ -678,6 +676,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define FREEKILL_ALIEN                     ALIEN_CREDITS_PER_KILL
 #define FREEKILL_HUMAN                     LEVEL0_VALUE
 
+#define RGS_RANGE                          750.0f
 #define DEFAULT_INITIAL_BUILD_POINTS       "50"
 #define DEFAULT_INITIAL_MINE_RATE          "10"
 #define DEFAULT_MINE_RATE_HALF_LIFE        "15"
