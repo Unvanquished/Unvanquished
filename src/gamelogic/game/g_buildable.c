@@ -1879,50 +1879,6 @@ void ATrapper_Think( gentity_t *self )
 
 /*
 ================
-G_SuicideIfNoPower
-
-Destroy human structures that have been unpowered too long
-================
-*/
-static qboolean G_SuicideIfNoPower( gentity_t *self )
-{
-	if ( self->buildableTeam != TEAM_HUMANS )
-	{
-		return qfalse;
-	}
-
-	if ( !self->powered )
-	{
-		// if the power hasn't reached this buildable for some time, then destroy the buildable
-		if ( self->count == 0 )
-		{
-			self->count = level.time;
-		}
-		else if ( ( level.time - self->count ) >= HUMAN_BUILDABLE_INACTIVE_TIME )
-		{
-			if ( self->parentNode )
-			{
-				G_Damage( self, NULL, g_entities + self->parentNode->killedBy,
-				          NULL, NULL, self->health, 0, MOD_NOCREEP );
-			}
-			else
-			{
-				G_Damage( self, NULL, NULL, NULL, NULL, self->health, 0, MOD_NOCREEP );
-			}
-
-			return qtrue;
-		}
-	}
-	else
-	{
-		self->count = 0;
-	}
-
-	return qfalse;
-}
-
-/*
-================
 G_IdlePowerState
 
 Set buildable idle animation to match power state
@@ -2040,11 +1996,6 @@ void HSpawn_Think( gentity_t *self )
 	// set parentNode
 	self->powered = G_FindPower( self, qfalse );
 
-	if ( G_SuicideIfNoPower( self ) )
-	{
-		return;
-	}
-
 	if ( self->spawned )
 	{
 		//only suicide if at rest
@@ -2132,11 +2083,6 @@ void HRepeater_Think( gentity_t *self )
 	gentity_t        *powerEnt;
 
 	self->powered = G_FindPower( self, qfalse );
-
-	if ( G_SuicideIfNoPower( self ) )
-	{
-		return;
-	}
 
 	powerEnt = G_InPowerZone( self );
 
@@ -2319,8 +2265,6 @@ void HArmoury_Think( gentity_t *self )
 	self->nextthink = level.time + POWER_REFRESH_TIME;
 
 	self->powered = G_FindPower( self, qfalse );
-
-	G_SuicideIfNoPower( self );
 }
 
 //==================================================================================
@@ -2338,8 +2282,6 @@ void HDCC_Think( gentity_t *self )
 	self->nextthink = level.time + POWER_REFRESH_TIME;
 
 	self->powered = G_FindPower( self, qfalse );
-
-	G_SuicideIfNoPower( self );
 }
 
 //==================================================================================
@@ -2381,11 +2323,6 @@ void HMedistat_Think( gentity_t *self )
 	self->nextthink = level.time + BG_Buildable( self->s.modelindex )->nextthink;
 
 	self->powered = G_FindPower( self, qfalse );
-
-	if ( G_SuicideIfNoPower( self ) )
-	{
-		return;
-	}
 
 	G_IdlePowerState( self );
 
@@ -2776,11 +2713,6 @@ void HMGTurret_Think( gentity_t *self )
 
 	self->powered = G_FindPower( self, qfalse );
 
-	if ( G_SuicideIfNoPower( self ) )
-	{
-		return;
-	}
-
 	G_IdlePowerState( self );
 
 	// If not powered or spawned don't do anything
@@ -2868,11 +2800,6 @@ void HTeslaGen_Think( gentity_t *self )
 	self->nextthink = level.time + BG_Buildable( self->s.modelindex )->nextthink;
 
 	self->powered = G_FindPower( self, qfalse );
-
-	if ( G_SuicideIfNoPower( self ) )
-	{
-		return;
-	}
 
 	G_IdlePowerState( self );
 
