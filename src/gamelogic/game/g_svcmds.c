@@ -36,100 +36,6 @@ Maryland 20850 USA.
 
 #include "g_local.h"
 
-
-static void PrintEntityType( gentity_t *entity )
-{
-	if(!entity)
-		return;
-
-	switch ( entity->s.eType )
-	{
-		case ET_GENERAL:
-			G_Printf( "ET_GENERAL          " );
-			break;
-
-		case ET_PLAYER:
-			G_Printf( "ET_PLAYER           " );
-			break;
-
-		case ET_ITEM:
-			G_Printf( "ET_ITEM             " );
-			break;
-
-		case ET_BUILDABLE:
-			G_Printf( "ET_BUILDABLE        " );
-			break;
-
-		case ET_LOCATION:
-			G_Printf( "ET_LOCATION         " );
-			break;
-
-		case ET_MISSILE:
-			G_Printf( "ET_MISSILE          " );
-			break;
-
-		case ET_MOVER:
-			G_Printf( "ET_MOVER            " );
-			break;
-
-		case ET_BEAM:
-			G_Printf( "ET_BEAM             " );
-			break;
-
-		case ET_PORTAL:
-			G_Printf( "ET_PORTAL           " );
-			break;
-
-		case ET_SPEAKER:
-			G_Printf( "ET_SPEAKER          " );
-			break;
-
-		case ET_PUSH_TRIGGER:
-			G_Printf( "ET_PUSH_TRIGGER     " );
-			break;
-
-		case ET_TELEPORT_TRIGGER:
-			G_Printf( "ET_TELEPORT_TRIGGER " );
-			break;
-
-		case ET_INVISIBLE:
-			G_Printf( "ET_INVISIBLE        " );
-			break;
-
-		case ET_GRAPPLE:
-			G_Printf( "ET_GRAPPLE          " );
-			break;
-
-		case ET_CORPSE:
-			G_Printf( "ET_CORPSE           " );
-			break;
-
-		case ET_PARTICLE_SYSTEM:
-			G_Printf( "ET_PARTICLE_SYSTEM  " );
-			break;
-
-		case ET_ANIMMAPOBJ:
-			G_Printf( "ET_ANIMMAPOBJ       " );
-			break;
-
-		case ET_MODELDOOR:
-			G_Printf( "ET_MODELDOOR        " );
-			break;
-
-		case ET_LIGHTFLARE:
-			G_Printf( "ET_LIGHTFLARE       " );
-			break;
-
-		case ET_LEV2_ZAP_CHAIN:
-			G_Printf( "ET_LEV2_ZAP_CHAIN   " );
-			break;
-
-		default:
-			G_Printf( "%-3i                 ", entity->s.eType );
-			break;
-	}
-}
-
 void Svcmd_EntityFire_f( void )
 {
 	char argument[ MAX_STRING_CHARS ];
@@ -216,11 +122,10 @@ void Svcmd_EntityShow_f( void )
 	}
 
 	G_Printf( "⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼\n" );
-	G_Printf( "^5#%3i^7:", entityNum );
-	PrintEntityType( selection );
+	G_Printf( S_COLOR_CYAN "#%3i" S_COLOR_WHITE ": %16s", entityNum, Com_EntityTypeName( selection->s.eType ) );
 	if (selection->s.origin)
 	{
-		G_Printf("%25s", vtos( selection->s.origin ) );
+		G_Printf("%26s", vtos( selection->s.origin ) );
 	}
 	G_Printf( "\n" );
 	G_Printf( "⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼\n" );
@@ -289,10 +194,10 @@ static void PrintEntityOverviewLine( gentity_t *entity )
 {
 	int i;
 
-	G_Printf( "%3i:", entity->s.number );
-	PrintEntityType( entity );
-	G_Printf( "%-25s", entity->classname );
-	G_Printf( "%s", vtos( entity->s.origin ) );
+	G_Printf( "%3i: %16s/" S_COLOR_CYAN "%-24s" S_COLOR_WHITE "%s",
+			entity->s.number, Com_EntityTypeName( entity->s.eType ), entity->classname,
+			vtos( entity->s.origin ));
+
 	if(entity->names[0])
 	{
 		G_Printf("\n    ");
