@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "g_local.h"
 #include "g_spawn.h"
+#include "../../engine/qcommon/q_unicode.h"
 
 // g_client.c -- client functions that don't happen every frame
 
@@ -909,7 +910,7 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 	}
 
 	// limit no. of code points
-	if ( Q_UTF8PrintStrlen( p ) > MAX_NAME_LENGTH_CP )
+	if ( Q_UTF8_PrintStrlen( p ) > MAX_NAME_LENGTH_CP )
 	{
 		invalid = qtrue;
 	}

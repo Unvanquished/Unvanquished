@@ -37,6 +37,7 @@ Maryland 20850 USA.
 #include <time.h>
 #include "revision.h"
 #include "client.h"
+#include "../qcommon/q_unicode.h"
 
 int g_console_field_width = 78;
 
@@ -107,7 +108,7 @@ static const char *Con_LineToString( int lineno, qboolean lf )
 		}
 		else
 		{
-			strcpy( lineString + d, Q_UTF8Encode( line[ s ].ch ) );
+			strcpy( lineString + d, Q_UTF8_Encode( line[ s ].ch ) );
 			while ( lineString[ d ] ) { ++d; }
 		}
 	}
@@ -144,7 +145,7 @@ static const char *Con_LineToColouredString( int lineno, qboolean lf )
 		}
 		else
 		{
-			strcpy( lineString + d, Q_UTF8Encode( line[ s ].ch ) );
+			strcpy( lineString + d, Q_UTF8_Encode( line[ s ].ch ) );
 			while ( lineString[ d ] ) { ++d; }
 		}
 	}
@@ -494,7 +495,7 @@ void Con_CheckResize( void )
 		Q_strncpyz( prompt, con_prompt->string, sizeof( prompt ) );
 		Q_CleanStr( prompt );
 
-		g_console_field_width = g_consoleField.widthInChars = consoleState.textWidthInChars - 8 - Q_UTF8Strlen( prompt );
+		g_console_field_width = g_consoleField.widthInChars = consoleState.textWidthInChars - 8 - Q_UTF8_Strlen( prompt );
 	}
 }
 
@@ -656,7 +657,7 @@ void CL_ConsolePrint( char *txt )
 				++i;
 			}
 
-			i += Q_UTF8Width( txt + i );
+			i += Q_UTF8_Width( txt + i );
 		}
 
 		// word wrap
@@ -685,7 +686,7 @@ void CL_ConsolePrint( char *txt )
 				y = consoleState.currentLine % consoleState.maxScrollbackLengthInLines;
 				// rain - sign extension caused the character to carry over
 				// into the color info for high ascii chars; casting c to unsigned
-				consoleState.text[ y * consoleState.textWidthInChars + consoleState.horizontalCharOffset ].ch = Q_UTF8CodePoint( txt );
+				consoleState.text[ y * consoleState.textWidthInChars + consoleState.horizontalCharOffset ].ch = Q_UTF8_CodePoint( txt );
 				consoleState.text[ y * consoleState.textWidthInChars + consoleState.horizontalCharOffset ].ink = color;
 				++consoleState.horizontalCharOffset;
 
@@ -698,7 +699,7 @@ void CL_ConsolePrint( char *txt )
 				break;
 		}
 
-		txt += Q_UTF8Width( txt );
+		txt += Q_UTF8_Width( txt );
 	}
 }
 
@@ -811,7 +812,7 @@ void Con_DrawRightFloatingTextLine( const int linePosition, const float *color, 
 
 	for ( x = 0; x < i; x++ )
 	{
-		int ch = Q_UTF8CodePoint( &text[ x ] );
+		int ch = Q_UTF8_CodePoint( &text[ x ] );
 		SCR_DrawConsoleFontUnichar( currentWidthLocation, positionFromTop + ( linePosition * charHeight ), ch );
 		currentWidthLocation += SCR_ConsoleFontUnicharWidth( ch );
 	}

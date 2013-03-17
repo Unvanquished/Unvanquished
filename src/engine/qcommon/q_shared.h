@@ -1473,18 +1473,6 @@ double rint( double x );
 
 //=============================================
 
-int Q_UTF8Width( const char *str );
-int Q_UTF8WidthCP( int ch );
-int Q_UTF8Strlen( const char *str );
-int Q_UTF8PrintStrlen( const char *str );
-qboolean Q_UTF8ContByte( char c );
-unsigned long Q_UTF8CodePoint( const char *str );
-char *Q_UTF8Encode( unsigned long codepoint );
-int Q_UTF8Store( const char *s );
-char *Q_UTF8Unstore( int e );
-
-//=============================================
-
 	char     *QDECL va( const char *format, ... ) PRINTF_LIKE(1);
 
 //=============================================
