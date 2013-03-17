@@ -48,7 +48,7 @@ void InitBrushSensor( gentity_t *self )
 	self->r.svFlags = SVF_NOCLIENT;
 }
 
-void sensor_act(gentityCallDefinition_t* target, gentity_t *self, gentity_t *other, gentity_t *activator)
+void sensor_act(gentityCallDefinition_t *callDefinition, gentity_t *self, gentity_t *other, gentity_t *activator)
 {
 	// if we wanted to tell the cgame about our deactivation, this would be the way to do it
 	// self->s.eFlags ^= EF_NODRAW;
@@ -66,7 +66,7 @@ void sensor_reset( gentity_t *self )
 }
 
 //some old sensors/triggers used to propagate use-events, this is deprecated behavior
-void trigger_compat_propagation_use( gentity_t *self, gentity_t *other, gentity_t *activator )
+void trigger_compat_propagation_act( gentityCallDefinition_t *callDefinition, gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	G_FireAllTargetsOf( self, self );
 
@@ -105,7 +105,7 @@ void trigger_checkWaitForReactivation( gentity_t *self )
 // the trigger was just activated
 // ent->activator should be set to the activator so it can be held through a delay
 // so wait for the delay time before firing
-void trigger_multiple_use( gentity_t *self, gentity_t *caller, gentity_t *activator )
+void trigger_multiple_act( gentityCallDefinition_t *callDefinition, gentity_t *self, gentity_t *caller, gentity_t *activator )
 {
 	self->activator = activator;
 
@@ -122,7 +122,7 @@ void trigger_multiple_use( gentity_t *self, gentity_t *caller, gentity_t *activa
 
 void trigger_multiple_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 {
-	trigger_multiple_use( self, other, other );
+	trigger_multiple_act( NULL, self, other, other );
 }
 
 void trigger_multiple_compat_reset( gentity_t *self )
@@ -178,7 +178,7 @@ void sensor_timer_think( gentity_t *self )
 	G_SetNextthink( self );
 }
 
-void sensor_timer_use( gentity_t *self, gentity_t *other, gentity_t *activator )
+void sensor_timer_act( gentityCallDefinition_t *callDefinition, gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	self->activator = activator;
 
@@ -197,7 +197,7 @@ void SP_sensor_timer( gentity_t *self )
 {
 	SP_WaitFields(self, 1.0f, (self->classname[0] == 'f') ? 1.0f : 0.0f); //wait variance default only for func_timer
 
-	self->use = sensor_timer_use;
+	self->act = sensor_timer_act;
 	self->think = sensor_timer_think;
 
 	if ( self->spawnflags & 1 )
@@ -246,7 +246,7 @@ void G_notify_sensor_stage( team_t team, stage_t stage )
 void SP_sensor_stage( gentity_t *self )
 {
 	if(self->classname[0] == 't')
-		self->use = trigger_compat_propagation_use;
+		self->act = trigger_compat_propagation_act;
 	else
 		self->act = sensor_act;
 
@@ -282,7 +282,7 @@ void G_notify_sensor_end( team_t winningTeam )
 void SP_sensor_end( gentity_t *self )
 {
 	if(self->classname[0] == 't')
-		self->use = trigger_compat_propagation_use;
+		self->act = trigger_compat_propagation_act;
 	else
 		self->act = sensor_act;
 
@@ -495,7 +495,7 @@ void SP_sensor_player( gentity_t *self )
 	if(!Q_stricmp(self->classname, "trigger_multiple"))
 	{
 		self->touch = trigger_multiple_touch;
-		self->use = trigger_multiple_use;
+		self->act = trigger_multiple_act;
 		self->reset = trigger_multiple_compat_reset;
 	} else {
 		self->touch = sensor_player_touch;
