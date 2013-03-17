@@ -2352,6 +2352,10 @@ void CL_Vid_Restart_f( void )
 	re.UnregisterFont( NULL );
 	// shutdown the renderer and clear the renderer interface
 	CL_ShutdownRef();
+#ifndef BUILD_TTY_CLIENT
+	// shutdown Rocket_Init
+	Rocket_Shutdown();
+#endif
 	// client is no longer pure untill new checksums are sent
 	CL_ResetPureClientAtServer();
 	// clear pak references
