@@ -369,6 +369,9 @@ static Rocket::Core::Context *context = NULL;
 
 extern "C" void Rocket_Init( void )
 {
+	char **fonts;
+	int numFiles;
+
 	Rocket::Core::SetFileInterface( &fileInterface );
 	Rocket::Core::SetSystemInterface( &systemInterface );
 	Rocket::Core::SetRenderInterface( &renderInterface );
@@ -381,26 +384,28 @@ extern "C" void Rocket_Init( void )
 
 	InitSDLtoRocketKeymap();
 
-	// won't work until required render interface stuff is done
-	Rocket::Core::FontDatabase::LoadFontFace( "fonts/unifont.ttf" );
+	// Load all fonts in the fonts/ dir...
+	fonts = FS_ListFiles( "fonts/", ".ttf", &numFiles );
+	for ( int i = 0; i < numFiles; ++i )
+	{
+		Rocket::Core::FontDatabase::LoadFontFace( va( "fonts/%s", fonts[ i ] ) );
+	}
 
+	FS_FreeFileList( fonts );
+
+	// Now get all the otf fonts...
+	fonts = FS_ListFiles( "fonts/", ".otf", &numFiles );
+	for ( int i = 0; i < numFiles; ++i )
+	{
+		Rocket::Core::FontDatabase::LoadFontFace( va( "fonts/%s", fonts[ i ] ) );
+	}
+
+	FS_FreeFileList( fonts );
+
+	// Create the main context
 	context = Rocket::Core::CreateContext( "default", Rocket::Core::Vector2i( cls.glconfig.vidWidth, cls.glconfig.vidHeight ) );
 
 	//Rocket::Debugger::Initialise(context);
-
-
-
-	Rocket::Core::ElementDocument* document = context->LoadDocument( "help.rml" );
-
-	if( document )
-	{
-		document->Show();
-		document->RemoveReference();
-	}
-	else
-	{
-		Com_Printf( "Document is NULL\n");
-	}
 }
 
 extern "C" void Rocket_Shutdown( void )
@@ -482,14 +487,71 @@ extern "C" void InjectRocket( SDL_Event event )
 
 extern "C" void Rocket_InjectMouseMotion( int x, int y )
 {
-
 	if ( context )
 	{
-		int mousepos = VM_Call( uivm, UI_MOUSE_POSITION, 0 );
-		int cursorx = mousepos & 0xFFFF;
-		int cursory = mousepos >> 16;
+		context->ProcessMouseMove( x, y, RocketConvertSDLmod( SDL_GetModState() ) );
+	}
+}
 
-		context->ProcessMouseMove( x+cursorx, cursory+y, RocketConvertSDLmod( SDL_GetModState() ) );
+extern "C" void Rocket_LoadDocument( const char *path )
+{
+	Rocket::Core::ElementDocument* document = context->LoadDocument( path );
+	if( document )
+	{
+		document->Hide();
+		document->RemoveReference();
+	}
+	else
+	{
+		Com_Printf( "Document is NULL\n");
+	}
+}
+
+extern "C" void Rocket_LoadCursor( const char *path )
+{
+	Rocket::Core::ElementDocument* document = context->LoadMouseCursor( path );
+	if( document )
+	{
+		document->RemoveReference();
+	}
+	else
+	{
+		Com_Printf( "Cursor is NULL\n");
+	}
+}
+
+extern "C" void Rocket_DocumentAction( const char *name, const char *action )
+{
+	if ( !Q_stricmp( action, "show" ) || !Q_stricmp( action, "open" ) )
+	{
+		Rocket::Core::ElementDocument* document = context->GetDocument( name );
+		if ( document )
+		{
+			if ( context->GetFocusElement()->GetOwnerDocument() )
+			{
+				context->GetFocusElement()->GetOwnerDocument()->Close();
+			}
+			document->Show();
+		}
+	}
+	else if ( !Q_stricmp( "close", action ) )
+	{
+		Rocket::Core::ElementDocument* document = context->GetDocument( name );
+		if ( document )
+		{
+			if ( context->GetFocusElement()->GetOwnerDocument() )
+			{
+				context->GetFocusElement()->GetOwnerDocument()->Close();
+			}
+			document->Show();
+		}
+		else if ( !*name ) // If name is empty, close current window
+		{
+			if ( context->GetFocusElement()->GetOwnerDocument() )
+			{
+				context->GetFocusElement()->GetOwnerDocument()->Close();
+			}
+		}
 	}
 }
 #endif

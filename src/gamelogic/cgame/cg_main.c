@@ -103,6 +103,10 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 			CG_CompleteCommand( arg0 );
 			return 0;
 
+		case CG_INIT_ROCKET:
+			CG_Rocket_Init();
+			return 0;
+
 		default:
 			CG_Error( "vmMain(): unknown cgame command %i", command );
 	}

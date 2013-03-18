@@ -1092,7 +1092,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 				if ( uivm )
 				{
 					// Gordon: can be called as the system is shutting down
-					VM_Call( uivm, UI_SET_ACTIVE_MENU, args[ 1 ] );
+// 					VM_Call( uivm, UI_SET_ACTIVE_MENU, args[ 1 ] );
 				}
 			}
 
@@ -1263,6 +1263,34 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_UNREGISTERVISTEST:
 			re.UnregisterVisTest( args[1] );
 			return 0;
+#ifndef BUILD_TTY_CLIENT
+		case CG_ROCKET_INIT:
+			Rocket_Init();
+			return 0;
+
+		case CG_ROCKET_SHUTDOWN:
+			Rocket_Shutdown();
+			return 0;
+
+		case CG_ROCKET_LOADDOCUMENT:
+			Rocket_LoadDocument( VMA(1) );
+			return 0;
+
+		case CG_ROCKET_LOADCURSOR:
+			Rocket_LoadCursor( VMA(1) );
+			return 0;
+
+		case CG_ROCKET_DOCUMENTACTION:
+			Rocket_DocumentAction( VMA(1), VMA(2) );
+			return 0;
+#else
+		case CG_ROCKET_INIT:
+		case CG_ROCKET_SHUTDOWN:
+		case CG_ROCKET_LOADDOCUMENT:
+		case CG_ROCKET_LOADCURSOR:
+		case CG_ROCKET_DOCUMENTACTION:
+			return 0;
+#endif
 
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );
@@ -1398,6 +1426,29 @@ void CL_UpdateLevelHunkUsage( void )
 }
 
 /*
+=============
+CL_InitUI
+
+Start the cgame so we can load rocket
+=============
+*/
+
+void CL_InitUI( void )
+{
+	int v;
+	cgvm = VM_Create( "cgame", CL_CgameSystemCalls, Cvar_VariableValue( "vm_cgame" ) );
+
+	if ( !cgvm )
+	{
+		Com_Error( ERR_DROP, "VM_Create on cgame failed" );
+	}
+
+	VM_Call( cgvm, CG_INIT_ROCKET );
+}
+
+
+
+/*
 ====================
 CL_InitCGame
 
@@ -1420,11 +1471,14 @@ void CL_InitCGame( void )
 	mapname = Info_ValueForKey( info, "mapname" );
 	Com_sprintf( cl.mapname, sizeof( cl.mapname ), "maps/%s.bsp", mapname );
 
-	cgvm = VM_Create( "cgame", CL_CgameSystemCalls, Cvar_VariableValue( "vm_cgame" ) );
-
 	if ( !cgvm )
 	{
-		Com_Error( ERR_DROP, "VM_Create on cgame failed" );
+		cgvm = VM_Create( "cgame", CL_CgameSystemCalls, Cvar_VariableValue( "vm_cgame" ) );
+
+		if ( !cgvm )
+		{
+			Com_Error( ERR_DROP, "VM_Create on cgame failed" );
+		}
 	}
 
 	cls.state = CA_LOADING;
@@ -1455,7 +1509,7 @@ void CL_InitCGame( void )
 
 	// Ridah, update the memory usage file
 	CL_UpdateLevelHunkUsage();
-	
+
 	CL_WriteClientLog( va("`~=-----------------=~`\n MAP: %s \n`~=-----------------=~`\n", mapname ) );
 
 //  if( cl_autorecord->integer ) {

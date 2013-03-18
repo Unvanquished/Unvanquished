@@ -1255,3 +1255,28 @@ void trap_UnregisterVisTest( qhandle_t hTest )
 {
 	syscall( CG_UNREGISTERVISTEST, hTest );
 }
+
+void trap_Rocket_Init( void )
+{
+	syscall( CG_ROCKET_INIT );
+}
+
+void trap_Rocket_Shutdown( void )
+{
+	syscall( CG_ROCKET_SHUTDOWN );
+}
+
+void trap_Rocket_LoadDocument( const char *path )
+{
+	syscall( CG_ROCKET_LOADDOCUMENT, path );
+}
+
+void trap_Rocket_LoadCursor( const char *path )
+{
+	syscall( CG_ROCKET_LOADCURSOR, path );
+}
+
+void trap_Rocket_DocumentAction( const char *name, const char *action )
+{
+	syscall( CG_ROCKET_DOCUMENTACTION, name, action );
+}

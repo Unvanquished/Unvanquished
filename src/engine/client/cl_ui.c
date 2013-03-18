@@ -1436,42 +1436,42 @@ void CL_ShutdownUI( void )
 		return;
 	}
 
-	VM_Call( uivm, UI_SHUTDOWN );
+// 	VM_Call( uivm, UI_SHUTDOWN );
 	VM_Free( uivm );
 	uivm = NULL;
 }
 
-/*
-====================
-CL_InitUI
-====================
-*/
-void CL_InitUI( void )
-{
-	int v;
-
-	uivm = VM_Create( "ui", CL_UISystemCalls, VMI_NATIVE );
-
-	if ( !uivm )
-	{
-		Com_Error( ERR_FATAL, "VM_Create on UI failed" );
-	}
-
-	// sanity check
-	v = VM_Call( uivm, UI_GETAPIVERSION );
-
-	if ( v != UI_API_VERSION )
-	{
-		// Free uivm now, so UI_SHUTDOWN doesn't get called later.
-		VM_Free( uivm );
-		uivm = NULL;
-
-		Com_Error( ERR_FATAL, "User Interface is version %d, expected %d", v, UI_API_VERSION );
-	}
-
-	// init for this gamestate
-	VM_Call( uivm, UI_INIT, ( cls.state >= CA_CONNECTING && cls.state < CA_ACTIVE ) );
-}
+// /*
+// ====================
+// CL_InitUI
+// ====================
+// */
+// void CL_InitUI( void )
+// {
+// 	int v;
+//
+// 	uivm = VM_Create( "ui", CL_UISystemCalls, VMI_NATIVE );
+//
+// 	if ( !uivm )
+// 	{
+// 		Com_Error( ERR_FATAL, "VM_Create on UI failed" );
+// 	}
+//
+// 	// sanity check
+// 	v = VM_Call( uivm, UI_GETAPIVERSION );
+//
+// 	if ( v != UI_API_VERSION )
+// 	{
+// 		// Free uivm now, so UI_SHUTDOWN doesn't get called later.
+// 		VM_Free( uivm );
+// 		uivm = NULL;
+//
+// 		Com_Error( ERR_FATAL, "User Interface is version %d, expected %d", v, UI_API_VERSION );
+// 	}
+//
+// 	// init for this gamestate
+// 	VM_Call( uivm, UI_INIT, ( cls.state >= CA_CONNECTING && cls.state < CA_ACTIVE ) );
+// }
 
 /*
 ====================
@@ -1487,5 +1487,5 @@ qboolean UI_GameCommand( void )
 		return qfalse;
 	}
 
-	return VM_Call( uivm, UI_CONSOLE_COMMAND, cls.realtime );
+// 	return VM_Call( uivm, UI_CONSOLE_COMMAND, cls.realtime );
 }

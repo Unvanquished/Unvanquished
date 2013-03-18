@@ -1907,3 +1907,9 @@ typedef enum
 // cg_utils.c
 //
 qboolean CG_ParseColor( byte *c, char **text_p );
+
+//
+// cg_rocket.c
+//
+
+void CG_Rocket_Init( void );

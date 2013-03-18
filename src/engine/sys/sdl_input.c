@@ -1586,6 +1586,7 @@ IN_ProcessEvents
 ===============
 */
 void InjectRocket( SDL_Event e );
+void Rocket_InjectMouseMotion( int x, int y );
 static void IN_ProcessEvents( void )
 {
 	SDL_Event  e;
@@ -1642,6 +1643,7 @@ static void IN_ProcessEvents( void )
 				break;
 
 			case SDL_MOUSEMOTION:
+				Rocket_InjectMouseMotion( e.motion.x, e.motion.y );
 				if ( mouseActive )
 				{
 					Com_QueueEvent( 0, SE_MOUSE, e.motion.xrel, e.motion.yrel, 0, NULL );

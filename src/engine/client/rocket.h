@@ -42,6 +42,9 @@ void Rocket_Shutdown( void );
 void Rocket_Render( void );
 void Rocket_Update( void );
 void Rocket_InjectMouseMotion( int x, int y );
+void Rocket_LoadDocument( const char *path );
+void Rocket_LoadCursor( const char *path );
+void Rocket_DocumentAction( const char *name, const char *action );
 
 #if defined( __cplusplus )
 }

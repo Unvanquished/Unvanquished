@@ -3754,7 +3754,7 @@ void CL_Frame( int msec )
 	{
 		// if disconnected, bring up the menu
 		//S_StopAllSounds();
-		VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_MAIN );
+// 		VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_MAIN );
 	}
 
 	// if recording an avi, lock to a fixed fps
@@ -4174,9 +4174,7 @@ void CL_StartHunkUsers( void )
 	if ( !cls.uiStarted )
 	{
 		cls.uiStarted = qtrue;
-#ifndef BUILD_TTY_CLIENT
-		Rocket_Init();
-#endif
+
 		CL_InitUI();
 	}
 }

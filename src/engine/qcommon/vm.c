@@ -401,14 +401,14 @@ static void VM_InitSanity( vm_t *vm )
 
 void VM_SetSanity( vm_t* vm, intptr_t call )
 {
-	if ( !vm->versionChecked && call != TRAP_VERSION )
-	{
-		Com_Error( ERR_DROP, "VM code must invoke a version check" );
-	}
-	else if ( call == TRAP_VERSION )
-	{
-		vm->versionChecked = qtrue;
-	}
+// 	if ( !vm->versionChecked && call != TRAP_VERSION )
+// 	{
+// 		Com_Error( ERR_DROP, "VM code must invoke a version check" );
+// 	}
+// 	else if ( call == TRAP_VERSION )
+// 	{
+// 		vm->versionChecked = qtrue;
+// 	}
 
 	if ( vm->dataMask )
 	{

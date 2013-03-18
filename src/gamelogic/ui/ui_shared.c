@@ -6578,7 +6578,7 @@ void Item_Model_Paint( itemDef_t *item )
 	VectorCopy( ent.origin, ent.oldorigin );
 
 	DC->addRefEntityToScene( &ent );
-	DC->renderScene( &refdef );
+// 	DC->renderScene( &refdef );
 }
 
 void Item_ListBoxRow_Paint( itemDef_t *item, int row, int renderPos, qboolean highlight, qboolean scrollbar )

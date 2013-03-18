@@ -2595,9 +2595,6 @@ int Com_EventLoop( void )
 
 			case SE_MOUSE:
 				CL_MouseEvent( ev.evValue, ev.evValue2, ev.evTime );
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
-				Rocket_InjectMouseMotion( ev.evValue, ev.evValue2 );
-#endif
 				break;
 
 			case SE_JOYSTICK_AXIS:

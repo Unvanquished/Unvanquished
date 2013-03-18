@@ -781,7 +781,7 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 		}
 	}
 
-	if ( uivm && !VM_Call( uivm, UI_IS_FULLSCREEN ) )
+	if ( qtrue )
 	{
 		switch ( cls.state )
 		{
@@ -879,7 +879,7 @@ void SCR_UpdateScreen( void )
 
 	// If there is no VM, there are also no rendering commands issued. Stop the renderer in
 	// that case.
-	if ( uivm || com_dedicated->integer )
+	if ( !uivm || com_dedicated->integer )
 	{
 		// XXX
 //		extern cvar_t* r_anaglyphMode;

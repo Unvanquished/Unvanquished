@@ -182,3 +182,8 @@ equ trap_RegisterVisTest                  -420
 equ trap_AddVisTestToScene                -421
 equ trap_CheckVisibility                  -422
 equ trap_UnregisterVisTest                -423
+equ trap_Rocket_Init                      -424
+equ trap_Rocket_Shutdown                  -425
+equ trap_Rocket_LoadDocument              -426
+equ trap_Rocket_LoadCursor                -427
+equ trap_Rocket_DocumentAction            -428

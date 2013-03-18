@@ -231,7 +231,12 @@ typedef enum cgameImport_s
   CG_REGISTERVISTEST,
   CG_ADDVISTESTTOSCENE,
   CG_CHECKVISIBILITY,
-  CG_UNREGISTERVISTEST
+  CG_UNREGISTERVISTEST,
+  CG_ROCKET_INIT,
+  CG_ROCKET_SHUTDOWN,
+  CG_ROCKET_LOADDOCUMENT,
+  CG_ROCKET_LOADCURSOR,
+  CG_ROCKET_DOCUMENTACTION
 } cgameImport_t;
 
 typedef enum
@@ -289,6 +294,9 @@ typedef enum
 
   CG_INIT_CVARS,
 // registers cvars only then shuts down; call instead of CG_INIT for this purpose
+
+  CG_INIT_ROCKET,
+// Inits libRocket in the game.
 } cgameExport_t;
 
 void            trap_Print( const char *string );
@@ -477,3 +485,9 @@ void            trap_AddVisTestToScene( qhandle_t hTest, vec3_t pos,
 					float depthAdjust );
 qboolean        trap_CheckVisibility( qhandle_t hTest );
 void            trap_UnregisterVisTest( qhandle_t hTest );
+void            trap_Rocket_Init( void );
+void            trap_Rocket_Shutdown( void );
+void            trap_Rocket_LoadDocument( const char *path );
+void            trap_Rocket_LoadCursor( const char *path );
+void            trap_Rocket_DocumentAction( const char *name, const char *action );
+
