@@ -618,7 +618,7 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 
 		case BA_A_ACIDTUBE:
 			*range = ACIDTUBE_RANGE;
-			shc = SHC_RED;
+			shc = SHC_ORANGE;
 			break;
 
 		case BA_A_TRAPPER:
@@ -633,7 +633,7 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 
 		case BA_A_LEECH:
 			*range = RGS_RANGE;
-			shc = SHC_INDIGO;
+			shc = SHC_RED;
 			break;
 
 		case BA_A_BOOSTER:
@@ -658,7 +658,7 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 
 		case BA_H_DRILL:
 			*range = RGS_RANGE;
-			shc = SHC_INDIGO;
+			shc = SHC_RED;
 			break;
 
 		case BA_H_REACTOR:
