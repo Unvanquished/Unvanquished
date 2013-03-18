@@ -529,28 +529,31 @@ extern "C" void Rocket_DocumentAction( const char *name, const char *action )
 		{
 			if ( context->GetFocusElement()->GetOwnerDocument() )
 			{
-				context->GetFocusElement()->GetOwnerDocument()->Close();
+				context->GetFocusElement()->GetOwnerDocument()->Hide();
 			}
 			document->Show();
 		}
 	}
 	else if ( !Q_stricmp( "close", action ) )
 	{
+		if ( !*name ) // If name is empty, hide all windows
+		{
+			for ( int i = 0; i < context->GetNumDocuments(); ++i )
+			{
+				context->GetDocument( i )->Hide();
+			}
+
+			return;
+		}
+
 		Rocket::Core::ElementDocument* document = context->GetDocument( name );
 		if ( document )
 		{
 			if ( context->GetFocusElement()->GetOwnerDocument() )
 			{
-				context->GetFocusElement()->GetOwnerDocument()->Close();
+				context->GetFocusElement()->GetOwnerDocument()->Hide();
 			}
 			document->Show();
-		}
-		else if ( !*name ) // If name is empty, close current window
-		{
-			if ( context->GetFocusElement()->GetOwnerDocument() )
-			{
-				context->GetFocusElement()->GetOwnerDocument()->Close();
-			}
 		}
 	}
 }

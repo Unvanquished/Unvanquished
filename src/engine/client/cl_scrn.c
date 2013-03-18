@@ -799,7 +799,7 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 			case CA_CONNECTED:
 				// connecting clients will only show the connection dialog
 				// refresh to update the time
-				//TODO: rocket equivalent of connect screen
+				Rocket_DocumentAction( "connecting", "show" );
 				break;
 
 			case CA_LOADING:
@@ -810,7 +810,7 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 				// also draw the connection information, so it doesn't
 				// flash away too briefly on local or LAN games
 				//if (!com_sv_running->value || Cvar_VariableIntegerValue("sv_cheats")) // Ridah, don't draw useless text if not in dev mode
-				//TODO: rocket equivalent of connect screen
+				Rocket_DocumentAction( "", "close" );
 				break;
 
 			case CA_ACTIVE:
