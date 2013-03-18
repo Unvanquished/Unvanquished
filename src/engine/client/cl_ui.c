@@ -38,8 +38,6 @@ Maryland 20850 USA.
 #define C__(x, y) Trans_PgettextGame(x, y)
 #define P__(x, y, c) Trans_GettextGamePlural(x, y, c)
 
-vm_t                   *uivm;
-
 /*
 ====================
 GetClientState
@@ -1430,15 +1428,6 @@ void CL_ShutdownUI( void )
 {
 	cls.keyCatchers &= ~KEYCATCH_UI;
 	cls.uiStarted = qfalse;
-
-	if ( !uivm )
-	{
-		return;
-	}
-
-// 	VM_Call( uivm, UI_SHUTDOWN );
-	VM_Free( uivm );
-	uivm = NULL;
 }
 
 // /*
@@ -1482,10 +1471,4 @@ See if the current console command is claimed by the ui
 */
 qboolean UI_GameCommand( void )
 {
-	if ( !uivm )
-	{
-		return qfalse;
-	}
-
-// 	return VM_Call( uivm, UI_CONSOLE_COMMAND, cls.realtime );
 }

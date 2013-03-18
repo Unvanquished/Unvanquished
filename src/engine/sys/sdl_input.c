@@ -861,14 +861,6 @@ void IN_DeactivateMouse( qboolean showCursor )
 	{
 		SDL_WM_GrabInput( SDL_GRAB_OFF );
 
-		if ( uivm )
-		{
-			// TODO (after no compatibility needed with alpha 9): remove argument
-			int mousepos = VM_Call( uivm, UI_MOUSE_POSITION, 0 );
-			int cursorx = mousepos & 0xFFFF;
-			int cursory = mousepos >> 16;
-			SDL_WarpMouse( cursorx, cursory );
-		}
 		IN_GobbleMotionEvents();
 
 		mouseActive = qfalse;
@@ -1647,14 +1639,6 @@ static void IN_ProcessEvents( void )
 				if ( mouseActive )
 				{
 					Com_QueueEvent( 0, SE_MOUSE, e.motion.xrel, e.motion.yrel, 0, NULL );
-				}
-				else if ( uivm )
-				{
-					// TODO (after no compatibility needed with alpha 8): remove argument
-					int mousepos = VM_Call( uivm, UI_MOUSE_POSITION, 0 );
-					int cursorx = mousepos & 0xFFFF;
-					int cursory = mousepos >> 16;
-					VM_Call( uivm, UI_MOUSE_EVENT, e.motion.x - cursorx, e.motion.y - cursory );
 				}
 				break;
 

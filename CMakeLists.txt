@@ -589,7 +589,6 @@ set( CLIENTLIST
   ${MOUNT_DIR}/engine/client/cl_net_chan.c
   ${MOUNT_DIR}/engine/client/cl_parse.c
   ${MOUNT_DIR}/engine/client/cl_scrn.c
-  ${MOUNT_DIR}/engine/client/cl_ui.c
   ${MOUNT_DIR}/engine/client/rocket.cpp
   ${MOUNT_DIR}/engine/client/cl_logs.c
   ${MOUNT_DIR}/engine/client/snd_adpcm.c

@@ -554,4 +554,13 @@ extern "C" void Rocket_DocumentAction( const char *name, const char *action )
 		}
 	}
 }
+#else
+extern "C" void Rocket_Init( void ) { }
+extern "C" void Rocket_Shutdown( void ) { }
+extern "C" void Rocket_Render( void ) { }
+extern "C" void Rocket_Update( void ) { }
+extern "C" void Rocket_InjectMouseMotion( int x, int y ) { }
+extern "C" void Rocket_LoadDocument( const char *path ) { }
+extern "C" void Rocket_LoadCursor( const char *path ) { }
+extern "C" void Rocket_DocumentAction( const char *name, const char *action ) { }
 #endif

@@ -419,7 +419,7 @@ extern clientStatic_t cls;
 //=============================================================================
 
 extern vm_t                   *cgvm; // interface to the cgame module
-extern vm_t                   *uivm; // interface to the ui module
+
 extern refexport_t            re; // interface to refresh library
 
 extern struct rsa_public_key  public_key;

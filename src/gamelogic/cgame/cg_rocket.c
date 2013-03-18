@@ -75,6 +75,9 @@ void CG_Rocket_Init( void )
 	char text[ 20000 ];
 	fileHandle_t f;
 
+	// Version check...
+	trap_SyscallABIVersion( SYSCALL_ABI_VERSION_MAJOR, SYSCALL_ABI_VERSION_MINOR );
+
 	// Init Rocket
 	trap_Rocket_Init();
 	CG_RegisterRocketCvars();

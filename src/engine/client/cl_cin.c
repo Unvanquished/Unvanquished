@@ -1845,10 +1845,7 @@ int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBi
 		if ( cinTable[ currentHandle ].alterGameState )
 		{
 			// close the menu
-			if ( uivm )
-			{
-// 				VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_NONE );
-			}
+			Rocket_DocumentAction( "", "close" );
 		}
 		else
 		{
@@ -1889,10 +1886,7 @@ int CIN_PlayCinematic( const char *arg, int x, int y, int w, int h, int systemBi
 	if ( cinTable[ currentHandle ].alterGameState )
 	{
 		// close the menu
-		if ( uivm )
-		{
-// 			VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_NONE );
-		}
+		Rocket_DocumentAction( "", "close" );
 	}
 	else
 	{

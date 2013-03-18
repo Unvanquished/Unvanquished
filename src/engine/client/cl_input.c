@@ -277,18 +277,11 @@ void IN_CenterView (void)
         cl.viewangles[PITCH] = -SHORT2ANGLE(cl.snap.ps.delta_angles[PITCH]);
 }
 
-void IN_Notebook( void )
-{
-	//if ( cls.state == CA_ACTIVE && !clc.demoplaying ) {
-	//VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_NOTEBOOK);  // startup notebook
-	//}
-}
-
 void IN_Help( void )
 {
 	if ( cls.state == CA_ACTIVE && !clc.demoplaying )
 	{
-// 		VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_HELP );  // startup help system
+		Rocket_DocumentAction( "Help", "open" );
 	}
 }
 
@@ -478,14 +471,7 @@ CL_MouseEvent
 */
 void CL_MouseEvent( int dx, int dy, int time )
 {
-	if ( CL_UIOwnsMouse() )
-	{
-		float fdx = dx, fdy = dy;
-		// Scale both by yscale to account for grabbed mouse movement
-		SCR_AdjustFrom640( NULL, &fdx, NULL, &fdy );
-// 		VM_Call( uivm, UI_MOUSE_EVENT, ( int ) fdx, ( int ) fdy );
-	}
-	else if ( cls.keyCatchers & KEYCATCH_CGAME )
+	if ( cls.keyCatchers & KEYCATCH_CGAME )
 	{
 		VM_Call( cgvm, CG_MOUSE_EVENT, dx, dy );
 	}

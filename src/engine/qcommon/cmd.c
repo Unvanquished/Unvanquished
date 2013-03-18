@@ -2420,12 +2420,6 @@ void Cmd_ExecuteString( const char *text )
 		return;
 	}
 
-	// check ui commands
-	if ( com_cl_running && com_cl_running->integer && UI_GameCommand() )
-	{
-		return;
-	}
-
 	// send it as a server command if we are connected
 	CL_ForwardCommandToServer( text );
 }

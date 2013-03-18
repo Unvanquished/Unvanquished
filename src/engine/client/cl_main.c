@@ -1557,11 +1557,6 @@ void CL_ShutdownAll( void )
 	DL_Shutdown();
 	// shutdown CGame
 	CL_ShutdownCGame();
-	// shutdown UI
-	CL_ShutdownUI();
-#ifndef BUILD_TTY_CLIENT
-	Rocket_Shutdown();
-#endif
 	// shutdown the renderer
 	if ( re.Shutdown )
 	{
@@ -1783,9 +1778,9 @@ void CL_Disconnect( qboolean showMainMenu )
 		clc.demofile = 0;
 	}
 
-	if ( uivm && showMainMenu )
+	if ( cgvm && showMainMenu )
 	{
-// 		VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_NONE );
+		Rocket_DocumentAction( "main", "show" );
 	}
 
 	SCR_StopCinematic();
@@ -1836,14 +1831,14 @@ void CL_Disconnect( qboolean showMainMenu )
 	// XreaL END
 
 	// show_bug.cgi?id=589
-	// don't try a restart if uivm is NULL, as we might be in the middle of a restart already
-	if ( uivm && cls.state > CA_DISCONNECTED )
+	// don't try a restart if rocket is NULL, as we might be in the middle of a restart already
+	if ( cgvm && cls.state > CA_DISCONNECTED )
 	{
 		// restart the UI
 		cls.state = CA_DISCONNECTED;
 
 		// shutdown the UI
-		CL_ShutdownUI();
+		Rocket_Shutdown();
 
 		// init the UI
 		CL_InitUI();
@@ -2344,18 +2339,12 @@ void CL_Vid_Restart_f( void )
 
 	// don't let them loop during the restart
 	S_StopAllSounds();
-	// shutdown the UI
-	CL_ShutdownUI();
 	// shutdown the CGame
 	CL_ShutdownCGame();
 	// clear the font cache
 	re.UnregisterFont( NULL );
 	// shutdown the renderer and clear the renderer interface
 	CL_ShutdownRef();
-#ifndef BUILD_TTY_CLIENT
-	// shutdown Rocket_Init
-	Rocket_Shutdown();
-#endif
 	// client is no longer pure untill new checksums are sent
 	CL_ResetPureClientAtServer();
 	// clear pak references
@@ -2419,9 +2408,7 @@ Restart the ui subsystem
 void CL_UI_Restart_f( void )
 {
 	// NERVE - SMF
-	// shutdown the UI
-	CL_ShutdownUI();
-
+	Rocket_Shutdown();
 	// init the UI
 	CL_InitUI();
 }
@@ -3750,11 +3737,11 @@ void CL_Frame( int msec )
 		return;
 	}
 
-	if ( uivm && cls.state == CA_DISCONNECTED && !( cls.keyCatchers & KEYCATCH_UI ) && !com_sv_running->integer )
+	if ( cls.state == CA_DISCONNECTED && !( cls.keyCatchers & KEYCATCH_UI ) && !com_sv_running->integer )
 	{
 		// if disconnected, bring up the menu
 		//S_StopAllSounds();
-// 		VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_MAIN );
+// 		Rocket_DocumentAction( "main", "open" );
 	}
 
 	// if recording an avi, lock to a fixed fps
@@ -4644,9 +4631,6 @@ void CL_Shutdown( void )
 	}
 
 	Com_DPrintf( "----- CL_Shutdown -----\n" );
-#ifndef BUILD_TTY_CLIENT
-	Rocket_Shutdown();
-#endif
 	if ( recursive )
 	{
 		printf( "recursive shutdown\n" );
@@ -4663,7 +4647,6 @@ void CL_Shutdown( void )
 	CL_Disconnect( qtrue );
 
 	CL_ShutdownCGame();
-	CL_ShutdownUI();
 
 	S_Shutdown();
 	DL_Shutdown();

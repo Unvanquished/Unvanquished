@@ -1868,7 +1868,6 @@ qboolean Hunk_CheckMark( void )
 	return qfalse;
 }
 
-void CL_ShutdownUI( void );
 void SV_ShutdownGameProgs( void );
 
 /*
@@ -1882,7 +1881,6 @@ void Hunk_Clear( void )
 {
 #if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 	CL_ShutdownCGame();
-	CL_ShutdownUI();
 #endif
 	SV_ShutdownGameProgs();
 #if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
