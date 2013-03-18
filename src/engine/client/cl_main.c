@@ -1785,7 +1785,7 @@ void CL_Disconnect( qboolean showMainMenu )
 
 	if ( uivm && showMainMenu )
 	{
-		VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_NONE );
+// 		VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_NONE );
 	}
 
 	SCR_StopCinematic();

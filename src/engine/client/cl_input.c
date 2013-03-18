@@ -288,7 +288,7 @@ void IN_Help( void )
 {
 	if ( cls.state == CA_ACTIVE && !clc.demoplaying )
 	{
-		VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_HELP );  // startup help system
+// 		VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_HELP );  // startup help system
 	}
 }
 

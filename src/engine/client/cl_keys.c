@@ -1805,14 +1805,14 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 				}
 				else
 				{
-					VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_INGAME );
+// 					VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_INGAME );
 				}
 			}
 			else
 			{
 				CL_Disconnect_f();
 				S_StopAllSounds();
-				VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_MAIN );
+// 				VM_Call( uivm, UI_SET_ACTIVE_MENU, UIMENU_MAIN );
 			}
 
 			return;
