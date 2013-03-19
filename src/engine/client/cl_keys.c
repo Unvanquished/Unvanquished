@@ -1810,6 +1810,8 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 				S_StopAllSounds();
 			}
 
+			Rocket_DocumentAction( "", "close" );
+
 			return;
 		}
 
