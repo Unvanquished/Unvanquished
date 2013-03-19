@@ -203,6 +203,7 @@ void CG_Rocket_ProcessEvents( int handle )
 	while ( 1 )
 	{
 		char *p, *args;
+
 		// Parse it. Check for semicolons first
 		tail = strchr( head, ';' );
 		if ( tail )
@@ -214,8 +215,10 @@ void CG_Rocket_ProcessEvents( int handle )
 		if ( p )
 		{
 			*p = '\0';
-			args = head + strlen( head ) + 1;
 		}
+
+		args = head + strlen( head ) + 1;
+
 		cmd = bsearch( head, eventCmdList, eventCmdListCount, sizeof( eventCmd_t ), eventCmdCmp );
 
 		if ( cmd )
@@ -223,12 +226,18 @@ void CG_Rocket_ProcessEvents( int handle )
 			cmd->exec( args );
 		}
 
-		if ( !tail )
+		head = args + strlen( args ) + 1;
+
+		if ( !*head )
 		{
 			break;
 		}
 
-		head = args + strlen( args ) + 1;
+		// Skip whitespaces
+		while ( *head == ' ' )
+		{
+			head++;
+		}
 	}
 
 	trap_Rocket_DeleteEvent( handle );
