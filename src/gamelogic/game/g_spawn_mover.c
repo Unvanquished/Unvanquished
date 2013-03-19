@@ -1521,7 +1521,7 @@ Trip to skip the closest door targeted by trigger
 */
 void manualTriggerSpectator( gentity_t *trigger, gentity_t *player )
 {
-	gentity_t *currentTarget;
+	gentity_t *currentTarget = NULL;
 	gentity_t *targets[ MAX_GENTITIES ];
 	int       i = 0, targetIndex, nameIndex;
 	float     minDistance, currentDistance;
@@ -1534,7 +1534,6 @@ void manualTriggerSpectator( gentity_t *trigger, gentity_t *player )
 		return;
 	}
 
-	currentTarget = &g_entities[MAX_CLIENTS];
 	//create a list of door entities this trigger targets
 	while( ( currentTarget = G_FindNextTarget( currentTarget, &targetIndex, &nameIndex, trigger ) ) != NULL )
 	{
