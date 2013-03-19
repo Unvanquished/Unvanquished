@@ -806,6 +806,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 		level.humanTeamLocked = qtrue;
 		trap_Cvar_Set( "g_lockTeamsAtStart", "0" );
 	}
+
+	G_notify_sensor_start();
 }
 
 /*

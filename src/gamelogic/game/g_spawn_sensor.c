@@ -150,17 +150,29 @@ sensor_start
 ==============================================================================
 */
 
-void sensor_start_think( gentity_t *ent )
+void sensor_start_fireAndForget( gentity_t *self )
 {
-	G_FireAllTargetsOf( ent, ent );
-	G_FreeEntity( ent );
+	G_FireAllTargetsOf(self, self);
+	G_FreeEntity( self );
 }
 
 void SP_sensor_start( gentity_t *ent )
 {
-	// we must have some delay to make sure our use targets are present
-	ent->nextthink = level.time + 300;
-	ent->think = sensor_start_think;
+	//ent->think = sensor_start_fireAndForget; //gonna reuse that later, when we make sensor_start delayable again (configurable though)
+}
+
+void G_notify_sensor_start()
+{
+	gentity_t *sensor;
+
+	if( g_debugEntities.integer >= 2 )
+		G_Printf( "DEBUG: Notification of match start.\n");
+
+	sensor = &g_entities[MAX_CLIENTS - 1]; //start after the reserved player slots
+	while ((sensor = G_FindNextEntity(sensor, FOFS( classname ), "sensor_start")) != NULL )
+	{
+		sensor_start_fireAndForget(sensor);
+	}
 }
 
 /*
