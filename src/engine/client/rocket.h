@@ -31,7 +31,8 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-
+#ifndef ROCKET_H
+#define ROCKET_H
 #if defined( __cplusplus )
 extern "C"
 {
@@ -45,7 +46,10 @@ void Rocket_InjectMouseMotion( int x, int y );
 void Rocket_LoadDocument( const char *path );
 void Rocket_LoadCursor( const char *path );
 void Rocket_DocumentAction( const char *name, const char *action );
+void Rocket_GetEvent( int handle, char *event, int length );
+void Rocket_DeleteEvent( int handle );
 
 #if defined( __cplusplus )
 }
+#endif
 #endif

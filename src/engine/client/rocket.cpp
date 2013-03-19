@@ -44,6 +44,8 @@ extern "C"
 #include <Rocket/Core/SystemInterface.h>
 #include <Rocket/Core/RenderInterface.h>
 #include <Rocket/Core.h>
+#include <Rocket/Controls.h>
+#include "rocketEventInstancer.h"
 //#include <Rocket/Debugger.h>
 
 class DaemonFileInterface : public Rocket::Core::FileInterface
@@ -382,6 +384,8 @@ extern "C" void Rocket_Init( void )
 		return;
 	}
 
+	Rocket::Controls::Initialise();
+
 	InitSDLtoRocketKeymap();
 
 	// Load all fonts in the fonts/ dir...
@@ -404,6 +408,11 @@ extern "C" void Rocket_Init( void )
 
 	// Create the main context
 	context = Rocket::Core::CreateContext( "default", Rocket::Core::Vector2i( cls.glconfig.vidWidth, cls.glconfig.vidHeight ) );
+
+	// Add the event listner instancer
+	EventInstancer* event_instancer = new EventInstancer();
+	Rocket::Core::Factory::RegisterEventListenerInstancer( event_instancer );
+	event_instancer->RemoveReference();
 
 	//Rocket::Debugger::Initialise(context);
 }
@@ -527,10 +536,6 @@ extern "C" void Rocket_DocumentAction( const char *name, const char *action )
 		Rocket::Core::ElementDocument* document = context->GetDocument( name );
 		if ( document )
 		{
-			if ( context->GetFocusElement()->GetOwnerDocument() )
-			{
-				context->GetFocusElement()->GetOwnerDocument()->Hide();
-			}
 			document->Show();
 		}
 	}
@@ -549,13 +554,54 @@ extern "C" void Rocket_DocumentAction( const char *name, const char *action )
 		Rocket::Core::ElementDocument* document = context->GetDocument( name );
 		if ( document )
 		{
-			if ( context->GetFocusElement()->GetOwnerDocument() )
+			document->Hide();
+		}
+	}
+	else if ( !Q_stricmp( "goto", action ) )
+	{
+		Rocket::Core::ElementDocument* document = context->GetDocument( name );
+		if ( document )
+		{
+			// Close all other windows
+			for ( int i = 0; i < context->GetNumDocuments(); ++i )
 			{
-				context->GetFocusElement()->GetOwnerDocument()->Hide();
+				context->GetDocument( i )->Hide();
 			}
 			document->Show();
 		}
 	}
+}
+
+
+
+class RocketEvent_t
+{
+public:
+	RocketEvent_t( Rocket::Core::Event& event, const char *cmds ) : event( event ), cmd( cmds ) { }
+	~RocketEvent_t() { }
+	Rocket::Core::Event& event;
+	const char *cmd;
+};
+
+std::map< unsigned int, RocketEvent_t* > eventMap;
+
+void Rocket_ProcessEvent( Rocket::Core::Event& event, Rocket::Core::String& value )
+{
+	static unsigned int handle;
+
+	eventMap[ handle++ ] = new RocketEvent_t( event, value.CString() );
+	VM_Call( cgvm, CG_ROCKET_PROCESSEVENT, handle - 1 );
+}
+
+void Rocket_GetEvent( int handle, char *event, int length )
+{
+	Q_strncpyz( event, eventMap[ handle ]->cmd, length );
+}
+
+void Rocket_DeleteEvent( int handle )
+{
+	delete eventMap[ handle ];
+	eventMap.erase( handle );
 }
 #else
 extern "C" void Rocket_Init( void ) { }
@@ -566,4 +612,6 @@ extern "C" void Rocket_InjectMouseMotion( int x, int y ) { }
 extern "C" void Rocket_LoadDocument( const char *path ) { }
 extern "C" void Rocket_LoadCursor( const char *path ) { }
 extern "C" void Rocket_DocumentAction( const char *name, const char *action ) { }
+extern "C" void Rocket_GetEvent( int handle, char *event, int length ) { }
+extern "C" void Rocket_DeleteEvent( int handle ) { }
 #endif

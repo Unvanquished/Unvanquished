@@ -107,6 +107,10 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 			CG_Rocket_Init();
 			return 0;
 
+		case CG_ROCKET_PROCESSEVENT:
+			CG_Rocket_ProcessEvents( arg0 );
+			return 0;
+
 		default:
 			CG_Error( "vmMain(): unknown cgame command %i", command );
 	}
@@ -2310,13 +2314,6 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	cgs.media.charsetShader = trap_R_RegisterShader( "gfx/2d/bigchars" );
 	cgs.media.outlineShader = trap_R_RegisterShader( "outline" );
 
-	// load overrides
-	BG_InitClassConfigs();
-	BG_InitBuildableConfigs();
-	BG_InitAllowedGameElements();
-
-	// Dynamic memory
-	BG_InitMemory();
 
 	CG_RegisterCvars();
 

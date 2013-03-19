@@ -80,6 +80,16 @@ void CG_Rocket_Init( void )
 
 	// Init Rocket
 	trap_Rocket_Init();
+
+	// load overrides
+	BG_InitClassConfigs();
+	BG_InitBuildableConfigs();
+	BG_InitAllowedGameElements();
+
+	// Dynamic memory
+	BG_InitMemory();
+
+	// rocket cvars
 	CG_RegisterRocketCvars();
 
 	// Preload all the menu files...
@@ -144,3 +154,82 @@ void CG_Rocket_Init( void )
 	trap_Rocket_DocumentAction( "main", "open" );
 }
 
+static void CG_Rocket_EventOpen( const char *args )
+{
+	trap_Rocket_DocumentAction( args, "open" );
+}
+
+static void CG_Rocket_EventClose( const char *args )
+{
+	trap_Rocket_DocumentAction( args, "close" );
+}
+
+static void CG_Rocket_EventGoto( const char *args )
+{
+	trap_Rocket_DocumentAction( args, "goto" );
+}
+
+typedef struct
+{
+	const char *command;
+	void ( *exec ) ( const char *args );
+} eventCmd_t;
+
+static const eventCmd_t eventCmdList[] =
+{
+	{ "close", &CG_Rocket_EventClose },
+	{ "goto", &CG_Rocket_EventGoto },
+	{ "open", &CG_Rocket_EventOpen },
+	{ "show", &CG_Rocket_EventOpen }
+};
+
+static const size_t eventCmdListCount = ARRAY_LEN( eventCmdList );
+
+static int eventCmdCmp( const void *a, const void *b )
+{
+	return Q_stricmp( ( const char * ) a, ( ( eventCmd_t * ) b )->command );
+}
+
+void CG_Rocket_ProcessEvents( int handle )
+{
+	static char commands[ 2000 ];
+	char *tail, *head;
+	eventCmd_t *cmd;
+
+	// Get the even command
+	trap_Rocket_GetEvent( handle, commands, sizeof( commands ) );
+
+	head = commands;
+	while ( 1 )
+	{
+		char *p, *args;
+		// Parse it. Check for semicolons first
+		tail = strchr( head, ';' );
+		if ( tail )
+		{
+			*tail = '\0';
+		}
+
+		p = strchr( head, ' ' );
+		if ( p )
+		{
+			*p = '\0';
+			args = head + strlen( head ) + 1;
+		}
+		cmd = bsearch( head, eventCmdList, eventCmdListCount, sizeof( eventCmd_t ), eventCmdCmp );
+
+		if ( cmd )
+		{
+			cmd->exec( args );
+		}
+
+		if ( !tail )
+		{
+			break;
+		}
+
+		head = args + strlen( args ) + 1;
+	}
+
+	trap_Rocket_DeleteEvent( handle );
+}

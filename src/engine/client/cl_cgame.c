@@ -1280,6 +1280,14 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Rocket_DocumentAction( VMA(1), VMA(2) );
 			return 0;
 
+		case CG_ROCKET_GETEVENT:
+			Rocket_GetEvent( args[1], VMA(2), args[3] );
+			return 0;
+
+		case CG_ROCKET_DELELTEEVENT:
+			Rocket_DeleteEvent( args[1] );
+			return 0;
+
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );
 	}

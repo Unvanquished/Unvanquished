@@ -187,3 +187,5 @@ equ trap_Rocket_Shutdown                  -425
 equ trap_Rocket_LoadDocument              -426
 equ trap_Rocket_LoadCursor                -427
 equ trap_Rocket_DocumentAction            -428
+equ trap_Rocket_GetEvent                  -429
+equ trap_Rocket_DeleteEvent               -430
