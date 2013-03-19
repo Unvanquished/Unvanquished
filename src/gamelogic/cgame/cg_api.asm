@@ -189,3 +189,7 @@ equ trap_Rocket_LoadCursor                -427
 equ trap_Rocket_DocumentAction            -428
 equ trap_Rocket_GetEvent                  -429
 equ trap_Rocket_DeleteEvent               -430
+equ trap_Rocket_RegisterDataSource        -431
+equ trap_Rocket_DSAddRow                  -432
+equ trap_Rocket_DSChangeRow               -433
+equ trap_Rocket_DSRemoveRow               -434

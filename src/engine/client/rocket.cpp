@@ -46,6 +46,7 @@ extern "C"
 #include <Rocket/Core.h>
 #include <Rocket/Controls.h>
 #include "rocketEventInstancer.h"
+#include "rocketDataGrid.h"
 //#include <Rocket/Debugger.h>
 
 class DaemonFileInterface : public Rocket::Core::FileInterface
@@ -369,7 +370,7 @@ static DaemonSystemInterface systemInterface;
 static DaemonRenderInterface renderInterface;
 static Rocket::Core::Context *context = NULL;
 
-extern "C" void Rocket_Init( void )
+void Rocket_Init( void )
 {
 	char **fonts;
 	int numFiles;
@@ -417,7 +418,7 @@ extern "C" void Rocket_Init( void )
 	//Rocket::Debugger::Initialise(context);
 }
 
-extern "C" void Rocket_Shutdown( void )
+void Rocket_Shutdown( void )
 {
 	if ( context )
 	{
@@ -427,7 +428,7 @@ extern "C" void Rocket_Shutdown( void )
 	Rocket::Core::Shutdown();
 }
 
-extern "C" void Rocket_Render( void )
+void Rocket_Render( void )
 {
 	if ( context )
 	{
@@ -435,7 +436,7 @@ extern "C" void Rocket_Render( void )
 	}
 }
 
-extern "C" void Rocket_Update( void )
+void Rocket_Update( void )
 {
 	if ( context )
 	{
@@ -444,7 +445,7 @@ extern "C" void Rocket_Update( void )
 }
 
 
-extern "C" void InjectRocket( SDL_Event event )
+ extern "C" void InjectRocket( SDL_Event event )
 {
 	using Rocket::Core::Input::KeyIdentifier;
 
@@ -494,7 +495,7 @@ extern "C" void InjectRocket( SDL_Event event )
 	}
 }
 
-extern "C" void Rocket_InjectMouseMotion( int x, int y )
+void Rocket_InjectMouseMotion( int x, int y )
 {
 	if ( context && !( cls.keyCatchers & KEYCATCH_CONSOLE ) )
 	{
@@ -502,7 +503,7 @@ extern "C" void Rocket_InjectMouseMotion( int x, int y )
 	}
 }
 
-extern "C" void Rocket_LoadDocument( const char *path )
+void Rocket_LoadDocument( const char *path )
 {
 	Rocket::Core::ElementDocument* document = context->LoadDocument( path );
 	if( document )
@@ -516,7 +517,7 @@ extern "C" void Rocket_LoadDocument( const char *path )
 	}
 }
 
-extern "C" void Rocket_LoadCursor( const char *path )
+void Rocket_LoadCursor( const char *path )
 {
 	Rocket::Core::ElementDocument* document = context->LoadMouseCursor( path );
 	if( document )
@@ -529,7 +530,7 @@ extern "C" void Rocket_LoadCursor( const char *path )
 	}
 }
 
-extern "C" void Rocket_DocumentAction( const char *name, const char *action )
+void Rocket_DocumentAction( const char *name, const char *action )
 {
 	if ( !Q_stricmp( action, "show" ) || !Q_stricmp( action, "open" ) )
 	{
@@ -603,15 +604,55 @@ void Rocket_DeleteEvent( int handle )
 	delete eventMap[ handle ];
 	eventMap.erase( handle );
 }
+
+std::map<std::string, RocketDataGrid*> dataSourceMap;
+
+void Rocket_RegisterDataSource( const char *name )
+{
+	dataSourceMap[ name ] = new RocketDataGrid( name );
+}
+
+void Rocket_DSAddRow( const char *name, const char *table, const char *data )
+{
+	if ( dataSourceMap.find( name ) == dataSourceMap.end() )
+	{
+		Com_Printf( "^1ERROR: ^7Rocket_DSAddRow: data source %s does not exist.\n", name );
+		return;
+	}
+
+	dataSourceMap[ name ]->AddRow( table, data );
+}
+
+void Rocket_DSChangeRow( const char *name, const char *table, const int row, const char *data )
+{
+	if ( dataSourceMap.find( name ) == dataSourceMap.end() )
+	{
+		Com_Printf( "^1ERROR: ^7Rocket_DSChangeRow: data source %s does not exist.\n", name );
+		return;
+	}
+
+	dataSourceMap[ name ]->ChangeRow( table, row, data );
+}
+
+void Rocket_DSRemoveRow( const char *name, const char *table, const int row )
+{
+	if ( dataSourceMap.find( name ) == dataSourceMap.end() )
+	{
+		Com_Printf( "^1ERROR: ^7Rocket_DSRemoveRow: data source %s does not exist.\n", name );
+		return;
+	}
+
+	dataSourceMap[ name ]->RemoveRow( table, row );
+}
 #else
-extern "C" void Rocket_Init( void ) { }
-extern "C" void Rocket_Shutdown( void ) { }
-extern "C" void Rocket_Render( void ) { }
-extern "C" void Rocket_Update( void ) { }
-extern "C" void Rocket_InjectMouseMotion( int x, int y ) { }
-extern "C" void Rocket_LoadDocument( const char *path ) { }
-extern "C" void Rocket_LoadCursor( const char *path ) { }
-extern "C" void Rocket_DocumentAction( const char *name, const char *action ) { }
-extern "C" void Rocket_GetEvent( int handle, char *event, int length ) { }
-extern "C" void Rocket_DeleteEvent( int handle ) { }
+void Rocket_Init( void ) { }
+void Rocket_Shutdown( void ) { }
+void Rocket_Render( void ) { }
+void Rocket_Update( void ) { }
+void Rocket_InjectMouseMotion( int x, int y ) { }
+void Rocket_LoadDocument( const char *path ) { }
+void Rocket_LoadCursor( const char *path ) { }
+void Rocket_DocumentAction( const char *name, const char *action ) { }
+void Rocket_GetEvent( int handle, char *event, int length ) { }
+void Rocket_DeleteEvent( int handle ) { }
 #endif

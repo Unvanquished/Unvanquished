@@ -31,28 +31,59 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-#ifndef ROCKET_H
-#define ROCKET_H
-#if defined( __cplusplus )
+
+#ifndef ROCKETDATAGRID_H
+#define ROCKETDATAGRID_H
+
 extern "C"
 {
-#endif
-
-void Rocket_Init( void );
-void Rocket_Shutdown( void );
-void Rocket_Render( void );
-void Rocket_Update( void );
-void Rocket_InjectMouseMotion( int x, int y );
-void Rocket_LoadDocument( const char *path );
-void Rocket_LoadCursor( const char *path );
-void Rocket_DocumentAction( const char *name, const char *action );
-void Rocket_GetEvent( int handle, char *event, int length );
-void Rocket_DeleteEvent( int handle );
-void Rocket_RegisterDataSource( const char *name );
-void Rocket_DSAddRow( const char *name, const char *table, const char *data );
-void Rocket_DSChangeRow( const char *name, const char *table, const int row, const char *data );
-void Rocket_DSRemoveRow( const char *name, const char *table, const int row );
-#if defined( __cplusplus )
+	#include "../qcommon/q_shared.h"
 }
-#endif
+
+#include <Rocket/Controls/DataSource.h>
+#include <Rocket/Core/Types.h>
+
+class RocketDataGrid : public Rocket::Controls::DataSource
+{
+public:
+	RocketDataGrid( const char *name ) : Rocket::Controls::DataSource( name ) { }
+	~RocketDataGrid() { }
+	void GetRow( Rocket::Core::StringList& row, const Rocket::Core::String& table, int row_index, const Rocket::Core::StringList& columns )
+	{
+		for ( int i = 0; i < columns.size(); ++i )
+		{
+			row.push_back( Info_ValueForKey( data[ table ][ row_index ].CString(), columns[ i ].CString() ) );
+		}
+	}
+
+	int GetNumRows( const Rocket::Core::String& table )
+	{
+		return data[ table ].size();
+	}
+
+	void AddRow( const char *table, const char *dataIn )
+	{
+		data[ table ].push_back( dataIn );
+		NotifyRowAdd( table, data[ table ].size() - 1, 1 );
+	}
+
+	void ChangeRow( const char *table, const int row, const char *dataIn )
+	{
+		data[ table ][ row ] = dataIn;
+		NotifyRowChange( table, row, 1 );
+	}
+
+	void RemoveRow( const char *table, const int row )
+	{
+		data[ table ].erase( data[ table ].begin() + row - 1 );
+		NotifyRowRemove( table, row, 1 );
+	}
+
+	void ClearData() { }
+
+
+private:
+	std::map<Rocket::Core::String, std::vector<Rocket::Core::String> > data;
+};
+
 #endif

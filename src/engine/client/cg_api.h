@@ -238,7 +238,11 @@ typedef enum cgameImport_s
   CG_ROCKET_LOADCURSOR,
   CG_ROCKET_DOCUMENTACTION,
   CG_ROCKET_GETEVENT,
-  CG_ROCKET_DELELTEEVENT
+  CG_ROCKET_DELELTEEVENT,
+  CG_ROCKET_REGISTERDATASOURCE,
+  CG_ROCKET_DSADDROW,
+  CG_ROCKET_DSCHANGEROW,
+  CG_ROCKET_DSREMOVEROW
 } cgameImport_t;
 
 typedef enum
@@ -497,4 +501,7 @@ void            trap_Rocket_LoadCursor( const char *path );
 void            trap_Rocket_DocumentAction( const char *name, const char *action );
 void            trap_Rocket_GetEvent( int handle, char *event, int length );
 void            trap_Rocket_DeleteEvent( int handle );
-
+void            trap_Rocket_RegisterDataSource( const char *name );
+void            trap_Rocket_DSAddRow( const char *name, const char *table, const char *data );
+void            trap_Rocket_DSChangeRow( const char *name, const char *table, int row, const char *data );
+void            trap_Rocket_DSRemoveRow( const char *name, const char *table, int row );

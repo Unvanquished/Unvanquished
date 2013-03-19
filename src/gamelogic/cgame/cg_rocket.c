@@ -169,6 +169,25 @@ static void CG_Rocket_EventGoto( const char *args )
 	trap_Rocket_DocumentAction( args, "goto" );
 }
 
+static void CG_Rocket_Test( const char *args )
+{
+	char data[ MAX_INFO_STRING ] = { 0 };
+	int i;
+	trap_Rocket_RegisterDataSource( "high_scores" );
+
+	for ( i = 0; i < 5; ++i )
+	{
+		Com_Memset( &data, 0, sizeof( data ) );
+		Info_SetValueForKey( data, "name", "Ishq", qfalse );
+		Info_SetValueForKey( data, "colour", "Red", qfalse );
+		Info_SetValueForKey( data, "wave", va( "%d", i ), qfalse );
+		Info_SetValueForKey( data, "score", va( "%d", i * rand() % 50 ), qfalse );
+		trap_Rocket_DSAddRow( "high_scores", "scores", data );
+	}
+
+}
+
+
 typedef struct
 {
 	const char *command;
@@ -177,6 +196,7 @@ typedef struct
 
 static const eventCmd_t eventCmdList[] =
 {
+	{ "add_score", &CG_Rocket_Test },
 	{ "close", &CG_Rocket_EventClose },
 	{ "goto", &CG_Rocket_EventGoto },
 	{ "open", &CG_Rocket_EventOpen },
@@ -242,3 +262,4 @@ void CG_Rocket_ProcessEvents( int handle )
 
 	trap_Rocket_DeleteEvent( handle );
 }
+

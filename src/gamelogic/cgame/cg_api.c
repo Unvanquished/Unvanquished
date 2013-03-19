@@ -1290,3 +1290,23 @@ void trap_Rocket_DeleteEvent( int handle )
 {
 	syscall( CG_ROCKET_DELELTEEVENT, handle );
 }
+
+void trap_Rocket_RegisterDataSource( const char *name )
+{
+	syscall( CG_ROCKET_REGISTERDATASOURCE, name );
+}
+
+void trap_Rocket_DSAddRow( const char *name, const char *table, const char *data )
+{
+	syscall( CG_ROCKET_DSADDROW, name, table, data );
+}
+
+void trap_Rocket_DSChangeRow( const char *name, const char *table, int row, const char *data )
+{
+	syscall( CG_ROCKET_DSCHANGEROW, name, table, row, data );
+}
+
+void trap_Rocket_DSRemoveRow( const char *name, const char *table, int row )
+{
+	syscall( CG_ROCKET_DSREMOVEROW, name, table, row );
+}
