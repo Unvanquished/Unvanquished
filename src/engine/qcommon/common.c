@@ -4211,8 +4211,6 @@ void Field_CompleteCommand( char *cmd,
 		completionString = Cmd_Argv( completionArgument - 1 );
 	}
 
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
-
 	// Unconditionally add a '\' to the start of the buffer
 	if ( completionField->buffer[ 0 ] &&
 	     completionField->buffer[ 0 ] != '\\' )
@@ -4235,22 +4233,16 @@ void Field_CompleteCommand( char *cmd,
 		completionField->buffer[ 0 ] = '\\';
 	}
 
-#endif
-
 	if ( completionArgument > 1 )
 	{
 		const char *baseCmd = Cmd_Argv( 0 );
 		char       *p;
-
-#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 
 		// This should always be true
 		if ( baseCmd[ 0 ] == '\\' || baseCmd[ 0 ] == '/' )
 		{
 			baseCmd++;
 		}
-
-#endif
 
 		if ( ( p = Field_FindFirstSeparator( cmd ) ) )
 		{
