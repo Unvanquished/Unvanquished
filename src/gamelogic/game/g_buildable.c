@@ -161,8 +161,6 @@ static void G_PuntBlocker( gentity_t *self, gentity_t *blocker )
 	trap_SendServerCommand( blocker - g_entities, "cp \"Don't spawn block!\"" );
 }
 
-#define POWER_REFRESH_TIME 2000
-
 /*
 ================
 G_FindPower
@@ -1892,6 +1890,19 @@ static void G_IdlePowerState( gentity_t *self )
 
 /*
 ================
+HGeneric_Think
+
+A generic think function for human buildables
+================
+*/
+void HGeneric_Think( gentity_t *self )
+{
+	self->powered = G_FindPower( self, qfalse );
+	self->nextthink = level.time + BG_Buildable( self->s.modelindex )->nextthink;
+}
+
+/*
+================
 HSpawn_Disappear
 
 Called when a human spawn is destroyed before it is spawned
@@ -1979,8 +1990,7 @@ void HSpawn_Think( gentity_t *self )
 {
 	gentity_t *ent;
 
-	// set parentNode
-	self->powered = G_FindPower( self, qfalse );
+	HGeneric_Think( self );
 
 	if ( self->spawned )
 	{
@@ -2019,8 +2029,6 @@ void HSpawn_Think( gentity_t *self )
 			}
 		}
 	}
-
-	self->nextthink = level.time + BG_Buildable( self->s.modelindex )->nextthink;
 }
 
 //==================================================================================
@@ -2068,7 +2076,7 @@ void HRepeater_Think( gentity_t *self )
 	int              i;
 	gentity_t        *powerEnt;
 
-	self->powered = G_FindPower( self, qfalse );
+	HGeneric_Think( self );
 
 	powerEnt = G_InPowerZone( self );
 
@@ -2090,7 +2098,6 @@ void HRepeater_Think( gentity_t *self )
 	}
 
 	G_IdlePowerState( self );
-	self->nextthink = level.time + POWER_REFRESH_TIME;
 }
 
 /*
@@ -2247,10 +2254,7 @@ Think for armoury
 */
 void HArmoury_Think( gentity_t *self )
 {
-	//make sure we have power
-	self->nextthink = level.time + POWER_REFRESH_TIME;
-
-	self->powered = G_FindPower( self, qfalse );
+	HGeneric_Think( self );
 }
 
 //==================================================================================
@@ -2264,10 +2268,7 @@ Think for dcc
 */
 void HDCC_Think( gentity_t *self )
 {
-	//make sure we have power
-	self->nextthink = level.time + POWER_REFRESH_TIME;
-
-	self->powered = G_FindPower( self, qfalse );
+	HGeneric_Think( self );
 }
 
 //==================================================================================
@@ -2306,9 +2307,7 @@ void HMedistat_Think( gentity_t *self )
 	gentity_t *player;
 	qboolean  occupied = qfalse;
 
-	self->nextthink = level.time + BG_Buildable( self->s.modelindex )->nextthink;
-
-	self->powered = G_FindPower( self, qfalse );
+	HGeneric_Think( self );
 
 	G_IdlePowerState( self );
 
@@ -2691,13 +2690,10 @@ Think function for MG turret
 */
 void HMGTurret_Think( gentity_t *self )
 {
-	self->nextthink = level.time +
-	                  BG_Buildable( self->s.modelindex )->nextthink;
+	HGeneric_Think( self );
 
 	// Turn off client side muzzle flashes
 	self->s.eFlags &= ~EF_FIRING;
-
-	self->powered = G_FindPower( self, qfalse );
 
 	G_IdlePowerState( self );
 
@@ -2783,9 +2779,7 @@ Think function for Tesla Generator
 */
 void HTeslaGen_Think( gentity_t *self )
 {
-	self->nextthink = level.time + BG_Buildable( self->s.modelindex )->nextthink;
-
-	self->powered = G_FindPower( self, qfalse );
+	HGeneric_Think( self );
 
 	G_IdlePowerState( self );
 
@@ -2859,8 +2853,7 @@ void HDrill_Think( gentity_t *self )
 {
 	qboolean active, lastThinkActive;
 
-	self->nextthink = level.time + BG_Buildable( self->s.modelindex )->nextthink;
-	self->powered = G_FindPower( self, qfalse );
+	HGeneric_Think( self );
 
 	active = self->spawned & self->powered;
 	lastThinkActive = self->s.weapon > 0;
