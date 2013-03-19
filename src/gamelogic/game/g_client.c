@@ -328,7 +328,6 @@ gentity_t *G_SelectAlienLockSpawnPoint( vec3_t origin, vec3_t angles )
 {
 	gentity_t *spot;
 
-	spot = &g_entities[MAX_CLIENTS]; //start after the reserved player slots
 	spot = G_PickRandomEntity( FOFS( classname ), "pos_alien_intermission" );
 
 	if ( !spot )
@@ -354,7 +353,6 @@ gentity_t *G_SelectHumanLockSpawnPoint( vec3_t origin, vec3_t angles )
 {
 	gentity_t *spot;
 
-	spot = &g_entities[MAX_CLIENTS]; //start after the reserved player slots
 	spot = G_PickRandomEntity( FOFS( classname ), "pos_human_intermission" );
 
 	if ( !spot )
