@@ -2435,7 +2435,8 @@ void Cmd_ExecuteString( const char *text )
 	}
 
 	// send it as a server command if we are connected
-	CL_ForwardCommandToServer( text );
+	// (cvars are expanded locally)
+	CL_ForwardCommandToServer( cmd.cmd );
 }
 
 /*
