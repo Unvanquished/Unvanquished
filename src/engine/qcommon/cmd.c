@@ -1646,7 +1646,12 @@ const char *Cmd_Cmd_FromNth( int count )
 	char *ret = cmd.cmd - 1;
 	int  i = 0, q = 0;
 
-	while ( count && *++ret )
+	if ( !count )
+	{
+		return cmd.cmd;
+	}
+
+	while ( *++ret )
 	{
 		if ( !q && *ret == ' ' )
 		{
@@ -1656,7 +1661,10 @@ const char *Cmd_Cmd_FromNth( int count )
 		if ( i && *ret != ' ' )
 		{
 			i = 0; // non-space found after space outside quotation marks
-			--count; // one word fewer to scan
+			if ( !--count ) // one word fewer to scan
+			{
+				return ret;
+			}
 		}
 
 		if ( *ret == '"' )
