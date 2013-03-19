@@ -448,7 +448,7 @@ extern "C" void InjectRocket( SDL_Event event )
 {
 	using Rocket::Core::Input::KeyIdentifier;
 
-	if ( !context )
+	if ( !context || cls.keyCatchers & KEYCATCH_CONSOLE )
 	{
 		return;
 	}
@@ -496,7 +496,7 @@ extern "C" void InjectRocket( SDL_Event event )
 
 extern "C" void Rocket_InjectMouseMotion( int x, int y )
 {
-	if ( context )
+	if ( context && !( cls.keyCatchers & KEYCATCH_CONSOLE ) )
 	{
 		context->ProcessMouseMove( x, y, RocketConvertSDLmod( SDL_GetModState() ) );
 	}
