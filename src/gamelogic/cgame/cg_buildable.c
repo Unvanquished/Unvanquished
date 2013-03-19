@@ -1041,6 +1041,13 @@ void CG_GhostBuildable( buildable_t buildable )
 		ent.customShader = cgs.media.redBuildShader;
 	}
 
+	// Draw predicted RGS efficiency
+	if ( buildable == BA_H_DRILL || buildable == BA_A_LEECH )
+	{
+		// TODO: Add fancy display for predicted RGS efficiency
+		CG_CenterPrint(va("%d%%", ps->stats[ STAT_PREDICTION ]), 200, GIANTCHAR_WIDTH * 4 );
+	}
+
 	//rescale the model
 	scale = BG_BuildableConfig( buildable )->modelScale;
 

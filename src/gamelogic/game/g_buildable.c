@@ -863,6 +863,28 @@ void G_RGSInformNeighbors( gentity_t *self )
 
 /*
 ================
+G_RGSPredictEfficiency
+
+Predict the efficiency of a RGS constructed at the given point
+================
+*/
+int G_RGSPredictEfficiency( vec3_t origin )
+{
+	gentity_t dummy;
+
+	memset( &dummy, 0, sizeof( gentity_t ) );
+	VectorCopy( origin, dummy.s.origin );
+	dummy.s.modelindex = BA_A_LEECH;
+	dummy.spawned = qtrue;
+	dummy.powered = qtrue;
+
+	G_RGSCalculateRate( &dummy );
+
+	return dummy.s.weaponAnim;
+}
+
+/*
+================
 nullDieFunction
 
 hack to prevent compilers complaining about function pointer -> NULL conversion

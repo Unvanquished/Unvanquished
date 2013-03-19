@@ -1303,7 +1303,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	{
 		return "Invalid pubkey key";
 	}
-	
+
 	trap_GenFingerprint( pubkey, sizeof( pubkey ), client->pers.guid, sizeof( client->pers.guid ) );
 
 	client->pers.admin = G_admin_admin( client->pers.guid );
@@ -1343,7 +1343,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 		{
 			continue;
 		}
-		
+
 		if ( !Q_stricmp( client->pers.guid, level.clients[ i ].pers.guid ) )
 		{
 			if ( !G_ClientIsLagging( level.clients + i ) )
@@ -1351,11 +1351,11 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 				trap_SendServerCommand( i, "cp \"Your GUID is not secure\"" );
 				return "Duplicate GUID";
 			}
-			
+
 			trap_DropClient( i, "Ghost" );
 		}
 	}
-	
+
 	client->pers.connected = CON_CONNECTING;
 
 	// read or initialize the session data
@@ -1705,6 +1705,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	ent->client->ps.stats[ STAT_TEAM ] = ent->client->pers.teamSelection;
 
 	ent->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
+	ent->client->ps.stats[ STAT_PREDICTION ] = 0;
 	ent->client->ps.stats[ STAT_STATE ] = 0;
 	VectorSet( ent->client->ps.grapplePoint, 0.0f, 0.0f, 1.0f );
 

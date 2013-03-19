@@ -775,7 +775,7 @@ int              G_FindDCC( gentity_t *self );
 gentity_t        *G_Reactor( void );
 gentity_t        *G_Overmind( void );
 qboolean         G_FindCreep( gentity_t *self );
-
+int              G_RGSPredictEfficiency( vec3_t origin );
 void             G_BuildableThink( gentity_t *ent, int msec );
 qboolean         G_BuildableRange( vec3_t origin, float r, buildable_t buildable );
 void             G_ClearDeconMarks( void );

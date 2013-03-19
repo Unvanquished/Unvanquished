@@ -674,13 +674,14 @@ Actions that happen once a second
 */
 void ClientTimerActions( gentity_t *ent, int msec )
 {
-	gclient_t *client;
-	usercmd_t *ucmd;
-	int       aForward, aRight;
-	qboolean  walking = qfalse, stopped = qfalse,
-	          crouched = qfalse, jumping = qfalse,
-	          strafing = qfalse;
-	int       i;
+	gclient_t   *client;
+	usercmd_t   *ucmd;
+	int         aForward, aRight;
+	qboolean    walking = qfalse, stopped = qfalse,
+	            crouched = qfalse, jumping = qfalse,
+	            strafing = qfalse;
+	int         i;
+	buildable_t buildable;
 
 	ucmd = &ent->client->pers.cmd;
 
@@ -766,9 +767,10 @@ void ClientTimerActions( gentity_t *ent, int msec )
 			case WP_ABUILD:
 			case WP_ABUILD2:
 			case WP_HBUILD:
+				buildable = client->ps.stats[ STAT_BUILDABLE ] & ~SB_VALID_TOGGLEBIT;
 
 				// Set validity bit on buildable
-				if ( ( client->ps.stats[ STAT_BUILDABLE ] & ~SB_VALID_TOGGLEBIT ) > BA_NONE )
+				if ( buildable > BA_NONE )
 				{
 					vec3_t forward, aimDir, normal;
 					vec3_t dummy, dummy2;
@@ -782,14 +784,18 @@ void ClientTimerActions( gentity_t *ent, int msec )
 
 					dist = BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->buildDist * DotProduct( forward, aimDir );
 
-					if ( G_CanBuild( ent, client->ps.stats[ STAT_BUILDABLE ] & ~SB_VALID_TOGGLEBIT,
-					                 dist, dummy, dummy2, &dummy3 ) == IBE_NONE )
+					if ( G_CanBuild( ent, buildable, dist, dummy, dummy2, &dummy3 ) == IBE_NONE )
 					{
 						client->ps.stats[ STAT_BUILDABLE ] |= SB_VALID_TOGGLEBIT;
 					}
 					else
 					{
 						client->ps.stats[ STAT_BUILDABLE ] &= ~SB_VALID_TOGGLEBIT;
+					}
+
+					if ( buildable == BA_H_DRILL || buildable == BA_A_LEECH )
+					{
+						client->ps.stats[ STAT_PREDICTION ] = G_RGSPredictEfficiency( dummy );
 					}
 
 					// Let the client know which buildables will be removed by building
