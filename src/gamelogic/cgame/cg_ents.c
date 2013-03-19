@@ -690,7 +690,6 @@ static void CG_Portal( centity_t *cent )
 #define FLARE_OFF      0
 #define FLARE_NOFADE   1
 #define FLARE_TIMEFADE 2
-#define FLARE_REALFADE 3
 
 /*
 =========================
@@ -803,7 +802,7 @@ static void CG_LightFlare( centity_t *cent )
 	VectorMA( flare.origin, -flare.radius, delta, end );
 	VectorMA( cg.refdef.vieworg, flare.radius, delta, start );
 
-	if ( cg_lightFlare.integer == FLARE_TIMEFADE )
+	if ( cg_lightFlare.integer >= FLARE_TIMEFADE )
 	{
 		//draw timed flares
 		if ( !newStatus && cent->lfs.status )

@@ -353,7 +353,7 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_depthSortParticles,          "cg_depthSortParticles",          "1",            CVAR_ARCHIVE                 },
 	{ &cg_bounceParticles,             "cg_bounceParticles",             "0",            CVAR_ARCHIVE                 },
 	{ &cg_consoleLatency,              "cg_consoleLatency",              "3000",         CVAR_ARCHIVE                 },
-	{ &cg_lightFlare,                  "cg_lightFlare",                  "3",            CVAR_ARCHIVE                 },
+	{ &cg_lightFlare,                  "cg_lightFlare",                  "2",            CVAR_ARCHIVE                 },
 	{ &cg_debugParticles,              "cg_debugParticles",              "0",            CVAR_CHEAT                   },
 	{ &cg_debugTrails,                 "cg_debugTrails",                 "0",            CVAR_CHEAT                   },
 	{ &cg_debugPVS,                    "cg_debugPVS",                    "0",            CVAR_CHEAT                   },
