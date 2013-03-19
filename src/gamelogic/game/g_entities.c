@@ -386,8 +386,11 @@ gentity_t *G_FindNextTarget(gentity_t *currentTarget, int *targetIndex, int *nam
 
 	for (*targetIndex = 0; self->targets[*targetIndex].name; ++(*targetIndex))
 	{
-		for( currentTarget = &g_entities[ 0 ]; currentTarget < &g_entities[ level.num_entities ]; ++currentTarget )
+		for( currentTarget = &g_entities[ MAX_CLIENTS ]; currentTarget < &g_entities[ level.num_entities ]; currentTarget++ )
 		{
+			if ( !currentTarget->inuse || !currentTarget->enabled )
+				continue;
+
 			for (*nameIndex = 0; currentTarget->names[*nameIndex]; ++(*nameIndex))
 			{
 				if (!Q_stricmp(self->targets[*targetIndex].name, currentTarget->names[*nameIndex]))
