@@ -1859,7 +1859,8 @@ Draw all the status / pacifier stuff during level loading
 void CG_DrawLoadingScreen( void )
 {
 	menuDef_t *menu = Menus_FindByName( "Loading" );
-
+	trap_Rocket_DocumentAction( "", "close" );
+	trap_Rocket_DocumentAction( "main", "close" );
 	Menu_Update( menu );
 	Menu_Paint( menu, qtrue );
 }
