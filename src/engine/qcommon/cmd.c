@@ -1041,7 +1041,7 @@ Just prints the rest of the line to the console
 */
 void Cmd_Echo_f( void )
 {
-	Com_Printf( "%s\n", Cmd_Args() );
+	Com_Printf( "%s\n", Cmd_UnquoteString( Cmd_Args() ) );
 }
 
 /*

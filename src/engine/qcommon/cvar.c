@@ -797,7 +797,7 @@ qboolean Cvar_Command( void )
 	}
 
 	// set the value if forcing isn't required
-	Cvar_Set2( v->name, Cmd_Args(), qfalse );
+	Cvar_Set2( v->name, Cmd_UnquoteString( Cmd_Args() ), qfalse );
 	return qtrue;
 }
 
