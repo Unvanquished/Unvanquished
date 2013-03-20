@@ -655,6 +655,15 @@ void Rocket_DSClearTable( const char *name, const char *table )
 
 	dataSourceMap[ name ]->ClearTable( table );
 }
+
+void Rocket_SetInnerRML( const char *name, const char *id, const char *RML )
+{
+	Rocket::Core::ElementDocument *document = context->GetDocument( name );
+	if ( document )
+	{
+		document->GetElementById( id )->SetInnerRML( RML );
+	}
+}
 #else
 void Rocket_Init( void ) { }
 void Rocket_Shutdown( void ) { }

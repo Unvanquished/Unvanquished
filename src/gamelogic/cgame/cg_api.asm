@@ -215,3 +215,4 @@ equ trap_Rocket_DSAddRow                  -453
 equ trap_Rocket_DSChangeRow               -454
 equ trap_Rocket_DSRemoveRow               -455
 equ trap_Rocket_DSClearTable              -456
+equ trap_Rocket_SetInnerRML               -457

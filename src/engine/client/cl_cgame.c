@@ -2256,6 +2256,10 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Rocket_DSClearTable( VMA(1), VMA(2) );
 			return 0;
 
+		case CG_ROCKET_SETINNERRML:
+			Rocket_SetInnerRML( VMA(1), VMA(2), VMA(3) );
+			return 0;
+
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );
 	}
