@@ -90,6 +90,23 @@ void Svcmd_EntityFire_f( void )
 	G_CallEntity(selection, &call);
 }
 
+
+static void PrintEntityOverviewLine( gentity_t *entity )
+{
+	int i;
+
+	G_Printf( "%3i: %16s/" S_COLOR_CYAN "%-24s" S_COLOR_WHITE "%s\n",
+			entity->s.number, Com_EntityTypeName( entity->s.eType ), entity->classname,
+			IS_NON_NULL_VEC3(entity->s.origin) ? vtos( entity->s.origin ) : "");
+
+	if(entity->names[0])
+	{
+		for (i = 0; i < MAX_ENTITY_ALIASES && entity->names[i]; ++i)
+			G_Printf("%s%s", i == 0 ? "    ": ", ", entity->names[i] );
+		G_Printf( "\n" );
+	}
+}
+
 /*
 ===================
 Svcmd_EntityShow_f
@@ -133,10 +150,9 @@ void Svcmd_EntityShow_f( void )
 	{
 		G_Printf("%26s", vtos( selection->s.origin ) );
 	}
-	G_Printf( "\n" );
-	G_Printf( "⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼\n" );
+	G_Printf( "\n⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼\n" );
 	G_Printf( "Classname: ^5%s^7\n", selection->classname );
-	G_Printf( "Capabilities:%s%s%s%s%s%s%s\n",
+	G_Printf( "Capabilities:%s%s%s%s%s%s%s\n\n",
 			selection->act ? " acts" : "",
 			selection->think ? " thinks" : "",
 			selection->pain ? " pains" : "",
@@ -144,7 +160,6 @@ void Svcmd_EntityShow_f( void )
 			selection->reset ? " resets" : "",
 			selection->touch ? " touchable" : "",
 			selection->use ? " usable" : "");
-	G_Printf( "\n" );
 	if (selection->names[0])
 	{
 		G_Printf( "Name:");
@@ -195,23 +210,6 @@ void Svcmd_EntityShow_f( void )
 Svcmd_EntityList_f
 ===================
 */
-
-static void PrintEntityOverviewLine( gentity_t *entity )
-{
-	int i;
-
-	G_Printf( "%3i: %16s/" S_COLOR_CYAN "%-24s" S_COLOR_WHITE "%s",
-			entity->s.number, Com_EntityTypeName( entity->s.eType ), entity->classname,
-			IS_NON_NULL_VEC3(entity->s.origin) ? vtos( entity->s.origin ) : "");
-
-	if(entity->names[0])
-	{
-		G_Printf("\n    ");
-		for (i = 0; i < MAX_ENTITY_ALIASES && entity->names[i]; ++i)
-			G_Printf("%s%s", i == 0 ? "": ", ", entity->names[i] );
-	}
-	G_Printf( "\n" );
-}
 
 void  Svcmd_EntityList_f( void )
 {
