@@ -1672,6 +1672,12 @@ void func_door_reset( gentity_t *self )
 	reset_moverspeed( self, 400 );
 }
 
+void func_door_use( gentity_t *self, gentity_t *caller, gentity_t *activator )
+{
+	if (GetMoverGroupState( self ) != MOVER_1TO2 )
+		BinaryMover_act( self, caller, activator );
+}
+
 void SP_func_door( gentity_t *ent )
 {
 	vec3_t abs_movedir;
@@ -1692,6 +1698,7 @@ void SP_func_door( gentity_t *ent )
 
 	ent->blocked = Blocked_Door;
 	ent->reset = func_door_reset;
+	ent->use = func_door_use;
 
 	// default wait of 2 seconds
 	if ( !ent->config.wait.time )
@@ -1775,6 +1782,7 @@ void SP_func_door_rotating( gentity_t *ent )
 
 	ent->blocked = Blocked_Door;
 	ent->reset = func_door_rotating_reset;
+	ent->use = func_door_use;
 
 	// if speed is negative, positize it and add reverse flag
 	if ( ent->config.speed < 0 )
@@ -1896,6 +1904,7 @@ void SP_func_door_model( gentity_t *ent )
 	ent->soundPos1 = G_SoundIndex( s );
 
 	ent->reset = func_door_model_reset;
+	ent->use = func_door_use;
 
 	//default wait of 2 seconds
 	if ( ent->config.wait.time <= 0 )
@@ -2203,6 +2212,12 @@ void Touch_Button( gentity_t *ent, gentity_t *other, trace_t *trace )
 	}
 }
 
+void func_button_use( gentity_t *self, gentity_t *caller, gentity_t *activator )
+{
+	if ( self->moverState == MOVER_POS1 )
+		BinaryMover_act( self, caller, activator );
+}
+
 void func_button_reset( gentity_t *self )
 {
 	reset_intField(&self->health, self->config.health, self->eclass->config.health, 0, qtrue);
@@ -2253,6 +2268,8 @@ void SP_func_button( gentity_t *ent )
 		// touchable button
 		ent->touch = Touch_Button;
 	}
+
+	ent->use = func_button_use;
 
 	InitMover( ent );
 }
