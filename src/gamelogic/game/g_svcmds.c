@@ -100,7 +100,7 @@ void Svcmd_EntityShow_f( void )
 	int       i, entityNum;
 	int       lastTargetIndex, targetIndex, nameIndex;
 	gentity_t *selection;
-	gentity_t *possbileTarget = NULL;
+	gentity_t *possibleTarget = NULL;
 	char argument[ 6 ];
 
 
@@ -166,7 +166,7 @@ void Svcmd_EntityShow_f( void )
 		G_Printf( "Targets:\n");
 
 		lastTargetIndex = -1;
-		while ((possbileTarget = G_FindNextTarget(possbileTarget, &targetIndex,	&nameIndex, selection)) != NULL )
+		while ((possibleTarget = G_FindNextTarget(possibleTarget, &targetIndex,	&nameIndex, selection)) != NULL )
 		{
 
 			if(lastTargetIndex != targetIndex)
@@ -176,12 +176,12 @@ void Svcmd_EntityShow_f( void )
 			}
 
 			G_Printf("   ⇨ ");
-			G_DebugPrintEntitiy( possbileTarget );
-			if(possbileTarget->names[1])
+			G_DebugPrintEntitiy( possibleTarget );
+			if(possibleTarget->names[1])
 			{
-				G_Printf(" using \"%s\" ∈ {", possbileTarget->names[nameIndex]);
-				for (i = 0; possbileTarget->names[i]; ++i)
-					G_Printf("%s\"%s\"", (i == 0 ? "" : ", "), possbileTarget->names[i]);
+				G_Printf(" using \"%s\" ∈ {", possibleTarget->names[nameIndex]);
+				for (i = 0; possibleTarget->names[i]; ++i)
+					G_Printf("%s\"%s\"", (i == 0 ? "" : ", "), possibleTarget->names[i]);
 				G_Printf("}");
 			}
 			G_Printf("\n");
