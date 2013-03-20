@@ -1082,7 +1082,6 @@ gentity_t  *G_ClosestEnt( vec3_t origin, gentity_t **entities, int numEntities )
 
 //test
 qboolean   G_Visible( gentity_t *ent1, gentity_t *ent2, int contents );
-qboolean   G_EntitiesFree( void );
 
 //chain
 gentityCallAction_t G_GetCallActionFor( const char* action );
