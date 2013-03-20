@@ -1105,8 +1105,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		{
 			if( targ->act )
 				targ->act( targ, inflictor, attacker );
-			else if( targ->use )
-				targ->use( targ, inflictor, attacker );
 		}
 
 		return;

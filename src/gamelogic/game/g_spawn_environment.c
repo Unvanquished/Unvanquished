@@ -43,7 +43,7 @@ env_speaker
 =================================================================================
 */
 
-void env_speaker_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
+void env_speaker_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 {
 	if ( ent->spawnflags & 3 )
 	{
@@ -115,7 +115,7 @@ void SP_env_speaker( gentity_t *ent )
 		ent->s.loopSound = ent->soundIndex;
 	}
 
-	ent->use = env_speaker_use;
+	ent->act = env_speaker_act;
 
 	if ( ent->spawnflags & 4 )
 	{
@@ -175,7 +175,7 @@ void env_rumble_think( gentity_t *self )
 	}
 }
 
-void env_rumble_use( gentity_t *self, gentity_t *other, gentity_t *activator )
+void env_rumble_act( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	self->timestamp = level.time + ( self->config.amount * FRAMETIME );
 	self->nextthink = level.time + FRAMETIME;
@@ -203,7 +203,7 @@ void SP_env_rumble( gentity_t *self )
 	}
 
 	self->think = env_rumble_think;
-	self->use = env_rumble_use;
+	self->act = env_rumble_act;
 }
 
 /*
@@ -222,7 +222,7 @@ void env_particle_system_toggle( gentity_t *self )
 	self->nextthink = 0;
 }
 
-void env_particle_system_use( gentity_t *self, gentity_t *other, gentity_t *activator )
+void env_particle_system_act( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	env_particle_system_toggle( self );
 
@@ -250,7 +250,7 @@ void SP_env_particle_system( gentity_t *self )
 		self->s.eFlags |= EF_NODRAW;
 	}
 
-	self->use = env_particle_system_use;
+	self->act = env_particle_system_act;
 	self->s.eType = ET_PARTICLE_SYSTEM;
 	trap_LinkEntity( self );
 }
@@ -322,7 +322,7 @@ void SP_env_lens_flare( gentity_t *self )
 	//is used to facilitate visibility testing
 	findEmptySpot( self->s.origin, 8.0f, self->s.angles2 );
 
-	self->use = env_lens_flare_toggle;
+	self->act = env_lens_flare_toggle;
 
 	if( !self->config.speed )
 		self->config.speed = 200;
@@ -444,7 +444,7 @@ env_animated_model
 
 =================================================================================
 */
-void env_animated_model( gentity_t *self, gentity_t *other, gentity_t *activator )
+void env_animated_model_act( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	if ( self->spawnflags & 1 )
 	{
@@ -486,7 +486,7 @@ void SP_env_animated_model( gentity_t *self )
 	//add the model to the client precache list
 	self->s.modelindex = G_ModelIndex( self->model );
 
-	self->use = env_animated_model;
+	self->act = env_animated_model_act;
 
 	self->s.eType = ET_ANIMMAPOBJ;
 

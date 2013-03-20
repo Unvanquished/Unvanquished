@@ -127,7 +127,7 @@ void env_afx_teleporter_touch( gentity_t *self, gentity_t *other, trace_t *trace
 	G_TeleportPlayer( other, dest->s.origin, dest->s.angles, self->config.speed );
 }
 
-void env_afx_teleporter_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
+void env_afx_teleporter_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 {
 	ent->s.eFlags ^= EF_NODRAW;
 }
@@ -158,7 +158,7 @@ void SP_env_afx_teleport( gentity_t *self )
 
 	self->s.eType = ET_TELEPORT_TRIGGER;
 	self->touch = env_afx_teleporter_touch;
-	self->use = env_afx_teleporter_use;
+	self->act = env_afx_teleporter_act;
 
 	trap_LinkEntity( self );
 }
@@ -221,7 +221,7 @@ void SP_env_afx_hurt( gentity_t *self )
 
 	reset_intField(&self->damage, self->config.damage, self->eclass->config.damage, 5, qtrue);
 
-	self->use = env_afx_toggle;
+	self->act = env_afx_toggle;
 
 	// link in to the world if starting active
 	if ( self->spawnflags & 1 )
@@ -262,7 +262,7 @@ void SP_env_afx_gravity( gentity_t *self )
 	G_SpawnInt( "gravity", "800", &self->triggerGravity );
 
 	self->touch = env_afx_gravity_touch;
-	self->use = env_afx_toggle;
+	self->act = env_afx_toggle;
 
 	InitEnvAFXEntity( self );
 	trap_LinkEntity( self );
@@ -327,7 +327,7 @@ void SP_env_afx_heal( gentity_t *self )
 	}
 
 	self->touch = env_afx_heal_touch;
-	self->use = env_afx_toggle;
+	self->act = env_afx_toggle;
 
 	InitEnvAFXEntity( self );
 

@@ -42,7 +42,7 @@ target_print
 
 =================================================================================
 */
-void target_print_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
+void target_print_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 {
 	if ( ent->spawnflags & 4 )
 	{
@@ -74,7 +74,7 @@ void target_print_use( gentity_t *ent, gentity_t *other, gentity_t *activator )
 
 void SP_target_print( gentity_t *ent )
 {
-	ent->use = target_print_use;
+	ent->act = target_print_act;
 }
 
 /*
@@ -85,7 +85,7 @@ target_push
 =================================================================================
 */
 
-void target_push_use( gentity_t *self, gentity_t *other, gentity_t *activator )
+void target_push_act( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	if ( !activator || !activator->client )
 	{
@@ -118,7 +118,7 @@ void SP_target_push( gentity_t *self )
 		self->nextthink = level.time + FRAMETIME;
 	}
 
-	self->use = target_push_use;
+	self->act = target_push_act;
 }
 
 /*
@@ -128,7 +128,7 @@ target_teleporter
 
 =================================================================================
 */
-void target_teleporter_use( gentity_t *self, gentity_t *other, gentity_t *activator )
+void target_teleporter_act( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	gentity_t *dest;
 
@@ -150,7 +150,7 @@ void SP_target_teleporter( gentity_t *self )
 	if( !self->config.speed )
 		self->config.speed = 400;
 
-	self->use = target_teleporter_use;
+	self->act = target_teleporter_act;
 }
 
 /*
@@ -160,7 +160,7 @@ target_kill
 
 =================================================================================
 */
-void target_kill_use( gentity_t *self, gentity_t *other, gentity_t *activator )
+void target_kill_act( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	if ( !activator )
 	{
@@ -172,7 +172,7 @@ void target_kill_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 
 void SP_target_kill( gentity_t *self )
 {
-	self->use = target_kill_use;
+	self->act = target_kill_act;
 }
 
 /*
@@ -182,7 +182,7 @@ target_hurt
 
 =================================================================================
 */
-void target_hurt_use( gentity_t *self, gentity_t *other, gentity_t *activator )
+void target_hurt_act( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	// hurt the activator
 	if ( !activator || !activator->takedamage )
@@ -196,6 +196,6 @@ void target_hurt_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 void SP_target_hurt( gentity_t *self )
 {
 	reset_intField(&self->damage, self->config.damage, self->eclass->config.damage, 5, qtrue);
-	self->use = target_hurt_use;
+	self->act = target_hurt_act;
 }
 

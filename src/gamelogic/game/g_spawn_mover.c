@@ -691,7 +691,7 @@ Used only by a master movers.
 ================
 */
 
-void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator );
+void BinaryMover_act( gentity_t *ent, gentity_t *other, gentity_t *activator );
 
 void ReturnToPos1orApos1( gentity_t *ent )
 {
@@ -700,7 +700,7 @@ void ReturnToPos1orApos1( gentity_t *ent )
 		return; // not every mover in the group has reached its endpoint yet
 	}
 
-	Use_BinaryMover( ent, ent, ent->activator );
+	BinaryMover_act( ent, ent, ent->activator );
 }
 
 /*
@@ -827,7 +827,7 @@ void Think_OpenModelDoor( gentity_t *ent )
 Reached_BinaryMover
 ================
 */
-void Reached_BinaryMover( gentity_t *ent )
+void BinaryMover_reached( gentity_t *ent )
 {
 	gentity_t *master = MasterOf( ent );
 
@@ -925,7 +925,7 @@ void Reached_BinaryMover( gentity_t *ent )
 Use_BinaryMover
 ================
 */
-void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
+void BinaryMover_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 {
 	int total;
 	int partial;
@@ -941,7 +941,7 @@ void Use_BinaryMover( gentity_t *ent, gentity_t *other, gentity_t *activator )
 	// only the master should be used
 	if ( ent->flags & FL_GROUPSLAVE )
 	{
-		Use_BinaryMover( ent->groupMaster, other, activator );
+		BinaryMover_act( ent->groupMaster, other, activator );
 		return;
 	}
 
@@ -1242,8 +1242,8 @@ void InitMover( gentity_t *ent )
 		ent->s.constantLight = r | ( g << 8 ) | ( b << 16 ) | ( i << 24 );
 	}
 
-	ent->use = Use_BinaryMover;
-	ent->reached = Reached_BinaryMover;
+	ent->act = BinaryMover_act;
+	ent->reached = BinaryMover_reached;
 
 	if ( G_SpawnString( "group", "", &groupName ) )
 	{
@@ -1355,8 +1355,8 @@ void InitRotator( gentity_t *ent )
 		ent->s.constantLight = r | ( g << 8 ) | ( b << 16 ) | ( i << 24 );
 	}
 
-	ent->use = Use_BinaryMover;
-	ent->reached = Reached_BinaryMover;
+	ent->act = BinaryMover_act;
+	ent->reached = BinaryMover_reached;
 
 	if ( G_SpawnString( "group", "", &groupName ) )
 	{
@@ -1413,7 +1413,7 @@ void Blocked_Door( gentity_t *ent, gentity_t *other )
 	}
 
 	// reverse direction
-	Use_BinaryMover( ent, ent, other );
+	BinaryMover_act( ent, ent, other );
 }
 
 /*
@@ -1593,7 +1593,7 @@ void Touch_DoorTrigger( gentity_t *ent, gentity_t *other, trace_t *trace )
 	}
 	else if ( groupState != MOVER_1TO2 )
 	{
-		Use_BinaryMover( ent->parent, ent, other );
+		BinaryMover_act( ent->parent, ent, other );
 	}
 }
 
@@ -1987,7 +1987,7 @@ void SP_func_door_model( gentity_t *ent )
 		ent->s.constantLight = r | ( g << 8 ) | ( b << 16 ) | ( i << 24 );
 	}
 
-	ent->use = Use_BinaryMover;
+	ent->act = BinaryMover_act;
 
 	ent->moverState = MODEL_POS1;
 	ent->s.eType = ET_MODELDOOR;
@@ -2073,7 +2073,7 @@ void Touch_PlatCenterTrigger( gentity_t *ent, gentity_t *other, trace_t *trace )
 
 	if ( ent->parent->moverState == MOVER_POS1 )
 	{
-		Use_BinaryMover( ent->parent, ent, other );
+		BinaryMover_act( ent->parent, ent, other );
 	}
 }
 
@@ -2199,7 +2199,7 @@ void Touch_Button( gentity_t *ent, gentity_t *other, trace_t *trace )
 
 	if ( ent->moverState == MOVER_POS1 )
 	{
-		Use_BinaryMover( ent, other, other );
+		BinaryMover_act( ent, other, other );
 	}
 }
 
@@ -2286,7 +2286,7 @@ void Think_BeginMoving( gentity_t *ent )
 Reached_Train
 ===============
 */
-void Reached_Train( gentity_t *ent )
+void func_train_reached( gentity_t *ent )
 {
 	gentity_t *next;
 	vec3_t    move;
@@ -2404,7 +2404,7 @@ void Stop_Train( gentity_t *ent, gentity_t *other, gentity_t *activator )
 Use_Train
 ================
 */
-void Use_Train( gentity_t *ent, gentity_t *other, gentity_t *activator )
+void func_train_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 {
 	if ( ent->spawnflags & TRAIN_START_OFF )
 	{
@@ -2477,7 +2477,7 @@ void Think_SetupTrainTargets( gentity_t *ent )
 	}
 
 	// start the train moving from the first corner
-	Reached_Train( ent );
+	func_train_reached( ent );
 }
 
 /*
@@ -2485,7 +2485,7 @@ void Think_SetupTrainTargets( gentity_t *ent )
 Blocked_Train
 ================
 */
-void Blocked_Train( gentity_t *self, gentity_t *other )
+void func_train_blocked( gentity_t *self, gentity_t *other )
 {
 	if ( self->spawnflags & TRAIN_BLOCK_STOPS )
 	{
@@ -2551,9 +2551,9 @@ void SP_func_train( gentity_t *self )
 	InitMover( self );
 	reset_moverspeed( self, 100 );
 
-	self->reached = Reached_Train;
-	self->use = Use_Train;
-	self->blocked = Blocked_Train;
+	self->reached = func_train_reached;
+	self->act = func_train_act;
+	self->blocked = func_train_blocked;
 
 	// start trains on the second frame, to make sure their targets have had
 	// a chance to spawn
@@ -2761,7 +2761,7 @@ void G_KillBrushModel( gentity_t *ent, gentity_t *activator )
 Use_func_spawn
 ====================
 */
-void Use_func_spawn( gentity_t *ent, gentity_t *other, gentity_t *activator )
+void func_spawn_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 {
   if( ent->r.linked )
     trap_UnlinkEntity( ent );
@@ -2800,7 +2800,7 @@ void SP_func_spawn( gentity_t *ent )
     VectorCopy( ent->s.angles, ent->s.apos.trBase );
   }
 
-  ent->use = Use_func_spawn;
+  ent->act = func_spawn_act;
   ent->reset = func_spawn_reset;
 }
 

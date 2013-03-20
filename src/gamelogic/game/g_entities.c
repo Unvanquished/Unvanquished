@@ -600,11 +600,8 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 			break;
 
 		default:
-			//by default call act, or fall back to use as a means of backward compatibility, until everything we need has a proper act function
 			if (targetedEntity->act)
 				targetedEntity->act(targetedEntity, call->caller, call->activator);
-			else if (targetedEntity->use)
-				targetedEntity->use(targetedEntity, call->caller, call->activator);
 			break;
 		}
 	}
