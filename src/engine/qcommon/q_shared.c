@@ -683,6 +683,45 @@ float FloatNoSwap( float f )
 /*
 ============================================================================
 
+q_shared.h-enum to name conversion
+
+============================================================================
+*/
+
+const char *Com_EntityTypeName(entityType_t entityType)
+{
+	switch (entityType)
+	{
+	case ET_GENERAL:          return "GENERAL";
+	case ET_PLAYER:           return "PLAYER";
+	case ET_ITEM:             return "ITEM";
+	case ET_BUILDABLE:        return "BUILDABLE";
+	case ET_LOCATION:         return "LOCATION";
+	case ET_MISSILE:          return "MISSILE";
+	case ET_MOVER:            return "MOVER";
+	case ET_BEAM:             return "BEAM";
+	case ET_PORTAL:           return "PORTAL";
+	case ET_SPEAKER:          return "SPEAKER";
+	case ET_PUSH_TRIGGER:     return "PUSH_TRIGGER";
+	case ET_TELEPORT_TRIGGER: return "TELEPORT_TRIGGER";
+	case ET_INVISIBLE:        return "INVISIBLE";
+	case ET_GRAPPLE:          return "GRAPPLE";
+	case ET_CORPSE:           return "CORPSE";
+	case ET_PARTICLE_SYSTEM:  return "PARTICLE_SYSTEM";
+	case ET_ANIMMAPOBJ:       return "ANIMMAPOBJ";
+	case ET_MODELDOOR:        return "MODELDOOR";
+	case ET_LIGHTFLARE:       return "LIGHTFLARE";
+	case ET_LEV2_ZAP_CHAIN:   return "LEV2_ZAP_CHAIN";
+	default:
+		if(entityType > ET_EVENTS)
+			return "EVENT";
+		return NULL;
+	}
+}
+
+/*
+============================================================================
+
 PARSING
 
 ============================================================================

@@ -3391,6 +3391,12 @@ static void CG_ScanForCrosshairEntity( void )
 			cg.crosshairBuildable = -1;
 		}
 
+		if ( cg_drawEntityInfo.integer && s->eType )
+		{
+			cg.crosshairClientNum = trace.entityNum;
+			cg.crosshairClientTime = cg.time;
+		}
+
 		return;
 	}
 
@@ -3488,9 +3494,15 @@ static void CG_DrawCrosshairNames( rectDef_t *rect, float scale, int textStyle )
 		return;
 	}
 
-	// add health from overlay info to the crosshair client name
-	name = cgs.clientinfo[ cg.crosshairClientNum ].name;
+	if( cg_drawEntityInfo.integer )
+	{
+		name = va( "(" S_COLOR_CYAN "%s" S_COLOR_WHITE "|" S_COLOR_CYAN "#%d" S_COLOR_WHITE ")",
+				Com_EntityTypeName( cg_entities[cg.crosshairClientNum].currentState.eType ), cg.crosshairClientNum );
+	} else {
+		name = cgs.clientinfo[ cg.crosshairClientNum ].name;
+	}
 
+	// add health from overlay info to the crosshair client name
 	if ( cg_teamOverlayUserinfo.integer &&
 	     cg.snap->ps.stats[ STAT_TEAM ] != TEAM_NONE &&
 	     cgs.teamInfoReceived &&

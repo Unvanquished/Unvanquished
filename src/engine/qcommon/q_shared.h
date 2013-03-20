@@ -2041,7 +2041,8 @@ char *Q_UTF8Unstore( int e );
 // the structure size is fairly large
 //
 // NOTE: all fields in here must be 32 bits (or those within sub-structures)
-
+//
+// You can use Com_EntityTypeName to get a String representation of this enum
 	typedef enum
 	{
 		ET_GENERAL,
@@ -2073,6 +2074,8 @@ char *Q_UTF8Unstore( int e );
 		// by setting eType to ET_EVENTS + eventNum
 		// this avoids having to set eFlags and eventNum
 	} entityType_t;
+
+	const char *Com_EntityTypeName(entityType_t entityType);
 
 	typedef struct entityState_s
 	{

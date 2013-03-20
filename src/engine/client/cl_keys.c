@@ -1362,6 +1362,8 @@ void Key_Bind_f( void )
 		return;
 	}
 
+	key = Key_KeynumToString( b );
+
 	if ( !cmd )
 	{
 		if ( teambind )

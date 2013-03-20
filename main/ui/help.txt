@@ -11,8 +11,8 @@
   "Alien Healing"
   {
     "The most important change for Alien players to know is that their healing "
-    "rate is slower away from creep. To counter this, healing near Boosters "
-    "and Basilisks is greatly accelerated.\n\n"
+    "rate is slower away from creep. To counter this, healing near [booster] Boosters "
+    "and [basilisk] Basilisks is greatly accelerated.\n\n"
     "Watch the health cross icon on your "
     "HUD to see what your healing rate is. If the icon glows, you are on "
     "creep. If you are near a booster or basilisk, you will see two "
@@ -23,7 +23,8 @@
     "Structures destroyed by enemy players will not immediately become available "
     "for reuse, but instead enter a queue. Build points will gradually leave the "
     "queue to become available again, at a rate proportional to the amount of "
-    "points in the queue.\n\n Repeaters can be built at any stage and come with 20 "
+    "points in the queue.\n\n"
+    "[repeater] Repeaters can be built at any stage and come with 20 "
     "BP that can only be used nearby to facilitate making small outposts. Aliens "
     "do not have a structure that provides additional buildpoints, but they have 150 "
     "overall BP to compensate."
@@ -32,45 +33,42 @@
   {
     "The deconstruction method has changed. Buildables are no longer instantly "
     "deconstructed. Instead, a deconstruct mark appears on the health bar. "
-    "Go ahead and build a new buildable somewhere else and the old one will "
-    "be removed automatically. Buildables that are about to be removed by "
-    "constructing the selected buildable glow red."
+    "Build somewhere else and the old one will be removed automatically if its build points are needed. "
+    "Buildables that are about to be removed by constructing the selected buildable glow ^1red^7."
     "\n\n"
     "Depending on server configuration, it may be possible to deconstruct "
     "some marked buildings."
   }
   "Alien Buildables"
   {
-    "Nearly useless in 1.1, Barricades now have more health, are cheaper to "
-    "build, and will shrink to allow Aliens to pass over them. Acid tubes "
+    "Nearly useless in 1.1, [barricade] Barricades now have more health, are cheaper to "
+    "build, and will shrink to allow Aliens to pass over them. [acidtube] Acid tubes "
     "will fire from behind barricades, providing a formidable defense. "
     "Experiment with blocking off hallways and building staged defenses, but "
-    "keep in mind that low ceilings will prevent Tyrants from returning inside "
+    "keep in mind that low ceilings will prevent [tyrant] Tyrants from returning inside "
     "the base. Hives are also much improved to become worth building in stage 3."
   }
   "Human Buildables"
   {
-    "Turrets now have a small spin up delay before firing, but they have "
+    "[turret] Turrets now have a small spin up delay before firing, but they have "
     "increased range and damage output.\n\n"
     "To protect against small Aliens getting inside "
-    "the base, build Tesla Generators at Stage 3. Tesla Generators no longer "
-    "require the Defense Computer to function. Instead, the Defense Computer "
+    "the base, build [tesla] Tesla Generators at Stage 3. Tesla Generators no longer "
+    "require the [defcomp] Defence Computer to function. Instead, the Defence Computer "
     "will automatically repair Human buildables. Tesla Generators can fire "
     "over turrets."
   }
   "Human Weapons"
   {
-    "Most of the human projeciles have a small volume now, making them more "
-    "effective against smaller targets.\n"
-    "The Lucifer Cannon projectile can be fired faster but now takes longer "
-    "to charge. You will be able to hear your teammates overcharge "
-    "their Lucifer Cannon.\n"
-    "Luci balls and pulse rifle shots may lose power as they travel.\n"
-    "The Flamer projectile now gains more of the velocity of its wielder, "
-    "making it easier to chase down aliens without burning yourself to a "
-    "crisp. It does less damage on impact; however, it causes heat damage "
-    "to nearby buildings or players while in flight.\n"
-    "Other weapons also have smaller changes."
+    "Most projectiles have a small volume now, making them more "
+    "effective against smaller targets.\n\n"
+    "The [lcannon] Lucifer Cannon projectile can be fired faster but now takes longer "
+    "to charge. Overcharging is audible to team-mates. "
+    "Luci balls and [prifle] pulse rifle shots may lose power as they travel.\n\n"
+    "The [flamer] Flamer projectile now gains more of the velocity of its wielder, "
+    "making it easier to chase down aliens without toasting yourself too. "
+    "It does less damage on impact; however, it causes heat damage "
+    "to nearby buildings or players while in flight."
   }
   "Lag Correction"
   {
@@ -83,8 +81,8 @@
   }
   "Sprint"
   {
-    "The sprint bind has changed from “boost” to “+sprint”; you can bind it "
-    "in the options menu or in the console (\\bind shift +sprint). Now, instead "
+    "The sprint bind has changed from “^5boost^7” to “^5+sprint^7”; you can bind it "
+    "in the options menu or in the console (^5\\bind shift +sprint^7). Now, instead "
     "of tapping the button while moving to start sprinting, just hold it down "
     "and let go to stop. Alternatively, you can change this to a toggle behavior "
     "with cg_sprintToggle."
@@ -92,44 +90,49 @@
   "Dodge"
   {
     "Humans also have a new movement ability: dodge. However, "
-    "it has a 5 sec cooldown between each use. You can bind it in the "
-    "options menu or the console (\\bind shift +sprint). When strafing or "
+    "it has a 5-second cooldown between each use. You can bind it in the "
+    "options menu or the console (^5\\bind shift +sprint^7). When strafing or "
     "walking backwards, press the dodge key to make a quick, low jump. You "
-    "can bind this to the same key as sprint in the console with \\bind shift "
-    "\"+sprint; +dodge\"."
+    "can bind this to the same key as sprint in the console with ^5\\bind shift "
+    "\"+sprint; +dodge\"^7."
   }
   "Headshots"
   {
-    "Headshots on unarmored humans only cause 150% damage. Battlesuit and "
+    "Headshots on unarmoured humans only cause 150% damage. Battlesuit and "
     "helmet protection have been reduced so headshot damage remains the same."
   }
-  "Dretch"
+  "Radar"
+  {
+    "Players who remain motionless will become invisible to human radar and "
+    "alien proximity sense."
+  }
+  "[dretch] Dretch"
   {
     "Dretches are slightly faster and can now damage any human structure while it "
     "is still building, but can no longer damage turrets and teslas that "
     "have been completed."
   }
-  "Basilisk"
+  "[basilisk] Basilisk"
   {
     "Basilisks provide regeneration boosting auras to nearby teammates: 2× "
-    "from regular and 3× from advanced basilisks. Their footsteps are also "
+    "from regular and 3× from [advbasilisk] advanced basilisks. Their footsteps are also "
     "silent for greater stealth."
   }
-  "Marauder"
+  "[marauder] Marauder"
   {
-    "The Adv. Marauder's electric shock damage is no longer split between its "
+    "The [advmarauder] Adv. Marauder's electric shock damage is no longer split between its "
     "targets, making it more effective against large groups of humans and "
     "buildables. Targets are now chosen slightly differently: instead of "
     "each new chain section originating from the previous target, it will "
     "originate from the first target."
   }
-  "Dragoon"
+  "[dragoon] Dragoon"
   {
-    "Advanced dragoons are now available at stage 2. Both dragoons have the "
+    "[advdragoon] Advanced dragoons are now available at stage 2. Both dragoons have the "
     "range of their chomp attacks lowered, but their pounce attacks are much "
     "more useful. Try to use pounce to pin a human to the wall before chomping."
   }
-  "Tyrant"
+  "[tyrant] Tyrant"
   {
     "The Tyrant is now a weaker class as its health has been lowered and "
     "turret damage is greater. To counter this, Tyrants can charge for longer "
