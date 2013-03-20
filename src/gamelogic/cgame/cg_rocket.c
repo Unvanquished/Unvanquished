@@ -150,11 +150,11 @@ void CG_Rocket_Init( void )
 			continue;
 		}
 
-		// Intialize data sources...
-		trap_Rocket_RegisterDataSource( "server_browser" );
-
 		trap_Rocket_LoadDocument( token );
 	}
+
+	// Intialize data sources...
+	trap_Rocket_RegisterDataSource( "server_browser" );
 
 	trap_Rocket_DocumentAction( "main", "open" );
 }
