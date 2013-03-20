@@ -146,10 +146,10 @@ static const field_t fields[] =
 	{ "spawnflags",          FOFS( spawnflags ),          F_INT       },
 	{ "speed",               FOFS( config.speed ),        F_FLOAT     },
 	{ "stage",               FOFS( conditions.stage ),    F_INT       },
-	{ "target",			     FOFS( calltargets[ 0 ] ),    F_CALLTARGET },
-	{ "target2", 			 FOFS( calltargets[ 1 ] ),    F_CALLTARGET },
-	{ "target3",			 FOFS( calltargets[ 2 ] ),    F_CALLTARGET },
-	{ "target4",			 FOFS( calltargets[ 3 ] ),    F_CALLTARGET },
+	{ "target",              FOFS( calltargets ),         F_CALLTARGET },
+	{ "target2",             FOFS( calltargets ),         F_CALLTARGET },
+	{ "target3",             FOFS( calltargets ),         F_CALLTARGET },
+	{ "target4",             FOFS( calltargets ),         F_CALLTARGET },
 	{ "targetname",			 FOFS( names[ 1 ] ),          F_STRING,	  ENT_V_RENAMED, "name"},
 	{ "targetShaderName",    FOFS( targetShaderName ),    F_STRING    },
 	{ "targetShaderNewName", FOFS( targetShaderNewName ), F_STRING    },
@@ -572,7 +572,7 @@ gentityCallDefinition_t G_NewCallDefinition( const char *string )
 		}
 		*stringPointer++ = string[ i ];
 	}
-
+	newTarget.actionType = G_GetCallActionFor( newTarget.action );
 	return newTarget;
 }
 
@@ -607,7 +607,10 @@ void G_ParseField( const char *key, const char *rawString, gentity_t *entity )
 			break;
 
 		case F_CALLTARGET:
-			* ( gentityCallDefinition_t * )( entityData + resultingField->offset ) = G_NewCallDefinition( rawString );
+			if(entity->callTargetCount >= MAX_ENTITY_TARGETS)
+				G_Error("Maximal number of %i calltargets reached. You can solve this by using a Relay.", MAX_ENTITY_TARGETS);
+
+			( ( gentityCallDefinition_t * )( entityData + resultingField->offset ) ) [ entity->callTargetCount++ ] = G_NewCallDefinition( rawString );
 			break;
 
 		case F_TIME:
@@ -688,8 +691,6 @@ void G_SpawnGEntityFromSpawnVars( void )
 	VectorCopy( spawningEntity->s.origin, spawningEntity->s.pos.trBase );
 	VectorCopy( spawningEntity->s.origin, spawningEntity->r.currentOrigin );
 
-	G_CleanUpSpawnedTargets( spawningEntity );
-
 	// don't leave any "gaps" between multiple names
 	j = 0;
 	for (i = 0; i < MAX_ENTITY_ALIASES; ++i)
@@ -706,7 +707,7 @@ void G_SpawnGEntityFromSpawnVars( void )
 	}
 }
 
-void G_CleanUpSpawnedTargets( gentity_t *ent )
+void G_ReorderCallTargets( gentity_t *ent )
 {
 	int i, j;
 	// don't leave any "gaps" between multiple targets

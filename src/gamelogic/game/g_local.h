@@ -893,7 +893,7 @@ qboolean G_SpawnFloat( const char *key, const char *defaultString, float *out );
 qboolean G_SpawnInt( const char *key, const char *defaultString, int *out );
 qboolean G_SpawnVector( const char *key, const char *defaultString, float *out );
 void     G_SpawnEntitiesFromString( void );
-void     G_CleanUpSpawnedTargets( gentity_t *ent );
+void     G_ReorderCallTargets( gentity_t *ent );
 char     *G_NewString( const char *string );
 
 //
