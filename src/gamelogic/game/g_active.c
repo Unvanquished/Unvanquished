@@ -2054,8 +2054,13 @@ void ClientThink_real( gentity_t *ent )
 
 		traceEnt = &g_entities[ trace.entityNum ];
 
-		if ( traceEnt && traceEnt->buildableTeam == client->ps.stats[ STAT_TEAM ] && traceEnt->use )
+		if ( traceEnt && traceEnt->use
+				&& ( !traceEnt->buildableTeam || traceEnt->buildableTeam == client->ps.stats[ STAT_TEAM ] )
+				&& ( !traceEnt->conditions.team || traceEnt->conditions.team == client->ps.stats[ STAT_TEAM ] ))
 		{
+			if ( g_debugEntities.integer > 1 )
+				G_Printf("Debug: Calling entity->use for player facing ^5#%i^7 of type ^5%s\n", traceEnt->s.number, traceEnt->classname);
+
 			traceEnt->use( traceEnt, ent, ent );  //other and activator are the same in this context
 		}
 		else
@@ -2071,8 +2076,11 @@ void ClientThink_real( gentity_t *ent )
 			{
 				traceEnt = &g_entities[ entityList[ i ] ];
 
-				if ( traceEnt && traceEnt->buildableTeam == client->ps.stats[ STAT_TEAM ] && traceEnt->use )
+				if ( traceEnt && traceEnt->use && traceEnt->buildableTeam == client->ps.stats[ STAT_TEAM ])
 				{
+					if ( g_debugEntities.integer > 1 )
+						G_Printf("Debug: Calling entity->use after an areasearch for ^5#%i^7 of type ^5%s\n", traceEnt->s.number, traceEnt->classname);
+
 					traceEnt->use( traceEnt, ent, ent );  //other and activator are the same in this context
 					break;
 				}
