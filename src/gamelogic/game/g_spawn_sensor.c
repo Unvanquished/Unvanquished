@@ -48,7 +48,7 @@ void InitBrushSensor( gentity_t *self )
 	self->r.svFlags = SVF_NOCLIENT;
 }
 
-void sensor_act(gentityCallDefinition_t *callDefinition, gentity_t *self, gentity_t *other, gentity_t *activator)
+void sensor_act(gentity_t *self, gentity_t *other, gentity_t *activator)
 {
 	// if we wanted to tell the cgame about our deactivation, this would be the way to do it
 	// self->s.eFlags ^= EF_NODRAW;
@@ -66,7 +66,7 @@ void sensor_reset( gentity_t *self )
 }
 
 //some old sensors/triggers used to propagate use-events, this is deprecated behavior
-void trigger_compat_propagation_act( gentityCallDefinition_t *callDefinition, gentity_t *self, gentity_t *other, gentity_t *activator )
+void trigger_compat_propagation_act( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	G_FireAllTargetsOf( self, self );
 
@@ -105,7 +105,7 @@ void trigger_checkWaitForReactivation( gentity_t *self )
 // the trigger was just activated
 // ent->activator should be set to the activator so it can be held through a delay
 // so wait for the delay time before firing
-void trigger_multiple_act( gentityCallDefinition_t *callDefinition, gentity_t *self, gentity_t *caller, gentity_t *activator )
+void trigger_multiple_act( gentity_t *self, gentity_t *caller, gentity_t *activator )
 {
 	self->activator = activator;
 
@@ -122,7 +122,7 @@ void trigger_multiple_act( gentityCallDefinition_t *callDefinition, gentity_t *s
 
 void trigger_multiple_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 {
-	trigger_multiple_act( NULL, self, other, other );
+	trigger_multiple_act( self, other, other );
 }
 
 void trigger_multiple_compat_reset( gentity_t *self )
@@ -190,7 +190,7 @@ void sensor_timer_think( gentity_t *self )
 	G_SetNextthink( self );
 }
 
-void sensor_timer_act( gentityCallDefinition_t *callDefinition, gentity_t *self, gentity_t *other, gentity_t *activator )
+void sensor_timer_act( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	self->activator = activator;
 

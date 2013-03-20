@@ -596,13 +596,13 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 			break;
 		case ECA_ACT:
 			if (targetedEntity->act)
-				targetedEntity->act(call->definition, targetedEntity, call->caller, call->activator);
+				targetedEntity->act(targetedEntity, call->caller, call->activator);
 			break;
 
 		default:
 			//by default call act, or fall back to use as a means of backward compatibility, until everything we need has a proper act function
 			if (targetedEntity->act)
-				targetedEntity->act(call->definition, targetedEntity, call->caller, call->activator);
+				targetedEntity->act(targetedEntity, call->caller, call->activator);
 			else if (targetedEntity->use)
 				targetedEntity->use(targetedEntity, call->caller, call->activator);
 			break;

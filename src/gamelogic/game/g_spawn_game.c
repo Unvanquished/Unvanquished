@@ -43,7 +43,7 @@ game_score
 =================================================================================
 */
 
-void game_score_act( gentityCallDefinition_t* target, gentity_t *self, gentity_t *other, gentity_t *activator )
+void game_score_act( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	if ( !activator )
 	{
@@ -77,7 +77,7 @@ game_end
 
 =================================================================================
 */
-void game_end_act( gentityCallDefinition_t* target, gentity_t *self, gentity_t *other, gentity_t *activator )
+void game_end_act( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	if ( level.unconditionalWin == TEAM_NONE ) // only if not yet triggered
 	{

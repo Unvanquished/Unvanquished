@@ -1104,7 +1104,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		if ( ( targ->moverState == MOVER_POS1 || targ->moverState == ROTATOR_POS1 ) )
 		{
 			if( targ->act )
-				targ->act( NULL, targ, inflictor, attacker);
+				targ->act( targ, inflictor, attacker );
 			else if( targ->use )
 				targ->use( targ, inflictor, attacker );
 		}
