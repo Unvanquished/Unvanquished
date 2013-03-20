@@ -35,6 +35,7 @@ Maryland 20850 USA.
 #include "cg_local.h"
 
 vmCvar_t rocket_menuFiles;
+vmCvar_t rocket_netSource;
 
 typedef struct
 {
@@ -46,7 +47,8 @@ typedef struct
 
 static const cvarTable_t rocketCvarTable[] =
 {
-	{ &rocket_menuFiles, "rocket_menuFiles", "rocket.txt", CVAR_ARCHIVE }
+	{ &rocket_menuFiles, "rocket_menuFiles", "rocket.txt", CVAR_ARCHIVE },
+	{ &rocket_netSource, "rocket_netSource", "internet", CVAR_ARCHIVE }
 };
 
 static const size_t rocketCvarTableSize = ARRAY_LEN( rocketCvarTable );
@@ -148,6 +150,9 @@ void CG_Rocket_Init( void )
 			continue;
 		}
 
+		// Intialize data sources...
+		trap_Rocket_RegisterDataSource( "server_browser" );
+
 		trap_Rocket_LoadDocument( token );
 	}
 
@@ -169,23 +174,92 @@ static void CG_Rocket_EventGoto( const char *args )
 	trap_Rocket_DocumentAction( args, "goto" );
 }
 
-static void CG_Rocket_Test( const char *args )
+static int CG_StringToNetSource( const char *src )
+{
+	if ( !Q_stricmp( src, "local" ) )
+	{
+		return AS_LOCAL;
+	}
+	else if ( !Q_stricmp( src, "favorites" ) )
+	{
+		return AS_FAVORITES;
+	}
+	else
+	{
+		return AS_GLOBAL;
+	}
+}
+
+static void CG_Rocket_InitServers( const char *args )
+{
+	trap_LAN_ResetPings( CG_StringToNetSource( args ) );
+	trap_LAN_ServerStatus( NULL, NULL, 0 );
+
+	if ( !Q_stricmp( args, "internet" ) )
+	{
+		trap_Cmd_ExecuteText( EXEC_APPEND, "globalservers 0 86 full empty\n" );
+	}
+
+	else if ( !Q_stricmp( args, "local" ) )
+	{
+		trap_Cmd_ExecuteText( EXEC_APPEND, "localservers\n" );
+	}
+
+	trap_LAN_UpdateVisiblePings( CG_StringToNetSource( args ) );
+}
+
+static void CG_Rocket_BuildServerList( const char *args )
 {
 	char data[ MAX_INFO_STRING ] = { 0 };
 	int i;
-	trap_Rocket_RegisterDataSource( "high_scores" );
 
-	for ( i = 0; i < 5; ++i )
+	if ( !Q_stricmp( args, "internet" ) )
 	{
-		Com_Memset( &data, 0, sizeof( data ) );
-		Info_SetValueForKey( data, "name", "Ishq", qfalse );
-		Info_SetValueForKey( data, "colour", "Red", qfalse );
-		Info_SetValueForKey( data, "wave", va( "%d", i ), qfalse );
-		Info_SetValueForKey( data, "score", va( "%d", i * rand() % 50 ), qfalse );
-		trap_Rocket_DSAddRow( "high_scores", "scores", data );
-	}
+		int numServers;
 
+		trap_Rocket_DSClearTable( "server_browser", args );
+
+		trap_LAN_MarkServerVisible( CG_StringToNetSource( args ), -1, qtrue );
+
+		numServers = trap_LAN_GetServerCount( CG_StringToNetSource( args ) );
+
+		trap_LAN_UpdateVisiblePings( CG_StringToNetSource( args ) );
+
+		for ( i = 0; i < numServers; ++i )
+		{
+			char info[ MAX_STRING_CHARS ];
+			int ping, bots, clients;
+
+			Com_Memset( &data, 0, sizeof( data ) );
+
+			if ( !trap_LAN_ServerIsVisible( CG_StringToNetSource( args ), i ) )
+			{
+				continue;
+			}
+
+			ping = trap_LAN_GetServerPing( CG_StringToNetSource( args ), i );
+
+			if ( qtrue || !Q_stricmp( args, "favorites" ) )
+			{
+				trap_LAN_GetServerInfo( CG_StringToNetSource( args ), i, info, MAX_INFO_STRING );
+
+				bots = atoi( Info_ValueForKey( info, "bots" ) );
+				clients = atoi( Info_ValueForKey( info, "clients" ) );
+
+				Info_SetValueForKey( data, "name", Info_ValueForKey( info, "hostname" ), qfalse );
+				Info_SetValueForKey( data, "players", va( "%d + (%d)", clients, bots ), qfalse );
+				Info_SetValueForKey( data, "ping", va( "%d", ping ), qfalse );
+
+				if ( ping > 0 )
+				{
+					trap_Rocket_DSAddRow( "server_browser", args, data );
+				}
+			}
+		}
+	}
 }
+
+
 
 
 typedef struct
@@ -196,9 +270,10 @@ typedef struct
 
 static const eventCmd_t eventCmdList[] =
 {
-	{ "add_score", &CG_Rocket_Test },
+	{ "build_list", &CG_Rocket_BuildServerList },
 	{ "close", &CG_Rocket_EventClose },
 	{ "goto", &CG_Rocket_EventGoto },
+	{ "init_servers", &CG_Rocket_InitServers },
 	{ "open", &CG_Rocket_EventOpen },
 	{ "show", &CG_Rocket_EventOpen }
 };

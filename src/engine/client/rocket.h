@@ -52,6 +52,7 @@ void Rocket_RegisterDataSource( const char *name );
 void Rocket_DSAddRow( const char *name, const char *table, const char *data );
 void Rocket_DSChangeRow( const char *name, const char *table, const int row, const char *data );
 void Rocket_DSRemoveRow( const char *name, const char *table, const int row );
+void Rocket_DSClearTable( const char *name, const char *table );
 #if defined( __cplusplus )
 }
 #endif

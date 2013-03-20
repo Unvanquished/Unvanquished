@@ -79,7 +79,11 @@ public:
 		NotifyRowRemove( table, row, 1 );
 	}
 
-	void ClearData() { }
+	void ClearTable( const char *table )
+	{
+		data.erase( table );
+		NotifyRowChange( table );
+	}
 
 
 private:

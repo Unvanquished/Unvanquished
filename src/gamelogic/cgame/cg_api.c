@@ -1356,6 +1356,12 @@ int trap_LAN_CompareServers( int source, int sortKey, int sortDir, int s1, int s
 	return syscall( CG_LAN_COMPARESERVERS, source, sortKey, sortDir, s1, s2 );
 }
 
+void trap_Cmd_ExecuteText( int exec_when, const char *text )
+{
+	syscall( CG_CMD_EXECUTETEXT, exec_when, text );
+}
+
+
 void trap_Rocket_Init( void )
 {
 	syscall( CG_ROCKET_INIT );
@@ -1409,4 +1415,9 @@ void trap_Rocket_DSChangeRow( const char *name, const char *table, int row, cons
 void trap_Rocket_DSRemoveRow( const char *name, const char *table, int row )
 {
 	syscall( CG_ROCKET_DSREMOVEROW, name, table, row );
+}
+
+void trap_Rocket_DSClearTable( const char *name, const char *table )
+{
+	syscall( CG_ROCKET_DSCLEARTABLE, name, table );
 }

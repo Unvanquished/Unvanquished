@@ -2248,6 +2248,13 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_LAN_COMPARESERVERS:
 			return LAN_CompareServers( args[ 1 ], args[ 2 ], args[ 3 ], args[ 4 ], args[ 5 ] );
 
+		case CG_CMD_EXECUTETEXT:
+			Cbuf_ExecuteText( args[ 1 ], VMA( 2 ) );
+			return 0;
+
+		case CG_ROCKET_DSCLEARTABLE:
+			Rocket_DSClearTable( VMA(1), VMA(2) );
+			return 0;
 
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );

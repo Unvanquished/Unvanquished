@@ -644,6 +644,17 @@ void Rocket_DSRemoveRow( const char *name, const char *table, const int row )
 
 	dataSourceMap[ name ]->RemoveRow( table, row );
 }
+
+void Rocket_DSClearTable( const char *name, const char *table )
+{
+	if ( dataSourceMap.find( name ) == dataSourceMap.end() )
+	{
+		Com_Printf( "^1ERROR: ^7Rocket_DSClearTable: data source %s does not exist.\n", name );
+		return;
+	}
+
+	dataSourceMap[ name ]->ClearTable( table );
+}
 #else
 void Rocket_Init( void ) { }
 void Rocket_Shutdown( void ) { }

@@ -252,6 +252,7 @@ typedef enum cgameImport_s
   CG_LAN_SERVERISINFAVORITELIST,
   CG_GETNEWS,
   CG_LAN_COMPARESERVERS,
+  CG_CMD_EXECUTETEXT,
   CG_ROCKET_INIT,
   CG_ROCKET_SHUTDOWN,
   CG_ROCKET_LOADDOCUMENT,
@@ -262,7 +263,8 @@ typedef enum cgameImport_s
   CG_ROCKET_REGISTERDATASOURCE,
   CG_ROCKET_DSADDROW,
   CG_ROCKET_DSCHANGEROW,
-  CG_ROCKET_DSREMOVEROW
+  CG_ROCKET_DSREMOVEROW,
+  CG_ROCKET_DSCLEARTABLE
 } cgameImport_t;
 
 typedef enum
@@ -534,7 +536,7 @@ int             trap_LAN_ServerStatus( const char *serverAddress, char *serverSt
 qboolean        trap_LAN_ServerIsInFavoriteList( int source, int n );
 qboolean        trap_GetNews( qboolean force );
 int             trap_LAN_CompareServers( int source, int sortKey, int sortDir, int s1, int s2 );
-
+void            trap_Cmd_ExecuteText( int exec_when, const char *text );
 void            trap_Rocket_Init( void );
 void            trap_Rocket_Shutdown( void );
 void            trap_Rocket_LoadDocument( const char *path );
@@ -546,3 +548,4 @@ void            trap_Rocket_RegisterDataSource( const char *name );
 void            trap_Rocket_DSAddRow( const char *name, const char *table, const char *data );
 void            trap_Rocket_DSChangeRow( const char *name, const char *table, int row, const char *data );
 void            trap_Rocket_DSRemoveRow( const char *name, const char *table, int row );
+void            trap_Rocket_DSClearTable( const char *name, const char *table );
