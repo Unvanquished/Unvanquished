@@ -176,7 +176,7 @@ void Svcmd_EntityShow_f( void )
 	}
 
 
-	if(selection->calltargets[0].name)
+	if(selection->callTargetCount)
 	{
 		G_Printf( "Targets:\n");
 

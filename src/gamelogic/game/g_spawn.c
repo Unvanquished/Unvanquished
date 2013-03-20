@@ -378,7 +378,7 @@ qboolean G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *enti
 {
 	switch (entityClass->chainType) {
 		case CHAIN_ACTIVE:
-			if(!entity->calltargets[0].name)
+			if(!entity->callTargetCount)
 			{
 				if( g_debugEntities.integer > -2 )
 					G_Printf( "^3WARNING: ^7Entity ^5#%i^7 of type ^5%s^7 needs to target to something — Removing it.\n", entity->s.number, entity->classname );
@@ -395,7 +395,7 @@ qboolean G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *enti
 			}
 			break;
 		case CHAIN_RELAY:
-			if(!entity->calltargets[0].name || !entity->names[0])
+			if(!entity->callTargetCount || !entity->names[0])
 			{
 				if( g_debugEntities.integer > -2 )
 					G_Printf( "^3WARNING: ^7Entity ^5#%i^7 of type ^5%s^7 needs a name as well as a target to conditionally relay the firing — Removing it.\n", entity->s.number, entity->classname );
@@ -722,6 +722,7 @@ void G_CleanUpSpawnedTargets( gentity_t *ent )
 	ent->calltargets[ j ].name = NULL;
 	ent->calltargets[ j ].action = NULL;
 	ent->calltargets[ j ].actionType = ECA_DEFAULT;
+	ent->callTargetCount = j;
 }
 
 qboolean G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFieldname, const char *actualFieldname, const int typeOfDeprecation  )
