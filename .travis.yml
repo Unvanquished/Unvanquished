@@ -15,5 +15,5 @@ install:
 script:
   - mkdir build
   - cd build
-  - cmake -DBUILD_DAEMONMAP=TRUE -DENABLE_W_ALL=TRUE ..
+  - cmake -DBUILD_DAEMONMAP=TRUE -DENABLE_W_ALL=TRUE -DFREETYPE_INCLUDE_DIR_freetype2=/usr/include/freetype2 ..
   - cmake --build . --target install
