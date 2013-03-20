@@ -49,6 +49,7 @@ void G_InitGentity( gentity_t *e )
 	e->classname = "noclass";
 	e->s.number = e - g_entities;
 	e->r.ownerNum = ENTITYNUM_NONE;
+	e->creationTime = level.time;
 }
 
 /*

@@ -4130,15 +4130,14 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 	built->takedamage = qtrue;
 	built->enabled = qfalse;
 	built->spawned = qfalse;
-	built->creationTime = built->s.time = level.time;
 
 	// build instantly in cheat mode
 	if ( builder->client && g_cheats.integer )
 	{
 		built->health = BG_Buildable( buildable )->health;
-		built->creationTime = built->s.time =
-		                     level.time - BG_Buildable( buildable )->buildTime;
+		built->creationTime -= BG_Buildable( buildable )->buildTime;
 	}
+	built->s.time = built->creationTime;
 
 	//things that vary for each buildable that aren't in the dbase
 	switch ( buildable )

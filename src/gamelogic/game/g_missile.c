@@ -495,7 +495,6 @@ gentity_t *fire_flamer( gentity_t *self, vec3_t start, vec3_t dir )
 	SnapVector( bolt->s.pos.trDelta );  // save net bandwidth
 
 	VectorCopy( start, bolt->r.currentOrigin );
-	bolt->creationTime = level.time; // for power fall-off
 
 	return bolt;
 }
@@ -584,7 +583,6 @@ gentity_t *fire_pulseRifle( gentity_t *self, vec3_t start, vec3_t dir )
 	SnapVector( bolt->s.pos.trDelta );  // save net bandwidth
 
 	VectorCopy( start, bolt->r.currentOrigin );
-	bolt->creationTime = level.time; // for power fall-off
 
 	return bolt;
 }
@@ -653,7 +651,6 @@ gentity_t *fire_luciferCannon( gentity_t *self, vec3_t start, vec3_t dir,
 	SnapVector( bolt->s.pos.trDelta );  // save net bandwidth
 
 	VectorCopy( start, bolt->r.currentOrigin );
-	bolt->creationTime = level.time; // for power fall-off
 
 //	Com_Printf("Luciball power = %d, speed = %d/s.\n", damage, speed);
 	return bolt;
