@@ -380,6 +380,39 @@ gentity chain handling
 =================================================================================
 */
 
+typedef struct
+{
+	const char *alias;
+	gentityCallAction_t action;
+} entityActionDescription_t;
+
+static const entityActionDescription_t actionDescriptions[] =
+{
+		{ "act",       ECA_ACT       },
+		{ "disable",   ECA_DISABLE   },
+		{ "enable",    ECA_ENABLE    },
+		{ "free",      ECA_FREE      },
+		{ "propagate", ECA_PROPAGATE },
+		{ "reset",     ECA_RESET     },
+		{ "toggle",    ECA_TOGGLE    },
+};
+
+gentityCallAction_t G_GetCallActionFor( const char* action )
+{
+	entityActionDescription_t *foundDescription;
+
+	if(!action)
+		return ECA_DEFAULT;
+
+	foundDescription = bsearch(action, actionDescriptions, ARRAY_LEN( actionDescriptions ),
+		             sizeof( entityActionDescription_t ), cmdcmp );
+
+	if(foundDescription && foundDescription->alias)
+		return foundDescription->action;
+
+	return ECA_CUSTOM;
+}
+
 gentity_t *G_FindNextTarget(gentity_t *currentTarget, int *targetIndex, int *nameIndex, gentity_t *self)
 {
 	if (currentTarget)

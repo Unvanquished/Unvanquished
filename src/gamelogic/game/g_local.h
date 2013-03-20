@@ -894,7 +894,6 @@ qboolean G_SpawnVector( const char *key, const char *defaultString, float *out )
 void     G_SpawnEntitiesFromString( void );
 void     G_CleanUpSpawnedTargets( gentity_t *ent );
 char     *G_NewString( const char *string );
-gentityCallAction_t G_GetTargetActionFor( const char* action );
 
 //
 // g_cmds.c
@@ -1086,6 +1085,7 @@ qboolean   G_Visible( gentity_t *ent1, gentity_t *ent2, int contents );
 qboolean   G_EntitiesFree( void );
 
 //chain
+gentityCallAction_t G_GetCallActionFor( const char* action );
 void       G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call);
 gentity_t  *G_FindNextTarget( gentity_t *targ, int *tIx, int *tnIx, gentity_t *self );
 gentity_t  *G_PickRandomTargetFor( gentity_t *self );

@@ -73,7 +73,7 @@ void Svcmd_EntityFire_f( void )
 	{
 		trap_Argv( 2, argument, sizeof( argument ) );
 		callDefinition.action = argument;
-		callDefinition.actionType = G_GetTargetActionFor( callDefinition.action );
+		callDefinition.actionType = G_GetCallActionFor( callDefinition.action );
 	}
 
 	G_Printf( "firing ");

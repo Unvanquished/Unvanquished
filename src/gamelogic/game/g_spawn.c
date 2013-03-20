@@ -158,24 +158,6 @@ static const field_t fields[] =
 	{ "yaw",                 FOFS( s.angles ),            F_YAW       },
 };
 
-
-typedef struct
-{
-	const char *alias;
-	gentityCallAction_t action;
-} entityActionDescription_t;
-
-static const entityActionDescription_t actionDescriptions[] =
-{
-		{ "act",       ECA_ACT       },
-		{ "disable",   ECA_DISABLE   },
-		{ "enable",    ECA_ENABLE    },
-		{ "free",      ECA_FREE      },
-		{ "propagate", ECA_PROPAGATE },
-		{ "reset",     ECA_RESET     },
-		{ "toggle",    ECA_TOGGLE    },
-};
-
 typedef enum
 {
 	/*
@@ -724,22 +706,6 @@ void G_SpawnGEntityFromSpawnVars( void )
 	}
 }
 
-gentityCallAction_t G_GetTargetActionFor( const char* action )
-{
-	entityActionDescription_t *foundDescription;
-
-	if(!action)
-		return ECA_DEFAULT;
-
-	foundDescription = bsearch(action, actionDescriptions, ARRAY_LEN( actionDescriptions ),
-		             sizeof( entityActionDescription_t ), cmdcmp );
-
-	if(foundDescription && foundDescription->alias)
-		return foundDescription->action;
-
-	return ECA_CUSTOM;
-}
-
 void G_CleanUpSpawnedTargets( gentity_t *ent )
 {
 	int i, j;
@@ -749,7 +715,7 @@ void G_CleanUpSpawnedTargets( gentity_t *ent )
 	{
 		if (ent->targets[i].name) {
 			ent->targets[j] = ent->targets[i];
-			ent->targets[j].actionType = G_GetTargetActionFor(ent->targets[i].action);
+			ent->targets[j].actionType = G_GetCallActionFor(ent->targets[i].action);
 			j++;
 		}
 	}
