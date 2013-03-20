@@ -173,8 +173,6 @@ static void G_PuntBlocker( gentity_t *self, gentity_t *blocker )
         }
 }
 
-#define POWER_REFRESH_TIME 2000
-
 /*
 ================
 G_FindPower
@@ -772,15 +770,7 @@ void G_RGSCalculateRate( gentity_t *self )
 	gentity_t       *rgs;
 	float           rate, d, dr, q;
 
-	if ( self->s.modelindex == BA_A_LEECH )
-	{
-		range[ 0 ] = range[ 1 ] = range[ 2 ] = LEECH_RANGE;
-	}
-	else if ( self->s.modelindex == BA_H_DRILL )
-	{
-		range[ 0 ] = range[ 1 ] = range[ 2 ] = DRILL_RANGE;
-	}
-	else
+	if ( !self->s.modelindex == BA_A_LEECH && !self->s.modelindex == BA_H_DRILL )
 	{
 		return;
 	}
@@ -795,6 +785,7 @@ void G_RGSCalculateRate( gentity_t *self )
 	{
 		rate = level.mineRate;
 
+		range[ 0 ] = range[ 1 ] = range[ 2 ] = RGS_RANGE * 2.0f; // own range plus neighbor range
 		VectorAdd( self->s.origin, range, maxs );
 		VectorSubtract( self->s.origin, range, mins );
 		numNeighbors = trap_EntitiesInBox( mins, maxs, neighbors, MAX_GENTITIES );
@@ -808,15 +799,15 @@ void G_RGSCalculateRate( gentity_t *self )
 			{
 				d = Distance( self->s.origin, rgs->s.origin );
 
-				// Discard RGS not in 2 * range and prevent divisin by zero on LEECH_RANGE = 0
-				if ( 2 * range[ 0 ] - d < 0 )
+				// Discard RGS not in range and prevent divisin by zero on RGS_RANGE = 0
+				if ( range[ 0 ] - d < 0 )
 				{
 					continue;
 				}
 
 				// q is the ratio of the part of a sphere with radius r that intersects with
 				// another sphere of equal size and distance d
-				dr = d / range[ 0 ];
+				dr = d / RGS_RANGE;
 				q = ((dr * dr * dr) - 12.0f * dr + 16.0f) / 16.0f;
 
 				// Two rgs together should mine at a rate proportional to the volume of the
@@ -842,7 +833,7 @@ void G_RGSCalculateRate( gentity_t *self )
 ================
 G_RGSInformNeighbors
 
-Adjust the rate of all interfering neighbors of a RGS
+Adjust the rate of all RGS in range
 ================
 */
 void G_RGSInformNeighbors( gentity_t *self )
@@ -852,19 +843,12 @@ void G_RGSInformNeighbors( gentity_t *self )
 	gentity_t       *rgs;
 	float           d;
 
-	if ( self->s.modelindex == BA_A_LEECH )
-	{
-		range[ 0 ] = range[ 1 ] = range[ 2 ] = LEECH_RANGE;
-	}
-	else if ( self->s.modelindex == BA_H_DRILL )
-	{
-		range[ 0 ] = range[ 1 ] = range[ 2 ] = DRILL_RANGE;
-	}
-	else
+	if ( !self->s.modelindex == BA_A_LEECH && !self->s.modelindex == BA_H_DRILL )
 	{
 		return;
 	}
 
+	range[ 0 ] = range[ 1 ] = range[ 2 ] = RGS_RANGE * 2.0f; // own range plus neighbor range
 	VectorAdd( self->s.origin, range, maxs );
 	VectorSubtract( self->s.origin, range, mins );
 	numNeighbors = trap_EntitiesInBox( mins, maxs, neighbors, MAX_GENTITIES );
@@ -878,8 +862,8 @@ void G_RGSInformNeighbors( gentity_t *self )
 		{
 			d = Distance( self->s.origin, rgs->s.origin );
 
-			// Discard RGS not in 2 * LEECH_RANGE
-			if ( 2 * range[ 0 ] - d < 0 )
+			// Discard RGS not in range
+			if ( range[ 0 ] - d < 0 )
 			{
 				continue;
 			}
@@ -887,6 +871,28 @@ void G_RGSInformNeighbors( gentity_t *self )
 			G_RGSCalculateRate( rgs );
 		}
 	}
+}
+
+/*
+================
+G_RGSPredictEfficiency
+
+Predict the efficiency of a RGS constructed at the given point
+================
+*/
+int G_RGSPredictEfficiency( vec3_t origin )
+{
+	gentity_t dummy;
+
+	memset( &dummy, 0, sizeof( gentity_t ) );
+	VectorCopy( origin, dummy.s.origin );
+	dummy.s.modelindex = BA_A_LEECH;
+	dummy.spawned = qtrue;
+	dummy.powered = qtrue;
+
+	G_RGSCalculateRate( &dummy );
+
+	return dummy.s.weaponAnim;
 }
 
 /*
@@ -1891,50 +1897,6 @@ void ATrapper_Think( gentity_t *self )
 
 /*
 ================
-G_SuicideIfNoPower
-
-Destroy human structures that have been unpowered too long
-================
-*/
-static qboolean G_SuicideIfNoPower( gentity_t *self )
-{
-	if ( self->buildableTeam != TEAM_HUMANS )
-	{
-		return qfalse;
-	}
-
-	if ( !self->powered )
-	{
-		// if the power hasn't reached this buildable for some time, then destroy the buildable
-		if ( self->count == 0 )
-		{
-			self->count = level.time;
-		}
-		else if ( ( level.time - self->count ) >= HUMAN_BUILDABLE_INACTIVE_TIME )
-		{
-			if ( self->parentNode )
-			{
-				G_Damage( self, NULL, g_entities + self->parentNode->killedBy,
-				          NULL, NULL, self->health, 0, MOD_NOCREEP );
-			}
-			else
-			{
-				G_Damage( self, NULL, NULL, NULL, NULL, self->health, 0, MOD_NOCREEP );
-			}
-
-			return qtrue;
-		}
-	}
-	else
-	{
-		self->count = 0;
-	}
-
-	return qfalse;
-}
-
-/*
-================
 G_IdlePowerState
 
 Set buildable idle animation to match power state
@@ -1959,6 +1921,19 @@ static void G_IdlePowerState( gentity_t *self )
 }
 
 //==================================================================================
+
+/*
+================
+HGeneric_Think
+
+A generic think function for human buildables
+================
+*/
+void HGeneric_Think( gentity_t *self )
+{
+	self->powered = G_FindPower( self, qfalse );
+	self->nextthink = level.time + BG_Buildable( self->s.modelindex )->nextthink;
+}
 
 /*
 ================
@@ -2049,13 +2024,7 @@ void HSpawn_Think( gentity_t *self )
 {
 	gentity_t *ent;
 
-	// set parentNode
-	self->powered = G_FindPower( self, qfalse );
-
-	if ( G_SuicideIfNoPower( self ) )
-	{
-		return;
-	}
+	HGeneric_Think( self );
 
 	if ( self->spawned )
 	{
@@ -2094,8 +2063,6 @@ void HSpawn_Think( gentity_t *self )
 			}
 		}
 	}
-
-	self->nextthink = level.time + BG_Buildable( self->s.modelindex )->nextthink;
 }
 
 //==================================================================================
@@ -2143,12 +2110,7 @@ void HRepeater_Think( gentity_t *self )
 	int              i;
 	gentity_t        *powerEnt;
 
-	self->powered = G_FindPower( self, qfalse );
-
-	if ( G_SuicideIfNoPower( self ) )
-	{
-		return;
-	}
+	HGeneric_Think( self );
 
 	powerEnt = G_InPowerZone( self );
 
@@ -2170,7 +2132,6 @@ void HRepeater_Think( gentity_t *self )
 	}
 
 	G_IdlePowerState( self );
-	self->nextthink = level.time + POWER_REFRESH_TIME;
 }
 
 /*
@@ -2327,12 +2288,7 @@ Think for armoury
 */
 void HArmoury_Think( gentity_t *self )
 {
-	//make sure we have power
-	self->nextthink = level.time + POWER_REFRESH_TIME;
-
-	self->powered = G_FindPower( self, qfalse );
-
-	G_SuicideIfNoPower( self );
+	HGeneric_Think( self );
 }
 
 //==================================================================================
@@ -2346,12 +2302,7 @@ Think for dcc
 */
 void HDCC_Think( gentity_t *self )
 {
-	//make sure we have power
-	self->nextthink = level.time + POWER_REFRESH_TIME;
-
-	self->powered = G_FindPower( self, qfalse );
-
-	G_SuicideIfNoPower( self );
+	HGeneric_Think( self );
 }
 
 //==================================================================================
@@ -2390,14 +2341,7 @@ void HMedistat_Think( gentity_t *self )
 	gentity_t *player;
 	qboolean  occupied = qfalse;
 
-	self->nextthink = level.time + BG_Buildable( self->s.modelindex )->nextthink;
-
-	self->powered = G_FindPower( self, qfalse );
-
-	if ( G_SuicideIfNoPower( self ) )
-	{
-		return;
-	}
+	HGeneric_Think( self );
 
 	G_IdlePowerState( self );
 
@@ -2780,18 +2724,10 @@ Think function for MG turret
 */
 void HMGTurret_Think( gentity_t *self )
 {
-	self->nextthink = level.time +
-	                  BG_Buildable( self->s.modelindex )->nextthink;
+	HGeneric_Think( self );
 
 	// Turn off client side muzzle flashes
 	self->s.eFlags &= ~EF_FIRING;
-
-	self->powered = G_FindPower( self, qfalse );
-
-	if ( G_SuicideIfNoPower( self ) )
-	{
-		return;
-	}
 
 	G_IdlePowerState( self );
 
@@ -2877,14 +2813,7 @@ Think function for Tesla Generator
 */
 void HTeslaGen_Think( gentity_t *self )
 {
-	self->nextthink = level.time + BG_Buildable( self->s.modelindex )->nextthink;
-
-	self->powered = G_FindPower( self, qfalse );
-
-	if ( G_SuicideIfNoPower( self ) )
-	{
-		return;
-	}
+	HGeneric_Think( self );
 
 	G_IdlePowerState( self );
 
@@ -2958,8 +2887,7 @@ void HDrill_Think( gentity_t *self )
 {
 	qboolean active, lastThinkActive;
 
-	self->nextthink = level.time + BG_Buildable( self->s.modelindex )->nextthink;
-	self->powered = G_FindPower( self, qfalse );
+	HGeneric_Think( self );
 
 	active = self->spawned & self->powered;
 	lastThinkActive = self->s.weapon > 0;
@@ -2976,6 +2904,8 @@ void HDrill_Think( gentity_t *self )
 	{
 		G_ModifyBuildPoints( TEAM_HUMANS, self->s.weapon / 60000.0f );
 	}
+
+	G_IdlePowerState( self );
 }
 
 /*

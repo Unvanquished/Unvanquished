@@ -308,7 +308,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define LEECH_SPLASHDAMAGE       30
 #define LEECH_SPLASHRADIUS       200
 #define LEECH_CREEPSIZE          120
-#define LEECH_RANGE              750.0f
 #define LEECH_LIFETIME           3000
 #define LEECH_REPEAT             3000
 #define LEECH_K_SCALE            1.0f
@@ -565,7 +564,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define DRILL_HEALTH           HBHM(200)
 #define DRILL_SPLASHDAMAGE     50
 #define DRILL_SPLASHRADIUS     100
-#define DRILL_RANGE            750.0f
 #define DRILL_VALUE            HBVM(DRILL_BP)
 
 #define MGTURRET_BP               8
@@ -666,8 +664,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define HUMAN_BUILDER_SCOREINC        50 // builders receive this many points every 10 seconds
 #define ALIEN_BUILDER_SCOREINC        AVM(100) // builders receive this many points every 10 seconds
 
-#define HUMAN_BUILDABLE_INACTIVE_TIME 90000
-
 /*
  * Misc
  */
@@ -680,22 +676,21 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define FREEKILL_ALIEN                     ALIEN_CREDITS_PER_KILL
 #define FREEKILL_HUMAN                     LEVEL0_VALUE
 
-#define DEFAULT_ALIEN_BUILDPOINTS          "150"
-#define DEFAULT_ALIEN_QUEUE_TIME           "12000"
-#define DEFAULT_ALIEN_STAGE2_THRESH        "400"
-#define DEFAULT_ALIEN_STAGE3_THRESH        "550"
-#define DEFAULT_ALIEN_MAX_STAGE            "2"
-#define DEFAULT_HUMAN_BUILDPOINTS          "100"
-#define DEFAULT_HUMAN_QUEUE_TIME           "8000"
-#define DEFAULT_HUMAN_REPEATER_BUILDPOINTS "20"
-#define DEFAULT_HUMAN_REPEATER_QUEUE_TIME  "2000"
-#define DEFAULT_HUMAN_REPEATER_MAX_ZONES   "500"
-#define DEFAULT_HUMAN_STAGE2_THRESH        "400"
-#define DEFAULT_HUMAN_STAGE3_THRESH        "550"
-#define DEFAULT_HUMAN_MAX_STAGE            "2"
-#define DEFAULT_STAGE_HYSTERESIS_FACTOR    "50"
+#define RGS_RANGE                          750.0f
+#define DEFAULT_INITIAL_BUILD_POINTS       "50"
+#define DEFAULT_INITIAL_MINE_RATE          "10"
+#define DEFAULT_MINE_RATE_HALF_LIFE        "15"
 
-#define DAMAGE_FRACTION_FOR_KILL           0.5f //how much damage players (versus structures) need to
-//do to increment the stage kill counters
+#define DEFAULT_ALIEN_STAGE1_BELOW         "300"
+#define DEFAULT_ALIEN_STAGE2_ABOVE         "350"
+#define DEFAULT_ALIEN_STAGE2_BELOW         "500"
+#define DEFAULT_ALIEN_STAGE3_ABOVE         "550"
+#define DEFAULT_ALIEN_MAX_STAGE            "2"
+
+#define DEFAULT_HUMAN_STAGE1_BELOW         "300"
+#define DEFAULT_HUMAN_STAGE2_ABOVE         "350"
+#define DEFAULT_HUMAN_STAGE2_BELOW         "500"
+#define DEFAULT_HUMAN_STAGE3_ABOVE         "550"
+#define DEFAULT_HUMAN_MAX_STAGE            "2"
 
 #define MAXIMUM_BUILD_TIME                 20000 // used for pie timer

@@ -1795,6 +1795,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	ent->client->ps.stats[ STAT_TEAM ] = ent->client->pers.teamSelection;
 
 	ent->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
+	ent->client->ps.stats[ STAT_PREDICTION ] = 0;
 	ent->client->ps.stats[ STAT_STATE ] = 0;
 	VectorSet( ent->client->ps.grapplePoint, 0.0f, 0.0f, 1.0f );
 

@@ -39,6 +39,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define CROUCH_VIEWHEIGHT  12
 #define DEAD_VIEWHEIGHT    4 // height from ground
 
+#define POWER_REFRESH_TIME 2000 // nextthink time for power checks
+
 // QVM-specific
 #ifdef Q3_VM
 #define QVM_STATIC static
@@ -223,6 +225,7 @@ void Pmove( pmove_t *pmove );
 //===================================================================================
 
 // player_state->stats[] indexes
+// netcode has space for 16 stats
 typedef enum
 {
   STAT_HEALTH,
@@ -237,8 +240,9 @@ typedef enum
   STAT_MISC, // for uh...misc stuff (pounce, trample, lcannon)
   STAT_BUILDABLE, // which ghost model to display for building
   STAT_FALLDIST, // the distance the player fell
-  STAT_VIEWLOCK // direction to lock the view in
-  // netcode has space for 3 more
+  STAT_VIEWLOCK, // direction to lock the view in
+  STAT_PREDICTION // predictions for current player action (RGS efficiency)
+  // netcode has space for 2 more
 } statIndex_t;
 
 #define SCA_WALLCLIMBER     0x00000001

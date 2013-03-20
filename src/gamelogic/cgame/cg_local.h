@@ -1498,6 +1498,7 @@ extern  vmCvar_t            cg_timescale;
 extern  vmCvar_t            cg_noTaunt;
 extern  vmCvar_t            cg_drawSurfNormal;
 extern  vmCvar_t            cg_drawBBOX;
+extern  vmCvar_t            cg_drawEntityInfo;
 extern  vmCvar_t            cg_wwSmoothTime;
 extern  vmCvar_t            cg_disableBlueprintErrors;
 extern  vmCvar_t            cg_depthSortParticles;

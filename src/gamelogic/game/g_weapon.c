@@ -885,6 +885,7 @@ void cancelBuildFire( gentity_t *ent )
 	if ( ent->client->ps.stats[ STAT_BUILDABLE ] != BA_NONE )
 	{
 		ent->client->ps.stats[ STAT_BUILDABLE ] = BA_NONE;
+		ent->client->ps.stats[ STAT_PREDICTION ] = 0;
 		return;
 	}
 

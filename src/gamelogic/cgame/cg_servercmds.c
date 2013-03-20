@@ -264,7 +264,7 @@ static void CG_AnnounceAlienStageTransition( stage_t from, stage_t to )
 	else if ( to < from )
 	{
 		trap_S_StartLocalSound( cgs.media.alienStageTransition, CHAN_ANNOUNCER ); // TODO: Add alien stage down sound
-		CG_CenterPrint( _("We have devolved!"), 200, GIANTCHAR_WIDTH * 4 );
+		CG_CenterPrint( _("^1We have devolved!"), 200, GIANTCHAR_WIDTH * 4 );
 	}
 }
 
@@ -288,7 +288,7 @@ static void CG_AnnounceHumanStageTransition( stage_t from, stage_t to )
 	else if ( to < from )
 	{
 		trap_S_StartLocalSound( cgs.media.humanStageTransition, CHAN_ANNOUNCER ); // TODO: Add human stage down sound
-		CG_CenterPrint( _("Reinforcements are lost!"), 200, GIANTCHAR_WIDTH * 4 );
+		CG_CenterPrint( _("^1Reinforcements are lost!"), 200, GIANTCHAR_WIDTH * 4 );
 	}
 }
 
