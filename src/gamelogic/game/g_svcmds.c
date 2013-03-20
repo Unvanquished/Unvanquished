@@ -176,7 +176,7 @@ void Svcmd_EntityShow_f( void )
 	}
 
 
-	if(selection->targets[0].name)
+	if(selection->calltargets[0].name)
 	{
 		G_Printf( "Targets:\n");
 
@@ -186,7 +186,7 @@ void Svcmd_EntityShow_f( void )
 
 			if(lastTargetIndex != targetIndex)
 			{
-				G_Printf(" • \"%s:%s\"\n", selection->targets[targetIndex].name, selection->targets[targetIndex].action ? selection->targets[targetIndex].action : "default");
+				G_Printf(" • \"%s:%s\"\n", selection->calltargets[targetIndex].name, selection->calltargets[targetIndex].action ? selection->calltargets[targetIndex].action : "default");
 				lastTargetIndex = targetIndex;
 			}
 

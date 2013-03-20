@@ -107,7 +107,7 @@ typedef enum
   F_INT,
   F_FLOAT,
   F_STRING,
-  F_TARGET,
+  F_CALLTARGET,
   F_TIME,
   F_3D_VECTOR,
   F_4D_VECTOR,
@@ -146,10 +146,10 @@ static const field_t fields[] =
 	{ "spawnflags",          FOFS( spawnflags ),          F_INT       },
 	{ "speed",               FOFS( config.speed ),        F_FLOAT     },
 	{ "stage",               FOFS( conditions.stage ),    F_INT       },
-	{ "target",			     FOFS( targets[ 0 ] ),        F_TARGET	  },
-	{ "target2", 			 FOFS( targets[ 1 ] ),        F_TARGET	  },
-	{ "target3",			 FOFS( targets[ 2 ] ),        F_TARGET	  },
-	{ "target4",			 FOFS( targets[ 3 ] ),        F_TARGET	  },
+	{ "target",			     FOFS( calltargets[ 0 ] ),    F_CALLTARGET },
+	{ "target2", 			 FOFS( calltargets[ 1 ] ),    F_CALLTARGET },
+	{ "target3",			 FOFS( calltargets[ 2 ] ),    F_CALLTARGET },
+	{ "target4",			 FOFS( calltargets[ 3 ] ),    F_CALLTARGET },
 	{ "targetname",			 FOFS( names[ 1 ] ),          F_STRING,	  ENT_V_RENAMED, "name"},
 	{ "targetShaderName",    FOFS( targetShaderName ),    F_STRING    },
 	{ "targetShaderNewName", FOFS( targetShaderNewName ), F_STRING    },
@@ -378,7 +378,7 @@ qboolean G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *enti
 {
 	switch (entityClass->chainType) {
 		case CHAIN_ACTIVE:
-			if(!entity->targets[0].name)
+			if(!entity->calltargets[0].name)
 			{
 				if( g_debugEntities.integer > -2 )
 					G_Printf( "^3WARNING: ^7Entity ^5#%i^7 of type ^5%s^7 needs to target to something — Removing it.\n", entity->s.number, entity->classname );
@@ -395,7 +395,7 @@ qboolean G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *enti
 			}
 			break;
 		case CHAIN_RELAY:
-			if(!entity->targets[0].name || !entity->names[0])
+			if(!entity->calltargets[0].name || !entity->names[0])
 			{
 				if( g_debugEntities.integer > -2 )
 					G_Printf( "^3WARNING: ^7Entity ^5#%i^7 of type ^5%s^7 needs a name as well as a target to conditionally relay the firing — Removing it.\n", entity->s.number, entity->classname );
@@ -549,7 +549,7 @@ char *G_NewString( const char *string )
 G_NewTarget
 =============
 */
-gentityCallDefinition_t G_NewTarget( const char *string )
+gentityCallDefinition_t G_NewCallDefinition( const char *string )
 {
 	char *stringPointer;
 	int  i, stringLength;
@@ -606,8 +606,8 @@ void G_ParseField( const char *key, const char *rawString, gentity_t *entity )
 			* ( char ** )( entityData + resultingField->offset ) = G_NewString( rawString );
 			break;
 
-		case F_TARGET:
-			* ( gentityCallDefinition_t * )( entityData + resultingField->offset ) = G_NewTarget( rawString );
+		case F_CALLTARGET:
+			* ( gentityCallDefinition_t * )( entityData + resultingField->offset ) = G_NewCallDefinition( rawString );
 			break;
 
 		case F_TIME:
@@ -713,15 +713,15 @@ void G_CleanUpSpawnedTargets( gentity_t *ent )
 	j = 0;
 	for (i = 0; i < MAX_ENTITY_TARGETS; ++i)
 	{
-		if (ent->targets[i].name) {
-			ent->targets[j] = ent->targets[i];
-			ent->targets[j].actionType = G_GetCallActionFor(ent->targets[i].action);
+		if (ent->calltargets[i].name) {
+			ent->calltargets[j] = ent->calltargets[i];
+			ent->calltargets[j].actionType = G_GetCallActionFor(ent->calltargets[i].action);
 			j++;
 		}
 	}
-	ent->targets[ j ].name = NULL;
-	ent->targets[ j ].action = NULL;
-	ent->targets[ j ].actionType = ECA_DEFAULT;
+	ent->calltargets[ j ].name = NULL;
+	ent->calltargets[ j ].action = NULL;
+	ent->calltargets[ j ].actionType = ECA_DEFAULT;
 }
 
 qboolean G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFieldname, const char *actualFieldname, const int typeOfDeprecation  )

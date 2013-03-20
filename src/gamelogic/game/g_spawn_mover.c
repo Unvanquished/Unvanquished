@@ -2448,7 +2448,7 @@ void Think_SetupTrainTargets( gentity_t *ent )
 			start = path;
 		}
 
-		if ( !path->targets[ 0 ].name )
+		if ( !path->calltargets[ 0 ].name )
 		{
 			G_Printf( "Train corner at %s without a target\n",
 			          vtos( path->s.origin ) );

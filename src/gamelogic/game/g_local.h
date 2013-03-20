@@ -264,7 +264,7 @@ struct gentity_s
 	gentity_t    *powerSource;
 
 	// targeting
-	gentityCallDefinition_t targets[ MAX_ENTITY_TARGETS + 1 ];
+	gentityCallDefinition_t calltargets[ MAX_ENTITY_TARGETS + 1 ];
 	gentity_t    *activator;
 
 	/*

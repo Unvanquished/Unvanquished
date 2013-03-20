@@ -418,7 +418,7 @@ gentity_t *G_FindNextTarget(gentity_t *currentTarget, int *targetIndex, int *nam
 	if (currentTarget)
 		goto cont;
 
-	for (*targetIndex = 0; self->targets[*targetIndex].name; ++(*targetIndex))
+	for (*targetIndex = 0; self->calltargets[*targetIndex].name; ++(*targetIndex))
 	{
 		for( currentTarget = &g_entities[ MAX_CLIENTS ]; currentTarget < &g_entities[ level.num_entities ]; currentTarget++ )
 		{
@@ -427,7 +427,7 @@ gentity_t *G_FindNextTarget(gentity_t *currentTarget, int *targetIndex, int *nam
 
 			for (*nameIndex = 0; currentTarget->names[*nameIndex]; ++(*nameIndex))
 			{
-				if (!Q_stricmp(self->targets[*targetIndex].name, currentTarget->names[*nameIndex]))
+				if (!Q_stricmp(self->calltargets[*targetIndex].name, currentTarget->names[*nameIndex]))
 					return currentTarget;
 				cont: ;
 			}
@@ -457,8 +457,8 @@ gentity_t *G_PickRandomTargetFor( gentity_t *self )
 		{
 			G_Printf( "^3WARNING: ^7none of the following targets could be resolved for Entity ^5#%i^7:", self->s.number );
 
-			for( targetIndex = 0; self->targets[ targetIndex ].name; ++targetIndex )
-			  G_Printf( "%s%s", ( targetIndex == 0 ? "" : ", " ), self->targets[ targetIndex ].name );
+			for( targetIndex = 0; self->calltargets[ targetIndex ].name; ++targetIndex )
+			  G_Printf( "%s%s", ( targetIndex == 0 ? "" : ", " ), self->calltargets[ targetIndex ].name );
 			G_Printf( "\n" );
 		}
 		return NULL;
@@ -487,7 +487,7 @@ void G_FireRandomTargetOf( gentity_t *entity, gentity_t *activator )
 	while( ( possbileTarget = G_FindNextTarget( possbileTarget, &targetIndex, &nameIndex, entity ) ) != NULL )
 	{
 		choices[ totalChoiceCount ].recipient = possbileTarget;
-		choices[ totalChoiceCount ].target = &entity->targets[targetIndex];
+		choices[ totalChoiceCount ].target = &entity->calltargets[targetIndex];
 		totalChoiceCount++;
 	}
 
@@ -530,7 +530,7 @@ void G_FireAllTargetsOf( gentity_t *self, gentity_t *activator )
 	while( ( currentTarget = G_FindNextTarget( currentTarget, &targetIndex, &nameIndex, self ) ) != NULL )
 	{
 		call.caller = self; //reset the caller in case there have been nested calls
-		call.definition = &self->targets[ targetIndex ];
+		call.definition = &self->calltargets[ targetIndex ];
 
 		G_CallEntity(currentTarget, &call);
 
