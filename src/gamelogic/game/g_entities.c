@@ -395,6 +395,7 @@ static const entityActionDescription_t actionDescriptions[] =
 		{ "propagate", ECA_PROPAGATE },
 		{ "reset",     ECA_RESET     },
 		{ "toggle",    ECA_TOGGLE    },
+		{ "use",       ECA_USE       },
 };
 
 gentityCallAction_t G_GetCallActionFor( const char* action )
