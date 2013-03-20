@@ -734,7 +734,7 @@ static void CG_LightFlare( centity_t *cent )
 
 	newStatus = trap_CheckVisibility( cent->lfs.hTest );
 
-	trap_AddVisTestToScene( cent->lfs.hTest, es->origin, 8.0f );
+	trap_AddVisTestToScene( cent->lfs.hTest, es->origin, 16.0f );
 
 	memset( &flare, 0, sizeof( flare ) );
 
