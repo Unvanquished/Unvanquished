@@ -13,5 +13,5 @@ install:
 script:
   - mkdir build
   - cd build
-  - cmake ..
+  - cmake -DUSE_INTERNAL_GLEW=TRUE -DUSE_INTERNAL_WEBP=TRUE ..
   - cmake --build . --target install
