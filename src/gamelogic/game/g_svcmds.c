@@ -43,7 +43,8 @@ void Svcmd_EntityFire_f( void )
 	char argument[ MAX_STRING_CHARS ];
 	int  entityNum;
 	gentity_t *selection;
-	gentityCallDefinition_t target = { NULL, NULL, ECA_DEFAULT };
+	gentityCall_t call;
+	gentityCallDefinition_t callDefinition = { NULL, NULL, ECA_DEFAULT };
 
 	if ( trap_Argc() < 2 || trap_Argc() > 3 )
 	{
@@ -71,18 +72,22 @@ void Svcmd_EntityFire_f( void )
 	if( trap_Argc() >= 3 )
 	{
 		trap_Argv( 2, argument, sizeof( argument ) );
-		target.action = argument;
-		target.actionType = G_GetTargetActionFor( target.action );
+		callDefinition.action = argument;
+		callDefinition.actionType = G_GetTargetActionFor( callDefinition.action );
 	}
 
 	G_Printf( "firing ");
 	G_DebugPrintEntitiy( selection );
-	G_Printf( ":%s\n", target.action ? target.action : "default" );
+	G_Printf( ":%s\n", callDefinition.action ? callDefinition.action : "default" );
 
 	if(selection->names[0])
-		target.name = selection->names[0];
+		callDefinition.name = selection->names[0];
 
-	G_FireTarget( &target, selection, &g_entities[ ENTITYNUM_NONE ], &g_entities[ ENTITYNUM_NONE ] );
+	call.definition = &callDefinition;
+	call.caller = &g_entities[ ENTITYNUM_NONE ];
+	call.activator = &g_entities[ ENTITYNUM_NONE ] ;
+
+	G_CallEntity(selection, &call);
 }
 
 /*

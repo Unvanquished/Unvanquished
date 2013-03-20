@@ -445,6 +445,7 @@ void G_FireRandomTargetOf( gentity_t *entity, gentity_t *activator )
 	int       targetIndex, nameIndex;
 	gentity_t *possbileTarget = NULL;
 	int       totalChoiceCount = 0;
+	gentityCall_t call;
 	gentityTargetChoice_t choices[ MAX_GENTITIES ];
 	gentityTargetChoice_t *selectedChoice;
 
@@ -461,7 +462,11 @@ void G_FireRandomTargetOf( gentity_t *entity, gentity_t *activator )
 	if (!selectedChoice)
 		return;
 
-	G_FireTarget( selectedChoice->target, selectedChoice->recipient, entity, activator );
+	call.definition = selectedChoice->target;
+	call.caller = entity;
+	call.activator = activator;
+
+	G_CallEntity( selectedChoice->recipient, &call );
 }
 
 /*
@@ -478,6 +483,8 @@ void G_FireAllTargetsOf( gentity_t *self, gentity_t *activator )
 {
 	gentity_t *currentTarget = NULL;
 	int targetIndex, nameIndex;
+	gentityCall_t call;
+	call.activator = activator;
 
 	if ( self->targetShaderName && self->targetShaderNewName )
 	{
@@ -488,7 +495,10 @@ void G_FireAllTargetsOf( gentity_t *self, gentity_t *activator )
 
 	while( ( currentTarget = G_FindNextTarget( currentTarget, &targetIndex, &nameIndex, self ) ) != NULL )
 	{
-		G_FireTarget( &self->targets[ targetIndex ], currentTarget, self, activator );
+		call.caller = self; //reset the caller in case there have been nested calls
+		call.definition = &self->targets[ targetIndex ];
+
+		G_CallEntity(currentTarget, &call);
 
 		if ( !self->inuse )
 		{
@@ -498,27 +508,27 @@ void G_FireAllTargetsOf( gentity_t *self, gentity_t *activator )
 	}
 }
 
-void G_FireTarget(gentityCallDefinition_t *target, gentity_t *targetedEntity, gentity_t *caller, gentity_t *activator)
+void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 {
 	if ( g_debugEntities.integer > 1 )
 	{
 		G_Printf("Debug: [");
-		G_DebugPrintEntitiy(activator);
+		G_DebugPrintEntitiy(call->activator);
 		G_Printf("] ");
-		G_DebugPrintEntitiy(caller);
+		G_DebugPrintEntitiy(call->caller);
 		G_Printf(" → ");
 		G_DebugPrintEntitiy(targetedEntity);
-		G_Printf(":%s\n", target && target->action ? target->action : "default");
+		G_Printf(":%s\n", call->definition && call->definition->action ? call->definition->action : "default");
 	}
 
-	if(!targetedEntity->handleCall || !targetedEntity->handleCall(targetedEntity, target, caller, activator))
+	if(!targetedEntity->handleCall || !targetedEntity->handleCall(targetedEntity, call))
 	{
-		switch (target->actionType)
+		switch (call->definition->actionType)
 		{
 		case ECA_CUSTOM:
 			if ( g_debugEntities.integer > -1 )
 			{
-				G_Printf("^3Warning:^7 Unknown action \"%s\" for ", target->action) ;
+				G_Printf("^3Warning:^7 Unknown action \"%s\" for ", call->definition->action) ;
 				G_DebugPrintEntitiy(targetedEntity);
 				G_Printf("\n");
 			}
@@ -529,7 +539,7 @@ void G_FireTarget(gentityCallDefinition_t *target, gentity_t *targetedEntity, ge
 			return; //we have to handle notification differently in the free-case
 
 		case ECA_PROPAGATE:
-			G_FireAllTargetsOf( targetedEntity, activator);
+			G_FireAllTargetsOf( targetedEntity, call->activator);
 			break;
 
 		case ECA_ENABLE:
@@ -544,7 +554,7 @@ void G_FireTarget(gentityCallDefinition_t *target, gentity_t *targetedEntity, ge
 
 		case ECA_USE:
 			if (targetedEntity->use)
-				targetedEntity->use(targetedEntity, caller, activator);
+				targetedEntity->use(targetedEntity, call->caller, call->activator);
 			break;
 		case ECA_RESET:
 			if (targetedEntity->reset)
@@ -552,20 +562,20 @@ void G_FireTarget(gentityCallDefinition_t *target, gentity_t *targetedEntity, ge
 			break;
 		case ECA_ACT:
 			if (targetedEntity->act)
-				targetedEntity->act(target, targetedEntity, caller, activator);
+				targetedEntity->act(call->definition, targetedEntity, call->caller, call->activator);
 			break;
 
 		default:
 			//by default call act, or fall back to use as a means of backward compatibility, until everything we need has a proper act function
 			if (targetedEntity->act)
-				targetedEntity->act(target, targetedEntity, caller, activator);
+				targetedEntity->act(call->definition, targetedEntity, call->caller, call->activator);
 			else if (targetedEntity->use)
-				targetedEntity->use(targetedEntity, caller, activator);
+				targetedEntity->use(targetedEntity, call->caller, call->activator);
 			break;
 		}
 	}
 	if(targetedEntity->notify)
-		targetedEntity->notify( targetedEntity, target );
+		targetedEntity->notify( targetedEntity, call );
 }
 
 /*
