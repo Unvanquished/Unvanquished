@@ -232,6 +232,26 @@ typedef enum cgameImport_s
   CG_ADDVISTESTTOSCENE,
   CG_CHECKVISIBILITY,
   CG_UNREGISTERVISTEST,
+  CG_LAN_LOADCACHEDSERVERS,
+  CG_LAN_SAVECACHEDSERVERS,
+  CG_LAN_ADDSERVER,
+  CG_LAN_REMOVESERVER,
+  CG_LAN_GETPINGQUEUECOUNT,
+  CG_LAN_CLEARPING,
+  CG_LAN_GETPING,
+  CG_LAN_GETPINGINFO,
+  CG_LAN_GETSERVERCOUNT,
+  CG_LAN_GETSERVERADDRESSSTRING,
+  CG_LAN_GETSERVERINFO,
+  CG_LAN_GETSERVERPING,
+  CG_LAN_MARKSERVERVISIBLE,
+  CG_LAN_SERVERISVISIBLE,
+  CG_LAN_UPDATEVISIBLEPINGS,
+  CG_LAN_RESETPINGS,
+  CG_LAN_SERVERSTATUS,
+  CG_LAN_SERVERISINFAVORITELIST,
+  CG_GETNEWS,
+  CG_LAN_COMPARESERVERS,
   CG_ROCKET_INIT,
   CG_ROCKET_SHUTDOWN,
   CG_ROCKET_LOADDOCUMENT,
@@ -494,6 +514,27 @@ void            trap_AddVisTestToScene( qhandle_t hTest, vec3_t pos,
 					float depthAdjust );
 qboolean        trap_CheckVisibility( qhandle_t hTest );
 void            trap_UnregisterVisTest( qhandle_t hTest );
+void            trap_LAN_LoadCachedServers( void );
+void            trap_LAN_SaveCachedServers( void );
+int             trap_LAN_AddServer( int source, const char *name, const char *addr );
+void            trap_LAN_RemoveServer( int source, const char *addr );
+int             trap_LAN_GetPingQueueCount( void );
+void            trap_LAN_ClearPing( int n );
+void            trap_LAN_GetPing( int n, char *buf, int buflen, int *pingtime );
+void            trap_LAN_GetPingInfo( int n, char *buf, int buflen );
+int             trap_LAN_GetServerCount( int source );
+void            trap_LAN_GetServerAddressString( int source, int n, char *buf, int buflen );
+void            trap_LAN_GetServerInfo( int source, int n, char *buf, int buflen );
+int             trap_LAN_GetServerPing( int source, int n );
+void            trap_LAN_MarkServerVisible( int source, int n, qboolean visible );
+int             trap_LAN_ServerIsVisible( int source, int n );
+qboolean        trap_LAN_UpdateVisiblePings( int source );
+void            trap_LAN_ResetPings( int n );
+int             trap_LAN_ServerStatus( const char *serverAddress, char *serverStatus, int maxLen );
+qboolean        trap_LAN_ServerIsInFavoriteList( int source, int n );
+qboolean        trap_GetNews( qboolean force );
+int             trap_LAN_CompareServers( int source, int sortKey, int sortDir, int s1, int s2 );
+
 void            trap_Rocket_Init( void );
 void            trap_Rocket_Shutdown( void );
 void            trap_Rocket_LoadDocument( const char *path );

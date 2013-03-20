@@ -1256,6 +1256,106 @@ void trap_UnregisterVisTest( qhandle_t hTest )
 	syscall( CG_UNREGISTERVISTEST, hTest );
 }
 
+void trap_LAN_LoadCachedServers( void )
+{
+	syscall( CG_LAN_LOADCACHEDSERVERS );
+}
+
+void trap_LAN_SaveCachedServers( void )
+{
+	syscall( CG_LAN_SAVECACHEDSERVERS );
+}
+
+int trap_LAN_AddServer( int source, const char *name, const char *addr )
+{
+	return syscall( CG_LAN_ADDSERVER, source, name, addr );
+}
+
+void trap_LAN_RemoveServer( int source, const char *addr )
+{
+	syscall( CG_LAN_REMOVESERVER, source, addr );
+}
+
+int trap_LAN_GetPingQueueCount( void )
+{
+	return syscall( CG_LAN_GETPINGQUEUECOUNT );
+}
+
+void trap_LAN_ClearPing( int n )
+{
+	syscall( CG_LAN_CLEARPING, n );
+}
+
+void trap_LAN_GetPing( int n, char *buf, int buflen, int *pingtime )
+{
+	syscall( CG_LAN_GETPING, n, buf, buflen, pingtime );
+}
+
+void trap_LAN_GetPingInfo( int n, char *buf, int buflen )
+{
+	syscall( CG_LAN_GETPINGINFO, n, buf, buflen );
+}
+
+int trap_LAN_GetServerCount( int source )
+{
+	return syscall( CG_LAN_GETSERVERCOUNT, source );
+}
+
+void trap_LAN_GetServerAddressString( int source, int n, char *buf, int buflen )
+{
+	syscall( CG_LAN_GETSERVERADDRESSSTRING, source, n, buf, buflen );
+}
+
+void trap_LAN_GetServerInfo( int source, int n, char *buf, int buflen )
+{
+	syscall( CG_LAN_GETSERVERINFO, source, n, buf, buflen );
+}
+
+int trap_LAN_GetServerPing( int source, int n )
+{
+	return syscall( CG_LAN_GETSERVERPING, source, n );
+}
+
+void trap_LAN_MarkServerVisible( int source, int n, qboolean visible )
+{
+	syscall( CG_LAN_MARKSERVERVISIBLE, source, n, visible );
+}
+
+int trap_LAN_ServerIsVisible( int source, int n )
+{
+	return syscall( CG_LAN_SERVERISVISIBLE, source, n );
+}
+
+qboolean trap_LAN_UpdateVisiblePings( int source )
+{
+	return syscall( CG_LAN_UPDATEVISIBLEPINGS, source );
+}
+
+void trap_LAN_ResetPings( int n )
+{
+	syscall( CG_LAN_RESETPINGS, n );
+}
+
+int trap_LAN_ServerStatus( const char *serverAddress, char *serverStatus, int maxLen )
+{
+	return syscall( CG_LAN_SERVERSTATUS, serverAddress, serverStatus, maxLen );
+}
+
+qboolean trap_LAN_ServerIsInFavoriteList( int source, int n )
+{
+	return syscall( CG_LAN_SERVERISINFAVORITELIST, source, n );
+}
+
+qboolean trap_GetNews( qboolean force )
+{
+	return syscall( CG_GETNEWS, force );
+}
+
+int trap_LAN_CompareServers( int source, int sortKey, int sortDir, int s1, int s2 )
+{
+	return syscall( CG_LAN_COMPARESERVERS, source, sortKey, sortDir, s1, s2 );
+}
+
 void trap_Rocket_Init( void )
 {
 	syscall( CG_ROCKET_INIT );
