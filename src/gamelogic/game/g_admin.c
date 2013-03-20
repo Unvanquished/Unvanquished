@@ -4840,7 +4840,7 @@ qboolean G_admin_builder( gentity_t *ent )
 
 	if ( tr.fraction < 1.0f && ( traceEnt->s.eType == ET_BUILDABLE ) )
 	{
-		const char *builder;
+		const char *builder, *buildingName;
 
 		if ( !buildlog &&
 		     ent->client->pers.teamSelection != TEAM_NONE &&
@@ -4870,21 +4870,27 @@ qboolean G_admin_builder( gentity_t *ent )
 		}
 
 		builder = traceEnt->builtBy ? traceEnt->builtBy->name[ traceEnt->builtBy->nameOffset ] : "<world>";
+		buildingName = BG_Buildable( traceEnt->s.modelindex )->humanName;
+
+		if ( !buildingName )
+		{
+			buildingName = "[unknown building]";
+		}
 
 		if ( buildlog && traceEnt->builtBy && i < level.numBuildLogs )
 		{
 			ADMP( va( "%s %s %s %d", QQ( N_("^3builder: ^7$1$ built by $2$^7, buildlog #$3$\n") ),
-				  Quote( BG_Buildable( log->modelindex )->humanName ), Quote( builder ), MAX_CLIENTS + level.buildId - i - 1 ) );
+				  Quote( buildingName ), Quote( builder ), MAX_CLIENTS + level.buildId - i - 1 ) );
 		}
 		else if ( traceEnt->builtBy )
 		{
 			ADMP( va( "%s %s %s", QQ( N_("^3builder: ^7$1$ built by $2$^7\n") ),
-				  Quote( BG_Buildable( log->modelindex )->humanName ), Quote( builder ) ) );
+				  Quote( buildingName ), Quote( builder ) ) );
 		}
 		else
 		{
 			ADMP( va( "%s %s", QQ( N_("^3builder: ^7$1$ appears to be a layout item\n") ),
-				  Quote( BG_Buildable( traceEnt->s.modelindex )->humanName ) ) );
+				  Quote( buildingName ) ) );
 		}
 	}
 	else
