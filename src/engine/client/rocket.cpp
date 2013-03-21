@@ -683,6 +683,7 @@ Rocket::Core::String Rocket_QuakeToRMLColors( const char *in )
 	}
 
 	p = in;
+
 	while ( p && *p )
 	{
 		if ( *p == Q_COLOR_ESCAPE && *(p+1) != Q_COLOR_ESCAPE )
@@ -764,6 +765,7 @@ Rocket::Core::String Rocket_QuakeToRMLColors( const char *in )
 					out.Append( "<span style='color: red;'>" );
 					break;
 
+				case 64:
 				case COLOR_LTORANGE:
 					out.Append( "<span style='color: orange;'>" );
 					break;
@@ -784,6 +786,7 @@ Rocket::Core::String Rocket_QuakeToRMLColors( const char *in )
 			// Skip past color code
 			p++;
 			span = qtrue;
+			continue;
 		}
 
 		out.Append( *p );
