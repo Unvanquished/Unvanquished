@@ -17,3 +17,8 @@ script:
   - cd build
   - cmake -DBUILD_DAEMONMAP=TRUE -DENABLE_W_ALL=TRUE ..
   - cmake --build .
+
+notifications:
+  irc: "irc.freenode.org#unvanquished-dev"
+  on_success: always
+  on_failure: always
