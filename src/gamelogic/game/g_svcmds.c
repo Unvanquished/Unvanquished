@@ -142,7 +142,7 @@ void Svcmd_EntityShow_f( void )
 		G_Printf("%26s", vtos( selection->s.origin ) );
 	}
 	G_Printf( "\n⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼\n" );
-	G_Printf( "Classname: ^5%s^7\n", selection->classname );
+	G_Printf( "Classname: " S_COLOR_CYAN "%s" S_COLOR_WHITE "\n", selection->classname );
 	G_Printf( "Capabilities:%s%s%s%s%s%s%s\n\n",
 			selection->act ? " acts" : "",
 			selection->think ? " thinks" : "",

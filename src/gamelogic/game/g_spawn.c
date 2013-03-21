@@ -357,7 +357,7 @@ qboolean G_HandleEntityVersions( entityClassDescriptor_t *spawnDescription, gent
 	if ( !spawnDescription->replacement || !Q_stricmp(entity->classname, spawnDescription->replacement))
 	{
 		if ( g_debugEntities.integer > -2 )
-			G_Printf( "^1ERROR: ^7Entity ^5#%i ^7 of type ^5%s ^7has been marked deprecated but no replacement has been supplied\n", entity->s.number, entity->classname );
+			G_Printf( S_COLOR_RED "ERROR: " S_COLOR_WHITE "Entity " S_COLOR_CYAN "#%i " S_COLOR_WHITE " of type " S_COLOR_CYAN "%s " S_COLOR_WHITE "has been marked deprecated but no replacement has been supplied\n", entity->s.number, entity->classname );
 
 		return qfalse;
 	}
@@ -367,7 +367,7 @@ qboolean G_HandleEntityVersions( entityClassDescriptor_t *spawnDescription, gent
 		if( spawnDescription->versionState < ENT_V_TMPORARY
 		|| ( g_debugEntities.integer >= 1 && spawnDescription->versionState >= ENT_V_TMPORARY) )
 		{
-			G_Printf( "^3WARNING: ^7Entity ^5#%i ^7is of deprecated type ^5%s^7 — use ^5%s^7 instead\n", entity->s.number, entity->classname, spawnDescription->replacement );
+			G_Printf( S_COLOR_YELLOW "WARNING: " S_COLOR_WHITE "Entity " S_COLOR_CYAN "#%i " S_COLOR_WHITE "is of deprecated type ^5%s" S_COLOR_WHITE " — use ^5%s" S_COLOR_WHITE " instead\n", entity->s.number, entity->classname, spawnDescription->replacement );
 		}
 	}
 	entity->classname = spawnDescription->replacement;
@@ -381,7 +381,7 @@ qboolean G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *enti
 			if(!entity->callTargetCount)
 			{
 				if( g_debugEntities.integer > -2 )
-					G_Printf( "^3WARNING: ^7Entity ^5#%i^7 of type ^5%s^7 needs to target to something — Removing it.\n", entity->s.number, entity->classname );
+					G_Printf( S_COLOR_YELLOW "WARNING: " S_COLOR_WHITE "Entity " S_COLOR_CYAN "#%i" S_COLOR_WHITE " of type " S_COLOR_CYAN "%s" S_COLOR_WHITE " needs to target to something — Removing it.\n", entity->s.number, entity->classname );
 				return qfalse;
 			}
 			break;
@@ -390,7 +390,7 @@ qboolean G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *enti
 			if(!entity->names[0])
 			{
 				if( g_debugEntities.integer > -2 )
-					G_Printf( "^3WARNING: ^7Entity ^5#%i^7 of type ^5%s^7 needs a name, so other entities can target it — Removing it.\n", entity->s.number, entity->classname );
+					G_Printf( S_COLOR_YELLOW "WARNING: " S_COLOR_WHITE "Entity " S_COLOR_CYAN "#%i" S_COLOR_WHITE " of type " S_COLOR_CYAN "%s" S_COLOR_WHITE " needs a name, so other entities can target it — Removing it.\n", entity->s.number, entity->classname );
 				return qfalse;
 			}
 			break;
@@ -398,7 +398,7 @@ qboolean G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *enti
 			if(!entity->callTargetCount || !entity->names[0])
 			{
 				if( g_debugEntities.integer > -2 )
-					G_Printf( "^3WARNING: ^7Entity ^5#%i^7 of type ^5%s^7 needs a name as well as a target to conditionally relay the firing — Removing it.\n", entity->s.number, entity->classname );
+					G_Printf( S_COLOR_YELLOW "WARNING: " S_COLOR_WHITE "Entity " S_COLOR_CYAN "#%i" S_COLOR_WHITE " of type " S_COLOR_CYAN "%s" S_COLOR_WHITE " needs a name as well as a target to conditionally relay the firing — Removing it.\n", entity->s.number, entity->classname );
 				return qfalse;
 			}
 			break;
@@ -428,7 +428,7 @@ qboolean G_CallSpawn( gentity_t *spawnedEntity )
 	{
 		//don't even warn about spawning-errors with -2 (maps might still work at least partly if we ignore these willingly)
 		if ( g_debugEntities.integer > -2 )
-			G_Printf( "^1ERROR: Entity ^5#%i^7 is missing classname – we are unable to spawn it.\n", spawnedEntity->s.number );
+			G_Printf( S_COLOR_RED "ERROR: Entity " S_COLOR_CYAN "#%i" S_COLOR_WHITE " is missing classname – we are unable to spawn it.\n", spawnedEntity->s.number );
 		return qfalse;
 	}
 
@@ -470,7 +470,7 @@ qboolean G_CallSpawn( gentity_t *spawnedEntity )
 		spawnedEntity->spawned = qtrue;
 
 		if ( g_debugEntities.integer > 2 )
-			G_Printf("Debug: Successfully spawned entity ^5#%i^7 as ^3%i^7th instance of ^5%s\n",
+			G_Printf("Debug: Successfully spawned entity " S_COLOR_CYAN "#%i" S_COLOR_WHITE " as " S_COLOR_YELLOW "%i" S_COLOR_WHITE "th instance of " S_COLOR_CYAN "%s\n",
 					spawnedEntity->s.number, spawnedEntity->eclass->instanceCounter, spawnedClass->name);
 
 		/*
@@ -489,11 +489,11 @@ qboolean G_CallSpawn( gentity_t *spawnedEntity )
 	{
 		if (!Q_stricmp("worldspawn", spawnedEntity->classname))
 		{
-			G_Printf( "^1ERROR: ^5%s ^7is not the first but the ^5#%i^7 entry in the spawn string – Some map configurations will not be set.\n", spawnedEntity->classname, spawnedEntity->s.number );
+			G_Printf( S_COLOR_RED "ERROR: " S_COLOR_CYAN "%s " S_COLOR_WHITE "is not the first but the " S_COLOR_CYAN "#%i" S_COLOR_WHITE " entry in the spawn string – Some map configurations will not be set.\n", spawnedEntity->classname, spawnedEntity->s.number );
 		}
 		else
 		{
-			G_Printf( "^1ERROR: Unknown entity class \"^5%s^7\".\n", spawnedEntity->classname );
+			G_Printf( S_COLOR_RED "ERROR: Unknown entity class \"" S_COLOR_CYAN "%s" S_COLOR_WHITE "\".\n", spawnedEntity->classname );
 		}
 	}
 
