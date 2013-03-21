@@ -91,20 +91,11 @@ void Svcmd_EntityFire_f( void )
 }
 
 
-static void PrintEntityOverviewLine( gentity_t *entity )
+STATIC_INLINE void PrintEntityOverviewLine( gentity_t *entity )
 {
-	int i;
-
-	G_Printf( "%3i: %16s/" S_COLOR_CYAN "%-24s" S_COLOR_WHITE "%s\n",
+	G_Printf( "%3i: %16s/" S_COLOR_CYAN "%-24s" S_COLOR_WHITE "%s%s\n",
 			entity->s.number, Com_EntityTypeName( entity->s.eType ), entity->classname,
-			IS_NON_NULL_VEC3(entity->s.origin) ? vtos( entity->s.origin ) : "");
-
-	if(entity->names[0])
-	{
-		for (i = 0; i < MAX_ENTITY_ALIASES && entity->names[i]; ++i)
-			G_Printf("%s%s", i == 0 ? "    ": ", ", entity->names[i] );
-		G_Printf( "\n" );
-	}
+			entity->names[0], entity->names[1] ? " …" : "");
 }
 
 /*
