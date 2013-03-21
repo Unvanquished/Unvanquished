@@ -116,11 +116,11 @@ typedef enum
 
 typedef struct
 {
-	const char  *name;
+	char  *name;
 	size_t      offset;
 	fieldtype_t type;
-	const int	versionState;
-	const char  *replacement;
+	int   versionState;
+	char  *replacement;
 } field_t;
 
 static const field_t fields[] =
@@ -549,11 +549,11 @@ char *G_NewString( const char *string )
 G_NewTarget
 =============
 */
-gentityCallDefinition_t G_NewCallDefinition( const char *string )
+gentityCallDefinition_t G_NewCallDefinition( char *eventKey, const char *string )
 {
 	char *stringPointer;
 	int  i, stringLength;
-	gentityCallDefinition_t newTarget = { NULL, NULL, ECA_DEFAULT };
+	gentityCallDefinition_t newTarget = { NULL, NULL, NULL, ECA_DEFAULT };
 
 	stringLength = strlen( string ) + 1;
 	if(stringLength == 1)
@@ -573,6 +573,7 @@ gentityCallDefinition_t G_NewCallDefinition( const char *string )
 		*stringPointer++ = string[ i ];
 	}
 	newTarget.actionType = G_GetCallActionFor( newTarget.action );
+	newTarget.event = eventKey;
 	return newTarget;
 }
 
@@ -610,7 +611,7 @@ void G_ParseField( const char *key, const char *rawString, gentity_t *entity )
 			if(entity->callTargetCount >= MAX_ENTITY_TARGETS)
 				G_Error("Maximal number of %i calltargets reached. You can solve this by using a Relay.", MAX_ENTITY_TARGETS);
 
-			( ( gentityCallDefinition_t * )( entityData + resultingField->offset ) ) [ entity->callTargetCount++ ] = G_NewCallDefinition( rawString );
+			( ( gentityCallDefinition_t * )( entityData + resultingField->offset ) ) [ entity->callTargetCount++ ] = G_NewCallDefinition( resultingField->replacement ? resultingField->replacement : resultingField->name, rawString );
 			break;
 
 		case F_TIME:

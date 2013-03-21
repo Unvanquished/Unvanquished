@@ -155,6 +155,7 @@ typedef enum
 
 typedef struct
 {
+	char  *event;
 	char  *name;
 	char  *action;
 	gentityCallAction_t actionType;

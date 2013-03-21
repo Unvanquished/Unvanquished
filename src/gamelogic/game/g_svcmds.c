@@ -44,7 +44,7 @@ void Svcmd_EntityFire_f( void )
 	int  entityNum;
 	gentity_t *selection;
 	gentityCall_t call;
-	gentityCallDefinition_t callDefinition = { NULL, NULL, ECA_DEFAULT };
+	gentityCallDefinition_t callDefinition = { NULL, NULL, NULL, ECA_DEFAULT };
 
 	if ( trap_Argc() < 2 || trap_Argc() > 3 )
 	{
@@ -186,7 +186,10 @@ void Svcmd_EntityShow_f( void )
 
 			if(lastTargetIndex != targetIndex)
 			{
-				G_Printf(" • \"%s:%s\"\n", selection->calltargets[targetIndex].name, selection->calltargets[targetIndex].action ? selection->calltargets[targetIndex].action : "default");
+				G_Printf(" • %s: \"%s:%s\"\n",
+						selection->calltargets[targetIndex].event ? selection->calltargets[targetIndex].event : "<null>",
+						selection->calltargets[targetIndex].name,
+						selection->calltargets[targetIndex].action ? selection->calltargets[targetIndex].action : "default");
 				lastTargetIndex = targetIndex;
 			}
 
