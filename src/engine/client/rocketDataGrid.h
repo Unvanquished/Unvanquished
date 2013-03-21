@@ -43,7 +43,7 @@ extern "C"
 #include <Rocket/Controls/DataSource.h>
 #include <Rocket/Core/Types.h>
 
-Rocket::Core::String Rocket_QuakeToRMLColors( const char *in );
+Rocket::Core::String Rocket_QuakeToRML( const char *in );
 
 class RocketDataGrid : public Rocket::Controls::DataSource
 {
@@ -54,7 +54,7 @@ public:
 	{
 		for ( int i = 0; i < columns.size(); ++i )
 		{
-			row.push_back( Rocket_QuakeToRMLColors ( Info_ValueForKey( data[ table ][ row_index ].CString(), columns[ i ].CString() ) ) );
+			row.push_back( Rocket_QuakeToRML ( Info_ValueForKey( data[ table ][ row_index ].CString(), columns[ i ].CString() ) ) );
 		}
 	}
 

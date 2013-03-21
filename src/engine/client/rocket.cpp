@@ -670,11 +670,10 @@ void Rocket_SetInnerRML( const char *name, const char *id, const char *RML )
 	}
 }
 
-Rocket::Core::String Rocket_QuakeToRMLColors( const char *in )
+Rocket::Core::String Rocket_QuakeToRML( const char *in )
 {
 	const char *p;
 	Rocket::Core::String out;
-	qboolean first = qtrue;
 	qboolean span = qfalse;
 
 	if ( !*in )
@@ -682,115 +681,44 @@ Rocket::Core::String Rocket_QuakeToRMLColors( const char *in )
 		return "";
 	}
 
-	p = in;
-
-	while ( p && *p )
+	for ( p = in; p && *p; ++p )
 	{
-		if ( *p == Q_COLOR_ESCAPE && *(p+1) != Q_COLOR_ESCAPE )
+		if ( *p == '<' )
 		{
-			// Advance past caret
-			p++;
-
-			if ( !first )
-			{
-				// Close previous <span>
-				out.Append( "</span>" );
-			}
-			else
-			{
-				// No <span> to close
-				first = qfalse;
-			}
-
-			// Skip escape and color
-			switch ( ( *p % 48 ) + 48 )
-			{
-				case COLOR_BLACK:
-					out.Append( "<span style='color: black;'>" );
-					break;
-
-				case COLOR_RED:
-					out.Append( "<span style='color: red;'>" );
-					break;
-
-				case COLOR_GREEN:
-					out.Append( "<span style='color: green;'>" );
-					break;
-
-				case COLOR_YELLOW:
-					out.Append( "<span style='color: yellow;'>" );
-					break;
-
-				case COLOR_BLUE:
-					out.Append( "<span style='color: blue;'>" );
-					break;
-
-				case COLOR_CYAN:
-					out.Append( "<span style='color: aqua;'>" );
-					break;
-
-				case COLOR_MAGENTA:
-					out.Append( "<span style='color: maroon;'>" );
-					break;
-
-				case COLOR_WHITE:
-					out.Append( "<span style='color: white;'>" );
-					break;
-
-				case COLOR_ORANGE:
-					out.Append( "<span style='color: orange;'>" );
-					break;
-
-				case COLOR_MDGREY:
-					out.Append( "<span style='color: silver;'>" );
-					break;
-
-				case COLOR_LTGREY:
-					out.Append( "<span style='color: grey;'>" );
-					break;
-
-				case COLOR_MDGREEN:
-					out.Append( "<span style='color: lime;'>" );
-					break;
-
-				case COLOR_MDYELLOW:
-					out.Append( "<span style='color: olive;'>" );
-					break;
-
-				case COLOR_MDBLUE:
-					out.Append( "<span style='color: teal;'>" );
-					break;
-
-				case COLOR_MDRED:
-					out.Append( "<span style='color: red;'>" );
-					break;
-
-				case 64:
-				case COLOR_LTORANGE:
-					out.Append( "<span style='color: orange;'>" );
-					break;
-
-				case COLOR_MDCYAN:
-					out.Append( "<span style='color: navy;'>" );
-					break;
-
-				case COLOR_MDPURPLE:
-					out.Append( "<span style='color: fuschia;'>" );
-					break;
-
-				case COLOR_NULL:
-					out.Append( "<span style='color: black;'>" );
-					break;
-			}
-
-			// Skip past color code
-			p++;
-			span = qtrue;
-			continue;
+			out.Append( "&lt;" );
 		}
+		else if ( *p == '>' )
+		{
+			out.Append( "&gt;" );
+		}
+		else if ( *p == '&' )
+		{
+			out.Append( "&amp;" );
+		}
+		else if ( Q_IsColorString( p ) )
+		{
+			if ( span )
+			{
+				out.Append( "</span>" );
+				span = qfalse;
+			}
 
-		out.Append( *p );
-		p++;
+			char rgb[32];
+			int code = ( *++p - 48 ) & 31;
+
+			snprintf( rgb, sizeof( rgb ), "<span style='color: #%02X%02X%02X;'>",
+			          (int)( g_color_table[ code ][ 0 ] * 255 ),
+			          (int)( g_color_table[ code ][ 1 ] * 255 ),
+			          (int)( g_color_table[ code ][ 2 ] * 255 ) );
+
+			out.Append( rgb );
+
+			span = qtrue;
+		}
+		else
+		{
+			out.Append( *p );
+		}
 	}
 	if ( span )
 	{
