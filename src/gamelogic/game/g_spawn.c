@@ -608,8 +608,8 @@ void G_ParseField( const char *key, const char *rawString, gentity_t *entity )
 			break;
 
 		case F_CALLTARGET:
-			if(entity->callTargetCount >= MAX_ENTITY_TARGETS)
-				G_Error("Maximal number of %i calltargets reached. You can solve this by using a Relay.", MAX_ENTITY_TARGETS);
+			if(entity->callTargetCount >= MAX_ENTITY_CALLTARGETS)
+				G_Error("Maximal number of %i calltargets reached. You can solve this by using a Relay.", MAX_ENTITY_CALLTARGETS);
 
 			( ( gentityCallDefinition_t * )( entityData + resultingField->offset ) ) [ entity->callTargetCount++ ] = G_NewCallDefinition( resultingField->replacement ? resultingField->replacement : resultingField->name, rawString );
 			break;
@@ -713,7 +713,7 @@ void G_ReorderCallTargets( gentity_t *ent )
 	int i, j;
 	// don't leave any "gaps" between multiple targets
 	j = 0;
-	for (i = 0; i < MAX_ENTITY_TARGETS; ++i)
+	for (i = 0; i < MAX_ENTITY_CALLTARGETS; ++i)
 	{
 		if (ent->calltargets[i].name) {
 			ent->calltargets[j] = ent->calltargets[i];
