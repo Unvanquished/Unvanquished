@@ -729,14 +729,20 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in )
 }
 
 #else
-void Rocket_Init( void ) { }
-void Rocket_Shutdown( void ) { }
-void Rocket_Render( void ) { }
-void Rocket_Update( void ) { }
-void Rocket_InjectMouseMotion( int x, int y ) { }
-void Rocket_LoadDocument( const char *path ) { }
-void Rocket_LoadCursor( const char *path ) { }
-void Rocket_DocumentAction( const char *name, const char *action ) { }
-void Rocket_GetEvent( int handle, char *event, int length ) { }
-void Rocket_DeleteEvent( int handle ) { }
+extern "C" void Rocket_Init( void ) { }
+extern "C" void Rocket_Shutdown( void ) { }
+extern "C" void Rocket_Render( void ) { }
+extern "C" void Rocket_Update( void ) { }
+extern "C" void Rocket_InjectMouseMotion( int x, int y ) { }
+extern "C" void Rocket_LoadDocument( const char *path ) { }
+extern "C" void Rocket_LoadCursor( const char *path ) { }
+extern "C" void Rocket_DocumentAction( const char *name, const char *action ) { }
+extern "C" void Rocket_GetEvent( int handle, char *event, int length ) { }
+extern "C" void Rocket_DeleteEvent( int handle ) { }
+extern "C" void Rocket_RegisterDataSource( const char *name ) { }
+extern "C" void Rocket_DSAddRow( const char *name, const char *table, const char *data ) { }
+extern "C" void Rocket_DSChangeRow( const char *name, const char *table, const int row, const char *data ) { }
+extern "C" void Rocket_DSRemoveRow( const char *name, const char *table, const int row ) { }
+extern "C" void Rocket_DSClearTable( const char *name, const char *table ) { }
+extern "C" void Rocket_SetInnerRML( const char *name, const char *id, const char *RML ) { }
 #endif
