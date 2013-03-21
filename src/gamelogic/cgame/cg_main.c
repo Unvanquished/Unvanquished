@@ -107,8 +107,8 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 			CG_Rocket_Init();
 			return 0;
 
-		case CG_ROCKET_PROCESSEVENT:
-			CG_Rocket_ProcessEvents( arg0 );
+		case CG_ROCKET_FRAME:
+			CG_Rocket_Frame();
 			return 0;
 
 		default:

@@ -327,8 +327,8 @@ typedef enum
   CG_INIT_ROCKET,
 // Inits libRocket in the game.
 
-  CG_ROCKET_PROCESSEVENT
-// Rocket runs through its event loop
+  CG_ROCKET_FRAME
+// Rocket runs through a frame, including event processing
 } cgameExport_t;
 
 void            trap_Print( const char *string );
@@ -543,8 +543,8 @@ void            trap_Rocket_Shutdown( void );
 void            trap_Rocket_LoadDocument( const char *path );
 void            trap_Rocket_LoadCursor( const char *path );
 void            trap_Rocket_DocumentAction( const char *name, const char *action );
-void            trap_Rocket_GetEvent( int handle, char *event, int length );
-void            trap_Rocket_DeleteEvent( int handle );
+void            trap_Rocket_GetEvent( char *event, int length );
+void            trap_Rocket_DeleteEvent( void );
 void            trap_Rocket_RegisterDataSource( const char *name );
 void            trap_Rocket_DSAddRow( const char *name, const char *table, const char *data );
 void            trap_Rocket_DSChangeRow( const char *name, const char *table, int row, const char *data );

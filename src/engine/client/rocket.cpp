@@ -546,7 +546,7 @@ void Rocket_DocumentAction( const char *name, const char *action )
 		{
 			if ( context->GetFocusElement()->GetOwnerDocument() && context->GetFocusElement()->GetOwnerDocument() != context->GetDocument( "main" ) )
 			{
-				context->GetFocusElement()->GetOwnerDocument()->Hide();
+				context->GetFocusElement()->GetOwnerDocument()->Close();
 			}
 
 			return;
@@ -555,7 +555,7 @@ void Rocket_DocumentAction( const char *name, const char *action )
 		Rocket::Core::ElementDocument* document = context->GetDocument( name );
 		if ( document )
 		{
-			document->Hide();
+			document->Close();
 		}
 	}
 	else if ( !Q_stricmp( "goto", action ) )
@@ -566,7 +566,7 @@ void Rocket_DocumentAction( const char *name, const char *action )
 			// Close all other windows
 			for ( int i = 0; i < context->GetNumDocuments(); ++i )
 			{
-				context->GetDocument( i )->Hide();
+				context->GetDocument( i )->Close();
 			}
 			document->Show();
 		}
@@ -584,25 +584,30 @@ public:
 	const char *cmd;
 };
 
-std::map< unsigned int, RocketEvent_t* > eventMap;
+std::queue< RocketEvent_t* > eventQueue;
 
 void Rocket_ProcessEvent( Rocket::Core::Event& event, Rocket::Core::String& value )
 {
-	static unsigned int handle;
-
-	eventMap[ handle++ ] = new RocketEvent_t( event, value.CString() );
-	VM_Call( cgvm, CG_ROCKET_PROCESSEVENT, handle - 1 );
+	eventQueue.push( new RocketEvent_t( event, value.CString() ) );
 }
 
-void Rocket_GetEvent( int handle, char *event, int length )
+void Rocket_GetEvent( char *event, int length )
 {
-	Q_strncpyz( event, eventMap[ handle ]->cmd, length );
+	if ( eventQueue.size() )
+	{
+		Q_strncpyz( event, eventQueue.front()->cmd, length );
+	}
+	else
+	{
+		*event = '\0';
+	}
 }
 
-void Rocket_DeleteEvent( int handle )
+void Rocket_DeleteEvent( void )
 {
-	delete eventMap[ handle ];
-	eventMap.erase( handle );
+	RocketEvent_t *event = eventQueue.front();
+	eventQueue.pop();
+	delete event;
 }
 
 std::map<std::string, RocketDataGrid*> dataSourceMap;

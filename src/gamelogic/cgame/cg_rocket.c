@@ -34,8 +34,9 @@ Maryland 20850 USA.
 
 #include "cg_local.h"
 
+static char rootDir[ MAX_QPATH ];
+
 vmCvar_t rocket_menuFiles;
-vmCvar_t rocket_netSource;
 
 typedef struct
 {
@@ -47,8 +48,7 @@ typedef struct
 
 static const cvarTable_t rocketCvarTable[] =
 {
-	{ &rocket_menuFiles, "rocket_menuFiles", "rocket.txt", CVAR_ARCHIVE },
-	{ &rocket_netSource, "rocket_netSource", "internet", CVAR_ARCHIVE }
+	{ &rocket_menuFiles, "rocket_menuFiles", "rocket.txt", CVAR_ARCHIVE }
 };
 
 static const size_t rocketCvarTableSize = ARRAY_LEN( rocketCvarTable );
@@ -144,13 +144,27 @@ void CG_Rocket_Init( void )
 			continue;
 		}
 
-		// Skip non-RML files
-		if ( Q_stricmp( token + strlen( token ) - 4, ".rml" ) )
+		if ( !Q_stricmp( token, "main" ) )
 		{
+			token = COM_Parse2( &text_p );
+
+			// Skip non-RML files
+			if ( Q_stricmp( token + strlen( token ) - 4, ".rml" ) )
+			{
+				continue;
+			}
+
+			trap_Rocket_LoadDocument( token );
 			continue;
 		}
 
-		trap_Rocket_LoadDocument( token );
+		if ( !Q_stricmp( token, "root" ) )
+		{
+			token = COM_Parse( &text_p );
+
+			Q_strncpyz( rootDir, token, sizeof( rootDir ) );
+			continue;
+		}
 	}
 
 	// Intialize data sources...
@@ -161,7 +175,7 @@ void CG_Rocket_Init( void )
 
 static void CG_Rocket_EventOpen( const char *args )
 {
-	trap_Rocket_DocumentAction( args, "open" );
+	trap_Rocket_LoadDocument( va( "%s%s.rml", rootDir, args ) );
 }
 
 static void CG_Rocket_EventClose( const char *args )
@@ -172,6 +186,11 @@ static void CG_Rocket_EventClose( const char *args )
 static void CG_Rocket_EventGoto( const char *args )
 {
 	trap_Rocket_DocumentAction( args, "goto" );
+}
+
+static void CG_Rocket_EventShow( const char *args )
+{
+	trap_Rocket_DocumentAction( args, "show" );
 }
 
 static int CG_StringToNetSource( const char *src )
@@ -275,7 +294,7 @@ static const eventCmd_t eventCmdList[] =
 	{ "goto", &CG_Rocket_EventGoto },
 	{ "init_servers", &CG_Rocket_InitServers },
 	{ "open", &CG_Rocket_EventOpen },
-	{ "show", &CG_Rocket_EventOpen }
+	{ "show", &CG_Rocket_EventShow }
 };
 
 static const size_t eventCmdListCount = ARRAY_LEN( eventCmdList );
@@ -285,16 +304,23 @@ static int eventCmdCmp( const void *a, const void *b )
 	return Q_stricmp( ( const char * ) a, ( ( eventCmd_t * ) b )->command );
 }
 
-void CG_Rocket_ProcessEvents( int handle )
+void CG_Rocket_ProcessEvents( void )
 {
 	static char commands[ 2000 ];
 	char *tail, *head;
 	eventCmd_t *cmd;
 
 	// Get the even command
-	trap_Rocket_GetEvent( handle, commands, sizeof( commands ) );
+	trap_Rocket_GetEvent( commands, sizeof( commands ) );
 
 	head = commands;
+
+	// No events to process
+	if ( !*head )
+	{
+		return;
+	}
+
 	while ( 1 )
 	{
 		char *p, *args;
@@ -335,6 +361,11 @@ void CG_Rocket_ProcessEvents( int handle )
 		}
 	}
 
-	trap_Rocket_DeleteEvent( handle );
+	trap_Rocket_DeleteEvent();
+}
+
+void CG_Rocket_Frame( void )
+{
+	CG_Rocket_ProcessEvents();
 }
 

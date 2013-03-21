@@ -2158,11 +2158,11 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_ROCKET_GETEVENT:
-			Rocket_GetEvent( args[1], VMA(2), args[3] );
+			Rocket_GetEvent( VMA(1), args[2] );
 			return 0;
 
 		case CG_ROCKET_DELELTEEVENT:
-			Rocket_DeleteEvent( args[1] );
+			Rocket_DeleteEvent();
 			return 0;
 
 		case CG_ROCKET_REGISTERDATASOURCE:

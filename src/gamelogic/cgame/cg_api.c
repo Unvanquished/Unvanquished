@@ -1387,14 +1387,14 @@ void trap_Rocket_DocumentAction( const char *name, const char *action )
 	syscall( CG_ROCKET_DOCUMENTACTION, name, action );
 }
 
-void trap_Rocket_GetEvent( int handle, char *event, int length )
+void trap_Rocket_GetEvent( char *event, int length )
 {
-	syscall( CG_ROCKET_GETEVENT, handle, event, length );
+	syscall( CG_ROCKET_GETEVENT, event, length );
 }
 
-void trap_Rocket_DeleteEvent( int handle )
+void trap_Rocket_DeleteEvent( void )
 {
-	syscall( CG_ROCKET_DELELTEEVENT, handle );
+	syscall( CG_ROCKET_DELELTEEVENT );
 }
 
 void trap_Rocket_RegisterDataSource( const char *name )
