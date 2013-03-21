@@ -1,0 +1,30 @@
+<rml>
+	<head>
+		<style>
+			div#background
+			{
+				z-index: -1;
+			}
+			div#text
+			{
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				color: white;
+				font-family: Roboto;
+				text-align: center;
+				vertical-align: middle;
+				font-size: 48;
+			}
+		</style>
+		<title>Connecting</title>
+	</head>
+	<body id="connecting">
+		<div id="text">
+			<p>Connecting...</p>
+		</div>
+		<div id="background">
+			<img style="height: 100%; width:100%;" src="ui/assets/mainmenu.jpg" />
+		</div>
+	</body>
+</rml>

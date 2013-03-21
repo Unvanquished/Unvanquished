@@ -48,7 +48,7 @@ typedef struct
 
 static const cvarTable_t rocketCvarTable[] =
 {
-	{ &rocket_menuFiles, "rocket_menuFiles", "rocket.txt", CVAR_ARCHIVE }
+	{ &rocket_menuFiles, "rocket_menuFiles", "ui/rocket.txt", CVAR_ARCHIVE }
 };
 
 static const size_t rocketCvarTableSize = ARRAY_LEN( rocketCvarTable );

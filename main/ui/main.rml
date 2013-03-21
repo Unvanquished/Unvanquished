@@ -1,0 +1,80 @@
+﻿<rml>
+	<head>
+		<style>
+			div#background
+			{
+				z-index: -1;
+			}
+			div#sidebar
+			{
+				position: fixed;
+				left: 35%;
+				height: 100%;
+				width: 25%;
+				font-family: Roboto;
+				background-decorator: none;
+				background: red;
+				z-index: 3;
+			}
+			div#sidebar button
+			{
+				color: teal;
+				display: inline-block;
+
+				width: 100%;
+				height: 37px;
+
+				padding-top: 8px;
+				vertical-align: -18px;
+
+				font-size: 24;
+				button-font-effect: outline;
+				text-align: center;
+				tab-index: auto;
+
+				background-decorator: image;
+				background-image-src: /ui/assets/button.png;
+			}
+			div#sidebar button:hover
+			{
+				color: white;
+				display: inline-block;
+
+				width: 100%;
+				height: 37px;
+
+				padding-top: 8px;
+				vertical-align: -18px;
+
+				font-size: 24;
+				button-font-effect: outline;
+				text-align: center;
+				tab-index: auto;
+
+				background-decorator: image;
+				background-image-src: /ui/assets/button_highlight.png;
+			}
+		</style>
+		<title>main</title>
+	</head>
+	<body id="main">
+	<div id="sidebar">
+		<img style="width: 100%;" src="/ui/assets/logo.png" /><br /><br />
+		<button onClick="open demo; show demo">Play</button><br /><br />
+		<button onClick="open options; show options">Options</button><br /><br />
+		<button onClick="open help; show help">Help</button><br /><br />
+		<button onClick="open serverbrowser; show serverbrowser">Demos</button><br /><br />
+		<button onClick="open high_score">Mods</button><br /><br />
+		<button>Quit</button><br /><br />
+	</div>
+	<div style="position: absolute;">
+		<img style="position: fixed; width: 50%; left: 30%; top: 350px;" src="/ui/assets/human.png"/>
+		<img style="position: fixed; width: 15%; left: 50%; top: 600px;" src="/ui/assets/dretch3.png"/>
+		<img style="position: fixed; width: 25%; left: 25%; top: 600px;" src="/ui/assets/dretch2.png"/>
+		<img style="position: fixed; width: 15%; left: 75%; top: 650px;" src="/ui/assets/dretch1.png"/>
+	</div>
+	<div id="background">
+		<img style="height: 100%; width: 100%;" src="/ui/assets/mainmenu.jpg" />
+	</div>
+	</body>
+</rml>

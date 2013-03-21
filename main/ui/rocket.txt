@@ -1,0 +1,5 @@
+{
+	root "ui/"
+	main ui/main.rml
+	cursor ui/cursor.rml
+}
