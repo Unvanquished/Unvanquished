@@ -234,6 +234,13 @@ static void CG_Rocket_BuildServerList( const char *args )
 	char data[ MAX_INFO_STRING ] = { 0 };
 	int i;
 
+
+	// Only refresh once every second
+	if ( trap_Milliseconds() < 1000 + rocketInfo.serversLastRefresh )
+	{
+		return;
+	}
+
 	Q_strncpyz( rocketInfo.currentNetSource, args, sizeof( rocketInfo.currentNetSource ) );
 	rocketInfo.rocketState = RETRIEVING_SERVERS;
 
@@ -279,6 +286,8 @@ static void CG_Rocket_BuildServerList( const char *args )
 			}
 		}
 	}
+
+	rocketInfo.serversLastRefresh = trap_Milliseconds();
 }
 
 
