@@ -429,7 +429,7 @@ static void SpawnCorpse( gentity_t *ent )
 		return;
 	}
 
-	body = G_Spawn();
+	body = G_NewEntity();
 
 	VectorCopy( ent->s.apos.trBase, body->s.angles );
 	body->s.eFlags = EF_DEAD;
@@ -1753,7 +1753,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 		// fire the targets of the spawn point
 		if ( !spawn && spawnPoint )
 		{
-			G_FireAllTargetsOf( spawnPoint, ent );
+			G_FireAllCallTargetsOf( spawnPoint, ent );
 		}
 
 		// select the highest weapon number available, after any
@@ -1839,7 +1839,7 @@ void ClientDisconnect( int clientNum )
 	if ( ent->client->pers.connected == CON_CONNECTED &&
 	     ent->client->sess.spectatorState == SPECTATOR_NOT )
 	{
-		tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_OUT );
+		tent = G_NewTempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_OUT );
 		tent->s.clientNum = ent->s.clientNum;
 	}
 

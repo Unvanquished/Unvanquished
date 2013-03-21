@@ -35,7 +35,7 @@ Maryland 20850 USA.
 #include "g_local.h"
 #include "g_spawn.h"
 
-void SP_pos_player_spawn( gentity_t *ent )
+void SP_pos_player_spawn( gentity_t *self )
 {
 	int i;
 
@@ -43,14 +43,14 @@ void SP_pos_player_spawn( gentity_t *ent )
 
 	if ( i )
 	{
-		ent->flags |= FL_NO_BOTS;
+		self->flags |= FL_NO_BOTS;
 	}
 
 	G_SpawnInt( "nohumans", "0", &i );
 
 	if ( i )
 	{
-		ent->flags |= FL_NO_HUMANS;
+		self->flags |= FL_NO_HUMANS;
 	}
 }
 

@@ -413,13 +413,13 @@ static entityClass_t entityClasses[ARRAY_LEN(entityClassDescriptions)];
 
 /*
 ===============
-G_CallSpawn
+G_CallSpawnFunction
 
 Finds the spawn function for the entity and calls it,
 returning qfalse if not found
 ===============
 */
-qboolean G_CallSpawn( gentity_t *spawnedEntity )
+qboolean G_CallSpawnFunction( gentity_t *spawnedEntity )
 {
 	entityClassDescriptor_t     *spawnedClass;
 	buildable_t buildable;
@@ -572,7 +572,7 @@ gentityCallDefinition_t G_NewCallDefinition( char *eventKey, const char *string 
 		}
 		*stringPointer++ = string[ i ];
 	}
-	newTarget.actionType = G_GetCallActionFor( newTarget.action );
+	newTarget.actionType = G_GetCallActionTypeFor( newTarget.action );
 	newTarget.event = eventKey;
 	return newTarget;
 }
@@ -673,7 +673,7 @@ void G_SpawnGEntityFromSpawnVars( void )
 	gentity_t *spawningEntity;
 
 	// get the next free entity
-	spawningEntity = G_Spawn();
+	spawningEntity = G_NewEntity();
 
 	for ( i = 0; i < level.numSpawnVars; i++ )
 	{
@@ -702,7 +702,7 @@ void G_SpawnGEntityFromSpawnVars( void )
 	spawningEntity->names[ j ] = NULL;
 
 	// if we didn't get necessary fields (like the classname), don't bother spawning anything
-	if ( !G_CallSpawn( spawningEntity ) )
+	if ( !G_CallSpawnFunction( spawningEntity ) )
 	{
 		G_FreeEntity( spawningEntity );
 	}
@@ -717,7 +717,7 @@ void G_ReorderCallTargets( gentity_t *ent )
 	{
 		if (ent->calltargets[i].name) {
 			ent->calltargets[j] = ent->calltargets[i];
-			ent->calltargets[j].actionType = G_GetCallActionFor(ent->calltargets[i].action);
+			ent->calltargets[j].actionType = G_GetCallActionTypeFor(ent->calltargets[i].action);
 			j++;
 		}
 	}

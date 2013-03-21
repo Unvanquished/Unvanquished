@@ -73,11 +73,11 @@ void Svcmd_EntityFire_f( void )
 	{
 		trap_Argv( 2, argument, sizeof( argument ) );
 		callDefinition.action = argument;
-		callDefinition.actionType = G_GetCallActionFor( callDefinition.action );
+		callDefinition.actionType = G_GetCallActionTypeFor( callDefinition.action );
 	}
 
 	G_Printf( "firing ");
-	G_DebugPrintEntitiy( selection );
+	G_PrintEntity( selection );
 	G_Printf( ":%s\n", callDefinition.action ? callDefinition.action : "default" );
 
 	if(selection->names[0])
@@ -185,7 +185,7 @@ void Svcmd_EntityShow_f( void )
 			}
 
 			G_Printf("   ⇨ ");
-			G_DebugPrintEntitiy( possibleTarget );
+			G_PrintEntity( possibleTarget );
 			if(possibleTarget->names[1])
 			{
 				G_Printf(" using \"%s\" ∈ {", possibleTarget->names[nameIndex]);

@@ -466,7 +466,7 @@ gentity_t *fire_flamer( gentity_t *self, vec3_t start, vec3_t dir )
 	gentity_t *bolt;
 	vec3_t    pvel;
 
-	bolt = G_Spawn();
+	bolt = G_NewEntity();
 	bolt->classname = "flame";
 	bolt->pointAgainstWorld = qfalse;
 	bolt->nextthink = level.time + FLAMER_LIFETIME;
@@ -511,7 +511,7 @@ gentity_t *fire_blaster( gentity_t *self, vec3_t start, vec3_t dir )
 {
 	gentity_t *bolt;
 
-	bolt = G_Spawn();
+	bolt = G_NewEntity();
 	bolt->classname = "blaster";
 	bolt->pointAgainstWorld = qtrue;
 	bolt->nextthink = level.time + 10000;
@@ -555,7 +555,7 @@ gentity_t *fire_pulseRifle( gentity_t *self, vec3_t start, vec3_t dir )
 {
 	gentity_t *bolt;
 
-	bolt = G_Spawn();
+	bolt = G_NewEntity();
 	bolt->classname = "pulse";
 	bolt->pointAgainstWorld = qtrue;
 	bolt->nextthink = level.time + 10000;
@@ -601,7 +601,7 @@ gentity_t *fire_luciferCannon( gentity_t *self, vec3_t start, vec3_t dir,
 	gentity_t *bolt;
 	float     charge;
 
-	bolt = G_Spawn();
+	bolt = G_NewEntity();
 	bolt->classname = "lcannon";
 	bolt->pointAgainstWorld = qtrue;
 
@@ -666,7 +666,7 @@ gentity_t *launch_grenade( gentity_t *self, vec3_t start, vec3_t dir )
 {
 	gentity_t *bolt;
 
-	bolt = G_Spawn();
+	bolt = G_NewEntity();
 	bolt->classname = "grenade";
 	bolt->pointAgainstWorld = qfalse;
 	bolt->nextthink = level.time + 5000;
@@ -780,7 +780,7 @@ gentity_t *fire_hive( gentity_t *self, vec3_t start, vec3_t dir )
 {
 	gentity_t *bolt;
 
-	bolt = G_Spawn();
+	bolt = G_NewEntity();
 	bolt->classname = "hive";
 	bolt->pointAgainstWorld = qfalse;
 	bolt->nextthink = level.time + HIVE_DIR_CHANGE_PERIOD;
@@ -821,7 +821,7 @@ gentity_t *fire_lockblob( gentity_t *self, vec3_t start, vec3_t dir )
 {
 	gentity_t *bolt;
 
-	bolt = G_Spawn();
+	bolt = G_NewEntity();
 	bolt->classname = "lockblob";
 	bolt->pointAgainstWorld = qtrue;
 	bolt->nextthink = level.time + 15000;
@@ -858,7 +858,7 @@ gentity_t *fire_slowBlob( gentity_t *self, vec3_t start, vec3_t dir )
 {
 	gentity_t *bolt;
 
-	bolt = G_Spawn();
+	bolt = G_NewEntity();
 	bolt->classname = "slowblob";
 	bolt->pointAgainstWorld = qtrue;
 	bolt->nextthink = level.time + 15000;
@@ -896,7 +896,7 @@ gentity_t *fire_bounceBall( gentity_t *self, vec3_t start, vec3_t dir )
 {
 	gentity_t *bolt;
 
-	bolt = G_Spawn();
+	bolt = G_NewEntity();
 	bolt->classname = "bounceball";
 	bolt->pointAgainstWorld = qtrue;
 	bolt->nextthink = level.time + 3000;

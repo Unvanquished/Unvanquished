@@ -359,7 +359,7 @@ void G_BroadcastEvent( int event, int eventParm )
 {
 	gentity_t *ent;
 
-	ent = G_TempEntity( vec3_origin, event );
+	ent = G_NewTempEntity( vec3_origin, event );
 	ent->s.eventParm = eventParm;
 	ent->r.svFlags = SVF_BROADCAST; // send to everyone
 }
@@ -373,7 +373,7 @@ void G_Sound( gentity_t *ent, int channel, int soundIndex )
 {
 	gentity_t *te;
 
-	te = G_TempEntity( ent->r.currentOrigin, EV_GENERAL_SOUND );
+	te = G_NewTempEntity( ent->r.currentOrigin, EV_GENERAL_SOUND );
 	te->s.eventParm = soundIndex;
 }
 

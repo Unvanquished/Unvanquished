@@ -146,14 +146,14 @@ typedef enum
 	ECA_DISABLE,
 	ECA_TOGGLE
 
-} gentityCallAction_t;
+} gentityCallActionType_t;
 
 typedef struct
 {
 	char  *event;
 	char  *name;
 	char  *action;
-	gentityCallAction_t actionType;
+	gentityCallActionType_t actionType;
 } gentityCallDefinition_t;
 
 typedef struct
@@ -1065,28 +1065,28 @@ void     G_InitDamageLocations( void );
 
 //lifecycle
 void       G_InitGentity( gentity_t *e );
-gentity_t  *G_Spawn( void );
-gentity_t  *G_TempEntity( const vec3_t origin, int event );
+gentity_t  *G_NewEntity( void );
+gentity_t  *G_NewTempEntity( const vec3_t origin, int event );
 void       G_FreeEntity( gentity_t *e );
 
 //debug
-void       G_DebugPrintEntitiy(gentity_t *entity);
+void       G_PrintEntity(gentity_t *entity);
 
 //search
 gentity_t  *G_FindNextEntity( gentity_t *from, size_t fieldofs, const char *match );
 gentity_t  *G_PickRandomEntity( size_t fieldofs, const char *match );
-gentity_t  *G_ClosestEnt( vec3_t origin, gentity_t **entities, int numEntities );
+gentity_t  *G_FindClosestEntity( vec3_t origin, gentity_t **entities, int numEntities );
 
 //test
-qboolean   G_Visible( gentity_t *ent1, gentity_t *ent2, int contents );
+qboolean   G_IsVisible( gentity_t *ent1, gentity_t *ent2, int contents );
 
 //chain
-gentityCallAction_t G_GetCallActionFor( const char* action );
+gentityCallActionType_t G_GetCallActionTypeFor( const char* action );
 void       G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call);
 gentity_t  *G_FindNextTarget( gentity_t *targ, int *tIx, int *tnIx, gentity_t *self );
 gentity_t  *G_PickRandomTargetFor( gentity_t *self );
-void       G_FireRandomTargetOf( gentity_t *entity, gentity_t *activator );
-void       G_FireAllTargetsOf( gentity_t *ent, gentity_t *activator );
+void       G_FireRandomCallTargetOf( gentity_t *entity, gentity_t *activator );
+void       G_FireAllCallTargetsOf( gentity_t *ent, gentity_t *activator );
 
 //configure
 void       G_SetMovedir( vec3_t angles, vec3_t movedir );
@@ -1112,7 +1112,7 @@ gentity_t *launch_grenade( gentity_t *self, vec3_t start, vec3_t dir );
 // g_mover.c
 //
 void G_RunMover( gentity_t *ent );
-void Touch_DoorTrigger( gentity_t *ent, gentity_t *other, trace_t *trace );
+void door_trigger_touch( gentity_t *ent, gentity_t *other, trace_t *trace );
 void manualTriggerSpectator( gentity_t *trigger, gentity_t *player );
 
 //

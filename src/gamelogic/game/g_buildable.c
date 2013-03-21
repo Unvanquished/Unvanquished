@@ -1385,7 +1385,7 @@ void AAcidTube_Think( gentity_t *self )
 				continue;
 			}
 
-			if ( !G_Visible( self, enemy, CONTENTS_SOLID ) )
+			if ( !G_IsVisible( self, enemy, CONTENTS_SOLID ) )
 			{
 				continue;
 			}
@@ -2181,7 +2181,7 @@ void HReactor_Think( gentity_t *self )
 				continue;
 			}
 
-			tent = G_TempEntity( enemy->s.pos.trBase, EV_TESLATRAIL );
+			tent = G_NewTempEntity( enemy->s.pos.trBase, EV_TESLATRAIL );
 			tent->s.generic1 = self->s.number; //src
 			tent->s.clientNum = enemy->s.number; //dest
 			VectorCopy( self->s.pos.trBase, tent->s.origin2 );
@@ -4109,7 +4109,7 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 	                        buildnums, sizeof( buildnums ) );
 
 	// Spawn the buildable
-	built = G_Spawn();
+	built = G_NewEntity();
 	built->s.eType = ET_BUILDABLE;
 	built->r.svFlags = SVF_CLIENTS_IN_RANGE;
 	built->r.clientRadius = MAX( HELMET_RANGE, ALIENSENSE_RANGE );
@@ -4746,7 +4746,7 @@ static void G_LayoutBuildItem( buildable_t buildable, vec3_t origin,
 {
 	gentity_t *builder;
 
-	builder = G_Spawn();
+	builder = G_NewEntity();
 	VectorCopy( origin, builder->s.pos.trBase );
 	VectorCopy( angles, builder->s.angles );
 	VectorCopy( origin2, builder->s.origin2 );
@@ -5014,7 +5014,7 @@ void G_BuildLogRevert( int id )
 		}
 		else
 		{
-			gentity_t *builder = G_Spawn();
+			gentity_t *builder = G_NewEntity();
 
 			VectorCopy( log->origin, builder->s.pos.trBase );
 			VectorCopy( log->angles, builder->s.angles );

@@ -32,63 +32,63 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-void    SP_func_plat( gentity_t *ent );
-void    SP_func_static( gentity_t *ent );
-void    SP_func_dynamic( gentity_t *ent );
-void    SP_func_rotating( gentity_t *ent );
-void    SP_func_bobbing( gentity_t *ent );
-void    SP_func_pendulum( gentity_t *ent );
-void    SP_func_button( gentity_t *ent );
-void    SP_func_door( gentity_t *ent );
-void    SP_func_door_rotating( gentity_t *ent );
-void    SP_func_door_model( gentity_t *ent );
-void    SP_func_train( gentity_t *ent );
+void    SP_func_plat( gentity_t *self );
+void    SP_func_static( gentity_t *self );
+void    SP_func_dynamic( gentity_t *self );
+void    SP_func_rotating( gentity_t *self );
+void    SP_func_bobbing( gentity_t *self );
+void    SP_func_pendulum( gentity_t *self );
+void    SP_func_button( gentity_t *self );
+void    SP_func_door( gentity_t *self );
+void    SP_func_door_rotating( gentity_t *self );
+void    SP_func_door_model( gentity_t *self );
+void    SP_func_train( gentity_t *self );
 
 void    SP_func_destructable( gentity_t *self );
 void    SP_func_spawn( gentity_t *self );
 
-void    SP_ctrl_relay( gentity_t *ent );
-void    SP_ctrl_limited( gentity_t *ent );
+void    SP_ctrl_relay( gentity_t *self );
+void    SP_ctrl_limited( gentity_t *self );
 
-void    SP_game_score( gentity_t *ent );
-void    SP_game_end( gentity_t *ent );
+void    SP_game_score( gentity_t *self );
+void    SP_game_end( gentity_t *self );
 
 void    SP_path_corner( gentity_t *self );
-void    SP_pos_player_spawn( gentity_t *ent );
-void    SP_pos_player_intermission( gentity_t *ent );
-void    SP_pos_target( gentity_t *ent );
-void    SP_pos_location( gentity_t *ent );
+void    SP_pos_player_spawn( gentity_t *self );
+void    SP_pos_player_intermission( gentity_t *self );
+void    SP_pos_target( gentity_t *self );
+void    SP_pos_location( gentity_t *self );
 
-void    SP_sensor_start( gentity_t *ent );
-void    SP_sensor_stage( gentity_t *ent );
-void    SP_sensor_end( gentity_t *ent );
-void    SP_sensor_player( gentity_t *ent );
-void    SP_sensor_buildable( gentity_t *ent );
+void    SP_sensor_start( gentity_t *self );
+void    SP_sensor_stage( gentity_t *self );
+void    SP_sensor_end( gentity_t *self );
+void    SP_sensor_player( gentity_t *self );
+void    SP_sensor_buildable( gentity_t *self );
 void    SP_sensor_timer( gentity_t *self );
 
-void    SP_target_print( gentity_t *ent );
-void    SP_target_teleporter( gentity_t *ent );
-void    SP_target_kill( gentity_t *ent );
-void    SP_target_push( gentity_t *ent );
-void    SP_target_alien_win( gentity_t *ent );
-void    SP_target_human_win( gentity_t *ent );
-void    SP_target_hurt( gentity_t *ent );
+void    SP_target_print( gentity_t *self );
+void    SP_target_teleporter( gentity_t *self );
+void    SP_target_kill( gentity_t *self );
+void    SP_target_push( gentity_t *self );
+void    SP_target_alien_win( gentity_t *self );
+void    SP_target_human_win( gentity_t *self );
+void    SP_target_hurt( gentity_t *self );
 
-void    SP_env_afx_push( gentity_t *ent );
-void    SP_env_afx_teleport( gentity_t *ent );
-void    SP_env_afx_hurt( gentity_t *ent );
-void    SP_env_afx_gravity( gentity_t *ent );
-void    SP_env_afx_heal( gentity_t *ent );
-void    SP_env_afx_ammo( gentity_t *ent );
+void    SP_env_afx_push( gentity_t *self );
+void    SP_env_afx_teleport( gentity_t *self );
+void    SP_env_afx_hurt( gentity_t *self );
+void    SP_env_afx_gravity( gentity_t *self );
+void    SP_env_afx_heal( gentity_t *self );
+void    SP_env_afx_ammo( gentity_t *self );
 
-void    SP_env_rumble( gentity_t *ent );
-void    SP_env_speaker( gentity_t *ent );
-void    SP_env_particle_system( gentity_t *ent );
-void    SP_env_animated_model( gentity_t *ent );
-void    SP_env_lens_flare( gentity_t *ent );
+void    SP_env_rumble( gentity_t *self );
+void    SP_env_speaker( gentity_t *self );
+void    SP_env_particle_system( gentity_t *self );
+void    SP_env_animated_model( gentity_t *self );
+void    SP_env_lens_flare( gentity_t *self );
 
-void    SP_env_portal_camera( gentity_t *ent );
-void    SP_env_portal_surface( gentity_t *ent );
+void    SP_env_portal_camera( gentity_t *self );
+void    SP_env_portal_surface( gentity_t *self );
 
 /*
  * everything around entity versioning and deprecation
@@ -114,8 +114,8 @@ qboolean G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expect
  * shared entity functions
  */
 
-void     think_fireDelayed( gentity_t *ent );
-void     think_aimAtTarget( gentity_t *ent );
+void     think_fireDelayed( gentity_t *self );
+void     think_aimAtTarget( gentity_t *self );
 
 void     SP_RemoveSelf( gentity_t *self );
 void     SP_Nothing( gentity_t *self );

@@ -68,7 +68,7 @@ void sensor_reset( gentity_t *self )
 //some old sensors/triggers used to propagate use-events, this is deprecated behavior
 void trigger_compat_propagation_act( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
-	G_FireAllTargetsOf( self, self );
+	G_FireAllCallTargetsOf( self, self );
 
 	if ( g_debugEntities.integer >= -1 ) //dont't warn about anything with -1 or lower
 	{
@@ -77,9 +77,9 @@ void trigger_compat_propagation_act( gentity_t *self, gentity_t *other, gentity_
 }
 
 // the wait time has passed, so set back up for another activation
-void sensor_checkWaitForReactivation_think( gentity_t *ent )
+void sensor_checkWaitForReactivation_think( gentity_t *self )
 {
-	ent->nextthink = 0;
+	self->nextthink = 0;
 }
 
 void trigger_checkWaitForReactivation( gentity_t *self )
@@ -116,7 +116,7 @@ void trigger_multiple_act( gentity_t *self, gentity_t *caller, gentity_t *activa
 	   ( activator->client->ps.stats[ STAT_TEAM ] != self->conditions.team ) )
 		return;
 
-	G_FireAllTargetsOf( self, self->activator );
+	G_FireAllCallTargetsOf( self, self->activator );
 	trigger_checkWaitForReactivation( self );
 }
 
@@ -152,13 +152,13 @@ sensor_start
 
 void sensor_start_fireAndForget( gentity_t *self )
 {
-	G_FireAllTargetsOf(self, self);
+	G_FireAllCallTargetsOf(self, self);
 	G_FreeEntity( self );
 }
 
-void SP_sensor_start( gentity_t *ent )
+void SP_sensor_start( gentity_t *self )
 {
-	//ent->think = sensor_start_fireAndForget; //gonna reuse that later, when we make sensor_start delayable again (configurable though)
+	//self->think = sensor_start_fireAndForget; //gonna reuse that later, when we make sensor_start delayable again (configurable though)
 }
 
 void G_notify_sensor_start()
@@ -185,7 +185,7 @@ timer
 
 void sensor_timer_think( gentity_t *self )
 {
-	G_FireAllTargetsOf( self, self->activator );
+	G_FireAllCallTargetsOf( self, self->activator );
 	// set time before next firing
 	G_SetNextthink( self );
 }
@@ -250,7 +250,7 @@ void G_notify_sensor_stage( team_t team, stage_t stage )
 				&& (!ent->conditions.team || team == ent->conditions.team))
 				== !ent->conditions.negated)
 		{
-			G_FireAllTargetsOf(ent, ent);
+			G_FireAllCallTargetsOf(ent, ent);
 		}
 	}
 }
@@ -286,7 +286,7 @@ void G_notify_sensor_end( team_t winningTeam )
 	while ((ent = G_FindNextEntity(ent, FOFS( classname ), "sensor_end")) != NULL )
 	{
 		if ((winningTeam == ent->conditions.team) == !ent->conditions.negated)
-			G_FireAllTargetsOf(ent, ent);
+			G_FireAllCallTargetsOf(ent, ent);
 	}
 }
 
@@ -357,7 +357,7 @@ void sensor_buildable_touch( gentity_t *self, gentity_t *activator, trace_t *tra
 
 	if( sensor_buildable_match( self, activator ) == !self->conditions.negated )
 	{
-		G_FireAllTargetsOf( self, activator );
+		G_FireAllCallTargetsOf( self, activator );
 		trigger_checkWaitForReactivation( self );
 	}
 }
@@ -494,7 +494,7 @@ void sensor_player_touch( gentity_t *self, gentity_t *activator, trace_t *trace 
 
 	if( shouldFire == !self->conditions.negated )
 	{
-		G_FireAllTargetsOf( self, activator );
+		G_FireAllCallTargetsOf( self, activator );
 		trigger_checkWaitForReactivation( self );
 	}
 }

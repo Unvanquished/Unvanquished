@@ -43,9 +43,9 @@ shared entity think functions
 =================================================================================
 */
 
-void think_fireDelayed( gentity_t *ent )
+void think_fireDelayed( gentity_t *self )
 {
-	G_FireAllTargetsOf( ent, ent->activator );
+	G_FireAllCallTargetsOf( self, self->activator );
 }
 
 /*
@@ -57,23 +57,23 @@ Calculate origin2 so the target apogee will be hit
 */
 void think_aimAtTarget( gentity_t *self )
 {
-	gentity_t *ent;
+	gentity_t *pickedTarget;
 	vec3_t    origin;
 	float     height, gravity, time, forward;
-	float     dist;
+	float     distance;
 
 	VectorAdd( self->r.absmin, self->r.absmax, origin );
 	VectorScale( origin, 0.5, origin );
 
-	ent = G_PickRandomTargetFor( self );
+	pickedTarget = G_PickRandomTargetFor( self );
 
-	if ( !ent )
+	if ( !pickedTarget )
 	{
 		G_FreeEntity( self );
 		return;
 	}
 
-	height = ent->s.origin[ 2 ] - origin[ 2 ];
+	height = pickedTarget->s.origin[ 2 ] - origin[ 2 ];
 	gravity = g_gravity.value;
 	time = sqrt( height / ( 0.5 * gravity ) );
 
@@ -84,11 +84,11 @@ void think_aimAtTarget( gentity_t *self )
 	}
 
 	// set s.origin2 to the push velocity
-	VectorSubtract( ent->s.origin, origin, self->s.origin2 );
+	VectorSubtract( pickedTarget->s.origin, origin, self->s.origin2 );
 	self->s.origin2[ 2 ] = 0;
-	dist = VectorNormalize( self->s.origin2 );
+	distance = VectorNormalize( self->s.origin2 );
 
-	forward = dist / time;
+	forward = distance / time;
 	VectorScale( self->s.origin2, forward, self->s.origin2 );
 
 	self->s.origin2[ 2 ] = time * gravity;
@@ -102,35 +102,35 @@ shared reset functions
 =================================================================================
 */
 
-void reset_intField( int* target, int instanceField, int classField, int fallback, qboolean fallbackIfNegative )
+void reset_intField( int* result, int instanceField, int classField, int fallback, qboolean fallbackIfNegative )
 {
 	if(instanceField && (instanceField > 0 || !fallbackIfNegative))
 	{
-		*target = instanceField;
+		*result = instanceField;
 	}
 	else if (classField && (classField > 0 || !fallbackIfNegative))
 	{
-		*target = classField;
+		*result = classField;
 	}
 	else
 	{
-		*target = fallback;
+		*result = fallback;
 	}
 }
 
-void reset_floatField( float* target, float instanceField, float classField, float fallback, qboolean fallbackIfNegative )
+void reset_floatField( float* result, float instanceField, float classField, float fallback, qboolean fallbackIfNegative )
 {
 	if(instanceField && (instanceField > 0 || !fallbackIfNegative))
 	{
-		*target = instanceField;
+		*result = instanceField;
 	}
 	else if (classField && (classField > 0 || !fallbackIfNegative))
 	{
-		*target = classField;
+		*result = classField;
 	}
 	else
 	{
-		*target = fallback;
+		*result = fallback;
 	}
 }
 

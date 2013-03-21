@@ -42,14 +42,14 @@ basic gentity lifecycle handling
 =================================================================================
 */
 
-void G_InitGentity( gentity_t *e )
+void G_InitGentity( gentity_t *entity )
 {
-	e->inuse = qtrue;
-	e->enabled = qtrue;
-	e->classname = "noclass";
-	e->s.number = e - g_entities;
-	e->r.ownerNum = ENTITYNUM_NONE;
-	e->creationTime = level.time;
+	entity->inuse = qtrue;
+	entity->enabled = qtrue;
+	entity->classname = "noclass";
+	entity->s.number = entity - g_entities;
+	entity->r.ownerNum = ENTITYNUM_NONE;
+	entity->creationTime = level.time;
 }
 
 /*
@@ -67,37 +67,37 @@ instead of being removed and recreated, which can cause interpolated
 angles and bad trails.
 =================
 */
-gentity_t *G_Spawn( void )
+gentity_t *G_NewEntity( void )
 {
 	int       i, force;
-	gentity_t *e;
+	gentity_t *newEntity;
 
-	e = NULL; // shut up warning
+	newEntity = NULL; // shut up warning
 	i = 0; // shut up warning
 
 	for ( force = 0; force < 2; force++ )
 	{
 		// if we go through all entities first and can't find a free one,
 		// then try again a second time, this time ignoring times
-		e = &g_entities[ MAX_CLIENTS ];
+		newEntity = &g_entities[ MAX_CLIENTS ];
 
-		for ( i = MAX_CLIENTS; i < level.num_entities; i++, e++ )
+		for ( i = MAX_CLIENTS; i < level.num_entities; i++, newEntity++ )
 		{
-			if ( e->inuse )
+			if ( newEntity->inuse )
 			{
 				continue;
 			}
 
 			// the first couple seconds of server time can involve a lot of
 			// freeing and allocating, so relax the replacement policy
-			if ( !force && e->freetime > level.startTime + 2000 && level.time - e->freetime < 1000 )
+			if ( !force && newEntity->freetime > level.startTime + 2000 && level.time - newEntity->freetime < 1000 )
 			{
 				continue;
 			}
 
 			// reuse this slot
-			G_InitGentity( e );
-			return e;
+			G_InitGentity( newEntity );
+			return newEntity;
 		}
 
 		if ( i != MAX_GENTITIES )
@@ -123,8 +123,8 @@ gentity_t *G_Spawn( void )
 	trap_LocateGameData( level.gentities, level.num_entities, sizeof( gentity_t ),
 	                     &level.clients[ 0 ].ps, sizeof( level.clients[ 0 ] ) );
 
-	G_InitGentity( e );
-	return e;
+	G_InitGentity( newEntity );
+	return newEntity;
 }
 
 /*
@@ -134,25 +134,25 @@ G_FreeEntity
 Marks the entity as free
 =================
 */
-void G_FreeEntity( gentity_t *ent )
+void G_FreeEntity( gentity_t *entity )
 {
-	trap_UnlinkEntity( ent );  // unlink from world
+	trap_UnlinkEntity( entity );  // unlink from world
 
-	if ( ent->neverFree )
+	if ( entity->neverFree )
 	{
 		return;
 	}
 
 	if ( g_debugEntities.integer > 2 )
-		G_Printf("Debug: Freeing Entity ^5#%i^7 of type ^5%s\n", ent->s.number, ent->classname);
+		G_Printf("Debug: Freeing Entity ^5#%i^7 of type ^5%s\n", entity->s.number, entity->classname);
 
-	if( ent->eclass && ent->eclass->instanceCounter > 0)
-		ent->eclass->instanceCounter--;
+	if( entity->eclass && entity->eclass->instanceCounter > 0)
+		entity->eclass->instanceCounter--;
 
-	memset( ent, 0, sizeof( *ent ) );
-	ent->classname = "freent";
-	ent->freetime = level.time;
-	ent->inuse = qfalse;
+	memset( entity, 0, sizeof( *entity ) );
+	entity->classname = "freent";
+	entity->freetime = level.time;
+	entity->inuse = qfalse;
 }
 
 
@@ -165,26 +165,26 @@ The origin will be snapped to save net bandwidth, so care
 must be taken if the origin is right on a surface (snap towards start vector first)
 =================
 */
-gentity_t *G_TempEntity( const vec3_t origin, int event )
+gentity_t *G_NewTempEntity( const vec3_t origin, int event )
 {
-	gentity_t *e;
+	gentity_t *newEntity;
 	vec3_t    snapped;
 
-	e = G_Spawn();
-	e->s.eType = ET_EVENTS + event;
+	newEntity = G_NewEntity();
+	newEntity->s.eType = ET_EVENTS + event;
 
-	e->classname = "tempEntity";
-	e->eventTime = level.time;
-	e->freeAfterEvent = qtrue;
+	newEntity->classname = "tempEntity";
+	newEntity->eventTime = level.time;
+	newEntity->freeAfterEvent = qtrue;
 
 	VectorCopy( origin, snapped );
 	SnapVector( snapped );  // save network bandwidth
-	G_SetOrigin( e, snapped );
+	G_SetOrigin( newEntity, snapped );
 
 	// find cluster for PVS
-	trap_LinkEntity( e );
+	trap_LinkEntity( newEntity );
 
-	return e;
+	return newEntity;
 }
 
 /*
@@ -195,7 +195,7 @@ gentity debuging
 =================================================================================
 */
 
-void G_DebugPrintEntitiy(gentity_t *entity)
+void G_PrintEntity(gentity_t *entity)
 {
 	if(!entity)
 	{
@@ -231,7 +231,7 @@ NULL will be returned if the end of the list is reached.
 */
 gentity_t *G_FindNextEntity( gentity_t *from, size_t fieldofs, const char *match )
 {
-	char *s;
+	char *fieldString;
 
 	if ( !from )
 	{
@@ -249,14 +249,14 @@ gentity_t *G_FindNextEntity( gentity_t *from, size_t fieldofs, const char *match
 			continue;
 		}
 
-		s = * ( char ** )( ( byte * ) from + fieldofs );
+		fieldString = * ( char ** )( ( byte * ) from + fieldofs );
 
-		if ( !s )
+		if ( !fieldString )
 		{
 			continue;
 		}
 
-		if ( !Q_stricmp( s, match ) )
+		if ( !Q_stricmp( fieldString, match ) )
 		{
 			return from;
 		}
@@ -298,7 +298,7 @@ gentity_t *G_PickRandomEntity( size_t fieldofs, const char *match  )
 // from quakestyle.telefragged.com
 // (NOBODY): Code helper function
 //
-gentity_t *G_FindRadius( gentity_t *from, vec3_t org, float rad )
+gentity_t *G_FindNextEntityInRadius( gentity_t *from, vec3_t org, float rad )
 {
 	vec3_t eorg;
 	int    j;
@@ -342,7 +342,7 @@ G_ClosestEnt
 Test a list of entities for the closest to a particular point
 ===============
 */
-gentity_t *G_ClosestEnt( vec3_t origin, gentity_t **entities, int numEntities )
+gentity_t *G_FindClosestEntity( vec3_t origin, gentity_t **entities, int numEntities )
 {
 	int       i;
 	float     nd, d;
@@ -383,7 +383,7 @@ gentity chain handling
 typedef struct
 {
 	const char *alias;
-	gentityCallAction_t action;
+	gentityCallActionType_t action;
 } entityActionDescription_t;
 
 static const entityActionDescription_t actionDescriptions[] =
@@ -398,7 +398,7 @@ static const entityActionDescription_t actionDescriptions[] =
 		{ "use",       ECA_USE       },
 };
 
-gentityCallAction_t G_GetCallActionFor( const char* action )
+gentityCallActionType_t G_GetCallActionTypeFor( const char* action )
 {
 	entityActionDescription_t *foundDescription;
 
@@ -471,24 +471,24 @@ gentity_t *G_PickRandomTargetFor( gentity_t *self )
 
 typedef struct
 {
-	gentityCallDefinition_t *target;
+	gentityCallDefinition_t *callDefinition;
 	gentity_t *recipient;
 } gentityTargetChoice_t;
 
-void G_FireRandomTargetOf( gentity_t *entity, gentity_t *activator )
+void G_FireRandomCallTargetOf( gentity_t *entity, gentity_t *activator )
 {
 	int       targetIndex, nameIndex;
-	gentity_t *possbileTarget = NULL;
+	gentity_t *possibleTarget = NULL;
 	int       totalChoiceCount = 0;
 	gentityCall_t call;
 	gentityTargetChoice_t choices[ MAX_GENTITIES ];
 	gentityTargetChoice_t *selectedChoice;
 
 	//collects the targets
-	while( ( possbileTarget = G_FindNextTarget( possbileTarget, &targetIndex, &nameIndex, entity ) ) != NULL )
+	while( ( possibleTarget = G_FindNextTarget( possibleTarget, &targetIndex, &nameIndex, entity ) ) != NULL )
 	{
-		choices[ totalChoiceCount ].recipient = possbileTarget;
-		choices[ totalChoiceCount ].target = &entity->calltargets[targetIndex];
+		choices[ totalChoiceCount ].recipient = possibleTarget;
+		choices[ totalChoiceCount ].callDefinition = &entity->calltargets[targetIndex];
 		totalChoiceCount++;
 	}
 
@@ -497,7 +497,7 @@ void G_FireRandomTargetOf( gentity_t *entity, gentity_t *activator )
 	if (!selectedChoice)
 		return;
 
-	call.definition = selectedChoice->target;
+	call.definition = selectedChoice->callDefinition;
 	call.caller = entity;
 	call.activator = activator;
 
@@ -514,7 +514,7 @@ For all t in the entities, where t.targetnames[i] matches
 ent.targets[j] for any (i,j) pairs, call the t.use function.
 ==============================
 */
-void G_FireAllTargetsOf( gentity_t *self, gentity_t *activator )
+void G_FireAllCallTargetsOf( gentity_t *self, gentity_t *activator )
 {
 	gentity_t *currentTarget = NULL;
 	int targetIndex, nameIndex;
@@ -548,11 +548,11 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 	if ( g_debugEntities.integer > 1 )
 	{
 		G_Printf("Debug: [");
-		G_DebugPrintEntitiy(call->activator);
+		G_PrintEntity(call->activator);
 		G_Printf("] ");
-		G_DebugPrintEntitiy(call->caller);
+		G_PrintEntity(call->caller);
 		G_Printf(" → ");
-		G_DebugPrintEntitiy(targetedEntity);
+		G_PrintEntity(targetedEntity);
 		G_Printf(":%s\n", call->definition && call->definition->action ? call->definition->action : "default");
 	}
 
@@ -564,7 +564,7 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 			if ( g_debugEntities.integer > -1 )
 			{
 				G_Printf("^3Warning:^7 Unknown action \"%s\" for ", call->definition->action) ;
-				G_DebugPrintEntitiy(targetedEntity);
+				G_PrintEntity(targetedEntity);
 				G_Printf("\n");
 			}
 			return;
@@ -574,7 +574,7 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 			return; //we have to handle notification differently in the free-case
 
 		case ECA_PROPAGATE:
-			G_FireAllTargetsOf( targetedEntity, call->activator);
+			G_FireAllCallTargetsOf( targetedEntity, call->activator);
 			break;
 
 		case ECA_ENABLE:
@@ -625,14 +625,14 @@ G_Visible
 Test for a LOS between two entities
 ===============
 */
-qboolean G_Visible( gentity_t *ent1, gentity_t *ent2, int contents )
+qboolean G_IsVisible( gentity_t *start, gentity_t *end, int contents )
 {
 	trace_t trace;
 
-	trap_Trace( &trace, ent1->s.pos.trBase, NULL, NULL, ent2->s.pos.trBase,
-	            ent1->s.number, contents );
+	trap_Trace( &trace, start->s.pos.trBase, NULL, NULL, end->s.pos.trBase,
+	            start->s.number, contents );
 
-	return trace.fraction >= 1.0f || trace.entityNum == ent2 - g_entities;
+	return trace.fraction >= 1.0f || trace.entityNum == end - g_entities;
 }
 
 /*
@@ -683,16 +683,16 @@ G_SetOrigin
 Sets the pos trajectory for a fixed position
 ================
 */
-void G_SetOrigin( gentity_t *ent, const vec3_t origin )
+void G_SetOrigin( gentity_t *self, const vec3_t origin )
 {
-	VectorCopy( origin, ent->s.pos.trBase );
-	ent->s.pos.trType = TR_STATIONARY;
-	ent->s.pos.trTime = 0;
-	ent->s.pos.trDuration = 0;
-	VectorClear( ent->s.pos.trDelta );
+	VectorCopy( origin, self->s.pos.trBase );
+	self->s.pos.trType = TR_STATIONARY;
+	self->s.pos.trTime = 0;
+	self->s.pos.trDuration = 0;
+	VectorClear( self->s.pos.trDelta );
 
-	VectorCopy( origin, ent->r.currentOrigin );
-	VectorCopy( origin, ent->s.origin );
+	VectorCopy( origin, self->r.currentOrigin );
+	VectorCopy( origin, self->s.origin );
 }
 
 /**

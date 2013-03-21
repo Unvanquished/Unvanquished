@@ -427,7 +427,7 @@ void  G_TouchTriggers( gentity_t *ent )
 			if ( hit->s.eType != ET_TELEPORT_TRIGGER &&
 			     // this is ugly but adding a new ET_? type will
 			     // most likely cause network incompatibilities
-			     hit->touch != Touch_DoorTrigger )
+			     hit->touch != door_trigger_touch )
 			{
 				//check for manually triggered doors
 				manualTriggerSpectator( hit, ent );
@@ -1119,7 +1119,7 @@ void SendPendingPredictableEvents( playerState_t *ps )
 		extEvent = ps->externalEvent;
 		ps->externalEvent = 0;
 		// create temporary entity for event
-		t = G_TempEntity( ps->origin, event );
+		t = G_NewTempEntity( ps->origin, event );
 		number = t->s.number;
 		BG_PlayerStateToEntityState( ps, &t->s, qtrue );
 		t->s.number = number;

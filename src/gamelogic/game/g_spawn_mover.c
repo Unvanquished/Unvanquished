@@ -819,7 +819,7 @@ void Think_OpenModelDoor( gentity_t *ent )
 		ent->activator = ent;
 	}
 
-	G_FireAllTargetsOf( ent, ent->activator );
+	G_FireAllCallTargetsOf( ent, ent->activator );
 }
 
 /*
@@ -855,7 +855,7 @@ void BinaryMover_reached( gentity_t *ent )
 			ent->activator = ent;
 		}
 
-		G_FireAllTargetsOf( ent, ent->activator );
+		G_FireAllCallTargetsOf( ent, ent->activator );
 	}
 	else if ( ent->moverState == MOVER_2TO1 )
 	{
@@ -895,7 +895,7 @@ void BinaryMover_reached( gentity_t *ent )
 			ent->activator = ent;
 		}
 
-		G_FireAllTargetsOf( ent, ent->activator );
+		G_FireAllCallTargetsOf( ent, ent->activator );
 	}
 	else if ( ent->moverState == ROTATOR_2TO1 )
 	{
@@ -1393,7 +1393,7 @@ targeted by another entity.
 Blocked_Door
 ================
 */
-void Blocked_Door( gentity_t *ent, gentity_t *other )
+void func_door_block( gentity_t *self, gentity_t *other )
 {
 	// remove anything other than a client or buildable
 	if ( !other->client && other->s.eType != ET_BUILDABLE )
@@ -1402,18 +1402,18 @@ void Blocked_Door( gentity_t *ent, gentity_t *other )
 		return;
 	}
 
-	if ( ent->damage )
+	if ( self->damage )
 	{
-		G_Damage( other, ent, ent, NULL, NULL, ent->damage, 0, MOD_CRUSH );
+		G_Damage( other, self, self, NULL, NULL, self->damage, 0, MOD_CRUSH );
 	}
 
-	if ( ent->spawnflags & 4 )
+	if ( self->spawnflags & 4 )
 	{
 		return; // crushers don't reverse
 	}
 
 	// reverse direction
-	BinaryMover_act( ent, ent, other );
+	BinaryMover_act( self, self, other );
 }
 
 /*
@@ -1421,23 +1421,23 @@ void Blocked_Door( gentity_t *ent, gentity_t *other )
 Touch_DoorTriggerSpectator
 ================
 */
-static void Touch_DoorTriggerSpectator( gentity_t *ent, gentity_t *other, trace_t *trace )
+static void door_trigger_spectatorTouch( gentity_t *self, gentity_t *other, trace_t *trace )
 {
 	int    i, axis;
 	vec3_t origin, dir, angles;
 
-	axis = ent->customNumber;
+	axis = self->customNumber;
 	VectorClear( dir );
 
-	if ( fabs( other->s.origin[ axis ] - ent->r.absmax[ axis ] ) <
-	     fabs( other->s.origin[ axis ] - ent->r.absmin[ axis ] ) )
+	if ( fabs( other->s.origin[ axis ] - self->r.absmax[ axis ] ) <
+	     fabs( other->s.origin[ axis ] - self->r.absmin[ axis ] ) )
 	{
-		origin[ axis ] = ent->r.absmin[ axis ] - 20;
+		origin[ axis ] = self->r.absmin[ axis ] - 20;
 		dir[ axis ] = -1;
 	}
 	else
 	{
-		origin[ axis ] = ent->r.absmax[ axis ] + 20;
+		origin[ axis ] = self->r.absmax[ axis ] + 20;
 		dir[ axis ] = 1;
 	}
 
@@ -1448,7 +1448,7 @@ static void Touch_DoorTriggerSpectator( gentity_t *ent, gentity_t *other, trace_
 			continue;
 		}
 
-		origin[ i ] = ( ent->r.absmin[ i ] + ent->r.absmax[ i ] ) * 0.5;
+		origin[ i ] = ( self->r.absmin[ i ] + self->r.absmax[ i ] ) * 0.5;
 	}
 
 	vectoangles( dir, angles );
@@ -1509,7 +1509,7 @@ static void manualDoorTriggerSpectator( gentity_t *door, gentity_t *player )
 	VectorCopy( maxs, triggerHull.r.absmax );
 	triggerHull.customNumber = best;
 
-	Touch_DoorTriggerSpectator( &triggerHull, player, NULL );
+	door_trigger_spectatorTouch( &triggerHull, player, NULL );
 }
 
 /*
@@ -1519,7 +1519,7 @@ manualTriggerSpectator
 Trip to skip the closest door targeted by trigger
 ================
 */
-void manualTriggerSpectator( gentity_t *trigger, gentity_t *player )
+void manualTriggerSpectator( gentity_t *sensor, gentity_t *player )
 {
 	gentity_t *currentTarget = NULL;
 	gentity_t *targets[ MAX_GENTITIES ];
@@ -1529,13 +1529,13 @@ void manualTriggerSpectator( gentity_t *trigger, gentity_t *player )
 
 
 	//restrict this hack to trigger_multiple only for now
-	if ( strcmp( trigger->classname, "sensor_player" ) )
+	if ( strcmp( sensor->classname, "sensor_player" ) )
 	{
 		return;
 	}
 
 	//create a list of door entities this trigger targets
-	while( ( currentTarget = G_FindNextTarget( currentTarget, &targetIndex, &nameIndex, trigger ) ) != NULL )
+	while( ( currentTarget = G_FindNextTarget( currentTarget, &targetIndex, &nameIndex, sensor ) ) != NULL )
 	{
 		if ( !strcmp( currentTarget->classname, "func_door" ) )
 		{
@@ -1571,7 +1571,7 @@ void manualTriggerSpectator( gentity_t *trigger, gentity_t *player )
 Touch_DoorTrigger
 ================
 */
-void Touch_DoorTrigger( gentity_t *ent, gentity_t *other, trace_t *trace )
+void door_trigger_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 {
 	moverState_t groupState;
 
@@ -1581,29 +1581,29 @@ void Touch_DoorTrigger( gentity_t *ent, gentity_t *other, trace_t *trace )
 		return;
 	}
 
-	groupState = GetMoverGroupState( ent->parent );
+	groupState = GetMoverGroupState( self->parent );
 
 	if ( other->client && other->client->sess.spectatorState != SPECTATOR_NOT )
 	{
 		// if the door is not open and not opening
 		if ( groupState != MOVER_POS2 && groupState != MOVER_1TO2 )
 		{
-			Touch_DoorTriggerSpectator( ent, other, trace );
+			door_trigger_spectatorTouch( self, other, trace );
 		}
 	}
 	else if ( groupState != MOVER_1TO2 )
 	{
-		BinaryMover_act( ent->parent, ent, other );
+		BinaryMover_act( self->parent, self, other );
 	}
 }
 
-void Think_MatchGroup( gentity_t *ent )
+void Think_MatchGroup( gentity_t *self )
 {
-	if ( ent->flags & FL_GROUPSLAVE )
+	if ( self->flags & FL_GROUPSLAVE )
 	{
 		return;
 	}
-	MatchGroup( ent, ent->moverState, level.time );
+	MatchGroup( self, self->moverState, level.time );
 }
 
 /*
@@ -1614,17 +1614,17 @@ All of the parts of a door have been spawned, so create
 a trigger that encloses all of them
 ======================
 */
-void Think_SpawnNewDoorTrigger( gentity_t *ent )
+void Think_SpawnNewDoorTrigger( gentity_t *self )
 {
 	gentity_t *other;
 	vec3_t    mins, maxs;
 	int       i, best;
 
 	// find the bounds of everything on the group
-	VectorCopy( ent->r.absmin, mins );
-	VectorCopy( ent->r.absmax, maxs );
+	VectorCopy( self->r.absmin, mins );
+	VectorCopy( self->r.absmax, maxs );
 
-	for ( other = ent->groupChain; other; other = other->groupChain )
+	for ( other = self->groupChain; other; other = other->groupChain )
 	{
 		AddPointToBounds( other->r.absmin, mins, maxs );
 		AddPointToBounds( other->r.absmax, mins, maxs );
@@ -1641,24 +1641,24 @@ void Think_SpawnNewDoorTrigger( gentity_t *ent )
 		}
 	}
 
-	maxs[ best ] += ent->config.triggerRange;
-	mins[ best ] -= ent->config.triggerRange;
+	maxs[ best ] += self->config.triggerRange;
+	mins[ best ] -= self->config.triggerRange;
 
 	// create a trigger with this size
-	other = G_Spawn();
+	other = G_NewEntity();
 	other->classname = "door_trigger";
 	VectorCopy( mins, other->r.mins );
 	VectorCopy( maxs, other->r.maxs );
-	other->parent = ent;
+	other->parent = self;
 	other->r.contents = CONTENTS_TRIGGER;
-	other->touch = Touch_DoorTrigger;
+	other->touch = door_trigger_touch;
 	// remember the thinnest axis
 	other->customNumber = best;
 	trap_LinkEntity( other );
 
-	if ( ent->moverState < MODEL_POS1 )
+	if ( self->moverState < MODEL_POS1 )
 	{
-		Think_MatchGroup( ent );
+		Think_MatchGroup( self );
 	}
 }
 
@@ -1678,7 +1678,7 @@ void func_door_use( gentity_t *self, gentity_t *caller, gentity_t *activator )
 		BinaryMover_act( self, caller, activator );
 }
 
-void SP_func_door( gentity_t *ent )
+void SP_func_door( gentity_t *self )
 {
 	vec3_t abs_movedir;
 	float  distance;
@@ -1687,73 +1687,73 @@ void SP_func_door( gentity_t *ent )
 	char   *s;
 
 	G_SpawnString( "sound2to1", "sound/movers/doors/dr1_strt.wav", &s );
-	ent->sound2to1 = G_SoundIndex( s );
+	self->sound2to1 = G_SoundIndex( s );
 	G_SpawnString( "sound1to2", "sound/movers/doors/dr1_strt.wav", &s );
-	ent->sound1to2 = G_SoundIndex( s );
+	self->sound1to2 = G_SoundIndex( s );
 
 	G_SpawnString( "soundPos2", "sound/movers/doors/dr1_end.wav", &s );
-	ent->soundPos2 = G_SoundIndex( s );
+	self->soundPos2 = G_SoundIndex( s );
 	G_SpawnString( "soundPos1", "sound/movers/doors/dr1_end.wav", &s );
-	ent->soundPos1 = G_SoundIndex( s );
+	self->soundPos1 = G_SoundIndex( s );
 
-	ent->blocked = Blocked_Door;
-	ent->reset = func_door_reset;
-	ent->use = func_door_use;
+	self->blocked = func_door_block;
+	self->reset = func_door_reset;
+	self->use = func_door_use;
 
 	// default wait of 2 seconds
-	if ( !ent->config.wait.time )
+	if ( !self->config.wait.time )
 	{
-		ent->config.wait.time = 2;
+		self->config.wait.time = 2;
 	}
 
-	ent->config.wait.time *= 1000;
+	self->config.wait.time *= 1000;
 
 	// default trigger range of 72 units (saved in noise_index)
-	G_SpawnInt( "range", "72", &ent->config.triggerRange );
+	G_SpawnInt( "range", "72", &self->config.triggerRange );
 
-	if ( ent->config.triggerRange < 0 )
+	if ( self->config.triggerRange < 0 )
 	{
-		ent->config.triggerRange = 72;
+		self->config.triggerRange = 72;
 	}
 
 	// default lip of 8 units
 	G_SpawnFloat( "lip", "8", &lip );
 
 	// first position at start
-	VectorCopy( ent->s.origin, ent->restingPosition );
+	VectorCopy( self->s.origin, self->restingPosition );
 
 	// calculate second position
-	trap_SetBrushModel( ent, ent->model );
-	G_SetMovedir( ent->s.angles, ent->movedir );
-	abs_movedir[ 0 ] = fabs( ent->movedir[ 0 ] );
-	abs_movedir[ 1 ] = fabs( ent->movedir[ 1 ] );
-	abs_movedir[ 2 ] = fabs( ent->movedir[ 2 ] );
-	VectorSubtract( ent->r.maxs, ent->r.mins, size );
+	trap_SetBrushModel( self, self->model );
+	G_SetMovedir( self->s.angles, self->movedir );
+	abs_movedir[ 0 ] = fabs( self->movedir[ 0 ] );
+	abs_movedir[ 1 ] = fabs( self->movedir[ 1 ] );
+	abs_movedir[ 2 ] = fabs( self->movedir[ 2 ] );
+	VectorSubtract( self->r.maxs, self->r.mins, size );
 	distance = DotProduct( abs_movedir, size ) - lip;
-	VectorMA( ent->restingPosition, distance, ent->movedir, ent->activatedPosition );
+	VectorMA( self->restingPosition, distance, self->movedir, self->activatedPosition );
 
 	// if "start_open", reverse position 1 and 2
-	if ( ent->spawnflags & 1 )
+	if ( self->spawnflags & 1 )
 	{
 		vec3_t temp;
 
-		VectorCopy( ent->activatedPosition, temp );
-		VectorCopy( ent->s.origin, ent->activatedPosition );
-		VectorCopy( temp, ent->restingPosition );
+		VectorCopy( self->activatedPosition, temp );
+		VectorCopy( self->s.origin, self->activatedPosition );
+		VectorCopy( temp, self->restingPosition );
 	}
 
-	InitMover( ent );
+	InitMover( self );
 
-	ent->nextthink = level.time + FRAMETIME;
+	self->nextthink = level.time + FRAMETIME;
 
-	if ( ent->names[ 0 ] || ent->config.health ) //FIXME wont work yet with class fallbacks
+	if ( self->names[ 0 ] || self->config.health ) //FIXME wont work yet with class fallbacks
 	{
 		// non touch/shoot doors
-		ent->think = Think_MatchGroup;
+		self->think = Think_MatchGroup;
 	}
 	else
 	{
-		ent->think = Think_SpawnNewDoorTrigger;
+		self->think = Think_SpawnNewDoorTrigger;
 	}
 }
 
@@ -1766,113 +1766,113 @@ void func_door_rotating_reset( gentity_t *self )
 	reset_rotatorspeed( self, 120 );
 }
 
-void SP_func_door_rotating( gentity_t *ent )
+void SP_func_door_rotating( gentity_t *self )
 {
 	char *s;
 
 	G_SpawnString( "sound2to1", "sound/movers/doors/dr1_strt.wav", &s );
-	ent->sound2to1 = G_SoundIndex( s );
+	self->sound2to1 = G_SoundIndex( s );
 	G_SpawnString( "sound1to2", "sound/movers/doors/dr1_strt.wav", &s );
-	ent->sound1to2 = G_SoundIndex( s );
+	self->sound1to2 = G_SoundIndex( s );
 
 	G_SpawnString( "soundPos2", "sound/movers/doors/dr1_end.wav", &s );
-	ent->soundPos2 = G_SoundIndex( s );
+	self->soundPos2 = G_SoundIndex( s );
 	G_SpawnString( "soundPos1", "sound/movers/doors/dr1_end.wav", &s );
-	ent->soundPos1 = G_SoundIndex( s );
+	self->soundPos1 = G_SoundIndex( s );
 
-	ent->blocked = Blocked_Door;
-	ent->reset = func_door_rotating_reset;
-	ent->use = func_door_use;
+	self->blocked = func_door_block;
+	self->reset = func_door_rotating_reset;
+	self->use = func_door_use;
 
 	// if speed is negative, positize it and add reverse flag
-	if ( ent->config.speed < 0 )
+	if ( self->config.speed < 0 )
 	{
-		ent->config.speed *= -1;
-		ent->spawnflags |= 8;
+		self->config.speed *= -1;
+		self->spawnflags |= 8;
 	}
 
 	// default of 2 seconds
-	if ( !ent->config.wait.time )
+	if ( !self->config.wait.time )
 	{
-		ent->config.wait.time = 2;
+		self->config.wait.time = 2;
 	}
 
-	ent->config.wait.time *= 1000;
+	self->config.wait.time *= 1000;
 
 	// default trigger range of 72 units (saved in noise_index)
-	G_SpawnInt( "range", "72", &ent->config.triggerRange );
+	G_SpawnInt( "range", "72", &self->config.triggerRange );
 
-	if ( ent->config.triggerRange < 0 )
+	if ( self->config.triggerRange < 0 )
 	{
-		ent->config.triggerRange = 72;
+		self->config.triggerRange = 72;
 	}
 
 	// set the axis of rotation
-	VectorClear( ent->movedir );
-	VectorClear( ent->s.angles );
+	VectorClear( self->movedir );
+	VectorClear( self->s.angles );
 
-	if ( ent->spawnflags & 32 )
+	if ( self->spawnflags & 32 )
 	{
-		ent->movedir[ 2 ] = 1.0;
+		self->movedir[ 2 ] = 1.0;
 	}
-	else if ( ent->spawnflags & 64 )
+	else if ( self->spawnflags & 64 )
 	{
-		ent->movedir[ 0 ] = 1.0;
+		self->movedir[ 0 ] = 1.0;
 	}
 	else
 	{
-		ent->movedir[ 1 ] = 1.0;
+		self->movedir[ 1 ] = 1.0;
 	}
 
 	// reverse direction if necessary
-	if ( ent->spawnflags & 8 )
+	if ( self->spawnflags & 8 )
 	{
-		VectorNegate( ent->movedir, ent->movedir );
+		VectorNegate( self->movedir, self->movedir );
 	}
 
-	G_SpawnFloat( "rotatorAngle", "0", &ent->rotatorAngle );
+	G_SpawnFloat( "rotatorAngle", "0", &self->rotatorAngle );
 
 	// default distance of 90 degrees. This is something the mapper should not
 	// leave out, so we'll tell him if he does.
-	if ( !ent->rotatorAngle )
+	if ( !self->rotatorAngle )
 	{
 		G_Printf( "%s at %s with no rotatorAngle set.\n",
-		          ent->classname, vtos( ent->s.origin ) );
+		          self->classname, vtos( self->s.origin ) );
 
-		ent->rotatorAngle = 90.0;
+		self->rotatorAngle = 90.0;
 	}
 
-	VectorCopy( ent->s.angles, ent->restingPosition );
-	trap_SetBrushModel( ent, ent->model );
-	VectorMA( ent->restingPosition, ent->rotatorAngle, ent->movedir, ent->activatedPosition );
+	VectorCopy( self->s.angles, self->restingPosition );
+	trap_SetBrushModel( self, self->model );
+	VectorMA( self->restingPosition, self->rotatorAngle, self->movedir, self->activatedPosition );
 
 	// if "start_open", reverse position 1 and 2
-	if ( ent->spawnflags & 1 )
+	if ( self->spawnflags & 1 )
 	{
 		vec3_t temp;
 
-		VectorCopy( ent->activatedPosition, temp );
-		VectorCopy( ent->s.angles, ent->activatedPosition );
-		VectorCopy( temp, ent->restingPosition );
-		VectorNegate( ent->movedir, ent->movedir );
+		VectorCopy( self->activatedPosition, temp );
+		VectorCopy( self->s.angles, self->activatedPosition );
+		VectorCopy( temp, self->restingPosition );
+		VectorNegate( self->movedir, self->movedir );
 	}
 
 	// set origin
-	VectorCopy( ent->s.origin, ent->s.pos.trBase );
-	VectorCopy( ent->s.pos.trBase, ent->r.currentOrigin );
+	VectorCopy( self->s.origin, self->s.pos.trBase );
+	VectorCopy( self->s.pos.trBase, self->r.currentOrigin );
 
-	InitRotator( ent );
+	InitRotator( self );
 
-	ent->nextthink = level.time + FRAMETIME;
+	self->nextthink = level.time + FRAMETIME;
 
-	if ( ent->names[ 0 ] || ent->config.health ) //FIXME wont work yet with class fallbacks
+	if ( self->names[ 0 ] || self->config.health ) //FIXME wont work yet with class fallbacks
 	{
 		// non touch/shoot doors
-		ent->think = Think_MatchGroup;
+		self->think = Think_MatchGroup;
 	}
 	else
 	{
-		ent->think = Think_SpawnNewDoorTrigger;
+		self->think = Think_SpawnNewDoorTrigger;
 	}
 }
 
@@ -1884,7 +1884,7 @@ void func_door_model_reset( gentity_t *self )
 	self->takedamage = !!self->health;
 }
 
-void SP_func_door_model( gentity_t *ent )
+void SP_func_door_model( gentity_t *self )
 {
 	char      *s;
 	float     light;
@@ -1894,67 +1894,67 @@ void SP_func_door_model( gentity_t *ent )
 	gentity_t *clipBrush;
 
 	G_SpawnString( "sound2to1", "sound/movers/doors/dr1_strt.wav", &s );
-	ent->sound2to1 = G_SoundIndex( s );
+	self->sound2to1 = G_SoundIndex( s );
 	G_SpawnString( "sound1to2", "sound/movers/doors/dr1_strt.wav", &s );
-	ent->sound1to2 = G_SoundIndex( s );
+	self->sound1to2 = G_SoundIndex( s );
 
 	G_SpawnString( "soundPos2", "sound/movers/doors/dr1_end.wav", &s );
-	ent->soundPos2 = G_SoundIndex( s );
+	self->soundPos2 = G_SoundIndex( s );
 	G_SpawnString( "soundPos1", "sound/movers/doors/dr1_end.wav", &s );
-	ent->soundPos1 = G_SoundIndex( s );
+	self->soundPos1 = G_SoundIndex( s );
 
-	ent->reset = func_door_model_reset;
-	ent->use = func_door_use;
+	self->reset = func_door_model_reset;
+	self->use = func_door_use;
 
 	//default wait of 2 seconds
-	if ( ent->config.wait.time <= 0 )
+	if ( self->config.wait.time <= 0 )
 	{
-		ent->config.wait.time = 2;
+		self->config.wait.time = 2;
 	}
 
-	ent->config.wait.time *= 1000;
+	self->config.wait.time *= 1000;
 
 	// default trigger range of 72 units (saved in noise_index)
-	G_SpawnInt( "range", "72", &ent->config.triggerRange );
+	G_SpawnInt( "range", "72", &self->config.triggerRange );
 
-	if ( ent->config.triggerRange < 0 )
+	if ( self->config.triggerRange < 0 )
 	{
-		ent->config.triggerRange = 72;
+		self->config.triggerRange = 72;
 	}
 
 	//brush model
-	clipBrush = ent->clipBrush = G_Spawn();
-	clipBrush->model = ent->model;
+	clipBrush = self->clipBrush = G_NewEntity();
+	clipBrush->model = self->model;
 	trap_SetBrushModel( clipBrush, clipBrush->model );
 	clipBrush->s.eType = ET_INVISIBLE;
 	trap_LinkEntity( clipBrush );
 
 	//copy the bounds back from the clipBrush so the
 	//triggers can be made
-	VectorCopy( clipBrush->r.absmin, ent->r.absmin );
-	VectorCopy( clipBrush->r.absmax, ent->r.absmax );
-	VectorCopy( clipBrush->r.mins, ent->r.mins );
-	VectorCopy( clipBrush->r.maxs, ent->r.maxs );
+	VectorCopy( clipBrush->r.absmin, self->r.absmin );
+	VectorCopy( clipBrush->r.absmax, self->r.absmax );
+	VectorCopy( clipBrush->r.mins, self->r.mins );
+	VectorCopy( clipBrush->r.maxs, self->r.maxs );
 
-	G_SpawnVector( "modelOrigin", "0 0 0", ent->s.origin );
+	G_SpawnVector( "modelOrigin", "0 0 0", self->s.origin );
 
-	G_SpawnVector( "scale", "1 1 1", ent->s.origin2 );
+	G_SpawnVector( "scale", "1 1 1", self->s.origin2 );
 
 	// if the "model2" key is set, use a separate model
 	// for drawing, but clip against the brushes
-	if ( !ent->model2 )
+	if ( !self->model2 )
 	{
-		G_Printf( S_COLOR_YELLOW "WARNING: func_door_model %d spawned with no model2 key\n", ent->s.number );
+		G_Printf( S_COLOR_YELLOW "WARNING: func_door_model %d spawned with no model2 key\n", self->s.number );
 	}
 	else
 	{
-		ent->s.modelindex = G_ModelIndex( ent->model2 );
+		self->s.modelindex = G_ModelIndex( self->model2 );
 	}
 
 	// if the "noise" key is set, use a constant looping sound when moving
 	if ( G_SpawnString( "noise", "", &sound ) )
 	{
-		ent->soundIndex = G_SoundIndex( sound );
+		self->soundIndex = G_SoundIndex( sound );
 	}
 
 	// if the "color" or "light" keys are set, setup constantLight
@@ -1993,41 +1993,41 @@ void SP_func_door_model( gentity_t *ent )
 			i = 255;
 		}
 
-		ent->s.constantLight = r | ( g << 8 ) | ( b << 16 ) | ( i << 24 );
+		self->s.constantLight = r | ( g << 8 ) | ( b << 16 ) | ( i << 24 );
 	}
 
-	ent->act = BinaryMover_act;
+	self->act = BinaryMover_act;
 
-	ent->moverState = MODEL_POS1;
-	ent->s.eType = ET_MODELDOOR;
-	VectorCopy( ent->s.origin, ent->s.pos.trBase );
-	ent->s.pos.trType = TR_STATIONARY;
-	ent->s.pos.trTime = 0;
-	ent->s.pos.trDuration = 0;
-	VectorClear( ent->s.pos.trDelta );
-	VectorCopy( ent->s.angles, ent->s.apos.trBase );
-	ent->s.apos.trType = TR_STATIONARY;
-	ent->s.apos.trTime = 0;
-	ent->s.apos.trDuration = 0;
-	VectorClear( ent->s.apos.trDelta );
+	self->moverState = MODEL_POS1;
+	self->s.eType = ET_MODELDOOR;
+	VectorCopy( self->s.origin, self->s.pos.trBase );
+	self->s.pos.trType = TR_STATIONARY;
+	self->s.pos.trTime = 0;
+	self->s.pos.trDuration = 0;
+	VectorClear( self->s.pos.trDelta );
+	VectorCopy( self->s.angles, self->s.apos.trBase );
+	self->s.apos.trType = TR_STATIONARY;
+	self->s.apos.trTime = 0;
+	self->s.apos.trDuration = 0;
+	VectorClear( self->s.apos.trDelta );
 
-	ent->s.misc = ( int ) ent->animation[ 0 ]; //first frame
-	ent->s.weapon = abs( ( int ) ent->animation[ 1 ] );  //number of frames
+	self->s.misc = ( int ) self->animation[ 0 ]; //first frame
+	self->s.weapon = abs( ( int ) self->animation[ 1 ] );  //number of frames
 
 	//must be at least one frame -- mapper has forgotten animation key
-	if ( ent->s.weapon == 0 )
+	if ( self->s.weapon == 0 )
 	{
-		ent->s.weapon = 1;
+		self->s.weapon = 1;
 	}
 
-	ent->s.torsoAnim = ent->s.weapon * ( 1000.0f / ent->config.speed ); //framerate
+	self->s.torsoAnim = self->s.weapon * ( 1000.0f / self->config.speed ); //framerate
 
-	trap_LinkEntity( ent );
+	trap_LinkEntity( self );
 
-	if ( !( ent->names[ 0 ] || ent->config.health ) ) //FIXME wont work yet with class fallbacks
+	if ( !( self->names[ 0 ] || self->config.health ) ) //FIXME wont work yet with class fallbacks
 	{
-		ent->nextthink = level.time + FRAMETIME;
-		ent->think = Think_SpawnNewDoorTrigger;
+		self->nextthink = level.time + FRAMETIME;
+		self->think = Think_SpawnNewDoorTrigger;
 	}
 }
 
@@ -2095,99 +2095,99 @@ Elevator cars require that the trigger extend through the entire low position,
 not just sit on top of it.
 ================
 */
-void SpawnPlatTrigger( gentity_t *ent )
+void SpawnPlatSensor( gentity_t *self )
 {
-	gentity_t *trigger;
+	gentity_t *sensor;
 	vec3_t    tmin, tmax;
 
 	// the middle trigger will be a thin trigger just
 	// above the starting position
-	trigger = G_Spawn();
-	trigger->classname = "plat_trigger";
-	trigger->touch = Touch_PlatCenterTrigger;
-	trigger->r.contents = CONTENTS_TRIGGER;
-	trigger->parent = ent;
+	sensor = G_NewEntity();
+	sensor->classname = "plat_trigger";
+	sensor->touch = Touch_PlatCenterTrigger;
+	sensor->r.contents = CONTENTS_TRIGGER;
+	sensor->parent = self;
 
-	tmin[ 0 ] = ent->restingPosition[ 0 ] + ent->r.mins[ 0 ] + 33;
-	tmin[ 1 ] = ent->restingPosition[ 1 ] + ent->r.mins[ 1 ] + 33;
-	tmin[ 2 ] = ent->restingPosition[ 2 ] + ent->r.mins[ 2 ];
+	tmin[ 0 ] = self->restingPosition[ 0 ] + self->r.mins[ 0 ] + 33;
+	tmin[ 1 ] = self->restingPosition[ 1 ] + self->r.mins[ 1 ] + 33;
+	tmin[ 2 ] = self->restingPosition[ 2 ] + self->r.mins[ 2 ];
 
-	tmax[ 0 ] = ent->restingPosition[ 0 ] + ent->r.maxs[ 0 ] - 33;
-	tmax[ 1 ] = ent->restingPosition[ 1 ] + ent->r.maxs[ 1 ] - 33;
-	tmax[ 2 ] = ent->restingPosition[ 2 ] + ent->r.maxs[ 2 ] + 8;
+	tmax[ 0 ] = self->restingPosition[ 0 ] + self->r.maxs[ 0 ] - 33;
+	tmax[ 1 ] = self->restingPosition[ 1 ] + self->r.maxs[ 1 ] - 33;
+	tmax[ 2 ] = self->restingPosition[ 2 ] + self->r.maxs[ 2 ] + 8;
 
 	if ( tmax[ 0 ] <= tmin[ 0 ] )
 	{
-		tmin[ 0 ] = ent->restingPosition[ 0 ] + ( ent->r.mins[ 0 ] + ent->r.maxs[ 0 ] ) * 0.5;
+		tmin[ 0 ] = self->restingPosition[ 0 ] + ( self->r.mins[ 0 ] + self->r.maxs[ 0 ] ) * 0.5;
 		tmax[ 0 ] = tmin[ 0 ] + 1;
 	}
 
 	if ( tmax[ 1 ] <= tmin[ 1 ] )
 	{
-		tmin[ 1 ] = ent->restingPosition[ 1 ] + ( ent->r.mins[ 1 ] + ent->r.maxs[ 1 ] ) * 0.5;
+		tmin[ 1 ] = self->restingPosition[ 1 ] + ( self->r.mins[ 1 ] + self->r.maxs[ 1 ] ) * 0.5;
 		tmax[ 1 ] = tmin[ 1 ] + 1;
 	}
 
-	VectorCopy( tmin, trigger->r.mins );
-	VectorCopy( tmax, trigger->r.maxs );
+	VectorCopy( tmin, sensor->r.mins );
+	VectorCopy( tmax, sensor->r.maxs );
 
-	trap_LinkEntity( trigger );
+	trap_LinkEntity( sensor );
 }
 
-void SP_func_plat( gentity_t *ent )
+void SP_func_plat( gentity_t *self )
 {
 	float lip, height;
 	char  *s;
 
 	G_SpawnString( "sound2to1", "sound/movers/plats/pt1_strt.wav", &s );
-	ent->sound2to1 = G_SoundIndex( s );
+	self->sound2to1 = G_SoundIndex( s );
 	G_SpawnString( "sound1to2", "sound/movers/plats/pt1_strt.wav", &s );
-	ent->sound1to2 = G_SoundIndex( s );
+	self->sound1to2 = G_SoundIndex( s );
 
 	G_SpawnString( "soundPos2", "sound/movers/plats/pt1_end.wav", &s );
-	ent->soundPos2 = G_SoundIndex( s );
+	self->soundPos2 = G_SoundIndex( s );
 	G_SpawnString( "soundPos1", "sound/movers/plats/pt1_end.wav", &s );
-	ent->soundPos1 = G_SoundIndex( s );
+	self->soundPos1 = G_SoundIndex( s );
 
-	VectorClear( ent->s.angles );
+	VectorClear( self->s.angles );
 
 	G_SpawnFloat( "lip", "8", &lip );
 
-	reset_intField(&ent->damage, ent->config.damage, ent->eclass->config.damage, 2, qtrue);
+	reset_intField(&self->damage, self->config.damage, self->eclass->config.damage, 2, qtrue);
 
-	if(!ent->config.wait.time)
-		ent->config.wait.time = 1.0f;
+	if(!self->config.wait.time)
+		self->config.wait.time = 1.0f;
 
-	ent->config.wait.time *= 1000;
+	self->config.wait.time *= 1000;
 
 	// create second position
-	trap_SetBrushModel( ent, ent->model );
+	trap_SetBrushModel( self, self->model );
 
 	if ( !G_SpawnFloat( "height", "0", &height ) )
 	{
-		height = ( ent->r.maxs[ 2 ] - ent->r.mins[ 2 ] ) - lip;
+		height = ( self->r.maxs[ 2 ] - self->r.mins[ 2 ] ) - lip;
 	}
 
 	// pos1 is the rest (bottom) position, pos2 is the top
-	VectorCopy( ent->s.origin, ent->activatedPosition );
-	VectorCopy( ent->activatedPosition, ent->restingPosition );
-	ent->restingPosition[ 2 ] -= height;
+	VectorCopy( self->s.origin, self->activatedPosition );
+	VectorCopy( self->activatedPosition, self->restingPosition );
+	self->restingPosition[ 2 ] -= height;
 
-	InitMover( ent );
-	reset_moverspeed( ent, 400 );
+	InitMover( self );
+	reset_moverspeed( self, 400 );
 
 	// touch function keeps the plat from returning while
 	// a live player is standing on it
-	ent->touch = Touch_Plat;
+	self->touch = Touch_Plat;
 
-	ent->blocked = Blocked_Door;
+	self->blocked = func_door_block;
 
-	ent->parent = ent; // so it can be treated as a door
+	self->parent = self; // so it can be treated as a door
 
 	// spawn the trigger if one hasn't been custom made
-	if ( !ent->names [ 0 ] )
+	if ( !self->names [ 0 ] )
 	{
-		SpawnPlatTrigger( ent );
+		SpawnPlatSensor( self );
 	}
 }
 
@@ -2227,7 +2227,7 @@ void func_button_reset( gentity_t *self )
 	reset_moverspeed( self, 40 );
 }
 
-void SP_func_button( gentity_t *ent )
+void SP_func_button( gentity_t *self )
 {
 	vec3_t abs_movedir;
 	float  distance;
@@ -2236,42 +2236,42 @@ void SP_func_button( gentity_t *ent )
 	char   *s;
 
 	G_SpawnString( "sound1to2", "sound/movers/switches/button1.wav", &s );
-	ent->sound1to2 = G_SoundIndex( s );
+	self->sound1to2 = G_SoundIndex( s );
 
-	ent->reset = func_button_reset;
+	self->reset = func_button_reset;
 
-	if ( !ent->config.wait.time )
+	if ( !self->config.wait.time )
 	{
-		ent->config.wait.time = 1;
+		self->config.wait.time = 1;
 	}
 
-	ent->config.wait.time *= 1000;
+	self->config.wait.time *= 1000;
 
 	// first position
-	VectorCopy( ent->s.origin, ent->restingPosition );
+	VectorCopy( self->s.origin, self->restingPosition );
 
 	// calculate second position
-	trap_SetBrushModel( ent, ent->model );
+	trap_SetBrushModel( self, self->model );
 
 	G_SpawnFloat( "lip", "4", &lip );
 
-	G_SetMovedir( ent->s.angles, ent->movedir );
-	abs_movedir[ 0 ] = fabs( ent->movedir[ 0 ] );
-	abs_movedir[ 1 ] = fabs( ent->movedir[ 1 ] );
-	abs_movedir[ 2 ] = fabs( ent->movedir[ 2 ] );
-	VectorSubtract( ent->r.maxs, ent->r.mins, size );
+	G_SetMovedir( self->s.angles, self->movedir );
+	abs_movedir[ 0 ] = fabs( self->movedir[ 0 ] );
+	abs_movedir[ 1 ] = fabs( self->movedir[ 1 ] );
+	abs_movedir[ 2 ] = fabs( self->movedir[ 2 ] );
+	VectorSubtract( self->r.maxs, self->r.mins, size );
 	distance = abs_movedir[ 0 ] * size[ 0 ] + abs_movedir[ 1 ] * size[ 1 ] + abs_movedir[ 2 ] * size[ 2 ] - lip;
-	VectorMA( ent->restingPosition, distance, ent->movedir, ent->activatedPosition );
+	VectorMA( self->restingPosition, distance, self->movedir, self->activatedPosition );
 
-	if ( !ent->config.health ) //FIXME wont work yet with class fallbacks
+	if ( !self->config.health ) //FIXME wont work yet with class fallbacks
 	{
 		// touchable button
-		ent->touch = Touch_Button;
+		self->touch = Touch_Button;
 	}
 
-	ent->use = func_button_use;
+	self->use = func_button_use;
 
-	InitMover( ent );
+	InitMover( self );
 }
 
 /*
@@ -2292,10 +2292,10 @@ Think_BeginMoving
 The wait time at a corner has completed, so start moving again
 ===============
 */
-void Think_BeginMoving( gentity_t *ent )
+void Think_BeginMoving( gentity_t *self )
 {
-	ent->s.pos.trTime = level.time;
-	ent->s.pos.trType = TR_LINEAR_STOP;
+	self->s.pos.trTime = level.time;
+	self->s.pos.trType = TR_LINEAR_STOP;
 }
 
 /*
@@ -2303,14 +2303,14 @@ void Think_BeginMoving( gentity_t *ent )
 Reached_Train
 ===============
 */
-void func_train_reached( gentity_t *ent )
+void func_train_reached( gentity_t *self )
 {
 	gentity_t *next;
 	vec3_t    move;
 	float     length;
 
 	// copy the appropriate values
-	next = ent->nextPathSegment;
+	next = self->nextPathSegment;
 
 	if ( !next || !next->nextPathSegment )
 	{
@@ -2318,66 +2318,66 @@ void func_train_reached( gentity_t *ent )
 	}
 
 	// fire all other targets
-	G_FireAllTargetsOf( next, NULL );
+	G_FireAllCallTargetsOf( next, NULL );
 
 	// set the new trajectory
-	ent->nextPathSegment = next->nextPathSegment;
-	VectorCopy( next->s.origin, ent->restingPosition );
-	VectorCopy( next->nextPathSegment->s.origin, ent->activatedPosition );
+	self->nextPathSegment = next->nextPathSegment;
+	VectorCopy( next->s.origin, self->restingPosition );
+	VectorCopy( next->nextPathSegment->s.origin, self->activatedPosition );
 
 	// if the path_corner has a speed, use that
 	if ( next->config.speed )
 	{
-		ent->speed = next->config.speed;
+		self->speed = next->config.speed;
 	}
 	else
 	{
 		// otherwise use the train's speed
-		ent->speed = ent->config.speed;
+		self->speed = self->config.speed;
 	}
 
-	if ( ent->speed < 1 )
+	if ( self->speed < 1 )
 	{
-		ent->speed = 1;
+		self->speed = 1;
 	}
 
 	// calculate duration
-	VectorSubtract( ent->activatedPosition, ent->restingPosition, move );
+	VectorSubtract( self->activatedPosition, self->restingPosition, move );
 	length = VectorLength( move );
 
-	ent->s.pos.trDuration = length * 1000 / ent->speed;
+	self->s.pos.trDuration = length * 1000 / self->speed;
 
 	// Be sure to send to clients after any fast move case
-	ent->r.svFlags &= ~SVF_NOCLIENT;
+	self->r.svFlags &= ~SVF_NOCLIENT;
 
 	// Fast move case
-	if ( ent->s.pos.trDuration < 1 )
+	if ( self->s.pos.trDuration < 1 )
 	{
 		// As trDuration is used later in a division, we need to avoid that case now
-		ent->s.pos.trDuration = 1;
+		self->s.pos.trDuration = 1;
 
 		// Don't send entity to clients so it becomes really invisible
-		ent->r.svFlags |= SVF_NOCLIENT;
+		self->r.svFlags |= SVF_NOCLIENT;
 	}
 
 	// looping sound
-	ent->s.loopSound = next->soundIndex;
+	self->s.loopSound = next->soundIndex;
 
 	// start it going
-	SetMoverState( ent, MOVER_1TO2, level.time );
+	SetMoverState( self, MOVER_1TO2, level.time );
 
-	if ( ent->spawnflags & TRAIN_START_OFF )
+	if ( self->spawnflags & TRAIN_START_OFF )
 	{
-		ent->s.pos.trType = TR_STATIONARY;
+		self->s.pos.trType = TR_STATIONARY;
 		return;
 	}
 
 	// if there is a "wait" value on the target, don't start moving yet
 	if ( next->config.wait.time )
 	{
-		ent->nextthink = level.time + next->config.wait.time * 1000;
-		ent->think = Think_BeginMoving;
-		ent->s.pos.trType = TR_STATIONARY;
+		self->nextthink = level.time + next->config.wait.time * 1000;
+		self->think = Think_BeginMoving;
+		self->s.pos.trType = TR_STATIONARY;
 	}
 }
 
@@ -2442,23 +2442,23 @@ Think_SetupTrainTargets
 Link all the corners together
 ===============
 */
-void Think_SetupTrainTargets( gentity_t *ent )
+void Think_SetupTrainTargets( gentity_t *self )
 {
 	gentity_t *path, *next, *start;
 	int targetIndex, nameIndex;
 
-	ent->nextPathSegment = G_FindNextTarget( NULL, &targetIndex, &nameIndex, ent );
+	self->nextPathSegment = G_FindNextTarget( NULL, &targetIndex, &nameIndex, self );
 
-	if ( !ent->nextPathSegment )
+	if ( !self->nextPathSegment )
 	{
 		G_Printf( "func_train at %s with an unfound target\n",
-		          vtos( ent->r.absmin ) );
+		          vtos( self->r.absmin ) );
 		return;
 	}
 
 	start = NULL;
 
-	for ( path = ent->nextPathSegment; path != start; path = next )
+	for ( path = self->nextPathSegment; path != start; path = next )
 	{
 		if ( !start )
 		{
@@ -2494,7 +2494,7 @@ void Think_SetupTrainTargets( gentity_t *ent )
 	}
 
 	// start the train moving from the first corner
-	func_train_reached( ent );
+	func_train_reached( self );
 }
 
 /*
@@ -2527,13 +2527,13 @@ void func_train_blocked( gentity_t *self, gentity_t *other )
 				if ( other->buildableTeam == TEAM_ALIENS )
 				{
 					VectorCopy( other->s.origin2, dir );
-					tent = G_TempEntity( other->s.origin, EV_ALIEN_BUILDABLE_EXPLOSION );
+					tent = G_NewTempEntity( other->s.origin, EV_ALIEN_BUILDABLE_EXPLOSION );
 					tent->s.eventParm = DirToByte( dir );
 				}
 				else if ( other->buildableTeam == TEAM_HUMANS )
 				{
 					VectorSet( dir, 0.0f, 0.0f, 1.0f );
-					tent = G_TempEntity( other->s.origin, EV_HUMAN_BUILDABLE_EXPLOSION );
+					tent = G_NewTempEntity( other->s.origin, EV_HUMAN_BUILDABLE_EXPLOSION );
 					tent->s.eventParm = DirToByte( dir );
 				}
 			}
@@ -2586,27 +2586,27 @@ STATIC
 ===============================================================================
 */
 
-void SP_func_static( gentity_t *ent )
+void SP_func_static( gentity_t *self )
 {
-	trap_SetBrushModel( ent, ent->model );
-	InitMover( ent );
-	reset_moverspeed( ent, 100 ); //TODO do we need this at all?
-	VectorCopy( ent->s.origin, ent->s.pos.trBase );
-	VectorCopy( ent->s.origin, ent->r.currentOrigin );
+	trap_SetBrushModel( self, self->model );
+	InitMover( self );
+	reset_moverspeed( self, 100 ); //TODO do we need this at all?
+	VectorCopy( self->s.origin, self->s.pos.trBase );
+	VectorCopy( self->s.origin, self->r.currentOrigin );
 }
 
-void SP_func_dynamic( gentity_t *ent )
+void SP_func_dynamic( gentity_t *self )
 {
-	trap_SetBrushModel( ent, ent->model );
+	trap_SetBrushModel( self, self->model );
 
-	InitMover( ent );
-	reset_moverspeed( ent, 100 ); //TODO do we need this at all?
+	InitMover( self );
+	reset_moverspeed( self, 100 ); //TODO do we need this at all?
 
-	ent->flags |= FL_GROUPSLAVE;
+	self->flags |= FL_GROUPSLAVE;
 
-	trap_UnlinkEntity( ent );  // was linked in InitMover
-	trap_AddPhysicsEntity( ent );
-	trap_LinkEntity( ent );
+	trap_UnlinkEntity( self );  // was linked in InitMover
+	trap_AddPhysicsEntity( self );
+	trap_LinkEntity( self );
 }
 
 /*
@@ -2617,37 +2617,37 @@ ROTATING
 ===============================================================================
 */
 
-void SP_func_rotating( gentity_t *ent )
+void SP_func_rotating( gentity_t *self )
 {
-	reset_floatField(&ent->speed, ent->config.speed, ent->eclass->config.speed, 400, qfalse);
+	reset_floatField(&self->speed, self->config.speed, self->eclass->config.speed, 400, qfalse);
 
 	// set the axis of rotation
-	ent->s.apos.trType = TR_LINEAR;
+	self->s.apos.trType = TR_LINEAR;
 
-	if ( ent->spawnflags & 4 )
+	if ( self->spawnflags & 4 )
 	{
-		ent->s.apos.trDelta[ 2 ] = ent->config.speed;
+		self->s.apos.trDelta[ 2 ] = self->config.speed;
 	}
-	else if ( ent->spawnflags & 8 )
+	else if ( self->spawnflags & 8 )
 	{
-		ent->s.apos.trDelta[ 0 ] = ent->config.speed;
+		self->s.apos.trDelta[ 0 ] = self->config.speed;
 	}
 	else
 	{
-		ent->s.apos.trDelta[ 1 ] = ent->config.speed;
+		self->s.apos.trDelta[ 1 ] = self->config.speed;
 	}
 
-	reset_intField(&ent->damage, ent->config.damage, ent->eclass->config.damage, 2, qtrue);
+	reset_intField(&self->damage, self->config.damage, self->eclass->config.damage, 2, qtrue);
 
-	trap_SetBrushModel( ent, ent->model );
-	InitMover( ent );
-	reset_moverspeed( ent, 400 );
+	trap_SetBrushModel( self, self->model );
+	InitMover( self );
+	reset_moverspeed( self, 400 );
 
-	VectorCopy( ent->s.origin, ent->s.pos.trBase );
-	VectorCopy( ent->s.pos.trBase, ent->r.currentOrigin );
-	VectorCopy( ent->s.apos.trBase, ent->r.currentAngles );
+	VectorCopy( self->s.origin, self->s.pos.trBase );
+	VectorCopy( self->s.pos.trBase, self->r.currentOrigin );
+	VectorCopy( self->s.apos.trBase, self->r.currentAngles );
 
-	trap_LinkEntity( ent );
+	trap_LinkEntity( self );
 }
 
 /*
@@ -2663,40 +2663,40 @@ void func_bobbing_reset( gentity_t *self )
 	reset_moverspeed( self, 4 );
 }
 
-void SP_func_bobbing( gentity_t *ent )
+void SP_func_bobbing( gentity_t *self )
 {
 	float height;
 	float phase;
 
-	ent->reset = func_bobbing_reset;
+	self->reset = func_bobbing_reset;
 
 	G_SpawnFloat( "height", "32", &height );
 	G_SpawnFloat( "phase", "0", &phase );
 
-	reset_intField(&ent->damage, ent->config.damage, ent->eclass->config.damage, 2, qtrue);
+	reset_intField(&self->damage, self->config.damage, self->eclass->config.damage, 2, qtrue);
 
-	trap_SetBrushModel( ent, ent->model );
-	InitMover( ent );
+	trap_SetBrushModel( self, self->model );
+	InitMover( self );
 
-	VectorCopy( ent->s.origin, ent->s.pos.trBase );
-	VectorCopy( ent->s.origin, ent->r.currentOrigin );
+	VectorCopy( self->s.origin, self->s.pos.trBase );
+	VectorCopy( self->s.origin, self->r.currentOrigin );
 
-	ent->s.pos.trDuration = ent->config.speed * 1000;
-	ent->s.pos.trTime = ent->s.pos.trDuration * phase;
-	ent->s.pos.trType = TR_SINE;
+	self->s.pos.trDuration = self->config.speed * 1000;
+	self->s.pos.trTime = self->s.pos.trDuration * phase;
+	self->s.pos.trType = TR_SINE;
 
 	// set the axis of bobbing
-	if ( ent->spawnflags & 1 )
+	if ( self->spawnflags & 1 )
 	{
-		ent->s.pos.trDelta[ 0 ] = height;
+		self->s.pos.trDelta[ 0 ] = height;
 	}
-	else if ( ent->spawnflags & 2 )
+	else if ( self->spawnflags & 2 )
 	{
-		ent->s.pos.trDelta[ 1 ] = height;
+		self->s.pos.trDelta[ 1 ] = height;
 	}
 	else
 	{
-		ent->s.pos.trDelta[ 2 ] = height;
+		self->s.pos.trDelta[ 2 ] = height;
 	}
 }
 
@@ -2708,7 +2708,7 @@ PENDULUM
 ===============================================================================
 */
 
-void SP_func_pendulum( gentity_t *ent )
+void SP_func_pendulum( gentity_t *self )
 {
 	float frequency;
 	float length;
@@ -2716,31 +2716,31 @@ void SP_func_pendulum( gentity_t *ent )
 
 	G_SpawnFloat( "phase", "0", &phase );
 
-	reset_intField(&ent->damage, ent->config.damage, ent->eclass->config.damage, 2, qtrue);
+	reset_intField(&self->damage, self->config.damage, self->eclass->config.damage, 2, qtrue);
 
-	trap_SetBrushModel( ent, ent->model );
+	trap_SetBrushModel( self, self->model );
 
 	// find pendulum length
-	length = fabs( ent->r.mins[ 2 ] );
+	length = fabs( self->r.mins[ 2 ] );
 
 	if ( length < 8 )
 	{
 		length = 8;
 	}
 
-	InitMover( ent );
-	reset_moverspeed( ent, 30 );
+	InitMover( self );
+	reset_moverspeed( self, 30 );
 
-	VectorCopy( ent->s.origin, ent->s.pos.trBase );
-	VectorCopy( ent->s.origin, ent->r.currentOrigin );
+	VectorCopy( self->s.origin, self->s.pos.trBase );
+	VectorCopy( self->s.origin, self->r.currentOrigin );
 
-	VectorCopy( ent->s.angles, ent->s.apos.trBase );
+	VectorCopy( self->s.angles, self->s.apos.trBase );
 
 	frequency = 1 / ( M_PI * 2 ) * sqrt( g_gravity.value / ( 3 * length ) );
-	ent->s.apos.trDuration = 1000 / frequency;
-	ent->s.apos.trTime = ent->s.apos.trDuration * phase;
-	ent->s.apos.trType = TR_SINE;
-	ent->s.apos.trDelta[ 2 ] = ent->config.speed;
+	self->s.apos.trDuration = 1000 / frequency;
+	self->s.apos.trTime = self->s.apos.trDuration * phase;
+	self->s.apos.trType = TR_SINE;
+	self->s.apos.trDelta[ 2 ] = self->config.speed;
 }
 
 /*
@@ -2778,15 +2778,15 @@ void G_KillBrushModel( gentity_t *ent, gentity_t *activator )
 Use_func_spawn
 ====================
 */
-void func_spawn_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
+void func_spawn_act( gentity_t *self, gentity_t *caller, gentity_t *activator )
 {
-  if( ent->r.linked )
-    trap_UnlinkEntity( ent );
+  if( self->r.linked )
+    trap_UnlinkEntity( self );
   else
   {
-    trap_LinkEntity( ent );
-    if( !( ent->spawnflags & 2 ) )
-      G_KillBrushModel( ent, activator );
+    trap_LinkEntity( self );
+    if( !( self->spawnflags & 2 ) )
+      G_KillBrushModel( self, activator );
   }
 }
 
@@ -2802,23 +2802,23 @@ void func_spawn_reset( gentity_t *self )
 SP_func_spawn
 ====================
 */
-void SP_func_spawn( gentity_t *ent )
+void SP_func_spawn( gentity_t *self )
 {
   //ent->r.svFlags = SVF_USE_CURRENT_ORIGIN;
-  ent->s.eType = ET_MOVER;
-  ent->moverState = MOVER_POS1;
-  VectorCopy( ent->s.origin, ent->restingPosition );
+  self->s.eType = ET_MOVER;
+  self->moverState = MOVER_POS1;
+  VectorCopy( self->s.origin, self->restingPosition );
 
-  if( ent->model[ 0 ] == '*' )
-    trap_SetBrushModel( ent, ent->model );
+  if( self->model[ 0 ] == '*' )
+    trap_SetBrushModel( self, self->model );
   else
   {
-    ent->s.modelindex = G_ModelIndex( ent->model );
-    VectorCopy( ent->s.angles, ent->s.apos.trBase );
+    self->s.modelindex = G_ModelIndex( self->model );
+    VectorCopy( self->s.angles, self->s.apos.trBase );
   }
 
-  ent->act = func_spawn_act;
-  ent->reset = func_spawn_reset;
+  self->act = func_spawn_act;
+  self->reset = func_spawn_reset;
 }
 
 void func_destructable_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod )
@@ -2827,7 +2827,7 @@ void func_destructable_die( gentity_t *self, gentity_t *inflictor, gentity_t *at
 	trap_UnlinkEntity( self );
 
 	G_RadiusDamage( self->restingPosition, attacker, self->splashDamage, self->splashRadius, self, MOD_TRIGGER_HURT );
-	G_FireAllTargetsOf( self, attacker );
+	G_FireAllCallTargetsOf( self, attacker );
 }
 
 
@@ -2867,35 +2867,35 @@ void func_destructable_act( gentity_t *self, gentity_t *caller, gentity_t *activ
 SP_func_destructable
 ====================
 */
-void SP_func_destructable( gentity_t *ent )
+void SP_func_destructable( gentity_t *self )
 {
-  SP_ConditionFields( ent );
+  SP_ConditionFields( self );
 
-  G_SpawnInt( "damage", "0", &ent->splashDamage );
-  G_SpawnInt( "radius", "0", &ent->splashRadius );
+  G_SpawnInt( "damage", "0", &self->splashDamage );
+  G_SpawnInt( "radius", "0", &self->splashRadius );
 
   //ent->r.svFlags = SVF_USE_CURRENT_ORIGIN;
-  ent->s.eType = ET_MOVER;
-  ent->moverState = MOVER_POS1;
-  VectorCopy( ent->s.origin, ent->restingPosition );
+  self->s.eType = ET_MOVER;
+  self->moverState = MOVER_POS1;
+  VectorCopy( self->s.origin, self->restingPosition );
 
-  if( ent->model[ 0 ] == '*' )
-    trap_SetBrushModel( ent, ent->model );
+  if( self->model[ 0 ] == '*' )
+    trap_SetBrushModel( self, self->model );
   else
   {
-    ent->s.modelindex = G_ModelIndex( ent->model );
-    VectorCopy( ent->s.angles, ent->s.apos.trBase );
+    self->s.modelindex = G_ModelIndex( self->model );
+    VectorCopy( self->s.angles, self->s.apos.trBase );
   }
 
-  ent->reset = func_destructable_reset;
-  ent->die = func_destructable_die;
-  ent->act = func_destructable_act;
+  self->reset = func_destructable_reset;
+  self->die = func_destructable_die;
+  self->act = func_destructable_act;
 
-  if( ent->spawnflags & 1 )
-    trap_UnlinkEntity( ent );
+  if( self->spawnflags & 1 )
+    trap_UnlinkEntity( self );
   else
   {
-    trap_LinkEntity( ent );
-    ent->takedamage = qtrue;
+    trap_LinkEntity( self );
+    self->takedamage = qtrue;
   }
 }

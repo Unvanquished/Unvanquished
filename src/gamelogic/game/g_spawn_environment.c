@@ -43,90 +43,90 @@ env_speaker
 =================================================================================
 */
 
-void env_speaker_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
+void env_speaker_act( gentity_t *self, gentity_t *caller, gentity_t *activator )
 {
-	if ( ent->spawnflags & 3 )
+	if ( self->spawnflags & 3 )
 	{
 		// looping sound toggles
-		if ( ent->s.loopSound )
+		if ( self->s.loopSound )
 		{
-			ent->s.loopSound = 0; // turn it off
+			self->s.loopSound = 0; // turn it off
 		}
 		else
 		{
-			ent->s.loopSound = ent->soundIndex; // start it
+			self->s.loopSound = self->soundIndex; // start it
 		}
 	}
 	else
 	{
 		// one-time sound
-		if ( (ent->spawnflags & 8) && activator )
+		if ( (self->spawnflags & 8) && activator )
 		{
-			G_AddEvent( activator, EV_GENERAL_SOUND, ent->soundIndex );
+			G_AddEvent( activator, EV_GENERAL_SOUND, self->soundIndex );
 		}
-		else if ( ent->spawnflags & 4 )
+		else if ( self->spawnflags & 4 )
 		{
-			G_AddEvent( ent, EV_GLOBAL_SOUND, ent->soundIndex );
+			G_AddEvent( self, EV_GLOBAL_SOUND, self->soundIndex );
 		}
 		else
 		{
-			G_AddEvent( ent, EV_GENERAL_SOUND, ent->soundIndex );
+			G_AddEvent( self, EV_GENERAL_SOUND, self->soundIndex );
 		}
 	}
 }
 
-void SP_env_speaker( gentity_t *ent )
+void SP_env_speaker( gentity_t *self )
 {
 	char buffer[ MAX_QPATH ];
-	char *s;
+	char *tmpString;
 
-	if ( !G_SpawnString( "noise", "NOSOUND", &s ) )
+	if ( !G_SpawnString( "noise", "NOSOUND", &tmpString ) )
 	{
-		G_Error( "target_speaker without a noise key at %s", vtos( ent->s.origin ) );
+		G_Error( "target_speaker without a noise key at %s", vtos( self->s.origin ) );
 	}
 
 	// force all client-relative sounds to be "activator" speakers that
 	// play on the entity that activates the speaker
-	if ( s[ 0 ] == '*' )
+	if ( tmpString[ 0 ] == '*' )
 	{
-		ent->spawnflags |= 8;
+		self->spawnflags |= 8;
 	}
 
-	if ( !strstr( s, ".wav" ) )
+	if ( !strstr( tmpString, ".wav" ) )
 	{
-		Com_sprintf( buffer, sizeof( buffer ), "%s.wav", s );
+		Com_sprintf( buffer, sizeof( buffer ), "%s.wav", tmpString );
 	}
 	else
 	{
-		Q_strncpyz( buffer, s, sizeof( buffer ) );
+		Q_strncpyz( buffer, tmpString, sizeof( buffer ) );
 	}
 
-	ent->soundIndex = G_SoundIndex( buffer );
+	self->soundIndex = G_SoundIndex( buffer );
 
 	// a repeating speaker can be done completely client side
-	ent->s.eType = ET_SPEAKER;
-	ent->s.eventParm = ent->soundIndex;
-	ent->s.frame = ent->config.wait.time * 10;
-	ent->s.clientNum = ent->config.wait.variance * 10;
+	self->s.eType = ET_SPEAKER;
+	self->s.eventParm = self->soundIndex;
+	self->s.frame = self->config.wait.time * 10;
+	self->s.clientNum = self->config.wait.variance * 10;
 
 	// check for prestarted looping sound
-	if ( ent->spawnflags & 1 )
+	if ( self->spawnflags & 1 )
 	{
-		ent->s.loopSound = ent->soundIndex;
+		self->s.loopSound = self->soundIndex;
 	}
 
-	ent->act = env_speaker_act;
+	self->act = env_speaker_act;
 
-	if ( ent->spawnflags & 4 )
+	if ( self->spawnflags & 4 )
 	{
-		ent->r.svFlags |= SVF_BROADCAST;
+		self->r.svFlags |= SVF_BROADCAST;
 	}
 
-	VectorCopy( ent->s.origin, ent->s.pos.trBase );
+	VectorCopy( self->s.origin, self->s.pos.trBase );
 
 	// must link the entity so we get areas and clusters so
 	// the server can determine who to send updates to
-	trap_LinkEntity( ent );
+	trap_LinkEntity( self );
 }
 
 /*
@@ -175,7 +175,7 @@ void env_rumble_think( gentity_t *self )
 	}
 }
 
-void env_rumble_act( gentity_t *self, gentity_t *other, gentity_t *activator )
+void env_rumble_act( gentity_t *self, gentity_t *caller, gentity_t *activator )
 {
 	self->timestamp = level.time + ( self->config.amount * FRAMETIME );
 	self->nextthink = level.time + FRAMETIME;
@@ -222,7 +222,7 @@ void env_particle_system_toggle( gentity_t *self )
 	self->nextthink = 0;
 }
 
-void env_particle_system_act( gentity_t *self, gentity_t *other, gentity_t *activator )
+void env_particle_system_act( gentity_t *self, gentity_t *caller, gentity_t *activator )
 {
 	env_particle_system_toggle( self );
 
@@ -262,7 +262,7 @@ env_lens_flare
 
 =================================================================================
 */
-void env_lens_flare_toggle( gentity_t *self, gentity_t *other, gentity_t *activator )
+void env_lens_flare_toggle( gentity_t *self, gentity_t *caller, gentity_t *activator )
 {
 	self->s.eFlags ^= EF_NODRAW;
 }
@@ -278,7 +278,7 @@ static void findEmptySpot( vec3_t origin, float radius, vec3_t spot )
 {
 	int     i, j, k;
 	vec3_t  delta, test, total;
-	trace_t tr;
+	trace_t trace;
 
 	VectorClear( total );
 
@@ -295,12 +295,12 @@ static void findEmptySpot( vec3_t origin, float radius, vec3_t spot )
 
 				VectorAdd( origin, delta, test );
 
-				trap_Trace( &tr, test, NULL, NULL, test, -1, MASK_SOLID );
+				trap_Trace( &trace, test, NULL, NULL, test, -1, MASK_SOLID );
 
-				if ( !tr.allsolid )
+				if ( !trace.allsolid )
 				{
-					trap_Trace( &tr, test, NULL, NULL, origin, -1, MASK_SOLID );
-					VectorScale( delta, tr.fraction, delta );
+					trap_Trace( &trace, test, NULL, NULL, origin, -1, MASK_SOLID );
+					VectorScale( delta, trace.fraction, delta );
 					VectorAdd( total, delta, total );
 				}
 			}
@@ -346,47 +346,47 @@ env_portal_*
 
 =================================================================================
 */
-void env_portal_locateCamera( gentity_t *ent )
+void env_portal_locateCamera( gentity_t *self )
 {
 	vec3_t    dir;
 	gentity_t *target;
 	gentity_t *owner;
 
-	owner = G_PickRandomTargetFor( ent );
+	owner = G_PickRandomTargetFor( self );
 
 	if ( !owner )
 	{
-		G_FreeEntity( ent );
+		G_FreeEntity( self );
 		return;
 	}
 
-	ent->r.ownerNum = owner->s.number;
+	self->r.ownerNum = owner->s.number;
 
 	// frame holds the rotate speed
 	if ( owner->spawnflags & 1 )
 	{
-		ent->s.frame = 25;
+		self->s.frame = 25;
 	}
 	else if ( owner->spawnflags & 2 )
 	{
-		ent->s.frame = 75;
+		self->s.frame = 75;
 	}
 
 	// swing camera ?
 	if ( owner->spawnflags & 4 )
 	{
 		// set to 0 for no rotation at all
-		ent->s.misc = 0;
+		self->s.misc = 0;
 	}
 	else
 	{
-		ent->s.misc = 1;
+		self->s.misc = 1;
 	}
 
 	// clientNum holds the rotate offset
-	ent->s.clientNum = owner->s.clientNum;
+	self->s.clientNum = owner->s.clientNum;
 
-	VectorCopy( owner->s.origin, ent->s.origin2 );
+	VectorCopy( owner->s.origin, self->s.origin2 );
 
 	// see if the portal_camera has a target
 	target = G_PickRandomTargetFor( owner );
@@ -401,40 +401,40 @@ void env_portal_locateCamera( gentity_t *ent )
 		G_SetMovedir( owner->s.angles, dir );
 	}
 
-	ent->s.eventParm = DirToByte( dir );
+	self->s.eventParm = DirToByte( dir );
 }
 
-void SP_env_portal_surface( gentity_t *ent )
+void SP_env_portal_surface( gentity_t *self )
 {
-	VectorClear( ent->r.mins );
-	VectorClear( ent->r.maxs );
-	trap_LinkEntity( ent );
+	VectorClear( self->r.mins );
+	VectorClear( self->r.maxs );
+	trap_LinkEntity( self );
 
-	ent->r.svFlags = SVF_PORTAL;
-	ent->s.eType = ET_PORTAL;
+	self->r.svFlags = SVF_PORTAL;
+	self->s.eType = ET_PORTAL;
 
-	if ( !ent->callTargetCount )
+	if ( !self->callTargetCount )
 	{
-		VectorCopy( ent->s.origin, ent->s.origin2 );
+		VectorCopy( self->s.origin, self->s.origin2 );
 	}
 	else
 	{
-		ent->think = env_portal_locateCamera;
-		ent->nextthink = level.time + 100;
+		self->think = env_portal_locateCamera;
+		self->nextthink = level.time + 100;
 	}
 }
 
-void SP_env_portal_camera( gentity_t *ent )
+void SP_env_portal_camera( gentity_t *self )
 {
 	float roll;
 
-	VectorClear( ent->r.mins );
-	VectorClear( ent->r.maxs );
-	trap_LinkEntity( ent );
+	VectorClear( self->r.mins );
+	VectorClear( self->r.maxs );
+	trap_LinkEntity( self );
 
 	G_SpawnFloat( "roll", "0", &roll );
 
-	ent->s.clientNum = roll / 360.0f * 256;
+	self->s.clientNum = roll / 360.0f * 256;
 }
 
 /*
