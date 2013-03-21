@@ -59,7 +59,7 @@ typedef struct gclient_s gclient_t;
 /**
  * The Maximal count of calltargets per Entity.
  */
-#define MAX_ENTITY_CALLTARGETS       4
+#define MAX_ENTITY_CALLTARGETS       16
 
 /**
  * The Maximal count of targetnames per Entity.
