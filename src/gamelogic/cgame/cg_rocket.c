@@ -34,7 +34,7 @@ Maryland 20850 USA.
 
 #include "cg_local.h"
 
-static char rootDir[ MAX_QPATH ];
+rocketInfo_t rocketInfo;
 
 vmCvar_t rocket_menuFiles;
 
@@ -93,6 +93,8 @@ void CG_Rocket_Init( void )
 
 	// rocket cvars
 	CG_RegisterRocketCvars();
+
+	rocketInfo.rocketState = IDLE;
 
 	// Preload all the menu files...
 	len = trap_FS_FOpenFile( rocket_menuFiles.string, &f, FS_READ );
@@ -162,7 +164,7 @@ void CG_Rocket_Init( void )
 		{
 			token = COM_Parse( &text_p );
 
-			Q_strncpyz( rootDir, token, sizeof( rootDir ) );
+			Q_strncpyz( rocketInfo.rootDir, token, sizeof( rocketInfo.rootDir ) );
 			continue;
 		}
 	}
@@ -175,7 +177,7 @@ void CG_Rocket_Init( void )
 
 static void CG_Rocket_EventOpen( const char *args )
 {
-	trap_Rocket_LoadDocument( va( "%s%s.rml", rootDir, args ) );
+	trap_Rocket_LoadDocument( va( "%s%s.rml", rocketInfo.rootDir, args ) );
 }
 
 static void CG_Rocket_EventClose( const char *args )
@@ -232,6 +234,9 @@ static void CG_Rocket_BuildServerList( const char *args )
 	char data[ MAX_INFO_STRING ] = { 0 };
 	int i;
 
+	Q_strncpyz( rocketInfo.currentNetSource, args, sizeof( rocketInfo.currentNetSource ) );
+	rocketInfo.rocketState = RETRIEVING_SERVERS;
+
 	if ( !Q_stricmp( args, "internet" ) )
 	{
 		int numServers;
@@ -241,8 +246,6 @@ static void CG_Rocket_BuildServerList( const char *args )
 		trap_LAN_MarkServerVisible( CG_StringToNetSource( args ), -1, qtrue );
 
 		numServers = trap_LAN_GetServerCount( CG_StringToNetSource( args ) );
-
-		trap_LAN_UpdateVisiblePings( CG_StringToNetSource( args ) );
 
 		for ( i = 0; i < numServers; ++i )
 		{
@@ -366,6 +369,21 @@ void CG_Rocket_ProcessEvents( void )
 
 void CG_Rocket_Frame( void )
 {
+	switch ( rocketInfo.rocketState )
+	{
+		case RETRIEVING_SERVERS:
+			if ( trap_LAN_UpdateVisiblePings( CG_StringToNetSource( rocketInfo.currentNetSource ) ) )
+			{
+				trap_Rocket_SetInnerRML( "serverbrowser", "status", "<strong>Updating...</strong>" );
+				CG_Rocket_BuildServerList( rocketInfo.currentNetSource );
+			}
+			else
+			{
+				trap_Rocket_SetInnerRML( "serverbrowser", "status", "Updated" );
+				rocketInfo.rocketState = IDLE;
+			}
+			break;
+	}
 	CG_Rocket_ProcessEvents();
 }
 

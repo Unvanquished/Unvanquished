@@ -1130,6 +1130,26 @@ typedef struct
 	cgBinaryShaderSetting_t binaryShaderSettings[ NUM_BINARY_SHADERS ];
 } cg_t;
 
+typedef enum
+{
+	IDLE,
+	RETRIEVING_SERVERS,
+	CONNECTING,
+	LOADING,
+	PLAYING,
+	INGAME_MENU
+} rocketState_t;
+
+typedef struct
+{
+	char rootDir[ MAX_QPATH ];
+	char currentNetSource[ 9 ];
+	int  serversLastRefresh;
+	rocketState_t rocketState;
+} rocketInfo_t;
+
+extern rocketInfo_t rocketInfo;
+
 // all of the model, shader, and sound references that are
 // loaded at gamestate time are stored in cgMedia_t
 // Other media that can be tied to clients, weapons, or items are
@@ -1572,6 +1592,11 @@ extern vmCvar_t             cg_highPolyWeaponModels;
 extern vmCvar_t             cg_motionblur;
 extern vmCvar_t             cg_motionblurMinSpeed;
 
+//
+// Rocket cvars
+//
+
+extern vmCvar_t            rocket_menuFiles;
 //
 // cg_main.c
 //
