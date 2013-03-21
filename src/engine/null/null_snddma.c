@@ -53,6 +53,7 @@ void SNDDMA_Submit( void )
 {
 }
 
+#ifndef BUILD_TTY_CLIENT
 // bk001119 - added boolean flag, match client/snd_public.h
 sfxHandle_t S_RegisterSound( const char *name, qboolean compressed )
 {
@@ -85,3 +86,4 @@ void S_UpdateThread( void )
 void S_AddLoopSounds( void )
 {
 }
+#endif

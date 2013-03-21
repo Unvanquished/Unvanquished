@@ -576,6 +576,7 @@ typedef struct lightFlareStatus_s
 	float    lastRatio; //caching of likely flare ratio
 	int      lastTime; //last time flare was visible/occluded
 	qboolean status; //flare is visible?
+	qhandle_t hTest;
 } lightFlareStatus_t;
 
 typedef struct buildableStatus_s

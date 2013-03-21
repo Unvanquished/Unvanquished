@@ -1250,6 +1250,20 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Key_SetTeam( args[1] ); // for binding selection
 			return 0;
 
+		case CG_REGISTERVISTEST:
+			return re.RegisterVisTest();
+
+		case CG_ADDVISTESTTOSCENE:
+			re.AddVisTestToScene( args[1], VMA(2), VMF(3) );
+			return 0;
+
+		case CG_CHECKVISIBILITY:
+			return re.CheckVisibility( args[1] );
+
+		case CG_UNREGISTERVISTEST:
+			re.UnregisterVisTest( args[1] );
+			return 0;
+
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );
 	}
