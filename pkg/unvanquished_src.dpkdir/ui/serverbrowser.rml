@@ -1,0 +1,49 @@
+<rml>
+    <head>
+        <title>Server Browser</title>
+        <link type="text/template" href="assets/window.rml" />
+        <style>
+        body
+        {
+			width: 50%;
+			height: 60%;
+			margin: auto;
+		}
+
+		div#content
+		{
+			overflow-y: auto;
+		}
+
+		div#title_bar div#icon
+		{
+			icon-image-s: 128px 179px;
+			icon-image-t: 152px 191px;
+		}
+        </style>
+    </head>
+    <body template="window" onload="init_servers internet" id="serverbrowser">
+			<tabset>
+				<tab>LAN</tab>
+				<panel>
+					LAN servers
+				</panel>
+				<tab onClick="build_list internet">Internet</tab>
+				<panel>
+					<span id="status"></span>
+					<div class="servers">
+					<datagrid source="server_browser.internet">
+						<col fields="name" width="50%">Name:</col>
+						<col fields="players" width="25%">Players + Bots:</col>
+						<col fields="ping" width="25%">Ping:</col>
+					</datagrid>
+					</div>
+					<button onClick="build_list internet">Refresh</button>
+				</panel>
+				<tab>Favorite</tab>
+				<panel>
+					Favorite servers here
+				</panel>
+			</tabset>
+	</body>
+</rml>

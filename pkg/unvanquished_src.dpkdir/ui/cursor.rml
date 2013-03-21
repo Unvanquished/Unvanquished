@@ -1,0 +1,17 @@
+<!-- Cursor document, used by the Ogre3D sample. -->
+<rml>
+	<head>
+		<style>
+			body
+			{
+				width: 25px;
+				height: 25px;
+				<!-- Add a simple image decorator onto the body element. -->
+				cursor-decorator: image;
+				cursor-image-src: /gfx/2d/crosshair-rifle.tga;
+			}
+		</style>
+	</head>
+	<body>
+	</body>
+</rml>
