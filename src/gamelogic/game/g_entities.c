@@ -195,6 +195,34 @@ gentity debuging
 =================================================================================
 */
 
+/*
+=============
+EntityToString
+
+Convenience function for printing entities
+=============
+*/
+char *etos( const gentity_t *entity )
+{
+	static  int  index;
+	static  char str[ 4 ][ MAX_STRING_CHARS ];
+	char         *resultString;
+
+	if(!entity)
+		return "<NULL>";
+
+	// use an array so that multiple etos have smaller chance of colliding
+	resultString = str[ index ];
+	index = ( index + 1 ) & 3;
+
+	Com_sprintf( resultString, sizeof(resultString),
+			"%s%s" S_COLOR_WHITE "(" S_COLOR_CYAN "%s" S_COLOR_WHITE "|" S_COLOR_CYAN "#%i" S_COLOR_WHITE ")",
+			entity->names[0], entity->names[0] ? " " : "", entity->classname, entity->s.number
+			);
+
+	return resultString;
+}
+
 void G_PrintEntity(gentity_t *entity)
 {
 	if(!entity)

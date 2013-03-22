@@ -1070,6 +1070,7 @@ gentity_t  *G_NewTempEntity( const vec3_t origin, int event );
 void       G_FreeEntity( gentity_t *e );
 
 //debug
+char       *etos( const gentity_t *entity );
 void       G_PrintEntity(gentity_t *entity);
 
 //search
