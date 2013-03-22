@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "g_local.h"
+#include "../../engine/qcommon/q_unicode.h"
 
 // big ugly global buffer for use with buffered printing of long outputs
 static char       g_bfb[ 32000 ];
@@ -641,12 +642,16 @@ qboolean G_admin_name_check( gentity_t *ent, const char *name, char *err, int le
 		return qfalse;
 	}
 
-	for ( i = 0; testName[ i ]; i++ )
+	for ( i = 0; testName[ i ]; )
 	{
-		if ( isalpha( testName[ i ] ) )
+		int cp = Q_UTF8_CodePoint( testName + i );
+
+		if ( Q_Unicode_IsAlphaOrIdeo( cp ) )
 		{
 			alphaCount++;
 		}
+
+		i += Q_UTF8_WidthCP( cp );
 	}
 
 	if ( alphaCount == 0 )

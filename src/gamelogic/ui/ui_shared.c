@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "ui_shared.h"
+#include "../../engine/qcommon/q_unicode.h"
 
 #define MAX_TEAMS 4 // keep in sync with src/engine/client/keys.h"
 
@@ -2149,7 +2150,7 @@ glyphInfo_t *UI_GlyphCP( const fontMetrics_t *font, int ch )
 
 glyphInfo_t *UI_Glyph( const fontMetrics_t *font, const char *str )
 {
-	return UI_GlyphCP( font, Q_UTF8CodePoint( str ) );
+	return UI_GlyphCP( font, Q_UTF8_CodePoint( str ) );
 }
 
 static INLINE float UI_EmoticonHeight( const fontMetrics_t *font, float scale )
@@ -2356,9 +2357,9 @@ float UI_Char_Width( const char **text, float scale )
 			}
 		}
 
-		ch = Q_UTF8CodePoint( *text );
+		ch = Q_UTF8_CodePoint( *text );
 		glyph = UI_GlyphCP( font, ch );
-		*text += Q_UTF8WidthCP( ch );
+		*text += Q_UTF8_WidthCP( ch );
 
 		return glyph->xSkip * DC->aspectScale * scale * font->glyphScale;
 	}
@@ -2441,7 +2442,7 @@ float UI_Text_Height( const char *text, float scale )
 					max = glyph->height;
 				}
 
-				s += Q_UTF8Width( s );
+				s += Q_UTF8_Width( s );
 			}
 		}
 	}
@@ -2596,7 +2597,7 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 	emoticonH = UI_EmoticonHeight( font, scale );
 	emoticonW = UI_EmoticonWidth( font, scale );
 
-	len = Q_UTF8Strlen( text );
+	len = Q_UTF8_Strlen( text );
 
 	x += UI_Parse_Indent( &s );
 
@@ -2607,7 +2608,7 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 	{
 		const char *t = s;
 		float      charWidth = UI_Char_Width( &t, scale );
-		int        ch = Q_UTF8CodePoint( s );
+		int        ch = Q_UTF8_CodePoint( s );
 		glyph = UI_GlyphCP( font, ch );
 
 		if ( maxX && charWidth + x > *maxX )
@@ -2731,7 +2732,7 @@ static void UI_Text_Paint_Generic( float x, float y, float scale, float gapAdjus
 		}
 
 		x += ( glyph->xSkip * DC->aspectScale * useScale ) + gapAdjust;
-		s += Q_UTF8WidthCP( ch );
+		s += Q_UTF8_WidthCP( ch );
 		count++;
 	}
 
@@ -3867,7 +3868,7 @@ static void Item_TextField_CalcPaintOffset( itemDef_t *item, char *buff )
 			// If the cursor is at the end of the string, maximise the amount of the
 			// string that's visible
 
-			if ( item->cursorPos == Q_UTF8Strlen( buff ) )
+			if ( item->cursorPos == Q_UTF8_Strlen( buff ) )
 			{
 				while ( UI_Plain_Text_Width( buff + ui_CursorToOffset( buff, editPtr->paintOffset ), item->textscale ) <=
 				        ( editPtr->maxFieldWidth - EDIT_CURSOR_WIDTH ) && editPtr->paintOffset > 0 )
@@ -3891,7 +3892,7 @@ static void Item_TextField_CalcPaintOffset( itemDef_t *item, char *buff )
 			        ( editPtr->maxFieldWidth - widthAdjust ) )
 			{
 				editPtr->paintOffset++;
-				offset += Q_UTF8Width( buff + offset );
+				offset += Q_UTF8_Width( buff + offset );
 			}
 		}
 	}
@@ -3928,8 +3929,8 @@ static void UI_Paste( itemDef_t *item, char *buf, clipboard_t clip )
 		// copy/erase one char at a time
 		while ( clipText[clipIndex] && buf[bufIndex] )
 		{
-			int oldWidth = Q_UTF8Width( buf + bufIndex );
-			int newWidth = Q_UTF8Width( clipText + clipIndex );
+			int oldWidth = Q_UTF8_Width( buf + bufIndex );
+			int newWidth = Q_UTF8_Width( clipText + clipIndex );
 
 			if ( bufLength + newWidth - oldWidth > max )
 			{
@@ -3956,7 +3957,7 @@ static void UI_Paste( itemDef_t *item, char *buf, clipboard_t clip )
 		while ( bufLength + newLength <= max )
 		{
 			clipLength = newLength;
-			newLength += Q_UTF8Width( clipText + clipIndex + clipLength );
+			newLength += Q_UTF8_Width( clipText + clipIndex + clipLength );
 		}
 
 		if ( bufLength + newLength <= max )
@@ -3972,7 +3973,7 @@ static void UI_Paste( itemDef_t *item, char *buf, clipboard_t clip )
 		memmove( buf + bufIndex + clipLength, buf + bufIndex, bufLength + 1 - bufIndex );
 		// copy in the new text
 		memcpy( buf + bufIndex, clipText + clipIndex, clipLength );
-		item->cursorPos += Q_UTF8Strlen( clipText + clipIndex );
+		item->cursorPos += Q_UTF8_Strlen( clipText + clipIndex );
 	}
 }
 
@@ -3994,11 +3995,11 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 		if ( editPtr->maxChars && len > editPtr->maxChars )
 		{
 			len = editPtr->maxChars;
-			while ( len && Q_UTF8ContByte( buff[len] ) ) { --len; } // don't leave a partial multibyte character!
+			while ( len && Q_UTF8_ContByte( buff[len] ) ) { --len; } // don't leave a partial multibyte character!
 			buff[ len ] = 0;
 		}
 
-		lenChars = Q_UTF8Strlen( buff );
+		lenChars = Q_UTF8_Strlen( buff );
 
 		if ( lenChars < item->cursorPos )
 		{
@@ -4014,7 +4015,7 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 				if ( item->cursorPos > 0 )
 				{
 					int index = ui_CursorToOffset( buff, --item->cursorPos );
-					int width = Q_UTF8Width( buff + index );
+					int width = Q_UTF8_Width( buff + index );
 					memmove( buff + index, buff + index + width, len + 1 - index - width );
 				}
 
@@ -4064,7 +4065,7 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 
 				i = ui_CursorToOffset( buff, item->cursorPos - 1 );
 				j = ui_CursorToOffset( buff, item->cursorPos );
-				w = Q_UTF8Width( buff + j );
+				w = Q_UTF8_Width( buff + j );
 
 				memcpy( tmp, buff + i, j - i );
 				memmove( buff + i, buff + j, w );
@@ -4088,10 +4089,10 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 			}
 			else
 			{
-				const char *str = Q_UTF8Unstore( chr );
+				const char *str = Q_UTF8_Unstore( chr );
 				int        index, width, oldWidth, max;
 
-				if ( (unsigned int)( Q_UTF8CodePoint( str ) - 0xF700 ) < 0x200u )
+				if ( (unsigned int)( Q_UTF8_CodePoint( str ) - 0xF700 ) < 0x200u )
 				{
 					// Filter out Mac cursor keys etc.
 					releaseFocus = qfalse;
@@ -4099,8 +4100,8 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 				}
 
 				index = ui_CursorToOffset( buff, item->cursorPos );
-				width = Q_UTF8Width( str );
-				oldWidth = ( DC->getOverstrikeMode() && buff[ index ] ) ? Q_UTF8Width( buff + index ) : 0;
+				width = Q_UTF8_Width( str );
+				oldWidth = ( DC->getOverstrikeMode() && buff[ index ] ) ? Q_UTF8_Width( buff + index ) : 0;
 				max = MIN( editPtr->maxChars, MAX_EDITFIELD - 1 );
 				max = max ? max : MAX_EDITFIELD - 1;
 
@@ -4130,7 +4131,7 @@ qboolean Item_TextField_HandleKey( itemDef_t *item, int key, int chr )
 					if ( item->cursorPos < lenChars )
 					{
 						int index = ui_CursorToOffset( buff, item->cursorPos );
-						int width = Q_UTF8Width( buff + index );
+						int width = Q_UTF8_Width( buff + index );
 						memmove( buff + index, buff + index + width, len + 1 - index - width );
 						DC->setCVar( item->cvar, buff );
 					}
@@ -5857,7 +5858,7 @@ void Item_TextField_Paint( itemDef_t *item )
 		editPtr->paintOffset = 0;
 	}
 
-    bufLength =  Q_UTF8Strlen( buff );
+    bufLength =  Q_UTF8_Strlen( buff );
 	paintIndex = ui_CursorToOffset( buff, editPtr->paintOffset );
 
 	// Shorten string to max viewable
