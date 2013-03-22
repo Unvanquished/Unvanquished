@@ -563,10 +563,10 @@ void Rocket_DocumentAction( const char *name, const char *action )
 		Rocket::Core::ElementDocument* document = context->GetDocument( name );
 		if ( document )
 		{
-			// Close all other windows
-			for ( int i = 0; i < context->GetNumDocuments(); ++i )
+			Rocket::Core::ElementDocument *owner = context->GetFocusElement()->GetOwnerDocument();
+			if ( owner )
 			{
-				context->GetDocument( i )->Close();
+				owner->Close();
 			}
 			document->Show();
 		}
