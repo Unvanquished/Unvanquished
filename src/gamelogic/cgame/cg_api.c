@@ -1426,3 +1426,18 @@ void trap_Rocket_SetInnerRML( const char *name, const char *id, const char *RML 
 {
 	syscall( CG_ROCKET_SETINNERRML, name, id, RML );
 }
+
+void trap_Rocket_GetAttribute( const char *name, const char *id, const char *attribute, char *out, int length )
+{
+	syscall( CG_ROCKET_GETATTRIBUTE, name, id, attribute, length );
+}
+
+void trap_Rocket_SetAttribute( const char *name, const char *id, const char *attribute, const char *value )
+{
+	syscall( CG_ROCKET_SETATTRIBUTE, name, id, attribute );
+}
+
+void trap_Rocket_GetEventParameters( char *params, int length )
+{
+	syscall( CG_ROCKET_GETEVENTPARAMETERS, params, length );
+}

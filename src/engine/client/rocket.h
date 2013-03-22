@@ -54,6 +54,7 @@ void Rocket_DSChangeRow( const char *name, const char *table, const int row, con
 void Rocket_DSRemoveRow( const char *name, const char *table, const int row );
 void Rocket_DSClearTable( const char *name, const char *table );
 void Rocket_SetInnerRML( const char *name, const char *id, const char *RML );
+void Rocket_GetEventParameters( char *params, int length );
 #if defined( __cplusplus )
 }
 #endif

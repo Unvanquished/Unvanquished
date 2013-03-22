@@ -265,7 +265,10 @@ typedef enum cgameImport_s
   CG_ROCKET_DSCHANGEROW,
   CG_ROCKET_DSREMOVEROW,
   CG_ROCKET_DSCLEARTABLE,
-  CG_ROCKET_SETINNERRML
+  CG_ROCKET_SETINNERRML,
+  CG_ROCKET_GETATTRIBUTE,
+  CG_ROCKET_SETATTRIBUTE,
+  CG_ROCKET_GETEVENTPARAMETERS
 } cgameImport_t;
 
 typedef enum
@@ -551,3 +554,6 @@ void            trap_Rocket_DSChangeRow( const char *name, const char *table, in
 void            trap_Rocket_DSRemoveRow( const char *name, const char *table, int row );
 void            trap_Rocket_DSClearTable( const char *name, const char *table );
 void            trap_Rocket_SetInnerRML( const char *name, const char *id, const char *RML );
+void            trap_Rocket_GetAttribute( const char *name, const char *id, const char *attribute, char *out, int length );
+void            trap_Rocket_SetAttribute( const char *name, const char *id, const char *attribute, const char *value );
+void            trap_Rocket_GetEventParameters( char *params, int length );

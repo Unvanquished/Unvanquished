@@ -295,7 +295,31 @@ static void CG_Rocket_EventExec( const char *args )
 	trap_Cmd_ExecuteText( EXEC_APPEND, args );
 }
 
+static void CG_Rocket_EventCvarForm( const char *args )
+{
+	static char params[ BIG_INFO_STRING ];
+	static char key[BIG_INFO_VALUE], value[ BIG_INFO_VALUE ];
+	const char *s;
 
+	trap_Rocket_GetEventParameters( params, 0 );
+
+	if ( !*params )
+	{
+		return;
+	}
+
+	s = params;
+
+	while ( *s )
+	{
+		Info_NextPair( &s, key, value );
+		if ( !Q_stricmpn( "cvar ", key, 5 ) )
+		{
+
+			trap_Cvar_Set( key + 5, value );
+		}
+	}
+}
 
 
 typedef struct
@@ -308,6 +332,7 @@ static const eventCmd_t eventCmdList[] =
 {
 	{ "build_list", &CG_Rocket_BuildServerList },
 	{ "close", &CG_Rocket_EventClose },
+	{ "cvarform", &CG_Rocket_EventCvarForm },
 	{ "exec", &CG_Rocket_EventExec },
 	{ "goto", &CG_Rocket_EventGoto },
 	{ "init_servers", &CG_Rocket_InitServers },

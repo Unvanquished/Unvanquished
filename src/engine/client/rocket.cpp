@@ -733,6 +733,41 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in )
 	return out;
 }
 
+void Rocket_GetAttribute( const char *name, const char *id, const char *attribute, char *out, int length )
+{
+	Rocket::Core::ElementDocument *document = context->GetDocument( name );
+
+	if ( document )
+	{
+		Q_strncpyz( out, document->GetElementById( id )->GetAttribute< Rocket::Core::String >( attribute, "" ).CString(), length );
+	}
+}
+
+void Rocket_SetAttribute( const char *name, const char *id, const char *attribute, const char *value )
+{
+	Rocket::Core::ElementDocument *document = context->GetDocument( name );
+
+	if ( document )
+	{
+		document->GetElementById( id )->SetAttribute( attribute, value );
+	}
+}
+
+void Rocket_GetEventParameters( char *params, int length )
+{
+	*params = '\0';
+	if ( !eventQueue.empty() )
+	{
+		int index = 0;
+		Rocket::Core::String key;
+		Rocket::Core::String value;
+
+		while ( eventQueue.front()->Parameters.Iterate( index, key, value ) )
+		{
+			Info_SetValueForKeyRocket( params, key.CString(), value.CString() );
+		}
+	}
+}
 #else
 extern "C" void Rocket_Init( void ) { }
 extern "C" void Rocket_Shutdown( void ) { }
@@ -750,4 +785,5 @@ extern "C" void Rocket_DSChangeRow( const char *name, const char *table, const i
 extern "C" void Rocket_DSRemoveRow( const char *name, const char *table, const int row ) { }
 extern "C" void Rocket_DSClearTable( const char *name, const char *table ) { }
 extern "C" void Rocket_SetInnerRML( const char *name, const char *id, const char *RML ) { }
+extern "C" void Rocket_GetEventParameters( char *params, int length ) { }
 #endif
