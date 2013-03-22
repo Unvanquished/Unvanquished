@@ -3451,8 +3451,9 @@ Com_Frame
 */
 void Com_Frame( void )
 {
+	int             timeVal;
 	int             msec, minMsec;
-	static int      lastTime;
+	static int      lastTime = 0, bias = 0;
 	//int             key;
 
 	int             timeBeforeFirstEvents;
@@ -3500,28 +3501,47 @@ void Com_Frame( void )
 	}
 
 	// we may want to spin here if things are going too fast
-	if ( !com_dedicated->integer && !com_timedemo->integer )
+	if ( !com_timedemo->integer )
 	{
-		if ( com_minimized->integer && com_maxfpsMinimized->integer > 0 )
+		if ( com_dedicated->integer )
 		{
-			minMsec = 1000 / com_maxfpsMinimized->integer;
-		}
-		else if ( com_unfocused->integer && com_maxfpsUnfocused->integer > 0 )
-		{
-			minMsec = 1000 / com_maxfpsUnfocused->integer;
-		}
-		else if ( com_maxfps->integer > 0 )
-		{
-			minMsec = 1000 / com_maxfps->integer;
+			minMsec = SV_FrameMsec();
 		}
 		else
 		{
-			minMsec = 1;
+			if ( com_minimized->integer && com_maxfpsMinimized->integer > 0 )
+			{
+				minMsec = 1000 / com_maxfpsMinimized->integer;
+			}
+			else if ( com_unfocused->integer && com_maxfpsUnfocused->integer > 0 )
+			{
+				minMsec = 1000 / com_maxfpsUnfocused->integer;
+			}
+			else if ( com_maxfps->integer > 0 )
+			{
+				minMsec = 1000 / com_maxfps->integer;
+			}
+			else
+			{
+				minMsec = 1;
+			}
+
+			timeVal = com_frameTime - lastTime;
+			bias += timeVal - minMsec;
+
+			if ( bias > minMsec )
+			{
+				bias = minMsec;
+			}
+
+			// Adjust minMsec if previous frame took too long to render so
+			// that framerate is stable at the requested value.
+			minMsec -= bias;
 		}
 	}
 	else
 	{
-		minMsec = 0; // let's not spin at all
+		minMsec = 1; // Bad things happen if this is 0
 	}
 
 	com_frameTime = Com_EventLoop();

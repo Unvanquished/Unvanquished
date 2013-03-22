@@ -1181,6 +1181,7 @@ void     SV_Shutdown( char *finalmsg );
 void     SV_Frame( int msec );
 void     SV_PacketEvent( netadr_t from, msg_t *msg );
 qboolean SV_GameCommand( void );
+int      SV_FrameMsec( void );
 
 //
 // UI interface
