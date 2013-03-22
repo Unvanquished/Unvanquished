@@ -27,7 +27,7 @@
 		</style>
 	</head>
 	<body id="options" template="window" onload="restore">
-		<form onsubmit="store; goto main_menu">
+		<form onsubmit="store; goto main">
 			<div>
 				<p>
 					Graphics:<br />
