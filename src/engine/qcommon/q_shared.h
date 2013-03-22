@@ -1496,6 +1496,7 @@ char *Q_UTF8Unstore( int e );
 	void       Info_RemoveKey( char *s, const char *key , qboolean big );
 	void       Info_RemoveKey_big( char *s, const char *key );
 	void       Info_SetValueForKey( char *s, const char *key, const char *value , qboolean big );
+	void       Info_SetValueForKeyRocket( char *s, const char *key, const char *value );
 	qboolean   Info_Validate( const char *s );
 	void       Info_NextPair( const char **s, char *key, char *value );
 

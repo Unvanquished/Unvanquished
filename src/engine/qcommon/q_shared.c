@@ -3285,6 +3285,41 @@ void Info_SetValueForKey( char *s, const char *key, const char *value, qboolean 
 }
 
 /*
+==================
+Info_SetValueForKey
+
+Changes or adds a key/value pair
+==================
+*/
+void Info_SetValueForKeyRocket( char *s, const char *key, const char *value )
+{
+	int maxlen = BIG_INFO_KEY;
+	int slen = strlen( s );
+	static char newi[ BIG_INFO_STRING ];
+
+	if ( slen >= maxlen )
+	{
+		Com_Error( ERR_DROP, "Info_SetValueForKey: oversize infostring [%s] [%s] [%s]", s, key, value );
+	}
+
+	Info_RemoveKey( s, key, qtrue );
+
+	if ( !value || !strlen( value ) )
+	{
+		return;
+	}
+
+	Com_sprintf( newi, maxlen, "\\%s\\%s", key, value );
+
+	if ( strlen( newi ) + slen >= maxlen )
+	{
+		Com_Printf( "Info string length exceeded\n" );
+		return;
+	}
+
+	strcat( s, newi );
+}
+/*
 ============
 Com_ClientListContains
 ============
