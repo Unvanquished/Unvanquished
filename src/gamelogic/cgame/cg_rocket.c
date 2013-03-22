@@ -356,7 +356,8 @@ void CG_Rocket_ProcessEvents( void )
 			*p = '\0';
 		}
 
-		args = head + strlen( head ) + 1;
+		// Special case for when head has no arguments
+		args = head + strlen( head ) + ( head + strlen( head ) == tail ? 0 : 1 );
 
 		cmd = bsearch( head, eventCmdList, eventCmdListCount, sizeof( eventCmd_t ), eventCmdCmp );
 
