@@ -59,8 +59,7 @@ void BotCalcSteerDir( Bot_t *bot, vec3_t dir )
 	float len0, len1;
 	vec3_t spos;
 
-	VectorCopy( SV_GentityNum( bot->clientNum )->s.origin, spos );
-	quake2recast( spos );
+	VectorCopy( bot->corridor.getPos(), spos );
 
 	VectorSubtract( p0, spos, dir0 );
 	VectorSubtract( p1, spos, dir1 );
@@ -143,7 +142,7 @@ qboolean BotFindNearestPoly( Bot_t *bot, const vec3_t coord, dtPolyRef *nearestP
 	return qtrue;
 }
 
-unsigned int FindRoute( Bot_t *bot, const vec3_t s, const vec3_t e )
+unsigned int FindRoute( Bot_t *bot, const vec3_t s, const botRouteTarget_t *rtarget )
 {
 	vec3_t start;
 	vec3_t end;
@@ -152,15 +151,13 @@ unsigned int FindRoute( Bot_t *bot, const vec3_t s, const vec3_t e )
 	dtStatus status;
 	int pathNumPolys;
 	qboolean result;
-	int time = Sys_Milliseconds();
+	int time = svs.time;
 
 	//dont pathfind too much
 	if ( time - bot->lastRouteTime < 200 )
 	{
 		return ROUTE_FAILED;
 	}
-
-	bot->lastRouteTime = time;
 
 	result = BotFindNearestPoly( bot, s, &startRef, start );
 
@@ -169,13 +166,15 @@ unsigned int FindRoute( Bot_t *bot, const vec3_t s, const vec3_t e )
 		return ROUTE_FAILED;
 	}
 
-	result = BotFindNearestPoly( bot, e, &endRef, end );
+	status = bot->nav->query->findNearestPoly( rtarget->pos, rtarget->extents, 
+	                                           &bot->nav->filter, &endRef, end ); 
 
-	if ( !result )
+	if ( dtStatusFailed( status ) || !endRef )
 	{
 		return ROUTE_FAILED;
 	}
 	
+	bot->lastRouteTime = time;
 	status = bot->nav->query->findPath( startRef, endRef, start, end, &bot->nav->filter, pathPolys, &pathNumPolys, MAX_BOT_PATH );
 
 	if ( dtStatusFailed( status ) )
@@ -186,7 +185,7 @@ unsigned int FindRoute( Bot_t *bot, const vec3_t s, const vec3_t e )
 	bot->corridor.reset( startRef, start );
 	bot->corridor.setCorridor( end, pathPolys, pathNumPolys );
 
-	if ( status & DT_PARTIAL_RESULT )
+	if ( dtStatusDetail( status, DT_PARTIAL_RESULT ) )
 	{
 		return ROUTE_SUCCEED | ROUTE_PARTIAL;
 	}
