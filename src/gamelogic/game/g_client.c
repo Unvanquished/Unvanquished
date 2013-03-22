@@ -23,6 +23,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "g_local.h"
 #include "g_spawn.h"
+#include "../../engine/qcommon/q_unicode.h"
 
 // g_client.c -- client functions that don't happen every frame
 
@@ -736,7 +737,7 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 	int      spaces;
 	qboolean escaped;
 	qboolean invalid = qfalse;
-	qboolean haslatin = qfalse;
+	qboolean hasletter = qfalse;
 
 	//save room for trailing null byte
 	outSize--;
@@ -749,6 +750,8 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 
 	for ( ; *in; in++ )
 	{
+		int cp, w;
+
 		// don't allow leading spaces
 		if ( colorlessLen == 0 && *in == ' ' )
 		{
@@ -760,12 +763,6 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 		if ( *in >= 0 && *in < ' ' )
 		{
 			continue;
-		}
-
-		if ( ( *in >= 'A' && *in <= 'Z' ) ||
-		     ( *in >= 'a' && *in <= 'z' ) )
-		{
-			haslatin = qtrue;
 		}
 
 		// check colors
@@ -806,6 +803,13 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 			continue;
 		}
 
+		cp = Q_UTF8_CodePoint( in );
+
+		if ( Q_Unicode_IsAlphaOrIdeo( cp ) )
+		{
+			hasletter = qtrue;
+		}
+
 		// don't allow too many consecutive spaces
 		if ( *in == ' ' )
 		{
@@ -821,14 +825,18 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 			spaces = 0;
 		}
 
-		if ( len > outSize - 1 )
+		w = Q_UTF8_WidthCP( cp );
+
+		if ( len > outSize - w )
 		{
 			break;
 		}
 
-		*out++ = *in;
+		memcpy( out, in, w );
 		colorlessLen++;
-		len++;
+		len += w;
+		out += w;
+		in += w - 1; // allow for loop increment
 	}
 
 	*out = 0;
@@ -852,13 +860,13 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 	}
 
 	// limit no. of code points
-	if ( Q_UTF8PrintStrlen( p ) > MAX_NAME_LENGTH_CP )
+	if ( Q_UTF8_PrintStrlen( p ) > MAX_NAME_LENGTH_CP )
 	{
 		invalid = qtrue;
 	}
 
 	// if something made the name bad, put them back to UnnamedPlayer
-	if ( invalid || !haslatin )
+	if ( invalid || !hasletter )
 	{
 		Q_strncpyz( p, G_UnnamedClientName( client ), outSize );
 	}

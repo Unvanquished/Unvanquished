@@ -745,7 +745,7 @@ extern console_t consoleState;
 
 void             Con_DrawCharacter( int cx, int line, int num );
 
-void             Con_CheckResize( void );
+qboolean         Con_CheckResize( void );
 void             Con_Init( void );
 void             Con_Clear_f( void );
 void             Con_ToggleConsole_f( void );

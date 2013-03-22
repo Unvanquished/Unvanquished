@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "g_local.h"
+#include "../../engine/qcommon/q_unicode.h"
 
 /*
 ==================
@@ -36,19 +37,26 @@ void G_SanitiseString( const char *in, char *out, int len )
 
 	while ( *in && len > 0 )
 	{
+		int cp = Q_UTF8_CodePoint( in );
+		int w;
+
 		if ( Q_IsColorString( in ) )
 		{
 			in += 2; // skip color code
 			continue;
 		}
 
-		if ( isalnum( *in ) )
+		w = Q_UTF8_WidthCP( cp );
+
+		if ( Q_Unicode_IsAlphaOrIdeoOrDigit( cp ) )
 		{
-			*out++ = tolower( *in );
-			len--;
+			int wm = MIN( len, w );
+			memcpy( out, in, wm );
+			out += wm;
+			len -= wm;
 		}
 
-		in++;
+		in += w;
 	}
 
 	*out = 0;
