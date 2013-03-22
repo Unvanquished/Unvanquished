@@ -202,11 +202,7 @@ void G_PrintEntity(gentity_t *entity)
 		G_Printf("<NULL>");
 		return;
 	}
-
-	if(entity->names[0])
-		G_Printf("%s ", entity->names[0]);
-
-	G_Printf("^7(^5%s^7|^5#%i^7)", entity->classname, entity->s.number);
+	G_Printf("%s%s" S_COLOR_WHITE "(" S_COLOR_CYAN "%s" S_COLOR_WHITE "|" S_COLOR_CYAN "#%i" S_COLOR_WHITE ")", entity->names[0], entity->names[0] ? " " : "", entity->classname, entity->s.number);
 }
 
 /*
