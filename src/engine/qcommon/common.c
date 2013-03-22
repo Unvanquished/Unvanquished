@@ -3450,9 +3450,8 @@ Com_Frame
 */
 void Com_Frame( void )
 {
-	int             timeVal;
 	int             msec, minMsec;
-	static int      lastTime = 0, bias = 0;
+	static int      lastTime = 0;
 	//int             key;
 
 	int             timeBeforeFirstEvents;
@@ -3524,18 +3523,6 @@ void Com_Frame( void )
 			{
 				minMsec = 1;
 			}
-
-			timeVal = com_frameTime - lastTime;
-			bias += timeVal - minMsec;
-
-			if ( bias > minMsec )
-			{
-				bias = minMsec;
-			}
-
-			// Adjust minMsec if previous frame took too long to render so
-			// that framerate is stable at the requested value.
-			minMsec -= bias;
 		}
 	}
 	else
