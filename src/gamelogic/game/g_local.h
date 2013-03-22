@@ -1083,6 +1083,7 @@ qboolean   G_IsVisible( gentity_t *ent1, gentity_t *ent2, int contents );
 //chain
 gentityCallActionType_t G_GetCallActionTypeFor( const char* action );
 void       G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call);
+gentity_t  *G_ResolveEntityKeyword( gentity_t *self, gentityCallDefinition_t *callDefinition );
 gentity_t  *G_FindNextTarget( gentity_t *targ, int *tIx, int *tnIx, gentity_t *self );
 gentity_t  *G_PickRandomTargetFor( gentity_t *self );
 void       G_FireRandomCallTargetOf( gentity_t *entity, gentity_t *activator );

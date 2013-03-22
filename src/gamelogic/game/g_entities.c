@@ -410,6 +410,17 @@ gentityCallActionType_t G_GetCallActionTypeFor( const char* action )
 	return ECA_CUSTOM;
 }
 
+gentity_t *G_ResolveEntityKeyword( gentity_t *self, gentityCallDefinition_t *callDefinition )
+{
+/*//TODO we need some checking before we actually allow this
+  	if (!Q_stricmp(callDefinition->name, "$activator"))
+		return self->activator;
+	else if (!Q_stricmp(callDefinition->name, "$self"))
+		return self;*/
+
+	return NULL;
+}
+
 gentity_t *G_FindNextTarget(gentity_t *currentTarget, int *targetIndex, int *nameIndex, gentity_t *self)
 {
 	if (currentTarget)
@@ -417,6 +428,9 @@ gentity_t *G_FindNextTarget(gentity_t *currentTarget, int *targetIndex, int *nam
 
 	for (*targetIndex = 0; self->calltargets[*targetIndex].name; ++(*targetIndex))
 	{
+		if(self->calltargets[*targetIndex].name[0] == '$')
+			return G_ResolveEntityKeyword( self, &self->calltargets[*targetIndex] );
+
 		for( currentTarget = &g_entities[ MAX_CLIENTS ]; currentTarget < &g_entities[ level.num_entities ]; currentTarget++ )
 		{
 			if ( !currentTarget->inuse )
