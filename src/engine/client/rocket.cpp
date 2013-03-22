@@ -578,9 +578,14 @@ void Rocket_DocumentAction( const char *name, const char *action )
 class RocketEvent_t
 {
 public:
-	RocketEvent_t( Rocket::Core::Event& event, const char *cmds ) : event( event ), cmd( cmds ) { }
+	RocketEvent_t( Rocket::Core::Event &event, const char *cmds ) : cmd( cmds )
+	{
+		targetElement = event.GetTargetElement();
+		Parameters = *(event.GetParameters());
+	}
 	~RocketEvent_t() { }
-	Rocket::Core::Event& event;
+	Rocket::Core::Element *targetElement;
+	Rocket::Core::Dictionary Parameters;
 	const char *cmd;
 };
 
