@@ -163,13 +163,12 @@ void SP_sensor_start( gentity_t *self )
 
 void G_notify_sensor_start()
 {
-	gentity_t *sensor;
+	gentity_t *sensor = NULL;
 
 	if( g_debugEntities.integer >= 2 )
 		G_Printf( "DEBUG: Notification of match start.\n");
 
-	sensor = &g_entities[MAX_CLIENTS - 1]; //start after the reserved player slots
-	while ((sensor = G_FindNextEntity(sensor, FOFS( classname ), "sensor_start")) != NULL )
+	while ((sensor = G_IterateEntitiesOfClass(sensor, "sensor_start")) != NULL )
 	{
 		sensor_start_fireAndForget(sensor);
 	}
@@ -238,19 +237,18 @@ Called when stages change
 */
 void G_notify_sensor_stage( team_t team, stage_t stage )
 {
-	gentity_t *ent;
+	gentity_t *entities = NULL;
 
 	if( g_debugEntities.integer >= 2 )
 		G_Printf( "DEBUG: Notification of team %i staging up to %i (0-2).\n", team, stage );
 
-	ent = &g_entities[MAX_CLIENTS - 1]; //start after the reserved player slots
-	while ((ent = G_FindNextEntity(ent, FOFS( classname ), "sensor_stage")) != NULL )
+	while ((entities = G_IterateEntitiesOfClass(entities, "sensor_stage")) != NULL )
 	{
-		if (((!ent->conditions.stage || stage == ent->conditions.stage)
-				&& (!ent->conditions.team || team == ent->conditions.team))
-				== !ent->conditions.negated)
+		if (((!entities->conditions.stage || stage == entities->conditions.stage)
+				&& (!entities->conditions.team || team == entities->conditions.team))
+				== !entities->conditions.negated)
 		{
-			G_FireAllCallTargetsOf(ent, ent);
+			G_FireAllCallTargetsOf(entities, entities);
 		}
 	}
 }
@@ -277,16 +275,15 @@ sensor_end
 
 void G_notify_sensor_end( team_t winningTeam )
 {
-	gentity_t *ent;
+	gentity_t *entity = NULL;
 
 	if( g_debugEntities.integer >= 2 )
 		G_Printf( "DEBUG: Notification of game end. Winning team %i.\n", winningTeam );
 
-	ent = &g_entities[MAX_CLIENTS - 1]; //start after the reserved player slots
-	while ((ent = G_FindNextEntity(ent, FOFS( classname ), "sensor_end")) != NULL )
+	while ((entity = G_IterateEntitiesOfClass(entity, "sensor_end")) != NULL )
 	{
-		if ((winningTeam == ent->conditions.team) == !ent->conditions.negated)
-			G_FireAllCallTargetsOf(ent, ent);
+		if ((winningTeam == entity->conditions.team) == !entity->conditions.negated)
+			G_FireAllCallTargetsOf(entity, entity);
 	}
 }
 

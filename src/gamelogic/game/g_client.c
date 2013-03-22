@@ -115,7 +115,7 @@ Chooses a player start, deathmatch start, etc
 */
 gentity_t *G_SelectRandomFurthestSpawnPoint( vec3_t avoidPoint, vec3_t origin, vec3_t angles )
 {
-	gentity_t *spot;
+	gentity_t *spot = NULL;
 	vec3_t    delta;
 	float     dist;
 	float     list_dist[ 64 ];
@@ -123,9 +123,8 @@ gentity_t *G_SelectRandomFurthestSpawnPoint( vec3_t avoidPoint, vec3_t origin, v
 	int       numSpots, rnd, i, j;
 
 	numSpots = 0;
-	spot = &g_entities[MAX_CLIENTS - 1]; //start after the reserved player slots
 
-	while ( ( spot = G_FindNextEntity( spot, FOFS( classname ), "pos_player_spawn" ) ) != NULL )
+	while ( ( spot = G_IterateEntitiesOfClass( spot, "pos_player_spawn" ) ) != NULL )
 	{
 		if ( SpotWouldTelefrag( spot ) )
 		{
@@ -173,7 +172,7 @@ gentity_t *G_SelectRandomFurthestSpawnPoint( vec3_t avoidPoint, vec3_t origin, v
 
 	if ( !numSpots )
 	{
-		spot = G_FindNextEntity( &g_entities[MAX_CLIENTS], FOFS( classname ), "pos_player_spawn" );
+		spot = G_IterateEntitiesOfClass( NULL, "pos_player_spawn" );
 
 		if ( !spot )
 		{
@@ -206,13 +205,10 @@ spawned/healthy/unblocked etc.
 */
 static gentity_t *G_SelectSpawnBuildable( vec3_t preference, buildable_t buildable )
 {
-	gentity_t *search, *spot;
+	gentity_t *search = NULL;
+	gentity_t *spot = NULL;
 
-	spot = NULL;
-	search = &g_entities[MAX_CLIENTS - 1]; //start after the reserved player slots
-
-	while ( ( search = G_FindNextEntity( search, FOFS( classname ),
-	                           BG_Buildable( buildable )->entityName ) ) != NULL )
+	while ( ( search = G_IterateEntitiesOfClass( search, BG_Buildable( buildable )->entityName ) ) != NULL )
 	{
 		if ( !search->spawned )
 		{
@@ -329,7 +325,7 @@ gentity_t *G_SelectAlienLockSpawnPoint( vec3_t origin, vec3_t angles )
 {
 	gentity_t *spot;
 
-	spot = G_PickRandomEntity( FOFS( classname ), "pos_alien_intermission" );
+	spot = G_PickRandomEntityOfClass( "pos_alien_intermission" );
 
 	if ( !spot )
 	{
@@ -354,7 +350,7 @@ gentity_t *G_SelectHumanLockSpawnPoint( vec3_t origin, vec3_t angles )
 {
 	gentity_t *spot;
 
-	spot = G_PickRandomEntity( FOFS( classname ), "pos_human_intermission" );
+	spot = G_PickRandomEntityOfClass( "pos_human_intermission" );
 
 	if ( !spot )
 	{

@@ -243,7 +243,66 @@ gentity list handling and searching
 
 /*
 =============
-G_Find
+G_IterateEntities
+
+Iterates through all active enities optionally filtered by classname
+and a fieldoffset (set via FOFS() macro) of the callers choosing.
+
+Iteration will continue to return the gentity following the "previous" parameter that fullfill these conditions
+or NULL if there are no further matching gentities.
+
+Set NULL as previous gentity to start the iteration from the beginning
+=============
+*/
+gentity_t *G_IterateEntities( gentity_t *entity, const char *classname, qboolean skipdisabled, size_t fieldofs, const char *match )
+{
+	char *fieldString;
+
+	if ( !entity )
+	{
+		entity = g_entities;
+		//start after the reserved player slots, if we are not searching for a player
+		if ( classname && !strcmp(classname, "player") )
+			entity += MAX_CLIENTS;
+	}
+	else
+	{
+		entity++;
+	}
+
+	for ( ; entity < &g_entities[ level.num_entities ]; entity++ )
+	{
+		if ( !entity->inuse )
+			continue;
+
+		if( skipdisabled && !entity->enabled)
+			continue;
+
+
+		if ( classname && Q_stricmp( entity->classname, classname ) )
+			continue;
+
+		if ( fieldofs && match )
+		{
+			fieldString = * ( char ** )( ( byte * ) entity + fieldofs );
+			if ( Q_stricmp( fieldString, match ) )
+				continue;
+		}
+
+		return entity;
+	}
+
+	return NULL;
+}
+
+gentity_t *G_IterateEntitiesOfClass( gentity_t *entity, const char *classname )
+{
+	return G_IterateEntities( entity, classname, qtrue, 0, NULL );
+}
+
+/*
+=============
+G_IterateEntitiesWithField
 
 Searches all active entities for the next one that holds
 the matching string at fieldofs (use the FOFS() macro) in the structure.
@@ -251,109 +310,50 @@ the matching string at fieldofs (use the FOFS() macro) in the structure.
 Searches beginning at the entity after from, or the beginning if NULL
 NULL will be returned if the end of the list is reached.
 
+if we are not searching for player entities it is recommended to start searching from gentities[MAX_CLIENTS - 1]
+
 =============
 */
-gentity_t *G_FindNextEntity( gentity_t *from, size_t fieldofs, const char *match )
+gentity_t *G_IterateEntitiesWithField( gentity_t *entity, size_t fieldofs, const char *match )
 {
-	char *fieldString;
-
-	if ( !from )
-	{
-		from = g_entities;
-	}
-	else
-	{
-		from++;
-	}
-
-	for ( ; from < &g_entities[ level.num_entities ]; from++ )
-	{
-		if ( !from->inuse || !from->enabled )
-		{
-			continue;
-		}
-
-		fieldString = * ( char ** )( ( byte * ) from + fieldofs );
-
-		if ( !fieldString )
-		{
-			continue;
-		}
-
-		if ( !Q_stricmp( fieldString, match ) )
-		{
-			return from;
-		}
-	}
-
-	return NULL;
-}
-
-gentity_t *G_PickRandomEntity( size_t fieldofs, const char *match  )
-{
-	gentity_t *foundEntity;
-	int       totalChoiceCount = 0;
-	gentity_t *choices[ MAX_GENTITIES - 2 - MAX_CLIENTS ];
-
-	/*
-	 * we either want to pick a random player or non-player
-	 * if we actually want a player, we need another dedicated function for it anyway
-	 * so lets skip the playerslots
-	 */
-	foundEntity = &g_entities[ MAX_CLIENTS - 1 ];
-
-	//collects the targets
-	while( ( foundEntity = G_FindNextEntity( foundEntity, fieldofs, match ) ) != NULL )
-		choices[ totalChoiceCount++ ] = foundEntity;
-
-	if ( !totalChoiceCount )
-	{
-
-		if ( g_debugEntities.integer > -1 )
-			G_Printf( "^3WARNING: ^7Could not find any entity matching \"^5%s^7\"\n", match );
-
-		return NULL;
-	}
-
-	//return a random one from among the choices
-	return choices[ rand() / ( RAND_MAX / totalChoiceCount + 1 ) ];
+	return G_IterateEntities( entity, NULL, qtrue, fieldofs, match );
 }
 
 // from quakestyle.telefragged.com
 // (NOBODY): Code helper function
 //
-gentity_t *G_FindNextEntityInRadius( gentity_t *from, vec3_t org, float rad )
+gentity_t *G_IterateEntitiesWithinRadius( gentity_t *entity, vec3_t origin, float radius )
 {
 	vec3_t eorg;
 	int    j;
 
-	if ( !from )
+	if ( !entity )
 	{
-		from = g_entities;
+		entity = g_entities;
 	}
 	else
 	{
-		from++;
+		entity++;
 	}
 
-	for ( ; from < &g_entities[ level.num_entities ]; from++ )
+	for ( ; entity < &g_entities[ level.num_entities ]; entity++ )
 	{
-		if ( !from->inuse )
+		if ( !entity->inuse )
 		{
 			continue;
 		}
 
 		for ( j = 0; j < 3; j++ )
 		{
-			eorg[ j ] = org[ j ] - ( from->r.currentOrigin[ j ] + ( from->r.mins[ j ] + from->r.maxs[ j ] ) * 0.5 );
+			eorg[ j ] = origin[ j ] - ( entity->r.currentOrigin[ j ] + ( entity->r.mins[ j ] + entity->r.maxs[ j ] ) * 0.5 );
 		}
 
-		if ( VectorLength( eorg ) > rad )
+		if ( VectorLength( eorg ) > radius )
 		{
 			continue;
 		}
 
-		return from;
+		return entity;
 	}
 
 	return NULL;
@@ -394,6 +394,39 @@ gentity_t *G_FindClosestEntity( vec3_t origin, gentity_t **entities, int numEnti
 	}
 
 	return closestEnt;
+}
+
+gentity_t *G_PickRandomEntity( const char *classname, size_t fieldofs, const char *match )
+{
+	gentity_t *foundEntity = NULL;
+	int       totalChoiceCount = 0;
+	gentity_t *choices[ MAX_GENTITIES - 2 - MAX_CLIENTS ];
+
+	//collects the targets
+	while( ( foundEntity = G_IterateEntities( foundEntity, classname, qtrue, fieldofs, match ) ) != NULL )
+		choices[ totalChoiceCount++ ] = foundEntity;
+
+	if ( !totalChoiceCount )
+	{
+
+		if ( g_debugEntities.integer > -1 )
+			G_Printf( S_COLOR_YELLOW "WARNING: " S_COLOR_WHITE "Could not find any entity matching \"" S_COLOR_CYAN "%s" S_COLOR_WHITE "\"\n", match );
+
+		return NULL;
+	}
+
+	//return a random one from among the choices
+	return choices[ rand() / ( RAND_MAX / totalChoiceCount + 1 ) ];
+}
+
+gentity_t *G_PickRandomEntityOfClass( const char *classname )
+{
+	return G_PickRandomEntity(classname, 0, NULL);
+}
+
+gentity_t *G_PickRandomEntityWithField( size_t fieldofs, const char *match )
+{
+	return G_PickRandomEntity(NULL, fieldofs, match);
 }
 
 /*
@@ -449,25 +482,25 @@ gentity_t *G_ResolveEntityKeyword( gentity_t *self, gentityCallDefinition_t *cal
 	return NULL;
 }
 
-gentity_t *G_FindNextTarget(gentity_t *currentTarget, int *targetIndex, int *nameIndex, gentity_t *self)
+gentity_t *G_IterateCallTargets(gentity_t *entity, int *calltargetIndex, int *nameIndex, gentity_t *self)
 {
-	if (currentTarget)
+	if (entity)
 		goto cont;
 
-	for (*targetIndex = 0; self->calltargets[*targetIndex].name; ++(*targetIndex))
+	for (*calltargetIndex = 0; self->calltargets[*calltargetIndex].name; ++(*calltargetIndex))
 	{
-		if(self->calltargets[*targetIndex].name[0] == '$')
-			return G_ResolveEntityKeyword( self, &self->calltargets[*targetIndex] );
+		if(self->calltargets[*calltargetIndex].name[0] == '$')
+			return G_ResolveEntityKeyword( self, &self->calltargets[*calltargetIndex] );
 
-		for( currentTarget = &g_entities[ MAX_CLIENTS ]; currentTarget < &g_entities[ level.num_entities ]; currentTarget++ )
+		for( entity = &g_entities[ MAX_CLIENTS ]; entity < &g_entities[ level.num_entities ]; entity++ )
 		{
-			if ( !currentTarget->inuse )
+			if ( !entity->inuse )
 				continue;
 
-			for (*nameIndex = 0; currentTarget->names[*nameIndex]; ++(*nameIndex))
+			for (*nameIndex = 0; entity->names[*nameIndex]; ++(*nameIndex))
 			{
-				if (!Q_stricmp(self->calltargets[*targetIndex].name, currentTarget->names[*nameIndex]))
-					return currentTarget;
+				if (!Q_stricmp(self->calltargets[*calltargetIndex].name, entity->names[*nameIndex]))
+					return entity;
 				cont: ;
 			}
 		}
@@ -487,7 +520,7 @@ gentity_t *G_PickRandomTargetFor( gentity_t *self )
 	gentity_t *choices[ MAX_GENTITIES ];
 
 	//collects the targets
-	while( ( foundTarget = G_FindNextTarget( foundTarget, &targetIndex, &nameIndex, self ) ) != NULL )
+	while( ( foundTarget = G_IterateCallTargets( foundTarget, &targetIndex, &nameIndex, self ) ) != NULL )
 		choices[ totalChoiceCount++ ] = foundTarget;
 
 	if ( !totalChoiceCount )
@@ -523,7 +556,7 @@ void G_FireRandomCallTargetOf( gentity_t *entity, gentity_t *activator )
 	gentityTargetChoice_t *selectedChoice;
 
 	//collects the targets
-	while( ( possibleTarget = G_FindNextTarget( possibleTarget, &targetIndex, &nameIndex, entity ) ) != NULL )
+	while( ( possibleTarget = G_IterateCallTargets( possibleTarget, &targetIndex, &nameIndex, entity ) ) != NULL )
 	{
 		choices[ totalChoiceCount ].recipient = possibleTarget;
 		choices[ totalChoiceCount ].callDefinition = &entity->calltargets[targetIndex];
@@ -566,7 +599,7 @@ void G_FireAllCallTargetsOf( gentity_t *self, gentity_t *activator )
 		trap_SetConfigstring( CS_SHADERSTATE, BuildShaderStateConfig() );
 	}
 
-	while( ( currentTarget = G_FindNextTarget( currentTarget, &targetIndex, &nameIndex, self ) ) != NULL )
+	while( ( currentTarget = G_IterateCallTargets( currentTarget, &targetIndex, &nameIndex, self ) ) != NULL )
 	{
 		call.caller = self; //reset the caller in case there have been nested calls
 		call.definition = &self->calltargets[ targetIndex ];

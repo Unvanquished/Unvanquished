@@ -1073,10 +1073,15 @@ void       G_FreeEntity( gentity_t *e );
 char       *etos( const gentity_t *entity );
 void       G_PrintEntity(gentity_t *entity);
 
-//search
-gentity_t  *G_FindNextEntity( gentity_t *from, size_t fieldofs, const char *match );
-gentity_t  *G_PickRandomEntity( size_t fieldofs, const char *match );
+//search, select, iterate
+gentity_t  *G_IterateEntities( gentity_t *entity, const char *classname, qboolean skipdisabled, size_t fieldofs, const char *match );
+gentity_t  *G_IterateEntitiesOfClass( gentity_t *entity, const char *classname );
+gentity_t  *G_IterateEntitiesWithField( gentity_t *entity, size_t fieldofs, const char *match );
+gentity_t  *G_IterateEntitiesWithinRadius( gentity_t *entity, vec3_t origin, float radius );
 gentity_t  *G_FindClosestEntity( vec3_t origin, gentity_t **entities, int numEntities );
+gentity_t  *G_PickRandomEntity( const char *classname, size_t fieldofs, const char *match );
+gentity_t  *G_PickRandomEntityOfClass( const char *classname );
+gentity_t  *G_PickRandomEntityWithField( size_t fieldofs, const char *match );
 
 //test
 qboolean   G_IsVisible( gentity_t *ent1, gentity_t *ent2, int contents );
@@ -1085,7 +1090,7 @@ qboolean   G_IsVisible( gentity_t *ent1, gentity_t *ent2, int contents );
 gentityCallActionType_t G_GetCallActionTypeFor( const char* action );
 void       G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call);
 gentity_t  *G_ResolveEntityKeyword( gentity_t *self, gentityCallDefinition_t *callDefinition );
-gentity_t  *G_FindNextTarget( gentity_t *targ, int *tIx, int *tnIx, gentity_t *self );
+gentity_t  *G_IterateCallTargets( gentity_t *entity, int *tIx, int *nameindex, gentity_t *self );
 gentity_t  *G_PickRandomTargetFor( gentity_t *self );
 void       G_FireRandomCallTargetOf( gentity_t *entity, gentity_t *activator );
 void       G_FireAllCallTargetsOf( gentity_t *ent, gentity_t *activator );
