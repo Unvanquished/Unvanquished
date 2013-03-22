@@ -65,7 +65,7 @@
 		<button onClick="open help; show help">Help</button><br /><br />
 		<button onClick="open serverbrowser; show serverbrowser">Demos</button><br /><br />
 		<button onClick="open high_score">Mods</button><br /><br />
-		<button>Quit</button><br /><br />
+		<button onClick="exec quit">Quit</button><br /><br />
 	</div>
 	<div style="position: absolute;">
 		<img style="position: fixed; width: 50%; left: 30%; top: 350px;" src="/ui/assets/human.png"/>

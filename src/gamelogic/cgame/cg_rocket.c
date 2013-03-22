@@ -290,6 +290,11 @@ static void CG_Rocket_BuildServerList( const char *args )
 	rocketInfo.serversLastRefresh = trap_Milliseconds();
 }
 
+static void CG_Rocket_EventExec( const char *args )
+{
+	trap_Cmd_ExecuteText( EXEC_APPEND, args );
+}
+
 
 
 
@@ -303,6 +308,7 @@ static const eventCmd_t eventCmdList[] =
 {
 	{ "build_list", &CG_Rocket_BuildServerList },
 	{ "close", &CG_Rocket_EventClose },
+	{ "exec", &CG_Rocket_EventExec },
 	{ "goto", &CG_Rocket_EventGoto },
 	{ "init_servers", &CG_Rocket_InitServers },
 	{ "open", &CG_Rocket_EventOpen },
