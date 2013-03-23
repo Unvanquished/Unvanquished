@@ -55,5 +55,4 @@ void Rocket_DataFormatterRawData( int handle, char *name, int nameLength, char *
 void Rocket_DataFormatterFormattedData( int handle, const char *data )
 {
 	dataFormatterList[ handle ]->out = Rocket::Core::String( data );
-	dataFormatterList[ handle ]->block = false;
 }

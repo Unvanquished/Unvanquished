@@ -46,8 +46,8 @@ extern "C"
 class RocketDataFormatter : public Rocket::Controls::DataFormatter
 {
 public:
-	RocketDataFormatter( const char *name, int handle ) : name( name ), Rocket::Controls::DataFormatter( name ), handle( handle ) { block = true; }
-	~RocketDataFormatter() { delete this; }
+	RocketDataFormatter( const char *name, int handle ) : name( name ), Rocket::Controls::DataFormatter( name ), handle( handle ) { }
+	~RocketDataFormatter() { }
 
 	void FormatData( Rocket::Core::String &formatted_data, const Rocket::Core::StringList &raw_data )
 	{
@@ -57,15 +57,12 @@ public:
 			Info_SetValueForKeyRocket( data, va( "%d", i+1 ), raw_data[ i ].CString() );
 		}
 		VM_Call( cgvm, CG_ROCKET_FORMATDATA, handle );
-		while( block );
 		formatted_data = out;
-		block = true;
 	}
 
 	int handle;
 	Rocket::Core::String name;
 	char data[ BIG_INFO_STRING ];
 	Rocket::Core::String out;
-	bool block;
 };
 #endif
