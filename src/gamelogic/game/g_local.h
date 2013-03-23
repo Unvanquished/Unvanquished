@@ -389,15 +389,15 @@ struct gentity_s
 	team_t      buildableTeam; // buildable item team
 	struct namelog_s *builtBy; // clientNum of person that built this
 	int         dcc; // number of controlling dccs
-	qboolean    deconstruct; // deconstruct if no BP left
 
-	// a lot of times pretty sure theres some duplication in there to find
 	int         pain_debounce_time;
 	int         last_move_time;
 	int         timestamp; // body queue sinking, etc
 	int         shrunkTime; // time when a barricade shrunk or zero
 	int         animTime; // last animation change
 	int         time1000; // timer evaluated every second
+
+	qboolean    deconstruct; // deconstruct if no BP left
 	int         deconstructTime; // time at which structure marked
 	int         overmindAttackTimer;
 	int         overmindDyingTimer;
@@ -406,20 +406,22 @@ struct gentity_s
 	// every single frame.. so only do it periodically
 	int         clientSpawnTime; // the time until this spawn can spawn a client
 	int         spawnBlockTime; // timer for anti spawn-block
-	int         turretSpinupTime; // spinup delay for norfenturrets
-	int         suicideTime; // when the client will suicide
-	int         lastDamageTime;
-	int         nextRegenTime;
 
 	int         credits[ MAX_CLIENTS ]; // human credits for each client
-
 	int         killedBy; // clientNum of killer
+
 	gentity_t   *targeted; // true if the player is currently a valid target of a turret
 	vec3_t      turretAim; // aim vector for turrets
+	int         turretSpinupTime; // spinup delay for norfenturrets
 
 	vec4_t      animation; // animated map objects
 
 	qboolean    nonSegModel; // this entity uses a nonsegmented player model
+
+	int         suicideTime; // when the client will suicide
+
+	int         lastDamageTime;
+	int         nextRegenTime;
 
 	qboolean    pointAgainstWorld; // don't use the bbox for map collisions
 
