@@ -107,6 +107,7 @@ typedef enum
   F_INT,
   F_FLOAT,
   F_STRING,
+  F_TARGET,
   F_CALLTARGET,
   F_TIME,
   F_3D_VECTOR,
@@ -605,6 +606,13 @@ void G_ParseField( const char *key, const char *rawString, gentity_t *entity )
 	{
 		case F_STRING:
 			* ( char ** )( entityData + resultingField->offset ) = G_NewString( rawString );
+			break;
+
+		case F_TARGET:
+			if(entity->targetCount >= MAX_ENTITY_TARGETS)
+				G_Error("Maximal number of %i targets reached.", MAX_ENTITY_TARGETS);
+
+			( ( char ** )( entityData + resultingField->offset ) ) [ entity->targetCount++ ] = G_NewString( rawString );
 			break;
 
 		case F_CALLTARGET:

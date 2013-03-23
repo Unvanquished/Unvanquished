@@ -57,12 +57,18 @@ typedef struct gclient_s gclient_t;
 #define FL_FORCE_GESTURE           0x00008000
 
 /**
- * The Maximal count of calltargets per Entity.
+ * The maximal available targets to aim at per entity.
+ */
+#define MAX_ENTITY_TARGETS           4
+
+
+/**
+ * The maximal available calltargets per entity
  */
 #define MAX_ENTITY_CALLTARGETS       16
 
 /**
- * The Maximal count of targetnames per Entity.
+ * The maximal available names or aliases per entity.
  *
  * If you increase these, then you also have to
  * change g_spawn.c to spawn additional targets and targetnames
@@ -259,7 +265,11 @@ struct gentity_s
 	qboolean     powered;
 	gentity_t    *powerSource;
 
-	// targeting
+	// targets to aim at
+	int          targetCount;
+	char         *targets[ MAX_ENTITY_TARGETS + 1 ];
+
+	// gentities to call on certain events
 	int          callTargetCount;
 	gentityCallDefinition_t calltargets[ MAX_ENTITY_CALLTARGETS + 1 ];
 	gentity_t    *activator;
