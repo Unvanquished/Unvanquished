@@ -202,10 +202,12 @@ EntityToString
 Convenience function for printing entities
 =============
 */
+//assuming MAX_GENTITIES to be 5 digits or less
+#define MAX_ETOS_LENGTH MAX_NAME_LENGTH + 5 * 2 + 4 + 1 + 5
 char *etos( const gentity_t *entity )
 {
 	static  int  index;
-	static  char str[ 4 ][ MAX_STRING_CHARS ];
+	static  char str[ 4 ][ MAX_ETOS_LENGTH ];
 	char         *resultString;
 
 	if(!entity)
@@ -215,7 +217,7 @@ char *etos( const gentity_t *entity )
 	resultString = str[ index ];
 	index = ( index + 1 ) & 3;
 
-	Com_sprintf( resultString, sizeof(resultString),
+	Com_sprintf( resultString, MAX_ETOS_LENGTH,
 			"%s%s" S_COLOR_WHITE "(" S_COLOR_CYAN "%s" S_COLOR_WHITE "|" S_COLOR_CYAN "#%i" S_COLOR_WHITE ")",
 			entity->names[0], entity->names[0] ? " " : "", entity->classname, entity->s.number
 			);
