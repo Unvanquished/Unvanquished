@@ -650,9 +650,10 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 {
 	if ( g_debugEntities.integer > 1 )
 	{
-		G_Printf("Debug: [%s] %s → %s:%s\n",
+		G_Printf("Debug: [%s] %s calling %s %s:%s\n",
 				etos( call->activator ),
 				etos( call->caller ),
+				call->definition ? call->definition->event : "onUnknown",
 				etos( targetedEntity ),
 				call->definition && call->definition->action ? call->definition->action : "default");
 	}
