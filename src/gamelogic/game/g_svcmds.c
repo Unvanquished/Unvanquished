@@ -105,7 +105,7 @@ Svcmd_EntityShow_f
 */
 void Svcmd_EntityShow_f( void )
 {
-	int       i, entityNum;
+	int       entityNum;
 	int       lastTargetIndex, targetIndex, nameIndex;
 	gentity_t *selection;
 	gentity_t *possibleTarget = NULL;
@@ -153,10 +153,8 @@ void Svcmd_EntityShow_f( void )
 			selection->use ? " usable" : "");
 	if (selection->names[0])
 	{
-		G_Printf( "Name:");
-		for( i = 0; selection->names[ i ]; ++i )
-			G_Printf("%s%s", ( i == 0 ? "" : ", " ), selection->names[i]);
-		G_Printf( "\n" );
+		G_Printf( "Names: ");
+		G_PrintEntityNameList( selection );
 	}
 
 	G_Printf("State: %s\n", selection->enabled ? "enabled" : "disabled");
@@ -188,10 +186,8 @@ void Svcmd_EntityShow_f( void )
 			G_PrintEntity( possibleTarget );
 			if(possibleTarget->names[1])
 			{
-				G_Printf(" using \"%s\" ∈ {", possibleTarget->names[nameIndex]);
-				for (i = 0; possibleTarget->names[i]; ++i)
-					G_Printf("%s\"%s\"", (i == 0 ? "" : ", "), possibleTarget->names[i]);
-				G_Printf("}");
+				G_Printf(" using \"%s\" ∈ ", possibleTarget->names[nameIndex]);
+				G_PrintEntityNameList( possibleTarget );
 			}
 			G_Printf("\n");
 		}

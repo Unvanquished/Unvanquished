@@ -223,6 +223,30 @@ char *etos( const gentity_t *entity )
 	return resultString;
 }
 
+void G_PrintEntityNameList(gentity_t *entity)
+{
+	int i;
+	char string[ MAX_STRING_CHARS ];
+	char nameSegment[ MAX_STRING_CHARS ];
+
+	if(!entity)
+	{
+		G_Printf("<NULL>");
+		return;
+	}
+	if(!entity->names[0])
+	{
+		return;
+	}
+
+	for (i = 0; i < MAX_ENTITY_ALIASES && entity->names[i]; ++i)
+	{
+		Com_sprintf(nameSegment, sizeof(nameSegment), "%s%s", i == 0 ? "": ", ", entity->names[i]);
+		Q_strcat(string, sizeof(string), nameSegment);
+	}
+	G_Printf("{ %s }\n", string);
+}
+
 void G_PrintEntity(gentity_t *entity)
 {
 	if(!entity)
@@ -527,11 +551,9 @@ gentity_t *G_PickRandomTargetFor( gentity_t *self )
 	{
 		if ( g_debugEntities.integer > -1 )
 		{
-			G_Printf( "^3WARNING: ^7none of the following targets could be resolved for Entity ^5#%i^7:", self->s.number );
-
-			for( targetIndex = 0; self->calltargets[ targetIndex ].name; ++targetIndex )
-			  G_Printf( "%s%s", ( targetIndex == 0 ? "" : ", " ), self->calltargets[ targetIndex ].name );
-			G_Printf( "\n" );
+			G_Printf( "^3WARNING: ^7none of the following targets could be resolved for Entity ^5#%i^7:",
+					self->s.number );
+			G_PrintEntityNameList( self );
 		}
 		return NULL;
 	}

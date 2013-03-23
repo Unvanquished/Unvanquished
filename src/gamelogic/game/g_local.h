@@ -1071,6 +1071,7 @@ void       G_FreeEntity( gentity_t *e );
 
 //debug
 char       *etos( const gentity_t *entity );
+void       G_PrintEntityNameList( gentity_t *entity );
 void       G_PrintEntity(gentity_t *entity);
 
 //search, select, iterate
