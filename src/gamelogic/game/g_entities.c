@@ -144,7 +144,7 @@ void G_FreeEntity( gentity_t *entity )
 	}
 
 	if ( g_debugEntities.integer > 2 )
-		G_Printf("Debug: Freeing Entity ^5#%i^7 of type ^5%s\n", entity->s.number, entity->classname);
+		G_Printf("Debug: Freeing Entity %s\n", etos(entity));
 
 	if( entity->eclass && entity->eclass->instanceCounter > 0)
 		entity->eclass->instanceCounter--;
@@ -247,16 +247,6 @@ void G_PrintEntityNameList(gentity_t *entity)
 		Q_strcat(string, sizeof(string), nameSegment);
 	}
 	G_Printf("{ %s }\n", string);
-}
-
-void G_PrintEntity(gentity_t *entity)
-{
-	if(!entity)
-	{
-		G_Printf("<NULL>");
-		return;
-	}
-	G_Printf("%s%s" S_COLOR_WHITE "(" S_COLOR_CYAN "%s" S_COLOR_WHITE "|" S_COLOR_CYAN "#%i" S_COLOR_WHITE ")", entity->names[0], entity->names[0] ? " " : "", entity->classname, entity->s.number);
 }
 
 /*
@@ -553,8 +543,7 @@ gentity_t *G_PickRandomTargetFor( gentity_t *self )
 	{
 		if ( g_debugEntities.integer > -1 )
 		{
-			G_Printf( "^3WARNING: ^7none of the following targets could be resolved for Entity ^5#%i^7:",
-					self->s.number );
+			G_Printf( S_COLOR_YELLOW "WARNING: " S_COLOR_WHITE "none of the following targets could be resolved for Entity %s:", etos(self));
 			G_PrintEntityNameList( self );
 		}
 		return NULL;
@@ -642,13 +631,11 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 {
 	if ( g_debugEntities.integer > 1 )
 	{
-		G_Printf("Debug: [");
-		G_PrintEntity(call->activator);
-		G_Printf("] ");
-		G_PrintEntity(call->caller);
-		G_Printf(" → ");
-		G_PrintEntity(targetedEntity);
-		G_Printf(":%s\n", call->definition && call->definition->action ? call->definition->action : "default");
+		G_Printf("Debug: [%s] %s → %s:%s\n",
+				etos( call->activator ),
+				etos( call->caller ),
+				etos( targetedEntity ),
+				call->definition && call->definition->action ? call->definition->action : "default");
 	}
 
 	if(!targetedEntity->handleCall || !targetedEntity->handleCall(targetedEntity, call))
@@ -658,9 +645,8 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 		case ECA_CUSTOM:
 			if ( g_debugEntities.integer > -1 )
 			{
-				G_Printf("^3Warning:^7 Unknown action \"%s\" for ", call->definition->action) ;
-				G_PrintEntity(targetedEntity);
-				G_Printf("\n");
+				G_Printf(S_COLOR_YELLOW "Warning:" S_COLOR_WHITE "Unknown action \"%s\" for %s\n",
+						call->definition->action, etos(targetedEntity));
 			}
 			return;
 

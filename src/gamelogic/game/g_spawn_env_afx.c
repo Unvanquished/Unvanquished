@@ -428,7 +428,7 @@ void SP_env_afx_ammo( gentity_t *self )
 	if ( self->config.amount <= 0 )
 	{
 		self->config.amount = 1;
-		G_Printf( S_COLOR_YELLOW "WARNING: ^5%s ^7with negative or unset ammo amount key\n", self->classname );
+		G_Printf( S_COLOR_YELLOW "WARNING: " S_COLOR_WHITE "%s with negative or unset ammo amount key\n", etos(self) );
 	}
 
 	self->touch = env_afx_ammo_touch;

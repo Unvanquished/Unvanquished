@@ -76,9 +76,7 @@ void Svcmd_EntityFire_f( void )
 		callDefinition.actionType = G_GetCallActionTypeFor( callDefinition.action );
 	}
 
-	G_Printf( "firing ");
-	G_PrintEntity( selection );
-	G_Printf( ":%s\n", callDefinition.action ? callDefinition.action : "default" );
+	G_Printf( "firing %s:%s\n", etos( selection ), callDefinition.action ? callDefinition.action : "default" );
 
 	if(selection->names[0])
 		callDefinition.name = selection->names[0];
@@ -182,8 +180,7 @@ void Svcmd_EntityShow_f( void )
 				lastTargetIndex = targetIndex;
 			}
 
-			G_Printf("   ⇨ ");
-			G_PrintEntity( possibleTarget );
+			G_Printf("   ⇨ %s", etos(possibleTarget));
 			if(possibleTarget->names[1])
 			{
 				G_Printf(" using \"%s\" ∈ ", possibleTarget->names[nameIndex]);

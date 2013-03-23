@@ -72,7 +72,7 @@ void trigger_compat_propagation_act( gentity_t *self, gentity_t *other, gentity_
 
 	if ( g_debugEntities.integer >= -1 ) //dont't warn about anything with -1 or lower
 	{
-		G_Printf( "^3ERROR: ^7It appears as if ^5%s^7 is targeted by ^5%s^7 to enforce firing, which is undefined behavior — stop doing that! This WILL break in future releases and toggle the sensor instead.\n", self->classname, activator->classname );
+		G_Printf( S_COLOR_RED "ERROR: " S_COLOR_WHITE "It appears as if %s is targeted by %s to enforce firing, which is undefined behavior — stop doing that! This WILL break in future releases and toggle the sensor instead.\n", etos( self ), etos( activator ) );
 	}
 }
 
@@ -137,7 +137,7 @@ void trigger_multiple_compat_reset( gentity_t *self )
 
 	if ( self->spawnflags && g_debugEntities.integer >= -1 ) //dont't warn about anything with -1 or lower
 	{
-		G_Printf( "^3ERROR: ^7It appears as if ^5%s^7 has set spawnflags that were not defined behavior of the entities.def; this is likly to break in the future\n", self->classname);
+		G_Printf( S_COLOR_RED "ERROR: " S_COLOR_WHITE "It appears as if %s has set spawnflags that were not defined behavior of the entities.def; this is likely to break in the future\n", etos( self ));
 	}
 }
 
