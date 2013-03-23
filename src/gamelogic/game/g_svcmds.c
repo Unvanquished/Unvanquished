@@ -162,25 +162,35 @@ void Svcmd_EntityShow_f( void )
 		G_Printf("Member of Group: %s%s\n", selection->groupName, !selection->groupMaster ? " [master]" : "");
 	}
 
+	G_Printf( "\n");
+
+	if(selection->targetCount)
+	{
+		G_Printf( "Aims at\n");
+
+		while ((possibleTarget = G_IterateTargets(possibleTarget, &targetIndex, selection)) != NULL )
+		{
+			G_Printf(" • %s %s\n", etos( possibleTarget ), vtos( possibleTarget->s.origin));
+		}
+		G_Printf( "\n");
+	}
 
 	if(selection->callTargetCount)
 	{
-		G_Printf( "Targets:\n");
-
 		lastTargetIndex = -1;
 		while ((possibleTarget = G_IterateCallEndpoints(possibleTarget, &targetIndex, selection)) != NULL )
 		{
 
 			if(lastTargetIndex != targetIndex)
 			{
-				G_Printf(" • %s: \"%s:%s\"\n",
-						selection->calltargets[targetIndex].event ? selection->calltargets[targetIndex].event : "<null>",
+				G_Printf("Calls %s \"%s:%s\"\n",
+						selection->calltargets[targetIndex].event ? selection->calltargets[targetIndex].event : "onUnknown",
 						selection->calltargets[targetIndex].name,
 						selection->calltargets[targetIndex].action ? selection->calltargets[targetIndex].action : "default");
 				lastTargetIndex = targetIndex;
 			}
 
-			G_Printf("   ⇨ %s", etos(possibleTarget));
+			G_Printf(" • %s", etos(possibleTarget));
 			if(possibleTarget->names[1])
 			{
 				G_Printf(" using \"%s\" ∈ ", selection->calltargets[targetIndex].name);
