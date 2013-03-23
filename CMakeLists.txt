@@ -589,7 +589,6 @@ set( CLIENTLIST
   ${MOUNT_DIR}/engine/client/cl_net_chan.c
   ${MOUNT_DIR}/engine/client/cl_parse.c
   ${MOUNT_DIR}/engine/client/cl_scrn.c
-  ${MOUNT_DIR}/engine/client/rocket.cpp
   ${MOUNT_DIR}/engine/client/cl_logs.c
   ${MOUNT_DIR}/engine/client/snd_adpcm.c
   ${MOUNT_DIR}/engine/client/snd_codec.c
@@ -602,6 +601,14 @@ set( CLIENTLIST
   ${MOUNT_DIR}/engine/client/snd_mix.c
   ${MOUNT_DIR}/engine/client/snd_wavelet.c
   ${MOUNT_DIR}/engine/client/qal.c
+)
+
+set( ROCKET_CLIENTLIST
+  ${MOUNT_DIR}/engine/client/rocket_dataformatter.cpp
+  ${MOUNT_DIR}/engine/client/rocket_datagrid.cpp
+  ${MOUNT_DIR}/engine/client/rocket_documents.cpp
+  ${MOUNT_DIR}/engine/client/rocket_events.cpp
+  ${MOUNT_DIR}/engine/client/rocket.cpp
 )
 
 if( USE_MUMBLE )
@@ -1359,7 +1366,7 @@ if( BUILD_CLIENT )
   # Setup target client
   add_executable( client ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST}
     ${CPUINFOLIST} ${SDLLIST} ${QCOMMONLIST} ${SHAREDLIST} ${CRYPTOLIST} ${TINYGETTEXT_LIST}
-    ${DATABASELIST} ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c ${SPEEXLIST} ${WIN_RC} )
+    ${DATABASELIST} ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c ${SPEEXLIST} ${WIN_RC} ${ROCKET_CLIENTLIST} )
   add_dependencies( client rendererGL )
   include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} ${ROCKET_DIR}/include )
   target_link_libraries( client ${OS_LIBRARIES} ${NEWTON_LIBRARY} ROCKET_LIB )
@@ -1628,7 +1635,7 @@ if( BUILD_TTY_CLIENT )
     ${QCOMMONLIST} ${SHAREDLIST} ${DATABASELIST} ${CRYPTOLIST}
     ${TINYGETTEXT_LIST}
     ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c ${WIN_RC}
-    ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c ${MOUNT_DIR}/engine/null/null_renderer.c )
+    ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c ${MOUNT_DIR}/engine/null/null_renderer.c ${MOUNT_DIR}/engine/null/null_rocket.c )
   include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )
   target_link_libraries( ttyclient ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
   set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS COMPAT_ET BUILD_TTY_CLIENT REF_HARD_LINKED )

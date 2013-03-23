@@ -31,23 +31,25 @@ Maryland 20850 USA.
 
 ===========================================================================
 */
-#ifndef BUILD_TTY_CLIENT
-extern "C"
-{
-	#include <SDL.h>
-	#include "client.h"
-}
 
-#undef DotProduct
+// The basic interfaces for libRocket
+
 // FIXME: Macro conflicts with Rocket::Core::Vector2
 #include <Rocket/Core/FileInterface.h>
 #include <Rocket/Core/SystemInterface.h>
 #include <Rocket/Core/RenderInterface.h>
 #include <Rocket/Core.h>
 #include <Rocket/Controls.h>
-#include "rocketEventInstancer.h"
 #include "rocketDataGrid.h"
 #include "rocketDataFormatter.h"
+#include "rocketEventInstancer.h"
+
+extern "C"
+{
+	#include <SDL.h>
+	#include "client.h"
+}
+
 //#include <Rocket/Debugger.h>
 
 class DaemonFileInterface : public Rocket::Core::FileInterface
@@ -369,7 +371,7 @@ int RocketConvertSDLButton( Uint8 sdlButton )
 static DaemonFileInterface fileInterface;
 static DaemonSystemInterface systemInterface;
 static DaemonRenderInterface renderInterface;
-static Rocket::Core::Context *context = NULL;
+Rocket::Core::Context *context = NULL;
 
 void Rocket_Init( void )
 {
@@ -421,12 +423,39 @@ void Rocket_Init( void )
 
 void Rocket_Shutdown( void )
 {
+	extern std::vector<RocketDataFormatter*> dataFormatterList;
+	extern std::map<std::string, RocketDataGrid*> dataSourceMap;
+	extern std::queue< RocketEvent_t* > eventQueue;
+
 	if ( context )
 	{
 		context->RemoveReference();
 		context = NULL;
 	}
+
 	Rocket::Core::Shutdown();
+
+	// Prevent memory leaks
+
+	for ( int i = 0; i < dataFormatterList.size(); ++i )
+	{
+		delete dataFormatterList[i];
+	}
+
+	dataFormatterList.clear();
+
+	for ( std::map<std::string, RocketDataGrid*>::iterator it = dataSourceMap.begin(); it != dataSourceMap.end(); ++it )
+	{
+		delete it->second;
+	}
+
+	dataSourceMap.clear();
+
+	while ( !eventQueue.empty() )
+	{
+		delete eventQueue.front();
+		eventQueue.pop();
+	}
 }
 
 void Rocket_Render( void )
@@ -504,178 +533,6 @@ void Rocket_InjectMouseMotion( int x, int y )
 	}
 }
 
-void Rocket_LoadDocument( const char *path )
-{
-	Rocket::Core::ElementDocument* document = context->LoadDocument( path );
-	if( document )
-	{
-		document->Hide();
-		document->RemoveReference();
-	}
-	else
-	{
-		Com_Printf( "Document is NULL\n");
-	}
-}
-
-void Rocket_LoadCursor( const char *path )
-{
-	Rocket::Core::ElementDocument* document = context->LoadMouseCursor( path );
-	if( document )
-	{
-		document->RemoveReference();
-	}
-	else
-	{
-		Com_Printf( "Cursor is NULL\n");
-	}
-}
-
-void Rocket_DocumentAction( const char *name, const char *action )
-{
-	if ( !Q_stricmp( action, "show" ) || !Q_stricmp( action, "open" ) )
-	{
-		Rocket::Core::ElementDocument* document = context->GetDocument( name );
-		if ( document )
-		{
-			document->Show();
-		}
-	}
-	else if ( !Q_stricmp( "close", action ) )
-	{
-		if ( !*name ) // If name is empty, hide active
-		{
-			if ( context->GetFocusElement()->GetOwnerDocument() && context->GetFocusElement()->GetOwnerDocument() != context->GetDocument( "main" ) )
-			{
-				context->GetFocusElement()->GetOwnerDocument()->Close();
-			}
-
-			return;
-		}
-
-		Rocket::Core::ElementDocument* document = context->GetDocument( name );
-		if ( document )
-		{
-			document->Close();
-		}
-	}
-	else if ( !Q_stricmp( "goto", action ) )
-	{
-		Rocket::Core::ElementDocument* document = context->GetDocument( name );
-		if ( document )
-		{
-			Rocket::Core::ElementDocument *owner = context->GetFocusElement()->GetOwnerDocument();
-			if ( owner )
-			{
-				owner->Close();
-			}
-			document->Show();
-		}
-	}
-}
-
-
-
-class RocketEvent_t
-{
-public:
-	RocketEvent_t( Rocket::Core::Event &event, const char *cmds ) : cmd( cmds )
-	{
-		targetElement = event.GetTargetElement();
-		Parameters = *(event.GetParameters());
-	}
-	~RocketEvent_t() { }
-	Rocket::Core::Element *targetElement;
-	Rocket::Core::Dictionary Parameters;
-	const char *cmd;
-};
-
-std::queue< RocketEvent_t* > eventQueue;
-
-void Rocket_ProcessEvent( Rocket::Core::Event& event, Rocket::Core::String& value )
-{
-	eventQueue.push( new RocketEvent_t( event, value.CString() ) );
-}
-
-void Rocket_GetEvent( char *event, int length )
-{
-	if ( eventQueue.size() )
-	{
-		Q_strncpyz( event, eventQueue.front()->cmd, length );
-	}
-	else
-	{
-		*event = '\0';
-	}
-}
-
-void Rocket_DeleteEvent( void )
-{
-	RocketEvent_t *event = eventQueue.front();
-	eventQueue.pop();
-	delete event;
-}
-
-std::map<std::string, RocketDataGrid*> dataSourceMap;
-
-void Rocket_RegisterDataSource( const char *name )
-{
-	dataSourceMap[ name ] = new RocketDataGrid( name );
-}
-
-void Rocket_DSAddRow( const char *name, const char *table, const char *data )
-{
-	if ( dataSourceMap.find( name ) == dataSourceMap.end() )
-	{
-		Com_Printf( "^1ERROR: ^7Rocket_DSAddRow: data source %s does not exist.\n", name );
-		return;
-	}
-
-	dataSourceMap[ name ]->AddRow( table, data );
-}
-
-void Rocket_DSChangeRow( const char *name, const char *table, const int row, const char *data )
-{
-	if ( dataSourceMap.find( name ) == dataSourceMap.end() )
-	{
-		Com_Printf( "^1ERROR: ^7Rocket_DSChangeRow: data source %s does not exist.\n", name );
-		return;
-	}
-
-	dataSourceMap[ name ]->ChangeRow( table, row, data );
-}
-
-void Rocket_DSRemoveRow( const char *name, const char *table, const int row )
-{
-	if ( dataSourceMap.find( name ) == dataSourceMap.end() )
-	{
-		Com_Printf( "^1ERROR: ^7Rocket_DSRemoveRow: data source %s does not exist.\n", name );
-		return;
-	}
-
-	dataSourceMap[ name ]->RemoveRow( table, row );
-}
-
-void Rocket_DSClearTable( const char *name, const char *table )
-{
-	if ( dataSourceMap.find( name ) == dataSourceMap.end() )
-	{
-		Com_Printf( "^1ERROR: ^7Rocket_DSClearTable: data source %s does not exist.\n", name );
-		return;
-	}
-
-	dataSourceMap[ name ]->ClearTable( table );
-}
-
-void Rocket_SetInnerRML( const char *name, const char *id, const char *RML )
-{
-	Rocket::Core::ElementDocument *document = context->GetDocument( name );
-	if ( document )
-	{
-		document->GetElementById( id )->SetInnerRML( RML );
-	}
-}
-
 Rocket::Core::String Rocket_QuakeToRML( const char *in )
 {
 	const char *p;
@@ -733,81 +590,3 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in )
 
 	return out;
 }
-
-void Rocket_GetAttribute( const char *name, const char *id, const char *attribute, char *out, int length )
-{
-	Rocket::Core::ElementDocument *document = context->GetDocument( name );
-
-	if ( document )
-	{
-		Q_strncpyz( out, document->GetElementById( id )->GetAttribute< Rocket::Core::String >( attribute, "" ).CString(), length );
-	}
-}
-
-void Rocket_SetAttribute( const char *name, const char *id, const char *attribute, const char *value )
-{
-	Rocket::Core::ElementDocument *document = context->GetDocument( name );
-
-	if ( document )
-	{
-		document->GetElementById( id )->SetAttribute( attribute, value );
-	}
-}
-
-void Rocket_GetEventParameters( char *params, int length )
-{
-	*params = '\0';
-	if ( !eventQueue.empty() )
-	{
-		int index = 0;
-		Rocket::Core::String key;
-		Rocket::Core::String value;
-
-		while ( eventQueue.front()->Parameters.Iterate( index, key, value ) )
-		{
-			Info_SetValueForKeyRocket( params, key.CString(), value.CString() );
-		}
-	}
-}
-
-std::vector<RocketDataFormatter*> dataFormatterList;
-
-void Rocket_RegisterDataFormatter( const char *name )
-{
-	dataFormatterList.push_back( new RocketDataFormatter( name, dataFormatterList.size() ) );
-}
-
-void Rocket_DataFormatterRawData( int handle, char *name, int nameLength, char *data, int dataLength )
-{
-	Q_strncpyz( name, dataFormatterList[ handle ]->name.CString(), nameLength );
-	Q_strncpyz( data, dataFormatterList[ handle ]->data, dataLength );
-}
-
-void Rocket_DataFormatterFormattedData( int handle, const char *data )
-{
-	dataFormatterList[ handle ]->out = Rocket::Core::String( data );
-	dataFormatterList[ handle ]->block = false;
-}
-
-#else
-extern "C" void Rocket_Init( void ) { }
-extern "C" void Rocket_Shutdown( void ) { }
-extern "C" void Rocket_Render( void ) { }
-extern "C" void Rocket_Update( void ) { }
-extern "C" void Rocket_InjectMouseMotion( int x, int y ) { }
-extern "C" void Rocket_LoadDocument( const char *path ) { }
-extern "C" void Rocket_LoadCursor( const char *path ) { }
-extern "C" void Rocket_DocumentAction( const char *name, const char *action ) { }
-extern "C" void Rocket_GetEvent( int handle, char *event, int length ) { }
-extern "C" void Rocket_DeleteEvent( int handle ) { }
-extern "C" void Rocket_RegisterDataSource( const char *name ) { }
-extern "C" void Rocket_DSAddRow( const char *name, const char *table, const char *data ) { }
-extern "C" void Rocket_DSChangeRow( const char *name, const char *table, const int row, const char *data ) { }
-extern "C" void Rocket_DSRemoveRow( const char *name, const char *table, const int row ) { }
-extern "C" void Rocket_DSClearTable( const char *name, const char *table ) { }
-extern "C" void Rocket_SetInnerRML( const char *name, const char *id, const char *RML ) { }
-extern "C" void Rocket_GetEventParameters( char *params, int length ) { }
-extern "C" void Rocket_RegisterDataFormatter( const char *name ) { }
-extern "C" void Rocket_DataFormatterRawData( int handle, char *name, int nameLength, char *data, int dataLength ) { }
-extern "C" void Rocket_DataFormatterFormattedData( int handle, const char *data ) { }
-#endif

@@ -34,6 +34,9 @@ Maryland 20850 USA.
 
 // client.h -- primary header for client
 
+#ifndef CLIENT_H
+#define CLIENT_H
+
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "../renderer/tr_public.h"
@@ -892,3 +895,4 @@ void CL_OpenClientLog(void);
 void CL_CloseClientLog(void);
 void CL_WriteClientLog( char *text );
 void CL_WriteClientChatLog( char *text );
+#endif

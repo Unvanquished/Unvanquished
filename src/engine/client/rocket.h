@@ -34,6 +34,24 @@ Maryland 20850 USA.
 #ifndef ROCKET_H
 #define ROCKET_H
 #if defined( __cplusplus )
+
+extern Rocket::Core::Context *context;
+
+class RocketEvent_t
+{
+public:
+	RocketEvent_t( Rocket::Core::Event &event, const char *cmds ) : cmd( cmds )
+	{
+		targetElement = event.GetTargetElement();
+		Parameters = *(event.GetParameters());
+	}
+	~RocketEvent_t() { }
+	Rocket::Core::Element *targetElement;
+	Rocket::Core::Dictionary Parameters;
+	const char *cmd;
+};
+
+
 extern "C"
 {
 #endif

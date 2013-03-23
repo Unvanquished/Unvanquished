@@ -32,40 +32,54 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#ifndef ROCKETDATAFORMATTER_H
-#define ROCKETDATAFORMATTER_H
+// Code for generating custom events for libRocket
+
+#include <queue>
+#include <Rocket/Core.h>
 
 extern "C"
 {
 #include "client.h"
 }
 
-#include <Rocket/Controls/DataFormatter.h>
+std::queue< RocketEvent_t* > eventQueue;
 
-
-class RocketDataFormatter : public Rocket::Controls::DataFormatter
+void Rocket_ProcessEvent( Rocket::Core::Event& event, Rocket::Core::String& value )
 {
-public:
-	RocketDataFormatter( const char *name, int handle ) : name( name ), Rocket::Controls::DataFormatter( name ), handle( handle ) { block = true; }
-	~RocketDataFormatter() { delete this; }
+	eventQueue.push( new RocketEvent_t( event, value.CString() ) );
+}
 
-	void FormatData( Rocket::Core::String &formatted_data, const Rocket::Core::StringList &raw_data )
+void Rocket_GetEvent( char *event, int length )
+{
+	if ( eventQueue.size() )
 	{
-		Com_Memset( &data, 0, sizeof( data ) );
-		for ( int i = 0; i < raw_data.size(); ++i )
-		{
-			Info_SetValueForKeyRocket( data, va( "%d", i+1 ), raw_data[ i ].CString() );
-		}
-		VM_Call( cgvm, CG_ROCKET_FORMATDATA, handle );
-		while( block );
-		formatted_data = out;
-		block = true;
+		Q_strncpyz( event, eventQueue.front()->cmd, length );
 	}
+	else
+	{
+		*event = '\0';
+	}
+}
 
-	int handle;
-	Rocket::Core::String name;
-	char data[ BIG_INFO_STRING ];
-	Rocket::Core::String out;
-	bool block;
-};
-#endif
+void Rocket_DeleteEvent( void )
+{
+	RocketEvent_t *event = eventQueue.front();
+	eventQueue.pop();
+	delete event;
+}
+
+void Rocket_GetEventParameters( char *params, int length )
+{
+	*params = '\0';
+	if ( !eventQueue.empty() )
+	{
+		int index = 0;
+		Rocket::Core::String key;
+		Rocket::Core::String value;
+
+		while ( eventQueue.front()->Parameters.Iterate( index, key, value ) )
+		{
+			Info_SetValueForKeyRocket( params, key.CString(), value.CString() );
+		}
+	}
+}

@@ -32,40 +32,28 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#ifndef ROCKETDATAFORMATTER_H
-#define ROCKETDATAFORMATTER_H
+#include <Rocket/Core.h>
+#include <Rocket/Controls.h>
+#include "rocket.h"
+#include "rocketDataFormatter.h"
 
-extern "C"
+// Code to format datagrid fields
+
+std::vector<RocketDataFormatter*> dataFormatterList;
+
+void Rocket_RegisterDataFormatter( const char *name )
 {
-#include "client.h"
+	dataFormatterList.push_back( new RocketDataFormatter( name, dataFormatterList.size() ) );
 }
 
-#include <Rocket/Controls/DataFormatter.h>
-
-
-class RocketDataFormatter : public Rocket::Controls::DataFormatter
+void Rocket_DataFormatterRawData( int handle, char *name, int nameLength, char *data, int dataLength )
 {
-public:
-	RocketDataFormatter( const char *name, int handle ) : name( name ), Rocket::Controls::DataFormatter( name ), handle( handle ) { block = true; }
-	~RocketDataFormatter() { delete this; }
+	Q_strncpyz( name, dataFormatterList[ handle ]->name.CString(), nameLength );
+	Q_strncpyz( data, dataFormatterList[ handle ]->data, dataLength );
+}
 
-	void FormatData( Rocket::Core::String &formatted_data, const Rocket::Core::StringList &raw_data )
-	{
-		Com_Memset( &data, 0, sizeof( data ) );
-		for ( int i = 0; i < raw_data.size(); ++i )
-		{
-			Info_SetValueForKeyRocket( data, va( "%d", i+1 ), raw_data[ i ].CString() );
-		}
-		VM_Call( cgvm, CG_ROCKET_FORMATDATA, handle );
-		while( block );
-		formatted_data = out;
-		block = true;
-	}
-
-	int handle;
-	Rocket::Core::String name;
-	char data[ BIG_INFO_STRING ];
-	Rocket::Core::String out;
-	bool block;
-};
-#endif
+void Rocket_DataFormatterFormattedData( int handle, const char *data )
+{
+	dataFormatterList[ handle ]->out = Rocket::Core::String( data );
+	dataFormatterList[ handle ]->block = false;
+}
