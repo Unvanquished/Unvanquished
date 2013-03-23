@@ -241,6 +241,12 @@ trigger_gravity
 
 =================================================================================
 */
+
+void env_afx_gravity_reset( gentity_t *self )
+{
+	reset_intField(&self->amount, self->config.amount, self->eclass->config.amount, 800, qfalse);
+}
+
 void env_afx_gravity_touch( gentity_t *ent, gentity_t *other, trace_t *trace )
 {
 	//only triggered by clients
@@ -249,7 +255,7 @@ void env_afx_gravity_touch( gentity_t *ent, gentity_t *other, trace_t *trace )
 		return;
 	}
 
-	other->client->ps.gravity = ent->triggerGravity;
+	other->client->ps.gravity = ent->amount;
 }
 
 /*
@@ -259,10 +265,12 @@ SP_trigger_gravity
 */
 void SP_env_afx_gravity( gentity_t *self )
 {
-	G_SpawnInt( "gravity", "800", &self->triggerGravity );
+	if(!self->config.amount)
+		G_SpawnInt( "gravity", "0", &self->config.amount );
 
 	self->touch = env_afx_gravity_touch;
 	self->act = env_afx_toggle;
+	self->reset = env_afx_gravity_reset;
 
 	InitEnvAFXEntity( self );
 	trap_LinkEntity( self );

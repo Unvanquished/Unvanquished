@@ -318,6 +318,11 @@ struct gentity_s
 
 	float        speed;
 
+	/* state of the amount of a context depended size for this entity
+	 * example: current set gravity for a gravity afx-entity
+	 */
+	int          amount;
+
 	/*
 	 * do not abuse this variable (again) for anything but actual representing a count
 	 *
@@ -415,8 +420,6 @@ struct gentity_s
 	vec4_t      animation; // animated map objects
 
 	qboolean    nonSegModel; // this entity uses a nonsegmented player model
-
-	int         triggerGravity; // gravity for this trigger
 
 	qboolean    pointAgainstWorld; // don't use the bbox for map collisions
 
