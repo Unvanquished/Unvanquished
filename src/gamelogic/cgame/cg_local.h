@@ -1941,3 +1941,4 @@ qboolean CG_ParseColor( byte *c, char **text_p );
 void CG_Rocket_Init( void );
 void CG_Rocket_ProcessEvents( void );
 void CG_Rocket_Frame( void );
+void CG_Rocket_FormatData( int handle );

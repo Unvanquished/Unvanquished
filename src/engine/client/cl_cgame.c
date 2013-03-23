@@ -2264,6 +2264,18 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Rocket_GetEventParameters( VMA(1), args[2] );
 			return 0;
 
+		case CG_ROCKET_REGISTERDATAFORMATTER:
+			Rocket_RegisterDataFormatter( VMA(1) );
+			return 0;
+
+		case CG_ROCKET_DATAFORMATTERRAWDATA:
+			Rocket_DataFormatterRawData( args[1], VMA(2), args[3], VMA(4), args[5] );
+			return 0;
+
+		case CG_ROCKET_DATAFORMATTERFORMATTEDDATA:
+			Rocket_DataFormatterFormattedData( args[1], VMA(2) );
+			return 0;
+
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );
 	}

@@ -171,6 +171,7 @@ void CG_Rocket_Init( void )
 
 	// Intialize data sources...
 	trap_Rocket_RegisterDataSource( "server_browser" );
+	trap_Rocket_RegisterDataFormatter( "ServerPing" );
 
 	trap_Rocket_DocumentAction( "main", "open" );
 }
@@ -426,5 +427,17 @@ void CG_Rocket_Frame( void )
 			break;
 	}
 	CG_Rocket_ProcessEvents();
+}
+
+void CG_Rocket_FormatData( int handle )
+{
+	static char name[ 200 ], data[ BIG_INFO_STRING ];
+	const char *s;
+	trap_Rocket_DataFormatterRawData( handle, name, sizeof( name ), data, sizeof( data ) );
+
+	if ( !Q_stricmp( name, "ServerPing" ) )
+	{
+		trap_Rocket_DataFormatterFormattedData( handle, va( "%s ms", Info_ValueForKey( data, "1" ) ) );
+	}
 }
 

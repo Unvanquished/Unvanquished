@@ -219,3 +219,6 @@ equ trap_Rocket_SetInnerRML               -457
 equ trap_Rocket_GetAttribute              -458
 equ trap_Rocket_SetAttribute              -459
 equ trap_Rocket_GetEventParameters        -460
+equ trap_Rocket_RegisterDataFormatter     -461
+equ trap_Rocket_DataFormatterRawData      -462
+equ trap_Rocket_DataFormatterFormattedData -463

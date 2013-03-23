@@ -1441,3 +1441,17 @@ void trap_Rocket_GetEventParameters( char *params, int length )
 {
 	syscall( CG_ROCKET_GETEVENTPARAMETERS, params, length );
 }
+void trap_Rocket_RegisterDataFormatter( const char *name )
+{
+	syscall( CG_ROCKET_REGISTERDATAFORMATTER, name );
+}
+
+void trap_Rocket_DataFormatterRawData( int handle, char *name, int nameLength, char *data, int dataLength )
+{
+	syscall( CG_ROCKET_DATAFORMATTERRAWDATA, handle, name, nameLength, data, dataLength );
+}
+
+void trap_Rocket_DataFormatterFormattedData( int handle, const char *data )
+{
+	syscall( CG_ROCKET_DATAFORMATTERFORMATTEDDATA, handle, data );
+}

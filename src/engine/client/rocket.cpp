@@ -47,6 +47,7 @@ extern "C"
 #include <Rocket/Controls.h>
 #include "rocketEventInstancer.h"
 #include "rocketDataGrid.h"
+#include "rocketDataFormatter.h"
 //#include <Rocket/Debugger.h>
 
 class DaemonFileInterface : public Rocket::Core::FileInterface
@@ -768,6 +769,26 @@ void Rocket_GetEventParameters( char *params, int length )
 		}
 	}
 }
+
+std::vector<RocketDataFormatter*> dataFormatterList;
+
+void Rocket_RegisterDataFormatter( const char *name )
+{
+	dataFormatterList.push_back( new RocketDataFormatter( name, dataFormatterList.size() ) );
+}
+
+void Rocket_DataFormatterRawData( int handle, char *name, int nameLength, char *data, int dataLength )
+{
+	Q_strncpyz( name, dataFormatterList[ handle ]->name.CString(), nameLength );
+	Q_strncpyz( data, dataFormatterList[ handle ]->data, dataLength );
+}
+
+void Rocket_DataFormatterFormattedData( int handle, const char *data )
+{
+	dataFormatterList[ handle ]->out = Rocket::Core::String( data );
+	dataFormatterList[ handle ]->block = false;
+}
+
 #else
 extern "C" void Rocket_Init( void ) { }
 extern "C" void Rocket_Shutdown( void ) { }
@@ -786,4 +807,7 @@ extern "C" void Rocket_DSRemoveRow( const char *name, const char *table, const i
 extern "C" void Rocket_DSClearTable( const char *name, const char *table ) { }
 extern "C" void Rocket_SetInnerRML( const char *name, const char *id, const char *RML ) { }
 extern "C" void Rocket_GetEventParameters( char *params, int length ) { }
+extern "C" void Rocket_RegisterDataFormatter( const char *name ) { }
+extern "C" void Rocket_DataFormatterRawData( int handle, char *name, int nameLength, char *data, int dataLength ) { }
+extern "C" void Rocket_DataFormatterFormattedData( int handle, const char *data ) { }
 #endif

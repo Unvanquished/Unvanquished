@@ -20,6 +20,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
+#ifndef CGAPI_H
+#define CGAPI_H
+
+
 #include "../qcommon/q_shared.h"
 #include "../qcommon/vm_traps.h"
 #include "../renderer/tr_types.h"
@@ -268,7 +272,10 @@ typedef enum cgameImport_s
   CG_ROCKET_SETINNERRML,
   CG_ROCKET_GETATTRIBUTE,
   CG_ROCKET_SETATTRIBUTE,
-  CG_ROCKET_GETEVENTPARAMETERS
+  CG_ROCKET_GETEVENTPARAMETERS,
+  CG_ROCKET_REGISTERDATAFORMATTER,
+  CG_ROCKET_DATAFORMATTERRAWDATA,
+  CG_ROCKET_DATAFORMATTERFORMATTEDDATA
 } cgameImport_t;
 
 typedef enum
@@ -330,8 +337,11 @@ typedef enum
   CG_INIT_ROCKET,
 // Inits libRocket in the game.
 
-  CG_ROCKET_FRAME
+  CG_ROCKET_FRAME,
 // Rocket runs through a frame, including event processing
+
+  CG_ROCKET_FORMATDATA
+// Rocket wants some data formatted
 } cgameExport_t;
 
 void            trap_Print( const char *string );
@@ -557,3 +567,7 @@ void            trap_Rocket_SetInnerRML( const char *name, const char *id, const
 void            trap_Rocket_GetAttribute( const char *name, const char *id, const char *attribute, char *out, int length );
 void            trap_Rocket_SetAttribute( const char *name, const char *id, const char *attribute, const char *value );
 void            trap_Rocket_GetEventParameters( char *params, int length );
+void            trap_Rocket_RegisterDataFormatter( const char *name );
+void            trap_Rocket_DataFormatterRawData( int handle, char *name, int nameLength, char *data, int dataLength );
+void            trap_Rocket_DataFormatterFormattedData( int handle, const char *data );
+#endif
