@@ -689,6 +689,18 @@ gentity testing/querying
 =================================================================================
 */
 
+qboolean G_MatchesName( gentity_t *entity, const char* name )
+{
+	int nameIndex;
+
+	for (nameIndex = 0; entity->names[nameIndex]; ++nameIndex)
+	{
+		if (!Q_stricmp(name, entity->names[nameIndex]))
+			return qtrue;
+	}
+	return qfalse;
+}
+
 /*
 ===============
 G_Visible

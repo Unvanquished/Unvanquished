@@ -1084,6 +1084,7 @@ gentity_t  *G_PickRandomEntityOfClass( const char *classname );
 gentity_t  *G_PickRandomEntityWithField( size_t fieldofs, const char *match );
 
 //test
+qboolean   G_MatchesName( gentity_t *entity, const char* name );
 qboolean   G_IsVisible( gentity_t *ent1, gentity_t *ent2, int contents );
 
 //chain
