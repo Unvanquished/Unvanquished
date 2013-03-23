@@ -104,7 +104,7 @@ Svcmd_EntityShow_f
 void Svcmd_EntityShow_f( void )
 {
 	int       entityNum;
-	int       lastTargetIndex, targetIndex, nameIndex;
+	int       lastTargetIndex, targetIndex;
 	gentity_t *selection;
 	gentity_t *possibleTarget = NULL;
 	char argument[ 6 ];
@@ -168,7 +168,7 @@ void Svcmd_EntityShow_f( void )
 		G_Printf( "Targets:\n");
 
 		lastTargetIndex = -1;
-		while ((possibleTarget = G_IterateCallEndpoints(possibleTarget, &targetIndex,	&nameIndex, selection)) != NULL )
+		while ((possibleTarget = G_IterateCallEndpoints(possibleTarget, &targetIndex, selection)) != NULL )
 		{
 
 			if(lastTargetIndex != targetIndex)
@@ -183,7 +183,7 @@ void Svcmd_EntityShow_f( void )
 			G_Printf("   ⇨ %s", etos(possibleTarget));
 			if(possibleTarget->names[1])
 			{
-				G_Printf(" using \"%s\" ∈ ", possibleTarget->names[nameIndex]);
+				G_Printf(" using \"%s\" ∈ ", selection->calltargets[targetIndex].name);
 				G_PrintEntityNameList( possibleTarget );
 			}
 			G_Printf("\n");

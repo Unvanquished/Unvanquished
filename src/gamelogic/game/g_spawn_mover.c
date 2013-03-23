@@ -1523,7 +1523,7 @@ void manualTriggerSpectator( gentity_t *sensor, gentity_t *player )
 {
 	gentity_t *currentTarget = NULL;
 	gentity_t *targets[ MAX_GENTITIES ];
-	int       i = 0, targetIndex, nameIndex;
+	int       i = 0, targetIndex;
 	float     minDistance, currentDistance;
 
 
@@ -1535,7 +1535,7 @@ void manualTriggerSpectator( gentity_t *sensor, gentity_t *player )
 	}
 
 	//create a list of door entities this trigger targets
-	while( ( currentTarget = G_IterateCallEndpoints( currentTarget, &targetIndex, &nameIndex, sensor ) ) != NULL )
+	while( ( currentTarget = G_IterateCallEndpoints( currentTarget, &targetIndex, sensor ) ) != NULL )
 	{
 		if ( !strcmp( currentTarget->classname, "func_door" ) )
 		{
@@ -2445,9 +2445,9 @@ Link all the corners together
 void Think_SetupTrainTargets( gentity_t *self )
 {
 	gentity_t *path, *next, *start;
-	int targetIndex, nameIndex;
+	int targetIndex;
 
-	self->nextPathSegment = G_IterateTargets( NULL, &targetIndex, &nameIndex, self );
+	self->nextPathSegment = G_IterateTargets( NULL, &targetIndex, self );
 
 	if ( !self->nextPathSegment )
 	{
@@ -2479,7 +2479,7 @@ void Think_SetupTrainTargets( gentity_t *self )
 
 		do
 		{
-			next = G_IterateTargets( next, &targetIndex, &nameIndex, path );
+			next = G_IterateTargets( next, &targetIndex, path );
 
 			if ( !next )
 			{

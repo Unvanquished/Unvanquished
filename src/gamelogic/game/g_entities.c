@@ -498,7 +498,7 @@ gentity_t *G_ResolveEntityKeyword( gentity_t *self, gentityCallDefinition_t *cal
 	return NULL;
 }
 
-gentity_t *G_IterateTargets(gentity_t *entity, int *targetIndex, int *nameIndex, gentity_t *self)
+gentity_t *G_IterateTargets(gentity_t *entity, int *targetIndex, gentity_t *self)
 {
 	if (entity)
 		goto cont;
@@ -510,18 +510,16 @@ gentity_t *G_IterateTargets(gentity_t *entity, int *targetIndex, int *nameIndex,
 			if ( !entity->inuse || !entity->enabled)
 				continue;
 
-			for (*nameIndex = 0; entity->names[*nameIndex]; ++(*nameIndex))
-			{
-				if (!Q_stricmp(self->calltargets[*targetIndex].name, entity->names[*nameIndex]))
-					return entity;
-				cont: ;
-			}
+			if( G_MatchesName(entity, self->calltargets[*targetIndex].name) )
+				return entity;
+
+			cont: ;
 		}
 	}
 	return NULL;
 }
 
-gentity_t *G_IterateCallEndpoints(gentity_t *entity, int *calltargetIndex, int *nameIndex, gentity_t *self)
+gentity_t *G_IterateCallEndpoints(gentity_t *entity, int *calltargetIndex, gentity_t *self)
 {
 	if (entity)
 		goto cont;
@@ -536,12 +534,10 @@ gentity_t *G_IterateCallEndpoints(gentity_t *entity, int *calltargetIndex, int *
 			if ( !entity->inuse )
 				continue;
 
-			for (*nameIndex = 0; entity->names[*nameIndex]; ++(*nameIndex))
-			{
-				if (!Q_stricmp(self->calltargets[*calltargetIndex].name, entity->names[*nameIndex]))
-					return entity;
-				cont: ;
-			}
+			if( G_MatchesName(entity, self->calltargets[*calltargetIndex].name) )
+				return entity;
+
+			cont: ;
 		}
 	}
 	return NULL;
@@ -553,13 +549,13 @@ gentity_t *G_IterateCallEndpoints(gentity_t *entity, int *calltargetIndex, int *
  */
 gentity_t *G_PickRandomTargetFor( gentity_t *self )
 {
-	int       targetIndex, nameIndex;
+	int       targetIndex;
 	gentity_t *foundTarget = NULL;
 	int       totalChoiceCount = 0;
 	gentity_t *choices[ MAX_GENTITIES ];
 
 	//collects the targets
-	while( ( foundTarget = G_IterateTargets( foundTarget, &targetIndex, &nameIndex, self ) ) != NULL )
+	while( ( foundTarget = G_IterateTargets( foundTarget, &targetIndex, self ) ) != NULL )
 		choices[ totalChoiceCount++ ] = foundTarget;
 
 	if ( !totalChoiceCount )
@@ -584,7 +580,7 @@ typedef struct
 
 void G_FireRandomCallTargetOf( gentity_t *entity, gentity_t *activator )
 {
-	int       targetIndex, nameIndex;
+	int       targetIndex;
 	gentity_t *possibleTarget = NULL;
 	int       totalChoiceCount = 0;
 	gentityCall_t call;
@@ -592,7 +588,7 @@ void G_FireRandomCallTargetOf( gentity_t *entity, gentity_t *activator )
 	gentityTargetChoice_t *selectedChoice;
 
 	//collects the targets
-	while( ( possibleTarget = G_IterateCallEndpoints( possibleTarget, &targetIndex, &nameIndex, entity ) ) != NULL )
+	while( ( possibleTarget = G_IterateCallEndpoints( possibleTarget, &targetIndex, entity ) ) != NULL )
 	{
 		choices[ totalChoiceCount ].recipient = possibleTarget;
 		choices[ totalChoiceCount ].callDefinition = &entity->calltargets[targetIndex];
@@ -624,7 +620,7 @@ ent.targets[j] for any (i,j) pairs, call the t.use function.
 void G_FireAllCallTargetsOf( gentity_t *self, gentity_t *activator )
 {
 	gentity_t *currentTarget = NULL;
-	int targetIndex, nameIndex;
+	int targetIndex;
 	gentityCall_t call;
 	call.activator = activator;
 
@@ -635,7 +631,7 @@ void G_FireAllCallTargetsOf( gentity_t *self, gentity_t *activator )
 		trap_SetConfigstring( CS_SHADERSTATE, BuildShaderStateConfig() );
 	}
 
-	while( ( currentTarget = G_IterateCallEndpoints( currentTarget, &targetIndex, &nameIndex, self ) ) != NULL )
+	while( ( currentTarget = G_IterateCallEndpoints( currentTarget, &targetIndex, self ) ) != NULL )
 	{
 		call.caller = self; //reset the caller in case there have been nested calls
 		call.definition = &self->calltargets[ targetIndex ];
