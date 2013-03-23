@@ -1535,7 +1535,7 @@ void manualTriggerSpectator( gentity_t *sensor, gentity_t *player )
 	}
 
 	//create a list of door entities this trigger targets
-	while( ( currentTarget = G_IterateCallTargets( currentTarget, &targetIndex, &nameIndex, sensor ) ) != NULL )
+	while( ( currentTarget = G_IterateCallEndpoints( currentTarget, &targetIndex, &nameIndex, sensor ) ) != NULL )
 	{
 		if ( !strcmp( currentTarget->classname, "func_door" ) )
 		{
@@ -2447,7 +2447,7 @@ void Think_SetupTrainTargets( gentity_t *self )
 	gentity_t *path, *next, *start;
 	int targetIndex, nameIndex;
 
-	self->nextPathSegment = G_IterateCallTargets( NULL, &targetIndex, &nameIndex, self );
+	self->nextPathSegment = G_IterateTargets( NULL, &targetIndex, &nameIndex, self );
 
 	if ( !self->nextPathSegment )
 	{
@@ -2479,7 +2479,7 @@ void Think_SetupTrainTargets( gentity_t *self )
 
 		do
 		{
-			next = G_IterateCallTargets( next, &targetIndex, &nameIndex, path );
+			next = G_IterateTargets( next, &targetIndex, &nameIndex, path );
 
 			if ( !next )
 			{

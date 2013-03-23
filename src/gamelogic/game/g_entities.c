@@ -498,7 +498,30 @@ gentity_t *G_ResolveEntityKeyword( gentity_t *self, gentityCallDefinition_t *cal
 	return NULL;
 }
 
-gentity_t *G_IterateCallTargets(gentity_t *entity, int *calltargetIndex, int *nameIndex, gentity_t *self)
+gentity_t *G_IterateTargets(gentity_t *entity, int *targetIndex, int *nameIndex, gentity_t *self)
+{
+	if (entity)
+		goto cont;
+
+	for (*targetIndex = 0; self->calltargets[*targetIndex].name; ++(*targetIndex))
+	{
+		for( entity = &g_entities[ MAX_CLIENTS ]; entity < &g_entities[ level.num_entities ]; entity++ )
+		{
+			if ( !entity->inuse || !entity->enabled)
+				continue;
+
+			for (*nameIndex = 0; entity->names[*nameIndex]; ++(*nameIndex))
+			{
+				if (!Q_stricmp(self->calltargets[*targetIndex].name, entity->names[*nameIndex]))
+					return entity;
+				cont: ;
+			}
+		}
+	}
+	return NULL;
+}
+
+gentity_t *G_IterateCallEndpoints(gentity_t *entity, int *calltargetIndex, int *nameIndex, gentity_t *self)
 {
 	if (entity)
 		goto cont;
@@ -536,7 +559,7 @@ gentity_t *G_PickRandomTargetFor( gentity_t *self )
 	gentity_t *choices[ MAX_GENTITIES ];
 
 	//collects the targets
-	while( ( foundTarget = G_IterateCallTargets( foundTarget, &targetIndex, &nameIndex, self ) ) != NULL )
+	while( ( foundTarget = G_IterateTargets( foundTarget, &targetIndex, &nameIndex, self ) ) != NULL )
 		choices[ totalChoiceCount++ ] = foundTarget;
 
 	if ( !totalChoiceCount )
@@ -569,7 +592,7 @@ void G_FireRandomCallTargetOf( gentity_t *entity, gentity_t *activator )
 	gentityTargetChoice_t *selectedChoice;
 
 	//collects the targets
-	while( ( possibleTarget = G_IterateCallTargets( possibleTarget, &targetIndex, &nameIndex, entity ) ) != NULL )
+	while( ( possibleTarget = G_IterateCallEndpoints( possibleTarget, &targetIndex, &nameIndex, entity ) ) != NULL )
 	{
 		choices[ totalChoiceCount ].recipient = possibleTarget;
 		choices[ totalChoiceCount ].callDefinition = &entity->calltargets[targetIndex];
@@ -612,7 +635,7 @@ void G_FireAllCallTargetsOf( gentity_t *self, gentity_t *activator )
 		trap_SetConfigstring( CS_SHADERSTATE, BuildShaderStateConfig() );
 	}
 
-	while( ( currentTarget = G_IterateCallTargets( currentTarget, &targetIndex, &nameIndex, self ) ) != NULL )
+	while( ( currentTarget = G_IterateCallEndpoints( currentTarget, &targetIndex, &nameIndex, self ) ) != NULL )
 	{
 		call.caller = self; //reset the caller in case there have been nested calls
 		call.definition = &self->calltargets[ targetIndex ];

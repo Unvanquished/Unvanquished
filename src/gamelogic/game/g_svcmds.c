@@ -168,7 +168,7 @@ void Svcmd_EntityShow_f( void )
 		G_Printf( "Targets:\n");
 
 		lastTargetIndex = -1;
-		while ((possibleTarget = G_IterateCallTargets(possibleTarget, &targetIndex,	&nameIndex, selection)) != NULL )
+		while ((possibleTarget = G_IterateCallEndpoints(possibleTarget, &targetIndex,	&nameIndex, selection)) != NULL )
 		{
 
 			if(lastTargetIndex != targetIndex)
