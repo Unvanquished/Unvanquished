@@ -35,10 +35,11 @@
 					<datagrid source="server_browser.internet">
 						<col fields="name" width="50%">Name:</col>
 						<col fields="players" width="25%">Players + Bots:</col>
-						<col fields="ping" width="25%">Ping:</col>
+						<col fields="ping" formatter="ServerPing" width="25%">Ping:</col>
 					</datagrid>
 					</div>
 					<button onClick="build_list internet">Refresh</button>
+					<button onClick="close serverbrowser">Close</button>
 				</panel>
 				<tab>Favorite</tab>
 				<panel>
