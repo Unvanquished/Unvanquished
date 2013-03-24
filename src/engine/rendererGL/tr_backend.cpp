@@ -7150,7 +7150,7 @@ void RB_CameraPostFX( void )
 	if( r_cameraPostFX->integer && tr.grainImage )
 		GL_Bind( tr.grainImage );
 	else
-		GL_Bind( tr.whiteImage );
+		GL_Bind( tr.blackImage );
 
 	// bind u_VignetteMap
 	GL_SelectTexture( 2 );
