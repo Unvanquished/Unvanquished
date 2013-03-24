@@ -1264,6 +1264,10 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			re.UnregisterVisTest( args[1] );
 			return 0;
 
+		case CG_SETCOLORGRADING:
+			re.SetColorGrading( args[1] );
+			return 0;
+
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );
 	}

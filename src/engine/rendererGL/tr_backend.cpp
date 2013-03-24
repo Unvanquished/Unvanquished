@@ -7089,8 +7089,8 @@ void RB_CameraPostFX( void )
 
 	GLimp_LogComment( "--- RB_CameraPostFX ---\n" );
 
-	if ( ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) || !r_cameraPostFX->integer || backEnd.viewParms.isPortal ||
-	     !tr.grainImage || !tr.vignetteImage )
+	if ( ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) ||
+	     backEnd.viewParms.isPortal )
 	{
 		return;
 	}
@@ -7147,13 +7147,16 @@ void RB_CameraPostFX( void )
 
 	// bind u_GrainMap
 	GL_SelectTexture( 1 );
-	GL_Bind( tr.grainImage );
-	//GL_Bind(tr.defaultImage);
+	if( r_cameraPostFX->integer && tr.grainImage )
+		GL_Bind( tr.grainImage );
+	else
+		GL_Bind( tr.whiteImage );
 
 	// bind u_VignetteMap
 	GL_SelectTexture( 2 );
 
-	if ( r_cameraVignette->integer )
+	if ( r_cameraPostFX->integer && r_cameraVignette->integer &&
+	     tr.vignetteImage )
 	{
 		GL_Bind( tr.vignetteImage );
 	}
@@ -7161,6 +7164,9 @@ void RB_CameraPostFX( void )
 	{
 		GL_Bind( tr.whiteImage );
 	}
+
+	GL_SelectTexture( 3 );
+	GL_Bind( tr.colorGradeImage );
 
 	// draw viewport
 	Tess_InstantQuad( backEnd.viewParms.viewportVerts );

@@ -607,6 +607,14 @@ void R_InitVBOs( void )
 
 	R_InitUnitCubeVBO();
 
+	// allocate a PBO for color grade map transfers
+	glGenBuffers( 1, &tr.colorGradePBO );
+	glBindBuffer( GL_PIXEL_PACK_BUFFER, tr.colorGradePBO );
+	glBufferData( GL_PIXEL_PACK_BUFFER,
+		      REF_COLORGRADEMAP_STORE_SIZE * sizeof(color4ub_t),
+		      NULL, GL_STREAM_COPY );
+	glBindBuffer( GL_PIXEL_PACK_BUFFER, 0 );
+
 	R_BindNullVBO();
 	R_BindNullIBO();
 
@@ -628,6 +636,8 @@ void R_ShutdownVBOs( void )
 
 	R_BindNullVBO();
 	R_BindNullIBO();
+
+	glDeleteBuffers( 1, &tr.colorGradePBO );
 
 	for ( i = 0; i < tr.vbos.currentElements; i++ )
 	{

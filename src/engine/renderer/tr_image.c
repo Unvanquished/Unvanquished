@@ -3076,6 +3076,10 @@ void R_DeleteTextures( void )
 	}
 }
 
+void RE_SetColorGrading( qhandle_t hShader ) {
+	// color grading not supported
+}
+
 // Ridah, utility for automatically cropping and numbering a bunch of images in a directory
 
 /*
