@@ -455,6 +455,39 @@ gentity chain handling
 
 typedef struct
 {
+	const char *key;
+	gentityCallEvent_t eventType;
+} entityCallEventDescription_t;
+
+static const entityCallEventDescription_t gentityEventDescriptions[] =
+{
+		{ "onAct",       ON_ACT       },
+		{ "onDisable",   ON_DISABLE   },
+		{ "onEnable",    ON_ENABLE    },
+		{ "onFree",      ON_FREE      },
+		{ "onReset",     ON_RESET     },
+		{ "onUse",       ON_USE       },
+		{ "target",      ON_ACT       },
+};
+
+gentityCallActionType_t G_GetCallEventTypeFor( const char* event )
+{
+	entityCallEventDescription_t *foundDescription;
+
+	if(!event)
+		return ON_DEFAULT;
+
+	foundDescription = bsearch(event, gentityEventDescriptions, ARRAY_LEN( gentityEventDescriptions ),
+		             sizeof( entityCallEventDescription_t ), cmdcmp );
+
+	if(foundDescription && foundDescription->key)
+		return foundDescription->eventType;
+
+	return ON_CUSTOM;
+}
+
+typedef struct
+{
 	const char *alias;
 	gentityCallActionType_t action;
 } entityActionDescription_t;

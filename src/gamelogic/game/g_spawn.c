@@ -556,28 +556,30 @@ gentityCallDefinition_t G_NewCallDefinition( char *eventKey, const char *string 
 {
 	char *stringPointer;
 	int  i, stringLength;
-	gentityCallDefinition_t newTarget = { NULL, NULL, NULL, ECA_DEFAULT };
+	gentityCallDefinition_t newCallDefinition = { NULL, ON_DEFAULT, NULL, NULL, ECA_DEFAULT };
 
 	stringLength = strlen( string ) + 1;
 	if(stringLength == 1)
-		return newTarget;
+		return newCallDefinition;
 
 	stringPointer = BG_Alloc( stringLength );
-	newTarget.name = stringPointer;
+	newCallDefinition.name = stringPointer;
 
 	for ( i = 0; i < stringLength; i++ )
 	{
-		if ( string[ i ] == ':' && !newTarget.action )
+		if ( string[ i ] == ':' && !newCallDefinition.action )
 		{
 			*stringPointer++ = '\0';
-			newTarget.action = stringPointer;
+			newCallDefinition.action = stringPointer;
 			continue;
 		}
 		*stringPointer++ = string[ i ];
 	}
-	newTarget.actionType = G_GetCallActionTypeFor( newTarget.action );
-	newTarget.event = eventKey;
-	return newTarget;
+	newCallDefinition.actionType = G_GetCallActionTypeFor( newCallDefinition.action );
+
+	newCallDefinition.event = eventKey;
+	newCallDefinition.eventType = G_GetCallEventTypeFor( newCallDefinition.event );
+	return newCallDefinition;
 }
 
 /*
@@ -723,6 +725,7 @@ void G_SpawnGEntityFromSpawnVars( void )
 				continue;
 
 			spawningEntity->calltargets[i].event = "target";
+			spawningEntity->calltargets[i].eventType = ON_DEFAULT;
 			spawningEntity->calltargets[i].name = spawningEntity->targets[i];
 			spawningEntity->callTargetCount++;
 		}

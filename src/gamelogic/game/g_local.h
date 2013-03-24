@@ -154,10 +154,31 @@ typedef enum
 
 } gentityCallActionType_t;
 
+typedef enum
+{
+	ON_DEFAULT = 0,
+	ON_CUSTOM,
+
+	ON_FREE,
+
+	ON_CALL,
+
+	ON_ACT,
+	ON_USE,
+	ON_RESET,
+
+	ON_ENABLE,
+	ON_DISABLE
+
+} gentityCallEvent_t;
+
 typedef struct
 {
 	char  *event;
+	gentityCallEvent_t eventType;
+
 	char  *name;
+
 	char  *action;
 	gentityCallActionType_t actionType;
 } gentityCallDefinition_t;
@@ -1103,6 +1124,7 @@ qboolean   G_MatchesName( gentity_t *entity, const char* name );
 qboolean   G_IsVisible( gentity_t *ent1, gentity_t *ent2, int contents );
 
 //chain
+gentityCallActionType_t G_GetCallEventTypeFor( const char* event );
 gentityCallActionType_t G_GetCallActionTypeFor( const char* action );
 void       G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call);
 gentity_t  *G_ResolveEntityKeyword( gentity_t *self, gentityCallDefinition_t *callDefinition );
