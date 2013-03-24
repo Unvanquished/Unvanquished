@@ -503,14 +503,14 @@ gentity_t *G_IterateTargets(gentity_t *entity, int *targetIndex, gentity_t *self
 	if (entity)
 		goto cont;
 
-	for (*targetIndex = 0; self->calltargets[*targetIndex].name; ++(*targetIndex))
+	for (*targetIndex = 0; self->targets[*targetIndex]; ++(*targetIndex))
 	{
 		for( entity = &g_entities[ MAX_CLIENTS ]; entity < &g_entities[ level.num_entities ]; entity++ )
 		{
 			if ( !entity->inuse || !entity->enabled)
 				continue;
 
-			if( G_MatchesName(entity, self->calltargets[*targetIndex].name) )
+			if( G_MatchesName(entity, self->targets[*targetIndex]) )
 				return entity;
 
 			cont: ;

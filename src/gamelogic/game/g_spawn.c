@@ -147,11 +147,12 @@ static const field_t fields[] =
 	{ "spawnflags",          FOFS( spawnflags ),          F_INT       },
 	{ "speed",               FOFS( config.speed ),        F_FLOAT     },
 	{ "stage",               FOFS( conditions.stage ),    F_INT       },
-	{ "target",              FOFS( calltargets ),         F_CALLTARGET },
-	{ "target2",             FOFS( calltargets ),         F_CALLTARGET },
-	{ "target3",             FOFS( calltargets ),         F_CALLTARGET },
-	{ "target4",             FOFS( calltargets ),         F_CALLTARGET },
-	{ "targetname",			 FOFS( names[ 1 ] ),          F_STRING,	  ENT_V_RENAMED, "name"},
+	{ "target",              FOFS( targets ),             F_TARGET     },
+	{ "target2",             FOFS( targets ),             F_TARGET     }, // backwardcompatibility with AMP and to use the blackout map for testing
+	{ "target3",             FOFS( targets ),             F_TARGET     }, // backwardcompatibility with AMP and to use the blackout map for testing
+	{ "target4",             FOFS( targets ),             F_TARGET     }, // backwardcompatibility with AMP and to use the blackout map for testing
+	{ "targetname",          FOFS( names[ 1 ] ),          F_STRING,    ENT_V_RENAMED, "name" },
+	{ "targetname2",         FOFS( names[ 2 ] ),          F_STRING,    ENT_V_RENAMED, "name" }, // backwardcompatibility with AMP and to use the blackout map for testing
 	{ "targetShaderName",    FOFS( targetShaderName ),    F_STRING    },
 	{ "targetShaderNewName", FOFS( targetShaderNewName ), F_STRING    },
 	{ "team",                FOFS( conditions.team ),     F_INT       },
@@ -379,7 +380,7 @@ qboolean G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *enti
 {
 	switch (entityClass->chainType) {
 		case CHAIN_ACTIVE:
-			if(!entity->callTargetCount)
+			if(!entity->callTargetCount) //check target usage for backward compatibility
 			{
 				if( g_debugEntities.integer > -2 )
 					G_Printf( S_COLOR_YELLOW "WARNING: " S_COLOR_WHITE "Entity " S_COLOR_CYAN "#%i" S_COLOR_WHITE " of type " S_COLOR_CYAN "%s" S_COLOR_WHITE " needs to target to something — Removing it.\n", entity->s.number, entity->classname );
@@ -396,7 +397,8 @@ qboolean G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *enti
 			}
 			break;
 		case CHAIN_RELAY:
-			if(!entity->callTargetCount || !entity->names[0])
+			if((!entity->callTargetCount) //check target usage for backward compatibility
+					|| !entity->names[0])
 			{
 				if( g_debugEntities.integer > -2 )
 					G_Printf( S_COLOR_YELLOW "WARNING: " S_COLOR_WHITE "Entity " S_COLOR_CYAN "#%i" S_COLOR_WHITE " of type " S_COLOR_CYAN "%s" S_COLOR_WHITE " needs a name as well as a target to conditionally relay the firing — Removing it.\n", entity->s.number, entity->classname );
@@ -708,6 +710,32 @@ void G_SpawnGEntityFromSpawnVars( void )
 			spawningEntity->names[j++] = spawningEntity->names[i];
 	}
 	spawningEntity->names[ j ] = NULL;
+
+	/*
+	 * for backward compatbility, since before targets were used for calling,
+	 * we'll have to copy them over to the called-targets as well for now
+	 */
+	if(!spawningEntity->callTargetCount)
+	{
+		for (i = 0; i < MAX_ENTITY_TARGETS && i < MAX_ENTITY_CALLTARGETS; i++)
+		{
+			if (!spawningEntity->targets[i])
+				continue;
+
+			spawningEntity->calltargets[i].event = "target";
+			spawningEntity->calltargets[i].name = spawningEntity->targets[i];
+			spawningEntity->callTargetCount++;
+		}
+	}
+
+	// don't leave any "gaps" between multiple targets
+	j = 0;
+	for (i = 0; i < MAX_ENTITY_TARGETS; ++i)
+	{
+		if (spawningEntity->targets[i])
+			spawningEntity->targets[j++] = spawningEntity->targets[i];
+	}
+	spawningEntity->targets[ j ] = NULL;
 
 	// if we didn't get necessary fields (like the classname), don't bother spawning anything
 	if ( !G_CallSpawnFunction( spawningEntity ) )

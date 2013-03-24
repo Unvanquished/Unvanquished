@@ -1523,7 +1523,7 @@ void manualTriggerSpectator( gentity_t *sensor, gentity_t *player )
 {
 	gentity_t *currentTarget = NULL;
 	gentity_t *targets[ MAX_GENTITIES ];
-	int       i = 0, targetIndex;
+	int       i = 0, targetIndex = 0;
 	float     minDistance, currentDistance;
 
 
@@ -2465,7 +2465,7 @@ void Think_SetupTrainTargets( gentity_t *self )
 			start = path;
 		}
 
-		if ( !path->callTargetCount )
+		if ( !path->targetCount )
 		{
 			G_Printf( "Train corner at %s without a target\n",
 			          vtos( path->s.origin ) );
