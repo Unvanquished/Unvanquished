@@ -141,6 +141,12 @@ static const field_t fields[] =
 	{ "model",               FOFS( model ),               F_STRING    },
 	{ "model2",              FOFS( model2 ),              F_STRING    },
 	{ "name",	        	 FOFS( names[ 0 ] ),          F_STRING	  },
+	{ "onAct",               FOFS( calltargets ),         F_CALLTARGET },
+	{ "onDisable",           FOFS( calltargets ),         F_CALLTARGET },
+	{ "onEnable",            FOFS( calltargets ),         F_CALLTARGET },
+	{ "onReset",             FOFS( calltargets ),         F_CALLTARGET },
+	{ "onFree",              FOFS( calltargets ),         F_CALLTARGET },
+	{ "onUse",               FOFS( calltargets ),         F_CALLTARGET },
 	{ "origin",              FOFS( s.origin ),            F_3D_VECTOR },
 	{ "radius",              FOFS( activatedPosition ),   F_3D_VECTOR }, // What's with the variable abuse everytime?
 	{ "random",              FOFS( config.wait.variance ),F_FLOAT,    ENT_V_COMBINED, "wait" },
