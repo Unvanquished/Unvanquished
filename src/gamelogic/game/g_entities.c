@@ -725,13 +725,22 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 			break;
 
 		case ECA_ENABLE:
-			targetedEntity->enabled = qtrue;
+			if(!targetedEntity->enabled) //only fire an event if we weren't already enabled
+			{
+				targetedEntity->enabled = qtrue;
+				G_EventFireEntity( targetedEntity, call->activator, ON_ENABLE );
+			}
 			break;
 		case ECA_DISABLE:
-			targetedEntity->enabled = qfalse;
+			if(targetedEntity->enabled) //only fire an event if we weren't already disabled
+			{
+				targetedEntity->enabled = qfalse;
+				G_EventFireEntity( targetedEntity, call->activator, ON_DISABLE );
+			}
 			break;
 		case ECA_TOGGLE:
 			targetedEntity->enabled = !targetedEntity->enabled;
+			G_EventFireEntity( targetedEntity, call->activator, targetedEntity->enabled ? ON_ENABLE : ON_DISABLE );
 			break;
 
 		case ECA_USE:
@@ -740,7 +749,10 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 			break;
 		case ECA_RESET:
 			if (targetedEntity->reset)
+			{
 				targetedEntity->reset(targetedEntity);
+				G_EventFireEntity( targetedEntity, call->activator, ON_RESET );
+			}
 			break;
 		case ECA_ACT:
 			if (targetedEntity->act)
