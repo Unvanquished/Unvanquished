@@ -462,10 +462,13 @@ typedef struct
 static const entityCallEventDescription_t gentityEventDescriptions[] =
 {
 		{ "onAct",       ON_ACT       },
+		{ "onDie",       ON_DIE       },
 		{ "onDisable",   ON_DISABLE   },
 		{ "onEnable",    ON_ENABLE    },
 		{ "onFree",      ON_FREE      },
+		{ "onReach",     ON_REACH     },
 		{ "onReset",     ON_RESET     },
+		{ "onTouch",     ON_TOUCH     },
 		{ "onUse",       ON_USE       },
 		{ "target",      ON_DEFAULT   },
 };

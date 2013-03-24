@@ -165,7 +165,10 @@ typedef enum
 
 	ON_ACT,
 	ON_USE,
+	ON_DIE,
+	ON_REACH,
 	ON_RESET,
+	ON_TOUCH,
 
 	ON_ENABLE,
 	ON_DISABLE
