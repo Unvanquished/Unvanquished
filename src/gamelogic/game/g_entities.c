@@ -525,12 +525,12 @@ gentityCallActionType_t G_GetCallActionTypeFor( const char* action )
 
 gentity_t *G_ResolveEntityKeyword( gentity_t *self, gentityCallDefinition_t *callDefinition )
 {
-/*//TODO we need some checking before we actually allow this
   	if (!Q_stricmp(callDefinition->name, "$activator"))
 		return self->activator;
 	else if (!Q_stricmp(callDefinition->name, "$self"))
-		return self;*/
-
+		return self;
+	else if (!Q_stricmp(callDefinition->name, "$parent"))
+		return self->parent;
 	return NULL;
 }
 
