@@ -467,7 +467,7 @@ static const entityCallEventDescription_t gentityEventDescriptions[] =
 		{ "onFree",      ON_FREE      },
 		{ "onReset",     ON_RESET     },
 		{ "onUse",       ON_USE       },
-		{ "target",      ON_ACT       },
+		{ "target",      ON_DEFAULT   },
 };
 
 gentityCallActionType_t G_GetCallEventTypeFor( const char* event )
@@ -650,7 +650,7 @@ For all t in the entities, where t.targetnames[i] matches
 ent.targets[j] for any (i,j) pairs, call the t.use function.
 ==============================
 */
-void G_FireEntity( gentity_t *self, gentity_t *activator )
+void G_EventFireEntity( gentity_t *self, gentity_t *activator, gentityCallEvent_t eventType )
 {
 	gentity_t *currentTarget = NULL;
 	int targetIndex;
@@ -666,6 +666,11 @@ void G_FireEntity( gentity_t *self, gentity_t *activator )
 
 	while( ( currentTarget = G_IterateCallEndpoints( currentTarget, &targetIndex, self ) ) != NULL )
 	{
+		if( eventType && self->calltargets[ targetIndex ].eventType != eventType )
+		{
+			continue;
+		}
+
 		call.caller = self; //reset the caller in case there have been nested calls
 		call.definition = &self->calltargets[ targetIndex ];
 
@@ -677,6 +682,11 @@ void G_FireEntity( gentity_t *self, gentity_t *activator )
 			return;
 		}
 	}
+}
+
+void G_FireEntity( gentity_t *self, gentity_t *activator )
+{
+	G_EventFireEntity( self, activator, ON_DEFAULT );
 }
 
 void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
