@@ -231,7 +231,8 @@ typedef enum cgameImport_s
   CG_REGISTERVISTEST,
   CG_ADDVISTESTTOSCENE,
   CG_CHECKVISIBILITY,
-  CG_UNREGISTERVISTEST
+  CG_UNREGISTERVISTEST,
+  CG_SETCOLORGRADING
 } cgameImport_t;
 
 typedef enum
@@ -477,3 +478,4 @@ void            trap_AddVisTestToScene( qhandle_t hTest, vec3_t pos,
 					float depthAdjust );
 qboolean        trap_CheckVisibility( qhandle_t hTest );
 void            trap_UnregisterVisTest( qhandle_t hTest );
+void            trap_SetColorGrading( qhandle_t hShader );

@@ -5990,8 +5990,13 @@ shader_t       *R_FindShader( const char *name, shaderType_t type, qboolean mipR
 
 	// if not defined in the in-memory shader descriptions,
 	// look for a single supported image file
-	image = R_FindImageFile( fileName, mipRawImage ? IF_NONE : IF_NOPICMIP,
-	                         mipRawImage ? FT_DEFAULT : FT_LINEAR, mipRawImage ? WT_REPEAT : WT_CLAMP, shader.name );
+	if( mipRawImage ) {
+		image = R_FindImageFile( fileName, IF_NONE, FT_DEFAULT,
+					 WT_REPEAT, shader.name );
+	} else {
+		image = R_FindImageFile( fileName, IF_NOPICMIP | IF_NOCOMPRESSION,
+					 FT_LINEAR, WT_CLAMP, shader.name );
+	}
 
 	if ( !image )
 	{
