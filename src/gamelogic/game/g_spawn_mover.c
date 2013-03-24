@@ -819,7 +819,7 @@ void Think_OpenModelDoor( gentity_t *ent )
 		ent->activator = ent;
 	}
 
-	G_FireAllCallTargetsOf( ent, ent->activator );
+	G_FireEntity( ent, ent->activator );
 }
 
 /*
@@ -855,7 +855,7 @@ void BinaryMover_reached( gentity_t *ent )
 			ent->activator = ent;
 		}
 
-		G_FireAllCallTargetsOf( ent, ent->activator );
+		G_FireEntity( ent, ent->activator );
 	}
 	else if ( ent->moverState == MOVER_2TO1 )
 	{
@@ -895,7 +895,7 @@ void BinaryMover_reached( gentity_t *ent )
 			ent->activator = ent;
 		}
 
-		G_FireAllCallTargetsOf( ent, ent->activator );
+		G_FireEntity( ent, ent->activator );
 	}
 	else if ( ent->moverState == ROTATOR_2TO1 )
 	{
@@ -2318,7 +2318,7 @@ void func_train_reached( gentity_t *self )
 	}
 
 	// fire all other targets
-	G_FireAllCallTargetsOf( next, NULL );
+	G_FireEntity( next, NULL );
 
 	// set the new trajectory
 	self->nextPathSegment = next->nextPathSegment;
@@ -2827,7 +2827,7 @@ void func_destructable_die( gentity_t *self, gentity_t *inflictor, gentity_t *at
 	trap_UnlinkEntity( self );
 
 	G_RadiusDamage( self->restingPosition, attacker, self->splashDamage, self->splashRadius, self, MOD_TRIGGER_HURT );
-	G_FireAllCallTargetsOf( self, attacker );
+	G_FireEntity( self, attacker );
 }
 
 

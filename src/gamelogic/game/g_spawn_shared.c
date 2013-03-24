@@ -45,7 +45,7 @@ shared entity think functions
 
 void think_fireDelayed( gentity_t *self )
 {
-	G_FireAllCallTargetsOf( self, self->activator );
+	G_FireEntity( self, self->activator );
 }
 
 /*

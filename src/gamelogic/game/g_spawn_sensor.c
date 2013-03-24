@@ -68,7 +68,7 @@ void sensor_reset( gentity_t *self )
 //some old sensors/triggers used to propagate use-events, this is deprecated behavior
 void trigger_compat_propagation_act( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
-	G_FireAllCallTargetsOf( self, self );
+	G_FireEntity( self, self );
 
 	if ( g_debugEntities.integer >= -1 ) //dont't warn about anything with -1 or lower
 	{
@@ -116,7 +116,7 @@ void trigger_multiple_act( gentity_t *self, gentity_t *caller, gentity_t *activa
 	   ( activator->client->ps.stats[ STAT_TEAM ] != self->conditions.team ) )
 		return;
 
-	G_FireAllCallTargetsOf( self, self->activator );
+	G_FireEntity( self, self->activator );
 	trigger_checkWaitForReactivation( self );
 }
 
@@ -152,7 +152,7 @@ sensor_start
 
 void sensor_start_fireAndForget( gentity_t *self )
 {
-	G_FireAllCallTargetsOf(self, self);
+	G_FireEntity(self, self);
 	G_FreeEntity( self );
 }
 
@@ -184,7 +184,7 @@ timer
 
 void sensor_timer_think( gentity_t *self )
 {
-	G_FireAllCallTargetsOf( self, self->activator );
+	G_FireEntity( self, self->activator );
 	// set time before next firing
 	G_SetNextthink( self );
 }
@@ -248,7 +248,7 @@ void G_notify_sensor_stage( team_t team, stage_t stage )
 				&& (!entities->conditions.team || team == entities->conditions.team))
 				== !entities->conditions.negated)
 		{
-			G_FireAllCallTargetsOf(entities, entities);
+			G_FireEntity(entities, entities);
 		}
 	}
 }
@@ -283,7 +283,7 @@ void G_notify_sensor_end( team_t winningTeam )
 	while ((entity = G_IterateEntitiesOfClass(entity, "sensor_end")) != NULL )
 	{
 		if ((winningTeam == entity->conditions.team) == !entity->conditions.negated)
-			G_FireAllCallTargetsOf(entity, entity);
+			G_FireEntity(entity, entity);
 	}
 }
 
@@ -354,7 +354,7 @@ void sensor_buildable_touch( gentity_t *self, gentity_t *activator, trace_t *tra
 
 	if( sensor_buildable_match( self, activator ) == !self->conditions.negated )
 	{
-		G_FireAllCallTargetsOf( self, activator );
+		G_FireEntity( self, activator );
 		trigger_checkWaitForReactivation( self );
 	}
 }
@@ -491,7 +491,7 @@ void sensor_player_touch( gentity_t *self, gentity_t *activator, trace_t *trace 
 
 	if( shouldFire == !self->conditions.negated )
 	{
-		G_FireAllCallTargetsOf( self, activator );
+		G_FireEntity( self, activator );
 		trigger_checkWaitForReactivation( self );
 	}
 }

@@ -611,7 +611,7 @@ typedef struct
 	gentity_t *recipient;
 } gentityTargetChoice_t;
 
-void G_FireRandomCallTargetOf( gentity_t *entity, gentity_t *activator )
+void G_FireEntityRandomly( gentity_t *entity, gentity_t *activator )
 {
 	int       targetIndex;
 	gentity_t *possibleTarget = NULL;
@@ -650,7 +650,7 @@ For all t in the entities, where t.targetnames[i] matches
 ent.targets[j] for any (i,j) pairs, call the t.use function.
 ==============================
 */
-void G_FireAllCallTargetsOf( gentity_t *self, gentity_t *activator )
+void G_FireEntity( gentity_t *self, gentity_t *activator )
 {
 	gentity_t *currentTarget = NULL;
 	int targetIndex;
@@ -708,7 +708,7 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 			return; //we have to handle notification differently in the free-case
 
 		case ECA_PROPAGATE:
-			G_FireAllCallTargetsOf( targetedEntity, call->activator);
+			G_FireEntity( targetedEntity, call->activator);
 			break;
 
 		case ECA_ENABLE:

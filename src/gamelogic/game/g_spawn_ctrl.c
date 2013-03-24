@@ -59,13 +59,13 @@ void ctrl_relay_act( gentity_t *self, gentity_t *caller, gentity_t *activator )
 
 	if ( self->spawnflags & 4 )
 	{
-		G_FireRandomCallTargetOf( self, activator );
+		G_FireEntityRandomly( self, activator );
 		return;
 	}
 
 	if ( !self->config.wait.time )
 	{
-		G_FireAllCallTargetsOf( self, activator );
+		G_FireEntity( self, activator );
 	}
 	else
 	{
@@ -106,7 +106,7 @@ void ctrl_limited_act(gentity_t *self, gentity_t *other, gentity_t *activator)
 	if (!self->enabled)
 		return;
 
-	G_FireAllCallTargetsOf( self, activator );
+	G_FireEntity( self, activator );
 	if ( self->count <= 1 )
 	{
 		G_FreeEntity( self );
