@@ -312,6 +312,225 @@ static qboolean IN_IsConsoleKey( keyNum_t key, const unsigned char character )
 	return qfalse;
 }
 
+int IN_SDLKeyToQuakeKey( int sym )
+{
+	if ( sym >= SDLK_SPACE && sym < SDLK_DELETE )
+	{
+		// These happen to match the ASCII chars
+		return ( int ) sym;
+	}
+	else
+	{
+		switch ( sym )
+		{
+			case SDLK_PAGEUP:
+				return K_PGUP;
+
+			case SDLK_KP9:
+				return K_KP_PGUP;
+
+			case SDLK_PAGEDOWN:
+				return K_PGDN;
+
+			case SDLK_KP3:
+				return K_KP_PGDN;
+
+			case SDLK_KP7:
+				return K_KP_HOME;
+
+			case SDLK_HOME:
+				return K_HOME;
+
+			case SDLK_KP1:
+				return K_KP_END;
+
+			case SDLK_END:
+				return K_END;
+
+			case SDLK_KP4:
+				return K_KP_LEFTARROW;
+
+			case SDLK_LEFT:
+				return K_LEFTARROW;
+
+			case SDLK_KP6:
+				return K_KP_RIGHTARROW;
+
+			case SDLK_RIGHT:
+				return K_RIGHTARROW;
+
+			case SDLK_KP2:
+				return K_KP_DOWNARROW;
+
+			case SDLK_DOWN:
+				return K_DOWNARROW;
+
+			case SDLK_KP8:
+				return K_KP_UPARROW;
+
+			case SDLK_UP:
+				return K_UPARROW;
+
+			case SDLK_ESCAPE:
+				return K_ESCAPE;
+
+			case SDLK_KP_ENTER:
+				return K_KP_ENTER;
+
+			case SDLK_RETURN:
+				return K_ENTER;
+
+			case SDLK_TAB:
+				return K_TAB;
+
+			case SDLK_F1:
+				return K_F1;
+
+			case SDLK_F2:
+				return K_F2;
+
+			case SDLK_F3:
+				return K_F3;
+
+			case SDLK_F4:
+				return K_F4;
+
+			case SDLK_F5:
+				return K_F5;
+
+			case SDLK_F6:
+				return K_F6;
+
+			case SDLK_F7:
+				return K_F7;
+
+			case SDLK_F8:
+				return K_F8;
+
+			case SDLK_F9:
+				return K_F9;
+
+			case SDLK_F10:
+				return K_F10;
+
+			case SDLK_F11:
+				return K_F11;
+
+			case SDLK_F12:
+				return K_F12;
+
+			case SDLK_F13:
+				return K_F13;
+
+			case SDLK_F14:
+				return K_F14;
+
+			case SDLK_F15:
+				return K_F15;
+
+			case SDLK_BACKSPACE:
+				return K_BACKSPACE;
+
+			case SDLK_KP_PERIOD:
+				return K_KP_DEL;
+
+			case SDLK_DELETE:
+				return K_DEL;
+
+			case SDLK_PAUSE:
+				return K_PAUSE;
+
+			case SDLK_LSHIFT:
+			case SDLK_RSHIFT:
+				return K_SHIFT;
+
+			case SDLK_LCTRL:
+			case SDLK_RCTRL:
+				return K_CTRL;
+
+			case SDLK_RMETA:
+			case SDLK_LMETA:
+				return K_COMMAND;
+
+			case SDLK_RALT:
+			case SDLK_LALT:
+				return K_ALT;
+
+			case SDLK_LSUPER:
+			case SDLK_RSUPER:
+				return K_SUPER;
+
+			case SDLK_KP5:
+				return K_KP_5;
+
+			case SDLK_INSERT:
+				return K_INS;
+
+			case SDLK_KP0:
+				return K_KP_INS;
+
+			case SDLK_KP_MULTIPLY:
+				return K_KP_STAR;
+
+			case SDLK_KP_PLUS:
+				return K_KP_PLUS;
+
+			case SDLK_KP_MINUS:
+				return K_KP_MINUS;
+
+			case SDLK_KP_DIVIDE:
+				return K_KP_SLASH;
+
+			case SDLK_MODE:
+				return K_MODE;
+
+			case SDLK_COMPOSE:
+				return K_COMPOSE;
+
+			case SDLK_HELP:
+				return K_HELP;
+
+			case SDLK_PRINT:
+				return K_PRINT;
+
+			case SDLK_SYSREQ:
+				return K_SYSREQ;
+
+			case SDLK_BREAK:
+				return K_BREAK;
+
+			case SDLK_MENU:
+				return K_MENU;
+
+			case SDLK_POWER:
+				return K_POWER;
+
+			case SDLK_EURO:
+				return K_EURO;
+
+			case SDLK_UNDO:
+				return K_UNDO;
+
+			case SDLK_SCROLLOCK:
+				return K_SCROLLOCK;
+
+			case SDLK_NUMLOCK:
+				return K_KP_NUMLOCK;
+
+			case SDLK_CAPSLOCK:
+				return K_CAPSLOCK;
+
+			default:
+				if ( sym >= SDLK_WORLD_0 && sym <= SDLK_WORLD_95 )
+				{
+					return ( sym - SDLK_WORLD_0 ) + K_WORLD_0;
+				}
+
+
+		}
+	}
+}
+
 /*
 ===============
 IN_TranslateSDLToQ3Key
@@ -326,285 +545,7 @@ static const char *IN_TranslateSDLToQ3Key( SDL_keysym *keysym,
 	*buf = '\0';
 	*key = 0;
 
-	if ( keysym->sym >= SDLK_SPACE && keysym->sym < SDLK_DELETE )
-	{
-		// These happen to match the ASCII chars
-		*key = ( int ) keysym->sym;
-	}
-	else
-	{
-		switch ( keysym->sym )
-		{
-			case SDLK_PAGEUP:
-				*key = K_PGUP;
-				break;
-
-			case SDLK_KP9:
-				*key = K_KP_PGUP;
-				break;
-
-			case SDLK_PAGEDOWN:
-				*key = K_PGDN;
-				break;
-
-			case SDLK_KP3:
-				*key = K_KP_PGDN;
-				break;
-
-			case SDLK_KP7:
-				*key = K_KP_HOME;
-				break;
-
-			case SDLK_HOME:
-				*key = K_HOME;
-				break;
-
-			case SDLK_KP1:
-				*key = K_KP_END;
-				break;
-
-			case SDLK_END:
-				*key = K_END;
-				break;
-
-			case SDLK_KP4:
-				*key = K_KP_LEFTARROW;
-				break;
-
-			case SDLK_LEFT:
-				*key = K_LEFTARROW;
-				break;
-
-			case SDLK_KP6:
-				*key = K_KP_RIGHTARROW;
-				break;
-
-			case SDLK_RIGHT:
-				*key = K_RIGHTARROW;
-				break;
-
-			case SDLK_KP2:
-				*key = K_KP_DOWNARROW;
-				break;
-
-			case SDLK_DOWN:
-				*key = K_DOWNARROW;
-				break;
-
-			case SDLK_KP8:
-				*key = K_KP_UPARROW;
-				break;
-
-			case SDLK_UP:
-				*key = K_UPARROW;
-				break;
-
-			case SDLK_ESCAPE:
-				*key = K_ESCAPE;
-				break;
-
-			case SDLK_KP_ENTER:
-				*key = K_KP_ENTER;
-				break;
-
-			case SDLK_RETURN:
-				*key = K_ENTER;
-				break;
-
-			case SDLK_TAB:
-				*key = K_TAB;
-				break;
-
-			case SDLK_F1:
-				*key = K_F1;
-				break;
-
-			case SDLK_F2:
-				*key = K_F2;
-				break;
-
-			case SDLK_F3:
-				*key = K_F3;
-				break;
-
-			case SDLK_F4:
-				*key = K_F4;
-				break;
-
-			case SDLK_F5:
-				*key = K_F5;
-				break;
-
-			case SDLK_F6:
-				*key = K_F6;
-				break;
-
-			case SDLK_F7:
-				*key = K_F7;
-				break;
-
-			case SDLK_F8:
-				*key = K_F8;
-				break;
-
-			case SDLK_F9:
-				*key = K_F9;
-				break;
-
-			case SDLK_F10:
-				*key = K_F10;
-				break;
-
-			case SDLK_F11:
-				*key = K_F11;
-				break;
-
-			case SDLK_F12:
-				*key = K_F12;
-				break;
-
-			case SDLK_F13:
-				*key = K_F13;
-				break;
-
-			case SDLK_F14:
-				*key = K_F14;
-				break;
-
-			case SDLK_F15:
-				*key = K_F15;
-				break;
-
-			case SDLK_BACKSPACE:
-				*key = K_BACKSPACE;
-				break;
-
-			case SDLK_KP_PERIOD:
-				*key = K_KP_DEL;
-				break;
-
-			case SDLK_DELETE:
-				*key = K_DEL;
-				break;
-
-			case SDLK_PAUSE:
-				*key = K_PAUSE;
-				break;
-
-			case SDLK_LSHIFT:
-			case SDLK_RSHIFT:
-				*key = K_SHIFT;
-				break;
-
-			case SDLK_LCTRL:
-			case SDLK_RCTRL:
-				*key = K_CTRL;
-				break;
-
-			case SDLK_RMETA:
-			case SDLK_LMETA:
-				*key = K_COMMAND;
-				break;
-
-			case SDLK_RALT:
-			case SDLK_LALT:
-				*key = K_ALT;
-				break;
-
-			case SDLK_LSUPER:
-			case SDLK_RSUPER:
-				*key = K_SUPER;
-				break;
-
-			case SDLK_KP5:
-				*key = K_KP_5;
-				break;
-
-			case SDLK_INSERT:
-				*key = K_INS;
-				break;
-
-			case SDLK_KP0:
-				*key = K_KP_INS;
-				break;
-
-			case SDLK_KP_MULTIPLY:
-				*key = K_KP_STAR;
-				break;
-
-			case SDLK_KP_PLUS:
-				*key = K_KP_PLUS;
-				break;
-
-			case SDLK_KP_MINUS:
-				*key = K_KP_MINUS;
-				break;
-
-			case SDLK_KP_DIVIDE:
-				*key = K_KP_SLASH;
-				break;
-
-			case SDLK_MODE:
-				*key = K_MODE;
-				break;
-
-			case SDLK_COMPOSE:
-				*key = K_COMPOSE;
-				break;
-
-			case SDLK_HELP:
-				*key = K_HELP;
-				break;
-
-			case SDLK_PRINT:
-				*key = K_PRINT;
-				break;
-
-			case SDLK_SYSREQ:
-				*key = K_SYSREQ;
-				break;
-
-			case SDLK_BREAK:
-				*key = K_BREAK;
-				break;
-
-			case SDLK_MENU:
-				*key = K_MENU;
-				break;
-
-			case SDLK_POWER:
-				*key = K_POWER;
-				break;
-
-			case SDLK_EURO:
-				*key = K_EURO;
-				break;
-
-			case SDLK_UNDO:
-				*key = K_UNDO;
-				break;
-
-			case SDLK_SCROLLOCK:
-				*key = K_SCROLLOCK;
-				break;
-
-			case SDLK_NUMLOCK:
-				*key = K_KP_NUMLOCK;
-				break;
-
-			case SDLK_CAPSLOCK:
-				*key = K_CAPSLOCK;
-				break;
-
-			default:
-				if ( keysym->sym >= SDLK_WORLD_0 && keysym->sym <= SDLK_WORLD_95 )
-				{
-					*key = ( keysym->sym - SDLK_WORLD_0 ) + K_WORLD_0;
-				}
-
-				break;
-		}
-	}
+	*key = IN_SDLKeyToQuakeKey( keysym->sym );
 
 	if ( down && keysym->unicode && !( keysym->unicode & 0xFF00 ) )
 	{
