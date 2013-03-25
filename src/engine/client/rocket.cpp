@@ -525,6 +525,21 @@ void Rocket_Update( void )
 	}
 }
 
+extern "C" int IN_SDLKeyToQuakeKey( int sym );
+int RocketToQuakeKey( const int rocketKey )
+{
+	for ( int i = 0; i < SDL_arraysize( SDLK_keymap ); ++i )
+	{
+		if ( SDLK_keymap[ i ] == rocketKey )
+		{
+			return IN_SDLKeyToQuakeKey( i );
+		}
+	}
+
+	return 0;
+}
+
+
 void Rocket_InjectMouseMotion( int x, int y )
 {
 	if ( context && !( cls.keyCatchers & KEYCATCH_CONSOLE ) )
