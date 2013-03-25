@@ -82,7 +82,9 @@ void Rocket_DocumentAction( const char *name, const char *action )
 	{
 		if ( !*name ) // If name is empty, hide active
 		{
-			if ( context->GetFocusElement()->GetOwnerDocument() && context->GetFocusElement()->GetOwnerDocument() != context->GetDocument( "main" ) )
+			if ( context->GetFocusElement() &&
+				context->GetFocusElement()->GetOwnerDocument() &&
+				context->GetFocusElement()->GetOwnerDocument() != context->GetDocument( "main" ) )
 			{
 				context->GetFocusElement()->GetOwnerDocument()->Close();
 			}
