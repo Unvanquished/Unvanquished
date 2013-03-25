@@ -44,6 +44,8 @@ typedef struct
 gentity_t          g_entities[ MAX_GENTITIES ];
 gclient_t          g_clients[ MAX_CLIENTS ];
 
+vmCvar_t           g_showHelpOnConnection;
+
 vmCvar_t           g_timelimit;
 vmCvar_t           g_friendlyFire;
 vmCvar_t           g_friendlyBuildableFire;
@@ -201,6 +203,8 @@ static cvarTable_t gameCvarTable[] =
 	{ NULL,                           "g_mapStartupMessage",           "",                                 0,                                               0, qfalse           },
 
 	// change anytime vars
+	{ &g_showHelpOnConnection,        "g_showHelpOnConnection",        "1",                                CVAR_ARCHIVE,                                    0, qfalse           },
+
 	{ &g_maxGameClients,              "g_maxGameClients",              "0",                                CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qfalse           },
 
 	{ &g_timelimit,                   "timelimit",                     "0",                                CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue            },

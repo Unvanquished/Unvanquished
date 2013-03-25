@@ -1488,7 +1488,19 @@ void ClientBegin( int clientNum )
 	if ( !client->sess.seenWelcome )
 	{
 		client->sess.seenWelcome = 1;
-		G_TriggerMenu( client->ps.clientNum, MN_WELCOME );
+
+		// 0 - don't show
+		// 1 - always show to all
+		// 2 - show only to unregistered
+		switch ( g_showHelpOnConnection.integer )
+		{
+		case 0:
+			if (0)
+		default:
+			if ( !client->pers.admin )
+		case 1:
+			G_TriggerMenu( client->ps.clientNum, MN_WELCOME );
+		}
 	}
 }
 
