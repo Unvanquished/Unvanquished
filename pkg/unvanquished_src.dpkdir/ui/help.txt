@@ -8,23 +8,19 @@
     "feedback as we work to bring you Unvanquished 1.0. Please report all bugs. Thank "
     "you."
   }
-  "Resources"
+  "[dev] Resource generation"
   {
-    "^1In development^7\n\n"
     "Build points are acquired via two structures – for the humans, [drill] drills, "
     "and for the aliens, [leech] leeches. These buildings need to be spread out for "
-    "efficiency. "
+    "efficiency."
+    "\n\n"
     "Builders will see two numbers for drills or leeches. The right-hand number "
-    "is this generator's % efficiency."
-    "\n\n"
-    "Build points are initially acquired fairly rapidly, but this slows over time. "
-    "The teams hava an initial, small, pool of build points."
-    "\n\n"
-    "[repeater] Repeaters no longer provide their own pools of build points."
+    "is this generator's efficiency. Usually, you want this as close to 100% "
+    "as you can reasonably get: you'll be shown the predicted efficiency "
+    "while positioning a drill or leech."
   }
-  "Stage changes"
+  "[dev] Stage changes"
   {
-    "^1In development^7\n\n"
     "Stages are gained through map control – the more resource generation "
     "capacity your team has, the more weapons, buildings and/or classes are "
     "available to you. ^3However,^7 if you lose enough of that capacity, you "
@@ -32,15 +28,20 @@
     "of whatever the lost stage(s) provided, but existing buildings, purchased "
     "upgrades and higher alien forms remain functional."
   }
-  "Alien Healing"
+  "[dev] Building"
   {
-    "The most important change for Alien players to know is that their healing "
-    "rate is slower away from creep. To counter this, healing near [booster] Boosters "
-    "and [basilisk] Basilisks is greatly accelerated.\n\n"
-    "Watch the health cross icon on your "
-    "HUD to see what your healing rate is. If the icon glows, you are on "
-    "creep. If you are near a booster or basilisk, you will see two "
-    "(2× healing) or four (3× healing) barbs around the health cross."
+    "Resources – build points – are initially acquired relatively rapidly, "
+    "with the rate diminishing over time. "
+    "Adding buildings requires build points."
+    "\n\n"
+    "Each team has an initial, small, pool of build points. This is "
+    "map-wide; [repeater] repeaters no longer provide their own pools of "
+    "build points."
+  }
+  "Construction kits"
+  {
+    "Repair using construction kits uses build points. Full repair from zero "
+    "health, were it possible, would be cheaper than replacing the building."
   }
   "Deconstruction"
   {
@@ -54,11 +55,6 @@
     "\n\n"
     "Deconstructing a damaged building returns only some of the build points "
     "used when constructing it. "
-  }
-  "Construction kits"
-  {
-    "Repair using construction kits uses build points. Full repair from zero "
-    "health, were it possible, would be cheaper than replacing the building."
   }
   "Alien Buildables"
   {
@@ -78,6 +74,16 @@
     "require the [defcomp] Defence Computer to function. Instead, the Defence Computer "
     "will automatically repair Human buildables. Tesla Generators can fire "
     "over turrets."
+  }
+  "Alien Healing"
+  {
+    "The most important change for Alien players to know is that their healing "
+    "rate is slower away from creep. To counter this, healing near [booster] Boosters "
+    "and [basilisk] Basilisks is greatly accelerated.\n\n"
+    "Watch the health cross icon on your "
+    "HUD to see what your healing rate is. If the icon glows, you are on "
+    "creep. If you are near a booster or basilisk, you will see two "
+    "(2× healing) or four (3× healing) barbs around the health cross."
   }
   "Human Weapons"
   {
