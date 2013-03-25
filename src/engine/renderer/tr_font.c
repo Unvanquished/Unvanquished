@@ -84,6 +84,7 @@ Maryland 20850 USA.
 #endif
 
 #include "../qcommon/qcommon.h"
+#include "../qcommon/q_unicode.h"
 
 #include <ft2build.h>
 #include FT_ERRORS_H
@@ -394,12 +395,12 @@ void RE_GlyphCharVM( fontHandle_t handle, int ch, glyphInfo_t *glyph )
 
 void RE_Glyph( fontInfo_t *font, const char *str, glyphInfo_t *glyph )
 {
-	RE_GlyphChar( font, Q_UTF8CodePoint( str ), glyph );
+	RE_GlyphChar( font, Q_UTF8_CodePoint( str ), glyph );
 }
 
 void RE_GlyphVM( fontHandle_t handle, const char *str, glyphInfo_t *glyph )
 {
-	RE_GlyphCharVM( handle, str ? Q_UTF8CodePoint( str ) : 0, glyph );
+	RE_GlyphCharVM( handle, str ? Q_UTF8_CodePoint( str ) : 0, glyph );
 }
 
 static void RE_StoreImage( fontInfo_t *font, int chunk, int page, int from, int to, const unsigned char *bitmap, int yEnd )

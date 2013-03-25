@@ -35,6 +35,7 @@ Maryland 20850 USA.
 // cl_main.c  -- client main loop
 
 #include "client.h"
+#include "../qcommon/q_unicode.h"
 #include <limits.h>
 
 #include "snd_local.h" // fretn
@@ -5835,7 +5836,7 @@ void CL_GetClipboardData( char *buf, int buflen, clipboard_t clip )
 		}
 		else
 		{
-			int w = Q_UTF8Width( clean + i );
+			int w = Q_UTF8_Width( clean + i );
 
 			if ( j + w >= buflen )
 			{

@@ -116,6 +116,9 @@ extern "C" {
 #define REF_CUBEMAP_STORE_SIZE 1024
 #define REF_CUBEMAP_STORE_SIDE ( REF_CUBEMAP_STORE_SIZE / REF_CUBEMAP_SIZE )
 
+#define REF_COLORGRADEMAP_SIZE 16
+#define REF_COLORGRADEMAP_STORE_SIZE ( REF_COLORGRADEMAP_SIZE * REF_COLORGRADEMAP_SIZE * REF_COLORGRADEMAP_SIZE )
+
 	typedef enum
 	{
 	  CULL_IN, // completely unclipped
@@ -3854,6 +3857,8 @@ extern "C" {
 		image_t *charsetImage;
 		image_t *grainImage;
 		image_t *vignetteImage;
+		image_t *colorGradeImage;
+		GLint    colorGradePBO;
 
 		// framebuffer objects
 		FBO_t *geometricRenderFBO; // is the G-Buffer for deferred shading
@@ -4525,6 +4530,7 @@ extern "C" {
 	void    RE_GetTextureSize( int textureID, int *width, int *height );
 	void    R_InitFogTable( void );
 	float   R_FogFactor( float s, float t );
+	void    RE_SetColorGrading( qhandle_t hShader );
 
 	/*
 	====================================================================

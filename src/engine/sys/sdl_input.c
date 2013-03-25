@@ -39,6 +39,7 @@ Maryland 20850 USA.
 #include <SDL.h>
 
 #include "../client/client.h"
+#include "../qcommon/q_unicode.h"
 #include "../sys/sys_local.h"
 
 #ifdef MACOS_X_ACCELERATION_HACK
@@ -659,7 +660,7 @@ static const char *IN_TranslateSDLToQ3Key( SDL_keysym *keysym,
 	}
 	else
 	{
-		memcpy( buf, Q_UTF8Encode( keysym->unicode ), sizeof( buf ) );
+		memcpy( buf, Q_UTF8_Encode( keysym->unicode ), sizeof( buf ) );
 	}
 
 	return ( char * ) buf;

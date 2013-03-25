@@ -1,3 +1,12 @@
+unvanquished (0.13.1-1) unstable; urgency=low
+
+  * Bugfix release.
+    - Fixes QVM string quoting sanity checking. This was, for some, breaking
+      team-joining etc.
+    - Adds some missing QVM string quoting sanity checking.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Wed, 06 Mar 2013 18:54:00 +0000
+
 unvanquished (0.13.0-1) unstable; urgency=low
 
   * Release of alpha 13.

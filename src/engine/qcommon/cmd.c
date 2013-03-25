@@ -1041,7 +1041,7 @@ Just prints the rest of the line to the console
 */
 void Cmd_Echo_f( void )
 {
-	Com_Printf( "%s\n", Cmd_Args() );
+	Com_Printf( "%s\n", Cmd_UnquoteString( Cmd_Args() ) );
 }
 
 /*
@@ -1646,7 +1646,12 @@ const char *Cmd_Cmd_FromNth( int count )
 	char *ret = cmd.cmd - 1;
 	int  i = 0, q = 0;
 
-	while ( count && *++ret )
+	if ( !count )
+	{
+		return cmd.cmd;
+	}
+
+	while ( *++ret )
 	{
 		if ( !q && *ret == ' ' )
 		{
@@ -1656,7 +1661,10 @@ const char *Cmd_Cmd_FromNth( int count )
 		if ( i && *ret != ' ' )
 		{
 			i = 0; // non-space found after space outside quotation marks
-			--count; // one word fewer to scan
+			if ( !--count ) // one word fewer to scan
+			{
+				return ret;
+			}
 		}
 
 		if ( *ret == '"' )
@@ -1757,7 +1765,7 @@ static void Tokenise( const char *text, char *textOut, qboolean tokens, qboolean
 				// copy until next space, quote or EOT, handling backslashes
 				while ( *text < 0 || ( *text > ' ' && *text != '"' ) )
 				{
-					if ( *text == '\\' && !*++text )
+					if ( *text == '\\' && (++text, (*text >= 0 && *text < ' ') ) )
 					{
 						break;
 					}
@@ -1774,7 +1782,7 @@ static void Tokenise( const char *text, char *textOut, qboolean tokens, qboolean
 
 				while ( *text && *text != '"' )
 				{
-					if ( *text == '\\' && !*++text )
+					if ( *text == '\\' && (++text, (*text >= 0 && *text < ' ') ) )
 					{
 						break;
 					}
@@ -2421,7 +2429,8 @@ void Cmd_ExecuteString( const char *text )
 	}
 
 	// send it as a server command if we are connected
-	CL_ForwardCommandToServer( text );
+	// (cvars are expanded locally)
+	CL_ForwardCommandToServer( cmd.cmd );
 }
 
 /*

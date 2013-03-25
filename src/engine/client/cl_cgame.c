@@ -2137,6 +2137,10 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			re.UnregisterVisTest( args[1] );
 			return 0;
 
+		case CG_SETCOLORGRADING:
+			re.SetColorGrading( args[1] );
+			return 0;
+			
 		case CG_ROCKET_INIT:
 			Rocket_Init();
 			return 0;

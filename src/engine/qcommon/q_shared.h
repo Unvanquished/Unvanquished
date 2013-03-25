@@ -45,10 +45,10 @@ extern "C" {
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.13.0"
+#define PRODUCT_VERSION         "0.13.1"
 
 #define ENGINE_NAME             "Daemon Engine"
-#define ENGINE_VERSION          "0.13.0"
+#define ENGINE_VERSION          "0.13.1"
 
 #ifdef REVISION
 # define Q3_VERSION             PRODUCT_NAME " " PRODUCT_VERSION " " REVISION
@@ -1470,18 +1470,6 @@ double rint( double x );
 
 // removes whitespaces and other bad directory characters
 	char     *Q_CleanDirName( char *dirname );
-
-//=============================================
-
-int Q_UTF8Width( const char *str );
-int Q_UTF8WidthCP( int ch );
-int Q_UTF8Strlen( const char *str );
-int Q_UTF8PrintStrlen( const char *str );
-qboolean Q_UTF8ContByte( char c );
-unsigned long Q_UTF8CodePoint( const char *str );
-char *Q_UTF8Encode( unsigned long codepoint );
-int Q_UTF8Store( const char *s );
-char *Q_UTF8Unstore( int e );
 
 //=============================================
 

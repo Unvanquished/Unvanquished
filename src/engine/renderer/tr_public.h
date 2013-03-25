@@ -198,6 +198,9 @@ typedef struct
 	void      ( *AddVisTestToScene ) ( qhandle_t hTest, vec3_t pos, float depthAdjust );
 	qboolean  ( *CheckVisibility ) ( qhandle_t hTest );
 	void      ( *UnregisterVisTest ) ( qhandle_t hTest );
+
+	// color grading
+	void      ( *SetColorGrading ) ( qhandle_t hShader );
 } refexport_t;
 
 //

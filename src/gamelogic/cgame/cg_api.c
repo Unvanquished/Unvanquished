@@ -1256,6 +1256,12 @@ void trap_UnregisterVisTest( qhandle_t hTest )
 	syscall( CG_UNREGISTERVISTEST, hTest );
 }
 
+void trap_SetColorGrading( qhandle_t hShader )
+{
+	syscall( CG_SETCOLORGRADING, hShader );
+
+}
+
 void trap_LAN_LoadCachedServers( void )
 {
 	syscall( CG_LAN_LOADCACHEDSERVERS );

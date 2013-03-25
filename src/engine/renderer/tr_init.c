@@ -1669,6 +1669,8 @@ extern "C" {
 		re.CheckVisibility = RE_CheckVisibility;
 		re.UnregisterVisTest = RE_UnregisterVisTest;
 
+		re.SetColorGrading = RE_SetColorGrading;
+
 		return &re;
 	}
 

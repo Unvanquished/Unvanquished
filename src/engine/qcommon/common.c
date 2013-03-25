@@ -36,6 +36,7 @@ Maryland 20850 USA.
 
 #include "revision.h"
 #include "../qcommon/q_shared.h"
+#include "q_unicode.h"
 #include "qcommon.h"
 #include <setjmp.h>
 
@@ -3778,7 +3779,7 @@ void Field_Set( field_t *edit, const char *content )
 {
 	memset( edit->buffer, 0, MAX_EDIT_LINE );
 	strncpy( edit->buffer, content, MAX_EDIT_LINE );
-	Field_SetCursor( edit, Q_UTF8Strlen( edit->buffer ) );
+	Field_SetCursor( edit, Q_UTF8_Strlen( edit->buffer ) );
 }
 
 /*
@@ -3792,7 +3793,7 @@ int Field_CursorToOffset( field_t *edit )
 
 	while ( ++i < edit->cursor )
 	{
-		j += Q_UTF8Width( edit->buffer + j );
+		j += Q_UTF8_Width( edit->buffer + j );
 	}
 
 	return j;
@@ -3809,7 +3810,7 @@ int Field_ScrollToOffset( field_t *edit )
 
 	while ( ++i < edit->scroll )
 	{
-		j += Q_UTF8Width( edit->buffer + j );
+		j += Q_UTF8_Width( edit->buffer + j );
 	}
 
 	return j;
@@ -3826,7 +3827,7 @@ int Field_OffsetToCursor( field_t *edit, int offset )
 
 	while ( i < offset )
 	{
-		i += Q_UTF8Width( edit->buffer + i );
+		i += Q_UTF8_Width( edit->buffer + i );
 		++j;
 	}
 
@@ -4037,7 +4038,7 @@ static qboolean Field_Complete( void )
 	Q_strncpyz( &completionField->buffer[ completionOffset ], shortestMatch,
 	            sizeof( completionField->buffer ) - completionOffset );
 
-	completionField->cursor = Q_UTF8Strlen( completionField->buffer );
+	completionField->cursor = Q_UTF8_Strlen( completionField->buffer );
 
 	if ( matchCount == 1 )
 	{
