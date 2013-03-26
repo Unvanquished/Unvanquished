@@ -637,7 +637,7 @@ static void CG_Obituary( entityState_t *ent )
 			{
 				// Argument order: victim, ["TEAMMATE"/"", attacker [, alien class]]
 				CG_Printf( message, targetName, ( teamKill ) ? _("^1TEAMMATE^7 ") : "", attackerName,
-				           ( attackerClass != -1 ) ? _( BG_ClassConfig( attackerClass )->humanName ) : NULL );
+				           ( attackerClass != -1 ) ? _( BG_ClassModelConfig( attackerClass )->humanName ) : NULL );
 			}
 
 			if ( teamKill && attacker == cg.clientNum )

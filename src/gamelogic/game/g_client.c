@@ -1120,17 +1120,17 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 		//model details to that of the spawning class or the info change will not be
 		//registered and an axis appears instead of the player model. There is zero chance
 		//the player can spawn with the battlesuit, hence this choice.
-		Com_sprintf( buffer, MAX_QPATH, "%s/%s",  BG_ClassConfig( PCL_HUMAN_BSUIT )->modelName,
-		             BG_ClassConfig( PCL_HUMAN_BSUIT )->skinName );
+		Com_sprintf( buffer, MAX_QPATH, "%s/%s",  BG_ClassModelConfig( PCL_HUMAN_BSUIT )->modelName,
+		             BG_ClassModelConfig( PCL_HUMAN_BSUIT )->skinName );
 	}
 	else
 	{
-		Com_sprintf( buffer, MAX_QPATH, "%s/%s",  BG_ClassConfig( client->pers.classSelection )->modelName,
-		             BG_ClassConfig( client->pers.classSelection )->skinName );
+		Com_sprintf( buffer, MAX_QPATH, "%s/%s",  BG_ClassModelConfig( client->pers.classSelection )->modelName,
+		             BG_ClassModelConfig( client->pers.classSelection )->skinName );
 
 		//model segmentation
 		Com_sprintf( filename, sizeof( filename ), "models/players/%s/animation.cfg",
-		             BG_ClassConfig( client->pers.classSelection )->modelName );
+		             BG_ClassModelConfig( client->pers.classSelection )->modelName );
 
 		if ( G_NonSegModel( filename ) )
 		{

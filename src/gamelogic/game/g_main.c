@@ -733,6 +733,9 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 
 	trap_SetConfigstring( CS_INTERMISSION, "0" );
 
+	// we need the entity names before we can spawn them
+	BG_InitBuildableAttributes();
+
 	// test to see if a custom buildable layout will be loaded
 	G_LayoutSelect();
 
@@ -750,8 +753,11 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	// general initialization
 	G_FindTeams();
 
-	BG_InitClassConfigs();
-	BG_InitBuildableConfigs();
+	BG_InitClassAttributes();
+	BG_InitClassModelConfigs();
+	BG_InitBuildableModelConfigs();
+	BG_InitWeaponAttributes();
+	BG_InitUpgradeAttributes();
 	G_InitDamageLocations();
 	G_InitMapRotations();
 	G_InitSpawnQueue( &level.alienSpawnQueue );

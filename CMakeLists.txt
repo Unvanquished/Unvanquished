@@ -653,6 +653,7 @@ set( GAME_VM_COMMON
 set( CGAMEGPP_BASE
   ${GPP_DIR}/cgame/cg_main.c
   ${GPP_DIR}/game/bg_misc.c
+  ${GPP_DIR}/game/bg_parse.c
   ${GPP_DIR}/game/bg_pmove.c
   ${GPP_DIR}/game/bg_slidemove.c
   ${GPP_DIR}/game/bg_lib.c
@@ -698,6 +699,7 @@ set( CGAMEGPP_QVM
 set( GAMEGPP_BASE
   ${GPP_DIR}/game/g_main.c
   ${GPP_DIR}/game/bg_misc.c
+  ${GPP_DIR}/game/bg_parse.c
   ${GPP_DIR}/game/bg_pmove.c
   ${GPP_DIR}/game/bg_slidemove.c
   ${GPP_DIR}/game/bg_lib.c
@@ -742,7 +744,9 @@ set( UIGPP_BASE
   ${GPP_DIR}/ui/ui_shared.c
   ${GPP_DIR}/ui/ui_gameinfo.c
   ${GPP_DIR}/game/bg_misc.c
+  ${GPP_DIR}/game/bg_parse.c
   ${GPP_DIR}/game/bg_lib.c
+  ${GPP_DIR}/game/bg_alloc.c
   ${GPP_DIR}/ui/ui_utf8.c
   ${SHAREDLIST}
 )
