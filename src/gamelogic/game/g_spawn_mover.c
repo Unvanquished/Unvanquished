@@ -2251,21 +2251,8 @@ void func_train_reached( gentity_t *self )
 	VectorCopy( next->s.origin, self->restingPosition );
 	VectorCopy( next->nextPathSegment->s.origin, self->activatedPosition );
 
-	// if the path_corner has a speed, use that
-	if ( next->config.speed )
-	{
-		self->speed = next->config.speed;
-	}
-	else
-	{
-		// otherwise use the train's speed
-		self->speed = self->config.speed;
-	}
-
-	if ( self->speed < 1 )
-	{
-		self->speed = 1;
-	}
+	// if the path_corner has a speed, use that otherwise use the train's speed
+	reset_floatField( &self->speed, next->config.speed, self->config.speed, 1, qtrue );
 
 	// calculate duration
 	VectorSubtract( self->activatedPosition, self->restingPosition, move );
