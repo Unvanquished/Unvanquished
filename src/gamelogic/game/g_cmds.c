@@ -526,7 +526,7 @@ void Cmd_Give_f( gentity_t *ent )
 		give_all = qtrue;
 	}
 
-	if ( give_all || Q_stricmpn( name, "funds", 5 ) == 0 )
+	if ( give_all || Q_strnicmp( name, "funds", 5 ) == 0 )
 	{
 		float credits;
 
@@ -557,7 +557,7 @@ void Cmd_Give_f( gentity_t *ent )
 	if ( ent->client->ps.stats[ STAT_HEALTH ] <= 0 ||
 			ent->client->sess.spectatorState != SPECTATOR_NOT )
 	{
-		if ( !( give_all || Q_stricmpn( name, "funds", 5 ) == 0 ) )
+		if ( !( give_all || Q_strnicmp( name, "funds", 5 ) == 0 ) )
 		{
 			G_TriggerMenu( ent-g_entities, MN_CMD_ALIVE );
 		}
@@ -3141,7 +3141,7 @@ void Cmd_Sell_f( gentity_t *ent )
 		return;
 	}
 
-	if ( !Q_stricmpn( s, "weapon", 6 ) )
+	if ( !Q_strnicmp( s, "weapon", 6 ) )
 	{
 		weapon = ent->client->ps.stats[ STAT_WEAPON ];
 	}

@@ -769,13 +769,13 @@ void CG_UpdateBuildableRangeMarkerMask( void )
 				char *pp;
 				int  only;
 
-				if ( !Q_stricmpn( p, "alien", 5 ) )
+				if ( !Q_strnicmp( p, "alien", 5 ) )
 				{
 					pp = p + 5;
 					only = ( 1 << BA_A_OVERMIND ) | ( 1 << BA_A_SPAWN ) |
 					       ( 1 << BA_A_ACIDTUBE ) | ( 1 << BA_A_TRAPPER ) | ( 1 << BA_A_HIVE ) | ( 1 << BA_A_BOOSTER );
 				}
-				else if ( !Q_stricmpn( p, "human", 5 ) )
+				else if ( !Q_strnicmp( p, "human", 5 ) )
 				{
 					pp = p + 5;
 					only = ( 1 << BA_H_REACTOR ) | ( 1 << BA_H_REPEATER ) | ( 1 << BA_H_DCC ) |

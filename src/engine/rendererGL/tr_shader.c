@@ -2952,7 +2952,7 @@ static void ParseDeform( char **text )
 		return;
 	}
 
-	if ( !Q_stricmpn( token, "text", 4 ) )
+	if ( !Q_strnicmp( token, "text", 4 ) )
 	{
 		int n;
 
@@ -3997,7 +3997,7 @@ static qboolean ParseShader( char *_text )
 			continue;
 		}
 		// skip stuff that only the QuakeEdRadient needs
-		else if ( !Q_stricmpn( token, "qer", 3 ) )
+		else if ( !Q_strnicmp( token, "qer", 3 ) )
 		{
 			SkipRestOfLine( text );
 			continue;
@@ -4041,7 +4041,7 @@ static qboolean ParseShader( char *_text )
 			continue;
 		}
 		// skip Prey's extra material types
-		else if ( !Q_stricmpn( token, "matter", 6 ) )
+		else if ( !Q_strnicmp( token, "matter", 6 ) )
 		{
 			//ri.Printf(PRINT_WARNING, "WARNING: materialType keyword not supported in shader '%s'\n", shader.name);
 			SkipRestOfLine( text );
@@ -4214,7 +4214,7 @@ static qboolean ParseShader( char *_text )
 			continue;
 		}
 		// skip stuff that only the xmap needs
-		else if ( !Q_stricmpn( token, "xmap", 4 ) || !Q_stricmpn( token, "q3map", 5 ) )
+		else if ( !Q_strnicmp( token, "xmap", 4 ) || !Q_strnicmp( token, "q3map", 5 ) )
 		{
 			SkipRestOfLine( text );
 			continue;
@@ -4595,7 +4595,7 @@ static qboolean ParseShader( char *_text )
 			continue;
 		}
 		// ydnar: implicit default mapping to eliminate redundant/incorrect explicit shader stages
-		else if ( !Q_stricmpn( token, "implicit", 8 ) )
+		else if ( !Q_strnicmp( token, "implicit", 8 ) )
 		{
 			//ri.Printf(PRINT_WARNING, "WARNING: keyword '%s' not supported in shader '%s'\n", token, shader.name);
 			//SkipRestOfLine(text);
@@ -6283,7 +6283,7 @@ void R_ShaderList_f( void )
 			shader = tr.shaders[ i ];
 		}
 
-		if ( s && Q_stricmpn( shader->name, s, strlen( s ) ) != 0 )
+		if ( s && Q_strnicmp( shader->name, s, strlen( s ) ) != 0 )
 		{
 			continue;
 		}

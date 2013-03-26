@@ -1050,7 +1050,7 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 	}
 
 	// IRC-like /me parsing
-	if ( mode != SAY_RAW && Q_stricmpn( text, "/me ", 4 ) == 0 )
+	if ( mode != SAY_RAW && Q_strnicmp( text, "/me ", 4 ) == 0 )
 	{
 		text += 4;
 		Q_strcat( prefix, sizeof( prefix ), "* " );

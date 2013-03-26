@@ -2473,7 +2473,7 @@ void G_ExecuteVote( team_t team )
 		G_MapLog_Result( 'r' );
 		level.restarted = qtrue;
 	}
-	else if ( !Q_stricmpn( level.voteString[ team ], "map", 3 ) )
+	else if ( !Q_strnicmp( level.voteString[ team ], "map", 3 ) )
 	{
 		G_MapLog_Result( 'm' );
 		level.restarted = qtrue;

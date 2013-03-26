@@ -2660,7 +2660,7 @@ static void ParseDeform( char **text )
 		return;
 	}
 
-	if ( !Q_stricmpn( token, "text", 4 ) )
+	if ( !Q_strnicmp( token, "text", 4 ) )
 	{
 		int n;
 
@@ -3243,14 +3243,14 @@ static qboolean ParseShader( char **text )
 			continue;
 		}
 		// skip stuff that only the QuakeEdRadient needs
-		else if ( !Q_stricmpn( token, "qer", 3 ) ||
+		else if ( !Q_strnicmp( token, "qer", 3 ) ||
 		          !Q_stricmp( token, "description" ) ||
 		          !Q_stricmp( token, "renderbump" ) ||
 		          !Q_stricmp( token, "unsmoothedTangents" ) ||
 		          !Q_stricmp( token, "guiSurf" ) ||
 		          !Q_stricmp( token, "decalInfo" ) ||
 		          !Q_stricmp( token, "materialType" ) ||
-		          !Q_stricmpn( token, "matter", 6 ) ||
+		          !Q_strnicmp( token, "matter", 6 ) ||
 		          !Q_stricmp( token, "noShadows" ) ||
 		          !Q_stricmp( token, "noSelfShadow" ) ||
 		          !Q_stricmp( token, "forceShadows" ) ||
@@ -3319,7 +3319,7 @@ static qboolean ParseShader( char **text )
 			}
 		}
 		// skip stuff that only the q3map needs
-		else if ( !Q_stricmpn( token, "xmap", 4 ) || !Q_stricmpn( token, "q3map", 5 ) )
+		else if ( !Q_strnicmp( token, "xmap", 4 ) || !Q_strnicmp( token, "q3map", 5 ) )
 		{
 			SkipRestOfLine( text );
 			continue;
@@ -3688,7 +3688,7 @@ static qboolean ParseShader( char **text )
 			continue;
 		}
 		// ydnar: implicit default mapping to eliminate redundant/incorrect explicit shader stages
-		else if ( !Q_stricmpn( token, "implicit", 8 ) )
+		else if ( !Q_strnicmp( token, "implicit", 8 ) )
 		{
 			// set implicit mapping state
 			if ( !Q_stricmp( token, "implicitBlend" ) )

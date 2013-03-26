@@ -2041,46 +2041,18 @@ void Q_strncpyz( char *dest, const char *src, int destsize )
 	dest[ destsize - 1 ] = 0;
 }
 
-int Q_stricmpn( const char *s1, const char *s2, int n )
-{
-	int c1, c2;
-
-	do
-	{
-		c1 = *s1++;
-		c2 = *s2++;
-
-		if ( !n-- )
-		{
-			return 0; // strings are equal until end point
-		}
-
-		if ( c1 != c2 )
-		{
-			if ( c1 >= 'a' && c1 <= 'z' )
-			{
-				c1 -= ( 'a' - 'A' );
-			}
-
-			if ( c2 >= 'a' && c2 <= 'z' )
-			{
-				c2 -= ( 'a' - 'A' );
-			}
-
-			if ( c1 != c2 )
-			{
-				return c1 < c2 ? -1 : 1;
-			}
-		}
-	}
-	while ( c1 );
-
-	return 0; // strings are equal
-}
-
 int Q_strncmp( const char *s1, const char *s2, int n )
 {
 	int c1, c2;
+
+	if ( s1 == NULL )
+	{
+		return ( s2 == NULL ) ? 0 : -1;
+	}
+	else if ( s2 == NULL )
+	{
+		return 1;
+	}
 
 	do
 	{
@@ -2104,7 +2076,7 @@ int Q_strncmp( const char *s1, const char *s2, int n )
 
 int Q_stricmp( const char *s1, const char *s2 )
 {
-	return ( s1 && s2 ) ? Q_stricmpn( s1, s2, 99999 ) : -1;
+	return Q_strnicmp( s1, s2, 99999 );
 }
 
 char *Q_strlwr( char *s1 )
@@ -2158,14 +2130,7 @@ int Q_strnicmp( const char *string1, const char *string2, int n )
 
 	if ( string1 == NULL )
 	{
-		if ( string2 == NULL )
-		{
-			return 0;
-		}
-		else
-		{
-			return -1;
-		}
+		return ( string2 == NULL ) ? 0 : -1;
 	}
 	else if ( string2 == NULL )
 	{
@@ -2226,48 +2191,6 @@ void Q_strncpyz2( char *dst, const char *src, int dstSize )
 	dst[ dstSize - 1 ] = 0;
 }
 
-int Q_strncasecmp( const char *s1, const char *s2, int n )
-{
-	int c1, c2;
-
-	do
-	{
-		c1 = *s1++;
-		c2 = *s2++;
-
-		if ( !n-- )
-		{
-			return 0; // strings are equal until end point
-		}
-
-		if ( c1 != c2 )
-		{
-			if ( c1 >= 'a' && c1 <= 'z' )
-			{
-				c1 -= ( 'a' - 'A' );
-			}
-
-			if ( c2 >= 'a' && c2 <= 'z' )
-			{
-				c2 -= ( 'a' - 'A' );
-			}
-
-			if ( c1 != c2 )
-			{
-				return -1; // strings not equal
-			}
-		}
-	}
-	while ( c1 );
-
-	return 0; // strings are equal
-}
-
-int Q_strcasecmp( const char *s1, const char *s2 )
-{
-	return Q_strncasecmp( s1, s2, 99999 );
-}
-
 /*
 * Find the first occurrence of find in s.
 */
@@ -2301,7 +2224,7 @@ const char *Q_stristr( const char *s, const char *find )
 			}
 			while ( sc != c );
 		}
-		while ( Q_stricmpn( s, find, len ) != 0 );
+		while ( Q_strnicmp( s, find, len ) != 0 );
 
 		s--;
 	}

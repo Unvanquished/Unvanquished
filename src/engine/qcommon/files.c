@@ -1265,7 +1265,7 @@ static qboolean FS_CheckUIImageFile( const char *filename )
 {
 	int l = strlen( filename );
 
-	if ( !Q_stricmpn( filename, "ui/assets/", 10 ) &&
+	if ( !Q_strnicmp( filename, "ui/assets/", 10 ) &&
 	   ( !Q_stricmp( filename + l - 4, ".tga" ) ||
 		 !Q_stricmp( filename + l - 4, ".png" ) ||
 		 !Q_stricmp( filename + l - 4, ".jpg" ) ||
@@ -2633,7 +2633,7 @@ char **FS_ListFilteredFiles( const char *path, const char *extension, char *filt
 				{
 					zpathLen = FS_ReturnPath( name, zpath, &depth );
 
-					if ( ( depth - pathDepth ) > 2 || pathLength > zpathLen || Q_stricmpn( name, path, pathLength ) )
+					if ( ( depth - pathDepth ) > 2 || pathLength > zpathLen || Q_strnicmp( name, path, pathLength ) )
 					{
 						continue;
 					}
@@ -2942,7 +2942,7 @@ int FS_GetModList( char *listbuf, int bufsize )
 		}
 
 		// we drop "baseq3" "." and ".."
-		if ( Q_stricmp( name, BASEGAME ) && Q_stricmpn( name, ".", 1 ) )
+		if ( Q_stricmp( name, BASEGAME ) && Q_strnicmp( name, ".", 1 ) )
 		{
 			// now we need to find some .pk3 files to validate the mod
 			// NOTE TTimo: (actually I'm not sure why .. what if it's a mod under developement with no .pk3?)
@@ -4034,7 +4034,7 @@ const char *FS_ReferencedPakChecksums( void )
 		// is the element a pak file?
 		if ( search->pack )
 		{
-			if ( search->pack->referenced || Q_stricmpn( search->pack->pakGamename, BASEGAME, strlen( BASEGAME ) ) )
+			if ( search->pack->referenced || Q_strnicmp( search->pack->pakGamename, BASEGAME, strlen( BASEGAME ) ) )
 			{
 				Q_strcat( info, sizeof( info ), va( "%i ", search->pack->checksum ) );
 			}
@@ -4066,7 +4066,7 @@ const char *FS_ReferencedPakNames( void )
 		// is the element a pak file?
 		if ( search->pack )
 		{
-			if ( search->pack->referenced || Q_stricmpn( search->pack->pakGamename, BASEGAME, strlen( BASEGAME ) ) )
+			if ( search->pack->referenced || Q_strnicmp( search->pack->pakGamename, BASEGAME, strlen( BASEGAME ) ) )
 			{
                                 if ( *info )
                                 {

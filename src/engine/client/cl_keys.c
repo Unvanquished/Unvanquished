@@ -1147,7 +1147,7 @@ static int Key_GetTeam( const char *arg, const char *cmd )
 	for ( t = 0; t < ARRAY_LEN( labels ); ++t )
 	{
 		// matching initial substring
-		if ( !Q_stricmpn( arg, labels[ t ].label, l ) )
+		if ( !Q_strnicmp( arg, labels[ t ].label, l ) )
 		{
 			return labels[ t ].team;
 		}

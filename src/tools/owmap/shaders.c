@@ -1134,7 +1134,7 @@ static void ParseShaderFile(const char *filename)
 				GetTokenAppend(shaderText, qfalse);
 
 				/* deformVertexes autosprite(2) */
-				if(!Q_strncasecmp(token, "autosprite", 10))
+				if(!Q_strnicmp(token, "autosprite", 10))
 				{
 					/* set it as autosprite and detail */
 					si->autosprite = qtrue;
@@ -1382,7 +1382,7 @@ static void ParseShaderFile(const char *filename)
 			}
 
 			/* match q3map_ */
-			else if(!Q_strncasecmp(token, "q3map_", 6))
+			else if(!Q_strnicmp(token, "q3map_", 6))
 			{
 				/* ydnar: q3map_baseShader <shader> (inherit this shader's parameters) */
 				if(!Q_stricmp(token, "q3map_baseShader"))

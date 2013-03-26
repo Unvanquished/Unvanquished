@@ -327,7 +327,7 @@ static void ConvertBrush(FILE * f, int num, bspBrush_t * brush, vec3_t origin)
 					buildSide->shaderInfo->shader);
 
 		/* get texture name */
-		if(!Q_strncasecmp(buildSide->shaderInfo->shader, "textures/", 9))
+		if(!Q_strnicmp(buildSide->shaderInfo->shader, "textures/", 9))
 			texture = buildSide->shaderInfo->shader + 9;
 		else
 			texture = buildSide->shaderInfo->shader;
@@ -373,7 +373,7 @@ for(i = 0; i < brush->numSides; i++)
 		continue;
 
 	/* get texture name */
-	if(!Q_strncasecmp(shader->shader, "textures/", 9))
+	if(!Q_strnicmp(shader->shader, "textures/", 9))
 		texture = shader->shader + 9;
 	else
 		texture = shader->shader;
@@ -442,7 +442,7 @@ static void ConvertPatch(FILE * f, int num, bspDrawSurface_t * ds, vec3_t origin
 	shader = &bspShaders[ds->shaderNum];
 
 	/* get texture name */
-	if(!Q_strncasecmp(shader->shader, "textures/", 9))
+	if(!Q_strnicmp(shader->shader, "textures/", 9))
 		texture = shader->shader + 9;
 	else
 		texture = shader->shader;

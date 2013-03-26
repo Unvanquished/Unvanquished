@@ -704,7 +704,7 @@ qboolean G_IsUnnamed( const char *name )
 	length = strlen( g_unnamedNamePrefix.string );
 
 	if ( g_unnamedNumbering.integer && length &&
-	     !Q_stricmpn( testName, g_unnamedNamePrefix.string, length ) )
+	     !Q_strnicmp( testName, g_unnamedNamePrefix.string, length ) )
 	{
 		return qtrue;
 	}
@@ -899,7 +899,7 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 	*out = 0;
 
 	// don't allow names beginning with "[skipnotify]" because it messes up /ignore-related code
-	if ( !Q_stricmpn( p, "[skipnotify]", 12 ) )
+	if ( !Q_strnicmp( p, "[skipnotify]", 12 ) )
 	{
 		invalid = qtrue;
 	}
