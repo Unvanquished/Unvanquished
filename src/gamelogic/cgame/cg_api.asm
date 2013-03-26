@@ -223,3 +223,7 @@ equ trap_Rocket_GetEventParameters        -461
 equ trap_Rocket_RegisterDataFormatter     -462
 equ trap_Rocket_DataFormatterRawData      -463
 equ trap_Rocket_DataFormatterFormattedData -464
+equ trap_Rocket_RegisterElement           -465
+equ trap_Rocket_SetElementDimensions      -466
+equ trap_Rocket_GetElementTag             -467
+equ trap_Rocket_KeyToQuake                -468

@@ -112,33 +112,3 @@ void Rocket_DocumentAction( const char *name, const char *action )
 		}
 	}
 }
-
-void Rocket_SetInnerRML( const char *name, const char *id, const char *RML )
-{
-	Rocket::Core::ElementDocument *document = context->GetDocument( name );
-	if ( document )
-	{
-		document->GetElementById( id )->SetInnerRML( RML );
-	}
-}
-
-
-void Rocket_GetAttribute( const char *name, const char *id, const char *attribute, char *out, int length )
-{
-	Rocket::Core::ElementDocument *document = context->GetDocument( name );
-
-	if ( document )
-	{
-		Q_strncpyz( out, document->GetElementById( id )->GetAttribute< Rocket::Core::String >( attribute, "" ).CString(), length );
-	}
-}
-
-void Rocket_SetAttribute( const char *name, const char *id, const char *attribute, const char *value )
-{
-	Rocket::Core::ElementDocument *document = context->GetDocument( name );
-
-	if ( document )
-	{
-		document->GetElementById( id )->SetAttribute( attribute, value );
-	}
-}

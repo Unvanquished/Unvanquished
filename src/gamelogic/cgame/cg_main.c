@@ -115,6 +115,14 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 			CG_Rocket_FormatData( arg0 );
 			return 0;
 
+		case CG_ROCKET_GETELEMENTDIMENSIONS:
+			CG_Rocket_SetElementDimensions();
+			return 0;
+
+		case CG_ROCKET_RENDERELEMENT:
+			CG_Rocket_RenderElement();
+			return 0;
+
 		default:
 			CG_Error( "vmMain(): unknown cgame command %i", command );
 	}

@@ -2140,7 +2140,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_SETCOLORGRADING:
 			re.SetColorGrading( args[1] );
 			return 0;
-			
+
 		case CG_ROCKET_INIT:
 			Rocket_Init();
 			return 0;
@@ -2279,6 +2279,29 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_ROCKET_DATAFORMATTERFORMATTEDDATA:
 			Rocket_DataFormatterFormattedData( args[1], VMA(2) );
 			return 0;
+
+		case CG_ROCKET_GETATTRIBUTE:
+			Rocket_GetAttribute( VMA(1), VMA(2), VMA(3), VMA(4), args[5] );
+			return 0;
+
+		case CG_ROCKET_SETATTRIBUTE:
+			Rocket_SetAttribute( VMA(1), VMA(2), VMA(3), VMA(4) );
+			return 0;
+
+		case CG_ROCKET_REGISTERELEMENT:
+			Rocket_RegisterElement( VMA(1) );
+			return 0;
+
+		case CG_ROCKET_SETELEMENTDIMENSIONS:
+			Rocket_SetElementDimensions( args[ 1 ], args[ 2 ] );
+			return 0;
+
+		case CG_ROCKET_GETELEMENTTAG:
+			Rocket_GetElementTag( VMA(1), args[ 2 ] );
+			return 0;
+
+		case CG_ROCKET_KEYTOQUAKE:
+			return Rocket_ToQuakeKey( args[ 1 ] );
 
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );

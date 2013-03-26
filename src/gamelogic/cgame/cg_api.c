@@ -1461,3 +1461,23 @@ void trap_Rocket_DataFormatterFormattedData( int handle, const char *data )
 {
 	syscall( CG_ROCKET_DATAFORMATTERFORMATTEDDATA, handle, data );
 }
+
+void trap_Rocket_RegisterElement( const char *tag )
+{
+	syscall( CG_ROCKET_REGISTERELEMENT, tag );
+}
+
+void trap_Rocket_SetElementDimensions( float x, float y )
+{
+	syscall( CG_ROCKET_SETELEMENTDIMENSIONS, PASSFLOAT( x ), PASSFLOAT( y ) );
+}
+
+void trap_Rocket_GetElementTag( char *tag, int length )
+{
+	syscall( CG_ROCKET_GETELEMENTTAG, tag, length );
+}
+
+int trap_Rocket_KeyToQuake( int key )
+{
+	return syscall( CG_ROCKET_KEYTOQUAKE, key );
+}

@@ -276,7 +276,12 @@ typedef enum cgameImport_s
   CG_ROCKET_GETEVENTPARAMETERS,
   CG_ROCKET_REGISTERDATAFORMATTER,
   CG_ROCKET_DATAFORMATTERRAWDATA,
-  CG_ROCKET_DATAFORMATTERFORMATTEDDATA
+  CG_ROCKET_DATAFORMATTERFORMATTEDDATA,
+  CG_ROCKET_REGISTERELEMENT,
+  CG_ROCKET_SETELEMENTDIMENSIONS,
+  CG_ROCKET_GETELEMENTTAG,
+  CG_ROCKET_KEYTOQUAKE
+
 } cgameImport_t;
 
 typedef enum
@@ -341,8 +346,14 @@ typedef enum
   CG_ROCKET_FRAME,
 // Rocket runs through a frame, including event processing
 
-  CG_ROCKET_FORMATDATA
+  CG_ROCKET_FORMATDATA,
 // Rocket wants some data formatted
+
+  CG_ROCKET_GETELEMENTDIMENSIONS,
+// Rocket wants to dimension some elements
+
+  CG_ROCKET_RENDERELEMENT
+// Rocket wants an element renderered
 } cgameExport_t;
 
 void            trap_Print( const char *string );
@@ -572,4 +583,8 @@ void            trap_Rocket_GetEventParameters( char *params, int length );
 void            trap_Rocket_RegisterDataFormatter( const char *name );
 void            trap_Rocket_DataFormatterRawData( int handle, char *name, int nameLength, char *data, int dataLength );
 void            trap_Rocket_DataFormatterFormattedData( int handle, const char *data );
+void            trap_Rocket_RegisterElement( const char *tag );
+void            trap_Rocket_SetElementDimensions( float x, float y );
+void            trap_Rocket_GetElementTag( char *tag, int length );
+int             trap_Rocket_KeyToQuake( int key );
 #endif

@@ -173,6 +173,9 @@ void CG_Rocket_Init( void )
 	trap_Rocket_RegisterDataSource( "server_browser" );
 	trap_Rocket_RegisterDataFormatter( "ServerPing" );
 
+	// Register elements
+	trap_Rocket_RegisterElement( "test" );
+
 	trap_Rocket_DocumentAction( "main", "open" );
 }
 
@@ -441,3 +444,31 @@ void CG_Rocket_FormatData( int handle )
 	}
 }
 
+static const char *CG_Rocket_GetTag()
+{
+	static char tag[ 100 ];
+
+	trap_Rocket_GetElementTag( tag, sizeof( tag ) );
+
+	return tag;
+}
+
+void CG_Rocket_SetElementDimensions( void )
+{
+	const char *tag = CG_Rocket_GetTag();
+
+	if ( Q_stricmp( tag, "test" ) )
+	{
+		trap_Rocket_SetElementDimensions( 100, 100 );
+	}
+}
+
+void CG_Rocket_RenderElement( void )
+{
+	const char *tag = CG_Rocket_GetTag();
+
+	if ( Q_stricmp( tag, "test" ) )
+	{
+		trap_Rocket_SetInnerRML( "", "", "<b>This is a test</b>" );
+	}
+}

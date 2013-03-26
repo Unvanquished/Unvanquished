@@ -1942,3 +1942,5 @@ void CG_Rocket_Init( void );
 void CG_Rocket_ProcessEvents( void );
 void CG_Rocket_Frame( void );
 void CG_Rocket_FormatData( int handle );
+void CG_Rocket_SetElementDimensions( void );
+void CG_Rocket_RenderElement( void );

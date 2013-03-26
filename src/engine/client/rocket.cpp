@@ -526,7 +526,7 @@ void Rocket_Update( void )
 }
 
 extern "C" int IN_SDLKeyToQuakeKey( int sym );
-int RocketToQuakeKey( const int rocketKey )
+int Rocket_ToQuakeKey( const int rocketKey )
 {
 	for ( int i = 0; i < SDL_arraysize( SDLK_keymap ); ++i )
 	{
