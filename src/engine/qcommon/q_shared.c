@@ -816,7 +816,7 @@ static char *SkipWhitespace( char *data, qboolean *hasNewLines )
 {
 	int c;
 
-	while ( ( c = *data ) <= ' ' )
+	while ( ( c = *data & 0xFF) <= ' ' )
 	{
 		if ( !c )
 		{
@@ -1058,7 +1058,7 @@ char *COM_ParseExt( char **data_p, qboolean allowLineBreaks )
 		}
 
 		data++;
-		c = *data;
+		c = *data & 0xFF;
 
 		if ( c == '\n' )
 		{
