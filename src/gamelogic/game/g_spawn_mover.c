@@ -2299,17 +2299,17 @@ void func_train_reached( gentity_t *self )
 Start_Train
 ================
 */
-void Start_Train( gentity_t *ent, gentity_t *other, gentity_t *activator )
+void Start_Train( gentity_t *self )
 {
 	vec3_t move;
 
 	//recalculate duration as the mover is highly
 	//unlikely to be right on a path_corner
-	VectorSubtract( ent->activatedPosition, ent->restingPosition, move );
-	ent->s.pos.trDuration = VectorLength( move ) * 1000 / ent->speed;
-	SetMoverState( ent, MOVER_1TO2, level.time );
+	VectorSubtract( self->activatedPosition, self->restingPosition, move );
+	self->s.pos.trDuration = VectorLength( move ) * 1000 / self->speed;
+	SetMoverState( self, MOVER_1TO2, level.time );
 
-	ent->spawnflags &= ~TRAIN_START_OFF;
+	self->spawnflags &= ~TRAIN_START_OFF;
 }
 
 /*
@@ -2317,16 +2317,16 @@ void Start_Train( gentity_t *ent, gentity_t *other, gentity_t *activator )
 Stop_Train
 ================
 */
-void Stop_Train( gentity_t *ent, gentity_t *other, gentity_t *activator )
+void Stop_Train( gentity_t *self )
 {
 	vec3_t origin;
 
 	//get current origin
-	BG_EvaluateTrajectory( &ent->s.pos, level.time, origin );
-	VectorCopy( origin, ent->restingPosition );
-	SetMoverState( ent, MOVER_POS1, level.time );
+	BG_EvaluateTrajectory( &self->s.pos, level.time, origin );
+	VectorCopy( origin, self->restingPosition );
+	SetMoverState( self, MOVER_POS1, level.time );
 
-	ent->spawnflags |= TRAIN_START_OFF;
+	self->spawnflags |= TRAIN_START_OFF;
 }
 
 /*
@@ -2339,12 +2339,12 @@ void func_train_act( gentity_t *ent, gentity_t *other, gentity_t *activator )
 	if ( ent->spawnflags & TRAIN_START_OFF )
 	{
 		//train is currently not moving so start it
-		Start_Train( ent, other, activator );
+		Start_Train( ent );
 	}
 	else
 	{
 		//train is moving so stop it
-		Stop_Train( ent, other, activator );
+		Stop_Train( ent );
 	}
 }
 
@@ -2419,7 +2419,7 @@ void func_train_blocked( gentity_t *self, gentity_t *other )
 {
 	if ( self->spawnflags & TRAIN_BLOCK_STOPS )
 	{
-		Stop_Train( self, other, other );
+		Stop_Train( self );
 	}
 	else
 	{
