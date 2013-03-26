@@ -980,7 +980,7 @@ void G_InitDamageLocations( void )
 
 	for ( i = PCL_NONE + 1; i < PCL_NUM_CLASSES; i++ )
 	{
-		modelName = BG_ClassConfig( i )->modelName;
+		modelName = BG_ClassModelConfig( i )->modelName;
 		Com_sprintf( filename, sizeof( filename ),
 		             "models/players/%s/locdamage.cfg", modelName );
 

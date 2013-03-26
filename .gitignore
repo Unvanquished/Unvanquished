@@ -19,6 +19,7 @@ main/cgame.*
 main/game.*
 main/ui.*
 main/vm
+main/*.pk3
 libglcpp-library.a
 libglsl_optimizer.a
 libmesa.a

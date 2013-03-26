@@ -382,7 +382,7 @@ void ParsePatch(qboolean onlyLights, qboolean patchDef3)
 	pm->brushNum = entitySourceBrushes;
 
 	/* set shader */
-	if(!Q_strncasecmp(texture, "textures/", 9))
+	if(!Q_strnicmp(texture, "textures/", 9))
 		sprintf(shader, "%s", texture);
 	else
 		sprintf(shader, "textures/%s", texture);

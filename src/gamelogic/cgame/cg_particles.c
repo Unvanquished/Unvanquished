@@ -565,7 +565,7 @@ qhandle_t CG_RegisterParticleSystem( const char *name )
 	{
 		bps = &baseParticleSystems[ i ];
 
-		if ( !Q_stricmpn( bps->name, name, MAX_QPATH ) )
+		if ( !Q_strnicmp( bps->name, name, MAX_QPATH ) )
 		{
 			//already registered
 			if ( bps->registered )

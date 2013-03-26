@@ -478,7 +478,7 @@ static qboolean R_LoadPSA( skelAnimation_t *skelAnim, void *buffer, int bufferSi
 	GetChunkHeader( stream, &chunkHeader );
 
 	// check indent again
-	if ( Q_stricmpn( chunkHeader.ident, "ANIMHEAD", 8 ) )
+	if ( Q_strnicmp( chunkHeader.ident, "ANIMHEAD", 8 ) )
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadPSA: '%s' has wrong chunk indent ('%s' should be '%s')\n", name, chunkHeader.ident, "ANIMHEAD" );
 		FreeMemStream( stream );
@@ -490,7 +490,7 @@ static qboolean R_LoadPSA( skelAnimation_t *skelAnim, void *buffer, int bufferSi
 	// read reference bones
 	GetChunkHeader( stream, &chunkHeader );
 
-	if ( Q_stricmpn( chunkHeader.ident, "BONENAMES", 9 ) )
+	if ( Q_strnicmp( chunkHeader.ident, "BONENAMES", 9 ) )
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadPSA: '%s' has wrong chunk indent ('%s' should be '%s')\n", name, chunkHeader.ident, "BONENAMES" );
 		FreeMemStream( stream );
@@ -568,7 +568,7 @@ static qboolean R_LoadPSA( skelAnimation_t *skelAnim, void *buffer, int bufferSi
 	// load animation info
 	GetChunkHeader( stream, &chunkHeader );
 
-	if ( Q_stricmpn( chunkHeader.ident, "ANIMINFO", 8 ) )
+	if ( Q_strnicmp( chunkHeader.ident, "ANIMINFO", 8 ) )
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadPSA: '%s' has wrong chunk indent ('%s' should be '%s')\n", name, chunkHeader.ident, "ANIMINFO" );
 		FreeMemStream( stream );
@@ -678,7 +678,7 @@ static qboolean R_LoadPSA( skelAnimation_t *skelAnim, void *buffer, int bufferSi
 	// load the animation frame keys
 	GetChunkHeader( stream, &chunkHeader );
 
-	if ( Q_stricmpn( chunkHeader.ident, "ANIMKEYS", 8 ) )
+	if ( Q_strnicmp( chunkHeader.ident, "ANIMKEYS", 8 ) )
 	{
 		ri.Printf( PRINT_WARNING, "R_LoadPSA: '%s' has wrong chunk indent ('%s' should be '%s')\n", name, chunkHeader.ident, "ANIMKEYS" );
 		FreeMemStream( stream );
@@ -821,11 +821,11 @@ qhandle_t RE_RegisterAnimation( const char *name )
 		return 0;
 	}
 
-	if ( !Q_stricmpn( ( const char * ) buffer, "MD5Version", 10 ) )
+	if ( !Q_strnicmp( ( const char * ) buffer, "MD5Version", 10 ) )
 	{
 		loaded = R_LoadMD5Anim( anim, buffer, bufferLen, name );
 	}
-	else if ( !Q_stricmpn( ( const char * ) buffer, "ANIMHEAD", 8 ) )
+	else if ( !Q_strnicmp( ( const char * ) buffer, "ANIMHEAD", 8 ) )
 	{
 		loaded = R_LoadPSA( anim, buffer, bufferLen, name );
 	}
