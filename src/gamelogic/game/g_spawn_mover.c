@@ -1174,34 +1174,11 @@ void reset_moverspeed( gentity_t *self, float fallbackSpeed )
 	}
 }
 
-/*
-================
-InitMover
-
-"pos1", "pos2", and "speed" should be set before calling,
-so the movement delta can be calculated
-================
-*/
-void InitMover( gentity_t *ent )
+static void SP_ConstantLightField( gentity_t *self )
 {
-	float    light;
-	vec3_t   color;
-	qboolean lightSet, colorSet;
-	char     *sound;
-	char     *groupName;
-
-	// if the "model2" key is set, use a separate model
-	// for drawing, but clip against the brushes
-	if ( ent->model2 )
-	{
-		ent->s.modelindex2 = G_ModelIndex( ent->model2 );
-	}
-
-	// if the "noise" key is set, use a constant looping sound when moving
-	if ( G_SpawnString( "noise", "", &sound ) )
-	{
-		ent->soundIndex = G_SoundIndex( sound );
-	}
+	qboolean  lightSet, colorSet;
+	float     light;
+	vec3_t    color;
 
 	// if the "color" or "light" keys are set, setup constantLight
 	lightSet = G_SpawnFloat( "light", "100", &light );
@@ -1239,8 +1216,37 @@ void InitMover( gentity_t *ent )
 			i = 255;
 		}
 
-		ent->s.constantLight = r | ( g << 8 ) | ( b << 16 ) | ( i << 24 );
+		self->s.constantLight = r | ( g << 8 ) | ( b << 16 ) | ( i << 24 );
 	}
+}
+
+/*
+================
+InitMover
+
+"pos1", "pos2", and "speed" should be set before calling,
+so the movement delta can be calculated
+================
+*/
+void InitMover( gentity_t *ent )
+{
+	char     *sound;
+	char     *groupName;
+
+	// if the "model2" key is set, use a separate model
+	// for drawing, but clip against the brushes
+	if ( ent->model2 )
+	{
+		ent->s.modelindex2 = G_ModelIndex( ent->model2 );
+	}
+
+	// if the "noise" key is set, use a constant looping sound when moving
+	if ( G_SpawnString( "noise", "", &sound ) )
+	{
+		ent->soundIndex = G_SoundIndex( sound );
+	}
+
+	SP_ConstantLightField( ent );
 
 	ent->act = BinaryMover_act;
 	ent->reached = BinaryMover_reached;
@@ -1297,9 +1303,6 @@ so the movement delta can be calculated
 */
 void InitRotator( gentity_t *ent )
 {
-	float    light;
-	vec3_t   color;
-	qboolean lightSet, colorSet;
 	char     *sound;
 	char     *groupName;
 
@@ -1316,44 +1319,7 @@ void InitRotator( gentity_t *ent )
 		ent->soundIndex = G_SoundIndex( sound );
 	}
 
-	// if the "color" or "light" keys are set, setup constantLight
-	lightSet = G_SpawnFloat( "light", "100", &light );
-	colorSet = G_SpawnVector( "color", "1 1 1", color );
-
-	if ( lightSet || colorSet )
-	{
-		int r, g, b, i;
-
-		r = color[ 0 ] * 255;
-
-		if ( r > 255 )
-		{
-			r = 255;
-		}
-
-		g = color[ 1 ] * 255;
-
-		if ( g > 255 )
-		{
-			g = 255;
-		}
-
-		b = color[ 2 ] * 255;
-
-		if ( b > 255 )
-		{
-			b = 255;
-		}
-
-		i = light / 4;
-
-		if ( i > 255 )
-		{
-			i = 255;
-		}
-
-		ent->s.constantLight = r | ( g << 8 ) | ( b << 16 ) | ( i << 24 );
-	}
+	SP_ConstantLightField( ent );
 
 	ent->act = BinaryMover_act;
 	ent->reached = BinaryMover_reached;
@@ -1887,9 +1853,6 @@ void func_door_model_reset( gentity_t *self )
 void SP_func_door_model( gentity_t *self )
 {
 	char      *s;
-	float     light;
-	vec3_t    color;
-	qboolean  lightSet, colorSet;
 	char      *sound;
 	gentity_t *clipBrush;
 
@@ -1957,44 +1920,7 @@ void SP_func_door_model( gentity_t *self )
 		self->soundIndex = G_SoundIndex( sound );
 	}
 
-	// if the "color" or "light" keys are set, setup constantLight
-	lightSet = G_SpawnFloat( "light", "100", &light );
-	colorSet = G_SpawnVector( "color", "1 1 1", color );
-
-	if ( lightSet || colorSet )
-	{
-		int r, g, b, i;
-
-		r = color[ 0 ] * 255;
-
-		if ( r > 255 )
-		{
-			r = 255;
-		}
-
-		g = color[ 1 ] * 255;
-
-		if ( g > 255 )
-		{
-			g = 255;
-		}
-
-		b = color[ 2 ] * 255;
-
-		if ( b > 255 )
-		{
-			b = 255;
-		}
-
-		i = light / 4;
-
-		if ( i > 255 )
-		{
-			i = 255;
-		}
-
-		self->s.constantLight = r | ( g << 8 ) | ( b << 16 ) | ( i << 24 );
-	}
+	SP_ConstantLightField( self );
 
 	self->act = BinaryMover_act;
 

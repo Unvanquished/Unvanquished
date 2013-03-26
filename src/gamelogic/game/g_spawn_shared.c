@@ -191,4 +191,3 @@ void SP_WaitFields( gentity_t *self, float defaultWait, float defaultWaitVarianc
 }
 
 
-
