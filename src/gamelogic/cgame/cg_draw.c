@@ -4685,7 +4685,7 @@ static void CG_Draw2D( void )
 	if ( cg.snap->ps.persistant[ PERS_SPECSTATE ] == SPECTATOR_NOT &&
 	     cg.snap->ps.stats[ STAT_HEALTH ] > 0 )
 	{
-		menu = Menus_FindByName( BG_ClassConfig(
+		menu = Menus_FindByName( BG_ClassModelConfig(
 		                           cg.predictedPlayerState.stats[ STAT_CLASS ] )->hudName );
 
 		CG_DrawBuildableStatus();

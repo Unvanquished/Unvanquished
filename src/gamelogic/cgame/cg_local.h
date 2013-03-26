@@ -1580,6 +1580,7 @@ extern vmCvar_t             cg_projectileNudge;
 extern vmCvar_t             cg_voice;
 
 extern vmCvar_t             cg_emoticons;
+extern vmCvar_t             cg_emoticonsInMessages;
 
 extern vmCvar_t             cg_chatTeamPrefix;
 

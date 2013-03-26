@@ -240,7 +240,7 @@ void SetQdirFromPath( const char *path )
 	{
 		int i;
 
-		if (!Q_strncasecmp (c, BASEDIRNAME, len))
+		if (!Q_strnicmp (c, BASEDIRNAME, len))
 		{
       //
 			//strncpy (qdir, path, c+len+2-path);
@@ -528,7 +528,7 @@ skipwhite:
 }
 
 
-int Q_strncasecmp (const char *s1, const char *s2, int n)
+int Q_strnicmp (const char *s1, const char *s2, int n)
 {
 	int		c1, c2;
 
@@ -547,7 +547,7 @@ int Q_strncasecmp (const char *s1, const char *s2, int n)
 			if (c2 >= 'a' && c2 <= 'z')
 				c2 -= ('a' - 'A');
 			if (c1 != c2)
-				return -1;		// strings not equal
+				return c1 < c2 ? -1 : 1; // strings not equal
 		}
 	} while (c1);
 
@@ -556,7 +556,7 @@ int Q_strncasecmp (const char *s1, const char *s2, int n)
 
 int Q_stricmp (const char *s1, const char *s2)
 {
-	return Q_strncasecmp (s1, s2, 99999);
+	return Q_strnicmp (s1, s2, 99999);
 }
 
 

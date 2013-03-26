@@ -704,7 +704,7 @@ qboolean G_IsUnnamed( const char *name )
 	length = strlen( g_unnamedNamePrefix.string );
 
 	if ( g_unnamedNumbering.integer && length &&
-	     !Q_stricmpn( testName, g_unnamedNamePrefix.string, length ) )
+	     !Q_strnicmp( testName, g_unnamedNamePrefix.string, length ) )
 	{
 		return qtrue;
 	}
@@ -899,7 +899,7 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 	*out = 0;
 
 	// don't allow names beginning with "[skipnotify]" because it messes up /ignore-related code
-	if ( !Q_stricmpn( p, "[skipnotify]", 12 ) )
+	if ( !Q_strnicmp( p, "[skipnotify]", 12 ) )
 	{
 		invalid = qtrue;
 	}
@@ -1120,17 +1120,17 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 		//model details to that of the spawning class or the info change will not be
 		//registered and an axis appears instead of the player model. There is zero chance
 		//the player can spawn with the battlesuit, hence this choice.
-		Com_sprintf( buffer, MAX_QPATH, "%s/%s",  BG_ClassConfig( PCL_HUMAN_BSUIT )->modelName,
-		             BG_ClassConfig( PCL_HUMAN_BSUIT )->skinName );
+		Com_sprintf( buffer, MAX_QPATH, "%s/%s",  BG_ClassModelConfig( PCL_HUMAN_BSUIT )->modelName,
+		             BG_ClassModelConfig( PCL_HUMAN_BSUIT )->skinName );
 	}
 	else
 	{
-		Com_sprintf( buffer, MAX_QPATH, "%s/%s",  BG_ClassConfig( client->pers.classSelection )->modelName,
-		             BG_ClassConfig( client->pers.classSelection )->skinName );
+		Com_sprintf( buffer, MAX_QPATH, "%s/%s",  BG_ClassModelConfig( client->pers.classSelection )->modelName,
+		             BG_ClassModelConfig( client->pers.classSelection )->skinName );
 
 		//model segmentation
 		Com_sprintf( filename, sizeof( filename ), "models/players/%s/animation.cfg",
-		             BG_ClassConfig( client->pers.classSelection )->modelName );
+		             BG_ClassModelConfig( client->pers.classSelection )->modelName );
 
 		if ( G_NonSegModel( filename ) )
 		{

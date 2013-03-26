@@ -1427,7 +1427,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 // portable case insensitive compare
 	int        Q_stricmp( const char *s1, const char *s2 );
 	int        Q_strncmp( const char *s1, const char *s2, int n );
-	int        Q_stricmpn( const char *s1, const char *s2, int n );
+	int        Q_strnicmp( const char *s1, const char *s2, int n );
 	char       *Q_strlwr( char *s1 );
 	char       *Q_strupr( char *s1 );
 	char       *Q_strrchr( const char *string, int c );
@@ -1448,10 +1448,7 @@ double rint( double x );
 
 #endif
 	void     Q_strcat( char *dest, int destsize, const char *src );
-	int      Q_strnicmp( const char *string1, const char *string2, int n );
 	void     Q_strncpyz2( char *dst, const char *src, int dstSize );
-	int      Q_strcasecmp( const char *s1, const char *s2 );
-	int      Q_strncasecmp( const char *s1, const char *s2, int n );
 	qboolean Q_strreplace( char *dest, int destsize, const char *find, const char *replace );
 
 	int      Com_Filter( const char *filter, const char *name, int casesensitive );

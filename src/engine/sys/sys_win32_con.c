@@ -358,7 +358,7 @@ static int     win_historyLine = 0;
 
 static void Win_FindIndexMatch( const char *s )
 {
-	if ( Q_stricmpn( s, win_completionString, strlen( win_completionString ) ) )
+	if ( Q_strnicmp( s, win_completionString, strlen( win_completionString ) ) )
 	{
 		return;
 	}
@@ -375,7 +375,7 @@ static void Win_FindMatches( const char *s )
 {
 	int i;
 
-	if ( Q_stricmpn( s, win_completionString, strlen( win_completionString ) ) )
+	if ( Q_strnicmp( s, win_completionString, strlen( win_completionString ) ) )
 	{
 		return;
 	}
@@ -448,7 +448,7 @@ static void Win_ConcatRemaining( const char *src, const char *start )
 
 static void Win_PrintMatches( const char *s )
 {
-	if ( !Q_stricmpn( s, win_currentMatch, win_acLength ) )
+	if ( !Q_strnicmp( s, win_currentMatch, win_acLength ) )
 	{
 		Sys_Print( va( "  ^9%s^0\n", s ) );
 	}
@@ -457,7 +457,7 @@ static void Win_PrintMatches( const char *s )
 // ydnar: to display cvar values
 static void Win_PrintCvarMatches( const char *s )
 {
-	if ( !Q_stricmpn( s, win_currentMatch, win_acLength ) )
+	if ( !Q_strnicmp( s, win_currentMatch, win_acLength ) )
 	{
 		Sys_Print( va( "  ^9%s = ^5%s^0\n", s, Cvar_VariableString( s ) ) );
 	}

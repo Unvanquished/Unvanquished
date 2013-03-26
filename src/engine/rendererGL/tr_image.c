@@ -2348,7 +2348,7 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 	// see if the image is already loaded
 	for ( image = r_imageHashTable[ hash ]; image; image = image->next )
 	{
-		if ( !Q_stricmpn( buffer, image->name, sizeof( image->name ) ) )
+		if ( !Q_strnicmp( buffer, image->name, sizeof( image->name ) ) )
 		{
 			// the white image can be used with any set of parms, but other mismatches are errors
 			if ( Q_stricmp( buffer, "_white" ) )
@@ -2383,7 +2383,7 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 #endif
 
 #if 0
-	if ( glConfig.textureCompression == TC_S3TC && !( bits & IF_NOCOMPRESSION ) && Q_stricmpn( imageName, "fonts", 5 ) )
+	if ( glConfig.textureCompression == TC_S3TC && !( bits & IF_NOCOMPRESSION ) && Q_strnicmp( imageName, "fonts", 5 ) )
 	{
 		Q_strncpyz( ddsName, imageName, sizeof( ddsName ) );
 		COM_StripExtension3( ddsName, ddsName, sizeof( ddsName ) );
@@ -2402,7 +2402,7 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 #endif
 
 #if 0
-	else if ( r_tryCachedDDSImages->integer && !( bits & IF_NOCOMPRESSION ) && Q_strncasecmp( name, "fonts", 5 ) )
+	else if ( r_tryCachedDDSImages->integer && !( bits & IF_NOCOMPRESSION ) && Q_strnicmp( name, "fonts", 5 ) )
 	{
 		Q_strncpyz( ddsName, "dds/", sizeof( ddsName ) );
 		Q_strcat( ddsName, sizeof( ddsName ), name );
@@ -2442,7 +2442,7 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 #endif
 
 #if 0
-	//if(r_tryCachedDDSImages->integer && !(bits & IF_NOCOMPRESSION) && Q_strncasecmp(name, "fonts", 5))
+	//if(r_tryCachedDDSImages->integer && !(bits & IF_NOCOMPRESSION) && Q_strnicmp(name, "fonts", 5))
 	{
 		// try to cache a .dds texture to the XreaL/<mod>/dds/ folder
 		SavePNG( ddsName, pic, width, height, 4, qtrue );
@@ -2694,7 +2694,7 @@ image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t f
 	// TODO
 #else
 
-	if ( glConfig.textureCompression == TC_S3TC && !( bits & IF_NOCOMPRESSION ) && Q_stricmpn( imageName, "fonts", 5 ) )
+	if ( glConfig.textureCompression == TC_S3TC && !( bits & IF_NOCOMPRESSION ) && Q_strnicmp( imageName, "fonts", 5 ) )
 	{
 		Q_strncpyz( ddsName, imageName, sizeof( ddsName ) );
 		COM_StripExtension3( ddsName, ddsName, sizeof( ddsName ) );
@@ -2713,7 +2713,7 @@ image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t f
 #endif
 
 #if 0
-	else if ( r_tryCachedDDSImages->integer && !( bits & IF_NOCOMPRESSION ) && Q_strncasecmp( name, "fonts", 5 ) )
+	else if ( r_tryCachedDDSImages->integer && !( bits & IF_NOCOMPRESSION ) && Q_strnicmp( name, "fonts", 5 ) )
 	{
 		Q_strncpyz( ddsName, "dds/", sizeof( ddsName ) );
 		Q_strcat( ddsName, sizeof( ddsName ), name );

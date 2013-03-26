@@ -84,12 +84,17 @@ void CG_Rocket_Init( void )
 	trap_Rocket_Init();
 
 	// load overrides
-	BG_InitClassConfigs();
-	BG_InitBuildableConfigs();
+	BG_InitClassAttributes();
+	BG_InitClassModelConfigs();
+	BG_InitBuildableAttributes();
+	BG_InitBuildableModelConfigs();
+	BG_InitWeaponAttributes();
+	BG_InitUpgradeAttributes();
 	BG_InitAllowedGameElements();
 
 	// Dynamic memory
 	BG_InitMemory();
+
 
 	// rocket cvars
 	CG_RegisterRocketCvars();
@@ -318,7 +323,7 @@ static void CG_Rocket_EventCvarForm( const char *args )
 	while ( *s )
 	{
 		Info_NextPair( &s, key, value );
-		if ( !Q_stricmpn( "cvar ", key, 5 ) )
+		if ( !Q_strnicmp( "cvar ", key, 5 ) )
 		{
 
 			trap_Cvar_Set( key + 5, value );

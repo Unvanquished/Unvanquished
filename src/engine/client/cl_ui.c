@@ -542,7 +542,7 @@ static int LAN_CompareServers( int source, int sortKey, int sortDir, int s1, int
 	if ( ( server1->label[ 0 ] && server1->ping <= FEATURED_MAXPING ) ||
 	     ( server2->label[ 0 ] && server2->ping <= FEATURED_MAXPING ) )
 	{
-		res = Q_stricmpn( server1->label, server2->label, MAX_FEATLABEL_CHARS );
+		res = Q_strnicmp( server1->label, server2->label, MAX_FEATLABEL_CHARS );
 
 		if ( res )
 		{

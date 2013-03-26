@@ -57,8 +57,7 @@ static void CG_UpdateRadarVisibility( void ) {
 				cent->radarVisibility = MAX( cent->radarVisibility - fadeOut * msec, 0.0f );
 			}
 		} else if ( cent->currentState.eType == ET_PLAYER ) {
-			const classAttributes_t *cls = BG_Class( (cent->currentState.misc >> 8) & 0xff );
-			float fadeOut = cls->radarFadeOut;
+			float fadeOut = BG_Class( (cent->currentState.misc >> 8) & 0xff )->radarFadeOut;
 			clientInfo_t *ci = &cgs.clientinfo[ cent->currentState.clientNum ];
 
 			if ( ci->nonsegmented ) {
