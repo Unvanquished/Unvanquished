@@ -2089,7 +2089,6 @@ static void R_CoherentHierachicalCulling()
 		R_BindNullFBO();
 	}
 
-	gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
 	gl_genericShader->DisableVertexSkinning();
 	gl_genericShader->DisableVertexAnimation();
 	gl_genericShader->DisableDeformVertexes();
@@ -2107,6 +2106,7 @@ static void R_CoherentHierachicalCulling()
 	            tr.viewParms.viewportWidth, tr.viewParms.viewportHeight );
 
 	// set uniforms
+	gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 	gl_genericShader->SetUniform_ColorModulate( CGEN_CONST, AGEN_CONST );
 	gl_genericShader->SetUniform_Color( colorWhite );
 

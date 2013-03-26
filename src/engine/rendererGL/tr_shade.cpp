@@ -559,8 +559,6 @@ static void DrawTris()
 {
 	GLimp_LogComment( "--- DrawTris ---\n" );
 
-	gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
-
 	gl_genericShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 	gl_genericShader->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
 
@@ -573,6 +571,7 @@ static void DrawTris()
 
 	GL_State( GLS_POLYMODE_LINE | GLS_DEPTHMASK_TRUE );
 
+	gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 	if ( r_showBatches->integer || r_showLightBatches->integer )
 	{
 		gl_genericShader->SetUniform_Color( g_color_table[ backEnd.pc.c_batches % 8 ] );
@@ -746,7 +745,7 @@ static void Render_generic( int stage )
 	}
 
 	// u_AlphaTest
-	gl_genericShader->Set_AlphaTest( pStage->stateBits );
+	gl_genericShader->SetUniform_AlphaTest( pStage->stateBits );
 
 	// u_ColorGen
 	switch ( pStage->rgbGen )
@@ -866,7 +865,7 @@ static void Render_vertexLighting_DBS_entity( int stage )
 	VectorCopy( backEnd.currentEntity->lightDir, lightDir );
 
 	// u_AlphaTest
-	gl_vertexLightingShader_DBS_entity->Set_AlphaTest( pStage->stateBits );
+	gl_vertexLightingShader_DBS_entity->SetUniform_AlphaTest( pStage->stateBits );
 
 	gl_vertexLightingShader_DBS_entity->SetUniform_AmbientColor( ambientColor );
 	gl_vertexLightingShader_DBS_entity->SetUniform_ViewOrigin( viewOrigin );
@@ -1123,7 +1122,7 @@ static void Render_vertexLighting_DBS_world( int stage )
 	gl_vertexLightingShader_DBS_world->SetUniform_ViewOrigin( viewOrigin );
 	gl_vertexLightingShader_DBS_world->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
-	gl_vertexLightingShader_DBS_world->Set_AlphaTest( pStage->stateBits );
+	gl_vertexLightingShader_DBS_world->SetUniform_AlphaTest( pStage->stateBits );
 	if ( r_parallaxMapping->integer )
 	{
 		float depthScale;
@@ -1250,7 +1249,7 @@ static void Render_lightMapping( int stage, bool asColorMap, bool normalMapping 
 
 	gl_lightMappingShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
 	gl_lightMappingShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-	gl_lightMappingShader->Set_AlphaTest( pStage->stateBits );
+	gl_lightMappingShader->SetUniform_AlphaTest( pStage->stateBits );
 
 	// u_ColorModulate
 	gl_lightMappingShader->SetUniform_ColorModulate( rgbGen, alphaGen );
@@ -1380,7 +1379,7 @@ static void Render_geometricFill( int stage, bool cmap2black )
 	}
 	*/
 
-	gl_geometricFillShader->Set_AlphaTest( pStage->stateBits );
+	gl_geometricFillShader->SetUniform_AlphaTest( pStage->stateBits );
 	gl_geometricFillShader->SetUniform_ViewOrigin( backEnd.viewParms.orientation.origin );  // world space
 //	gl_geometricFillShader->SetUniform_AmbientColor(ambientColor);
 
@@ -1511,7 +1510,7 @@ static void Render_depthFill( int stage )
 	}
 
 	// u_AlphaTest
-	gl_genericShader->Set_AlphaTest( pStage->stateBits );
+	gl_genericShader->SetUniform_AlphaTest( pStage->stateBits );
 
 	// u_ColorModulate
 	gl_genericShader->SetUniform_ColorModulate( CGEN_CONST, AGEN_CONST );
@@ -1612,7 +1611,7 @@ static void Render_shadowFill( int stage )
 		gl_shadowFillShader->SetUniform_Color( shadowMapColor );
 	}
 
-	gl_shadowFillShader->Set_AlphaTest( pStage->stateBits );
+	gl_shadowFillShader->SetUniform_AlphaTest( pStage->stateBits );
 
 	if ( backEnd.currentLight->l.rlType != RL_DIRECTIONAL )
 	{
@@ -1726,7 +1725,7 @@ static void Render_forwardLighting_DBS_omni( shaderStage_t *diffuseStage,
 	// u_Color
 	gl_forwardLightingShader_omniXYZ->SetUniform_Color( tess.svars.color );
 
-	gl_forwardLightingShader_omniXYZ->Set_AlphaTest( diffuseStage->stateBits );
+	gl_forwardLightingShader_omniXYZ->SetUniform_AlphaTest( diffuseStage->stateBits );
 
 	if ( r_parallaxMapping->integer )
 	{
@@ -1924,7 +1923,7 @@ static void Render_forwardLighting_DBS_proj( shaderStage_t *diffuseStage,
 	// u_Color
 	gl_forwardLightingShader_projXYZ->SetUniform_Color( tess.svars.color );
 
-	gl_forwardLightingShader_projXYZ->Set_AlphaTest( diffuseStage->stateBits );
+	gl_forwardLightingShader_projXYZ->SetUniform_AlphaTest( diffuseStage->stateBits );
 
 	if ( r_parallaxMapping->integer )
 	{
@@ -2124,7 +2123,7 @@ static void Render_forwardLighting_DBS_directional( shaderStage_t *diffuseStage,
 	// u_Color
 	gl_forwardLightingShader_directionalSun->SetUniform_Color( tess.svars.color );
 
-	gl_forwardLightingShader_directionalSun->Set_AlphaTest( diffuseStage->stateBits );
+	gl_forwardLightingShader_directionalSun->SetUniform_AlphaTest( diffuseStage->stateBits );
 
 	if ( r_parallaxMapping->integer )
 	{
@@ -2581,8 +2580,6 @@ static void Render_heatHaze( int stage )
 		GL_State( stateBits );
 
 		// choose right shader program ----------------------------------
-		gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
-
 		gl_genericShader->SetVertexSkinning( glConfig2.vboVertexSkinningAvailable && tess.vboVertexSkinning );
 		gl_genericShader->SetVertexAnimation( glState.vertexAttribsInterpolation > 0 );
 
@@ -2592,6 +2589,7 @@ static void Render_heatHaze( int stage )
 		gl_genericShader->BindProgram();
 		// end choose right shader program ------------------------------
 
+		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		// u_ColorModulate
 		gl_genericShader->SetUniform_ColorModulate( CGEN_CONST, AGEN_CONST );
 
