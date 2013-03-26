@@ -22,6 +22,7 @@ main/vm
 libglcpp-library.a
 libglsl_optimizer.a
 libmesa.a
+libROCKET_LIB.a
 build-32/*
 build-64/*
 *.vcxproj.user
