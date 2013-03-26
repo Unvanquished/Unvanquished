@@ -264,8 +264,8 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	 *	=============
 	 *
 	 */
-	{ "game_score",               SP_game_score,             CHAIN_PASSIV,     ENT_V_CURRENT, NULL },
 	{ "game_end",                 SP_game_end,               CHAIN_PASSIV,     ENT_V_CURRENT, NULL },
+	{ "game_score",               SP_game_score,             CHAIN_PASSIV,     ENT_V_CURRENT, NULL },
 
 	/**
 	 * former information and misc entities
