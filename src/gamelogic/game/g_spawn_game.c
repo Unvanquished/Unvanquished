@@ -101,3 +101,25 @@ void SP_game_end( gentity_t *self )
 {
 	self->act = game_end_act;
 }
+
+/*
+=================================================================================
+
+game_kill
+
+=================================================================================
+*/
+void game_kill_act( gentity_t *self, gentity_t *other, gentity_t *activator )
+{
+	if ( !activator )
+	{
+		return;
+	}
+
+	G_Damage( activator, NULL, NULL, NULL, NULL, 100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG );
+}
+
+void SP_game_kill( gentity_t *self )
+{
+	self->act = game_kill_act;
+}

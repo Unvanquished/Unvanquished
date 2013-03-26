@@ -68,7 +68,7 @@ void    SP_sensor_timer( gentity_t *self );
 
 void    SP_target_print( gentity_t *self );
 void    SP_target_teleporter( gentity_t *self );
-void    SP_target_kill( gentity_t *self );
+void    SP_game_kill( gentity_t *self );
 void    SP_target_push( gentity_t *self );
 void    SP_target_alien_win( gentity_t *self );
 void    SP_target_human_win( gentity_t *self );

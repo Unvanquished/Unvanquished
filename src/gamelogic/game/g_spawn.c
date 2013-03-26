@@ -266,6 +266,8 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	 */
 	{ "game_end",                 SP_game_end,               CHAIN_PASSIV,     ENT_V_CURRENT, NULL },
 	{ "game_score",               SP_game_score,             CHAIN_PASSIV,     ENT_V_CURRENT, NULL },
+	{ "game_kill",                SP_game_kill,              CHAIN_PASSIV,     ENT_V_CURRENT, NULL },
+
 
 	/**
 	 * former information and misc entities
@@ -331,7 +333,7 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ "target_delay",             SP_ctrl_relay,             CHAIN_RELAY,      ENT_V_TMPNAME, "ctrl_relay" },
 	{ "target_human_win",         SP_target_human_win,       CHAIN_PASSIV,     ENT_V_TMPNAME, "game_end" },
 	{ "target_hurt",              SP_target_hurt,            CHAIN_PASSIV,     ENT_V_UNCLEAR, NULL },
-	{ "target_kill",              SP_target_kill,            CHAIN_PASSIV,     ENT_V_UNCLEAR, NULL },
+	{ "target_kill",              SP_game_kill,              CHAIN_PASSIV,     ENT_V_RENAMED, "game_kill" },
 	{ "target_location",          SP_pos_location,           CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "pos_location" },
 	{ "target_position",          SP_pos_target,             CHAIN_TARGET,     ENT_V_TMPNAME, "pos_target" },
 	{ "target_print",             SP_target_print,           CHAIN_PASSIV,     ENT_V_UNCLEAR, NULL },

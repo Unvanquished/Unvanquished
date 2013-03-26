@@ -156,28 +156,6 @@ void SP_target_teleporter( gentity_t *self )
 /*
 =================================================================================
 
-target_kill
-
-=================================================================================
-*/
-void target_kill_act( gentity_t *self, gentity_t *other, gentity_t *activator )
-{
-	if ( !activator )
-	{
-		return;
-	}
-
-	G_Damage( activator, NULL, NULL, NULL, NULL, 100000, DAMAGE_NO_PROTECTION, MOD_TELEFRAG );
-}
-
-void SP_target_kill( gentity_t *self )
-{
-	self->act = target_kill_act;
-}
-
-/*
-=================================================================================
-
 target_hurt
 
 =================================================================================
