@@ -94,6 +94,14 @@ void CG_Rocket_Init( void )
 	// rocket cvars
 	CG_RegisterRocketCvars();
 
+
+	// Intialize data sources...
+	trap_Rocket_RegisterDataSource( "server_browser" );
+	trap_Rocket_RegisterDataFormatter( "ServerPing" );
+
+	// Register elements
+	trap_Rocket_RegisterElement( "test" );
+
 	rocketInfo.rocketState = IDLE;
 
 	// Preload all the menu files...
@@ -168,13 +176,6 @@ void CG_Rocket_Init( void )
 			continue;
 		}
 	}
-
-	// Intialize data sources...
-	trap_Rocket_RegisterDataSource( "server_browser" );
-	trap_Rocket_RegisterDataFormatter( "ServerPing" );
-
-	// Register elements
-	trap_Rocket_RegisterElement( "test" );
 
 	trap_Rocket_DocumentAction( "main", "open" );
 }
@@ -457,7 +458,7 @@ void CG_Rocket_SetElementDimensions( void )
 {
 	const char *tag = CG_Rocket_GetTag();
 
-	if ( Q_stricmp( tag, "test" ) )
+	if ( !Q_stricmp( tag, "test" ) )
 	{
 		trap_Rocket_SetElementDimensions( 100, 100 );
 	}
@@ -467,8 +468,8 @@ void CG_Rocket_RenderElement( void )
 {
 	const char *tag = CG_Rocket_GetTag();
 
-	if ( Q_stricmp( tag, "test" ) )
+	if ( !Q_stricmp( tag, "test" ) )
 	{
-		trap_Rocket_SetInnerRML( "", "", "<b>This is a test</b>" );
+		trap_Rocket_SetInnerRML( "", "", "<span style='font-size: 5em;'><b>This is a test</b></span>" );
 	}
 }

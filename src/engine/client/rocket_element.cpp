@@ -35,6 +35,8 @@ Maryland 20850 USA.
 #include "rocketElement.h"
 #include <Rocket/Core/Core.h>
 #include <Rocket/Core/Factory.h>
+#include <Rocket/Core/ElementInstancer.h>
+#include <Rocket/Core/ElementInstancerGeneric.h>
 extern "C"
 {
 #include "client.h"
@@ -62,14 +64,12 @@ void Rocket_SetElementDimensions( float x, float y )
 
 void Rocket_RegisterElement( const char *tag )
 {
-	Rocket::Core::ElementInstancer *instancer = new RocketElementInstancer();
-	Rocket::Core::Factory::RegisterElementInstancer( tag, instancer );
-	instancer->RemoveReference();
+	Rocket::Core::Factory::RegisterElementInstancer( tag, new Rocket::Core::ElementInstancerGeneric< RocketElement >() )->RemoveReference();
 }
 
 void Rocket_SetInnerRML( const char *name, const char *id, const char *RML )
 {
-	if ( ( !name || !id ) && activeElement )
+	if ( ( !*name || !*id ) && activeElement )
 	{
 		activeElement->SetInnerRML( RML );
 	}
@@ -86,7 +86,7 @@ void Rocket_SetInnerRML( const char *name, const char *id, const char *RML )
 
 void Rocket_GetAttribute( const char *name, const char *id, const char *attribute, char *out, int length )
 {
-	if ( ( !name || !id ) && activeElement )
+	if ( ( !*name || !*id ) && activeElement )
 	{
 		Q_strncpyz( out, activeElement->GetAttribute< Rocket::Core::String >( attribute, "" ).CString(), length );
 	}
@@ -103,7 +103,7 @@ void Rocket_GetAttribute( const char *name, const char *id, const char *attribut
 
 void Rocket_SetAttribute( const char *name, const char *id, const char *attribute, const char *value )
 {
-	if ( ( !name || !id ) && activeElement )
+	if ( ( !*name || !*id ) && activeElement )
 	{
 		activeElement->SetAttribute( attribute, value );
 	}
