@@ -992,7 +992,7 @@ void G_LoadCensors( void )
 void G_CensorString( char *out, const char *in, int len, gentity_t *ent )
 {
 	const char *s, *m;
-	int        i;
+	int        i, ch, bytes;
 
 	if ( !numcensors || G_admin_permission( ent, ADMF_NOCENSORFLOOD ) )
 	{
@@ -1017,15 +1017,20 @@ void G_CensorString( char *out, const char *in, int len, gentity_t *ent )
 			continue;
 		}
 
-		if ( !isalnum( *in ) )
+		ch = Q_UTF8_CodePoint( in );
+
+		if ( !Q_Unicode_IsAlphaOrIdeoOrDigit( ch ) )
 		{
 			if ( len < 1 )
 			{
 				break;
 			}
 
-			*out++ = *in++;
-			len--;
+			bytes = Q_UTF8_WidthCP( ch );
+			memcpy( out, in, bytes );
+			out += bytes;
+			in += bytes;
+			len -= bytes;
 			continue;
 		}
 
@@ -1043,19 +1048,22 @@ void G_CensorString( char *out, const char *in, int len, gentity_t *ent )
 					continue;
 				}
 
-				if ( !isalnum( *s ) )
+				ch = Q_UTF8_CodePoint( s );
+				bytes = Q_UTF8_WidthCP( ch );
+
+				if ( !Q_Unicode_IsAlphaOrIdeoOrDigit( ch ) )
 				{
-					s++;
+					s += bytes;
 					continue;
 				}
 
-				if ( tolower( *s ) != *m )
+				if ( Q_Unicode_ToLower( ch ) != Q_UTF8_CodePoint( m ) )
 				{
 					break;
 				}
 
-				s++;
-				m++;
+				s += bytes;
+				m += Q_UTF8_Width( m );
 			}
 
 			// match
@@ -1063,33 +1071,17 @@ void G_CensorString( char *out, const char *in, int len, gentity_t *ent )
 			{
 				in = s;
 				m++;
-
-				while ( *m )
-				{
-					if ( len < 1 )
-					{
-						break;
-					}
-
-					*out++ = *m++;
-					len--;
-				}
-
+				bytes = strlen( m );
+				bytes = MIN( bytes, len );
+				memcpy( out, m, bytes );
+				out += bytes;
+				len -= bytes;
 				break;
 			}
 			else
 			{
-				while ( *m )
-				{
-					m++;
-				}
-
-				m++;
-
-				while ( *m )
-				{
-					m++;
-				}
+				m += strlen( m ) + 1;
+				m += strlen( m );
 			}
 		}
 
@@ -1101,8 +1093,11 @@ void G_CensorString( char *out, const char *in, int len, gentity_t *ent )
 		// no match
 		if ( i == numcensors )
 		{
-			*out++ = *in++;
-			len--;
+			bytes = Q_UTF8_WidthCP( ch );
+			memcpy( out, in, bytes );
+			out += bytes;
+			in += bytes;
+			len -= bytes;
 		}
 	}
 
