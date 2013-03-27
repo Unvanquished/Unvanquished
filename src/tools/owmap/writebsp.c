@@ -309,7 +309,7 @@ void SetLightStyles(void)
 		e = &entities[i];
 
 		t = ValueForKey(e, "classname");
-		if(Q_strncasecmp(t, "light", 5))
+		if(Q_strnicmp(t, "light", 5))
 			continue;
 		t = ValueForKey(e, "name");
 		if(t[0] == '\0')

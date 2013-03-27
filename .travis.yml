@@ -1,0 +1,24 @@
+language:
+  - c
+  - c++
+
+compiler:
+  - clang
+  - gcc
+
+install:
+  - sudo sh -c 'echo deb http://debs.unvanquished.net precise main >>/etc/apt/sources.list'
+  - sudo apt-key adv --keyserver x-hkp://pool.sks-keyservers.net --recv-key 06AF4C14
+  - sudo apt-get -qq update
+  - sudo apt-get -qq install cmake libwebp-dev libglew-dev libgmp-dev libjpeg8-dev libcurl4-gnutls-dev libfreetype6-dev libncursesw5-dev libogg-dev libopenal-dev libpng-dev libsdl1.2-dev libsm-dev libspeexdsp-dev libtheora-dev libvorbis-dev libxvidcore-dev nettle-dev zlib1g-dev
+
+script:
+  - mkdir build
+  - cd build
+  - cmake -DBUILD_DAEMONMAP=TRUE -DENABLE_W_ALL=TRUE ..
+  - cmake --build .
+
+notifications:
+  irc: "irc.freenode.org#unvanquished-dev"
+  on_success: change
+  on_failure: always

@@ -351,86 +351,81 @@ int BotValueOfUpgrades( gentity_t *self )
 }
 void BotGetDesiredBuy( gentity_t *self, weapon_t *weapon, upgrade_t *upgrades, int *numUpgrades )
 {
+	int i;
 	int equipmentPrice = BotValueOfWeapons( self ) + BotValueOfUpgrades( self );
 	int credits = self->client->ps.persistant[PERS_CREDIT];
 	int usableCapital = credits + equipmentPrice;
 
 	//decide what upgrade(s) to buy
-	if ( g_humanStage.integer >= 2 && usableCapital >= ( PAINSAW_PRICE + BSUIT_PRICE ) )
+	if ( g_humanStage.integer >= 2 && usableCapital >= ( BG_Weapon( WP_PAIN_SAW )->price + BG_Upgrade( UP_BATTLESUIT )->price ) )
 	{
 		upgrades[0] = UP_BATTLESUIT;
 		*numUpgrades = 1;
-		usableCapital -= BSUIT_PRICE;
 	}
-	else if ( g_humanStage.integer >= 1 && usableCapital >= ( SHOTGUN_PRICE + LIGHTARMOUR_PRICE + HELMET_PRICE ) )
+	else if ( g_humanStage.integer >= 1 && usableCapital >= ( BG_Weapon( WP_SHOTGUN )->price + BG_Upgrade( UP_LIGHTARMOUR )->price + BG_Upgrade( UP_HELMET )->price ) )
 	{
 		upgrades[0] = UP_LIGHTARMOUR;
 		upgrades[1] = UP_HELMET;
 		*numUpgrades = 2;
-		usableCapital = usableCapital - ( LIGHTARMOUR_PRICE + HELMET_PRICE );
 	}
-	else if ( g_humanStage.integer >= 0 && usableCapital >= ( PAINSAW_PRICE + LIGHTARMOUR_PRICE ) )
+	else if ( g_humanStage.integer >= 0 && usableCapital >= ( BG_Weapon( WP_PAIN_SAW )->price + BG_Upgrade( UP_LIGHTARMOUR )->price ) )
 	{
 		upgrades[0] = UP_LIGHTARMOUR;
 		*numUpgrades = 1;
-		usableCapital -= LIGHTARMOUR_PRICE;
 	}
 	else
 	{
 		*numUpgrades = 0;
 	}
 
-	//now decide what weapon to buy
-	if ( g_humanStage.integer >= 2  && usableCapital >= LCANNON_PRICE && g_bot_lcannon.integer )
+	for (i = 0; i < *numUpgrades; i++)
 	{
-		*weapon = WP_LUCIFER_CANNON;
-		usableCapital -= LCANNON_PRICE;
+		usableCapital -= BG_Upgrade( upgrades[i] )->price;
 	}
-	else if ( g_humanStage.integer >= 2 && usableCapital >= CHAINGUN_PRICE && upgrades[0] == UP_BATTLESUIT && g_bot_chaingun.integer )
+
+	//now decide what weapon to buy
+	if ( g_humanStage.integer >= 2  && usableCapital >= BG_Weapon( WP_LUCIFER_CANNON )->price && g_bot_lcannon.integer )
+	{
+		*weapon = WP_LUCIFER_CANNON;;
+	}
+	else if ( g_humanStage.integer >= 2 && usableCapital >= BG_Weapon( WP_CHAINGUN )->price && upgrades[0] == UP_BATTLESUIT && g_bot_chaingun.integer )
 	{
 		*weapon = WP_CHAINGUN;
-		usableCapital -= CHAINGUN_PRICE;
 	}
-	else if ( g_humanStage.integer >= 1 && g_alienStage.integer < 2 && usableCapital >= FLAMER_PRICE && g_bot_flamer.integer )
+	else if ( g_humanStage.integer >= 1 && g_alienStage.integer < 2 && usableCapital >= BG_Weapon( WP_FLAMER )->price && g_bot_flamer.integer )
 	{
 		*weapon = WP_FLAMER;
-		usableCapital -= FLAMER_PRICE;
 	}
-	else if ( g_humanStage.integer >= 1 && usableCapital >= PRIFLE_PRICE && g_bot_prifle.integer )
+	else if ( g_humanStage.integer >= 1 && usableCapital >= BG_Weapon( WP_PULSE_RIFLE )->price && g_bot_prifle.integer )
 	{
 		*weapon = WP_PULSE_RIFLE;
-		usableCapital -= PRIFLE_PRICE;
 	}
-	else if ( g_humanStage.integer >= 0 && usableCapital >= CHAINGUN_PRICE && g_bot_chaingun.integer )
+	else if ( g_humanStage.integer >= 0 && usableCapital >= BG_Weapon( WP_CHAINGUN )->price && g_bot_chaingun.integer )
 	{
-		*weapon = WP_CHAINGUN;
-		usableCapital -= CHAINGUN_PRICE;
+		*weapon = WP_CHAINGUN;;
 	}
-	else if ( g_humanStage.integer >= 0 && usableCapital >= MDRIVER_PRICE && g_bot_mdriver.integer )
+	else if ( g_humanStage.integer >= 0 && usableCapital >= BG_Weapon( WP_MASS_DRIVER )->price && g_bot_mdriver.integer )
 	{
 		*weapon = WP_MASS_DRIVER;
-		usableCapital -= MDRIVER_PRICE;
 	}
-	else if ( g_humanStage.integer >= 0 && usableCapital >= LASGUN_PRICE && g_bot_lasgun.integer )
+	else if ( g_humanStage.integer >= 0 && usableCapital >= BG_Weapon( WP_LAS_GUN )->price && g_bot_lasgun.integer )
 	{
 		*weapon = WP_LAS_GUN;
-		usableCapital -= LASGUN_PRICE;
 	}
-	else if ( g_humanStage.integer >= 0 && usableCapital >= SHOTGUN_PRICE && g_bot_shotgun.integer )
+	else if ( g_humanStage.integer >= 0 && usableCapital >= BG_Weapon( WP_SHOTGUN )->price && g_bot_shotgun.integer )
 	{
 		*weapon = WP_SHOTGUN;
-		usableCapital -= SHOTGUN_PRICE;
 	}
-	else if ( g_humanStage.integer >= 0 && usableCapital >= PAINSAW_PRICE && g_bot_painsaw.integer )
+	else if ( g_humanStage.integer >= 0 && usableCapital >= BG_Weapon( WP_PAIN_SAW )->price && g_bot_painsaw.integer )
 	{
 		*weapon = WP_PAIN_SAW;
-		usableCapital -= PAINSAW_PRICE;
 	}
 	else
 	{
 		*weapon = WP_MACHINEGUN;
-		usableCapital -= RIFLE_PRICE;
 	}
+
+	usableCapital -= BG_Weapon( *weapon )->price;
 
 	//finally, see if we can buy a battpack
 	if ( BG_Weapon( *weapon )->usesEnergy && usableCapital >= BATTPACK_PRICE && g_humanStage.integer >= 1 && upgrades[0] != UP_BATTLESUIT )
@@ -829,11 +824,11 @@ AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node )
 
 	BotGetTargetPos( self->botMind->goal, targetPos );
 	VectorCopy( self->s.origin, myPos );
-	targetPos[2] += BG_BuildableConfig( BA_H_MEDISTAT )->maxs[2];
+	targetPos[2] += BG_BuildableModelConfig( BA_H_MEDISTAT )->maxs[2];
 	myPos[2] += self->r.mins[2]; //mins is negative
 
 	//keep moving to the medi until we are on top of it
-	if ( DistanceSquared( myPos, targetPos ) > Square( BG_BuildableConfig( BA_H_MEDISTAT )->mins[1] ) )
+	if ( DistanceSquared( myPos, targetPos ) > Square( BG_BuildableModelConfig( BA_H_MEDISTAT )->mins[1] ) )
 	{
 		BotMoveToGoal( self );
 	}

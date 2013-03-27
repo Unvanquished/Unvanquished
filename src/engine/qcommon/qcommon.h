@@ -133,9 +133,6 @@ float MSG_ReadAngle16( msg_t *sb );
 void  MSG_ReadData( msg_t *sb, void *buffer, int size );
 int   MSG_LookaheadByte( msg_t *msg );
 
-void  MSG_WriteDeltaUsercmd( msg_t *msg, struct usercmd_s *from, struct usercmd_s *to );
-void  MSG_ReadDeltaUsercmd( msg_t *msg, struct usercmd_s *from, struct usercmd_s *to );
-
 void  MSG_WriteDeltaUsercmdKey( msg_t *msg, int key, usercmd_t *from, usercmd_t *to );
 void  MSG_ReadDeltaUsercmdKey( msg_t *msg, int key, usercmd_t *from, usercmd_t *to );
 
@@ -1184,6 +1181,7 @@ void     SV_Shutdown( char *finalmsg );
 void     SV_Frame( int msec );
 void     SV_PacketEvent( netadr_t from, msg_t *msg );
 qboolean SV_GameCommand( void );
+int      SV_FrameMsec( void );
 
 //
 // UI interface
@@ -1257,8 +1255,6 @@ void                  Sys_Print( const char *msg );
 // any game related timing information should come from event timestamps
 int           Sys_Milliseconds( void );
 
-void          Sys_SnapVector( float *v );
-
 qboolean      Sys_RandomBytes( byte *string, int len );
 
 // the system console is shown when a dedicated server is running
@@ -1278,6 +1274,7 @@ qboolean      Sys_StringToAdr( const char *s, netadr_t *a, netadrtype_t family )
 qboolean Sys_IsLANAddress( netadr_t adr );
 void     Sys_ShowIP( void );
 
+FILE     *Sys_FOpen( const char *ospath, const char *mode );
 qboolean Sys_Mkdir( const char *path );
 FILE     *Sys_Mkfifo( const char *ospath );
 char     *Sys_Cwd( void );

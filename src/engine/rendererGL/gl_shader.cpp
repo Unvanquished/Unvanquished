@@ -2429,6 +2429,7 @@ void GLShader_cameraEffects::SetShaderProgramUniformLocations( shaderProgram_t *
 	shaderProgram->u_CurrentMap = glGetUniformLocation( shaderProgram->program, "u_CurrentMap" );
 	shaderProgram->u_GrainMap = glGetUniformLocation( shaderProgram->program, "u_GrainMap" );
 	shaderProgram->u_VignetteMap = glGetUniformLocation( shaderProgram->program, "u_VignetteMap" );
+	shaderProgram->u_ColorMap = glGetUniformLocation( shaderProgram->program, "u_ColorMap" );
 }
 
 void GLShader_cameraEffects::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
@@ -2436,6 +2437,7 @@ void GLShader_cameraEffects::SetShaderProgramUniforms( shaderProgram_t *shaderPr
 	glUniform1i( shaderProgram->u_CurrentMap, 0 );
 	glUniform1i( shaderProgram->u_GrainMap, 1 );
 	glUniform1i( shaderProgram->u_VignetteMap, 2 );
+	glUniform1i( shaderProgram->u_ColorMap, 3 );
 }
 
 GLShader_blurX::GLShader_blurX() :

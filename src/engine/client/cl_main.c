@@ -35,6 +35,7 @@ Maryland 20850 USA.
 // cl_main.c  -- client main loop
 
 #include "client.h"
+#include "../qcommon/q_unicode.h"
 #include <limits.h>
 
 #include "snd_local.h" // fretn
@@ -447,20 +448,20 @@ void CL_VoipParseTargets( void )
 		}
 		else
 		{
-			if ( !Q_stricmpn( target, "all", 3 ) )
+			if ( !Q_strnicmp( target, "all", 3 ) )
 			{
 				Com_Memset( clc.voipTargets, ~0, sizeof( clc.voipTargets ) );
 				return;
 			}
 
-			else if ( !Q_stricmpn( target, "spatial", 7 ) )
+			else if ( !Q_strnicmp( target, "spatial", 7 ) )
 			{
 				clc.voipFlags |= VOIP_SPATIAL;
 				target += 7;
 				continue;
 			}
 
-			else if ( !Q_stricmpn( target, "team", 4 ) )
+			else if ( !Q_strnicmp( target, "team", 4 ) )
 			{
 				int i = 0;
 
@@ -493,12 +494,12 @@ void CL_VoipParseTargets( void )
 
 			else
 			{
-				if ( !Q_stricmpn( target, "attacker", 8 ) )
+				if ( !Q_strnicmp( target, "attacker", 8 ) )
 				{
 					val = VM_Call( cgvm, CG_LAST_ATTACKER );
 					target += 8;
 				}
-				else if ( !Q_stricmpn( target, "crosshair", 9 ) )
+				else if ( !Q_strnicmp( target, "crosshair", 9 ) )
 				{
 					val = VM_Call( cgvm, CG_CROSSHAIR_PLAYER );
 					target += 9;
@@ -1412,7 +1413,7 @@ void CL_PlayDemo_f( void )
 		Com_Error( ERR_DROP, "couldn't open %s", name );
 	}
 
-	Q_strncpyz( clc.demoName, Cmd_Argv( 1 ), sizeof( clc.demoName ) );
+	Q_strncpyz( clc.demoName, arg, sizeof( clc.demoName ) );
 
 	Con_Close();
 
@@ -1424,7 +1425,7 @@ void CL_PlayDemo_f( void )
 		CL_WriteWaveOpen();
 	}
 
-	Q_strncpyz( cls.servername, Cmd_Argv( 1 ), sizeof( cls.servername ) );
+	Q_strncpyz( cls.servername, arg, sizeof( cls.servername ) );
 
 	// read demo messages until connected
 	while ( cls.state >= CA_CONNECTED && cls.state < CA_PRIMED )
@@ -3033,18 +3034,18 @@ void CL_PrintPacket( netadr_t from, msg_t *msg )
 
 	s = MSG_ReadBigString( msg );
 
-	if ( !Q_stricmpn( s, "[err_dialog]", 12 ) )
+	if ( !Q_strnicmp( s, "[err_dialog]", 12 ) )
 	{
 		Q_strncpyz( clc.serverMessage, s + 12, sizeof( clc.serverMessage ) );
 		// Cvar_Set("com_errorMessage", clc.serverMessage );
 		Com_Error( ERR_DROP, "%s", clc.serverMessage );
 	}
-	else if ( !Q_stricmpn( s, "[err_prot]", 10 ) )
+	else if ( !Q_strnicmp( s, "[err_prot]", 10 ) )
 	{
 		Q_strncpyz( clc.serverMessage, s + 10, sizeof( clc.serverMessage ) );
 		Com_Error( ERR_DROP, "%s", PROTOCOL_MISMATCH_ERROR_LONG );
 	}
-	else if ( !Q_stricmpn( s, "ET://", 5 ) )
+	else if ( !Q_strnicmp( s, "ET://", 5 ) )
 	{
 		// fretn
 		Q_strncpyz( clc.serverMessage, s, sizeof( clc.serverMessage ) );
@@ -5845,7 +5846,7 @@ void CL_GetClipboardData( char *buf, int buflen, clipboard_t clip )
 		}
 		else
 		{
-			int w = Q_UTF8Width( clean + i );
+			int w = Q_UTF8_Width( clean + i );
 
 			if ( j + w >= buflen )
 			{

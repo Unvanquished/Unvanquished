@@ -382,7 +382,7 @@ static cvarTable_t gameCvarTable[] =
 
 	{ &g_censorship,                  "g_censorship",                  "",                                 CVAR_ARCHIVE,                                    0, qfalse           },
 
-	{ &g_tag,                         "g_tag",                         "gpp",                              CVAR_INIT,                                       0, qfalse           },
+	{ &g_tag,                         "g_tag",                         "unv",                              CVAR_INIT,                                       0, qfalse           },
 
 	{ &g_showKillerHP,                "g_showKillerHP",                "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_combatCooldown,              "g_combatCooldown",              "15",                               CVAR_ARCHIVE,                                    0, qfalse           },
@@ -826,6 +826,9 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 
 	trap_SetConfigstring( CS_INTERMISSION, "0" );
 
+	// we need the entity names before we can spawn them
+	BG_InitBuildableAttributes();
+
 	// test to see if a custom buildable layout will be loaded
 	G_LayoutSelect();
 
@@ -846,8 +849,11 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	// general initialization
 	G_FindTeams();
 
-	BG_InitClassConfigs();
-	BG_InitBuildableConfigs();
+	BG_InitClassAttributes();
+	BG_InitClassModelConfigs();
+	BG_InitBuildableModelConfigs();
+	BG_InitWeaponAttributes();
+	BG_InitUpgradeAttributes();
 	G_InitDamageLocations();
 	G_InitMapRotations();
 	G_InitSpawnQueue( &level.alienSpawnQueue );
@@ -2597,7 +2603,7 @@ void G_ExecuteVote( team_t team )
 		G_MapLog_Result( 'r' );
 		level.restarted = qtrue;
 	}
-	else if ( !Q_stricmpn( level.voteString[ team ], "map", 3 ) )
+	else if ( !Q_strnicmp( level.voteString[ team ], "map", 3 ) )
 	{
 		G_MapLog_Result( 'm' );
 		level.restarted = qtrue;
@@ -2884,7 +2890,7 @@ void G_RunFrame( int levelTime )
 
 	// generate public-key messages
 	G_admin_pubkey();
-	
+
 
 	// get any cvar changes
 	G_UpdateCvars();

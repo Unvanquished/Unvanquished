@@ -355,6 +355,25 @@ char *strstr( const char *string, const char *strCharSet )
 	return ( char * ) 0;
 }
 
+void *BG_Alloc( int size );
+char *strdup( const char *string )
+{
+    size_t length;
+    char *copy;
+
+    length = strlen(string) + 1;
+    copy = (char *)BG_Alloc(length);
+
+    if(copy == NULL)
+    {
+        return NULL;
+    }
+    else
+    {
+        return memcpy(copy, string, length);
+    }
+}
+
 int tolower( int c )
 {
 	if ( c >= 'A' && c <= 'Z' )
@@ -1675,7 +1694,7 @@ double strtod( const char *nptr, char **endptr )
 	}
 
 	// special string parsing
-	if ( Q_stricmpn( nptr, "nan", 3 ) == 0 )
+	if ( Q_strnicmp( nptr, "nan", 3 ) == 0 )
 	{
 		floatint_t nan;
 
@@ -1711,7 +1730,7 @@ double strtod( const char *nptr, char **endptr )
 		return nan.f;
 	}
 
-	if ( Q_stricmpn( nptr, "inf", 3 ) == 0 )
+	if ( Q_strnicmp( nptr, "inf", 3 ) == 0 )
 	{
 		floatint_t inf;
 		inf.ui = 0x7f800000;
@@ -1721,7 +1740,7 @@ double strtod( const char *nptr, char **endptr )
 			return inf.f;
 		}
 
-		if ( Q_stricmpn( &nptr[ 3 ], "inity", 5 ) == 0 )
+		if ( Q_strnicmp( &nptr[ 3 ], "inity", 5 ) == 0 )
 		{
 			*endptr = ( char * ) &nptr[ 8 ];
 		}
@@ -1746,7 +1765,7 @@ double strtod( const char *nptr, char **endptr )
 	}
 
 	// hex
-	if ( Q_stricmpn( nptr, "0x", 2 ) == 0 )
+	if ( Q_strnicmp( nptr, "0x", 2 ) == 0 )
 	{
 		// track if we use any digits
 		const char *s = &nptr[ 1 ], *end = s;

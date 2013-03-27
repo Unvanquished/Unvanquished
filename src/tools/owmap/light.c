@@ -234,9 +234,9 @@ void CreateEntityLights(void)
 		name = ValueForKey(e, "classname");
 
 		/* ydnar: check for lightJunior */
-		if(Q_strncasecmp(name, "lightJunior", 11) == 0)
+		if(Q_strnicmp(name, "lightJunior", 11) == 0)
 			junior = qtrue;
-		else if(Q_strncasecmp(name, "light", 5) == 0)
+		else if(Q_strnicmp(name, "light", 5) == 0)
 			junior = qfalse;
 		else
 			continue;

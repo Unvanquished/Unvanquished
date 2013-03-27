@@ -86,16 +86,18 @@ static void CG_ParseTeamInfo( void )
 	int i;
 	int count;
 	int client;
-	int fields;
 
-	fields = ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_ALIENS ) ? 5 : 6; // aliens don't have upgrades
-	count = ( trap_Argc( ) - 1 ) / fields;
+	count = trap_Argc();
 
-	cgs.teamInfoReceived = qtrue;
-
-	for ( i = 0; i < count; i++ )
+	for ( i = 1; i < count; ++i ) // i is also incremented when writing into cgs.clientinfo
 	{
-		client = atoi( CG_Argv( i * fields + 1 ) );
+		client = atoi( CG_Argv( i ) );
+
+		// wrong team? skip to the next one
+		if ( cgs.clientinfo[ client ].team != cg.snap->ps.stats[ STAT_TEAM ] )
+		{
+			return;
+		}
 
 		if ( client < 0 || client >= MAX_CLIENTS )
 		{
@@ -103,15 +105,18 @@ static void CG_ParseTeamInfo( void )
 			return;
 		}
 
-		cgs.clientinfo[ client ].location = atoi( CG_Argv( i * fields + 2 ) );
-		cgs.clientinfo[ client ].health = atoi( CG_Argv( i * fields + 3 ) );
-		cgs.clientinfo[ client ].curWeaponClass = atoi( CG_Argv( i * fields + 4 ) );
-		cgs.clientinfo[ client ].credit = atoi( CG_Argv( i * fields + 5 ) );
+		cgs.clientinfo[ client ].location       = atoi( CG_Argv( ++i ) );
+		cgs.clientinfo[ client ].health         = atoi( CG_Argv( ++i ) );
+		cgs.clientinfo[ client ].curWeaponClass = atoi( CG_Argv( ++i ) );
+		cgs.clientinfo[ client ].credit         = atoi( CG_Argv( ++i ) );
+
 		if( cg.snap->ps.stats[ STAT_TEAM ] != TEAM_ALIENS )
 		{
-			cgs.clientinfo[ client ].upgrade = atoi( CG_Argv( i * fields + 6 ) );
-        }
+			cgs.clientinfo[ client ].upgrade = atoi( CG_Argv( ++i ) );
+		}
 	}
+
+	cgs.teamInfoReceived = qtrue;
 }
 
 /*
@@ -863,7 +868,7 @@ void CG_Menu( int menu, int arg )
 
 		case MN_A_CANTEVOLVE:
 			shortMsg = va( _("You cannot evolve into a %s"),
-			               _( BG_ClassConfig( arg )->humanName ) );
+			               _( BG_ClassModelConfig( arg )->humanName ) );
 			type = DT_ARMOURYEVOLVE;
 			break;
 
@@ -879,19 +884,19 @@ void CG_Menu( int menu, int arg )
 
 		case MN_A_CLASSNOTSPAWN:
 			shortMsg = va( _("You cannot spawn as a %s"),
-			               _( BG_ClassConfig( arg )->humanName ) );
+			               _( BG_ClassModelConfig( arg )->humanName ) );
 			type = DT_ARMOURYEVOLVE;
 			break;
 
 		case MN_A_CLASSNOTALLOWED:
 			shortMsg = va( _("The %s is not allowed"),
-			               _( BG_ClassConfig( arg )->humanName ) );
+			               _( BG_ClassModelConfig( arg )->humanName ) );
 			type = DT_ARMOURYEVOLVE;
 			break;
 
 		case MN_A_CLASSNOTATSTAGE:
 			shortMsg = va( _("The %s is not allowed at Stage %d"),
-			               _( BG_ClassConfig( arg )->humanName ),
+			               _( BG_ClassModelConfig( arg )->humanName ),
 			               cgs.alienStage + 1 );
 			type = DT_ARMOURYEVOLVE;
 			break;
@@ -1045,7 +1050,7 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 	}
 
 	// IRC-like /me parsing
-	if ( mode != SAY_RAW && Q_stricmpn( text, "/me ", 4 ) == 0 )
+	if ( mode != SAY_RAW && Q_strnicmp( text, "/me ", 4 ) == 0 )
 	{
 		text += 4;
 		Q_strcat( prefix, sizeof( prefix ), "* " );

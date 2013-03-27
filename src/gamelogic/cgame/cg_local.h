@@ -576,6 +576,7 @@ typedef struct lightFlareStatus_s
 	float    lastRatio; //caching of likely flare ratio
 	int      lastTime; //last time flare was visible/occluded
 	qboolean status; //flare is visible?
+	qhandle_t hTest;
 } lightFlareStatus_t;
 
 typedef struct buildableStatus_s
@@ -1499,6 +1500,7 @@ extern  vmCvar_t            cg_timescale;
 extern  vmCvar_t            cg_noTaunt;
 extern  vmCvar_t            cg_drawSurfNormal;
 extern  vmCvar_t            cg_drawBBOX;
+extern  vmCvar_t            cg_drawEntityInfo;
 extern  vmCvar_t            cg_wwSmoothTime;
 extern  vmCvar_t            cg_disableBlueprintErrors;
 extern  vmCvar_t            cg_depthSortParticles;
@@ -1558,6 +1560,7 @@ extern vmCvar_t             cg_projectileNudge;
 extern vmCvar_t             cg_voice;
 
 extern vmCvar_t             cg_emoticons;
+extern vmCvar_t             cg_emoticonsInMessages;
 
 extern vmCvar_t             cg_chatTeamPrefix;
 

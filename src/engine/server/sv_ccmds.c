@@ -175,6 +175,7 @@ static void SV_Map_f( void )
 	char     mapname[ MAX_QPATH ];
 	qboolean cheat;
 	char     expanded[ MAX_QPATH ];
+	char     layout[ MAX_CVAR_VALUE_STRING ];
 
 	map = Cmd_Argv( 1 );
 
@@ -194,16 +195,10 @@ static void SV_Map_f( void )
 		return;
 	}
 
-	cmd = Cmd_Argv( 0 );
+	// layout(s) - note that ArgsFrom adds quoting which we don't want here
+	Cvar_Set( "g_layouts", Cmd_UnquoteString( Cmd_ArgsFrom( 2 ) ) );
 
-	if ( !Q_stricmp( cmd, "devmap" ) )
-	{
-		cheat = qtrue;
-	}
-	else
-	{
-		cheat = qfalse;
-	}
+	cheat = !Q_stricmp( Cmd_Argv( 0 ), "devmap" );
 
 	// save the map name here cause on a map restart we reload the q3config.cfg
 	// and thus nuke the arguments of the map command
@@ -216,14 +211,7 @@ static void SV_Map_f( void )
 	// if the level was started with "map <levelname>", then
 	// cheats will not be allowed.  If started with "devmap <levelname>"
 	// then cheats will be allowed
-	if ( cheat )
-	{
-		Cvar_Set( "sv_cheats", "1" );
-	}
-	else
-	{
-		Cvar_Set( "sv_cheats", "0" );
-	}
+	Cvar_Set( "sv_cheats", cheat ? "1" : "0" );
 }
 
 void MSG_PrioritiseEntitystateFields( void );
@@ -538,6 +526,10 @@ static void SV_CompleteMapName( char *args, int argNum )
 	if ( argNum == 2 )
 	{
 		Field_CompleteFilename( "maps", "bsp", qtrue );
+	}
+	else if ( argNum >= 3 )
+	{
+		Field_CompleteFilename( va( "layouts/%s", Cmd_Argv( 1 ) ), "dat", qtrue );
 	}
 }
 

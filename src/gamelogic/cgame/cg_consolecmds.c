@@ -368,6 +368,12 @@ static void CG_CompleteItem( void )
 	}
 }
 
+static void CG_TestCGrade_f( void )
+{
+	qhandle_t shader = trap_R_RegisterShaderNoMip( CG_Argv( 1 ) );
+	trap_SetColorGrading( shader );
+}
+
 static const struct
 {
 	const char *cmd;
@@ -405,6 +411,7 @@ static const struct
 	{ "sell",          0,                       CG_CompleteSell  },
 	{ "sizedown",      CG_SizeDown_f,           0                },
 	{ "sizeup",        CG_SizeUp_f,             0                },
+	{ "testcgrade",    CG_TestCGrade_f,         0                },
 	{ "testgun",       CG_TestGun_f,            0                },
 	{ "testmodel",     CG_TestModel_f,          0                },
 	{ "testPS",        CG_TestPS_f,             0                },

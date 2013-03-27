@@ -35,6 +35,7 @@ Maryland 20850 USA.
 // cl_scrn.c -- master for refresh, status bar, console, chat, notify, etc
 
 #include "client.h"
+#include "../qcommon/q_unicode.h"
 
 qboolean scr_initialized; // ready to draw
 
@@ -238,7 +239,7 @@ void SCR_DrawConsoleFontUnichar( float x, float y, int ch )
 
 void SCR_DrawConsoleFontChar( float x, float y, const char *s )
 {
-	SCR_DrawConsoleFontUnichar( x, y, Q_UTF8CodePoint( s ) );
+	SCR_DrawConsoleFontUnichar( x, y, Q_UTF8_CodePoint( s ) );
 }
 
 /*
@@ -328,10 +329,10 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string, float *set
 			++s;
 		}
 
-		ch = Q_UTF8CodePoint( s );
+		ch = Q_UTF8_CodePoint( s );
 		SCR_DrawUnichar( xx + 2, y + 2, size, ch );
 		xx += size;
-		s += Q_UTF8WidthCP( ch );
+		s += Q_UTF8_WidthCP( ch );
 	}
 
 	// draw the colored text
@@ -382,10 +383,10 @@ void SCR_DrawStringExt( int x, int y, float size, const char *string, float *set
 			noColour = qfalse;
 		}
 
-		ch = Q_UTF8CodePoint( s );
+		ch = Q_UTF8_CodePoint( s );
 		SCR_DrawUnichar( xx, y, size, ch );
 		xx += size;
-		s += Q_UTF8WidthCP( ch );
+		s += Q_UTF8_WidthCP( ch );
 	}
 
 	re.SetColor( NULL );
@@ -470,10 +471,10 @@ void SCR_DrawSmallStringExt( int x, int y, const char *string, float *setColor, 
 			noColour = qfalse;
 		}
 
-		ch = Q_UTF8CodePoint( s );
+		ch = Q_UTF8_CodePoint( s );
 		SCR_DrawConsoleFontUnichar( xx, y, ch );
 		xx += SCR_ConsoleFontUnicharWidth( ch );
-		s += Q_UTF8WidthCP( ch );
+		s += Q_UTF8_WidthCP( ch );
 	}
 
 	re.SetColor( NULL );
@@ -500,7 +501,7 @@ static int SCR_Strlen( const char *str )
 
 		{
 			count++;
-			s += Q_UTF8Width( s );
+			s += Q_UTF8_Width( s );
 		}
 	}
 
@@ -764,8 +765,9 @@ This will be called twice if rendering in stereo mode
 */
 void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 {
+#ifndef BUILD_TTY_CLIENT
 	extern qboolean mouseActive; // see sdl_input.c
-
+#endif
 	re.BeginFrame( stereoFrame );
 
 	// wide aspect ratio screens need to have the sides cleared
@@ -837,12 +839,12 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 
 	// console draws next
 	Con_DrawConsole();
-
+#ifndef BUILD_TTY_CLIENT
 	if ( uivm && ( CL_UIOwnsMouse() || !mouseActive ) ) {
 		// TODO (after no compatibility needed with alpha 8): replace with UI_DRAW_CURSOR
 		VM_Call( uivm, UI_MOUSE_POSITION, qtrue );
 	}
-
+#endif
 	// debug graph can be drawn on top of anything
 	if ( cl_debuggraph->integer || cl_timegraph->integer || cl_debugMove->integer )
 	{
@@ -916,7 +918,7 @@ float SCR_ConsoleFontUnicharWidth( int ch )
 
 float SCR_ConsoleFontCharWidth( const char *s )
 {
-	return SCR_ConsoleFontUnicharWidth( Q_UTF8CodePoint( s ) );
+	return SCR_ConsoleFontUnicharWidth( Q_UTF8_CodePoint( s ) );
 }
 
 float SCR_ConsoleFontCharHeight( void )
@@ -951,7 +953,7 @@ float SCR_ConsoleFontStringWidth( const char* s, int len )
 			while( *str && len > 0 )
 			{
 				l++;
-				str += Q_UTF8Width( str );
+				str += Q_UTF8_Width( str );
 				len--;
 			}
 
@@ -963,7 +965,7 @@ float SCR_ConsoleFontStringWidth( const char* s, int len )
 	{
 		width += SCR_ConsoleFontCharWidth( s );
 
-		s += Q_UTF8Width( s );
+		s += Q_UTF8_Width( s );
 		len--;
 	}
 
