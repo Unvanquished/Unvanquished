@@ -5,7 +5,7 @@
 			{
 				z-index: -1;
 			}
-			div#sidebar, test
+			div#sidebar, test, pic
 			{
 				position: fixed;
 				left: 35%;
@@ -75,6 +75,7 @@
 	</div>
 	<div>
 		<test value="test"></test>
+		<pic width="800" height="450" />
 	</div>
 	<div id="background">
 		<img style="height: 100%; width: 100%;" src="/ui/assets/mainmenu.jpg" />

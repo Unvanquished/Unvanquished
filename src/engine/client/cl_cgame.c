@@ -2303,6 +2303,18 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_ROCKET_KEYTOQUAKE:
 			return Rocket_ToQuakeKey( args[ 1 ] );
 
+		case CG_ROCKET_GETELEMENTABSOLUTEOFFSET:
+			Rocket_GetElementAbsoluteOffset( VMA(1), VMA(2) );
+			return 0;
+
+		case CG_ROCKET_DRAWPIC:
+			Rocket_DrawElementPic( VMF(1), VMF(2), VMF(3), VMF(4), VMF(5), VMF(6), VMF(7), VMF(8), VMA(9) );
+			return 0;
+
+		case CG_ROCKET_CLEARELEMENTGEOMETRY:
+			Rocket_ClearElementGeometry();
+			return 0;
+
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );
 	}

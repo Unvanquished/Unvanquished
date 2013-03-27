@@ -106,6 +106,7 @@ void CG_Rocket_Init( void )
 
 	// Register elements
 	trap_Rocket_RegisterElement( "test" );
+	trap_Rocket_RegisterElement( "pic" );
 
 	rocketInfo.rocketState = IDLE;
 
@@ -458,6 +459,14 @@ static const char *CG_Rocket_GetTag()
 
 	return tag;
 }
+const char *CG_Rocket_GetAttribute( const char *name, const char *id, const char *attribute )
+{
+	static char buffer[ 1000 ];
+
+	trap_Rocket_GetAttribute( name, id, attribute, buffer, sizeof( buffer ) );
+
+	return buffer;
+}
 
 void CG_Rocket_SetElementDimensions( void )
 {
@@ -466,6 +475,15 @@ void CG_Rocket_SetElementDimensions( void )
 	if ( !Q_stricmp( tag, "test" ) )
 	{
 		trap_Rocket_SetElementDimensions( 100, 100 );
+	}
+	else if ( !Q_stricmp( tag, "pic" ) )
+	{
+		int x, y;
+
+		x = atoi( CG_Rocket_GetAttribute( "", "", "width" ) );
+		y = atoi( CG_Rocket_GetAttribute( "", "", "height" ) );
+
+		trap_Rocket_SetElementDimensions( x, y );
 	}
 }
 
@@ -476,5 +494,12 @@ void CG_Rocket_RenderElement( void )
 	if ( !Q_stricmp( tag, "test" ) )
 	{
 		trap_Rocket_SetInnerRML( "", "", "<span style='font-size: 5em;'><b>This is a test</b></span>" );
+	}
+	else if ( !Q_stricmp( tag, "pic" ) )
+	{
+		float x, y;
+		trap_Rocket_GetElementAbsoluteOffset( &x, &y );
+		trap_Rocket_ClearElementGeometry();
+		trap_Rocket_DrawElementPic( 0, 0, atoi( CG_Rocket_GetAttribute( "", "", "width" ) ), atoi( CG_Rocket_GetAttribute( "", "", "height" ) ), 0, 0, 1, 1,  "ui/assets/mainmenu.jpg" );
 	}
 }

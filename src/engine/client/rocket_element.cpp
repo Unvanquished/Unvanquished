@@ -62,6 +62,22 @@ void Rocket_SetElementDimensions( float x, float y )
 	}
 }
 
+void Rocket_DrawElementPic( float x, float y, float w, float h, float t1, float s1, float t2, float s2, const char *src )
+{
+	if ( activeElement )
+	{
+		static_cast<RocketElement*>(activeElement)->DrawPic( x, y, w, h, t1, s1, t2, s2, src );
+	}
+}
+
+void Rocket_ClearElementGeometry( void )
+{
+	if ( activeElement )
+	{
+		static_cast<RocketElement*>(activeElement)->ClearGeometry();
+	}
+}
+
 void Rocket_RegisterElement( const char *tag )
 {
 	Rocket::Core::Factory::RegisterElementInstancer( tag, new Rocket::Core::ElementInstancerGeneric< RocketElement >() )->RemoveReference();
@@ -115,5 +131,20 @@ void Rocket_SetAttribute( const char *name, const char *id, const char *attribut
 		{
 			document->GetElementById( id )->SetAttribute( attribute, value );
 		}
+	}
+}
+
+void Rocket_GetElementAbsoluteOffset( float *x, float *y )
+{
+	if ( activeElement )
+	{
+		Rocket::Core::Vector2f position = activeElement->GetAbsoluteOffset();
+		*x = position.x;
+		*y = position.y;
+	}
+	else
+	{
+		*x = -1;
+		*y = -1;
 	}
 }

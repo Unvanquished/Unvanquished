@@ -1435,7 +1435,7 @@ void trap_Rocket_SetInnerRML( const char *name, const char *id, const char *RML 
 
 void trap_Rocket_GetAttribute( const char *name, const char *id, const char *attribute, char *out, int length )
 {
-	syscall( CG_ROCKET_GETATTRIBUTE, name, id, attribute, length );
+	syscall( CG_ROCKET_GETATTRIBUTE, name, id, attribute, out, length );
 }
 
 void trap_Rocket_SetAttribute( const char *name, const char *id, const char *attribute, const char *value )
@@ -1480,4 +1480,19 @@ void trap_Rocket_GetElementTag( char *tag, int length )
 int trap_Rocket_KeyToQuake( int key )
 {
 	return syscall( CG_ROCKET_KEYTOQUAKE, key );
+}
+
+void trap_Rocket_GetElementAbsoluteOffset( float *x, float *y )
+{
+	syscall( CG_ROCKET_GETELEMENTABSOLUTEOFFSET, x, y );
+}
+
+void trap_Rocket_DrawElementPic( float x, float y, float w, float h, float t1, float s1, float t2, float s2, const char *src )
+{
+	syscall( CG_ROCKET_DRAWPIC, PASSFLOAT(x), PASSFLOAT(y), PASSFLOAT(w), PASSFLOAT(h), PASSFLOAT(t1), PASSFLOAT(s1), PASSFLOAT(t2), PASSFLOAT(s2), src );
+}
+
+void trap_Rocket_ClearElementGeometry( void )
+{
+	syscall( CG_ROCKET_CLEARELEMENTGEOMETRY );
 }
