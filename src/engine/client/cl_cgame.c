@@ -2293,7 +2293,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_ROCKET_SETELEMENTDIMENSIONS:
-			Rocket_SetElementDimensions( args[ 1 ], args[ 2 ] );
+			Rocket_SetElementDimensions( VMF(1), VMF(2) );
 			return 0;
 
 		case CG_ROCKET_GETELEMENTTAG:
