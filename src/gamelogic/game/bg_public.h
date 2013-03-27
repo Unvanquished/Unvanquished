@@ -1155,21 +1155,21 @@ void                        BG_InitBuildableModelConfigs( void );
 
 const classAttributes_t     *BG_ClassByName( const char *name );
 
-const classAttributes_t     *BG_Class( class_t class );
-qboolean                    BG_ClassAllowedInStage( class_t class,
+const classAttributes_t     *BG_Class( class_t pClass );
+qboolean                    BG_ClassAllowedInStage( class_t pClass,
     stage_t stage );
 
-classModelConfig_t          *BG_ClassModelConfig( class_t class );
+classModelConfig_t          *BG_ClassModelConfig( class_t pClass );
 
-void                        BG_ClassBoundingBox( class_t class, vec3_t mins,
+void                        BG_ClassBoundingBox( class_t pClass, vec3_t mins,
     vec3_t maxs, vec3_t cmaxs,
     vec3_t dmins, vec3_t dmaxs );
-qboolean                    BG_ClassHasAbility( class_t class, int ability );
+qboolean                    BG_ClassHasAbility( class_t pClass, int ability );
 int                         BG_ClassCanEvolveFromTo( class_t fclass,
     class_t tclass,
     int credits, int alienStage, int num );
 
-qboolean                  BG_AlienCanEvolve( class_t class, int credits, int alienStage );
+qboolean                  BG_AlienCanEvolve( class_t pClass, int credits, int alienStage );
 
 void                      BG_InitClassAttributes( void );
 void                      BG_InitClassModelConfigs( void );

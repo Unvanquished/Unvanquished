@@ -408,10 +408,10 @@ const classAttributes_t *BG_ClassByName( const char *name )
 BG_Class
 ==============
 */
-const classAttributes_t *BG_Class( class_t class )
+const classAttributes_t *BG_Class( class_t pClass )
 {
-	return ( class >= PCL_NONE && class < PCL_NUM_CLASSES ) ?
-	       &bg_classList[ class ] : &nullClass;
+	return ( pClass >= PCL_NONE && pClass < PCL_NUM_CLASSES ) ?
+	       &bg_classList[ pClass ] : &nullClass;
 }
 
 /*
@@ -419,10 +419,10 @@ const classAttributes_t *BG_Class( class_t class )
 BG_ClassAllowedInStage
 ==============
 */
-qboolean BG_ClassAllowedInStage( class_t class,
+qboolean BG_ClassAllowedInStage( class_t pClass,
                                  stage_t stage )
 {
-	int stages = BG_Class( class )->stages;
+	int stages = BG_Class( pClass )->stages;
 
 	return stages & ( 1 << stage );
 }
@@ -434,9 +434,9 @@ static classModelConfig_t bg_classModelConfigList[ PCL_NUM_CLASSES ];
 BG_ClassModelConfig
 ==============
 */
-classModelConfig_t *BG_ClassModelConfig( class_t class )
+classModelConfig_t *BG_ClassModelConfig( class_t pClass )
 {
-	return &bg_classModelConfigList[ class ];
+	return &bg_classModelConfigList[ pClass ];
 }
 
 /*
@@ -444,11 +444,11 @@ classModelConfig_t *BG_ClassModelConfig( class_t class )
 BG_ClassBoundingBox
 ==============
 */
-void BG_ClassBoundingBox( class_t class,
+void BG_ClassBoundingBox( class_t pClass,
                           vec3_t mins, vec3_t maxs,
                           vec3_t cmaxs, vec3_t dmins, vec3_t dmaxs )
 {
-	classModelConfig_t *classModelConfig = BG_ClassModelConfig( class );
+	classModelConfig_t *classModelConfig = BG_ClassModelConfig( pClass );
 
 	if ( mins != NULL )
 	{
@@ -481,9 +481,9 @@ void BG_ClassBoundingBox( class_t class,
 BG_ClassHasAbility
 ==============
 */
-qboolean BG_ClassHasAbility( class_t class, int ability )
+qboolean BG_ClassHasAbility( class_t pClass, int ability )
 {
-	int abilities = BG_Class( class )->abilities;
+	int abilities = BG_Class( pClass )->abilities;
 
 	return abilities & ability;
 }
@@ -557,13 +557,13 @@ int BG_ClassCanEvolveFromTo( class_t fclass,
 BG_AlienCanEvolve
 ==============
 */
-qboolean BG_AlienCanEvolve( class_t class, int credits, int stage )
+qboolean BG_AlienCanEvolve( class_t pClass, int credits, int stage )
 {
 	int i, j, tclass;
 
 	for ( i = 0; i < bg_numClasses; i++ )
 	{
-		if ( bg_classList[ i ].number != class )
+		if ( bg_classList[ i ].number != pClass )
 		{
 			continue;
 		}
