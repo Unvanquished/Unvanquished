@@ -49,12 +49,17 @@ void	main()
 	vec3 start = vec3(st * 2.0 - 1.0, 1.0) * depth;
 	vec3 end   = start + u_blurVec.yzx;
 
-	for( int i = 0; i < 11; i ++ ) {
+	float weight = 1.0;
+	float total = 0.0;
+
+	for( int i = 0; i < 6; i ++ ) {
 		vec3 pos = mix( start, end, float(i) * 0.1 );
 		pos /= pos.z;
 
-		color += texture2D( u_ColorMap, 0.5 * pos.xy + 0.5 );
+		color += weight * texture2D( u_ColorMap, 0.5 * pos.xy + 0.5 );
+		total += weight;
+		weight *= 0.5;
         }
 
-	gl_FragColor = color / 11.0;
+	gl_FragColor = color / total;
 }
