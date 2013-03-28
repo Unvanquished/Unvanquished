@@ -1556,6 +1556,7 @@ static const struct {
 		VOTE_AFTER,  // not within the first N minutes
 		VOTE_REMAIN, // within N/2 minutes before SD
 		VOTE_NO_AUTO,// don't automatically vote 'yes'
+		VOTE_ENABLE, // for special-purpose enable flags
 	}               special;
 	const vmCvar_t *specialCvar;
 	const vmCvar_t *reasonFlag; // where a reason requirement is configurable (reasonNeeded must be qtrue)
@@ -1575,7 +1576,8 @@ static const struct {
 	{ "layout",       qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
 	{ "nextmap",      qfalse, V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_nextMapVotesPercent },
 	{ "poll",         qfalse, V_ANY,    T_NONE,    qfalse,  qtrue,  &g_pollVotesPercent,        VOTE_NO_AUTO },
-	{ "spectatebots", qfalse, V_PUBLIC, T_NONE,    qfalse,  qfalse, &g_kickVotesPercent },
+	{ "kickbots",     qtrue,  V_PUBLIC, T_NONE,    qfalse,  qfalse, &g_kickVotesPercent,        VOTE_ENABLE, &g_botKickVotesAllowedThisMap },
+	{ "spectatebots", qfalse, V_PUBLIC, T_NONE,    qfalse,  qfalse, &g_kickVotesPercent,        VOTE_ENABLE, &g_botKickVotesAllowedThisMap },
 	{ NULL }
 };
 
@@ -1737,6 +1739,15 @@ void Cmd_CallVote_f( gentity_t *ent )
 
 		break;
 
+	case VOTE_ENABLE:
+		if ( !voteInfo[voteId].specialCvar->integer )
+		{
+			trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("'$1$' votes have been disabled\n") ), voteInfo[voteId].name ) );
+			return;
+		}
+
+		break;
+
 	default:;
 	}
 
@@ -1777,6 +1788,13 @@ void Cmd_CallVote_f( gentity_t *ent )
 
 		G_DecolorString( level.clients[ clientNum ].pers.netname, name, sizeof( name ) );
 		id = level.clients[ clientNum ].pers.namelog->id;
+
+		if ( g_entities[clientNum].r.svFlags & SVF_BOT )
+		{
+			trap_SendServerCommand( ent - g_entities,
+			                        va( "print_tr %s %s", QQ( N_("$1$: player is a bot\n") ), cmd ) );
+			return;
+		}
 
 		if ( voteInfo[voteId].adminImmune && G_admin_permission( g_entities + clientNum, ADMF_IMMUNITY ) )
 		{
@@ -1835,6 +1853,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		             N_("Move player '%s' to spectators"), name );
 		break;
 
+	case VOTE_BOT_KICK:
 	case VOTE_BOT_SPECTATE:
 		for ( i = 0; i < MAX_CLIENTS; ++i )
 		{
@@ -1852,8 +1871,16 @@ void Cmd_CallVote_f( gentity_t *ent )
 			return;
 		}
 
-		Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ), "bot spec all" );
-		Com_sprintf( level.voteDisplayString[ team ], sizeof( level.voteDisplayString[ team ] ), N_("Move all bots to spectators") );
+		if ( voteId == VOTE_BOT_KICK )
+		{
+			Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ), "bot del all" );
+			Com_sprintf( level.voteDisplayString[ team ], sizeof( level.voteDisplayString[ team ] ), N_("Remove all bots") );
+		}
+		else
+		{
+			Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ), "bot spec all" );
+			Com_sprintf( level.voteDisplayString[ team ], sizeof( level.voteDisplayString[ team ] ), N_("Move all bots to spectators") );
+		}
 		break;
 
 	case VOTE_MUTE:

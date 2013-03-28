@@ -603,6 +603,7 @@ typedef enum {
 	VOTE_LAYOUT,
 	VOTE_NEXT_MAP,
 	VOTE_POLL,
+	VOTE_BOT_KICK,
 	VOTE_BOT_SPECTATE
 } voteType_t;
 
@@ -1226,6 +1227,8 @@ extern  vmCvar_t g_drawVotesAfter;
 extern  vmCvar_t g_drawVoteReasonRequired;
 extern  vmCvar_t g_admitDefeatVotesPercent;
 extern  vmCvar_t g_pollVotesPercent;
+extern  vmCvar_t g_botKickVotesAllowed;
+extern  vmCvar_t g_botKickVotesAllowedThisMap;
 extern  vmCvar_t g_teamForceBalance;
 extern  vmCvar_t g_smoothClients;
 extern  vmCvar_t pmove_fixed;

@@ -85,6 +85,8 @@ vmCvar_t           g_drawVoteReasonRequired;
 vmCvar_t           g_admitDefeatVotesPercent;
 vmCvar_t           g_nextMapVotesPercent;
 vmCvar_t           g_pollVotesPercent;
+vmCvar_t           g_botKickVotesAllowed;
+vmCvar_t           g_botKickVotesAllowedThisMap;
 
 vmCvar_t           g_teamForceBalance;
 vmCvar_t           g_smoothClients;
@@ -294,6 +296,8 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_drawVoteReasonRequired,      "g_drawVoteReasonRequired",      "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_admitDefeatVotesPercent,     "g_admitDefeatVotesPercent",     "74",                               CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_pollVotesPercent,            "g_pollVotesPercent",            "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_botKickVotesAllowed,         "g_botKickVotesAllowed",         "1",                                CVAR_ARCHIVE,                                    0, qtrue            },
+	{ &g_botKickVotesAllowedThisMap,  "g_botKickVotesAllowedThisMap",  "1",                                0,                                               0, qtrue            },
 	{ &g_minNameChangePeriod,         "g_minNameChangePeriod",         "5",                                0,                                               0, qfalse           },
 	{ &g_maxNameChanges,              "g_maxNameChanges",              "5",                                0,                                               0, qfalse           },
 
@@ -769,6 +773,10 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	{
 		G_Printf( "Not logging to disk\n" );
 	}
+
+	// initialise whether bot vote kicks are allowed
+	// rotation may clear this flag
+	trap_Cvar_Set( "g_botKickVotesAllowedThisMap", g_botKickVotesAllowed.integer ? "1" : "0" );
 
 	// clear this now; it'll be set, if needed, from rotation
 	trap_Cvar_Set( "g_mapStartupMessage", "" );
