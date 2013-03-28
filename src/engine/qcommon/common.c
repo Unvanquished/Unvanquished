@@ -36,6 +36,7 @@ Maryland 20850 USA.
 
 #include "revision.h"
 #include "../qcommon/q_shared.h"
+#include "q_unicode.h"
 #include "qcommon.h"
 #include <setjmp.h>
 
@@ -576,7 +577,7 @@ qboolean Com_AddStartupCommands( void )
 		}
 
 		// set commands won't override menu startup
-		if ( Q_stricmpn( com_consoleLines[ i ], "set", 3 ) )
+		if ( Q_strnicmp( com_consoleLines[ i ], "set", 3 ) )
 		{
 			added = qtrue;
 		}
@@ -3452,7 +3453,7 @@ Com_Frame
 void Com_Frame( void )
 {
 	int             msec, minMsec;
-	static int      lastTime;
+	static int      lastTime = 0;
 	//int             key;
 
 	int             timeBeforeFirstEvents;
@@ -3500,28 +3501,35 @@ void Com_Frame( void )
 	}
 
 	// we may want to spin here if things are going too fast
-	if ( !com_dedicated->integer && !com_timedemo->integer )
+	if ( !com_timedemo->integer )
 	{
-		if ( com_minimized->integer && com_maxfpsMinimized->integer > 0 )
+		if ( com_dedicated->integer )
 		{
-			minMsec = 1000 / com_maxfpsMinimized->integer;
-		}
-		else if ( com_unfocused->integer && com_maxfpsUnfocused->integer > 0 )
-		{
-			minMsec = 1000 / com_maxfpsUnfocused->integer;
-		}
-		else if ( com_maxfps->integer > 0 )
-		{
-			minMsec = 1000 / com_maxfps->integer;
+			minMsec = SV_FrameMsec();
 		}
 		else
 		{
-			minMsec = 1;
+			if ( com_minimized->integer && com_maxfpsMinimized->integer > 0 )
+			{
+				minMsec = 1000 / com_maxfpsMinimized->integer;
+			}
+			else if ( com_unfocused->integer && com_maxfpsUnfocused->integer > 0 )
+			{
+				minMsec = 1000 / com_maxfpsUnfocused->integer;
+			}
+			else if ( com_maxfps->integer > 0 )
+			{
+				minMsec = 1000 / com_maxfps->integer;
+			}
+			else
+			{
+				minMsec = 1;
+			}
 		}
 	}
 	else
 	{
-		minMsec = 0; // let's not spin at all
+		minMsec = 1; // Bad things happen if this is 0
 	}
 
 	com_frameTime = Com_EventLoop();
@@ -3772,7 +3780,7 @@ void Field_Set( field_t *edit, const char *content )
 {
 	memset( edit->buffer, 0, MAX_EDIT_LINE );
 	strncpy( edit->buffer, content, MAX_EDIT_LINE );
-	Field_SetCursor( edit, Q_UTF8Strlen( edit->buffer ) );
+	Field_SetCursor( edit, Q_UTF8_Strlen( edit->buffer ) );
 }
 
 /*
@@ -3786,7 +3794,7 @@ int Field_CursorToOffset( field_t *edit )
 
 	while ( ++i < edit->cursor )
 	{
-		j += Q_UTF8Width( edit->buffer + j );
+		j += Q_UTF8_Width( edit->buffer + j );
 	}
 
 	return j;
@@ -3803,7 +3811,7 @@ int Field_ScrollToOffset( field_t *edit )
 
 	while ( ++i < edit->scroll )
 	{
-		j += Q_UTF8Width( edit->buffer + j );
+		j += Q_UTF8_Width( edit->buffer + j );
 	}
 
 	return j;
@@ -3820,7 +3828,7 @@ int Field_OffsetToCursor( field_t *edit, int offset )
 
 	while ( i < offset )
 	{
-		i += Q_UTF8Width( edit->buffer + i );
+		i += Q_UTF8_Width( edit->buffer + i );
 		++j;
 	}
 
@@ -3867,7 +3875,7 @@ static void FindMatches( const char *s )
 {
 	int i;
 
-	if ( Q_stricmpn( s, completionString, strlen( completionString ) ) )
+	if ( Q_strnicmp( s, completionString, strlen( completionString ) ) )
 	{
 		return;
 	}
@@ -3900,7 +3908,7 @@ PrintCmdMatches
 #if 0
 static void PrintCmdMatches( const char *s )
 {
-	if ( !Q_stricmpn( s, shortestMatch, strlen( shortestMatch ) ) )
+	if ( !Q_strnicmp( s, shortestMatch, strlen( shortestMatch ) ) )
 	{
 		Com_Printf( " %s\n", s );
 	}
@@ -3916,7 +3924,7 @@ PrintMatches
 */
 static void PrintMatches( const char *s )
 {
-	if ( !Q_stricmpn( s, shortestMatch, strlen( shortestMatch ) ) )
+	if ( !Q_strnicmp( s, shortestMatch, strlen( shortestMatch ) ) )
 	{
 		Com_Printf( "    %s\n", s );
 	}
@@ -3929,7 +3937,7 @@ PrintCvarMatches
 */
 static void PrintCvarMatches( const char *s )
 {
-	if ( !Q_stricmpn( s, shortestMatch, strlen( shortestMatch ) ) )
+	if ( !Q_strnicmp( s, shortestMatch, strlen( shortestMatch ) ) )
 	{
 		Com_Printf( " %s = \"%s\"\n", s, Cvar_VariableString( s ) );
 	}
@@ -4031,7 +4039,7 @@ static qboolean Field_Complete( void )
 	Q_strncpyz( &completionField->buffer[ completionOffset ], shortestMatch,
 	            sizeof( completionField->buffer ) - completionOffset );
 
-	completionField->cursor = Q_UTF8Strlen( completionField->buffer );
+	completionField->cursor = Q_UTF8_Strlen( completionField->buffer );
 
 	if ( matchCount == 1 )
 	{

@@ -67,9 +67,9 @@ Maryland 20850 USA.
 #define CONTENTS_NODROP           0x80000000 // don't leave bodies or items (death fog, lava)
 
 // custominfoparms below
-#define CONTENTS_NOALIENBUILD     0x00000200 // disallow alien building
-#define CONTENTS_NOHUMANBUILD     0x00000400 // disallow human building
-#define CONTENTS_NOBUILD          0x00000800 // disallow building
+#define CONTENTS_NOALIENBUILD     0x00001000 // disallow alien building
+#define CONTENTS_NOHUMANBUILD     0x00002000 // disallow human building
+#define CONTENTS_NOBUILD          0x00004000 // disallow building
 
 #define SURF_NODAMAGE             0x00000001 // never give falling damage
 #define SURF_SLICK                0x00000002 // effects game physics
@@ -106,6 +106,6 @@ Maryland 20850 USA.
 
 #define SURF_LANDMINE             0x80000000 // ydnar: ok to place landmines on this surface
 
-#define SURF_TREM_NOALIENBUILD    0x00000001 // disallow alien building
-#define SURF_TREM_NOHUMANBUILD    0x00000002 // disallow alien building
-#define SURF_TREM_NOBUILD         0x00000004 // disallow alien building
+#define SURF_NOALIENBUILD         0x00080000 // disallow alien building
+#define SURF_NOHUMANBUILD         0x00100000 // disallow human building
+#define SURF_NOBUILD              0x00200000 // disallow building

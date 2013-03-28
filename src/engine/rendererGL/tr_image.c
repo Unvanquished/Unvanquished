@@ -1150,6 +1150,10 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 	// set target
 	switch ( image->type )
 	{
+		case GL_TEXTURE_3D:
+			target = GL_TEXTURE_3D;
+			break;
+
 		case GL_TEXTURE_CUBE_MAP:
 			target = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
 			break;
@@ -1315,6 +1319,14 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 		}
 	}
 
+	// 3D textures are uploaded in slices via glTexSubImage3D,
+	// so the storage has to be allocated before the loop
+	if( image->type == GL_TEXTURE_3D ) {
+		glTexImage3D( GL_TEXTURE_3D, 0, internalFormat,
+			      scaledWidth, scaledHeight, numData,
+			      0, format, GL_UNSIGNED_BYTE, NULL );
+	}
+
 	for ( i = 0; i < numData; i++ )
 	{
 		data = dataArray[ i ];
@@ -1341,6 +1353,12 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 
 		switch ( image->type )
 		{
+			case GL_TEXTURE_3D:
+				glTexSubImage3D( GL_TEXTURE_3D, 0, 0, 0, i,
+						 scaledWidth, scaledHeight, 1,
+						 format, GL_UNSIGNED_BYTE,
+						 scaledBuffer );
+				break;
 			case GL_TEXTURE_CUBE_MAP:
 				glTexImage2D( target + i, 0, internalFormat, scaledWidth, scaledHeight, 0, format, GL_UNSIGNED_BYTE,
 				              scaledBuffer );
@@ -1691,6 +1709,64 @@ image_t        *R_CreateCubeImage( const char *name,
 #else
 	glBindTexture( image->type, 0 );
 #endif
+
+	return image;
+}
+
+/*
+================
+R_Create3DImage
+================
+*/
+image_t        *R_Create3DImage( const char *name,
+				 const byte *pic,
+				 int width, int height, int depth,
+				 int bits, filterType_t filterType,
+				 wrapType_t wrapType )
+{
+	image_t *image;
+	const byte **pics;
+	int i;
+
+	image = R_AllocImage( name, qtrue );
+
+	if ( !image )
+	{
+		return NULL;
+	}
+
+#if defined( USE_D3D10 )
+	// TODO
+#else
+	image->type = GL_TEXTURE_3D;
+#endif
+
+	image->width = width;
+	image->height = height;
+
+	pics = ri.Hunk_AllocateTempMemory( depth * sizeof(const byte *) );
+	for( i = 0; i < depth; i++ ) {
+		pics[i] = pic + i * width * height * sizeof(color4ub_t);
+	}
+
+	image->bits = bits;
+	image->filterType = filterType;
+	image->wrapType = wrapType;
+
+#if defined( USE_D3D10 )
+	// TODO
+#else
+	GL_Bind( image );
+#endif
+
+	R_UploadImage( pics, depth, image );
+
+#if defined( USE_D3D10 )
+	// TODO
+#else
+	glBindTexture( image->type, 0 );
+#endif
+	ri.Hunk_FreeTempMemory( pics );
 
 	return image;
 }
@@ -2264,7 +2340,7 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 	// see if the image is already loaded
 	for ( image = r_imageHashTable[ hash ]; image; image = image->next )
 	{
-		if ( !Q_stricmpn( buffer, image->name, sizeof( image->name ) ) )
+		if ( !Q_strnicmp( buffer, image->name, sizeof( image->name ) ) )
 		{
 			// the white image can be used with any set of parms, but other mismatches are errors
 			if ( Q_stricmp( buffer, "_white" ) )
@@ -2299,7 +2375,7 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 #endif
 
 #if 0
-	if ( glConfig.textureCompression == TC_S3TC && !( bits & IF_NOCOMPRESSION ) && Q_stricmpn( imageName, "fonts", 5 ) )
+	if ( glConfig.textureCompression == TC_S3TC && !( bits & IF_NOCOMPRESSION ) && Q_strnicmp( imageName, "fonts", 5 ) )
 	{
 		Q_strncpyz( ddsName, imageName, sizeof( ddsName ) );
 		COM_StripExtension3( ddsName, ddsName, sizeof( ddsName ) );
@@ -2318,7 +2394,7 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 #endif
 
 #if 0
-	else if ( r_tryCachedDDSImages->integer && !( bits & IF_NOCOMPRESSION ) && Q_strncasecmp( name, "fonts", 5 ) )
+	else if ( r_tryCachedDDSImages->integer && !( bits & IF_NOCOMPRESSION ) && Q_strnicmp( name, "fonts", 5 ) )
 	{
 		Q_strncpyz( ddsName, "dds/", sizeof( ddsName ) );
 		Q_strcat( ddsName, sizeof( ddsName ), name );
@@ -2358,7 +2434,7 @@ image_t        *R_FindImageFile( const char *imageName, int bits, filterType_t f
 #endif
 
 #if 0
-	//if(r_tryCachedDDSImages->integer && !(bits & IF_NOCOMPRESSION) && Q_strncasecmp(name, "fonts", 5))
+	//if(r_tryCachedDDSImages->integer && !(bits & IF_NOCOMPRESSION) && Q_strnicmp(name, "fonts", 5))
 	{
 		// try to cache a .dds texture to the XreaL/<mod>/dds/ folder
 		SavePNG( ddsName, pic, width, height, 4, qtrue );
@@ -2610,7 +2686,7 @@ image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t f
 	// TODO
 #else
 
-	if ( glConfig.textureCompression == TC_S3TC && !( bits & IF_NOCOMPRESSION ) && Q_stricmpn( imageName, "fonts", 5 ) )
+	if ( glConfig.textureCompression == TC_S3TC && !( bits & IF_NOCOMPRESSION ) && Q_strnicmp( imageName, "fonts", 5 ) )
 	{
 		Q_strncpyz( ddsName, imageName, sizeof( ddsName ) );
 		COM_StripExtension3( ddsName, ddsName, sizeof( ddsName ) );
@@ -2629,7 +2705,7 @@ image_t        *R_FindCubeImage( const char *imageName, int bits, filterType_t f
 #endif
 
 #if 0
-	else if ( r_tryCachedDDSImages->integer && !( bits & IF_NOCOMPRESSION ) && Q_strncasecmp( name, "fonts", 5 ) )
+	else if ( r_tryCachedDDSImages->integer && !( bits & IF_NOCOMPRESSION ) && Q_strnicmp( name, "fonts", 5 ) )
 	{
 		Q_strncpyz( ddsName, "dds/", sizeof( ddsName ) );
 		Q_strcat( ddsName, sizeof( ddsName ), name );
@@ -3581,6 +3657,36 @@ static void R_CreateWhiteCubeImage( void )
 
 // *INDENT-ON*
 
+static void R_CreateColorGradeImage( void )
+{
+	byte *data, *ptr;
+	int r, g, b;
+
+	data = ri.Hunk_AllocateTempMemory( REF_COLORGRADEMAP_STORE_SIZE * sizeof(color4ub_t) );
+
+	// 255 is 15 * 17, so the colors range from 0 to 255
+	for( ptr = data, b = 0; b < REF_COLORGRADEMAP_SIZE; b++ ) {
+		for( g = 0; g < REF_COLORGRADEMAP_SIZE; g++ ) {
+			for( r = 0; r < REF_COLORGRADEMAP_SIZE; r++ ) {
+				*ptr++ = (byte) r * 17;
+				*ptr++ = (byte) g * 17;
+				*ptr++ = (byte) b * 17;
+				*ptr++ = 255;
+			}
+		}
+	}
+
+	tr.colorGradeImage = R_Create3DImage( "_colorGrade", data,
+					      REF_COLORGRADEMAP_SIZE,
+					      REF_COLORGRADEMAP_SIZE,
+					      REF_COLORGRADEMAP_SIZE,
+					      IF_NOPICMIP | IF_NOCOMPRESSION,
+					      FT_LINEAR,
+					      WT_EDGE_CLAMP );
+
+	ri.Hunk_FreeTempMemory( data );
+}
+
 /*
 ==================
 R_CreateBuiltinImages
@@ -3708,6 +3814,7 @@ void R_CreateBuiltinImages( void )
 	R_CreateShadowCubeFBOImage();
 	R_CreateBlackCubeImage();
 	R_CreateWhiteCubeImage();
+	R_CreateColorGradeImage();
 }
 
 /*
@@ -3933,4 +4040,59 @@ int RE_GetTextureId( const char *name )
 
 //  ri.Printf(PRINT_ALL, "Image not found.\n");
 	return -1;
+}
+
+void RE_SetColorGrading( qhandle_t hShader )
+{
+	shader_t *shader = R_GetShaderByHandle( hShader );
+	image_t  *image;
+	
+	if( shader->defaultShader ||
+	    !shader->stages[0] ||
+	    !(image = shader->stages[0]->bundle[0].image[0] ) ) {
+		return;
+	}
+
+	if( image->width != REF_COLORGRADEMAP_SIZE &&
+	    image->height != REF_COLORGRADEMAP_SIZE ) {
+		return;
+	}
+	if( image->width * image->height != REF_COLORGRADEMAP_STORE_SIZE ) {
+		return;
+	}
+
+	GL_Unbind();
+
+	glBindBuffer( GL_PIXEL_PACK_BUFFER, tr.colorGradePBO );
+
+	glBindTexture( GL_TEXTURE_2D, image->texnum );
+	glGetTexImage( GL_TEXTURE_2D, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+	glBindBuffer( GL_PIXEL_PACK_BUFFER, 0 );
+
+	glBindBuffer( GL_PIXEL_UNPACK_BUFFER, tr.colorGradePBO );
+	glBindTexture( GL_TEXTURE_3D, tr.colorGradeImage->texnum );
+	if( image->width == REF_COLORGRADEMAP_SIZE ) {
+		glTexSubImage3D( GL_TEXTURE_3D, 0,
+				 0,0,0,
+				 REF_COLORGRADEMAP_SIZE,
+				 REF_COLORGRADEMAP_SIZE,
+				 REF_COLORGRADEMAP_SIZE,
+				 GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+	} else {
+		int i;
+		
+		glPixelStorei( GL_UNPACK_ROW_LENGTH, REF_COLORGRADEMAP_SIZE * REF_COLORGRADEMAP_SIZE );
+		for( i = 0; i < 16; i++ ) {
+			glTexSubImage3D( GL_TEXTURE_3D, 0,
+					 0,0,i,
+					 REF_COLORGRADEMAP_SIZE,
+					 REF_COLORGRADEMAP_SIZE,
+					 1,
+					 GL_RGBA, GL_UNSIGNED_BYTE,
+					 ((color4ub_t *)NULL) + REF_COLORGRADEMAP_SIZE );
+		}
+		glPixelStorei( GL_UNPACK_ROW_LENGTH, 0 );
+	}
+	glBindTexture( GL_TEXTURE_3D, 0 );
+	glBindBuffer( GL_PIXEL_UNPACK_BUFFER, 0 );
 }

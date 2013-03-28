@@ -348,6 +348,7 @@ typedef struct
 	int              botSkill;
 	char             botTree[ MAX_QPATH ];
 	clientList_t     ignoreList;
+	int              seenWelcome; // determines if the client has seen server's welcome message
 } clientSession_t;
 
 // namelog
@@ -1193,6 +1194,7 @@ extern  vmCvar_t g_lockTeamsAtStart;
 extern  vmCvar_t g_minNameChangePeriod;
 extern  vmCvar_t g_maxNameChanges;
 
+extern  vmCvar_t g_showHelpOnConnection;
 extern  vmCvar_t g_timelimit;
 extern  vmCvar_t g_friendlyFire;
 extern  vmCvar_t g_friendlyBuildableFire;

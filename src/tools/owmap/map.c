@@ -1201,7 +1201,7 @@ static void ParseRawBrush(qboolean onlyLights)
 		}
 
 		/* set default flags and values */
-		if(!Q_strncasecmp(name, "textures/", 9))
+		if(!Q_strnicmp(name, "textures/", 9))
 			sprintf(shader, "%s", name);
 		else
 			sprintf(shader, "textures/%s", name);
@@ -2172,7 +2172,7 @@ static qboolean ParseMapEntity(qboolean onlyLights)
 
 
 	/* ydnar: only lights? */
-	if(onlyLights && Q_strncasecmp(classname, "light", 5))
+	if(onlyLights && Q_strnicmp(classname, "light", 5))
 	{
 		numEntities--;
 		return qtrue;

@@ -3057,7 +3057,6 @@ static void RB_RenderInteractionsShadowMapped()
 
 										GL_PushMatrix();
 
-										gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
 										gl_genericShader->DisableVertexSkinning();
 										gl_genericShader->DisableVertexAnimation();
 										gl_genericShader->DisableDeformVertexes();
@@ -3066,6 +3065,7 @@ static void RB_RenderInteractionsShadowMapped()
 										gl_genericShader->BindProgram();
 
 										// set uniforms
+										gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 										gl_genericShader->SetUniform_ColorModulate( CGEN_VERTEX, AGEN_VERTEX );
 										gl_genericShader->SetUniform_Color( colorBlack );
 
@@ -5995,7 +5995,6 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 							GL_State( GLS_POLYMODE_LINE | GLS_DEPTHTEST_DISABLE );
 							GL_Cull( CT_TWO_SIDED );
 
-							gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
 							gl_genericShader->DisableVertexSkinning();
 							gl_genericShader->DisableVertexAnimation();
 							gl_genericShader->DisableDeformVertexes();
@@ -6003,6 +6002,7 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 
 							gl_genericShader->BindProgram();
 
+							gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 							gl_genericShader->SetUniform_ColorModulate( CGEN_VERTEX, AGEN_VERTEX );
 							gl_genericShader->SetUniform_Color( colorBlack );
 
@@ -7089,8 +7089,8 @@ void RB_CameraPostFX( void )
 
 	GLimp_LogComment( "--- RB_CameraPostFX ---\n" );
 
-	if ( ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) || !r_cameraPostFX->integer || backEnd.viewParms.isPortal ||
-	     !tr.grainImage || !tr.vignetteImage )
+	if ( ( backEnd.refdef.rdflags & RDF_NOWORLDMODEL ) ||
+	     backEnd.viewParms.isPortal )
 	{
 		return;
 	}
@@ -7147,13 +7147,16 @@ void RB_CameraPostFX( void )
 
 	// bind u_GrainMap
 	GL_SelectTexture( 1 );
-	GL_Bind( tr.grainImage );
-	//GL_Bind(tr.defaultImage);
+	if( r_cameraPostFX->integer && tr.grainImage )
+		GL_Bind( tr.grainImage );
+	else
+		GL_Bind( tr.blackImage );
 
 	// bind u_VignetteMap
 	GL_SelectTexture( 2 );
 
-	if ( r_cameraVignette->integer )
+	if ( r_cameraPostFX->integer && r_cameraVignette->integer &&
+	     tr.vignetteImage )
 	{
 		GL_Bind( tr.vignetteImage );
 	}
@@ -7161,6 +7164,9 @@ void RB_CameraPostFX( void )
 	{
 		GL_Bind( tr.whiteImage );
 	}
+
+	GL_SelectTexture( 3 );
+	GL_Bind( tr.colorGradeImage );
 
 	// draw viewport
 	Tess_InstantQuad( backEnd.viewParms.viewportVerts );
@@ -7851,7 +7857,6 @@ void RB_RenderLightOcclusionQueries()
 			startTime = ri.Milliseconds();
 		}
 
-		gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
 		gl_genericShader->DisableDeformVertexes();
@@ -7865,6 +7870,7 @@ void RB_RenderLightOcclusionQueries()
 		GL_LoadProjectionMatrix( backEnd.viewParms.projectionMatrix );
 
 		// set uniforms
+		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_ColorModulate( CGEN_VERTEX, AGEN_VERTEX );
 		gl_genericShader->SetUniform_Color( colorBlack );
 
@@ -8448,7 +8454,6 @@ void RB_RenderEntityOcclusionQueries()
 			startTime = ri.Milliseconds();
 		}
 
-		gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
 		gl_genericShader->DisableDeformVertexes();
@@ -8462,6 +8467,7 @@ void RB_RenderEntityOcclusionQueries()
 		GL_LoadProjectionMatrix( backEnd.viewParms.projectionMatrix );
 
 		// set uniforms
+		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_ColorModulate( CGEN_CONST, AGEN_CONST );
 		gl_genericShader->SetUniform_Color( colorBlue );
 
@@ -8828,7 +8834,6 @@ static void RB_RenderDebugUtils()
 		static const vec3_t minSize = { -2, -2, -2 };
 		static const vec3_t maxSize = { 2,  2,  2 };
 
-		gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
 		gl_genericShader->DisableDeformVertexes();
@@ -8841,6 +8846,7 @@ static void RB_RenderDebugUtils()
 		GL_Cull( CT_TWO_SIDED );
 
 		// set uniforms
+		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_ColorModulate( CGEN_CUSTOM_RGB, AGEN_CUSTOM );
 
 		// bind u_ColorMap
@@ -9209,7 +9215,6 @@ static void RB_RenderDebugUtils()
 		static const vec3_t mins = { -1, -1, -1 };
 		static const vec3_t maxs = { 1, 1, 1 };
 
-		gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
 		gl_genericShader->DisableDeformVertexes();
@@ -9221,6 +9226,7 @@ static void RB_RenderDebugUtils()
 		GL_Cull( CT_TWO_SIDED );
 
 		// set uniforms
+		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_ColorModulate( CGEN_VERTEX, AGEN_VERTEX );
 		gl_genericShader->SetUniform_Color( colorBlack );
 
@@ -9397,7 +9403,6 @@ static void RB_RenderDebugUtils()
 		static const vec3_t mins = { -1, -1, -1 };
 		static const vec3_t maxs = { 1, 1, 1 };
 
-		gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
 		gl_genericShader->DisableDeformVertexes();
@@ -9409,6 +9414,7 @@ static void RB_RenderDebugUtils()
 		GL_Cull( CT_TWO_SIDED );
 
 		// set uniforms
+		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_ColorModulate( CGEN_VERTEX, AGEN_VERTEX );
 		gl_genericShader->SetUniform_Color( colorBlack );
 
@@ -9494,7 +9500,6 @@ static void RB_RenderDebugUtils()
 		static refSkeleton_t skeleton;
 		refSkeleton_t        *skel;
 
-		gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
 		gl_genericShader->DisableDeformVertexes();
@@ -9505,6 +9510,7 @@ static void RB_RenderDebugUtils()
 		GL_Cull( CT_TWO_SIDED );
 
 		// set uniforms
+		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_ColorModulate( CGEN_VERTEX, AGEN_VERTEX );
 		gl_genericShader->SetUniform_Color( colorBlack );
 
@@ -9713,7 +9719,6 @@ static void RB_RenderDebugUtils()
 		matrix_t      ortho;
 		vec4_t        quadVerts[ 4 ];
 
-		gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
 		gl_genericShader->DisableDeformVertexes();
@@ -9725,6 +9730,7 @@ static void RB_RenderDebugUtils()
 		GL_Cull( CT_TWO_SIDED );
 
 		// set uniforms
+		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_ColorModulate( CGEN_CUSTOM_RGB, AGEN_CUSTOM );
 
 		// bind u_ColorMap
@@ -9856,7 +9862,6 @@ static void RB_RenderDebugUtils()
 			cubemapProbe_t *cubeProbeNearest;
 			cubemapProbe_t *cubeProbeSecondNearest;
 
-			gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
 			gl_genericShader->DisableVertexSkinning();
 			gl_genericShader->DisableVertexAnimation();
 			gl_genericShader->DisableDeformVertexes();
@@ -9864,6 +9869,7 @@ static void RB_RenderDebugUtils()
 
 			gl_genericShader->BindProgram();
 
+			gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 			gl_genericShader->SetUniform_ColorModulate( CGEN_VERTEX, AGEN_VERTEX );
 			gl_genericShader->SetUniform_Color( colorBlack );
 
@@ -9933,7 +9939,6 @@ static void RB_RenderDebugUtils()
 
 		GLimp_LogComment( "--- r_showLightGrid > 0: Rendering light grid\n" );
 
-		gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
 		gl_genericShader->DisableDeformVertexes();
@@ -9941,6 +9946,7 @@ static void RB_RenderDebugUtils()
 
 		gl_genericShader->BindProgram();
 
+		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_ColorModulate( CGEN_VERTEX, AGEN_VERTEX );
 		gl_genericShader->SetUniform_Color( colorBlack );
 
@@ -10019,7 +10025,6 @@ static void RB_RenderDebugUtils()
 			return;
 		}
 
-		gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
 		gl_genericShader->DisableDeformVertexes();
@@ -10028,6 +10033,7 @@ static void RB_RenderDebugUtils()
 		gl_genericShader->BindProgram();
 
 		// set uniforms
+		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_ColorModulate( CGEN_CUSTOM_RGB, AGEN_CUSTOM );
 
 		// bind u_ColorMap
@@ -10379,7 +10385,6 @@ static void RB_RenderDebugUtils()
 			return;
 		}
 
-		gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
 		gl_genericShader->DisableDeformVertexes();
@@ -10391,6 +10396,7 @@ static void RB_RenderDebugUtils()
 		GL_Cull( CT_TWO_SIDED );
 
 		// set uniforms
+		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_ColorModulate( CGEN_VERTEX, AGEN_VERTEX );
 		gl_genericShader->SetUniform_Color( colorBlack );
 
@@ -11368,7 +11374,6 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 	glVertexAttrib4f( ATTR_INDEX_NORMAL, 0, 0, 1, 1 );
 	glVertexAttrib4f( ATTR_INDEX_COLOR, tr.identityLight, tr.identityLight, tr.identityLight, 1 );
 
-	gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
 	gl_genericShader->DisableVertexSkinning();
 	gl_genericShader->DisableVertexAnimation();
 	gl_genericShader->DisableDeformVertexes();
@@ -11377,6 +11382,7 @@ void RE_StretchRaw( int x, int y, int w, int h, int cols, int rows, const byte *
 	gl_genericShader->BindProgram();
 
 	// set uniforms
+	gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 	gl_genericShader->SetUniform_ColorModulate( CGEN_VERTEX, AGEN_VERTEX );
 	gl_genericShader->SetUniform_Color( colorBlack );
 
@@ -11973,8 +11979,6 @@ const void *RB_RunVisTests( const void *data )
 		tess.indexes[0] = 0;
 		tess.numIndexes = 1;
 
-		gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
-
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
 
@@ -11987,6 +11991,7 @@ const void *RB_RunVisTests( const void *data )
 		GL_State( GLS_DEPTHMASK_TRUE );
 		GL_VertexAttribsState( ATTR_POSITION );
 
+		gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 		gl_genericShader->SetUniform_Color( colorWhite );
 
 		gl_genericShader->SetUniform_ColorModulate( CGEN_CONST, AGEN_CONST );
@@ -12066,7 +12071,6 @@ void RB_ShowImages( void )
 
 	glFinish();
 
-	gl_genericShader->Set_AlphaTest( GLS_ATEST_NONE );
 	gl_genericShader->DisableVertexSkinning();
 	gl_genericShader->DisableVertexAnimation();
 	gl_genericShader->DisableDeformVertexes();
@@ -12077,6 +12081,7 @@ void RB_ShowImages( void )
 	GL_Cull( CT_TWO_SIDED );
 
 	// set uniforms
+	gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 	gl_genericShader->SetUniform_ColorModulate( CGEN_VERTEX, AGEN_VERTEX );
 	gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 

@@ -1412,8 +1412,8 @@ static int CG_GetCorpseNum( class_t class )
 	char         *modelName;
 	char         *skinName;
 
-	modelName = BG_ClassConfig( class )->modelName;
-	skinName = BG_ClassConfig( class )->skinName;
+	modelName = BG_ClassModelConfig( class )->modelName;
+	skinName = BG_ClassModelConfig( class )->skinName;
 
 	for ( i = PCL_NONE + 1; i < PCL_NUM_CLASSES; i++ )
 	{
@@ -2838,7 +2838,7 @@ static qboolean CG_PlayerShadow( centity_t *cent, float *shadowPlane, class_t cl
 	// without taking a spot in the cg_marks array
 	CG_ImpactMark( cgs.media.shadowMarkShader, trace.endpos, trace.plane.normal,
 	               cent->pe.legs.yawAngle, 0.0f, 0.0f, 0.0f, alpha, qfalse,
-	               24.0f * BG_ClassConfig( class )->shadowScale, qtrue );
+	               24.0f * BG_ClassModelConfig( class )->shadowScale, qtrue );
 
 	return qtrue;
 }
@@ -2898,7 +2898,7 @@ static void CG_PlayerSplash( centity_t *cent, class_t class )
 
 	CG_ImpactMark( cgs.media.wakeMarkShader, trace.endpos, trace.plane.normal,
 	               cent->pe.legs.yawAngle, 1.0f, 1.0f, 1.0f, 1.0f, qfalse,
-	               32.0f * BG_ClassConfig( class )->shadowScale, qtrue );
+	               32.0f * BG_ClassModelConfig( class )->shadowScale, qtrue );
 }
 
 /*
@@ -3527,7 +3527,7 @@ void CG_Player( centity_t *cent )
 	}
 
 	//rescale the model
-	scale = BG_ClassConfig( class )->modelScale;
+	scale = BG_ClassModelConfig( class )->modelScale;
 
 	if ( scale != 1.0f )
 	{
@@ -3539,7 +3539,7 @@ void CG_Player( centity_t *cent )
 	}
 
 	//offset on the Z axis if required
-	VectorMA( legs.origin, BG_ClassConfig( class )->zOffset, surfNormal, legs.origin );
+	VectorMA( legs.origin, BG_ClassModelConfig( class )->zOffset, surfNormal, legs.origin );
 	VectorCopy( legs.origin, legs.lightingOrigin );
 	VectorCopy( legs.origin, legs.oldorigin );  // don't positionally lerp at all
 
@@ -3809,11 +3809,11 @@ void CG_Corpse( centity_t *cent )
 	VectorCopy( origin, legs.lightingOrigin );
 	legs.shadowPlane = shadowPlane;
 	legs.renderfx = renderfx;
-	legs.origin[ 2 ] += BG_ClassConfig( es->clientNum )->zOffset;
+	legs.origin[ 2 ] += BG_ClassModelConfig( es->clientNum )->zOffset;
 	VectorCopy( legs.origin, legs.oldorigin );  // don't positionally lerp at all
 
 	//rescale the model
-	scale = BG_ClassConfig( es->clientNum )->modelScale;
+	scale = BG_ClassModelConfig( es->clientNum )->modelScale;
 
 	if ( scale != 1.0f && !ci->md5 )
 	{

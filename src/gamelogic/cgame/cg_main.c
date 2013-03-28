@@ -252,6 +252,7 @@ vmCvar_t        cg_projectileNudge;
 vmCvar_t        cg_voice;
 
 vmCvar_t        cg_emoticons;
+vmCvar_t        cg_emoticonsInMessages;
 
 vmCvar_t        cg_chatTeamPrefix;
 
@@ -353,7 +354,7 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_depthSortParticles,          "cg_depthSortParticles",          "1",            CVAR_ARCHIVE                 },
 	{ &cg_bounceParticles,             "cg_bounceParticles",             "0",            CVAR_ARCHIVE                 },
 	{ &cg_consoleLatency,              "cg_consoleLatency",              "3000",         CVAR_ARCHIVE                 },
-	{ &cg_lightFlare,                  "cg_lightFlare",                  "3",            CVAR_ARCHIVE                 },
+	{ &cg_lightFlare,                  "cg_lightFlare",                  "2",            CVAR_ARCHIVE                 },
 	{ &cg_debugParticles,              "cg_debugParticles",              "0",            CVAR_CHEAT                   },
 	{ &cg_debugTrails,                 "cg_debugTrails",                 "0",            CVAR_CHEAT                   },
 	{ &cg_debugPVS,                    "cg_debugPVS",                    "0",            CVAR_CHEAT                   },
@@ -426,6 +427,7 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_voice,                       "voice",                          "default",      CVAR_USERINFO | CVAR_ARCHIVE },
 
 	{ &cg_emoticons,                   "cg_emoticons",                   "1",            CVAR_LATCH | CVAR_ARCHIVE    },
+	{ &cg_emoticonsInMessages,         "cg_emoticonsInMessages",         "0",            CVAR_ARCHIVE                 },
 
 	{ &cg_animSpeed,                   "cg_animspeed",                   "1",            CVAR_CHEAT                   },
 	{ &cg_animBlend,                   "cg_animblend",                   "5.0",          CVAR_ARCHIVE                 },
@@ -767,13 +769,13 @@ void CG_UpdateBuildableRangeMarkerMask( void )
 				char *pp;
 				int  only;
 
-				if ( !Q_stricmpn( p, "alien", 5 ) )
+				if ( !Q_strnicmp( p, "alien", 5 ) )
 				{
 					pp = p + 5;
 					only = ( 1 << BA_A_OVERMIND ) | ( 1 << BA_A_SPAWN ) |
 					       ( 1 << BA_A_ACIDTUBE ) | ( 1 << BA_A_TRAPPER ) | ( 1 << BA_A_HIVE ) | ( 1 << BA_A_LEECH ) | ( 1 << BA_A_BOOSTER );
 				}
-				else if ( !Q_stricmpn( p, "human", 5 ) )
+				else if ( !Q_strnicmp( p, "human", 5 ) )
 				{
 					pp = p + 5;
 					only = ( 1 << BA_H_REACTOR ) | ( 1 << BA_H_REPEATER ) | ( 1 << BA_H_DCC ) |
@@ -1369,8 +1371,8 @@ static void CG_RegisterClients( void )
 	//precache all the models/sounds/etc
 	for ( i = PCL_NONE + 1; i < PCL_NUM_CLASSES; i++ )
 	{
-		CG_PrecacheClientInfo( i, BG_ClassConfig( i )->modelName,
-		                       BG_ClassConfig( i )->skinName );
+		CG_PrecacheClientInfo( i, BG_ClassModelConfig( i )->modelName,
+		                       BG_ClassModelConfig( i )->skinName );
 
 		cg.charModelFraction = ( float ) i / ( float ) PCL_NUM_CLASSES;
 		trap_UpdateScreen();
@@ -2309,8 +2311,12 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	cgs.media.outlineShader = trap_R_RegisterShader( "outline" );
 
 	// load overrides
-	BG_InitClassConfigs();
-	BG_InitBuildableConfigs();
+	BG_InitClassAttributes();
+	BG_InitClassModelConfigs();
+	BG_InitBuildableAttributes();
+	BG_InitBuildableModelConfigs();
+	BG_InitWeaponAttributes();
+	BG_InitUpgradeAttributes();
 	BG_InitAllowedGameElements();
 
 	// Dynamic memory

@@ -411,6 +411,7 @@ endif(NOT MINIMAL_FLAGS)
 
 set( SHAREDLIST
   ${MOUNT_DIR}/engine/qcommon/q_shared.c
+  ${MOUNT_DIR}/engine/qcommon/q_unicode.c
   ${MOUNT_DIR}/engine/qcommon/q_math.c
 )
 
@@ -656,6 +657,7 @@ set( GAME_VM_COMMON
 set( CGAMEGPP_BASE
   ${GPP_DIR}/cgame/cg_main.c
   ${GPP_DIR}/game/bg_misc.c
+  ${GPP_DIR}/game/bg_parse.c
   ${GPP_DIR}/game/bg_pmove.c
   ${GPP_DIR}/game/bg_slidemove.c
   ${GPP_DIR}/game/bg_lib.c
@@ -685,8 +687,7 @@ set( CGAMEGPP_BASE
   ${GPP_DIR}/cgame/cg_utils.c
   ${GPP_DIR}/ui/ui_shared.c
   ${GPP_DIR}/ui/ui_utf8.c
-  ${MOUNT_DIR}/engine/qcommon/q_math.c
-  ${MOUNT_DIR}/engine/qcommon/q_shared.c
+  ${SHAREDLIST}
 )
 
 set( CGAMEGPP_SO
@@ -702,6 +703,7 @@ set( CGAMEGPP_QVM
 set( GAMEGPP_BASE
   ${GPP_DIR}/game/g_main.c
   ${GPP_DIR}/game/bg_misc.c
+  ${GPP_DIR}/game/bg_parse.c
   ${GPP_DIR}/game/bg_pmove.c
   ${GPP_DIR}/game/bg_slidemove.c
   ${GPP_DIR}/game/bg_lib.c
@@ -731,8 +733,7 @@ set( GAMEGPP_BASE
   ${GPP_DIR}/game/g_alienbot.c
   ${GPP_DIR}/game/g_humanbot.c
   ${GPP_DIR}/game/g_nav.c
-  ${MOUNT_DIR}/engine/qcommon/q_math.c
-  ${MOUNT_DIR}/engine/qcommon/q_shared.c
+  ${SHAREDLIST}
 )
 
 set( GAMEGPP_SO
@@ -751,10 +752,11 @@ set( UIGPP_BASE
   ${GPP_DIR}/ui/ui_shared.c
   ${GPP_DIR}/ui/ui_gameinfo.c
   ${GPP_DIR}/game/bg_misc.c
+  ${GPP_DIR}/game/bg_parse.c
   ${GPP_DIR}/game/bg_lib.c
-  ${MOUNT_DIR}/engine/qcommon/q_math.c
-  ${MOUNT_DIR}/engine/qcommon/q_shared.c
+  ${GPP_DIR}/game/bg_alloc.c
   ${GPP_DIR}/ui/ui_utf8.c
+  ${SHAREDLIST}
 )
 
 set( UIGPP_SO

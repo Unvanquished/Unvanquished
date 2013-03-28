@@ -510,6 +510,11 @@ void CG_Menu( int menu, int arg )
 
 	switch ( menu )
 	{
+	        case MN_WELCOME:
+	                cmd = "menu ingame_help\n";
+	                type = DT_INTERACTIVE;
+	                break;
+
 		case MN_TEAM:
 			cmd = "menu tremulous_teamselect\n";
 			type = DT_INTERACTIVE;
@@ -880,7 +885,7 @@ void CG_Menu( int menu, int arg )
 
 		case MN_A_CANTEVOLVE:
 			shortMsg = va( _("You cannot evolve into a %s"),
-			               _( BG_ClassConfig( arg )->humanName ) );
+			               _( BG_ClassModelConfig( arg )->humanName ) );
 			type = DT_ARMOURYEVOLVE;
 			break;
 
@@ -896,19 +901,19 @@ void CG_Menu( int menu, int arg )
 
 		case MN_A_CLASSNOTSPAWN:
 			shortMsg = va( _("You cannot spawn as a %s"),
-			               _( BG_ClassConfig( arg )->humanName ) );
+			               _( BG_ClassModelConfig( arg )->humanName ) );
 			type = DT_ARMOURYEVOLVE;
 			break;
 
 		case MN_A_CLASSNOTALLOWED:
 			shortMsg = va( _("The %s is not allowed"),
-			               _( BG_ClassConfig( arg )->humanName ) );
+			               _( BG_ClassModelConfig( arg )->humanName ) );
 			type = DT_ARMOURYEVOLVE;
 			break;
 
 		case MN_A_CLASSNOTATSTAGE:
 			shortMsg = va( _("The %s is not allowed at Stage %d"),
-			               _( BG_ClassConfig( arg )->humanName ),
+			               _( BG_ClassModelConfig( arg )->humanName ),
 			               cgs.alienStage + 1 );
 			type = DT_ARMOURYEVOLVE;
 			break;
@@ -1062,7 +1067,7 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 	}
 
 	// IRC-like /me parsing
-	if ( mode != SAY_RAW && Q_stricmpn( text, "/me ", 4 ) == 0 )
+	if ( mode != SAY_RAW && Q_strnicmp( text, "/me ", 4 ) == 0 )
 	{
 		text += 4;
 		Q_strcat( prefix, sizeof( prefix ), "* " );

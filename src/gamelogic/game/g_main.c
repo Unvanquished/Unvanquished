@@ -44,6 +44,8 @@ typedef struct
 gentity_t          g_entities[ MAX_GENTITIES ];
 gclient_t          g_clients[ MAX_CLIENTS ];
 
+vmCvar_t           g_showHelpOnConnection;
+
 vmCvar_t           g_timelimit;
 vmCvar_t           g_friendlyFire;
 vmCvar_t           g_friendlyBuildableFire;
@@ -244,6 +246,8 @@ static cvarTable_t gameCvarTable[] =
 	{ NULL,                           "g_mapStartupMessage",           "",                                 0,                                               0, qfalse           },
 
 	// change anytime vars
+	{ &g_showHelpOnConnection,        "g_showHelpOnConnection",        "1",                                CVAR_ARCHIVE,                                    0, qfalse           },
+
 	{ &g_maxGameClients,              "g_maxGameClients",              "0",                                CVAR_SERVERINFO | CVAR_ARCHIVE,                  0, qfalse           },
 
 	{ &g_timelimit,                   "timelimit",                     "0",                                CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue            },
@@ -814,6 +818,12 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 
 	trap_SetConfigstring( CS_INTERMISSION, "0" );
 
+	// we need the entity names before we can spawn them
+	BG_InitBuildableAttributes();
+	BG_InitClassAttributes();
+	BG_InitWeaponAttributes();
+	BG_InitUpgradeAttributes();
+
 	// test to see if a custom buildable layout will be loaded
 	G_LayoutSelect();
 
@@ -834,8 +844,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	// general initialization
 	G_FindTeams();
 
-	BG_InitClassConfigs();
-	BG_InitBuildableConfigs();
+	BG_InitClassModelConfigs();
+	BG_InitBuildableModelConfigs();
 	G_InitDamageLocations();
 	G_InitMapRotations();
 	G_InitSpawnQueue( &level.alienSpawnQueue );
@@ -2427,7 +2437,7 @@ void G_ExecuteVote( team_t team )
 		G_MapLog_Result( 'r' );
 		level.restarted = qtrue;
 	}
-	else if ( !Q_stricmpn( level.voteString[ team ], "map", 3 ) )
+	else if ( !Q_strnicmp( level.voteString[ team ], "map", 3 ) )
 	{
 		G_MapLog_Result( 'm' );
 		level.restarted = qtrue;

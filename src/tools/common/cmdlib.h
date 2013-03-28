@@ -116,7 +116,7 @@ void 			Com_sprintf(char *dest, int size, const char *fmt, ...) PRINTF_LIKE(3);
 
 char           *va(char *format, ...) PRINTF_LIKE(1);
 char           *strlower(char *in);
-int             Q_strncasecmp(const char *s1, const char *s2, int n);
+int             Q_strnicmp(const char *s1, const char *s2, int n);
 int             Q_stricmp(const char *s1, const char *s2);
 void            Q_strncpyz(char *dest, const char *src, int destsize);
 void            Q_strcat(char *dest, int destsize, const char *src);

@@ -793,7 +793,7 @@ void AddTriangleModel(entity_t * e)
 	{
 		/* look for keys prefixed with "_remap" */
 		if(ep->key != NULL && ep->value != NULL &&
-		   ep->key[0] != '\0' && ep->value[0] != '\0' && !Q_strncasecmp(ep->key, "_remap", 6))
+		   ep->key[0] != '\0' && ep->value[0] != '\0' && !Q_strnicmp(ep->key, "_remap", 6))
 		{
 			/* create new remapping */
 			remap2 = remap;
@@ -1059,7 +1059,7 @@ void AddTriangleModels(entity_t * e)
 		{
 			/* look for keys prefixed with "_remap" */
 			if(ep->key != NULL && ep->value != NULL &&
-			   ep->key[0] != '\0' && ep->value[0] != '\0' && !Q_strncasecmp(ep->key, "_remap", 6))
+			   ep->key[0] != '\0' && ep->value[0] != '\0' && !Q_strnicmp(ep->key, "_remap", 6))
 			{
 				/* create new remapping */
 				remap2 = remap;

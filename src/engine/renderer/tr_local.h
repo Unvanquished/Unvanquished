@@ -1926,6 +1926,8 @@ skin_t   *R_GetSkinByHandle( qhandle_t hSkin );
 
 void     R_DebugText( const vec3_t org, float r, float g, float b, const char *text, qboolean neverOcclude );
 
+void     RE_SetColorGrading( qhandle_t hShader );
+
 //
 // tr_shader.c
 //
