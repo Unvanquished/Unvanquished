@@ -181,7 +181,7 @@ hashtable_t HT_Create(
 
 	// Set functions
 	table->GetKey = ( flags & HT_FLAG_CASE ) ? _HT_GetKey : _HT_GetCIKey;
-	table->CompareKey = ( flags & HT_FLAG_CASE ) ? strcmp : Q_strcasecmp;
+	table->CompareKey = ( flags & HT_FLAG_CASE ) ? strcmp : Q_stricmp;
 
 	if ( ( flags & HT_FLAG_INTABLE ) == 0 )
 	{

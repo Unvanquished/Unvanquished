@@ -183,3 +183,4 @@ equ trap_RegisterVisTest                  -420
 equ trap_AddVisTestToScene                -421
 equ trap_CheckVisibility                  -422
 equ trap_UnregisterVisTest                -423
+equ trap_SetColorGrading                  -424

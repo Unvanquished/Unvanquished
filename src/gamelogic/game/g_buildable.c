@@ -3913,7 +3913,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 		}
 
 		// Check permission to build here
-		if ( tr1.surfaceFlags & SURF_TREM_NOALIENBUILD || contents & CONTENTS_NOALIENBUILD )
+		if ( tr1.surfaceFlags & SURF_NOALIENBUILD || contents & CONTENTS_NOALIENBUILD )
 		{
 			reason = IBE_PERMISSION;
 		}
@@ -3958,14 +3958,14 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 		}
 
 		// Check permission to build here
-		if ( tr1.surfaceFlags & SURF_TREM_NOHUMANBUILD || contents & CONTENTS_NOHUMANBUILD )
+		if ( tr1.surfaceFlags & SURF_NOHUMANBUILD || contents & CONTENTS_NOHUMANBUILD )
 		{
 			reason = IBE_PERMISSION;
 		}
 	}
 
 	// Check permission to build here
-	if ( tr1.surfaceFlags & SURF_TREM_NOBUILD || contents & CONTENTS_NOBUILD )
+	if ( tr1.surfaceFlags & SURF_NOBUILD || contents & CONTENTS_NOBUILD )
 	{
 		reason = IBE_PERMISSION;
 	}

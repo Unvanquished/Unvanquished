@@ -37,6 +37,7 @@ Maryland 20850 USA.
 #include <time.h>
 #include "revision.h"
 #include "client.h"
+#include "../qcommon/q_unicode.h"
 
 int g_console_field_width = 78;
 
@@ -50,7 +51,7 @@ cvar_t    *con_animationType;
 cvar_t    *con_autoclear;
 
 /**
- * 0: no scroll lock at all, scroll down on any message ariving
+ * 0: no scroll lock at all, scroll down on any message arriving
  * 1: lock scrolling if in scrollback, but scroll down for send message/entered commands
  * 2: lock scrolling if in scrollback, even for own output
  * 3: always lock scrolling
@@ -59,14 +60,13 @@ cvar_t    *con_scrollLock;
 
 cvar_t	  *con_prompt;
 
-cvar_t    *con_margin;
-
 cvar_t    *con_borderWidth;
 cvar_t    *con_borderColorAlpha;
 cvar_t    *con_borderColorRed;
 cvar_t    *con_borderColorBlue;
 cvar_t    *con_borderColorGreen;
 
+cvar_t    *con_margin;
 cvar_t    *con_horizontalPadding;
 
 cvar_t    *con_height;
@@ -107,7 +107,7 @@ static const char *Con_LineToString( int lineno, qboolean lf )
 		}
 		else
 		{
-			strcpy( lineString + d, Q_UTF8Encode( line[ s ].ch ) );
+			strcpy( lineString + d, Q_UTF8_Encode( line[ s ].ch ) );
 			while ( lineString[ d ] ) { ++d; }
 		}
 	}
@@ -144,7 +144,7 @@ static const char *Con_LineToColouredString( int lineno, qboolean lf )
 		}
 		else
 		{
-			strcpy( lineString + d, Q_UTF8Encode( line[ s ].ch ) );
+			strcpy( lineString + d, Q_UTF8_Encode( line[ s ].ch ) );
 			while ( lineString[ d ] ) { ++d; }
 		}
 	}
@@ -343,7 +343,6 @@ Find all console lines containing a string
 void Con_Grep_f( void )
 {
 	int    l;
-	int    lastcolor;
 	char  *search;
 	char  *printbuf = NULL;
 	size_t pbAlloc = 0, pbLength = 0;
@@ -365,7 +364,6 @@ void Con_Grep_f( void )
 
 	// check the remaining lines
 	search = Cmd_Argv( 1 );
-	lastcolor = 7;
 
 	for ( ; l <= consoleState.currentLine; l++ )
 	{
@@ -419,10 +417,11 @@ Con_CheckResize
 If the line width has changed, reformat the buffer.
 ================
 */
-void Con_CheckResize( void )
+qboolean Con_CheckResize( void )
 {
 	int   i, textWidthInChars, oldwidth, oldtotallines, numlines, numchars;
 	conChar_t buf[ CON_TEXTSIZE ];
+	qboolean  ret = qtrue;
 
 	if ( cls.glconfig.vidWidth )
 	{
@@ -447,6 +446,8 @@ void Con_CheckResize( void )
 		consoleState.currentLine = consoleState.maxScrollbackLengthInLines - 1;
 		consoleState.bottomDisplayedLine = consoleState.currentLine;
 		consoleState.scrollLineIndex = consoleState.currentLine;
+
+		ret = qfalse;
 	}
 	else
 	{
@@ -454,7 +455,7 @@ void Con_CheckResize( void )
 		consoleState.textWidthInChars = textWidthInChars;
 		oldtotallines = consoleState.maxScrollbackLengthInLines;
 		consoleState.maxScrollbackLengthInLines = CON_TEXTSIZE / consoleState.textWidthInChars;
-		numlines = oldtotallines;
+		numlines = oldwidth < 0 ? 0 : oldtotallines;
 
 		if ( consoleState.maxScrollbackLengthInLines < numlines )
 		{
@@ -494,8 +495,10 @@ void Con_CheckResize( void )
 		Q_strncpyz( prompt, con_prompt->string, sizeof( prompt ) );
 		Q_CleanStr( prompt );
 
-		g_console_field_width = g_consoleField.widthInChars = consoleState.textWidthInChars - 8 - Q_UTF8Strlen( prompt );
+		g_console_field_width = g_consoleField.widthInChars = consoleState.textWidthInChars - 8 - Q_UTF8_Strlen( prompt );
 	}
+
+	return ret;
 }
 
 /*
@@ -513,14 +516,13 @@ void Con_Init( void )
 
 	con_prompt = Cvar_Get( "con_prompt", "^3->", CVAR_ARCHIVE );
 
-	con_margin = Cvar_Get( "con_margin", "10", CVAR_ARCHIVE );
-
 	con_height = Cvar_Get( "con_height", "55", CVAR_ARCHIVE );
 	con_colorRed = Cvar_Get( "con_colorRed", "0", CVAR_ARCHIVE );
 	con_colorBlue = Cvar_Get( "con_colorBlue", "0.3", CVAR_ARCHIVE );
 	con_colorGreen = Cvar_Get( "con_colorGreen", "0.18", CVAR_ARCHIVE );
 	con_colorAlpha = Cvar_Get( "con_colorAlpha", "0.5", CVAR_ARCHIVE );
 
+	con_margin = Cvar_Get( "con_margin", "10", CVAR_ARCHIVE );
 	con_horizontalPadding = Cvar_Get( "con_horizontalPadding", "0", CVAR_ARCHIVE );
 
 	con_borderWidth = Cvar_Get( "con_borderWidth", "1", CVAR_ARCHIVE );
@@ -597,13 +599,13 @@ If no console is visible, the text will appear at the top of the game window
 #pragma optimize( "g", off ) // SMF - msvc totally screws this function up with optimize on
 #endif
 
-void CL_ConsolePrint( char *txt )
+void CL_ConsolePrint( char *text )
 {
 	int      y;
 	int      c, i, l;
 	int      color;
 	
-	CL_WriteClientChatLog( txt );
+	CL_WriteClientChatLog( text );
 
 	// for some demos we don't want to ever show anything on the console
 	if ( cl_noprint && cl_noprint->integer )
@@ -614,49 +616,48 @@ void CL_ConsolePrint( char *txt )
 	if ( !consoleState.initialized )
 	{
 		consoleState.textWidthInChars = -1;
-		Con_CheckResize();
-		consoleState.initialized = qtrue;
+		consoleState.initialized = Con_CheckResize();
 	}
 
 	// NERVE - SMF - work around for text that shows up in console but not in notify
-	if ( !Q_strncmp( txt, "[skipnotify]", 12 ) )
+	if ( !Q_strncmp( text, "[skipnotify]", 12 ) )
 	{
-			txt += 12;
+			text += 12;
 	}
-	else if ( !consoleState.isOpened && strncmp( txt, "EXCL: ", 6 ) )
+	else if ( !consoleState.isOpened && strncmp( text, "EXCL: ", 6 ) )
 	{
 		// feed the text to cgame
 		Cmd_SaveCmdContext();
-		Cmd_TokenizeString( txt );
+		Cmd_TokenizeString( text );
 		CL_GameConsoleText();
 		Cmd_RestoreCmdContext();
 	}
 
 	color = ColorIndex( CONSOLE_COLOR );
 
-	while ( ( c = *txt & 0xFF ) != 0 )
+	while ( ( c = *text & 0xFF ) != 0 )
 	{
-		if ( Q_IsColorString( txt ) )
+		if ( Q_IsColorString( text ) )
 		{
-			color = ( txt[ 1 ] == COLOR_NULL ) ? ColorIndex( CONSOLE_COLOR ) : ColorIndex( txt[ 1 ] );
-			txt += 2;
+			color = ( text[ 1 ] == COLOR_NULL ) ? ColorIndex( CONSOLE_COLOR ) : ColorIndex( text[ 1 ] );
+			text += 2;
 			continue;
 		}
 
 		// count word length
 		for ( i = l = 0; l < consoleState.textWidthInChars; ++l )
 		{
-			if ( txt[ i ] <= ' ' && txt[ i ] >= 0 )
+			if ( text[ i ] <= ' ' && text[ i ] >= 0 )
 			{
 				break;
 			}
 
-			if ( txt[ i ] == Q_COLOR_ESCAPE && txt[ i + 1 ] == Q_COLOR_ESCAPE )
+			if ( text[ i ] == Q_COLOR_ESCAPE && text[ i + 1 ] == Q_COLOR_ESCAPE )
 			{
 				++i;
 			}
 
-			i += Q_UTF8Width( txt + i );
+			i += Q_UTF8_Width( text + i );
 		}
 
 		// word wrap
@@ -676,16 +677,17 @@ void CL_ConsolePrint( char *txt )
 				break;
 
 			case Q_COLOR_ESCAPE:
-				if ( txt[ 1 ] == Q_COLOR_ESCAPE )
+				if ( text[ 1 ] == Q_COLOR_ESCAPE )
 				{
-					++txt;
+					++text;
 				}
+				/* no break */
 
 			default: // display character and advance
 				y = consoleState.currentLine % consoleState.maxScrollbackLengthInLines;
 				// rain - sign extension caused the character to carry over
 				// into the color info for high ascii chars; casting c to unsigned
-				consoleState.text[ y * consoleState.textWidthInChars + consoleState.horizontalCharOffset ].ch = Q_UTF8CodePoint( txt );
+				consoleState.text[ y * consoleState.textWidthInChars + consoleState.horizontalCharOffset ].ch = Q_UTF8_CodePoint( text );
 				consoleState.text[ y * consoleState.textWidthInChars + consoleState.horizontalCharOffset ].ink = color;
 				++consoleState.horizontalCharOffset;
 
@@ -698,7 +700,7 @@ void CL_ConsolePrint( char *txt )
 				break;
 		}
 
-		txt += Q_UTF8Width( txt );
+		text += Q_UTF8_Width( text );
 	}
 }
 
@@ -811,7 +813,7 @@ void Con_DrawRightFloatingTextLine( const int linePosition, const float *color, 
 
 	for ( x = 0; x < i; x++ )
 	{
-		int ch = Q_UTF8CodePoint( &text[ x ] );
+		int ch = Q_UTF8_CodePoint( &text[ x ] );
 		SCR_DrawConsoleFontUnichar( currentWidthLocation, positionFromTop + ( linePosition * charHeight ), ch );
 		currentWidthLocation += SCR_ConsoleFontUnicharWidth( ch );
 	}

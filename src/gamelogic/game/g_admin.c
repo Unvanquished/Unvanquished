@@ -31,6 +31,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "g_local.h"
+#include "../../engine/qcommon/q_unicode.h"
 
 // big ugly global buffer for use with buffered printing of long outputs
 static char       g_bfb[ 32000 ];
@@ -641,12 +642,16 @@ qboolean G_admin_name_check( gentity_t *ent, const char *name, char *err, int le
 		return qfalse;
 	}
 
-	for ( i = 0; testName[ i ]; i++ )
+	for ( i = 0; testName[ i ]; )
 	{
-		if ( isalpha( testName[ i ] ) )
+		int cp = Q_UTF8_CodePoint( testName + i );
+
+		if ( Q_Unicode_IsAlphaOrIdeo( cp ) )
 		{
 			alphaCount++;
 		}
+
+		i += Q_UTF8_WidthCP( cp );
 	}
 
 	if ( alphaCount == 0 )
@@ -4051,49 +4056,55 @@ qboolean G_admin_restart( gentity_t *ent )
 	int       i;
 	gclient_t *cl;
 
-	if ( trap_Argc() > 1 )
-	{
-		char map[ MAX_QPATH ];
+	char      map[ MAX_QPATH ];
+	qboolean  builtin;
 
-		trap_Cvar_VariableStringBuffer( "mapname", map, sizeof( map ) );
-		trap_Argv( 1, layout, sizeof( layout ) );
-
-		// Figure out which argument is which
-		if ( trap_Argc() > 2 ||
-		     ( Q_stricmp( layout, "keepteams" ) && Q_stricmp( layout, "kt" ) &&
-		       Q_stricmp( layout, "keepteamslock" ) && Q_stricmp( layout, "ktl" ) &&
-		       Q_stricmp( layout, "switchteams" ) && Q_stricmp( layout, "st" ) &&
-		       Q_stricmp( layout, "switchteamslock" ) && Q_stricmp( layout, "stl" ) ) )
-		{
-			if ( !Q_stricmp( layout, "*BUILTIN*" ) ||
-			     trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, layout ),
-			                        NULL, FS_READ ) > 0 )
-			{
-				trap_Cvar_Set( "g_layouts", layout );
-			}
-			else
-			{
-				ADMP( va( "%s %s", QQ( N_("^3restart: ^7layout '$1$' does not exist\n") ), layout ) );
-				return qfalse;
-			}
-		}
-		else
-		{
-			layout[ 0 ] = '\0';
-			trap_Argv( 1, teampref, sizeof( teampref ) );
-		}
-	}
+	trap_Cvar_VariableStringBuffer( "mapname", map, sizeof( map ) );
+	trap_Argv( 1, layout, sizeof( layout ) );
 
 	if ( trap_Argc() > 2 )
 	{
+		// first one's the layout
 		trap_Argv( 2, teampref, sizeof( teampref ) );
 	}
+	else if ( !Q_stricmp( layout, "keepteams" )       || !Q_stricmp( layout, "kt" )  ||
+	          !Q_stricmp( layout, "keepteamslock" )   || !Q_stricmp( layout, "ktl" ) ||
+	          !Q_stricmp( layout, "switchteams" )     || !Q_stricmp( layout, "st" )  ||
+	          !Q_stricmp( layout, "switchteamslock" ) || !Q_stricmp( layout, "stl" ) )
+	{
+		// one argument, and it's a flag
+		*layout = 0;
+		trap_Argv( 1, teampref, sizeof( teampref ) );
+	}
+	else if ( trap_Argc() > 1 )
+	{
+		// one argument, and it's a layout name
+		// nothing to do
+	}
+	else
+	{
+		// no arguments
+		// nothing to do
+	}
 
+	// check that the layout's available
+	builtin = !*layout || !Q_stricmp( layout, "*BUILTIN*" );
+
+	if ( !builtin && !trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, layout ), NULL, FS_READ ) )
+	{
+		ADMP( va( "%s %s", QQ( N_("^3restart: ^7layout '$1$' does not exist\n") ), layout ) );
+		return qfalse;
+	}
+
+	// report
 	admin_log( layout );
 	admin_log( teampref );
 
+	// cvars
+	trap_Cvar_Set( "g_layouts", builtin ? "*BUILTIN*" : layout );
 	trap_Cvar_Set( "g_mapRestarted", "y" );
 
+	// handle the flag
 	if ( !Q_stricmp( teampref, "keepteams" ) || !Q_stricmp( teampref, "keepteamslock" ) || !Q_stricmp( teampref,"kt" ) || !Q_stricmp( teampref,"ktl" ) )
 	{
 		for ( i = 0; i < g_maxclients.integer; i++ )
@@ -4138,7 +4149,7 @@ qboolean G_admin_restart( gentity_t *ent )
 
 		trap_Cvar_Set( "g_mapRestarted", "yks" );
 	}
-	else if ( !layout[ 0 ] && trap_Argc() > 1 )
+	else if ( *teampref )
 	{
 		ADMP( va( "%s %s", QQ( N_( "^3restart: ^7unrecognised option '$1$'\n") ), Quote( teampref ) ) );
 		return qfalse;

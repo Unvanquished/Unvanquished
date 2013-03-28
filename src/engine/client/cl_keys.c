@@ -33,6 +33,7 @@ Maryland 20850 USA.
 */
 
 #include "client.h"
+#include "../qcommon/q_unicode.h"
 
 /*
 
@@ -361,7 +362,7 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
 	int  offset, offsetEnd;
 
 	drawLen = edit->widthInChars - 1; // - 1 so there is always a space for the cursor
-	len = Q_UTF8Strlen( edit->buffer );
+	len = Q_UTF8_Strlen( edit->buffer );
 
 	// guarantee that cursor will be visible
 	if ( len <= drawLen )
@@ -392,7 +393,7 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
 	offset = offsetEnd = Field_ScrollToOffset( edit );
 	for ( i = 0; i < drawLen && edit->buffer[ offsetEnd ]; ++i )
 	{
-		offsetEnd += Q_UTF8Width( edit->buffer + offsetEnd );
+		offsetEnd += Q_UTF8_Width( edit->buffer + offsetEnd );
 	}
 
 	if ( offsetEnd - offset >= MAX_STRING_CHARS )
@@ -454,7 +455,7 @@ void Field_VariableSizeDraw( field_t *edit, int x, int y, int size, qboolean sho
 		}
 		else
 		{
-			i = drawLen - Q_UTF8Strlen( str );
+			i = drawLen - Q_UTF8_Strlen( str );
 			xpos = x + ( edit->cursor - prestep - i ) * size;
 			height = key_overstrikeMode ? BIGCHAR_HEIGHT / ( CONSOLE_FONT_VPADDING + 1 ) : 2;
 			width = BIGCHAR_WIDTH;
@@ -496,7 +497,7 @@ static void Field_Paste( field_t *edit, clipboard_t clip )
 	// send as if typed, so insert / overstrike works properly
 	pasteLen = strlen( cbd );
 
-	while ( pasteLen >= ( width = Q_UTF8Width( cbd ) ) )
+	while ( pasteLen >= ( width = Q_UTF8_Width( cbd ) ) )
 	{
 		Field_CharEvent( edit, cbd );
 
@@ -521,9 +522,9 @@ void Field_KeyDownEvent( field_t *edit, int key )
 	char *s;
 
 	key = tolower( key );
-	len = Q_UTF8Strlen( edit->buffer );
+	len = Q_UTF8_Strlen( edit->buffer );
 	s = &edit->buffer[ Field_CursorToOffset( edit ) ];
-	width = Q_UTF8Width( s );
+	width = Q_UTF8_Width( s );
 
 	switch ( key )
 	{
@@ -619,7 +620,7 @@ void Field_KeyDownEvent( field_t *edit, int key )
 				{
 					--edit->cursor;
 					s = &edit->buffer[ Field_CursorToOffset( edit ) ];
-					width = Q_UTF8Width( s );
+					width = Q_UTF8_Width( s );
 				}
 
 				--edit->cursor;
@@ -708,7 +709,7 @@ void Field_CharEvent( field_t *edit, const char *s )
 
 		if ( edit->buffer[ posTo ] )
 		{
-			int posFrom = posTo + Q_UTF8Width( edit->buffer + posTo );
+			int posFrom = posTo + Q_UTF8_Width( edit->buffer + posTo );
 			memmove( edit->buffer + posTo, edit->buffer + posFrom, len + 1 - posFrom );
 		}
 
@@ -738,17 +739,17 @@ void Field_CharEvent( field_t *edit, const char *s )
 	}
 
 	// 'unprintable' on Mac - used for cursor keys, function keys etc.
-	if ( (unsigned int)( Q_UTF8CodePoint( s ) - 0xF700 ) < 0x200u )
+	if ( (unsigned int)( Q_UTF8_CodePoint( s ) - 0xF700 ) < 0x200u )
 	{
 		return;
 	}
 
-	width = Q_UTF8Width( s );
+	width = Q_UTF8_Width( s );
 	offset = Field_CursorToOffset( edit );
 
 	// if overstrike, adjust the width according to what's being replaced
 	// (at end-of-string, just insert)
-	oldWidth = ( key_overstrikeMode && edit->buffer[ offset ] ) ? Q_UTF8Width( edit->buffer + offset ) : 0;
+	oldWidth = ( key_overstrikeMode && edit->buffer[ offset ] ) ? Q_UTF8_Width( edit->buffer + offset ) : 0;
 
 	if ( len + width - oldWidth >= MAX_EDIT_LINE )
 	{
@@ -1146,7 +1147,7 @@ static int Key_GetTeam( const char *arg, const char *cmd )
 	for ( t = 0; t < ARRAY_LEN( labels ); ++t )
 	{
 		// matching initial substring
-		if ( !Q_stricmpn( arg, labels[ t ].label, l ) )
+		if ( !Q_strnicmp( arg, labels[ t ].label, l ) )
 		{
 			return labels[ t ].team;
 		}
@@ -1946,10 +1947,10 @@ void CL_CharEvent( const char *key )
 		// VMs that don't support i18n distinguish between char and key events by looking at the 11th least significant bit.
 		// Patched VMs look at the second least significant bit to determine whether the event is a char event, and at the third bit
 		// to determine the original 11th least significant bit of the key.
-		VM_Call( uivm, UI_KEY_EVENT, Q_UTF8Store( key ) | (1 << (K_CHAR_BIT - 1)),
+		VM_Call( uivm, UI_KEY_EVENT, Q_UTF8_Store( key ) | (1 << (K_CHAR_BIT - 1)),
 				(qtrue << KEYEVSTATE_DOWN) |
 				(qtrue << KEYEVSTATE_CHAR) |
-				((Q_UTF8Store( key ) & (1 << (K_CHAR_BIT - 1))) >> ((K_CHAR_BIT - 1) - KEYEVSTATE_BIT)) |
+				((Q_UTF8_Store( key ) & (1 << (K_CHAR_BIT - 1))) >> ((K_CHAR_BIT - 1) - KEYEVSTATE_BIT)) |
 				(qtrue << KEYEVSTATE_SUP) );
 	}
 	else if ( cls.state == CA_DISCONNECTED )

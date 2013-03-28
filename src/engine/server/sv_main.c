@@ -1150,6 +1150,36 @@ qboolean SV_CheckPaused( void )
 
 /*
 ==================
+SV_FrameMsec
+Return time in millseconds until processing of the next server frame.
+==================
+*/
+int SV_FrameMsec( void )
+{
+	if( sv_fps )
+	{
+		int frameMsec;
+
+		frameMsec = 1000.0f / sv_fps->value;
+
+		if( frameMsec < sv.timeResidual )
+		{
+			return 0;
+		}
+		else
+		{
+			return frameMsec - sv.timeResidual;
+		}
+	}
+	else
+	{
+		return 1;
+	}
+}
+
+
+/*
+==================
 SV_Frame
 
 Player movement occurs as a result of packet events, which

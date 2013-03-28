@@ -520,7 +520,7 @@ qhandle_t RE_RegisterAnimation( const char *name )
 		return 0;
 	}
 
-	if ( !Q_stricmpn( ( const char * ) buffer, "MD5Version", 10 ) )
+	if ( !Q_strnicmp( ( const char * ) buffer, "MD5Version", 10 ) )
 	{
 		loaded = R_LoadMD5Anim( anim, buffer, bufferLen, name );
 	}

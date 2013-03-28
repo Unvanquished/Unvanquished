@@ -21,6 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "ui_local.h"
+#include "../../engine/qcommon/q_unicode.h"
 
 int ui_CursorToOffset( const char *buf, int cursor )
 {
@@ -28,7 +29,7 @@ int ui_CursorToOffset( const char *buf, int cursor )
 
 	while ( ++i < cursor )
 	{
-		j += Q_UTF8Width( buf + j );
+		j += Q_UTF8_Width( buf + j );
 	}
 
 	return j;
@@ -40,7 +41,7 @@ int ui_OffsetToCursor( const char *buf, int offset )
 
 	while ( i < offset )
 	{
-		i += Q_UTF8Width( buf + i );
+		i += Q_UTF8_Width( buf + i );
 		++j;
 	}
 
