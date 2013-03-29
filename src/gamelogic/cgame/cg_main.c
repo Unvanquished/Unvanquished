@@ -2310,6 +2310,9 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	cgs.media.charsetShader = trap_R_RegisterShader( "gfx/2d/bigchars" );
 	cgs.media.outlineShader = trap_R_RegisterShader( "outline" );
 
+	// Dynamic memory
+	BG_InitMemory();
+
 	// load overrides
 	BG_InitClassAttributes();
 	BG_InitClassModelConfigs();
@@ -2319,8 +2322,6 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	BG_InitUpgradeAttributes();
 	BG_InitAllowedGameElements();
 
-	// Dynamic memory
-	BG_InitMemory();
 
 	CG_RegisterCvars();
 
