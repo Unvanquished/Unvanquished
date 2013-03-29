@@ -358,21 +358,19 @@ char *strstr( const char *string, const char *strCharSet )
 
 char *strdup( const char *string )
 {
-    size_t length;
-    char *copy;
+	size_t length;
+	char *copy;
 
-    length = strlen(string) + 1;
-    copy = (char *)BG_Alloc(length);
+	length = strlen(string) + 1;
+	copy = (char *)BG_Alloc(length);
 
-    if(copy == NULL)
-    {
-        return NULL;
-    }
-    else
-    {
-        memcpy(copy, string, length);
-        return copy;
-    }
+	if ( copy == NULL )
+	{
+		return NULL;
+	}
+
+	memcpy( copy, string, length );
+	return copy;
 }
 
 int tolower( int c )

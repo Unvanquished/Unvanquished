@@ -38,9 +38,9 @@ void                               trap_QuoteString( const char *, char *, int )
 
 typedef struct
 {
-    buildable_t number;
-    const char* name;
-    const char* classname;
+	buildable_t number;
+	const char* name;
+	const char* classname;
 } buildableName_t;
 
 static const buildableName_t bg_buildableNameList[] =
@@ -210,26 +210,26 @@ void BG_InitBuildableAttributes( void )
 	const buildableName_t *bh;
 	buildableAttributes_t *ba;
 
-    for ( i = 0; i < bg_numBuildables; i++ )
+	for ( i = 0; i < bg_numBuildables; i++ )
 	{
-	    bh = &bg_buildableNameList[i];
-        ba = &bg_buildableList[i];
+		bh = &bg_buildableNameList[i];
+		ba = &bg_buildableList[i];
 
-	    //Initialise default values for buildables
-	    Com_Memset( ba, 0, sizeof( buildableAttributes_t ) );
+		//Initialise default values for buildables
+		Com_Memset( ba, 0, sizeof( buildableAttributes_t ) );
 
-        ba->number = bh->number;
-        ba->name = strdup( bh->name );
-        ba->entityName = strdup( bh->classname );
+		ba->number = bh->number;
+		ba->name = strdup( bh->name );
+		ba->entityName = strdup( bh->classname );
 
-        ba->idleAnim = BANIM_IDLE1;
-        ba->traj = TR_GRAVITY;
-        ba->bounce = 0.0;
-        ba->nextthink = 100;
-        ba->turretProjType = WP_NONE;
-        ba->minNormal = 0.0;
+		ba->idleAnim = BANIM_IDLE1;
+		ba->traj = TR_GRAVITY;
+		ba->bounce = 0.0;
+		ba->nextthink = 100;
+		ba->turretProjType = WP_NONE;
+		ba->minNormal = 0.0;
 
-        BG_ParseBuildableAttributeFile( va( "configs/buildables/%s.attr.cfg", ba->name ), ba );
+		BG_ParseBuildableAttributeFile( va( "configs/buildables/%s.attr.cfg", ba->name ), ba );
 	}
 }
 
@@ -289,10 +289,10 @@ void BG_InitBuildableModelConfigs( void )
 ////////////////////////////////////////////////////////////////////////////////
 typedef struct
 {
-    class_t number;
-    const char* name;
-    weapon_t startWeapon;
-    int children[ 3 ];
+	class_t number;
+	const char* name;
+	weapon_t startWeapon;
+	int children[ 3 ];
 } classData_t;
 
 static classData_t bg_classData[] =
@@ -598,24 +598,24 @@ void BG_InitClassAttributes( void )
 	const classData_t *cd;
 	classAttributes_t *ca;
 
-    for ( i = 0; i < bg_numClasses; i++ )
+	for ( i = 0; i < bg_numClasses; i++ )
 	{
-        cd = &bg_classData[i];
-        ca = &bg_classList[i];
+		cd = &bg_classData[i];
+		ca = &bg_classList[i];
 
-        ca->number = cd->number;
-        ca->name = strdup( cd->name );
-        ca->startWeapon = cd->startWeapon;
-        ca->children[0] = cd->children[0];
-        ca->children[1] = cd->children[1];
-        ca->children[2] = cd->children[2];
+		ca->number = cd->number;
+		ca->name = strdup( cd->name );
+		ca->startWeapon = cd->startWeapon;
+		ca->children[0] = cd->children[0];
+		ca->children[1] = cd->children[1];
+		ca->children[2] = cd->children[2];
 
-        ca->buildDist = 0.0f;
-        ca->bob = 0.0f;
-        ca->bobCycle = 0.0f;
-        ca->abilities = 0;
+		ca->buildDist = 0.0f;
+		ca->bob = 0.0f;
+		ca->bobCycle = 0.0f;
+		ca->abilities = 0;
 
-        BG_ParseClassAttributeFile( va( "configs/classes/%s.attr.cfg", ca->name ), ca );
+		BG_ParseClassAttributeFile( va( "configs/classes/%s.attr.cfg", ca->name ), ca );
 	}
 }
 
@@ -642,8 +642,8 @@ void BG_InitClassModelConfigs( void )
 
 typedef struct
 {
-    int number;
-    const char* name;
+	int number;
+	const char* name;
 } weaponData_t;
 
 static const weaponData_t bg_weaponsData[] =
@@ -810,24 +810,24 @@ BG_InitWeaponAttributes
 */
 void BG_InitWeaponAttributes( void )
 {
-    int i;
-    const weaponData_t *wd;
-    weaponAttributes_t *wa;
+	int i;
+	const weaponData_t *wd;
+	weaponAttributes_t *wa;
 
-    for ( i = 0; i < bg_numWeapons; i++ )
-    {
-        wd = &bg_weaponsData[i];
-        wa = &bg_weapons[i];
+	for ( i = 0; i < bg_numWeapons; i++ )
+	{
+		wd = &bg_weaponsData[i];
+		wa = &bg_weapons[i];
 
-        //Initialise default values for buildables
-        Com_Memset( wa, 0, sizeof( weaponAttributes_t ) );
+		//Initialise default values for buildables
+		Com_Memset( wa, 0, sizeof( weaponAttributes_t ) );
 
-        wa->number = wd->number;
-        wa->name = wd->name;
-        wa->knockbackScale = 0.0f;
+		wa->number = wd->number;
+		wa->name = wd->name;
+		wa->knockbackScale = 0.0f;
 
-        BG_ParseWeaponAttributeFile( va( "configs/weapon/%s.attr.cfg", wa->name ), wa );
-    }
+		BG_ParseWeaponAttributeFile( va( "configs/weapon/%s.attr.cfg", wa->name ), wa );
+	}
 }
 
 
@@ -836,8 +836,8 @@ void BG_InitWeaponAttributes( void )
 
 typedef struct
 {
-    int number;
-    const char* name;
+	int number;
+	const char* name;
 } upgradeData_t;
 
 
@@ -933,23 +933,23 @@ BG_InitUpgradeAttributes
 */
 void BG_InitUpgradeAttributes( void )
 {
-    int i;
-    const upgradeData_t *ud;
-    upgradeAttributes_t *ua;
+	int i;
+	const upgradeData_t *ud;
+	upgradeAttributes_t *ua;
 
-    for ( i = 0; i < bg_numUpgrades; i++ )
-    {
-        ud = &bg_upgradesData[i];
-        ua = &bg_upgrades[i];
+	for ( i = 0; i < bg_numUpgrades; i++ )
+	{
+		ud = &bg_upgradesData[i];
+		ua = &bg_upgrades[i];
 
-        //Initialise default values for buildables
-        Com_Memset( ua, 0, sizeof( upgradeAttributes_t ) );
+		//Initialise default values for buildables
+		Com_Memset( ua, 0, sizeof( upgradeAttributes_t ) );
 
-        ua->number = ud->number;
-        ua->name = ud->name;
+		ua->number = ud->number;
+		ua->name = ud->name;
 
-        BG_ParseUpgradeAttributeFile( va( "configs/upgrades/%s.attr.cfg", ua->name ), ua );
-    }
+		BG_ParseUpgradeAttributeFile( va( "configs/upgrades/%s.attr.cfg", ua->name ), ua );
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
