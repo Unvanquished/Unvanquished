@@ -4052,7 +4052,7 @@ qboolean CL_InitRenderer( void )
 	}
 
 	// load character sets
-	cls.charSetShader = re.RegisterShader( "gfx/2d/bigchars" );
+	cls.charSetShader = re.RegisterShader( "gfx/2d/bigchars", RSF_DEFAULT );
 	cls.useLegacyConsoleFont = cls.useLegacyConsoleFace = qtrue;
 
 	// Register console font specified by cl_consoleFont, if any
@@ -4068,8 +4068,8 @@ qboolean CL_InitRenderer( void )
 		FS_FCloseFile( f );
 	}
 
-	cls.whiteShader = re.RegisterShader( "white" );
-	cls.consoleShader = re.RegisterShader( "console" );
+	cls.whiteShader = re.RegisterShader( "white", RSF_NOMIP );
+	cls.consoleShader = re.RegisterShader( "console", RSF_DEFAULT );
 
 	g_console_field_width = cls.glconfig.vidWidth / SMALLCHAR_WIDTH - 2;
 	g_consoleField.widthInChars = g_console_field_width;

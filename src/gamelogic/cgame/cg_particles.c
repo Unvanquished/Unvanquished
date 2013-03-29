@@ -583,7 +583,8 @@ qhandle_t CG_RegisterParticleSystem( const char *name )
 
 					for ( k = 0; k < bp->numFrames; k++ )
 					{
-						bp->shaders[ k ] = trap_R_RegisterShader( bp->shaderNames[ k ] );
+						bp->shaders[ k ] = trap_R_RegisterShader(bp->shaderNames[k],
+											 RSF_DEFAULT);
 					}
 
 					for ( k = 0; k < bp->numModels; k++ )
@@ -593,7 +594,8 @@ qhandle_t CG_RegisterParticleSystem( const char *name )
 
 					if ( bp->bounceMarkName[ 0 ] != '\0' )
 					{
-						bp->bounceMark = trap_R_RegisterShader( bp->bounceMarkName );
+						bp->bounceMark = trap_R_RegisterShader(bp->bounceMarkName,
+										       RSF_DEFAULT);
 					}
 
 					if ( bp->bounceSoundName[ 0 ] != '\0' )

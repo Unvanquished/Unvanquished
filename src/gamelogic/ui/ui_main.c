@@ -233,15 +233,24 @@ void AssetCache( void )
 {
 	int i;
 
-	uiInfo.uiDC.Assets.gradientBar = trap_R_RegisterShaderNoMip( ASSET_GRADIENTBAR );
-	uiInfo.uiDC.Assets.scrollBar = trap_R_RegisterShaderNoMip( ASSET_SCROLLBAR );
-	uiInfo.uiDC.Assets.scrollBarArrowDown = trap_R_RegisterShaderNoMip( ASSET_SCROLLBAR_ARROWDOWN );
-	uiInfo.uiDC.Assets.scrollBarArrowUp = trap_R_RegisterShaderNoMip( ASSET_SCROLLBAR_ARROWUP );
-	uiInfo.uiDC.Assets.scrollBarArrowLeft = trap_R_RegisterShaderNoMip( ASSET_SCROLLBAR_ARROWLEFT );
-	uiInfo.uiDC.Assets.scrollBarArrowRight = trap_R_RegisterShaderNoMip( ASSET_SCROLLBAR_ARROWRIGHT );
-	uiInfo.uiDC.Assets.scrollBarThumb = trap_R_RegisterShaderNoMip( ASSET_SCROLL_THUMB );
-	uiInfo.uiDC.Assets.sliderBar = trap_R_RegisterShaderNoMip( ASSET_SLIDER_BAR );
-	uiInfo.uiDC.Assets.sliderThumb = trap_R_RegisterShaderNoMip( ASSET_SLIDER_THUMB );
+	uiInfo.uiDC.Assets.gradientBar = trap_R_RegisterShader(ASSET_GRADIENTBAR,
+							       RSF_NOMIP);
+	uiInfo.uiDC.Assets.scrollBar = trap_R_RegisterShader(ASSET_SCROLLBAR,
+							     RSF_NOMIP);
+	uiInfo.uiDC.Assets.scrollBarArrowDown = trap_R_RegisterShader(ASSET_SCROLLBAR_ARROWDOWN,
+								      RSF_NOMIP);
+	uiInfo.uiDC.Assets.scrollBarArrowUp = trap_R_RegisterShader(ASSET_SCROLLBAR_ARROWUP,
+								    RSF_NOMIP);
+	uiInfo.uiDC.Assets.scrollBarArrowLeft = trap_R_RegisterShader(ASSET_SCROLLBAR_ARROWLEFT,
+								      RSF_NOMIP);
+	uiInfo.uiDC.Assets.scrollBarArrowRight = trap_R_RegisterShader(ASSET_SCROLLBAR_ARROWRIGHT,
+								       RSF_NOMIP);
+	uiInfo.uiDC.Assets.scrollBarThumb = trap_R_RegisterShader(ASSET_SCROLL_THUMB,
+								  RSF_NOMIP);
+	uiInfo.uiDC.Assets.sliderBar = trap_R_RegisterShader(ASSET_SLIDER_BAR,
+							     RSF_NOMIP);
+	uiInfo.uiDC.Assets.sliderThumb = trap_R_RegisterShader(ASSET_SLIDER_THUMB,
+							       RSF_NOMIP);
 
 	if ( ui_emoticons.integer )
 	{
@@ -255,9 +264,8 @@ void AssetCache( void )
 
 	for ( i = 0; i < uiInfo.uiDC.Assets.emoticonCount; i++ )
 	{
-		uiInfo.uiDC.Assets.emoticons[ i ].shader = trap_R_RegisterShaderNoMip(
-		      va( "emoticons/%s_%dx1.tga", uiInfo.uiDC.Assets.emoticons[ i ].name,
-		          uiInfo.uiDC.Assets.emoticons[ i ].width ) );
+		uiInfo.uiDC.Assets.emoticons[ i ].shader = trap_R_RegisterShader(va("emoticons/%s_%dx1.tga", uiInfo.uiDC.Assets.emoticons[i].name, uiInfo.uiDC.Assets.emoticons[i].width),
+										 RSF_NOMIP);
 	}
 }
 
@@ -1395,7 +1403,8 @@ qboolean Asset_Parse( int handle )
 				return qfalse;
 			}
 
-			uiInfo.uiDC.Assets.gradientBar = trap_R_RegisterShaderNoMip( tempStr );
+			uiInfo.uiDC.Assets.gradientBar = trap_R_RegisterShader(tempStr,
+									       RSF_NOMIP);
 			continue;
 		}
 
@@ -1454,7 +1463,8 @@ qboolean Asset_Parse( int handle )
 				return qfalse;
 			}
 
-			uiInfo.uiDC.Assets.cursor = trap_R_RegisterShaderNoMip( uiInfo.uiDC.Assets.cursorStr );
+			uiInfo.uiDC.Assets.cursor = trap_R_RegisterShader(uiInfo.uiDC.Assets.cursorStr,
+									  RSF_NOMIP);
 			continue;
 		}
 
@@ -1938,7 +1948,8 @@ static void UI_DrawServerMapPreview( rectDef_t *rect, float scale, vec4_t color 
 	}
 	else
 	{
-		UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip( "gfx/2d/load_screen" ) );
+		UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShader("gfx/2d/load_screen",
+											    RSF_NOMIP));
 	}
 }
 
@@ -1976,7 +1987,8 @@ static void UI_DrawSelectedMapPreview( rectDef_t *rect, float scale, vec4_t colo
 	{
 		if ( uiInfo.mapList[ map ].levelShot == -1 )
 		{
-			uiInfo.mapList[ map ].levelShot = trap_R_RegisterShaderNoMip( uiInfo.mapList[ map ].imageName );
+			uiInfo.mapList[ map ].levelShot = trap_R_RegisterShader(uiInfo.mapList[map].imageName,
+										RSF_NOMIP);
 		}
 
 		if ( uiInfo.mapList[ map ].levelShot > 0 )
@@ -1985,7 +1997,8 @@ static void UI_DrawSelectedMapPreview( rectDef_t *rect, float scale, vec4_t colo
 		}
 		else
 		{
-			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShaderNoMip( "gfx/2d/load_screen" ) );
+			UI_DrawHandlePic( rect->x, rect->y, rect->w, rect->h, trap_R_RegisterShader("gfx/2d/load_screen",
+												    RSF_NOMIP));
 		}
 	}
 }
@@ -3125,7 +3138,8 @@ static void UI_LoadHUDs( void )
 		}
 
 		uiInfo.huds[ pos ].name = String_Alloc( hudName );
-		uiInfo.huds[ pos++ ].hudShot = trap_R_RegisterShaderNoMip( va( "ui/%s/hudShot", hudName ) );
+		uiInfo.huds[ pos++ ].hudShot = trap_R_RegisterShader(va("ui/%s/hudShot", hudName),
+								     RSF_NOMIP);
 
 		hudName += len + 1;
 	}
@@ -4633,7 +4647,8 @@ static qhandle_t UI_FeederItemImage( int feederID, int index )
 		{
 			if ( uiInfo.mapList[ index ].levelShot == -1 )
 			{
-				uiInfo.mapList[ index ].levelShot = trap_R_RegisterShaderNoMip( uiInfo.mapList[ index ].imageName );
+				uiInfo.mapList[ index ].levelShot = trap_R_RegisterShader(uiInfo.mapList[index].imageName,
+											  RSF_NOMIP);
 			}
 
 			return uiInfo.mapList[ index ].levelShot;
@@ -4682,7 +4697,8 @@ static void UI_FeederSelection( int feederID, int index )
 		trap_LAN_GetServerInfo( ui_netSource.integer, uiInfo.serverStatus.displayServers[ index ],
 		                        info, MAX_STRING_CHARS );
 		uiInfo.serverStatus.currentServerPreview =
-		  trap_R_RegisterShaderNoMip( va( "levelshots/%s", Info_ValueForKey( info, "mapname" ) ) );
+		  trap_R_RegisterShader(va("levelshots/%s", Info_ValueForKey(info, "mapname")),
+					RSF_NOMIP);
 
 		if ( uiInfo.serverStatus.currentServerCinematic >= 0 )
 		{
@@ -5128,7 +5144,7 @@ void UI_Init( void )
 	uiInfo.uiDC.smallFontScale = trap_Cvar_VariableValue( "ui_smallFont" );
 	uiInfo.uiDC.bigFontScale = trap_Cvar_VariableValue( "ui_bigFont" );
 
-	uiInfo.uiDC.registerShaderNoMip = &trap_R_RegisterShaderNoMip;
+	uiInfo.uiDC.registerShader = &trap_R_RegisterShader;
 	uiInfo.uiDC.setColor = &UI_SetColor;
 	uiInfo.uiDC.drawHandlePic = &UI_DrawHandlePic;
 	uiInfo.uiDC.drawNoStretchPic = &UI_DrawNoStretchPic;
@@ -5183,7 +5199,7 @@ void UI_Init( void )
 
 	String_Init();
 
-	uiInfo.uiDC.whiteShader = trap_R_RegisterShaderNoMip( "white" );
+	uiInfo.uiDC.whiteShader = trap_R_RegisterShader("white", RSF_NOMIP);
 
 	AssetCache();
 

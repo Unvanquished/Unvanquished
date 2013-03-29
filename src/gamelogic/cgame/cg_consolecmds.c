@@ -370,7 +370,9 @@ static void CG_CompleteItem( void )
 
 static void CG_TestCGrade_f( void )
 {
-	qhandle_t shader = trap_R_RegisterShaderNoMip( CG_Argv( 1 ) );
+	qhandle_t shader = trap_R_RegisterShader(CG_Argv(1),
+						 RSF_NOMIP |
+						 RSF_NOLIGHTSCALE);
 	trap_SetColorGrading( shader );
 }
 

@@ -40,7 +40,7 @@ equ trap_FS_GetFileList                   -279
 equ trap_FS_Seek                          -280
 equ trap_R_RegisterModel                  -281
 equ trap_R_RegisterSkin                   -282
-equ trap_R_RegisterShaderNoMip            -283
+equ trap_R_RegisterShader                 -283
 equ trap_R_ClearScene                     -284
 equ trap_R_AddRefEntityToScene            -285
 equ trap_R_AddPolyToScene                 -286

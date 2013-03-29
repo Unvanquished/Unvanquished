@@ -88,6 +88,13 @@ Maryland 20850 USA.
 #define GL_INDEX_TYPE GL_UNSIGNED_INT
 typedef unsigned int   glIndex_t;
 
+typedef enum RegisterShaderFlags {
+	RSF_DEFAULT           = 0x00,
+	RSF_NOMIP             = 0x01,
+	RSF_LIGHT_ATTENUATION = 0x02,
+	RSF_NOLIGHTSCALE      = 0x04
+} RegisterShaderFlags_t;
+
 typedef struct
 {
 	vec3_t xyz;

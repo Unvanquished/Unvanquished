@@ -1620,7 +1620,7 @@ void Script_SetBackground( itemDef_t *item, char **args )
 
 	if ( String_Parse( args, &name ) )
 	{
-		item->window.background = DC->registerShaderNoMip( name );
+	  item->window.background = DC->registerShader( name, RSF_NOMIP );
 	}
 }
 
@@ -7794,7 +7794,7 @@ qboolean ItemParse_asset_shader( itemDef_t *item, int handle )
 		return qfalse;
 	}
 
-	item->asset = DC->registerShaderNoMip( temp );
+	item->asset = DC->registerShader( temp, RSF_NOMIP );
 	return qtrue;
 }
 
@@ -8239,7 +8239,7 @@ qboolean ItemParse_background( itemDef_t *item, int handle )
 		return qfalse;
 	}
 
-	item->window.background = DC->registerShaderNoMip( temp );
+	item->window.background = DC->registerShader( temp, RSF_NOMIP );
 	return qtrue;
 }
 
@@ -9107,7 +9107,7 @@ qboolean MenuParse_background( itemDef_t *item, int handle )
 		return qfalse;
 	}
 
-	menu->window.background = DC->registerShaderNoMip( buff );
+	menu->window.background = DC->registerShader( buff, RSF_NOMIP );
 	return qtrue;
 }
 
