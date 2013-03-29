@@ -425,12 +425,12 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
         {
             PARSE(text, token);
 
-            ba->value = atof(token);
+            ba->radarFadeOut = atof(token);
             defined |= RADAR;
         }
         else
         {
-            Com_Printf( S_COLOR_RED "ERROR: unknown token '%s'\n", token );
+            Com_Printf( S_COLOR_RED "ERROR: %s: unknown token '%s'\n", filename, token );
         }
     }
 
@@ -582,7 +582,7 @@ void BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_t *b
         }
         else
         {
-            Com_Printf( S_COLOR_RED "ERROR: unknown token '%s'\n", token );
+            Com_Printf( S_COLOR_RED "ERROR: %s: unknown token '%s'\n", filename, token );
         }
     }
 
@@ -851,7 +851,7 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
         }
         else
         {
-            Com_Printf( S_COLOR_RED "ERROR: unknown token '%s'\n", token );
+            Com_Printf( S_COLOR_RED "ERROR: %s: unknown token '%s'\n", filename, token );
         }
     }
 
@@ -1118,7 +1118,7 @@ void BG_ParseClassModelFile( const char *filename, classModelConfig_t *cc )
         }
         else
         {
-            Com_Printf( S_COLOR_RED "ERROR: unknown token '%s'\n", token );
+            Com_Printf( S_COLOR_RED "ERROR: %s: unknown token '%s'\n", filename, token );
         }
     }
 
@@ -1317,7 +1317,7 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
         }
         else
         {
-            Com_Printf( S_COLOR_RED "ERROR: unknown token '%s'\n", token );
+            Com_Printf( S_COLOR_RED "ERROR: %s: unknown token '%s'\n", filename, token );
         }
     }
 
@@ -1448,7 +1448,7 @@ void BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua
         }
         else
         {
-            Com_Printf( S_COLOR_RED "ERROR: unknown token '%s'\n", token );
+            Com_Printf( S_COLOR_RED "ERROR: %s: unknown token '%s'\n", filename, token );
         }
     }
 
