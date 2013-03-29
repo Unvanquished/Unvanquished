@@ -1,3 +1,6 @@
+; Generated file. Do not edit.
+; To update, run src/utils/scan_api.sh
+
 code
 
 equ memset                                -1
@@ -82,8 +85,6 @@ equ trap_R_GetSkinModel                   -320
 equ trap_R_GetShaderFromModel             -321
 equ trap_R_RegisterShader                 -322
 equ trap_R_RegisterFont                   -323
-
-
 equ trap_R_ClearScene                     -326
 equ trap_R_AddRefEntityToScene            -327
 equ trap_R_AddRefLightToScene             -328

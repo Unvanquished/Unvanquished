@@ -1,3 +1,6 @@
+; Generated file. Do not edit.
+; To update, run src/utils/scan_api.sh
+
 code
 
 equ memset                                -1
