@@ -425,7 +425,7 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
         {
             PARSE(text, token);
 
-            ba->value = atof(token);
+            ba->radarFadeOut = atof(token);
             defined |= RADAR;
         }
         else
