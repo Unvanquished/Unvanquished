@@ -32,11 +32,13 @@ void                               trap_FS_Write( const void *buffer, int len, f
 void                               trap_FS_FCloseFile( fileHandle_t f );
 
 #define PARSE(text, token) \
+do { \
     (token) = COM_Parse( &(text) ); \
     if ( !*(token) ) \
     { \
         break; \
-    }
+    } \
+} while (0)
 
 /*
 ======================
