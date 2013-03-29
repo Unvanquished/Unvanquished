@@ -753,6 +753,9 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 
 	// we need the entity names before we can spawn them
 	BG_InitBuildableAttributes();
+	BG_InitClassAttributes();
+	BG_InitWeaponAttributes();
+	BG_InitUpgradeAttributes();
 
 	// test to see if a custom buildable layout will be loaded
 	G_LayoutSelect();
@@ -772,11 +775,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	G_FindEntityGroups();
 	G_InitSetEntities();
 
-	BG_InitClassAttributes();
 	BG_InitClassModelConfigs();
 	BG_InitBuildableModelConfigs();
-	BG_InitWeaponAttributes();
-	BG_InitUpgradeAttributes();
 	G_InitDamageLocations();
 	G_InitMapRotations();
 	G_InitSpawnQueue( &level.alienSpawnQueue );

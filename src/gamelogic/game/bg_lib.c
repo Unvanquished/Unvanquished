@@ -370,7 +370,8 @@ char *strdup( const char *string )
     }
     else
     {
-        return memcpy(copy, string, length);
+        memcpy(copy, string, length);
+        return copy;
     }
 }
 
