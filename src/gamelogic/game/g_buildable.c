@@ -3069,6 +3069,11 @@ void G_BuildableTouchTriggers( gentity_t *ent )
 			continue;
 		}
 
+		if ( !hit->enabled )
+		{
+			continue;
+		}
+
 		//ignore buildables not yet spawned
 		if ( !ent->spawned )
 		{
