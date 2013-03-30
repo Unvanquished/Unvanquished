@@ -2051,8 +2051,8 @@ double rint( double x );
 		ET_BEAM,
 		ET_PORTAL,
 		ET_SPEAKER,
-		ET_PUSH_TRIGGER,
-		ET_TELEPORT_TRIGGER,
+		ET_PUSHER,
+		ET_TELEPORTER,
 		ET_INVISIBLE,
 		ET_GRAPPLE,       // grapple hooked on wall
 

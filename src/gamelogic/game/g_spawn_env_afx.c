@@ -78,7 +78,7 @@ void SP_env_afx_push( gentity_t *self )
 	// unlike other triggers, we need to send this one to the client
 	self->r.svFlags &= ~SVF_NOCLIENT;
 
-	self->s.eType = ET_PUSH_TRIGGER;
+	self->s.eType = ET_PUSHER;
 	self->touch = env_afx_push_touch;
 	self->think = think_aimAtTarget;
 	self->nextthink = level.time + FRAMETIME;
@@ -156,7 +156,7 @@ void SP_env_afx_teleport( gentity_t *self )
 		self->s.eFlags |= EF_NODRAW;
 	}
 
-	self->s.eType = ET_TELEPORT_TRIGGER;
+	self->s.eType = ET_TELEPORTER;
 	self->touch = env_afx_teleporter_touch;
 	self->act = env_afx_teleporter_act;
 
