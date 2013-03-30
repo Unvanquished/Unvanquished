@@ -40,7 +40,7 @@ Maryland 20850 USA.
 void RE_Shutdown( qboolean destroyWindow ) { }
 qhandle_t RE_RegisterModel( const char *name ) { return 1; }
 qhandle_t RE_RegisterSkin( const char *name ) { return 1; }
-qhandle_t RE_RegisterShader( const char *name ) { return 1; }
+qhandle_t RE_RegisterShader( const char *name, RegisterShaderFlags_t flags ) { return 1; }
 qhandle_t RE_RegisterShaderNoMip( const char *name ) { return 1; }
 qhandle_t RE_RegisterLightAttenuation( const char *name ) { return  1; }
 void RE_RegisterFont( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t *font ) { }
@@ -133,7 +133,6 @@ extern "C" {
 		re.RegisterModel = RE_RegisterModel;
 		re.RegisterSkin = RE_RegisterSkin;
 		re.RegisterShader = RE_RegisterShader;
-		re.RegisterShaderNoMip = RE_RegisterShaderNoMip;
 		#if defined( USE_REFLIGHT )
 		re.RegisterShaderLightAttenuation = RE_RegisterLightAttenuation;
 		#endif
