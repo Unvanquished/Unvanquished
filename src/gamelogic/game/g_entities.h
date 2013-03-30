@@ -52,8 +52,8 @@ Maryland 20850 USA.
  */
 
 #define S_FUNC_DOOR               "func_door"
-#define S_DOOR_TRIGGER            "door_trigger"
-#define S_PLAT_TRIGGER            "plat_trigger"
+#define S_DOOR_SENSOR             "door_sensor"
+#define S_PLAT_SENSOR             "plat_sensor"
 
 #define S_PATH_CORNER             "path_corner"
 #define S_POS_PLAYER_SPAWN        "pos_player_spawn"
