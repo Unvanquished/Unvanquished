@@ -246,7 +246,7 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ "func_bobbing",             SP_func_bobbing,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "func_button",              SP_func_button,            CHAIN_ACTIVE,     ENT_V_UNCLEAR, NULL },
 	{ "func_destructable",        SP_func_destructable,      CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ "func_door",                SP_func_door,              CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ S_FUNC_DOOR,                SP_func_door,              CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "func_door_model",          SP_func_door_model,        CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "func_door_rotating",       SP_func_door_rotating,     CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "func_dynamic",             SP_func_dynamic,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
@@ -273,13 +273,13 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	/**
 	 * former information and misc entities
 	 */
-	{ "info_alien_intermission",  SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "pos_alien_intermission"  },
-	{ "info_human_intermission",  SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "pos_human_intermission"  },
+	{ "info_alien_intermission",  SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_ALIEN_INTERMISSION  },
+	{ "info_human_intermission",  SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_HUMAN_INTERMISSION  },
 	{ "info_notnull",             SP_pos_target,             CHAIN_TARGET,     ENT_V_TMPNAME, "pos_target" },
 	{ "info_null",                SP_RemoveSelf,             0,                ENT_V_UNCLEAR, NULL },
-	{ "info_player_deathmatch",   SP_pos_player_spawn,       CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "pos_player_spawn" },
-	{ "info_player_intermission", SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "pos_player_intermission" },
-	{ "info_player_start",        SP_pos_player_spawn,       CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "pos_player_spawn" },
+	{ "info_player_deathmatch",   SP_pos_player_spawn,       CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_PLAYER_SPAWN },
+	{ "info_player_intermission", SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_PLAYER_INTERMISSION },
+	{ "info_player_start",        SP_pos_player_spawn,       CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_PLAYER_SPAWN },
 	{ "light",                    SP_RemoveSelf,             0,                ENT_V_UNCLEAR, NULL },
 	{ "misc_anim_model",          SP_env_animated_model,     CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_animated_model" },
 	{ "misc_light_flare",         SP_env_lens_flare,         CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_lens_flare"},
@@ -297,12 +297,12 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	 *  positions may or may not have an additional direction attached to them
 	 *  they may also target to another position to indicate that direction
 	 */
-	{ "path_corner",              SP_Nothing,                CHAIN_TARGET,     ENT_V_UNCLEAR, NULL },
-	{ "pos_alien_intermission",   SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ "pos_human_intermission",   SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ S_PATH_CORNER,              SP_Nothing,                CHAIN_TARGET,     ENT_V_UNCLEAR, NULL },
+	{ S_POS_ALIEN_INTERMISSION,   SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ S_POS_HUMAN_INTERMISSION,   SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "pos_location",             SP_pos_location,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ "pos_player_intermission",  SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ "pos_player_spawn",         SP_pos_player_spawn,       CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ S_POS_PLAYER_INTERMISSION,  SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ S_POS_PLAYER_SPAWN,         SP_pos_player_spawn,       CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "pos_target",               SP_pos_target,             CHAIN_TARGET,     ENT_V_UNCLEAR, NULL },
 
 	/**
@@ -315,10 +315,10 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	 */
 
 	{ "sensor_buildable",         SP_sensor_buildable,       CHAIN_ACTIVE,     ENT_V_UNCLEAR, NULL },
-	{ "sensor_end",               SP_sensor_end,             CHAIN_ACTIVE,     ENT_V_CURRENT, NULL },
-	{ "sensor_player",            SP_sensor_player,          CHAIN_ACTIVE,     ENT_V_UNCLEAR, NULL },
-	{ "sensor_stage",             SP_sensor_stage,           CHAIN_ACTIVE,     ENT_V_CURRENT, NULL },
-	{ "sensor_start",             SP_sensor_start,           CHAIN_ACTIVE,     ENT_V_CURRENT, NULL },
+	{ S_SENSOR_END,               SP_sensor_end,             CHAIN_ACTIVE,     ENT_V_CURRENT, NULL },
+	{ S_SENSOR_PLAYER,            SP_sensor_player,          CHAIN_ACTIVE,     ENT_V_UNCLEAR, NULL },
+	{ S_SENSOR_STAGE,             SP_sensor_stage,           CHAIN_ACTIVE,     ENT_V_CURRENT, NULL },
+	{ S_SENSOR_START,             SP_sensor_start,           CHAIN_ACTIVE,     ENT_V_CURRENT, NULL },
 	{ "sensor_timer",             SP_sensor_timer,           CHAIN_ACTIVE,     ENT_V_UNCLEAR, NULL },
 
 	/**
@@ -348,19 +348,19 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	/**
 	 * former trigger
 	 */
-	{ "trigger_always",           SP_sensor_start,           CHAIN_ACTIVE,     ENT_V_RENAMED, "sensor_start" },
+	{ "trigger_always",           SP_sensor_start,           CHAIN_ACTIVE,     ENT_V_RENAMED, S_SENSOR_START },
 	{ "trigger_ammo",             SP_env_afx_ammo,           CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_afx_ammo" },
 	{ "trigger_buildable",        SP_sensor_buildable,       CHAIN_ACTIVE,     ENT_V_TMPNAME, "sensor_buildable" },
-	{ "trigger_class",            SP_sensor_player,          CHAIN_ACTIVE,     ENT_V_TMPNAME, "sensor_player" },
-	{ "trigger_equipment",        SP_sensor_player,          CHAIN_ACTIVE,     ENT_V_TMPNAME, "sensor_player" },
+	{ "trigger_class",            SP_sensor_player,          CHAIN_ACTIVE,     ENT_V_TMPNAME, S_SENSOR_PLAYER },
+	{ "trigger_equipment",        SP_sensor_player,          CHAIN_ACTIVE,     ENT_V_TMPNAME, S_SENSOR_PLAYER },
 	{ "trigger_gravity",          SP_env_afx_gravity,        CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_afx_gravity" },
 	{ "trigger_heal",             SP_env_afx_heal,           CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_afx_heal" },
 	{ "trigger_hurt",             SP_env_afx_hurt,           CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_afx_hurt" },
-	{ "trigger_multiple",         SP_sensor_player,          CHAIN_ACTIVE,     ENT_V_TMPNAME, "sensor_player" },
+	{ "trigger_multiple",         SP_sensor_player,          CHAIN_ACTIVE,     ENT_V_TMPNAME, S_SENSOR_PLAYER },
 	{ "trigger_push",             SP_env_afx_push,           CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_afx_push" },
-	{ "trigger_stage",            SP_sensor_stage,           CHAIN_ACTIVE,     ENT_V_RENAMED, "sensor_stage" },
+	{ "trigger_stage",            SP_sensor_stage,           CHAIN_ACTIVE,     ENT_V_RENAMED, S_SENSOR_STAGE },
 	{ "trigger_teleport",         SP_env_afx_teleport,       CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_afx_teleport" },
-	{ "trigger_win",              SP_sensor_end,             CHAIN_ACTIVE,     ENT_V_TMPNAME, "sensor_end" }
+	{ "trigger_win",              SP_sensor_end,             CHAIN_ACTIVE,     ENT_V_TMPNAME, S_SENSOR_END }
 };
 
 qboolean G_HandleEntityVersions( entityClassDescriptor_t *spawnDescription, gentity_t *entity )

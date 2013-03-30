@@ -168,7 +168,7 @@ void G_notify_sensor_start()
 	if( g_debugEntities.integer >= 2 )
 		G_Printf( "DEBUG: Notification of match start.\n");
 
-	while ((sensor = G_IterateEntitiesOfClass(sensor, "sensor_start")) != NULL )
+	while ((sensor = G_IterateEntitiesOfClass(sensor, S_SENSOR_START)) != NULL )
 	{
 		sensor_start_fireAndForget(sensor);
 	}
@@ -242,7 +242,7 @@ void G_notify_sensor_stage( team_t team, stage_t stage )
 	if( g_debugEntities.integer >= 2 )
 		G_Printf( "DEBUG: Notification of team %i staging up to %i (0-2).\n", team, stage );
 
-	while ((entities = G_IterateEntitiesOfClass(entities, "sensor_stage")) != NULL )
+	while ((entities = G_IterateEntitiesOfClass(entities, S_SENSOR_STAGE)) != NULL )
 	{
 		if (((!entities->conditions.stage || stage == entities->conditions.stage)
 				&& (!entities->conditions.team || team == entities->conditions.team))
@@ -280,7 +280,7 @@ void G_notify_sensor_end( team_t winningTeam )
 	if( g_debugEntities.integer >= 2 )
 		G_Printf( "DEBUG: Notification of game end. Winning team %i.\n", winningTeam );
 
-	while ((entity = G_IterateEntitiesOfClass(entity, "sensor_end")) != NULL )
+	while ((entity = G_IterateEntitiesOfClass(entity, S_SENSOR_END)) != NULL )
 	{
 		if ((winningTeam == entity->conditions.team) == !entity->conditions.negated)
 			G_FireEntity(entity, entity);

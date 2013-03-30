@@ -45,6 +45,28 @@ Maryland 20850 USA.
 #define FL_NO_HUMANS               0x00004000 // spawn point just for bots
 #define FL_FORCE_GESTURE           0x00008000
 
+/*
+ * Constant entity classnames.
+ * These might get referenced from several locations in the code.
+ * At least once for spawning, and then potentially for searching or validation.
+ */
+
+#define S_FUNC_DOOR               "func_door"
+#define S_DOOR_TRIGGER            "door_trigger"
+#define S_PLAT_TRIGGER            "plat_trigger"
+
+#define S_PATH_CORNER             "path_corner"
+#define S_POS_PLAYER_SPAWN        "pos_player_spawn"
+#define S_POS_ALIEN_INTERMISSION  "pos_alien_intermission"
+#define S_POS_PLAYER_INTERMISSION "pos_player_intermission"
+#define S_POS_HUMAN_INTERMISSION  "pos_human_intermission"
+
+#define S_SENSOR_END              "sensor_end"
+#define S_SENSOR_PLAYER           "sensor_player"
+#define S_SENSOR_START            "sensor_start"
+#define S_SENSOR_STAGE            "sensor_stage"
+
+
 /**
  * The maximal available targets to aim at per entity.
  */

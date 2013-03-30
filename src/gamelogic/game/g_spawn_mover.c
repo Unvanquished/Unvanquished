@@ -1495,7 +1495,7 @@ void manualTriggerSpectator( gentity_t *sensor, gentity_t *player )
 
 
 	//restrict this hack to trigger_multiple only for now
-	if ( strcmp( sensor->classname, "sensor_player" ) )
+	if ( strcmp( sensor->classname, S_SENSOR_PLAYER ) )
 	{
 		return;
 	}
@@ -1503,7 +1503,7 @@ void manualTriggerSpectator( gentity_t *sensor, gentity_t *player )
 	//create a list of door entities this trigger targets
 	while( ( currentTarget = G_IterateCallEndpoints( currentTarget, &targetIndex, sensor ) ) != NULL )
 	{
-		if ( !strcmp( currentTarget->classname, "func_door" ) )
+		if ( !strcmp( currentTarget->classname, S_FUNC_DOOR ) )
 		{
 			targets[ i++ ] = currentTarget;
 		}
@@ -1612,7 +1612,7 @@ void Think_SpawnNewDoorTrigger( gentity_t *self )
 
 	// create a trigger with this size
 	other = G_NewEntity();
-	other->classname = "door_trigger";
+	other->classname = S_DOOR_TRIGGER;
 	VectorCopy( mins, other->r.mins );
 	VectorCopy( maxs, other->r.maxs );
 	other->parent = self;
@@ -2029,7 +2029,7 @@ void SpawnPlatSensor( gentity_t *self )
 	// the middle trigger will be a thin trigger just
 	// above the starting position
 	sensor = G_NewEntity();
-	sensor->classname = "plat_trigger";
+	sensor->classname = S_PLAT_TRIGGER;
 	sensor->touch = Touch_PlatCenterTrigger;
 	sensor->r.contents = CONTENTS_TRIGGER;
 	sensor->parent = self;
@@ -2396,12 +2396,12 @@ void Think_SetupTrainTargets( gentity_t *self )
 
 			if ( !next )
 			{
-				G_Printf( "Train corner at %s without a target path_corner\n",
+				G_Printf( "Train corner at %s without a referenced " S_PATH_CORNER "\n",
 				          vtos( path->s.origin ) );
 				return;
 			}
 		}
-		while ( strcmp( next->classname, "path_corner" ) );
+		while ( strcmp( next->classname, S_PATH_CORNER ) );
 
 		path->nextPathSegment = next;
 	}

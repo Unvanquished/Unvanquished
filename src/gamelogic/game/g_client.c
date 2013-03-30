@@ -124,7 +124,7 @@ gentity_t *G_SelectRandomFurthestSpawnPoint( vec3_t avoidPoint, vec3_t origin, v
 
 	numSpots = 0;
 
-	while ( ( spot = G_IterateEntitiesOfClass( spot, "pos_player_spawn" ) ) != NULL )
+	while ( ( spot = G_IterateEntitiesOfClass( spot, S_POS_PLAYER_SPAWN ) ) != NULL )
 	{
 		if ( SpotWouldTelefrag( spot ) )
 		{
@@ -172,7 +172,7 @@ gentity_t *G_SelectRandomFurthestSpawnPoint( vec3_t avoidPoint, vec3_t origin, v
 
 	if ( !numSpots )
 	{
-		spot = G_IterateEntitiesOfClass( NULL, "pos_player_spawn" );
+		spot = G_IterateEntitiesOfClass( NULL, S_POS_PLAYER_SPAWN );
 
 		if ( !spot )
 		{
@@ -325,7 +325,7 @@ gentity_t *G_SelectAlienLockSpawnPoint( vec3_t origin, vec3_t angles )
 {
 	gentity_t *spot;
 
-	spot = G_PickRandomEntityOfClass( "pos_alien_intermission" );
+	spot = G_PickRandomEntityOfClass( S_POS_ALIEN_INTERMISSION );
 
 	if ( !spot )
 	{
@@ -350,7 +350,7 @@ gentity_t *G_SelectHumanLockSpawnPoint( vec3_t origin, vec3_t angles )
 {
 	gentity_t *spot;
 
-	spot = G_PickRandomEntityOfClass( "pos_human_intermission" );
+	spot = G_PickRandomEntityOfClass( S_POS_HUMAN_INTERMISSION );
 
 	if ( !spot )
 	{
