@@ -371,7 +371,7 @@ qboolean G_HandleEntityVersions( entityClassDescriptor_t *spawnDescription, gent
 	if ( !spawnDescription->replacement || !Q_stricmp(entity->classname, spawnDescription->replacement))
 	{
 		if ( g_debugEntities.integer > -2 )
-			G_Printf( S_COLOR_RED "ERROR: " S_COLOR_WHITE "Entity " S_COLOR_CYAN "#%i " S_COLOR_WHITE " of type " S_COLOR_CYAN "%s " S_COLOR_WHITE "has been marked deprecated but no replacement has been supplied\n", entity->s.number, entity->classname );
+			G_Printf(S_COLOR_RED "ERROR: " S_COLOR_WHITE "Class %s has been marked deprecated but no replacement has been supplied\n", etos( entity ) );
 
 		return qfalse;
 	}
@@ -381,7 +381,7 @@ qboolean G_HandleEntityVersions( entityClassDescriptor_t *spawnDescription, gent
 		if( spawnDescription->versionState < ENT_V_TMPORARY
 		|| ( g_debugEntities.integer >= 1 && spawnDescription->versionState >= ENT_V_TMPORARY) )
 		{
-			G_Printf( S_COLOR_YELLOW "WARNING: " S_COLOR_WHITE "Entity " S_COLOR_CYAN "#%i " S_COLOR_WHITE "is of deprecated type ^5%s" S_COLOR_WHITE " — use ^5%s" S_COLOR_WHITE " instead\n", entity->s.number, entity->classname, spawnDescription->replacement );
+			G_Printf( S_COLOR_YELLOW "WARNING: " S_COLOR_WHITE "Entity %s uses a deprecated classtype — use the class " S_COLOR_CYAN "%s" S_COLOR_WHITE " instead\n", etos( entity ), spawnDescription->replacement );
 		}
 	}
 	entity->classname = spawnDescription->replacement;
@@ -395,7 +395,7 @@ qboolean G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *enti
 			if(!entity->callTargetCount) //check target usage for backward compatibility
 			{
 				if( g_debugEntities.integer > -2 )
-					G_Printf( S_COLOR_YELLOW "WARNING: " S_COLOR_WHITE "Entity " S_COLOR_CYAN "#%i" S_COLOR_WHITE " of type " S_COLOR_CYAN "%s" S_COLOR_WHITE " needs to target to something — Removing it.\n", entity->s.number, entity->classname );
+					G_Printf( S_COLOR_YELLOW "WARNING: " S_COLOR_WHITE "Entity %s needs to call or target to something — Removing it.\n", etos( entity ) );
 				return qfalse;
 			}
 			break;
@@ -404,7 +404,7 @@ qboolean G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *enti
 			if(!entity->names[0])
 			{
 				if( g_debugEntities.integer > -2 )
-					G_Printf( S_COLOR_YELLOW "WARNING: " S_COLOR_WHITE "Entity " S_COLOR_CYAN "#%i" S_COLOR_WHITE " of type " S_COLOR_CYAN "%s" S_COLOR_WHITE " needs a name, so other entities can target it — Removing it.\n", entity->s.number, entity->classname );
+					G_Printf( S_COLOR_YELLOW "WARNING: " S_COLOR_WHITE "Entity %s needs a name, so other entities can target it — Removing it.\n", etos( entity ) );
 				return qfalse;
 			}
 			break;
@@ -413,7 +413,7 @@ qboolean G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *enti
 					|| !entity->names[0])
 			{
 				if( g_debugEntities.integer > -2 )
-					G_Printf( S_COLOR_YELLOW "WARNING: " S_COLOR_WHITE "Entity " S_COLOR_CYAN "#%i" S_COLOR_WHITE " of type " S_COLOR_CYAN "%s" S_COLOR_WHITE " needs a name as well as a target to conditionally relay the firing — Removing it.\n", entity->s.number, entity->classname );
+					G_Printf( S_COLOR_YELLOW "WARNING: " S_COLOR_WHITE "Entity %s needs a name as well as a target to conditionally relay the firing — Removing it.\n", etos( entity ) );
 				return qfalse;
 			}
 			break;
@@ -443,7 +443,7 @@ qboolean G_CallSpawnFunction( gentity_t *spawnedEntity )
 	{
 		//don't even warn about spawning-errors with -2 (maps might still work at least partly if we ignore these willingly)
 		if ( g_debugEntities.integer > -2 )
-			G_Printf( S_COLOR_RED "ERROR: Entity " S_COLOR_CYAN "#%i" S_COLOR_WHITE " is missing classname – we are unable to spawn it.\n", spawnedEntity->s.number );
+			G_Printf( S_COLOR_RED "ERROR: " S_COLOR_WHITE "Entity " S_COLOR_CYAN "#%i" S_COLOR_WHITE " is missing classname – we are unable to spawn it.\n", spawnedEntity->s.number );
 		return qfalse;
 	}
 
@@ -788,7 +788,7 @@ qboolean G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expect
 		if( typeOfDeprecation < ENT_V_TMPORARY
 		|| ( g_debugEntities.integer >= 1 && typeOfDeprecation >= ENT_V_TMPORARY) )
 		{
-			G_Printf( "^3WARNING: ^7Entity ^5#%i^7 contains deprecated field ^5%s^7 — use ^5%s^7 instead\n", entity->s.number, actualFieldname, expectedFieldname );
+			G_Printf( S_COLOR_YELLOW "WARNING: " S_COLOR_WHITE " Entity " S_COLOR_CYAN "#%i" S_COLOR_WHITE " contains deprecated field " S_COLOR_CYAN "%s" S_COLOR_WHITE " — use " S_COLOR_CYAN "%s" S_COLOR_WHITE " instead\n", entity->s.number, actualFieldname, expectedFieldname );
 		}
 	}
 
