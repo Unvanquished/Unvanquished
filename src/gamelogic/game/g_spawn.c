@@ -502,9 +502,9 @@ qboolean G_CallSpawnFunction( gentity_t *spawnedEntity )
 	//don't even warn about spawning-errors with -2 (maps might still work at least partly if we ignore these willingly)
 	if ( g_debugEntities.integer > -2 )
 	{
-		if (!Q_stricmp("worldspawn", spawnedEntity->classname))
+		if (!Q_stricmp(S_WORLDSPAWN, spawnedEntity->classname))
 		{
-			G_Printf( S_ERROR "%s " S_COLOR_WHITE "is not the first but the " S_COLOR_CYAN "#%i" S_COLOR_WHITE " entry in the spawn string – Some map configurations will not be set.\n", spawnedEntity->classname, spawnedEntity->s.number );
+			G_Printf( S_ERROR "a " S_COLOR_CYAN S_WORLDSPAWN S_COLOR_WHITE " class was misplaced into position " S_COLOR_CYAN "#%i" S_COLOR_WHITE " of the spawn string – Ignoring\n", spawnedEntity->s.number );
 		}
 		else
 		{
@@ -917,9 +917,9 @@ void SP_worldspawn( void )
 
 	G_SpawnString( "classname", "", &s );
 
-	if ( Q_stricmp( s, "worldspawn" ) )
+	if ( Q_stricmp( s, S_WORLDSPAWN ) )
 	{
-		G_Error( "SP_worldspawn: The first entity isn't 'worldspawn'" );
+		G_Error( "SP_worldspawn: The first entry in the spawn string isn't of expected type '" S_WORLDSPAWN "'" );
 	}
 
 	// make some data visible to connecting client
@@ -970,7 +970,7 @@ void SP_worldspawn( void )
 
 	g_entities[ ENTITYNUM_WORLD ].s.number = ENTITYNUM_WORLD;
 	g_entities[ ENTITYNUM_WORLD ].r.ownerNum = ENTITYNUM_NONE;
-	g_entities[ ENTITYNUM_WORLD ].classname = "worldspawn";
+	g_entities[ ENTITYNUM_WORLD ].classname = S_WORLDSPAWN;
 
 	g_entities[ ENTITYNUM_NONE ].s.number = ENTITYNUM_NONE;
 	g_entities[ ENTITYNUM_NONE ].r.ownerNum = ENTITYNUM_NONE;

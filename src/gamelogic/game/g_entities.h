@@ -51,6 +51,8 @@ Maryland 20850 USA.
  * At least once for spawning, and then potentially for searching or validation.
  */
 
+#define S_WORLDSPAWN              "worldspawn"
+
 #define S_FUNC_DOOR               "func_door"
 #define S_DOOR_SENSOR             "door_sensor"
 #define S_PLAT_SENSOR             "plat_sensor"
