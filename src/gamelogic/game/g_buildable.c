@@ -3064,7 +3064,7 @@ void G_BuildableTouchTriggers( gentity_t *ent )
 			continue;
 		}
 
-		if ( !( hit->r.contents & CONTENTS_TRIGGER ) )
+		if ( !( hit->r.contents & CONTENTS_SENSOR ) )
 		{
 			continue;
 		}
