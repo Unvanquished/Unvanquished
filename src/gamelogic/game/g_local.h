@@ -1139,6 +1139,7 @@ gentity_t  *G_IterateCallEndpoints( gentity_t *entity, int *calltargetIndex, gen
 gentity_t  *G_PickRandomTargetFor( gentity_t *self );
 void       G_FireEntityRandomly( gentity_t *entity, gentity_t *activator );
 void       G_FireEntity( gentity_t *ent, gentity_t *activator );
+void       G_EventFireEntity( gentity_t *self, gentity_t *activator, gentityCallEvent_t eventType );
 
 //configure
 void       G_SetMovedir( vec3_t angles, vec3_t movedir );
