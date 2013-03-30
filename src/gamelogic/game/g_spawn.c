@@ -371,7 +371,7 @@ qboolean G_HandleEntityVersions( entityClassDescriptor_t *spawnDescription, gent
 	if ( !spawnDescription->replacement || !Q_stricmp(entity->classname, spawnDescription->replacement))
 	{
 		if ( g_debugEntities.integer > -2 )
-			G_Printf(S_COLOR_RED "ERROR: " S_COLOR_WHITE "Class %s has been marked deprecated but no replacement has been supplied\n", etos( entity ) );
+			G_Printf(S_ERROR "Class %s has been marked deprecated but no replacement has been supplied\n", etos( entity ) );
 
 		return qfalse;
 	}
@@ -381,7 +381,7 @@ qboolean G_HandleEntityVersions( entityClassDescriptor_t *spawnDescription, gent
 		if( spawnDescription->versionState < ENT_V_TMPORARY
 		|| ( g_debugEntities.integer >= 1 && spawnDescription->versionState >= ENT_V_TMPORARY) )
 		{
-			G_Printf( S_COLOR_YELLOW "WARNING: " S_COLOR_WHITE "Entity %s uses a deprecated classtype — use the class " S_COLOR_CYAN "%s" S_COLOR_WHITE " instead\n", etos( entity ), spawnDescription->replacement );
+			G_Printf( S_WARNING "Entity %s uses a deprecated classtype — use the class " S_COLOR_CYAN "%s" S_COLOR_WHITE " instead\n", etos( entity ), spawnDescription->replacement );
 		}
 	}
 	entity->classname = spawnDescription->replacement;
@@ -395,7 +395,7 @@ qboolean G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *enti
 			if(!entity->callTargetCount) //check target usage for backward compatibility
 			{
 				if( g_debugEntities.integer > -2 )
-					G_Printf( S_COLOR_YELLOW "WARNING: " S_COLOR_WHITE "Entity %s needs to call or target to something — Removing it.\n", etos( entity ) );
+					G_Printf( S_WARNING "Entity %s needs to call or target to something — Removing it.\n", etos( entity ) );
 				return qfalse;
 			}
 			break;
@@ -404,7 +404,7 @@ qboolean G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *enti
 			if(!entity->names[0])
 			{
 				if( g_debugEntities.integer > -2 )
-					G_Printf( S_COLOR_YELLOW "WARNING: " S_COLOR_WHITE "Entity %s needs a name, so other entities can target it — Removing it.\n", etos( entity ) );
+					G_Printf( S_WARNING "Entity %s needs a name, so other entities can target it — Removing it.\n", etos( entity ) );
 				return qfalse;
 			}
 			break;
@@ -413,7 +413,7 @@ qboolean G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *enti
 					|| !entity->names[0])
 			{
 				if( g_debugEntities.integer > -2 )
-					G_Printf( S_COLOR_YELLOW "WARNING: " S_COLOR_WHITE "Entity %s needs a name as well as a target to conditionally relay the firing — Removing it.\n", etos( entity ) );
+					G_Printf( S_WARNING "Entity %s needs a name as well as a target to conditionally relay the firing — Removing it.\n", etos( entity ) );
 				return qfalse;
 			}
 			break;
@@ -443,7 +443,7 @@ qboolean G_CallSpawnFunction( gentity_t *spawnedEntity )
 	{
 		//don't even warn about spawning-errors with -2 (maps might still work at least partly if we ignore these willingly)
 		if ( g_debugEntities.integer > -2 )
-			G_Printf( S_COLOR_RED "ERROR: " S_COLOR_WHITE "Entity " S_COLOR_CYAN "#%i" S_COLOR_WHITE " is missing classname – we are unable to spawn it.\n", spawnedEntity->s.number );
+			G_Printf( S_ERROR "Entity " S_COLOR_CYAN "#%i" S_COLOR_WHITE " is missing classname – we are unable to spawn it.\n", spawnedEntity->s.number );
 		return qfalse;
 	}
 
@@ -485,7 +485,7 @@ qboolean G_CallSpawnFunction( gentity_t *spawnedEntity )
 		spawnedEntity->spawned = qtrue;
 
 		if ( g_debugEntities.integer > 2 )
-			G_Printf("Debug: Successfully spawned entity " S_COLOR_CYAN "#%i" S_COLOR_WHITE " as " S_COLOR_YELLOW "%i" S_COLOR_WHITE "th instance of " S_COLOR_CYAN "%s\n",
+			G_Printf( S_DEBUG "Successfully spawned entity " S_COLOR_CYAN "#%i" S_COLOR_WHITE " as " S_COLOR_YELLOW "%i" S_COLOR_WHITE "th instance of " S_COLOR_CYAN "%s\n",
 					spawnedEntity->s.number, spawnedEntity->eclass->instanceCounter, spawnedClass->name);
 
 		/*
@@ -504,11 +504,11 @@ qboolean G_CallSpawnFunction( gentity_t *spawnedEntity )
 	{
 		if (!Q_stricmp("worldspawn", spawnedEntity->classname))
 		{
-			G_Printf( S_COLOR_RED "ERROR: " S_COLOR_CYAN "%s " S_COLOR_WHITE "is not the first but the " S_COLOR_CYAN "#%i" S_COLOR_WHITE " entry in the spawn string – Some map configurations will not be set.\n", spawnedEntity->classname, spawnedEntity->s.number );
+			G_Printf( S_ERROR "%s " S_COLOR_WHITE "is not the first but the " S_COLOR_CYAN "#%i" S_COLOR_WHITE " entry in the spawn string – Some map configurations will not be set.\n", spawnedEntity->classname, spawnedEntity->s.number );
 		}
 		else
 		{
-			G_Printf( S_COLOR_RED "ERROR: Unknown entity class \"" S_COLOR_CYAN "%s" S_COLOR_WHITE "\".\n", spawnedEntity->classname );
+			G_Printf( S_ERROR "Unknown entity class \"" S_COLOR_CYAN "%s" S_COLOR_WHITE "\".\n", spawnedEntity->classname );
 		}
 	}
 
@@ -675,7 +675,7 @@ void G_ParseField( const char *key, const char *rawString, gentity_t *entity )
 			break;
 
 		default:
-			G_Printf( "^3ERROR: unknown datatype %i for field %s\n", resultingField->type, resultingField->name );
+			G_Printf( S_ERROR "unknown datatype %i for field %s\n", resultingField->type, resultingField->name );
 			break;
 	}
 
@@ -788,7 +788,7 @@ qboolean G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expect
 		if( typeOfDeprecation < ENT_V_TMPORARY
 		|| ( g_debugEntities.integer >= 1 && typeOfDeprecation >= ENT_V_TMPORARY) )
 		{
-			G_Printf( S_COLOR_YELLOW "WARNING: " S_COLOR_WHITE " Entity " S_COLOR_CYAN "#%i" S_COLOR_WHITE " contains deprecated field " S_COLOR_CYAN "%s" S_COLOR_WHITE " — use " S_COLOR_CYAN "%s" S_COLOR_WHITE " instead\n", entity->s.number, actualFieldname, expectedFieldname );
+			G_Printf( S_WARNING "Entity " S_COLOR_CYAN "#%i" S_COLOR_WHITE " contains deprecated field " S_COLOR_CYAN "%s" S_COLOR_WHITE " — use " S_COLOR_CYAN "%s" S_COLOR_WHITE " instead\n", entity->s.number, actualFieldname, expectedFieldname );
 		}
 	}
 

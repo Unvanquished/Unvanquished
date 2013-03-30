@@ -145,7 +145,7 @@ void G_FreeEntity( gentity_t *entity )
 	}
 
 	if ( g_debugEntities.integer > 2 )
-		G_Printf("Debug: Freeing Entity %s\n", etos(entity));
+		G_Printf(S_DEBUG "Freeing Entity %s\n", etos(entity));
 
 	if( entity->eclass && entity->eclass->instanceCounter > 0)
 		entity->eclass->instanceCounter--;
@@ -427,7 +427,7 @@ gentity_t *G_PickRandomEntity( const char *classname, size_t fieldofs, const cha
 	{
 
 		if ( g_debugEntities.integer > -1 )
-			G_Printf( S_COLOR_YELLOW "WARNING: " S_COLOR_WHITE "Could not find any entity matching \"" S_COLOR_CYAN "%s" S_COLOR_WHITE "\"\n", match );
+			G_Printf( S_WARNING "Could not find any entity matching \"" S_COLOR_CYAN "%s" S_COLOR_WHITE "\"\n", match );
 
 		return NULL;
 	}
@@ -600,7 +600,7 @@ gentity_t *G_PickRandomTargetFor( gentity_t *self )
 	{
 		if ( g_debugEntities.integer > -1 )
 		{
-			G_Printf( S_COLOR_YELLOW "WARNING: " S_COLOR_WHITE "none of the following targets could be resolved for Entity %s:", etos(self));
+			G_Printf( S_WARNING "none of the following targets could be resolved for Entity %s:", etos(self));
 			G_PrintEntityNameList( self );
 		}
 		return NULL;
@@ -683,7 +683,7 @@ void G_EventFireEntity( gentity_t *self, gentity_t *activator, gentityCallEvent_
 
 		if ( !self->inuse )
 		{
-			G_Printf( "entity was removed while using targets\n" );
+			G_Printf( S_WARNING "entity was removed while using targets\n" );
 			return;
 		}
 	}
@@ -698,7 +698,7 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 {
 	if ( g_debugEntities.integer > 1 )
 	{
-		G_Printf("Debug: [%s] %s calling %s %s:%s\n",
+		G_Printf(S_DEBUG "[%s] %s calling %s %s:%s\n",
 				etos( call->activator ),
 				etos( call->caller ),
 				call->definition ? call->definition->event : "onUnknown",
@@ -713,7 +713,7 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 		case ECA_CUSTOM:
 			if ( g_debugEntities.integer > -1 )
 			{
-				G_Printf(S_COLOR_YELLOW "Warning:" S_COLOR_WHITE "Unknown action \"%s\" for %s\n",
+				G_Printf(S_WARNING "Unknown action \"%s\" for %s\n",
 						call->definition->action, etos(targetedEntity));
 			}
 			return;

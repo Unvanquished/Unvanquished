@@ -72,7 +72,7 @@ void trigger_compat_propagation_act( gentity_t *self, gentity_t *other, gentity_
 
 	if ( g_debugEntities.integer >= -1 ) //dont't warn about anything with -1 or lower
 	{
-		G_Printf( S_COLOR_RED "ERROR: " S_COLOR_WHITE "It appears as if %s is targeted by %s to enforce firing, which is undefined behavior — stop doing that! This WILL break in future releases and toggle the sensor instead.\n", etos( self ), etos( activator ) );
+		G_Printf( S_ERROR "It appears as if %s is targeted by %s to enforce firing, which is undefined behavior — stop doing that! This WILL break in future releases and toggle the sensor instead.\n", etos( self ), etos( activator ) );
 	}
 }
 
@@ -137,7 +137,7 @@ void trigger_multiple_compat_reset( gentity_t *self )
 
 	if ( self->spawnflags && g_debugEntities.integer >= -1 ) //dont't warn about anything with -1 or lower
 	{
-		G_Printf( S_COLOR_RED "ERROR: " S_COLOR_WHITE "It appears as if %s has set spawnflags that were not defined behavior of the entities.def; this is likely to break in the future\n", etos( self ));
+		G_Printf( S_ERROR "It appears as if %s has set spawnflags that were not defined behavior of the entities.def; this is likely to break in the future\n", etos( self ));
 	}
 }
 
@@ -166,7 +166,7 @@ void G_notify_sensor_start()
 	gentity_t *sensor = NULL;
 
 	if( g_debugEntities.integer >= 2 )
-		G_Printf( "DEBUG: Notification of match start.\n");
+		G_Printf( S_DEBUG "Notification of match start.\n");
 
 	while ((sensor = G_IterateEntitiesOfClass(sensor, S_SENSOR_START)) != NULL )
 	{
@@ -240,7 +240,7 @@ void G_notify_sensor_stage( team_t team, stage_t stage )
 	gentity_t *entities = NULL;
 
 	if( g_debugEntities.integer >= 2 )
-		G_Printf( "DEBUG: Notification of team %i staging up to %i (0-2).\n", team, stage );
+		G_Printf( S_DEBUG "Notification of team %i staging up to %i (0-2).\n", team, stage );
 
 	while ((entities = G_IterateEntitiesOfClass(entities, S_SENSOR_STAGE)) != NULL )
 	{
@@ -278,7 +278,7 @@ void G_notify_sensor_end( team_t winningTeam )
 	gentity_t *entity = NULL;
 
 	if( g_debugEntities.integer >= 2 )
-		G_Printf( "DEBUG: Notification of game end. Winning team %i.\n", winningTeam );
+		G_Printf( S_DEBUG "Notification of game end. Winning team %i.\n", winningTeam );
 
 	while ((entity = G_IterateEntitiesOfClass(entity, S_SENSOR_END)) != NULL )
 	{

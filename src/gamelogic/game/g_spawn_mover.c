@@ -1907,7 +1907,7 @@ void SP_func_door_model( gentity_t *self )
 	// for drawing, but clip against the brushes
 	if ( !self->model2 )
 	{
-		G_Printf( S_COLOR_YELLOW "WARNING: func_door_model %d spawned with no model2 key\n", self->s.number );
+		G_Printf( S_WARNING "func_door_model %d spawned with no model2 key\n", self->s.number );
 	}
 	else
 	{

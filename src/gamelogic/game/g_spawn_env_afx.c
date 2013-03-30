@@ -331,7 +331,7 @@ void SP_env_afx_heal( gentity_t *self )
 	if ( self->damage <= 0 )
 	{
 		self->damage = 1;
-		G_Printf( S_COLOR_YELLOW "WARNING: trigger_heal with negative damage key\n" );
+		G_Printf( S_WARNING "trigger_heal with negative damage key\n" );
 	}
 
 	self->touch = env_afx_heal_touch;
@@ -436,7 +436,7 @@ void SP_env_afx_ammo( gentity_t *self )
 	if ( self->config.amount <= 0 )
 	{
 		self->config.amount = 1;
-		G_Printf( S_COLOR_YELLOW "WARNING: " S_COLOR_WHITE "%s with negative or unset ammo amount key\n", etos(self) );
+		G_Printf( S_WARNING "%s with negative or unset ammo amount key\n", etos(self) );
 	}
 
 	self->touch = env_afx_ammo_touch;

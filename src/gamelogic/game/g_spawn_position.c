@@ -85,7 +85,7 @@ void SP_pos_location( gentity_t *self )
 	if ( pos_location_counter == MAX_LOCATIONS )
 	{
 		if(g_debugEntities.integer > -1)
-			G_Printf( "^3WARNING: ^7too many locations set\n" );
+			G_Printf( S_WARNING "too many locations set\n" );
 		return;
 	}
 

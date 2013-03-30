@@ -185,7 +185,7 @@ void SP_WaitFields( gentity_t *self, float defaultWait, float defaultWaitVarianc
 
 		if( g_debugEntities.integer > -1)
 		{
-			G_Printf( "^3WARNING: ^7Entity %s has waitWariance >= wait\n", etos( self ) );
+			G_Printf( S_WARNING "Entity %s has wait.variance >= wait.time\n", etos( self ) );
 		}
 	}
 }
