@@ -118,6 +118,17 @@ typedef struct
 	float speed;
 	int damage;
 
+	/**
+	 * how long dekay firing an event
+	 */
+	variatingTime_t delay;
+	/**
+	 * the duration of one cycle in a repeating event
+	 */
+	variatingTime_t period;
+	/**
+	 * how long to wait in a state after a statechange
+	 */
 	variatingTime_t wait;
 
 	// trigger "range"
