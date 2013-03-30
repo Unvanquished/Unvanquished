@@ -148,6 +148,7 @@ static const field_t fields[] =
 	{ "onFree",              FOFS( calltargets ),         F_CALLTARGET },
 	{ "onReach",             FOFS( calltargets ),         F_CALLTARGET },
 	{ "onReset",             FOFS( calltargets ),         F_CALLTARGET },
+	{ "onSpawn",             FOFS( calltargets ),         F_CALLTARGET },
 	{ "onTouch",             FOFS( calltargets ),         F_CALLTARGET },
 	{ "onUse",               FOFS( calltargets ),         F_CALLTARGET },
 	{ "origin",              FOFS( s.origin ),            F_3D_VECTOR },

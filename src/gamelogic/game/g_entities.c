@@ -468,6 +468,7 @@ static const entityCallEventDescription_t gentityEventDescriptions[] =
 		{ "onFree",      ON_FREE      },
 		{ "onReach",     ON_REACH     },
 		{ "onReset",     ON_RESET     },
+		{ "onSpawn",     ON_SPAWN     },
 		{ "onTouch",     ON_TOUCH     },
 		{ "onUse",       ON_USE       },
 		{ "target",      ON_DEFAULT   },

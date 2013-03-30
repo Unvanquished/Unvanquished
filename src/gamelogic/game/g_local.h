@@ -171,7 +171,9 @@ typedef enum
 	ON_TOUCH,
 
 	ON_ENABLE,
-	ON_DISABLE
+	ON_DISABLE,
+
+	ON_SPAWN
 
 } gentityCallEvent_t;
 
