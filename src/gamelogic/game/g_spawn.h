@@ -32,6 +32,9 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+#ifndef SPAWN_H_
+#define SPAWN_H_
+
 void    SP_func_plat( gentity_t *self );
 void    SP_func_static( gentity_t *self );
 void    SP_func_dynamic( gentity_t *self );
@@ -133,3 +136,4 @@ void     SP_WaitFields( gentity_t *self, float defaultWait, float defaultWaitVar
 // Init functions
 void    SP_position_init( void );
 
+#endif /* SPAWN_H_ */
