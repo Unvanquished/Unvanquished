@@ -2658,36 +2658,6 @@ void SP_func_pendulum( gentity_t *self )
 
 /*
 ====================
-G_KillBrushModel
-====================
-*/
-void G_KillBrushModel( gentity_t *ent, gentity_t *activator )
-{
-  gentity_t *e;
-  vec3_t mins, maxs;
-  trace_t tr;
-
-  for( e = &g_entities[ 0 ]; e < &g_entities[ level.num_entities ]; ++e )
-  {
-    if( !e->takedamage || !e->r.linked || !e->clipmask || ( e->client && e->client->noclip ) )
-      continue;
-
-    VectorAdd( e->r.currentOrigin, e->r.mins, mins );
-    VectorAdd( e->r.currentOrigin, e->r.maxs, maxs );
-
-    if( !trap_EntityContact( mins, maxs, ent ) )
-      continue;
-
-    trap_Trace( &tr, e->r.currentOrigin, e->r.mins, e->r.maxs,
-                e->r.currentOrigin, e->s.number, e->clipmask );
-
-    if( tr.entityNum != ENTITYNUM_NONE )
-      G_Damage( e, ent, activator, NULL, NULL, 100000, DAMAGE_NO_PROTECTION, MOD_CRUSH );
-  }
-}
-
-/*
-====================
 Use_func_spawn
 ====================
 */
