@@ -2242,6 +2242,7 @@ typedef struct
 #define MAX_MODELS                256 // these are sent over the net as 8 bits
 #define MAX_SOUNDS                256 // so they cannot be blindly increased
 #define MAX_GAME_SHADERS          64
+#define MAX_GRADING_TEXTURES      64
 #define MAX_GAME_PARTICLE_SYSTEMS 64
 #define MAX_HOSTNAME_LENGTH       80
 #define MAX_NEWS_STRING           10000
