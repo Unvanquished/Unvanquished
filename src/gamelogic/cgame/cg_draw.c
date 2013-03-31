@@ -4697,7 +4697,7 @@ static void CG_Draw2D( void )
 
 		if ( !menu ) // still couldn't find it
 		{
-			CG_Error( "Default HUD could not be found" );
+// 			CG_Error( "Default HUD could not be found" );
 		}
 	}
 

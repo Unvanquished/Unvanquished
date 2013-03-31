@@ -2259,7 +2259,8 @@ void CG_LoadHudMenu( void )
 		hudSet = "ui/hud.txt";
 	}
 
-	CG_LoadMenus( hudSet );
+// 	CG_LoadMenus( hudSet );
+	trap_Rocket_DocumentAction( "hud", "open" );
 }
 
 void CG_AssetCache( void )
