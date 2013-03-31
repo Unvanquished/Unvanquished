@@ -119,7 +119,8 @@ typedef enum
 
 typedef enum
 {
-	ECA_DEFAULT = 0,
+	ECA_NOP = 0,
+	ECA_DEFAULT,
 	ECA_CUSTOM,
 
 	ECA_FREE,

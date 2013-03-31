@@ -570,7 +570,7 @@ gentityCallDefinition_t G_NewCallDefinition( char *eventKey, const char *string 
 {
 	char *stringPointer;
 	int  i, stringLength;
-	gentityCallDefinition_t newCallDefinition = { NULL, ON_DEFAULT, NULL, NULL, ECA_DEFAULT };
+	gentityCallDefinition_t newCallDefinition = { NULL, ON_DEFAULT, NULL, NULL, ECA_NOP };
 
 	stringLength = strlen( string ) + 1;
 	if(stringLength == 1)
@@ -776,7 +776,7 @@ void G_ReorderCallTargets( gentity_t *ent )
 	}
 	ent->calltargets[ j ].name = NULL;
 	ent->calltargets[ j ].action = NULL;
-	ent->calltargets[ j ].actionType = ECA_DEFAULT;
+	ent->calltargets[ j ].actionType = ECA_NOP;
 	ent->callTargetCount = j;
 }
 

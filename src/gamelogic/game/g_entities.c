@@ -503,6 +503,7 @@ static const entityActionDescription_t actionDescriptions[] =
 		{ "disable",   ECA_DISABLE   },
 		{ "enable",    ECA_ENABLE    },
 		{ "free",      ECA_FREE      },
+		{ "nop",       ECA_NOP       },
 		{ "propagate", ECA_PROPAGATE },
 		{ "reset",     ECA_RESET     },
 		{ "toggle",    ECA_TOGGLE    },
@@ -710,6 +711,9 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 	{
 		switch (call->definition->actionType)
 		{
+		case ECA_NOP:
+			break;
+
 		case ECA_CUSTOM:
 			if ( g_debugEntities.integer > -1 )
 			{
