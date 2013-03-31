@@ -87,25 +87,6 @@ typedef struct
 	qboolean negated;
 } gentityConditions_t;
 
-typedef struct
-{
-	char  *event;
-	gentityCallEvent_t eventType;
-
-	char  *name;
-
-	char  *action;
-	gentityCallActionType_t actionType;
-} gentityCallDefinition_t;
-
-typedef struct
-{
-	gentityCallDefinition_t *definition;
-	//struct gentity_s *recipient;
-	struct gentity_s *caller;
-	struct gentity_s *activator;
-} gentityCall_t;
-
 /*
  * struct containing the configuration data of a gentity opposed to its state data
  */
@@ -842,19 +823,6 @@ typedef struct
 } commands_t;
 
 //
-// g_spawn.c
-//
-qboolean G_SpawnString( const char *key, const char *defaultString, char **out );
-
-// spawn string returns a temporary reference, you must CopyString() if you want to keep it
-qboolean G_SpawnFloat( const char *key, const char *defaultString, float *out );
-qboolean G_SpawnInt( const char *key, const char *defaultString, int *out );
-qboolean G_SpawnVector( const char *key, const char *defaultString, float *out );
-void     G_SpawnEntitiesFromString( void );
-void     G_ReorderCallTargets( gentity_t *ent );
-char     *G_NewString( const char *string );
-
-//
 // g_cmds.c
 //
 
@@ -1023,51 +991,6 @@ void     G_InitDamageLocations( void );
 #define DAMAGE_NO_LOCDAMAGE  0x00000010 // do not apply locational damage
 
 //
-// g_entities.c
-//
-
-//lifecycle
-void       G_InitGentity( gentity_t *e );
-gentity_t  *G_NewEntity( void );
-gentity_t  *G_NewTempEntity( const vec3_t origin, int event );
-void       G_FreeEntity( gentity_t *e );
-
-//debug
-char       *etos( const gentity_t *entity );
-void       G_PrintEntityNameList( gentity_t *entity );
-
-//search, select, iterate
-gentity_t  *G_IterateEntities( gentity_t *entity, const char *classname, qboolean skipdisabled, size_t fieldofs, const char *match );
-gentity_t  *G_IterateEntitiesOfClass( gentity_t *entity, const char *classname );
-gentity_t  *G_IterateEntitiesWithField( gentity_t *entity, size_t fieldofs, const char *match );
-gentity_t  *G_IterateEntitiesWithinRadius( gentity_t *entity, vec3_t origin, float radius );
-gentity_t  *G_FindClosestEntity( vec3_t origin, gentity_t **entities, int numEntities );
-gentity_t  *G_PickRandomEntity( const char *classname, size_t fieldofs, const char *match );
-gentity_t  *G_PickRandomEntityOfClass( const char *classname );
-gentity_t  *G_PickRandomEntityWithField( size_t fieldofs, const char *match );
-
-//test
-qboolean   G_MatchesName( gentity_t *entity, const char* name );
-qboolean   G_IsVisible( gentity_t *ent1, gentity_t *ent2, int contents );
-
-//chain
-gentityCallActionType_t G_GetCallEventTypeFor( const char* event );
-gentityCallActionType_t G_GetCallActionTypeFor( const char* action );
-void       G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call);
-gentity_t  *G_ResolveEntityKeyword( gentity_t *self, char *keyword );
-gentity_t  *G_IterateTargets(gentity_t *entity, int *targetIndex, gentity_t *self);
-gentity_t  *G_IterateCallEndpoints( gentity_t *entity, int *calltargetIndex, gentity_t *self );
-gentity_t  *G_PickRandomTargetFor( gentity_t *self );
-void       G_FireEntityRandomly( gentity_t *entity, gentity_t *activator );
-void       G_FireEntity( gentity_t *ent, gentity_t *activator );
-void       G_EventFireEntity( gentity_t *self, gentity_t *activator, gentityCallEvent_t eventType );
-
-//configure
-void       G_SetMovedir( vec3_t angles, vec3_t movedir );
-void       G_SetOrigin( gentity_t *ent, const vec3_t origin );
-void       G_SetNextthink( gentity_t *self );
-
-//
 // g_missile.c
 //
 void      G_RunMissile( gentity_t *ent );
@@ -1082,24 +1005,6 @@ gentity_t *fire_bounceBall( gentity_t *self, vec3_t start, vec3_t dir );
 gentity_t *fire_hive( gentity_t *self, vec3_t start, vec3_t dir );
 gentity_t *launch_grenade( gentity_t *self, vec3_t start, vec3_t dir );
 
-//
-// g_mover.c
-//
-void G_RunMover( gentity_t *ent );
-void door_trigger_touch( gentity_t *ent, gentity_t *other, trace_t *trace );
-void manualTriggerSpectator( gentity_t *trigger, gentity_t *player );
-
-//
-// g_sensor.c
-//
-void G_notify_sensor_stage( team_t team, stage_t stage );
-void G_notify_sensor_start( );
-void G_notify_sensor_end( team_t winningTeam );
-
-//
-// g_trigger.c
-//
-void env_afx_teleporter_touch( gentity_t *self, gentity_t *other, trace_t *trace );
 
 //
 // g_weapon.c
