@@ -526,26 +526,39 @@ gentityCallActionType_t G_GetCallActionTypeFor( const char* action )
 	return ECA_CUSTOM;
 }
 
-gentity_t *G_ResolveEntityKeyword( gentity_t *self, char *keyword, gentityCallDefinition_t *callDefinition )
+gentity_t *G_ResolveEntityKeyword( gentity_t *self, char *keyword )
 {
+	gentity_t *resolution = NULL;
+
 	if (!Q_stricmp(keyword, "$activator"))
-		return self->activator;
+		resolution = self->activator;
 	else if (!Q_stricmp(keyword, "$self"))
-		return self;
+		resolution = self;
 	else if (!Q_stricmp(keyword, "$parent"))
-		return self->parent;
-	return NULL;
+		resolution = self->parent;
+
+	if(!resolution->inuse)
+		return NULL;
+
+	return resolution;
 }
 
 gentity_t *G_IterateTargets(gentity_t *entity, int *targetIndex, gentity_t *self)
 {
+	gentity_t *possibleTarget = NULL;
+
 	if (entity)
 		goto cont;
 
 	for (*targetIndex = 0; self->targets[*targetIndex]; ++(*targetIndex))
 	{
 		if(self->targets[*targetIndex][0] == '$')
-			return G_ResolveEntityKeyword( self, self->targets[*targetIndex], NULL );
+		{
+			possibleTarget = G_ResolveEntityKeyword( self, self->targets[*targetIndex] );
+			if(possibleTarget && possibleTarget->enabled)
+				return possibleTarget;
+			return NULL;
+		}
 
 		for( entity = &g_entities[ MAX_CLIENTS ]; entity < &g_entities[ level.num_entities ]; entity++ )
 		{
@@ -569,7 +582,7 @@ gentity_t *G_IterateCallEndpoints(gentity_t *entity, int *calltargetIndex, genti
 	for (*calltargetIndex = 0; self->calltargets[*calltargetIndex].name; ++(*calltargetIndex))
 	{
 		if(self->calltargets[*calltargetIndex].name[0] == '$')
-			return G_ResolveEntityKeyword( self, self->calltargets[*calltargetIndex].name, &self->calltargets[*calltargetIndex] );
+			return G_ResolveEntityKeyword( self, self->calltargets[*calltargetIndex].name );
 
 		for( entity = &g_entities[ MAX_CLIENTS ]; entity < &g_entities[ level.num_entities ]; entity++ )
 		{
