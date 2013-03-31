@@ -111,4 +111,8 @@ void Rocket_DocumentAction( const char *name, const char *action )
 			document->Show();
 		}
 	}
+	else if ( !Q_stricmp( "load", action ) )
+	{
+		Rocket_LoadDocument( name );
+	}
 }

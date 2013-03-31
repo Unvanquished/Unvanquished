@@ -368,6 +368,11 @@ int RocketConvertSDLButton( Uint8 sdlButton )
 	return sdlButton - 1;
 }
 
+void Rocket_Rocket_f( void )
+{
+	Rocket_DocumentAction( Cmd_Argv(1), Cmd_Argv(2) );
+}
+
 static DaemonFileInterface fileInterface;
 static DaemonSystemInterface systemInterface;
 static DaemonRenderInterface renderInterface;
@@ -418,6 +423,8 @@ void Rocket_Init( void )
 	Rocket::Core::Factory::RegisterEventListenerInstancer( event_instancer );
 	event_instancer->RemoveReference();
 
+	Cmd_AddCommand( "rocket", Rocket_Rocket_f );
+
 	//Rocket::Debugger::Initialise(context);
 }
 
@@ -456,6 +463,8 @@ void Rocket_Shutdown( void )
 		delete eventQueue.front();
 		eventQueue.pop();
 	}
+
+	Cmd_RemoveCommand( "rocket" );
 }
 
 void Rocket_Render( void )
