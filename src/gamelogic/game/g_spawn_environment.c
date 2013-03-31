@@ -245,7 +245,7 @@ void SP_env_particle_system( gentity_t *self )
 	//add the particle system to the client precache list
 	self->s.modelindex = G_ParticleSystemIndex( s );
 
-	if ( self->spawnflags & 1 )
+	if ( self->spawnflags & SPF_SPAWN_DISABLED )
 	{
 		self->s.eFlags |= EF_NODRAW;
 	}
@@ -331,7 +331,7 @@ void SP_env_lens_flare( gentity_t *self )
 
 	G_SpawnInt( "mindist", "0", &self->s.generic1 );
 
-	if ( self->spawnflags & 1 )
+	if ( self->spawnflags & SPF_SPAWN_DISABLED )
 	{
 		self->s.eFlags |= EF_NODRAW;
 	}

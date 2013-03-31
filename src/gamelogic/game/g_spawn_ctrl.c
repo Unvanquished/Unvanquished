@@ -118,7 +118,7 @@ void ctrl_limited_act(gentity_t *self, gentity_t *other, gentity_t *activator)
 void ctrl_limited_reset( gentity_t *self )
 {
 	// spawn disabled?
-	self->enabled = !(self->spawnflags & 1);
+	self->enabled = !(self->spawnflags & SPF_SPAWN_DISABLED);
 
 	reset_intField(&self->count, self->config.amount, self->eclass->config.amount, 1, qtrue);
 }

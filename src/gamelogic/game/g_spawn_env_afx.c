@@ -340,7 +340,7 @@ void SP_env_afx_heal( gentity_t *self )
 	InitEnvAFXEntity( self );
 
 	// link in to the world if starting active
-	if ( self->spawnflags & 1 )
+	if ( self->spawnflags & SPF_SPAWN_DISABLED )
 	{
 		trap_UnlinkEntity( self );
 	}

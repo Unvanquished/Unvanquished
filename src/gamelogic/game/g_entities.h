@@ -46,6 +46,13 @@ Maryland 20850 USA.
 #define FL_FORCE_GESTURE           0x00008000
 
 /*
+ *  common entity spawn flags
+ */
+#define SPF_SPAWN_DISABLED          1
+#define SPF_SPAWN_ENABLED           1
+#define SPF_NEGATE_CONDITIONS       2
+
+/*
  * Constant entity classnames.
  * These might get referenced from several locations in the code.
  * At least once for spawning, and then potentially for searching or validation.

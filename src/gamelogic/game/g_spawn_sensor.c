@@ -59,7 +59,7 @@ void sensor_act(gentity_t *self, gentity_t *other, gentity_t *activator)
 void sensor_reset( gentity_t *self )
 {
 	// SPAWN_DISABLED?
-	self->enabled = !(self->spawnflags & 1);
+	self->enabled = !(self->spawnflags & SPF_SPAWN_DISABLED);
 
 	// NEGATE?
 	self->conditions.negated = !!( self->spawnflags & 2 );
