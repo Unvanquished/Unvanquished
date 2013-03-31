@@ -85,20 +85,17 @@ void game_end_act( gentity_t *self, gentity_t *caller, gentity_t *activator )
 	}
 }
 
-void SP_target_alien_win( gentity_t *self )
-{
-	self->conditions.team = TEAM_ALIENS;
-	self->act = game_end_act;
-}
-
-void SP_target_human_win( gentity_t *self )
-{
-	self->conditions.team = TEAM_HUMANS;
-	self->act = game_end_act;
-}
-
 void SP_game_end( gentity_t *self )
 {
+	if(!Q_stricmp(self->classname, "target_human_win"))
+	{
+		self->conditions.team = TEAM_HUMANS;
+	}
+	else if(!Q_stricmp(self->classname, "target_alien_win"))
+	{
+		self->conditions.team = TEAM_ALIENS;
+	}
+
 	self->act = game_end_act;
 }
 
