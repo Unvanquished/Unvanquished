@@ -32,7 +32,8 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-// g_local.h -- local definitions for game module
+#ifndef G_LOCAL_H_
+#define G_LOCAL_H_
 
 #include "../../engine/qcommon/q_shared.h"
 #include "bg_public.h"
@@ -44,6 +45,7 @@ typedef struct gclient_s gclient_t;
 #include "g_admin.h"
 #include "g_entities.h"
 
+// g_local.h -- local definitions for game module
 //==================================================================
 
 #define INTERMISSION_DELAY_TIME    1000
@@ -1375,3 +1377,7 @@ void             trap_GenFingerprint( const char *pubkey, int size, char *buffer
 void             trap_GetPlayerPubkey( int clientNum, char *pubkey, int size );
 
 void             trap_GetTimeString( char *buffer, int size, const char *format, const qtime_t *tm );
+
+//==================================================================
+#endif /* G_LOCAL_H_ */
+
