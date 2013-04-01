@@ -927,9 +927,9 @@ typedef struct
 {
 	class_t  number;
 
-	char *name;
-	char *info;
-	char *fovCvar;
+	const char *name;
+	const char *info;
+	const char *fovCvar;
 
 	int      stages;
 
@@ -998,10 +998,10 @@ typedef struct
 {
 	buildable_t number;
 
-	char  *name;
-	char  *humanName;
-	char  *info;
-	char  *entityName;
+	const char *name;
+	const char *humanName;
+	const char *info;
+	const char *entityName;
 
 	trType_t    traj;
 	float       bounce;

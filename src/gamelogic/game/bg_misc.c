@@ -219,8 +219,8 @@ void BG_InitBuildableAttributes( void )
 		Com_Memset( ba, 0, sizeof( buildableAttributes_t ) );
 
 		ba->number = bh->number;
-		ba->name = strdup( bh->name );
-		ba->entityName = strdup( bh->classname );
+		ba->name = bh->name;
+		ba->entityName = bh->classname;
 
 		ba->idleAnim = BANIM_IDLE1;
 		ba->traj = TR_GRAVITY;
@@ -604,7 +604,7 @@ void BG_InitClassAttributes( void )
 		ca = &bg_classList[i];
 
 		ca->number = cd->number;
-		ca->name = strdup( cd->name );
+		ca->name = cd->name;
 		ca->startWeapon = cd->startWeapon;
 		ca->children[0] = cd->children[0];
 		ca->children[1] = cd->children[1];
