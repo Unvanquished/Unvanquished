@@ -1010,7 +1010,7 @@ void BG_UnloadAllConfigs( void )
             BG_Free( (char *)ca->info );
         }
 
-        if( *ca->info != '\0' )
+        if( *ca->fovCvar != '\0' )
         {
             BG_Free( (char *)ca->fovCvar );
         }
