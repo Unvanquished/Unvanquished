@@ -787,8 +787,8 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 			break;
 		}
 	}
-	if(targetedEntity->notify)
-		targetedEntity->notify( targetedEntity, call );
+	if(targetedEntity->notifyHandler)
+		targetedEntity->notifyHandler( targetedEntity, call );
 }
 
 /*

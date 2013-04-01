@@ -285,9 +285,9 @@ struct gentity_s
 
 
 	/*
-	 * notify about an event or undertaken action, so each entity can decide to undertake special actions as result
+	 * handle the notification about an event or undertaken action, so each entity can decide to undertake special actions as result
 	 */
-	void ( *notify )( gentity_t *self, gentityCall_t *call );
+	void ( *notifyHandler )( gentity_t *self, gentityCall_t *call );
 
 	/**
 	 * the entry function for calls to the entity;
