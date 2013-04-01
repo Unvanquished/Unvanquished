@@ -455,7 +455,7 @@ qboolean G_CallSpawnFunction( gentity_t *spawnedEntity )
 	if ( buildable != BA_NONE )
 	{
 		// don't spawn built-in buildings if we are using a custom layout
-		if ( level.layout[ 0 ] && Q_stricmp( level.layout, "*BUILTIN*" ) )
+		if ( level.layout[ 0 ] && Q_stricmp( level.layout, S_BUILTIN_LAYOUT ) )
 		{
 			return qfalse;
 		}

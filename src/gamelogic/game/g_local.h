@@ -50,6 +50,8 @@ typedef struct gclient_s gclient_t;
 
 #define INTERMISSION_DELAY_TIME    1000
 
+#define S_BUILTIN_LAYOUT           "*BUILTIN*"
+
 #define N_( text )             text
 // FIXME: CLIENT PLURAL
 #define P_( one, many, count ) ( ( count ) == 1 ? ( one ) : ( many ) )

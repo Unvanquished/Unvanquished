@@ -4595,7 +4595,7 @@ int G_LayoutList( const char *map, char *list, int len )
 	int  count = 0;
 	char *filePtr;
 
-	Q_strcat( layouts, sizeof( layouts ), "*BUILTIN* " );
+	Q_strcat( layouts, sizeof( layouts ), S_BUILTIN_LAYOUT " " );
 	numFiles = trap_FS_GetFileList( va( "layouts/%s", map ), ".dat",
 	                                fileList, sizeof( fileList ) );
 	filePtr = fileList;
@@ -4684,7 +4684,7 @@ void G_LayoutSelect( void )
 			break;
 		}
 
-		if ( !Q_stricmp( s, "*BUILTIN*" ) )
+		if ( !Q_stricmp( s, S_BUILTIN_LAYOUT ) )
 		{
 			Q_strcat( layouts, sizeof( layouts ), s );
 			Q_strcat( layouts, sizeof( layouts ), " " );
@@ -4782,7 +4782,7 @@ void G_LayoutLoad( void )
 	char         line[ MAX_STRING_CHARS ];
 	int          i = 0;
 
-	if ( !level.layout[ 0 ] || !Q_stricmp( level.layout, "*BUILTIN*" ) )
+	if ( !level.layout[ 0 ] || !Q_stricmp( level.layout, S_BUILTIN_LAYOUT ) )
 	{
 		return;
 	}

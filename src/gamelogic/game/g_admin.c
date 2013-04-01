@@ -3093,7 +3093,7 @@ qboolean G_admin_changemap( gentity_t *ent )
 	{
 		trap_Argv( 2, layout, sizeof( layout ) );
 
-		if ( !Q_stricmp( layout, "*BUILTIN*" ) ||
+		if ( !Q_stricmp( layout, S_BUILTIN_LAYOUT ) ||
 		     trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, layout ),
 		                        NULL, FS_READ ) > 0 )
 		{
@@ -4096,7 +4096,7 @@ qboolean G_admin_restart( gentity_t *ent )
 	}
 
 	// check that the layout's available
-	builtin = !*layout || !Q_stricmp( layout, "*BUILTIN*" );
+	builtin = !*layout || !Q_stricmp( layout, S_BUILTIN_LAYOUT );
 
 	if ( !builtin && !trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, layout ), NULL, FS_READ ) )
 	{
@@ -4109,7 +4109,7 @@ qboolean G_admin_restart( gentity_t *ent )
 	admin_log( teampref );
 
 	// cvars
-	trap_Cvar_Set( "g_layouts", builtin ? "*BUILTIN*" : layout );
+	trap_Cvar_Set( "g_layouts", builtin ? S_BUILTIN_LAYOUT : layout );
 	trap_Cvar_Set( "g_mapRestarted", "y" );
 
 	// handle the flag
