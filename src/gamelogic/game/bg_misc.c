@@ -219,8 +219,8 @@ void BG_InitBuildableAttributes( void )
 		Com_Memset( ba, 0, sizeof( buildableAttributes_t ) );
 
 		ba->number = bh->number;
-		ba->name = strdup( bh->name );
-		ba->entityName = strdup( bh->classname );
+		ba->name = bh->name;
+		ba->entityName = bh->classname;
 
 		ba->idleAnim = BANIM_IDLE1;
 		ba->traj = TR_GRAVITY;
@@ -604,7 +604,7 @@ void BG_InitClassAttributes( void )
 		ca = &bg_classList[i];
 
 		ca->number = cd->number;
-		ca->name = strdup( cd->name );
+		ca->name = cd->name;
 		ca->startWeapon = cd->startWeapon;
 		ca->children[0] = cd->children[0];
 		ca->children[1] = cd->children[1];
@@ -950,6 +950,98 @@ void BG_InitUpgradeAttributes( void )
 
 		BG_ParseUpgradeAttributeFile( va( "configs/upgrades/%s.attr.cfg", ua->name ), ua );
 	}
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+/*
+================
+BG_InitAllConfigs
+
+================
+*/
+
+qboolean config_loaded = qfalse;
+
+void BG_InitAllConfigs( void )
+{
+	BG_InitBuildableAttributes();
+	BG_InitBuildableModelConfigs();
+	BG_InitClassAttributes();
+	BG_InitClassModelConfigs();
+	BG_InitWeaponAttributes();
+	BG_InitUpgradeAttributes();
+
+	config_loaded = qtrue;
+}
+
+/*
+================
+BG_UnloadAllConfigs
+
+================
+*/
+
+void BG_UnloadAllConfigs( void )
+{
+    // Frees all the strings that were allocated when the config files were read
+    int i;
+
+    // When the game starts VMs are shutdown before they are even started
+    if(!config_loaded){
+        return;
+    }
+    config_loaded = qfalse;
+
+    for ( i = 0; i < bg_numBuildables; i++ )
+    {
+        buildableAttributes_t *ba = &bg_buildableList[i];
+        BG_Free( (char *)ba->humanName );
+        BG_Free( (char *)ba->info );
+    }
+
+    for ( i = 0; i < bg_numClasses; i++ )
+    {
+        classAttributes_t *ca = &bg_classList[i];
+
+        // Do not free the statically allocated empty string
+        if( *ca->info != '\0' )
+        {
+            BG_Free( (char *)ca->info );
+        }
+
+        if( *ca->info != '\0' )
+        {
+            BG_Free( (char *)ca->fovCvar );
+        }
+    }
+
+    for ( i = PCL_NONE; i < PCL_NUM_CLASSES; i++ )
+    {
+        BG_Free( (char *)BG_ClassModelConfig( i )->humanName );
+    }
+
+    for ( i = 0; i < bg_numWeapons; i++ )
+    {
+        weaponAttributes_t *wa = &bg_weapons[i];
+        BG_Free( (char *)wa->humanName );
+
+        if( *wa->info != '\0' )
+        {
+            BG_Free( (char *)wa->info );
+        }
+    }
+
+    for ( i = 0; i < bg_numUpgrades; i++ )
+    {
+        upgradeAttributes_t *ua = &bg_upgrades[i];
+        BG_Free( (char *)ua->humanName );
+
+        if( *ua->info != '\0' )
+        {
+            BG_Free( (char *)ua->info );
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -2596,6 +2688,31 @@ char *Substring( const char *in, int start, int count )
 
 	return buf;
 }
+
+/*
+=================
+BG_strdup
+=================
+*/
+
+char *BG_strdup( const char *string )
+{
+	size_t length;
+	char *copy;
+
+	length = strlen(string) + 1;
+	copy = (char *)BG_Alloc(length);
+
+	if ( copy == NULL )
+	{
+		return NULL;
+	}
+
+	memcpy( copy, string, length );
+	return copy;
+}
+
+
 
 /*
 =================

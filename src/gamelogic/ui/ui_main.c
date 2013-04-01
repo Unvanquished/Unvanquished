@@ -1312,6 +1312,7 @@ void UI_Shutdown( void )
 	UI_R_UnregisterFont( uiInfo.uiDC.Assets.bigFont.handle );
 
 	UIS_Shutdown( );
+	BG_UnloadAllConfigs();
 }
 
 qboolean Asset_Parse( int handle )
@@ -5120,15 +5121,11 @@ void UI_Init( void )
 
 	BG_InitMemory();
 
-	BG_InitClassAttributes();
-	BG_InitClassModelConfigs();
-	BG_InitBuildableAttributes();
-	BG_InitWeaponAttributes();
-	BG_InitUpgradeAttributes();
+	BG_InitAllConfigs();
+
 	BG_InitAllowedGameElements();
 
 	UI_RegisterCvars();
-	UI_InitMemory();
 
 	// cache redundant calulations
 	trap_GetGlconfig( &uiInfo.uiDC.glconfig );
