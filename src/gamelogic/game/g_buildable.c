@@ -2605,7 +2605,7 @@ void HMGTurret_FindEnemy( gentity_t *self )
 
 	if ( self->target )
 	{
-		self->target->targeted = NULL;
+		self->target->tracker = NULL;
 	}
 
 	self->target = NULL;
@@ -2633,7 +2633,7 @@ void HMGTurret_FindEnemy( gentity_t *self )
 		}
 
 		self->target = target;
-		self->target->targeted = self;
+		self->target->tracker = self;
 		return;
 	}
 }

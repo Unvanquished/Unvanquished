@@ -202,7 +202,11 @@ struct gentity_s
 	 */
 	int          targetCount;
 	char         *targets[ MAX_ENTITY_TARGETS + 1 ];
-	gentity_t    *target; /*< the currently selected target to aim at/for */
+	gentity_t    *target;  /*< the currently selected target to aim at/for, is the reverse to "tracker" */
+	gentity_t    *tracker; /*< entity that currently targets, aims for or tracks this entity, is the reverse to "target" */
+	/* path chaining, not unlike the target/tracker relationship */
+	gentity_t    *nextPathSegment;
+	gentity_t    *prevPathSegment;
 
 	/*
 	 * gentities to call on certain events
@@ -224,10 +228,6 @@ struct gentity_s
 	char         *groupName;
 	gentity_t    *groupChain; // next entity in group
 	gentity_t    *groupMaster; // master of the group
-
-	// path chaining
-	gentity_t    *nextPathSegment;
-	gentity_t    *prevPathSegment;
 
 	char     *model;
 	char     *model2;
@@ -353,7 +353,6 @@ struct gentity_s
 	int         credits[ MAX_CLIENTS ]; // human credits for each client
 	int         killedBy; // clientNum of killer
 
-	gentity_t   *targeted; // true if the player is currently a valid target of a turret
 	vec3_t      turretAim; // aim vector for turrets
 	int         turretSpinupTime; // spinup delay for norfenturrets
 
