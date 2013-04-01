@@ -59,6 +59,7 @@ Maryland 20850 USA.
  */
 
 #define S_WORLDSPAWN              "worldspawn"
+#define S_PLAYER_CLASSNAME        "player"
 
 #define S_FUNC_DOOR               "func_door"
 #define S_DOOR_SENSOR             "door_sensor"
