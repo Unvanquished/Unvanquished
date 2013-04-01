@@ -773,7 +773,7 @@ void teslaFire( gentity_t *self )
 	vec3_t    origin, target;
 	gentity_t *tent;
 
-	if ( !self->enemy )
+	if ( !self->target )
 	{
 		return;
 	}
@@ -782,13 +782,13 @@ void teslaFire( gentity_t *self )
 	VectorMA( muzzle, self->r.maxs[ 2 ], self->s.origin2, origin );
 
 	// Don't aim for the center, aim at the top of the bounding box
-	VectorCopy( self->enemy->s.origin, target );
-	target[ 2 ] += self->enemy->r.maxs[ 2 ];
+	VectorCopy( self->target->s.origin, target );
+	target[ 2 ] += self->target->r.maxs[ 2 ];
 
 	// Trace to the target entity
 	trap_Trace( &tr, origin, NULL, NULL, target, self->s.number, MASK_SHOT );
 
-	if ( tr.entityNum != self->enemy->s.number )
+	if ( tr.entityNum != self->target->s.number )
 	{
 		return;
 	}
@@ -797,20 +797,20 @@ void teslaFire( gentity_t *self )
 	self->s.eFlags |= EF_FIRING;
 
 	// Deal damage
-	if ( self->enemy->takedamage )
+	if ( self->target->takedamage )
 	{
 		vec3_t dir;
 
 		VectorSubtract( target, origin, dir );
 		VectorNormalize( dir );
-		G_Damage( self->enemy, self, self, dir, tr.endpos,
+		G_Damage( self->target, self, self, dir, tr.endpos,
 		          TESLAGEN_DMG, 0, MOD_TESLAGEN );
 	}
 
 	// Send tesla zap trail
 	tent = G_NewTempEntity( tr.endpos, EV_TESLATRAIL );
 	tent->s.generic1 = self->s.number; // src
-	tent->s.clientNum = self->enemy->s.number; // dest
+	tent->s.clientNum = self->target->s.number; // dest
 }
 
 /*

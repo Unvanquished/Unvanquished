@@ -1452,7 +1452,7 @@ static qboolean AHive_CheckTarget( gentity_t *self, gentity_t *enemy )
 	}
 
 	self->active = qtrue;
-	self->target_ent = enemy;
+	self->target = enemy;
 	self->timestamp = level.time + HIVE_REPEAT;
 
 	VectorSubtract( enemy->s.pos.trBase, self->s.pos.trBase, dirToTarget );
@@ -1582,18 +1582,18 @@ Used by ATrapper_Think to fire at enemy
 */
 void ATrapper_FireOnEnemy( gentity_t *self, int firespeed, float range )
 {
-	gentity_t *enemy = self->enemy;
+	gentity_t *target = self->target;
 	vec3_t    dirToTarget;
 	vec3_t    halfAcceleration, thirdJerk;
 	float     distanceToTarget = BG_Buildable( self->s.modelindex )->turretRange;
 	int       lowMsec = 0;
 	int       highMsec = ( int )( (
 	                                ( ( distanceToTarget * LOCKBLOB_SPEED ) +
-	                                  ( distanceToTarget * BG_Class( enemy->client->ps.stats[ STAT_CLASS ] )->speed ) ) /
+	                                  ( distanceToTarget * BG_Class( target->client->ps.stats[ STAT_CLASS ] )->speed ) ) /
 	                                ( LOCKBLOB_SPEED * LOCKBLOB_SPEED ) ) * 1000.0f );
 
-	VectorScale( enemy->acceleration, 1.0f / 2.0f, halfAcceleration );
-	VectorScale( enemy->jerk, 1.0f / 3.0f, thirdJerk );
+	VectorScale( target->acceleration, 1.0f / 2.0f, halfAcceleration );
+	VectorScale( target->jerk, 1.0f / 3.0f, thirdJerk );
 
 	// highMsec and lowMsec can only move toward
 	// one another, so the loop must terminate
@@ -1603,7 +1603,7 @@ void ATrapper_FireOnEnemy( gentity_t *self, int firespeed, float range )
 		float time = ( float ) partitionMsec / 1000.0f;
 		float projectileDistance = LOCKBLOB_SPEED * ( time + MISSILE_PRESTEP_TIME / 1000.0f );
 
-		VectorMA( enemy->s.pos.trBase, time, enemy->s.pos.trDelta, dirToTarget );
+		VectorMA( target->s.pos.trBase, time, target->s.pos.trDelta, dirToTarget );
 		VectorMA( dirToTarget, time * time, halfAcceleration, dirToTarget );
 		VectorMA( dirToTarget, time * time * time, thirdJerk, dirToTarget );
 		VectorSubtract( dirToTarget, self->s.pos.trBase, dirToTarget );
@@ -1741,12 +1741,12 @@ void ATrapper_FindEnemy( gentity_t *ent, int range )
 		}
 
 		//we found a target
-		ent->enemy = target;
+		ent->target = target;
 		return;
 	}
 
 	//couldn't find a target
-	ent->enemy = NULL;
+	ent->target = NULL;
 }
 
 /*
@@ -1766,13 +1766,13 @@ void ATrapper_Think( gentity_t *self )
 	if ( self->spawned && self->powered )
 	{
 		//if the current target is not valid find a new one
-		if ( !ATrapper_CheckTarget( self, self->enemy, range ) )
+		if ( !ATrapper_CheckTarget( self, self->target, range ) )
 		{
 			ATrapper_FindEnemy( self, range );
 		}
 
 		//if a new target cannot be found don't do anything
-		if ( !self->enemy )
+		if ( !self->target )
 		{
 			return;
 		}
@@ -2300,9 +2300,9 @@ void HMedistat_Die( gentity_t *self, gentity_t *inflictor,
                     gentity_t *attacker, int damage, int mod )
 {
 	//clear target's healing flag
-	if ( self->enemy && self->enemy->client )
+	if ( self->target && self->target->client )
 	{
-		self->enemy->client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_ACTIVE;
+		self->target->client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_ACTIVE;
 	}
 
 	HSpawn_Die( self, inflictor, attacker, damage, mod );
@@ -2335,9 +2335,9 @@ void HMedistat_Think( gentity_t *self )
 	G_IdlePowerState( self );
 
 	//clear target's healing flag
-	if ( self->enemy && self->enemy->client )
+	if ( self->target && self->target->client )
 	{
-		self->enemy->client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_ACTIVE;
+		self->target->client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_ACTIVE;
 	}
 
 	//make sure we have power
@@ -2346,7 +2346,7 @@ void HMedistat_Think( gentity_t *self )
 		if ( self->active )
 		{
 			self->active = qfalse;
-			self->enemy = NULL;
+			self->target = NULL;
 		}
 
 		self->nextthink = level.time + POWER_REFRESH_TIME;
@@ -2385,7 +2385,7 @@ void HMedistat_Think( gentity_t *self )
 				player->client->ps.stats[ STAT_STATE ] &= ~SS_POISONED;
 			}
 
-			if ( self->enemy == player && player->client &&
+			if ( self->target == player && player->client &&
 			     player->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS &&
 			     player->health < player->client->ps.stats[ STAT_MAX_HEALTH ] &&
 			     PM_Live( player->client->ps.pm_type ) )
@@ -2397,7 +2397,7 @@ void HMedistat_Think( gentity_t *self )
 
 		if ( !occupied )
 		{
-			self->enemy = NULL;
+			self->target = NULL;
 
 			//look for something to heal
 			for ( i = 0; i < num; i++ )
@@ -2415,7 +2415,7 @@ void HMedistat_Think( gentity_t *self )
 					       player->client->ps.stats[ STAT_STAMINA ] < STAMINA_MAX ) &&
 					     PM_Live( player->client->ps.pm_type ) )
 					{
-						self->enemy = player;
+						self->target = player;
 
 						//start the heal anim
 						if ( !self->active )
@@ -2434,35 +2434,35 @@ void HMedistat_Think( gentity_t *self )
 		}
 
 		//nothing left to heal so go back to idling
-		if ( !self->enemy && self->active )
+		if ( !self->target && self->active )
 		{
 			G_SetBuildableAnim( self, BANIM_CONSTRUCT2, qtrue );
 			G_SetIdleBuildableAnim( self, BANIM_IDLE1 );
 
 			self->active = qfalse;
 		}
-		else if ( self->enemy && self->enemy->client ) //heal!
+		else if ( self->target && self->target->client ) //heal!
 		{
-			if ( self->enemy->client->ps.stats[ STAT_STAMINA ] <  STAMINA_MAX )
+			if ( self->target->client->ps.stats[ STAT_STAMINA ] <  STAMINA_MAX )
 			{
-				self->enemy->client->ps.stats[ STAT_STAMINA ] += STAMINA_MEDISTAT_RESTORE;
+				self->target->client->ps.stats[ STAT_STAMINA ] += STAMINA_MEDISTAT_RESTORE;
 			}
 
-			if ( self->enemy->client->ps.stats[ STAT_STAMINA ] > STAMINA_MAX )
+			if ( self->target->client->ps.stats[ STAT_STAMINA ] > STAMINA_MAX )
 			{
-				self->enemy->client->ps.stats[ STAT_STAMINA ] = STAMINA_MAX;
+				self->target->client->ps.stats[ STAT_STAMINA ] = STAMINA_MAX;
 			}
 
-			self->enemy->health++;
+			self->target->health++;
 
 			//if they're completely healed, give them a medkit
-			if ( self->enemy->health >= self->enemy->client->ps.stats[ STAT_MAX_HEALTH ] )
+			if ( self->target->health >= self->target->client->ps.stats[ STAT_MAX_HEALTH ] )
 			{
-				self->enemy->health = self->enemy->client->ps.stats[ STAT_MAX_HEALTH ];
+				self->target->health = self->target->client->ps.stats[ STAT_MAX_HEALTH ];
 
-				if ( !BG_InventoryContainsUpgrade( UP_MEDKIT, self->enemy->client->ps.stats ) )
+				if ( !BG_InventoryContainsUpgrade( UP_MEDKIT, self->target->client->ps.stats ) )
 				{
-					BG_AddUpgradeToInventory( UP_MEDKIT, self->enemy->client->ps.stats );
+					BG_AddUpgradeToInventory( UP_MEDKIT, self->target->client->ps.stats );
 				}
 			}
 		}
@@ -2522,7 +2522,7 @@ qboolean HMGTurret_TrackEnemy( gentity_t *self )
 	vec3_t refNormal = { 0.0f, 0.0f, 1.0f };
 	float  temp, rotAngle;
 
-	VectorSubtract( self->enemy->s.pos.trBase, self->s.pos.trBase, dirToTarget );
+	VectorSubtract( self->target->s.pos.trBase, self->s.pos.trBase, dirToTarget );
 	VectorNormalize( dirToTarget );
 
 	CrossProduct( self->s.origin2, refNormal, xNormal );
@@ -2603,12 +2603,12 @@ void HMGTurret_FindEnemy( gentity_t *self )
 	gentity_t *target;
 	int       start;
 
-	if ( self->enemy )
+	if ( self->target )
 	{
-		self->enemy->targeted = NULL;
+		self->target->targeted = NULL;
 	}
 
-	self->enemy = NULL;
+	self->target = NULL;
 
 	// Look for targets in a box around the turret
 	VectorSet( range, MGTURRET_RANGE, MGTURRET_RANGE, MGTURRET_RANGE );
@@ -2632,8 +2632,8 @@ void HMGTurret_FindEnemy( gentity_t *self )
 			continue;
 		}
 
-		self->enemy = target;
-		self->enemy->targeted = self;
+		self->target = target;
+		self->target->targeted = self;
 		return;
 	}
 }
@@ -2689,7 +2689,7 @@ static qboolean HMGTurret_State( gentity_t *self, int state )
 	}
 	else if ( state == MGT_STATE_ACTIVE )
 	{
-		if ( !self->enemy && angle > 0.0f )
+		if ( !self->target && angle > 0.0f )
 		{
 			self->waterlevel = MGT_STATE_RISE;
 			self->s.angles2[ PITCH ] =
@@ -2748,7 +2748,7 @@ void HMGTurret_Think( gentity_t *self )
 	}
 
 	// If the current target is not valid find a new enemy
-	if ( !HMGTurret_CheckTarget( self, self->enemy, qtrue ) )
+	if ( !HMGTurret_CheckTarget( self, self->target, qtrue ) )
 	{
 		self->active = qfalse;
 		self->turretSpinupTime = -1;
@@ -2758,7 +2758,7 @@ void HMGTurret_Think( gentity_t *self )
 	// if newly powered raise turret
 	HMGTurret_State( self, MGT_STATE_ACTIVE );
 
-	if ( !self->enemy )
+	if ( !self->target )
 	{
 		return;
 	}
@@ -2849,22 +2849,22 @@ void HTeslaGen_Think( gentity_t *self )
 
 		for ( i = 0; i < num; i++ )
 		{
-			self->enemy = &g_entities[ entityList[ i ] ];
+			self->target = &g_entities[ entityList[ i ] ];
 
-			if ( self->enemy->flags & FL_NOTARGET )
+			if ( self->target->flags & FL_NOTARGET )
 			{
 				continue;
 			}
 
-			if ( self->enemy->client && self->enemy->health > 0 &&
-			     self->enemy->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS &&
-			     Distance( origin, self->enemy->s.pos.trBase ) <= TESLAGEN_RANGE )
+			if ( self->target->client && self->target->health > 0 &&
+			     self->target->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS &&
+			     Distance( origin, self->target->s.pos.trBase ) <= TESLAGEN_RANGE )
 			{
 				FireWeapon( self );
 			}
 		}
 
-		self->enemy = NULL;
+		self->target = NULL;
 
 		if ( self->s.eFlags & EF_FIRING )
 		{
@@ -4245,7 +4245,7 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 
 	built->r.contents = CONTENTS_BODY;
 	built->clipmask = MASK_PLAYERSOLID;
-	built->enemy = NULL;
+	built->target = NULL;
 	built->s.weapon = BG_Buildable( buildable )->turretProjType;
 
 	if ( builder->client )

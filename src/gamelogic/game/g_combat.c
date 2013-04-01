@@ -324,7 +324,6 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	ent->s.otherEntityNum2 = killer;
 	ent->r.svFlags = SVF_BROADCAST; // send to everyone
 
-	self->enemy = attacker;
 	self->client->ps.persistant[ PERS_KILLED ]++;
 
 	if ( attacker && attacker->client )
@@ -1376,7 +1375,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 				targ->health = -999;
 			}
 
-			targ->enemy = attacker;
 			targ->die( targ, inflictor, attacker, take, mod );
 			return;
 		}

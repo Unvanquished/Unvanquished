@@ -197,11 +197,16 @@ struct gentity_s
 	qboolean     powered;
 	gentity_t    *powerSource;
 
-	// targets to aim at
+	/*
+	 * targets to aim at
+	 */
 	int          targetCount;
 	char         *targets[ MAX_ENTITY_TARGETS + 1 ];
+	gentity_t    *target; /*< the currently selected target to aim at/for */
 
-	// gentities to call on certain events
+	/*
+	 * gentities to call on certain events
+	 */
 	int          callTargetCount;
 	gentityCallDefinition_t calltargets[ MAX_ENTITY_CALLTARGETS + 1 ];
 	gentity_t    *activator;
@@ -223,10 +228,6 @@ struct gentity_s
 	// path chaining
 	gentity_t    *nextPathSegment;
 	gentity_t    *prevPathSegment;
-
-	//additional unclear chaining
-	gentity_t    *target_ent;
-	gentity_t    *enemy;
 
 	char     *model;
 	char     *model2;
