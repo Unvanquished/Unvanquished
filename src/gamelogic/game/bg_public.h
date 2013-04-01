@@ -1181,6 +1181,7 @@ qboolean                  BG_UpgradeAllowedInStage( upgrade_t upgrade,
     stage_t stage );
 
 void                      BG_InitAllConfigs( void );
+void                      BG_UnloadAllConfigs( void );
 
 // Parsers
 qboolean                  BG_ReadWholeFile( const char *filename, char *buffer, int size);

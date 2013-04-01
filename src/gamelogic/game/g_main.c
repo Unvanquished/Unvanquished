@@ -864,6 +864,7 @@ void G_ShutdownGame( int restart )
 	G_UnregisterCommands();
 
 	G_ShutdownMapRotations();
+	BG_UnloadAllConfigs();
 
 	level.restarted = qfalse;
 	level.surrenderTeam = TEAM_NONE;

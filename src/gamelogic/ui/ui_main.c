@@ -1312,6 +1312,7 @@ void UI_Shutdown( void )
 	UI_R_UnregisterFont( uiInfo.uiDC.Assets.bigFont.handle );
 
 	UIS_Shutdown( );
+	BG_UnloadAllConfigs();
 }
 
 qboolean Asset_Parse( int handle )

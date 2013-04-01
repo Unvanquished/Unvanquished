@@ -961,6 +961,8 @@ BG_InitAllConfigs
 ================
 */
 
+qboolean config_loaded = qfalse;
+
 void BG_InitAllConfigs( void )
 {
 	BG_InitBuildableAttributes();
@@ -969,6 +971,77 @@ void BG_InitAllConfigs( void )
 	BG_InitClassModelConfigs();
 	BG_InitWeaponAttributes();
 	BG_InitUpgradeAttributes();
+
+	config_loaded = qtrue;
+}
+
+/*
+================
+BG_UnloadAllConfigs
+
+================
+*/
+
+void BG_UnloadAllConfigs( void )
+{
+    // Frees all the strings that were allocated when the config files were read
+    int i;
+
+    // When the game starts VMs are shutdown before they are even started
+    if(!config_loaded){
+        return;
+    }
+    config_loaded = qfalse;
+
+    for ( i = 0; i < bg_numBuildables; i++ )
+    {
+        buildableAttributes_t *ba = &bg_buildableList[i];
+        BG_Free( (char *)ba->humanName );
+        BG_Free( (char *)ba->info );
+    }
+
+    for ( i = 0; i < bg_numClasses; i++ )
+    {
+        classAttributes_t *ca = &bg_classList[i];
+
+        // Do not free the statically allocated empty string
+        if( *ca->info != '\0' )
+        {
+            BG_Free( (char *)ca->info );
+        }
+
+        if( *ca->info != '\0' )
+        {
+            BG_Free( (char *)ca->fovCvar );
+        }
+    }
+
+    for ( i = PCL_NONE; i < PCL_NUM_CLASSES; i++ )
+    {
+        BG_Free( (char *)BG_ClassModelConfig( i )->humanName );
+    }
+
+    for ( i = 0; i < bg_numWeapons; i++ )
+    {
+        weaponAttributes_t *wa = &bg_weapons[i];
+        BG_Free( (char *)wa->humanName );
+
+        if( *wa->info != '\0' )
+        {
+            BG_Free( (char *)wa->info );
+        }
+    }
+
+    for ( i = 0; i < bg_numUpgrades; i++ )
+    {
+        upgradeAttributes_t *ua = &bg_upgrades[i];
+        BG_Free( (char *)ua->humanName );
+
+        if( *ua->info != '\0' )
+        {
+            BG_Free( (char *)ua->info );
+        }
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
