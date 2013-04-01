@@ -169,6 +169,7 @@ struct gentity_s
 	 * e.g. used for buildables (e.g. medi-stations or hives can be in an active state or being inactive)
 	 */
 	qboolean     active;
+	int          activeAtTime; /*< delay being really active until this time, e.g for spinup for norfenturrets */
 
 	/**
 	 * is the entity able to become active?
@@ -354,7 +355,6 @@ struct gentity_s
 	int         killedBy; // clientNum of killer
 
 	vec3_t      turretAim; // aim vector for turrets
-	int         turretSpinupTime; // spinup delay for norfenturrets
 
 	vec4_t      animation; // animated map objects
 

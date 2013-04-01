@@ -2751,7 +2751,7 @@ void HMGTurret_Think( gentity_t *self )
 	if ( !HMGTurret_CheckTarget( self, self->target, qtrue ) )
 	{
 		self->active = qfalse;
-		self->turretSpinupTime = -1;
+		self->activeAtTime = -1;
 		HMGTurret_FindEnemy( self );
 	}
 
@@ -2767,7 +2767,7 @@ void HMGTurret_Think( gentity_t *self )
 	if ( !HMGTurret_TrackEnemy( self ) )
 	{
 		self->active = qfalse;
-		self->turretSpinupTime = -1;
+		self->activeAtTime = -1;
 		return;
 	}
 
@@ -2776,12 +2776,12 @@ void HMGTurret_Think( gentity_t *self )
 	{
 		self->active = qtrue;
 
-		self->turretSpinupTime = level.time + MGTURRET_SPINUP_TIME;
+		self->activeAtTime = level.time + MGTURRET_SPINUP_TIME;
 		G_AddEvent( self, EV_MGTURRET_SPINUP, 0 );
 	}
 
 	// Not firing or haven't spun up yet
-	if ( !self->active || self->turretSpinupTime > level.time )
+	if ( !self->active || self->activeAtTime > level.time )
 	{
 		return;
 	}
