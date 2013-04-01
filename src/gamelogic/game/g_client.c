@@ -22,7 +22,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "g_local.h"
-#include "g_spawn.h"
 #include "../../engine/qcommon/q_unicode.h"
 
 // g_client.c -- client functions that don't happen every frame
