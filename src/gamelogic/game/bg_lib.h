@@ -127,7 +127,6 @@ int    strcmp( const char *string1, const char *string2 );
 char   *strchr( const char *string, int c );
 char   *strrchr( const char *string, int c );
 char   *strstr( const char *string, const char *strCharSet );
-char   *strdup( const char *string );
 char   *strncpy( char *strDest, const char *strSource, size_t count );
 int    tolower( int c );
 int    toupper( int c );

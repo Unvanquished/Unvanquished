@@ -356,23 +356,6 @@ char *strstr( const char *string, const char *strCharSet )
 	return ( char * ) 0;
 }
 
-char *strdup( const char *string )
-{
-	size_t length;
-	char *copy;
-
-	length = strlen(string) + 1;
-	copy = (char *)BG_Alloc(length);
-
-	if ( copy == NULL )
-	{
-		return NULL;
-	}
-
-	memcpy( copy, string, length );
-	return copy;
-}
-
 int tolower( int c )
 {
 	if ( c >= 'A' && c <= 'Z' )
