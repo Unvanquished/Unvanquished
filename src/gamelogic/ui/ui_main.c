@@ -5120,15 +5120,11 @@ void UI_Init( void )
 
 	BG_InitMemory();
 
-	BG_InitClassAttributes();
-	BG_InitClassModelConfigs();
-	BG_InitBuildableAttributes();
-	BG_InitWeaponAttributes();
-	BG_InitUpgradeAttributes();
+	BG_InitAllConfigs();
+
 	BG_InitAllowedGameElements();
 
 	UI_RegisterCvars();
-	UI_InitMemory();
 
 	// cache redundant calulations
 	trap_GetGlconfig( &uiInfo.uiDC.glconfig );

@@ -956,6 +956,25 @@ void BG_InitUpgradeAttributes( void )
 
 /*
 ================
+BG_InitAllConfigs
+
+================
+*/
+
+void BG_InitAllConfigs( void )
+{
+	BG_InitBuildableAttributes();
+	BG_InitBuildableModelConfigs();
+	BG_InitClassAttributes();
+	BG_InitClassModelConfigs();
+	BG_InitWeaponAttributes();
+	BG_InitUpgradeAttributes();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+/*
+================
 BG_EvaluateTrajectory
 
 ================

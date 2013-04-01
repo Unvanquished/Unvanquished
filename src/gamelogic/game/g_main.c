@@ -695,6 +695,9 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 		G_MapConfigs( map );
 	}
 
+	//Load config files
+	BG_InitAllConfigs();
+
 	// we're done with g_mapConfigs, so reset this for the next map
 	trap_Cvar_Set( "g_mapConfigsLoaded", "0" );
 
@@ -733,12 +736,6 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 
 	trap_SetConfigstring( CS_INTERMISSION, "0" );
 
-	// we need the entity names before we can spawn them
-	BG_InitBuildableAttributes();
-	BG_InitClassAttributes();
-	BG_InitWeaponAttributes();
-	BG_InitUpgradeAttributes();
-
 	// test to see if a custom buildable layout will be loaded
 	G_LayoutSelect();
 
@@ -756,8 +753,6 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	// general initialization
 	G_FindTeams();
 
-	BG_InitClassModelConfigs();
-	BG_InitBuildableModelConfigs();
 	G_InitDamageLocations();
 	G_InitMapRotations();
 	G_InitSpawnQueue( &level.alienSpawnQueue );

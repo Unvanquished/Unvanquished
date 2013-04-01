@@ -2357,14 +2357,9 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	BG_InitMemory();
 
 	// load overrides
-	BG_InitClassAttributes();
-	BG_InitClassModelConfigs();
-	BG_InitBuildableAttributes();
-	BG_InitBuildableModelConfigs();
-	BG_InitWeaponAttributes();
-	BG_InitUpgradeAttributes();
-	BG_InitAllowedGameElements();
+	BG_InitAllConfigs();
 
+	BG_InitAllowedGameElements();
 
 	CG_RegisterCvars();
 
