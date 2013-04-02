@@ -216,7 +216,7 @@ qboolean   G_MatchesName( gentity_t *entity, const char* name );
 qboolean   G_IsVisible( gentity_t *ent1, gentity_t *ent2, int contents );
 
 //chain
-gentityCallActionType_t G_GetCallEventTypeFor( const char* event );
+gentityCallEvent_t      G_GetCallEventTypeFor( const char* event );
 gentityCallActionType_t G_GetCallActionTypeFor( const char* action );
 void       G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call);
 gentity_t  *G_ResolveEntityKeyword( gentity_t *self, char *keyword );

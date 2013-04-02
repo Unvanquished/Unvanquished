@@ -475,7 +475,7 @@ static const entityCallEventDescription_t gentityEventDescriptions[] =
 		{ "target",      ON_DEFAULT   },
 };
 
-gentityCallActionType_t G_GetCallEventTypeFor( const char* event )
+gentityCallEvent_t G_GetCallEventTypeFor( const char* event )
 {
 	entityCallEventDescription_t *foundDescription;
 
