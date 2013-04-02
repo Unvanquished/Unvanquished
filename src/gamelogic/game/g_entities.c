@@ -536,6 +536,10 @@ gentity_t *G_ResolveEntityKeyword( gentity_t *self, char *keyword )
 		resolution = self;
 	else if (!Q_stricmp(keyword, "$parent"))
 		resolution = self->parent;
+	else if (!Q_stricmp(keyword, "$target"))
+		resolution = self->target;
+	else if (!Q_stricmp(keyword, "$tracker"))
+		resolution = self->tracker;
 
 	if(!resolution->inuse)
 		return NULL;
