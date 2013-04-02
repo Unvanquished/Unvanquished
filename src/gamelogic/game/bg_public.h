@@ -21,7 +21,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
+#ifndef BG_PUBLIC_H_
+#define BG_PUBLIC_H_
 // bg_public.h -- definitions shared by both the server game and client game modules
+//==================================================================
 
 //Unvanquished balance header
 #include "unvanquished.h"
@@ -1313,3 +1316,6 @@ char *Substring( const char *in, int start, int count );
 char *BG_strdup( const char *string );
 
 const char *Trans_GenderContext( gender_t gender );
+
+//==================================================================
+#endif /* BG_PUBLIC_H_ */

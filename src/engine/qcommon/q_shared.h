@@ -583,6 +583,14 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 }
 #endif
 
+/*
+ * used for consistent representation within print or log statements
+ * TODO: should probably be rather done via specialized print function that takes a severity enum, so that it also can do filtering
+ */
+#define S_WARNING S_COLOR_YELLOW "Warning: " S_COLOR_WHITE
+#define S_ERROR   S_COLOR_RED "ERROR: " S_COLOR_WHITE
+#define S_DEBUG   "Debug: "
+
 #define INDENT_MARKER    '\v'
 
 	extern vec4_t g_color_table[ 32 ];
@@ -2043,8 +2051,8 @@ double rint( double x );
 		ET_BEAM,
 		ET_PORTAL,
 		ET_SPEAKER,
-		ET_PUSH_TRIGGER,
-		ET_TELEPORT_TRIGGER,
+		ET_PUSHER,
+		ET_TELEPORTER,
 		ET_INVISIBLE,
 		ET_GRAPPLE,       // grapple hooked on wall
 

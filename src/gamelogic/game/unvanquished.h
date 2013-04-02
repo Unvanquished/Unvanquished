@@ -21,6 +21,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
+#ifndef UNVANQUISHED_H_
+#define UNVANQUISHED_H_
+//==================================================================
+
 /*
  * ALIEN weapons
  *
@@ -30,7 +34,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ALIEN_WDMG_MODIFIER - overall damage modifier for coarse tuning
  *
  */
-
 #define ALIEN_WDMG_MODIFIER           1.0f
 #define ADM(d) ((int)((float)d * ALIEN_WDMG_MODIFIER ))
 
@@ -463,3 +466,5 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 //do to increment the stage kill counters
 
 #define MAXIMUM_BUILD_TIME                 20000 // used for pie timer
+
+#endif /* UNVANQUISHED_H_ */

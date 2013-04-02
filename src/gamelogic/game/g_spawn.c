@@ -1,23 +1,34 @@
 /*
 ===========================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2000-2009 Darklegion Development
 
-This file is part of Daemon.
+Daemon GPL Source Code
+Copyright (C) 2012 Unvanquished Developers
 
-Daemon is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License,
-or (at your option) any later version.
+This file is part of the Daemon GPL Source Code (Daemon Source Code).
 
-Daemon is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+Daemon Source Code is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Daemon Source Code is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Daemon; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
+
+In addition, the Daemon Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following the
+terms and conditions of the GNU General Public License which accompanied the Daemon
+Source Code.  If not, please request a copy in writing from id Software at the address
+below.
+
+If you have questions concerning this license or the applicable additional terms, you
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
+Maryland 20850 USA.
+
 ===========================================================================
 */
 
@@ -96,176 +107,416 @@ typedef enum
   F_INT,
   F_FLOAT,
   F_STRING,
-  F_VECTOR,
-  F_VECTOR4,
-  F_ANGLEHACK
+  F_TARGET,
+  F_CALLTARGET,
+  F_TIME,
+  F_3D_VECTOR,
+  F_4D_VECTOR,
+  F_YAW
 } fieldtype_t;
 
 typedef struct
 {
-	const char  *name;
-	size_t      ofs;
+	char  *name;
+	size_t      offset;
 	fieldtype_t type;
+	int   versionState;
+	char  *replacement;
 } field_t;
 
 static const field_t fields[] =
 {
-	{ "acceleration",        FOFS( acceleration ),        F_VECTOR    },
-	{ "alpha",               FOFS( pos1 ),                F_VECTOR    },
-	{ "angle",               FOFS( s.angles ),            F_ANGLEHACK },
-	{ "angles",              FOFS( s.angles ),            F_VECTOR    },
-	{ "animation",           FOFS( animation ),           F_VECTOR4   },
+	{ "acceleration",        FOFS( acceleration ),        F_3D_VECTOR },
+	{ "alias",               FOFS( names[ 2 ] ),          F_STRING    },
+	{ "alpha",               FOFS( restingPosition ),     F_3D_VECTOR }, // What's with the variable abuse everytime?
+	{ "amount",              FOFS( config.amount ),       F_INT       },
+	{ "angle",               FOFS( s.angles ),            F_YAW,      ENT_V_TMPNAME, "yaw"}, //radiants ui sadly strongly encourages the "angle" keyword
+	{ "angles",              FOFS( s.angles ),            F_3D_VECTOR },
+	{ "animation",           FOFS( animation ),           F_4D_VECTOR },
 	{ "bounce",              FOFS( physicsBounce ),       F_FLOAT     },
 	{ "classname",           FOFS( classname ),           F_STRING    },
-	{ "count",               FOFS( count ),               F_INT       },
-	{ "dmg",                 FOFS( damage ),              F_INT       },
-	{ "health",              FOFS( health ),              F_INT       },
+	{ "delay",               FOFS( config.delay ),        F_TIME       },
+	{ "dmg",                 FOFS( config.damage ),       F_INT       },
+	{ "health",              FOFS( config.health ),       F_INT       },
 	{ "message",             FOFS( message ),             F_STRING    },
 	{ "model",               FOFS( model ),               F_STRING    },
 	{ "model2",              FOFS( model2 ),              F_STRING    },
-	{ "origin",              FOFS( s.origin ),            F_VECTOR    },
-	{ "radius",              FOFS( pos2 ),                F_VECTOR    },
-	{ "random",              FOFS( random ),              F_FLOAT     },
-	{ "rotatorAngle",        FOFS( rotatorAngle ),        F_FLOAT     },
+	{ "name",	        	 FOFS( names[ 0 ] ),          F_STRING	  },
+	{ "onAct",               FOFS( calltargets ),         F_CALLTARGET },
+	{ "onDie",               FOFS( calltargets ),         F_CALLTARGET },
+	{ "onDisable",           FOFS( calltargets ),         F_CALLTARGET },
+	{ "onEnable",            FOFS( calltargets ),         F_CALLTARGET },
+	{ "onFree",              FOFS( calltargets ),         F_CALLTARGET },
+	{ "onReach",             FOFS( calltargets ),         F_CALLTARGET },
+	{ "onReset",             FOFS( calltargets ),         F_CALLTARGET },
+	{ "onSpawn",             FOFS( calltargets ),         F_CALLTARGET },
+	{ "onTouch",             FOFS( calltargets ),         F_CALLTARGET },
+	{ "onUse",               FOFS( calltargets ),         F_CALLTARGET },
+	{ "origin",              FOFS( s.origin ),            F_3D_VECTOR },
+	{ "period",              FOFS( config.period ),       F_TIME       },
+	{ "radius",              FOFS( activatedPosition ),   F_3D_VECTOR }, // What's with the variable abuse everytime?
+	{ "random",              FOFS( config.wait.variance ),F_FLOAT,    ENT_V_COMBINED, "wait" },
 	{ "spawnflags",          FOFS( spawnflags ),          F_INT       },
-	{ "speed",               FOFS( speed ),               F_FLOAT     },
-	{ "target",              FOFS( target ),              F_STRING    },
-	{ "targetname",          FOFS( targetname ),          F_STRING    },
+	{ "speed",               FOFS( config.speed ),        F_FLOAT     },
+	{ "stage",               FOFS( conditions.stage ),    F_INT       },
+	{ "target",              FOFS( targets ),             F_TARGET     },
+	{ "target2",             FOFS( targets ),             F_TARGET     }, // backwardcompatibility with AMP and to use the blackout map for testing
+	{ "target3",             FOFS( targets ),             F_TARGET     }, // backwardcompatibility with AMP and to use the blackout map for testing
+	{ "target4",             FOFS( targets ),             F_TARGET     }, // backwardcompatibility with AMP and to use the blackout map for testing
+	{ "targetname",          FOFS( names[ 1 ] ),          F_STRING,    ENT_V_RENAMED, "name" },
+	{ "targetname2",         FOFS( names[ 2 ] ),          F_STRING,    ENT_V_RENAMED, "name" }, // backwardcompatibility with AMP and to use the blackout map for testing
 	{ "targetShaderName",    FOFS( targetShaderName ),    F_STRING    },
 	{ "targetShaderNewName", FOFS( targetShaderNewName ), F_STRING    },
-	{ "wait",                FOFS( wait ),                F_FLOAT     }
+	{ "team",                FOFS( conditions.team ),     F_INT       },
+	{ "wait",                FOFS( config.wait ),         F_TIME      },
+	{ "yaw",                 FOFS( s.angles ),            F_YAW       },
 };
+
+typedef enum
+{
+	/*
+	 * self sufficent, it might possibly be fired at, but it can do as well on its own, so won't be freed automaticly
+	 */
+	CHAIN_AUTONOMOUS,
+	/*
+	 * needs something to fire at, or it has no reason to exist in this <world> and will be freed
+	 */
+	CHAIN_ACTIVE,
+	/*
+	 * needs something to fire at it in order to fullfill any task given to it, or will be freed otherwise
+	 */
+	CHAIN_PASSIV,
+	/*
+	 * needs something to fire at it, and something to relay that fire to (under whatever conditions given), or will be freed otherwise
+	 */
+	CHAIN_RELAY,
+	/*
+	 * will be aimed at by something, but no firing needs to be involved at all, if not aimed at, it will be freed
+	 */
+	CHAIN_TARGET,
+} entityChainType_t;
 
 typedef struct
 {
 	const char *name;
-	void      ( *spawn )( gentity_t *ent );
-} spawn_t;
+	void ( *spawn )( gentity_t *entityToSpawn );
+	const entityChainType_t chainType;
 
-static const spawn_t spawns[] =
+	//optional spawn-time data
+	const int	versionState;
+	const char  *replacement;
+} entityClassDescriptor_t;
+
+
+static const entityClassDescriptor_t entityClassDescriptions[] =
 {
-	{ "func_bobbing",             SP_func_bobbing             },
-	{ "func_button",              SP_func_button              },
-	{ "func_door",                SP_func_door                },
-	{ "func_door_model",          SP_func_door_model          },
-	{ "func_door_rotating",       SP_func_door_rotating       },
-	{ "func_dynamic",             SP_func_dynamic             },
-	{ "func_group",               SP_info_null                },
-	{ "func_pendulum",            SP_func_pendulum            },
-	{ "func_plat",                SP_func_plat                },
-	{ "func_rotating",            SP_func_rotating            },
-	{ "func_static",              SP_func_static              },
-	{ "func_timer",               SP_func_timer               }, // rename trigger_timer?
-	{ "func_train",               SP_func_train               },
+	/**
+	 *
+	 *	Control entities
+	 *	================
+	 *
+	 */
+	{ "ctrl_limited",             SP_ctrl_limited,           CHAIN_RELAY,      ENT_V_CURRENT, NULL  },
+	{ "ctrl_relay",               SP_ctrl_relay,             CHAIN_RELAY,      ENT_V_CURRENT, NULL  },
 
-	// info entities don't do anything at all, but provide positional
-	// information for things controlled by other processes
-	{ "info_alien_intermission",  SP_info_alien_intermission  },
-	{ "info_human_intermission",  SP_info_human_intermission  },
-	{ "info_notnull",             SP_info_notnull             }, // use target_position instead
-	{ "info_null",                SP_info_null                },
-	{ "info_player_deathmatch",   SP_info_player_deathmatch   },
-	{ "info_player_intermission", SP_info_player_intermission },
-	{ "info_player_start",        SP_info_player_start        },
-	{ "light",                    SP_light                    },
-	{ "misc_anim_model",          SP_misc_anim_model          },
-	{ "misc_light_flare",         SP_misc_light_flare         },
-	{ "misc_model",               SP_misc_model               },
-	{ "misc_particle_system",     SP_misc_particle_system     },
-	{ "misc_portal_camera",       SP_misc_portal_camera       },
-	{ "misc_portal_surface",      SP_misc_portal_surface      },
-	{ "misc_teleporter_dest",     SP_misc_teleporter_dest     },
-	{ "path_corner",              SP_path_corner              },
+	/**
+	 *
+	 *	Environment entities
+	 *	====================
+	 *  the afx subgroup describes environment area effects, which in most cases should be client predictable
+	 */
+	{ "env_afx_ammo",             SP_env_afx_ammo,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "env_afx_gravity",          SP_env_afx_gravity,        CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "env_afx_heal",             SP_env_afx_heal,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "env_afx_hurt",             SP_env_afx_hurt,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "env_afx_push",             SP_env_afx_push,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "env_afx_teleport",         SP_env_afx_teleport,       CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "env_animated_model",       SP_env_animated_model,     CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "env_lens_flare",           SP_env_lens_flare,         CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "env_particle_system",      SP_env_particle_system,    CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "env_portal_camera",        SP_env_portal_camera,      CHAIN_TARGET,     ENT_V_UNCLEAR, NULL },
+	{ "env_portal_surface",       SP_env_portal_surface,     CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "env_rumble",               SP_env_rumble,             CHAIN_PASSIV,     ENT_V_UNCLEAR, NULL },
+	{ "env_speaker",              SP_env_speaker,            CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 
-	// targets perform no action by themselves, but must be triggered
-	// by another entity
-	{ "target_alien_win",         SP_target_alien_win         },
-	{ "target_delay",             SP_target_delay             },
-	{ "target_human_win",         SP_target_human_win         },
-	{ "target_hurt",              SP_target_hurt              },
-	{ "target_kill",              SP_target_kill              },
-	{ "target_location",          SP_target_location          },
-	{ "target_position",          SP_target_position          },
-	{ "target_print",             SP_target_print             },
-	{ "target_push",              SP_target_push              },
-	{ "target_relay",             SP_target_relay             },
-	{ "target_rumble",            SP_target_rumble            },
-	{ "target_score",             SP_target_score             },
-	{ "target_speaker",           SP_target_speaker           },
-	{ "target_teleporter",        SP_target_teleporter        },
+	/**
+	 *
+	 *	Functional entities
+	 *	====================
+	 *
+	 */
+	{ "func_bobbing",             SP_func_bobbing,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "func_button",              SP_func_button,            CHAIN_ACTIVE,     ENT_V_UNCLEAR, NULL },
+	{ "func_destructable",        SP_func_destructable,      CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ S_FUNC_DOOR,                SP_func_door,              CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "func_door_model",          SP_func_door_model,        CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "func_door_rotating",       SP_func_door_rotating,     CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "func_dynamic",             SP_func_dynamic,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "func_group",               SP_RemoveSelf,             0,                ENT_V_UNCLEAR, NULL },
+	{ "func_pendulum",            SP_func_pendulum,          CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "func_plat",                SP_func_plat,              CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "func_rotating",            SP_func_rotating,          CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "func_spawn",               SP_func_spawn,             CHAIN_PASSIV,     ENT_V_UNCLEAR, NULL },
+	{ "func_static",              SP_func_static,            CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "func_timer",               SP_sensor_timer,			 CHAIN_ACTIVE,     ENT_V_TMPNAME, "sensor_timer" },
+	{ "func_train",               SP_func_train,             CHAIN_ACTIVE,     ENT_V_UNCLEAR, NULL },
 
-	// Triggers are brush objects that cause an effect when contacted
-	// by a living player, usually involving firing targets.
-	// While almost everything could be done with
-	// a single trigger class and different targets, triggered effects
-	// could not be client side predicted (push and teleport).
-	{ "trigger_always",           SP_trigger_always           },
-	{ "trigger_ammo",             SP_trigger_ammo             },
-	{ "trigger_buildable",        SP_trigger_buildable        },
-	{ "trigger_class",            SP_trigger_class            },
-	{ "trigger_equipment",        SP_trigger_equipment        },
-	{ "trigger_gravity",          SP_trigger_gravity          },
-	{ "trigger_heal",             SP_trigger_heal             },
-	{ "trigger_hurt",             SP_trigger_hurt             },
-	{ "trigger_multiple",         SP_trigger_multiple         },
-	{ "trigger_push",             SP_trigger_push             },
-	{ "trigger_stage",            SP_trigger_stage            },
-	{ "trigger_teleport",         SP_trigger_teleport         },
-	{ "trigger_win",              SP_trigger_win              }
+	/**
+	 *
+	 *	Game entities
+	 *	=============
+	 *
+	 */
+	{ "game_end",                 SP_game_end,               CHAIN_PASSIV,     ENT_V_CURRENT, NULL },
+	{ "game_score",               SP_game_score,             CHAIN_PASSIV,     ENT_V_CURRENT, NULL },
+	{ "game_kill",                SP_game_kill,              CHAIN_PASSIV,     ENT_V_CURRENT, NULL },
+
+
+	/**
+	 * former information and misc entities
+	 */
+	{ "info_alien_intermission",  SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_ALIEN_INTERMISSION  },
+	{ "info_human_intermission",  SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_HUMAN_INTERMISSION  },
+	{ "info_notnull",             SP_pos_target,             CHAIN_TARGET,     ENT_V_TMPNAME, "pos_target" },
+	{ "info_null",                SP_RemoveSelf,             0,                ENT_V_UNCLEAR, NULL },
+	{ "info_player_deathmatch",   SP_pos_player_spawn,       CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_PLAYER_SPAWN },
+	{ "info_player_intermission", SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_PLAYER_INTERMISSION },
+	{ "info_player_start",        SP_pos_player_spawn,       CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_PLAYER_SPAWN },
+	{ "light",                    SP_RemoveSelf,             0,                ENT_V_UNCLEAR, NULL },
+	{ "misc_anim_model",          SP_env_animated_model,     CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_animated_model" },
+	{ "misc_light_flare",         SP_env_lens_flare,         CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_lens_flare"},
+	{ "misc_model",               SP_RemoveSelf,             0,                ENT_V_UNCLEAR, NULL },
+	{ "misc_particle_system",     SP_env_particle_system,    CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_particle_system"},
+	{ "misc_portal_camera",       SP_env_portal_camera,      CHAIN_TARGET,     ENT_V_TMPNAME, "env_portal_camera" },
+	{ "misc_portal_surface",      SP_env_portal_surface,     CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_portal_surface" },
+	{ "misc_teleporter_dest",     SP_pos_target,             CHAIN_TARGET,     ENT_V_TMPNAME, "pos_target" },
+
+	/**
+	 *  Position entities
+	 *  =================
+	 *  position entities may get used by other entities or other processes as provider for positional data
+	 *
+	 *  positions may or may not have an additional direction attached to them
+	 *  they may also target to another position to indicate that direction
+	 */
+	{ S_PATH_CORNER,              SP_Nothing,                CHAIN_TARGET,     ENT_V_UNCLEAR, NULL },
+	{ S_POS_ALIEN_INTERMISSION,   SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ S_POS_HUMAN_INTERMISSION,   SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "pos_location",             SP_pos_location,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ S_POS_PLAYER_INTERMISSION,  SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ S_POS_PLAYER_SPAWN,         SP_pos_player_spawn,       CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ "pos_target",               SP_pos_target,             CHAIN_TARGET,     ENT_V_UNCLEAR, NULL },
+
+	/**
+	 *  Sensors
+	 *  =======
+	 *  Sensor fire an event (usually towards targets) when aware
+	 *  of another entity, event, or gamestate (timer and start being aware of the game start).
+	 *  Sensors often can be targeted to toggle (activate or deactivate)
+	 *  their function of perceiving other entities.
+	 */
+
+	{ "sensor_buildable",         SP_sensor_buildable,       CHAIN_ACTIVE,     ENT_V_UNCLEAR, NULL },
+	{ S_SENSOR_CREEP,             SP_sensor_creep,           CHAIN_ACTIVE },
+	{ S_SENSOR_END,               SP_sensor_end,             CHAIN_ACTIVE,     ENT_V_CURRENT, NULL },
+	{ S_SENSOR_PLAYER,            SP_sensor_player,          CHAIN_ACTIVE,     ENT_V_UNCLEAR, NULL },
+	{ S_SENSOR_POWER,             SP_sensor_power,           CHAIN_ACTIVE },
+	{ S_SENSOR_STAGE,             SP_sensor_stage,           CHAIN_ACTIVE,     ENT_V_CURRENT, NULL },
+	{ S_SENSOR_START,             SP_sensor_start,           CHAIN_ACTIVE,     ENT_V_CURRENT, NULL },
+	{ S_SENSOR_SUPPORT,           SP_sensor_support,         CHAIN_ACTIVE },
+	{ "sensor_timer",             SP_sensor_timer,           CHAIN_ACTIVE,     ENT_V_UNCLEAR, NULL },
+
+	/**
+	 *
+	 * 	Target Entities
+	 * 	===============
+	 * 	Targets perform no action by themselves.
+	 *	Instead they are targeted by other entities,
+	 *	like being triggered by a trigger_ entity.
+	 *
+	 */
+	{ "target_alien_win",         SP_game_end,               CHAIN_PASSIV,     ENT_V_TMPNAME, "game_end" },
+	{ "target_delay",             SP_ctrl_relay,             CHAIN_RELAY,      ENT_V_TMPNAME, "ctrl_relay" },
+	{ "target_human_win",         SP_game_end,               CHAIN_PASSIV,     ENT_V_TMPNAME, "game_end" },
+	{ "target_hurt",              SP_target_hurt,            CHAIN_PASSIV,     ENT_V_UNCLEAR, NULL },
+	{ "target_kill",              SP_game_kill,              CHAIN_PASSIV,     ENT_V_RENAMED, "game_kill" },
+	{ "target_location",          SP_pos_location,           CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "pos_location" },
+	{ "target_position",          SP_pos_target,             CHAIN_TARGET,     ENT_V_TMPNAME, "pos_target" },
+	{ "target_print",             SP_target_print,           CHAIN_PASSIV,     ENT_V_UNCLEAR, NULL },
+	{ "target_push",              SP_target_push,            CHAIN_PASSIV,     ENT_V_UNCLEAR, NULL },
+	{ "target_relay",             SP_ctrl_relay,             CHAIN_RELAY,      ENT_V_TMPNAME, "ctrl_relay" },
+	{ "target_rumble",            SP_env_rumble,             CHAIN_PASSIV,     ENT_V_TMPNAME, "env_rumble" },
+	{ "target_score",             SP_game_score,             CHAIN_PASSIV,     ENT_V_TMPNAME, "game_score" },
+	{ "target_speaker",           SP_env_speaker,            CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_speaker" },
+	{ "target_teleporter",        SP_target_teleporter,      CHAIN_PASSIV,     ENT_V_UNCLEAR, NULL },
+
+	/**
+	 * former trigger
+	 */
+	{ "trigger_always",           SP_sensor_start,           CHAIN_ACTIVE,     ENT_V_RENAMED, S_SENSOR_START },
+	{ "trigger_ammo",             SP_env_afx_ammo,           CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_afx_ammo" },
+	{ "trigger_buildable",        SP_sensor_buildable,       CHAIN_ACTIVE,     ENT_V_TMPNAME, "sensor_buildable" },
+	{ "trigger_class",            SP_sensor_player,          CHAIN_ACTIVE,     ENT_V_TMPNAME, S_SENSOR_PLAYER },
+	{ "trigger_equipment",        SP_sensor_player,          CHAIN_ACTIVE,     ENT_V_TMPNAME, S_SENSOR_PLAYER },
+	{ "trigger_gravity",          SP_env_afx_gravity,        CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_afx_gravity" },
+	{ "trigger_heal",             SP_env_afx_heal,           CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_afx_heal" },
+	{ "trigger_hurt",             SP_env_afx_hurt,           CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_afx_hurt" },
+	{ "trigger_multiple",         SP_sensor_player,          CHAIN_ACTIVE,     ENT_V_TMPNAME, S_SENSOR_PLAYER },
+	{ "trigger_push",             SP_env_afx_push,           CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_afx_push" },
+	{ "trigger_stage",            SP_sensor_stage,           CHAIN_ACTIVE,     ENT_V_RENAMED, S_SENSOR_STAGE },
+	{ "trigger_teleport",         SP_env_afx_teleport,       CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_afx_teleport" },
+	{ "trigger_win",              SP_sensor_end,             CHAIN_ACTIVE,     ENT_V_TMPNAME, S_SENSOR_END }
 };
+
+qboolean G_HandleEntityVersions( entityClassDescriptor_t *spawnDescription, gentity_t *entity )
+{
+	if ( spawnDescription->versionState == ENT_V_CURRENT ) // we don't need to handle anything
+		return qtrue;
+
+	if ( !spawnDescription->replacement || !Q_stricmp(entity->classname, spawnDescription->replacement))
+	{
+		if ( g_debugEntities.integer > -2 )
+			G_Printf(S_ERROR "Class %s has been marked deprecated but no replacement has been supplied\n", etos( entity ) );
+
+		return qfalse;
+	}
+
+	if ( g_debugEntities.integer >= 0 ) //dont't warn about anything with -1 or lower
+	{
+		if( spawnDescription->versionState < ENT_V_TMPORARY
+		|| ( g_debugEntities.integer >= 1 && spawnDescription->versionState >= ENT_V_TMPORARY) )
+		{
+			G_Printf( S_WARNING "Entity %s uses a deprecated classtype — use the class " S_COLOR_CYAN "%s" S_COLOR_WHITE " instead\n", etos( entity ), spawnDescription->replacement );
+		}
+	}
+	entity->classname = spawnDescription->replacement;
+	return qtrue;
+}
+
+qboolean G_ValidateEntity( entityClassDescriptor_t *entityClass, gentity_t *entity )
+{
+	switch (entityClass->chainType) {
+		case CHAIN_ACTIVE:
+			if(!entity->callTargetCount) //check target usage for backward compatibility
+			{
+				if( g_debugEntities.integer > -2 )
+					G_Printf( S_WARNING "Entity %s needs to call or target to something — Removing it.\n", etos( entity ) );
+				return qfalse;
+			}
+			break;
+		case CHAIN_TARGET:
+		case CHAIN_PASSIV:
+			if(!entity->names[0])
+			{
+				if( g_debugEntities.integer > -2 )
+					G_Printf( S_WARNING "Entity %s needs a name, so other entities can target it — Removing it.\n", etos( entity ) );
+				return qfalse;
+			}
+			break;
+		case CHAIN_RELAY:
+			if((!entity->callTargetCount) //check target usage for backward compatibility
+					|| !entity->names[0])
+			{
+				if( g_debugEntities.integer > -2 )
+					G_Printf( S_WARNING "Entity %s needs a name as well as a target to conditionally relay the firing — Removing it.\n", etos( entity ) );
+				return qfalse;
+			}
+			break;
+		default:
+			break;
+	}
+
+	return qtrue;
+}
+
+static entityClass_t entityClasses[ARRAY_LEN(entityClassDescriptions)];
 
 /*
 ===============
-G_CallSpawn
+G_CallSpawnFunction
 
 Finds the spawn function for the entity and calls it,
 returning qfalse if not found
 ===============
 */
-qboolean G_CallSpawn( gentity_t *ent )
+qboolean G_CallSpawnFunction( gentity_t *spawnedEntity )
 {
-	spawn_t     *s;
+	entityClassDescriptor_t     *spawnedClass;
 	buildable_t buildable;
 
-	if ( !ent->classname )
+	if ( !spawnedEntity->classname )
 	{
-		G_Printf( "G_CallSpawn: NULL classname\n" );
+		//don't even warn about spawning-errors with -2 (maps might still work at least partly if we ignore these willingly)
+		if ( g_debugEntities.integer > -2 )
+			G_Printf( S_ERROR "Entity " S_COLOR_CYAN "#%i" S_COLOR_WHITE " is missing classname – we are unable to spawn it.\n", spawnedEntity->s.number );
 		return qfalse;
 	}
 
 	//check buildable spawn functions
-	buildable = BG_BuildableByEntityName( ent->classname )->number;
+	buildable = BG_BuildableByEntityName( spawnedEntity->classname )->number;
 
 	if ( buildable != BA_NONE )
 	{
 		// don't spawn built-in buildings if we are using a custom layout
-		if ( level.layout[ 0 ] && Q_stricmp( level.layout, "*BUILTIN*" ) )
+		if ( level.layout[ 0 ] && Q_stricmp( level.layout, S_BUILTIN_LAYOUT ) )
 		{
 			return qfalse;
 		}
 
 		if ( buildable == BA_A_SPAWN || buildable == BA_H_SPAWN )
 		{
-			ent->s.angles[ YAW ] += 180.0f;
-			AngleNormalize360( ent->s.angles[ YAW ] );
+			spawnedEntity->s.angles[ YAW ] += 180.0f;
+			AngleNormalize360( spawnedEntity->s.angles[ YAW ] );
 		}
 
-		G_SpawnBuildable( ent, buildable );
+		G_SpawnBuildable( spawnedEntity, buildable );
 		return qtrue;
 	}
 
 	// check the spawn functions for other classes
-	s = bsearch( ent->classname, spawns, ARRAY_LEN( spawns ),
-	             sizeof( spawn_t ), cmdcmp );
+	spawnedClass = bsearch( spawnedEntity->classname, entityClassDescriptions, ARRAY_LEN( entityClassDescriptions ),
+	             sizeof( entityClassDescriptor_t ), cmdcmp );
 
-	if ( s )
-	{
-		// found it
-		s->spawn( ent );
+	if ( spawnedClass )
+	{ // found it
+
+		spawnedEntity->eclass = &entityClasses[(int) (spawnedClass-entityClassDescriptions)];
+		spawnedEntity->eclass->instanceCounter++;
+
+		if(!G_ValidateEntity( spawnedClass, spawnedEntity ))
+			return qfalse; // results in freeing the entity
+
+		spawnedClass->spawn( spawnedEntity );
+		spawnedEntity->spawned = qtrue;
+
+		if ( g_debugEntities.integer > 2 )
+			G_Printf( S_DEBUG "Successfully spawned entity " S_COLOR_CYAN "#%i" S_COLOR_WHITE " as " S_COLOR_YELLOW "%i" S_COLOR_WHITE "th instance of " S_COLOR_CYAN "%s\n",
+					spawnedEntity->s.number, spawnedEntity->eclass->instanceCounter, spawnedClass->name);
+
+		/*
+		 *  to allow each spawn function to test and handle for itself,
+		 *  we handle it automatically *after* the spawn (but before it's use/reset)
+		 */
+		if(!G_HandleEntityVersions( spawnedClass, spawnedEntity ))
+			return qfalse;
+
+
 		return qtrue;
 	}
 
-	G_Printf( "%s doesn't have a spawn function\n", ent->classname );
+	//don't even warn about spawning-errors with -2 (maps might still work at least partly if we ignore these willingly)
+	if ( g_debugEntities.integer > -2 )
+	{
+		if (!Q_stricmp(S_WORLDSPAWN, spawnedEntity->classname))
+		{
+			G_Printf( S_ERROR "a " S_COLOR_CYAN S_WORLDSPAWN S_COLOR_WHITE " class was misplaced into position " S_COLOR_CYAN "#%i" S_COLOR_WHITE " of the spawn string – Ignoring\n", spawnedEntity->s.number );
+		}
+		else
+		{
+			G_Printf( S_ERROR "Unknown entity class \"" S_COLOR_CYAN "%s" S_COLOR_WHITE "\".\n", spawnedEntity->classname );
+		}
+	}
+
 	return qfalse;
 }
 
@@ -314,6 +565,41 @@ char *G_NewString( const char *string )
 }
 
 /*
+=============
+G_NewTarget
+=============
+*/
+gentityCallDefinition_t G_NewCallDefinition( char *eventKey, const char *string )
+{
+	char *stringPointer;
+	int  i, stringLength;
+	gentityCallDefinition_t newCallDefinition = { NULL, ON_DEFAULT, NULL, NULL, ECA_NOP };
+
+	stringLength = strlen( string ) + 1;
+	if(stringLength == 1)
+		return newCallDefinition;
+
+	stringPointer = BG_Alloc( stringLength );
+	newCallDefinition.name = stringPointer;
+
+	for ( i = 0; i < stringLength; i++ )
+	{
+		if ( string[ i ] == ':' && !newCallDefinition.action )
+		{
+			*stringPointer++ = '\0';
+			newCallDefinition.action = stringPointer;
+			continue;
+		}
+		*stringPointer++ = string[ i ];
+	}
+	newCallDefinition.actionType = G_GetCallActionTypeFor( newCallDefinition.action );
+
+	newCallDefinition.event = eventKey;
+	newCallDefinition.eventType = G_GetCallEventTypeFor( newCallDefinition.event );
+	return newCallDefinition;
+}
+
+/*
 ===============
 G_ParseField
 
@@ -321,62 +607,85 @@ Takes a key/value pair and sets the binary values
 in a gentity
 ===============
 */
-void G_ParseField( const char *key, const char *value, gentity_t *ent )
+void G_ParseField( const char *key, const char *rawString, gentity_t *entity )
 {
-	field_t *f;
-	byte    *b;
-	float   v;
-	vec3_t  vec;
-	vec4_t  vec4;
+	field_t *resultingField;
+	byte    *entityData;
+	vec4_t  tmpFloatData;
+	variatingTime_t varTime = {0, 0};
 
-	f = bsearch( key, fields, ARRAY_LEN( fields ),
-	             sizeof( field_t ), cmdcmp );
+	resultingField = bsearch( key, fields, ARRAY_LEN( fields ), sizeof( field_t ), cmdcmp );
 
-	if ( !f )
+	if ( !resultingField )
 	{
 		return;
 	}
 
-	b = ( byte * ) ent;
+	entityData = ( byte * ) entity;
 
-	switch ( f->type )
+	switch ( resultingField->type )
 	{
 		case F_STRING:
-			* ( char ** )( b + f->ofs ) = G_NewString( value );
+			* ( char ** )( entityData + resultingField->offset ) = G_NewString( rawString );
 			break;
 
-		case F_VECTOR:
-			sscanf( value, "%f %f %f", &vec[ 0 ], &vec[ 1 ], &vec[ 2 ] );
+		case F_TARGET:
+			if(entity->targetCount >= MAX_ENTITY_TARGETS)
+				G_Error("Maximal number of %i targets reached.", MAX_ENTITY_TARGETS);
 
-			( ( float * )( b + f->ofs ) ) [ 0 ] = vec[ 0 ];
-			( ( float * )( b + f->ofs ) ) [ 1 ] = vec[ 1 ];
-			( ( float * )( b + f->ofs ) ) [ 2 ] = vec[ 2 ];
+			( ( char ** )( entityData + resultingField->offset ) ) [ entity->targetCount++ ] = G_NewString( rawString );
 			break;
 
-		case F_VECTOR4:
-			sscanf( value, "%f %f %f %f", &vec4[ 0 ], &vec4[ 1 ], &vec4[ 2 ], &vec4[ 3 ] );
+		case F_CALLTARGET:
+			if(entity->callTargetCount >= MAX_ENTITY_CALLTARGETS)
+				G_Error("Maximal number of %i calltargets reached. You can solve this by using a Relay.", MAX_ENTITY_CALLTARGETS);
 
-			( ( float * )( b + f->ofs ) ) [ 0 ] = vec4[ 0 ];
-			( ( float * )( b + f->ofs ) ) [ 1 ] = vec4[ 1 ];
-			( ( float * )( b + f->ofs ) ) [ 2 ] = vec4[ 2 ];
-			( ( float * )( b + f->ofs ) ) [ 3 ] = vec4[ 3 ];
+			( ( gentityCallDefinition_t * )( entityData + resultingField->offset ) ) [ entity->callTargetCount++ ] = G_NewCallDefinition( resultingField->replacement ? resultingField->replacement : resultingField->name, rawString );
+			break;
+
+		case F_TIME:
+			sscanf( rawString, "%f %f", &varTime.time, &varTime.variance );
+			* ( variatingTime_t * )( entityData + resultingField->offset ) = varTime;
+			break;
+
+		case F_3D_VECTOR:
+			sscanf( rawString, "%f %f %f", &tmpFloatData[ 0 ], &tmpFloatData[ 1 ], &tmpFloatData[ 2 ] );
+
+			( ( float * )( entityData + resultingField->offset ) ) [ 0 ] = tmpFloatData[ 0 ];
+			( ( float * )( entityData + resultingField->offset ) ) [ 1 ] = tmpFloatData[ 1 ];
+			( ( float * )( entityData + resultingField->offset ) ) [ 2 ] = tmpFloatData[ 2 ];
+			break;
+
+		case F_4D_VECTOR:
+			sscanf( rawString, "%f %f %f %f", &tmpFloatData[ 0 ], &tmpFloatData[ 1 ], &tmpFloatData[ 2 ], &tmpFloatData[ 3 ] );
+
+			( ( float * )( entityData + resultingField->offset ) ) [ 0 ] = tmpFloatData[ 0 ];
+			( ( float * )( entityData + resultingField->offset ) ) [ 1 ] = tmpFloatData[ 1 ];
+			( ( float * )( entityData + resultingField->offset ) ) [ 2 ] = tmpFloatData[ 2 ];
+			( ( float * )( entityData + resultingField->offset ) ) [ 3 ] = tmpFloatData[ 3 ];
 			break;
 
 		case F_INT:
-			* ( int * )( b + f->ofs ) = atoi( value );
+			* ( int * )( entityData + resultingField->offset ) = atoi( rawString );
 			break;
 
 		case F_FLOAT:
-			* ( float * )( b + f->ofs ) = atof( value );
+			* ( float * )( entityData + resultingField->offset ) = atof( rawString );
 			break;
 
-		case F_ANGLEHACK:
-			v = atof( value );
-			( ( float * )( b + f->ofs ) ) [ 0 ] = 0;
-			( ( float * )( b + f->ofs ) ) [ 1 ] = v;
-			( ( float * )( b + f->ofs ) ) [ 2 ] = 0;
+		case F_YAW:
+			( ( float * )( entityData + resultingField->offset ) ) [ 0 ] = 0;
+			( ( float * )( entityData + resultingField->offset ) ) [ 1 ] = atof( rawString );
+			( ( float * )( entityData + resultingField->offset ) ) [ 2 ] = 0;
+			break;
+
+		default:
+			G_Printf( S_ERROR "unknown datatype %i for field %s\n", resultingField->type, resultingField->name );
 			break;
 	}
+
+	if ( resultingField->replacement && resultingField->versionState )
+		G_WarnAboutDeprecatedEntityField(entity, resultingField->replacement, key, resultingField->versionState );
 }
 
 /*
@@ -389,34 +698,107 @@ level.spawnVars[], then call the class specfic spawn function
 */
 void G_SpawnGEntityFromSpawnVars( void )
 {
-	int       i;
-	gentity_t *ent;
+	int       i, j;
+	gentity_t *spawningEntity;
 
 	// get the next free entity
-	ent = G_Spawn();
+	spawningEntity = G_NewEntity();
 
 	for ( i = 0; i < level.numSpawnVars; i++ )
 	{
-		G_ParseField( level.spawnVars[ i ][ 0 ], level.spawnVars[ i ][ 1 ], ent );
+		G_ParseField( level.spawnVars[ i ][ 0 ], level.spawnVars[ i ][ 1 ], spawningEntity );
 	}
 
 	G_SpawnInt( "notq3a", "0", &i );
 
 	if ( i )
 	{
-		G_FreeEntity( ent );
+		G_FreeEntity( spawningEntity );
 		return;
 	}
 
 	// move editor origin to pos
-	VectorCopy( ent->s.origin, ent->s.pos.trBase );
-	VectorCopy( ent->s.origin, ent->r.currentOrigin );
+	VectorCopy( spawningEntity->s.origin, spawningEntity->s.pos.trBase );
+	VectorCopy( spawningEntity->s.origin, spawningEntity->r.currentOrigin );
 
-	// if we didn't get a classname, don't bother spawning anything
-	if ( !G_CallSpawn( ent ) )
+	// don't leave any "gaps" between multiple names
+	j = 0;
+	for (i = 0; i < MAX_ENTITY_ALIASES; ++i)
 	{
-		G_FreeEntity( ent );
+		if (spawningEntity->names[i])
+			spawningEntity->names[j++] = spawningEntity->names[i];
 	}
+	spawningEntity->names[ j ] = NULL;
+
+	/*
+	 * for backward compatbility, since before targets were used for calling,
+	 * we'll have to copy them over to the called-targets as well for now
+	 */
+	if(!spawningEntity->callTargetCount)
+	{
+		for (i = 0; i < MAX_ENTITY_TARGETS && i < MAX_ENTITY_CALLTARGETS; i++)
+		{
+			if (!spawningEntity->targets[i])
+				continue;
+
+			spawningEntity->calltargets[i].event = "target";
+			spawningEntity->calltargets[i].eventType = ON_DEFAULT;
+			spawningEntity->calltargets[i].actionType = ECA_DEFAULT;
+			spawningEntity->calltargets[i].name = spawningEntity->targets[i];
+			spawningEntity->callTargetCount++;
+		}
+	}
+
+	// don't leave any "gaps" between multiple targets
+	j = 0;
+	for (i = 0; i < MAX_ENTITY_TARGETS; ++i)
+	{
+		if (spawningEntity->targets[i])
+			spawningEntity->targets[j++] = spawningEntity->targets[i];
+	}
+	spawningEntity->targets[ j ] = NULL;
+
+	// if we didn't get necessary fields (like the classname), don't bother spawning anything
+	if ( !G_CallSpawnFunction( spawningEntity ) )
+	{
+		G_FreeEntity( spawningEntity );
+	}
+}
+
+void G_ReorderCallTargets( gentity_t *ent )
+{
+	int i, j;
+	// don't leave any "gaps" between multiple targets
+	j = 0;
+	for (i = 0; i < MAX_ENTITY_CALLTARGETS; ++i)
+	{
+		if (ent->calltargets[i].name) {
+			ent->calltargets[j] = ent->calltargets[i];
+			ent->calltargets[j].actionType = G_GetCallActionTypeFor(ent->calltargets[i].action);
+			j++;
+		}
+	}
+	ent->calltargets[ j ].name = NULL;
+	ent->calltargets[ j ].action = NULL;
+	ent->calltargets[ j ].actionType = ECA_NOP;
+	ent->callTargetCount = j;
+}
+
+qboolean G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expectedFieldname, const char *actualFieldname, const int typeOfDeprecation  )
+{
+	if ( !Q_stricmp(expectedFieldname, actualFieldname) || typeOfDeprecation == ENT_V_CURRENT )
+		return qfalse;
+
+	if ( g_debugEntities.integer >= 0 ) //dont't warn about anything with -1 or lower
+	{
+		if( typeOfDeprecation < ENT_V_TMPORARY
+		|| ( g_debugEntities.integer >= 1 && typeOfDeprecation >= ENT_V_TMPORARY) )
+		{
+			G_Printf( S_WARNING "Entity " S_COLOR_CYAN "#%i" S_COLOR_WHITE " contains deprecated field " S_COLOR_CYAN "%s" S_COLOR_WHITE " — use " S_COLOR_CYAN "%s" S_COLOR_WHITE " instead\n", entity->s.number, actualFieldname, expectedFieldname );
+		}
+	}
+
+	return qtrue;
 }
 
 /*
@@ -512,12 +894,28 @@ qboolean G_ParseSpawnVars( void )
 	return qtrue;
 }
 
+/**
+ * Warning: The following comment contains information, that might be parsed and used by radiant based mapeditors.
+ */
 /*QUAKED worldspawn (0 0 0) ?
+Used for game-world global options.
+Every map should have exactly one.
 
-Every map should have exactly one worldspawn.
-"music"   music wav file
-"gravity" 800 is default gravity
-"message" Text to print during connection process
+=== KEYS ===
+; message: Text to print during connection process. Used for the name of level.
+; music: path/name of looping .wav file used for level's music (eg. music/sonic5.wav).
+; gravity: level gravity [g_gravity (800)]
+
+; humanBuildPoints: maximum amount of power the humans can use. [g_humanBuildPoints]
+; humanRepeaterBuildPoints: maximum amount of power the humans can use around each repeater. [g_humanRepeaterBuildPoints]
+; alienBuildPoints: maximum amount of sentience available to the overmind. [g_alienBuildPoints]
+
+; humanMaxStage: The highest stage the humans are allowed to use (0/1/2). [g_alienMaxStage (2)]
+; alienMaxStage: The highest stage the aliens are allowed to use (0/1/2). [g_humanMaxStage (2)]
+
+; disabledEquipment: A comma delimited list of human weapons or upgrades to disable for this map. [g_disabledEquipment ()]
+; disabledClasses: A comma delimited list of alien classes to disable for this map. [g_disabledClasses ()]
+; disabledBuildables: A comma delimited list of buildables to disable for this map. [g_disabledBuildables ()]
 */
 void SP_worldspawn( void )
 {
@@ -525,9 +923,9 @@ void SP_worldspawn( void )
 
 	G_SpawnString( "classname", "", &s );
 
-	if ( Q_stricmp( s, "worldspawn" ) )
+	if ( Q_stricmp( s, S_WORLDSPAWN ) )
 	{
-		G_Error( "SP_worldspawn: The first entity isn't 'worldspawn'" );
+		G_Error( "SP_worldspawn: The first entry in the spawn string isn't of expected type '" S_WORLDSPAWN "'" );
 	}
 
 	// make some data visible to connecting client
@@ -578,7 +976,7 @@ void SP_worldspawn( void )
 
 	g_entities[ ENTITYNUM_WORLD ].s.number = ENTITYNUM_WORLD;
 	g_entities[ ENTITYNUM_WORLD ].r.ownerNum = ENTITYNUM_NONE;
-	g_entities[ ENTITYNUM_WORLD ].classname = "worldspawn";
+	g_entities[ ENTITYNUM_WORLD ].classname = S_WORLDSPAWN;
 
 	g_entities[ ENTITYNUM_NONE ].s.number = ENTITYNUM_NONE;
 	g_entities[ ENTITYNUM_NONE ].r.ownerNum = ENTITYNUM_NONE;
@@ -616,7 +1014,7 @@ void G_SpawnEntitiesFromString( void )
 		G_Error( "SpawnEntities: no entities" );
 	}
 
-	SP_target_init();
+	SP_position_init();
 	SP_worldspawn();
 
 	// parse ents

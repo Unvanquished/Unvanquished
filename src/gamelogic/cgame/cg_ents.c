@@ -1182,8 +1182,8 @@ static void CG_AddCEntity( centity_t *cent )
 			CG_Error( "Bad entity type: %i", cent->currentState.eType );
 
 		case ET_INVISIBLE:
-		case ET_PUSH_TRIGGER:
-		case ET_TELEPORT_TRIGGER:
+		case ET_PUSHER:
+		case ET_TELEPORTER:
 		case ET_LOCATION:
 			break;
 
