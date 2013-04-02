@@ -51,7 +51,7 @@ class GLShaderManager;
 
 class GLShader
 {
-	friend GLShaderManager;
+	friend class GLShaderManager;
 private:
 	GLShader &operator             = ( const GLShader & );
 
