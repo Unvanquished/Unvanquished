@@ -97,7 +97,7 @@ for $line (keys %syscallfuncs)
 
 die 'Multiple definitions of '.join (', ', sort @errs)."\n" if $#errs >= 0;
 
-print "code\n\n";
+print "; Generated file. Do not edit.\n; To update, run src/utils/scan_api.sh\n\ncode\n\n";
 
 for $line (sort { $a <=> $b } keys %output)
 {

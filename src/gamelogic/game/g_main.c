@@ -530,71 +530,89 @@ void QDECL PRINTF_LIKE(1) NORETURN G_Error( const char *fmt, ... )
 
 /*
 ================
-G_FindTeams
+G_FindEntityGroups
 
-Chain together all entities with a matching team field.
-Entity teams are used for item groups and multi-entity mover groups.
+Chain together all entities with a matching groupName field.
+Entity groups are used for item groups and multi-entity mover groups.
 
-All but the first will have the FL_TEAMSLAVE flag set and teammaster field set
-All but the last will have the teamchain field set to the next one
+All but the first will have the FL_GROUPSLAVE flag set and groupMaster field set
+All but the last will have the groupChain field set to the next one
 ================
 */
-void G_FindTeams( void )
+void G_FindEntityGroups( void )
 {
-	gentity_t *e, *e2;
-	int       i, j;
-	int       c, c2;
+	gentity_t *masterEntity, *comparedEntity;
+	int       i, j, k;
+	int       groupCount, entityCount;
 
-	c = 0;
-	c2 = 0;
+	groupCount = 0;
+	entityCount = 0;
 
-	for ( i = MAX_CLIENTS, e = g_entities + i; i < level.num_entities; i++, e++ )
+	for ( i = MAX_CLIENTS, masterEntity = g_entities + i; i < level.num_entities; i++, masterEntity++ )
 	{
-		if ( !e->team )
+		if ( !masterEntity->groupName )
 		{
 			continue;
 		}
 
-		if ( e->flags & FL_TEAMSLAVE )
+		if ( masterEntity->flags & FL_GROUPSLAVE )
 		{
 			continue;
 		}
 
-		e->teammaster = e;
-		c++;
-		c2++;
+		masterEntity->groupMaster = masterEntity;
+		groupCount++;
+		entityCount++;
 
-		for ( j = i + 1, e2 = e + 1; j < level.num_entities; j++, e2++ )
+		for ( j = i + 1, comparedEntity = masterEntity + 1; j < level.num_entities; j++, comparedEntity++ )
 		{
-			if ( !e2->team )
+			if ( !comparedEntity->groupName )
 			{
 				continue;
 			}
 
-			if ( e2->flags & FL_TEAMSLAVE )
+			if ( comparedEntity->flags & FL_GROUPSLAVE )
 			{
 				continue;
 			}
 
-			if ( !strcmp( e->team, e2->team ) )
+			if ( !strcmp( masterEntity->groupName, comparedEntity->groupName ) )
 			{
-				c2++;
-				e2->teamchain = e->teamchain;
-				e->teamchain = e2;
-				e2->teammaster = e;
-				e2->flags |= FL_TEAMSLAVE;
+				entityCount++;
+				comparedEntity->groupChain = masterEntity->groupChain;
+				masterEntity->groupChain = comparedEntity;
+				comparedEntity->groupMaster = masterEntity;
+				comparedEntity->flags |= FL_GROUPSLAVE;
 
 				// make sure that targets only point at the master
-				if ( e2->targetname )
+				for (k = 0; comparedEntity->names[k]; k++)
 				{
-					e->targetname = e2->targetname;
-					e2->targetname = NULL;
+					masterEntity->names[k] = comparedEntity->names[k];
+					comparedEntity->names[k] = NULL;
 				}
 			}
 		}
 	}
 
-	G_Printf( "%i teams with %i entities\n", c, c2 );
+	G_Printf( "%i groups with %i entities\n", groupCount, entityCount );
+}
+/*
+================
+G_InitSetEntities
+goes through all entities and concludes the spawn
+by calling their reset function as initiation if available
+================
+*/
+void G_InitSetEntities( void )
+{
+	int i;
+	gentity_t *entity;
+
+	for ( i = MAX_CLIENTS, entity = g_entities + i; i < level.num_entities; i++, entity++ )
+	{
+		if(entity->inuse && entity->reset)
+			entity->reset( entity );
+	}
 }
 
 /*
@@ -605,21 +623,21 @@ G_RegisterCvars
 void G_RegisterCvars( void )
 {
 	int         i;
-	cvarTable_t *cv;
+	cvarTable_t *cvarTable;
 
-	for ( i = 0, cv = gameCvarTable; i < gameCvarTableSize; i++, cv++ )
+	for ( i = 0, cvarTable = gameCvarTable; i < gameCvarTableSize; i++, cvarTable++ )
 	{
-		trap_Cvar_Register( cv->vmCvar, cv->cvarName,
-		                    cv->defaultString, cv->cvarFlags );
+		trap_Cvar_Register( cvarTable->vmCvar, cvarTable->cvarName,
+		                    cvarTable->defaultString, cvarTable->cvarFlags );
 
-		if ( cv->vmCvar )
+		if ( cvarTable->vmCvar )
 		{
-			cv->modificationCount = cv->vmCvar->modificationCount;
+			cvarTable->modificationCount = cvarTable->vmCvar->modificationCount;
 		}
 
-		if ( cv->explicit )
+		if ( cvarTable->explicit )
 		{
-			strcpy( cv->explicit, cv->vmCvar->string );
+			strcpy( cvarTable->explicit, cvarTable->vmCvar->string );
 		}
 	}
 }
@@ -788,6 +806,9 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 		G_MapConfigs( map );
 	}
 
+	//Load config files
+	BG_InitAllConfigs();
+
 	// we're done with g_mapConfigs, so reset this for the next map
 	trap_Cvar_Set( "g_mapConfigsLoaded", "0" );
 
@@ -826,12 +847,6 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 
 	trap_SetConfigstring( CS_INTERMISSION, "0" );
 
-	// we need the entity names before we can spawn them
-	BG_InitBuildableAttributes();
-	BG_InitClassAttributes();
-	BG_InitWeaponAttributes();
-	BG_InitUpgradeAttributes();
-
 	// test to see if a custom buildable layout will be loaded
 	G_LayoutSelect();
 
@@ -850,10 +865,9 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	BG_InitAllowedGameElements();
 
 	// general initialization
-	G_FindTeams();
+	G_FindEntityGroups();
+	G_InitSetEntities();
 
-	BG_InitClassModelConfigs();
-	BG_InitBuildableModelConfigs();
 	G_InitDamageLocations();
 	G_InitMapRotations();
 	G_InitSpawnQueue( &level.alienSpawnQueue );
@@ -889,6 +903,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 		level.humanTeamLocked = qtrue;
 		trap_Cvar_Set( "g_lockTeamsAtStart", "0" );
 	}
+
+	G_notify_sensor_start();
 }
 
 /*
@@ -967,6 +983,7 @@ void G_ShutdownGame( int restart )
 	G_UnregisterCommands();
 
 	G_ShutdownMapRotations();
+	BG_UnloadAllConfigs();
 
 	level.restarted = qfalse;
 	level.surrenderTeam = TEAM_NONE;
@@ -1341,7 +1358,7 @@ void G_CountSpawns( void )
 	level.numAlienSpawns = 0;
 	level.numHumanSpawns = 0;
 
-	for ( i = 1, ent = g_entities + i; i < level.num_entities; i++, ent++ )
+	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 	{
 		if ( !ent->inuse || ent->s.eType != ET_BUILDABLE || ent->health <= 0 )
 		{
@@ -1625,7 +1642,7 @@ void G_CalculateStages( void )
 	{
 		while ( alienTriggerStage < MIN( g_alienStage.integer, S3 ) )
 		{
-			G_Checktrigger_stages( TEAM_ALIENS, ++alienTriggerStage );
+			G_notify_sensor_stage( TEAM_ALIENS, ++alienTriggerStage );
 		}
 
 		if ( g_alienStage.integer == S2 )
@@ -1644,7 +1661,7 @@ void G_CalculateStages( void )
 	{
 		while ( humanTriggerStage < MIN( g_humanStage.integer, S3 ) )
 		{
-			G_Checktrigger_stages( TEAM_HUMANS, ++humanTriggerStage );
+			G_notify_sensor_stage( TEAM_HUMANS, ++humanTriggerStage );
 		}
 
 		if ( g_humanStage.integer == S2 )
@@ -1929,7 +1946,7 @@ void FindIntermissionPoint( void )
 	vec3_t    dir;
 
 	// find the intermission spot
-	ent = G_Find( NULL, FOFS( classname ), "info_player_intermission" );
+	ent = G_PickRandomEntityOfClass( S_POS_PLAYER_INTERMISSION );
 
 	if ( !ent )
 	{
@@ -1942,9 +1959,9 @@ void FindIntermissionPoint( void )
 		VectorCopy( ent->s.angles, level.intermission_angle );
 
 		// if it has a target, look towards it
-		if ( ent->target )
+		if ( ent->targetCount  )
 		{
-			target = G_PickTarget( ent->target );
+			target = G_PickRandomTargetFor( ent );
 
 			if ( target )
 			{
@@ -2306,22 +2323,6 @@ void LogExit( const char *string )
 		             cl->pers.netname );
 	}
 
-	for ( i = 1, ent = g_entities + i; i < level.num_entities; i++, ent++ )
-	{
-		if ( !ent->inuse )
-		{
-			continue;
-		}
-
-		if ( !Q_stricmp( ent->classname, "trigger_win" ) )
-		{
-			if ( level.lastWin == ent->stageTeam )
-			{
-				ent->use( ent, ent, ent );
-			}
-		}
-	}
-
 	G_SendGameStat( level.lastWin );
 }
 
@@ -2484,6 +2485,7 @@ void CheckExitRules( void )
 			level.lastWin = TEAM_NONE;
 			trap_SendServerCommand( -1, "print_tr \"" N_("Timelimit hit\n") "\"" );
 			trap_SetConfigstring( CS_WINNER, "Stalemate" );
+			G_notify_sensor_end( TEAM_NONE );
 			LogExit( "Timelimit hit." );
 			G_MapLog_Result( 't' );
 			return;
@@ -2502,8 +2504,8 @@ void CheckExitRules( void )
 		}
 	}
 
-	if ( level.uncondHumanWin ||
-	     ( !level.uncondAlienWin &&
+	if ( level.unconditionalWin == TEAM_HUMANS ||
+	     ( level.unconditionalWin != TEAM_ALIENS &&
 	       ( level.time > level.startTime + 1000 ) &&
 	       ( level.numAlienSpawns == 0 ) &&
 	       ( level.numLiveAlienClients == 0 ) ) )
@@ -2512,11 +2514,13 @@ void CheckExitRules( void )
 		level.lastWin = TEAM_HUMANS;
 		trap_SendServerCommand( -1, "print_tr \"" N_("Humans win\n") "\"" );
 		trap_SetConfigstring( CS_WINNER, "Humans Win" );
+		G_notify_sensor_end( TEAM_HUMANS );
 		LogExit( "Humans win." );
 		G_MapLog_Result( 'h' );
 	}
-	else if ( level.uncondAlienWin ||
-	          ( ( level.time > level.startTime + 1000 ) &&
+	else if ( level.unconditionalWin == TEAM_ALIENS ||
+	          ( level.unconditionalWin != TEAM_HUMANS &&
+	            ( level.time > level.startTime + 1000 ) &&
 	            ( level.numHumanSpawns == 0 ) &&
 	            ( level.numLiveHumanClients == 0 ) ) )
 	{
@@ -2524,6 +2528,7 @@ void CheckExitRules( void )
 		level.lastWin = TEAM_ALIENS;
 		trap_SendServerCommand( -1, "print_tr \"" N_("Aliens win\n") "\"" );
 		trap_SetConfigstring( CS_WINNER, "Aliens Win" );
+		G_notify_sensor_end( TEAM_ALIENS );
 		LogExit( "Aliens win." );
 		G_MapLog_Result( 'a' );
 	}

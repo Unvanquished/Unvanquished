@@ -149,6 +149,12 @@ void BG_Free( void *ptr )
 	char          *freeend;
 	int           *freeptr;
 
+	// Short-circuit NULL pointers (free() semantics)
+	if ( !ptr )
+	{
+		return;
+	}
+
 	freeptr = ptr;
 	freeptr--;
 

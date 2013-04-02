@@ -35,6 +35,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <unistd.h>
 #endif
 
+#include "../../../include/global.h"
+
 #define	BASEDIRNAME	"quake"		// assumed to have a 2 or 3 following
 #define PATHSEPARATOR   '/'
 
@@ -114,7 +116,7 @@ Error
 For abnormal program terminations in windowed apps
 =================
 */
-void Error( const char *error, ... )
+void NORETURN Error( const char *error, ... )
 {
 	va_list argptr;
 	char	text[1024];
@@ -141,7 +143,7 @@ Error
 For abnormal program terminations in console apps
 =================
 */
-void Error( const char *error, ...)
+void NORETURN Error( const char *error, ...)
 {
 	va_list argptr;
 

@@ -17,6 +17,8 @@ static char rcsid[] = "Id: dummy rcsid";
 #include <io.h>
 #endif
 
+#include "../../../include/global.h"
+
 #ifndef TEMPDIR
 #define TEMPDIR "/tmp"
 #endif
@@ -612,7 +614,7 @@ static void initinputs(void) {
 }
 
 /* interrupt - catch interrupt signals */
-static void interrupt(int n) {
+static NORETURN void interrupt(int n) {
 	rm(rmlist);
 	exit(n = 100);
 }

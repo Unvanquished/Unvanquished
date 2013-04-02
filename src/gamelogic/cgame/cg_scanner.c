@@ -60,7 +60,9 @@ static void CG_UpdateRadarVisibility( void ) {
 			float fadeOut = BG_Class( (cent->currentState.misc >> 8) & 0xff )->radarFadeOut;
 			clientInfo_t *ci = &cgs.clientinfo[ cent->currentState.clientNum ];
 
-			if ( ci->nonsegmented ) {
+			if ( !(cent->currentState.eFlags & EF_POWER_AVAILABLE ) ) {
+				cent->radarVisibility = 1.0f;
+			} else if ( ci->nonsegmented ) {
 				switch( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT) {
 				case NSPA_STAND:
 				case NSPA_DEATH1:

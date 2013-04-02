@@ -215,7 +215,7 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
         {
             PARSE(text, token);
 
-            ba->humanName = strdup( token );
+            ba->humanName = BG_strdup( token );
 
             defined |= HUMANNAME;
         }
@@ -223,7 +223,7 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
         {
             PARSE(text, token);
 
-            ba->info = strdup( token );
+            ba->info = BG_strdup( token );
 
             defined |= DESCRIPTION;
         }
@@ -658,7 +658,7 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
             }
             else
             {
-                ca->info = strdup(token);
+                ca->info = BG_strdup(token);
             }
 
             defined |= INFO;
@@ -673,7 +673,7 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
             }
             else
             {
-                ca->fovCvar = strdup(token);
+                ca->fovCvar = BG_strdup(token);
             }
 
             defined |= FOVCVAR;
@@ -1099,7 +1099,7 @@ void BG_ParseClassModelFile( const char *filename, classModelConfig_t *cc )
         {
             PARSE(text, token);
 
-            cc->humanName = strdup( token );
+            cc->humanName = BG_strdup( token );
 
             defined |= NAME;
         }
@@ -1186,7 +1186,7 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
         {
             PARSE(text, token);
 
-            wa->humanName = strdup( token );
+            wa->humanName = BG_strdup( token );
 
             defined |= NAME;
         }
@@ -1200,7 +1200,7 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
             }
             else
             {
-                wa->info = strdup(token);
+                wa->info = BG_strdup(token);
             }
 
             defined |= INFO;
@@ -1376,7 +1376,7 @@ void BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua
         {
             PARSE(text, token);
 
-            ua->humanName = strdup( token );
+            ua->humanName = BG_strdup( token );
 
             defined |= NAME;
         }
@@ -1390,7 +1390,7 @@ void BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua
             }
             else
             {
-                ua->info = strdup(token);
+                ua->info = BG_strdup(token);
             }
 
             defined |= INFO;
@@ -1417,7 +1417,7 @@ void BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua
             }
             else
             {
-                ua->icon = strdup(token);
+                ua->icon = BG_strdup(token);
             }
 
             defined |= ICON;
