@@ -1544,7 +1544,7 @@ void G_CalculateStages( void )
 	{
 		while ( alienTriggerStage < MIN( g_alienStage.integer, S3 ) )
 		{
-			G_notify_sensor_stage( TEAM_ALIENS, ++alienTriggerStage );
+			G_notify_sensor_stage( TEAM_ALIENS, alienTriggerStage, ++alienTriggerStage );
 		}
 
 		if ( g_alienStage.integer == S2 )
@@ -1563,7 +1563,7 @@ void G_CalculateStages( void )
 	{
 		while ( humanTriggerStage < MIN( g_humanStage.integer, S3 ) )
 		{
-			G_notify_sensor_stage( TEAM_HUMANS, ++humanTriggerStage );
+			G_notify_sensor_stage( TEAM_HUMANS, humanTriggerStage, ++humanTriggerStage );
 		}
 
 		if ( g_humanStage.integer == S2 )

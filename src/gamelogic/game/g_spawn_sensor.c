@@ -235,16 +235,19 @@ G_notify_sensor_stage
 Called when stages change
 ===============
 */
-void G_notify_sensor_stage( team_t team, stage_t stage )
+void G_notify_sensor_stage( team_t team, stage_t previousStage, stage_t newStage )
 {
 	gentity_t *entities = NULL;
 
 	if( g_debugEntities.integer >= 2 )
-		G_Printf( S_DEBUG "Notification of team %i staging up to %i (0-2).\n", team, stage );
+		G_Printf( S_DEBUG "Notification of team %i changing stage from %i to %i (0-2).\n", team, previousStage, newStage );
+
+	if(newStage <= previousStage) //not supporting stage down yet, also no need to fire if stage didn't change at all
+		return;
 
 	while ((entities = G_IterateEntitiesOfClass(entities, S_SENSOR_STAGE)) != NULL )
 	{
-		if (((!entities->conditions.stage || stage == entities->conditions.stage)
+		if (((!entities->conditions.stage || newStage == entities->conditions.stage)
 				&& (!entities->conditions.team || team == entities->conditions.team))
 				== !entities->conditions.negated)
 		{
