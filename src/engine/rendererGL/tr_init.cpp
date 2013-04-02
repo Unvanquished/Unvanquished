@@ -2332,10 +2332,6 @@ extern "C" {
 
 		re.RegisterSkin = RE_RegisterSkin;
 		re.RegisterShader = RE_RegisterShader;
-		re.RegisterShaderNoMip = RE_RegisterShaderNoMip;
-#if !defined( COMPAT_ET )
-		re.RegisterShaderLightAttenuation = RE_RegisterShaderLightAttenuation;
-#endif
 
 		re.LoadWorld = RE_LoadWorldMap;
 		re.SetWorldVisData = RE_SetWorldVisData;

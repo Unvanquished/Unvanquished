@@ -722,17 +722,23 @@ set( GAMEGPP_BASE
   ${GPP_DIR}/game/g_client.c
   ${GPP_DIR}/game/g_cmds.c
   ${GPP_DIR}/game/g_combat.c
+  ${GPP_DIR}/game/g_entities.c
   ${GPP_DIR}/game/g_physics.c
   ${GPP_DIR}/game/g_buildable.c
-  ${GPP_DIR}/game/g_misc.c
   ${GPP_DIR}/game/g_missile.c
-  ${GPP_DIR}/game/g_mover.c
   ${GPP_DIR}/game/g_session.c
+  ${GPP_DIR}/game/g_spawn_ctrl.c
+  ${GPP_DIR}/game/g_spawn_env_afx.c
+  ${GPP_DIR}/game/g_spawn_environment.c
+  ${GPP_DIR}/game/g_spawn_game.c
+  ${GPP_DIR}/game/g_spawn_mover.c
+  ${GPP_DIR}/game/g_spawn_position.c
+  ${GPP_DIR}/game/g_spawn_sensor.c
+  ${GPP_DIR}/game/g_spawn_shared.c
+  ${GPP_DIR}/game/g_spawn_target.c
   ${GPP_DIR}/game/g_spawn.c
   ${GPP_DIR}/game/g_svcmds.c
-  ${GPP_DIR}/game/g_target.c
   ${GPP_DIR}/game/g_team.c
-  ${GPP_DIR}/game/g_trigger.c
   ${GPP_DIR}/game/g_utils.c
   ${GPP_DIR}/game/g_maprotation.c
   ${GPP_DIR}/game/g_weapon.c

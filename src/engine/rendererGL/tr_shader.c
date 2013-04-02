@@ -107,7 +107,7 @@ void R_RemapShader( const char *shaderName, const char *newShaderName, const cha
 
 	if ( sh == NULL || sh == tr.defaultShader )
 	{
-		h = RE_RegisterShader( shaderName );
+		h = RE_RegisterShader( shaderName, RSF_DEFAULT );
 		sh = R_GetShaderByHandle( h );
 	}
 
@@ -121,7 +121,7 @@ void R_RemapShader( const char *shaderName, const char *newShaderName, const cha
 
 	if ( sh2 == NULL || sh2 == tr.defaultShader )
 	{
-		h = RE_RegisterShader( newShaderName );
+		h = RE_RegisterShader( newShaderName, RSF_DEFAULT );
 		sh2 = R_GetShaderByHandle( h );
 	}
 
@@ -6138,7 +6138,7 @@ This should really only be used for explicit shaders, because there is no
 way to ask for different implicit lighting modes (vertex, lightmap, etc)
 ====================
 */
-qhandle_t RE_RegisterShader( const char *name )
+qhandle_t RE_RegisterShader( const char *name, RegisterShaderFlags_t flags )
 {
 	shader_t *sh;
 
@@ -6148,71 +6148,9 @@ qhandle_t RE_RegisterShader( const char *name )
 		return 0;
 	}
 
-	sh = R_FindShader( name, SHADER_2D, qtrue );
-
-	// we want to return 0 if the shader failed to
-	// load for some reason, but R_FindShader should
-	// still keep a name allocated for it, so if
-	// something calls RE_RegisterShader again with
-	// the same name, we don't try looking for it again
-	if ( sh->defaultShader )
-	{
-		return 0;
-	}
-
-	return sh->index;
-}
-
-/*
-====================
-RE_RegisterShaderNoMip
-
-For menu graphics that should never be picmiped
-====================
-*/
-qhandle_t RE_RegisterShaderNoMip( const char *name )
-{
-	shader_t *sh;
-
-	if ( strlen( name ) >= MAX_QPATH )
-	{
-		Com_Printf( "Shader name exceeds MAX_QPATH\n" );
-		return 0;
-	}
-
-	sh = R_FindShader( name, SHADER_2D, qfalse );
-
-	// we want to return 0 if the shader failed to
-	// load for some reason, but R_FindShader should
-	// still keep a name allocated for it, so if
-	// something calls RE_RegisterShader again with
-	// the same name, we don't try looking for it again
-	if ( sh->defaultShader )
-	{
-		return 0;
-	}
-
-	return sh->index;
-}
-
-/*
-====================
-RE_RegisterShaderLightAttenuation
-
-For different Doom3 style light effects
-====================
-*/
-qhandle_t RE_RegisterShaderLightAttenuation( const char *name )
-{
-	shader_t *sh;
-
-	if ( strlen( name ) >= MAX_QPATH )
-	{
-		Com_Printf( "Shader name exceeds MAX_QPATH\n" );
-		return 0;
-	}
-
-	sh = R_FindShader( name, SHADER_LIGHT, qfalse );
+	sh = R_FindShader( name,
+			   (flags & RSF_LIGHT_ATTENUATION) ? SHADER_LIGHT : SHADER_2D,
+			   (flags & RSF_NOMIP) ? qfalse : qtrue );
 
 	// we want to return 0 if the shader failed to
 	// load for some reason, but R_FindShader should

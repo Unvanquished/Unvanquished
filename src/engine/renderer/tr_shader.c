@@ -5329,7 +5329,7 @@ This should really only be used for explicit shaders, because there is no
 way to ask for different implicit lighting modes (vertex, lightmap, etc)
 ====================
 */
-qhandle_t RE_RegisterShader( const char *name )
+qhandle_t RE_RegisterShader( const char *name, RegisterShaderFlags_t flags )
 {
 	shader_t *sh;
 
@@ -5339,39 +5339,8 @@ qhandle_t RE_RegisterShader( const char *name )
 		return 0;
 	}
 
-	sh = R_FindShader( name, LIGHTMAP_2D, qtrue );
-
-	// we want to return 0 if the shader failed to
-	// load for some reason, but R_FindShader should
-	// still keep a name allocated for it, so if
-	// something calls RE_RegisterShader again with
-	// the same name, we don't try looking for it again
-	if ( sh->defaultShader )
-	{
-		return 0;
-	}
-
-	return sh->index;
-}
-
-/*
-====================
-RE_RegisterShaderNoMip
-
-For menu graphics that should never be picmiped
-====================
-*/
-qhandle_t RE_RegisterShaderNoMip( const char *name )
-{
-	shader_t *sh;
-
-	if ( strlen( name ) >= MAX_QPATH )
-	{
-		Com_Printf( "Shader name exceeds MAX_QPATH\n" );
-		return 0;
-	}
-
-	sh = R_FindShader( name, LIGHTMAP_2D, qfalse );
+	sh = R_FindShader( name, LIGHTMAP_2D,
+			   (flags & RSF_NOMIP) ? qfalse : qtrue );
 
 	// we want to return 0 if the shader failed to
 	// load for some reason, but R_FindShader should

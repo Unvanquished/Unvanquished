@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifdef Q3_VM
 
 #include "../../engine/qcommon/q_shared.h"
+#include "bg_public.h"
 
 /*-
  * Copyright (c) 1992, 1993
@@ -353,25 +354,6 @@ char *strstr( const char *string, const char *strCharSet )
 	}
 
 	return ( char * ) 0;
-}
-
-void *BG_Alloc( int size );
-char *strdup( const char *string )
-{
-    size_t length;
-    char *copy;
-
-    length = strlen(string) + 1;
-    copy = (char *)BG_Alloc(length);
-
-    if(copy == NULL)
-    {
-        return NULL;
-    }
-    else
-    {
-        return memcpy(copy, string, length);
-    }
 }
 
 int tolower( int c )

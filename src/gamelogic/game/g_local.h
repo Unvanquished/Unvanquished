@@ -1,27 +1,39 @@
 /*
 ===========================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2000-2009 Darklegion Development
 
-This file is part of Daemon.
+Daemon GPL Source Code
+Copyright (C) 2012 Unvanquished Developers
 
-Daemon is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License,
-or (at your option) any later version.
+This file is part of the Daemon GPL Source Code (Daemon Source Code).
 
-Daemon is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+Daemon Source Code is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Daemon Source Code is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Daemon; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
+
+In addition, the Daemon Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following the
+terms and conditions of the GNU General Public License which accompanied the Daemon
+Source Code.  If not, please request a copy in writing from id Software at the address
+below.
+
+If you have questions concerning this license or the applicable additional terms, you
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
+Maryland 20850 USA.
+
 ===========================================================================
 */
 
-// g_local.h -- local definitions for game module
+#ifndef G_LOCAL_H_
+#define G_LOCAL_H_
 
 #include "../../engine/qcommon/q_shared.h"
 #include "bg_public.h"
@@ -31,19 +43,14 @@ typedef struct gentity_s gentity_t;
 typedef struct gclient_s gclient_t;
 
 #include "g_admin.h"
+#include "g_entities.h"
 
+// g_local.h -- local definitions for game module
 //==================================================================
 
 #define INTERMISSION_DELAY_TIME    1000
 
-// gentity->flags
-#define FL_GODMODE                 0x00000010
-#define FL_NOTARGET                0x00000020
-#define FL_TEAMSLAVE               0x00000400 // not the first on the team
-#define FL_NO_KNOCKBACK            0x00000800
-#define FL_NO_BOTS                 0x00002000 // spawn point not for bot use
-#define FL_NO_HUMANS               0x00004000 // spawn point just for bots
-#define FL_FORCE_GESTURE           0x00008000
+#define S_BUILTIN_LAYOUT           "*BUILTIN*"
 
 #define N_( text )             text
 // FIXME: CLIENT PLURAL
@@ -61,26 +68,67 @@ typedef struct gclient_s gclient_t;
 #define DECON_OPTION_PROTECT       32
 #define DECON_OPTION_CHECK(option) ( g_markDeconstruct.integer & DECON_OPTION_##option )
 
-// movers are things like doors, plats, buttons, etc
-typedef enum
+typedef struct
 {
-  MOVER_POS1,
-  MOVER_POS2,
-  MOVER_1TO2,
-  MOVER_2TO1,
+	float time;
+	float variance;
+} variatingTime_t;
 
-  ROTATOR_POS1,
-  ROTATOR_POS2,
-  ROTATOR_1TO2,
-  ROTATOR_2TO1,
+/**
+ * in the context of a target, this describes the conditions to create or to act within
+ * while as part of trigger or most other types, it will be used as filtering condition that needs to be fulfilled to trigger, or to act directly
+ */
+typedef struct
+{
+	team_t   team;
+	stage_t  stage;
 
-  MODEL_POS1,
-  MODEL_POS2,
-  MODEL_1TO2,
-  MODEL_2TO1
-} moverState_t;
+	class_t     classes[ PCL_NUM_CLASSES ];
+	weapon_t    weapons[ WP_NUM_WEAPONS ];
+	upgrade_t   upgrades[ UP_NUM_UPGRADES ];
+	buildable_t buildables[ BA_NUM_BUILDABLES ];
 
-//============================================================================
+	qboolean negated;
+} gentityConditions_t;
+
+/*
+ * struct containing the configuration data of a gentity opposed to its state data
+ */
+typedef struct
+{
+	/* amount of a context depended size for this entity */
+	int amount;
+
+	int health;
+	float speed;
+	int damage;
+
+	/**
+	 * how long dekay firing an event
+	 */
+	variatingTime_t delay;
+	/**
+	 * the duration of one cycle in a repeating event
+	 */
+	variatingTime_t period;
+	/**
+	 * how long to wait in a state after a statechange
+	 */
+	variatingTime_t wait;
+
+	// trigger "range"
+	int triggerRange;
+} gentityConfig_t;
+
+typedef struct
+{
+	int instanceCounter;
+	/*
+	 * default config
+	 * entities might fallback to their classwide config if their individual is not set
+	 */
+	gentityConfig_t config;
+} entityClass_t;
 
 struct gentity_s
 {
@@ -93,23 +141,97 @@ struct gentity_s
 
 	struct gclient_s *client; // NULL if not a client
 
-	qboolean         inuse;
+	qboolean     inuse;
+	qboolean     neverFree; // if true, FreeEntity will only unlink
+	int          freetime; // level.time when the object was freed
+	int          eventTime; // events will be cleared EVENT_VALID_MSEC after set
+	qboolean     freeAfterEvent;
+	qboolean     unlinkAfterEvent;
 
-	const char       *classname; // set in QuakeEd
-	int              spawnflags; // set in QuakeEd
+	int          flags; // FL_* variables
 
-	qboolean         neverFree; // if true, FreeEntity will only unlink
-	// bodyque uses this
+	/*
+	 * the class of the entity
+	 * this is shared among all instances of this type
+	 */
+	entityClass_t *eclass;
 
-	int      flags; // FL_* variables
+	const char   *classname;
+	int          spawnflags;
+
+	//entity creation time, i.e. when a building was build or a missile was fired (for diminishing missile damage)
+	int          creationTime;
+
+	char         *names[ MAX_ENTITY_ALIASES + 1 ];
+	/*
+	 * is the entity considered active?
+	 * as in 'currently doing something'
+	 * e.g. used for buildables (e.g. medi-stations or hives can be in an active state or being inactive)
+	 */
+	qboolean     active;
+	int          activeAtTime; /*< delay being really active until this time, e.g for spinup for norfenturrets */
+
+	/**
+	 * is the entity able to become active?
+	 * e.g. used for buildables to indicate being useable or a stationary weapon being "live"
+	 * or for sensors to indicate being able to sense other entities and fire events
+	 *
+	 * as a resasonable assumption we default to entities being enabled directly after they are spawned,
+	 * since most of the time we want them to be
+	 */
+	qboolean     enabled;
+
+	/**
+	 * for entities taking a longer time to spawn,
+	 * this boolean indicates when this spawn process was finished
+	 * this can e.g. be indicated by an animation
+	 */
+	qboolean     spawned;
+	gentity_t    *parent; // the gentity that spawned this one
+	/**
+	 * is the buildable getting support by reactor or overmind?
+	 * this is tightly coupled with enabled
+	 * but buildables might be disabled indpendently of rc/om support
+	 * unpowered buildables are expected to be disabled though
+	 * other entities might also consider the powergrid for behavior changes
+	 */
+	qboolean     powered;
+	gentity_t    *powerSource;
+
+	/*
+	 * targets to aim at
+	 */
+	int          targetCount;
+	char         *targets[ MAX_ENTITY_TARGETS + 1 ];
+	gentity_t    *target;  /*< the currently selected target to aim at/for, is the reverse to "tracker" */
+	gentity_t    *tracker; /*< entity that currently targets, aims for or tracks this entity, is the reverse to "target" */
+	/* path chaining, not unlike the target/tracker relationship */
+	gentity_t    *nextPathSegment;
+	gentity_t    *prevPathSegment;
+
+	/*
+	 * gentities to call on certain events
+	 */
+	int          callTargetCount;
+	gentityCallDefinition_t calltargets[ MAX_ENTITY_CALLTARGETS + 1 ];
+	gentity_t    *activator;
+
+	/*
+	 * configuration, as supplied by the spawn string, external spawn scripts etc.
+	 * as opposed to state data as placed everywhere else
+	 */
+	gentityConfig_t config;
+
+	//conditions as trigger-filter or target-goal
+	gentityConditions_t conditions;
+
+	// entity groups
+	char         *groupName;
+	gentity_t    *groupChain; // next entity in group
+	gentity_t    *groupMaster; // master of the group
 
 	char     *model;
 	char     *model2;
-	int      freetime; // level.time when the object was freed
-
-	int      eventTime; // events will be cleared EVENT_VALID_MSEC after set
-	qboolean freeAfterEvent;
-	qboolean unlinkAfterEvent;
 
 	qboolean physicsObject; // if true, it can be pushed by movers and fall off edges
 	// all game items are physicsObjects,
@@ -118,35 +240,40 @@ struct gentity_s
 	// when moving.  items and corpses do not collide against
 	// players, for instance
 
+	//sound index, used by movers as well as target_speaker e.g. for looping sounds
+	int          soundIndex;
+
 	// movers
 	moverState_t moverState;
-	int          soundPos1;
-	int          sound1to2;
-	int          sound2to1;
-	int          soundPos2;
-	int          soundLoop;
-	gentity_t    *parent;
-	gentity_t    *nextTrain;
-	gentity_t    *prevTrain;
-	vec3_t       pos1, pos2;
+	int          soundPos1, soundPos2;
+	int          sound1to2, sound2to1;
+
+	vec3_t       restingPosition, activatedPosition;
 	float        rotatorAngle;
 	gentity_t    *clipBrush; // clipping brush for model doors
 
 	char         *message;
 
-	int          timestamp; // body queue sinking, etc
-	int          startTime; // currently for the diminishing missile damage
-
-	char         *target;
-	char         *targetname;
-	char         *team;
 	char         *targetShaderName;
 	char         *targetShaderNewName;
-	gentity_t    *target_ent;
+
+	int          lastHealth;
+	int          health;
 
 	float        speed;
-	float        lastSpeed; // used by trains that have been restarted
-	vec3_t       movedir;
+
+	/* state of the amount of a context depended size for this entity
+	 * example: current set gravity for a gravity afx-entity
+	 */
+	int          amount;
+
+	/*
+	 * do not abuse this variable (again) for anything but actual representing a count
+	 *
+	 * add your own number with correct semantic information to gentity_t or
+	 * if you really have to use customNumber
+	 */
+	int count;
 
 	// acceleration evaluation
 	qboolean  evaluateAcceleration;
@@ -155,61 +282,65 @@ struct gentity_s
 	vec3_t    oldAccel;
 	vec3_t    jerk;
 
+	vec3_t       movedir;
+
+
+	/*
+	 * handle the notification about an event or undertaken action, so each entity can decide to undertake special actions as result
+	 */
+	void ( *notifyHandler )( gentity_t *self, gentityCall_t *call );
+
+	/**
+	 * the entry function for calls to the entity;
+	 * especially previous chain members will indirectly call this when firing against the given entity
+	 * @returns qtrue if the call was handled by the given function and doesnt need default handling anymore or qfalse otherwise
+	 */
+	qboolean ( *handleCall )( gentity_t *self, gentityCall_t *call );
+
 	int       nextthink;
 	void ( *think )( gentity_t *self );
+	void ( *reset )( gentity_t *self );
 	void ( *reached )( gentity_t *self );       // movers call this when hitting endpoint
 	void ( *blocked )( gentity_t *self, gentity_t *other );
 	void ( *touch )( gentity_t *self, gentity_t *other, trace_t *trace );
 	void ( *use )( gentity_t *self, gentity_t *other, gentity_t *activator );
+	void ( *act )( gentity_t *self, gentity_t *caller, gentity_t *activator );
 	void ( *pain )( gentity_t *self, gentity_t *attacker, int damage );
 	void ( *die )( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod );
 
-	int       pain_debounce_time;
-	int       last_move_time;
-
-	int       health;
-	int       lastHealth; // currently only used for overmind
-
 	qboolean  takedamage;
 
-	int       damage;
 	int       flightSplashDamage; // quad will increase this without increasing radius
 	int       splashDamage; // quad will increase this without increasing radius
 	int       splashRadius;
 	int       methodOfDeath;
 	int       splashMethodOfDeath;
 
-	int       count;
-
-	gentity_t *chain;
-	gentity_t *enemy;
-	gentity_t *activator;
-	gentity_t *teamchain; // next entity in team
-	gentity_t *teammaster; // master of the team
-
 	int       watertype;
 	int       waterlevel;
 
-	int       noise_index;
+	/*
+	 * variables that got randomly semantically abused by everyone
+	 * so now we rather name them to indicate the fact, that we cannot imply any meaning by the name
+	 *
+	 * please try not to use them for new things if you can avoid it
+	 * but prefer them over semantically abusing other variables if you are into that sort of thing
+	 */
+	int       damage;
+	int       customNumber;
 
-	// timing variables
-	float       wait;
-	float       random;
-
-	team_t      stageTeam;
-	stage_t     stageStage;
 
 	team_t      buildableTeam; // buildable item team
-	gentity_t   *parentNode; // for creep and defence/spawn dependencies
-	qboolean    active; // for power repeater, but could be useful elsewhere
-	qboolean    powered; // for human buildables
 	struct namelog_s *builtBy; // clientNum of person that built this
 	int         dcc; // number of controlling dccs
-	qboolean    spawned; // whether or not this buildable has finished spawning
+
+	int         pain_debounce_time;
+	int         last_move_time;
+	int         timestamp; // body queue sinking, etc
 	int         shrunkTime; // time when a barricade shrunk or zero
-	int         buildTime; // when this buildable was built
 	int         animTime; // last animation change
 	int         time1000; // timer evaluated every second
+
 	qboolean    deconstruct; // deconstruct if no BP left
 	int         deconstructTime; // time at which structure marked
 	int         overmindAttackTimer;
@@ -223,20 +354,11 @@ struct gentity_s
 	int         credits[ MAX_CLIENTS ]; // human credits for each client
 	int         killedBy; // clientNum of killer
 
-	gentity_t   *targeted; // true if the player is currently a valid target of a turret
 	vec3_t      turretAim; // aim vector for turrets
-	int         turretSpinupTime; // spinup delay for norfenturrets
 
 	vec4_t      animation; // animated map objects
 
 	qboolean    nonSegModel; // this entity uses a nonsegmented player model
-
-	buildable_t bTriggers[ BA_NUM_BUILDABLES ]; // which buildables are triggers
-	class_t     cTriggers[ PCL_NUM_CLASSES ]; // which classes are triggers
-	weapon_t    wTriggers[ WP_NUM_WEAPONS ]; // which weapons are triggers
-	upgrade_t   uTriggers[ UP_NUM_UPGRADES ]; // which upgrades are triggers
-
-	int         triggerGravity; // gravity for this trigger
 
 	int         suicideTime; // when the client will suicide
 
@@ -660,8 +782,8 @@ typedef struct
 	int              humanStage2Time;
 	int              humanStage3Time;
 
-	qboolean         uncondAlienWin;
-	qboolean         uncondHumanWin;
+	team_t           unconditionalWin;
+
 	qboolean         alienTeamLocked;
 	qboolean         humanTeamLocked;
 	int              pausedTime;
@@ -703,18 +825,6 @@ typedef struct
 	int        cmdFlags;
 	void      ( *cmdHandler )( gentity_t *ent );
 } commands_t;
-
-//
-// g_spawn.c
-//
-qboolean G_SpawnString( const char *key, const char *defaultString, char **out );
-
-// spawn string returns a temporary reference, you must CopyString() if you want to keep it
-qboolean G_SpawnFloat( const char *key, const char *defaultString, float *out );
-qboolean G_SpawnInt( const char *key, const char *defaultString, int *out );
-qboolean G_SpawnVector( const char *key, const char *defaultString, float *out );
-void     G_SpawnEntitiesFromString( void );
-char     *G_NewString( const char *string );
 
 //
 // g_cmds.c
@@ -835,29 +945,20 @@ int        G_ShaderIndex( const char *name );
 int        G_ModelIndex( const char *name );
 int        G_SoundIndex( const char *name );
 void       G_KillBox( gentity_t *ent );
-gentity_t  *G_Find( gentity_t *from, int fieldofs, const char *match );
-gentity_t  *G_PickTarget( const char *targetname );
-void       G_UseTargets( gentity_t *ent, gentity_t *activator );
-void       G_SetMovedir( vec3_t angles, vec3_t movedir );
+void       G_KillBrushModel( gentity_t *ent, gentity_t *activator );
+void       G_TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, float speed );
 
-void       G_InitGentity( gentity_t *e );
-gentity_t  *G_Spawn( void );
-gentity_t  *G_TempEntity( const vec3_t origin, int event );
 void       G_Sound( gentity_t *ent, int channel, int soundIndex );
-void       G_FreeEntity( gentity_t *e );
-qboolean   G_EntitiesFree( void );
 char       *G_CopyString( const char *str );
 
 void       G_TouchTriggers( gentity_t *ent );
 
 char       *vtos( const vec3_t v );
-
 float      vectoyaw( const vec3_t vec );
 
 void       G_AddPredictableEvent( gentity_t *ent, int event, int eventParm );
 void       G_AddEvent( gentity_t *ent, int event, int eventParm );
 void       G_BroadcastEvent( int event, int eventParm );
-void       G_SetOrigin( gentity_t *ent, const vec3_t origin );
 void       AddRemap( const char *oldShader, const char *newShader, float timeOffset );
 const char *BuildShaderStateConfig( void );
 
@@ -867,8 +968,6 @@ void       G_TriggerMenu( int clientNum, dynMenu_t menu );
 void       G_TriggerMenuArgs( int clientNum, dynMenu_t menu, int arg );
 void       G_CloseMenus( int clientNum );
 
-qboolean   G_Visible( gentity_t *ent1, gentity_t *ent2, int contents );
-gentity_t  *G_ClosestEnt( vec3_t origin, gentity_t **entities, int numEntities );
 
 //
 // g_combat.c
@@ -910,23 +1009,6 @@ gentity_t *fire_bounceBall( gentity_t *self, vec3_t start, vec3_t dir );
 gentity_t *fire_hive( gentity_t *self, vec3_t start, vec3_t dir );
 gentity_t *launch_grenade( gentity_t *self, vec3_t start, vec3_t dir );
 
-//
-// g_mover.c
-//
-void G_RunMover( gentity_t *ent );
-void Touch_DoorTrigger( gentity_t *ent, gentity_t *other, trace_t *trace );
-void manualTriggerSpectator( gentity_t *trigger, gentity_t *player );
-
-//
-// g_trigger.c
-//
-void trigger_teleporter_touch( gentity_t *self, gentity_t *other, trace_t *trace );
-void G_Checktrigger_stages( team_t team, stage_t stage );
-
-//
-// g_misc.c
-//
-void TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, float speed );
 
 //
 // g_weapon.c
@@ -1297,3 +1379,7 @@ void             trap_GenFingerprint( const char *pubkey, int size, char *buffer
 void             trap_GetPlayerPubkey( int clientNum, char *pubkey, int size );
 
 void             trap_GetTimeString( char *buffer, int size, const char *format, const qtime_t *tm );
+
+//==================================================================
+#endif /* G_LOCAL_H_ */
+

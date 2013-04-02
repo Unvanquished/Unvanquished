@@ -411,7 +411,12 @@ void  G_TouchTriggers( gentity_t *ent )
 			continue;
 		}
 
-		if ( !( hit->r.contents & CONTENTS_TRIGGER ) )
+		if ( !( hit->r.contents & CONTENTS_SENSOR ) )
+		{
+			continue;
+		}
+
+		if ( !hit->enabled )
 		{
 			continue;
 		}
@@ -419,10 +424,10 @@ void  G_TouchTriggers( gentity_t *ent )
 		// ignore most entities if a spectator
 		if ( ent->client->sess.spectatorState != SPECTATOR_NOT )
 		{
-			if ( hit->s.eType != ET_TELEPORT_TRIGGER &&
+			if ( hit->s.eType != ET_TELEPORTER &&
 			     // this is ugly but adding a new ET_? type will
 			     // most likely cause network incompatibilities
-			     hit->touch != Touch_DoorTrigger )
+			     hit->touch != door_trigger_touch )
 			{
 				//check for manually triggered doors
 				manualTriggerSpectator( hit, ent );
@@ -1114,7 +1119,7 @@ void SendPendingPredictableEvents( playerState_t *ps )
 		extEvent = ps->externalEvent;
 		ps->externalEvent = 0;
 		// create temporary entity for event
-		t = G_TempEntity( ps->origin, event );
+		t = G_NewTempEntity( ps->origin, event );
 		number = t->s.number;
 		BG_PlayerStateToEntityState( ps, &t->s, qtrue );
 		t->s.number = number;
@@ -2049,8 +2054,13 @@ void ClientThink_real( gentity_t *ent )
 
 		traceEnt = &g_entities[ trace.entityNum ];
 
-		if ( traceEnt && traceEnt->buildableTeam == client->ps.stats[ STAT_TEAM ] && traceEnt->use )
+		if ( traceEnt && traceEnt->use
+				&& ( !traceEnt->buildableTeam || traceEnt->buildableTeam == client->ps.stats[ STAT_TEAM ] )
+				&& ( !traceEnt->conditions.team || traceEnt->conditions.team == client->ps.stats[ STAT_TEAM ] ))
 		{
+			if ( g_debugEntities.integer > 1 )
+				G_Printf("Debug: Calling entity->use for player facing %s\n", etos(traceEnt));
+
 			traceEnt->use( traceEnt, ent, ent );  //other and activator are the same in this context
 		}
 		else
@@ -2066,8 +2076,11 @@ void ClientThink_real( gentity_t *ent )
 			{
 				traceEnt = &g_entities[ entityList[ i ] ];
 
-				if ( traceEnt && traceEnt->buildableTeam == client->ps.stats[ STAT_TEAM ] && traceEnt->use )
+				if ( traceEnt && traceEnt->use && traceEnt->buildableTeam == client->ps.stats[ STAT_TEAM ])
 				{
+					if ( g_debugEntities.integer > 1 )
+						G_Printf("Debug: Calling entity->use after an area-search for %s\n", etos(traceEnt));
+
 					traceEnt->use( traceEnt, ent, ent );  //other and activator are the same in this context
 					break;
 				}

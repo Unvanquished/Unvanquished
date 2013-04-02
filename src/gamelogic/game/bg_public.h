@@ -21,7 +21,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
+#ifndef BG_PUBLIC_H_
+#define BG_PUBLIC_H_
 // bg_public.h -- definitions shared by both the server game and client game modules
+//==================================================================
 
 //Unvanquished balance header
 #include "unvanquished.h"
@@ -90,7 +93,8 @@ enum
   CS_MODELS,
   CS_SOUNDS = CS_MODELS + MAX_MODELS,
   CS_SHADERS = CS_SOUNDS + MAX_SOUNDS,
-  CS_PARTICLE_SYSTEMS = CS_SHADERS + MAX_GAME_SHADERS,
+  CS_GRADING_TEXTURES = CS_SHADERS + MAX_GAME_SHADERS,
+  CS_PARTICLE_SYSTEMS = CS_GRADING_TEXTURES + MAX_GRADING_TEXTURES,
   CS_PLAYERS = CS_PARTICLE_SYSTEMS + MAX_GAME_PARTICLE_SYSTEMS,
   CS_LOCATIONS = CS_PLAYERS + MAX_CLIENTS,
 
@@ -926,9 +930,9 @@ typedef struct
 {
 	class_t  number;
 
-	char *name;
-	char *info;
-	char *fovCvar;
+	const char *name;
+	const char *info;
+	const char *fovCvar;
 
 	int      stages;
 
@@ -997,10 +1001,10 @@ typedef struct
 {
 	buildable_t number;
 
-	char  *name;
-	char  *humanName;
-	char  *info;
-	char  *entityName;
+	const char *name;
+	const char *humanName;
+	const char *info;
+	const char *entityName;
 
 	trType_t    traj;
 	float       bounce;
@@ -1146,12 +1150,10 @@ const buildableAttributes_t *BG_BuildableByEntityName( const char *name );
 const buildableAttributes_t *BG_Buildable( buildable_t buildable );
 qboolean                    BG_BuildableAllowedInStage( buildable_t buildable,
     stage_t stage );
-void                        BG_InitBuildableAttributes( void );
 
 buildableModelConfig_t      *BG_BuildableModelConfig( buildable_t buildable );
 void                        BG_BuildableBoundingBox( buildable_t buildable,
     vec3_t mins, vec3_t maxs );
-void                        BG_InitBuildableModelConfigs( void );
 
 const classAttributes_t     *BG_ClassByName( const char *name );
 
@@ -1171,20 +1173,18 @@ int                         BG_ClassCanEvolveFromTo( class_t fclass,
 
 qboolean                  BG_AlienCanEvolve( class_t pClass, int credits, int alienStage );
 
-void                      BG_InitClassAttributes( void );
-void                      BG_InitClassModelConfigs( void );
-
 const weaponAttributes_t  *BG_WeaponByName( const char *name );
 const weaponAttributes_t  *BG_Weapon( weapon_t weapon );
 qboolean                  BG_WeaponAllowedInStage( weapon_t weapon,
     stage_t stage );
-void                      BG_InitWeaponAttributes( void );
 
 const upgradeAttributes_t *BG_UpgradeByName( const char *name );
 const upgradeAttributes_t *BG_Upgrade( upgrade_t upgrade );
 qboolean                  BG_UpgradeAllowedInStage( upgrade_t upgrade,
     stage_t stage );
-void                      BG_InitUpgradeAttributes( void );
+
+void                      BG_InitAllConfigs( void );
+void                      BG_UnloadAllConfigs( void );
 
 // Parsers
 qboolean                  BG_ReadWholeFile( const char *filename, char *buffer, int size);
@@ -1313,5 +1313,9 @@ int cmdcmp( const void *a, const void *b );
 
 char *Quote( const char *str );
 char *Substring( const char *in, int start, int count );
+char *BG_strdup( const char *string );
 
 const char *Trans_GenderContext( gender_t gender );
+
+//==================================================================
+#endif /* BG_PUBLIC_H_ */

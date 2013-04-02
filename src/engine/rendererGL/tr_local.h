@@ -4539,9 +4539,7 @@ extern "C" {
 
 	====================================================================
 	*/
-	qhandle_t RE_RegisterShader( const char *name );
-	qhandle_t RE_RegisterShaderNoMip( const char *name );
-	qhandle_t RE_RegisterShaderLightAttenuation( const char *name );
+	qhandle_t RE_RegisterShader( const char *name, RegisterShaderFlags_t flags );
 	qhandle_t RE_RegisterShaderFromImage( const char *name, image_t *image, qboolean mipRawImage );
 	qboolean  RE_LoadDynamicShader( const char *shadername, const char *shadertext );
 

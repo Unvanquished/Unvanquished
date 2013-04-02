@@ -703,8 +703,8 @@ const char *Com_EntityTypeName(entityType_t entityType)
 	case ET_BEAM:             return "BEAM";
 	case ET_PORTAL:           return "PORTAL";
 	case ET_SPEAKER:          return "SPEAKER";
-	case ET_PUSH_TRIGGER:     return "PUSH_TRIGGER";
-	case ET_TELEPORT_TRIGGER: return "TELEPORT_TRIGGER";
+	case ET_PUSHER:           return "PUSHER";
+	case ET_TELEPORTER:       return "TELEPORTER";
 	case ET_INVISIBLE:        return "INVISIBLE";
 	case ET_GRAPPLE:          return "GRAPPLE";
 	case ET_CORPSE:           return "CORPSE";

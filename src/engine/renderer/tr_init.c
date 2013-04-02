@@ -1563,10 +1563,6 @@ extern "C" {
 		re.RegisterModel = RE_RegisterModel;
 		re.RegisterSkin = RE_RegisterSkin;
 		re.RegisterShader = RE_RegisterShader;
-		re.RegisterShaderNoMip = RE_RegisterShaderNoMip;
-#if defined( USE_REFLIGHT )
-		re.RegisterShaderLightAttenuation = NULL;
-#endif
 		re.RegisterFont = RE_RegisterFont;
 		re.Glyph = RE_Glyph;
 		re.GlyphChar = RE_GlyphChar;

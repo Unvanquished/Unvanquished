@@ -515,12 +515,12 @@ qhandle_t trap_R_GetShaderFromModel( qhandle_t modelid, int surfnum, int withlig
 }
 
 //64.
-//return re.RegisterShader(VMA(1));
-qhandle_t trap_R_RegisterShader( const char *name )
+//return re.RegisterShader(VMA(1), args[2]);
+qhandle_t trap_R_RegisterShader( const char *name, RegisterShaderFlags_t flags )
 {
 	//CG_DrawInformation(qtrue);
 
-	return syscall( CG_R_REGISTERSHADER, name );
+	return syscall( CG_R_REGISTERSHADER, name, flags );
 }
 
 //65.
@@ -532,26 +532,6 @@ void trap_R_RegisterFont( const char *fontName, const char *fallbackName, int po
 	/**/
 	syscall( CG_R_REGISTERFONT, fontName, fallbackName, pointSize, font );
 }
-
-//66.
-//return re.RegisterShaderNoMip(VMA(1));
-qhandle_t trap_R_RegisterShaderNoMip( const char *name )
-{
-	//CG_DrawInformation(qtrue);
-
-
-	return syscall( CG_R_REGISTERSHADERNOMIP, name );
-}
-
-//67.
-//return re.RegisterShaderLightAttenuation(VMA(1));
-#if defined( USE_REFLIGHT )
-qhandle_t trap_R_RegisterShaderLightAttenuation( const char *name )
-{
-	return syscall( CG_R_REGISTERSHADERLIGHTATTENUATION, name );
-}
-
-#endif
 
 //68.
 //re.ClearScene();

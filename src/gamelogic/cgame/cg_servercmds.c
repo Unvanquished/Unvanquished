@@ -403,7 +403,8 @@ static void CG_ConfigStringModified( void )
 	}
 	else if ( num >= CS_SHADERS && num < CS_SHADERS + MAX_GAME_SHADERS )
 	{
-		cgs.gameShaders[ num - CS_SHADERS ] = trap_R_RegisterShader( str );
+		cgs.gameShaders[ num - CS_SHADERS ] = trap_R_RegisterShader(str,
+									    RSF_DEFAULT);
 	}
 	else if ( num >= CS_PARTICLE_SYSTEMS && num < CS_PARTICLE_SYSTEMS + MAX_GAME_PARTICLE_SYSTEMS )
 	{

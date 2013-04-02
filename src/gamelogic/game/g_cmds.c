@@ -1992,7 +1992,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 
 			trap_Cvar_VariableStringBuffer( "mapname", map, sizeof( map ) );
 
-			if ( Q_stricmp( arg, "*BUILTIN*" ) &&
+			if ( Q_stricmp( arg, S_BUILTIN_LAYOUT ) &&
 			     !trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, arg ), NULL, FS_READ ) )
 			{
 				trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("callvote: "
@@ -2157,36 +2157,59 @@ void Cmd_SetViewpos_f( gentity_t *ent )
 {
 	vec3_t origin, angles;
 	char   buffer[ MAX_TOKEN_CHARS ];
-	int    i;
+	int    i, entityId;
+	gentity_t* selection;
 
-	if ( trap_Argc() < 4 )
+	if ( trap_Argc() < 4 && trap_Argc() != 2 )
 	{
-		trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("usage: setviewpos <x> <y> <z> [<yaw> [<pitch>]]\n") "\"" );
+		trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("usage: setviewpos (<x> <y> <z> [<yaw> [<pitch>]] | <entitynum>)\n") "\"" );
 		return;
 	}
 
-	for ( i = 0; i < 3; i++ )
+	if(trap_Argc() == 2)
 	{
-		trap_Argv( i + 1, buffer, sizeof( buffer ) );
-		origin[ i ] = atof( buffer );
-	}
-	origin[ 2 ] -= ent->client->ps.viewheight;
+		trap_Argv( 1, buffer, sizeof( buffer ) );
+		entityId = atoi( buffer );
 
-	VectorCopy( ent->client->ps.viewangles, angles );
-	angles[ ROLL ] = 0;
-
-	if ( trap_Argc() >= 5 )
-	{
-		trap_Argv( 4, buffer, sizeof( buffer ) );
-		angles[ YAW ] = atof( buffer );
-		if ( trap_Argc() >= 6 )
+		if (entityId >= level.num_entities || entityId < MAX_CLIENTS)
 		{
-			trap_Argv( 5, buffer, sizeof( buffer ) );
-			angles[ PITCH ] = atof( buffer );
+			G_Printf("entityId %d is out of range\n", entityId);
+			return;
+		}
+		selection = &g_entities[entityId];
+		if (!selection->inuse)
+		{
+			G_Printf("entity slot %d is not in use\n", entityId);
+			return;
+		}
+
+		VectorCopy( selection->s.origin, origin );
+		VectorCopy( selection->s.angles, angles );
+	}
+	else
+	{
+		for ( i = 0; i < 3; i++ )
+		{
+			trap_Argv( i + 1, buffer, sizeof( buffer ) );
+			origin[ i ] = atof( buffer );
+		}
+		origin[ 2 ] -= ent->client->ps.viewheight;
+		VectorCopy( ent->client->ps.viewangles, angles );
+		angles[ ROLL ] = 0;
+
+		if ( trap_Argc() >= 5 )
+		{
+			trap_Argv( 4, buffer, sizeof( buffer ) );
+			angles[ YAW ] = atof( buffer );
+			if ( trap_Argc() >= 6 )
+			{
+				trap_Argv( 5, buffer, sizeof( buffer ) );
+				angles[ PITCH ] = atof( buffer );
+			}
 		}
 	}
 
-	TeleportPlayer( ent, origin, angles, 0.0f );
+	G_TeleportPlayer( ent, origin, angles, 0.0f );
 }
 
 #define AS_OVER_RT3 (( ALIENSENSE_RANGE * 0.5f ) / M_ROOT3 )
@@ -3508,7 +3531,7 @@ void G_StopFollowing( gentity_t *ent )
 		BG_GetClientViewOrigin( &ent->client->ps, viewOrigin );
 		VectorCopy( ent->client->ps.viewangles, angles );
 		angles[ ROLL ] = 0;
-		TeleportPlayer( ent, viewOrigin, angles, qfalse );
+		G_TeleportPlayer( ent, viewOrigin, angles, qfalse );
 	}
 
 	CalculateRanks();

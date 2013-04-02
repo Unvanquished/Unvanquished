@@ -1765,19 +1765,11 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			//----(SA)  end
 
 		case CG_R_REGISTERSHADER:
-			return re.RegisterShader( VMA( 1 ) );
+			return re.RegisterShader( VMA( 1 ), args[ 2 ] );
 
 		case CG_R_REGISTERFONT:
 			re.RegisterFontVM( VMA( 1 ), VMA( 2 ), args[ 3 ], VMA( 4 ) );
 			return 0;
-
-		case CG_R_REGISTERSHADERNOMIP:
-			return re.RegisterShaderNoMip( VMA( 1 ) );
-
-#if defined( USE_REFLIGHT )
-		case CG_R_REGISTERSHADERLIGHTATTENUATION:
-			return re.RegisterShaderLightAttenuation( VMA( 1 ) );
-#endif
 
 		case CG_R_CLEARSCENE:
 			re.ClearScene();
