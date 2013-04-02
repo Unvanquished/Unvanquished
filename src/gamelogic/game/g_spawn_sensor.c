@@ -515,3 +515,56 @@ void SP_sensor_player( gentity_t *self )
 	InitBrushSensor( self );
 	trap_LinkEntity( self );
 }
+
+/*
+=================================================================================
+
+sensor_power
+
+=================================================================================
+*/
+
+void sensor_support_think( gentity_t *self )
+{
+	if(!self->enabled)
+	{
+		self->nextthink = level.time + SENSOR_POLL_PERIOD * 5;
+		return;
+	}
+
+	switch (self->conditions.team) {
+		case TEAM_HUMANS:
+			self->powered = G_FindPower( self, qfalse );
+			break;
+		case TEAM_ALIENS:
+			self->powered = G_FindCreep( self );
+			break;
+		case TEAM_ALL:
+			self->powered = G_FindPower( self, qfalse );
+			if(!self->powered)
+				self->powered = G_FindCreep( self );
+			break;
+		default:
+			G_Printf(S_ERROR "missing team field for %s\n", etos( self ));
+			G_FreeEntity( self );
+			break;
+	}
+
+	if(self->powered)
+		G_FireEntity( self, self->powerSource );
+
+	self->nextthink = level.time + SENSOR_POLL_PERIOD;
+}
+
+void sensor_support_reset( gentity_t *self )
+{
+	self->enabled = !(self->spawnflags & SPF_SPAWN_DISABLED);
+	//if(self->enabled)
+	self->nextthink = level.time + SENSOR_POLL_PERIOD;
+}
+
+void SP_sensor_support( gentity_t *self )
+{
+	self->think = sensor_support_think;
+	self->reset = sensor_support_reset;
+}

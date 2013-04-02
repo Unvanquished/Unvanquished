@@ -321,6 +321,7 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ S_SENSOR_PLAYER,            SP_sensor_player,          CHAIN_ACTIVE,     ENT_V_UNCLEAR, NULL },
 	{ S_SENSOR_STAGE,             SP_sensor_stage,           CHAIN_ACTIVE,     ENT_V_CURRENT, NULL },
 	{ S_SENSOR_START,             SP_sensor_start,           CHAIN_ACTIVE,     ENT_V_CURRENT, NULL },
+	{ S_SENSOR_SUPPORT,           SP_sensor_support,         CHAIN_ACTIVE },
 	{ "sensor_timer",             SP_sensor_timer,           CHAIN_ACTIVE,     ENT_V_UNCLEAR, NULL },
 
 	/**

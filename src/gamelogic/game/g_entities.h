@@ -73,6 +73,7 @@ Maryland 20850 USA.
 
 #define S_SENSOR_END              "sensor_end"
 #define S_SENSOR_PLAYER           "sensor_player"
+#define S_SENSOR_SUPPORT          "sensor_support"
 #define S_SENSOR_START            "sensor_start"
 #define S_SENSOR_STAGE            "sensor_stage"
 
@@ -98,6 +99,11 @@ Maryland 20850 USA.
  * @see G_SpawnGEntityFromSpawnVars()
  */
 #define MAX_ENTITY_ALIASES 	3
+
+/**
+ * after which time shall a sensor that depends on polling for sensing poll again?
+ */
+#define SENSOR_POLL_PERIOD 100
 
 // movers are things like doors, plats, buttons, etc
 typedef enum
