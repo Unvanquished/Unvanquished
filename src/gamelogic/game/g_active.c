@@ -1656,6 +1656,20 @@ void ClientThink_real( gentity_t *ent )
 		client->ps.stats[ STAT_STATE ] &= ~SS_SLOWLOCKED;
 	}
 
+	// Is power/creep available for the client's team?
+	if ( client->pers.teamSelection == TEAM_HUMANS && G_Reactor() )
+	{
+		client->ps.eFlags |= EF_POWER_AVAILABLE;
+	}
+	else if ( client->pers.teamSelection == TEAM_ALIENS && G_Overmind() )
+	{
+		client->ps.eFlags |= EF_POWER_AVAILABLE;
+	}
+	else
+	{
+		client->ps.eFlags &= ~EF_POWER_AVAILABLE;
+	}
+
 	// Update boosted state flags
 	client->ps.stats[ STAT_STATE ] &= ~SS_BOOSTEDWARNING;
 
