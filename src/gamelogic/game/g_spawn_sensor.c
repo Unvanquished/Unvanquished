@@ -572,6 +572,37 @@ void SP_sensor_support( gentity_t *self )
 /*
 =================================================================================
 
+sensor_power
+
+=================================================================================
+*/
+
+
+void sensor_power_think( gentity_t *self )
+{
+	if(!self->enabled)
+	{
+		self->nextthink = level.time + SENSOR_POLL_PERIOD * 5;
+		return;
+	}
+
+	self->powered = G_FindPower( self, qfalse ); //TODO spawnflag setting
+
+	if(self->powered)
+		G_FireEntity( self, self->powerSource );
+
+	self->nextthink = level.time + SENSOR_POLL_PERIOD;
+}
+
+void SP_sensor_power( gentity_t *self )
+{
+	self->think = sensor_power_think;
+	self->reset = sensor_support_reset;
+}
+
+/*
+=================================================================================
+
 sensor_creep
 
 =================================================================================

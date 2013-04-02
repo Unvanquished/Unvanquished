@@ -66,6 +66,7 @@ void    SP_sensor_start( gentity_t *self );
 void    SP_sensor_stage( gentity_t *self );
 void    SP_sensor_end( gentity_t *self );
 void    SP_sensor_player( gentity_t *self );
+void    SP_sensor_power( gentity_t *self );
 void    SP_sensor_support( gentity_t *self );
 void    SP_sensor_creep( gentity_t *self );
 void    SP_sensor_buildable( gentity_t *self );

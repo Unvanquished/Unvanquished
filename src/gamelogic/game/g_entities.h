@@ -74,6 +74,7 @@ Maryland 20850 USA.
 #define S_SENSOR_CREEP            "sensor_creep"
 #define S_SENSOR_END              "sensor_end"
 #define S_SENSOR_PLAYER           "sensor_player"
+#define S_SENSOR_POWER            "sensor_power"
 #define S_SENSOR_SUPPORT          "sensor_support"
 #define S_SENSOR_START            "sensor_start"
 #define S_SENSOR_STAGE            "sensor_stage"

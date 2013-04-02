@@ -320,6 +320,7 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ S_SENSOR_CREEP,             SP_sensor_creep,           CHAIN_ACTIVE },
 	{ S_SENSOR_END,               SP_sensor_end,             CHAIN_ACTIVE,     ENT_V_CURRENT, NULL },
 	{ S_SENSOR_PLAYER,            SP_sensor_player,          CHAIN_ACTIVE,     ENT_V_UNCLEAR, NULL },
+	{ S_SENSOR_POWER,             SP_sensor_power,           CHAIN_ACTIVE },
 	{ S_SENSOR_STAGE,             SP_sensor_stage,           CHAIN_ACTIVE,     ENT_V_CURRENT, NULL },
 	{ S_SENSOR_START,             SP_sensor_start,           CHAIN_ACTIVE,     ENT_V_CURRENT, NULL },
 	{ S_SENSOR_SUPPORT,           SP_sensor_support,         CHAIN_ACTIVE },
