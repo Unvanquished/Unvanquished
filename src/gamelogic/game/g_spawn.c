@@ -317,6 +317,7 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	 */
 
 	{ "sensor_buildable",         SP_sensor_buildable,       CHAIN_ACTIVE,     ENT_V_UNCLEAR, NULL },
+	{ S_SENSOR_CREEP,             SP_sensor_creep,           CHAIN_ACTIVE },
 	{ S_SENSOR_END,               SP_sensor_end,             CHAIN_ACTIVE,     ENT_V_CURRENT, NULL },
 	{ S_SENSOR_PLAYER,            SP_sensor_player,          CHAIN_ACTIVE,     ENT_V_UNCLEAR, NULL },
 	{ S_SENSOR_STAGE,             SP_sensor_stage,           CHAIN_ACTIVE,     ENT_V_CURRENT, NULL },

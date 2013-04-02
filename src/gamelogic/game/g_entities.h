@@ -71,6 +71,7 @@ Maryland 20850 USA.
 #define S_POS_PLAYER_INTERMISSION "pos_player_intermission"
 #define S_POS_HUMAN_INTERMISSION  "pos_human_intermission"
 
+#define S_SENSOR_CREEP            "sensor_creep"
 #define S_SENSOR_END              "sensor_end"
 #define S_SENSOR_PLAYER           "sensor_player"
 #define S_SENSOR_SUPPORT          "sensor_support"

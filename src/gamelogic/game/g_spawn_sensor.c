@@ -519,7 +519,7 @@ void SP_sensor_player( gentity_t *self )
 /*
 =================================================================================
 
-sensor_power
+sensor_support
 
 =================================================================================
 */
@@ -566,5 +566,36 @@ void sensor_support_reset( gentity_t *self )
 void SP_sensor_support( gentity_t *self )
 {
 	self->think = sensor_support_think;
+	self->reset = sensor_support_reset;
+}
+
+/*
+=================================================================================
+
+sensor_creep
+
+=================================================================================
+*/
+
+
+void sensor_creep_think( gentity_t *self )
+{
+	if(!self->enabled)
+	{
+		self->nextthink = level.time + SENSOR_POLL_PERIOD * 5;
+		return;
+	}
+
+	self->powered = G_FindCreep( self );
+
+	if(self->powered)
+		G_FireEntity( self, self->powerSource );
+
+	self->nextthink = level.time + SENSOR_POLL_PERIOD;
+}
+
+void SP_sensor_creep( gentity_t *self )
+{
+	self->think = sensor_creep_think;
 	self->reset = sensor_support_reset;
 }
