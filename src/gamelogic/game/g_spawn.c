@@ -743,6 +743,7 @@ void G_SpawnGEntityFromSpawnVars( void )
 
 			spawningEntity->calltargets[i].event = "target";
 			spawningEntity->calltargets[i].eventType = ON_DEFAULT;
+			spawningEntity->calltargets[i].actionType = ECA_DEFAULT;
 			spawningEntity->calltargets[i].name = spawningEntity->targets[i];
 			spawningEntity->callTargetCount++;
 		}
