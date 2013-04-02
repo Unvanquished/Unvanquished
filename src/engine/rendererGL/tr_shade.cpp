@@ -37,10 +37,6 @@ This file deals with applying shaders to surface data in the tess struct.
 
 void GLSL_InitGPUShaders( void )
 {
-	int startTime, endTime;
-
-	ri.Printf( PRINT_ALL, "------- GLSL_InitGPUShaders -------\n" );
-
 	// make sure the render thread is stopped
 	R_SyncRenderThread();
 
@@ -50,365 +46,167 @@ void GLSL_InitGPUShaders( void )
 	s_glslOptimizer = glslopt_initialize( false );
 #endif
 
-	startTime = ri.Milliseconds();
-
 	// single texture rendering
-	gl_genericShader = new GLShader_generic();
+	gl_shaderManager.load( gl_genericShader );
 
 	// simple vertex color shading for entities
-	gl_vertexLightingShader_DBS_entity = new GLShader_vertexLighting_DBS_entity();
+	gl_shaderManager.load( gl_vertexLightingShader_DBS_entity );
 
 	// simple vertex color shading for the world
-	gl_vertexLightingShader_DBS_world = new GLShader_vertexLighting_DBS_world();
+	gl_shaderManager.load( gl_vertexLightingShader_DBS_world );
 
 	// standard light mapping
-	gl_lightMappingShader = new GLShader_lightMapping();
+	gl_shaderManager.load( gl_lightMappingShader );
 
 	// geometric-buffer fill rendering with diffuse + bump + specular
 	if ( DS_STANDARD_ENABLED() )
 	{
 		// G-Buffer construction
-		gl_geometricFillShader = new GLShader_geometricFill();
+		gl_shaderManager.load( gl_geometricFillShader );
 
 		// deferred omni-directional lighting post process effect
-		gl_deferredLightingShader_omniXYZ = new GLShader_deferredLighting_omniXYZ();
+		gl_shaderManager.load( gl_deferredLightingShader_omniXYZ );
 
-		gl_deferredLightingShader_projXYZ = new GLShader_deferredLighting_projXYZ();
+		gl_shaderManager.load( gl_deferredLightingShader_projXYZ );
 
-		gl_deferredLightingShader_directionalSun = new GLShader_deferredLighting_directionalSun();
+		gl_shaderManager.load( gl_deferredLightingShader_directionalSun );
 	}
 	else
 	{
 		// omni-directional specular bump mapping ( Doom3 style )
-		gl_forwardLightingShader_omniXYZ = new GLShader_forwardLighting_omniXYZ();
+		gl_shaderManager.load( gl_forwardLightingShader_omniXYZ );
 
 		// projective lighting ( Doom3 style )
-		gl_forwardLightingShader_projXYZ = new GLShader_forwardLighting_projXYZ();
+		gl_shaderManager.load( gl_forwardLightingShader_projXYZ );
 
 		// directional sun lighting ( Doom3 style )
-		gl_forwardLightingShader_directionalSun = new GLShader_forwardLighting_directionalSun();
+		gl_shaderManager.load( gl_forwardLightingShader_directionalSun );
 	}
 
 #if !defined( GLSL_COMPILE_STARTUP_ONLY )
 
-	gl_depthToColorShader = new GLShader_depthToColor();
+	gl_shaderManager.load( gl_depthToColorShader );
 
 #endif // #if !defined(GLSL_COMPILE_STARTUP_ONLY)
 
 	// shadowmap distance compression
-	gl_shadowFillShader = new GLShader_shadowFill();
+	gl_shaderManager.load( gl_shadowFillShader );
 
 #if !defined( GLSL_COMPILE_STARTUP_ONLY )
 
 #ifdef VOLUMETRIC_LIGHTING
 	// volumetric lighting
-	gl_lightVolumeShader_omni = new GLShader_lightVolume_omni();
+	gl_shaderManager.load( gl_lightVolumeShader_omni );
 #endif
 
 	// UT3 style player shadowing
-	gl_deferredShadowingShader_proj = new GLShader_deferredShadowing_proj();
+	gl_shaderManager.load( gl_deferredShadowingShader_proj );
 
 #endif // #if !defined(GLSL_COMPILE_STARTUP_ONLY)
 
 	// bumped cubemap reflection for abitrary polygons ( EMBM )
-	gl_reflectionShader = new GLShader_reflection();
+	gl_shaderManager.load( gl_reflectionShader );
 
 	// skybox drawing for abitrary polygons
-	gl_skyboxShader = new GLShader_skybox();
+	gl_shaderManager.load( gl_skyboxShader );
 
 	// Q3A volumetric fog
-	gl_fogQuake3Shader = new GLShader_fogQuake3();
+	gl_shaderManager.load( gl_fogQuake3Shader );
 
 	// global fog post process effect
-	gl_fogGlobalShader = new GLShader_fogGlobal();
+	gl_shaderManager.load( gl_fogGlobalShader );
 
 	// heatHaze post process effect
-	gl_heatHazeShader = new GLShader_heatHaze();
+	gl_shaderManager.load( gl_heatHazeShader );
 
 	// screen post process effect
-	gl_screenShader = new GLShader_screen();
+	gl_shaderManager.load( gl_screenShader );
 
 	// portal process effect
-	gl_portalShader = new GLShader_portal();
+	gl_shaderManager.load( gl_portalShader );
 
 	// HDR -> LDR tone mapping
-	gl_toneMappingShader = new GLShader_toneMapping();
+	gl_shaderManager.load( gl_toneMappingShader );
 
 	// LDR bright pass filter
-	gl_contrastShader = new GLShader_contrast();
+	gl_shaderManager.load( gl_contrastShader );
 
 	// camera post process effect
-	gl_cameraEffectsShader = new GLShader_cameraEffects();
+	gl_shaderManager.load( gl_cameraEffectsShader );
 
 	// gaussian blur
-	gl_blurXShader = new GLShader_blurX();
+	gl_shaderManager.load( gl_blurXShader );
 
-	gl_blurYShader = new GLShader_blurY();
+	gl_shaderManager.load( gl_blurYShader );
 
 	// debug utils
-	gl_debugShadowMapShader = new GLShader_debugShadowMap();
+	gl_shaderManager.load( gl_debugShadowMapShader );
 
 #if !defined( GLSL_COMPILE_STARTUP_ONLY )
 
-	gl_liquidShader = new GLShader_liquid();
+	gl_shaderManager.load( gl_liquidShader );
 
-	gl_volumetricFogShader = new GLShader_volumetricFog();
+	gl_shaderManager.load( gl_volumetricFogShader );
 
 #ifdef EXPERIMENTAL
 	// screen space ambien occlusion post process effect
-	gl_screenSpaceAmbientOcclusionShader = new GLShader_screenSpaceAmbientOcclusion();
+	gl_shaderManager.load( gl_screenSpaceAmbientOcclusionShader );
 
-	gl_depthOfFieldShader = new GLShader_depthOfField();
+	gl_shaderManager.load( gl_depthOfFieldShader );
 #endif
 
 #endif // #if !defined(GLSL_COMPILE_STARTUP_ONLY)
 
-	gl_motionblurShader = new GLShader_motionblur();
+	gl_shaderManager.load( gl_motionblurShader );
 
-	endTime = ri.Milliseconds();
-
-#if defined( USE_GLSL_OPTIMIZER )
-	glslopt_cleanup( s_glslOptimizer );
-#endif
-
-	ri.Printf( PRINT_ALL, "GLSL shaders load time = %5.2f seconds\n", ( endTime - startTime ) / 1000.0 );
-
-	if( r_recompileShaders->integer )
-	{
-		ri.Cvar_Set( "r_recompileShaders", "0" );
-	}
+	gl_shaderManager.buildAll();
 }
 
 void GLSL_ShutdownGPUShaders( void )
 {
-//	int        i;
+	R_SyncRenderThread();
 
-	ri.Printf( PRINT_ALL, "------- GLSL_ShutdownGPUShaders -------\n" );
+	gl_shaderManager.freeAll();
 
-	if ( gl_genericShader )
-	{
-		delete gl_genericShader;
-		gl_genericShader = NULL;
-	}
+	gl_genericShader = NULL;
+	gl_vertexLightingShader_DBS_entity = NULL;
+	gl_vertexLightingShader_DBS_world = NULL;
+	gl_lightMappingShader = NULL;
+	gl_geometricFillShader = NULL;
+	gl_deferredLightingShader_omniXYZ = NULL;
+	gl_deferredLightingShader_projXYZ = NULL;
+	gl_deferredLightingShader_directionalSun = NULL;
+	gl_forwardLightingShader_omniXYZ = NULL;
+	gl_forwardLightingShader_projXYZ = NULL;
+	gl_forwardLightingShader_directionalSun = NULL;
+	gl_depthToColorShader = NULL;
+	gl_shadowFillShader = NULL;
+	gl_lightVolumeShader_omni = NULL;
+	gl_deferredShadowingShader_proj = NULL;
+	gl_reflectionShader = NULL;
+	gl_skyboxShader = NULL;
+	gl_fogQuake3Shader = NULL;
+	gl_fogGlobalShader = NULL;
+	gl_heatHazeShader = NULL;
+	gl_screenShader = NULL;
+	gl_portalShader = NULL;
+	gl_toneMappingShader = NULL;
+	gl_contrastShader = NULL;
+	gl_cameraEffectsShader = NULL;
+	gl_blurXShader = NULL;
+	gl_blurYShader = NULL;
+	gl_debugShadowMapShader = NULL;
+	gl_liquidShader = NULL;
+	gl_volumetricFogShader = NULL;
+	gl_screenSpaceAmbientOcclusionShader = NULL;
+	gl_depthOfFieldShader = NULL;
+	gl_motionblurShader = NULL;
 
-	if ( gl_vertexLightingShader_DBS_entity )
-	{
-		delete gl_vertexLightingShader_DBS_entity;
-		gl_vertexLightingShader_DBS_entity = NULL;
-	}
+	GL_BindNullProgram();
 
-	if ( gl_vertexLightingShader_DBS_world )
-	{
-		delete gl_vertexLightingShader_DBS_world;
-		gl_vertexLightingShader_DBS_world = NULL;
-	}
-
-	if ( gl_lightMappingShader )
-	{
-		delete gl_lightMappingShader;
-		gl_lightMappingShader = NULL;
-	}
-
-	if ( gl_geometricFillShader )
-	{
-		delete gl_geometricFillShader;
-		gl_geometricFillShader = NULL;
-	}
-
-	if ( gl_deferredLightingShader_omniXYZ )
-	{
-		delete gl_deferredLightingShader_omniXYZ;
-		gl_deferredLightingShader_omniXYZ = NULL;
-	}
-
-	if( gl_deferredLightingShader_projXYZ ) 
-	{
-		delete gl_deferredLightingShader_projXYZ;
-		gl_deferredLightingShader_projXYZ = NULL;
-	}
-
-	if( gl_deferredLightingShader_directionalSun )
-	{
-		delete gl_deferredLightingShader_directionalSun;
-		gl_deferredLightingShader_directionalSun = NULL;
-	}
-
-#if !defined( GLSL_COMPILE_STARTUP_ONLY )
-
-	if ( gl_depthToColorShader )
-	{
-		delete gl_depthToColorShader;
-		gl_depthToColorShader = NULL;
-	}
-
-#endif // #if !defined(GLSL_COMPILE_STARTUP_ONLY)
-
-	if ( gl_shadowFillShader )
-	{
-		delete gl_shadowFillShader;
-		gl_shadowFillShader = NULL;
-	}
-
-	if ( gl_forwardLightingShader_omniXYZ )
-	{
-		delete gl_forwardLightingShader_omniXYZ;
-		gl_forwardLightingShader_omniXYZ = NULL;
-	}
-
-	if ( gl_forwardLightingShader_projXYZ )
-	{
-		delete gl_forwardLightingShader_projXYZ;
-		gl_forwardLightingShader_projXYZ = NULL;
-	}
-
-	if ( gl_forwardLightingShader_directionalSun )
-	{
-		delete gl_forwardLightingShader_directionalSun;
-		gl_forwardLightingShader_directionalSun = NULL;
-	}
-
-#if !defined( GLSL_COMPILE_STARTUP_ONLY )
-
-#ifdef VOLUMETRIC_LIGHTING
-
-	if ( gl_lightVolumeShader_omni )
-	{
-		delete gl_lightVolumeShader_omni;
-		gl_lightVolumeShader_omni = NULL;
-	}
-
+#if defined( USE_GLSL_OPTIMIZER )
+	glslopt_cleanup( s_glslOptimizer );
 #endif
-
-	if ( gl_deferredShadowingShader_proj )
-	{
-		delete gl_deferredShadowingShader_proj;
-		gl_deferredShadowingShader_proj = NULL;
-	}
-
-#endif // #if !defined(GLSL_COMPILE_STARTUP_ONLY)
-
-	if ( gl_reflectionShader )
-	{
-		delete gl_reflectionShader;
-		gl_reflectionShader = NULL;
-	}
-
-	if ( gl_skyboxShader )
-	{
-		delete gl_skyboxShader;
-		gl_skyboxShader = NULL;
-	}
-
-	if ( gl_fogQuake3Shader )
-	{
-		delete gl_fogQuake3Shader;
-		gl_fogQuake3Shader = NULL;
-	}
-
-	if ( gl_fogGlobalShader )
-	{
-		delete gl_fogGlobalShader;
-		gl_fogGlobalShader = NULL;
-	}
-
-	if ( gl_heatHazeShader )
-	{
-		delete gl_heatHazeShader;
-		gl_heatHazeShader = NULL;
-	}
-
-	if ( gl_screenShader )
-	{
-		delete gl_screenShader;
-		gl_screenShader = NULL;
-	}
-
-	if ( gl_portalShader )
-	{
-		delete gl_portalShader;
-		gl_portalShader = NULL;
-	}
-
-	if ( gl_toneMappingShader )
-	{
-		delete gl_toneMappingShader;
-		gl_toneMappingShader = NULL;
-	}
-
-	if ( gl_contrastShader )
-	{
-		delete gl_contrastShader;
-		gl_contrastShader = NULL;
-	}
-
-	if ( gl_cameraEffectsShader )
-	{
-		delete gl_cameraEffectsShader;
-		gl_cameraEffectsShader = NULL;
-	}
-
-	if ( gl_blurXShader )
-	{
-		delete gl_blurXShader;
-		gl_blurXShader = NULL;
-	}
-
-	if ( gl_blurYShader )
-	{
-		delete gl_blurYShader;
-		gl_blurYShader = NULL;
-	}
-
-	if ( gl_debugShadowMapShader )
-	{
-		delete gl_debugShadowMapShader;
-		gl_debugShadowMapShader = NULL;
-	}
-
-#if !defined( GLSL_COMPILE_STARTUP_ONLY )
-
-	if ( gl_liquidShader )
-	{
-		delete gl_liquidShader;
-		gl_liquidShader = NULL;
-	}
-
-	if ( gl_volumetricFogShader )
-	{
-		delete gl_volumetricFogShader;
-		gl_volumetricFogShader = NULL;
-	}
-
-#ifdef EXPERIMENTAL
-
-	if ( gl_screenSpaceAmbientOcclusionShader )
-	{
-		delete gl_screenSpaceAmbientOcclusionShader;
-		gl_screenSpaceAmbientOcclusionShader = NULL;
-	}
-
-	if ( gl_depthOfFieldShader )
-	{
-		delete gl_depthOfFieldShader;
-		gl_depthOfFieldShader = NULL;
-	}
-
-#endif
-
-#endif // #if !defined(GLSL_COMPILE_STARTUP_ONLY)
-
-	if ( gl_motionblurShader )
-	{
-		delete gl_motionblurShader;
-		gl_motionblurShader = NULL;
-	}
-
-	glState.currentProgram = 0;
-
-	if ( glUseProgram != NULL )
-	{
-		glUseProgram( 0 );
-	}
 }
 
 /*

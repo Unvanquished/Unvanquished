@@ -1124,8 +1124,7 @@ extern "C" {
 		glState.vertexAttribsState = 0;
 		glState.vertexAttribPointersSet = 0;
 
-		glState.currentProgram = 0;
-		glUseProgram( 0 );
+		GL_BindProgram( NULL );
 
 		glBindBuffer( GL_ARRAY_BUFFER, 0 );
 		glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
