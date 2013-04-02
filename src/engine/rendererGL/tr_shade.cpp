@@ -159,7 +159,10 @@ void GLSL_InitGPUShaders( void )
 
 	gl_shaderManager.load( gl_motionblurShader );
 
-	gl_shaderManager.buildAll();
+	if ( !r_lazyShaders->integer )
+	{
+		gl_shaderManager.buildAll();
+	}
 }
 
 void GLSL_ShutdownGPUShaders( void )
@@ -209,6 +212,12 @@ void GLSL_ShutdownGPUShaders( void )
 #endif
 }
 
+void GLSL_FinishGPUShaders( void )
+{
+	R_SyncRenderThread();
+
+	gl_shaderManager.buildAll();
+}
 /*
 static void MyMultiDrawElements(GLenum mode, const GLsizei *count, GLenum type, const void* *indices, GLsizei primcount)
 {
