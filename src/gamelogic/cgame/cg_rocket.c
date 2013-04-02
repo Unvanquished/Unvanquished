@@ -83,17 +83,13 @@ void CG_Rocket_Init( void )
 	// Init Rocket
 	trap_Rocket_Init();
 
-	// load overrides
-	BG_InitClassAttributes();
-	BG_InitClassModelConfigs();
-	BG_InitBuildableAttributes();
-	BG_InitBuildableModelConfigs();
-	BG_InitWeaponAttributes();
-	BG_InitUpgradeAttributes();
-	BG_InitAllowedGameElements();
-
 	// Dynamic memory
 	BG_InitMemory();
+
+	// load overrides
+	BG_InitAllConfigs();
+
+	BG_InitAllowedGameElements();
 
 
 	// rocket cvars

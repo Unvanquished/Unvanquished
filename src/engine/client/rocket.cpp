@@ -175,7 +175,7 @@ public:
 	bool LoadTexture( Rocket::Core::TextureHandle& textureHandle, Rocket::Core::Vector2i& textureDimensions, const Rocket::Core::String& source )
 	{
 		char temp[ MAX_QPATH ];
-		qhandle_t shaderHandle = re.RegisterShaderNoMip( source.CString() );
+		qhandle_t shaderHandle = re.RegisterShader( source.CString(), RSF_NOMIP );
 
 		COM_StripExtension3( source.CString(), temp, sizeof( temp ) );
 

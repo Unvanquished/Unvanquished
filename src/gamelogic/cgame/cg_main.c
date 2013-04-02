@@ -2368,20 +2368,11 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	cgs.screenYScale = cgs.glconfig.vidHeight / 480.0f;
 
 	// load a few needed things before we do any screen updates
-
 	cgs.media.whiteShader = trap_R_RegisterShader("white", RSF_DEFAULT);
 	cgs.media.charsetShader = trap_R_RegisterShader("gfx/2d/bigchars",
 							RSF_DEFAULT);
 	cgs.media.outlineShader = trap_R_RegisterShader("outline",
 							RSF_DEFAULT);
-
-	// Dynamic memory
-	BG_InitMemory();
-
-	// load overrides
-	BG_InitAllConfigs();
-
-	BG_InitAllowedGameElements();
 
 	CG_RegisterCvars();
 
