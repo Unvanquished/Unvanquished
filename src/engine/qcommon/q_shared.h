@@ -227,35 +227,7 @@ extern int memcmp( void *, void *, size_t );
 #define Q3_VM_INSTANTIATE
 #endif
 
-#if defined __GNUC__ || defined __clang__
-#define NORETURN __attribute__((__noreturn__))
-#define UNUSED __attribute__((__unused__))
-#define PRINTF_ARGS(f, a) __attribute__((__format__(__printf__, (f), (a))))
-#define PRINTF_LIKE(n) PRINTF_ARGS((n), (n) + 1)
-#define VPRINTF_LIKE(n) PRINTF_ARGS((n), 0)
-#define ALIGNED(a, x) x __attribute__((__aligned__(a)))
-#define ALWAYS_INLINE INLINE __attribute__((__always_inline__))
-#elif ( defined _MSC_VER )
-#define NORETURN
-#define UNUSED
-#define PRINTF_ARGS(f, a)
-#define PRINTF_LIKE(n)
-#define VPRINTF_LIKE(n)
-#define ALIGNED( a, x ) __declspec(align(a)) x
-#define ALWAYS_INLINE __forceinline
-#define __attribute__(x)
-#define __func__ __FUNCTION__
-#else
-#define NORETURN
-#define UNUSED
-#define PRINTF_ARGS(f, a)
-#define PRINTF_LIKE(n)
-#define VPRINTF_LIKE(n)
-#define ALIGNED( a, x ) x
-#define ALWAYS_INLINE
-#define __attribute__(x)
-#define __func__
-#endif
+#include "../../include/global.h"
 
 //bani
 //======================= GNUC DEFINES ==================================
