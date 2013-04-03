@@ -1075,6 +1075,9 @@ void Cvar_WriteVariables( fileHandle_t f )
 	{
 		if ( var->flags & CVAR_ARCHIVE )
 		{
+			if( var->modificationCount == 0)
+				continue;
+
 			// write the latched value, even if it hasn't taken effect yet
 			Com_sprintf( buffer, sizeof( buffer ), "seta %s %s%s\n",
 			             var->name,
