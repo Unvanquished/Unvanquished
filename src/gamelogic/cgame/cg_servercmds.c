@@ -431,6 +431,17 @@ static void CG_ConfigStringModified( void )
 	{
 		CG_ShaderStateChanged();
 	}
+	else if ( num >= CS_GRADING_TEXTURES &&
+		  num < CS_GRADING_TEXTURES + MAX_GRADING_TEXTURES )
+	{
+		qhandle_t shader = trap_R_RegisterShader(CG_Argv(1),
+							 RSF_NOMIP |
+							 RSF_NOLIGHTSCALE);
+
+		cg.gradingTextures[ num - CS_GRADING_TEXTURES ] = shader;
+		if( num == CS_GRADING_TEXTURES )
+			trap_SetColorGrading( shader );
+	}
 }
 
 /*

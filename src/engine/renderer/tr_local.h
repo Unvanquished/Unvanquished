@@ -1933,7 +1933,7 @@ void     RE_SetColorGrading( qhandle_t hShader );
 //
 qhandle_t RE_RegisterShaderLightMap( const char *name, int lightmapIndex );
 qhandle_t RE_RegisterShader( const char *name, RegisterShaderFlags_t flags );
-qhandle_t RE_RegisterShaderFromImage( const char *name, int lightmapIndex, image_t *image, qboolean mipRawImage );
+qhandle_t RE_RegisterShaderFromImage( const char *name, int lightmapIndex, image_t *image );
 
 shader_t  *R_FindShader( const char *name, int lightmapIndex, qboolean mipRawImage );
 shader_t  *R_GetShaderByHandle( qhandle_t hShader );

@@ -468,7 +468,8 @@ extern "C" {
 	  IF_RGBA16 = BIT( 15 ),
 	  IF_RGBE = BIT( 16 ),
 	  IF_ALPHATEST = BIT( 17 ),
-	  IF_DISPLACEMAP = BIT( 18 )
+	  IF_DISPLACEMAP = BIT( 18 ),
+	  IF_NOLIGHTSCALE = BIT( 19 )
 	};
 
 	typedef enum
@@ -4530,10 +4531,11 @@ extern "C" {
 	====================================================================
 	*/
 	qhandle_t RE_RegisterShader( const char *name, RegisterShaderFlags_t flags );
-	qhandle_t RE_RegisterShaderFromImage( const char *name, image_t *image, qboolean mipRawImage );
+	qhandle_t RE_RegisterShaderFromImage( const char *name, image_t *image );
 	qboolean  RE_LoadDynamicShader( const char *shadername, const char *shadertext );
 
-	shader_t  *R_FindShader( const char *name, shaderType_t type, qboolean mipRawImage );
+	shader_t  *R_FindShader( const char *name, shaderType_t type,
+				 RegisterShaderFlags_t flags );
 	shader_t  *R_GetShaderByHandle( qhandle_t hShader );
 	shader_t  *R_FindShaderByName( const char *name );
 	void      R_InitShaders( void );
