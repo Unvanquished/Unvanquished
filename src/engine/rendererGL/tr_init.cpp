@@ -2428,7 +2428,6 @@ extern "C" {
 #endif
 
 #if defined( USE_REFLIGHT )
-		re.RegisterShaderLightAttenuation = RE_RegisterShaderLightAttenuation;
 		re.AddRefLightToScene = RE_AddRefLightToScene;
 #endif
 

@@ -4479,7 +4479,7 @@ static qboolean ParseShader( char *_text )
 			}
 
 			/*
-			RB: don't call tr.sunShader = R_FindShader(token, SHADER_3D_STATIC, qtrue);
+			RB: don't call tr.sunShader = R_FindShader(token, SHADER_3D_STATIC, RSF_DEFAULT);
 			        because it breaks the computation of the current shader
 			*/
 			tokenLen = strlen( token ) + 1;
@@ -5888,11 +5888,12 @@ the vertex rgba modulate values, as appropriate for misc_model
 pre-lit surfaces.
 ===============
 */
-shader_t       *R_FindShader( const char *name, shaderType_t type, qboolean mipRawImage )
+shader_t       *R_FindShader( const char *name, shaderType_t type,
+			      RegisterShaderFlags_t flags )
 {
 	char     strippedName[ MAX_QPATH ];
 	char     fileName[ MAX_QPATH ];
-	int      i, hash;
+	int      i, hash, bits;
 	char     *shaderText;
 	image_t  *image;
 	shader_t *sh;
@@ -5981,21 +5982,25 @@ shader_t       *R_FindShader( const char *name, shaderType_t type, qboolean mipR
 		Q_strncpyz( fileName, implicitMap, sizeof( fileName ) );
 	}
 
-	// ydnar: implicit shaders were breaking nopicmip/nomipmaps
-	if ( !mipRawImage )
-	{
-		//shader.noMipMaps = qtrue;
-		shader.noPicMip = qtrue;
-	}
-
 	// if not defined in the in-memory shader descriptions,
 	// look for a single supported image file
-	if( mipRawImage ) {
-		image = R_FindImageFile( fileName, IF_NONE, FT_DEFAULT,
+	bits = IF_NONE;
+	if( flags & RSF_NOMIP )
+		bits |= IF_NOPICMIP;
+	else
+		shader.noPicMip = qtrue;
+
+	if( flags & RSF_NOLIGHTSCALE )
+		bits |= IF_NOLIGHTSCALE | IF_NOCOMPRESSION;
+
+	// choosing filter based on the NOMIP flag seems strange,
+	// maybe it should be changed to type == SHADER_2D
+	if( !(bits & RSF_NOMIP) ) {
+		image = R_FindImageFile( fileName, bits, FT_DEFAULT,
 					 WT_REPEAT, shader.name );
 	} else {
-		image = R_FindImageFile( fileName, IF_NOPICMIP | IF_NOCOMPRESSION,
-					 FT_LINEAR, WT_CLAMP, shader.name );
+		image = R_FindImageFile( fileName, bits, FT_LINEAR,
+					 WT_CLAMP, shader.name );
 	}
 
 	if ( !image )
@@ -6071,7 +6076,7 @@ shader_t       *R_FindShader( const char *name, shaderType_t type, qboolean mipR
 	return FinishShader();
 }
 
-qhandle_t RE_RegisterShaderFromImage( const char *name, image_t *image, qboolean mipRawImage )
+qhandle_t RE_RegisterShaderFromImage( const char *name, image_t *image )
 {
 	int      i, hash;
 	shader_t *sh;
@@ -6146,7 +6151,7 @@ qhandle_t RE_RegisterShader( const char *name, RegisterShaderFlags_t flags )
 
 	sh = R_FindShader( name,
 			   (flags & RSF_LIGHT_ATTENUATION) ? SHADER_LIGHT : SHADER_2D,
-			   (flags & RSF_NOMIP) ? qfalse : qtrue );
+			   flags );
 
 	// we want to return 0 if the shader failed to
 	// load for some reason, but R_FindShader should
@@ -7092,12 +7097,12 @@ static void CreateExternalShaders( void )
 {
 	ri.Printf( PRINT_DEVELOPER, "----- CreateExternalShaders -----\n" );
 
-	tr.flareShader = R_FindShader( "flareShader", SHADER_3D_DYNAMIC, qtrue );
-	tr.sunShader = R_FindShader( "sun", SHADER_3D_DYNAMIC, qtrue );
+	tr.flareShader = R_FindShader( "flareShader", SHADER_3D_DYNAMIC, RSF_DEFAULT );
+	tr.sunShader = R_FindShader( "sun", SHADER_3D_DYNAMIC, RSF_DEFAULT );
 
-	tr.defaultPointLightShader = R_FindShader( "lights/defaultPointLight", SHADER_LIGHT, qtrue );
-	tr.defaultProjectedLightShader = R_FindShader( "lights/defaultProjectedLight", SHADER_LIGHT, qtrue );
-	tr.defaultDynamicLightShader = R_FindShader( "lights/defaultDynamicLight", SHADER_LIGHT, qtrue );
+	tr.defaultPointLightShader = R_FindShader( "lights/defaultPointLight", SHADER_LIGHT, RSF_DEFAULT );
+	tr.defaultProjectedLightShader = R_FindShader( "lights/defaultProjectedLight", SHADER_LIGHT, RSF_DEFAULT );
+	tr.defaultDynamicLightShader = R_FindShader( "lights/defaultDynamicLight", SHADER_LIGHT, RSF_DEFAULT );
 }
 
 /*
