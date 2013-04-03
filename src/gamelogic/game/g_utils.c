@@ -153,6 +153,11 @@ int G_SoundIndex( const char *name )
 	return G_FindConfigstringIndex( name, CS_SOUNDS, MAX_SOUNDS, qtrue );
 }
 
+int G_GradingTextureIndex( const char *name )
+{
+	return G_FindConfigstringIndex( name, CS_GRADING_TEXTURES, MAX_GRADING_TEXTURES, qtrue );
+}
+
 /*
 =============
 VectorToString
