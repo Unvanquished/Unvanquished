@@ -749,7 +749,7 @@ static fontHandle_t RE_RegisterFont_Internal( const char *fontName, const char *
 
 		for ( i = GLYPH_START; i <= GLYPH_END; i++ )
 		{
-			glyphs[ i ].glyph = RE_RegisterShaderNoMip( glyphs[ i ].shaderName );
+			glyphs[ i ].glyph = RE_RegisterShader( glyphs[ i ].shaderName, RSF_NOMIP );
 		}
 
 		Com_Memcpy( &registeredFont[ fontNo ], font, sizeof( fontInfo_t ) );

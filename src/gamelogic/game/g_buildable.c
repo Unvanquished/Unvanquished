@@ -199,7 +199,7 @@ qboolean G_FindPower( gentity_t *self, qboolean searchUnspawned )
 	// Reactor is always powered
 	if ( self->s.modelindex == BA_H_REACTOR )
 	{
-		self->parentNode = self;
+		self->powerSource = self;
 
 		return qtrue;
 	}
@@ -207,9 +207,9 @@ qboolean G_FindPower( gentity_t *self, qboolean searchUnspawned )
 	// Handle repeaters
 	if ( self->s.modelindex == BA_H_REPEATER )
 	{
-		self->parentNode = G_Reactor();
+		self->powerSource = G_Reactor();
 
-		return self->parentNode != NULL;
+		return self->powerSource != NULL;
 	}
 
 	// Iterate through entities
@@ -246,7 +246,7 @@ qboolean G_FindPower( gentity_t *self, qboolean searchUnspawned )
 							continue;
 						}
 
-						if ( ent2->parentNode == ent )
+						if ( ent2->powerSource == ent )
 						{
 							buildPoints -= BG_Buildable( ent2->s.modelindex )->buildPoints;
 						}
@@ -256,7 +256,7 @@ qboolean G_FindPower( gentity_t *self, qboolean searchUnspawned )
 
 					if ( buildPoints >= 0 )
 					{
-						self->parentNode = ent;
+						self->powerSource = ent;
 						return qtrue;
 					}
 					else
@@ -270,7 +270,7 @@ qboolean G_FindPower( gentity_t *self, qboolean searchUnspawned )
 				// Dummy buildables don't need to look for zones
 				else
 				{
-					self->parentNode = ent;
+					self->powerSource = ent;
 					return qtrue;
 				}
 			}
@@ -294,8 +294,8 @@ qboolean G_FindPower( gentity_t *self, qboolean searchUnspawned )
 		}
 	}
 
-	self->parentNode = closestPower;
-	return self->parentNode != NULL;
+	self->powerSource = closestPower;
+	return self->powerSource != NULL;
 }
 
 /*
@@ -310,14 +310,14 @@ gentity_t *G_PowerEntityForPoint( const vec3_t origin )
 {
 	gentity_t dummy;
 
-	dummy.parentNode = NULL;
+	dummy.powerSource = NULL;
 	dummy.buildableTeam = TEAM_HUMANS;
 	dummy.s.modelindex = BA_NONE;
 	VectorCopy( origin, dummy.s.origin );
 
 	if ( G_FindPower( &dummy, qfalse ) )
 	{
-		return dummy.parentNode;
+		return dummy.powerSource;
 	}
 	else
 	{
@@ -337,7 +337,7 @@ gentity_t *G_PowerEntityForEntity( gentity_t *ent )
 {
 	if ( G_FindPower( ent, qfalse ) )
 	{
-		return ent->parentNode;
+		return ent->powerSource;
 	}
 
 	return NULL;
@@ -644,8 +644,8 @@ qboolean G_FindCreep( gentity_t *self )
 	}
 
 	//if self does not have a parentNode or its parentNode is invalid find a new one
-	if ( self->client || self->parentNode == NULL || !self->parentNode->inuse ||
-	     self->parentNode->health <= 0 )
+	if ( self->client || self->powerSource == NULL || !self->powerSource->inuse ||
+	     self->powerSource->health <= 0 )
 	{
 		for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 		{
@@ -673,7 +673,7 @@ qboolean G_FindCreep( gentity_t *self )
 		{
 			if ( !self->client )
 			{
-				self->parentNode = closestSpawn;
+				self->powerSource = closestSpawn;
 			}
 
 			return qtrue;
@@ -706,7 +706,7 @@ static qboolean G_IsCreepHere( vec3_t origin )
 
 	memset( &dummy, 0, sizeof( gentity_t ) );
 
-	dummy.parentNode = NULL;
+	dummy.powerSource = NULL;
 	dummy.s.modelindex = BA_NONE;
 	VectorCopy( origin, dummy.s.origin );
 
@@ -934,7 +934,7 @@ void AGeneric_CreepRecede( gentity_t *self )
 		{
 			self->s.time = - ( level.time -
 			                   ( int )( ( float ) CREEP_SCALEDOWN_TIME *
-			                            ( 1.0f - ( ( float )( level.time - self->buildTime ) /
+			                            ( 1.0f - ( ( float )( level.time - self->creationTime ) /
 			                                       ( float ) BG_Buildable( self->s.modelindex )->buildTime ) ) ) );
 		}
 	}
@@ -1021,7 +1021,7 @@ void AGeneric_CreepCheck( gentity_t *self )
 {
 	gentity_t *spawn;
 
-	spawn = self->parentNode;
+	spawn = self->powerSource;
 
 	if ( !G_FindCreep( self ) )
 	{
@@ -1443,7 +1443,7 @@ void AAcidTube_Think( gentity_t *self )
 				continue;
 			}
 
-			if ( !G_Visible( self, enemy, CONTENTS_SOLID ) )
+			if ( !G_IsVisible( self, enemy, CONTENTS_SOLID ) )
 			{
 				continue;
 			}
@@ -1560,7 +1560,7 @@ static qboolean AHive_CheckTarget( gentity_t *self, gentity_t *enemy )
 	}
 
 	self->active = qtrue;
-	self->target_ent = enemy;
+	self->target = enemy;
 	self->timestamp = level.time + HIVE_REPEAT;
 
 	VectorSubtract( enemy->s.pos.trBase, self->s.pos.trBase, dirToTarget );
@@ -1690,18 +1690,18 @@ Used by ATrapper_Think to fire at enemy
 */
 void ATrapper_FireOnEnemy( gentity_t *self, int firespeed, float range )
 {
-	gentity_t *enemy = self->enemy;
+	gentity_t *target = self->target;
 	vec3_t    dirToTarget;
 	vec3_t    halfAcceleration, thirdJerk;
 	float     distanceToTarget = BG_Buildable( self->s.modelindex )->turretRange;
 	int       lowMsec = 0;
 	int       highMsec = ( int )( (
 	                                ( ( distanceToTarget * LOCKBLOB_SPEED ) +
-	                                  ( distanceToTarget * BG_Class( enemy->client->ps.stats[ STAT_CLASS ] )->speed ) ) /
+	                                  ( distanceToTarget * BG_Class( target->client->ps.stats[ STAT_CLASS ] )->speed ) ) /
 	                                ( LOCKBLOB_SPEED * LOCKBLOB_SPEED ) ) * 1000.0f );
 
-	VectorScale( enemy->acceleration, 1.0f / 2.0f, halfAcceleration );
-	VectorScale( enemy->jerk, 1.0f / 3.0f, thirdJerk );
+	VectorScale( target->acceleration, 1.0f / 2.0f, halfAcceleration );
+	VectorScale( target->jerk, 1.0f / 3.0f, thirdJerk );
 
 	// highMsec and lowMsec can only move toward
 	// one another, so the loop must terminate
@@ -1711,7 +1711,7 @@ void ATrapper_FireOnEnemy( gentity_t *self, int firespeed, float range )
 		float time = ( float ) partitionMsec / 1000.0f;
 		float projectileDistance = LOCKBLOB_SPEED * ( time + MISSILE_PRESTEP_TIME / 1000.0f );
 
-		VectorMA( enemy->s.pos.trBase, time, enemy->s.pos.trDelta, dirToTarget );
+		VectorMA( target->s.pos.trBase, time, target->s.pos.trDelta, dirToTarget );
 		VectorMA( dirToTarget, time * time, halfAcceleration, dirToTarget );
 		VectorMA( dirToTarget, time * time * time, thirdJerk, dirToTarget );
 		VectorSubtract( dirToTarget, self->s.pos.trBase, dirToTarget );
@@ -1737,7 +1737,7 @@ void ATrapper_FireOnEnemy( gentity_t *self, int firespeed, float range )
 	//fire at target
 	FireWeapon( self );
 	G_SetBuildableAnim( self, BANIM_ATTACK1, qfalse );
-	self->count = level.time + firespeed;
+	self->customNumber = level.time + firespeed;
 }
 
 /*
@@ -1849,12 +1849,12 @@ void ATrapper_FindEnemy( gentity_t *ent, int range )
 		}
 
 		//we found a target
-		ent->enemy = target;
+		ent->target = target;
 		return;
 	}
 
 	//couldn't find a target
-	ent->enemy = NULL;
+	ent->target = NULL;
 }
 
 /*
@@ -1874,19 +1874,19 @@ void ATrapper_Think( gentity_t *self )
 	if ( self->spawned && self->powered )
 	{
 		//if the current target is not valid find a new one
-		if ( !ATrapper_CheckTarget( self, self->enemy, range ) )
+		if ( !ATrapper_CheckTarget( self, self->target, range ) )
 		{
 			ATrapper_FindEnemy( self, range );
 		}
 
 		//if a new target cannot be found don't do anything
-		if ( !self->enemy )
+		if ( !self->target )
 		{
 			return;
 		}
 
 		//if we are pointing at our target and we can fire shoot it
-		if ( self->count < level.time )
+		if ( self->customNumber < level.time )
 		{
 			ATrapper_FireOnEnemy( self, firespeed, range );
 		}
@@ -2209,7 +2209,7 @@ void HReactor_Think( gentity_t *self )
 				continue;
 			}
 
-			tent = G_TempEntity( enemy->s.pos.trBase, EV_TESLATRAIL );
+			tent = G_NewTempEntity( enemy->s.pos.trBase, EV_TESLATRAIL );
 			tent->s.generic1 = self->s.number; //src
 			tent->s.clientNum = enemy->s.number; //dest
 			VectorCopy( self->s.pos.trBase, tent->s.origin2 );
@@ -2318,9 +2318,9 @@ void HMedistat_Die( gentity_t *self, gentity_t *inflictor,
                     gentity_t *attacker, int damage, int mod )
 {
 	//clear target's healing flag
-	if ( self->enemy && self->enemy->client )
+	if ( self->target && self->target->client )
 	{
-		self->enemy->client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_ACTIVE;
+		self->target->client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_ACTIVE;
 	}
 
 	HSpawn_Die( self, inflictor, attacker, damage, mod );
@@ -2346,9 +2346,9 @@ void HMedistat_Think( gentity_t *self )
 	G_IdlePowerState( self );
 
 	//clear target's healing flag
-	if ( self->enemy && self->enemy->client )
+	if ( self->target && self->target->client )
 	{
-		self->enemy->client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_ACTIVE;
+		self->target->client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_ACTIVE;
 	}
 
 	//make sure we have power
@@ -2357,7 +2357,7 @@ void HMedistat_Think( gentity_t *self )
 		if ( self->active )
 		{
 			self->active = qfalse;
-			self->enemy = NULL;
+			self->target = NULL;
 		}
 
 		self->nextthink = level.time + POWER_REFRESH_TIME;
@@ -2396,7 +2396,7 @@ void HMedistat_Think( gentity_t *self )
 				player->client->ps.stats[ STAT_STATE ] &= ~SS_POISONED;
 			}
 
-			if ( self->enemy == player && player->client &&
+			if ( self->target == player && player->client &&
 			     player->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS &&
 			     player->health < player->client->ps.stats[ STAT_MAX_HEALTH ] &&
 			     PM_Live( player->client->ps.pm_type ) )
@@ -2408,7 +2408,7 @@ void HMedistat_Think( gentity_t *self )
 
 		if ( !occupied )
 		{
-			self->enemy = NULL;
+			self->target = NULL;
 
 			//look for something to heal
 			for ( i = 0; i < num; i++ )
@@ -2426,7 +2426,7 @@ void HMedistat_Think( gentity_t *self )
 					       player->client->ps.stats[ STAT_STAMINA ] < STAMINA_MAX ) &&
 					     PM_Live( player->client->ps.pm_type ) )
 					{
-						self->enemy = player;
+						self->target = player;
 
 						//start the heal anim
 						if ( !self->active )
@@ -2445,35 +2445,35 @@ void HMedistat_Think( gentity_t *self )
 		}
 
 		//nothing left to heal so go back to idling
-		if ( !self->enemy && self->active )
+		if ( !self->target && self->active )
 		{
 			G_SetBuildableAnim( self, BANIM_CONSTRUCT2, qtrue );
 			G_SetIdleBuildableAnim( self, BANIM_IDLE1 );
 
 			self->active = qfalse;
 		}
-		else if ( self->enemy && self->enemy->client ) //heal!
+		else if ( self->target && self->target->client ) //heal!
 		{
-			if ( self->enemy->client->ps.stats[ STAT_STAMINA ] <  STAMINA_MAX )
+			if ( self->target->client->ps.stats[ STAT_STAMINA ] <  STAMINA_MAX )
 			{
-				self->enemy->client->ps.stats[ STAT_STAMINA ] += STAMINA_MEDISTAT_RESTORE;
+				self->target->client->ps.stats[ STAT_STAMINA ] += STAMINA_MEDISTAT_RESTORE;
 			}
 
-			if ( self->enemy->client->ps.stats[ STAT_STAMINA ] > STAMINA_MAX )
+			if ( self->target->client->ps.stats[ STAT_STAMINA ] > STAMINA_MAX )
 			{
-				self->enemy->client->ps.stats[ STAT_STAMINA ] = STAMINA_MAX;
+				self->target->client->ps.stats[ STAT_STAMINA ] = STAMINA_MAX;
 			}
 
-			self->enemy->health++;
+			self->target->health++;
 
 			//if they're completely healed, give them a medkit
-			if ( self->enemy->health >= self->enemy->client->ps.stats[ STAT_MAX_HEALTH ] )
+			if ( self->target->health >= self->target->client->ps.stats[ STAT_MAX_HEALTH ] )
 			{
-				self->enemy->health = self->enemy->client->ps.stats[ STAT_MAX_HEALTH ];
+				self->target->health = self->target->client->ps.stats[ STAT_MAX_HEALTH ];
 
-				if ( !BG_InventoryContainsUpgrade( UP_MEDKIT, self->enemy->client->ps.stats ) )
+				if ( !BG_InventoryContainsUpgrade( UP_MEDKIT, self->target->client->ps.stats ) )
 				{
-					BG_AddUpgradeToInventory( UP_MEDKIT, self->enemy->client->ps.stats );
+					BG_AddUpgradeToInventory( UP_MEDKIT, self->target->client->ps.stats );
 				}
 			}
 		}
@@ -2533,7 +2533,7 @@ qboolean HMGTurret_TrackEnemy( gentity_t *self )
 	vec3_t refNormal = { 0.0f, 0.0f, 1.0f };
 	float  temp, rotAngle;
 
-	VectorSubtract( self->enemy->s.pos.trBase, self->s.pos.trBase, dirToTarget );
+	VectorSubtract( self->target->s.pos.trBase, self->s.pos.trBase, dirToTarget );
 	VectorNormalize( dirToTarget );
 
 	CrossProduct( self->s.origin2, refNormal, xNormal );
@@ -2614,12 +2614,12 @@ void HMGTurret_FindEnemy( gentity_t *self )
 	gentity_t *target;
 	int       start;
 
-	if ( self->enemy )
+	if ( self->target )
 	{
-		self->enemy->targeted = NULL;
+		self->target->tracker = NULL;
 	}
 
-	self->enemy = NULL;
+	self->target = NULL;
 
 	// Look for targets in a box around the turret
 	VectorSet( range, MGTURRET_RANGE, MGTURRET_RANGE, MGTURRET_RANGE );
@@ -2643,8 +2643,8 @@ void HMGTurret_FindEnemy( gentity_t *self )
 			continue;
 		}
 
-		self->enemy = target;
-		self->enemy->targeted = self;
+		self->target = target;
+		self->target->tracker = self;
 		return;
 	}
 }
@@ -2700,7 +2700,7 @@ static qboolean HMGTurret_State( gentity_t *self, int state )
 	}
 	else if ( state == MGT_STATE_ACTIVE )
 	{
-		if ( !self->enemy && angle > 0.0f )
+		if ( !self->target && angle > 0.0f )
 		{
 			self->waterlevel = MGT_STATE_RISE;
 			self->s.angles2[ PITCH ] =
@@ -2751,17 +2751,17 @@ void HMGTurret_Think( gentity_t *self )
 	}
 
 	// If the current target is not valid find a new enemy
-	if ( !HMGTurret_CheckTarget( self, self->enemy, qtrue ) )
+	if ( !HMGTurret_CheckTarget( self, self->target, qtrue ) )
 	{
 		self->active = qfalse;
-		self->turretSpinupTime = -1;
+		self->activeAtTime = -1;
 		HMGTurret_FindEnemy( self );
 	}
 
 	// if newly powered raise turret
 	HMGTurret_State( self, MGT_STATE_ACTIVE );
 
-	if ( !self->enemy )
+	if ( !self->target )
 	{
 		return;
 	}
@@ -2770,7 +2770,7 @@ void HMGTurret_Think( gentity_t *self )
 	if ( !HMGTurret_TrackEnemy( self ) )
 	{
 		self->active = qfalse;
-		self->turretSpinupTime = -1;
+		self->activeAtTime = -1;
 		return;
 	}
 
@@ -2779,12 +2779,12 @@ void HMGTurret_Think( gentity_t *self )
 	{
 		self->active = qtrue;
 
-		self->turretSpinupTime = level.time + MGTURRET_SPINUP_TIME;
+		self->activeAtTime = level.time + MGTURRET_SPINUP_TIME;
 		G_AddEvent( self, EV_MGTURRET_SPINUP, 0 );
 	}
 
 	// Not firing or haven't spun up yet
-	if ( !self->active || self->turretSpinupTime > level.time )
+	if ( !self->active || self->activeAtTime > level.time )
 	{
 		return;
 	}
@@ -2845,22 +2845,22 @@ void HTeslaGen_Think( gentity_t *self )
 
 		for ( i = 0; i < num; i++ )
 		{
-			self->enemy = &g_entities[ entityList[ i ] ];
+			self->target = &g_entities[ entityList[ i ] ];
 
-			if ( self->enemy->flags & FL_NOTARGET )
+			if ( self->target->flags & FL_NOTARGET )
 			{
 				continue;
 			}
 
-			if ( self->enemy->client && self->enemy->health > 0 &&
-			     self->enemy->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS &&
-			     Distance( origin, self->enemy->s.pos.trBase ) <= TESLAGEN_RANGE )
+			if ( self->target->client && self->target->health > 0 &&
+			     self->target->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS &&
+			     Distance( origin, self->target->s.pos.trBase ) <= TESLAGEN_RANGE )
 			{
 				FireWeapon( self );
 			}
 		}
 
-		self->enemy = NULL;
+		self->target = NULL;
 
 		if ( self->s.eFlags & EF_FIRING )
 		{
@@ -3011,7 +3011,12 @@ void G_BuildableTouchTriggers( gentity_t *ent )
 			continue;
 		}
 
-		if ( !( hit->r.contents & CONTENTS_TRIGGER ) )
+		if ( !( hit->r.contents & CONTENTS_SENSOR ) )
+		{
+			continue;
+		}
+
+		if ( !hit->enabled )
 		{
 			continue;
 		}
@@ -3052,9 +3057,10 @@ void G_BuildableThink( gentity_t *ent, int msec )
 	//toggle spawned flag for buildables
 	if ( !ent->spawned && ent->health > 0 && !level.pausedTime )
 	{
-		if ( ent->buildTime + buildTime < level.time )
+		if ( ent->creationTime + buildTime < level.time )
 		{
 			ent->spawned = qtrue;
+			ent->enabled = qtrue;
 
 			if ( ent->s.modelindex == BA_A_OVERMIND )
 			{
@@ -3330,19 +3336,6 @@ static int G_CompareBuildablesForRemoval( const void *a, const void *b )
 		// Prefer the entity that is providing power for this point
 		aMatches = ( powerEntity == buildableA );
 		bMatches = ( powerEntity == buildableB );
-
-		if ( aMatches && !bMatches )
-		{
-			return -1;
-		}
-		else if ( !aMatches && bMatches )
-		{
-			return 1;
-		}
-
-		// Prefer the entity that is in the same power zone
-		aMatches = ( buildableA->parentNode == powerEntity );
-		bMatches = ( buildableB->parentNode == powerEntity );
 
 		if ( aMatches && !bMatches )
 		{
@@ -3810,7 +3803,7 @@ static void G_SetBuildableLinkState( qboolean link )
 	int       i;
 	gentity_t *ent;
 
-	for ( i = 1, ent = g_entities + i; i < level.num_entities; i++, ent++ )
+	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 	{
 		if ( ent->s.eType != ET_BUILDABLE )
 		{
@@ -4064,7 +4057,7 @@ gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 	                        buildnums, sizeof( buildnums ) );
 
 	// Spawn the buildable
-	built = G_Spawn();
+	built = G_NewEntity();
 	built->s.eType = ET_BUILDABLE;
 	built->r.svFlags = SVF_CLIENTS_IN_RANGE;
 	built->r.clientRadius = MAX( HELMET_RANGE, ALIENSENSE_RANGE );
@@ -4083,16 +4076,16 @@ gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 	built->nextthink = BG_Buildable( buildable )->nextthink;
 
 	built->takedamage = qtrue;
+	built->enabled = qfalse;
 	built->spawned = qfalse;
-	built->buildTime = built->s.time = level.time;
 
 	// build instantly in cheat mode
 	if ( builder->client && g_cheats.integer )
 	{
 		built->health = BG_Buildable( buildable )->health;
-		built->buildTime = built->s.time =
-		                     level.time - BG_Buildable( buildable )->buildTime;
+		built->creationTime -= BG_Buildable( buildable )->buildTime;
 	}
+	built->s.time = built->creationTime;
 
 	//things that vary for each buildable that aren't in the dbase
 	switch ( buildable )
@@ -4241,7 +4234,7 @@ gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 			built->think = HRepeater_Think;
 			built->die = HRepeater_Die;
 			built->use = HRepeater_Use;
-			built->count = -1;
+			built->customNumber = -1;
 			break;
 
 		default:
@@ -4251,7 +4244,7 @@ gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 
 	built->r.contents = CONTENTS_BODY;
 	built->clipmask = MASK_PLAYERSOLID;
-	built->enemy = NULL;
+	built->target = NULL;
 	built->s.weapon = BG_Buildable( buildable )->turretProjType;
 
 	if ( builder->client )
@@ -4461,6 +4454,7 @@ static gentity_t *G_FinishSpawningBuildable( gentity_t *ent, qboolean force )
 
 	built->takedamage = qtrue;
 	built->spawned = qtrue; //map entities are already spawned
+	built->enabled = qtrue;
 	built->health = BG_Buildable( buildable )->health;
 	built->s.eFlags |= EF_B_SPAWNED;
 
@@ -4601,7 +4595,7 @@ int G_LayoutList( const char *map, char *list, int len )
 	int  count = 0;
 	char *filePtr;
 
-	Q_strcat( layouts, sizeof( layouts ), "*BUILTIN* " );
+	Q_strcat( layouts, sizeof( layouts ), S_BUILTIN_LAYOUT " " );
 	numFiles = trap_FS_GetFileList( va( "layouts/%s", map ), ".dat",
 	                                fileList, sizeof( fileList ) );
 	filePtr = fileList;
@@ -4690,7 +4684,7 @@ void G_LayoutSelect( void )
 			break;
 		}
 
-		if ( !Q_stricmp( s, "*BUILTIN*" ) )
+		if ( !Q_stricmp( s, S_BUILTIN_LAYOUT ) )
 		{
 			Q_strcat( layouts, sizeof( layouts ), s );
 			Q_strcat( layouts, sizeof( layouts ), " " );
@@ -4757,7 +4751,7 @@ static void G_LayoutBuildItem( buildable_t buildable, vec3_t origin,
 {
 	gentity_t *builder;
 
-	builder = G_Spawn();
+	builder = G_NewEntity();
 	VectorCopy( origin, builder->s.pos.trBase );
 	VectorCopy( angles, builder->s.angles );
 	VectorCopy( origin2, builder->s.origin2 );
@@ -4788,7 +4782,7 @@ void G_LayoutLoad( void )
 	char         line[ MAX_STRING_CHARS ];
 	int          i = 0;
 
-	if ( !level.layout[ 0 ] || !Q_stricmp( level.layout, "*BUILTIN*" ) )
+	if ( !level.layout[ 0 ] || !Q_stricmp( level.layout, S_BUILTIN_LAYOUT ) )
 	{
 		return;
 	}
@@ -4912,7 +4906,7 @@ void G_BuildLogSet( buildLog_t *log, gentity_t *ent )
 	VectorCopy( ent->s.angles, log->angles );
 	VectorCopy( ent->s.origin2, log->origin2 );
 	VectorCopy( ent->s.angles2, log->angles2 );
-	log->powerSource = ent->parentNode ? ent->parentNode->s.modelindex : BA_NONE;
+	log->powerSource = ent->powerSource ? ent->powerSource->s.modelindex : BA_NONE;
 	log->powerValue = G_QueueValue( ent );
 }
 
@@ -4971,7 +4965,7 @@ void G_BuildLogRevertThink( gentity_t *ent )
 		built->deconstructTime = ent->deconstructTime;
 	}
 
-	built->buildTime = built->s.time = 0;
+	built->creationTime = built->s.time = 0;
 	G_KillBox( built );
 
 	G_LogPrintf( "revert: restore %d %s\n",
@@ -5027,7 +5021,7 @@ void G_BuildLogRevert( int id )
 		}
 		else
 		{
-			gentity_t *builder = G_Spawn();
+			gentity_t *builder = G_NewEntity();
 
 			VectorCopy( log->origin, builder->s.pos.trBase );
 			VectorCopy( log->angles, builder->s.angles );

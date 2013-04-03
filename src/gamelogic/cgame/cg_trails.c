@@ -1332,7 +1332,8 @@ qhandle_t CG_RegisterTrailSystem( const char *name )
 			{
 				btb = bts->beams[ j ];
 
-				btb->shader = trap_R_RegisterShader( btb->shaderName );
+				btb->shader = trap_R_RegisterShader(btb->shaderName,
+								    RSF_DEFAULT);
 			}
 
 			if ( cg_debugTrails.integer >= 1 )
