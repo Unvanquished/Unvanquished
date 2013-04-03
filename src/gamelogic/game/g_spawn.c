@@ -1017,7 +1017,6 @@ void G_SpawnEntitiesFromString( void )
 		G_Error( "SpawnEntities: no entities" );
 	}
 
-	SP_position_init();
 	SP_worldspawn();
 
 	// parse ents
