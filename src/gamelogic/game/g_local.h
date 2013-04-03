@@ -254,8 +254,11 @@ struct gentity_s
 
 	char         *message;
 
-	char         *targetShaderName;
-	char         *targetShaderNewName;
+	/*
+	 * for toggleable shaders
+	 */
+	char         *shaderKey;
+	char         *shaderReplacement;
 
 	int          lastHealth;
 	int          health;
@@ -959,7 +962,7 @@ float      vectoyaw( const vec3_t vec );
 void       G_AddPredictableEvent( gentity_t *ent, int event, int eventParm );
 void       G_AddEvent( gentity_t *ent, int event, int eventParm );
 void       G_BroadcastEvent( int event, int eventParm );
-void       AddRemap( const char *oldShader, const char *newShader, float timeOffset );
+void       G_SetShaderRemap( const char *oldShader, const char *newShader, float timeOffset );
 const char *BuildShaderStateConfig( void );
 
 qboolean   G_ClientIsLagging( gclient_t *client );

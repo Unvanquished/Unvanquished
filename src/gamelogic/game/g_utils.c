@@ -37,7 +37,7 @@ typedef struct
 int           remapCount = 0;
 shaderRemap_t remappedShaders[ MAX_SHADER_REMAPS ];
 
-void AddRemap( const char *oldShader, const char *newShader, float timeOffset )
+void G_SetShaderRemap( const char *oldShader, const char *newShader, float timeOffset )
 {
 	int i;
 

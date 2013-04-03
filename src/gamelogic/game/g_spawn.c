@@ -165,8 +165,8 @@ static const field_t fields[] =
 	{ "target4",             FOFS( targets ),             F_TARGET     }, // backwardcompatibility with AMP and to use the blackout map for testing
 	{ "targetname",          FOFS( names[ 1 ] ),          F_STRING,    ENT_V_RENAMED, "name" },
 	{ "targetname2",         FOFS( names[ 2 ] ),          F_STRING,    ENT_V_RENAMED, "name" }, // backwardcompatibility with AMP and to use the blackout map for testing
-	{ "targetShaderName",    FOFS( targetShaderName ),    F_STRING    },
-	{ "targetShaderNewName", FOFS( targetShaderNewName ), F_STRING    },
+	{ "targetShaderName",    FOFS( shaderKey ),           F_STRING     },
+	{ "targetShaderNewName", FOFS( shaderReplacement ),   F_STRING     },
 	{ "team",                FOFS( conditions.team ),     F_INT       },
 	{ "wait",                FOFS( config.wait ),         F_TIME      },
 	{ "yaw",                 FOFS( s.angles ),            F_YAW       },
