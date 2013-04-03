@@ -401,7 +401,7 @@ cvar_t         *Cvar_Get( const char *var_name, const char *var_value, int flags
 	var->name = CopyString( var_name );
 	var->string = CopyString( var_value );
 	var->modified = qtrue;
-	var->modificationCount = 1;
+	var->modificationCount = 0;
 	var->value = atof( var->string );
 	var->integer = atoi( var->string );
 	var->resetString = CopyString( var_value );
@@ -460,12 +460,14 @@ cvar_t         *Cvar_Set2( const char *var_name, const char *value, qboolean for
 		// create it
 		if ( !force )
 		{
-			return Cvar_Get( var_name, value, CVAR_USER_CREATED );
+			var = Cvar_Get( var_name, value, CVAR_USER_CREATED );
 		}
 		else
 		{
-			return Cvar_Get( var_name, value, 0 );
+			var = Cvar_Get( var_name, value, 0 );
 		}
+		var->modificationCount++;
+		return var;
 	}
 
 	if ( !value )
