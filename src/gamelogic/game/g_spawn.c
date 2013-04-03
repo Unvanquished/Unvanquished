@@ -935,8 +935,12 @@ void SP_worldspawn( void )
 	G_SpawnString( "music", "", &s );
 	trap_SetConfigstring( CS_MUSIC, s );
 
+
 	G_SpawnString( "message", "", &s );
 	trap_SetConfigstring( CS_MESSAGE, s );  // map specific message
+
+	if(G_SpawnString( "colorGrade", "", &s ))
+		trap_SetConfigstring( CS_GRADING_TEXTURES, s );
 
 	trap_SetConfigstring( CS_MOTD, g_motd.string );  // message of the day
 
