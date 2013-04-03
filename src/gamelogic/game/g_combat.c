@@ -179,7 +179,7 @@ float G_RewardAttackers( gentity_t *self )
 		// only give partial credits for a buildable not yet completed
 		if ( !self->spawned )
 		{
-			value *= ( float )( level.time - self->buildTime ) /
+			value *= ( float )( level.time - self->creationTime ) /
 			         BG_Buildable( self->s.modelindex )->buildTime;
 		}
 
@@ -293,13 +293,12 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	}
 
 	// broadcast the death event to everyone
-	ent = G_TempEntity( self->r.currentOrigin, EV_OBITUARY );
+	ent = G_NewTempEntity( self->r.currentOrigin, EV_OBITUARY );
 	ent->s.eventParm = meansOfDeath;
 	ent->s.otherEntityNum = self->s.number;
 	ent->s.otherEntityNum2 = killer;
 	ent->r.svFlags = SVF_BROADCAST; // send to everyone
 
-	self->enemy = attacker;
 	self->client->ps.persistant[ PERS_KILLED ]++;
 
 	if ( attacker && attacker->client )
@@ -1073,13 +1072,13 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		attacker = &g_entities[ ENTITYNUM_WORLD ];
 	}
 
-	// shootable doors / buttons don't actually have any health
-	if ( targ->s.eType == ET_MOVER )
+	// shootable doors / buttons don't actually have any health unless they have a die or pain function to handle it
+	if ( targ->s.eType == ET_MOVER && !(targ->die || targ->pain ))
 	{
-		if ( targ->use && ( targ->moverState == MOVER_POS1 ||
-		                    targ->moverState == ROTATOR_POS1 ) )
+		if ( ( targ->moverState == MOVER_POS1 || targ->moverState == ROTATOR_POS1 ) )
 		{
-			targ->use( targ, inflictor, attacker );
+			if( targ->act )
+				targ->act( targ, inflictor, attacker );
 		}
 
 		return;
@@ -1294,7 +1293,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		                dflags ) + 0.5f );
 
 		//if boosted poison every attack
-		if ( attacker->client && attacker->client->ps.stats[ STAT_STATE ] & SS_BOOSTED )
+		if ( attacker->client && (attacker->client->ps.stats[ STAT_STATE ] & SS_BOOSTED) )
 		{
 			if ( targ->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS &&
 			     mod != MOD_LEVEL2_ZAP && mod != MOD_POISON &&
@@ -1351,7 +1350,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 				targ->health = -999;
 			}
 
-			targ->enemy = attacker;
 			targ->die( targ, inflictor, attacker, take, mod );
 			return;
 		}

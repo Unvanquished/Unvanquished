@@ -7017,7 +7017,7 @@ void R_LoadEntities( lump_t *l )
 			// check for light shader
 			else if ( !Q_stricmp( keyname, "texture" ) )
 			{
-				light->l.attenuationShader = RE_RegisterShaderLightAttenuation( value );
+				light->l.attenuationShader = RE_RegisterShader( value, RSF_LIGHT_ATTENUATION );
 			}
 			// check for rotation
 			else if ( !Q_stricmp( keyname, "rotation" ) || !Q_stricmp( keyname, "light_rotation" ) )

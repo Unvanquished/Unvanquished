@@ -70,7 +70,8 @@ void CG_RegisterUpgrade( int upgradeNum )
 	}
 	else if ( ( icon = BG_Upgrade( upgradeNum )->icon ) )
 	{
-		upgradeInfo->upgradeIcon = trap_R_RegisterShader( icon );
+		upgradeInfo->upgradeIcon = trap_R_RegisterShader(icon,
+								 RSF_DEFAULT);
 	}
 }
 
@@ -144,7 +145,7 @@ static void CG_LoadCustomCrosshairs( void )
 				break;
 			}
 			
-			shader = trap_R_RegisterShader( token );
+			shader = trap_R_RegisterShader(token, RSF_DEFAULT);
 			
 			if ( !shader )
 			{
@@ -334,7 +335,8 @@ static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p 
 				break;
 			}
 
-			wim->missileSprite = trap_R_RegisterShader( token );
+			wim->missileSprite = trap_R_RegisterShader(token,
+								   RSF_DEFAULT);
 			wim->missileSpriteSize = size;
 			wim->usesSpriteMissle = qtrue;
 
@@ -503,7 +505,8 @@ static qboolean CG_ParseWeaponModeSection( weaponInfoMode_t *wim, char **text_p 
 				break;
 			}
 
-			wim->impactMark = trap_R_RegisterShader( token );
+			wim->impactMark = trap_R_RegisterShader(token,
+								RSF_DEFAULT);
 			wim->impactMarkSize = size;
 
 			if ( !wim->impactMark )
@@ -1082,7 +1085,8 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 				break;
 			}
 
-			wi->weaponIcon = wi->ammoIcon = trap_R_RegisterShader( token );
+			wi->weaponIcon = wi->ammoIcon = trap_R_RegisterShader(token,
+									      RSF_DEFAULT);
 
 			if ( !wi->weaponIcon )
 			{
@@ -1116,7 +1120,8 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 				break;
 			}
 
-			wi->crossHair = trap_R_RegisterShader( token );
+			wi->crossHair = trap_R_RegisterShader(token,
+							      RSF_DEFAULT);
 			wi->crossHairSize = size;
 
 			if ( !wi->crossHair )

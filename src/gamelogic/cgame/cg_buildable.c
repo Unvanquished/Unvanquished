@@ -1169,7 +1169,8 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 		{
 			if ( PC_String_Parse( handle, &s ) )
 			{
-				bs->frameShader = trap_R_RegisterShader( s );
+				bs->frameShader = trap_R_RegisterShader(s,
+									RSF_DEFAULT);
 			}
 
 			continue;
@@ -1178,7 +1179,8 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 		{
 			if ( PC_String_Parse( handle, &s ) )
 			{
-				bs->overlayShader = trap_R_RegisterShader( s );
+				bs->overlayShader = trap_R_RegisterShader(s,
+									  RSF_DEFAULT);
 			}
 
 			continue;
@@ -1187,7 +1189,8 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 		{
 			if ( PC_String_Parse( handle, &s ) )
 			{
-				bs->noPowerShader = trap_R_RegisterShader( s );
+				bs->noPowerShader = trap_R_RegisterShader(s,
+									  RSF_DEFAULT);
 			}
 
 			continue;
@@ -1196,7 +1199,8 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 		{
 			if ( PC_String_Parse( handle, &s ) )
 			{
-				bs->markedShader = trap_R_RegisterShader( s );
+				bs->markedShader = trap_R_RegisterShader(s,
+									 RSF_DEFAULT);
 			}
 
 			continue;

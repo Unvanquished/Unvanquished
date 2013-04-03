@@ -102,6 +102,7 @@ extern "C" {
 	cvar_t      *r_heatHazeFix;
 	cvar_t      *r_noMarksOnTrisurfs;
 	cvar_t      *r_recompileShaders;
+	cvar_t      *r_lazyShaders;
 
 	cvar_t      *r_ext_compressed_textures;
 	cvar_t      *r_ext_occlusion_query;
@@ -1124,8 +1125,7 @@ extern "C" {
 		glState.vertexAttribsState = 0;
 		glState.vertexAttribPointersSet = 0;
 
-		glState.currentProgram = 0;
-		glUseProgram( 0 );
+		GL_BindProgram( NULL );
 
 		glBindBuffer( GL_ARRAY_BUFFER, 0 );
 		glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
@@ -1430,6 +1430,7 @@ extern "C" {
 		r_heatHazeFix = ri.Cvar_Get( "r_heatHazeFix", "0", CVAR_CHEAT | CVAR_SHADER );
 		r_noMarksOnTrisurfs = ri.Cvar_Get( "r_noMarksOnTrisurfs", "1", CVAR_CHEAT );
 		r_recompileShaders = ri.Cvar_Get( "r_recompileShaders", "0", CVAR_ARCHIVE );
+		r_lazyShaders = ri.Cvar_Get( "r_lazyShaders", "0", CVAR_ARCHIVE );
 
 		r_forceFog = ri.Cvar_Get( "r_forceFog", "0", CVAR_CHEAT /* | CVAR_LATCH */ );
 		AssertCvarRange( r_forceFog, 0.0f, 1.0f, qfalse );
@@ -2283,6 +2284,7 @@ extern "C" {
 		   RB_ShowImages();
 		   }
 		 */
+		GLSL_FinishGPUShaders();
 	}
 
 	static void RE_PurgeCache( void )
@@ -2330,10 +2332,6 @@ extern "C" {
 
 		re.RegisterSkin = RE_RegisterSkin;
 		re.RegisterShader = RE_RegisterShader;
-		re.RegisterShaderNoMip = RE_RegisterShaderNoMip;
-#if !defined( COMPAT_ET )
-		re.RegisterShaderLightAttenuation = RE_RegisterShaderLightAttenuation;
-#endif
 
 		re.LoadWorld = RE_LoadWorldMap;
 		re.SetWorldVisData = RE_SetWorldVisData;

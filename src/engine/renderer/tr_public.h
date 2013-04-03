@@ -66,11 +66,8 @@ typedef struct
 	qhandle_t ( *RegisterModel )( const char *name );
 	//qhandle_t   (*RegisterModelAllLODs) (const char *name);
 	qhandle_t ( *RegisterSkin )( const char *name );
-	qhandle_t ( *RegisterShader )( const char *name );
-	qhandle_t ( *RegisterShaderNoMip )( const char *name );
-#if defined( USE_REFLIGHT )
-	qhandle_t ( *RegisterShaderLightAttenuation )( const char *name );
-#endif
+	qhandle_t ( *RegisterShader )( const char *name,
+				       RegisterShaderFlags_t flags );
 	void   ( *RegisterFont )( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t *font );
 	void   ( *UnregisterFont )( fontInfo_t *font );
 	void   ( *RegisterFontVM )( const char *fontName, const char *fallbackName, int pointSize, fontMetrics_t * );

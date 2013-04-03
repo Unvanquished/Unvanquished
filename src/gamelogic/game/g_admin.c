@@ -1534,10 +1534,7 @@ qboolean G_admin_ban_check( gentity_t *ent, char *reason, int rlen )
 
 g_admin_spec_t *G_admin_match_spec( gentity_t *ent )
 {
-	int            t;
 	g_admin_spec_t *spec;
-
-	t = trap_RealTime( NULL );
 
 	if ( ent->client->pers.localClient )
 	{
@@ -2369,15 +2366,19 @@ int G_admin_parse_time( const char *time )
 		{
 			case 'w':
 				num *= 7;
+				/* no break */
 
 			case 'd':
 				num *= 24;
+				/* no break */
 
 			case 'h':
 				num *= 60;
+				/* no break */
 
 			case 'm':
 				num *= 60;
+				/* no break */
 
 			case 's':
 				break;
@@ -3085,7 +3086,7 @@ qboolean G_admin_changemap( gentity_t *ent )
 	{
 		trap_Argv( 2, layout, sizeof( layout ) );
 
-		if ( !Q_stricmp( layout, "*BUILTIN*" ) ||
+		if ( !Q_stricmp( layout, S_BUILTIN_LAYOUT ) ||
 		     trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, layout ),
 		                        NULL, FS_READ ) > 0 )
 		{
@@ -4088,7 +4089,7 @@ qboolean G_admin_restart( gentity_t *ent )
 	}
 
 	// check that the layout's available
-	builtin = !*layout || !Q_stricmp( layout, "*BUILTIN*" );
+	builtin = !*layout || !Q_stricmp( layout, S_BUILTIN_LAYOUT );
 
 	if ( !builtin && !trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, layout ), NULL, FS_READ ) )
 	{
@@ -4101,7 +4102,7 @@ qboolean G_admin_restart( gentity_t *ent )
 	admin_log( teampref );
 
 	// cvars
-	trap_Cvar_Set( "g_layouts", builtin ? "*BUILTIN*" : layout );
+	trap_Cvar_Set( "g_layouts", builtin ? S_BUILTIN_LAYOUT : layout );
 	trap_Cvar_Set( "g_mapRestarted", "y" );
 
 	// handle the flag
@@ -4186,6 +4187,7 @@ qboolean G_admin_nextmap( gentity_t *ent )
 	        G_quoted_admin_name( ent ) ) );
 	level.lastWin = TEAM_NONE;
 	trap_SetConfigstring( CS_WINNER, "Evacuation" );
+	G_notify_sensor_end( TEAM_NONE );
 	LogExit( va( "nextmap was run by %s", G_admin_name( ent ) ) );
 	G_MapLog_Result( 'N' );
 	return qtrue;
@@ -4821,7 +4823,7 @@ qboolean G_admin_builder( gentity_t *ent )
 	trace_t    tr;
 	gentity_t  *traceEnt;
 	buildLog_t *log;
-	int        i;
+	int        i = 0;
 	qboolean   buildlog;
 
 	if ( !ent )

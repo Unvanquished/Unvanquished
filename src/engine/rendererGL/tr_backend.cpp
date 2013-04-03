@@ -11853,7 +11853,7 @@ const void *RB_RunVisTests( const void *data )
 				test->position, diff );
 		VectorNormalize( diff );
 		VectorMA( test->position, test->depthAdjust, diff, tess.xyz[0] );
-		tess.xyz[0][4] = 1.0f;
+		tess.xyz[0][3] = 1.0f;
 		tess.numVertexes = 1;
 
 		tess.indexes[0] = 0;
@@ -12213,6 +12213,8 @@ void RB_ExecuteRenderCommands( const void *data )
 				// stop rendering on this thread
 				t2 = ri.Milliseconds();
 				backEnd.pc.msec = t2 - t1;
+
+				gl_shaderManager.buildIncremental( r_lazyShaders->integer );
 				return;
 		}
 	}

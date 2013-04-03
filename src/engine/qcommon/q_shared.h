@@ -227,35 +227,7 @@ extern int memcmp( void *, void *, size_t );
 #define Q3_VM_INSTANTIATE
 #endif
 
-#if defined __GNUC__ || defined __clang__
-#define NORETURN __attribute__((__noreturn__))
-#define UNUSED __attribute__((__unused__))
-#define PRINTF_ARGS(f, a) __attribute__((__format__(__printf__, (f), (a))))
-#define PRINTF_LIKE(n) PRINTF_ARGS((n), (n) + 1)
-#define VPRINTF_LIKE(n) PRINTF_ARGS((n), 0)
-#define ALIGNED(a, x) x __attribute__((__aligned__(a)))
-#define ALWAYS_INLINE INLINE __attribute__((__always_inline__))
-#elif ( defined _MSC_VER )
-#define NORETURN
-#define UNUSED
-#define PRINTF_ARGS(f, a)
-#define PRINTF_LIKE(n)
-#define VPRINTF_LIKE(n)
-#define ALIGNED( a, x ) __declspec(align(a)) x
-#define ALWAYS_INLINE __forceinline
-#define __attribute__(x)
-#define __func__ __FUNCTION__
-#else
-#define NORETURN
-#define UNUSED
-#define PRINTF_ARGS(f, a)
-#define PRINTF_LIKE(n)
-#define VPRINTF_LIKE(n)
-#define ALIGNED( a, x ) x
-#define ALWAYS_INLINE
-#define __attribute__(x)
-#define __func__
-#endif
+#include "../../include/global.h"
 
 //bani
 //======================= GNUC DEFINES ==================================
@@ -582,6 +554,14 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 	       ) ? qtrue : qfalse;
 }
 #endif
+
+/*
+ * used for consistent representation within print or log statements
+ * TODO: should probably be rather done via specialized print function that takes a severity enum, so that it also can do filtering
+ */
+#define S_WARNING S_COLOR_YELLOW "Warning: " S_COLOR_WHITE
+#define S_ERROR   S_COLOR_RED "ERROR: " S_COLOR_WHITE
+#define S_DEBUG   "Debug: "
 
 #define INDENT_MARKER    '\v'
 
@@ -2043,8 +2023,8 @@ double rint( double x );
 		ET_BEAM,
 		ET_PORTAL,
 		ET_SPEAKER,
-		ET_PUSH_TRIGGER,
-		ET_TELEPORT_TRIGGER,
+		ET_PUSHER,
+		ET_TELEPORTER,
 		ET_INVISIBLE,
 		ET_GRAPPLE,       // grapple hooked on wall
 
@@ -2242,6 +2222,7 @@ typedef struct
 #define MAX_MODELS                256 // these are sent over the net as 8 bits
 #define MAX_SOUNDS                256 // so they cannot be blindly increased
 #define MAX_GAME_SHADERS          64
+#define MAX_GRADING_TEXTURES      64
 #define MAX_GAME_PARTICLE_SYSTEMS 64
 #define MAX_HOSTNAME_LENGTH       80
 #define MAX_NEWS_STRING           10000

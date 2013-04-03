@@ -35,24 +35,7 @@ Maryland 20850 USA.
 #ifndef _DL_LOCAL_H_
 #define _DL_LOCAL_H_
 
-#if defined __GNUC__ || defined __clang__
-#define NORETURN __attribute__((__noreturn__))
-#define UNUSED __attribute__((__unused__))
-#define PRINTF_ARGS(f, a) __attribute__((__format__(__printf__, (f), (a))))
-#define PRINTF_LIKE(n) PRINTF_ARGS((n), (n) + 1)
-#define VPRINTF_LIKE(n) PRINTF_ARGS((n), 0)
-#define ALIGNED(a) __attribute__((__aligned__(a)))
-#define ALWAYS_INLINE __attribute__((__always_inline__))
-#else
-#define NORETURN
-#define UNUSED
-#define PRINTF_ARGS(f, a)
-#define PRINTF_LIKE(n)
-#define VPRINTF_LIKE(n)
-#define ALIGNED(a)
-#define ALWAYS_INLINE
-#define __attribute__(x)
-#endif
+#include "../../include/global.h"
 
 // system API
 // only the restricted subset we need

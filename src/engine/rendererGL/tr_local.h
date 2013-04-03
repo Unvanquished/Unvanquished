@@ -3849,7 +3849,7 @@ extern "C" {
 		image_t *grainImage;
 		image_t *vignetteImage;
 		image_t *colorGradeImage;
-		GLint    colorGradePBO;
+		GLuint   colorGradePBO;
 
 		// framebuffer objects
 		FBO_t *geometricRenderFBO; // is the G-Buffer for deferred shading
@@ -4073,6 +4073,7 @@ extern "C" {
 	extern cvar_t *r_heatHazeFix;
 	extern cvar_t *r_noMarksOnTrisurfs;
 	extern cvar_t *r_recompileShaders;
+	extern cvar_t *r_lazyShaders;
 
 	extern cvar_t *r_norefresh; // bypasses the ref rendering
 	extern cvar_t *r_drawentities; // disable/enable entity rendering
@@ -4528,9 +4529,7 @@ extern "C" {
 
 	====================================================================
 	*/
-	qhandle_t RE_RegisterShader( const char *name );
-	qhandle_t RE_RegisterShaderNoMip( const char *name );
-	qhandle_t RE_RegisterShaderLightAttenuation( const char *name );
+	qhandle_t RE_RegisterShader( const char *name, RegisterShaderFlags_t flags );
 	qhandle_t RE_RegisterShaderFromImage( const char *name, image_t *image, qboolean mipRawImage );
 	qboolean  RE_LoadDynamicShader( const char *shadername, const char *shadertext );
 
@@ -4640,6 +4639,7 @@ extern "C" {
 #if !defined( USE_D3D10 )
 	void                    GLSL_InitGPUShaders( void );
 	void                    GLSL_ShutdownGPUShaders( void );
+	void                    GLSL_FinishGPUShaders( void );
 
 #endif
 
