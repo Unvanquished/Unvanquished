@@ -3166,9 +3166,6 @@ void Com_Init( char *commandLine )
 		// if the user didn't give any commands, run default action
 	}
 
-	// start in full screen ui mode
-	Cvar_Set( "r_uiFullScreen", "1" );
-
 	CL_StartHunkUsers();
 
 	// NERVE - SMF - force recommendedSet and don't do vid_restart if in safe mode
