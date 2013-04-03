@@ -164,6 +164,11 @@ int G_GradingTextureIndex( const char *name )
 	return G_FindConfigstringIndex( name, CS_GRADING_TEXTURES+1, MAX_GRADING_TEXTURES-1, qtrue );
 }
 
+int G_LocationIndex( const char *name )
+{
+	return G_FindConfigstringIndex( name, CS_LOCATIONS, MAX_LOCATIONS, qtrue );
+}
+
 /*
 =============
 VectorToString
