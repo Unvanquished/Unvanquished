@@ -5741,6 +5741,9 @@ static char    *FindShaderInShaderText( const char *shaderName )
 		}
 	}
 
+	// if the shader is not in the table, it must not exist
+	return NULL;
+#if 0
 	p = s_shaderText;
 
 	if ( !p )
@@ -5822,6 +5825,7 @@ static char    *FindShaderInShaderText( const char *shaderName )
 	}
 
 	return NULL;
+#endif
 }
 
 /*
@@ -6709,7 +6713,8 @@ static void ScanAndLoadShaderFiles( void )
 	char *p;
 	int  numShaderFiles;
 	int  i;
-	char *oldp, *token, *hashMem, *textEnd;
+	char *oldp, *token, *textEnd;
+	char **hashMem;
 	int  shaderTextHashTableSizes[ MAX_SHADERTEXT_HASH ], hash, size;
 	char filename[ MAX_QPATH ];
 	long sum = 0, summand;
@@ -6901,8 +6906,8 @@ static void ScanAndLoadShaderFiles( void )
 
 	for ( i = 0; i < MAX_SHADERTEXT_HASH; i++ )
 	{
-		shaderTextHashTable[ i ] = ( char ** ) hashMem;
-		hashMem = ( ( char * ) hashMem ) + ( ( shaderTextHashTableSizes[ i ] + 1 ) * sizeof( char * ) );
+		shaderTextHashTable[ i ] = hashMem;
+		hashMem += shaderTextHashTableSizes[ i ] + 1;
 	}
 
 	Com_Memset( shaderTextHashTableSizes, 0, sizeof( shaderTextHashTableSizes ) );
