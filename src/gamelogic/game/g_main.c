@@ -1560,13 +1560,13 @@ void G_CalculateStages( void )
 
 		while ( stage < newStage )
 		{
-			G_notify_sensor_stage( team, stage + 1 );
+			G_notify_sensor_stage( team, stage, stage + 1 );
 			++stage;
 		}
 
 		while ( stage > newStage )
 		{
-			G_notify_sensor_stage( team, stage - 1 );
+			G_notify_sensor_stage( team, stage, stage - 1 );
 			--stage;
 		}
 
@@ -2135,7 +2135,6 @@ void LogExit( const char *string )
 {
 	int       i, numSorted;
 	gclient_t *cl;
-	gentity_t *ent;
 
 	G_LogPrintf( "Exit: %s\n", string );
 
@@ -2399,7 +2398,7 @@ void G_Vote( gentity_t *ent, team_t team, qboolean voting )
 		return;
 	}
 
-	if ( voting && ent->client->pers.voted & ( 1 << team ) )
+	if ( voting && (ent->client->pers.voted & ( 1 << team )) )
 	{
 		return;
 	}

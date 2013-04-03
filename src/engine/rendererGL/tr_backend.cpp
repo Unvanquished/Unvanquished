@@ -12333,6 +12333,8 @@ void RB_ExecuteRenderCommands( const void *data )
 				// stop rendering on this thread
 				t2 = ri.Milliseconds();
 				backEnd.pc.msec = t2 - t1;
+
+				gl_shaderManager.buildIncremental( r_lazyShaders->integer );
 				return;
 		}
 	}

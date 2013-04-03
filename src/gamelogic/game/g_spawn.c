@@ -126,22 +126,22 @@ typedef struct
 
 static const field_t fields[] =
 {
-	{ "acceleration",        FOFS( acceleration ),        F_3D_VECTOR },
-	{ "alias",               FOFS( names[ 2 ] ),          F_STRING    },
-	{ "alpha",               FOFS( restingPosition ),     F_3D_VECTOR }, // What's with the variable abuse everytime?
-	{ "amount",              FOFS( config.amount ),       F_INT       },
-	{ "angle",               FOFS( s.angles ),            F_YAW,      ENT_V_TMPNAME, "yaw"}, //radiants ui sadly strongly encourages the "angle" keyword
-	{ "angles",              FOFS( s.angles ),            F_3D_VECTOR },
-	{ "animation",           FOFS( animation ),           F_4D_VECTOR },
-	{ "bounce",              FOFS( physicsBounce ),       F_FLOAT     },
-	{ "classname",           FOFS( classname ),           F_STRING    },
+	{ "acceleration",        FOFS( acceleration ),        F_3D_VECTOR  },
+	{ "alias",               FOFS( names[ 2 ] ),          F_STRING     },
+	{ "alpha",               FOFS( restingPosition ),     F_3D_VECTOR  }, // What's with the variable abuse everytime?
+	{ "amount",              FOFS( config.amount ),       F_INT        },
+	{ "angle",               FOFS( s.angles ),            F_YAW,       ENT_V_TMPNAME, "yaw"}, //radiants ui sadly strongly encourages the "angle" keyword
+	{ "angles",              FOFS( s.angles ),            F_3D_VECTOR  },
+	{ "animation",           FOFS( animation ),           F_4D_VECTOR  },
+	{ "bounce",              FOFS( physicsBounce ),       F_FLOAT      },
+	{ "classname",           FOFS( classname ),           F_STRING     },
 	{ "delay",               FOFS( config.delay ),        F_TIME       },
-	{ "dmg",                 FOFS( config.damage ),       F_INT       },
-	{ "health",              FOFS( config.health ),       F_INT       },
-	{ "message",             FOFS( message ),             F_STRING    },
-	{ "model",               FOFS( model ),               F_STRING    },
-	{ "model2",              FOFS( model2 ),              F_STRING    },
-	{ "name",	        	 FOFS( names[ 0 ] ),          F_STRING	  },
+	{ "dmg",                 FOFS( config.damage ),       F_INT        },
+	{ "health",              FOFS( config.health ),       F_INT        },
+	{ "message",             FOFS( message ),             F_STRING     },
+	{ "model",               FOFS( model ),               F_STRING     },
+	{ "model2",              FOFS( model2 ),              F_STRING     },
+	{ "name",	        	 FOFS( names[ 0 ] ),          F_STRING	   },
 	{ "onAct",               FOFS( calltargets ),         F_CALLTARGET },
 	{ "onDie",               FOFS( calltargets ),         F_CALLTARGET },
 	{ "onDisable",           FOFS( calltargets ),         F_CALLTARGET },
@@ -152,24 +152,25 @@ static const field_t fields[] =
 	{ "onSpawn",             FOFS( calltargets ),         F_CALLTARGET },
 	{ "onTouch",             FOFS( calltargets ),         F_CALLTARGET },
 	{ "onUse",               FOFS( calltargets ),         F_CALLTARGET },
-	{ "origin",              FOFS( s.origin ),            F_3D_VECTOR },
+	{ "origin",              FOFS( s.origin ),            F_3D_VECTOR  },
 	{ "period",              FOFS( config.period ),       F_TIME       },
-	{ "radius",              FOFS( activatedPosition ),   F_3D_VECTOR }, // What's with the variable abuse everytime?
-	{ "random",              FOFS( config.wait.variance ),F_FLOAT,    ENT_V_COMBINED, "wait" },
-	{ "spawnflags",          FOFS( spawnflags ),          F_INT       },
-	{ "speed",               FOFS( config.speed ),        F_FLOAT     },
-	{ "stage",               FOFS( conditions.stage ),    F_INT       },
+	{ "radius",              FOFS( activatedPosition ),   F_3D_VECTOR  }, // What's with the variable abuse everytime?
+	{ "random",              FOFS( config.wait.variance ),F_FLOAT,     ENT_V_TMPNAME, "wait" },
+	{ "shader",              FOFS( shaderKey ),           F_STRING     },
+	{ "spawnflags",          FOFS( spawnflags ),          F_INT        },
+	{ "speed",               FOFS( config.speed ),        F_FLOAT      },
+	{ "stage",               FOFS( conditions.stage ),    F_INT        },
 	{ "target",              FOFS( targets ),             F_TARGET     },
 	{ "target2",             FOFS( targets ),             F_TARGET     }, // backwardcompatibility with AMP and to use the blackout map for testing
 	{ "target3",             FOFS( targets ),             F_TARGET     }, // backwardcompatibility with AMP and to use the blackout map for testing
 	{ "target4",             FOFS( targets ),             F_TARGET     }, // backwardcompatibility with AMP and to use the blackout map for testing
 	{ "targetname",          FOFS( names[ 1 ] ),          F_STRING,    ENT_V_RENAMED, "name" },
 	{ "targetname2",         FOFS( names[ 2 ] ),          F_STRING,    ENT_V_RENAMED, "name" }, // backwardcompatibility with AMP and to use the blackout map for testing
-	{ "targetShaderName",    FOFS( targetShaderName ),    F_STRING    },
-	{ "targetShaderNewName", FOFS( targetShaderNewName ), F_STRING    },
-	{ "team",                FOFS( conditions.team ),     F_INT       },
-	{ "wait",                FOFS( config.wait ),         F_TIME      },
-	{ "yaw",                 FOFS( s.angles ),            F_YAW       },
+	{ "targetShaderName",    FOFS( shaderKey ),           F_STRING,    ENT_V_TMPNAME, "shader"},
+	{ "targetShaderNewName", FOFS( shaderReplacement ),   F_STRING     },
+	{ "team",                FOFS( conditions.team ),     F_INT        },
+	{ "wait",                FOFS( config.wait ),         F_TIME       },
+	{ "yaw",                 FOFS( s.angles ),            F_YAW        },
 };
 
 typedef enum
@@ -214,16 +215,23 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	 *
 	 *	Control entities
 	 *	================
+	 *	Entities state control and optionally store states.
+	 *	Act essentially as Statemachines.
 	 *
 	 */
-	{ "ctrl_limited",             SP_ctrl_limited,           CHAIN_RELAY,      ENT_V_CURRENT, NULL  },
-	{ "ctrl_relay",               SP_ctrl_relay,             CHAIN_RELAY,      ENT_V_CURRENT, NULL  },
+	{ S_CTRL_LIMITED,             SP_ctrl_limited,           CHAIN_RELAY },
+	{ S_CTRL_RELAY,               SP_ctrl_relay,             CHAIN_RELAY },
 
 	/**
 	 *
 	 *	Environment entities
 	 *	====================
-	 *  the afx subgroup describes environment area effects, which in most cases should be client predictable
+	 *	Entities that represent some form of Effect in the world.
+	 *	Many are client predictable or even completly handled clientside.
+	 *
+	 *	sfx: sound
+	 *	gfx: graphics
+	 *	afx: area environment effects
 	 */
 	{ "env_afx_ammo",             SP_env_afx_ammo,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "env_afx_gravity",          SP_env_afx_gravity,        CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
@@ -258,26 +266,27 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ "func_rotating",            SP_func_rotating,          CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "func_spawn",               SP_func_spawn,             CHAIN_PASSIV,     ENT_V_UNCLEAR, NULL },
 	{ "func_static",              SP_func_static,            CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ "func_timer",               SP_sensor_timer,			 CHAIN_ACTIVE,     ENT_V_TMPNAME, "sensor_timer" },
+	{ "func_timer",               SP_sensor_timer,			 CHAIN_ACTIVE,     ENT_V_TMPNAME, S_SENSOR_TIMER },
 	{ "func_train",               SP_func_train,             CHAIN_ACTIVE,     ENT_V_UNCLEAR, NULL },
 
 	/**
 	 *
 	 *	Game entities
 	 *	=============
-	 *
+	 *  Entities that have an major influence on the gameplay.
+	 *  These are actions and effects against the whole match, a team or a player.
 	 */
-	{ "game_end",                 SP_game_end,               CHAIN_PASSIV,     ENT_V_CURRENT, NULL },
-	{ "game_score",               SP_game_score,             CHAIN_PASSIV,     ENT_V_CURRENT, NULL },
-	{ "game_kill",                SP_game_kill,              CHAIN_PASSIV,     ENT_V_CURRENT, NULL },
+	{ S_GAME_END,                 SP_game_end,               CHAIN_PASSIV },
+	{ S_GAME_KILL,                SP_game_kill,              CHAIN_PASSIV },
+	{ S_GAME_SCORE,               SP_game_score,             CHAIN_PASSIV },
 
 
 	/**
-	 * former information and misc entities
+	 * former information and misc entities, now deprecated
 	 */
 	{ "info_alien_intermission",  SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_ALIEN_INTERMISSION  },
 	{ "info_human_intermission",  SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_HUMAN_INTERMISSION  },
-	{ "info_notnull",             SP_pos_target,             CHAIN_TARGET,     ENT_V_TMPNAME, "pos_target" },
+	{ "info_notnull",             SP_pos_target,             CHAIN_TARGET,     ENT_V_RENAMED, S_POS_TARGET },
 	{ "info_null",                SP_RemoveSelf,             0,                ENT_V_UNCLEAR, NULL },
 	{ "info_player_deathmatch",   SP_pos_player_spawn,       CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_PLAYER_SPAWN },
 	{ "info_player_intermission", SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_PLAYER_INTERMISSION },
@@ -289,7 +298,7 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ "misc_particle_system",     SP_env_particle_system,    CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_particle_system"},
 	{ "misc_portal_camera",       SP_env_portal_camera,      CHAIN_TARGET,     ENT_V_TMPNAME, "env_portal_camera" },
 	{ "misc_portal_surface",      SP_env_portal_surface,     CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_portal_surface" },
-	{ "misc_teleporter_dest",     SP_pos_target,             CHAIN_TARGET,     ENT_V_TMPNAME, "pos_target" },
+	{ "misc_teleporter_dest",     SP_pos_target,             CHAIN_TARGET,     ENT_V_RENAMED, S_POS_TARGET },
 
 	/**
 	 *  Position entities
@@ -297,65 +306,55 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	 *  position entities may get used by other entities or other processes as provider for positional data
 	 *
 	 *  positions may or may not have an additional direction attached to them
-	 *  they may also target to another position to indicate that direction
+	 *  they may also target to another position to indicate that direction,
+	 *  possibly even modeling a form of path
 	 */
 	{ S_PATH_CORNER,              SP_Nothing,                CHAIN_TARGET,     ENT_V_UNCLEAR, NULL },
 	{ S_POS_ALIEN_INTERMISSION,   SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ S_POS_HUMAN_INTERMISSION,   SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ "pos_location",             SP_pos_location,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ S_POS_LOCATION,             SP_pos_location,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ S_POS_PLAYER_INTERMISSION,  SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ S_POS_PLAYER_SPAWN,         SP_pos_player_spawn,       CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ "pos_target",               SP_pos_target,             CHAIN_TARGET,     ENT_V_UNCLEAR, NULL },
+	{ S_POS_TARGET,               SP_pos_target,             CHAIN_TARGET },
 
 	/**
 	 *  Sensors
 	 *  =======
-	 *  Sensor fire an event (usually towards targets) when aware
+	 *  Sensor fire an event against call-receiving entities, when aware
 	 *  of another entity, event, or gamestate (timer and start being aware of the game start).
-	 *  Sensors often can be targeted to toggle (activate or deactivate)
-	 *  their function of perceiving other entities.
+	 *  Enabling/Disabling Sensors generally changes their ability of perceiving other entities.
 	 */
 
-	{ "sensor_buildable",         SP_sensor_buildable,       CHAIN_ACTIVE,     ENT_V_UNCLEAR, NULL },
+	{ S_SENSOR_BUILDABLE,         SP_sensor_buildable,       CHAIN_ACTIVE },
 	{ S_SENSOR_CREEP,             SP_sensor_creep,           CHAIN_ACTIVE },
-	{ S_SENSOR_END,               SP_sensor_end,             CHAIN_ACTIVE,     ENT_V_CURRENT, NULL },
-	{ S_SENSOR_PLAYER,            SP_sensor_player,          CHAIN_ACTIVE,     ENT_V_UNCLEAR, NULL },
+	{ S_SENSOR_END,               SP_sensor_end,             CHAIN_ACTIVE },
+	{ S_SENSOR_PLAYER,            SP_sensor_player,          CHAIN_ACTIVE },
 	{ S_SENSOR_POWER,             SP_sensor_power,           CHAIN_ACTIVE },
-	{ S_SENSOR_STAGE,             SP_sensor_stage,           CHAIN_ACTIVE,     ENT_V_CURRENT, NULL },
-	{ S_SENSOR_START,             SP_sensor_start,           CHAIN_ACTIVE,     ENT_V_CURRENT, NULL },
+	{ S_SENSOR_STAGE,             SP_sensor_stage,           CHAIN_ACTIVE },
+	{ S_SENSOR_START,             SP_sensor_start,           CHAIN_ACTIVE },
 	{ S_SENSOR_SUPPORT,           SP_sensor_support,         CHAIN_ACTIVE },
-	{ "sensor_timer",             SP_sensor_timer,           CHAIN_ACTIVE,     ENT_V_UNCLEAR, NULL },
+	{ S_SENSOR_TIMER,             SP_sensor_timer,           CHAIN_ACTIVE,     ENT_V_UNCLEAR, NULL },
 
-	/**
-	 *
-	 * 	Target Entities
-	 * 	===============
-	 * 	Targets perform no action by themselves.
-	 *	Instead they are targeted by other entities,
-	 *	like being triggered by a trigger_ entity.
-	 *
+	/*
+	 * former target and trigger entities, now deprecated or soon to be deprecated
 	 */
-	{ "target_alien_win",         SP_game_end,               CHAIN_PASSIV,     ENT_V_TMPNAME, "game_end" },
-	{ "target_delay",             SP_ctrl_relay,             CHAIN_RELAY,      ENT_V_TMPNAME, "ctrl_relay" },
-	{ "target_human_win",         SP_game_end,               CHAIN_PASSIV,     ENT_V_TMPNAME, "game_end" },
+	{ "target_alien_win",         SP_game_end,               CHAIN_PASSIV,     ENT_V_TMPNAME, S_GAME_END },
+	{ "target_delay",             SP_ctrl_relay,             CHAIN_RELAY,      ENT_V_TMPNAME, S_CTRL_RELAY },
+	{ "target_human_win",         SP_game_end,               CHAIN_PASSIV,     ENT_V_TMPNAME, S_GAME_END },
 	{ "target_hurt",              SP_target_hurt,            CHAIN_PASSIV,     ENT_V_UNCLEAR, NULL },
-	{ "target_kill",              SP_game_kill,              CHAIN_PASSIV,     ENT_V_RENAMED, "game_kill" },
-	{ "target_location",          SP_pos_location,           CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "pos_location" },
-	{ "target_position",          SP_pos_target,             CHAIN_TARGET,     ENT_V_TMPNAME, "pos_target" },
+	{ "target_kill",              SP_game_kill,              CHAIN_PASSIV,     ENT_V_TMPNAME, S_GAME_KILL },
+	{ "target_location",          SP_pos_location,           CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_LOCATION },
+	{ "target_position",          SP_pos_target,             CHAIN_TARGET,     ENT_V_RENAMED, S_POS_TARGET },
 	{ "target_print",             SP_target_print,           CHAIN_PASSIV,     ENT_V_UNCLEAR, NULL },
 	{ "target_push",              SP_target_push,            CHAIN_PASSIV,     ENT_V_UNCLEAR, NULL },
-	{ "target_relay",             SP_ctrl_relay,             CHAIN_RELAY,      ENT_V_TMPNAME, "ctrl_relay" },
+	{ "target_relay",             SP_ctrl_relay,             CHAIN_RELAY,      ENT_V_TMPNAME, S_CTRL_RELAY },
 	{ "target_rumble",            SP_env_rumble,             CHAIN_PASSIV,     ENT_V_TMPNAME, "env_rumble" },
-	{ "target_score",             SP_game_score,             CHAIN_PASSIV,     ENT_V_TMPNAME, "game_score" },
+	{ "target_score",             SP_game_score,             CHAIN_PASSIV,     ENT_V_TMPNAME, S_GAME_SCORE },
 	{ "target_speaker",           SP_env_speaker,            CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_speaker" },
 	{ "target_teleporter",        SP_target_teleporter,      CHAIN_PASSIV,     ENT_V_UNCLEAR, NULL },
-
-	/**
-	 * former trigger
-	 */
 	{ "trigger_always",           SP_sensor_start,           CHAIN_ACTIVE,     ENT_V_RENAMED, S_SENSOR_START },
 	{ "trigger_ammo",             SP_env_afx_ammo,           CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_afx_ammo" },
-	{ "trigger_buildable",        SP_sensor_buildable,       CHAIN_ACTIVE,     ENT_V_TMPNAME, "sensor_buildable" },
+	{ "trigger_buildable",        SP_sensor_buildable,       CHAIN_ACTIVE,     ENT_V_TMPNAME, S_SENSOR_BUILDABLE },
 	{ "trigger_class",            SP_sensor_player,          CHAIN_ACTIVE,     ENT_V_TMPNAME, S_SENSOR_PLAYER },
 	{ "trigger_equipment",        SP_sensor_player,          CHAIN_ACTIVE,     ENT_V_TMPNAME, S_SENSOR_PLAYER },
 	{ "trigger_gravity",          SP_env_afx_gravity,        CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_afx_gravity" },

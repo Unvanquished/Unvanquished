@@ -1538,10 +1538,7 @@ qboolean G_admin_ban_check( gentity_t *ent, char *reason, int rlen )
 
 g_admin_spec_t *G_admin_match_spec( gentity_t *ent )
 {
-	int            t;
 	g_admin_spec_t *spec;
-
-	t = trap_RealTime( NULL );
 
 	if ( ent->client->pers.localClient )
 	{
@@ -2373,15 +2370,19 @@ int G_admin_parse_time( const char *time )
 		{
 			case 'w':
 				num *= 7;
+				/* no break */
 
 			case 'd':
 				num *= 24;
+				/* no break */
 
 			case 'h':
 				num *= 60;
+				/* no break */
 
 			case 'm':
 				num *= 60;
+				/* no break */
 
 			case 's':
 				break;
@@ -4828,7 +4829,7 @@ qboolean G_admin_builder( gentity_t *ent )
 	trace_t    tr;
 	gentity_t  *traceEnt;
 	buildLog_t *log;
-	int        i;
+	int        i = 0;
 	qboolean   buildlog;
 
 	if ( !ent )

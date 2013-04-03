@@ -4394,54 +4394,54 @@ void ClientCommand( int clientNum )
 		return;
 	}
 
-	if ( command->cmdFlags & CMD_CHEAT && !g_cheats.integer )
+	if ( (command->cmdFlags & CMD_CHEAT) && !g_cheats.integer )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_CHEAT );
 		return;
 	}
 
-	if ( command->cmdFlags & CMD_MESSAGE && ( ent->client->pers.namelog->muted ||
+	if ( (command->cmdFlags & CMD_MESSAGE) && ( ent->client->pers.namelog->muted ||
 	     G_FloodLimited( ent ) ) )
 	{
 		return;
 	}
 
-	if ( command->cmdFlags & CMD_TEAM &&
+	if ( (command->cmdFlags & CMD_TEAM) &&
 	     ent->client->pers.teamSelection == TEAM_NONE )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_TEAM );
 		return;
 	}
 
-	if ( command->cmdFlags & CMD_CHEAT_TEAM && !g_cheats.integer &&
+	if ( (command->cmdFlags & CMD_CHEAT_TEAM) && !g_cheats.integer &&
 	     ent->client->pers.teamSelection != TEAM_NONE )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_CHEAT_TEAM );
 		return;
 	}
 
-	if ( command->cmdFlags & CMD_SPEC &&
+	if ( (command->cmdFlags & CMD_SPEC) &&
 	     ent->client->sess.spectatorState == SPECTATOR_NOT )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_SPEC );
 		return;
 	}
 
-	if ( command->cmdFlags & CMD_ALIEN &&
+	if ( (command->cmdFlags & CMD_ALIEN) &&
 	     ent->client->pers.teamSelection != TEAM_ALIENS )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_ALIEN );
 		return;
 	}
 
-	if ( command->cmdFlags & CMD_HUMAN &&
+	if ( (command->cmdFlags & CMD_HUMAN) &&
 	     ent->client->pers.teamSelection != TEAM_HUMANS )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_HUMAN );
 		return;
 	}
 
-	if ( command->cmdFlags & CMD_ALIVE &&
+	if ( (command->cmdFlags & CMD_ALIVE) &&
 	     ( ent->client->ps.stats[ STAT_HEALTH ] <= 0 ||
 	       ent->client->sess.spectatorState != SPECTATOR_NOT ) )
 	{
