@@ -1377,7 +1377,7 @@ void G_CalculateBuildPoints( void )
 		buildable_t      buildable;
 		int              cost;
 
-		if ( ent->s.eType != ET_BUILDABLE || ent->s.eFlags & EF_DEAD )
+		if ( ent->s.eType != ET_BUILDABLE || (ent->s.eFlags & EF_DEAD) )
 		{
 			continue;
 		}
@@ -1428,7 +1428,7 @@ void G_CalculateBuildPoints( void )
 	{
 		gentity_t *ent = &g_entities[ i ];
 
-		if ( ent->s.eType != ET_BUILDABLE || ent->s.eFlags & EF_DEAD ||
+		if ( ent->s.eType != ET_BUILDABLE || (ent->s.eFlags & EF_DEAD) ||
 		     ent->buildableTeam != TEAM_HUMANS )
 		{
 			continue;
@@ -2158,7 +2158,6 @@ void LogExit( const char *string )
 {
 	int       i, numSorted;
 	gclient_t *cl;
-	gentity_t *ent;
 
 	G_LogPrintf( "Exit: %s\n", string );
 
@@ -2422,7 +2421,7 @@ void G_Vote( gentity_t *ent, team_t team, qboolean voting )
 		return;
 	}
 
-	if ( voting && ent->client->pers.voted & ( 1 << team ) )
+	if ( voting && (ent->client->pers.voted & ( 1 << team )) )
 	{
 		return;
 	}
