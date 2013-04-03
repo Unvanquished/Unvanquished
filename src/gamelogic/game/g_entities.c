@@ -769,8 +769,19 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 			break;
 
 		case ECA_USE:
-			if (targetedEntity->use)
-				targetedEntity->use(targetedEntity, call->caller, call->activator);
+			if (!targetedEntity->use)
+			{
+				if(g_debugEntities.integer >= 0)
+					G_Printf(S_WARNING "calling :use on %s, which has no use function!\n", etos(targetedEntity));
+				break;
+			}
+			if(!call->activator || !call->activator->client)
+			{
+				if(g_debugEntities.integer >= 0)
+					G_Printf(S_WARNING "calling %s:use, without a client as activator.\n", etos(targetedEntity));
+				break;
+			}
+			targetedEntity->use(targetedEntity, call->caller, call->activator);
 			break;
 		case ECA_RESET:
 			if (targetedEntity->reset)
