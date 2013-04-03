@@ -156,6 +156,7 @@ static const field_t fields[] =
 	{ "period",              FOFS( config.period ),       F_TIME       },
 	{ "radius",              FOFS( activatedPosition ),   F_3D_VECTOR }, // What's with the variable abuse everytime?
 	{ "random",              FOFS( config.wait.variance ),F_FLOAT,    ENT_V_COMBINED, "wait" },
+	{ "shader",              FOFS( shaderKey ),           F_STRING     },
 	{ "spawnflags",          FOFS( spawnflags ),          F_INT       },
 	{ "speed",               FOFS( config.speed ),        F_FLOAT     },
 	{ "stage",               FOFS( conditions.stage ),    F_INT       },
@@ -165,7 +166,7 @@ static const field_t fields[] =
 	{ "target4",             FOFS( targets ),             F_TARGET     }, // backwardcompatibility with AMP and to use the blackout map for testing
 	{ "targetname",          FOFS( names[ 1 ] ),          F_STRING,    ENT_V_RENAMED, "name" },
 	{ "targetname2",         FOFS( names[ 2 ] ),          F_STRING,    ENT_V_RENAMED, "name" }, // backwardcompatibility with AMP and to use the blackout map for testing
-	{ "targetShaderName",    FOFS( shaderKey ),           F_STRING     },
+	{ "targetShaderName",    FOFS( shaderKey ),           F_STRING,    ENT_V_RENAMED, "shader"},
 	{ "targetShaderNewName", FOFS( shaderReplacement ),   F_STRING     },
 	{ "team",                FOFS( conditions.team ),     F_INT       },
 	{ "wait",                FOFS( config.wait ),         F_TIME      },
