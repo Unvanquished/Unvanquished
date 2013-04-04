@@ -803,7 +803,7 @@ void CG_UpdateBuildableRangeMarkerMask( void )
 				}
 				else
 				{
-					Com_Printf( S_COLOR_YELLOW  "WARNING: unknown buildable or group: %s\n", p );
+					Com_Printf( S_WARNING "unknown buildable or group: %s\n", p );
 				}
 			}
 

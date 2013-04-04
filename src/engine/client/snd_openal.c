@@ -119,7 +119,7 @@ static void S_AL_ClearError( qboolean quiet )
 		return;
 	if(error != AL_NO_ERROR)
 	{
-		Com_Printf(S_COLOR_YELLOW "WARNING: unhandled AL error: %s\n",
+		Com_Printf(S_WARNING "unhandled AL error: %s\n",
 			S_AL_ErrorMsg(error));
 	}
 }
@@ -230,7 +230,7 @@ static void S_AL_BufferUseDefault(sfxHandle_t sfx)
 	if(sfx == default_sfx)
 		Com_Error(ERR_FATAL, "Can't load default sound effect %s", knownSfx[sfx].filename);
 
-	Com_Printf( S_COLOR_YELLOW "WARNING: Using default sound for %s\n", knownSfx[sfx].filename);
+	Com_Printf( S_WARNING "Using default sound for %s\n", knownSfx[sfx].filename);
 	knownSfx[sfx].isDefault = qtrue;
 	knownSfx[sfx].buffer = knownSfx[default_sfx].buffer;
 }
@@ -252,7 +252,7 @@ static void S_AL_BufferUnload(sfxHandle_t sfx)
 	S_AL_ClearError( qtrue );
 	qalDeleteBuffers(1, &knownSfx[sfx].buffer);
 	if(qalGetError() != AL_NO_ERROR)
-		Com_Printf( S_COLOR_RED "ERROR: Can't delete sound buffer for %s\n",
+		Com_Printf( S_ERROR "Can't delete sound buffer for %s\n",
 				knownSfx[sfx].filename);
 
 	knownSfx[sfx].inMemory = qfalse;
@@ -344,7 +344,7 @@ static void S_AL_BufferLoad(sfxHandle_t sfx, qboolean cache)
 	{
 		S_AL_BufferUseDefault(sfx);
 		Hunk_FreeTempMemory(data);
-		Com_Printf( S_COLOR_RED "ERROR: Can't create a sound buffer for %s - %s\n",
+		Com_Printf( S_ERROR "Can't create a sound buffer for %s - %s\n",
 				curSfx->filename, S_AL_ErrorMsg(error));
 		return;
 	}
@@ -369,7 +369,7 @@ static void S_AL_BufferLoad(sfxHandle_t sfx, qboolean cache)
 		{
 			S_AL_BufferUseDefault(sfx);
 			Hunk_FreeTempMemory(data);
-			Com_Printf( S_COLOR_RED "ERROR: Out of memory loading %s\n", curSfx->filename);
+			Com_Printf( S_ERROR "Out of memory loading %s\n", curSfx->filename);
 			return;
 		}
 
@@ -383,7 +383,7 @@ static void S_AL_BufferLoad(sfxHandle_t sfx, qboolean cache)
 	{
 		S_AL_BufferUseDefault(sfx);
 		Hunk_FreeTempMemory(data);
-		Com_Printf( S_COLOR_RED "ERROR: Can't fill sound buffer for %s - %s\n",
+		Com_Printf( S_ERROR "Can't fill sound buffer for %s - %s\n",
 				curSfx->filename, S_AL_ErrorMsg(error));
 		return;
 	}
@@ -566,7 +566,7 @@ static void _S_AL_SanitiseVector( vec3_t v, int line )
 {
 	if( Q_isnan( v[ 0 ] ) || Q_isnan( v[ 1 ] ) || Q_isnan( v[ 2 ] ) )
 	{
-		Com_DPrintf( S_COLOR_YELLOW "WARNING: vector with one or more NaN components "
+		Com_DPrintf( S_WARNING "vector with one or more NaN components "
 				"being passed to OpenAL at %s:%d -- zeroing\n", __FILE__, line );
 		VectorClear( v );
 	}
@@ -716,7 +716,7 @@ void S_AL_SrcShutdown( void )
 		curSource = &srcList[i];
 
 		if(curSource->isLocked)
-			Com_DPrintf( S_COLOR_YELLOW "WARNING: Source %d is locked\n", i);
+			Com_DPrintf( S_WARNING "Source %d is locked\n", i);
 
 		if(curSource->entity > 0)
 			entityList[curSource->entity].srcAllocated = qfalse;
@@ -804,7 +804,7 @@ static void S_AL_SaveLoopPos(src_t *dest, ALuint alSource)
 
 		if(error != AL_INVALID_ENUM)
 		{
-			Com_Printf(S_COLOR_YELLOW "WARNING: Could not get time offset for alSource %d: %s\n",
+			Com_Printf(S_WARNING "Could not get time offset for alSource %d: %s\n",
 				   alSource, S_AL_ErrorMsg(error));
 		}
 
@@ -1137,7 +1137,7 @@ static qboolean S_AL_CheckInput(int entityNum, sfxHandle_t sfx)
 
 	if (sfx < 0 || sfx >= numSfx)
 	{
-		Com_Printf(S_COLOR_RED "ERROR: S_AL_CheckInput: handle %i out of range\n", sfx);
+		Com_Printf(S_ERROR "S_AL_CheckInput: handle %i out of range\n", sfx);
 		return qtrue;
 	}
 
@@ -1276,7 +1276,7 @@ static void S_AL_SrcLoop( alSrcPriority_t priority, sfxHandle_t sfx,
 		src = S_AL_SrcAlloc( priority, entityNum, -1 );
 		if( src == -1 )
 		{
-			Com_DPrintf( S_COLOR_YELLOW "WARNING: Failed to allocate source "
+			Com_DPrintf( S_WARNING "Failed to allocate source "
 					"for loop sfx %d on entity %d\n", sfx, entityNum );
 			return;
 		}
@@ -1479,7 +1479,7 @@ void S_AL_SrcUpdate( void )
 							{
 								if(error != AL_INVALID_ENUM)
 								{
-									Com_Printf(S_COLOR_YELLOW "WARNING: Cannot get sample offset from source %d: "
+									Com_Printf(S_WARNING "Cannot get sample offset from source %d: "
 										   "%s\n", i, S_AL_ErrorMsg(error));
 								}
 							}
@@ -1712,7 +1712,7 @@ void S_AL_RawSamples(int stream, int samples, int rate, int width, int channels,
 		// Failed?
 		if(streamSourceHandles[stream] == -1)
 		{
-			Com_Printf( S_COLOR_RED "ERROR: Can't allocate streaming streamSource\n");
+			Com_Printf( S_ERROR "Can't allocate streaming streamSource\n");
 			return;
 		}
 	}
@@ -1979,7 +1979,7 @@ void S_AL_MusicProcess(ALuint b)
 	if( ( error = qalGetError( ) ) != AL_NO_ERROR )
 	{
 		S_AL_StopBackgroundTrack( );
-		Com_Printf( S_COLOR_RED "ERROR: while buffering data for music stream - %s\n",
+		Com_Printf( S_ERROR "while buffering data for music stream - %s\n",
 				S_AL_ErrorMsg( error ) );
 		return;
 	}
@@ -2388,7 +2388,7 @@ int S_AL_GetSoundLength( sfxHandle_t sfxHandle )
 	int length = 0;
 	if (sfxHandle < 0 || sfxHandle >= numSfx)
 	{
-		Com_Printf(S_COLOR_RED "ERROR: S_AL_CheckInput: handle %i out of range\n", sfxHandle);
+		Com_Printf(S_ERROR "S_AL_CheckInput: handle %i out of range\n", sfxHandle);
 		return qtrue;
 	}
 

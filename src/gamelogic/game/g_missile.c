@@ -257,7 +257,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 		{
 			if ( !ent->parent )
 			{
-				G_Printf( S_COLOR_YELLOW "WARNING: hive entity has no parent in G_MissileImpact\n" );
+				G_Printf( S_WARNING "hive entity has no parent in G_MissileImpact\n" );
 			}
 			else
 			{

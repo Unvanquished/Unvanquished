@@ -308,7 +308,7 @@ static qboolean G_ParseNode( node_t **node, char *token, char **text_p, qboolean
 			}
 			else
 			{
-				G_Printf( S_COLOR_RED "ERROR: invalid operator in expression: %s\n", token );
+				G_Printf( S_ERROR "invalid operator in expression: %s\n", token );
 				return qfalse;
 			}
 
@@ -342,7 +342,7 @@ static qboolean G_ParseNode( node_t **node, char *token, char **text_p, qboolean
 			}
 			else
 			{
-				G_Printf( S_COLOR_RED "ERROR: invalid right hand side in expression: %s\n", token );
+				G_Printf( S_ERROR "invalid right hand side in expression: %s\n", token );
 				return qfalse;
 			}
 		}
@@ -352,7 +352,7 @@ static qboolean G_ParseNode( node_t **node, char *token, char **text_p, qboolean
 		}
 		else
 		{
-			G_Printf( S_COLOR_RED "ERROR: invalid left hand side in expression: %s\n", token );
+			G_Printf( S_ERROR "invalid left hand side in expression: %s\n", token );
 			return qfalse;
 		}
 
@@ -392,7 +392,7 @@ static qboolean G_ParseNode( node_t **node, char *token, char **text_p, qboolean
 
 		if ( !*token )
 		{
-			G_Printf( S_COLOR_RED "ERROR: goto or resume without label\n" );
+			G_Printf( S_ERROR "goto or resume without label\n" );
 			return qfalse;
 		}
 
@@ -447,13 +447,13 @@ static qboolean G_ParseMapRotation( mapRotation_t *mr, char **text_p )
 		{
 			if ( node == NULL )
 			{
-				G_Printf( S_COLOR_RED "ERROR: map command section with no associated map\n" );
+				G_Printf( S_ERROR "map command section with no associated map\n" );
 				return qfalse;
 			}
 
 			if ( !G_ParseMapCommandSection( node, text_p ) )
 			{
-				G_Printf( S_COLOR_RED "ERROR: failed to parse map command section\n" );
+				G_Printf( S_ERROR "failed to parse map command section\n" );
 				return qfalse;
 			}
 
@@ -467,7 +467,7 @@ static qboolean G_ParseMapRotation( mapRotation_t *mr, char **text_p )
 
 		if ( mr->numNodes == MAX_MAP_ROTATION_MAPS )
 		{
-			G_Printf( S_COLOR_RED "ERROR: maximum number of maps in one rotation (%d) reached\n",
+			G_Printf( S_ERROR "maximum number of maps in one rotation (%d) reached\n",
 			          MAX_MAP_ROTATION_MAPS );
 			return qfalse;
 		}
@@ -513,7 +513,7 @@ static qboolean G_ParseMapRotationFile( const char *fileName )
 	if ( len == 0 || len >= sizeof( text ) - 1 )
 	{
 		trap_FS_FCloseFile( f );
-		G_Printf( S_COLOR_RED "ERROR: map rotation file %s is %s\n", fileName,
+		G_Printf( S_ERROR "map rotation file %s is %s\n", fileName,
 		          len == 0 ? "empty" : "too long" );
 		return qfalse;
 	}
@@ -542,13 +542,13 @@ static qboolean G_ParseMapRotationFile( const char *fileName )
 				//check for name space clashes
 				if ( G_RotationExists( mrName ) )
 				{
-					G_Printf( S_COLOR_RED "ERROR: a map rotation is already named %s\n", mrName );
+					G_Printf( S_ERROR "a map rotation is already named %s\n", mrName );
 					return qfalse;
 				}
 
 				if ( mapRotations.numRotations == MAX_MAP_ROTATIONS )
 				{
-					G_Printf( S_COLOR_RED "ERROR: maximum number of map rotations (%d) reached\n",
+					G_Printf( S_ERROR "maximum number of map rotations (%d) reached\n",
 					          MAX_MAP_ROTATIONS );
 					return qfalse;
 				}
@@ -557,7 +557,7 @@ static qboolean G_ParseMapRotationFile( const char *fileName )
 
 				if ( !G_ParseMapRotation( &mapRotations.rotations[ mapRotations.numRotations ], &text_p ) )
 				{
-					G_Printf( S_COLOR_RED "ERROR: %s: failed to parse map rotation %s\n", fileName, mrName );
+					G_Printf( S_ERROR "%s: failed to parse map rotation %s\n", fileName, mrName );
 					return qfalse;
 				}
 
@@ -570,7 +570,7 @@ static qboolean G_ParseMapRotationFile( const char *fileName )
 			}
 			else
 			{
-				G_Printf( S_COLOR_RED "ERROR: unnamed map rotation\n" );
+				G_Printf( S_ERROR "unnamed map rotation\n" );
 				return qfalse;
 			}
 		}
@@ -582,7 +582,7 @@ static qboolean G_ParseMapRotationFile( const char *fileName )
 		}
 		else
 		{
-			G_Printf( S_COLOR_RED "ERROR: map rotation already named\n" );
+			G_Printf( S_ERROR "map rotation already named\n" );
 			return qfalse;
 		}
 	}
@@ -602,7 +602,7 @@ static qboolean G_ParseMapRotationFile( const char *fileName )
 
 				if ( !G_MapExists( node->u.map.name ) )
 				{
-					G_Printf( S_COLOR_RED "ERROR: rotation map \"%s\" doesn't exist\n",
+					G_Printf( S_ERROR "rotation map \"%s\" doesn't exist\n",
 					          node->u.map.name );
 					return qfalse;
 				}
@@ -629,7 +629,7 @@ static qboolean G_ParseMapRotationFile( const char *fileName )
 			     !G_LabelExists( i, node->u.label.name ) &&
 			     !G_RotationExists( node->u.label.name ) )
 			{
-				G_Printf( S_COLOR_RED "ERROR: goto destination named \"%s\" doesn't exist\n",
+				G_Printf( S_ERROR "goto destination named \"%s\" doesn't exist\n",
 				          node->u.label.name );
 				return qfalse;
 			}
@@ -637,7 +637,7 @@ static qboolean G_ParseMapRotationFile( const char *fileName )
 
 		if ( mapCount == 0 )
 		{
-			G_Printf( S_COLOR_RED "ERROR: rotation \"%s\" needs at least one map entry\n",
+			G_Printf( S_ERROR "rotation \"%s\" needs at least one map entry\n",
 			          mr->name );
 			return qfalse;
 		}
@@ -1129,7 +1129,7 @@ static qboolean G_EvaluateMapCondition( condition_t **condition )
 
 		default:
 		case CV_ERR:
-			G_Printf( S_COLOR_RED "ERROR: malformed map switch localCondition\n" );
+			G_Printf( S_ERROR "malformed map switch localCondition\n" );
 			break;
 	}
 
@@ -1177,12 +1177,12 @@ qboolean G_StepMapRotation( int rotation, int nodeIndex, int depth )
 	{
 		if ( depth > 64 )
 		{
-			G_Printf( S_COLOR_RED "ERROR: infinite loop protection stopped at map rotation %s\n",
+			G_Printf( S_ERROR "infinite loop protection stopped at map rotation %s\n",
 			          G_RotationNameByIndex( rotation ) );
 			return qfalse;
 		}
 
-		G_Printf( S_COLOR_YELLOW "WARNING: possible infinite loop in map rotation %s\n",
+		G_Printf( S_WARNING "possible infinite loop in map rotation %s\n",
 		          G_RotationNameByIndex( rotation ) );
 		return qtrue;
 	}
@@ -1236,7 +1236,7 @@ qboolean G_StepMapRotation( int rotation, int nodeIndex, int depth )
 					return qfalse;
 				}
 
-				G_Printf( S_COLOR_YELLOW "WARNING: skipped missing map %s in rotation %s\n",
+				G_Printf( S_WARNING "skipped missing map %s in rotation %s\n",
 				          node->u.map.name, G_RotationNameByIndex( rotation ) );
 				break;
 
@@ -1254,7 +1254,7 @@ qboolean G_StepMapRotation( int rotation, int nodeIndex, int depth )
 					return qfalse;
 				}
 
-				G_Printf( S_COLOR_YELLOW "WARNING: label, map, or rotation %s not found in %s\n",
+				G_Printf( S_WARNING "label, map, or rotation %s not found in %s\n",
 				          node->u.label.name, G_RotationNameByIndex( rotation ) );
 				break;
 		}
@@ -1288,7 +1288,7 @@ void G_AdvanceMapRotation( int depth )
 
 	if ( !node )
 	{
-		G_Printf( S_COLOR_YELLOW "WARNING: index incorrect for map rotation %s, trying 0\n",
+		G_Printf( S_WARNING "index incorrect for map rotation %s, trying 0\n",
 		          G_RotationNameByIndex( rotation ) );
 		nodeIndex = 0;
 		node = G_NodeByIndex( nodeIndex, rotation );
@@ -1303,7 +1303,7 @@ void G_AdvanceMapRotation( int depth )
 
 	if ( !node )
 	{
-		G_Printf( S_COLOR_RED "ERROR: unexpected end of maprotation '%s'\n",
+		G_Printf( S_ERROR "unexpected end of maprotation '%s'\n",
 		          G_RotationNameByIndex( rotation ) );
 	}
 }
@@ -1398,7 +1398,7 @@ void G_InitMapRotations( void )
 	{
 		if ( !G_ParseMapRotationFile( fileName ) )
 		{
-			G_Printf( S_COLOR_RED "ERROR: failed to parse %s file\n", fileName );
+			G_Printf( S_ERROR "failed to parse %s file\n", fileName );
 		}
 	}
 	else

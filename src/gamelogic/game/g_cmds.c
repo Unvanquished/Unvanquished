@@ -941,7 +941,7 @@ void G_LoadCensors( void )
 
 	if ( len < 0 )
 	{
-		Com_Printf( S_COLOR_RED "ERROR: Censors file %s doesn't exist\n",
+		Com_Printf( S_ERROR "Censors file %s doesn't exist\n",
 		            g_censorship.string );
 		return;
 	}
@@ -949,7 +949,7 @@ void G_LoadCensors( void )
 	if ( len == 0 || len >= sizeof( text ) - 1 )
 	{
 		trap_FS_FCloseFile( f );
-		Com_Printf( S_COLOR_RED "ERROR: Censors file %s is %s\n",
+		Com_Printf( S_ERROR "Censors file %s is %s\n",
 		            g_censorship.string, len == 0 ? "empty" : "too long" );
 		return;
 	}

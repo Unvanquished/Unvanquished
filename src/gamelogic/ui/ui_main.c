@@ -1548,7 +1548,7 @@ qboolean UI_ParseMenu( const char *menuFile )
 
 	if ( !handle )
 	{
-		Com_Printf( S_COLOR_YELLOW  "WARNING: Menu file %s not found\n",
+		Com_Printf( S_WARNING "Menu file %s not found\n",
 		            menuFile );
 		return qfalse;
 	}
@@ -1726,7 +1726,7 @@ qboolean UI_LoadHelp( const char *helpFile )
 
 	if ( !handle )
 	{
-		Com_Printf( S_COLOR_YELLOW  "WARNING: help file '%s' not found!\n",
+		Com_Printf( S_WARNING "help file '%s' not found!\n",
 		            helpFile );
 		return qfalse;
 	}
@@ -1734,7 +1734,7 @@ qboolean UI_LoadHelp( const char *helpFile )
 	if ( !trap_Parse_ReadToken( handle, &token ) ||
 	     token.string[ 0 ] == 0 || token.string[ 0 ] != '{' )
 	{
-		Com_Printf( S_COLOR_YELLOW  "WARNING: help file '%s' does not start with "
+		Com_Printf( S_WARNING "help file '%s' does not start with "
 		            "'{'\n", helpFile );
 		return qfalse;
 	}

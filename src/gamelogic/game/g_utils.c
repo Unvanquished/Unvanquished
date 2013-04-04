@@ -372,7 +372,7 @@ void G_AddEvent( gentity_t *ent, int event, int eventParm )
 	// eventParm is converted to uint8_t (0 - 255) in msg.c
 	if ( eventParm & ~0xFF )
 	{
-		G_Printf( S_COLOR_YELLOW "WARNING: G_AddEvent( %s ) has eventParm %d, "
+		G_Printf( S_WARNING "G_AddEvent( %s ) has eventParm %d, "
 		          "which will overflow\n", BG_EventName( event ), eventParm );
 	}
 

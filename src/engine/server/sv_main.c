@@ -1445,7 +1445,7 @@ int SV_LoadTag( const char *mod_name )
 	if ( version != TAG_VERSION )
 	{
 		FS_FreeFile( buffer );
-		Com_Printf( S_COLOR_YELLOW  "WARNING: SV_LoadTag: %s has wrong version (%i should be %i)\n", mod_name, version,
+		Com_Printf( S_WARNING "SV_LoadTag: %s has wrong version (%i should be %i)\n", mod_name, version,
 		            TAG_VERSION );
 		return 0;
 	}

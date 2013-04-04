@@ -781,7 +781,7 @@ void G_admin_writeconfig( void )
 
 	if ( !g_admin.string[ 0 ] )
 	{
-		G_Printf( S_COLOR_YELLOW "WARNING: g_admin is not set. "
+		G_Printf( S_WARNING "g_admin is not set. "
 		          " configuration will not be saved to a file.\n" );
 		return;
 	}

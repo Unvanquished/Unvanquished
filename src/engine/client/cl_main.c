@@ -477,7 +477,7 @@ void CL_VoipParseTargets( void )
 						val = i;
 						if ( val < 0 || val >= MAX_CLIENTS )
 						{
-							Com_Printf( _( S_COLOR_YELLOW  "WARNING: VoIP "
+							Com_Printf( _( S_WARNING "VoIP "
 							"target %d is not a valid client "
 							"number\n"), val );
 
@@ -522,7 +522,7 @@ void CL_VoipParseTargets( void )
 
 		if ( val < 0 || val >= MAX_CLIENTS )
 		{
-			Com_Printf( _( S_COLOR_YELLOW  "WARNING: VoIP "
+			Com_Printf( _( S_WARNING "VoIP "
 			            "target %d is not a valid client "
 			            "number\n"), val );
 
@@ -3156,8 +3156,7 @@ void CL_GSRFeaturedLabel( byte **data, char *buf, int size )
 		}
 		else if ( l == &buf[ size - 1 ] )
 		{
-			Com_DPrintf( "%s", S_COLOR_YELLOW  "Warning: "
-			             "CL_GSRFeaturedLabel: overflow\n" );
+			Com_DPrintf( "%s", S_WARNING "CL_GSRFeaturedLabel: overflow\n" );
 		}
 
 		l++, ( *data ) ++;

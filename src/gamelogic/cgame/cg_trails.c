@@ -958,7 +958,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 				}
 				else
 				{
-					CG_Printf( S_COLOR_RED  "ERROR: unknown textureType clamp \"%s\"\n", token );
+					CG_Printf( S_ERROR "unknown textureType clamp \"%s\"\n", token );
 					break;
 				}
 
@@ -1027,7 +1027,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 		}
 		else
 		{
-			CG_Printf( S_COLOR_RED  "ERROR: unknown token '%s' in trail beam\n", token );
+			CG_Printf( S_ERROR "unknown token '%s' in trail beam\n", token );
 			return qfalse;
 		}
 	}
@@ -1177,7 +1177,7 @@ static qboolean CG_ParseTrailFile( const char *fileName )
 	if ( len == 0 || len >= sizeof( text ) - 1 )
 	{
 		trap_FS_FCloseFile( f );
-		CG_Printf( len ? S_COLOR_RED  "ERROR: trail file %s is too long\n" : S_COLOR_RED  "ERROR: trail file %s is empty\n", fileName );
+		CG_Printf( len ? S_ERROR "trail file %s is too long\n" : S_ERROR "trail file %s is empty\n", fileName );
 		return qfalse;
 	}
 
@@ -1207,7 +1207,7 @@ static qboolean CG_ParseTrailFile( const char *fileName )
 				{
 					if ( !Q_stricmp( baseTrailSystems[ i ].name, tsName ) )
 					{
-						CG_Printf( S_COLOR_RED  "ERROR: a trail system is already named %s\n", tsName );
+						CG_Printf( S_ERROR "a trail system is already named %s\n", tsName );
 						return qfalse;
 					}
 				}
@@ -1216,7 +1216,7 @@ static qboolean CG_ParseTrailFile( const char *fileName )
 
 				if ( !CG_ParseTrailSystem( &baseTrailSystems[ numBaseTrailSystems ], &text_p, tsName ) )
 				{
-					CG_Printf( S_COLOR_RED  "ERROR: %s: failed to parse trail system %s\n", fileName, tsName );
+					CG_Printf( S_ERROR "%s: failed to parse trail system %s\n", fileName, tsName );
 					return qfalse;
 				}
 
@@ -1225,7 +1225,7 @@ static qboolean CG_ParseTrailFile( const char *fileName )
 
 				if ( numBaseTrailSystems == MAX_BASETRAIL_SYSTEMS )
 				{
-					CG_Printf( S_COLOR_RED  "ERROR: maximum number of trail systems (%d) reached\n",
+					CG_Printf( S_ERROR "maximum number of trail systems (%d) reached\n",
 					           MAX_BASETRAIL_SYSTEMS );
 					return qfalse;
 				}
@@ -1348,7 +1348,7 @@ qhandle_t CG_RegisterTrailSystem( const char *name )
 		}
 	}
 
-	CG_Printf( S_COLOR_RED  "ERROR: failed to register trail system %s\n", name );
+	CG_Printf( S_ERROR "failed to register trail system %s\n", name );
 	return 0;
 }
 
