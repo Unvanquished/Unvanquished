@@ -1893,7 +1893,7 @@ void            TCModTranslate(tcMod_t mod, float s, float t);
 void            TCModScale(tcMod_t mod, float s, float t);
 void            TCModRotate(tcMod_t mod, float euler);
 
-qboolean        ApplySurfaceParm(char *name, int *contentFlags, int *surfaceFlags, int *compileFlags);
+qboolean        ApplySurfaceParm(const char *name, int *contentFlags, int *surfaceFlags, int *compileFlags);
 
 void            BeginMapShaderFile(const char *mapFile);
 void            WriteMapShaderFile(void);
