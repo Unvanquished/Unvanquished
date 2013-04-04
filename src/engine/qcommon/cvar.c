@@ -1305,7 +1305,7 @@ void Cvar_Restart_f( void )
 			continue;
 		}
 
-		Cvar_Set( var->name, var->resetString );
+		Cvar_Set2( var->name, NULL, qtrue );
 
 		prev = &var->next;
 	}
