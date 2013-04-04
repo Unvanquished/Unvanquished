@@ -1516,6 +1516,13 @@ double rint( double x );
 		int           modificationCount; // incremented each time the cvar is changed
 		float         value; // atof( string )
 		int           integer; // atoi( string )
+
+		/**
+		 * indicate whether the cvar won't be archived, even if it's an ARCHIVE flagged cvar.
+		 * this allows us to keep ARCHIVE cvars unwritten to autogen until a user changes them
+		 */
+		qboolean      transient;
+
 		qboolean      validate;
 		qboolean      integral;
 		float         min;

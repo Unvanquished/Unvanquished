@@ -406,6 +406,8 @@ cvar_t         *Cvar_Get( const char *var_name, const char *var_value, int flags
 	var->integer = atoi( var->string );
 	var->resetString = CopyString( var_value );
 
+	var->transient = qtrue;
+
 	// link the variable in
 	var->next = cvar_vars;
 	cvar_vars = var;
@@ -467,12 +469,16 @@ cvar_t         *Cvar_Set2( const char *var_name, const char *value, qboolean for
 			var = Cvar_Get( var_name, value, 0 );
 		}
 		var->modificationCount++;
+		var->transient = qfalse;
 		return var;
 	}
+
+	var->transient = qfalse;
 
 	if ( !value )
 	{
 		value = var->resetString;
+		var->transient = qtrue;
 	}
 
 	if ( var->flags & CVAR_USERINFO )
@@ -1063,7 +1069,7 @@ void Cvar_Reset_f( void )
 Cvar_WriteVariables
 
 Appends lines containing "set variable value" for all variables
-with the archive flag set to qtrue.
+with the archive flag set that are not in a transient state.
 ============
 */
 void Cvar_WriteVariables( fileHandle_t f )
@@ -1075,7 +1081,7 @@ void Cvar_WriteVariables( fileHandle_t f )
 	{
 		if ( var->flags & CVAR_ARCHIVE )
 		{
-			if( var->modificationCount == 0)
+			if( var->transient )
 				continue;
 
 			// write the latched value, even if it hasn't taken effect yet
