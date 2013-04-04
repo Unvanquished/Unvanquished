@@ -468,7 +468,8 @@ extern "C" {
 	  IF_RGBA16 = BIT( 15 ),
 	  IF_RGBE = BIT( 16 ),
 	  IF_ALPHATEST = BIT( 17 ),
-	  IF_DISPLACEMAP = BIT( 18 )
+	  IF_DISPLACEMAP = BIT( 18 ),
+	  IF_NOLIGHTSCALE = BIT( 19 )
 	};
 
 	typedef enum
@@ -4073,6 +4074,7 @@ extern "C" {
 	extern cvar_t *r_heatHazeFix;
 	extern cvar_t *r_noMarksOnTrisurfs;
 	extern cvar_t *r_recompileShaders;
+	extern cvar_t *r_lazyShaders;
 
 	extern cvar_t *r_norefresh; // bypasses the ref rendering
 	extern cvar_t *r_drawentities; // disable/enable entity rendering
@@ -4135,8 +4137,6 @@ extern "C" {
 	extern cvar_t *r_halfLambertLighting;
 	extern cvar_t *r_rimLighting;
 	extern cvar_t *r_rimExponent;
-
-	extern cvar_t *r_uiFullScreen; // ui is running fullscreen
 
 	extern cvar_t *r_logFile; // number of frames to emit GL logs
 
@@ -4533,10 +4533,11 @@ extern "C" {
 	====================================================================
 	*/
 	qhandle_t RE_RegisterShader( const char *name, RegisterShaderFlags_t flags );
-	qhandle_t RE_RegisterShaderFromImage( const char *name, image_t *image, qboolean mipRawImage );
+	qhandle_t RE_RegisterShaderFromImage( const char *name, image_t *image );
 	qboolean  RE_LoadDynamicShader( const char *shadername, const char *shadertext );
 
-	shader_t  *R_FindShader( const char *name, shaderType_t type, qboolean mipRawImage );
+	shader_t  *R_FindShader( const char *name, shaderType_t type,
+				 RegisterShaderFlags_t flags );
 	shader_t  *R_GetShaderByHandle( qhandle_t hShader );
 	shader_t  *R_FindShaderByName( const char *name );
 	void      R_InitShaders( void );
@@ -4642,6 +4643,7 @@ extern "C" {
 #if !defined( USE_D3D10 )
 	void                    GLSL_InitGPUShaders( void );
 	void                    GLSL_ShutdownGPUShaders( void );
+	void                    GLSL_FinishGPUShaders( void );
 
 #endif
 

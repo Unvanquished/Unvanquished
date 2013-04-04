@@ -61,18 +61,29 @@ Maryland 20850 USA.
 #define S_WORLDSPAWN              "worldspawn"
 #define S_PLAYER_CLASSNAME        "player"
 
+#define S_CTRL_LIMITED            "ctrl_limited"
+#define S_CTRL_RELAY              "ctrl_relay"
+
 #define S_FUNC_DOOR               "func_door"
 #define S_DOOR_SENSOR             "door_sensor"
 #define S_PLAT_SENSOR             "plat_sensor"
+
+#define S_GAME_END                "game_end"
+#define S_GAME_KILL               "game_kill"
+#define S_GAME_SCORE              "game_score"
 
 #define S_PATH_CORNER             "path_corner"
 #define S_POS_PLAYER_SPAWN        "pos_player_spawn"
 #define S_POS_ALIEN_INTERMISSION  "pos_alien_intermission"
 #define S_POS_PLAYER_INTERMISSION "pos_player_intermission"
 #define S_POS_HUMAN_INTERMISSION  "pos_human_intermission"
+#define S_POS_TARGET              "pos_target"
+#define S_POS_LOCATION            "pos_location"
 
 #define S_SENSOR_CREEP            "sensor_creep"
 #define S_SENSOR_END              "sensor_end"
+#define S_SENSOR_BUILDABLE        "sensor_buildable"
+#define S_SENSOR_TIMER            "sensor_timer"
 #define S_SENSOR_PLAYER           "sensor_player"
 #define S_SENSOR_POWER            "sensor_power"
 #define S_SENSOR_SUPPORT          "sensor_support"
@@ -256,7 +267,7 @@ void manualTriggerSpectator( gentity_t *trigger, gentity_t *player );
 //
 // g_spawn_sensor.c
 //
-void G_notify_sensor_stage( team_t team, stage_t stage );
+void G_notify_sensor_stage( team_t team, stage_t previousStage, stage_t newStage );
 void G_notify_sensor_start( );
 void G_notify_sensor_end( team_t winningTeam );
 

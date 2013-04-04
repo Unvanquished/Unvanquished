@@ -315,7 +315,7 @@ static void findEmptySpot( vec3_t origin, float radius, vec3_t spot )
 void SP_env_lens_flare( gentity_t *self )
 {
 	self->s.eType = ET_LIGHTFLARE;
-	self->s.modelindex = G_ShaderIndex( self->targetShaderName );
+	self->s.modelindex = G_ShaderIndex( self->shaderKey );
 	VectorCopy( self->activatedPosition, self->s.origin2 );
 
 	//try to find a spot near to the flare which is empty. This

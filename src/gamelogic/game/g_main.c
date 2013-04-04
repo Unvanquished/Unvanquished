@@ -1475,7 +1475,7 @@ void G_CalculateBuildPoints( void )
 		buildable_t      buildable;
 		int              cost;
 
-		if ( ent->s.eType != ET_BUILDABLE || ent->s.eFlags & EF_DEAD )
+		if ( ent->s.eType != ET_BUILDABLE || (ent->s.eFlags & EF_DEAD) )
 		{
 			continue;
 		}
@@ -1526,7 +1526,7 @@ void G_CalculateBuildPoints( void )
 	{
 		gentity_t *ent = &g_entities[ i ];
 
-		if ( ent->s.eType != ET_BUILDABLE || ent->s.eFlags & EF_DEAD ||
+		if ( ent->s.eType != ET_BUILDABLE || (ent->s.eFlags & EF_DEAD) ||
 		     ent->buildableTeam != TEAM_HUMANS )
 		{
 			continue;
@@ -1642,7 +1642,7 @@ void G_CalculateStages( void )
 	{
 		while ( alienTriggerStage < MIN( g_alienStage.integer, S3 ) )
 		{
-			G_notify_sensor_stage( TEAM_ALIENS, ++alienTriggerStage );
+			G_notify_sensor_stage( TEAM_ALIENS, alienTriggerStage, ++alienTriggerStage );
 		}
 
 		if ( g_alienStage.integer == S2 )
@@ -1661,7 +1661,7 @@ void G_CalculateStages( void )
 	{
 		while ( humanTriggerStage < MIN( g_humanStage.integer, S3 ) )
 		{
-			G_notify_sensor_stage( TEAM_HUMANS, ++humanTriggerStage );
+			G_notify_sensor_stage( TEAM_HUMANS, humanTriggerStage, ++humanTriggerStage );
 		}
 
 		if ( g_humanStage.integer == S2 )
@@ -2282,7 +2282,6 @@ void LogExit( const char *string )
 {
 	int       i, numSorted;
 	gclient_t *cl;
-	gentity_t *ent;
 
 	G_LogPrintf( "Exit: %s\n", string );
 
@@ -2546,7 +2545,7 @@ void G_Vote( gentity_t *ent, team_t team, qboolean voting )
 		return;
 	}
 
-	if ( voting && ent->client->pers.voted & ( 1 << team ) )
+	if ( voting && (ent->client->pers.voted & ( 1 << team )) )
 	{
 		return;
 	}

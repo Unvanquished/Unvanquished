@@ -336,8 +336,11 @@ struct gentity_s
 
 	char         *message;
 
-	char         *targetShaderName;
-	char         *targetShaderNewName;
+	/*
+	 * for toggleable shaders
+	 */
+	char         *shaderKey;
+	char         *shaderReplacement;
 
 	int          lastHealth;
 	int          health;
@@ -1056,6 +1059,9 @@ int        G_ParticleSystemIndex( const char *name );
 int        G_ShaderIndex( const char *name );
 int        G_ModelIndex( const char *name );
 int        G_SoundIndex( const char *name );
+int        G_GradingTextureIndex( const char *name );
+int        G_LocationIndex( const char *name );
+
 void       G_KillBox( gentity_t *ent );
 void       G_KillBrushModel( gentity_t *ent, gentity_t *activator );
 void       G_TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, float speed );
@@ -1071,7 +1077,7 @@ float      vectoyaw( const vec3_t vec );
 void       G_AddPredictableEvent( gentity_t *ent, int event, int eventParm );
 void       G_AddEvent( gentity_t *ent, int event, int eventParm );
 void       G_BroadcastEvent( int event, int eventParm );
-void       AddRemap( const char *oldShader, const char *newShader, float timeOffset );
+void       G_SetShaderRemap( const char *oldShader, const char *newShader, float timeOffset );
 const char *BuildShaderStateConfig( void );
 
 qboolean   G_ClientIsLagging( gclient_t *client );

@@ -108,7 +108,8 @@ static float G_MissileTimePowerReduce( gentity_t *self, int fullPower, int halfL
 		divider = MAX( 0.0f, divider );
 		break;
 
-	case PR_END:; // compiler, do shut up :-)
+	case PR_END:
+		break;
 	}
 
 	return divider;
@@ -185,8 +186,6 @@ void G_ExplodeMissile( gentity_t *ent )
 
 	trap_LinkEntity( ent );
 }
-
-void AHive_ReturnToHive( gentity_t *self );
 
 /*
 ================
@@ -383,7 +382,7 @@ void G_RunMissile( gentity_t *ent )
 
 	if ( tr.fraction < 1.0f )
 	{
-		if ( !ent->pointAgainstWorld || tr.contents & CONTENTS_BODY )
+		if ( !ent->pointAgainstWorld || (tr.contents & CONTENTS_BODY) )
 		{
 			// We hit an entity or we don't care
 			impact = qtrue;

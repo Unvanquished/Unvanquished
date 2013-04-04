@@ -2392,7 +2392,7 @@ void HMedistat_Think( gentity_t *self )
 			}
 
 			//remove poison from everyone, not just the healed player
-			if ( player->client && player->client->ps.stats[ STAT_STATE ] & SS_POISONED )
+			if ( player->client && (player->client->ps.stats[ STAT_STATE ] & SS_POISONED) )
 			{
 				player->client->ps.stats[ STAT_STATE ] &= ~SS_POISONED;
 			}
@@ -2949,10 +2949,6 @@ void G_QueueBuildPoints( gentity_t *self )
 
 	switch ( self->buildableTeam )
 	{
-		default:
-		case TEAM_NONE:
-			return;
-
 		case TEAM_ALIENS:
 			if ( !level.alienBuildPointQueue )
 			{
@@ -3010,6 +3006,10 @@ void G_QueueBuildPoints( gentity_t *self )
 						break;
 				}
 			}
+			break;
+		default:
+		case TEAM_NONE:
+			return;
 	}
 }
 
@@ -3987,7 +3987,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 		}
 
 		// Check permission to build here
-		if ( tr1.surfaceFlags & SURF_NOALIENBUILD || contents & CONTENTS_NOALIENBUILD )
+		if ( (tr1.surfaceFlags & SURF_NOALIENBUILD) || (contents & CONTENTS_NOALIENBUILD) )
 		{
 			reason = IBE_PERMISSION;
 		}
@@ -4032,14 +4032,14 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 		}
 
 		// Check permission to build here
-		if ( tr1.surfaceFlags & SURF_NOHUMANBUILD || contents & CONTENTS_NOHUMANBUILD )
+		if ( (tr1.surfaceFlags & SURF_NOHUMANBUILD) || (contents & CONTENTS_NOHUMANBUILD) )
 		{
 			reason = IBE_PERMISSION;
 		}
 	}
 
 	// Check permission to build here
-	if ( tr1.surfaceFlags & SURF_NOBUILD || contents & CONTENTS_NOBUILD )
+	if ( (tr1.surfaceFlags & SURF_NOBUILD) || (contents & CONTENTS_NOBUILD) )
 	{
 		reason = IBE_PERMISSION;
 	}
@@ -4063,6 +4063,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 
 				default:
 					Com_Error( ERR_FATAL, "No reason for denying build of %d", buildable );
+					break;
 			}
 		}
 	}

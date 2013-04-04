@@ -134,7 +134,4 @@ void     reset_floatField( float* target, float instanceField, float classField,
 void     SP_ConditionFields( gentity_t *self );
 void     SP_WaitFields( gentity_t *self, float defaultWait, float defaultWaitVariance );
 
-// Init functions
-void    SP_position_init( void );
-
 #endif /* SPAWN_H_ */

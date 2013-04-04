@@ -1376,7 +1376,7 @@ static shader_t *ShaderForShaderNum( int shaderNum )
 
 //  ri.Printf(PRINT_ALL, "ShaderForShaderNum: '%s'\n", dsh->shader);
 
-	shader = R_FindShader( dsh->shader, SHADER_3D_STATIC, qtrue );
+	shader = R_FindShader( dsh->shader, SHADER_3D_STATIC, RSF_DEFAULT );
 
 	// if the shader had errors, just use default shader
 	if ( shader->defaultShader )
@@ -6362,7 +6362,7 @@ static void R_LoadFogs( lump_t *l, lump_t *brushesLump, lump_t *sidesLump )
 		}
 
 		// get information from the shader for fog parameters
-		shader = R_FindShader( fogs->shader, SHADER_3D_DYNAMIC, qtrue );
+		shader = R_FindShader( fogs->shader, SHADER_3D_DYNAMIC, RSF_DEFAULT );
 
 		out->fogParms = shader->fogParms;
 
@@ -10288,7 +10288,7 @@ void RE_LoadWorldMap( const char *name )
 	//----(SA)  set the sun shader if there is one
 	if ( tr.sunShaderName )
 	{
-		tr.sunShader = R_FindShader( tr.sunShaderName, SHADER_3D_STATIC, qtrue );
+		tr.sunShader = R_FindShader( tr.sunShaderName, SHADER_3D_STATIC, RSF_DEFAULT );
 	}
 
 	//----(SA)  end

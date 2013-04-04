@@ -568,9 +568,6 @@ void RB_BeginDrawingView( void )
 
 	clearBits |= GL_STENCIL_BUFFER_BIT;
 
-//  if(r_uiFullScreen->integer) {
-//      clearBits = GL_DEPTH_BUFFER_BIT;    // (SA) always just clear depth for menus
-//  } else
 	// ydnar: global q3 fog volume
 	if ( tr.world && tr.world->globalFog >= 0 )
 	{

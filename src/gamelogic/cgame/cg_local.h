@@ -1128,6 +1128,7 @@ typedef struct
 
 	int                     numBinaryShadersUsed;
 	cgBinaryShaderSetting_t binaryShaderSettings[ NUM_BINARY_SHADERS ];
+	qhandle_t		gradingTextures[ MAX_GRADING_TEXTURES ];
 } cg_t;
 
 // all of the model, shader, and sound references that are

@@ -249,7 +249,7 @@ ApplySurfaceParm() - ydnar
 applies a named surfaceparm to the supplied flags
 */
 
-qboolean ApplySurfaceParm(char *name, int *contentFlags, int *surfaceFlags, int *compileFlags)
+qboolean ApplySurfaceParm(const char *name, int *contentFlags, int *surfaceFlags, int *compileFlags)
 {
 	int             i, fake;
 	surfaceParm_t  *sp;
