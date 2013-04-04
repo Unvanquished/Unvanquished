@@ -113,18 +113,18 @@ typedef enum
   F_3D_VECTOR,
   F_4D_VECTOR,
   F_YAW
-} fieldtype_t;
+} fieldType_t;
 
 typedef struct
 {
 	char  *name;
 	size_t      offset;
-	fieldtype_t type;
+	fieldType_t type;
 	int   versionState;
 	char  *replacement;
-} field_t;
+} fieldDescriptor_t;
 
-static const field_t fields[] =
+static const fieldDescriptor_t fields[] =
 {
 	{ "acceleration",        FOFS( acceleration ),        F_3D_VECTOR  },
 	{ "alias",               FOFS( names[ 2 ] ),          F_STRING     },
@@ -608,12 +608,12 @@ in a gentity
 */
 void G_ParseField( const char *key, const char *rawString, gentity_t *entity )
 {
-	field_t *resultingField;
+	fieldDescriptor_t *resultingField;
 	byte    *entityData;
 	vec4_t  tmpFloatData;
 	variatingTime_t varTime = {0, 0};
 
-	resultingField = bsearch( key, fields, ARRAY_LEN( fields ), sizeof( field_t ), cmdcmp );
+	resultingField = bsearch( key, fields, ARRAY_LEN( fields ), sizeof( fieldDescriptor_t ), cmdcmp );
 
 	if ( !resultingField )
 	{
