@@ -1206,6 +1206,15 @@ void Cvar_List_f( void )
 			Com_Printf( " " );
 		}
 
+		if ( var->transient )
+		{
+			Com_Printf( "T" );
+		}
+		else
+		{
+			Com_Printf( " " );
+		}
+
 		if ( raw )
 		{
 			char *index;
