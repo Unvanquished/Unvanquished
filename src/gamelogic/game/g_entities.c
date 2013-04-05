@@ -220,7 +220,7 @@ char *etos( const gentity_t *entity )
 
 	Com_sprintf( resultString, MAX_ETOS_LENGTH,
 			"%s%s" S_COLOR_WHITE "(" S_COLOR_CYAN "%s" S_COLOR_WHITE "|" S_COLOR_CYAN "#%i" S_COLOR_WHITE ")",
-			entity->names[0], entity->names[0] ? " " : "", entity->classname, entity->s.number
+			entity->names[0] ? entity->names[0] : "", entity->names[0] ? " " : "", entity->classname, entity->s.number
 			);
 
 	return resultString;
