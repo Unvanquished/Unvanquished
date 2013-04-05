@@ -756,7 +756,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 			if ( btb->numSegments >= MAX_TRAIL_BEAM_NODES )
 			{
 				btb->numSegments = MAX_TRAIL_BEAM_NODES - 1;
-				CG_Printf( "^3WARNING: too many segments in trail beam\n" );
+				CG_Printf( S_WARNING "too many segments in trail beam\n" );
 			}
 
 			continue;
@@ -857,13 +857,13 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 				}
 				else
 				{
-					CG_Printf( "^1ERROR: missing '{'\n" );
+					CG_Printf( S_ERROR "missing '{'\n" );
 					break;
 				}
 			}
 			else
 			{
-				CG_Printf( "^1ERROR: missing '{'\n" );
+				CG_Printf( S_ERROR "missing '{'\n" );
 				break;
 			}
 
@@ -973,7 +973,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 			}
 			else
 			{
-				CG_Printf( "^1ERROR: unknown textureType \"%s\"\n", token );
+				CG_Printf( S_ERROR "unknown textureType \"%s\"\n", token );
 				break;
 			}
 
@@ -989,7 +989,7 @@ static qboolean CG_ParseTrailBeam( baseTrailBeam_t *btb, char **text_p )
 		{
 			if ( btb->numJitters == MAX_TRAIL_BEAM_JITTERS )
 			{
-				CG_Printf( "^1ERROR: too many jitters\n" );
+				CG_Printf( S_ERROR "too many jitters\n" );
 				break;
 			}
 
@@ -1084,18 +1084,18 @@ static qboolean CG_ParseTrailSystem( baseTrailSystem_t *bts, char **text_p, cons
 
 			if ( !CG_ParseTrailBeam( &baseTrailBeams[ numBaseTrailBeams ], text_p ) )
 			{
-				CG_Printf( "^1ERROR: failed to parse trail beam\n" );
+				CG_Printf( S_ERROR "failed to parse trail beam\n" );
 				return qfalse;
 			}
 
 			if ( bts->numBeams == MAX_BEAMS_PER_SYSTEM )
 			{
-				CG_Printf( "^1ERROR: trail system has > %d beams\n", MAX_BEAMS_PER_SYSTEM );
+				CG_Printf( S_ERROR "trail system has > %d beams\n", MAX_BEAMS_PER_SYSTEM );
 				return qfalse;
 			}
 			else if ( numBaseTrailBeams == MAX_BASETRAIL_BEAMS )
 			{
-				CG_Printf( "^1ERROR: maximum number of trail beams (%d) reached\n",
+				CG_Printf( S_ERROR "maximum number of trail beams (%d) reached\n",
 				           MAX_BASETRAIL_BEAMS );
 				return qfalse;
 			}
@@ -1238,7 +1238,7 @@ static qboolean CG_ParseTrailFile( const char *fileName )
 			}
 			else
 			{
-				CG_Printf( "^1ERROR: unnamed trail system\n" );
+				CG_Printf( S_ERROR "unnamed trail system\n" );
 				return qfalse;
 			}
 		}
@@ -1250,7 +1250,7 @@ static qboolean CG_ParseTrailFile( const char *fileName )
 		}
 		else
 		{
-			CG_Printf( "^1ERROR: trail system already named\n" );
+			CG_Printf( S_ERROR "trail system already named\n" );
 			return qfalse;
 		}
 	}
@@ -1412,7 +1412,7 @@ trailSystem_t *CG_SpawnNewTrailSystem( qhandle_t psHandle )
 
 	if ( !bts->registered )
 	{
-		CG_Printf( "^1ERROR: a trail system has not been registered yet\n" );
+		CG_Printf( S_ERROR "a trail system has not been registered yet\n" );
 		return NULL;
 	}
 

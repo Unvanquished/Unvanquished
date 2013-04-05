@@ -879,12 +879,12 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 		{
 			if ( weaponMode == WPM_NONE )
 			{
-				CG_Printf( "^1ERROR: weapon mode section started without a declaration\n" );
+				CG_Printf( S_ERROR "weapon mode section started without a declaration\n" );
 				return qfalse;
 			}
 			else if ( !CG_ParseWeaponModeSection( &wi->wim[ weaponMode ], &text_p ) )
 			{
-				CG_Printf( "^1ERROR: failed to parse weapon mode section\n" );
+				CG_Printf( S_ERROR "failed to parse weapon mode section\n" );
 				return qfalse;
 			}
 

@@ -5204,7 +5204,7 @@ void UI_Init( void )
 
 	if ( !UI_LoadMenus( ui_menuFiles.string, qtrue ) )
 	{
-		Com_Printf( "^3WARNING: %s not found. Attempting to load default value...\n", ui_menuFiles.string );
+		Com_Printf( S_WARNING "%s not found. Attempting to load default value...\n", ui_menuFiles.string );
 		trap_Cvar_Reset( "ui_menuFiles" );
 		trap_Cvar_Update( &ui_menuFiles );
 		if ( !UI_LoadMenus( ui_menuFiles.string, qtrue ) )
@@ -5214,7 +5214,7 @@ void UI_Init( void )
 	}
 	if ( !UI_LoadMenus( ui_ingameFiles.string, qfalse ) )
 	{
-		Com_Printf( "^3WARNING: %s not found. Attempting to load default value...\n", ui_ingameFiles.string );
+		Com_Printf( S_WARNING "%s not found. Attempting to load default value...\n", ui_ingameFiles.string );
 		trap_Cvar_Reset( "ui_ingameFiles" );
 		trap_Cvar_Update( &ui_ingameFiles );
 		if ( !UI_LoadMenus( ui_ingameFiles.string, qfalse ) )
@@ -5224,7 +5224,7 @@ void UI_Init( void )
 	}
 	if ( !UI_LoadMenus( ui_teamFiles.string, qfalse ) )
 	{
-		Com_Printf( "^3WARNING: %s not found. Attempting to load default value...\n", ui_teamFiles.string );
+		Com_Printf( S_WARNING "%s not found. Attempting to load default value...\n", ui_teamFiles.string );
 		trap_Cvar_Reset( "ui_teamFiles" );
 		trap_Cvar_Update( &ui_teamFiles );
 
@@ -5235,7 +5235,7 @@ void UI_Init( void )
 	}
 	if ( !UI_LoadHelp( ui_helpFiles.string ) )
 	{
-		Com_Printf( "^3WARNING: %s not found. Attempting to load default value...\n", ui_teamFiles.string );
+		Com_Printf( S_WARNING "%s not found. Attempting to load default value...\n", ui_teamFiles.string );
 		trap_Cvar_Reset( "ui_helpFiles" );
 		trap_Cvar_Update( &ui_helpFiles );
 
@@ -5827,7 +5827,7 @@ void UI_UpdateNews( qboolean begin )
 	else if ( uiInfo.uiDC.realTime > uiInfo.newsInfo.refreshtime )
 	{
 		strcpy( uiInfo.newsInfo.text[ 0 ],
-		        "^1Error: Timed out while contacting the server." );
+		        S_ERROR "Timed out while contacting the server." );
 		uiInfo.newsInfo.numLines = 1;
 		return;
 	}
