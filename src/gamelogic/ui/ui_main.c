@@ -45,8 +45,8 @@ static const size_t numNetSources = ARRAY_LEN( netSources );
 static const char *const netnames[] =
 {
 	"???",
-	"UDP",
-	"IPX",
+	"UDP v4",
+	"UDP v6",
 	NULL
 };
 
