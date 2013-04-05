@@ -262,10 +262,8 @@ but not on every player enter or exit.
 ================
 */
 #define HEARTBEAT_MSEC (300 * 1000)
-//#define   HEARTBEAT_GAME  "Wolfenstein-1"
-//#define   HEARTBEAT_DEAD  "WolfFlatline-1"            // NERVE - SMF
-#define HEARTBEAT_GAME "EnemyTerritory-1"
-#define HEARTBEAT_DEAD "ETFlatline-1" // NERVE - SMF
+#define HEARTBEAT_GAME "Unvanquished"
+#define HEARTBEAT_DEAD "Unvanquished-dead"
 
 void SV_MasterHeartbeat( const char *hbname )
 {
@@ -365,12 +363,12 @@ void SV_MasterHeartbeat( const char *hbname )
 
 		if ( adr[ i ][ 0 ].type != NA_BAD )
 		{
-			NET_OutOfBandPrint( NS_SERVER, adr[ i ][ 0 ], "heartbeat %s\n", HEARTBEAT_GAME );
+			NET_OutOfBandPrint( NS_SERVER, adr[ i ][ 0 ], "heartbeat %s\n", hbname );
 		}
 
 		if ( adr[ i ][ 1 ].type != NA_BAD )
 		{
-			NET_OutOfBandPrint( NS_SERVER, adr[ i ][ 1 ], "heartbeat %s\n", HEARTBEAT_GAME );
+			NET_OutOfBandPrint( NS_SERVER, adr[ i ][ 1 ], "heartbeat %s\n", hbname );
 		}
 	}
 }
