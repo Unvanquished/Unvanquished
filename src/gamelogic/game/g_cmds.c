@@ -1802,7 +1802,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 			trap_SendServerCommand( ent - g_entities,
 			                        va( "print_tr %s %s", QQ( N_("$1$: admin is immune\n") ), cmd ) );
 			G_AdminMessage( NULL,
-			                va( "^7%s^3 attempted %s %s"
+			                va( S_COLOR_WHITE "%s^3 attempted %s %s"
 			                    " on immune admin ^7%s"
 			                    " ^3for: %s",
 			                    ent->client->pers.netname, cmd, vote,
@@ -3978,7 +3978,7 @@ void Cmd_ListMaps_f( gentity_t *ent )
 			}
 			else
 			{
-				ADMBP( va( "^7 %-20s", fileSort[ i ] ) );
+				ADMBP( va( S_COLOR_WHITE " %-20s", fileSort[ i ] ) );
 			}
 
 			shown++;
@@ -4020,7 +4020,7 @@ typedef struct {
 } mapLogResult_t;
 
 static const mapLogResult_t maplog_table[] = {
-	{ 't', "^7tie"                                  },
+	{ 't', S_COLOR_WHITE "tie"                                  },
 	{ 'a', "^1Alien win"                            },
 	{ 'A', "^1Alien win ^7/ Humans admitted defeat" },
 	{ 'h', "^5Human win"                            },
@@ -4165,7 +4165,7 @@ void Cmd_MapLog_f( gentity_t *ent )
 		}
 		else if ( ptr == maplog )
 		{
-			result = "^7current map";
+			result = S_COLOR_WHITE "current map";
 		}
 
 		ADMBP( va( "  ^%s%-20s %6s %s^7\n",

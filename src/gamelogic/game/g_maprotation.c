@@ -826,7 +826,7 @@ void G_PrintCurrentRotation( gentity_t *ent )
 
 	if ( G_MapExists( g_nextMap.string ) )
 	{
-		ADMBP( va( "^7The next map has been set to %s\n", g_nextMap.string ) );
+		ADMBP( va( S_COLOR_WHITE "The next map has been set to %s\n", g_nextMap.string ) );
 	}
 
 	ADMBP_end();
