@@ -59,6 +59,24 @@ qboolean G_SpawnString( const char *key, const char *defaultString, char **out )
 	return qfalse;
 }
 
+/**
+ * spawns a string and sets it as a cvar.
+ *
+ * use this with caution, as it might persist unprepared cvars (see cvartable)
+ */
+static qboolean G_SpawnStringIntoCVar( const char *key, const char *cvarName )
+{
+	char     *tmpString;
+
+	if ( G_SpawnString( key, "", &tmpString ) )
+	{
+		trap_Cvar_Set( cvarName, tmpString );
+		return qtrue;
+	}
+
+	return qfalse;
+}
+
 qboolean  G_SpawnFloat( const char *key, const char *defaultString, float *out )
 {
 	char     *s;
@@ -944,38 +962,18 @@ void SP_worldspawn( void )
 
 	trap_SetConfigstring( CS_MOTD, g_motd.string );  // message of the day
 
-	if ( G_SpawnString( "gravity", "", &s ) )
-	{
-		trap_Cvar_Set( "g_gravity", s );
-	}
+	G_SpawnStringIntoCVar( "gravity", "g_gravity" );
 
-	if ( G_SpawnString( "humanMaxStage", "", &s ) )
-	{
-		trap_Cvar_Set( "g_humanMaxStage", s );
-	}
+	G_SpawnStringIntoCVar( "humanMaxStage", "g_humanRepeaterBuildPoints" );
+	G_SpawnStringIntoCVar( "alienMaxStage", "g_alienMaxStage" );
 
-	if ( G_SpawnString( "alienMaxStage", "", &s ) )
-	{
-		trap_Cvar_Set( "g_alienMaxStage", s );
-	}
+	G_SpawnStringIntoCVar( "humanBuildPoints", "g_humanBuildPoints" );
+	G_SpawnStringIntoCVar( "humanRepeaterBuildPoints", "g_humanRepeaterBuildPoints" );
+	G_SpawnStringIntoCVar( "alienBuildPoints", "g_alienBuildPoints" );
 
-	if ( G_SpawnString( "humanRepeaterBuildPoints", "", &s ) )
-		trap_Cvar_Set( "g_humanRepeaterBuildPoints", s );
-
-	if ( G_SpawnString( "humanBuildPoints", "", &s ) )
-		trap_Cvar_Set( "g_humanBuildPoints", s );
-
-	if ( G_SpawnString( "alienBuildPoints", "", &s ) )
-		trap_Cvar_Set( "g_alienBuildPoints", s );
-
-	G_SpawnString( "disabledEquipment", "", &s );
-	trap_Cvar_Set( "g_disabledEquipment", s );
-
-	G_SpawnString( "disabledClasses", "", &s );
-	trap_Cvar_Set( "g_disabledClasses", s );
-
-	G_SpawnString( "disabledBuildables", "", &s );
-	trap_Cvar_Set( "g_disabledBuildables", s );
+	G_SpawnStringIntoCVar( "disabledEquipment", "g_disabledEquipment" );
+	G_SpawnStringIntoCVar( "disabledClasses", "g_disabledClasses" );
+	G_SpawnStringIntoCVar( "disabledBuildables", "g_disabledBuildables" );
 
 	g_entities[ ENTITYNUM_WORLD ].s.number = ENTITYNUM_WORLD;
 	g_entities[ ENTITYNUM_WORLD ].r.ownerNum = ENTITYNUM_NONE;
