@@ -478,7 +478,13 @@ cvar_t         *Cvar_Set2( const char *var_name, const char *value, qboolean for
 	if ( !value )
 	{
 		value = var->resetString;
-		var->transient = qtrue;
+
+		/* make sure we remove ARCHIVE cvars from the autogen if reset */
+		if( var->flags & CVAR_ARCHIVE )
+		{
+			var->transient = qtrue;
+			cvar_modifiedFlags |= CVAR_ARCHIVE;
+		}
 	}
 
 	if ( var->flags & CVAR_USERINFO )
