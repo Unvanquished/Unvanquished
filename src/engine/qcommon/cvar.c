@@ -1243,14 +1243,7 @@ void Cvar_List_f( void )
 	Com_Printf( "%i cvar indexes\n", cvar_numIndexes );
 }
 
-/*
-============
-Cvar_Restart_f
-
-Resets all cvars to their hardcoded values
-============
-*/
-void Cvar_Restart_f( void )
+static void restart_cvars( qboolean checkForEquality )
 {
 	cvar_t *var;
 	cvar_t **prev;
@@ -1272,6 +1265,16 @@ void Cvar_Restart_f( void )
 		{
 			prev = &var->next;
 			continue;
+		}
+
+		if( checkForEquality && ( var->flags & CVAR_ARCHIVE ) )
+		{
+			//if not equal, we don't want it to reset
+			if(strcmp(var->string, var->resetString))
+			{
+				prev = &var->next;
+				continue;
+			}
 		}
 
 		// throw out any variables the user created
@@ -1309,6 +1312,31 @@ void Cvar_Restart_f( void )
 
 		prev = &var->next;
 	}
+}
+
+/*
+============
+Cvar_Restart_f
+
+Resets all cvars to their default value and sets them transient
+============
+*/
+void Cvar_Restart_f( void )
+{
+	restart_cvars( qfalse );
+}
+
+/*
+============
+Cvar_Clean_f
+
+Resets all cvars to their default value and sets them transient, if their current value and their default value are equal
+============
+*/
+
+void Cvar_Clean_f( void )
+{
+	restart_cvars( qtrue );
 }
 
 /*
@@ -1478,5 +1506,6 @@ void Cvar_Init( void )
 	Cmd_AddCommand( "reset", Cvar_Reset_f );
 	Cmd_SetCommandCompletionFunc( "reset", Cvar_CompleteCvarName );
 	Cmd_AddCommand( "cvarlist", Cvar_List_f );
+	Cmd_AddCommand( "cvar_clean", Cvar_Clean_f );
 	Cmd_AddCommand( "cvar_restart", Cvar_Restart_f );
 }
