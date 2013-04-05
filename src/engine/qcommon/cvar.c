@@ -401,10 +401,12 @@ cvar_t         *Cvar_Get( const char *var_name, const char *var_value, int flags
 	var->name = CopyString( var_name );
 	var->string = CopyString( var_value );
 	var->modified = qtrue;
-	var->modificationCount = 1;
+	var->modificationCount = 0;
 	var->value = atof( var->string );
 	var->integer = atoi( var->string );
 	var->resetString = CopyString( var_value );
+
+	var->transient = qtrue;
 
 	// link the variable in
 	var->next = cvar_vars;
@@ -460,17 +462,23 @@ cvar_t         *Cvar_Set2( const char *var_name, const char *value, qboolean for
 		// create it
 		if ( !force )
 		{
-			return Cvar_Get( var_name, value, CVAR_USER_CREATED );
+			var = Cvar_Get( var_name, value, CVAR_USER_CREATED );
 		}
 		else
 		{
-			return Cvar_Get( var_name, value, 0 );
+			var = Cvar_Get( var_name, value, 0 );
 		}
+		var->modificationCount++;
+		var->transient = qfalse;
+		return var;
 	}
+
+	var->transient = qfalse;
 
 	if ( !value )
 	{
 		value = var->resetString;
+		var->transient = qtrue;
 	}
 
 	if ( var->flags & CVAR_USERINFO )
@@ -1061,7 +1069,7 @@ void Cvar_Reset_f( void )
 Cvar_WriteVariables
 
 Appends lines containing "set variable value" for all variables
-with the archive flag set to qtrue.
+with the archive flag set that are not in a transient state.
 ============
 */
 void Cvar_WriteVariables( fileHandle_t f )
@@ -1073,6 +1081,9 @@ void Cvar_WriteVariables( fileHandle_t f )
 	{
 		if ( var->flags & CVAR_ARCHIVE )
 		{
+			if( var->transient )
+				continue;
+
 			// write the latched value, even if it hasn't taken effect yet
 			Com_sprintf( buffer, sizeof( buffer ), "seta %s %s%s\n",
 			             var->name,
@@ -1195,6 +1206,15 @@ void Cvar_List_f( void )
 			Com_Printf( " " );
 		}
 
+		if ( var->transient )
+		{
+			Com_Printf( "T" );
+		}
+		else
+		{
+			Com_Printf( " " );
+		}
+
 		if ( raw )
 		{
 			char *index;
@@ -1285,7 +1305,7 @@ void Cvar_Restart_f( void )
 			continue;
 		}
 
-		Cvar_Set( var->name, var->resetString );
+		Cvar_Set2( var->name, NULL, qtrue );
 
 		prev = &var->next;
 	}
