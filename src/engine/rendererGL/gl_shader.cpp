@@ -1463,7 +1463,6 @@ void GLShader::SetRequiredVertexPointers()
 
 GLShader_generic::GLShader_generic( GLShaderManager *manager ) :
 	GLShader( "generic", ATTR_POSITION | ATTR_TEXCOORD | ATTR_NORMAL, manager ),
-	u_ColorMap( this ),
 	u_ColorTextureMatrix( this ),
 	u_ViewOrigin( this ),
 	u_AlphaThreshold( this ),
@@ -1494,7 +1493,7 @@ void GLShader_generic::BuildShaderVertexLibNames( std::string& vertexInlines )
 
 void GLShader_generic::SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram )
 {
-	//shaderProgram->u_ColorMap = glGetUniformLocation(shaderProgram->program, "u_ColorMap");
+	shaderProgram->u_ColorMap = glGetUniformLocation( shaderProgram->program, "u_ColorMap" );
 }
 
 void GLShader_generic::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
@@ -2213,8 +2212,6 @@ void GLShader_shadowFill::SetShaderProgramUniforms( shaderProgram_t *shaderProgr
 
 GLShader_reflection::GLShader_reflection( GLShaderManager *manager ):
 	GLShader("reflection", "reflection_CB", ATTR_POSITION | ATTR_TEXCOORD | ATTR_NORMAL, manager ),
-	u_ColorMap( this ),
-	u_NormalMap( this ),
 	u_NormalTextureMatrix( this ),
 	u_ViewOrigin( this ),
 	u_ModelMatrix( this ),
@@ -2247,6 +2244,8 @@ void GLShader_reflection::BuildShaderCompileMacros( std::string& compileMacros )
 
 void GLShader_reflection::SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram )
 {
+	shaderProgram->u_ColorMap = glGetUniformLocation( shaderProgram->program, "u_ColorMap" );
+	shaderProgram->u_NormalMap = glGetUniformLocation( shaderProgram->program, "u_NormalMap" );
 }
 
 void GLShader_reflection::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )
@@ -2257,7 +2256,6 @@ void GLShader_reflection::SetShaderProgramUniforms( shaderProgram_t *shaderProgr
 
 GLShader_skybox::GLShader_skybox( GLShaderManager *manager ) :
 	GLShader( "skybox", ATTR_POSITION, manager ),
-	u_ColorMap( this ),
 	u_ViewOrigin( this ),
 	u_ModelMatrix( this ),
 	u_ModelViewProjectionMatrix( this ),
@@ -2269,6 +2267,7 @@ GLShader_skybox::GLShader_skybox( GLShaderManager *manager ) :
 
 void GLShader_skybox::SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram )
 {
+	shaderProgram->u_ColorMap = glGetUniformLocation( shaderProgram->program, "u_ColorMap" );
 }
 
 void GLShader_skybox::SetShaderProgramUniforms( shaderProgram_t *shaderProgram )

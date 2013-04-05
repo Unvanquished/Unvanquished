@@ -1018,81 +1018,6 @@ public:
 	}
 };
 
-class u_ColorMap :
-	GLUniform
-{
-public:
-	u_ColorMap( GLShader *shader ) :
-		GLUniform( shader )
-	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_ColorMap";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_ColorMap = glGetUniformLocation( shaderProgram->program, GetName() );
-	}
-
-	void SetUniform_ColorMap( int texUnit )
-	{
-		glUniform1i( _shader->GetProgram()->u_ColorMap, texUnit );
-	}
-};
-
-class u_NormalMap :
-	GLUniform
-{
-public:
-	u_NormalMap( GLShader *shader ) :
-		GLUniform( shader )
-	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_NormalMap";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_NormalMap = glGetUniformLocation( shaderProgram->program, GetName() );
-	}
-
-	void SetUniform_NormalMap( int texUnit )
-	{
-		glUniform1i( _shader->GetProgram()->u_NormalMap, texUnit );
-	}
-};
-
-class u_CurrentMap :
-	GLUniform
-{
-public:
-	u_CurrentMap( GLShader *shader ) :
-		GLUniform( shader )
-	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_CurrentMap";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_CurrentMap = glGetUniformLocation( shaderProgram->program, GetName() );
-	}
-
-	void SetUniform_CurrentMap( int texUnit )
-	{
-		glUniform1i( _shader->GetProgram()->u_CurrentMap, texUnit );
-	}
-};
-
 class u_ColorTextureMatrix :
 	GLUniform
 {
@@ -2739,7 +2664,6 @@ public:
 
 class GLShader_generic :
 	public GLShader,
-	public u_ColorMap,
 	public u_ColorTextureMatrix,
 	public u_ViewOrigin,
 	public u_AlphaThreshold,
@@ -3123,8 +3047,6 @@ public:
 
 class GLShader_reflection :
 	public GLShader,
-	public u_ColorMap,
-	public u_NormalMap,
 	public u_NormalTextureMatrix,
 	public u_ViewOrigin,
 	public u_ModelMatrix,
@@ -3148,7 +3070,6 @@ public:
 
 class GLShader_skybox :
 	public GLShader,
-	public u_ColorMap,
 	public u_ViewOrigin,
 	public u_ModelMatrix,
 	public u_ModelViewProjectionMatrix,
