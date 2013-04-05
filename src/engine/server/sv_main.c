@@ -659,6 +659,10 @@ qboolean SV_CheckDRDoS( netadr_t from )
 	{
 		from.ip[ 3 ] = 0; // xx.xx.xx.0
 	}
+	else if ( from.type == NA_IP6 )
+	{
+		memset( from.ip + 7, 0, 9 ); // mask to /56
+	}
 	else
 	{
 		// So we got a connectionless packet but it's not IPv4, so
