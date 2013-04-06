@@ -3500,8 +3500,17 @@ static void CG_DrawCrosshairNames( rectDef_t *rect, float scale, int textStyle )
 	{
 		name = va( "(" S_COLOR_CYAN "%s" S_COLOR_WHITE "|" S_COLOR_CYAN "#%d" S_COLOR_WHITE ")",
 				Com_EntityTypeName( cg_entities[cg.crosshairClientNum].currentState.eType ), cg.crosshairClientNum );
-	} else {
-		name = cgs.clientinfo[ cg.crosshairClientNum ].name;
+	}
+	else
+	{
+		if ( cg_drawCrosshairNames.integer >= 2 )
+		{
+			name = va( "%2i: %s", cg.crosshairClientNum, cgs.clientinfo[ cg.crosshairClientNum ].name );
+		}
+		else
+		{
+			name = cgs.clientinfo[ cg.crosshairClientNum ].name;
+		}
 	}
 
 	// add health from overlay info to the crosshair client name
