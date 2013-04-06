@@ -459,7 +459,7 @@ void CL_VoipParseTargets( void )
 				target += 7;
 				continue;
 			}
-
+#if 0 //FIXME we need to find another way to get the team CS_PLAYERS value, which will continuously change independently of the client, especially now with several cgames/games in development
 			else if ( !Q_strnicmp( target, "team", 4 ) )
 			{
 				int i = 0;
@@ -490,7 +490,7 @@ void CL_VoipParseTargets( void )
 				}
 				target += 4;
 			}
-
+#endif
 			else
 			{
 				if ( !Q_strnicmp( target, "attacker", 8 ) )
