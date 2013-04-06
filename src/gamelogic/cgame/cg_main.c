@@ -487,21 +487,20 @@ static void CG_SetPVars( void )
 	if ( ( ps->pm_flags & PMF_FOLLOW ) )
 		return;
 
+	trap_Cvar_Set( "p_teamname", BG_TeamName( ps->stats[ STAT_TEAM ] ) );
+
 	switch ( ps->stats[ STAT_TEAM ] )
 	{
 		case TEAM_ALIENS:
-			trap_Cvar_Set( "p_teamname", "Alien" );
 			trap_Cvar_Set( "p_stage", va( "%d", cgs.alienStage ) );
 			break;
 
 		case TEAM_HUMANS:
-			trap_Cvar_Set( "p_teamname", "Human" );
 			trap_Cvar_Set( "p_stage", va( "%d", cgs.humanStage ) );
 			break;
 
 		default:
 		case TEAM_NONE:
-			trap_Cvar_Set( "p_teamname", "Spectator" );
 			trap_Cvar_Set( "p_classname", "Spectator" );
 			trap_Cvar_Set( "p_weaponname", "Nothing" );
 
