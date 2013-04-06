@@ -361,7 +361,7 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 	if ( code == ERR_SERVERDISCONNECT )
 	{
 		VM_Forced_Unload_Start();
-		Com_Printf( "^7%s\n", com_errorMessage );
+		Com_Printf( S_COLOR_WHITE "%s\n", com_errorMessage );
 		SV_Shutdown( "Server disconnected" );
 		CL_Disconnect( qtrue );
 		CL_FlushMemory();
@@ -372,7 +372,7 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 	else if ( code == ERR_DROP )
 	{
 		VM_Forced_Unload_Start();
-		Com_Printf( "^8%s\n", com_errorMessage );
+		Com_Printf( S_COLOR_ORANGE "%s\n", com_errorMessage );
 		SV_Shutdown( va( "********************\nServer crashed: %s\n********************\n", com_errorMessage ) );
 		CL_Disconnect( qtrue );
 		CL_FlushMemory();
@@ -3002,7 +3002,7 @@ void Com_Init( char *commandLine )
 			if ( !Com_CheckProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
 			{
 #if 0
-				Com_Printf(_( "^3WARNING: profile.pid found for profile '%s' — the system settings will revert to their defaults\n"),
+				Com_Printf(_( S_WARNING "profile.pid found for profile '%s' — the system settings will revert to their defaults\n"),
 				            cl_profileStr );
 				// ydnar: set crashed state
 				Cbuf_AddText( "set com_crashed 1\n" );
@@ -3012,7 +3012,7 @@ void Com_Init( char *commandLine )
 			// bani - write a new one
 			if ( !Com_WriteProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
 			{
-				Com_Printf(_( "^3WARNING: couldn't write profiles/%s/profile.pid\n"), cl_profileStr );
+				Com_Printf(_( S_WARNING "couldn't write profiles/%s/profile.pid\n"), cl_profileStr );
 			}
 
 			// exec the config

@@ -394,7 +394,7 @@ void PRINTF_LIKE(2) PC_SourceWarning( int handle, char *format, ... )
 	line = 0;
 	trap_Parse_SourceFileAndLine( handle, filename, &line );
 
-	Com_Printf( S_COLOR_YELLOW  "WARNING: %s, line %d: %s\n", filename, line, string );
+	Com_Printf( S_WARNING "%s, line %d: %s\n", filename, line, string );
 }
 
 /*
@@ -417,7 +417,7 @@ void PRINTF_LIKE(2) PC_SourceError( int handle, char *format, ... )
 	line = 0;
 	trap_Parse_SourceFileAndLine( handle, filename, &line );
 
-	Com_Printf( S_COLOR_RED  "ERROR: %s, line %d: %s\n", filename, line, string );
+	Com_Printf( S_ERROR "%s, line %d: %s\n", filename, line, string );
 }
 
 /*

@@ -546,7 +546,7 @@ void CG_InitBuildables( void )
 
 			if ( !CG_ParseBuildableAnimationFile( filename, i ) )
 			{
-				Com_Printf( S_COLOR_YELLOW  "WARNING: failed to load animation file %s\n", filename );
+				Com_Printf( S_WARNING "failed to load animation file %s\n", filename );
 			}
 		}
 
@@ -555,7 +555,7 @@ void CG_InitBuildables( void )
 
 		if ( !CG_ParseBuildableSoundFile( filename, i ) )
 		{
-			Com_Printf( S_COLOR_YELLOW  "WARNING: failed to load sound file %s\n", filename );
+			Com_Printf( S_WARNING "failed to load sound file %s\n", filename );
 		}
 
 		//sounds

@@ -803,7 +803,7 @@ void CG_UpdateBuildableRangeMarkerMask( void )
 				}
 				else
 				{
-					Com_Printf( S_COLOR_YELLOW  "WARNING: unknown buildable or group: %s\n", p );
+					Com_Printf( S_WARNING "unknown buildable or group: %s\n", p );
 				}
 			}
 
@@ -2494,7 +2494,7 @@ static char *CG_VoIPString( void )
 
 			if ( slen + nlen + 1 >= sizeof( voipString ) )
 			{
-				CG_Printf( "^3WARNING: voipString overflowed\n" );
+				CG_Printf( S_WARNING "voipString overflowed\n" );
 				break;
 			}
 
