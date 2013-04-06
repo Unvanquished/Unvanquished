@@ -1488,8 +1488,9 @@ typedef struct visTest_s
 {
 	vec3_t            position;
 	float             depthAdjust; // move position this distance to camera
+	float             area;
 	qboolean          registered;
-	qboolean          lastResult;
+	float             lastResult;
 } visTest_t;
 
 
@@ -1727,7 +1728,6 @@ extern cvar_t *r_offsetFactor;
 extern cvar_t *r_offsetUnits;
 
 extern cvar_t *r_showLightMaps; // render lightmaps only
-extern cvar_t *r_uiFullScreen; // ui is running fullscreen
 
 extern cvar_t *r_logFile; // number of frames to emit GL logs
 extern cvar_t *r_showtris; // enables wireframe rendering of the world
@@ -1945,7 +1945,7 @@ void     RE_SetColorGrading( qhandle_t hShader );
 //
 qhandle_t RE_RegisterShaderLightMap( const char *name, int lightmapIndex );
 qhandle_t RE_RegisterShader( const char *name, RegisterShaderFlags_t flags );
-qhandle_t RE_RegisterShaderFromImage( const char *name, int lightmapIndex, image_t *image, qboolean mipRawImage );
+qhandle_t RE_RegisterShaderFromImage( const char *name, int lightmapIndex, image_t *image );
 
 shader_t  *R_FindShader( const char *name, int lightmapIndex, qboolean mipRawImage );
 shader_t  *R_GetShaderByHandle( qhandle_t hShader );
@@ -2214,8 +2214,9 @@ void RE_SaveViewParms( void );
 void RE_RestoreViewParms( void );
 
 qhandle_t RE_RegisterVisTest( void );
-void RE_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust );
-qboolean RE_CheckVisibility( qhandle_t hTest );
+void RE_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust,
+			   float area );
+float RE_CheckVisibility( qhandle_t hTest );
 void RE_UnregisterVisTest( qhandle_t hTest );
 /*
 =============================================================

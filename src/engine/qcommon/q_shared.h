@@ -63,9 +63,13 @@ extern "C" {
 #define CLIENT_WINDOW_MIN_TITLE PRODUCT_NAME_LOWER
 #define GAMENAME_FOR_MASTER     PRODUCT_NAME_UPPER
 
+
+#define AUTOEXEC_NAME           "autoexec.cfg"
+
 #ifndef DEDICATED
 #define CONFIG_NAME             "autogen.cfg"
 #define KEYBINDINGS_NAME        "keybindings.cfg"
+#define TEAMCONFIG_NAME         "teamconfig.cfg"
 #else
 #define CONFIG_NAME             "autogen_server.cfg"
 #endif
@@ -227,35 +231,7 @@ extern int memcmp( void *, void *, size_t );
 #define Q3_VM_INSTANTIATE
 #endif
 
-#if defined __GNUC__ || defined __clang__
-#define NORETURN __attribute__((__noreturn__))
-#define UNUSED __attribute__((__unused__))
-#define PRINTF_ARGS(f, a) __attribute__((__format__(__printf__, (f), (a))))
-#define PRINTF_LIKE(n) PRINTF_ARGS((n), (n) + 1)
-#define VPRINTF_LIKE(n) PRINTF_ARGS((n), 0)
-#define ALIGNED(a, x) x __attribute__((__aligned__(a)))
-#define ALWAYS_INLINE INLINE __attribute__((__always_inline__))
-#elif ( defined _MSC_VER )
-#define NORETURN
-#define UNUSED
-#define PRINTF_ARGS(f, a)
-#define PRINTF_LIKE(n)
-#define VPRINTF_LIKE(n)
-#define ALIGNED( a, x ) __declspec(align(a)) x
-#define ALWAYS_INLINE __forceinline
-#define __attribute__(x)
-#define __func__ __FUNCTION__
-#else
-#define NORETURN
-#define UNUSED
-#define PRINTF_ARGS(f, a)
-#define PRINTF_LIKE(n)
-#define VPRINTF_LIKE(n)
-#define ALIGNED( a, x ) x
-#define ALWAYS_INLINE
-#define __attribute__(x)
-#define __func__
-#endif
+#include "../../include/global.h"
 
 //bani
 //======================= GNUC DEFINES ==================================
@@ -1545,6 +1521,13 @@ double rint( double x );
 		int           modificationCount; // incremented each time the cvar is changed
 		float         value; // atof( string )
 		int           integer; // atoi( string )
+
+		/**
+		 * indicate whether the cvar won't be archived, even if it's an ARCHIVE flagged cvar.
+		 * this allows us to keep ARCHIVE cvars unwritten to autogen until a user changes them
+		 */
+		qboolean      transient;
+
 		qboolean      validate;
 		qboolean      integral;
 		float         min;

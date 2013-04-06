@@ -1238,7 +1238,7 @@ void CL_RegisterButtonCommands( const char *cmd_names )
 
 	if ( cmd_names )
 	{
-		Com_Printf( "^1BUG: cgame: some button commands left unregistered (\"%s\")\n", cmd_names );
+		Com_Printf( S_WARNING "cgame: some button commands left unregistered (\"%s\")\n", cmd_names );
 	}
 }
 

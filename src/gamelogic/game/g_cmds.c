@@ -941,7 +941,7 @@ void G_LoadCensors( void )
 
 	if ( len < 0 )
 	{
-		Com_Printf( S_COLOR_RED "ERROR: Censors file %s doesn't exist\n",
+		Com_Printf( S_ERROR "Censors file %s doesn't exist\n",
 		            g_censorship.string );
 		return;
 	}
@@ -949,7 +949,7 @@ void G_LoadCensors( void )
 	if ( len == 0 || len >= sizeof( text ) - 1 )
 	{
 		trap_FS_FCloseFile( f );
-		Com_Printf( S_COLOR_RED "ERROR: Censors file %s is %s\n",
+		Com_Printf( S_ERROR "Censors file %s is %s\n",
 		            g_censorship.string, len == 0 ? "empty" : "too long" );
 		return;
 	}
@@ -1802,7 +1802,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 			trap_SendServerCommand( ent - g_entities,
 			                        va( "print_tr %s %s", QQ( N_("$1$: admin is immune\n") ), cmd ) );
 			G_AdminMessage( NULL,
-			                va( "^7%s^3 attempted %s %s"
+			                va( S_COLOR_WHITE "%s^3 attempted %s %s"
 			                    " on immune admin ^7%s"
 			                    " ^3for: %s",
 			                    ent->client->pers.netname, cmd, vote,
@@ -3978,7 +3978,7 @@ void Cmd_ListMaps_f( gentity_t *ent )
 			}
 			else
 			{
-				ADMBP( va( "^7 %-20s", fileSort[ i ] ) );
+				ADMBP( va( S_COLOR_WHITE " %-20s", fileSort[ i ] ) );
 			}
 
 			shown++;
@@ -4020,7 +4020,7 @@ typedef struct {
 } mapLogResult_t;
 
 static const mapLogResult_t maplog_table[] = {
-	{ 't', "^7tie"                                  },
+	{ 't', S_COLOR_WHITE "tie"                                  },
 	{ 'a', "^1Alien win"                            },
 	{ 'A', "^1Alien win ^7/ Humans admitted defeat" },
 	{ 'h', "^5Human win"                            },
@@ -4165,7 +4165,7 @@ void Cmd_MapLog_f( gentity_t *ent )
 		}
 		else if ( ptr == maplog )
 		{
-			result = "^7current map";
+			result = S_COLOR_WHITE "current map";
 		}
 
 		ADMBP( va( "  ^%s%-20s %6s %s^7\n",
@@ -4391,54 +4391,54 @@ void ClientCommand( int clientNum )
 		return;
 	}
 
-	if ( command->cmdFlags & CMD_CHEAT && !g_cheats.integer )
+	if ( (command->cmdFlags & CMD_CHEAT) && !g_cheats.integer )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_CHEAT );
 		return;
 	}
 
-	if ( command->cmdFlags & CMD_MESSAGE && ( ent->client->pers.namelog->muted ||
+	if ( (command->cmdFlags & CMD_MESSAGE) && ( ent->client->pers.namelog->muted ||
 	     G_FloodLimited( ent ) ) )
 	{
 		return;
 	}
 
-	if ( command->cmdFlags & CMD_TEAM &&
+	if ( (command->cmdFlags & CMD_TEAM) &&
 	     ent->client->pers.teamSelection == TEAM_NONE )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_TEAM );
 		return;
 	}
 
-	if ( command->cmdFlags & CMD_CHEAT_TEAM && !g_cheats.integer &&
+	if ( (command->cmdFlags & CMD_CHEAT_TEAM) && !g_cheats.integer &&
 	     ent->client->pers.teamSelection != TEAM_NONE )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_CHEAT_TEAM );
 		return;
 	}
 
-	if ( command->cmdFlags & CMD_SPEC &&
+	if ( (command->cmdFlags & CMD_SPEC) &&
 	     ent->client->sess.spectatorState == SPECTATOR_NOT )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_SPEC );
 		return;
 	}
 
-	if ( command->cmdFlags & CMD_ALIEN &&
+	if ( (command->cmdFlags & CMD_ALIEN) &&
 	     ent->client->pers.teamSelection != TEAM_ALIENS )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_ALIEN );
 		return;
 	}
 
-	if ( command->cmdFlags & CMD_HUMAN &&
+	if ( (command->cmdFlags & CMD_HUMAN) &&
 	     ent->client->pers.teamSelection != TEAM_HUMANS )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_HUMAN );
 		return;
 	}
 
-	if ( command->cmdFlags & CMD_ALIVE &&
+	if ( (command->cmdFlags & CMD_ALIVE) &&
 	     ( ent->client->ps.stats[ STAT_HEALTH ] <= 0 ||
 	       ent->client->sess.spectatorState != SPECTATOR_NOT ) )
 	{

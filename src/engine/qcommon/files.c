@@ -1169,7 +1169,7 @@ fileHandle_t FS_FCreateOpenPipeFile( const char *filename ) {
 	}
 	else
 	{
-		Com_Printf( S_COLOR_YELLOW "WARNING: Could not create new com_pipefile at %s. "
+		Com_Printf( S_WARNING "Could not create new com_pipefile at %s. "
 		"com_pipefile will not be used.\n", ospath );
 		f = 0;
 	}
@@ -4749,7 +4749,7 @@ void FS_Restart( int checksumFeed )
 				if ( !Com_CheckProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
 				{
 #ifdef NDEBUG
-					Com_Printf( "^3WARNING: profile.pid found for profile '%s' — the system settings will revert to their defaults\n", cl_profileStr );
+					Com_Printf( S_WARNING "profile.pid found for profile '%s' — the system settings will revert to their defaults\n", cl_profileStr );
 					// ydnar: set crashed state
 					Cbuf_AddText( "set com_crashed 1\n" );
 #endif
@@ -4758,7 +4758,7 @@ void FS_Restart( int checksumFeed )
 				// bani - write a new one
 				if ( !Com_WriteProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
 				{
-					Com_Printf( "^3WARNING: couldn't write profiles/%s/profile.pid\n", cl_profileStr );
+					Com_Printf( S_WARNING "couldn't write profiles/%s/profile.pid\n", cl_profileStr );
 				}
 
 				// exec the config

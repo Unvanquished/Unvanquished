@@ -251,7 +251,7 @@ qhandle_t RE_GetShaderFromModel( qhandle_t modelid, int surfnum, int withlightma
 			                        break;
 			                }
 			        }
-			        shd = R_FindShader(surf->shader->name, LIGHTMAP_NONE, mip);
+			        shd = R_FindShader(surf->shader->name, LIGHTMAP_NONE, mip ? RSF_DEFAULT : RSF_NOMIP);
 			        shd->stages[0]->rgbGen = CGEN_LIGHTING_DIFFUSE; // (SA) new
 			}
 			else
@@ -334,7 +334,7 @@ qhandle_t RE_RegisterSkin( const char *name )
 	{
 		skin->numSurfaces = 1;
 		skin->surfaces[ 0 ] = ri.Hunk_Alloc( sizeof( skin->surfaces[ 0 ] ), h_low );
-		skin->surfaces[ 0 ]->shader = R_FindShader( name, SHADER_3D_DYNAMIC, qtrue );
+		skin->surfaces[ 0 ]->shader = R_FindShader( name, SHADER_3D_DYNAMIC, RSF_DEFAULT );
 		return hSkin;
 	}
 
@@ -407,7 +407,7 @@ qhandle_t RE_RegisterSkin( const char *name )
 
 		// RB: bspSurface_t does not have ::hash yet
 //		surf->hash = Com_HashKey(surf->name, sizeof(surf->name));
-		surf->shader = R_FindShader( token, SHADER_3D_DYNAMIC, qtrue );
+		surf->shader = R_FindShader( token, SHADER_3D_DYNAMIC, RSF_DEFAULT );
 		skin->numSurfaces++;
 	}
 

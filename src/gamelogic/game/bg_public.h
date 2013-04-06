@@ -310,6 +310,8 @@ typedef enum
 #define EF_B_POWERED        0x0010
 #define EF_B_MARKED         0x0020
 
+// for players
+#define EF_POWER_AVAILABLE  0x0010
 #define EF_WARN_CHARGE      0x0020 // Lucifer Cannon is about to overcharge
 #define EF_WALLCLIMB        0x0040 // wall walking
 #define EF_WALLCLIMBCEILING 0x0080 // wall walking ceiling hack

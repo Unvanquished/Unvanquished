@@ -1342,7 +1342,7 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 			                 ( image->bits & IF_NORMALMAP ) );
 		}
 
-		if ( !( image->bits & ( IF_NORMALMAP | IF_RGBA16F | IF_RGBA32F | IF_LA16F | IF_LA32F ) ) )
+		if ( !( image->bits & ( IF_NORMALMAP | IF_RGBA16F | IF_RGBA32F | IF_LA16F | IF_LA32F | IF_NOLIGHTSCALE ) ) )
 		{
 			R_LightScaleTexture( ( unsigned * ) scaledBuffer, scaledWidth, scaledHeight, image->filterType == FT_DEFAULT );
 		}
@@ -1670,7 +1670,7 @@ int numTextures = 0;
 qhandle_t RE_GenerateTexture( const byte *pic, int width, int height )
 {
 	const char *name = va( "rocket%d", numTextures++ );
-	return RE_RegisterShaderFromImage( name, R_CreateImage( name, pic, width, height, IF_NOCOMPRESSION | IF_NOPICMIP, FT_LINEAR, WT_CLAMP ), qfalse );
+	return RE_RegisterShaderFromImage( name, R_CreateImage( name, pic, width, height, IF_NOCOMPRESSION | IF_NOPICMIP, FT_LINEAR, WT_CLAMP ) );
 }
 
 /*

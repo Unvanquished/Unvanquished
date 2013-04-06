@@ -412,7 +412,7 @@ sfxHandle_t     S_Base_RegisterSound( const char *name, qboolean compressed )
 	{
 		if ( sfx->defaultSound )
 		{
-			Com_Printf( _( S_COLOR_YELLOW  "WARNING: could not find %s — using default\n"), sfx->soundName );
+			Com_Printf( _( S_WARNING "could not find %s — using default\n"), sfx->soundName );
 			return 0;
 		}
 
@@ -426,7 +426,7 @@ sfxHandle_t     S_Base_RegisterSound( const char *name, qboolean compressed )
 
 	if ( sfx->defaultSound )
 	{
-		Com_Printf( _( S_COLOR_YELLOW  "WARNING: could not find %s — using default\n"), sfx->soundName );
+		Com_Printf( _( S_WARNING "could not find %s — using default\n"), sfx->soundName );
 		return 0;
 	}
 
@@ -438,7 +438,7 @@ void S_memoryLoad( sfx_t *sfx )
 	// load the sound file
 	if ( !S_LoadSound( sfx ) )
 	{
-//		Com_Printf( _( S_COLOR_YELLOW  "WARNING: couldn't load sound: %s\n"), sfx->soundName );
+//		Com_Printf( _( S_WARNING "couldn't load sound: %s\n"), sfx->soundName );
 		sfx->defaultSound = qtrue;
 	}
 
@@ -1577,13 +1577,13 @@ void S_Base_StartBackgroundTrack( const char *intro, const char *loop )
 
 	if ( !s_backgroundStream )
 	{
-		Com_DPrintf( S_COLOR_YELLOW  "WARNING: couldn't open music file %s\n", intro );
+		Com_DPrintf( S_WARNING "couldn't open music file %s\n", intro );
 		return;
 	}
 
 	if ( s_backgroundStream->info.channels != 2 || s_backgroundStream->info.rate != 22050 )
 	{
-		Com_DPrintf( S_COLOR_YELLOW  "WARNING: music file %s is not 22k stereo\n", intro );
+		Com_DPrintf( S_WARNING "music file %s is not 22k stereo\n", intro );
 	}
 }
 

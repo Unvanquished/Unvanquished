@@ -2111,19 +2111,19 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			re.UnregisterFontVM( args[1] );
 			return 0;
 
-		case CG_KEY_SETTEAM:
-			Key_SetTeam( args[1] ); // for binding selection
+		case CG_NOTIFY_TEAMCHANGE:
+			CL_OnTeamChanged( args[1] );
 			return 0;
 
 		case CG_REGISTERVISTEST:
 			return re.RegisterVisTest();
 
 		case CG_ADDVISTESTTOSCENE:
-			re.AddVisTestToScene( args[1], VMA(2), VMF(3) );
+			re.AddVisTestToScene( args[1], VMA(2), VMF(3), VMF(4) );
 			return 0;
 
 		case CG_CHECKVISIBILITY:
-			return re.CheckVisibility( args[1] );
+			return FloatAsInt( re.CheckVisibility( args[1] ) );
 
 		case CG_UNREGISTERVISTEST:
 			re.UnregisterVisTest( args[1] );
@@ -2957,4 +2957,32 @@ qboolean CL_GetTag( int clientNum, const char *tagname, orientation_t * or )
 	//  (the direct pointer method to pass the tag name would work only with modules in native format)
 	//return VM_Call( cgvm, CG_GET_TAG, clientNum, tagname, or );
 	return qfalse;
+}
+
+/**
+ * is notified by teamchanges.
+ * while most notifications will come from the cgame, due to game semantics,
+ * other code may assume a change to a non-team "0", like e.g. /disconnect
+ */
+void  CL_OnTeamChanged( int newTeam )
+{
+	if(p_team->integer == newTeam
+			&& p_team->modificationCount > 0 ) //to make sure, we run the hook initially as well
+	{
+		return;
+	}
+
+	Cvar_SetValue( p_team->name, newTeam );
+
+	/* set all team specific teambindinds */
+	Key_SetTeam( newTeam );
+
+	/*
+	 * execute a possibly team aware config each time the team was changed.
+	 * the user can use the cvars p_team or p_teamname (if the cgame sets it) within that config
+	 * to e.g. execute team specific configs, like cg_<team>Config did previously, but with less dependency on the cgame
+	 *
+	 * compared to render settings, that are client/workstation specifc, teamconfigs will always be player and with that profile dependend
+	 */
+	Cbuf_AddText( va( "exec profiles/%s/" TEAMCONFIG_NAME "\n", cl_profile->string ) );
 }

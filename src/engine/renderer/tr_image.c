@@ -1272,7 +1272,7 @@ int numTextures = 0;
 qhandle_t RE_GenerateTexture( const byte *pic, int width, int height )
 {
 	const char *name = va( "rocket%d", numTextures++ );
-	return RE_RegisterShaderFromImage( name, LIGHTMAP_2D, R_CreateImage( name, pic, width, height, qfalse, qfalse, GL_CLAMP ), qfalse );
+	return RE_RegisterShaderFromImage( name, LIGHTMAP_2D, R_CreateImage( name, pic, width, height, qfalse, qfalse, GL_CLAMP ) );
 }
 
 
@@ -2603,7 +2603,7 @@ image_t        *R_FindImageFile( const char *name, qboolean mipmap, qboolean all
 
 	if ( ( ( width - 1 ) & width ) || ( ( height - 1 ) & height ) )
 	{
-		Com_Printf( "^1Image not power of 2 scaled: %s\n", name );
+		Com_Printf( S_ERROR "Image not power of 2 scaled: %s\n", name );
 		return NULL;
 	}
 

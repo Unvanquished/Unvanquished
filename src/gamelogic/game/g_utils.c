@@ -37,7 +37,7 @@ typedef struct
 int           remapCount = 0;
 shaderRemap_t remappedShaders[ MAX_SHADER_REMAPS ];
 
-void AddRemap( const char *oldShader, const char *newShader, float timeOffset )
+void G_SetShaderRemap( const char *oldShader, const char *newShader, float timeOffset )
 {
 	int i;
 
@@ -151,6 +151,22 @@ int G_ModelIndex( const char *name )
 int G_SoundIndex( const char *name )
 {
 	return G_FindConfigstringIndex( name, CS_SOUNDS, MAX_SOUNDS, qtrue );
+}
+
+/**
+ * searches for a the grading texture with the given name among the configstrings and returns the index
+ * if it wasn't found it will add the texture to the configstrings, send these to the client and return the new index
+ *
+ * the first one at CS_GRADING_TEXTURES is always the global one, so we start searching from CS_GRADING_TEXTURES+1
+ */
+int G_GradingTextureIndex( const char *name )
+{
+	return G_FindConfigstringIndex( name, CS_GRADING_TEXTURES+1, MAX_GRADING_TEXTURES-1, qtrue );
+}
+
+int G_LocationIndex( const char *name )
+{
+	return G_FindConfigstringIndex( name, CS_LOCATIONS, MAX_LOCATIONS, qtrue );
 }
 
 /*
@@ -356,7 +372,7 @@ void G_AddEvent( gentity_t *ent, int event, int eventParm )
 	// eventParm is converted to uint8_t (0 - 255) in msg.c
 	if ( eventParm & ~0xFF )
 	{
-		G_Printf( S_COLOR_YELLOW "WARNING: G_AddEvent( %s ) has eventParm %d, "
+		G_Printf( S_WARNING "G_AddEvent( %s ) has eventParm %d, "
 		          "which will overflow\n", BG_EventName( event ), eventParm );
 	}
 

@@ -785,7 +785,7 @@ void PRINTF_LIKE(1) COM_ParseError( char *format, ... )
 	Q_vsnprintf( string, sizeof( string ), format, argptr );
 	va_end( argptr );
 
-	Com_Printf( S_COLOR_RED "ERROR: %s, line %d: %s\n", com_parsename, com_lines, string );
+	Com_Printf( S_ERROR "%s, line %d: %s\n", com_parsename, com_lines, string );
 }
 
 void PRINTF_LIKE(1) COM_ParseWarning( char *format, ... )
@@ -797,7 +797,7 @@ void PRINTF_LIKE(1) COM_ParseWarning( char *format, ... )
 	Q_vsnprintf( string, sizeof( string ), format, argptr );
 	va_end( argptr );
 
-	Com_Printf( "WARNING: %s, line %d: %s\n", com_parsename, com_lines, string );
+	Com_Printf( S_WARNING "%s, line %d: %s\n", com_parsename, com_lines, string );
 }
 
 /*

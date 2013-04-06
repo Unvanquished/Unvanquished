@@ -220,7 +220,7 @@ char *etos( const gentity_t *entity )
 
 	Com_sprintf( resultString, MAX_ETOS_LENGTH,
 			"%s%s" S_COLOR_WHITE "(" S_COLOR_CYAN "%s" S_COLOR_WHITE "|" S_COLOR_CYAN "#%i" S_COLOR_WHITE ")",
-			entity->names[0], entity->names[0] ? " " : "", entity->classname, entity->s.number
+			entity->names[0] ? entity->names[0] : "", entity->names[0] ? " " : "", entity->classname, entity->s.number
 			);
 
 	return resultString;
@@ -475,7 +475,7 @@ static const entityCallEventDescription_t gentityEventDescriptions[] =
 		{ "target",      ON_DEFAULT   },
 };
 
-gentityCallActionType_t G_GetCallEventTypeFor( const char* event )
+gentityCallEvent_t G_GetCallEventTypeFor( const char* event )
 {
 	entityCallEventDescription_t *foundDescription;
 
@@ -683,10 +683,9 @@ void G_EventFireEntity( gentity_t *self, gentity_t *activator, gentityCallEvent_
 	gentityCall_t call;
 	call.activator = activator;
 
-	if ( self->targetShaderName && self->targetShaderNewName )
+	if ( self->shaderKey && self->shaderReplacement )
 	{
-		float f = level.time * 0.001;
-		AddRemap( self->targetShaderName, self->targetShaderNewName, f );
+		G_SetShaderRemap( self->shaderKey, self->shaderReplacement, level.time * 0.001 );
 		trap_SetConfigstring( CS_SHADERSTATE, BuildShaderStateConfig() );
 	}
 
@@ -770,8 +769,19 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 			break;
 
 		case ECA_USE:
-			if (targetedEntity->use)
-				targetedEntity->use(targetedEntity, call->caller, call->activator);
+			if (!targetedEntity->use)
+			{
+				if(g_debugEntities.integer >= 0)
+					G_Printf(S_WARNING "calling :use on %s, which has no use function!\n", etos(targetedEntity));
+				break;
+			}
+			if(!call->activator || !call->activator->client)
+			{
+				if(g_debugEntities.integer >= 0)
+					G_Printf(S_WARNING "calling %s:use, without a client as activator.\n", etos(targetedEntity));
+				break;
+			}
+			targetedEntity->use(targetedEntity, call->caller, call->activator);
 			break;
 		case ECA_RESET:
 			if (targetedEntity->reset)

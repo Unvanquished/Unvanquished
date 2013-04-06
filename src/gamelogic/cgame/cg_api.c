@@ -39,6 +39,16 @@ static int FloatAsInt( float f )
 
 #define PASSFLOAT( x ) FloatAsInt( x )
 
+static float IntAsFloat( int i )
+{
+	floatint_t fi;
+
+	fi.i = i;
+	return fi.f;
+}
+
+#define RETFLOAT( x ) IntAsFloat( x )
+
 void trap_SyscallABIVersion( int major, int minor )
 {
         syscall( TRAP_VERSION, major, minor );
@@ -1211,9 +1221,9 @@ qboolean trap_R_inPVVS( const vec3_t p1, const vec3_t p2 )
 	return syscall( CG_R_INPVVS, p1, p2 );
 }
 
-void trap_Key_SetTeam( int newTeam )
+void trap_notify_onTeamChange( int newTeam )
 {
-	syscall( CG_KEY_SETTEAM, newTeam );
+	syscall( CG_NOTIFY_TEAMCHANGE, newTeam );
 }
 
 qhandle_t trap_RegisterVisTest( void )
@@ -1221,14 +1231,16 @@ qhandle_t trap_RegisterVisTest( void )
 	return syscall( CG_REGISTERVISTEST );
 }
 
-void trap_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust )
+void trap_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust,
+			     float area )
 {
-	syscall( CG_ADDVISTESTTOSCENE, hTest, pos, PASSFLOAT( depthAdjust ) );
+	syscall( CG_ADDVISTESTTOSCENE, hTest, pos, PASSFLOAT( depthAdjust ),
+		 PASSFLOAT( area ) );
 }
 
-qboolean trap_CheckVisibility( qhandle_t hTest )
+float trap_CheckVisibility( qhandle_t hTest )
 {
-	return syscall( CG_CHECKVISIBILITY, hTest );
+	return RETFLOAT( syscall( CG_CHECKVISIBILITY, hTest ) );
 }
 
 void trap_UnregisterVisTest( qhandle_t hTest )

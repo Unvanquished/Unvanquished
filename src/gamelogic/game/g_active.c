@@ -1624,8 +1624,8 @@ void ClientThink_real( gentity_t *ent )
 	{
 		client->ps.pm_type = PM_DEAD;
 	}
-	else if ( client->ps.stats[ STAT_STATE ] & SS_BLOBLOCKED ||
-	          client->ps.stats[ STAT_STATE ] & SS_GRABBED )
+	else if ( (client->ps.stats[ STAT_STATE ] & SS_BLOBLOCKED) ||
+	          (client->ps.stats[ STAT_STATE ] & SS_GRABBED) )
 	{
 		client->ps.pm_type = PM_GRABBED;
 	}
@@ -1656,6 +1656,20 @@ void ClientThink_real( gentity_t *ent )
 		client->ps.stats[ STAT_STATE ] &= ~SS_SLOWLOCKED;
 	}
 
+	// Is power/creep available for the client's team?
+	if ( client->pers.teamSelection == TEAM_HUMANS && G_Reactor() )
+	{
+		client->ps.eFlags |= EF_POWER_AVAILABLE;
+	}
+	else if ( client->pers.teamSelection == TEAM_ALIENS && G_Overmind() )
+	{
+		client->ps.eFlags |= EF_POWER_AVAILABLE;
+	}
+	else
+	{
+		client->ps.eFlags &= ~EF_POWER_AVAILABLE;
+	}
+
 	// Update boosted state flags
 	client->ps.stats[ STAT_STATE ] &= ~SS_BOOSTEDWARNING;
 
@@ -1683,7 +1697,7 @@ void ClientThink_real( gentity_t *ent )
 		client->ps.eFlags &= ~EF_POISONCLOUDED;
 	}
 
-	if ( client->ps.stats[ STAT_STATE ] & SS_POISONED &&
+	if ( (client->ps.stats[ STAT_STATE ] & SS_POISONED) &&
 	     client->lastPoisonTime + ALIEN_POISON_TIME < level.time )
 	{
 		client->ps.stats[ STAT_STATE ] &= ~SS_POISONED;
@@ -1695,7 +1709,7 @@ void ClientThink_real( gentity_t *ent )
 	     BG_UpgradeIsActive( UP_MEDKIT, client->ps.stats ) )
 	{
 		//if currently using a medkit or have no need for a medkit now
-		if ( client->ps.stats[ STAT_STATE ] & SS_HEALING_2X ||
+		if ( (client->ps.stats[ STAT_STATE ] & SS_HEALING_2X) ||
 		     ( client->ps.stats[ STAT_HEALTH ] == client->ps.stats[ STAT_MAX_HEALTH ] &&
 		       !( client->ps.stats[ STAT_STATE ] & SS_POISONED ) ) )
 		{

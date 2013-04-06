@@ -457,9 +457,9 @@ static void RE_StoreImage( fontInfo_t *font, int chunk, int page, int from, int 
 
 	image = R_CreateGlyph( fileName, buffer, FONT_SIZE, y );
 #ifdef USE_XREAL_RENDERER
-	h = RE_RegisterShaderFromImage( fileName, image, qfalse );
+	h = RE_RegisterShaderFromImage( fileName, image );
 #else
-	h = RE_RegisterShaderFromImage( fileName, LIGHTMAP_2D, image, qfalse );
+	h = RE_RegisterShaderFromImage( fileName, LIGHTMAP_2D, image );
 #endif
 	ri.Free( buffer );
 

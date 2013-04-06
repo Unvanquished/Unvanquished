@@ -848,6 +848,7 @@ qhandle_t RE_RegisterVisTest( void )
 
 	memset( test, 0, sizeof( visTest_t ) );
 	glGenQueries( 1, &test->hQuery );
+	glGenQueries( 1, &test->hQueryRef );
 	test->registered = qtrue;
 
 	return hTest + 1;
@@ -861,7 +862,8 @@ Add a VisTest to the current scene. If the VisTest is still
 running from a prior scene, just noop.
 ================
 */
-void RE_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust )
+void RE_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust,
+			   float area )
 {
 	visTest_t *test;
 
@@ -876,6 +878,7 @@ void RE_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust )
 
 	VectorCopy( pos, test->position );
 	test->depthAdjust = depthAdjust;
+	test->area = area;
 
 	backEndData[ tr.smpFrame ]->visTests[ r_numVisTests++ ] = test;
 }
@@ -887,10 +890,10 @@ RE_CheckVisibility
 Query the last available result of a VisTest.
 ================
 */
-qboolean RE_CheckVisibility( qhandle_t hTest )
+float RE_CheckVisibility( qhandle_t hTest )
 {
 	if( hTest <= 0 || hTest > MAX_VISTESTS || !tr.visTests[ hTest - 1 ] )
-		return qfalse;
+		return 0.0f;
 
 	return tr.visTests[ hTest - 1 ]->lastResult;
 }
@@ -901,6 +904,7 @@ void RE_UnregisterVisTest( qhandle_t hTest )
 		return;
 
 	glDeleteQueries( 1, &tr.visTests[ hTest - 1 ]->hQuery );
+	glDeleteQueries( 1, &tr.visTests[ hTest - 1 ]->hQueryRef );
 	tr.visTests[ hTest - 1 ]->registered = qfalse;
 }
 
@@ -913,6 +917,7 @@ void R_ShutdownVisTests( void )
 			continue;
 
 		glDeleteQueries( 1, &tr.visTests[ hTest ]->hQuery );
+		glDeleteQueries( 1, &tr.visTests[ hTest ]->hQueryRef );
 		tr.visTests[ hTest ]->registered = qfalse;
 	}
 }

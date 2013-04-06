@@ -1128,6 +1128,7 @@ typedef struct
 
 	int                     numBinaryShadersUsed;
 	cgBinaryShaderSetting_t binaryShaderSettings[ NUM_BINARY_SHADERS ];
+	qhandle_t		gradingTextures[ MAX_GRADING_TEXTURES ];
 } cg_t;
 
 typedef enum
@@ -1609,6 +1610,7 @@ void QDECL CG_Error( const char *msg, ... ) PRINTF_LIKE(1) NORETURN;
 
 void       CG_StartMusic( void );
 
+void       CG_NotifyHooks( void );
 void       CG_UpdateCvars( void );
 
 int        CG_CrosshairPlayer( void );

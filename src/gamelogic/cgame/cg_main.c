@@ -374,7 +374,7 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_depthSortParticles,          "cg_depthSortParticles",          "1",            CVAR_ARCHIVE                 },
 	{ &cg_bounceParticles,             "cg_bounceParticles",             "0",            CVAR_ARCHIVE                 },
 	{ &cg_consoleLatency,              "cg_consoleLatency",              "3000",         CVAR_ARCHIVE                 },
-	{ &cg_lightFlare,                  "cg_lightFlare",                  "2",            CVAR_ARCHIVE                 },
+	{ &cg_lightFlare,                  "cg_lightFlare",                  "3",            CVAR_ARCHIVE                 },
 	{ &cg_debugParticles,              "cg_debugParticles",              "0",            CVAR_CHEAT                   },
 	{ &cg_debugTrails,                 "cg_debugTrails",                 "0",            CVAR_CHEAT                   },
 	{ &cg_debugPVS,                    "cg_debugPVS",                    "0",            CVAR_CHEAT                   },
@@ -488,61 +488,39 @@ void CG_RegisterCvars( void )
 
 /*
 ===============
-CG_SetUIVars
+CG_SetPVars
 
-Set some cvars used by the UI
+Set some player cvars usable in scripts
+these should refer only to playerstates that belong to the client, not the followed player, ui cvars will do that already
 ===============
 */
-static void CG_SetUIVars( void )
+static void CG_SetPVars( void )
 {
-	int           i;
-	char          carriageCvar[ MAX_TOKEN_CHARS ];
 	playerState_t *ps;
-
 	if ( !cg.snap )
 	{
 		return;
 	}
 
 	ps = &cg.snap->ps;
-	*carriageCvar = 0;
+	/* if we follow someone, the stats won't be about us, but the followed player instead */
+	if ( ( ps->pm_flags & PMF_FOLLOW ) )
+		return;
 
-	//determine what the player is carrying
-	for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
-	{
-		if ( BG_InventoryContainsWeapon( i, cg.snap->ps.stats ) &&
-		     BG_Weapon( i )->purchasable )
-		{
-			strcat( carriageCvar, va( "W%d ", i ) );
-		}
-	}
-
-	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
-	{
-		if ( BG_InventoryContainsUpgrade( i, cg.snap->ps.stats ) &&
-		     BG_Upgrade( i )->purchasable )
-		{
-			strcat( carriageCvar, va( "U%d ", i ) );
-		}
-	}
-
-	strcat( carriageCvar, "$" );
-
-	trap_Cvar_Set( "ui_carriage", carriageCvar );
-
-	trap_Cvar_Set( "p_team", va( "%d", ps->stats[ STAT_TEAM ] ) );
-
-	if ( !( ps->pm_flags & PMF_FOLLOW ) )
-	{
-		trap_Key_SetTeam( ps->stats[ STAT_TEAM ] );
-        }
+	trap_Cvar_Set( "p_teamname", BG_TeamName( ps->stats[ STAT_TEAM ] ) );
 
 	switch ( ps->stats[ STAT_TEAM ] )
 	{
-		case TEAM_NONE:
-			trap_Cvar_Set( "ui_stages", va( "%d %d", cgs.alienStage, cgs.humanStage ) );
+		case TEAM_ALIENS:
+			trap_Cvar_Set( "p_stage", va( "%d", cgs.alienStage ) );
+			break;
 
-			trap_Cvar_Set( "p_teamname", "Spectator" );
+		case TEAM_HUMANS:
+			trap_Cvar_Set( "p_stage", va( "%d", cgs.humanStage ) );
+			break;
+
+		default:
+		case TEAM_NONE:
 			trap_Cvar_Set( "p_classname", "Spectator" );
 			trap_Cvar_Set( "p_weaponname", "Nothing" );
 
@@ -559,22 +537,6 @@ static void CG_SetUIVars( void )
 			trap_Cvar_Set( "p_ammo", "0" );
 			trap_Cvar_Set( "p_clips", "0" );
 			return;
-
-		case TEAM_ALIENS:
-			//dont send human stages to aliens
-			trap_Cvar_Set( "ui_stages", va( "%d %d", cgs.alienStage, -1 ) );
-
-			trap_Cvar_Set( "p_teamname", "Alien" );
-			trap_Cvar_Set( "p_stage", va( "%d", cgs.alienStage ) );
-			break;
-
-		case TEAM_HUMANS:
-			//dont send alien stages to humans
-			trap_Cvar_Set( "ui_stages", va( "%d %d", -1, cgs.humanStage ) );
-
-			trap_Cvar_Set( "p_teamname", "Human" );
-			trap_Cvar_Set( "p_stage", va( "%d", cgs.humanStage ) );
-			break;
 	}
 
 	trap_Cvar_Set( "p_class", va( "%d", ps->stats[ STAT_CLASS ] ) );
@@ -726,6 +688,69 @@ static void CG_SetUIVars( void )
 }
 
 /*
+===============
+CG_SetUIVars
+
+Set some cvars used by the UI
+these will change when following another player
+===============
+*/
+static void CG_SetUIVars( void )
+{
+	int           i;
+	char          carriageCvar[ MAX_TOKEN_CHARS ];
+	playerState_t *ps;
+
+	if ( !cg.snap )
+	{
+		return;
+	}
+
+	ps = &cg.snap->ps;
+	*carriageCvar = 0;
+
+	//determine what the player is carrying
+	for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
+	{
+		if ( BG_InventoryContainsWeapon( i, cg.snap->ps.stats ) &&
+		     BG_Weapon( i )->purchasable )
+		{
+			strcat( carriageCvar, va( "W%d ", i ) );
+		}
+	}
+
+	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
+	{
+		if ( BG_InventoryContainsUpgrade( i, cg.snap->ps.stats ) &&
+		     BG_Upgrade( i )->purchasable )
+		{
+			strcat( carriageCvar, va( "U%d ", i ) );
+		}
+	}
+
+	strcat( carriageCvar, "$" );
+
+	trap_Cvar_Set( "ui_carriage", carriageCvar );
+
+	switch ( ps->stats[ STAT_TEAM ] )
+	{
+		case TEAM_NONE:
+			trap_Cvar_Set( "ui_stages", va( "%d %d", cgs.alienStage, cgs.humanStage ) );
+			return;
+
+		case TEAM_ALIENS:
+			//dont send human stages to aliens
+			trap_Cvar_Set( "ui_stages", va( "%d %d", cgs.alienStage, -1 ) );
+			break;
+
+		case TEAM_HUMANS:
+			//dont send alien stages to humans
+			trap_Cvar_Set( "ui_stages", va( "%d %d", -1, cgs.humanStage ) );
+			break;
+	}
+}
+
+/*
 ================
 CG_UpdateBuildableRangeMarkerMask
 ================
@@ -823,7 +848,7 @@ void CG_UpdateBuildableRangeMarkerMask( void )
 				}
 				else
 				{
-					Com_Printf( S_COLOR_YELLOW  "WARNING: unknown buildable or group: %s\n", p );
+					Com_Printf( S_WARNING "unknown buildable or group: %s\n", p );
 				}
 			}
 
@@ -842,6 +867,36 @@ empty:
 
 		btmc = cg_rangeMarkerBuildableTypes.modificationCount;
 		spmc = cg_rangeMarkerWhenSpectating.modificationCount;
+	}
+}
+
+void CG_NotifyHooks( void )
+{
+	playerState_t *ps;
+	char config[ MAX_CVAR_VALUE_STRING ];
+	static int lastTeam = INT_MIN; //to make sure we run the hook initially as well
+
+	if ( !cg.snap )
+	{
+		return;
+	}
+
+	ps = &cg.snap->ps;
+	if ( !( ps->pm_flags & PMF_FOLLOW ) )
+	{
+		if( lastTeam != ps->stats[ STAT_TEAM ] )
+		{
+			trap_notify_onTeamChange( ps->stats[ STAT_TEAM ] );
+
+			/* execute team-specific config files */
+			trap_Cvar_VariableStringBuffer( va( "cg_%sConfig", BG_TeamName( ps->stats[ STAT_TEAM ] ) ), config, sizeof( config ) );
+			if ( config[ 0 ] )
+			{
+				trap_SendConsoleCommand( va( "exec %s\n", Quote( config ) ) );
+			}
+
+			lastTeam = ps->stats[ STAT_TEAM ];
+		}
 	}
 }
 
@@ -864,7 +919,7 @@ void CG_UpdateCvars( void )
 	}
 
 	// check for modifications here
-
+	CG_SetPVars();
 	CG_SetUIVars();
 	CG_UpdateBuildableRangeMarkerMask();
 }
@@ -2507,7 +2562,7 @@ static char *CG_VoIPString( void )
 
 			if ( slen + nlen + 1 >= sizeof( voipString ) )
 			{
-				CG_Printf( "^3WARNING: voipString overflowed\n" );
+				CG_Printf( S_WARNING "voipString overflowed\n" );
 				break;
 			}
 

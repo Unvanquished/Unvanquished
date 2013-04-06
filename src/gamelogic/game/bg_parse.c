@@ -55,14 +55,14 @@ qboolean BG_ReadWholeFile( const char *filename, char *buffer, int size)
 
     if ( len < 0 )
     {
-        Com_Printf( S_COLOR_RED "ERROR: file %s doesn't exist\n", filename );
+        Com_Printf( S_ERROR "file %s doesn't exist\n", filename );
         return qfalse;
     }
 
     if ( len == 0 || len >= size - 1 )
     {
         trap_FS_FCloseFile( f );
-        Com_Printf( S_COLOR_RED "ERROR: file %s is %s\n", filename,
+        Com_Printf( S_ERROR "file %s is %s\n", filename,
                     len == 0 ? "empty" : "too long" );
         return qfalse;
     }
@@ -104,7 +104,7 @@ static int BG_ParseTeam(char* token)
     }
     else
     {
-        Com_Printf( S_COLOR_RED "ERROR: unknown team value '%s'\n", token );
+        Com_Printf( S_ERROR "unknown team value '%s'\n", token );
         return -1;
     }
 }
@@ -163,7 +163,7 @@ static int BG_ParseSlotList(char** text)
         }
         else
         {
-            Com_Printf( S_COLOR_RED "ERROR: unknown slot '%s'\n", token );
+            Com_Printf( S_ERROR "unknown slot '%s'\n", token );
         }
     }
 
@@ -284,7 +284,7 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
             }
             else
             {
-                Com_Printf( S_COLOR_RED "ERROR: unknown meanOfDeath value '%s'\n", token );
+                Com_Printf( S_ERROR "unknown meanOfDeath value '%s'\n", token );
             }
 
             defined |= DEATHMOD;
@@ -315,7 +315,7 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
             }
             else
             {
-                Com_Printf( S_COLOR_RED "ERROR: unknown buildWeapon value '%s'\n", token );
+                Com_Printf( S_ERROR "unknown buildWeapon value '%s'\n", token );
             }
 
             defined |= BUILDWEAPON;
@@ -376,7 +376,7 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
             }
             else
             {
-                Com_Printf( S_COLOR_RED "ERROR: unknown attackType value '%s'\n", token );
+                Com_Printf( S_ERROR "unknown attackType value '%s'\n", token );
             }
         }
         else if ( !Q_stricmp( token, "minNormal" ) )
@@ -430,7 +430,7 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
         }
         else
         {
-            Com_Printf( S_COLOR_RED "ERROR: %s: unknown token '%s'\n", filename, token );
+            Com_Printf( S_ERROR "%s: unknown token '%s'\n", filename, token );
         }
     }
 
@@ -449,7 +449,7 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
 
     if ( strlen( token ) > 0 )
     {
-        Com_Printf( S_COLOR_RED "ERROR: %s not defined in %s\n",
+        Com_Printf( S_ERROR "%s not defined in %s\n",
                     token, filename );
     }
 }
@@ -582,7 +582,7 @@ void BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_t *b
         }
         else
         {
-            Com_Printf( S_COLOR_RED "ERROR: %s: unknown token '%s'\n", filename, token );
+            Com_Printf( S_ERROR "%s: unknown token '%s'\n", filename, token );
         }
     }
 
@@ -595,7 +595,7 @@ void BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_t *b
 
     if ( strlen( token ) > 0 )
     {
-        Com_Printf( S_COLOR_RED "ERROR: %s not defined in %s\n",
+        Com_Printf( S_ERROR "%s not defined in %s\n",
                     token, filename );
     }
 }
@@ -851,7 +851,7 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
         }
         else
         {
-            Com_Printf( S_COLOR_RED "ERROR: %s: unknown token '%s'\n", filename, token );
+            Com_Printf( S_ERROR "%s: unknown token '%s'\n", filename, token );
         }
     }
 
@@ -877,7 +877,7 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
 
     if ( strlen( token ) > 0 )
     {
-        Com_Printf( S_COLOR_RED "ERROR: %s not defined in %s\n",
+        Com_Printf( S_ERROR "%s not defined in %s\n",
                     token, filename );
     }
 }
@@ -1118,7 +1118,7 @@ void BG_ParseClassModelFile( const char *filename, classModelConfig_t *cc )
         }
         else
         {
-            Com_Printf( S_COLOR_RED "ERROR: %s: unknown token '%s'\n", filename, token );
+            Com_Printf( S_ERROR "%s: unknown token '%s'\n", filename, token );
         }
     }
 
@@ -1141,7 +1141,7 @@ void BG_ParseClassModelFile( const char *filename, classModelConfig_t *cc )
 
     if ( strlen( token ) > 0 )
     {
-        Com_Printf( S_COLOR_RED "ERROR: %s not defined in %s\n",
+        Com_Printf( S_ERROR "%s not defined in %s\n",
                     token, filename );
     }
 }
@@ -1317,7 +1317,7 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
         }
         else
         {
-            Com_Printf( S_COLOR_RED "ERROR: %s: unknown token '%s'\n", filename, token );
+            Com_Printf( S_ERROR "%s: unknown token '%s'\n", filename, token );
         }
     }
 
@@ -1332,7 +1332,7 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
 
     if ( strlen( token ) > 0 )
     {
-        Com_Printf( S_COLOR_RED "ERROR: %s not defined in %s\n",
+        Com_Printf( S_ERROR "%s not defined in %s\n",
                     token, filename );
     }
 }
@@ -1448,7 +1448,7 @@ void BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua
         }
         else
         {
-            Com_Printf( S_COLOR_RED "ERROR: %s: unknown token '%s'\n", filename, token );
+            Com_Printf( S_ERROR "%s: unknown token '%s'\n", filename, token );
         }
     }
 
@@ -1462,7 +1462,7 @@ void BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua
 
     if ( strlen( token ) > 0 )
     {
-        Com_Printf( S_COLOR_RED "ERROR: %s not defined in %s\n",
+        Com_Printf( S_ERROR "%s not defined in %s\n",
                     token, filename );
     }
 }

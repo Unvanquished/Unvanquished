@@ -107,7 +107,7 @@ static voice_t *BG_VoiceList( void )
 
 		if ( fileLen > MAX_VOICE_NAME_LEN + 8 )
 		{
-			Com_Printf( S_COLOR_YELLOW "WARNING: MAX_VOICE_NAME_LEN is %d. "
+			Com_Printf( S_WARNING "MAX_VOICE_NAME_LEN is %d. "
 			            "skipping \"%s\", filename too long\n", MAX_VOICE_NAME_LEN, filePtr );
 			continue;
 		}
@@ -115,7 +115,7 @@ static voice_t *BG_VoiceList( void )
 		// trap_FS_GetFileList() buffer has overflowed
 		if ( !trap_FS_FOpenFile( va( "voice/%s", filePtr ), NULL, FS_READ ) )
 		{
-			Com_Printf( S_COLOR_YELLOW "WARNING: BG_VoiceList(): detected "
+			Com_Printf( S_WARNING "BG_VoiceList(): detected "
 			            "an invalid .voice file \"%s\" in directory listing.  You have "
 			            "probably named one or more .voice files with outrageously long "
 			            "names.\n", filePtr );
@@ -124,7 +124,7 @@ static voice_t *BG_VoiceList( void )
 
 		if ( count >= MAX_VOICES )
 		{
-			Com_Printf( S_COLOR_YELLOW "WARNING: .voice file overflow.  "
+			Com_Printf( S_WARNING ".voice file overflow.  "
 			            "%d of %d .voice files loaded.  MAX_VOICES is %d\n",
 			            count, numFiles, MAX_VOICES );
 			break;
@@ -332,7 +332,7 @@ static voiceTrack_t *BG_VoiceParseCommand( int handle )
 			char filename[ MAX_QPATH ];
 
 			trap_Parse_SourceFileAndLine( handle, filename, &line );
-			Com_Printf( S_COLOR_YELLOW "WARNING: BG_VoiceParseCommand(): "
+			Com_Printf( S_WARNING "BG_VoiceParseCommand(): "
 			            "track \"%s\" referenced on line %d of %s does not exist\n",
 			            token.string, line, filename );
 		}
