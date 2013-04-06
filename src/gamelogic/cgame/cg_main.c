@@ -823,6 +823,7 @@ empty:
 void CG_NotifyHooks( void )
 {
 	playerState_t *ps;
+	static int lastTeam;
 
 	if ( !cg.snap )
 	{
@@ -832,7 +833,11 @@ void CG_NotifyHooks( void )
 	ps = &cg.snap->ps;
 	if ( !( ps->pm_flags & PMF_FOLLOW ) )
 	{
-		trap_notify_onTeamChange( ps->stats[ STAT_TEAM ] );
+		if( lastTeam != ps->stats[ STAT_TEAM ] )
+		{
+			lastTeam = ps->stats[ STAT_TEAM ];
+			trap_notify_onTeamChange( lastTeam );
+		}
 	}
 }
 

@@ -1893,5 +1893,14 @@ qboolean CL_GetTag( int clientNum, const char *tagname, orientation_t * or )
  */
 void  CL_OnTeamChanged( int newTeam )
 {
+	static int lastTeam;
+
+	if(lastTeam == newTeam)
+	{
+		return;
+	}
+
 	Key_SetTeam( newTeam );
+
+	lastTeam = newTeam;
 }
