@@ -35,6 +35,8 @@ Maryland 20850 USA.
 #ifndef BOT_DEBUG_H
 #define BOT_DEBUG_H
 
+#include "../../gamelogic/game/bg_public.h"
+
 typedef enum
 {
 	D_DRAW_POINTS,
