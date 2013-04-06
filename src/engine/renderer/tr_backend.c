@@ -1444,9 +1444,9 @@ const void     *RB_RunVisTests( const void *data )
 {
 	const runVisTestsCommand_t *cmd;
 	int i, j;
-	vec4_t eye, clip;
-	float depth, *modelMatrix, *projectionMatrix;
-	int windowX, windowY;
+	vec4_t eye, clip, areaOffs;
+	float *depth, *modelMatrix, *projectionMatrix;
+	int windowX1, windowY1, windowX2, windowY2, w, h;
 
 	// finish any 2D drawing if needed
 	if ( tess.numIndexes )
@@ -1486,11 +1486,15 @@ const void     *RB_RunVisTests( const void *data )
 				eye[ 2 ] * projectionMatrix[ j + 2 * 4 ] +
 				eye[ 3 ] * projectionMatrix[ j + 3 * 4 ];
 
+			areaOffs[ j ] =
+				test->area * projectionMatrix[ j + 0 * 4 ] +
+				test->area * projectionMatrix[ j + 1 * 4 ] +
+				             projectionMatrix[ j + 3 * 4 ];
 		}
 
-		if( fabsf( clip[ 0 ] ) > clip[ 3 ] ||
-		    fabsf( clip[ 1 ] ) > clip[ 3 ] ||
-		    fabsf( clip[ 2 ] ) > clip[ 3 ] ) {
+		if( fabsf( clip[ 0 ] ) - fabsf( areaOffs[ 0 ] ) > clip[ 3 ] ||
+		    fabsf( clip[ 1 ] ) - fabsf( areaOffs[ 0 ] ) > clip[ 3 ] ||
+		    fabsf( clip[ 2 ] ) - fabsf( areaOffs[ 0 ] ) > clip[ 3 ] ) {
 			test->lastResult = qfalse;
 			continue;
 		}
@@ -1500,13 +1504,39 @@ const void     *RB_RunVisTests( const void *data )
 		clip[ 1 ] *= clip[ 3 ];
 		clip[ 2 ] *= clip[ 3 ];
 
-		windowX = (int)(( 0.5f * clip[ 0 ] + 0.5f ) * backEnd.viewParms.viewportWidth);
-		windowY = (int)(( 0.5f * clip[ 1 ] + 0.5f ) * backEnd.viewParms.viewportHeight);
+		areaOffs[ 0 ] *= clip[ 3 ];
+		areaOffs[ 1 ] *= clip[ 3 ];
 
-		glReadPixels( windowX, windowY, 1, 1, GL_DEPTH_COMPONENT,
-			      GL_FLOAT, &depth );
+		windowX1 = (int)(( 0.5f * (clip[ 0 ] - areaOffs[ 0 ]) + 0.5f ) * backEnd.viewParms.viewportWidth);
+		windowY1 = (int)(( 0.5f * (clip[ 1 ] - areaOffs[ 1 ]) + 0.5f ) * backEnd.viewParms.viewportHeight);
+		if( windowX1 < 0 )
+			windowX1 = 0;
+		if( windowY1 < 0 )
+			windowY1 = 0;
 
-		test->lastResult = ( depth >= 0.5f * clip[ 2 ] + 0.5f );
+		windowX2 = (int)(( 0.5f * (clip[ 0 ] + areaOffs[ 0 ]) + 0.5f ) * backEnd.viewParms.viewportWidth);
+		windowY2 = (int)(( 0.5f * (clip[ 1 ] + areaOffs[ 1 ]) + 0.5f ) * backEnd.viewParms.viewportHeight);
+		if( windowX2 >= backEnd.viewParms.viewportWidth )
+			windowX2 = backEnd.viewParms.viewportWidth - 1;
+		if( windowY2 >= backEnd.viewParms.viewportHeight )
+			windowY2 = backEnd.viewParms.viewportHeight - 1;
+
+		w = windowX2 - windowX1 + 1;
+		h = windowY2 - windowY1 + 1;
+
+		depth = ri.Hunk_AllocateTempMemory( w * h * sizeof( float ) );
+
+		glReadPixels( windowX1, windowY1, w, h, 
+			      GL_DEPTH_COMPONENT, GL_FLOAT, depth );
+
+		// count visible pixels
+		test->lastResult = 0.0f;
+		for( i = 0; i < w * h; i++ ) {
+			test->lastResult += ( depth[ i ] >= 0.5f * clip[ 2 ] + 0.5f ) ? 1.0f : 0.0f;
+		}
+		test->lastResult /= w * h;
+
+		ri.Hunk_FreeTempMemory( depth );
 	}
 
 	return ( const void * )( cmd + 1 );

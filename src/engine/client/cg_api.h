@@ -471,7 +471,7 @@ void            trap_notify_onTeamChange( int newTeam );
 
 qhandle_t       trap_RegisterVisTest();
 void            trap_AddVisTestToScene( qhandle_t hTest, vec3_t pos,
-					float depthAdjust );
-qboolean        trap_CheckVisibility( qhandle_t hTest );
+					float depthAdjust, float area );
+float           trap_CheckVisibility( qhandle_t hTest );
 void            trap_UnregisterVisTest( qhandle_t hTest );
 void            trap_SetColorGrading( qhandle_t hShader );

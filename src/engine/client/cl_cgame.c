@@ -1246,11 +1246,11 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return re.RegisterVisTest();
 
 		case CG_ADDVISTESTTOSCENE:
-			re.AddVisTestToScene( args[1], VMA(2), VMF(3) );
+			re.AddVisTestToScene( args[1], VMA(2), VMF(3), VMF(4) );
 			return 0;
 
 		case CG_CHECKVISIBILITY:
-			return re.CheckVisibility( args[1] );
+			return FloatAsInt( re.CheckVisibility( args[1] ) );
 
 		case CG_UNREGISTERVISTEST:
 			re.UnregisterVisTest( args[1] );

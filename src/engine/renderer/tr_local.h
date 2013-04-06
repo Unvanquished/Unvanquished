@@ -1479,8 +1479,9 @@ typedef struct visTest_s
 {
 	vec3_t            position;
 	float             depthAdjust; // move position this distance to camera
+	float             area;
 	qboolean          registered;
-	qboolean          lastResult;
+	float             lastResult;
 } visTest_t;
 
 /*
@@ -2200,8 +2201,9 @@ void RE_SaveViewParms( void );
 void RE_RestoreViewParms( void );
 
 qhandle_t RE_RegisterVisTest( void );
-void RE_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust );
-qboolean RE_CheckVisibility( qhandle_t hTest );
+void RE_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust,
+			   float area );
+float RE_CheckVisibility( qhandle_t hTest );
 void RE_UnregisterVisTest( qhandle_t hTest );
 /*
 =============================================================

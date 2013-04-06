@@ -39,6 +39,16 @@ static int FloatAsInt( float f )
 
 #define PASSFLOAT( x ) FloatAsInt( x )
 
+static float IntAsFloat( int i )
+{
+	floatint_t fi;
+
+	fi.i = i;
+	return fi.f;
+}
+
+#define RETFLOAT( x ) IntAsFloat( x )
+
 void trap_SyscallABIVersion( int major, int minor )
 {
         syscall( TRAP_VERSION, major, minor );
@@ -1221,14 +1231,16 @@ qhandle_t trap_RegisterVisTest( void )
 	return syscall( CG_REGISTERVISTEST );
 }
 
-void trap_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust )
+void trap_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust,
+			     float area )
 {
-	syscall( CG_ADDVISTESTTOSCENE, hTest, pos, PASSFLOAT( depthAdjust ) );
+	syscall( CG_ADDVISTESTTOSCENE, hTest, pos, PASSFLOAT( depthAdjust ),
+		 PASSFLOAT( area ) );
 }
 
-qboolean trap_CheckVisibility( qhandle_t hTest )
+float trap_CheckVisibility( qhandle_t hTest )
 {
-	return syscall( CG_CHECKVISIBILITY, hTest );
+	return RETFLOAT( syscall( CG_CHECKVISIBILITY, hTest ) );
 }
 
 void trap_UnregisterVisTest( qhandle_t hTest )
