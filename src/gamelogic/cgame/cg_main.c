@@ -514,8 +514,8 @@ static void CG_SetUIVars( void )
 
 	if ( !( ps->pm_flags & PMF_FOLLOW ) )
 	{
-		trap_Key_SetTeam( ps->stats[ STAT_TEAM ] );
-        }
+		trap_notify_onTeamChange( ps->stats[ STAT_TEAM ] );
+	}
 
 	switch ( ps->stats[ STAT_TEAM ] )
 	{

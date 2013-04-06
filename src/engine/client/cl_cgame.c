@@ -1238,8 +1238,8 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			re.UnregisterFontVM( args[1] );
 			return 0;
 
-		case CG_KEY_SETTEAM:
-			Key_SetTeam( args[1] ); // for binding selection
+		case CG_NOTIFY_TEAMCHANGE:
+			CL_OnTeamChanged( args[1] );
 			return 0;
 
 		case CG_REGISTERVISTEST:
@@ -1884,4 +1884,14 @@ qboolean CL_GetTag( int clientNum, const char *tagname, orientation_t * or )
 	//  (the direct pointer method to pass the tag name would work only with modules in native format)
 	//return VM_Call( cgvm, CG_GET_TAG, clientNum, tagname, or );
 	return qfalse;
+}
+
+/**
+ * is notified by teamchanges.
+ * while most notifications will come from the cgame, due to game semantics,
+ * other code may assume a change to a non-team "0", like e.g. /disconnect
+ */
+void  CL_OnTeamChanged( int newTeam )
+{
+	Key_SetTeam( newTeam );
 }

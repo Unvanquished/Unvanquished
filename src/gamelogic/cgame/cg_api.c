@@ -1211,9 +1211,9 @@ qboolean trap_R_inPVVS( const vec3_t p1, const vec3_t p2 )
 	return syscall( CG_R_INPVVS, p1, p2 );
 }
 
-void trap_Key_SetTeam( int newTeam )
+void trap_notify_onTeamChange( int newTeam )
 {
-	syscall( CG_KEY_SETTEAM, newTeam );
+	syscall( CG_NOTIFY_TEAMCHANGE, newTeam );
 }
 
 qhandle_t trap_RegisterVisTest( void )

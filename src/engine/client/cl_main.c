@@ -1849,7 +1849,7 @@ void CL_Disconnect( qboolean showMainMenu )
 		cls.state = CA_DISCONNECTED;
 	}
 
-	Key_SetTeam( DEFAULT_BINDING );
+	CL_OnTeamChanged( 0 );
 }
 
 /*
