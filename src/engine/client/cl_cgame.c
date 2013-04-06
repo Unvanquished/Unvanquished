@@ -1893,7 +1893,7 @@ qboolean CL_GetTag( int clientNum, const char *tagname, orientation_t * or )
  */
 void  CL_OnTeamChanged( int newTeam )
 {
-	static int lastTeam;
+	static int lastTeam = INT_MIN; //to make sure we run the hook initially as well
 
 	if(lastTeam == newTeam)
 	{

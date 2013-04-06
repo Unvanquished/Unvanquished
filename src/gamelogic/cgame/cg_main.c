@@ -823,7 +823,7 @@ empty:
 void CG_NotifyHooks( void )
 {
 	playerState_t *ps;
-	static int lastTeam;
+	static int lastTeam = INT_MIN; //to make sure we run the hook initially as well
 
 	if ( !cg.snap )
 	{
