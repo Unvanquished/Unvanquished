@@ -46,14 +46,14 @@ std::queue< RocketEvent_t* > eventQueue;
 
 void Rocket_ProcessEvent( Rocket::Core::Event& event, Rocket::Core::String& value )
 {
-	eventQueue.push( new RocketEvent_t( event, value.CString() ) );
+	eventQueue.push( new RocketEvent_t( event, value ) );
 }
 
 void Rocket_GetEvent( char *event, int length )
 {
 	if ( eventQueue.size() )
 	{
-		Q_strncpyz( event, eventQueue.front()->cmd, length );
+		Q_strncpyz( event, eventQueue.front()->cmd.CString(), length );
 	}
 	else
 	{

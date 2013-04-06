@@ -40,7 +40,7 @@ extern Rocket::Core::Context *context;
 class RocketEvent_t
 {
 public:
-	RocketEvent_t( Rocket::Core::Event &event, const char *cmds ) : cmd( cmds )
+	RocketEvent_t( Rocket::Core::Event &event, Rocket::Core::String cmds ) : cmd( cmds )
 	{
 		targetElement = event.GetTargetElement();
 		Parameters = *(event.GetParameters());
@@ -48,7 +48,7 @@ public:
 	~RocketEvent_t() { }
 	Rocket::Core::Element *targetElement;
 	Rocket::Core::Dictionary Parameters;
-	const char *cmd;
+	Rocket::Core::String cmd;
 };
 
 

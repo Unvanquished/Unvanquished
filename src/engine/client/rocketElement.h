@@ -72,7 +72,7 @@ public:
 		Rocket::Core::Element::ProcessEvent( event );
 
 		// Let this be picked up in the event loop
-		eventQueue.push( new RocketEvent_t( event, event.GetType().CString() ) );
+		eventQueue.push( new RocketEvent_t( event, event.GetType() ) );
 	}
 
 	void SetDimensions( float x, float y )
