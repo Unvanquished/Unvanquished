@@ -63,6 +63,9 @@ extern "C" {
 #define CLIENT_WINDOW_MIN_TITLE PRODUCT_NAME_LOWER
 #define GAMENAME_FOR_MASTER     PRODUCT_NAME_UPPER
 
+
+#define AUTOEXEC_NAME           "autoexec.cfg"
+
 #ifndef DEDICATED
 #define CONFIG_NAME             "autogen.cfg"
 #define KEYBINDINGS_NAME        "keybindings.cfg"

@@ -3016,19 +3016,19 @@ void Com_Init( char *commandLine )
 			}
 
 			// exec the config
-			Cbuf_AddText( va( "exec profiles/%s/%s\n", cl_profileStr, CONFIG_NAME ) );
-			Cbuf_AddText( va( "exec profiles/%s/%s\n", cl_profileStr, KEYBINDINGS_NAME ) );
-			Cbuf_AddText( va( "exec profiles/%s/autoexec.cfg\n", cl_profileStr ) );
+			Cbuf_AddText( va( "exec profiles/%s/" CONFIG_NAME "\n", cl_profileStr ) );
+			Cbuf_AddText( va( "exec profiles/%s/" KEYBINDINGS_NAME "\n", cl_profileStr ) );
+			Cbuf_AddText( va( "exec profiles/%s/" AUTOEXEC_NAME "\n", cl_profileStr ) );
 		}
 		else
 		{
-			Cbuf_AddText( va( "exec %s\n", CONFIG_NAME ) );
-			Cbuf_AddText( va( "exec %s\n", KEYBINDINGS_NAME ) );
-			Cbuf_AddText( "exec autoexec.cfg\n" );
+			Cbuf_AddText( "exec " CONFIG_NAME "\n" );
+			Cbuf_AddText( "exec " KEYBINDINGS_NAME "\n" );
+			Cbuf_AddText( "exec " AUTOEXEC_NAME "\n" );
 		}
 	}
 #else
-	Cbuf_AddText( va( "exec %s\n", CONFIG_NAME ) );
+	Cbuf_AddText( "exec " CONFIG_NAME "\n" );
 #endif
 
 
