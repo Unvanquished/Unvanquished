@@ -823,6 +823,7 @@ empty:
 void CG_NotifyHooks( void )
 {
 	playerState_t *ps;
+	char config[ MAX_CVAR_VALUE_STRING ];
 	static int lastTeam = INT_MIN; //to make sure we run the hook initially as well
 
 	if ( !cg.snap )
@@ -835,8 +836,16 @@ void CG_NotifyHooks( void )
 	{
 		if( lastTeam != ps->stats[ STAT_TEAM ] )
 		{
+			trap_notify_onTeamChange( ps->stats[ STAT_TEAM ] );
+
+			/* execute team-specific config files */
+			trap_Cvar_VariableStringBuffer( va( "cg_%sConfig", BG_TeamName( ps->stats[ STAT_TEAM ] ) ), config, sizeof( config ) );
+			if ( config[ 0 ] )
+			{
+				trap_SendConsoleCommand( va( "exec %s\n", Quote( config ) ) );
+			}
+
 			lastTeam = ps->stats[ STAT_TEAM ];
-			trap_notify_onTeamChange( lastTeam );
 		}
 	}
 }

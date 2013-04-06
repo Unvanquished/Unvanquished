@@ -1584,29 +1584,6 @@ void CG_NewClientInfo( int clientNum )
 	v = Info_ValueForKey( configstring, "t" );
 	newInfo.team = atoi( v );
 
-	// if this is us, execute team-specific config files
-	// the spectator config is a little unreliable because it's easy to get on
-	// to the spectator team without joining it - e.g. when a new game starts.
-	// It's not a big deal because the spec config is the least important
-	// slash used anyway.
-	// I guess it's possible for someone to change teams during a restart and
-	// for that to then be missed here. But that's rare enough that people can
-	// just exec the configs manually, I think.
-	if ( clientNum == cg.clientNum && ci->infoValid &&
-	     ci->team != newInfo.team )
-	{
-		char config[ MAX_CVAR_VALUE_STRING ];
-
-		trap_Cvar_VariableStringBuffer(
-		  va( "cg_%sConfig", BG_TeamName( newInfo.team ) ),
-		  config, sizeof( config ) );
-
-		if ( config[ 0 ] )
-		{
-			trap_SendConsoleCommand( va( "exec %s\n", Quote( config ) ) );
-		}
-	}
-
 	// model
 	v = Info_ValueForKey( configstring, "model" );
 	Q_strncpyz( newInfo.modelName, v, sizeof( newInfo.modelName ) );
