@@ -2482,7 +2482,7 @@ void CL_Configstrings_f( void )
 		return;
 	}
 
-	for ( i = 0; i < CS_MAX; i++ )
+	for ( i = 0; i < MAX_CONFIGSTRINGS; i++ )
 	{
 		ofs = cl.gameState.stringOffsets[ i ];
 
@@ -2493,8 +2493,6 @@ void CL_Configstrings_f( void )
 
 		Com_Printf( "%4i: %s\n", i, cl.gameState.stringData + ofs );
 	}
-
-	Com_Printf( "Reserving %i out of %i Configstrings\n", CS_MAX, MAX_CONFIGSTRINGS );
 }
 
 /*
