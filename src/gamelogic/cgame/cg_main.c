@@ -512,11 +512,6 @@ static void CG_SetUIVars( void )
 
 	trap_Cvar_Set( "p_team", va( "%d", ps->stats[ STAT_TEAM ] ) );
 
-	if ( !( ps->pm_flags & PMF_FOLLOW ) )
-	{
-		trap_notify_onTeamChange( ps->stats[ STAT_TEAM ] );
-	}
-
 	switch ( ps->stats[ STAT_TEAM ] )
 	{
 		case TEAM_NONE:
@@ -822,6 +817,22 @@ empty:
 
 		btmc = cg_rangeMarkerBuildableTypes.modificationCount;
 		spmc = cg_rangeMarkerWhenSpectating.modificationCount;
+	}
+}
+
+void CG_NotifyHooks( void )
+{
+	playerState_t *ps;
+
+	if ( !cg.snap )
+	{
+		return;
+	}
+
+	ps = &cg.snap->ps;
+	if ( !( ps->pm_flags & PMF_FOLLOW ) )
+	{
+		trap_notify_onTeamChange( ps->stats[ STAT_TEAM ] );
 	}
 }
 
