@@ -468,55 +468,41 @@ void CG_RegisterCvars( void )
 
 /*
 ===============
-CG_SetUIVars
+CG_SetPVars
 
-Set some cvars used by the UI
+Set some player cvars usable in scripts
+these should refer only to playerstates that belong to the client, not the followed player, ui cvars will do that already
 ===============
 */
-static void CG_SetUIVars( void )
+static void CG_SetPVars( void )
 {
-	int           i;
-	char          carriageCvar[ MAX_TOKEN_CHARS ];
 	playerState_t *ps;
-
 	if ( !cg.snap )
 	{
 		return;
 	}
 
 	ps = &cg.snap->ps;
-	*carriageCvar = 0;
-
-	//determine what the player is carrying
-	for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
-	{
-		if ( BG_InventoryContainsWeapon( i, cg.snap->ps.stats ) &&
-		     BG_Weapon( i )->purchasable )
-		{
-			strcat( carriageCvar, va( "W%d ", i ) );
-		}
-	}
-
-	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
-	{
-		if ( BG_InventoryContainsUpgrade( i, cg.snap->ps.stats ) &&
-		     BG_Upgrade( i )->purchasable )
-		{
-			strcat( carriageCvar, va( "U%d ", i ) );
-		}
-	}
-
-	strcat( carriageCvar, "$" );
-
-	trap_Cvar_Set( "ui_carriage", carriageCvar );
+	/* if we follow someone, the stats won't be about us, but the followed player instead */
+	if ( ( ps->pm_flags & PMF_FOLLOW ) )
+		return;
 
 	trap_Cvar_Set( "p_team", va( "%d", ps->stats[ STAT_TEAM ] ) );
 
 	switch ( ps->stats[ STAT_TEAM ] )
 	{
-		case TEAM_NONE:
-			trap_Cvar_Set( "ui_stages", va( "%d %d", cgs.alienStage, cgs.humanStage ) );
+		case TEAM_ALIENS:
+			trap_Cvar_Set( "p_teamname", "Alien" );
+			trap_Cvar_Set( "p_stage", va( "%d", cgs.alienStage ) );
+			break;
 
+		case TEAM_HUMANS:
+			trap_Cvar_Set( "p_teamname", "Human" );
+			trap_Cvar_Set( "p_stage", va( "%d", cgs.humanStage ) );
+			break;
+
+		default:
+		case TEAM_NONE:
 			trap_Cvar_Set( "p_teamname", "Spectator" );
 			trap_Cvar_Set( "p_classname", "Spectator" );
 			trap_Cvar_Set( "p_weaponname", "Nothing" );
@@ -534,22 +520,6 @@ static void CG_SetUIVars( void )
 			trap_Cvar_Set( "p_ammo", "0" );
 			trap_Cvar_Set( "p_clips", "0" );
 			return;
-
-		case TEAM_ALIENS:
-			//dont send human stages to aliens
-			trap_Cvar_Set( "ui_stages", va( "%d %d", cgs.alienStage, -1 ) );
-
-			trap_Cvar_Set( "p_teamname", "Alien" );
-			trap_Cvar_Set( "p_stage", va( "%d", cgs.alienStage ) );
-			break;
-
-		case TEAM_HUMANS:
-			//dont send alien stages to humans
-			trap_Cvar_Set( "ui_stages", va( "%d %d", -1, cgs.humanStage ) );
-
-			trap_Cvar_Set( "p_teamname", "Human" );
-			trap_Cvar_Set( "p_stage", va( "%d", cgs.humanStage ) );
-			break;
 	}
 
 	trap_Cvar_Set( "p_class", va( "%d", ps->stats[ STAT_CLASS ] ) );
@@ -698,6 +668,69 @@ static void CG_SetUIVars( void )
 	trap_Cvar_Set( "p_maxhp", va( "%d", ps->stats[ STAT_MAX_HEALTH ] ) );
 	trap_Cvar_Set( "p_ammo", va( "%d", ps->ammo ) );
 	trap_Cvar_Set( "p_clips", va( "%d", ps->clips ) );
+}
+
+/*
+===============
+CG_SetUIVars
+
+Set some cvars used by the UI
+these will change when following another player
+===============
+*/
+static void CG_SetUIVars( void )
+{
+	int           i;
+	char          carriageCvar[ MAX_TOKEN_CHARS ];
+	playerState_t *ps;
+
+	if ( !cg.snap )
+	{
+		return;
+	}
+
+	ps = &cg.snap->ps;
+	*carriageCvar = 0;
+
+	//determine what the player is carrying
+	for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
+	{
+		if ( BG_InventoryContainsWeapon( i, cg.snap->ps.stats ) &&
+		     BG_Weapon( i )->purchasable )
+		{
+			strcat( carriageCvar, va( "W%d ", i ) );
+		}
+	}
+
+	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
+	{
+		if ( BG_InventoryContainsUpgrade( i, cg.snap->ps.stats ) &&
+		     BG_Upgrade( i )->purchasable )
+		{
+			strcat( carriageCvar, va( "U%d ", i ) );
+		}
+	}
+
+	strcat( carriageCvar, "$" );
+
+	trap_Cvar_Set( "ui_carriage", carriageCvar );
+
+	switch ( ps->stats[ STAT_TEAM ] )
+	{
+		case TEAM_NONE:
+			trap_Cvar_Set( "ui_stages", va( "%d %d", cgs.alienStage, cgs.humanStage ) );
+			return;
+
+		case TEAM_ALIENS:
+			//dont send human stages to aliens
+			trap_Cvar_Set( "ui_stages", va( "%d %d", cgs.alienStage, -1 ) );
+			break;
+
+		case TEAM_HUMANS:
+			//dont send alien stages to humans
+			trap_Cvar_Set( "ui_stages", va( "%d %d", -1, cgs.humanStage ) );
+			break;
+	}
 }
 
 /*
@@ -869,7 +902,7 @@ void CG_UpdateCvars( void )
 	}
 
 	// check for modifications here
-
+	CG_SetPVars();
 	CG_SetUIVars();
 	CG_UpdateBuildableRangeMarkerMask();
 }
