@@ -559,6 +559,8 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 }
 #endif
 
+#define S_SKIPNOTIFY "[skipnotify]"
+
 /*
  * used for consistent representation within print or log statements
  * TODO: should probably be rather done via specialized print function that takes a severity enum, so that it also can do filtering

@@ -1013,7 +1013,7 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 
 		if ( Com_ClientListContains( &cgs.ignoreList, clientNum ) )
 		{
-			ignore = "[skipnotify]";
+			ignore = S_SKIPNOTIFY;
 		}
 
 		if ( ( mode == SAY_TEAM || mode == SAY_AREA ) &&
@@ -1081,7 +1081,7 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 			// might already be ignored but in that case no harm is done
 			if ( cg_teamChatsOnly.integer )
 			{
-				ignore = "[skipnotify]";
+				ignore = S_SKIPNOTIFY;
 			}
 
 		case SAY_ALL_ADMIN:

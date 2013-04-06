@@ -3806,7 +3806,7 @@ static void Cmd_Ignore_f( gentity_t *ent )
 
 	if ( trap_Argc() < 2 )
 	{
-		trap_SendServerCommand( ent - g_entities, va( "print_tr \"[skipnotify]"
+		trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
 		                        "%s\" %s", N_("usage: $1$ [clientNum | partial name match]\n"), cmd ) );
 		return;
 	}
@@ -3816,7 +3816,7 @@ static void Cmd_Ignore_f( gentity_t *ent )
 
 	if ( matches < 1 )
 	{
-		trap_SendServerCommand( ent - g_entities, va( "print_tr \"[skipnotify]"
+		trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
 		                        "%s\" %s %s", N_("$1$: no clients match the name '$2$'\n"), cmd, Quote( name ) ) );
 		return;
 	}
@@ -3829,13 +3829,13 @@ static void Cmd_Ignore_f( gentity_t *ent )
 			{
 				Com_ClientListAdd( &ent->client->sess.ignoreList, pids[ i ] );
 				ClientUserinfoChanged( ent->client->ps.clientNum, qfalse );
-				trap_SendServerCommand( ent - g_entities, va( "print_tr \"[skipnotify]"
+				trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
 				                        "%s\" %s", N_("ignore: added $1$^7 to your ignore list\n"),
 				                        Quote( level.clients[ pids[ i ] ].pers.netname ) ) );
 			}
 			else
 			{
-				trap_SendServerCommand( ent - g_entities, va( "print_tr \"[skipnotify]"
+				trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
 				                        "%s\" %s", N_("ignore: $1$^7 is already on your ignore list\n"),
 				                        Quote( level.clients[ pids[ i ] ].pers.netname ) ) );
 			}
@@ -3846,13 +3846,13 @@ static void Cmd_Ignore_f( gentity_t *ent )
 			{
 				Com_ClientListRemove( &ent->client->sess.ignoreList, pids[ i ] );
 				ClientUserinfoChanged( ent->client->ps.clientNum, qfalse );
-				trap_SendServerCommand( ent - g_entities, va( "print_tr \"[skipnotify]"
+				trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
 				                        "%s\" %s", N_("unignore: removed $1$^7 from your ignore list\n"),
 				                        Quote( level.clients[ pids[ i ] ].pers.netname ) ) );
 			}
 			else
 			{
-				trap_SendServerCommand( ent - g_entities, va( "print_tr \"[skipnotify]"
+				trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
 				                        "%s\" %s", N_("unignore: $1$^7 is not on your ignore list\n"),
 				                        Quote( level.clients[ pids[ i ] ].pers.netname ) )  );
 			}
