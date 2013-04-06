@@ -158,12 +158,6 @@ void GL_BindProgram( shaderProgram_t *program )
 		return;
 	}
 
-	if ( r_logFile->integer )
-	{
-		// don't just call LogComment, or we will get a call to va() every frame!
-		GLimp_LogComment( va( "--- GL_BindProgram( name = '%s', macros = '%s' ) ---\n", program->name, program->compileMacros ) );
-	}
-
 	if ( glState.currentProgram != program )
 	{
 		glUseProgram( program->program );
