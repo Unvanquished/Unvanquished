@@ -1893,24 +1893,23 @@ qboolean CL_GetTag( int clientNum, const char *tagname, orientation_t * or )
  */
 void  CL_OnTeamChanged( int newTeam )
 {
-	static int lastTeam = INT_MIN; //to make sure we run the hook initially as well
-
-	if(lastTeam == newTeam)
+	if(p_team->integer == newTeam
+			&& p_team->modificationCount > 0 ) //to make sure, we run the hook initially as well
 	{
 		return;
 	}
+
+	Cvar_SetValue( p_team->name, newTeam );
 
 	/* set all team specific teambindinds */
 	Key_SetTeam( newTeam );
 
 	/*
 	 * execute a possibly team aware config each time the team was changed.
-	 * the user can use the cvars p_team or p_teamname within that config
+	 * the user can use the cvars p_team or p_teamname (if the cgame sets it) within that config
 	 * to e.g. execute team specific configs, like cg_<team>Config did previously, but with less dependency on the cgame
 	 *
 	 * compared to render settings, that are client/workstation specifc, teamconfigs will always be player and with that profile dependend
 	 */
 	Cbuf_AddText( va( "exec profiles/%s/" TEAMCONFIG_NAME "\n", cl_profile->string ) );
-
-	lastTeam = newTeam;
 }

@@ -154,10 +154,13 @@ cvar_t                 *cl_consoleCommand; //see also com_consoleCommand for ter
 
 cvar_t	*cl_logs;
 
+cvar_t             *p_team; /*<team id without team semantics (to not break the relationship between client and cgame)*/
+
 struct rsa_public_key  public_key;
 struct rsa_private_key private_key;
 
 cvar_t             *cl_gamename;
+
 cvar_t             *cl_altTab;
 
 static cvar_t      *cl_renderer = NULL;
@@ -4494,6 +4497,8 @@ void CL_Init( void )
 	cl_consoleCommand = Cvar_Get( "cl_consoleCommand", "say", CVAR_ARCHIVE );
 	
 	cl_logs = Cvar_Get ("cl_logs", "0", CVAR_ARCHIVE);
+
+	p_team = Cvar_Get("p_team", "0", CVAR_ROM );
 
 	cl_gamename = Cvar_Get( "cl_gamename", GAMENAME_FOR_MASTER, CVAR_TEMP );
 	cl_altTab = Cvar_Get( "cl_altTab", "1", CVAR_ARCHIVE );

@@ -487,8 +487,6 @@ static void CG_SetPVars( void )
 	if ( ( ps->pm_flags & PMF_FOLLOW ) )
 		return;
 
-	trap_Cvar_Set( "p_team", va( "%d", ps->stats[ STAT_TEAM ] ) );
-
 	switch ( ps->stats[ STAT_TEAM ] )
 	{
 		case TEAM_ALIENS:

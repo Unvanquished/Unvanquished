@@ -503,6 +503,16 @@ extern cvar_t *cl_consoleCommand;
 
 extern cvar_t *cl_logs;
 
+/**
+ * Independently of the gamelogic, we can assume the game to have "teams" with an id,
+ * as long as we don't assume any semantics on that
+ * we can assume however that "0" is some form of "neutral" or "non" team,
+ * most likly a non-playing client that e.g. observes the game or hasn't joined yet.
+ * even in a deathmatch or singleplayer game, joining would start with team 1, even though there might not be another one
+ * this allows several client logic (like team specific binds or configurations) to work no matter how the team is called or what its attributes are
+ */
+extern cvar_t *p_team;
+
 extern cvar_t *con_scrollLock;
 
 // XreaL BEGIN
