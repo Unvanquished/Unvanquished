@@ -50,11 +50,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <curses.h>
 
 #ifdef DEDICATED
-#define TITLE         S_COLOR_BLUE "---[ " S_COLOR_YELLOW CLIENT_WINDOW_TITLE " Server Console " S_COLOR_BLUE "]---"
+#define TITLE         "^4---[ ^3" CLIENT_WINDOW_TITLE " Server Console ^4]---"
 #else
-#define TITLE         S_COLOR_BLUE "---[ " S_COLOR_YELLOW CLIENT_WINDOW_TITLE " Console " S_COLOR_BLUE "]---"
+#define TITLE         "^4---[ ^3" CLIENT_WINDOW_TITLE " Console ^4]---"
 #endif
-#define PROMPT        S_COLOR_YELLOW "-> "
+#define PROMPT        "^3-> "
 #define INPUT_SCROLL  15
 #define LOG_SCROLL    5
 #define MAX_LOG_LINES 1024
@@ -702,7 +702,7 @@ char *CON_Input( void )
 				wnoutrefresh( inputwin );
 				CON_UpdateCursor();
 				//doupdate();
-				Com_Printf( PROMPT S_COLOR_WHITE "%s\n", text );
+				Com_Printf( PROMPT "^7%s\n", text );
 				return text;
 
 			case 21: // Ctrl-U
