@@ -2486,21 +2486,33 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	trap_CM_LoadMap( cgs.mapname );
 
 	CG_LoadTrailSystems();
+
+	Com_sprintf(cg.currentLoadingLabel, sizeof( cg.currentLoadingLabel ), "Collecting Hivebees");
 	CG_UpdateMediaFraction( 0.05f );
 
 	CG_LoadParticleSystems();
+
+	Com_sprintf(cg.currentLoadingLabel, sizeof( cg.currentLoadingLabel ), "Record granger purring");
 	CG_UpdateMediaFraction( 0.05f );
 
 	CG_RegisterSounds();
+
+	Com_sprintf(cg.currentLoadingLabel, sizeof( cg.currentLoadingLabel ), "Take pictures of the world");
 	CG_UpdateMediaFraction( 0.60f );
 
 	CG_RegisterGraphics();
+
+	Com_sprintf(cg.currentLoadingLabel, sizeof( cg.currentLoadingLabel ), "Set up Armory");
 	CG_UpdateMediaFraction( 0.90f );
 
 	CG_InitWeapons();
+
+	Com_sprintf(cg.currentLoadingLabel, sizeof( cg.currentLoadingLabel ), "Charge Batterypacks");
 	CG_UpdateMediaFraction( 0.95f );
 
 	CG_InitUpgrades();
+
+	Com_sprintf(cg.currentLoadingLabel, sizeof( cg.currentLoadingLabel ), "Finish Construction");
 	CG_UpdateMediaFraction( 1.0f );
 
 	CG_InitBuildables();
