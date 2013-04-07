@@ -298,6 +298,8 @@ static void CG_ConfigStringModified( void )
 	// look up the individual string that was modified
 	str = CG_ConfigString( num );
 
+	//CG_Printf("configstring modification %i: %s\n", num, str);
+
 	// do something with it if necessary
 	if ( num == CS_MUSIC )
 	{
@@ -406,6 +408,11 @@ static void CG_ConfigStringModified( void )
 		cgs.gameShaders[ num - CS_SHADERS ] = trap_R_RegisterShader(str,
 									    RSF_DEFAULT);
 	}
+	else if ( num >= CS_GRADING_TEXTURES && num < CS_GRADING_TEXTURES + MAX_GRADING_TEXTURES )
+	{
+		cg.gradingTextures[ num - CS_GRADING_TEXTURES ] =
+				trap_R_RegisterShader(CG_Argv(1), RSF_NOMIP | RSF_NOLIGHTSCALE);
+	}
 	else if ( num >= CS_PARTICLE_SYSTEMS && num < CS_PARTICLE_SYSTEMS + MAX_GAME_PARTICLE_SYSTEMS )
 	{
 		cgs.gameParticleSystems[ num - CS_PARTICLE_SYSTEMS ] = CG_RegisterParticleSystem( ( char * ) str );
@@ -430,17 +437,6 @@ static void CG_ConfigStringModified( void )
 	else if ( num == CS_SHADERSTATE )
 	{
 		CG_ShaderStateChanged();
-	}
-	else if ( num >= CS_GRADING_TEXTURES &&
-		  num < CS_GRADING_TEXTURES + MAX_GRADING_TEXTURES )
-	{
-		qhandle_t shader = trap_R_RegisterShader(CG_Argv(1),
-							 RSF_NOMIP |
-							 RSF_NOLIGHTSCALE);
-
-		cg.gradingTextures[ num - CS_GRADING_TEXTURES ] = shader;
-		if( num == CS_GRADING_TEXTURES )
-			trap_SetColorGrading( shader );
 	}
 }
 

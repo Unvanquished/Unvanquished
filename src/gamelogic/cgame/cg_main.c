@@ -1402,6 +1402,32 @@ static void CG_RegisterGraphics( void )
 							     RSF_DEFAULT);
 	}
 
+	CG_UpdateMediaFraction( 0.85f );
+
+	// register all the server specified grading textures
+	// starting with the world wide one
+
+	cg.gradingTextures[ 0 ] = CG_ConfigString( CS_GRADING_TEXTURES );
+
+	if( cg.gradingTextures[ 0 ] )
+	{
+		trap_SetColorGrading( cg.gradingTextures[ 0 ] );
+	}
+
+	for ( i = 1; i < MAX_GRADING_TEXTURES; i++ )
+	{
+		const char *gradingTextureName;
+
+		gradingTextureName = CG_ConfigString( CS_GRADING_TEXTURES + i );
+
+		if ( !gradingTextureName[ 0 ] )
+		{
+			break;
+		}
+
+		cg.gradingTextures[ i ] = trap_R_RegisterShader(gradingTextureName, RSF_NOMIP | RSF_NOLIGHTSCALE);
+	}
+
 	CG_UpdateMediaFraction( 0.9f );
 
 	// register all the server specified particle systems
