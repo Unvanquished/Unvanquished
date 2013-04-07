@@ -408,27 +408,30 @@ void Cdelay_Frame( void ) {
 Cmd_Exec_f
 ===============
 */
-static void Cmd_ExecFile( char *f )
+
+static void Cmd_SetExecArgs( int startingArg )
 {
 	int i;
 
-	COM_Compress( f );
+	Cvar_Get( "arg_all", Cmd_ArgsFrom( startingArg ), CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED );
+	Cvar_Set( "arg_all", Cmd_ArgsFrom( startingArg ) );
+	Cvar_Get( "arg_count", va( "%i", Cmd_Argc() - startingArg ), CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED );
+	Cvar_Set( "arg_count", va( "%i", Cmd_Argc() - startingArg ) );
 
-	Cvar_Get( "arg_all", Cmd_ArgsFrom( 2 ), CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED );
-	Cvar_Set( "arg_all", Cmd_ArgsFrom( 2 ) );
-	Cvar_Get( "arg_count", va( "%i", Cmd_Argc() - 2 ), CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED );
-	Cvar_Set( "arg_count", va( "%i", Cmd_Argc() - 2 ) );
-
-	for ( i = Cmd_Argc() - 2; i; i-- )
+	for ( i = Cmd_Argc() - startingArg; i; i-- )
 	{
 		Cvar_Get( va( "arg_%i", i ), Cmd_Argv( i + 1 ), CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED );
 		Cvar_Set( va( "arg_%i", i ), Cmd_Argv( i + 1 ) );
 	}
-
-	Cbuf_InsertText( f );
 }
 
-void Cmd_Exec_f( void )
+static void Cmd_ExecText( char *scriptText )
+{
+	COM_Compress( scriptText );
+	Cbuf_InsertText( scriptText );
+}
+
+static qboolean Cmd_ExecFile( char *filename )
 {
 	union
 	{
@@ -437,8 +440,39 @@ void Cmd_Exec_f( void )
 	} f;
 
 	int          len;
-	char         filename[ MAX_QPATH ];
 	fileHandle_t h;
+	qboolean     success = qfalse;
+
+	len = FS_SV_FOpenFileRead( filename, &h );
+
+	if ( h )
+	{
+		success = qtrue;
+		f.v = Hunk_AllocateTempMemory( len + 1 );
+		FS_Read( f.v, len, h );
+		f.c[ len ] = 0;
+		FS_FCloseFile( h );
+		Cmd_ExecText( f.c );
+		Hunk_FreeTempMemory( f.v );
+	}
+	else
+	{
+		FS_ReadFile( filename, &f.v );
+
+		if ( f.c )
+		{
+			success = qtrue;
+			Cmd_ExecText( f.c );
+			FS_FreeFile( f.v );
+		}
+	}
+	return success;
+}
+
+void Cmd_Exec_f( void )
+{
+	int          len;
+	char         filename[ MAX_QPATH ];
 	qboolean     success = qfalse;
 	qboolean     quiet;
 
@@ -461,29 +495,8 @@ void Cmd_Exec_f( void )
 	Q_strncpyz( filename, Cmd_Argv( 1 ), sizeof( filename ) );
 	COM_DefaultExtension( filename, sizeof( filename ), ".cfg" );
 
-	len = FS_SV_FOpenFileRead( filename, &h );
-
-	if ( h )
-	{
-		success = qtrue;
-		f.v = Hunk_AllocateTempMemory( len + 1 );
-		FS_Read( f.v, len, h );
-		f.c[ len ] = 0;
-		FS_FCloseFile( h );
-		Cmd_ExecFile( f.c );
-		Hunk_FreeTempMemory( f.v );
-	}
-	else
-	{
-		FS_ReadFile( filename, &f.v );
-
-		if ( f.c )
-		{
-			success = qtrue;
-			Cmd_ExecFile( f.c );
-			FS_FreeFile( f.v );
-		}
-	}
+	Cmd_SetExecArgs( 2 );
+	success = Cmd_ExecFile( filename );
 
 	if ( !success )
 	{
