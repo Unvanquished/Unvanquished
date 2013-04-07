@@ -2587,16 +2587,6 @@ static char *CG_VoIPString( void )
 		// so this will remove any trailing commas or partially-completed numbers
 		voipString[ slen ] = '\0';
 	}
-	else if ( Q_stricmp( voipSendTarget, "crosshair" ) == 0 )
-	{
-		Com_sprintf( voipString, sizeof( voipString ), "%d",
-		             CG_CrosshairPlayer() );
-	}
-	else if ( Q_stricmp( voipSendTarget, "attacker" ) == 0 )
-	{
-		Com_sprintf( voipString, sizeof( voipString ), "%d",
-		             CG_LastAttacker() );
-	}
 	else
 	{
 		return NULL;
