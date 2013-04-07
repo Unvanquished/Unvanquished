@@ -38,6 +38,31 @@ void                               trap_FS_FCloseFile( fileHandle_t f );
         break; \
     }
 
+typedef enum
+{
+    INTEGER,
+    FLOAT
+} configVarType_t;
+
+typedef struct
+{
+    //The name is on top of the structure, this is useful for bsearch
+    const char *name;
+    configVarType_t type;
+    qboolean defined;
+    void *var;
+} configVar_t;
+
+//Definition of the config vars
+int ABUILDER_CLAW_DMG;
+
+static configVar_t bg_configVars[] =
+{
+    {"w_abuild_clawDmg", INTEGER, qfalse, &ABUILDER_CLAW_DMG},
+};
+
+static const size_t bg_numConfigVars = ARRAY_LEN( bg_configVars );
+
 /*
 ======================
 BG_ReadWholeFile
@@ -170,6 +195,61 @@ static int BG_ParseSlotList(char** text)
     return slots;
 }
 
+int configVarComparator(const void* a, const void* b)
+{
+    const configVar_t *ca = (const configVar_t*) a;
+    const configVar_t *cb = (const configVar_t*) b;
+    return Q_stricmp(ca->name, cb->name);
+}
+
+configVar_t* BG_FindConfigVar(const char *varName)
+{
+    return bsearch(&varName, bg_configVars, bg_numConfigVars, sizeof(configVar_t), configVarComparator);
+}
+
+qboolean BG_ParseConfigVar(configVar_t *var, char **text, const char *filename)
+{
+    char *token;
+
+    token = COM_Parse( text );
+
+    if( !*token )
+    {
+        Com_Printf( S_COLOR_RED "ERROR: %s expected argument for '%s'\n", filename, var->name );
+        return qfalse;
+    }
+
+    if( var->type == INTEGER)
+    {
+        *((int*) var->var) = atoi( token );
+    }
+    else if( var->type == FLOAT)
+    {
+        *((float*) var->var) = atof( token );
+    }
+
+    var->defined = qtrue;
+
+    return qtrue;
+}
+
+qboolean BG_CheckConfigVars( void )
+{
+    int i;
+    int ok = qtrue;
+
+    for( i = 0; i < bg_numConfigVars; i++)
+    {
+        if( !bg_configVars[i].defined )
+        {
+            ok = qfalse;
+            Com_Printf(S_COLOR_YELLOW "WARNING: config var %s was not defined\n", bg_configVars[i].name );
+        }
+    }
+
+    return ok;
+}
+
 /*
 ======================
 BG_ParseBuildableAttributeFile
@@ -183,6 +263,7 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
     char *token;
     char text_buffer[ 20000 ];
     char* text;
+    configVar_t* var;
     int defined = 0;
     enum
     {
@@ -428,6 +509,10 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
             ba->radarFadeOut = atof(token);
             defined |= RADAR;
         }
+        else if( (var = BG_FindConfigVar( va( "b_%s_%s", ba->name, token ) ) ) != NULL )
+        {
+            BG_ParseConfigVar( var, &text, filename );
+        }
         else
         {
             Com_Printf( S_ERROR "%s: unknown token '%s'\n", filename, token );
@@ -613,6 +698,7 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
     char *token;
     char text_buffer[ 20000 ];
     char* text;
+    configVar_t* var;
     int defined = 0;
     enum
     {
@@ -848,6 +934,10 @@ void BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca )
             ca->radarFadeOut = atof( token );
 
             defined |= RADAR;
+        }
+        else if( (var = BG_FindConfigVar( va( "c_%s_%s", ca->name, token ) ) ) != NULL )
+        {
+            BG_ParseConfigVar( var, &text, filename );
         }
         else
         {
@@ -1158,6 +1248,7 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
     char *token;
     char text_buffer[ 20000 ];
     char* text;
+    configVar_t* var;
     int defined = 0;
     enum
     {
@@ -1315,6 +1406,10 @@ void BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa )
 
             defined |= TEAM;
         }
+        else if( (var = BG_FindConfigVar( va( "w_%s_%s", wa->name, token ) ) ) != NULL )
+        {
+            BG_ParseConfigVar( var, &text, filename );
+        }
         else
         {
             Com_Printf( S_ERROR "%s: unknown token '%s'\n", filename, token );
@@ -1349,6 +1444,7 @@ void BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua
     char *token;
     char text_buffer[ 20000 ];
     char* text;
+    configVar_t* var;
     int defined = 0;
     enum
     {
@@ -1445,6 +1541,10 @@ void BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua
         else if ( !Q_stricmp( token, "isUsable" ) )
         {
             ua->usable = qtrue;
+        }
+        else if( (var = BG_FindConfigVar( va( "u_%s_%s", ua->name, token ) ) ) != NULL )
+        {
+            BG_ParseConfigVar( var, &text, filename );
         }
         else
         {

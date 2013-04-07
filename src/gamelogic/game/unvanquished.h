@@ -37,7 +37,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define ALIEN_WDMG_MODIFIER           1.0f
 #define ADM(d) ((int)((float)d * ALIEN_WDMG_MODIFIER ))
 
-#define ABUILDER_CLAW_DMG             ADM(20)
+extern int ABUILDER_CLAW_DMG;
 #define ABUILDER_CLAW_RANGE           64.0f
 #define ABUILDER_CLAW_WIDTH           4.0f
 #define ABUILDER_BLOB_DMG             ADM(4)

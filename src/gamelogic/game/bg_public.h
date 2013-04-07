@@ -1190,6 +1190,7 @@ void                      BG_UnloadAllConfigs( void );
 
 // Parsers
 qboolean                  BG_ReadWholeFile( const char *filename, char *buffer, int size);
+qboolean                  BG_CheckConfigVars( void );
 void                      BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t *ba );
 void                      BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_t *bc );
 void                      BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca );
