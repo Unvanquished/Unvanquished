@@ -100,7 +100,10 @@ enum
 
   CS_MAX = CS_LOCATIONS + MAX_LOCATIONS
 };
-// CS_MAX had better not be greater than MAX_CONFIGSTRINGS !
+
+#if CS_MAX > MAX_CONFIGSTRINGS
+#error exceeded configstrings: CS_MAX > MAX_CONFIGSTRINGS
+#endif
 
 typedef enum
 {
