@@ -34,7 +34,6 @@ Remove color codes and non-alphanumeric characters from a string
 void G_SanitiseString( const char *in, char *out, int len )
 {
 	len--;
-
 	while ( *in && len > 0 )
 	{
 		int cp = Q_UTF8_CodePoint( in );
@@ -50,8 +49,21 @@ void G_SanitiseString( const char *in, char *out, int len )
 
 		if ( Q_Unicode_IsAlphaOrIdeoOrDigit( cp ) )
 		{
-			int wm = MIN( len, w );
-			memcpy( out, in, wm );
+			int wm, lc;
+
+			if ( Q_Unicode_IsUpper( cp ) )
+			{
+				cp = Q_Unicode_ToLower( cp );
+				wm = Q_UTF8_WidthCP( cp );
+				wm = MIN( len, wm );
+				memcpy( out, Q_UTF8_Encode( cp ), wm );
+			}
+			else
+			{
+				wm = MIN( len, w );
+				memcpy( out, in, wm );
+			}
+
 			out += wm;
 			len -= wm;
 		}
