@@ -473,36 +473,69 @@ void Cmd_Exec_f( void )
 {
 	int          len;
 	char         filename[ MAX_QPATH ];
-	qboolean     success = qfalse;
-	qboolean     quiet;
+	qboolean     executeSilent;
+	qboolean     failSilent = qfalse;
+	int          filenameArgNum;
 
-	quiet = !Q_stricmp( Cmd_Argv( 0 ), "execq" );
+	executeSilent = !Q_stricmp( Cmd_Argv( 0 ), "execq" );
 
 	if ( Cmd_Argc() < 2 )
 	{
-		if ( quiet )
+		if ( executeSilent )
 		{
-			Com_Printf(_("execq <filename> (args) : execute a script file without notification\n"));
+			Com_Printf(_("execq <filename> (args) : execute a script file without notification, a shortcut for exec -q\n"));
 		}
 		else
 		{
-			Com_Printf(_("exec <filename> (args) : execute a script file\n"));
+			Com_Printf(_("exec [-q|-f|-s] <filename> (args) : execute a script file.\n"));
 		}
 
 		return;
 	}
 
 	Q_strncpyz( filename, Cmd_Argv( 1 ), sizeof( filename ) );
-	COM_DefaultExtension( filename, sizeof( filename ), ".cfg" );
 
-	Cmd_SetExecArgs( 2 );
-	success = Cmd_ExecFile( filename );
-
-	if ( !success )
+	if( filename[0] != '-'  || Cmd_Argc() < 3 )
 	{
-		Com_Printf( "couldn't exec %s\n", filename );
+		filenameArgNum = 2;
 	}
-	else if ( !quiet )
+	else // wasn't the filename after all; we got us a parameter!
+	{
+		filenameArgNum = 3;
+
+		switch (filename[1]) {
+			case 'q':
+				executeSilent = qtrue;
+				break;
+
+			case 'f':
+				failSilent = qtrue;
+				break;
+
+			case 's':
+				executeSilent = qtrue;
+				failSilent = qtrue;
+				break;
+			default: //if we use only '-'
+				break;
+		}
+
+		Q_strncpyz( filename, Cmd_Argv( 2 ), sizeof( filename ) );
+	}
+
+	COM_DefaultExtension( filename, sizeof( filename ), ".cfg" );
+	Cmd_SetExecArgs( filenameArgNum );
+
+	if ( !Cmd_ExecFile( filename ) )
+	{
+		if( !failSilent )
+		{
+			Com_Printf( "couldn't exec %s\n", filename );
+		}
+		return;
+	}
+
+	if ( !executeSilent )
 	{
 		Com_Printf( "execing %s\n", filename );
 	}
