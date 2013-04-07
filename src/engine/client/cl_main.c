@@ -464,7 +464,7 @@ void CL_VoipParseTargets( void )
 			}
 			else if ( !Q_strnicmp( target, "team", 4 ) )
 			{
-				const char *players = ( const char * ) VM_Call( cgvm, CG_VOIP_STRING );
+				const char *players = VM_ExplicitArgPtr( cgvm, VM_Call( cgvm, CG_VOIP_STRING, 0 ) );
 				const char *head;
 				char *p;
 
