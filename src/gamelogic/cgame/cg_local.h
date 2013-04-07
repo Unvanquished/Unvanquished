@@ -54,6 +54,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define CHAR_WIDTH                     32
 #define CHAR_HEIGHT                    48
 
+#define MAX_LOADING_LABEL_LENGHT       32
+
 typedef enum
 {
   FOOTSTEP_GENERAL,
@@ -1093,6 +1095,7 @@ typedef struct
 	int                     rightMoveTime;
 	int                     upMoveTime;
 
+	char                    currentLoadingLabel[ MAX_LOADING_LABEL_LENGHT ];
 	float                   charModelFraction; // loading percentages
 	float                   mediaFraction;
 	float                   buildablesFraction;

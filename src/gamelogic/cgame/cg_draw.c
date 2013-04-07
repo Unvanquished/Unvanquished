@@ -1728,6 +1728,13 @@ static void CG_DrawOverallProgress( rectDef_t *rect, vec4_t color, float scale,
 	                    borderSize, total );
 }
 
+static void CG_DrawOverallProgressLabel( rectDef_t *rect, float text_x, float text_y,
+    vec4_t color, float scale, int textalign, int textvalign )
+{
+	CG_DrawProgressLabel( rect, text_x, text_y, color, scale, textalign, textvalign,
+	                     cg.currentLoadingLabel, cg.charModelFraction );
+}
+
 static void CG_DrawLevelShot( rectDef_t *rect )
 {
 	const char *s;
@@ -4120,6 +4127,10 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
 		case CG_LOAD_OVERALL:
 			CG_DrawOverallProgress( rect, foreColor, scale, align, textalign, textStyle,
 			                        borderSize );
+			break;
+
+		case CG_LOAD_OVERALL_LABEL:
+			CG_DrawOverallProgressLabel( rect, text_x, text_y, foreColor, scale, textalign, textvalign );
 			break;
 
 		case CG_LOAD_LEVELNAME:
