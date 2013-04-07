@@ -2405,6 +2405,37 @@ Called after every level change or subsystem restart
 Will perform callbacks to make the loading info screen update.
 =================
 */
+static SENTINEL const char *choose( const char *first, ... )
+{
+	va_list    ap;
+	int        count = 1;
+	const char *ret;
+
+	va_start( ap, first );
+	while ( va_arg( ap, const char * ) )
+	{
+		++count;
+	}
+	va_end( ap );
+
+	if ( count < 2 )
+	{
+		return first;
+	}
+
+	count = rand() % count;
+
+	ret = first;
+	va_start( ap, first );
+	while ( count-- )
+	{
+		ret = va_arg( ap, const char * );
+	}
+	va_end( ap );
+
+	return ret;
+}
+
 void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 {
 	const char *s;
@@ -2485,34 +2516,38 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	// load the new map
 	trap_CM_LoadMap( cgs.mapname );
 
+	srand( serverMessageNum * serverCommandSequence ^ clientNum );
+
+	Q_strncpyz(cg.currentLoadingLabel, choose("Tracking your movements", "Letting out the magic smoke", NULL), sizeof( cg.currentLoadingLabel ) );
+	CG_UpdateMediaFraction( 0.0f );
 	CG_LoadTrailSystems();
 
-	Com_sprintf(cg.currentLoadingLabel, sizeof( cg.currentLoadingLabel ), "Collecting Hivebees");
+	Q_strncpyz(cg.currentLoadingLabel, choose("Collecting bees for the hives", "Initialising fireworks", "Causing electrical faults", NULL), sizeof( cg.currentLoadingLabel ) );
 	CG_UpdateMediaFraction( 0.05f );
 
 	CG_LoadParticleSystems();
 
-	Com_sprintf(cg.currentLoadingLabel, sizeof( cg.currentLoadingLabel ), "Record granger purring");
+	Q_strncpyz(cg.currentLoadingLabel, choose("Recording granger purring", "Generating annoying noises", NULL), sizeof( cg.currentLoadingLabel ) );
 	CG_UpdateMediaFraction( 0.05f );
 
 	CG_RegisterSounds();
 
-	Com_sprintf(cg.currentLoadingLabel, sizeof( cg.currentLoadingLabel ), "Take pictures of the world");
+	Q_strncpyz(cg.currentLoadingLabel, choose("Taking pictures of the world", "Using your laptop's camera", "Adding texture to concrete", "Drawing smiley faces", NULL), sizeof( cg.currentLoadingLabel ) );
 	CG_UpdateMediaFraction( 0.60f );
 
 	CG_RegisterGraphics();
 
-	Com_sprintf(cg.currentLoadingLabel, sizeof( cg.currentLoadingLabel ), "Set up Armory");
+	Q_strncpyz(cg.currentLoadingLabel, choose("Setting up the armoury", "Sharpening the aliens' claws", "Overloading lucifer cannons", NULL), sizeof( cg.currentLoadingLabel ) );
 	CG_UpdateMediaFraction( 0.90f );
 
 	CG_InitWeapons();
 
-	Com_sprintf(cg.currentLoadingLabel, sizeof( cg.currentLoadingLabel ), "Charge Batterypacks");
+	Q_strncpyz(cg.currentLoadingLabel, choose("Charging battery packs", "Replicating alien DNA", "Packing tents for jetcampers", NULL), sizeof( cg.currentLoadingLabel ) );
 	CG_UpdateMediaFraction( 0.95f );
 
 	CG_InitUpgrades();
 
-	Com_sprintf(cg.currentLoadingLabel, sizeof( cg.currentLoadingLabel ), "Finish Construction");
+	Q_strncpyz(cg.currentLoadingLabel, choose("Finishing construction", "Adding turret spam", "Awakening the overmind", NULL), sizeof( cg.currentLoadingLabel ) );
 	CG_UpdateMediaFraction( 1.0f );
 
 	CG_InitBuildables();
