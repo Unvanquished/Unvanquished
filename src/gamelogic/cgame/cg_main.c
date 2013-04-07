@@ -2550,47 +2550,36 @@ static char *CG_VoIPString( void )
 {
 	// a generous overestimate of the space needed for 0,1,2...61,62,63
 	static char voipString[ MAX_CLIENTS * 4 ];
-	char        voipSendTarget[ MAX_CVAR_VALUE_STRING ];
 
-	trap_Cvar_VariableStringBuffer( "cl_voipSendTarget", voipSendTarget,
-	                                sizeof( voipSendTarget ) );
+	int i, slen, nlen;
 
-	if ( Q_stricmp( voipSendTarget, "team" ) == 0 )
+	for ( slen = i = 0; i < cgs.maxclients; i++ )
 	{
-		int i, slen, nlen;
-
-		for ( slen = i = 0; i < cgs.maxclients; i++ )
+		if ( !cgs.clientinfo[ i ].infoValid || i == cg.clientNum )
 		{
-			if ( !cgs.clientinfo[ i ].infoValid || i == cg.clientNum )
-			{
-				continue;
-			}
-
-			if ( cgs.clientinfo[ i ].team != cgs.clientinfo[ cg.clientNum ].team )
-			{
-				continue;
-			}
-
-			nlen = Q_snprintf( &voipString[ slen ], sizeof( voipString ) - slen,
-			                   "%s%d", ( slen > 0 ) ? "," : "", i );
-
-			if ( slen + nlen + 1 >= sizeof( voipString ) )
-			{
-				CG_Printf( S_WARNING "voipString overflowed\n" );
-				break;
-			}
-
-			slen += nlen;
+			continue;
 		}
 
-		// Notice that if the snprintf was truncated, slen was not updated
-		// so this will remove any trailing commas or partially-completed numbers
-		voipString[ slen ] = '\0';
+		if ( cgs.clientinfo[ i ].team != cgs.clientinfo[ cg.clientNum ].team )
+		{
+			continue;
+		}
+
+		nlen = Q_snprintf( &voipString[ slen ], sizeof( voipString ) - slen,
+							"%s%d", ( slen > 0 ) ? "," : "", i );
+
+		if ( slen + nlen + 1 >= sizeof( voipString ) )
+		{
+			CG_Printf( S_WARNING "voipString overflowed\n" );
+			break;
+		}
+
+		slen += nlen;
 	}
-	else
-	{
-		return NULL;
-	}
+
+	// Notice that if the snprintf was truncated, slen was not updated
+	// so this will remove any trailing commas or partially-completed numbers
+	voipString[ slen ] = '\0';
 
 	return voipString;
 }
