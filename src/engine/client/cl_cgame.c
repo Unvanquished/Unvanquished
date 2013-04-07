@@ -1911,5 +1911,5 @@ void  CL_OnTeamChanged( int newTeam )
 	 *
 	 * compared to render settings, that are client/workstation specifc, teamconfigs will always be player and with that profile dependend
 	 */
-	Cbuf_AddText( va( "exec profiles/%s/" TEAMCONFIG_NAME "\n", cl_profile->string ) );
+	Cbuf_AddText( va( "exec -f profiles/%s/" TEAMCONFIG_NAME "\n", cl_profile->string ) );
 }
