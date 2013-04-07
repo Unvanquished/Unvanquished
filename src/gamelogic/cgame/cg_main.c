@@ -1407,11 +1407,12 @@ static void CG_RegisterGraphics( void )
 	// register all the server specified grading textures
 	// starting with the world wide one
 
-	cg.gradingTextures[ 0 ] = CG_ConfigString( CS_GRADING_TEXTURES );
+	cgs.gameGradingTextures[ 0 ] =
+			trap_R_RegisterShader( CG_ConfigString( CS_GRADING_TEXTURES ), RSF_NOMIP | RSF_NOLIGHTSCALE );
 
-	if( cg.gradingTextures[ 0 ] )
+	if( cgs.gameGradingTextures[ 0 ] )
 	{
-		trap_SetColorGrading( cg.gradingTextures[ 0 ] );
+		trap_SetColorGrading( cgs.gameGradingTextures[ 0 ] );
 	}
 
 	for ( i = 1; i < MAX_GRADING_TEXTURES; i++ )
@@ -1425,7 +1426,7 @@ static void CG_RegisterGraphics( void )
 			break;
 		}
 
-		cg.gradingTextures[ i ] = trap_R_RegisterShader(gradingTextureName, RSF_NOMIP | RSF_NOLIGHTSCALE);
+		cgs.gameGradingTextures[ i ] = trap_R_RegisterShader(gradingTextureName, RSF_NOMIP | RSF_NOLIGHTSCALE);
 	}
 
 	CG_UpdateMediaFraction( 0.9f );

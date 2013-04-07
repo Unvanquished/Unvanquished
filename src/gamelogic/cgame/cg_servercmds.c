@@ -410,7 +410,7 @@ static void CG_ConfigStringModified( void )
 	}
 	else if ( num >= CS_GRADING_TEXTURES && num < CS_GRADING_TEXTURES + MAX_GRADING_TEXTURES )
 	{
-		cg.gradingTextures[ num - CS_GRADING_TEXTURES ] =
+		cgs.gameGradingTextures[ num - CS_GRADING_TEXTURES ] =
 				trap_R_RegisterShader(CG_Argv(1), RSF_NOMIP | RSF_NOLIGHTSCALE);
 	}
 	else if ( num >= CS_PARTICLE_SYSTEMS && num < CS_PARTICLE_SYSTEMS + MAX_GAME_PARTICLE_SYSTEMS )
