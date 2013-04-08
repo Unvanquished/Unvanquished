@@ -820,17 +820,12 @@ BUILD GUN
 
 ======================================================================
 */
-float G_GetRepairCostForBuilding( const buildableAttributes_t *buildable )
-{
-	return ( HBUILD_HEALRATE / (float) buildable->health ) * ( buildable->buildPoints / 2.0f );
-}
 
 void CheckCkitRepair( gentity_t *ent )
 {
 	vec3_t    viewOrigin, forward, end;
 	trace_t   tr;
 	gentity_t *traceEnt;
-	float     cost;
 
 	if ( ent->client->ps.weaponTime > 0 ||
 	     ent->client->ps.stats[ STAT_MISC ] > 0 )
@@ -851,13 +846,10 @@ void CheckCkitRepair( gentity_t *ent )
 		const buildableAttributes_t *buildable;
 
 		buildable = BG_Buildable( traceEnt->s.modelindex );
-		cost = G_GetRepairCostForBuilding( buildable );
 
-		if ( traceEnt->health < buildable->health && G_CanAffordBuildPoints( TEAM_HUMANS, cost ) )
+		if ( traceEnt->health < buildable->health )
 		{
 			traceEnt->health += HBUILD_HEALRATE;
-
-			G_ModifyBuildPoints( traceEnt->buildableTeam, -cost );
 
 			if ( traceEnt->health >= buildable->health )
 			{
