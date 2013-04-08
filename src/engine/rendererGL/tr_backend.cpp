@@ -11951,10 +11951,11 @@ const void *RB_RunVisTests( const void *data )
 	for( i = 0; i < cmd->numVisTests; i++ ) {
 		visTest_t *test = cmd->visTests[ i ];
 		vec3_t     diff;
+		vec3_t     center, left, up;
 
 		if( test->running ) {
 			GLint  available;
-			GLuint result;
+			GLuint result, resultRef;
 
 			glGetQueryObjectiv( test->hQuery,
 					    GL_QUERY_RESULT_AVAILABLE,
@@ -11962,22 +11963,59 @@ const void *RB_RunVisTests( const void *data )
 			if( !available )
 				continue;
 
+			glGetQueryObjectiv( test->hQueryRef,
+					    GL_QUERY_RESULT_AVAILABLE,
+					    &available );
+			if( !available )
+				continue;
+
+			glGetQueryObjectuiv( test->hQueryRef, GL_QUERY_RESULT,
+					     &resultRef );
 			glGetQueryObjectuiv( test->hQuery, GL_QUERY_RESULT,
 					     &result );
 
-			test->lastResult = (qboolean)(result > 0);
+			if( resultRef > 0 )
+				test->lastResult = (float)result / (float)resultRef;
+			else
+				test->lastResult = 0.0f;
 			test->running = qfalse;
 		}
 
 		VectorSubtract( backEnd.orientation.viewOrigin,
 				test->position, diff );
 		VectorNormalize( diff );
-		VectorMA( test->position, test->depthAdjust, diff, tess.xyz[0] );
+		VectorMA( test->position, test->depthAdjust, diff, center );
+
+		VectorScale( backEnd.viewParms.orientation.axis[ 1 ],
+			     test->area, left );
+		VectorScale( backEnd.viewParms.orientation.axis[ 2 ],
+			     test->area, up );
+
+		tess.xyz[0][0] = center[0] + left[0] + up[0];
+		tess.xyz[0][1] = center[1] + left[1] + up[1];
+		tess.xyz[0][2] = center[2] + left[2] + up[2];
 		tess.xyz[0][3] = 1.0f;
-		tess.numVertexes = 1;
+		tess.xyz[1][0] = center[0] - left[0] + up[0];
+		tess.xyz[1][1] = center[1] - left[1] + up[1];
+		tess.xyz[1][2] = center[2] - left[2] + up[2];
+		tess.xyz[1][3] = 1.0f;
+		tess.xyz[2][0] = center[0] - left[0] - up[0];
+		tess.xyz[2][1] = center[1] - left[1] - up[1];
+		tess.xyz[2][2] = center[2] - left[2] - up[2];
+		tess.xyz[2][3] = 1.0f;
+		tess.xyz[3][0] = center[0] + left[0] - up[0];
+		tess.xyz[3][1] = center[1] + left[1] - up[1];
+		tess.xyz[3][2] = center[2] + left[2] - up[2];
+		tess.xyz[3][3] = 1.0f;
+		tess.numVertexes = 4;
 
 		tess.indexes[0] = 0;
-		tess.numIndexes = 1;
+		tess.indexes[1] = 1;
+		tess.indexes[2] = 2;
+		tess.indexes[3] = 0;
+		tess.indexes[4] = 2;
+		tess.indexes[5] = 3;
+		tess.numIndexes = 6;
 
 		gl_genericShader->DisableVertexSkinning();
 		gl_genericShader->DisableVertexAnimation();
@@ -12006,9 +12044,16 @@ const void *RB_RunVisTests( const void *data )
 
 		Tess_UpdateVBOs( ATTR_POSITION );
 
-		glBeginQuery( GL_SAMPLES_PASSED, test->hQuery );
-		glDrawArrays( GL_POINTS, 0, 1 );
+		glColorMask( GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE );
+		glDisable( GL_DEPTH_TEST );
+		glBeginQuery( GL_SAMPLES_PASSED, test->hQueryRef );
+		glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL );
 		glEndQuery( GL_SAMPLES_PASSED );
+		glEnable( GL_DEPTH_TEST );
+		glBeginQuery( GL_SAMPLES_PASSED, test->hQuery );
+		glDrawElements( GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL );
+		glEndQuery( GL_SAMPLES_PASSED );
+		glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
 
 		test->running = qtrue;
        }

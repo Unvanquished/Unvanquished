@@ -250,7 +250,7 @@ void *codec_wav_load( const char *filename, snd_info_t *info )
 	if ( !buffer )
 	{
 		FS_FCloseFile( file );
-		Com_Printf( _( S_COLOR_RED  "ERROR: Out of memory reading \"%s\"\n"), filename );
+		Com_Printf( _( S_ERROR "Out of memory reading \"%s\"\n"), filename );
 		return NULL;
 	}
 

@@ -279,7 +279,7 @@ qboolean R_LoadMD5( model_t *mod, void *buffer, int bufferSize, const char *modN
 		//ri.Printf(PRINT_ALL, "R_LoadMD5: '%s' has surface '%s'\n", modName, surf->name);
 
 		// register the shaders
-		sh = R_FindShader( surf->shader, SHADER_3D_DYNAMIC, qtrue );
+		sh = R_FindShader( surf->shader, SHADER_3D_DYNAMIC, RSF_DEFAULT );
 
 		if ( sh->defaultShader )
 		{

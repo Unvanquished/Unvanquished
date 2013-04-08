@@ -1862,7 +1862,7 @@ qboolean GLimp_Init( void )
 	r_sdlDriver = ri.Cvar_Get( "r_sdlDriver", "", CVAR_ROM );
 	r_allowResize = ri.Cvar_Get( "r_allowResize", "0", CVAR_ARCHIVE );
 	r_centerWindow = ri.Cvar_Get( "r_centerWindow", "0", CVAR_ARCHIVE );
-	r_minimize = ri.Cvar_Get( "r_minimize", "0", CVAR_ARCHIVE );
+	r_minimize = ri.Cvar_Get( "r_minimize", "0", CVAR_TEMP );
 
 	if ( ri.Cvar_VariableIntegerValue( "com_abnormalExit" ) )
 	{

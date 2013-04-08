@@ -1342,7 +1342,7 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 			                 ( image->bits & IF_NORMALMAP ) );
 		}
 
-		if ( !( image->bits & ( IF_NORMALMAP | IF_RGBA16F | IF_RGBA32F | IF_LA16F | IF_LA32F ) ) )
+		if ( !( image->bits & ( IF_NORMALMAP | IF_RGBA16F | IF_RGBA32F | IF_LA16F | IF_LA32F | IF_NOLIGHTSCALE ) ) )
 		{
 			R_LightScaleTexture( ( unsigned * ) scaledBuffer, scaledWidth, scaledHeight, image->filterType == FT_DEFAULT );
 		}
@@ -3680,7 +3680,7 @@ static void R_CreateColorGradeImage( void )
 					      REF_COLORGRADEMAP_SIZE,
 					      REF_COLORGRADEMAP_SIZE,
 					      REF_COLORGRADEMAP_SIZE,
-					      IF_NOPICMIP | IF_NOCOMPRESSION,
+					      IF_NOPICMIP | IF_NOCOMPRESSION | IF_NOLIGHTSCALE,
 					      FT_LINEAR,
 					      WT_EDGE_CLAMP );
 

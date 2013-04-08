@@ -1044,6 +1044,9 @@ int        G_ParticleSystemIndex( const char *name );
 int        G_ShaderIndex( const char *name );
 int        G_ModelIndex( const char *name );
 int        G_SoundIndex( const char *name );
+int        G_GradingTextureIndex( const char *name );
+int        G_LocationIndex( const char *name );
+
 void       G_KillBox( gentity_t *ent );
 void       G_KillBrushModel( gentity_t *ent, gentity_t *activator );
 void       G_TeleportPlayer( gentity_t *player, vec3_t origin, vec3_t angles, float speed );

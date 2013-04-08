@@ -1030,7 +1030,7 @@ dialogResult_t Sys_Dialog( dialogType_t type, const char *message, const char *t
 		break;
 	}
 
-	Com_DPrintf( S_COLOR_YELLOW "WARNING: failed to show a dialog\n" );
+	Com_DPrintf( S_WARNING "failed to show a dialog\n" );
 	return DR_OK;
 }
 

@@ -312,6 +312,8 @@ static void CG_ConfigStringModified( void )
 	// look up the individual string that was modified
 	str = CG_ConfigString( num );
 
+	//CG_Printf("configstring modification %i: %s\n", num, str);
+
 	// do something with it if necessary
 	if ( num == CS_MUSIC )
 	{
@@ -417,6 +419,11 @@ static void CG_ConfigStringModified( void )
 	{
 		cgs.gameShaders[ num - CS_SHADERS ] = trap_R_RegisterShader(str,
 									    RSF_DEFAULT);
+	}
+	else if ( num >= CS_GRADING_TEXTURES && num < CS_GRADING_TEXTURES + MAX_GRADING_TEXTURES )
+	{
+		cgs.gameGradingTextures[ num - CS_GRADING_TEXTURES ] =
+				trap_R_RegisterShader(CG_Argv(1), RSF_NOMIP | RSF_NOLIGHTSCALE);
 	}
 	else if ( num >= CS_PARTICLE_SYSTEMS && num < CS_PARTICLE_SYSTEMS + MAX_GAME_PARTICLE_SYSTEMS )
 	{
@@ -1019,7 +1026,7 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 
 		if ( Com_ClientListContains( &cgs.ignoreList, clientNum ) )
 		{
-			ignore = "[skipnotify]";
+			ignore = S_SKIPNOTIFY;
 		}
 
 		if ( ( mode == SAY_TEAM || mode == SAY_AREA ) &&
@@ -1087,7 +1094,7 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 			// might already be ignored but in that case no harm is done
 			if ( cg_teamChatsOnly.integer )
 			{
-				ignore = "[skipnotify]";
+				ignore = S_SKIPNOTIFY;
 			}
 
 		case SAY_ALL_ADMIN:

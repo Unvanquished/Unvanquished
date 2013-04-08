@@ -558,7 +558,7 @@ int BG_ClassCanEvolveFromTo( class_t fclass,
 		return best <= credits ? best : -1;
 	}
 
-	Com_Printf( S_COLOR_YELLOW "WARNING: fallthrough in BG_ClassCanEvolveFromTo\n" );
+	Com_Printf( S_WARNING "fallthrough in BG_ClassCanEvolveFromTo\n" );
 	return -1;
 }
 
@@ -593,7 +593,7 @@ qboolean BG_AlienCanEvolve( class_t pClass, int credits, int stage )
 		return qfalse;
 	}
 
-	Com_Printf( S_COLOR_YELLOW "WARNING: fallthrough in BG_AlienCanEvolve\n" );
+	Com_Printf( S_WARNING "fallthrough in BG_AlienCanEvolve\n" );
 	return qfalse;
 }
 
@@ -1656,7 +1656,7 @@ int BG_SlotsForInventory( int stats[] )
 			// this check should never be true
 			if ( slots & slot )
 			{
-				Com_Printf( S_COLOR_YELLOW "WARNING: held item %d conflicts with "
+				Com_Printf( S_WARNING "held item %d conflicts with "
 				            "inventory slot %d\n", i, slot );
 			}
 
@@ -2033,7 +2033,7 @@ void BG_PackEntityNumbers( entityState_t *es, const int *entityNums, int count )
 	if ( count > MAX_NUM_PACKED_ENTITY_NUMS )
 	{
 		count = MAX_NUM_PACKED_ENTITY_NUMS;
-		Com_Printf( S_COLOR_YELLOW "WARNING: A maximum of %d entity numbers can be "
+		Com_Printf( S_WARNING "A maximum of %d entity numbers can be "
 		            "packed, but BG_PackEntityNumbers was passed %d entities\n",
 		            MAX_NUM_PACKED_ENTITY_NUMS, count );
 	}
@@ -2235,7 +2235,7 @@ void BG_ParseCSVEquipmentList( const char *string, weapon_t *weapons, int weapon
 		if ( weaponsSize && weapons[ i ] == WP_NONE &&
 		     upgradesSize && upgrades[ j ] == UP_NONE )
 		{
-			Com_Printf( S_COLOR_YELLOW "WARNING: unknown equipment %s\n", q );
+			Com_Printf( S_WARNING "unknown equipment %s\n", q );
 		}
 		else if ( weaponsSize && weapons[ i ] != WP_NONE )
 		{
@@ -2314,7 +2314,7 @@ void BG_ParseCSVClassList( const char *string, class_t *classes, int classesSize
 
 		if ( classes[ i ] == PCL_NONE )
 		{
-			Com_Printf( S_COLOR_YELLOW "WARNING: unknown class %s\n", q );
+			Com_Printf( S_WARNING "unknown class %s\n", q );
 		}
 		else
 		{
@@ -2376,7 +2376,7 @@ void BG_ParseCSVBuildableList( const char *string, buildable_t *buildables, int 
 
 		if ( buildables[ i ] == BA_NONE )
 		{
-			Com_Printf( S_COLOR_YELLOW "WARNING: unknown buildable %s\n", q );
+			Com_Printf( S_WARNING "unknown buildable %s\n", q );
 		}
 		else
 		{

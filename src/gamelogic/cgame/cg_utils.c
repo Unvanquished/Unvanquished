@@ -51,7 +51,7 @@ qboolean CG_ParseColor( byte *c, char **text_p )
 
 	if ( strcmp( token, "}" ) )
 	{
-		CG_Printf( S_COLOR_RED "ERROR: missing '}'\n" );
+		CG_Printf( S_ERROR "missing '}'\n" );
 		return qfalse;
 	}
 

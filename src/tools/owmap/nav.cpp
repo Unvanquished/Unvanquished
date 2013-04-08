@@ -37,12 +37,12 @@ int   tileSize = 128;
 
 struct Character
 {
-	char *name;   //appended to filename
+	const char *name;   //appended to filename
 	float radius; //radius of agents (BBox maxs[0] or BBox maxs[1])
 	float height; //height of agents (BBox maxs[2] - BBox mins[2])
 };
 
-const Character characters[] = {
+static const Character characters[] = {
 	{ "builder",     20, 40 },
 	{ "builderupg",  20, 40 },
 	{ "human_base",  15, 56 },

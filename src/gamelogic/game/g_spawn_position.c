@@ -73,7 +73,6 @@ pos_location
 
 =================================================================================
 */
-static int pos_location_counter = 1;
 
 void SP_pos_location( gentity_t *self )
 {
@@ -81,13 +80,6 @@ void SP_pos_location( gentity_t *self )
 	self->s.eType = ET_LOCATION;
 	self->r.svFlags = SVF_BROADCAST;
 	trap_LinkEntity( self );  // make the server send them to the clients
-
-	if ( pos_location_counter == MAX_LOCATIONS )
-	{
-		if(g_debugEntities.integer > -1)
-			G_Printf( S_WARNING "too many locations set\n" );
-		return;
-	}
 
 	if ( G_SpawnInt( "count", "", &self->customNumber) )
 	{
@@ -109,24 +101,9 @@ void SP_pos_location( gentity_t *self )
 		message = self->message;
 	}
 
-	trap_SetConfigstring( CS_LOCATIONS + pos_location_counter, message );
 	self->nextPathSegment = level.locationHead;
-	self->s.generic1 = pos_location_counter; // use for location marking
+	self->s.generic1 = G_LocationIndex(message);
 	level.locationHead = self;
-	pos_location_counter++;
 
 	G_SetOrigin( self, self->s.origin );
-}
-
-/*
-=================================================================================
-
-init
-
-=================================================================================
-*/
-
-void SP_position_init( void )
-{
-	pos_location_counter = 1;
 }
