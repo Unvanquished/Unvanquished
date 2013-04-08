@@ -71,8 +71,12 @@ public:
 		// Class base class's Event processor
 		Rocket::Core::Element::ProcessEvent( event );
 
-		// Let this be picked up in the event loop
-		eventQueue.push( new RocketEvent_t( event, event.GetType() ) );
+
+		// Let this be picked up in the event loop if it is meant for us
+		if ( event.GetTargetElement() == this )
+		{
+			eventQueue.push( new RocketEvent_t( event, event.GetType() ) );
+		}
 	}
 
 	void SetDimensions( float x, float y )
