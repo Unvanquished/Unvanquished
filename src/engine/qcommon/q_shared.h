@@ -2231,6 +2231,7 @@ typedef struct
 #define MAX_EMOTICON_NAME_LEN     16
 #define MAX_EMOTICONS             64
 
+#define MAX_OBJECTIVES            64
 #define MAX_LOCATIONS             64
 #define MAX_MODELS                256 // these are sent over the net as 8 bits
 #define MAX_SOUNDS                256 // so they cannot be blindly increased
