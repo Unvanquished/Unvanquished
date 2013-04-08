@@ -427,7 +427,11 @@ gentity_t *G_PickRandomEntity( const char *classname, size_t fieldofs, const cha
 	{
 
 		if ( g_debugEntities.integer > -1 )
-			G_Printf( S_WARNING "Could not find any entity matching \"" S_COLOR_CYAN "%s" S_COLOR_WHITE "\"\n", match );
+			G_Printf( S_WARNING "Could not find any entity matching \"" S_COLOR_CYAN "%s%s%s" S_COLOR_WHITE "\"\n",
+					classname ? classname : "",
+					classname && match ? S_COLOR_WHITE " and " S_COLOR_CYAN :  "",
+					match ? match : ""
+					);
 
 		return NULL;
 	}
