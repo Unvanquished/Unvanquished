@@ -224,7 +224,7 @@ typedef enum cgameImport_s
   CG_R_UREGISTERFONT,
   CG_PGETTEXT,
   CG_R_INPVVS,
-  CG_KEY_SETTEAM,
+  CG_NOTIFY_TEAMCHANGE,
   CG_GETTEXT_PLURAL,
   CG_REGISTERVISTEST,
   CG_ADDVISTESTTOSCENE,
@@ -467,11 +467,11 @@ void            trap_Gettext( char *buffer, const char *msgid, int bufferLength 
 void            trap_Pgettext( char *buffer, const char *ctxt, const char *msgid, int bufferLength );
 void            trap_GettextPlural( char *buffer, const char *msgid, const char *msgid2, int number, int bufferLength );
 
-void            trap_Key_SetTeam( int newTeam );
+void            trap_notify_onTeamChange( int newTeam );
 
 qhandle_t       trap_RegisterVisTest();
 void            trap_AddVisTestToScene( qhandle_t hTest, vec3_t pos,
-					float depthAdjust );
-qboolean        trap_CheckVisibility( qhandle_t hTest );
+					float depthAdjust, float area );
+float           trap_CheckVisibility( qhandle_t hTest );
 void            trap_UnregisterVisTest( qhandle_t hTest );
 void            trap_SetColorGrading( qhandle_t hShader );

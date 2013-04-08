@@ -403,7 +403,7 @@ qboolean CL_OpenAVIForWriting( const char *fileName )
 			suggestRate--;
 		}
 
-		Com_Printf( S_COLOR_YELLOW "WARNING: cl_aviFrameRate is not a divisor of the audio rate, suggest %d\n", suggestRate );
+		Com_Printf( S_WARNING "cl_aviFrameRate is not a divisor of the audio rate, suggest %d\n", suggestRate );
 	}
 
 	if ( !Cvar_VariableIntegerValue( "s_initsound" ) )
@@ -424,7 +424,7 @@ qboolean CL_OpenAVIForWriting( const char *fileName )
 	else
 	{
 		afd.audio = qfalse;
-		Com_Printf( S_COLOR_YELLOW "WARNING: Audio capture is not supported with OpenAL. Set s_useOpenAL to 0 for audio capture\n" );
+		Com_Printf( S_WARNING "Audio capture is not supported with OpenAL. Set s_useOpenAL to 0 for audio capture\n" );
 	}
 
 	// This doesn't write a real header, but allocates the
@@ -555,7 +555,7 @@ void CL_WriteAVIAudioFrame( const byte *pcmBuffer, int size )
 
 	if ( bytesInBuffer + size > PCM_BUFFER_SIZE )
 	{
-		Com_Printf( S_COLOR_YELLOW "WARNING: Audio capture buffer overflow — truncating\n" );
+		Com_Printf( S_WARNING "Audio capture buffer overflow — truncating\n" );
 		size = PCM_BUFFER_SIZE - bytesInBuffer;
 	}
 

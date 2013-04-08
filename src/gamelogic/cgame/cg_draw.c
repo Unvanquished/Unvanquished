@@ -1758,6 +1758,13 @@ static void CG_DrawOverallProgress( rectDef_t *rect, vec4_t color, float scale,
 	                    borderSize, total );
 }
 
+static void CG_DrawOverallProgressLabel( rectDef_t *rect, float text_x, float text_y,
+    vec4_t color, float scale, int textalign, int textvalign )
+{
+	CG_DrawProgressLabel( rect, text_x, text_y, color, scale, textalign, textvalign,
+	                     cg.currentLoadingLabel, cg.charModelFraction );
+}
+
 static void CG_DrawLevelShot( rectDef_t *rect )
 {
 	const char *s;
@@ -3261,7 +3268,7 @@ void CG_DrawWeaponIcon( rectDef_t *rect, vec4_t color )
 
 	if ( !cg_weapons[ weapon ].registered )
 	{
-		Com_Printf( S_COLOR_YELLOW  "WARNING: CG_DrawWeaponIcon: weapon %d (%s) "
+		Com_Printf( S_WARNING "CG_DrawWeaponIcon: weapon %d (%s) "
 		            "is not registered\n", weapon, BG_Weapon( weapon )->name );
 		return;
 	}
@@ -3528,8 +3535,17 @@ static void CG_DrawCrosshairNames( rectDef_t *rect, float scale, int textStyle )
 	{
 		name = va( "(" S_COLOR_CYAN "%s" S_COLOR_WHITE "|" S_COLOR_CYAN "#%d" S_COLOR_WHITE ")",
 				Com_EntityTypeName( cg_entities[cg.crosshairClientNum].currentState.eType ), cg.crosshairClientNum );
-	} else {
-		name = cgs.clientinfo[ cg.crosshairClientNum ].name;
+	}
+	else
+	{
+		if ( cg_drawCrosshairNames.integer >= 2 )
+		{
+			name = va( "%2i: %s", cg.crosshairClientNum, cgs.clientinfo[ cg.crosshairClientNum ].name );
+		}
+		else
+		{
+			name = cgs.clientinfo[ cg.crosshairClientNum ].name;
+		}
 	}
 
 	// add health from overlay info to the crosshair client name
@@ -4143,6 +4159,10 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
 		case CG_LOAD_OVERALL:
 			CG_DrawOverallProgress( rect, foreColor, scale, align, textalign, textStyle,
 			                        borderSize );
+			break;
+
+		case CG_LOAD_OVERALL_LABEL:
+			CG_DrawOverallProgressLabel( rect, text_x, text_y, foreColor, scale, textalign, textvalign );
 			break;
 
 		case CG_LOAD_LEVELNAME:

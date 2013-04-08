@@ -133,7 +133,6 @@ extern "C" {
 	cvar_t      *r_stereo;
 
 	cvar_t      *r_drawBuffer;
-	cvar_t      *r_uiFullScreen;
 	cvar_t      *r_shadows;
 	cvar_t      *r_softShadows;
 	cvar_t      *r_shadowBlur;
@@ -1176,9 +1175,6 @@ extern "C" {
 		glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
 		glClearDepth( 1.0 );
 
-		glDrawBuffer( GL_FRONT );
-		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
-
 		glDrawBuffer( GL_BACK );
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
 
@@ -1417,7 +1413,6 @@ extern "C" {
 		r_customheight = ri.Cvar_Get( "r_customheight", "1024", CVAR_ARCHIVE | CVAR_LATCH );
 		r_customaspect = ri.Cvar_Get( "r_customaspect", "1", CVAR_ARCHIVE | CVAR_LATCH );
 		r_simpleMipMaps = ri.Cvar_Get( "r_simpleMipMaps", "0", CVAR_ARCHIVE | CVAR_LATCH );
-		r_uiFullScreen = ri.Cvar_Get( "r_uifullscreen", "0", 0 );
 		r_subdivisions = ri.Cvar_Get( "r_subdivisions", "4", CVAR_ARCHIVE | CVAR_LATCH );
 		r_deferredShading = ri.Cvar_Get( "r_deferredShading", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_SHADER );
 		r_parallaxMapping = ri.Cvar_Get( "r_parallaxMapping", "0", CVAR_ARCHIVE );
@@ -2428,7 +2423,6 @@ extern "C" {
 #endif
 
 #if defined( USE_REFLIGHT )
-		re.RegisterShaderLightAttenuation = RE_RegisterShaderLightAttenuation;
 		re.AddRefLightToScene = RE_AddRefLightToScene;
 #endif
 

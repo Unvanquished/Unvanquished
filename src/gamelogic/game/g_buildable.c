@@ -4571,7 +4571,7 @@ int G_LayoutList( const char *map, char *list, int len )
 
 	if ( count != numFiles )
 	{
-		G_Printf( S_COLOR_YELLOW "WARNING: layout list was truncated to %d "
+		G_Printf( S_WARNING "layout list was truncated to %d "
 		          "layouts, but %d layout files exist in layouts/%s/.\n",
 		          count, numFiles, map );
 	}
@@ -4646,13 +4646,13 @@ void G_LayoutSelect( void )
 		}
 		else
 		{
-			G_Printf( S_COLOR_YELLOW "WARNING: layout \"%s\" does not exist\n", s );
+			G_Printf( S_WARNING "layout \"%s\" does not exist\n", s );
 		}
 	}
 
 	if ( !cnt )
 	{
-		G_Printf( S_COLOR_RED "ERROR: none of the specified layouts could be "
+		G_Printf( S_ERROR "none of the specified layouts could be "
 		          "found, using map default\n" );
 		return;
 	}
@@ -4750,7 +4750,7 @@ void G_LayoutLoad( void )
 	{
 		if ( i >= sizeof( line ) - 1 )
 		{
-			G_Printf( S_COLOR_RED "ERROR: line overflow in %s before \"%s\"\n",
+			G_Printf( S_ERROR "line overflow in %s before \"%s\"\n",
 			          va( "layouts/%s/%s.dat", map, level.layout ), line );
 			break;
 		}
@@ -4772,7 +4772,7 @@ void G_LayoutLoad( void )
 
 			if ( buildable <= BA_NONE || buildable >= BA_NUM_BUILDABLES )
 			{
-				G_Printf( S_COLOR_YELLOW "WARNING: bad buildable name (%s) in layout."
+				G_Printf( S_WARNING "bad buildable name (%s) in layout."
 				          " skipping\n", buildName );
 			}
 			else

@@ -836,8 +836,8 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 
 	*out = 0;
 
-	// don't allow names beginning with "[skipnotify]" because it messes up /ignore-related code
-	if ( !Q_strnicmp( p, "[skipnotify]", 12 ) )
+	// don't allow names beginning with S_SKIPNOTIFY because it messes up /ignore-related code
+	if ( !Q_strnicmp( p, S_SKIPNOTIFY, 12 ) )
 	{
 		invalid = qtrue;
 	}

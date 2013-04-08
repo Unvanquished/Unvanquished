@@ -53,7 +53,7 @@ qboolean bindingsModified;
 int      anykeydown;
 qkey_t   keys[ MAX_KEYS ];
 
-int      bindTeam = 0; // TEAM_NONE
+int      bindTeam = DEFAULT_BINDING;
 
 typedef struct
 {
@@ -1989,14 +1989,14 @@ Key_SetTeam
 */
 void Key_SetTeam( int newTeam )
 {
-	if ( newTeam < TEAM_NONE || newTeam >= NUM_TEAMS || newTeam >= MAX_TEAMS )
+	if ( newTeam < 0 || newTeam >= MAX_TEAMS )
 	{
-		newTeam = TEAM_NONE;
+		newTeam = DEFAULT_BINDING;
 	}
 
 	if ( bindTeam != newTeam )
 	{
-		Com_DPrintf( "^2Setting binding team index to %d\n", newTeam );
+		Com_DPrintf( S_COLOR_GREEN "Setting binding team index to %d\n", newTeam );
 	}
 
 	bindTeam = newTeam;

@@ -59,6 +59,24 @@ qboolean G_SpawnString( const char *key, const char *defaultString, char **out )
 	return qfalse;
 }
 
+/**
+ * spawns a string and sets it as a cvar.
+ *
+ * use this with caution, as it might persist unprepared cvars (see cvartable)
+ */
+static qboolean G_SpawnStringIntoCVar( const char *key, const char *cvarName )
+{
+	char     *tmpString;
+
+	if ( G_SpawnString( key, "", &tmpString ) )
+	{
+		trap_Cvar_Set( cvarName, tmpString );
+		return qtrue;
+	}
+
+	return qfalse;
+}
+
 qboolean  G_SpawnFloat( const char *key, const char *defaultString, float *out )
 {
 	char     *s;
@@ -113,18 +131,18 @@ typedef enum
   F_3D_VECTOR,
   F_4D_VECTOR,
   F_YAW
-} fieldtype_t;
+} fieldType_t;
 
 typedef struct
 {
 	char  *name;
 	size_t      offset;
-	fieldtype_t type;
+	fieldType_t type;
 	int   versionState;
 	char  *replacement;
-} field_t;
+} fieldDescriptor_t;
 
-static const field_t fields[] =
+static const fieldDescriptor_t fields[] =
 {
 	{ "acceleration",        FOFS( acceleration ),        F_3D_VECTOR  },
 	{ "alias",               FOFS( names[ 2 ] ),          F_STRING     },
@@ -164,7 +182,7 @@ static const field_t fields[] =
 	{ "target2",             FOFS( targets ),             F_TARGET     }, // backwardcompatibility with AMP and to use the blackout map for testing
 	{ "target3",             FOFS( targets ),             F_TARGET     }, // backwardcompatibility with AMP and to use the blackout map for testing
 	{ "target4",             FOFS( targets ),             F_TARGET     }, // backwardcompatibility with AMP and to use the blackout map for testing
-	{ "targetname",          FOFS( names[ 1 ] ),          F_STRING,    ENT_V_RENAMED, "name" },
+	{ "targetname",          FOFS( names[ 1 ] ),          F_STRING,    ENT_V_TMPNAME, "name" }, //radiants ui sadly strongly encourages the "targetname" keyword
 	{ "targetname2",         FOFS( names[ 2 ] ),          F_STRING,    ENT_V_RENAMED, "name" }, // backwardcompatibility with AMP and to use the blackout map for testing
 	{ "targetShaderName",    FOFS( shaderKey ),           F_STRING,    ENT_V_TMPNAME, "shader"},
 	{ "targetShaderNewName", FOFS( shaderReplacement ),   F_STRING     },
@@ -608,12 +626,12 @@ in a gentity
 */
 void G_ParseField( const char *key, const char *rawString, gentity_t *entity )
 {
-	field_t *resultingField;
+	fieldDescriptor_t *resultingField;
 	byte    *entityData;
 	vec4_t  tmpFloatData;
 	variatingTime_t varTime = {0, 0};
 
-	resultingField = bsearch( key, fields, ARRAY_LEN( fields ), sizeof( field_t ), cmdcmp );
+	resultingField = bsearch( key, fields, ARRAY_LEN( fields ), sizeof( fieldDescriptor_t ), cmdcmp );
 
 	if ( !resultingField )
 	{
@@ -935,43 +953,27 @@ void SP_worldspawn( void )
 	G_SpawnString( "music", "", &s );
 	trap_SetConfigstring( CS_MUSIC, s );
 
+
 	G_SpawnString( "message", "", &s );
 	trap_SetConfigstring( CS_MESSAGE, s );  // map specific message
 
+	if(G_SpawnString( "colorGrade", "", &s ))
+		trap_SetConfigstring( CS_GRADING_TEXTURES, s );
+
 	trap_SetConfigstring( CS_MOTD, g_motd.string );  // message of the day
 
-	if ( G_SpawnString( "gravity", "", &s ) )
-	{
-		trap_Cvar_Set( "g_gravity", s );
-	}
+	G_SpawnStringIntoCVar( "gravity", "g_gravity" );
 
-	if ( G_SpawnString( "humanMaxStage", "", &s ) )
-	{
-		trap_Cvar_Set( "g_humanMaxStage", s );
-	}
+	G_SpawnStringIntoCVar( "humanMaxStage", "g_humanRepeaterBuildPoints" );
+	G_SpawnStringIntoCVar( "alienMaxStage", "g_alienMaxStage" );
 
-	if ( G_SpawnString( "alienMaxStage", "", &s ) )
-	{
-		trap_Cvar_Set( "g_alienMaxStage", s );
-	}
+	G_SpawnStringIntoCVar( "humanBuildPoints", "g_humanBuildPoints" );
+	G_SpawnStringIntoCVar( "humanRepeaterBuildPoints", "g_humanRepeaterBuildPoints" );
+	G_SpawnStringIntoCVar( "alienBuildPoints", "g_alienBuildPoints" );
 
-	if ( G_SpawnString( "humanRepeaterBuildPoints", "", &s ) )
-		trap_Cvar_Set( "g_humanRepeaterBuildPoints", s );
-
-	if ( G_SpawnString( "humanBuildPoints", "", &s ) )
-		trap_Cvar_Set( "g_humanBuildPoints", s );
-
-	if ( G_SpawnString( "alienBuildPoints", "", &s ) )
-		trap_Cvar_Set( "g_alienBuildPoints", s );
-
-	G_SpawnString( "disabledEquipment", "", &s );
-	trap_Cvar_Set( "g_disabledEquipment", s );
-
-	G_SpawnString( "disabledClasses", "", &s );
-	trap_Cvar_Set( "g_disabledClasses", s );
-
-	G_SpawnString( "disabledBuildables", "", &s );
-	trap_Cvar_Set( "g_disabledBuildables", s );
+	G_SpawnStringIntoCVar( "disabledEquipment", "g_disabledEquipment" );
+	G_SpawnStringIntoCVar( "disabledClasses", "g_disabledClasses" );
+	G_SpawnStringIntoCVar( "disabledBuildables", "g_disabledBuildables" );
 
 	g_entities[ ENTITYNUM_WORLD ].s.number = ENTITYNUM_WORLD;
 	g_entities[ ENTITYNUM_WORLD ].r.ownerNum = ENTITYNUM_NONE;
@@ -1013,7 +1015,6 @@ void G_SpawnEntitiesFromString( void )
 		G_Error( "SpawnEntities: no entities" );
 	}
 
-	SP_position_init();
 	SP_worldspawn();
 
 	// parse ents

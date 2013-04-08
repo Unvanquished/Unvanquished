@@ -602,6 +602,7 @@ SCR_DrawVoipSender
 */
 void SCR_DrawVoipSender( void )
 {
+#if 0 //FIXME we need to find another way to get the team CS_PLAYERS value, which will continuously change independently of the client, especially now with several cgames/games in development
 	char string[ 256 ];
 	char teamColor;
 
@@ -665,8 +666,8 @@ void SCR_DrawVoipSender( void )
 			SCR_DrawStringExt( 320 - strlen( string ) * -8, 380, 8, string, g_color_table[ 7 ], qtrue, qtrue );
 		}
 	}
+#endif
 }
-
 #endif
 
 /*

@@ -468,7 +468,8 @@ extern "C" {
 	  IF_RGBA16 = BIT( 15 ),
 	  IF_RGBE = BIT( 16 ),
 	  IF_ALPHATEST = BIT( 17 ),
-	  IF_DISPLACEMAP = BIT( 18 )
+	  IF_DISPLACEMAP = BIT( 18 ),
+	  IF_NOLIGHTSCALE = BIT( 19 )
 	};
 
 	typedef enum
@@ -3749,10 +3750,11 @@ extern "C" {
 	{
 		vec3_t            position;
 		float             depthAdjust; // move position this distance to camera
-		GLuint            hQuery;
+		float             area; // size of the quad used to test vis
+		GLuint            hQuery, hQueryRef;
 		qboolean          registered;
 		qboolean          running;
-		qboolean          lastResult;
+		float             lastResult;
 	} visTest_t;
 
 	typedef struct
@@ -4136,8 +4138,6 @@ extern "C" {
 	extern cvar_t *r_halfLambertLighting;
 	extern cvar_t *r_rimLighting;
 	extern cvar_t *r_rimExponent;
-
-	extern cvar_t *r_uiFullScreen; // ui is running fullscreen
 
 	extern cvar_t *r_logFile; // number of frames to emit GL logs
 
@@ -4530,10 +4530,11 @@ extern "C" {
 	====================================================================
 	*/
 	qhandle_t RE_RegisterShader( const char *name, RegisterShaderFlags_t flags );
-	qhandle_t RE_RegisterShaderFromImage( const char *name, image_t *image, qboolean mipRawImage );
+	qhandle_t RE_RegisterShaderFromImage( const char *name, image_t *image );
 	qboolean  RE_LoadDynamicShader( const char *shadername, const char *shadertext );
 
-	shader_t  *R_FindShader( const char *name, shaderType_t type, qboolean mipRawImage );
+	shader_t  *R_FindShader( const char *name, shaderType_t type,
+				 RegisterShaderFlags_t flags );
 	shader_t  *R_GetShaderByHandle( qhandle_t hShader );
 	shader_t  *R_FindShaderByName( const char *name );
 	void      R_InitShaders( void );
@@ -4925,8 +4926,9 @@ extern "C" {
 	void RE_RestoreViewParms( void );
 
 	qhandle_t RE_RegisterVisTest( void );
-	void RE_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust );
-	qboolean RE_CheckVisibility( qhandle_t hTest );
+	void RE_AddVisTestToScene( qhandle_t hTest, vec3_t pos,
+				   float depthAdjust, float area );
+	float RE_CheckVisibility( qhandle_t hTest );
 	void RE_UnregisterVisTest( qhandle_t hTest );
 	void R_ShutdownVisTests( void );
 	/*

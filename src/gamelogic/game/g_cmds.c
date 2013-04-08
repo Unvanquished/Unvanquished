@@ -34,7 +34,6 @@ Remove color codes and non-alphanumeric characters from a string
 void G_SanitiseString( const char *in, char *out, int len )
 {
 	len--;
-
 	while ( *in && len > 0 )
 	{
 		int cp = Q_UTF8_CodePoint( in );
@@ -50,8 +49,21 @@ void G_SanitiseString( const char *in, char *out, int len )
 
 		if ( Q_Unicode_IsAlphaOrIdeoOrDigit( cp ) )
 		{
-			int wm = MIN( len, w );
-			memcpy( out, in, wm );
+			int wm, lc;
+
+			if ( Q_Unicode_IsUpper( cp ) )
+			{
+				cp = Q_Unicode_ToLower( cp );
+				wm = Q_UTF8_WidthCP( cp );
+				wm = MIN( len, wm );
+				memcpy( out, Q_UTF8_Encode( cp ), wm );
+			}
+			else
+			{
+				wm = MIN( len, w );
+				memcpy( out, in, wm );
+			}
+
 			out += wm;
 			len -= wm;
 		}
@@ -941,7 +953,7 @@ void G_LoadCensors( void )
 
 	if ( len < 0 )
 	{
-		Com_Printf( S_COLOR_RED "ERROR: Censors file %s doesn't exist\n",
+		Com_Printf( S_ERROR "Censors file %s doesn't exist\n",
 		            g_censorship.string );
 		return;
 	}
@@ -949,7 +961,7 @@ void G_LoadCensors( void )
 	if ( len == 0 || len >= sizeof( text ) - 1 )
 	{
 		trap_FS_FCloseFile( f );
-		Com_Printf( S_COLOR_RED "ERROR: Censors file %s is %s\n",
+		Com_Printf( S_ERROR "Censors file %s is %s\n",
 		            g_censorship.string, len == 0 ? "empty" : "too long" );
 		return;
 	}
@@ -3761,7 +3773,7 @@ static void Cmd_Ignore_f( gentity_t *ent )
 
 	if ( trap_Argc() < 2 )
 	{
-		trap_SendServerCommand( ent - g_entities, va( "print_tr \"[skipnotify]"
+		trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
 		                        "%s\" %s", N_("usage: $1$ [clientNum | partial name match]\n"), cmd ) );
 		return;
 	}
@@ -3771,7 +3783,7 @@ static void Cmd_Ignore_f( gentity_t *ent )
 
 	if ( matches < 1 )
 	{
-		trap_SendServerCommand( ent - g_entities, va( "print_tr \"[skipnotify]"
+		trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
 		                        "%s\" %s %s", N_("$1$: no clients match the name '$2$'\n"), cmd, Quote( name ) ) );
 		return;
 	}
@@ -3784,13 +3796,13 @@ static void Cmd_Ignore_f( gentity_t *ent )
 			{
 				Com_ClientListAdd( &ent->client->sess.ignoreList, pids[ i ] );
 				ClientUserinfoChanged( ent->client->ps.clientNum, qfalse );
-				trap_SendServerCommand( ent - g_entities, va( "print_tr \"[skipnotify]"
+				trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
 				                        "%s\" %s", N_("ignore: added $1$^7 to your ignore list\n"),
 				                        Quote( level.clients[ pids[ i ] ].pers.netname ) ) );
 			}
 			else
 			{
-				trap_SendServerCommand( ent - g_entities, va( "print_tr \"[skipnotify]"
+				trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
 				                        "%s\" %s", N_("ignore: $1$^7 is already on your ignore list\n"),
 				                        Quote( level.clients[ pids[ i ] ].pers.netname ) ) );
 			}
@@ -3801,13 +3813,13 @@ static void Cmd_Ignore_f( gentity_t *ent )
 			{
 				Com_ClientListRemove( &ent->client->sess.ignoreList, pids[ i ] );
 				ClientUserinfoChanged( ent->client->ps.clientNum, qfalse );
-				trap_SendServerCommand( ent - g_entities, va( "print_tr \"[skipnotify]"
+				trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
 				                        "%s\" %s", N_("unignore: removed $1$^7 from your ignore list\n"),
 				                        Quote( level.clients[ pids[ i ] ].pers.netname ) ) );
 			}
 			else
 			{
-				trap_SendServerCommand( ent - g_entities, va( "print_tr \"[skipnotify]"
+				trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
 				                        "%s\" %s", N_("unignore: $1$^7 is not on your ignore list\n"),
 				                        Quote( level.clients[ pids[ i ] ].pers.netname ) )  );
 			}

@@ -781,7 +781,7 @@ void G_admin_writeconfig( void )
 
 	if ( !g_admin.string[ 0 ] )
 	{
-		G_Printf( S_COLOR_YELLOW "WARNING: g_admin is not set. "
+		G_Printf( S_WARNING "g_admin is not set. "
 		          " configuration will not be saved to a file.\n" );
 		return;
 	}
@@ -5359,7 +5359,7 @@ void G_admin_print( gentity_t *ent, const char *m )
 {
 	if ( ent )
 	{
-		trap_SendServerCommand( ent - level.gentities, va( "print_tr %s", m ) );
+		trap_SendServerCommand( ent->s.number, va( "print_tr %s", m ) );
 	}
 	else
 	{
@@ -5371,7 +5371,7 @@ void G_admin_print_plural( gentity_t *ent, const char *m, int number )
 {
 	if ( ent )
 	{
-		trap_SendServerCommand( ent - level.gentities, va( "print_tr_p %d %s", number, m ) );
+		trap_SendServerCommand( ent->s.number, va( "print_tr_p %d %s", number, m ) );
 	}
 	else
 	{
@@ -5403,7 +5403,7 @@ void G_admin_buffer_print( gentity_t *ent, const char *m )
 	// 1022 - strlen("print 64 \"\"") - 1
 	if ( !m ||  strlen( m ) + strlen( g_bfb ) >= 1009 )
 	{
-		trap_SendServerCommand( ent ? ent - level.gentities : -2, va( "print %s", Quote( g_bfb ) ) );
+		trap_SendServerCommand( ent ? ent->s.number : -2, va( "print %s", Quote( g_bfb ) ) );
 		g_bfb[ 0 ] = '\0';
 	}
 
