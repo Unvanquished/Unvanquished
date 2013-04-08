@@ -131,7 +131,6 @@ cvar_t *r_ext_multisample;
 
 cvar_t *r_drawBuffer;
 cvar_t *r_showLightMaps;
-cvar_t *r_uiFullScreen;
 cvar_t *r_shadows;
 cvar_t *r_portalsky; //----(SA)  added
 cvar_t *r_flares;
@@ -908,6 +907,13 @@ void GL_SetDefaultState( void )
 	glDisable( GL_CULL_FACE );
 	glDisable( GL_BLEND );
 
+	glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
+	glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
+	glClearDepth( 1.0 );
+
+	glDrawBuffer( GL_BACK );
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT );
+
 //----(SA)  added.
 #if 0
 
@@ -1144,7 +1150,6 @@ void R_Register( void )
 	r_customheight = ri.Cvar_Get( "r_customheight", "1024", CVAR_ARCHIVE | CVAR_LATCH );
 	r_customaspect = ri.Cvar_Get( "r_customaspect", "1", CVAR_ARCHIVE | CVAR_LATCH );
 	r_simpleMipMaps = ri.Cvar_Get( "r_simpleMipMaps", "1", CVAR_ARCHIVE | CVAR_LATCH );
-	r_uiFullScreen = ri.Cvar_Get( "r_uifullscreen", "0", 0 );
 	r_subdivisions = ri.Cvar_Get( "r_subdivisions", "4", CVAR_ARCHIVE | CVAR_LATCH );
 #ifdef MACOS_X
 	// debe: r_smp doesn't work on MACOS_X yet...
@@ -1553,10 +1558,6 @@ extern "C" {
 		re.RegisterModel = RE_RegisterModel;
 		re.RegisterSkin = RE_RegisterSkin;
 		re.RegisterShader = RE_RegisterShader;
-		re.RegisterShaderNoMip = RE_RegisterShaderNoMip;
-#if defined( USE_REFLIGHT )
-		re.RegisterShaderLightAttenuation = NULL;
-#endif
 		re.RegisterFont = RE_RegisterFont;
 		re.Glyph = RE_Glyph;
 		re.GlyphChar = RE_GlyphChar;
@@ -1647,6 +1648,13 @@ extern "C" {
 		re.AnimNumFrames = RE_AnimNumFrames;
 		re.AnimFrameRate = RE_AnimFrameRate;
 #endif
+
+		re.RegisterVisTest = RE_RegisterVisTest;
+		re.AddVisTestToScene = RE_AddVisTestToScene;
+		re.CheckVisibility = RE_CheckVisibility;
+		re.UnregisterVisTest = RE_UnregisterVisTest;
+
+		re.SetColorGrading = RE_SetColorGrading;
 
 		return &re;
 	}

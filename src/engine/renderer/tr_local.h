@@ -62,6 +62,11 @@ Maryland 20850 USA.
 // ydnar: optimizing diffuse lighting calculation with a table lookup
 #define ENTITY_LIGHT_STEPS 16
 
+// visibility tests: check if a 3D-point is visible
+// results may be delayed, but for visual effect like flares this
+// shouldn't matter
+#define MAX_VISTESTS          256
+
 typedef struct
 {
 	refEntity_t e;
@@ -686,6 +691,9 @@ typedef struct
 
 	int                    numDrawSurfs;
 	struct drawSurf_s      *drawSurfs;
+
+	int                    numVisTests;
+	struct visTest_s       **visTests;
 } trRefdef_t;
 
 //=================================================================================
@@ -1467,6 +1475,15 @@ typedef struct
 	trRefEntity_t     entity2D; // currentEntity will point at this when doing 2D rendering
 } backEndState_t;
 
+typedef struct visTest_s
+{
+	vec3_t            position;
+	float             depthAdjust; // move position this distance to camera
+	float             area;
+	qboolean          registered;
+	float             lastResult;
+} visTest_t;
+
 /*
 ** trGlobals_t
 **
@@ -1574,6 +1591,9 @@ typedef struct
 
 	int      numSkins;
 	skin_t   *skins[ MAX_SKINS ];
+
+	int      numVisTests;
+	visTest_t *visTests[ MAX_VISTESTS ];
 
 	float    sinTable[ FUNCTABLE_SIZE ];
 	float    squareTable[ FUNCTABLE_SIZE ];
@@ -1697,7 +1717,6 @@ extern cvar_t *r_offsetFactor;
 extern cvar_t *r_offsetUnits;
 
 extern cvar_t *r_showLightMaps; // render lightmaps only
-extern cvar_t *r_uiFullScreen; // ui is running fullscreen
 
 extern cvar_t *r_logFile; // number of frames to emit GL logs
 extern cvar_t *r_showtris; // enables wireframe rendering of the world
@@ -1907,13 +1926,14 @@ skin_t   *R_GetSkinByHandle( qhandle_t hSkin );
 
 void     R_DebugText( const vec3_t org, float r, float g, float b, const char *text, qboolean neverOcclude );
 
+void     RE_SetColorGrading( qhandle_t hShader );
+
 //
 // tr_shader.c
 //
 qhandle_t RE_RegisterShaderLightMap( const char *name, int lightmapIndex );
-qhandle_t RE_RegisterShader( const char *name );
-qhandle_t RE_RegisterShaderNoMip( const char *name );
-qhandle_t RE_RegisterShaderFromImage( const char *name, int lightmapIndex, image_t *image, qboolean mipRawImage );
+qhandle_t RE_RegisterShader( const char *name, RegisterShaderFlags_t flags );
+qhandle_t RE_RegisterShaderFromImage( const char *name, int lightmapIndex, image_t *image );
 
 shader_t  *R_FindShader( const char *name, int lightmapIndex, qboolean mipRawImage );
 shader_t  *R_GetShaderByHandle( qhandle_t hShader );
@@ -2180,6 +2200,11 @@ void RE_RenderScene( const refdef_t *fd );
 void RE_SaveViewParms( void );
 void RE_RestoreViewParms( void );
 
+qhandle_t RE_RegisterVisTest( void );
+void RE_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust,
+			   float area );
+float RE_CheckVisibility( qhandle_t hTest );
+void RE_UnregisterVisTest( qhandle_t hTest );
 /*
 =============================================================
 
@@ -2325,6 +2350,15 @@ typedef struct
 	int         numDrawSurfs;
 } drawSurfsCommand_t;
 
+typedef struct
+{
+	int         commandId;
+	trRefdef_t  refdef;
+	viewParms_t viewParms;
+	visTest_t   **visTests;
+	int         numVisTests;
+} runVisTestsCommand_t;
+
 typedef enum
 {
   SSF_TGA,
@@ -2369,6 +2403,7 @@ typedef enum
   RC_STRETCH_PIC_GRADIENT, // (SA) added
   RC_DRAW_SURFS,
   RC_DRAW_BUFFER,
+  RC_RUN_VISTESTS,
   RC_SWAP_BUFFERS,
   RC_VIDEOFRAME,
   RC_RENDERTOTEXTURE, //bani
@@ -2409,6 +2444,7 @@ typedef struct
 	polyVert_t          polyVerts[ MAX_POLYVERTS ];
 	decalProjector_t    decalProjectors[ MAX_DECAL_PROJECTORS ];
 	srfDecal_t          decals[ MAX_DECALS ];
+	visTest_t           *visTests[ MAX_VISTESTS ];
 	renderCommandList_t commands;
 } backEndData_t;
 
@@ -2428,6 +2464,7 @@ void                                R_ShutdownCommandBuffers( void );
 void                                R_SyncRenderThread( void );
 
 void                                R_AddDrawSurfCmd( drawSurf_t *drawSurfs, int numDrawSurfs );
+void                                R_AddRunVisTestsCmd( visTest_t **visTests, int numVisTests );
 
 void                                RE_SetColor( const float *rgba );
 void                                RE_SetClipRegion( const float *region );

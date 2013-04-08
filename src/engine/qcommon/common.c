@@ -36,6 +36,7 @@ Maryland 20850 USA.
 
 #include "revision.h"
 #include "../qcommon/q_shared.h"
+#include "q_unicode.h"
 #include "qcommon.h"
 #include <setjmp.h>
 
@@ -241,11 +242,11 @@ int QDECL VPRINTF_LIKE(1) Com_VPrintf( const char *fmt, va_list argptr )
 
 			if ( com_logfile->integer != 3 )
 			{
-				logfile = FS_FOpenFileWrite( "etconsole.log" );
+				logfile = FS_FOpenFileWrite( "unvconsole.log" );
 			}
 			else
 			{
-				logfile = FS_FOpenFileAppend( "etconsole.log" );
+				logfile = FS_FOpenFileAppend( "unvconsole.log" );
 			}
 
 			Com_Printf(_( "logfile opened on %s\n"), asctime( newtime ) );
@@ -360,7 +361,7 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 	if ( code == ERR_SERVERDISCONNECT )
 	{
 		VM_Forced_Unload_Start();
-		Com_Printf( "^7%s\n", com_errorMessage );
+		Com_Printf( S_COLOR_WHITE "%s\n", com_errorMessage );
 		SV_Shutdown( "Server disconnected" );
 		CL_Disconnect( qtrue );
 		CL_FlushMemory();
@@ -371,7 +372,7 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int code, const char *fmt, ... )
 	else if ( code == ERR_DROP )
 	{
 		VM_Forced_Unload_Start();
-		Com_Printf( "^8%s\n", com_errorMessage );
+		Com_Printf( S_COLOR_ORANGE "%s\n", com_errorMessage );
 		SV_Shutdown( va( "********************\nServer crashed: %s\n********************\n", com_errorMessage ) );
 		CL_Disconnect( qtrue );
 		CL_FlushMemory();
@@ -420,7 +421,7 @@ void NORETURN Com_Quit_f( void )
 		VM_Forced_Unload_Start();
 		SV_Shutdown( p[ 0 ] ? p : "Server quit\n" );
 //bani
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 		CL_ShutdownCGame();
 #endif
 		CL_Shutdown();
@@ -576,7 +577,7 @@ qboolean Com_AddStartupCommands( void )
 		}
 
 		// set commands won't override menu startup
-		if ( Q_stricmpn( com_consoleLines[ i ], "set", 3 ) )
+		if ( Q_strnicmp( com_consoleLines[ i ], "set", 3 ) )
 		{
 			added = qtrue;
 		}
@@ -1880,12 +1881,12 @@ The server calls this before shutting down or loading a new map
 */
 void Hunk_Clear( void )
 {
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 	CL_ShutdownCGame();
 	CL_ShutdownUI();
 #endif
 	SV_ShutdownGameProgs();
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 	CIN_CloseAllVideos();
 #endif
 	hunk_low.mark = 0;
@@ -2523,7 +2524,7 @@ Returns last event time
 =================
 */
 
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 extern qboolean consoleButtonWasPressed;
 #endif
 
@@ -2575,7 +2576,7 @@ int Com_EventLoop( void )
 				break;
 
 			case SE_CHAR:
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 
 				// fretn
 				// we just pressed the console button,
@@ -2968,7 +2969,7 @@ void Com_Init( char *commandLine )
 
 	Cbuf_AddText( "exec default.cfg\n" );
 
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 	// skip the q3config.cfg if "safe" is on the command line
 	if ( !Com_SafeMode() )
 	{
@@ -3001,7 +3002,7 @@ void Com_Init( char *commandLine )
 			if ( !Com_CheckProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
 			{
 #if 0
-				Com_Printf(_( "^3WARNING: profile.pid found for profile '%s' — the system settings will revert to their defaults\n"),
+				Com_Printf(_( S_WARNING "profile.pid found for profile '%s' — the system settings will revert to their defaults\n"),
 				            cl_profileStr );
 				// ydnar: set crashed state
 				Cbuf_AddText( "set com_crashed 1\n" );
@@ -3011,23 +3012,23 @@ void Com_Init( char *commandLine )
 			// bani - write a new one
 			if ( !Com_WriteProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
 			{
-				Com_Printf(_( "^3WARNING: couldn't write profiles/%s/profile.pid\n"), cl_profileStr );
+				Com_Printf(_( S_WARNING "couldn't write profiles/%s/profile.pid\n"), cl_profileStr );
 			}
 
 			// exec the config
-			Cbuf_AddText( va( "exec profiles/%s/%s\n", cl_profileStr, CONFIG_NAME ) );
-			Cbuf_AddText( va( "exec profiles/%s/%s\n", cl_profileStr, KEYBINDINGS_NAME ) );
-			Cbuf_AddText( va( "exec profiles/%s/autoexec.cfg\n", cl_profileStr ) );
+			Cbuf_AddText( va( "exec profiles/%s/" CONFIG_NAME "\n", cl_profileStr ) );
+			Cbuf_AddText( va( "exec profiles/%s/" KEYBINDINGS_NAME "\n", cl_profileStr ) );
+			Cbuf_AddText( va( "exec profiles/%s/" AUTOEXEC_NAME "\n", cl_profileStr ) );
 		}
 		else
 		{
-			Cbuf_AddText( va( "exec %s\n", CONFIG_NAME ) );
-			Cbuf_AddText( va( "exec %s\n", KEYBINDINGS_NAME ) );
-			Cbuf_AddText( "exec autoexec.cfg\n" );
+			Cbuf_AddText( "exec " CONFIG_NAME "\n" );
+			Cbuf_AddText( "exec " KEYBINDINGS_NAME "\n" );
+			Cbuf_AddText( "exec " AUTOEXEC_NAME "\n" );
 		}
 	}
 #else
-	Cbuf_AddText( va( "exec %s\n", CONFIG_NAME ) );
+	Cbuf_AddText( "exec " CONFIG_NAME "\n" );
 #endif
 
 
@@ -3040,7 +3041,7 @@ void Com_Init( char *commandLine )
 	// override anything from the config files with command line args
 	Com_StartupVariable( NULL );
 
-#ifdef DEDICATED
+#if defined(DEDICATED)
 	// TTimo: default to Internet dedicated, not LAN dedicated
 	com_dedicated = Cvar_Get( "dedicated", "2", CVAR_ROM );
 	Cvar_CheckRange( com_dedicated, 1, 2, qtrue );
@@ -3123,7 +3124,7 @@ void Com_Init( char *commandLine )
 
 	Cmd_AddCommand( "quit", Com_Quit_f );
 	Cmd_AddCommand( "writeconfig", Com_WriteConfig_f );
-#ifndef DEDICATED
+#if !defined(DEDICATED)
 	Cmd_AddCommand( "writebindings", Com_WriteBindings_f );
 #endif
 
@@ -3164,9 +3165,6 @@ void Com_Init( char *commandLine )
 	{
 		// if the user didn't give any commands, run default action
 	}
-
-	// start in full screen ui mode
-	Cvar_Set( "r_uiFullScreen", "1" );
 
 	CL_StartHunkUsers();
 
@@ -3318,7 +3316,7 @@ void Com_WriteConfiguration( void )
 		}
 	}
 
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 	if ( bindingsModified )
 	{
 		bindingsModified = qfalse;
@@ -3365,7 +3363,7 @@ Com_WriteBindings_f
 Write the key bindings file to a specific name
 ===============
 */
-#ifndef DEDICATED
+#if !defined(DEDICATED)
 void Com_WriteBindings_f( void )
 {
 	char filename[ MAX_QPATH ];
@@ -3452,7 +3450,7 @@ Com_Frame
 void Com_Frame( void )
 {
 	int             msec, minMsec;
-	static int      lastTime;
+	static int      lastTime = 0;
 	//int             key;
 
 	int             timeBeforeFirstEvents;
@@ -3500,28 +3498,35 @@ void Com_Frame( void )
 	}
 
 	// we may want to spin here if things are going too fast
-	if ( !com_dedicated->integer && !com_timedemo->integer )
+	if ( !com_timedemo->integer )
 	{
-		if ( com_minimized->integer && com_maxfpsMinimized->integer > 0 )
+		if ( com_dedicated->integer )
 		{
-			minMsec = 1000 / com_maxfpsMinimized->integer;
-		}
-		else if ( com_unfocused->integer && com_maxfpsUnfocused->integer > 0 )
-		{
-			minMsec = 1000 / com_maxfpsUnfocused->integer;
-		}
-		else if ( com_maxfps->integer > 0 )
-		{
-			minMsec = 1000 / com_maxfps->integer;
+			minMsec = SV_FrameMsec();
 		}
 		else
 		{
-			minMsec = 1;
+			if ( com_minimized->integer && com_maxfpsMinimized->integer > 0 )
+			{
+				minMsec = 1000 / com_maxfpsMinimized->integer;
+			}
+			else if ( com_unfocused->integer && com_maxfpsUnfocused->integer > 0 )
+			{
+				minMsec = 1000 / com_maxfpsUnfocused->integer;
+			}
+			else if ( com_maxfps->integer > 0 )
+			{
+				minMsec = 1000 / com_maxfps->integer;
+			}
+			else
+			{
+				minMsec = 1;
+			}
 		}
 	}
 	else
 	{
-		minMsec = 0; // let's not spin at all
+		minMsec = 1; // Bad things happen if this is 0
 	}
 
 	com_frameTime = Com_EventLoop();
@@ -3772,7 +3777,7 @@ void Field_Set( field_t *edit, const char *content )
 {
 	memset( edit->buffer, 0, MAX_EDIT_LINE );
 	strncpy( edit->buffer, content, MAX_EDIT_LINE );
-	Field_SetCursor( edit, Q_UTF8Strlen( edit->buffer ) );
+	Field_SetCursor( edit, Q_UTF8_Strlen( edit->buffer ) );
 }
 
 /*
@@ -3786,7 +3791,7 @@ int Field_CursorToOffset( field_t *edit )
 
 	while ( ++i < edit->cursor )
 	{
-		j += Q_UTF8Width( edit->buffer + j );
+		j += Q_UTF8_Width( edit->buffer + j );
 	}
 
 	return j;
@@ -3803,7 +3808,7 @@ int Field_ScrollToOffset( field_t *edit )
 
 	while ( ++i < edit->scroll )
 	{
-		j += Q_UTF8Width( edit->buffer + j );
+		j += Q_UTF8_Width( edit->buffer + j );
 	}
 
 	return j;
@@ -3820,7 +3825,7 @@ int Field_OffsetToCursor( field_t *edit, int offset )
 
 	while ( i < offset )
 	{
-		i += Q_UTF8Width( edit->buffer + i );
+		i += Q_UTF8_Width( edit->buffer + i );
 		++j;
 	}
 
@@ -3867,7 +3872,7 @@ static void FindMatches( const char *s )
 {
 	int i;
 
-	if ( Q_stricmpn( s, completionString, strlen( completionString ) ) )
+	if ( Q_strnicmp( s, completionString, strlen( completionString ) ) )
 	{
 		return;
 	}
@@ -3900,7 +3905,7 @@ PrintCmdMatches
 #if 0
 static void PrintCmdMatches( const char *s )
 {
-	if ( !Q_stricmpn( s, shortestMatch, strlen( shortestMatch ) ) )
+	if ( !Q_strnicmp( s, shortestMatch, strlen( shortestMatch ) ) )
 	{
 		Com_Printf( " %s\n", s );
 	}
@@ -3916,7 +3921,7 @@ PrintMatches
 */
 static void PrintMatches( const char *s )
 {
-	if ( !Q_stricmpn( s, shortestMatch, strlen( shortestMatch ) ) )
+	if ( !Q_strnicmp( s, shortestMatch, strlen( shortestMatch ) ) )
 	{
 		Com_Printf( "    %s\n", s );
 	}
@@ -3929,7 +3934,7 @@ PrintCvarMatches
 */
 static void PrintCvarMatches( const char *s )
 {
-	if ( !Q_stricmpn( s, shortestMatch, strlen( shortestMatch ) ) )
+	if ( !Q_strnicmp( s, shortestMatch, strlen( shortestMatch ) ) )
 	{
 		Com_Printf( " %s = \"%s\"\n", s, Cvar_VariableString( s ) );
 	}
@@ -4031,7 +4036,7 @@ static qboolean Field_Complete( void )
 	Q_strncpyz( &completionField->buffer[ completionOffset ], shortestMatch,
 	            sizeof( completionField->buffer ) - completionOffset );
 
-	completionField->cursor = Q_UTF8Strlen( completionField->buffer );
+	completionField->cursor = Q_UTF8_Strlen( completionField->buffer );
 
 	if ( matchCount == 1 )
 	{
@@ -4045,7 +4050,7 @@ static qboolean Field_Complete( void )
 	return qfalse;
 }
 
-#ifndef DEDICATED
+#if !defined(DEDICATED)
 
 static void Field_TeamnameCompletion( void ( *callback )( const char *s ), int flags )
 {
@@ -4211,8 +4216,6 @@ void Field_CompleteCommand( char *cmd,
 		completionString = Cmd_Argv( completionArgument - 1 );
 	}
 
-#ifndef DEDICATED
-
 	// Unconditionally add a '\' to the start of the buffer
 	if ( completionField->buffer[ 0 ] &&
 	     completionField->buffer[ 0 ] != '\\' )
@@ -4235,22 +4238,16 @@ void Field_CompleteCommand( char *cmd,
 		completionField->buffer[ 0 ] = '\\';
 	}
 
-#endif
-
 	if ( completionArgument > 1 )
 	{
 		const char *baseCmd = Cmd_Argv( 0 );
 		char       *p;
-
-#ifndef DEDICATED
 
 		// This should always be true
 		if ( baseCmd[ 0 ] == '\\' || baseCmd[ 0 ] == '/' )
 		{
 			baseCmd++;
 		}
-
-#endif
 
 		if ( ( p = Field_FindFirstSeparator( cmd ) ) )
 		{

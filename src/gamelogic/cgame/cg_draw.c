@@ -1728,6 +1728,13 @@ static void CG_DrawOverallProgress( rectDef_t *rect, vec4_t color, float scale,
 	                    borderSize, total );
 }
 
+static void CG_DrawOverallProgressLabel( rectDef_t *rect, float text_x, float text_y,
+    vec4_t color, float scale, int textalign, int textvalign )
+{
+	CG_DrawProgressLabel( rect, text_x, text_y, color, scale, textalign, textvalign,
+	                     cg.currentLoadingLabel, cg.charModelFraction );
+}
+
 static void CG_DrawLevelShot( rectDef_t *rect )
 {
 	const char *s;
@@ -1737,18 +1744,20 @@ static void CG_DrawLevelShot( rectDef_t *rect )
 
 	info = CG_ConfigString( CS_SERVERINFO );
 	s = Info_ValueForKey( info, "mapname" );
-	levelshot = trap_R_RegisterShaderNoMip( va( "levelshots/%s.tga", s ) );
+	levelshot = trap_R_RegisterShader(va("levelshots/%s.tga", s),
+					  RSF_NOMIP);
 
 	if ( !levelshot )
 	{
-		levelshot = trap_R_RegisterShaderNoMip( "gfx/2d/load_screen" );
+		levelshot = trap_R_RegisterShader("gfx/2d/load_screen",
+						  RSF_NOMIP);
 	}
 
 	trap_R_SetColor( NULL );
 	CG_DrawPic( rect->x, rect->y, rect->w, rect->h, levelshot );
 
 	// blend a detail texture over it
-	detail = trap_R_RegisterShader( "gfx/misc/detail" );
+	detail = trap_R_RegisterShader("gfx/misc/detail", RSF_DEFAULT);
 	CG_DrawPic( rect->x, rect->y, rect->w, rect->h, detail );
 }
 
@@ -2543,8 +2552,9 @@ static void CG_DrawTeamOverlay( rectDef_t *rect, float scale, vec4_t color )
 				}
 			}
 
-			s = va( " [^%c%3d^7] %s ^7%s",
+			s = va( " [^%c%s%d^7] %s ^7%s",
 			        CG_GetColorCharForHealth( displayClients[ i ] ),
+			        "  " + ( ci->health >= 100 ? 6 : ci->health >= 10 ? 3 : 0 ), // these are figure spaces, 3 bytes each
 			        ci->health,
 			        ( ci->team == TEAM_ALIENS )
 			          ? va( "₠%.1f", (float) ci->credit / ALIEN_CREDITS_PER_KILL )
@@ -2777,7 +2787,8 @@ static void CG_DrawDisconnect( void )
 	x = 640 - 48;
 	y = 480 - 48;
 
-	CG_DrawPic( x, y, 48, 48, trap_R_RegisterShader( "gfx/2d/net.tga" ) );
+	CG_DrawPic( x, y, 48, 48, trap_R_RegisterShader("gfx/2d/net.tga",
+							RSF_DEFAULT));
 }
 
 #define MAX_LAGOMETER_PING  900
@@ -3229,7 +3240,7 @@ void CG_DrawWeaponIcon( rectDef_t *rect, vec4_t color )
 
 	if ( !cg_weapons[ weapon ].registered )
 	{
-		Com_Printf( S_COLOR_YELLOW  "WARNING: CG_DrawWeaponIcon: weapon %d (%s) "
+		Com_Printf( S_WARNING "CG_DrawWeaponIcon: weapon %d (%s) "
 		            "is not registered\n", weapon, BG_Weapon( weapon )->name );
 		return;
 	}
@@ -3389,6 +3400,12 @@ static void CG_ScanForCrosshairEntity( void )
 			cg.crosshairBuildable = -1;
 		}
 
+		if ( cg_drawEntityInfo.integer && s->eType )
+		{
+			cg.crosshairClientNum = trace.entityNum;
+			cg.crosshairClientTime = cg.time;
+		}
+
 		return;
 	}
 
@@ -3486,9 +3503,24 @@ static void CG_DrawCrosshairNames( rectDef_t *rect, float scale, int textStyle )
 		return;
 	}
 
-	// add health from overlay info to the crosshair client name
-	name = cgs.clientinfo[ cg.crosshairClientNum ].name;
+	if( cg_drawEntityInfo.integer )
+	{
+		name = va( "(" S_COLOR_CYAN "%s" S_COLOR_WHITE "|" S_COLOR_CYAN "#%d" S_COLOR_WHITE ")",
+				Com_EntityTypeName( cg_entities[cg.crosshairClientNum].currentState.eType ), cg.crosshairClientNum );
+	}
+	else
+	{
+		if ( cg_drawCrosshairNames.integer >= 2 )
+		{
+			name = va( "%2i: %s", cg.crosshairClientNum, cgs.clientinfo[ cg.crosshairClientNum ].name );
+		}
+		else
+		{
+			name = cgs.clientinfo[ cg.crosshairClientNum ].name;
+		}
+	}
 
+	// add health from overlay info to the crosshair client name
 	if ( cg_teamOverlayUserinfo.integer &&
 	     cg.snap->ps.stats[ STAT_TEAM ] != TEAM_NONE &&
 	     cgs.teamInfoReceived &&
@@ -4097,6 +4129,10 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
 			                        borderSize );
 			break;
 
+		case CG_LOAD_OVERALL_LABEL:
+			CG_DrawOverallProgressLabel( rect, text_x, text_y, foreColor, scale, textalign, textvalign );
+			break;
+
 		case CG_LOAD_LEVELNAME:
 			CG_DrawLevelName( rect, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
 			break;
@@ -4671,7 +4707,7 @@ static void CG_Draw2D( void )
 	if ( cg.snap->ps.persistant[ PERS_SPECSTATE ] == SPECTATOR_NOT &&
 	     cg.snap->ps.stats[ STAT_HEALTH ] > 0 )
 	{
-		menu = Menus_FindByName( BG_ClassConfig(
+		menu = Menus_FindByName( BG_ClassModelConfig(
 		                           cg.predictedPlayerState.stats[ STAT_CLASS ] )->hudName );
 
 		CG_DrawBuildableStatus();

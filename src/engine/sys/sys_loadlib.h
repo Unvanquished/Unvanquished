@@ -32,7 +32,7 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#ifdef DEDICATED
+#if defined(DEDICATED) || defined(BUILD_TTY_CLIENT)
 #       ifdef _WIN32
 #               include <windows.h>
 #               define Sys_LoadLibrary(f)     (void*)LoadLibrary(f)

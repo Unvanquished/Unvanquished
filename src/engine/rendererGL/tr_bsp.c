@@ -1294,7 +1294,7 @@ R_LoadVisibility
 */
 static void R_LoadVisibility( lump_t *l )
 {
-	int  len, i, j, k;
+	int  len, i, j, k, m;
 	byte *buf;
 
 	ri.Printf( PRINT_DEVELOPER, "...loading visibility\n" );
@@ -1334,21 +1334,46 @@ static void R_LoadVisibility( lump_t *l )
 	len = s_worldData.numClusters * s_worldData.clusterBytes;
 	s_worldData.visvis = ri.Hunk_Alloc( len, h_low );
 	memcpy( s_worldData.visvis, s_worldData.vis, len );
-	for(i = 0; i < s_worldData.numClusters; i++ ) {
-		const byte *src, *src2;
+
+	for ( i = 0; i < s_worldData.numClusters; i++ )
+	{
+		const byte *src;
+		const long *src2;
 		byte *dest;
 
 		src  = s_worldData.vis + i * s_worldData.clusterBytes;
 		dest = s_worldData.visvis + i * s_worldData.clusterBytes;
 
-		for( j = 0; j < s_worldData.numClusters; j++ ) {
-			if( !(src[ j >> 3 ] & (1 << ( j & 7 ) ) ) )
+		// for each byte in the current cluster's vis data
+		for ( j = 0; j < s_worldData.clusterBytes; j++ )
+		{
+			byte bitbyte = src[ j ];
+
+			if ( !bitbyte )
+			{
 				continue;
+			}
 
-			src2 = s_worldData.vis + j * s_worldData.clusterBytes;
+			for ( k = 0; k < 8; k++ )
+			{
+				int index;
 
-			for( k = 0; k < s_worldData.clusterBytes; k++ )
-				dest[ k ] |= src2[ k ];
+				// check if this cluster ( k = ( cluster & 7 ) ) is visible from the current cluster
+				if ( ! ( bitbyte & ( 1 << k ) ) )
+				{
+					continue;
+				}
+
+				// retrieve vis data for the cluster
+				index = ( ( j << 3 ) | k );
+				src2 = ( long * ) ( s_worldData.vis + index * s_worldData.clusterBytes );
+				
+				// OR this vis data with the current cluster's
+				for ( m = 0; m < ( s_worldData.clusterBytes / sizeof( long ) ); m++ )
+				{
+					( ( long * ) dest )[ m ] |= src2[ m ];
+				}
+			}
 		}
 	}
 }
@@ -1376,7 +1401,7 @@ static shader_t *ShaderForShaderNum( int shaderNum )
 
 //  ri.Printf(PRINT_ALL, "ShaderForShaderNum: '%s'\n", dsh->shader);
 
-	shader = R_FindShader( dsh->shader, SHADER_3D_STATIC, qtrue );
+	shader = R_FindShader( dsh->shader, SHADER_3D_STATIC, RSF_DEFAULT );
 
 	// if the shader had errors, just use default shader
 	if ( shader->defaultShader )
@@ -6362,7 +6387,7 @@ static void R_LoadFogs( lump_t *l, lump_t *brushesLump, lump_t *sidesLump )
 		}
 
 		// get information from the shader for fog parameters
-		shader = R_FindShader( fogs->shader, SHADER_3D_DYNAMIC, qtrue );
+		shader = R_FindShader( fogs->shader, SHADER_3D_DYNAMIC, RSF_DEFAULT );
 
 		out->fogParms = shader->fogParms;
 
@@ -7017,7 +7042,7 @@ void R_LoadEntities( lump_t *l )
 			// check for light shader
 			else if ( !Q_stricmp( keyname, "texture" ) )
 			{
-				light->l.attenuationShader = RE_RegisterShaderLightAttenuation( value );
+				light->l.attenuationShader = RE_RegisterShader( value, RSF_LIGHT_ATTENUATION );
 			}
 			// check for rotation
 			else if ( !Q_stricmp( keyname, "rotation" ) || !Q_stricmp( keyname, "light_rotation" ) )
@@ -10288,7 +10313,7 @@ void RE_LoadWorldMap( const char *name )
 	//----(SA)  set the sun shader if there is one
 	if ( tr.sunShaderName )
 	{
-		tr.sunShader = R_FindShader( tr.sunShaderName, SHADER_3D_STATIC, qtrue );
+		tr.sunShader = R_FindShader( tr.sunShaderName, SHADER_3D_STATIC, RSF_DEFAULT );
 	}
 
 	//----(SA)  end

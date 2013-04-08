@@ -97,10 +97,12 @@ port-related hacks
 #if 1
 #ifdef WIN32
 #define Q_stricmp			stricmp
-#define Q_strncasecmp		strnicmp
+#define Q_strnicmp			strnicmp
+/*
 #else
-#define Q_stricmp			strcasecmp
+#define Q_strcasecmp		strcasecmp
 #define Q_strncasecmp		strncasecmp
+*/
 #endif
 #endif
 
@@ -1894,7 +1896,7 @@ void            TCModTranslate(tcMod_t mod, float s, float t);
 void            TCModScale(tcMod_t mod, float s, float t);
 void            TCModRotate(tcMod_t mod, float euler);
 
-qboolean        ApplySurfaceParm(char *name, int *contentFlags, int *surfaceFlags, int *compileFlags);
+qboolean        ApplySurfaceParm(const char *name, int *contentFlags, int *surfaceFlags, int *compileFlags);
 
 void            BeginMapShaderFile(const char *mapFile);
 void            WriteMapShaderFile(void);

@@ -233,10 +233,10 @@ qhandle_t trap_R_RegisterSkin( const char *name )
 }
 
 //26.
-//return re.RegisterShaderNoMip(VMA(1));
-qhandle_t trap_R_RegisterShaderNoMip( const char *name )
+//return re.RegisterShader(VMA(1));
+qhandle_t trap_R_RegisterShader( const char *name, RegisterShaderFlags_t flags )
 {
-	return syscall( UI_R_REGISTERSHADERNOMIP, name );
+	return syscall( UI_R_REGISTERSHADER, name, flags );
 }
 
 //27.

@@ -2595,7 +2595,7 @@ image_t        *R_FindImageFile( const char *name, qboolean mipmap, qboolean all
 
 	if ( ( ( width - 1 ) & width ) || ( ( height - 1 ) & height ) )
 	{
-		Com_Printf( "^1Image not power of 2 scaled: %s\n", name );
+		Com_Printf( S_ERROR "Image not power of 2 scaled: %s\n", name );
 		return NULL;
 	}
 
@@ -3074,6 +3074,10 @@ void R_DeleteTextures( void )
 			glBindTexture( GL_TEXTURE_2D, 0 );
 		}
 	}
+}
+
+void RE_SetColorGrading( qhandle_t hShader ) {
+	// color grading not supported
 }
 
 // Ridah, utility for automatically cropping and numbering a bunch of images in a directory

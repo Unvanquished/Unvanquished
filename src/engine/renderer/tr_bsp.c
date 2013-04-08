@@ -304,7 +304,7 @@ R_LoadVisibility
 */
 static void R_LoadVisibility( lump_t *l )
 {
-	int  len, i, j, k;
+	int  len, i, j, k, m;
 	byte *buf;
 
 	len = ( s_worldData.numClusters + 63 ) & ~63;
@@ -342,21 +342,46 @@ static void R_LoadVisibility( lump_t *l )
 	len = s_worldData.numClusters * s_worldData.clusterBytes;
 	s_worldData.visvis = ri.Hunk_Alloc( len, h_low );
 	memcpy( s_worldData.visvis, s_worldData.vis, len );
-	for(i = 0; i < s_worldData.numClusters; i++ ) {
-		const byte *src, *src2;
+
+	for ( i = 0; i < s_worldData.numClusters; i++ )
+	{
+		const byte *src;
+		const long *src2;
 		byte *dest;
 
 		src  = s_worldData.vis + i * s_worldData.clusterBytes;
 		dest = s_worldData.visvis + i * s_worldData.clusterBytes;
 
-		for( j = 0; j < s_worldData.numClusters; j++ ) {
-			if( !(src[ j >> 3 ] & (1 << ( j & 7 ) ) ) )
+		// for each byte in the current cluster's vis data
+		for ( j = 0; j < s_worldData.clusterBytes; j++ )
+		{
+			byte bitbyte = src[ j ];
+
+			if ( !bitbyte )
+			{
 				continue;
+			}
 
-			src2 = s_worldData.vis + j * s_worldData.clusterBytes;
+			for ( k = 0; k < 8; k++ )
+			{
+				int index;
 
-			for( k = 0; k < s_worldData.clusterBytes; k++ )
-				dest[ k ] |= src2[ k ];
+				// check if this cluster ( k = ( cluster & 7 ) ) is visible from the current cluster
+				if ( ! ( bitbyte & ( 1 << k ) ) )
+				{
+					continue;
+				}
+
+				// retrieve vis data for the cluster
+				index = ( ( j << 3 ) | k );
+				src2 = ( long * ) ( s_worldData.vis + index * s_worldData.clusterBytes );
+				
+				// OR this vis data with the current cluster's
+				for ( m = 0; m < ( s_worldData.clusterBytes / sizeof( long ) ); m++ )
+				{
+					( ( long * ) dest )[ m ] |= src2[ m ];
+				}
+			}
 		}
 	}
 }

@@ -22,6 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "g_local.h"
+#include "../../engine/qcommon/q_unicode.h"
 
 /*
 ==================
@@ -33,22 +34,41 @@ Remove color codes and non-alphanumeric characters from a string
 void G_SanitiseString( const char *in, char *out, int len )
 {
 	len--;
-
 	while ( *in && len > 0 )
 	{
+		int cp = Q_UTF8_CodePoint( in );
+		int w;
+
 		if ( Q_IsColorString( in ) )
 		{
 			in += 2; // skip color code
 			continue;
 		}
 
-		if ( isalnum( *in ) )
+		w = Q_UTF8_WidthCP( cp );
+
+		if ( Q_Unicode_IsAlphaOrIdeoOrDigit( cp ) )
 		{
-			*out++ = tolower( *in );
-			len--;
+			int wm, lc;
+
+			if ( Q_Unicode_IsUpper( cp ) )
+			{
+				cp = Q_Unicode_ToLower( cp );
+				wm = Q_UTF8_WidthCP( cp );
+				wm = MIN( len, wm );
+				memcpy( out, Q_UTF8_Encode( cp ), wm );
+			}
+			else
+			{
+				wm = MIN( len, w );
+				memcpy( out, in, wm );
+			}
+
+			out += wm;
+			len -= wm;
 		}
 
-		in++;
+		in += w;
 	}
 
 	*out = 0;
@@ -518,7 +538,7 @@ void Cmd_Give_f( gentity_t *ent )
 		give_all = qtrue;
 	}
 
-	if ( give_all || Q_stricmpn( name, "funds", 5 ) == 0 )
+	if ( give_all || Q_strnicmp( name, "funds", 5 ) == 0 )
 	{
 		float credits;
 
@@ -549,7 +569,7 @@ void Cmd_Give_f( gentity_t *ent )
 	if ( ent->client->ps.stats[ STAT_HEALTH ] <= 0 ||
 			ent->client->sess.spectatorState != SPECTATOR_NOT )
 	{
-		if ( !( give_all || Q_stricmpn( name, "funds", 5 ) == 0 ) )
+		if ( !( give_all || Q_strnicmp( name, "funds", 5 ) == 0 ) )
 		{
 			G_TriggerMenu( ent-g_entities, MN_CMD_ALIVE );
 		}
@@ -932,7 +952,7 @@ void G_LoadCensors( void )
 
 	if ( len < 0 )
 	{
-		Com_Printf( S_COLOR_RED "ERROR: Censors file %s doesn't exist\n",
+		Com_Printf( S_ERROR "Censors file %s doesn't exist\n",
 		            g_censorship.string );
 		return;
 	}
@@ -940,7 +960,7 @@ void G_LoadCensors( void )
 	if ( len == 0 || len >= sizeof( text ) - 1 )
 	{
 		trap_FS_FCloseFile( f );
-		Com_Printf( S_COLOR_RED "ERROR: Censors file %s is %s\n",
+		Com_Printf( S_ERROR "Censors file %s is %s\n",
 		            g_censorship.string, len == 0 ? "empty" : "too long" );
 		return;
 	}
@@ -983,7 +1003,7 @@ void G_LoadCensors( void )
 void G_CensorString( char *out, const char *in, int len, gentity_t *ent )
 {
 	const char *s, *m;
-	int        i;
+	int        i, ch, bytes;
 
 	if ( !numcensors || G_admin_permission( ent, ADMF_NOCENSORFLOOD ) )
 	{
@@ -1008,15 +1028,20 @@ void G_CensorString( char *out, const char *in, int len, gentity_t *ent )
 			continue;
 		}
 
-		if ( !isalnum( *in ) )
+		ch = Q_UTF8_CodePoint( in );
+
+		if ( !Q_Unicode_IsAlphaOrIdeoOrDigit( ch ) )
 		{
 			if ( len < 1 )
 			{
 				break;
 			}
 
-			*out++ = *in++;
-			len--;
+			bytes = Q_UTF8_WidthCP( ch );
+			memcpy( out, in, bytes );
+			out += bytes;
+			in += bytes;
+			len -= bytes;
 			continue;
 		}
 
@@ -1034,19 +1059,22 @@ void G_CensorString( char *out, const char *in, int len, gentity_t *ent )
 					continue;
 				}
 
-				if ( !isalnum( *s ) )
+				ch = Q_UTF8_CodePoint( s );
+				bytes = Q_UTF8_WidthCP( ch );
+
+				if ( !Q_Unicode_IsAlphaOrIdeoOrDigit( ch ) )
 				{
-					s++;
+					s += bytes;
 					continue;
 				}
 
-				if ( tolower( *s ) != *m )
+				if ( Q_Unicode_ToLower( ch ) != Q_UTF8_CodePoint( m ) )
 				{
 					break;
 				}
 
-				s++;
-				m++;
+				s += bytes;
+				m += Q_UTF8_Width( m );
 			}
 
 			// match
@@ -1054,33 +1082,17 @@ void G_CensorString( char *out, const char *in, int len, gentity_t *ent )
 			{
 				in = s;
 				m++;
-
-				while ( *m )
-				{
-					if ( len < 1 )
-					{
-						break;
-					}
-
-					*out++ = *m++;
-					len--;
-				}
-
+				bytes = strlen( m );
+				bytes = MIN( bytes, len );
+				memcpy( out, m, bytes );
+				out += bytes;
+				len -= bytes;
 				break;
 			}
 			else
 			{
-				while ( *m )
-				{
-					m++;
-				}
-
-				m++;
-
-				while ( *m )
-				{
-					m++;
-				}
+				m += strlen( m ) + 1;
+				m += strlen( m );
 			}
 		}
 
@@ -1092,8 +1104,11 @@ void G_CensorString( char *out, const char *in, int len, gentity_t *ent )
 		// no match
 		if ( i == numcensors )
 		{
-			*out++ = *in++;
-			len--;
+			bytes = Q_UTF8_WidthCP( ch );
+			memcpy( out, in, bytes );
+			out += bytes;
+			in += bytes;
+			len -= bytes;
 		}
 	}
 
@@ -1554,6 +1569,7 @@ static const struct {
 		VOTE_REMAIN, // within N/2 minutes before SD
 		VOTE_NOT_SD, // doesn't make sense during SD
 		VOTE_NO_AUTO,// don't automatically vote 'yes'
+		VOTE_ENABLE, // for special-purpose enable flags
 	}               special;
 	const vmCvar_t *specialCvar;
 	const vmCvar_t *reasonFlag; // where a reason requirement is configurable (reasonNeeded must be qtrue)
@@ -1574,7 +1590,8 @@ static const struct {
 	{ "layout",       qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
 	{ "nextmap",      qfalse, V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_nextMapVotesPercent },
 	{ "poll",         qfalse, V_ANY,    T_NONE,    qfalse,  qtrue,  &g_pollVotesPercent,        VOTE_NO_AUTO },
-	{ "spectatebots", qfalse, V_PUBLIC, T_NONE,    qfalse,  qfalse, &g_kickVotesPercent },
+	{ "kickbots",     qtrue,  V_PUBLIC, T_NONE,    qfalse,  qfalse, &g_kickVotesPercent,        VOTE_ENABLE, &g_botKickVotesAllowedThisMap },
+	{ "spectatebots", qfalse, V_PUBLIC, T_NONE,    qfalse,  qfalse, &g_kickVotesPercent,        VOTE_ENABLE, &g_botKickVotesAllowedThisMap },
 	{ NULL }
 };
 
@@ -1754,6 +1771,15 @@ void Cmd_CallVote_f( gentity_t *ent )
 
 		break;
 
+	case VOTE_ENABLE:
+		if ( !voteInfo[voteId].specialCvar->integer )
+		{
+			trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("'$1$' votes have been disabled\n") ), voteInfo[voteId].name ) );
+			return;
+		}
+
+		break;
+
 	default:;
 	}
 
@@ -1794,6 +1820,13 @@ void Cmd_CallVote_f( gentity_t *ent )
 
 		G_DecolorString( level.clients[ clientNum ].pers.netname, name, sizeof( name ) );
 		id = level.clients[ clientNum ].pers.namelog->id;
+
+		if ( g_entities[clientNum].r.svFlags & SVF_BOT )
+		{
+			trap_SendServerCommand( ent - g_entities,
+			                        va( "print_tr %s %s", QQ( N_("$1$: player is a bot\n") ), cmd ) );
+			return;
+		}
 
 		if ( voteInfo[voteId].adminImmune && G_admin_permission( g_entities + clientNum, ADMF_IMMUNITY ) )
 		{
@@ -1852,6 +1885,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		             N_("Move player '%s' to spectators"), name );
 		break;
 
+	case VOTE_BOT_KICK:
 	case VOTE_BOT_SPECTATE:
 		for ( i = 0; i < MAX_CLIENTS; ++i )
 		{
@@ -1869,8 +1903,16 @@ void Cmd_CallVote_f( gentity_t *ent )
 			return;
 		}
 
-		Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ), "bot spec all" );
-		Com_sprintf( level.voteDisplayString[ team ], sizeof( level.voteDisplayString[ team ] ), N_("Move all bots to spectators") );
+		if ( voteId == VOTE_BOT_KICK )
+		{
+			Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ), "bot del all" );
+			Com_sprintf( level.voteDisplayString[ team ], sizeof( level.voteDisplayString[ team ] ), N_("Remove all bots") );
+		}
+		else
+		{
+			Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ), "bot spec all" );
+			Com_sprintf( level.voteDisplayString[ team ], sizeof( level.voteDisplayString[ team ] ), N_("Move all bots to spectators") );
+		}
 		break;
 
 	case VOTE_MUTE:
@@ -2010,7 +2052,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 
 			trap_Cvar_VariableStringBuffer( "mapname", map, sizeof( map ) );
 
-			if ( Q_stricmp( arg, "*BUILTIN*" ) &&
+			if ( Q_stricmp( arg, S_BUILTIN_LAYOUT ) &&
 			     !trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, arg ), NULL, FS_READ ) )
 			{
 				trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("callvote: "
@@ -2087,9 +2129,8 @@ void Cmd_CallVote_f( gentity_t *ent )
 				     ( level.clients[ i ].pers.teamSelection == TEAM_NONE &&
 				       G_admin_permission( &g_entities[ i ], ADMF_SPEC_ALLCHAT ) ) )
 				{
-					trap_SendServerCommand( i, va( "print_tr %s %s", QQ( N_("$1$^7 called a team vote: ") ),
-					                               Quote( ent->client->pers.netname ) ) );
-					trap_SendServerCommand( i, va( "print_tr \"%s\"", Quote( level.voteDisplayString[ team ] ) ) );
+					trap_SendServerCommand( i, va( "print_tr %s %s %s", QQ( N_("$1$^7 called a team vote: $2t$\n") ),
+					                               Quote( ent->client->pers.netname ), Quote( level.voteDisplayString[ team ] ) ) );
 				}
 				else if ( G_admin_permission( &g_entities[ i ], ADMF_ADMINCHAT ) )
 				{
@@ -2176,36 +2217,59 @@ void Cmd_SetViewpos_f( gentity_t *ent )
 {
 	vec3_t origin, angles;
 	char   buffer[ MAX_TOKEN_CHARS ];
-	int    i;
+	int    i, entityId;
+	gentity_t* selection;
 
-	if ( trap_Argc() < 4 )
+	if ( trap_Argc() < 4 && trap_Argc() != 2 )
 	{
-		trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("usage: setviewpos <x> <y> <z> [<yaw> [<pitch>]]\n") "\"" );
+		trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("usage: setviewpos (<x> <y> <z> [<yaw> [<pitch>]] | <entitynum>)\n") "\"" );
 		return;
 	}
 
-	for ( i = 0; i < 3; i++ )
+	if(trap_Argc() == 2)
 	{
-		trap_Argv( i + 1, buffer, sizeof( buffer ) );
-		origin[ i ] = atof( buffer );
-	}
-	origin[ 2 ] -= ent->client->ps.viewheight;
+		trap_Argv( 1, buffer, sizeof( buffer ) );
+		entityId = atoi( buffer );
 
-	VectorCopy( ent->client->ps.viewangles, angles );
-	angles[ ROLL ] = 0;
-
-	if ( trap_Argc() >= 5 )
-	{
-		trap_Argv( 4, buffer, sizeof( buffer ) );
-		angles[ YAW ] = atof( buffer );
-		if ( trap_Argc() >= 6 )
+		if (entityId >= level.num_entities || entityId < MAX_CLIENTS)
 		{
-			trap_Argv( 5, buffer, sizeof( buffer ) );
-			angles[ PITCH ] = atof( buffer );
+			G_Printf("entityId %d is out of range\n", entityId);
+			return;
+		}
+		selection = &g_entities[entityId];
+		if (!selection->inuse)
+		{
+			G_Printf("entity slot %d is not in use\n", entityId);
+			return;
+		}
+
+		VectorCopy( selection->s.origin, origin );
+		VectorCopy( selection->s.angles, angles );
+	}
+	else
+	{
+		for ( i = 0; i < 3; i++ )
+		{
+			trap_Argv( i + 1, buffer, sizeof( buffer ) );
+			origin[ i ] = atof( buffer );
+		}
+		origin[ 2 ] -= ent->client->ps.viewheight;
+		VectorCopy( ent->client->ps.viewangles, angles );
+		angles[ ROLL ] = 0;
+
+		if ( trap_Argc() >= 5 )
+		{
+			trap_Argv( 4, buffer, sizeof( buffer ) );
+			angles[ YAW ] = atof( buffer );
+			if ( trap_Argc() >= 6 )
+			{
+				trap_Argv( 5, buffer, sizeof( buffer ) );
+				angles[ PITCH ] = atof( buffer );
+			}
 		}
 	}
 
-	TeleportPlayer( ent, origin, angles, 0.0f );
+	G_TeleportPlayer( ent, origin, angles, 0.0f );
 }
 
 #define AS_OVER_RT3 (( ALIENSENSE_RANGE * 0.5f ) / M_ROOT3 )
@@ -3184,7 +3248,7 @@ void Cmd_Sell_f( gentity_t *ent )
 		return;
 	}
 
-	if ( !Q_stricmpn( s, "weapon", 6 ) )
+	if ( !Q_strnicmp( s, "weapon", 6 ) )
 	{
 		weapon = ent->client->ps.stats[ STAT_WEAPON ];
 	}
@@ -3551,7 +3615,7 @@ void G_StopFollowing( gentity_t *ent )
 		BG_GetClientViewOrigin( &ent->client->ps, viewOrigin );
 		VectorCopy( ent->client->ps.viewangles, angles );
 		angles[ ROLL ] = 0;
-		TeleportPlayer( ent, viewOrigin, angles, qfalse );
+		G_TeleportPlayer( ent, viewOrigin, angles, qfalse );
 	}
 
 	CalculateRanks();
@@ -3826,7 +3890,7 @@ static void Cmd_Ignore_f( gentity_t *ent )
 
 	if ( trap_Argc() < 2 )
 	{
-		trap_SendServerCommand( ent - g_entities, va( "print_tr \"[skipnotify]"
+		trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
 		                        "%s\" %s", N_("usage: $1$ [clientNum | partial name match]\n"), cmd ) );
 		return;
 	}
@@ -3836,7 +3900,7 @@ static void Cmd_Ignore_f( gentity_t *ent )
 
 	if ( matches < 1 )
 	{
-		trap_SendServerCommand( ent - g_entities, va( "print_tr \"[skipnotify]"
+		trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
 		                        "%s\" %s %s", N_("$1$: no clients match the name '$2$'\n"), cmd, Quote( name ) ) );
 		return;
 	}
@@ -3849,13 +3913,13 @@ static void Cmd_Ignore_f( gentity_t *ent )
 			{
 				Com_ClientListAdd( &ent->client->sess.ignoreList, pids[ i ] );
 				ClientUserinfoChanged( ent->client->ps.clientNum, qfalse );
-				trap_SendServerCommand( ent - g_entities, va( "print_tr \"[skipnotify]"
+				trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
 				                        "%s\" %s", N_("ignore: added $1$^7 to your ignore list\n"),
 				                        Quote( level.clients[ pids[ i ] ].pers.netname ) ) );
 			}
 			else
 			{
-				trap_SendServerCommand( ent - g_entities, va( "print_tr \"[skipnotify]"
+				trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
 				                        "%s\" %s", N_("ignore: $1$^7 is already on your ignore list\n"),
 				                        Quote( level.clients[ pids[ i ] ].pers.netname ) ) );
 			}
@@ -3866,13 +3930,13 @@ static void Cmd_Ignore_f( gentity_t *ent )
 			{
 				Com_ClientListRemove( &ent->client->sess.ignoreList, pids[ i ] );
 				ClientUserinfoChanged( ent->client->ps.clientNum, qfalse );
-				trap_SendServerCommand( ent - g_entities, va( "print_tr \"[skipnotify]"
+				trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
 				                        "%s\" %s", N_("unignore: removed $1$^7 from your ignore list\n"),
 				                        Quote( level.clients[ pids[ i ] ].pers.netname ) ) );
 			}
 			else
 			{
-				trap_SendServerCommand( ent - g_entities, va( "print_tr \"[skipnotify]"
+				trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
 				                        "%s\" %s", N_("unignore: $1$^7 is not on your ignore list\n"),
 				                        Quote( level.clients[ pids[ i ] ].pers.netname ) )  );
 			}
@@ -4763,54 +4827,54 @@ void ClientCommand( int clientNum )
 		return;
 	}
 
-	if ( command->cmdFlags & CMD_CHEAT && !g_cheats.integer )
+	if ( (command->cmdFlags & CMD_CHEAT) && !g_cheats.integer )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_CHEAT );
 		return;
 	}
 
-	if ( command->cmdFlags & CMD_MESSAGE && ( ent->client->pers.namelog->muted ||
+	if ( (command->cmdFlags & CMD_MESSAGE) && ( ent->client->pers.namelog->muted ||
 	     G_FloodLimited( ent ) ) )
 	{
 		return;
 	}
 
-	if ( command->cmdFlags & CMD_TEAM &&
+	if ( (command->cmdFlags & CMD_TEAM) &&
 	     ent->client->pers.teamSelection == TEAM_NONE )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_TEAM );
 		return;
 	}
 
-	if ( command->cmdFlags & CMD_CHEAT_TEAM && !g_cheats.integer &&
+	if ( (command->cmdFlags & CMD_CHEAT_TEAM) && !g_cheats.integer &&
 	     ent->client->pers.teamSelection != TEAM_NONE )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_CHEAT_TEAM );
 		return;
 	}
 
-	if ( command->cmdFlags & CMD_SPEC &&
+	if ( (command->cmdFlags & CMD_SPEC) &&
 	     ent->client->sess.spectatorState == SPECTATOR_NOT )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_SPEC );
 		return;
 	}
 
-	if ( command->cmdFlags & CMD_ALIEN &&
+	if ( (command->cmdFlags & CMD_ALIEN) &&
 	     ent->client->pers.teamSelection != TEAM_ALIENS )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_ALIEN );
 		return;
 	}
 
-	if ( command->cmdFlags & CMD_HUMAN &&
+	if ( (command->cmdFlags & CMD_HUMAN) &&
 	     ent->client->pers.teamSelection != TEAM_HUMANS )
 	{
 		G_TriggerMenu( clientNum, MN_CMD_HUMAN );
 		return;
 	}
 
-	if ( command->cmdFlags & CMD_ALIVE &&
+	if ( (command->cmdFlags & CMD_ALIVE) &&
 	     ( ent->client->ps.stats[ STAT_HEALTH ] <= 0 ||
 	       ent->client->sess.spectatorState != SPECTATOR_NOT ) )
 	{

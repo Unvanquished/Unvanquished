@@ -387,7 +387,7 @@ commandDef_t;
 
 typedef struct
 {
-	qhandle_t ( *registerShaderNoMip )( const char *p );
+	qhandle_t ( *registerShader )( const char *p, RegisterShaderFlags_t flags );
 	void ( *setColor )( const vec4_t v );
 	void ( *drawHandlePic )( float x, float y, float w, float h, qhandle_t asset );
 	void ( *drawNoStretchPic ) ( float x, float y, float w, float h, qhandle_t asset );

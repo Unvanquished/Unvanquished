@@ -2929,6 +2929,10 @@ do \
 				success = qtrue;\
 			}\
 			break;\
+		case OP_NONE:\
+		case OP_NOT:\
+		case OP_BOOL:\
+			break;\
 	}\
 } while ( 0 );
 
@@ -2949,6 +2953,14 @@ do \
 		{\
 			s = qtrue;\
 		}\
+		break;\
+	case OP_NONE:\
+	case OP_LESSTHAN:\
+	case OP_LESSTHANEQUAL:\
+	case OP_GREATERTHAN:\
+	case OP_GREATERTHANEQUAL:\
+	case OP_EQUAL:\
+	case OP_NEQUAL:\
 		break;\
 	}\
 } while( 0 );

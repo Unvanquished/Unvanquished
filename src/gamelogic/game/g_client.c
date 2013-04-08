@@ -22,68 +22,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "g_local.h"
-#include "g_spawn.h"
+#include "../../engine/qcommon/q_unicode.h"
 
 // g_client.c -- client functions that don't happen every frame
 
 static const vec3_t playerMins = { -15, -15, -24 };
 static const vec3_t playerMaxs = { 15, 15, 32 };
-
-/*QUAKED info_player_deathmatch (1 0 1) (-16 -16 -24) (16 16 32) initial
-potential spawning position for deathmatch games.
-The first time a player enters the game, they will be at an 'initial' spot.
-Targets will be fired when someone spawns in on them.
-"nobots" will prevent bots from using this spot.
-"nohumans" will prevent non-bots from using this spot.
-*/
-void SP_info_player_deathmatch( gentity_t *ent )
-{
-	int i;
-
-	G_SpawnInt( "nobots", "0", &i );
-
-	if ( i )
-	{
-		ent->flags |= FL_NO_BOTS;
-	}
-
-	G_SpawnInt( "nohumans", "0", &i );
-
-	if ( i )
-	{
-		ent->flags |= FL_NO_HUMANS;
-	}
-}
-
-/*QUAKED info_player_start (1 0 0) (-16 -16 -24) (16 16 32)
-equivelant to info_player_deathmatch
-*/
-void SP_info_player_start( gentity_t *ent )
-{
-	ent->classname = "info_player_deathmatch";
-	SP_info_player_deathmatch( ent );
-}
-
-/*QUAKED info_player_intermission (1 0 1) (-16 -16 -24) (16 16 32)
-The intermission will be viewed from this point.  Target an info_notnull for the view direction.
-*/
-void SP_info_player_intermission( gentity_t *ent )
-{
-}
-
-/*QUAKED info_alien_intermission (1 0 1) (-16 -16 -24) (16 16 32)
-The intermission will be viewed from this point.  Target an info_notnull for the view direction.
-*/
-void SP_info_alien_intermission( gentity_t *ent )
-{
-}
-
-/*QUAKED info_human_intermission (1 0 1) (-16 -16 -24) (16 16 32)
-The intermission will be viewed from this point.  Target an info_notnull for the view direction.
-*/
-void SP_info_human_intermission( gentity_t *ent )
-{
-}
 
 /*
 ===============
@@ -170,7 +114,7 @@ Chooses a player start, deathmatch start, etc
 */
 gentity_t *G_SelectRandomFurthestSpawnPoint( vec3_t avoidPoint, vec3_t origin, vec3_t angles )
 {
-	gentity_t *spot;
+	gentity_t *spot = NULL;
 	vec3_t    delta;
 	float     dist;
 	float     list_dist[ 64 ];
@@ -178,9 +122,8 @@ gentity_t *G_SelectRandomFurthestSpawnPoint( vec3_t avoidPoint, vec3_t origin, v
 	int       numSpots, rnd, i, j;
 
 	numSpots = 0;
-	spot = NULL;
 
-	while ( ( spot = G_Find( spot, FOFS( classname ), "info_player_deathmatch" ) ) != NULL )
+	while ( ( spot = G_IterateEntitiesOfClass( spot, S_POS_PLAYER_SPAWN ) ) != NULL )
 	{
 		if ( SpotWouldTelefrag( spot ) )
 		{
@@ -228,7 +171,7 @@ gentity_t *G_SelectRandomFurthestSpawnPoint( vec3_t avoidPoint, vec3_t origin, v
 
 	if ( !numSpots )
 	{
-		spot = G_Find( NULL, FOFS( classname ), "info_player_deathmatch" );
+		spot = G_IterateEntitiesOfClass( NULL, S_POS_PLAYER_SPAWN );
 
 		if ( !spot )
 		{
@@ -261,12 +204,10 @@ spawned/healthy/unblocked etc.
 */
 static gentity_t *G_SelectSpawnBuildable( vec3_t preference, buildable_t buildable )
 {
-	gentity_t *search, *spot;
+	gentity_t *search = NULL;
+	gentity_t *spot = NULL;
 
-	search = spot = NULL;
-
-	while ( ( search = G_Find( search, FOFS( classname ),
-	                           BG_Buildable( buildable )->entityName ) ) != NULL )
+	while ( ( search = G_IterateEntitiesOfClass( search, BG_Buildable( buildable )->entityName ) ) != NULL )
 	{
 		if ( !search->spawned )
 		{
@@ -383,8 +324,7 @@ gentity_t *G_SelectAlienLockSpawnPoint( vec3_t origin, vec3_t angles )
 {
 	gentity_t *spot;
 
-	spot = NULL;
-	spot = G_Find( spot, FOFS( classname ), "info_alien_intermission" );
+	spot = G_PickRandomEntityOfClass( S_POS_ALIEN_INTERMISSION );
 
 	if ( !spot )
 	{
@@ -409,8 +349,7 @@ gentity_t *G_SelectHumanLockSpawnPoint( vec3_t origin, vec3_t angles )
 {
 	gentity_t *spot;
 
-	spot = NULL;
-	spot = G_Find( spot, FOFS( classname ), "info_human_intermission" );
+	spot = G_PickRandomEntityOfClass( S_POS_HUMAN_INTERMISSION );
 
 	if ( !spot )
 	{
@@ -486,7 +425,7 @@ static void SpawnCorpse( gentity_t *ent )
 		return;
 	}
 
-	body = G_Spawn();
+	body = G_NewEntity();
 
 	VectorCopy( ent->s.apos.trBase, body->s.angles );
 	body->s.eFlags = EF_DEAD;
@@ -703,7 +642,7 @@ qboolean G_IsUnnamed( const char *name )
 	length = strlen( g_unnamedNamePrefix.string );
 
 	if ( g_unnamedNumbering.integer && length &&
-	     !Q_stricmpn( testName, g_unnamedNamePrefix.string, length ) )
+	     !Q_strnicmp( testName, g_unnamedNamePrefix.string, length ) )
 	{
 		return qtrue;
 	}
@@ -793,7 +732,7 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 	int      spaces;
 	qboolean escaped;
 	qboolean invalid = qfalse;
-	qboolean haslatin = qfalse;
+	qboolean hasletter = qfalse;
 
 	//save room for trailing null byte
 	outSize--;
@@ -806,6 +745,8 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 
 	for ( ; *in; in++ )
 	{
+		int cp, w;
+
 		// don't allow leading spaces
 		if ( colorlessLen == 0 && *in == ' ' )
 		{
@@ -817,12 +758,6 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 		if ( *in >= 0 && *in < ' ' )
 		{
 			continue;
-		}
-
-		if ( ( *in >= 'A' && *in <= 'Z' ) ||
-		     ( *in >= 'a' && *in <= 'z' ) )
-		{
-			haslatin = qtrue;
 		}
 
 		// check colors
@@ -863,6 +798,13 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 			continue;
 		}
 
+		cp = Q_UTF8_CodePoint( in );
+
+		if ( Q_Unicode_IsAlphaOrIdeo( cp ) )
+		{
+			hasletter = qtrue;
+		}
+
 		// don't allow too many consecutive spaces
 		if ( *in == ' ' )
 		{
@@ -878,20 +820,24 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 			spaces = 0;
 		}
 
-		if ( len > outSize - 1 )
+		w = Q_UTF8_WidthCP( cp );
+
+		if ( len > outSize - w )
 		{
 			break;
 		}
 
-		*out++ = *in;
+		memcpy( out, in, w );
 		colorlessLen++;
-		len++;
+		len += w;
+		out += w;
+		in += w - 1; // allow for loop increment
 	}
 
 	*out = 0;
 
-	// don't allow names beginning with "[skipnotify]" because it messes up /ignore-related code
-	if ( !Q_stricmpn( p, "[skipnotify]", 12 ) )
+	// don't allow names beginning with S_SKIPNOTIFY because it messes up /ignore-related code
+	if ( !Q_strnicmp( p, S_SKIPNOTIFY, 12 ) )
 	{
 		invalid = qtrue;
 	}
@@ -909,13 +855,13 @@ static void G_ClientCleanName( const char *in, char *out, int outSize, gclient_t
 	}
 
 	// limit no. of code points
-	if ( Q_UTF8PrintStrlen( p ) > MAX_NAME_LENGTH_CP )
+	if ( Q_UTF8_PrintStrlen( p ) > MAX_NAME_LENGTH_CP )
 	{
 		invalid = qtrue;
 	}
 
 	// if something made the name bad, put them back to UnnamedPlayer
-	if ( invalid || !haslatin )
+	if ( invalid || !hasletter )
 	{
 		Q_strncpyz( p, G_UnnamedClientName( client ), outSize );
 	}
@@ -1112,17 +1058,17 @@ char *ClientUserinfoChanged( int clientNum, qboolean forceName )
 		//model details to that of the spawning class or the info change will not be
 		//registered and an axis appears instead of the player model. There is zero chance
 		//the player can spawn with the battlesuit, hence this choice.
-		Com_sprintf( buffer, MAX_QPATH, "%s/%s",  BG_ClassConfig( PCL_HUMAN_BSUIT )->modelName,
-		             BG_ClassConfig( PCL_HUMAN_BSUIT )->skinName );
+		Com_sprintf( buffer, MAX_QPATH, "%s/%s",  BG_ClassModelConfig( PCL_HUMAN_BSUIT )->modelName,
+		             BG_ClassModelConfig( PCL_HUMAN_BSUIT )->skinName );
 	}
 	else
 	{
-		Com_sprintf( buffer, MAX_QPATH, "%s/%s",  BG_ClassConfig( client->pers.classSelection )->modelName,
-		             BG_ClassConfig( client->pers.classSelection )->skinName );
+		Com_sprintf( buffer, MAX_QPATH, "%s/%s",  BG_ClassModelConfig( client->pers.classSelection )->modelName,
+		             BG_ClassModelConfig( client->pers.classSelection )->skinName );
 
 		//model segmentation
 		Com_sprintf( filename, sizeof( filename ), "models/players/%s/animation.cfg",
-		             BG_ClassConfig( client->pers.classSelection )->modelName );
+		             BG_ClassModelConfig( client->pers.classSelection )->modelName );
 
 		if ( G_NonSegModel( filename ) )
 		{
@@ -1753,7 +1699,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 	ent->s.groundEntityNum = ENTITYNUM_NONE;
 	ent->client = &level.clients[ index ];
 	ent->takedamage = teamLocal != TEAM_NONE && client->sess.spectatorState == SPECTATOR_NOT; //qtrue;
-	ent->classname = "player";
+	ent->classname = S_PLAYER_CLASSNAME;
 	if ( client->noclip )
 	{
 		client->cliprcontents = CONTENTS_BODY;
@@ -1921,7 +1867,7 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 		// fire the targets of the spawn point
 		if ( !spawn && spawnPoint )
 		{
-			G_UseTargets( spawnPoint, ent );
+			G_EventFireEntity( spawnPoint, ent, ON_SPAWN );
 		}
 
 		// select the highest weapon number available, after any
@@ -2007,7 +1953,7 @@ void ClientDisconnect( int clientNum )
 	if ( ent->client->pers.connected == CON_CONNECTED &&
 	     ent->client->sess.spectatorState == SPECTATOR_NOT )
 	{
-		tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_OUT );
+		tent = G_NewTempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_OUT );
 		tent->s.clientNum = ent->s.clientNum;
 	}
 

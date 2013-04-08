@@ -21,7 +21,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
+#ifndef BG_PUBLIC_H_
+#define BG_PUBLIC_H_
 // bg_public.h -- definitions shared by both the server game and client game modules
+//==================================================================
 
 //Unvanquished balance header
 #include "unvanquished.h"
@@ -90,13 +93,18 @@ enum
   CS_MODELS,
   CS_SOUNDS = CS_MODELS + MAX_MODELS,
   CS_SHADERS = CS_SOUNDS + MAX_SOUNDS,
-  CS_PARTICLE_SYSTEMS = CS_SHADERS + MAX_GAME_SHADERS,
-  CS_PLAYERS = CS_PARTICLE_SYSTEMS + MAX_GAME_PARTICLE_SYSTEMS,
-  CS_LOCATIONS = CS_PLAYERS + MAX_CLIENTS,
+  CS_GRADING_TEXTURES = CS_SHADERS + MAX_GAME_SHADERS,
+  CS_PARTICLE_SYSTEMS = CS_GRADING_TEXTURES + MAX_GRADING_TEXTURES,
 
+  CS_PLAYERS = CS_PARTICLE_SYSTEMS + MAX_GAME_PARTICLE_SYSTEMS,
+  CS_OBJECTIVES = CS_PLAYERS + MAX_CLIENTS,
+  CS_LOCATIONS = CS_OBJECTIVES + MAX_OBJECTIVES,
   CS_MAX = CS_LOCATIONS + MAX_LOCATIONS
 };
-// CS_MAX had better not be greater than MAX_CONFIGSTRINGS !
+
+#if CS_MAX > MAX_CONFIGSTRINGS
+#error exceeded configstrings: CS_MAX > MAX_CONFIGSTRINGS
+#endif
 
 typedef enum
 {
@@ -306,6 +314,8 @@ typedef enum
 #define EF_B_POWERED        0x0010
 #define EF_B_MARKED         0x0020
 
+// for players
+#define EF_POWER_AVAILABLE  0x0010
 #define EF_WARN_CHARGE      0x0020 // Lucifer Cannon is about to overcharge
 #define EF_WALLCLIMB        0x0040 // wall walking
 #define EF_WALLCLIMBCEILING 0x0080 // wall walking ceiling hack
@@ -970,7 +980,7 @@ typedef struct
 	char   skinName[ MAX_QPATH ];
 	float  shadowScale;
 	char   hudName[ MAX_QPATH ];
-	char   humanName[ MAX_STRING_CHARS ];
+	char   *humanName;
 
 	vec3_t mins;
 	vec3_t maxs;
@@ -981,7 +991,7 @@ typedef struct
 	int    crouchViewheight;
 	float  zOffset;
 	vec3_t shoulderOffsets;
-} classConfig_t;
+} classModelConfig_t;
 
 //stages
 typedef enum
@@ -998,10 +1008,10 @@ typedef struct
 {
 	buildable_t number;
 
-	const char  *name;
-	const char  *humanName;
-	const char  *info;
-	const char  *entityName;
+	const char *name;
+	const char *humanName;
+	const char *info;
+	const char *entityName;
 
 	trType_t    traj;
 	float       bounce;
@@ -1055,7 +1065,7 @@ typedef struct
 	float  zOffset;
 	float  oldScale;
 	float  oldOffset;
-} buildableConfig_t;
+} buildableModelConfig_t;
 
 // weapon record
 typedef struct
@@ -1150,10 +1160,9 @@ const buildableAttributes_t *BG_Buildable( buildable_t buildable );
 qboolean                    BG_BuildableAllowedInStage( buildable_t buildable,
     stage_t stage );
 
-buildableConfig_t           *BG_BuildableConfig( buildable_t buildable );
+buildableModelConfig_t      *BG_BuildableModelConfig( buildable_t buildable );
 void                        BG_BuildableBoundingBox( buildable_t buildable,
     vec3_t mins, vec3_t maxs );
-void                        BG_InitBuildableConfigs( void );
 
 const classAttributes_t     *BG_ClassByName( const char *name );
 
@@ -1161,7 +1170,7 @@ const classAttributes_t     *BG_Class( class_t pClass );
 qboolean                    BG_ClassAllowedInStage( class_t pClass,
     stage_t stage );
 
-classConfig_t               *BG_ClassConfig( class_t pClass );
+classModelConfig_t          *BG_ClassModelConfig( class_t pClass );
 
 void                        BG_ClassBoundingBox( class_t pClass, vec3_t mins,
     vec3_t maxs, vec3_t cmaxs,
@@ -1174,8 +1183,6 @@ int                         BG_ClassCanEvolveFromTo( class_t fclass,
 qboolean                  BG_Strip_ClassAllowedInStage( class_t pclass, stage_t stage );
 qboolean                  BG_AlienCanEvolve( class_t pClass, int credits, int alienStage );
 
-void                      BG_InitClassConfigs( void );
-
 const weaponAttributes_t  *BG_WeaponByName( const char *name );
 const weaponAttributes_t  *BG_Weapon( weapon_t weapon );
 qboolean                  BG_WeaponAllowedInStage( weapon_t weapon,
@@ -1187,6 +1194,18 @@ const upgradeAttributes_t *BG_Upgrade( upgrade_t upgrade );
 qboolean                  BG_UpgradeAllowedInStage( upgrade_t upgrade,
     stage_t stage );
 qboolean                  BG_Strip_UpgradeAllowedInStage( upgrade_t upgrade, stage_t stage );
+
+void                      BG_InitAllConfigs( void );
+void                      BG_UnloadAllConfigs( void );
+
+// Parsers
+qboolean                  BG_ReadWholeFile( const char *filename, char *buffer, int size);
+void                      BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t *ba );
+void                      BG_ParseBuildableModelFile( const char *filename, buildableModelConfig_t *bc );
+void                      BG_ParseClassAttributeFile( const char *filename, classAttributes_t *ca );
+void                      BG_ParseClassModelFile( const char *filename, classModelConfig_t *cc );
+void                      BG_ParseWeaponAttributeFile( const char *filename, weaponAttributes_t *wa );
+void                      BG_ParseUpgradeAttributeFile( const char *filename, upgradeAttributes_t *ua );
 
 // content masks
 #define MASK_ALL         ( -1 )
@@ -1306,5 +1325,9 @@ int cmdcmp( const void *a, const void *b );
 
 char *Quote( const char *str );
 char *Substring( const char *in, int start, int count );
+char *BG_strdup( const char *string );
 
 const char *Trans_GenderContext( gender_t gender );
+
+//==================================================================
+#endif /* BG_PUBLIC_H_ */

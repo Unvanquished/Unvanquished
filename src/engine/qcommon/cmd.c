@@ -408,27 +408,30 @@ void Cdelay_Frame( void ) {
 Cmd_Exec_f
 ===============
 */
-static void Cmd_ExecFile( char *f )
+
+static void Cmd_SetExecArgs( int startingArg )
 {
 	int i;
 
-	COM_Compress( f );
+	Cvar_Get( "arg_all", Cmd_ArgsFrom( startingArg ), CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED );
+	Cvar_Set( "arg_all", Cmd_ArgsFrom( startingArg ) );
+	Cvar_Get( "arg_count", va( "%i", Cmd_Argc() - startingArg ), CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED );
+	Cvar_Set( "arg_count", va( "%i", Cmd_Argc() - startingArg ) );
 
-	Cvar_Get( "arg_all", Cmd_ArgsFrom( 2 ), CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED );
-	Cvar_Set( "arg_all", Cmd_ArgsFrom( 2 ) );
-	Cvar_Get( "arg_count", va( "%i", Cmd_Argc() - 2 ), CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED );
-	Cvar_Set( "arg_count", va( "%i", Cmd_Argc() - 2 ) );
-
-	for ( i = Cmd_Argc() - 2; i; i-- )
+	for ( i = Cmd_Argc() - startingArg; i; i-- )
 	{
 		Cvar_Get( va( "arg_%i", i ), Cmd_Argv( i + 1 ), CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED );
 		Cvar_Set( va( "arg_%i", i ), Cmd_Argv( i + 1 ) );
 	}
-
-	Cbuf_InsertText( f );
 }
 
-void Cmd_Exec_f( void )
+static void Cmd_ExecText( char *scriptText )
+{
+	COM_Compress( scriptText );
+	Cbuf_InsertText( scriptText );
+}
+
+static qboolean Cmd_ExecFile( char *filename )
 {
 	union
 	{
@@ -437,29 +440,8 @@ void Cmd_Exec_f( void )
 	} f;
 
 	int          len;
-	char         filename[ MAX_QPATH ];
 	fileHandle_t h;
 	qboolean     success = qfalse;
-	qboolean     quiet;
-
-	quiet = !Q_stricmp( Cmd_Argv( 0 ), "execq" );
-
-	if ( Cmd_Argc() < 2 )
-	{
-		if ( quiet )
-		{
-			Com_Printf(_("execq <filename> (args) : execute a script file without notification\n"));
-		}
-		else
-		{
-			Com_Printf(_("exec <filename> (args) : execute a script file\n"));
-		}
-
-		return;
-	}
-
-	Q_strncpyz( filename, Cmd_Argv( 1 ), sizeof( filename ) );
-	COM_DefaultExtension( filename, sizeof( filename ), ".cfg" );
 
 	len = FS_SV_FOpenFileRead( filename, &h );
 
@@ -470,7 +452,7 @@ void Cmd_Exec_f( void )
 		FS_Read( f.v, len, h );
 		f.c[ len ] = 0;
 		FS_FCloseFile( h );
-		Cmd_ExecFile( f.c );
+		Cmd_ExecText( f.c );
 		Hunk_FreeTempMemory( f.v );
 	}
 	else
@@ -480,16 +462,80 @@ void Cmd_Exec_f( void )
 		if ( f.c )
 		{
 			success = qtrue;
-			Cmd_ExecFile( f.c );
+			Cmd_ExecText( f.c );
 			FS_FreeFile( f.v );
 		}
 	}
+	return success;
+}
 
-	if ( !success )
+void Cmd_Exec_f( void )
+{
+	int          len;
+	char         filename[ MAX_QPATH ];
+	qboolean     executeSilent;
+	qboolean     failSilent = qfalse;
+	int          filenameArgNum;
+
+	executeSilent = !Q_stricmp( Cmd_Argv( 0 ), "execq" );
+
+	if ( Cmd_Argc() < 2 )
 	{
-		Com_Printf( "couldn't exec %s\n", filename );
+		if ( executeSilent )
+		{
+			Com_Printf(_("execq <filename> (args) : execute a script file without notification, a shortcut for exec -q\n"));
+		}
+		else
+		{
+			Com_Printf(_("exec [-q|-f|-s] <filename> (args) : execute a script file.\n"));
+		}
+
+		return;
 	}
-	else if ( !quiet )
+
+	Q_strncpyz( filename, Cmd_Argv( 1 ), sizeof( filename ) );
+
+	if( filename[0] != '-'  || Cmd_Argc() < 3 )
+	{
+		filenameArgNum = 2;
+	}
+	else // wasn't the filename after all; we got us a parameter!
+	{
+		filenameArgNum = 3;
+
+		switch (filename[1]) {
+			case 'q':
+				executeSilent = qtrue;
+				break;
+
+			case 'f':
+				failSilent = qtrue;
+				break;
+
+			case 's':
+				executeSilent = qtrue;
+				failSilent = qtrue;
+				break;
+			default: //if we use only '-'
+				break;
+		}
+
+		Q_strncpyz( filename, Cmd_Argv( 2 ), sizeof( filename ) );
+	}
+
+	COM_DefaultExtension( filename, sizeof( filename ), ".cfg" );
+	Cmd_SetExecArgs( filenameArgNum );
+
+	if ( !Cmd_ExecFile( filename ) )
+	{
+		if( !failSilent )
+		{
+			Com_Printf( "couldn't exec %s\n", filename );
+		}
+		return;
+	}
+
+	if ( !executeSilent )
 	{
 		Com_Printf( "execing %s\n", filename );
 	}
@@ -1041,7 +1087,7 @@ Just prints the rest of the line to the console
 */
 void Cmd_Echo_f( void )
 {
-	Com_Printf( "%s\n", Cmd_Args() );
+	Com_Printf( "%s\n", Cmd_UnquoteString( Cmd_Args() ) );
 }
 
 /*
@@ -1646,7 +1692,12 @@ const char *Cmd_Cmd_FromNth( int count )
 	char *ret = cmd.cmd - 1;
 	int  i = 0, q = 0;
 
-	while ( count && *++ret )
+	if ( !count )
+	{
+		return cmd.cmd;
+	}
+
+	while ( *++ret )
 	{
 		if ( !q && *ret == ' ' )
 		{
@@ -1656,7 +1707,10 @@ const char *Cmd_Cmd_FromNth( int count )
 		if ( i && *ret != ' ' )
 		{
 			i = 0; // non-space found after space outside quotation marks
-			--count; // one word fewer to scan
+			if ( !--count ) // one word fewer to scan
+			{
+				return ret;
+			}
 		}
 
 		if ( *ret == '"' )
@@ -1757,7 +1811,7 @@ static void Tokenise( const char *text, char *textOut, qboolean tokens, qboolean
 				// copy until next space, quote or EOT, handling backslashes
 				while ( *text < 0 || ( *text > ' ' && *text != '"' ) )
 				{
-					if ( *text == '\\' && !*++text )
+					if ( *text == '\\' && (++text, (*text >= 0 && *text < ' ') ) )
 					{
 						break;
 					}
@@ -1774,7 +1828,7 @@ static void Tokenise( const char *text, char *textOut, qboolean tokens, qboolean
 
 				while ( *text && *text != '"' )
 				{
-					if ( *text == '\\' && !*++text )
+					if ( *text == '\\' && (++text, (*text >= 0 && *text < ' ') ) )
 					{
 						break;
 					}
@@ -2427,7 +2481,8 @@ void Cmd_ExecuteString( const char *text )
 	}
 
 	// send it as a server command if we are connected
-	CL_ForwardCommandToServer( text );
+	// (cvars are expanded locally)
+	CL_ForwardCommandToServer( cmd.cmd );
 }
 
 /*

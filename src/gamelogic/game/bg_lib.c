@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #ifdef Q3_VM
 
 #include "../../engine/qcommon/q_shared.h"
+#include "bg_public.h"
 
 /*-
  * Copyright (c) 1992, 1993
@@ -1675,7 +1676,7 @@ double strtod( const char *nptr, char **endptr )
 	}
 
 	// special string parsing
-	if ( Q_stricmpn( nptr, "nan", 3 ) == 0 )
+	if ( Q_strnicmp( nptr, "nan", 3 ) == 0 )
 	{
 		floatint_t nan;
 
@@ -1711,7 +1712,7 @@ double strtod( const char *nptr, char **endptr )
 		return nan.f;
 	}
 
-	if ( Q_stricmpn( nptr, "inf", 3 ) == 0 )
+	if ( Q_strnicmp( nptr, "inf", 3 ) == 0 )
 	{
 		floatint_t inf;
 		inf.ui = 0x7f800000;
@@ -1721,7 +1722,7 @@ double strtod( const char *nptr, char **endptr )
 			return inf.f;
 		}
 
-		if ( Q_stricmpn( &nptr[ 3 ], "inity", 5 ) == 0 )
+		if ( Q_strnicmp( &nptr[ 3 ], "inity", 5 ) == 0 )
 		{
 			*endptr = ( char * ) &nptr[ 8 ];
 		}
@@ -1746,7 +1747,7 @@ double strtod( const char *nptr, char **endptr )
 	}
 
 	// hex
-	if ( Q_stricmpn( nptr, "0x", 2 ) == 0 )
+	if ( Q_strnicmp( nptr, "0x", 2 ) == 0 )
 	{
 		// track if we use any digits
 		const char *s = &nptr[ 1 ], *end = s;

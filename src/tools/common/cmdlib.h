@@ -37,35 +37,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #pragma check_stack(off)
 #endif
 
-#if defined __GNUC__ || defined __clang__
-#define NORETURN __attribute__((__noreturn__))
-#define UNUSED __attribute__((__unused__))
-#define PRINTF_ARGS(f, a) __attribute__((__format__(__printf__, (f), (a))))
-#define PRINTF_LIKE(n) PRINTF_ARGS((n), (n) + 1)
-#define VPRINTF_LIKE(n) PRINTF_ARGS((n), 0)
-#define ALIGNED(a) __attribute__((__aligned__(a)))
-#define ALWAYS_INLINE INLINE __attribute__((__always_inline__))
-#elif defined ( _MSC_VER )
-#define NORETURN
-#define UNUSED
-#define PRINTF_ARGS(f, a)
-#define PRINTF_LIKE(n)
-#define VPRINTF_LIKE(n)
-#define ALIGNED( a, x ) __declspec(align(a)) x
-#define ALWAYS_INLINE __forceinline
-#define __attribute__(x)
-#define __func__ __FUNCTION__
-#else
-#define NORETURN
-#define UNUSED
-#define PRINTF_ARGS(f, a)
-#define PRINTF_LIKE(n)
-#define VPRINTF_LIKE(n)
-#define ALIGNED( a, x ) x
-#define ALWAYS_INLINE
-#define __attribute__(x)
-#define __func__
-#endif
+#include "../../include/global.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -116,7 +88,7 @@ void 			Com_sprintf(char *dest, int size, const char *fmt, ...) PRINTF_LIKE(3);
 
 char           *va(char *format, ...) PRINTF_LIKE(1);
 char           *strlower(char *in);
-int             Q_strncasecmp(const char *s1, const char *s2, int n);
+int             Q_strnicmp(const char *s1, const char *s2, int n);
 int             Q_stricmp(const char *s1, const char *s2);
 void            Q_strncpyz(char *dest, const char *src, int destsize);
 void            Q_strcat(char *dest, int destsize, const char *src);

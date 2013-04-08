@@ -1412,8 +1412,8 @@ static int CG_GetCorpseNum( class_t class )
 	char         *modelName;
 	char         *skinName;
 
-	modelName = BG_ClassConfig( class )->modelName;
-	skinName = BG_ClassConfig( class )->skinName;
+	modelName = BG_ClassModelConfig( class )->modelName;
+	skinName = BG_ClassModelConfig( class )->skinName;
 
 	for ( i = PCL_NONE + 1; i < PCL_NUM_CLASSES; i++ )
 	{
@@ -1583,29 +1583,6 @@ void CG_NewClientInfo( int clientNum )
 	// team
 	v = Info_ValueForKey( configstring, "t" );
 	newInfo.team = atoi( v );
-
-	// if this is us, execute team-specific config files
-	// the spectator config is a little unreliable because it's easy to get on
-	// to the spectator team without joining it - e.g. when a new game starts.
-	// It's not a big deal because the spec config is the least important
-	// slash used anyway.
-	// I guess it's possible for someone to change teams during a restart and
-	// for that to then be missed here. But that's rare enough that people can
-	// just exec the configs manually, I think.
-	if ( clientNum == cg.clientNum && ci->infoValid &&
-	     ci->team != newInfo.team )
-	{
-		char config[ MAX_CVAR_VALUE_STRING ];
-
-		trap_Cvar_VariableStringBuffer(
-		  va( "cg_%sConfig", BG_TeamName( newInfo.team ) ),
-		  config, sizeof( config ) );
-
-		if ( config[ 0 ] )
-		{
-			trap_SendConsoleCommand( va( "exec %s\n", Quote( config ) ) );
-		}
-	}
 
 	// model
 	v = Info_ValueForKey( configstring, "model" );
@@ -2838,7 +2815,7 @@ static qboolean CG_PlayerShadow( centity_t *cent, float *shadowPlane, class_t cl
 	// without taking a spot in the cg_marks array
 	CG_ImpactMark( cgs.media.shadowMarkShader, trace.endpos, trace.plane.normal,
 	               cent->pe.legs.yawAngle, 0.0f, 0.0f, 0.0f, alpha, qfalse,
-	               24.0f * BG_ClassConfig( class )->shadowScale, qtrue );
+	               24.0f * BG_ClassModelConfig( class )->shadowScale, qtrue );
 
 	return qtrue;
 }
@@ -2898,7 +2875,7 @@ static void CG_PlayerSplash( centity_t *cent, class_t class )
 
 	CG_ImpactMark( cgs.media.wakeMarkShader, trace.endpos, trace.plane.normal,
 	               cent->pe.legs.yawAngle, 1.0f, 1.0f, 1.0f, 1.0f, qfalse,
-	               32.0f * BG_ClassConfig( class )->shadowScale, qtrue );
+	               32.0f * BG_ClassModelConfig( class )->shadowScale, qtrue );
 }
 
 /*
@@ -3295,7 +3272,12 @@ void CG_Player( centity_t *cent )
 			body.skeleton = torsoSkeleton;
 			if ( torsoSkeleton.numBones != legsSkeleton.numBones )
 			{
-				CG_Error( "cent->pe.legs.skeleton.numBones != cent->pe.torso.skeleton.numBones" );
+
+				// seems only to happen when switching from an MD3 model to an MD5 model
+				// while spectating (switching between players on the human team)
+				// - don't treat as fatal, but doing so will (briefly?) cause rendering
+				// glitches if chasing; also, brief spam
+				CG_Printf( "[skipnotify]WARNING: cent->pe.legs.skeleton.numBones != cent->pe.torso.skeleton.numBones\n" );
 			}
 
 			// combine legs and torso skeletons
@@ -3522,7 +3504,7 @@ void CG_Player( centity_t *cent )
 	}
 
 	//rescale the model
-	scale = BG_ClassConfig( class )->modelScale;
+	scale = BG_ClassModelConfig( class )->modelScale;
 
 	if ( scale != 1.0f )
 	{
@@ -3534,7 +3516,7 @@ void CG_Player( centity_t *cent )
 	}
 
 	//offset on the Z axis if required
-	VectorMA( legs.origin, BG_ClassConfig( class )->zOffset, surfNormal, legs.origin );
+	VectorMA( legs.origin, BG_ClassModelConfig( class )->zOffset, surfNormal, legs.origin );
 	VectorCopy( legs.origin, legs.lightingOrigin );
 	VectorCopy( legs.origin, legs.oldorigin );  // don't positionally lerp at all
 
@@ -3804,11 +3786,11 @@ void CG_Corpse( centity_t *cent )
 	VectorCopy( origin, legs.lightingOrigin );
 	legs.shadowPlane = shadowPlane;
 	legs.renderfx = renderfx;
-	legs.origin[ 2 ] += BG_ClassConfig( es->clientNum )->zOffset;
+	legs.origin[ 2 ] += BG_ClassModelConfig( es->clientNum )->zOffset;
 	VectorCopy( legs.origin, legs.oldorigin );  // don't positionally lerp at all
 
 	//rescale the model
-	scale = BG_ClassConfig( es->clientNum )->modelScale;
+	scale = BG_ClassModelConfig( es->clientNum )->modelScale;
 
 	if ( scale != 1.0f && !ci->md5 )
 	{

@@ -195,10 +195,6 @@ void R_FogOn( void )
 		return;
 	}
 
-//  if(r_uiFullScreen->integer) {   // don't fog in the menu
-//      R_FogOff();
-//      return;
-//  }
 
 	if ( !r_wolffog->integer )
 	{
@@ -2121,6 +2117,8 @@ void R_RenderView( viewParms_t *parms )
 	R_GenerateDrawSurfs();
 
 	R_SortDrawSurfs( tr.refdef.drawSurfs + firstDrawSurf, tr.refdef.numDrawSurfs - firstDrawSurf );
+
+	R_AddRunVisTestsCmd( tr.refdef.visTests, tr.refdef.numVisTests );
 
 	// draw main system development information (surface outlines, etc)
 	R_DebugGraphics();

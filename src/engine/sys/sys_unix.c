@@ -53,7 +53,7 @@ Maryland 20850 USA.
 #include <fenv.h>
 
 
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 #include <SDL.h>
 #include <SDL_syswm.h>
 #endif
@@ -178,7 +178,7 @@ Sys_GetClipboardData
 ==================
 */
 #ifndef MACOS_X
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 static struct {
 	Display *display;
 	Window  window;
@@ -190,7 +190,7 @@ static struct {
 
 char *Sys_GetClipboardData( clipboard_t clip )
 {
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 	// derived from SDL clipboard code (http://hg.assembla.com/SDL_Clipboard)
 	Window        owner;
 	Atom          selection;
@@ -341,6 +341,24 @@ Sys_Dirname
 char *Sys_Dirname( char *path )
 {
 	return dirname( path );
+}
+
+/*
+==============
+Sys_FOpen
+==============
+*/
+FILE *Sys_FOpen( const char *ospath, const char *mode )
+{
+	struct stat buf;
+
+	// check if path exists and is a directory
+	if ( !stat( ospath, &buf ) && S_ISDIR( buf.st_mode ) )
+	{
+		return NULL;
+	}
+
+	return fopen( ospath, mode );
 }
 
 /*
@@ -723,7 +741,7 @@ void Sys_ErrorDialog( const char *error )
 
 	Sys_Print( va( "%s\n", error ) );
 
-#ifndef DEDICATED
+#if !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 	// We may have grabbed input devices. Need to release.
 	if ( SDL_WasInit( SDL_INIT_VIDEO ) )
 	{
@@ -1012,7 +1030,7 @@ dialogResult_t Sys_Dialog( dialogType_t type, const char *message, const char *t
 		break;
 	}
 
-	Com_DPrintf( S_COLOR_YELLOW "WARNING: failed to show a dialog\n" );
+	Com_DPrintf( S_WARNING "failed to show a dialog\n" );
 	return DR_OK;
 }
 
@@ -1097,7 +1115,7 @@ Sys_IsNumLockDown
 */
 qboolean Sys_IsNumLockDown( void )
 {
-#if !defined(MACOS_X) && !defined(DEDICATED)
+#if !defined(MACOS_X) && !defined(DEDICATED) && !defined(BUILD_TTY_CLIENT)
 	Display        *dpy = XOpenDisplay(":0");
 	XKeyboardState x;
 

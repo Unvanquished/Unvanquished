@@ -80,6 +80,11 @@ extern "C" {
 
 //#define USE_BSP_CLUSTERSURFACE_MERGING 1
 
+// visibility tests: check if a 3D-point is visible
+// results may be delayed, but for visual effect like flares this
+// shouldn't matter
+#define MAX_VISTESTS          256
+
 	typedef enum
 	{
 		DS_DISABLED, // traditional Doom 3 style rendering
@@ -110,6 +115,9 @@ extern "C" {
 #define REF_CUBEMAP_SIZE       32
 #define REF_CUBEMAP_STORE_SIZE 1024
 #define REF_CUBEMAP_STORE_SIDE ( REF_CUBEMAP_STORE_SIZE / REF_CUBEMAP_SIZE )
+
+#define REF_COLORGRADEMAP_SIZE 16
+#define REF_COLORGRADEMAP_STORE_SIZE ( REF_COLORGRADEMAP_SIZE * REF_COLORGRADEMAP_SIZE * REF_COLORGRADEMAP_SIZE )
 
 	typedef enum
 	{
@@ -460,7 +468,8 @@ extern "C" {
 	  IF_RGBA16 = BIT( 15 ),
 	  IF_RGBE = BIT( 16 ),
 	  IF_ALPHATEST = BIT( 17 ),
-	  IF_DISPLACEMAP = BIT( 18 )
+	  IF_DISPLACEMAP = BIT( 18 ),
+	  IF_NOLIGHTSCALE = BIT( 19 )
 	};
 
 	typedef enum
@@ -2463,6 +2472,9 @@ extern "C" {
 #if defined( COMPAT_ET )
 		glfog_t glFog; // (SA) added (needed to pass fog infos into the portal sky scene)
 #endif
+
+		int                    numVisTests;
+		struct visTest_s       **visTests;
 	} trRefdef_t;
 
 //=================================================================================
@@ -3734,6 +3746,17 @@ extern "C" {
 		trRefEntity_t     entity2D; // currentEntity will point at this when doing 2D rendering
 	} backEndState_t;
 
+	typedef struct visTest_s
+	{
+		vec3_t            position;
+		float             depthAdjust; // move position this distance to camera
+		float             area; // size of the quad used to test vis
+		GLuint            hQuery, hQueryRef;
+		qboolean          registered;
+		qboolean          running;
+		float             lastResult;
+	} visTest_t;
+
 	typedef struct
 	{
 		vec3_t  origin;
@@ -3827,6 +3850,8 @@ extern "C" {
 		image_t *charsetImage;
 		image_t *grainImage;
 		image_t *vignetteImage;
+		image_t *colorGradeImage;
+		GLuint   colorGradePBO;
 
 		// framebuffer objects
 		FBO_t *geometricRenderFBO; // is the G-Buffer for deferred shading
@@ -3955,6 +3980,9 @@ extern "C" {
 		int           numTables;
 		shaderTable_t *shaderTables[ MAX_SHADER_TABLES ];
 
+		int           numVisTests;
+		visTest_t     *visTests[ MAX_VISTESTS ];
+
 		float         sinTable[ FUNCTABLE_SIZE ];
 		float         squareTable[ FUNCTABLE_SIZE ];
 		float         triangleTable[ FUNCTABLE_SIZE ];
@@ -4047,6 +4075,7 @@ extern "C" {
 	extern cvar_t *r_heatHazeFix;
 	extern cvar_t *r_noMarksOnTrisurfs;
 	extern cvar_t *r_recompileShaders;
+	extern cvar_t *r_lazyShaders;
 
 	extern cvar_t *r_norefresh; // bypasses the ref rendering
 	extern cvar_t *r_drawentities; // disable/enable entity rendering
@@ -4109,8 +4138,6 @@ extern "C" {
 	extern cvar_t *r_halfLambertLighting;
 	extern cvar_t *r_rimLighting;
 	extern cvar_t *r_rimExponent;
-
-	extern cvar_t *r_uiFullScreen; // ui is running fullscreen
 
 	extern cvar_t *r_logFile; // number of frames to emit GL logs
 
@@ -4497,6 +4524,7 @@ extern "C" {
 
 	void    R_InitFogTable( void );
 	float   R_FogFactor( float s, float t );
+	void    RE_SetColorGrading( qhandle_t hShader );
 
 	/*
 	====================================================================
@@ -4505,13 +4533,12 @@ extern "C" {
 
 	====================================================================
 	*/
-	qhandle_t RE_RegisterShader( const char *name );
-	qhandle_t RE_RegisterShaderNoMip( const char *name );
-	qhandle_t RE_RegisterShaderLightAttenuation( const char *name );
-	qhandle_t RE_RegisterShaderFromImage( const char *name, image_t *image, qboolean mipRawImage );
+	qhandle_t RE_RegisterShader( const char *name, RegisterShaderFlags_t flags );
+	qhandle_t RE_RegisterShaderFromImage( const char *name, image_t *image );
 	qboolean  RE_LoadDynamicShader( const char *shadername, const char *shadertext );
 
-	shader_t  *R_FindShader( const char *name, shaderType_t type, qboolean mipRawImage );
+	shader_t  *R_FindShader( const char *name, shaderType_t type,
+				 RegisterShaderFlags_t flags );
 	shader_t  *R_GetShaderByHandle( qhandle_t hShader );
 	shader_t  *R_FindShaderByName( const char *name );
 	void      R_InitShaders( void );
@@ -4617,6 +4644,7 @@ extern "C" {
 #if !defined( USE_D3D10 )
 	void                    GLSL_InitGPUShaders( void );
 	void                    GLSL_ShutdownGPUShaders( void );
+	void                    GLSL_FinishGPUShaders( void );
 
 #endif
 
@@ -4901,6 +4929,12 @@ extern "C" {
 	void RE_SaveViewParms( void );
 	void RE_RestoreViewParms( void );
 
+	qhandle_t RE_RegisterVisTest( void );
+	void RE_AddVisTestToScene( qhandle_t hTest, vec3_t pos,
+				   float depthAdjust, float area );
+	float RE_CheckVisibility( qhandle_t hTest );
+	void RE_UnregisterVisTest( qhandle_t hTest );
+	void R_ShutdownVisTests( void );
 	/*
 	=============================================================
 
@@ -5083,6 +5117,15 @@ extern "C" {
 		int     h;
 	} renderToTextureCommand_t;
 
+	typedef struct
+	{
+		int         commandId;
+		trRefdef_t  refdef;
+		viewParms_t viewParms;
+		visTest_t   **visTests;
+		int         numVisTests;
+	} runVisTestsCommand_t;
+
 	typedef enum
 	{
 	  SSF_TGA,
@@ -5126,6 +5169,7 @@ extern "C" {
 	  RC_STRETCH_PIC_GRADIENT, // (SA) added
 	  RC_DRAW_VIEW,
 	  RC_DRAW_BUFFER,
+	  RC_RUN_VISTESTS,
 	  RC_SWAP_BUFFERS,
 	  RC_SCREENSHOT,
 	  RC_VIDEOFRAME,
@@ -5158,6 +5202,8 @@ extern "C" {
 		decalProjector_t    decalProjectors[ MAX_DECAL_PROJECTORS ];
 		srfDecal_t          decals[ MAX_DECALS ];
 
+		visTest_t           *visTests[ MAX_VISTESTS ];
+
 		renderCommandList_t commands;
 	} backEndData_t;
 
@@ -5176,6 +5222,7 @@ extern "C" {
 	void                                R_AddDrawViewCmd( void );
 
 	void                                RE_SetColor( const float *rgba );
+	void                                R_AddRunVisTestsCmd( visTest_t **visTests, int numVisTests );
 	void                                RE_SetClipRegion( const float *region );
 	void                                RE_StretchPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader );
 	void                                RE_RotatedPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, qhandle_t hShader, float angle );  // NERVE - SMF

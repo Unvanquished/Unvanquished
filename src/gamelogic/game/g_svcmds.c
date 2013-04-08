@@ -1,23 +1,34 @@
 /*
 ===========================================================================
-Copyright (C) 1999-2005 Id Software, Inc.
-Copyright (C) 2000-2009 Darklegion Development
 
-This file is part of Daemon.
+Daemon GPL Source Code
+Copyright (C) 2012 Unvanquished Developers
 
-Daemon is free software; you can redistribute it
-and/or modify it under the terms of the GNU General Public License as
-published by the Free Software Foundation; either version 2 of the License,
-or (at your option) any later version.
+This file is part of the Daemon GPL Source Code (Daemon Source Code).
 
-Daemon is distributed in the hope that it will be
-useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+Daemon Source Code is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Daemon Source Code is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Daemon; if not, write to the Free Software
-Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
+
+In addition, the Daemon Source Code is also subject to certain additional terms.
+You should have received a copy of these additional terms immediately following the
+terms and conditions of the GNU General Public License which accompanied the Daemon
+Source Code.  If not, please request a copy in writing from id Software at the address
+below.
+
+If you have questions concerning this license or the applicable additional terms, you
+may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville,
+Maryland 20850 USA.
+
 ===========================================================================
 */
 
@@ -25,123 +36,218 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "g_local.h"
 
+#define IS_NON_NULL_VEC3(vec3tor) (vec3tor[0] || vec3tor[1] || vec3tor[2])
+
+void Svcmd_EntityFire_f( void )
+{
+	char argument[ MAX_STRING_CHARS ];
+	int  entityNum;
+	gentity_t *selection;
+	gentityCall_t call;
+	gentityCallDefinition_t callDefinition = { NULL, ON_DEFAULT, NULL, NULL, ECA_DEFAULT };
+
+	if ( trap_Argc() < 2 || trap_Argc() > 3 )
+	{
+		G_Printf( "usage: entityFire <entityNum> [<action>]\n" );
+		return;
+	}
+
+	trap_Argv( 1, argument, sizeof( argument ) );
+	entityNum = atoi( argument );
+
+	if ( entityNum >= level.num_entities || entityNum < MAX_CLIENTS )
+	{
+		G_Printf( "invalid entityId %d\n", entityNum );
+		return;
+	}
+
+	selection = &g_entities[entityNum];
+
+	if (!selection->inuse)
+	{
+		G_Printf("entity slot %d is not in use\n", entityNum);
+		return;
+	}
+
+	if( trap_Argc() >= 3 )
+	{
+		trap_Argv( 2, argument, sizeof( argument ) );
+		callDefinition.action = argument;
+		callDefinition.actionType = G_GetCallActionTypeFor( callDefinition.action );
+	}
+
+	G_Printf( "firing %s:%s\n", etos( selection ), callDefinition.action ? callDefinition.action : "default" );
+
+	if(selection->names[0])
+		callDefinition.name = selection->names[0];
+
+	call.definition = &callDefinition;
+	call.caller = &g_entities[ ENTITYNUM_NONE ];
+	call.activator = &g_entities[ ENTITYNUM_NONE ] ;
+
+	G_CallEntity(selection, &call);
+}
+
+
+STATIC_INLINE void PrintEntityOverviewLine( gentity_t *entity )
+{
+	G_Printf( "%3i: %15s/" S_COLOR_CYAN "%-24s" S_COLOR_WHITE "%s%s\n",
+			entity->s.number, Com_EntityTypeName( entity->s.eType ), entity->classname,
+			entity->names[0] ? entity->names[0] : "", entity->names[1] ? " …" : "");
+}
+
+/*
+===================
+Svcmd_EntityShow_f
+===================
+*/
+void Svcmd_EntityShow_f( void )
+{
+	int       entityNum;
+	int       lastTargetIndex, targetIndex;
+	gentity_t *selection;
+	gentity_t *possibleTarget = NULL;
+	char argument[ 6 ];
+
+
+	if (trap_Argc() != 2)
+	{
+		G_Printf("usage: entityShow <entityId>\n");
+		return;
+	}
+
+	trap_Argv( 1, argument, sizeof( argument ) );
+	entityNum = atoi( argument );
+
+	if (entityNum >= level.num_entities || entityNum < MAX_CLIENTS)
+	{
+		G_Printf("entityId %d is out of range\n", entityNum);
+		return;
+	}
+
+	selection = &g_entities[entityNum];
+
+	if (!selection->inuse)
+	{
+		G_Printf("entity slot %d is unused/free\n", entityNum);
+		return;
+	}
+
+	G_Printf( "⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼\n" );
+	G_Printf( S_COLOR_CYAN "#%3i" S_COLOR_WHITE ": %16s", entityNum, Com_EntityTypeName( selection->s.eType ) );
+	if (IS_NON_NULL_VEC3(selection->s.origin))
+	{
+		G_Printf("%26s", vtos( selection->s.origin ) );
+	}
+	G_Printf( "\n⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼⎼\n" );
+	G_Printf( "Classname: " S_COLOR_CYAN "%s" S_COLOR_WHITE "\n", selection->classname );
+	G_Printf( "Capabilities:%s%s%s%s%s%s%s\n\n",
+			selection->act ? " acts" : "",
+			selection->think ? " thinks" : "",
+			selection->pain ? " pains" : "",
+			selection->die ? " dies" : "",
+			selection->reset ? " resets" : "",
+			selection->touch ? " touchable" : "",
+			selection->use ? " usable" : "");
+	if (selection->names[0])
+	{
+		G_Printf( "Names: ");
+		G_PrintEntityNameList( selection );
+	}
+
+	G_Printf("State: %s\n", selection->enabled ? "enabled" : "disabled");
+
+	if (selection->groupName)
+	{
+		G_Printf("Member of Group: %s%s\n", selection->groupName, !selection->groupMaster ? " [master]" : "");
+	}
+
+	G_Printf( "\n");
+
+	if(selection->targetCount)
+	{
+		G_Printf( "Aims at\n");
+
+		while ((possibleTarget = G_IterateTargets(possibleTarget, &targetIndex, selection)) != NULL )
+		{
+			G_Printf(" • %s %s\n", etos( possibleTarget ), vtos( possibleTarget->s.origin));
+		}
+		G_Printf( "\n");
+	}
+
+	if(selection->callTargetCount)
+	{
+		lastTargetIndex = -1;
+		while ((possibleTarget = G_IterateCallEndpoints(possibleTarget, &targetIndex, selection)) != NULL )
+		{
+
+			if(lastTargetIndex != targetIndex)
+			{
+				G_Printf("Calls %s \"%s:%s\"\n",
+						selection->calltargets[targetIndex].event ? selection->calltargets[targetIndex].event : "onUnknown",
+						selection->calltargets[targetIndex].name,
+						selection->calltargets[targetIndex].action ? selection->calltargets[targetIndex].action : "default");
+				lastTargetIndex = targetIndex;
+			}
+
+			G_Printf(" • %s", etos(possibleTarget));
+			if(possibleTarget->names[1])
+			{
+				G_Printf(" using \"%s\" ∈ ", selection->calltargets[targetIndex].name);
+				G_PrintEntityNameList( possibleTarget );
+			}
+			G_Printf("\n");
+		}
+	}
+	G_Printf( "\n" );
+}
+
 /*
 ===================
 Svcmd_EntityList_f
 ===================
 */
+
 void  Svcmd_EntityList_f( void )
 {
-	int       e;
+	int       entityNum;
+	int i;
 	int currentEntityCount;
-	gentity_t *check;
+	gentity_t *displayedEntity;
+	char* filter;
 
-	check = g_entities;
+	displayedEntity = g_entities;
 
-	for ( e = 0, currentEntityCount = 0; e < level.num_entities; e++, check++ )
+	if(trap_Argc() > 1)
 	{
-		if ( !check->inuse )
+		filter = ConcatArgs( 1 );
+	}
+	else
+	{
+		filter = NULL;
+	}
+
+	for ( entityNum = 0, currentEntityCount = 0; entityNum < level.num_entities; entityNum++, displayedEntity++ )
+	{
+		if ( !displayedEntity->inuse )
 		{
 			continue;
 		}
-
 		currentEntityCount++;
 
-		G_Printf( "%3i:", e );
-
-		switch ( check->s.eType )
+		if(filter && !Com_Filter(filter, displayedEntity->classname, qfalse) )
 		{
-			case ET_GENERAL:
-				G_Printf( "ET_GENERAL          " );
-				break;
-
-			case ET_PLAYER:
-				G_Printf( "ET_PLAYER           " );
-				break;
-
-			case ET_ITEM:
-				G_Printf( "ET_ITEM             " );
-				break;
-
-			case ET_BUILDABLE:
-				G_Printf( "ET_BUILDABLE        " );
-				break;
-
-			case ET_LOCATION:
-				G_Printf( "ET_LOCATION         " );
-				break;
-
-			case ET_MISSILE:
-				G_Printf( "ET_MISSILE          " );
-				break;
-
-			case ET_MOVER:
-				G_Printf( "ET_MOVER            " );
-				break;
-
-			case ET_BEAM:
-				G_Printf( "ET_BEAM             " );
-				break;
-
-			case ET_PORTAL:
-				G_Printf( "ET_PORTAL           " );
-				break;
-
-			case ET_SPEAKER:
-				G_Printf( "ET_SPEAKER          " );
-				break;
-
-			case ET_PUSH_TRIGGER:
-				G_Printf( "ET_PUSH_TRIGGER     " );
-				break;
-
-			case ET_TELEPORT_TRIGGER:
-				G_Printf( "ET_TELEPORT_TRIGGER " );
-				break;
-
-			case ET_INVISIBLE:
-				G_Printf( "ET_INVISIBLE        " );
-				break;
-
-			case ET_GRAPPLE:
-				G_Printf( "ET_GRAPPLE          " );
-				break;
-
-			case ET_CORPSE:
-				G_Printf( "ET_CORPSE           " );
-				break;
-
-			case ET_PARTICLE_SYSTEM:
-				G_Printf( "ET_PARTICLE_SYSTEM  " );
-				break;
-
-			case ET_ANIMMAPOBJ:
-				G_Printf( "ET_ANIMMAPOBJ       " );
-				break;
-
-			case ET_MODELDOOR:
-				G_Printf( "ET_MODELDOOR        " );
-				break;
-
-			case ET_LIGHTFLARE:
-				G_Printf( "ET_LIGHTFLARE       " );
-				break;
-
-			case ET_LEV2_ZAP_CHAIN:
-				G_Printf( "ET_LEV2_ZAP_CHAIN   " );
-				break;
-
-			default:
-				G_Printf( "%-3i                 ", check->s.eType );
-				break;
+			for (i = 0; i < MAX_ENTITY_ALIASES && displayedEntity->names[i]; ++i)
+			{
+				if( Com_Filter(filter, displayedEntity->names[i], qfalse) )
+				{
+					PrintEntityOverviewLine( displayedEntity );
+					break;
+				}
+			}
+			continue;
 		}
-
-		if ( check->classname )
-		{
-			G_Printf( "%s", check->classname );
-		}
-
-		G_Printf( "\n" );
+		PrintEntityOverviewLine( displayedEntity );
 	}
 
 	G_Printf( "A total of %i entities are currently in use.\n", currentEntityCount);
@@ -338,6 +444,7 @@ static void Svcmd_Evacuation_f( void )
 	trap_SendServerCommand( -1, "print_tr \"" N_("Evacuation ordered\n") "\"" );
 	level.lastWin = TEAM_NONE;
 	trap_SetConfigstring( CS_WINNER, "Evacuation" );
+	G_notify_sensor_end( TEAM_NONE );
 	LogExit( "Evacuation." );
 	G_MapLog_Result( 'd' );
 }
@@ -614,7 +721,9 @@ static const struct svcmd
 	{ "cp",                 qtrue,  Svcmd_CenterPrint_f          },
 	{ "dumpuser",           qfalse, Svcmd_DumpUser_f             },
 	{ "eject",              qfalse, Svcmd_EjectClient_f          },
+	{ "entityFire",         qfalse, Svcmd_EntityFire_f           },
 	{ "entityList",         qfalse, Svcmd_EntityList_f           },
+	{ "entityShow",         qfalse, Svcmd_EntityShow_f           },
 	{ "evacuation",         qfalse, Svcmd_Evacuation_f           },
 	{ "forceTeam",          qfalse, Svcmd_ForceTeam_f            },
 	{ "game_memory",        qfalse, BG_MemoryInfo                },

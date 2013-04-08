@@ -76,7 +76,7 @@ typedef enum {
 
 static float G_MissileTimePowerReduce( gentity_t *self, int fullPower, int halfLife, powerReduce_t type )
 {
-	int lifetime = level.time - self->startTime;
+	int lifetime = level.time - self->creationTime;
 	float travelled;
 	float divider = 1;
 
@@ -108,7 +108,8 @@ static float G_MissileTimePowerReduce( gentity_t *self, int fullPower, int halfL
 		divider = MAX( 0.0f, divider );
 		break;
 
-	case PR_END:; // compiler, do shut up :-)
+	case PR_END:
+		break;
 	}
 
 	return divider;
@@ -186,8 +187,6 @@ void G_ExplodeMissile( gentity_t *ent )
 	trap_LinkEntity( ent );
 }
 
-void AHive_ReturnToHive( gentity_t *self );
-
 /*
 ================
 G_MissileImpact
@@ -258,7 +257,7 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 		{
 			if ( !ent->parent )
 			{
-				G_Printf( S_COLOR_YELLOW "WARNING: hive entity has no parent in G_MissileImpact\n" );
+				G_Printf( S_WARNING "hive entity has no parent in G_MissileImpact\n" );
 			}
 			else
 			{
@@ -383,7 +382,7 @@ void G_RunMissile( gentity_t *ent )
 
 	if ( tr.fraction < 1.0f )
 	{
-		if ( !ent->pointAgainstWorld || tr.contents & CONTENTS_BODY )
+		if ( !ent->pointAgainstWorld || (tr.contents & CONTENTS_BODY) )
 		{
 			// We hit an entity or we don't care
 			impact = qtrue;
@@ -466,7 +465,7 @@ gentity_t *fire_flamer( gentity_t *self, vec3_t start, vec3_t dir )
 	gentity_t *bolt;
 	vec3_t    pvel;
 
-	bolt = G_Spawn();
+	bolt = G_NewEntity();
 	bolt->classname = "flame";
 	bolt->pointAgainstWorld = qfalse;
 	bolt->nextthink = level.time + FLAMER_LIFETIME;
@@ -483,7 +482,7 @@ gentity_t *fire_flamer( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->methodOfDeath = MOD_FLAMER;
 	bolt->splashMethodOfDeath = MOD_FLAMER_SPLASH;
 	bolt->clipmask = MASK_SHOT;
-	bolt->target_ent = NULL;
+	bolt->target = NULL;
 	bolt->r.mins[ 0 ] = bolt->r.mins[ 1 ] = bolt->r.mins[ 2 ] = -FLAMER_SIZE;
 	bolt->r.maxs[ 0 ] = bolt->r.maxs[ 1 ] = bolt->r.maxs[ 2 ] = FLAMER_SIZE;
 
@@ -495,7 +494,6 @@ gentity_t *fire_flamer( gentity_t *self, vec3_t start, vec3_t dir )
 	SnapVector( bolt->s.pos.trDelta );  // save net bandwidth
 
 	VectorCopy( start, bolt->r.currentOrigin );
-	bolt->startTime = level.time; // for power fall-off
 
 	return bolt;
 }
@@ -512,7 +510,7 @@ gentity_t *fire_blaster( gentity_t *self, vec3_t start, vec3_t dir )
 {
 	gentity_t *bolt;
 
-	bolt = G_Spawn();
+	bolt = G_NewEntity();
 	bolt->classname = "blaster";
 	bolt->pointAgainstWorld = qtrue;
 	bolt->nextthink = level.time + 10000;
@@ -529,7 +527,7 @@ gentity_t *fire_blaster( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->methodOfDeath = MOD_BLASTER;
 	bolt->splashMethodOfDeath = MOD_BLASTER;
 	bolt->clipmask = MASK_SHOT;
-	bolt->target_ent = NULL;
+	bolt->target = NULL;
 	bolt->r.mins[ 0 ] = bolt->r.mins[ 1 ] = bolt->r.mins[ 2 ] = -BLASTER_SIZE;
 	bolt->r.maxs[ 0 ] = bolt->r.maxs[ 1 ] = bolt->r.maxs[ 2 ] = BLASTER_SIZE;
 
@@ -556,7 +554,7 @@ gentity_t *fire_pulseRifle( gentity_t *self, vec3_t start, vec3_t dir )
 {
 	gentity_t *bolt;
 
-	bolt = G_Spawn();
+	bolt = G_NewEntity();
 	bolt->classname = "pulse";
 	bolt->pointAgainstWorld = qtrue;
 	bolt->nextthink = level.time + 10000;
@@ -573,7 +571,7 @@ gentity_t *fire_pulseRifle( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->methodOfDeath = MOD_PRIFLE;
 	bolt->splashMethodOfDeath = MOD_PRIFLE;
 	bolt->clipmask = MASK_SHOT;
-	bolt->target_ent = NULL;
+	bolt->target = NULL;
 	bolt->r.mins[ 0 ] = bolt->r.mins[ 1 ] = bolt->r.mins[ 2 ] = -PRIFLE_SIZE;
 	bolt->r.maxs[ 0 ] = bolt->r.maxs[ 1 ] = bolt->r.maxs[ 2 ] = PRIFLE_SIZE;
 
@@ -584,7 +582,6 @@ gentity_t *fire_pulseRifle( gentity_t *self, vec3_t start, vec3_t dir )
 	SnapVector( bolt->s.pos.trDelta );  // save net bandwidth
 
 	VectorCopy( start, bolt->r.currentOrigin );
-	bolt->startTime = level.time; // for power fall-off
 
 	return bolt;
 }
@@ -603,7 +600,7 @@ gentity_t *fire_luciferCannon( gentity_t *self, vec3_t start, vec3_t dir,
 	gentity_t *bolt;
 	float     charge;
 
-	bolt = G_Spawn();
+	bolt = G_NewEntity();
 	bolt->classname = "lcannon";
 	bolt->pointAgainstWorld = qtrue;
 
@@ -629,7 +626,7 @@ gentity_t *fire_luciferCannon( gentity_t *self, vec3_t start, vec3_t dir,
 	bolt->methodOfDeath = MOD_LCANNON;
 	bolt->splashMethodOfDeath = MOD_LCANNON_SPLASH;
 	bolt->clipmask = MASK_SHOT;
-	bolt->target_ent = NULL;
+	bolt->target = NULL;
 
 	// Give the missile a small bounding box
 	bolt->r.mins[ 0 ] = bolt->r.mins[ 1 ] = bolt->r.mins[ 2 ] =
@@ -653,7 +650,6 @@ gentity_t *fire_luciferCannon( gentity_t *self, vec3_t start, vec3_t dir,
 	SnapVector( bolt->s.pos.trDelta );  // save net bandwidth
 
 	VectorCopy( start, bolt->r.currentOrigin );
-	bolt->startTime = level.time; // for power fall-off
 
 //	Com_Printf("Luciball power = %d, speed = %d/s.\n", damage, speed);
 	return bolt;
@@ -669,7 +665,7 @@ gentity_t *launch_grenade( gentity_t *self, vec3_t start, vec3_t dir )
 {
 	gentity_t *bolt;
 
-	bolt = G_Spawn();
+	bolt = G_NewEntity();
 	bolt->classname = "grenade";
 	bolt->pointAgainstWorld = qfalse;
 	bolt->nextthink = level.time + 5000;
@@ -687,7 +683,7 @@ gentity_t *launch_grenade( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->methodOfDeath = MOD_GRENADE;
 	bolt->splashMethodOfDeath = MOD_GRENADE;
 	bolt->clipmask = MASK_SHOT;
-	bolt->target_ent = NULL;
+	bolt->target = NULL;
 	bolt->r.mins[ 0 ] = bolt->r.mins[ 1 ] = bolt->r.mins[ 2 ] = -3.0f;
 	bolt->r.maxs[ 0 ] = bolt->r.maxs[ 1 ] = bolt->r.maxs[ 2 ] = 3.0f;
 	bolt->s.time = level.time;
@@ -734,7 +730,7 @@ void AHive_SearchAndDestroy( gentity_t *self )
 		return;
 	}
 
-	nearest = DistanceSquared( self->r.currentOrigin, self->target_ent->r.currentOrigin );
+	nearest = DistanceSquared( self->r.currentOrigin, self->target->r.currentOrigin );
 
 	//find the closest human
 	for ( i = 0; i < MAX_CLIENTS; i++ )
@@ -757,12 +753,12 @@ void AHive_SearchAndDestroy( gentity_t *self )
 			if ( tr.entityNum != ENTITYNUM_WORLD )
 			{
 				nearest = d;
-				self->target_ent = ent;
+				self->target = ent;
 			}
 		}
 	}
 
-	VectorSubtract( self->target_ent->r.currentOrigin, self->r.currentOrigin, dir );
+	VectorSubtract( self->target->r.currentOrigin, self->r.currentOrigin, dir );
 	VectorNormalize( dir );
 
 	//change direction towards the player
@@ -783,7 +779,7 @@ gentity_t *fire_hive( gentity_t *self, vec3_t start, vec3_t dir )
 {
 	gentity_t *bolt;
 
-	bolt = G_Spawn();
+	bolt = G_NewEntity();
 	bolt->classname = "hive";
 	bolt->pointAgainstWorld = qfalse;
 	bolt->nextthink = level.time + HIVE_DIR_CHANGE_PERIOD;
@@ -800,7 +796,7 @@ gentity_t *fire_hive( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->splashRadius = 0;
 	bolt->methodOfDeath = MOD_SWARM;
 	bolt->clipmask = MASK_SHOT;
-	bolt->target_ent = self->target_ent;
+	bolt->target = self->target;
 	bolt->timestamp = level.time + HIVE_LIFETIME;
 
 	bolt->s.pos.trType = TR_LINEAR;
@@ -824,7 +820,7 @@ gentity_t *fire_lockblob( gentity_t *self, vec3_t start, vec3_t dir )
 {
 	gentity_t *bolt;
 
-	bolt = G_Spawn();
+	bolt = G_NewEntity();
 	bolt->classname = "lockblob";
 	bolt->pointAgainstWorld = qtrue;
 	bolt->nextthink = level.time + 15000;
@@ -840,7 +836,7 @@ gentity_t *fire_lockblob( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->splashRadius = 0;
 	bolt->methodOfDeath = MOD_UNKNOWN; //doesn't do damage so will never kill
 	bolt->clipmask = MASK_SHOT;
-	bolt->target_ent = NULL;
+	bolt->target = NULL;
 
 	bolt->s.pos.trType = TR_LINEAR;
 	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME; // move a bit on the very first frame
@@ -861,7 +857,7 @@ gentity_t *fire_slowBlob( gentity_t *self, vec3_t start, vec3_t dir )
 {
 	gentity_t *bolt;
 
-	bolt = G_Spawn();
+	bolt = G_NewEntity();
 	bolt->classname = "slowblob";
 	bolt->pointAgainstWorld = qtrue;
 	bolt->nextthink = level.time + 15000;
@@ -878,7 +874,7 @@ gentity_t *fire_slowBlob( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->methodOfDeath = MOD_SLOWBLOB;
 	bolt->splashMethodOfDeath = MOD_SLOWBLOB;
 	bolt->clipmask = MASK_SHOT;
-	bolt->target_ent = NULL;
+	bolt->target = NULL;
 
 	bolt->s.pos.trType = TR_GRAVITY;
 	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME; // move a bit on the very first frame
@@ -899,7 +895,7 @@ gentity_t *fire_bounceBall( gentity_t *self, vec3_t start, vec3_t dir )
 {
 	gentity_t *bolt;
 
-	bolt = G_Spawn();
+	bolt = G_NewEntity();
 	bolt->classname = "bounceball";
 	bolt->pointAgainstWorld = qtrue;
 	bolt->nextthink = level.time + 3000;
@@ -916,7 +912,7 @@ gentity_t *fire_bounceBall( gentity_t *self, vec3_t start, vec3_t dir )
 	bolt->methodOfDeath = MOD_LEVEL3_BOUNCEBALL;
 	bolt->splashMethodOfDeath = MOD_LEVEL3_BOUNCEBALL;
 	bolt->clipmask = MASK_SHOT;
-	bolt->target_ent = NULL;
+	bolt->target = NULL;
 
 	bolt->s.pos.trType = TR_GRAVITY;
 	bolt->s.pos.trTime = level.time - MISSILE_PRESTEP_TIME; // move a bit on the very first frame

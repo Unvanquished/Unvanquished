@@ -561,7 +561,7 @@ qboolean R_LoadMDM( model_t *mod, void *buffer, const char *modName )
 		{
 			Q_strncpyz( surf->shader, mdmSurf->shader, sizeof( surf->shader ) );
 
-			sh = R_FindShader( surf->shader, SHADER_3D_DYNAMIC, qtrue );
+			sh = R_FindShader( surf->shader, SHADER_3D_DYNAMIC, RSF_DEFAULT );
 
 			if ( sh->defaultShader )
 			{

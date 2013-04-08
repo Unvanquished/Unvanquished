@@ -86,16 +86,18 @@ static void CG_ParseTeamInfo( void )
 	int i;
 	int count;
 	int client;
-	int fields;
 
-	fields = ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_ALIENS ) ? 5 : 6; // aliens don't have upgrades
-	count = ( trap_Argc( ) - 1 ) / fields;
+	count = trap_Argc();
 
-	cgs.teamInfoReceived = qtrue;
-
-	for ( i = 0; i < count; i++ )
+	for ( i = 1; i < count; ++i ) // i is also incremented when writing into cgs.clientinfo
 	{
-		client = atoi( CG_Argv( i * fields + 1 ) );
+		client = atoi( CG_Argv( i ) );
+
+		// wrong team? skip to the next one
+		if ( cgs.clientinfo[ client ].team != cg.snap->ps.stats[ STAT_TEAM ] )
+		{
+			return;
+		}
 
 		if ( client < 0 || client >= MAX_CLIENTS )
 		{
@@ -103,15 +105,18 @@ static void CG_ParseTeamInfo( void )
 			return;
 		}
 
-		cgs.clientinfo[ client ].location = atoi( CG_Argv( i * fields + 2 ) );
-		cgs.clientinfo[ client ].health = atoi( CG_Argv( i * fields + 3 ) );
-		cgs.clientinfo[ client ].curWeaponClass = atoi( CG_Argv( i * fields + 4 ) );
-		cgs.clientinfo[ client ].credit = atoi( CG_Argv( i * fields + 5 ) );
+		cgs.clientinfo[ client ].location       = atoi( CG_Argv( ++i ) );
+		cgs.clientinfo[ client ].health         = atoi( CG_Argv( ++i ) );
+		cgs.clientinfo[ client ].curWeaponClass = atoi( CG_Argv( ++i ) );
+		cgs.clientinfo[ client ].credit         = atoi( CG_Argv( ++i ) );
+
 		if( cg.snap->ps.stats[ STAT_TEAM ] != TEAM_ALIENS )
 		{
-			cgs.clientinfo[ client ].upgrade = atoi( CG_Argv( i * fields + 6 ) );
-        }
+			cgs.clientinfo[ client ].upgrade = atoi( CG_Argv( ++i ) );
+		}
 	}
+
+	cgs.teamInfoReceived = qtrue;
 }
 
 /*
@@ -293,6 +298,8 @@ static void CG_ConfigStringModified( void )
 	// look up the individual string that was modified
 	str = CG_ConfigString( num );
 
+	//CG_Printf("configstring modification %i: %s\n", num, str);
+
 	// do something with it if necessary
 	if ( num == CS_MUSIC )
 	{
@@ -398,7 +405,13 @@ static void CG_ConfigStringModified( void )
 	}
 	else if ( num >= CS_SHADERS && num < CS_SHADERS + MAX_GAME_SHADERS )
 	{
-		cgs.gameShaders[ num - CS_SHADERS ] = trap_R_RegisterShader( str );
+		cgs.gameShaders[ num - CS_SHADERS ] = trap_R_RegisterShader(str,
+									    RSF_DEFAULT);
+	}
+	else if ( num >= CS_GRADING_TEXTURES && num < CS_GRADING_TEXTURES + MAX_GRADING_TEXTURES )
+	{
+		cgs.gameGradingTextures[ num - CS_GRADING_TEXTURES ] =
+				trap_R_RegisterShader(CG_Argv(1), RSF_NOMIP | RSF_NOLIGHTSCALE);
 	}
 	else if ( num >= CS_PARTICLE_SYSTEMS && num < CS_PARTICLE_SYSTEMS + MAX_GAME_PARTICLE_SYSTEMS )
 	{
@@ -863,7 +876,7 @@ void CG_Menu( int menu, int arg )
 
 		case MN_A_CANTEVOLVE:
 			shortMsg = va( _("You cannot evolve into a %s"),
-			               _( BG_ClassConfig( arg )->humanName ) );
+			               _( BG_ClassModelConfig( arg )->humanName ) );
 			type = DT_ARMOURYEVOLVE;
 			break;
 
@@ -879,19 +892,19 @@ void CG_Menu( int menu, int arg )
 
 		case MN_A_CLASSNOTSPAWN:
 			shortMsg = va( _("You cannot spawn as a %s"),
-			               _( BG_ClassConfig( arg )->humanName ) );
+			               _( BG_ClassModelConfig( arg )->humanName ) );
 			type = DT_ARMOURYEVOLVE;
 			break;
 
 		case MN_A_CLASSNOTALLOWED:
 			shortMsg = va( _("The %s is not allowed"),
-			               _( BG_ClassConfig( arg )->humanName ) );
+			               _( BG_ClassModelConfig( arg )->humanName ) );
 			type = DT_ARMOURYEVOLVE;
 			break;
 
 		case MN_A_CLASSNOTATSTAGE:
 			shortMsg = va( _("The %s is not allowed at Stage %d"),
-			               _( BG_ClassConfig( arg )->humanName ),
+			               _( BG_ClassModelConfig( arg )->humanName ),
 			               cgs.alienStage + 1 );
 			type = DT_ARMOURYEVOLVE;
 			break;
@@ -996,7 +1009,7 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 
 		if ( Com_ClientListContains( &cgs.ignoreList, clientNum ) )
 		{
-			ignore = "[skipnotify]";
+			ignore = S_SKIPNOTIFY;
 		}
 
 		if ( ( mode == SAY_TEAM || mode == SAY_AREA ) &&
@@ -1045,7 +1058,7 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 	}
 
 	// IRC-like /me parsing
-	if ( mode != SAY_RAW && Q_stricmpn( text, "/me ", 4 ) == 0 )
+	if ( mode != SAY_RAW && Q_strnicmp( text, "/me ", 4 ) == 0 )
 	{
 		text += 4;
 		Q_strcat( prefix, sizeof( prefix ), "* " );
@@ -1064,7 +1077,7 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 			// might already be ignored but in that case no harm is done
 			if ( cg_teamChatsOnly.integer )
 			{
-				ignore = "[skipnotify]";
+				ignore = S_SKIPNOTIFY;
 			}
 
 		case SAY_ALL_ADMIN:

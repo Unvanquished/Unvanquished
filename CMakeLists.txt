@@ -70,6 +70,7 @@ option( BUILD_SERVER         "Build Daemonded server"                      1 )
 option( GAME_LIB             "Build game logic libraries"                  1 )
 option( GAME_QVM             "Build game logic QVM files"                  1 )
 option( BUILD_DAEMONMAP      "Build Mapping tool"                          0 )
+option( BUILD_TTY_CLIENT     "Build Daemon headless client"                0 )
 
 option( ENABLE_W_ALL         "Use -Wall"                                   0 )
 option( ENABLE_WARNINGS      "Enable security & code-checking warning options" 1 )
@@ -410,6 +411,7 @@ endif(NOT MINIMAL_FLAGS)
 
 set( SHAREDLIST
   ${MOUNT_DIR}/engine/qcommon/q_shared.c
+  ${MOUNT_DIR}/engine/qcommon/q_unicode.c
   ${MOUNT_DIR}/engine/qcommon/q_math.c
 )
 
@@ -655,6 +657,7 @@ set( GAME_VM_COMMON
 set( CGAMEGPP_BASE
   ${GPP_DIR}/cgame/cg_main.c
   ${GPP_DIR}/game/bg_misc.c
+  ${GPP_DIR}/game/bg_parse.c
   ${GPP_DIR}/game/bg_pmove.c
   ${GPP_DIR}/game/bg_slidemove.c
   ${GPP_DIR}/game/bg_lib.c
@@ -684,8 +687,7 @@ set( CGAMEGPP_BASE
   ${GPP_DIR}/cgame/cg_utils.c
   ${GPP_DIR}/ui/ui_shared.c
   ${GPP_DIR}/ui/ui_utf8.c
-  ${MOUNT_DIR}/engine/qcommon/q_math.c
-  ${MOUNT_DIR}/engine/qcommon/q_shared.c
+  ${SHAREDLIST}
 )
 
 set( CGAMEGPP_SO
@@ -701,6 +703,7 @@ set( CGAMEGPP_QVM
 set( GAMEGPP_BASE
   ${GPP_DIR}/game/g_main.c
   ${GPP_DIR}/game/bg_misc.c
+  ${GPP_DIR}/game/bg_parse.c
   ${GPP_DIR}/game/bg_pmove.c
   ${GPP_DIR}/game/bg_slidemove.c
   ${GPP_DIR}/game/bg_lib.c
@@ -710,17 +713,23 @@ set( GAMEGPP_BASE
   ${GPP_DIR}/game/g_client.c
   ${GPP_DIR}/game/g_cmds.c
   ${GPP_DIR}/game/g_combat.c
+  ${GPP_DIR}/game/g_entities.c
   ${GPP_DIR}/game/g_physics.c
   ${GPP_DIR}/game/g_buildable.c
-  ${GPP_DIR}/game/g_misc.c
   ${GPP_DIR}/game/g_missile.c
-  ${GPP_DIR}/game/g_mover.c
   ${GPP_DIR}/game/g_session.c
+  ${GPP_DIR}/game/g_spawn_ctrl.c
+  ${GPP_DIR}/game/g_spawn_env_afx.c
+  ${GPP_DIR}/game/g_spawn_environment.c
+  ${GPP_DIR}/game/g_spawn_game.c
+  ${GPP_DIR}/game/g_spawn_generic.c
+  ${GPP_DIR}/game/g_spawn_mover.c
+  ${GPP_DIR}/game/g_spawn_position.c
+  ${GPP_DIR}/game/g_spawn_sensor.c
+  ${GPP_DIR}/game/g_spawn_shared.c
   ${GPP_DIR}/game/g_spawn.c
   ${GPP_DIR}/game/g_svcmds.c
-  ${GPP_DIR}/game/g_target.c
   ${GPP_DIR}/game/g_team.c
-  ${GPP_DIR}/game/g_trigger.c
   ${GPP_DIR}/game/g_utils.c
   ${GPP_DIR}/game/g_maprotation.c
   ${GPP_DIR}/game/g_weapon.c
@@ -730,8 +739,7 @@ set( GAMEGPP_BASE
   ${GPP_DIR}/game/g_alienbot.c
   ${GPP_DIR}/game/g_humanbot.c
   ${GPP_DIR}/game/g_nav.c
-  ${MOUNT_DIR}/engine/qcommon/q_math.c
-  ${MOUNT_DIR}/engine/qcommon/q_shared.c
+  ${SHAREDLIST}
 )
 
 set( GAMEGPP_SO
@@ -750,10 +758,11 @@ set( UIGPP_BASE
   ${GPP_DIR}/ui/ui_shared.c
   ${GPP_DIR}/ui/ui_gameinfo.c
   ${GPP_DIR}/game/bg_misc.c
+  ${GPP_DIR}/game/bg_parse.c
   ${GPP_DIR}/game/bg_lib.c
-  ${MOUNT_DIR}/engine/qcommon/q_math.c
-  ${MOUNT_DIR}/engine/qcommon/q_shared.c
+  ${GPP_DIR}/game/bg_alloc.c
   ${GPP_DIR}/ui/ui_utf8.c
+  ${SHAREDLIST}
 )
 
 set( UIGPP_SO
@@ -1655,6 +1664,90 @@ if( BUILD_DAEMONMAP )
   target_link_libraries( daemonMap ${OPENGL_LIBRARIES} ${SDL_LIBRARY} ${JPEG_LIBRARIES} ${PNG_LIBRARIES} ${GLIB_LIBRARIES} )
   include_directories( ${OPENGL_INCLUDE_DIR} ${JPEG_INCLUDE_DIR} ${PNG_INCLUDE_DIR} ${SDL_INCLUDE_DIR} ${GLIB_INCLUDE_DIRS} )
 endif()
+
+####################
+# Build tty client #
+####################
+if( BUILD_TTY_CLIENT )
+  # Setup the target Server
+  add_executable( ttyclient ${SERVERLIST} ${CLIENTLIST} ${SDLBASELIST} ${CPUINFOLIST}
+    ${QCOMMONLIST} ${SHAREDLIST} ${DATABASELIST} ${CRYPTOLIST}
+    ${TINYGETTEXT_LIST}
+    ${MOUNT_DIR}/engine/qcommon/dl_main_stubs.c ${WIN_RC}
+    ${MOUNT_DIR}/engine/null/null_input.c ${MOUNT_DIR}/engine/null/null_snddma.c ${MOUNT_DIR}/engine/null/null_renderer.c )
+  include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} )
+  target_link_libraries( ttyclient ${OS_LIBRARIES} ${NEWTON_LIBRARY} )
+  set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS COMPAT_ET BUILD_TTY_CLIENT REF_HARD_LINKED )
+  set_target_properties( ttyclient PROPERTIES OUTPUT_NAME "daemon-tty" PREFIX "" LINKER_LANGUAGE CXX )
+
+  # Setup CPack for target server
+  install( TARGETS ttyclient DESTINATION "Unvanquished" )
+  get_target_property( LOCATION ttyclient LOCATION )
+  get_filename_component( OUTPUT_NAME ${LOCATION} NAME )
+  set( APPS ${APPS} Unvanquished/${OUTPUT_NAME} )
+
+  # Mac OS X has some trouble with PIC code under X86/32.
+  if( CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND BUILD_ARCH STREQUAL "i386" )
+    set_target_properties( ttyclient PROPERTIES COMPILE_FLAGS -mdynamic-no-pic LINK_FLAGS "-read_only_relocs suppress" )
+  endif()
+
+  # Visual Studio specific settings
+  if( MSVC )
+    set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS ZLIB_WINAPI )
+  endif()
+
+  # The following section finds the REQUIRED dependencies and makes them available to the target
+  find_package( GMP REQUIRED )
+  find_package( ZLIB REQUIRED )
+
+  if( USE_INTERNAL_CRYPTO )
+    # BEFORE is required to prevent system headers from being used
+    include_directories( BEFORE ${MOUNT_DIR}/libs/nettle )
+  else()
+    find_package( Nettle REQUIRED )
+    include_directories( ${NETTLE_INCLUDE_DIRS} )
+    target_link_libraries( ttyclient ${NETTLE_LIBRARIES} )
+  endif()
+
+  include_directories( ${GMP_INCLUDE_DIR} ${ZLIB_INCLUDE_DIRS} )
+  target_link_libraries( ttyclient ${GMP_LIBRARIES} ${ZLIB_LIBRARIES} )
+
+  # The following section finds the OPTIONAL dependencies and makes them available to the target
+
+  if( USE_CURSES )
+    set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS ${CURSES_DEFINES} )
+    include_directories( ${CURSES_INCLUDE_DIR} )
+    target_link_libraries( ttyclient ${CURSES_LIBRARIES} )
+  endif()
+
+  if( USE_PHYSICS )
+    find_package( TinyXML REQUIRED )
+    set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS USE_PHYSICS )
+    include_directories( ${TINYXML_INCLUDE_DIRS} )
+    target_link_libraries( ttyclient ${TINYXML_LIBRARIES} )
+  endif()
+
+  if( HAVE_BZIP2 )
+    find_package( BZip2 REQUIRED )
+    set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS HAVE_BZIP2 )
+    include_directories( ${BZIP2_INCLUDE_DIR} )
+    target_link_libraries( ttyclient ${BZIP2_LIBRARY} )
+  endif()
+
+  if( USE_SDL_ICONV )
+    find_package( SDL REQUIRED )
+    set_property( TARGET ttyclient APPEND PROPERTY COMPILE_DEFINITIONS HAVE_SDL )
+    include_directories( ${SDL_INCLUDE_DIR} )
+    target_link_libraries( ttyclient ${SDL_LIBRARY} )
+  endif()
+
+  if( GAME_LIB_LLVM )
+    include_directories( ${LLVM_INCLUDE_DIR} )
+    target_link_libraries( ttyclient ${LLVM_LIBS} )
+  endif()
+endif()
+
+
 
 ###########################
 #Configure Download Script#

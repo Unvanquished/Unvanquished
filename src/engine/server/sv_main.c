@@ -262,10 +262,8 @@ but not on every player enter or exit.
 ================
 */
 #define HEARTBEAT_MSEC (300 * 1000)
-//#define   HEARTBEAT_GAME  "Wolfenstein-1"
-//#define   HEARTBEAT_DEAD  "WolfFlatline-1"            // NERVE - SMF
-#define HEARTBEAT_GAME "EnemyTerritory-1"
-#define HEARTBEAT_DEAD "ETFlatline-1" // NERVE - SMF
+#define HEARTBEAT_GAME "Unvanquished"
+#define HEARTBEAT_DEAD "Unvanquished-dead"
 
 void SV_MasterHeartbeat( const char *hbname )
 {
@@ -365,12 +363,12 @@ void SV_MasterHeartbeat( const char *hbname )
 
 		if ( adr[ i ][ 0 ].type != NA_BAD )
 		{
-			NET_OutOfBandPrint( NS_SERVER, adr[ i ][ 0 ], "heartbeat %s\n", HEARTBEAT_GAME );
+			NET_OutOfBandPrint( NS_SERVER, adr[ i ][ 0 ], "heartbeat %s\n", hbname );
 		}
 
 		if ( adr[ i ][ 1 ].type != NA_BAD )
 		{
-			NET_OutOfBandPrint( NS_SERVER, adr[ i ][ 1 ], "heartbeat %s\n", HEARTBEAT_GAME );
+			NET_OutOfBandPrint( NS_SERVER, adr[ i ][ 1 ], "heartbeat %s\n", hbname );
 		}
 	}
 }
@@ -668,6 +666,10 @@ qboolean SV_CheckDRDoS( netadr_t from )
 	if ( from.type == NA_IP )
 	{
 		from.ip[ 3 ] = 0; // xx.xx.xx.0
+	}
+	else if ( from.type == NA_IP6 )
+	{
+		memset( from.ip + 7, 0, 9 ); // mask to /56
 	}
 	else
 	{
@@ -1158,6 +1160,36 @@ qboolean SV_CheckPaused( void )
 
 /*
 ==================
+SV_FrameMsec
+Return time in millseconds until processing of the next server frame.
+==================
+*/
+int SV_FrameMsec( void )
+{
+	if( sv_fps )
+	{
+		int frameMsec;
+
+		frameMsec = 1000.0f / sv_fps->value;
+
+		if( frameMsec < sv.timeResidual )
+		{
+			return 0;
+		}
+		else
+		{
+			return frameMsec - sv.timeResidual;
+		}
+	}
+	else
+	{
+		return 1;
+	}
+}
+
+
+/*
+==================
 SV_Frame
 
 Player movement occurs as a result of packet events, which
@@ -1423,7 +1455,7 @@ int SV_LoadTag( const char *mod_name )
 	if ( version != TAG_VERSION )
 	{
 		FS_FreeFile( buffer );
-		Com_Printf( S_COLOR_YELLOW  "WARNING: SV_LoadTag: %s has wrong version (%i should be %i)\n", mod_name, version,
+		Com_Printf( S_WARNING "SV_LoadTag: %s has wrong version (%i should be %i)\n", mod_name, version,
 		            TAG_VERSION );
 		return 0;
 	}

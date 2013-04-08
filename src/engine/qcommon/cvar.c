@@ -401,10 +401,12 @@ cvar_t         *Cvar_Get( const char *var_name, const char *var_value, int flags
 	var->name = CopyString( var_name );
 	var->string = CopyString( var_value );
 	var->modified = qtrue;
-	var->modificationCount = 1;
+	var->modificationCount = 0;
 	var->value = atof( var->string );
 	var->integer = atoi( var->string );
 	var->resetString = CopyString( var_value );
+
+	var->transient = qtrue;
 
 	// link the variable in
 	var->next = cvar_vars;
@@ -460,17 +462,29 @@ cvar_t         *Cvar_Set2( const char *var_name, const char *value, qboolean for
 		// create it
 		if ( !force )
 		{
-			return Cvar_Get( var_name, value, CVAR_USER_CREATED );
+			var = Cvar_Get( var_name, value, CVAR_USER_CREATED );
 		}
 		else
 		{
-			return Cvar_Get( var_name, value, 0 );
+			var = Cvar_Get( var_name, value, 0 );
 		}
+		var->modificationCount++;
+		var->transient = qfalse;
+		return var;
 	}
+
+	var->transient = qfalse;
 
 	if ( !value )
 	{
 		value = var->resetString;
+
+		/* make sure we remove ARCHIVE cvars from the autogen if reset */
+		if( var->flags & CVAR_ARCHIVE )
+		{
+			var->transient = qtrue;
+			cvar_modifiedFlags |= CVAR_ARCHIVE;
+		}
 	}
 
 	if ( var->flags & CVAR_USERINFO )
@@ -797,7 +811,7 @@ qboolean Cvar_Command( void )
 	}
 
 	// set the value if forcing isn't required
-	Cvar_Set2( v->name, Cmd_Args(), qfalse );
+	Cvar_Set2( v->name, Cmd_UnquoteString( Cmd_Args() ), qfalse );
 	return qtrue;
 }
 
@@ -1061,7 +1075,7 @@ void Cvar_Reset_f( void )
 Cvar_WriteVariables
 
 Appends lines containing "set variable value" for all variables
-with the archive flag set to qtrue.
+with the archive flag set that are not in a transient state.
 ============
 */
 void Cvar_WriteVariables( fileHandle_t f )
@@ -1073,6 +1087,9 @@ void Cvar_WriteVariables( fileHandle_t f )
 	{
 		if ( var->flags & CVAR_ARCHIVE )
 		{
+			if( var->transient )
+				continue;
+
 			// write the latched value, even if it hasn't taken effect yet
 			Com_sprintf( buffer, sizeof( buffer ), "seta %s %s%s\n",
 			             var->name,
@@ -1195,6 +1212,15 @@ void Cvar_List_f( void )
 			Com_Printf( " " );
 		}
 
+		if ( var->transient )
+		{
+			Com_Printf( "T" );
+		}
+		else
+		{
+			Com_Printf( " " );
+		}
+
 		if ( raw )
 		{
 			char *index;
@@ -1223,14 +1249,7 @@ void Cvar_List_f( void )
 	Com_Printf( "%i cvar indexes\n", cvar_numIndexes );
 }
 
-/*
-============
-Cvar_Restart_f
-
-Resets all cvars to their hardcoded values
-============
-*/
-void Cvar_Restart_f( void )
+static void restart_cvars( qboolean checkForEquality )
 {
 	cvar_t *var;
 	cvar_t **prev;
@@ -1252,6 +1271,16 @@ void Cvar_Restart_f( void )
 		{
 			prev = &var->next;
 			continue;
+		}
+
+		if( checkForEquality && ( var->flags & CVAR_ARCHIVE ) )
+		{
+			//if not equal, we don't want it to reset
+			if(strcmp(var->string, var->resetString))
+			{
+				prev = &var->next;
+				continue;
+			}
 		}
 
 		// throw out any variables the user created
@@ -1285,10 +1314,35 @@ void Cvar_Restart_f( void )
 			continue;
 		}
 
-		Cvar_Set( var->name, var->resetString );
+		Cvar_Set2( var->name, NULL, qtrue );
 
 		prev = &var->next;
 	}
+}
+
+/*
+============
+Cvar_Restart_f
+
+Resets all cvars to their default value and sets them transient
+============
+*/
+void Cvar_Restart_f( void )
+{
+	restart_cvars( qfalse );
+}
+
+/*
+============
+Cvar_Clean_f
+
+Resets all cvars to their default value and sets them transient, if their current value and their default value are equal
+============
+*/
+
+void Cvar_Clean_f( void )
+{
+	restart_cvars( qtrue );
 }
 
 /*
@@ -1458,5 +1512,6 @@ void Cvar_Init( void )
 	Cmd_AddCommand( "reset", Cvar_Reset_f );
 	Cmd_SetCommandCompletionFunc( "reset", Cvar_CompleteCvarName );
 	Cmd_AddCommand( "cvarlist", Cvar_List_f );
+	Cmd_AddCommand( "cvar_clean", Cvar_Clean_f );
 	Cmd_AddCommand( "cvar_restart", Cvar_Restart_f );
 }

@@ -227,7 +227,7 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 		   {
 		   shader_t       *sh;
 
-		   sh = R_FindShader(md3Shader->name, SHADER_3D_DYNAMIC, qtrue);
+		   sh = R_FindShader(md3Shader->name, SHADER_3D_DYNAMIC, RSF_DEFAULT);
 		   if(sh->defaultShader)
 		   {
 		   shader->shaderIndex = 0;
@@ -241,7 +241,7 @@ qboolean R_LoadMD3( model_t *mod, int lod, void *buffer, int bufferSize, const c
 
 		// only consider the first shader
 		md3Shader = ( md3Shader_t * )( ( byte * ) md3Surf + md3Surf->ofsShaders );
-		surf->shader = R_FindShader( md3Shader->name, SHADER_3D_DYNAMIC, qtrue );
+		surf->shader = R_FindShader( md3Shader->name, SHADER_3D_DYNAMIC, RSF_DEFAULT );
 
 		// swap all the triangles
 		surf->numTriangles = md3Surf->numTriangles;

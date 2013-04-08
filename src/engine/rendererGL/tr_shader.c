@@ -107,7 +107,7 @@ void R_RemapShader( const char *shaderName, const char *newShaderName, const cha
 
 	if ( sh == NULL || sh == tr.defaultShader )
 	{
-		h = RE_RegisterShader( shaderName );
+		h = RE_RegisterShader( shaderName, RSF_DEFAULT );
 		sh = R_GetShaderByHandle( h );
 	}
 
@@ -121,7 +121,7 @@ void R_RemapShader( const char *shaderName, const char *newShaderName, const cha
 
 	if ( sh2 == NULL || sh2 == tr.defaultShader )
 	{
-		h = RE_RegisterShader( newShaderName );
+		h = RE_RegisterShader( newShaderName, RSF_DEFAULT );
 		sh2 = R_GetShaderByHandle( h );
 	}
 
@@ -2952,7 +2952,7 @@ static void ParseDeform( char **text )
 		return;
 	}
 
-	if ( !Q_stricmpn( token, "text", 4 ) )
+	if ( !Q_strnicmp( token, "text", 4 ) )
 	{
 		int n;
 
@@ -3997,7 +3997,7 @@ static qboolean ParseShader( char *_text )
 			continue;
 		}
 		// skip stuff that only the QuakeEdRadient needs
-		else if ( !Q_stricmpn( token, "qer", 3 ) )
+		else if ( !Q_strnicmp( token, "qer", 3 ) )
 		{
 			SkipRestOfLine( text );
 			continue;
@@ -4041,7 +4041,7 @@ static qboolean ParseShader( char *_text )
 			continue;
 		}
 		// skip Prey's extra material types
-		else if ( !Q_stricmpn( token, "matter", 6 ) )
+		else if ( !Q_strnicmp( token, "matter", 6 ) )
 		{
 			//ri.Printf(PRINT_WARNING, "WARNING: materialType keyword not supported in shader '%s'\n", shader.name);
 			SkipRestOfLine( text );
@@ -4214,7 +4214,7 @@ static qboolean ParseShader( char *_text )
 			continue;
 		}
 		// skip stuff that only the xmap needs
-		else if ( !Q_stricmpn( token, "xmap", 4 ) || !Q_stricmpn( token, "q3map", 5 ) )
+		else if ( !Q_strnicmp( token, "xmap", 4 ) || !Q_strnicmp( token, "q3map", 5 ) )
 		{
 			SkipRestOfLine( text );
 			continue;
@@ -4479,7 +4479,7 @@ static qboolean ParseShader( char *_text )
 			}
 
 			/*
-			RB: don't call tr.sunShader = R_FindShader(token, SHADER_3D_STATIC, qtrue);
+			RB: don't call tr.sunShader = R_FindShader(token, SHADER_3D_STATIC, RSF_DEFAULT);
 			        because it breaks the computation of the current shader
 			*/
 			tokenLen = strlen( token ) + 1;
@@ -4595,7 +4595,7 @@ static qboolean ParseShader( char *_text )
 			continue;
 		}
 		// ydnar: implicit default mapping to eliminate redundant/incorrect explicit shader stages
-		else if ( !Q_stricmpn( token, "implicit", 8 ) )
+		else if ( !Q_strnicmp( token, "implicit", 8 ) )
 		{
 			//ri.Printf(PRINT_WARNING, "WARNING: keyword '%s' not supported in shader '%s'\n", token, shader.name);
 			//SkipRestOfLine(text);
@@ -5741,6 +5741,9 @@ static char    *FindShaderInShaderText( const char *shaderName )
 		}
 	}
 
+	// if the shader is not in the table, it must not exist
+	return NULL;
+#if 0
 	p = s_shaderText;
 
 	if ( !p )
@@ -5822,6 +5825,7 @@ static char    *FindShaderInShaderText( const char *shaderName )
 	}
 
 	return NULL;
+#endif
 }
 
 /*
@@ -5888,11 +5892,12 @@ the vertex rgba modulate values, as appropriate for misc_model
 pre-lit surfaces.
 ===============
 */
-shader_t       *R_FindShader( const char *name, shaderType_t type, qboolean mipRawImage )
+shader_t       *R_FindShader( const char *name, shaderType_t type,
+			      RegisterShaderFlags_t flags )
 {
 	char     strippedName[ MAX_QPATH ];
 	char     fileName[ MAX_QPATH ];
-	int      i, hash;
+	int      i, hash, bits;
 	char     *shaderText;
 	image_t  *image;
 	shader_t *sh;
@@ -5981,17 +5986,26 @@ shader_t       *R_FindShader( const char *name, shaderType_t type, qboolean mipR
 		Q_strncpyz( fileName, implicitMap, sizeof( fileName ) );
 	}
 
-	// ydnar: implicit shaders were breaking nopicmip/nomipmaps
-	if ( !mipRawImage )
-	{
-		//shader.noMipMaps = qtrue;
-		shader.noPicMip = qtrue;
-	}
-
 	// if not defined in the in-memory shader descriptions,
 	// look for a single supported image file
-	image = R_FindImageFile( fileName, mipRawImage ? IF_NONE : IF_NOPICMIP,
-	                         mipRawImage ? FT_DEFAULT : FT_LINEAR, mipRawImage ? WT_REPEAT : WT_CLAMP, shader.name );
+	bits = IF_NONE;
+	if( flags & RSF_NOMIP )
+		bits |= IF_NOPICMIP;
+	else
+		shader.noPicMip = qtrue;
+
+	if( flags & RSF_NOLIGHTSCALE )
+		bits |= IF_NOLIGHTSCALE | IF_NOCOMPRESSION;
+
+	// choosing filter based on the NOMIP flag seems strange,
+	// maybe it should be changed to type == SHADER_2D
+	if( !(bits & RSF_NOMIP) ) {
+		image = R_FindImageFile( fileName, bits, FT_DEFAULT,
+					 WT_REPEAT, shader.name );
+	} else {
+		image = R_FindImageFile( fileName, bits, FT_LINEAR,
+					 WT_CLAMP, shader.name );
+	}
 
 	if ( !image )
 	{
@@ -6066,7 +6080,7 @@ shader_t       *R_FindShader( const char *name, shaderType_t type, qboolean mipR
 	return FinishShader();
 }
 
-qhandle_t RE_RegisterShaderFromImage( const char *name, image_t *image, qboolean mipRawImage )
+qhandle_t RE_RegisterShaderFromImage( const char *name, image_t *image )
 {
 	int      i, hash;
 	shader_t *sh;
@@ -6129,7 +6143,7 @@ This should really only be used for explicit shaders, because there is no
 way to ask for different implicit lighting modes (vertex, lightmap, etc)
 ====================
 */
-qhandle_t RE_RegisterShader( const char *name )
+qhandle_t RE_RegisterShader( const char *name, RegisterShaderFlags_t flags )
 {
 	shader_t *sh;
 
@@ -6139,71 +6153,9 @@ qhandle_t RE_RegisterShader( const char *name )
 		return 0;
 	}
 
-	sh = R_FindShader( name, SHADER_2D, qtrue );
-
-	// we want to return 0 if the shader failed to
-	// load for some reason, but R_FindShader should
-	// still keep a name allocated for it, so if
-	// something calls RE_RegisterShader again with
-	// the same name, we don't try looking for it again
-	if ( sh->defaultShader )
-	{
-		return 0;
-	}
-
-	return sh->index;
-}
-
-/*
-====================
-RE_RegisterShaderNoMip
-
-For menu graphics that should never be picmiped
-====================
-*/
-qhandle_t RE_RegisterShaderNoMip( const char *name )
-{
-	shader_t *sh;
-
-	if ( strlen( name ) >= MAX_QPATH )
-	{
-		Com_Printf( "Shader name exceeds MAX_QPATH\n" );
-		return 0;
-	}
-
-	sh = R_FindShader( name, SHADER_2D, qfalse );
-
-	// we want to return 0 if the shader failed to
-	// load for some reason, but R_FindShader should
-	// still keep a name allocated for it, so if
-	// something calls RE_RegisterShader again with
-	// the same name, we don't try looking for it again
-	if ( sh->defaultShader )
-	{
-		return 0;
-	}
-
-	return sh->index;
-}
-
-/*
-====================
-RE_RegisterShaderLightAttenuation
-
-For different Doom3 style light effects
-====================
-*/
-qhandle_t RE_RegisterShaderLightAttenuation( const char *name )
-{
-	shader_t *sh;
-
-	if ( strlen( name ) >= MAX_QPATH )
-	{
-		Com_Printf( "Shader name exceeds MAX_QPATH\n" );
-		return 0;
-	}
-
-	sh = R_FindShader( name, SHADER_LIGHT, qfalse );
+	sh = R_FindShader( name,
+			   (flags & RSF_LIGHT_ATTENUATION) ? SHADER_LIGHT : SHADER_2D,
+			   flags );
 
 	// we want to return 0 if the shader failed to
 	// load for some reason, but R_FindShader should
@@ -6278,7 +6230,7 @@ void R_ShaderList_f( void )
 			shader = tr.shaders[ i ];
 		}
 
-		if ( s && Q_stricmpn( shader->name, s, strlen( s ) ) != 0 )
+		if ( s && Q_strnicmp( shader->name, s, strlen( s ) ) != 0 )
 		{
 			continue;
 		}
@@ -6761,7 +6713,8 @@ static void ScanAndLoadShaderFiles( void )
 	char *p;
 	int  numShaderFiles;
 	int  i;
-	char *oldp, *token, *hashMem, *textEnd;
+	char *oldp, *token, *textEnd;
+	char **hashMem;
 	int  shaderTextHashTableSizes[ MAX_SHADERTEXT_HASH ], hash, size;
 	char filename[ MAX_QPATH ];
 	long sum = 0, summand;
@@ -6953,8 +6906,8 @@ static void ScanAndLoadShaderFiles( void )
 
 	for ( i = 0; i < MAX_SHADERTEXT_HASH; i++ )
 	{
-		shaderTextHashTable[ i ] = ( char ** ) hashMem;
-		hashMem = ( ( char * ) hashMem ) + ( ( shaderTextHashTableSizes[ i ] + 1 ) * sizeof( char * ) );
+		shaderTextHashTable[ i ] = hashMem;
+		hashMem += shaderTextHashTableSizes[ i ] + 1;
 	}
 
 	Com_Memset( shaderTextHashTableSizes, 0, sizeof( shaderTextHashTableSizes ) );
@@ -7149,12 +7102,12 @@ static void CreateExternalShaders( void )
 {
 	ri.Printf( PRINT_DEVELOPER, "----- CreateExternalShaders -----\n" );
 
-	tr.flareShader = R_FindShader( "flareShader", SHADER_3D_DYNAMIC, qtrue );
-	tr.sunShader = R_FindShader( "sun", SHADER_3D_DYNAMIC, qtrue );
+	tr.flareShader = R_FindShader( "flareShader", SHADER_3D_DYNAMIC, RSF_DEFAULT );
+	tr.sunShader = R_FindShader( "sun", SHADER_3D_DYNAMIC, RSF_DEFAULT );
 
-	tr.defaultPointLightShader = R_FindShader( "lights/defaultPointLight", SHADER_LIGHT, qtrue );
-	tr.defaultProjectedLightShader = R_FindShader( "lights/defaultProjectedLight", SHADER_LIGHT, qtrue );
-	tr.defaultDynamicLightShader = R_FindShader( "lights/defaultDynamicLight", SHADER_LIGHT, qtrue );
+	tr.defaultPointLightShader = R_FindShader( "lights/defaultPointLight", SHADER_LIGHT, RSF_DEFAULT );
+	tr.defaultProjectedLightShader = R_FindShader( "lights/defaultProjectedLight", SHADER_LIGHT, RSF_DEFAULT );
+	tr.defaultDynamicLightShader = R_FindShader( "lights/defaultDynamicLight", SHADER_LIGHT, RSF_DEFAULT );
 }
 
 /*

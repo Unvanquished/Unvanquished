@@ -35,6 +35,7 @@ Maryland 20850 USA.
 // cl_main.c  -- client main loop
 
 #include "client.h"
+#include "../qcommon/q_unicode.h"
 #include <limits.h>
 
 #include "snd_local.h" // fretn
@@ -154,10 +155,13 @@ cvar_t                 *cl_consoleCommand; //see also com_consoleCommand for ter
 
 cvar_t	*cl_logs;
 
+cvar_t             *p_team; /*<team id without team semantics (to not break the relationship between client and cgame)*/
+
 struct rsa_public_key  public_key;
 struct rsa_private_key private_key;
 
 cvar_t             *cl_gamename;
+
 cvar_t             *cl_altTab;
 
 static cvar_t      *cl_renderer = NULL;
@@ -447,58 +451,45 @@ void CL_VoipParseTargets( void )
 		}
 		else
 		{
-			if ( !Q_stricmpn( target, "all", 3 ) )
+			if ( !Q_strnicmp( target, "all", 3 ) )
 			{
 				Com_Memset( clc.voipTargets, ~0, sizeof( clc.voipTargets ) );
 				return;
 			}
 
-			else if ( !Q_stricmpn( target, "spatial", 7 ) )
+			else if ( !Q_strnicmp( target, "spatial", 7 ) )
 			{
 				clc.voipFlags |= VOIP_SPATIAL;
 				target += 7;
 				continue;
 			}
-
-			else if ( !Q_stricmpn( target, "team", 4 ) )
+			else if ( !Q_strnicmp( target, "team", 4 ) )
 			{
-				int i = 0;
+				const char *players = VM_ExplicitArgPtr( cgvm, VM_Call( cgvm, CG_VOIP_STRING, 0 ) );
+				const char *head;
+				char *p;
 
-				for ( i = 0; i < MAX_CLIENTS; i++ )
+				head = players;
+
+				while ( ( p = strchr( head, ',' ) ) )
 				{
-					team_t team = atoi( Info_ValueForKey(cl.gameState.stringData +
-					cl.gameState.stringOffsets[CS_PLAYERS + i], "t") );
+					int val;
 
-					qboolean connected = Info_ValueForKey(cl.gameState.stringData +
-					cl.gameState.stringOffsets[CS_PLAYERS + i], "n")[0];
-
-					if ( connected && team == cl.snap.ps.stats[ STAT_TEAM ] )
-					{
-						val = i;
-						if ( val < 0 || val >= MAX_CLIENTS )
-						{
-							Com_Printf( _( S_COLOR_YELLOW  "WARNING: VoIP "
-							"target %d is not a valid client "
-							"number\n"), val );
-
-							continue;
-						}
-
-
-						clc.voipTargets[ val / 8 ] |= 1 << ( val % 8 );
-					}
+					*p = '\0';
+					val = atoi( head );
+					clc.voipTargets[ val / 8 ] |= 1 << ( val % 8 );
+					head = p + 1;
 				}
 				target += 4;
 			}
-
 			else
 			{
-				if ( !Q_stricmpn( target, "attacker", 8 ) )
+				if ( !Q_strnicmp( target, "attacker", 8 ) )
 				{
 					val = VM_Call( cgvm, CG_LAST_ATTACKER );
 					target += 8;
 				}
-				else if ( !Q_stricmpn( target, "crosshair", 9 ) )
+				else if ( !Q_strnicmp( target, "crosshair", 9 ) )
 				{
 					val = VM_Call( cgvm, CG_CROSSHAIR_PLAYER );
 					target += 9;
@@ -522,7 +513,7 @@ void CL_VoipParseTargets( void )
 
 		if ( val < 0 || val >= MAX_CLIENTS )
 		{
-			Com_Printf( _( S_COLOR_YELLOW  "WARNING: VoIP "
+			Com_Printf( _( S_WARNING "VoIP "
 			            "target %d is not a valid client "
 			            "number\n"), val );
 
@@ -1412,7 +1403,7 @@ void CL_PlayDemo_f( void )
 		Com_Error( ERR_DROP, "couldn't open %s", name );
 	}
 
-	Q_strncpyz( clc.demoName, Cmd_Argv( 1 ), sizeof( clc.demoName ) );
+	Q_strncpyz( clc.demoName, arg, sizeof( clc.demoName ) );
 
 	Con_Close();
 
@@ -1424,7 +1415,7 @@ void CL_PlayDemo_f( void )
 		CL_WriteWaveOpen();
 	}
 
-	Q_strncpyz( cls.servername, Cmd_Argv( 1 ), sizeof( cls.servername ) );
+	Q_strncpyz( cls.servername, arg, sizeof( cls.servername ) );
 
 	// read demo messages until connected
 	while ( cls.state >= CA_CONNECTED && cls.state < CA_PRIMED )
@@ -1717,9 +1708,6 @@ void CL_Disconnect( qboolean showMainMenu )
 		return;
 	}
 
-	// shutting down the client so enter full screen ui mode
-	Cvar_Set( "r_uiFullScreen", "1" );
-
 	if ( clc.demorecording )
 	{
 		CL_StopRecord_f();
@@ -1852,7 +1840,7 @@ void CL_Disconnect( qboolean showMainMenu )
 		cls.state = CA_DISCONNECTED;
 	}
 
-	Key_SetTeam( TEAM_NONE );
+	CL_OnTeamChanged( 0 );
 }
 
 /*
@@ -2057,8 +2045,6 @@ void CL_Connect_f( void )
 
 	S_StopAllSounds(); // NERVE - SMF
 
-	// starting to load a map so we get out of full screen ui mode
-	Cvar_Set( "r_uiFullScreen", "0" );
 	Cvar_Set( "ui_connecting", "1" );
 
 	// fire a message off to the motd server
@@ -2678,9 +2664,6 @@ void CL_DownloadsComplete( void )
 		return;
 	}
 
-	// starting to load a map so we get out of full screen ui mode
-	Cvar_Set( "r_uiFullScreen", "0" );
-
 	// flush client memory and start loading stuff
 	// this will also (re)load the UI
 	// if this is a local client then only the client part of the hunk
@@ -3033,18 +3016,18 @@ void CL_PrintPacket( netadr_t from, msg_t *msg )
 
 	s = MSG_ReadBigString( msg );
 
-	if ( !Q_stricmpn( s, "[err_dialog]", 12 ) )
+	if ( !Q_strnicmp( s, "[err_dialog]", 12 ) )
 	{
 		Q_strncpyz( clc.serverMessage, s + 12, sizeof( clc.serverMessage ) );
 		// Cvar_Set("com_errorMessage", clc.serverMessage );
 		Com_Error( ERR_DROP, "%s", clc.serverMessage );
 	}
-	else if ( !Q_stricmpn( s, "[err_prot]", 10 ) )
+	else if ( !Q_strnicmp( s, "[err_prot]", 10 ) )
 	{
 		Q_strncpyz( clc.serverMessage, s + 10, sizeof( clc.serverMessage ) );
 		Com_Error( ERR_DROP, "%s", PROTOCOL_MISMATCH_ERROR_LONG );
 	}
-	else if ( !Q_stricmpn( s, "ET://", 5 ) )
+	else if ( !Q_strnicmp( s, "ET://", 5 ) )
 	{
 		// fretn
 		Q_strncpyz( clc.serverMessage, s, sizeof( clc.serverMessage ) );
@@ -3162,8 +3145,7 @@ void CL_GSRFeaturedLabel( byte **data, char *buf, int size )
 		}
 		else if ( l == &buf[ size - 1 ] )
 		{
-			Com_DPrintf( "%s", S_COLOR_YELLOW  "Warning: "
-			             "CL_GSRFeaturedLabel: overflow\n" );
+			Com_DPrintf( "%s", S_WARNING "CL_GSRFeaturedLabel: overflow\n" );
 		}
 
 		l++, ( *data ) ++;
@@ -4052,7 +4034,7 @@ qboolean CL_InitRenderer( void )
 	}
 
 	// load character sets
-	cls.charSetShader = re.RegisterShader( "gfx/2d/bigchars" );
+	cls.charSetShader = re.RegisterShader( "gfx/2d/bigchars", RSF_DEFAULT );
 	cls.useLegacyConsoleFont = cls.useLegacyConsoleFace = qtrue;
 
 	// Register console font specified by cl_consoleFont, if any
@@ -4068,8 +4050,8 @@ qboolean CL_InitRenderer( void )
 		FS_FCloseFile( f );
 	}
 
-	cls.whiteShader = re.RegisterShader( "white" );
-	cls.consoleShader = re.RegisterShader( "console" );
+	cls.whiteShader = re.RegisterShader( "white", RSF_NOMIP );
+	cls.consoleShader = re.RegisterShader( "console", RSF_DEFAULT );
 
 	g_console_field_width = cls.glconfig.vidWidth / SMALLCHAR_WIDTH - 2;
 	g_consoleField.widthInChars = g_console_field_width;
@@ -4502,8 +4484,10 @@ void CL_Init( void )
 	cl_consoleFontKerning = Cvar_Get( "cl_consoleFontKerning", "0", CVAR_ARCHIVE );
 
 	cl_consoleCommand = Cvar_Get( "cl_consoleCommand", "say", CVAR_ARCHIVE );
-	
+
 	cl_logs = Cvar_Get ("cl_logs", "0", CVAR_ARCHIVE);
+
+	p_team = Cvar_Get("p_team", "0", CVAR_ROM );
 
 	cl_gamename = Cvar_Get( "cl_gamename", GAMENAME_FOR_MASTER, CVAR_TEMP );
 	cl_altTab = Cvar_Get( "cl_altTab", "1", CVAR_ARCHIVE );
@@ -4615,7 +4599,7 @@ void CL_Init( void )
 
 	Cvar_Set( "cl_running", "1" );
 	CL_GenerateRSAKey();
-	
+
 	CL_OpenClientLog();
 	CL_WriteClientLog( "`~-     Client Opened     -~`\n" );
 
@@ -4703,7 +4687,7 @@ void CL_Shutdown( void )
 	// done.
 
 	CL_IRCWaitShutdown();
-	
+
 	CL_WriteClientLog( "`~-     Client Closed     -~`\n" );
 	CL_CloseClientLog();
 
@@ -5845,7 +5829,7 @@ void CL_GetClipboardData( char *buf, int buflen, clipboard_t clip )
 		}
 		else
 		{
-			int w = Q_UTF8Width( clean + i );
+			int w = Q_UTF8_Width( clean + i );
 
 			if ( j + w >= buflen )
 			{

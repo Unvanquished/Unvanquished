@@ -25,6 +25,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 uniform sampler2D	u_CurrentMap;
 uniform sampler2D	u_GrainMap;
 uniform sampler2D	u_VignetteMap;
+uniform sampler3D	u_ColorMap;
 
 varying vec2		var_Tex;
 
@@ -39,6 +40,9 @@ void	main()
 	vec4 original = clamp(texture2D(u_CurrentMap, st), 0.0, 1.0);
 
 	vec4 color = original;
+
+	// apply color grading
+	color.rgb = texture3D(u_ColorMap, color.rgb * 15.0/16.0 + 0.5/16.0).rgb;
 
 	// calculate chromatic aberration
 #if 0

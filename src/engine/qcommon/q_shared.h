@@ -45,10 +45,10 @@ extern "C" {
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.13.0"
+#define PRODUCT_VERSION         "0.14.0"
 
 #define ENGINE_NAME             "Daemon Engine"
-#define ENGINE_VERSION          "0.13.0"
+#define ENGINE_VERSION          "0.14.0"
 
 #ifdef REVISION
 # define Q3_VERSION             PRODUCT_NAME " " PRODUCT_VERSION " " REVISION
@@ -63,9 +63,13 @@ extern "C" {
 #define CLIENT_WINDOW_MIN_TITLE PRODUCT_NAME_LOWER
 #define GAMENAME_FOR_MASTER     PRODUCT_NAME_UPPER
 
+
+#define AUTOEXEC_NAME           "autoexec.cfg"
+
 #ifndef DEDICATED
 #define CONFIG_NAME             "autogen.cfg"
 #define KEYBINDINGS_NAME        "keybindings.cfg"
+#define TEAMCONFIG_NAME         "teamconfig.cfg"
 #else
 #define CONFIG_NAME             "autogen_server.cfg"
 #endif
@@ -227,35 +231,7 @@ extern int memcmp( void *, void *, size_t );
 #define Q3_VM_INSTANTIATE
 #endif
 
-#if defined __GNUC__ || defined __clang__
-#define NORETURN __attribute__((__noreturn__))
-#define UNUSED __attribute__((__unused__))
-#define PRINTF_ARGS(f, a) __attribute__((__format__(__printf__, (f), (a))))
-#define PRINTF_LIKE(n) PRINTF_ARGS((n), (n) + 1)
-#define VPRINTF_LIKE(n) PRINTF_ARGS((n), 0)
-#define ALIGNED(a, x) x __attribute__((__aligned__(a)))
-#define ALWAYS_INLINE INLINE __attribute__((__always_inline__))
-#elif ( defined _MSC_VER )
-#define NORETURN
-#define UNUSED
-#define PRINTF_ARGS(f, a)
-#define PRINTF_LIKE(n)
-#define VPRINTF_LIKE(n)
-#define ALIGNED( a, x ) __declspec(align(a)) x
-#define ALWAYS_INLINE __forceinline
-#define __attribute__(x)
-#define __func__ __FUNCTION__
-#else
-#define NORETURN
-#define UNUSED
-#define PRINTF_ARGS(f, a)
-#define PRINTF_LIKE(n)
-#define VPRINTF_LIKE(n)
-#define ALIGNED( a, x ) x
-#define ALWAYS_INLINE
-#define __attribute__(x)
-#define __func__
-#endif
+#include "../../include/global.h"
 
 //bani
 //======================= GNUC DEFINES ==================================
@@ -582,6 +558,16 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 	       ) ? qtrue : qfalse;
 }
 #endif
+
+#define S_SKIPNOTIFY "[skipnotify]"
+
+/*
+ * used for consistent representation within print or log statements
+ * TODO: should probably be rather done via specialized print function that takes a severity enum, so that it also can do filtering
+ */
+#define S_WARNING S_COLOR_YELLOW "Warning: " S_COLOR_WHITE
+#define S_ERROR   S_COLOR_RED "ERROR: " S_COLOR_WHITE
+#define S_DEBUG   "Debug: "
 
 #define INDENT_MARKER    '\v'
 
@@ -1427,7 +1413,7 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 // portable case insensitive compare
 	int        Q_stricmp( const char *s1, const char *s2 );
 	int        Q_strncmp( const char *s1, const char *s2, int n );
-	int        Q_stricmpn( const char *s1, const char *s2, int n );
+	int        Q_strnicmp( const char *s1, const char *s2, int n );
 	char       *Q_strlwr( char *s1 );
 	char       *Q_strupr( char *s1 );
 	char       *Q_strrchr( const char *string, int c );
@@ -1448,10 +1434,7 @@ double rint( double x );
 
 #endif
 	void     Q_strcat( char *dest, int destsize, const char *src );
-	int      Q_strnicmp( const char *string1, const char *string2, int n );
 	void     Q_strncpyz2( char *dst, const char *src, int dstSize );
-	int      Q_strcasecmp( const char *s1, const char *s2 );
-	int      Q_strncasecmp( const char *s1, const char *s2, int n );
 	qboolean Q_strreplace( char *dest, int destsize, const char *find, const char *replace );
 
 	int      Com_Filter( const char *filter, const char *name, int casesensitive );
@@ -1470,18 +1453,6 @@ double rint( double x );
 
 // removes whitespaces and other bad directory characters
 	char     *Q_CleanDirName( char *dirname );
-
-//=============================================
-
-int Q_UTF8Width( const char *str );
-int Q_UTF8WidthCP( int ch );
-int Q_UTF8Strlen( const char *str );
-int Q_UTF8PrintStrlen( const char *str );
-qboolean Q_UTF8ContByte( char c );
-unsigned long Q_UTF8CodePoint( const char *str );
-char *Q_UTF8Encode( unsigned long codepoint );
-int Q_UTF8Store( const char *s );
-char *Q_UTF8Unstore( int e );
 
 //=============================================
 
@@ -1551,6 +1522,13 @@ char *Q_UTF8Unstore( int e );
 		int           modificationCount; // incremented each time the cvar is changed
 		float         value; // atof( string )
 		int           integer; // atoi( string )
+
+		/**
+		 * indicate whether the cvar won't be archived, even if it's an ARCHIVE flagged cvar.
+		 * this allows us to keep ARCHIVE cvars unwritten to autogen until a user changes them
+		 */
+		qboolean      transient;
+
 		qboolean      validate;
 		qboolean      integral;
 		float         min;
@@ -2041,7 +2019,8 @@ char *Q_UTF8Unstore( int e );
 // the structure size is fairly large
 //
 // NOTE: all fields in here must be 32 bits (or those within sub-structures)
-
+//
+// You can use Com_EntityTypeName to get a String representation of this enum
 	typedef enum
 	{
 		ET_GENERAL,
@@ -2057,8 +2036,8 @@ char *Q_UTF8Unstore( int e );
 		ET_BEAM,
 		ET_PORTAL,
 		ET_SPEAKER,
-		ET_PUSH_TRIGGER,
-		ET_TELEPORT_TRIGGER,
+		ET_PUSHER,
+		ET_TELEPORTER,
 		ET_INVISIBLE,
 		ET_GRAPPLE,       // grapple hooked on wall
 
@@ -2073,6 +2052,8 @@ char *Q_UTF8Unstore( int e );
 		// by setting eType to ET_EVENTS + eventNum
 		// this avoids having to set eFlags and eventNum
 	} entityType_t;
+
+	const char *Com_EntityTypeName(entityType_t entityType);
 
 	typedef struct entityState_s
 	{
@@ -2250,10 +2231,12 @@ typedef struct
 #define MAX_EMOTICON_NAME_LEN     16
 #define MAX_EMOTICONS             64
 
+#define MAX_OBJECTIVES            64
 #define MAX_LOCATIONS             64
 #define MAX_MODELS                256 // these are sent over the net as 8 bits
 #define MAX_SOUNDS                256 // so they cannot be blindly increased
 #define MAX_GAME_SHADERS          64
+#define MAX_GRADING_TEXTURES      64
 #define MAX_GAME_PARTICLE_SYSTEMS 64
 #define MAX_HOSTNAME_LENGTH       80
 #define MAX_NEWS_STRING           10000

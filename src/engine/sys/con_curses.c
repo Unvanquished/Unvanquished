@@ -21,6 +21,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #include "../qcommon/q_shared.h"
+#include "../qcommon/q_unicode.h"
 #include "../qcommon/qcommon.h"
 #include "sys_local.h"
 
@@ -49,11 +50,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include <curses.h>
 
 #ifdef DEDICATED
-#define TITLE         "^4---[ ^3" CLIENT_WINDOW_TITLE " Server Console ^4]---"
+#define TITLE         S_COLOR_BLUE "---[ " S_COLOR_YELLOW CLIENT_WINDOW_TITLE " Server Console " S_COLOR_BLUE "]---"
 #else
-#define TITLE         "^4---[ ^3" CLIENT_WINDOW_TITLE " Console ^4]---"
+#define TITLE         S_COLOR_BLUE "---[ " S_COLOR_YELLOW CLIENT_WINDOW_TITLE " Console " S_COLOR_BLUE "]---"
 #endif
-#define PROMPT        "^3-> "
+#define PROMPT        S_COLOR_YELLOW "-> "
 #define INPUT_SCROLL  15
 #define LOG_SCROLL    5
 #define MAX_LOG_LINES 1024
@@ -160,7 +161,7 @@ Update the cursor position
 #ifdef USE_CURSES_W
 static INLINE int CON_wcwidth( const char *s )
 {
-	int w = wcwidth( Q_UTF8CodePoint( s ) );
+	int w = wcwidth( Q_UTF8_CodePoint( s ) );
 	return w < 0 ? 0 : w;
 }
 
@@ -172,7 +173,7 @@ static int CON_CursorPosFromScroll( void )
 	for ( i = input_field.scroll; i < input_field.cursor; ++i )
 	{
 		c += CON_wcwidth( input_field.buffer + p );
-		p += Q_UTF8Width( input_field.buffer + p );
+		p += Q_UTF8_Width( input_field.buffer + p );
 	}
 
 	return c;
@@ -349,13 +350,13 @@ static void CON_ColorPrint( WINDOW *win, const char *msg, qboolean stripcodes )
 				noColour = qfalse;
 			}
 #ifdef USE_CURSES_W
-			buffer[ length ] = (wchar_t) Q_UTF8CodePoint( msg );
-			msg += Q_UTF8WidthCP( buffer[ length ]);
+			buffer[ length ] = (wchar_t) Q_UTF8_CodePoint( msg );
+			msg += Q_UTF8_WidthCP( buffer[ length ]);
 			length++;
 #else
 			{
-				int chr = Q_UTF8CodePoint( msg );
-				msg += Q_UTF8WidthCP( chr );
+				int chr = Q_UTF8_CodePoint( msg );
+				msg += Q_UTF8_WidthCP( chr );
 				buffer[ length++ ] = ( chr >= 0x100 ) ? '?' : chr;
 			}
 #endif
@@ -701,7 +702,7 @@ char *CON_Input( void )
 				wnoutrefresh( inputwin );
 				CON_UpdateCursor();
 				//doupdate();
-				Com_Printf( PROMPT "^7%s\n", text );
+				Com_Printf( PROMPT S_COLOR_WHITE "%s\n", text );
 				return text;
 
 			case 21: // Ctrl-U
@@ -718,7 +719,7 @@ char *CON_Input( void )
 			case '\t':
 			case KEY_STAB:
 				Field_AutoComplete( &input_field, PROMPT );
-				input_field.cursor = Q_UTF8Strlen( input_field.buffer );
+				input_field.cursor = Q_UTF8_Strlen( input_field.buffer );
 				continue;
 
 			case '\f':
@@ -734,7 +735,7 @@ char *CON_Input( void )
 				continue;
 
 			case KEY_RIGHT:
-				if ( input_field.cursor < Q_UTF8Strlen( input_field.buffer ) )
+				if ( input_field.cursor < Q_UTF8_Strlen( input_field.buffer ) )
 				{
 					input_field.cursor++;
 				}
@@ -779,7 +780,7 @@ char *CON_Input( void )
 			case 5: // Ctrl-E
 			case KEY_END:
 				key_end:
-				input_field.cursor = Q_UTF8Strlen( input_field.buffer );
+				input_field.cursor = Q_UTF8_Strlen( input_field.buffer );
 				continue;
 
 			case KEY_NPAGE:
@@ -827,10 +828,10 @@ char *CON_Input( void )
 				// Fall through
 			case 4: // Ctrl-D
 			case KEY_DC:
-				if ( input_field.cursor < Q_UTF8Strlen( input_field.buffer ) )
+				if ( input_field.cursor < Q_UTF8_Strlen( input_field.buffer ) )
 				{
 					int offset = Field_CursorToOffset( &input_field );
-					int width = Q_UTF8Width( input_field.buffer + offset );
+					int width = Q_UTF8_Width( input_field.buffer + offset );
 					memmove( input_field.buffer + offset,
 					         input_field.buffer + offset + width,
 					         strlen( input_field.buffer + offset + width ) + 1 );
@@ -844,13 +845,13 @@ char *CON_Input( void )
 					char *p, *s, tmp[4];
 					int width;
 
-					if ( input_field.cursor == Q_UTF8Strlen( input_field.buffer ) )
+					if ( input_field.cursor == Q_UTF8_Strlen( input_field.buffer ) )
 					{
 						--input_field.cursor;
 					}
 
 					s = &input_field.buffer[ Field_CursorToOffset( &input_field ) ];
-					width = Q_UTF8Width( s );
+					width = Q_UTF8_Width( s );
 					--input_field.cursor;
 					p = &input_field.buffer[ Field_CursorToOffset( &input_field ) ];
 					memcpy( tmp, p, s - p );
@@ -865,7 +866,7 @@ char *CON_Input( void )
 		// Other characters
 		if ( chr >= ' ' )
 		{
-			int width = 1;//Q_UTF8WidthCP( chr );
+			int width = 1;//Q_UTF8_WidthCP( chr );
 			int count, offset;
 			char buf[20];
 
@@ -944,7 +945,7 @@ char *CON_Input( void )
 
 				for ( count = 0; count <= width; ++count )
 				{
-					strcat( buf, Q_UTF8Encode( ( chr >> ( ( width - count ) * 8 ) ) & 0xFF ) );
+					strcat( buf, Q_UTF8_Encode( ( chr >> ( ( width - count ) * 8 ) ) & 0xFF ) );
 				}
 
 				count = strlen( buf );

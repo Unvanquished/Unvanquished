@@ -416,7 +416,7 @@ void InitPaths(int *argc, char **argv)
 			for(j = 0; j < (len - len2); j++)
 			{
 				/* check for the game's magic word */
-				if(Q_strncasecmp(&temp[j], game->magic, len2) == 0)
+				if(Q_strnicmp(&temp[j], game->magic, len2) == 0)
 				{
 					/* now find the next slash and nuke everything after it */
 					while(temp[++j] != '/' && temp[j] != '\0');

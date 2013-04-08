@@ -2865,8 +2865,8 @@ PM_SetViewheight
 static void PM_SetViewheight( void )
 {
 	pm->ps->viewheight = ( pm->ps->pm_flags & PMF_DUCKED )
-	                     ? BG_ClassConfig( pm->ps->stats[ STAT_CLASS ] )->crouchViewheight
-	                     : BG_ClassConfig( pm->ps->stats[ STAT_CLASS ] )->viewheight;
+	                     ? BG_ClassModelConfig( pm->ps->stats[ STAT_CLASS ] )->crouchViewheight
+	                     : BG_ClassModelConfig( pm->ps->stats[ STAT_CLASS ] )->viewheight;
 }
 
 /*
@@ -3913,9 +3913,18 @@ static void PM_Weapon( void )
 				break;
 
 			default:
-				PM_StartTorsoAnim( TORSO_ATTACK );
-				PM_StartWeaponAnim( WANIM_ATTACK1 );
-				break;
+				if ( attack1 )
+				{
+					PM_StartTorsoAnim( TORSO_ATTACK );
+					PM_StartWeaponAnim( WANIM_ATTACK1 );
+					break;
+				}
+				else if ( attack2 )
+				{
+					PM_StartTorsoAnim( TORSO_ATTACK );
+					PM_StartWeaponAnim( WANIM_ATTACK2 );
+					break;
+				}
 		}
 	}
 	else

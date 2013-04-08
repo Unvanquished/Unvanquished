@@ -46,6 +46,9 @@ int        r_numDecalProjectors;
 int        r_firstSceneDecal;
 int        r_numDecals;
 
+int r_numVisTests;
+int r_firstSceneVisTest;
+
 /*
 ====================
 R_ToggleSmpFrame
@@ -88,6 +91,9 @@ void R_ToggleSmpFrame( void )
 	r_firstSceneDecalProjector = 0;
 	r_numDecals = 0;
 	r_firstSceneDecal = 0;
+
+	r_numVisTests = 0;
+	r_firstSceneVisTest = 0;
 }
 
 /*
@@ -100,6 +106,7 @@ void RE_ClearScene( void )
 	r_firstSceneLight = r_numLights;
 	r_firstSceneEntity = r_numEntities;
 	r_firstScenePoly = r_numPolys;
+	r_firstSceneVisTest = r_numVisTests;
 }
 
 /*
@@ -694,6 +701,9 @@ void RE_RenderScene( const refdef_t *fd )
 	tr.refdef.numDecals = r_numDecals - r_firstSceneDecal;
 	tr.refdef.decals = &backEndData[ tr.smpFrame ]->decals[ r_firstSceneDecal ];
 
+	tr.refdef.numVisTests = r_numVisTests - r_firstSceneVisTest;
+	tr.refdef.visTests = &backEndData[ tr.smpFrame ]->visTests[ r_firstSceneVisTest ];
+
 	// a single frame may have multiple scenes draw inside it --
 	// a 3D game view, 3D status bar renderings, 3D menus, etc.
 	// They need to be distinguished by the light flare code, because
@@ -801,4 +811,111 @@ void RE_RestoreViewParms( void )
 {
 	// This was killing the LOD computation
 	tr.viewParms = g_oldViewParms;
+}
+
+/*
+================
+RE_RegisterVisTest
+
+Reserves a VisTest handle. This can be used to query the visibility
+of a 3D-point in the scene. The engine will try not to stall the GPU,
+so the result may be available delayed.
+================
+*/
+qhandle_t RE_RegisterVisTest( void )
+{
+	int hTest;
+	visTest_t *test;
+
+	for( hTest = 0; hTest < tr.numVisTests; hTest++ ) {
+		test = tr.visTests[ hTest ];
+		if( !test->registered )
+			break;
+	}
+
+	if( hTest >= tr.numVisTests ) {
+		if( tr.numVisTests == MAX_VISTESTS ) {
+			ri.Printf( PRINT_WARNING, "WARNING: RE_RegisterVisTest - MAX_VISTESTS hit\n" );
+			return 0;
+		}
+
+		hTest = tr.numVisTests++;
+		test = (visTest_t *)ri.Hunk_Alloc( sizeof( visTest_t ), h_low );
+		tr.visTests[ hTest ] = test;
+	}
+
+	memset( test, 0, sizeof( visTest_t ) );
+	glGenQueries( 1, &test->hQuery );
+	glGenQueries( 1, &test->hQueryRef );
+	test->registered = qtrue;
+
+	return hTest + 1;
+}
+
+/*
+================
+RE_AddVisTestToScene
+
+Add a VisTest to the current scene. If the VisTest is still
+running from a prior scene, just noop.
+================
+*/
+void RE_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust,
+			   float area )
+{
+	visTest_t *test;
+
+	if( r_numVisTests == MAX_VISTESTS ) {
+		ri.Printf( PRINT_WARNING, "WARNING: RE_AddVisTestToScene - MAX_VISTESTS hit\n" );
+		return;
+	}
+
+	if( hTest <= 0 || hTest > MAX_VISTESTS ||
+	    !(test = tr.visTests[ hTest - 1 ] ) )
+		return;
+
+	VectorCopy( pos, test->position );
+	test->depthAdjust = depthAdjust;
+	test->area = area;
+
+	backEndData[ tr.smpFrame ]->visTests[ r_numVisTests++ ] = test;
+}
+
+/*
+================
+RE_CheckVisibility
+
+Query the last available result of a VisTest.
+================
+*/
+float RE_CheckVisibility( qhandle_t hTest )
+{
+	if( hTest <= 0 || hTest > MAX_VISTESTS || !tr.visTests[ hTest - 1 ] )
+		return 0.0f;
+
+	return tr.visTests[ hTest - 1 ]->lastResult;
+}
+
+void RE_UnregisterVisTest( qhandle_t hTest )
+{
+	if( hTest <= 0 || hTest > tr.numVisTests || !tr.visTests[ hTest - 1 ] )
+		return;
+
+	glDeleteQueries( 1, &tr.visTests[ hTest - 1 ]->hQuery );
+	glDeleteQueries( 1, &tr.visTests[ hTest - 1 ]->hQueryRef );
+	tr.visTests[ hTest - 1 ]->registered = qfalse;
+}
+
+void R_ShutdownVisTests( void )
+{
+	int hTest;
+
+	for( hTest = 0; hTest < tr.numVisTests; hTest++ ) {
+		if( !tr.visTests[ hTest ]->registered )
+			continue;
+
+		glDeleteQueries( 1, &tr.visTests[ hTest ]->hQuery );
+		glDeleteQueries( 1, &tr.visTests[ hTest ]->hQueryRef );
+		tr.visTests[ hTest ]->registered = qfalse;
+	}
 }

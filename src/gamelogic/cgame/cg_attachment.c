@@ -104,7 +104,7 @@ qboolean CG_AttachmentPoint( attachment_t *a, vec3_t v )
 			break;
 
 		default:
-			CG_Printf( "^1ERROR: Invalid attachmentType_t in attachment\n" );
+			CG_Printf( S_ERROR "Invalid attachmentType_t in attachment\n" );
 			break;
 	}
 
@@ -179,7 +179,7 @@ qboolean CG_AttachmentDir( attachment_t *a, vec3_t v )
 			break;
 
 		default:
-			CG_Printf( "^1ERROR: Invalid attachmentType_t in attachment\n" );
+			CG_Printf( S_ERROR "Invalid attachmentType_t in attachment\n" );
 			break;
 	}
 
@@ -231,7 +231,7 @@ qboolean CG_AttachmentAxis( attachment_t *a, vec3_t axis[ 3 ] )
 			return qfalse;
 
 		default:
-			CG_Printf( "^1ERROR: Invalid attachmentType_t in attachment\n" );
+			CG_Printf( S_ERROR "Invalid attachmentType_t in attachment\n" );
 			break;
 	}
 

@@ -1,3 +1,6 @@
+; Generated file. Do not edit.
+; To update, run src/utils/scan_api.sh
+
 code
 
 equ memset                                -1
@@ -82,8 +85,6 @@ equ trap_R_GetSkinModel                   -320
 equ trap_R_GetShaderFromModel             -321
 equ trap_R_RegisterShader                 -322
 equ trap_R_RegisterFont                   -323
-equ trap_R_RegisterShaderNoMip            -324
-equ trap_R_RegisterShaderLightAttenuation -325
 equ trap_R_ClearScene                     -326
 equ trap_R_AddRefEntityToScene            -327
 equ trap_R_AddRefLightToScene             -328
@@ -176,5 +177,10 @@ equ trap_R_GlyphChar                      -414
 equ trap_R_UnregisterFont                 -415
 equ trap_Pgettext                         -416
 equ trap_R_inPVVS                         -417
-equ trap_Key_SetTeam                      -418
+equ trap_notify_onTeamChange              -418
 equ trap_GettextPlural                    -419
+equ trap_RegisterVisTest                  -420
+equ trap_AddVisTestToScene                -421
+equ trap_CheckVisibility                  -422
+equ trap_UnregisterVisTest                -423
+equ trap_SetColorGrading                  -424

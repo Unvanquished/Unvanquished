@@ -2660,7 +2660,7 @@ static void ParseDeform( char **text )
 		return;
 	}
 
-	if ( !Q_stricmpn( token, "text", 4 ) )
+	if ( !Q_strnicmp( token, "text", 4 ) )
 	{
 		int n;
 
@@ -3243,14 +3243,14 @@ static qboolean ParseShader( char **text )
 			continue;
 		}
 		// skip stuff that only the QuakeEdRadient needs
-		else if ( !Q_stricmpn( token, "qer", 3 ) ||
+		else if ( !Q_strnicmp( token, "qer", 3 ) ||
 		          !Q_stricmp( token, "description" ) ||
 		          !Q_stricmp( token, "renderbump" ) ||
 		          !Q_stricmp( token, "unsmoothedTangents" ) ||
 		          !Q_stricmp( token, "guiSurf" ) ||
 		          !Q_stricmp( token, "decalInfo" ) ||
 		          !Q_stricmp( token, "materialType" ) ||
-		          !Q_stricmpn( token, "matter", 6 ) ||
+		          !Q_strnicmp( token, "matter", 6 ) ||
 		          !Q_stricmp( token, "noShadows" ) ||
 		          !Q_stricmp( token, "noSelfShadow" ) ||
 		          !Q_stricmp( token, "forceShadows" ) ||
@@ -3319,7 +3319,7 @@ static qboolean ParseShader( char **text )
 			}
 		}
 		// skip stuff that only the q3map needs
-		else if ( !Q_stricmpn( token, "xmap", 4 ) || !Q_stricmpn( token, "q3map", 5 ) )
+		else if ( !Q_strnicmp( token, "xmap", 4 ) || !Q_strnicmp( token, "q3map", 5 ) )
 		{
 			SkipRestOfLine( text );
 			continue;
@@ -3688,7 +3688,7 @@ static qboolean ParseShader( char **text )
 			continue;
 		}
 		// ydnar: implicit default mapping to eliminate redundant/incorrect explicit shader stages
-		else if ( !Q_stricmpn( token, "implicit", 8 ) )
+		else if ( !Q_strnicmp( token, "implicit", 8 ) )
 		{
 			// set implicit mapping state
 			if ( !Q_stricmp( token, "implicitBlend" ) )
@@ -5223,7 +5223,7 @@ shader_t       *R_FindShader( const char *name, int lightmapIndex, qboolean mipR
 	return FinishShader();
 }
 
-qhandle_t RE_RegisterShaderFromImage( const char *name, int lightmapIndex, image_t *image, qboolean mipRawImage )
+qhandle_t RE_RegisterShaderFromImage( const char *name, int lightmapIndex, image_t *image )
 {
 	int      i, hash;
 	shader_t *sh;
@@ -5326,7 +5326,7 @@ This should really only be used for explicit shaders, because there is no
 way to ask for different implicit lighting modes (vertex, lightmap, etc)
 ====================
 */
-qhandle_t RE_RegisterShader( const char *name )
+qhandle_t RE_RegisterShader( const char *name, RegisterShaderFlags_t flags )
 {
 	shader_t *sh;
 
@@ -5336,39 +5336,8 @@ qhandle_t RE_RegisterShader( const char *name )
 		return 0;
 	}
 
-	sh = R_FindShader( name, LIGHTMAP_2D, qtrue );
-
-	// we want to return 0 if the shader failed to
-	// load for some reason, but R_FindShader should
-	// still keep a name allocated for it, so if
-	// something calls RE_RegisterShader again with
-	// the same name, we don't try looking for it again
-	if ( sh->defaultShader )
-	{
-		return 0;
-	}
-
-	return sh->index;
-}
-
-/*
-====================
-RE_RegisterShaderNoMip
-
-For menu graphics that should never be picmiped
-====================
-*/
-qhandle_t RE_RegisterShaderNoMip( const char *name )
-{
-	shader_t *sh;
-
-	if ( strlen( name ) >= MAX_QPATH )
-	{
-		Com_Printf( "Shader name exceeds MAX_QPATH\n" );
-		return 0;
-	}
-
-	sh = R_FindShader( name, LIGHTMAP_2D, qfalse );
+	sh = R_FindShader( name, LIGHTMAP_2D,
+			   (flags & RSF_NOMIP) ? qfalse : qtrue );
 
 	// we want to return 0 if the shader failed to
 	// load for some reason, but R_FindShader should

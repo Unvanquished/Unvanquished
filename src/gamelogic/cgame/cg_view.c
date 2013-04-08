@@ -463,7 +463,7 @@ void CG_OffsetShoulderView( void )
 	float        deltaMousePitch;
 	static float mousePitch;
 	vec3_t       forward, right, up;
-	classConfig_t *classConfig;
+	classModelConfig_t *classModelConfig;
 
 	// Ignore following pitch; it's too jerky otherwise.
 	if ( !cg_thirdPersonPitchFollow.integer )
@@ -473,10 +473,10 @@ void CG_OffsetShoulderView( void )
 
 	AngleVectors( cg.refdefViewAngles, forward, right, up );
 
-	classConfig = BG_ClassConfig( cg.snap->ps.stats[ STAT_CLASS ] );
-	VectorMA( cg.refdef.vieworg, classConfig->shoulderOffsets[ 0 ], forward, cg.refdef.vieworg );
-	VectorMA( cg.refdef.vieworg, classConfig->shoulderOffsets[ 1 ], right, cg.refdef.vieworg );
-	VectorMA( cg.refdef.vieworg, classConfig->shoulderOffsets[ 2 ], up, cg.refdef.vieworg );
+	classModelConfig = BG_ClassModelConfig( cg.snap->ps.stats[ STAT_CLASS ] );
+	VectorMA( cg.refdef.vieworg, classModelConfig->shoulderOffsets[ 0 ], forward, cg.refdef.vieworg );
+	VectorMA( cg.refdef.vieworg, classModelConfig->shoulderOffsets[ 1 ], right, cg.refdef.vieworg );
+	VectorMA( cg.refdef.vieworg, classModelConfig->shoulderOffsets[ 2 ], up, cg.refdef.vieworg );
 
 	// If someone is playing like this, the rest is already taken care of
 	// so just get the firstperson effects and leave.
@@ -1578,6 +1578,8 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 
 	// update cvars
 	CG_UpdateCvars();
+
+	CG_NotifyHooks();
 
 	// any looped sounds will be respecified as entities
 	// are added to the render list

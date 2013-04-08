@@ -67,11 +67,8 @@ typedef struct
 	qhandle_t ( *RegisterModel )( const char *name );
 	//qhandle_t   (*RegisterModelAllLODs) (const char *name);
 	qhandle_t ( *RegisterSkin )( const char *name );
-	qhandle_t ( *RegisterShader )( const char *name );
-	qhandle_t ( *RegisterShaderNoMip )( const char *name );
-#if defined( USE_REFLIGHT )
-	qhandle_t ( *RegisterShaderLightAttenuation )( const char *name );
-#endif
+	qhandle_t ( *RegisterShader )( const char *name,
+				       RegisterShaderFlags_t flags );
 	void   ( *RegisterFont )( const char *fontName, const char *fallbackName, int pointSize, fontInfo_t *font );
 	void   ( *UnregisterFont )( fontInfo_t *font );
 	void   ( *RegisterFontVM )( const char *fontName, const char *fallbackName, int pointSize, fontMetrics_t * );
@@ -188,6 +185,16 @@ typedef struct
 #endif
 
 	// XreaL END
+
+	// VisTest API
+	qhandle_t ( *RegisterVisTest ) ();
+	void      ( *AddVisTestToScene ) ( qhandle_t hTest, vec3_t pos,
+					   float depthAdjust, float area );
+	float     ( *CheckVisibility ) ( qhandle_t hTest );
+	void      ( *UnregisterVisTest ) ( qhandle_t hTest );
+
+	// color grading
+	void      ( *SetColorGrading ) ( qhandle_t hShader );
 } refexport_t;
 
 //

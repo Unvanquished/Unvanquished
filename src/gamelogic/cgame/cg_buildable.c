@@ -435,7 +435,7 @@ void CG_InitBuildables( void )
 
 			for ( j = 0; j < MAX_BUILDABLE_MODELS; j++ )
 			{
-				modelFile = BG_BuildableConfig( i )->models[ j ];
+				modelFile = BG_BuildableModelConfig( i )->models[ j ];
 
 				if ( strlen( modelFile ) > 0 )
 				{
@@ -546,7 +546,7 @@ void CG_InitBuildables( void )
 
 			if ( !CG_ParseBuildableAnimationFile( filename, i ) )
 			{
-				Com_Printf( S_COLOR_YELLOW  "WARNING: failed to load animation file %s\n", filename );
+				Com_Printf( S_WARNING "failed to load animation file %s\n", filename );
 			}
 		}
 
@@ -555,7 +555,7 @@ void CG_InitBuildables( void )
 
 		if ( !CG_ParseBuildableSoundFile( filename, i ) )
 		{
-			Com_Printf( S_COLOR_YELLOW  "WARNING: failed to load sound file %s\n", filename );
+			Com_Printf( S_WARNING "failed to load sound file %s\n", filename );
 		}
 
 		//sounds
@@ -963,7 +963,7 @@ static void CG_DrawBuildableRangeMarker( buildable_t buildable, const vec3_t ori
 
 		if ( buildable == BA_A_HIVE || buildable == BA_H_TESLAGEN )
 		{
-			VectorMA( origin, BG_BuildableConfig( buildable )->maxs[ 2 ], normal, localOrigin );
+			VectorMA( origin, BG_BuildableModelConfig( buildable )->maxs[ 2 ], normal, localOrigin );
 		}
 		else
 		{
@@ -1014,7 +1014,7 @@ void CG_GhostBuildable( buildable_t buildable )
 	                                  mins, maxs, ent.axis, ent.origin );
 
 	//offset on the Z axis if required
-	VectorMA( ent.origin, cg_highPolyBuildableModels.integer ? BG_BuildableConfig( buildable )->zOffset : BG_BuildableConfig( buildable )->oldOffset, tr.plane.normal, ent.origin );
+	VectorMA( ent.origin, cg_highPolyBuildableModels.integer ? BG_BuildableModelConfig( buildable )->zOffset : BG_BuildableModelConfig( buildable )->oldOffset, tr.plane.normal, ent.origin );
 
 	VectorCopy( ent.origin, ent.lightingOrigin );
 	VectorCopy( ent.origin, ent.oldorigin );  // don't positionally lerp at all
@@ -1031,7 +1031,7 @@ void CG_GhostBuildable( buildable_t buildable )
 	}
 
 	//rescale the model
-	scale = BG_BuildableConfig( buildable )->modelScale;
+	scale = BG_BuildableModelConfig( buildable )->modelScale;
 
 	if ( cg_buildables[ buildable ].md5 )
 	{
@@ -1151,7 +1151,8 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 		{
 			if ( PC_String_Parse( handle, &s ) )
 			{
-				bs->frameShader = trap_R_RegisterShader( s );
+				bs->frameShader = trap_R_RegisterShader(s,
+									RSF_DEFAULT);
 			}
 
 			continue;
@@ -1160,7 +1161,8 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 		{
 			if ( PC_String_Parse( handle, &s ) )
 			{
-				bs->overlayShader = trap_R_RegisterShader( s );
+				bs->overlayShader = trap_R_RegisterShader(s,
+									  RSF_DEFAULT);
 			}
 
 			continue;
@@ -1169,7 +1171,8 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 		{
 			if ( PC_String_Parse( handle, &s ) )
 			{
-				bs->noPowerShader = trap_R_RegisterShader( s );
+				bs->noPowerShader = trap_R_RegisterShader(s,
+									  RSF_DEFAULT);
 			}
 
 			continue;
@@ -1178,7 +1181,8 @@ void CG_BuildableStatusParse( const char *filename, buildStat_t *bs )
 		{
 			if ( PC_String_Parse( handle, &s ) )
 			{
-				bs->markedShader = trap_R_RegisterShader( s );
+				bs->markedShader = trap_R_RegisterShader(s,
+									 RSF_DEFAULT);
 			}
 
 			continue;
@@ -1870,7 +1874,7 @@ void CG_Buildable( centity_t *cent )
 	}
 
 	//offset on the Z axis if required
-	VectorMA( ent.origin, cg_highPolyBuildableModels.integer ? BG_BuildableConfig( es->modelindex )->zOffset : BG_BuildableConfig( es->modelindex )->oldOffset, surfNormal, ent.origin );
+	VectorMA( ent.origin, cg_highPolyBuildableModels.integer ? BG_BuildableModelConfig( es->modelindex )->zOffset : BG_BuildableModelConfig( es->modelindex )->oldOffset, surfNormal, ent.origin );
 
 	VectorCopy( ent.origin, ent.oldorigin );  // don't positionally lerp at all
 	VectorCopy( ent.origin, ent.lightingOrigin );
@@ -1897,7 +1901,7 @@ void CG_Buildable( centity_t *cent )
 	CG_BuildableAnimation( cent, &ent.oldframe, &ent.frame, &ent.backlerp );
 
 	//rescale the model
-	scale = cg_highPolyBuildableModels.integer ? BG_BuildableConfig( es->modelindex )->modelScale : BG_BuildableConfig( es->modelindex )->oldScale;
+	scale = cg_highPolyBuildableModels.integer ? BG_BuildableModelConfig( es->modelindex )->modelScale : BG_BuildableModelConfig( es->modelindex )->oldScale;
 
 	if ( scale != 1.0f )
 	{
