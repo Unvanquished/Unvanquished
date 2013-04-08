@@ -4,302 +4,318 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Unv Client DE r1\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-21 11:10-0800\n"
-"PO-Revision-Date: 2013-01-24 11:08+0100\n"
-"Last-Translator: Viech\n"
+"Report-Msgid-Bugs-To: vcelestialragev@gmail.com\n"
+"POT-Creation-Date: 2013-03-16 01:52-0700\n"
+"PO-Revision-Date: 2013-04-02 12:47+0000\n"
+"Last-Translator: Viech <eris@hush.com>\n"
 "Language-Team: Unvanquished Development\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Pootle 2.1.6\n"
+"X-Generator: Pootle 2.5.0-beta1\n"
+"X-POOTLE-MTIME: 1364906845.0\n"
 
 #: src/engine/client/cl_cgame.c:471
 msgid "^3Server sent a pubkey_decrypt command, but sent nothing to decrypt!\n"
-msgstr ""
-"^3Server hat einen pubkey_decrypt Befehl gesendet, es gibt aber nichts zu "
+msgstr "^3Server hat einen pubkey_decrypt Befehl gesendet, es gibt aber nichts zu "
 "entschlüsseln!\n"
 
-#: src/engine/client/cl_cgame.c:1635
+#: src/engine/client/cl_cgame.c:1670
 msgid "Mumble: Linking to Mumble application okay\n"
 msgstr "Mumble: Verbindung zu Mumble-Anwendung steht\n"
 
-#: src/engine/client/cl_cgame.c:1635
+#: src/engine/client/cl_cgame.c:1670
 msgid "Mumble: Linking to Mumble application failed\n"
 msgstr "Mumble: Verbindung zu Mumble-Anwendung fehlgeschlagen\n"
 
-#: src/engine/client/cl_console.c:247
-msgid "usage: condump <filename>\n"
-msgstr "Benutzung: condump <Dateiname>\n"
+#: src/engine/client/cl_console.c:248
+msgid "usage: condump [filename]\n"
+msgstr "Benutzung: condump [Dateiname]\n"
 
-#: src/engine/client/cl_console.c:253
+#: src/engine/client/cl_console.c:263
 #, c-format
 msgid "Dumped console text to %s.\n"
 msgstr "Konsolentext nach %s geschrieben.\n"
 
-#: src/engine/client/cl_console.c:259 src/engine/client/cl_main.c:994
+#: src/engine/client/cl_console.c:269 src/engine/client/cl_main.c:994
 msgid "ERROR: couldn't open.\n"
 msgstr "FEHLER: Konnte nicht geöffnet werden.\n"
 
-#: src/engine/client/cl_console.c:297
+#: src/engine/client/cl_console.c:307
 #, c-format
 msgid "usage: %s <string1> <string2> <…>\n"
 msgstr "Benutzung: %s <Zeichenkette1> <Zeichenkette2> <...>\n"
 
-#: src/engine/client/cl_console.c:343
+#: src/engine/client/cl_console.c:353
 msgid "usage: grep <string>\n"
 msgstr "Benutzung: grep <Zeichenkette>\n"
 
-#: src/engine/client/cl_irc.c:1001
+#: src/engine/client/cl_irc.c:1000
 msgid "Unable to initialise socket.\n"
 msgstr "Konnte Socket nicht initialisieren.\n"
 
-#: src/engine/client/cl_irc.c:1005
+#: src/engine/client/cl_irc.c:1004
 msgid "The specified address family is not supported.\n"
 msgstr "Der angegebene Netzwerktyp wird nicht unterstützt.\n"
 
 # verfügbar/erreichbar?
-#: src/engine/client/cl_irc.c:1009
+#: src/engine/client/cl_irc.c:1008
 msgid "Specified address is not available from the local machine.\n"
-msgstr ""
-"Die angegebene Adresse ist von der lokalen Maschine aus nicht verfügbar.\n"
+msgstr "Die angegebene Adresse ist von der lokalen Maschine aus nicht verfügbar.\n"
 
 # forcefully?
-#: src/engine/client/cl_irc.c:1013
+#: src/engine/client/cl_irc.c:1012
 msgid "The attempt to connect was forcefully rejected.\n"
 msgstr "Verbindungsversuch mutwillig abgelehnt.\n"
 
-#: src/engine/client/cl_irc.c:1017
+#: src/engine/client/cl_irc.c:1016
 msgid "address destination address is required.\n"
 msgstr "Zieladresse wird benötigt.\n"
 
-#: src/engine/client/cl_irc.c:1021
+#: src/engine/client/cl_irc.c:1020
 msgid "The namelen argument is incorrect.\n"
 msgstr "Das Argument 'namelen' ist inkorrekt.\n"
 
-#: src/engine/client/cl_irc.c:1025
+#: src/engine/client/cl_irc.c:1024
 msgid "The socket is not already bound to an address.\n"
 msgstr "Der Socket ist noch nicht an eine Adresse gebunden.\n"
 
-#: src/engine/client/cl_irc.c:1029
+#: src/engine/client/cl_irc.c:1028
 msgid "The socket is already connected.\n"
 msgstr "Der Socket ist bereits verbunden.\n"
 
-#: src/engine/client/cl_irc.c:1033
+#: src/engine/client/cl_irc.c:1032
 msgid "The specified address is already in use.\n"
 msgstr "Die angegebene Adresse wird bereits verwendet.\n"
 
-#: src/engine/client/cl_irc.c:1037
+#: src/engine/client/cl_irc.c:1036
 msgid "No more file descriptors are available.\n"
 msgstr "Keine weiteren Dateideskriptoren verfügbar.\n"
 
-#: src/engine/client/cl_irc.c:1041
+#: src/engine/client/cl_irc.c:1040
 msgid "No buffer space available. The socket cannot be created.\n"
-msgstr ""
-"Kein Pufferspeicher verfügbar. Der Socket kann nicht erstellt werden.\n"
+msgstr "Kein Pufferspeicher verfügbar. Der Socket kann nicht erstellt werden.\n"
 
-#: src/engine/client/cl_irc.c:1045
+#: src/engine/client/cl_irc.c:1044
 msgid "The specified protocol is not supported.\n"
 msgstr "Das angegebene Protokoll wird nicht unterstützt.\n"
 
-#: src/engine/client/cl_irc.c:1049
+#: src/engine/client/cl_irc.c:1048
 msgid "The specified protocol is the wrong type for this socket.\n"
 msgstr "Das angegebene Protokoll passt nicht zu diesem Socket.\n"
 
-#: src/engine/client/cl_irc.c:1053
+#: src/engine/client/cl_irc.c:1052
 msgid "The network can't be reached from this host at this time.\n"
 msgstr "Das Netzwerk kann von diesem Host derzeit nicht erreicht werden.\n"
 
-#: src/engine/client/cl_irc.c:1057
+#: src/engine/client/cl_irc.c:1056
 msgid "The descriptor is not a socket.\n"
 msgstr "Der Deskriptor ist kein Socket.\n"
 
-#: src/engine/client/cl_irc.c:1061
+#: src/engine/client/cl_irc.c:1060
 msgid "Attempt timed out without establishing a connection.\n"
 msgstr "Zeitüberschreitung, Verbindungsaufbau fehlgeschlagen.\n"
 
-#: src/engine/client/cl_irc.c:1065
+#: src/engine/client/cl_irc.c:1064
 msgid "Socket type is not supported in this address family.\n"
 msgstr "Socket-Typ wird in dieser Adressfamilie nicht unterstützt.\n"
 
-#: src/engine/client/cl_irc.c:1069
+#: src/engine/client/cl_irc.c:1068
 msgid "Network subsystem failure.\n"
 msgstr "Fehler des Netzwerksubsystems.\n"
 
-#: src/engine/client/cl_irc.c:1073
+#: src/engine/client/cl_irc.c:1072
 msgid "Authoritative Answer Host not found.\n"
 msgstr "Authoritäre Antwort: Host nicht gefunden\n"
 
-#: src/engine/client/cl_irc.c:1077
+#: src/engine/client/cl_irc.c:1076
 msgid "Non-Authoritative Host not found or SERVERFAIL.\n"
 msgstr "Nicht-authoritäre Antwort: Host nicht gefunden oder Serverfehler.\n"
 
-#: src/engine/client/cl_irc.c:1081
+#: src/engine/client/cl_irc.c:1080
 msgid "Non recoverable errors, FORMERR, REFUSED, NOTIMP.\n"
 msgstr "Nicht behebbare Fehler: FORMERR, REFUSED, NOTIMP.\n"
 
-#: src/engine/client/cl_irc.c:1085
+#: src/engine/client/cl_irc.c:1084
 msgid "Valid name, no data record of requested type.\n"
 msgstr "Gültiger Name aber kein Eintrag zum angefragten Typ.\n"
 
-#: src/engine/client/cl_irc.c:1089
+#: src/engine/client/cl_irc.c:1088
 msgid "address blocking Windows Sockets operation is in progress.\n"
 msgstr "Adressblockierende Windows Sockets Operation ist aktiv.\n"
 
-#: src/engine/client/cl_irc.c:1093
+#: src/engine/client/cl_irc.c:1092
 msgid "Unknown connection error.\n"
 msgstr "Unbekannter Verbindungsfehler.\n"
 
-#: src/engine/client/cl_irc.c:1103
+#: src/engine/client/cl_irc.c:1102
 #, c-format
 msgid "IRC socket connection error: %s\n"
 msgstr "IRC-Socket-Verbindungsfehler: %s\n"
 
-#: src/engine/client/cl_irc.c:1394
+#: src/engine/client/cl_irc.c:1393
 #, c-format
 msgid "^5-> ^7%s^5 has entered the channel.\n"
 msgstr "^5-> ^7%s^5 hat den Kanal betreten.\n"
 
-#: src/engine/client/cl_irc.c:1398
+#: src/engine/client/cl_irc.c:1397
 msgid "^2Joined IRC chat.\n"
 msgstr "^2IRC-Chat betreten.\n"
 
-#: src/engine/client/cl_irc.c:1411
+#: src/engine/client/cl_irc.c:1410
 #, c-format
 msgid "^5<- ^7%s^5 has left the channel: %s.\n"
 msgstr "^5-> ^7%s^5 hat den Kanal verlassen: %s\n"
 
-#: src/engine/client/cl_irc.c:1415
+#: src/engine/client/cl_irc.c:1414
 #, c-format
 msgid "^5<- ^7%s^5 has left the channel.\n"
 msgstr "^5-> ^7%s^5 hat den Kanal verlassen.\n"
 
-#: src/engine/client/cl_irc.c:1429
+#: src/engine/client/cl_irc.c:1428
 #, c-format
 msgid "^5<- ^7%s^5 has quit: %s.\n"
 msgstr "^5<- ^7%s^5 hat die Verbindung getrennt: %s\n"
 
-#: src/engine/client/cl_irc.c:1433
+#: src/engine/client/cl_irc.c:1432
 #, c-format
 msgid "^5<- ^7%s^5 has quit.\n"
 msgstr "^5<- ^7%s^5 hat die Verbindung getrennt.\n"
 
-#: src/engine/client/cl_irc.c:1439
+#: src/engine/client/cl_irc.c:1438
 #, c-format
 msgid "^2Quit IRC chat: %s.\n"
 msgstr "^2IRC-Chat verlassen: %s\n"
 
-#: src/engine/client/cl_irc.c:1449
+#: src/engine/client/cl_irc.c:1448
 #, c-format
 msgid "^2Kicked by ^7%s^2: %s.\n"
 msgstr "^2Herausgeworfen von ^7%s^2: %s\n"
 
-#: src/engine/client/cl_irc.c:1453
+#: src/engine/client/cl_irc.c:1452
 #, c-format
 msgid "^5<- ^7%s^5 has been kicked: %s.\n"
 msgstr "^5<- ^7%s^5 wurde herausgeworfen: %s\n"
 
-#: src/engine/client/cl_irc.c:1463
+#: src/engine/client/cl_irc.c:1462
 #, c-format
 msgid "^2** ^7%s^2 is now known as ^7%s^2.\n"
 msgstr "^2** ^7%s^2 ist jetzt bekannt als ^7%s^2.\n"
 
-#: src/engine/client/cl_irc.c:1467
+#: src/engine/client/cl_irc.c:1466
 #, c-format
 msgid "^5** ^7%s^5 is now known as ^7%s^5.\n"
 msgstr "^5** ^7%s^5 ist jetzt bekannt als ^7%s^5.\n"
 
-#: src/engine/client/cl_irc.c:1474
+#: src/engine/client/cl_irc.c:1473
 msgid "unknown message received\n"
 msgstr "Unbekannte Nachricht erhalten\n"
 
-#: src/engine/client/cl_irc.c:1573
+#: src/engine/client/cl_irc.c:1572
 #, c-format
 msgid "IRC: server error: %s\n"
 msgstr "IRC: Serverfehler: %s\n"
 
-#: src/engine/client/cl_irc.c:1577
+#: src/engine/client/cl_irc.c:1576
 msgid "IRC: server error\n"
 msgstr "IRC: Serverfehler\n"
 
-#: src/engine/client/cl_irc.c:1635
+#: src/engine/client/cl_irc.c:1634
 msgid "…IRC: got spurious nickname error\n"
-msgstr ""
-"...IRC: Unerwarteter, womöglich ungültiger Fehler bezüglich des Nicknamens "
+msgstr "...IRC: Unerwarteter, womöglich ungültiger Fehler bezüglich des Nicknamens "
 "erhalten\n"
 
-#: src/engine/client/cl_irc.c:2044
+#: src/engine/client/cl_irc.c:2034
 msgid "usage: irc_say <text>\n"
 msgstr "Benutzung: irc_say <Text>\n"
 
-#: src/engine/client/cl_irc.c:2050
+#: src/engine/client/cl_irc.c:2040
 msgid "IRC: Not connected\n"
 msgstr "IRC: Nicht verbunden\n"
 
-#: src/engine/client/cl_irc.c:2073
+#: src/engine/client/cl_irc.c:2063
 msgid "IRC: flood detected, message not sent\n"
 msgstr "IRC: Flood entdeckt, Nachricht wurde nicht gesendet\n"
 
-#: src/engine/client/cl_irc.c:2271
+#: src/engine/client/cl_irc.c:2261
 msgid "…IRC: connecting to server\n"
 msgstr "…IRC: Verbinde zu Server\n"
 
-#: src/engine/client/cl_irc.c:2278
+#: src/engine/client/cl_irc.c:2268
 msgid "…IRC: rejected due to unset player name\n"
 msgstr "…IRC: Abgewiesen da Spielername nicht angegeben wurde\n"
 
-#: src/engine/client/cl_irc.c:2285
+#: src/engine/client/cl_irc.c:2275
 msgid "…IRC: rejected due to mostly unusable player name\n"
 msgstr "…IRC: Abgewiesen aufgrund eines unbenutzbaren Spielernamens\n"
 
-#: src/engine/client/cl_irc.c:2294
+#: src/engine/client/cl_irc.c:2284
 msgid "…IRC: unknown server\n"
 msgstr "…IRC: Unbekannter Server\n"
 
-#: src/engine/client/cl_irc.c:2312
+#: src/engine/client/cl_irc.c:2302
 msgid "IRC: invalid port number, defaulting to 6667\n"
 msgstr "IRC: Ungültige Portnummer, es wird der Standardport 6667 verwendet\n"
 
-#: src/engine/client/cl_irc.c:2324
+#: src/engine/client/cl_irc.c:2314
 msgid "…IRC connection refused.\n"
 msgstr "…IRC Verbindung abgewiesen.\n"
 
-#: src/engine/client/cl_irc.c:2348
+#: src/engine/client/cl_irc.c:2338
 msgid "…Connected to IRC server\n"
 msgstr "…Mit IRC Server verbunden\n"
 
-#: src/engine/client/cl_irc.c:2549
+#: src/engine/client/cl_irc.c:2539
 msgid "…IRC: disconnected from server\n"
 msgstr "…IRC: Verbindung zum Server getrennt\n"
 
-#: src/engine/client/cl_irc.c:2714
+#: src/engine/client/cl_irc.c:2703
 msgid "…IRC thread is already running\n"
 msgstr "…IRC-Thread läuft bereits\n"
 
-#: src/engine/client/cl_keys.c:1371
-msgid "unbind <key> : remove commands from a key\n"
-msgstr "unbind <Taste> : Löscht die Tastenbelegung\n"
+#: src/engine/client/cl_keys.c:1137
+#, c-format
+msgid "^3%s:^7 %d is not a valid team number\n"
+msgstr "^3%s:^7 %d ist keine gültige Teamnummer\n"
 
-#: src/engine/client/cl_keys.c:1379 src/engine/client/cl_keys.c:1432
-#: src/engine/client/cl_keys.c:1487
+#: src/engine/client/cl_keys.c:1156
+#, c-format
+msgid "^3%s:^7 '%s^7' is not a valid team name\n"
+msgstr "^3%s:^7 '%s^7' ist kein gültiger Teamname\n"
+
+#: src/engine/client/cl_keys.c:1280
+msgid "unbind [team] <key>: remove commands from a key\n"
+msgstr "unbind [team] <Taste>: Löscht eine Tastenbelegung\n"
+
+#: src/engine/client/cl_keys.c:1298 src/engine/client/cl_keys.c:1361
+#: src/engine/client/cl_keys.c:1450
 #, c-format
 msgid "\"%s\" isn't a valid key\n"
 msgstr "\"%s\" ist eine ungültige Taste\n"
 
-#: src/engine/client/cl_keys.c:1419
+#: src/engine/client/cl_keys.c:1338
+msgid "teambind <team> <key> [command] : attach a command to a key\n"
+msgstr "teambind <Team> <Taste> [Befehl] : Belegt eine Taste mit einem Befehl\n"
+
+#: src/engine/client/cl_keys.c:1338
 msgid "bind <key> [command] : attach a command to a key\n"
 msgstr "bind <Taste> [Befehl] : Belegt eine Taste mit einem Befehl\n"
 
-#: src/engine/client/cl_keys.c:1444
+#: src/engine/client/cl_keys.c:1375
+#, c-format
+msgid "\"%s\"[%s] is not bound\n"
+msgstr "\"%s\"[%s] ist kein Befehl zugeordnet\n"
+
+#: src/engine/client/cl_keys.c:1394
 #, c-format
 msgid "\"%s\" is not bound\n"
 msgstr "\"%s\" ist kein Befehl zugeordnet\n"
 
-#: src/engine/client/cl_keys.c:1478
-msgid "usage: editbind <key>"
-msgstr "Benutzung: editbind <Taste>"
+#: src/engine/client/cl_keys.c:1431
+msgid "usage: editbind [team] <key>"
+msgstr "Benutzung: editbind [Team] <Taste>"
 
 #: src/engine/client/cl_main.c:291
 #, c-format
@@ -364,8 +380,7 @@ msgid ""
 "Until then, VoIP is disabled.\n"
 msgstr ""
 "Deine Netzwerkgeschwindigkeit ist für VoIP zu langsam.\n"
-"Stelle in den Einstellungen 'Datenrate' auf 'LAN/Cable/xDSL' und starte "
-"neu.\n"
+"Stelle in den Einstellungen 'Datenrate' auf 'LAN/Cable/xDSL' und starte neu.\n"
 "Bis dahin wird VoIP deaktiviert sein.\n"
 
 #: src/engine/client/cl_main.c:873
@@ -392,8 +407,7 @@ msgstr "Du musst auf einer Map sein um aufzunehmen.\n"
 msgid ""
 "WARNING: You should set 'g_synchronousClients 1' for smoother demo "
 "recording\n"
-msgstr ""
-"WARNUNG: Du solltest 'g_synchronousClients' auf '1' ändern, um die Demo "
+msgstr "WARNUNG: Du solltest 'g_synchronousClients' auf '1' ändern, um die Demo "
 "gleichmäßiger aufnehmen zu können\n"
 
 #: src/engine/client/cl_main.c:989 src/engine/client/cl_main.c:1309
@@ -431,78 +445,68 @@ msgstr "Aufnahme gestoppt\n"
 msgid "playdemo <demoname>\n"
 msgstr "playdemo <Demoname>\n"
 
-#: src/engine/client/cl_main.c:1742
+#: src/engine/client/cl_main.c:1743
 msgid "Mumble: Unlinking from Mumble application\n"
 msgstr "Mumble: Verbindung zur Mumble-Andwendung wird beendet\n"
 
-#: src/engine/client/cl_main.c:1877
+#: src/engine/client/cl_main.c:1880
 #, c-format
 msgid "Unknown command \"%s\"\n"
 msgstr "Unbekannter Befehl \"%s\"\n"
 
-#: src/engine/client/cl_main.c:1912
+#: src/engine/client/cl_main.c:1915
 msgid "Couldn't resolve master address\n"
 msgstr "Hauptserveradresse konnte nicht aufgelöst werden\n"
 
-#: src/engine/client/cl_main.c:1922 src/engine/client/cl_main.c:2101
-#: src/engine/server/sv_main.c:317 src/engine/server/sv_main.c:338
-#: src/engine/server/sv_main.c:424
-#, c-format
-msgid "%s resolved to %s\n"
-msgstr "%s aufgelöst zu %s\n"
-
-#: src/engine/client/cl_main.c:1954 src/engine/client/cl_main.c:2485
-#: src/engine/client/cl_main.c:5724
+#: src/engine/client/cl_main.c:1957 src/engine/client/cl_main.c:2485
+#: src/engine/client/cl_main.c:5739
 msgid "Not connected to a server.\n"
 msgstr "Zu keinem Server verbunden.\n"
 
-#: src/engine/client/cl_main.c:1990
+#: src/engine/client/cl_main.c:1988
 msgid "Can't reconnect to localhost.\n"
 msgstr "Wiederverbindung zu lokalem Server nicht möglich.\n"
 
-#: src/engine/client/cl_main.c:2013
+#: src/engine/client/cl_main.c:2011
 msgid "usage: connect [-4|-6] server\n"
 msgstr "Benutzung: connect [-4|-6] server\n"
 
-#: src/engine/client/cl_main.c:2033 src/engine/client/cl_main.c:5544
-#: src/engine/client/cl_main.c:5752
+#: src/engine/client/cl_main.c:2031 src/engine/client/cl_main.c:5559
+#: src/engine/client/cl_main.c:5767
 msgid "warning: only -4 or -6 as address type understood.\n"
 msgstr "Warnung: nur -4 oder -6 als Adresstyp möglich.\n"
 
-#: src/engine/client/cl_main.c:2088
+#: src/engine/client/cl_main.c:2086
 msgid "Bad server address\n"
 msgstr "Ungültige Serveradresse\n"
 
-#: src/engine/client/cl_main.c:2149
+#: src/engine/client/cl_main.c:2147
 msgid ""
 "You must set 'rconPassword' before\n"
 "issuing an rcon command.\n"
-msgstr ""
-"'rconPassword' muss gesetzt werden, bevor ein rcon-Befehl ausgeführt werden "
+msgstr "'rconPassword' muss gesetzt werden, bevor ein rcon-Befehl ausgeführt werden "
 "kann.\n"
 
-#: src/engine/client/cl_main.c:2176
+#: src/engine/client/cl_main.c:2174
 msgid ""
 "Connect to a server or set the 'rconAddress' cvar to issue rcon commands\n"
-msgstr ""
-"Verbinde Dich zu einem Server oder setze 'rconAddress' um einen rcon-Befehl "
+msgstr "Verbinde Dich zu einem Server oder setze 'rconAddress' um einen rcon-Befehl "
 "auszuführen.\n"
 
-#: src/engine/client/cl_main.c:2253
+#: src/engine/client/cl_main.c:2251
 msgid "Daemon RSA public-key file not found, regenerating\n"
-msgstr ""
-"Öffentlicher RSA-Schlüssel wurde nicht gefunden, generiere ein neues "
+msgstr "Öffentlicher RSA-Schlüssel wurde nicht gefunden, generiere ein neues "
 "Schlüsselpaar\n"
 
-#: src/engine/client/cl_main.c:2263
+#: src/engine/client/cl_main.c:2261
 msgid "Invalid RSA keypair in RSAKey, regenerating\n"
 msgstr "Ungültiges RSA-Schlüsselpaar gefunden, regeneriere ein neues\n"
 
-#: src/engine/client/cl_main.c:2269
+#: src/engine/client/cl_main.c:2267
 msgid "Daemon RSA public-key found.\n"
 msgstr "RSA-Schlüsselpaar gefunden.\n"
 
-#: src/engine/client/cl_main.c:2298
+#: src/engine/client/cl_main.c:2296
 #, c-format
 msgid ""
 "Daemon RSA public-key could not open %s for write, RSA support will be "
@@ -511,7 +515,7 @@ msgstr ""
 "Konnte %s nicht zum speichern eines RSA-Schlüssels öffnen, RSA wird nicht "
 "unterstützt"
 
-#: src/engine/client/cl_main.c:2305
+#: src/engine/client/cl_main.c:2303
 msgid "Daemon RSA public-key generated\n"
 msgstr "RSA-Schlüsselpaar generiert\n"
 
@@ -521,20 +525,19 @@ msgstr "Es wird keine Wav-Datei aufgenommen\n"
 
 #: src/engine/client/cl_main.c:2572
 msgid "The video command can only be used when playing back demos\n"
-msgstr ""
-"Der 'video' Befehl kann nur ausgeführt werden, wenn eine Demo abgespielt "
+msgstr "Der 'video' Befehl kann nur ausgeführt werden, wenn eine Demo abgespielt "
 "wird\n"
 
 #: src/engine/client/cl_main.c:2608
 msgid "ERROR: no free file names to create video\n"
 msgstr "FEHLER: Keine freien Dateinamen um Video zu erstellen\n"
 
-#: src/engine/client/cl_main.c:3681 src/engine/client/cl_main.c:3690
+#: src/engine/client/cl_main.c:3682 src/engine/client/cl_main.c:3691
 #, c-format
 msgid "Download failure while getting '%s'\n"
 msgstr "Der Download von '%s' schlug fehl\n"
 
-#: src/engine/client/cl_main.c:3715
+#: src/engine/client/cl_main.c:3716
 #, c-format
 msgid ""
 "WARNING: file %s obtained through download redirect has wrong checksum\n"
@@ -544,40 +547,31 @@ msgstr ""
 "hat eine ungültige Prüfsumme\n"
 "         Dies bedeutet i.d.R. dass die Serverkonfiguration fehlerhaft ist\n"
 
-#: src/engine/client/cl_main.c:3726
-#, c-format
-msgid "bad checksums: %s\n"
-msgstr "Ungültige Prüfsumme: %s\n"
-
-#: src/engine/client/cl_main.c:4104
+#: src/engine/client/cl_main.c:4105
 msgid "----- Initializing Renderer ----\n"
 msgstr "----- Renderer wird gestartet ----\n"
 
-#: src/engine/client/cl_main.c:4334
+#: src/engine/client/cl_main.c:4341
 msgid "Calling GetRefAPI…\n"
 msgstr "Rufe GetRefAPI auf...\n"
 
-#: src/engine/client/cl_main.c:4384
+#: src/engine/client/cl_main.c:4391
 msgid "----- Client Initialization -----\n"
 msgstr "----- Client Initialisierung -----\n"
 
-#: src/engine/client/cl_main.c:4490 src/engine/qcommon/translation.cpp:270
+#: src/engine/client/cl_main.c:4496 src/engine/qcommon/translation.cpp:270
 msgid "~ ` 0x7e 0x60"
 msgstr "~ ` 0x7e 0x60"
 
-#: src/engine/client/cl_main.c:4609
+#: src/engine/client/cl_main.c:4620
 msgid "----- Client Initialization Complete -----\n"
 msgstr "----- Clientinitialisierung Abgeschlossen -----\n"
 
-#: src/engine/client/cl_main.c:4628
-msgid "----- CL_Shutdown -----\n"
-msgstr "----- CL_Shutdown -----\n"
-
-#: src/engine/client/cl_main.c:5048
+#: src/engine/client/cl_main.c:5063
 msgid "Server settings:\n"
 msgstr "Servereinstellungen:\n"
 
-#: src/engine/client/cl_main.c:5098
+#: src/engine/client/cl_main.c:5113
 msgid ""
 "\n"
 "Players:\n"
@@ -585,47 +579,40 @@ msgstr ""
 "\n"
 "Spieler:\n"
 
-#: src/engine/client/cl_main.c:5099
+#: src/engine/client/cl_main.c:5114
 msgid "num: score: ping: name:\n"
 msgstr "Nummer: Punktzahl: Ping: Name:\n"
 
-#: src/engine/client/cl_main.c:5155
-msgid "Scanning for servers on the local network…\n"
-msgstr "Suche nach Servern im lokalen Netzwerk...\n"
-
-#: src/engine/client/cl_main.c:5208
+#: src/engine/client/cl_main.c:5223
 #, c-format
 msgid "usage: globalservers <master# 0-%d> [protocol] [keywords]\n"
-msgstr ""
-"Benutzung: globalservers <master# 0-%d> [Protokoll] [Schlüsselwörter]\n"
+msgstr "Benutzung: globalservers <master# 0-%d> [Protokoll] [Schlüsselwörter]\n"
 
-#: src/engine/client/cl_main.c:5274
+#: src/engine/client/cl_main.c:5289
 #, c-format
 msgid "usage: globalservers <master# 0-%d> <protocol> [keywords]\n"
-msgstr ""
-"Benutzung: globalservers <master# 0-%d> <Protokoll> [Schlüsselwörter]\n"
+msgstr "Benutzung: globalservers <master# 0-%d> <Protokoll> [Schlüsselwörter]\n"
 
-#: src/engine/client/cl_main.c:5283
+#: src/engine/client/cl_main.c:5298
 msgid "CL_GlobalServers_f: Error: No master server address given.\n"
 msgstr "CL_GlobalServers_f: Fehler: Keine Hauptserver-Adresse angegeben.\n"
 
-#: src/engine/client/cl_main.c:5294
+#: src/engine/client/cl_main.c:5309
 #, c-format
 msgid "CL_GlobalServers_f: Error: could not resolve address of master %s\n"
-msgstr ""
-"CL_GlobalServers_f: Fehler: Konnte Adresse des Hauptservers %s nicht "
+msgstr "CL_GlobalServers_f: Fehler: Konnte Adresse des Hauptservers %s nicht "
 "auflösen\n"
 
-#: src/engine/client/cl_main.c:5302
+#: src/engine/client/cl_main.c:5317
 #, c-format
 msgid "Requesting servers from master %s…\n"
 msgstr "Fordere Serverliste vom Hauptserver %s an...\n"
 
-#: src/engine/client/cl_main.c:5524
+#: src/engine/client/cl_main.c:5539
 msgid "usage: ping [-4|-6] server\n"
 msgstr "Benutzung: ping [-4|-6] server\n"
 
-#: src/engine/client/cl_main.c:5725
+#: src/engine/client/cl_main.c:5740
 msgid "usage: serverstatus [-4|-6] server\n"
 msgstr "Benutzung: serverstatus [-4|-6] server\n"
 
@@ -719,10 +706,6 @@ msgstr "Hintergrundstream: %s\n"
 msgid "No background file.\n"
 msgstr "Keine Hintergrunddatei.\n"
 
-#: src/engine/client/snd_dma.c:181
-msgid "Channel memory manager started\n"
-msgstr "Kanalspeichermanager gestartet\n"
-
 #: src/engine/client/snd_dma.c:405
 msgid "Sound name exceeds MAX_QPATH\n"
 msgstr "Name des Sounds überschreitet MAX_QPATH\n"
@@ -786,75 +769,79 @@ msgstr "CBuf_AddText: Überlauf\n"
 msgid "Cbuf_InsertText overflowed\n"
 msgstr "Cbuf_InsertText ist übergelaufen\n"
 
-#: src/engine/qcommon/cmd.c:445
+#: src/engine/qcommon/cmd.c:451
 msgid "execq <filename> (args) : execute a script file without notification\n"
-msgstr ""
-"execq <Dateiname> (Argumente) : Führe eine Skript-Datei ohne "
+msgstr "execq <Dateiname> (Argumente) : Führe eine Skript-Datei ohne "
 "Benachrichtigung aus\n"
 
-#: src/engine/qcommon/cmd.c:449
+#: src/engine/qcommon/cmd.c:455
 msgid "exec <filename> (args) : execute a script file\n"
 msgstr "exec <Dateiname> (Argumente) : Führe eine Skript-Datei aus\n"
 
-#: src/engine/qcommon/cmd.c:505
+#: src/engine/qcommon/cmd.c:511
 msgid "vstr <variablename> : execute a variable command\n"
 msgstr "vstr <Variablenname> : Führe einen Variablenbefehl aus\n"
 
-#: src/engine/qcommon/cmd.c:519
+#: src/engine/qcommon/cmd.c:525
 msgid "not supported in the dedicated server"
 msgstr "wird vom dedizierten Server nicht unterstützt"
 
-#: src/engine/qcommon/cmd.c:521
+#: src/engine/qcommon/cmd.c:527
 msgid "shift, ctrl, alt, command/cmd, mode, super; ! negates; e.g. shift,!alt"
 msgstr "shift, ctrl, alt, command/cmd, mode, super; ! negiert; z.B. shift,!alt"
 
-#: src/engine/qcommon/cmd.c:592
+#: src/engine/qcommon/cmd.c:598
 #, c-format
 msgid "can't have %s both pressed and not pressed\n"
 msgstr "%s kann nicht gleichzeitig gedrückt und nicht gedrückt sein\n"
 
-#: src/engine/qcommon/cmd.c:613
+#: src/engine/qcommon/cmd.c:619
 #, c-format
 msgid "unknown modifier key name in \"%s\"\n"
 msgstr "Unbekannte Modifikatortaste in \"%s\"\n"
 
-#: src/engine/qcommon/cmd.c:677
+#: src/engine/qcommon/cmd.c:683
 msgid "modcase <modifiers> <command> [<modifiers> <command>] … [<command>]\n"
-msgstr ""
-"modcase <Modifikatoren> <Befehl> [<Modifikatoren> <Befehl>] ... [<Befehl>]\n"
+msgstr "modcase <Modifikatoren> <Befehl> [<Modifikatoren> <Befehl>] ... [<Befehl>]\n"
 
-#: src/engine/qcommon/cmd.c:766
+#: src/engine/qcommon/cmd.c:772
 msgid "if <modifiers>… is not supported on the server — assuming true.\n"
-msgstr ""
-"if <Modifikatoren>... wird vom Server nicht unterstützt — nehme Gültigkeit "
+msgstr "if <Modifikatoren>... wird vom Server nicht unterstützt — nehme Gültigkeit "
 "an.\n"
 
-#: src/engine/qcommon/cmd.c:803
+#: src/engine/qcommon/cmd.c:809
 msgid ""
-"invalid relation operator in if command. valid relation operators are = != < "
-"> >= <= eq ne in !in\n"
-msgstr ""
-"Ungültige Relation in if-Struktur. Gültige Relationen sind = != < > >= <= eq "
-"ne in !in\n"
+"invalid relation operator in if command. valid relation operators are = != ≠ "
+"< > ≥ >= ≤ <= eq ne in !in\n"
+msgstr "Ungültiger Relationsoperator in if-Kontrollstruktur. Gültige Operatoren sind "
+"= != ≠ < > ≥ >= ≤ <= eq ne in !in\n"
 
-#: src/engine/qcommon/cmd.c:810
+#: src/engine/qcommon/cmd.c:816
 #, c-format
 msgid ""
-"if <number> <relation> <number> <cmdthen> (<cmdelse>) : compares the first "
-"two numbers and executes <cmdthen> if true, <cmdelse> if false\n"
+"if <number|string> <relation> <number|string> <cmdthen> (<cmdelse>) : "
+"compares two numbers or two strings and executes <cmdthen> if true, "
+"<cmdelse> if false\n"
 "if <modifiers> <cmdthen> (<cmdelse>) : check if modifiers are (not) pressed\n"
 "-- modifiers are %s\n"
 "-- commands are cvar names unless prefixed with / or \\\n"
 msgstr ""
-"if <Zahl> <Relation> <Zahl> <Dann-Befehl> (<Sonst-Befehl>) : Vergleiche zwei "
-"Zahlen und führe <Dann-Befehl> aus, wenn die Bedingung gilt, sonst führe "
-"<Sonst-Befehl> aus\n"
-"if <Modifikatoren> <Dann-Befehl> (<Sonst-Befehl>) : Überprüfe ob "
-"Modifikatoren (nicht) gedrückt sind\n"
-"-- Modifikatoren sind %s\n"
 
-#: src/engine/qcommon/cmd.c:861 src/engine/qcommon/cmd.c:895
-#: src/engine/qcommon/cmd.c:930 src/engine/qcommon/cmd.c:936
+#: src/engine/qcommon/cmd.c:867 src/engine/qcommon/cmd.c:901
+msgid ""
+"math <variableToSet> = <number> <operator> <number>\n"
+"math <variableToSet> <operator> <number>\n"
+"math <variableToSet> ++\n"
+"math <variableToSet> --\n"
+"valid operators are + - × * ÷ /\n"
+msgstr ""
+
+#: src/engine/qcommon/cmd.c:893 src/engine/qcommon/cmd.c:928
+#: src/engine/qcommon/cmd.c:1015
+msgid "Cannot divide by 0!\n"
+msgstr "Kann nicht durch 0 teilen!\n"
+
+#: src/engine/qcommon/cmd.c:936 src/engine/qcommon/cmd.c:942
 msgid ""
 "math <variableToSet> = <number> <operator> <number>\n"
 "math <variableToSet> <operator> <number>\n"
@@ -868,37 +855,18 @@ msgstr ""
 "math <Zielvariable> --\n"
 "Gültige Operatoren sind + - * /\n"
 
-#: src/engine/qcommon/cmd.c:887 src/engine/qcommon/cmd.c:922
-#: src/engine/qcommon/cmd.c:1065
-msgid "Cannot divide by 0!\n"
-msgstr "Kann nicht durch 0 teilen!\n"
-
-#: src/engine/qcommon/cmd.c:984
-msgid "invalid operator in strcmp command. valid operators are = !=\n"
-msgstr "Ungültiger Operator in strcmp-Befehl. Gültige Operatoren sind = !=\n"
-
-#: src/engine/qcommon/cmd.c:990
-msgid ""
-"strcmp <string1> <relation> <string2> <cmdthen> (<cmdelse>) : compares the "
-"first two strings and executes <cmdthen> if true, <cmdelse> if false\n"
-msgstr ""
-"strcmp <Zeichenkette> <Relation> <Zeichenkette> <Dann-Befehl> (<Sonst-"
-"Befehl>) : Vergleiche zwei Zeichenketten und führe <Dann-Befehl> aus, wenn "
-"die Bedingung gilt. Ansonsten führe <Sonst-Befehl> aus.\n"
-
-#: src/engine/qcommon/cmd.c:1011
+#: src/engine/qcommon/cmd.c:961
 msgid ""
 "concat <variableToSet> <variable1> … <variableN> : concatenates variable1 to "
 "variableN and sets the result to variableToSet\n"
-msgstr ""
-"concat <Zielvariable> <Variable 1> ... <Variable n> : Hänge die Werte der "
+msgstr "concat <Zielvariable> <Variable 1> ... <Variable n> : Hänge die Werte der "
 "Variablen aneinander und schreibe das Ergebnis nach <Zielvariable>\n"
 
-#: src/engine/qcommon/cmd.c:1038 src/engine/qcommon/cmd.c:1082
+#: src/engine/qcommon/cmd.c:988 src/engine/qcommon/cmd.c:1032
 msgid "calc <number> <operator> <number>, accepted operators: +, -, /, */x\n"
 msgstr "calc <Zahl> <Operator> <Zahl>, gültige Operatoren sind: +, -, /, */x\n"
 
-#: src/engine/qcommon/cmd.c:1112
+#: src/engine/qcommon/cmd.c:1062
 msgid ""
 "undelay <name> (command)\n"
 "removes all commands with <name> in them.\n"
@@ -910,7 +878,7 @@ msgstr ""
 "Falls <Befehl> angegeben wird, sind nur die Befehle, die <Befehl> enthalten "
 "betroffen.\n"
 
-#: src/engine/qcommon/cmd.c:1161
+#: src/engine/qcommon/cmd.c:1111
 msgid ""
 "delay (name) <delay in milliseconds> <command>\n"
 "delay <delay in frames>f <command>\n"
@@ -920,54 +888,54 @@ msgstr ""
 "delay <Verzögerung in Frames>f <Befehl>\n"
 "Führt <Befehl> nach einer Verzögerung aus\n"
 
-#: src/engine/qcommon/cmd.c:1183
+#: src/engine/qcommon/cmd.c:1133
 msgid "delay: the delay must be a positive integer\n"
 msgstr "delay: Die Verzögerung muss eine positive Ganzzahl sein\n"
 
-#: src/engine/qcommon/cmd.c:1199
+#: src/engine/qcommon/cmd.c:1149
 msgid "WARNING: Maximum amount of delayed commands reached\n"
 msgstr "WARNUNG: Maximale Anzahl an Verzögerungsbefehlen erreicht\n"
 
-#: src/engine/qcommon/cmd.c:1242
+#: src/engine/qcommon/cmd.c:1192
 msgid "random <variableToSet> <minNumber> <maxNumber>\n"
 msgstr "random <Zielvariable> <Minimum> <Maximum>\n"
 
-#: src/engine/qcommon/cmd.c:1386
+#: src/engine/qcommon/cmd.c:1336
 msgid "unalias <name> : delete an alias\n"
 msgstr "unalias <Name> : Lösche ein Alias\n"
 
-#: src/engine/qcommon/cmd.c:1433
+#: src/engine/qcommon/cmd.c:1383
 msgid "alias <name> : show an alias\n"
 msgstr "alias <Name> : Zeige ein Alias an\n"
 
-#: src/engine/qcommon/cmd.c:1434
+#: src/engine/qcommon/cmd.c:1384
 msgid "alias <name> <exec> : create an alias\n"
 msgstr "alias <Name> <Befehl> : Erstelle ein Alias\n"
 
-#: src/engine/qcommon/cmd.c:1457
+#: src/engine/qcommon/cmd.c:1407
 msgid "Can't make an alias to itself\n"
 msgstr "Kann kein reflexives Alias anlegen\n"
 
-#: src/engine/qcommon/cmd.c:1466
+#: src/engine/qcommon/cmd.c:1416
 msgid "Can't override a builtin function with an alias\n"
 msgstr "Kann keine eingebaute Funktion durch ein Alias ersetzen\n"
 
-#: src/engine/qcommon/cmd.c:1491
+#: src/engine/qcommon/cmd.c:1441
 #, c-format
 msgid "Alias %s does not exist\n"
 msgstr "Alias %s existiert nicht\n"
 
-#: src/engine/qcommon/cmd.c:2237
+#: src/engine/qcommon/cmd.c:2187
 #, c-format
 msgid "Cmd_AddCommand: %s already defined\n"
 msgstr "Cmd_AddCommand: %s ist bereits definiert\n"
 
-#: src/engine/qcommon/cmd.c:2309
+#: src/engine/qcommon/cmd.c:2259
 #, c-format
 msgid "Cmd_AddButtonCommand: +/-%s already defined\n"
 msgstr "Cmd_AddButtonCommand: +/-%s ist bereits definiert\n"
 
-#: src/engine/qcommon/cmd.c:2516
+#: src/engine/qcommon/cmd.c:2466
 #, c-format
 msgid "%i commands\n"
 msgstr "%i Befehle\n"
@@ -981,71 +949,64 @@ msgid "WARNING: CM_GridPlane unresolvable\n"
 msgstr "WARNUNG: CM_GridPlane unauflösbar\n"
 
 # on = in?
-#: src/engine/qcommon/common.c:250
+#: src/engine/qcommon/common.c:251
 #, c-format
 msgid "logfile opened on %s\n"
 msgstr "Logdatei in %s geöffnet\n"
 
-#: src/engine/qcommon/common.c:385
-#, c-format
-msgid ""
-"********************\n"
-"ERROR: %s\n"
-"********************\n"
-msgstr ""
-"********************\n"
-"FEHLER: %s\n"
-"********************\n"
-
-#: src/engine/qcommon/common.c:2938
+#: src/engine/qcommon/common.c:2741
 msgid "freeze <seconds>\n"
 msgstr "freeze <Sekunden>\n"
 
-#: src/engine/qcommon/common.c:2982
+#: src/engine/qcommon/common.c:2785
 msgid "Found high quality video and slow CPU\n"
 msgstr "Schnelle Grafikkarte und langsame CPU entdeckt\n"
 
-#: src/engine/qcommon/common.c:2988
+#: src/engine/qcommon/common.c:2791
 msgid "Found low quality video and slow CPU\n"
 msgstr "Langsame Grafikkarte und langsame CPU entdeckt\n"
 
-#: src/engine/qcommon/common.c:3201
+#: src/engine/qcommon/common.c:3004
 #, c-format
 msgid ""
 "^3WARNING: profile.pid found for profile '%s' — the system settings will "
 "revert to their defaults\n"
-msgstr ""
-"^3WARNUNG: Datei profile.pid für Profil '%s' entdeckt — Die "
+msgstr "^3WARNUNG: Datei profile.pid für Profil '%s' entdeckt — Die "
 "Systemeinstellungen werden auf Standardwerte zurückgesetzt\n"
 
-#: src/engine/qcommon/common.c:3211
+#: src/engine/qcommon/common.c:3014
 #, c-format
 msgid "^3WARNING: couldn't write profiles/%s/profile.pid\n"
 msgstr "^3WARNUNG: Konnte nicht in Datei profiles/%s/profile.pid schreiben\n"
 
-#: src/engine/qcommon/common.c:3466 src/engine/qcommon/common.c:4559
+#: src/engine/qcommon/common.c:3277 src/engine/qcommon/common.c:4455
 #, c-format
 msgid "Couldn't write %s.\n"
 msgstr "Kann %s nicht schreiben.\n"
 
-#: src/engine/qcommon/common.c:3524
+#: src/engine/qcommon/common.c:3351
 msgid "Usage: writeconfig <filename>\n"
 msgstr "Benutzung: writeconfig <Dateiname>\n"
 
-#: src/engine/qcommon/common.c:3530
+#: src/engine/qcommon/common.c:3357 src/engine/qcommon/common.c:3381
 #, c-format
 msgid "Writing %s.\n"
 msgstr "Schreibe %s.\n"
 
-#: src/engine/qcommon/common.c:3781
+#: src/engine/qcommon/common.c:3375
+#, fuzzy
+msgid "Usage: writebindings <filename>\n"
+msgstr "Benutzung: writeconfig <Dateiname>\n"
+
+#: src/engine/qcommon/common.c:3633
 msgid "WARNING: watchdog will trigger in 4 seconds\n"
 msgstr "WARNUNG: Watchdog wird in 4 Sekunden ausgelöst\n"
 
-#: src/engine/qcommon/common.c:3786
+#: src/engine/qcommon/common.c:3638
 msgid "Idle server with no map — triggering watchdog\n"
 msgstr "Server läuft im Leerlauf (keine Map aktiv) — Starte Watchdog\n"
 
-#: src/engine/qcommon/common.c:4510
+#: src/engine/qcommon/common.c:4406
 #, c-format
 msgid "Couldn't read %s.\n"
 msgstr "Kann %s nicht lesen.\n"
@@ -1073,8 +1034,7 @@ msgstr "%s kann nicht geändert werden.\n"
 #: src/engine/qcommon/cvar.c:529
 #, c-format
 msgid "%s is cheat protected.\n"
-msgstr ""
-"%s ist ein Cheat und kann in diesem Kontext nicht verwendet werden. (Starte "
+msgstr "%s ist ein Cheat und kann in diesem Kontext nicht verwendet werden. (Starte "
 "eine Map mit 'devmap' um Cheats benutzen zu können.)\n"
 
 #: src/engine/qcommon/cvar.c:535
@@ -1123,48 +1083,42 @@ msgstr "Benutzung: reset <Variable>\n"
 msgid "Replace existing download target file\n"
 msgstr "Download: Ersetze existierende Zieldatei\n"
 
-#: src/engine/qcommon/dl_main.c:186 src/engine/qcommon/dl_main_curl.c:87
-msgid "Client download subsystem initialized\n"
-msgstr "Clientdownload Subsystem gestartet\n"
-
 # extension: Dateiendung oder voller Dateiname?
-#: src/engine/qcommon/files.c:3033
+#: src/engine/qcommon/files.c:3037
 msgid "usage: dir <directory> [extension]\n"
 msgstr "Benutzung: dir <Pfad> [Dateiendung]\n"
 
-#: src/engine/qcommon/files.c:3048
+#: src/engine/qcommon/files.c:3052
 #, c-format
 msgid "Directory of %s %s\n"
 msgstr "Verzeichnis von %s %s\n"
 
-#: src/engine/qcommon/files.c:3181
-msgid "usage: fdir <filter>\n"
-msgstr "Benutzung: fdir <Filter>\n"
+#: src/engine/qcommon/files.c:3185
+msgid ""
+"usage: fdir <filter>\n"
+"example: fdir *q3dm*.bsp\n"
+msgstr ""
 
-#: src/engine/qcommon/files.c:3182
-msgid "example: fdir *q3dm*.bsp\n"
-msgstr "Beispiel: fdir *q3dm*.bsp\n"
-
-#: src/engine/qcommon/files.c:3200
+#: src/engine/qcommon/files.c:3204
 #, c-format
 msgid "%d files listed\n"
 msgstr "%d Dateien\n"
 
-#: src/engine/qcommon/files.c:3275
+#: src/engine/qcommon/files.c:3279
 msgid "Usage: which <file>\n"
 msgstr "Benutzung: which <Datei>\n"
 
-#: src/engine/qcommon/files.c:3306
+#: src/engine/qcommon/files.c:3310
 #, c-format
 msgid "File \"%s\" found in \"%s\"\n"
 msgstr "Datei \"%s\" gefunden in \"%s\"\n"
 
-#: src/engine/qcommon/files.c:3329
+#: src/engine/qcommon/files.c:3333
 #, c-format
 msgid "File \"%s\" found at \"%s\"\n"
 msgstr "Datei \"%s\" gefunden in \"%s\"\n"
 
-#: src/engine/qcommon/files.c:3334
+#: src/engine/qcommon/files.c:3338
 #, c-format
 msgid "File not found: \"%s\"\n"
 msgstr "Datei nicht gefunden: \"%s\"\n"
@@ -1207,9 +1161,8 @@ msgstr "Hostname: %s\n"
 #, c-format
 msgid ""
 "^3WARNING:^7 Language \"%s\" (%s) not found. Default to \"English\" (en)\n"
-msgstr ""
-"^3WARNUNG: ^7 Sprache \"%s\" (%s) nicht gefunden. Weiche auf \"English"
-"\" (en) aus\n"
+msgstr "^3WARNUNG: ^7 Sprache \"%s\" (%s) nicht gefunden. Weiche auf \"English\" (en) "
+"aus\n"
 
 #: src/engine/qcommon/translation.cpp:253
 msgid "Unknown Language"
@@ -1221,9 +1174,11 @@ msgid "Set language to %s\n"
 msgstr "Setze Sprache auf %s\n"
 
 #: src/engine/qcommon/translation.cpp:340
-#, c-format
-msgid "Loaded %lu language(s)\n"
-msgstr "%lu Sprache(n) geladen.\n"
+#, c-format, fuzzy
+msgid "Loaded %u language\n"
+msgid_plural "Loaded %u languages\n"
+msgstr[0] "%lu Sprache(n) geladen.\n"
+msgstr[1] ""
 
 #: src/engine/qcommon/vm.c:1208
 msgid "Registered virtual machines:\n"
@@ -1259,7 +1214,7 @@ msgid "Can't find map %s\n"
 msgstr "Kann Map %s nicht finden\n"
 
 #: src/engine/server/sv_ccmds.c:263 src/engine/server/sv_ccmds.c:393
-#: src/engine/server/sv_ccmds.c:492 src/engine/server/sv_ccmds.c:512
+#: src/engine/server/sv_ccmds.c:491 src/engine/server/sv_ccmds.c:511
 msgid "Server is not running.\n"
 msgstr "Server läuft nicht.\n"
 
@@ -1268,12 +1223,12 @@ msgid "sv_maxclients variable change — restarting.\n"
 msgstr "Die Variable sv_maxclients wurde verändert — führe Neustart durch.\n"
 
 # Server Infoeinstellungen/Serverinfo Einstellungen?
-#: src/engine/server/sv_ccmds.c:496
+#: src/engine/server/sv_ccmds.c:495
 msgid "Server info settings:\n"
 msgstr "Serverinfo Einstellungen:\n"
 
 # Systeminfo Einstellungen/System Infoeinstellungen?
-#: src/engine/server/sv_ccmds.c:516
+#: src/engine/server/sv_ccmds.c:515
 msgid "System info settings:\n"
 msgstr "Systeminfo Einstellungen:\n"
 
@@ -1302,14 +1257,12 @@ msgstr "Warnung: Doppelte wwwdl-Empfangsbestätigung von Client '%s' erhalten\n"
 msgid ""
 "WARNING: client '%s' reports that the redirect download for '%s' had wrong "
 "checksum.\n"
-msgstr ""
-"Warnung: Client '%s' meldet, dass der weitergeleitete Download für '%s' eine "
+msgstr "Warnung: Client '%s' meldet, dass der weitergeleitete Download für '%s' eine "
 "ungültige Prüfsumme hat.\n"
 
 #: src/engine/server/sv_client.c:865
 msgid "         you should check your download redirect configuration.\n"
-msgstr ""
-"         Du solltest deine Download-Weiterleitungseinstellungen überprüfen.\n"
+msgstr "         Du solltest deine Download-Weiterleitungseinstellungen überprüfen.\n"
 
 #: src/engine/server/sv_client.c:875
 #, c-format
@@ -1334,8 +1287,7 @@ msgstr "FEHLER: Client '%s' konnte Dateigröße von %s nicht extrahieren\n"
 #: src/engine/server/sv_client.c:1050
 #, c-format
 msgid "Client '%s': falling back to regular downloading for failed file %s\n"
-msgstr ""
-"Client '%s' weicht nach Fehlversuch auf regulären Download für %s aus\n"
+msgstr "Client '%s' weicht nach Fehlversuch auf regulären Download für %s aus\n"
 
 #: src/engine/server/sv_client.c:1061
 #, c-format
@@ -1383,8 +1335,7 @@ msgstr "Server: %s\n"
 
 #: src/engine/server/sv_init.c:766
 msgid "WARNING: sv_pure set but no PK3 files loaded\n"
-msgstr ""
-"WARNUNG: sv_pure ist gesetzt aber es wurden keine PK3-Dateien geladen\n"
+msgstr "WARNUNG: sv_pure ist gesetzt aber es wurden keine PK3-Dateien geladen\n"
 
 #: src/engine/server/sv_init.c:964
 msgid "----- Server Shutdown -----\n"
@@ -1395,65 +1346,70 @@ msgstr "----- Server fährt herunter -----\n"
 msgid "===== pending server commands =====\n"
 msgstr "===== Anstehende Serverbefehle =====\n"
 
-#: src/engine/server/sv_main.c:306
+#: src/engine/server/sv_main.c:310
 #, c-format
 msgid "Resolving %s (IPv4)\n"
 msgstr "Löse %s zu IPv4 Adresse auf\n"
 
-#: src/engine/server/sv_main.c:321
+#: src/engine/server/sv_main.c:321 src/engine/server/sv_main.c:342
+#: src/engine/server/sv_main.c:428
+#, c-format
+msgid "%s resolved to %s\n"
+msgstr "%s aufgelöst zu %s\n"
+
+#: src/engine/server/sv_main.c:325
 #, c-format
 msgid "%s has no IPv4 address.\n"
 msgstr "%s hat keine IPv4 Adresse.\n"
 
-#: src/engine/server/sv_main.c:327
+#: src/engine/server/sv_main.c:331
 #, c-format
 msgid "Resolving %s (IPv6)\n"
 msgstr "Löse %s zu IPv6 Adresse auf\n"
 
-#: src/engine/server/sv_main.c:342
+#: src/engine/server/sv_main.c:346
 #, c-format
 msgid "%s has no IPv6 address.\n"
 msgstr "%s hat keine IPv6 Adresse.\n"
 
-#: src/engine/server/sv_main.c:350
+#: src/engine/server/sv_main.c:354
 #, c-format
 msgid "Couldn't resolve address: %s\n"
 msgstr "Adresse %s konnte nicht aufgelöst werden\n"
 
-#: src/engine/server/sv_main.c:357
+#: src/engine/server/sv_main.c:361
 #, c-format
 msgid "Sending heartbeat to %s\n"
 msgstr "Sende Lebenszeichen an %s\n"
 
-#: src/engine/server/sv_main.c:409
+#: src/engine/server/sv_main.c:413
 #, c-format
 msgid "Resolving %s\n"
 msgstr "Löse %s auf\n"
 
-#: src/engine/server/sv_main.c:414
+#: src/engine/server/sv_main.c:418
 #, c-format
 msgid "Couldn't resolve master address: %s\n"
 msgstr "Adresse des Hauptservers konnte nicht aufgelöst werden: %s\n"
 
-#: src/engine/server/sv_main.c:427
+#: src/engine/server/sv_main.c:431
 #, c-format
 msgid "Sending gamestat to %s\n"
 msgstr "Sende Spielstatus an %s\n"
 
-#: src/engine/server/sv_main.c:707
+#: src/engine/server/sv_main.c:711
 msgid "Detected flood of getinfo/getstatus connectionless packets\n"
 msgstr "Übermäßige verbindungslose getinfo/getstatus Anfragen entdeckt\n"
 
-#: src/engine/server/sv_main.c:718
+#: src/engine/server/sv_main.c:722
 #, c-format
 msgid ""
 "Possible DRDoS attack to address %i.%i.%i.%i, ignoring getinfo/getstatus "
 "connectionless packet\n"
-msgstr ""
-"Möglicher DDoS-Angriff gegen Adresse %i.%i.%i.%i, ignoriere verbindungslose "
+msgstr "Möglicher DDoS-Angriff gegen Adresse %i.%i.%i.%i, ignoriere verbindungslose "
 "getinfo/getstatus Pakete\n"
 
-#: src/engine/server/sv_main.c:770
+#: src/engine/server/sv_main.c:774
 #, c-format
 msgid ""
 "Bad rcon from %s:\n"
@@ -1462,7 +1418,7 @@ msgstr ""
 "Ungültigen rcon-Befehl von %s erhalten:\n"
 "%s\n"
 
-#: src/engine/server/sv_main.c:775
+#: src/engine/server/sv_main.c:779
 #, c-format
 msgid ""
 "Rcon from %s:\n"
@@ -1471,11 +1427,11 @@ msgstr ""
 "rcon-Befehl von %s erhalten:\n"
 "%s\n"
 
-#: src/engine/server/sv_main.c:790
+#: src/engine/server/sv_main.c:794
 msgid "No rconpassword set on the server.\n"
 msgstr "Auf dem Server ist kein rcon-Passwort gesetzt.\n"
 
-#: src/engine/server/sv_main.c:794
+#: src/engine/server/sv_main.c:798
 msgid "Bad rconpassword.\n"
 msgstr "Falsches rcon-Passwort.\n"
 
@@ -1483,6 +1439,84 @@ msgstr "Falsches rcon-Passwort.\n"
 #, c-format
 msgid "WARNING: msg overflowed for %s\n"
 msgstr "WARNUNG: Nachrichtenpuffer für %s übergelaufen\n"
+
+#~ msgid "usage: condump <filename>\n"
+#~ msgstr "Benutzung: condump <Dateiname>\n"
+
+#~ msgid "unbind <key> : remove commands from a key\n"
+#~ msgstr "unbind <Taste> : Löscht die Tastenbelegung\n"
+
+#~ msgid "usage: editbind <key>"
+#~ msgstr "Benutzung: editbind <Taste>"
+
+#, c-format
+#~ msgid "bad checksums: %s\n"
+#~ msgstr "Ungültige Prüfsumme: %s\n"
+
+#~ msgid "----- CL_Shutdown -----\n"
+#~ msgstr "----- CL_Shutdown -----\n"
+
+#~ msgid "Scanning for servers on the local network…\n"
+#~ msgstr "Suche nach Servern im lokalen Netzwerk...\n"
+
+#~ msgid "Channel memory manager started\n"
+#~ msgstr "Kanalspeichermanager gestartet\n"
+
+#~ msgid ""
+#~ "invalid relation operator in if command. valid relation operators are = != < "
+#~ "> >= <= eq ne in !in\n"
+#~ msgstr ""
+#~ "Ungültige Relation in if-Struktur. Gültige Relationen sind = != < > >= <= eq "
+#~ "ne in !in\n"
+
+#, c-format
+#~ msgid ""
+#~ "if <number> <relation> <number> <cmdthen> (<cmdelse>) : compares the first "
+#~ "two numbers and executes <cmdthen> if true, <cmdelse> if false\n"
+#~ "if <modifiers> <cmdthen> (<cmdelse>) : check if modifiers are (not) pressed\n"
+#~ "-- modifiers are %s\n"
+#~ "-- commands are cvar names unless prefixed with / or \\\n"
+#~ msgstr ""
+#~ "if <Zahl> <Relation> <Zahl> <Dann-Befehl> (<Sonst-Befehl>) : Vergleiche zwei "
+#~ "Zahlen und führe <Dann-Befehl> aus, wenn die Bedingung gilt, sonst führe "
+#~ "<Sonst-Befehl> aus\n"
+#~ "if <Modifikatoren> <Dann-Befehl> (<Sonst-Befehl>) : Überprüfe ob "
+#~ "Modifikatoren (nicht) gedrückt sind\n"
+#~ "-- Modifikatoren sind %s\n"
+
+#~ msgid "invalid operator in strcmp command. valid operators are = !=\n"
+#~ msgstr "Ungültiger Operator in strcmp-Befehl. Gültige Operatoren sind = !=\n"
+
+#~ msgid ""
+#~ "strcmp <string1> <relation> <string2> <cmdthen> (<cmdelse>) : compares the "
+#~ "first two strings and executes <cmdthen> if true, <cmdelse> if false\n"
+#~ msgstr ""
+#~ "strcmp <Zeichenkette> <Relation> <Zeichenkette> <Dann-Befehl> (<Sonst-"
+#~ "Befehl>) : Vergleiche zwei Zeichenketten und führe <Dann-Befehl> aus, wenn "
+#~ "die Bedingung gilt. Ansonsten führe <Sonst-Befehl> aus.\n"
+
+#, c-format
+#~ msgid ""
+#~ "********************\n"
+#~ "ERROR: %s\n"
+#~ "********************\n"
+#~ msgstr ""
+#~ "********************\n"
+#~ "FEHLER: %s\n"
+#~ "********************\n"
+
+#~ msgid "Client download subsystem initialized\n"
+#~ msgstr "Clientdownload Subsystem gestartet\n"
+
+#~ msgid "usage: fdir <filter>\n"
+#~ msgstr "Benutzung: fdir <Filter>\n"
+
+#~ msgid "example: fdir *q3dm*.bsp\n"
+#~ msgstr "Beispiel: fdir *q3dm*.bsp\n"
+
+#, c-format
+#~ msgid "Loaded %lu language(s)\n"
+#~ msgstr "%lu Sprache(n) geladen.\n"
 
 #~ msgid "execing %s\n"
 #~ msgstr "Führe %s aus\n"

@@ -34,7 +34,6 @@ Remove color codes and non-alphanumeric characters from a string
 void G_SanitiseString( const char *in, char *out, int len )
 {
 	len--;
-
 	while ( *in && len > 0 )
 	{
 		int cp = Q_UTF8_CodePoint( in );
@@ -50,8 +49,21 @@ void G_SanitiseString( const char *in, char *out, int len )
 
 		if ( Q_Unicode_IsAlphaOrIdeoOrDigit( cp ) )
 		{
-			int wm = MIN( len, w );
-			memcpy( out, in, wm );
+			int wm, lc;
+
+			if ( Q_Unicode_IsUpper( cp ) )
+			{
+				cp = Q_Unicode_ToLower( cp );
+				wm = Q_UTF8_WidthCP( cp );
+				wm = MIN( len, wm );
+				memcpy( out, Q_UTF8_Encode( cp ), wm );
+			}
+			else
+			{
+				wm = MIN( len, w );
+				memcpy( out, in, wm );
+			}
+
 			out += wm;
 			len -= wm;
 		}
@@ -1821,7 +1833,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 			trap_SendServerCommand( ent - g_entities,
 			                        va( "print_tr %s %s", QQ( N_("$1$: admin is immune\n") ), cmd ) );
 			G_AdminMessage( NULL,
-			                va( S_COLOR_WHITE "%s^3 attempted %s %s"
+			                va( "^7%s^3 attempted %s %s"
 			                    " on immune admin ^7%s"
 			                    " ^3for: %s",
 			                    ent->client->pers.netname, cmd, vote,
@@ -3854,7 +3866,7 @@ static void Cmd_Ignore_f( gentity_t *ent )
 
 	if ( trap_Argc() < 2 )
 	{
-		trap_SendServerCommand( ent - g_entities, va( "print_tr \"[skipnotify]"
+		trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
 		                        "%s\" %s", N_("usage: $1$ [clientNum | partial name match]\n"), cmd ) );
 		return;
 	}
@@ -3864,7 +3876,7 @@ static void Cmd_Ignore_f( gentity_t *ent )
 
 	if ( matches < 1 )
 	{
-		trap_SendServerCommand( ent - g_entities, va( "print_tr \"[skipnotify]"
+		trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
 		                        "%s\" %s %s", N_("$1$: no clients match the name '$2$'\n"), cmd, Quote( name ) ) );
 		return;
 	}
@@ -3877,13 +3889,13 @@ static void Cmd_Ignore_f( gentity_t *ent )
 			{
 				Com_ClientListAdd( &ent->client->sess.ignoreList, pids[ i ] );
 				ClientUserinfoChanged( ent->client->ps.clientNum, qfalse );
-				trap_SendServerCommand( ent - g_entities, va( "print_tr \"[skipnotify]"
+				trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
 				                        "%s\" %s", N_("ignore: added $1$^7 to your ignore list\n"),
 				                        Quote( level.clients[ pids[ i ] ].pers.netname ) ) );
 			}
 			else
 			{
-				trap_SendServerCommand( ent - g_entities, va( "print_tr \"[skipnotify]"
+				trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
 				                        "%s\" %s", N_("ignore: $1$^7 is already on your ignore list\n"),
 				                        Quote( level.clients[ pids[ i ] ].pers.netname ) ) );
 			}
@@ -3894,13 +3906,13 @@ static void Cmd_Ignore_f( gentity_t *ent )
 			{
 				Com_ClientListRemove( &ent->client->sess.ignoreList, pids[ i ] );
 				ClientUserinfoChanged( ent->client->ps.clientNum, qfalse );
-				trap_SendServerCommand( ent - g_entities, va( "print_tr \"[skipnotify]"
+				trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
 				                        "%s\" %s", N_("unignore: removed $1$^7 from your ignore list\n"),
 				                        Quote( level.clients[ pids[ i ] ].pers.netname ) ) );
 			}
 			else
 			{
-				trap_SendServerCommand( ent - g_entities, va( "print_tr \"[skipnotify]"
+				trap_SendServerCommand( ent - g_entities, va( "print_tr \"" S_SKIPNOTIFY
 				                        "%s\" %s", N_("unignore: $1$^7 is not on your ignore list\n"),
 				                        Quote( level.clients[ pids[ i ] ].pers.netname ) )  );
 			}
@@ -4026,7 +4038,7 @@ void Cmd_ListMaps_f( gentity_t *ent )
 			}
 			else
 			{
-				ADMBP( va( S_COLOR_WHITE " %-20s", fileSort[ i ] ) );
+				ADMBP( va( "^7 %-20s", fileSort[ i ] ) );
 			}
 
 			shown++;
@@ -4068,7 +4080,7 @@ typedef struct {
 } mapLogResult_t;
 
 static const mapLogResult_t maplog_table[] = {
-	{ 't', S_COLOR_WHITE "tie"                                  },
+	{ 't', "^7tie"                                  },
 	{ 'a', "^1Alien win"                            },
 	{ 'A', "^1Alien win ^7/ Humans admitted defeat" },
 	{ 'h', "^5Human win"                            },
@@ -4213,7 +4225,7 @@ void Cmd_MapLog_f( gentity_t *ent )
 		}
 		else if ( ptr == maplog )
 		{
-			result = S_COLOR_WHITE "current map";
+			result = "^7current map";
 		}
 
 		ADMBP( va( "  ^%s%-20s %6s %s^7\n",

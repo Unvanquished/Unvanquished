@@ -179,7 +179,7 @@ void SP_WaitFields( gentity_t *self, float defaultWait, float defaultWaitVarianc
 	if (!self->config.wait.variance)
 		self->config.wait.variance = defaultWaitVariance;
 
-	if ( self->config.wait.variance >= self->config.wait.time )
+	if ( self->config.wait.variance >= self->config.wait.time && self->config.wait.variance > 0)
 	{
 		self->config.wait.variance = self->config.wait.time - FRAMETIME;
 

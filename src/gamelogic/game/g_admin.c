@@ -1129,7 +1129,7 @@ static int admin_search( gentity_t *ent,
 			{
 				out( l, str );
 
-				ADMBP( va( S_COLOR_WHITE "%-3d %s\n", i + offset, str ) );
+				ADMBP( va( "^7%-3d %s\n", i + offset, str ) );
 
 				count++;
 				end = i;
@@ -4186,12 +4186,12 @@ qboolean G_admin_restart( gentity_t *ent )
 
 	AP( va( "print_tr %s %s %s %s %s %s %s %s", QQ( N_("^3restart: ^7map restarted by $1$ $2$$3t$$4$$5$$6t$$7$\n") ),
 	        G_quoted_admin_name( ent ),
-	        ( layout[ 0 ] ) ? QQ( N_( S_COLOR_WHITE "(forcing layout '" ) ) : "",
+	        ( layout[ 0 ] ) ? QQ( N_( "^7(forcing layout '" ) ) : "",
 			( layout[ 0 ] ) ? Quote( layout ) : "",
-			( layout[ 0 ] ) ? QQ( S_COLOR_WHITE "') " ) : "",
-	        ( teampref[ 0 ] ) ? QQ( N_( S_COLOR_WHITE "(with teams option: '" ) ) : "",
+			( layout[ 0 ] ) ? QQ( "^7') " ) : "",
+	        ( teampref[ 0 ] ) ? QQ( N_( "^7(with teams option: '" ) ) : "",
 	        ( teampref[ 0 ] ) ? Quote( teampref ) : "",
-	        ( teampref[ 0 ] ) ? QQ( S_COLOR_WHITE "')" ) : "" ) );
+	        ( teampref[ 0 ] ) ? QQ( "^7')" ) : "" ) );
 	return qtrue;
 }
 
@@ -4961,10 +4961,10 @@ static const char *const fates[] =
 {
 	N_("^2built^7"),
 	N_("^3deconstructed^7"),
-	N_(S_COLOR_WHITE "replaced^7"),
+	N_("^7replaced^7"),
 	N_("^5destroyed^7"),
 	N_("^1TEAMKILLED^7"),
-	N_(S_COLOR_WHITE "unpowered^7"),
+	N_("^7unpowered^7"),
 	N_("removed")
 };
 qboolean G_admin_buildlog( gentity_t *ent )
@@ -5119,7 +5119,7 @@ qboolean G_admin_buildlog( gentity_t *ent )
 		           BG_Buildable( log->modelindex )->humanName,
 		           log->builtBy && log->fate != BF_CONSTRUCT ? " (built by " : "",
 		           log->builtBy && log->fate != BF_CONSTRUCT ? log->builtBy->name[ log->builtBy->nameOffset ] : "",
-		           log->builtBy && log->fate != BF_CONSTRUCT ? S_COLOR_WHITE ")" : "",
+		           log->builtBy && log->fate != BF_CONSTRUCT ? "^7)" : "",
 		           fates[ log->fate ],
 		           log->actor ? " by " : "",
 		           log->actor ?

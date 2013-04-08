@@ -54,6 +54,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define CHAR_WIDTH                     32
 #define CHAR_HEIGHT                    48
 
+#define MAX_LOADING_LABEL_LENGTH       32
+
 typedef enum
 {
   FOOTSTEP_GENERAL,
@@ -1093,6 +1095,7 @@ typedef struct
 	int                     rightMoveTime;
 	int                     upMoveTime;
 
+	char                    currentLoadingLabel[ MAX_LOADING_LABEL_LENGTH ];
 	float                   charModelFraction; // loading percentages
 	float                   mediaFraction;
 	float                   buildablesFraction;
@@ -1128,7 +1131,6 @@ typedef struct
 
 	int                     numBinaryShadersUsed;
 	cgBinaryShaderSetting_t binaryShaderSettings[ NUM_BINARY_SHADERS ];
-	qhandle_t		gradingTextures[ MAX_GRADING_TEXTURES ];
 } cg_t;
 
 // all of the model, shader, and sound references that are
@@ -1354,6 +1356,7 @@ typedef struct
 	//
 	qhandle_t    gameModels[ MAX_MODELS ];
 	qhandle_t    gameShaders[ MAX_GAME_SHADERS ];
+	qhandle_t    gameGradingTextures[ MAX_GRADING_TEXTURES ];
 	qhandle_t    gameParticleSystems[ MAX_GAME_PARTICLE_SYSTEMS ];
 	sfxHandle_t  gameSounds[ MAX_SOUNDS ];
 
@@ -1585,6 +1588,7 @@ void QDECL CG_Error( const char *msg, ... ) PRINTF_LIKE(1) NORETURN;
 
 void       CG_StartMusic( void );
 
+void       CG_NotifyHooks( void );
 void       CG_UpdateCvars( void );
 
 int        CG_CrosshairPlayer( void );

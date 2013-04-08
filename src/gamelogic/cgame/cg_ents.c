@@ -690,6 +690,7 @@ static void CG_Portal( centity_t *cent )
 #define FLARE_OFF      0
 #define FLARE_NOFADE   1
 #define FLARE_TIMEFADE 2
+#define FLARE_REALFADE 3
 
 /*
 =========================
@@ -706,19 +707,9 @@ static void CG_LightFlare( centity_t *cent )
 	float         maxAngle;
 	vec3_t        mins, maxs, start, end;
 	float         srcRadius, srLocal, ratio = 1.0f;
-	int           entityNum;
-	qboolean      newStatus;
+	float         newStatus;
 
 	es = &cent->currentState;
-
-	if ( cg.renderingThirdPerson )
-	{
-		entityNum = MAGIC_TRACE_HACK;
-	}
-	else
-	{
-		entityNum = cg.predictedPlayerState.clientNum;
-	}
 
 	//don't draw light flares
 	if ( cg_lightFlare.integer == FLARE_OFF )
@@ -734,7 +725,7 @@ static void CG_LightFlare( centity_t *cent )
 
 	newStatus = trap_CheckVisibility( cent->lfs.hTest );
 
-	trap_AddVisTestToScene( cent->lfs.hTest, es->origin, 16.0f );
+	trap_AddVisTestToScene( cent->lfs.hTest, es->origin, 16.0f, 8.0f );
 
 	memset( &flare, 0, sizeof( flare ) );
 
@@ -802,15 +793,19 @@ static void CG_LightFlare( centity_t *cent )
 	VectorMA( flare.origin, -flare.radius, delta, end );
 	VectorMA( cg.refdef.vieworg, flare.radius, delta, start );
 
-	if ( cg_lightFlare.integer >= FLARE_TIMEFADE )
+	if ( cg_lightFlare.integer == FLARE_REALFADE )
+	{
+		ratio = newStatus;
+	}
+	else if ( cg_lightFlare.integer == FLARE_TIMEFADE )
 	{
 		//draw timed flares
-		if ( !newStatus && cent->lfs.status )
+		if ( newStatus <= 0.5f && cent->lfs.status )
 		{
 			cent->lfs.status = qfalse;
 			cent->lfs.lastTime = cg.time;
 		}
-		else if ( newStatus && !cent->lfs.status )
+		else if ( newStatus > 0.5f && !cent->lfs.status )
 		{
 			cent->lfs.status = qtrue;
 			cent->lfs.lastTime = cg.time;
@@ -842,7 +837,7 @@ static void CG_LightFlare( centity_t *cent )
 	else if ( cg_lightFlare.integer == FLARE_NOFADE )
 	{
 		//flare source occluded
-		if ( !newStatus )
+		if ( newStatus <= 0.5f )
 		{
 			ratio = 0.0f;
 		}

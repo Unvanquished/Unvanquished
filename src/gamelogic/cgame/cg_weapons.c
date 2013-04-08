@@ -90,28 +90,28 @@ static void CG_LoadCustomCrosshairs( void )
 	int          len, size;
 	fileHandle_t f;
 	weapon_t     weapon;
-	
+
 	len = trap_FS_FOpenFile( cg_crosshairFile.string, &f, FS_READ );
-	
+
 	if ( len < 0 )
 	{
 		return;
 	}
-	
+
 	if ( len == 0 || len >= sizeof( text ) - 1 )
 	{
 		CG_Printf( len == 0 ? "File %s is empty\n" : "File %s is too long\n", cg_crosshairFile.string );
 		trap_FS_FCloseFile( f );
 		return;
 	}
-	
+
 	trap_FS_Read( text, len, f );
 	text[ len ] = 0;
 	trap_FS_FCloseFile( f );
-	
+
 	// parse the text
 	text_p = text;
-	
+
 	while ( 1 )
 	{
 		qhandle_t shader;
@@ -121,37 +121,37 @@ static void CG_LoadCustomCrosshairs( void )
 		{
 			break;
 		}
-		
+
 		if ( ( weapon = BG_WeaponByName( token )->number ) )
 		{
 			token = COM_Parse( &text_p );
-			
+
 			if ( !*token )
 			{
 				break;
 			}
-			
+
 			size = atoi( token );
-			
+
 			if ( size < 0 )
 			{
 				size = 0;
 			}
-			
+
 			token = COM_Parse( &text_p );
-			
+
 			if ( !*token )
 			{
 				break;
 			}
-			
+
 			shader = trap_R_RegisterShader(token, RSF_DEFAULT);
-			
+
 			if ( !shader )
 			{
 				continue;
 			}
-			
+
 			cg_weapons[ weapon ].crossHair = shader;
 			cg_weapons[ weapon ].crossHairSize = size;
 		}
@@ -175,7 +175,7 @@ void CG_InitUpgrades( void )
 	{
 		CG_RegisterUpgrade( i );
 	}
-	
+
 	if ( cg_crosshairFile.string[0] )
 	{
 		CG_LoadCustomCrosshairs();
@@ -973,6 +973,8 @@ static qboolean CG_ParseWeaponFile( const char *filename, int weapon, weaponInfo
 													va( "%s_view_reload.md5anim", token2 ), qfalse, qfalse, qfalse );
 						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK1 ],
 													va( "%s_view_fire.md5anim", token2 ), qfalse, qfalse, qfalse );
+						CG_RegisterWeaponAnimation( &wi->animations[ WANIM_ATTACK2 ],
+													va( "%s_view_fire2.md5anim", token2 ), qfalse, qfalse, qfalse );
 						break;
 
 					case WP_ALEVEL1:

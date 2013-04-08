@@ -3750,10 +3750,11 @@ extern "C" {
 	{
 		vec3_t            position;
 		float             depthAdjust; // move position this distance to camera
-		GLuint            hQuery;
+		float             area; // size of the quad used to test vis
+		GLuint            hQuery, hQueryRef;
 		qboolean          registered;
 		qboolean          running;
-		qboolean          lastResult;
+		float             lastResult;
 	} visTest_t;
 
 	typedef struct
@@ -4929,8 +4930,9 @@ extern "C" {
 	void RE_RestoreViewParms( void );
 
 	qhandle_t RE_RegisterVisTest( void );
-	void RE_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust );
-	qboolean RE_CheckVisibility( qhandle_t hTest );
+	void RE_AddVisTestToScene( qhandle_t hTest, vec3_t pos,
+				   float depthAdjust, float area );
+	float RE_CheckVisibility( qhandle_t hTest );
 	void RE_UnregisterVisTest( qhandle_t hTest );
 	void R_ShutdownVisTests( void );
 	/*

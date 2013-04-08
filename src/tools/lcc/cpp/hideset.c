@@ -58,8 +58,8 @@ newhideset(int hs, Nlist *np)
 			error(FATAL, "Out of memory from realloc");
 	}
 	hs1 = (Hideset)domalloc(len*sizeof(Hideset));
-	memmove(hs1, nhs, len*sizeof(Hideset));
 	hidesets[nhidesets] = hs1;
+	memmove(hs1, nhs, len*sizeof(Hideset));
 	return nhidesets++;
 }
 

@@ -35,6 +35,7 @@ Maryland 20850 USA.
 #include "keycodes.h"
 
 #define MAX_TEAMS 4
+#define DEFAULT_BINDING 0
 
 typedef struct
 {

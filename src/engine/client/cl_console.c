@@ -620,7 +620,7 @@ void CL_ConsolePrint( char *text )
 	}
 
 	// NERVE - SMF - work around for text that shows up in console but not in notify
-	if ( !Q_strncmp( text, "[skipnotify]", 12 ) )
+	if ( !Q_strncmp( text, S_SKIPNOTIFY, 12 ) )
 	{
 			text += 12;
 	}

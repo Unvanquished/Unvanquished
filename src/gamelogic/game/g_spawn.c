@@ -182,7 +182,7 @@ static const fieldDescriptor_t fields[] =
 	{ "target2",             FOFS( targets ),             F_TARGET     }, // backwardcompatibility with AMP and to use the blackout map for testing
 	{ "target3",             FOFS( targets ),             F_TARGET     }, // backwardcompatibility with AMP and to use the blackout map for testing
 	{ "target4",             FOFS( targets ),             F_TARGET     }, // backwardcompatibility with AMP and to use the blackout map for testing
-	{ "targetname",          FOFS( names[ 1 ] ),          F_STRING,    ENT_V_RENAMED, "name" },
+	{ "targetname",          FOFS( names[ 1 ] ),          F_STRING,    ENT_V_TMPNAME, "name" }, //radiants ui sadly strongly encourages the "targetname" keyword
 	{ "targetname2",         FOFS( names[ 2 ] ),          F_STRING,    ENT_V_RENAMED, "name" }, // backwardcompatibility with AMP and to use the blackout map for testing
 	{ "targetShaderName",    FOFS( shaderKey ),           F_STRING,    ENT_V_TMPNAME, "shader"},
 	{ "targetShaderNewName", FOFS( shaderReplacement ),   F_STRING     },

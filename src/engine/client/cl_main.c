@@ -155,10 +155,13 @@ cvar_t                 *cl_consoleCommand; //see also com_consoleCommand for ter
 
 cvar_t	*cl_logs;
 
+cvar_t             *p_team; /*<team id without team semantics (to not break the relationship between client and cgame)*/
+
 struct rsa_public_key  public_key;
 struct rsa_private_key private_key;
 
 cvar_t             *cl_gamename;
+
 cvar_t             *cl_altTab;
 
 static cvar_t      *cl_renderer = NULL;
@@ -460,38 +463,25 @@ void CL_VoipParseTargets( void )
 				target += 7;
 				continue;
 			}
-
 			else if ( !Q_strnicmp( target, "team", 4 ) )
 			{
-				int i = 0;
+				const char *players = VM_ExplicitArgPtr( cgvm, VM_Call( cgvm, CG_VOIP_STRING, 0 ) );
+				const char *head;
+				char *p;
 
-				for ( i = 0; i < MAX_CLIENTS; i++ )
+				head = players;
+
+				while ( ( p = strchr( head, ',' ) ) )
 				{
-					team_t team = atoi( Info_ValueForKey(cl.gameState.stringData +
-					cl.gameState.stringOffsets[CS_PLAYERS + i], "t") );
+					int val;
 
-					qboolean connected = Info_ValueForKey(cl.gameState.stringData +
-					cl.gameState.stringOffsets[CS_PLAYERS + i], "n")[0];
-
-					if ( connected && team == cl.snap.ps.stats[ STAT_TEAM ] )
-					{
-						val = i;
-						if ( val < 0 || val >= MAX_CLIENTS )
-						{
-							Com_Printf( _( S_WARNING "VoIP "
-							"target %d is not a valid client "
-							"number\n"), val );
-
-							continue;
-						}
-
-
-						clc.voipTargets[ val / 8 ] |= 1 << ( val % 8 );
-					}
+					*p = '\0';
+					val = atoi( head );
+					clc.voipTargets[ val / 8 ] |= 1 << ( val % 8 );
+					head = p + 1;
 				}
 				target += 4;
 			}
-
 			else
 			{
 				if ( !Q_strnicmp( target, "attacker", 8 ) )
@@ -1850,7 +1840,7 @@ void CL_Disconnect( qboolean showMainMenu )
 		cls.state = CA_DISCONNECTED;
 	}
 
-	Key_SetTeam( TEAM_NONE );
+	CL_OnTeamChanged( 0 );
 }
 
 /*
@@ -4494,8 +4484,10 @@ void CL_Init( void )
 	cl_consoleFontKerning = Cvar_Get( "cl_consoleFontKerning", "0", CVAR_ARCHIVE );
 
 	cl_consoleCommand = Cvar_Get( "cl_consoleCommand", "say", CVAR_ARCHIVE );
-	
+
 	cl_logs = Cvar_Get ("cl_logs", "0", CVAR_ARCHIVE);
+
+	p_team = Cvar_Get("p_team", "0", CVAR_ROM );
 
 	cl_gamename = Cvar_Get( "cl_gamename", GAMENAME_FOR_MASTER, CVAR_TEMP );
 	cl_altTab = Cvar_Get( "cl_altTab", "1", CVAR_ARCHIVE );
@@ -4607,7 +4599,7 @@ void CL_Init( void )
 
 	Cvar_Set( "cl_running", "1" );
 	CL_GenerateRSAKey();
-	
+
 	CL_OpenClientLog();
 	CL_WriteClientLog( "`~-     Client Opened     -~`\n" );
 
@@ -4695,7 +4687,7 @@ void CL_Shutdown( void )
 	// done.
 
 	CL_IRCWaitShutdown();
-	
+
 	CL_WriteClientLog( "`~-     Client Closed     -~`\n" );
 	CL_CloseClientLog();
 
