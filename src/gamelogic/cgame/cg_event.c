@@ -587,24 +587,24 @@ static void CG_Obituary( entityState_t *ent )
 			case MOD_POISON:
 				if ( cg_emoticonsInMessages.integer )
 				{
-					message = "%s%s" S_COLOR_WHITE " [booster] %s\n";
+					message = "%s%s^7 [booster] %s\n";
 					attackerFirst = qtrue;
 				}
 				else
 				{
-					message = G_( "%s ^7should have used a medkit against %s%s" S_COLOR_WHITE "'s poison\n" );
+					message = G_( "%s ^7should have used a medkit against %s%s^7's poison\n" );
 				}
 				break;
 
 			case MOD_LEVEL1_PCLOUD:
 				if ( cg_emoticonsInMessages.integer )
 				{
-					message = "%s%s" S_COLOR_WHITE " [advbasilisk] %s\n";
+					message = "%s%s^7 [advbasilisk] %s\n";
 					attackerFirst = qtrue;
 				}
 				else
 				{
-					message = G_( "%s " S_COLOR_WHITE "was gassed by %s%s" S_COLOR_WHITE "'s %s\n" );
+					message = G_( "%s ^7was gassed by %s%s^7's %s\n" );
 					attackerClass = PCL_ALIEN_LEVEL1;
 				}
 				break;
@@ -612,17 +612,17 @@ static void CG_Obituary( entityState_t *ent )
 			case MOD_TELEFRAG:
 				if ( cg_emoticonsInMessages.integer )
 				{
-					message = "%s%s" S_COLOR_WHITE " [telenode] %s\n";
+					message = "%s%s^7 [telenode] %s\n";
 					attackerFirst = qtrue;
 				}
 				else
 				{
-					message = G_( "%s " S_COLOR_WHITE "tried to invade %s%s" S_COLOR_WHITE "'s personal space\n" );
+					message = G_( "%s ^7tried to invade %s%s^7's personal space\n" );
 				}
 				break;
 
 			default:
-				message = G_( "%s " S_COLOR_WHITE "was killed by %s%s\n" );
+				message = G_( "%s ^7was killed by %s%s\n" );
 				break;
 		}
 
@@ -631,18 +631,18 @@ static void CG_Obituary( entityState_t *ent )
 			if ( attackerFirst )
 			{
 				// Argument order: "TEAMMATE"/"", attacker, victim
-				CG_Printf( message, ( teamKill ) ? _(S_COLOR_RED "TEAMMATE" S_COLOR_WHITE " ") : "", attackerName, targetName );
+				CG_Printf( message, ( teamKill ) ? _("^1TEAMMATE^7 ") : "", attackerName, targetName );
 			}
 			else
 			{
 				// Argument order: victim, ["TEAMMATE"/"", attacker [, alien class]]
-				CG_Printf( message, targetName, ( teamKill ) ? _(S_COLOR_RED "TEAMMATE" S_COLOR_WHITE " ") : "", attackerName,
+				CG_Printf( message, targetName, ( teamKill ) ? _("^1TEAMMATE^7 ") : "", attackerName,
 				           ( attackerClass != -1 ) ? _( BG_ClassModelConfig( attackerClass )->humanName ) : NULL );
 			}
 
 			if ( teamKill && attacker == cg.clientNum )
 			{
-				CG_CenterPrint( va( _("You killed " S_COLOR_RED "TEAMMATE" S_COLOR_WHITE " %s"), targetName ),
+				CG_CenterPrint( va( _("You killed ^1TEAMMATE^7 %s"), targetName ),
 				                SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH );
 			}
 

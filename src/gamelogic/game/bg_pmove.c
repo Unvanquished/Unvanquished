@@ -3913,9 +3913,18 @@ static void PM_Weapon( void )
 				break;
 
 			default:
-				PM_StartTorsoAnim( TORSO_ATTACK );
-				PM_StartWeaponAnim( WANIM_ATTACK1 );
-				break;
+				if ( attack1 )
+				{
+					PM_StartTorsoAnim( TORSO_ATTACK );
+					PM_StartWeaponAnim( WANIM_ATTACK1 );
+					break;
+				}
+				else if ( attack2 )
+				{
+					PM_StartTorsoAnim( TORSO_ATTACK );
+					PM_StartWeaponAnim( WANIM_ATTACK2 );
+					break;
+				}
 		}
 	}
 	else

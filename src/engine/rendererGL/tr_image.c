@@ -3688,7 +3688,7 @@ static void R_CreateColorGradeImage( void )
 					      REF_COLORGRADEMAP_SIZE,
 					      REF_COLORGRADEMAP_SIZE,
 					      REF_COLORGRADEMAP_SIZE,
-					      IF_NOPICMIP | IF_NOCOMPRESSION,
+					      IF_NOPICMIP | IF_NOCOMPRESSION | IF_NOLIGHTSCALE,
 					      FT_LINEAR,
 					      WT_EDGE_CLAMP );
 

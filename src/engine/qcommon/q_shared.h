@@ -45,10 +45,10 @@ extern "C" {
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.13.1"
+#define PRODUCT_VERSION         "0.14.0"
 
 #define ENGINE_NAME             "Daemon Engine"
-#define ENGINE_VERSION          "0.13.1"
+#define ENGINE_VERSION          "0.14.0"
 
 #ifdef REVISION
 # define Q3_VERSION             PRODUCT_NAME " " PRODUCT_VERSION " " REVISION
@@ -558,6 +558,8 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 	       ) ? qtrue : qfalse;
 }
 #endif
+
+#define S_SKIPNOTIFY "[skipnotify]"
 
 /*
  * used for consistent representation within print or log statements
@@ -2230,6 +2232,7 @@ typedef struct
 #define MAX_EMOTICON_NAME_LEN     16
 #define MAX_EMOTICONS             64
 
+#define MAX_OBJECTIVES            64
 #define MAX_LOCATIONS             64
 #define MAX_MODELS                256 // these are sent over the net as 8 bits
 #define MAX_SOUNDS                256 // so they cannot be blindly increased

@@ -462,38 +462,25 @@ void CL_VoipParseTargets( void )
 				target += 7;
 				continue;
 			}
-#if 0 //FIXME we need to find another way to get the team CS_PLAYERS value, which will continuously change independently of the client, especially now with several cgames/games in development
 			else if ( !Q_strnicmp( target, "team", 4 ) )
 			{
-				int i = 0;
+				const char *players = VM_ExplicitArgPtr( cgvm, VM_Call( cgvm, CG_VOIP_STRING, 0 ) );
+				const char *head;
+				char *p;
 
-				for ( i = 0; i < MAX_CLIENTS; i++ )
+				head = players;
+
+				while ( ( p = strchr( head, ',' ) ) )
 				{
-					team_t team = atoi( Info_ValueForKey(cl.gameState.stringData +
-					cl.gameState.stringOffsets[CS_PLAYERS + i], "t") );
+					int val;
 
-					qboolean connected = Info_ValueForKey(cl.gameState.stringData +
-					cl.gameState.stringOffsets[CS_PLAYERS + i], "n")[0];
-
-					if ( connected && team == cl.snap.ps.stats[ STAT_TEAM ] )
-					{
-						val = i;
-						if ( val < 0 || val >= MAX_CLIENTS )
-						{
-							Com_Printf( _( S_WARNING "VoIP "
-							"target %d is not a valid client "
-							"number\n"), val );
-
-							continue;
-						}
-
-
-						clc.voipTargets[ val / 8 ] |= 1 << ( val % 8 );
-					}
+					*p = '\0';
+					val = atoi( head );
+					clc.voipTargets[ val / 8 ] |= 1 << ( val % 8 );
+					head = p + 1;
 				}
 				target += 4;
 			}
-#endif
 			else
 			{
 				if ( !Q_strnicmp( target, "attacker", 8 ) )

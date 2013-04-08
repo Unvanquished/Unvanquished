@@ -1422,6 +1422,33 @@ static void CG_RegisterGraphics( void )
 							     RSF_DEFAULT);
 	}
 
+	CG_UpdateMediaFraction( 0.85f );
+
+	// register all the server specified grading textures
+	// starting with the world wide one
+
+	cgs.gameGradingTextures[ 0 ] =
+			trap_R_RegisterShader( CG_ConfigString( CS_GRADING_TEXTURES ), RSF_NOMIP | RSF_NOLIGHTSCALE );
+
+	if( cgs.gameGradingTextures[ 0 ] )
+	{
+		trap_SetColorGrading( cgs.gameGradingTextures[ 0 ] );
+	}
+
+	for ( i = 1; i < MAX_GRADING_TEXTURES; i++ )
+	{
+		const char *gradingTextureName;
+
+		gradingTextureName = CG_ConfigString( CS_GRADING_TEXTURES + i );
+
+		if ( !gradingTextureName[ 0 ] )
+		{
+			break;
+		}
+
+		cgs.gameGradingTextures[ i ] = trap_R_RegisterShader(gradingTextureName, RSF_NOMIP | RSF_NOLIGHTSCALE);
+	}
+
 	CG_UpdateMediaFraction( 0.9f );
 
 	// register all the server specified particle systems
@@ -2399,6 +2426,37 @@ Called after every level change or subsystem restart
 Will perform callbacks to make the loading info screen update.
 =================
 */
+static SENTINEL const char *choose( const char *first, ... )
+{
+	va_list    ap;
+	int        count = 1;
+	const char *ret;
+
+	va_start( ap, first );
+	while ( va_arg( ap, const char * ) )
+	{
+		++count;
+	}
+	va_end( ap );
+
+	if ( count < 2 )
+	{
+		return first;
+	}
+
+	count = rand() % count;
+
+	ret = first;
+	va_start( ap, first );
+	while ( count-- )
+	{
+		ret = va_arg( ap, const char * );
+	}
+	va_end( ap );
+
+	return ret;
+}
+
 void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 {
 	const char *s;
@@ -2471,22 +2529,38 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	// load the new map
 	trap_CM_LoadMap( cgs.mapname );
 
+	srand( serverMessageNum * serverCommandSequence ^ clientNum );
+
+	Q_strncpyz(cg.currentLoadingLabel, choose("Tracking your movements", "Letting out the magic smoke", NULL), sizeof( cg.currentLoadingLabel ) );
+	CG_UpdateMediaFraction( 0.0f );
 	CG_LoadTrailSystems();
+
+	Q_strncpyz(cg.currentLoadingLabel, choose("Collecting bees for the hives", "Initialising fireworks", "Causing electrical faults", NULL), sizeof( cg.currentLoadingLabel ) );
 	CG_UpdateMediaFraction( 0.05f );
 
 	CG_LoadParticleSystems();
+
+	Q_strncpyz(cg.currentLoadingLabel, choose("Recording granger purring", "Generating annoying noises", NULL), sizeof( cg.currentLoadingLabel ) );
 	CG_UpdateMediaFraction( 0.05f );
 
 	CG_RegisterSounds();
+
+	Q_strncpyz(cg.currentLoadingLabel, choose("Taking pictures of the world", "Using your laptop's camera", "Adding texture to concrete", "Drawing smiley faces", NULL), sizeof( cg.currentLoadingLabel ) );
 	CG_UpdateMediaFraction( 0.60f );
 
 	CG_RegisterGraphics();
+
+	Q_strncpyz(cg.currentLoadingLabel, choose("Setting up the armoury", "Sharpening the aliens' claws", "Overloading lucifer cannons", NULL), sizeof( cg.currentLoadingLabel ) );
 	CG_UpdateMediaFraction( 0.90f );
 
 	CG_InitWeapons();
+
+	Q_strncpyz(cg.currentLoadingLabel, choose("Charging battery packs", "Replicating alien DNA", "Packing tents for jetcampers", NULL), sizeof( cg.currentLoadingLabel ) );
 	CG_UpdateMediaFraction( 0.95f );
 
 	CG_InitUpgrades();
+
+	Q_strncpyz(cg.currentLoadingLabel, choose("Finishing construction", "Adding turret spam", "Awakening the overmind", NULL), sizeof( cg.currentLoadingLabel ) );
 	CG_UpdateMediaFraction( 1.0f );
 
 	CG_InitBuildables();
@@ -2536,57 +2610,36 @@ static char *CG_VoIPString( void )
 {
 	// a generous overestimate of the space needed for 0,1,2...61,62,63
 	static char voipString[ MAX_CLIENTS * 4 ];
-	char        voipSendTarget[ MAX_CVAR_VALUE_STRING ];
 
-	trap_Cvar_VariableStringBuffer( "cl_voipSendTarget", voipSendTarget,
-	                                sizeof( voipSendTarget ) );
+	int i, slen, nlen;
 
-	if ( Q_stricmp( voipSendTarget, "team" ) == 0 )
+	for ( slen = i = 0; i < cgs.maxclients; i++ )
 	{
-		int i, slen, nlen;
-
-		for ( slen = i = 0; i < cgs.maxclients; i++ )
+		if ( !cgs.clientinfo[ i ].infoValid || i == cg.clientNum )
 		{
-			if ( !cgs.clientinfo[ i ].infoValid || i == cg.clientNum )
-			{
-				continue;
-			}
-
-			if ( cgs.clientinfo[ i ].team != cgs.clientinfo[ cg.clientNum ].team )
-			{
-				continue;
-			}
-
-			nlen = Q_snprintf( &voipString[ slen ], sizeof( voipString ) - slen,
-			                   "%s%d", ( slen > 0 ) ? "," : "", i );
-
-			if ( slen + nlen + 1 >= sizeof( voipString ) )
-			{
-				CG_Printf( S_WARNING "voipString overflowed\n" );
-				break;
-			}
-
-			slen += nlen;
+			continue;
 		}
 
-		// Notice that if the snprintf was truncated, slen was not updated
-		// so this will remove any trailing commas or partially-completed numbers
-		voipString[ slen ] = '\0';
+		if ( cgs.clientinfo[ i ].team != cgs.clientinfo[ cg.clientNum ].team )
+		{
+			continue;
+		}
+
+		nlen = Q_snprintf( &voipString[ slen ], sizeof( voipString ) - slen,
+							"%s%d", ( slen > 0 ) ? "," : "", i );
+
+		if ( slen + nlen + 1 >= sizeof( voipString ) )
+		{
+			CG_Printf( S_WARNING "voipString overflowed\n" );
+			break;
+		}
+
+		slen += nlen;
 	}
-	else if ( Q_stricmp( voipSendTarget, "crosshair" ) == 0 )
-	{
-		Com_sprintf( voipString, sizeof( voipString ), "%d",
-		             CG_CrosshairPlayer() );
-	}
-	else if ( Q_stricmp( voipSendTarget, "attacker" ) == 0 )
-	{
-		Com_sprintf( voipString, sizeof( voipString ), "%d",
-		             CG_LastAttacker() );
-	}
-	else
-	{
-		return NULL;
-	}
+
+	// Notice that if the snprintf was truncated, slen was not updated
+	// so this will remove any trailing commas or partially-completed numbers
+	voipString[ slen ] = '\0';
 
 	return voipString;
 }
