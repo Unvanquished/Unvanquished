@@ -33,8 +33,8 @@ Maryland 20850 USA.
 */
 
 // qcommon.h -- definitions common between client and server, but not game.or ref modules
-#ifndef _QCOMMON_H_
-#define _QCOMMON_H_
+#ifndef QCOMMON_H_
+#define QCOMMON_H_
 
 #include "../qcommon/cm_public.h"
 #include "../../include/global.h"
@@ -1383,4 +1383,4 @@ const char* Trans_GettextGame( const char *msgid ) __attribute__((__format_arg__
 const char* Trans_PgettextGame( const char *ctxt, const char *msgid ) __attribute__((__format_arg__(2)));
 const char* Trans_GettextGamePlural( const char *msgid, const char *msgid_plural, int num ) __attribute__((__format_arg__(1))) __attribute__((__format_arg__(2)));
 
-#endif // _QCOMMON_H_
+#endif // QCOMMON_H_

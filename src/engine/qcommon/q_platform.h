@@ -32,8 +32,8 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#ifndef __Q_PLATFORM_H
-#define __Q_PLATFORM_H
+#ifndef Q_PLATFORM_H_
+#define Q_PLATFORM_H_
 
 // this is for determining if we have an asm version of a C function
 #define idx64 0
@@ -460,4 +460,4 @@ float FloatSwap( float f );
 #define NO_VM_COMPILED
 #endif
 
-#endif
+#endif /* Q_PLATFORM_H_ */

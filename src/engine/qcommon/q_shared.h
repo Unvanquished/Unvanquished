@@ -32,8 +32,8 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#ifndef __Q_SHARED_H
-#define __Q_SHARED_H
+#ifndef Q_SHARED_H_
+#define Q_SHARED_H_
 
 #if defined( __cplusplus )
 extern "C" {
@@ -2272,4 +2272,4 @@ typedef struct
 }
 #endif
 
-#endif // __Q_SHARED_H
+#endif /* Q_SHARED_H_ */
