@@ -2109,8 +2109,7 @@ static void CG_DrawStageReport( rectDef_t *rect, float text_x, float text_y,
 {
 	char  s[ MAX_TOKEN_CHARS ];
 	float tx, ty;
-	float levelMineRate;
-	int   mineEfficiency, neededEfficiency;
+	int   confidence, neededConfidence;
 
 	if ( cg.intermissionStarted )
 	{
@@ -2124,46 +2123,46 @@ static void CG_DrawStageReport( rectDef_t *rect, float text_x, float text_y,
 
 	if ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
 	{
-		// TODO: Store CS_ALIEN_MINE_RATE in cgs
-		sscanf( CG_ConfigString( CS_ALIEN_MINE_RATE ), "%f %d", &levelMineRate, &mineEfficiency );
+		sscanf( CG_ConfigString( CS_ALIEN_CONFIDENCE ), "%d", &confidence );
 
-		neededEfficiency = cgs.alienNextStageThreshold - mineEfficiency;
+		neededConfidence = cgs.alienNextStageThreshold - confidence;
 
-		if ( neededEfficiency < 0 )
+		if ( neededConfidence < 0 )
 		{
-			neededEfficiency = 0;
+			neededConfidence = 0;
 		}
 
 		if ( cgs.alienNextStageThreshold < 0 )
 		{
-			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d"), cgs.alienStage + 1 );
+			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %d confidence"),
+			             cgs.alienStage + 1, confidence );
 		}
 		else
 		{
-			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, Add %d%% to your leech rate"),
-			             cgs.alienStage + 1, neededEfficiency );
+			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %d confidence, %d needed"),
+			             cgs.alienStage + 1, confidence, neededConfidence );
 		}
 	}
 	else if ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
 	{
-		// TODO: Store CS_HUMAN_MINE_RATE in cgs
-		sscanf( CG_ConfigString( CS_HUMAN_MINE_RATE ), "%f %d", &levelMineRate, &mineEfficiency );
+		sscanf( CG_ConfigString( CS_HUMAN_CONFIDENCE ), "%d", &confidence );
 
-		neededEfficiency = cgs.humanNextStageThreshold - mineEfficiency;
+		neededConfidence = cgs.humanNextStageThreshold - confidence;
 
-		if ( neededEfficiency < 0 )
+		if ( neededConfidence < 0 )
 		{
-			neededEfficiency = 0;
+			neededConfidence = 0;
 		}
 
 		if ( cgs.humanNextStageThreshold < 0 )
 		{
-			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d"), cgs.humanStage + 1 );
+			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %d confidence"),
+			             cgs.humanStage + 1, confidence );
 		}
 		else
 		{
-			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, Add %d%% to your mine rate"),
-			             cgs.humanStage + 1, neededEfficiency );
+			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %d confidence, %d needed"),
+			             cgs.humanStage + 1, confidence, neededConfidence );
 		}
 	}
 

@@ -139,28 +139,27 @@ static const char *const modNames[] =
 G_RewardAttackers
 
 Function to distribute rewards to entities that killed this one.
-Returns the total damage dealt.
+Returns the total enemy damage dealt.
 ==================
 */
 float G_RewardAttackers( gentity_t *self )
 {
-	float     value, totalDamage = 0;
-	int       team, i, maxHealth = 0;
+	float     value;
+	int       playerNum, enemyDamage, maxHealth, reward;
 	gentity_t *player;
+	team_t    ownTeam, playerTeam;
 
-	// Total up all the damage done by non-teammates
-	for ( i = 0; i < level.maxclients; i++ )
+	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
 	{
-		player = g_entities + i;
+		player = &g_entities[ playerNum ];
 
-		if ( !OnSameTeam( self, player ) ||
-		     self->buildableTeam != player->client->ps.stats[ STAT_TEAM ] )
+		if ( !OnSameTeam( self, player ) || self->buildableTeam != player->client->ps.stats[ STAT_TEAM ] ) // ?
 		{
-			totalDamage += ( float ) self->credits[ i ];
+			enemyDamage += self->credits[ playerNum ];
 		}
 	}
 
-	if ( totalDamage <= 0.0f )
+	if ( enemyDamage <= 0 )
 	{
 		return 0.0f;
 	}
@@ -169,59 +168,61 @@ float G_RewardAttackers( gentity_t *self )
 	if ( self->client )
 	{
 		value = BG_GetValueOfPlayer( &self->client->ps );
-		team = self->client->pers.teamSelection;
+		ownTeam = self->client->pers.teamSelection;
 		maxHealth = self->client->ps.stats[ STAT_MAX_HEALTH ];
 	}
 	else if ( self->s.eType == ET_BUILDABLE )
 	{
 		value = BG_Buildable( self->s.modelindex )->value;
+		ownTeam = self->buildableTeam;
+		maxHealth = BG_Buildable( self->s.modelindex )->health;
 
-		// only give partial credits for a buildable not yet completed
+		// Give partial credits for buildables in construction
 		if ( !self->spawned )
 		{
-			value *= ( float )( level.time - self->creationTime ) /
-			         BG_Buildable( self->s.modelindex )->buildTime;
+			value *= ( float )( level.time - self->creationTime ) / BG_Buildable( self->s.modelindex )->buildTime;
 		}
-
-		team = self->buildableTeam;
-		maxHealth = BG_Buildable( self->s.modelindex )->health;
 	}
 	else
 	{
-		return totalDamage;
+		return ( float )( enemyDamage );
 	}
 
-	// Give credits and empty the array
-	for ( i = 0; i < level.maxclients; i++ )
+	// Give credits/confidence and reset reward array
+	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
 	{
-		int stageValue = value * self->credits[ i ] / totalDamage;
-		player = g_entities + i;
+		player = &g_entities[ playerNum ];
+		playerTeam = player->client->pers.teamSelection;
 
-		if ( player->client->pers.teamSelection != team )
+		if ( playerTeam != ownTeam && self->credits[ playerNum ] )
 		{
-			if ( totalDamage < maxHealth )
+			reward = value * ( self->credits[ playerNum ] / ( float )( maxHealth ) );
+			AddScore( player, reward );
+
+			// Killing buildables earns confidence, killing players earns credits
+			if ( self->s.eType == ET_BUILDABLE )
 			{
-				stageValue *= totalDamage / maxHealth;
+				// TODO: Make score/value/redits consistent/comparable among the teams
+				if ( ownTeam == TEAM_ALIENS )
+				{
+					reward *= 2;
+				}
+				else
+				{
+					reward *= 0.6;
+				}
+				G_AddConfidence( playerTeam, CONFIDENCE_DESTRUCTION, reward, player );
 			}
-
-			if ( !self->credits[ i ] || player->client->ps.stats[ STAT_TEAM ] == team )
+			else
 			{
-				continue;
-			}
-
-			AddScore( player, stageValue );
-
-			// killing buildables earns score, but not credits
-			if ( self->s.eType != ET_BUILDABLE )
-			{
-				G_AddCreditToClient( player->client, stageValue, qtrue );
+				G_AddCreditToClient( player->client, reward, qtrue );
 			}
 		}
 
-		self->credits[ i ] = 0;
+		self->credits[ playerNum ] = 0;
 	}
 
-	return totalDamage;
+	return ( float )( enemyDamage );
 }
 
 /*

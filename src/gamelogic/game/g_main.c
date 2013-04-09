@@ -98,6 +98,8 @@ vmCvar_t           g_initialBuildPoints;
 vmCvar_t           g_initialMineRate;
 vmCvar_t           g_mineRateHalfLife;
 
+vmCvar_t           g_confidenceSumPeriod;
+
 vmCvar_t           g_humanStage;
 vmCvar_t           g_humanMaxStage;
 vmCvar_t           g_humanStage1Below;
@@ -263,6 +265,8 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_initialMineRate,             "g_initialMineRate",             DEFAULT_INITIAL_MINE_RATE,           CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_mineRateHalfLife,            "g_mineRateHalfLife",            DEFAULT_MINE_RATE_HALF_LIFE,         CVAR_ARCHIVE,                                    0, qfalse           },
 
+	{ &g_confidenceSumPeriod,         "g_confidenceSumPeriod",         DEFAULT_CONFIDENCE_SUM_PERIOD,       CVAR_ARCHIVE,                                    0, qfalse           },
+
 	{ &g_humanStage,                  "g_humanStage",                  "0",                                0,                                               0, qfalse           },
 	{ &g_humanMaxStage,               "g_humanMaxStage",               DEFAULT_HUMAN_MAX_STAGE,            0,                                               0, qfalse, cv_humanMaxStage},
 	{ &g_humanStage1Below,            "g_humanStage1Below",            DEFAULT_HUMAN_STAGE1_BELOW,         0,                                               0, qfalse           },
@@ -351,6 +355,7 @@ void               CheckExitRules( void );
 
 void               G_CountSpawns( void );
 void               G_CalculateMineRate( void );
+void               G_SumTeamConfidence( void );
 
 /*
 ================
@@ -1331,13 +1336,89 @@ void G_CalculateMineRate( void )
 
 /*
 ============
+G_SumTeamConfidence
+============
+*/
+void G_SumTeamConfidence( void )
+{
+	team_t          team;
+	confidenceLog_t **logs, *head, *log;
+	int             *confidence, amount, period, age;
+	confidence_t	type;
+
+	static int nextCalculation = 0;
+
+	if ( level.time < nextCalculation )
+	{
+		return;
+	}
+
+	for ( team = NUM_TEAMS - 1; team > TEAM_NONE; team-- )
+	{
+		switch ( team )
+		{
+			case TEAM_ALIENS:
+				logs = &level.alienConfidenceLogs;
+				head = log = *logs;
+				confidence = level.alienConfidence;
+				break;
+			case TEAM_HUMANS:
+				logs = &level.humanConfidenceLogs;
+				head = log = *logs;
+				confidence = level.humanConfidence;
+				break;
+			default:
+				continue;
+		}
+
+		// reset confidence
+		for ( type = CONFIDENCE_SUM; type < NUM_CONFIDENCE_TYPES; type++ )
+		{
+			confidence[ type ] = 0;
+		}
+
+		period = g_confidenceSumPeriod.value * 60000;
+
+		while ( log != NULL )
+		{
+			// remove old logs
+			if ( log->time + period < level.time )
+			{
+				head = log->next;
+				BG_Free( log );
+				log = head;
+				*logs = head;
+			}
+			// add to confidence
+			else
+			{
+				// fade out the effect of each reward
+				age = level.time - log->time;
+				amount = ceilf( log->amount * ( ( period - age ) / ( float )period ) / 100.0f );
+
+				confidence[ log->type ] += amount;
+				confidence[ CONFIDENCE_SUM ] += amount;
+
+				log = log->next;
+			}
+		}
+	}
+
+	trap_SetConfigstring( CS_ALIEN_CONFIDENCE, va( "%d", level.alienConfidence[ CONFIDENCE_SUM ] ) );
+	trap_SetConfigstring( CS_HUMAN_CONFIDENCE, va( "%d", level.humanConfidence[ CONFIDENCE_SUM ] ) );
+
+	nextCalculation = level.time + 200;
+}
+
+/*
+============
 G_CalculateStages
 ============
 */
 void G_CalculateStages( void )
 {
 	team_t     team;
-	int        mineEfficiency,
+	int        confidence,
 	           stage,
 	           stageModCount,
 	           maxStage,
@@ -1352,6 +1433,7 @@ void G_CalculateStages( void )
 	           nextThreshold;
 	const char *stageCVar,
 	           *teamName;
+
 	static int nextCalculation = 0;
 
 	if ( level.time < nextCalculation )
@@ -1364,7 +1446,7 @@ void G_CalculateStages( void )
 		switch ( team )
 		{
 			case TEAM_ALIENS:
-				mineEfficiency = level.alienMineEfficiency;
+				confidence     = level.alienConfidence[ CONFIDENCE_SUM ];
 				stage          = g_alienStage.integer;
 				stageModCount  = g_alienStage.modificationCount;
 				maxStage       = g_alienMaxStage.integer;
@@ -1379,7 +1461,7 @@ void G_CalculateStages( void )
 				CSStages       = CS_ALIEN_STAGES;
 				break;
 			case TEAM_HUMANS:
-				mineEfficiency = level.humanMineEfficiency;
+				confidence     = level.humanConfidence[ CONFIDENCE_SUM ];
 				stage          = g_humanStage.integer;
 				stageModCount  = g_humanStage.modificationCount;
 				maxStage       = g_humanMaxStage.integer;
@@ -1399,7 +1481,7 @@ void G_CalculateStages( void )
 
 		newStage = stage;
 
-		if ( mineEfficiency >= S3Above && maxStage >= S3 )
+		if ( confidence >= S3Above && maxStage >= S3 )
 		{
 			if ( stage == S3 )
 			{
@@ -1419,11 +1501,11 @@ void G_CalculateStages( void )
 				*S3Time = level.time;
 			}
 		}
-		else if ( mineEfficiency >= S2Below && stage >= S3 )
+		else if ( confidence >= S2Below && stage >= S3 )
 		{
 			continue;
 		}
-		else if ( mineEfficiency >= S2Above && maxStage >= S2 )
+		else if ( confidence >= S2Above && maxStage >= S2 )
 		{
 			if ( stage == S2 )
 			{
@@ -1438,7 +1520,7 @@ void G_CalculateStages( void )
 				*S2Time = level.time;
 			}
 		}
-		else if ( mineEfficiency >= S1Below && stage >= S2 )
+		else if ( confidence >= S1Below && stage >= S2 )
 		{
 			continue;
 		}
@@ -2702,6 +2784,7 @@ void G_RunFrame( int levelTime )
 
 	G_CountSpawns();
 	G_CalculateMineRate();
+	G_SumTeamConfidence();
 	G_CalculateStages();
 	G_SpawnClients( TEAM_ALIENS );
 	G_SpawnClients( TEAM_HUMANS );

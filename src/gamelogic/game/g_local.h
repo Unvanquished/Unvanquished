@@ -647,6 +647,31 @@ typedef enum {
 } voteType_t;
 
 //
+// confidence
+//
+typedef enum {
+	CONFIDENCE_SUM,
+
+	CONFIDENCE_GENERAL,
+	CONFIDENCE_KILLING,
+	CONFIDENCE_DESTRUCTION,
+	CONFIDENCE_BUILDING,
+	CONFIDENCE_TEAMPLAY,
+
+	NUM_CONFIDENCE_TYPES
+} confidence_t;
+
+typedef struct confidenceLog_s
+{
+	struct confidenceLog_s *next;
+
+	int                    time;
+	confidence_t           type;
+	int                    amount;
+	gentity_t              *source;
+} confidenceLog_t;
+
+//
 // this structure is cleared as each map is entered
 //
 #define MAX_SPAWN_VARS       64
@@ -744,6 +769,11 @@ typedef struct
 	int              alienMineEfficiency;
 	int              humanMineEfficiency;
 	float            mineRate;
+
+	confidenceLog_t  *alienConfidenceLogs;
+	confidenceLog_t  *humanConfidenceLogs;
+	int              alienConfidence[ NUM_CONFIDENCE_TYPES ];
+	int              humanConfidence[ NUM_CONFIDENCE_TYPES ];
 
 	gentity_t        *markedBuildables[ MAX_GENTITIES ];
 	int              numBuildablesForRemoval;
@@ -957,6 +987,8 @@ qboolean   G_ClientIsLagging( gclient_t *client );
 void       G_TriggerMenu( int clientNum, dynMenu_t menu );
 void       G_TriggerMenuArgs( int clientNum, dynMenu_t menu, int arg );
 void       G_CloseMenus( int clientNum );
+
+void       G_AddConfidence( team_t team, confidence_t type, int amount, gentity_t *source );
 
 
 //

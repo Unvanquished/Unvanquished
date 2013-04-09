@@ -458,16 +458,18 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define DEFAULT_INITIAL_MINE_RATE          "10"
 #define DEFAULT_MINE_RATE_HALF_LIFE        "15"
 
-#define DEFAULT_ALIEN_STAGE1_BELOW         "300"
-#define DEFAULT_ALIEN_STAGE2_ABOVE         "350"
-#define DEFAULT_ALIEN_STAGE2_BELOW         "500"
-#define DEFAULT_ALIEN_STAGE3_ABOVE         "550"
+#define DEFAULT_CONFIDENCE_SUM_PERIOD      "10"
+
+#define DEFAULT_ALIEN_STAGE1_BELOW         "50"
+#define DEFAULT_ALIEN_STAGE2_ABOVE         "100"
+#define DEFAULT_ALIEN_STAGE2_BELOW         "150"
+#define DEFAULT_ALIEN_STAGE3_ABOVE         "200"
 #define DEFAULT_ALIEN_MAX_STAGE            "2"
 
-#define DEFAULT_HUMAN_STAGE1_BELOW         "300"
-#define DEFAULT_HUMAN_STAGE2_ABOVE         "350"
-#define DEFAULT_HUMAN_STAGE2_BELOW         "500"
-#define DEFAULT_HUMAN_STAGE3_ABOVE         "550"
+#define DEFAULT_HUMAN_STAGE1_BELOW         "50"
+#define DEFAULT_HUMAN_STAGE2_ABOVE         "100"
+#define DEFAULT_HUMAN_STAGE2_BELOW         "150"
+#define DEFAULT_HUMAN_STAGE3_ABOVE         "200"
 #define DEFAULT_HUMAN_MAX_STAGE            "2"
 
 #define MAXIMUM_BUILD_TIME                 20000 // used for pie timer

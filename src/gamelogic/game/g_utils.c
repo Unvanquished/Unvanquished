@@ -748,3 +748,50 @@ qboolean G_AddressCompare( const addr_t *a, const addr_t *b )
 
 	return qtrue;
 }
+
+void G_AddConfidence( team_t team, confidence_t type, int amount, gentity_t *source )
+{
+	confidenceLog_t **logs, *log, *newlog;
+
+	switch ( team )
+	{
+		case TEAM_ALIENS:
+			logs = &level.alienConfidenceLogs;
+			break;
+		case TEAM_HUMANS:
+			logs = &level.humanConfidenceLogs;
+			break;
+		default:
+			return;
+	}
+
+	if ( type <= CONFIDENCE_SUM || type >= NUM_CONFIDENCE_TYPES )
+	{
+		return;
+	}
+
+	// create new log
+	newlog = (confidenceLog_t *)BG_Alloc( sizeof( confidenceLog_t ) );
+	newlog->next = NULL;
+	newlog->type = type;
+	newlog->time = level.time;
+	newlog->amount = amount;
+	newlog->source = source;
+
+	// append log
+	if ( *logs == NULL )
+	{
+		*logs = newlog;
+	}
+	else
+	{
+		log = *logs;
+
+		while ( log->next != NULL )
+		{
+			log = log->next;
+		}
+
+		log->next = newlog;
+	}
+}
