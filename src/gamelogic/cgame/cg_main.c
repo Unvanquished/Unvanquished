@@ -1153,6 +1153,64 @@ static void CG_UpdateMediaFraction( float newFract )
 	trap_UpdateScreen();
 }
 
+enum {
+	LOAD_START = 1,
+	LOAD_TRAILS,
+	LOAD_PARTICLES,
+	LOAD_SOUNDS,
+	LOAD_ASSETS,
+	LOAD_WEAPONS,
+	LOAD_UPGRADES,
+	LOAD_BUILDINGS,
+	LOAD_REMAINING,
+	LOAD_DONE
+} typedef cgLoadingStep_t;
+
+static void CG_UpdateLoadingStep( cgLoadingStep_t step )
+{
+	switch (step) {
+		case LOAD_START:
+			cg.loading = qtrue;
+			cg.mediaFraction = cg.charModelFraction = cg.buildablesFraction = 0.0f;
+			Q_strncpyz(cg.currentLoadingLabel, "Start loading.", sizeof( cg.currentLoadingLabel ) );
+			trap_UpdateScreen();
+			break;
+
+		case LOAD_TRAILS:
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.0f, choose("Tracking your movements", "Letting out the magic smoke", NULL) );
+			break;
+		case LOAD_PARTICLES:
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.05f, choose("Collecting bees for the hives", "Initialising fireworks", "Causing electrical faults", NULL) );
+			break;
+		case LOAD_SOUNDS:
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.05f, choose("Recording granger purring", "Generating annoying noises", NULL) );
+			break;
+		case LOAD_ASSETS:
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.60f, choose("Taking pictures of the world", "Using your laptop's camera", "Adding texture to concrete", "Drawing smiley faces", NULL) );
+			break;
+		case LOAD_WEAPONS:
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.90f, choose("Setting up the armoury", "Sharpening the aliens' claws", "Overloading lucifer cannons", NULL) );
+			break;
+		case LOAD_UPGRADES:
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.95f, choose("Charging battery packs", "Replicating alien DNA", "Packing tents for jetcampers", NULL) );
+			break;
+		case LOAD_BUILDINGS:
+			cg.mediaFraction = 1.0f;
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.0f, choose("Finishing construction", "Adding turret spam", "Awakening the overmind", NULL) );
+			break;
+
+		case LOAD_DONE:
+			cg.mediaFraction = cg.charModelFraction = cg.buildablesFraction = 1.0f;
+			Q_strncpyz(cg.currentLoadingLabel, "Done!", sizeof( cg.currentLoadingLabel ) );
+			trap_UpdateScreen();
+			cg.loading = qfalse;
+			break;
+
+		default:
+			break;
+	}
+}
+
 /*
 =================
 CG_RegisterSounds
@@ -2484,7 +2542,6 @@ Will perform callbacks to make the loading info screen update.
 void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 {
 	const char *s;
-
 	trap_SyscallABIVersion( SYSCALL_ABI_VERSION_MAJOR, SYSCALL_ABI_VERSION_MINOR );
 
 	// clear everything
@@ -2492,8 +2549,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	memset( &cg, 0, sizeof( cg ) );
 	memset( cg_entities, 0, sizeof( cg_entities ) );
 
-	cg.loading = qtrue;
-
+	CG_UpdateLoadingStep( LOAD_START );
 	cg.clientNum = clientNum;
 
 	cgs.processedSnapshotNum = serverMessageNum;
@@ -2563,26 +2619,28 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 
 	srand( serverMessageNum * serverCommandSequence ^ clientNum );
 
-	CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.0f, choose("Tracking your movements", "Letting out the magic smoke", NULL) );
+	CG_UpdateLoadingStep( LOAD_TRAILS );
 	CG_LoadTrailSystems();
 
-	CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.05f, choose("Collecting bees for the hives", "Initialising fireworks", "Causing electrical faults", NULL) );
+	CG_UpdateLoadingStep( LOAD_PARTICLES );
 	CG_LoadParticleSystems();
 
-	CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.05f, choose("Recording granger purring", "Generating annoying noises", NULL) );
+	CG_UpdateLoadingStep( LOAD_SOUNDS );
 	CG_RegisterSounds();
 
-	CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.60f, choose("Taking pictures of the world", "Using your laptop's camera", "Adding texture to concrete", "Drawing smiley faces", NULL) );
+	CG_UpdateLoadingStep( LOAD_ASSETS );
 	CG_RegisterGraphics();
 
-	CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.90f, choose("Setting up the armoury", "Sharpening the aliens' claws", "Overloading lucifer cannons", NULL) );
+	CG_UpdateLoadingStep( LOAD_WEAPONS );
 	CG_InitWeapons();
 
-	CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.95f, choose("Charging battery packs", "Replicating alien DNA", "Packing tents for jetcampers", NULL) );
+	CG_UpdateLoadingStep( LOAD_UPGRADES );
 	CG_InitUpgrades();
 
-	CG_UpdateLoadingProgress( LOADBAR_MEDIA, 1.0f, choose("Finishing construction", "Adding turret spam", "Awakening the overmind", NULL) );
+	CG_UpdateLoadingStep( LOAD_BUILDINGS );
 	CG_InitBuildables();
+
+	CG_UpdateLoadingStep( LOAD_REMAINING );
 
 	cgs.voices = BG_VoiceInit();
 	BG_PrintVoices( cgs.voices, cg_debugVoices.integer );
@@ -2601,7 +2659,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	trap_S_ClearLoopingSounds( qtrue );
 	trap_Cvar_Set( "ui_winner", "" ); // Clear the previous round's winner.
 
-	cg.loading = qfalse;
+	CG_UpdateLoadingStep( LOAD_DONE );
 }
 
 /*

@@ -1095,6 +1095,7 @@ typedef struct
 	int                     rightMoveTime;
 	int                     upMoveTime;
 
+	/* loading */
 	char                    currentLoadingLabel[ MAX_LOADING_LABEL_LENGTH ];
 	float                   charModelFraction; // loading percentages
 	float                   mediaFraction;
