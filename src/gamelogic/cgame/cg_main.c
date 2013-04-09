@@ -1168,6 +1168,28 @@ enum {
 
 static void CG_UpdateLoadingStep( cgLoadingStep_t step )
 {
+#if 0
+	static int startTime = 0;
+	static int lastStepTime = 0;
+	const int thisStepTime = trap_Milliseconds();
+
+	switch (step) {
+		case LOAD_START:
+			startTime = thisStepTime;
+			CG_Printf("^4%%^5 Start loading.\n");
+			break;
+		case LOAD_DONE:
+			CG_Printf("^4%%^5 Done loading everything after %is (%ims).\n",
+					(thisStepTime - startTime)/1000, (thisStepTime - startTime));
+			break;
+		default:
+			CG_Printf("^4%%^5 Done with Step %i after %is (%ims)… Starting Step %i\n",
+					step - 1, (thisStepTime - lastStepTime)/1000, (thisStepTime - lastStepTime), step );
+			break;
+	}
+	lastStepTime = thisStepTime;
+#endif
+
 	switch (step) {
 		case LOAD_START:
 			cg.loading = qtrue;
