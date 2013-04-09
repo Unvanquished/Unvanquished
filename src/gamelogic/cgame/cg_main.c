@@ -2499,7 +2499,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	            CG_ConfigString( CS_VOTE_STRING + TEAM_ALIENS ),
 	            sizeof( cgs.voteString[ TEAM_ALIENS ] ) );
 	Q_strncpyz( cgs.voteString[ TEAM_HUMANS ],
-	            CG_ConfigString( CS_VOTE_STRING + TEAM_ALIENS ),
+	            CG_ConfigString( CS_VOTE_STRING + TEAM_HUMANS ),
 	            sizeof( cgs.voteString[ TEAM_HUMANS ] ) );
 
 	// check version
