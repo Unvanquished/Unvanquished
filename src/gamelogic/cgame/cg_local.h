@@ -1670,7 +1670,6 @@ void       CG_RunMenuScript( char **args );
 void       CG_SetPrintString( int type, const char *p );
 const char *CG_GetKillerText( void );
 void       CG_DrawLoadingScreen( void );
-void       CG_UpdateMediaFraction( float newFract );
 void       CG_ResetPainBlend( void );
 void       CG_DrawField( float x, float y, int width, float cw, float ch, int value );
 
