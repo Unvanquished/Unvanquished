@@ -107,14 +107,14 @@ char *Sys_DefaultHomePath( void )
 	FARPROC qSHGetFolderPath;
 	HMODULE shfolder = LoadLibrary( "shfolder.dll" );
 
-	if ( !*homePath )
+	if ( shfolder == NULL )
 	{
-		if ( shfolder == NULL )
-		{
-			Com_Printf( "Unable to load SHFolder.dll\n" );
-			return NULL;
-		}
+		Com_Printf( "Unable to load SHFolder.dll\n" );
+		return NULL;
+	}
 
+	if ( !*homePath && com_homepath )
+	{
 		qSHGetFolderPath = GetProcAddress( shfolder, "SHGetFolderPathA" );
 
 		if ( qSHGetFolderPath == NULL )
@@ -132,11 +132,19 @@ char *Sys_DefaultHomePath( void )
 			return NULL;
 		}
 
-		Q_strncpyz( homePath, szPath, sizeof( homePath ) );
-		Q_strcat( homePath, sizeof( homePath ), "\\Daemon" );
-		FreeLibrary( shfolder );
+		Com_sprintf( homePath, sizeof( homePath ), "%s%c", szPath, PATH_SEP );
+
+		if ( com_homepath->string[0] )
+		{
+			Q_strcat(homePath, sizeof(homePath), com_homepath->string);
+		}
+		else
+		{
+			Q_strcat(homePath, sizeof(homePath), HOMEPATH_NAME_WIN);
+		}
 	}
 
+	FreeLibrary( shfolder );
 	return homePath;
 }
 
