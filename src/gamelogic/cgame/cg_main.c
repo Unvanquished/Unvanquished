@@ -1158,6 +1158,7 @@ enum {
 	LOAD_TRAILS,
 	LOAD_PARTICLES,
 	LOAD_SOUNDS,
+	LOAD_GEOMETRY,
 	LOAD_ASSETS,
 	LOAD_WEAPONS,
 	LOAD_UPGRADES,
@@ -1205,10 +1206,13 @@ static void CG_UpdateLoadingStep( cgLoadingStep_t step )
 			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.05f, choose("Collecting bees for the hives", "Initialising fireworks", "Causing electrical faults", NULL) );
 			break;
 		case LOAD_SOUNDS:
-			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.05f, choose("Recording granger purring", "Generating annoying noises", NULL) );
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.08f, choose("Recording granger purring", "Generating annoying noises", NULL) );
+			break;
+		case LOAD_GEOMETRY:
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.60f, choose("Hello World!", "Making a scene.", NULL) );
 			break;
 		case LOAD_ASSETS:
-			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.60f, choose("Taking pictures of the world", "Using your laptop's camera", "Adding texture to concrete", "Drawing smiley faces", NULL) );
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.66f, choose("Taking pictures of the world", "Using your laptop's camera", "Adding texture to concrete", "Drawing smiley faces", NULL) );
 			break;
 		case LOAD_WEAPONS:
 			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.90f, choose("Setting up the armoury", "Sharpening the aliens' claws", "Overloading lucifer cannons", NULL) );
@@ -1218,7 +1222,7 @@ static void CG_UpdateLoadingStep( cgLoadingStep_t step )
 			break;
 		case LOAD_BUILDINGS:
 			cg.mediaFraction = 1.0f;
-			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.0f, choose("Finishing construction", "Adding turret spam", "Awakening the overmind", NULL) );
+			CG_UpdateLoadingProgress( LOADBAR_BUILDABLES, 0.0f, choose("Finishing construction", "Adding turret spam", "Awakening the overmind", NULL) );
 			break;
 
 		case LOAD_DONE:
@@ -1378,9 +1382,10 @@ static void CG_RegisterGraphics( void )
 	memset( &cg.refdef, 0, sizeof( cg.refdef ) );
 	trap_R_ClearScene();
 
+	CG_UpdateLoadingStep( LOAD_GEOMETRY );
 	trap_R_LoadWorldMap( cgs.mapname );
-	CG_UpdateMediaFraction( 0.66f );
 
+	CG_UpdateLoadingStep( LOAD_ASSETS );
 	for ( i = 0; i < 11; i++ )
 	{
 		cgs.media.numberShaders[ i ] = trap_R_RegisterShader(sb_nums[i],
@@ -2650,7 +2655,6 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	CG_UpdateLoadingStep( LOAD_SOUNDS );
 	CG_RegisterSounds();
 
-	CG_UpdateLoadingStep( LOAD_ASSETS );
 	CG_RegisterGraphics();
 
 	CG_UpdateLoadingStep( LOAD_WEAPONS );
