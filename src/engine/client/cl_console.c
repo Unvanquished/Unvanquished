@@ -81,10 +81,11 @@ cvar_t    *con_colorGreen;
  */
 cvar_t    *con_debug;
 
-#define ANIMATION_TYPE_NONE   0
-#define ANIMATION_TYPE_SCROLL_DOWN 1
-#define ANIMATION_TYPE_FADE   2
-#define ANIMATION_TYPE_BOTH   3
+enum {
+	ANIMATION_TYPE_NONE,
+	ANIMATION_TYPE_SCROLL_DOWN,
+	ANIMATION_TYPE_FADE,
+} typedef conAnimationType_t;
 
 #define DEFAULT_CONSOLE_WIDTH 78
 #define MAX_CONSOLE_WIDTH   1024
@@ -1182,7 +1183,7 @@ void Con_UpdateConsoleState( void )
 	 * calculate global alpha factor
 	 * apply the fade animation if the type is set, otherwise remain completly visible
 	 */
-	consoleState.currentAlphaFactor = ( con_animationType->integer & ANIMATION_TYPE_FADE ) ? consoleState.currentAnimationFraction : 1.0f;
+	consoleState.currentAlphaFactor = ( con_animationType->integer & FLAG(ANIMATION_TYPE_FADE) ) ? consoleState.currentAnimationFraction : 1.0f;
 
 	/*
 	 * calculate current console height
@@ -1201,7 +1202,7 @@ void Con_UpdateConsoleState( void )
 
 
 	//animate via scroll animation if the type is set
-	if ( con_animationType->integer & ANIMATION_TYPE_SCROLL_DOWN)
+	if ( con_animationType->integer & FLAG(ANIMATION_TYPE_SCROLL_DOWN))
 	{
 		consoleState.height *= consoleState.currentAnimationFraction;
 	}
@@ -1303,7 +1304,7 @@ void Con_RunConsole( void )
 	{
 		consoleState.currentAnimationFraction -= con_animationSpeed->value * cls.realFrametime * 0.001;
 
-		if ( consoleState.currentAnimationFraction <= 0  || con_animationType->integer == ANIMATION_TYPE_NONE )
+		if ( consoleState.currentAnimationFraction <= 0  || con_animationType->integer == FLAG(ANIMATION_TYPE_NONE) )
 		{	//we are closed, do some last onClose work
 			consoleState.currentAnimationFraction = 0;
 			consoleState.lastReadLineIndex = consoleState.currentLine;
@@ -1313,7 +1314,7 @@ void Con_RunConsole( void )
 	{
 		consoleState.currentAnimationFraction += con_animationSpeed->value * cls.realFrametime * 0.001;
 
-		if ( consoleState.currentAnimationFraction > 1  || con_animationType->integer == ANIMATION_TYPE_NONE  )
+		if ( consoleState.currentAnimationFraction > 1  || con_animationType->integer == FLAG(ANIMATION_TYPE_NONE)  )
 		{
 			consoleState.currentAnimationFraction = 1;
 		}
@@ -1325,7 +1326,7 @@ void Con_RunConsole( void )
 		if( consoleState.bottomDisplayedLine < consoleState.scrollLineIndex )
 		{
 			consoleState.bottomDisplayedLine += con_animationSpeed->value * cls.realFrametime * 0.005 * scrollDifference;
-			if( consoleState.bottomDisplayedLine > consoleState.scrollLineIndex || con_animationType->integer == ANIMATION_TYPE_NONE )
+			if( consoleState.bottomDisplayedLine > consoleState.scrollLineIndex || con_animationType->integer == FLAG(ANIMATION_TYPE_NONE) )
 			{
 				consoleState.bottomDisplayedLine = consoleState.scrollLineIndex;
 			}
@@ -1333,7 +1334,7 @@ void Con_RunConsole( void )
 		else if ( consoleState.bottomDisplayedLine > consoleState.scrollLineIndex )
 		{
 			consoleState.bottomDisplayedLine -= con_animationSpeed->value * cls.realFrametime * 0.005 * scrollDifference;
-			if( consoleState.bottomDisplayedLine < consoleState.scrollLineIndex || con_animationType->integer == ANIMATION_TYPE_NONE )
+			if( consoleState.bottomDisplayedLine < consoleState.scrollLineIndex || con_animationType->integer == FLAG(ANIMATION_TYPE_NONE) )
 			{
 				consoleState.bottomDisplayedLine = consoleState.scrollLineIndex;
 			}
