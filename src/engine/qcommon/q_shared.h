@@ -1510,35 +1510,6 @@ double rint( double x );
 #define CVAR_SERVERINFO_NOUPDATE 8192 // gordon: won't automatically send this to clients, but server browsers will see it
 #define CVAR_NONEXISTENT         0xFFFFFFFF // Cvar doesn't exist.
 
-// nothing outside the Cvar_*() functions should modify these fields!
-	typedef struct cvar_s
-	{
-		char          *name;
-		char          *string;
-		char          *resetString; // cvar_restart will reset to this value
-		char          *latchedString; // for CVAR_LATCH vars
-		int           flags;
-		qboolean      modified; // set each time the cvar is changed
-		int           modificationCount; // incremented each time the cvar is changed
-		float         value; // atof( string )
-		int           integer; // atoi( string )
-
-		/**
-		 * indicate whether the cvar won't be archived, even if it's an ARCHIVE flagged cvar.
-		 * this allows us to keep ARCHIVE cvars unwritten to autogen until a user changes them
-		 */
-		qboolean      transient;
-
-		qboolean      validate;
-		qboolean      integral;
-		float         min;
-		float         max;
-
-		struct cvar_s *next;
-
-		struct cvar_s *hashNext;
-	} cvar_t;
-
 #define MAX_CVAR_VALUE_STRING 256
 
 	typedef int cvarHandle_t;
