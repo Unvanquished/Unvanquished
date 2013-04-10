@@ -1073,7 +1073,6 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 	GLenum     target;
 	GLenum     format = GL_RGBA;
 	GLenum     internalFormat = GL_RGB;
-	float      rMax = 0, gMax = 0, bMax = 0;
 	vec4_t     zeroClampBorder = { 0, 0, 0, 1 };
 	vec4_t     alphaZeroClampBorder = { 0, 0, 0, 0 };
 
@@ -1252,21 +1251,6 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 		{
 			for ( i = 0; i < c; i++ )
 			{
-				if ( scan[ i * 4 + 0 ] > rMax )
-				{
-					rMax = scan[ i * 4 + 0 ];
-				}
-
-				if ( scan[ i * 4 + 1 ] > gMax )
-				{
-					gMax = scan[ i * 4 + 1 ];
-				}
-
-				if ( scan[ i * 4 + 2 ] > bMax )
-				{
-					bMax = scan[ i * 4 + 2 ];
-				}
-
 				if ( scan[ i * 4 + 3 ] != 255 )
 				{
 					samples = 4;
