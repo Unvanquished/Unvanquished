@@ -32,6 +32,8 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+#ifdef _WIN32
+
 #include "revision.h"
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
@@ -1105,3 +1107,5 @@ qboolean Sys_IsNumLockDown( void )
 
 	return qfalse;
 }
+
+#endif /* _WIN32 */

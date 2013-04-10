@@ -32,6 +32,8 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+#ifdef _WIN32
+
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
 #include "sys_local.h"
@@ -559,3 +561,5 @@ void CON_Print( const char *msg )
 
 	CON_Show();
 }
+
+#endif /* _WIN32 */

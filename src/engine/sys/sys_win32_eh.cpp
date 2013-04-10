@@ -32,6 +32,8 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+#ifdef _WIN32
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -297,3 +299,5 @@ extern "C" {
 		g_Version = version;
 	}
 }
+
+#endif /* _WIN32 */
