@@ -1483,61 +1483,65 @@ double rint( double x );
 	void QDECL Com_Printf( const char *msg, ... ) PRINTF_LIKE(1);
 	void QDECL Com_DPrintf( const char *msg, ... ) PRINTF_LIKE(1);
 
-	/*
-	==========================================================
+//=============================================
+/*
+ * CVARS (console variables)
+ *
+ * Many variables can be used for cheating purposes, so when
+ * cheats is zero, force all unspecified variables to their
+ * default values.
+ */
 
-	CVARS (console variables)
+/**
+ * set to cause it to be saved to autogen
+ * used for system variables, not for player
+ * specific configurations
+ */
+#define CVAR_ARCHIVE             BIT(0)
+#define CVAR_USERINFO            BIT(1)    /*< sent to server on connect or change */
+#define CVAR_SERVERINFO          BIT(2)    /*< sent in response to front end requests */
+#define CVAR_SYSTEMINFO          BIT(3)    /*< these cvars will be duplicated on all clients */
 
-	Many variables can be used for cheating purposes, so when
-	cheats is zero, force all unspecified variables to their
-	default values.
-	==========================================================
-	*/
+/**
+ * don't allow change from console at all,
+ * but can be set from the command line
+ */
+#define CVAR_INIT                BIT(4)
 
-	/**
-	 * set to cause it to be saved to autogen
-	 * used for system variables, not for player
-	 * specific configurations
-	 */
-#define CVAR_ARCHIVE             FLAG(1)
-#define CVAR_USERINFO            FLAG(2)    /*< sent to server on connect or change */
-#define CVAR_SERVERINFO          FLAG(3)    /*< sent in response to front end requests */
-#define CVAR_SYSTEMINFO          FLAG(4)    /*< these cvars will be duplicated on all clients */
-	/**
-	 * don't allow change from console at all,
-	 * but can be set from the command line
-	 */
-#define CVAR_INIT                FLAG(5)
-	/**
-	 * will only change when C code next does a Cvar_Get(),
-	 * so it can't be changed without proper initialization.
-	 * modified will be set, even though the value hasn't changed yet
-	 */
-#define CVAR_LATCH               FLAG(6)
-#define CVAR_ROM                 FLAG(7)   /*< display only, cannot be set by user at all */
-#define CVAR_USER_CREATED        FLAG(8)   /*< created by a set command */
-#define CVAR_TEMP                FLAG(9)   /*< can be set even when cheats are disabled, but is not archived */
-#define CVAR_CHEAT               FLAG(10)  /*< can not be changed if cheats are disabled */
-#define CVAR_NORESTART           FLAG(11)  /*< do not clear when a cvar_restart is issued */
-#define CVAR_SHADER              FLAG(12)   /*< tell renderer to recompile shaders. */
-	/**
-	 * unsafe system cvars (renderer, sound settings,
-	 * anything that might cause a crash)
-	 */
-#define CVAR_UNSAFE              FLAG(13)
-	/**
-	 * won't automatically be send to clients,
-	 * but server browsers will see it
-	 */
-#define CVAR_SERVERINFO_NOUPDATE FLAG(14)
+/**
+ * will only change when C code next does a Cvar_Get(),
+ * so it can't be changed without proper initialization.
+ * modified will be set, even though the value hasn't changed yet
+ */
+#define CVAR_LATCH               BIT(5)
+#define CVAR_ROM                 BIT(6)   /*< display only, cannot be set by user at all */
+#define CVAR_USER_CREATED        BIT(7)   /*< created by a set command */
+#define CVAR_TEMP                BIT(8)   /*< can be set even when cheats are disabled, but is not archived */
+#define CVAR_CHEAT               BIT(9)   /*< can not be changed if cheats are disabled */
+#define CVAR_NORESTART           BIT(10)  /*< do not clear when a cvar_restart is issued */
+#define CVAR_SHADER              BIT(11)  /*< tell renderer to recompile shaders. */
+
+/**
+ * unsafe system cvars (renderer, sound settings,
+ * anything that might cause a crash)
+ */
+#define CVAR_UNSAFE              BIT(12)
+
+/**
+ * won't automatically be send to clients,
+ * but server browsers will see it
+ */
+#define CVAR_SERVERINFO_NOUPDATE BIT(13)
 #define CVAR_NONEXISTENT         0xFFFFFFFF /*< Cvar doesn't exist. */
 
 #define MAX_CVAR_VALUE_STRING 256
 
 	typedef int cvarHandle_t;
 
-// the modules that run in the virtual machine can't access the cvar_t directly,
-// so they must ask for structured updates
+/**
+ * the modules that run in the virtual machine can't access the cvar_t directly,
+ * so they must ask for structured updates
+ */
 	typedef struct
 	{
 		cvarHandle_t handle;
