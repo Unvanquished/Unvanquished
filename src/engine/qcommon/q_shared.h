@@ -282,6 +282,14 @@ extern int memcmp( void *, void *, size_t );
 #define BIT(x) ( 1 << ( x ) )
 #endif
 
+/**
+ * like BIT but starts counting from 1, and making sure FLAG(0)=0
+ */
+#ifndef FLAG
+#define FLAG(x) ( x <= 0 ? 0 : 1 << ( x - 1 ) )
+#define FLAG_ALL -1
+#endif
+
 // the game guarantees that no string from the network will ever
 // exceed MAX_STRING_CHARS
 #define MAX_STRING_CHARS  1024 // max length of a string passed to Cmd_TokenizeString
