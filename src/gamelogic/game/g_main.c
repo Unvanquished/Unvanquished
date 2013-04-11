@@ -1343,8 +1343,9 @@ void G_SumTeamConfidence( void )
 {
 	team_t          team;
 	confidenceLog_t **logs, *head, *log;
-	int             *confidence, amount, period, age;
 	confidence_t	type;
+	int             *confidence, period, CSConfidence;
+	float           amount, confidence_f[ NUM_CONFIDENCE_TYPES ];
 
 	static int nextCalculation = 0;
 
@@ -1361,11 +1362,13 @@ void G_SumTeamConfidence( void )
 				logs = &level.alienConfidenceLogs;
 				head = log = *logs;
 				confidence = level.alienConfidence;
+				CSConfidence = CS_ALIEN_CONFIDENCE;
 				break;
 			case TEAM_HUMANS:
 				logs = &level.humanConfidenceLogs;
 				head = log = *logs;
 				confidence = level.humanConfidence;
+				CSConfidence = CS_HUMAN_CONFIDENCE;
 				break;
 			default:
 				continue;
@@ -1374,6 +1377,7 @@ void G_SumTeamConfidence( void )
 		// reset confidence
 		for ( type = CONFIDENCE_SUM; type < NUM_CONFIDENCE_TYPES; type++ )
 		{
+			confidence_f[ type ] = 0.0f;
 			confidence[ type ] = 0;
 		}
 
@@ -1382,7 +1386,7 @@ void G_SumTeamConfidence( void )
 		while ( log != NULL )
 		{
 			// remove old logs
-			if ( log->time + period < level.time )
+			if ( log->time + period <= level.time )
 			{
 				head = log->next;
 				BG_Free( log );
@@ -1393,19 +1397,24 @@ void G_SumTeamConfidence( void )
 			else
 			{
 				// fade out the effect of each reward
-				age = level.time - log->time;
-				amount = ceilf( log->amount * ( ( period - age ) / ( float )period ) / 100.0f );
+				amount = log->amount * ( ( period - ( level.time - log->time ) ) / ( float )period ) / 100.0f;
 
-				confidence[ log->type ] += amount;
-				confidence[ CONFIDENCE_SUM ] += amount;
+				confidence_f[ log->type ] += amount;
+				confidence_f[ CONFIDENCE_SUM ] += amount;
 
 				log = log->next;
 			}
 		}
-	}
 
-	trap_SetConfigstring( CS_ALIEN_CONFIDENCE, va( "%d", level.alienConfidence[ CONFIDENCE_SUM ] ) );
-	trap_SetConfigstring( CS_HUMAN_CONFIDENCE, va( "%d", level.humanConfidence[ CONFIDENCE_SUM ] ) );
+		// round confidence
+		for ( type = CONFIDENCE_SUM; type < NUM_CONFIDENCE_TYPES; type++ )
+		{
+			confidence[ type ] = roundf( confidence_f[ type ] );
+		}
+
+		// send total confidence to clients
+		trap_SetConfigstring( CSConfidence, va( "%d", confidence[ CONFIDENCE_SUM ] ) );
+	}
 
 	nextCalculation = level.time + 200;
 }
