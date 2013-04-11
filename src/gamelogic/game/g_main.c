@@ -150,6 +150,7 @@ vmCvar_t           g_sayAreaRange;
 vmCvar_t           g_floodMaxDemerits;
 vmCvar_t           g_floodMinTime;
 
+vmCvar_t           g_defaultLayouts;
 vmCvar_t           g_layouts;
 vmCvar_t           g_layoutAuto;
 
@@ -314,6 +315,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_mapConfigs,                  "g_mapConfigs",                  "",                                 CVAR_ARCHIVE,                                    0, qfalse           },
 	{ NULL,                           "g_mapConfigsLoaded",            "0",                                CVAR_ROM,                                        0, qfalse           },
 
+	{ &g_defaultLayouts,              "g_defaultLayouts",              "",                                 CVAR_LATCH | CVAR_ARCHIVE,                       0, qfalse           },
 	{ &g_layouts,                     "g_layouts",                     "",                                 CVAR_LATCH,                                      0, qfalse           },
 	{ &g_layoutAuto,                  "g_layoutAuto",                  "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
 

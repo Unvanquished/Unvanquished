@@ -1282,6 +1282,7 @@ extern  vmCvar_t g_antiSpawnBlock;
 
 extern  vmCvar_t g_mapConfigs;
 
+extern  vmCvar_t g_defaultLayouts;
 extern  vmCvar_t g_layouts;
 extern  vmCvar_t g_layoutAuto;
 
