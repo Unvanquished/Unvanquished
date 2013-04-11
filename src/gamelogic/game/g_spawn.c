@@ -77,6 +77,44 @@ static qboolean G_SpawnStringIntoCVar( const char *key, const char *cvarName )
 	return qfalse;
 }
 
+qboolean G_SpawnBoolean( const char *key, qboolean defaultqboolean )
+{
+	char     *string;
+	int     out;
+
+	if(G_SpawnString( key, "", &string ))
+	{
+		if(Q_strtoi(string, &out))
+		{
+			if(out == 1)
+			{
+				return qtrue;
+			}
+			else if(out == 0)
+			{
+				return qfalse;
+			}
+			return defaultqboolean;
+		}
+		else
+		{
+			if(!Q_stricmp(string, "true"))
+			{
+				return qtrue;
+			}
+			else if(!Q_stricmp(string, "false"))
+			{
+				return qfalse;
+			}
+			return defaultqboolean;
+		}
+	}
+	else
+	{
+		return defaultqboolean;
+	}
+}
+
 qboolean  G_SpawnFloat( const char *key, const char *defaultString, float *out )
 {
 	char     *s;
