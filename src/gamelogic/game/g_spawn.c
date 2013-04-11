@@ -726,12 +726,13 @@ void G_SpawnGEntityFromSpawnVars( void )
 		G_ParseField( level.spawnVars[ i ][ 0 ], level.spawnVars[ i ][ 1 ], spawningEntity );
 	}
 
-	G_SpawnInt( "notq3a", "0", &i );
-
-	if ( i )
+	if(G_SpawnInt( "notunv", "0", &i ))
 	{
-		G_FreeEntity( spawningEntity );
-		return;
+		if ( i )
+		{
+			G_FreeEntity( spawningEntity );
+			return;
+		}
 	}
 
 	/*
