@@ -648,20 +648,8 @@ typedef enum {
 } voteType_t;
 
 //
-// confidence
+// confidence log entry
 //
-typedef enum {
-	CONFIDENCE_SUM,
-
-	CONFIDENCE_GENERAL,
-	CONFIDENCE_KILLING,
-	CONFIDENCE_DESTRUCTION,
-	CONFIDENCE_BUILDING,
-	CONFIDENCE_TEAMPLAY,
-
-	NUM_CONFIDENCE_TYPES
-} confidence_t;
-
 typedef struct confidenceLog_s
 {
 	struct confidenceLog_s *next;

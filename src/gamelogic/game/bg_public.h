@@ -563,7 +563,9 @@ typedef enum
   EV_MGTURRET_SPINUP, // turret spinup sound should play
 
   EV_RPTUSE_SOUND, // trigger a sound
-  EV_LEV2_ZAP
+  EV_LEV2_ZAP,
+
+  EV_CONFIDENCE // notify client of generated confidence
 } entity_event_t;
 
 typedef enum
@@ -941,6 +943,19 @@ typedef enum
   MOD_REPLACE,
   MOD_NOCREEP
 } meansOfDeath_t;
+
+// confidence types
+typedef enum {
+	CONFIDENCE_SUM,
+
+	CONFIDENCE_GENERAL,
+	CONFIDENCE_KILLING,
+	CONFIDENCE_DESTRUCTION,
+	CONFIDENCE_BUILDING,
+	CONFIDENCE_TEAMPLAY,
+
+	NUM_CONFIDENCE_TYPES
+} confidence_t;
 
 //---------------------------------------------------------
 

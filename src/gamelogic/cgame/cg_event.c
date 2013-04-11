@@ -766,6 +766,42 @@ static void CG_Level2Zap( entityState_t *es )
 
 /*
 ==============
+CG_Confidence
+
+Notify player of generated confidence
+==============
+*/
+void CG_Confidence( entityState_t *es )
+{
+	const char *reason;
+
+	switch ( es->eventParm )
+	{
+		case CONFIDENCE_KILLING:
+			reason = _("Killing an enemy");
+			break;
+
+		case CONFIDENCE_DESTRUCTION:
+			reason = _("Destroying an enemy building");
+			break;
+
+		case CONFIDENCE_BUILDING:
+			reason = _("Building a structure");
+			break;
+
+		case CONFIDENCE_TEAMPLAY:
+			reason = _("Your sense for teamplay");
+			break;
+
+		default:
+			reason = _("Your actions");
+	}
+
+	CG_Printf( _("%s earned your team %d confidence\n"), reason, es->otherEntityNum );
+}
+
+/*
+==============
 CG_EntityEvent
 
 An entity has an event value
@@ -1372,6 +1408,10 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 
 		case EV_LEV2_ZAP:
 			CG_Level2Zap( es );
+			break;
+
+		case EV_CONFIDENCE:
+			CG_Confidence( es );
 			break;
 
 		default:
