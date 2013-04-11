@@ -55,7 +55,7 @@ void G_InitGentity( gentity_t *entity )
 
 /*
 =================
-G_Spawn
+G_NewEntity
 
 Either finds a free entity, or allocates a new one.
 
@@ -159,7 +159,7 @@ void G_FreeEntity( gentity_t *entity )
 
 /*
 =================
-G_TempEntity
+G_NewTempEntity
 
 Spawns an event entity that will be auto-removed
 The origin will be snapped to save net bandwidth, so care
