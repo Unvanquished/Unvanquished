@@ -1336,7 +1336,14 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		// add to the attackers "account" on the target
 		if ( attacker->client && attacker != targ )
 		{
-			targ->credits[ attacker->client->ps.clientNum ] += take;
+			if ( targ->health < 0 )
+			{
+				targ->credits[ attacker->client->ps.clientNum ] += ( take + targ->health );
+			}
+			else
+			{
+				targ->credits[ attacker->client->ps.clientNum ] += take;
+			}
 		}
 
 		if ( targ->health <= 0 )
