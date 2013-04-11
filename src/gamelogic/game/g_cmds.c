@@ -4055,7 +4055,7 @@ void Cmd_ListMaps_f( gentity_t *ent )
 
 typedef struct {
 	char       flag;
-	const char *description;
+	const char description[64];
 } mapLogResult_t;
 
 static const mapLogResult_t maplog_table[] = {
