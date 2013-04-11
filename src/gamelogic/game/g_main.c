@@ -100,6 +100,8 @@ vmCvar_t           g_mineRateHalfLife;
 
 vmCvar_t           g_confidenceSumPeriod;
 
+vmCvar_t           g_alienOffCreepRegenHalfLife;
+
 vmCvar_t           g_humanStage;
 vmCvar_t           g_humanMaxStage;
 vmCvar_t           g_humanStage1Below;
@@ -266,6 +268,8 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_mineRateHalfLife,            "g_mineRateHalfLife",            DEFAULT_MINE_RATE_HALF_LIFE,         CVAR_ARCHIVE,                                    0, qfalse           },
 
 	{ &g_confidenceSumPeriod,         "g_confidenceSumPeriod",         DEFAULT_CONFIDENCE_SUM_PERIOD,       CVAR_ARCHIVE,                                    0, qfalse           },
+
+	{ &g_alienOffCreepRegenHalfLife,  "g_alienOffCreepRegenHalfLife",  "5",                               CVAR_ARCHIVE,                                    0, qfalse           },
 
 	{ &g_humanStage,                  "g_humanStage",                  "0",                                0,                                               0, qfalse           },
 	{ &g_humanMaxStage,               "g_humanMaxStage",               DEFAULT_HUMAN_MAX_STAGE,            0,                                               0, qfalse, cv_humanMaxStage},

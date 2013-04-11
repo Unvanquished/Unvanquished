@@ -341,6 +341,7 @@ struct gentity_s
 	int         last_move_time;
 	int         timestamp; // body queue sinking, etc
 	int         shrunkTime; // time when a barricade shrunk or zero
+	int         creepTime; // Time when alien was last on creep
 	int         animTime; // last animation change
 	int         time1000; // timer evaluated every second
 
@@ -1243,6 +1244,8 @@ extern  vmCvar_t pmove_accurate;
 extern  vmCvar_t g_initialMineRate;
 extern  vmCvar_t g_initialBuildPoints;
 extern  vmCvar_t g_mineRateHalfLife;
+
+extern vmCvar_t  g_alienOffCreepRegenHalfLife;
 
 extern  vmCvar_t g_humanStage;
 extern  vmCvar_t g_humanMaxStage;
