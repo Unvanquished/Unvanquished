@@ -2907,6 +2907,8 @@ void Cmd_ToggleItem_f( gentity_t *ent )
 Cmd_Buy_f
 =================
 */
+static qboolean Cmd_Sell_internal( gentity_t *ent, const char *s );
+
 static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s )
 {
 	weapon_t  weapon;
@@ -3115,7 +3117,7 @@ void Cmd_Buy_f( gentity_t *ent )
 	for ( c = 1; c < args; ++c )
 	{
 		trap_Argv( c, s, sizeof( s ) );
-		updated |= Cmd_Buy_internal( ent, s );
+		updated |= s[0] == '-' ? Cmd_Sell_internal( ent, s + 1 ) : Cmd_Buy_internal( ent, s );
 	}
 
 	//update ClientInfo

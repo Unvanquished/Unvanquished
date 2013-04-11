@@ -207,14 +207,10 @@ static void CG_CompleteClass( void )
 	}
 }
 
-static void CG_CompleteBuy( void )
+static void CG_CompleteBuy_internal( qboolean negatives )
 {
 	int i;
-
-	if( cgs.clientinfo[ cg.clientNum ].team != TEAM_HUMANS )
-	{
-		return;
-	}
+	const char *negative[ 64 ];
 
 	for( i = 0; i < UP_NUM_UPGRADES; i++ )
 	{
@@ -222,10 +218,23 @@ static void CG_CompleteBuy( void )
 		if ( item->purchasable && item->team == TEAM_HUMANS )
 		{
 			trap_CompleteCallback( item->name );
+
+			if ( negatives )
+			{
+				trap_CompleteCallback( va( "-%s", item->name ) );
+			}
 		}
 	}
 
 	trap_CompleteCallback( "grenade" ); // called "gren" elsewhere, so special-case it
+
+	if ( negatives )
+	{
+		trap_CompleteCallback( "-grenade" );
+
+		i = BG_GetPlayerWeapon( &cg.snap->ps );
+
+	}
 
 	for( i = 0; i < WP_NUM_WEAPONS; i++ )
 	{
@@ -233,8 +242,26 @@ static void CG_CompleteBuy( void )
 		if ( item->purchasable && item->team == TEAM_HUMANS )
 		{
 			trap_CompleteCallback( item->name );
+
+			if ( negatives )
+			{
+				trap_CompleteCallback( va( "-%s", BG_Weapon( i )->name ) );
+			}
 		}
 	}
+}
+
+static void CG_CompleteBuy( void )
+{
+	if( cgs.clientinfo[ cg.clientNum ].team != TEAM_HUMANS )
+	{
+		return;
+	}
+
+	trap_CompleteCallback( "-all" );
+	trap_CompleteCallback( "-weapons" );
+	trap_CompleteCallback( "-upgrades" );
+	CG_CompleteBuy_internal( qtrue );
 }
 
 static void CG_CompleteSell( void )
@@ -247,8 +274,9 @@ static void CG_CompleteSell( void )
 	trap_CompleteCallback( "all" );
 	trap_CompleteCallback( "weapons" );
 	trap_CompleteCallback( "upgrades" );
-	CG_CompleteBuy( );
+	CG_CompleteBuy_internal( qfalse );
 }
+
 
 static void CG_CompleteBuild( void )
 {
