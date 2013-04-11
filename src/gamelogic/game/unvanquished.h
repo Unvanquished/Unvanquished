@@ -415,10 +415,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define HUMAN_JOG_MODIFIER            1.0f
 #define HUMAN_BACK_MODIFIER           0.8f
 #define HUMAN_SIDE_MODIFIER           0.9f
-#define HUMAN_DODGE_SIDE_MODIFIER     2.9f
-#define HUMAN_DODGE_SLOWED_MODIFIER   0.9f
-#define HUMAN_DODGE_UP_MODIFIER       0.5f
-#define HUMAN_DODGE_TIMEOUT           2500 // Reduced dodge cooldown.
 #define HUMAN_LAND_FRICTION           3.0f
 
 #define STAMINA_STOP_RESTORE          30
@@ -426,7 +422,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define STAMINA_MEDISTAT_RESTORE      30 // stacked on STOP or WALK
 #define STAMINA_SPRINT_TAKE           6
 #define STAMINA_JUMP_TAKE             250 // Doubled jump requirement. Can perform ~8 jumps.
-#define STAMINA_DODGE_TAKE            750 // Tripled dodge stamina requirement.
 #define STAMINA_MAX                   2000 // Doubled maximum stamina.
 #define STAMINA_BREATHING_LEVEL       0
 #define STAMINA_SLOW_LEVEL            -1000 // doubled to match doubled stamina
