@@ -35,7 +35,6 @@ static bind_t bindings[] =
 {
 	{ "+useitem",       N_( "Activate Upgrade" ),                      { -1, -1 } },
 	{ "+speed",         N_( "Run/Walk" ),                              { -1, -1 } },
-	{ "+dodge",         N_( "Dodge" ),                                 { -1, -1 } },
 	{ "+sprint",        N_( "Sprint" ),                                { -1, -1 } },
 	{ "+moveup",        N_( "Jump" ),                                  { -1, -1 } },
 	{ "+movedown",      N_( "Crouch" ),                                { -1, -1 } },
@@ -546,10 +545,6 @@ static void CG_HumanText( char *text, playerState_t *ps )
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
 	          va( _( "Press %s and any direction to sprint\n" ),
 	              CG_KeyNameForCommand( "+sprint" ) ) );
-
-	Q_strcat( text, MAX_TUTORIAL_TEXT,
-	          va( _( "Press %s and back or strafe to dodge\n" ),
-	              CG_KeyNameForCommand( "+dodge" ) ) );
 }
 
 /*

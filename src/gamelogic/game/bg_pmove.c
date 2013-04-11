@@ -938,13 +938,6 @@ static qboolean PM_CheckJump( void )
 		return qfalse;
 	}
 
-	//no bunny hopping off a dodge
-	if ( pm->ps->stats[ STAT_TEAM ] == TEAM_HUMANS &&
-	     pm->ps->pm_time > HUMAN_DODGE_TIMEOUT - 500 ) // Let the human jump half a second into the dodge cooldown
-	{
-		return qfalse;
-	}
-
 	if ( pm->ps->pm_flags & PMF_RESPAWNED )
 	{
 		return qfalse; // don't allow jump until all buttons are up
@@ -1076,152 +1069,6 @@ static qboolean PM_CheckWaterJump( void )
 
 	pm->ps->pm_flags |= PMF_TIME_WATERJUMP;
 	pm->ps->pm_time = 2000;
-
-	return qtrue;
-}
-
-/*
-==================
-PM_CheckDodge
-
-Checks the dodge key and starts a human dodge or sprint
-==================
-*/
-static qboolean PM_CheckDodge( void )
-{
-	vec3_t right, forward, velocity = { 0.0f, 0.0f, 0.0f };
-	float  jump, sideModifier;
-	int    i;
-
-	if ( pm->ps->stats[ STAT_TEAM ] != TEAM_HUMANS )
-	{
-		return qfalse;
-	}
-
-	// Landed a dodge
-	if ( ( pm->ps->pm_flags & PMF_CHARGE ) &&
-	     pm->ps->groundEntityNum != ENTITYNUM_NONE )
-	{
-		pm->ps->pm_flags = ( pm->ps->pm_flags & ~PMF_CHARGE ) | PMF_TIME_LAND;
-		pm->ps->pm_time = HUMAN_DODGE_TIMEOUT;
-	}
-
-	// Reasons why we can't start a dodge or sprint
-	if ( pm->ps->pm_type != PM_NORMAL || pm->ps->stats[ STAT_STAMINA ] < STAMINA_SLOW_LEVEL + STAMINA_DODGE_TAKE ||
-	     ( pm->ps->pm_flags & PMF_DUCKED ) )
-	{
-		return qfalse;
-	}
-
-	// Can't dodge forward
-	if ( pm->cmd.forwardmove > 0 )
-	{
-		return qfalse;
-	}
-
-	if ( pm->cmd.doubleTap == DT_BACK || pm->cmd.doubleTap == DT_MOVELEFT || pm->cmd.doubleTap == DT_MOVERIGHT )
-	{
-		switch ( pm->cmd.doubleTap )
-		{
-			case DT_BACK:
-				pm->cmd.forwardmove = -1;
-				break;
-
-			case DT_MOVELEFT:
-				pm->cmd.rightmove = -1;
-				break;
-
-			case DT_MOVERIGHT:
-				pm->cmd.rightmove = 1;
-				break;
-		}
-
-		usercmdPressButton( pm->cmd.buttons, BUTTON_DODGE );
-	}
-
-	// Reasons why we can't start a dodge only
-	if ( pm->ps->pm_flags & ( PMF_TIME_LAND | PMF_CHARGE ) ||
-	     pm->ps->groundEntityNum == ENTITYNUM_NONE ||
-	     !usercmdButtonPressed( pm->cmd.buttons, BUTTON_DODGE ) )
-	{
-		return qfalse;
-	}
-
-	// Dodge direction specified with movement keys
-	if ( ( !pm->cmd.rightmove && !pm->cmd.forwardmove ) || pm->cmd.upmove )
-	{
-		return qfalse;
-	}
-
-	AngleVectors( pm->ps->viewangles, NULL, right, NULL );
-	forward[ 0 ] = -right[ 1 ];
-	forward[ 1 ] = right[ 0 ];
-	forward[ 2 ] = 0.0f;
-
-	// Dodge magnitude is based on the jump magnitude scaled by the modifiers
-	jump = BG_Class( pm->ps->stats[ STAT_CLASS ] )->jumpMagnitude;
-
-	if ( pm->cmd.rightmove && pm->cmd.forwardmove )
-	{
-		jump *= ( 0.5f * M_SQRT2 );
-	}
-
-	// Weaken dodge if slowed
-	if ( ( pm->ps->stats[ STAT_STATE ] & SS_SLOWLOCKED )  ||
-	     ( pm->ps->stats[ STAT_STATE ] & SS_CREEPSLOWED ) ||
-	     ( pm->ps->eFlags & EF_POISONCLOUDED ) )
-	{
-		sideModifier = HUMAN_DODGE_SLOWED_MODIFIER;
-	}
-	else
-	{
-		sideModifier = HUMAN_DODGE_SIDE_MODIFIER;
-	}
-
-	// The dodge sets minimum velocity
-	if ( pm->cmd.rightmove )
-	{
-		if ( pm->cmd.rightmove < 0 )
-		{
-			VectorNegate( right, right );
-		}
-
-		VectorMA( velocity, jump * sideModifier, right, velocity );
-	}
-
-	if ( pm->cmd.forwardmove )
-	{
-		if ( pm->cmd.forwardmove < 0 )
-		{
-			VectorNegate( forward, forward );
-		}
-
-		VectorMA( velocity, jump * sideModifier, forward, velocity );
-	}
-
-	velocity[ 2 ] = jump * HUMAN_DODGE_UP_MODIFIER;
-
-	// Make sure client has minimum velocity
-	for ( i = 0; i < 3; i++ )
-	{
-		if ( ( velocity[ i ] < 0.0f &&
-		       pm->ps->velocity[ i ] > velocity[ i ] ) ||
-		     ( velocity[ i ] > 0.0f &&
-		       pm->ps->velocity[ i ] < velocity[ i ] ) )
-		{
-			pm->ps->velocity[ i ] = velocity[ i ];
-		}
-	}
-
-	// Jumped away
-	pml.groundPlane = qfalse;
-	pml.walking = qfalse;
-	pm->ps->groundEntityNum = ENTITYNUM_NONE;
-	pm->ps->pm_flags |= PMF_CHARGE;
-	pm->ps->stats[ STAT_STAMINA ] -= STAMINA_DODGE_TAKE;
-	pm->ps->legsAnim = ( ( pm->ps->legsAnim & ANIM_TOGGLEBIT ) ^
-	                     ANIM_TOGGLEBIT ) | LEGS_JUMP;
-	PM_AddEvent( EV_JUMP );
 
 	return qtrue;
 }
@@ -4522,7 +4369,6 @@ void PmoveSingle( pmove_t *pmove )
 	}
 
 	PM_DropTimers();
-	PM_CheckDodge();
 
 	if ( pm->ps->pm_type == PM_JETPACK )
 	{
