@@ -775,7 +775,7 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 
 		// make sure that we're not using the blaster
 		G_ForceWeaponChange( self, weapon );
-		
+
 		return STATUS_SUCCESS;
 	}
 }
@@ -862,11 +862,6 @@ AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 
 	buildable = BG_Buildable( ( buildable_t )self->botMind->goal.ent->s.modelindex );
 
-	if ( !G_CanAffordBuildPoints( TEAM_HUMANS, G_GetRepairCostForBuilding( buildable ) ) )
-	{
-		return STATUS_FAILURE;
-	}
-
 	if ( self->botMind->goal.ent->health >= buildable->health )
 	{
 		return STATUS_SUCCESS;
@@ -929,10 +924,6 @@ gentity_t* BotFindDamagedFriendlyStructure( gentity_t *self )
 			continue;
 		}
 		if ( !target->spawned || !target->powered )
-		{
-			continue;
-		}
-		if ( !G_CanAffordBuildPoints( TEAM_HUMANS, G_GetRepairCostForBuilding( buildable ) ) )
 		{
 			continue;
 		}

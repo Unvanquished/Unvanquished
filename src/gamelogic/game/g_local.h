@@ -1144,8 +1144,6 @@ void     G_CrushAttack( gentity_t *ent, gentity_t *victim );
 void     G_UpdateZaps( int msec );
 void     G_ClearPlayerZapEffects( gentity_t *player );
 
-float    G_GetRepairCostForBuilding( const buildableAttributes_t *buildable );
-
 //
 // g_client.c
 //

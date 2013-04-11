@@ -89,7 +89,7 @@ pc_token_list *CreateTokenList( int handle )
 	while ( trap_Parse_ReadToken( handle, &token ) )
 	{
 		pc_token_list *list = ( pc_token_list * ) BG_Alloc( sizeof( pc_token_list ) );
-		
+
 		if ( current )
 		{
 			list->prev = current;
@@ -100,7 +100,7 @@ pc_token_list *CreateTokenList( int handle )
 			list->prev = list;
 			root = list;
 		}
-		
+
 		current = list;
 		current->next = NULL;
 
@@ -624,7 +624,7 @@ AIBehaviorTree_t * ReadBehaviorTree( const char *name )
 	}
 
 	list = CreateTokenList( handle );
-	
+
 	tree = ( AIBehaviorTree_t * ) BG_Alloc( sizeof( AIBehaviorTree_t ) );
 
 	Q_strncpyz( tree->name, name, sizeof( tree->name ) );
@@ -1280,7 +1280,7 @@ void BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget
 	{
 		mins[ i ] = Q_fabs( mins[ i ] );
 	}
-	
+
 	for ( i = 0; i < 3; i++ )
 	{
 		routeTarget->extents[ i ] = MAX( mins[ i ], maxs[ i ] );
@@ -1288,7 +1288,7 @@ void BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget
 
 	BotGetTargetPos( target, routeTarget->pos );
 
-	// move center a bit lower so we don't get polys above the object 
+	// move center a bit lower so we don't get polys above the object
 	// and get polys below the object on a slope
 	routeTarget->pos[ 2 ] -= routeTarget->extents[ 2 ] / 2;
 
@@ -1482,7 +1482,7 @@ qboolean BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 
 	trap_Trace( &trace, muzzle, mins, maxs, targetPos, self->s.number, MASK_SHOT );
 
-	if ( self->client->ps.stats[STAT_TEAM] != BotGetEntityTeam( &g_entities[trace.entityNum] ) 
+	if ( self->client->ps.stats[STAT_TEAM] != BotGetEntityTeam( &g_entities[trace.entityNum] )
 		&& BotGetEntityTeam( &g_entities[ trace.entityNum ] ) != TEAM_NONE
 		&& Distance( muzzle, trace.endpos ) <= MAX( range, secondaryRange ) )
 	{
@@ -2539,11 +2539,6 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 					//we will be moving toward enemy, strafe too
 					//the result: we go around the enemy
 					BotAlternateStrafe( self );
-
-					if ( self->client->ps.weapon != WP_PAIN_SAW )
-					{
-						BotDodge( self );
-					}
 				}
 				else if ( DistanceToGoalSquared( self ) >= Square( MAX_HUMAN_DANCE_DIST ) && self->client->ps.weapon != WP_PAIN_SAW )
 				{
@@ -3185,7 +3180,7 @@ void BotSearchForEnemy( gentity_t *self )
 		{
 			BotSetTarget( &target, enemy, NULL );
 
-			if ( enemy->s.eType != ET_PLAYER || ( enemy->s.eType == ET_PLAYER 
+			if ( enemy->s.eType != ET_PLAYER || ( enemy->s.eType == ET_PLAYER
 				&& ( self->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS || BotAimNegligence( self, target ) <= g_bot_fov.value / 2 ) ) )
 			{
 				self->botMind->bestEnemy.ent = enemy;

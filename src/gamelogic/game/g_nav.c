@@ -41,7 +41,7 @@ void G_BotNavInit()
 		botClass_t bot;
 		bot.polyFlagsInclude = POLYFLAGS_WALK;
 		bot.polyFlagsExclude = POLYFLAGS_DISABLED;
-		
+
 		Q_strncpyz( bot.name, BG_Class( i )->name, sizeof( bot.name ) );
 
 		if ( !trap_BotSetupNav( &bot, &navHandle ) )
@@ -253,81 +253,6 @@ qboolean BotSprint( gentity_t *self, qboolean enable )
 }
 
 
-qboolean BotDodge( gentity_t *self )
-{
-	vec3_t backward, right, left;
-	vec3_t end;
-	float jumpMag;
-	botTrace_t tback, tright, tleft;
-
-	//see: bg_pmove.c, these conditions prevent use from using dodge
-	if ( self->client->ps.stats[STAT_TEAM] != TEAM_HUMANS )
-	{
-		usercmdReleaseButton( self->botMind->cmdBuffer.buttons, BUTTON_DODGE );
-		return qfalse;
-	}
-
-	if ( self->client->ps.pm_type != PM_NORMAL || self->client->ps.stats[STAT_STAMINA] > STAMINA_SLOW_LEVEL + STAMINA_DODGE_TAKE ||
-	        ( self->client->ps.pm_flags & PMF_DUCKED ) )
-	{
-		usercmdReleaseButton( self->botMind->cmdBuffer.buttons, BUTTON_DODGE );
-		return qfalse;
-	}
-
-	if ( !( self->client->ps.pm_flags & ( PMF_TIME_LAND | PMF_CHARGE ) ) && self->client->ps.groundEntityNum != ENTITYNUM_NONE )
-	{
-		usercmdReleaseButton( self->botMind->cmdBuffer.buttons, BUTTON_DODGE );
-		return qfalse;
-	}
-
-	//skill level required to use dodge
-	if ( self->botMind->botSkill.level < 7 )
-	{
-		usercmdReleaseButton( self->botMind->cmdBuffer.buttons, BUTTON_DODGE );
-		return qfalse;
-	}
-
-	//find the best direction to dodge in
-	AngleVectors( self->client->ps.viewangles, backward, right, NULL );
-	VectorInverse( backward );
-	backward[2] = 0;
-	VectorNormalize( backward );
-	right[2] = 0;
-	VectorNormalize( right );
-	VectorNegate( right, left );
-
-	jumpMag = BG_Class( ( class_t ) self->client->ps.stats[STAT_CLASS] )->jumpMagnitude;
-
-	//test each direction for navigation mesh collisions
-	//FIXME: this code does not guarentee that we will land safely and on the navigation mesh!
-	VectorMA( self->s.origin, jumpMag, backward, end );
-	trap_BotNavTrace( self->s.number, &tback, self->s.origin, end );
-	VectorMA( self->s.origin, jumpMag, right, end );
-	trap_BotNavTrace( self->s.number, &tright, self->s.origin, end );
-	VectorMA( self->s.origin, jumpMag, left, end );
-	trap_BotNavTrace( self->s.number, &tleft, self->s.origin, end );
-
-	//set the direction to dodge
-	BotStandStill( self );
-
-	if ( tback.frac > tleft.frac && tback.frac > tright.frac )
-	{
-		self->botMind->cmdBuffer.forwardmove = -127;
-	}
-	else if ( tleft.frac > tright.frac && tleft.frac > tback.frac )
-	{
-		self->botMind->cmdBuffer.rightmove = -127;
-	}
-	else
-	{
-		self->botMind->cmdBuffer.rightmove = 127;
-	}
-
-	// dodge
-	usercmdPressButton( self->botMind->cmdBuffer.buttons, BUTTON_DODGE );
-	return qtrue;
-}
-
 #define STEPSIZE 18.0f
 gentity_t* BotGetPathBlocker( gentity_t *self, const vec3_t dir )
 {
@@ -376,7 +301,7 @@ qboolean BotShouldJump( gentity_t *self, gentity_t *blocker, const vec3_t dir )
 	}
 
 	//already normalized
-	
+
 	BG_ClassBoundingBox( ( class_t ) self->client->ps.stats[STAT_CLASS], playerMins, playerMaxs, NULL, NULL, NULL );
 
 	playerMins[2] += STEPSIZE;
@@ -656,12 +581,11 @@ qboolean BotMoveToGoal( gentity_t *self )
 			BotMoveInDir( self, MOVE_FORWARD );
 		}
 
-		//dont sprint or dodge if we dont have enough stamina and are about to slow
+		//dont sprint if we dont have enough stamina and are about to slow
 		if ( self->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS && self->client->ps.stats[STAT_STAMINA] < STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE )
 		{
 			usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
 			usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_SPRINT );
-			usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_DODGE );
 		}
 		return qtrue;
 	}
