@@ -1266,6 +1266,7 @@ extern  vmCvar_t g_currentMapRotation;
 extern  vmCvar_t g_mapRotationNodes;
 extern  vmCvar_t g_mapRotationStack;
 extern  vmCvar_t g_nextMap;
+extern  vmCvar_t g_nextMapLayouts;
 extern  vmCvar_t g_initialMapRotation;
 extern  vmCvar_t g_mapLog;
 extern  vmCvar_t g_mapStartupMessageDelay;

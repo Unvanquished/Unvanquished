@@ -134,6 +134,7 @@ vmCvar_t           g_currentMapRotation;
 vmCvar_t           g_mapRotationNodes;
 vmCvar_t           g_mapRotationStack;
 vmCvar_t           g_nextMap;
+vmCvar_t           g_nextMapLayouts;
 vmCvar_t           g_initialMapRotation;
 vmCvar_t           g_mapLog;
 vmCvar_t           g_mapStartupMessageDelay;
@@ -305,6 +306,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_mapRotationNodes,            "g_mapRotationNodes",            "",                                 CVAR_ROM,                                        0, qfalse           },
 	{ &g_mapRotationStack,            "g_mapRotationStack",            "",                                 CVAR_ROM,                                        0, qfalse           },
 	{ &g_nextMap,                     "g_nextMap",                     "",                                 0,                                               0, qtrue            },
+	{ &g_nextMapLayouts,              "g_nextMapLayouts",              "",                                 0,                                               0, qtrue            },
 	{ &g_initialMapRotation,          "g_initialMapRotation",          "rotation1",                        CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_mapLog,                      "g_mapLog",                      "",                                 CVAR_ROM,                                        0, qfalse           },
 	{ &g_mapStartupMessageDelay,      "g_mapStartupMessageDelay",      "5000",                             CVAR_ARCHIVE | CVAR_LATCH,                       0, qfalse           },
@@ -1911,7 +1913,7 @@ void ExitLevel( void )
 
 	if ( G_MapExists( g_nextMap.string ) )
 	{
-		trap_SendConsoleCommand( EXEC_APPEND, va( "map %s\n", Quote( g_nextMap.string ) ) );
+		trap_SendConsoleCommand( EXEC_APPEND, va( "map %s %s\n", Quote( g_nextMap.string ), Quote( g_nextMapLayouts.string ) ) );
 
 		if ( G_MapRotationActive() )
 		{

@@ -1561,7 +1561,7 @@ static const struct {
 		T_NONE, T_PLAYER, T_OTHER
 	}               target;
 	qboolean        adminImmune; // from needing a reason and from being the target
-	qboolean        reasonNeeded;
+	qtrinary        reasonNeeded;
 	const vmCvar_t *percentage;
 	enum {
 		VOTE_ALWAYS, // default
@@ -1575,22 +1575,23 @@ static const struct {
 	const vmCvar_t *reasonFlag; // where a reason requirement is configurable (reasonNeeded must be qtrue)
 } voteInfo[] = {
 	// Name           Stop?   Type      Target     Immune   Reason  Vote percentage var        Extra
-	{ "kick",         qfalse, V_ANY,    T_PLAYER,  qtrue,   qtrue,  &g_kickVotesPercent },
-	{ "spectate",     qfalse, V_ANY,    T_PLAYER,  qtrue,   qtrue,  &g_kickVotesPercent },
-	{ "mute",         qtrue,  V_PUBLIC, T_PLAYER,  qtrue,   qtrue,  &g_denyVotesPercent },
-	{ "unmute",       qtrue,  V_PUBLIC, T_PLAYER,  qfalse,  qfalse, &g_denyVotesPercent },
-	{ "denybuild",    qtrue,  V_TEAM,   T_PLAYER,  qtrue,   qtrue,  &g_denyVotesPercent,        VOTE_NOT_SD },
-	{ "allowbuild",   qtrue,  V_TEAM,   T_PLAYER,  qfalse,  qfalse, &g_denyVotesPercent,        VOTE_NOT_SD },
-	{ "sudden_death", qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_suddenDeathVotePercent,  VOTE_NOT_SD },
-	{ "extend",       qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_extendVotesPercent,      VOTE_REMAIN, &g_extendVotesTime },
-	{ "admitdefeat",  qtrue,  V_TEAM,   T_NONE,    qfalse,  qfalse, &g_admitDefeatVotesPercent },
-	{ "draw",         qtrue,  V_PUBLIC, T_NONE,    qtrue,   qtrue,  &g_drawVotesPercent,        VOTE_AFTER,  &g_drawVotesAfter,  &g_drawVoteReasonRequired },
-	{ "map_restart",  qtrue,  V_PUBLIC, T_NONE,    qfalse,  qfalse, &g_mapVotesPercent },
-	{ "map",          qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
-	{ "layout",       qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
-	{ "nextmap",      qfalse, V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_nextMapVotesPercent },
+	{ "kick",         qfalse, V_ANY,    T_PLAYER,  qtrue,   qyes,   &g_kickVotesPercent },
+	{ "spectate",     qfalse, V_ANY,    T_PLAYER,  qtrue,   qyes,   &g_kickVotesPercent },
+	{ "mute",         qtrue,  V_PUBLIC, T_PLAYER,  qtrue,   qyes,   &g_denyVotesPercent },
+	{ "unmute",       qtrue,  V_PUBLIC, T_PLAYER,  qfalse,  qno,    &g_denyVotesPercent },
+	{ "denybuild",    qtrue,  V_TEAM,   T_PLAYER,  qtrue,   qyes,   &g_denyVotesPercent,        VOTE_NOT_SD },
+	{ "allowbuild",   qtrue,  V_TEAM,   T_PLAYER,  qfalse,  qno,    &g_denyVotesPercent,        VOTE_NOT_SD },
+	{ "sudden_death", qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qno,    &g_suddenDeathVotePercent,  VOTE_NOT_SD },
+	{ "extend",       qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qno,    &g_extendVotesPercent,      VOTE_REMAIN, &g_extendVotesTime },
+	{ "admitdefeat",  qtrue,  V_TEAM,   T_NONE,    qfalse,  qno,    &g_admitDefeatVotesPercent },
+	{ "draw",         qtrue,  V_PUBLIC, T_NONE,    qtrue,   qyes,   &g_drawVotesPercent,        VOTE_AFTER,  &g_drawVotesAfter,  &g_drawVoteReasonRequired },
+	{ "map_restart",  qtrue,  V_PUBLIC, T_NONE,    qfalse,  qno,    &g_mapVotesPercent },
+	{ "map",          qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qmaybe, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
+	{ "layout",       qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qno,    &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
+	{ "nextmap",      qfalse, V_PUBLIC, T_OTHER,   qfalse,  qmaybe, &g_nextMapVotesPercent },
 	{ "poll",         qfalse, V_ANY,    T_NONE,    qfalse,  qtrue,  &g_pollVotesPercent,        VOTE_NO_AUTO },
 	{ NULL }
+	// note: map votes use the reason, if given, as the layout name
 };
 
 /*
@@ -1840,7 +1841,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 
 	}
 
-	if ( voteInfo[voteId].reasonNeeded && !reason[ 0 ] &&
+	if ( voteInfo[voteId].reasonNeeded == qyes && !reason[ 0 ] &&
 	     !( voteInfo[voteId].adminImmune && G_admin_permission( ent, ADMF_UNACCOUNTABLE ) ) &&
 	     !( voteInfo[voteId].reasonFlag && voteInfo[voteId].reasonFlag->integer ) )
 	{
@@ -1991,11 +1992,24 @@ void Cmd_CallVote_f( gentity_t *ent )
 
 		level.voteDelay[ team ] = 3000;
 
-		Com_sprintf( level.voteString[ team ], sizeof( level.voteString ),
-		             "map %s", Quote( arg ) );
-		Com_sprintf( level.voteDisplayString[ team ],
-		             sizeof( level.voteDisplayString[ team ] ),
-		             "Change to map '%s'", arg );
+		if ( *reason ) // layout?
+		{
+			Com_sprintf( level.voteString[ team ], sizeof( level.voteString ),
+			             "map %s %s", Quote( arg ), Quote( reason ) );
+			Com_sprintf( level.voteDisplayString[ team ],
+			             sizeof( level.voteDisplayString[ team ] ),
+			             "Change to map '%s' layout '%s'", arg, reason );
+		}
+		else
+		{
+			Com_sprintf( level.voteString[ team ], sizeof( level.voteString ),
+			             "map %s", Quote( arg ) );
+			Com_sprintf( level.voteDisplayString[ team ],
+			             sizeof( level.voteDisplayString[ team ] ),
+			             "Change to map '%s'", arg );
+		}
+
+		reason[0] = '\0'; // nullify since we've used it here...
 		break;
 
 	case VOTE_LAYOUT:
@@ -2016,7 +2030,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 			Com_sprintf( level.voteDisplayString[ team ],
 			             sizeof( level.voteDisplayString[ team ] ), "Change to map layout '%s'", arg );
 		}
-		break;
+		break; 
 
 	case VOTE_NEXT_MAP:
 		if ( G_MapExists( g_nextMap.string ) )
@@ -2035,11 +2049,24 @@ void Cmd_CallVote_f( gentity_t *ent )
 			return;
 		}
 
-		Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ),
-		             "set g_nextMap %s", Quote( arg ) );
-		Com_sprintf( level.voteDisplayString[ team ],
-		             sizeof( level.voteDisplayString[ team ] ),
-		             "Set the next map to '%s'", arg );
+		if ( *reason ) // layout?
+		{
+			Com_sprintf( level.voteString[ team ], sizeof( level.voteString ),
+			             "set g_nextMap %s; set g_nextMapLayouts %s", Quote( arg ), Quote( reason ) );
+			Com_sprintf( level.voteDisplayString[ team ],
+			             sizeof( level.voteDisplayString[ team ] ),
+			             "Set the next map to '%s' layout '%s'", arg, reason );
+		}
+		else
+		{
+			Com_sprintf( level.voteString[ team ], sizeof( level.voteString ),
+			             "set g_nextMap %s; set g_nextMapLayouts \"\"", Quote( arg ) );
+			Com_sprintf( level.voteDisplayString[ team ],
+			             sizeof( level.voteDisplayString[ team ] ),
+			             "Set the next map to '%s'", arg );
+		}
+
+		reason[0] = '\0'; // nullify since we've used it here...
 		break;
 
 	case VOTE_POLL:
