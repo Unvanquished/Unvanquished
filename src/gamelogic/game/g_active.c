@@ -1512,6 +1512,71 @@ static void G_UnlaggedDetectCollisions( gentity_t *ent )
 	G_UnlaggedOff();
 }
 
+
+/*
+================
+G_FindHealth
+
+attempt to find a health source for self
+================
+*/
+static int G_FindHealth( gentity_t *self )
+{
+	int entityList[ MAX_GENTITIES ];
+	int i, num, ret = 0;
+	vec3_t range, mins, maxs;
+	gclient_t *client = self->client;
+
+	if ( !client )
+	{
+		return 0;
+	}
+
+	VectorSet( range, CREEP_BASESIZE, CREEP_BASESIZE, CREEP_BASESIZE );
+	VectorAdd( client->ps.origin, range, maxs );
+	VectorSubtract( client->ps.origin, range, mins );
+
+	num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
+
+	for ( i = 0; i < num; ++i )
+	{
+		gentity_t *boost = &g_entities[ entityList[ i ] ];
+
+		if ( boost->s.eType == ET_PLAYER && boost->client &&
+			boost->client->pers.teamSelection == client->pers.teamSelection &&
+			boost->health > 0 &&
+			Distance( boost->s.origin, self->s.origin ) < REGEN_BOOST_RANGE )
+		{
+			if ( boost->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL1 )
+			{
+				ret |= SS_HEALING_2X;
+			}
+			else if ( boost->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL1_UPG )
+			{
+				ret |= SS_HEALING_3X;
+			}
+		}
+		else if ( boost->s.eType == ET_BUILDABLE && boost->spawned && boost->health > 0 && boost->powered && boost->buildableTeam == client->pers.teamSelection )
+		{
+			if ( boost->s.modelindex == BA_A_SPAWN || boost->s.modelindex == BA_A_OVERMIND )
+			{
+				ret |= SS_HEALING_ACTIVE;
+			}
+			else if ( boost->s.modelindex == BA_A_BOOSTER && Distance( boost->s.origin, self->s.origin ) < REGEN_BOOST_RANGE )
+			{
+				ret |= SS_HEALING_3X;
+			}
+		}
+	}
+
+	if ( ret )
+	{
+		self->creepTime = level.time;
+	}
+
+	return ret;
+}
+
 /*
 ==============
 ClientThink
@@ -1530,7 +1595,7 @@ void ClientThink_real( gentity_t *ent )
 	int       oldEventSequence;
 	int       msec;
 	usercmd_t *ucmd;
-	qboolean  foundCreep;
+	int       foundHealthSource;
 
 	client = ent->client;
 
@@ -1740,9 +1805,9 @@ void ClientThink_real( gentity_t *ent )
 	}
 
 	// Replenish alien health
-	foundCreep = G_FindCreep( ent );
+	foundHealthSource = G_FindHealth( ent );
 	if ( ( level.surrenderTeam != client->pers.teamSelection &&
-		ent->nextRegenTime >= 0 && ent->nextRegenTime < level.time ) || ( !( client->ps.stats[ STAT_STATE ] & SS_HEALING_ACTIVE ) && foundCreep ) || ( client->ps.stats[ STAT_STATE ] & SS_HEALING_ACTIVE && !foundCreep ) )
+		ent->nextRegenTime >= 0 && ent->nextRegenTime < level.time ) || ( !( client->ps.stats[ STAT_STATE ] & SS_HEALING_ACTIVE ) && foundHealthSource ) || ( client->ps.stats[ STAT_STATE ] & SS_HEALING_ACTIVE && !foundHealthSource ) )
 	{
 		float regenRate =
 		  BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->regenRate;
@@ -1753,79 +1818,33 @@ void ClientThink_real( gentity_t *ent )
 		}
 		else
 		{
-			int    entityList[ MAX_GENTITIES ];
-			int    i, num;
-			int    count, interval;
-			vec3_t range, mins, maxs;
+			int    count, interval, i;
 			float  modifier = 1.0f;
-
-			VectorSet( range, REGEN_BOOST_RANGE, REGEN_BOOST_RANGE,
-			           REGEN_BOOST_RANGE );
-			VectorAdd( client->ps.origin, range, maxs );
-			VectorSubtract( client->ps.origin, range, mins );
-
-			num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
-
-			for ( i = 0; i < num; i++ )
-			{
-				gentity_t *boost = &g_entities[ entityList[ i ] ];
-
-				if ( Distance( client->ps.origin, boost->s.origin ) > REGEN_BOOST_RANGE )
-				{
-					continue;
-				}
-
-				if ( modifier < BOOSTER_REGEN_MOD && boost->s.eType == ET_BUILDABLE &&
-				     boost->s.modelindex == BA_A_BOOSTER && boost->spawned &&
-				     boost->health > 0 && boost->powered )
-				{
-					modifier = BOOSTER_REGEN_MOD;
-					continue;
-				}
-
-				if ( boost->s.eType == ET_PLAYER && boost->client &&
-				     boost->client->pers.teamSelection ==
-				     ent->client->pers.teamSelection && boost->health > 0 )
-				{
-					class_t  class = boost->client->ps.stats[ STAT_CLASS ];
-					qboolean didBoost = qfalse;
-
-					if ( class == PCL_ALIEN_LEVEL1 && modifier < LEVEL1_REGEN_MOD )
-					{
-						modifier = LEVEL1_REGEN_MOD;
-						didBoost = qtrue;
-					}
-					else if ( class == PCL_ALIEN_LEVEL1_UPG &&
-					          modifier < LEVEL1_UPG_REGEN_MOD )
-					{
-						modifier = LEVEL1_UPG_REGEN_MOD;
-						didBoost = qtrue;
-					}
-
-					if ( didBoost && ent->health < client->ps.stats[ STAT_MAX_HEALTH ] )
-					{
-						boost->client->pers.hasHealed = qtrue;
-					}
-				}
-			}
 
 			// Transmit heal rate to the client so it can be displayed on the HUD
 			client->ps.stats[ STAT_STATE ] |= SS_HEALING_ACTIVE;
 			client->ps.stats[ STAT_STATE ] &= ~( SS_HEALING_2X | SS_HEALING_3X );
 
-			if ( modifier == 1.0f && !foundCreep )
+			if ( modifier == 1.0f && !foundHealthSource )
 			{
 				client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_ACTIVE;
 				// ln(2) ~= 0.6931472
 				modifier *= exp( ( 0.6931472f / ( 1000.0f * g_alienOffCreepRegenHalfLife.value ) ) * ( ent->creepTime - level.time ) );
 			}
-			else if ( modifier >= 3.0f )
+			else if ( foundHealthSource & SS_HEALING_3X )
 			{
+				modifier = 3.0f;
 				client->ps.stats[ STAT_STATE ] |= SS_HEALING_3X;
 			}
-			else if ( modifier >= 2.0f )
+			else if ( foundHealthSource & SS_HEALING_2X )
 			{
+				modifier = 2.0f;
 				client->ps.stats[ STAT_STATE ] |= SS_HEALING_2X;
+			}
+			else if ( foundHealthSource & SS_HEALING_ACTIVE )
+			{
+				modifier = 1.0f;
+				client->ps.stats[ STAT_STATE ] |= SS_HEALING_ACTIVE;
 			}
 
 			interval = 1000 / ( regenRate * modifier );
