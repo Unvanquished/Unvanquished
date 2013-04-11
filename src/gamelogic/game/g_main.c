@@ -1397,7 +1397,7 @@ void G_SumTeamConfidence( void )
 			else
 			{
 				// fade out the effect of each reward
-				amount = log->amount * ( ( period - ( level.time - log->time ) ) / ( float )period ) / 100.0f;
+				amount = log->amount * ( ( period - ( level.time - log->time ) ) / ( float )period );
 
 				confidence_f[ log->type ] += amount;
 				confidence_f[ CONFIDENCE_SUM ] += amount;

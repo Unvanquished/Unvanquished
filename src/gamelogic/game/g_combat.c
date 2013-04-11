@@ -33,7 +33,7 @@ int            g_numArmourRegions[ UP_NUM_UPGRADES ];
 ============
 AddScore
 
-Adds score to the client
+Adds score to the client, takes a value representing human credits as input.
 ============
 */
 void AddScore( gentity_t *ent, int score )
@@ -43,16 +43,9 @@ void AddScore( gentity_t *ent, int score )
 		return;
 	}
 
-	// make alien and human scores equivalent
-	if ( ent->client->pers.teamSelection == TEAM_ALIENS )
-	{
-		score = rint( ( ( float ) score ) / 2.0f );
-	}
+	// Convert from human credits to confidence points
+	ent->client->ps.persistant[ PERS_SCORE ] += score / CREDITS_TO_CONFIDENCE_SCORE_RATIO;
 
-	// scale values down to fit the scoreboard better
-	score = rint( ( ( float ) score ) / 50.0f );
-
-	ent->client->ps.persistant[ PERS_SCORE ] += score;
 	CalculateRanks();
 }
 
@@ -139,10 +132,9 @@ static const char *const modNames[] =
 G_RewardAttackers
 
 Function to distribute rewards to entities that killed this one.
-Returns the total enemy damage dealt.
 ==================
 */
-float G_RewardAttackers( gentity_t *self )
+void G_RewardAttackers( gentity_t *self )
 {
 	float     value;
 	int       playerNum, enemyDamage, maxHealth, reward;
@@ -161,19 +153,19 @@ float G_RewardAttackers( gentity_t *self )
 
 	if ( enemyDamage <= 0 )
 	{
-		return 0.0f;
+		return;
 	}
 
 	// Only give credits for killing players and buildables
 	if ( self->client )
 	{
-		value = BG_GetValueOfPlayer( &self->client->ps );
+		value = ( float )BG_GetValueOfPlayer( &self->client->ps );
 		ownTeam = self->client->pers.teamSelection;
 		maxHealth = self->client->ps.stats[ STAT_MAX_HEALTH ];
 	}
 	else if ( self->s.eType == ET_BUILDABLE )
 	{
-		value = BG_Buildable( self->s.modelindex )->value;
+		value = ( float )BG_Buildable( self->s.modelindex )->value;
 		ownTeam = self->buildableTeam;
 		maxHealth = BG_Buildable( self->s.modelindex )->health;
 
@@ -185,7 +177,7 @@ float G_RewardAttackers( gentity_t *self )
 	}
 	else
 	{
-		return ( float )( enemyDamage );
+		return;
 	}
 
 	// Give credits/confidence and reset reward array
@@ -196,33 +188,23 @@ float G_RewardAttackers( gentity_t *self )
 
 		if ( playerTeam != ownTeam && self->credits[ playerNum ] )
 		{
-			reward = value * ( self->credits[ playerNum ] / ( float )( maxHealth ) );
-			AddScore( player, reward );
+			reward = roundf( value * ( self->credits[ playerNum ] / ( float )maxHealth ) );
 
 			// Killing buildables earns confidence, killing players earns credits
 			if ( self->s.eType == ET_BUILDABLE )
 			{
-				// TODO: Make score/value/redits consistent/comparable among the teams
-				if ( ownTeam == TEAM_ALIENS )
-				{
-					reward *= 2;
-				}
-				else
-				{
-					reward *= 0.6;
-				}
 				G_AddConfidence( playerTeam, CONFIDENCE_DESTRUCTION, reward, player );
+				AddScore( player, reward * CREDITS_TO_CONFIDENCE_SCORE_RATIO );
 			}
 			else
 			{
 				G_AddCreditToClient( player->client, reward, qtrue );
+				AddScore( player, reward );
 			}
 		}
 
 		self->credits[ playerNum ] = 0;
 	}
-
-	return ( float )( enemyDamage );
 }
 
 /*

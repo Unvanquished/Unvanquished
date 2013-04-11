@@ -459,6 +459,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define DEFAULT_MINE_RATE_HALF_LIFE        "15"
 
 #define DEFAULT_CONFIDENCE_SUM_PERIOD      "10"
+#define CREDITS_TO_CONFIDENCE_SCORE_RATIO  50 // the score value of one confidence point in human credits
 
 #define DEFAULT_ALIEN_STAGE1_BELOW         "50"
 #define DEFAULT_ALIEN_STAGE2_ABOVE         "100"
