@@ -137,37 +137,22 @@ Function to distribute rewards to entities that killed this one.
 void G_RewardAttackers( gentity_t *self )
 {
 	float     value;
-	int       playerNum, enemyDamage, maxHealth, reward;
+	int       playerNum, enemyDamage, maxHealth, reward, damageShare;
 	gentity_t *player;
 	team_t    ownTeam, playerTeam;
 
-	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
-	{
-		player = &g_entities[ playerNum ];
-
-		if ( !OnSameTeam( self, player ) || self->buildableTeam != player->client->ps.stats[ STAT_TEAM ] ) // ?
-		{
-			enemyDamage += self->credits[ playerNum ];
-		}
-	}
-
-	if ( enemyDamage <= 0 )
-	{
-		return;
-	}
-
-	// Only give credits for killing players and buildables
+	// Only reward killing players and buildables
 	if ( self->client )
 	{
-		value = ( float )BG_GetValueOfPlayer( &self->client->ps );
 		ownTeam = self->client->pers.teamSelection;
 		maxHealth = self->client->ps.stats[ STAT_MAX_HEALTH ];
+		value = ( float )BG_GetValueOfPlayer( &self->client->ps );
 	}
 	else if ( self->s.eType == ET_BUILDABLE )
 	{
-		value = ( float )BG_Buildable( self->s.modelindex )->value;
 		ownTeam = self->buildableTeam;
 		maxHealth = BG_Buildable( self->s.modelindex )->health;
+		value = ( float )BG_Buildable( self->s.modelindex )->value;
 
 		// Give partial credits for buildables in construction
 		if ( !self->spawned )
@@ -180,30 +165,68 @@ void G_RewardAttackers( gentity_t *self )
 		return;
 	}
 
-	// Give credits/confidence and reset reward array
+	enemyDamage = 0;
+
+	// Sum up damage dealt by enemies
 	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
 	{
 		player = &g_entities[ playerNum ];
 		playerTeam = player->client->pers.teamSelection;
 
-		if ( playerTeam != ownTeam && self->credits[ playerNum ] )
+		// Player must be on the other team
+		if ( playerTeam == ownTeam || playerTeam <= TEAM_NONE || playerTeam >= NUM_TEAMS )
 		{
-			reward = roundf( value * ( self->credits[ playerNum ] / ( float )maxHealth ) );
-
-			// Killing buildables earns confidence, killing players earns credits
-			if ( self->s.eType == ET_BUILDABLE )
-			{
-				G_AddConfidence( playerTeam, CONFIDENCE_DESTRUCTION, reward, player );
-				AddScore( player, reward * CREDITS_TO_CONFIDENCE_SCORE_RATIO );
-			}
-			else
-			{
-				G_AddCreditToClient( player->client, reward, qtrue );
-				AddScore( player, reward );
-			}
+			continue;
 		}
 
+		enemyDamage += self->credits[ playerNum ];
+	}
+
+	if ( enemyDamage <= 0 )
+	{
+		return;
+	}
+
+	// Give individual rewards
+	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
+	{
+		player = &g_entities[ playerNum ];
+		playerTeam = player->client->pers.teamSelection;
+		damageShare = self->credits[ playerNum ];
+
+		// Clear reward array
 		self->credits[ playerNum ] = 0;
+
+		// Player must be on the other team
+		if ( playerTeam == ownTeam || playerTeam <= TEAM_NONE || playerTeam >= NUM_TEAMS )
+		{
+			continue;
+		}
+
+		// Player must have dealt damage
+		if ( damageShare <= 0 )
+		{
+			continue;
+		}
+
+		reward = roundf( value * ( damageShare / ( float )maxHealth ) );
+
+		if ( reward <= 0 )
+		{
+			continue;
+		}
+
+		// Killing buildables earns confidence, killing players earns credits
+		if ( self->s.eType == ET_BUILDABLE )
+		{
+			G_AddConfidence( playerTeam, CONFIDENCE_DESTRUCTION, reward, player );
+			AddScore( player, reward * CREDITS_TO_CONFIDENCE_SCORE_RATIO );
+		}
+		else
+		{
+			G_AddCreditToClient( player->client, reward, qtrue );
+			AddScore( player, reward );
+		}
 	}
 }
 
