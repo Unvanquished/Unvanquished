@@ -98,6 +98,8 @@ vmCvar_t           g_initialBuildPoints;
 vmCvar_t           g_initialMineRate;
 vmCvar_t           g_mineRateHalfLife;
 
+vmCvar_t           g_alienOffCreepRegenHalfLife;
+
 vmCvar_t           g_humanStage;
 vmCvar_t           g_humanMaxStage;
 vmCvar_t           g_humanStage1Below;
@@ -262,7 +264,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_initialBuildPoints,          "g_initialBuildPoints",          DEFAULT_INITIAL_BUILD_POINTS,        CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_initialMineRate,             "g_initialMineRate",             DEFAULT_INITIAL_MINE_RATE,           CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_mineRateHalfLife,            "g_mineRateHalfLife",            DEFAULT_MINE_RATE_HALF_LIFE,         CVAR_ARCHIVE,                                    0, qfalse           },
-
+	{ &g_alienOffCreepRegenHalfLife,  "g_alienOffCreepRegenHalfLife",  "5",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_humanStage,                  "g_humanStage",                  "0",                                0,                                               0, qfalse           },
 	{ &g_humanMaxStage,               "g_humanMaxStage",               DEFAULT_HUMAN_MAX_STAGE,            0,                                               0, qfalse, cv_humanMaxStage},
 	{ &g_humanStage1Below,            "g_humanStage1Below",            DEFAULT_HUMAN_STAGE1_BELOW,         0,                                               0, qfalse           },

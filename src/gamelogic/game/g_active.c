@@ -1530,6 +1530,7 @@ void ClientThink_real( gentity_t *ent )
 	int       oldEventSequence;
 	int       msec;
 	usercmd_t *ucmd;
+	qboolean  foundCreep;
 
 	client = ent->client;
 
@@ -1739,8 +1740,9 @@ void ClientThink_real( gentity_t *ent )
 	}
 
 	// Replenish alien health
-	if ( level.surrenderTeam != client->pers.teamSelection &&
-	     ent->nextRegenTime >= 0 && ent->nextRegenTime < level.time )
+	foundCreep = G_FindCreep( ent );
+	if ( ( level.surrenderTeam != client->pers.teamSelection &&
+		ent->nextRegenTime >= 0 && ent->nextRegenTime < level.time ) || ( !( client->ps.stats[ STAT_STATE ] & SS_HEALING_ACTIVE ) && foundCreep ) || ( client->ps.stats[ STAT_STATE ] & SS_HEALING_ACTIVE && !foundCreep ) )
 	{
 		float regenRate =
 		  BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->regenRate;
@@ -1811,10 +1813,11 @@ void ClientThink_real( gentity_t *ent )
 			client->ps.stats[ STAT_STATE ] |= SS_HEALING_ACTIVE;
 			client->ps.stats[ STAT_STATE ] &= ~( SS_HEALING_2X | SS_HEALING_3X );
 
-			if ( modifier == 1.0f && !G_FindCreep( ent ) )
+			if ( modifier == 1.0f && !foundCreep )
 			{
 				client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_ACTIVE;
-				modifier *= ALIEN_REGEN_NOCREEP_MOD;
+				// ln(2) ~= 0.6931472
+				modifier *= exp( ( 0.6931472f / ( 1000.0f * g_alienOffCreepRegenHalfLife.value ) ) * ( ent->creepTime - level.time ) );
 			}
 			else if ( modifier >= 3.0f )
 			{
@@ -1827,7 +1830,7 @@ void ClientThink_real( gentity_t *ent )
 
 			interval = 1000 / ( regenRate * modifier );
 			// if recovery interval is less than frametime, compensate
-			count = 1 + ( level.time - ent->nextRegenTime ) / interval;
+			count = MAX( 1 + ( level.time - ent->nextRegenTime ) / interval, 0 );
 
 			ent->health += count;
 			ent->nextRegenTime += count * interval;

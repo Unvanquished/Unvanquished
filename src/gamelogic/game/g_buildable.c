@@ -664,6 +664,7 @@ qboolean G_FindCreep( gentity_t *self )
 				self->powerSource = closestSpawn;
 			}
 
+			self->creepTime = level.time; // This was the last time ent was on creep
 			return qtrue;
 		}
 		else
@@ -678,6 +679,7 @@ qboolean G_FindCreep( gentity_t *self )
 	}
 
 	//if we haven't returned by now then we must already have a valid parent
+	self->creepTime = level.time; // This was the last time ent was on creep
 	return qtrue;
 }
 
