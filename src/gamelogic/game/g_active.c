@@ -1611,10 +1611,7 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 
 	foundHealthSource = G_FindHealth( self );
 
-	// Run if it's time or healing state needs to change
-	if ( self->nextRegenTime < level.time ||
-		 ( !( client->ps.stats[ STAT_STATE ] & SS_HEALING_ACTIVE ) &&  foundHealthSource ) ||
-		 (    client->ps.stats[ STAT_STATE ] & SS_HEALING_ACTIVE   && !foundHealthSource ) )
+	if ( self->nextRegenTime < level.time )
 	{
 		// Clear healing state, then set it accordingly
 		client->ps.stats[ STAT_STATE ] &= ~( SS_HEALING_ACTIVE | SS_HEALING_2X | SS_HEALING_3X );
@@ -1659,6 +1656,18 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 		}
 
 		self->nextRegenTime = level.time + count * interval;
+	}
+	else if ( !( client->ps.stats[ STAT_STATE ] & SS_HEALING_ACTIVE ) && foundHealthSource )
+	{
+		client->ps.stats[ STAT_STATE ] |= SS_HEALING_ACTIVE;
+
+		// Don't immediately start regeneration to prevent players from quickly
+		// hopping in and out of a creep area to increase their heal rate
+		self->nextRegenTime = level.time + ( 1000 / regenBaseRate );
+	}
+	else if ( ( client->ps.stats[ STAT_STATE ] & SS_HEALING_ACTIVE ) && !foundHealthSource )
+	{
+		client->ps.stats[ STAT_STATE ] &= ~( SS_HEALING_ACTIVE );
 	}
 }
 
