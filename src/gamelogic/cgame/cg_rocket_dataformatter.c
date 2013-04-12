@@ -39,6 +39,11 @@ static void CG_Rocket_DFServerPing( int handle, const char *data )
 	trap_Rocket_DataFormatterFormattedData( handle, va( "%s ms", Info_ValueForKey( data, "1" ) ) );
 }
 
+static void CG_Rocket_DFServerPlayers( int handle, const char *data )
+{
+	trap_Rocket_DataFormatterFormattedData( handle, va( "%s + (%s)", Info_ValueForKey( data, "1" ), Info_ValueForKey( data, "2" ) ) );
+}
+
 typedef struct
 {
 	const char *name;
@@ -47,7 +52,8 @@ typedef struct
 
 static const dataFormatterCmd_t dataFormatterCmdList[] =
 {
-	{ "ServerPing", &CG_Rocket_DFServerPing }
+	{ "ServerPing", &CG_Rocket_DFServerPing },
+	{ "ServerPlayers", &CG_Rocket_DFServerPlayers }
 };
 
 static const size_t dataFormatterCmdListCount = ARRAY_LEN( dataFormatterCmdList );

@@ -81,7 +81,8 @@ static void CG_Rocket_BuildServerList( const char *args )
 				clients = atoi( Info_ValueForKey( info, "clients" ) );
 
 				Info_SetValueForKey( data, "name", Info_ValueForKey( info, "hostname" ), qfalse );
-				Info_SetValueForKey( data, "players", va( "%d + (%d)", clients, bots ), qfalse );
+				Info_SetValueForKey( data, "players", va( "%d", clients ), qfalse );
+				Info_SetValueForKey( data, "bots", va( "%d", bots ), qfalse );
 				Info_SetValueForKey( data, "ping", va( "%d", ping ), qfalse );
 
 				if ( ping > 0 )
