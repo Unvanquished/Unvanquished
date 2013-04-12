@@ -1577,9 +1577,84 @@ static int G_FindHealth( gentity_t *self )
 	return ret;
 }
 
+static void G_ReplenishAlienHealth( gentity_t *self )
+{
+	gclient_t *client;
+	float     regenBaseRate, modifier;
+	int       foundHealthSource, count, interval, clientNum;
+
+	client = self->client;
+
+	// Check if client is an alien and has the healing ability
+	if ( !client || client->pers.teamSelection != TEAM_ALIENS ||
+	     self->health <= 0 || level.surrenderTeam == client->pers.teamSelection )
+	{
+		return;
+	}
+
+	regenBaseRate = BG_Class( client->ps.stats[ STAT_CLASS ] )->regenRate;
+
+	if ( regenBaseRate == 0 )
+	{
+		return;
+	}
+
+	foundHealthSource = G_FindHealth( self );
+
+	// Run if it's time or healing state needs to change
+	if ( self->nextRegenTime < level.time ||
+		 ( !( client->ps.stats[ STAT_STATE ] & SS_HEALING_ACTIVE ) &&  foundHealthSource ) ||
+		 (    client->ps.stats[ STAT_STATE ] & SS_HEALING_ACTIVE   && !foundHealthSource ) )
+	{
+		// Clear healing state, then set it accordingly
+		client->ps.stats[ STAT_STATE ] &= ~( SS_HEALING_ACTIVE | SS_HEALING_2X | SS_HEALING_3X );
+
+		if ( !foundHealthSource )
+		{
+			// Exponentially decrease healing rate when not on creep. ln(2) ~= 0.6931472
+			modifier = exp( ( 0.6931472f / ( 1000.0f * g_alienOffCreepRegenHalfLife.value ) ) * ( self->creepTime - level.time ) );
+		}
+		else if ( foundHealthSource & SS_HEALING_3X )
+		{
+			modifier = 3.0f;
+			client->ps.stats[ STAT_STATE ] |= ( SS_HEALING_ACTIVE | SS_HEALING_3X );
+		}
+		else if ( foundHealthSource & SS_HEALING_2X )
+		{
+			modifier = 2.0f;
+			client->ps.stats[ STAT_STATE ] |= ( SS_HEALING_ACTIVE | SS_HEALING_2X );
+		}
+		else if ( foundHealthSource & SS_HEALING_ACTIVE )
+		{
+			modifier = 1.0f;
+			client->ps.stats[ STAT_STATE ] |= SS_HEALING_ACTIVE;
+		}
+
+		interval = ( int )( 1000.0f / ( regenBaseRate * modifier ) );
+
+		// If recovery interval is less than frametime, compensate
+		count = MAX( 1 + ( level.time - self->nextRegenTime ) / interval, 0 );
+
+		self->health += count;
+
+		// If at full health, clear damage counters
+		if ( self->health >= client->ps.stats[ STAT_MAX_HEALTH ] )
+		{
+			self->health = client->ps.stats[ STAT_MAX_HEALTH ];
+
+			for ( clientNum = 0; clientNum < MAX_CLIENTS; clientNum++ )
+			{
+				self->credits[ clientNum ] = 0;
+			}
+		}
+
+		self->nextRegenTime = level.time + count * interval;
+	}
+}
+
 /*
 ==============
-ClientThink
+ClientThink_real
 
 This will be called once for each client frame, which will
 usually be a couple times for each server frame on fast clients.
@@ -1595,7 +1670,6 @@ void ClientThink_real( gentity_t *ent )
 	int       oldEventSequence;
 	int       msec;
 	usercmd_t *ucmd;
-	int       foundHealthSource;
 
 	client = ent->client;
 
@@ -1805,68 +1879,9 @@ void ClientThink_real( gentity_t *ent )
 	}
 
 	// Replenish alien health
-	foundHealthSource = G_FindHealth( ent );
-	if ( ( level.surrenderTeam != client->pers.teamSelection &&
-		ent->nextRegenTime >= 0 && ent->nextRegenTime < level.time ) || ( !( client->ps.stats[ STAT_STATE ] & SS_HEALING_ACTIVE ) && foundHealthSource ) || ( client->ps.stats[ STAT_STATE ] & SS_HEALING_ACTIVE && !foundHealthSource ) )
-	{
-		float regenRate =
-		  BG_Class( ent->client->ps.stats[ STAT_CLASS ] )->regenRate;
+	G_ReplenishAlienHealth( ent );
 
-		if ( ent->health <= 0 || ent->nextRegenTime < 0 || regenRate == 0 )
-		{
-			ent->nextRegenTime = -1; // no regen
-		}
-		else
-		{
-			int    count, interval, i;
-			float  modifier = 1.0f;
-
-			// Transmit heal rate to the client so it can be displayed on the HUD
-			client->ps.stats[ STAT_STATE ] |= SS_HEALING_ACTIVE;
-			client->ps.stats[ STAT_STATE ] &= ~( SS_HEALING_2X | SS_HEALING_3X );
-
-			if ( modifier == 1.0f && !foundHealthSource )
-			{
-				client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_ACTIVE;
-				// ln(2) ~= 0.6931472
-				modifier *= exp( ( 0.6931472f / ( 1000.0f * g_alienOffCreepRegenHalfLife.value ) ) * ( ent->creepTime - level.time ) );
-			}
-			else if ( foundHealthSource & SS_HEALING_3X )
-			{
-				modifier = 3.0f;
-				client->ps.stats[ STAT_STATE ] |= SS_HEALING_3X;
-			}
-			else if ( foundHealthSource & SS_HEALING_2X )
-			{
-				modifier = 2.0f;
-				client->ps.stats[ STAT_STATE ] |= SS_HEALING_2X;
-			}
-			else if ( foundHealthSource & SS_HEALING_ACTIVE )
-			{
-				modifier = 1.0f;
-				client->ps.stats[ STAT_STATE ] |= SS_HEALING_ACTIVE;
-			}
-
-			interval = 1000 / ( regenRate * modifier );
-			// if recovery interval is less than frametime, compensate
-			count = MAX( 1 + ( level.time - ent->nextRegenTime ) / interval, 0 );
-
-			ent->health += count;
-			ent->nextRegenTime += count * interval;
-
-			// if at max health, clear damage counters
-			if ( ent->health >= client->ps.stats[ STAT_MAX_HEALTH ] )
-			{
-				ent->health = client->ps.stats[ STAT_MAX_HEALTH ];
-
-				for ( i = 0; i < MAX_CLIENTS; i++ )
-				{
-					ent->credits[ i ] = 0;
-				}
-			}
-		}
-	}
-
+	// Throw human grenade
 	if ( BG_InventoryContainsUpgrade( UP_GRENADE, client->ps.stats ) &&
 	     BG_UpgradeIsActive( UP_GRENADE, client->ps.stats ) )
 	{
@@ -2177,8 +2192,7 @@ void ClientThink( int clientNum )
 	ent = g_entities + clientNum;
 	trap_GetUsercmd( clientNum, &ent->client->pers.cmd );
 
-	// mark the time we got info, so we can display the
-	// phone jack if they don't get any for a while
+	// mark the time we got info, so we can display the phone jack if we don't get any for a while
 	ent->client->lastCmdTime = level.time;
 
 	if ( !g_synchronousClients.integer )
