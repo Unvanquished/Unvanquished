@@ -97,7 +97,7 @@ void CG_Rocket_Init( void )
 
 
 	// Intialize data sources...
-	trap_Rocket_RegisterDataSource( "server_browser" );
+	CG_Rocket_RegisterDataSources();
 	CG_Rocket_RegisterDataFormatters();
 
 	// Register elements
