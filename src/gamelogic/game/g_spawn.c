@@ -665,87 +665,87 @@ in a gentity
 */
 void G_ParseField( const char *key, const char *rawString, gentity_t *entity )
 {
-	fieldDescriptor_t *resultingField;
-	byte    *entityData;
+	fieldDescriptor_t *fieldDescriptor;
+	byte    *entityDataField;
 	vec4_t  tmpFloatData;
 	variatingTime_t varTime = {0, 0};
 
-	resultingField = bsearch( key, fields, ARRAY_LEN( fields ), sizeof( fieldDescriptor_t ), cmdcmp );
+	fieldDescriptor = bsearch( key, fields, ARRAY_LEN( fields ), sizeof( fieldDescriptor_t ), cmdcmp );
 
-	if ( !resultingField )
+	if ( !fieldDescriptor )
 	{
 		return;
 	}
 
-	entityData = ( byte * ) entity;
+	entityDataField = ( byte * ) entity + fieldDescriptor->offset;
 
-	switch ( resultingField->type )
+	switch ( fieldDescriptor->type )
 	{
 		case F_STRING:
-			* ( char ** )( entityData + resultingField->offset ) = G_NewString( rawString );
+			* ( char ** ) entityDataField = G_NewString( rawString );
 			break;
 
 		case F_TARGET:
 			if(entity->targetCount >= MAX_ENTITY_TARGETS)
 				G_Error("Maximal number of %i targets reached.", MAX_ENTITY_TARGETS);
 
-			( ( char ** )( entityData + resultingField->offset ) ) [ entity->targetCount++ ] = G_NewString( rawString );
+			( ( char ** ) entityDataField ) [ entity->targetCount++ ] = G_NewString( rawString );
 			break;
 
 		case F_CALLTARGET:
 			if(entity->callTargetCount >= MAX_ENTITY_CALLTARGETS)
 				G_Error("Maximal number of %i calltargets reached. You can solve this by using a Relay.", MAX_ENTITY_CALLTARGETS);
 
-			( ( gentityCallDefinition_t * )( entityData + resultingField->offset ) ) [ entity->callTargetCount++ ] = G_NewCallDefinition( resultingField->replacement ? resultingField->replacement : resultingField->name, rawString );
+			( ( gentityCallDefinition_t * ) entityDataField ) [ entity->callTargetCount++ ] = G_NewCallDefinition( fieldDescriptor->replacement ? fieldDescriptor->replacement : fieldDescriptor->name, rawString );
 			break;
 
 		case F_TIME:
 			sscanf( rawString, "%f %f", &varTime.time, &varTime.variance );
-			* ( variatingTime_t * )( entityData + resultingField->offset ) = varTime;
+			* ( variatingTime_t * ) entityDataField = varTime;
 			break;
 
 		case F_3D_VECTOR:
 			sscanf( rawString, "%f %f %f", &tmpFloatData[ 0 ], &tmpFloatData[ 1 ], &tmpFloatData[ 2 ] );
 
-			( ( float * )( entityData + resultingField->offset ) ) [ 0 ] = tmpFloatData[ 0 ];
-			( ( float * )( entityData + resultingField->offset ) ) [ 1 ] = tmpFloatData[ 1 ];
-			( ( float * )( entityData + resultingField->offset ) ) [ 2 ] = tmpFloatData[ 2 ];
+			( ( float * ) entityDataField ) [ 0 ] = tmpFloatData[ 0 ];
+			( ( float * ) entityDataField ) [ 1 ] = tmpFloatData[ 1 ];
+			( ( float * ) entityDataField ) [ 2 ] = tmpFloatData[ 2 ];
 			break;
 
 		case F_4D_VECTOR:
 			sscanf( rawString, "%f %f %f %f", &tmpFloatData[ 0 ], &tmpFloatData[ 1 ], &tmpFloatData[ 2 ], &tmpFloatData[ 3 ] );
 
-			( ( float * )( entityData + resultingField->offset ) ) [ 0 ] = tmpFloatData[ 0 ];
-			( ( float * )( entityData + resultingField->offset ) ) [ 1 ] = tmpFloatData[ 1 ];
-			( ( float * )( entityData + resultingField->offset ) ) [ 2 ] = tmpFloatData[ 2 ];
-			( ( float * )( entityData + resultingField->offset ) ) [ 3 ] = tmpFloatData[ 3 ];
+			( ( float * ) entityDataField ) [ 0 ] = tmpFloatData[ 0 ];
+			( ( float * ) entityDataField ) [ 1 ] = tmpFloatData[ 1 ];
+			( ( float * ) entityDataField ) [ 2 ] = tmpFloatData[ 2 ];
+			( ( float * ) entityDataField ) [ 3 ] = tmpFloatData[ 3 ];
 			break;
 
 		case F_INT:
-			* ( int * )( entityData + resultingField->offset ) = atoi( rawString );
+			* ( int * )   entityDataField = atoi( rawString );
 			break;
 
 		case F_FLOAT:
-			* ( float * )( entityData + resultingField->offset ) = atof( rawString );
+			* ( float * ) entityDataField = atof( rawString );
 			break;
 
 		case F_YAW:
-			( ( float * )( entityData + resultingField->offset ) ) [ 0 ] = 0;
-			( ( float * )( entityData + resultingField->offset ) ) [ 1 ] = atof( rawString );
-			( ( float * )( entityData + resultingField->offset ) ) [ 2 ] = 0;
+			( ( float * ) entityDataField ) [ PITCH ] = 0;
+			( ( float * ) entityDataField ) [ YAW   ] = atof( rawString );
+			( ( float * ) entityDataField ) [ ROLL  ] = 0;
 			break;
 
 		case F_SOUNDINDEX:
-			* ( int * )( entityData + resultingField->offset ) = G_SoundIndex( rawString );
+			* ( int * ) entityDataField  = G_SoundIndex( rawString );
 			break;
 
 		default:
-			G_Printf( S_ERROR "unknown datatype %i for field %s\n", resultingField->type, resultingField->name );
+			G_Printf( S_ERROR "unknown datatype %i for field %s\n", fieldDescriptor->type, fieldDescriptor->name );
 			break;
 	}
 
-	if ( resultingField->replacement && resultingField->versionState )
-		G_WarnAboutDeprecatedEntityField(entity, resultingField->replacement, key, resultingField->versionState );
+	if ( fieldDescriptor->replacement && fieldDescriptor->versionState )
+		G_WarnAboutDeprecatedEntityField(entity, fieldDescriptor->replacement, key, fieldDescriptor->versionState );
 }
 
 /*
