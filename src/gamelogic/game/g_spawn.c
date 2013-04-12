@@ -736,6 +736,11 @@ void G_ParseField( const char *key, const char *rawString, gentity_t *entity )
 			break;
 
 		case F_SOUNDINDEX:
+			if ( strlen( rawString ) >= MAX_QPATH )
+			{
+				G_Error( S_ERROR "Sound filename %s in field %s of %s exceeds MAX_QPATH\n", rawString, fieldDescriptor->name, etos( entity ) );
+			}
+
 			* ( int * ) entityDataField  = G_SoundIndex( rawString );
 			break;
 
