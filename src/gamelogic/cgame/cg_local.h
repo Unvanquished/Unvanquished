@@ -20,6 +20,8 @@ along with Daemon; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
+#ifndef CG_LOCAL_H
+#define CG_LOCAL_H
 
 #include "../../engine/qcommon/q_shared.h"
 #include "../../engine/renderer/tr_types.h"
@@ -1945,8 +1947,31 @@ qboolean CG_ParseColor( byte *c, char **text_p );
 //
 
 void CG_Rocket_Init( void );
-void CG_Rocket_ProcessEvents( void );
 void CG_Rocket_Frame( void );
+const char *CG_Rocket_GetTag();
+const char *CG_Rocket_GetAttribute( const char *name, const char *id, const char *attribute );
+int CG_StringToNetSource( const char *src );
+
+//
+// cg_rocket_events.c
+//
+void CG_Rocket_ProcessEvents( void );
+
+//
+// cg_rocket_dataformatter.c
+//
 void CG_Rocket_FormatData( int handle );
-void CG_Rocket_SetElementDimensions( void );
+void CG_Rocket_RegisterDataFormatters( void );
+
+//
+// cg_rocket_draw.c
+//
 void CG_Rocket_RenderElement( void );
+void CG_Rocket_RegisterElements( void );
+
+//
+// cg_rocket_elementdimensions.c
+//
+void CG_Rocket_SetElementDimensions( void );
+
+#endif

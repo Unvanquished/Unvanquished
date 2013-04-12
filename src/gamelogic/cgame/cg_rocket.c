@@ -98,11 +98,10 @@ void CG_Rocket_Init( void )
 
 	// Intialize data sources...
 	trap_Rocket_RegisterDataSource( "server_browser" );
-	trap_Rocket_RegisterDataFormatter( "ServerPing" );
+	CG_Rocket_RegisterDataFormatters();
 
 	// Register elements
-	trap_Rocket_RegisterElement( "test" );
-	trap_Rocket_RegisterElement( "pic" );
+	CG_Rocket_RegisterElements();
 
 	rocketInfo.rocketState = IDLE;
 
@@ -182,27 +181,7 @@ void CG_Rocket_Init( void )
 	trap_Rocket_DocumentAction( "main", "open" );
 }
 
-static void CG_Rocket_EventOpen( const char *args )
-{
-	trap_Rocket_LoadDocument( va( "%s%s.rml", rocketInfo.rootDir, args ) );
-}
-
-static void CG_Rocket_EventClose( const char *args )
-{
-	trap_Rocket_DocumentAction( args, "close" );
-}
-
-static void CG_Rocket_EventGoto( const char *args )
-{
-	trap_Rocket_DocumentAction( args, "goto" );
-}
-
-static void CG_Rocket_EventShow( const char *args )
-{
-	trap_Rocket_DocumentAction( args, "show" );
-}
-
-static int CG_StringToNetSource( const char *src )
+int CG_StringToNetSource( const char *src )
 {
 	if ( !Q_stricmp( src, "local" ) )
 	{
@@ -218,202 +197,6 @@ static int CG_StringToNetSource( const char *src )
 	}
 }
 
-static void CG_Rocket_InitServers( const char *args )
-{
-	trap_LAN_ResetPings( CG_StringToNetSource( args ) );
-	trap_LAN_ServerStatus( NULL, NULL, 0 );
-
-	if ( !Q_stricmp( args, "internet" ) )
-	{
-		trap_Cmd_ExecuteText( EXEC_APPEND, "globalservers 0 86 full empty\n" );
-	}
-
-	else if ( !Q_stricmp( args, "local" ) )
-	{
-		trap_Cmd_ExecuteText( EXEC_APPEND, "localservers\n" );
-	}
-
-	trap_LAN_UpdateVisiblePings( CG_StringToNetSource( args ) );
-}
-
-static void CG_Rocket_BuildServerList( const char *args )
-{
-	char data[ MAX_INFO_STRING ] = { 0 };
-	int i;
-
-
-	// Only refresh once every second
-	if ( trap_Milliseconds() < 1000 + rocketInfo.serversLastRefresh )
-	{
-		return;
-	}
-
-	Q_strncpyz( rocketInfo.currentNetSource, args, sizeof( rocketInfo.currentNetSource ) );
-	rocketInfo.rocketState = RETRIEVING_SERVERS;
-
-	if ( !Q_stricmp( args, "internet" ) )
-	{
-		int numServers;
-
-		trap_Rocket_DSClearTable( "server_browser", args );
-
-		trap_LAN_MarkServerVisible( CG_StringToNetSource( args ), -1, qtrue );
-
-		numServers = trap_LAN_GetServerCount( CG_StringToNetSource( args ) );
-
-		for ( i = 0; i < numServers; ++i )
-		{
-			char info[ MAX_STRING_CHARS ];
-			int ping, bots, clients;
-
-			Com_Memset( &data, 0, sizeof( data ) );
-
-			if ( !trap_LAN_ServerIsVisible( CG_StringToNetSource( args ), i ) )
-			{
-				continue;
-			}
-
-			ping = trap_LAN_GetServerPing( CG_StringToNetSource( args ), i );
-
-			if ( qtrue || !Q_stricmp( args, "favorites" ) )
-			{
-				trap_LAN_GetServerInfo( CG_StringToNetSource( args ), i, info, MAX_INFO_STRING );
-
-				bots = atoi( Info_ValueForKey( info, "bots" ) );
-				clients = atoi( Info_ValueForKey( info, "clients" ) );
-
-				Info_SetValueForKey( data, "name", Info_ValueForKey( info, "hostname" ), qfalse );
-				Info_SetValueForKey( data, "players", va( "%d + (%d)", clients, bots ), qfalse );
-				Info_SetValueForKey( data, "ping", va( "%d", ping ), qfalse );
-
-				if ( ping > 0 )
-				{
-					trap_Rocket_DSAddRow( "server_browser", args, data );
-				}
-			}
-		}
-	}
-
-	rocketInfo.serversLastRefresh = trap_Milliseconds();
-}
-
-static void CG_Rocket_EventExec( const char *args )
-{
-	trap_Cmd_ExecuteText( EXEC_APPEND, args );
-}
-
-static void CG_Rocket_EventCvarForm( const char *args )
-{
-	static char params[ BIG_INFO_STRING ];
-	static char key[BIG_INFO_VALUE], value[ BIG_INFO_VALUE ];
-	const char *s;
-
-	trap_Rocket_GetEventParameters( params, 0 );
-
-	if ( !*params )
-	{
-		return;
-	}
-
-	s = params;
-
-	while ( *s )
-	{
-		Info_NextPair( &s, key, value );
-		if ( !Q_strnicmp( "cvar ", key, 5 ) )
-		{
-
-			trap_Cvar_Set( key + 5, value );
-		}
-	}
-}
-
-
-typedef struct
-{
-	const char *command;
-	void ( *exec ) ( const char *args );
-} eventCmd_t;
-
-static const eventCmd_t eventCmdList[] =
-{
-	{ "build_list", &CG_Rocket_BuildServerList },
-	{ "close", &CG_Rocket_EventClose },
-	{ "cvarform", &CG_Rocket_EventCvarForm },
-	{ "exec", &CG_Rocket_EventExec },
-	{ "goto", &CG_Rocket_EventGoto },
-	{ "init_servers", &CG_Rocket_InitServers },
-	{ "open", &CG_Rocket_EventOpen },
-	{ "show", &CG_Rocket_EventShow }
-};
-
-static const size_t eventCmdListCount = ARRAY_LEN( eventCmdList );
-
-static int eventCmdCmp( const void *a, const void *b )
-{
-	return Q_stricmp( ( const char * ) a, ( ( eventCmd_t * ) b )->command );
-}
-
-void CG_Rocket_ProcessEvents( void )
-{
-	static char commands[ 2000 ];
-	char *tail, *head;
-	eventCmd_t *cmd;
-
-	// Get the even command
-	trap_Rocket_GetEvent( commands, sizeof( commands ) );
-
-	head = commands;
-
-	// No events to process
-	if ( !*head )
-	{
-		return;
-	}
-
-	while ( 1 )
-	{
-		char *p, *args;
-
-		// Parse it. Check for semicolons first
-		tail = strchr( head, ';' );
-		if ( tail )
-		{
-			*tail = '\0';
-		}
-
-		p = strchr( head, ' ' );
-		if ( p )
-		{
-			*p = '\0';
-		}
-
-		// Special case for when head has no arguments
-		args = head + strlen( head ) + ( head + strlen( head ) == tail ? 0 : 1 );
-
-		cmd = bsearch( head, eventCmdList, eventCmdListCount, sizeof( eventCmd_t ), eventCmdCmp );
-
-		if ( cmd )
-		{
-			cmd->exec( args );
-		}
-
-		head = args + strlen( args ) + 1;
-
-		if ( !*head )
-		{
-			break;
-		}
-
-		// Skip whitespaces
-		while ( *head == ' ' )
-		{
-			head++;
-		}
-	}
-
-	trap_Rocket_DeleteEvent();
-}
 
 void CG_Rocket_Frame( void )
 {
@@ -422,8 +205,6 @@ void CG_Rocket_Frame( void )
 		case RETRIEVING_SERVERS:
 			if ( trap_LAN_UpdateVisiblePings( CG_StringToNetSource( rocketInfo.currentNetSource ) ) )
 			{
-				trap_Rocket_SetInnerRML( "serverbrowser", "status", "<strong>Updating...</strong>" );
-				CG_Rocket_BuildServerList( rocketInfo.currentNetSource );
 			}
 			else
 			{
@@ -435,19 +216,7 @@ void CG_Rocket_Frame( void )
 	CG_Rocket_ProcessEvents();
 }
 
-void CG_Rocket_FormatData( int handle )
-{
-	static char name[ 200 ], data[ BIG_INFO_STRING ];
-	const char *s;
-	trap_Rocket_DataFormatterRawData( handle, name, sizeof( name ), data, sizeof( data ) );
-
-	if ( !Q_stricmp( name, "ServerPing" ) )
-	{
-		trap_Rocket_DataFormatterFormattedData( handle, va( "%s ms", Info_ValueForKey( data, "1" ) ) );
-	}
-}
-
-static const char *CG_Rocket_GetTag()
+const char *CG_Rocket_GetTag()
 {
 	static char tag[ 100 ];
 
@@ -455,6 +224,7 @@ static const char *CG_Rocket_GetTag()
 
 	return tag;
 }
+
 const char *CG_Rocket_GetAttribute( const char *name, const char *id, const char *attribute )
 {
 	static char buffer[ 1000 ];
@@ -464,38 +234,3 @@ const char *CG_Rocket_GetAttribute( const char *name, const char *id, const char
 	return buffer;
 }
 
-void CG_Rocket_SetElementDimensions( void )
-{
-	const char *tag = CG_Rocket_GetTag();
-
-	if ( !Q_stricmp( tag, "test" ) )
-	{
-		trap_Rocket_SetElementDimensions( 100, 100 );
-	}
-	else if ( !Q_stricmp( tag, "pic" ) )
-	{
-		int x, y;
-
-		x = atoi( CG_Rocket_GetAttribute( "", "", "width" ) );
-		y = atoi( CG_Rocket_GetAttribute( "", "", "height" ) );
-
-		trap_Rocket_SetElementDimensions( x, y );
-	}
-}
-
-void CG_Rocket_RenderElement( void )
-{
-	const char *tag = CG_Rocket_GetTag();
-
-	if ( !Q_stricmp( tag, "test" ) )
-	{
-		trap_Rocket_SetInnerRML( "", "", "<span style='font-size: 5em;'><b>This is a test</b></span>" );
-	}
-	else if ( !Q_stricmp( tag, "pic" ) )
-	{
-		float x, y;
-		trap_Rocket_GetElementAbsoluteOffset( &x, &y );
-		trap_Rocket_ClearElementGeometry();
-		trap_Rocket_DrawElementPic( 0, 0, atoi( CG_Rocket_GetAttribute( "", "", "width" ) ), atoi( CG_Rocket_GetAttribute( "", "", "height" ) ), 0, 0, 1, 1,  "ui/assets/mainmenu.jpg" );
-	}
-}
