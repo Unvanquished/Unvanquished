@@ -199,6 +199,7 @@ static const fieldDescriptor_t fields[] =
 	{ "model",               FOFS( model ),               F_STRING     },
 	{ "model2",              FOFS( model2 ),              F_STRING     },
 	{ "name",	        	 FOFS( names[ 0 ] ),          F_STRING	   },
+	{ "noise",               FOFS( soundIndex ),          F_SOUNDINDEX },
 	{ "onAct",               FOFS( calltargets ),         F_CALLTARGET },
 	{ "onDie",               FOFS( calltargets ),         F_CALLTARGET },
 	{ "onDisable",           FOFS( calltargets ),         F_CALLTARGET },
@@ -214,6 +215,10 @@ static const fieldDescriptor_t fields[] =
 	{ "radius",              FOFS( activatedPosition ),   F_3D_VECTOR  }, // What's with the variable abuse everytime?
 	{ "random",              FOFS( config.wait.variance ),F_FLOAT,     ENT_V_TMPNAME, "wait" },
 	{ "shader",              FOFS( shaderKey ),           F_STRING     },
+	{ "sound1to2",           FOFS( sound1to2 ),           F_SOUNDINDEX },
+	{ "sound2to1",           FOFS( sound2to1 ),           F_SOUNDINDEX },
+	{ "soundPos1",           FOFS( soundPos1 ),           F_SOUNDINDEX },
+	{ "soundPos2",           FOFS( soundPos2 ),           F_SOUNDINDEX },
 	{ "spawnflags",          FOFS( spawnflags ),          F_INT        },
 	{ "speed",               FOFS( config.speed ),        F_FLOAT      },
 	{ "stage",               FOFS( conditions.stage ),    F_INT        },
