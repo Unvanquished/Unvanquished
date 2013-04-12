@@ -179,12 +179,12 @@ void SV_SetBrushModel( sharedEntity_t *ent, const char *name )
 
 	if ( !name )
 	{
-		Com_Error( ERR_DROP, "SV_SetBrushModel: NULL" );
+		Com_Error( ERR_DROP, "SV_SetBrushModel: NULL for #%i", ent->s.number );
 	}
 
 	if ( name[ 0 ] != '*' )
 	{
-		Com_Error( ERR_DROP, "SV_SetBrushModel: %s isn't a brush model", name );
+		Com_Error( ERR_DROP, "SV_SetBrushModel: %s of #%i isn't a brush model", name, ent->s.number );
 	}
 
 	ent->s.modelindex = atoi( name + 1 );

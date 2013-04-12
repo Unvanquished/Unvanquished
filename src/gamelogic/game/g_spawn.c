@@ -734,6 +734,17 @@ void G_SpawnGEntityFromSpawnVars( void )
 		return;
 	}
 
+	/*
+	 * will have only the classname or missing it…
+	 * both aren't helping us and might even create a error later
+	 * in the server, where we dont know as much anymore about it,
+	 * so we fail rather here, so mappers have a chance to remove it
+	 */
+	if( level.numSpawnVars <= 1 )
+	{
+		G_Error( S_ERROR "encountered ghost-entity #%i with only one field: %s = %s\n", spawningEntity->s.number, level.spawnVars[ 0 ][ 0 ], level.spawnVars[ 0 ][ 1 ] );
+	}
+
 	// move editor origin to pos
 	VectorCopy( spawningEntity->s.origin, spawningEntity->s.pos.trBase );
 	VectorCopy( spawningEntity->s.origin, spawningEntity->r.currentOrigin );
