@@ -73,66 +73,12 @@ static void CG_Rocket_InitServers( const char *args )
 	trap_LAN_UpdateVisiblePings( CG_StringToNetSource( args ) );
 }
 
-static void CG_Rocket_BuildServerList( const char *args )
+static void CG_Rocket_BuildDS( const char *args )
 {
-	char data[ MAX_INFO_STRING ] = { 0 };
-	int i;
-
-
-	// Only refresh once every second
-	if ( trap_Milliseconds() < 1000 + rocketInfo.serversLastRefresh )
-	{
-		return;
-	}
-
-	Q_strncpyz( rocketInfo.currentNetSource, args, sizeof( rocketInfo.currentNetSource ) );
-	rocketInfo.rocketState = RETRIEVING_SERVERS;
-
-	if ( !Q_stricmp( args, "internet" ) )
-	{
-		int numServers;
-
-		trap_Rocket_DSClearTable( "server_browser", args );
-
-		trap_LAN_MarkServerVisible( CG_StringToNetSource( args ), -1, qtrue );
-
-		numServers = trap_LAN_GetServerCount( CG_StringToNetSource( args ) );
-
-		for ( i = 0; i < numServers; ++i )
-		{
-			char info[ MAX_STRING_CHARS ];
-			int ping, bots, clients;
-
-			Com_Memset( &data, 0, sizeof( data ) );
-
-			if ( !trap_LAN_ServerIsVisible( CG_StringToNetSource( args ), i ) )
-			{
-				continue;
-			}
-
-			ping = trap_LAN_GetServerPing( CG_StringToNetSource( args ), i );
-
-			if ( qtrue || !Q_stricmp( args, "favorites" ) )
-			{
-				trap_LAN_GetServerInfo( CG_StringToNetSource( args ), i, info, MAX_INFO_STRING );
-
-				bots = atoi( Info_ValueForKey( info, "bots" ) );
-				clients = atoi( Info_ValueForKey( info, "clients" ) );
-
-				Info_SetValueForKey( data, "name", Info_ValueForKey( info, "hostname" ), qfalse );
-				Info_SetValueForKey( data, "players", va( "%d + (%d)", clients, bots ), qfalse );
-				Info_SetValueForKey( data, "ping", va( "%d", ping ), qfalse );
-
-				if ( ping > 0 )
-				{
-					trap_Rocket_DSAddRow( "server_browser", args, data );
-				}
-			}
-		}
-	}
-
-	rocketInfo.serversLastRefresh = trap_Milliseconds();
+	CG_Rocket_BuildDataSource( args );
 }
+
+
 
 static void CG_Rocket_EventExec( const char *args )
 {
@@ -174,7 +120,7 @@ typedef struct
 
 static const eventCmd_t eventCmdList[] =
 {
-	{ "build_list", &CG_Rocket_BuildServerList },
+	{ "buildDS", &CG_Rocket_BuildDS },
 	{ "close", &CG_Rocket_EventClose },
 	{ "cvarform", &CG_Rocket_EventCvarForm },
 	{ "exec", &CG_Rocket_EventExec },
