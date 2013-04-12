@@ -1890,7 +1890,6 @@ void SP_func_door_model( gentity_t *self )
 	clipBrush->model = self->model;
 	trap_SetBrushModel( clipBrush, clipBrush->model );
 	clipBrush->s.eType = ET_INVISIBLE;
-	trap_LinkEntity( clipBrush );
 
 	//copy the bounds back from the clipBrush so the
 	//triggers can be made
@@ -2559,8 +2558,6 @@ void SP_func_rotating( gentity_t *self )
 	VectorCopy( self->s.origin, self->s.pos.trBase );
 	VectorCopy( self->s.pos.trBase, self->r.currentOrigin );
 	VectorCopy( self->s.apos.trBase, self->r.currentAngles );
-
-	trap_LinkEntity( self );
 }
 
 /*
@@ -2773,9 +2770,7 @@ void SP_func_destructable( gentity_t *self )
   self->die = func_destructable_die;
   self->act = func_destructable_act;
 
-  if( self->spawnflags & 1 )
-    trap_UnlinkEntity( self );
-  else
+  if( !self->spawnflags & 1 )
   {
     trap_LinkEntity( self );
     self->takedamage = qtrue;
