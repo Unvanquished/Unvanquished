@@ -1517,13 +1517,21 @@ static void G_UnlaggedDetectCollisions( gentity_t *ent )
 ================
 G_FindHealth
 
-attempt to find a health source for self
+Attempt to find a health source for self.
+
+Returns SS_HEALING_ACTIVE when on creep,
+        SS_HEALING_2X when there is a source for double healing,
+        SS_HEALING_3X when there is a source for triple healing
+        or any combination of these flags, if more than one is true.
+
+Sets creepTime on self if appropriate.
 ================
 */
 static int G_FindHealth( gentity_t *self )
 {
 	int entityList[ MAX_GENTITIES ];
 	int i, num, ret = 0;
+	float distance;
 	vec3_t range, mins, maxs;
 	gclient_t *client = self->client;
 
@@ -1542,10 +1550,11 @@ static int G_FindHealth( gentity_t *self )
 	{
 		gentity_t *boost = &g_entities[ entityList[ i ] ];
 
+		distance = Distance( boost->s.origin, self->s.origin );
+
 		if ( boost->s.eType == ET_PLAYER && boost->client &&
-			boost->client->pers.teamSelection == client->pers.teamSelection &&
-			boost->health > 0 &&
-			Distance( boost->s.origin, self->s.origin ) < REGEN_BOOST_RANGE )
+		     boost->client->pers.teamSelection == client->pers.teamSelection &&
+		     boost->health > 0 && distance < REGEN_BOOST_RANGE )
 		{
 			if ( boost->client->ps.stats[ STAT_CLASS ] == PCL_ALIEN_LEVEL1 )
 			{
@@ -1556,13 +1565,14 @@ static int G_FindHealth( gentity_t *self )
 				ret |= SS_HEALING_3X;
 			}
 		}
-		else if ( boost->s.eType == ET_BUILDABLE && boost->spawned && boost->health > 0 && boost->powered && boost->buildableTeam == client->pers.teamSelection )
+		else if ( boost->s.eType == ET_BUILDABLE && boost->spawned && boost->health > 0 &&
+		          boost->powered && boost->buildableTeam == client->pers.teamSelection )
 		{
-			if ( boost->s.modelindex == BA_A_SPAWN || boost->s.modelindex == BA_A_OVERMIND )
+			if ( ( boost->s.modelindex == BA_A_SPAWN || boost->s.modelindex == BA_A_OVERMIND ) && ( int )distance < CREEP_BASESIZE )
 			{
 				ret |= SS_HEALING_ACTIVE;
 			}
-			else if ( boost->s.modelindex == BA_A_BOOSTER && Distance( boost->s.origin, self->s.origin ) < REGEN_BOOST_RANGE )
+			else if ( boost->s.modelindex == BA_A_BOOSTER && distance < REGEN_BOOST_RANGE )
 			{
 				ret |= SS_HEALING_3X;
 			}
