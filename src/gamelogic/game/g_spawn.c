@@ -168,7 +168,8 @@ typedef enum
   F_TIME,
   F_3D_VECTOR,
   F_4D_VECTOR,
-  F_YAW
+  F_YAW,
+  F_SOUNDINDEX
 } fieldType_t;
 
 typedef struct
@@ -732,6 +733,10 @@ void G_ParseField( const char *key, const char *rawString, gentity_t *entity )
 			( ( float * )( entityData + resultingField->offset ) ) [ 0 ] = 0;
 			( ( float * )( entityData + resultingField->offset ) ) [ 1 ] = atof( rawString );
 			( ( float * )( entityData + resultingField->offset ) ) [ 2 ] = 0;
+			break;
+
+		case F_SOUNDINDEX:
+			* ( int * )( entityData + resultingField->offset ) = G_SoundIndex( rawString );
 			break;
 
 		default:
