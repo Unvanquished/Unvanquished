@@ -28,7 +28,7 @@
 				<panel>
 					LAN servers
 				</panel>
-				<tab onClick="build_list internet">Internet</tab>
+				<tab onClick="buildDS server_browser internet">Internet</tab>
 				<panel>
 					<span id="status"></span>
 					<div class="servers">
@@ -38,7 +38,7 @@
 						<col fields="ping" formatter="ServerPing" width="25%">Ping:</col>
 					</datagrid>
 					</div>
-					<button onClick="build_list internet">Refresh</button>
+					<button onClick="buildDS server_browser internet">Refresh</button>
 					<button onClick="close serverbrowser">Close</button>
 				</panel>
 				<tab>Favorite</tab>
