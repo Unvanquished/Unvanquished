@@ -82,7 +82,7 @@ void SP_sfx_speaker( gentity_t *self )
 
 	if ( !G_SpawnString( "noise", "NOSOUND", &tmpString ) )
 	{
-		G_Error( "target_speaker without a noise key at %s", vtos( self->s.origin ) );
+		G_Error( "speaker %s without a noise key", etos( self ) );
 	}
 
 	// force all client-relative sounds to be "activator" speakers that
@@ -91,17 +91,7 @@ void SP_sfx_speaker( gentity_t *self )
 	{
 		self->spawnflags |= 8;
 	}
-
-	if ( !strstr( tmpString, ".wav" ) )
-	{
-		Com_sprintf( buffer, sizeof( buffer ), "%s.wav", tmpString );
-	}
-	else
-	{
-		Q_strncpyz( buffer, tmpString, sizeof( buffer ) );
-	}
-
-	self->soundIndex = G_SoundIndex( buffer );
+	self->soundIndex = G_SoundIndex( tmpString );
 
 	// a repeating speaker can be done completely client side
 	self->s.eType = ET_SPEAKER;
