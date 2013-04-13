@@ -551,6 +551,8 @@ fileHandle_t FS_FOpenFileWrite( const char *qpath );
 fileHandle_t FS_FOpenFileAppend( const char *filename );
 fileHandle_t  FS_FCreateOpenPipeFile( const char *filename );
 
+void         FS_FChmod( fileHandle_t f, int mode );
+
 // will properly create any needed paths and deal with separator character issues
 
 int          FS_filelength( fileHandle_t f );
@@ -1137,6 +1139,9 @@ qboolean Sys_Mkdir( const char *path );
 FILE     *Sys_Mkfifo( const char *ospath );
 char     *Sys_Cwd( void );
 char     *Sys_DefaultBasePath( void );
+
+void     Sys_FChmod( FILE *f, int mode );
+void     Sys_Chmod( const char *ospath, int mode );
 
 #ifdef MACOS_X
 char     *Sys_DefaultAppPath( void );
