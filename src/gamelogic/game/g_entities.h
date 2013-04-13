@@ -64,6 +64,21 @@ Maryland 20850 USA.
 #define S_CTRL_LIMITED            "ctrl_limited"
 #define S_CTRL_RELAY              "ctrl_relay"
 
+#define S_env_afx_ammo            "env_afx_ammo"
+#define S_env_afx_gravity         "env_afx_gravity"
+#define S_env_afx_heal            "env_afx_heal"
+#define S_env_afx_hurt            "env_afx_hurt"
+#define S_env_afx_push            "env_afx_push"
+#define S_env_afx_teleport        "env_afx_teleport"
+
+#define S_env_animated_model      "env_animated_model"
+#define S_env_lens_flare          "env_lens_flare"
+#define S_env_particle_system     "env_particle_system"
+#define S_env_portal_camera       "env_portal_camera"
+#define S_env_portal_surface      "env_portal_surface"
+#define S_env_rumble              "env_rumble"
+#define S_env_speaker             "env_speaker"
+
 #define S_FUNC_DOOR               "func_door"
 #define S_DOOR_SENSOR             "door_sensor"
 #define S_PLAT_SENSOR             "plat_sensor"
