@@ -3143,18 +3143,11 @@ void G_BuildableThink( gentity_t *ent, int msec )
 				distanceToBase = G_DistanceToBase( ent, qtrue );
 				reward = ( float )BG_Buildable( ent->s.modelindex )->value;
 
-				// Always give some confidence for building a crucial structure
-				// TODO: Make sure confidence isn't earned by teamkilling buildings
 				if ( reason == CONF_REAS_BUILD_CRUCIAL )
 				{
 					reward *= 0.25f;
 					qualifier = CONF_QUAL_NONE;
-
-					G_AddConfidence( BG_Buildable( ent->s.modelindex )->team, CONFIDENCE_BUILDING, reason,
-									 qualifier, reward, &g_entities[ ent->builtBy->slot ] );
 				}
-				// For non-crucial structures, give confidence if built outside the own base and a bonus
-				// if built close to the enemy base
 				else if ( distanceToBase > 1000.0f )
 				{
 					if ( G_DistanceToBase( ent, qfalse ) < 1500.0f )
@@ -3167,10 +3160,15 @@ void G_BuildableThink( gentity_t *ent, int msec )
 						reward *= 0.75f;
 						qualifier = CONF_QUAL_OUTSIDE_OWN_BASE;
 					}
-
-					G_AddConfidence( BG_Buildable( ent->s.modelindex )->team, CONFIDENCE_BUILDING, reason,
-									qualifier, reward, &g_entities[ ent->builtBy->slot ] );
 				}
+				else
+				{
+					reward *= 0.5f;
+					qualifier = CONF_QUAL_IN_OWN_BASE;
+				}
+
+				G_AddConfidence( BG_Buildable( ent->s.modelindex )->team, CONFIDENCE_BUILDING, reason,
+				                 qualifier, reward, &g_entities[ ent->builtBy->slot ] );
 			}
 		}
 	}
