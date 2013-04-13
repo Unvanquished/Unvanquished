@@ -1195,8 +1195,6 @@ static void CG_UpdateLoadingStep( cgLoadingStep_t step )
 		case LOAD_START:
 			cg.loading = qtrue;
 			cg.mediaFraction = cg.charModelFraction = cg.buildablesFraction = 0.0f;
-			Q_strncpyz(cg.currentLoadingLabel, "Start loading.", sizeof( cg.currentLoadingLabel ) );
-			trap_UpdateScreen();
 			break;
 
 		case LOAD_TRAILS:
