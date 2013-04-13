@@ -774,30 +774,65 @@ Notify player of generated confidence
 void CG_Confidence( entityState_t *es )
 {
 	const char *reason;
+	const char *qualifier;
 
-	switch ( es->eventParm )
+	switch ( es->eventParm ) // reason
 	{
-		case CONFIDENCE_KILLING:
+		case CONF_REAS_KILLING:
 			reason = _("Killing an enemy");
 			break;
 
-		case CONFIDENCE_DESTRUCTION:
-			reason = _("Destroying an enemy building");
+		case CONF_REAS_DESTR_CRUCIAL:
+			reason = _("Destroying a crucial structure");
 			break;
 
-		case CONFIDENCE_BUILDING:
-			reason = _("Building a structure");
+		case CONF_REAS_DESTR_AGGRESSIVE:
+			reason = _("Destroying an aggressive structure");
 			break;
 
-		case CONFIDENCE_TEAMPLAY:
-			reason = _("Your sense for teamplay");
+		case CONF_REAS_DESTR_SUPPORT:
+			reason = _("Destroying a support structure");
+			break;
+
+		case CONF_REAS_BUILD_CRUCIAL:
+			reason = _("Building a crucial structure");
+			break;
+
+		case CONF_REAS_BUILD_AGGRESSIVE:
+			reason = _("Building an aggressive structure");
+			break;
+
+		case CONF_REAS_BUILD_SUPPORT:
+			reason = _("Building a support structure");
 			break;
 
 		default:
 			reason = _("Your actions");
 	}
 
-	CG_Printf( _("%s earned your team %d confidence\n"), reason, es->otherEntityNum );
+	switch ( es->otherEntityNum ) // qualifier
+	{
+		case CONF_QUAL_IN_ENEMEY_BASE:
+			qualifier = _(" inside the enemy base");
+			break;
+
+		case CONF_QUAL_CLOSE_TO_ENEMY_BASE:
+			qualifier = _(" close to the enemy base");
+			break;
+
+		case CONF_QUAL_OUTSIDE_OWN_BASE:
+			qualifier = _(" outside your own base");
+			break;
+
+		case CONF_QUAL_IN_OWN_BASE:
+			qualifier = _(" inside your own base");
+			break;
+
+		default:
+			qualifier = "";
+	}
+
+	CG_Printf( _("%s%s earned your team %.1f confidence\n"), reason, qualifier, es->otherEntityNum2 / 10.0f );
 }
 
 /*

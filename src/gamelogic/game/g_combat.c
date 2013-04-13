@@ -136,10 +136,12 @@ Function to distribute rewards to entities that killed this one.
 */
 void G_RewardAttackers( gentity_t *self )
 {
-	float     value;
-	int       playerNum, enemyDamage, maxHealth, reward, damageShare;
+	float     value, reward, distanceToBase;
+	int       playerNum, enemyDamage, maxHealth, damageShare;
 	gentity_t *player;
 	team_t    ownTeam, playerTeam;
+	confidence_reason_t    reason;
+	confidence_qualifier_t qualifier;
 
 	// Only reward killing players and buildables
 	if ( self->client )
@@ -187,6 +189,8 @@ void G_RewardAttackers( gentity_t *self )
 		return;
 	}
 
+	distanceToBase = G_DistanceToBase( self, qtrue );
+
 	// Give individual rewards
 	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
 	{
@@ -209,23 +213,57 @@ void G_RewardAttackers( gentity_t *self )
 			continue;
 		}
 
-		reward = roundf( value * ( damageShare / ( float )maxHealth ) );
+		reward = value * ( damageShare / ( float )maxHealth );
 
-		if ( reward <= 0 )
+		if ( reward <= 0.0f )
 		{
 			continue;
 		}
 
-		// Killing buildables earns confidence, killing players earns credits
 		if ( self->s.eType == ET_BUILDABLE )
 		{
-			G_AddConfidence( playerTeam, CONFIDENCE_DESTRUCTION, reward, player );
-			AddScore( player, reward * CREDITS_TO_CONFIDENCE_SCORE_RATIO );
+			AddScore( player, ( int )( reward * CREDITS_TO_CONFIDENCE_SCORE_RATIO ) );
+
+			switch ( self->s.modelindex )
+			{
+				case BA_A_OVERMIND:
+				case BA_H_REACTOR:
+					reason = CONF_REAS_DESTR_CRUCIAL;
+					break;
+
+				case BA_A_ACIDTUBE:
+				case BA_A_TRAPPER:
+				case BA_A_HIVE:
+				case BA_H_MGTURRET:
+				case BA_H_TESLAGEN:
+					reason = CONF_REAS_DESTR_AGGRESSIVE;
+					break;
+
+				default:
+					reason = CONF_REAS_DESTR_SUPPORT;
+			}
+
+			// TODO: Give bonus for killing enemy buildings inside their main base
+			qualifier = CONF_QUAL_NONE;
+
+			G_AddConfidence( playerTeam, CONFIDENCE_DESTRUCTION, reason, qualifier, reward, player );
 		}
 		else
 		{
 			G_AddCreditToClient( player->client, reward, qtrue );
-			AddScore( player, reward );
+			AddScore( player, ( int )reward );
+
+			// Give confidence for killing enemies inside their main base
+			if ( distanceToBase < 500.0f )
+			{
+				G_AddConfidence( playerTeam, CONFIDENCE_KILLING, CONF_REAS_KILLING, CONF_QUAL_IN_ENEMEY_BASE,
+								 reward / ( 2 * CREDITS_TO_CONFIDENCE_SCORE_RATIO ), player );
+			}
+			else if ( distanceToBase < 1000.0f )
+			{
+				G_AddConfidence( playerTeam, CONFIDENCE_KILLING, CONF_REAS_KILLING, CONF_QUAL_CLOSE_TO_ENEMY_BASE,
+								 reward / ( 3 * CREDITS_TO_CONFIDENCE_SCORE_RATIO ), player );
+			}
 		}
 	}
 }
