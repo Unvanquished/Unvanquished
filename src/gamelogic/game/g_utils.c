@@ -804,7 +804,7 @@ void G_AddConfidence( team_t team, confidence_t type, float amount, gentity_t *s
 	{
 		event = G_NewTempEntity( client->ps.origin, EV_CONFIDENCE );
 		event->s.eventParm = type;
-		event->s.otherEntityNum2 = ( int )( amount * 10.0f );
+		event->s.otherEntityNum = ( int )( amount * 10.0f );
 		//event->s.otherEntityNum2 = 0; // use later for notification of a bonus
 		event->r.svFlags = SVF_SINGLECLIENT;
 		event->r.singleClient = client->ps.clientNum;
