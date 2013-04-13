@@ -1348,8 +1348,8 @@ void G_SumTeamConfidence( void )
 	team_t          team;
 	confidenceLog_t **logs, *head, *log;
 	confidence_t	type;
-	int             *confidence, period, CSConfidence;
-	float           amount, confidence_f[ NUM_CONFIDENCE_TYPES ];
+	int             period, CSConfidence;
+	float           *confidence, amount;
 
 	static int nextCalculation = 0;
 
@@ -1381,8 +1381,7 @@ void G_SumTeamConfidence( void )
 		// reset confidence
 		for ( type = CONFIDENCE_SUM; type < NUM_CONFIDENCE_TYPES; type++ )
 		{
-			confidence_f[ type ] = 0.0f;
-			confidence[ type ] = 0;
+			confidence[ type ] = 0.0f;
 		}
 
 		period = g_confidenceSumPeriod.value * 60000;
@@ -1403,21 +1402,15 @@ void G_SumTeamConfidence( void )
 				// fade out the effect of each reward
 				amount = log->amount * ( ( period - ( level.time - log->time ) ) / ( float )period );
 
-				confidence_f[ log->type ] += amount;
-				confidence_f[ CONFIDENCE_SUM ] += amount;
+				confidence[ log->type ] += amount;
+				confidence[ CONFIDENCE_SUM ] += amount;
 
 				log = log->next;
 			}
 		}
 
-		// round confidence
-		for ( type = CONFIDENCE_SUM; type < NUM_CONFIDENCE_TYPES; type++ )
-		{
-			confidence[ type ] = roundf( confidence_f[ type ] );
-		}
-
 		// send total confidence to clients
-		trap_SetConfigstring( CSConfidence, va( "%d", confidence[ CONFIDENCE_SUM ] ) );
+		trap_SetConfigstring( CSConfidence, va( "%f", confidence[ CONFIDENCE_SUM ] ) );
 	}
 
 	nextCalculation = level.time + 200;

@@ -2108,8 +2108,7 @@ static void CG_DrawStageReport( rectDef_t *rect, float text_x, float text_y,
                                 vec4_t color, float scale, int textalign, int textvalign, int textStyle )
 {
 	char  s[ MAX_TOKEN_CHARS ];
-	float tx, ty;
-	int   confidence, neededConfidence;
+	float tx, ty, confidence, neededConfidence;
 
 	if ( cg.intermissionStarted )
 	{
@@ -2123,7 +2122,7 @@ static void CG_DrawStageReport( rectDef_t *rect, float text_x, float text_y,
 
 	if ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
 	{
-		sscanf( CG_ConfigString( CS_ALIEN_CONFIDENCE ), "%d", &confidence );
+		sscanf( CG_ConfigString( CS_ALIEN_CONFIDENCE ), "%f", &confidence );
 
 		neededConfidence = cgs.alienNextStageThreshold - confidence;
 
@@ -2134,18 +2133,18 @@ static void CG_DrawStageReport( rectDef_t *rect, float text_x, float text_y,
 
 		if ( cgs.alienNextStageThreshold < 0 )
 		{
-			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %d confidence"),
+			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %.1f confidence"),
 			             cgs.alienStage + 1, confidence );
 		}
 		else
 		{
-			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %d confidence, %d needed"),
+			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %.1f confidence, %.1f needed"),
 			             cgs.alienStage + 1, confidence, neededConfidence );
 		}
 	}
 	else if ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
 	{
-		sscanf( CG_ConfigString( CS_HUMAN_CONFIDENCE ), "%d", &confidence );
+		sscanf( CG_ConfigString( CS_HUMAN_CONFIDENCE ), "%f", &confidence );
 
 		neededConfidence = cgs.humanNextStageThreshold - confidence;
 
@@ -2156,12 +2155,12 @@ static void CG_DrawStageReport( rectDef_t *rect, float text_x, float text_y,
 
 		if ( cgs.humanNextStageThreshold < 0 )
 		{
-			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %d confidence"),
+			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %.1f confidence"),
 			             cgs.humanStage + 1, confidence );
 		}
 		else
 		{
-			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %d confidence, %d needed"),
+			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %.1f confidence, %.1f needed"),
 			             cgs.humanStage + 1, confidence, neededConfidence );
 		}
 	}

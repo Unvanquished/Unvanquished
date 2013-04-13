@@ -656,7 +656,7 @@ typedef struct confidenceLog_s
 
 	int                    time;
 	confidence_t           type;
-	int                    amount;
+	float                  amount;
 	gentity_t              *source;
 } confidenceLog_t;
 
@@ -761,8 +761,8 @@ typedef struct
 
 	confidenceLog_t  *alienConfidenceLogs;
 	confidenceLog_t  *humanConfidenceLogs;
-	int              alienConfidence[ NUM_CONFIDENCE_TYPES ];
-	int              humanConfidence[ NUM_CONFIDENCE_TYPES ];
+	float            alienConfidence[ NUM_CONFIDENCE_TYPES ];
+	float            humanConfidence[ NUM_CONFIDENCE_TYPES ];
 
 	gentity_t        *markedBuildables[ MAX_GENTITIES ];
 	int              numBuildablesForRemoval;
@@ -977,8 +977,7 @@ void       G_TriggerMenu( int clientNum, dynMenu_t menu );
 void       G_TriggerMenuArgs( int clientNum, dynMenu_t menu, int arg );
 void       G_CloseMenus( int clientNum );
 
-void       G_AddConfidence( team_t team, confidence_t type, int amount, gentity_t *source );
-
+void G_AddConfidence(team_t team, confidence_t type, float amount, gentity_t *source );
 
 //
 // g_combat.c

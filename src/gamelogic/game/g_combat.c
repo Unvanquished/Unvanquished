@@ -136,8 +136,8 @@ Function to distribute rewards to entities that killed this one.
 */
 void G_RewardAttackers( gentity_t *self )
 {
-	float     value;
-	int       playerNum, enemyDamage, maxHealth, reward, damageShare;
+	float     value, reward;
+	int       playerNum, enemyDamage, maxHealth, damageShare;
 	gentity_t *player;
 	team_t    ownTeam, playerTeam;
 
@@ -209,9 +209,9 @@ void G_RewardAttackers( gentity_t *self )
 			continue;
 		}
 
-		reward = roundf( value * ( damageShare / ( float )maxHealth ) );
+		reward = value * ( damageShare / ( float )maxHealth );
 
-		if ( reward <= 0 )
+		if ( reward <= 0.0f )
 		{
 			continue;
 		}
@@ -220,12 +220,12 @@ void G_RewardAttackers( gentity_t *self )
 		if ( self->s.eType == ET_BUILDABLE )
 		{
 			G_AddConfidence( playerTeam, CONFIDENCE_DESTRUCTION, reward, player );
-			AddScore( player, reward * CREDITS_TO_CONFIDENCE_SCORE_RATIO );
+			AddScore( player, ( int )( reward * CREDITS_TO_CONFIDENCE_SCORE_RATIO ) );
 		}
 		else
 		{
 			G_AddCreditToClient( player->client, reward, qtrue );
-			AddScore( player, reward );
+			AddScore( player, ( int )reward );
 		}
 	}
 }
