@@ -749,7 +749,8 @@ qboolean G_AddressCompare( const addr_t *a, const addr_t *b )
 	return qtrue;
 }
 
-void G_AddConfidence( team_t team, confidence_t type, float amount, gentity_t *source )
+void G_AddConfidence( team_t team, confidence_t type, confidence_reason_t reason,
+                      confidence_qualifier_t qualifier, float amount, gentity_t *source )
 {
 	confidenceLog_t **logs, *log, *newlog;
 	gclient_t *client;
@@ -803,9 +804,9 @@ void G_AddConfidence( team_t team, confidence_t type, float amount, gentity_t *s
 	if ( client && client->pers.teamSelection == team )
 	{
 		event = G_NewTempEntity( client->ps.origin, EV_CONFIDENCE );
-		event->s.eventParm = type;
-		event->s.otherEntityNum = ( int )( amount * 10.0f );
-		//event->s.otherEntityNum2 = 0; // use later for notification of a bonus
+		event->s.eventParm = reason;
+		event->s.otherEntityNum = qualifier;
+		event->s.otherEntityNum2 = ( int )( amount * 10.0f );
 		event->r.svFlags = SVF_SINGLECLIENT;
 		event->r.singleClient = client->ps.clientNum;
 	}

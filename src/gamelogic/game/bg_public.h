@@ -944,18 +944,33 @@ typedef enum
   MOD_NOCREEP
 } meansOfDeath_t;
 
-// confidence types
-typedef enum {
-	CONFIDENCE_SUM,
+// reasons for giving confidence, get sent to the client who earned it
+typedef enum
+{
+	CONF_REAS_NONE,
 
-	CONFIDENCE_GENERAL,
-	CONFIDENCE_KILLING,
-	CONFIDENCE_DESTRUCTION,
-	CONFIDENCE_BUILDING,
-	CONFIDENCE_TEAMPLAY,
+	CONF_REAS_KILLING,
 
-	NUM_CONFIDENCE_TYPES
-} confidence_t;
+	CONF_REAS_DESTR_CRUCIAL,
+	CONF_REAS_DESTR_AGGRESSIVE,
+	CONF_REAS_DESTR_SUPPORT,
+
+	CONF_REAS_BUILD_CRUCIAL,
+	CONF_REAS_BUILD_AGGRESSIVE,
+	CONF_REAS_BUILD_SUPPORT
+} confidence_reason_t;
+
+// qualifications that are necessary for generating confidence or yield a bonus,
+// get sent to the client who earned it
+typedef enum
+{
+	CONF_QUAL_NONE,
+
+	CONF_QUAL_IN_ENEMEY_BASE,
+	CONF_QUAL_CLOSE_TO_ENEMY_BASE,
+	CONF_QUAL_OUTSIDE_OWN_BASE,
+	CONF_QUAL_IN_OWN_BASE
+} confidence_qualifier_t;
 
 //---------------------------------------------------------
 

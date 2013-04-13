@@ -611,6 +611,65 @@ gentity_t *G_Overmind( void )
 
 /*
 ================
+G_DistanceToBase
+
+Calculates the distance of an entity to its own or the enemy base.
+Returns a huge value if the base is not found.
+================
+*/
+float G_DistanceToBase( gentity_t *self, qboolean ownBase )
+{
+	team_t    team;
+	gentity_t *mainBuilding = NULL;
+
+	if ( self->client )
+	{
+		team = self->client->pers.teamSelection;
+	}
+	else if ( self->s.eType == ET_BUILDABLE )
+	{
+		team = BG_Buildable( self->s.modelindex )->team;
+	}
+	else
+	{
+		return 1E+37;
+	}
+
+	if ( ownBase )
+	{
+		if ( team == TEAM_ALIENS )
+		{
+			mainBuilding = G_Overmind();
+		}
+		else if ( team == TEAM_HUMANS )
+		{
+			mainBuilding = G_Reactor();
+		}
+	}
+	else
+	{
+		if ( team == TEAM_ALIENS )
+		{
+			mainBuilding = G_Reactor();
+		}
+		else if ( team == TEAM_HUMANS )
+		{
+			mainBuilding = G_Overmind();
+		}
+	}
+
+	if ( mainBuilding )
+	{
+		return Distance( self->s.origin, mainBuilding->s.origin );
+	}
+	else
+	{
+		return 1E+37;
+	}
+}
+
+/*
+================
 G_FindCreep
 
 attempt to find creep for self, return qtrue if successful
