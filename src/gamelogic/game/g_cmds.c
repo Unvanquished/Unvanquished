@@ -164,6 +164,10 @@ int G_ClientNumberFromString( const char *s, char *err, int len )
 
 		if ( i < 0 || i >= level.maxclients )
 		{
+			if ( p )
+			{
+				Q_strncpyz( p, N_("no player connected in that slot #\n"), len );
+			}
 			return -1;
 		}
 
