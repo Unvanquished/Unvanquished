@@ -2428,9 +2428,19 @@ handles will be invalid
 void CL_Snd_Restart_f( void )
 {
 	S_Shutdown();
-	S_Init();
 
-	CL_Vid_Restart_f();
+	if( !cls.cgameStarted )
+	{
+		CL_ShutdownUI();
+		S_Init();
+		S_BeginRegistration();
+		CL_InitUI();
+	}
+	else
+	{
+		S_Init();
+		CL_Vid_Restart_f();
+	}
 }
 
 
