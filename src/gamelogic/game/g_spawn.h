@@ -54,7 +54,9 @@ void    SP_ctrl_relay( gentity_t *self );
 void    SP_ctrl_limited( gentity_t *self );
 
 void    SP_game_score( gentity_t *self );
+void    SP_game_kill( gentity_t *self );
 void    SP_game_end( gentity_t *self );
+void    SP_game_funds( gentity_t *self );
 
 void    SP_path_corner( gentity_t *self );
 void    SP_pos_player_spawn( gentity_t *self );
@@ -74,7 +76,6 @@ void    SP_sensor_timer( gentity_t *self );
 
 void    SP_target_print( gentity_t *self );
 void    SP_target_teleporter( gentity_t *self );
-void    SP_game_kill( gentity_t *self );
 void    SP_target_push( gentity_t *self );
 void    SP_target_hurt( gentity_t *self );
 

@@ -336,6 +336,7 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	 *  These are actions and effects against the whole match, a team or a player.
 	 */
 	{ S_GAME_END,                 SP_game_end,               CHAIN_PASSIV },
+	{ S_GAME_FUNDS,               SP_game_funds,             CHAIN_PASSIV },
 	{ S_GAME_KILL,                SP_game_kill,              CHAIN_PASSIV },
 	{ S_GAME_SCORE,               SP_game_score,             CHAIN_PASSIV },
 

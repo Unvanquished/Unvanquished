@@ -85,6 +85,7 @@ Maryland 20850 USA.
 #define S_PLAT_SENSOR             "plat_sensor"
 
 #define S_GAME_END                "game_end"
+#define S_GAME_FUNDS              "game_funds"
 #define S_GAME_KILL               "game_kill"
 #define S_GAME_SCORE              "game_score"
 
