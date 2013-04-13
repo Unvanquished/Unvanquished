@@ -3162,7 +3162,6 @@ void Com_Init( char *commandLine )
 	if ( !com_recommendedSet->integer && !Com_SafeMode() )
 	{
 		Com_SetRecommended();
-		Cbuf_ExecuteText( EXEC_APPEND, "vid_restart\n" );
 	}
 
 	Cvar_Set( "com_recommendedSet", "1" );
