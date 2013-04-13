@@ -2901,8 +2901,6 @@ qboolean Com_WriteProfile( char *profile_path )
 	return qtrue;
 }
 
-qboolean Crypto_Init( void );
-
 /*
 =================
 Com_Init
@@ -3138,9 +3136,7 @@ void Com_Init( char *commandLine )
 	SV_Init();
 	Hist_Load();
 
-	if ( !Crypto_Init() )
-	{
-	}
+	Crypto_Init();
 
 	com_dedicated->modified = qfalse;
 

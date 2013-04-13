@@ -1268,4 +1268,6 @@ const char* Trans_GettextGame( const char *msgid ) __attribute__((__format_arg__
 const char* Trans_PgettextGame( const char *ctxt, const char *msgid ) __attribute__((__format_arg__(2)));
 const char* Trans_GettextGamePlural( const char *msgid, const char *msgid_plural, int num ) __attribute__((__format_arg__(1))) __attribute__((__format_arg__(2)));
 
+void     Crypto_Init( void );
+void     Crypto_Shutdown( void );
 #endif // QCOMMON_H_
