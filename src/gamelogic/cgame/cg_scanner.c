@@ -62,7 +62,7 @@ static void CG_UpdateRadarVisibility( void ) {
 
 			if ( !(cent->currentState.eFlags & EF_POWER_AVAILABLE ) ) {
 				cent->radarVisibility = 1.0f;
-			} else if ( ci->nonsegmented ) {
+			} else if ( ci->nonsegmented || ci->gender == GENDER_NEUTER ) {
 				switch( cent->currentState.legsAnim & ~ANIM_TOGGLEBIT) {
 				case NSPA_STAND:
 				case NSPA_DEATH1:

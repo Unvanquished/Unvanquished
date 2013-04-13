@@ -1218,6 +1218,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	gentity_t       *ent;
 	char            reason[ MAX_STRING_CHARS ] = { "" };
 	int             i;
+	g_admin_admin_t *admin;
 
 	ent = &g_entities[ clientNum ];
 	client = &level.clients[ clientNum ];
@@ -1251,9 +1252,9 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	}
 
 	trap_GenFingerprint( pubkey, sizeof( pubkey ), client->pers.guid, sizeof( client->pers.guid ) );
-
 	client->pers.admin = G_admin_admin( client->pers.guid );
-	client->pers.pubkey_authenticated = 0;
+
+	client->pers.pubkey_authenticated = qfalse;
 
 	if ( client->pers.admin )
 	{
@@ -1290,7 +1291,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 			continue;
 		}
 
-		if ( !Q_stricmp( client->pers.guid, level.clients[ i ].pers.guid ) )
+		if ( !( g_entities[i].r.svFlags & SVF_BOT ) && !Q_stricmp( client->pers.guid, level.clients[ i ].pers.guid ) )
 		{
 			if ( !G_ClientIsLagging( level.clients + i ) )
 			{
@@ -1322,7 +1323,7 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	}
 
 	G_LogPrintf( "ClientConnect: %i [%s] (%s) \"%s^7\" \"%c%s%c^7\"\n",
-	             clientNum, client->pers.ip.str, client->pers.guid,
+	             clientNum, client->pers.ip.str[0] ? client->pers.ip.str : "127.0.0.1", client->pers.guid,
 	             client->pers.netname,
 	             DECOLOR_OFF, client->pers.netname, DECOLOR_ON );
 
@@ -1341,6 +1342,95 @@ char *ClientConnect( int clientNum, qboolean firstTime )
 	{
 		G_ChangeTeam( ent, client->sess.restartTeam );
 		client->sess.restartTeam = TEAM_NONE;
+	}
+
+	return NULL;
+}
+
+/*
+===========
+ClientBotConnect
+
+Cut-down version of ClientConnect.
+Doesn't do things not relevant to bots (which are local GUIDless clients).
+============
+*/
+char *ClientBotConnect( int clientNum, qboolean firstTime, team_t team )
+{
+	char            *value;
+	char            *userInfoError;
+	gclient_t       *client;
+	char            userinfo[ MAX_INFO_STRING ];
+	gentity_t       *ent;
+	char            reason[ MAX_STRING_CHARS ] = { "" };
+	int             i;
+
+	ent = &g_entities[ clientNum ];
+	client = &level.clients[ clientNum ];
+
+	ent->client = client;
+	memset( client, 0, sizeof( *client ) );
+
+	trap_GetUserinfo( clientNum, userinfo, sizeof( userinfo ) );
+
+	client->pers.localClient = qtrue;
+	G_AddressParse( "localhost", &client->pers.ip );
+
+	Q_strncpyz( client->pers.guid, "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX", sizeof( client->pers.guid ) );
+	client->pers.admin = NULL;
+	client->pers.pubkey_authenticated = qtrue;
+	client->pers.connected = CON_CONNECTING;
+
+	// read or initialize the session data
+	if ( firstTime )
+	{
+		G_InitSessionData( client, userinfo );
+	}
+
+	G_ReadSessionData( client );
+
+	// get and distribute relevant parameters
+	G_namelog_connect( client );
+	userInfoError = ClientUserinfoChanged( clientNum, qfalse );
+
+	if ( userInfoError != NULL )
+	{
+		return userInfoError;
+	}
+
+	ent->r.svFlags |= SVF_BOT;
+
+	// can happen during reconnection
+	if ( !ent->botMind )
+	{
+		G_BotSetDefaults( clientNum, team, client->sess.botSkill, client->sess.botTree );
+	}
+
+	G_LogPrintf( "ClientConnect: %i [%s] (%s) \"%s^7\" \"%c%s%c^7\" [BOT]\n",
+	             clientNum, client->pers.ip.str[0] ? client->pers.ip.str : "127.0.0.1", client->pers.guid,
+	             client->pers.netname,
+	             DECOLOR_OFF, client->pers.netname, DECOLOR_ON );
+
+	// don't do the "xxx connected" messages if they were caried over from previous level
+	if ( firstTime )
+	{
+		trap_SendServerCommand( -1, va( "print_tr %s %s", QQ( N_("$1$^7 connected\n") ),
+		                                Quote( client->pers.netname ) ) );
+	}
+
+	// count current clients and rank for scoreboard
+	CalculateRanks();
+
+	// if this is after !restart keepteams or !restart switchteams, apply said selection
+	if ( client->sess.restartTeam != TEAM_NONE )
+	{
+//		G_ChangeTeam( ent, client->sess.restartTeam );
+//		client->sess.restartTeam = TEAM_NONE;
+	}
+	else if ( team != TEAM_NONE )
+	{
+//		G_ChangeTeam( ent, team );
+		client->sess.restartTeam = team;
 	}
 
 	return NULL;

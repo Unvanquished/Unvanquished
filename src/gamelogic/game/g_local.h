@@ -32,6 +32,7 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+// g_local.h -- local definitions for game module
 #ifndef G_LOCAL_H_
 #define G_LOCAL_H_
 
@@ -67,6 +68,87 @@ typedef struct gclient_s gclient_t;
 #define DECON_OPTION_INSTANT       16
 #define DECON_OPTION_PROTECT       32
 #define DECON_OPTION_CHECK(option) ( g_markDeconstruct.integer & DECON_OPTION_##option )
+
+#define MAX_BOT_BUILDINGS 300
+
+typedef struct
+{
+	gentity_t *ent;
+	float distance;
+} botEntityAndDistance_t;
+
+typedef struct
+{
+	buildable_t type;
+	vec3_t normal;
+	vec3_t origin;
+} botBuilding_t;
+
+typedef struct
+{
+	botBuilding_t buildings[ MAX_BOT_BUILDINGS ];
+	int numBuildings;
+} botBuildLayout_t;
+
+typedef struct
+{
+	gentity_t *ent;
+	vec3_t coord;
+	qboolean inuse;
+}botTarget_t;
+
+typedef struct
+{
+	int level;
+	float aimSlowness;
+	float aimShake;
+} botSkill_t;
+
+typedef enum
+{
+  SELECTOR_NODE,
+  ACTION_NODE,
+  CONDITION_NODE
+} AINode_t;
+
+typedef struct
+{
+	char name[ MAX_QPATH ];
+	AINode_t *root;
+} AIBehaviorTree_t;
+
+#define MAX_ROUTE_NODES 5
+#define MAX_NODE_DEPTH 20
+
+typedef struct 
+{
+	//when the enemy was last seen
+	int enemyLastSeen;
+	int timeFoundEnemy;
+
+	//team the bot is on when added
+	team_t botTeam;
+
+	//targets
+	botTarget_t goal;
+
+	qboolean directPathToGoal;
+
+	botSkill_t botSkill;
+	botEntityAndDistance_t bestEnemy;
+	botEntityAndDistance_t closestDamagedBuilding;
+	botEntityAndDistance_t closestBuildings[ BA_NUM_BUILDABLES ];
+
+	AIBehaviorTree_t *behaviorTree;
+	void *currentNode; //AINode_t *
+	void *runningNodes[ MAX_NODE_DEPTH ]; //AIGenericNode_t *
+	int  numRunningNodes;
+
+  	int         futureAimTime;
+	int         futureAimTimeInterval;
+	vec3_t      futureAim;
+	usercmd_t   cmdBuffer;
+} botMemory_t;
 
 typedef struct
 {
@@ -370,6 +452,9 @@ struct gentity_s
 	int         nextRegenTime;
 
 	qboolean    pointAgainstWorld; // don't use the bbox for map collisions
+
+	qhandle_t   obstacleHandle;
+	botMemory_t *botMind;
 };
 
 typedef enum
@@ -389,6 +474,8 @@ typedef struct
 	spectatorState_t spectatorState;
 	int              spectatorClient; // for chasecam and follow mode
 	team_t           restartTeam; //for !restart keepteams and !restart switchteams
+	int              botSkill;
+	char             botTree[ MAX_QPATH ];
 	clientList_t     ignoreList;
 	int              seenWelcome; // determines if the client has seen server's welcome message
 } clientSession_t;
@@ -644,7 +731,9 @@ typedef enum {
 	VOTE_MAP,
 	VOTE_LAYOUT,
 	VOTE_NEXT_MAP,
-	VOTE_POLL
+	VOTE_POLL,
+	VOTE_BOT_KICK,
+	VOTE_BOT_SPECTATE
 } voteType_t;
 
 //
@@ -811,6 +900,8 @@ typedef struct
 	buildLog_t       buildLog[ MAX_BUILDLOG ];
 	int              buildId;
 	int              numBuildLogs;
+
+	botBuildLayout_t botBuildLayout;
 } level_locals_t;
 
 #define CMD_CHEAT        0x0001
@@ -829,6 +920,25 @@ typedef struct
 	int        cmdFlags;
 	void      ( *cmdHandler )( gentity_t *ent );
 } commands_t;
+
+//
+// g_bot.c
+//
+qboolean G_BotAdd( char *name, team_t team, int skill, const char* behavior );
+qboolean G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavior );
+void G_BotDel( int clientNum );
+void G_BotDelAllBots( void );
+void G_BotThink( gentity_t *self );
+void G_BotSpectatorThink( gentity_t *self );
+void G_BotIntermissionThink( gclient_t *client );
+void G_BotLoadBuildLayout( void );
+void G_BotListNames( gentity_t *ent );
+qboolean G_BotClearNames( void );
+int G_BotAddNames(team_t team, int arg, int last);
+void G_BotDisableArea( vec3_t origin, vec3_t mins, vec3_t maxs );
+void G_BotEnableArea( vec3_t origin, vec3_t mins, vec3_t maxs );
+void G_BotInit( void );
+void G_BotCleanup(int restart);
 
 //
 // g_cmds.c
@@ -860,6 +970,7 @@ void     G_ListCommands( gentity_t *ent );
 void     G_LoadCensors( void );
 void     G_CensorString( char *out, const char *in, int len, gentity_t *ent );
 qboolean G_CheckStopVote( team_t );
+qboolean G_RoomForClassChange( gentity_t *ent, class_t class, vec3_t newOrigin );
 
 //
 // g_physics.c
@@ -898,16 +1009,18 @@ typedef enum
   IBE_MAXERRORS
 } itemBuildError_t;
 
-gentity_t *G_CheckSpawnPoint( int spawnNum, const vec3_t origin,
-                              const vec3_t normal, buildable_t spawn,
-                              vec3_t spawnOrigin );
-
+gentity_t        *G_CheckSpawnPoint( int spawnNum, const vec3_t origin,
+                                     const vec3_t normal, buildable_t spawn,
+                                     vec3_t spawnOrigin );
+itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable, vec3_t          origin );
 buildable_t      G_IsPowered( vec3_t origin );
 qboolean         G_IsDCCBuilt( void );
 int              G_FindDCC( gentity_t *self );
 gentity_t        *G_Reactor( void );
 gentity_t        *G_Overmind( void );
 qboolean         G_FindCreep( gentity_t *self );
+gentity_t        *G_Build( gentity_t *builder, buildable_t buildable,
+                           const vec3_t origin, const vec3_t normal, const vec3_t angles, int groundEntityNum );
 int              G_RGSPredictEfficiency( vec3_t origin );
 void             G_BuildableThink( gentity_t *ent, int msec );
 qboolean         G_BuildableRange( vec3_t origin, float r, buildable_t buildable );
@@ -917,7 +1030,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 qboolean         G_BuildIfValid( gentity_t *ent, buildable_t buildable );
 void             G_SetBuildableAnim( gentity_t *ent, buildableAnimNumber_t anim, qboolean force );
 void             G_SetIdleBuildableAnim( gentity_t *ent, buildableAnimNumber_t anim );
-void             G_SpawnBuildable( gentity_t *ent, buildable_t buildable );
+void             G_SpawnBuildable(gentity_t *ent, buildable_t buildable);
 void             FinishSpawningBuildable( gentity_t *ent );
 void             G_LayoutSave( const char *name );
 int              G_LayoutList( const char *map, char *list, int len );
@@ -1105,6 +1218,7 @@ void       LogExit( const char *string );
 // g_client.c
 //
 char *ClientConnect( int clientNum, qboolean firstTime );
+char *ClientBotConnect( int clientNum, qboolean firstTime, team_t team );
 char *ClientUserinfoChanged( int clientNum, qboolean forceName );
 void ClientDisconnect( int clientNum );
 void ClientBegin( int clientNum );
@@ -1223,6 +1337,8 @@ extern  vmCvar_t g_drawVotesAfter;
 extern  vmCvar_t g_drawVoteReasonRequired;
 extern  vmCvar_t g_admitDefeatVotesPercent;
 extern  vmCvar_t g_pollVotesPercent;
+extern  vmCvar_t g_botKickVotesAllowed;
+extern  vmCvar_t g_botKickVotesAllowedThisMap;
 extern  vmCvar_t g_teamForceBalance;
 extern  vmCvar_t g_smoothClients;
 extern  vmCvar_t pmove_fixed;
@@ -1311,6 +1427,45 @@ extern  vmCvar_t g_combatCooldown;
 
 extern  vmCvar_t g_debugEntities;
 
+// <bot stuff>
+// bot buy cvars
+extern vmCvar_t g_bot_buy;
+extern vmCvar_t g_bot_rifle;
+extern vmCvar_t g_bot_painsaw;
+extern vmCvar_t g_bot_shotgun;
+extern vmCvar_t g_bot_lasgun;
+extern vmCvar_t g_bot_mdriver;
+extern vmCvar_t g_bot_chaingun;
+extern vmCvar_t g_bot_prifle;
+extern vmCvar_t g_bot_flamer;
+extern vmCvar_t g_bot_lcannon;
+// bot evolution cvars
+extern vmCvar_t g_bot_evolve;
+extern vmCvar_t g_bot_level1;
+extern vmCvar_t g_bot_level1upg;
+extern vmCvar_t g_bot_level2;
+extern vmCvar_t g_bot_level2upg;
+extern vmCvar_t g_bot_level3;
+extern vmCvar_t g_bot_level3upg;
+extern vmCvar_t g_bot_level4;
+//misc bot cvars
+extern vmCvar_t g_bot_attackStruct;
+extern vmCvar_t g_bot_roam;
+extern vmCvar_t g_bot_rush;
+extern vmCvar_t g_bot_build;
+extern vmCvar_t g_bot_repair;
+extern vmCvar_t g_bot_retreat;
+extern vmCvar_t g_bot_fov;
+extern vmCvar_t g_bot_chasetime;
+extern vmCvar_t g_bot_reactiontime;
+//extern vmCvar_t g_bot_camp;
+extern vmCvar_t g_bot_infinite_funds;
+extern vmCvar_t g_bot_numInGroup;
+extern vmCvar_t g_bot_persistent;
+extern vmCvar_t g_bot_buildLayout;
+extern vmCvar_t g_bot_debug;
+//</bot stuff>
+
 void             trap_Print( const char *string );
 void             trap_Error( const char *string ) NORETURN;
 int              trap_Milliseconds( void );
@@ -1386,11 +1541,23 @@ messageStatus_t  trap_MessageStatus( int clientNum );
 int              trap_RSA_GenerateMessage( const char *public_key, const char *cleartext, char *encrypted );
 
 void             trap_QuoteString( const char *str, char *buf, int size );
+
 void             trap_GenFingerprint( const char *pubkey, int size, char *buffer, int bufsize );
 void             trap_GetPlayerPubkey( int clientNum, char *pubkey, int size );
 
 void             trap_GetTimeString( char *buffer, int size, const char *format, const qtime_t *tm );
 
+qboolean         trap_BotSetupNav( const void *botClass /* botClass_t* */, qhandle_t *navHandle );
+void             trap_BotShutdownNav( void );
+void             trap_BotSetNavMesh( int botClientNum, qhandle_t navHandle );
+unsigned int     trap_BotFindRoute( int botClientNum, const void *target /*botRotueTarget_t*/ );
+qboolean         trap_BotUpdatePath( int botClientNum, const void *target /*botRouteTarget_t*/, vec3_t dir, qboolean *directPathToGoal );
+qboolean         trap_BotNavTrace( int botClientNum, void *botTrace /*botTrace_t**/, const vec3_t start, const vec3_t end );
+void             trap_BotFindRandomPoint( int botClientNum, vec3_t point );
+void             trap_BotEnableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
+void             trap_BotDisableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
+void             trap_BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *handle );
+void             trap_BotRemoveObstacle( qhandle_t handle );
+void             trap_BotUpdateObstacles( void );
 //==================================================================
 #endif /* G_LOCAL_H_ */
-

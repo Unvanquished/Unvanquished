@@ -546,13 +546,16 @@ void RunThreadsOn(int workcnt, qboolean showpacifier, void (*func) (int))
 		for(i = 0; i < numthreads; i++)
 		{
 			/* Default pthread attributes: joinable & non-realtime scheduling */
-			if(pthread_create(&work_threads[i], NULL, (void *(*)(void *))func, (void *)(long)i) != 0) // long should be intptr_t
-				Error("pthread_create failed");
+			int err = pthread_create(&work_threads[i], NULL, (void *(*)(void *))func, (void *)(long)i); // long should be intptr_t
+			if(err)
+				Error("pthread_create failed (%s)", strerror(err));
 		}
 		for(i = 0; i < numthreads; i++)
 		{
-			if(pthread_join(work_threads[i], (void **)&status) != 0)
-				Error("pthread_join failed");
+			int err = pthread_join(work_threads[i], (void **)&status);
+			// ESRCH == no such thread - Shouldn't Happen - FIXME
+			if(err && err != ESRCH)
+				Error("pthread_join failed (%s)", strerror(err));
 		}
 		pthread_mutexattr_destroy(&mattrib);
 		threaded = qfalse;

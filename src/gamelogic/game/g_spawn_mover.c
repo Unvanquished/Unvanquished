@@ -539,11 +539,28 @@ void SetMoverState( gentity_t *ent, moverState_t moverState, int time )
 		case MOVER_POS1:
 			VectorCopy( ent->restingPosition, ent->s.pos.trBase );
 			ent->s.pos.trType = TR_STATIONARY;
+
+			if ( !Q_stricmp( ent->classname, "func_door" ) && ( ent->names[0] || ent->takedamage  ) )
+			{
+				vec3_t mins, maxs;
+				VectorAdd( ent->restingPosition, ent->r.mins, mins );
+				VectorAdd( ent->restingPosition, ent->r.maxs, maxs );
+				trap_BotAddObstacle( mins, maxs, &ent->obstacleHandle );
+			}
 			break;
 
 		case MOVER_POS2:
 			VectorCopy( ent->activatedPosition, ent->s.pos.trBase );
 			ent->s.pos.trType = TR_STATIONARY;
+
+			if ( !Q_stricmp( ent->classname, "func_door" ) && ( ent->names[0] || ent->takedamage ) )
+			{
+				if ( ent->obstacleHandle )
+				{
+					trap_BotRemoveObstacle( ent->obstacleHandle );
+					ent->obstacleHandle = 0;
+				}
+			}
 			break;
 
 		case MOVER_1TO2:

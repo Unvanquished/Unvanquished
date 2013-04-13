@@ -1989,6 +1989,48 @@ void R_DebugText( const vec3_t org, float r, float g, float b, const char *text,
 #endif
 }
 
+void DebugDrawDepthMask( qboolean state )
+{
+	glDepthMask( state ? GL_TRUE : GL_FALSE );
+}
+
+void DebugDrawBegin( debugDrawMode_t mode, float size )
+{
+	switch(mode) {
+		case D_DRAW_POINTS:
+			glPointSize( size );
+			glBegin( GL_POINTS );
+			break;
+		case D_DRAW_LINES:
+			glLineWidth( size );
+			glBegin( GL_LINES );
+			break;
+		case D_DRAW_TRIS:
+			glBegin( GL_TRIANGLES );
+			break;
+		case D_DRAW_QUADS:
+			glBegin( GL_QUADS );
+			break;
+	}
+}
+
+void DebugDrawVertex( const vec3_t pos, unsigned int color, const vec2_t uv ) 
+{
+	glColor4ubv( (GLubyte*)&color );
+	if( uv ) 
+	{
+		glTexCoord2fv( uv );
+	}
+	glVertex3fv( pos );
+}
+
+void DebugDrawEnd( void ) 
+{
+	glEnd();
+	glLineWidth( 1.0f );
+	glPointSize( 1.0f );
+}
+
 /*
 ====================
 R_DebugGraphics
@@ -1996,6 +2038,8 @@ R_DebugGraphics
 Visualization aid for movement clipping debugging
 ====================
 */
+
+static BotDebugInterface_t bi = { DebugDrawBegin, DebugDrawDepthMask, DebugDrawVertex, DebugDrawEnd };
 void R_DebugGraphics( void )
 {
 	if ( !r_debugSurface->integer )
@@ -2011,7 +2055,9 @@ void R_DebugGraphics( void )
 	GL_Bind( tr.whiteImage );
 	GL_Cull( CT_FRONT_SIDED );
 	ri.CM_DrawDebugSurface( R_DebugPolygon );
-	
+
+	GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
+	ri.Bot_DrawDebugMesh( &bi );
 	R_FogOn();
 }
 

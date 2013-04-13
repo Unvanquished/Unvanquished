@@ -1552,6 +1552,9 @@ int             ConvertBSPToMap(char *bspName);
 /* convert_ase.c */
 int             ConvertBSPToASE(char *bspName);
 
+/* nav.cpp */
+int             NavMain(int argc, char **argv);
+
 /**
 Tr3B: convertType_t is used for .map to .map conversions
 */
@@ -1985,11 +1988,11 @@ Q_EXTERN game_t				games[]
 #else
 							=
 							{
+#include "game_unvanquished.h"
+                                ,
 #include "game_openwolf.h"
 								,
 #include "game_tremulous.h"
-                                ,
-#include "game_unvanquished.h"
                                 ,
 								{ NULL }	/* null game */
 							};

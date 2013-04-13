@@ -906,7 +906,6 @@ void Cmd_Team_f( gentity_t *ent )
 			                        va( "print_tr %s %d", QQ( N_("You cannot join a team for another $1$s.\n") ), remaining ) );
 			return;
 		}
-
 	}
 
 	// stop team join spam
@@ -1569,6 +1568,7 @@ static const struct {
 		VOTE_AFTER,  // not within the first N minutes
 		VOTE_REMAIN, // within N/2 minutes before SD
 		VOTE_NO_AUTO,// don't automatically vote 'yes'
+		VOTE_ENABLE, // for special-purpose enable flags
 	}               special;
 	const vmCvar_t *specialCvar;
 	const vmCvar_t *reasonFlag; // where a reason requirement is configurable (reasonNeeded must be qtrue)
@@ -1588,6 +1588,8 @@ static const struct {
 	{ "layout",       qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
 	{ "nextmap",      qfalse, V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_nextMapVotesPercent },
 	{ "poll",         qfalse, V_ANY,    T_NONE,    qfalse,  qtrue,  &g_pollVotesPercent,        VOTE_NO_AUTO },
+	{ "kickbots",     qtrue,  V_PUBLIC, T_NONE,    qfalse,  qfalse, &g_kickVotesPercent,        VOTE_ENABLE, &g_botKickVotesAllowedThisMap },
+	{ "spectatebots", qfalse, V_PUBLIC, T_NONE,    qfalse,  qfalse, &g_kickVotesPercent,        VOTE_ENABLE, &g_botKickVotesAllowedThisMap },
 	{ NULL }
 };
 
@@ -1618,6 +1620,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 	int    id = -1;
 	int    voteId;
 	team_t team;
+	int    i;
 
 	trap_Argv( 0, cmd, sizeof( cmd ) );
 	team = ( !Q_stricmp( cmd, "callteamvote" ) ) ? ent->client->pers.teamSelection : TEAM_NONE;
@@ -1748,6 +1751,15 @@ void Cmd_CallVote_f( gentity_t *ent )
 
 		break;
 
+	case VOTE_ENABLE:
+		if ( !voteInfo[voteId].specialCvar->integer )
+		{
+			trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("'$1$' votes have been disabled\n") ), voteInfo[voteId].name ) );
+			return;
+		}
+
+		break;
+
 	default:;
 	}
 
@@ -1789,6 +1801,13 @@ void Cmd_CallVote_f( gentity_t *ent )
 		G_DecolorString( level.clients[ clientNum ].pers.netname, name, sizeof( name ) );
 		id = level.clients[ clientNum ].pers.namelog->id;
 
+		if ( g_entities[clientNum].r.svFlags & SVF_BOT )
+		{
+			trap_SendServerCommand( ent - g_entities,
+			                        va( "print_tr %s %s", QQ( N_("$1$: player is a bot\n") ), cmd ) );
+			return;
+		}
+
 		if ( voteInfo[voteId].adminImmune && G_admin_permission( g_entities + clientNum, ADMF_IMMUNITY ) )
 		{
 			trap_SendServerCommand( ent - g_entities,
@@ -1817,7 +1836,6 @@ void Cmd_CallVote_f( gentity_t *ent )
 			                        va( "print_tr %s %s", QQ( N_("$1$: player is not on your team\n") ), cmd ) );
 			return;
 		}
-
 	}
 
 	if ( voteInfo[voteId].reasonNeeded && !reason[ 0 ] &&
@@ -1845,6 +1863,36 @@ void Cmd_CallVote_f( gentity_t *ent )
 		Com_sprintf( level.voteDisplayString[ team ],
 		             sizeof( level.voteDisplayString[ team ] ),
 		             N_("Move player '%s' to spectators"), name );
+		break;
+
+	case VOTE_BOT_KICK:
+	case VOTE_BOT_SPECTATE:
+		for ( i = 0; i < MAX_CLIENTS; ++i )
+		{
+			if ( g_entities[i].r.svFlags & SVF_BOT &&
+			     g_entities[i].client->pers.teamSelection != TEAM_NONE )
+			{
+				break;
+			}
+		}
+
+		if ( i == MAX_CLIENTS )
+		{
+			trap_SendServerCommand( ent - g_entities,
+			                        va( "print_tr %s %s", QQ( N_("$1$: there are no active bots\n") ), cmd ) );
+			return;
+		}
+
+		if ( voteId == VOTE_BOT_KICK )
+		{
+			Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ), "bot del all" );
+			Com_sprintf( level.voteDisplayString[ team ], sizeof( level.voteDisplayString[ team ] ), N_("Remove all bots") );
+		}
+		else
+		{
+			Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ), "bot spec all" );
+			Com_sprintf( level.voteDisplayString[ team ], sizeof( level.voteDisplayString[ team ] ), N_("Move all bots to spectators") );
+		}
 		break;
 
 	case VOTE_MUTE:
@@ -2191,7 +2239,7 @@ void Cmd_SetViewpos_f( gentity_t *ent )
 
 #define AS_OVER_RT3 (( ALIENSENSE_RANGE * 0.5f ) / M_ROOT3 )
 
-static qboolean G_RoomForClassChange( gentity_t *ent, class_t class,
+qboolean G_RoomForClassChange( gentity_t *ent, class_t class,
                                       vec3_t newOrigin )
 {
 	vec3_t  fromMins, fromMaxs;

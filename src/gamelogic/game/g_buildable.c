@@ -157,8 +157,20 @@ static void G_PuntBlocker( gentity_t *self, gentity_t *blocker )
 	nudge[ 1 ] = crandom() * 100.0f;
 	nudge[ 2 ] = 75.0f;
 
-	VectorAdd( blocker->client->ps.velocity, nudge, blocker->client->ps.velocity );
-	trap_SendServerCommand( blocker - g_entities, "cp \"Don't spawn block!\"" );
+	if ( blocker->r.svFlags & SVF_BOT )
+	{
+	        // nudge the bot (okay, we lose the fractional part)
+		blocker->client->pers.cmd.forwardmove = nudge[0];
+		blocker->client->pers.cmd.rightmove = nudge[1];
+		blocker->client->pers.cmd.upmove = nudge[2];
+		// bots don't double-tap, so use as a nudge flag
+		blocker->client->pers.cmd.doubleTap = 1;
+	}
+	else
+	{
+		VectorAdd( blocker->client->ps.velocity, nudge, blocker->client->ps.velocity );
+		trap_SendServerCommand( blocker - g_entities, "cp \"Don't spawn block!\"" );
+        }
 }
 
 /*
@@ -3487,7 +3499,7 @@ Determine if enough build points can be released for the buildable
 and list the buildables that must be destroyed if this is the case
 ===============
 */
-static itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable,
+itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable,
     vec3_t          origin )
 {
 	int              i;
@@ -4026,8 +4038,8 @@ G_Build
 Spawns a buildable
 ================
 */
-static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
-                           const vec3_t origin, const vec3_t normal, const vec3_t angles, int groundEntNum )
+gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
+                    const vec3_t origin, const vec3_t normal, const vec3_t angles, int groundEntNum )
 {
 	gentity_t  *built;
 	char       readable[ MAX_STRING_CHARS ];
@@ -4131,6 +4143,15 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 			built->die = AGeneric_Die;
 			built->think = AOvermind_Think;
 			built->pain = AGeneric_Pain;
+			{
+				vec3_t mins;
+				vec3_t maxs;
+				VectorCopy( built->r.mins, mins );
+				VectorCopy( built->r.maxs, maxs );
+				VectorAdd( mins, origin, mins );
+				VectorAdd( maxs, origin, maxs );
+				trap_BotAddObstacle( mins, maxs, &built->obstacleHandle );
+			}
 			break;
 
 		case BA_H_SPAWN:
@@ -4146,17 +4167,44 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 		case BA_H_TESLAGEN:
 			built->die = HSpawn_Die;
 			built->think = HTeslaGen_Think;
+						{
+				vec3_t mins;
+				vec3_t maxs;
+				VectorCopy( built->r.mins, mins );
+				VectorCopy( built->r.maxs, maxs );
+				VectorAdd( mins, origin, mins );
+				VectorAdd( maxs, origin, maxs );
+				trap_BotAddObstacle( mins, maxs, &built->obstacleHandle );
+			}
 			break;
 
 		case BA_H_ARMOURY:
 			built->think = HArmoury_Think;
 			built->die = HSpawn_Die;
 			built->use = HArmoury_Activate;
+						{
+				vec3_t mins;
+				vec3_t maxs;
+				VectorCopy( built->r.mins, mins );
+				VectorCopy( built->r.maxs, maxs );
+				VectorAdd( mins, origin, mins );
+				VectorAdd( maxs, origin, maxs );
+				trap_BotAddObstacle( mins, maxs, &built->obstacleHandle );
+			}
 			break;
 
 		case BA_H_DCC:
 			built->think = HDCC_Think;
 			built->die = HSpawn_Die;
+						{
+				vec3_t mins;
+				vec3_t maxs;
+				VectorCopy( built->r.mins, mins );
+				VectorCopy( built->r.maxs, maxs );
+				VectorAdd( mins, origin, mins );
+				VectorAdd( maxs, origin, maxs );
+				trap_BotAddObstacle( mins, maxs, &built->obstacleHandle );
+			}
 			break;
 
 		case BA_H_MEDISTAT:
@@ -4174,6 +4222,15 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 			built->die = HSpawn_Die;
 			built->use = HRepeater_Use;
 			built->powered = built->active = qtrue;
+			{
+				vec3_t mins;
+				vec3_t maxs;
+				VectorCopy( built->r.mins, mins );
+				VectorCopy( built->r.maxs, maxs );
+				VectorAdd( mins, origin, mins );
+				VectorAdd( maxs, origin, maxs );
+				trap_BotAddObstacle( mins, maxs, &built->obstacleHandle );
+			}
 			break;
 
 		case BA_H_REPEATER:

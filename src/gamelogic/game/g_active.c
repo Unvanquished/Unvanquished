@@ -303,7 +303,34 @@ static void ClientShove( gentity_t *ent, gentity_t *victim )
 		victim->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
 	}
 }
+void PushBot(gentity_t * ent, gentity_t * other)
+{
+	vec3_t dir, ang, f, r;
+	float oldspeed;
 
+	oldspeed = VectorLength(other->client->ps.velocity);
+	if(oldspeed < 200)
+	{
+		oldspeed = 200;
+	}
+
+	VectorSubtract(other->r.currentOrigin, ent->r.currentOrigin, dir);
+	VectorNormalize(dir);
+	vectoangles(dir, ang);
+	AngleVectors(ang, f, r, NULL);
+	f[2] = 0;
+	r[2] = 0;
+
+	VectorMA(other->client->ps.velocity, 200, f, other->client->ps.velocity);
+	VectorMA(other->client->ps.velocity, 100 * ((level.time + (ent->s.number * 1000)) % 4000 < 2000 ? 1.0 : -1.0), r,
+	other->client->ps.velocity);
+
+	if(VectorLengthSquared(other->client->ps.velocity) > oldspeed * oldspeed)
+	{
+		VectorNormalize(other->client->ps.velocity);
+		VectorScale(other->client->ps.velocity, oldspeed, other->client->ps.velocity);
+	}
+}
 /*
 ==============
 ClientImpacts
@@ -342,6 +369,18 @@ void ClientImpacts( gentity_t *ent, pmove_t *pm )
 		if ( ent->client && other->client )
 		{
 			ClientShove( ent, other );
+
+			//bot should get pushed out the way
+			if((ent->client) && (other->r.svFlags & SVF_BOT) && ent->client->ps.stats[STAT_TEAM] == other->client->ps.stats[STAT_TEAM])
+			{
+				PushBot(ent, other);
+			}
+
+			// if we are standing on their head, then we should be pushed also
+			if((ent->r.svFlags & SVF_BOT) && ent->s.groundEntityNum == other->s.number && other->client && ent->client->ps.stats[STAT_TEAM] == other->client->ps.stats[STAT_TEAM])
+			{
+				PushBot(other, ent);
+			}
 		}
 
 		// touch triggers
@@ -470,6 +509,12 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 	          !usercmdButtonPressed( client->oldbuttons, BUTTON_ATTACK );
 	attack3 = usercmdButtonPressed( client->buttons, BUTTON_USE_HOLDABLE ) &&
 	          !usercmdButtonPressed( client->oldbuttons, BUTTON_USE_HOLDABLE );
+
+	//if bot
+	if( ent->r.svFlags & SVF_BOT ) {
+		G_BotSpectatorThink( ent );
+		return;
+	}
 
 	// We are in following mode only if we are following a non-spectating client
 	following = client->sess.spectatorState == SPECTATOR_FOLLOW;
@@ -720,6 +765,9 @@ void ClientTimerActions( gentity_t *ent, int msec )
 	client->time100 += msec;
 	client->time1000 += msec;
 	client->time10000 += msec;
+
+	if( ent->r.svFlags & SVF_BOT )
+		G_BotThink( ent );
 
 	while ( client->time100 >= 100 )
 	{
@@ -1751,7 +1799,10 @@ void ClientThink_real( gentity_t *ent )
 	//
 	if ( level.intermissiontime )
 	{
-		ClientIntermissionThink( client );
+		if( ent->r.svFlags & SVF_BOT )
+			G_BotIntermissionThink( client );
+		else
+			ClientIntermissionThink( client );
 		return;
 	}
 
@@ -2214,7 +2265,7 @@ void ClientThink( int clientNum )
 	// mark the time we got info, so we can display the phone jack if we don't get any for a while
 	ent->client->lastCmdTime = level.time;
 
-	if ( !g_synchronousClients.integer )
+	if(!( ent->r.svFlags & SVF_BOT ) && !g_synchronousClients.integer )
 	{
 		ClientThink_real( ent );
 	}
@@ -2222,7 +2273,7 @@ void ClientThink( int clientNum )
 
 void G_RunClient( gentity_t *ent )
 {
-	if ( !g_synchronousClients.integer )
+	if(!( ent->r.svFlags & SVF_BOT ) && !g_synchronousClients.integer )
 	{
 		return;
 	}
@@ -2308,7 +2359,7 @@ void ClientEndFrame( gentity_t *ent )
 	P_DamageFeedback( ent );
 
 	// add the EF_CONNECTION flag if we haven't gotten commands recently
-	if ( level.time - ent->client->lastCmdTime > 1000 )
+	if ( level.time - ent->client->lastCmdTime > 1000 && !( ent->r.svFlags & SVF_BOT ) )
 	{
 		ent->client->ps.eFlags |= EF_CONNECTION;
 	}

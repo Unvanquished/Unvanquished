@@ -1,0 +1,19 @@
+selector priority
+{
+	condition alertedToEnemy
+	{
+		action fight
+	}
+	
+	condition botTeam == TEAM_HUMANS
+	{
+		action equip
+	}
+	
+	condition botTeam == TEAM_ALIENS
+	{
+		action evolve
+	}
+	
+	action rush
+}

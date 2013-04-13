@@ -572,3 +572,64 @@ void trap_GetTimeString( char *buffer, int size, const char *format, const qtime
 {
 	syscall( G_GETTIMESTRING, buffer, size, format, tm );
 }
+
+qboolean trap_BotSetupNav( const void *botClass /* botClass_t* */, qhandle_t *navHandle )
+{
+	return syscall( BOT_NAV_SETUP, botClass, navHandle );
+}
+
+void trap_BotShutdownNav( void )
+{
+	syscall( BOT_NAV_SHUTDOWN );
+}
+
+void trap_BotSetNavMesh( int botClientNum, qhandle_t navHandle )
+{
+	syscall( BOT_SET_NAVMESH, botClientNum, navHandle );
+}
+
+unsigned int trap_BotFindRoute( int botClientNum, const void *target /*botRouteTarget_t*/ )
+{
+	return syscall( BOT_FIND_ROUTE, botClientNum, target );
+}
+
+qboolean trap_BotUpdatePath( int botClientNum, const void *target /*botRouteTarget_t*/, vec3_t dir, qboolean *directPathToGoal )
+{
+	return syscall( BOT_UPDATE_PATH, botClientNum, target, dir, directPathToGoal );
+}
+
+qboolean trap_BotNavTrace( int botClientNum, void *botTrace /*botTrace_t**/, const vec3_t start, const vec3_t end )
+{
+	return syscall( BOT_NAV_RAYCAST, botClientNum, botTrace, start, end );
+}
+
+void trap_BotFindRandomPoint( int botClientNum, vec3_t point )
+{
+	syscall( BOT_NAV_RANDOMPOINT, botClientNum, point );
+}
+
+void trap_BotEnableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs )
+{
+	syscall( BOT_ENABLE_AREA, origin, mins, maxs );
+}
+
+void trap_BotDisableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs )
+{
+	syscall( BOT_DISABLE_AREA, origin, mins, maxs );
+}
+
+void trap_BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *handle )
+{
+	syscall( BOT_ADD_OBSTACLE, mins, maxs, handle );
+}
+
+void trap_BotRemoveObstacle( qhandle_t handle )
+{
+	syscall( BOT_REMOVE_OBSTACLE, handle );
+}
+
+void trap_BotUpdateObstacles( void )
+{
+	syscall( BOT_UPDATE_OBSTACLES );
+}
+

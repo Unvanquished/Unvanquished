@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "../qcommon/vm_traps.h"
 #include "../qcommon/vm_traps.h"
 
-#define GAME_API_VERSION          9
+#define GAME_API_VERSION          10
 
 #define SVF_NOCLIENT              0x00000001
 #define SVF_CLIENTMASK            0x00000002
@@ -166,7 +166,19 @@ typedef enum gameImport_s
   G_QUOTESTRING,
   G_GENFINGERPRINT,
   G_GETPLAYERPUBKEY,
-  G_GETTIMESTRING
+  G_GETTIMESTRING,
+  BOT_NAV_SETUP,
+  BOT_NAV_SHUTDOWN,
+  BOT_SET_NAVMESH,
+  BOT_FIND_ROUTE,
+  BOT_UPDATE_PATH,
+  BOT_NAV_RAYCAST,
+  BOT_NAV_RANDOMPOINT,
+  BOT_ENABLE_AREA,
+  BOT_DISABLE_AREA,
+  BOT_ADD_OBSTACLE,
+  BOT_REMOVE_OBSTACLE,
+  BOT_UPDATE_OBSTACLES
 } gameImport_t;
 
 // engine-to-game-module calls
