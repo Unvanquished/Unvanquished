@@ -753,7 +753,7 @@ void G_AddConfidence( team_t team, confidence_t type, confidence_reason_t reason
                       confidence_qualifier_t qualifier, float amount, gentity_t *source )
 {
 	confidenceLog_t **logs, *log, *newlog;
-	gclient_t *client;
+	gclient_t *client = NULL;
 	gentity_t *event;
 
 	switch ( team )
@@ -798,7 +798,10 @@ void G_AddConfidence( team_t team, confidence_t type, confidence_reason_t reason
 		log->next = newlog;
 	}
 
-	client = source->client;
+	if ( source )
+	{
+		client = source->client;
+	}
 
 	// If source is a client who is still on the team, notify
 	if ( client && client->pers.teamSelection == team )

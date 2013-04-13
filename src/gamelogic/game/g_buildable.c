@@ -3102,6 +3102,8 @@ void G_BuildableThink( gentity_t *ent, int msec )
 	int maxHealth = BG_Buildable( ent->s.modelindex )->health;
 	int regenRate = BG_Buildable( ent->s.modelindex )->regenRate;
 	int buildTime = BG_Buildable( ent->s.modelindex )->buildTime;
+	int   reason, qualifier;
+	float reward, distanceToBase;
 
 	//toggle spawned flag for buildables
 	if ( !ent->spawned && ent->health > 0 && !level.pausedTime )
@@ -3114,6 +3116,61 @@ void G_BuildableThink( gentity_t *ent, int msec )
 			if ( ent->s.modelindex == BA_A_OVERMIND )
 			{
 				G_TeamCommand( TEAM_ALIENS, "cp \"The Overmind has awakened!\"" );
+			}
+
+			// Award confidence
+			if ( !ent->replacement )
+			{
+				switch ( ent->s.modelindex )
+				{
+					case BA_A_OVERMIND:
+					case BA_H_REACTOR:
+						reason = CONF_REAS_BUILD_CRUCIAL;
+						break;
+
+					case BA_A_ACIDTUBE:
+					case BA_A_TRAPPER:
+					case BA_A_HIVE:
+					case BA_H_MGTURRET:
+					case BA_H_TESLAGEN:
+						reason = CONF_REAS_BUILD_AGGRESSIVE;
+						break;
+
+					default:
+						reason = CONF_REAS_BUILD_SUPPORT;
+				}
+
+				distanceToBase = G_DistanceToBase( ent, qtrue );
+				reward = ( float )BG_Buildable( ent->s.modelindex )->value;
+
+				// Always give some confidence for building a crucial structure
+				// TODO: Make sure confidence isn't earned by teamkilling buildings
+				if ( reason == CONF_REAS_BUILD_CRUCIAL )
+				{
+					reward *= 0.25f;
+					qualifier = CONF_QUAL_NONE;
+
+					G_AddConfidence( BG_Buildable( ent->s.modelindex )->team, CONFIDENCE_BUILDING, reason,
+									 qualifier, reward, &g_entities[ ent->builtBy->slot ] );
+				}
+				// For non-crucial structures, give confidence if built outside the own base and a bonus
+				// if built close to the enemy base
+				else if ( distanceToBase > 1000.0f )
+				{
+					if ( G_DistanceToBase( ent, qfalse ) < 1500.0f )
+					{
+						//reward *= 1.0f;
+						qualifier = CONF_QUAL_CLOSE_TO_ENEMY_BASE;
+					}
+					else
+					{
+						reward *= 0.75f;
+						qualifier = CONF_QUAL_OUTSIDE_OWN_BASE;
+					}
+
+					G_AddConfidence( BG_Buildable( ent->s.modelindex )->team, CONFIDENCE_BUILDING, reason,
+									qualifier, reward, &g_entities[ ent->builtBy->slot ] );
+				}
 			}
 		}
 	}
@@ -3449,9 +3506,10 @@ void G_ClearDeconMarks( void )
 G_FreeMarkedBuildables
 
 Free up build points for a team by deconstructing marked buildables
+Returns the number of buildables removed.
 ===============
 */
-void G_FreeMarkedBuildables( gentity_t *deconner, char *readable, int rsize,
+int G_FreeMarkedBuildables( gentity_t *deconner, char *readable, int rsize,
                              char *nums, int nsize )
 {
 	int       i;
@@ -3462,6 +3520,7 @@ void G_FreeMarkedBuildables( gentity_t *deconner, char *readable, int rsize,
 	int       removalCounts[ BA_NUM_BUILDABLES ] = { 0 };
 	int       refund;
 	const buildableAttributes_t *attr;
+	int       numRemoved = 0;
 
 	if ( readable && rsize )
 	{
@@ -3475,7 +3534,7 @@ void G_FreeMarkedBuildables( gentity_t *deconner, char *readable, int rsize,
 
 	if ( DECON_MARK_CHECK( INSTANT ) && !DECON_OPTION_CHECK( PROTECT ) )
 	{
-		return; // Not enabled, can't deconstruct anything
+		return 0; // Not enabled, can't deconstruct anything
 	}
 
 	for ( i = 0; i < level.numBuildablesForRemoval; i++ )
@@ -3502,11 +3561,13 @@ void G_FreeMarkedBuildables( gentity_t *deconner, char *readable, int rsize,
 		}
 
 		G_FreeEntity( ent );
+
+		numRemoved++;
 	}
 
 	if ( !readable )
 	{
-		return;
+		return numRemoved;
 	}
 
 	for ( i = 0; i < BA_NUM_BUILDABLES; i++ )
@@ -3536,6 +3597,8 @@ void G_FreeMarkedBuildables( gentity_t *deconner, char *readable, int rsize,
 			listItems++;
 		}
 	}
+
+	return numRemoved;
 }
 
 /*
@@ -4102,12 +4165,13 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 		log = NULL;
 	}
 
+	built = G_NewEntity();
+
 	// Free existing buildables
-	G_FreeMarkedBuildables( builder, readable, sizeof( readable ),
-	                        buildnums, sizeof( buildnums ) );
+	built->replacement = ( G_FreeMarkedBuildables( builder, readable, sizeof( readable ),
+	                                               buildnums, sizeof( buildnums ) ) > 0 );
 
 	// Spawn the buildable
-	built = G_NewEntity();
 	built->s.eType = ET_BUILDABLE;
 	built->r.svFlags = SVF_CLIENTS_IN_RANGE;
 	built->r.clientRadius = MAX( HELMET_RANGE, ALIENSENSE_RANGE );
