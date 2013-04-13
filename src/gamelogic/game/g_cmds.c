@@ -1592,7 +1592,7 @@ static const struct {
 	{ "map",          qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qmaybe, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
 	{ "layout",       qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qno,    &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
 	{ "nextmap",      qfalse, V_PUBLIC, T_OTHER,   qfalse,  qmaybe, &g_nextMapVotesPercent },
-	{ "poll",         qfalse, V_ANY,    T_NONE,    qfalse,  qtrue,  &g_pollVotesPercent,        VOTE_NO_AUTO },
+	{ "poll",         qfalse, V_ANY,    T_NONE,    qfalse,  qyes,   &g_pollVotesPercent,        VOTE_NO_AUTO },
 	{ NULL }
 	// note: map votes use the reason, if given, as the layout name
 };
