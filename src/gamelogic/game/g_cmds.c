@@ -142,14 +142,13 @@ int G_ClientNumberFromString( const char *s, char *err, int len )
 	int       i, found = 0, m = -1;
 	char      s2[ MAX_NAME_LENGTH ];
 	char      n2[ MAX_NAME_LENGTH ];
-	char      *p = err;
 	int       l, l2 = len;
 
 	if ( !s[ 0 ] )
 	{
-		if ( p )
+		if ( err )
 		{
-			Q_strncpyz( p, N_("no player name or slot # provided\n"), len );
+			Q_strncpyz( err, N_("no player name or slot # provided\n"), len );
 		}
 
 		return -1;
@@ -164,9 +163,9 @@ int G_ClientNumberFromString( const char *s, char *err, int len )
 
 		if ( i < 0 || i >= level.maxclients )
 		{
-			if ( p )
+			if ( err )
 			{
-				Q_strncpyz( p, N_("no player connected in that slot #\n"), len );
+				Q_strncpyz( err, N_("no player connected in that slot #\n"), len );
 			}
 			return -1;
 		}
@@ -175,9 +174,9 @@ int G_ClientNumberFromString( const char *s, char *err, int len )
 
 		if ( cl->pers.connected == CON_DISCONNECTED )
 		{
-			if ( p )
+			if ( err )
 			{
-				Q_strncpyz( p, N_("no player connected in that slot #\n"), len );
+				Q_strncpyz( err, N_("no player connected in that slot #\n"), len );
 			}
 
 			return -1;
@@ -190,20 +189,20 @@ int G_ClientNumberFromString( const char *s, char *err, int len )
 
 	if ( !s2[ 0 ] )
 	{
-		if ( p )
+		if ( err )
 		{
-			Q_strncpyz( p, N_("no player name provided\n"), len );
+			Q_strncpyz( err, N_("no player name provided\n"), len );
 		}
 
 		return -1;
 	}
 
-	if ( p )
+	if ( err )
 	{
-		Q_strncpyz( p, N_("more than one player name matches. "
+		Q_strncpyz( err, N_("more than one player name matches. "
 		            "be more specific or use the slot #:\n"), l2 );
-		l = strlen( p );
-		p += l;
+		l = strlen( err );
+		err += l;
 		l2 -= l;
 	}
 
@@ -224,10 +223,10 @@ int G_ClientNumberFromString( const char *s, char *err, int len )
 
 		if ( strstr( n2, s2 ) )
 		{
-			if ( p )
+			if ( err )
 			{
-				l = Q_snprintf( p, l2, "%-2d — %s^7\n", i, cl->pers.netname );
-				p += l;
+				l = Q_snprintf( err, l2, "%-2d — %s^7\n", i, cl->pers.netname );
+				err += l;
 				l2 -= l;
 			}
 
