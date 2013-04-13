@@ -2902,7 +2902,7 @@ qboolean G_admin_putteam( gentity_t *ent )
 
 	if ( ( pid = G_ClientNumberFromString( name, err, sizeof( err ) ) ) == -1 )
 	{
-		ADMP( va( "%s %s %s", QQ( "^3$1$:^7 $2t$" ), "rename", err ) );
+		ADMP( va( "%s %s %s", QQ( "^3$1$:^7 $2t$" ), "rename", Quote( err ) ) );
 		return qfalse;
 	}
 
