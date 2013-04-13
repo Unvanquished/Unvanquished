@@ -2370,11 +2370,7 @@ void CL_Vid_Restart_f( void )
 	// startup all the client stuff
 	CL_StartHunkUsers();
 
-	if( Cvar_VariableIntegerValue( "cl_newProfile" ) )
-	{
-		CL_GenerateRSAKeys();
-		Cvar_Set( "cl_newProfile", "0" );
-	}
+	CL_UpdateProfile();
 #ifdef _WIN32
 	Sys_In_Restart_f(); // fretn
 #endif
@@ -2435,6 +2431,21 @@ void CL_Snd_Restart_f( void )
 	S_Init();
 
 	CL_Vid_Restart_f();
+}
+
+
+/*
+=================
+CL_ChangeProfile
+=================
+*/
+void CL_UpdateProfile( void )
+{
+	if( cl_profile->modified )
+	{
+		CL_LoadRSAKeys();
+		cl_profile->modified = qfalse;
+	}
 }
 
 /*
