@@ -119,6 +119,7 @@ qboolean G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expect
  */
 
 void     think_fireDelayed( gentity_t *self );
+void     think_fireOnActDelayed( gentity_t *self );
 void     think_aimAtTarget( gentity_t *self );
 
 void     SP_RemoveSelf( gentity_t *self );
