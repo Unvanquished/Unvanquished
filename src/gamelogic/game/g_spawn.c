@@ -286,14 +286,11 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 
 	/**
 	 *
-	 *	Environment entities
+	 *	Environment area effect entities
 	 *	====================
-	 *	Entities that represent some form of Effect in the world.
+	 *	Entities that represent some form of area effect in the world.
 	 *	Many are client predictable or even completly handled clientside.
 	 *
-	 *	sfx: sound
-	 *	gfx: graphics
-	 *	afx: area environment effects
 	 */
 	{ S_env_afx_ammo,             SP_env_afx_ammo,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ S_env_afx_gravity,          SP_env_afx_gravity,        CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
@@ -301,19 +298,10 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ S_env_afx_hurt,             SP_env_afx_hurt,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ S_env_afx_push,             SP_env_afx_push,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ S_env_afx_teleport,         SP_env_afx_teleport,       CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ S_env_animated_model,       SP_env_animated_model,     CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ S_env_lens_flare,           SP_env_lens_flare,         CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ S_env_particle_system,      SP_env_particle_system,    CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ S_env_portal_camera,        SP_env_portal_camera,      CHAIN_TARGET,     ENT_V_UNCLEAR, NULL },
-	{ S_env_portal_surface,       SP_env_portal_surface,     CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ S_env_rumble,               SP_env_rumble,             CHAIN_PASSIV,     ENT_V_UNCLEAR, NULL },
-	{ S_env_speaker,              SP_env_speaker,            CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 
 	/**
-	 *
 	 *	Functional entities
 	 *	====================
-	 *
 	 */
 	{ "func_bobbing",             SP_func_bobbing,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "func_button",              SP_func_button,            CHAIN_ACTIVE,     ENT_V_UNCLEAR, NULL },
@@ -322,7 +310,7 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ "func_door_model",          SP_func_door_model,        CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "func_door_rotating",       SP_func_door_rotating,     CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "func_dynamic",             SP_func_dynamic,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ "func_group",               SP_RemoveSelf,             0,                ENT_V_UNCLEAR, NULL },
+	{ "func_group",               SP_RemoveSelf,             0 },
 	{ "func_pendulum",            SP_func_pendulum,          CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "func_plat",                SP_func_plat,              CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "func_rotating",            SP_func_rotating,          CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
@@ -330,6 +318,15 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ "func_static",              SP_func_static,            CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "func_timer",               SP_sensor_timer,			 CHAIN_ACTIVE,     ENT_V_TMPNAME, S_SENSOR_TIMER },
 	{ "func_train",               SP_func_train,             CHAIN_ACTIVE,     ENT_V_UNCLEAR, NULL },
+
+	/**
+	 *
+	 *	Effects entities
+	 *	====================
+	 *	Entities that represent some form of Effect in the world.
+	 *	Some might be client predictable or even completly handled clientside.
+	 */
+	{ S_fx_rumble,                SP_fx_rumble,              CHAIN_PASSIV,     ENT_V_UNCLEAR, NULL },
 
 	/**
 	 *
@@ -342,6 +339,18 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ S_GAME_KILL,                SP_game_kill,              CHAIN_PASSIV },
 	{ S_GAME_SCORE,               SP_game_score,             CHAIN_PASSIV },
 
+	/**
+	 *
+	 *	Graphic Effects
+	 *	====================
+	 *	Entities that represent some form of Graphical or visual Effect in the world.
+	 *	They will be handled by cgame and mostly the renderer.
+	 */
+	{ S_gfx_animated_model,       SP_gfx_animated_model,     CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ S_gfx_light_flare,          SP_gfx_light_flare,        CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ S_gfx_particle_system,      SP_gfx_particle_system,    CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ S_gfx_portal_camera,        SP_gfx_portal_camera,      CHAIN_TARGET,     ENT_V_UNCLEAR, NULL },
+	{ S_gfx_portal_surface,       SP_gfx_portal_surface,     CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 
 	/**
 	 * former information and misc entities, now deprecated
@@ -349,17 +358,17 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ "info_alien_intermission",  SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_ALIEN_INTERMISSION  },
 	{ "info_human_intermission",  SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_HUMAN_INTERMISSION  },
 	{ "info_notnull",             SP_pos_target,             CHAIN_TARGET,     ENT_V_RENAMED, S_POS_TARGET },
-	{ "info_null",                SP_RemoveSelf,             0,                ENT_V_UNCLEAR, NULL },
+	{ "info_null",                SP_RemoveSelf,             0 },
 	{ "info_player_deathmatch",   SP_pos_player_spawn,       CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_PLAYER_SPAWN },
 	{ "info_player_intermission", SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_PLAYER_INTERMISSION },
 	{ "info_player_start",        SP_pos_player_spawn,       CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_PLAYER_SPAWN },
-	{ "light",                    SP_RemoveSelf,             0,                ENT_V_UNCLEAR, NULL },
-	{ "misc_anim_model",          SP_env_animated_model,     CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_env_animated_model },
-	{ "misc_light_flare",         SP_env_lens_flare,         CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_env_lens_flare },
-	{ "misc_model",               SP_RemoveSelf,             0,                ENT_V_UNCLEAR, NULL },
-	{ "misc_particle_system",     SP_env_particle_system,    CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_env_particle_system},
-	{ "misc_portal_camera",       SP_env_portal_camera,      CHAIN_TARGET,     ENT_V_TMPNAME, S_env_portal_camera },
-	{ "misc_portal_surface",      SP_env_portal_surface,     CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_env_portal_surface },
+	{ "light",                    SP_RemoveSelf,             0 },
+	{ "misc_anim_model",          SP_gfx_animated_model,     CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_gfx_animated_model },
+	{ "misc_light_flare",         SP_gfx_light_flare,        CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_gfx_light_flare },
+	{ "misc_model",               SP_RemoveSelf,             0 },
+	{ "misc_particle_system",     SP_gfx_particle_system,    CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_gfx_particle_system},
+	{ "misc_portal_camera",       SP_gfx_portal_camera,      CHAIN_TARGET,     ENT_V_TMPNAME, S_gfx_portal_camera },
+	{ "misc_portal_surface",      SP_gfx_portal_surface,     CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_gfx_portal_surface },
 	{ "misc_teleporter_dest",     SP_pos_target,             CHAIN_TARGET,     ENT_V_RENAMED, S_POS_TARGET },
 
 	/**
@@ -386,7 +395,6 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	 *  of another entity, event, or gamestate (timer and start being aware of the game start).
 	 *  Enabling/Disabling Sensors generally changes their ability of perceiving other entities.
 	 */
-
 	{ S_SENSOR_BUILDABLE,         SP_sensor_buildable,       CHAIN_ACTIVE },
 	{ S_SENSOR_CREEP,             SP_sensor_creep,           CHAIN_ACTIVE },
 	{ S_SENSOR_END,               SP_sensor_end,             CHAIN_ACTIVE },
@@ -396,6 +404,17 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ S_SENSOR_START,             SP_sensor_start,           CHAIN_ACTIVE },
 	{ S_SENSOR_SUPPORT,           SP_sensor_support,         CHAIN_ACTIVE },
 	{ S_SENSOR_TIMER,             SP_sensor_timer,           CHAIN_ACTIVE,     ENT_V_UNCLEAR, NULL },
+
+   /**
+	*
+	*	Sound Effects
+	*	====================
+	*	Entities that represent some form of auditive effect in the world.
+	*	They will be handled by cgame and even more the sound backend.
+	*/
+	{ S_sfx_speaker,              SP_sfx_speaker,            CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+
+
 
 	/*
 	 * former target and trigger entities, now deprecated or soon to be deprecated
@@ -410,9 +429,9 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ "target_print",             SP_target_print,           CHAIN_PASSIV,     ENT_V_UNCLEAR, NULL },
 	{ "target_push",              SP_target_push,            CHAIN_PASSIV,     ENT_V_UNCLEAR, NULL },
 	{ "target_relay",             SP_ctrl_relay,             CHAIN_RELAY,      ENT_V_TMPNAME, S_CTRL_RELAY },
-	{ "target_rumble",            SP_env_rumble,             CHAIN_PASSIV,     ENT_V_TMPNAME, S_env_rumble },
+	{ "target_rumble",            SP_fx_rumble,              CHAIN_PASSIV,     ENT_V_TMPNAME, S_fx_rumble },
 	{ "target_score",             SP_game_score,             CHAIN_PASSIV,     ENT_V_TMPNAME, S_GAME_SCORE },
-	{ "target_speaker",           SP_env_speaker,            CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_env_speaker },
+	{ "target_speaker",           SP_sfx_speaker,            CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_sfx_speaker },
 	{ "target_teleporter",        SP_target_teleporter,      CHAIN_PASSIV,     ENT_V_UNCLEAR, NULL },
 	{ "trigger_always",           SP_sensor_start,           CHAIN_ACTIVE,     ENT_V_RENAMED, S_SENSOR_START },
 	{ "trigger_ammo",             SP_env_afx_ammo,           CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_env_afx_ammo },

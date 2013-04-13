@@ -85,14 +85,14 @@ void    SP_env_afx_gravity( gentity_t *self );
 void    SP_env_afx_heal( gentity_t *self );
 void    SP_env_afx_ammo( gentity_t *self );
 
-void    SP_env_rumble( gentity_t *self );
-void    SP_env_speaker( gentity_t *self );
-void    SP_env_particle_system( gentity_t *self );
-void    SP_env_animated_model( gentity_t *self );
-void    SP_env_lens_flare( gentity_t *self );
+void    SP_fx_rumble( gentity_t *self );
+void    SP_sfx_speaker( gentity_t *self );
 
-void    SP_env_portal_camera( gentity_t *self );
-void    SP_env_portal_surface( gentity_t *self );
+void    SP_gfx_particle_system( gentity_t *self );
+void    SP_gfx_animated_model( gentity_t *self );
+void    SP_gfx_light_flare( gentity_t *self );
+void    SP_gfx_portal_camera( gentity_t *self );
+void    SP_gfx_portal_surface( gentity_t *self );
 
 /*
  * everything around entity versioning and deprecation
