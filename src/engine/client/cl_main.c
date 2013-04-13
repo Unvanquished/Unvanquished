@@ -4396,8 +4396,6 @@ void CL_Init( void )
 
 	CL_IRCSetup();
 
-	CL_LoadRSAKeys();
-
 	//
 	// register our variables
 	//
@@ -4610,6 +4608,7 @@ void CL_Init( void )
 	Cbuf_Execute();
 
 	Cvar_Set( "cl_running", "1" );
+	CL_LoadRSAKeys();
 
 	CL_OpenClientLog();
 	CL_WriteClientLog( "`~-     Client Opened     -~`\n" );
