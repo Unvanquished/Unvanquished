@@ -54,11 +54,162 @@ typedef struct
 } configVar_t;
 
 //Definition of the config vars
-int ABUILDER_CLAW_DMG;
+int   ABUILDER_CLAW_DMG;
+float ABUILDER_CLAW_RANGE;
+float ABUILDER_CLAW_WIDTH;
+int   ABUILDER_BLOB_DMG;
+float ABUILDER_BLOB_SPEED;
+float ABUILDER_BLOB_SPEED_MOD;
+int   ABUILDER_BLOB_TIME;
+
+int   LEVEL0_BITE_DMG;
+float LEVEL0_BITE_RANGE;
+float LEVEL0_BITE_WIDTH;
+int   LEVEL0_BITE_REPEAT;
+
+int   LEVEL1_CLAW_DMG;
+float LEVEL1_CLAW_RANGE;
+float LEVEL1_CLAW_U_RANGE;
+float LEVEL1_CLAW_WIDTH;
+float LEVEL1_GRAB_RANGE;
+float LEVEL1_GRAB_U_RANGE;
+int   LEVEL1_GRAB_TIME;
+int   LEVEL1_GRAB_U_TIME;
+float LEVEL1_PCLOUD_RANGE;
+int   LEVEL1_PCLOUD_TIME;
+float LEVEL1_REGEN_MOD;
+float LEVEL1_UPG_REGEN_MOD;
+int   LEVEL1_REGEN_SCOREINC;
+int   LEVEL1_UPG_REGEN_SCOREINC;
+
+int   LEVEL2_CLAW_DMG;
+float LEVEL2_CLAW_RANGE;
+float LEVEL2_CLAW_U_RANGE;
+float LEVEL2_CLAW_WIDTH;
+int   LEVEL2_AREAZAP_DMG;
+float LEVEL2_AREAZAP_RANGE;
+float LEVEL2_AREAZAP_CHAIN_RANGE;
+float LEVEL2_AREAZAP_CHAIN_FALLOFF;
+float LEVEL2_AREAZAP_WIDTH;
+int   LEVEL2_AREAZAP_TIME;
+float LEVEL2_WALLJUMP_MAXSPEED;
+
+int   LEVEL3_CLAW_DMG;
+float LEVEL3_CLAW_RANGE;
+float LEVEL3_CLAW_UPG_RANGE;
+float LEVEL3_CLAW_WIDTH;
+int   LEVEL3_POUNCE_DMG;
+float LEVEL3_POUNCE_RANGE;
+float LEVEL3_POUNCE_UPG_RANGE;
+float LEVEL3_POUNCE_WIDTH;
+int   LEVEL3_POUNCE_TIME;
+int   LEVEL3_POUNCE_TIME_UPG;
+int   LEVEL3_POUNCE_TIME_MIN;
+int   LEVEL3_POUNCE_REPEAT;
+float LEVEL3_POUNCE_SPEED_MOD;
+int   LEVEL3_POUNCE_JUMP_MAG;
+int   LEVEL3_POUNCE_JUMP_MAG_UPG;
+int   LEVEL3_BOUNCEBALL_DMG;
+float LEVEL3_BOUNCEBALL_SPEED;
+int   LEVEL3_BOUNCEBALL_RADIUS;
+int   LEVEL3_BOUNCEBALL_REGEN;
+
+int   LEVEL4_CLAW_DMG;
+float LEVEL4_CLAW_RANGE;
+float LEVEL4_CLAW_WIDTH;
+float LEVEL4_CLAW_HEIGHT;
+int   LEVEL4_TRAMPLE_DMG;
+float LEVEL4_TRAMPLE_SPEED;
+int   LEVEL4_TRAMPLE_CHARGE_MIN;
+int   LEVEL4_TRAMPLE_CHARGE_MAX;
+int   LEVEL4_TRAMPLE_CHARGE_TRIGGER;
+int   LEVEL4_TRAMPLE_DURATION;
+int   LEVEL4_TRAMPLE_STOP_PENALTY;
+int   LEVEL4_TRAMPLE_REPEAT;
+float LEVEL4_CRUSH_DAMAGE_PER_V;
+int   LEVEL4_CRUSH_DAMAGE;
+int   LEVEL4_CRUSH_REPEAT;
 
 static configVar_t bg_configVars[] =
 {
+    {"w_abuild_blobDmg", INTEGER, qfalse, &ABUILDER_BLOB_DMG},
+    {"w_abuild_blobSlowTime", INTEGER, qfalse, &ABUILDER_BLOB_TIME},
+    {"w_abuild_blobSpeed", FLOAT, qfalse, &ABUILDER_BLOB_SPEED},
+    {"w_abuild_blobSpeedMod", FLOAT, qfalse, &ABUILDER_BLOB_SPEED_MOD},
     {"w_abuild_clawDmg", INTEGER, qfalse, &ABUILDER_CLAW_DMG},
+    {"w_abuild_clawRange", FLOAT, qfalse, &ABUILDER_CLAW_RANGE},
+    {"w_abuild_clawWidth", FLOAT, qfalse, &ABUILDER_CLAW_WIDTH},
+
+    {"w_level0_biteDmg", INTEGER, qfalse, &LEVEL0_BITE_DMG},
+    {"w_level0_biteRange", FLOAT, qfalse, &LEVEL0_BITE_RANGE},
+    {"w_level0_biteRepeat", INTEGER, qfalse, &LEVEL0_BITE_REPEAT},
+    {"w_level0_biteWidth", FLOAT, qfalse, &LEVEL0_BITE_WIDTH},
+
+    {"w_level1upg_clawRange", INTEGER, qfalse, &LEVEL1_CLAW_U_RANGE},
+    {"w_level1upg_grabRange", FLOAT, qfalse, &LEVEL1_GRAB_U_RANGE},
+    {"w_level1upg_grabTime", INTEGER, qfalse, &LEVEL1_GRAB_U_TIME},
+    {"w_level1upg_poisonCloudDuration", INTEGER, qfalse, &LEVEL1_PCLOUD_TIME},
+    {"w_level1upg_poisonCloudRange", FLOAT, qfalse, &LEVEL1_PCLOUD_RANGE},
+    {"w_level1upg_regenMod", FLOAT, qfalse, &LEVEL1_UPG_REGEN_MOD},
+    {"w_level1upg_regenScoreGain", INTEGER, qfalse, &LEVEL1_UPG_REGEN_SCOREINC},
+
+    {"w_level1_clawDmg", INTEGER, qfalse, &LEVEL1_CLAW_DMG},
+    {"w_level1_clawRange", FLOAT, qfalse, &LEVEL1_CLAW_RANGE},
+    {"w_level1_clawWidth", FLOAT, qfalse, &LEVEL1_CLAW_WIDTH},
+    {"w_level1_grabRange", FLOAT, qfalse, &LEVEL1_GRAB_RANGE},
+    {"w_level1_grabTime", INTEGER, qfalse, &LEVEL1_GRAB_TIME},
+    {"w_level1_regenMod", FLOAT, qfalse, &LEVEL1_REGEN_MOD},
+    {"w_level1_regenScoreGain", INTEGER, qfalse, &LEVEL1_REGEN_SCOREINC},
+
+    {"w_level2upg_clawRange", INTEGER, qfalse, &LEVEL2_CLAW_U_RANGE},
+    {"w_level2upg_zapChainFalloff", FLOAT, qfalse, &LEVEL2_AREAZAP_CHAIN_FALLOFF},
+    {"w_level2upg_zapChainRange", FLOAT, qfalse, &LEVEL2_AREAZAP_CHAIN_RANGE},
+    {"w_level2upg_zapDmg", INTEGER, qfalse, &LEVEL2_AREAZAP_DMG},
+    {"w_level2upg_zapRange", FLOAT, qfalse, &LEVEL2_AREAZAP_RANGE},
+    {"w_level2upg_zapTime", INTEGER, qfalse, &LEVEL2_AREAZAP_TIME},
+    {"w_level2upg_zapWidth", FLOAT, qfalse, &LEVEL2_AREAZAP_WIDTH},
+
+    {"w_level2_clawDmg", INTEGER, qfalse, &LEVEL2_CLAW_DMG},
+    {"w_level2_clawRange", FLOAT, qfalse, &LEVEL2_CLAW_RANGE},
+    {"w_level2_clawWidth", FLOAT, qfalse, &LEVEL2_CLAW_WIDTH},
+    {"w_level2_maxWalljumpSpeed", FLOAT, qfalse, &LEVEL2_WALLJUMP_MAXSPEED},
+
+    {"w_level3upg_ballDmg", INTEGER, qfalse, &LEVEL3_BOUNCEBALL_DMG},
+    {"w_level3upg_ballRadius", INTEGER, qfalse, &LEVEL3_BOUNCEBALL_RADIUS},
+    {"w_level3upg_ballRegen", INTEGER, qfalse, &LEVEL3_BOUNCEBALL_REGEN},
+    {"w_level3upg_ballSpeed", FLOAT, qfalse, &LEVEL3_BOUNCEBALL_SPEED},
+    {"w_level3upg_clawRange", FLOAT, qfalse, &LEVEL3_CLAW_UPG_RANGE},
+    {"w_level3upg_pounceDuration", INTEGER, qfalse, &LEVEL3_POUNCE_TIME_UPG},
+    {"w_level3upg_pounceJumpMagnitude", INTEGER, qfalse, &LEVEL3_POUNCE_JUMP_MAG_UPG},
+    {"w_level3upg_pounceRange", FLOAT, qfalse, &LEVEL3_POUNCE_UPG_RANGE},
+
+    {"w_level3_clawDmg", INTEGER, qfalse, &LEVEL3_CLAW_DMG},
+    {"w_level3_clawRange", FLOAT, qfalse, &LEVEL3_CLAW_RANGE},
+    {"w_level3_clawWidth", FLOAT, qfalse, &LEVEL3_CLAW_WIDTH},
+    {"w_level3_pounceCancelTime", INTEGER, qfalse, &LEVEL3_POUNCE_TIME},
+    {"w_level3_pounceDmg", INTEGER, qfalse, &LEVEL3_POUNCE_DMG},
+    {"w_level3_pounceDuration", INTEGER, qfalse, &LEVEL3_POUNCE_TIME},
+    {"w_level3_pounceJumpMagnitude", INTEGER, qfalse, &LEVEL3_POUNCE_JUMP_MAG},
+    {"w_level3_pounceRange", FLOAT, qfalse, &LEVEL3_POUNCE_RANGE},
+    {"w_level3_pounceRepeat", INTEGER, qfalse, &LEVEL3_POUNCE_REPEAT},
+    {"w_level3_pounceSpeedMod", FLOAT, qfalse, &LEVEL3_POUNCE_SPEED_MOD},
+    {"w_level3_pounceWidth", FLOAT, qfalse, &LEVEL3_POUNCE_WIDTH},
+
+    {"w_level4_clawDmg", INTEGER, qfalse, &LEVEL4_CLAW_DMG},
+    {"w_level4_clawHeight", FLOAT, qfalse, &LEVEL4_CLAW_HEIGHT},
+    {"w_level4_clawRange", FLOAT, qfalse, &LEVEL4_CLAW_RANGE},
+    {"w_level4_clawWidth", FLOAT, qfalse, &LEVEL4_CLAW_WIDTH},
+    {"w_level4_crushDmg", INTEGER, qfalse, &LEVEL4_CRUSH_DAMAGE},
+    {"w_level4_crushDmgPerFallingVelocity", FLOAT, qfalse, &LEVEL4_CRUSH_DAMAGE_PER_V},
+    {"w_level4_crushRepeat", INTEGER, qfalse, &LEVEL4_CRUSH_REPEAT},
+    {"w_level4_trampleChargeMax", INTEGER, qfalse, &LEVEL4_TRAMPLE_CHARGE_MAX},
+    {"w_level4_trampleChargeMin", INTEGER, qfalse, &LEVEL4_TRAMPLE_CHARGE_MIN},
+    {"w_level4_trampleChargeTrigger", INTEGER, qfalse, &LEVEL4_TRAMPLE_CHARGE_TRIGGER},
+    {"w_level4_trampleDmg", INTEGER, qfalse, &LEVEL4_TRAMPLE_DMG},
+    {"w_level4_trampleDuration", INTEGER, qfalse, &LEVEL4_TRAMPLE_DURATION},
+    {"w_level4_trampleRepeat", INTEGER, qfalse, &LEVEL4_TRAMPLE_REPEAT},
+    {"w_level4_trampleSpeed", FLOAT, qfalse, &LEVEL4_TRAMPLE_SPEED},
+    {"w_level4_trampleStopPenalty", INTEGER, qfalse, &LEVEL4_TRAMPLE_STOP_PENALTY},
 };
 
 static const size_t bg_numConfigVars = ARRAY_LEN( bg_configVars );

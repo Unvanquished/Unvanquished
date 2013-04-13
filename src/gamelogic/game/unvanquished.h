@@ -37,86 +37,82 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define ALIEN_WDMG_MODIFIER           1.0f
 #define ADM(d) ((int)((float)d * ALIEN_WDMG_MODIFIER ))
 
-extern int ABUILDER_CLAW_DMG;
-#define ABUILDER_CLAW_RANGE           64.0f
-#define ABUILDER_CLAW_WIDTH           4.0f
-#define ABUILDER_BLOB_DMG             ADM(4)
-#define ABUILDER_BLOB_SPEED           800.0f
-#define ABUILDER_BLOB_SPEED_MOD       0.5f
-#define ABUILDER_BLOB_TIME            2000
+extern int   ABUILDER_CLAW_DMG;
+extern float ABUILDER_CLAW_RANGE;
+extern float ABUILDER_CLAW_WIDTH;
+extern int   ABUILDER_BLOB_DMG;
+extern float ABUILDER_BLOB_SPEED;
+extern float ABUILDER_BLOB_SPEED_MOD;
+extern int   ABUILDER_BLOB_TIME;
 
-#define LEVEL0_BITE_DMG               ADM(36)
-#define LEVEL0_BITE_RANGE             64.0f
-#define LEVEL0_BITE_WIDTH             6.0f
-#define LEVEL0_BITE_REPEAT            500
+extern int   LEVEL0_BITE_DMG;
+extern float LEVEL0_BITE_RANGE;
+extern float LEVEL0_BITE_WIDTH;
+extern int   LEVEL0_BITE_REPEAT;
 
-#define LEVEL1_CLAW_DMG               ADM(32)
-#define LEVEL1_CLAW_RANGE             80.0f // Claw and grab range normalized. Not sure on this one, but it was pretty widely requested.
-#define LEVEL1_CLAW_U_RANGE           LEVEL1_CLAW_RANGE + 3.0f
-#define LEVEL1_CLAW_WIDTH             10.0f
-#define LEVEL1_CLAW_K_SCALE           1.0f
-#define LEVEL1_GRAB_RANGE             80.0f // Claw and grab range normalized.
-#define LEVEL1_GRAB_U_RANGE           LEVEL1_GRAB_RANGE + 3.0f
-#define LEVEL1_GRAB_TIME              300
-#define LEVEL1_GRAB_U_TIME            300
-#define LEVEL1_PCLOUD_DMG             ADM(4)
-#define LEVEL1_PCLOUD_RANGE           120.0f
-#define LEVEL1_PCLOUD_TIME            10000
-#define LEVEL1_REGEN_MOD              2.0f
-#define LEVEL1_UPG_REGEN_MOD          3.0f
-#define LEVEL1_REGEN_SCOREINC         AVM(100) // score added for healing per 10s
-#define LEVEL1_UPG_REGEN_SCOREINC     AVM(200)
+extern int   LEVEL1_CLAW_DMG;
+extern float LEVEL1_CLAW_RANGE;
+extern float LEVEL1_CLAW_U_RANGE;
+extern float LEVEL1_CLAW_WIDTH;
+extern float LEVEL1_GRAB_RANGE;
+extern float LEVEL1_GRAB_U_RANGE;
+extern int   LEVEL1_GRAB_TIME;
+extern int   LEVEL1_GRAB_U_TIME;
+extern float LEVEL1_PCLOUD_RANGE;
+extern int   LEVEL1_PCLOUD_TIME;
+extern float LEVEL1_REGEN_MOD;
+extern float LEVEL1_UPG_REGEN_MOD;
+extern int   LEVEL1_REGEN_SCOREINC;
+extern int   LEVEL1_UPG_REGEN_SCOREINC;
 
-#define LEVEL2_CLAW_DMG               ADM(40)
-#define LEVEL2_CLAW_RANGE             80.0f
-#define LEVEL2_CLAW_U_RANGE           LEVEL2_CLAW_RANGE + 2.0f
-#define LEVEL2_CLAW_WIDTH             14.0f
-#define LEVEL2_AREAZAP_DMG            ADM(60)
-#define LEVEL2_AREAZAP_RANGE          200.0f
-#define LEVEL2_AREAZAP_CHAIN_RANGE    150.0f
-#define LEVEL2_AREAZAP_CHAIN_FALLOFF  8.0f
-#define LEVEL2_AREAZAP_WIDTH          15.0f
-#define LEVEL2_AREAZAP_TIME           1000
-#define LEVEL2_AREAZAP_MAX_TARGETS    5
-#define LEVEL2_WALLJUMP_MAXSPEED      1000.0f
+extern int   LEVEL2_CLAW_DMG;
+extern float LEVEL2_CLAW_RANGE;
+extern float LEVEL2_CLAW_U_RANGE;
+extern float LEVEL2_CLAW_WIDTH;
+extern int   LEVEL2_AREAZAP_DMG;
+extern float LEVEL2_AREAZAP_RANGE;
+extern float LEVEL2_AREAZAP_CHAIN_RANGE;
+extern float LEVEL2_AREAZAP_CHAIN_FALLOFF;
+extern float LEVEL2_AREAZAP_WIDTH;
+extern int   LEVEL2_AREAZAP_TIME;
+extern float LEVEL2_WALLJUMP_MAXSPEED;
+#define LEVEL2_AREAZAP_MAX_TARGETS 5
 
-#define LEVEL3_CLAW_DMG               ADM(80)
-#define LEVEL3_CLAW_RANGE             80.0f // Increased claw range
-#define LEVEL3_CLAW_UPG_RANGE         LEVEL3_CLAW_RANGE + 3.0f
-#define LEVEL3_CLAW_WIDTH             11.0f //
-#define LEVEL3_POUNCE_DMG             ADM(75) // Reduced damage. Pounce is very powerful as it is.
-#define LEVEL3_POUNCE_RANGE           55.0f // Pounce range raised by 7.0. May need to be nerfed, still want to test like this though.
-#define LEVEL3_POUNCE_UPG_RANGE       LEVEL3_POUNCE_RANGE + 3.0f
-#define LEVEL3_POUNCE_WIDTH           12.0f // Pounce width narrowed. May scale this down even further.
-#define LEVEL3_POUNCE_TIME            800 // Reduced this by 100ms, may need nerfing.
-#define LEVEL3_POUNCE_TIME_UPG        800 // Evened with standard goon. I'd like to keep this here even if standard goon charge time is raised.
-#define LEVEL3_POUNCE_TIME_MIN        200 // msec before which pounce cancels
-#define LEVEL3_POUNCE_REPEAT          400 // msec before a new pounce starts
-#define LEVEL3_POUNCE_SPEED_MOD       0.85f // Whales: Reduced the slowdown from a charged pounce by 0.10
-#define LEVEL3_POUNCE_JUMP_MAG        750 // Raised by 50,
-#define LEVEL3_POUNCE_JUMP_MAG_UPG    850 // Raised by 50.
-#define LEVEL3_BOUNCEBALL_DMG         ADM(110)
-#define LEVEL3_BOUNCEBALL_SPEED       1000.0f
-#define LEVEL3_BOUNCEBALL_RADIUS      75
-#define LEVEL3_BOUNCEBALL_REGEN       12500 // Reduced regen time.
+extern int   LEVEL3_CLAW_DMG;
+extern float LEVEL3_CLAW_RANGE;
+extern float LEVEL3_CLAW_UPG_RANGE;
+extern float LEVEL3_CLAW_WIDTH;
+extern int   LEVEL3_POUNCE_DMG;
+extern float LEVEL3_POUNCE_RANGE;
+extern float LEVEL3_POUNCE_UPG_RANGE;
+extern float LEVEL3_POUNCE_WIDTH;
+extern int   LEVEL3_POUNCE_TIME;
+extern int   LEVEL3_POUNCE_TIME_UPG;
+extern int   LEVEL3_POUNCE_TIME_MIN;
+extern int   LEVEL3_POUNCE_REPEAT;
+extern float LEVEL3_POUNCE_SPEED_MOD;
+extern int   LEVEL3_POUNCE_JUMP_MAG;
+extern int   LEVEL3_POUNCE_JUMP_MAG_UPG;
+extern int   LEVEL3_BOUNCEBALL_DMG;
+extern float LEVEL3_BOUNCEBALL_SPEED;
+extern int   LEVEL3_BOUNCEBALL_RADIUS;
+extern int   LEVEL3_BOUNCEBALL_REGEN;
 
-#define LEVEL4_CLAW_DMG               ADM(100)
-#define LEVEL4_CLAW_RANGE             100.0f
-#define LEVEL4_CLAW_WIDTH             14.0f
-#define LEVEL4_CLAW_HEIGHT            20.0f
-
-#define LEVEL4_TRAMPLE_DMG            ADM(85) // 111 -> 85
-#define LEVEL4_TRAMPLE_SPEED          2.0f
-#define LEVEL4_TRAMPLE_CHARGE_MIN     375 // minimum msec to start a charge
-#define LEVEL4_TRAMPLE_CHARGE_MAX     1000 // msec to maximum charge stored
-#define LEVEL4_TRAMPLE_CHARGE_TRIGGER 3000 // msec charge starts on its own
-#define LEVEL4_TRAMPLE_DURATION       3000 // msec trample lasts on full charge
-#define LEVEL4_TRAMPLE_STOP_PENALTY   1 // charge lost per msec when stopped
-#define LEVEL4_TRAMPLE_REPEAT         300 // Time until charge rehits a player Ishq: 100->300
-
-#define LEVEL4_CRUSH_DAMAGE_PER_V     0.5f // damage per falling velocity
-#define LEVEL4_CRUSH_DAMAGE           120 // to players only
-#define LEVEL4_CRUSH_REPEAT           500 // player damage repeat
+extern int   LEVEL4_CLAW_DMG;
+extern float LEVEL4_CLAW_RANGE;
+extern float LEVEL4_CLAW_WIDTH;
+extern float LEVEL4_CLAW_HEIGHT;
+extern int   LEVEL4_TRAMPLE_DMG;
+extern float LEVEL4_TRAMPLE_SPEED;
+extern int   LEVEL4_TRAMPLE_CHARGE_MIN;
+extern int   LEVEL4_TRAMPLE_CHARGE_MAX;
+extern int   LEVEL4_TRAMPLE_CHARGE_TRIGGER;
+extern int   LEVEL4_TRAMPLE_DURATION;
+extern int   LEVEL4_TRAMPLE_STOP_PENALTY;
+extern int   LEVEL4_TRAMPLE_REPEAT;
+extern float LEVEL4_CRUSH_DAMAGE_PER_V;
+extern int   LEVEL4_CRUSH_DAMAGE;
+extern int   LEVEL4_CRUSH_REPEAT;
 
 /*
  * ALIEN classes
