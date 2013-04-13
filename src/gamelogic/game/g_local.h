@@ -280,6 +280,11 @@ struct gentity_s
 	qboolean     powered;
 	gentity_t    *powerSource;
 
+	/**
+	 * has a marked building been deconstructed for this building?
+	 */
+	qboolean     replacement;
+
 	/*
 	 * targets to aim at
 	 */
