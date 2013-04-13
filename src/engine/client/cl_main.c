@@ -2223,7 +2223,7 @@ static void CL_GenerateRSAKeys( void )
 		Com_Error( ERR_FATAL, "Error converting RSA keypair to sexp" );
 	}
 
-	if ( cl_profile->string[ 0 ] )
+	if ( cl_profile && cl_profile->string[ 0 ] )
 	{
 		f = FS_FOpenFileWrite( va( "profiles/%s/%s", cl_profile->string, RSAKEY_FILE ) );
 	}
@@ -2263,7 +2263,7 @@ static void CL_LoadRSAKeys( void )
 	rsa_public_key_init( &public_key );
 	rsa_private_key_init( &private_key );
 
-	if( cl_profile->string[ 0 ] )
+	if( cl_profile && cl_profile->string[ 0 ] )
 	{
 		len = FS_FOpenFileRead( va( "profiles/%s/%s", cl_profile->string, RSAKEY_FILE ), &f, qtrue );
 	}
