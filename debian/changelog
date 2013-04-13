@@ -1,3 +1,13 @@
+unvanquished (0.14.0-2) unstable; urgency=low
+
+  * Bug fixes and optimisations.
+    - GL3: Improve R_AddNormals (image accuracy, some loading speedup).
+    - GL3: Eliminate a few useless calculations when uploading images.
+    - GL: Handle a few keywords which presence caused missing textures.
+    - Fix a possible buffer overflow in the OpenAL code.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Sat, 13 Apr 2013 01:26:12 +0100
+
 unvanquished (0.14.0-1) unstable; urgency=low
 
   * Release of alpha 14.
