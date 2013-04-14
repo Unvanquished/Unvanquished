@@ -35,7 +35,7 @@ Maryland 20850 USA.
 #include "g_local.h"
 #include "g_spawn.h"
 
-void InitEnvAFXEntity( gentity_t *self )
+void InitEnvAFXEntity( gentity_t *self, qboolean link )
 {
 	if ( !VectorCompare( self->s.angles, vec3_origin ) )
 	{
@@ -45,6 +45,11 @@ void InitEnvAFXEntity( gentity_t *self )
 	trap_SetBrushModel( self, self->model );
 	self->r.contents = CONTENTS_SENSOR; // replaces the -1 from trap_SetBrushModel
 	self->r.svFlags = SVF_NOCLIENT;
+
+	if( link )
+	{
+		trap_LinkEntity( self );
+	}
 }
 
 void env_afx_toggle( gentity_t *self, gentity_t *other, gentity_t *activator )
@@ -73,16 +78,14 @@ void env_afx_push_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 
 void SP_env_afx_push( gentity_t *self )
 {
-	InitEnvAFXEntity( self );
-
-	// unlike other triggers, we need to send this one to the client
-	self->r.svFlags &= ~SVF_NOCLIENT;
-
 	self->s.eType = ET_PUSHER;
 	self->touch = env_afx_push_touch;
 	self->think = think_aimAtTarget;
 	self->nextthink = level.time + FRAMETIME;
-	trap_LinkEntity( self );
+	InitEnvAFXEntity( self, qtrue );
+
+	// unlike other afx, we need to send this one to the client
+	self->r.svFlags &= ~SVF_NOCLIENT;
 }
 
 /*
@@ -134,21 +137,9 @@ void env_afx_teleporter_act( gentity_t *ent, gentity_t *other, gentity_t *activa
 
 void SP_env_afx_teleport( gentity_t *self )
 {
-	InitEnvAFXEntity( self );
 
 	if( !self->config.speed )
 		self->config.speed = 400;
-
-	// unlike other triggers, we need to send this one to the client
-	// unless is a spectator trigger
-	if ( self->spawnflags & 1 )
-	{
-		self->r.svFlags |= SVF_NOCLIENT;
-	}
-	else
-	{
-		self->r.svFlags &= ~SVF_NOCLIENT;
-	}
 
 	// SPAWN_DISABLED
 	if ( self->spawnflags & 2 )
@@ -160,7 +151,17 @@ void SP_env_afx_teleport( gentity_t *self )
 	self->touch = env_afx_teleporter_touch;
 	self->act = env_afx_teleporter_act;
 
-	trap_LinkEntity( self );
+	InitEnvAFXEntity( self, qtrue );
+	// unlike other afx, we need to send this one to the client
+	// unless is a spectator trigger
+	if ( self->spawnflags & 1 )
+	{
+		self->r.svFlags |= SVF_NOCLIENT;
+	}
+	else
+	{
+		self->r.svFlags &= ~SVF_NOCLIENT;
+	}
 }
 
 /*
@@ -214,7 +215,6 @@ void env_afx_hurt_touch( gentity_t *self, gentity_t *other, trace_t *trace )
 
 void SP_env_afx_hurt( gentity_t *self )
 {
-	InitEnvAFXEntity( self );
 
 	self->soundIndex = G_SoundIndex( "sound/misc/electro.wav" );
 	self->touch = env_afx_hurt_touch;
@@ -223,15 +223,7 @@ void SP_env_afx_hurt( gentity_t *self )
 
 	self->act = env_afx_toggle;
 
-	// link in to the world if starting active
-	if ( self->spawnflags & 1 )
-	{
-		trap_UnlinkEntity( self );
-	}
-	else
-	{
-		trap_LinkEntity( self );
-	}
+	InitEnvAFXEntity( self, !(self->spawnflags & SPF_SPAWN_DISABLED ) );
 }
 
 /*
@@ -272,8 +264,7 @@ void SP_env_afx_gravity( gentity_t *self )
 	self->act = env_afx_toggle;
 	self->reset = env_afx_gravity_reset;
 
-	InitEnvAFXEntity( self );
-	trap_LinkEntity( self );
+	InitEnvAFXEntity( self, qtrue );
 }
 
 /*
@@ -337,17 +328,7 @@ void SP_env_afx_heal( gentity_t *self )
 	self->touch = env_afx_heal_touch;
 	self->act = env_afx_toggle;
 
-	InitEnvAFXEntity( self );
-
-	// link in to the world if starting active
-	if ( self->spawnflags & SPF_SPAWN_DISABLED )
-	{
-		trap_UnlinkEntity( self );
-	}
-	else
-	{
-		trap_LinkEntity( self );
-	}
+	InitEnvAFXEntity( self, !( self->spawnflags & SPF_SPAWN_DISABLED ) );
 }
 
 /*
@@ -441,6 +422,5 @@ void SP_env_afx_ammo( gentity_t *self )
 
 	self->touch = env_afx_ammo_touch;
 
-	InitEnvAFXEntity( self );
-	trap_LinkEntity( self );
+	InitEnvAFXEntity( self, qtrue );
 }

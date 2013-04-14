@@ -32,6 +32,9 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+#if defined(WIN32) && !defined(SYS_WIN32_H_)
+#define SYS_WIN32_H_
+
 #if defined ( _MSC_VER ) && ( _MSC_VER >= 1200 )
 #pragma warning(disable : 4201)
 #pragma warning( push )
@@ -61,3 +64,5 @@ extern WinVars_t g_wv;
 
 void             Sys_CreateConsole( void );
 void             Sys_ShowConsole( int level, qboolean quitOnClose );
+
+#endif

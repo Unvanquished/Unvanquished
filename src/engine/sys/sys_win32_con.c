@@ -32,6 +32,8 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+#ifdef _WIN32
+
 // win_syscon.h
 #include "../client/client.h"
 //#include "win_local.h"
@@ -1024,3 +1026,6 @@ void Sys_ClearViewlog_f( void )
 {
 	SendMessage( s_wcd.hwndBuffer, WM_SETTEXT, 0, ( LPARAM ) "" );
 }
+#else
+#error Don't compile me as part of an awesome operating system. This is meant for Win32 and Win64 only!
+#endif /* _WIN32 */

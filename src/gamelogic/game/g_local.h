@@ -186,7 +186,7 @@ typedef struct
 	int damage;
 
 	/**
-	 * how long dekay firing an event
+	 * how long delay firing an event
 	 */
 	variatingTime_t delay;
 	/**
@@ -255,10 +255,10 @@ struct gentity_s
 
 	/**
 	 * is the entity able to become active?
-	 * e.g. used for buildables to indicate being useable or a stationary weapon being "live"
+	 * e.g. used for buildables to indicate being usable or a stationary weapon being "live"
 	 * or for sensors to indicate being able to sense other entities and fire events
 	 *
-	 * as a resasonable assumption we default to entities being enabled directly after they are spawned,
+	 * as a reasonable assumption we default to entities being enabled directly after they are spawned,
 	 * since most of the time we want them to be
 	 */
 	qboolean     enabled;
@@ -273,7 +273,7 @@ struct gentity_s
 	/**
 	 * is the buildable getting support by reactor or overmind?
 	 * this is tightly coupled with enabled
-	 * but buildables might be disabled indpendently of rc/om support
+	 * but buildables might be disabled independently of rc/om support
 	 * unpowered buildables are expected to be disabled though
 	 * other entities might also consider the powergrid for behavior changes
 	 */
@@ -378,7 +378,7 @@ struct gentity_s
 	/**
 	 * the entry function for calls to the entity;
 	 * especially previous chain members will indirectly call this when firing against the given entity
-	 * @returns qtrue if the call was handled by the given function and doesnt need default handling anymore or qfalse otherwise
+	 * @returns qtrue if the call was handled by the given function and doesn't need default handling anymore or qfalse otherwise
 	 */
 	qboolean ( *handleCall )( gentity_t *self, gentityCall_t *call );
 
@@ -1381,6 +1381,7 @@ extern  vmCvar_t g_currentMapRotation;
 extern  vmCvar_t g_mapRotationNodes;
 extern  vmCvar_t g_mapRotationStack;
 extern  vmCvar_t g_nextMap;
+extern  vmCvar_t g_nextMapLayouts;
 extern  vmCvar_t g_initialMapRotation;
 extern  vmCvar_t g_mapLog;
 extern  vmCvar_t g_mapStartupMessageDelay;
@@ -1397,6 +1398,7 @@ extern  vmCvar_t g_antiSpawnBlock;
 
 extern  vmCvar_t g_mapConfigs;
 
+extern  vmCvar_t g_defaultLayouts;
 extern  vmCvar_t g_layouts;
 extern  vmCvar_t g_layoutAuto;
 

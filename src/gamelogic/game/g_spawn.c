@@ -77,6 +77,44 @@ static qboolean G_SpawnStringIntoCVar( const char *key, const char *cvarName )
 	return qfalse;
 }
 
+qboolean G_SpawnBoolean( const char *key, qboolean defaultqboolean )
+{
+	char     *string;
+	int     out;
+
+	if(G_SpawnString( key, "", &string ))
+	{
+		if(Q_strtoi(string, &out))
+		{
+			if(out == 1)
+			{
+				return qtrue;
+			}
+			else if(out == 0)
+			{
+				return qfalse;
+			}
+			return defaultqboolean;
+		}
+		else
+		{
+			if(!Q_stricmp(string, "true"))
+			{
+				return qtrue;
+			}
+			else if(!Q_stricmp(string, "false"))
+			{
+				return qfalse;
+			}
+			return defaultqboolean;
+		}
+	}
+	else
+	{
+		return defaultqboolean;
+	}
+}
+
 qboolean  G_SpawnFloat( const char *key, const char *defaultString, float *out )
 {
 	char     *s;
@@ -130,7 +168,8 @@ typedef enum
   F_TIME,
   F_3D_VECTOR,
   F_4D_VECTOR,
-  F_YAW
+  F_YAW,
+  F_SOUNDINDEX
 } fieldType_t;
 
 typedef struct
@@ -160,6 +199,7 @@ static const fieldDescriptor_t fields[] =
 	{ "model",               FOFS( model ),               F_STRING     },
 	{ "model2",              FOFS( model2 ),              F_STRING     },
 	{ "name",	        	 FOFS( names[ 0 ] ),          F_STRING	   },
+	{ "noise",               FOFS( soundIndex ),          F_SOUNDINDEX },
 	{ "onAct",               FOFS( calltargets ),         F_CALLTARGET },
 	{ "onDie",               FOFS( calltargets ),         F_CALLTARGET },
 	{ "onDisable",           FOFS( calltargets ),         F_CALLTARGET },
@@ -175,6 +215,10 @@ static const fieldDescriptor_t fields[] =
 	{ "radius",              FOFS( activatedPosition ),   F_3D_VECTOR  }, // What's with the variable abuse everytime?
 	{ "random",              FOFS( config.wait.variance ),F_FLOAT,     ENT_V_TMPNAME, "wait" },
 	{ "shader",              FOFS( shaderKey ),           F_STRING     },
+	{ "sound1to2",           FOFS( sound1to2 ),           F_SOUNDINDEX },
+	{ "sound2to1",           FOFS( sound2to1 ),           F_SOUNDINDEX },
+	{ "soundPos1",           FOFS( soundPos1 ),           F_SOUNDINDEX },
+	{ "soundPos2",           FOFS( soundPos2 ),           F_SOUNDINDEX },
 	{ "spawnflags",          FOFS( spawnflags ),          F_INT        },
 	{ "speed",               FOFS( config.speed ),        F_FLOAT      },
 	{ "stage",               FOFS( conditions.stage ),    F_INT        },
@@ -242,34 +286,22 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 
 	/**
 	 *
-	 *	Environment entities
+	 *	Environment area effect entities
 	 *	====================
-	 *	Entities that represent some form of Effect in the world.
+	 *	Entities that represent some form of area effect in the world.
 	 *	Many are client predictable or even completly handled clientside.
 	 *
-	 *	sfx: sound
-	 *	gfx: graphics
-	 *	afx: area environment effects
 	 */
-	{ "env_afx_ammo",             SP_env_afx_ammo,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ "env_afx_gravity",          SP_env_afx_gravity,        CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ "env_afx_heal",             SP_env_afx_heal,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ "env_afx_hurt",             SP_env_afx_hurt,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ "env_afx_push",             SP_env_afx_push,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ "env_afx_teleport",         SP_env_afx_teleport,       CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ "env_animated_model",       SP_env_animated_model,     CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ "env_lens_flare",           SP_env_lens_flare,         CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ "env_particle_system",      SP_env_particle_system,    CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ "env_portal_camera",        SP_env_portal_camera,      CHAIN_TARGET,     ENT_V_UNCLEAR, NULL },
-	{ "env_portal_surface",       SP_env_portal_surface,     CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ "env_rumble",               SP_env_rumble,             CHAIN_PASSIV,     ENT_V_UNCLEAR, NULL },
-	{ "env_speaker",              SP_env_speaker,            CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ S_env_afx_ammo,             SP_env_afx_ammo,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ S_env_afx_gravity,          SP_env_afx_gravity,        CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ S_env_afx_heal,             SP_env_afx_heal,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ S_env_afx_hurt,             SP_env_afx_hurt,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ S_env_afx_push,             SP_env_afx_push,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ S_env_afx_teleport,         SP_env_afx_teleport,       CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 
 	/**
-	 *
 	 *	Functional entities
 	 *	====================
-	 *
 	 */
 	{ "func_bobbing",             SP_func_bobbing,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "func_button",              SP_func_button,            CHAIN_ACTIVE,     ENT_V_UNCLEAR, NULL },
@@ -278,7 +310,7 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ "func_door_model",          SP_func_door_model,        CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "func_door_rotating",       SP_func_door_rotating,     CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "func_dynamic",             SP_func_dynamic,           CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
-	{ "func_group",               SP_RemoveSelf,             0,                ENT_V_UNCLEAR, NULL },
+	{ "func_group",               SP_RemoveSelf,             0 },
 	{ "func_pendulum",            SP_func_pendulum,          CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "func_plat",                SP_func_plat,              CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ "func_rotating",            SP_func_rotating,          CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
@@ -289,15 +321,37 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 
 	/**
 	 *
+	 *	Effects entities
+	 *	====================
+	 *	Entities that represent some form of Effect in the world.
+	 *	Some might be client predictable or even completly handled clientside.
+	 */
+	{ S_fx_rumble,                SP_fx_rumble,              CHAIN_PASSIV,     ENT_V_UNCLEAR, NULL },
+
+	/**
+	 *
 	 *	Game entities
 	 *	=============
 	 *  Entities that have an major influence on the gameplay.
 	 *  These are actions and effects against the whole match, a team or a player.
 	 */
 	{ S_GAME_END,                 SP_game_end,               CHAIN_PASSIV },
+	{ S_GAME_FUNDS,               SP_game_funds,             CHAIN_PASSIV },
 	{ S_GAME_KILL,                SP_game_kill,              CHAIN_PASSIV },
 	{ S_GAME_SCORE,               SP_game_score,             CHAIN_PASSIV },
 
+	/**
+	 *
+	 *	Graphic Effects
+	 *	====================
+	 *	Entities that represent some form of Graphical or visual Effect in the world.
+	 *	They will be handled by cgame and mostly the renderer.
+	 */
+	{ S_gfx_animated_model,       SP_gfx_animated_model,     CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ S_gfx_light_flare,          SP_gfx_light_flare,        CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ S_gfx_particle_system,      SP_gfx_particle_system,    CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ S_gfx_portal_camera,        SP_gfx_portal_camera,      CHAIN_TARGET,     ENT_V_UNCLEAR, NULL },
+	{ S_gfx_portal_surface,       SP_gfx_portal_surface,     CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 
 	/**
 	 * former information and misc entities, now deprecated
@@ -305,17 +359,17 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ "info_alien_intermission",  SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_ALIEN_INTERMISSION  },
 	{ "info_human_intermission",  SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_HUMAN_INTERMISSION  },
 	{ "info_notnull",             SP_pos_target,             CHAIN_TARGET,     ENT_V_RENAMED, S_POS_TARGET },
-	{ "info_null",                SP_RemoveSelf,             0,                ENT_V_UNCLEAR, NULL },
+	{ "info_null",                SP_RemoveSelf,             0 },
 	{ "info_player_deathmatch",   SP_pos_player_spawn,       CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_PLAYER_SPAWN },
 	{ "info_player_intermission", SP_Nothing,                CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_PLAYER_INTERMISSION },
 	{ "info_player_start",        SP_pos_player_spawn,       CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_POS_PLAYER_SPAWN },
-	{ "light",                    SP_RemoveSelf,             0,                ENT_V_UNCLEAR, NULL },
-	{ "misc_anim_model",          SP_env_animated_model,     CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_animated_model" },
-	{ "misc_light_flare",         SP_env_lens_flare,         CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_lens_flare"},
-	{ "misc_model",               SP_RemoveSelf,             0,                ENT_V_UNCLEAR, NULL },
-	{ "misc_particle_system",     SP_env_particle_system,    CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_particle_system"},
-	{ "misc_portal_camera",       SP_env_portal_camera,      CHAIN_TARGET,     ENT_V_TMPNAME, "env_portal_camera" },
-	{ "misc_portal_surface",      SP_env_portal_surface,     CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_portal_surface" },
+	{ "light",                    SP_RemoveSelf,             0 },
+	{ "misc_anim_model",          SP_gfx_animated_model,     CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_gfx_animated_model },
+	{ "misc_light_flare",         SP_gfx_light_flare,        CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_gfx_light_flare },
+	{ "misc_model",               SP_RemoveSelf,             0 },
+	{ "misc_particle_system",     SP_gfx_particle_system,    CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_gfx_particle_system},
+	{ "misc_portal_camera",       SP_gfx_portal_camera,      CHAIN_TARGET,     ENT_V_TMPNAME, S_gfx_portal_camera },
+	{ "misc_portal_surface",      SP_gfx_portal_surface,     CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_gfx_portal_surface },
 	{ "misc_teleporter_dest",     SP_pos_target,             CHAIN_TARGET,     ENT_V_RENAMED, S_POS_TARGET },
 
 	/**
@@ -342,7 +396,6 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	 *  of another entity, event, or gamestate (timer and start being aware of the game start).
 	 *  Enabling/Disabling Sensors generally changes their ability of perceiving other entities.
 	 */
-
 	{ S_SENSOR_BUILDABLE,         SP_sensor_buildable,       CHAIN_ACTIVE },
 	{ S_SENSOR_CREEP,             SP_sensor_creep,           CHAIN_ACTIVE },
 	{ S_SENSOR_END,               SP_sensor_end,             CHAIN_ACTIVE },
@@ -352,6 +405,17 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ S_SENSOR_START,             SP_sensor_start,           CHAIN_ACTIVE },
 	{ S_SENSOR_SUPPORT,           SP_sensor_support,         CHAIN_ACTIVE },
 	{ S_SENSOR_TIMER,             SP_sensor_timer,           CHAIN_ACTIVE,     ENT_V_UNCLEAR, NULL },
+
+   /**
+	*
+	*	Sound Effects
+	*	====================
+	*	Entities that represent some form of auditive effect in the world.
+	*	They will be handled by cgame and even more the sound backend.
+	*/
+	{ S_sfx_speaker,              SP_sfx_speaker,            CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+
+
 
 	/*
 	 * former target and trigger entities, now deprecated or soon to be deprecated
@@ -366,22 +430,22 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ "target_print",             SP_target_print,           CHAIN_PASSIV,     ENT_V_UNCLEAR, NULL },
 	{ "target_push",              SP_target_push,            CHAIN_PASSIV,     ENT_V_UNCLEAR, NULL },
 	{ "target_relay",             SP_ctrl_relay,             CHAIN_RELAY,      ENT_V_TMPNAME, S_CTRL_RELAY },
-	{ "target_rumble",            SP_env_rumble,             CHAIN_PASSIV,     ENT_V_TMPNAME, "env_rumble" },
+	{ "target_rumble",            SP_fx_rumble,              CHAIN_PASSIV,     ENT_V_TMPNAME, S_fx_rumble },
 	{ "target_score",             SP_game_score,             CHAIN_PASSIV,     ENT_V_TMPNAME, S_GAME_SCORE },
-	{ "target_speaker",           SP_env_speaker,            CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_speaker" },
+	{ "target_speaker",           SP_sfx_speaker,            CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_sfx_speaker },
 	{ "target_teleporter",        SP_target_teleporter,      CHAIN_PASSIV,     ENT_V_UNCLEAR, NULL },
 	{ "trigger_always",           SP_sensor_start,           CHAIN_ACTIVE,     ENT_V_RENAMED, S_SENSOR_START },
-	{ "trigger_ammo",             SP_env_afx_ammo,           CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_afx_ammo" },
+	{ "trigger_ammo",             SP_env_afx_ammo,           CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_env_afx_ammo },
 	{ "trigger_buildable",        SP_sensor_buildable,       CHAIN_ACTIVE,     ENT_V_TMPNAME, S_SENSOR_BUILDABLE },
 	{ "trigger_class",            SP_sensor_player,          CHAIN_ACTIVE,     ENT_V_TMPNAME, S_SENSOR_PLAYER },
 	{ "trigger_equipment",        SP_sensor_player,          CHAIN_ACTIVE,     ENT_V_TMPNAME, S_SENSOR_PLAYER },
-	{ "trigger_gravity",          SP_env_afx_gravity,        CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_afx_gravity" },
-	{ "trigger_heal",             SP_env_afx_heal,           CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_afx_heal" },
-	{ "trigger_hurt",             SP_env_afx_hurt,           CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_afx_hurt" },
+	{ "trigger_gravity",          SP_env_afx_gravity,        CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_env_afx_gravity },
+	{ "trigger_heal",             SP_env_afx_heal,           CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_env_afx_heal },
+	{ "trigger_hurt",             SP_env_afx_hurt,           CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_env_afx_hurt },
 	{ "trigger_multiple",         SP_sensor_player,          CHAIN_ACTIVE,     ENT_V_TMPNAME, S_SENSOR_PLAYER },
-	{ "trigger_push",             SP_env_afx_push,           CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_afx_push" },
+	{ "trigger_push",             SP_env_afx_push,           CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_env_afx_push },
 	{ "trigger_stage",            SP_sensor_stage,           CHAIN_ACTIVE,     ENT_V_RENAMED, S_SENSOR_STAGE },
-	{ "trigger_teleport",         SP_env_afx_teleport,       CHAIN_AUTONOMOUS, ENT_V_TMPNAME, "env_afx_teleport" },
+	{ "trigger_teleport",         SP_env_afx_teleport,       CHAIN_AUTONOMOUS, ENT_V_TMPNAME, S_env_afx_teleport },
 	{ "trigger_win",              SP_sensor_end,             CHAIN_ACTIVE,     ENT_V_TMPNAME, S_SENSOR_END }
 };
 
@@ -626,83 +690,92 @@ in a gentity
 */
 void G_ParseField( const char *key, const char *rawString, gentity_t *entity )
 {
-	fieldDescriptor_t *resultingField;
-	byte    *entityData;
+	fieldDescriptor_t *fieldDescriptor;
+	byte    *entityDataField;
 	vec4_t  tmpFloatData;
 	variatingTime_t varTime = {0, 0};
 
-	resultingField = bsearch( key, fields, ARRAY_LEN( fields ), sizeof( fieldDescriptor_t ), cmdcmp );
+	fieldDescriptor = bsearch( key, fields, ARRAY_LEN( fields ), sizeof( fieldDescriptor_t ), cmdcmp );
 
-	if ( !resultingField )
+	if ( !fieldDescriptor )
 	{
 		return;
 	}
 
-	entityData = ( byte * ) entity;
+	entityDataField = ( byte * ) entity + fieldDescriptor->offset;
 
-	switch ( resultingField->type )
+	switch ( fieldDescriptor->type )
 	{
 		case F_STRING:
-			* ( char ** )( entityData + resultingField->offset ) = G_NewString( rawString );
+			* ( char ** ) entityDataField = G_NewString( rawString );
 			break;
 
 		case F_TARGET:
 			if(entity->targetCount >= MAX_ENTITY_TARGETS)
 				G_Error("Maximal number of %i targets reached.", MAX_ENTITY_TARGETS);
 
-			( ( char ** )( entityData + resultingField->offset ) ) [ entity->targetCount++ ] = G_NewString( rawString );
+			( ( char ** ) entityDataField ) [ entity->targetCount++ ] = G_NewString( rawString );
 			break;
 
 		case F_CALLTARGET:
 			if(entity->callTargetCount >= MAX_ENTITY_CALLTARGETS)
 				G_Error("Maximal number of %i calltargets reached. You can solve this by using a Relay.", MAX_ENTITY_CALLTARGETS);
 
-			( ( gentityCallDefinition_t * )( entityData + resultingField->offset ) ) [ entity->callTargetCount++ ] = G_NewCallDefinition( resultingField->replacement ? resultingField->replacement : resultingField->name, rawString );
+			( ( gentityCallDefinition_t * ) entityDataField ) [ entity->callTargetCount++ ] = G_NewCallDefinition( fieldDescriptor->replacement ? fieldDescriptor->replacement : fieldDescriptor->name, rawString );
 			break;
 
 		case F_TIME:
 			sscanf( rawString, "%f %f", &varTime.time, &varTime.variance );
-			* ( variatingTime_t * )( entityData + resultingField->offset ) = varTime;
+			* ( variatingTime_t * ) entityDataField = varTime;
 			break;
 
 		case F_3D_VECTOR:
 			sscanf( rawString, "%f %f %f", &tmpFloatData[ 0 ], &tmpFloatData[ 1 ], &tmpFloatData[ 2 ] );
 
-			( ( float * )( entityData + resultingField->offset ) ) [ 0 ] = tmpFloatData[ 0 ];
-			( ( float * )( entityData + resultingField->offset ) ) [ 1 ] = tmpFloatData[ 1 ];
-			( ( float * )( entityData + resultingField->offset ) ) [ 2 ] = tmpFloatData[ 2 ];
+			( ( float * ) entityDataField ) [ 0 ] = tmpFloatData[ 0 ];
+			( ( float * ) entityDataField ) [ 1 ] = tmpFloatData[ 1 ];
+			( ( float * ) entityDataField ) [ 2 ] = tmpFloatData[ 2 ];
 			break;
 
 		case F_4D_VECTOR:
 			sscanf( rawString, "%f %f %f %f", &tmpFloatData[ 0 ], &tmpFloatData[ 1 ], &tmpFloatData[ 2 ], &tmpFloatData[ 3 ] );
 
-			( ( float * )( entityData + resultingField->offset ) ) [ 0 ] = tmpFloatData[ 0 ];
-			( ( float * )( entityData + resultingField->offset ) ) [ 1 ] = tmpFloatData[ 1 ];
-			( ( float * )( entityData + resultingField->offset ) ) [ 2 ] = tmpFloatData[ 2 ];
-			( ( float * )( entityData + resultingField->offset ) ) [ 3 ] = tmpFloatData[ 3 ];
+			( ( float * ) entityDataField ) [ 0 ] = tmpFloatData[ 0 ];
+			( ( float * ) entityDataField ) [ 1 ] = tmpFloatData[ 1 ];
+			( ( float * ) entityDataField ) [ 2 ] = tmpFloatData[ 2 ];
+			( ( float * ) entityDataField ) [ 3 ] = tmpFloatData[ 3 ];
 			break;
 
 		case F_INT:
-			* ( int * )( entityData + resultingField->offset ) = atoi( rawString );
+			* ( int * )   entityDataField = atoi( rawString );
 			break;
 
 		case F_FLOAT:
-			* ( float * )( entityData + resultingField->offset ) = atof( rawString );
+			* ( float * ) entityDataField = atof( rawString );
 			break;
 
 		case F_YAW:
-			( ( float * )( entityData + resultingField->offset ) ) [ 0 ] = 0;
-			( ( float * )( entityData + resultingField->offset ) ) [ 1 ] = atof( rawString );
-			( ( float * )( entityData + resultingField->offset ) ) [ 2 ] = 0;
+			( ( float * ) entityDataField ) [ PITCH ] = 0;
+			( ( float * ) entityDataField ) [ YAW   ] = atof( rawString );
+			( ( float * ) entityDataField ) [ ROLL  ] = 0;
+			break;
+
+		case F_SOUNDINDEX:
+			if ( strlen( rawString ) >= MAX_QPATH )
+			{
+				G_Error( S_ERROR "Sound filename %s in field %s of %s exceeds MAX_QPATH\n", rawString, fieldDescriptor->name, etos( entity ) );
+			}
+
+			* ( int * ) entityDataField  = G_SoundIndex( rawString );
 			break;
 
 		default:
-			G_Printf( S_ERROR "unknown datatype %i for field %s\n", resultingField->type, resultingField->name );
+			G_Printf( S_ERROR "unknown datatype %i for field %s\n", fieldDescriptor->type, fieldDescriptor->name );
 			break;
 	}
 
-	if ( resultingField->replacement && resultingField->versionState )
-		G_WarnAboutDeprecatedEntityField(entity, resultingField->replacement, key, resultingField->versionState );
+	if ( fieldDescriptor->replacement && fieldDescriptor->versionState )
+		G_WarnAboutDeprecatedEntityField(entity, fieldDescriptor->replacement, key, fieldDescriptor->versionState );
 }
 
 /*
@@ -726,12 +799,21 @@ void G_SpawnGEntityFromSpawnVars( void )
 		G_ParseField( level.spawnVars[ i ][ 0 ], level.spawnVars[ i ][ 1 ], spawningEntity );
 	}
 
-	G_SpawnInt( "notq3a", "0", &i );
-
-	if ( i )
+	if(G_SpawnBoolean( "nop", qfalse ) || G_SpawnBoolean( "notunv", qfalse ))
 	{
 		G_FreeEntity( spawningEntity );
 		return;
+	}
+
+	/*
+	 * will have only the classname or missing it…
+	 * both aren't helping us and might even create a error later
+	 * in the server, where we dont know as much anymore about it,
+	 * so we fail rather here, so mappers have a chance to remove it
+	 */
+	if( level.numSpawnVars <= 1 )
+	{
+		G_Error( S_ERROR "encountered ghost-entity #%i with only one field: %s = %s\n", spawningEntity->s.number, level.spawnVars[ 0 ][ 0 ], level.spawnVars[ 0 ][ 1 ] );
 	}
 
 	// move editor origin to pos
