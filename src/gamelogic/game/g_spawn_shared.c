@@ -48,6 +48,11 @@ void think_fireDelayed( gentity_t *self )
 	G_FireEntity( self, self->activator );
 }
 
+void think_fireOnActDelayed( gentity_t *self )
+{
+	G_EventFireEntity( self, self->activator, ON_ACT );
+}
+
 /*
 =================
 AimAtTarget

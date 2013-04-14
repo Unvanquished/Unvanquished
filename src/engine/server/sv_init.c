@@ -1000,4 +1000,6 @@ void SV_Shutdown( char *finalmsg )
 
 	// disconnect any local clients
 	CL_Disconnect( qfalse );
+
+	Crypto_Shutdown();
 }

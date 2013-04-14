@@ -1240,12 +1240,6 @@ void InitMover( gentity_t *ent )
 		ent->s.modelindex2 = G_ModelIndex( ent->model2 );
 	}
 
-	// if the "noise" key is set, use a constant looping sound when moving
-	if ( G_SpawnString( "noise", "", &sound ) )
-	{
-		ent->soundIndex = G_SoundIndex( sound );
-	}
-
 	SP_ConstantLightField( ent );
 
 	ent->act = BinaryMover_act;
@@ -1311,12 +1305,6 @@ void InitRotator( gentity_t *ent )
 	if ( ent->model2 )
 	{
 		ent->s.modelindex2 = G_ModelIndex( ent->model2 );
-	}
-
-	// if the "noise" key is set, use a constant looping sound when moving
-	if ( G_SpawnString( "noise", "", &sound ) )
-	{
-		ent->soundIndex = G_SoundIndex( sound );
 	}
 
 	SP_ConstantLightField( ent );
@@ -1652,15 +1640,22 @@ void SP_func_door( gentity_t *self )
 	float  lip;
 	char   *s;
 
-	G_SpawnString( "sound2to1", "sound/movers/doors/dr1_strt.wav", &s );
-	self->sound2to1 = G_SoundIndex( s );
-	G_SpawnString( "sound1to2", "sound/movers/doors/dr1_strt.wav", &s );
-	self->sound1to2 = G_SoundIndex( s );
-
-	G_SpawnString( "soundPos2", "sound/movers/doors/dr1_end.wav", &s );
-	self->soundPos2 = G_SoundIndex( s );
-	G_SpawnString( "soundPos1", "sound/movers/doors/dr1_end.wav", &s );
-	self->soundPos1 = G_SoundIndex( s );
+	if( !self->sound1to2 )
+	{
+		self->sound1to2 = G_SoundIndex( "sound/movers/doors/dr1_strt.wav" );
+	}
+	if( !self->sound2to1 )
+	{
+		self->sound2to1 = G_SoundIndex( "sound/movers/doors/dr1_strt.wav" );
+	}
+	if( !self->soundPos1 )
+	{
+		self->soundPos1 = G_SoundIndex( "sound/movers/doors/dr1_end.wav" );
+	}
+	if( !self->soundPos2 )
+	{
+		self->soundPos2 = G_SoundIndex( "sound/movers/doors/dr1_end.wav" );
+	}
 
 	self->blocked = func_door_block;
 	self->reset = func_door_reset;
@@ -1736,15 +1731,22 @@ void SP_func_door_rotating( gentity_t *self )
 {
 	char *s;
 
-	G_SpawnString( "sound2to1", "sound/movers/doors/dr1_strt.wav", &s );
-	self->sound2to1 = G_SoundIndex( s );
-	G_SpawnString( "sound1to2", "sound/movers/doors/dr1_strt.wav", &s );
-	self->sound1to2 = G_SoundIndex( s );
-
-	G_SpawnString( "soundPos2", "sound/movers/doors/dr1_end.wav", &s );
-	self->soundPos2 = G_SoundIndex( s );
-	G_SpawnString( "soundPos1", "sound/movers/doors/dr1_end.wav", &s );
-	self->soundPos1 = G_SoundIndex( s );
+	if( !self->sound1to2 )
+	{
+		self->sound1to2 = G_SoundIndex( "sound/movers/doors/dr1_strt.wav" );
+	}
+	if( !self->sound2to1 )
+	{
+		self->sound2to1 = G_SoundIndex( "sound/movers/doors/dr1_strt.wav" );
+	}
+	if( !self->soundPos1 )
+	{
+		self->soundPos1 = G_SoundIndex( "sound/movers/doors/dr1_end.wav" );
+	}
+	if( !self->soundPos2 )
+	{
+		self->soundPos2 = G_SoundIndex( "sound/movers/doors/dr1_end.wav" );
+	}
 
 	self->blocked = func_door_block;
 	self->reset = func_door_rotating_reset;
@@ -1856,15 +1858,22 @@ void SP_func_door_model( gentity_t *self )
 	char      *sound;
 	gentity_t *clipBrush;
 
-	G_SpawnString( "sound2to1", "sound/movers/doors/dr1_strt.wav", &s );
-	self->sound2to1 = G_SoundIndex( s );
-	G_SpawnString( "sound1to2", "sound/movers/doors/dr1_strt.wav", &s );
-	self->sound1to2 = G_SoundIndex( s );
-
-	G_SpawnString( "soundPos2", "sound/movers/doors/dr1_end.wav", &s );
-	self->soundPos2 = G_SoundIndex( s );
-	G_SpawnString( "soundPos1", "sound/movers/doors/dr1_end.wav", &s );
-	self->soundPos1 = G_SoundIndex( s );
+	if( !self->sound1to2 )
+	{
+		self->sound1to2 = G_SoundIndex( "sound/movers/doors/dr1_strt.wav" );
+	}
+	if( !self->sound2to1 )
+	{
+		self->sound2to1 = G_SoundIndex( "sound/movers/doors/dr1_strt.wav" );
+	}
+	if( !self->soundPos1 )
+	{
+		self->soundPos1 = G_SoundIndex( "sound/movers/doors/dr1_end.wav" );
+	}
+	if( !self->soundPos2 )
+	{
+		self->soundPos2 = G_SoundIndex( "sound/movers/doors/dr1_end.wav" );
+	}
 
 	self->reset = func_door_model_reset;
 	self->use = func_door_use;
@@ -1890,7 +1899,6 @@ void SP_func_door_model( gentity_t *self )
 	clipBrush->model = self->model;
 	trap_SetBrushModel( clipBrush, clipBrush->model );
 	clipBrush->s.eType = ET_INVISIBLE;
-	trap_LinkEntity( clipBrush );
 
 	//copy the bounds back from the clipBrush so the
 	//triggers can be made
@@ -2065,15 +2073,22 @@ void SP_func_plat( gentity_t *self )
 	float lip, height;
 	char  *s;
 
-	G_SpawnString( "sound2to1", "sound/movers/plats/pt1_strt.wav", &s );
-	self->sound2to1 = G_SoundIndex( s );
-	G_SpawnString( "sound1to2", "sound/movers/plats/pt1_strt.wav", &s );
-	self->sound1to2 = G_SoundIndex( s );
-
-	G_SpawnString( "soundPos2", "sound/movers/plats/pt1_end.wav", &s );
-	self->soundPos2 = G_SoundIndex( s );
-	G_SpawnString( "soundPos1", "sound/movers/plats/pt1_end.wav", &s );
-	self->soundPos1 = G_SoundIndex( s );
+	if( !self->sound1to2 )
+	{
+		self->sound1to2 = G_SoundIndex( "sound/movers/plats/pt1_strt.wav" );
+	}
+	if( !self->sound2to1 )
+	{
+		self->sound2to1 = G_SoundIndex( "sound/movers/plats/pt1_strt.wav" );
+	}
+	if( !self->soundPos1 )
+	{
+		self->soundPos1 = G_SoundIndex( "sound/movers/plats/pt1_end.wav" );
+	}
+	if( !self->soundPos2 )
+	{
+		self->soundPos2 = G_SoundIndex( "sound/movers/plats/pt1_end.wav" );
+	}
 
 	VectorClear( self->s.angles );
 
@@ -2161,8 +2176,10 @@ void SP_func_button( gentity_t *self )
 	float  lip;
 	char   *s;
 
-	G_SpawnString( "sound1to2", "sound/movers/switches/button1.wav", &s );
-	self->sound1to2 = G_SoundIndex( s );
+	if( !self->sound1to2 )
+	{
+		self->sound1to2 = G_SoundIndex( "sound/movers/switches/button1.wav" );
+	}
 
 	self->reset = func_button_reset;
 
@@ -2559,8 +2576,6 @@ void SP_func_rotating( gentity_t *self )
 	VectorCopy( self->s.origin, self->s.pos.trBase );
 	VectorCopy( self->s.pos.trBase, self->r.currentOrigin );
 	VectorCopy( self->s.apos.trBase, self->r.currentAngles );
-
-	trap_LinkEntity( self );
 }
 
 /*
@@ -2710,7 +2725,6 @@ void func_destructable_die( gentity_t *self, gentity_t *inflictor, gentity_t *at
 	trap_UnlinkEntity( self );
 
 	G_RadiusDamage( self->restingPosition, attacker, self->splashDamage, self->splashRadius, self, MOD_TRIGGER_HURT );
-	G_FireEntity( self, attacker );
 }
 
 
@@ -2774,9 +2788,7 @@ void SP_func_destructable( gentity_t *self )
   self->die = func_destructable_die;
   self->act = func_destructable_act;
 
-  if( self->spawnflags & 1 )
-    trap_UnlinkEntity( self );
-  else
+  if( !self->spawnflags & 1 )
   {
     trap_LinkEntity( self );
     self->takedamage = qtrue;

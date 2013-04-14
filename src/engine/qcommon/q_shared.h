@@ -32,8 +32,8 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#ifndef __Q_SHARED_H
-#define __Q_SHARED_H
+#ifndef Q_SHARED_H_
+#define Q_SHARED_H_
 
 #if defined( __cplusplus )
 extern "C" {
@@ -250,6 +250,7 @@ extern int memcmp( void *, void *, size_t );
 	typedef unsigned int         uint;
 
 	typedef enum {qfalse, qtrue} qboolean;
+	typedef enum {qno, qyes, qmaybe} qtrinary;
 
 	typedef union
 	{
@@ -1475,76 +1476,65 @@ double rint( double x );
 	void QDECL Com_Printf( const char *msg, ... ) PRINTF_LIKE(1);
 	void QDECL Com_DPrintf( const char *msg, ... ) PRINTF_LIKE(1);
 
-	/*
-	==========================================================
+//=============================================
+/*
+ * CVARS (console variables)
+ *
+ * Many variables can be used for cheating purposes, so when
+ * cheats is zero, force all unspecified variables to their
+ * default values.
+ */
 
-	CVARS (console variables)
+/**
+ * set to cause it to be saved to autogen
+ * used for system variables, not for player
+ * specific configurations
+ */
+#define CVAR_ARCHIVE             BIT(0)
+#define CVAR_USERINFO            BIT(1)    /*< sent to server on connect or change */
+#define CVAR_SERVERINFO          BIT(2)    /*< sent in response to front end requests */
+#define CVAR_SYSTEMINFO          BIT(3)    /*< these cvars will be duplicated on all clients */
 
-	Many variables can be used for cheating purposes, so when
-	cheats is zero, force all unspecified variables to their
-	default values.
-	==========================================================
-	*/
+/**
+ * don't allow change from console at all,
+ * but can be set from the command line
+ */
+#define CVAR_INIT                BIT(4)
 
-#define CVAR_ARCHIVE    1 // set to cause it to be saved to vars.rc
-// used for system variables, not for player
-// specific configurations
-#define CVAR_USERINFO   2 // sent to server on connect or change
-#define CVAR_SERVERINFO 4 // sent in response to front end requests
-#define CVAR_SYSTEMINFO 8 // these cvars will be duplicated on all clients
-#define CVAR_INIT       16 // don't allow change from console at all,
-// but can be set from the command line
-#define CVAR_LATCH      32 // will only change when C code next does
-// a Cvar_Get(), so it can't be changed
-// without proper initialization.  modified
-// will be set, even though the value hasn't
-// changed yet
-#define CVAR_ROM                 64 // display only, cannot be set by user at all
-#define CVAR_USER_CREATED        128 // created by a set command
-#define CVAR_TEMP                256 // can be set even when cheats are disabled, but is not archived
-#define CVAR_CHEAT               512 // can not be changed if cheats are disabled
-#define CVAR_NORESTART           1024 // do not clear when a cvar_restart is issued
-#define CVAR_SHADER              2048 // tell renderer to recompile shaders.
+/**
+ * will only change when C code next does a Cvar_Get(),
+ * so it can't be changed without proper initialization.
+ * modified will be set, even though the value hasn't changed yet
+ */
+#define CVAR_LATCH               BIT(5)
+#define CVAR_ROM                 BIT(6)   /*< display only, cannot be set by user at all */
+#define CVAR_USER_CREATED        BIT(7)   /*< created by a set command */
+#define CVAR_TEMP                BIT(8)   /*< can be set even when cheats are disabled, but is not archived */
+#define CVAR_CHEAT               BIT(9)   /*< can not be changed if cheats are disabled */
+#define CVAR_NORESTART           BIT(10)  /*< do not clear when a cvar_restart is issued */
+#define CVAR_SHADER              BIT(11)  /*< tell renderer to recompile shaders. */
 
-#define CVAR_UNSAFE              4096 // ydnar: unsafe system cvars (renderer, sound settings, anything that might cause a crash)
-#define CVAR_SERVERINFO_NOUPDATE 8192 // gordon: won't automatically send this to clients, but server browsers will see it
-#define CVAR_NONEXISTENT         0xFFFFFFFF // Cvar doesn't exist.
+/**
+ * unsafe system cvars (renderer, sound settings,
+ * anything that might cause a crash)
+ */
+#define CVAR_UNSAFE              BIT(12)
 
-// nothing outside the Cvar_*() functions should modify these fields!
-	typedef struct cvar_s
-	{
-		char          *name;
-		char          *string;
-		char          *resetString; // cvar_restart will reset to this value
-		char          *latchedString; // for CVAR_LATCH vars
-		int           flags;
-		qboolean      modified; // set each time the cvar is changed
-		int           modificationCount; // incremented each time the cvar is changed
-		float         value; // atof( string )
-		int           integer; // atoi( string )
-
-		/**
-		 * indicate whether the cvar won't be archived, even if it's an ARCHIVE flagged cvar.
-		 * this allows us to keep ARCHIVE cvars unwritten to autogen until a user changes them
-		 */
-		qboolean      transient;
-
-		qboolean      validate;
-		qboolean      integral;
-		float         min;
-		float         max;
-
-		struct cvar_s *next;
-
-		struct cvar_s *hashNext;
-	} cvar_t;
+/**
+ * won't automatically be send to clients,
+ * but server browsers will see it
+ */
+#define CVAR_SERVERINFO_NOUPDATE BIT(13)
+#define CVAR_NONEXISTENT         0xFFFFFFFF /*< Cvar doesn't exist. */
 
 #define MAX_CVAR_VALUE_STRING 256
 
 	typedef int cvarHandle_t;
 
-// the modules that run in the virtual machine can't access the cvar_t directly,
-// so they must ask for structured updates
+/**
+ * the modules that run in the virtual machine can't access the cvar_t directly,
+ * so they must ask for structured updates
+ */
 	typedef struct
 	{
 		cvarHandle_t handle;
@@ -2272,4 +2262,4 @@ typedef struct
 }
 #endif
 
-#endif // __Q_SHARED_H
+#endif /* Q_SHARED_H_ */

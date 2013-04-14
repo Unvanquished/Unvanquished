@@ -1876,19 +1876,6 @@ static void CG_DrawDemoRecording( rectDef_t *rect, vec4_t color, qhandle_t shade
 }
 
 /*
-======================
-CG_UpdateMediaFraction
-
-======================
-*/
-void CG_UpdateMediaFraction( float newFract )
-{
-	cg.mediaFraction = newFract;
-
-	trap_UpdateScreen();
-}
-
-/*
 ====================
 CG_DrawLoadingScreen
 
