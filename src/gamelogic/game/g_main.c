@@ -99,22 +99,19 @@ vmCvar_t           g_initialMineRate;
 vmCvar_t           g_mineRateHalfLife;
 
 vmCvar_t           g_confidenceHalfLife;
+vmCvar_t           g_minimumStageTime;
 
 vmCvar_t           g_alienOffCreepRegenHalfLife;
 
 vmCvar_t           g_humanStage;
 vmCvar_t           g_humanMaxStage;
-vmCvar_t           g_humanStage1Below;
-vmCvar_t           g_humanStage2Above;
-vmCvar_t           g_humanStage2Below;
-vmCvar_t           g_humanStage3Above;
+vmCvar_t           g_humanStage2Threshold;
+vmCvar_t           g_humanStage3Threshold;
 
 vmCvar_t           g_alienStage;
 vmCvar_t           g_alienMaxStage;
-vmCvar_t           g_alienStage1Below;
-vmCvar_t           g_alienStage2Above;
-vmCvar_t           g_alienStage2Below;
-vmCvar_t           g_alienStage3Above;
+vmCvar_t           g_alienStage2Threshold;
+vmCvar_t           g_alienStage3Threshold;
 
 vmCvar_t           g_teamImbalanceWarnings;
 vmCvar_t           g_freeFundPeriod;
@@ -268,20 +265,17 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_mineRateHalfLife,            "g_mineRateHalfLife",            DEFAULT_MINE_RATE_HALF_LIFE,        CVAR_ARCHIVE,                                    0, qfalse           },
 
 	{ &g_confidenceHalfLife,          "g_confidenceHalfLife",          DEFAULT_CONFIDENCE_HALF_LIFE,       CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_minimumStageTime,            "g_minimumStageTime",            DEFAULT_MINIMUM_STAGE_TIME,         CVAR_ARCHIVE,                                    0, qfalse           },
 
 	{ &g_humanStage,                  "g_humanStage",                  "0",                                0,                                               0, qfalse           },
 	{ &g_humanMaxStage,               "g_humanMaxStage",               DEFAULT_HUMAN_MAX_STAGE,            0,                                               0, qfalse, cv_humanMaxStage},
-	{ &g_humanStage1Below,            "g_humanStage1Below",            DEFAULT_HUMAN_STAGE1_BELOW,         0,                                               0, qfalse           },
-	{ &g_humanStage2Above,            "g_humanStage2Above",            DEFAULT_HUMAN_STAGE2_ABOVE,         0,                                               0, qfalse           },
-	{ &g_humanStage2Below,            "g_humanStage2Below",            DEFAULT_HUMAN_STAGE2_BELOW,         0,                                               0, qfalse           },
-	{ &g_humanStage3Above,            "g_humanStage3Above",            DEFAULT_HUMAN_STAGE3_ABOVE,         0,                                               0, qfalse           },
+	{ &g_humanStage2Threshold,        "g_humanStage2Threshold",        DEFAULT_HUMAN_STAGE2_THRESHOLD,     0,                                               0, qfalse           },
+	{ &g_humanStage3Threshold,        "g_humanStage3Threshold",        DEFAULT_HUMAN_STAGE3_THRESHOLD,     0,                                               0, qfalse           },
 
 	{ &g_alienStage,                  "g_alienStage",                  "0",                                0,                                               0, qfalse           },
 	{ &g_alienMaxStage,               "g_alienMaxStage",               DEFAULT_ALIEN_MAX_STAGE,            0,                                               0, qfalse, cv_alienMaxStage},
-	{ &g_alienStage1Below,            "g_alienStage1Below",            DEFAULT_ALIEN_STAGE1_BELOW,         0,                                               0, qfalse           },
-	{ &g_alienStage2Above,            "g_alienStage2Above",            DEFAULT_ALIEN_STAGE2_ABOVE,         0,                                               0, qfalse           },
-	{ &g_alienStage2Below,            "g_alienStage2Below",            DEFAULT_ALIEN_STAGE2_BELOW,         0,                                               0, qfalse           },
-	{ &g_alienStage3Above,            "g_alienStage3Above",            DEFAULT_ALIEN_STAGE3_ABOVE,         0,                                               0, qfalse           },
+	{ &g_alienStage2Threshold,        "g_alienStage2Threshold",        DEFAULT_ALIEN_STAGE2_THRESHOLD,     0,                                               0, qfalse           },
+	{ &g_alienStage3Threshold,        "g_alienStage3Threshold",        DEFAULT_ALIEN_STAGE3_THRESHOLD,     0,                                               0, qfalse           },
 
 	{ &g_alienOffCreepRegenHalfLife,  "g_alienOffCreepRegenHalfLife",  "5",                                CVAR_ARCHIVE,                                    0, qfalse           },
 
@@ -1417,15 +1411,15 @@ void G_CalculateStages( void )
 	           stage,
 	           stageModCount,
 	           maxStage,
-	           S1Below,
-	           S2Above,
-	           S2Below,
-	           S3Above,
+	           S2Threshold,
+	           S3Threshold,
 	           *S2Time,
 	           *S3Time,
 	           CSStages,
 	           newStage,
-	           nextThreshold;
+	           nextThreshold,
+	           prevThreshold;
+	float      bonus;
 	const char *stageCVar,
 	           *teamName;
 
@@ -1445,10 +1439,8 @@ void G_CalculateStages( void )
 				stage          = g_alienStage.integer;
 				stageModCount  = g_alienStage.modificationCount;
 				maxStage       = g_alienMaxStage.integer;
-				S1Below        = g_alienStage1Below.integer;
-				S2Above        = g_alienStage2Above.integer;
-				S2Below        = g_alienStage2Below.integer;
-				S3Above        = g_alienStage3Above.integer;
+				S2Threshold    = g_alienStage2Threshold.integer;
+				S3Threshold    = g_alienStage3Threshold.integer;
 				S2Time         = &level.alienStage2Time;
 				S3Time         = &level.alienStage3Time;
 				stageCVar      = "g_alienStage";
@@ -1460,10 +1452,8 @@ void G_CalculateStages( void )
 				stage          = g_humanStage.integer;
 				stageModCount  = g_humanStage.modificationCount;
 				maxStage       = g_humanMaxStage.integer;
-				S1Below        = g_humanStage1Below.integer;
-				S2Above        = g_humanStage2Above.integer;
-				S2Below        = g_humanStage2Below.integer;
-				S3Above        = g_humanStage3Above.integer;
+				S2Threshold    = g_humanStage2Threshold.integer;
+				S3Threshold    = g_humanStage3Threshold.integer;
 				S2Time         = &level.humanStage2Time;
 				S3Time         = &level.humanStage3Time;
 				stageCVar      = "g_humanStage";
@@ -1476,7 +1466,7 @@ void G_CalculateStages( void )
 
 		newStage = stage;
 
-		if ( confidence >= S3Above && maxStage >= S3 )
+		if ( confidence >= S3Threshold && maxStage >= S3 )
 		{
 			if ( stage == S3 )
 			{
@@ -1484,6 +1474,7 @@ void G_CalculateStages( void )
 			}
 
 			newStage = S3;
+			prevThreshold = S3Threshold;
 			nextThreshold = -1;
 
 			if ( *S3Time == level.startTime )
@@ -1496,11 +1487,7 @@ void G_CalculateStages( void )
 				*S3Time = level.time;
 			}
 		}
-		else if ( confidence >= S2Below && stage >= S3 )
-		{
-			continue;
-		}
-		else if ( confidence >= S2Above && maxStage >= S2 )
+		else if ( confidence >= S2Threshold && maxStage >= S2 )
 		{
 			if ( stage == S2 )
 			{
@@ -1508,25 +1495,23 @@ void G_CalculateStages( void )
 			}
 
 			newStage = S2;
-			nextThreshold = S3Above;
+			prevThreshold = S2Threshold;
+			nextThreshold = S3Threshold;
 
 			if ( *S2Time == level.startTime )
 			{
 				*S2Time = level.time;
 			}
 		}
-		else if ( confidence >= S1Below && stage >= S2 )
-		{
-			continue;
-		}
 		else if ( stage != S1 )
 		{
 			newStage = S1;
-			nextThreshold = S2Above;
+			prevThreshold = -1;
+			nextThreshold = S2Threshold;
 		}
 		else if ( nextCalculation == 0 )
 		{
-			trap_SetConfigstring( CSStages, va( "%d %d", S1, S2Above ) );
+			trap_SetConfigstring( CSStages, va( "%d %d", S1, S2Threshold ) );
 			continue;
 		}
 		else
@@ -1537,12 +1522,23 @@ void G_CalculateStages( void )
 		trap_Cvar_Set( stageCVar, va( "%d", newStage ) );
 		trap_SetConfigstring( CSStages, va( "%d %d", newStage, nextThreshold ) );
 
+		// give extra confidence on stageup, so the new stage won't be lost in the next g_minimumStageTime seconds
+		if ( newStage > stage && g_minimumStageTime.integer > 0 && g_confidenceHalfLife.integer > 0 )
+		{
+			// ln(2) ~= 0.6931472
+			bonus = prevThreshold *
+			        ( exp( ( 0.6931472 * g_minimumStageTime.value ) / ( g_confidenceHalfLife.value * 60.0f ) ) - 1.0f );
+			G_AddConfidence( team, CONFIDENCE_GENERAL, CONF_REAS_STAGEUP, CONF_QUAL_NONE, bonus, NULL );
+		}
+
+		// notify stage sensors of stageup
 		while ( stage < newStage )
 		{
 			G_notify_sensor_stage( team, stage, stage + 1 );
 			++stage;
 		}
 
+		// notify stage sensors of stagedown
 		while ( stage > newStage )
 		{
 			G_notify_sensor_stage( team, stage, stage - 1 );
