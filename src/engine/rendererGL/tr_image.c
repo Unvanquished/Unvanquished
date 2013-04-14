@@ -1143,8 +1143,6 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 		}
 	}
 
-	scaledBuffer = ri.Hunk_AllocateTempMemory( sizeof( byte ) * scaledWidth * scaledHeight * 4 );
-
 	// set target
 	switch ( image->type )
 	{
@@ -1160,11 +1158,6 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 			target = GL_TEXTURE_2D;
 			break;
 	}
-
-	// scan the texture for each channel's max values
-	// and verify if the alpha channel is being used or not
-	c = image->width * image->height;
-	scan = data;
 
 	if ( image->bits & ( IF_DEPTH16 | IF_DEPTH24 | IF_DEPTH32 ) )
 	{
@@ -1224,9 +1217,17 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 	{
 		internalFormat = GL_RGBA8;
 	}
+	else if ( !data ) {
+		internalFormat = GL_RGBA8;
+	}
 	else
 	{
 		int samples;
+
+		// scan the texture for each channel's max values
+		// and verify if the alpha channel is being used or not
+		c = image->width * image->height;
+		scan = data;
 
 		samples = 3;
 
@@ -1310,24 +1311,32 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 			      0, format, GL_UNSIGNED_BYTE, NULL );
 	}
 
+	if( data )
+		scaledBuffer = ri.Hunk_AllocateTempMemory( sizeof( byte ) * scaledWidth * scaledHeight * 4 );
+	else
+		scaledBuffer = NULL;
+
 	for ( i = 0; i < numData; i++ )
 	{
 		data = dataArray[ i ];
 
-		// copy or resample data as appropriate for first MIP level
-		if ( ( scaledWidth == image->width ) && ( scaledHeight == image->height ) )
+		if( scaledBuffer )
 		{
-			Com_Memcpy( scaledBuffer, data, scaledWidth * scaledHeight * 4 );
-		}
-		else
-		{
-			ResampleTexture( ( unsigned * ) data, image->width, image->height, ( unsigned * ) scaledBuffer, scaledWidth, scaledHeight,
-			                 ( image->bits & IF_NORMALMAP ) );
-		}
+			// copy or resample data as appropriate for first MIP level
+			if ( ( scaledWidth == image->width ) && ( scaledHeight == image->height ) )
+			{
+				Com_Memcpy( scaledBuffer, data, scaledWidth * scaledHeight * 4 );
+			}
+			else
+			{
+				ResampleTexture( ( unsigned * ) data, image->width, image->height, ( unsigned * ) scaledBuffer, scaledWidth, scaledHeight,
+						 ( image->bits & IF_NORMALMAP ) );
+			}
 
-		if ( !( image->bits & ( IF_NORMALMAP | IF_RGBA16F | IF_RGBA32F | IF_LA16F | IF_LA32F | IF_NOLIGHTSCALE ) ) )
-		{
-			R_LightScaleTexture( ( unsigned * ) scaledBuffer, scaledWidth, scaledHeight, image->filterType == FT_DEFAULT );
+			if ( !( image->bits & ( IF_NORMALMAP | IF_RGBA16F | IF_RGBA32F | IF_LA16F | IF_LA32F | IF_NOLIGHTSCALE ) ) )
+			{
+				R_LightScaleTexture( ( unsigned * ) scaledBuffer, scaledWidth, scaledHeight, image->filterType == FT_DEFAULT );
+			}
 		}
 
 		image->uploadWidth = scaledWidth;
@@ -3053,7 +3062,6 @@ static void R_CreateBloomRenderFBOImage( void )
 {
 	int  i;
 	int  width, height;
-	byte *data;
 
 	if ( glConfig2.textureNPOTAvailable )
 	{
@@ -3066,21 +3074,17 @@ static void R_CreateBloomRenderFBOImage( void )
 		height = NearestPowerOfTwo( glConfig.vidHeight ) * 0.25f;
 	}
 
-	data = ri.Hunk_AllocateTempMemory( width * height * 4 );
-
 	for ( i = 0; i < 2; i++ )
 	{
 		if ( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
 		{
-			tr.bloomRenderFBOImage[ i ] = R_CreateImage( va( "_bloomRenderFBO%d", i ), data, width, height, IF_NOPICMIP | IF_NOCOMPRESSION | IF_RGBA16F, FT_LINEAR, WT_CLAMP );
+			tr.bloomRenderFBOImage[ i ] = R_CreateImage( va( "_bloomRenderFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_NOCOMPRESSION | IF_RGBA16F, FT_LINEAR, WT_CLAMP );
 		}
 		else
 		{
-			tr.bloomRenderFBOImage[ i ] = R_CreateImage( va( "_bloomRenderFBO%d", i ), data, width, height, IF_NOPICMIP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP );
+			tr.bloomRenderFBOImage[ i ] = R_CreateImage( va( "_bloomRenderFBO%d", i ), NULL, width, height, IF_NOPICMIP | IF_NOCOMPRESSION, FT_LINEAR, WT_CLAMP );
 		}
 	}
-
-	ri.Hunk_FreeTempMemory( data );
 }
 
 static void R_CreateCurrentRenderImage( void )
