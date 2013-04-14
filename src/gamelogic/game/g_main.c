@@ -98,7 +98,7 @@ vmCvar_t           g_initialBuildPoints;
 vmCvar_t           g_initialMineRate;
 vmCvar_t           g_mineRateHalfLife;
 
-vmCvar_t           g_confidenceSumPeriod;
+vmCvar_t           g_confidenceHalfLife;
 
 vmCvar_t           g_alienOffCreepRegenHalfLife;
 
@@ -263,13 +263,11 @@ static cvarTable_t gameCvarTable[] =
 	{ &pmove_msec,                    "pmove_msec",                    "8",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 	{ &pmove_accurate,                "pmove_accurate",                "0",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 
-	{ &g_initialBuildPoints,          "g_initialBuildPoints",          DEFAULT_INITIAL_BUILD_POINTS,        CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_initialMineRate,             "g_initialMineRate",             DEFAULT_INITIAL_MINE_RATE,           CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_mineRateHalfLife,            "g_mineRateHalfLife",            DEFAULT_MINE_RATE_HALF_LIFE,         CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_initialBuildPoints,          "g_initialBuildPoints",          DEFAULT_INITIAL_BUILD_POINTS,       CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_initialMineRate,             "g_initialMineRate",             DEFAULT_INITIAL_MINE_RATE,          CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_mineRateHalfLife,            "g_mineRateHalfLife",            DEFAULT_MINE_RATE_HALF_LIFE,        CVAR_ARCHIVE,                                    0, qfalse           },
 
-	{ &g_confidenceSumPeriod,         "g_confidenceSumPeriod",         DEFAULT_CONFIDENCE_SUM_PERIOD,       CVAR_ARCHIVE,                                    0, qfalse           },
-
-	{ &g_alienOffCreepRegenHalfLife,  "g_alienOffCreepRegenHalfLife",  "5",                               CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_confidenceHalfLife,          "g_confidenceHalfLife",          DEFAULT_CONFIDENCE_HALF_LIFE,       CVAR_ARCHIVE,                                    0, qfalse           },
 
 	{ &g_humanStage,                  "g_humanStage",                  "0",                                0,                                               0, qfalse           },
 	{ &g_humanMaxStage,               "g_humanMaxStage",               DEFAULT_HUMAN_MAX_STAGE,            0,                                               0, qfalse, cv_humanMaxStage},
@@ -284,6 +282,8 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_alienStage2Above,            "g_alienStage2Above",            DEFAULT_ALIEN_STAGE2_ABOVE,         0,                                               0, qfalse           },
 	{ &g_alienStage2Below,            "g_alienStage2Below",            DEFAULT_ALIEN_STAGE2_BELOW,         0,                                               0, qfalse           },
 	{ &g_alienStage3Above,            "g_alienStage3Above",            DEFAULT_ALIEN_STAGE3_ABOVE,         0,                                               0, qfalse           },
+
+	{ &g_alienOffCreepRegenHalfLife,  "g_alienOffCreepRegenHalfLife",  "5",                                CVAR_ARCHIVE,                                    0, qfalse           },
 
 	{ &g_teamImbalanceWarnings,       "g_teamImbalanceWarnings",       "30",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_freeFundPeriod,              "g_freeFundPeriod",              DEFAULT_FREEKILL_PERIOD,            CVAR_ARCHIVE,                                    0, qtrue            },
@@ -359,7 +359,7 @@ void               CheckExitRules( void );
 
 void               G_CountSpawns( void );
 void               G_CalculateMineRate( void );
-void               G_SumTeamConfidence( void );
+void               G_DecreaseConfidence( void );
 
 /*
 ================
@@ -1288,8 +1288,6 @@ void G_CountSpawns( void )
 	}
 }
 
-#define PLAYER_COUNT_MOD 5.0f
-
 /*
 ============
 G_CalculateMineRate
@@ -1340,22 +1338,40 @@ void G_CalculateMineRate( void )
 
 /*
 ============
-G_SumTeamConfidence
+G_DecreaseConfidence
+
+Decreases both teams confidence according to g_confidenceHalfLife.
+g_confidenceHalfLife <= 0 disables decrease.
 ============
 */
-void G_SumTeamConfidence( void )
-{
-	team_t          team;
-	confidenceLog_t **logs, *head, *log;
-	confidence_t	type;
-	int             period, CSConfidence;
-	float           *confidence, amount;
+#define DECREASE_CONFIDENCE_PERIOD 1000
 
-	static int nextCalculation = 0;
+void G_DecreaseConfidence( void )
+{
+	team_t       team;
+	confidence_t type;
+	float        *confidence;
+	int          CSConfidence;
+
+	static float decreaseFactor = 1.0f, lastConfidenceHalfLife = 0.0f;
+	static int   nextCalculation = 0;
 
 	if ( level.time < nextCalculation )
 	{
 		return;
+	}
+
+	if ( g_confidenceHalfLife.value <= 0.0f )
+	{
+		return;
+	}
+
+	if ( lastConfidenceHalfLife != g_confidenceHalfLife.value )
+	{
+		// ln(2) ~= 0.6931472
+		decreaseFactor = exp( ( -0.6931472f / ( ( 60000.0f / DECREASE_CONFIDENCE_PERIOD ) * g_confidenceHalfLife.value ) ) );
+
+		lastConfidenceHalfLife = g_confidenceHalfLife.value;
 	}
 
 	for ( team = NUM_TEAMS - 1; team > TEAM_NONE; team-- )
@@ -1363,14 +1379,10 @@ void G_SumTeamConfidence( void )
 		switch ( team )
 		{
 			case TEAM_ALIENS:
-				logs = &level.alienConfidenceLogs;
-				head = log = *logs;
 				confidence = level.alienConfidence;
 				CSConfidence = CS_ALIEN_CONFIDENCE;
 				break;
 			case TEAM_HUMANS:
-				logs = &level.humanConfidenceLogs;
-				head = log = *logs;
 				confidence = level.humanConfidence;
 				CSConfidence = CS_HUMAN_CONFIDENCE;
 				break;
@@ -1378,42 +1390,19 @@ void G_SumTeamConfidence( void )
 				continue;
 		}
 
-		// reset confidence
-		for ( type = CONFIDENCE_SUM; type < NUM_CONFIDENCE_TYPES; type++ )
+		confidence[ CONFIDENCE_SUM ] = 0.0f;
+
+		for ( type = CONFIDENCE_SUM + 1; type < NUM_CONFIDENCE_TYPES; type++ )
 		{
-			confidence[ type ] = 0.0f;
-		}
-
-		period = g_confidenceSumPeriod.value * 60000;
-
-		while ( log != NULL )
-		{
-			// remove old logs
-			if ( log->time + period <= level.time )
-			{
-				head = log->next;
-				BG_Free( log );
-				log = head;
-				*logs = head;
-			}
-			// add to confidence
-			else
-			{
-				// fade out the effect of each reward
-				amount = log->amount * ( ( period - ( level.time - log->time ) ) / ( float )period );
-
-				confidence[ log->type ] += amount;
-				confidence[ CONFIDENCE_SUM ] += amount;
-
-				log = log->next;
-			}
+			confidence[ type ] *= decreaseFactor;
+			confidence[ CONFIDENCE_SUM ] += confidence[ type ];
 		}
 
 		// send total confidence to clients
 		trap_SetConfigstring( CSConfidence, va( "%f", confidence[ CONFIDENCE_SUM ] ) );
 	}
 
-	nextCalculation = level.time + 200;
+	nextCalculation = level.time + DECREASE_CONFIDENCE_PERIOD;
 }
 
 /*
@@ -1452,7 +1441,7 @@ void G_CalculateStages( void )
 		switch ( team )
 		{
 			case TEAM_ALIENS:
-				confidence     = level.alienConfidence[ CONFIDENCE_SUM ];
+				confidence     = ( int )level.alienConfidence[ CONFIDENCE_SUM ];
 				stage          = g_alienStage.integer;
 				stageModCount  = g_alienStage.modificationCount;
 				maxStage       = g_alienMaxStage.integer;
@@ -1467,7 +1456,7 @@ void G_CalculateStages( void )
 				CSStages       = CS_ALIEN_STAGES;
 				break;
 			case TEAM_HUMANS:
-				confidence     = level.humanConfidence[ CONFIDENCE_SUM ];
+				confidence     = ( int )level.humanConfidence[ CONFIDENCE_SUM ];
 				stage          = g_humanStage.integer;
 				stageModCount  = g_humanStage.modificationCount;
 				maxStage       = g_humanMaxStage.integer;
@@ -2790,7 +2779,7 @@ void G_RunFrame( int levelTime )
 
 	G_CountSpawns();
 	G_CalculateMineRate();
-	G_SumTeamConfidence();
+	G_DecreaseConfidence();
 	G_CalculateStages();
 	G_SpawnClients( TEAM_ALIENS );
 	G_SpawnClients( TEAM_HUMANS );

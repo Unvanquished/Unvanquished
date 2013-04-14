@@ -752,17 +752,17 @@ qboolean G_AddressCompare( const addr_t *a, const addr_t *b )
 void G_AddConfidence( team_t team, confidence_t type, confidence_reason_t reason,
                       confidence_qualifier_t qualifier, float amount, gentity_t *source )
 {
-	confidenceLog_t **logs, *log, *newlog;
+	float     *confidence;
 	gclient_t *client = NULL;
 	gentity_t *event;
 
 	switch ( team )
 	{
 		case TEAM_ALIENS:
-			logs = &level.alienConfidenceLogs;
+			confidence = level.alienConfidence;
 			break;
 		case TEAM_HUMANS:
-			logs = &level.humanConfidenceLogs;
+			confidence = level.humanConfidence;
 			break;
 		default:
 			return;
@@ -773,44 +773,21 @@ void G_AddConfidence( team_t team, confidence_t type, confidence_reason_t reason
 		return;
 	}
 
-	// create new log
-	newlog = (confidenceLog_t *)BG_Alloc( sizeof( confidenceLog_t ) );
-	newlog->next = NULL;
-	newlog->type = type;
-	newlog->time = level.time;
-	newlog->amount = amount;
-	newlog->source = source;
+	confidence[ type ] += amount;
 
-	// append log
-	if ( *logs == NULL )
-	{
-		*logs = newlog;
-	}
-	else
-	{
-		log = *logs;
-
-		while ( log->next != NULL )
-		{
-			log = log->next;
-		}
-
-		log->next = newlog;
-	}
-
+	// If source is a client who is still on the team, notify
 	if ( source )
 	{
 		client = source->client;
-	}
 
-	// If source is a client who is still on the team, notify
-	if ( client && client->pers.teamSelection == team )
-	{
-		event = G_NewTempEntity( client->ps.origin, EV_CONFIDENCE );
-		event->s.eventParm = reason;
-		event->s.otherEntityNum = qualifier;
-		event->s.otherEntityNum2 = ( int )( amount * 10.0f );
-		event->r.svFlags = SVF_SINGLECLIENT;
-		event->r.singleClient = client->ps.clientNum;
+		if ( client && client->pers.teamSelection == team )
+		{
+			event = G_NewTempEntity( client->ps.origin, EV_CONFIDENCE );
+			event->s.eventParm = reason;
+			event->s.otherEntityNum = qualifier;
+			event->s.otherEntityNum2 = ( int )( amount * 10.0f );
+			event->r.svFlags = SVF_SINGLECLIENT;
+			event->r.singleClient = client->ps.clientNum;
+		}
 	}
 }

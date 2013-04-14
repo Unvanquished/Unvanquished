@@ -670,19 +670,6 @@ typedef enum
 } confidence_t;
 
 //
-// confidence log entry
-//
-typedef struct confidenceLog_s
-{
-	struct confidenceLog_s *next;
-
-	int                    time;
-	confidence_t           type;
-	float                  amount;
-	gentity_t              *source;
-} confidenceLog_t;
-
-//
 // this structure is cleared as each map is entered
 //
 #define MAX_SPAWN_VARS       64
@@ -781,8 +768,6 @@ typedef struct
 	int              humanMineEfficiency;
 	float            mineRate;
 
-	confidenceLog_t  *alienConfidenceLogs;
-	confidenceLog_t  *humanConfidenceLogs;
 	float            alienConfidence[ NUM_CONFIDENCE_TYPES ];
 	float            humanConfidence[ NUM_CONFIDENCE_TYPES ];
 
