@@ -100,23 +100,20 @@ vmCvar_t           g_initialBuildPoints;
 vmCvar_t           g_initialMineRate;
 vmCvar_t           g_mineRateHalfLife;
 
-vmCvar_t           g_confidenceSumPeriod;
+vmCvar_t           g_confidenceHalfLife;
+vmCvar_t           g_minimumStageTime;
 
 vmCvar_t           g_alienOffCreepRegenHalfLife;
 
 vmCvar_t           g_humanStage;
 vmCvar_t           g_humanMaxStage;
-vmCvar_t           g_humanStage1Below;
-vmCvar_t           g_humanStage2Above;
-vmCvar_t           g_humanStage2Below;
-vmCvar_t           g_humanStage3Above;
+vmCvar_t           g_humanStage2Threshold;
+vmCvar_t           g_humanStage3Threshold;
 
 vmCvar_t           g_alienStage;
 vmCvar_t           g_alienMaxStage;
-vmCvar_t           g_alienStage1Below;
-vmCvar_t           g_alienStage2Above;
-vmCvar_t           g_alienStage2Below;
-vmCvar_t           g_alienStage3Above;
+vmCvar_t           g_alienStage2Threshold;
+vmCvar_t           g_alienStage3Threshold;
 
 vmCvar_t           g_teamImbalanceWarnings;
 vmCvar_t           g_freeFundPeriod;
@@ -310,27 +307,24 @@ static cvarTable_t gameCvarTable[] =
 	{ &pmove_msec,                    "pmove_msec",                    "8",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 	{ &pmove_accurate,                "pmove_accurate",                "0",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 
-	{ &g_initialBuildPoints,          "g_initialBuildPoints",          DEFAULT_INITIAL_BUILD_POINTS,        CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_initialMineRate,             "g_initialMineRate",             DEFAULT_INITIAL_MINE_RATE,           CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_mineRateHalfLife,            "g_mineRateHalfLife",            DEFAULT_MINE_RATE_HALF_LIFE,         CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_initialBuildPoints,          "g_initialBuildPoints",          DEFAULT_INITIAL_BUILD_POINTS,       CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_initialMineRate,             "g_initialMineRate",             DEFAULT_INITIAL_MINE_RATE,          CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_mineRateHalfLife,            "g_mineRateHalfLife",            DEFAULT_MINE_RATE_HALF_LIFE,        CVAR_ARCHIVE,                                    0, qfalse           },
 
-	{ &g_confidenceSumPeriod,         "g_confidenceSumPeriod",         DEFAULT_CONFIDENCE_SUM_PERIOD,       CVAR_ARCHIVE,                                    0, qfalse           },
-
-	{ &g_alienOffCreepRegenHalfLife,  "g_alienOffCreepRegenHalfLife",  "5",                               CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_confidenceHalfLife,          "g_confidenceHalfLife",          DEFAULT_CONFIDENCE_HALF_LIFE,       CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_minimumStageTime,            "g_minimumStageTime",            DEFAULT_MINIMUM_STAGE_TIME,         CVAR_ARCHIVE,                                    0, qfalse           },
 
 	{ &g_humanStage,                  "g_humanStage",                  "0",                                0,                                               0, qfalse           },
 	{ &g_humanMaxStage,               "g_humanMaxStage",               DEFAULT_HUMAN_MAX_STAGE,            0,                                               0, qfalse, cv_humanMaxStage},
-	{ &g_humanStage1Below,            "g_humanStage1Below",            DEFAULT_HUMAN_STAGE1_BELOW,         0,                                               0, qfalse           },
-	{ &g_humanStage2Above,            "g_humanStage2Above",            DEFAULT_HUMAN_STAGE2_ABOVE,         0,                                               0, qfalse           },
-	{ &g_humanStage2Below,            "g_humanStage2Below",            DEFAULT_HUMAN_STAGE2_BELOW,         0,                                               0, qfalse           },
-	{ &g_humanStage3Above,            "g_humanStage3Above",            DEFAULT_HUMAN_STAGE3_ABOVE,         0,                                               0, qfalse           },
+	{ &g_humanStage2Threshold,        "g_humanStage2Threshold",        DEFAULT_HUMAN_STAGE2_THRESHOLD,     0,                                               0, qfalse           },
+	{ &g_humanStage3Threshold,        "g_humanStage3Threshold",        DEFAULT_HUMAN_STAGE3_THRESHOLD,     0,                                               0, qfalse           },
 
 	{ &g_alienStage,                  "g_alienStage",                  "0",                                0,                                               0, qfalse           },
 	{ &g_alienMaxStage,               "g_alienMaxStage",               DEFAULT_ALIEN_MAX_STAGE,            0,                                               0, qfalse, cv_alienMaxStage},
-	{ &g_alienStage1Below,            "g_alienStage1Below",            DEFAULT_ALIEN_STAGE1_BELOW,         0,                                               0, qfalse           },
-	{ &g_alienStage2Above,            "g_alienStage2Above",            DEFAULT_ALIEN_STAGE2_ABOVE,         0,                                               0, qfalse           },
-	{ &g_alienStage2Below,            "g_alienStage2Below",            DEFAULT_ALIEN_STAGE2_BELOW,         0,                                               0, qfalse           },
-	{ &g_alienStage3Above,            "g_alienStage3Above",            DEFAULT_ALIEN_STAGE3_ABOVE,         0,                                               0, qfalse           },
+	{ &g_alienStage2Threshold,        "g_alienStage2Threshold",        DEFAULT_ALIEN_STAGE2_THRESHOLD,     0,                                               0, qfalse           },
+	{ &g_alienStage3Threshold,        "g_alienStage3Threshold",        DEFAULT_ALIEN_STAGE3_THRESHOLD,     0,                                               0, qfalse           },
+
+	{ &g_alienOffCreepRegenHalfLife,  "g_alienOffCreepRegenHalfLife",  "5",                                CVAR_ARCHIVE,                                    0, qfalse           },
 
 	{ &g_teamImbalanceWarnings,       "g_teamImbalanceWarnings",       "30",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_freeFundPeriod,              "g_freeFundPeriod",              DEFAULT_FREEKILL_PERIOD,            CVAR_ARCHIVE,                                    0, qtrue            },
@@ -444,7 +438,7 @@ void               CheckExitRules( void );
 
 void               G_CountSpawns( void );
 void               G_CalculateMineRate( void );
-void               G_SumTeamConfidence( void );
+void               G_DecreaseConfidence( void );
 
 /*
 ================
@@ -1386,8 +1380,6 @@ void G_CountSpawns( void )
 	}
 }
 
-#define PLAYER_COUNT_MOD 5.0f
-
 /*
 ============
 G_CalculateMineRate
@@ -1438,22 +1430,40 @@ void G_CalculateMineRate( void )
 
 /*
 ============
-G_SumTeamConfidence
+G_DecreaseConfidence
+
+Decreases both teams confidence according to g_confidenceHalfLife.
+g_confidenceHalfLife <= 0 disables decrease.
 ============
 */
-void G_SumTeamConfidence( void )
-{
-	team_t          team;
-	confidenceLog_t **logs, *head, *log;
-	confidence_t	type;
-	int             period, CSConfidence;
-	float           *confidence, amount;
+#define DECREASE_CONFIDENCE_PERIOD 1000
 
-	static int nextCalculation = 0;
+void G_DecreaseConfidence( void )
+{
+	team_t       team;
+	confidence_t type;
+	float        *confidence;
+	int          CSConfidence;
+
+	static float decreaseFactor = 1.0f, lastConfidenceHalfLife = 0.0f;
+	static int   nextCalculation = 0;
 
 	if ( level.time < nextCalculation )
 	{
 		return;
+	}
+
+	if ( g_confidenceHalfLife.value <= 0.0f )
+	{
+		return;
+	}
+
+	if ( lastConfidenceHalfLife != g_confidenceHalfLife.value )
+	{
+		// ln(2) ~= 0.6931472
+		decreaseFactor = exp( ( -0.6931472f / ( ( 60000.0f / DECREASE_CONFIDENCE_PERIOD ) * g_confidenceHalfLife.value ) ) );
+
+		lastConfidenceHalfLife = g_confidenceHalfLife.value;
 	}
 
 	for ( team = NUM_TEAMS - 1; team > TEAM_NONE; team-- )
@@ -1461,14 +1471,10 @@ void G_SumTeamConfidence( void )
 		switch ( team )
 		{
 			case TEAM_ALIENS:
-				logs = &level.alienConfidenceLogs;
-				head = log = *logs;
 				confidence = level.alienConfidence;
 				CSConfidence = CS_ALIEN_CONFIDENCE;
 				break;
 			case TEAM_HUMANS:
-				logs = &level.humanConfidenceLogs;
-				head = log = *logs;
 				confidence = level.humanConfidence;
 				CSConfidence = CS_HUMAN_CONFIDENCE;
 				break;
@@ -1476,42 +1482,19 @@ void G_SumTeamConfidence( void )
 				continue;
 		}
 
-		// reset confidence
-		for ( type = CONFIDENCE_SUM; type < NUM_CONFIDENCE_TYPES; type++ )
+		confidence[ CONFIDENCE_SUM ] = 0.0f;
+
+		for ( type = CONFIDENCE_SUM + 1; type < NUM_CONFIDENCE_TYPES; type++ )
 		{
-			confidence[ type ] = 0.0f;
-		}
-
-		period = g_confidenceSumPeriod.value * 60000;
-
-		while ( log != NULL )
-		{
-			// remove old logs
-			if ( log->time + period <= level.time )
-			{
-				head = log->next;
-				BG_Free( log );
-				log = head;
-				*logs = head;
-			}
-			// add to confidence
-			else
-			{
-				// fade out the effect of each reward
-				amount = log->amount * ( ( period - ( level.time - log->time ) ) / ( float )period );
-
-				confidence[ log->type ] += amount;
-				confidence[ CONFIDENCE_SUM ] += amount;
-
-				log = log->next;
-			}
+			confidence[ type ] *= decreaseFactor;
+			confidence[ CONFIDENCE_SUM ] += confidence[ type ];
 		}
 
 		// send total confidence to clients
 		trap_SetConfigstring( CSConfidence, va( "%f", confidence[ CONFIDENCE_SUM ] ) );
 	}
 
-	nextCalculation = level.time + 200;
+	nextCalculation = level.time + DECREASE_CONFIDENCE_PERIOD;
 }
 
 /*
@@ -1526,15 +1509,15 @@ void G_CalculateStages( void )
 	           stage,
 	           stageModCount,
 	           maxStage,
-	           S1Below,
-	           S2Above,
-	           S2Below,
-	           S3Above,
+	           S2Threshold,
+	           S3Threshold,
 	           *S2Time,
 	           *S3Time,
 	           CSStages,
 	           newStage,
-	           nextThreshold;
+	           nextThreshold,
+	           prevThreshold;
+	float      bonus;
 	const char *stageCVar,
 	           *teamName;
 
@@ -1550,14 +1533,12 @@ void G_CalculateStages( void )
 		switch ( team )
 		{
 			case TEAM_ALIENS:
-				confidence     = level.alienConfidence[ CONFIDENCE_SUM ];
+				confidence     = ( int )level.alienConfidence[ CONFIDENCE_SUM ];
 				stage          = g_alienStage.integer;
 				stageModCount  = g_alienStage.modificationCount;
 				maxStage       = g_alienMaxStage.integer;
-				S1Below        = g_alienStage1Below.integer;
-				S2Above        = g_alienStage2Above.integer;
-				S2Below        = g_alienStage2Below.integer;
-				S3Above        = g_alienStage3Above.integer;
+				S2Threshold    = g_alienStage2Threshold.integer;
+				S3Threshold    = g_alienStage3Threshold.integer;
 				S2Time         = &level.alienStage2Time;
 				S3Time         = &level.alienStage3Time;
 				stageCVar      = "g_alienStage";
@@ -1565,14 +1546,12 @@ void G_CalculateStages( void )
 				CSStages       = CS_ALIEN_STAGES;
 				break;
 			case TEAM_HUMANS:
-				confidence     = level.humanConfidence[ CONFIDENCE_SUM ];
+				confidence     = ( int )level.humanConfidence[ CONFIDENCE_SUM ];
 				stage          = g_humanStage.integer;
 				stageModCount  = g_humanStage.modificationCount;
 				maxStage       = g_humanMaxStage.integer;
-				S1Below        = g_humanStage1Below.integer;
-				S2Above        = g_humanStage2Above.integer;
-				S2Below        = g_humanStage2Below.integer;
-				S3Above        = g_humanStage3Above.integer;
+				S2Threshold    = g_humanStage2Threshold.integer;
+				S3Threshold    = g_humanStage3Threshold.integer;
 				S2Time         = &level.humanStage2Time;
 				S3Time         = &level.humanStage3Time;
 				stageCVar      = "g_humanStage";
@@ -1585,7 +1564,7 @@ void G_CalculateStages( void )
 
 		newStage = stage;
 
-		if ( confidence >= S3Above && maxStage >= S3 )
+		if ( confidence >= S3Threshold && maxStage >= S3 )
 		{
 			if ( stage == S3 )
 			{
@@ -1593,6 +1572,7 @@ void G_CalculateStages( void )
 			}
 
 			newStage = S3;
+			prevThreshold = S3Threshold;
 			nextThreshold = -1;
 
 			if ( *S3Time == level.startTime )
@@ -1605,11 +1585,7 @@ void G_CalculateStages( void )
 				*S3Time = level.time;
 			}
 		}
-		else if ( confidence >= S2Below && stage >= S3 )
-		{
-			continue;
-		}
-		else if ( confidence >= S2Above && maxStage >= S2 )
+		else if ( confidence >= S2Threshold && maxStage >= S2 )
 		{
 			if ( stage == S2 )
 			{
@@ -1617,25 +1593,23 @@ void G_CalculateStages( void )
 			}
 
 			newStage = S2;
-			nextThreshold = S3Above;
+			prevThreshold = S2Threshold;
+			nextThreshold = S3Threshold;
 
 			if ( *S2Time == level.startTime )
 			{
 				*S2Time = level.time;
 			}
 		}
-		else if ( confidence >= S1Below && stage >= S2 )
-		{
-			continue;
-		}
 		else if ( stage != S1 )
 		{
 			newStage = S1;
-			nextThreshold = S2Above;
+			prevThreshold = -1;
+			nextThreshold = S2Threshold;
 		}
 		else if ( nextCalculation == 0 )
 		{
-			trap_SetConfigstring( CSStages, va( "%d %d", S1, S2Above ) );
+			trap_SetConfigstring( CSStages, va( "%d %d", S1, S2Threshold ) );
 			continue;
 		}
 		else
@@ -1646,12 +1620,23 @@ void G_CalculateStages( void )
 		trap_Cvar_Set( stageCVar, va( "%d", newStage ) );
 		trap_SetConfigstring( CSStages, va( "%d %d", newStage, nextThreshold ) );
 
+		// give extra confidence on stageup, so the new stage won't be lost in the next g_minimumStageTime seconds
+		if ( newStage > stage && g_minimumStageTime.integer > 0 && g_confidenceHalfLife.integer > 0 )
+		{
+			// ln(2) ~= 0.6931472
+			bonus = prevThreshold *
+			        ( exp( ( 0.6931472 * g_minimumStageTime.value ) / ( g_confidenceHalfLife.value * 60.0f ) ) - 1.0f );
+			G_AddConfidence( team, CONFIDENCE_GENERAL, CONF_REAS_STAGEUP, CONF_QUAL_NONE, bonus, NULL );
+		}
+
+		// notify stage sensors of stageup
 		while ( stage < newStage )
 		{
 			G_notify_sensor_stage( team, stage, stage + 1 );
 			++stage;
 		}
 
+		// notify stage sensors of stagedown
 		while ( stage > newStage )
 		{
 			G_notify_sensor_stage( team, stage, stage - 1 );
@@ -2914,7 +2899,7 @@ void G_RunFrame( int levelTime )
 
 	G_CountSpawns();
 	G_CalculateMineRate();
-	G_SumTeamConfidence();
+	G_DecreaseConfidence();
 	G_CalculateStages();
 	G_SpawnClients( TEAM_ALIENS );
 	G_SpawnClients( TEAM_HUMANS );

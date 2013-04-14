@@ -44,7 +44,7 @@ void AddScore( gentity_t *ent, int score )
 	}
 
 	// Convert from human credits to confidence points
-	ent->client->ps.persistant[ PERS_SCORE ] += score / CREDITS_TO_CONFIDENCE_SCORE_RATIO;
+	ent->client->ps.persistant[ PERS_SCORE ] += score / CREDITS_TO_CONFIDENCE_RATIO;
 
 	CalculateRanks();
 }
@@ -222,7 +222,7 @@ void G_RewardAttackers( gentity_t *self )
 
 		if ( self->s.eType == ET_BUILDABLE )
 		{
-			AddScore( player, ( int )( reward * CREDITS_TO_CONFIDENCE_SCORE_RATIO ) );
+			AddScore( player, ( int )( reward * CREDITS_TO_CONFIDENCE_RATIO ) );
 
 			switch ( self->s.modelindex )
 			{
@@ -257,12 +257,12 @@ void G_RewardAttackers( gentity_t *self )
 			if ( distanceToBase < 500.0f )
 			{
 				G_AddConfidence( playerTeam, CONFIDENCE_KILLING, CONF_REAS_KILLING, CONF_QUAL_IN_ENEMEY_BASE,
-								 reward / ( 2 * CREDITS_TO_CONFIDENCE_SCORE_RATIO ), player );
+								 reward / ( 2 * CREDITS_TO_CONFIDENCE_RATIO ), player );
 			}
 			else if ( distanceToBase < 1000.0f )
 			{
 				G_AddConfidence( playerTeam, CONFIDENCE_KILLING, CONF_REAS_KILLING, CONF_QUAL_CLOSE_TO_ENEMY_BASE,
-								 reward / ( 3 * CREDITS_TO_CONFIDENCE_SCORE_RATIO ), player );
+								 reward / ( 3 * CREDITS_TO_CONFIDENCE_RATIO ), player );
 			}
 		}
 	}
