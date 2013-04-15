@@ -107,7 +107,7 @@ shared reset functions
 =================================================================================
 */
 
-void reset_intField( int* result, int instanceField, int classField, int fallback, qboolean fallbackIfNegative )
+void G_ResetIntField( int* result, qboolean fallbackIfNegative, int instanceField, int classField, int fallback )
 {
 	if(instanceField && (instanceField > 0 || !fallbackIfNegative))
 	{
@@ -123,7 +123,7 @@ void reset_intField( int* result, int instanceField, int classField, int fallbac
 	}
 }
 
-void reset_floatField( float* result, float instanceField, float classField, float fallback, qboolean fallbackIfNegative )
+void G_ResetFloatField( float* result, qboolean fallbackIfNegative, float instanceField, float classField, float fallback )
 {
 	if(instanceField && (instanceField > 0 || !fallbackIfNegative))
 	{
@@ -139,7 +139,7 @@ void reset_floatField( float* result, float instanceField, float classField, flo
 	}
 }
 
-void reset_timeField( variatingTime_t *result,
+void G_ResetTimeField( variatingTime_t *result,
 		variatingTime_t instanceField, variatingTime_t classField, variatingTime_t fallback )
 {
 	if( instanceField.time && instanceField.time > 0 )

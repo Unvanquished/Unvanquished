@@ -129,10 +129,9 @@ void     SP_Nothing( gentity_t *self );
 /*
  * Shared and standardized entity management
  */
-
-void     reset_intField( int* target, int instanceField, int classField, int fallback, qboolean fallbackIfNegative );
-void     reset_floatField( float* target, float instanceField, float classField, float fallback, qboolean fallbackIfNegative );
-void     reset_timeField( variatingTime_t* result, variatingTime_t instanceField, variatingTime_t classField, variatingTime_t fallback );
+void     G_ResetIntField( int* target, qboolean fallbackIfNegativ, int instanceField, int classField, int fallbacke );
+void     G_ResetFloatField( float* target, qboolean fallbackIfNegativ, float instanceField, float classField, float fallback );
+void     G_ResetTimeField( variatingTime_t* result, variatingTime_t instanceField, variatingTime_t classField, variatingTime_t fallback );
 
 void     SP_ConditionFields( gentity_t *self );
 void     SP_WaitFields( gentity_t *self, float defaultWait, float defaultWaitVariance );

@@ -151,7 +151,7 @@ void ctrl_limited_reset( gentity_t *self )
 {
 	self->enabled = !(self->spawnflags & SPF_SPAWN_DISABLED);
 
-	reset_intField(&self->count, self->config.amount, self->eclass->config.amount, 1, qtrue);
+	G_ResetIntField(&self->count, qtrue, self->config.amount, self->eclass->config.amount, 1);
 }
 
 void SP_ctrl_limited( gentity_t *self )
