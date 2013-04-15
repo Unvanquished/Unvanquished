@@ -218,11 +218,6 @@ typedef struct
 extern const gentityCall_t WORLD_CALL;
 extern const gentityCall_t NULL_CALL;
 
-/**
- * resolves a variatingTime_t to a variated next level.time
- */
-#define VariatedLevelTime( variableTime ) level.time + ( variableTime.time + variableTime.variance * crandom() ) * 1000
-
 //
 // g_entities.c
 //

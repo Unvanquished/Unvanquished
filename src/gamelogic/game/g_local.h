@@ -77,6 +77,12 @@ struct variatingTime_s
 };
 
 /**
+ * resolves a variatingTime_t to a variated next level.time
+ */
+#define VariatedLevelTime( variableTime ) level.time + ( variableTime.time + variableTime.variance * crandom() ) * 1000
+
+
+/**
  * in the context of a target, this describes the conditions to create or to act within
  * while as part of trigger or most other types, it will be used as filtering condition that needs to be fulfilled to trigger, or to act directly
  */
