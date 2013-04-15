@@ -593,7 +593,7 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in )
 			char rgb[32];
 			int code = ( *++p - 48 ) & 31;
 
-			snprintf( rgb, sizeof( rgb ), "<span style='color: #%02X%02X%02X;'>",
+			Com_sprintf( rgb, sizeof( rgb ), "<span style='color: #%02X%02X%02X;'>",
 			          (int)( g_color_table[ code ][ 0 ] * 255 ),
 			          (int)( g_color_table[ code ][ 1 ] * 255 ),
 			          (int)( g_color_table[ code ][ 2 ] * 255 ) );
