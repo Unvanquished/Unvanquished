@@ -215,6 +215,9 @@ typedef struct
 	struct gentity_s *activator;
 } gentityCall_t;
 
+extern const gentityCall_t WORLD_CALL;
+extern const gentityCall_t NULL_CALL;
+
 /**
  * resolves a variatingTime_t to a variated next level.time
  */
