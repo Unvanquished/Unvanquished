@@ -139,6 +139,42 @@ void reset_floatField( float* result, float instanceField, float classField, flo
 	}
 }
 
+void reset_timeField( variatingTime_t *result,
+		variatingTime_t instanceField, variatingTime_t classField, variatingTime_t fallback )
+{
+	if( instanceField.time && instanceField.time > 0 )
+	{
+		*result = instanceField;
+	}
+	else if (classField.time && classField.time > 0 )
+	{
+		*result = classField;
+	}
+	else
+	{
+		*result = fallback;
+	}
+
+	if ( result->variance < 0 )
+	{
+		result->variance = 0;
+
+		if( g_debugEntities.integer >= 0 )
+		{
+			G_Printf( S_WARNING "negative variance (%f); resetting to 0\n", result->variance );
+		}
+	}
+	else if ( result->variance >= result->time && result->variance > 0)
+	{
+		result->variance = result->time - FRAMETIME;
+
+		if( g_debugEntities.integer > 0 )
+		{
+			G_Printf( S_WARNING "limitting variance (%f) to be smaller than time (%f)\n", result->variance, result->time );
+		}
+	}
+}
+
 /*
 =================================================================================
 
