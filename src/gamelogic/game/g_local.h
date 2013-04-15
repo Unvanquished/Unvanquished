@@ -43,6 +43,8 @@ typedef struct gentity_s gentity_t;
 typedef struct gclient_s gclient_t;
 
 #include "g_admin.h"
+
+typedef struct variatingTime_s variatingTime_t;
 #include "g_entities.h"
 
 // g_local.h -- local definitions for game module
@@ -68,11 +70,11 @@ typedef struct gclient_s gclient_t;
 #define DECON_OPTION_PROTECT       32
 #define DECON_OPTION_CHECK(option) ( g_markDeconstruct.integer & DECON_OPTION_##option )
 
-typedef struct
+struct variatingTime_s
 {
 	float time;
 	float variance;
-} variatingTime_t;
+};
 
 /**
  * in the context of a target, this describes the conditions to create or to act within
@@ -229,12 +231,12 @@ struct gentity_s
 	gentityCallDefinition_t calltargets[ MAX_ENTITY_CALLTARGETS + 1 ];
 
 	/**
-	 * temporary call state for a single threaded call hierarchy.
+	 * current valid call state for a single threaded call hierarchy.
 	 * this allows us to lookup the current callIn,
 	 * walk back further the hierarchy and even do simply loop detection
 	 */
-	gentityCall_t *callIn;
-	gentity_t    *activator; //FIXME: handle this as part of currentCall
+	gentityCall_t callIn;
+	gentity_t    *activator; //FIXME: handle this as part of the current Call
 
 	/*
 	 * configuration, as supplied by the spawn string, external spawn scripts etc.

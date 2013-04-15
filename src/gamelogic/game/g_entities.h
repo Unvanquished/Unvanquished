@@ -253,7 +253,6 @@ qboolean   G_IsVisible( gentity_t *ent1, gentity_t *ent2, int contents );
 //chain
 gentityCallEvent_t      G_GetCallEventTypeFor( const char* event );
 gentityCallActionType_t G_GetCallActionTypeFor( const char* action );
-void       G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call);
 gentity_t  *G_ResolveEntityKeyword( gentity_t *self, char *keyword );
 gentity_t  *G_IterateTargets(gentity_t *entity, int *targetIndex, gentity_t *self);
 gentity_t  *G_IterateCallEndpoints( gentity_t *entity, int *calltargetIndex, gentity_t *self );
@@ -261,6 +260,10 @@ gentity_t  *G_PickRandomTargetFor( gentity_t *self );
 void       G_FireEntityRandomly( gentity_t *entity, gentity_t *activator );
 void       G_FireEntity( gentity_t *ent, gentity_t *activator );
 void       G_EventFireEntity( gentity_t *self, gentity_t *activator, gentityCallEvent_t eventType );
+
+void       G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call);
+void       G_HandleActCall( gentity_t *entity, gentityCall_t *call );
+void       G_ExecuteAct( gentity_t *entity, gentityCall_t *call );
 
 //configure
 void       G_SetMovedir( vec3_t angles, vec3_t movedir );
@@ -286,6 +289,13 @@ void manualTriggerSpectator( gentity_t *trigger, gentity_t *player );
 void G_notify_sensor_stage( team_t team, stage_t previousStage, stage_t newStage );
 void G_notify_sensor_start( );
 void G_notify_sensor_end( team_t winningTeam );
+
+//
+// g_spawn_shared.c
+//
+void     G_ResetIntField( int* target, qboolean fallbackIfNegativ, int instanceField, int classField, int fallbacke );
+void     G_ResetFloatField( float* target, qboolean fallbackIfNegativ, float instanceField, float classField, float fallback );
+void     G_ResetTimeField( variatingTime_t* result, variatingTime_t instanceField, variatingTime_t classField, variatingTime_t fallback );
 
 //==================================================================
 #endif /* ENTITIES_H_ */

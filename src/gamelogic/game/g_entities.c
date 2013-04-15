@@ -728,6 +728,61 @@ void G_FireEntity( gentity_t *self, gentity_t *activator )
 	G_EventFireEntity( self, activator, ON_DEFAULT );
 }
 
+/**
+ * executes the entities act function
+ * This is basicly nothing but a wrapper around act() ensuring a correct call,
+ * neither paramater may be NULL, and the entity is required to have an act function to execute
+ * or this function will fail
+ */
+void G_ExecuteAct( gentity_t *entity, gentityCall_t *call )
+{
+	gentityCall_t previousCallIn;
+
+	/**
+	 * assertions against programmatic errors
+	 */
+	assert( entity->act != NULL );
+	assert( call != NULL );
+
+	//assert( entity->callIn->activator != NULL );
+
+	if( entity->active )
+	{
+		//TODO
+	}
+
+	entity->nextAct = 0;
+	entity->active = qtrue;
+	/*
+	 * for now we use the callIn activator if its set or fallback to the old solution, but we should
+	 * //TODO remove the old solution of activator setting from this
+	 */
+	entity->act(entity, call->caller, call->caller->activator ? call->caller->activator : entity->activator );
+	entity->active = qfalse;
+}
+
+/**
+ * check delayed variable and either call an entity act() directly or delay its execution
+ */
+void G_HandleActCall( gentity_t *entity, gentityCall_t *call )
+{
+	variatingTime_t delay = {0, 0};
+
+	assert( call != NULL );
+	entity->callIn = *call;
+
+	G_ResetTimeField(&delay, entity->config.delay, entity->eclass->config.delay, delay );
+
+	if(delay.time)
+	{
+		entity->nextAct = VariatedLevelTime( delay );
+	}
+	else /* no time and variance set means, we can call it directly instead of waiting for the next frame */
+	{
+		G_ExecuteAct( entity, call );
+	}
+}
+
 void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 {
 	if ( g_debugEntities.integer > 1 )
@@ -740,7 +795,7 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 				call->definition && call->definition->action ? call->definition->action : "default");
 	}
 
-	targetedEntity->callIn = call;
+	targetedEntity->callIn = *call;
 
 	if(!targetedEntity->handleCall || !targetedEntity->handleCall(targetedEntity, call))
 	{
@@ -807,12 +862,7 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 			}
 			break;
 		case ECA_ACT:
-			if (targetedEntity->act)
-			{
-				targetedEntity->active = qtrue;
-				targetedEntity->act(targetedEntity, call->caller, call->activator);
-				targetedEntity->active = qfalse;
-			}
+			G_HandleActCall( targetedEntity, call );
 			break;
 
 		default:
@@ -824,7 +874,7 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 	if(targetedEntity->notifyHandler)
 		targetedEntity->notifyHandler( targetedEntity, call );
 
-	targetedEntity->callIn = NULL; /**< not called anymore */
+	targetedEntity->callIn = NULL_CALL; /**< not called anymore */
 }
 
 /*
