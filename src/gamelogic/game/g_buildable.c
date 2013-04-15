@@ -2386,146 +2386,181 @@ void HMedistat_Think( gentity_t *self )
 {
 	int       entityList[ MAX_GENTITIES ];
 	vec3_t    mins, maxs;
-	int       i, num;
+	int       playerNum, numPlayers;
 	gentity_t *player;
-	qboolean  occupied = qfalse;
+	gclient_t *client;
+	qboolean  occupied;
 
 	HGeneric_Think( self );
 
-	G_IdlePowerState( self );
+	if ( !self->spawned )
+	{
+		return;
+	}
 
-	//clear target's healing flag
+	// set animation
+	if ( self->powered )
+	{
+		if ( !self->active && self->s.torsoAnim != BANIM_IDLE1 )
+		{
+			G_SetBuildableAnim( self, BANIM_CONSTRUCT2, qtrue );
+			G_SetIdleBuildableAnim( self, BANIM_IDLE1 );
+		}
+	}
+	else if ( self->s.torsoAnim != BANIM_IDLE3 )
+	{
+			G_SetIdleBuildableAnim( self, BANIM_IDLE3 );
+	}
+
+	// clear target's healing flag for now
 	if ( self->target && self->target->client )
 	{
 		self->target->client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_ACTIVE;
 	}
 
-	//make sure we have power
+	// clear target on power loss
 	if ( !self->powered )
 	{
-		if ( self->active )
-		{
-			self->active = qfalse;
-			self->target = NULL;
-		}
+		self->active = qfalse;
+		self->target = NULL;
 
 		self->nextthink = level.time + POWER_REFRESH_TIME;
+
 		return;
 	}
 
-	if ( self->spawned )
+	// get entities standing on top
+	VectorAdd( self->s.origin, self->r.maxs, maxs );
+	VectorAdd( self->s.origin, self->r.mins, mins );
+
+	mins[ 2 ] += ( self->r.mins[ 2 ] + self->r.maxs[ 2 ] );
+	maxs[ 2 ] += 32; // continue to heal jumping players but don't heal jetpack campers
+
+	numPlayers = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
+	occupied = qfalse;
+
+	// mark occupied if still healing a player
+	for ( playerNum = 0; playerNum < numPlayers; playerNum++ )
 	{
-		VectorAdd( self->s.origin, self->r.maxs, maxs );
-		VectorAdd( self->s.origin, self->r.mins, mins );
+		player = &g_entities[ entityList[ playerNum ] ];
+		client = player->client;
 
-		mins[ 2 ] += fabs( self->r.mins[ 2 ] ) + self->r.maxs[ 2 ];
-		maxs[ 2 ] += 60; //player height
-
-		//if active use the healing idle
-		if ( self->active )
+		if ( self->target == player && PM_Live( client->ps.pm_type ) &&
+			 ( player->health < client->ps.stats[ STAT_MAX_HEALTH ] ||
+			   client->ps.stats[ STAT_STAMINA ] < STAMINA_MAX ) )
 		{
+			occupied = qtrue;
+		}
+	}
+
+	if ( !occupied )
+	{
+		self->target = NULL;
+	}
+
+	// clear poison, distribute medikits, find a new target if necessary
+	for ( playerNum = 0; playerNum < numPlayers; playerNum++ )
+	{
+		player = &g_entities[ entityList[ playerNum ] ];
+		client = player->client;
+
+		// only react to humans
+		if ( !client || !client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+		{
+			continue;
+		}
+
+		// ignore 'notarget' users
+		if ( player->flags & FL_NOTARGET )
+		{
+			continue;
+		}
+
+		// remove poison
+		if ( client->ps.stats[ STAT_STATE ] & SS_POISONED )
+		{
+			client->ps.stats[ STAT_STATE ] &= ~SS_POISONED;
+		}
+
+		// give medikit to players with full health
+		if ( player->health >= client->ps.stats[ STAT_MAX_HEALTH ] )
+		{
+			player->health = client->ps.stats[ STAT_MAX_HEALTH ];
+
+			if ( !BG_InventoryContainsUpgrade( UP_MEDKIT, player->client->ps.stats ) )
+			{
+				BG_AddUpgradeToInventory( UP_MEDKIT, player->client->ps.stats );
+			}
+		}
+
+		// if not already occupied, check if someone needs healing
+		if ( !occupied )
+		{
+			if ( PM_Live( client->ps.pm_type ) &&
+				 ( player->health < client->ps.stats[ STAT_MAX_HEALTH ] ||
+				   client->ps.stats[ STAT_STAMINA ] < STAMINA_MAX ) )
+			{
+				self->target = player;
+				occupied = qtrue;
+			}
+		}
+	}
+
+	// if we have a target, heal it
+	if ( self->target )
+	{
+		player = self->target;
+		client = player->client;
+		client->ps.stats[ STAT_STATE ] |= SS_HEALING_ACTIVE;
+
+		// start healing animation
+		if ( !self->active )
+		{
+			self->active = qtrue;
+
+			G_SetBuildableAnim( self, BANIM_ATTACK1, qfalse );
 			G_SetIdleBuildableAnim( self, BANIM_IDLE2 );
 		}
 
-		//check if a previous occupier is still here
-		num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
-
-		for ( i = 0; i < num; i++ )
+		// restore stamina
+		if ( client->ps.stats[ STAT_STAMINA ] + STAMINA_MEDISTAT_RESTORE >= STAMINA_MAX )
 		{
-			player = &g_entities[ entityList[ i ] ];
-
-			if ( player->flags & FL_NOTARGET )
-			{
-				continue; // notarget cancels even beneficial effects?
-			}
-
-			//remove poison from everyone, not just the healed player
-			if ( player->client && (player->client->ps.stats[ STAT_STATE ] & SS_POISONED) )
-			{
-				player->client->ps.stats[ STAT_STATE ] &= ~SS_POISONED;
-			}
-
-			if ( self->target == player && player->client &&
-			     player->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS &&
-			     player->health < player->client->ps.stats[ STAT_MAX_HEALTH ] &&
-			     PM_Live( player->client->ps.pm_type ) )
-			{
-				occupied = qtrue;
-				player->client->ps.stats[ STAT_STATE ] |= SS_HEALING_ACTIVE;
-			}
+			client->ps.stats[ STAT_STAMINA ] = STAMINA_MAX;
+		}
+		else
+		{
+			client->ps.stats[ STAT_STAMINA ] += STAMINA_MEDISTAT_RESTORE;
 		}
 
-		if ( !occupied )
+		// restore health
+		if ( player->health < client->ps.stats[ STAT_MAX_HEALTH ] )
 		{
-			self->target = NULL;
+			player->health++;
 
-			//look for something to heal
-			for ( i = 0; i < num; i++ )
+			// fully healed
+			if ( player->health == client->ps.stats[ STAT_MAX_HEALTH ] )
 			{
-				player = &g_entities[ entityList[ i ] ];
-
-				if ( player->flags & FL_NOTARGET )
+				// clear rewards array
+				for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
 				{
-					continue; // notarget cancels even beneficial effects?
+					player->credits[ playerNum ] = 0;
 				}
 
-				if ( player->client && player->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+				// give medikit
+				if ( !BG_InventoryContainsUpgrade( UP_MEDKIT, client->ps.stats ) )
 				{
-					if ( ( player->health < player->client->ps.stats[ STAT_MAX_HEALTH ] ||
-					       player->client->ps.stats[ STAT_STAMINA ] < STAMINA_MAX ) &&
-					     PM_Live( player->client->ps.pm_type ) )
-					{
-						self->target = player;
-
-						//start the heal anim
-						if ( !self->active )
-						{
-							G_SetBuildableAnim( self, BANIM_ATTACK1, qfalse );
-							self->active = qtrue;
-							player->client->ps.stats[ STAT_STATE ] |= SS_HEALING_ACTIVE;
-						}
-					}
-					else if ( !BG_InventoryContainsUpgrade( UP_MEDKIT, player->client->ps.stats ) )
-					{
-						BG_AddUpgradeToInventory( UP_MEDKIT, player->client->ps.stats );
-					}
+					BG_AddUpgradeToInventory( UP_MEDKIT, client->ps.stats );
 				}
 			}
 		}
+	}
+	// if we lost our target, replay construction animation
+	else if ( self->active )
+	{
+		self->active = qfalse;
 
-		//nothing left to heal so go back to idling
-		if ( !self->target && self->active )
-		{
-			G_SetBuildableAnim( self, BANIM_CONSTRUCT2, qtrue );
-			G_SetIdleBuildableAnim( self, BANIM_IDLE1 );
-
-			self->active = qfalse;
-		}
-		else if ( self->target && self->target->client ) //heal!
-		{
-			if ( self->target->client->ps.stats[ STAT_STAMINA ] <  STAMINA_MAX )
-			{
-				self->target->client->ps.stats[ STAT_STAMINA ] += STAMINA_MEDISTAT_RESTORE;
-			}
-
-			if ( self->target->client->ps.stats[ STAT_STAMINA ] > STAMINA_MAX )
-			{
-				self->target->client->ps.stats[ STAT_STAMINA ] = STAMINA_MAX;
-			}
-
-			self->target->health++;
-
-			//if they're completely healed, give them a medkit
-			if ( self->target->health >= self->target->client->ps.stats[ STAT_MAX_HEALTH ] )
-			{
-				self->target->health = self->target->client->ps.stats[ STAT_MAX_HEALTH ];
-
-				if ( !BG_InventoryContainsUpgrade( UP_MEDKIT, self->target->client->ps.stats ) )
-				{
-					BG_AddUpgradeToInventory( UP_MEDKIT, self->target->client->ps.stats );
-				}
-			}
-		}
+		G_SetBuildableAnim( self, BANIM_CONSTRUCT2, qtrue );
+		G_SetIdleBuildableAnim( self, BANIM_IDLE1 );
 	}
 }
 
