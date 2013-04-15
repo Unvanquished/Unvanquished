@@ -215,10 +215,14 @@ typedef struct
 	struct gentity_s *activator;
 } gentityCall_t;
 
+/**
+ * resolves a variatingTime_t to a variated next level.time
+ */
+#define VariatedLevelTime( variableTime ) level.time + ( variableTime.time + variableTime.variance * crandom() ) * 1000
+
 //
 // g_entities.c
 //
-
 //lifecycle
 void       G_InitGentity( gentity_t *e );
 gentity_t  *G_NewEntity( void );
@@ -258,7 +262,6 @@ void       G_EventFireEntity( gentity_t *self, gentity_t *activator, gentityCall
 //configure
 void       G_SetMovedir( vec3_t angles, vec3_t movedir );
 void       G_SetOrigin( gentity_t *ent, const vec3_t origin );
-void       G_SetNextthink( gentity_t *self );
 
 //
 // g_spawn.c

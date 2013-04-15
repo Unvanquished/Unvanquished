@@ -914,10 +914,3 @@ void G_SetOrigin( gentity_t *self, const vec3_t origin )
 	VectorCopy( origin, self->r.currentOrigin );
 	VectorCopy( origin, self->s.origin );
 }
-
-/**
- * predefined field interpretations
- */
-void G_SetNextthink( gentity_t *self ) {
-	self->nextthink = level.time + ( self->config.wait.time + self->config.wait.variance * crandom() ) * 1000;
-}

@@ -72,7 +72,7 @@ void target_relay_act( gentity_t *self, gentity_t *caller, gentity_t *activator 
 	}
 	else
 	{
-		G_SetNextthink( self );
+		self->nextthink = VariatedLevelTime( self->config.wait );
 		self->think = think_fireDelayed;
 		self->activator = activator;
 	}
@@ -94,7 +94,7 @@ void ctrl_relay_act( gentity_t *self, gentity_t *caller, gentity_t *activator )
 	}
 	else
 	{
-		G_SetNextthink( self );
+		self->nextthink = VariatedLevelTime( self->config.wait );
 		self->think = think_fireOnActDelayed;
 		self->activator = activator;
 	}
