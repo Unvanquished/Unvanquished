@@ -797,7 +797,11 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 			break;
 		case ECA_ACT:
 			if (targetedEntity->act)
+			{
+				targetedEntity->active = qtrue;
 				targetedEntity->act(targetedEntity, call->caller, call->activator);
+				targetedEntity->active = qfalse;
+			}
 			break;
 
 		default:

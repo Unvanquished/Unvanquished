@@ -104,7 +104,8 @@ typedef struct
 	int damage;
 
 	/**
-	 * how long delay firing an event
+	 * how long to wait before fullfilling the maintask act()
+	 * (e.g. how long to delay sensing as sensor or relaying as relay)
 	 */
 	variatingTime_t delay;
 	/**
@@ -163,13 +164,25 @@ struct gentity_s
 	int          creationTime;
 
 	char         *names[ MAX_ENTITY_ALIASES + 1 ];
-	/*
+
+	/**
 	 * is the entity considered active?
 	 * as in 'currently doing something'
 	 * e.g. used for buildables (e.g. medi-stations or hives can be in an active state or being inactive)
+	 * or during executing act() in general
 	 */
 	qboolean     active;
-	int          activeAtTime; /*< delay being really active until this time, e.g for spinup for norfenturrets */
+	/**
+	 * delay being really active until this time, e.g for act() delaying or for spinup for norfenturrets
+	 * this will most probably be set by think() before act()ing, probably by using the config.delay time
+	 */
+	int          nextAct;
+	/**
+	 * Fulfill the main task of this entity.
+	 * act, therefore also become active,
+	 * but only if enabled
+	 */
+	void ( *act )( gentity_t *self, gentity_t *caller, gentity_t *activator );
 
 	/**
 	 * is the entity able to become active?
@@ -302,12 +315,12 @@ struct gentity_s
 
 	int       nextthink;
 	void ( *think )( gentity_t *self );
+
 	void ( *reset )( gentity_t *self );
 	void ( *reached )( gentity_t *self );       // movers call this when hitting endpoint
 	void ( *blocked )( gentity_t *self, gentity_t *other );
 	void ( *touch )( gentity_t *self, gentity_t *other, trace_t *trace );
 	void ( *use )( gentity_t *self, gentity_t *other, gentity_t *activator );
-	void ( *act )( gentity_t *self, gentity_t *caller, gentity_t *activator );
 	void ( *pain )( gentity_t *self, gentity_t *attacker, int damage );
 	void ( *die )( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod );
 
