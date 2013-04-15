@@ -2005,34 +2005,34 @@ void Q_strncpyz( char *dest, const char *src, int destsize )
 
 	if ( !dest )
 	{
-		Com_Error( ERR_DROP, "Q_strncpyz: NULL dest (%s, %i)", file, line );
+		Com_Error( ERR_FATAL, "Q_strncpyz: NULL dest (%s, %i)", file, line );
 	}
 
 	if ( !src )
 	{
-		Com_Error( ERR_DROP, "Q_strncpyz: NULL src (%s, %i)", file, line );
+		Com_Error( ERR_FATAL, "Q_strncpyz: NULL src (%s, %i)", file, line );
 	}
 
 	if ( destsize < 1 )
 	{
-		Com_Error( ERR_DROP, "Q_strncpyz: destsize < 1 (%s, %i)", file, line );
+		Com_Error( ERR_FATAL, "Q_strncpyz: destsize < 1 (%s, %i)", file, line );
 	}
 
 #else
 
 	if ( !dest )
 	{
-		Com_Error( ERR_FATAL, "Q_strncpyz: NULL dest" );
+		Com_Error( ERR_DROP, "Q_strncpyz: NULL dest" );
 	}
 
 	if ( !src )
 	{
-		Com_Error( ERR_FATAL, "Q_strncpyz: NULL src" );
+		Com_Error( ERR_DROP, "Q_strncpyz: NULL src" );
 	}
 
 	if ( destsize < 1 )
 	{
-		Com_Error( ERR_FATAL, "Q_strncpyz: destsize < 1" );
+		Com_Error( ERR_DROP, "Q_strncpyz: destsize < 1" );
 	}
 
 #endif
