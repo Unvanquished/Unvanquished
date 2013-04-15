@@ -35,6 +35,21 @@ Maryland 20850 USA.
 #ifndef SPAWN_H_
 #define SPAWN_H_
 
+/*
+ * g_spawn.c
+ */
+
+/** spawn string returns a temporary reference, you must CopyString() if you want to keep it */
+qboolean G_SpawnString( const char *key, const char *defaultString, char **out );
+qboolean G_SpawnBoolean( const char *key, qboolean defaultqboolean );
+qboolean G_SpawnFloat( const char *key, const char *defaultString, float *out );
+qboolean G_SpawnInt( const char *key, const char *defaultString, int *out );
+qboolean G_SpawnVector( const char *key, const char *defaultString, float *out );
+
+
+/*
+ * spawn functions
+ */
 void    SP_func_plat( gentity_t *self );
 void    SP_func_static( gentity_t *self );
 void    SP_func_dynamic( gentity_t *self );
