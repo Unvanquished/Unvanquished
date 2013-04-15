@@ -746,7 +746,7 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 				G_Printf(S_WARNING "Unknown action \"%s\" for %s\n",
 						call->definition->action, etos(targetedEntity));
 			}
-			return;
+			break;
 
 		case ECA_FREE:
 			G_FreeEntity(targetedEntity);
