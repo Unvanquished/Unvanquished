@@ -715,6 +715,74 @@ qboolean ClientInactivityTimer( gentity_t *ent )
 	return qtrue;
 }
 
+static void G_ReplenishHumanHealth( gentity_t *self )
+{
+	gclient_t *client;
+	int       remainingStartupTime, clientNum;
+
+	if ( !self )
+	{
+		return;
+	}
+
+	client = self->client;
+
+	if ( !client || client->pers.teamSelection != TEAM_HUMANS )
+	{
+		return;
+	}
+
+	// check if medikit is active
+	if ( !( client->ps.stats[ STAT_STATE ] & SS_HEALING_2X ) )
+	{
+		return;
+	}
+
+	// stop if client is fully healed
+	if ( self->health >= client->ps.stats[ STAT_MAX_HEALTH ] )
+	{
+		self->health = client->ps.stats[ STAT_MAX_HEALTH ];
+		client->medKitHealthToRestore = 0;
+		client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_2X;
+
+		// clear rewards array
+		for ( clientNum = 0; clientNum < level.maxclients; clientNum++ )
+		{
+			self->credits[ clientNum ] = 0;
+		}
+
+		return;
+	}
+
+	// stop if client is dead or medikit is depleted
+	if ( client->medKitHealthToRestore <= 0 || client->ps.pm_type == PM_DEAD )
+	{
+		client->medKitHealthToRestore = 0;
+		client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_2X;
+
+		return;
+	}
+
+	remainingStartupTime = MEDKIT_STARTUP_TIME - ( level.time - client->lastMedKitTime );
+
+	// increase heal rate during startup
+	if ( remainingStartupTime > 0 )
+	{
+		if ( level.time < client->medKitIncrementTime )
+		{
+			return;
+		}
+		else
+		{
+			client->medKitIncrementTime = level.time + ( remainingStartupTime / MEDKIT_STARTUP_SPEED );
+		}
+	}
+
+	// heal
+	client->medKitHealthToRestore--;
+	self->health++;
+}
+
 /*
 ==================
 ClientTimerActions
@@ -878,47 +946,8 @@ void ClientTimerActions( gentity_t *ent, int msec )
 				break;
 		}
 
-		if ( ent->client->pers.teamSelection == TEAM_HUMANS &&
-		     ( client->ps.stats[ STAT_STATE ] & SS_HEALING_2X ) )
-		{
-			int remainingStartupTime = MEDKIT_STARTUP_TIME - ( level.time - client->lastMedKitTime );
-
-			if ( remainingStartupTime < 0 )
-			{
-				if ( ent->health < ent->client->ps.stats[ STAT_MAX_HEALTH ] &&
-				     ent->client->medKitHealthToRestore &&
-				     ent->client->ps.pm_type != PM_DEAD )
-				{
-					ent->client->medKitHealthToRestore--;
-					ent->health++;
-				}
-				else
-				{
-					ent->client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_2X;
-				}
-			}
-			else
-			{
-				if ( ent->health < ent->client->ps.stats[ STAT_MAX_HEALTH ] &&
-				     ent->client->medKitHealthToRestore &&
-				     ent->client->ps.pm_type != PM_DEAD )
-				{
-					//partial increase
-					if ( level.time > client->medKitIncrementTime )
-					{
-						ent->client->medKitHealthToRestore--;
-						ent->health++;
-
-						client->medKitIncrementTime = level.time +
-						                              ( remainingStartupTime / MEDKIT_STARTUP_SPEED );
-					}
-				}
-				else
-				{
-					ent->client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_2X;
-				}
-			}
-		}
+		// replenish human health
+		G_ReplenishHumanHealth( ent );
 	}
 
 	while ( client->time1000 >= 1000 )
