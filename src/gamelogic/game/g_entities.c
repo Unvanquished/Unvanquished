@@ -731,6 +731,8 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 				call->definition && call->definition->action ? call->definition->action : "default");
 	}
 
+	targetedEntity->callIn = call;
+
 	if(!targetedEntity->handleCall || !targetedEntity->handleCall(targetedEntity, call))
 	{
 		switch (call->definition->actionType)
@@ -812,6 +814,8 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 	}
 	if(targetedEntity->notifyHandler)
 		targetedEntity->notifyHandler( targetedEntity, call );
+
+	targetedEntity->callIn = NULL; /**< not called anymore */
 }
 
 /*

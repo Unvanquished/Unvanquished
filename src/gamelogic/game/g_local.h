@@ -227,7 +227,14 @@ struct gentity_s
 	 */
 	int          callTargetCount;
 	gentityCallDefinition_t calltargets[ MAX_ENTITY_CALLTARGETS + 1 ];
-	gentity_t    *activator;
+
+	/**
+	 * temporary call state for a single threaded call hierarchy.
+	 * this allows us to lookup the current callIn,
+	 * walk back further the hierarchy and even do simply loop detection
+	 */
+	gentityCall_t *callIn;
+	gentity_t    *activator; //FIXME: handle this as part of currentCall
 
 	/*
 	 * configuration, as supplied by the spawn string, external spawn scripts etc.
