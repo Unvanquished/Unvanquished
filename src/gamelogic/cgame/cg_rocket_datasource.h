@@ -51,3 +51,42 @@ typedef struct server_s
 server_t *serverListHead;
 server_t *serverListTail;
 int serverCount = 0;
+
+typedef struct resolution_s
+{
+	struct resolution_s *next;
+
+	int width;
+	int height;
+} resolution_t;
+
+resolution_t *resolutionsListHead;
+resolution_t *resolutionsListTail;
+int resolutionCount = 0;
+
+typedef struct language_s
+{
+	struct language_s *next;
+
+	char *name;
+	char *lang;
+} language_t;
+
+language_t *languageListHead;
+language_t *languageListTail;
+int languageCount = 0;
+
+typedef struct charList_s
+{
+	struct charList_s *next;
+
+	char *name;
+} charList_t;
+
+charList_t *voipInputsListHead;
+charList_t *voipInputsListTail;
+int voipInputsCount = 0;
+
+charList_t *alOutputsListHead;
+charList_t *alOutputsListTail;
+int alOutputsCount = 0;

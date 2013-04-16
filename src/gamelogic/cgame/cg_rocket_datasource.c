@@ -62,7 +62,7 @@ node_t* mergesort(node_t *head,long lengtho, int ( *cmp )( node_t *a, node_t *b 
 	return NULL; // silence compiler
 }
 
-static void AddToServerList( const char *name, int clients, int bots, int ping )
+static void AddToServerList( char *name, int clients, int bots, int ping )
 {
 	server_t *node = BG_Alloc( sizeof( server_t ) );
 
@@ -209,7 +209,267 @@ void CG_Rocket_CleanUpServerList( void )
 		BG_Free( tmp );
 	}
 
+	serverListHead = serverListTail = NULL;
 	serverCount = 0;
+}
+
+qboolean Parse( char **p, char **out )
+{
+	char *token;
+
+	token = COM_ParseExt( p, qfalse );
+
+	if ( token && token[ 0 ] != 0 )
+	{
+		* ( out ) = BG_strdup( token );
+		return qtrue;
+	}
+
+	return qfalse;
+}
+
+static void AddToResolutionList( int w, int h )
+{
+	resolution_t *node = BG_Alloc( sizeof( resolution_t ) );
+
+	node->width = w;
+	node->height = h;
+	resolutionCount++;
+
+	if ( !resolutionsListHead && !resolutionsListTail )
+	{
+		resolutionsListHead = BG_Alloc( sizeof( resolution_t ) );
+		resolutionsListHead->next = resolutionsListTail = node;
+	}
+	else
+	{
+		resolutionsListTail->next = node;
+		resolutionsListTail = node;
+	}
+}
+
+void CG_Rocket_BuildResolutionList( const char *args )
+{
+	char        buf[ MAX_STRING_CHARS ];
+	char        w[ 16 ], h[ 16 ];
+	char        *p;
+	char  *out;
+	char        *s = NULL;
+
+	trap_Cvar_VariableStringBuffer( "r_availableModes", buf, sizeof( buf ) );
+	p = buf;
+	resolutionCount = 0;
+
+	while ( Parse( &p, &out ) )
+	{
+		Q_strncpyz( w, out, sizeof( w ) );
+		s = strchr( w, 'x' );
+
+		if ( !s )
+		{
+			return;
+		}
+
+		*s++ = '\0';
+		Q_strncpyz( h, s, sizeof( h ) );
+
+		AddToResolutionList( atoi( w ), atoi( h ) );
+		resolutionCount++;
+		BG_Free( out );
+	}
+}
+
+void CG_Rocket_CleanUpResolutionList( void )
+{
+	resolution_t *resolution = resolutionsListHead;
+
+	while ( resolution )
+	{
+		resolution_t *tmp = resolution;
+		resolution = resolution->next;
+
+		BG_Free( tmp );
+	}
+
+	resolutionsListHead = resolutionsListTail = NULL;
+	resolutionCount = 0;
+}
+
+static void AddToLanguageList( char *name, char *lang )
+{
+	language_t *node = BG_Alloc( sizeof( language_t ) );
+
+	node->name = name;
+	node->lang = lang;
+	languageCount++;
+
+	if ( !languageListHead && !languageListTail )
+	{
+		languageListHead = BG_Alloc( sizeof( language_t ) );
+		languageListHead->next = languageListTail = node;
+	}
+	else
+	{
+		languageListTail->next = node;
+		languageListTail = node;
+	}
+}
+
+void CG_Rocket_BuildLanguageList( const char *args )
+{
+	char        buf[ MAX_STRING_CHARS ], temp[ MAX_TOKEN_CHARS ];
+	int         index = 0;
+	qboolean    quoted = qfalse;
+	char        *p;
+	language_t  *language;
+
+	trap_Cvar_VariableStringBuffer( "trans_languages", buf, sizeof( buf ) );
+	p = buf;
+	memset( &temp, 0, sizeof( temp ) );
+	while( p && *p )
+	{
+		if( *p == '"' && quoted )
+		{
+			AddToLanguageList( BG_strdup( temp ), NULL );
+			languageCount++;
+			quoted = qfalse;
+			index = 0;
+		}
+
+		else if( *p == '"' || quoted )
+		{
+			if( !quoted ) { p++; }
+			quoted = qtrue;
+			temp[ index++ ] = *p;
+		}
+		p++;
+	}
+	trap_Cvar_VariableStringBuffer( "trans_encodings", buf, sizeof( buf ) );
+	p = buf;
+	memset( &temp, 0, sizeof( temp ) );
+	language = languageListHead->next;
+	while( p && *p )
+	{
+		if( *p == '"' && quoted )
+		{
+			language->lang = BG_strdup( temp );
+			language = language->next;
+			quoted = qfalse;
+			index = 0;
+		}
+
+		else if( *p == '"' || quoted )
+		{
+			if( !quoted ) { p++; }
+			quoted = qtrue;
+			temp[ index++ ] = *p;
+		}
+		p++;
+	}
+}
+
+void CG_Rocket_CleanUpLanguageList( void )
+{
+
+	language_t *language = languageListHead;
+
+	while ( language )
+	{
+		language_t *tmp = language;
+		language = language->next;
+
+		BG_Free( tmp );
+	}
+
+	languageListHead = languageListTail = NULL;
+	languageCount = 0;
+}
+
+static void AddToCharList( charList_t *head, charList_t *tail, char *name, int *count )
+{
+	charList_t *node = BG_Alloc( sizeof( charList_t ) );
+
+	node->name = name;
+	( *count )++;
+
+	if ( !head && !tail )
+	{
+		head = BG_Alloc( sizeof( charList_t ) );
+		head->next = tail = node;
+	}
+	else
+	{
+		tail->next = node;
+		tail = node;
+	}
+}
+
+void CG_Rocket_BuildVoIPInputs( const char *args )
+{
+	char buf[ MAX_STRING_CHARS ];
+	char *p, *head;
+	int inputs = 0;
+
+	trap_Cvar_VariableStringBuffer( "s_alAvailableInputDevices", buf, sizeof( buf ) );
+	head = buf;
+	while ( ( p = strchr( head, '\n' ) ) )
+	{
+		*p = '\0';
+		AddToCharList( voipInputsListHead, voipInputsListTail, BG_strdup( head ), &voipInputsCount );
+		head = p + 1;
+	}
+}
+
+void CG_Rocket_CleanUpVoIPInputs( void )
+{
+	charList_t *list = voipInputsListHead;
+
+	while ( list )
+	{
+		charList_t *tmp = list;
+		list = list->next;
+
+		BG_Free( tmp );
+	}
+
+	voipInputsListHead = voipInputsListTail = NULL;
+	voipInputsCount = 0;
+}
+
+void CG_Rocket_BuildAlOutputs( const char *args )
+{
+	char buf[ MAX_STRING_CHARS ];
+	char *p, *head;
+	int outputs = 0;
+
+	trap_Cvar_VariableStringBuffer( "s_alAvailableDevices", buf, sizeof( buf ) );
+	head = buf;
+	while ( ( p = strchr( head, '\n' ) ) )
+	{
+		*p = '\0';
+		AddToCharList( alOutputsListHead, alOutputsListTail, BG_strdup( head ), &alOutputsCount );
+		head = p + 1;
+	}
+}
+
+void CG_Rocket_CleanUpAlOutputs( void )
+{
+	charList_t *list = alOutputsListHead;
+
+	while ( list )
+	{
+		charList_t *tmp = list;
+		list = list->next;
+
+		BG_Free( tmp );
+	}
+
+	alOutputsListHead = alOutputsListTail = NULL;
+	alOutputsCount = 0;
+}
+
+static void nullSortFunc( const char *name, const char *sortBy )
+{
 }
 
 typedef struct
@@ -217,11 +477,17 @@ typedef struct
 	const char *name;
 	void ( *build ) ( const char *args );
 	void ( *sort ) ( const char *name, const char *sortBy );
+	void ( *cleanup ) ( void );
 } dataSourceCmd_t;
 
 static const dataSourceCmd_t dataSourceCmdList[] =
 {
-	{ "server_browser", &CG_Rocket_BuildServerList, &CG_Rocket_SortServerList }
+	{ "alOutputs", &CG_Rocket_BuildAlOutputs, &nullSortFunc, &CG_Rocket_CleanUpAlOutputs },
+	{ "languages", &CG_Rocket_BuildLanguageList, &nullSortFunc, &CG_Rocket_CleanUpLanguageList },
+	{ "resolutions", &CG_Rocket_BuildResolutionList, &nullSortFunc, &CG_Rocket_CleanUpResolutionList },
+	{ "server_browser", &CG_Rocket_BuildServerList, &CG_Rocket_SortServerList, &CG_Rocket_CleanUpServerList },
+	{ "voipInputs", &CG_Rocket_BuildVoIPInputs, &nullSortFunc, &CG_Rocket_CleanUpVoIPInputs },
+
 };
 
 static const size_t dataSourceCmdListCount = ARRAY_LEN( dataSourceCmdList );
