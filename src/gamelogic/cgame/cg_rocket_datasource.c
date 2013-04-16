@@ -255,6 +255,7 @@ void CG_Rocket_BuildResolutionList( const char *args )
 	char        *p;
 	char  *out;
 	char        *s = NULL;
+	resolution_t *resolution;
 
 	trap_Cvar_VariableStringBuffer( "r_availableModes", buf, sizeof( buf ) );
 	p = buf;
@@ -274,10 +275,59 @@ void CG_Rocket_BuildResolutionList( const char *args )
 		Q_strncpyz( h, s, sizeof( h ) );
 
 		AddToResolutionList( atoi( w ), atoi( h ) );
-		resolutionCount++;
 		BG_Free( out );
 	}
+
+	buf[ 0 ] = '\0';
+
+	trap_Rocket_DSClearTable( "resolutions", "default" );
+	resolution = resolutionsListHead;
+
+	while ( resolution = resolution->next )
+	{
+		Info_SetValueForKey( buf, "width", va( "%d", resolution->width ), qfalse );
+		Info_SetValueForKey( buf, "height", va( "%d", resolution->height ), qfalse );
+
+		trap_Rocket_DSAddRow( "resolutions", "default", buf );
+	}
+
 }
+
+static int ResolutionListCmpByWidth( node_t *one, node_t *two )
+{
+	resolution_t *a = ( resolution_t * ) one;
+	resolution_t *b = ( resolution_t * ) two;
+
+	if ( a->width > b->width ) return -1;
+	if ( b->width > a->width ) return 1;
+	if ( a->width == b->width )  return 0;
+	return 0; // silence compiler
+}
+
+void CG_Rocket_SortResolutionList( const char *name, const char *sortBy )
+{
+	static char buf[ MAX_STRING_CHARS ];
+	resolution_t *resolution;
+
+	if ( !Q_stricmp( sortBy, "width" ) )
+	{
+		mergesort( ( node_t * )resolutionsListHead, resolutionCount, &ResolutionListCmpByWidth );
+	}
+
+	resolution = resolutionsListHead;
+
+	trap_Rocket_DSClearTable( "resolutions", "default" );
+	resolution = resolutionsListHead;
+
+	while ( resolution = resolution->next )
+	{
+		Info_SetValueForKey( buf, "width", va( "%d", resolution->width ), qfalse );
+		Info_SetValueForKey( buf, "height", va( "%d", resolution->height ), qfalse );
+
+		trap_Rocket_DSAddRow( "resolutions", "default", buf );
+	}
+}
+
 
 void CG_Rocket_CleanUpResolutionList( void )
 {
@@ -484,7 +534,7 @@ static const dataSourceCmd_t dataSourceCmdList[] =
 {
 	{ "alOutputs", &CG_Rocket_BuildAlOutputs, &nullSortFunc, &CG_Rocket_CleanUpAlOutputs },
 	{ "languages", &CG_Rocket_BuildLanguageList, &nullSortFunc, &CG_Rocket_CleanUpLanguageList },
-	{ "resolutions", &CG_Rocket_BuildResolutionList, &nullSortFunc, &CG_Rocket_CleanUpResolutionList },
+	{ "resolutions", &CG_Rocket_BuildResolutionList, &CG_Rocket_SortResolutionList, &CG_Rocket_CleanUpResolutionList },
 	{ "server_browser", &CG_Rocket_BuildServerList, &CG_Rocket_SortServerList, &CG_Rocket_CleanUpServerList },
 	{ "voipInputs", &CG_Rocket_BuildVoIPInputs, &nullSortFunc, &CG_Rocket_CleanUpVoIPInputs },
 

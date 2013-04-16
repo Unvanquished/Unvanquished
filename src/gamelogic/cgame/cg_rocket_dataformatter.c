@@ -34,6 +34,46 @@ Maryland 20850 USA.
 
 #include "cg_local.h"
 
+static int GCD( int a, int b )
+{
+	int c;
+
+	while ( b != 0 )
+	{
+		c = a % b;
+		a = b;
+		b = c;
+	}
+
+	return a;
+}
+
+static const char *DisplayAspectString( int w, int h )
+{
+	int gcd = GCD( w, h );
+
+	w /= gcd;
+	h /= gcd;
+
+	// For some reason 8:5 is usually referred to as 16:10
+	if ( w == 8 && h == 5 )
+	{
+		w = 16;
+		h = 10;
+	}
+
+	return va( "%d:%d", w, h );
+}
+
+static void CG_Rocket_DFResolution( int handle, const char *data )
+{
+	int w = atoi( Info_ValueForKey(data, "1" ) );
+	int h = atoi( Info_ValueForKey(data, "2" ) );
+	char *aspectRatio = BG_strdup( DisplayAspectString( w, h ) );
+	trap_Rocket_DataFormatterFormattedData( handle, va( "%dx%d ( %s )", w, h, aspectRatio ) );
+	BG_Free( aspectRatio );
+}
+
 static void CG_Rocket_DFServerPing( int handle, const char *data )
 {
 	trap_Rocket_DataFormatterFormattedData( handle, va( "%s ms", Info_ValueForKey( data, "1" ) ) );
@@ -52,8 +92,9 @@ typedef struct
 
 static const dataFormatterCmd_t dataFormatterCmdList[] =
 {
+	{ "Resolution", &CG_Rocket_DFResolution },
 	{ "ServerPing", &CG_Rocket_DFServerPing },
-	{ "ServerPlayers", &CG_Rocket_DFServerPlayers }
+	{ "ServerPlayers", &CG_Rocket_DFServerPlayers },
 };
 
 static const size_t dataFormatterCmdListCount = ARRAY_LEN( dataFormatterCmdList );
