@@ -243,15 +243,15 @@ void G_RewardAttackers( gentity_t *self )
 					reason = CONF_REAS_DESTR_SUPPORT;
 			}
 
-			// TODO: Give bonus for killing enemy buildings inside their main base
 			qualifier = CONF_QUAL_NONE;
 
 			G_AddConfidence( playerTeam, CONFIDENCE_DESTRUCTION, reason, qualifier, reward, player );
 		}
 		else
 		{
-			G_AddCreditToClient( player->client, reward, qtrue );
 			AddScore( player, ( int )reward );
+
+			G_AddCreditToClient( player->client, ( short )reward, qtrue );
 
 			// Give confidence for killing enemies inside their main base
 			if ( distanceToBase < 500.0f )

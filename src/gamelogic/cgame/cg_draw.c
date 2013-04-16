@@ -386,7 +386,7 @@ static void CG_DrawPlayerCreditsValue( rectDef_t *rect, vec4_t color, qboolean p
 				localColor[ 3 ] = 0.0f;
 			}
 
-			value /= ALIEN_CREDITS_PER_KILL;
+			value /= ALIEN_CREDITS_PER_EVO;
 		}
 
 		trap_R_SetColor( localColor );
@@ -416,7 +416,7 @@ static void CG_DrawPlayerCreditsFraction( rectDef_t *rect, vec4_t color, qhandle
 	}
 
 	fraction = ( ( float )( cg.predictedPlayerState.persistant[ PERS_CREDIT ] %
-	                        ALIEN_CREDITS_PER_KILL ) ) / ALIEN_CREDITS_PER_KILL;
+	             ALIEN_CREDITS_PER_EVO ) ) / ALIEN_CREDITS_PER_EVO;
 
 	aRect = *rect;
 	CG_AdjustFrom640( &aRect.x, &aRect.y, &aRect.w, &aRect.h );
@@ -456,7 +456,7 @@ static void CG_DrawPlayerAlienEvos( rectDef_t *rect, float text_x, float text_y,
 				localColor[ 3 ] = 0.0f;
 			}
 
-			value /= ( float ) ALIEN_CREDITS_PER_KILL;
+			value /= ( float ) ALIEN_CREDITS_PER_EVO;
 		}
 
 		s = va( "%0.1f", floor( value * 10 ) / 10 );
@@ -2570,7 +2570,7 @@ static void CG_DrawTeamOverlay( rectDef_t *rect, float scale, vec4_t color )
 			        "  " + ( ci->health >= 100 ? 6 : ci->health >= 10 ? 3 : 0 ), // these are figure spaces, 3 bytes each
 			        ci->health,
 			        ( ci->team == TEAM_ALIENS )
-			          ? va( "₠%.1f", (float) ci->credit / ALIEN_CREDITS_PER_KILL )
+			          ? va( "₠%.1f", (float) ci->credit / ALIEN_CREDITS_PER_EVO )
 			          : va( "₢%d", ci->credit ),
 			        CG_ConfigString( CS_LOCATIONS + ci->location ) );
 		}

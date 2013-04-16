@@ -264,10 +264,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define ALIEN_REGEN_DAMAGE_TIME  2000 //msec since damage that regen starts again
 #define ALIEN_REGEN_NOCREEP_MOD  ( 1.0f / 3.0f ) //regen off creep
 
-#define ALIEN_MAX_FRAGS          9
-#define ALIEN_MAX_CREDITS        ( ALIEN_MAX_FRAGS * ALIEN_CREDITS_PER_KILL )
-#define ALIEN_CREDITS_PER_KILL   400
-#define ALIEN_TK_SUICIDE_PENALTY 350
+#define ALIEN_MAX_CREDITS        2000
+#define ALIEN_CREDITS_PER_EVO    100 // 1 evo = 100 credits (= 0.5 trem evos)
+#define ALIEN_TK_SUICIDE_PENALTY 150
 
 /*
  * HUMAN weapons
@@ -434,7 +433,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define HUMAN_TK_SUICIDE_PENALTY      150
 
 #define HUMAN_BUILDER_SCOREINC        50 // builders receive this many points every 10 seconds
-#define ALIEN_BUILDER_SCOREINC        AVM(100) // builders receive this many points every 10 seconds
+#define ALIEN_BUILDER_SCOREINC        AVM(50) // builders receive this many points every 10 seconds
 
 /*
  * Misc
@@ -445,7 +444,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define AVG_FALL_DISTANCE                  (( MIN_FALL_DISTANCE + MAX_FALL_DISTANCE ) / 2.0f )
 
 #define DEFAULT_FREEKILL_PERIOD            "120" //seconds
-#define FREEKILL_ALIEN                     ALIEN_CREDITS_PER_KILL
+#define FREEKILL_ALIEN                     200
 #define FREEKILL_HUMAN                     LEVEL0_VALUE
 
 #define RGS_RANGE                          750.0f
@@ -455,7 +454,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define DEFAULT_CONFIDENCE_HALF_LIFE       "5"
 #define DEFAULT_MINIMUM_STAGE_TIME         "60" // how many seconds to keep a new stage at minimum
-#define CREDITS_TO_CONFIDENCE_RATIO        50 // the score value of one confidence point in human credits
+#define CREDITS_TO_CONFIDENCE_RATIO        50 // the score value of one confidence point in credits
 
 #define DEFAULT_ALIEN_STAGE2_THRESHOLD     "150"
 #define DEFAULT_ALIEN_STAGE3_THRESHOLD     "300"
