@@ -1386,6 +1386,8 @@ if( BUILD_CLIENT )
   include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} ${ROCKET_DIR}/include )
   target_link_libraries( client ${OS_LIBRARIES} ${NEWTON_LIBRARY} ROCKET_LIB )
   set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER COMPAT_ET USE_REFENTITY_ANIMATIONSYSTEM HAVE_SDL )
+  # Required for linking against the LibRocket static library in MSVC
+  set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS STATIC_LIB )
   set_target_properties( client PROPERTIES OUTPUT_NAME "daemon" PREFIX "" LINKER_LANGUAGE CXX )
 
   # Setup CPack for target client
