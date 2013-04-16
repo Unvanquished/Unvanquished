@@ -2200,27 +2200,67 @@ void CL_ResetPureClientAtServer( void )
 	CL_AddReliableCommand( "vdr" );
 }
 
+static void CL_GenerateRSAKeys( void )
+{
+	struct nettle_buffer key_buffer;
+	int                  key_buffer_len = 0;
+	fileHandle_t         f;
+
+	mpz_set_ui( public_key.e, RSA_PUBLIC_EXPONENT );
+
+	if ( !rsa_generate_keypair( &public_key, &private_key, NULL, qnettle_random, NULL, NULL, RSA_KEY_LENGTH, 0 ) )
+	{
+		Com_Error( ERR_FATAL, "Error generating RSA keypair" );
+	}
+
+	qnettle_buffer_init( &key_buffer, &key_buffer_len );
+
+	if ( !rsa_keypair_to_sexp( &key_buffer, NULL, &public_key, &private_key ) )
+	{
+		Com_Error( ERR_FATAL, "Error converting RSA keypair to sexp" );
+	}
+
+	if ( cl_profile && cl_profile->string[ 0 ] )
+	{
+		f = FS_FOpenFileWrite( va( "profiles/%s/%s", cl_profile->string, RSAKEY_FILE ) );
+	}
+	else
+	{
+		f = FS_FOpenFileWrite( RSAKEY_FILE );
+	}
+
+	if ( !f )
+	{
+		Com_Error( ERR_FATAL, _( "Daemon could not open %s for writing the RSA keypair" ), RSAKEY_FILE );
+	}
+
+	FS_FChmod( f, 0600 ); // owner r/w, no other access
+
+	FS_Write( key_buffer.contents, key_buffer.size, f );
+	FS_FCloseFile( f );
+
+	nettle_buffer_clear( &key_buffer );
+	Com_Printf( "%s", _( "Daemon RSA keys generated\n" ) );
+}
+
 /*
 ===============
-CL_GenerateRSAKey
+CL_LoadRSAKeys
 
-Check if the RSAKey file contains a valid RSA keypair
-If not then generate a new keypair
+Attempt to load the RSA keys from a file
+If this fails then generate a new keypair
 ===============
 */
-static void CL_GenerateRSAKey( void )
+static void CL_LoadRSAKeys( void )
 {
 	int                  len;
 	fileHandle_t         f;
-	void                 *buf;
-	struct nettle_buffer key_buffer;
-
-	int                  key_buffer_len = 0;
+	uint8_t              *buf;
 
 	rsa_public_key_init( &public_key );
 	rsa_private_key_init( &private_key );
 
-	if( cl_profile->string[ 0 ] )
+	if( cl_profile && cl_profile->string[ 0 ] )
 	{
 		len = FS_FOpenFileRead( va( "profiles/%s/%s", cl_profile->string, RSAKEY_FILE ), &f, qtrue );
 	}
@@ -2232,7 +2272,8 @@ static void CL_GenerateRSAKey( void )
 	if ( !f || len < 1 )
 	{
 		Com_Printf( "%s", _( "Daemon RSA public-key file not found, regenerating\n" ) );
-		goto new_key;
+		CL_GenerateRSAKeys();
+		return;
 	}
 
 	buf = Z_TagMalloc( len, TAG_CRYPTO );
@@ -2241,54 +2282,14 @@ static void CL_GenerateRSAKey( void )
 
 	if ( !rsa_keypair_from_sexp( &public_key, &private_key, 0, len, buf ) )
 	{
-		Com_Printf( "%s", _( "Invalid RSA keypair in RSAKey, regenerating\n" ) );
+		Com_Printf( "%s", _( "Invalid RSA keypair in file, regenerating\n" ) );
 		Z_Free( buf );
-		goto new_key;
+		CL_GenerateRSAKeys();
+		return;
 	}
 
 	Z_Free( buf );
 	Com_Printf( "%s", _( "Daemon RSA public-key found.\n" ) );
-	return;
-
-	new_key:
-	mpz_set_ui( public_key.e, RSA_PUBLIC_EXPONENT );
-
-	if ( !rsa_generate_keypair( &public_key, &private_key, NULL, qnettle_random, NULL, NULL, RSA_KEY_LENGTH, 0 ) )
-	{
-		goto keygen_error;
-	}
-
-	qnettle_buffer_init( &key_buffer, &key_buffer_len );
-
-	if ( !rsa_keypair_to_sexp( &key_buffer, NULL, &public_key, &private_key ) )
-	{
-		goto keygen_error;
-	}
-
-	if( cl_profile->string[ 0 ] )
-	{
-		f = FS_FOpenFileWrite( va( "profiles/%s/%s", cl_profile->string, RSAKEY_FILE ) );
-	}
-	else
-	{
-		f = FS_FOpenFileWrite( RSAKEY_FILE );
-	}
-
-	if ( !f )
-	{
-		Com_Error( ERR_FATAL, _( "Daemon RSA public-key could not open %s for write, RSA support will be disabled" ), RSAKEY_FILE );
-		return;
-	}
-
-	FS_Write( key_buffer.contents, key_buffer.size, f );
-	nettle_buffer_clear( &key_buffer );
-	FS_FCloseFile( f );
-	Com_Printf( "%s", _( "Daemon RSA public-key generated\n" ) );
-	return;
-
-	keygen_error:
-	Com_Error( ERR_FATAL, "Error generating RSA keypair, RSA support will be disabled" );
-	Crypto_Shutdown();
 }
 
 
@@ -2364,11 +2365,7 @@ void CL_Vid_Restart_f( void )
 	// startup all the client stuff
 	CL_StartHunkUsers();
 
-	if( Cvar_VariableIntegerValue( "cl_newProfile" ) )
-	{
-		CL_GenerateRSAKey();
-		Cvar_Set( "cl_newProfile", "0" );
-	}
+	CL_UpdateProfile();
 #ifdef _WIN32
 	Sys_In_Restart_f(); // fretn
 #endif
@@ -2424,9 +2421,34 @@ handles will be invalid
 void CL_Snd_Restart_f( void )
 {
 	S_Shutdown();
-	S_Init();
 
-	CL_Vid_Restart_f();
+	if( !cls.cgameStarted )
+	{
+		CL_ShutdownUI();
+		S_Init();
+		S_BeginRegistration();
+		CL_InitUI();
+	}
+	else
+	{
+		S_Init();
+		CL_Vid_Restart_f();
+	}
+}
+
+
+/*
+=================
+CL_ChangeProfile
+=================
+*/
+void CL_UpdateProfile( void )
+{
+	if( cl_profile->modified )
+	{
+		CL_LoadRSAKeys();
+		cl_profile->modified = qfalse;
+	}
 }
 
 /*
@@ -4590,7 +4612,7 @@ void CL_Init( void )
 	Cbuf_Execute();
 
 	Cvar_Set( "cl_running", "1" );
-	CL_GenerateRSAKey();
+	CL_LoadRSAKeys();
 
 	CL_OpenClientLog();
 	CL_WriteClientLog( "`~-     Client Opened     -~`\n" );
@@ -4643,6 +4665,8 @@ void CL_Shutdown( void )
 	CL_ShutdownRef();
 
 	CL_IRCInitiateShutdown();
+
+	Crypto_Shutdown();
 
 	Cmd_RemoveCommand( "cmd" );
 	Cmd_RemoveCommand( "configstrings" );

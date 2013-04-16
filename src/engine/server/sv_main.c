@@ -158,14 +158,14 @@ void SV_AddServerCommand( client_t *client, const char *cmd )
 	// doesn't cause a recursive drop client
 	if ( client->reliableSequence - client->reliableAcknowledge == MAX_RELIABLE_COMMANDS + 1 )
 	{
-		Com_Printf(_( "===== pending server commands =====\n" ));
+		Com_DPrintf(_( "===== pending server commands =====\n" ));
 
 		for ( i = client->reliableAcknowledge + 1; i <= client->reliableSequence; i++ )
 		{
-			Com_Printf( "cmd %5d: %s\n", i, client->reliableCommands[ i & ( MAX_RELIABLE_COMMANDS - 1 ) ] );
+			Com_DPrintf( "cmd %5d: %s\n", i, client->reliableCommands[ i & ( MAX_RELIABLE_COMMANDS - 1 ) ] );
 		}
 
-		Com_Printf( "cmd %5d: %s\n", i, cmd );
+		Com_DPrintf( "cmd %5d: %s\n", i, cmd );
 		SV_DropClient( client, "Server command overflow" );
 		return;
 	}

@@ -401,7 +401,6 @@ void TeamplayInfoMessage( gentity_t *ent )
 	gclient_t *cl;
 	upgrade_t upgrade = UP_NONE;
 	int       curWeaponClass = WP_NONE; // sends weapon for humans, class for aliens
-	char      *format;
 
 	if ( !g_allowTeamOverlay.integer )
 	{
@@ -428,8 +427,6 @@ void TeamplayInfoMessage( gentity_t *ent )
 	{
 		team = ent->client->pers.teamSelection;
 	}
-
-	format = ( team == TEAM_ALIENS ) ? " %i %i %i %i %i" : " %i %i %i %i %i %i"; // aliens don't have upgrades
 
 	string[ 0 ] = '\0';
 	stringlength = 0;
@@ -491,12 +488,24 @@ void TeamplayInfoMessage( gentity_t *ent )
 			upgrade = UP_NONE;
 		}
 
-		Com_sprintf( entry, sizeof( entry ), format, i,
-		             cl->pers.location,
-		             cl->ps.stats[ STAT_HEALTH ] < 1 ? 0 : cl->ps.stats[ STAT_HEALTH ],
-		             curWeaponClass,
-		             cl->pers.credit,
-		             upgrade );
+		if( team == TEAM_ALIENS ) // aliens don't have upgrades
+		{
+			Com_sprintf( entry, sizeof( entry ), " %i %i %i %i %i", i,
+						 cl->pers.location,
+						 cl->ps.stats[ STAT_HEALTH ] < 1 ? 0 : cl->ps.stats[ STAT_HEALTH ],
+						 curWeaponClass,
+						 cl->pers.credit );
+		}
+		else
+		{
+			Com_sprintf( entry, sizeof( entry ), " %i %i %i %i %i %i", i,
+			             cl->pers.location,
+			             cl->ps.stats[ STAT_HEALTH ] < 1 ? 0 : cl->ps.stats[ STAT_HEALTH ],
+			             curWeaponClass,
+			             cl->pers.credit,
+			             upgrade );
+		}
+
 
 		j = strlen( entry );
 

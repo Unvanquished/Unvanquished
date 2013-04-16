@@ -250,6 +250,7 @@ extern int memcmp( void *, void *, size_t );
 	typedef unsigned int         uint;
 
 	typedef enum {qfalse, qtrue} qboolean;
+	typedef enum {qno, qyes, qmaybe} qtrinary;
 
 	typedef union
 	{
@@ -280,14 +281,6 @@ extern int memcmp( void *, void *, size_t );
 
 #ifndef BIT
 #define BIT(x) ( 1 << ( x ) )
-#endif
-
-/**
- * like BIT but starts counting from 1, and making sure FLAG(0)=0
- */
-#ifndef FLAG
-#define FLAG(x) ( x <= 0 ? 0 : 1 << ( x - 1 ) )
-#define FLAG_ALL -1
 #endif
 
 // the game guarantees that no string from the network will ever

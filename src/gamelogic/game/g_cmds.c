@@ -142,14 +142,13 @@ int G_ClientNumberFromString( const char *s, char *err, int len )
 	int       i, found = 0, m = -1;
 	char      s2[ MAX_NAME_LENGTH ];
 	char      n2[ MAX_NAME_LENGTH ];
-	char      *p = err;
 	int       l, l2 = len;
 
 	if ( !s[ 0 ] )
 	{
-		if ( p )
+		if ( err )
 		{
-			Q_strncpyz( p, N_("no player name or slot # provided\n"), len );
+			Q_strncpyz( err, N_("no player name or slot # provided\n"), len );
 		}
 
 		return -1;
@@ -164,6 +163,10 @@ int G_ClientNumberFromString( const char *s, char *err, int len )
 
 		if ( i < 0 || i >= level.maxclients )
 		{
+			if ( err )
+			{
+				Q_strncpyz( err, N_("no player connected in that slot #\n"), len );
+			}
 			return -1;
 		}
 
@@ -171,9 +174,9 @@ int G_ClientNumberFromString( const char *s, char *err, int len )
 
 		if ( cl->pers.connected == CON_DISCONNECTED )
 		{
-			if ( p )
+			if ( err )
 			{
-				Q_strncpyz( p, N_("no player connected in that slot #\n"), len );
+				Q_strncpyz( err, N_("no player connected in that slot #\n"), len );
 			}
 
 			return -1;
@@ -186,20 +189,20 @@ int G_ClientNumberFromString( const char *s, char *err, int len )
 
 	if ( !s2[ 0 ] )
 	{
-		if ( p )
+		if ( err )
 		{
-			Q_strncpyz( p, N_("no player name provided\n"), len );
+			Q_strncpyz( err, N_("no player name provided\n"), len );
 		}
 
 		return -1;
 	}
 
-	if ( p )
+	if ( err )
 	{
-		Q_strncpyz( p, N_("more than one player name matches. "
+		Q_strncpyz( err, N_("more than one player name matches. "
 		            "be more specific or use the slot #:\n"), l2 );
-		l = strlen( p );
-		p += l;
+		l = strlen( err );
+		err += l;
 		l2 -= l;
 	}
 
@@ -220,10 +223,10 @@ int G_ClientNumberFromString( const char *s, char *err, int len )
 
 		if ( strstr( n2, s2 ) )
 		{
-			if ( p )
+			if ( err )
 			{
-				l = Q_snprintf( p, l2, "%-2d — %s^7\n", i, cl->pers.netname );
-				p += l;
+				l = Q_snprintf( err, l2, "%-2d — %s^7\n", i, cl->pers.netname );
+				err += l;
 				l2 -= l;
 			}
 
@@ -1561,7 +1564,7 @@ static const struct {
 		T_NONE, T_PLAYER, T_OTHER
 	}               target;
 	qboolean        adminImmune; // from needing a reason and from being the target
-	qboolean        reasonNeeded;
+	qtrinary        reasonNeeded;
 	const vmCvar_t *percentage;
 	enum {
 		VOTE_ALWAYS, // default
@@ -1575,22 +1578,23 @@ static const struct {
 	const vmCvar_t *reasonFlag; // where a reason requirement is configurable (reasonNeeded must be qtrue)
 } voteInfo[] = {
 	// Name           Stop?   Type      Target     Immune   Reason  Vote percentage var        Extra
-	{ "kick",         qfalse, V_ANY,    T_PLAYER,  qtrue,   qtrue,  &g_kickVotesPercent },
-	{ "spectate",     qfalse, V_ANY,    T_PLAYER,  qtrue,   qtrue,  &g_kickVotesPercent },
-	{ "mute",         qtrue,  V_PUBLIC, T_PLAYER,  qtrue,   qtrue,  &g_denyVotesPercent },
-	{ "unmute",       qtrue,  V_PUBLIC, T_PLAYER,  qfalse,  qfalse, &g_denyVotesPercent },
-	{ "denybuild",    qtrue,  V_TEAM,   T_PLAYER,  qtrue,   qtrue,  &g_denyVotesPercent,        VOTE_NOT_SD },
-	{ "allowbuild",   qtrue,  V_TEAM,   T_PLAYER,  qfalse,  qfalse, &g_denyVotesPercent,        VOTE_NOT_SD },
-	{ "sudden_death", qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_suddenDeathVotePercent,  VOTE_NOT_SD },
-	{ "extend",       qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_extendVotesPercent,      VOTE_REMAIN, &g_extendVotesTime },
-	{ "admitdefeat",  qtrue,  V_TEAM,   T_NONE,    qfalse,  qfalse, &g_admitDefeatVotesPercent },
-	{ "draw",         qtrue,  V_PUBLIC, T_NONE,    qtrue,   qtrue,  &g_drawVotesPercent,        VOTE_AFTER,  &g_drawVotesAfter,  &g_drawVoteReasonRequired },
-	{ "map_restart",  qtrue,  V_PUBLIC, T_NONE,    qfalse,  qfalse, &g_mapVotesPercent },
-	{ "map",          qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
-	{ "layout",       qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
-	{ "nextmap",      qfalse, V_PUBLIC, T_OTHER,   qfalse,  qfalse, &g_nextMapVotesPercent },
-	{ "poll",         qfalse, V_ANY,    T_NONE,    qfalse,  qtrue,  &g_pollVotesPercent,        VOTE_NO_AUTO },
+	{ "kick",         qfalse, V_ANY,    T_PLAYER,  qtrue,   qyes,   &g_kickVotesPercent },
+	{ "spectate",     qfalse, V_ANY,    T_PLAYER,  qtrue,   qyes,   &g_kickVotesPercent },
+	{ "mute",         qtrue,  V_PUBLIC, T_PLAYER,  qtrue,   qyes,   &g_denyVotesPercent },
+	{ "unmute",       qtrue,  V_PUBLIC, T_PLAYER,  qfalse,  qno,    &g_denyVotesPercent },
+	{ "denybuild",    qtrue,  V_TEAM,   T_PLAYER,  qtrue,   qyes,   &g_denyVotesPercent,        VOTE_NOT_SD },
+	{ "allowbuild",   qtrue,  V_TEAM,   T_PLAYER,  qfalse,  qno,    &g_denyVotesPercent,        VOTE_NOT_SD },
+	{ "sudden_death", qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qno,    &g_suddenDeathVotePercent,  VOTE_NOT_SD },
+	{ "extend",       qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qno,    &g_extendVotesPercent,      VOTE_REMAIN, &g_extendVotesTime },
+	{ "admitdefeat",  qtrue,  V_TEAM,   T_NONE,    qfalse,  qno,    &g_admitDefeatVotesPercent },
+	{ "draw",         qtrue,  V_PUBLIC, T_NONE,    qtrue,   qyes,   &g_drawVotesPercent,        VOTE_AFTER,  &g_drawVotesAfter,  &g_drawVoteReasonRequired },
+	{ "map_restart",  qtrue,  V_PUBLIC, T_NONE,    qfalse,  qno,    &g_mapVotesPercent },
+	{ "map",          qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qmaybe, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
+	{ "layout",       qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qno,    &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
+	{ "nextmap",      qfalse, V_PUBLIC, T_OTHER,   qfalse,  qmaybe, &g_nextMapVotesPercent },
+	{ "poll",         qfalse, V_ANY,    T_NONE,    qfalse,  qyes,   &g_pollVotesPercent,        VOTE_NO_AUTO },
 	{ NULL }
+	// note: map votes use the reason, if given, as the layout name
 };
 
 /*
@@ -1840,7 +1844,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 
 	}
 
-	if ( voteInfo[voteId].reasonNeeded && !reason[ 0 ] &&
+	if ( voteInfo[voteId].reasonNeeded == qyes && !reason[ 0 ] &&
 	     !( voteInfo[voteId].adminImmune && G_admin_permission( ent, ADMF_UNACCOUNTABLE ) ) &&
 	     !( voteInfo[voteId].reasonFlag && voteInfo[voteId].reasonFlag->integer ) )
 	{
@@ -1991,11 +1995,24 @@ void Cmd_CallVote_f( gentity_t *ent )
 
 		level.voteDelay[ team ] = 3000;
 
-		Com_sprintf( level.voteString[ team ], sizeof( level.voteString ),
-		             "map %s", Quote( arg ) );
-		Com_sprintf( level.voteDisplayString[ team ],
-		             sizeof( level.voteDisplayString[ team ] ),
-		             "Change to map '%s'", arg );
+		if ( *reason ) // layout?
+		{
+			Com_sprintf( level.voteString[ team ], sizeof( level.voteString ),
+			             "map %s %s", Quote( arg ), Quote( reason ) );
+			Com_sprintf( level.voteDisplayString[ team ],
+			             sizeof( level.voteDisplayString[ team ] ),
+			             "Change to map '%s' layout '%s'", arg, reason );
+		}
+		else
+		{
+			Com_sprintf( level.voteString[ team ], sizeof( level.voteString ),
+			             "map %s", Quote( arg ) );
+			Com_sprintf( level.voteDisplayString[ team ],
+			             sizeof( level.voteDisplayString[ team ] ),
+			             "Change to map '%s'", arg );
+		}
+
+		reason[0] = '\0'; // nullify since we've used it here...
 		break;
 
 	case VOTE_LAYOUT:
@@ -2016,7 +2033,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 			Com_sprintf( level.voteDisplayString[ team ],
 			             sizeof( level.voteDisplayString[ team ] ), "Change to map layout '%s'", arg );
 		}
-		break;
+		break; 
 
 	case VOTE_NEXT_MAP:
 		if ( G_MapExists( g_nextMap.string ) )
@@ -2035,11 +2052,24 @@ void Cmd_CallVote_f( gentity_t *ent )
 			return;
 		}
 
-		Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ),
-		             "set g_nextMap %s", Quote( arg ) );
-		Com_sprintf( level.voteDisplayString[ team ],
-		             sizeof( level.voteDisplayString[ team ] ),
-		             "Set the next map to '%s'", arg );
+		if ( *reason ) // layout?
+		{
+			Com_sprintf( level.voteString[ team ], sizeof( level.voteString ),
+			             "set g_nextMap %s; set g_nextMapLayouts %s", Quote( arg ), Quote( reason ) );
+			Com_sprintf( level.voteDisplayString[ team ],
+			             sizeof( level.voteDisplayString[ team ] ),
+			             "Set the next map to '%s' layout '%s'", arg, reason );
+		}
+		else
+		{
+			Com_sprintf( level.voteString[ team ], sizeof( level.voteString ),
+			             "set g_nextMap %s; set g_nextMapLayouts \"\"", Quote( arg ) );
+			Com_sprintf( level.voteDisplayString[ team ],
+			             sizeof( level.voteDisplayString[ team ] ),
+			             "Set the next map to '%s'", arg );
+		}
+
+		reason[0] = '\0'; // nullify since we've used it here...
 		break;
 
 	case VOTE_POLL:
@@ -2880,14 +2910,13 @@ void Cmd_ToggleItem_f( gentity_t *ent )
 Cmd_Buy_f
 =================
 */
-void Cmd_Buy_f( gentity_t *ent )
+static qboolean Cmd_Sell_internal( gentity_t *ent, const char *s );
+
+static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s )
 {
-	char      s[ MAX_TOKEN_CHARS ];
 	weapon_t  weapon;
 	upgrade_t upgrade;
 	qboolean  energyOnly;
-
-	trap_Argv( 1, s, sizeof( s ) );
 
 	weapon = BG_WeaponByName( s )->number;
 	upgrade = BG_UpgradeByName( s )->number;
@@ -2916,7 +2945,7 @@ void Cmd_Buy_f( gentity_t *ent )
 			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOARMOURYHERE );
 		}
 
-		return;
+		return qfalse;
 	}
 
 	if ( weapon != WP_NONE )
@@ -2925,7 +2954,7 @@ void Cmd_Buy_f( gentity_t *ent )
 		if ( BG_InventoryContainsWeapon( weapon, ent->client->ps.stats ) )
 		{
 			G_TriggerMenu( ent->client->ps.clientNum, MN_H_ITEMHELD );
-			return;
+			return qfalse;
 		}
 
 		// Only humans can buy stuff
@@ -2950,20 +2979,20 @@ void Cmd_Buy_f( gentity_t *ent )
 		if ( BG_Weapon( weapon )->price > ( short ) ent->client->pers.credit )
 		{
 			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOFUNDS );
-			return;
+			return qfalse;
 		}
 
 		//have space to carry this?
 		if ( BG_Weapon( weapon )->slots & BG_SlotsForInventory( ent->client->ps.stats ) )
 		{
 			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOSLOTS );
-			return;
+			return qfalse;
 		}
 
 		// In some instances, weapons can't be changed
 		if ( !BG_PlayerCanChangeWeapon( &ent->client->ps ) )
 		{
-			return;
+			return qfalse;
 		}
 
 		ent->client->ps.stats[ STAT_WEAPON ] = weapon;
@@ -2983,6 +3012,8 @@ void Cmd_Buy_f( gentity_t *ent )
 
 		//subtract from funds
 		G_AddCreditToClient( ent->client, - ( short ) BG_Weapon( weapon )->price, qfalse );
+
+		return qtrue;
 	}
 	else if ( upgrade != UP_NONE )
 	{
@@ -2990,7 +3021,7 @@ void Cmd_Buy_f( gentity_t *ent )
 		if ( BG_InventoryContainsUpgrade( upgrade, ent->client->ps.stats ) )
 		{
 			G_TriggerMenu( ent->client->ps.clientNum, MN_H_ITEMHELD );
-			return;
+			return qfalse;
 		}
 
 		// Only humans can buy stuff
@@ -3015,19 +3046,20 @@ void Cmd_Buy_f( gentity_t *ent )
 		if ( BG_Upgrade( upgrade )->price > ( short ) ent->client->pers.credit )
 		{
 			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOFUNDS );
-			return;
+			return qfalse;
 		}
 
 		//have space to carry this?
 		if ( BG_Upgrade( upgrade )->slots & BG_SlotsForInventory( ent->client->ps.stats ) )
 		{
 			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOSLOTS );
-			return;
+			return qfalse;
 		}
 
 		if ( upgrade == UP_AMMO )
 		{
 			G_GiveClientMaxAmmo( ent, energyOnly );
+			return qtrue;
 		}
 		else
 		{
@@ -3038,7 +3070,7 @@ void Cmd_Buy_f( gentity_t *ent )
 				if ( !G_RoomForClassChange( ent, PCL_HUMAN_BSUIT, newOrigin ) )
 				{
 					G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMBSUITON );
-					return;
+					return qfalse;
 				}
 
 				VectorCopy( newOrigin, ent->client->ps.origin );
@@ -3058,26 +3090,45 @@ void Cmd_Buy_f( gentity_t *ent )
 
 		//subtract from funds
 		G_AddCreditToClient( ent->client, - ( short ) BG_Upgrade( upgrade )->price, qfalse );
+
+		return qtrue;
 	}
 	else
 	{
 		G_TriggerMenu( ent->client->ps.clientNum, MN_H_UNKNOWNITEM );
-		return;
 	}
 
-	//update ClientInfo
-	ClientUserinfoChanged( ent->client->ps.clientNum, qfalse );
-	ent->client->pers.infoChangeTime = level.time;
-
-	return;
+	return qfalse;
 
 cant_buy:
-	trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't buy this item\n") "\"" );
-	return;
+	trap_SendServerCommand( ent - g_entities, va( "print_tr \"" N_("You can't buy this item ($1$)\n") "\" %s", Quote( s ) ) );
+	return qfalse;
 
 not_alien:
 	trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't buy alien items\n") "\"" );
-	return;
+	return qfalse;
+}
+
+void Cmd_Buy_f( gentity_t *ent )
+{
+	char     s[ MAX_TOKEN_CHARS ];
+	int      c, args;
+	qboolean updated = qfalse;
+
+	args = trap_Argc();
+
+	for ( c = 1; c < args; ++c )
+	{
+		trap_Argv( c, s, sizeof( s ) );
+		updated |= s[0] == '-' ? Cmd_Sell_internal( ent, s + 1 ) : Cmd_Buy_internal( ent, s );
+	}
+
+	//update ClientInfo
+	if ( updated )
+	{
+		ClientUserinfoChanged( ent->client->ps.clientNum, qfalse );
+		ent->client->pers.infoChangeTime = level.time;
+	}
 }
 
 /*
@@ -3085,14 +3136,15 @@ not_alien:
 Cmd_Sell_f
 =================
 */
-static void Cmd_Sell_weapons( gentity_t *ent )
+static qboolean Cmd_Sell_weapons( gentity_t *ent )
 {
 	int      i;
 	weapon_t selected = BG_GetPlayerWeapon( &ent->client->ps );
+	qboolean sold = qfalse;
 
 	if ( !BG_PlayerCanChangeWeapon( &ent->client->ps ) )
 	{
-		return;
+		return qfalse;
 	}
 
 	for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; i++ )
@@ -3111,6 +3163,8 @@ static void Cmd_Sell_weapons( gentity_t *ent )
 
 			// add to funds
 			G_AddCreditToClient( ent->client, ( short ) BG_Weapon( i )->price, qfalse );
+
+			sold = qtrue;
 		}
 
 		// if we have this weapon selected, force a new selection
@@ -3119,11 +3173,14 @@ static void Cmd_Sell_weapons( gentity_t *ent )
 			G_ForceWeaponChange( ent, WP_NONE );
 		}
 	}
+
+	return sold;
 }
 
-static void Cmd_Sell_upgrades( gentity_t *ent )
+static qboolean Cmd_Sell_upgrades( gentity_t *ent )
 {
 	int      i;
+	qboolean sold = qfalse;
 
 	for ( i = UP_NONE + 1; i < UP_NUM_UPGRADES; i++ )
 	{
@@ -3157,23 +3214,25 @@ static void Cmd_Sell_upgrades( gentity_t *ent )
 
 			// add to funds
 			G_AddCreditToClient( ent->client, ( short ) BG_Upgrade( i )->price, qfalse );
+
+			sold = qtrue;
 		}
 	}
+
+	return sold;
 }
 
-void Cmd_Sell_f( gentity_t *ent )
+static qboolean Cmd_Sell_internal( gentity_t *ent, const char *s )
 {
-	char      s[ MAX_TOKEN_CHARS ];
+	int       i;
 	weapon_t  weapon;
 	upgrade_t upgrade;
-
-	trap_Argv( 1, s, sizeof( s ) );
 
 	//no armoury nearby
 	if ( !G_BuildableRange( ent->client->ps.origin, 100, BA_H_ARMOURY ) )
 	{
 		G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOARMOURYHERE );
-		return;
+		return qfalse;
 	}
 
 	if ( !Q_strnicmp( s, "weapon", 6 ) )
@@ -3193,14 +3252,14 @@ void Cmd_Sell_f( gentity_t *ent )
 
 		if ( !BG_PlayerCanChangeWeapon( &ent->client->ps ) )
 		{
-			return;
+			return qfalse;
 		}
 
 		//are we /allowed/ to sell this?
 		if ( !BG_Weapon( weapon )->purchasable )
 		{
 			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't sell this weapon\n") "\"" );
-			return;
+			return qfalse;
 		}
 
 		//remove weapon if carried
@@ -3210,7 +3269,7 @@ void Cmd_Sell_f( gentity_t *ent )
 			if ( weapon == WP_HBUILD && ent->client->ps.stats[ STAT_MISC ] > 0 )
 			{
 				G_TriggerMenu( ent->client->ps.clientNum, MN_H_ARMOURYBUILDTIMER );
-				return;
+				return qfalse;
 			}
 
 			ent->client->ps.stats[ STAT_WEAPON ] = WP_NONE;
@@ -3233,7 +3292,7 @@ void Cmd_Sell_f( gentity_t *ent )
 		if ( !BG_Upgrade( upgrade )->purchasable )
 		{
 			trap_SendServerCommand( ent - g_entities, "print_tr \"" N_("You can't sell this item\n") "\"" );
-			return;
+			return qfalse;
 		}
 
 		//remove upgrade if carried
@@ -3247,7 +3306,7 @@ void Cmd_Sell_f( gentity_t *ent )
 				if ( !G_RoomForClassChange( ent, PCL_HUMAN, newOrigin ) )
 				{
 					G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOROOMBSUITOFF );
-					return;
+					return qfalse;
 				}
 
 				VectorCopy( newOrigin, ent->client->ps.origin );
@@ -3266,30 +3325,49 @@ void Cmd_Sell_f( gentity_t *ent )
 
 			//add to funds
 			G_AddCreditToClient( ent->client, ( short ) BG_Upgrade( upgrade )->price, qfalse );
+			return qtrue;
 		}
 	}
 	else if ( !Q_stricmp( s, "weapons" ) )
 	{
-		Cmd_Sell_weapons( ent );
+		return Cmd_Sell_weapons( ent );
 	}
 	else if ( !Q_stricmp( s, "upgrades" ) )
 	{
-		Cmd_Sell_upgrades( ent );
+		return Cmd_Sell_upgrades( ent );
 	}
 	else if ( !Q_stricmp( s, "all" ) )
 	{
-		Cmd_Sell_weapons( ent );
-		Cmd_Sell_upgrades( ent );
+		return Cmd_Sell_weapons( ent ) | Cmd_Sell_upgrades( ent );
 	}
 	else
 	{
 		G_TriggerMenu( ent->client->ps.clientNum, MN_H_UNKNOWNITEM );
-		return;
+	}
+
+	return qfalse;
+}
+
+void Cmd_Sell_f( gentity_t *ent )
+{
+	char     s[ MAX_TOKEN_CHARS ];
+	int      c, args;
+	qboolean updated = qfalse;
+
+	args = trap_Argc();
+
+	for ( c = 1; c < args; ++c )
+	{
+		trap_Argv( c, s, sizeof( s ) );
+		updated |= Cmd_Sell_internal( ent, s );
 	}
 
 	//update ClientInfo
-	ClientUserinfoChanged( ent->client->ps.clientNum, qfalse );
-	ent->client->pers.infoChangeTime = level.time;
+	if ( updated )
+	{
+		ClientUserinfoChanged( ent->client->ps.clientNum, qfalse );
+		ent->client->pers.infoChangeTime = level.time;
+	}
 }
 
 /*
@@ -4028,7 +4106,7 @@ void Cmd_ListMaps_f( gentity_t *ent )
 
 typedef struct {
 	char       flag;
-	const char *description;
+	const char description[64];
 } mapLogResult_t;
 
 static const mapLogResult_t maplog_table[] = {

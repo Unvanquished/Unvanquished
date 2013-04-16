@@ -551,6 +551,8 @@ fileHandle_t FS_FOpenFileWrite( const char *qpath );
 fileHandle_t FS_FOpenFileAppend( const char *filename );
 fileHandle_t  FS_FCreateOpenPipeFile( const char *filename );
 
+void         FS_FChmod( fileHandle_t f, int mode );
+
 // will properly create any needed paths and deal with separator character issues
 
 int          FS_filelength( fileHandle_t f );
@@ -1138,6 +1140,9 @@ FILE     *Sys_Mkfifo( const char *ospath );
 char     *Sys_Cwd( void );
 char     *Sys_DefaultBasePath( void );
 
+void     Sys_FChmod( FILE *f, int mode );
+void     Sys_Chmod( const char *ospath, int mode );
+
 #ifdef MACOS_X
 char     *Sys_DefaultAppPath( void );
 #endif
@@ -1268,4 +1273,6 @@ const char* Trans_GettextGame( const char *msgid ) __attribute__((__format_arg__
 const char* Trans_PgettextGame( const char *ctxt, const char *msgid ) __attribute__((__format_arg__(2)));
 const char* Trans_GettextGamePlural( const char *msgid, const char *msgid_plural, int num ) __attribute__((__format_arg__(1))) __attribute__((__format_arg__(2)));
 
+void     Crypto_Init( void );
+void     Crypto_Shutdown( void );
 #endif // QCOMMON_H_

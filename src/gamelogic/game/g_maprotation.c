@@ -1024,10 +1024,12 @@ static void G_IssueMapChange( int index, int rotation )
 	// allow a manually defined g_layouts setting to override the maprotation
 	if ( !g_layouts.string[ 0 ] && map->layouts[ 0 ] )
 	{
-		trap_Cvar_Set( "g_layouts", map->layouts );
+		trap_SendConsoleCommand( EXEC_APPEND, va( "map %s %s\n", Quote( map->name ), Quote( map->layouts ) ) );
 	}
-
-	trap_SendConsoleCommand( EXEC_APPEND, va( "map %s\n", Quote( map->name ) ) );
+	else
+	{
+		trap_SendConsoleCommand( EXEC_APPEND, va( "map %s\n", Quote( map->name ) ) );
+	}
 
 	// Load up map defaults if g_mapConfigs is set
 	G_MapConfigs( map->name );
