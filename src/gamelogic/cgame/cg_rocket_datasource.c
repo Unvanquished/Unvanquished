@@ -33,11 +33,66 @@ Maryland 20850 USA.
 */
 
 #include "cg_local.h"
+#include "cg_rocket_datasource.h"
+
+/* from http://stackoverflow.com/questions/7685/merge-sort-a-linked-list */
+node_t* mergesort(node_t *head,long lengtho, int ( *cmp )( node_t *a, node_t *b ) )
+{
+	long count1=(lengtho/2), count2=(lengtho-count1);
+	node_t *next1,*next2,*tail1,*tail2,*tail;
+	if (lengtho<=1) return head->next;  /* Trivial case. */
+
+		tail1 = mergesort(head,count1,cmp);
+	tail2 = mergesort(tail1,count2,cmp);
+	tail=head;
+	next1 = head->next;
+	next2 = tail1->next;
+	tail1->next = tail2->next; /* in case this ends up as the tail */
+	while (1) {
+		if(cmp(next1,next2)<=0) {
+			tail->next=next1; tail=next1;
+			if(--count1==0) { tail->next=next2; return tail2; }
+			next1=next1->next;
+		} else {
+			tail->next=next2; tail=next2;
+			if(--count2==0) { tail->next=next1; return tail1; }
+			next2=next2->next;
+		}
+	}
+	return NULL; // silence compiler
+}
+
+static void AddToServerList( const char *name, int clients, int bots, int ping )
+{
+	server_t *node = BG_Alloc( sizeof( server_t ) );
+
+	node->name = BG_strdup( name );
+	node->clients = clients;
+	node->bots = bots;
+	node->ping = ping;
+	serverCount++;
+
+	if ( !serverListHead && !serverListTail )
+	{
+		serverListHead = BG_Alloc( sizeof( server_t ) );
+		 serverListHead->next = serverListTail = node;
+	}
+	else
+	{
+		serverListTail->next = node;
+		serverListTail = node;
+	}
+}
+
+
+
+
 
 static void CG_Rocket_BuildServerList( const char *args )
 {
 	char data[ MAX_INFO_STRING ] = { 0 };
 	int i;
+	server_t *server;
 
 
 	// Only refresh once every second
@@ -80,32 +135,88 @@ static void CG_Rocket_BuildServerList( const char *args )
 				bots = atoi( Info_ValueForKey( info, "bots" ) );
 				clients = atoi( Info_ValueForKey( info, "clients" ) );
 
-				Info_SetValueForKey( data, "name", Info_ValueForKey( info, "hostname" ), qfalse );
-				Info_SetValueForKey( data, "players", va( "%d", clients ), qfalse );
-				Info_SetValueForKey( data, "bots", va( "%d", bots ), qfalse );
-				Info_SetValueForKey( data, "ping", va( "%d", ping ), qfalse );
-
-				if ( ping > 0 )
-				{
-					trap_Rocket_DSAddRow( "server_browser", args, data );
-				}
+				AddToServerList( Info_ValueForKey( info, "hostname" ), clients, bots, ping );
 			}
+		}
+		server = serverListHead;
+		while ( server = server->next )
+		{
+			if ( server->ping <= 0 )
+			{
+				continue;
+			}
+
+			Info_SetValueForKey( data, "name", server->name, qfalse );
+			Info_SetValueForKey( data, "players", va( "%d", server->clients ), qfalse );
+			Info_SetValueForKey( data, "bots", va( "%d", server->bots ), qfalse );
+			Info_SetValueForKey( data, "ping", va( "%d", server->ping ), qfalse );
+
+			trap_Rocket_DSAddRow( "server_browser", args, data );
 		}
 	}
 
 	rocketInfo.serversLastRefresh = trap_Milliseconds();
 }
 
-static void CG_Rocket_SortServerList( const char *sortBy )
+static int ServerListCmpByPing( node_t *one, node_t *two )
 {
-	//TODO: Sort data
+	server_t *a = ( server_t * ) one;
+	server_t *b = ( server_t * ) two;
+
+	if ( a->ping > b->ping ) return 1;
+	if ( b->ping > a->ping ) return -1;
+	if ( a->ping == b->ping )  return 0;
+	return 0; // silence compiler
+}
+
+static void CG_Rocket_SortServerList( const char *name, const char *sortBy )
+{
+	server_t *server;
+	char data[ MAX_INFO_STRING ] = { 0 };
+
+	if ( !Q_stricmp( sortBy, "ping" ) )
+	{
+		mergesort( ( node_t * )serverListHead, serverCount, &ServerListCmpByPing );
+	}
+
+	trap_Rocket_DSClearTable( "server_browser", name );
+	server = serverListHead;
+	while ( server = server->next )
+	{
+		if ( server->ping <= 0 )
+		{
+			continue;
+		}
+
+		Info_SetValueForKey( data, "name", server->name, qfalse );
+		Info_SetValueForKey( data, "players", va( "%d", server->clients ), qfalse );
+		Info_SetValueForKey( data, "bots", va( "%d", server->bots ), qfalse );
+		Info_SetValueForKey( data, "ping", va( "%d", server->ping ), qfalse );
+
+		trap_Rocket_DSAddRow( "server_browser", name, data );
+	}
+}
+
+void CG_Rocket_CleanUpServerList( void )
+{
+	server_t *server = serverListHead;
+	while ( server )
+	{
+		server_t *tmp = server;
+		server = server->next;
+
+		BG_Free( tmp->name );
+		BG_Free( tmp );
+	}
+
+	serverCount = 0;
 }
 
 typedef struct
 {
 	const char *name;
 	void ( *build ) ( const char *args );
-	void ( *sort ) ( const char *sortBy );
+	void ( *sort ) ( const char *name, const char *sortBy );
 } dataSourceCmd_t;
 
 static const dataSourceCmd_t dataSourceCmdList[] =
@@ -155,7 +266,7 @@ void CG_Rocket_BuildDataSource( const char *data )
 	BG_Free( head );
 }
 
-void CG_Rocket_SortDataSource( const char *dataSource, const char *sortBy )
+void CG_Rocket_SortDataSource( const char *dataSource, const char *name, const char *sortBy )
 {
 	dataSourceCmd_t *cmd;
 
@@ -163,7 +274,7 @@ void CG_Rocket_SortDataSource( const char *dataSource, const char *sortBy )
 
 	if ( cmd && cmd->sort )
 	{
-		cmd->sort( sortBy );
+		cmd->sort( name, sortBy );
 	}
 }
 

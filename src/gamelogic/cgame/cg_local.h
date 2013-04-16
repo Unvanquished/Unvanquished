@@ -1978,7 +1978,8 @@ void CG_Rocket_SetElementDimensions( void );
 // cg_rocket_datasource.c
 //
 void CG_Rocket_BuildDataSource( const char *data );
-void CG_Rocket_SortDataSource( const char *dataSource, const char *sortBy );
+void CG_Rocket_SortDataSource( const char *dataSource, const char *name, const char *sortBy );
+void CG_Rocket_CleanUpServerList( void );
 void CG_Rocket_RegisterDataSources( void );
 
 #endif

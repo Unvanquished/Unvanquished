@@ -111,6 +111,44 @@ static void CG_Rocket_EventCvarForm( const char *args )
 	}
 }
 
+static void CG_Rocket_SortDS( const char *args )
+{
+	char *name, *table, *sortBy;
+	char *p;
+
+	name = BG_strdup( args );
+
+	p = strchr( name, ' ' );
+	if ( p )
+	{
+		*p = '\0';
+		table = p + 1;
+		if ( table )
+		{
+			p = strchr( table, ' ' );
+			if ( p )
+			{
+				*p = '\0';
+				sortBy = p + 1;
+				if ( sortBy )
+				{
+					CG_Rocket_SortDataSource( name, table, sortBy );
+					BG_Free( name );
+					return;
+				}
+			}
+		}
+	}
+
+	BG_Free( name );
+	Com_Printf( "^3WARNING: Invalid syntax for 'sortDS'\n sortDS <data source> <table name> <sort by>\n" );
+}
+
+
+
+
+
+
 
 typedef struct
 {
@@ -127,7 +165,8 @@ static const eventCmd_t eventCmdList[] =
 	{ "goto", &CG_Rocket_EventGoto },
 	{ "init_servers", &CG_Rocket_InitServers },
 	{ "open", &CG_Rocket_EventOpen },
-	{ "show", &CG_Rocket_EventShow }
+	{ "show", &CG_Rocket_EventShow },
+	{ "sortDS", &CG_Rocket_SortDS }
 };
 
 static const size_t eventCmdListCount = ARRAY_LEN( eventCmdList );

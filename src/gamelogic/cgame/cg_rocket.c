@@ -212,6 +212,10 @@ void CG_Rocket_Frame( void )
 				rocketInfo.rocketState = IDLE;
 			}
 			break;
+
+		case CONNECTING:
+			CG_Rocket_CleanUpServerList();
+			break;
 	}
 	CG_Rocket_ProcessEvents();
 }
