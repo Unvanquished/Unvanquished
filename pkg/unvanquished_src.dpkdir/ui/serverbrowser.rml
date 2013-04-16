@@ -39,6 +39,7 @@
 					</datagrid>
 					</div>
 					<button onClick="buildDS server_browser internet">Refresh</button>
+					<button onClick="sortDS server_browser internet ping">Sort</button>
 					<button onClick="close serverbrowser">Close</button>
 				</panel>
 				<tab>Favorite</tab>
