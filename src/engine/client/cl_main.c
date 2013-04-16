@@ -2424,7 +2424,6 @@ void CL_Snd_Restart_f( void )
 
 	if( !cls.cgameStarted )
 	{
-		CL_ShutdownUI();
 		S_Init();
 		S_BeginRegistration();
 		CL_InitUI();
