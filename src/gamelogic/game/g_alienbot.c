@@ -143,7 +143,7 @@ qboolean BotEvolveToClass( gentity_t *ent, class_t newClass )
 			return qfalse;
 		}
 
-		numLevels = BG_ClassCanEvolveFromTo( currentClass, newClass, ( short )ent->client->ps.persistant[ PERS_CREDIT ], g_alienStage.integer, 0 );
+		numLevels = BG_ClassCanEvolveFromTo( currentClass, newClass, ( short )ent->client->ps.persistant[ PERS_CREDIT ], g_alienStage.integer );
 
 		if ( G_RoomForClassChange( ent, newClass, infestOrigin ) )
 		{
@@ -192,7 +192,7 @@ qboolean BotEvolveToClass( gentity_t *ent, class_t newClass )
 }
 qboolean BotCanEvolveToClass( gentity_t *self, class_t newClass )
 {
-	return ( BG_ClassCanEvolveFromTo( ( class_t )self->client->ps.stats[STAT_CLASS], newClass, self->client->ps.persistant[PERS_CREDIT], g_alienStage.integer, 0 ) >= 0 );
+	return ( BG_ClassCanEvolveFromTo( ( class_t )self->client->ps.stats[STAT_CLASS], newClass, self->client->ps.persistant[PERS_CREDIT], g_alienStage.integer ) >= 0 );
 }
 /*
 ==============================
