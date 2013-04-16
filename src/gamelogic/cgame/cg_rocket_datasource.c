@@ -381,7 +381,6 @@ void CG_Rocket_BuildLanguageList( const char *args )
 		if( *p == '"' && quoted )
 		{
 			AddToLanguageList( BG_strdup( temp ), NULL );
-			languageCount++;
 			quoted = qfalse;
 			index = 0;
 		}
