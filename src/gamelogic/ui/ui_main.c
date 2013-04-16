@@ -1839,9 +1839,7 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 			break;
 
 		case INFOTYPE_CLASS:
-			value = ( BG_ClassCanEvolveFromTo( class, item->v.pclass, credits,
-			                                   UI_GetCurrentAlienStage(), 0 ) +
-			          ALIEN_CREDITS_PER_KILL - 1 ) / ALIEN_CREDITS_PER_KILL;
+			value = BG_ClassCanEvolveFromTo( class, item->v.pclass, credits, UI_GetCurrentAlienStage() );
 
 			if ( value < 1 )
 			{
@@ -1854,7 +1852,7 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 				s = va( _("%s\n\n%s\n\nFrags: %d"),
 				        _( BG_ClassModelConfig( item->v.pclass )->humanName ),
 				        _( BG_Class( item->v.pclass )->info ),
-				        value );
+				        value / ALIEN_CREDITS_PER_EVO );
 			}
 
 			break;
@@ -2810,7 +2808,7 @@ static void UI_LoadAlienUpgrades( void )
 
 	for ( i = PCL_NONE + 1; i < PCL_NUM_CLASSES; i++ )
 	{
-		if ( BG_ClassCanEvolveFromTo( class, i, credits, stage, 0 ) >= 0 )
+		if ( BG_ClassCanEvolveFromTo( class, i, credits, stage ) >= 0 )
 		{
 			uiInfo.alienUpgradeList[ j ].text = BG_ClassModelConfig( i )->humanName;
 			uiInfo.alienUpgradeList[ j ].cmd =

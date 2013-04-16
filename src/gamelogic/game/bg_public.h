@@ -1010,7 +1010,6 @@ typedef struct
 	float    jumpMagnitude;
 	float    knockbackScale;
 
-	int      children[ 3 ];
 	int      cost;
 	int      value;
 
@@ -1218,11 +1217,9 @@ void                        BG_ClassBoundingBox( class_t pClass, vec3_t mins,
     vec3_t maxs, vec3_t cmaxs,
     vec3_t dmins, vec3_t dmaxs );
 qboolean                    BG_ClassHasAbility( class_t pClass, int ability );
-int                         BG_ClassCanEvolveFromTo( class_t fclass,
-    class_t tclass,
-    int credits, int alienStage, int num );
 
-qboolean                  BG_AlienCanEvolve( class_t pClass, int credits, int alienStage );
+int                         BG_ClassCanEvolveFromTo(class_t from, class_t to, int credits, int stage);
+qboolean                    BG_AlienCanEvolve(class_t from, int credits, int alienStage );
 
 const weaponAttributes_t  *BG_WeaponByName( const char *name );
 const weaponAttributes_t  *BG_Weapon( weapon_t weapon );

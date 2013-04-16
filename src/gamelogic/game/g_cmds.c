@@ -549,8 +549,7 @@ void Cmd_Give_f( gentity_t *ent )
 		else
 		{
 			credits = atof( name + 6 ) *
-			          ( ent->client->pers.teamSelection ==
-			            TEAM_ALIENS ? ALIEN_CREDITS_PER_KILL : 1.0f );
+			          ( ent->client->pers.teamSelection == TEAM_ALIENS ? ALIEN_CREDITS_PER_EVO : 1.0f );
 
 			// clamp credits manually, as G_AddCreditToClient() expects a short int
 			if ( credits > 30000.0f )
@@ -2443,9 +2442,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 				return qfalse;
 			}
 
-			cost = BG_ClassCanEvolveFromTo( currentClass, newClass,
-			                                ent->client->pers.credit,
-			                                g_alienStage.integer, 0 );
+			cost = BG_ClassCanEvolveFromTo( currentClass, newClass, ent->client->pers.credit, g_alienStage.integer );
 
 			if ( G_RoomForClassChange( ent, newClass, infestOrigin ) )
 			{
