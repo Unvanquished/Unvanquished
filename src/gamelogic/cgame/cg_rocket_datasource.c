@@ -415,6 +415,16 @@ void CG_Rocket_BuildLanguageList( const char *args )
 		}
 		p++;
 	}
+
+	buf[ 0 ] = '\0';
+	language = languageListHead;
+	while ( language = language->next )
+	{
+		Info_SetValueForKey( buf, "name", language->name, qfalse );
+		Info_SetValueForKey( buf, "lang", language->lang, qfalse );
+
+		trap_Rocket_DSAddRow( "language", "default", buf );
+	}
 }
 
 void CG_Rocket_CleanUpLanguageList( void )
@@ -458,6 +468,7 @@ void CG_Rocket_BuildVoIPInputs( const char *args )
 	char buf[ MAX_STRING_CHARS ];
 	char *p, *head;
 	int inputs = 0;
+	charList_t *list;
 
 	trap_Cvar_VariableStringBuffer( "s_alAvailableInputDevices", buf, sizeof( buf ) );
 	head = buf;
@@ -466,6 +477,15 @@ void CG_Rocket_BuildVoIPInputs( const char *args )
 		*p = '\0';
 		AddToCharList( voipInputsListHead, voipInputsListTail, BG_strdup( head ), &voipInputsCount );
 		head = p + 1;
+	}
+
+	buf[ 0 ] = '\0';
+	list = voipInputsListHead;
+	while ( list = list->next )
+	{
+		Info_SetValueForKey( buf, "name", list->name, qfalse );
+
+		trap_Rocket_DSAddRow( "voipInputs", "default", buf );
 	}
 }
 
@@ -490,7 +510,7 @@ void CG_Rocket_BuildAlOutputs( const char *args )
 	char buf[ MAX_STRING_CHARS ];
 	char *p, *head;
 	int outputs = 0;
-
+	charList_t *list;
 	trap_Cvar_VariableStringBuffer( "s_alAvailableDevices", buf, sizeof( buf ) );
 	head = buf;
 	while ( ( p = strchr( head, '\n' ) ) )
@@ -498,6 +518,15 @@ void CG_Rocket_BuildAlOutputs( const char *args )
 		*p = '\0';
 		AddToCharList( alOutputsListHead, alOutputsListTail, BG_strdup( head ), &alOutputsCount );
 		head = p + 1;
+	}
+
+	buf[ 0 ] = '\0';
+	list = alOutputsListHead;
+	while ( list = list->next )
+	{
+		Info_SetValueForKey( buf, "name", list->name, qfalse );
+
+		trap_Rocket_DSAddRow( "alOutputs", "default", buf );
 	}
 }
 
