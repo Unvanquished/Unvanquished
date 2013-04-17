@@ -1114,7 +1114,8 @@ qboolean G_RadiusDamage( vec3_t origin, gentity_t *attacker, float damage, float
 qboolean G_SelectiveRadiusDamage( vec3_t origin, gentity_t *attacker, float damage, float radius,
                                   gentity_t *ignore, int mod, int team );
 void     G_RewardAttackers( gentity_t *self );
-void     AddScore( gentity_t *ent, int score );
+void     G_AddCreditsToScore( gentity_t *self, int credits );
+void     G_AddConfidenceToScore( gentity_t *self, float confidence );
 void     G_LogDestruction( gentity_t *self, gentity_t *actor, int mod );
 
 void     G_InitDamageLocations( void );

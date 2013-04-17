@@ -527,7 +527,7 @@ int BG_ClassCanEvolveFromTo( class_t from, class_t to, int credits, int stage )
 	}
 
 	// evolving between classes of euqal cost costs one evo
-	evolveCost = MAX(toCost - fromCost, ALIEN_CREDITS_PER_EVO );
+	evolveCost = MAX( toCost - fromCost, CREDITS_PER_EVO );
 
 	if ( credits < evolveCost )
 	{

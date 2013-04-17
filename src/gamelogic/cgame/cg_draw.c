@@ -386,7 +386,7 @@ static void CG_DrawPlayerCreditsValue( rectDef_t *rect, vec4_t color, qboolean p
 				localColor[ 3 ] = 0.0f;
 			}
 
-			value /= ALIEN_CREDITS_PER_EVO;
+			value /= CREDITS_PER_EVO;
 		}
 
 		trap_R_SetColor( localColor );
@@ -416,7 +416,7 @@ static void CG_DrawPlayerCreditsFraction( rectDef_t *rect, vec4_t color, qhandle
 	}
 
 	fraction = ( ( float )( cg.predictedPlayerState.persistant[ PERS_CREDIT ] %
-	             ALIEN_CREDITS_PER_EVO ) ) / ALIEN_CREDITS_PER_EVO;
+	             CREDITS_PER_EVO ) ) / CREDITS_PER_EVO;
 
 	aRect = *rect;
 	CG_AdjustFrom640( &aRect.x, &aRect.y, &aRect.w, &aRect.h );
@@ -456,7 +456,7 @@ static void CG_DrawPlayerAlienEvos( rectDef_t *rect, float text_x, float text_y,
 				localColor[ 3 ] = 0.0f;
 			}
 
-			value /= ( float ) ALIEN_CREDITS_PER_EVO;
+			value /= ( float ) CREDITS_PER_EVO;
 		}
 
 		s = va( "%0.1f", floor( value * 10 ) / 10 );
@@ -1654,26 +1654,26 @@ static void CG_DrawLevelMineRate( rectDef_t *rect, float text_x, float text_y,
 {
 	char s[ MAX_TOKEN_CHARS ];
 	float tx, ty, levelRate;
-	weapon_t weapon;
 	int totalRate;
 
-	weapon = BG_GetPlayerWeapon( &cg.snap->ps );
-
-	switch ( weapon )
+	// check if builder
+	switch ( BG_GetPlayerWeapon( &cg.snap->ps ) )
 	{
 		case WP_ABUILD:
 		case WP_ABUILD2:
-			sscanf( CG_ConfigString( CS_ALIEN_MINE_RATE ), "%f %d", &levelRate, &totalRate );
-			break;
 		case WP_HBUILD:
-			sscanf( CG_ConfigString( CS_HUMAN_MINE_RATE ), "%f %d", &levelRate, &totalRate );
 			break;
 
 		default:
 			return;
 	}
 
-	Com_sprintf( s, MAX_TOKEN_CHARS, _("Level Rate: %.1f Total Rate: %.1f (%d%%)"), ( levelRate ), ( ( totalRate / 100.0f ) * levelRate ), totalRate );
+	levelRate = cg.predictedPlayerState.persistant[ PERS_MINERATE ] / 10.0f;
+	totalRate = cg.predictedPlayerState.persistant[ PERS_RGS_EFFICIENCY ];
+
+	Com_sprintf( s, MAX_TOKEN_CHARS, _("Level Rate: %.1f Total Rate: %.1f (%d%%)"),
+	             ( levelRate ), ( ( totalRate / 100.0f ) * levelRate ), totalRate );
+
 	CG_AlignText( rect, s, scale, 0.0f, 0.0f, textalign, textvalign, &tx, &ty );
 	UI_Text_Paint( text_x + tx, text_y + ty, scale, color, s, 0, textStyle );
 }
@@ -2109,7 +2109,7 @@ static void CG_DrawStageReport( rectDef_t *rect, float text_x, float text_y,
 {
 	char  s[ MAX_TOKEN_CHARS ];
 	float tx, ty, confidence, neededConfidence;
-	int   CSConfidence, nextStageThreshold, stage;
+	int   nextStageThreshold, stage;
 
 	if ( cg.intermissionStarted )
 	{
@@ -2119,21 +2119,20 @@ static void CG_DrawStageReport( rectDef_t *rect, float text_x, float text_y,
 	switch ( cg.snap->ps.stats[ STAT_TEAM ] )
 	{
 		case TEAM_ALIENS:
-			CSConfidence = CS_ALIEN_CONFIDENCE;
 			nextStageThreshold = cgs.alienNextStageThreshold;
 			stage = cgs.alienStage;
 			break;
+
 		case TEAM_HUMANS:
-			CSConfidence = CS_HUMAN_CONFIDENCE;
 			nextStageThreshold = cgs.humanNextStageThreshold;
 			stage = cgs.humanStage;
 			break;
+
 		default:
 			return;
 	}
 
-	sscanf( CG_ConfigString( CSConfidence ), "%f", &confidence );
-
+	confidence = cg.predictedPlayerState.persistant[ PERS_CONFIDENCE ] / 10.0f;
 	neededConfidence = nextStageThreshold - confidence;
 
 	if ( neededConfidence < 0 )
@@ -2570,7 +2569,7 @@ static void CG_DrawTeamOverlay( rectDef_t *rect, float scale, vec4_t color )
 			        "  " + ( ci->health >= 100 ? 6 : ci->health >= 10 ? 3 : 0 ), // these are figure spaces, 3 bytes each
 			        ci->health,
 			        ( ci->team == TEAM_ALIENS )
-			          ? va( "₠%.1f", (float) ci->credit / ALIEN_CREDITS_PER_EVO )
+			          ? va( "₠%.1f", (float) ci->credit / CREDITS_PER_EVO )
 			          : va( "₢%d", ci->credit ),
 			        CG_ConfigString( CS_LOCATIONS + ci->location ) );
 		}

@@ -50,7 +50,7 @@ void game_score_act( gentity_t *self, gentity_t *caller, gentity_t *activator )
 		return;
 	}
 
-	AddScore( activator, self->config.amount );
+	G_AddCreditsToScore( activator, self->config.amount );
 }
 
 void SP_game_score( gentity_t *self )

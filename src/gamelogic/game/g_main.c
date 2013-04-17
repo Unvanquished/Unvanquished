@@ -1389,8 +1389,9 @@ Recalculate the mine rate and the teams mine efficiencies
 */
 void G_CalculateMineRate( void )
 {
-	int              i;
-	gentity_t        *ent;
+	int              i, playerNum;
+	gentity_t        *ent, *player;
+	gclient_t        *client;
 	static int       lastMineRateCalculation = 0;
 	static int       time = 0;
 
@@ -1421,8 +1422,33 @@ void G_CalculateMineRate( void )
 		// ln(2) ~= 0.6931472
 		level.mineRate = g_initialMineRate.value * exp( ( 0.6931472f / ( 60000.0f * g_mineRateHalfLife.value ) ) * -time );
 
-		trap_SetConfigstring( CS_ALIEN_MINE_RATE, va( "%f %d", level.mineRate, level.alienMineEfficiency ) );
-		trap_SetConfigstring( CS_HUMAN_MINE_RATE, va( "%f %d", level.mineRate, level.humanMineEfficiency ) );
+		// send to clients
+		for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
+		{
+			player = &g_entities[ playerNum ];
+			client = player->client;
+
+			if ( !client )
+			{
+				continue;
+			}
+
+			client->ps.persistant[ PERS_MINERATE ] = ( short )( level.mineRate * 10.0f );
+
+			switch ( client->pers.teamSelection )
+			{
+				case TEAM_ALIENS:
+					client->ps.persistant[ PERS_RGS_EFFICIENCY ] = ( short )level.alienMineEfficiency;
+					break;
+
+				case TEAM_HUMANS:
+					client->ps.persistant[ PERS_RGS_EFFICIENCY ] = ( short )level.humanMineEfficiency;
+					break;
+
+				default:
+					client->ps.persistant[ PERS_RGS_EFFICIENCY ] = 0;
+			}
+		}
 
 		lastMineRateCalculation = level.time;
 	}
@@ -1443,7 +1469,9 @@ void G_DecreaseConfidence( void )
 	team_t       team;
 	confidence_t type;
 	float        *confidence;
-	int          CSConfidence;
+	int          playerNum;
+	gentity_t    *player;
+	gclient_t    *client;
 
 	static float decreaseFactor = 1.0f, lastConfidenceHalfLife = 0.0f;
 	static int   nextCalculation = 0;
@@ -1466,18 +1494,19 @@ void G_DecreaseConfidence( void )
 		lastConfidenceHalfLife = g_confidenceHalfLife.value;
 	}
 
+	// decrease all types of confidence for both teams
 	for ( team = NUM_TEAMS - 1; team > TEAM_NONE; team-- )
 	{
 		switch ( team )
 		{
 			case TEAM_ALIENS:
 				confidence = level.alienConfidence;
-				CSConfidence = CS_ALIEN_CONFIDENCE;
 				break;
+
 			case TEAM_HUMANS:
 				confidence = level.humanConfidence;
-				CSConfidence = CS_HUMAN_CONFIDENCE;
 				break;
+
 			default:
 				continue;
 		}
@@ -1489,9 +1518,32 @@ void G_DecreaseConfidence( void )
 			confidence[ type ] *= decreaseFactor;
 			confidence[ CONFIDENCE_SUM ] += confidence[ type ];
 		}
+	}
 
-		// send total confidence to clients
-		trap_SetConfigstring( CSConfidence, va( "%f", confidence[ CONFIDENCE_SUM ] ) );
+	// send to clients
+	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
+	{
+		player = &g_entities[ playerNum ];
+		client = player->client;
+
+		if ( !client )
+		{
+			continue;
+		}
+
+		switch ( client->pers.teamSelection )
+		{
+			case TEAM_ALIENS:
+				client->ps.persistant[ PERS_CONFIDENCE ] = ( short )( level.alienConfidence[ CONFIDENCE_SUM ] * 10.0f );
+				break;
+
+			case TEAM_HUMANS:
+				client->ps.persistant[ PERS_CONFIDENCE ] = ( short )( level.humanConfidence[ CONFIDENCE_SUM ] * 10.0f );
+				break;
+
+			default:
+				client->ps.persistant[ PERS_CONFIDENCE ] = 0;
+		}
 	}
 
 	nextCalculation = level.time + DECREASE_CONFIDENCE_PERIOD;

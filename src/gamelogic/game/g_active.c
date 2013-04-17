@@ -1026,11 +1026,11 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		if ( ent->client->ps.weapon == WP_ABUILD ||
 		     ent->client->ps.weapon == WP_ABUILD2 )
 		{
-			AddScore( ent, ALIEN_BUILDER_SCOREINC );
+			G_AddCreditsToScore( ent, ALIEN_BUILDER_SCOREINC );
 		}
 		else if ( ent->client->ps.weapon == WP_HBUILD )
 		{
-			AddScore( ent, HUMAN_BUILDER_SCOREINC );
+			G_AddCreditsToScore( ent, HUMAN_BUILDER_SCOREINC );
 		}
 
 		// Give score to basis that healed other aliens
@@ -1038,11 +1038,11 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		{
 			if ( client->ps.weapon == WP_ALEVEL1 )
 			{
-				AddScore( ent, LEVEL1_REGEN_SCOREINC );
+				G_AddCreditsToScore( ent, LEVEL1_REGEN_SCOREINC );
 			}
 			else if ( client->ps.weapon == WP_ALEVEL1_UPG )
 			{
-				AddScore( ent, LEVEL1_UPG_REGEN_SCOREINC );
+				G_AddCreditsToScore( ent, LEVEL1_UPG_REGEN_SCOREINC );
 			}
 
 			ent->client->pers.hasHealed = qfalse;

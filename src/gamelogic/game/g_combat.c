@@ -31,22 +31,45 @@ int            g_numArmourRegions[ UP_NUM_UPGRADES ];
 
 /*
 ============
-AddScore
+AddScoreHelper
 
-Adds score to the client, takes a value representing human credits as input.
+Helper function for G_AddCreditsToScore and G_AddConfidenceToScore.
 ============
 */
-void AddScore( gentity_t *ent, int score )
+static void AddScoreHelper( gentity_t *self, float score )
 {
-	if ( !ent->client )
+	if ( !self->client )
 	{
 		return;
 	}
 
-	// Convert from human credits to confidence points
-	ent->client->ps.persistant[ PERS_SCORE ] += score / CREDITS_TO_CONFIDENCE_RATIO;
+	self->client->ps.persistant[ PERS_SCORE ] += ( int )( score + 0.5f );
 
 	CalculateRanks();
+}
+
+/*
+============
+G_AddCreditsToScore
+
+Adds score to the client, input represents a credit value.
+============
+*/
+void G_AddCreditsToScore( gentity_t *self, int credits )
+{
+	AddScoreHelper( self, credits * SCORE_PER_CREDIT );
+}
+
+/*
+============
+G_AddConfidenceToScore
+
+Adds score to the client, input represents a confidence value.
+============
+*/
+void G_AddConfidenceToScore( gentity_t *self, float confidence )
+{
+	AddScoreHelper( self, confidence * SCORE_PER_CONFIDENCE );
 }
 
 /*
@@ -222,7 +245,7 @@ void G_RewardAttackers( gentity_t *self )
 
 		if ( self->s.eType == ET_BUILDABLE )
 		{
-			AddScore( player, ( int )( reward * CREDITS_TO_CONFIDENCE_RATIO ) );
+			G_AddConfidenceToScore( player, reward );
 
 			switch ( self->s.modelindex )
 			{
@@ -249,7 +272,7 @@ void G_RewardAttackers( gentity_t *self )
 		}
 		else
 		{
-			AddScore( player, ( int )reward );
+			G_AddCreditsToScore( player, ( int )reward );
 
 			G_AddCreditToClient( player->client, ( short )reward, qtrue );
 
@@ -257,12 +280,12 @@ void G_RewardAttackers( gentity_t *self )
 			if ( distanceToBase < 500.0f )
 			{
 				G_AddConfidence( playerTeam, CONFIDENCE_KILLING, CONF_REAS_KILLING, CONF_QUAL_IN_ENEMEY_BASE,
-								 reward / ( 2 * CREDITS_TO_CONFIDENCE_RATIO ), player );
+								 reward * CONFIDENCE_PER_CREDIT, player );
 			}
 			else if ( distanceToBase < 1000.0f )
 			{
 				G_AddConfidence( playerTeam, CONFIDENCE_KILLING, CONF_REAS_KILLING, CONF_QUAL_CLOSE_TO_ENEMY_BASE,
-								 reward / ( 3 * CREDITS_TO_CONFIDENCE_RATIO ), player );
+								 0.75f * reward * CONFIDENCE_PER_CREDIT, player );
 			}
 		}
 	}
@@ -343,8 +366,6 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	ent->s.otherEntityNum2 = killer;
 	ent->r.svFlags = SVF_BROADCAST; // send to everyone
 
-	self->client->ps.persistant[ PERS_KILLED ]++;
-
 	if ( attacker && attacker->client )
 	{
 		if ( ( attacker == self || OnSameTeam( self, attacker ) ) )
@@ -353,12 +374,12 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 			if ( attacker->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
 			{
 				G_AddCreditToClient( attacker->client, -ALIEN_TK_SUICIDE_PENALTY, qtrue );
-				AddScore( attacker, -ALIEN_TK_SUICIDE_PENALTY );
+				G_AddCreditsToScore( attacker, -ALIEN_TK_SUICIDE_PENALTY );
 			}
 			else if ( attacker->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
 			{
 				G_AddCreditToClient( attacker->client, -HUMAN_TK_SUICIDE_PENALTY, qtrue );
-				AddScore( attacker, -HUMAN_TK_SUICIDE_PENALTY );
+				G_AddCreditsToScore( attacker, -HUMAN_TK_SUICIDE_PENALTY );
 			}
 		}
 		else if ( g_showKillerHP.integer )
@@ -372,11 +393,11 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	{
 		if ( self->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
 		{
-			AddScore( self, -ALIEN_TK_SUICIDE_PENALTY );
+			G_AddCreditsToScore( self, -ALIEN_TK_SUICIDE_PENALTY );
 		}
 		else if ( self->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
 		{
-			AddScore( self, -HUMAN_TK_SUICIDE_PENALTY );
+			G_AddCreditsToScore( self, -HUMAN_TK_SUICIDE_PENALTY );
 		}
 	}
 
@@ -1284,21 +1305,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		// Update the last combat time.
 		targ->client->lastCombatTime = level.time;
 		attacker->client->lastCombatTime = level.time;
-	}
-
-	// add to the attacker's hit counter
-	if ( attacker->client && targ != attacker && targ->health > 0
-	     && targ->s.eType != ET_MISSILE
-	     && targ->s.eType != ET_GENERAL )
-	{
-		if ( OnSameTeam( targ, attacker ) )
-		{
-			attacker->client->ps.persistant[ PERS_HITS ]--;
-		}
-		else
-		{
-			attacker->client->ps.persistant[ PERS_HITS ]++;
-		}
 	}
 
 	take = damage;
