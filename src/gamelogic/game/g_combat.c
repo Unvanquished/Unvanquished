@@ -366,8 +366,6 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	ent->s.otherEntityNum2 = killer;
 	ent->r.svFlags = SVF_BROADCAST; // send to everyone
 
-	self->client->ps.persistant[ PERS_KILLED ]++;
-
 	if ( attacker && attacker->client )
 	{
 		if ( ( attacker == self || OnSameTeam( self, attacker ) ) )
@@ -1307,21 +1305,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		// Update the last combat time.
 		targ->client->lastCombatTime = level.time;
 		attacker->client->lastCombatTime = level.time;
-	}
-
-	// add to the attacker's hit counter
-	if ( attacker->client && targ != attacker && targ->health > 0
-	     && targ->s.eType != ET_MISSILE
-	     && targ->s.eType != ET_GENERAL )
-	{
-		if ( OnSameTeam( targ, attacker ) )
-		{
-			attacker->client->ps.persistant[ PERS_HITS ]--;
-		}
-		else
-		{
-			attacker->client->ps.persistant[ PERS_HITS ]++;
-		}
 	}
 
 	take = damage;

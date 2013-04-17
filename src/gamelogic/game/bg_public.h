@@ -92,12 +92,6 @@ enum
   CS_ALIEN_STAGES,
   CS_HUMAN_STAGES,
 
-  CS_ALIEN_CONFIDENCE,
-  CS_HUMAN_CONFIDENCE,
-
-  CS_ALIEN_MINE_RATE,
-  CS_HUMAN_MINE_RATE,
-
   CS_MODELS,
   CS_SOUNDS = CS_MODELS + MAX_MODELS,
   CS_SHADERS = CS_SOUNDS + MAX_SOUNDS,
@@ -287,20 +281,20 @@ typedef enum
 typedef enum
 {
   PERS_SCORE, // !!! MUST NOT CHANGE, SERVER AND GAME BOTH REFERENCE !!!
-  PERS_HITS, // total points damage inflicted so damage beeps can sound on change
+  PERS_CONFIDENCE, // the total confidence of a team
   PERS_SPAWNS, // how many spawns your team has
   PERS_SPECSTATE,
   PERS_SPAWN_COUNT, // incremented every respawn
   PERS_ATTACKER, // clientnum of last damage inflicter
-  PERS_KILLED, // count of the number of times you died
-
+  PERS_RGS_EFFICIENCY, // summed efficiency of all friendly RGS
   PERS_STATE,
   PERS_CREDIT, // human credit
   PERS_QUEUEPOS, // position in the spawn queue
   PERS_NEWWEAPON, // weapon to switch to
   PERS_BP,
-  PERS_MARKEDBP
-  // netcode has space for 3 more
+  PERS_MARKEDBP,
+  PERS_MINERATE // level wide base mine rate. TODO: calculate clientside
+  // netcode has space for 2 more
 } persEnum_t;
 
 #define PS_WALLCLIMBINGFOLLOW 0x00000001
