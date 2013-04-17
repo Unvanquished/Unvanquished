@@ -1852,7 +1852,7 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 				s = va( _("%s\n\n%s\n\nFrags: %d"),
 				        _( BG_ClassModelConfig( item->v.pclass )->humanName ),
 				        _( BG_Class( item->v.pclass )->info ),
-				        value / ALIEN_CREDITS_PER_EVO );
+				        value / CREDITS_PER_EVO );
 			}
 
 			break;

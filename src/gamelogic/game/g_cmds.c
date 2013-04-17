@@ -549,7 +549,7 @@ void Cmd_Give_f( gentity_t *ent )
 		else
 		{
 			credits = atof( name + 6 ) *
-			          ( ent->client->pers.teamSelection == TEAM_ALIENS ? ALIEN_CREDITS_PER_EVO : 1.0f );
+			          ( ent->client->pers.teamSelection == TEAM_ALIENS ? CREDITS_PER_EVO : 1.0f );
 
 			// clamp credits manually, as G_AddCreditToClient() expects a short int
 			if ( credits > 30000.0f )
