@@ -73,10 +73,9 @@ void qnettle_buffer_init( struct nettle_buffer *buffer, int *size )
 	nettle_buffer_init_realloc( buffer, size, nettle_realloc );
 }
 
-qboolean Crypto_Init( void )
+void Crypto_Init( void )
 {
 	mp_set_memory_functions( gmp_alloc, gmp_realloc, gmp_free );
-	return qtrue;
 }
 
 void Crypto_Shutdown( void )

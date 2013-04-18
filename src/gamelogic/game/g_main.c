@@ -135,6 +135,7 @@ vmCvar_t           g_currentMapRotation;
 vmCvar_t           g_mapRotationNodes;
 vmCvar_t           g_mapRotationStack;
 vmCvar_t           g_nextMap;
+vmCvar_t           g_nextMapLayouts;
 vmCvar_t           g_initialMapRotation;
 vmCvar_t           g_mapLog;
 vmCvar_t           g_mapStartupMessageDelay;
@@ -151,6 +152,7 @@ vmCvar_t           g_sayAreaRange;
 vmCvar_t           g_floodMaxDemerits;
 vmCvar_t           g_floodMinTime;
 
+vmCvar_t           g_defaultLayouts;
 vmCvar_t           g_layouts;
 vmCvar_t           g_layoutAuto;
 
@@ -306,6 +308,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_mapRotationNodes,            "g_mapRotationNodes",            "",                                 CVAR_ROM,                                        0, qfalse           },
 	{ &g_mapRotationStack,            "g_mapRotationStack",            "",                                 CVAR_ROM,                                        0, qfalse           },
 	{ &g_nextMap,                     "g_nextMap",                     "",                                 0,                                               0, qtrue            },
+	{ &g_nextMapLayouts,              "g_nextMapLayouts",              "",                                 0,                                               0, qtrue            },
 	{ &g_initialMapRotation,          "g_initialMapRotation",          "rotation1",                        CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_mapLog,                      "g_mapLog",                      "",                                 CVAR_ROM,                                        0, qfalse           },
 	{ &g_mapStartupMessageDelay,      "g_mapStartupMessageDelay",      "5000",                             CVAR_ARCHIVE | CVAR_LATCH,                       0, qfalse           },
@@ -316,6 +319,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_mapConfigs,                  "g_mapConfigs",                  "",                                 CVAR_ARCHIVE,                                    0, qfalse           },
 	{ NULL,                           "g_mapConfigsLoaded",            "0",                                CVAR_ROM,                                        0, qfalse           },
 
+	{ &g_defaultLayouts,              "g_defaultLayouts",              "",                                 CVAR_LATCH | CVAR_ARCHIVE,                       0, qfalse           },
 	{ &g_layouts,                     "g_layouts",                     "",                                 CVAR_LATCH,                                      0, qfalse           },
 	{ &g_layoutAuto,                  "g_layoutAuto",                  "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
 
@@ -1888,7 +1892,7 @@ void ExitLevel( void )
 
 	if ( G_MapExists( g_nextMap.string ) )
 	{
-		trap_SendConsoleCommand( EXEC_APPEND, va( "map %s\n", Quote( g_nextMap.string ) ) );
+		trap_SendConsoleCommand( EXEC_APPEND, va( "map %s %s\n", Quote( g_nextMap.string ), Quote( g_nextMapLayouts.string ) ) );
 
 		if ( G_MapRotationActive() )
 		{

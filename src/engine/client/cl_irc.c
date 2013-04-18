@@ -2073,7 +2073,6 @@ Processes the next item on the send queue, if any.
 */
 static qboolean IRC_ProcessSendQueue( void )
 {
-	const char *fmt_string;
 	int        event, rv;
 
 	if ( !IRC_SendQueue[ IRC_SendQueue_Process ].has_content )
@@ -2083,16 +2082,15 @@ static qboolean IRC_ProcessSendQueue( void )
 
 	if ( IRC_SendQueue[ IRC_SendQueue_Process ].is_action )
 	{
-		fmt_string = "PRIVMSG #%s :\001ACTION %s\001\n";
 		event = IRC_MakeEvent( ACT, 1 );
+		rv = IRC_Send( "PRIVMSG #%s :\001ACTION %s\001\n", cl_IRC_channel->string, IRC_SendQueue[ IRC_SendQueue_Process ].string );
 	}
 	else
 	{
-		fmt_string = "PRIVMSG #%s :%s\n";
 		event = IRC_MakeEvent( SAY, 1 );
+		rv = IRC_Send( "PRIVMSG #%s :%s\n", cl_IRC_channel->string, IRC_SendQueue[ IRC_SendQueue_Process ].string );
 	}
 
-	rv = IRC_Send( fmt_string, cl_IRC_channel->string, IRC_SendQueue[ IRC_SendQueue_Process ].string );
 
 	if ( rv == IRC_CMD_SUCCESS )
 	{

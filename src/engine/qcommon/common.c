@@ -1756,7 +1756,9 @@ void Com_InitHunkMemory( void )
 {
 	cvar_t *cv;
 	int    nMinAlloc;
-	char   *pMsg = NULL;
+	qboolean isDedicated;
+
+	isDedicated = (com_dedicated && com_dedicated->integer);
 
 	// make sure the file system has allocated and "not" freed any temp blocks
 	// this allows the config and product id files ( journal files too ) to be loaded
@@ -1771,21 +1773,13 @@ void Com_InitHunkMemory( void )
 	cv = Cvar_Get( "com_hunkMegs", DEF_COMHUNKMEGS_S, CVAR_LATCH | CVAR_ARCHIVE );
 
 	// if we are not dedicated min allocation is 56, otherwise min is 1
-	if ( com_dedicated && com_dedicated->integer )
-	{
-		nMinAlloc = MIN_DEDICATED_COMHUNKMEGS;
-		pMsg = "Minimum com_hunkMegs for a dedicated server is %i, allocating %iMB.\n";
-	}
-	else
-	{
-		nMinAlloc = MIN_COMHUNKMEGS;
-		pMsg = "Minimum com_hunkMegs is %i, allocating %iMB.\n";
-	}
+	nMinAlloc = isDedicated ? MIN_DEDICATED_COMHUNKMEGS : MIN_COMHUNKMEGS;
 
 	if ( cv->integer < nMinAlloc )
 	{
 		s_hunkTotal = 1024 * 1024 * nMinAlloc;
-		Com_Printf( pMsg, nMinAlloc, s_hunkTotal / ( 1024 * 1024 ) );
+		Com_Printf(	isDedicated	? "Minimum com_hunkMegs for a dedicated server is %i, allocating %iMB.\n"
+				: "Minimum com_hunkMegs is %i, allocating %iMB.\n", nMinAlloc, s_hunkTotal / ( 1024 * 1024 ) );
 	}
 	else
 	{
@@ -2907,8 +2901,6 @@ qboolean Com_WriteProfile( char *profile_path )
 	return qtrue;
 }
 
-qboolean Crypto_Init( void );
-
 /*
 =================
 Com_Init
@@ -3144,9 +3136,7 @@ void Com_Init( char *commandLine )
 	SV_Init();
 	Hist_Load();
 
-	if ( !Crypto_Init() )
-	{
-	}
+	Crypto_Init();
 
 	com_dedicated->modified = qfalse;
 
@@ -3172,7 +3162,6 @@ void Com_Init( char *commandLine )
 	if ( !com_recommendedSet->integer && !Com_SafeMode() )
 	{
 		Com_SetRecommended();
-		Cbuf_ExecuteText( EXEC_APPEND, "vid_restart\n" );
 	}
 
 	Cvar_Set( "com_recommendedSet", "1" );

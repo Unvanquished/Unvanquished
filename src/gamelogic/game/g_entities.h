@@ -64,11 +64,28 @@ Maryland 20850 USA.
 #define S_CTRL_LIMITED            "ctrl_limited"
 #define S_CTRL_RELAY              "ctrl_relay"
 
+#define S_env_afx_ammo            "env_afx_ammo"
+#define S_env_afx_gravity         "env_afx_gravity"
+#define S_env_afx_heal            "env_afx_heal"
+#define S_env_afx_hurt            "env_afx_hurt"
+#define S_env_afx_push            "env_afx_push"
+#define S_env_afx_teleport        "env_afx_teleport"
+
+#define S_fx_rumble               "fx_rumble"
+#define S_sfx_speaker             "sfx_speaker"
+
+#define S_gfx_animated_model      "gfx_animated_model"
+#define S_gfx_light_flare         "gfx_light_flare"
+#define S_gfx_particle_system     "gfx_particle_system"
+#define S_gfx_portal_camera       "gfx_portal_camera"
+#define S_gfx_portal_surface      "gfx_portal_surface"
+
 #define S_FUNC_DOOR               "func_door"
 #define S_DOOR_SENSOR             "door_sensor"
 #define S_PLAT_SENSOR             "plat_sensor"
 
 #define S_GAME_END                "game_end"
+#define S_GAME_FUNDS              "game_funds"
 #define S_GAME_KILL               "game_kill"
 #define S_GAME_SCORE              "game_score"
 
@@ -250,6 +267,7 @@ void       G_SetNextthink( gentity_t *self );
 // spawn string returns a temporary reference, you must CopyString() if you want to keep it
 qboolean G_SpawnString( const char *key, const char *defaultString, char **out );
 
+qboolean G_SpawnBoolean( const char *key, qboolean defaultqboolean );
 qboolean G_SpawnFloat( const char *key, const char *defaultString, float *out );
 qboolean G_SpawnInt( const char *key, const char *defaultString, int *out );
 qboolean G_SpawnVector( const char *key, const char *defaultString, float *out );

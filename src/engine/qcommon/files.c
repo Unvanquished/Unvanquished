@@ -996,6 +996,18 @@ fileHandle_t FS_FOpenFileWrite( const char *filename )
 
 /*
 ===========
+FS_FChmod
+
+===========
+*/
+void FS_FChmod( fileHandle_t f, int mode )
+{
+	// Sys_Chmod( fsh[ f ].name, mode ); // we may need this for Windows
+	Sys_FChmod( fsh[ f ].handleFiles.file.o, mode );
+}
+
+/*
+===========
 FS_FOpenFileAppend
 
 ===========
