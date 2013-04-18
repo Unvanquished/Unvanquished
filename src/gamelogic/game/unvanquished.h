@@ -272,64 +272,59 @@ extern int   LEVEL4_CRUSH_REPEAT;
 #define HUMAN_WDMG_MODIFIER      1.0f
 #define HDM(d) ((int)((float)d * HUMAN_WDMG_MODIFIER ))
 
-extern int BLASTER_SPREAD;
-extern int BLASTER_SPEED;
-extern int BLASTER_DMG;
-extern int BLASTER_SIZE;
+extern int   BLASTER_SPREAD;
+extern int   BLASTER_SPEED;
+extern int   BLASTER_DMG;
+extern int   BLASTER_SIZE;
 
-extern int RIFLE_SPREAD;
-extern int RIFLE_DMG;
+extern int   RIFLE_SPREAD;
+extern int   RIFLE_DMG;
 
-extern int PAINSAW_DAMAGE;
+extern int   PAINSAW_DAMAGE;
 extern float PAINSAW_RANGE;
 extern float PAINSAW_WIDTH;
 extern float PAINSAW_HEIGHT;
 
-extern int GRENADE_DAMAGE;
+extern int   GRENADE_DAMAGE;
 extern float GRENADE_RANGE;
 extern float GRENADE_SPEED;
 
-extern int SHOTGUN_DMG;
-extern int SHOTGUN_RANGE;
-extern int SHOTGUN_PELLETS;
-extern int SHOTGUN_SPREAD;
+extern int   SHOTGUN_DMG;
+extern int   SHOTGUN_RANGE;
+extern int   SHOTGUN_PELLETS;
+extern int   SHOTGUN_SPREAD;
 
-extern int LASGUN_REPEAT;
-extern float LASGUN_K_SCALE;
-extern int LASGUN_DAMAGE;
+extern int   LASGUN_DAMAGE;
 
-extern int MDRIVER_DMG;
-extern int MDRIVER_REPEAT;
-extern float MDRIVER_K_SCALE;
+extern int   MDRIVER_DMG;
 
-extern int CHAINGUN_SPREAD;
-extern int CHAINGUN_DMG;
+extern int   CHAINGUN_SPREAD;
+extern int   CHAINGUN_DMG;
 
-extern int FLAMER_DMG;
-extern int FLAMER_FLIGHTSPLASHDAMAGE;
-extern int FLAMER_SPLASHDAMAGE;
-extern int FLAMER_RADIUS;
-extern int FLAMER_SIZE;
+extern int   FLAMER_DMG;
+extern int   FLAMER_FLIGHTSPLASHDAMAGE;
+extern int   FLAMER_SPLASHDAMAGE;
+extern int   FLAMER_RADIUS;
+extern int   FLAMER_SIZE;
 extern float FLAMER_LIFETIME;
 extern float FLAMER_SPEED;
 extern float FLAMER_LAG;
 
-extern int PRIFLE_DMG;
-extern int PRIFLE_SPEED;
-extern int PRIFLE_SIZE;
+extern int   PRIFLE_DMG;
+extern int   PRIFLE_SPEED;
+extern int   PRIFLE_SIZE;
 
-extern int LCANNON_DAMAGE;
-extern int LCANNON_RADIUS;
-extern int LCANNON_SIZE;
-extern int LCANNON_SECONDARY_DAMAGE;
-extern int LCANNON_SECONDARY_RADIUS;
-extern int LCANNON_SECONDARY_SPEED;
-extern int LCANNON_SECONDARY_RELOAD;
-extern int LCANNON_SPEED;
-extern int LCANNON_CHARGE_TIME_MAX;
-extern int LCANNON_CHARGE_TIME_MIN;
-extern int LCANNON_CHARGE_TIME_WARN;
-extern int LCANNON_CHARGE_AMMO;
+extern int   LCANNON_DAMAGE;
+extern int   LCANNON_RADIUS;
+extern int   LCANNON_SIZE;
+extern int   LCANNON_SECONDARY_DAMAGE;
+extern int   LCANNON_SECONDARY_RADIUS;
+extern int   LCANNON_SECONDARY_SPEED;
+extern int   LCANNON_SPEED;
+extern int   LCANNON_CHARGE_TIME_MAX;
+extern int   LCANNON_CHARGE_TIME_MIN;
+extern int   LCANNON_CHARGE_TIME_WARN;
+extern int   LCANNON_CHARGE_AMMO;
 
 #define HBUILD_HEALRATE             18
 

@@ -54,6 +54,9 @@ typedef struct
 } configVar_t;
 
 //Definition of the config vars
+
+// Alien weapons
+
 int   ABUILDER_CLAW_DMG;
 float ABUILDER_CLAW_RANGE;
 float ABUILDER_CLAW_WIDTH;
@@ -130,6 +133,8 @@ float LEVEL4_CRUSH_DAMAGE_PER_V;
 int   LEVEL4_CRUSH_DAMAGE;
 int   LEVEL4_CRUSH_REPEAT;
 
+// Human upgrades
+
 int   LIGHTARMOUR_POISON_PROTECTION;
 int   LIGHTARMOUR_PCLOUD_PROTECTION;
 
@@ -150,6 +155,8 @@ int   BSUIT_PCLOUD_PROTECTION;
 int   MEDKIT_POISON_IMMUNITY_TIME;
 int   MEDKIT_STARTUP_TIME;
 int   MEDKIT_STARTUP_SPEED;
+
+// Human buildables
 
 float REACTOR_BASESIZE;
 float REACTOR_ATTACK_RANGE;
@@ -192,51 +199,48 @@ float PAINSAW_RANGE;
 float PAINSAW_WIDTH;
 float PAINSAW_HEIGHT;
 
-int GRENADE_DAMAGE;
+int   GRENADE_DAMAGE;
 float GRENADE_RANGE;
 float GRENADE_SPEED;
 
-int SHOTGUN_PELLETS;
-int SHOTGUN_SPREAD;
-int SHOTGUN_DMG;
-int SHOTGUN_RANGE;
+int   SHOTGUN_PELLETS;
+int   SHOTGUN_SPREAD;
+int   SHOTGUN_DMG;
+int   SHOTGUN_RANGE;
 
-int LASGUN_REPEAT;
-float LASGUN_K_SCALE;
-int LASGUN_DAMAGE;
+int   LASGUN_REPEAT;
+int   LASGUN_DAMAGE;
 
-int MDRIVER_DMG;
-int MDRIVER_REPEAT;
-float MDRIVER_K_SCALE;
+int   MDRIVER_DMG;
+int   MDRIVER_REPEAT;
 
-int CHAINGUN_SPREAD;
-int CHAINGUN_DMG;
+int   CHAINGUN_SPREAD;
+int   CHAINGUN_DMG;
 
-int FLAMER_DMG;
-int FLAMER_FLIGHTSPLASHDAMAGE;
-int FLAMER_SPLASHDAMAGE;
-int FLAMER_RADIUS;
-int FLAMER_SIZE;
+int   FLAMER_DMG;
+int   FLAMER_FLIGHTSPLASHDAMAGE;
+int   FLAMER_SPLASHDAMAGE;
+int   FLAMER_RADIUS;
+int   FLAMER_SIZE;
 float FLAMER_LIFETIME;
 float FLAMER_SPEED;
 float FLAMER_LAG;
 
-int PRIFLE_DMG;
-int PRIFLE_SPEED;
-int PRIFLE_SIZE;
+int   PRIFLE_DMG;
+int   PRIFLE_SPEED;
+int   PRIFLE_SIZE;
 
-int LCANNON_DAMAGE;
-int LCANNON_RADIUS;
-int LCANNON_SIZE;
-int LCANNON_SECONDARY_DAMAGE;
-int LCANNON_SECONDARY_RADIUS;
-int LCANNON_SECONDARY_SPEED;
-int LCANNON_SECONDARY_RELOAD;
-int LCANNON_SPEED;
-int LCANNON_CHARGE_TIME_MAX;
-int LCANNON_CHARGE_TIME_MIN;
-int LCANNON_CHARGE_TIME_WARN;
-int LCANNON_CHARGE_AMMO;
+int   LCANNON_DAMAGE;
+int   LCANNON_RADIUS;
+int   LCANNON_SIZE;
+int   LCANNON_SECONDARY_DAMAGE;
+int   LCANNON_SECONDARY_RADIUS;
+int   LCANNON_SECONDARY_SPEED;
+int   LCANNON_SPEED;
+int   LCANNON_CHARGE_TIME_MAX;
+int   LCANNON_CHARGE_TIME_MIN;
+int   LCANNON_CHARGE_TIME_WARN;
+int   LCANNON_CHARGE_AMMO;
 
 static configVar_t bg_configVars[] =
 {
@@ -324,7 +328,6 @@ static configVar_t bg_configVars[] =
 	{"w_lcannon_radius", INTEGER, qfalse, &LCANNON_RADIUS },
 	{"w_lcannon_secondaryDamage", INTEGER, qfalse, &LCANNON_SECONDARY_DAMAGE },
 	{"w_lcannon_secondaryRadius", INTEGER, qfalse, &LCANNON_SECONDARY_RADIUS },
-	{"w_lcannon_secondaryReload", INTEGER, qfalse, &LCANNON_SECONDARY_RELOAD },
 	{"w_lcannon_secondarySpeed", INTEGER, qfalse, &LCANNON_SECONDARY_SPEED },
 	{"w_lcannon_size", INTEGER, qfalse, &LCANNON_SIZE },
 	{"w_lcannon_speed", INTEGER, qfalse, &LCANNON_SPEED },
@@ -401,12 +404,8 @@ static configVar_t bg_configVars[] =
 	{"w_level4_trampleStopPenalty", INTEGER, qfalse, &LEVEL4_TRAMPLE_STOP_PENALTY},
 
 	{"w_lgun_damage", INTEGER, qfalse, &LASGUN_DAMAGE },
-	{"w_lgun_k_scale", FLOAT, qfalse, &LASGUN_K_SCALE },
-	{"w_lgun_repeat", INTEGER, qfalse, &LASGUN_REPEAT },
 
 	{"w_mdriver_damage", INTEGER, qfalse, &MDRIVER_DMG },
-	{"w_mdriver_k_scale", FLOAT, qfalse, &MDRIVER_K_SCALE },
-	{"w_mdriver_repeat", INTEGER, qfalse, &MDRIVER_REPEAT },
 
 	{"w_prifle_damage", INTEGER, qfalse, &PRIFLE_DMG },
 	{"w_prifle_size", INTEGER, qfalse, &PRIFLE_SIZE },
