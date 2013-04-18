@@ -4819,6 +4819,11 @@ void G_LayoutSelect( void )
 	// one time use cvar
 	trap_Cvar_Set( "g_layouts", "" );
 
+	if ( !layouts[ 0 ] )
+	{
+		Q_strncpyz( layouts, g_defaultLayouts.string, sizeof( layouts ) );
+	}
+
 	// pick an included layout at random if no list has been provided
 	if ( !layouts[ 0 ] && g_layoutAuto.integer )
 	{

@@ -106,8 +106,8 @@ int RE_BoneIndex( qhandle_t hModel, const char *boneName ) { return 0; }
 int RE_AnimNumFrames( qhandle_t hAnim ) { return 1; }
 int RE_AnimFrameRate( qhandle_t hAnim ) { return 1; }
 qhandle_t RE_RegisterVisTest( void ) { return 1; }
-void RE_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust ) { }
-qboolean RE_CheckVisibility( qhandle_t hTest ) { return qfalse; }
+void RE_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust, float area ) { }
+float RE_CheckVisibility( qhandle_t hTest ) { return 0.0f; }
 void RE_UnregisterVisTest( qhandle_t hTest ) { }
 
 qboolean RE_BeginRegistration( glconfig_t *config, glconfig2_t *glconfig2 )

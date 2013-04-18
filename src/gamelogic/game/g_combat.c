@@ -1408,6 +1408,11 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			}
 
 			targ->die( targ, inflictor, attacker, take, mod );
+
+			if(!targ->client) //call the onDie event only on non living entities
+			{
+				G_EventFireEntity( targ, attacker, ON_DIE );
+			}
 			return;
 		}
 		else if ( targ->pain )

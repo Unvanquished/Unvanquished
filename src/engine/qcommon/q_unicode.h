@@ -19,6 +19,8 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 ===========================================================================
 */
 
+#ifndef Q_UNICODE_H_
+#define Q_UNICODE_H_
 
 int Q_UTF8_Width( const char *str );
 int Q_UTF8_WidthCP( int ch );
@@ -39,3 +41,5 @@ qboolean Q_Unicode_IsAlphaOrIdeoOrDigit( int ch );
 
 int Q_Unicode_ToUpper( int ch );
 int Q_Unicode_ToLower( int ch );
+
+#endif /* Q_UNICODE_H_ */

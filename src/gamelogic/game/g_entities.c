@@ -55,7 +55,7 @@ void G_InitGentity( gentity_t *entity )
 
 /*
 =================
-G_Spawn
+G_NewEntity
 
 Either finds a free entity, or allocates a new one.
 
@@ -164,7 +164,7 @@ void G_FreeEntity( gentity_t *entity )
 
 /*
 =================
-G_TempEntity
+G_NewTempEntity
 
 Spawns an event entity that will be auto-removed
 The origin will be snapped to save net bandwidth, so care
@@ -235,7 +235,6 @@ void G_PrintEntityNameList(gentity_t *entity)
 {
 	int i;
 	char string[ MAX_STRING_CHARS ];
-	char nameSegment[ MAX_STRING_CHARS ];
 
 	if(!entity)
 	{
@@ -247,10 +246,12 @@ void G_PrintEntityNameList(gentity_t *entity)
 		return;
 	}
 
-	for (i = 0; i < MAX_ENTITY_ALIASES && entity->names[i]; ++i)
+	Q_strncpyz( string, entity->names[0], sizeof(string) );
+
+	for (i = 1; i < MAX_ENTITY_ALIASES && entity->names[i]; i++)
 	{
-		Com_sprintf(nameSegment, sizeof(nameSegment), "%s%s", i == 0 ? "": ", ", entity->names[i]);
-		Q_strcat(string, sizeof(string), nameSegment);
+		Q_strcat(string, sizeof(string), ", ");
+		Q_strcat(string, sizeof(string), entity->names[i]);
 	}
 	G_Printf("{ %s }\n", string);
 }
@@ -432,7 +433,11 @@ gentity_t *G_PickRandomEntity( const char *classname, size_t fieldofs, const cha
 	{
 
 		if ( g_debugEntities.integer > -1 )
-			G_Printf( S_WARNING "Could not find any entity matching \"" S_COLOR_CYAN "%s" S_COLOR_WHITE "\"\n", match );
+			G_Printf( S_WARNING "Could not find any entity matching \"" S_COLOR_CYAN "%s%s%s" S_COLOR_WHITE "\"\n",
+					classname ? classname : "",
+					classname && match ? S_COLOR_WHITE " and " S_COLOR_CYAN :  "",
+					match ? match : ""
+					);
 
 		return NULL;
 	}

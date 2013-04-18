@@ -877,38 +877,37 @@ static void R_AddNormals( byte *in, byte *in2, int width, int height )
 	int    x, y;
 	vec3_t n;
 	byte   a;
-	vec3_t n2;
 	byte   a2;
-	float  inv255 = 1.0f / 255.0f;
-	byte   *out;
-
-	out = in;
 
 	for ( y = 0; y < height; y++ )
 	{
 		for ( x = 0; x < width; x++ )
 		{
-			n[ 0 ] = ( in[ 4 * ( y * width + x ) + 0 ] * inv255 - 0.5 ) * 2.0;
-			n[ 1 ] = ( in[ 4 * ( y * width + x ) + 1 ] * inv255 - 0.5 ) * 2.0;
-			n[ 2 ] = ( in[ 4 * ( y * width + x ) + 2 ] * inv255 - 0.5 ) * 2.0;
-			a = in[ 4 * ( y * width + x ) + 3 ];
+			byte *d1, *d2;
 
-			n2[ 0 ] = ( in2[ 4 * ( y * width + x ) + 0 ] * inv255 - 0.5 ) * 2.0;
-			n2[ 1 ] = ( in2[ 4 * ( y * width + x ) + 1 ] * inv255 - 0.5 ) * 2.0;
-			n2[ 2 ] = ( in2[ 4 * ( y * width + x ) + 2 ] * inv255 - 0.5 ) * 2.0;
-			a2 = in2[ 4 * ( y * width + x ) + 3 ];
+			d1 = in + ( y * width + x ) * 4;
+			d2 = in2 + ( y * width + x ) * 4;
 
-			VectorAdd( n, n2, n );
+			n[ 0 ] = ( d1[ 0 ] - 128 ) / 127.0f;
+			n[ 1 ] = ( d1[ 1 ] - 128 ) / 127.0f;
+			n[ 2 ] = ( d1[ 2 ] - 128 ) / 127.0f;
+
+			n[ 0 ] += ( d2[ 0 ] - 128 ) / 127.0f;
+			n[ 1 ] += ( d2[ 1 ] - 128 ) / 127.0f;
+			n[ 2 ] += ( d2[ 2 ] - 128 ) / 127.0f;
+
+			a = d1[ 3 ];
+			a2 = d2[ 3 ];
 
 			if ( !VectorNormalize( n ) )
 			{
 				VectorSet( n, 0, 0, 1 );
 			}
 
-			*out++ = ( byte )( 128 + 127 * n[ 0 ] );
-			*out++ = ( byte )( 128 + 127 * n[ 1 ] );
-			*out++ = ( byte )( 128 + 127 * n[ 2 ] );
-			*out++ = ( byte )( Q_bound( 0, a + a2, 255 ) );
+			d1[ 0 ] = ( byte )( 127 * n[ 0 ] + 128 );
+			d1[ 1 ] = ( byte )( 127 * n[ 1 ] + 128 );
+			d1[ 2 ] = ( byte )( 127 * n[ 2 ] + 128 );
+			d1[ 3 ] = ( byte )( Q_bound( 0, a + a2, 255 ) );
 		}
 	}
 }
@@ -1074,7 +1073,6 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 	GLenum     target;
 	GLenum     format = GL_RGBA;
 	GLenum     internalFormat = GL_RGB;
-	float      rMax = 0, gMax = 0, bMax = 0;
 	vec4_t     zeroClampBorder = { 0, 0, 0, 1 };
 	vec4_t     alphaZeroClampBorder = { 0, 0, 0, 0 };
 
@@ -1253,21 +1251,6 @@ void R_UploadImage( const byte **dataArray, int numData, image_t *image )
 		{
 			for ( i = 0; i < c; i++ )
 			{
-				if ( scan[ i * 4 + 0 ] > rMax )
-				{
-					rMax = scan[ i * 4 + 0 ];
-				}
-
-				if ( scan[ i * 4 + 1 ] > gMax )
-				{
-					gMax = scan[ i * 4 + 1 ];
-				}
-
-				if ( scan[ i * 4 + 2 ] > bMax )
-				{
-					bMax = scan[ i * 4 + 2 ];
-				}
-
 				if ( scan[ i * 4 + 3 ] != 255 )
 				{
 					samples = 4;

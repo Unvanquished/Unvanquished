@@ -2898,7 +2898,7 @@ qboolean G_admin_putteam( gentity_t *ent )
 
 	if ( ( pid = G_ClientNumberFromString( name, err, sizeof( err ) ) ) == -1 )
 	{
-		ADMP( va( "%s %s %s", QQ( "^3$1$:^7 $2t$" ), "rename", err ) );
+		ADMP( va( "%s %s %s", QQ( "^3$1$:^7 $2t$" ), "rename", Quote( err ) ) );
 		return qfalse;
 	}
 
@@ -3094,7 +3094,7 @@ qboolean G_admin_changemap( gentity_t *ent )
 		     trap_FS_FOpenFile( va( "layouts/%s/%s.dat", map, layout ),
 		                        NULL, FS_READ ) > 0 )
 		{
-			trap_Cvar_Set( "g_layouts", layout );
+			// nothing to do
 		}
 		else
 		{
@@ -3106,7 +3106,8 @@ qboolean G_admin_changemap( gentity_t *ent )
 	admin_log( map );
 	admin_log( layout );
 
-	trap_SendConsoleCommand( EXEC_APPEND, va( "map %s", Quote( map ) ) );
+	trap_SendConsoleCommand( EXEC_APPEND, va( "map %s %s", Quote( map ), Quote( layout ) ) );
+
 	level.restarted = qtrue;
 	G_MapLog_Result( 'M' );
 	AP( va( "print_tr %s %s %s %s %s %s", QQ( N_("^3changemap: ^7map '$1$' started by $2$^7 $3t$$4$$5$\n") ),

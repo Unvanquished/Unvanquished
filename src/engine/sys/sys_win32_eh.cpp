@@ -32,6 +32,8 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+#ifdef _WIN32
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -297,3 +299,7 @@ extern "C" {
 		g_Version = version;
 	}
 }
+
+#else
+#error Don't compile me as part of an awesome operating system. This is meant for Win32 and Win64 only!
+#endif /* _WIN32 */
