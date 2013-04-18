@@ -337,28 +337,26 @@ extern int   LEVEL4_CRUSH_REPEAT;
  * HUMAN upgrades
  */
 
-#define LIGHTARMOUR_POISON_PROTECTION 1
-#define LIGHTARMOUR_PCLOUD_PROTECTION 1000
+extern int   LIGHTARMOUR_POISON_PROTECTION;
+extern int   LIGHTARMOUR_PCLOUD_PROTECTION;
 
-#define HELMET_RANGE                  1000.0f
-#define HELMET_POISON_PROTECTION      1
-#define HELMET_PCLOUD_PROTECTION      1000
+extern float HELMET_RANGE;
+extern int   HELMET_POISON_PROTECTION;
+extern int   HELMET_PCLOUD_PROTECTION;
 
-#define BATTPACK_PRICE                100
-#define BATTPACK_MODIFIER             1.5f //modifier for extra energy storage available
+extern float BATTPACK_MODIFIER;
 
-#define JETPACK_FLOAT_SPEED           128.0f //up movement speed
-#define JETPACK_SINK_SPEED            192.0f //down movement speed
-#define JETPACK_DISABLE_TIME          1000 //time to disable the jetpack when player damaged
-#define JETPACK_DISABLE_CHANCE        0.3f
+extern float JETPACK_FLOAT_SPEED;
+extern float JETPACK_SINK_SPEED;
+extern int   JETPACK_DISABLE_TIME;
+extern float JETPACK_DISABLE_CHANCE;
 
-#define BSUIT_PRICE                   400
-#define BSUIT_POISON_PROTECTION       3
-#define BSUIT_PCLOUD_PROTECTION       3000
+extern int   BSUIT_POISON_PROTECTION;
+extern int   BSUIT_PCLOUD_PROTECTION;
 
-#define MEDKIT_POISON_IMMUNITY_TIME   2000 // Added two second poison immunity from medkit.
-#define MEDKIT_STARTUP_TIME           4000
-#define MEDKIT_STARTUP_SPEED          5
+extern int   MEDKIT_POISON_IMMUNITY_TIME;
+extern int   MEDKIT_STARTUP_TIME;
+extern int   MEDKIT_STARTUP_SPEED;
 
 /*
  * HUMAN buildables

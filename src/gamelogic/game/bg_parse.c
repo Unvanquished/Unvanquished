@@ -130,8 +130,50 @@ float LEVEL4_CRUSH_DAMAGE_PER_V;
 int   LEVEL4_CRUSH_DAMAGE;
 int   LEVEL4_CRUSH_REPEAT;
 
+int   LIGHTARMOUR_POISON_PROTECTION;
+int   LIGHTARMOUR_PCLOUD_PROTECTION;
+
+float HELMET_RANGE;
+int   HELMET_POISON_PROTECTION;
+int   HELMET_PCLOUD_PROTECTION;
+
+float BATTPACK_MODIFIER;
+
+float JETPACK_FLOAT_SPEED;
+float JETPACK_SINK_SPEED;
+int   JETPACK_DISABLE_TIME;
+float JETPACK_DISABLE_CHANCE;
+
+int   BSUIT_POISON_PROTECTION;
+int   BSUIT_PCLOUD_PROTECTION;
+
+int   MEDKIT_POISON_IMMUNITY_TIME;
+int   MEDKIT_STARTUP_TIME;
+int   MEDKIT_STARTUP_SPEED;
+
 static configVar_t bg_configVars[] =
 {
+    {"u_battpack_ammoCapacityModifier", FLOAT, qfalse, &BATTPACK_MODIFIER},
+
+    {"u_bsuit_poisonCloudProtection", INTEGER, qfalse, &BSUIT_POISON_PROTECTION},
+    {"u_bsuit_poisonProtection", INTEGER, qfalse, &BSUIT_PCLOUD_PROTECTION},
+
+    {"u_helmet_poisonCloudProtection", INTEGER, qfalse, &HELMET_POISON_PROTECTION},
+    {"u_helmet_poisonProtection", INTEGER, qfalse, &HELMET_PCLOUD_PROTECTION},
+    {"u_helmet_radarRange", FLOAT, qfalse, &HELMET_RANGE},
+
+    {"u_jetpack_disableChance", FLOAT, qfalse, &JETPACK_DISABLE_CHANCE},
+    {"u_jetpack_disableTime", INTEGER, qfalse, &JETPACK_DISABLE_TIME},
+    {"u_jetpack_riseSpeed", FLOAT, qfalse, &JETPACK_FLOAT_SPEED},
+    {"u_jetpack_sinkSpeed", FLOAT, qfalse, &JETPACK_SINK_SPEED},
+
+    {"u_larmour_poisonCloudProtection", INTEGER, qfalse, &LIGHTARMOUR_POISON_PROTECTION},
+    {"u_larmour_poisonProtection", INTEGER, qfalse, &LIGHTARMOUR_PCLOUD_PROTECTION},
+
+    {"u_medkit_poisonImmunityTime", INTEGER, qfalse, &MEDKIT_POISON_IMMUNITY_TIME},
+    {"u_medkit_startupSpeed", INTEGER, qfalse, &MEDKIT_STARTUP_SPEED},
+    {"u_medkit_startupTime", INTEGER, qfalse, &MEDKIT_STARTUP_TIME},
+
     {"w_abuild_blobDmg", INTEGER, qfalse, &ABUILDER_BLOB_DMG},
     {"w_abuild_blobSlowTime", INTEGER, qfalse, &ABUILDER_BLOB_TIME},
     {"w_abuild_blobSpeed", FLOAT, qfalse, &ABUILDER_BLOB_SPEED},
