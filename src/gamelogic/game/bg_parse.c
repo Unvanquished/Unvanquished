@@ -177,133 +177,253 @@ int   DC_ATTACK_PERIOD;
 int   DC_HEALRATE;
 int   DC_RANGE;
 
+// Human Weapons
+
+int   BLASTER_SPREAD;
+int   BLASTER_SPEED;
+int   BLASTER_DMG;
+int   BLASTER_SIZE;
+
+int   RIFLE_SPREAD;
+int   RIFLE_DMG;
+
+int   PAINSAW_DAMAGE;
+float PAINSAW_RANGE;
+float PAINSAW_WIDTH;
+float PAINSAW_HEIGHT;
+
+int GRENADE_DAMAGE;
+float GRENADE_RANGE;
+float GRENADE_SPEED;
+
+int SHOTGUN_PELLETS;
+int SHOTGUN_SPREAD;
+int SHOTGUN_DMG;
+int SHOTGUN_RANGE;
+
+int LASGUN_REPEAT;
+float LASGUN_K_SCALE;
+int LASGUN_DAMAGE;
+
+int MDRIVER_DMG;
+int MDRIVER_REPEAT;
+float MDRIVER_K_SCALE;
+
+int CHAINGUN_SPREAD;
+int CHAINGUN_DMG;
+
+int FLAMER_DMG;
+int FLAMER_FLIGHTSPLASHDAMAGE;
+int FLAMER_SPLASHDAMAGE;
+int FLAMER_RADIUS;
+int FLAMER_SIZE;
+float FLAMER_LIFETIME;
+float FLAMER_SPEED;
+float FLAMER_LAG;
+
+int PRIFLE_DMG;
+int PRIFLE_SPEED;
+int PRIFLE_SIZE;
+
+int LCANNON_DAMAGE;
+int LCANNON_RADIUS;
+int LCANNON_SIZE;
+int LCANNON_SECONDARY_DAMAGE;
+int LCANNON_SECONDARY_RADIUS;
+int LCANNON_SECONDARY_SPEED;
+int LCANNON_SECONDARY_RELOAD;
+int LCANNON_SPEED;
+int LCANNON_CHARGE_TIME_MAX;
+int LCANNON_CHARGE_TIME_MIN;
+int LCANNON_CHARGE_TIME_WARN;
+int LCANNON_CHARGE_AMMO;
+
 static configVar_t bg_configVars[] =
 {
-    {"b_dcc_healRange", INTEGER, qfalse, &DC_RANGE},
-    {"b_dcc_healRate", INTEGER, qfalse, &DC_HEALRATE},
-    {"b_dcc_warningPeriod", INTEGER, qfalse, &DC_ATTACK_PERIOD},
+	{"b_dcc_healRange", INTEGER, qfalse, &DC_RANGE},
+	{"b_dcc_healRate", INTEGER, qfalse, &DC_HEALRATE},
+	{"b_dcc_warningPeriod", INTEGER, qfalse, &DC_ATTACK_PERIOD},
 
-    {"b_mgturret_accuracyToFire", INTEGER, qfalse, &MGTURRET_ACCURACY_TO_FIRE},
-    {"b_mgturret_angularSpeed", INTEGER, qfalse, &MGTURRET_ANGULARSPEED},
-    {"b_mgturret_attackDamage", INTEGER, qfalse, &MGTURRET_DMG},
-    {"b_mgturret_attackSpread", INTEGER, qfalse, &MGTURRET_SPREAD},
-    {"b_mgturret_fireRange", FLOAT, qfalse, &MGTURRET_RANGE},
-    {"b_mgturret_spinupTime", INTEGER, qfalse, &MGTURRET_SPINUP_TIME},
-    {"b_mgturret_verticalCap", INTEGER, qfalse, &MGTURRET_VERTICALCAP},
+	{"b_mgturret_accuracyToFire", INTEGER, qfalse, &MGTURRET_ACCURACY_TO_FIRE},
+	{"b_mgturret_angularSpeed", INTEGER, qfalse, &MGTURRET_ANGULARSPEED},
+	{"b_mgturret_attackDamage", INTEGER, qfalse, &MGTURRET_DMG},
+	{"b_mgturret_attackSpread", INTEGER, qfalse, &MGTURRET_SPREAD},
+	{"b_mgturret_fireRange", FLOAT, qfalse, &MGTURRET_RANGE},
+	{"b_mgturret_spinupTime", INTEGER, qfalse, &MGTURRET_SPINUP_TIME},
+	{"b_mgturret_verticalCap", INTEGER, qfalse, &MGTURRET_VERTICALCAP},
 
-    {"b_reactor_powerRadius", FLOAT, qfalse, &REACTOR_BASESIZE},
-    {"b_reactor_zapAttackDamage", INTEGER, qfalse, &REACTOR_ATTACK_DAMAGE},
-    {"b_reactor_zapAttackDamageDCC", INTEGER, qfalse, &REACTOR_ATTACK_DCC_DAMAGE},
-    {"b_reactor_zapAttackRange", FLOAT, qfalse, &REACTOR_ATTACK_RANGE},
-    {"b_reactor_zapAttackRangeDCC", FLOAT, qfalse, &REACTOR_ATTACK_DCC_RANGE},
-    {"b_reactor_zapAttackRepeat", INTEGER, qfalse, &REACTOR_ATTACK_REPEAT},
-    {"b_reactor_zapAttackRepeatDCC", INTEGER, qfalse, &REACTOR_ATTACK_DCC_REPEAT},
+	{"b_reactor_powerRadius", FLOAT, qfalse, &REACTOR_BASESIZE},
+	{"b_reactor_zapAttackDamage", INTEGER, qfalse, &REACTOR_ATTACK_DAMAGE},
+	{"b_reactor_zapAttackDamageDCC", INTEGER, qfalse, &REACTOR_ATTACK_DCC_DAMAGE},
+	{"b_reactor_zapAttackRange", FLOAT, qfalse, &REACTOR_ATTACK_RANGE},
+	{"b_reactor_zapAttackRangeDCC", FLOAT, qfalse, &REACTOR_ATTACK_DCC_RANGE},
+	{"b_reactor_zapAttackRepeat", INTEGER, qfalse, &REACTOR_ATTACK_REPEAT},
+	{"b_reactor_zapAttackRepeatDCC", INTEGER, qfalse, &REACTOR_ATTACK_DCC_REPEAT},
 
-    {"b_repeater_powerRadius", FLOAT, qfalse, &REPEATER_BASESIZE},
+	{"b_repeater_powerRadius", FLOAT, qfalse, &REPEATER_BASESIZE},
 
-    {"b_tesla_zapAttackDamage", INTEGER, qfalse, &TESLAGEN_DMG},
-    {"b_tesla_zapAttackRange", FLOAT, qfalse, &TESLAGEN_RANGE},
-    {"b_tesla_zapAttackRepeat", INTEGER, qfalse, &TESLAGEN_REPEAT},
+	{"b_tesla_zapAttackDamage", INTEGER, qfalse, &TESLAGEN_DMG},
+	{"b_tesla_zapAttackRange", FLOAT, qfalse, &TESLAGEN_RANGE},
+	{"b_tesla_zapAttackRepeat", INTEGER, qfalse, &TESLAGEN_REPEAT},
 
-    {"u_battpack_ammoCapacityModifier", FLOAT, qfalse, &BATTPACK_MODIFIER},
+	{"u_battpack_ammoCapacityModifier", FLOAT, qfalse, &BATTPACK_MODIFIER},
 
-    {"u_bsuit_poisonCloudProtection", INTEGER, qfalse, &BSUIT_POISON_PROTECTION},
-    {"u_bsuit_poisonProtection", INTEGER, qfalse, &BSUIT_PCLOUD_PROTECTION},
+	{"u_bsuit_poisonCloudProtection", INTEGER, qfalse, &BSUIT_POISON_PROTECTION},
+	{"u_bsuit_poisonProtection", INTEGER, qfalse, &BSUIT_PCLOUD_PROTECTION},
 
-    {"u_helmet_poisonCloudProtection", INTEGER, qfalse, &HELMET_POISON_PROTECTION},
-    {"u_helmet_poisonProtection", INTEGER, qfalse, &HELMET_PCLOUD_PROTECTION},
-    {"u_helmet_radarRange", FLOAT, qfalse, &HELMET_RANGE},
+	{"u_helmet_poisonCloudProtection", INTEGER, qfalse, &HELMET_POISON_PROTECTION},
+	{"u_helmet_poisonProtection", INTEGER, qfalse, &HELMET_PCLOUD_PROTECTION},
+	{"u_helmet_radarRange", FLOAT, qfalse, &HELMET_RANGE},
 
-    {"u_jetpack_disableChance", FLOAT, qfalse, &JETPACK_DISABLE_CHANCE},
-    {"u_jetpack_disableTime", INTEGER, qfalse, &JETPACK_DISABLE_TIME},
-    {"u_jetpack_riseSpeed", FLOAT, qfalse, &JETPACK_FLOAT_SPEED},
-    {"u_jetpack_sinkSpeed", FLOAT, qfalse, &JETPACK_SINK_SPEED},
+	{"u_jetpack_disableChance", FLOAT, qfalse, &JETPACK_DISABLE_CHANCE},
+	{"u_jetpack_disableTime", INTEGER, qfalse, &JETPACK_DISABLE_TIME},
+	{"u_jetpack_riseSpeed", FLOAT, qfalse, &JETPACK_FLOAT_SPEED},
+	{"u_jetpack_sinkSpeed", FLOAT, qfalse, &JETPACK_SINK_SPEED},
 
-    {"u_larmour_poisonCloudProtection", INTEGER, qfalse, &LIGHTARMOUR_POISON_PROTECTION},
-    {"u_larmour_poisonProtection", INTEGER, qfalse, &LIGHTARMOUR_PCLOUD_PROTECTION},
+	{"u_larmour_poisonCloudProtection", INTEGER, qfalse, &LIGHTARMOUR_POISON_PROTECTION},
+	{"u_larmour_poisonProtection", INTEGER, qfalse, &LIGHTARMOUR_PCLOUD_PROTECTION},
 
-    {"u_medkit_poisonImmunityTime", INTEGER, qfalse, &MEDKIT_POISON_IMMUNITY_TIME},
-    {"u_medkit_startupSpeed", INTEGER, qfalse, &MEDKIT_STARTUP_SPEED},
-    {"u_medkit_startupTime", INTEGER, qfalse, &MEDKIT_STARTUP_TIME},
+	{"u_medkit_poisonImmunityTime", INTEGER, qfalse, &MEDKIT_POISON_IMMUNITY_TIME},
+	{"u_medkit_startupSpeed", INTEGER, qfalse, &MEDKIT_STARTUP_SPEED},
+	{"u_medkit_startupTime", INTEGER, qfalse, &MEDKIT_STARTUP_TIME},
 
-    {"w_abuild_blobDmg", INTEGER, qfalse, &ABUILDER_BLOB_DMG},
-    {"w_abuild_blobSlowTime", INTEGER, qfalse, &ABUILDER_BLOB_TIME},
-    {"w_abuild_blobSpeed", FLOAT, qfalse, &ABUILDER_BLOB_SPEED},
-    {"w_abuild_blobSpeedMod", FLOAT, qfalse, &ABUILDER_BLOB_SPEED_MOD},
-    {"w_abuild_clawDmg", INTEGER, qfalse, &ABUILDER_CLAW_DMG},
-    {"w_abuild_clawRange", FLOAT, qfalse, &ABUILDER_CLAW_RANGE},
-    {"w_abuild_clawWidth", FLOAT, qfalse, &ABUILDER_CLAW_WIDTH},
+	{"w_abuild_blobDmg", INTEGER, qfalse, &ABUILDER_BLOB_DMG},
+	{"w_abuild_blobSlowTime", INTEGER, qfalse, &ABUILDER_BLOB_TIME},
+	{"w_abuild_blobSpeed", FLOAT, qfalse, &ABUILDER_BLOB_SPEED},
+	{"w_abuild_blobSpeedMod", FLOAT, qfalse, &ABUILDER_BLOB_SPEED_MOD},
+	{"w_abuild_clawDmg", INTEGER, qfalse, &ABUILDER_CLAW_DMG},
+	{"w_abuild_clawRange", FLOAT, qfalse, &ABUILDER_CLAW_RANGE},
+	{"w_abuild_clawWidth", FLOAT, qfalse, &ABUILDER_CLAW_WIDTH},
 
-    {"w_level0_biteDmg", INTEGER, qfalse, &LEVEL0_BITE_DMG},
-    {"w_level0_biteRange", FLOAT, qfalse, &LEVEL0_BITE_RANGE},
-    {"w_level0_biteRepeat", INTEGER, qfalse, &LEVEL0_BITE_REPEAT},
-    {"w_level0_biteWidth", FLOAT, qfalse, &LEVEL0_BITE_WIDTH},
+	{"w_blaster_damage", INTEGER, qfalse, &BLASTER_DMG },
+	{"w_blaster_size", INTEGER, qfalse, &BLASTER_SIZE },
+	{"w_blaster_speed", INTEGER, qfalse, &BLASTER_SPEED },
+	{"w_blaster_spread", INTEGER, qfalse, &BLASTER_SPREAD },
 
-    {"w_level1upg_clawRange", INTEGER, qfalse, &LEVEL1_CLAW_U_RANGE},
-    {"w_level1upg_grabRange", FLOAT, qfalse, &LEVEL1_GRAB_U_RANGE},
-    {"w_level1upg_grabTime", INTEGER, qfalse, &LEVEL1_GRAB_U_TIME},
-    {"w_level1upg_poisonCloudDuration", INTEGER, qfalse, &LEVEL1_PCLOUD_TIME},
-    {"w_level1upg_poisonCloudRange", FLOAT, qfalse, &LEVEL1_PCLOUD_RANGE},
-    {"w_level1upg_regenMod", FLOAT, qfalse, &LEVEL1_UPG_REGEN_MOD},
-    {"w_level1upg_regenScoreGain", INTEGER, qfalse, &LEVEL1_UPG_REGEN_SCOREINC},
+	{"w_chaingun_damage", INTEGER, qfalse, &CHAINGUN_DMG },
+	{"w_chaingun_spread", INTEGER, qfalse, &CHAINGUN_SPREAD },
 
-    {"w_level1_clawDmg", INTEGER, qfalse, &LEVEL1_CLAW_DMG},
-    {"w_level1_clawRange", FLOAT, qfalse, &LEVEL1_CLAW_RANGE},
-    {"w_level1_clawWidth", FLOAT, qfalse, &LEVEL1_CLAW_WIDTH},
-    {"w_level1_grabRange", FLOAT, qfalse, &LEVEL1_GRAB_RANGE},
-    {"w_level1_grabTime", INTEGER, qfalse, &LEVEL1_GRAB_TIME},
-    {"w_level1_regenMod", FLOAT, qfalse, &LEVEL1_REGEN_MOD},
-    {"w_level1_regenScoreGain", INTEGER, qfalse, &LEVEL1_REGEN_SCOREINC},
+	{"w_flamer_damage", INTEGER, qfalse, &FLAMER_DMG },
+	{"w_flamer_flightSplashDamage", INTEGER, qfalse, &FLAMER_FLIGHTSPLASHDAMAGE },
+	{"w_flamer_lag", FLOAT, qfalse, &FLAMER_LAG },
+	{"w_flamer_lifeTime", FLOAT, qfalse, &FLAMER_LIFETIME },
+	{"w_flamer_radius", INTEGER, qfalse, &FLAMER_RADIUS },
+	{"w_flamer_size", INTEGER, qfalse, &FLAMER_SIZE },
+	{"w_flamer_speed", FLOAT, qfalse, &FLAMER_SPEED },
+	{"w_flamer_splashDamage", INTEGER, qfalse, &FLAMER_SPLASHDAMAGE },
 
-    {"w_level2upg_clawRange", INTEGER, qfalse, &LEVEL2_CLAW_U_RANGE},
-    {"w_level2upg_zapChainFalloff", FLOAT, qfalse, &LEVEL2_AREAZAP_CHAIN_FALLOFF},
-    {"w_level2upg_zapChainRange", FLOAT, qfalse, &LEVEL2_AREAZAP_CHAIN_RANGE},
-    {"w_level2upg_zapDmg", INTEGER, qfalse, &LEVEL2_AREAZAP_DMG},
-    {"w_level2upg_zapRange", FLOAT, qfalse, &LEVEL2_AREAZAP_RANGE},
-    {"w_level2upg_zapTime", INTEGER, qfalse, &LEVEL2_AREAZAP_TIME},
-    {"w_level2upg_zapWidth", FLOAT, qfalse, &LEVEL2_AREAZAP_WIDTH},
+	{"w_grenade_damage", INTEGER, qfalse, &GRENADE_DAMAGE },
+	{"w_grenade_range", FLOAT, qfalse, &GRENADE_RANGE },
+	{"w_grenade_speed", FLOAT, qfalse, &GRENADE_SPEED },
 
-    {"w_level2_clawDmg", INTEGER, qfalse, &LEVEL2_CLAW_DMG},
-    {"w_level2_clawRange", FLOAT, qfalse, &LEVEL2_CLAW_RANGE},
-    {"w_level2_clawWidth", FLOAT, qfalse, &LEVEL2_CLAW_WIDTH},
-    {"w_level2_maxWalljumpSpeed", FLOAT, qfalse, &LEVEL2_WALLJUMP_MAXSPEED},
+	{"w_lcannon_chargeAmmo", INTEGER, qfalse, &LCANNON_CHARGE_AMMO },
+	{"w_lcannon_chargeTimeMax", INTEGER, qfalse, &LCANNON_CHARGE_TIME_MAX },
+	{"w_lcannon_chargeTimeMin", INTEGER, qfalse, &LCANNON_CHARGE_TIME_MIN },
+	{"w_lcannon_chargeTimeWarn", INTEGER, qfalse, &LCANNON_CHARGE_TIME_WARN },
+	{"w_lcannon_damage", INTEGER, qfalse, &LCANNON_DAMAGE },
+	{"w_lcannon_radius", INTEGER, qfalse, &LCANNON_RADIUS },
+	{"w_lcannon_secondaryDamage", INTEGER, qfalse, &LCANNON_SECONDARY_DAMAGE },
+	{"w_lcannon_secondaryRadius", INTEGER, qfalse, &LCANNON_SECONDARY_RADIUS },
+	{"w_lcannon_secondaryReload", INTEGER, qfalse, &LCANNON_SECONDARY_RELOAD },
+	{"w_lcannon_secondarySpeed", INTEGER, qfalse, &LCANNON_SECONDARY_SPEED },
+	{"w_lcannon_size", INTEGER, qfalse, &LCANNON_SIZE },
+	{"w_lcannon_speed", INTEGER, qfalse, &LCANNON_SPEED },
 
-    {"w_level3upg_ballDmg", INTEGER, qfalse, &LEVEL3_BOUNCEBALL_DMG},
-    {"w_level3upg_ballRadius", INTEGER, qfalse, &LEVEL3_BOUNCEBALL_RADIUS},
-    {"w_level3upg_ballRegen", INTEGER, qfalse, &LEVEL3_BOUNCEBALL_REGEN},
-    {"w_level3upg_ballSpeed", FLOAT, qfalse, &LEVEL3_BOUNCEBALL_SPEED},
-    {"w_level3upg_clawRange", FLOAT, qfalse, &LEVEL3_CLAW_UPG_RANGE},
-    {"w_level3upg_pounceDuration", INTEGER, qfalse, &LEVEL3_POUNCE_TIME_UPG},
-    {"w_level3upg_pounceJumpMagnitude", INTEGER, qfalse, &LEVEL3_POUNCE_JUMP_MAG_UPG},
-    {"w_level3upg_pounceRange", FLOAT, qfalse, &LEVEL3_POUNCE_UPG_RANGE},
+	{"w_level0_biteDmg", INTEGER, qfalse, &LEVEL0_BITE_DMG},
+	{"w_level0_biteRange", FLOAT, qfalse, &LEVEL0_BITE_RANGE},
+	{"w_level0_biteRepeat", INTEGER, qfalse, &LEVEL0_BITE_REPEAT},
+	{"w_level0_biteWidth", FLOAT, qfalse, &LEVEL0_BITE_WIDTH},
 
-    {"w_level3_clawDmg", INTEGER, qfalse, &LEVEL3_CLAW_DMG},
-    {"w_level3_clawRange", FLOAT, qfalse, &LEVEL3_CLAW_RANGE},
-    {"w_level3_clawWidth", FLOAT, qfalse, &LEVEL3_CLAW_WIDTH},
-    {"w_level3_pounceCancelTime", INTEGER, qfalse, &LEVEL3_POUNCE_TIME},
-    {"w_level3_pounceDmg", INTEGER, qfalse, &LEVEL3_POUNCE_DMG},
-    {"w_level3_pounceDuration", INTEGER, qfalse, &LEVEL3_POUNCE_TIME},
-    {"w_level3_pounceJumpMagnitude", INTEGER, qfalse, &LEVEL3_POUNCE_JUMP_MAG},
-    {"w_level3_pounceRange", FLOAT, qfalse, &LEVEL3_POUNCE_RANGE},
-    {"w_level3_pounceRepeat", INTEGER, qfalse, &LEVEL3_POUNCE_REPEAT},
-    {"w_level3_pounceSpeedMod", FLOAT, qfalse, &LEVEL3_POUNCE_SPEED_MOD},
-    {"w_level3_pounceWidth", FLOAT, qfalse, &LEVEL3_POUNCE_WIDTH},
+	{"w_level1upg_clawRange", INTEGER, qfalse, &LEVEL1_CLAW_U_RANGE},
+	{"w_level1upg_grabRange", FLOAT, qfalse, &LEVEL1_GRAB_U_RANGE},
+	{"w_level1upg_grabTime", INTEGER, qfalse, &LEVEL1_GRAB_U_TIME},
+	{"w_level1upg_poisonCloudDuration", INTEGER, qfalse, &LEVEL1_PCLOUD_TIME},
+	{"w_level1upg_poisonCloudRange", FLOAT, qfalse, &LEVEL1_PCLOUD_RANGE},
+	{"w_level1upg_regenMod", FLOAT, qfalse, &LEVEL1_UPG_REGEN_MOD},
+	{"w_level1upg_regenScoreGain", INTEGER, qfalse, &LEVEL1_UPG_REGEN_SCOREINC},
 
-    {"w_level4_clawDmg", INTEGER, qfalse, &LEVEL4_CLAW_DMG},
-    {"w_level4_clawHeight", FLOAT, qfalse, &LEVEL4_CLAW_HEIGHT},
-    {"w_level4_clawRange", FLOAT, qfalse, &LEVEL4_CLAW_RANGE},
-    {"w_level4_clawWidth", FLOAT, qfalse, &LEVEL4_CLAW_WIDTH},
-    {"w_level4_crushDmg", INTEGER, qfalse, &LEVEL4_CRUSH_DAMAGE},
-    {"w_level4_crushDmgPerFallingVelocity", FLOAT, qfalse, &LEVEL4_CRUSH_DAMAGE_PER_V},
-    {"w_level4_crushRepeat", INTEGER, qfalse, &LEVEL4_CRUSH_REPEAT},
-    {"w_level4_trampleChargeMax", INTEGER, qfalse, &LEVEL4_TRAMPLE_CHARGE_MAX},
-    {"w_level4_trampleChargeMin", INTEGER, qfalse, &LEVEL4_TRAMPLE_CHARGE_MIN},
-    {"w_level4_trampleChargeTrigger", INTEGER, qfalse, &LEVEL4_TRAMPLE_CHARGE_TRIGGER},
-    {"w_level4_trampleDmg", INTEGER, qfalse, &LEVEL4_TRAMPLE_DMG},
-    {"w_level4_trampleDuration", INTEGER, qfalse, &LEVEL4_TRAMPLE_DURATION},
-    {"w_level4_trampleRepeat", INTEGER, qfalse, &LEVEL4_TRAMPLE_REPEAT},
-    {"w_level4_trampleSpeed", FLOAT, qfalse, &LEVEL4_TRAMPLE_SPEED},
-    {"w_level4_trampleStopPenalty", INTEGER, qfalse, &LEVEL4_TRAMPLE_STOP_PENALTY},
+	{"w_level1_clawDmg", INTEGER, qfalse, &LEVEL1_CLAW_DMG},
+	{"w_level1_clawRange", FLOAT, qfalse, &LEVEL1_CLAW_RANGE},
+	{"w_level1_clawWidth", FLOAT, qfalse, &LEVEL1_CLAW_WIDTH},
+	{"w_level1_grabRange", FLOAT, qfalse, &LEVEL1_GRAB_RANGE},
+	{"w_level1_grabTime", INTEGER, qfalse, &LEVEL1_GRAB_TIME},
+	{"w_level1_regenMod", FLOAT, qfalse, &LEVEL1_REGEN_MOD},
+	{"w_level1_regenScoreGain", INTEGER, qfalse, &LEVEL1_REGEN_SCOREINC},
+
+	{"w_level2upg_clawRange", INTEGER, qfalse, &LEVEL2_CLAW_U_RANGE},
+	{"w_level2upg_zapChainFalloff", FLOAT, qfalse, &LEVEL2_AREAZAP_CHAIN_FALLOFF},
+	{"w_level2upg_zapChainRange", FLOAT, qfalse, &LEVEL2_AREAZAP_CHAIN_RANGE},
+	{"w_level2upg_zapDmg", INTEGER, qfalse, &LEVEL2_AREAZAP_DMG},
+	{"w_level2upg_zapRange", FLOAT, qfalse, &LEVEL2_AREAZAP_RANGE},
+	{"w_level2upg_zapTime", INTEGER, qfalse, &LEVEL2_AREAZAP_TIME},
+	{"w_level2upg_zapWidth", FLOAT, qfalse, &LEVEL2_AREAZAP_WIDTH},
+
+	{"w_level2_clawDmg", INTEGER, qfalse, &LEVEL2_CLAW_DMG},
+	{"w_level2_clawRange", FLOAT, qfalse, &LEVEL2_CLAW_RANGE},
+	{"w_level2_clawWidth", FLOAT, qfalse, &LEVEL2_CLAW_WIDTH},
+	{"w_level2_maxWalljumpSpeed", FLOAT, qfalse, &LEVEL2_WALLJUMP_MAXSPEED},
+
+	{"w_level3upg_ballDmg", INTEGER, qfalse, &LEVEL3_BOUNCEBALL_DMG},
+	{"w_level3upg_ballRadius", INTEGER, qfalse, &LEVEL3_BOUNCEBALL_RADIUS},
+	{"w_level3upg_ballRegen", INTEGER, qfalse, &LEVEL3_BOUNCEBALL_REGEN},
+	{"w_level3upg_ballSpeed", FLOAT, qfalse, &LEVEL3_BOUNCEBALL_SPEED},
+	{"w_level3upg_clawRange", FLOAT, qfalse, &LEVEL3_CLAW_UPG_RANGE},
+	{"w_level3upg_pounceDuration", INTEGER, qfalse, &LEVEL3_POUNCE_TIME_UPG},
+	{"w_level3upg_pounceJumpMagnitude", INTEGER, qfalse, &LEVEL3_POUNCE_JUMP_MAG_UPG},
+	{"w_level3upg_pounceRange", FLOAT, qfalse, &LEVEL3_POUNCE_UPG_RANGE},
+
+	{"w_level3_clawDmg", INTEGER, qfalse, &LEVEL3_CLAW_DMG},
+	{"w_level3_clawRange", FLOAT, qfalse, &LEVEL3_CLAW_RANGE},
+	{"w_level3_clawWidth", FLOAT, qfalse, &LEVEL3_CLAW_WIDTH},
+	{"w_level3_pounceCancelTime", INTEGER, qfalse, &LEVEL3_POUNCE_TIME},
+	{"w_level3_pounceDmg", INTEGER, qfalse, &LEVEL3_POUNCE_DMG},
+	{"w_level3_pounceDuration", INTEGER, qfalse, &LEVEL3_POUNCE_TIME},
+	{"w_level3_pounceJumpMagnitude", INTEGER, qfalse, &LEVEL3_POUNCE_JUMP_MAG},
+	{"w_level3_pounceRange", FLOAT, qfalse, &LEVEL3_POUNCE_RANGE},
+	{"w_level3_pounceRepeat", INTEGER, qfalse, &LEVEL3_POUNCE_REPEAT},
+	{"w_level3_pounceSpeedMod", FLOAT, qfalse, &LEVEL3_POUNCE_SPEED_MOD},
+	{"w_level3_pounceWidth", FLOAT, qfalse, &LEVEL3_POUNCE_WIDTH},
+
+	{"w_level4_clawDmg", INTEGER, qfalse, &LEVEL4_CLAW_DMG},
+	{"w_level4_clawHeight", FLOAT, qfalse, &LEVEL4_CLAW_HEIGHT},
+	{"w_level4_clawRange", FLOAT, qfalse, &LEVEL4_CLAW_RANGE},
+	{"w_level4_clawWidth", FLOAT, qfalse, &LEVEL4_CLAW_WIDTH},
+	{"w_level4_crushDmg", INTEGER, qfalse, &LEVEL4_CRUSH_DAMAGE},
+	{"w_level4_crushDmgPerFallingVelocity", FLOAT, qfalse, &LEVEL4_CRUSH_DAMAGE_PER_V},
+	{"w_level4_crushRepeat", INTEGER, qfalse, &LEVEL4_CRUSH_REPEAT},
+	{"w_level4_trampleChargeMax", INTEGER, qfalse, &LEVEL4_TRAMPLE_CHARGE_MAX},
+	{"w_level4_trampleChargeMin", INTEGER, qfalse, &LEVEL4_TRAMPLE_CHARGE_MIN},
+	{"w_level4_trampleChargeTrigger", INTEGER, qfalse, &LEVEL4_TRAMPLE_CHARGE_TRIGGER},
+	{"w_level4_trampleDmg", INTEGER, qfalse, &LEVEL4_TRAMPLE_DMG},
+	{"w_level4_trampleDuration", INTEGER, qfalse, &LEVEL4_TRAMPLE_DURATION},
+	{"w_level4_trampleRepeat", INTEGER, qfalse, &LEVEL4_TRAMPLE_REPEAT},
+	{"w_level4_trampleSpeed", FLOAT, qfalse, &LEVEL4_TRAMPLE_SPEED},
+	{"w_level4_trampleStopPenalty", INTEGER, qfalse, &LEVEL4_TRAMPLE_STOP_PENALTY},
+
+	{"w_lgun_damage", INTEGER, qfalse, &LASGUN_DAMAGE },
+	{"w_lgun_k_scale", FLOAT, qfalse, &LASGUN_K_SCALE },
+	{"w_lgun_repeat", INTEGER, qfalse, &LASGUN_REPEAT },
+
+	{"w_mdriver_damage", INTEGER, qfalse, &MDRIVER_DMG },
+	{"w_mdriver_k_scale", FLOAT, qfalse, &MDRIVER_K_SCALE },
+	{"w_mdriver_repeat", INTEGER, qfalse, &MDRIVER_REPEAT },
+
+	{"w_prifle_damage", INTEGER, qfalse, &PRIFLE_DMG },
+	{"w_prifle_size", INTEGER, qfalse, &PRIFLE_SIZE },
+	{"w_prifle_speed", INTEGER, qfalse, &PRIFLE_SPEED },
+
+	{"w_psaw_damage", INTEGER, qfalse, &PAINSAW_DAMAGE },
+	{"w_psaw_height", FLOAT, qfalse, &PAINSAW_HEIGHT },
+	{"w_psaw_range", FLOAT, qfalse, &PAINSAW_RANGE },
+	{"w_psaw_width", FLOAT, qfalse, &PAINSAW_WIDTH },
+
+	{"w_rifle_damage", INTEGER, qfalse, &RIFLE_DMG },
+	{"w_rifle_spread", INTEGER, qfalse, &RIFLE_SPREAD },
+
+	{"w_shotgun_damage", INTEGER, qfalse, &SHOTGUN_DMG },
+	{"w_shotgun_pellets", INTEGER, qfalse, &SHOTGUN_PELLETS },
+	{"w_shotgun_range", INTEGER, qfalse, &SHOTGUN_RANGE },
+	{"w_shotgun_spread", INTEGER, qfalse, &SHOTGUN_SPREAD },
 };
 
 static const size_t bg_numConfigVars = ARRAY_LEN( bg_configVars );

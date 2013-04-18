@@ -272,66 +272,66 @@ extern int   LEVEL4_CRUSH_REPEAT;
 #define HUMAN_WDMG_MODIFIER      1.0f
 #define HDM(d) ((int)((float)d * HUMAN_WDMG_MODIFIER ))
 
-#define BLASTER_SPREAD           200
-#define BLASTER_SPEED            1400
-#define BLASTER_DMG              HDM(10)
-#define BLASTER_SIZE             5
+extern int BLASTER_SPREAD;
+extern int BLASTER_SPEED;
+extern int BLASTER_DMG;
+extern int BLASTER_SIZE;
 
-#define RIFLE_SPREAD             250 // Raised by 50.
-#define RIFLE_DMG                HDM(5)
+extern int RIFLE_SPREAD;
+extern int RIFLE_DMG;
 
-#define PAINSAW_DAMAGE           HDM(11)
-#define PAINSAW_RANGE            64.0f
-#define PAINSAW_WIDTH            0.0f
-#define PAINSAW_HEIGHT           8.0f
+extern int PAINSAW_DAMAGE;
+extern float PAINSAW_RANGE;
+extern float PAINSAW_WIDTH;
+extern float PAINSAW_HEIGHT;
 
-#define GRENADE_DAMAGE           HDM(310)
-#define GRENADE_RANGE            192.0f
-#define GRENADE_SPEED            400.0f
+extern int GRENADE_DAMAGE;
+extern float GRENADE_RANGE;
+extern float GRENADE_SPEED;
 
-#define SHOTGUN_PELLETS          11 //used to sync server and client side
-#define SHOTGUN_SPREAD           790
-#define SHOTGUN_DMG              HDM(5)
-#define SHOTGUN_RANGE            ( 8192 * 12 )
+extern int SHOTGUN_DMG;
+extern int SHOTGUN_RANGE;
+extern int SHOTGUN_PELLETS;
+extern int SHOTGUN_SPREAD;
 
-#define LASGUN_REPEAT            200
-#define LASGUN_K_SCALE           1.0f
-#define LASGUN_DAMAGE            HDM(9)
+extern int LASGUN_REPEAT;
+extern float LASGUN_K_SCALE;
+extern int LASGUN_DAMAGE;
 
-#define MDRIVER_DMG              HDM(40)
-#define MDRIVER_REPEAT           1000
-#define MDRIVER_K_SCALE          1.0f
+extern int MDRIVER_DMG;
+extern int MDRIVER_REPEAT;
+extern float MDRIVER_K_SCALE;
 
-#define CHAINGUN_SPREAD          900
-#define CHAINGUN_DMG             HDM(6)
+extern int CHAINGUN_SPREAD;
+extern int CHAINGUN_DMG;
 
-#define FLAMER_DMG               HDM(14) // 20->15->14
-#define FLAMER_FLIGHTSPLASHDAMAGE HDM(1)
-#define FLAMER_SPLASHDAMAGE      HDM(6) // 10->7->6
-#define FLAMER_RADIUS            25 //  Radius lowered by 25
-#define FLAMER_SIZE              15 // missile bounding box
-#define FLAMER_LIFETIME          750.0f // Raised by 50.
-#define FLAMER_SPEED             500.0f
-#define FLAMER_LAG               0.65f // the amount of player velocity that is added to the fireball
+extern int FLAMER_DMG;
+extern int FLAMER_FLIGHTSPLASHDAMAGE;
+extern int FLAMER_SPLASHDAMAGE;
+extern int FLAMER_RADIUS;
+extern int FLAMER_SIZE;
+extern float FLAMER_LIFETIME;
+extern float FLAMER_SPEED;
+extern float FLAMER_LAG;
 
-#define PRIFLE_DMG               HDM(9)
-#define PRIFLE_SPEED             1200
-#define PRIFLE_SIZE              5
+extern int PRIFLE_DMG;
+extern int PRIFLE_SPEED;
+extern int PRIFLE_SIZE;
 
-#define LCANNON_DAMAGE           HDM(265)
-#define LCANNON_RADIUS           150 // primary splash damage radius
-#define LCANNON_SIZE             5 // missile bounding box radius
-#define LCANNON_SECONDARY_DAMAGE HDM(30)
-#define LCANNON_SECONDARY_RADIUS 75 // secondary splash damage radius
-#define LCANNON_SECONDARY_SPEED  1400
-#define LCANNON_SECONDARY_RELOAD 2000
-#define LCANNON_SPEED            700
-#define LCANNON_CHARGE_TIME_MAX  3000
-#define LCANNON_CHARGE_TIME_MIN  100
-#define LCANNON_CHARGE_TIME_WARN 2000
-#define LCANNON_CHARGE_AMMO      10 // ammo cost of a full charge shot
+extern int LCANNON_DAMAGE;
+extern int LCANNON_RADIUS;
+extern int LCANNON_SIZE;
+extern int LCANNON_SECONDARY_DAMAGE;
+extern int LCANNON_SECONDARY_RADIUS;
+extern int LCANNON_SECONDARY_SPEED;
+extern int LCANNON_SECONDARY_RELOAD;
+extern int LCANNON_SPEED;
+extern int LCANNON_CHARGE_TIME_MAX;
+extern int LCANNON_CHARGE_TIME_MIN;
+extern int LCANNON_CHARGE_TIME_WARN;
+extern int LCANNON_CHARGE_AMMO;
 
-#define HBUILD_HEALRATE          18
+#define HBUILD_HEALRATE             18
 
 /*
  * HUMAN upgrades
