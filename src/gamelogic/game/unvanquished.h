@@ -366,33 +366,32 @@ extern int   MEDKIT_STARTUP_SPEED;
  *
  */
 
-#define REACTOR_BASESIZE          1000
-#define REPEATER_BASESIZE         500
+extern float REACTOR_BASESIZE;
+extern float REPEATER_BASESIZE;
 #define HUMAN_DETONATION_DELAY    5000
 
-#define MGTURRET_RANGE            400.0
-#define MGTURRET_REPEAT           150.0
-#define MGTURRET_ANGULARSPEED     12
-#define MGTURRET_ACCURACY_TO_FIRE 0
-#define MGTURRET_VERTICALCAP      30 // +/- maximum pitch
-#define MGTURRET_SPREAD           200
-#define MGTURRET_DMG              HDM(8)
-#define MGTURRET_SPINUP_TIME      750 // time between target sighted and fire
+extern float MGTURRET_RANGE;
+extern int   MGTURRET_ANGULARSPEED;
+extern int   MGTURRET_ACCURACY_TO_FIRE;
+extern int   MGTURRET_VERTICALCAP;
+extern int   MGTURRET_SPREAD;
+extern int   MGTURRET_DMG;
+extern int   MGTURRET_SPINUP_TIME;
 
-#define TESLAGEN_RANGE            250.0
-#define TESLAGEN_REPEAT           200.0
-#define TESLAGEN_DMG              HDM(10)
+extern float TESLAGEN_RANGE;
+extern int   TESLAGEN_REPEAT;
+extern int   TESLAGEN_DMG;
 
-#define DC_ATTACK_PERIOD          10000 // how often to spam "under attack"
-#define DC_HEALRATE               4
-#define DC_RANGE                  1000
+extern int   DC_ATTACK_PERIOD;
+extern int   DC_HEALRATE;
+extern int   DC_RANGE;
 
-#define REACTOR_ATTACK_RANGE      100.0f
-#define REACTOR_ATTACK_REPEAT     1000
-#define REACTOR_ATTACK_DAMAGE     40
-#define REACTOR_ATTACK_DCC_REPEAT 1000
-#define REACTOR_ATTACK_DCC_RANGE  150.0f
-#define REACTOR_ATTACK_DCC_DAMAGE 40
+extern float REACTOR_ATTACK_RANGE;
+extern int   REACTOR_ATTACK_REPEAT;
+extern int   REACTOR_ATTACK_DAMAGE;
+extern float REACTOR_ATTACK_DCC_RANGE;
+extern int   REACTOR_ATTACK_DCC_REPEAT;
+extern int   REACTOR_ATTACK_DCC_DAMAGE;
 
 /*
  * HUMAN misc
