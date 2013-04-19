@@ -1117,7 +1117,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
                vec3_t dir, vec3_t point, int damage, int dflags, int mod )
 {
 	gclient_t *client;
-	int       take;
+	int       take, loss;
 	int       asave = 0;
 	int       knockback;
 
@@ -1382,16 +1382,27 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		targ->lastDamageTime = level.time;
 		targ->nextRegenTime = level.time + ALIEN_REGEN_DAMAGE_TIME;
 
-		// add to the attackers "account" on the target
-		if ( attacker->client && attacker != targ )
+		if ( attacker != targ )
 		{
 			if ( targ->health < 0 )
 			{
-				targ->credits[ attacker->client->ps.clientNum ] += ( take + targ->health );
+				loss = ( take + targ->health );
 			}
 			else
 			{
-				targ->credits[ attacker->client->ps.clientNum ] += take;
+				loss = take;
+			}
+
+			// add to the attackers "account" on the target
+			if ( attacker->client )
+			{
+				targ->credits[ attacker->client->ps.clientNum ] += loss;
+			}
+
+			// update buildable stats
+			if ( attacker->s.eType == ET_BUILDABLE && attacker->health > 0 )
+			{
+				attacker->buildableStatsTotal += loss;
 			}
 		}
 
@@ -1408,6 +1419,12 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			}
 
 			targ->die( targ, inflictor, attacker, take, mod );
+
+			// update buildable stats
+			if ( attacker->s.eType == ET_BUILDABLE && attacker->health > 0 )
+			{
+				attacker->buildableStatsCount++;
+			}
 
 			if(!targ->client) //call the onDie event only on non living entities
 			{

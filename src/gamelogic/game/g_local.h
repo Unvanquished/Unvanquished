@@ -328,6 +328,13 @@ struct gentity_s
 	int       waterlevel;
 
 	/*
+	 * Buildable statistics
+	 */
+	int       buildableStatsCount;  // players spawned/healed/killed, posion given
+	int       buildableStatsTotal;  // total damage/healing done
+	float     buildableStatsTotalF; // total resources mined
+
+	/*
 	 * variables that got randomly semantically abused by everyone
 	 * so now we rather name them to indicate the fact, that we cannot imply any meaning by the name
 	 *

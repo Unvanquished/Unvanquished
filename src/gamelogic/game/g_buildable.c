@@ -1527,6 +1527,7 @@ Think function for the Alien Leech.
 void ALeech_Think( gentity_t *self )
 {
 	qboolean active, lastThinkActive;
+	float    resources;
 
 	AGeneric_Think( self );
 
@@ -1543,7 +1544,9 @@ void ALeech_Think( gentity_t *self )
 
 	if ( active )
 	{
-		G_ModifyBuildPoints( TEAM_ALIENS, self->s.weapon / 60000.0f );
+		resources = self->s.weapon / 60000.0f;
+		G_ModifyBuildPoints( TEAM_ALIENS, resources );
+		self->buildableStatsTotalF += resources;
 	}
 }
 
@@ -1718,6 +1721,11 @@ void ABooster_Touch( gentity_t *self, gentity_t *other, trace_t *trace )
 	if ( other->flags & FL_NOTARGET )
 	{
 		return; // notarget cancels even beneficial effects?
+	}
+
+	if ( level.time - client->boostedTime > BOOST_TIME )
+	{
+		self->buildableStatsCount++;
 	}
 
 	client->ps.stats[ STAT_STATE ] |= SS_BOOSTED;
@@ -2537,6 +2545,8 @@ void HMedistat_Think( gentity_t *self )
 		{
 			player->health++;
 
+			self->buildableStatsTotal++;
+
 			// fully healed
 			if ( player->health == client->ps.stats[ STAT_MAX_HEALTH ] )
 			{
@@ -2551,6 +2561,8 @@ void HMedistat_Think( gentity_t *self )
 				{
 					BG_AddUpgradeToInventory( UP_MEDKIT, client->ps.stats );
 				}
+
+				self->buildableStatsCount++;
 			}
 		}
 	}
@@ -2970,6 +2982,7 @@ Think function for the Human Drill.
 void HDrill_Think( gentity_t *self )
 {
 	qboolean active, lastThinkActive;
+	float    resources;
 
 	HGeneric_Think( self );
 
@@ -2986,7 +2999,9 @@ void HDrill_Think( gentity_t *self )
 
 	if ( active )
 	{
-		G_ModifyBuildPoints( TEAM_HUMANS, self->s.weapon / 60000.0f );
+		resources = self->s.weapon / 60000.0f;
+		G_ModifyBuildPoints( TEAM_HUMANS, resources );
+		self->buildableStatsTotalF += resources;
 	}
 
 	G_IdlePowerState( self );
