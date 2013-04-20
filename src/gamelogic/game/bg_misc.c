@@ -517,8 +517,9 @@ int BG_ClassCanEvolveFromTo( class_t from, class_t to, int credits, int stage )
 	// classes w/o a cost are for spawning only
 	if ( toCost == 0 )
 	{
-		// granger may evolve into dretch for free
-		if ( ( from == PCL_ALIEN_BUILDER0 || from == PCL_ALIEN_BUILDER0_UPG ) && to == PCL_ALIEN_LEVEL0 )
+		// (adv.) granger may evolve into adv. granger or dretch at no cost
+		if ( ( from == PCL_ALIEN_BUILDER0 || from == PCL_ALIEN_BUILDER0_UPG ) &&
+		     ( to == PCL_ALIEN_BUILDER0_UPG || to == PCL_ALIEN_LEVEL0 ) )
 		{
 			return 0;
 		}
