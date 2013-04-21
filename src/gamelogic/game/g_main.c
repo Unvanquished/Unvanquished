@@ -1676,13 +1676,24 @@ void G_CalculateStages( void )
 		trap_Cvar_Set( stageCVar, va( "%d", newStage ) );
 		trap_SetConfigstring( CSStages, va( "%d %d", newStage, nextThreshold ) );
 
-		// give extra confidence on stageup, so the new stage won't be lost in the next g_minimumStageTime seconds
-		if ( newStage > stage && g_minimumStageTime.integer > 0 && g_confidenceHalfLife.integer > 0 )
+		if ( g_minimumStageTime.integer > 0 && g_confidenceHalfLife.integer > 0 )
 		{
-			// ln(2) ~= 0.6931472
-			bonus = prevThreshold *
-			        ( exp( ( 0.6931472 * g_minimumStageTime.value ) / ( g_confidenceHalfLife.value * 60.0f ) ) - 1.0f );
-			G_AddConfidence( team, CONFIDENCE_GENERAL, CONF_REAS_STAGEUP, CONF_QUAL_NONE, bonus, NULL );
+			// give extra confidence on stageup, so the new stage won't be lost in the next g_minimumStageTime seconds
+			if ( newStage > stage )
+			{
+				// ln(2) ~= 0.6931472
+				bonus = prevThreshold *
+				        ( exp( ( 0.6931472f * g_minimumStageTime.value ) / ( g_confidenceHalfLife.value * 60.0f ) ) - 1.0f );
+				G_AddConfidence( team, CONFIDENCE_GENERAL, CONF_REAS_STAGEUP, CONF_QUAL_NONE, bonus, NULL );
+			}
+			// remove confidence on losing a stage, as if the team did nothing for g_minimumStageTime seconds
+			else
+			{
+				// ln(2) ~= 0.6931472
+				bonus = -nextThreshold * ( 1.0f -
+				        ( exp( ( -0.6931472f * g_minimumStageTime.value ) / ( g_confidenceHalfLife.value * 60.0f ) ) ) );
+				G_AddConfidence( team, CONFIDENCE_GENERAL, CONF_REAS_STAGEDOWN, CONF_QUAL_NONE, bonus, NULL );
+			}
 		}
 
 		// notify stage sensors of stageup

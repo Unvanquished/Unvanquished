@@ -1695,13 +1695,20 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 
 		if ( !foundHealthSource )
 		{
-			// Exponentially decrease healing rate when not on creep. ln(2) ~= 0.6931472
-			modifier = exp( ( 0.6931472f / ( 1000.0f * g_alienOffCreepRegenHalfLife.value ) ) * ( self->creepTime - level.time ) );
-
-			// Prevent possible overflow/division by zero and keep a minimum heal rate
-			if ( modifier < 0.1f )
+			if ( g_alienOffCreepRegenHalfLife.value < 1 )
 			{
-				modifier = 0.1f;
+				modifier = ALIEN_REGEN_NOCREEP_MOD;
+			}
+			else
+			{
+				// Exponentially decrease healing rate when not on creep. ln(2) ~= 0.6931472
+				modifier = exp( ( 0.6931472f / ( 1000.0f * g_alienOffCreepRegenHalfLife.value ) ) * ( self->creepTime - level.time ) );
+
+				// Prevent possible overflow/division by zero and keep a minimum heal rate
+				if ( modifier < 0.1f )
+				{
+					modifier = 0.1f;
+				}
 			}
 		}
 		else if ( foundHealthSource & SS_HEALING_3X )

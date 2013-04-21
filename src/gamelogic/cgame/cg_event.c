@@ -773,6 +773,7 @@ Notify player of generated confidence
 */
 void CG_Confidence( entityState_t *es )
 {
+	const char *message;
 	const char *reason;
 	const char *qualifier;
 
@@ -780,6 +781,10 @@ void CG_Confidence( entityState_t *es )
 	{
 		case CONF_REAS_STAGEUP:
 			reason = _("Staging up");
+			break;
+
+		case CONF_REAS_STAGEDOWN:
+			reason = _("Staging down");
 			break;
 
 		case CONF_REAS_KILLING:
@@ -836,7 +841,16 @@ void CG_Confidence( entityState_t *es )
 			qualifier = "";
 	}
 
-	CG_Printf( _("%s%s earned your team %.1f confidence\n"), reason, qualifier, es->otherEntityNum2 / 10.0f );
+	if ( es->groundEntityNum ) // amount is negative
+	{
+		message = _("%s%s " S_COLOR_RED "lost" S_COLOR_WHITE " your team %.1f confidence\n");
+	}
+	else
+	{
+		message = _("%s%s " S_COLOR_GREEN "earned" S_COLOR_WHITE " your team %.1f confidence\n");
+	}
+
+	CG_Printf( message, reason, qualifier, es->otherEntityNum2 / 10.0f );
 }
 
 /*
