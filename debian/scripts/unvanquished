@@ -3,11 +3,19 @@ cd /usr/lib/games/unvanquished
 unvanquished-migrate-profile
 
 # Assumptions:
-# - if there's a URI, it's the first parameter
+# - if there's a URI, it's the first parameter (after any debug options)
 # - pipe file presence == Unvanquished is running
 # - the pipe file's name hasn't been changed
 
 UNVPIPE=~/.Unvanquished/main/pipe
+
+unset RUNGDB
+if test "$1" = --gdb; then
+  shift
+  if test -f /usr/bin/gdb; then
+    RUNGDB='gdb --args'
+  fi
+fi
 
 echo "$1" | LANG=C grep -q '^unv://\(\[[0-9A-Fa-f:]\+\]\|[-.A-Za-z0-9]\+\)\(:[0-9]\+\)\?/\?$'
 NOT_URI=$?
@@ -33,4 +41,4 @@ else
   fi
 fi
 
-exec ./unvanquished +set fs_libpath "$PWD" +set fs_basepath /var/games/unvanquished +$PRECMD"$@"
+exec $RUNGDB ./unvanquished +set fs_libpath "$PWD" +set fs_basepath /var/games/unvanquished +$PRECMD"$@"
