@@ -2473,7 +2473,7 @@ void HMedistat_Think( gentity_t *self )
 		client = player->client;
 
 		// only react to humans
-		if ( !client || !client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+		if ( !client || client->ps.stats[ STAT_TEAM ] != TEAM_HUMANS )
 		{
 			continue;
 		}
