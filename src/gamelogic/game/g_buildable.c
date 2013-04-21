@@ -2485,7 +2485,7 @@ void HMedistat_Think( gentity_t *self )
 		client = player->client;
 
 		// only react to humans
-		if ( !client || !client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+		if ( !client || client->ps.stats[ STAT_TEAM ] != TEAM_HUMANS )
 		{
 			continue;
 		}
@@ -2527,7 +2527,7 @@ void HMedistat_Think( gentity_t *self )
 	}
 
 	// if we have a target, heal it
-	if ( self->target )
+	if ( self->target && self->target->client )
 	{
 		player = self->target;
 		client = player->client;
