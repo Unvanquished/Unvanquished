@@ -837,6 +837,7 @@ void G_AddConfidence( team_t team, confidence_t type, confidence_reason_t reason
 	{
 		event->s.eventParm = reason;
 		event->s.otherEntityNum = qualifier;
-		event->s.otherEntityNum2 = ( int )( amount * 10.0f );
+		event->s.otherEntityNum2 = abs( ( int )( amount * 10.0f ) );
+		event->s.groundEntityNum = amount < 0 ? qtrue : qfalse;
 	}
 }
