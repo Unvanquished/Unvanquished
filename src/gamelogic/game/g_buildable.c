@@ -2515,7 +2515,7 @@ void HMedistat_Think( gentity_t *self )
 	}
 
 	// if we have a target, heal it
-	if ( self->target )
+	if ( self->target && self->target->client )
 	{
 		player = self->target;
 		client = player->client;
