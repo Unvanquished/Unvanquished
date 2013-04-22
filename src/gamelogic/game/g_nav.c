@@ -642,19 +642,8 @@ qboolean BotMoveToGoal( gentity_t *self )
 			VectorNormalize( dir );
 		}
 
-		if ( !BotAvoidObstacles( self, dir ) )
-		{
-			BotSeek( self, dir );
-		}
-		else
-		{
-			vec3_t pos;
-			BG_GetClientViewOrigin( &self->client->ps, pos );
-			VectorMA( pos, 100, dir, pos );
-			BotSlowAim( self, pos, 0.5f );
-			BotAimAtLocation( self, pos );
-			BotMoveInDir( self, MOVE_FORWARD );
-		}
+		BotAvoidObstacles( self, dir );
+		BotSeek( self, dir );
 
 		//dont sprint or dodge if we dont have enough stamina and are about to slow
 		if ( self->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS && self->client->ps.stats[STAT_STAMINA] < STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE )
