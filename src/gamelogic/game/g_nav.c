@@ -624,17 +624,17 @@ Global Bot Navigation
 
 qboolean BotMoveToGoal( gentity_t *self )
 {
-	vec3_t pos;
 	vec3_t dir;
+	botRouteTarget_t rtarget;
 
 	if ( !( self && self->client ) )
 	{
 		return qfalse;
 	}
 
-	BotGetTargetPos( self->botMind->goal, pos );
+	BotTargetToRouteTarget( self, self->botMind->goal, &rtarget );
 
-	if ( trap_BotUpdatePath( self->s.number, pos, dir, &self->botMind->directPathToGoal ) )
+	if ( trap_BotUpdatePath( self->s.number, &rtarget, dir, &self->botMind->directPathToGoal ) )
 	{
 		if ( dir[ 2 ] < 0 )
 		{
