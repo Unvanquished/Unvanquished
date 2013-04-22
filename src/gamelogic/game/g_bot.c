@@ -1261,11 +1261,25 @@ void BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget
 	{
 		VectorCopy( target.ent->r.mins, mins );
 		VectorCopy( target.ent->r.maxs, maxs );
+
+		if ( !BotTargetIsPlayer( target ) )
+		{
+			VectorCopy( mins, routeTarget->mins );
+			VectorCopy( maxs, routeTarget->maxs );
+		}
+		else
+		{
+			VectorSet( routeTarget->mins, 0, 0, 0 );
+			VectorSet( routeTarget->maxs, 0, 0, 0 );
+		}
 	}
 	else
 	{
+		// point target
 		VectorSet( maxs, 640, 640, 96 );
 		VectorSet( mins, -640, -640, 96 );
+		VectorSet( routeTarget->mins, 0, 0, 0 );
+		VectorSet( routeTarget->maxs, 0, 0, 0 );
 	}
 
 	for ( i = 0; i < 3; i++ )
@@ -1275,19 +1289,19 @@ void BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget
 	
 	for ( i = 0; i < 3; i++ )
 	{
-		routeTarget->extents[ i ] = MAX( mins[ i ], maxs[ i ] );
+		routeTarget->polyExtents[ i ] = MAX( mins[ i ], maxs[ i ] );
 	}
 
 	BotGetTargetPos( target, routeTarget->pos );
 
 	// move center a bit lower so we don't get polys above the object 
 	// and get polys below the object on a slope
-	routeTarget->pos[ 2 ] -= routeTarget->extents[ 2 ] / 2;
+	routeTarget->pos[ 2 ] -= routeTarget->polyExtents[ 2 ] / 2;
 
 	// increase extents a little to account for obstacles cutting into the navmesh
 	// also accounts for navmesh erosion at mesh boundrys
-	routeTarget->extents[ 0 ] += self->r.maxs[ 0 ] + 10;
-	routeTarget->extents[ 1 ] += self->r.maxs[ 1 ] + 10;
+	routeTarget->polyExtents[ 0 ] += self->r.maxs[ 0 ] + 10;
+	routeTarget->polyExtents[ 1 ] += self->r.maxs[ 1 ] + 10;
 }
 
 team_t BotGetEntityTeam( gentity_t *ent )

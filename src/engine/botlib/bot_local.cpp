@@ -92,7 +92,7 @@ void FindWaypoints( Bot_t *bot, float *corners, unsigned char *cornerFlags, dtPo
 	*numCorners = bot->corridor.findCorners( corners, cornerFlags, cornerPolys, maxCorners, bot->nav->query, &bot->nav->filter );
 }
 
-qboolean PointInPoly( Bot_t *bot, dtPolyRef ref, const vec3_t point )
+qboolean PointInPolyExtents( Bot_t *bot, dtPolyRef ref, const vec3_t point, const vec3_t mins, const vec3_t maxs )
 {
 	vec3_t closest;
 
@@ -104,6 +104,7 @@ qboolean PointInPoly( Bot_t *bot, dtPolyRef ref, const vec3_t point )
 	// use the bot's bbox as an epsilon because the navmesh is always at least that far from a boundry
 	sharedEntity_t *ent = SV_GentityNum( bot->clientNum );
 	float maxRad = MAX( ent->r.maxs[ 0 ], ent->r.maxs[ 1 ] );
+	maxRad += MAX( maxs[ 0 ], maxs[ 1 ] );
 
 	if ( fabsf( point[ 0 ] - closest[ 0 ] ) > maxRad )
 	{
@@ -116,6 +117,11 @@ qboolean PointInPoly( Bot_t *bot, dtPolyRef ref, const vec3_t point )
 	}
 
 	return qtrue;
+}
+
+qboolean PointInPoly( Bot_t *bot, dtPolyRef ref, const vec3_t point )
+{
+	return PointInPolyExtents( bot, ref, point, vec3_origin, vec3_origin );
 }
 
 qboolean BotFindNearestPoly( Bot_t *bot, const vec3_t coord, dtPolyRef *nearestPoly, vec3_t nearPoint )
@@ -166,7 +172,7 @@ unsigned int FindRoute( Bot_t *bot, const vec3_t s, const botRouteTarget_t *rtar
 		return ROUTE_FAILED;
 	}
 
-	status = bot->nav->query->findNearestPoly( rtarget->pos, rtarget->extents, 
+	status = bot->nav->query->findNearestPoly( rtarget->pos, rtarget->polyExtents, 
 	                                           &bot->nav->filter, &endRef, end ); 
 
 	if ( dtStatusFailed( status ) || !endRef )
