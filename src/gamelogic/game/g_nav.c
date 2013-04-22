@@ -549,17 +549,17 @@ Global Bot Navigation
 
 qboolean BotMoveToGoal( gentity_t *self )
 {
-	vec3_t pos;
 	vec3_t dir;
+	botRouteTarget_t rtarget;
 
 	if ( !( self && self->client ) )
 	{
 		return qfalse;
 	}
 
-	BotGetTargetPos( self->botMind->goal, pos );
+	BotTargetToRouteTarget( self, self->botMind->goal, &rtarget );
 
-	if ( trap_BotUpdatePath( self->s.number, pos, dir, &self->botMind->directPathToGoal ) )
+	if ( trap_BotUpdatePath( self->s.number, &rtarget, dir, &self->botMind->directPathToGoal ) )
 	{
 		if ( dir[ 2 ] < 0 )
 		{
@@ -567,19 +567,8 @@ qboolean BotMoveToGoal( gentity_t *self )
 			VectorNormalize( dir );
 		}
 
-		if ( !BotAvoidObstacles( self, dir ) )
-		{
-			BotSeek( self, dir );
-		}
-		else
-		{
-			vec3_t pos;
-			BG_GetClientViewOrigin( &self->client->ps, pos );
-			VectorMA( pos, 100, dir, pos );
-			BotSlowAim( self, pos, 0.5f );
-			BotAimAtLocation( self, pos );
-			BotMoveInDir( self, MOVE_FORWARD );
-		}
+		BotAvoidObstacles( self, dir );
+		BotSeek( self, dir );
 
 		//dont sprint if we dont have enough stamina and are about to slow
 		if ( self->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS && self->client->ps.stats[STAT_STAMINA] < STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE )

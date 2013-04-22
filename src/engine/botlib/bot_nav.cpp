@@ -136,12 +136,8 @@ extern "C" unsigned int BotFindRouteExt( int botClientNum, const botRouteTarget_
 	rtarget = *target;
 
 	VectorCopy( SV_GentityNum( botClientNum )->s.origin, start );
-	quake2recast( rtarget.pos );
-	quake2recast( rtarget.extents );
-	rtarget.extents[ 0 ] = fabsf( rtarget.extents[ 0 ] );
-	rtarget.extents[ 1 ] = fabsf( rtarget.extents[ 1 ] );
-	rtarget.extents[ 2 ] = fabsf( rtarget.extents[ 2 ] );
 	quake2recast( start );
+	quake2recastTarget( &rtarget );
 	return FindRoute( bot, start, &rtarget );
 }
 
@@ -158,15 +154,9 @@ extern "C" qboolean BotUpdateCorridor( int botClientNum, const botRouteTarget_t 
 	quake2recast( spos );
 
 	rtarget = *target;
-	quake2recast( rtarget.pos );
+	quake2recastTarget( &rtarget );
+
 	VectorCopy( rtarget.pos, epos );
-
-	quake2recast( rtarget.extents );
-
-	for ( int i = 0; i < 3; i++ )
-	{
-		rtarget.extents[ i ] = fabsf( rtarget.extents[ i ] );
-	}
 
 	if ( directPathToGoal )
 	{
@@ -205,7 +195,7 @@ extern "C" qboolean BotUpdateCorridor( int botClientNum, const botRouteTarget_t 
 		bot->needReplan = qtrue;
 	}
 
-	if ( !PointInPoly( bot, lastPoly, epos ) )
+	if ( !PointInPolyExtents( bot, lastPoly, epos, rtarget.mins, rtarget.maxs ) )
 	{
 		bot->needReplan = qtrue;
 	}
@@ -282,18 +272,11 @@ extern "C" qboolean BotNavTrace( int botClientNum, botTrace_t *trace, const vec3
 
 extern "C" void BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *obstacleHandle )
 {
-	vec3_t p1, p2;
 	vec3_t bmin, bmax;
-	VectorCopy( mins, p1 );
-	VectorCopy( maxs, p2 );
+	VectorCopy( mins, bmin );
+	VectorCopy( maxs, bmax );
 
-	quake2recast( p1 );
-	quake2recast( p2 );
-
-	// bounds do not convert correctly when using quake2recast, so recalculate them
-	ClearBounds( bmin, bmax );
-	AddPointToBounds( p1, bmin, bmax );
-	AddPointToBounds( p2, bmin, bmax );
+	quake2recastExtents( bmin, bmax );
 
 	for ( int i = 0; i < numNavData; i++ )
 	{
