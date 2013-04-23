@@ -162,6 +162,13 @@ static AIGenericNode_t *ReadConditionNode( pc_token_list **tokenlist )
 	pc_token_list *current = *tokenlist;
 	AIConditionNode_t *condition;
 
+	if ( Q_stricmp( current->token.string, "condition" ) )
+	{
+		BotDPrintf( S_COLOR_RED "ERROR: ReadConditionNode called on non-condition node\n" );
+	}
+
+	current = current->next;
+
 	condition = allocNode( AIConditionNode_t );
 	BotInitNode( CONDITION_NODE, BotConditionNode, condition );
 
@@ -358,6 +365,13 @@ static AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
 
 	AIGenericNode_t *node;
 
+	if ( Q_stricmp( current->token.string, "action" ) )
+	{
+		BotDPrintf( S_COLOR_RED "ERROR: ReadActionNode called on non-action node\n" );
+	}
+
+	current = current->next;
+
 	if ( !Q_stricmp( current->token.string, "heal" ) )
 	{
 		node = allocNode( AIGenericNode_t );
@@ -451,6 +465,13 @@ static AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist )
 	AINodeList_t *list;
 	pc_token_list *current = *tokenlist;
 
+	if ( Q_stricmp( current->token.string, "selector" ) )
+	{
+		BotDPrintf( S_COLOR_RED "ERROR: ReadNodeList called on non-list node\n" );
+	}
+
+	current = current->next;
+
 	list = allocNode( AINodeList_t );
 
 	if ( !Q_stricmp( current->token.string, "sequence" ) )
@@ -517,17 +538,14 @@ static AIGenericNode_t *ReadNode( pc_token_list **tokenlist )
 
 	if ( !Q_stricmp( current->token.string, "selector" ) )
 	{
-		current = current->next;
 		node = ReadNodeList( &current );
 	}
 	else if ( !Q_stricmp( current->token.string, "action" ) )
 	{
-		current = current->next;
 		node = ReadActionNode( &current );
 	}
 	else if ( !Q_stricmp( current->token.string, "condition" ) )
 	{
-		current = current->next;
 		node = ReadConditionNode( &current );
 	}
 	else
