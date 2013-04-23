@@ -27,8 +27,6 @@ Behavior Tree Creation
 =======================
 */
 
-AITreeList_t treeList;
-
 static void BotInitNode( AINode_t type, AINodeRunner func, void *node )
 {
 	AIGenericNode_t *n = ( AIGenericNode_t * ) node;
@@ -700,7 +698,7 @@ AIBehaviorTree_t * ReadBehaviorTree( const char *name, AITreeList_t *list )
 
 	if ( tree )
 	{
-		AddTreeToList( &treeList, tree );
+		AddTreeToList( list, tree );
 	}
 
 	FreeTokenList( tokenlist );
