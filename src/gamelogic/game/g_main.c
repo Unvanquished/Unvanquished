@@ -1457,10 +1457,17 @@ G_CalculateStageThresholds
 */
 void G_CalculateStageThresholds( void )
 {
-	gentity_t *player;
-	gclient_t *client;
-	int       playerNum;
-	float     modifier;
+	gentity_t    *player;
+	gclient_t    *client;
+	int          playerNum;
+	float        modifier;
+
+	static int   nextCalculation = 0;
+
+	if ( level.time < nextCalculation )
+	{
+		return;
+	}
 
 	// ln(2) ~= 0.6931472
 	modifier = exp( ( -0.6931472f * level.time ) / ( g_stageThresholdHalfLife.value * 60000.0f ) );
@@ -1496,6 +1503,8 @@ void G_CalculateStageThresholds( void )
 				client->ps.persistant[ PERS_THRESHOLD_STAGE3 ] = 0;
 		}
 	}
+
+	nextCalculation = level.time + 1000;
 }
 
 /*
