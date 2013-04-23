@@ -465,7 +465,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define DEFAULT_STAGE2_BASE_THRESHOLD      "100"
 #define DEFAULT_STAGE3_BASE_THRESHOLD      "200"
 #define DEFAULT_STAGE2_INC_PER_PLAYER      "10"
-#define DEFAULT_STAGE3_INC_PER_PLAYER      "10"
+#define DEFAULT_STAGE3_INC_PER_PLAYER      "20"
 #define DEFAULT_STAGE_THRESHOLD_HALF_LIFE  "30"
 #define DEFAULT_ALIEN_MAX_STAGE            "2"
 #define DEFAULT_HUMAN_MAX_STAGE            "2"
