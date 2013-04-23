@@ -89,8 +89,8 @@ enum
   CS_BOTINFO,
   CS_CLIENTS_READY,
 
-  CS_ALIEN_STAGES,
-  CS_HUMAN_STAGES,
+  CS_ALIEN_STAGE,
+  CS_HUMAN_STAGE,
 
   CS_MODELS,
   CS_SOUNDS = CS_MODELS + MAX_MODELS,
@@ -293,8 +293,10 @@ typedef enum
   PERS_NEWWEAPON, // weapon to switch to
   PERS_BP,
   PERS_MARKEDBP,
-  PERS_MINERATE // level wide base mine rate. TODO: calculate clientside
-  // netcode has space for 2 more
+  PERS_MINERATE, // level wide base mine rate. TODO: calculate clientside
+  PERS_THRESHOLD_STAGE2,
+  PERS_THRESHOLD_STAGE3
+  // netcode has space for 0 more. TODO: extend
 } persEnum_t;
 
 #define PS_WALLCLIMBINGFOLLOW 0x00000001

@@ -800,6 +800,9 @@ typedef struct
 	int              humanStage2Time;
 	int              humanStage3Time;
 
+	int              stage2Threshold;
+	int              stage3Threshold;
+
 	team_t           unconditionalWin;
 
 	qboolean         alienTeamLocked;
@@ -1249,17 +1252,17 @@ extern  vmCvar_t g_initialMineRate;
 extern  vmCvar_t g_initialBuildPoints;
 extern  vmCvar_t g_mineRateHalfLife;
 
-extern vmCvar_t  g_alienOffCreepRegenHalfLife;
-
-extern  vmCvar_t g_humanStage;
+extern  vmCvar_t g_confidenceHalfLife;
+extern  vmCvar_t g_minimumStageTime;
+extern  vmCvar_t g_initialStage2Threshold;
+extern  vmCvar_t g_initialStage3Threshold;
+extern  vmCvar_t g_stageThresholdHalfLife;
 extern  vmCvar_t g_humanMaxStage;
-extern  vmCvar_t g_humanStage2Threshold;
-extern  vmCvar_t g_humanStage3Threshold;
-
-extern  vmCvar_t g_alienStage;
 extern  vmCvar_t g_alienMaxStage;
-extern  vmCvar_t g_alienStage2Threshold;
-extern  vmCvar_t g_alienStage3Threshold;
+extern  vmCvar_t g_humanStage;
+extern  vmCvar_t g_alienStage;
+
+extern  vmCvar_t  g_alienOffCreepRegenHalfLife;
 
 extern  vmCvar_t g_teamImbalanceWarnings;
 extern  vmCvar_t g_freeFundPeriod;

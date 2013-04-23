@@ -215,8 +215,8 @@ void G_UpdateTeamConfigStrings( void )
 	trap_SetConfigstringRestrictions( CS_VOTE_YES + TEAM_HUMANS,    &alienTeam );
 	trap_SetConfigstringRestrictions( CS_VOTE_NO + TEAM_HUMANS,     &alienTeam );
 
-	trap_SetConfigstringRestrictions( CS_ALIEN_STAGES, &humanTeam );
-	trap_SetConfigstringRestrictions( CS_HUMAN_STAGES, &alienTeam );
+	trap_SetConfigstringRestrictions( CS_ALIEN_STAGE, &humanTeam );
+	trap_SetConfigstringRestrictions( CS_HUMAN_STAGE, &alienTeam );
 }
 
 /*

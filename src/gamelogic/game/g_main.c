@@ -100,18 +100,15 @@ vmCvar_t           g_mineRateHalfLife;
 
 vmCvar_t           g_confidenceHalfLife;
 vmCvar_t           g_minimumStageTime;
+vmCvar_t           g_initialStage2Threshold;
+vmCvar_t           g_initialStage3Threshold;
+vmCvar_t           g_stageThresholdHalfLife;
+vmCvar_t           g_humanMaxStage;
+vmCvar_t           g_alienMaxStage;
+vmCvar_t           g_humanStage;
+vmCvar_t           g_alienStage;
 
 vmCvar_t           g_alienOffCreepRegenHalfLife;
-
-vmCvar_t           g_humanStage;
-vmCvar_t           g_humanMaxStage;
-vmCvar_t           g_humanStage2Threshold;
-vmCvar_t           g_humanStage3Threshold;
-
-vmCvar_t           g_alienStage;
-vmCvar_t           g_alienMaxStage;
-vmCvar_t           g_alienStage2Threshold;
-vmCvar_t           g_alienStage3Threshold;
 
 vmCvar_t           g_teamImbalanceWarnings;
 vmCvar_t           g_freeFundPeriod;
@@ -268,16 +265,13 @@ static cvarTable_t gameCvarTable[] =
 
 	{ &g_confidenceHalfLife,          "g_confidenceHalfLife",          DEFAULT_CONFIDENCE_HALF_LIFE,       CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_minimumStageTime,            "g_minimumStageTime",            DEFAULT_MINIMUM_STAGE_TIME,         CVAR_ARCHIVE,                                    0, qfalse           },
-
-	{ &g_humanStage,                  "g_humanStage",                  "0",                                0,                                               0, qfalse           },
+	{ &g_initialStage2Threshold,      "g_initialStage2Threshold",      DEFAULT_INITIAL_STAGE2_THRESHOLD,   CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_initialStage3Threshold,      "g_initialStage3Threshold",      DEFAULT_INITIAL_STAGE3_THRESHOLD,   CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_stageThresholdHalfLife,      "g_stageThresholdHalfLife",      DEFAULT_STAGE_THRESHOLD_HALF_LIFE,  CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_humanMaxStage,               "g_humanMaxStage",               DEFAULT_HUMAN_MAX_STAGE,            0,                                               0, qfalse, cv_humanMaxStage},
-	{ &g_humanStage2Threshold,        "g_humanStage2Threshold",        DEFAULT_HUMAN_STAGE2_THRESHOLD,     0,                                               0, qfalse           },
-	{ &g_humanStage3Threshold,        "g_humanStage3Threshold",        DEFAULT_HUMAN_STAGE3_THRESHOLD,     0,                                               0, qfalse           },
-
-	{ &g_alienStage,                  "g_alienStage",                  "0",                                0,                                               0, qfalse           },
 	{ &g_alienMaxStage,               "g_alienMaxStage",               DEFAULT_ALIEN_MAX_STAGE,            0,                                               0, qfalse, cv_alienMaxStage},
-	{ &g_alienStage2Threshold,        "g_alienStage2Threshold",        DEFAULT_ALIEN_STAGE2_THRESHOLD,     0,                                               0, qfalse           },
-	{ &g_alienStage3Threshold,        "g_alienStage3Threshold",        DEFAULT_ALIEN_STAGE3_THRESHOLD,     0,                                               0, qfalse           },
+	{ &g_humanStage,                  "g_humanStage",                  "0",                                0,                                               0, qfalse           },
+	{ &g_alienStage,                  "g_alienStage",                  "0",                                0,                                               0, qfalse           },
 
 	{ &g_alienOffCreepRegenHalfLife,  "g_alienOffCreepRegenHalfLife",  "5",                                CVAR_ARCHIVE,                                    0, qfalse           },
 
@@ -358,6 +352,7 @@ void               CheckExitRules( void );
 void               G_CountSpawns( void );
 void               G_CalculateMineRate( void );
 void               G_DecreaseConfidence( void );
+void               G_CalculateStageThresholds( void );
 
 /*
 ================
@@ -1457,6 +1452,54 @@ void G_DecreaseConfidence( void )
 
 /*
 ============
+G_CalculateStageThresholds
+============
+*/
+void G_CalculateStageThresholds( void )
+{
+	gentity_t *player;
+	gclient_t *client;
+	int       playerNum;
+	float     modifier;
+
+	// ln(2) ~= 0.6931472
+	modifier = exp( ( -0.6931472f * level.time ) / ( g_stageThresholdHalfLife.value * 60000.0f ) );
+
+	level.stage2Threshold = ( int )( g_initialStage2Threshold.value * modifier );
+	level.stage3Threshold = ( int )( g_initialStage3Threshold.value * modifier );
+
+	// send to clients
+	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
+	{
+		player = &g_entities[ playerNum ];
+		client = player->client;
+
+		if ( !client )
+		{
+			continue;
+		}
+
+		switch ( client->pers.teamSelection )
+		{
+			case TEAM_ALIENS:
+				client->ps.persistant[ PERS_THRESHOLD_STAGE2 ] = ( short )( level.stage2Threshold );
+				client->ps.persistant[ PERS_THRESHOLD_STAGE3 ] = ( short )( level.stage3Threshold );
+				break;
+
+			case TEAM_HUMANS:
+				client->ps.persistant[ PERS_THRESHOLD_STAGE2 ] = ( short )( level.stage2Threshold );
+				client->ps.persistant[ PERS_THRESHOLD_STAGE3 ] = ( short )( level.stage3Threshold );
+				break;
+
+			default:
+				client->ps.persistant[ PERS_THRESHOLD_STAGE2 ] = 0;
+				client->ps.persistant[ PERS_THRESHOLD_STAGE3 ] = 0;
+		}
+	}
+}
+
+/*
+============
 G_CalculateStages
 ============
 */
@@ -1471,7 +1514,7 @@ void G_CalculateStages( void )
 	           S3Threshold,
 	           *S2Time,
 	           *S3Time,
-	           CSStages,
+	           CSStage,
 	           newStage,
 	           nextThreshold,
 	           prevThreshold;
@@ -1486,6 +1529,9 @@ void G_CalculateStages( void )
 		return;
 	}
 
+	S2Threshold = level.stage2Threshold;
+	S3Threshold = level.stage3Threshold;
+
 	for ( team = NUM_TEAMS - 1; team > TEAM_NONE; team-- )
 	{
 		switch ( team )
@@ -1495,26 +1541,22 @@ void G_CalculateStages( void )
 				stage          = g_alienStage.integer;
 				stageModCount  = g_alienStage.modificationCount;
 				maxStage       = g_alienMaxStage.integer;
-				S2Threshold    = g_alienStage2Threshold.integer;
-				S3Threshold    = g_alienStage3Threshold.integer;
 				S2Time         = &level.alienStage2Time;
 				S3Time         = &level.alienStage3Time;
 				stageCVar      = "g_alienStage";
 				teamName       = "Aliens";
-				CSStages       = CS_ALIEN_STAGES;
+				CSStage        = CS_ALIEN_STAGE;
 				break;
 			case TEAM_HUMANS:
 				confidence     = ( int )level.humanConfidence[ CONFIDENCE_SUM ];
 				stage          = g_humanStage.integer;
 				stageModCount  = g_humanStage.modificationCount;
 				maxStage       = g_humanMaxStage.integer;
-				S2Threshold    = g_humanStage2Threshold.integer;
-				S3Threshold    = g_humanStage3Threshold.integer;
 				S2Time         = &level.humanStage2Time;
 				S3Time         = &level.humanStage3Time;
 				stageCVar      = "g_humanStage";
 				teamName       = "Humans";
-				CSStages       = CS_HUMAN_STAGES;
+				CSStage        = CS_HUMAN_STAGE;
 				break;
 			default:
 				continue;
@@ -1567,7 +1609,7 @@ void G_CalculateStages( void )
 		}
 		else if ( nextCalculation == 0 )
 		{
-			trap_SetConfigstring( CSStages, va( "%d %d", S1, S2Threshold ) );
+			trap_SetConfigstring( CSStage, va( "%d", S1 ) );
 			continue;
 		}
 		else
@@ -1576,7 +1618,7 @@ void G_CalculateStages( void )
 		}
 
 		trap_Cvar_Set( stageCVar, va( "%d", newStage ) );
-		trap_SetConfigstring( CSStages, va( "%d %d", newStage, nextThreshold ) );
+		trap_SetConfigstring( CSStage, va( "%d", newStage ) );
 
 		if ( g_minimumStageTime.integer > 0 && g_confidenceHalfLife.integer > 0 )
 		{
@@ -2843,6 +2885,7 @@ void G_RunFrame( int levelTime )
 	G_CountSpawns();
 	G_CalculateMineRate();
 	G_DecreaseConfidence();
+	G_CalculateStageThresholds();
 	G_CalculateStages();
 	G_SpawnClients( TEAM_ALIENS );
 	G_SpawnClients( TEAM_HUMANS );

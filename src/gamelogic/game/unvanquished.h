@@ -458,19 +458,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define DEFAULT_INITIAL_MINE_RATE          "10"  // in (BP/min)/RGS
 #define DEFAULT_MINE_RATE_HALF_LIFE        "15"  // in min
 
-// confidence
+// confidence & stages
 #define CONFIDENCE_PER_CREDIT              0.01f // used to award confidence based on credit rewards
 #define DEFAULT_CONFIDENCE_HALF_LIFE       "5"   // in min
 #define DEFAULT_MINIMUM_STAGE_TIME         "60"  // in s. how long to keep a new stage at minimum
-
-// alien stages
-#define DEFAULT_ALIEN_STAGE2_THRESHOLD     "150"
-#define DEFAULT_ALIEN_STAGE3_THRESHOLD     "300"
+#define DEFAULT_INITIAL_STAGE2_THRESHOLD   "200"
+#define DEFAULT_INITIAL_STAGE3_THRESHOLD   "400"
+#define DEFAULT_STAGE_THRESHOLD_HALF_LIFE  "30"
 #define DEFAULT_ALIEN_MAX_STAGE            "2"
-
-// human stages
-#define DEFAULT_HUMAN_STAGE2_THRESHOLD     "150"
-#define DEFAULT_HUMAN_STAGE3_THRESHOLD     "300"
 #define DEFAULT_HUMAN_MAX_STAGE            "2"
 
 #define MAXIMUM_BUILD_TIME                 20000 // used for pie timer

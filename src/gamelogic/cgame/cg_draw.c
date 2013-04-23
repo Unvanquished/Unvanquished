@@ -2095,8 +2095,8 @@ static void CG_DrawStageReport( rectDef_t *rect, float text_x, float text_y,
                                 vec4_t color, float scale, int textalign, int textvalign, int textStyle )
 {
 	char  s[ MAX_TOKEN_CHARS ];
-	float tx, ty, confidence, neededConfidence;
-	int   nextStageThreshold, stage;
+	float tx, ty, confidence;
+	int   stage, stage2Threshold, stage3Threshold;
 
 	if ( cg.intermissionStarted )
 	{
@@ -2106,12 +2106,10 @@ static void CG_DrawStageReport( rectDef_t *rect, float text_x, float text_y,
 	switch ( cg.snap->ps.stats[ STAT_TEAM ] )
 	{
 		case TEAM_ALIENS:
-			nextStageThreshold = cgs.alienNextStageThreshold;
 			stage = cgs.alienStage;
 			break;
 
 		case TEAM_HUMANS:
-			nextStageThreshold = cgs.humanNextStageThreshold;
 			stage = cgs.humanStage;
 			break;
 
@@ -2120,22 +2118,24 @@ static void CG_DrawStageReport( rectDef_t *rect, float text_x, float text_y,
 	}
 
 	confidence = cg.predictedPlayerState.persistant[ PERS_CONFIDENCE ] / 10.0f;
-	neededConfidence = nextStageThreshold - confidence;
 
-	if ( neededConfidence < 0 )
+	stage2Threshold = cg.predictedPlayerState.persistant[ PERS_THRESHOLD_STAGE2 ];
+	stage3Threshold = cg.predictedPlayerState.persistant[ PERS_THRESHOLD_STAGE3 ];
+
+	if ( stage == S1 )
 	{
-		neededConfidence = 0;
+		Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %.1f confidence, ↑%d"),
+					 stage + 1, confidence, stage2Threshold );
 	}
-
-	if ( nextStageThreshold < 0 )
+	else if ( stage == S3 )
 	{
-		Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %.1f confidence"),
-					 stage + 1, confidence );
+		Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %.1f confidence, ↓%d"),
+					 stage + 1, confidence, stage3Threshold );
 	}
 	else
 	{
-		Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %.1f confidence, %.1f needed"),
-					 stage + 1, confidence, neededConfidence );
+		Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %.1f confidence, ↑%d ↓%d"),
+					 stage + 1, confidence, stage3Threshold, stage2Threshold );
 	}
 
 	CG_AlignText( rect, s, scale, 0.0f, 0.0f, textalign, textvalign, &tx, &ty );
