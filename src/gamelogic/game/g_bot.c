@@ -528,11 +528,7 @@ void RemoveTreeFromList( AITreeList_t *list, AIBehaviorTree_t *tree )
 		AIBehaviorTree_t *testTree = list->trees[ i ];
 		if ( !Q_stricmp( testTree->name, tree->name ) )
 		{
-			if ( i + 1 < list->numTrees )
-			{
-				memmove( &list->trees[ i ], &list->trees[ i + 1 ], sizeof( AIBehaviorTree_t * ) );
-			}
-
+			memmove( &list->trees[ i ], &list->trees[ i + 1 ], sizeof( AIBehaviorTree_t * ) * ( list->numTrees - i - 1 ) );
 			list->numTrees--;
 		}
 	}
