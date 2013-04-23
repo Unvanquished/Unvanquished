@@ -850,9 +850,9 @@ typedef struct
 	int              numAlienClients;
 	int              numHumanClients;
 
-	float            averageNumAlienClients;
+	float            avgNumAlienClients;
 	int              numAlienSamples;
-	float            averageNumHumanClients;
+	float            avgNumHumanClients;
 	int              numHumanSamples;
 
 	int              numLiveAlienClients;
@@ -888,6 +888,11 @@ typedef struct
 	int              alienStage3Time;
 	int              humanStage2Time;
 	int              humanStage3Time;
+
+	int              alienStage2Threshold;
+	int              alienStage3Threshold;
+	int              humanStage2Threshold;
+	int              humanStage3Threshold;
 
 	team_t           unconditionalWin;
 
@@ -1365,17 +1370,19 @@ extern  vmCvar_t g_initialMineRate;
 extern  vmCvar_t g_initialBuildPoints;
 extern  vmCvar_t g_mineRateHalfLife;
 
-extern vmCvar_t  g_alienOffCreepRegenHalfLife;
-
-extern  vmCvar_t g_humanStage;
+extern  vmCvar_t g_confidenceHalfLife;
+extern  vmCvar_t g_minimumStageTime;
+extern  vmCvar_t g_stage2BaseThreshold;
+extern  vmCvar_t g_stage3BaseThreshold;
+extern  vmCvar_t g_stage2IncreasePerPlayer;
+extern  vmCvar_t g_stage3IncreasePerPlayer;
+extern  vmCvar_t g_stageThresholdHalfLife;
 extern  vmCvar_t g_humanMaxStage;
-extern  vmCvar_t g_humanStage2Threshold;
-extern  vmCvar_t g_humanStage3Threshold;
-
-extern  vmCvar_t g_alienStage;
 extern  vmCvar_t g_alienMaxStage;
-extern  vmCvar_t g_alienStage2Threshold;
-extern  vmCvar_t g_alienStage3Threshold;
+extern  vmCvar_t g_humanStage;
+extern  vmCvar_t g_alienStage;
+
+extern  vmCvar_t  g_alienOffCreepRegenHalfLife;
 
 extern  vmCvar_t g_teamImbalanceWarnings;
 extern  vmCvar_t g_freeFundPeriod;

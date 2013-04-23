@@ -1347,8 +1347,6 @@ typedef struct
 
 	int      alienStage;
 	int      humanStage;
-	int      alienNextStageThreshold;
-	int      humanNextStageThreshold;
 
 	//
 	// locally derived information from gamestate
