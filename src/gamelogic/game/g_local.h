@@ -795,6 +795,7 @@ typedef struct
 	int      frameMsec; // trap_Milliseconds() at end frame
 
 	int      startTime; // level.time the map was last (re)started in milliseconds
+	int      matchTime; // ms since the current match begun
 
 	int      lastTeamLocationTime; // last time of client team location update
 

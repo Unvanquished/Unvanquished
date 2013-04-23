@@ -1391,66 +1391,66 @@ void G_CalculateMineRate( void )
 	int              i, playerNum;
 	gentity_t        *ent, *player;
 	gclient_t        *client;
-	static int       lastMineRateCalculation = 0;
-	static int       time = 0;
 
-	time += level.time - level.previousTime;
+	static int       nextCalculation = 0;
 
-	if ( level.time >= lastMineRateCalculation + 1000 )
+	if ( level.time < nextCalculation )
 	{
-		level.humanMineEfficiency = level.alienMineEfficiency = 0;
-
-		for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
-		{
-			if ( ent->s.eType != ET_BUILDABLE )
-			{
-				continue;
-			}
-
-			if ( ent->s.modelindex == BA_H_DRILL )
-			{
-				level.humanMineEfficiency += ent->s.weaponAnim;
-			}
-
-			else if ( ent->s.modelindex == BA_A_LEECH )
-			{
-				level.alienMineEfficiency += ent->s.weaponAnim;
-			}
-		}
-
-		// ln(2) ~= 0.6931472
-		level.mineRate = g_initialMineRate.value * exp( ( 0.6931472f / ( 60000.0f * g_mineRateHalfLife.value ) ) * -time );
-
-		// send to clients
-		for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
-		{
-			player = &g_entities[ playerNum ];
-			client = player->client;
-
-			if ( !client )
-			{
-				continue;
-			}
-
-			client->ps.persistant[ PERS_MINERATE ] = ( short )( level.mineRate * 10.0f );
-
-			switch ( client->pers.teamSelection )
-			{
-				case TEAM_ALIENS:
-					client->ps.persistant[ PERS_RGS_EFFICIENCY ] = ( short )level.alienMineEfficiency;
-					break;
-
-				case TEAM_HUMANS:
-					client->ps.persistant[ PERS_RGS_EFFICIENCY ] = ( short )level.humanMineEfficiency;
-					break;
-
-				default:
-					client->ps.persistant[ PERS_RGS_EFFICIENCY ] = 0;
-			}
-		}
-
-		lastMineRateCalculation = level.time;
+		return;
 	}
+
+	level.humanMineEfficiency = level.alienMineEfficiency = 0;
+
+	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
+	{
+		if ( ent->s.eType != ET_BUILDABLE )
+		{
+			continue;
+		}
+
+		if ( ent->s.modelindex == BA_H_DRILL )
+		{
+			level.humanMineEfficiency += ent->s.weaponAnim;
+		}
+
+		else if ( ent->s.modelindex == BA_A_LEECH )
+		{
+			level.alienMineEfficiency += ent->s.weaponAnim;
+		}
+	}
+
+	// ln(2) ~= 0.6931472
+	level.mineRate = g_initialMineRate.value * exp( ( -0.6931472f * level.matchTime ) / ( 60000.0f * g_mineRateHalfLife.value ) );
+
+	// send to clients
+	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
+	{
+		player = &g_entities[ playerNum ];
+		client = player->client;
+
+		if ( !client )
+		{
+			continue;
+		}
+
+		client->ps.persistant[ PERS_MINERATE ] = ( short )( level.mineRate * 10.0f );
+
+		switch ( client->pers.teamSelection )
+		{
+			case TEAM_ALIENS:
+				client->ps.persistant[ PERS_RGS_EFFICIENCY ] = ( short )level.alienMineEfficiency;
+				break;
+
+			case TEAM_HUMANS:
+				client->ps.persistant[ PERS_RGS_EFFICIENCY ] = ( short )level.humanMineEfficiency;
+				break;
+
+			default:
+				client->ps.persistant[ PERS_RGS_EFFICIENCY ] = 0;
+		}
+	}
+
+	nextCalculation = level.time + 1000;
 }
 
 /*
@@ -1568,7 +1568,7 @@ void G_CalculateStageThresholds( void )
 	}
 
 	// ln(2) ~= 0.6931472
-	modifier = exp( ( -0.6931472f * level.time ) / ( g_stageThresholdHalfLife.value * 60000.0f ) );
+	modifier = exp( ( -0.6931472f * level.matchTime ) / ( g_stageThresholdHalfLife.value * 60000.0f ) );
 
 	S2BT  = g_stage2BaseThreshold.integer;
 	S3BT  = g_stage3BaseThreshold.integer;
@@ -2186,7 +2186,7 @@ void QDECL PRINTF_LIKE(1) G_LogPrintf( const char *fmt, ... )
 	char    string[ 1024 ], decolored[ 1024 ];
 	int     min, tens, sec;
 
-	sec = ( level.time - level.startTime ) / 1000;
+	sec = level.matchTime / 1000;
 
 	min = sec / 60;
 	sec -= min * 60;
@@ -2262,7 +2262,7 @@ void G_SendGameStat( team_t team )
 	             level.avgNumAlienClients,
 	             level.avgNumHumanClients,
 	             map,
-	             level.time - level.startTime,
+	             level.matchTime,
 	             g_alienStage.integer,
 	             level.alienStage2Time - level.startTime,
 	             level.alienStage3Time - level.startTime,
@@ -2536,7 +2536,7 @@ void CheckExitRules( void )
 
 	if ( level.timelimit )
 	{
-		if ( level.time - level.startTime >= level.timelimit * 60000 )
+		if ( level.matchTime >= level.timelimit * 60000 )
 		{
 			level.lastWin = TEAM_NONE;
 			trap_SendServerCommand( -1, "print_tr \"" N_("Timelimit hit\n") "\"" );
@@ -2546,13 +2546,13 @@ void CheckExitRules( void )
 			G_MapLog_Result( 't' );
 			return;
 		}
-		else if ( level.time - level.startTime >= ( level.timelimit - 5 ) * 60000 &&
+		else if ( level.matchTime >= ( level.timelimit - 5 ) * 60000 &&
 		          level.timelimitWarning < TW_IMMINENT )
 		{
 			trap_SendServerCommand( -1, "cp \"5 minutes remaining!\"" );
 			level.timelimitWarning = TW_IMMINENT;
 		}
-		else if ( level.time - level.startTime >= ( level.timelimit - 1 ) * 60000 &&
+		else if ( level.matchTime >= ( level.timelimit - 1 ) * 60000 &&
 		          level.timelimitWarning < TW_PASSED )
 		{
 			trap_SendServerCommand( -1, "cp \"1 minute remaining!\"" );
@@ -2911,6 +2911,8 @@ void G_RunFrame( int levelTime )
 	level.framenum++;
 	level.previousTime = level.time;
 	level.time = levelTime;
+	level.matchTime = levelTime - level.startTime;
+
 	msec = level.time - level.previousTime;
 
 	// generate public-key messages

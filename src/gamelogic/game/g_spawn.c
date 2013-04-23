@@ -1070,7 +1070,7 @@ void SP_worldspawn( void )
 
 	if ( g_doWarmup.integer )
 	{
-		level.warmupTime = level.time - level.startTime + ( g_warmup.integer * 1000 );
+		level.warmupTime = level.matchTime + ( g_warmup.integer * 1000 );
 		trap_SetConfigstring( CS_WARMUP, va( "%i", level.warmupTime ) );
 		G_LogPrintf( "Warmup: %i\n", g_warmup.integer );
 	}

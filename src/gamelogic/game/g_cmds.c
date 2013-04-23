@@ -1724,7 +1724,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 	switch ( voteInfo[voteId].special )
 	{
 	case VOTE_BEFORE:
-		if ( ( level.time - level.startTime ) >= ( voteInfo[voteId].specialCvar->integer * 60000 ) )
+		if ( level.matchTime >= ( voteInfo[voteId].specialCvar->integer * 60000 ) )
 		{
 			trap_SendServerCommand( ent - g_entities,
 			                        va( "print_tr %s %s %d", QQ( N_("'$1$' votes are not allowed once $2$ minutes have passed\n") ), voteInfo[voteId].name, voteInfo[voteId].specialCvar->integer ) );
@@ -1734,7 +1734,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		break;
 
 	case VOTE_AFTER:
-		if ( ( level.time - level.startTime ) < ( voteInfo[voteId].specialCvar->integer * 60000 ) )
+		if ( level.matchTime < ( voteInfo[voteId].specialCvar->integer * 60000 ) )
 		{
 			trap_SendServerCommand( ent - g_entities,
 			                        va( "print_tr %s %s %d", QQ( N_("'$1$' votes are not allowed until $2$ minutes have passed\n") ), voteInfo[voteId].name, voteInfo[voteId].specialCvar->integer ) );
@@ -1744,7 +1744,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		break;
 
 	case VOTE_REMAIN:
-		if ( !level.timelimit || level.time - level.startTime < ( level.timelimit - voteInfo[voteId].specialCvar->integer / 2 ) * 60000 )
+		if ( !level.timelimit || level.matchTime < ( level.timelimit - voteInfo[voteId].specialCvar->integer / 2 ) * 60000 )
 		{
 			trap_SendServerCommand( ent - g_entities,
 			                        va( "print_tr %s %s %d", QQ( N_("'$1$' votes are only allowed with less than $2$ minutes remaining\n") ),
@@ -4190,7 +4190,7 @@ void G_MapLog_Result( char result )
 		}
 	}
 
-	t = ( level.time - level.startTime ) / 1000;
+	t = level.matchTime / 1000;
 	Q_strncpyz( maplog, g_mapLog.string, sizeof( maplog ) );
 	trap_Cvar_Set( "g_mapLog",
 	               va( "%c;%d:%02d;%s", result, t / 60, t % 60, maplog ) );
