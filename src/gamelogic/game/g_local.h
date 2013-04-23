@@ -45,6 +45,7 @@ typedef struct gclient_s gclient_t;
 
 #include "g_admin.h"
 #include "g_entities.h"
+#include "g_bot_ai.h"
 
 // g_local.h -- local definitions for game module
 //==================================================================
@@ -69,8 +70,6 @@ typedef struct gclient_s gclient_t;
 #define DECON_OPTION_PROTECT       32
 #define DECON_OPTION_CHECK(option) ( g_markDeconstruct.integer & DECON_OPTION_##option )
 
-#define MAX_BOT_BUILDINGS 300
-
 typedef struct
 {
 	gentity_t *ent;
@@ -79,23 +78,10 @@ typedef struct
 
 typedef struct
 {
-	buildable_t type;
-	vec3_t normal;
-	vec3_t origin;
-} botBuilding_t;
-
-typedef struct
-{
-	botBuilding_t buildings[ MAX_BOT_BUILDINGS ];
-	int numBuildings;
-} botBuildLayout_t;
-
-typedef struct
-{
 	gentity_t *ent;
 	vec3_t coord;
 	qboolean inuse;
-}botTarget_t;
+} botTarget_t;
 
 typedef struct
 {
@@ -104,20 +90,6 @@ typedef struct
 	float aimShake;
 } botSkill_t;
 
-typedef enum
-{
-  SELECTOR_NODE,
-  ACTION_NODE,
-  CONDITION_NODE
-} AINode_t;
-
-typedef struct
-{
-	char name[ MAX_QPATH ];
-	AINode_t *root;
-} AIBehaviorTree_t;
-
-#define MAX_ROUTE_NODES 5
 #define MAX_NODE_DEPTH 20
 
 typedef struct 
@@ -899,8 +871,6 @@ typedef struct
 	buildLog_t       buildLog[ MAX_BUILDLOG ];
 	int              buildId;
 	int              numBuildLogs;
-
-	botBuildLayout_t botBuildLayout;
 } level_locals_t;
 
 #define CMD_CHEAT        0x0001
@@ -930,7 +900,6 @@ void G_BotDelAllBots( void );
 void G_BotThink( gentity_t *self );
 void G_BotSpectatorThink( gentity_t *self );
 void G_BotIntermissionThink( gclient_t *client );
-void G_BotLoadBuildLayout( void );
 void G_BotListNames( gentity_t *ent );
 qboolean G_BotClearNames( void );
 int G_BotAddNames(team_t team, int arg, int last);
