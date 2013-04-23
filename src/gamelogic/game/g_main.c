@@ -100,8 +100,10 @@ vmCvar_t           g_mineRateHalfLife;
 
 vmCvar_t           g_confidenceHalfLife;
 vmCvar_t           g_minimumStageTime;
-vmCvar_t           g_initialStage2Threshold;
-vmCvar_t           g_initialStage3Threshold;
+vmCvar_t           g_stage2BaseThreshold;
+vmCvar_t           g_stage3BaseThreshold;
+vmCvar_t           g_stage2IncreasePerPlayer;
+vmCvar_t           g_stage3IncreasePerPlayer;
 vmCvar_t           g_stageThresholdHalfLife;
 vmCvar_t           g_humanMaxStage;
 vmCvar_t           g_alienMaxStage;
@@ -265,8 +267,10 @@ static cvarTable_t gameCvarTable[] =
 
 	{ &g_confidenceHalfLife,          "g_confidenceHalfLife",          DEFAULT_CONFIDENCE_HALF_LIFE,       CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_minimumStageTime,            "g_minimumStageTime",            DEFAULT_MINIMUM_STAGE_TIME,         CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_initialStage2Threshold,      "g_initialStage2Threshold",      DEFAULT_INITIAL_STAGE2_THRESHOLD,   CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_initialStage3Threshold,      "g_initialStage3Threshold",      DEFAULT_INITIAL_STAGE3_THRESHOLD,   CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_stage2BaseThreshold,         "g_stage2BaseThreshold",         DEFAULT_STAGE2_BASE_THRESHOLD,      CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_stage3BaseThreshold,         "g_stage3BaseThreshold",         DEFAULT_STAGE3_BASE_THRESHOLD,      CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_stage2IncreasePerPlayer,     "g_stage2IncreasePerPlayer",     DEFAULT_STAGE2_INC_PER_PLAYER,      CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_stage3IncreasePerPlayer,     "g_stage3IncreasePerPlayer",     DEFAULT_STAGE3_INC_PER_PLAYER,      CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_stageThresholdHalfLife,      "g_stageThresholdHalfLife",      DEFAULT_STAGE_THRESHOLD_HALF_LIFE,  CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_humanMaxStage,               "g_humanMaxStage",               DEFAULT_HUMAN_MAX_STAGE,            0,                                               0, qfalse, cv_humanMaxStage},
 	{ &g_alienMaxStage,               "g_alienMaxStage",               DEFAULT_ALIEN_MAX_STAGE,            0,                                               0, qfalse, cv_alienMaxStage},
@@ -348,11 +352,7 @@ void               G_InitGame( int levelTime, int randomSeed, int restart );
 void               G_RunFrame( int levelTime );
 void               G_ShutdownGame( int restart );
 void               CheckExitRules( void );
-
 void               G_CountSpawns( void );
-void               G_CalculateMineRate( void );
-void               G_DecreaseConfidence( void );
-void               G_CalculateStageThresholds( void );
 
 /*
 ================
@@ -1459,7 +1459,7 @@ void G_CalculateStageThresholds( void )
 {
 	gentity_t    *player;
 	gclient_t    *client;
-	int          playerNum;
+	int          playerNum, S2BT, S3BT, S2IPP, S3IPP;
 	float        modifier;
 
 	static int   nextCalculation = 0;
@@ -1472,8 +1472,15 @@ void G_CalculateStageThresholds( void )
 	// ln(2) ~= 0.6931472
 	modifier = exp( ( -0.6931472f * level.time ) / ( g_stageThresholdHalfLife.value * 60000.0f ) );
 
-	level.stage2Threshold = ( int )( g_initialStage2Threshold.value * modifier );
-	level.stage3Threshold = ( int )( g_initialStage3Threshold.value * modifier );
+	S2BT  = g_stage2BaseThreshold.integer;
+	S3BT  = g_stage3BaseThreshold.integer;
+	S2IPP = g_stage2IncreasePerPlayer.integer;
+	S3IPP = g_stage3IncreasePerPlayer.integer;
+
+	level.alienStage2Threshold = ( int )( modifier * ( S2BT + ( S2IPP * level.avgNumAlienClients ) ) );
+	level.humanStage2Threshold = ( int )( modifier * ( S2BT + ( S2IPP * level.avgNumHumanClients ) ) );
+	level.alienStage3Threshold = ( int )( modifier * ( S3BT + ( S3IPP * level.avgNumAlienClients ) ) );
+	level.humanStage3Threshold = ( int )( modifier * ( S3BT + ( S3IPP * level.avgNumHumanClients ) ) );
 
 	// send to clients
 	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
@@ -1489,13 +1496,13 @@ void G_CalculateStageThresholds( void )
 		switch ( client->pers.teamSelection )
 		{
 			case TEAM_ALIENS:
-				client->ps.persistant[ PERS_THRESHOLD_STAGE2 ] = ( short )( level.stage2Threshold );
-				client->ps.persistant[ PERS_THRESHOLD_STAGE3 ] = ( short )( level.stage3Threshold );
+				client->ps.persistant[ PERS_THRESHOLD_STAGE2 ] = ( short )( level.alienStage2Threshold );
+				client->ps.persistant[ PERS_THRESHOLD_STAGE3 ] = ( short )( level.alienStage3Threshold );
 				break;
 
 			case TEAM_HUMANS:
-				client->ps.persistant[ PERS_THRESHOLD_STAGE2 ] = ( short )( level.stage2Threshold );
-				client->ps.persistant[ PERS_THRESHOLD_STAGE3 ] = ( short )( level.stage3Threshold );
+				client->ps.persistant[ PERS_THRESHOLD_STAGE2 ] = ( short )( level.humanStage2Threshold );
+				client->ps.persistant[ PERS_THRESHOLD_STAGE3 ] = ( short )( level.humanStage3Threshold );
 				break;
 
 			default:
@@ -1538,9 +1545,6 @@ void G_CalculateStages( void )
 		return;
 	}
 
-	S2Threshold = level.stage2Threshold;
-	S3Threshold = level.stage3Threshold;
-
 	for ( team = NUM_TEAMS - 1; team > TEAM_NONE; team-- )
 	{
 		switch ( team )
@@ -1550,6 +1554,8 @@ void G_CalculateStages( void )
 				stage          = g_alienStage.integer;
 				stageModCount  = g_alienStage.modificationCount;
 				maxStage       = g_alienMaxStage.integer;
+				S2Threshold    = level.alienStage2Threshold;
+				S3Threshold    = level.alienStage3Threshold;
 				S2Time         = &level.alienStage2Time;
 				S3Time         = &level.alienStage3Time;
 				stageCVar      = "g_alienStage";
@@ -1561,6 +1567,8 @@ void G_CalculateStages( void )
 				stage          = g_humanStage.integer;
 				stageModCount  = g_humanStage.modificationCount;
 				maxStage       = g_humanMaxStage.integer;
+				S2Threshold    = level.humanStage2Threshold;
+				S3Threshold    = level.humanStage3Threshold;
 				S2Time         = &level.humanStage2Time;
 				S3Time         = &level.humanStage3Time;
 				stageCVar      = "g_humanStage";
@@ -1673,16 +1681,21 @@ void G_CalculateStages( void )
 
 /*
 ============
-CalculateAvgPlayers
+G_CalculateAvgPlayers
 
-Calculates the average number of players playing this game
+Calculates the average number of players on each team.
+Resets completely if all players leave a team.
 ============
 */
 void G_CalculateAvgPlayers( void )
 {
-	//there are no clients or only spectators connected, so
-	//reset the number of samples in order to avoid the situation
-	//where the average tends to 0
+	static int nextCalculation = 0;
+
+	if ( level.time < nextCalculation )
+	{
+		return;
+	}
+
 	if ( !level.numAlienClients )
 	{
 		level.numAlienSamples = 0;
@@ -1693,18 +1706,18 @@ void G_CalculateAvgPlayers( void )
 		level.numHumanSamples = 0;
 	}
 
-	//calculate average number of clients for stats
-	level.averageNumAlienClients =
-	  ( ( level.averageNumAlienClients * level.numAlienSamples )
-	    + level.numAlienClients ) /
-	  ( float )( level.numAlienSamples + 1 );
-	level.numAlienSamples++;
+	level.avgNumAlienClients =
+		( ( level.avgNumAlienClients * level.numAlienSamples ) + level.numAlienClients ) /
+		( float )( level.numAlienSamples + 1 );
 
-	level.averageNumHumanClients =
-	  ( ( level.averageNumHumanClients * level.numHumanSamples )
-	    + level.numHumanClients ) /
-	  ( float )( level.numHumanSamples + 1 );
+	level.avgNumHumanClients =
+		( ( level.avgNumHumanClients * level.numHumanSamples ) + level.numHumanClients ) /
+		( float )( level.numHumanSamples + 1 );
+
+	level.numAlienSamples++;
 	level.numHumanSamples++;
+
+	nextCalculation = level.time + 100;
 }
 
 /*
@@ -2122,8 +2135,8 @@ void G_SendGameStat( team_t team )
 	             Q3_VERSION,
 	             g_tag.string,
 	             teamChar,
-	             level.averageNumAlienClients,
-	             level.averageNumHumanClients,
+	             level.avgNumAlienClients,
+	             level.avgNumHumanClients,
 	             map,
 	             level.time - level.startTime,
 	             g_alienStage.integer,
@@ -2894,11 +2907,11 @@ void G_RunFrame( int levelTime )
 	G_CountSpawns();
 	G_CalculateMineRate();
 	G_DecreaseConfidence();
+	G_CalculateAvgPlayers();
 	G_CalculateStageThresholds();
 	G_CalculateStages();
 	G_SpawnClients( TEAM_ALIENS );
 	G_SpawnClients( TEAM_HUMANS );
-	G_CalculateAvgPlayers();
 	G_UpdateZaps( msec );
 
 	// see if it is time to end the level

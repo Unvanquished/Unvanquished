@@ -761,9 +761,9 @@ typedef struct
 	int              numAlienClients;
 	int              numHumanClients;
 
-	float            averageNumAlienClients;
+	float            avgNumAlienClients;
 	int              numAlienSamples;
-	float            averageNumHumanClients;
+	float            avgNumHumanClients;
 	int              numHumanSamples;
 
 	int              numLiveAlienClients;
@@ -800,8 +800,10 @@ typedef struct
 	int              humanStage2Time;
 	int              humanStage3Time;
 
-	int              stage2Threshold;
-	int              stage3Threshold;
+	int              alienStage2Threshold;
+	int              alienStage3Threshold;
+	int              humanStage2Threshold;
+	int              humanStage3Threshold;
 
 	team_t           unconditionalWin;
 
@@ -1254,8 +1256,10 @@ extern  vmCvar_t g_mineRateHalfLife;
 
 extern  vmCvar_t g_confidenceHalfLife;
 extern  vmCvar_t g_minimumStageTime;
-extern  vmCvar_t g_initialStage2Threshold;
-extern  vmCvar_t g_initialStage3Threshold;
+extern  vmCvar_t g_stage2BaseThreshold;
+extern  vmCvar_t g_stage3BaseThreshold;
+extern  vmCvar_t g_stage2IncreasePerPlayer;
+extern  vmCvar_t g_stage3IncreasePerPlayer;
 extern  vmCvar_t g_stageThresholdHalfLife;
 extern  vmCvar_t g_humanMaxStage;
 extern  vmCvar_t g_alienMaxStage;
