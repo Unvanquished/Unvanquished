@@ -176,7 +176,11 @@ extern "C" qboolean BotUpdateCorridor( int botClientNum, const botRouteTarget_t 
 	}
 
 	bot->corridor.movePosition( spos, bot->nav->query, &bot->nav->filter );
-	bot->corridor.moveTargetPosition( epos, bot->nav->query, &bot->nav->filter );
+
+	if ( rtarget.type == BOT_TARGET_DYNAMIC )
+	{
+		bot->corridor.moveTargetPosition( epos, bot->nav->query, &bot->nav->filter );
+	}
 
 	if ( !bot->corridor.isValid( MAX_PATH_LOOKAHEAD, bot->nav->query, &bot->nav->filter ) )
 	{
@@ -195,9 +199,12 @@ extern "C" qboolean BotUpdateCorridor( int botClientNum, const botRouteTarget_t 
 		bot->needReplan = qtrue;
 	}
 
-	if ( !PointInPolyExtents( bot, lastPoly, epos, rtarget.mins, rtarget.maxs ) )
+	if ( rtarget.type == BOT_TARGET_DYNAMIC )
 	{
-		bot->needReplan = qtrue;
+		if ( !PointInPolyExtents( bot, lastPoly, epos, rtarget.polyExtents ) )
+		{
+			bot->needReplan = qtrue;
+		}
 	}
 
 	if ( dir )

@@ -846,24 +846,21 @@ void BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget
 		VectorCopy( target.ent->r.mins, mins );
 		VectorCopy( target.ent->r.maxs, maxs );
 
-		if ( !BotTargetIsPlayer( target ) )
+		if ( BotTargetIsPlayer( target ) )
 		{
-			VectorCopy( mins, routeTarget->mins );
-			VectorCopy( maxs, routeTarget->maxs );
+			routeTarget->type = BOT_TARGET_DYNAMIC;
 		}
 		else
 		{
-			VectorSet( routeTarget->mins, 0, 0, 0 );
-			VectorSet( routeTarget->maxs, 0, 0, 0 );
+			routeTarget->type = BOT_TARGET_STATIC;
 		}
 	}
 	else
 	{
 		// point target
-		VectorSet( maxs, 640, 640, 96 );
-		VectorSet( mins, -640, -640, 96 );
-		VectorSet( routeTarget->mins, 0, 0, 0 );
-		VectorSet( routeTarget->maxs, 0, 0, 0 );
+		VectorSet( maxs, 96, 96, 96 );
+		VectorSet( mins, -96, -96, -96 );
+		routeTarget->type = BOT_TARGET_STATIC;
 	}
 
 	for ( i = 0; i < 3; i++ )

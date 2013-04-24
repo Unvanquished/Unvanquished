@@ -92,7 +92,7 @@ void FindWaypoints( Bot_t *bot, float *corners, unsigned char *cornerFlags, dtPo
 	*numCorners = bot->corridor.findCorners( corners, cornerFlags, cornerPolys, maxCorners, bot->nav->query, &bot->nav->filter );
 }
 
-qboolean PointInPolyExtents( Bot_t *bot, dtPolyRef ref, const vec3_t point, const vec3_t mins, const vec3_t maxs )
+qboolean PointInPolyExtents( Bot_t *bot, dtPolyRef ref, const vec3_t point, const vec3_t extents )
 {
 	vec3_t closest;
 
@@ -103,8 +103,7 @@ qboolean PointInPolyExtents( Bot_t *bot, dtPolyRef ref, const vec3_t point, cons
 
 	// use the bot's bbox as an epsilon because the navmesh is always at least that far from a boundry
 	sharedEntity_t *ent = SV_GentityNum( bot->clientNum );
-	float maxRad = MAX( ent->r.maxs[ 0 ], ent->r.maxs[ 1 ] );
-	maxRad += MAX( maxs[ 0 ], maxs[ 1 ] );
+	float maxRad = MAX( extents[ 0 ], extents[ 1 ] ) + 1;
 
 	if ( fabsf( point[ 0 ] - closest[ 0 ] ) > maxRad )
 	{
@@ -121,7 +120,8 @@ qboolean PointInPolyExtents( Bot_t *bot, dtPolyRef ref, const vec3_t point, cons
 
 qboolean PointInPoly( Bot_t *bot, dtPolyRef ref, const vec3_t point )
 {
-	return PointInPolyExtents( bot, ref, point, vec3_origin, vec3_origin );
+	sharedEntity_t *ent = SV_GentityNum( bot->clientNum );
+	return PointInPolyExtents( bot, ref, point, ent->r.maxs );
 }
 
 qboolean BotFindNearestPoly( Bot_t *bot, const vec3_t coord, dtPolyRef *nearestPoly, vec3_t nearPoint )
