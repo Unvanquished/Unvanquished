@@ -1550,6 +1550,69 @@ void G_DecreaseConfidence( void )
 
 /*
 ============
+G_CalculateAvgPlayers
+
+Calculates the average number of players on each team.
+Resets completely if all players leave a team.
+============
+*/
+void G_CalculateAvgPlayers( void )
+{
+	team_t     team;
+	int        *samples, currentPlayers;
+	float      *avgPlayers;
+
+	static int nextCalculation = 0;
+
+	if ( level.time < nextCalculation )
+	{
+		return;
+	}
+
+	for ( team = NUM_TEAMS - 1; team > TEAM_NONE; team-- )
+	{
+		switch ( team )
+		{
+			case TEAM_ALIENS:
+				samples        = &level.numAlienSamples;
+				currentPlayers =  level.numAlienClients;
+				avgPlayers     = &level.avgNumAlienClients;
+				break;
+
+			case TEAM_HUMANS:
+				samples        = &level.numHumanSamples;
+				currentPlayers =  level.numHumanClients;
+				avgPlayers     = &level.avgNumHumanClients;
+				break;
+
+			default:
+				continue;
+		}
+
+		if ( *samples == 0 )
+		{
+			*avgPlayers = ( float )currentPlayers;
+		}
+		else
+		{
+			*avgPlayers = ( ( *avgPlayers * *samples ) + currentPlayers ) / ( *samples + 1 );
+		}
+
+		if ( currentPlayers == 0 )
+		{
+			*samples = 0;
+		}
+		else
+		{
+			(*samples)++;
+		}
+	}
+
+	nextCalculation = level.time + 1000;
+}
+
+/*
+============
 G_CalculateStageThresholds
 ============
 */
@@ -1558,7 +1621,7 @@ void G_CalculateStageThresholds( void )
 	gentity_t    *player;
 	gclient_t    *client;
 	int          playerNum, S2BT, S3BT, S2IPP, S3IPP;
-	float        modifier;
+	float        modifier, ANAP, ANHP;
 
 	static int   nextCalculation = 0;
 
@@ -1567,18 +1630,27 @@ void G_CalculateStageThresholds( void )
 		return;
 	}
 
-	// ln(2) ~= 0.6931472
-	modifier = exp( ( -0.6931472f * level.matchTime ) / ( g_stageThresholdHalfLife.value * 60000.0f ) );
+	if ( g_stageThresholdHalfLife.value <= 0.0f )
+	{
+		modifier = 1.0f;
+	}
+	else
+	{
+		// ln(2) ~= 0.6931472
+		modifier = exp( ( -0.6931472f * level.matchTime ) / ( g_stageThresholdHalfLife.value * 60000.0f ) );
+	}
 
 	S2BT  = g_stage2BaseThreshold.integer;
 	S3BT  = g_stage3BaseThreshold.integer;
 	S2IPP = g_stage2IncreasePerPlayer.integer;
 	S3IPP = g_stage3IncreasePerPlayer.integer;
+	ANAP  = level.avgNumAlienClients;
+	ANHP  = level.avgNumHumanClients;
 
-	level.alienStage2Threshold = ( int )( modifier * ( S2BT + ( S2IPP * level.avgNumAlienClients ) ) );
-	level.humanStage2Threshold = ( int )( modifier * ( S2BT + ( S2IPP * level.avgNumHumanClients ) ) );
-	level.alienStage3Threshold = ( int )( modifier * ( S3BT + ( S3IPP * level.avgNumAlienClients ) ) );
-	level.humanStage3Threshold = ( int )( modifier * ( S3BT + ( S3IPP * level.avgNumHumanClients ) ) );
+	level.alienStage2Threshold = ( int )( modifier * ( S2BT + ( S2IPP * ANAP ) ) + 0.5f );
+	level.humanStage2Threshold = ( int )( modifier * ( S2BT + ( S2IPP * ANHP ) ) + 0.5f );
+	level.alienStage3Threshold = ( int )( modifier * ( S3BT + ( S3IPP * ANAP ) ) + 0.5f );
+	level.humanStage3Threshold = ( int )( modifier * ( S3BT + ( S3IPP * ANHP ) ) + 0.5f );
 
 	// send to clients
 	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
@@ -1775,47 +1847,6 @@ void G_CalculateStages( void )
 	}
 
 	nextCalculation = level.time + 1000;
-}
-
-/*
-============
-G_CalculateAvgPlayers
-
-Calculates the average number of players on each team.
-Resets completely if all players leave a team.
-============
-*/
-void G_CalculateAvgPlayers( void )
-{
-	static int nextCalculation = 0;
-
-	if ( level.time < nextCalculation )
-	{
-		return;
-	}
-
-	if ( !level.numAlienClients )
-	{
-		level.numAlienSamples = 0;
-	}
-
-	if ( !level.numHumanClients )
-	{
-		level.numHumanSamples = 0;
-	}
-
-	level.avgNumAlienClients =
-		( ( level.avgNumAlienClients * level.numAlienSamples ) + level.numAlienClients ) /
-		( float )( level.numAlienSamples + 1 );
-
-	level.avgNumHumanClients =
-		( ( level.avgNumHumanClients * level.numHumanSamples ) + level.numHumanClients ) /
-		( float )( level.numHumanSamples + 1 );
-
-	level.numAlienSamples++;
-	level.numHumanSamples++;
-
-	nextCalculation = level.time + 100;
 }
 
 /*
