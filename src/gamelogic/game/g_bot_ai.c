@@ -1348,7 +1348,7 @@ AINodeStatus_t BotActionRoam( gentity_t *self, AIGenericNode_t *node )
 		}
 	}
 
-	if ( DistanceToGoalSquared( self ) < Square( 70 ) )
+	if ( self->botMind->directPathToGoal && DistanceToGoal2DSquared( self ) < Square( 70 ) )
 	{
 		return STATUS_SUCCESS;
 	}
