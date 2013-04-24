@@ -1469,8 +1469,15 @@ void G_CalculateStageThresholds( void )
 		return;
 	}
 
-	// ln(2) ~= 0.6931472
-	modifier = exp( ( -0.6931472f * level.matchTime ) / ( g_stageThresholdHalfLife.value * 60000.0f ) );
+	if ( g_stageThresholdHalfLife.value <= 0.0f )
+	{
+		modifier = 1.0f;
+	}
+	else
+	{
+		// ln(2) ~= 0.6931472
+		modifier = exp( ( -0.6931472f * level.matchTime ) / ( g_stageThresholdHalfLife.value * 60000.0f ) );
+	}
 
 	S2BT  = g_stage2BaseThreshold.integer;
 	S3BT  = g_stage3BaseThreshold.integer;
