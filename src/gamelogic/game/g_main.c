@@ -1460,7 +1460,7 @@ void G_CalculateStageThresholds( void )
 	gentity_t    *player;
 	gclient_t    *client;
 	int          playerNum, S2BT, S3BT, S2IPP, S3IPP;
-	float        modifier;
+	float        modifier, ANAP, ANHP;
 
 	static int   nextCalculation = 0;
 
@@ -1483,11 +1483,13 @@ void G_CalculateStageThresholds( void )
 	S3BT  = g_stage3BaseThreshold.integer;
 	S2IPP = g_stage2IncreasePerPlayer.integer;
 	S3IPP = g_stage3IncreasePerPlayer.integer;
+	ANAP  = level.avgNumAlienClients;
+	ANHP  = level.avgNumHumanClients;
 
-	level.alienStage2Threshold = ( int )( modifier * ( S2BT + ( S2IPP * level.avgNumAlienClients ) ) );
-	level.humanStage2Threshold = ( int )( modifier * ( S2BT + ( S2IPP * level.avgNumHumanClients ) ) );
-	level.alienStage3Threshold = ( int )( modifier * ( S3BT + ( S3IPP * level.avgNumAlienClients ) ) );
-	level.humanStage3Threshold = ( int )( modifier * ( S3BT + ( S3IPP * level.avgNumHumanClients ) ) );
+	level.alienStage2Threshold = ( int )( modifier * ( S2BT + ( S2IPP * ANAP ) ) + 0.5f );
+	level.humanStage2Threshold = ( int )( modifier * ( S2BT + ( S2IPP * ANHP ) ) + 0.5f );
+	level.alienStage3Threshold = ( int )( modifier * ( S3BT + ( S3IPP * ANAP ) ) + 0.5f );
+	level.humanStage3Threshold = ( int )( modifier * ( S3BT + ( S3IPP * ANHP ) ) + 0.5f );
 
 	// send to clients
 	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
