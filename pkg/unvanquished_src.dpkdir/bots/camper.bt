@@ -4,7 +4,7 @@ selector priority
 	{
 		selector priority
 		{
-			condition botTeam == TEAM_HUMANS
+			condition team == TEAM_HUMANS
 			{
 				action equip
 			}
@@ -17,7 +17,7 @@ selector priority
 	{
 		selector sequence
 		{
-			condition distanceTo E_ENEMY < 500
+			condition distanceTo( E_ENEMY ) < 500
 			action fight
 		}
 	}
