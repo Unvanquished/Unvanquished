@@ -104,64 +104,85 @@ typedef struct
 	float range;
 } AIMoveToNode_t;
 
+// ordered according to precedence
+// lower values == higher precedence
 typedef enum
 {
-	CON_BUILDING,
-	CON_DAMAGEDBUILDING,
-	CON_CVAR,
-	CON_WEAPON,
-	CON_UPGRADE,
-	CON_CURWEAPON,
-	CON_TEAM,
-	CON_ENEMY,
-	CON_HEALTH,
-	CON_AMMO,
-	CON_TEAM_WEAPON,
-	CON_DISTANCE,
-	CON_BASERUSH,
-	CON_HEAL
-} AIConditionInfo_t;
-
-typedef enum
-{
-	VALUE_FLOAT,
-	VALUE_INT,
-	VALUE_PTR
-} AIConditionValue_t;
-
-typedef struct
-{
-	AIConditionValue_t type;
-	union
-	{
-		float f;
-		int   i;
-		void *ptr;
-	} value;
-} AIConditionParameter_t;
-
-typedef enum
-{
-	OP_NONE,
+	OP_NOT,
 	OP_LESSTHAN,
 	OP_LESSTHANEQUAL,
 	OP_GREATERTHAN,
 	OP_GREATERTHANEQUAL,
 	OP_EQUAL,
 	OP_NEQUAL,
-	OP_NOT,
-	OP_BOOL
+	OP_AND,
+	OP_OR,
+	OP_NONE
 } AIConditionOperator_t;
+
+typedef enum
+{
+	EX_OP,
+	EX_VALUE,
+	EX_FUNC
+} AIConditionExpression_t;
+
+typedef enum
+{
+	VALUE_FLOAT,
+	VALUE_INT
+} AIValueType_t;
+
+typedef struct
+{
+	AIConditionExpression_t type;
+	AIValueType_t           valType;
+
+	union
+	{
+		float floatValue;
+		int   intValue;
+	} l;
+} AIValue_t;
+
+typedef AIValue_t (*AIFunc)( gentity_t *self, const AIValue_t *params );
+
+typedef struct
+{
+	AIConditionExpression_t type;
+	AIValueType_t           valType;
+	AIFunc                  func;
+	AIValue_t               *params;
+	int                     nparams;
+} AIValueFunc_t;
+
+typedef struct
+{
+	AIConditionExpression_t type;
+	AIConditionOperator_t   op;
+} AIOp_t;
+
+typedef struct 
+{
+	AIConditionExpression_t type;
+	AIConditionOperator_t   op;
+	AIConditionExpression_t *exp1;
+	AIConditionExpression_t *exp2;
+} AIBinaryOp_t;
+
+typedef struct
+{
+	AIConditionExpression_t type;
+	AIConditionOperator_t   op;
+	AIConditionExpression_t *exp;
+} AIUnaryOp_t;
 
 typedef struct
 {
 	AINode_t type;
 	AINodeRunner run;
 	AIGenericNode_t *child;
-	AIConditionOperator_t op;
-	AIConditionInfo_t info;
-	AIConditionParameter_t param1;
-	AIConditionParameter_t param2;
+	AIConditionExpression_t *exp;
 } AIConditionNode_t;
 
 typedef struct

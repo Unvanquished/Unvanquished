@@ -39,6 +39,8 @@ static void BotInitNode( AINode_t type, AINodeRunner func, void *node )
 #define D( T ) trap_Parse_AddGlobalDefine( stringify( T ) )
 
 // FIXME: copied from parse.c
+#define P_LOGIC_AND        5
+#define P_LOGIC_OR         6
 #define P_LOGIC_GEQ        7
 #define P_LOGIC_LEQ        8
 #define P_LOGIC_EQ         9
@@ -101,6 +103,8 @@ static void FreeTokenList( pc_token_list *list )
 
 static AIGenericNode_t *ReadNode( pc_token_list **tokenlist );
 static void FreeNode( AIGenericNode_t *node );
+static void FreeNodeList( AINodeList_t *node );
+static void FreeConditionNode( AIConditionNode_t *node );
 
 static void CheckToken( const char *tokenValueName, const char *nodename, const pc_token_t *token, int requiredType )
 {
@@ -110,30 +114,634 @@ static void CheckToken( const char *tokenValueName, const char *nodename, const 
 	}
 }
 
-static AIConditionOperator_t ReadConditionOperator( pc_token_list *tokenlist )
+static AIValue_t AIBoxFloat( float f )
 {
-	CheckToken( "operator", "condition", &tokenlist->token, TT_PUNCTUATION );
+	AIValue_t t;
+	t.type = EX_VALUE;
+	t.valType = VALUE_FLOAT;
+	t.l.floatValue = f;
+	return t;
+}
 
-	switch( tokenlist->token.subtype )
+static AIValue_t AIBoxInt( int i )
+{
+	AIValue_t t;
+	t.type = EX_VALUE;
+	t.valType = VALUE_INT;
+	t.l.intValue = i;
+	return t;
+}
+
+static AIValue_t AIBoxToken( const pc_token_t *token )
+{
+	if ( ( float ) token->intvalue != token->floatvalue )
 	{
-		case P_LOGIC_LESS:
-			return OP_LESSTHAN;
-		case P_LOGIC_LEQ:
-			return OP_LESSTHANEQUAL;
-		case P_LOGIC_GREATER:
-			return OP_GREATERTHAN;
-		case P_LOGIC_GEQ:
-			return OP_GREATERTHANEQUAL;
-		case P_LOGIC_EQ:
-			return OP_EQUAL;
-		case P_LOGIC_UNEQ:
-			return OP_NEQUAL;
-		case P_LOGIC_NOT:
-			return OP_NOT;
-		default:
-			return OP_BOOL;
+		return AIBoxFloat( token->floatvalue );
+	}
+	else
+	{
+		return AIBoxInt( token->intvalue );
 	}
 }
+
+static float AIUnBoxFloat( AIValue_t v )
+{
+	switch ( v.valType )
+	{
+		case VALUE_FLOAT:
+			return v.l.floatValue;
+		case VALUE_INT:
+			return ( float ) v.l.intValue;
+	}
+	return 0.0f;
+}
+
+static int AIUnBoxInt( AIValue_t v )
+{
+	switch ( v.valType )
+	{
+		case VALUE_FLOAT:
+			return ( int ) v.l.floatValue;
+		case VALUE_INT:
+			return v.l.intValue;
+	}
+	return 0;
+}
+
+static double AIUnBoxDouble( AIValue_t v )
+{
+	switch ( v.valType )
+	{
+		case VALUE_FLOAT:
+			return ( double ) v.l.floatValue;
+		case VALUE_INT:
+			return v.l.intValue;
+	}
+	return 0.0;
+}
+
+// functions that are used to provide values to the behavior tree
+static AIValue_t buildingIsDamaged( gentity_t *self, const AIValue_t *params )
+{
+	return AIBoxInt( self->botMind->closestDamagedBuilding.ent != NULL );
+}
+
+static AIValue_t haveWeapon( gentity_t *self, const AIValue_t *params )
+{
+	return AIBoxInt( BG_InventoryContainsWeapon( AIUnBoxInt( params[ 0 ] ), self->client->ps.stats ) );
+}
+
+static AIValue_t alertedToEnemy( gentity_t *self, const AIValue_t *params )
+{
+	qboolean success;
+	if ( level.time - self->botMind->timeFoundEnemy < g_bot_reactiontime.integer )
+	{
+		success = qfalse;
+	}
+	else if ( !self->botMind->bestEnemy.ent )
+	{
+		success = qfalse;
+	}
+	else
+	{
+		success = qtrue;
+	}
+
+	return AIBoxInt( success );
+}
+
+static AIValue_t botTeam( gentity_t *self, const AIValue_t *params )
+{
+	return AIBoxInt( self->client->ps.stats[ STAT_TEAM ] );
+}
+
+static AIValue_t currentWeapon( gentity_t *self, const AIValue_t *params )
+{
+	return AIBoxInt( self->client->ps.weapon == AIUnBoxInt( params[ 0 ] ) );
+}
+
+static AIValue_t haveUpgrade( gentity_t *self, const AIValue_t *params )
+{
+	int upgrade = AIUnBoxInt( params[ 0 ] );
+	return AIBoxInt( !BG_UpgradeIsActive( upgrade, self->client->ps.stats ) && BG_InventoryContainsUpgrade( upgrade, self->client->ps.stats ) );
+}
+static AIValue_t botHealth( gentity_t *self, const AIValue_t *params )
+{
+	float health = self->health;
+	float maxHealth = BG_Class( self->client->ps.stats[ STAT_CLASS ] )->health;
+	return AIBoxFloat( health / maxHealth );
+}
+
+static AIValue_t botAmmo( gentity_t *self, const AIValue_t *params )
+{
+	return AIBoxFloat( PercentAmmoRemaining( BG_PrimaryWeapon( self->client->ps.stats ), &self->client->ps ) );
+}
+
+static AIValue_t teamateHasWeapon( gentity_t *self, const AIValue_t *params )
+{
+	return AIBoxInt( BotTeamateHasWeapon( self, AIUnBoxInt( params[ 0 ] ) ) );
+}
+
+static AIValue_t distanceTo( gentity_t *self, const AIValue_t *params )
+{
+	int e = AIUnBoxInt( params[ 0 ] );
+	float distance = 0;
+	if ( e < BA_NUM_BUILDABLES )
+	{
+		distance = self->botMind->closestBuildings[ e ].distance;
+	}
+	else if ( e == E_GOAL )
+	{
+		distance = DistanceToGoal( self );
+	}
+	else if ( e == E_ENEMY )
+	{
+		distance = self->botMind->bestEnemy.distance;
+	}
+	else if ( e == E_DAMAGEDBUILDING )
+	{
+		distance = self->botMind->closestDamagedBuilding.distance;
+	}
+	return AIBoxFloat( distance );
+}
+
+static AIValue_t baseRushScore( gentity_t *self, const AIValue_t *params )
+{
+	return AIBoxFloat( BotGetBaseRushScore( self ) );
+}
+
+static AIValue_t healScore( gentity_t *self, const AIValue_t *params )
+{
+	return AIBoxFloat( BotGetHealScore( self ) );
+}
+
+static AIValue_t botClass( gentity_t *self, const AIValue_t *params )
+{
+	return AIBoxInt( self->client->ps.stats[ STAT_CLASS ] );
+}
+
+// functions accessible to the behavior tree for use in condition nodes
+static const struct AIFuncMap_s
+{
+	const char    *name;
+	AIValueType_t type;
+	AIFunc        func;
+	int           nparams;
+} funcs[] = 
+{
+	{ "alertedToEnemy",     VALUE_INT,   alertedToEnemy,    0 },
+	{ "baseRushScore",      VALUE_FLOAT, baseRushScore,     0 },
+	{ "buildingIsDamaged",  VALUE_INT,   buildingIsDamaged, 0 },
+	{ "class",              VALUE_INT,   botClass,          0 },
+	{ "distanceTo",         VALUE_FLOAT, distanceTo,        1 },
+	{ "haveUpgrade",        VALUE_INT,   haveUpgrade,       1 },
+	{ "haveWeapon",         VALUE_INT,   haveWeapon,        1 },
+	{ "healScore",          VALUE_FLOAT, healScore,         0 },
+	{ "percentHealth",      VALUE_FLOAT, botHealth,         0 },
+	{ "team",               VALUE_INT,   botTeam,           0 },
+	{ "teamateHasWeapon",   VALUE_INT,   teamateHasWeapon,  1 },
+	{ "weapon",             VALUE_INT,   currentWeapon,     0 }
+};
+
+typedef struct
+{
+	const char            *str;
+	int                   subtype;
+	AIConditionOperator_t op;
+} AIOpMap_t;
+
+static const AIOpMap_t opmap[] =
+{
+	{ ">=", P_LOGIC_GEQ,     OP_GREATERTHANEQUAL },
+	{ ">",  P_LOGIC_GREATER, OP_GREATERTHAN      },
+	{ "<=", P_LOGIC_LEQ,     OP_LESSTHANEQUAL    },
+	{ "<",  P_LOGIC_LESS,    OP_LESSTHAN         },
+	{ "==", P_LOGIC_EQ,      OP_EQUAL            },
+	{ "!=", P_LOGIC_UNEQ,    OP_NEQUAL           },
+	{ "!",  P_LOGIC_NOT,     OP_NOT              },
+	{ "&&", P_LOGIC_AND,     OP_AND              },
+	{ "||", P_LOGIC_OR,      OP_OR               }
+};
+
+static AIConditionOperator_t opFromToken( pc_token_t *token )
+{
+	int i;
+	if ( token->type != TT_PUNCTUATION )
+	{
+		return OP_NONE;
+	}
+
+	for ( i = 0; i < ARRAY_LEN( opmap ); i++ )
+	{
+		if ( token->subtype == opmap[ i ].subtype )
+		{
+			return opmap[ i ].op;
+		}
+	}
+	return OP_NONE;
+}
+
+static const char *opToString( AIConditionOperator_t op )
+{
+	int i;
+	for ( i = 0; i < ARRAY_LEN( opmap ); i++ )
+	{
+		if ( opmap[ i ].op == op )
+		{
+			return opmap[ i ].str;
+		}
+	}
+	return NULL;
+}
+
+static qboolean isBinaryOp( AIConditionOperator_t op )
+{
+	switch ( op )
+	{
+		case OP_GREATERTHAN:
+		case OP_GREATERTHANEQUAL:
+		case OP_LESSTHAN:
+		case OP_LESSTHANEQUAL:
+		case OP_EQUAL:
+		case OP_NEQUAL:
+		case OP_AND:
+		case OP_OR:
+			return qtrue;
+		default: return qfalse;
+	}
+}
+
+static qboolean isUnaryOp( AIConditionOperator_t op )
+{
+	return op == OP_NOT;
+}
+
+// compare operator precedence
+static int opCompare( AIConditionOperator_t op1, AIConditionOperator_t op2 )
+{
+	if ( op1 < op2 )
+	{
+		return 1;
+	}
+	else if ( op1 < op2 )
+	{
+		return -1;
+	}
+	return 0;
+}
+
+static pc_token_list *findCloseParen( pc_token_list *start, pc_token_list *end )
+{
+	pc_token_list *list = start;
+	int depth = 0;
+
+	while ( list != end )
+	{
+		if ( list->token.string[ 0 ] == '(' )
+		{
+			depth++;
+		}
+
+		if ( list->token.string[ 0 ] == ')' )
+		{
+			depth--;
+		}
+
+		if ( depth == 0 )
+		{
+			return list;
+		}
+
+		list = list->next;
+	}
+
+	return NULL;
+}
+
+qboolean expectToken( const char *s, pc_token_list **list, qboolean next )
+{
+	const pc_token_list *current = *list;
+
+	if ( !current )
+	{
+		BotDPrintf( S_COLOR_RED "ERROR: Expected token %s but found end of file\n", s );
+		return qfalse;
+	}
+	
+	if ( Q_stricmp( current->token.string, s ) != 0 )
+	{
+		BotDPrintf( S_COLOR_RED "ERROR: Expected token %s but found %s on line %d\n", s, current->token.string, current->token.line );
+		return qfalse;
+	}
+	
+	if ( next )
+	{
+		*list = current->next;
+	}
+	return qtrue;
+}
+
+static AIOp_t *newOp( pc_token_list *list )
+{
+	pc_token_list *current = list;
+	AIOp_t *ret = NULL;
+
+	AIConditionOperator_t op = opFromToken( &current->token );
+
+	if ( isBinaryOp( op ) )
+	{
+		AIBinaryOp_t *b = ( AIBinaryOp_t * ) BG_Alloc( sizeof( *b ) );
+		b->op = op;
+		ret = ( AIOp_t * ) b;
+	}
+	else if ( isUnaryOp( op ) )
+	{
+		AIUnaryOp_t *u = ( AIUnaryOp_t * ) BG_Alloc( sizeof( *u ) );
+		u->op = op;
+		ret = ( AIOp_t * ) u;
+	}
+
+	return ret;
+}
+
+static AIValue_t *newValueLiteral( pc_token_list **list )
+{
+	AIValue_t *ret;
+	pc_token_list *current = *list;
+	pc_token_t *token = &current->token;
+
+	ret = ( AIValue_t * ) BG_Alloc( sizeof( *ret ) );
+
+	*ret = AIBoxToken( token );
+
+	*list = current->next;
+	return ret;
+}
+
+static AIValueFunc_t *newValueFunc( pc_token_list **list )
+{
+	AIValueFunc_t *ret = NULL;
+	AIValueFunc_t v;
+	pc_token_list *current = *list;
+	pc_token_list *parenBegin = NULL;
+	pc_token_list *parenEnd = NULL;
+	pc_token_list *parse = NULL;
+	int numParams = 0;
+	struct AIFuncMap_s *f;
+	
+	memset( &v, 0, sizeof( v ) );
+
+	f = bsearch( current->token.string, funcs, ARRAY_LEN( funcs ), sizeof( *funcs ), cmdcmp );
+
+	if ( !f )
+	{
+		BotDPrintf( S_COLOR_RED "ERROR: Unknown function: %s on line %d\n", current->token.string, current->token.line );
+		*list = current->next;
+		return NULL;
+	}
+
+	v.type = EX_FUNC;
+	v.valType = f->type;
+	v.func =    f->func;
+	v.nparams = f->nparams;
+
+	parenBegin = current->next;
+
+	// if the function has no parameters, allow it to be used without parenthesis
+	if ( v.nparams == 0 && parenBegin->token.string[ 0 ] != '(' )
+	{
+		ret = ( AIValueFunc_t * ) BG_Alloc( sizeof( *ret ) );
+		memcpy( ret, &v, sizeof( *ret ) );
+
+		*list = current->next;
+		return ret;
+	}
+
+	// functions should always be proceeded by a '(' if they have parameters
+	if ( !expectToken( "(", &parenBegin, qfalse ) )
+	{
+		return NULL;
+	}
+
+	// find the end parenthesis around the function's args
+	parenEnd = findCloseParen( parenBegin, NULL );
+
+	if ( !parenEnd )
+	{
+		BotDPrintf( S_COLOR_RED "ERROR: could not find matching ')' for '(' on line %d", parenBegin->token.line );
+		*list = parenBegin->next;
+		return NULL;
+	}
+
+	// count the number of parameters
+	parse = parenBegin->next;
+
+	while ( parse != parenEnd )
+	{
+		if ( parse->token.type == TT_NUMBER )
+		{
+			numParams++;
+		}
+		else if ( parse->token.string[ 0 ] != ',' )
+		{
+			BotDPrintf( S_COLOR_RED "ERROR: found invalid token %s in parameter list on line %d\n", parse->token.string, parse->token.line );
+			*list = parenEnd->next; // skip invalid function expression
+			return NULL;
+		}
+		parse = parse->next;
+	}
+
+	// warn if too many or too few parameters
+	if ( numParams < v.nparams )
+	{
+		BotDPrintf( S_COLOR_YELLOW "WARNING: too few parameters for %s on line %d\n", current->token.string, current->token.line );
+	}
+
+	if ( numParams > v.nparams )
+	{
+		BotDPrintf( S_COLOR_YELLOW "WARNING: too many parameters for %s on line %d\n", current->token.string, current->token.line );
+	}
+
+	// create the value op
+	ret = ( AIValueFunc_t * ) BG_Alloc( sizeof( *ret ) );
+
+	// copy the members
+	memcpy( ret, &v, sizeof( *ret ) );
+
+	if ( ret->nparams )
+	{
+		// add the parameters
+		ret->params = ( AIValue_t * ) BG_Alloc( sizeof( *ret->params ) * ret->nparams );
+
+		numParams = 0;
+		parse = parenBegin->next;
+		while ( parse != parenEnd )
+		{
+			if ( parse->token.type == TT_NUMBER )
+			{
+				ret->params[ numParams ] = AIBoxToken( &parse->token );
+				numParams++;
+			}
+			parse = parse->next;
+		}
+	}
+	*list = parenEnd->next;
+	return ret;
+}
+
+static void FreeOp( AIOp_t *op );
+static void FreeValue( AIValue_t *v )
+{
+	if ( !v )
+	{
+		return;
+	}
+
+	BG_Free( v );
+}
+static void FreeValueFunc( AIValueFunc_t *v )
+{
+	if ( !v )
+	{
+		return;
+	}
+
+	BG_Free( v->params );
+	BG_Free( v );
+}
+static void FreeExpression( AIConditionExpression_t *exp )
+{
+	if ( !exp )
+	{
+		return;
+	}
+
+	if ( *exp == EX_FUNC )
+	{
+		AIValueFunc_t *v = ( AIValueFunc_t * ) exp;
+		FreeValueFunc( v );
+	}
+	else if ( *exp == EX_VALUE )
+	{
+		AIValue_t *v = ( AIValue_t * ) exp;
+		
+		FreeValue( v );
+	}
+	else if ( *exp == EX_OP )
+	{
+		AIOp_t *op = ( AIOp_t * ) exp;
+
+		FreeOp( op );
+	}
+}
+static void FreeOp( AIOp_t *op )
+{
+	if ( !op )
+	{
+		return;
+	}
+
+	if ( isBinaryOp( op->op ) )
+	{
+		AIBinaryOp_t *b = ( AIBinaryOp_t * ) op;
+		FreeExpression( b->exp1 );
+		FreeExpression( b->exp2 );
+	}
+	else if ( isUnaryOp( op->op ) )
+	{
+		AIUnaryOp_t *u = ( AIUnaryOp_t * ) op;
+		FreeExpression( u->exp );
+	}
+
+	BG_Free( op );
+}
+
+AIConditionExpression_t *makeExpression( AIOp_t *op, AIConditionExpression_t *exp1, AIConditionExpression_t *exp2 )
+{
+	if ( isUnaryOp( op->op ) )
+	{
+		AIUnaryOp_t *u = ( AIUnaryOp_t * ) op;
+		u->exp = exp1;
+	}
+	else if ( isBinaryOp( op->op ) )
+	{
+		AIBinaryOp_t *b = ( AIBinaryOp_t * ) op;
+		b->exp1 = exp1;
+		b->exp2 = exp2;
+	}
+
+	return ( AIConditionExpression_t * ) op;
+}
+
+AIConditionExpression_t *Primary( pc_token_list **list );
+AIConditionExpression_t *ReadConditionExpression( pc_token_list **list, AIConditionOperator_t op2 )
+{
+	AIConditionExpression_t *t;
+	AIConditionOperator_t   op;
+
+	if ( !*list )
+	{
+		BotDPrintf( S_COLOR_RED "ERROR: Unexpected end of file\n" );
+		return NULL;
+	}
+
+	t = Primary( list );
+
+	op = opFromToken( &(*list)->token );
+
+	while ( isBinaryOp( op ) && opCompare( op, op2 ) >= 0 )
+	{
+		AIConditionExpression_t *t1;
+		AIOp_t *exp = newOp( *list );
+		*list = (*list)->next;
+		t1 = ReadConditionExpression( list, op );
+		t = makeExpression( exp, t, t1 );
+
+		if ( !*list )
+		{
+			break;
+		}
+
+		op = opFromToken( &(*list)->token );
+	}
+
+	return t;
+}
+
+AIConditionExpression_t *Primary( pc_token_list **list )
+{
+	pc_token_list *current = *list;
+	AIConditionExpression_t *tree = NULL;
+
+	if ( isUnaryOp( opFromToken( &current->token ) ) )
+	{
+		AIConditionExpression_t *t;
+		AIOp_t *op = newOp( current );
+		*list = current->next;
+		t = ReadConditionExpression( list, op->op );
+		tree = makeExpression( op, t, NULL );
+	}
+	else if ( current->token.string[0] == '(' )
+	{
+		*list = current->next;
+		tree = ReadConditionExpression( list, OP_NONE );
+		expectToken( ")", list, qtrue );
+	}
+	else if ( current->token.type == TT_NUMBER )
+	{
+		tree = ( AIConditionExpression_t * ) newValueLiteral( list );
+	}
+	else if ( current->token.type == TT_NAME )
+	{
+		tree = ( AIConditionExpression_t * ) newValueFunc( list );
+	}
+	else
+	{
+		BotDPrintf( S_COLOR_RED "ERROR: token %s on line %d is not valid\n", current->token.string, current->token.line );
+	}
+	return tree;
+}
+
 
 /*
 ======================
@@ -150,180 +758,24 @@ condition [expression] {
 or the form:
 condition [expression]
 
-[expression] can be either builtinValue, !builtinValue, or builtinValue [op] constant
-where [op] is one of >=, <=, ==, !=
-depending on the context
-
-FIXME: allow arbitrary mixing of expressions and operators instead of hardcoding the options
+[expression] can be any valid set of boolean operations and values
 ======================
 */
 static AIGenericNode_t *ReadConditionNode( pc_token_list **tokenlist )
 {
 	pc_token_list *current = *tokenlist;
+
 	AIConditionNode_t *condition;
 
-	if ( Q_stricmp( current->token.string, "condition" ) )
+	if ( !expectToken( "condition", &current, qtrue ) )
 	{
-		BotDPrintf( S_COLOR_RED "ERROR: ReadConditionNode called on non-condition node\n" );
+		return NULL;
 	}
-
-	current = current->next;
 
 	condition = allocNode( AIConditionNode_t );
 	BotInitNode( CONDITION_NODE, BotConditionNode, condition );
 
-	// read not or bool
-	if ( current->token.subtype == P_LOGIC_NOT )
-	{
-		condition->op = OP_NOT;
-		current = current->next;
-		if ( !current )
-		{
-			BotDPrintf( S_COLOR_RED "ERROR: no token after operator not\n" );
-		}
-	}
-	else
-	{
-		condition->op = OP_BOOL;
-	}
-
-	if ( !Q_stricmp( current->token.string, "buildingIsDamaged" ) )
-	{
-		condition->info = CON_DAMAGEDBUILDING;
-	}
-	else if ( !Q_stricmp( current->token.string, "alertedToEnemy" ) )
-	{
-		condition->info = CON_ENEMY;
-	}
-	else if ( !Q_stricmp( current->token.string, "haveWeapon" ) )
-	{
-		condition->info = CON_WEAPON;
-
-		current = current->next;
-
-		CheckToken( "weapon", "condition haveWeapon", &current->token, TT_NUMBER );
-
-		condition->param1.type = VALUE_INT;
-		condition->param1.value.i = current->token.intvalue;
-	}
-	else if ( !Q_stricmp( current->token.string, "haveUpgrade" ) )
-	{
-		condition->info = CON_UPGRADE;
-
-		current = current->next;
-
-		CheckToken( "upgrade", "condition haveUpgrade", &current->token, TT_NUMBER );
-
-		condition->param1.type = VALUE_INT;
-		condition->param1.value.i = current->token.intvalue;
-	}
-	else if ( !Q_stricmp( current->token.string, "teamateHasWeapon" ) )
-	{
-		condition->info = CON_TEAM_WEAPON;
-
-		current = current->next;
-
-		CheckToken( "weapon", "condition teamateHasWeapon", &current->token, TT_NUMBER );
-
-		condition->param1.type = VALUE_INT;
-		condition->param1.value.i = current->token.intvalue;
-	}
-	else if ( !Q_stricmp( current->token.string, "botTeam" ) )
-	{
-		condition->info = CON_TEAM;
-
-		current = current->next;
-		condition->op = ReadConditionOperator( current );
-
-		current = current->next;
-
-		CheckToken( "team", "condition botTeam", &current->token, TT_NUMBER );
-
-		condition->param1.type = VALUE_INT;
-		condition->param1.value.i = current->token.intvalue;
-	}
-	else if ( !Q_stricmp( current->token.string, "percentHealth" ) )
-	{
-		condition->info = CON_HEALTH;
-
-		current = current->next;
-		condition->op = ReadConditionOperator( current );
-
-		current = current->next;
-
-		CheckToken( "value", "condition percentHealth", &current->token, TT_NUMBER );
-
-		condition->param1.type = VALUE_FLOAT;
-		condition->param1.value.f = current->token.floatvalue;
-	}
-	else if ( !Q_stricmp( current->token.string, "weapon" ) )
-	{
-		condition->info = CON_CURWEAPON;
-
-		current = current->next;
-		condition->op = ReadConditionOperator( current );
-
-		current = current->next;
-
-		CheckToken( "weapon", "condition weapon", &current->token, TT_NUMBER );
-
-		condition->param1.type = VALUE_INT;
-		condition->param1.value.i = current->token.intvalue;
-	}
-	else if ( !Q_stricmp( current->token.string, "distanceTo" ) )
-	{
-		condition->info = CON_DISTANCE;
-
-		current = current->next;
-
-		CheckToken( "entity", "condition distanceTo", &current->token, TT_NUMBER );
-
-		condition->param1.value.i = current->token.intvalue;
-
-		current = current->next;
-
-		condition->op = ReadConditionOperator( current );
-
-		current = current->next;
-
-		CheckToken( "value", "condition distanceTo", &current->token, TT_NUMBER );
-
-		condition->param2.value.i = current->token.intvalue;
-	}
-	else if ( !Q_stricmp ( current->token.string, "baseRushScore" ) )
-	{
-		condition->info = CON_BASERUSH;
-
-		current = current->next;
-
-		condition->op = ReadConditionOperator( current );
-
-		current = current->next;
-
-		CheckToken( "value", "condition baseRushScore", &current->token, TT_NUMBER );
-
-		condition->param1.value.f = current->token.floatvalue;
-	}
-	else if ( !Q_stricmp( current->token.string, "healScore" ) )
-	{
-		condition->info = CON_HEAL;
-
-		current = current->next;
-
-		condition->op = ReadConditionOperator( current );
-
-		current = current->next;
-
-		CheckToken( "value", "condition healScore", &current->token, TT_NUMBER );
-
-		condition->param1.value.f = current->token.floatvalue;
-	}
-	else
-	{
-		BotDPrintf( S_COLOR_RED "ERROR: unknown condition %s\n", current->token.string );
-	}
-
-	current = current->next;
+	condition->exp = ReadConditionExpression( &current, OP_NONE );
 
 	if ( Q_stricmp( current->token.string, "{" ) )
 	{
@@ -336,10 +788,7 @@ static AIGenericNode_t *ReadConditionNode( pc_token_list **tokenlist )
 
 	condition->child = ReadNode( &current );
 
-	if ( Q_stricmp( current->token.string, "}" ) )
-	{
-		BotDPrintf( S_COLOR_RED "ERROR: invalid token on line %d found %s expected }\n", current->token.line, current->token.string );
-	}
+	expectToken( "}", &current, qfalse );
 
 	*tokenlist = current->next;
 
@@ -365,12 +814,10 @@ static AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
 
 	AIGenericNode_t *node;
 
-	if ( Q_stricmp( current->token.string, "action" ) )
+	if ( !expectToken( "action", &current, qtrue ) )
 	{
-		BotDPrintf( S_COLOR_RED "ERROR: ReadActionNode called on non-action node\n" );
+		return NULL;
 	}
-
-	current = current->next;
 
 	if ( !Q_stricmp( current->token.string, "heal" ) )
 	{
@@ -465,12 +912,10 @@ static AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist )
 	AINodeList_t *list;
 	pc_token_list *current = *tokenlist;
 
-	if ( Q_stricmp( current->token.string, "selector" ) )
+	if ( !expectToken( "selector", &current, qtrue ) )
 	{
-		BotDPrintf( S_COLOR_RED "ERROR: ReadNodeList called on non-list node\n" );
+		return NULL;
 	}
-
-	current = current->next;
 
 	list = allocNode( AINodeList_t );
 
@@ -493,12 +938,11 @@ static AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist )
 		BotDPrintf( S_COLOR_RED "ERROR: Invalid token %s on line %d\n", current->token.string, current->token.line );
 	}
 
-	if ( Q_stricmp( current->token.string, "{" ) )
+	if ( !expectToken( "{", &current, qtrue ) )
 	{
-		BotDPrintf( S_COLOR_RED "ERROR: Invalid token %s on line %d\n", current->token.string, current->token.line );
+		FreeNodeList( list );
+		return NULL;
 	}
-
-	current = current->next;
 
 	while ( Q_stricmp( current->token.string, "}" ) )
 	{
@@ -506,12 +950,19 @@ static AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist )
 
 		if ( node && list->numNodes >= MAX_NODE_LIST )
 		{
-			BotDPrintf( "ERROR: Max selector children limit exceeded at line %d\n", current->token.line );
+			BotDPrintf( "ERROR: Max selector children limit exceeded at line %d\n", (*tokenlist)->token.line );
+			FreeNode( node );
 		}
 		else if ( node )
 		{
 			list->list[ list->numNodes ] = node;
 			list->numNodes++;
+		}
+
+		if ( !current )
+		{
+			*tokenlist = current;
+			return ( AIGenericNode_t * ) list;
 		}
 	}
 
@@ -686,6 +1137,21 @@ AIBehaviorTree_t * ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( E_ENEMY );
 	D( E_DAMAGEDBUILDING );
 
+	// add player classes
+	D( PCL_NONE );
+	D( PCL_ALIEN_BUILDER0 );
+	D( PCL_ALIEN_BUILDER0_UPG );
+	D( PCL_ALIEN_LEVEL0 );
+	D( PCL_ALIEN_LEVEL1 );
+	D( PCL_ALIEN_LEVEL1_UPG );
+	D( PCL_ALIEN_LEVEL2 );
+	D( PCL_ALIEN_LEVEL2_UPG );
+	D( PCL_ALIEN_LEVEL3 );
+	D( PCL_ALIEN_LEVEL3_UPG );
+	D( PCL_ALIEN_LEVEL4 );
+	D( PCL_HUMAN );
+	D( PCL_HUMAN_BSUIT );
+	
 	Q_strncpyz( treefilename, va( "bots/%s.bt", name ), sizeof( treefilename ) );
 
 	handle = trap_Parse_LoadSource( treefilename );
@@ -727,6 +1193,7 @@ AIBehaviorTree_t * ReadBehaviorTree( const char *name, AITreeList_t *list )
 static void FreeConditionNode( AIConditionNode_t *node )
 {
 	FreeNode( node->child );
+	FreeExpression( node->exp );
 	BG_Free( node );
 }
 
@@ -890,208 +1357,101 @@ AINodeStatus_t BotParallelNode( gentity_t *self, AIGenericNode_t *node )
 	}
 	return STATUS_FAILURE;
 }
+qboolean EvalConditionExpression( gentity_t *self, AIConditionExpression_t *exp );
 
-#define BotCompare( leftValue, rightValue, op, success ) \
-do \
-{\
-	success = qfalse;\
-	switch ( op )\
-	{\
-		case OP_LESSTHAN:\
-			if ( leftValue < rightValue )\
-			{\
-				success = qtrue;\
-			}\
-			break;\
-		case OP_LESSTHANEQUAL:\
-			if ( leftValue <= rightValue )\
-			{\
-				success = qtrue;\
-			}\
-			break;\
-		case OP_GREATERTHAN:\
-			if ( leftValue > rightValue )\
-			{\
-				success = qtrue;\
-			}\
-			break;\
-		case OP_GREATERTHANEQUAL:\
-			if ( leftValue >= rightValue )\
-			{\
-				success = qtrue;\
-			}\
-			break;\
-		case OP_EQUAL:\
-			if ( leftValue == rightValue )\
-			{\
-				success = qtrue;\
-			}\
-			break;\
-		case OP_NEQUAL:\
-			if ( leftValue != rightValue )\
-			{\
-				success = qtrue;\
-			}\
-			break;\
-		case OP_NONE:\
-		case OP_NOT:\
-		case OP_BOOL:\
-			break;\
-	}\
-} while ( 0 );
+double EvalFunc( gentity_t *self, AIConditionExpression_t *exp )
+{
+	AIValueFunc_t *v = ( AIValueFunc_t * ) exp;
 
-#define BotBoolCondition( left, op, s ) \
-do \
-{ \
-	s = qfalse; \
-	switch( op )\
-	{\
-	case OP_BOOL:\
-		if ( left )\
-		{\
-			s = qtrue;\
-		}\
-		break;\
-	case OP_NOT:\
-		if ( !left )\
-		{\
-			s = qtrue;\
-		}\
-		break;\
-	case OP_NONE:\
-	case OP_LESSTHAN:\
-	case OP_LESSTHANEQUAL:\
-	case OP_GREATERTHAN:\
-	case OP_GREATERTHANEQUAL:\
-	case OP_EQUAL:\
-	case OP_NEQUAL:\
-		break;\
-	}\
-} while( 0 );
+	return AIUnBoxDouble( v->func( self, v->params ) );
+}
 
-// TODO: rewrite how condition nodes work in order to increase their flexibility
+// using double because it has enough precision to exactly represent both a float and an int
+double EvalValue( gentity_t *self, AIConditionExpression_t *exp )
+{
+	AIValue_t *v = ( AIValue_t * ) exp;
+
+	if ( *exp == EX_FUNC )
+	{
+		return EvalFunc( self, exp ); 
+	}
+
+	if ( *exp != EX_VALUE )
+	{
+		return ( double ) EvalConditionExpression( self, exp );
+	}
+
+	return AIUnBoxDouble( *v );
+}
+
+qboolean EvaluateBinaryOp( gentity_t *self, AIConditionExpression_t *exp )
+{
+	AIBinaryOp_t *o = ( AIBinaryOp_t * ) exp;
+	qboolean      ret = qfalse;
+	
+	switch ( o->op )
+	{
+		case OP_LESSTHAN:
+			return EvalValue( self, o->exp1 ) < EvalValue( self, o->exp2 );
+		case OP_LESSTHANEQUAL:
+			return EvalValue( self, o->exp1 ) <= EvalValue( self, o->exp2 );
+		case OP_GREATERTHAN:
+			return EvalValue( self, o->exp1 ) > EvalValue( self, o->exp2 );
+		case OP_GREATERTHANEQUAL:
+			return EvalValue( self, o->exp1 ) >= EvalValue( self, o->exp2 );
+		case OP_EQUAL:
+			return EvalValue( self, o->exp1 ) == EvalValue( self, o->exp2 );
+		case OP_NEQUAL:
+			return EvalValue( self, o->exp1 ) != EvalValue( self, o->exp2 );
+		case OP_AND:
+			return EvalConditionExpression( self, o->exp1 ) && EvalConditionExpression( self, o->exp2 );
+		case OP_OR:
+			return EvalConditionExpression( self, o->exp1 ) || EvalConditionExpression( self, o->exp2 );
+		default:
+			return qfalse;
+	}
+}
+
+qboolean EvaluateUnaryOp( gentity_t *self, AIConditionExpression_t *exp )
+{
+	AIUnaryOp_t *o = ( AIUnaryOp_t * ) exp;
+	return !EvalConditionExpression( self, o->exp );
+}
+
+qboolean EvalConditionExpression( gentity_t *self, AIConditionExpression_t *exp )
+{
+	if ( *exp == EX_OP )
+	{
+		AIOp_t *op = ( AIOp_t * ) exp;
+
+		if ( isBinaryOp( op->op ) )
+		{
+			return EvaluateBinaryOp( self, exp );
+		}
+		else if ( isUnaryOp( op->op ) )
+		{
+			return EvaluateUnaryOp( self, exp );
+		}
+	}
+	else if ( *exp  == EX_VALUE )
+	{
+		return EvalValue( self, exp ) != 0.0;
+	}
+	else if ( *exp == EX_FUNC )
+	{
+		return EvalFunc( self, exp ) != 0.0;
+	}
+
+	return qfalse;
+}
+
 AINodeStatus_t BotConditionNode( gentity_t *self, AIGenericNode_t *node )
 {
 	qboolean success = qfalse;
 
 	AIConditionNode_t *con = ( AIConditionNode_t * ) node;
 
-	switch ( con->info )
-	{
-		case CON_BUILDING:
-		{
-			gentity_t *building = NULL;
-			building = self->botMind->closestBuildings[ con->param1.value.i ].ent;
-			BotBoolCondition( building, con->op, success );
-		}
-		break;
-		case CON_WEAPON:
-			BotBoolCondition( BG_InventoryContainsWeapon( con->param1.value.i, self->client->ps.stats ), con->op, success );
-			break;
-		case CON_DAMAGEDBUILDING:
-			BotBoolCondition( self->botMind->closestDamagedBuilding.ent, con->op, success );
-			break;
-		case CON_CVAR:
-			BotBoolCondition( ( ( ( vmCvar_t * ) con->param1.value.ptr )->integer ), con->op, success );
-			break;
-		case CON_CURWEAPON:
-			BotCompare( self->client->ps.weapon, con->param1.value.i, con->op, success );
-			break;
-		case CON_TEAM:
-			BotCompare( self->client->ps.stats[ STAT_TEAM ], con->param1.value.i, con->op, success );
-			break;
-		case CON_ENEMY:
-			if ( level.time - self->botMind->timeFoundEnemy < g_bot_reactiontime.integer )
-			{
-				success = qfalse;
-			}
-			else if ( !self->botMind->bestEnemy.ent )
-			{
-				success = qfalse;
-			}
-			else
-			{
-				success = qtrue;
-			}
-
-			if ( con->op == OP_NOT )
-			{
-				success = ( qboolean ) ( ( int ) !success );
-			}
-			break;
-		case CON_UPGRADE:
-		{
-			BotBoolCondition( BG_InventoryContainsUpgrade( con->param1.value.i, self->client->ps.stats ), con->op, success );
-
-			if ( con->op == OP_NOT )
-			{
-				if ( BG_UpgradeIsActive( con->param1.value.i, self->client->ps.stats ) )
-				{
-					success = qfalse;
-				}
-			}
-			else if ( con->op == OP_BOOL )
-			{
-				if ( BG_UpgradeIsActive( con->param1.value.i, self->client->ps.stats ) )
-				{
-					success = qtrue;
-				}
-			}
-		}
-		break;
-		case CON_HEALTH:
-		{
-			float health = self->health;
-			float maxHealth = BG_Class( ( class_t ) self->client->ps.stats[ STAT_CLASS ] )->health;
-
-			BotCompare( ( health / maxHealth ), con->param1.value.f, con->op, success );
-		}
-		break;
-		case CON_AMMO:
-			BotCompare( PercentAmmoRemaining( BG_PrimaryWeapon( self->client->ps.stats ), &self->client->ps ), con->param1.value.f, con->op, success );
-			break;
-		case CON_TEAM_WEAPON:
-			BotBoolCondition( BotTeamateHasWeapon( self, con->param1.value.i ), con->op, success );
-			break;
-		case CON_DISTANCE:
-		{
-			float distance = 0;
-
-			if ( con->param1.value.i < BA_NUM_BUILDABLES )
-			{
-				distance = self->botMind->closestBuildings[ con->param1.value.i ].distance;
-			}
-			else if ( con->param1.value.i == E_GOAL )
-			{
-				distance = DistanceToGoal( self );
-			}
-			else if ( con->param1.value.i == E_ENEMY )
-			{
-				distance = self->botMind->bestEnemy.distance;
-			}
-			else if ( con->param1.value.i == E_DAMAGEDBUILDING )
-			{
-				distance = self->botMind->closestDamagedBuilding.distance;
-			}
-
-			BotCompare( distance, con->param2.value.i, con->op, success );
-		}
-		break;
-		case CON_BASERUSH:
-		{
-			float score = BotGetBaseRushScore( self );
-
-			BotCompare( score, con->param1.value.f, con->op, success );
-		}
-		break;
-		case CON_HEAL:
-		{
-			float score = BotGetHealScore( self );
-			BotCompare( score, con->param1.value.f, con->op, success );
-		}
-		break;
-	}
-
+	success = EvalConditionExpression( self, con->exp );
 	if ( success )
 	{
 		if ( con->child )
