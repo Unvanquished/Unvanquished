@@ -1257,7 +1257,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_SETCOLORGRADING:
-			re.SetColorGrading( args[1] );
+			re.SetColorGrading( args[1], args[2] );
 			return 0;
 
 		default:

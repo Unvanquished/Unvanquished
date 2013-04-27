@@ -3580,18 +3580,20 @@ static void R_CreateWhiteCubeImage( void )
 static void R_CreateColorGradeImage( void )
 {
 	byte *data, *ptr;
-	int r, g, b;
+	int i, r, g, b;
 
-	data = ri.Hunk_AllocateTempMemory( REF_COLORGRADEMAP_STORE_SIZE * sizeof(color4ub_t) );
+	data = ri.Hunk_AllocateTempMemory( 4 * REF_COLORGRADEMAP_STORE_SIZE * sizeof(color4ub_t) );
 
 	// 255 is 15 * 17, so the colors range from 0 to 255
-	for( ptr = data, b = 0; b < REF_COLORGRADEMAP_SIZE; b++ ) {
-		for( g = 0; g < REF_COLORGRADEMAP_SIZE; g++ ) {
-			for( r = 0; r < REF_COLORGRADEMAP_SIZE; r++ ) {
-				*ptr++ = (byte) r * 17;
-				*ptr++ = (byte) g * 17;
-				*ptr++ = (byte) b * 17;
-				*ptr++ = 255;
+	for( ptr = data, i = 0; i < 4; i++ ) {
+		for( b = 0; b < REF_COLORGRADEMAP_SIZE; b++ ) {
+			for( g = 0; g < REF_COLORGRADEMAP_SIZE; g++ ) {
+				for( r = 0; r < REF_COLORGRADEMAP_SIZE; r++ ) {
+					*ptr++ = (byte) r * 17;
+					*ptr++ = (byte) g * 17;
+					*ptr++ = (byte) b * 17;
+					*ptr++ = 255;
+				}
 			}
 		}
 	}
@@ -3599,7 +3601,7 @@ static void R_CreateColorGradeImage( void )
 	tr.colorGradeImage = R_Create3DImage( "_colorGrade", data,
 					      REF_COLORGRADEMAP_SIZE,
 					      REF_COLORGRADEMAP_SIZE,
-					      REF_COLORGRADEMAP_SIZE,
+					      4 * REF_COLORGRADEMAP_SIZE,
 					      IF_NOPICMIP | IF_NOCOMPRESSION | IF_NOLIGHTSCALE,
 					      FT_LINEAR,
 					      WT_EDGE_CLAMP );
@@ -3962,11 +3964,14 @@ int RE_GetTextureId( const char *name )
 	return -1;
 }
 
-void RE_SetColorGrading( qhandle_t hShader )
+void RE_SetColorGrading( int slot, qhandle_t hShader )
 {
 	shader_t *shader = R_GetShaderByHandle( hShader );
 	image_t  *image;
 	
+	if( slot < 0 || slot > 3 )
+		return;
+
 	if( shader->defaultShader ||
 	    !shader->stages[0] ||
 	    !(image = shader->stages[0]->bundle[0].image[0] ) ) {
@@ -3993,7 +3998,7 @@ void RE_SetColorGrading( qhandle_t hShader )
 	glBindTexture( GL_TEXTURE_3D, tr.colorGradeImage->texnum );
 	if( image->width == REF_COLORGRADEMAP_SIZE ) {
 		glTexSubImage3D( GL_TEXTURE_3D, 0,
-				 0,0,0,
+				 0,0, slot * REF_COLORGRADEMAP_SIZE,
 				 REF_COLORGRADEMAP_SIZE,
 				 REF_COLORGRADEMAP_SIZE,
 				 REF_COLORGRADEMAP_SIZE,
@@ -4004,7 +4009,7 @@ void RE_SetColorGrading( qhandle_t hShader )
 		glPixelStorei( GL_UNPACK_ROW_LENGTH, REF_COLORGRADEMAP_SIZE * REF_COLORGRADEMAP_SIZE );
 		for( i = 0; i < 16; i++ ) {
 			glTexSubImage3D( GL_TEXTURE_3D, 0,
-					 0,0,i,
+					 0,0,i + slot * REF_COLORGRADEMAP_SIZE,
 					 REF_COLORGRADEMAP_SIZE,
 					 REF_COLORGRADEMAP_SIZE,
 					 1,

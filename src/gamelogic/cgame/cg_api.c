@@ -1231,8 +1231,7 @@ qhandle_t trap_RegisterVisTest( void )
 	return syscall( CG_REGISTERVISTEST );
 }
 
-void trap_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust,
-			     float area )
+void trap_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust, float area )
 {
 	syscall( CG_ADDVISTESTTOSCENE, hTest, pos, PASSFLOAT( depthAdjust ),
 		 PASSFLOAT( area ) );
@@ -1248,7 +1247,7 @@ void trap_UnregisterVisTest( qhandle_t hTest )
 	syscall( CG_UNREGISTERVISTEST, hTest );
 }
 
-void trap_SetColorGrading( qhandle_t hShader )
+void trap_SetColorGrading( int slot, qhandle_t hShader )
 {
-	syscall( CG_SETCOLORGRADING, hShader );
+	syscall( CG_SETCOLORGRADING, slot, hShader );
 }

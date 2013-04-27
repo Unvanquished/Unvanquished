@@ -474,4 +474,4 @@ void            trap_AddVisTestToScene( qhandle_t hTest, vec3_t pos,
 					float depthAdjust, float area );
 float           trap_CheckVisibility( qhandle_t hTest );
 void            trap_UnregisterVisTest( qhandle_t hTest );
-void            trap_SetColorGrading( qhandle_t hShader );
+void            trap_SetColorGrading( int slot, qhandle_t hShader );

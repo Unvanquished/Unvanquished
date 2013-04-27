@@ -1991,6 +1991,10 @@ public:
 	{
 	}
 
+	void SetUniform_ColorModulate( vec4_t v )
+	{
+		this->SetValue( v );
+	}
 	void SetUniform_ColorModulate( colorGen_t colorGen, alphaGen_t alphaGen )
 	{
 		vec4_t v;
@@ -2671,6 +2675,7 @@ public:
 
 class GLShader_cameraEffects :
 	public GLShader,
+	public u_ColorModulate,
 	public u_ColorTextureMatrix,
 	public u_ModelViewProjectionMatrix,
 	public u_DeformMagnitude
