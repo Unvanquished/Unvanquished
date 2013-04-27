@@ -277,15 +277,10 @@ void G_RewardAttackers( gentity_t *self )
 			G_AddCreditToClient( player->client, ( short )reward, qtrue );
 
 			// Give confidence for killing enemies inside their main base
-			if ( distanceToBase < 500.0f )
+			if ( distanceToBase < 1000.0f )
 			{
 				G_AddConfidence( playerTeam, CONFIDENCE_KILLING, CONF_REAS_KILLING, CONF_QUAL_IN_ENEMEY_BASE,
 								 reward * CONFIDENCE_PER_CREDIT, player );
-			}
-			else if ( distanceToBase < 1000.0f )
-			{
-				G_AddConfidence( playerTeam, CONFIDENCE_KILLING, CONF_REAS_KILLING, CONF_QUAL_CLOSE_TO_ENEMY_BASE,
-								 0.75f * reward * CONFIDENCE_PER_CREDIT, player );
 			}
 		}
 	}
