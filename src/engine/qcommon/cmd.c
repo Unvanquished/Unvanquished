@@ -530,14 +530,14 @@ void Cmd_Exec_f( void )
 	{
 		if( !failSilent )
 		{
-			Com_Printf( "couldn't exec %s\n", filename );
+			Com_Printf( _("couldn't exec %s\n"), filename );
 		}
 		return;
 	}
 
 	if ( !executeSilent )
 	{
-		Com_Printf( "execing %s\n", filename );
+		Com_Printf( _("execing %s\n"), filename );
 	}
 }
 
@@ -1337,7 +1337,7 @@ void Cmd_AliasList_f( void )
 		i++;
 	}
 
-	Com_Printf("%i aliases\n", i );
+	Com_Printf(_("%i aliases\n"), i );
 }
 
 /*
