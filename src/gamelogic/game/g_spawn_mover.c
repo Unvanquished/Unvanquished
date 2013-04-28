@@ -35,6 +35,8 @@ Maryland 20850 USA.
 #include "g_local.h"
 #include "g_spawn.h"
 
+#define DEFAULT_FUNC_TRAIN_SPEED 100
+
 /*
 ===============================================================================
 
@@ -2269,7 +2271,10 @@ void func_train_reached( gentity_t *self )
 	VectorCopy( next->nextPathSegment->s.origin, self->activatedPosition );
 
 	// if the path_corner has a speed, use that otherwise use the train's speed
-	G_ResetFloatField( &self->speed, qtrue, next->config.speed, self->config.speed, 1);
+	G_ResetFloatField( &self->speed, qtrue, next->config.speed, next->eclass->config.speed, 0);
+	if(!self->speed) {
+		G_ResetFloatField(&self->speed, qtrue, self->config.speed, self->eclass->config.speed, DEFAULT_FUNC_TRAIN_SPEED);
+	}
 
 	// calculate duration
 	VectorSubtract( self->activatedPosition, self->restingPosition, move );
@@ -2496,7 +2501,7 @@ void SP_func_train( gentity_t *self )
 
 	trap_SetBrushModel( self, self->model );
 	InitMover( self );
-	reset_moverspeed( self, 100 );
+	reset_moverspeed( self, DEFAULT_FUNC_TRAIN_SPEED );
 
 	self->reached = func_train_reached;
 	self->act = func_train_act;
