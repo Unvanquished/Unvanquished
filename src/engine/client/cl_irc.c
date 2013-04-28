@@ -1099,7 +1099,7 @@ static void IRC_HandleError( void )
 #elif defined __linux__ || defined MACOS_X || defined __FreeBSD__
 static void IRC_HandleError( void )
 {
-	Com_Printf(_( "IRC socket connection error: %s\n"), strerror( errno ) );
+	Com_Printf( "IRC: %s: %s\n", _( "socket connection error"), strerror( errno ) );
 }
 
 #endif
@@ -1569,11 +1569,11 @@ static int IRCH_ServerError( void )
 
 	if ( IRC_ReceivedMessage.arg_count == 1 )
 	{
-		Com_Printf(_( "IRC: server error: %s\n"), IRC_String( arg_values[ 0 ] ) );
+		Com_Printf("IRC: %s: %s\n", _( "server error" ), IRC_String( arg_values[ 0 ] ));
 	}
 	else
 	{
-		Com_Printf("%s", _( "IRC: server error\n" ));
+		Com_Printf("IRC: %s\n", _( "server error" ));
 	}
 
 	return IRC_CMD_RETRY;
@@ -1631,7 +1631,7 @@ static int IRCH_NickError( void )
 	}
 	else
 	{
-		Com_Printf("%s", _( "…IRC: got spurious nickname error\n" ));
+		Com_Printf("…IRC: %s\n", _( "got spurious nickname error" ));
 	}
 
 	return IRC_CMD_SUCCESS;
@@ -2037,7 +2037,7 @@ void CL_IRCSay( void )
 
 	if ( IRC_ThreadStatus != IRC_THREAD_JOINED )
 	{
-		Com_Printf("%s", _( "IRC: Not connected\n" ));
+		Com_Printf("IRC: %s\n", _( "Not connected" ));
 		return;
 	}
 
@@ -2060,7 +2060,7 @@ void CL_IRCSay( void )
 
 	if ( !send_result )
 	{
-		Com_Printf("%s", _( "IRC: flood detected, message not sent\n" ));
+		Com_Printf("IRC: %s\n", _( "flood detected, message not sent" ));
 	}
 }
 
@@ -2256,21 +2256,21 @@ static int IRC_AttemptConnection( void )
 	int                port;
 
 	CHECK_SHUTDOWN;
-	Com_Printf("%s", _( "…IRC: connecting to server\n" ));
+	Com_Printf("…IRC: %s\n", _( "connecting to server" ));
 
 	// Force players to use a non-default name
 	strcpy( name, Cvar_VariableString( "name" ) );
 
 	if ( !Q_strnicmp( name, "player", 7 ) )
 	{
-		Com_Printf("%s", _( "…IRC: rejected due to unset player name\n" ));
+		Com_Printf("…IRC: %s\n", _( "rejected due to unset player name" ));
 		return IRC_CMD_FATAL;
 	}
 
 	// Prepare USER record
 	if ( !IRC_InitialiseUser( name ) )
 	{
-		Com_Printf("%s", _( "…IRC: rejected due to mostly unusable player name\n" ));
+		Com_Printf("…IRC: %s\n", _( "rejected due to mostly unusable player name" ));
 		return IRC_CMD_FATAL;
 	}
 
@@ -2279,7 +2279,7 @@ static int IRC_AttemptConnection( void )
 
 	if ( ( host = gethostbyname( host_name ) ) == NULL )
 	{
-		Com_Printf("%s", _( "…IRC: unknown server\n" ));
+		Com_Printf("…IRC: %s\n", _( "unknown server" ));
 		return IRC_CMD_FATAL;
 	}
 
@@ -2297,7 +2297,7 @@ static int IRC_AttemptConnection( void )
 
 	if ( port <= 0 || port >= 65536 )
 	{
-		Com_Printf("%s", _( "IRC: invalid port number, defaulting to 6667\n" ));
+		Com_Printf("IRC: %s\n", _( "invalid port number, defaulting to 6667" ));
 		port = 6667;
 	}
 
@@ -2309,7 +2309,7 @@ static int IRC_AttemptConnection( void )
 	if ( ( connect( IRC_Socket, ( struct sockaddr * ) &address, sizeof( address ) ) ) != 0 )
 	{
 		closesocket( IRC_Socket );
-		Com_Printf("%s", _( "…IRC connection refused.\n" ));
+		Com_Printf("…IRC: %s\n", _( "connection refused" ));
 		return IRC_CMD_RETRY;
 	}
 
@@ -2534,7 +2534,7 @@ static void IRC_Thread( void )
 	IRC_MainLoop();
 
 	// Clean up
-	Com_Printf("%s", _( "…IRC: disconnected from server\n" ));
+	Com_Printf("…IRC: %s\n", _( "disconnected from server" ));
 	IRC_FlushDEQueue();
 	IRC_FreeHandlers();
 	IRC_SetThreadDead();
@@ -2698,7 +2698,7 @@ void CL_InitIRC( void )
 {
 	if ( IRC_ThreadStatus != IRC_THREAD_DEAD )
 	{
-		Com_Printf("%s", _( "…IRC thread is already running\n" ));
+		Com_Printf("…IRC: %s\n", _( "thread is already running" ));
 		return;
 	}
 
