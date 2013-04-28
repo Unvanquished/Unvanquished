@@ -61,6 +61,7 @@ typedef enum cgameImport_s
 {
   CG_PRINT = FIRST_VM_SYSCALL,
   CG_ERROR,
+  CG_LOG,
   CG_MILLISECONDS,
   CG_CVAR_REGISTER,
   CG_CVAR_UPDATE,
