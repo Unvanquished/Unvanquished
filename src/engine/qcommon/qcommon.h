@@ -795,9 +795,6 @@ void       Com_EndRedirect( void );
 
 // *INDENT-OFF*
 int QDECL  Com_VPrintf( const char *fmt, va_list argptr ) VPRINTF_LIKE(1);    // conforms to vprintf prototype for print callback passing
-void QDECL Com_Printf( const char *fmt, ... ) PRINTF_LIKE(1);    // this one calls to Com_VPrintf now
-void QDECL Com_DPrintf( const char *fmt, ... ) PRINTF_LIKE(1);
-void QDECL Com_Error( int code, const char *fmt, ... ) PRINTF_LIKE(2) NORETURN;
 
 // *INDENT-ON*
 void       Com_Quit_f( void ) NORETURN;
