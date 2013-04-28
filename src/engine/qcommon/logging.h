@@ -47,6 +47,23 @@
 #define S_ERROR   S_COLOR_RED "ERROR: " S_COLOR_WHITE
 #define S_DEBUG   "Debug: "
 
+#ifndef __func__
+# if (__STDC_VERSION__ < 199901L) &&  (__GNUC__ >= 2)
+#  define __func__ __FUNCTION__
+# else
+#  define __func__ "<?>"
+# endif
+#endif
+
+typedef struct
+{
+	const char* file;
+	int line;
+	const char* function;
+} log_location_info_t;
+
+#define LOCATION_INFO { __FILE__, __LINE__, __func__ }
+
 /**
  * print levels as currently used by the renderer
  */
