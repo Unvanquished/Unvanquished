@@ -620,6 +620,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_ERROR:
 			Com_Error( ERR_DROP, "%s", ( char * ) VMA( 1 ) );
+			return 0; //silence warning and have a fallback behavior if Com_Error behavior changes
 
 		case CG_MILLISECONDS:
 			return Sys_Milliseconds();
@@ -1262,6 +1263,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );
+			exit(1); // silence warning, and make sure this behaves as expected, if Com_Error's behavior changes
 	}
 
 	return 0;
