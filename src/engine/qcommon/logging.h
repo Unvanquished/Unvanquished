@@ -76,6 +76,13 @@ typedef enum
 	LOG_ALL = 4
 } log_level_t;
 
+typedef struct
+{
+	const char* category;
+	log_level_t level;
+	const char* message;
+} log_event_t;
+
 /**
  * print levels as currently used by the renderer
  */
@@ -99,6 +106,8 @@ typedef enum
 	ERR_DROP, // print to console and disconnect from game
 	ERR_SERVERDISCONNECT, // don't kill server
 } errorParm_t;
+
+void QDECL Com_Log( log_event_t *event, log_location_info_t *location );
 
 // this is only here so the functions in q_shared.c and bg_*.c can link
 void QDECL Com_Error( int level, const char *error, ... ) PRINTF_LIKE(2) NORETURN;

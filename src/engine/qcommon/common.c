@@ -279,6 +279,36 @@ void QDECL PRINTF_LIKE(1) Com_Printf( const char *fmt, ... )
 	va_end( argptr );
 }
 
+void QDECL Com_Log( log_event_t *event, log_location_info_t *location )
+{
+	switch (event->level)
+	{
+	case LOG_OFF:
+		return;
+	case LOG_WARN:
+		Com_Printf(S_WARNING "%s\n", event->message);
+		break;
+	case LOG_ERROR:
+		Com_Printf(S_ERROR "%s\n", event->message);
+		break;
+	case LOG_DEBUG:
+		Com_Printf(S_DEBUG "%s\n", event->message);
+		break;
+	case LOG_TRACE:
+		Com_Printf("Trace: %s \n", event->message);
+		return;
+	default:
+		Com_Printf("%s\n", event->message);
+		break;
+	}
+#ifndef NDEBUG
+	if (location)
+	{
+		Com_Printf("\tin %s at %s:%i\n", location->function, location->file, location->line);
+	}
+#endif
+}
+
 /*
 ================
 Com_DPrintf
