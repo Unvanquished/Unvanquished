@@ -64,6 +64,18 @@ typedef struct
 
 #define LOCATION_INFO { __FILE__, __LINE__, __func__ }
 
+typedef enum
+{
+	LOG_OFF = -3,
+	LOG_ERROR = -2,
+	LOG_WARN = -1,
+	LOG_NOTICE = 0, /*< information regarded worth notifying about; the default */
+	LOG_INFO = 1, /*< general helpful (even outside of debugging) but not necessary information */
+	LOG_DEBUG = 2,
+	LOG_TRACE = 3, /*< this is for finest grained debug-tracing, that should not be executed in NDEBUG */
+	LOG_ALL = 4
+} log_level_t;
+
 /**
  * print levels as currently used by the renderer
  */
