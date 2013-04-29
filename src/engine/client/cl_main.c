@@ -5267,66 +5267,7 @@ void CL_GlobalServers_f( void )
 	// servers with getserversExt %s %d ipvX
 	// not that big a deal since the extra servers won't respond to getinfo
 	// anyway.
-
-	for ( i = 3; i < count; i++ )
-	{
-		Q_strcat( command, sizeof( command ), " " );
-		Q_strcat( command, sizeof( command ), Cmd_Argv( i ) );
-	}
-
-	NET_OutOfBandPrint( NS_SERVER, to, "%s", command );
-	CL_RequestMotd();
-}
-
 #if 0
-
-/*
-==================
-CL_GlobalServers_f
-==================
-*/
-void CL_GlobalServers_f( void )
-{
-	netadr_t to;
-	int      count, i, masterNum;
-	char     command[ 1024 ], *masteraddress;
-	int      protocol = atoi( Cmd_Argv( 2 ) );   // Do this right away, otherwise weird things happen when you use the ingame "Get New Servers" button.
-
-	if ( ( count = Cmd_Argc() ) < 3 || ( masterNum = atoi( Cmd_Argv( 1 ) ) ) < 0 || masterNum > MAX_MASTER_SERVERS - 1 )
-	{
-		Com_Printf(_( "usage: globalservers <master# 0-%d> <protocol> [keywords]\n"), MAX_MASTER_SERVERS - 1 );
-		return;
-	}
-
-	sprintf( command, "sv_master%d", masterNum + 1 );
-	masteraddress = Cvar_VariableString( command );
-
-	if ( !*masteraddress )
-	{
-		Com_Printf("%s", _( "CL_GlobalServers_f: Error: No master server address given.\n" ));
-		return;
-	}
-
-	// reset the list, waiting for response
-	// -1 is used to distinguish a "no response"
-
-	i = NET_StringToAdr( masteraddress, &to, NA_UNSPEC );
-
-	if ( !i )
-	{
-		Com_Printf(_( "CL_GlobalServers_f: Error: could not resolve address of master %s\n"), masteraddress );
-		return;
-	}
-	else if ( i == 2 )
-	{
-		to.port = BigShort( PORT_MASTER );
-	}
-
-	Com_Printf(_( "Requesting servers from master %s…\n"), masteraddress );
-
-	cls.numglobalservers = -1;
-	cls.pingUpdateSource = AS_GLOBAL;
-
 	// Use the extended query for IPv6 masters
 	if ( to.type == NA_IP6 || to.type == NA_MULTICAST6 )
 	{
@@ -5347,6 +5288,7 @@ void CL_GlobalServers_f( void )
 	{
 		Com_sprintf( command, sizeof( command ), "getservers %d", protocol );
 	}
+#endif
 
 	for ( i = 3; i < count; i++ )
 	{
@@ -5355,9 +5297,8 @@ void CL_GlobalServers_f( void )
 	}
 
 	NET_OutOfBandPrint( NS_SERVER, to, "%s", command );
+	CL_RequestMotd();
 }
-
-#endif
 
 /*
 ==================
