@@ -449,6 +449,30 @@ static void Svcmd_Evacuation_f( void )
 	G_MapLog_Result( 'd' );
 }
 
+static void Svcmd_Armageddon_f( void )
+{
+	char arg[ 4 ];
+	int percent;
+
+	if ( trap_Argc() != 2 )
+	{
+		G_Printf( "usage: armageddon <percent>\n" );
+		return;
+	}
+
+	trap_Argv( 1, arg, sizeof( arg ) );
+	percent = atoi( arg );
+
+
+	if ( percent < 1 || percent > 100 )
+	{
+		G_Printf( "armageddon: Strength must be between 1 and 100\n" );
+		return;
+	}
+
+	G_Armageddon( percent / 100.0f );
+}
+
 static void Svcmd_MapRotation_f( void )
 {
 	char rotationName[ MAX_QPATH ];
@@ -705,6 +729,7 @@ static const struct svcmd
 	{ "admitDefeat",        qfalse, Svcmd_AdmitDefeat_f          },
 	{ "advanceMapRotation", qfalse, Svcmd_G_AdvanceMapRotation_f },
 	{ "alienWin",           qfalse, Svcmd_TeamWin_f              },
+	{ "armageddon",         qfalse, Svcmd_Armageddon_f           },
 	{ "asay",               qtrue,  Svcmd_MessageWrapper         },
 	{ "chat",               qtrue,  Svcmd_MessageWrapper         },
 	{ "cp",                 qtrue,  Svcmd_CenterPrint_f          },
