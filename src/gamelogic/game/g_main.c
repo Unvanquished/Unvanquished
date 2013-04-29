@@ -1435,11 +1435,13 @@ void G_DecreaseConfidence( void )
 		switch ( client->pers.teamSelection )
 		{
 			case TEAM_ALIENS:
-				client->ps.persistant[ PERS_CONFIDENCE ] = ( short )( level.alienConfidence[ CONFIDENCE_SUM ] * 10.0f );
+				client->ps.persistant[ PERS_CONFIDENCE ] = ( short )
+					( level.alienConfidence[ CONFIDENCE_SUM ] * 10.0f + 0.5f );
 				break;
 
 			case TEAM_HUMANS:
-				client->ps.persistant[ PERS_CONFIDENCE ] = ( short )( level.humanConfidence[ CONFIDENCE_SUM ] * 10.0f );
+				client->ps.persistant[ PERS_CONFIDENCE ] = ( short )
+					( level.humanConfidence[ CONFIDENCE_SUM ] * 10.0f + 0.5f );
 				break;
 
 			default:
