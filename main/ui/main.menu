@@ -65,7 +65,6 @@
 
 	MMBUTTON( "Play", open joinserver, 0 )
 	MMBUTTON( "Help", open help, 1 )
-// 	MMBUTTON( "News", open news_menu, 1 )
 //	MMBUTTON( "Profiles", open profiles, 2 )
 	MMBUTTON( "Options", open options, 2 )
 	MMBUTTON( "Demos", open demo, 3 )
