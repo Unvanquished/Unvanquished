@@ -800,7 +800,7 @@ qboolean Cvar_Command( void )
 	// perform a variable print or set
 	if ( Cmd_Argc() == 1 )
 	{
-		Com_Printf( _("\"%s\" is:\"%s" S_COLOR_WHITE "\" default:\"%s" S_COLOR_WHITE "\"\n"), v->name, v->string, v->resetString );
+		Com_Printf( _("\"%s\" is \"%s^7\" default: \"%s^7\"\n"), v->name, v->string, v->resetString );
 
 		if ( v->latchedString )
 		{
