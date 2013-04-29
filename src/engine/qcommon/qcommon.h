@@ -797,6 +797,8 @@ void       Com_EndRedirect( void );
 int QDECL  Com_VPrintf( const char *fmt, va_list argptr ) VPRINTF_LIKE(1);    // conforms to vprintf prototype for print callback passing
 void QDECL Com_Log( log_event_t *event, log_location_info_t *location );
 
+#define    PrintBanner(text) Com_Printf("----- %s -----\n", text );
+
 // *INDENT-ON*
 void       Com_Quit_f( void ) NORETURN;
 int        Com_EventLoop( void );

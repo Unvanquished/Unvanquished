@@ -101,7 +101,7 @@ portable_samplepair_t s_rawsamples[ MAX_RAW_SAMPLES ];
 
 void S_Base_SoundInfo_f( void )
 {
-	Com_Printf("%s", _( "----- Sound Info -----\n" ));
+	PrintBanner(_( "Sound Info" ))
 
 	if ( !s_soundStarted )
 	{

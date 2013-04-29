@@ -451,7 +451,7 @@ void S_Init( void )
 	cvar_t *cv;
 	qboolean  started = qfalse;
 
-	Com_Printf("%s", _( "------ Initializing Sound -----\n" ));
+	PrintBanner(_( "Initializing Sound" ))
 
 	cv = Cvar_Get( "s_initsound", "1", 0 );
 	if ( !cv->integer )

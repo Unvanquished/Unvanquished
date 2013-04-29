@@ -4106,7 +4106,7 @@ void CL_StartHunkUsers( void )
 		char renderers[ MAX_QPATH ];
 		char *from, *to;
 
-		Com_Printf("%s", _( "----- Initializing Renderer ----\n" ));
+		PrintBanner(_( "Initializing Renderer" ))
 
 		Q_strncpyz( renderers, cl_renderer->string, sizeof( renderers ) );
 		from = renderers;
@@ -4392,7 +4392,7 @@ CL_Init
 */
 void CL_Init( void )
 {
-	Com_Printf("%s", _( "----- Client Initialization -----\n" ));
+	PrintBanner(_( "Client Initialization" ))
 
 	Con_Init();
 
@@ -4623,7 +4623,7 @@ void CL_Init( void )
 	CL_OpenClientLog();
 	CL_WriteClientLog( "`~-     Client Opened     -~`\n" );
 
-	Com_Printf("%s", _( "----- Client Initialization Complete -----\n" ));
+	PrintBanner(_( "Client Initialization Complete" ))
 }
 
 /*
