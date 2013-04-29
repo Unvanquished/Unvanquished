@@ -1585,6 +1585,7 @@ static const struct {
 	{ "extend",       qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qno,    &g_extendVotesPercent,      VOTE_REMAIN, &g_extendVotesTime },
 	{ "admitdefeat",  qtrue,  V_TEAM,   T_NONE,    qfalse,  qno,    &g_admitDefeatVotesPercent },
 	{ "draw",         qtrue,  V_PUBLIC, T_NONE,    qtrue,   qyes,   &g_drawVotesPercent,        VOTE_AFTER,  &g_drawVotesAfter,  &g_drawVoteReasonRequired },
+	{ "armageddon",   qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qmaybe, &g_drawVotesPercent },
 	{ "map_restart",  qtrue,  V_PUBLIC, T_NONE,    qfalse,  qno,    &g_mapVotesPercent },
 	{ "map",          qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qmaybe, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
 	{ "layout",       qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qno,    &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
@@ -1988,6 +1989,22 @@ void Cmd_CallVote_f( gentity_t *ent )
 		level.voteDelay[ team ] = 3000;
 		strcpy( level.voteString[ team ], "evacuation" );
 		strcpy( level.voteDisplayString[ team ], "End match in a draw" );
+		break;
+
+	case VOTE_ARMAGEDDON:
+		if ( atoi( arg ) < 1 || atoi( arg ) > 100 )
+		{
+			trap_SendServerCommand( ent - g_entities,
+			                        va( "print_tr %s %s", QQ( N_("$1$: Argument must be anumber between 1 and 100\n") ),
+			                            cmd ) );
+			return;
+		}
+
+		level.voteDelay[ team ] = 3000;
+		Com_sprintf( level.voteString[ team ], sizeof( level.voteString ),
+		             "armageddon %s", Quote( arg ) );
+		Com_sprintf( level.voteDisplayString[ team ], sizeof( level.voteDisplayString[ team ] ),
+		             "Destroy %s%% of all defensive buildings", arg );
 		break;
 
 	case VOTE_MAP_RESTART:

@@ -3154,6 +3154,59 @@ void G_BuildableTouchTriggers( gentity_t *ent )
 
 /*
 ===============
+G_BuildingConfidenceReward
+
+Calculates the amount of confidence awarded for building a structure.
+TODO: Stores the reward with the buildable so it can be reverted on deconstruction.
+===============
+*/
+#define BCR_NEIGHBOR_RANGE      500.0f
+#define BCR_BASE_MODIFIER       0.8f
+#define BCR_FACTOR_PER_NEIGHBOR 0.9f
+
+float G_BuildingConfidenceReward( gentity_t *self )
+{
+	int             neighborNum, numNeighbors, neighbors[ MAX_GENTITIES ];
+	vec3_t          range, mins, maxs;
+	gentity_t       *neighbor;
+	float           distance, reward;
+
+	if ( !self || self->s.eType != ET_BUILDABLE )
+	{
+		return 0.0f;
+	}
+
+	reward = BG_Buildable( self->s.modelindex )->value * BCR_BASE_MODIFIER;
+
+	range[ 0 ] = range[ 1 ] = range[ 2 ] = BCR_NEIGHBOR_RANGE;
+	VectorAdd( self->s.origin, range, maxs );
+	VectorSubtract( self->s.origin, range, mins );
+	numNeighbors = trap_EntitiesInBox( mins, maxs, neighbors, MAX_GENTITIES );
+
+	for ( neighborNum = 0; neighborNum < numNeighbors; neighborNum++ )
+	{
+		neighbor = &g_entities[ neighbors[ neighborNum ] ];
+
+		if ( neighbor->s.eType == ET_BUILDABLE && neighbor->buildableTeam == self->buildableTeam &&
+			 neighbor != self && neighbor->spawned && neighbor->powered && neighbor->health > 0 &&
+		     neighbor->s.modelindex != BA_H_REPEATER )
+		{
+			distance = Distance( self->s.origin, neighbor->s.origin );
+
+			if ( distance > BCR_NEIGHBOR_RANGE )
+			{
+				continue;
+			}
+
+			reward *= BCR_FACTOR_PER_NEIGHBOR;
+		}
+	}
+
+	return reward;
+}
+
+/*
+===============
 G_BuildableThink
 
 General think function for buildables
@@ -3161,11 +3214,10 @@ General think function for buildables
 */
 void G_BuildableThink( gentity_t *ent, int msec )
 {
-	int maxHealth = BG_Buildable( ent->s.modelindex )->health;
-	int regenRate = BG_Buildable( ent->s.modelindex )->regenRate;
-	int buildTime = BG_Buildable( ent->s.modelindex )->buildTime;
-	int   reason, qualifier;
-	float reward, distanceToBase;
+	int   maxHealth = BG_Buildable( ent->s.modelindex )->health;
+	int   regenRate = BG_Buildable( ent->s.modelindex )->regenRate;
+	int   buildTime = BG_Buildable( ent->s.modelindex )->buildTime;
+	int   reason;
 
 	//toggle spawned flag for buildables
 	if ( !ent->spawned && ent->health > 0 && !level.pausedTime )
@@ -3202,35 +3254,9 @@ void G_BuildableThink( gentity_t *ent, int msec )
 						reason = CONF_REAS_BUILD_SUPPORT;
 				}
 
-				distanceToBase = G_DistanceToBase( ent, qtrue );
-				reward = ( float )BG_Buildable( ent->s.modelindex )->value;
-
-				if ( reason == CONF_REAS_BUILD_CRUCIAL )
-				{
-					reward *= 0.25f;
-					qualifier = CONF_QUAL_NONE;
-				}
-				else if ( distanceToBase > 1000.0f )
-				{
-					if ( G_DistanceToBase( ent, qfalse ) < 1500.0f )
-					{
-						//reward *= 1.0f;
-						qualifier = CONF_QUAL_CLOSE_TO_ENEMY_BASE;
-					}
-					else
-					{
-						reward *= 0.75f;
-						qualifier = CONF_QUAL_OUTSIDE_OWN_BASE;
-					}
-				}
-				else
-				{
-					reward *= 0.5f;
-					qualifier = CONF_QUAL_IN_OWN_BASE;
-				}
-
-				G_AddConfidence( BG_Buildable( ent->s.modelindex )->team, CONFIDENCE_BUILDING, reason,
-				                 qualifier, reward, &g_entities[ ent->builtBy->slot ] );
+				G_AddConfidence( BG_Buildable( ent->s.modelindex )->team, CONFIDENCE_BUILDING,
+				                 reason, CONF_QUAL_NONE, G_BuildingConfidenceReward( ent ),
+				                 &g_entities[ ent->builtBy->slot ] );
 			}
 		}
 	}
@@ -5047,6 +5073,60 @@ void G_BaseSelfDestruct( team_t team )
 		}
 
 		if ( ent->buildableTeam != team )
+		{
+			continue;
+		}
+
+		G_Damage( ent, NULL, NULL, NULL, NULL, 10000, 0, MOD_SUICIDE );
+	}
+}
+
+/*
+============
+G_Armageddon
+
+Destroys a part of all defensive buildings.
+strength in ]0,1] is the destruction quota.
+============
+*/
+void G_Armageddon( float strength )
+{
+	int       entNum;
+	gentity_t *ent;
+
+	if ( strength <= 0.0f )
+	{
+		return;
+	}
+
+	for ( entNum = MAX_CLIENTS; entNum < level.num_entities; entNum++ )
+	{
+		ent = &level.gentities[ entNum ];
+
+		// check for alive buildable
+		if ( ent->s.eType != ET_BUILDABLE || ent->health <= 0 )
+		{
+			continue;
+		}
+
+		// check for defensive building (includes DCC)
+		switch ( ent->s.modelindex )
+		{
+			case BA_A_ACIDTUBE:
+			case BA_A_TRAPPER:
+			case BA_A_HIVE:
+			case BA_A_BARRICADE:
+			case BA_H_MGTURRET:
+			case BA_H_TESLAGEN:
+			case BA_H_DCC:
+				break;
+
+			default:
+				continue;
+		}
+
+		// russian roulette
+		if ( rand() / ( float )RAND_MAX > strength )
 		{
 			continue;
 		}

@@ -739,6 +739,7 @@ typedef enum {
 	VOTE_EXTEND,
 	VOTE_ADMIT_DEFEAT,
 	VOTE_DRAW,
+	VOTE_ARMAGEDDON,
 	VOTE_MAP_RESTART,
 	VOTE_MAP,
 	VOTE_LAYOUT,
@@ -1058,6 +1059,7 @@ int              G_LayoutList( const char *map, char *list, int len );
 void             G_LayoutSelect( void );
 void             G_LayoutLoad( void );
 void             G_BaseSelfDestruct( team_t team );
+void             G_Armageddon( float strength );
 int              G_NextQueueTime( int queuedBP, int totalBP, int queueBaseRate );
 void             G_QueueBuildPoints( gentity_t *self );
 int              G_GetBuildPointsInt( team_t team );
