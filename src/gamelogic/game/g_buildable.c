@@ -5032,6 +5032,7 @@ void G_Armageddon( float strength )
 			case BA_A_ACIDTUBE:
 			case BA_A_TRAPPER:
 			case BA_A_HIVE:
+			case BA_A_BARRICADE:
 			case BA_H_MGTURRET:
 			case BA_H_TESLAGEN:
 			case BA_H_DCC:
