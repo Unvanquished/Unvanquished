@@ -795,6 +795,7 @@ void       Com_EndRedirect( void );
 
 // *INDENT-OFF*
 int QDECL  Com_VPrintf( const char *fmt, va_list argptr ) VPRINTF_LIKE(1);    // conforms to vprintf prototype for print callback passing
+void QDECL Com_Log( log_event_t *event, log_location_info_t *location );
 
 // *INDENT-ON*
 void       Com_Quit_f( void ) NORETURN;

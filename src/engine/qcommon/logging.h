@@ -107,8 +107,6 @@ typedef enum
 	ERR_SERVERDISCONNECT, // don't kill server
 } errorParm_t;
 
-void QDECL Com_Log( log_event_t *event, log_location_info_t *location );
-
 // this is only here so the functions in q_shared.c and bg_*.c can link
 void QDECL Com_Error( int level, const char *error, ... ) PRINTF_LIKE(2) NORETURN;
 void QDECL Com_Printf( const char *msg, ... ) PRINTF_LIKE(1);
