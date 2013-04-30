@@ -881,6 +881,17 @@ void Cmd_If_f( void )
 	}
 }
 
+
+static void Cmd_Math_PrintUsage( void )
+{
+	Cmd_PrintUsage( _( "<variableToSet> = <number> <operator> <number>" ), NULL );
+	Cmd_PrintUsage( _( "<variableToSet> <operator> <number>" ), NULL );
+	Cmd_PrintUsage( _( "<variableToSet> (++|--)" ), NULL );
+
+	Com_Printf(_( "valid operators: + - × * ÷ /\n" ) );
+}
+
+
 /*
 ===============
 Cmd_Math_f
@@ -910,7 +921,7 @@ void Cmd_Math_f( void )
 		}
 		else
 		{
-			Com_Printf(_( "math <variableToSet> = <number> <operator> <number>\nmath <variableToSet> <operator> <number>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - × * ÷ /\n" ));
+			Cmd_Math_PrintUsage();
 			return;
 		}
 	}
@@ -944,7 +955,7 @@ void Cmd_Math_f( void )
 		}
 		else
 		{
-			Com_Printf(_( "math <variableToSet> = <number> <operator> <number>\nmath <variableToSet> <operator> <number>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - × * ÷ /\n" ));
+			Cmd_Math_PrintUsage();
 			return;
 		}
 	}
@@ -979,13 +990,13 @@ void Cmd_Math_f( void )
 		}
 		else
 		{
-			Com_Printf(_( "math <variableToSet> = <number> <operator> <number>\nmath <variableToSet> <operator> <number>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * /\n" ));
+			Cmd_Math_PrintUsage();
 			return;
 		}
 	}
 	else
 	{
-		Com_Printf(_( "math <variableToSet> = <number> <operator> <number>\nmath <variableToSet> <operator> <number>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * /\n" ));
+		Cmd_Math_PrintUsage();
 		return;
 	}
 }
