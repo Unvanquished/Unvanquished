@@ -4766,10 +4766,7 @@ void FS_Restart( int checksumFeed )
 				}
 
 				// bani - write a new one
-				if ( !Com_WriteProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
-				{
-					Com_Printf( S_WARNING "couldn't write profiles/%s/profile.pid\n", cl_profileStr );
-				}
+				Com_WriteProfile( va( "profiles/%s/profile.pid", cl_profileStr ) );
 
 				// exec the config
 				Cbuf_AddText( va( "exec profiles/%s/%s\n", cl_profileStr, CONFIG_NAME ) );

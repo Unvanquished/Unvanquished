@@ -2917,7 +2917,7 @@ qboolean Com_WriteProfile( char *profile_path )
 
 	if ( f < 0 )
 	{
-		Com_Printf( "Com_WriteProfile: Can't write %s.\n", profile_path );
+		Com_Printf( _( "%s couldn't write %s\n"), "[Com_WriteProfile]" S_WARNING, profile_path );
 		return qfalse;
 	}
 
@@ -3032,10 +3032,7 @@ void Com_Init( char *commandLine )
 			}
 
 			// bani - write a new one
-			if ( !Com_WriteProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
-			{
-				Com_Printf(_( S_WARNING "couldn't write profiles/%s/profile.pid\n"), cl_profileStr );
-			}
+			Com_WriteProfile( va( "profiles/%s/profile.pid", cl_profileStr ) );
 
 			// exec the config
 			Cbuf_AddText( va( "exec profiles/%s/" CONFIG_NAME "\n", cl_profileStr ) );
