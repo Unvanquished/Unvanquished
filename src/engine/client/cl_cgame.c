@@ -623,7 +623,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0; //silence warning and have a fallback behavior if Com_Error behavior changes
 
 		case CG_LOG:
-			Com_Log( VMA( 1 ), NULL );
+			Com_LogEvent( VMA( 1 ), NULL );
 			return 0;
 
 		case CG_MILLISECONDS:

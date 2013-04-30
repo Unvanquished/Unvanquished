@@ -279,7 +279,7 @@ void QDECL PRINTF_LIKE(1) Com_Printf( const char *fmt, ... )
 	va_end( argptr );
 }
 
-void QDECL Com_Log( log_event_t *event, log_location_info_t *location )
+void QDECL Com_LogEvent( log_event_t *event, log_location_info_t *location )
 {
 	switch (event->level)
 	{
