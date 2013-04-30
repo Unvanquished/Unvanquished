@@ -725,7 +725,7 @@
 	YESNOX	( netsound, "Doppler Sound:", "s_doppler", play "sound/misc/menu1.wav", 7 )
 	TEXTX	( netsound, "Network", 9 )
 	MULTIX	( netsound, "Net Data Rate:", "rate",
-			"<=28.8k" 2500 "33.6k" 3000 "56k" 4000 "ISDN" 5000 "LAN/CABLE/xDSl" 25000,
+			"<=28.8k" 2500 "33.6k" 3000 "56k" 4000 "ISDN" 5000 "LAN/CABLE/xDSL" 25000,
 			play "sound/misc/menu1.wav",
 			10 )
 	BUTTONX	( netsound, APPLY, play "sound/misc/menu1.wav"; exec "snd_restart", 12 )
