@@ -483,11 +483,11 @@ void Cmd_Exec_f( void )
 	{
 		if ( executeSilent )
 		{
-			Com_Printf(_("execq <filename> (args) : execute a script file without notification, a shortcut for exec -q\n"));
+			Cmd_PrintUsage(_("<filename> [<arguments>…]"), _("execute a script file without notification, a shortcut for exec -q"));
 		}
 		else
 		{
-			Com_Printf(_("exec [-q|-f|-s] <filename> (args) : execute a script file.\n"));
+			Cmd_PrintUsage(_("[-q|-f|-s] <filename> [<arguments>…]"), _("execute a script file."));
 		}
 
 		return;
@@ -554,7 +554,7 @@ void Cmd_Vstr_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Com_Printf(_( "vstr <variablename> : execute a variable command\n" ));
+		Cmd_PrintUsage(_("<variablename>"), _("execute a variable command"));
 		return;
 	}
 
@@ -726,7 +726,7 @@ void Cmd_ModCase_f( void )
 
 	if ( argc < 3 )
 	{
-		Com_Printf(_( "modcase <modifiers> <command> [<modifiers> <command>] … [<command>]\n" ));
+		Cmd_PrintUsage(_( "<modifiers> <command> [<modifiers> <command>] … [<command>]"), NULL );
 		return;
 	}
 
@@ -1004,7 +1004,7 @@ void Cmd_Concat_f( void )
 
 	if ( Cmd_Argc() < 3 )
 	{
-		Com_Printf(_( "concat <variableToSet> <variable1> … <variableN> : concatenates variable1 to variableN and sets the result to variableToSet\n" ));
+		Cmd_PrintUsage(_("<variableToSet> <variable1> … <variableN>"), _("concatenates variable1 to variableN and sets the result to variableToSet"));
 		return;
 	}
 
@@ -1031,7 +1031,7 @@ void Cmd_Calc_f( void )
 
 	if ( Cmd_Argc() < 3 )
 	{
-		Com_Printf(_( "calc <number> <operator> <number>, accepted operators: +, -, /, */x\n" ));
+		Cmd_PrintUsage(_( "<number> <operator> <number>" ), _("Calculator.\nAccepted operators: +, -, /, */x\n") );
 		return;
 	}
 
@@ -1075,7 +1075,7 @@ void Cmd_Calc_f( void )
 	}
 
 	// Invalid function, help the poor guy out
-	Com_Printf(_( "calc <number> <operator> <number>, accepted operators: +, -, /, */x\n" ));
+	Cmd_PrintUsage(_( "<number> <operator> <number>" ), _("Calculator.\nAccepted operators: +, -, /, */x\n") );
 }
 
 /*
@@ -1105,7 +1105,8 @@ void Cmd_Undelay_f( void )
 	// Check if the call is valid
 	if ( Cmd_Argc() < 1 )
 	{
-		Com_Printf(_( "undelay <name> (command)\nremoves all commands with <name> in them.\nif (command) is specified, the removal will be limited only to delays whose commands contain (command).\n" ));
+		Cmd_PrintUsage(_("<name> (command)"), _( "removes all commands with <name> in them.\n"
+				"if (command) is specified, the removal will be limited only to delays whose commands contain (command)." ));
 		return;
 	}
 
@@ -1235,7 +1236,7 @@ void Cmd_Random_f( void )
 	}
 	else
 	{
-		Com_Printf(_( "random <variableToSet> <minNumber> <maxNumber>\n" ));
+		Cmd_PrintUsage("<variableToSet> <minNumber> <maxNumber>", "sets a variable to a random integer between minNumber and maxNumber");
 	}
 }
 
@@ -1379,7 +1380,7 @@ void Cmd_UnAlias_f( void )
 	// Get args
 	if ( Cmd_Argc() < 2 )
 	{
-		Com_Printf(_( "unalias <name> : delete an alias\n" ));
+		Cmd_PrintUsage(_("<name>"), _("delete an alias"));
 		return;
 	}
 
@@ -1426,8 +1427,8 @@ void Cmd_Alias_f( void )
 	// Get args
 	if ( Cmd_Argc() < 2 )
 	{
-		Com_Printf(_( "alias <name> : show an alias\n" ));
-		Com_Printf(_( "alias <name> <exec> : create an alias\n" ));
+		Cmd_PrintUsage(_("<name>"), _("show an alias"));
+		Cmd_PrintUsage(_("<name> <exec>"), _("create an alias"));
 		return;
 	}
 

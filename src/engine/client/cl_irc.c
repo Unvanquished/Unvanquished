@@ -2031,7 +2031,7 @@ void CL_IRCSay( void )
 
 	if ( Cmd_Argc() < 2 )
 	{
-		Com_Printf("%s", _( "usage: irc_say <text>\n" ));
+		Cmd_PrintUsage(_("<text>"), NULL);
 		return;
 	}
 

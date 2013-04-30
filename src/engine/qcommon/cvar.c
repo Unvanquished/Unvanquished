@@ -832,7 +832,7 @@ void Cvar_Toggle_f( void )
 
 	if ( c < 2 )
 	{
-		Com_Printf("%s", _("usage: toggle <variable> [<value> …]\n") );
+		Cmd_PrintUsage(_("<variable> [<value> …]"), NULL);
 		return;
 	}
 
@@ -875,7 +875,7 @@ void Cvar_Cycle_f( void )
 
 	if ( Cmd_Argc() < 4 || Cmd_Argc() > 5 )
 	{
-		Com_Printf(_( "usage: cycle <variable> <start> <end> [step]\n" ));
+		Cmd_PrintUsage(_("<variable> <start> <end> [<step>]"), NULL);
 		return;
 	}
 
@@ -936,7 +936,7 @@ void Cvar_Set_f( void )
 
 	if ( c < 3 )
 	{
-		Com_Printf(_( "usage: set <variable> <value> [unsafe]\n" ));
+		Cmd_PrintUsage(_("<variable> <value> [unsafe]"), NULL);
 		return;
 	}
 
@@ -1003,7 +1003,7 @@ static void Cvar_Set_Flagged( int flag )
 
 	if ( Cmd_Argc() < 3 )
 	{
-		Com_Printf(_( "usage: %s <variable> <value> [unsafe]\n" ), Cmd_Argv( 0 ) );
+		Cmd_PrintUsage(_("<variable> <value> [unsafe]"), NULL);
 		return;
 	}
 
@@ -1063,7 +1063,7 @@ void Cvar_Reset_f( void )
 {
 	if ( Cmd_Argc() != 2 )
 	{
-		Com_Printf(_( "usage: reset <variable>\n" ));
+		Cmd_PrintUsage(_("<variable>"), NULL);
 		return;
 	}
 

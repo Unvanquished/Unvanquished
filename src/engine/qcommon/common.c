@@ -3362,7 +3362,7 @@ void Com_WriteConfig_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Com_Printf(_( "Usage: writeconfig <filename>\n" ));
+		Cmd_PrintUsage(_("<filename>"), NULL);
 		return;
 	}
 
@@ -3386,7 +3386,7 @@ void Com_WriteBindings_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Com_Printf(_( "Usage: writebindings <filename>\n" ));
+		Cmd_PrintUsage(_("<filename>"), NULL);
 		return;
 	}
 

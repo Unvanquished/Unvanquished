@@ -440,7 +440,7 @@ void S_Music_f( void )
 	}
 	else
 	{
-		Com_Printf( "music <musicfile> [loopfile]\n" );
+		Cmd_PrintUsage("<musicfile> [<loopfile>]", NULL);
 		return;
 	}
 }

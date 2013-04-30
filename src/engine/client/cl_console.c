@@ -245,7 +245,7 @@ void Con_Dump_f( void )
 
 	if ( l > 2 )
 	{
-		Com_Printf("%s", _( "usage: condump [filename]\n" ));
+		Cmd_PrintUsage(_("[<filename>]"), NULL);
 		return;
 	}
 
@@ -304,7 +304,7 @@ void Con_Search_f( void )
 
 	if ( c < 2 )
 	{
-		Com_Printf(_( "usage: %s <string1> <string2> <…>\n"), Cmd_Argv( 0 ) );
+		Cmd_PrintUsage(_("<string>…"), NULL);
 		return;
 	}
 
@@ -349,7 +349,7 @@ void Con_Grep_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Com_Printf("%s", _( "usage: grep <string>\n" ));
+		Cmd_PrintUsage(_("<string>"), NULL);
 		return;
 	}
 

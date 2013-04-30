@@ -374,7 +374,7 @@ void CL_Voip_f( void )
 		}
 		else
 		{
-			Com_Printf("%s", _( "usage: voip gain <playerID#> [value]\n" ));
+			Cmd_PrintUsage("gain <playerID#> [<value>]", NULL);
 		}
 	}
 	else if ( strcmp( cmd, "muteall" ) == 0 )
@@ -391,9 +391,9 @@ void CL_Voip_f( void )
 	}
 	else
 	{
-		Com_Printf( "%s", _( "usage: voip [un]ignore <playerID#>\n"
-		            "       voip [un]muteall\n"
-		            "       voip gain <playerID#> [value]\n" ) );
+		Cmd_PrintUsage("[un]ignore <playerID#>", NULL);
+		Cmd_PrintUsage("[un]muteall", NULL);
+		Cmd_PrintUsage("gain <playerID#> [value]", NULL);
 	}
 }
 
@@ -914,7 +914,7 @@ void CL_Record_f( void )
 
 	if ( Cmd_Argc() > 2 )
 	{
-		Com_Printf("%s", _( "record <demoname>\n" ));
+		Cmd_PrintUsage("<name>", NULL);
 		return;
 	}
 
@@ -1258,7 +1258,7 @@ void CL_WriteWaveOpen( void )
 
 	if ( Cmd_Argc() > 2 )
 	{
-		Com_Printf("%s", _( "wav_record <wavname>\n" ));
+		Cmd_PrintUsage("<name>", NULL);
 		return;
 	}
 
@@ -1365,7 +1365,7 @@ void CL_PlayDemo_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Com_Printf("%s", _( "playdemo <demoname>\n" ));
+		Cmd_PrintUsage("<name>", NULL);
 		return;
 	}
 
@@ -1996,7 +1996,7 @@ void CL_Connect_f( void )
 
 	if ( argc != 2 && argc != 3 )
 	{
-		Com_Printf("%s", _( "usage: connect [-4|-6] server\n" ));
+		Cmd_PrintUsage(_("[-4|-6] <server>"), NULL);
 		return;
 	}
 
@@ -5228,7 +5228,7 @@ void CL_GlobalServers_f( void )
 
 	if ( ( count = Cmd_Argc() ) < 2 || ( masterNum = atoi( Cmd_Argv( 1 ) ) ) < 0 || masterNum > MAX_MASTER_SERVERS - 1 )
 	{
-		Com_Printf(_( "usage: globalservers <master# 0-%d> [protocol] [keywords]\n"), MAX_MASTER_SERVERS - 1 );
+		Cmd_PrintUsage("<master# 0-" XSTRING(MAX_MASTER_SERVERS - 1) "> [<protocol>] [<keywords>]", NULL);
 		return;
 	}
 
@@ -5485,7 +5485,7 @@ void CL_Ping_f( void )
 
 	if ( argc != 2 && argc != 3 )
 	{
-		Com_Printf("%s", _( "usage: ping [-4|-6] server\n" ));
+		Cmd_PrintUsage(_("[-4|-6] <server>"), NULL);
 		return;
 	}
 
@@ -5686,7 +5686,7 @@ void CL_ServerStatus_f( void )
 		if ( cls.state != CA_ACTIVE || clc.demoplaying )
 		{
 			Com_Printf("%s", _( "Not connected to a server.\n" ));
-			Com_Printf("%s", _( "usage: serverstatus [-4|-6] server\n" ));
+			Cmd_PrintUsage(_("[-4|-6] <server>"), NULL);
 			return;
 		}
 
