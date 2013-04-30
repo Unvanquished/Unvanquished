@@ -286,16 +286,16 @@ void QDECL Com_Log( log_event_t *event, log_location_info_t *location )
 	case LOG_OFF:
 		return;
 	case LOG_WARN:
-		Com_Printf(S_WARNING "%s\n", event->message);
+		Com_Printf(_("^3Warning: ^7%s\n"), event->message);
 		break;
 	case LOG_ERROR:
-		Com_Printf(S_ERROR "%s\n", event->message);
+		Com_Printf(_("^1Error: ^7%s\n"), event->message);
 		break;
 	case LOG_DEBUG:
-		Com_Printf(S_DEBUG "%s\n", event->message);
+		Com_Printf(_("Debug: %s\n"), event->message);
 		break;
 	case LOG_TRACE:
-		Com_Printf("Trace: %s \n", event->message);
+		Com_Printf("Trace: %s\n", event->message);
 		return;
 	default:
 		Com_Printf("%s\n", event->message);
