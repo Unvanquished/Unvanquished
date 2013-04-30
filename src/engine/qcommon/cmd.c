@@ -1558,6 +1558,23 @@ void Cmd_RestoreCmdContext( void )
 
 /*
 ============
+Cmd_PrintUsage
+============
+*/
+void Cmd_PrintUsage( const char *syntax, const char *description )
+{
+	if(!description)
+	{
+		Com_Printf( "%s: %s %s\n", _("usage"), Cmd_Argv( 0 ), syntax );
+	}
+	else
+	{
+		Com_Printf( "%s: %s %s — %s\n", _("usage"),  Cmd_Argv( 0 ), syntax, description );
+	}
+}
+
+/*
+============
 Cmd_Argc
 ============
 */

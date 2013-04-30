@@ -459,6 +459,7 @@ void Cmd_CompleteCfgName( char *args, int argNum );
 
 // callback with each valid string
 
+void Cmd_PrintUsage( const char *syntax, const char *description );
 int  Cmd_Argc( void );
 char *Cmd_Argv( int arg );
 void Cmd_ArgvBuffer( int arg, char *buffer, int bufferLength );
