@@ -266,7 +266,7 @@ void Con_Dump_f( void )
 
 	if ( !f )
 	{
-		Com_Printf("%s", _( "ERROR: couldn't open.\n" ));
+		Com_Printf(S_ERROR "%s\n", _( "couldn't open." ));
 		return;
 	}
 
