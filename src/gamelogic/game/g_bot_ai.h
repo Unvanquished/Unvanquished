@@ -23,6 +23,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define __BOT_AI_HEADER
 #include "g_local.h"
 
+// integer constants given to the behavior tree to use as parameters
+// values E_A_SPAWN to E_H_REPEATER are meant to have the same
+// integer values as the corresponding enum in buildable_t
+// TODO: get rid of dependence on buildable_t
 typedef enum
 {
 	E_NONE,
@@ -46,6 +50,8 @@ typedef enum
 	E_DAMAGEDBUILDING
 } AIEntity_t;
 
+// all behavior tree nodes must return one of 
+// these status when finished
 typedef enum
 {
 	STATUS_FAILURE = 0,
@@ -53,11 +59,12 @@ typedef enum
 	STATUS_RUNNING
 } AINodeStatus_t;
 
+// behavior tree node types
 typedef enum
 {
-  SELECTOR_NODE,
-  ACTION_NODE,
-  CONDITION_NODE
+	SELECTOR_NODE,
+	ACTION_NODE,
+	CONDITION_NODE
 } AINode_t;
 
 typedef struct
@@ -70,7 +77,7 @@ struct AIGenericNode_s;
 
 typedef AINodeStatus_t ( *AINodeRunner )( gentity_t *, struct AIGenericNode_s * );
 
-// all nodes must conform to this interface
+// all behavior tree nodes must conform to this interface
 typedef struct AIGenericNode_s
 {
 	AINode_t type;
@@ -104,6 +111,7 @@ typedef struct
 	float range;
 } AIMoveToNode_t;
 
+// operations used in condition nodes
 // ordered according to precedence
 // lower values == higher precedence
 typedef enum
@@ -118,14 +126,15 @@ typedef enum
 	OP_AND,
 	OP_OR,
 	OP_NONE
-} AIConditionOperator_t;
+} AIOpType_t;
 
+// types of expressions in condition nodes
 typedef enum
 {
 	EX_OP,
 	EX_VALUE,
 	EX_FUNC
-} AIConditionExpression_t;
+} AIExpType_t;
 
 typedef enum
 {
@@ -135,7 +144,7 @@ typedef enum
 
 typedef struct
 {
-	AIConditionExpression_t type;
+	AIExpType_t             expType;
 	AIValueType_t           valType;
 
 	union
@@ -149,40 +158,41 @@ typedef AIValue_t (*AIFunc)( gentity_t *self, const AIValue_t *params );
 
 typedef struct
 {
-	AIConditionExpression_t type;
-	AIValueType_t           valType;
-	AIFunc                  func;
-	AIValue_t               *params;
-	int                     nparams;
+	AIExpType_t   expType;
+	AIValueType_t retType;
+	AIFunc        func;
+	AIValue_t     *params;
+	int           nparams;
 } AIValueFunc_t;
 
+// all ops must conform to this interface
 typedef struct
 {
-	AIConditionExpression_t type;
-	AIConditionOperator_t   op;
+	AIExpType_t expType;
+	AIOpType_t  opType;
 } AIOp_t;
 
 typedef struct 
 {
-	AIConditionExpression_t type;
-	AIConditionOperator_t   op;
-	AIConditionExpression_t *exp1;
-	AIConditionExpression_t *exp2;
+	AIExpType_t expType;
+	AIOpType_t  opType;
+	AIExpType_t *exp1;
+	AIExpType_t *exp2;
 } AIBinaryOp_t;
 
 typedef struct
 {
-	AIConditionExpression_t type;
-	AIConditionOperator_t   op;
-	AIConditionExpression_t *exp;
+	AIExpType_t expType;
+	AIOpType_t  opType;
+	AIExpType_t *exp;
 } AIUnaryOp_t;
 
 typedef struct
 {
-	AINode_t type;
-	AINodeRunner run;
+	AINode_t        type;
+	AINodeRunner    run;
 	AIGenericNode_t *child;
-	AIConditionExpression_t *exp;
+	AIExpType_t     *exp;
 } AIConditionNode_t;
 
 typedef struct

@@ -117,7 +117,7 @@ static void CheckToken( const char *tokenValueName, const char *nodename, const 
 static AIValue_t AIBoxFloat( float f )
 {
 	AIValue_t t;
-	t.type = EX_VALUE;
+	t.expType = EX_VALUE;
 	t.valType = VALUE_FLOAT;
 	t.l.floatValue = f;
 	return t;
@@ -126,7 +126,7 @@ static AIValue_t AIBoxFloat( float f )
 static AIValue_t AIBoxInt( int i )
 {
 	AIValue_t t;
-	t.type = EX_VALUE;
+	t.expType = EX_VALUE;
 	t.valType = VALUE_INT;
 	t.l.intValue = i;
 	return t;
@@ -281,36 +281,34 @@ static AIValue_t botClass( gentity_t *self, const AIValue_t *params )
 }
 
 // functions accessible to the behavior tree for use in condition nodes
-static const struct AIFuncMap_s
+static const struct AIConditionMap_s
 {
 	const char    *name;
-	AIValueType_t type;
+	AIValueType_t retType;
 	AIFunc        func;
 	int           nparams;
-} funcs[] = 
+} conditionFuncs[] =
 {
-	{ "alertedToEnemy",     VALUE_INT,   alertedToEnemy,    0 },
-	{ "baseRushScore",      VALUE_FLOAT, baseRushScore,     0 },
-	{ "buildingIsDamaged",  VALUE_INT,   buildingIsDamaged, 0 },
-	{ "class",              VALUE_INT,   botClass,          0 },
-	{ "distanceTo",         VALUE_FLOAT, distanceTo,        1 },
-	{ "haveUpgrade",        VALUE_INT,   haveUpgrade,       1 },
-	{ "haveWeapon",         VALUE_INT,   haveWeapon,        1 },
-	{ "healScore",          VALUE_FLOAT, healScore,         0 },
-	{ "percentHealth",      VALUE_FLOAT, botHealth,         0 },
-	{ "team",               VALUE_INT,   botTeam,           0 },
-	{ "teamateHasWeapon",   VALUE_INT,   teamateHasWeapon,  1 },
-	{ "weapon",             VALUE_INT,   currentWeapon,     0 }
+	{ "alertedToEnemy",    VALUE_INT,   alertedToEnemy,    0 },
+	{ "baseRushScore",     VALUE_FLOAT, baseRushScore,     0 },
+	{ "buildingIsDamaged", VALUE_INT,   buildingIsDamaged, 0 },
+	{ "class",             VALUE_INT,   botClass,          0 },
+	{ "distanceTo",        VALUE_FLOAT, distanceTo,        1 },
+	{ "haveUpgrade",       VALUE_INT,   haveUpgrade,       1 },
+	{ "haveWeapon",        VALUE_INT,   haveWeapon,        1 },
+	{ "healScore",         VALUE_FLOAT, healScore,         0 },
+	{ "percentHealth",     VALUE_FLOAT, botHealth,         0 },
+	{ "team",              VALUE_INT,   botTeam,           0 },
+	{ "teamateHasWeapon",  VALUE_INT,   teamateHasWeapon,  1 },
+	{ "weapon",            VALUE_INT,   currentWeapon,     0 }
 };
 
-typedef struct
+static const struct AIOpMap_s
 {
 	const char            *str;
-	int                   subtype;
-	AIConditionOperator_t op;
-} AIOpMap_t;
-
-static const AIOpMap_t opmap[] =
+	int                   tokenSubtype;
+	AIOpType_t            opType;
+} conditionOps[] =
 {
 	{ ">=", P_LOGIC_GEQ,     OP_GREATERTHANEQUAL },
 	{ ">",  P_LOGIC_GREATER, OP_GREATERTHAN      },
@@ -323,7 +321,7 @@ static const AIOpMap_t opmap[] =
 	{ "||", P_LOGIC_OR,      OP_OR               }
 };
 
-static AIConditionOperator_t opFromToken( pc_token_t *token )
+static AIOpType_t opTypeFromToken( pc_token_t *token )
 {
 	int i;
 	if ( token->type != TT_PUNCTUATION )
@@ -331,30 +329,30 @@ static AIConditionOperator_t opFromToken( pc_token_t *token )
 		return OP_NONE;
 	}
 
-	for ( i = 0; i < ARRAY_LEN( opmap ); i++ )
+	for ( i = 0; i < ARRAY_LEN( conditionOps ); i++ )
 	{
-		if ( token->subtype == opmap[ i ].subtype )
+		if ( token->subtype == conditionOps[ i ].tokenSubtype )
 		{
-			return opmap[ i ].op;
+			return conditionOps[ i ].opType;
 		}
 	}
 	return OP_NONE;
 }
 
-static const char *opToString( AIConditionOperator_t op )
+static const char *opTypeToString( AIOpType_t op )
 {
 	int i;
-	for ( i = 0; i < ARRAY_LEN( opmap ); i++ )
+	for ( i = 0; i < ARRAY_LEN( conditionOps ); i++ )
 	{
-		if ( opmap[ i ].op == op )
+		if ( conditionOps[ i ].opType == op )
 		{
-			return opmap[ i ].str;
+			return conditionOps[ i ].str;
 		}
 	}
 	return NULL;
 }
 
-static qboolean isBinaryOp( AIConditionOperator_t op )
+static qboolean isBinaryOp( AIOpType_t op )
 {
 	switch ( op )
 	{
@@ -371,13 +369,13 @@ static qboolean isBinaryOp( AIConditionOperator_t op )
 	}
 }
 
-static qboolean isUnaryOp( AIConditionOperator_t op )
+static qboolean isUnaryOp( AIOpType_t op )
 {
 	return op == OP_NOT;
 }
 
 // compare operator precedence
-static int opCompare( AIConditionOperator_t op1, AIConditionOperator_t op2 )
+static int opCompare( AIOpType_t op1, AIOpType_t op2 )
 {
 	if ( op1 < op2 )
 	{
@@ -446,18 +444,18 @@ static AIOp_t *newOp( pc_token_list *list )
 	pc_token_list *current = list;
 	AIOp_t *ret = NULL;
 
-	AIConditionOperator_t op = opFromToken( &current->token );
+	AIOpType_t op = opTypeFromToken( &current->token );
 
 	if ( isBinaryOp( op ) )
 	{
 		AIBinaryOp_t *b = ( AIBinaryOp_t * ) BG_Alloc( sizeof( *b ) );
-		b->op = op;
+		b->opType = op;
 		ret = ( AIOp_t * ) b;
 	}
 	else if ( isUnaryOp( op ) )
 	{
 		AIUnaryOp_t *u = ( AIUnaryOp_t * ) BG_Alloc( sizeof( *u ) );
-		u->op = op;
+		u->opType = op;
 		ret = ( AIOp_t * ) u;
 	}
 
@@ -487,11 +485,11 @@ static AIValueFunc_t *newValueFunc( pc_token_list **list )
 	pc_token_list *parenEnd = NULL;
 	pc_token_list *parse = NULL;
 	int numParams = 0;
-	struct AIFuncMap_s *f;
-	
+	struct AIConditionMap_s *f;
+
 	memset( &v, 0, sizeof( v ) );
 
-	f = bsearch( current->token.string, funcs, ARRAY_LEN( funcs ), sizeof( *funcs ), cmdcmp );
+	f = bsearch( current->token.string, conditionFuncs, ARRAY_LEN( conditionFuncs ), sizeof( *conditionFuncs ), cmdcmp );
 
 	if ( !f )
 	{
@@ -500,8 +498,8 @@ static AIValueFunc_t *newValueFunc( pc_token_list **list )
 		return NULL;
 	}
 
-	v.type = EX_FUNC;
-	v.valType = f->type;
+	v.expType = EX_FUNC;
+	v.retType = f->retType;
 	v.func =    f->func;
 	v.nparams = f->nparams;
 
@@ -609,7 +607,7 @@ static void FreeValueFunc( AIValueFunc_t *v )
 	BG_Free( v->params );
 	BG_Free( v );
 }
-static void FreeExpression( AIConditionExpression_t *exp )
+static void FreeExpression( AIExpType_t *exp )
 {
 	if ( !exp )
 	{
@@ -641,13 +639,13 @@ static void FreeOp( AIOp_t *op )
 		return;
 	}
 
-	if ( isBinaryOp( op->op ) )
+	if ( isBinaryOp( op->opType ) )
 	{
 		AIBinaryOp_t *b = ( AIBinaryOp_t * ) op;
 		FreeExpression( b->exp1 );
 		FreeExpression( b->exp2 );
 	}
-	else if ( isUnaryOp( op->op ) )
+	else if ( isUnaryOp( op->opType ) )
 	{
 		AIUnaryOp_t *u = ( AIUnaryOp_t * ) op;
 		FreeExpression( u->exp );
@@ -656,28 +654,28 @@ static void FreeOp( AIOp_t *op )
 	BG_Free( op );
 }
 
-AIConditionExpression_t *makeExpression( AIOp_t *op, AIConditionExpression_t *exp1, AIConditionExpression_t *exp2 )
+AIExpType_t *makeExpression( AIOp_t *op, AIExpType_t *exp1, AIExpType_t *exp2 )
 {
-	if ( isUnaryOp( op->op ) )
+	if ( isUnaryOp( op->opType ) )
 	{
 		AIUnaryOp_t *u = ( AIUnaryOp_t * ) op;
 		u->exp = exp1;
 	}
-	else if ( isBinaryOp( op->op ) )
+	else if ( isBinaryOp( op->opType ) )
 	{
 		AIBinaryOp_t *b = ( AIBinaryOp_t * ) op;
 		b->exp1 = exp1;
 		b->exp2 = exp2;
 	}
 
-	return ( AIConditionExpression_t * ) op;
+	return ( AIExpType_t * ) op;
 }
 
-AIConditionExpression_t *Primary( pc_token_list **list );
-AIConditionExpression_t *ReadConditionExpression( pc_token_list **list, AIConditionOperator_t op2 )
+AIExpType_t *Primary( pc_token_list **list );
+AIExpType_t *ReadConditionExpression( pc_token_list **list, AIOpType_t op2 )
 {
-	AIConditionExpression_t *t;
-	AIConditionOperator_t   op;
+	AIExpType_t *t;
+	AIOpType_t  op;
 
 	if ( !*list )
 	{
@@ -687,11 +685,11 @@ AIConditionExpression_t *ReadConditionExpression( pc_token_list **list, AICondit
 
 	t = Primary( list );
 
-	op = opFromToken( &(*list)->token );
+	op = opTypeFromToken( &(*list)->token );
 
 	while ( isBinaryOp( op ) && opCompare( op, op2 ) >= 0 )
 	{
-		AIConditionExpression_t *t1;
+		AIExpType_t *t1;
 		AIOp_t *exp = newOp( *list );
 		*list = (*list)->next;
 		t1 = ReadConditionExpression( list, op );
@@ -702,23 +700,23 @@ AIConditionExpression_t *ReadConditionExpression( pc_token_list **list, AICondit
 			break;
 		}
 
-		op = opFromToken( &(*list)->token );
+		op = opTypeFromToken( &(*list)->token );
 	}
 
 	return t;
 }
 
-AIConditionExpression_t *Primary( pc_token_list **list )
+AIExpType_t *Primary( pc_token_list **list )
 {
 	pc_token_list *current = *list;
-	AIConditionExpression_t *tree = NULL;
+	AIExpType_t *tree = NULL;
 
-	if ( isUnaryOp( opFromToken( &current->token ) ) )
+	if ( isUnaryOp( opTypeFromToken( &current->token ) ) )
 	{
-		AIConditionExpression_t *t;
+		AIExpType_t *t;
 		AIOp_t *op = newOp( current );
 		*list = current->next;
-		t = ReadConditionExpression( list, op->op );
+		t = ReadConditionExpression( list, op->opType );
 		tree = makeExpression( op, t, NULL );
 	}
 	else if ( current->token.string[0] == '(' )
@@ -729,11 +727,11 @@ AIConditionExpression_t *Primary( pc_token_list **list )
 	}
 	else if ( current->token.type == TT_NUMBER )
 	{
-		tree = ( AIConditionExpression_t * ) newValueLiteral( list );
+		tree = ( AIExpType_t * ) newValueLiteral( list );
 	}
 	else if ( current->token.type == TT_NAME )
 	{
-		tree = ( AIConditionExpression_t * ) newValueFunc( list );
+		tree = ( AIExpType_t * ) newValueFunc( list );
 	}
 	else
 	{
@@ -1357,9 +1355,9 @@ AINodeStatus_t BotParallelNode( gentity_t *self, AIGenericNode_t *node )
 	}
 	return STATUS_FAILURE;
 }
-qboolean EvalConditionExpression( gentity_t *self, AIConditionExpression_t *exp );
+qboolean EvalConditionExpression( gentity_t *self, AIExpType_t *exp );
 
-double EvalFunc( gentity_t *self, AIConditionExpression_t *exp )
+double EvalFunc( gentity_t *self, AIExpType_t *exp )
 {
 	AIValueFunc_t *v = ( AIValueFunc_t * ) exp;
 
@@ -1367,7 +1365,7 @@ double EvalFunc( gentity_t *self, AIConditionExpression_t *exp )
 }
 
 // using double because it has enough precision to exactly represent both a float and an int
-double EvalValue( gentity_t *self, AIConditionExpression_t *exp )
+double EvalValue( gentity_t *self, AIExpType_t *exp )
 {
 	AIValue_t *v = ( AIValue_t * ) exp;
 
@@ -1384,12 +1382,12 @@ double EvalValue( gentity_t *self, AIConditionExpression_t *exp )
 	return AIUnBoxDouble( *v );
 }
 
-qboolean EvaluateBinaryOp( gentity_t *self, AIConditionExpression_t *exp )
+qboolean EvaluateBinaryOp( gentity_t *self, AIExpType_t *exp )
 {
 	AIBinaryOp_t *o = ( AIBinaryOp_t * ) exp;
 	qboolean      ret = qfalse;
 	
-	switch ( o->op )
+	switch ( o->opType )
 	{
 		case OP_LESSTHAN:
 			return EvalValue( self, o->exp1 ) < EvalValue( self, o->exp2 );
@@ -1412,23 +1410,23 @@ qboolean EvaluateBinaryOp( gentity_t *self, AIConditionExpression_t *exp )
 	}
 }
 
-qboolean EvaluateUnaryOp( gentity_t *self, AIConditionExpression_t *exp )
+qboolean EvaluateUnaryOp( gentity_t *self, AIExpType_t *exp )
 {
 	AIUnaryOp_t *o = ( AIUnaryOp_t * ) exp;
 	return !EvalConditionExpression( self, o->exp );
 }
 
-qboolean EvalConditionExpression( gentity_t *self, AIConditionExpression_t *exp )
+qboolean EvalConditionExpression( gentity_t *self, AIExpType_t *exp )
 {
 	if ( *exp == EX_OP )
 	{
 		AIOp_t *op = ( AIOp_t * ) exp;
 
-		if ( isBinaryOp( op->op ) )
+		if ( isBinaryOp( op->opType ) )
 		{
 			return EvaluateBinaryOp( self, exp );
 		}
-		else if ( isUnaryOp( op->op ) )
+		else if ( isUnaryOp( op->opType ) )
 		{
 			return EvaluateUnaryOp( self, exp );
 		}
