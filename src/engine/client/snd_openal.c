@@ -195,7 +195,7 @@ static sfxHandle_t S_AL_BufferFind(const char *filename)
 
 	if ( strlen( filename ) >= MAX_QPATH )
 	{
-		Com_Printf(S_ERROR "%s", _( "Sound name exceeds MAX_QPATH\n" ));
+		Com_Log(LOG_ERROR, _( "Sound name exceeds MAX_QPATH" ));
 		return default_sfx;
 	}
 

@@ -3717,8 +3717,8 @@ qboolean CL_WWWBadChecksum( const char *pakname )
 {
 	if ( strstr( clc.redirectedList, va( "@%s", pakname ) ) )
 	{
-		Com_Printf(_( "WARNING: file %s obtained through download redirect has wrong checksum\n"
-		              "         this likely means the server configuration is broken\n" ), pakname );
+		Com_Logf(LOG_WARN, _( "file %s obtained through download redirect has wrong checksum\n"
+		              "\tthis likely means the server configuration is broken" ), pakname );
 
 		if ( strlen( clc.badChecksumList ) + strlen( pakname ) + 1 >= sizeof( clc.badChecksumList ) )
 		{

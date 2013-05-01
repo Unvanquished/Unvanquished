@@ -468,7 +468,7 @@ rescan:
 
 		if ( argc == 1 )
 		{
-			Com_Printf("%s", _( "^3Server sent a pubkey_decrypt command, but sent nothing to decrypt!\n" ));
+			Com_Log(LOG_ERROR, _( "Server sent a pubkey_decrypt command, but sent nothing to decrypt!" ));
 			return qfalse;
 		}
 

@@ -402,7 +402,7 @@ sfxHandle_t     S_Base_RegisterSound( const char *name, qboolean compressed )
 
 	if ( strlen( name ) >= MAX_QPATH )
 	{
-		Com_Printf("%s", _( "Sound name exceeds MAX_QPATH\n" ));
+		Com_Log(LOG_ERROR, _( "Sound name exceeds MAX_QPATH" ));
 		return 0;
 	}
 
@@ -555,7 +555,7 @@ void S_Base_StartSound( vec3_t origin, int entityNum, int entchannel, sfxHandle_
 
 	if ( sfxHandle < 0 || sfxHandle >= s_numSfx )
 	{
-		Com_Printf( _( S_COLOR_YELLOW  "S_StartSound: handle %i out of range\n"), sfxHandle );
+		Com_Logf( LOG_ERROR, _( "handle %i out of range"), sfxHandle );
 		return;
 	}
 
@@ -702,7 +702,7 @@ void S_Base_StartLocalSound( sfxHandle_t sfxHandle, int channelNum )
 
 	if ( sfxHandle < 0 || sfxHandle >= s_numSfx )
 	{
-		Com_Logf( LOG_ERROR, _(  "handle %i out of range"), sfxHandle );
+		Com_Logf( LOG_ERROR, _( "handle %i out of range"), sfxHandle );
 		return;
 	}
 
@@ -1490,7 +1490,7 @@ void S_Base_SoundList_f( void )
 	sfx_t *sfx;
 
 	static const char type[][ 8 ] = { "16bit", "adpcm", "daub4", "mulaw" };
-	static const char mem[][ 16 ] = { N_("paged out"), N_("resident") };
+	static const char mem[][ 16 ] = { "paged out", "resident" };
 
 	total = 0;
 
@@ -1498,10 +1498,10 @@ void S_Base_SoundList_f( void )
 	{
 		size = sfx->soundLength;
 		total += size;
-		Com_Printf( "%6i[%s] : %s[%s]\n", size, type[ sfx->soundCompressionMethod ], sfx->soundName, _(mem[ sfx->inMemory ]) );
+		Com_Printf( "%6i[%s] : %s[%s]\n", size, type[ sfx->soundCompressionMethod ], sfx->soundName, mem[ sfx->inMemory ] );
 	}
 
-	Com_Printf(_( "Total resident: %i\n"), total );
+	Com_Printf( "Total resident: %i\n", total );
 	S_DisplayFreeMemory();
 }
 
