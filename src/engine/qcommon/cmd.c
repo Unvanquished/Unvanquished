@@ -947,7 +947,7 @@ void Cmd_Math_f( void )
 		{
 			if ( atof( firstOperand ) == 0.f )
 			{
-				Com_Printf(_( "Cannot divide by 0!\n" ));
+				Com_Log(LOG_ERROR, _( "Cannot divide by 0!" ));
 				return;
 			}
 
@@ -982,7 +982,7 @@ void Cmd_Math_f( void )
 		{
 			if ( atof( secondOperand ) == 0.f )
 			{
-				Com_Printf(_( "Cannot divide by 0!\n" ));
+				Com_Log(LOG_ERROR, _( "Cannot divide by 0!" ));
 				return;
 			}
 
@@ -1069,7 +1069,7 @@ void Cmd_Calc_f( void )
 	{
 		if ( atof( secondOperand ) == 0.f )
 		{
-			Com_Printf(_( "Cannot divide by 0!\n" ));
+			Com_Log(LOG_ERROR, _( "Cannot divide by 0!" ));
 			return;
 		}
 
@@ -1204,7 +1204,7 @@ void Cmd_Delay_f( void )
 
 	if ( !availiable_cmd )
 	{
-		Com_Printf(_( "WARNING: Maximum amount of delayed commands reached\n" ));
+		Com_Log( LOG_WARN, _( "Maximum amount of delayed commands reached." ));
 		return;
 	}
 

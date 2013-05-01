@@ -3675,7 +3675,7 @@ void Com_Frame( void )
 		{
 			if ( !watchWarn && Sys_Milliseconds() - watchdogTime > ( com_watchdog->integer - 4 ) * 1000 )
 			{
-				Com_Printf(_( "WARNING: watchdog will trigger in 4 seconds\n" ));
+				Com_Log( LOG_WARN, _( "watchdog will trigger in 4 seconds" ));
 				watchWarn = qtrue;
 			}
 			else if ( Sys_Milliseconds() - watchdogTime > com_watchdog->integer * 1000 )

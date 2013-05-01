@@ -982,7 +982,7 @@ void CL_Record( const char *name )
 
 	if ( !clc.demofile )
 	{
-		Com_Printf("%s", _( "ERROR: couldn't open.\n" ));
+		Com_Log( LOG_ERROR, _( "couldn't open." ));
 		return;
 	}
 
@@ -1302,7 +1302,7 @@ void CL_WriteWaveOpen( void )
 
 	if ( !clc.wavefile )
 	{
-		Com_Printf(_( "ERROR: couldn't open %s for writing.\n"), name );
+		Com_Logf( LOG_ERROR, _( "couldn't open %s for writing."), name );
 		return;
 	}
 
@@ -2016,7 +2016,7 @@ void CL_Connect_f( void )
 		}
 		else
 		{
-			Com_Printf("%s", _( "warning: only -4 or -6 as address type understood.\n" ));
+			Com_Log(LOG_WARN, _( "only -4 or -6 as address type understood." ));
 		}
 
 		server = Cmd_Argv( 2 );
@@ -3722,7 +3722,7 @@ qboolean CL_WWWBadChecksum( const char *pakname )
 
 		if ( strlen( clc.badChecksumList ) + strlen( pakname ) + 1 >= sizeof( clc.badChecksumList ) )
 		{
-			Com_Printf( "ERROR: badChecksumList overflowed (%s)\n", clc.badChecksumList );
+			Com_Logf( LOG_ERROR, "badChecksumList overflowed (%s)", clc.badChecksumList );
 			return qfalse;
 		}
 
