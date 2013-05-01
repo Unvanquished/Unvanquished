@@ -58,6 +58,11 @@ void NORETURN trap_Error( const char *string )
 	exit(1); // silence warning
 }
 
+void trap_Log( log_event_t *event )
+{
+	syscall( G_LOG, event );
+}
+
 //02.
 //return Sys_Milliseconds();
 int trap_Milliseconds( void )

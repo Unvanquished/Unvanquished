@@ -2813,6 +2813,39 @@ void G_RunThink( gentity_t *ent )
 
 /*
 =============
+G_RunAct
+
+Runs act code for this frame if it should
+=============
+*/
+void G_RunAct( gentity_t *entity )
+{
+
+	if ( entity->nextAct <= 0 )
+	{
+		return;
+	}
+
+	if ( entity->nextAct > level.time )
+	{
+		return;
+	}
+
+	if ( !entity->act )
+	{
+		/*
+		 * e.g. turrets will make use of act and nextAct as part of their think()
+		 * without having an act() function
+		 * other uses might be valid too, so lets not error for now
+		 */
+		return;
+	}
+
+	G_ExecuteAct( entity, &entity->callIn );
+}
+
+/*
+=============
 G_EvaluateAcceleration
 
 Calculates the acceleration for an entity
@@ -2995,6 +3028,8 @@ void G_RunFrame( int levelTime )
 		}
 
 		G_RunThink( ent );
+		/* think() before you act() */
+		G_RunAct( ent );
 	}
 
 	// perform final fixups on the players

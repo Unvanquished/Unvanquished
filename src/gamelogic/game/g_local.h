@@ -44,6 +44,8 @@ typedef struct gentity_s gentity_t;
 typedef struct gclient_s gclient_t;
 
 #include "g_admin.h"
+
+typedef struct variatingTime_s variatingTime_t;
 #include "g_entities.h"
 #include "g_bot_ai.h"
 
@@ -122,11 +124,17 @@ typedef struct
 	usercmd_t   cmdBuffer;
 } botMemory_t;
 
-typedef struct
+struct variatingTime_s
 {
 	float time;
 	float variance;
-} variatingTime_t;
+};
+
+/**
+ * resolves a variatingTime_t to a variated next level.time
+ */
+#define VariatedLevelTime( variableTime ) level.time + ( variableTime.time + variableTime.variance * crandom() ) * 1000
+
 
 /**
  * in the context of a target, this describes the conditions to create or to act within
@@ -158,7 +166,8 @@ typedef struct
 	int damage;
 
 	/**
-	 * how long delay firing an event
+	 * how long to wait before fullfilling the maintask act()
+	 * (e.g. how long to delay sensing as sensor or relaying as relay)
 	 */
 	variatingTime_t delay;
 	/**
@@ -217,13 +226,25 @@ struct gentity_s
 	int          creationTime;
 
 	char         *names[ MAX_ENTITY_ALIASES + 1 ];
-	/*
+
+	/**
 	 * is the entity considered active?
 	 * as in 'currently doing something'
 	 * e.g. used for buildables (e.g. medi-stations or hives can be in an active state or being inactive)
+	 * or during executing act() in general
 	 */
 	qboolean     active;
-	int          activeAtTime; /*< delay being really active until this time, e.g for spinup for norfenturrets */
+	/**
+	 * delay being really active until this time, e.g for act() delaying or for spinup for norfenturrets
+	 * this will most probably be set by think() before act()ing, probably by using the config.delay time
+	 */
+	int          nextAct;
+	/**
+	 * Fulfill the main task of this entity.
+	 * act, therefore also become active,
+	 * but only if enabled
+	 */
+	void ( *act )( gentity_t *self, gentity_t *caller, gentity_t *activator );
 
 	/**
 	 * is the entity able to become active?
@@ -268,7 +289,14 @@ struct gentity_s
 	 */
 	int          callTargetCount;
 	gentityCallDefinition_t calltargets[ MAX_ENTITY_CALLTARGETS + 1 ];
-	gentity_t    *activator;
+
+	/**
+	 * current valid call state for a single threaded call hierarchy.
+	 * this allows us to lookup the current callIn,
+	 * walk back further the hierarchy and even do simply loop detection
+	 */
+	gentityCall_t callIn;
+	gentity_t    *activator; //FIXME: handle this as part of the current Call
 
 	/*
 	 * configuration, as supplied by the spawn string, external spawn scripts etc.
@@ -356,12 +384,12 @@ struct gentity_s
 
 	int       nextthink;
 	void ( *think )( gentity_t *self );
+
 	void ( *reset )( gentity_t *self );
 	void ( *reached )( gentity_t *self );       // movers call this when hitting endpoint
 	void ( *blocked )( gentity_t *self, gentity_t *other );
 	void ( *touch )( gentity_t *self, gentity_t *other, trace_t *trace );
 	void ( *use )( gentity_t *self, gentity_t *other, gentity_t *activator );
-	void ( *act )( gentity_t *self, gentity_t *caller, gentity_t *activator );
 	void ( *pain )( gentity_t *self, gentity_t *attacker, int damage );
 	void ( *die )( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod );
 

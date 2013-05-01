@@ -464,6 +464,11 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 
 		case G_ERROR:
 			Com_Error( ERR_DROP, "%s", ( char * ) VMA( 1 ) );
+			return 0; //silence warning and have a fallback behavior if Com_Error behavior changes
+
+		case G_LOG:
+			Com_LogEvent( VMA( 1 ), NULL );
+			return 0;
 
 		case G_MILLISECONDS:
 			return Sys_Milliseconds();
@@ -775,6 +780,7 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			return 0;
 		default:
 			Com_Error( ERR_DROP, "Bad game system trap: %ld", ( long int ) args[ 0 ] );
+			exit(1); // silence warning, and make sure this behaves as expected, if Com_Error's behavior changes
 	}
 }
 
