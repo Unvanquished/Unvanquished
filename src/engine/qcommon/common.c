@@ -309,6 +309,30 @@ void QDECL Com_LogEvent( log_event_t *event, log_location_info_t *location )
 #endif
 }
 
+void QDECL PRINTF_LIKE(2) Com_Logf( log_level_t level, const char *fmt, ... )
+{
+	va_list argptr;
+	char    text[ MAXPRINTMSG ];
+	log_event_t event;
+
+	event.level = level;
+	event.message = text;
+
+	va_start( argptr, fmt );
+	Q_vsnprintf( text, sizeof( text ), fmt, argptr );
+	va_end( argptr );
+
+	Com_LogEvent( &event, NULL );
+}
+
+void QDECL Com_Log( log_level_t level, const char* message )
+{
+	log_event_t event;
+	event.level = level;
+	event.message = message;
+	Com_LogEvent( &event, NULL );
+}
+
 /*
 ================
 Com_DPrintf
