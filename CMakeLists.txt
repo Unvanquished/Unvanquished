@@ -739,6 +739,7 @@ set( GAMEGPP_BASE
   ${GPP_DIR}/game/g_bot.c
   ${GPP_DIR}/game/g_bot_ai.c
   ${GPP_DIR}/game/g_bot_nav.c
+  ${GPP_DIR}/game/g_bot_util.c
   ${SHAREDLIST}
 )
 

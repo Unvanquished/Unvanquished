@@ -47,7 +47,8 @@ typedef struct gclient_s gclient_t;
 
 typedef struct variatingTime_s variatingTime_t;
 #include "g_entities.h"
-#include "g_bot_ai.h"
+#include "g_bot.h"
+#include "../../engine/botlib/bot_types.h"
 
 // g_local.h -- local definitions for game module
 //==================================================================
@@ -71,58 +72,6 @@ typedef struct variatingTime_s variatingTime_t;
 #define DECON_OPTION_INSTANT       16
 #define DECON_OPTION_PROTECT       32
 #define DECON_OPTION_CHECK(option) ( g_markDeconstruct.integer & DECON_OPTION_##option )
-
-typedef struct
-{
-	gentity_t *ent;
-	float distance;
-} botEntityAndDistance_t;
-
-typedef struct
-{
-	gentity_t *ent;
-	vec3_t coord;
-	qboolean inuse;
-} botTarget_t;
-
-typedef struct
-{
-	int level;
-	float aimSlowness;
-	float aimShake;
-} botSkill_t;
-
-#define MAX_NODE_DEPTH 20
-
-typedef struct 
-{
-	//when the enemy was last seen
-	int enemyLastSeen;
-	int timeFoundEnemy;
-
-	//team the bot is on when added
-	team_t botTeam;
-
-	//targets
-	botTarget_t goal;
-
-	qboolean directPathToGoal;
-
-	botSkill_t botSkill;
-	botEntityAndDistance_t bestEnemy;
-	botEntityAndDistance_t closestDamagedBuilding;
-	botEntityAndDistance_t closestBuildings[ BA_NUM_BUILDABLES ];
-
-	AIBehaviorTree_t *behaviorTree;
-	void *currentNode; //AINode_t *
-	void *runningNodes[ MAX_NODE_DEPTH ]; //AIGenericNode_t *
-	int  numRunningNodes;
-
-  	int         futureAimTime;
-	int         futureAimTimeInterval;
-	vec3_t      futureAim;
-	usercmd_t   cmdBuffer;
-} botMemory_t;
 
 struct variatingTime_s
 {
@@ -919,24 +868,6 @@ typedef struct
 } commands_t;
 
 //
-// g_bot.c
-//
-qboolean G_BotAdd( char *name, team_t team, int skill, const char* behavior );
-qboolean G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavior );
-void G_BotDel( int clientNum );
-void G_BotDelAllBots( void );
-void G_BotThink( gentity_t *self );
-void G_BotSpectatorThink( gentity_t *self );
-void G_BotIntermissionThink( gclient_t *client );
-void G_BotListNames( gentity_t *ent );
-qboolean G_BotClearNames( void );
-int G_BotAddNames(team_t team, int arg, int last);
-void G_BotDisableArea( vec3_t origin, vec3_t mins, vec3_t maxs );
-void G_BotEnableArea( vec3_t origin, vec3_t mins, vec3_t maxs );
-void G_BotInit( void );
-void G_BotCleanup(int restart);
-
-//
 // g_cmds.c
 //
 
@@ -1540,12 +1471,12 @@ void             trap_GetPlayerPubkey( int clientNum, char *pubkey, int size );
 
 void             trap_GetTimeString( char *buffer, int size, const char *format, const qtime_t *tm );
 
-qboolean         trap_BotSetupNav( const void *botClass /* botClass_t* */, qhandle_t *navHandle );
+qboolean         trap_BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle );
 void             trap_BotShutdownNav( void );
 void             trap_BotSetNavMesh( int botClientNum, qhandle_t navHandle );
-unsigned int     trap_BotFindRoute( int botClientNum, const void *target /*botRotueTarget_t*/ );
-qboolean         trap_BotUpdatePath( int botClientNum, const void *target /*botRouteTarget_t*/, vec3_t dir, qboolean *directPathToGoal );
-qboolean         trap_BotNavTrace( int botClientNum, void *botTrace /*botTrace_t**/, const vec3_t start, const vec3_t end );
+unsigned int     trap_BotFindRoute( int botClientNum, const botRouteTarget_t *target );
+qboolean         trap_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, vec3_t dir, qboolean *directPathToGoal );
+qboolean         trap_BotNavTrace( int botClientNum, botTrace_t *botTrace, const vec3_t start, const vec3_t end );
 void             trap_BotFindRandomPoint( int botClientNum, vec3_t point );
 void             trap_BotEnableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
 void             trap_BotDisableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );

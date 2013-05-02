@@ -19,9 +19,10 @@ along with Daemon; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
+#include "g_local.h"
+
 #ifndef __BOT_AI_HEADER
 #define __BOT_AI_HEADER
-#include "g_local.h"
 
 // integer constants given to the behavior tree to use as parameters
 // values E_A_SPAWN to E_H_REPEATER are meant to have the same

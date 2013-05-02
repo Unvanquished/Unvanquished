@@ -19,7 +19,7 @@ along with Daemon; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-#include "g_bot.h"
+#include "g_bot_util.h"
 #include "../../engine/botlib/bot_types.h"
 
 //tells if all navmeshes loaded successfully
