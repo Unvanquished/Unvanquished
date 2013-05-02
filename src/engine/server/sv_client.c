@@ -1221,7 +1221,7 @@ The client is going to disconnect, so remove the connection immediately  FIXME: 
 */
 static void SV_Disconnect_f( client_t *cl )
 {
-	SV_DropClient( cl, "disconnected" );
+	SV_DropClient( cl, _("disconnected") );
 }
 
 /*
