@@ -1232,7 +1232,6 @@ so the movement delta can be calculated
 */
 void InitMover( gentity_t *ent )
 {
-	char     *sound;
 	char     *groupName;
 
 	// if the "model2" key is set, use a separate model
@@ -1299,7 +1298,6 @@ so the movement delta can be calculated
 */
 void InitRotator( gentity_t *ent )
 {
-	char     *sound;
 	char     *groupName;
 
 	// if the "model2" key is set, use a separate model
@@ -1640,7 +1638,6 @@ void SP_func_door( gentity_t *self )
 	float  distance;
 	vec3_t size;
 	float  lip;
-	char   *s;
 
 	if( !self->sound1to2 )
 	{
@@ -1731,8 +1728,6 @@ void func_door_rotating_reset( gentity_t *self )
 
 void SP_func_door_rotating( gentity_t *self )
 {
-	char *s;
-
 	if( !self->sound1to2 )
 	{
 		self->sound1to2 = G_SoundIndex( "sound/movers/doors/dr1_strt.wav" );
@@ -1856,7 +1851,6 @@ void func_door_model_reset( gentity_t *self )
 
 void SP_func_door_model( gentity_t *self )
 {
-	char      *s;
 	char      *sound;
 	gentity_t *clipBrush;
 
@@ -2073,7 +2067,6 @@ void SpawnPlatSensor( gentity_t *self )
 void SP_func_plat( gentity_t *self )
 {
 	float lip, height;
-	char  *s;
 
 	if( !self->sound1to2 )
 	{
@@ -2176,7 +2169,6 @@ void SP_func_button( gentity_t *self )
 	float  distance;
 	vec3_t size;
 	float  lip;
-	char   *s;
 
 	if( !self->sound1to2 )
 	{
