@@ -44,7 +44,11 @@ typedef struct gentity_s gentity_t;
 typedef struct gclient_s gclient_t;
 
 #include "g_admin.h"
+
+typedef struct variatingTime_s variatingTime_t;
 #include "g_entities.h"
+#include "g_bot.h"
+#include "../../engine/botlib/bot_types.h"
 
 // g_local.h -- local definitions for game module
 //==================================================================
@@ -69,92 +73,17 @@ typedef struct gclient_s gclient_t;
 #define DECON_OPTION_PROTECT       32
 #define DECON_OPTION_CHECK(option) ( g_markDeconstruct.integer & DECON_OPTION_##option )
 
-#define MAX_BOT_BUILDINGS 300
-
-typedef struct
-{
-	gentity_t *ent;
-	float distance;
-} botEntityAndDistance_t;
-
-typedef struct
-{
-	buildable_t type;
-	vec3_t normal;
-	vec3_t origin;
-} botBuilding_t;
-
-typedef struct
-{
-	botBuilding_t buildings[ MAX_BOT_BUILDINGS ];
-	int numBuildings;
-} botBuildLayout_t;
-
-typedef struct
-{
-	gentity_t *ent;
-	vec3_t coord;
-	qboolean inuse;
-}botTarget_t;
-
-typedef struct
-{
-	int level;
-	float aimSlowness;
-	float aimShake;
-} botSkill_t;
-
-typedef enum
-{
-  SELECTOR_NODE,
-  ACTION_NODE,
-  CONDITION_NODE
-} AINode_t;
-
-typedef struct
-{
-	char name[ MAX_QPATH ];
-	AINode_t *root;
-} AIBehaviorTree_t;
-
-#define MAX_ROUTE_NODES 5
-#define MAX_NODE_DEPTH 20
-
-typedef struct 
-{
-	//when the enemy was last seen
-	int enemyLastSeen;
-	int timeFoundEnemy;
-
-	//team the bot is on when added
-	team_t botTeam;
-
-	//targets
-	botTarget_t goal;
-
-	qboolean directPathToGoal;
-
-	botSkill_t botSkill;
-	botEntityAndDistance_t bestEnemy;
-	botEntityAndDistance_t closestDamagedBuilding;
-	botEntityAndDistance_t closestBuildings[ BA_NUM_BUILDABLES ];
-
-	AIBehaviorTree_t *behaviorTree;
-	void *currentNode; //AINode_t *
-	void *runningNodes[ MAX_NODE_DEPTH ]; //AIGenericNode_t *
-	int  numRunningNodes;
-
-  	int         futureAimTime;
-	int         futureAimTimeInterval;
-	vec3_t      futureAim;
-	usercmd_t   cmdBuffer;
-} botMemory_t;
-
-typedef struct
+struct variatingTime_s
 {
 	float time;
 	float variance;
-} variatingTime_t;
+};
+
+/**
+ * resolves a variatingTime_t to a variated next level.time
+ */
+#define VariatedLevelTime( variableTime ) level.time + ( variableTime.time + variableTime.variance * crandom() ) * 1000
+
 
 /**
  * in the context of a target, this describes the conditions to create or to act within
@@ -186,7 +115,8 @@ typedef struct
 	int damage;
 
 	/**
-	 * how long delay firing an event
+	 * how long to wait before fullfilling the maintask act()
+	 * (e.g. how long to delay sensing as sensor or relaying as relay)
 	 */
 	variatingTime_t delay;
 	/**
@@ -245,13 +175,25 @@ struct gentity_s
 	int          creationTime;
 
 	char         *names[ MAX_ENTITY_ALIASES + 1 ];
-	/*
+
+	/**
 	 * is the entity considered active?
 	 * as in 'currently doing something'
 	 * e.g. used for buildables (e.g. medi-stations or hives can be in an active state or being inactive)
+	 * or during executing act() in general
 	 */
 	qboolean     active;
-	int          activeAtTime; /*< delay being really active until this time, e.g for spinup for norfenturrets */
+	/**
+	 * delay being really active until this time, e.g for act() delaying or for spinup for norfenturrets
+	 * this will most probably be set by think() before act()ing, probably by using the config.delay time
+	 */
+	int          nextAct;
+	/**
+	 * Fulfill the main task of this entity.
+	 * act, therefore also become active,
+	 * but only if enabled
+	 */
+	void ( *act )( gentity_t *self, gentity_t *caller, gentity_t *activator );
 
 	/**
 	 * is the entity able to become active?
@@ -301,7 +243,14 @@ struct gentity_s
 	 */
 	int          callTargetCount;
 	gentityCallDefinition_t calltargets[ MAX_ENTITY_CALLTARGETS + 1 ];
-	gentity_t    *activator;
+
+	/**
+	 * current valid call state for a single threaded call hierarchy.
+	 * this allows us to lookup the current callIn,
+	 * walk back further the hierarchy and even do simply loop detection
+	 */
+	gentityCall_t callIn;
+	gentity_t    *activator; //FIXME: handle this as part of the current Call
 
 	/*
 	 * configuration, as supplied by the spawn string, external spawn scripts etc.
@@ -389,12 +338,12 @@ struct gentity_s
 
 	int       nextthink;
 	void ( *think )( gentity_t *self );
+
 	void ( *reset )( gentity_t *self );
 	void ( *reached )( gentity_t *self );       // movers call this when hitting endpoint
 	void ( *blocked )( gentity_t *self, gentity_t *other );
 	void ( *touch )( gentity_t *self, gentity_t *other, trace_t *trace );
 	void ( *use )( gentity_t *self, gentity_t *other, gentity_t *activator );
-	void ( *act )( gentity_t *self, gentity_t *caller, gentity_t *activator );
 	void ( *pain )( gentity_t *self, gentity_t *attacker, int damage );
 	void ( *die )( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod );
 
@@ -921,8 +870,6 @@ typedef struct
 	buildLog_t       buildLog[ MAX_BUILDLOG ];
 	int              buildId;
 	int              numBuildLogs;
-
-	botBuildLayout_t botBuildLayout;
 } level_locals_t;
 
 #define CMD_CHEAT        0x0001
@@ -941,25 +888,6 @@ typedef struct
 	int        cmdFlags;
 	void      ( *cmdHandler )( gentity_t *ent );
 } commands_t;
-
-//
-// g_bot.c
-//
-qboolean G_BotAdd( char *name, team_t team, int skill, const char* behavior );
-qboolean G_BotSetDefaults( int clientNum, team_t team, int skill, const char* behavior );
-void G_BotDel( int clientNum );
-void G_BotDelAllBots( void );
-void G_BotThink( gentity_t *self );
-void G_BotSpectatorThink( gentity_t *self );
-void G_BotIntermissionThink( gclient_t *client );
-void G_BotLoadBuildLayout( void );
-void G_BotListNames( gentity_t *ent );
-qboolean G_BotClearNames( void );
-int G_BotAddNames(team_t team, int arg, int last);
-void G_BotDisableArea( vec3_t origin, vec3_t mins, vec3_t maxs );
-void G_BotEnableArea( vec3_t origin, vec3_t mins, vec3_t maxs );
-void G_BotInit( void );
-void G_BotCleanup(int restart);
 
 //
 // g_cmds.c
@@ -1571,12 +1499,12 @@ void             trap_GetPlayerPubkey( int clientNum, char *pubkey, int size );
 
 void             trap_GetTimeString( char *buffer, int size, const char *format, const qtime_t *tm );
 
-qboolean         trap_BotSetupNav( const void *botClass /* botClass_t* */, qhandle_t *navHandle );
+qboolean         trap_BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle );
 void             trap_BotShutdownNav( void );
 void             trap_BotSetNavMesh( int botClientNum, qhandle_t navHandle );
-unsigned int     trap_BotFindRoute( int botClientNum, const void *target /*botRotueTarget_t*/ );
-qboolean         trap_BotUpdatePath( int botClientNum, const void *target /*botRouteTarget_t*/, vec3_t dir, qboolean *directPathToGoal );
-qboolean         trap_BotNavTrace( int botClientNum, void *botTrace /*botTrace_t**/, const vec3_t start, const vec3_t end );
+unsigned int     trap_BotFindRoute( int botClientNum, const botRouteTarget_t *target );
+qboolean         trap_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, vec3_t dir, qboolean *directPathToGoal );
+qboolean         trap_BotNavTrace( int botClientNum, botTrace_t *botTrace, const vec3_t start, const vec3_t end );
 void             trap_BotFindRandomPoint( int botClientNum, vec3_t point );
 void             trap_BotEnableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
 void             trap_BotDisableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );

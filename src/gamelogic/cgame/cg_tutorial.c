@@ -47,7 +47,8 @@ static bind_t bindings[] =
 	{ "if alt \"/deconstruct marked\" /deconstruct",
                             N_( "Deconstruct Structure" ),                 { -1, -1 } },
 	{ "weapprev",       N_( "Previous Upgrade" ),                      { -1, -1 } },
-	{ "weapnext",       N_( "Next Upgrade" ),                          { -1, -1 } }
+	{ "weapnext",       N_( "Next Upgrade" ),                          { -1, -1 } },
+	{ "toggleconsole",  N_( "Toggle Console" ),                        { -1, -1 } }
 };
 
 static const size_t numBindings = ARRAY_LEN( bindings );
@@ -714,6 +715,7 @@ const char *CG_TutorialText( void )
 
 	if ( !cg.demoPlayback )
 	{
+		Q_strcat( text, MAX_TUTORIAL_TEXT, va( _( "Press %s to open the console\n" ), CG_KeyNameForCommand( "toggleconsole" ) ) );
 		Q_strcat( text, MAX_TUTORIAL_TEXT, _( "Press ESC for the menu" ) );
 	}
 

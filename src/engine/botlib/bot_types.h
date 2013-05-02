@@ -48,16 +48,20 @@ typedef struct
 	vec3_t normal;
 } botTrace_t;
 
+typedef enum
+{
+	BOT_TARGET_STATIC, // target stays in one place always
+	BOT_TARGET_DYNAMIC // target can move
+} botRouteTargetType_t;
+
+// type: determines if the object can move or not
 // pos: the object's position 
 // polyExtents: how far away from pos to search for a nearby navmesh polygon for finding a route
-// mins: the object's collision bmin
-// maxs: the object's collision bmax
 typedef struct
 {
+	botRouteTargetType_t type;
 	vec3_t pos;
 	vec3_t polyExtents;
-	vec3_t mins;
-	vec3_t maxs;
 } botRouteTarget_t;
 
 enum navPolyFlags

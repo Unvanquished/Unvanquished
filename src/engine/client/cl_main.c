@@ -375,7 +375,7 @@ void CL_Voip_f( void )
 		}
 		else
 		{
-			Com_Printf("%s", _( "usage: voip gain <playerID#> [value]\n" ));
+			Cmd_PrintUsage("gain <playerID#> [<value>]", NULL);
 		}
 	}
 	else if ( strcmp( cmd, "muteall" ) == 0 )
@@ -392,9 +392,9 @@ void CL_Voip_f( void )
 	}
 	else
 	{
-		Com_Printf( "%s", _( "usage: voip [un]ignore <playerID#>\n"
-		            "       voip [un]muteall\n"
-		            "       voip gain <playerID#> [value]\n" ) );
+		Cmd_PrintUsage("[un]ignore <playerID#>", NULL);
+		Cmd_PrintUsage("[un]muteall", NULL);
+		Cmd_PrintUsage("gain <playerID#> [value]", NULL);
 	}
 }
 
@@ -915,7 +915,7 @@ void CL_Record_f( void )
 
 	if ( Cmd_Argc() > 2 )
 	{
-		Com_Printf("%s", _( "record <demoname>\n" ));
+		Cmd_PrintUsage("<name>", NULL);
 		return;
 	}
 
@@ -983,7 +983,7 @@ void CL_Record( const char *name )
 
 	if ( !clc.demofile )
 	{
-		Com_Printf("%s", _( "ERROR: couldn't open.\n" ));
+		Com_Log( LOG_ERROR, _( "couldn't open." ));
 		return;
 	}
 
@@ -1259,7 +1259,7 @@ void CL_WriteWaveOpen( void )
 
 	if ( Cmd_Argc() > 2 )
 	{
-		Com_Printf("%s", _( "wav_record <wavname>\n" ));
+		Cmd_PrintUsage("<name>", NULL);
 		return;
 	}
 
@@ -1303,7 +1303,7 @@ void CL_WriteWaveOpen( void )
 
 	if ( !clc.wavefile )
 	{
-		Com_Printf(_( "ERROR: couldn't open %s for writing.\n"), name );
+		Com_Logf( LOG_ERROR, _( "couldn't open %s for writing."), name );
 		return;
 	}
 
@@ -1366,7 +1366,7 @@ void CL_PlayDemo_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Com_Printf("%s", _( "playdemo <demoname>\n" ));
+		Cmd_PrintUsage("<name>", NULL);
 		return;
 	}
 
@@ -1997,7 +1997,7 @@ void CL_Connect_f( void )
 
 	if ( argc != 2 && argc != 3 )
 	{
-		Com_Printf("%s", _( "usage: connect [-4|-6] server\n" ));
+		Cmd_PrintUsage(_("[-4|-6] <server>"), NULL);
 		return;
 	}
 
@@ -2017,7 +2017,7 @@ void CL_Connect_f( void )
 		}
 		else
 		{
-			Com_Printf("%s", _( "warning: only -4 or -6 as address type understood.\n" ));
+			Com_Log(LOG_WARN, _( "only -4 or -6 as address type understood." ));
 		}
 
 		server = Cmd_Argv( 2 );
@@ -3718,12 +3718,12 @@ qboolean CL_WWWBadChecksum( const char *pakname )
 {
 	if ( strstr( clc.redirectedList, va( "@%s", pakname ) ) )
 	{
-		Com_Printf(_( "WARNING: file %s obtained through download redirect has wrong checksum\n"
-		              "         this likely means the server configuration is broken\n" ), pakname );
+		Com_Logf(LOG_WARN, _( "file %s obtained through download redirect has wrong checksum\n"
+		              "\tthis likely means the server configuration is broken" ), pakname );
 
 		if ( strlen( clc.badChecksumList ) + strlen( pakname ) + 1 >= sizeof( clc.badChecksumList ) )
 		{
-			Com_Printf( "ERROR: badChecksumList overflowed (%s)\n", clc.badChecksumList );
+			Com_Logf( LOG_ERROR, "badChecksumList overflowed (%s)", clc.badChecksumList );
 			return qfalse;
 		}
 
@@ -4107,7 +4107,7 @@ void CL_StartHunkUsers( void )
 		char renderers[ MAX_QPATH ];
 		char *from, *to;
 
-		Com_Printf("%s", _( "----- Initializing Renderer ----\n" ));
+		PrintBanner(_( "Initializing Renderer" ))
 
 		Q_strncpyz( renderers, cl_renderer->string, sizeof( renderers ) );
 		from = renderers;
@@ -4394,7 +4394,7 @@ CL_Init
 */
 void CL_Init( void )
 {
-	Com_Printf("%s", _( "----- Client Initialization -----\n" ));
+	PrintBanner(_( "Client Initialization" ))
 
 	Con_Init();
 
@@ -4625,7 +4625,7 @@ void CL_Init( void )
 	CL_OpenClientLog();
 	CL_WriteClientLog( "`~-     Client Opened     -~`\n" );
 
-	Com_Printf("%s", _( "----- Client Initialization Complete -----\n" ));
+	PrintBanner(_( "Client Initialization Complete" ))
 }
 
 /*
@@ -5230,7 +5230,7 @@ void CL_GlobalServers_f( void )
 
 	if ( ( count = Cmd_Argc() ) < 2 || ( masterNum = atoi( Cmd_Argv( 1 ) ) ) < 0 || masterNum > MAX_MASTER_SERVERS - 1 )
 	{
-		Com_Printf(_( "usage: globalservers <master# 0-%d> [protocol] [keywords]\n"), MAX_MASTER_SERVERS - 1 );
+		Cmd_PrintUsage("<master# 0-" XSTRING(MAX_MASTER_SERVERS - 1) "> [<protocol>] [<keywords>]", NULL);
 		return;
 	}
 
@@ -5269,66 +5269,7 @@ void CL_GlobalServers_f( void )
 	// servers with getserversExt %s %d ipvX
 	// not that big a deal since the extra servers won't respond to getinfo
 	// anyway.
-
-	for ( i = 3; i < count; i++ )
-	{
-		Q_strcat( command, sizeof( command ), " " );
-		Q_strcat( command, sizeof( command ), Cmd_Argv( i ) );
-	}
-
-	NET_OutOfBandPrint( NS_SERVER, to, "%s", command );
-	CL_RequestMotd();
-}
-
 #if 0
-
-/*
-==================
-CL_GlobalServers_f
-==================
-*/
-void CL_GlobalServers_f( void )
-{
-	netadr_t to;
-	int      count, i, masterNum;
-	char     command[ 1024 ], *masteraddress;
-	int      protocol = atoi( Cmd_Argv( 2 ) );   // Do this right away, otherwise weird things happen when you use the ingame "Get New Servers" button.
-
-	if ( ( count = Cmd_Argc() ) < 3 || ( masterNum = atoi( Cmd_Argv( 1 ) ) ) < 0 || masterNum > MAX_MASTER_SERVERS - 1 )
-	{
-		Com_Printf(_( "usage: globalservers <master# 0-%d> <protocol> [keywords]\n"), MAX_MASTER_SERVERS - 1 );
-		return;
-	}
-
-	sprintf( command, "sv_master%d", masterNum + 1 );
-	masteraddress = Cvar_VariableString( command );
-
-	if ( !*masteraddress )
-	{
-		Com_Printf("%s", _( "CL_GlobalServers_f: Error: No master server address given.\n" ));
-		return;
-	}
-
-	// reset the list, waiting for response
-	// -1 is used to distinguish a "no response"
-
-	i = NET_StringToAdr( masteraddress, &to, NA_UNSPEC );
-
-	if ( !i )
-	{
-		Com_Printf(_( "CL_GlobalServers_f: Error: could not resolve address of master %s\n"), masteraddress );
-		return;
-	}
-	else if ( i == 2 )
-	{
-		to.port = BigShort( PORT_MASTER );
-	}
-
-	Com_Printf(_( "Requesting servers from master %s…\n"), masteraddress );
-
-	cls.numglobalservers = -1;
-	cls.pingUpdateSource = AS_GLOBAL;
-
 	// Use the extended query for IPv6 masters
 	if ( to.type == NA_IP6 || to.type == NA_MULTICAST6 )
 	{
@@ -5349,6 +5290,7 @@ void CL_GlobalServers_f( void )
 	{
 		Com_sprintf( command, sizeof( command ), "getservers %d", protocol );
 	}
+#endif
 
 	for ( i = 3; i < count; i++ )
 	{
@@ -5357,9 +5299,8 @@ void CL_GlobalServers_f( void )
 	}
 
 	NET_OutOfBandPrint( NS_SERVER, to, "%s", command );
+	CL_RequestMotd();
 }
-
-#endif
 
 /*
 ==================
@@ -5546,7 +5487,7 @@ void CL_Ping_f( void )
 
 	if ( argc != 2 && argc != 3 )
 	{
-		Com_Printf("%s", _( "usage: ping [-4|-6] server\n" ));
+		Cmd_PrintUsage(_("[-4|-6] <server>"), NULL);
 		return;
 	}
 
@@ -5747,7 +5688,7 @@ void CL_ServerStatus_f( void )
 		if ( cls.state != CA_ACTIVE || clc.demoplaying )
 		{
 			Com_Printf("%s", _( "Not connected to a server.\n" ));
-			Com_Printf("%s", _( "usage: serverstatus [-4|-6] server\n" ));
+			Cmd_PrintUsage(_("[-4|-6] <server>"), NULL);
 			return;
 		}
 

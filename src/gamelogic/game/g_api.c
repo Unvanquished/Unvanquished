@@ -58,6 +58,11 @@ void NORETURN trap_Error( const char *string )
 	exit(1); // silence warning
 }
 
+void trap_Log( log_event_t *event )
+{
+	syscall( G_LOG, event );
+}
+
 //02.
 //return Sys_Milliseconds();
 int trap_Milliseconds( void )
@@ -573,7 +578,7 @@ void trap_GetTimeString( char *buffer, int size, const char *format, const qtime
 	syscall( G_GETTIMESTRING, buffer, size, format, tm );
 }
 
-qboolean trap_BotSetupNav( const void *botClass /* botClass_t* */, qhandle_t *navHandle )
+qboolean trap_BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle )
 {
 	return syscall( BOT_NAV_SETUP, botClass, navHandle );
 }
@@ -588,17 +593,17 @@ void trap_BotSetNavMesh( int botClientNum, qhandle_t navHandle )
 	syscall( BOT_SET_NAVMESH, botClientNum, navHandle );
 }
 
-unsigned int trap_BotFindRoute( int botClientNum, const void *target /*botRouteTarget_t*/ )
+unsigned int trap_BotFindRoute( int botClientNum, const botRouteTarget_t *target )
 {
 	return syscall( BOT_FIND_ROUTE, botClientNum, target );
 }
 
-qboolean trap_BotUpdatePath( int botClientNum, const void *target /*botRouteTarget_t*/, vec3_t dir, qboolean *directPathToGoal )
+qboolean trap_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, vec3_t dir, qboolean *directPathToGoal )
 {
 	return syscall( BOT_UPDATE_PATH, botClientNum, target, dir, directPathToGoal );
 }
 
-qboolean trap_BotNavTrace( int botClientNum, void *botTrace /*botTrace_t**/, const vec3_t start, const vec3_t end )
+qboolean trap_BotNavTrace( int botClientNum, botTrace_t *botTrace, const vec3_t start, const vec3_t end )
 {
 	return syscall( BOT_NAV_RAYCAST, botClientNum, botTrace, start, end );
 }

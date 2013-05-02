@@ -7104,6 +7104,7 @@ void RB_CameraPostFX( void )
 	// enable shader, set arrays
 	gl_cameraEffectsShader->BindProgram();
 
+	gl_cameraEffectsShader->SetUniform_ColorModulate( backEnd.viewParms.gradingWeights );
 	gl_cameraEffectsShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 	//glUniform1f(tr.cameraEffectsShader.u_BlurMagnitude, r_bloomBlur->value);
 

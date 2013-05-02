@@ -130,14 +130,13 @@ static inline void quake2recastTarget( botRouteTarget_t *target )
 	target->polyExtents[ 0 ] = fabsf( target->polyExtents[ 0 ] );
 	target->polyExtents[ 1 ] = fabsf( target->polyExtents[ 1 ] );
 	target->polyExtents[ 2 ] = fabsf( target->polyExtents[ 2 ] );
-	quake2recastExtents( target->mins, target->maxs );
 }
 
 // all functions here use detour's coordinate system
 // callers should use quake2recast and recast2quake where appropriate to convert vectors
 void         BotCalcSteerDir( Bot_t *bot, vec3_t dir );
 void         FindWaypoints( Bot_t *bot, float *corners, unsigned char *cornerFlags, dtPolyRef *cornerPolys, int *numCorners, int maxCorners );
-qboolean     PointInPolyExtents( Bot_t *bot, dtPolyRef ref, const vec3_t point, const vec3_t mins, const vec3_t maxs );
+qboolean     PointInPolyExtents( Bot_t *bot, dtPolyRef ref, const vec3_t point, const vec3_t extents );
 qboolean     PointInPoly( Bot_t *bot, dtPolyRef ref, const vec3_t point );
 qboolean     BotFindNearestPoly( Bot_t *bot, const vec3_t coord, dtPolyRef *nearestPoly, vec3_t nearPoint );
 unsigned int FindRoute( Bot_t *bot, const vec3_t s, const botRouteTarget_t *target );
