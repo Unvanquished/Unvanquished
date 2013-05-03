@@ -69,6 +69,8 @@ vmCvar_t           g_doWarmup;
 vmCvar_t           g_lockTeamsAtStart;
 vmCvar_t           g_mapRestarted;
 vmCvar_t           g_logFile;
+vmCvar_t           g_logGameplayFile;
+vmCvar_t           g_logGameplayFrequency;
 vmCvar_t           g_logFileSync;
 vmCvar_t           g_allowVote;
 vmCvar_t           g_voteLimit;
@@ -267,6 +269,8 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_warmup,                      "g_warmup",                      "10",                               CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_doWarmup,                    "g_doWarmup",                    "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_logFile,                     "g_logFile",                     "games.log",                        CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_logGameplayFile,             "g_logGameplayFile",             "gameplay.log",                     CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_logGameplayFrequency,        "g_logGameplayFrequency",        "10",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_logFileSync,                 "g_logFileSync",                 "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
 
 	{ &g_password,                    "g_password",                    "",                                 CVAR_USERINFO,                                   0, qfalse           },
@@ -438,6 +442,7 @@ void               G_RunFrame( int levelTime );
 void               G_ShutdownGame( int restart );
 void               CheckExitRules( void );
 void               G_CountSpawns( void );
+static void        G_LogGameplay( qboolean init );
 
 /*
 ================
@@ -792,6 +797,28 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	else
 	{
 		G_Printf( "Not logging to disk\n" );
+	}
+	
+	// gameplay statistics logging
+	if ( g_logGameplayFile.string[ 0 ] )
+	{
+		if ( g_logFileSync.integer )
+		{
+			trap_FS_FOpenFile( g_logGameplayFile.string, &level.logGameplayFile, FS_APPEND_SYNC );
+		}
+		else
+		{
+			trap_FS_FOpenFile( g_logGameplayFile.string, &level.logGameplayFile, FS_APPEND );
+		}
+
+		if ( !level.logGameplayFile )
+		{
+			G_Printf( "WARNING: Couldn't open gameplay logfile: %s\n", g_logGameplayFile.string );
+		}
+		else
+		{
+			G_LogGameplay( qtrue );
+		}
 	}
 
 	// initialise whether bot vote kicks are allowed
@@ -2247,6 +2274,94 @@ void QDECL PRINTF_LIKE(1) G_LogPrintf( const char *fmt, ... )
 	trap_FS_Write( decolored, strlen( decolored ), level.logFile );
 }
 
+static void G_LogGameplay( qboolean init )
+{
+	char    serverinfo[ MAX_INFO_STRING ], logline[ MAX_INFO_STRING + 1024 ];
+	int     time, numA, numH, AS2T, HS2T, AS3T, HS3T, ACon, HCon, AME, HME, ABP, HBP;
+	float   LMR;
+	qtime_t t;
+
+	static int nextCalculation = 0;
+
+	if ( !init && level.time < nextCalculation )
+	{
+		return;
+	}
+
+	if ( !level.logGameplayFile )
+	{
+		return;
+	}
+
+	if ( init )
+	{
+		trap_GetServerinfo( serverinfo, sizeof( serverinfo ) );
+		trap_RealTime( &t );
+
+		Com_sprintf( logline, sizeof( logline ),
+		             "# -------------------------------------------------------------------\n"
+		             "# Info: %s\n"
+		             "# Time: %04i-%02i-%02i %02i:%02i:%02i\n"
+		             "#\n"
+		             "# g_stage2BaseThreshold     %4i\n"
+		             "# g_stage3BaseThreshold     %4i\n"
+		             "# g_stage2IncreasePerPlayer %4i\n"
+		             "# g_stage3IncreasePerPlayer %4i\n"
+		             "# g_stageThresholdHalfLife  %4i\n"
+		             "# g_confidenceHalfLife      %4i\n"
+		             "# g_initialBuildPoints      %4i\n"
+		             "# g_initialMineRate         %4i\n"
+		             "# g_mineRateHalfLife        %4i\n"
+		             "#\n"
+		             "#  1    2    3    4    5    6    7    8    9   10   11   12   13   14\n"
+		             "#  T numA numH AS2T HS2T AS3T HS3T ACon HCon  LMR  AME  HME  ABP  HBP\n",
+		             serverinfo,
+		             t.tm_year + 1900, t.tm_mon + 1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec,
+		             g_stage2BaseThreshold.integer,
+		             g_stage3BaseThreshold.integer,
+		             g_stage2IncreasePerPlayer.integer,
+		             g_stage3IncreasePerPlayer.integer,
+		             g_stageThresholdHalfLife.integer,
+		             g_confidenceHalfLife.integer,
+		             g_initialBuildPoints.integer,
+		             g_initialMineRate.integer,
+		             g_mineRateHalfLife.integer
+		);
+	}
+	else
+	{
+		time = level.matchTime / 1000;
+		numA = level.numAlienClients;
+		numH = level.numHumanClients;
+		AS2T = level.alienStage2Threshold;
+		HS2T = level.humanStage2Threshold;
+		AS3T = level.alienStage3Threshold;
+		HS3T = level.humanStage3Threshold;
+		ACon = ( int )level.alienConfidence[ CONFIDENCE_SUM ];
+		HCon = ( int )level.humanConfidence[ CONFIDENCE_SUM ];
+		LMR  = level.mineRate; // float
+		AME  = level.alienMineEfficiency;
+		HME  = level.humanMineEfficiency;
+		ABP  = level.alienBuildPoints;
+		HBP  = level.humanBuildPoints;
+
+		Com_sprintf( logline, sizeof( logline ),
+		             "%4i %4i %4i %4i %4i %4i %4i %4i %4i %4.1f %4i %4i %4i %4i\n",
+		             time, numA, numH, AS2T, HS2T, AS3T, HS3T, ACon, HCon, LMR, AME, HME, ABP, HBP );
+	}
+
+	trap_FS_Write( logline, strlen( logline ), level.logGameplayFile );
+
+	if ( init )
+	{
+		nextCalculation = 0;
+	}
+	else
+	{
+		nextCalculation = level.time + MAX( 1, g_logGameplayFrequency.integer ) * 1000;
+	}
+}
+
 /*
 =================
 G_SendGameStat
@@ -3107,6 +3222,9 @@ void G_RunFrame( int levelTime )
 	G_SpawnClients( TEAM_ALIENS );
 	G_SpawnClients( TEAM_HUMANS );
 	G_UpdateZaps( msec );
+
+	// log gameplay statistics
+	G_LogGameplay( qfalse );
 
 	// see if it is time to end the level
 	CheckExitRules();
