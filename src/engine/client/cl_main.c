@@ -920,13 +920,13 @@ void CL_Record_f( void )
 
 	if ( clc.demorecording )
 	{
-		Com_Printf("%s", _( "Already recording.\n" ));
+		Com_Log(LOG_ERROR, _( "Already recording." ));
 		return;
 	}
 
 	if ( cls.state != CA_ACTIVE )
 	{
-		Com_Printf("%s", _( "You must be in a level to record.\n" ));
+		Com_Log(LOG_ERROR, _( "You must be in a level to record." ));
 		return;
 	}
 
@@ -934,7 +934,7 @@ void CL_Record_f( void )
 	// sync 0 doesn't prevent recording, so not forcing it off .. everyone does g_sync 1 ; record ; g_sync 0 ..
 	if ( NET_IsLocalAddress( clc.serverAddress ) && !Cvar_VariableValue( "g_synchronousClients" ) )
 	{
-		Com_Printf( S_COLOR_YELLOW"%s", _( "WARNING: You should set 'g_synchronousClients 1' for smoother demo recording\n" ));
+		Com_Logf( LOG_WARN, _( "You should set '%s' for smoother demo recording" ), "g_synchronousClients 1");
 	}
 
 	if ( Cmd_Argc() == 2 )
@@ -2613,7 +2613,7 @@ void CL_Video_f( void )
 
 		if ( i > 9999 )
 		{
-			Com_Printf( S_COLOR_RED"%s", _( "ERROR: no free file names to create video\n" ));
+			Com_Log(LOG_ERROR, _( "no free file names to create video" ));
 			return;
 		}
 	}
