@@ -697,6 +697,7 @@ typedef struct
 	int              timelimit; //time in minutes
 
 	fileHandle_t     logFile;
+	fileHandle_t     logGameplayFile;
 
 	// store latched cvars here that we want to get at often
 	int      maxclients;
