@@ -35,6 +35,8 @@ Maryland 20850 USA.
 #include "g_local.h"
 #include "g_spawn.h"
 
+#define DEFAULT_FUNC_TRAIN_SPEED 100
+
 /*
 ===============================================================================
 
@@ -1176,7 +1178,7 @@ void reset_moverspeed( gentity_t *self, float fallbackSpeed )
 	if(!fallbackSpeed)
 		G_Error("No default speed was supplied to reset_moverspeed for entity #%i of type %s.\n", self->s.number, self->classname);
 
-	reset_floatField(&self->speed, self->config.speed, self->eclass->config.speed, fallbackSpeed, qtrue);
+	G_ResetFloatField(&self->speed, qtrue, self->config.speed, self->eclass->config.speed, fallbackSpeed);
 
 	// calculate time to reach second position from speed
 	VectorSubtract( self->activatedPosition, self->restingPosition, move );
@@ -1247,7 +1249,6 @@ so the movement delta can be calculated
 */
 void InitMover( gentity_t *ent )
 {
-	char     *sound;
 	char     *groupName;
 
 	// if the "model2" key is set, use a separate model
@@ -1255,12 +1256,6 @@ void InitMover( gentity_t *ent )
 	if ( ent->model2 )
 	{
 		ent->s.modelindex2 = G_ModelIndex( ent->model2 );
-	}
-
-	// if the "noise" key is set, use a constant looping sound when moving
-	if ( G_SpawnString( "noise", "", &sound ) )
-	{
-		ent->soundIndex = G_SoundIndex( sound );
 	}
 
 	SP_ConstantLightField( ent );
@@ -1299,7 +1294,7 @@ void reset_rotatorspeed( gentity_t *self, float fallbackSpeed )
 	VectorSubtract( self->activatedPosition, self->restingPosition, move );
 	angle = VectorLength( move );
 
-	reset_floatField(&self->speed, self->config.speed, self->eclass->config.speed, fallbackSpeed, qfalse);
+	G_ResetFloatField(&self->speed, qtrue, self->config.speed, self->eclass->config.speed, fallbackSpeed);
 
 	VectorScale( move, self->speed, self->s.apos.trDelta );
 	self->s.apos.trDuration = angle * 1000 / self->speed;
@@ -1320,7 +1315,6 @@ so the movement delta can be calculated
 */
 void InitRotator( gentity_t *ent )
 {
-	char     *sound;
 	char     *groupName;
 
 	// if the "model2" key is set, use a separate model
@@ -1328,12 +1322,6 @@ void InitRotator( gentity_t *ent )
 	if ( ent->model2 )
 	{
 		ent->s.modelindex2 = G_ModelIndex( ent->model2 );
-	}
-
-	// if the "noise" key is set, use a constant looping sound when moving
-	if ( G_SpawnString( "noise", "", &sound ) )
-	{
-		ent->soundIndex = G_SoundIndex( sound );
 	}
 
 	SP_ConstantLightField( ent );
@@ -1647,8 +1635,8 @@ void Think_SpawnNewDoorTrigger( gentity_t *self )
 
 void func_door_reset( gentity_t *self )
 {
-	reset_intField(&self->health, self->config.health, self->eclass->config.health, 0, qtrue);
-	reset_intField(&self->damage, self->config.damage, self->eclass->config.damage, 2, qtrue);
+	G_ResetIntField(&self->health, qtrue, self->config.health, self->eclass->config.health, 0);
+	G_ResetIntField(&self->damage, qtrue, self->config.damage, self->eclass->config.damage, 2);
 
 	self->takedamage = !!self->health;
 
@@ -1667,17 +1655,23 @@ void SP_func_door( gentity_t *self )
 	float  distance;
 	vec3_t size;
 	float  lip;
-	char   *s;
 
-	G_SpawnString( "sound2to1", "sound/movers/doors/dr1_strt.wav", &s );
-	self->sound2to1 = G_SoundIndex( s );
-	G_SpawnString( "sound1to2", "sound/movers/doors/dr1_strt.wav", &s );
-	self->sound1to2 = G_SoundIndex( s );
-
-	G_SpawnString( "soundPos2", "sound/movers/doors/dr1_end.wav", &s );
-	self->soundPos2 = G_SoundIndex( s );
-	G_SpawnString( "soundPos1", "sound/movers/doors/dr1_end.wav", &s );
-	self->soundPos1 = G_SoundIndex( s );
+	if( !self->sound1to2 )
+	{
+		self->sound1to2 = G_SoundIndex( "sound/movers/doors/dr1_strt.wav" );
+	}
+	if( !self->sound2to1 )
+	{
+		self->sound2to1 = G_SoundIndex( "sound/movers/doors/dr1_strt.wav" );
+	}
+	if( !self->soundPos1 )
+	{
+		self->soundPos1 = G_SoundIndex( "sound/movers/doors/dr1_end.wav" );
+	}
+	if( !self->soundPos2 )
+	{
+		self->soundPos2 = G_SoundIndex( "sound/movers/doors/dr1_end.wav" );
+	}
 
 	self->blocked = func_door_block;
 	self->reset = func_door_reset;
@@ -1742,7 +1736,7 @@ void SP_func_door( gentity_t *self )
 
 void func_door_rotating_reset( gentity_t *self )
 {
-	reset_intField(&self->health, self->config.health, self->eclass->config.health, 0, qtrue);
+	G_ResetIntField(&self->health, qtrue, self->config.health, self->eclass->config.health, 0);
 
 	self->takedamage = !!self->health;
 
@@ -1751,17 +1745,22 @@ void func_door_rotating_reset( gentity_t *self )
 
 void SP_func_door_rotating( gentity_t *self )
 {
-	char *s;
-
-	G_SpawnString( "sound2to1", "sound/movers/doors/dr1_strt.wav", &s );
-	self->sound2to1 = G_SoundIndex( s );
-	G_SpawnString( "sound1to2", "sound/movers/doors/dr1_strt.wav", &s );
-	self->sound1to2 = G_SoundIndex( s );
-
-	G_SpawnString( "soundPos2", "sound/movers/doors/dr1_end.wav", &s );
-	self->soundPos2 = G_SoundIndex( s );
-	G_SpawnString( "soundPos1", "sound/movers/doors/dr1_end.wav", &s );
-	self->soundPos1 = G_SoundIndex( s );
+	if( !self->sound1to2 )
+	{
+		self->sound1to2 = G_SoundIndex( "sound/movers/doors/dr1_strt.wav" );
+	}
+	if( !self->sound2to1 )
+	{
+		self->sound2to1 = G_SoundIndex( "sound/movers/doors/dr1_strt.wav" );
+	}
+	if( !self->soundPos1 )
+	{
+		self->soundPos1 = G_SoundIndex( "sound/movers/doors/dr1_end.wav" );
+	}
+	if( !self->soundPos2 )
+	{
+		self->soundPos2 = G_SoundIndex( "sound/movers/doors/dr1_end.wav" );
+	}
 
 	self->blocked = func_door_block;
 	self->reset = func_door_rotating_reset;
@@ -1861,27 +1860,33 @@ void SP_func_door_rotating( gentity_t *self )
 
 void func_door_model_reset( gentity_t *self )
 {
-	reset_floatField(&self->speed, self->config.speed, self->eclass->config.speed, 200, qtrue);
-	reset_intField(&self->health, self->config.health, self->eclass->config.health, 0, qtrue);
+	G_ResetFloatField(&self->speed, qtrue, self->config.speed, self->eclass->config.speed, 200);
+	G_ResetIntField(&self->health, qtrue, self->config.health, self->eclass->config.health, 0);
 
 	self->takedamage = !!self->health;
 }
 
 void SP_func_door_model( gentity_t *self )
 {
-	char      *s;
 	char      *sound;
 	gentity_t *clipBrush;
 
-	G_SpawnString( "sound2to1", "sound/movers/doors/dr1_strt.wav", &s );
-	self->sound2to1 = G_SoundIndex( s );
-	G_SpawnString( "sound1to2", "sound/movers/doors/dr1_strt.wav", &s );
-	self->sound1to2 = G_SoundIndex( s );
-
-	G_SpawnString( "soundPos2", "sound/movers/doors/dr1_end.wav", &s );
-	self->soundPos2 = G_SoundIndex( s );
-	G_SpawnString( "soundPos1", "sound/movers/doors/dr1_end.wav", &s );
-	self->soundPos1 = G_SoundIndex( s );
+	if( !self->sound1to2 )
+	{
+		self->sound1to2 = G_SoundIndex( "sound/movers/doors/dr1_strt.wav" );
+	}
+	if( !self->sound2to1 )
+	{
+		self->sound2to1 = G_SoundIndex( "sound/movers/doors/dr1_strt.wav" );
+	}
+	if( !self->soundPos1 )
+	{
+		self->soundPos1 = G_SoundIndex( "sound/movers/doors/dr1_end.wav" );
+	}
+	if( !self->soundPos2 )
+	{
+		self->soundPos2 = G_SoundIndex( "sound/movers/doors/dr1_end.wav" );
+	}
 
 	self->reset = func_door_model_reset;
 	self->use = func_door_use;
@@ -1907,7 +1912,6 @@ void SP_func_door_model( gentity_t *self )
 	clipBrush->model = self->model;
 	trap_SetBrushModel( clipBrush, clipBrush->model );
 	clipBrush->s.eType = ET_INVISIBLE;
-	trap_LinkEntity( clipBrush );
 
 	//copy the bounds back from the clipBrush so the
 	//triggers can be made
@@ -2080,23 +2084,29 @@ void SpawnPlatSensor( gentity_t *self )
 void SP_func_plat( gentity_t *self )
 {
 	float lip, height;
-	char  *s;
 
-	G_SpawnString( "sound2to1", "sound/movers/plats/pt1_strt.wav", &s );
-	self->sound2to1 = G_SoundIndex( s );
-	G_SpawnString( "sound1to2", "sound/movers/plats/pt1_strt.wav", &s );
-	self->sound1to2 = G_SoundIndex( s );
-
-	G_SpawnString( "soundPos2", "sound/movers/plats/pt1_end.wav", &s );
-	self->soundPos2 = G_SoundIndex( s );
-	G_SpawnString( "soundPos1", "sound/movers/plats/pt1_end.wav", &s );
-	self->soundPos1 = G_SoundIndex( s );
+	if( !self->sound1to2 )
+	{
+		self->sound1to2 = G_SoundIndex( "sound/movers/plats/pt1_strt.wav" );
+	}
+	if( !self->sound2to1 )
+	{
+		self->sound2to1 = G_SoundIndex( "sound/movers/plats/pt1_strt.wav" );
+	}
+	if( !self->soundPos1 )
+	{
+		self->soundPos1 = G_SoundIndex( "sound/movers/plats/pt1_end.wav" );
+	}
+	if( !self->soundPos2 )
+	{
+		self->soundPos2 = G_SoundIndex( "sound/movers/plats/pt1_end.wav" );
+	}
 
 	VectorClear( self->s.angles );
 
 	G_SpawnFloat( "lip", "8", &lip );
 
-	reset_intField(&self->damage, self->config.damage, self->eclass->config.damage, 2, qtrue);
+	G_ResetIntField(&self->damage, qtrue, self->config.damage, self->eclass->config.damage, 2);
 
 	if(!self->config.wait.time)
 		self->config.wait.time = 1.0f;
@@ -2163,7 +2173,7 @@ void func_button_use( gentity_t *self, gentity_t *caller, gentity_t *activator )
 
 void func_button_reset( gentity_t *self )
 {
-	reset_intField(&self->health, self->config.health, self->eclass->config.health, 0, qtrue);
+	G_ResetIntField(&self->health, qtrue, self->config.health, self->eclass->config.health, 0);
 
 	self->takedamage = !!self->health;
 
@@ -2176,10 +2186,11 @@ void SP_func_button( gentity_t *self )
 	float  distance;
 	vec3_t size;
 	float  lip;
-	char   *s;
 
-	G_SpawnString( "sound1to2", "sound/movers/switches/button1.wav", &s );
-	self->sound1to2 = G_SoundIndex( s );
+	if( !self->sound1to2 )
+	{
+		self->sound1to2 = G_SoundIndex( "sound/movers/switches/button1.wav" );
+	}
 
 	self->reset = func_button_reset;
 
@@ -2269,7 +2280,10 @@ void func_train_reached( gentity_t *self )
 	VectorCopy( next->nextPathSegment->s.origin, self->activatedPosition );
 
 	// if the path_corner has a speed, use that otherwise use the train's speed
-	reset_floatField( &self->speed, next->config.speed, self->config.speed, 1, qtrue );
+	G_ResetFloatField( &self->speed, qtrue, next->config.speed, next->eclass->config.speed, 0);
+	if(!self->speed) {
+		G_ResetFloatField(&self->speed, qtrue, self->config.speed, self->eclass->config.speed, DEFAULT_FUNC_TRAIN_SPEED);
+	}
 
 	// calculate duration
 	VectorSubtract( self->activatedPosition, self->restingPosition, move );
@@ -2491,12 +2505,12 @@ void SP_func_train( gentity_t *self )
 	}
 	else
 	{
-		reset_intField(&self->damage, self->config.damage, self->eclass->config.damage, 2, qtrue);
+		G_ResetIntField(&self->damage, qtrue, self->config.damage, self->eclass->config.damage, 2);
 	}
 
 	trap_SetBrushModel( self, self->model );
 	InitMover( self );
-	reset_moverspeed( self, 100 );
+	reset_moverspeed( self, DEFAULT_FUNC_TRAIN_SPEED );
 
 	self->reached = func_train_reached;
 	self->act = func_train_act;
@@ -2549,7 +2563,7 @@ ROTATING
 
 void SP_func_rotating( gentity_t *self )
 {
-	reset_floatField(&self->speed, self->config.speed, self->eclass->config.speed, 400, qfalse);
+	G_ResetFloatField(&self->speed, qfalse, self->config.speed, self->eclass->config.speed, 400);
 
 	// set the axis of rotation
 	self->s.apos.trType = TR_LINEAR;
@@ -2567,7 +2581,7 @@ void SP_func_rotating( gentity_t *self )
 		self->s.apos.trDelta[ 1 ] = self->config.speed;
 	}
 
-	reset_intField(&self->damage, self->config.damage, self->eclass->config.damage, 2, qtrue);
+	G_ResetIntField(&self->damage, qtrue, self->config.damage, self->eclass->config.damage, 2);
 
 	trap_SetBrushModel( self, self->model );
 	InitMover( self );
@@ -2576,8 +2590,6 @@ void SP_func_rotating( gentity_t *self )
 	VectorCopy( self->s.origin, self->s.pos.trBase );
 	VectorCopy( self->s.pos.trBase, self->r.currentOrigin );
 	VectorCopy( self->s.apos.trBase, self->r.currentAngles );
-
-	trap_LinkEntity( self );
 }
 
 /*
@@ -2603,7 +2615,7 @@ void SP_func_bobbing( gentity_t *self )
 	G_SpawnFloat( "height", "32", &height );
 	G_SpawnFloat( "phase", "0", &phase );
 
-	reset_intField(&self->damage, self->config.damage, self->eclass->config.damage, 2, qtrue);
+	G_ResetIntField(&self->damage, qtrue, self->config.damage, self->eclass->config.damage, 2);
 
 	trap_SetBrushModel( self, self->model );
 	InitMover( self );
@@ -2646,7 +2658,7 @@ void SP_func_pendulum( gentity_t *self )
 
 	G_SpawnFloat( "phase", "0", &phase );
 
-	reset_intField(&self->damage, self->config.damage, self->eclass->config.damage, 2, qtrue);
+	G_ResetIntField(&self->damage, qtrue, self->config.damage, self->eclass->config.damage, 2);
 
 	trap_SetBrushModel( self, self->model );
 
@@ -2727,13 +2739,12 @@ void func_destructable_die( gentity_t *self, gentity_t *inflictor, gentity_t *at
 	trap_UnlinkEntity( self );
 
 	G_RadiusDamage( self->restingPosition, attacker, self->splashDamage, self->splashRadius, self, MOD_TRIGGER_HURT );
-	G_FireEntity( self, attacker );
 }
 
 
 void func_destructable_reset( gentity_t *self )
 {
-	reset_intField(&self->health, self->config.health, self->eclass->config.health, 100, qtrue);
+	G_ResetIntField(&self->health, qtrue, self->config.health, self->eclass->config.health, 100);
 	self->takedamage = qtrue;
 }
 
@@ -2791,9 +2802,7 @@ void SP_func_destructable( gentity_t *self )
   self->die = func_destructable_die;
   self->act = func_destructable_act;
 
-  if( self->spawnflags & 1 )
-    trap_UnlinkEntity( self );
-  else
+  if( !self->spawnflags & 1 )
   {
     trap_LinkEntity( self );
     self->takedamage = qtrue;

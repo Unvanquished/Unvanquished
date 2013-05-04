@@ -718,11 +718,12 @@ set( GAMEGPP_BASE
   ${GPP_DIR}/game/g_buildable.c
   ${GPP_DIR}/game/g_missile.c
   ${GPP_DIR}/game/g_session.c
+  ${GPP_DIR}/game/g_spawn_afx.c
   ${GPP_DIR}/game/g_spawn_ctrl.c
-  ${GPP_DIR}/game/g_spawn_env_afx.c
-  ${GPP_DIR}/game/g_spawn_environment.c
+  ${GPP_DIR}/game/g_spawn_fx.c
   ${GPP_DIR}/game/g_spawn_game.c
   ${GPP_DIR}/game/g_spawn_generic.c
+  ${GPP_DIR}/game/g_spawn_gfx.c
   ${GPP_DIR}/game/g_spawn_mover.c
   ${GPP_DIR}/game/g_spawn_position.c
   ${GPP_DIR}/game/g_spawn_sensor.c
@@ -736,9 +737,9 @@ set( GAMEGPP_BASE
   ${GPP_DIR}/game/g_admin.c
   ${GPP_DIR}/game/g_namelog.c
   ${GPP_DIR}/game/g_bot.c
-  ${GPP_DIR}/game/g_alienbot.c
-  ${GPP_DIR}/game/g_humanbot.c
-  ${GPP_DIR}/game/g_nav.c
+  ${GPP_DIR}/game/g_bot_ai.c
+  ${GPP_DIR}/game/g_bot_nav.c
+  ${GPP_DIR}/game/g_bot_util.c
   ${SHAREDLIST}
 )
 

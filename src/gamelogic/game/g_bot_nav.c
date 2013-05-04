@@ -1,23 +1,25 @@
 /*
 ===========================================================================
-This file is part of Tremulous.
+Copyright (C) 1999-2005 Id Software, Inc.
 
-Tremulous is free software; you can redistribute it
+This file is part of Daemon.
+
+Daemon is free software; you can redistribute it
 and/or modify it under the terms of the GNU General Public License as
 published by the Free Software Foundation; either version 2 of the License,
 or (at your option) any later version.
 
-Tremulous is distributed in the hope that it will be
+Daemon is distributed in the hope that it will be
 useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Tremulous; if not, write to the Free Software
+along with Daemon; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-#include "g_bot.h"
+#include "g_bot_util.h"
 #include "../../engine/botlib/bot_types.h"
 
 //tells if all navmeshes loaded successfully
@@ -83,6 +85,51 @@ void BotSetNavmesh( gentity_t  *self, class_t newClass )
 Bot Navigation Querys
 ========================
 */
+float RadiusFromBounds2D( vec3_t mins, vec3_t maxs )
+{
+	float rad1 = sqrt( Square( mins[0] ) + Square( mins[1] ) );
+	float rad2 = sqrt( Square( maxs[0] ) + Square( maxs[1] ) );
+	if ( rad1 > rad2 )
+	{
+		return rad1;
+	}
+	else
+	{
+		return rad2;
+	}
+}
+
+float BotGetGoalRadius( gentity_t *self )
+{
+	if ( BotTargetIsEntity( self->botMind->goal ) )
+	{
+		botTarget_t *t = &self->botMind->goal;
+		if ( t->ent->s.modelindex == BA_H_MEDISTAT || t->ent->s.modelindex == BA_A_BOOSTER )
+		{
+			return self->r.maxs[0] + t->ent->r.maxs[0];
+		}
+		else
+		{
+			return RadiusFromBounds2D( t->ent->r.mins, t->ent->r.maxs ) + RadiusFromBounds2D( self->r.mins, self->r.maxs );
+		}
+	}
+	else
+	{
+		return RadiusFromBounds2D( self->r.mins, self->r.maxs );
+	}
+}
+
+int DistanceToGoal2DSquared( gentity_t *self )
+{
+	vec3_t vec;
+	vec3_t goalPos;
+
+	BotGetTargetPos( self->botMind->goal, goalPos );
+
+	VectorSubtract( goalPos, self->s.origin, vec );
+
+	return Square( vec[ 0 ] ) + Square( vec[ 1 ] );
+}
 
 int DistanceToGoal( gentity_t *self )
 {
@@ -624,17 +671,17 @@ Global Bot Navigation
 
 qboolean BotMoveToGoal( gentity_t *self )
 {
-	vec3_t pos;
 	vec3_t dir;
+	botRouteTarget_t rtarget;
 
 	if ( !( self && self->client ) )
 	{
 		return qfalse;
 	}
 
-	BotGetTargetPos( self->botMind->goal, pos );
+	BotTargetToRouteTarget( self, self->botMind->goal, &rtarget );
 
-	if ( trap_BotUpdatePath( self->s.number, pos, dir, &self->botMind->directPathToGoal ) )
+	if ( trap_BotUpdatePath( self->s.number, &rtarget, dir, &self->botMind->directPathToGoal ) )
 	{
 		if ( dir[ 2 ] < 0 )
 		{
@@ -642,19 +689,8 @@ qboolean BotMoveToGoal( gentity_t *self )
 			VectorNormalize( dir );
 		}
 
-		if ( !BotAvoidObstacles( self, dir ) )
-		{
-			BotSeek( self, dir );
-		}
-		else
-		{
-			vec3_t pos;
-			BG_GetClientViewOrigin( &self->client->ps, pos );
-			VectorMA( pos, 100, dir, pos );
-			BotSlowAim( self, pos, 0.5f );
-			BotAimAtLocation( self, pos );
-			BotMoveInDir( self, MOVE_FORWARD );
-		}
+		BotAvoidObstacles( self, dir );
+		BotSeek( self, dir );
 
 		//dont sprint or dodge if we dont have enough stamina and are about to slow
 		if ( self->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS && self->client->ps.stats[STAT_STAMINA] < STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE )

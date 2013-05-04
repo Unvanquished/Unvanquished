@@ -279,6 +279,60 @@ void QDECL PRINTF_LIKE(1) Com_Printf( const char *fmt, ... )
 	va_end( argptr );
 }
 
+void QDECL Com_LogEvent( log_event_t *event, log_location_info_t *location )
+{
+	switch (event->level)
+	{
+	case LOG_OFF:
+		return;
+	case LOG_WARN:
+		Com_Printf(_("^3Warning: ^7%s\n"), event->message);
+		break;
+	case LOG_ERROR:
+		Com_Printf(_("^1Error: ^7%s\n"), event->message);
+		break;
+	case LOG_DEBUG:
+		Com_Printf(_("Debug: %s\n"), event->message);
+		break;
+	case LOG_TRACE:
+		Com_Printf("Trace: %s\n", event->message);
+		return;
+	default:
+		Com_Printf("%s\n", event->message);
+		break;
+	}
+#ifndef NDEBUG
+	if (location)
+	{
+		Com_Printf("\tin %s at %s:%i\n", location->function, location->file, location->line);
+	}
+#endif
+}
+
+void QDECL PRINTF_LIKE(2) Com_Logf( log_level_t level, const char *fmt, ... )
+{
+	va_list argptr;
+	char    text[ MAXPRINTMSG ];
+	log_event_t event;
+
+	event.level = level;
+	event.message = text;
+
+	va_start( argptr, fmt );
+	Q_vsnprintf( text, sizeof( text ), fmt, argptr );
+	va_end( argptr );
+
+	Com_LogEvent( &event, NULL );
+}
+
+void QDECL Com_Log( log_level_t level, const char* message )
+{
+	log_event_t event;
+	event.level = level;
+	event.message = message;
+	Com_LogEvent( &event, NULL );
+}
+
 /*
 ================
 Com_DPrintf
@@ -1756,7 +1810,9 @@ void Com_InitHunkMemory( void )
 {
 	cvar_t *cv;
 	int    nMinAlloc;
-	char   *pMsg = NULL;
+	qboolean isDedicated;
+
+	isDedicated = (com_dedicated && com_dedicated->integer);
 
 	// make sure the file system has allocated and "not" freed any temp blocks
 	// this allows the config and product id files ( journal files too ) to be loaded
@@ -1771,21 +1827,13 @@ void Com_InitHunkMemory( void )
 	cv = Cvar_Get( "com_hunkMegs", DEF_COMHUNKMEGS_S, CVAR_LATCH | CVAR_ARCHIVE );
 
 	// if we are not dedicated min allocation is 56, otherwise min is 1
-	if ( com_dedicated && com_dedicated->integer )
-	{
-		nMinAlloc = MIN_DEDICATED_COMHUNKMEGS;
-		pMsg = "Minimum com_hunkMegs for a dedicated server is %i, allocating %iMB.\n";
-	}
-	else
-	{
-		nMinAlloc = MIN_COMHUNKMEGS;
-		pMsg = "Minimum com_hunkMegs is %i, allocating %iMB.\n";
-	}
+	nMinAlloc = isDedicated ? MIN_DEDICATED_COMHUNKMEGS : MIN_COMHUNKMEGS;
 
 	if ( cv->integer < nMinAlloc )
 	{
 		s_hunkTotal = 1024 * 1024 * nMinAlloc;
-		Com_Printf( pMsg, nMinAlloc, s_hunkTotal / ( 1024 * 1024 ) );
+		Com_Printf(	isDedicated	? "Minimum com_hunkMegs for a dedicated server is %i, allocating %iMB.\n"
+				: "Minimum com_hunkMegs is %i, allocating %iMB.\n", nMinAlloc, s_hunkTotal / ( 1024 * 1024 ) );
 	}
 	else
 	{
@@ -2893,7 +2941,7 @@ qboolean Com_WriteProfile( char *profile_path )
 
 	if ( f < 0 )
 	{
-		Com_Printf( "Com_WriteProfile: Can't write %s.\n", profile_path );
+		Com_Printf( _( "%s couldn't write %s\n"), "[Com_WriteProfile]" S_WARNING, profile_path );
 		return qfalse;
 	}
 
@@ -2906,8 +2954,6 @@ qboolean Com_WriteProfile( char *profile_path )
 
 	return qtrue;
 }
-
-qboolean Crypto_Init( void );
 
 /*
 =================
@@ -3010,10 +3056,7 @@ void Com_Init( char *commandLine )
 			}
 
 			// bani - write a new one
-			if ( !Com_WriteProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
-			{
-				Com_Printf(_( S_WARNING "couldn't write profiles/%s/profile.pid\n"), cl_profileStr );
-			}
+			Com_WriteProfile( va( "profiles/%s/profile.pid", cl_profileStr ) );
 
 			// exec the config
 			Cbuf_AddText( va( "exec profiles/%s/" CONFIG_NAME "\n", cl_profileStr ) );
@@ -3144,9 +3187,7 @@ void Com_Init( char *commandLine )
 	SV_Init();
 	Hist_Load();
 
-	if ( !Crypto_Init() )
-	{
-	}
+	Crypto_Init();
 
 	com_dedicated->modified = qfalse;
 
@@ -3172,7 +3213,6 @@ void Com_Init( char *commandLine )
 	if ( !com_recommendedSet->integer && !Com_SafeMode() )
 	{
 		Com_SetRecommended();
-		Cbuf_ExecuteText( EXEC_APPEND, "vid_restart\n" );
 	}
 
 	Cvar_Set( "com_recommendedSet", "1" );
@@ -3346,7 +3386,7 @@ void Com_WriteConfig_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Com_Printf(_( "Usage: writeconfig <filename>\n" ));
+		Cmd_PrintUsage(_("<filename>"), NULL);
 		return;
 	}
 
@@ -3370,7 +3410,7 @@ void Com_WriteBindings_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Com_Printf(_( "Usage: writebindings <filename>\n" ));
+		Cmd_PrintUsage(_("<filename>"), NULL);
 		return;
 	}
 
@@ -3635,7 +3675,7 @@ void Com_Frame( void )
 		{
 			if ( !watchWarn && Sys_Milliseconds() - watchdogTime > ( com_watchdog->integer - 4 ) * 1000 )
 			{
-				Com_Printf(_( "WARNING: watchdog will trigger in 4 seconds\n" ));
+				Com_Log( LOG_WARN, _( "watchdog will trigger in 4 seconds" ));
 				watchWarn = qtrue;
 			}
 			else if ( Sys_Milliseconds() - watchdogTime > com_watchdog->integer * 1000 )

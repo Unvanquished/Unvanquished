@@ -2,7 +2,6 @@
 //
 {
   loadMenu { "ui/main.menu" }
-  loadMenu { "ui/news.menu" }
   loadMenu { "ui/joinserver.menu" }
   loadMenu { "ui/options.menu" }
   loadMenu { "ui/createserver.menu" }
@@ -16,7 +15,6 @@
   loadMenu { "ui/drop.menu" }
   loadMenu { "ui/serverinfo.menu" }
   loadMenu { "ui/findplayer.menu" }
-  loadMenu { "ui/quitcredit.menu" }
   loadMenu { "ui/createfavorite.menu" }
   loadMenu { "ui/firstrun.menu" }
   loadMenu { "ui/profiles.menu" }

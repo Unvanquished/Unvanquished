@@ -48,12 +48,20 @@ typedef struct
 	vec3_t normal;
 } botTrace_t;
 
-// if the target is not within extents of a navmesh polygon 
-// then the bot will not be able to find a route to it
+typedef enum
+{
+	BOT_TARGET_STATIC, // target stays in one place always
+	BOT_TARGET_DYNAMIC // target can move
+} botRouteTargetType_t;
+
+// type: determines if the object can move or not
+// pos: the object's position 
+// polyExtents: how far away from pos to search for a nearby navmesh polygon for finding a route
 typedef struct
 {
+	botRouteTargetType_t type;
 	vec3_t pos;
-	vec3_t extents;
+	vec3_t polyExtents;
 } botRouteTarget_t;
 
 enum navPolyFlags

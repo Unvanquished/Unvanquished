@@ -3789,6 +3789,12 @@ static qboolean ParseShader( char **text )
 			SkipRestOfLine( text );
 			continue;
 		}
+		// nonSolid, noImpact
+		else if ( !Q_stricmp( token, "nonSolid" ) || !Q_stricmp( token, "noImpact" ) )
+		{
+			SkipRestOfLine( text );
+			continue;
+		}
 		// unknown directive
 		else
 		{

@@ -158,12 +158,6 @@ void GL_BindProgram( shaderProgram_t *program )
 		return;
 	}
 
-	if ( r_logFile->integer )
-	{
-		// don't just call LogComment, or we will get a call to va() every frame!
-		GLimp_LogComment( va( "--- GL_BindProgram( name = '%s', macros = '%s' ) ---\n", program->name, program->compileMacros ) );
-	}
-
 	if ( glState.currentProgram != program )
 	{
 		glUseProgram( program->program );
@@ -7110,6 +7104,7 @@ void RB_CameraPostFX( void )
 	// enable shader, set arrays
 	gl_cameraEffectsShader->BindProgram();
 
+	gl_cameraEffectsShader->SetUniform_ColorModulate( backEnd.viewParms.gradingWeights );
 	gl_cameraEffectsShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 	//glUniform1f(tr.cameraEffectsShader.u_BlurMagnitude, r_bloomBlur->value);
 

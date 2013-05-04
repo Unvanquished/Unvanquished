@@ -29,6 +29,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "tr_local.h"
 
+#define LOG_GLSL_UNIFORMS 1
+#define USE_UNIFORM_FIREWALL 1
+
 // *INDENT-OFF*
 static const int MAX_SHADER_MACROS = 9;
 static const unsigned int GL_SHADER_VERSION = 3;
@@ -67,6 +70,7 @@ protected:
 	std::vector< GLUniform * >      _uniforms;
 	std::vector< GLCompileMacro * > _compileMacros;
 
+	size_t                         _uniformStorageSize;
 	const uint32_t                 _vertexAttribsRequired;
 	uint32_t                       _vertexAttribs; // can be set by uniforms
 	unsigned int                   _checkSum;
@@ -79,7 +83,8 @@ protected:
 		_currentProgram( NULL ),
 		_vertexAttribsRequired( vertexAttribsRequired ),
 		_vertexAttribs( 0 ),
-		_shaderManager( manager )
+		_shaderManager( manager ),
+		_uniformStorageSize( 0 )
 		//_vertexAttribsOptional(vertexAttribsOptional),
 		//_vertexAttribsUnsupported(vertexAttribsUnsupported)
 	{
@@ -93,7 +98,8 @@ protected:
 		_currentProgram( NULL ),
 		_vertexAttribsRequired( vertexAttribsRequired ),
 		_vertexAttribs( 0 ),
-		_shaderManager( manager )
+		_shaderManager( manager ),
+		_uniformStorageSize( 0 )
 	{
 	}
 
@@ -101,9 +107,21 @@ protected:
 	{
 		for ( std::size_t i = 0; i < _shaderPrograms.size(); i++ )
 		{
-			if ( _shaderPrograms[ i ].program )
+			shaderProgram_t *p = &_shaderPrograms[ i ];
+
+			if ( p->program )
 			{
-				glDeleteProgram( _shaderPrograms[ i ].program );
+				glDeleteProgram( p->program );
+			}
+
+			if ( p->uniformFirewall )
+			{
+				ri.Free( p->uniformFirewall );
+			}
+
+			if ( p->uniformLocations )
+			{
+				ri.Free( p->uniformLocations );
 			}
 		}
 	}
@@ -125,7 +143,7 @@ public:
 		_compileMacros.push_back( compileMacro );
 	}
 
-	size_t                          GetNumOfCompiledMacros() const
+	size_t GetNumOfCompiledMacros() const
 	{
 		return _compileMacros.size();
 	}
@@ -150,7 +168,6 @@ protected:
 	virtual void BuildShaderVertexLibNames( std::string& vertexInlines ) { };
 	virtual void BuildShaderFragmentLibNames( std::string& vertexInlines ) { };
 	virtual void BuildShaderCompileMacros( std::string& vertexInlines ) { };
-	virtual void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram ) { };
 	virtual void SetShaderProgramUniforms( shaderProgram_t *shaderProgram ) { };
 	int          SelectProgram();
 public:
@@ -208,7 +225,7 @@ public:
 	void load( T *& shader )
 	{
 		shader = new T( this );
-		LoadShaderSource( shader );
+		InitShader( shader );
 		_shaders.push_back( shader );
 		_shaderBuildQueue.push( shader );
 	}
@@ -220,18 +237,16 @@ public:
 private:
 	bool LoadShaderBinary( GLShader *shader, size_t permutation );
 	void SaveShaderBinary( GLShader *shader, size_t permutation );
-	void CompileGPUShader( GLuint program, const char *programName, const char *shaderText, 
+	void CompileGPUShader( GLuint program, const char *programName, const char *shaderText,
 	                       int shaderTextSize, GLenum shaderType ) const;
-	void CompileAndLinkGPUShaderProgram( shaderProgram_t *program,
-	                                     const std::string &vertexShaderText,
-	                                     const std::string &fragmentShaderText,
+	void CompileAndLinkGPUShaderProgram( GLShader *shader, shaderProgram_t *program,
 	                                     const std::string &compileMacros ) const;
 	std::string BuildGPUShaderText( const char *mainShader, const char *libShaders, GLenum shaderType ) const;
 	void LinkProgram( GLuint program ) const;
 	void BindAttribLocations( GLuint program ) const;
 	void PrintShaderSource( GLuint object ) const;
 	void PrintInfoLog( GLuint object, bool developerOnly ) const;
-	void LoadShaderSource( GLShader *shader );
+	void InitShader( GLShader *shader );
 	void ValidateProgram( GLuint program ) const;
 	void UpdateShaderProgramUniformLocations( GLShader *shader, shaderProgram_t *shaderProgram ) const;
 };
@@ -239,19 +254,263 @@ private:
 class GLUniform
 {
 protected:
-	GLShader *_shader;
+	GLShader   *_shader;
+	std::string _name;
+	size_t      _firewallIndex;
+	size_t      _locationIndex;
 
-	GLUniform( GLShader *shader ) :
-		_shader( shader )
+	GLUniform( GLShader *shader, const char *name ) :
+		_shader( shader ),
+		_name( name ),
+		_firewallIndex( 0 ),
+		_locationIndex( 0 )
 	{
 		_shader->RegisterUniform( this );
 	}
 
 public:
-	virtual const char *GetName() const = 0;
-	virtual void      UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const = 0;
+	void SetFirewallIndex( size_t offSetValue )
+	{
+		_firewallIndex = offSetValue;
+	}
 
-	virtual ~GLUniform() {}
+	void SetLocationIndex( size_t index )
+	{
+		_locationIndex = index;
+	}
+
+	const char *GetName( void )
+	{
+		return _name.c_str();
+	}
+
+	void UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram )
+	{
+		shaderProgram->uniformLocations[ _locationIndex ] = glGetUniformLocation( shaderProgram->program, GetName() );
+	}
+
+	virtual size_t GetSize( void )
+	{
+		return 0;
+	}
+};
+
+class GLUniform1f : protected GLUniform
+{
+protected:
+	GLUniform1f( GLShader *shader, const char *name ) :
+	GLUniform( shader, name )
+	{
+	}
+
+	inline void SetValue( float value )
+	{
+		shaderProgram_t *p = _shader->GetProgram();
+#if defined( LOG_GLSL_UNIFORMS )
+		if ( r_logFile->integer )
+		{
+			GLimp_LogComment( va( "GLSL_SetUniform1f( %s, shader: %s, value: %f ) ---\n",
+				this->GetName(), _shader->GetName().c_str(), value ) );
+		}
+#endif
+#if defined( USE_UNIFORM_FIREWALL )
+		float *firewall = ( float * ) &p->uniformFirewall[ _firewallIndex ];
+
+		if ( *firewall == value )
+		{
+			return;
+		}
+
+		*firewall = value;
+#endif
+		glUniform1f( p->uniformLocations[ _locationIndex ], value );
+	}
+public:
+	size_t GetSize( void )
+	{
+		return sizeof( float );
+	}
+};
+
+class GLUniform1fv : protected GLUniform
+{
+protected:
+	GLUniform1fv( GLShader *shader, const char *name ) :
+	GLUniform( shader, name )
+	{
+	}
+
+	inline void SetValue( int numFloats, float *f )
+	{
+		shaderProgram_t *p = _shader->GetProgram();
+
+#if defined( LOG_GLSL_UNIFORMS )
+		if ( r_logFile->integer )
+		{
+			GLimp_LogComment( va( "GLSL_SetUniform1fv( %s, shader: %s, numFloats: %d ) ---\n",
+				this->GetName(), _shader->GetName().c_str(), numFloats ) );
+		}
+#endif
+		glUniform1fv( p->uniformLocations[ _locationIndex ], numFloats, f );
+	}
+};
+
+class GLUniform3f : protected GLUniform
+{
+protected:
+	GLUniform3f( GLShader *shader, const char *name ) :
+	GLUniform( shader, name )
+	{
+	}
+
+	inline void SetValue( const vec3_t v )
+	{
+		shaderProgram_t *p = _shader->GetProgram();
+#if defined( LOG_GLSL_UNIFORMS )
+		if ( r_logFile->integer )
+		{
+			GLimp_LogComment( va( "GLSL_SetUniform3f( %s, shader: %s, value: [ %f, %f, %f ] ) ---\n",
+				this->GetName(), _shader->GetName().c_str(), v[ 0 ], v[ 1 ], v[ 2 ] ) );
+		}
+#endif
+#if defined( USE_UNIFORM_FIREWALL )
+		vec3_t *firewall = ( vec3_t * ) &p->uniformFirewall[ _firewallIndex ];
+
+		if ( VectorCompare( *firewall, v ) )
+		{
+			return;
+		}
+
+		VectorCopy( v, *firewall );
+#endif
+		glUniform3f( p->uniformLocations[ _locationIndex ], v[ 0 ], v[ 1 ], v[ 2 ] );
+	}
+public:
+	size_t GetSize( void )
+	{
+		return sizeof( vec3_t );
+	}
+};
+
+class GLUniform4f : protected GLUniform
+{
+protected:
+	GLUniform4f( GLShader *shader, const char *name ) :
+	GLUniform( shader, name )
+	{
+	}
+
+	inline void SetValue( const vec4_t v )
+	{
+		shaderProgram_t *p = _shader->GetProgram();
+#if defined( LOG_GLSL_UNIFORMS )
+		if ( r_logFile->integer )
+		{
+			GLimp_LogComment( va( "GLSL_SetUniform4f( %s, shader: %s, value: [ %f, %f, %f, %f ] ) ---\n",
+				this->GetName(), _shader->GetName().c_str(), v[ 0 ], v[ 1 ], v[ 2 ], v[ 3 ] ) );
+		}
+#endif
+#if defined( USE_UNIFORM_FIREWALL )
+		vec4_t *firewall = ( vec4_t * ) &p->uniformFirewall[ _firewallIndex ];
+
+		if ( Vector4Compare( *firewall, v ) )
+		{
+			return;
+		}
+
+		Vector4Copy( v, *firewall );
+#endif
+		glUniform4f( p->uniformLocations[ _locationIndex ], v[ 0 ], v[ 1 ], v[ 2 ], v[ 3 ] );
+	}
+public:
+	size_t GetSize( void )
+	{
+		return sizeof( vec4_t );
+	}
+};
+
+class GLUniform4fv : protected GLUniform
+{
+protected:
+	GLUniform4fv( GLShader *shader, const char *name ) :
+	GLUniform( shader, name )
+	{
+	}
+
+	inline void SetValue( int numV, vec4_t *v )
+	{
+		shaderProgram_t *p = _shader->GetProgram();
+#if defined( LOG_GLSL_UNIFORMS )
+		if ( r_logFile->integer )
+		{
+			GLimp_LogComment( va( "GLSL_SetUniform4fv( %s, shader: %s, numV: %d ) ---\n",
+				this->GetName(), _shader->GetName().c_str(), numV ) );
+		}
+#endif
+		glUniform4fv( p->uniformLocations[ _locationIndex ], numV, &v[ 0 ][ 0 ] );
+	}
+};
+
+class GLUniformMatrix4f : protected GLUniform
+{
+protected:
+	GLUniformMatrix4f( GLShader *shader, const char *name ) :
+	GLUniform( shader, name )
+	{
+	}
+
+	inline void SetValue( GLboolean transpose, const matrix_t m )
+	{
+		shaderProgram_t *p = _shader->GetProgram();
+#if defined( LOG_GLSL_UNIFORMS )
+		if ( r_logFile->integer )
+		{
+			GLimp_LogComment( va( "GLSL_SetUniformMatrix4f( %s, shader: %s, transpose: %d, [ %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f, %f ] ) ---\n",
+				this->GetName(), _shader->GetName().c_str(), transpose,
+				m[ 0 ], m[ 1 ], m[ 2 ], m[ 3 ], m[ 4 ], m[ 5 ], m[ 6 ], m[ 7 ], m[ 8 ], m[ 9 ], m[ 10 ], m[ 11 ], m[ 12 ],
+				m[ 13 ], m[ 14 ], m[ 15 ] ) );
+		}
+#endif
+#if defined( USE_UNIFORM_FIREWALL )
+		matrix_t *firewall = ( matrix_t * ) &p->uniformFirewall[ _firewallIndex ];
+
+		if ( MatrixCompare( m, *firewall ) )
+		{
+			return;
+		}
+
+		MatrixCopy( m, *firewall );
+#endif
+		glUniformMatrix4fv( p->uniformLocations[ _locationIndex ], 1, transpose, m );
+	}
+public:
+	size_t GetSize( void )
+	{
+		return sizeof( matrix_t );
+	}
+};
+
+class GLUniformMatrix4fv : protected GLUniform
+{
+protected:
+	GLUniformMatrix4fv( GLShader *shader, const char *name ) :
+	GLUniform( shader, name )
+	{
+	}
+
+	inline void SetValue( int numMatrices, GLboolean transpose, const matrix_t *m )
+	{
+		shaderProgram_t *p = _shader->GetProgram();
+
+#if defined( LOG_GLSL_UNIFORMS )
+		if ( r_logFile->integer )
+		{
+			GLimp_LogComment( va( "GLSL_SetUniformMatrix4fv( %s, shader: %s, numMatrices: %d, transpose: %d ) ---\n",
+				this->GetName(), _shader->GetName().c_str(), numMatrices, transpose ) );
+		}
+#endif
+		glUniformMatrix4fv( p->uniformLocations[ _locationIndex ], numMatrices, transpose, &m[ 0 ][ 0 ] );
+	}
 };
 
 class GLCompileMacro
@@ -1018,198 +1277,73 @@ public:
 	}
 };
 
-class u_ColorMap :
-	GLUniform
-{
-public:
-	u_ColorMap( GLShader *shader ) :
-		GLUniform( shader )
-	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_ColorMap";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_ColorMap = glGetUniformLocation( shaderProgram->program, GetName() );
-	}
-
-	void SetUniform_ColorMap( int texUnit )
-	{
-		glUniform1i( _shader->GetProgram()->u_ColorMap, texUnit );
-	}
-};
-
-class u_NormalMap :
-	GLUniform
-{
-public:
-	u_NormalMap( GLShader *shader ) :
-		GLUniform( shader )
-	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_NormalMap";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_NormalMap = glGetUniformLocation( shaderProgram->program, GetName() );
-	}
-
-	void SetUniform_NormalMap( int texUnit )
-	{
-		glUniform1i( _shader->GetProgram()->u_NormalMap, texUnit );
-	}
-};
-
-class u_CurrentMap :
-	GLUniform
-{
-public:
-	u_CurrentMap( GLShader *shader ) :
-		GLUniform( shader )
-	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_CurrentMap";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_CurrentMap = glGetUniformLocation( shaderProgram->program, GetName() );
-	}
-
-	void SetUniform_CurrentMap( int texUnit )
-	{
-		glUniform1i( _shader->GetProgram()->u_CurrentMap, texUnit );
-	}
-};
-
 class u_ColorTextureMatrix :
-	GLUniform
+	GLUniformMatrix4f
 {
 public:
 	u_ColorTextureMatrix( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniformMatrix4f( shader, "u_ColorTextureMatrix" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_ColorTextureMatrix";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_ColorTextureMatrix = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_ColorTextureMatrix( const matrix_t m )
 	{
-		GLSL_SetUniform_ColorTextureMatrix( _shader->GetProgram(), m );
+		this->SetValue( GL_FALSE, m );
 	}
 };
 
 class u_DiffuseTextureMatrix :
-	GLUniform
+	GLUniformMatrix4f
 {
 public:
 	u_DiffuseTextureMatrix( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniformMatrix4f( shader, "u_DiffuseTextureMatrix" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_DiffuseTextureMatrix";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_DiffuseTextureMatrix = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_DiffuseTextureMatrix( const matrix_t m )
 	{
-		GLSL_SetUniform_DiffuseTextureMatrix( _shader->GetProgram(), m );
+		this->SetValue( GL_FALSE, m );
 	}
 };
 
 class u_NormalTextureMatrix :
-	GLUniform
+	GLUniformMatrix4f
 {
 public:
 	u_NormalTextureMatrix( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniformMatrix4f( shader, "u_NormalTextureMatrix" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_NormalTextureMatrix";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_NormalTextureMatrix = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_NormalTextureMatrix( const matrix_t m )
 	{
-		GLSL_SetUniform_NormalTextureMatrix( _shader->GetProgram(), m );
+		this->SetValue( GL_FALSE, m );
 	}
 };
 
 class u_SpecularTextureMatrix :
-	GLUniform
+	GLUniformMatrix4f
 {
 public:
 	u_SpecularTextureMatrix( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniformMatrix4f( shader, "u_SpecularTextureMatrix" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_SpecularTextureMatrix";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_SpecularTextureMatrix = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_SpecularTextureMatrix( const matrix_t m )
 	{
-		GLSL_SetUniform_SpecularTextureMatrix( _shader->GetProgram(), m );
+		this->SetValue( GL_FALSE, m );
 	}
 };
 
 class u_AlphaThreshold :
-	GLUniform
+	GLUniform1f
 {
 public:
 	u_AlphaThreshold( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform1f( shader, "u_AlphaThreshold" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_AlphaThreshold";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_AlphaThreshold = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_AlphaTest( uint32_t stateBits )
@@ -1237,971 +1371,527 @@ public:
 				break;
 		}
 
-		GLSL_SetUniform_AlphaThreshold( _shader->GetProgram(), value );
+		this->SetValue( value );
 	}
 };
 
 class u_AmbientColor :
-	GLUniform
+	GLUniform3f
 {
 public:
 	u_AmbientColor( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform3f( shader, "u_AmbientColor" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_AmbientColor";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_AmbientColor = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_AmbientColor( const vec3_t v )
 	{
-		GLSL_SetUniform_AmbientColor( _shader->GetProgram(), v );
+		this->SetValue( v );
 	}
 };
 
 class u_ViewOrigin :
-	GLUniform
+	GLUniform3f
 {
 public:
 	u_ViewOrigin( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform3f( shader, "u_ViewOrigin" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_ViewOrigin";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_ViewOrigin = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_ViewOrigin( const vec3_t v )
 	{
-		GLSL_SetUniform_ViewOrigin( _shader->GetProgram(), v );
+		this->SetValue( v );
 	}
 };
 
 class u_LightDir :
-	GLUniform
+	GLUniform3f
 {
 public:
 	u_LightDir( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform3f( shader, "u_LightDir" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_LightDir";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_LightDir = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_LightDir( const vec3_t v )
 	{
-		GLSL_SetUniform_LightDir( _shader->GetProgram(), v );
+		this->SetValue( v );
 	}
 };
 
 class u_LightOrigin :
-	GLUniform
+	GLUniform3f
 {
 public:
 	u_LightOrigin( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform3f( shader, "u_LightOrigin" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_LightOrigin";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_LightOrigin = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_LightOrigin( const vec3_t v )
 	{
-		GLSL_SetUniform_LightOrigin( _shader->GetProgram(), v );
+		this->SetValue( v );
 	}
 };
 
 class u_LightColor :
-	GLUniform
+	GLUniform3f
 {
 public:
 	u_LightColor( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform3f( shader, "u_LightColor" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_LightColor";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_LightColor = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_LightColor( const vec3_t v )
 	{
-		GLSL_SetUniform_LightColor( _shader->GetProgram(), v );
+		this->SetValue( v );
 	}
 };
 
 class u_LightRadius :
-	GLUniform
+	GLUniform1f
 {
 public:
 	u_LightRadius( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform1f( shader, "u_LightRadius" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_LightRadius";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_LightRadius = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_LightRadius( float value )
 	{
-		GLSL_SetUniform_LightRadius( _shader->GetProgram(), value );
+		this->SetValue( value );
 	}
 };
 
 class u_LightScale :
-	GLUniform
+	GLUniform1f
 {
 public:
 	u_LightScale( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform1f( shader, "u_LightScale" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_LightScale";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_LightScale = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_LightScale( float value )
 	{
-		GLSL_SetUniform_LightScale( _shader->GetProgram(), value );
+		this->SetValue( value );
 	}
 };
 
 class u_LightWrapAround :
-	GLUniform
+	GLUniform1f
 {
 public:
 	u_LightWrapAround( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform1f( shader, "u_LightWrapAround" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_LightWrapAround";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_LightWrapAround = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_LightWrapAround( float value )
 	{
-		GLSL_SetUniform_LightWrapAround( _shader->GetProgram(), value );
+		this->SetValue( value );
 	}
 };
 
 class u_LightAttenuationMatrix :
-	GLUniform
+	GLUniformMatrix4f
 {
 public:
 	u_LightAttenuationMatrix( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniformMatrix4f( shader, "u_LightAttenuationMatrix" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_LightAttenuationMatrix";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_LightAttenuationMatrix = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_LightAttenuationMatrix( const matrix_t m )
 	{
-		GLSL_SetUniform_LightAttenuationMatrix( _shader->GetProgram(), m );
+		this->SetValue( GL_FALSE, m );
 	}
 };
 
 class u_LightFrustum :
-	GLUniform
+	GLUniform4fv
 {
 public:
 	u_LightFrustum( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform4fv( shader, "u_LightFrustum" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_LightFrustum";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_LightFrustum = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_LightFrustum( vec4_t lightFrustum[ 6 ] )
 	{
-		shaderProgram_t *program = _shader->GetProgram();
-
-#if 0
-
-		if ( memcmp( program->t_LightFrustum, m ) )
-		{
-			return;
-		}
-
-#endif
-
-#if defined( LOG_GLSL_UNIFORMS )
-
-		if ( r_logFile->integer )
-		{
-			GLimp_LogComment( va( "--- SetUniform_LightFrustum( program = %s, "
-			                      "( %5.3f, %5.3f, %5.3f, %5.3f )\n"
-			                      "( %5.3f, %5.3f, %5.3f, %5.3f )\n"
-			                      "( %5.3f, %5.3f, %5.3f, %5.3f )\n"
-			                      "( %5.3f, %5.3f, %5.3f, %5.3f )\n"
-			                      "( %5.3f, %5.3f, %5.3f, %5.3f )\n"
-			                      "( %5.3f, %5.3f, %5.3f, %5.3f ) ) ---\n",
-			                      program->name,
-			                      lightFrustum[ 0 ][ 0 ], lightFrustum[ 0 ][ 1 ], lightFrustum[ 0 ][ 2 ], lightFrustum[ 0 ][ 3 ],
-			                      lightFrustum[ 1 ][ 0 ], lightFrustum[ 1 ][ 1 ], lightFrustum[ 1 ][ 2 ], lightFrustum[ 1 ][ 3 ],
-			                      lightFrustum[ 2 ][ 0 ], lightFrustum[ 2 ][ 1 ], lightFrustum[ 2 ][ 2 ], lightFrustum[ 2 ][ 3 ],
-			                      lightFrustum[ 3 ][ 0 ], lightFrustum[ 3 ][ 1 ], lightFrustum[ 3 ][ 2 ], lightFrustum[ 3 ][ 3 ],
-			                      lightFrustum[ 4 ][ 0 ], lightFrustum[ 4 ][ 1 ], lightFrustum[ 4 ][ 2 ], lightFrustum[ 4 ][ 3 ],
-			                      lightFrustum[ 5 ][ 0 ], lightFrustum[ 5 ][ 1 ], lightFrustum[ 5 ][ 2 ], lightFrustum[ 5 ][ 3 ]
-			                    ) );
-		}
-
-#endif
-
-		glUniform4fv( program->u_LightFrustum, 6, &lightFrustum[ 0 ][ 0 ] );
+		this->SetValue( 6, lightFrustum );
 	}
 };
 
 class u_ShadowTexelSize :
-	GLUniform
+	GLUniform1f
 {
 public:
 	u_ShadowTexelSize( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform1f( shader, "u_ShadowTexelSize" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_ShadowTexelSize";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_ShadowTexelSize = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_ShadowTexelSize( float value )
 	{
-		GLSL_SetUniform_ShadowTexelSize( _shader->GetProgram(), value );
+		this->SetValue( value );
 	}
 };
 
 class u_ShadowBlur :
-	GLUniform
+	GLUniform1f
 {
 public:
 	u_ShadowBlur( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform1f( shader, "u_ShadowBlur" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_ShadowBlur";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_ShadowBlur = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_ShadowBlur( float value )
 	{
-		GLSL_SetUniform_ShadowBlur( _shader->GetProgram(), value );
+		this->SetValue( value );
 	}
 };
 
 class u_ShadowMatrix :
-	GLUniform
+	GLUniformMatrix4fv
 {
 public:
 	u_ShadowMatrix( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniformMatrix4fv( shader, "u_ShadowMatrix" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_ShadowMatrix";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_ShadowMatrix = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_ShadowMatrix( matrix_t m[ MAX_SHADOWMAPS ] )
 	{
-		GLSL_SetUniform_ShadowMatrix( _shader->GetProgram(), m );
+		this->SetValue( MAX_SHADOWMAPS, GL_FALSE, m );
 	}
 };
 
 class u_ShadowParallelSplitDistances :
-	GLUniform
+	GLUniform4f
 {
 public:
 	u_ShadowParallelSplitDistances( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform4f( shader, "u_ShadowParallelSplitDistances" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_ShadowParallelSplitDistances";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_ShadowParallelSplitDistances = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_ShadowParallelSplitDistances( const vec4_t v )
 	{
-		GLSL_SetUniform_ShadowParallelSplitDistances( _shader->GetProgram(), v );
+		this->SetValue( v );
 	}
 };
 
 class u_RefractionIndex :
-	GLUniform
+	GLUniform1f
 {
 public:
 	u_RefractionIndex( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform1f( shader, "u_RefractionIndex" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_RefractionIndex";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_RefractionIndex = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_RefractionIndex( float value )
 	{
-		GLSL_SetUniform_RefractionIndex( _shader->GetProgram(), value );
+		this->SetValue( value );
 	}
 };
 
 class u_FresnelPower :
-	GLUniform
+	GLUniform1f
 {
 public:
 	u_FresnelPower( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform1f( shader, "u_FresnelPower" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_FresnelPower";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_FresnelPower = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_FresnelPower( float value )
 	{
-		shaderProgram_t *program = _shader->GetProgram();
-
-#if defined( LOG_GLSL_UNIFORMS )
-
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( va( "--- GLSL_SetUniform_FresnelPower( program = %s, value = %f ) ---\n", program->name, value ) );
-			}
-
-#endif
-		glUniform1f( program->u_FresnelPower, value );
+		this->SetValue( value );
 	}
 };
 
 class u_FresnelScale :
-	GLUniform
+	GLUniform1f
 {
 public:
 	u_FresnelScale( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform1f( shader, "u_FresnelScale" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_FresnelScale";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_FresnelScale = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_FresnelScale( float value )
 	{
-		shaderProgram_t *program = _shader->GetProgram();
-
-#if defined( LOG_GLSL_UNIFORMS )
-
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( va( "--- GLSL_SetUniform_FresnelScale( program = %s, value = %f ) ---\n", program->name, value ) );
-			}
-
-#endif
-		glUniform1f( program->u_FresnelScale, value );
+		this->SetValue( value );
 	}
 };
 
 class u_FresnelBias :
-	GLUniform
+	GLUniform1f
 {
 public:
 	u_FresnelBias( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform1f( shader, "u_FresnelBias" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_FresnelBias";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_FresnelBias = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_FresnelBias( float value )
 	{
-		shaderProgram_t *program = _shader->GetProgram();
-
-#if defined( LOG_GLSL_UNIFORMS )
-
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( va( "--- GLSL_SetUniform_FresnelBias( program = %s, value = %f ) ---\n", program->name, value ) );
-			}
-
-#endif
-		glUniform1f( program->u_FresnelBias, value );
+		this->SetValue( value );
 	}
 };
 
 class u_NormalScale :
-	GLUniform
+	GLUniform1f
 {
 public:
 	u_NormalScale( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform1f( shader, "u_NormalScale" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_NormalScale";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_NormalScale = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_NormalScale( float value )
 	{
-		shaderProgram_t *program = _shader->GetProgram();
-
-#if defined( LOG_GLSL_UNIFORMS )
-
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( va( "--- GLSL_SetUniform_NormalScale( program = %s, value = %f ) ---\n", program->name, value ) );
-			}
-
-#endif
-		glUniform1f( program->u_NormalScale, value );
+		this->SetValue( value );
 	}
 };
 
 class u_FogDensity :
-	GLUniform
+	GLUniform1f
 {
 public:
 	u_FogDensity( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform1f( shader, "u_FogDensity" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_FogDensity";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_FogDensity = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_FogDensity( float value )
 	{
-		shaderProgram_t *program = _shader->GetProgram();
-
-#if defined( LOG_GLSL_UNIFORMS )
-
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( va( "--- GLSL_SetUniform_FogDensity( program = %s, value = %f ) ---\n", program->name, value ) );
-			}
-
-#endif
-		glUniform1f( program->u_FogDensity, value );
+		this->SetValue( value );
 	}
 };
 
 class u_FogColor :
-	GLUniform
+	GLUniform3f
 {
 public:
 	u_FogColor( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform3f( shader, "u_FogColor" )
 	{
 	}
 
-	const char *GetName() const
+	void SetUniform_FogColor( const vec3_t v )
 	{
-		return "u_FogColor";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_FogColor = glGetUniformLocation( shaderProgram->program, GetName() );
-	}
-
-	void SetUniform_FogColor( GLfloat v1, GLfloat v2, GLfloat v3 )
-	{
-		shaderProgram_t *program = _shader->GetProgram();
-
-#if defined( LOG_GLSL_UNIFORMS )
-
-			if ( r_logFile->integer )
-			{
-				GLimp_LogComment( va( "--- GLSL_SetUniform_FogColor( program = %s, value = %f %f %f ) ---\n", program->name, v1, v2, v3 ) );
-			}
-
-#endif
-		glUniform3f( program->u_FogColor, v1, v2, v3 );
+		this->SetValue( v );
 	}
 };
 
 class u_Color :
-	GLUniform
+	GLUniform4f
 {
 public:
 	u_Color( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform4f( shader, "u_Color" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_Color";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_Color = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_Color( const vec4_t v )
 	{
-		GLSL_SetUniform_Color( _shader->GetProgram(), v );
+		this->SetValue( v );
 	}
 };
 
 class u_ModelMatrix :
-	GLUniform
+	GLUniformMatrix4f
 {
 public:
 	u_ModelMatrix( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniformMatrix4f( shader, "u_ModelMatrix" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_ModelMatrix";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_ModelMatrix = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_ModelMatrix( const matrix_t m )
 	{
-		GLSL_SetUniform_ModelMatrix( _shader->GetProgram(), m );
+		this->SetValue( GL_FALSE, m );
 	}
 };
 
 class u_ViewMatrix :
-	GLUniform
+	GLUniformMatrix4f
 {
 public:
 	u_ViewMatrix( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniformMatrix4f( shader, "u_ViewMatrix" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_ViewMatrix";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_ViewMatrix = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_ViewMatrix( const matrix_t m )
 	{
-		GLSL_SetUniform_ViewMatrix( _shader->GetProgram(), m );
+		this->SetValue( GL_FALSE, m );
 	}
 };
 
 class u_ModelViewMatrix :
-	GLUniform
+	GLUniformMatrix4f
 {
 public:
 	u_ModelViewMatrix( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniformMatrix4f( shader, "u_ModelViewMatrix" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_ModelViewMatrix";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_ModelViewMatrix = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_ModelViewMatrix( const matrix_t m )
 	{
-		GLSL_SetUniform_ModelViewMatrix( _shader->GetProgram(), m );
+		this->SetValue( GL_FALSE, m );
 	}
 };
 
 class u_ModelViewMatrixTranspose :
-	GLUniform
+	GLUniformMatrix4f
 {
 public:
 	u_ModelViewMatrixTranspose( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniformMatrix4f( shader, "u_ModelViewMatrixTranspose" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_ModelViewMatrixTranspose";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_ModelViewMatrixTranspose = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_ModelViewMatrixTranspose( const matrix_t m )
 	{
-		GLSL_SetUniform_ModelViewMatrixTranspose( _shader->GetProgram(), m );
+		this->SetValue( GL_TRUE, m );
 	}
 };
 
 class u_ProjectionMatrixTranspose :
-	GLUniform
+	GLUniformMatrix4f
 {
 public:
 	u_ProjectionMatrixTranspose( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniformMatrix4f( shader, "u_ProjectionMatrixTranspose" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_ProjectionMatrixTranspose";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_ProjectionMatrixTranspose = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_ProjectionMatrixTranspose( const matrix_t m )
 	{
-		GLSL_SetUniform_ProjectionMatrixTranspose( _shader->GetProgram(), m );
+		this->SetValue( GL_TRUE, m );
 	}
 };
 
 class u_ModelViewProjectionMatrix :
-	GLUniform
+	GLUniformMatrix4f
 {
 public:
 	u_ModelViewProjectionMatrix( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniformMatrix4f( shader, "u_ModelViewProjectionMatrix" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_ModelViewProjectionMatrix";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_ModelViewProjectionMatrix = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_ModelViewProjectionMatrix( const matrix_t m )
 	{
-		GLSL_SetUniform_ModelViewProjectionMatrix( _shader->GetProgram(), m );
+		this->SetValue( GL_FALSE, m );
 	}
 };
 
 class u_UnprojectMatrix :
-	GLUniform
+	GLUniformMatrix4f
 {
 public:
 	u_UnprojectMatrix( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniformMatrix4f( shader, "u_UnprojectMatrix" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_UnprojectMatrix";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_UnprojectMatrix = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_UnprojectMatrix( const matrix_t m )
 	{
-		GLSL_SetUniform_UnprojectMatrix( _shader->GetProgram(), m );
+		this->SetValue( GL_FALSE, m );
 	}
 };
 
 class u_BoneMatrix :
-	GLUniform
+	GLUniformMatrix4fv
 {
 public:
 	u_BoneMatrix( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniformMatrix4fv( shader, "u_BoneMatrix" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_BoneMatrix";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_BoneMatrix = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_BoneMatrix( int numBones, const matrix_t boneMatrices[ MAX_BONES ] )
 	{
-		glUniformMatrix4fv( _shader->GetProgram()->u_BoneMatrix, numBones, GL_FALSE, &boneMatrices[ 0 ][ 0 ] );
+		this->SetValue( numBones, GL_FALSE, boneMatrices );
 	}
 };
 
 class u_VertexInterpolation :
-	GLUniform
+	GLUniform1f
 {
 public:
 	u_VertexInterpolation( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform1f( shader, "u_VertexInterpolation" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_VertexInterpolation";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_VertexInterpolation = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_VertexInterpolation( float value )
 	{
-		GLSL_SetUniform_VertexInterpolation( _shader->GetProgram(), value );
+		this->SetValue( value );
 	}
 };
 
 class u_PortalRange :
-	GLUniform
+	GLUniform1f
 {
 public:
 	u_PortalRange( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform1f( shader, "u_PortalRange" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_PortalRange";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_PortalRange = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_PortalRange( float value )
 	{
-		GLSL_SetUniform_PortalRange( _shader->GetProgram(), value );
+		this->SetValue( value );
 	}
 };
 
 class u_DepthScale :
-	GLUniform
+	GLUniform1f
 {
 public:
 	u_DepthScale( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform1f( shader, "u_DepthScale" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_DepthScale";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_DepthScale = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_DepthScale( float value )
 	{
-		GLSL_SetUniform_DepthScale( _shader->GetProgram(), value );
+		this->SetValue( value );
 	}
 };
 
 class u_EnvironmentInterpolation :
-	GLUniform
+	GLUniform1f
 {
 public:
 	u_EnvironmentInterpolation( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform1f( shader, "u_EnvironmentInterpolation" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_EnvironmentInterpolation";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_EnvironmentInterpolation = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_EnvironmentInterpolation( float value )
 	{
-		GLSL_SetUniform_EnvironmentInterpolation( _shader->GetProgram(), value );
+		this->SetValue( value );
 	}
 };
 
 class u_DeformParms :
-	GLUniform
+	GLUniform1fv
 {
 public:
 	u_DeformParms( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform1fv( shader, "u_DeformParms" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_DeformParms";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_DeformParms = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_DeformParms( deformStage_t deforms[ MAX_SHADER_DEFORMS ], int numDeforms )
@@ -2259,34 +1949,24 @@ public:
 				default:
 					break;
 			}
-
-			glUniform1fv( _shader->GetProgram()->u_DeformParms, MAX_SHADER_DEFORM_PARMS, deformParms );
 		}
+
+		this->SetValue( deformOfs, deformParms );
 	}
 };
 
 class u_Time :
-	GLUniform
+	GLUniform1f
 {
 public:
 	u_Time( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform1f( shader, "u_Time" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_Time";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_Time = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_Time( float value )
 	{
-		GLSL_SetUniform_Time( _shader->GetProgram(), value );
+		this->SetValue( value );
 	}
 };
 
@@ -2303,31 +1983,25 @@ public:
 };
 
 class u_ColorModulate :
-	GLUniform
+	GLUniform4f
 {
 public:
 	u_ColorModulate( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform4f( shader, "u_ColorModulate" )
 	{
 	}
 
-	const char *GetName() const
+	void SetUniform_ColorModulate( vec4_t v )
 	{
-		return "u_ColorModulate";
+		this->SetValue( v );
 	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_ColorModulate = glGetUniformLocation( shaderProgram->program, GetName() );
-	}
-
 	void SetUniform_ColorModulate( colorGen_t colorGen, alphaGen_t alphaGen )
 	{
 		vec4_t v;
 
 		if ( r_logFile->integer )
 		{
-			GLimp_LogComment( va( "--- u_ColorModulate::SetUniform_ColorModulate( program = %s, colorGen = %i, alphaGen = %i ) ---\n", _shader->GetProgram()->name, colorGen, alphaGen ) );
+			GLimp_LogComment( va( "--- u_ColorModulate::SetUniform_ColorModulate( program = %s, colorGen = %i, alphaGen = %i ) ---\n", _shader->GetName().c_str(), colorGen, alphaGen ) );
 		}
 
 		switch ( colorGen )
@@ -2365,381 +2039,132 @@ public:
 				break;
 		}
 
-		GLSL_SetUniform_ColorModulate( _shader->GetProgram(), v );
+		this->SetValue( v );
 	}
 };
 
 class u_FogDistanceVector :
-	GLUniform
+	GLUniform4f
 {
 public:
 	u_FogDistanceVector( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform4f( shader, "u_FogDistanceVector" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_FogDistanceVector";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_FogDistanceVector = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_FogDistanceVector( const vec4_t v )
 	{
-		shaderProgram_t *program = _shader->GetProgram();
-
-#if defined( USE_UNIFORM_FIREWALL )
-
-		if ( Vector4Compare( program->t_FogDistanceVector, v ) )
-		{
-			return;
-		}
-
-		VectorCopy( v, program->t_FogDistanceVector );
-#endif
-
-#if defined( LOG_GLSL_UNIFORMS )
-
-		if ( r_logFile->integer )
-		{
-			GLimp_LogComment( va( "--- SetUniform_FogDistanceVector( program = %s, vector = ( %5.3f, %5.3f, %5.3f, %5.3f ) ) ---\n", program->name, v[ 0 ], v[ 1 ], v[ 2 ], v[ 3 ] ) );
-		}
-
-#endif
-
-		glUniform4f( program->u_FogDistanceVector, v[ 0 ], v[ 1 ], v[ 2 ], v[ 3 ] );
+		this->SetValue( v );
 	}
 };
 
 class u_FogDepthVector :
-	GLUniform
+	GLUniform4f
 {
 public:
 	u_FogDepthVector( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform4f( shader, "u_FogDepthVector" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_FogDepthVector";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_FogDepthVector = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_FogDepthVector( const vec4_t v )
 	{
-		shaderProgram_t *program = _shader->GetProgram();
-
-#if defined( USE_UNIFORM_FIREWALL )
-
-		if ( Vector4Compare( program->t_FogDepthVector, v ) )
-		{
-			return;
-		}
-
-		VectorCopy( v, program->t_FogDepthVector );
-#endif
-
-#if defined( LOG_GLSL_UNIFORMS )
-
-		if ( r_logFile->integer )
-		{
-			GLimp_LogComment( va( "--- SetUniform_FogDepthVector( program = %s, vector = ( %5.3f, %5.3f, %5.3f, %5.3f ) ) ---\n", program->name, v[ 0 ], v[ 1 ], v[ 2 ], v[ 3 ] ) );
-		}
-
-#endif
-
-		glUniform4f( program->u_FogDepthVector, v[ 0 ], v[ 1 ], v[ 2 ], v[ 3 ] );
+		this->SetValue( v );
 	}
 };
 
 class u_FogEyeT :
-	GLUniform
+	GLUniform1f
 {
 public:
 	u_FogEyeT( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform1f( shader, "u_FogEyeT" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_FogEyeT";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_FogEyeT = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_FogEyeT( float value )
 	{
-		shaderProgram_t *program = _shader->GetProgram();
-
-#if defined( USE_UNIFORM_FIREWALL )
-
-		if ( program->t_FogEyeT == value )
-		{
-			return;
-		}
-
-		program->t_FogEyeT = value;
-#endif
-
-#if defined( LOG_GLSL_UNIFORMS )
-
-		if ( r_logFile->integer )
-		{
-			GLimp_LogComment( va( "--- SetUniform_FogEyeT( program = %s, value = %f ) ---\n", program->name, value ) );
-		}
-
-#endif
-
-		glUniform1f( program->u_FogEyeT, value );
+		this->SetValue( value );
 	}
 };
 
 class u_DeformMagnitude :
-	GLUniform
+	GLUniform1f
 {
 public:
 	u_DeformMagnitude( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform1f( shader, "u_DeformMagnitude" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_DeformMagnitude";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_DeformMagnitude = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_DeformMagnitude( float value )
 	{
-		shaderProgram_t *program = _shader->GetProgram();
-
-#if defined( USE_UNIFORM_FIREWALL )
-
-		if ( program->t_DeformMagnitude == value )
-		{
-			return;
-		}
-
-		program->t_DeformMagnitude = value;
-#endif
-
-#if defined( LOG_GLSL_UNIFORMS )
-
-		if ( r_logFile->integer )
-		{
-			GLimp_LogComment( va( "--- SetUniform_DeformMagnitude( program = %s, value = %f ) ---\n", program->name, value ) );
-		}
-
-#endif
-
-		glUniform1f( program->u_DeformMagnitude, value );
+		this->SetValue( value );
 	}
 };
 
 class u_HDRKey :
-	GLUniform
+	GLUniform1f
 {
 public:
 	u_HDRKey( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform1f( shader, "u_HDRKey" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_HDRKey";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_HDRKey = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_HDRKey( float value )
 	{
-		shaderProgram_t *program = _shader->GetProgram();
-
-#if defined( USE_UNIFORM_FIREWALL )
-
-		if ( program->t_HDRKey == value )
-		{
-			return;
-		}
-
-		program->t_HDRKey = value;
-#endif
-
-#if defined( LOG_GLSL_UNIFORMS )
-
-		if ( r_logFile->integer )
-		{
-			GLimp_LogComment( va( "--- SetUniform_HDRKey( program = %s, value = %f ) ---\n", program->name, value ) );
-		}
-
-#endif
-
-		glUniform1f( program->u_HDRKey, value );
+		this->SetValue( value );
 	}
 };
 
 class u_HDRAverageLuminance :
-	GLUniform
+	GLUniform1f
 {
 public:
 	u_HDRAverageLuminance( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform1f( shader, "u_HDRAverageLuminance" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_HDRAverageLuminance";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_HDRAverageLuminance = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_HDRAverageLuminance( float value )
 	{
-		shaderProgram_t *program = _shader->GetProgram();
-
-#if defined( USE_UNIFORM_FIREWALL )
-
-		if ( program->t_HDRAverageLuminance == value )
-		{
-			return;
-		}
-
-		program->t_HDRAverageLuminance = value;
-#endif
-
-#if defined( LOG_GLSL_UNIFORMS )
-
-		if ( r_logFile->integer )
-		{
-			GLimp_LogComment( va( "--- SetUniform_HDRAverageLuminance( program = %s, value = %f ) ---\n", program->name, value ) );
-		}
-
-#endif
-
-		glUniform1f( program->u_HDRAverageLuminance, value );
+		this->SetValue( value );
 	}
 };
 
 class u_HDRMaxLuminance :
-	GLUniform
+	GLUniform1f
 {
 public:
 	u_HDRMaxLuminance( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform1f( shader, "u_HDRMaxLuminance" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_HDRMaxLuminance";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_HDRMaxLuminance = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_HDRMaxLuminance( float value )
 	{
-		shaderProgram_t *program = _shader->GetProgram();
-
-#if defined( USE_UNIFORM_FIREWALL )
-
-		if ( program->t_HDRMaxLuminance == value )
-		{
-			return;
-		}
-
-		program->t_HDRMaxLuminance = value;
-#endif
-
-#if defined( LOG_GLSL_UNIFORMS )
-
-		if ( r_logFile->integer )
-		{
-			GLimp_LogComment( va( "--- SetUniform_HDRMaxLuminance( program = %s, value = %f ) ---\n", program->name, value ) );
-		}
-
-#endif
-
-		glUniform1f( program->u_HDRMaxLuminance, value );
+		this->SetValue( value );
 	}
 };
 
 class u_blurVec :
-	GLUniform
+	GLUniform3f
 {
 public:
 	u_blurVec( GLShader *shader ) :
-		GLUniform( shader )
+		GLUniform3f( shader, "u_blurVec" )
 	{
-	}
-
-	const char *GetName() const
-	{
-		return "u_blurVec";
-	}
-
-	void                            UpdateShaderProgramUniformLocation( shaderProgram_t *shaderProgram ) const
-	{
-		shaderProgram->u_blurVec = glGetUniformLocation( shaderProgram->program, GetName() );
 	}
 
 	void SetUniform_blurVec( vec3_t value )
 	{
-		shaderProgram_t *program = _shader->GetProgram();
-
-#if defined( USE_UNIFORM_FIREWALL )
-
-		if ( VectorCompare( program->t_blurVec, value ) )
-		{
-			return;
-		}
-
-		VectorCopy( value, program->t_blurVec );
-#endif
-
-#if defined( LOG_GLSL_UNIFORMS )
-
-		if ( r_logFile->integer )
-		{
-			GLimp_LogComment( va( "--- SetUniform_blurVec( program = %s, value = %f %f %f ) ---\n", program->name, value[0], value[1], value[2] ) );
-		}
-
-#endif
-
-		glUniform3fv( program->u_blurVec, 1, value );
+		this->SetValue( value );
 	}
 };
 
 class GLShader_generic :
 	public GLShader,
-	public u_ColorMap,
 	public u_ColorTextureMatrix,
 	public u_ViewOrigin,
 	public u_AlphaThreshold,
@@ -2759,7 +2184,6 @@ class GLShader_generic :
 public:
 	GLShader_generic( GLShaderManager *manager );
 	void BuildShaderVertexLibNames( std::string& vertexInlines );
-	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
@@ -2786,7 +2210,6 @@ public:
 	void BuildShaderVertexLibNames( std::string& vertexInlines );
 	void BuildShaderFragmentLibNames( std::string& fragmentInlines );
 	void BuildShaderCompileMacros( std::string& compileMacros );
-	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
@@ -2820,7 +2243,6 @@ public:
 	void BuildShaderVertexLibNames( std::string& vertexInlines );
 	void BuildShaderFragmentLibNames( std::string& fragmentInlines );
 	void BuildShaderCompileMacros( std::string& compileMacros );
-	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
@@ -2849,7 +2271,6 @@ public:
 	void BuildShaderVertexLibNames( std::string& vertexInlines );
 	void BuildShaderFragmentLibNames( std::string& fragmentInlines );
 	void BuildShaderCompileMacros( std::string& compileMacros );
-	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
@@ -2889,7 +2310,6 @@ public:
 	void BuildShaderVertexLibNames( std::string& vertexInlines );
 	void BuildShaderFragmentLibNames( std::string& fragmentInlines );
 	void BuildShaderCompileMacros( std::string& compileMacros );
-	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
@@ -2930,7 +2350,6 @@ public:
 	void BuildShaderVertexLibNames( std::string& vertexInlines );
 	void BuildShaderFragmentLibNames( std::string& fragmentInlines );
 	void BuildShaderCompileMacros( std::string& compileMacros );
-	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
@@ -2973,7 +2392,6 @@ public:
 	void BuildShaderVertexLibNames( std::string& vertexInlines );
 	void BuildShaderFragmentLibNames( std::string& fragmentInlines );
 	void BuildShaderCompileMacros( std::string& compileMacros );
-	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
@@ -3001,7 +2419,6 @@ class GLShader_deferredLighting_omniXYZ :
 public:
 	GLShader_deferredLighting_omniXYZ( GLShaderManager *manager );
 	void BuildShaderCompileMacros( std::string& compileMacros );
-	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
@@ -3030,7 +2447,6 @@ class GLShader_deferredLighting_projXYZ :
 public:
 	GLShader_deferredLighting_projXYZ( GLShaderManager *manager );
 	void BuildShaderCompileMacros( std::string& compileMacros );
-	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
@@ -3061,7 +2477,6 @@ class GLShader_deferredLighting_directionalSun :
 public:
 	GLShader_deferredLighting_directionalSun( GLShaderManager *manager );
 	void BuildShaderCompileMacros( std::string& compileMacros );
-	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
@@ -3092,7 +2507,6 @@ public:
 	void BuildShaderVertexLibNames( std::string& vertexInlines );
 	void BuildShaderFragmentLibNames( std::string& fragmentInlines );
 	void BuildShaderCompileMacros( std::string& compileMacros );
-	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
@@ -3117,14 +2531,11 @@ class GLShader_shadowFill :
 public:
 	GLShader_shadowFill( GLShaderManager *manager );
 	void BuildShaderVertexLibNames( std::string& vertexInlines );
-	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
 class GLShader_reflection :
 	public GLShader,
-	public u_ColorMap,
-	public u_NormalMap,
 	public u_NormalTextureMatrix,
 	public u_ViewOrigin,
 	public u_ModelMatrix,
@@ -3142,13 +2553,11 @@ public:
 	GLShader_reflection( GLShaderManager *manager );
 	void BuildShaderVertexLibNames( std::string& vertexInlines );
 	void BuildShaderCompileMacros( std::string& compileMacros );
-	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
 class GLShader_skybox :
 	public GLShader,
-	public u_ColorMap,
 	public u_ViewOrigin,
 	public u_ModelMatrix,
 	public u_ModelViewProjectionMatrix,
@@ -3158,7 +2567,6 @@ class GLShader_skybox :
 {
 public:
 	GLShader_skybox( GLShaderManager *manager );
-	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
@@ -3181,7 +2589,6 @@ class GLShader_fogQuake3 :
 public:
 	GLShader_fogQuake3( GLShaderManager *manager );
 	void BuildShaderVertexLibNames( std::string& vertexInlines );
-	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
@@ -3197,7 +2604,6 @@ class GLShader_fogGlobal :
 {
 public:
 	GLShader_fogGlobal( GLShaderManager *manager );
-	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
@@ -3222,7 +2628,6 @@ class GLShader_heatHaze :
 public:
 	GLShader_heatHaze( GLShaderManager *manager );
 	void BuildShaderVertexLibNames( std::string& vertexInlines );
-	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
@@ -3232,7 +2637,6 @@ class GLShader_screen :
 {
 public:
 	GLShader_screen( GLShaderManager *manager );
-	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
@@ -3244,7 +2648,6 @@ class GLShader_portal :
 {
 public:
 	GLShader_portal( GLShaderManager *manager );
-	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
@@ -3258,7 +2661,6 @@ class GLShader_toneMapping :
 {
 public:
 	GLShader_toneMapping( GLShaderManager *manager );
-	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
@@ -3268,19 +2670,18 @@ class GLShader_contrast :
 {
 public:
 	GLShader_contrast( GLShaderManager *manager );
-	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
 class GLShader_cameraEffects :
 	public GLShader,
+	public u_ColorModulate,
 	public u_ColorTextureMatrix,
 	public u_ModelViewProjectionMatrix,
 	public u_DeformMagnitude
 {
 public:
 	GLShader_cameraEffects( GLShaderManager *manager );
-	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
@@ -3291,7 +2692,6 @@ class GLShader_blurX :
 {
 public:
 	GLShader_blurX( GLShaderManager *manager );
-	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
@@ -3302,7 +2702,6 @@ class GLShader_blurY :
 {
 public:
 	GLShader_blurY( GLShaderManager *manager );
-	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
@@ -3312,7 +2711,6 @@ class GLShader_debugShadowMap :
 {
 public:
 	GLShader_debugShadowMap( GLShaderManager *manager );
-	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
@@ -3341,7 +2739,6 @@ class GLShader_lightVolume_omni :
 {
 public:
 	GLShader_lightVolume_omni( GLShaderManager *manager );
-	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
@@ -3359,7 +2756,6 @@ class GLShader_deferredShadowing_proj :
 {
 public:
 	GLShader_deferredShadowing_proj( GLShaderManager *manager );
-	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
@@ -3381,7 +2777,6 @@ class GLShader_liquid :
 {
 public:
 	GLShader_liquid( GLShaderManager *manager );
-	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
@@ -3395,7 +2790,6 @@ class GLShader_volumetricFog :
 {
 public:
 	GLShader_volumetricFog( GLShaderManager *manager );
-	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
@@ -3405,7 +2799,6 @@ class GLShader_screenSpaceAmbientOcclusion :
 {
 public:
 	GLShader_screenSpaceAmbientOcclusion( GLShaderManager *manager );
-	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
@@ -3415,7 +2808,6 @@ class GLShader_depthOfField :
 {
 public:
 	GLShader_depthOfField( GLShaderManager *manager );
-	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 
@@ -3425,7 +2817,6 @@ class GLShader_motionblur :
 {
 public:
 	GLShader_motionblur( GLShaderManager *manager );
-	void SetShaderProgramUniformLocations( shaderProgram_t *shaderProgram );
 	void SetShaderProgramUniforms( shaderProgram_t *shaderProgram );
 };
 

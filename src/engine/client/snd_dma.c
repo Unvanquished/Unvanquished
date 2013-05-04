@@ -101,7 +101,7 @@ portable_samplepair_t s_rawsamples[ MAX_RAW_SAMPLES ];
 
 void S_Base_SoundInfo_f( void )
 {
-	Com_Printf("%s", _( "----- Sound Info -----\n" ));
+	PrintBanner(_( "Sound Info" ))
 
 	if ( !s_soundStarted )
 	{
@@ -402,7 +402,7 @@ sfxHandle_t     S_Base_RegisterSound( const char *name, qboolean compressed )
 
 	if ( strlen( name ) >= MAX_QPATH )
 	{
-		Com_Printf("%s", _( "Sound name exceeds MAX_QPATH\n" ));
+		Com_Log(LOG_ERROR, _( "Sound name exceeds MAX_QPATH" ));
 		return 0;
 	}
 
@@ -412,7 +412,7 @@ sfxHandle_t     S_Base_RegisterSound( const char *name, qboolean compressed )
 	{
 		if ( sfx->defaultSound )
 		{
-			Com_Printf( _( S_WARNING "could not find %s — using default\n"), sfx->soundName );
+			Com_Logf( LOG_WARN, _( "could not find %s — using default"), sfx->soundName );
 			return 0;
 		}
 
@@ -426,7 +426,7 @@ sfxHandle_t     S_Base_RegisterSound( const char *name, qboolean compressed )
 
 	if ( sfx->defaultSound )
 	{
-		Com_Printf( _( S_WARNING "could not find %s — using default\n"), sfx->soundName );
+		Com_Logf( LOG_WARN, _( "could not find %s — using default"), sfx->soundName );
 		return 0;
 	}
 
@@ -555,7 +555,7 @@ void S_Base_StartSound( vec3_t origin, int entityNum, int entchannel, sfxHandle_
 
 	if ( sfxHandle < 0 || sfxHandle >= s_numSfx )
 	{
-		Com_Printf( _( S_COLOR_YELLOW  "S_StartSound: handle %i out of range\n"), sfxHandle );
+		Com_Logf( LOG_ERROR, _( "handle %i out of range"), sfxHandle );
 		return;
 	}
 
@@ -702,7 +702,7 @@ void S_Base_StartLocalSound( sfxHandle_t sfxHandle, int channelNum )
 
 	if ( sfxHandle < 0 || sfxHandle >= s_numSfx )
 	{
-		Com_Printf( _( S_COLOR_YELLOW  "S_StartLocalSound: handle %i out of range\n"), sfxHandle );
+		Com_Logf( LOG_ERROR, _( "handle %i out of range"), sfxHandle );
 		return;
 	}
 
@@ -828,7 +828,7 @@ void S_Base_AddLoopingSound( int entityNum, const vec3_t origin, const vec3_t ve
 
 	if ( sfxHandle < 0 || sfxHandle >= s_numSfx )
 	{
-		Com_Printf( _( S_COLOR_YELLOW  "S_AddLoopingSound: handle %i out of range\n"), sfxHandle );
+		Com_Logf( LOG_ERROR, _("handle %i out of range"), sfxHandle );
 		return;
 	}
 
@@ -902,7 +902,7 @@ void S_Base_AddRealLoopingSound( int entityNum, const vec3_t origin, const vec3_
 
 	if ( sfxHandle < 0 || sfxHandle >= s_numSfx )
 	{
-		Com_Printf( _( S_COLOR_YELLOW  "S_AddRealLoopingSound: handle %i out of range\n"), sfxHandle );
+		Com_Logf( LOG_ERROR, _("handle %i out of range"), sfxHandle );
 		return;
 	}
 
@@ -1490,7 +1490,7 @@ void S_Base_SoundList_f( void )
 	sfx_t *sfx;
 
 	static const char type[][ 8 ] = { "16bit", "adpcm", "daub4", "mulaw" };
-	static const char mem[][ 16 ] = { N_("paged out"), N_("resident") };
+	static const char mem[][ 16 ] = { "paged out", "resident" };
 
 	total = 0;
 
@@ -1498,10 +1498,10 @@ void S_Base_SoundList_f( void )
 	{
 		size = sfx->soundLength;
 		total += size;
-		Com_Printf( "%6i[%s] : %s[%s]\n", size, type[ sfx->soundCompressionMethod ], sfx->soundName, _(mem[ sfx->inMemory ]) );
+		Com_Printf( "%6i[%s] : %s[%s]\n", size, type[ sfx->soundCompressionMethod ], sfx->soundName, mem[ sfx->inMemory ] );
 	}
 
-	Com_Printf(_( "Total resident: %i\n"), total );
+	Com_Printf( "Total resident: %i\n", total );
 	S_DisplayFreeMemory();
 }
 
@@ -1733,7 +1733,7 @@ int S_Base_GetSoundLength( sfxHandle_t sfxHandle )
 {
 	if ( sfxHandle < 0 || sfxHandle >= s_numSfx )
 	{
-		Com_DPrintf( S_COLOR_YELLOW  "S_StartSound: handle %i out of range\n", sfxHandle );
+		Com_DPrintf( S_ERROR  "S_StartSound: handle %i out of range\n", sfxHandle );
 		return -1;
 	}
 

@@ -1221,7 +1221,7 @@ The client is going to disconnect, so remove the connection immediately  FIXME: 
 */
 static void SV_Disconnect_f( client_t *cl )
 {
-	SV_DropClient( cl, "disconnected" );
+	SV_DropClient( cl, _("disconnected") );
 }
 
 /*
@@ -2258,12 +2258,12 @@ void SV_ExecuteClientMessage( client_t *cl, msg_t *msg )
 	}
 	else if ( c != clc_EOF )
 	{
-		Com_Printf(_( "WARNING: bad command byte for client %i\n"), ( int )( cl - svs.clients ) );
+		Com_Printf( "WARNING: bad command byte for client %i\n", ( int )( cl - svs.clients ) );
 	}
 
 	SV_ParseBinaryMessage( cl, msg );
 
 //  if ( msg->readcount != msg->cursize ) {
-//      Com_Printf(_( "WARNING: Junk at end of packet for client %i\n"), cl - svs.clients );
+//      Com_Printf( "WARNING: Junk at end of packet for client %i\n", cl - svs.clients );
 //  }
 }

@@ -32,6 +32,8 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+#ifdef _WIN32
+
 #include "revision.h"
 #include "../qcommon/q_shared.h"
 #include "../qcommon/qcommon.h"
@@ -321,6 +323,26 @@ Sys_FOpen
 FILE *Sys_FOpen( const char *ospath, const char *mode )
 {
 	return fopen( ospath, mode );
+}
+
+/*
+==============
+Sys_Chmod
+==============
+*/
+void Sys_Chmod( const char *ospath, int mode )
+{
+	// chmod( ospath, (mode_t) mode ); // FIXME - need equivalent to POSIX chmod
+}
+
+/*
+==============
+Sys_FChmod
+==============
+*/
+void Sys_FChmod( FILE *f, int mode )
+{
+	// fchmod( fileno( f ), (mode_t) mode ); // FIXME - need equivalent to POSIX fchmod
 }
 
 /*
@@ -1105,3 +1127,7 @@ qboolean Sys_IsNumLockDown( void )
 
 	return qfalse;
 }
+
+#else
+#error Don't compile me as part of an awesome operating system. This is meant for Win32 and Win64 only!
+#endif /* _WIN32 */

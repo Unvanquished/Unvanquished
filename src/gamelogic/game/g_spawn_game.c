@@ -102,6 +102,36 @@ void SP_game_end( gentity_t *self )
 /*
 =================================================================================
 
+game_funds
+
+=================================================================================
+*/
+
+void game_funds_act( gentity_t *self, gentity_t *caller, gentity_t *activator )
+{
+	if( !activator )
+	{
+		return;
+	}
+
+	G_AddCreditToClient( activator->client, self->amount, qtrue );
+}
+
+void game_funds_reset( gentity_t *self )
+{
+	G_ResetIntField( &self->amount, qfalse, self->config.amount, self->eclass->config.amount, 0);
+}
+
+void SP_game_funds( gentity_t *self )
+{
+	self->act = game_funds_act;
+	self->reset = game_funds_reset;
+}
+
+
+/*
+=================================================================================
+
 game_kill
 
 =================================================================================
