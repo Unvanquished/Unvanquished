@@ -1851,9 +1851,10 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 			}
 			else
 			{
-				s = va( _("%s\n\n%s\n\nFrags: %d"),
+				s = va( "%s\n\n%s\n\n%s %d",
 				        _( BG_ClassModelConfig( item->v.pclass )->humanName ),
 				        _( BG_Class( item->v.pclass )->info ),
+				        _( "Frags:" ),
 				        value );
 			}
 
@@ -1864,15 +1865,17 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 
 			if ( value == 0 )
 			{
-				s = va( _("%s\n\n%s\n\nCredits: Free"),
+				s = va( "%s\n\n%s\n\n%s",
 				        _( BG_Weapon( item->v.weapon )->humanName ),
-				        _( BG_Weapon( item->v.weapon )->info ) );
+				        _( BG_Weapon( item->v.weapon )->info ),
+				        _("Credits: Free"));
 			}
 			else
 			{
-				s = va( _("%s\n\n%s\n\nCredits: %d"),
+				s = va( "%s\n\n%s\n\n%s %d",
 				        _( BG_Weapon( item->v.weapon )->humanName ),
 				        _( BG_Weapon( item->v.weapon )->info ),
+				        _("Credits:"),
 				        value );
 			}
 
@@ -1883,15 +1886,17 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 
 			if ( value == 0 )
 			{
-				s = va( _("%s\n\n%s\n\nCredits: Free"),
+				s = va( "%s\n\n%s\n\n%s",
 				        _( BG_Upgrade( item->v.upgrade )->humanName ),
-				        _( BG_Upgrade( item->v.upgrade )->info ) );
+				        _( BG_Upgrade( item->v.upgrade )->info ),
+				        _("Credits: Free"));
 			}
 			else
 			{
-				s = va( _("%s\n\n%s\n\nCredits: %d"),
+				s = va( "%s\n\n%s\n\n%s %d",
 				        _( BG_Upgrade( item->v.upgrade )->humanName ),
 				        _( BG_Upgrade( item->v.upgrade )->info ),
+				        _("Credits:"),
 				        value );
 			}
 

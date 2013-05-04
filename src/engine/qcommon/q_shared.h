@@ -331,28 +331,6 @@ extern int memcmp( void *, void *, size_t );
 //
 #define MAX_MAP_AREA_BYTES 32 // bit vector of area visibility
 
-// print levels from renderer (FIXME: set up for game / cgame?)
-	typedef enum
-	{
-	  PRINT_ALL,
-	  PRINT_DEVELOPER, // only print when "developer 1"
-	  PRINT_WARNING,
-	  PRINT_ERROR
-	} printParm_t;
-
-#ifdef ERR_FATAL
-#undef ERR_FATAL // this is possibly defined in malloc.h
-#endif
-
-// parameters to the main Error routine
-	typedef enum
-	{
-	  ERR_FATAL, // exit the entire game with a popup window
-	  ERR_VID_FATAL, // exit the entire game with a popup window and doesn't delete profile.pid
-	  ERR_DROP, // print to console and disconnect from game
-	  ERR_SERVERDISCONNECT, // don't kill server
-	} errorParm_t;
-
 // font rendering values used by ui and cgame
 
 #define BLINK_DIVISOR         200
@@ -560,15 +538,6 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 }
 #endif
 
-#define S_SKIPNOTIFY "[skipnotify]"
-
-/*
- * used for consistent representation within print or log statements
- * TODO: should probably be rather done via specialized print function that takes a severity enum, so that it also can do filtering
- */
-#define S_WARNING S_COLOR_YELLOW "Warning: " S_COLOR_WHITE
-#define S_ERROR   S_COLOR_RED "ERROR: " S_COLOR_WHITE
-#define S_DEBUG   "Debug: "
 
 #define INDENT_MARKER    '\v'
 
@@ -583,6 +552,8 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 // check whether in the rrggbb format, r,g,b e {0,...,9} U {A,...,F}
 #define Q_IsHexColorString( p )       ( ishex( *( p ) ) && ishex( *( ( p ) + 1 ) ) && ishex( *( ( p ) + 2 ) ) && ishex( *( ( p ) + 3 ) ) && ishex( *( ( p ) + 4 ) ) && ishex( *( ( p ) + 5 ) ) )
 #define Q_HexColorStringHasAlpha( p ) ( ishex( *( ( p ) + 6 ) ) && ishex( *( ( p ) + 7 ) ) )
+
+#include "logging.h"
 
 #define DEG2RAD( a )                  ( ( ( a ) * M_PI ) / 180.0F )
 #define RAD2DEG( a )                  ( ( ( a ) * 180.0f ) / M_PI )
@@ -1471,11 +1442,6 @@ double rint( double x );
 	void       Info_SetValueForKeyRocket( char *s, const char *key, const char *value );
 	qboolean   Info_Validate( const char *s );
 	void       Info_NextPair( const char **s, char *key, char *value );
-
-// this is only here so the functions in q_shared.c and bg_*.c can link
-	void QDECL Com_Error( int level, const char *error, ... ) PRINTF_LIKE(2) NORETURN;
-	void QDECL Com_Printf( const char *msg, ... ) PRINTF_LIKE(1);
-	void QDECL Com_DPrintf( const char *msg, ... ) PRINTF_LIKE(1);
 
 //=============================================
 /*

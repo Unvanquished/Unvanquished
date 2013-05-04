@@ -440,7 +440,7 @@ void S_Music_f( void )
 	}
 	else
 	{
-		Com_Printf( "music <musicfile> [loopfile]\n" );
+		Cmd_PrintUsage("<musicfile> [<loopfile>]", NULL);
 		return;
 	}
 }
@@ -451,7 +451,7 @@ void S_Init( void )
 	cvar_t *cv;
 	qboolean  started = qfalse;
 
-	Com_Printf("%s", _( "------ Initializing Sound -----\n" ));
+	PrintBanner(_( "Initializing Sound" ))
 
 	cv = Cvar_Get( "s_initsound", "1", 0 );
 	if ( !cv->integer )

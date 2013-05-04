@@ -35,6 +35,8 @@ Maryland 20850 USA.
 #include "g_local.h"
 #include "g_spawn.h"
 
+#define DEFAULT_FUNC_TRAIN_SPEED 100
+
 /*
 ===============================================================================
 
@@ -1230,7 +1232,6 @@ so the movement delta can be calculated
 */
 void InitMover( gentity_t *ent )
 {
-	char     *sound;
 	char     *groupName;
 
 	// if the "model2" key is set, use a separate model
@@ -1297,7 +1298,6 @@ so the movement delta can be calculated
 */
 void InitRotator( gentity_t *ent )
 {
-	char     *sound;
 	char     *groupName;
 
 	// if the "model2" key is set, use a separate model
@@ -1638,7 +1638,6 @@ void SP_func_door( gentity_t *self )
 	float  distance;
 	vec3_t size;
 	float  lip;
-	char   *s;
 
 	if( !self->sound1to2 )
 	{
@@ -1729,8 +1728,6 @@ void func_door_rotating_reset( gentity_t *self )
 
 void SP_func_door_rotating( gentity_t *self )
 {
-	char *s;
-
 	if( !self->sound1to2 )
 	{
 		self->sound1to2 = G_SoundIndex( "sound/movers/doors/dr1_strt.wav" );
@@ -1854,7 +1851,6 @@ void func_door_model_reset( gentity_t *self )
 
 void SP_func_door_model( gentity_t *self )
 {
-	char      *s;
 	char      *sound;
 	gentity_t *clipBrush;
 
@@ -2071,7 +2067,6 @@ void SpawnPlatSensor( gentity_t *self )
 void SP_func_plat( gentity_t *self )
 {
 	float lip, height;
-	char  *s;
 
 	if( !self->sound1to2 )
 	{
@@ -2174,7 +2169,6 @@ void SP_func_button( gentity_t *self )
 	float  distance;
 	vec3_t size;
 	float  lip;
-	char   *s;
 
 	if( !self->sound1to2 )
 	{
@@ -2269,7 +2263,10 @@ void func_train_reached( gentity_t *self )
 	VectorCopy( next->nextPathSegment->s.origin, self->activatedPosition );
 
 	// if the path_corner has a speed, use that otherwise use the train's speed
-	G_ResetFloatField( &self->speed, qtrue, next->config.speed, self->config.speed, 1);
+	G_ResetFloatField( &self->speed, qtrue, next->config.speed, next->eclass->config.speed, 0);
+	if(!self->speed) {
+		G_ResetFloatField(&self->speed, qtrue, self->config.speed, self->eclass->config.speed, DEFAULT_FUNC_TRAIN_SPEED);
+	}
 
 	// calculate duration
 	VectorSubtract( self->activatedPosition, self->restingPosition, move );
@@ -2496,7 +2493,7 @@ void SP_func_train( gentity_t *self )
 
 	trap_SetBrushModel( self, self->model );
 	InitMover( self );
-	reset_moverspeed( self, 100 );
+	reset_moverspeed( self, DEFAULT_FUNC_TRAIN_SPEED );
 
 	self->reached = func_train_reached;
 	self->act = func_train_act;

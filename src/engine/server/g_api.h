@@ -101,6 +101,7 @@ typedef enum gameImport_s
 {
   G_PRINT = FIRST_VM_SYSCALL,
   G_ERROR,
+  G_LOG,
   G_MILLISECONDS,
   G_CVAR_REGISTER,
   G_CVAR_UPDATE,

@@ -249,8 +249,8 @@ void Trans_SetLanguage( const char* lang )
 	// language not found, display warning
 	if( bestScore == 0 )
 	{
-		Com_Printf( _("^3WARNING:^7 Language \"%s\" (%s) not found. Default to \"English\" (en)\n"),
-					requestLang.get_name().empty() ? _( "Unknown Language" ) : requestLang.get_name().c_str(),
+		Com_Printf( S_WARNING "Language \"%s\" (%s) not found. Default to \"English\" (en)\n",
+					requestLang.get_name().empty() ? "Unknown Language" : requestLang.get_name().c_str(),
 					lang );
 	}
 

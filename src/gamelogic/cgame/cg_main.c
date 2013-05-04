@@ -1398,6 +1398,7 @@ static void CG_RegisterGraphics( void )
 
 	// clear any references to old media
 	memset( &cg.refdef, 0, sizeof( cg.refdef ) );
+	cg.gradingWeights[0] = 1.0f;
 	trap_R_ClearScene();
 
 	CG_UpdateLoadingStep( LOAD_GEOMETRY );
@@ -1590,7 +1591,7 @@ static void CG_RegisterGraphics( void )
 
 	if( cgs.gameGradingTextures[ 0 ] )
 	{
-		trap_SetColorGrading( cgs.gameGradingTextures[ 0 ] );
+		trap_SetColorGrading( 0, cgs.gameGradingTextures[ 0 ] );
 	}
 
 	for ( i = 1; i < MAX_GRADING_TEXTURES; i++ )

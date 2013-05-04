@@ -1504,6 +1504,7 @@ extern "C" {
 		cplane_t       portalPlane; // clip anything behind this if mirroring
 		int            viewportX, viewportY, viewportWidth, viewportHeight;
 		vec4_t         viewportVerts[ 4 ]; // for immediate 2D quad rendering
+		vec4_t         gradingWeights;
 
 		float          fovX, fovY;
 		matrix_t       projectionMatrix;
@@ -3466,7 +3467,7 @@ extern "C" {
 	void    RE_GetTextureSize( int textureID, int *width, int *height );
 	void    R_InitFogTable( void );
 	float   R_FogFactor( float s, float t );
-	void    RE_SetColorGrading( qhandle_t hShader );
+	void    RE_SetColorGrading( int slot, qhandle_t hShader );
 
 	/*
 	====================================================================
