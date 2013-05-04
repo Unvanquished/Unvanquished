@@ -3037,7 +3037,7 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s )
 		{
 			trap_SendServerCommand( ent-g_entities,
 				"print \"^3This weapon is currently denied to stripped players.\n\"" );
-			return;
+			return qfalse;
 		}
 
 		//can afford this?
@@ -3112,7 +3112,7 @@ static qboolean Cmd_Buy_internal( gentity_t *ent, const char *s )
 		{
 			trap_SendServerCommand( ent - g_entities,
 				"print_tr \"" N_("^3This upgrade is currently denied to stripped players.\n") "\"" );
-			return;
+			return qfalse;
 		}
 
 		//can afford this?
