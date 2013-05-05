@@ -134,7 +134,6 @@ static int ServerListCmpByPing( const void *one, const void *two )
 
 static void CG_Rocket_SortServerList( const char *name, const char *sortBy )
 {
-	server_t *server;
 	char data[ MAX_INFO_STRING ] = { 0 };
 	int  i;
 
@@ -145,17 +144,17 @@ static void CG_Rocket_SortServerList( const char *name, const char *sortBy )
 
 	trap_Rocket_DSClearTable( "server_browser", name );
 
-	for ( i = 0; i < serverCount; ++i, server = &servers[ i ] )
+	for ( i = 0; i < serverCount; ++i )
 	{
-		if ( server->ping <= 0 )
+		if ( servers[ i ].ping <= 0 )
 		{
 			continue;
 		}
 
-		Info_SetValueForKey( data, "name", server->name, qfalse );
-		Info_SetValueForKey( data, "players", va( "%d", server->clients ), qfalse );
-		Info_SetValueForKey( data, "bots", va( "%d", server->bots ), qfalse );
-		Info_SetValueForKey( data, "ping", va( "%d", server->ping ), qfalse );
+		Info_SetValueForKey( data, "name", servers[ i ].name, qfalse );
+		Info_SetValueForKey( data, "players", va( "%d", servers[ i ].clients ), qfalse );
+		Info_SetValueForKey( data, "bots", va( "%d", servers[ i ].bots ), qfalse );
+		Info_SetValueForKey( data, "ping", va( "%d", servers[ i ].ping ), qfalse );
 
 		trap_Rocket_DSAddRow( "server_browser", name, data );
 	}
