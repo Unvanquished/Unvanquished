@@ -2885,6 +2885,7 @@ void HMGTurret_Think( gentity_t *self )
 	// Update spin state
 	if ( !self->active && self->timestamp < level.time )
 	{
+		self->active = qtrue;
 		self->nextAct = level.time + MGTURRET_SPINUP_TIME;
 		G_AddEvent( self, EV_MGTURRET_SPINUP, 0 );
 	}
@@ -2894,8 +2895,6 @@ void HMGTurret_Think( gentity_t *self )
 	{
 		return;
 	}
-
-	self->active = qtrue;
 
 	// Fire repeat delay
 	if ( self->timestamp > level.time )

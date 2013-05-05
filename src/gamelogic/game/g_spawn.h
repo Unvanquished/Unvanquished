@@ -109,6 +109,7 @@ void    SP_gfx_animated_model( gentity_t *self );
 void    SP_gfx_light_flare( gentity_t *self );
 void    SP_gfx_portal_camera( gentity_t *self );
 void    SP_gfx_portal_surface( gentity_t *self );
+void    SP_gfx_shader_mod( gentity_t *self );
 
 /*
  * everything around entity versioning and deprecation

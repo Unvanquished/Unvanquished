@@ -821,7 +821,7 @@ void SV_WWWDownload_f( client_t *cl )
 	{
 		if ( cl->bWWWing )
 		{
-			Com_Printf(_( "WARNING: dupe wwwdl ack from client '%s'\n"), cl->name );
+			Com_Logf(LOG_WARN, _( "dupe wwwdl ack from client '%s'"), cl->name );
 		}
 
 		cl->bWWWing = qtrue;
@@ -860,9 +860,8 @@ void SV_WWWDownload_f( client_t *cl )
 	}
 	else if ( !Q_stricmp( subcmd, "chkfail" ) )
 	{
-		Com_Printf(_( "WARNING: client '%s' reports that the redirect download for '%s' had wrong checksum.\n"), cl->name,
-		            cl->downloadName );
-		Com_Printf(_( "         you should check your download redirect configuration.\n" ));
+		Com_Logf(LOG_WARN, _( "client '%s' reports that the redirect download for '%s' had wrong checksum.\n\tYou should check your download redirect configuration."),
+				cl->name, cl->downloadName );
 		cl->download = 0;
 		*cl->downloadName = 0;
 		cl->bWWWing = qfalse;
@@ -872,7 +871,7 @@ void SV_WWWDownload_f( client_t *cl )
 		return;
 	}
 
-	Com_Printf(_( "SV_WWWDownload: unknown wwwdl subcommand '%s' for client '%s'\n"), subcmd, cl->name );
+	Com_Printf("SV_WWWDownload: unknown wwwdl subcommand '%s' for client '%s'\n", subcmd, cl->name );
 	SV_DropClient( cl, va( "SV_WWWDownload: unknown wwwdl subcommand '%s'", subcmd ) );
 }
 
@@ -1034,7 +1033,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 					else
 					{
 						// that should NOT happen - even regular download would fail then anyway
-						Com_Printf(_( "ERROR: Client '%s': couldn't extract file size for %s\n"), cl->name, cl->downloadName );
+						Com_Logf(LOG_ERROR, _( "Client '%s': couldn't extract file size for %s"), cl->name, cl->downloadName );
 					}
 				}
 				else
@@ -1047,7 +1046,7 @@ void SV_WriteDownloadToClient( client_t *cl, msg_t *msg )
 						return;
 					}
 
-					Com_Printf(_( "Client '%s': falling back to regular downloading for failed file %s\n"), cl->name,
+					Com_Logf(LOG_ERROR, _( "Client '%s': falling back to regular downloading for failed file %s"), cl->name,
 					            cl->downloadName );
 				}
 			}

@@ -197,9 +197,10 @@ static void CG_BuilderText( char *text, playerState_t *ps )
 	{
 		const char *item = _( BG_Buildable( buildable )->humanName );
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( _( "Press %s to place the %s\n"
-		                 "Press %s to cancel placing the %s\n" ),
-		              CG_KeyNameForCommand( "+attack" ), item,
+		          va( _( "Press %s to place the %s\n"),
+		              CG_KeyNameForCommand( "+attack" ), item ) );
+		Q_strcat( text, MAX_TUTORIAL_TEXT,
+		          va( _( "Press %s to cancel placing the %s\n" ),
 		              CG_KeyNameForCommand( "+attack2" ), item ) );
 	}
 	else
@@ -480,11 +481,8 @@ static void CG_HumanText( char *text, playerState_t *ps )
 	}
 
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
-	          va( _( "Press %s and " ),
-	              CG_KeyNameForCommand( "weapprev" ) ) );
-	Q_strcat( text, MAX_TUTORIAL_TEXT,
-	          va( _( "%s to select an upgrade\n" ),
-	              CG_KeyNameForCommand( "weapnext" ) ) );
+	          va( _( "Use %s and %s to select an upgrade\n" ),
+	              CG_KeyNameForCommand( "weapprev" ), CG_KeyNameForCommand( "weapnext" ) ) );
 
 	if ( upgrade == UP_NONE ||
 	     ( upgrade > UP_NONE && BG_Upgrade( upgrade )->usable ) )
@@ -599,11 +597,8 @@ static void CG_SpectatorText( char *text, playerState_t *ps )
 		}
 
 		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( _( "Press %s or " ),
-		              CG_KeyNameForCommand( "weapprev" ) ) );
-		Q_strcat( text, MAX_TUTORIAL_TEXT,
-		          va( _( "%s to change player\n" ),
-		              CG_KeyNameForCommand( "weapnext" ) ) );
+		          va( _( "Use %s and %s to change between players\n" ),
+		              CG_KeyNameForCommand( "weapprev" ), CG_KeyNameForCommand( "weapnext" ) ) );
 	}
 	else
 	{
