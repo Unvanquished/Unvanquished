@@ -357,7 +357,15 @@ void               G_RunFrame( int levelTime );
 void               G_ShutdownGame( int restart );
 void               CheckExitRules( void );
 void               G_CountSpawns( void );
-static void        G_LogGameplay( qboolean init );
+static void        G_LogGameplayStats( int state );
+
+// state field of G_LogGameplayStats
+enum
+{
+	LOG_GAMEPLAY_STATS_HEADER,
+	LOG_GAMEPLAY_STATS_BODY,
+	LOG_GAMEPLAY_STATS_FOOTER
+};
 
 /*
 ================
@@ -728,7 +736,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 		}
 		else
 		{
-			G_LogGameplay( qtrue );
+			G_LogGameplayStats( LOG_GAMEPLAY_STATS_HEADER );
 		}
 	}
 
@@ -904,6 +912,14 @@ void G_ShutdownGame( int restart )
 		G_LogPrintf( "------------------------------------------------------------\n" );
 		trap_FS_FCloseFile( level.logFile );
 		level.logFile = 0;
+	}
+
+	// finalize logging of gameplay statistics
+	if ( level.logGameplayFile )
+	{
+		G_LogGameplayStats( LOG_GAMEPLAY_STATS_FOOTER );
+		trap_FS_FCloseFile( level.logGameplayFile );
+		level.logGameplayFile = 0;
 	}
 
 	// write all the client session data so we can get it back
@@ -2150,7 +2166,12 @@ void QDECL PRINTF_LIKE(1) G_LogPrintf( const char *fmt, ... )
 	trap_FS_Write( decolored, strlen( decolored ), level.logFile );
 }
 
-static void G_LogGameplay( qboolean init )
+/*
+=================
+G_LogGameplayStats
+=================
+*/
+static void G_LogGameplayStats( int state )
 {
 	char    serverinfo[ MAX_INFO_STRING ], logline[ MAX_INFO_STRING + 1024 ];
 	int     time, numA, numH, AS2T, HS2T, AS3T, HS3T, ACon, HCon, AME, HME, ABP, HBP;
@@ -2159,7 +2180,7 @@ static void G_LogGameplay( qboolean init )
 
 	static int nextCalculation = 0;
 
-	if ( !init && level.time < nextCalculation )
+	if ( state == LOG_GAMEPLAY_STATS_BODY && level.time < nextCalculation )
 	{
 		return;
 	}
@@ -2169,13 +2190,12 @@ static void G_LogGameplay( qboolean init )
 		return;
 	}
 
-	if ( init )
+	if ( state == LOG_GAMEPLAY_STATS_HEADER )
 	{
 		trap_GetServerinfo( serverinfo, sizeof( serverinfo ) );
 		trap_RealTime( &t );
 
 		Com_sprintf( logline, sizeof( logline ),
-		             "# -------------------------------------------------------------------\n"
 		             "# Info: %s\n"
 		             "# Time: %04i-%02i-%02i %02i:%02i:%02i\n"
 		             "#\n"
@@ -2204,7 +2224,7 @@ static void G_LogGameplay( qboolean init )
 		             g_mineRateHalfLife.integer
 		);
 	}
-	else
+	else if ( state == LOG_GAMEPLAY_STATS_BODY )
 	{
 		time = level.matchTime / 1000;
 		numA = level.numAlienClients;
@@ -2225,16 +2245,25 @@ static void G_LogGameplay( qboolean init )
 		             "%4i %4i %4i %4i %4i %4i %4i %4i %4i %4.1f %4i %4i %4i %4i\n",
 		             time, numA, numH, AS2T, HS2T, AS3T, HS3T, ACon, HCon, LMR, AME, HME, ABP, HBP );
 	}
-
-	trap_FS_Write( logline, strlen( logline ), level.logGameplayFile );
-
-	if ( init )
+	else if ( state == LOG_GAMEPLAY_STATS_FOOTER )
 	{
-		nextCalculation = 0;
+		Com_sprintf( logline, sizeof( logline ),
+		             "# -------------------------------------------------------------------\n\n" );
 	}
 	else
 	{
+		return;
+	}
+
+	trap_FS_Write( logline, strlen( logline ), level.logGameplayFile );
+
+	if ( state == LOG_GAMEPLAY_STATS_BODY )
+	{
 		nextCalculation = level.time + MAX( 1, g_logGameplayFrequency.integer ) * 1000;
+	}
+	else
+	{
+		nextCalculation = 0;
 	}
 }
 
@@ -3065,7 +3094,7 @@ void G_RunFrame( int levelTime )
 	G_UpdateZaps( msec );
 
 	// log gameplay statistics
-	G_LogGameplay( qfalse );
+	G_LogGameplayStats( LOG_GAMEPLAY_STATS_BODY );
 
 	// see if it is time to end the level
 	CheckExitRules();
