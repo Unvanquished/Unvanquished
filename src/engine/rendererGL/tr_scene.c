@@ -767,6 +767,7 @@ void RE_RenderScene( const refdef_t *fd )
 	VectorCopy( fd->viewaxis[ 2 ], parms.orientation.axis[ 2 ] );
 
 	VectorCopy( fd->vieworg, parms.pvsOrigin );
+	Vector4Copy( fd->gradingWeights, parms.gradingWeights );
 
 	R_RenderView( &parms );
 

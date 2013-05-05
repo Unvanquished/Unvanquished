@@ -1675,7 +1675,7 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 	//
 	statsbits = 0;
 
-	for ( i = 0; i < 16; i++ )
+	for ( i = 0; i < MAX_STATS; i++ )
 	{
 		if ( to->stats[ i ] != from->stats[ i ] )
 		{
@@ -1685,7 +1685,7 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 
 	persistantbits = 0;
 
-	for ( i = 0; i < 16; i++ )
+	for ( i = 0; i < MAX_PERSISTANT; i++ )
 	{
 		if ( to->persistant[ i ] != from->persistant[ i ] )
 		{
@@ -1712,7 +1712,7 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 			MSG_WriteBits( msg, 1, 1 );  // changed
 			MSG_WriteShort( msg, statsbits );
 
-			for ( i = 0; i < 16; i++ )
+			for ( i = 0; i < MAX_STATS; i++ )
 			{
 				if ( statsbits & ( 1 << i ) )
 				{
@@ -1732,7 +1732,7 @@ void MSG_WriteDeltaPlayerstate( msg_t *msg, struct playerState_s *from, struct p
 			MSG_WriteBits( msg, 1, 1 );  // changed
 			MSG_WriteShort( msg, persistantbits );
 
-			for ( i = 0; i < 16; i++ )
+			for ( i = 0; i < MAX_PERSISTANT; i++ )
 			{
 				if ( persistantbits & ( 1 << i ) )
 				{
@@ -1907,7 +1907,7 @@ void MSG_ReadDeltaPlayerstate( msg_t *msg, playerState_t *from, playerState_t *t
 			LOG( "PS_STATS" );
 			bits = MSG_ReadShort( msg );
 
-			for ( i = 0; i < 16; i++ )
+			for ( i = 0; i < MAX_STATS; i++ )
 			{
 				if ( bits & ( 1 << i ) )
 				{
@@ -1924,7 +1924,7 @@ void MSG_ReadDeltaPlayerstate( msg_t *msg, playerState_t *from, playerState_t *t
 			LOG( "PS_PERSISTANT" );
 			bits = MSG_ReadShort( msg );
 
-			for ( i = 0; i < 16; i++ )
+			for ( i = 0; i < MAX_PERSISTANT; i++ )
 			{
 				if ( bits & ( 1 << i ) )
 				{

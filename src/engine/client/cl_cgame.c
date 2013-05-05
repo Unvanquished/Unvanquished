@@ -468,7 +468,7 @@ rescan:
 
 		if ( argc == 1 )
 		{
-			Com_Printf("%s", _( "^3Server sent a pubkey_decrypt command, but sent nothing to decrypt!\n" ));
+			Com_Log(LOG_ERROR, _( "Server sent a pubkey_decrypt command, but sent nothing to decrypt!" ));
 			return qfalse;
 		}
 
@@ -620,6 +620,11 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_ERROR:
 			Com_Error( ERR_DROP, "%s", ( char * ) VMA( 1 ) );
+			return 0; //silence warning and have a fallback behavior if Com_Error behavior changes
+
+		case CG_LOG:
+			Com_LogEvent( VMA( 1 ), NULL );
+			return 0;
 
 		case CG_MILLISECONDS:
 			return Sys_Milliseconds();
@@ -1213,17 +1218,17 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_GETTEXT:
 			VM_CheckBlock( args[ 1 ], args[ 3 ], "CGGETTEXT" );
-			strncpy( VMA(1), __(VMA(2)), args[3] );
+			Q_strncpyz( VMA(1), __( VMA( 2 ) ), args[3] );
 			return 0;
 
 		case CG_PGETTEXT:
 			VM_CheckBlock( args[ 1 ], args[ 4 ], "CGPGETTEXT" );
-			strncpy( VMA( 1 ), C__( VMA( 2 ), VMA( 3 ) ), args[ 4 ] );
+			Q_strncpyz( VMA( 1 ), C__( VMA( 2 ), VMA( 3 ) ), args[ 4 ] );
 			return 0;
 
 		case CG_GETTEXT_PLURAL:
 			VM_CheckBlock( args[ 1 ], args[ 5 ], "CGGETTEXTP" );
-			strncpy( VMA( 1 ), P__( VMA( 2 ), VMA( 3 ), args[ 4 ] ), args[ 5 ] );
+			Q_strncpyz( VMA( 1 ), P__( VMA( 2 ), VMA( 3 ), args[ 4 ] ), args[ 5 ] );
 			return 0;
 
 		case CG_R_GLYPH:
@@ -1257,11 +1262,12 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_SETCOLORGRADING:
-			re.SetColorGrading( args[1] );
+			re.SetColorGrading( args[1], args[2] );
 			return 0;
 
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );
+			exit(1); // silence warning, and make sure this behaves as expected, if Com_Error's behavior changes
 	}
 
 	return 0;

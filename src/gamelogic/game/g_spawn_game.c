@@ -119,7 +119,7 @@ void game_funds_act( gentity_t *self, gentity_t *caller, gentity_t *activator )
 
 void game_funds_reset( gentity_t *self )
 {
-	reset_intField( &self->amount, self->config.amount, self->eclass->config.amount, 0, qfalse);
+	G_ResetIntField( &self->amount, qfalse, self->config.amount, self->eclass->config.amount, 0);
 }
 
 void SP_game_funds( gentity_t *self )

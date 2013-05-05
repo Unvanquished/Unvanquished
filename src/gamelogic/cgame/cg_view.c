@@ -1344,6 +1344,7 @@ static int CG_CalcViewValues( void )
 	playerState_t *ps;
 
 	memset( &cg.refdef, 0, sizeof( cg.refdef ) );
+	Vector4Copy( cg.gradingWeights, cg.refdef.gradingWeights );
 
 	// calculate size of 3D view
 	CG_CalcVrect();

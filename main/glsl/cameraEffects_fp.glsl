@@ -26,6 +26,7 @@ uniform sampler2D	u_CurrentMap;
 uniform sampler2D	u_GrainMap;
 uniform sampler2D	u_VignetteMap;
 uniform sampler3D	u_ColorMap;
+uniform vec4            u_ColorModulate;
 
 varying vec2		var_Tex;
 
@@ -42,7 +43,15 @@ void	main()
 	vec4 color = original;
 
 	// apply color grading
-	color.rgb = texture3D(u_ColorMap, color.rgb * 15.0/16.0 + 0.5/16.0).rgb;
+	vec3 colCoord = color.rgb * 15.0 / 16.0 + 0.5 / 16.0;
+	colCoord.z *= 0.25;
+	color.rgb = u_ColorModulate.x * texture3D(u_ColorMap, colCoord).rgb;
+	colCoord.z += 0.25;
+	color.rgb += u_ColorModulate.y * texture3D(u_ColorMap, colCoord).rgb;
+	colCoord.z += 0.25;
+	color.rgb += u_ColorModulate.z * texture3D(u_ColorMap, colCoord).rgb;
+	colCoord.z += 0.25;
+	color.rgb += u_ColorModulate.w * texture3D(u_ColorMap, colCoord).rgb;
 
 	// calculate chromatic aberration
 #if 0

@@ -1504,6 +1504,7 @@ extern "C" {
 		cplane_t       portalPlane; // clip anything behind this if mirroring
 		int            viewportX, viewportY, viewportWidth, viewportHeight;
 		vec4_t         viewportVerts[ 4 ]; // for immediate 2D quad rendering
+		vec4_t         gradingWeights;
 
 		float          fovX, fovY;
 		matrix_t       projectionMatrix;
@@ -3007,6 +3008,7 @@ extern "C" {
 	extern cvar_t *r_compressDiffuseMaps;
 	extern cvar_t *r_compressSpecularMaps;
 	extern cvar_t *r_compressNormalMaps;
+	extern cvar_t *r_heatHaze;
 	extern cvar_t *r_heatHazeFix;
 	extern cvar_t *r_noMarksOnTrisurfs;
 	extern cvar_t *r_recompileShaders;
@@ -3455,7 +3457,7 @@ extern "C" {
 
 	void    R_InitFogTable( void );
 	float   R_FogFactor( float s, float t );
-	void    RE_SetColorGrading( qhandle_t hShader );
+	void    RE_SetColorGrading( int slot, qhandle_t hShader );
 
 	/*
 	====================================================================

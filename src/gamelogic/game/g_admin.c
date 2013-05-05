@@ -3740,7 +3740,7 @@ qboolean G_admin_adminhelp( gentity_t *ent )
 		{
 			if ( G_admin_permission( ent, c->flag ) )
 			{
-				int thiswidth = strlen( g_admin_cmds[ i ].keyword );
+				int thiswidth = strlen( c->command );
 
 				if ( width < thiswidth )
 				{
