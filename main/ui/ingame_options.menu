@@ -575,10 +575,13 @@
 			8 )
 	MULTIX	( geffects, "Motion Blur:", "cg_motionblur",
 			  "Yes" 0.05 "No" 0, play "sound/misc/menu1.wav"; uiScript glCustom,
-		  9 )
+		    9 )
+    YESNOX	( geffects, "Heat Haze:", "r_heatHaze",
+			play "sound/misc/menu1.wav"; uiScript glCustom,
+			10 )
 	BUTTONX	( geffects, "APPLY",
 			play "sound/misc/menu1.wav"; exec "vid_restart",
-			10 )
+			11 )
 
     itemDef
     {
