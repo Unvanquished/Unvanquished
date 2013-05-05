@@ -69,8 +69,7 @@ vmCvar_t           g_doWarmup;
 vmCvar_t           g_lockTeamsAtStart;
 vmCvar_t           g_mapRestarted;
 vmCvar_t           g_logFile;
-vmCvar_t           g_logGameplayFile;
-vmCvar_t           g_logGameplayFrequency;
+vmCvar_t           g_logGameplayStatsFrequency;
 vmCvar_t           g_logFileSync;
 vmCvar_t           g_allowVote;
 vmCvar_t           g_voteLimit;
@@ -224,8 +223,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_warmup,                      "g_warmup",                      "10",                               CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_doWarmup,                    "g_doWarmup",                    "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_logFile,                     "g_logFile",                     "games.log",                        CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_logGameplayFile,             "g_logGameplayFile",             "gameplay.log",                     CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_logGameplayFrequency,        "g_logGameplayFrequency",        "10",                               CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_logGameplayStatsFrequency,   "g_logGameplayStatsFrequency",   "10",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_logFileSync,                 "g_logFileSync",                 "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
 
 	{ &g_password,                    "g_password",                    "",                                 CVAR_USERINFO,                                   0, qfalse           },
@@ -719,20 +717,25 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	}
 
 	// gameplay statistics logging
-	if ( g_logGameplayFile.string[ 0 ] )
+	if ( g_logGameplayStatsFrequency.integer > 0 )
 	{
-		if ( g_logFileSync.integer )
-		{
-			trap_FS_FOpenFile( g_logGameplayFile.string, &level.logGameplayFile, FS_APPEND_SYNC );
-		}
-		else
-		{
-			trap_FS_FOpenFile( g_logGameplayFile.string, &level.logGameplayFile, FS_APPEND );
-		}
+		char    logfile[ 128 ], mapname[ 64 ];
+		qtime_t qt;
+
+		trap_RealTime( &qt );
+		trap_Cvar_VariableStringBuffer( "mapname", mapname, sizeof( mapname ) );
+
+		Com_sprintf( logfile, sizeof( logfile ),
+		             "stats/gameplay/%04i%02i%02i_%02i%02i%02i_%s.log",
+		             1900 + qt.tm_year, qt.tm_mon + 1, qt.tm_mday,
+		             qt.tm_hour, qt.tm_min, qt.tm_sec,
+		             mapname );
+
+		trap_FS_FOpenFile( logfile, &level.logGameplayFile, FS_WRITE );
 
 		if ( !level.logGameplayFile )
 		{
-			G_Printf( "WARNING: Couldn't open gameplay logfile: %s\n", g_logGameplayFile.string );
+			G_Printf( "WARNING: Couldn't open gameplay statistics logfile: %s\n", logfile );
 		}
 		else
 		{
@@ -2173,10 +2176,8 @@ G_LogGameplayStats
 */
 static void G_LogGameplayStats( int state )
 {
-	char    serverinfo[ MAX_INFO_STRING ], logline[ MAX_INFO_STRING + 1024 ];
-	int     time, numA, numH, AS2T, HS2T, AS3T, HS3T, ACon, HCon, AME, HME, ABP, HBP;
-	float   LMR;
-	qtime_t t;
+	char       mapname[ 128 ];
+	char       logline[ sizeof( Q3_VERSION ) + sizeof( mapname ) + 1024 ];
 
 	static int nextCalculation = 0;
 
@@ -2192,12 +2193,18 @@ static void G_LogGameplayStats( int state )
 
 	if ( state == LOG_GAMEPLAY_STATS_HEADER )
 	{
-		trap_GetServerinfo( serverinfo, sizeof( serverinfo ) );
+		qtime_t t;
+
+		trap_Cvar_VariableStringBuffer( "mapname", mapname, sizeof( mapname ) );
 		trap_RealTime( &t );
 
 		Com_sprintf( logline, sizeof( logline ),
-		             "# Info: %s\n"
-		             "# Time: %04i-%02i-%02i %02i:%02i:%02i\n"
+		             "# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+		             "#\n"
+		             "# Version: %s\n"
+		             "# Map:     %s\n"
+		             "# Date:    %04i-%02i-%02i\n"
+		             "# Time:    %02i:%02i:%02i\n"
 		             "#\n"
 		             "# g_stage2BaseThreshold     %4i\n"
 		             "# g_stage3BaseThreshold     %4i\n"
@@ -2210,9 +2217,12 @@ static void G_LogGameplayStats( int state )
 		             "# g_mineRateHalfLife        %4i\n"
 		             "#\n"
 		             "#  1    2    3    4    5    6    7    8    9   10   11   12   13   14\n"
-		             "#  T numA numH AS2T HS2T AS3T HS3T ACon HCon  LMR  AME  HME  ABP  HBP\n",
-		             serverinfo,
-		             t.tm_year + 1900, t.tm_mon + 1, t.tm_mday, t.tm_hour, t.tm_min, t.tm_sec,
+		             "#  T numA numH AS2T HS2T AS3T HS3T ACon HCon  LMR  AME  HME  ABP  HBP\n"
+		             "# -------------------------------------------------------------------\n",
+		             Q3_VERSION,
+		             mapname,
+		             t.tm_year + 1900, t.tm_mon + 1, t.tm_mday,
+		             t.tm_hour, t.tm_min, t.tm_sec,
 		             g_stage2BaseThreshold.integer,
 		             g_stage3BaseThreshold.integer,
 		             g_stage2IncreasePerPlayer.integer,
@@ -2221,11 +2231,13 @@ static void G_LogGameplayStats( int state )
 		             g_confidenceHalfLife.integer,
 		             g_initialBuildPoints.integer,
 		             g_initialMineRate.integer,
-		             g_mineRateHalfLife.integer
-		);
+		             g_mineRateHalfLife.integer );
 	}
 	else if ( state == LOG_GAMEPLAY_STATS_BODY )
 	{
+		int   time, numA, numH, AS2T, HS2T, AS3T, HS3T, ACon, HCon, AME, HME, ABP, HBP;
+		float LMR;
+
 		time = level.matchTime / 1000;
 		numA = level.numAlienClients;
 		numH = level.numHumanClients;
@@ -2247,8 +2259,40 @@ static void G_LogGameplayStats( int state )
 	}
 	else if ( state == LOG_GAMEPLAY_STATS_FOOTER )
 	{
+		const char *winner;
+		int        min, sec;
+
+		switch ( level.lastWin )
+		{
+			case TEAM_ALIENS:
+				winner = "Aliens";
+				break;
+
+			case TEAM_HUMANS:
+				winner = "Humans";
+				break;
+
+			default:
+				winner = "-";
+		}
+
+		min = level.matchTime / 60000;
+		sec = ( level.matchTime / 1000 ) % 60;
+
 		Com_sprintf( logline, sizeof( logline ),
-		             "# -------------------------------------------------------------------\n\n" );
+		             "# -------------------------------------------------------------------\n"
+		             "#\n"
+		             "# Match duration:  %i:%02i\n"
+		             "# Winning team:    %s\n"
+		             "# Average Players: %.1f\n"
+		             "# Average Aliens:  %.1f\n"
+		             "# Average Humans:  %.1f\n"
+		             "#\n",
+		             min, sec,
+		             winner,
+		             level.avgNumAlienClients + level.avgNumHumanClients,
+		             level.avgNumAlienClients,
+		             level.avgNumHumanClients );
 	}
 	else
 	{
@@ -2259,7 +2303,7 @@ static void G_LogGameplayStats( int state )
 
 	if ( state == LOG_GAMEPLAY_STATS_BODY )
 	{
-		nextCalculation = level.time + MAX( 1, g_logGameplayFrequency.integer ) * 1000;
+		nextCalculation = level.time + MAX( 1, g_logGameplayStatsFrequency.integer ) * 1000;
 	}
 	else
 	{
