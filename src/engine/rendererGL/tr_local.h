@@ -3008,6 +3008,7 @@ extern "C" {
 	extern cvar_t *r_compressDiffuseMaps;
 	extern cvar_t *r_compressSpecularMaps;
 	extern cvar_t *r_compressNormalMaps;
+	extern cvar_t *r_heatHaze;
 	extern cvar_t *r_heatHazeFix;
 	extern cvar_t *r_noMarksOnTrisurfs;
 	extern cvar_t *r_recompileShaders;
