@@ -49,7 +49,7 @@ void G_SanitiseString( const char *in, char *out, int len )
 
 		if ( Q_Unicode_IsAlphaOrIdeoOrDigit( cp ) )
 		{
-			int wm, lc;
+			int wm;
 
 			if ( Q_Unicode_IsUpper( cp ) )
 			{
@@ -3248,7 +3248,6 @@ static qboolean Cmd_Sell_upgrades( gentity_t *ent )
 
 static qboolean Cmd_Sell_internal( gentity_t *ent, const char *s )
 {
-	int       i;
 	weapon_t  weapon;
 	upgrade_t upgrade;
 
