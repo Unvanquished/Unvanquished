@@ -35,65 +35,28 @@ Maryland 20850 USA.
 #include "cg_local.h"
 #include "cg_rocket_datasource.h"
 
-/* from http://stackoverflow.com/questions/7685/merge-sort-a-linked-list */
-node_t* mergesort(node_t *head,long lengtho, int ( *cmp )( node_t *a, node_t *b ) )
-{
-	long count1=(lengtho/2), count2=(lengtho-count1);
-	node_t *next1,*next2,*tail1,*tail2,*tail;
-	if (lengtho<=1) return head->next;  /* Trivial case. */
-
-		tail1 = mergesort(head,count1,cmp);
-	tail2 = mergesort(tail1,count2,cmp);
-	tail=head;
-	next1 = head->next;
-	next2 = tail1->next;
-	tail1->next = tail2->next; /* in case this ends up as the tail */
-	while (1) {
-		if(cmp(next1,next2)<=0) {
-			tail->next=next1; tail=next1;
-			if(--count1==0) { tail->next=next2; return tail2; }
-			next1=next1->next;
-		} else {
-			tail->next=next2; tail=next2;
-			if(--count2==0) { tail->next=next1; return tail1; }
-			next2=next2->next;
-		}
-	}
-	return NULL; // silence compiler
-}
-
 static void AddToServerList( char *name, int clients, int bots, int ping )
 {
-	server_t *node = BG_Alloc( sizeof( server_t ) );
+	server_t *node;
+
+	if ( serverCount == MAX_SERVERS )
+	{
+		return;
+	}
+
+	node = &servers[ serverCount ];
 
 	node->name = BG_strdup( name );
 	node->clients = clients;
 	node->bots = bots;
 	node->ping = ping;
 	serverCount++;
-
-	if ( !serverListHead && !serverListTail )
-	{
-		serverListHead = BG_Alloc( sizeof( server_t ) );
-		 serverListHead->next = serverListTail = node;
-	}
-	else
-	{
-		serverListTail->next = node;
-		serverListTail = node;
-	}
 }
-
-
-
-
 
 static void CG_Rocket_BuildServerList( const char *args )
 {
 	char data[ MAX_INFO_STRING ] = { 0 };
 	int i;
-	server_t *server;
-
 
 	// Only refresh once every second
 	if ( trap_Milliseconds() < 1000 + rocketInfo.serversLastRefresh )
@@ -138,18 +101,18 @@ static void CG_Rocket_BuildServerList( const char *args )
 				AddToServerList( Info_ValueForKey( info, "hostname" ), clients, bots, ping );
 			}
 		}
-		server = serverListHead;
-		while ( server = server->next )
+
+		for ( i = 0; i < serverCount; ++i )
 		{
-			if ( server->ping <= 0 )
+			if ( servers[ i ].ping <= 0 )
 			{
 				continue;
 			}
 
-			Info_SetValueForKey( data, "name", server->name, qfalse );
-			Info_SetValueForKey( data, "players", va( "%d", server->clients ), qfalse );
-			Info_SetValueForKey( data, "bots", va( "%d", server->bots ), qfalse );
-			Info_SetValueForKey( data, "ping", va( "%d", server->ping ), qfalse );
+			Info_SetValueForKey( data, "name", servers[ i ].name, qfalse );
+			Info_SetValueForKey( data, "players", va( "%d", servers[ i ].clients ), qfalse );
+			Info_SetValueForKey( data, "bots", va( "%d", servers[ i ].bots ), qfalse );
+			Info_SetValueForKey( data, "ping", va( "%d", servers[ i ].ping ), qfalse );
 
 			trap_Rocket_DSAddRow( "server_browser", args, data );
 		}
@@ -158,7 +121,7 @@ static void CG_Rocket_BuildServerList( const char *args )
 	rocketInfo.serversLastRefresh = trap_Milliseconds();
 }
 
-static int ServerListCmpByPing( node_t *one, node_t *two )
+static int ServerListCmpByPing( const void *one, const void *two )
 {
 	server_t *a = ( server_t * ) one;
 	server_t *b = ( server_t * ) two;
@@ -173,15 +136,16 @@ static void CG_Rocket_SortServerList( const char *name, const char *sortBy )
 {
 	server_t *server;
 	char data[ MAX_INFO_STRING ] = { 0 };
+	int  i;
 
 	if ( !Q_stricmp( sortBy, "ping" ) )
 	{
-		mergesort( ( node_t * )serverListHead, serverCount, &ServerListCmpByPing );
+		qsort( servers, serverCount, sizeof( server_t ), &ServerListCmpByPing );
 	}
 
 	trap_Rocket_DSClearTable( "server_browser", name );
-	server = serverListHead;
-	while ( server = server->next )
+
+	for ( i = 0; i < serverCount; ++i, server = &servers[ i ] )
 	{
 		if ( server->ping <= 0 )
 		{
@@ -199,21 +163,17 @@ static void CG_Rocket_SortServerList( const char *name, const char *sortBy )
 
 void CG_Rocket_CleanUpServerList( void )
 {
-	server_t *server = serverListHead;
-	while ( server )
-	{
-		server_t *tmp = server;
-		server = server->next;
+	int i;
 
-		BG_Free( tmp->name );
-		BG_Free( tmp );
+	for ( i = 0; i < serverCount; ++i )
+	{
+		BG_Free( servers[ i ].name );
 	}
 
-	serverListHead = serverListTail = NULL;
 	serverCount = 0;
 }
 
-qboolean Parse( char **p, char **out )
+static qboolean Parse( char **p, char **out )
 {
 	char *token;
 
@@ -230,32 +190,29 @@ qboolean Parse( char **p, char **out )
 
 static void AddToResolutionList( int w, int h )
 {
-	resolution_t *node = BG_Alloc( sizeof( resolution_t ) );
+	resolution_t *node;
+
+	if ( resolutionCount == MAX_RESOLUTIONS )
+	{
+		return;
+	}
+
+	node = &resolutions[ resolutionCount ];
 
 	node->width = w;
 	node->height = h;
 	resolutionCount++;
-
-	if ( !resolutionsListHead && !resolutionsListTail )
-	{
-		resolutionsListHead = BG_Alloc( sizeof( resolution_t ) );
-		resolutionsListHead->next = resolutionsListTail = node;
-	}
-	else
-	{
-		resolutionsListTail->next = node;
-		resolutionsListTail = node;
-	}
 }
 
 void CG_Rocket_BuildResolutionList( const char *args )
 {
 	char        buf[ MAX_STRING_CHARS ];
-	char        w[ 16 ], h[ 16 ];
+	int         w, h;
 	char        *p;
-	char  *out;
+	char        *out;
 	char        *s = NULL;
 	resolution_t *resolution;
+	int          i;
 
 	trap_Cvar_VariableStringBuffer( "r_availableModes", buf, sizeof( buf ) );
 	p = buf;
@@ -263,37 +220,27 @@ void CG_Rocket_BuildResolutionList( const char *args )
 
 	while ( Parse( &p, &out ) )
 	{
-		Q_strncpyz( w, out, sizeof( w ) );
-		s = strchr( w, 'x' );
 
-		if ( !s )
-		{
-			return;
-		}
-
-		*s++ = '\0';
-		Q_strncpyz( h, s, sizeof( h ) );
-
-		AddToResolutionList( atoi( w ), atoi( h ) );
+		sscanf( out, "%dx%d", &w, &h );
+		AddToResolutionList( w, h );
 		BG_Free( out );
 	}
 
 	buf[ 0 ] = '\0';
 
 	trap_Rocket_DSClearTable( "resolutions", "default" );
-	resolution = resolutionsListHead;
 
-	while ( resolution = resolution->next )
+	for ( i = 0; i < resolutionCount; ++i )
 	{
-		Info_SetValueForKey( buf, "width", va( "%d", resolution->width ), qfalse );
-		Info_SetValueForKey( buf, "height", va( "%d", resolution->height ), qfalse );
+		Info_SetValueForKey( buf, "width", va( "%d", resolutions[ i ].width ), qfalse );
+		Info_SetValueForKey( buf, "height", va( "%d", resolutions[ i ].height ), qfalse );
 
 		trap_Rocket_DSAddRow( "resolutions", "default", buf );
 	}
 
 }
 
-static int ResolutionListCmpByWidth( node_t *one, node_t *two )
+static int ResolutionListCmpByWidth( const void *one, const void *two )
 {
 	resolution_t *a = ( resolution_t * ) one;
 	resolution_t *b = ( resolution_t * ) two;
@@ -307,22 +254,19 @@ static int ResolutionListCmpByWidth( node_t *one, node_t *two )
 void CG_Rocket_SortResolutionList( const char *name, const char *sortBy )
 {
 	static char buf[ MAX_STRING_CHARS ];
-	resolution_t *resolution;
+	int i;
 
 	if ( !Q_stricmp( sortBy, "width" ) )
 	{
-		mergesort( ( node_t * )resolutionsListHead, resolutionCount, &ResolutionListCmpByWidth );
+		qsort( resolutions, resolutionCount, sizeof( resolution_t ), &ResolutionListCmpByWidth );
 	}
 
-	resolution = resolutionsListHead;
-
 	trap_Rocket_DSClearTable( "resolutions", "default" );
-	resolution = resolutionsListHead;
 
-	while ( resolution = resolution->next )
+	for ( i = 0; i < resolutionCount; ++i )
 	{
-		Info_SetValueForKey( buf, "width", va( "%d", resolution->width ), qfalse );
-		Info_SetValueForKey( buf, "height", va( "%d", resolution->height ), qfalse );
+		Info_SetValueForKey( buf, "width", va( "%d", resolutions[ i ].width ), qfalse );
+		Info_SetValueForKey( buf, "height", va( "%d", resolutions[ i ].height ), qfalse );
 
 		trap_Rocket_DSAddRow( "resolutions", "default", buf );
 	}
@@ -331,47 +275,32 @@ void CG_Rocket_SortResolutionList( const char *name, const char *sortBy )
 
 void CG_Rocket_CleanUpResolutionList( void )
 {
-	resolution_t *resolution = resolutionsListHead;
-
-	while ( resolution )
-	{
-		resolution_t *tmp = resolution;
-		resolution = resolution->next;
-
-		BG_Free( tmp );
-	}
-
-	resolutionsListHead = resolutionsListTail = NULL;
 	resolutionCount = 0;
 }
 
 static void AddToLanguageList( char *name, char *lang )
 {
-	language_t *node = BG_Alloc( sizeof( language_t ) );
+	language_t *node;
+
+	if ( languageCount == MAX_LANGUAGES )
+	{
+		return;
+	}
+
+	node = &languages[ languageCount ];
 
 	node->name = name;
 	node->lang = lang;
 	languageCount++;
-
-	if ( !languageListHead && !languageListTail )
-	{
-		languageListHead = BG_Alloc( sizeof( language_t ) );
-		languageListHead->next = languageListTail = node;
-	}
-	else
-	{
-		languageListTail->next = node;
-		languageListTail = node;
-	}
 }
 
+// FIXME: use COM_Parse or something instead of this way
 void CG_Rocket_BuildLanguageList( const char *args )
 {
 	char        buf[ MAX_STRING_CHARS ], temp[ MAX_TOKEN_CHARS ];
-	int         index = 0;
+	int         index = 0, lang = 0;
 	qboolean    quoted = qfalse;
 	char        *p;
-	language_t  *language;
 
 	trap_Cvar_VariableStringBuffer( "trans_languages", buf, sizeof( buf ) );
 	p = buf;
@@ -396,13 +325,11 @@ void CG_Rocket_BuildLanguageList( const char *args )
 	trap_Cvar_VariableStringBuffer( "trans_encodings", buf, sizeof( buf ) );
 	p = buf;
 	memset( &temp, 0, sizeof( temp ) );
-	language = languageListHead->next;
 	while( p && *p )
 	{
 		if( *p == '"' && quoted )
 		{
-			language->lang = BG_strdup( temp );
-			language = language->next;
+			languages[ lang++ ].lang = BG_strdup( temp );
 			quoted = qfalse;
 			index = 0;
 		}
@@ -417,11 +344,11 @@ void CG_Rocket_BuildLanguageList( const char *args )
 	}
 
 	buf[ 0 ] = '\0';
-	language = languageListHead;
-	while ( language = language->next )
+
+	for ( index = 0; index < languageCount; ++index )
 	{
-		Info_SetValueForKey( buf, "name", language->name, qfalse );
-		Info_SetValueForKey( buf, "lang", language->lang, qfalse );
+		Info_SetValueForKey( buf, "name", languages[ index ].name, qfalse );
+		Info_SetValueForKey( buf, "lang", languages[ index ].lang, qfalse );
 
 		trap_Rocket_DSAddRow( "language", "default", buf );
 	}
@@ -429,38 +356,25 @@ void CG_Rocket_BuildLanguageList( const char *args )
 
 void CG_Rocket_CleanUpLanguageList( void )
 {
+	int i;
 
-	language_t *language = languageListHead;
-
-	while ( language )
+	for ( i = 0; i < languageCount; ++i )
 	{
-		language_t *tmp = language;
-		language = language->next;
-
-		BG_Free( tmp );
+		BG_Free( languages[ i ].lang );
+		BG_Free( languages[ i ].name );
 	}
 
-	languageListHead = languageListTail = NULL;
 	languageCount = 0;
 }
 
-static void AddToCharList( charList_t *head, charList_t *tail, char *name, int *count )
+static void AddToVoipInputs( char *name )
 {
-	charList_t *node = BG_Alloc( sizeof( charList_t ) );
-
-	node->name = name;
-	( *count )++;
-
-	if ( !head && !tail )
+	if ( voipInputsCount == MAX_INPUTS )
 	{
-		head = BG_Alloc( sizeof( charList_t ) );
-		head->next = tail = node;
+		return;
 	}
-	else
-	{
-		tail->next = node;
-		tail = node;
-	}
+
+	voipInputs[ voipInputsCount++ ] = name;
 }
 
 void CG_Rocket_BuildVoIPInputs( const char *args )
@@ -468,22 +382,20 @@ void CG_Rocket_BuildVoIPInputs( const char *args )
 	char buf[ MAX_STRING_CHARS ];
 	char *p, *head;
 	int inputs = 0;
-	charList_t *list;
 
 	trap_Cvar_VariableStringBuffer( "s_alAvailableInputDevices", buf, sizeof( buf ) );
 	head = buf;
 	while ( ( p = strchr( head, '\n' ) ) )
 	{
 		*p = '\0';
-		AddToCharList( voipInputsListHead, voipInputsListTail, BG_strdup( head ), &voipInputsCount );
+		AddToVoipInputs( BG_strdup( head ) );
 		head = p + 1;
 	}
 
 	buf[ 0 ] = '\0';
-	list = voipInputsListHead;
-	while ( list = list->next )
+	for ( inputs = 0; inputs < voipInputsCount; ++inputs )
 	{
-		Info_SetValueForKey( buf, "name", list->name, qfalse );
+		Info_SetValueForKey( buf, "name", voipInputs[ inputs ], qfalse );
 
 		trap_Rocket_DSAddRow( "voipInputs", "default", buf );
 	}
@@ -491,18 +403,24 @@ void CG_Rocket_BuildVoIPInputs( const char *args )
 
 void CG_Rocket_CleanUpVoIPInputs( void )
 {
-	charList_t *list = voipInputsListHead;
+	int i;
 
-	while ( list )
+	for ( i = 0; i < voipInputsCount; ++i )
 	{
-		charList_t *tmp = list;
-		list = list->next;
-
-		BG_Free( tmp );
+		BG_Free( voipInputs[ i ] );
 	}
 
-	voipInputsListHead = voipInputsListTail = NULL;
 	voipInputsCount = 0;
+}
+
+static void AddToAlOutputs( char *name )
+{
+	if ( alOutputsCount == MAX_OUTPUTS )
+	{
+		return;
+	}
+
+	alOutputs[ alOutputsCount++ ] = name;
 }
 
 void CG_Rocket_BuildAlOutputs( const char *args )
@@ -510,21 +428,21 @@ void CG_Rocket_BuildAlOutputs( const char *args )
 	char buf[ MAX_STRING_CHARS ];
 	char *p, *head;
 	int outputs = 0;
-	charList_t *list;
+
 	trap_Cvar_VariableStringBuffer( "s_alAvailableDevices", buf, sizeof( buf ) );
 	head = buf;
 	while ( ( p = strchr( head, '\n' ) ) )
 	{
 		*p = '\0';
-		AddToCharList( alOutputsListHead, alOutputsListTail, BG_strdup( head ), &alOutputsCount );
+		AddToAlOutputs( BG_strdup( head ) );
 		head = p + 1;
 	}
 
 	buf[ 0 ] = '\0';
-	list = alOutputsListHead;
-	while ( list = list->next )
+
+	for ( outputs = 0; outputs < alOutputsCount; ++outputs )
 	{
-		Info_SetValueForKey( buf, "name", list->name, qfalse );
+		Info_SetValueForKey( buf, "name", alOutputs[ outputs ], qfalse );
 
 		trap_Rocket_DSAddRow( "alOutputs", "default", buf );
 	}
@@ -532,17 +450,13 @@ void CG_Rocket_BuildAlOutputs( const char *args )
 
 void CG_Rocket_CleanUpAlOutputs( void )
 {
-	charList_t *list = alOutputsListHead;
+	int i;
 
-	while ( list )
+	for ( i = 0; i < alOutputsCount; ++i )
 	{
-		charList_t *tmp = list;
-		list = list->next;
-
-		BG_Free( tmp );
+		BG_Free( alOutputs[ i ] );
 	}
 
-	alOutputsListHead = alOutputsListTail = NULL;
 	alOutputsCount = 0;
 }
 

@@ -34,59 +34,49 @@ Maryland 20850 USA.
 
 #include "cg_local.h"
 
-typedef struct node_s {
-	struct node_s *next;
-} node_t;
+#define MAX_SERVERS 2048
+#define MAX_RESOLUTIONS 32
+#define MAX_LANGUAGES 64
+#define MAX_INPUTS 16
+#define MAX_OUTPUTS 16
+
 
 typedef struct server_s
 {
-	struct server_s *next;
-
 	char *name;
 	int clients;
 	int bots;
 	int ping;
 } server_t;
 
-server_t *serverListHead;
-server_t *serverListTail;
+server_t servers[ MAX_SERVERS ];
 int serverCount = 0;
+int serverIndex;
 
 typedef struct resolution_s
 {
-	struct resolution_s *next;
-
 	int width;
 	int height;
 } resolution_t;
 
-resolution_t *resolutionsListHead;
-resolution_t *resolutionsListTail;
+resolution_t resolutions[ MAX_RESOLUTIONS ];
 int resolutionCount = 0;
+int resolutionIndex;
 
 typedef struct language_s
 {
-	struct language_s *next;
-
 	char *name;
 	char *lang;
 } language_t;
 
-language_t *languageListHead;
-language_t *languageListTail;
+language_t languages[ MAX_LANGUAGES ];
 int languageCount = 0;
+int languageIndex;
 
-typedef struct charList_s
-{
-	struct charList_s *next;
-
-	char *name;
-} charList_t;
-
-charList_t *voipInputsListHead;
-charList_t *voipInputsListTail;
+char *voipInputs[ MAX_INPUTS ];
 int voipInputsCount = 0;
+int voipInputIndex;
 
-charList_t *alOutputsListHead;
-charList_t *alOutputsListTail;
+char *alOutputs[ MAX_OUTPUTS ];
 int alOutputsCount = 0;
+int alOutputIndex;
