@@ -328,3 +328,47 @@ void SP_gfx_animated_model( gentity_t *self )
 	trap_LinkEntity( self );
 }
 
+/*
+=================================================================================
+
+gfx_shader_mod
+
+=================================================================================
+*/
+
+void gfx_shader_mod_act( gentity_t *self, gentity_t *other, gentity_t *activator )
+{
+	if ( !self->shaderKey || !self->shaderReplacement || !self->enabled )
+	{
+		return;
+	}
+
+	G_SetShaderRemap( self->shaderKey, self->shaderReplacement, level.time * 0.001 );
+	trap_SetConfigstring( CS_SHADERSTATE, BuildShaderStateConfig() );
+
+	self->active = qtrue;
+}
+
+void gfx_shader_mod_reset( gentity_t *self )
+{
+	if ( !self->shaderKey || !self->shaderReplacement )
+	{
+		return;
+	}
+
+	if( !self->active ) // initial reset doesnt need a remap
+	{
+		return;
+	}
+
+	G_SetShaderRemap( self->shaderKey, self->shaderKey, level.time * 0.001 );
+	trap_SetConfigstring( CS_SHADERSTATE, BuildShaderStateConfig() );
+
+	self->active = qfalse;
+}
+
+void SP_gfx_shader_mod( gentity_t *self )
+{
+	self->act = gfx_shader_mod_act;
+	self->reset = gfx_shader_mod_reset;
+}
