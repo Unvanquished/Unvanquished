@@ -6,7 +6,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-05-06 01:34+0200\n"
-"PO-Revision-Date: 2013-05-06 00:04+0000\n"
+"PO-Revision-Date: 2013-05-06 00:30+0000\n"
 "Last-Translator: gillux <gillou.ray@free.fr>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: fr\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Pootle 2.5.0-beta1\n"
-"X-POOTLE-MTIME: 1367798683.0\n"
+"X-POOTLE-MTIME: 1367800256.0\n"
 
 #: tremulous_alien_builder_hud.menu:47 tremulous_alien_builder_hud.menu:49
 #: tremulous_alien_builder_hud.menu:48
@@ -2481,10 +2481,11 @@ msgstr "« %s » (non affecté)"
 msgid "Press %s to place the %s\n"
 msgstr "Appuyez sur %s pour utiliser le %s\n"
 
+# L’article qui précède le %s n’est pas accordé
 #: src/gamelogic/cgame/cg_tutorial.c:204
-#, c-format
+#, c-format, fuzzy
 msgid "Press %s to cancel placing the %s\n"
-msgstr ""
+msgstr "Appuyez sur %s pour annuler la mise en place du %s\n"
 
 #: src/gamelogic/cgame/cg_tutorial.c:210
 #, c-format
@@ -4176,10 +4177,9 @@ msgid "$1$: vote cast\n"
 msgstr "$1$ : vote exprimé\n"
 
 #: src/gamelogic/game/g_cmds.c:2208
-#, fuzzy
 msgid "usage: setviewpos (<x> <y> <z> [<yaw> [<pitch>]] | <entitynum>)\n"
-msgstr "utilisation : setviewpos <x> <y> <z> [<lacet> [<tangage>]] | <numéro "
-"d’entitée>\n"
+msgstr "utilisation : setviewpos (<x> <y> <z> [<lacet> [<tangage>]] | <numéro "
+"d’entitée>)\n"
 
 #: src/gamelogic/game/g_cmds.c:2823 src/gamelogic/game/g_cmds.c:2853
 #: src/gamelogic/game/g_cmds.c:2905
@@ -4929,7 +4929,7 @@ msgstr "Rim lighting :"
 
 #: main/ui/ingame_options.menu:579 main/ui/options.menu:591
 msgid "Heat Haze:"
-msgstr ""
+msgstr "Flou de chaleur :"
 
 #: main/ui/ingame_options.menu:617 main/ui/options.menu:629
 msgid "Brightness:"
