@@ -37,6 +37,21 @@ void BotDPrintf( const char* fmt, ... )
 	}
 }
 
+void BotError( const char* fmt, ... )
+{
+	va_list argptr;
+	size_t  len;
+	char    text[ 1024 ] = S_COLOR_RED "ERROR: ";
+
+	len = strlen( text );
+
+	va_start( argptr, fmt );
+	Q_vsnprintf( text + len, sizeof( text ) - len, fmt, argptr );
+	va_end( argptr );
+
+	trap_Print( text );
+}
+
 /*
 =======================
 Scoring functions for logic

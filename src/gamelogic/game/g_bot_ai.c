@@ -423,13 +423,13 @@ qboolean expectToken( const char *s, pc_token_list **list, qboolean next )
 
 	if ( !current )
 	{
-		BotDPrintf( S_COLOR_RED "ERROR: Expected token %s but found end of file\n", s );
+		BotError( "Expected token %s but found end of file\n", s );
 		return qfalse;
 	}
 	
 	if ( Q_stricmp( current->token.string, s ) != 0 )
 	{
-		BotDPrintf( S_COLOR_RED "ERROR: Expected token %s but found %s on line %d\n", s, current->token.string, current->token.line );
+		BotError( "Expected token %s but found %s on line %d\n", s, current->token.string, current->token.line );
 		return qfalse;
 	}
 	
@@ -494,7 +494,7 @@ static AIValueFunc_t *newValueFunc( pc_token_list **list )
 
 	if ( !f )
 	{
-		BotDPrintf( S_COLOR_RED "ERROR: Unknown function: %s on line %d\n", current->token.string, current->token.line );
+		BotError( "Unknown function: %s on line %d\n", current->token.string, current->token.line );
 		*list = current->next;
 		return NULL;
 	}
@@ -528,7 +528,7 @@ static AIValueFunc_t *newValueFunc( pc_token_list **list )
 
 	if ( !parenEnd )
 	{
-		BotDPrintf( S_COLOR_RED "ERROR: could not find matching ')' for '(' on line %d", parenBegin->token.line );
+		BotError( "could not find matching ')' for '(' on line %d", parenBegin->token.line );
 		*list = parenBegin->next;
 		return NULL;
 	}
@@ -544,7 +544,7 @@ static AIValueFunc_t *newValueFunc( pc_token_list **list )
 		}
 		else if ( parse->token.string[ 0 ] != ',' )
 		{
-			BotDPrintf( S_COLOR_RED "ERROR: found invalid token %s in parameter list on line %d\n", parse->token.string, parse->token.line );
+			BotError( "Invalid token %s in parameter list on line %d\n", parse->token.string, parse->token.line );
 			*list = parenEnd->next; // skip invalid function expression
 			return NULL;
 		}
@@ -554,12 +554,12 @@ static AIValueFunc_t *newValueFunc( pc_token_list **list )
 	// warn if too many or too few parameters
 	if ( numParams < v.nparams )
 	{
-		BotDPrintf( S_COLOR_YELLOW "WARNING: too few parameters for %s on line %d\n", current->token.string, current->token.line );
+		G_Printf( S_COLOR_YELLOW "WARNING: too few parameters for %s on line %d\n", current->token.string, current->token.line );
 	}
 
 	if ( numParams > v.nparams )
 	{
-		BotDPrintf( S_COLOR_YELLOW "WARNING: too many parameters for %s on line %d\n", current->token.string, current->token.line );
+		G_Printf( S_COLOR_YELLOW "WARNING: too many parameters for %s on line %d\n", current->token.string, current->token.line );
 	}
 
 	// create the value op
@@ -681,7 +681,7 @@ AIExpType_t *ReadConditionExpression( pc_token_list **list, AIOpType_t op2 )
 
 	if ( !*list )
 	{
-		BotDPrintf( S_COLOR_RED "ERROR: Unexpected end of file\n" );
+		BotError( "Unexpected end of file\n" );
 		return NULL;
 	}
 
@@ -697,13 +697,14 @@ AIExpType_t *ReadConditionExpression( pc_token_list **list, AIOpType_t op2 )
 	while ( isBinaryOp( op ) && opCompare( op, op2 ) >= 0 )
 	{
 		AIExpType_t *t1;
+		pc_token_list *prev = *list;
 		AIOp_t *exp = newOp( *list );
 		*list = (*list)->next;
 		t1 = ReadConditionExpression( list, op );
 
 		if ( !t1 )
 		{
-			BotDPrintf( S_COLOR_RED "ERROR: Missing right operand for %s\n", opTypeToString( op ) );
+			BotError( "Missing right operand for %s on line %d\n", opTypeToString( op ), prev->token.line );
 			FreeExpression( t );
 			FreeOp( exp );
 			return NULL;
@@ -731,7 +732,7 @@ AIExpType_t *Primary( pc_token_list **list )
 
 		if ( !t )
 		{
-			BotDPrintf( S_COLOR_RED "ERROR: Missing right operand for %s\n", opTypeToString( op->opType ) );
+			BotError( "Missing right operand for %s on line %d\n", opTypeToString( op->opType ), current->token.line );
 			FreeOp( op );
 			return NULL;
 		}
@@ -742,7 +743,10 @@ AIExpType_t *Primary( pc_token_list **list )
 	{
 		*list = current->next;
 		tree = ReadConditionExpression( list, OP_NONE );
-		expectToken( ")", list, qtrue );
+		if ( !expectToken( ")", list, qtrue ) )
+		{
+			return NULL;
+		}
 	}
 	else if ( current->token.type == TT_NUMBER )
 	{
@@ -754,7 +758,7 @@ AIExpType_t *Primary( pc_token_list **list )
 	}
 	else
 	{
-		BotDPrintf( S_COLOR_RED "ERROR: token %s on line %d is not valid\n", current->token.string, current->token.line );
+		BotError( "token %s on line %d is not valid\n", current->token.string, current->token.line );
 	}
 	return tree;
 }
@@ -797,7 +801,7 @@ static AIGenericNode_t *ReadConditionNode( pc_token_list **tokenlist )
 	if ( !current )
 	{
 		*tokenlist = current;
-		BotDPrintf( S_COLOR_RED "ERROR: Unexpected end of file\n" );
+		BotError( "Unexpected end of file\n" );
 		FreeConditionNode( condition );
 		return NULL;
 	}
@@ -849,7 +853,7 @@ static AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
 {
 	pc_token_list *current = *tokenlist;
 
-	AIGenericNode_t *node;
+	AIGenericNode_t *node = NULL;
 
 	if ( !expectToken( "action", &current, qtrue ) )
 	{
@@ -858,7 +862,7 @@ static AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
 
 	if ( !current )
 	{
-		BotDPrintf( S_COLOR_RED "Unexpected end of file after line %d\n", (*tokenlist)->token.line );
+		BotError( "Unexpected end of file after line %d\n", (*tokenlist)->token.line );
 		return NULL;
 	}
 
@@ -922,7 +926,7 @@ static AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
 	}
 	else
 	{
-		BotDPrintf( S_COLOR_RED "ERROR: Invalid token %s on line %d\n", current->token.string, current->token.line );
+		BotError( "Invalid token %s on line %d\n", current->token.string, current->token.line );
 	}
 
 	*tokenlist = current->next;
@@ -978,7 +982,10 @@ static AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist )
 	}
 	else
 	{
-		BotDPrintf( S_COLOR_RED "ERROR: Invalid token %s on line %d\n", current->token.string, current->token.line );
+		BotError( "Invalid token %s on line %d\n", current->token.string, current->token.line );
+		FreeNodeList( list );
+		*tokenlist = current;
+		return NULL;
 	}
 
 	if ( !expectToken( "{", &current, qtrue ) )
@@ -993,7 +1000,7 @@ static AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist )
 
 		if ( node && list->numNodes >= MAX_NODE_LIST )
 		{
-			BotDPrintf( "ERROR: Max selector children limit exceeded at line %d\n", (*tokenlist)->token.line );
+			BotError( "Max selector children limit exceeded at line %d\n", (*tokenlist)->token.line );
 			FreeNode( node );
 			FreeNodeList( list );
 			*tokenlist = current;
@@ -1054,7 +1061,7 @@ static AIGenericNode_t *ReadNode( pc_token_list **tokenlist )
 	}
 	else
 	{
-		BotDPrintf( S_COLOR_RED "ERROR: invalid token on line %d found: %s\n", current->token.line, current->token.string );
+		BotError( "Invalid token on line %d found: %s\n", current->token.line, current->token.string );
 		node = NULL;
 	}
 
