@@ -4597,6 +4597,7 @@ static qboolean ParseShader( char *_text )
 		// ydnar: implicit default mapping to eliminate redundant/incorrect explicit shader stages
 		else if ( !Q_strnicmp( token, "implicit", 8 ) )
 		{
+			qboolean GL1 = qfalse;
 			//ri.Printf(PRINT_WARNING, "WARNING: keyword '%s' not supported in shader '%s'\n", token, shader.name);
 			//SkipRestOfLine(text);
 
@@ -4611,6 +4612,10 @@ static qboolean ParseShader( char *_text )
 				implicitStateBits = GLS_DEPTHMASK_TRUE | GLS_ATEST_GE_128;
 				implicitCullType = CT_TWO_SIDED;
 			}
+			else if ( !Q_stricmp( token, "implicitMapGL1" ) )
+			{
+				GL1 = qtrue;
+			}
 			else // "implicitMap"
 			{
 				implicitStateBits = GLS_DEPTHMASK_TRUE;
@@ -4620,14 +4625,17 @@ static qboolean ParseShader( char *_text )
 			// get image
 			token = COM_ParseExt( text, qfalse );
 
-			if ( token[ 0 ] != '\0' )
+			if ( !GL1 )
 			{
-				Q_strncpyz( implicitMap, token, sizeof( implicitMap ) );
-			}
-			else
-			{
-				implicitMap[ 0 ] = '-';
-				implicitMap[ 1 ] = '\0';
+				if ( token[ 0 ] != '\0' )
+				{
+					Q_strncpyz( implicitMap, token, sizeof( implicitMap ) );
+				}
+				else
+				{
+					implicitMap[ 0 ] = '-';
+					implicitMap[ 1 ] = '\0';
+				}
 			}
 
 			continue;

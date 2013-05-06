@@ -64,11 +64,29 @@ Maryland 20850 USA.
 #define S_CTRL_LIMITED            "ctrl_limited"
 #define S_CTRL_RELAY              "ctrl_relay"
 
+#define S_env_afx_ammo            "env_afx_ammo"
+#define S_env_afx_gravity         "env_afx_gravity"
+#define S_env_afx_heal            "env_afx_heal"
+#define S_env_afx_hurt            "env_afx_hurt"
+#define S_env_afx_push            "env_afx_push"
+#define S_env_afx_teleport        "env_afx_teleport"
+
+#define S_fx_rumble               "fx_rumble"
+#define S_sfx_speaker             "sfx_speaker"
+
+#define S_gfx_animated_model      "gfx_animated_model"
+#define S_gfx_light_flare         "gfx_light_flare"
+#define S_gfx_particle_system     "gfx_particle_system"
+#define S_gfx_portal_camera       "gfx_portal_camera"
+#define S_gfx_portal_surface      "gfx_portal_surface"
+#define S_gfx_shader_mod          "gfx_shader_mod"
+
 #define S_FUNC_DOOR               "func_door"
 #define S_DOOR_SENSOR             "door_sensor"
 #define S_PLAT_SENSOR             "plat_sensor"
 
 #define S_GAME_END                "game_end"
+#define S_GAME_FUNDS              "game_funds"
 #define S_GAME_KILL               "game_kill"
 #define S_GAME_SCORE              "game_score"
 
@@ -198,10 +216,12 @@ typedef struct
 	struct gentity_s *activator;
 } gentityCall_t;
 
+extern const gentityCall_t WORLD_CALL;
+extern const gentityCall_t NULL_CALL;
+
 //
 // g_entities.c
 //
-
 //lifecycle
 void       G_InitGentity( gentity_t *e );
 gentity_t  *G_NewEntity( void );
@@ -229,7 +249,6 @@ qboolean   G_IsVisible( gentity_t *ent1, gentity_t *ent2, int contents );
 //chain
 gentityCallEvent_t      G_GetCallEventTypeFor( const char* event );
 gentityCallActionType_t G_GetCallActionTypeFor( const char* action );
-void       G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call);
 gentity_t  *G_ResolveEntityKeyword( gentity_t *self, char *keyword );
 gentity_t  *G_IterateTargets(gentity_t *entity, int *targetIndex, gentity_t *self);
 gentity_t  *G_IterateCallEndpoints( gentity_t *entity, int *calltargetIndex, gentity_t *self );
@@ -238,21 +257,17 @@ void       G_FireEntityRandomly( gentity_t *entity, gentity_t *activator );
 void       G_FireEntity( gentity_t *ent, gentity_t *activator );
 void       G_EventFireEntity( gentity_t *self, gentity_t *activator, gentityCallEvent_t eventType );
 
+void       G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call);
+void       G_HandleActCall( gentity_t *entity, gentityCall_t *call );
+void       G_ExecuteAct( gentity_t *entity, gentityCall_t *call );
+
 //configure
 void       G_SetMovedir( vec3_t angles, vec3_t movedir );
 void       G_SetOrigin( gentity_t *ent, const vec3_t origin );
-void       G_SetNextthink( gentity_t *self );
 
 //
 // g_spawn.c
 //
-
-// spawn string returns a temporary reference, you must CopyString() if you want to keep it
-qboolean G_SpawnString( const char *key, const char *defaultString, char **out );
-
-qboolean G_SpawnFloat( const char *key, const char *defaultString, float *out );
-qboolean G_SpawnInt( const char *key, const char *defaultString, int *out );
-qboolean G_SpawnVector( const char *key, const char *defaultString, float *out );
 void     G_SpawnEntitiesFromString( void );
 void     G_ReorderCallTargets( gentity_t *ent );
 char     *G_NewString( const char *string );
@@ -270,6 +285,13 @@ void manualTriggerSpectator( gentity_t *trigger, gentity_t *player );
 void G_notify_sensor_stage( team_t team, stage_t previousStage, stage_t newStage );
 void G_notify_sensor_start( );
 void G_notify_sensor_end( team_t winningTeam );
+
+//
+// g_spawn_shared.c
+//
+void     G_ResetIntField( int* target, qboolean fallbackIfNegativ, int instanceField, int classField, int fallbacke );
+void     G_ResetFloatField( float* target, qboolean fallbackIfNegativ, float instanceField, float classField, float fallback );
+void     G_ResetTimeField( variatingTime_t* result, variatingTime_t instanceField, variatingTime_t classField, variatingTime_t fallback );
 
 //==================================================================
 #endif /* ENTITIES_H_ */

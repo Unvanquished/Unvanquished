@@ -1278,7 +1278,7 @@ void Key_Unbind_f( void )
 
 	if ( b < 2 || b > 3 )
 	{
-		Com_Printf("%s", _( "unbind [team] <key>: remove commands from a key\n" ));
+		Cmd_PrintUsage(_("[<team>] <key>"), _("remove commands from a key"));
 		return;
 	}
 
@@ -1336,7 +1336,7 @@ void Key_Bind_f( void )
 
 	if ( c < 2 + teambind )
 	{
-		Com_Printf("%s", teambind ? _( "teambind <team> <key> [command] : attach a command to a key\n" ) : _( "bind <key> [command] : attach a command to a key\n" ));
+		Cmd_PrintUsage( teambind ? _("<team> <key> [<command>]") : _("<key> [<command>]"), _("attach a command to a key"));
 		return;
 	}
 	else if ( c > 2 + teambind )
@@ -1431,7 +1431,7 @@ void Key_EditBind_f( void )
 
 	if ( b < 2 || b > 3 )
 	{
-		Com_Printf( "%s\n", _( "usage: editbind [team] <key>" ));
+		Cmd_PrintUsage(_("[<team>] <key>"), NULL);
 		return;
 	}
 

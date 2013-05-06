@@ -2555,7 +2555,7 @@ static void Render_liquid( int stage )
 	gl_liquidShader->SetUniform_FresnelBias( RB_EvalExpression( &pStage->fresnelBiasExp, 0.05 ) );
 	gl_liquidShader->SetUniform_NormalScale( RB_EvalExpression( &pStage->normalScaleExp, 0.05 ) );
 	gl_liquidShader->SetUniform_FogDensity( fogDensity );
-	gl_liquidShader->SetUniform_FogColor( fogColor[ 0 ], fogColor[ 1 ], fogColor[ 2 ] );
+	gl_liquidShader->SetUniform_FogColor( fogColor );
 
 	gl_liquidShader->SetUniform_UnprojectMatrix( backEnd.viewParms.unprojectionMatrix );
 	gl_liquidShader->SetUniform_ModelMatrix( backEnd.orientation.transformMatrix );
@@ -2868,7 +2868,7 @@ static void Render_volumetricFog()
 		gl_volumetricFogShader->SetUniform_UnprojectMatrix( backEnd.viewParms.unprojectionMatrix );
 		gl_volumetricFogShader->SetUniform_ViewOrigin( viewOrigin );
 		gl_volumetricFogShader->SetUniform_FogDensity( fogDensity );
-		gl_volumetricFogShader->SetUniform_FogColor( fogColor[ 0 ], fogColor[ 1 ], fogColor[ 2 ] );
+		gl_volumetricFogShader->SetUniform_FogColor( fogColor );
 
 		// bind u_DepthMap
 		GL_SelectTexture( 0 );
@@ -3537,7 +3537,11 @@ void Tess_StageIteratorGeneric()
 
 			case ST_HEATHAZEMAP:
 				{
-					Render_heatHaze( stage );
+					if ( r_heatHaze->integer )
+					{
+						Render_heatHaze( stage );
+					}
+
 					break;
 				}
 

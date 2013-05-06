@@ -35,6 +35,21 @@ Maryland 20850 USA.
 #ifndef SPAWN_H_
 #define SPAWN_H_
 
+/*
+ * g_spawn.c
+ */
+
+/** spawn string returns a temporary reference, you must CopyString() if you want to keep it */
+qboolean G_SpawnString( const char *key, const char *defaultString, char **out );
+qboolean G_SpawnBoolean( const char *key, qboolean defaultqboolean );
+qboolean G_SpawnFloat( const char *key, const char *defaultString, float *out );
+qboolean G_SpawnInt( const char *key, const char *defaultString, int *out );
+qboolean G_SpawnVector( const char *key, const char *defaultString, float *out );
+
+
+/*
+ * spawn functions
+ */
 void    SP_func_plat( gentity_t *self );
 void    SP_func_static( gentity_t *self );
 void    SP_func_dynamic( gentity_t *self );
@@ -54,7 +69,9 @@ void    SP_ctrl_relay( gentity_t *self );
 void    SP_ctrl_limited( gentity_t *self );
 
 void    SP_game_score( gentity_t *self );
+void    SP_game_kill( gentity_t *self );
 void    SP_game_end( gentity_t *self );
+void    SP_game_funds( gentity_t *self );
 
 void    SP_path_corner( gentity_t *self );
 void    SP_pos_player_spawn( gentity_t *self );
@@ -74,7 +91,6 @@ void    SP_sensor_timer( gentity_t *self );
 
 void    SP_target_print( gentity_t *self );
 void    SP_target_teleporter( gentity_t *self );
-void    SP_game_kill( gentity_t *self );
 void    SP_target_push( gentity_t *self );
 void    SP_target_hurt( gentity_t *self );
 
@@ -85,14 +101,15 @@ void    SP_env_afx_gravity( gentity_t *self );
 void    SP_env_afx_heal( gentity_t *self );
 void    SP_env_afx_ammo( gentity_t *self );
 
-void    SP_env_rumble( gentity_t *self );
-void    SP_env_speaker( gentity_t *self );
-void    SP_env_particle_system( gentity_t *self );
-void    SP_env_animated_model( gentity_t *self );
-void    SP_env_lens_flare( gentity_t *self );
+void    SP_fx_rumble( gentity_t *self );
+void    SP_sfx_speaker( gentity_t *self );
 
-void    SP_env_portal_camera( gentity_t *self );
-void    SP_env_portal_surface( gentity_t *self );
+void    SP_gfx_particle_system( gentity_t *self );
+void    SP_gfx_animated_model( gentity_t *self );
+void    SP_gfx_light_flare( gentity_t *self );
+void    SP_gfx_portal_camera( gentity_t *self );
+void    SP_gfx_portal_surface( gentity_t *self );
+void    SP_gfx_shader_mod( gentity_t *self );
 
 /*
  * everything around entity versioning and deprecation
@@ -119,6 +136,7 @@ qboolean G_WarnAboutDeprecatedEntityField( gentity_t *entity, const char *expect
  */
 
 void     think_fireDelayed( gentity_t *self );
+void     think_fireOnActDelayed( gentity_t *self );
 void     think_aimAtTarget( gentity_t *self );
 
 void     SP_RemoveSelf( gentity_t *self );
@@ -127,10 +145,6 @@ void     SP_Nothing( gentity_t *self );
 /*
  * Shared and standardized entity management
  */
-
-void     reset_intField( int* target, int instanceField, int classField, int fallback, qboolean fallbackIfNegative );
-void     reset_floatField( float* target, float instanceField, float classField, float fallback, qboolean fallbackIfNegative );
-
 void     SP_ConditionFields( gentity_t *self );
 void     SP_WaitFields( gentity_t *self, float defaultWait, float defaultWaitVariance );
 

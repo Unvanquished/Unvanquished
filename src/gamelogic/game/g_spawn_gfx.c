@@ -36,177 +36,6 @@ Maryland 20850 USA.
 #include "g_spawn.h"
 
 /*
-=================================================================================
-
-env_speaker
-
-=================================================================================
-*/
-
-void env_speaker_act( gentity_t *self, gentity_t *caller, gentity_t *activator )
-{
-	if ( self->spawnflags & 3 )
-	{
-		// looping sound toggles
-		if ( self->s.loopSound )
-		{
-			self->s.loopSound = 0; // turn it off
-		}
-		else
-		{
-			self->s.loopSound = self->soundIndex; // start it
-		}
-	}
-	else
-	{
-		// one-time sound
-		if ( (self->spawnflags & 8) && activator )
-		{
-			G_AddEvent( activator, EV_GENERAL_SOUND, self->soundIndex );
-		}
-		else if ( self->spawnflags & 4 )
-		{
-			G_AddEvent( self, EV_GLOBAL_SOUND, self->soundIndex );
-		}
-		else
-		{
-			G_AddEvent( self, EV_GENERAL_SOUND, self->soundIndex );
-		}
-	}
-}
-
-void SP_env_speaker( gentity_t *self )
-{
-	char buffer[ MAX_QPATH ];
-	char *tmpString;
-
-	if ( !G_SpawnString( "noise", "NOSOUND", &tmpString ) )
-	{
-		G_Error( "target_speaker without a noise key at %s", vtos( self->s.origin ) );
-	}
-
-	// force all client-relative sounds to be "activator" speakers that
-	// play on the entity that activates the speaker
-	if ( tmpString[ 0 ] == '*' )
-	{
-		self->spawnflags |= 8;
-	}
-
-	if ( !strstr( tmpString, ".wav" ) )
-	{
-		Com_sprintf( buffer, sizeof( buffer ), "%s.wav", tmpString );
-	}
-	else
-	{
-		Q_strncpyz( buffer, tmpString, sizeof( buffer ) );
-	}
-
-	self->soundIndex = G_SoundIndex( buffer );
-
-	// a repeating speaker can be done completely client side
-	self->s.eType = ET_SPEAKER;
-	self->s.eventParm = self->soundIndex;
-	self->s.frame = self->config.wait.time * 10;
-	self->s.clientNum = self->config.wait.variance * 10;
-
-	// check for prestarted looping sound
-	if ( self->spawnflags & 1 )
-	{
-		self->s.loopSound = self->soundIndex;
-	}
-
-	self->act = env_speaker_act;
-
-	if ( self->spawnflags & 4 )
-	{
-		self->r.svFlags |= SVF_BROADCAST;
-	}
-
-	VectorCopy( self->s.origin, self->s.pos.trBase );
-
-	// must link the entity so we get areas and clusters so
-	// the server can determine who to send updates to
-	trap_LinkEntity( self );
-}
-
-/*
-=================================================================================
-
-env_rumble
-
-=================================================================================
-*/
-void env_rumble_think( gentity_t *self )
-{
-	int       i;
-	gentity_t *ent;
-
-	if ( self->last_move_time < level.time )
-	{
-		self->last_move_time = level.time + 0.5;
-	}
-
-	for ( i = 0, ent = g_entities + i; i < level.num_entities; i++, ent++ )
-	{
-		if ( !ent->inuse )
-		{
-			continue;
-		}
-
-		if ( !ent->client )
-		{
-			continue;
-		}
-
-		if ( ent->client->ps.groundEntityNum == ENTITYNUM_NONE )
-		{
-			continue;
-		}
-
-		ent->client->ps.groundEntityNum = ENTITYNUM_NONE;
-		ent->client->ps.velocity[ 0 ] += crandom() * 150;
-		ent->client->ps.velocity[ 1 ] += crandom() * 150;
-		ent->client->ps.velocity[ 2 ] = self->config.speed;
-	}
-
-	if ( level.time < self->timestamp )
-	{
-		self->nextthink = level.time + FRAMETIME;
-	}
-}
-
-void env_rumble_act( gentity_t *self, gentity_t *caller, gentity_t *activator )
-{
-	self->timestamp = level.time + ( self->config.amount * FRAMETIME );
-	self->nextthink = level.time + FRAMETIME;
-	self->activator = activator;
-	self->last_move_time = 0;
-}
-
-void SP_env_rumble( gentity_t *self )
-{
-	if ( !self->config.amount )
-	{
-		if( G_SpawnInt( "count", "0", &self->config.amount) )
-		{
-			G_WarnAboutDeprecatedEntityField( self, "amount", "count", ENT_V_RENAMED );
-		}
-		else
-		{
-			self->customNumber = 10;
-		}
-	}
-
-	if ( !self->config.speed )
-	{
-		self->config.speed = 100;
-	}
-
-	self->think = env_rumble_think;
-	self->act = env_rumble_act;
-}
-
-/*
 ======================================================================
 
   Particle System
@@ -214,7 +43,7 @@ void SP_env_rumble( gentity_t *self )
 ======================================================================
 */
 
-void env_particle_system_toggle( gentity_t *self )
+void gfx_particle_system_toggle( gentity_t *self )
 {
 	//toggle EF_NODRAW
 	self->s.eFlags ^= EF_NODRAW;
@@ -222,18 +51,18 @@ void env_particle_system_toggle( gentity_t *self )
 	self->nextthink = 0;
 }
 
-void env_particle_system_act( gentity_t *self, gentity_t *caller, gentity_t *activator )
+void gfx_particle_system_act( gentity_t *self, gentity_t *caller, gentity_t *activator )
 {
-	env_particle_system_toggle( self );
+	gfx_particle_system_toggle( self );
 
 	if ( self->config.wait.time > 0.0f )
 	{
-		self->think = env_particle_system_toggle;
+		self->think = gfx_particle_system_toggle;
 		self->nextthink = level.time + ( int )( self->config.wait.time * 1000 );
 	}
 }
 
-void SP_env_particle_system( gentity_t *self )
+void SP_gfx_particle_system( gentity_t *self )
 {
 	char *s;
 
@@ -250,7 +79,7 @@ void SP_env_particle_system( gentity_t *self )
 		self->s.eFlags |= EF_NODRAW;
 	}
 
-	self->act = env_particle_system_act;
+	self->act = gfx_particle_system_act;
 	self->s.eType = ET_PARTICLE_SYSTEM;
 	trap_LinkEntity( self );
 }
@@ -258,11 +87,11 @@ void SP_env_particle_system( gentity_t *self )
 /*
 =================================================================================
 
-env_lens_flare
+Light Flare
 
 =================================================================================
 */
-void env_lens_flare_toggle( gentity_t *self, gentity_t *caller, gentity_t *activator )
+void gfx_light_flare_toggle( gentity_t *self, gentity_t *caller, gentity_t *activator )
 {
 	self->s.eFlags ^= EF_NODRAW;
 }
@@ -312,7 +141,7 @@ static void findEmptySpot( vec3_t origin, float radius, vec3_t spot )
 	VectorAdd( origin, total, spot );
 }
 
-void SP_env_lens_flare( gentity_t *self )
+void SP_gfx_light_flare( gentity_t *self )
 {
 	self->s.eType = ET_LIGHTFLARE;
 	self->s.modelindex = G_ShaderIndex( self->shaderKey );
@@ -322,7 +151,7 @@ void SP_env_lens_flare( gentity_t *self )
 	//is used to facilitate visibility testing
 	findEmptySpot( self->s.origin, 8.0f, self->s.angles2 );
 
-	self->act = env_lens_flare_toggle;
+	self->act = gfx_light_flare_toggle;
 
 	if( !self->config.speed )
 		self->config.speed = 200;
@@ -346,7 +175,7 @@ env_portal_*
 
 =================================================================================
 */
-void env_portal_locateCamera( gentity_t *self )
+void gfx_portal_locateCamera( gentity_t *self )
 {
 	vec3_t    dir;
 	gentity_t *target;
@@ -404,7 +233,7 @@ void env_portal_locateCamera( gentity_t *self )
 	self->s.eventParm = DirToByte( dir );
 }
 
-void SP_env_portal_surface( gentity_t *self )
+void SP_gfx_portal_surface( gentity_t *self )
 {
 	VectorClear( self->r.mins );
 	VectorClear( self->r.maxs );
@@ -419,12 +248,12 @@ void SP_env_portal_surface( gentity_t *self )
 	}
 	else
 	{
-		self->think = env_portal_locateCamera;
+		self->think = gfx_portal_locateCamera;
 		self->nextthink = level.time + 100;
 	}
 }
 
-void SP_env_portal_camera( gentity_t *self )
+void SP_gfx_portal_camera( gentity_t *self )
 {
 	float roll;
 
@@ -444,7 +273,7 @@ env_animated_model
 
 =================================================================================
 */
-void env_animated_model_act( gentity_t *self, gentity_t *other, gentity_t *activator )
+void gfx_animated_model_act( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
 	if ( self->spawnflags & 1 )
 	{
@@ -474,7 +303,7 @@ void env_animated_model_act( gentity_t *self, gentity_t *other, gentity_t *activ
 	}
 }
 
-void SP_env_animated_model( gentity_t *self )
+void SP_gfx_animated_model( gentity_t *self )
 {
 	self->s.misc = ( int ) self->animation[ 0 ];
 	self->s.weapon = ( int ) self->animation[ 1 ];
@@ -486,7 +315,7 @@ void SP_env_animated_model( gentity_t *self )
 	//add the model to the client precache list
 	self->s.modelindex = G_ModelIndex( self->model );
 
-	self->act = env_animated_model_act;
+	self->act = gfx_animated_model_act;
 
 	self->s.eType = ET_ANIMMAPOBJ;
 
@@ -499,3 +328,47 @@ void SP_env_animated_model( gentity_t *self )
 	trap_LinkEntity( self );
 }
 
+/*
+=================================================================================
+
+gfx_shader_mod
+
+=================================================================================
+*/
+
+void gfx_shader_mod_act( gentity_t *self, gentity_t *other, gentity_t *activator )
+{
+	if ( !self->shaderKey || !self->shaderReplacement || !self->enabled )
+	{
+		return;
+	}
+
+	G_SetShaderRemap( self->shaderKey, self->shaderReplacement, level.time * 0.001 );
+	trap_SetConfigstring( CS_SHADERSTATE, BuildShaderStateConfig() );
+
+	self->active = qtrue;
+}
+
+void gfx_shader_mod_reset( gentity_t *self )
+{
+	if ( !self->shaderKey || !self->shaderReplacement )
+	{
+		return;
+	}
+
+	if( !self->active ) // initial reset doesnt need a remap
+	{
+		return;
+	}
+
+	G_SetShaderRemap( self->shaderKey, self->shaderKey, level.time * 0.001 );
+	trap_SetConfigstring( CS_SHADERSTATE, BuildShaderStateConfig() );
+
+	self->active = qfalse;
+}
+
+void SP_gfx_shader_mod( gentity_t *self )
+{
+	self->act = gfx_shader_mod_act;
+	self->reset = gfx_shader_mod_reset;
+}

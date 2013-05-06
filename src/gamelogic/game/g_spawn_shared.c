@@ -48,6 +48,11 @@ void think_fireDelayed( gentity_t *self )
 	G_FireEntity( self, self->activator );
 }
 
+void think_fireOnActDelayed( gentity_t *self )
+{
+	G_EventFireEntity( self, self->activator, ON_ACT );
+}
+
 /*
 =================
 AimAtTarget
@@ -102,7 +107,7 @@ shared reset functions
 =================================================================================
 */
 
-void reset_intField( int* result, int instanceField, int classField, int fallback, qboolean fallbackIfNegative )
+void G_ResetIntField( int* result, qboolean fallbackIfNegative, int instanceField, int classField, int fallback )
 {
 	if(instanceField && (instanceField > 0 || !fallbackIfNegative))
 	{
@@ -118,7 +123,7 @@ void reset_intField( int* result, int instanceField, int classField, int fallbac
 	}
 }
 
-void reset_floatField( float* result, float instanceField, float classField, float fallback, qboolean fallbackIfNegative )
+void G_ResetFloatField( float* result, qboolean fallbackIfNegative, float instanceField, float classField, float fallback )
 {
 	if(instanceField && (instanceField > 0 || !fallbackIfNegative))
 	{
@@ -131,6 +136,42 @@ void reset_floatField( float* result, float instanceField, float classField, flo
 	else
 	{
 		*result = fallback;
+	}
+}
+
+void G_ResetTimeField( variatingTime_t *result,
+		variatingTime_t instanceField, variatingTime_t classField, variatingTime_t fallback )
+{
+	if( instanceField.time && instanceField.time > 0 )
+	{
+		*result = instanceField;
+	}
+	else if (classField.time && classField.time > 0 )
+	{
+		*result = classField;
+	}
+	else
+	{
+		*result = fallback;
+	}
+
+	if ( result->variance < 0 )
+	{
+		result->variance = 0;
+
+		if( g_debugEntities.integer >= 0 )
+		{
+			G_Printf( S_WARNING "negative variance (%f); resetting to 0\n", result->variance );
+		}
+	}
+	else if ( result->variance >= result->time && result->variance > 0)
+	{
+		result->variance = result->time - FRAMETIME;
+
+		if( g_debugEntities.integer > 0 )
+		{
+			G_Printf( S_WARNING "limitting variance (%f) to be smaller than time (%f)\n", result->variance, result->time );
+		}
 	}
 }
 
@@ -179,7 +220,7 @@ void SP_WaitFields( gentity_t *self, float defaultWait, float defaultWaitVarianc
 	if (!self->config.wait.variance)
 		self->config.wait.variance = defaultWaitVariance;
 
-	if ( self->config.wait.variance >= self->config.wait.time )
+	if ( self->config.wait.variance >= self->config.wait.time && self->config.wait.variance > 0)
 	{
 		self->config.wait.variance = self->config.wait.time - FRAMETIME;
 

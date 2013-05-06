@@ -46,6 +46,7 @@ void InitBrushSensor( gentity_t *self )
 	trap_SetBrushModel( self, self->model );
 	self->r.contents = CONTENTS_SENSOR; // replaces the -1 from trap_SetBrushModel
 	self->r.svFlags = SVF_NOCLIENT;
+	trap_LinkEntity( self );
 }
 
 void sensor_act(gentity_t *self, gentity_t *other, gentity_t *activator)
@@ -87,7 +88,7 @@ void trigger_checkWaitForReactivation( gentity_t *self )
 	if ( self->config.wait.time > 0 )
 	{
 		self->think = sensor_checkWaitForReactivation_think;
-		G_SetNextthink( self );
+		self->nextthink = VariatedLevelTime( self->config.wait );
 	}
 	else
 	{
@@ -186,7 +187,7 @@ void sensor_timer_think( gentity_t *self )
 {
 	G_FireEntity( self, self->activator );
 	// set time before next firing
-	G_SetNextthink( self );
+	self->nextthink = VariatedLevelTime( self->config.wait );
 }
 
 void sensor_timer_act( gentity_t *self, gentity_t *other, gentity_t *activator )
@@ -372,7 +373,6 @@ void SP_sensor_buildable( gentity_t *self )
 	self->reset = sensor_reset;
 
 	InitBrushSensor( self );
-	trap_LinkEntity( self );
 }
 
 /*
@@ -516,7 +516,6 @@ void SP_sensor_player( gentity_t *self )
 	}
 
 	InitBrushSensor( self );
-	trap_LinkEntity( self );
 }
 
 /*

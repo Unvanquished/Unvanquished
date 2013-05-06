@@ -362,6 +362,26 @@ FILE *Sys_FOpen( const char *ospath, const char *mode )
 }
 
 /*
+==============
+Sys_Chmod
+==============
+*/
+void Sys_Chmod( const char *ospath, int mode )
+{
+	chmod( ospath, (mode_t) mode );
+}
+
+/*
+==============
+Sys_FChmod
+==============
+*/
+void Sys_FChmod( FILE *f, int mode )
+{
+	fchmod( fileno( f ), (mode_t) mode );
+}
+
+/*
 ==================
 Sys_Mkdir
 ==================

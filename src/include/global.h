@@ -37,6 +37,13 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #define VPRINTF_LIKE(n) PRINTF_ARGS((n), 0)
 #define ALIGNED(a,x) x __attribute__((__aligned__(a)))
 #define ALWAYS_INLINE INLINE __attribute__((__always_inline__))
+#define SENTINEL INLINE __attribute__((__sentinel__))
+//http://gcc.gnu.org/onlinedocs/gcc-4.1.2/gcc/Function-Names.html
+# if (__STDC_VERSION__ < 199901L) &&  (__GNUC__ >= 2)
+#  define __func__ __FUNCTION__
+# else
+#  define __func__ "<?>"
+# endif
 #elif defined( _MSC_VER )
 #define NORETURN
 #define UNUSED
@@ -45,6 +52,7 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #define VPRINTF_LIKE(n)
 #define ALIGNED(a,x) __declspec(align(a)) x
 #define ALWAYS_INLINE __forceinline
+#define SENTINEL
 #define __attribute__(x)
 #define __func__ __FUNCTION__
 #else
@@ -55,8 +63,9 @@ along with Daemon Source Code.  If not, see <http://www.gnu.org/licenses/>.
 #define VPRINTF_LIKE(n)
 #define ALIGNED(a,x) x
 #define ALWAYS_INLINE
+#define SENTINEL
 #define __attribute__(x)
-#define __func__
+#define __func__ "<?>"
 #endif
 
 #endif

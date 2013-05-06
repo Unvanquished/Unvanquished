@@ -32,8 +32,8 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#ifndef __Q_SHARED_H
-#define __Q_SHARED_H
+#ifndef Q_SHARED_H_
+#define Q_SHARED_H_
 
 #if defined( __cplusplus )
 extern "C" {
@@ -45,10 +45,10 @@ extern "C" {
 #define PRODUCT_NAME            "Unvanquished"
 #define PRODUCT_NAME_UPPER      "UNVANQUISHED" // Case, No spaces
 #define PRODUCT_NAME_LOWER      "unvanquished" // No case, No spaces
-#define PRODUCT_VERSION         "0.13.1"
+#define PRODUCT_VERSION         "0.15.0"
 
 #define ENGINE_NAME             "Daemon Engine"
-#define ENGINE_VERSION          "0.13.1"
+#define ENGINE_VERSION          "0.15.0"
 
 #ifdef REVISION
 # define Q3_VERSION             PRODUCT_NAME " " PRODUCT_VERSION " " REVISION
@@ -250,6 +250,7 @@ extern int memcmp( void *, void *, size_t );
 	typedef unsigned int         uint;
 
 	typedef enum {qfalse, qtrue} qboolean;
+	typedef enum {qno, qyes, qmaybe} qtrinary;
 
 	typedef union
 	{
@@ -329,28 +330,6 @@ extern int memcmp( void *, void *, size_t );
 // these aren't needed by any of the VMs.  put in another header?
 //
 #define MAX_MAP_AREA_BYTES 32 // bit vector of area visibility
-
-// print levels from renderer (FIXME: set up for game / cgame?)
-	typedef enum
-	{
-	  PRINT_ALL,
-	  PRINT_DEVELOPER, // only print when "developer 1"
-	  PRINT_WARNING,
-	  PRINT_ERROR
-	} printParm_t;
-
-#ifdef ERR_FATAL
-#undef ERR_FATAL // this is possibly defined in malloc.h
-#endif
-
-// parameters to the main Error routine
-	typedef enum
-	{
-	  ERR_FATAL, // exit the entire game with a popup window
-	  ERR_VID_FATAL, // exit the entire game with a popup window and doesn't delete profile.pid
-	  ERR_DROP, // print to console and disconnect from game
-	  ERR_SERVERDISCONNECT, // don't kill server
-	} errorParm_t;
 
 // font rendering values used by ui and cgame
 
@@ -559,15 +538,6 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 }
 #endif
 
-#define S_SKIPNOTIFY "[skipnotify]"
-
-/*
- * used for consistent representation within print or log statements
- * TODO: should probably be rather done via specialized print function that takes a severity enum, so that it also can do filtering
- */
-#define S_WARNING S_COLOR_YELLOW "Warning: " S_COLOR_WHITE
-#define S_ERROR   S_COLOR_RED "ERROR: " S_COLOR_WHITE
-#define S_DEBUG   "Debug: "
 
 #define INDENT_MARKER    '\v'
 
@@ -582,6 +552,8 @@ STATIC_INLINE qboolean Q_IsColorString( const char *p ) IFDECLARE
 // check whether in the rrggbb format, r,g,b e {0,...,9} U {A,...,F}
 #define Q_IsHexColorString( p )       ( ishex( *( p ) ) && ishex( *( ( p ) + 1 ) ) && ishex( *( ( p ) + 2 ) ) && ishex( *( ( p ) + 3 ) ) && ishex( *( ( p ) + 4 ) ) && ishex( *( ( p ) + 5 ) ) )
 #define Q_HexColorStringHasAlpha( p ) ( ishex( *( ( p ) + 6 ) ) && ishex( *( ( p ) + 7 ) ) )
+
+#include "logging.h"
 
 #define DEG2RAD( a )                  ( ( ( a ) * M_PI ) / 180.0F )
 #define RAD2DEG( a )                  ( ( ( a ) * 180.0f ) / M_PI )
@@ -1470,81 +1442,65 @@ double rint( double x );
 	qboolean   Info_Validate( const char *s );
 	void       Info_NextPair( const char **s, char *key, char *value );
 
-// this is only here so the functions in q_shared.c and bg_*.c can link
-	void QDECL Com_Error( int level, const char *error, ... ) PRINTF_LIKE(2) NORETURN;
-	void QDECL Com_Printf( const char *msg, ... ) PRINTF_LIKE(1);
-	void QDECL Com_DPrintf( const char *msg, ... ) PRINTF_LIKE(1);
+//=============================================
+/*
+ * CVARS (console variables)
+ *
+ * Many variables can be used for cheating purposes, so when
+ * cheats is zero, force all unspecified variables to their
+ * default values.
+ */
 
-	/*
-	==========================================================
+/**
+ * set to cause it to be saved to autogen
+ * used for system variables, not for player
+ * specific configurations
+ */
+#define CVAR_ARCHIVE             BIT(0)
+#define CVAR_USERINFO            BIT(1)    /*< sent to server on connect or change */
+#define CVAR_SERVERINFO          BIT(2)    /*< sent in response to front end requests */
+#define CVAR_SYSTEMINFO          BIT(3)    /*< these cvars will be duplicated on all clients */
 
-	CVARS (console variables)
+/**
+ * don't allow change from console at all,
+ * but can be set from the command line
+ */
+#define CVAR_INIT                BIT(4)
 
-	Many variables can be used for cheating purposes, so when
-	cheats is zero, force all unspecified variables to their
-	default values.
-	==========================================================
-	*/
+/**
+ * will only change when C code next does a Cvar_Get(),
+ * so it can't be changed without proper initialization.
+ * modified will be set, even though the value hasn't changed yet
+ */
+#define CVAR_LATCH               BIT(5)
+#define CVAR_ROM                 BIT(6)   /*< display only, cannot be set by user at all */
+#define CVAR_USER_CREATED        BIT(7)   /*< created by a set command */
+#define CVAR_TEMP                BIT(8)   /*< can be set even when cheats are disabled, but is not archived */
+#define CVAR_CHEAT               BIT(9)   /*< can not be changed if cheats are disabled */
+#define CVAR_NORESTART           BIT(10)  /*< do not clear when a cvar_restart is issued */
+#define CVAR_SHADER              BIT(11)  /*< tell renderer to recompile shaders. */
 
-#define CVAR_ARCHIVE    1 // set to cause it to be saved to vars.rc
-// used for system variables, not for player
-// specific configurations
-#define CVAR_USERINFO   2 // sent to server on connect or change
-#define CVAR_SERVERINFO 4 // sent in response to front end requests
-#define CVAR_SYSTEMINFO 8 // these cvars will be duplicated on all clients
-#define CVAR_INIT       16 // don't allow change from console at all,
-// but can be set from the command line
-#define CVAR_LATCH      32 // will only change when C code next does
-// a Cvar_Get(), so it can't be changed
-// without proper initialization.  modified
-// will be set, even though the value hasn't
-// changed yet
-#define CVAR_ROM                 64 // display only, cannot be set by user at all
-#define CVAR_USER_CREATED        128 // created by a set command
-#define CVAR_TEMP                256 // can be set even when cheats are disabled, but is not archived
-#define CVAR_CHEAT               512 // can not be changed if cheats are disabled
-#define CVAR_NORESTART           1024 // do not clear when a cvar_restart is issued
-#define CVAR_SHADER              2048 // tell renderer to recompile shaders.
+/**
+ * unsafe system cvars (renderer, sound settings,
+ * anything that might cause a crash)
+ */
+#define CVAR_UNSAFE              BIT(12)
 
-#define CVAR_UNSAFE              4096 // ydnar: unsafe system cvars (renderer, sound settings, anything that might cause a crash)
-#define CVAR_SERVERINFO_NOUPDATE 8192 // gordon: won't automatically send this to clients, but server browsers will see it
-#define CVAR_NONEXISTENT         0xFFFFFFFF // Cvar doesn't exist.
-
-// nothing outside the Cvar_*() functions should modify these fields!
-	typedef struct cvar_s
-	{
-		char          *name;
-		char          *string;
-		char          *resetString; // cvar_restart will reset to this value
-		char          *latchedString; // for CVAR_LATCH vars
-		int           flags;
-		qboolean      modified; // set each time the cvar is changed
-		int           modificationCount; // incremented each time the cvar is changed
-		float         value; // atof( string )
-		int           integer; // atoi( string )
-
-		/**
-		 * indicate whether the cvar won't be archived, even if it's an ARCHIVE flagged cvar.
-		 * this allows us to keep ARCHIVE cvars unwritten to autogen until a user changes them
-		 */
-		qboolean      transient;
-
-		qboolean      validate;
-		qboolean      integral;
-		float         min;
-		float         max;
-
-		struct cvar_s *next;
-
-		struct cvar_s *hashNext;
-	} cvar_t;
+/**
+ * won't automatically be send to clients,
+ * but server browsers will see it
+ */
+#define CVAR_SERVERINFO_NOUPDATE BIT(13)
+#define CVAR_NONEXISTENT         0xFFFFFFFF /*< Cvar doesn't exist. */
 
 #define MAX_CVAR_VALUE_STRING 256
 
 	typedef int cvarHandle_t;
 
-// the modules that run in the virtual machine can't access the cvar_t directly,
-// so they must ask for structured updates
+/**
+ * the modules that run in the virtual machine can't access the cvar_t directly,
+ * so they must ask for structured updates
+ */
 	typedef struct
 	{
 		cvarHandle_t handle;
@@ -2231,6 +2187,7 @@ typedef struct
 #define MAX_EMOTICON_NAME_LEN     16
 #define MAX_EMOTICONS             64
 
+#define MAX_OBJECTIVES            64
 #define MAX_LOCATIONS             64
 #define MAX_MODELS                256 // these are sent over the net as 8 bits
 #define MAX_SOUNDS                256 // so they cannot be blindly increased
@@ -2271,4 +2228,4 @@ typedef struct
 }
 #endif
 
-#endif // __Q_SHARED_H
+#endif /* Q_SHARED_H_ */

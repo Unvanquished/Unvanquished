@@ -408,27 +408,30 @@ void Cdelay_Frame( void ) {
 Cmd_Exec_f
 ===============
 */
-static void Cmd_ExecFile( char *f )
+
+static void Cmd_SetExecArgs( int startingArg )
 {
 	int i;
 
-	COM_Compress( f );
+	Cvar_Get( "arg_all", Cmd_ArgsFrom( startingArg ), CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED );
+	Cvar_Set( "arg_all", Cmd_ArgsFrom( startingArg ) );
+	Cvar_Get( "arg_count", va( "%i", Cmd_Argc() - startingArg ), CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED );
+	Cvar_Set( "arg_count", va( "%i", Cmd_Argc() - startingArg ) );
 
-	Cvar_Get( "arg_all", Cmd_ArgsFrom( 2 ), CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED );
-	Cvar_Set( "arg_all", Cmd_ArgsFrom( 2 ) );
-	Cvar_Get( "arg_count", va( "%i", Cmd_Argc() - 2 ), CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED );
-	Cvar_Set( "arg_count", va( "%i", Cmd_Argc() - 2 ) );
-
-	for ( i = Cmd_Argc() - 2; i; i-- )
+	for ( i = Cmd_Argc() - startingArg; i; i-- )
 	{
 		Cvar_Get( va( "arg_%i", i ), Cmd_Argv( i + 1 ), CVAR_TEMP | CVAR_ROM | CVAR_USER_CREATED );
 		Cvar_Set( va( "arg_%i", i ), Cmd_Argv( i + 1 ) );
 	}
-
-	Cbuf_InsertText( f );
 }
 
-void Cmd_Exec_f( void )
+static void Cmd_ExecText( char *scriptText )
+{
+	COM_Compress( scriptText );
+	Cbuf_InsertText( scriptText );
+}
+
+static qboolean Cmd_ExecFile( char *filename )
 {
 	union
 	{
@@ -437,29 +440,8 @@ void Cmd_Exec_f( void )
 	} f;
 
 	int          len;
-	char         filename[ MAX_QPATH ];
 	fileHandle_t h;
 	qboolean     success = qfalse;
-	qboolean     quiet;
-
-	quiet = !Q_stricmp( Cmd_Argv( 0 ), "execq" );
-
-	if ( Cmd_Argc() < 2 )
-	{
-		if ( quiet )
-		{
-			Com_Printf(_("execq <filename> (args) : execute a script file without notification\n"));
-		}
-		else
-		{
-			Com_Printf(_("exec <filename> (args) : execute a script file\n"));
-		}
-
-		return;
-	}
-
-	Q_strncpyz( filename, Cmd_Argv( 1 ), sizeof( filename ) );
-	COM_DefaultExtension( filename, sizeof( filename ), ".cfg" );
 
 	len = FS_SV_FOpenFileRead( filename, &h );
 
@@ -470,7 +452,7 @@ void Cmd_Exec_f( void )
 		FS_Read( f.v, len, h );
 		f.c[ len ] = 0;
 		FS_FCloseFile( h );
-		Cmd_ExecFile( f.c );
+		Cmd_ExecText( f.c );
 		Hunk_FreeTempMemory( f.v );
 	}
 	else
@@ -480,18 +462,82 @@ void Cmd_Exec_f( void )
 		if ( f.c )
 		{
 			success = qtrue;
-			Cmd_ExecFile( f.c );
+			Cmd_ExecText( f.c );
 			FS_FreeFile( f.v );
 		}
 	}
+	return success;
+}
 
-	if ( !success )
+void Cmd_Exec_f( void )
+{
+	int          len;
+	char         filename[ MAX_QPATH ];
+	qboolean     executeSilent;
+	qboolean     failSilent = qfalse;
+	int          filenameArgNum;
+
+	executeSilent = !Q_stricmp( Cmd_Argv( 0 ), "execq" );
+
+	if ( Cmd_Argc() < 2 )
 	{
-		Com_Printf( "couldn't exec %s\n", filename );
+		if ( executeSilent )
+		{
+			Cmd_PrintUsage(_("<filename> [<arguments>…]"), _("execute a script file without notification, a shortcut for exec -q"));
+		}
+		else
+		{
+			Cmd_PrintUsage(_("[-q|-f|-s] <filename> [<arguments>…]"), _("execute a script file."));
+		}
+
+		return;
 	}
-	else if ( !quiet )
+
+	Q_strncpyz( filename, Cmd_Argv( 1 ), sizeof( filename ) );
+
+	if( filename[0] != '-'  || Cmd_Argc() < 3 )
 	{
-		Com_Printf( "execing %s\n", filename );
+		filenameArgNum = 2;
+	}
+	else // wasn't the filename after all; we got us a parameter!
+	{
+		filenameArgNum = 3;
+
+		switch (filename[1]) {
+			case 'q':
+				executeSilent = qtrue;
+				break;
+
+			case 'f':
+				failSilent = qtrue;
+				break;
+
+			case 's':
+				executeSilent = qtrue;
+				failSilent = qtrue;
+				break;
+			default: //if we use only '-'
+				break;
+		}
+
+		Q_strncpyz( filename, Cmd_Argv( 2 ), sizeof( filename ) );
+	}
+
+	COM_DefaultExtension( filename, sizeof( filename ), ".cfg" );
+	Cmd_SetExecArgs( filenameArgNum );
+
+	if ( !Cmd_ExecFile( filename ) )
+	{
+		if( !failSilent )
+		{
+			Com_Printf( _("couldn't exec %s\n"), filename );
+		}
+		return;
+	}
+
+	if ( !executeSilent )
+	{
+		Com_Printf( _("execing %s\n"), filename );
 	}
 }
 
@@ -508,7 +554,7 @@ void Cmd_Vstr_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Com_Printf(_( "vstr <variablename> : execute a variable command\n" ));
+		Cmd_PrintUsage(_("<variablename>"), _("execute a variable command"));
 		return;
 	}
 
@@ -680,7 +726,7 @@ void Cmd_ModCase_f( void )
 
 	if ( argc < 3 )
 	{
-		Com_Printf(_( "modcase <modifiers> <command> [<modifiers> <command>] … [<command>]\n" ));
+		Cmd_PrintUsage(_( "<modifiers> <command> [<modifiers> <command>] … [<command>]"), NULL );
 		return;
 	}
 
@@ -835,6 +881,17 @@ void Cmd_If_f( void )
 	}
 }
 
+
+static void Cmd_Math_PrintUsage( void )
+{
+	Cmd_PrintUsage( _( "<variableToSet> = <number> <operator> <number>" ), NULL );
+	Cmd_PrintUsage( _( "<variableToSet> <operator> <number>" ), NULL );
+	Cmd_PrintUsage( _( "<variableToSet> (++|--)" ), NULL );
+
+	Com_Printf(_( "valid operators: + - × * ÷ /\n" ) );
+}
+
+
 /*
 ===============
 Cmd_Math_f
@@ -864,7 +921,7 @@ void Cmd_Math_f( void )
 		}
 		else
 		{
-			Com_Printf(_( "math <variableToSet> = <number> <operator> <number>\nmath <variableToSet> <operator> <number>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - × * ÷ /\n" ));
+			Cmd_Math_PrintUsage();
 			return;
 		}
 	}
@@ -890,7 +947,7 @@ void Cmd_Math_f( void )
 		{
 			if ( atof( firstOperand ) == 0.f )
 			{
-				Com_Printf(_( "Cannot divide by 0!\n" ));
+				Com_Log(LOG_ERROR, _( "Cannot divide by 0!" ));
 				return;
 			}
 
@@ -898,7 +955,7 @@ void Cmd_Math_f( void )
 		}
 		else
 		{
-			Com_Printf(_( "math <variableToSet> = <number> <operator> <number>\nmath <variableToSet> <operator> <number>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - × * ÷ /\n" ));
+			Cmd_Math_PrintUsage();
 			return;
 		}
 	}
@@ -925,7 +982,7 @@ void Cmd_Math_f( void )
 		{
 			if ( atof( secondOperand ) == 0.f )
 			{
-				Com_Printf(_( "Cannot divide by 0!\n" ));
+				Com_Log(LOG_ERROR, _( "Cannot divide by 0!" ));
 				return;
 			}
 
@@ -933,13 +990,13 @@ void Cmd_Math_f( void )
 		}
 		else
 		{
-			Com_Printf(_( "math <variableToSet> = <number> <operator> <number>\nmath <variableToSet> <operator> <number>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * /\n" ));
+			Cmd_Math_PrintUsage();
 			return;
 		}
 	}
 	else
 	{
-		Com_Printf(_( "math <variableToSet> = <number> <operator> <number>\nmath <variableToSet> <operator> <number>\nmath <variableToSet> ++\nmath <variableToSet> --\nvalid operators are + - * /\n" ));
+		Cmd_Math_PrintUsage();
 		return;
 	}
 }
@@ -958,7 +1015,7 @@ void Cmd_Concat_f( void )
 
 	if ( Cmd_Argc() < 3 )
 	{
-		Com_Printf(_( "concat <variableToSet> <variable1> … <variableN> : concatenates variable1 to variableN and sets the result to variableToSet\n" ));
+		Cmd_PrintUsage(_("<variableToSet> <variable1> … <variableN>"), _("concatenates variable1 to variableN and sets the result to variableToSet"));
 		return;
 	}
 
@@ -985,7 +1042,7 @@ void Cmd_Calc_f( void )
 
 	if ( Cmd_Argc() < 3 )
 	{
-		Com_Printf(_( "calc <number> <operator> <number>, accepted operators: +, -, /, */x\n" ));
+		Cmd_PrintUsage(_( "<number> <operator> <number>" ), _("Calculator.\nAccepted operators: +, -, /, */x\n") );
 		return;
 	}
 
@@ -1012,7 +1069,7 @@ void Cmd_Calc_f( void )
 	{
 		if ( atof( secondOperand ) == 0.f )
 		{
-			Com_Printf(_( "Cannot divide by 0!\n" ));
+			Com_Log(LOG_ERROR, _( "Cannot divide by 0!" ));
 			return;
 		}
 
@@ -1029,7 +1086,7 @@ void Cmd_Calc_f( void )
 	}
 
 	// Invalid function, help the poor guy out
-	Com_Printf(_( "calc <number> <operator> <number>, accepted operators: +, -, /, */x\n" ));
+	Cmd_PrintUsage(_( "<number> <operator> <number>" ), _("Calculator.\nAccepted operators: +, -, /, */x\n") );
 }
 
 /*
@@ -1059,7 +1116,8 @@ void Cmd_Undelay_f( void )
 	// Check if the call is valid
 	if ( Cmd_Argc() < 1 )
 	{
-		Com_Printf(_( "undelay <name> (command)\nremoves all commands with <name> in them.\nif (command) is specified, the removal will be limited only to delays whose commands contain (command).\n" ));
+		Cmd_PrintUsage(_("<name> (command)"), _( "removes all commands with <name> in them.\n"
+				"if (command) is specified, the removal will be limited only to delays whose commands contain (command)." ));
 		return;
 	}
 
@@ -1146,7 +1204,7 @@ void Cmd_Delay_f( void )
 
 	if ( !availiable_cmd )
 	{
-		Com_Printf(_( "WARNING: Maximum amount of delayed commands reached\n" ));
+		Com_Log( LOG_WARN, _( "Maximum amount of delayed commands reached." ));
 		return;
 	}
 
@@ -1189,7 +1247,7 @@ void Cmd_Random_f( void )
 	}
 	else
 	{
-		Com_Printf(_( "random <variableToSet> <minNumber> <maxNumber>\n" ));
+		Cmd_PrintUsage("<variableToSet> <minNumber> <maxNumber>", "sets a variable to a random integer between minNumber and maxNumber");
 	}
 }
 
@@ -1291,7 +1349,7 @@ void Cmd_AliasList_f( void )
 		i++;
 	}
 
-	Com_Printf("%i aliases\n", i );
+	Com_Printf(_("%i aliases\n"), i );
 }
 
 /*
@@ -1333,7 +1391,7 @@ void Cmd_UnAlias_f( void )
 	// Get args
 	if ( Cmd_Argc() < 2 )
 	{
-		Com_Printf(_( "unalias <name> : delete an alias\n" ));
+		Cmd_PrintUsage(_("<name>"), _("delete an alias"));
 		return;
 	}
 
@@ -1380,8 +1438,8 @@ void Cmd_Alias_f( void )
 	// Get args
 	if ( Cmd_Argc() < 2 )
 	{
-		Com_Printf(_( "alias <name> : show an alias\n" ));
-		Com_Printf(_( "alias <name> <exec> : create an alias\n" ));
+		Cmd_PrintUsage(_("<name>"), _("show an alias"));
+		Cmd_PrintUsage(_("<name> <exec>"), _("create an alias"));
 		return;
 	}
 
@@ -1508,6 +1566,23 @@ Cmd_RestoreCmdContext
 void Cmd_RestoreCmdContext( void )
 {
 	Com_Memcpy( &cmd, &savedCmd, sizeof( cmdContext_t ) );
+}
+
+/*
+============
+Cmd_PrintUsage
+============
+*/
+void Cmd_PrintUsage( const char *syntax, const char *description )
+{
+	if(!description)
+	{
+		Com_Printf( "%s: %s %s\n", _("usage"), Cmd_Argv( 0 ), syntax );
+	}
+	else
+	{
+		Com_Printf( "%s: %s %s — %s\n", _("usage"),  Cmd_Argv( 0 ), syntax, description );
+	}
 }
 
 /*

@@ -55,7 +55,7 @@ void G_InitGentity( gentity_t *entity )
 
 /*
 =================
-G_Spawn
+G_NewEntity
 
 Either finds a free entity, or allocates a new one.
 
@@ -159,7 +159,7 @@ void G_FreeEntity( gentity_t *entity )
 
 /*
 =================
-G_TempEntity
+G_NewTempEntity
 
 Spawns an event entity that will be auto-removed
 The origin will be snapped to save net bandwidth, so care
@@ -230,7 +230,6 @@ void G_PrintEntityNameList(gentity_t *entity)
 {
 	int i;
 	char string[ MAX_STRING_CHARS ];
-	char nameSegment[ MAX_STRING_CHARS ];
 
 	if(!entity)
 	{
@@ -242,10 +241,12 @@ void G_PrintEntityNameList(gentity_t *entity)
 		return;
 	}
 
-	for (i = 0; i < MAX_ENTITY_ALIASES && entity->names[i]; ++i)
+	Q_strncpyz( string, entity->names[0], sizeof(string) );
+
+	for (i = 1; i < MAX_ENTITY_ALIASES && entity->names[i]; i++)
 	{
-		Com_sprintf(nameSegment, sizeof(nameSegment), "%s%s", i == 0 ? "": ", ", entity->names[i]);
-		Q_strcat(string, sizeof(string), nameSegment);
+		Q_strcat(string, sizeof(string), ", ");
+		Q_strcat(string, sizeof(string), entity->names[i]);
 	}
 	G_Printf("{ %s }\n", string);
 }
@@ -427,7 +428,11 @@ gentity_t *G_PickRandomEntity( const char *classname, size_t fieldofs, const cha
 	{
 
 		if ( g_debugEntities.integer > -1 )
-			G_Printf( S_WARNING "Could not find any entity matching \"" S_COLOR_CYAN "%s" S_COLOR_WHITE "\"\n", match );
+			G_Printf( S_WARNING "Could not find any entity matching \"" S_COLOR_CYAN "%s%s%s" S_COLOR_WHITE "\"\n",
+					classname ? classname : "",
+					classname && match ? S_COLOR_WHITE " and " S_COLOR_CYAN :  "",
+					match ? match : ""
+					);
 
 		return NULL;
 	}
@@ -453,6 +458,15 @@ gentity chain handling
 
 =================================================================================
 */
+
+/**
+ * a call made by the world, mostly by hard coded calls due to world-events
+ */
+const gentityCall_t WORLD_CALL = { NULL, &g_entities[ ENTITYNUM_WORLD ], &g_entities[ ENTITYNUM_WORLD ] };
+/**
+ * a non made call
+ */
+const gentityCall_t NULL_CALL = { NULL, &g_entities[ ENTITYNUM_NONE ], &g_entities[ ENTITYNUM_NONE ] };
 
 typedef struct
 {
@@ -683,12 +697,6 @@ void G_EventFireEntity( gentity_t *self, gentity_t *activator, gentityCallEvent_
 	gentityCall_t call;
 	call.activator = activator;
 
-	if ( self->shaderKey && self->shaderReplacement )
-	{
-		G_SetShaderRemap( self->shaderKey, self->shaderReplacement, level.time * 0.001 );
-		trap_SetConfigstring( CS_SHADERSTATE, BuildShaderStateConfig() );
-	}
-
 	while( ( currentTarget = G_IterateCallEndpoints( currentTarget, &targetIndex, self ) ) != NULL )
 	{
 		if( eventType && self->calltargets[ targetIndex ].eventType != eventType )
@@ -714,6 +722,61 @@ void G_FireEntity( gentity_t *self, gentity_t *activator )
 	G_EventFireEntity( self, activator, ON_DEFAULT );
 }
 
+/**
+ * executes the entities act function
+ * This is basicly nothing but a wrapper around act() ensuring a correct call,
+ * neither paramater may be NULL, and the entity is required to have an act function to execute
+ * or this function will fail
+ */
+void G_ExecuteAct( gentity_t *entity, gentityCall_t *call )
+{
+	gentityCall_t previousCallIn;
+
+	/**
+	 * assertions against programmatic errors
+	 */
+	assert( entity->act != NULL );
+	assert( call != NULL );
+
+	//assert( entity->callIn->activator != NULL );
+
+	if( entity->active )
+	{
+		//TODO
+	}
+
+	entity->nextAct = 0;
+	entity->active = qtrue;
+	/*
+	 * for now we use the callIn activator if its set or fallback to the old solution, but we should
+	 * //TODO remove the old solution of activator setting from this
+	 */
+	entity->act(entity, call->caller, call->caller->activator ? call->caller->activator : entity->activator );
+	entity->active = qfalse;
+}
+
+/**
+ * check delayed variable and either call an entity act() directly or delay its execution
+ */
+void G_HandleActCall( gentity_t *entity, gentityCall_t *call )
+{
+	variatingTime_t delay = {0, 0};
+
+	assert( call != NULL );
+	entity->callIn = *call;
+
+	G_ResetTimeField(&delay, entity->config.delay, entity->eclass->config.delay, delay );
+
+	if(delay.time)
+	{
+		entity->nextAct = VariatedLevelTime( delay );
+	}
+	else /* no time and variance set means, we can call it directly instead of waiting for the next frame */
+	{
+		G_ExecuteAct( entity, call );
+	}
+}
+
 void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 {
 	if ( g_debugEntities.integer > 1 )
@@ -725,6 +788,8 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 				etos( targetedEntity ),
 				call->definition && call->definition->action ? call->definition->action : "default");
 	}
+
+	targetedEntity->callIn = *call;
 
 	if(!targetedEntity->handleCall || !targetedEntity->handleCall(targetedEntity, call))
 	{
@@ -739,7 +804,7 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 				G_Printf(S_WARNING "Unknown action \"%s\" for %s\n",
 						call->definition->action, etos(targetedEntity));
 			}
-			return;
+			break;
 
 		case ECA_FREE:
 			G_FreeEntity(targetedEntity);
@@ -791,8 +856,7 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 			}
 			break;
 		case ECA_ACT:
-			if (targetedEntity->act)
-				targetedEntity->act(targetedEntity, call->caller, call->activator);
+			G_HandleActCall( targetedEntity, call );
 			break;
 
 		default:
@@ -803,6 +867,8 @@ void G_CallEntity(gentity_t *targetedEntity, gentityCall_t *call)
 	}
 	if(targetedEntity->notifyHandler)
 		targetedEntity->notifyHandler( targetedEntity, call );
+
+	targetedEntity->callIn = NULL_CALL; /**< not called anymore */
 }
 
 /*
@@ -900,11 +966,4 @@ void G_SetOrigin( gentity_t *self, const vec3_t origin )
 
 	VectorCopy( origin, self->r.currentOrigin );
 	VectorCopy( origin, self->s.origin );
-}
-
-/**
- * predefined field interpretations
- */
-void G_SetNextthink( gentity_t *self ) {
-	self->nextthink = level.time + ( self->config.wait.time + self->config.wait.variance * crandom() ) * 1000;
 }
