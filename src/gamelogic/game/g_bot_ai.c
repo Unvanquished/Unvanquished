@@ -824,6 +824,14 @@ static AIGenericNode_t *ReadConditionNode( pc_token_list **tokenlist )
 
 	condition->child = ReadNode( &current );
 
+	if ( !condition->child )
+	{
+		BotError( "Failed to parse child node of condition on line %d\n", (*tokenlist)->token.line );
+		*tokenlist = current;
+		FreeConditionNode( condition );
+		return NULL;
+	}
+
 	if ( !expectToken( "}", &current, qtrue ) )
 	{
 		*tokenlist = current;
