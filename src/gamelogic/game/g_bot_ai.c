@@ -519,6 +519,7 @@ static AIValueFunc_t *newValueFunc( pc_token_list **list )
 	// functions should always be proceeded by a '(' if they have parameters
 	if ( !expectToken( "(", &parenBegin, qfalse ) )
 	{
+		*list = current;
 		return NULL;
 	}
 
@@ -686,6 +687,11 @@ AIExpType_t *ReadConditionExpression( pc_token_list **list, AIOpType_t op2 )
 
 	t = Primary( list );
 
+	if ( !t )
+	{
+		return NULL;
+	}
+
 	op = opTypeFromToken( &(*list)->token );
 
 	while ( isBinaryOp( op ) && opCompare( op, op2 ) >= 0 )
@@ -694,12 +700,16 @@ AIExpType_t *ReadConditionExpression( pc_token_list **list, AIOpType_t op2 )
 		AIOp_t *exp = newOp( *list );
 		*list = (*list)->next;
 		t1 = ReadConditionExpression( list, op );
-		t = makeExpression( exp, t, t1 );
 
-		if ( !*list )
+		if ( !t1 )
 		{
-			break;
+			BotDPrintf( S_COLOR_RED "ERROR: Missing right operand for %s\n", opTypeToString( op ) );
+			FreeExpression( t );
+			FreeOp( exp );
+			return NULL;
 		}
+
+		t = makeExpression( exp, t, t1 );
 
 		op = opTypeFromToken( &(*list)->token );
 	}
@@ -718,6 +728,14 @@ AIExpType_t *Primary( pc_token_list **list )
 		AIOp_t *op = newOp( current );
 		*list = current->next;
 		t = ReadConditionExpression( list, op->opType );
+
+		if ( !t )
+		{
+			BotDPrintf( S_COLOR_RED "ERROR: Missing right operand for %s\n", opTypeToString( op->opType ) );
+			FreeOp( op );
+			return NULL;
+		}
+
 		tree = makeExpression( op, t, NULL );
 	}
 	else if ( current->token.string[0] == '(' )
@@ -776,6 +794,21 @@ static AIGenericNode_t *ReadConditionNode( pc_token_list **tokenlist )
 
 	condition->exp = ReadConditionExpression( &current, OP_NONE );
 
+	if ( !current )
+	{
+		*tokenlist = current;
+		BotDPrintf( S_COLOR_RED "ERROR: Unexpected end of file\n" );
+		FreeConditionNode( condition );
+		return NULL;
+	}
+
+	if ( !condition->exp )
+	{
+		*tokenlist = current;
+		FreeConditionNode( condition );
+		return NULL;
+	}
+
 	if ( Q_stricmp( current->token.string, "{" ) )
 	{
 		// this condition node has no child nodes
@@ -787,9 +820,14 @@ static AIGenericNode_t *ReadConditionNode( pc_token_list **tokenlist )
 
 	condition->child = ReadNode( &current );
 
-	expectToken( "}", &current, qfalse );
+	if ( !expectToken( "}", &current, qtrue ) )
+	{
+		*tokenlist = current;
+		FreeConditionNode( condition );
+		return NULL;
+	}
 
-	*tokenlist = current->next;
+	*tokenlist = current;
 
 	return ( AIGenericNode_t * ) condition;
 }
@@ -815,6 +853,12 @@ static AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
 
 	if ( !expectToken( "action", &current, qtrue ) )
 	{
+		return NULL;
+	}
+
+	if ( !current )
+	{
+		BotDPrintf( S_COLOR_RED "Unexpected end of file after line %d\n", (*tokenlist)->token.line );
 		return NULL;
 	}
 
@@ -951,11 +995,21 @@ static AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist )
 		{
 			BotDPrintf( "ERROR: Max selector children limit exceeded at line %d\n", (*tokenlist)->token.line );
 			FreeNode( node );
+			FreeNodeList( list );
+			*tokenlist = current;
+			return NULL;
 		}
 		else if ( node )
 		{
 			list->list[ list->numNodes ] = node;
 			list->numNodes++;
+		}
+
+		if ( !node )
+		{
+			*tokenlist = current;
+			FreeNodeList( list );
+			return NULL;
 		}
 
 		if ( !current )
