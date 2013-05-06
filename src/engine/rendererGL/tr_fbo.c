@@ -551,35 +551,28 @@ void R_InitFBOs( void )
 
 		if ( glConfig2.framebufferPackedDepthStencilAvailable )
 		{
-			R_CreateFBOPackedDepthStencilBuffer( tr.geometricRenderFBO, GL_DEPTH24_STENCIL8_EXT );
 			R_AttachFBOTexturePackedDepthStencil( tr.depthRenderImage->texnum );
 		}
 
 		else if ( glConfig.hardwareType == GLHW_ATI || glConfig.hardwareType == GLHW_ATI_DX10 ) // || glConfig.hardwareType == GLHW_NV_DX10)
 		{
-			R_CreateFBODepthBuffer( tr.geometricRenderFBO, GL_DEPTH_COMPONENT16 );
 			R_AttachFBOTextureDepth( tr.depthRenderImage->texnum );
 		}
 		else
 #endif
 		{
-			R_CreateFBODepthBuffer( tr.geometricRenderFBO, GL_DEPTH_COMPONENT24 );
 			R_AttachFBOTextureDepth( tr.depthRenderImage->texnum );
 		}
 
 		// enable all attachments as draw buffers
 		//glDrawBuffers(4, geometricRenderTargets);
 
-		R_CreateFBOColorBuffer( tr.geometricRenderFBO, GL_RGBA, 0 );
 		R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.deferredRenderFBOImage->texnum, 0 );
 
-		R_CreateFBOColorBuffer( tr.geometricRenderFBO, GL_RGBA, 1 );
 		R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.deferredDiffuseFBOImage->texnum, 1 );
 
-		R_CreateFBOColorBuffer( tr.geometricRenderFBO, GL_RGBA, 2 );
 		R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.deferredNormalFBOImage->texnum, 2 );
 
-		R_CreateFBOColorBuffer( tr.geometricRenderFBO, GL_RGBA, 3 );
 		R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.deferredSpecularFBOImage->texnum, 3 );
 
 		R_CheckFBO( tr.geometricRenderFBO );
@@ -603,33 +596,21 @@ void R_InitFBOs( void )
 		tr.deferredRenderFBO = R_CreateFBO( "_deferredRender", width, height );
 		R_BindFBO( tr.deferredRenderFBO );
 
-		if ( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
-		{
-			R_CreateFBOColorBuffer( tr.deferredRenderFBO, GL_RGBA16F, 0 );
-		}
-		else
-		{
-			R_CreateFBOColorBuffer( tr.deferredRenderFBO, GL_RGBA, 0 );
-		}
-
 		R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.deferredRenderFBOImage->texnum, 0 );
 
 #if 0
 
 		if ( glConfig2.framebufferPackedDepthStencilAvailable )
 		{
-			R_CreateFBOPackedDepthStencilBuffer( tr.deferredRenderFBO, GL_DEPTH24_STENCIL8_EXT );
 			R_AttachFBOTexturePackedDepthStencil( tr.depthRenderImage->texnum );
 		}
 		else if ( glConfig.hardwareType == GLHW_ATI || glConfig.hardwareType == GLHW_ATI_DX10 ) // || glConfig.hardwareType == GLHW_NV_DX10)
 		{
-			R_CreateFBODepthBuffer( tr.deferredRenderFBO, GL_DEPTH_COMPONENT16 );
 			R_AttachFBOTextureDepth( tr.depthRenderImage->texnum );
 		}
 		else
 #endif
 		{
-			R_CreateFBODepthBuffer( tr.deferredRenderFBO, GL_DEPTH_COMPONENT24 );
 			R_AttachFBOTextureDepth( tr.depthRenderImage->texnum );
 		}
 
@@ -673,7 +654,6 @@ void R_InitFBOs( void )
 			R_CreateFBODepthBuffer( tr.occlusionRenderFBO, GL_DEPTH_COMPONENT24 );
 		}
 
-		R_CreateFBOColorBuffer( tr.occlusionRenderFBO, GL_RGBA, 0 );
 		R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.occlusionRenderFBOImage->texnum, 0 );
 
 		R_CheckFBO( tr.occlusionRenderFBO );
@@ -817,15 +797,6 @@ void R_InitFBOs( void )
 		tr.portalRenderFBO = R_CreateFBO( "_portalRender", width, height );
 		R_BindFBO( tr.portalRenderFBO );
 
-		if ( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
-		{
-			R_CreateFBOColorBuffer( tr.portalRenderFBO, GL_RGBA16F, 0 );
-		}
-		else
-		{
-			R_CreateFBOColorBuffer( tr.portalRenderFBO, GL_RGBA, 0 );
-		}
-
 		R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.portalRenderImage->texnum, 0 );
 
 		R_CheckFBO( tr.portalRenderFBO );
@@ -846,29 +817,11 @@ void R_InitFBOs( void )
 		tr.downScaleFBO_quarter = R_CreateFBO( "_downScale_quarter", width, height );
 		R_BindFBO( tr.downScaleFBO_quarter );
 
-		if ( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
-		{
-			R_CreateFBOColorBuffer( tr.downScaleFBO_quarter, GL_RGBA16F, 0 );
-		}
-		else
-		{
-			R_CreateFBOColorBuffer( tr.downScaleFBO_quarter, GL_RGBA, 0 );
-		}
-
 		R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.downScaleFBOImage_quarter->texnum, 0 );
 		R_CheckFBO( tr.downScaleFBO_quarter );
 
 		tr.downScaleFBO_64x64 = R_CreateFBO( "_downScale_64x64", 64, 64 );
 		R_BindFBO( tr.downScaleFBO_64x64 );
-
-		if ( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
-		{
-			R_CreateFBOColorBuffer( tr.downScaleFBO_64x64, GL_RGBA16F, 0 );
-		}
-		else
-		{
-			R_CreateFBOColorBuffer( tr.downScaleFBO_64x64, GL_RGBA, 0 );
-		}
 
 		R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.downScaleFBOImage_64x64->texnum, 0 );
 		R_CheckFBO( tr.downScaleFBO_64x64 );
@@ -877,44 +830,17 @@ void R_InitFBOs( void )
 		tr.downScaleFBO_16x16 = R_CreateFBO( "_downScale_16x16", 16, 16 );
 		R_BindFBO( tr.downScaleFBO_16x16 );
 
-		if ( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
-		{
-			R_CreateFBOColorBuffer( tr.downScaleFBO_16x16, GL_RGBA16F, 0 );
-		}
-		else
-		{
-			R_CreateFBOColorBuffer( tr.downScaleFBO_16x16, GL_RGBA, 0 );
-		}
-
 		R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.downScaleFBOImage_16x16->texnum, 0 );
 		R_CheckFBO( tr.downScaleFBO_16x16 );
 
 		tr.downScaleFBO_4x4 = R_CreateFBO( "_downScale_4x4", 4, 4 );
 		R_BindFBO( tr.downScaleFBO_4x4 );
 
-		if ( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
-		{
-			R_CreateFBOColorBuffer( tr.downScaleFBO_4x4, GL_RGBA16F, 0 );
-		}
-		else
-		{
-			R_CreateFBOColorBuffer( tr.downScaleFBO_4x4, GL_RGBA, 0 );
-		}
-
 		R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.downScaleFBOImage_4x4->texnum, 0 );
 		R_CheckFBO( tr.downScaleFBO_4x4 );
 
 		tr.downScaleFBO_1x1 = R_CreateFBO( "_downScale_1x1", 1, 1 );
 		R_BindFBO( tr.downScaleFBO_1x1 );
-
-		if ( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
-		{
-			R_CreateFBOColorBuffer( tr.downScaleFBO_1x1, GL_RGBA16F, 0 );
-		}
-		else
-		{
-			R_CreateFBOColorBuffer( tr.downScaleFBO_1x1, GL_RGBA, 0 );
-		}
 
 		R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.downScaleFBOImage_1x1->texnum, 0 );
 		R_CheckFBO( tr.downScaleFBO_1x1 );
@@ -934,15 +860,6 @@ void R_InitFBOs( void )
 		tr.contrastRenderFBO = R_CreateFBO( "_contrastRender", width, height );
 		R_BindFBO( tr.contrastRenderFBO );
 
-		if ( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
-		{
-			R_CreateFBOColorBuffer( tr.contrastRenderFBO, GL_RGBA16F, 0 );
-		}
-		else
-		{
-			R_CreateFBOColorBuffer( tr.contrastRenderFBO, GL_RGBA, 0 );
-		}
-
 		R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.contrastRenderFBOImage->texnum, 0 );
 
 		R_CheckFBO( tr.contrastRenderFBO );
@@ -951,15 +868,6 @@ void R_InitFBOs( void )
 		{
 			tr.bloomRenderFBO[ i ] = R_CreateFBO( va( "_bloomRender%d", i ), width, height );
 			R_BindFBO( tr.bloomRenderFBO[ i ] );
-
-			if ( r_hdrRendering->integer && glConfig2.textureFloatAvailable )
-			{
-				R_CreateFBOColorBuffer( tr.bloomRenderFBO[ i ], GL_RGBA16F, 0 );
-			}
-			else
-			{
-				R_CreateFBOColorBuffer( tr.bloomRenderFBO[ i ], GL_RGBA, 0 );
-			}
 
 			R_AttachFBOTexture2D( GL_TEXTURE_2D, tr.bloomRenderFBOImage[ i ]->texnum, 0 );
 

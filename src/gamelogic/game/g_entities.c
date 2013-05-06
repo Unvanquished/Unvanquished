@@ -697,12 +697,6 @@ void G_EventFireEntity( gentity_t *self, gentity_t *activator, gentityCallEvent_
 	gentityCall_t call;
 	call.activator = activator;
 
-	if ( self->shaderKey && self->shaderReplacement )
-	{
-		G_SetShaderRemap( self->shaderKey, self->shaderReplacement, level.time * 0.001 );
-		trap_SetConfigstring( CS_SHADERSTATE, BuildShaderStateConfig() );
-	}
-
 	while( ( currentTarget = G_IterateCallEndpoints( currentTarget, &targetIndex, self ) ) != NULL )
 	{
 		if( eventType && self->calltargets[ targetIndex ].eventType != eventType )

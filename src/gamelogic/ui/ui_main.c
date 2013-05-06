@@ -3228,6 +3228,7 @@ static void UI_Update( const char *name )
 				trap_Cvar_SetValue( "cg_motionblur", 0.05 );
 				trap_Cvar_SetValue( "r_ext_multisample", 8 );
 				trap_Cvar_SetValue( "r_ext_texture_filter_anisotropic", 8 );
+				trap_Cvar_SetValue( "r_heathaze", 1 );
 				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_LINEAR" );
 				break;
 
@@ -3245,6 +3246,7 @@ static void UI_Update( const char *name )
 				trap_Cvar_SetValue( "cg_motionblur", 0 );
 				trap_Cvar_SetValue( "r_ext_multisample", 4 );
 				trap_Cvar_SetValue( "r_ext_texture_filter_anisotropic", 4 );
+				trap_Cvar_SetValue( "r_heathaze", 0 );
 				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_LINEAR" );
 				break;
 
@@ -3262,6 +3264,7 @@ static void UI_Update( const char *name )
 				trap_Cvar_SetValue( "cg_motionblur", 0 );
 				trap_Cvar_SetValue( "r_ext_multisample", 2 );
 				trap_Cvar_SetValue( "r_ext_texture_filter_anisotropic", 2 );
+				trap_Cvar_SetValue( "r_heathaze", 0 );
 				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_NEAREST" );
 				break;
 
@@ -3279,6 +3282,7 @@ static void UI_Update( const char *name )
 				trap_Cvar_SetValue( "cg_motionblur", 0 );
 				trap_Cvar_SetValue( "r_ext_multisample", 0 );
 				trap_Cvar_SetValue( "r_ext_texture_filter_anisotropic", 0 );
+				trap_Cvar_SetValue( "r_heathaze", 0 );
 				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_NEAREST" );
 				break;
 		}

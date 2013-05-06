@@ -79,6 +79,7 @@ Maryland 20850 USA.
 #define S_gfx_particle_system     "gfx_particle_system"
 #define S_gfx_portal_camera       "gfx_portal_camera"
 #define S_gfx_portal_surface      "gfx_portal_surface"
+#define S_gfx_shader_mod          "gfx_shader_mod"
 
 #define S_FUNC_DOOR               "func_door"
 #define S_DOOR_SENSOR             "door_sensor"
