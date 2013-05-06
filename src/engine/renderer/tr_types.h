@@ -367,6 +367,7 @@ typedef struct
 //----(SA)  added (needed to pass fog infos into the portal sky scene)
 	glfog_t glfog;
 //----(SA)  end
+	vec4_t  gradingWeights;
 } refdef_t;
 
 typedef enum

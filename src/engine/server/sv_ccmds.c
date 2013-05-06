@@ -172,6 +172,7 @@ static void SV_Map_f( void )
 {
 	char     *cmd;
 	char     *map;
+	const char *layouts;
 	char     mapname[ MAX_QPATH ];
 	qboolean cheat;
 	char     expanded[ MAX_QPATH ];
@@ -196,7 +197,12 @@ static void SV_Map_f( void )
 	}
 
 	// layout(s) - note that ArgsFrom adds quoting which we don't want here
-	Cvar_Set( "g_layouts", Cmd_UnquoteString( Cmd_ArgsFrom( 2 ) ) );
+	// Also, if empty, don't override
+	layouts = Cmd_UnquoteString( Cmd_ArgsFrom( 2 ) );
+	if ( *layouts )
+	{
+		Cvar_Set( "g_layouts", layouts );
+	}
 
 	cheat = !Q_stricmp( Cmd_Argv( 0 ), "devmap" );
 

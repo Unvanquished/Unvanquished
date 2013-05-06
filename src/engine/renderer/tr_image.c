@@ -3076,7 +3076,7 @@ void R_DeleteTextures( void )
 	}
 }
 
-void RE_SetColorGrading( qhandle_t hShader ) {
+void RE_SetColorGrading( int slot, qhandle_t hShader ) {
 	// color grading not supported
 }
 

@@ -1066,6 +1066,38 @@ const char *CG_Argv( int arg )
 
 //========================================================================
 
+static SENTINEL const char *choose( const char *first, ... )
+{
+	va_list    ap;
+	int        count = 1;
+	const char *ret;
+
+	va_start( ap, first );
+	while ( va_arg( ap, const char * ) )
+	{
+		++count;
+	}
+	va_end( ap );
+
+	if ( count < 2 )
+	{
+		return first;
+	}
+
+	count = rand() % count;
+
+	ret = first;
+	va_start( ap, first );
+	while ( count-- )
+	{
+		ret = va_arg( ap, const char * );
+	}
+	va_end( ap );
+
+	return ret;
+}
+
+
 /*
 =================
 CG_FileExists
@@ -1076,6 +1108,131 @@ Test if a specific file exists or not
 qboolean CG_FileExists( const char *filename )
 {
 	return trap_FS_FOpenFile( filename, NULL, FS_READ );
+}
+
+/*
+======================
+CG_UpdateLoadingProgress
+
+======================
+*/
+
+enum {
+	LOADBAR_MEDIA,
+	LOADBAR_CHARACTER_MODELS,
+	LOADBAR_BUILDABLES
+} typedef loadingBar_t;
+
+static void CG_UpdateLoadingProgress( loadingBar_t progressBar, float progress, const char *label )
+{
+	if(!cg.loading)
+		return;
+
+	switch (progressBar) {
+		case LOADBAR_MEDIA:
+			cg.mediaFraction = progress;
+			break;
+		case LOADBAR_CHARACTER_MODELS:
+			cg.charModelFraction = progress;
+			break;
+		case LOADBAR_BUILDABLES:
+			cg.buildablesFraction = progress;
+			break;
+		default:
+			break;
+	}
+
+	Q_strncpyz(cg.currentLoadingLabel, label, sizeof( cg.currentLoadingLabel ) );
+
+	trap_UpdateScreen();
+}
+
+static void CG_UpdateMediaFraction( float newFract )
+{
+	cg.mediaFraction = newFract;
+	trap_UpdateScreen();
+}
+
+enum {
+	LOAD_START = 1,
+	LOAD_TRAILS,
+	LOAD_PARTICLES,
+	LOAD_SOUNDS,
+	LOAD_GEOMETRY,
+	LOAD_ASSETS,
+	LOAD_WEAPONS,
+	LOAD_UPGRADES,
+	LOAD_BUILDINGS,
+	LOAD_REMAINING,
+	LOAD_DONE
+} typedef cgLoadingStep_t;
+
+static void CG_UpdateLoadingStep( cgLoadingStep_t step )
+{
+#if 0
+	static int startTime = 0;
+	static int lastStepTime = 0;
+	const int thisStepTime = trap_Milliseconds();
+
+	switch (step) {
+		case LOAD_START:
+			startTime = thisStepTime;
+			CG_Printf("^4%%^5 Start loading.\n");
+			break;
+		case LOAD_DONE:
+			CG_Printf("^4%%^5 Done loading everything after %is (%ims).\n",
+					(thisStepTime - startTime)/1000, (thisStepTime - startTime));
+			break;
+		default:
+			CG_Printf("^4%%^5 Done with Step %i after %is (%ims)… Starting Step %i\n",
+					step - 1, (thisStepTime - lastStepTime)/1000, (thisStepTime - lastStepTime), step );
+			break;
+	}
+	lastStepTime = thisStepTime;
+#endif
+
+	switch (step) {
+		case LOAD_START:
+			cg.loading = qtrue;
+			cg.mediaFraction = cg.charModelFraction = cg.buildablesFraction = 0.0f;
+			break;
+
+		case LOAD_TRAILS:
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.0f, choose("Tracking your movements", "Letting out the magic smoke", NULL) );
+			break;
+		case LOAD_PARTICLES:
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.05f, choose("Collecting bees for the hives", "Initialising fireworks", "Causing electrical faults", NULL) );
+			break;
+		case LOAD_SOUNDS:
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.08f, choose("Recording granger purring", "Generating annoying noises", NULL) );
+			break;
+		case LOAD_GEOMETRY:
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.60f, choose("Hello World!", "Making a scene.", NULL) );
+			break;
+		case LOAD_ASSETS:
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.66f, choose("Taking pictures of the world", "Using your laptop's camera", "Adding texture to concrete", "Drawing smiley faces", NULL) );
+			break;
+		case LOAD_WEAPONS:
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.90f, choose("Setting up the armoury", "Sharpening the aliens' claws", "Overloading lucifer cannons", NULL) );
+			break;
+		case LOAD_UPGRADES:
+			CG_UpdateLoadingProgress( LOADBAR_MEDIA, 0.95f, choose("Charging battery packs", "Replicating alien DNA", "Packing tents for jetcampers", NULL) );
+			break;
+		case LOAD_BUILDINGS:
+			cg.mediaFraction = 1.0f;
+			CG_UpdateLoadingProgress( LOADBAR_BUILDABLES, 0.0f, choose("Finishing construction", "Adding turret spam", "Awakening the overmind", NULL) );
+			break;
+
+		case LOAD_DONE:
+			cg.mediaFraction = cg.charModelFraction = cg.buildablesFraction = 1.0f;
+			Q_strncpyz(cg.currentLoadingLabel, "Done!", sizeof( cg.currentLoadingLabel ) );
+			trap_UpdateScreen();
+			cg.loading = qfalse;
+			break;
+
+		default:
+			break;
+	}
 }
 
 /*
@@ -1221,11 +1378,13 @@ static void CG_RegisterGraphics( void )
 
 	// clear any references to old media
 	memset( &cg.refdef, 0, sizeof( cg.refdef ) );
+	cg.gradingWeights[0] = 1.0f;
 	trap_R_ClearScene();
 
+	CG_UpdateLoadingStep( LOAD_GEOMETRY );
 	trap_R_LoadWorldMap( cgs.mapname );
-	CG_UpdateMediaFraction( 0.66f );
 
+	CG_UpdateLoadingStep( LOAD_ASSETS );
 	for ( i = 0; i < 11; i++ )
 	{
 		cgs.media.numberShaders[ i ] = trap_R_RegisterShader(sb_nums[i],
@@ -1412,7 +1571,7 @@ static void CG_RegisterGraphics( void )
 
 	if( cgs.gameGradingTextures[ 0 ] )
 	{
-		trap_SetColorGrading( cgs.gameGradingTextures[ 0 ] );
+		trap_SetColorGrading( 0, cgs.gameGradingTextures[ 0 ] );
 	}
 
 	for ( i = 1; i < MAX_GRADING_TEXTURES; i++ )
@@ -2405,41 +2564,10 @@ Called after every level change or subsystem restart
 Will perform callbacks to make the loading info screen update.
 =================
 */
-static SENTINEL const char *choose( const char *first, ... )
-{
-	va_list    ap;
-	int        count = 1;
-	const char *ret;
-
-	va_start( ap, first );
-	while ( va_arg( ap, const char * ) )
-	{
-		++count;
-	}
-	va_end( ap );
-
-	if ( count < 2 )
-	{
-		return first;
-	}
-
-	count = rand() % count;
-
-	ret = first;
-	va_start( ap, first );
-	while ( count-- )
-	{
-		ret = va_arg( ap, const char * );
-	}
-	va_end( ap );
-
-	return ret;
-}
 
 void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 {
 	const char *s;
-
 	trap_SyscallABIVersion( SYSCALL_ABI_VERSION_MAJOR, SYSCALL_ABI_VERSION_MINOR );
 
 	// clear everything
@@ -2447,8 +2575,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	memset( &cg, 0, sizeof( cg ) );
 	memset( cg_entities, 0, sizeof( cg_entities ) );
 
-	cg.loading = qtrue;
-
+	CG_UpdateLoadingStep( LOAD_START );
 	cg.clientNum = clientNum;
 
 	cgs.processedSnapshotNum = serverMessageNum;
@@ -2499,7 +2626,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	            CG_ConfigString( CS_VOTE_STRING + TEAM_ALIENS ),
 	            sizeof( cgs.voteString[ TEAM_ALIENS ] ) );
 	Q_strncpyz( cgs.voteString[ TEAM_HUMANS ],
-	            CG_ConfigString( CS_VOTE_STRING + TEAM_ALIENS ),
+	            CG_ConfigString( CS_VOTE_STRING + TEAM_HUMANS ),
 	            sizeof( cgs.voteString[ TEAM_HUMANS ] ) );
 
 	// check version
@@ -2518,39 +2645,27 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 
 	srand( serverMessageNum * serverCommandSequence ^ clientNum );
 
-	Q_strncpyz(cg.currentLoadingLabel, choose("Tracking your movements", "Letting out the magic smoke", NULL), sizeof( cg.currentLoadingLabel ) );
-	CG_UpdateMediaFraction( 0.0f );
+	CG_UpdateLoadingStep( LOAD_TRAILS );
 	CG_LoadTrailSystems();
 
-	Q_strncpyz(cg.currentLoadingLabel, choose("Collecting bees for the hives", "Initialising fireworks", "Causing electrical faults", NULL), sizeof( cg.currentLoadingLabel ) );
-	CG_UpdateMediaFraction( 0.05f );
-
+	CG_UpdateLoadingStep( LOAD_PARTICLES );
 	CG_LoadParticleSystems();
 
-	Q_strncpyz(cg.currentLoadingLabel, choose("Recording granger purring", "Generating annoying noises", NULL), sizeof( cg.currentLoadingLabel ) );
-	CG_UpdateMediaFraction( 0.05f );
-
+	CG_UpdateLoadingStep( LOAD_SOUNDS );
 	CG_RegisterSounds();
-
-	Q_strncpyz(cg.currentLoadingLabel, choose("Taking pictures of the world", "Using your laptop's camera", "Adding texture to concrete", "Drawing smiley faces", NULL), sizeof( cg.currentLoadingLabel ) );
-	CG_UpdateMediaFraction( 0.60f );
 
 	CG_RegisterGraphics();
 
-	Q_strncpyz(cg.currentLoadingLabel, choose("Setting up the armoury", "Sharpening the aliens' claws", "Overloading lucifer cannons", NULL), sizeof( cg.currentLoadingLabel ) );
-	CG_UpdateMediaFraction( 0.90f );
-
+	CG_UpdateLoadingStep( LOAD_WEAPONS );
 	CG_InitWeapons();
 
-	Q_strncpyz(cg.currentLoadingLabel, choose("Charging battery packs", "Replicating alien DNA", "Packing tents for jetcampers", NULL), sizeof( cg.currentLoadingLabel ) );
-	CG_UpdateMediaFraction( 0.95f );
-
+	CG_UpdateLoadingStep( LOAD_UPGRADES );
 	CG_InitUpgrades();
 
-	Q_strncpyz(cg.currentLoadingLabel, choose("Finishing construction", "Adding turret spam", "Awakening the overmind", NULL), sizeof( cg.currentLoadingLabel ) );
-	CG_UpdateMediaFraction( 1.0f );
-
+	CG_UpdateLoadingStep( LOAD_BUILDINGS );
 	CG_InitBuildables();
+
+	CG_UpdateLoadingStep( LOAD_REMAINING );
 
 	cgs.voices = BG_VoiceInit();
 	BG_PrintVoices( cgs.voices, cg_debugVoices.integer );
@@ -2569,7 +2684,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	trap_S_ClearLoopingSounds( qtrue );
 	trap_Cvar_Set( "ui_winner", "" ); // Clear the previous round's winner.
 
-	cg.loading = qfalse;
+	CG_UpdateLoadingStep( LOAD_DONE );
 }
 
 /*

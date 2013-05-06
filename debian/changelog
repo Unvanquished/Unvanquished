@@ -1,8 +1,9 @@
-unvanquished (0.14.0-2) UNRELEASED; urgency=low
+unvanquished (0.15.0-1) unstable; urgency=low
 
+  * Release of alpha 15.
   * Implemented ‘unvanquished --gdb’.
 
- -- Darren Salt <devspam@moreofthesa.me.uk>  Sun, 21 Apr 2013 01:24:25 +0100
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Mon, 06 May 2013 01:37:58 +0100
 
 unvanquished (0.14.0-2) unstable; urgency=low
 

@@ -179,12 +179,12 @@ void SV_SetBrushModel( sharedEntity_t *ent, const char *name )
 
 	if ( !name )
 	{
-		Com_Error( ERR_DROP, "SV_SetBrushModel: NULL" );
+		Com_Error( ERR_DROP, "SV_SetBrushModel: NULL for #%i", ent->s.number );
 	}
 
 	if ( name[ 0 ] != '*' )
 	{
-		Com_Error( ERR_DROP, "SV_SetBrushModel: %s isn't a brush model", name );
+		Com_Error( ERR_DROP, "SV_SetBrushModel: %s of #%i isn't a brush model", name, ent->s.number );
 	}
 
 	ent->s.modelindex = atoi( name + 1 );
@@ -196,8 +196,6 @@ void SV_SetBrushModel( sharedEntity_t *ent, const char *name )
 	ent->r.bmodel = qtrue;
 
 	ent->r.contents = -1; // we don't know exactly what is in the brushes
-
-	SV_LinkEntity( ent );  // FIXME: remove
 }
 
 /*
@@ -466,6 +464,11 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 
 		case G_ERROR:
 			Com_Error( ERR_DROP, "%s", ( char * ) VMA( 1 ) );
+			return 0; //silence warning and have a fallback behavior if Com_Error behavior changes
+
+		case G_LOG:
+			Com_LogEvent( VMA( 1 ), NULL );
+			return 0;
 
 		case G_MILLISECONDS:
 			return Sys_Milliseconds();
@@ -746,6 +749,7 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			
 		default:
 			Com_Error( ERR_DROP, "Bad game system trap: %ld", ( long int ) args[ 0 ] );
+			exit(1); // silence warning, and make sure this behaves as expected, if Com_Error's behavior changes
 	}
 }
 
