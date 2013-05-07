@@ -865,18 +865,24 @@ AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_FAILURE;
 	}
 
-	//we are fully healed
-	if ( maxHealth == self->client->ps.stats[STAT_HEALTH] )
-	{
-		return STATUS_SUCCESS;
-	}
-
 	if ( self->botMind->currentNode != node )
 	{
+		// already fully healed
+		if ( maxHealth == self->client->ps.stats[ STAT_HEALTH ] )
+		{
+			return STATUS_FAILURE;
+		}
+
 		if ( !BotChangeGoalEntity( self, healTarget ) )
 		{
 			return STATUS_FAILURE;
 		}
+	}
+
+	//we are fully healed now
+	if ( maxHealth == self->client->ps.stats[STAT_HEALTH] )
+	{
+		return STATUS_SUCCESS;
 	}
 
 	if ( !BotTargetIsEntity( self->botMind->goal ) )
@@ -904,24 +910,30 @@ AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node )
 {
 	vec3_t targetPos;
 	vec3_t myPos;
+	qboolean fullyHealed = BG_Class( self->client->ps.stats[ STAT_CLASS ] )->health <= self->client->ps.stats[ STAT_HEALTH ] &&
+	                       BG_InventoryContainsUpgrade( UP_MEDKIT, self->client->ps.stats );
 
 	if ( self->client->ps.stats[STAT_TEAM] != TEAM_HUMANS )
 	{
 		return STATUS_FAILURE;
 	}
 
-	//we are fully healed
-	if ( BG_Class( ( class_t )self->client->ps.stats[STAT_CLASS] )->health <= self->health && BG_InventoryContainsUpgrade( UP_MEDKIT, self->client->ps.stats ) )
-	{
-		return STATUS_SUCCESS;
-	}
-
 	if ( self->botMind->currentNode != node )
 	{
+		if ( fullyHealed )
+		{
+			return STATUS_FAILURE;
+		}
+
 		if ( !BotChangeGoalEntity( self, self->botMind->closestBuildings[ BA_H_MEDISTAT ].ent ) )
 		{
 			return STATUS_FAILURE;
 		}
+	}
+
+	if ( fullyHealed )
+	{
+		return STATUS_SUCCESS;
 	}
 
 	//safety check
