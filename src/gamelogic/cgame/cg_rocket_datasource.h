@@ -71,6 +71,10 @@ typedef struct language_s
 	char *lang;
 } language_t;
 
+language_t languages[ MAX_LANGUAGES ];
+int languageCount = 0;
+int languageIndex;
+
 typedef struct modInfo_s
 {
 	char *name;
@@ -80,10 +84,6 @@ typedef struct modInfo_s
 modInfo_t modList[ MAX_MODS ];
 int modCount;
 int modIndex;
-
-language_t languages[ MAX_LANGUAGES ];
-int languageCount = 0;
-int languageIndex;
 
 char *voipInputs[ MAX_INPUTS ];
 int voipInputsCount = 0;
