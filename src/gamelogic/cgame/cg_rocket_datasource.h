@@ -39,6 +39,7 @@ Maryland 20850 USA.
 #define MAX_LANGUAGES 64
 #define MAX_INPUTS 16
 #define MAX_OUTPUTS 16
+#define MAX_MODS 64
 
 
 typedef struct server_s
@@ -68,6 +69,16 @@ typedef struct language_s
 	char *name;
 	char *lang;
 } language_t;
+
+typedef struct modInfo_s
+{
+	char *name;
+	char *description;
+} modInfo_t;
+
+modInfo_t modList[ MAX_MODS ];
+int modCount;
+int modIndex;
 
 language_t languages[ MAX_LANGUAGES ];
 int languageCount = 0;

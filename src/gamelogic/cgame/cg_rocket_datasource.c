@@ -459,6 +459,58 @@ void CG_Rocket_CleanUpAlOutputs( void )
 	alOutputsCount = 0;
 }
 
+void CG_Rocket_BuildModList( const char *args )
+{
+	int   numdirs;
+	char  dirlist[ 2048 ];
+	char  *dirptr;
+	char  *descptr;
+	int   i;
+	int   dirlen;
+
+	modCount = 0;
+	numdirs = trap_FS_GetFileList( "$modlist", "", dirlist, sizeof( dirlist ) );
+	dirptr = dirlist;
+
+	for ( i = 0; i < numdirs; i++ )
+	{
+		dirlen = strlen( dirptr ) + 1;
+		descptr = dirptr + dirlen;
+		modList[ modCount ].name = BG_strdup( dirptr );
+		modList[ modCount ].description = BG_strdup( descptr );
+		dirptr += dirlen + strlen( descptr ) + 1;
+		modCount++;
+
+		if ( modCount >= MAX_MODS )
+		{
+			break;
+		}
+	}
+
+	dirlist[ 0 ] = '\0';
+
+	for ( i = 0; i < modCount; ++i )
+	{
+		Info_SetValueForKey( dirlist, "name", modList[ i ].name, qfalse );
+		Info_SetValueForKey( dirlist, "description", modList[ i ].description, qfalse );
+
+		trap_Rocket_DSAddRow( "modList", "default", dirlist );
+	}
+}
+
+void CG_Rocket_CleanUpModList( void )
+{
+	int i;
+
+	for ( i = 0; i < modCount; ++i )
+	{
+		BG_Free( modList[ i ].name );
+		BG_Free( modList[ i ].description );
+	}
+
+	modCount = 0;
+}
+
 static void nullSortFunc( const char *name, const char *sortBy )
 {
 }
@@ -475,6 +527,7 @@ static const dataSourceCmd_t dataSourceCmdList[] =
 {
 	{ "alOutputs", &CG_Rocket_BuildAlOutputs, &nullSortFunc, &CG_Rocket_CleanUpAlOutputs },
 	{ "languages", &CG_Rocket_BuildLanguageList, &nullSortFunc, &CG_Rocket_CleanUpLanguageList },
+	{ "modList", &CG_Rocket_BuildModList, &nullSortFunc, &CG_Rocket_CleanUpModList },
 	{ "resolutions", &CG_Rocket_BuildResolutionList, &CG_Rocket_SortResolutionList, &CG_Rocket_CleanUpResolutionList },
 	{ "server_browser", &CG_Rocket_BuildServerList, &CG_Rocket_SortServerList, &CG_Rocket_CleanUpServerList },
 	{ "voipInputs", &CG_Rocket_BuildVoIPInputs, &nullSortFunc, &CG_Rocket_CleanUpVoIPInputs },
