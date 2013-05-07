@@ -60,7 +60,7 @@
 	<body id="main">
 	<div id="sidebar">
 		<img style="width: 100%;" src="/ui/assets/logo.png" /><br /><br />
-		<button onClick="open demo; show demo">Play</button><br /><br />
+		<button onClick="open demos; show demos">Play</button><br /><br />
 		<button onClick="open options; show options">Options</button><br /><br />
 		<button onClick="open help; show help">Help</button><br /><br />
 		<button onClick="open serverbrowser; show serverbrowser">Server Browser</button><br /><br />
