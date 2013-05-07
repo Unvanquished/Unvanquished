@@ -63,8 +63,8 @@
 		<button onClick="open demo; show demo">Play</button><br /><br />
 		<button onClick="open options; show options">Options</button><br /><br />
 		<button onClick="open help; show help">Help</button><br /><br />
-		<button onClick="open serverbrowser; show serverbrowser">Demos</button><br /><br />
-		<button onClick="open high_score">Mods</button><br /><br />
+		<button onClick="open serverbrowser; show serverbrowser">Server Browser</button><br /><br />
+		<button onClick="open mods; show mods">Mods</button><br /><br />
 		<button onClick="exec quit">Quit</button><br /><br />
 	</div>
 	<div style="position: absolute;">
