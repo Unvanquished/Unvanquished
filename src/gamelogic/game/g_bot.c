@@ -449,6 +449,12 @@ void G_BotSpectatorThink( gentity_t *self )
 	self->botMind->bestEnemy.ent = NULL;
 	self->botMind->timeFoundEnemy = 0;
 	self->botMind->enemyLastSeen = 0;
+	self->botMind->currentNode = NULL;
+	self->botMind->directPathToGoal = qfalse;
+	self->botMind->futureAimTime = 0;
+	self->botMind->futureAimTimeInterval = 0;
+	self->botMind->numRunningNodes = 0;
+	memset( self->botMind->runningNodes, 0, sizeof( self->botMind->runningNodes ) );
 
 	if ( self->client->sess.restartTeam == TEAM_NONE )
 	{
