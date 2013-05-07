@@ -130,6 +130,7 @@ void     BotMoveInDir( gentity_t *self, uint32_t moveDir );
 void     BotStandStill( gentity_t *self );
 
 // navigation queries
+qboolean GoalInRange( gentity_t *self, float r );
 int      DistanceToGoal( gentity_t *self );
 int      DistanceToGoalSquared( gentity_t *self );
 int      DistanceToGoal2DSquared( gentity_t *self );
