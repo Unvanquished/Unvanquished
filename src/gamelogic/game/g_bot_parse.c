@@ -118,24 +118,19 @@ static AIValue_t teamateHasWeapon( gentity_t *self, const AIValue_t *params )
 
 static AIValue_t distanceTo( gentity_t *self, const AIValue_t *params )
 {
-	int e = AIUnBoxInt( params[ 0 ] );
+	AIEntity_t e = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
 	float distance = 0;
-	if ( e < BA_NUM_BUILDABLES )
+	botEntityAndDistance_t *ent = AIEntityToGentity( self, e );
+
+	if ( ent )
 	{
-		distance = self->botMind->closestBuildings[ e ].distance;
+		distance = ent->distance;
 	}
 	else if ( e == E_GOAL )
 	{
 		distance = DistanceToGoal( self );
 	}
-	else if ( e == E_ENEMY )
-	{
-		distance = self->botMind->bestEnemy.distance;
-	}
-	else if ( e == E_DAMAGEDBUILDING )
-	{
-		distance = self->botMind->closestDamagedBuilding.distance;
-	}
+	
 	return AIBoxFloat( distance );
 }
 

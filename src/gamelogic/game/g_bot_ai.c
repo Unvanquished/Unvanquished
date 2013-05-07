@@ -111,6 +111,38 @@ double AIUnBoxDouble( AIValue_t v )
 	return 0.0;
 }
 
+botEntityAndDistance_t *AIEntityToGentity( gentity_t *self, AIEntity_t e )
+{
+	if ( e > BA_NONE && e < BA_NUM_BUILDABLES )
+	{
+		if ( !self->botMind->closestBuildings[ e ].ent )
+		{
+			return NULL;
+		}
+		return &self->botMind->closestBuildings[ e ];
+	}
+	else if ( e == E_ENEMY )
+	{
+		if ( !self->botMind->bestEnemy.ent )
+		{
+			return NULL;
+		}
+		return &self->botMind->bestEnemy;
+	}
+	else if ( e == E_DAMAGEDBUILDING )
+	{
+		if ( !self->botMind->closestDamagedBuilding.ent )
+		{
+			return NULL;
+		}
+		return &self->botMind->closestDamagedBuilding;
+	}
+	else
+	{
+		return NULL;
+	}
+}
+
 static qboolean NodeIsRunning( gentity_t *self, AIGenericNode_t *node )
 {
 	int i;
@@ -574,26 +606,14 @@ AINodeStatus_t BotActionRoamInRadius( gentity_t *self, AIGenericNode_t *node )
 	if ( node != self->botMind->currentNode )
 	{
 		vec3_t point;
-		gentity_t *ent= NULL;
+		botEntityAndDistance_t *ent = AIEntityToGentity( self, e );
 
-		if ( e < BA_NUM_BUILDABLES )
-		{
-			ent = self->botMind->closestBuildings[ e ].ent;
-		}
-		else if ( e == E_ENEMY )
-		{
-			ent = self->botMind->bestEnemy.ent;
-		}
-		else if ( e == E_DAMAGEDBUILDING )
-		{
-			ent = self->botMind->closestDamagedBuilding.ent;
-		}
-		else 
+		if ( !ent )
 		{
 			return STATUS_FAILURE;
 		}
 
-		if ( !trap_BotFindRandomPointInRadius( self->s.number, ent->s.origin, point, radius ) )
+		if ( !trap_BotFindRandomPointInRadius( self->s.number, ent->ent->s.origin, point, radius ) )
 		{
 			return STATUS_FAILURE;
 		}
@@ -643,18 +663,12 @@ botTarget_t BotGetMoveToTarget( gentity_t *self, AIEntity_t e )
 {
 	botTarget_t target;
 	gentity_t *ent = NULL;
+	botEntityAndDistance_t *en;
+	en = AIEntityToGentity( self, e );
 
-	if ( e < BA_NUM_BUILDABLES )
+	if ( en )
 	{
-		ent = self->botMind->closestBuildings[ e ].ent;
-	}
-	else if ( e == E_ENEMY )
-	{
-		ent = self->botMind->bestEnemy.ent;
-	}
-	else if ( e == E_DAMAGEDBUILDING )
-	{
-		ent = self->botMind->closestDamagedBuilding.ent;
+		ent = en->ent;
 	}
 
 	BotSetTarget( &target, ent, NULL );
