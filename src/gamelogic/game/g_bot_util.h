@@ -51,7 +51,7 @@ void  BotAimAtLocation( gentity_t *self, vec3_t target );
 float BotAimNegligence( gentity_t *self, botTarget_t target );
 
 // targets
-void        BotSetTarget( botTarget_t *target, gentity_t *ent, vec3_t *pos );
+void        BotSetTarget( botTarget_t *target, gentity_t *ent, vec3_t pos );
 qboolean    BotTargetIsEntity( botTarget_t target );
 qboolean    BotTargetIsPlayer( botTarget_t target );
 qboolean    BotTargetIsVisible( gentity_t *self, botTarget_t target, int mask );
