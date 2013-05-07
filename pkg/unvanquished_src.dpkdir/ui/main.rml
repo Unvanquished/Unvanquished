@@ -73,10 +73,6 @@
 		<img style="position: fixed; width: 25%; left: 25%; top: 600px;" src="/ui/assets/dretch2.png"/>
 		<img style="position: fixed; width: 15%; left: 75%; top: 650px;" src="/ui/assets/dretch1.png"/>
 	</div>
-	<div>
-		<test value="test"></test>
-		<pic width="800" height="450" />
-	</div>
 	<div id="background">
 		<img style="height: 100%; width: 100%;" src="/ui/assets/mainmenu.jpg" />
 	</div>
