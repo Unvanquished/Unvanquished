@@ -641,16 +641,17 @@ static const struct AIActionMap_s
 	int          maxparams;
 } AIActions[] =
 {
-	{ "buy",    BotActionBuy,    1, 4 },
-	{ "equip",  BotActionBuy,    0, 0 },
-	{ "evolve", BotActionEvolve, 0, 0 },
-	{ "fight",  BotActionFight,  0, 0 },
-	{ "flee",   BotActionFlee,   0, 0 },
-	{ "heal",   BotActionHeal,   0, 0 },
-	{ "moveTo", BotActionMoveTo, 1, 2 },
-	{ "repair", BotActionRepair, 0, 0 },
-	{ "roam",   BotActionRoam,   0, 0 },
-	{ "rush",   BotActionRush,   0, 0 }
+	{ "buy",          BotActionBuy,          1, 4 },
+	{ "equip",        BotActionBuy,          0, 0 },
+	{ "evolve",       BotActionEvolve,       0, 0 },
+	{ "fight",        BotActionFight,        0, 0 },
+	{ "flee",         BotActionFlee,         0, 0 },
+	{ "heal",         BotActionHeal,         0, 0 },
+	{ "moveTo",       BotActionMoveTo,       1, 2 },
+	{ "repair",       BotActionRepair,       0, 0 },
+	{ "roam",         BotActionRoam,         0, 0 },
+	{ "roamInRadius", BotActionRoamInRadius, 2, 2 },
+	{ "rush",         BotActionRush,         0, 0 }
 };
 
 /*

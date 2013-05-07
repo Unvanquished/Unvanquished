@@ -565,6 +565,57 @@ AINodeStatus_t BotActionFlee( gentity_t *self, AIGenericNode_t *node )
 	return STATUS_RUNNING;
 }
 
+AINodeStatus_t BotActionRoamInRadius( gentity_t *self, AIGenericNode_t *node )
+{
+	AIActionNode_t *a = ( AIActionNode_t * ) node;
+	AIEntity_t e = ( AIEntity_t ) AIUnBoxInt( a->params[ 0 ] );
+	float radius = AIUnBoxFloat( a->params[ 1 ] );
+
+	if ( node != self->botMind->currentNode )
+	{
+		vec3_t point;
+		gentity_t *ent= NULL;
+
+		if ( e < BA_NUM_BUILDABLES )
+		{
+			ent = self->botMind->closestBuildings[ e ].ent;
+		}
+		else if ( e == E_ENEMY )
+		{
+			ent = self->botMind->bestEnemy.ent;
+		}
+		else if ( e == E_DAMAGEDBUILDING )
+		{
+			ent = self->botMind->closestDamagedBuilding.ent;
+		}
+		else 
+		{
+			return STATUS_FAILURE;
+		}
+
+		if ( !trap_BotFindRandomPointInRadius( self->s.number, ent->s.origin, point, radius ) )
+		{
+			return STATUS_FAILURE;
+		}
+
+		if ( !BotChangeGoalPos( self, point ) )
+		{
+			return STATUS_FAILURE;
+		}
+	}
+
+	if ( self->botMind->directPathToGoal && DistanceToGoal2DSquared( self ) < Square( 70 ) )
+	{
+		return STATUS_SUCCESS;
+	}
+	else
+	{
+		BotMoveToGoal( self );
+	}
+
+	return STATUS_RUNNING;
+}
+
 AINodeStatus_t BotActionRoam( gentity_t *self, AIGenericNode_t *node )
 {
 	// we are just starting to roam, get a target location
