@@ -28,6 +28,7 @@ selector priority
 			{
 				action heal
 			}
+			action evolve
 			action roamInRadius( E_A_OVERMIND, 500 )
 		}
 	}
