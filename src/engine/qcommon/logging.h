@@ -71,7 +71,7 @@ typedef enum
 
 typedef struct
 {
-	const char* category;
+	const char* source;
 	log_level_t level;
 	const char* message;
 } log_event_t;

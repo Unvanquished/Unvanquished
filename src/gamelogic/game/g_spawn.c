@@ -214,6 +214,7 @@ static const fieldDescriptor_t fields[] =
 	{ "period",              FOFS( config.period ),       F_TIME       },
 	{ "radius",              FOFS( activatedPosition ),   F_3D_VECTOR  }, // What's with the variable abuse everytime?
 	{ "random",              FOFS( config.wait.variance ),F_FLOAT,     ENT_V_TMPNAME, "wait" },
+	{ "replacement",         FOFS( shaderReplacement ),   F_STRING     },
 	{ "shader",              FOFS( shaderKey ),           F_STRING     },
 	{ "sound1to2",           FOFS( sound1to2 ),           F_SOUNDINDEX },
 	{ "sound2to1",           FOFS( sound2to1 ),           F_SOUNDINDEX },
@@ -228,8 +229,8 @@ static const fieldDescriptor_t fields[] =
 	{ "target4",             FOFS( targets ),             F_TARGET     }, // backwardcompatibility with AMP and to use the blackout map for testing
 	{ "targetname",          FOFS( names[ 1 ] ),          F_STRING,    ENT_V_TMPNAME, "name" }, //radiants ui sadly strongly encourages the "targetname" keyword
 	{ "targetname2",         FOFS( names[ 2 ] ),          F_STRING,    ENT_V_RENAMED, "name" }, // backwardcompatibility with AMP and to use the blackout map for testing
-	{ "targetShaderName",    FOFS( shaderKey ),           F_STRING,    ENT_V_TMPNAME, "shader"},
-	{ "targetShaderNewName", FOFS( shaderReplacement ),   F_STRING     },
+	{ "targetShaderName",    FOFS( shaderKey ),           F_STRING,    ENT_V_RENAMED, "shader"},
+	{ "targetShaderNewName", FOFS( shaderReplacement ),   F_STRING,    ENT_V_RENAMED, "replacement"},
 	{ "team",                FOFS( conditions.team ),     F_INT        },
 	{ "wait",                FOFS( config.wait ),         F_TIME       },
 	{ "yaw",                 FOFS( s.angles ),            F_YAW        },
@@ -352,6 +353,8 @@ static const entityClassDescriptor_t entityClassDescriptions[] =
 	{ S_gfx_particle_system,      SP_gfx_particle_system,    CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
 	{ S_gfx_portal_camera,        SP_gfx_portal_camera,      CHAIN_TARGET,     ENT_V_UNCLEAR, NULL },
 	{ S_gfx_portal_surface,       SP_gfx_portal_surface,     CHAIN_AUTONOMOUS, ENT_V_UNCLEAR, NULL },
+	{ S_gfx_shader_mod,           SP_gfx_shader_mod,         CHAIN_PASSIV,     ENT_V_UNCLEAR, NULL },
+
 
 	/**
 	 * former information and misc entities, now deprecated

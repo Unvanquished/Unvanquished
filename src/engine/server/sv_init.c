@@ -763,7 +763,7 @@ void SV_SpawnServer( char *server )
 
 		if ( strlen( p ) == 0 )
 		{
-			Com_Printf(_( "WARNING: sv_pure set but no PK3 files loaded\n" ));
+			Com_Log(LOG_WARN, _( "sv_pure set but no PK3 files loaded" ));
 		}
 
 		p = FS_LoadedPakNames();
