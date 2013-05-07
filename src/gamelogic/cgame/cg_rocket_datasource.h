@@ -40,6 +40,7 @@ Maryland 20850 USA.
 #define MAX_INPUTS 16
 #define MAX_OUTPUTS 16
 #define MAX_MODS 64
+#define MAX_DEMOS 256
 
 
 typedef struct server_s
@@ -91,3 +92,8 @@ int voipInputIndex;
 char *alOutputs[ MAX_OUTPUTS ];
 int alOutputsCount = 0;
 int alOutputIndex;
+
+char *demoList[ MAX_DEMOS ];
+int demoCount = 0;
+int demoIndex;
+

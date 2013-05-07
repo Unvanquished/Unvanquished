@@ -511,6 +511,65 @@ void CG_Rocket_CleanUpModList( void )
 	modCount = 0;
 }
 
+void CG_Rocket_BuildDemoList( const char *args )
+{
+	char  demolist[ 4096 ];
+	char demoExt[ 32 ];
+	char  *demoname;
+	int   i, len;
+
+	Com_sprintf( demoExt, sizeof( demoExt ), "dm_%d", ( int ) trap_Cvar_VariableIntegerValue( "protocol" ) );
+
+	demoCount = trap_FS_GetFileList( "demos", demoExt, demolist, 4096 );
+
+	Com_sprintf( demoExt, sizeof( demoExt ), ".dm_%d", ( int ) trap_Cvar_VariableIntegerValue( "protocol" ) );
+
+	if ( demoCount )
+	{
+		if ( demoCount > MAX_DEMOS )
+		{
+			demoCount = MAX_DEMOS;
+		}
+
+		demoname = demolist;
+
+		for ( i = 0; i < demoCount; i++ )
+		{
+			len = strlen( demoname );
+
+			if ( !Q_stricmp( demoname +  len - strlen( demoExt ), demoExt ) )
+			{
+				demoname[ len - strlen( demoExt ) ] = '\0';
+			}
+
+			demoList[ i ] = BG_strdup( demoname );
+			demoname += len + 1;
+		}
+	}
+
+	demolist[ 0 ] = '\0';
+
+	for ( i = 0; i < demoCount; ++i )
+	{
+		Info_SetValueForKey( demolist, "name", demoList[ i ], qfalse );
+
+		trap_Rocket_DSAddRow( "demoList", "default", demolist );
+	}
+}
+
+void CG_Rocket_CleanUpDemoList( void )
+{
+	int i;
+
+	for ( i = 0; i < demoCount; ++i )
+	{
+		BG_Free( demoList[ i ] );
+	}
+
+	demoCount = 0;
+}
+
+
 static void nullSortFunc( const char *name, const char *sortBy )
 {
 }
@@ -526,6 +585,7 @@ typedef struct
 static const dataSourceCmd_t dataSourceCmdList[] =
 {
 	{ "alOutputs", &CG_Rocket_BuildAlOutputs, &nullSortFunc, &CG_Rocket_CleanUpAlOutputs },
+	{ "demoList", &CG_Rocket_BuildDemoList, &nullSortFunc, &CG_Rocket_CleanUpDemoList },
 	{ "languages", &CG_Rocket_BuildLanguageList, &nullSortFunc, &CG_Rocket_CleanUpLanguageList },
 	{ "modList", &CG_Rocket_BuildModList, &nullSortFunc, &CG_Rocket_CleanUpModList },
 	{ "resolutions", &CG_Rocket_BuildResolutionList, &CG_Rocket_SortResolutionList, &CG_Rocket_CleanUpResolutionList },

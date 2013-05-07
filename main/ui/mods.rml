@@ -1,0 +1,31 @@
+<rml>
+    <head>
+        <title>Mods</title>
+        <link type="text/template" href="assets/window.rml" />
+        <style>
+        body
+        {
+			width: 50%;
+			height: 60%;
+			margin: auto;
+		}
+
+		div#content
+		{
+			overflow-y: auto;
+		}
+
+		div#title_bar div#icon
+		{
+			icon-image-s: 128px 179px;
+			icon-image-t: 152px 191px;
+		}
+        </style>
+    </head>
+    <body template="window" onload="buildDS modList" id="mods">
+	<datagrid source="modList.default">
+		<col fields="name" width="30%">Name:</col>
+		<col fields="description" width="70%">Description:</col>
+	</datagrid>
+    </body>
+</rml>
