@@ -196,17 +196,16 @@ typedef struct
 	AIExpType_t     *exp;
 } AIConditionNode_t;
 
-typedef struct
-{
-	AIBehaviorTree_t **trees;
-	int numTrees;
-	int maxTrees;
-} AITreeList_t;
+qboolean isBinaryOp( AIOpType_t op );
+qboolean isUnaryOp( AIOpType_t op );
 
-void              FreeBehaviorTree( AIBehaviorTree_t *tree );
-AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list );
-void              FreeTreeList( AITreeList_t *list );
-void              InitTreeList( AITreeList_t *list );
+AIValue_t AIBoxFloat( float f );
+AIValue_t AIBoxInt( int i );
+AIValue_t AIBoxToken( const pc_token_t *token );
+
+float     AIUnBoxFloat( AIValue_t v );
+int       AIUnBoxInt( AIValue_t v );
+double    AIUnBoxDouble( AIValue_t v );
 
 // standard behavior tree control-flow nodes
 AINodeStatus_t BotEvaluateNode( gentity_t *self, AIGenericNode_t *node );

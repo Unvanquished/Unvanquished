@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-#include "g_bot.h"
+#include "g_bot_parse.h"
 #include "g_bot_util.h"
 
 static botMemory_t g_botMind[MAX_CLIENTS];
