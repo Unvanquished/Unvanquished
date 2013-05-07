@@ -19,11 +19,10 @@ along with Daemon; if not, write to the Free Software
 Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
-#include "g_bot_ai.h"
-#include "g_local.h"
 
 #ifndef __BOT_HEADER
 #define __BOT_HEADER
+#include "g_local.h"
 
 typedef struct
 {
@@ -45,6 +44,7 @@ typedef struct
 	float aimShake;
 } botSkill_t;
 
+#include "g_bot_ai.h"
 #define MAX_NODE_DEPTH 20
 
 typedef struct 
