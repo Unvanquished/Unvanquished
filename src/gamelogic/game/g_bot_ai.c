@@ -588,20 +588,20 @@ AINodeStatus_t BotActionRoam( gentity_t *self, AIGenericNode_t *node )
 	return STATUS_RUNNING;
 }
 
-botTarget_t BotGetMoveToTarget( gentity_t *self, AIMoveToNode_t *node )
+botTarget_t BotGetMoveToTarget( gentity_t *self, AIEntity_t e )
 {
 	botTarget_t target;
 	gentity_t *ent = NULL;
 
-	if ( node->ent < BA_NUM_BUILDABLES )
+	if ( e < BA_NUM_BUILDABLES )
 	{
-		ent = self->botMind->closestBuildings[ node->ent ].ent;
+		ent = self->botMind->closestBuildings[ e ].ent;
 	}
-	else if ( node->ent == E_ENEMY )
+	else if ( e == E_ENEMY )
 	{
 		ent = self->botMind->bestEnemy.ent;
 	}
-	else if ( node->ent == E_DAMAGEDBUILDING )
+	else if ( e == E_DAMAGEDBUILDING )
 	{
 		ent = self->botMind->closestDamagedBuilding.ent;
 	}
@@ -612,11 +612,18 @@ botTarget_t BotGetMoveToTarget( gentity_t *self, AIMoveToNode_t *node )
 
 AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node )
 {
-	float radius;
-	AIMoveToNode_t *moveTo = ( AIMoveToNode_t * ) node;
+	float radius = 0;
+	AIActionNode_t *moveTo = ( AIActionNode_t * ) node;
+	AIEntity_t ent = ( AIEntity_t ) AIUnBoxInt( moveTo->params[ 0 ] );
+	
+	if ( moveTo->nparams > 1 )
+	{
+		radius = MAX( AIUnBoxFloat( moveTo->params[ 1 ] ), 0 );
+	}
+
 	if ( node != self->botMind->currentNode )
 	{
-		if ( !BotChangeGoal( self, BotGetMoveToTarget( self, moveTo ) ) )
+		if ( !BotChangeGoal( self, BotGetMoveToTarget( self, ent ) ) )
 		{
 			return STATUS_FAILURE;
 		}
@@ -637,13 +644,9 @@ AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node )
 
 	BotMoveToGoal( self );
 
-	if ( moveTo->range == -1 )
+	if ( radius == 0 )
 	{
 		radius = BotGetGoalRadius( self );
-	}
-	else
-	{
-		radius = moveTo->range;
 	}
 
 	if ( DistanceToGoal2DSquared( self ) <= Square( radius ) && self->botMind->directPathToGoal )
@@ -940,16 +943,46 @@ AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 }
 AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 {
-	AIBuyNode_t *buy = ( AIBuyNode_t * ) node;
-
-	weapon_t weapon = buy->weapon;
-	upgrade_t *upgrades = buy->upgrades;
-	int numUpgrades = buy->numUpgrades;
+	AIActionNode_t *buy = ( AIActionNode_t * ) node;
+	
+	weapon_t  weapon;
+	upgrade_t upgrades[3];
+	int numUpgrades = MAX( buy->nparams - 1, 0 );
 	int i;
 
-	if ( weapon == WP_NONE && numUpgrades == 0 )
+	if ( buy->nparams == 0 )
 	{
 		BotGetDesiredBuy( self, &weapon, upgrades, &numUpgrades );
+	}
+	else
+	{
+		if ( buy->nparams >= 1 )
+		{
+			weapon = AIUnBoxInt( buy->params[ 0 ] );
+
+			if ( weapon < WP_NONE || weapon >= WP_NUM_WEAPONS )
+			{
+				BotDPrintf( S_COLOR_YELLOW "WARNING: parameter 1 to action buy out of range\n" );
+				weapon = WP_NONE;
+			}
+		}
+
+		if ( numUpgrades )
+		{
+			int j = 0;
+			int n = numUpgrades;
+			for ( i = 0; i < n; i++ )
+			{
+				upgrades[ i - j ] = AIUnBoxInt( buy->params[ i + 1 ] );
+
+				if ( upgrades[ i - j ] <= UP_NONE || upgrades[ i - j ] >= UP_NUM_UPGRADES )
+				{
+					BotDPrintf( S_COLOR_YELLOW "WARNING: parameter %d to action buy out of range\n", i + 1 );
+					numUpgrades--;
+					j++;
+				}
+			}
+		}
 	}
 
 	if ( !g_bot_buy.integer )

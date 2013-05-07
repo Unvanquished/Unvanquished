@@ -95,23 +95,6 @@ typedef struct
 	int maxFail;
 } AINodeList_t;
 
-typedef struct
-{
-	AINode_t type;
-	AINodeRunner run;
-	weapon_t weapon;
-	upgrade_t upgrades[ 3 ];
-	int numUpgrades;
-} AIBuyNode_t;
-
-typedef struct
-{
-	AINode_t type;
-	AINodeRunner run;
-	AIEntity_t ent;
-	float range;
-} AIMoveToNode_t;
-
 // operations used in condition nodes
 // ordered according to precedence
 // lower values == higher precedence
@@ -195,6 +178,14 @@ typedef struct
 	AIGenericNode_t *child;
 	AIExpType_t     *exp;
 } AIConditionNode_t;
+
+typedef struct
+{
+	AINode_t     type;
+	AINodeRunner run;
+	AIValue_t    *params;
+	int          nparams;
+} AIActionNode_t;
 
 qboolean isBinaryOp( AIOpType_t op );
 qboolean isUnaryOp( AIOpType_t op );

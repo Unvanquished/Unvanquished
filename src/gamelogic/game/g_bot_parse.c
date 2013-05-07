@@ -305,44 +305,14 @@ static AIValue_t *newValueLiteral( pc_token_list **list )
 	return ret;
 }
 
-static AIValueFunc_t *newValueFunc( pc_token_list **list )
+static AIValue_t *parseFunctionParameters( pc_token_list **list, int *nparams, int minparams, int maxparams )
 {
-	AIValueFunc_t *ret = NULL;
-	AIValueFunc_t v;
 	pc_token_list *current = *list;
-	pc_token_list *parenBegin = NULL;
-	pc_token_list *parenEnd = NULL;
-	pc_token_list *parse = NULL;
-	int numParams = 0;
-	struct AIConditionMap_s *f;
-
-	memset( &v, 0, sizeof( v ) );
-
-	f = bsearch( current->token.string, conditionFuncs, ARRAY_LEN( conditionFuncs ), sizeof( *conditionFuncs ), cmdcmp );
-
-	if ( !f )
-	{
-		BotError( "Unknown function: %s on line %d\n", current->token.string, current->token.line );
-		*list = current->next;
-		return NULL;
-	}
-
-	v.expType = EX_FUNC;
-	v.retType = f->retType;
-	v.func =    f->func;
-	v.nparams = f->nparams;
-
-	parenBegin = current->next;
-
-	// if the function has no parameters, allow it to be used without parenthesis
-	if ( v.nparams == 0 && parenBegin->token.string[ 0 ] != '(' )
-	{
-		ret = ( AIValueFunc_t * ) BG_Alloc( sizeof( *ret ) );
-		memcpy( ret, &v, sizeof( *ret ) );
-
-		*list = current->next;
-		return ret;
-	}
+	pc_token_list *parenBegin = current->next;
+	pc_token_list *parenEnd;
+	pc_token_list *parse;
+	AIValue_t     *params;
+	int           numParams = 0;
 
 	// functions should always be proceeded by a '(' if they have parameters
 	if ( !expectToken( "(", &parenBegin, qfalse ) )
@@ -380,14 +350,84 @@ static AIValueFunc_t *newValueFunc( pc_token_list **list )
 	}
 
 	// warn if too many or too few parameters
-	if ( numParams < v.nparams )
+	if ( numParams < minparams )
 	{
-		G_Printf( S_COLOR_YELLOW "WARNING: too few parameters for %s on line %d\n", current->token.string, current->token.line );
+		BotError( "too few parameters for %s on line %d\n", current->token.string, current->token.line );
+		*list = parenEnd->next;
+		return NULL;
 	}
 
-	if ( numParams > v.nparams )
+	if ( numParams > maxparams )
 	{
-		G_Printf( S_COLOR_YELLOW "WARNING: too many parameters for %s on line %d\n", current->token.string, current->token.line );
+		BotError( "too many parameters for %s on line %d\n", current->token.string, current->token.line );
+		*list = parenEnd->next;
+		return NULL;
+	}
+
+	*nparams = numParams;
+
+	if ( numParams )
+	{
+		// add the parameters
+		params = ( AIValue_t * ) BG_Alloc( sizeof( *params ) * numParams );
+
+		numParams = 0;
+		parse = parenBegin->next;
+		while ( parse != parenEnd )
+		{
+			if ( parse->token.type == TT_NUMBER )
+			{
+				params[ numParams ] = AIBoxToken( &parse->token );
+				numParams++;
+			}
+			parse = parse->next;
+		}
+	}
+	*list = parenEnd->next;
+	return params;
+}
+
+static AIValueFunc_t *newValueFunc( pc_token_list **list )
+{
+	AIValueFunc_t *ret = NULL;
+	AIValueFunc_t v;
+	pc_token_list *current = *list;
+	pc_token_list *parenBegin = NULL;
+	struct AIConditionMap_s *f;
+
+	memset( &v, 0, sizeof( v ) );
+
+	f = bsearch( current->token.string, conditionFuncs, ARRAY_LEN( conditionFuncs ), sizeof( *conditionFuncs ), cmdcmp );
+
+	if ( !f )
+	{
+		BotError( "Unknown function: %s on line %d\n", current->token.string, current->token.line );
+		*list = current->next;
+		return NULL;
+	}
+
+	v.expType = EX_FUNC;
+	v.retType = f->retType;
+	v.func =    f->func;
+	v.nparams = f->nparams;
+
+	parenBegin = current->next;
+
+	// if the function has no parameters, allow it to be used without parenthesis
+	if ( v.nparams == 0 && parenBegin->token.string[ 0 ] != '(' )
+	{
+		ret = ( AIValueFunc_t * ) BG_Alloc( sizeof( *ret ) );
+		memcpy( ret, &v, sizeof( *ret ) );
+
+		*list = current->next;
+		return ret;
+	}
+
+	v.params = parseFunctionParameters( list, &v.nparams, f->nparams, f->nparams );
+
+	if ( !v.params && f->nparams > 0 )
+	{
+		return NULL;
 	}
 
 	// create the value op
@@ -396,24 +436,6 @@ static AIValueFunc_t *newValueFunc( pc_token_list **list )
 	// copy the members
 	memcpy( ret, &v, sizeof( *ret ) );
 
-	if ( ret->nparams )
-	{
-		// add the parameters
-		ret->params = ( AIValue_t * ) BG_Alloc( sizeof( *ret->params ) * ret->nparams );
-
-		numParams = 0;
-		parse = parenBegin->next;
-		while ( parse != parenEnd )
-		{
-			if ( parse->token.type == TT_NUMBER )
-			{
-				ret->params[ numParams ] = AIBoxToken( &parse->token );
-				numParams++;
-			}
-			parse = parse->next;
-		}
-	}
-	*list = parenEnd->next;
 	return ret;
 }
 
@@ -611,6 +633,26 @@ AIGenericNode_t *ReadConditionNode( pc_token_list **tokenlist )
 	return ( AIGenericNode_t * ) condition;
 }
 
+static const struct AIActionMap_s
+{
+	const char   *name;
+	AINodeRunner run;
+	int          minparams;
+	int          maxparams;
+} AIActions[] =
+{
+	{ "buy",    BotActionBuy,    1, 4 },
+	{ "equip",  BotActionBuy,    0, 0 },
+	{ "evolve", BotActionEvolve, 0, 0 },
+	{ "fight",  BotActionFight,  0, 0 },
+	{ "flee",   BotActionFlee,   0, 0 },
+	{ "heal",   BotActionHeal,   0, 0 },
+	{ "moveTo", BotActionMoveTo, 1, 2 },
+	{ "repair", BotActionRepair, 0, 0 },
+	{ "roam",   BotActionRoam,   0, 0 },
+	{ "rush",   BotActionRush,   0, 0 }
+};
+
 /*
 ======================
 ReadActionNode
@@ -619,16 +661,18 @@ Parses and creates an AIGenericNode_t with the type ACTION_NODE from a token lis
 The token list pointer is modified to point to the beginning of the next node text block after reading
 
 An action node has the form:
-action [type]
+action name( p1, p2, ... )
 
-Where [type] defines which action to execute
+Where name defines the action to execute, and the parameters are surrounded by parenthesis
 ======================
 */
 AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
 {
 	pc_token_list *current = *tokenlist;
-
-	AIGenericNode_t *node = NULL;
+	pc_token_list *parenBegin;
+	AIActionNode_t        *ret = NULL;
+	AIActionNode_t        node;
+	struct AIActionMap_s  *action = NULL;
 
 	if ( !expectToken( "action", &current, qtrue ) )
 	{
@@ -641,71 +685,52 @@ AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
 		return NULL;
 	}
 
-	if ( !Q_stricmp( current->token.string, "heal" ) )
-	{
-		node = allocNode( AIGenericNode_t );
-		BotInitNode( ACTION_NODE, BotActionHeal, node );
-	}
-	else if ( !Q_stricmp( current->token.string, "fight" ) )
-	{
-		node = allocNode( AIGenericNode_t );
-		BotInitNode( ACTION_NODE, BotActionFight, node );
-	}
-	else if ( !Q_stricmp( current->token.string, "roam" ) )
-	{
-		node = allocNode( AIGenericNode_t );
-		BotInitNode( ACTION_NODE, BotActionRoam, node );
-	}
-	else if ( !Q_stricmp( current->token.string, "equip" ) )
-	{
-		AIBuyNode_t *realAction = allocNode( AIBuyNode_t );
-		realAction->numUpgrades = 0;
-		realAction->weapon = WP_NONE;
+	action = bsearch( current->token.string, AIActions, ARRAY_LEN( AIActions ), sizeof( *AIActions ), cmdcmp );
 
-		BotInitNode( ACTION_NODE, BotActionBuy, realAction );
-		node = ( AIGenericNode_t * ) realAction;
-	}
-	else if ( !Q_stricmp( current->token.string, "buy" ) )
+	if ( !action )
 	{
-		AIBuyNode_t *realAction = allocNode( AIBuyNode_t );
-
-		current = current->next;
-
-		CheckToken( "weapon", "action buy", &current->token, TT_NUMBER );
-
-		realAction->weapon = ( weapon_t ) current->token.intvalue;
-		realAction->numUpgrades = 0;
-
-		BotInitNode( ACTION_NODE, BotActionBuy, realAction );
-		node = ( AIGenericNode_t * ) realAction;
-	}
-	else if ( !Q_stricmp( current->token.string, "flee" ) )
-	{
-		node = allocNode( AIGenericNode_t );
-		BotInitNode( ACTION_NODE, BotActionFlee, node );
-	}
-	else if ( !Q_stricmp( current->token.string, "repair" ) )
-	{
-		node = allocNode( AIGenericNode_t );
-		BotInitNode( ACTION_NODE, BotActionRepair, node );
-	}
-	else if ( !Q_stricmp( current->token.string, "evolve" ) )
-	{
-		node = allocNode( AIGenericNode_t );
-		BotInitNode( ACTION_NODE, BotActionEvolve, node );
-	}
-	else if ( !Q_stricmp( current->token.string, "rush" ) )
-	{
-		node = allocNode( AIGenericNode_t );
-		BotInitNode( ACTION_NODE, BotActionRush, node );
-	}
-	else
-	{
-		BotError( "Invalid token %s on line %d\n", current->token.string, current->token.line );
+		BotError( "%s on line %d is not a valid action\n", current->token.string, current->token.line );
+		*tokenlist = current;
+		return NULL;
 	}
 
-	*tokenlist = current->next;
-	return ( AIGenericNode_t * ) node;
+	// if this action doesn't have any parameters, save memory by allocating a small AIGenericNode_t
+	if ( action->minparams == 0 && action->maxparams == 0 )
+	{
+		ret = ( AIActionNode_t * ) allocNode(  AIGenericNode_t );
+		BotInitNode( ACTION_NODE, action->run, ret );
+		*tokenlist = current->next;
+		return ( AIGenericNode_t * ) ret;
+	}
+
+	parenBegin = current->next;
+
+	memset( &node, 0, sizeof( node ) );
+
+	BotInitNode( ACTION_NODE, action->run, &node );
+
+	// allow dropping of parenthesis if we don't require any parameters
+	if ( action->minparams == 0 && parenBegin->token.string[0] != '(' )
+	{
+		ret = allocNode( AIActionNode_t );
+		memcpy( ret, &node, sizeof( node ) );
+		*tokenlist = parenBegin;
+		return ( AIGenericNode_t * ) ret;
+	}
+
+	node.params = parseFunctionParameters( &current, &node.nparams, action->minparams, action->maxparams );
+
+	if ( !node.params && action->minparams > 0 )
+	{
+		return NULL;
+	}
+
+	// create the action node
+	ret = allocNode( AIActionNode_t );
+	memcpy( ret, &node, sizeof( *ret ) );
+
+	*tokenlist = current;
+	return ( AIGenericNode_t * ) ret;
 }
 
 /*
