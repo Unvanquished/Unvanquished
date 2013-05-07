@@ -1,24 +1,34 @@
 selector priority
-{
-	condition !alertedToEnemy
+{	
+	condition alertedToEnemy
+	{
+		action fight
+	}
+	
+	condition team == TEAM_HUMANS
 	{
 		selector priority
 		{
-			condition team == TEAM_HUMANS
+			action equip
+			
+			condition percentHealth < 1.0 || !haveUpgrade( UP_MEDKIT )
 			{
-				action equip
+				action heal
 			}
-			action heal
-			action flee
+			
+			action roamInRadius( E_H_REACTOR, 500 )
 		}
 	}
-	
-	condition alertedToEnemy
+
+	condition team == TEAM_ALIENS
 	{
-		selector sequence
+		selector priority
 		{
-			condition distanceTo( E_ENEMY ) < 500
-			action fight
+			condition percentHealth < 1.0
+			{
+				action heal
+			}
+			action roamInRadius( E_A_OVERMIND, 500 )
 		}
 	}
 }
