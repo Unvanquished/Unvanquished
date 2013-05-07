@@ -134,7 +134,7 @@ void CG_Rocket_Init( void )
 			break;
 		}
 
-		// Ignore openning bracket
+		// Ignore opening bracket
 		if ( *token == '{' )
 		{
 			continue;
