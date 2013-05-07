@@ -55,6 +55,12 @@ static void CG_Rocket_EventShow( const char *args )
 	trap_Rocket_DocumentAction( args, "show" );
 }
 
+static void CG_Rocket_EventBlur( const char *args )
+{
+	trap_Rocket_DocumentAction( args, "blur" );
+}
+
+
 static void CG_Rocket_InitServers( const char *args )
 {
 	trap_LAN_ResetPings( CG_StringToNetSource( args ) );
@@ -144,12 +150,6 @@ static void CG_Rocket_SortDS( const char *args )
 	Com_Printf( "^3WARNING: Invalid syntax for 'sortDS'\n sortDS <data source> <table name> <sort by>\n" );
 }
 
-
-
-
-
-
-
 typedef struct
 {
 	const char *command;
@@ -158,6 +158,7 @@ typedef struct
 
 static const eventCmd_t eventCmdList[] =
 {
+	{ "blur", &CG_Rocket_EventBlur },
 	{ "buildDS", &CG_Rocket_BuildDS },
 	{ "close", &CG_Rocket_EventClose },
 	{ "cvarform", &CG_Rocket_EventCvarForm },

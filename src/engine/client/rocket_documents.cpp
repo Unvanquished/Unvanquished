@@ -115,4 +115,12 @@ void Rocket_DocumentAction( const char *name, const char *action )
 	{
 		Rocket_LoadDocument( name );
 	}
+	else if ( !Q_stricmp( "blur", action ) || !Q_stricmp( "hide", action ) )
+	{
+		Rocket::Core::ElementDocument* document = context->GetDocument( name );
+		if ( document )
+		{
+			document->Blur();
+		}
+	}
 }
