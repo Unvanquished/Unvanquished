@@ -149,6 +149,11 @@ static AIValue_t botClass( gentity_t *self, const AIValue_t *params )
 	return AIBoxInt( self->client->ps.stats[ STAT_CLASS ] );
 }
 
+static AIValue_t botSkill( gentity_t *self, const AIValue_t *params )
+{
+	return AIBoxInt( self->botMind->botSkill.level );
+}
+
 // functions accessible to the behavior tree for use in condition nodes
 static const struct AIConditionMap_s
 {
@@ -167,6 +172,7 @@ static const struct AIConditionMap_s
 	{ "haveWeapon",        VALUE_INT,   haveWeapon,        1 },
 	{ "healScore",         VALUE_FLOAT, healScore,         0 },
 	{ "percentHealth",     VALUE_FLOAT, botHealth,         0 },
+	{ "skill",             VALUE_INT,   botSkill,          0 },
 	{ "team",              VALUE_INT,   botTeam,           0 },
 	{ "teamateHasWeapon",  VALUE_INT,   teamateHasWeapon,  1 },
 	{ "weapon",            VALUE_INT,   currentWeapon,     0 }
