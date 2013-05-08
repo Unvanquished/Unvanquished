@@ -696,15 +696,6 @@ AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
 		return NULL;
 	}
 
-	// if this action doesn't have any parameters, save memory by allocating a small AIGenericNode_t
-	if ( action->minparams == 0 && action->maxparams == 0 )
-	{
-		ret = ( AIActionNode_t * ) allocNode(  AIGenericNode_t );
-		BotInitNode( ACTION_NODE, action->run, ret );
-		*tokenlist = current->next;
-		return ( AIGenericNode_t * ) ret;
-	}
-
 	parenBegin = current->next;
 
 	memset( &node, 0, sizeof( node ) );
@@ -1184,6 +1175,12 @@ void FreeNodeList( AINodeList_t *node )
 	BG_Free( node );
 }
 
+void FreeActionNode( AIActionNode_t *action )
+{
+	BG_Free( action->params );
+	BG_Free( action );
+}
+
 void FreeNode( AIGenericNode_t *node )
 {
 	if ( !node )
@@ -1191,17 +1188,19 @@ void FreeNode( AIGenericNode_t *node )
 		return;
 	}
 
-	if ( node->type == SELECTOR_NODE )
+	switch( node->type )
 	{
-		FreeNodeList( ( AINodeList_t * ) node );
-	}
-	else if ( node->type == CONDITION_NODE )
-	{
-		FreeConditionNode( ( AIConditionNode_t * ) node );
-	}
-	else if ( node->type == ACTION_NODE )
-	{
-		BG_Free( node );
+		case SELECTOR_NODE:
+			FreeNodeList( ( AINodeList_t * ) node );
+			break;
+		case CONDITION_NODE:
+			FreeConditionNode( ( AIConditionNode_t * ) node );
+			break;
+		case ACTION_NODE:
+			FreeActionNode( ( AIActionNode_t * ) node );
+			break;
+		default:
+			break;
 	}
 }
 
