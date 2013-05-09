@@ -46,9 +46,12 @@ Maryland 20850 USA.
 typedef struct server_s
 {
 	char *name;
+	char *label;
 	int clients;
 	int bots;
 	int ping;
+	int maxClients;
+	char *addr;
 } server_t;
 
 server_t servers[ MAX_SERVERS ];

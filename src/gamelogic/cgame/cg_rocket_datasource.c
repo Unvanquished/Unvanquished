@@ -35,7 +35,7 @@ Maryland 20850 USA.
 #include "cg_local.h"
 #include "cg_rocket_datasource.h"
 
-static void AddToServerList( char *name, int clients, int bots, int ping )
+static void AddToServerList( char *name, char *label, int clients, int bots, int ping, int maxClients, char *addr )
 {
 	server_t *node;
 
@@ -50,6 +50,10 @@ static void AddToServerList( char *name, int clients, int bots, int ping )
 	node->clients = clients;
 	node->bots = bots;
 	node->ping = ping;
+	node->maxClients = maxClients;
+	node->addr = BG_strdup( addr );
+	node->label = BG_strdup( label );
+
 	serverCount++;
 }
 
@@ -80,7 +84,7 @@ static void CG_Rocket_BuildServerList( const char *args )
 		for ( i = 0; i < numServers; ++i )
 		{
 			char info[ MAX_STRING_CHARS ];
-			int ping, bots, clients;
+			int ping, bots, clients, maxClients;
 
 			Com_Memset( &data, 0, sizeof( data ) );
 
@@ -97,8 +101,9 @@ static void CG_Rocket_BuildServerList( const char *args )
 
 				bots = atoi( Info_ValueForKey( info, "bots" ) );
 				clients = atoi( Info_ValueForKey( info, "clients" ) );
+				maxClients = atoi( Info_ValueForKey( info, "maxClients" ) );
 
-				AddToServerList( Info_ValueForKey( info, "hostname" ), clients, bots, ping );
+				AddToServerList( Info_ValueForKey( info, "hostname" ), Info_ValueForKey( info, "label" ), clients, bots, ping, maxClients, Info_ValueForKey( info, "addr" ) );
 			}
 		}
 
@@ -154,7 +159,9 @@ static void CG_Rocket_SortServerList( const char *name, const char *sortBy )
 		Info_SetValueForKey( data, "name", servers[ i ].name, qfalse );
 		Info_SetValueForKey( data, "players", va( "%d", servers[ i ].clients ), qfalse );
 		Info_SetValueForKey( data, "bots", va( "%d", servers[ i ].bots ), qfalse );
-		Info_SetValueForKey( data, "ping", va( "%d", servers[ i ].ping ), qfalse );
+		Info_SetValueForKey( data, "maxClients", va( "%d", servers[ i ].maxClients ), qfalse );
+		Info_SetValueForKey( data, "addr", servers[ i ].addr, qfalse );
+		Info_SetValueForKey( data, "label", servers[ i ].label, qfalse );
 
 		trap_Rocket_DSAddRow( "server_browser", name, data );
 	}
@@ -167,6 +174,8 @@ void CG_Rocket_CleanUpServerList( void )
 	for ( i = 0; i < serverCount; ++i )
 	{
 		BG_Free( servers[ i ].name );
+		BG_Free( servers[ i ].label );
+		BG_Free( servers[ i ].addr );
 	}
 
 	serverCount = 0;
