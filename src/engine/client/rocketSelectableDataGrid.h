@@ -40,7 +40,6 @@ extern "C"
 }
 #include <Rocket/Core.h>
 #include <Rocket/Controls.h>
-#include <boost/concept_check.hpp>
 
 class SelectableDataGrid : public Rocket::Controls::ElementDataGrid
 {
