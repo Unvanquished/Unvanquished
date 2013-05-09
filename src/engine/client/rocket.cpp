@@ -43,6 +43,7 @@ Maryland 20850 USA.
 #include "rocketDataGrid.h"
 #include "rocketDataFormatter.h"
 #include "rocketEventInstancer.h"
+#include "rocketSelectableDataGrid.h"
 
 extern "C"
 {
@@ -422,6 +423,9 @@ void Rocket_Init( void )
 	EventInstancer* event_instancer = new EventInstancer();
 	Rocket::Core::Factory::RegisterEventListenerInstancer( event_instancer );
 	event_instancer->RemoveReference();
+
+	// Add custom client elements
+	Rocket::Core::Factory::RegisterElementInstancer( "datagrid", new Rocket::Core::ElementInstancerGeneric< SelectableDataGrid >() )->RemoveReference();
 
 	Cmd_AddCommand( "rocket", Rocket_Rocket_f );
 
