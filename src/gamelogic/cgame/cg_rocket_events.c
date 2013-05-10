@@ -150,6 +150,20 @@ static void CG_Rocket_SortDS( const char *args )
 	Com_Printf( "^3WARNING: Invalid syntax for 'sortDS'\n sortDS <data source> <table name> <sort by>\n" );
 }
 
+static void CG_Rocket_ExecDS( const char *args )
+{
+	CG_Rocket_ExecDataSource( args );
+}
+
+static void CG_Rocket_SetDS( const char *args )
+{
+	char *p = BG_strdup( args );
+	char *n = strchr( args, ' ' );
+
+	*n = '\0';
+
+	CG_Rocket_SetDataSourceIndex( p, atoi( n + 1 ) );
+}
 typedef struct
 {
 	const char *command;
@@ -163,9 +177,11 @@ static const eventCmd_t eventCmdList[] =
 	{ "close", &CG_Rocket_EventClose },
 	{ "cvarform", &CG_Rocket_EventCvarForm },
 	{ "exec", &CG_Rocket_EventExec },
+	{ "execDS", &CG_Rocket_ExecDS },
 	{ "goto", &CG_Rocket_EventGoto },
 	{ "init_servers", &CG_Rocket_InitServers },
 	{ "open", &CG_Rocket_EventOpen },
+	{ "setDS", &CG_Rocket_SetDS },
 	{ "show", &CG_Rocket_EventShow },
 	{ "sortDS", &CG_Rocket_SortDS }
 };

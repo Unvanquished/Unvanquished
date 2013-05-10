@@ -62,6 +62,9 @@ public:
 	/// @param[in] event The event to process.
 	void ProcessEvent( Rocket::Core::Event& evt )
 	{
+		extern std::queue< RocketEvent_t* > eventQueue;
+		Rocket::Core::String dataSource = GetAttribute<Rocket::Core::String>( "source", "" );
+
 		ElementDataGrid::ProcessEvent( evt );
 
 		if( evt == "click" || evt == "dblclick" )
@@ -116,6 +119,11 @@ public:
 							lastSelectedRow->RemoveReference();
 						}
 					}
+					// Already selected. Exec it. dblclick doesn't seem to work
+					else
+					{
+						eventQueue.push( new RocketEvent_t( Rocket::Core::String( va ( "execDS %s", dataSource.Substring( 0, dataSource.Find( "." ) ).CString() ) ) ) );
+					}
 
 					// select clicked row
 					lastSelectedRow = row;
@@ -125,6 +133,10 @@ public:
 
 					row->SetPseudoClass( "selected", true );
 					row->AddReference();
+
+
+
+					eventQueue.push( new RocketEvent_t( Rocket::Core::String( va ( "setDS %s %d", dataSource.Substring( 0, dataSource.Find( "." ) ).CString(), index ) ) ) );
 				}
 
 				Rocket::Core::Dictionary parameters;

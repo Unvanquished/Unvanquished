@@ -57,6 +57,11 @@ static void AddToServerList( char *name, char *label, int clients, int bots, int
 	serverCount++;
 }
 
+static void CG_Rocket_SetServerListServer( int index )
+{
+	serverIndex = index;
+}
+
 static void CG_Rocket_BuildServerList( const char *args )
 {
 	char data[ MAX_INFO_STRING ] = { 0 };
@@ -97,13 +102,14 @@ static void CG_Rocket_BuildServerList( const char *args )
 
 			if ( qtrue || !Q_stricmp( args, "favorites" ) )
 			{
+				char addr[ 25 ];
 				trap_LAN_GetServerInfo( CG_StringToNetSource( args ), i, info, MAX_INFO_STRING );
-
+				
 				bots = atoi( Info_ValueForKey( info, "bots" ) );
 				clients = atoi( Info_ValueForKey( info, "clients" ) );
 				maxClients = atoi( Info_ValueForKey( info, "maxClients" ) );
-
-				AddToServerList( Info_ValueForKey( info, "hostname" ), Info_ValueForKey( info, "label" ), clients, bots, ping, maxClients, Info_ValueForKey( info, "addr" ) );
+				Q_strncpyz( addr, Info_ValueForKey( info, "addr" ), sizeof( addr ) );
+				AddToServerList( Info_ValueForKey( info, "hostname" ), Info_ValueForKey( info, "label" ), clients, bots, ping, maxClients, addr );
 			}
 		}
 
@@ -117,7 +123,9 @@ static void CG_Rocket_BuildServerList( const char *args )
 			Info_SetValueForKey( data, "name", servers[ i ].name, qfalse );
 			Info_SetValueForKey( data, "players", va( "%d", servers[ i ].clients ), qfalse );
 			Info_SetValueForKey( data, "bots", va( "%d", servers[ i ].bots ), qfalse );
-			Info_SetValueForKey( data, "ping", va( "%d", servers[ i ].ping ), qfalse );
+			Info_SetValueForKey( data, "maxClients", va( "%d", servers[ i ].maxClients ), qfalse );
+			Info_SetValueForKey( data, "addr", servers[ i ].addr, qfalse );
+			Info_SetValueForKey( data, "label", servers[ i ].label, qfalse );
 
 			trap_Rocket_DSAddRow( "server_browser", args, data );
 		}
@@ -181,6 +189,11 @@ void CG_Rocket_CleanUpServerList( void )
 	serverCount = 0;
 }
 
+void CG_Rocket_ExecServerList( void )
+{
+	trap_Cmd_ExecuteText( EXEC_APPEND, va( "connect %s", servers[ serverIndex ].addr ) );
+}
+
 static qboolean Parse( char **p, char **out )
 {
 	char *token;
@@ -210,6 +223,11 @@ static void AddToResolutionList( int w, int h )
 	node->width = w;
 	node->height = h;
 	resolutionCount++;
+}
+
+void CG_Rocket_SetResolutionListResolution( int index )
+{
+	resolutionIndex = index;
 }
 
 void CG_Rocket_BuildResolutionList( const char *args )
@@ -302,6 +320,11 @@ static void AddToLanguageList( char *name, char *lang )
 	languageCount++;
 }
 
+void CG_Rocket_SetLanguageListLanguage( int index )
+{
+	languageIndex = index;
+}
+
 // FIXME: use COM_Parse or something instead of this way
 void CG_Rocket_BuildLanguageList( const char *args )
 {
@@ -385,6 +408,11 @@ static void AddToVoipInputs( char *name )
 	voipInputs[ voipInputsCount++ ] = name;
 }
 
+void CG_Rocket_SetVoipInputsInput( int index )
+{
+	voipInputIndex = index;
+}
+
 void CG_Rocket_BuildVoIPInputs( const char *args )
 {
 	char buf[ MAX_STRING_CHARS ];
@@ -431,6 +459,11 @@ static void AddToAlOutputs( char *name )
 	alOutputs[ alOutputsCount++ ] = name;
 }
 
+void CG_Rocket_SetAlOutputsOutput( int index )
+{
+	alOutputIndex = index;
+}
+
 void CG_Rocket_BuildAlOutputs( const char *args )
 {
 	char buf[ MAX_STRING_CHARS ];
@@ -466,6 +499,11 @@ void CG_Rocket_CleanUpAlOutputs( void )
 	}
 
 	alOutputsCount = 0;
+}
+
+void CG_Rocket_SetModListMod( int index )
+{
+	modIndex = index;
 }
 
 void CG_Rocket_BuildModList( const char *args )
@@ -518,6 +556,11 @@ void CG_Rocket_CleanUpModList( void )
 	}
 
 	modCount = 0;
+}
+
+void CG_Rocket_SetDemoListDemo( int index )
+{
+	demoIndex = index;
 }
 
 void CG_Rocket_BuildDemoList( const char *args )
@@ -583,23 +626,29 @@ static void nullSortFunc( const char *name, const char *sortBy )
 {
 }
 
+static void nullExecFunc( void )
+{
+}
+
 typedef struct
 {
 	const char *name;
 	void ( *build ) ( const char *args );
 	void ( *sort ) ( const char *name, const char *sortBy );
 	void ( *cleanup ) ( void );
+	void ( *set ) ( int index );
+	void ( *exec ) ( void );
 } dataSourceCmd_t;
 
 static const dataSourceCmd_t dataSourceCmdList[] =
 {
-	{ "alOutputs", &CG_Rocket_BuildAlOutputs, &nullSortFunc, &CG_Rocket_CleanUpAlOutputs },
-	{ "demoList", &CG_Rocket_BuildDemoList, &nullSortFunc, &CG_Rocket_CleanUpDemoList },
-	{ "languages", &CG_Rocket_BuildLanguageList, &nullSortFunc, &CG_Rocket_CleanUpLanguageList },
-	{ "modList", &CG_Rocket_BuildModList, &nullSortFunc, &CG_Rocket_CleanUpModList },
-	{ "resolutions", &CG_Rocket_BuildResolutionList, &CG_Rocket_SortResolutionList, &CG_Rocket_CleanUpResolutionList },
-	{ "server_browser", &CG_Rocket_BuildServerList, &CG_Rocket_SortServerList, &CG_Rocket_CleanUpServerList },
-	{ "voipInputs", &CG_Rocket_BuildVoIPInputs, &nullSortFunc, &CG_Rocket_CleanUpVoIPInputs },
+	{ "alOutputs", &CG_Rocket_BuildAlOutputs, &nullSortFunc, &CG_Rocket_CleanUpAlOutputs, &CG_Rocket_SetAlOutputsOutput, &nullExecFunc },
+	{ "demoList", &CG_Rocket_BuildDemoList, &nullSortFunc, &CG_Rocket_CleanUpDemoList, &CG_Rocket_SetDemoListDemo, &nullExecFunc },
+	{ "languages", &CG_Rocket_BuildLanguageList, &nullSortFunc, &CG_Rocket_CleanUpLanguageList, &CG_Rocket_SetLanguageListLanguage, &nullExecFunc },
+	{ "modList", &CG_Rocket_BuildModList, &nullSortFunc, &CG_Rocket_CleanUpModList, &CG_Rocket_SetModListMod, &nullExecFunc },
+	{ "resolutions", &CG_Rocket_BuildResolutionList, &CG_Rocket_SortResolutionList, &CG_Rocket_CleanUpResolutionList, &CG_Rocket_SetResolutionListResolution, &nullExecFunc },
+	{ "server_browser", &CG_Rocket_BuildServerList, &CG_Rocket_SortServerList, &CG_Rocket_CleanUpServerList, &CG_Rocket_SetServerListServer, &CG_Rocket_ExecServerList },
+	{ "voipInputs", &CG_Rocket_BuildVoIPInputs, &nullSortFunc, &CG_Rocket_CleanUpVoIPInputs, &CG_Rocket_SetVoipInputsInput, &nullExecFunc },
 
 };
 
@@ -654,6 +703,30 @@ void CG_Rocket_SortDataSource( const char *dataSource, const char *name, const c
 	if ( cmd && cmd->sort )
 	{
 		cmd->sort( name, sortBy );
+	}
+}
+
+void CG_Rocket_SetDataSourceIndex( const char *dataSource, int index )
+{
+	dataSourceCmd_t *cmd;
+
+	cmd = bsearch( dataSource, dataSourceCmdList, dataSourceCmdListCount, sizeof( dataSourceCmd_t ), dataSourceCmdCmp );
+
+	if ( cmd && cmd->set )
+	{
+		cmd->set( index );
+	}
+}
+
+void CG_Rocket_ExecDataSource( const char *dataSource )
+{
+	dataSourceCmd_t *cmd;
+
+	cmd = bsearch( dataSource, dataSourceCmdList, dataSourceCmdListCount, sizeof( dataSourceCmd_t ), dataSourceCmdCmp );
+
+	if ( cmd && cmd->exec )
+	{
+		cmd->exec();
 	}
 }
 
