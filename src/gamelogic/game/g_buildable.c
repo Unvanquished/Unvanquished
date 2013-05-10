@@ -5375,7 +5375,7 @@ G_GetBuildableValueBP
 Calculates the value of buildables (in build points) for both teams.
 =================
 */
-void G_GetBuildableValueBP( int *alienValue, int *humanValue )
+void G_GetBuildableResourceValue( int *alienValue, int *humanValue )
 {
 	int       entityNum, *value;
 	gentity_t *ent;
