@@ -5409,6 +5409,6 @@ void G_GetBuildableValueBP( int *alienValue, int *humanValue )
 
 		attr = BG_Buildable( ent->s.modelindex );
 
-		*value += ( attr->buildPoints * ent->health ) / attr->health;
+		*value += ( attr->buildPoints * MAX( 0, ent->health ) ) / attr->health;
 	}
 }
