@@ -49,7 +49,7 @@ selector priority
 		{
 			condition !haveWeapon( WP_HBUILD )
 			{
-				action buy WP_HBUILD
+				action buy( WP_HBUILD )
 			}
 			
 			condition haveWeapon( WP_HBUILD )

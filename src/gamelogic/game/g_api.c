@@ -613,6 +613,11 @@ void trap_BotFindRandomPoint( int botClientNum, vec3_t point )
 	syscall( BOT_NAV_RANDOMPOINT, botClientNum, point );
 }
 
+qboolean trap_BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, vec3_t point, float radius )
+{
+	return syscall( BOT_NAV_RANDOMPOINTRADIUS, botClientNum, origin, point, PASSFLOAT( radius ) );
+}
+
 void trap_BotEnableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs )
 {
 	syscall( BOT_ENABLE_AREA, origin, mins, maxs );

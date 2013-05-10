@@ -240,6 +240,33 @@ extern "C" void BotFindRandomPoint( int botClientNum, vec3_t point )
 	recast2quake( point );
 }
 
+extern "C" qboolean BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, vec3_t point, float radius )
+{
+	vec3_t rorigin;
+	dtPolyRef nearPoly;
+	VectorCopy( origin, rorigin );
+	quake2recast( rorigin );
+	VectorSet( point, 0, 0, 0 );
+
+	Bot_t *bot = &agents[ botClientNum ];
+
+	if ( !BotFindNearestPoly( bot, rorigin, &nearPoly, point ) )
+	{
+		return qfalse;
+	}
+
+	dtPolyRef randRef;
+	dtStatus status = bot->nav->query->findRandomPointAroundCircle( nearPoly, rorigin, radius, &bot->nav->filter, frand, &randRef, point );
+	
+	if ( dtStatusFailed( status ) )
+	{
+		return qfalse;
+	}
+
+	recast2quake( point );
+	return qtrue;
+}
+
 extern "C" qboolean BotNavTrace( int botClientNum, botTrace_t *trace, const vec3_t start, const vec3_t end )
 {
 	vec3_t nearPoint;

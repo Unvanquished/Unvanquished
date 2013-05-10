@@ -27,6 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "g_bot.h"
 
 //g_bot.c
+void     BotError( const char* fmt, ... ) __attribute__( ( format( printf, 1, 2 ) ) );
 void     BotDPrintf( const char* fmt, ... ) __attribute__( ( format( printf, 1, 2 ) ) );
 qboolean PlayersBehindBotInSpawnQueue( gentity_t *self );
 void     BotSetSkillLevel( gentity_t *self, int skill );
@@ -50,7 +51,7 @@ void  BotAimAtLocation( gentity_t *self, vec3_t target );
 float BotAimNegligence( gentity_t *self, botTarget_t target );
 
 // targets
-void        BotSetTarget( botTarget_t *target, gentity_t *ent, vec3_t *pos );
+void        BotSetTarget( botTarget_t *target, gentity_t *ent, vec3_t pos );
 qboolean    BotTargetIsEntity( botTarget_t target );
 qboolean    BotTargetIsPlayer( botTarget_t target );
 qboolean    BotTargetIsVisible( gentity_t *self, botTarget_t target, int mask );
@@ -129,6 +130,7 @@ void     BotMoveInDir( gentity_t *self, uint32_t moveDir );
 void     BotStandStill( gentity_t *self );
 
 // navigation queries
+qboolean GoalInRange( gentity_t *self, float r );
 int      DistanceToGoal( gentity_t *self );
 int      DistanceToGoalSquared( gentity_t *self );
 int      DistanceToGoal2DSquared( gentity_t *self );

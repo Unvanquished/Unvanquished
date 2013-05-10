@@ -95,23 +95,6 @@ typedef struct
 	int maxFail;
 } AINodeList_t;
 
-typedef struct
-{
-	AINode_t type;
-	AINodeRunner run;
-	weapon_t weapon;
-	upgrade_t upgrades[ 3 ];
-	int numUpgrades;
-} AIBuyNode_t;
-
-typedef struct
-{
-	AINode_t type;
-	AINodeRunner run;
-	AIEntity_t ent;
-	float range;
-} AIMoveToNode_t;
-
 // operations used in condition nodes
 // ordered according to precedence
 // lower values == higher precedence
@@ -198,15 +181,24 @@ typedef struct
 
 typedef struct
 {
-	AIBehaviorTree_t **trees;
-	int numTrees;
-	int maxTrees;
-} AITreeList_t;
+	AINode_t     type;
+	AINodeRunner run;
+	AIValue_t    *params;
+	int          nparams;
+} AIActionNode_t;
 
-void              FreeBehaviorTree( AIBehaviorTree_t *tree );
-AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list );
-void              FreeTreeList( AITreeList_t *list );
-void              InitTreeList( AITreeList_t *list );
+qboolean isBinaryOp( AIOpType_t op );
+qboolean isUnaryOp( AIOpType_t op );
+
+AIValue_t AIBoxFloat( float f );
+AIValue_t AIBoxInt( int i );
+AIValue_t AIBoxToken( const pc_token_t *token );
+
+float     AIUnBoxFloat( AIValue_t v );
+int       AIUnBoxInt( AIValue_t v );
+double    AIUnBoxDouble( AIValue_t v );
+
+botEntityAndDistance_t *AIEntityToGentity( gentity_t *self, AIEntity_t e );
 
 // standard behavior tree control-flow nodes
 AINodeStatus_t BotEvaluateNode( gentity_t *self, AIGenericNode_t *node );
@@ -226,6 +218,7 @@ AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionHeal( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionFlee( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionRoam( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionRoamInRadius( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionRush( gentity_t *self, AIGenericNode_t *node );
 #endif

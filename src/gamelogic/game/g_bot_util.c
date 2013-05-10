@@ -37,6 +37,21 @@ void BotDPrintf( const char* fmt, ... )
 	}
 }
 
+void BotError( const char* fmt, ... )
+{
+	va_list argptr;
+	size_t  len;
+	char    text[ 1024 ] = S_COLOR_RED "ERROR: ";
+
+	len = strlen( text );
+
+	va_start( argptr, fmt );
+	Q_vsnprintf( text + len, sizeof( text ) - len, fmt, argptr );
+	va_end( argptr );
+
+	trap_Print( text );
+}
+
 /*
  = *======================
  Scoring functions for logic
@@ -764,7 +779,7 @@ botTarget_t BotGetRoamTarget( gentity_t *self )
 	vec3_t targetPos;
 
 	BotFindRandomPointOnMesh( self, targetPos );
-	BotSetTarget( &target, NULL, &targetPos );
+	BotSetTarget( &target, NULL, targetPos );
 	return target;
 }
 /*
@@ -773,7 +788,7 @@ botTarget_t BotGetRoamTarget( gentity_t *self )
  ========================
  */
 
-void BotSetTarget( botTarget_t *target, gentity_t *ent, vec3_t *pos )
+void BotSetTarget( botTarget_t *target, gentity_t *ent, vec3_t pos )
 {
 	if ( ent )
 	{
@@ -784,7 +799,7 @@ void BotSetTarget( botTarget_t *target, gentity_t *ent, vec3_t *pos )
 	else if ( pos )
 	{
 		target->ent = NULL;
-		VectorCopy( *pos, target->coord );
+		VectorCopy( pos, target->coord );
 		target->inuse = qtrue;
 	}
 	else
@@ -949,7 +964,7 @@ qboolean BotChangeGoalEntity( gentity_t *self, gentity_t *goal )
 qboolean BotChangeGoalPos( gentity_t *self, vec3_t goal )
 {
 	botTarget_t target;
-	BotSetTarget( &target, NULL, ( vec3_t * ) &goal );
+	BotSetTarget( &target, NULL, goal );
 	return BotChangeGoal( self, target );
 }
 

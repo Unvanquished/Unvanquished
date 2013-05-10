@@ -96,8 +96,9 @@ equ trap_BotFindRoute                     -329
 equ trap_BotUpdatePath                    -330
 equ trap_BotNavTrace                      -331
 equ trap_BotFindRandomPoint               -332
-equ trap_BotEnableArea                    -333
-equ trap_BotDisableArea                   -334
-equ trap_BotAddObstacle                   -335
-equ trap_BotRemoveObstacle                -336
-equ trap_BotUpdateObstacles               -337
+equ trap_BotFindRandomPointInRadius       -333
+equ trap_BotEnableArea                    -334
+equ trap_BotDisableArea                   -335
+equ trap_BotAddObstacle                   -336
+equ trap_BotRemoveObstacle                -337
+equ trap_BotUpdateObstacles               -338
