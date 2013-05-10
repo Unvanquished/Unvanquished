@@ -2182,10 +2182,8 @@ static void GetAverageDistanceToBase( int *alienDistance, int *humanDistance )
 	gentity_t *playerEnt;
 	gclient_t *client;
 
-	*alienDistance = 0;
-	*humanDistance = 0;
-	alienCnt = 0;
-	humanCnt = 0;
+	*alienDistance = *humanDistance = 0;
+	alienCnt = humanCnt = 0;
 
 	for ( playerNum = 0; playerNum < MAX_CLIENTS; playerNum++ )
 	{
@@ -2208,29 +2206,54 @@ static void GetAverageDistanceToBase( int *alienDistance, int *humanDistance )
 				*humanDistance += ( int )G_DistanceToBase( playerEnt, qtrue );
 				humanCnt++;
 				break;
-
-			default:
-				continue;
 		}
 	}
 
-	if ( !G_Overmind() || alienCnt == 0 )
+	*alienDistance = ( !G_Overmind() || alienCnt == 0 ) ? 0 : ( *alienDistance / alienCnt );
+	*humanDistance = ( !G_Reactor()  || humanCnt == 0 ) ? 0 : ( *humanDistance / humanCnt );
+}
+/*
+=================
+GetAverageCredits
+
+Calculates the average amount of credits of each teams' players.
+=================
+*/
+static void GetAverageCredits( int *alienCredits, int *humanCredits )
+{
+	int       playerNum, alienCnt, humanCnt;
+	gentity_t *playerEnt;
+	gclient_t *client;
+
+	*alienCredits = *humanCredits = 0;
+	alienCnt = humanCnt = 0;
+
+	for ( playerNum = 0; playerNum < MAX_CLIENTS; playerNum++ )
 	{
-		*alienDistance = 0;
-	}
-	else
-	{
-		*alienDistance /= alienCnt;
+		playerEnt = &g_entities[ playerNum ];
+		client = playerEnt->client;
+
+		if ( !client )
+		{
+			continue;
+		}
+
+		switch ( client->pers.teamSelection )
+		{
+			case TEAM_ALIENS:
+				*alienCredits += client->pers.credit;
+				alienCnt++;
+				break;
+
+			case TEAM_HUMANS:
+				*humanCredits += client->pers.credit;
+				humanCnt++;
+				break;
+		}
 	}
 
-	if ( !G_Reactor() || humanCnt == 0 )
-	{
-		*humanDistance = 0;
-	}
-	else
-	{
-		*humanDistance /= humanCnt;
-	}
+	*alienCredits = ( alienCnt == 0 ) ? 0 : ( *alienCredits / alienCnt );
+	*humanCredits = ( humanCnt == 0 ) ? 0 : ( *humanCredits / humanCnt );
 }
 
 /*
@@ -2263,7 +2286,7 @@ static void G_LogGameplayStats( int state )
 		trap_RealTime( &t );
 
 		Com_sprintf( logline, sizeof( logline ),
-		             "# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+		             "# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
 		             "#\n"
 		             "# Version: %s\n"
 		             "# Map:     %s\n"
@@ -2280,9 +2303,9 @@ static void G_LogGameplayStats( int state )
 		             "# g_initialMineRate:         %4i\n"
 		             "# g_mineRateHalfLife:        %4i\n"
 		             "#\n"
-		             "#  1  2  3    4    5    6    7    8    9   10   11   12   13   14   15   16    17    18\n"
-		             "#  T #A #H AS2T HS2T AS3T HS3T ACon HCon  LMR  AME  HME  ABP  HBP ABPV HBPV  ADTB  HDTB\n"
-		             "# -------------------------------------------------------------------------------------\n",
+		             "#  1  2  3    4    5    6    7    8    9   10   11   12   13   14   15   16    17    18   19   20\n"
+		             "#  T #A #H AS2T HS2T AS3T HS3T ACon HCon  LMR  AME  HME  ABP  HBP ABRV HBRV  ADTB  HDTB ACre HCre\n"
+		             "# -----------------------------------------------------------------------------------------------\n",
 		             Q3_VERSION,
 		             mapname,
 		             t.tm_year + 1900, t.tm_mon + 1, t.tm_mday,
@@ -2300,7 +2323,7 @@ static void G_LogGameplayStats( int state )
 	else if ( state == LOG_GAMEPLAY_STATS_BODY )
 	{
 		int   time, numA, numH, AS2T, HS2T, AS3T, HS3T, ACon, HCon, AME, HME, ABP, HBP,
-		      ABPV, HBPV, ADTB, HDTB;
+		      ABRV, HBRV, ADTB, HDTB, ACre, HCre;
 		float LMR;
 
 		time = level.matchTime / 1000;
@@ -2317,13 +2340,14 @@ static void G_LogGameplayStats( int state )
 		HME  = level.humanMineEfficiency;
 		ABP  = level.alienBuildPoints;
 		HBP  = level.humanBuildPoints;
-		G_GetBuildableValueBP( &ABPV, &HBPV );
+		G_GetBuildableResourceValue( &ABRV, &HBRV );
 		GetAverageDistanceToBase( &ADTB, &HDTB );
+		GetAverageCredits( &ACre, &HCre );
 
 		Com_sprintf( logline, sizeof( logline ),
-		             "%4i %2i %2i %4i %4i %4i %4i %4i %4i %4.1f %4i %4i %4i %4i %4i %4i %5i %5i\n",
+		             "%4i %2i %2i %4i %4i %4i %4i %4i %4i %4.1f %4i %4i %4i %4i %4i %4i %5i %5i %4i %4i\n",
 		             time, numA, numH, AS2T, HS2T, AS3T, HS3T, ACon, HCon, LMR, AME, HME,
-		             ABP, HBP, ABPV, HBPV, ADTB, HDTB );
+		             ABP, HBP, ABRV, HBRV, ADTB, HDTB, ACre, HCre );
 	}
 	else if ( state == LOG_GAMEPLAY_STATS_FOOTER )
 	{
@@ -2348,7 +2372,7 @@ static void G_LogGameplayStats( int state )
 		sec = ( level.matchTime / 1000 ) % 60;
 
 		Com_sprintf( logline, sizeof( logline ),
-		             "# -------------------------------------------------------------------------------------\n"
+		             "# -----------------------------------------------------------------------------------------------\n"
 		             "#\n"
 		             "# Match duration:  %i:%02i\n"
 		             "# Winning team:    %s\n"
