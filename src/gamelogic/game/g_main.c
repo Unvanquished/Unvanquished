@@ -2267,6 +2267,9 @@ static void GetAverageCredits( int *alienCredits, int *humanCredits, int *alienV
 G_LogGameplayStats
 =================
 */
+// Increment this if you add/change columns or otherwise change the log format
+#define LOG_GAMEPLAY_STATS_VERSION 1
+
 static void G_LogGameplayStats( int state )
 {
 	char       mapname[ 128 ];
@@ -2298,6 +2301,7 @@ static void G_LogGameplayStats( int state )
 		             "# Map:     %s\n"
 		             "# Date:    %04i-%02i-%02i\n"
 		             "# Time:    %02i:%02i:%02i\n"
+		             "# Format:  %i\n"
 		             "#\n"
 		             "# g_stage2BaseThreshold:     %4i\n"
 		             "# g_stage3BaseThreshold:     %4i\n"
@@ -2316,6 +2320,7 @@ static void G_LogGameplayStats( int state )
 		             mapname,
 		             t.tm_year + 1900, t.tm_mon + 1, t.tm_mday,
 		             t.tm_hour, t.tm_min, t.tm_sec,
+		             LOG_GAMEPLAY_STATS_VERSION,
 		             g_stage2BaseThreshold.integer,
 		             g_stage3BaseThreshold.integer,
 		             g_stage2IncreasePerPlayer.integer,
