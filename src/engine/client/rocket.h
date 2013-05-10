@@ -34,7 +34,6 @@ Maryland 20850 USA.
 #ifndef ROCKET_H
 #define ROCKET_H
 #if defined( __cplusplus )
-#include </home/modi/unv/Unvanquished/src/libs/libRocket/src/Controls/XMLNodeHandlerDataGrid.h>
 
 extern Rocket::Core::Context *context;
 
