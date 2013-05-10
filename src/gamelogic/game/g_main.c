@@ -2199,7 +2199,7 @@ static void G_LogGameplayStats( int state )
 		trap_RealTime( &t );
 
 		Com_sprintf( logline, sizeof( logline ),
-		             "# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+		             "# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
 		             "#\n"
 		             "# Version: %s\n"
 		             "# Map:     %s\n"
@@ -2216,9 +2216,9 @@ static void G_LogGameplayStats( int state )
 		             "# g_initialMineRate         %4i\n"
 		             "# g_mineRateHalfLife        %4i\n"
 		             "#\n"
-		             "#  1    2    3    4    5    6    7    8    9   10   11   12   13   14\n"
-		             "#  T numA numH AS2T HS2T AS3T HS3T ACon HCon  LMR  AME  HME  ABP  HBP\n"
-		             "# -------------------------------------------------------------------\n",
+		             "#  1    2    3    4    5    6    7    8    9   10   11   12   13   14   15   16\n"
+		             "#  T numA numH AS2T HS2T AS3T HS3T ACon HCon  LMR  AME  HME  ABP  HBP ABPV HBPV\n"
+		             "# -----------------------------------------------------------------------------\n",
 		             Q3_VERSION,
 		             mapname,
 		             t.tm_year + 1900, t.tm_mon + 1, t.tm_mday,
@@ -2235,7 +2235,8 @@ static void G_LogGameplayStats( int state )
 	}
 	else if ( state == LOG_GAMEPLAY_STATS_BODY )
 	{
-		int   time, numA, numH, AS2T, HS2T, AS3T, HS3T, ACon, HCon, AME, HME, ABP, HBP;
+		int   time, numA, numH, AS2T, HS2T, AS3T, HS3T, ACon, HCon, AME, HME, ABP, HBP,
+		      ABPV, HBPV;
 		float LMR;
 
 		time = level.matchTime / 1000;
@@ -2252,10 +2253,12 @@ static void G_LogGameplayStats( int state )
 		HME  = level.humanMineEfficiency;
 		ABP  = level.alienBuildPoints;
 		HBP  = level.humanBuildPoints;
+		G_GetBuildableValueBP( &ABPV, &HBPV );
 
 		Com_sprintf( logline, sizeof( logline ),
-		             "%4i %4i %4i %4i %4i %4i %4i %4i %4i %4.1f %4i %4i %4i %4i\n",
-		             time, numA, numH, AS2T, HS2T, AS3T, HS3T, ACon, HCon, LMR, AME, HME, ABP, HBP );
+		             "%4i %4i %4i %4i %4i %4i %4i %4i %4i %4.1f %4i %4i %4i %4i %4i %4i\n",
+		             time, numA, numH, AS2T, HS2T, AS3T, HS3T, ACon, HCon, LMR, AME, HME,
+		             ABP, HBP, ABPV, HBPV );
 	}
 	else if ( state == LOG_GAMEPLAY_STATS_FOOTER )
 	{
@@ -2280,7 +2283,7 @@ static void G_LogGameplayStats( int state )
 		sec = ( level.matchTime / 1000 ) % 60;
 
 		Com_sprintf( logline, sizeof( logline ),
-		             "# -------------------------------------------------------------------\n"
+		             "# -----------------------------------------------------------------------------\n"
 		             "#\n"
 		             "# Match duration:  %i:%02i\n"
 		             "# Winning team:    %s\n"
