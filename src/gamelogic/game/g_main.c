@@ -2295,6 +2295,70 @@ void QDECL PRINTF_LIKE(1) G_LogPrintf( const char *fmt, ... )
 
 /*
 =================
+GetAverageDistanceToBase
+
+Calculates the average distance of each teams' players to their main base.
+=================
+*/
+static void GetAverageDistanceToBase( int *alienDistance, int *humanDistance )
+{
+	int       playerNum, alienCnt, humanCnt;
+	gentity_t *playerEnt;
+	gclient_t *client;
+
+	*alienDistance = 0;
+	*humanDistance = 0;
+	alienCnt = 0;
+	humanCnt = 0;
+
+	for ( playerNum = 0; playerNum < MAX_CLIENTS; playerNum++ )
+	{
+		playerEnt = &g_entities[ playerNum ];
+		client = playerEnt->client;
+
+		if ( !client || playerEnt->health <= 0 )
+		{
+			continue;
+		}
+
+		switch ( client->pers.teamSelection )
+		{
+			case TEAM_ALIENS:
+				*alienDistance += ( int )G_DistanceToBase( playerEnt, qtrue );
+				alienCnt++;
+				break;
+
+			case TEAM_HUMANS:
+				*humanDistance += ( int )G_DistanceToBase( playerEnt, qtrue );
+				humanCnt++;
+				break;
+
+			default:
+				continue;
+		}
+	}
+
+	if ( !G_Overmind() || alienCnt == 0 )
+	{
+		*alienDistance = 0;
+	}
+	else
+	{
+		*alienDistance /= alienCnt;
+	}
+
+	if ( !G_Reactor() || humanCnt == 0 )
+	{
+		*humanDistance = 0;
+	}
+	else
+	{
+		*humanDistance /= humanCnt;
+	}
+}
+
+/*
+=================
 G_LogGameplayStats
 =================
 */
@@ -2323,26 +2387,26 @@ static void G_LogGameplayStats( int state )
 		trap_RealTime( &t );
 
 		Com_sprintf( logline, sizeof( logline ),
-		             "# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+		             "# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
 		             "#\n"
 		             "# Version: %s\n"
 		             "# Map:     %s\n"
 		             "# Date:    %04i-%02i-%02i\n"
 		             "# Time:    %02i:%02i:%02i\n"
 		             "#\n"
-		             "# g_stage2BaseThreshold     %4i\n"
-		             "# g_stage3BaseThreshold     %4i\n"
-		             "# g_stage2IncreasePerPlayer %4i\n"
-		             "# g_stage3IncreasePerPlayer %4i\n"
-		             "# g_stageThresholdHalfLife  %4i\n"
-		             "# g_confidenceHalfLife      %4i\n"
-		             "# g_initialBuildPoints      %4i\n"
-		             "# g_initialMineRate         %4i\n"
-		             "# g_mineRateHalfLife        %4i\n"
+		             "# g_stage2BaseThreshold:     %4i\n"
+		             "# g_stage3BaseThreshold:     %4i\n"
+		             "# g_stage2IncreasePerPlayer: %4i\n"
+		             "# g_stage3IncreasePerPlayer: %4i\n"
+		             "# g_stageThresholdHalfLife:  %4i\n"
+		             "# g_confidenceHalfLife:      %4i\n"
+		             "# g_initialBuildPoints:      %4i\n"
+		             "# g_initialMineRate:         %4i\n"
+		             "# g_mineRateHalfLife:        %4i\n"
 		             "#\n"
-		             "#  1    2    3    4    5    6    7    8    9   10   11   12   13   14\n"
-		             "#  T numA numH AS2T HS2T AS3T HS3T ACon HCon  LMR  AME  HME  ABP  HBP\n"
-		             "# -------------------------------------------------------------------\n",
+		             "#  1  2  3    4    5    6    7    8    9   10   11   12   13   14   15   16    17    18\n"
+		             "#  T #A #H AS2T HS2T AS3T HS3T ACon HCon  LMR  AME  HME  ABP  HBP ABPV HBPV  ADTB  HDTB\n"
+		             "# -------------------------------------------------------------------------------------\n",
 		             Q3_VERSION,
 		             mapname,
 		             t.tm_year + 1900, t.tm_mon + 1, t.tm_mday,
@@ -2359,7 +2423,8 @@ static void G_LogGameplayStats( int state )
 	}
 	else if ( state == LOG_GAMEPLAY_STATS_BODY )
 	{
-		int   time, numA, numH, AS2T, HS2T, AS3T, HS3T, ACon, HCon, AME, HME, ABP, HBP;
+		int   time, numA, numH, AS2T, HS2T, AS3T, HS3T, ACon, HCon, AME, HME, ABP, HBP,
+		      ABPV, HBPV, ADTB, HDTB;
 		float LMR;
 
 		time = level.matchTime / 1000;
@@ -2376,10 +2441,13 @@ static void G_LogGameplayStats( int state )
 		HME  = level.humanMineEfficiency;
 		ABP  = level.alienBuildPoints;
 		HBP  = level.humanBuildPoints;
+		G_GetBuildableValueBP( &ABPV, &HBPV );
+		GetAverageDistanceToBase( &ADTB, &HDTB );
 
 		Com_sprintf( logline, sizeof( logline ),
-		             "%4i %4i %4i %4i %4i %4i %4i %4i %4i %4.1f %4i %4i %4i %4i\n",
-		             time, numA, numH, AS2T, HS2T, AS3T, HS3T, ACon, HCon, LMR, AME, HME, ABP, HBP );
+		             "%4i %2i %2i %4i %4i %4i %4i %4i %4i %4.1f %4i %4i %4i %4i %4i %4i %5i %5i\n",
+		             time, numA, numH, AS2T, HS2T, AS3T, HS3T, ACon, HCon, LMR, AME, HME,
+		             ABP, HBP, ABPV, HBPV, ADTB, HDTB );
 	}
 	else if ( state == LOG_GAMEPLAY_STATS_FOOTER )
 	{
@@ -2404,7 +2472,7 @@ static void G_LogGameplayStats( int state )
 		sec = ( level.matchTime / 1000 ) % 60;
 
 		Com_sprintf( logline, sizeof( logline ),
-		             "# -------------------------------------------------------------------\n"
+		             "# -------------------------------------------------------------------------------------\n"
 		             "#\n"
 		             "# Match duration:  %i:%02i\n"
 		             "# Winning team:    %s\n"

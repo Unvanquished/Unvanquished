@@ -1003,6 +1003,7 @@ void             G_BuildLogAuto( gentity_t *actor, gentity_t *buildable, buildFa
 void             G_BuildLogRevert( int id );
 qboolean         G_CanAffordBuildPoints( team_t team, float amount );
 void             G_ModifyBuildPoints( team_t team, float amount );
+void             G_GetBuildableValueBP(int *alienValue, int *humanValue );
 
 //
 // g_utils.c

@@ -5367,3 +5367,48 @@ void G_ModifyBuildPoints( team_t team, float amount )
 		*bp = newbp;
 	}
 }
+
+/*
+=================
+G_GetBuildableValueBP
+
+Calculates the value of buildables (in build points) for both teams.
+=================
+*/
+void G_GetBuildableValueBP( int *alienValue, int *humanValue )
+{
+	int       entityNum, *value;
+	gentity_t *ent;
+	const buildableAttributes_t *attr;
+
+	*alienValue = 0;
+	*humanValue = 0;
+
+	for ( entityNum = MAX_CLIENTS; entityNum < level.num_entities; entityNum++ )
+	{
+		ent = &g_entities[ entityNum ];
+
+		if ( ent->s.eType != ET_BUILDABLE )
+		{
+			continue;
+		}
+
+		switch ( ent->buildableTeam )
+		{
+			case TEAM_ALIENS:
+				value = alienValue;
+				break;
+
+			case TEAM_HUMANS:
+				value = humanValue;
+				break;
+
+			default:
+				continue;
+		}
+
+		attr = BG_Buildable( ent->s.modelindex );
+
+		*value += ( attr->buildPoints * ent->health ) / attr->health;
+	}
+}
