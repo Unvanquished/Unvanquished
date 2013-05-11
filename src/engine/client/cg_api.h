@@ -236,6 +236,7 @@ typedef enum cgameImport_s
   CG_CHECKVISIBILITY,
   CG_UNREGISTERVISTEST,
   CG_SETCOLORGRADING,
+  CG_CM_DISTANCETOMODEL,
   CG_LAN_LOADCACHEDSERVERS,
   CG_LAN_SAVECACHEDSERVERS,
   CG_LAN_ADDSERVER,
@@ -542,6 +543,7 @@ void            trap_AddVisTestToScene( qhandle_t hTest, vec3_t pos,
 float           trap_CheckVisibility( qhandle_t hTest );
 void            trap_UnregisterVisTest( qhandle_t hTest );
 void            trap_SetColorGrading( int slot, qhandle_t hShader );
+float           trap_CM_DistanceToModel( const vec3_t loc, clipHandle_t model );
 void            trap_LAN_LoadCachedServers( void );
 void            trap_LAN_SaveCachedServers( void );
 int             trap_LAN_AddServer( int source, const char *name, const char *addr );

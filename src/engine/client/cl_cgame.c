@@ -2142,6 +2142,9 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			re.SetColorGrading( args[1], args[2] );
 			return 0;
 
+		case CG_CM_DISTANCETOMODEL:
+			return FloatAsInt( CM_DistanceToModel( VMA(1), args[2] ) );
+			
 		case CG_ROCKET_INIT:
 			Rocket_Init();
 			return 0;
