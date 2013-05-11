@@ -231,7 +231,8 @@ typedef enum cgameImport_s
   CG_ADDVISTESTTOSCENE,
   CG_CHECKVISIBILITY,
   CG_UNREGISTERVISTEST,
-  CG_SETCOLORGRADING
+  CG_SETCOLORGRADING,
+  CG_CM_DISTANCETOMODEL
 } cgameImport_t;
 
 typedef enum
@@ -476,3 +477,5 @@ void            trap_AddVisTestToScene( qhandle_t hTest, vec3_t pos,
 float           trap_CheckVisibility( qhandle_t hTest );
 void            trap_UnregisterVisTest( qhandle_t hTest );
 void            trap_SetColorGrading( int slot, qhandle_t hShader );
+
+float           trap_CM_DistanceToModel( const vec3_t loc, clipHandle_t model );
