@@ -34,7 +34,7 @@
 					<div class="servers">
 					<datagrid source="server_browser.internet">
 						<col fields="name" width="50%">Name:</col>
-						<col fields="players,bots" formatter="ServerPlayers"  width="25%">Players + Bots:</col>
+						<col fields="players,bots,maxClients" formatter="ServerPlayers"  width="25%">Players + Bots:</col>
 						<col fields="ping" formatter="ServerPing" width="25%">Ping:</col>
 					</datagrid>
 					</div>
