@@ -58,6 +58,7 @@ public:
 extern "C"
 {
 #endif
+#include "../qcommon/q_shared.h"
 
 void Rocket_Init( void );
 void Rocket_Shutdown( void );
@@ -67,7 +68,7 @@ void Rocket_InjectMouseMotion( int x, int y );
 void Rocket_LoadDocument( const char *path );
 void Rocket_LoadCursor( const char *path );
 void Rocket_DocumentAction( const char *name, const char *action );
-void Rocket_GetEvent( char *event, int length );
+qboolean Rocket_GetEvent( void );
 void Rocket_DeleteEvent( void );
 void Rocket_RegisterDataSource( const char *name );
 void Rocket_DSAddRow( const char *name, const char *table, const char *data );

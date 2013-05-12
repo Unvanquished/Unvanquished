@@ -36,6 +36,7 @@ Maryland 20850 USA.
 
 #include <queue>
 #include <Rocket/Core.h>
+#include <Rocket/Core/StringUtilities.h>
 
 extern "C"
 {
@@ -46,19 +47,24 @@ std::queue< RocketEvent_t* > eventQueue;
 
 void Rocket_ProcessEvent( Rocket::Core::Event& event, Rocket::Core::String& value )
 {
-	eventQueue.push( new RocketEvent_t( event, value ) );
+	Rocket::Core::StringList list;
+
+	Rocket::Core::StringUtilities::ExpandString( list, value, ';' );
+	for ( int i; i < list.size(); ++i )
+	{
+		eventQueue.push( new RocketEvent_t( event, list[ i ] ) );
+	}
 }
 
-void Rocket_GetEvent( char *event, int length )
+qboolean Rocket_GetEvent( void )
 {
-	if ( eventQueue.size() )
+	if ( eventQueue.front() != NULL )
 	{
-		Q_strncpyz( event, eventQueue.front()->cmd.CString(), length );
+		Cmd_TokenizeString( eventQueue.front()->cmd.CString() );
+		return qtrue;
 	}
-	else
-	{
-		*event = '\0';
-	}
+
+	return qfalse;
 }
 
 void Rocket_DeleteEvent( void )

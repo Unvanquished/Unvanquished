@@ -1393,9 +1393,9 @@ void trap_Rocket_DocumentAction( const char *name, const char *action )
 	syscall( CG_ROCKET_DOCUMENTACTION, name, action );
 }
 
-void trap_Rocket_GetEvent( char *event, int length )
+qboolean trap_Rocket_GetEvent( void )
 {
-	syscall( CG_ROCKET_GETEVENT, event, length );
+	return syscall( CG_ROCKET_GETEVENT );
 }
 
 void trap_Rocket_DeleteEvent( void )

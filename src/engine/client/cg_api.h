@@ -570,7 +570,7 @@ void            trap_Rocket_Shutdown( void );
 void            trap_Rocket_LoadDocument( const char *path );
 void            trap_Rocket_LoadCursor( const char *path );
 void            trap_Rocket_DocumentAction( const char *name, const char *action );
-void            trap_Rocket_GetEvent( char *event, int length );
+qboolean        trap_Rocket_GetEvent( void );
 void            trap_Rocket_DeleteEvent( void );
 void            trap_Rocket_RegisterDataSource( const char *name );
 void            trap_Rocket_DSAddRow( const char *name, const char *table, const char *data );

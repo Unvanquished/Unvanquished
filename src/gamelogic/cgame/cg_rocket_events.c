@@ -35,63 +35,67 @@ Maryland 20850 USA.
 #include "cg_local.h"
 
 
-static void CG_Rocket_EventOpen( const char *args )
+static void CG_Rocket_EventOpen( void )
 {
-	trap_Rocket_LoadDocument( va( "%s%s.rml", rocketInfo.rootDir, args ) );
+	trap_Rocket_LoadDocument( va( "%s%s.rml", rocketInfo.rootDir, CG_Argv( 1 ) ) );
 }
 
-static void CG_Rocket_EventClose( const char *args )
+static void CG_Rocket_EventClose( void )
 {
-	trap_Rocket_DocumentAction( args, "close" );
+	trap_Rocket_DocumentAction( CG_Argv( 1 ), "close" );
 }
 
-static void CG_Rocket_EventGoto( const char *args )
+static void CG_Rocket_EventGoto( void )
 {
-	trap_Rocket_DocumentAction( args, "goto" );
+	trap_Rocket_DocumentAction( CG_Argv( 1 ), "goto" );
 }
 
-static void CG_Rocket_EventShow( const char *args )
+static void CG_Rocket_EventShow( void )
 {
-	trap_Rocket_DocumentAction( args, "show" );
+	trap_Rocket_DocumentAction( CG_Argv( 1 ), "show" );
 }
 
-static void CG_Rocket_EventBlur( const char *args )
+static void CG_Rocket_EventBlur( void )
 {
-	trap_Rocket_DocumentAction( args, "blur" );
+	trap_Rocket_DocumentAction( CG_Argv( 1 ), "blur" );
 }
 
 
-static void CG_Rocket_InitServers( const char *args )
+static void CG_Rocket_InitServers( void )
 {
-	trap_LAN_ResetPings( CG_StringToNetSource( args ) );
+	const char *src = CG_Argv( 1 );
+	trap_LAN_ResetPings( CG_StringToNetSource( src ) );
 	trap_LAN_ServerStatus( NULL, NULL, 0 );
 
-	if ( !Q_stricmp( args, "internet" ) )
+	if ( !Q_stricmp( src, "internet" ) )
 	{
 		trap_Cmd_ExecuteText( EXEC_APPEND, "globalservers 0 86 full empty\n" );
 	}
 
-	else if ( !Q_stricmp( args, "local" ) )
+	else if ( !Q_stricmp( src, "local" ) )
 	{
 		trap_Cmd_ExecuteText( EXEC_APPEND, "localservers\n" );
 	}
 
-	trap_LAN_UpdateVisiblePings( CG_StringToNetSource( args ) );
+	trap_LAN_UpdateVisiblePings( CG_StringToNetSource( src ) );
 }
 
-static void CG_Rocket_BuildDS( const char *args )
+static void CG_Rocket_BuildDS( void )
 {
-	CG_Rocket_BuildDataSource( args );
+	char table[ 100 ];
+
+	Q_strncpyz( table, CG_Argv( 2 ), sizeof( table ) );
+	CG_Rocket_BuildDataSource( CG_Argv( 1 ), table );
 }
 
 
 
-static void CG_Rocket_EventExec( const char *args )
+static void CG_Rocket_EventExec( void )
 {
-	trap_Cmd_ExecuteText( EXEC_APPEND, args );
+	trap_Cmd_ExecuteText( EXEC_APPEND, CG_Args() );
 }
 
-static void CG_Rocket_EventCvarForm( const char *args )
+static void CG_Rocket_EventCvarForm( void )
 {
 	static char params[ BIG_INFO_STRING ];
 	static char key[BIG_INFO_VALUE], value[ BIG_INFO_VALUE ];
@@ -117,57 +121,42 @@ static void CG_Rocket_EventCvarForm( const char *args )
 	}
 }
 
-static void CG_Rocket_SortDS( const char *args )
+static void CG_Rocket_SortDS( void )
 {
-	char *name, *table, *sortBy;
+	char name[ 100 ], table[ 100 ], sortBy[ 100 ];
 	char *p;
 
-	name = BG_strdup( args );
+	Q_strncpyz( name, CG_Argv( 1 ), sizeof( name ) );
+	Q_strncpyz( table, CG_Argv( 2 ), sizeof( name ) );
+	Q_strncpyz( sortBy, CG_Argv( 3 ), sizeof( name ) );
 
-	p = strchr( name, ' ' );
-	if ( p )
+	if ( name[ 0 ] && table[ 0 ] && sortBy[ 0 ] )
 	{
-		*p = '\0';
-		table = p + 1;
-		if ( table )
-		{
-			p = strchr( table, ' ' );
-			if ( p )
-			{
-				*p = '\0';
-				sortBy = p + 1;
-				if ( sortBy )
-				{
-					CG_Rocket_SortDataSource( name, table, sortBy );
-					BG_Free( name );
-					return;
-				}
-			}
-		}
+		CG_Rocket_SortDataSource( name, table, sortBy );
+		return;
 	}
 
-	BG_Free( name );
 	Com_Printf( "^3WARNING: Invalid syntax for 'sortDS'\n sortDS <data source> <table name> <sort by>\n" );
 }
 
-static void CG_Rocket_ExecDS( const char *args )
+static void CG_Rocket_ExecDS( void )
 {
-	CG_Rocket_ExecDataSource( args );
+	char table[ 100 ];
+	Q_strncpyz( table, CG_Argv( 2 ), sizeof( table ) );
+	CG_Rocket_ExecDataSource( CG_Argv( 1 ), table );
 }
 
-static void CG_Rocket_SetDS( const char *args )
+static void CG_Rocket_SetDS( void )
 {
-	char *p = BG_strdup( args );
-	char *n = strchr( args, ' ' );
+	char datasrc[ 100 ];
 
-	*n = '\0';
-
-	CG_Rocket_SetDataSourceIndex( p, atoi( n + 1 ) );
+	Q_strncpyz( datasrc, CG_Argv( 1 ), sizeof( datasrc ) );
+	CG_Rocket_SetDataSourceIndex( datasrc, atoi( CG_Argv( 2 ) ) );
 }
 typedef struct
 {
 	const char *command;
-	void ( *exec ) ( const char *args );
+	void ( *exec ) ( void );
 } eventCmd_t;
 
 static const eventCmd_t eventCmdList[] =
@@ -195,61 +184,22 @@ static int eventCmdCmp( const void *a, const void *b )
 
 void CG_Rocket_ProcessEvents( void )
 {
-	static char commands[ 2000 ];
 	char *tail, *head;
 	eventCmd_t *cmd;
 
 	// Get the even command
-	trap_Rocket_GetEvent( commands, sizeof( commands ) );
-
-	head = commands;
-
-	// No events to process
-	if ( !*head )
+	while ( trap_Rocket_GetEvent() )
 	{
-		return;
-	}
 
-	while ( 1 )
-	{
-		char *p, *args;
-
-		// Parse it. Check for semicolons first
-		tail = strchr( head, ';' );
-		if ( tail )
-		{
-			*tail = '\0';
-		}
-
-		p = strchr( head, ' ' );
-		if ( p )
-		{
-			*p = '\0';
-		}
-
-		// Special case for when head has no arguments
-		args = head + strlen( head ) + ( head + strlen( head ) == tail ? 0 : 1 );
-
-		cmd = bsearch( head, eventCmdList, eventCmdListCount, sizeof( eventCmd_t ), eventCmdCmp );
+		cmd = bsearch( CG_Argv( 0 ), eventCmdList, eventCmdListCount, sizeof( eventCmd_t ), eventCmdCmp );
 
 		if ( cmd )
 		{
-			cmd->exec( args );
+			cmd->exec();
 		}
 
-		head = args + strlen( args ) + 1;
-
-		if ( !*head )
-		{
-			break;
-		}
-
-		// Skip whitespaces
-		while ( *head == ' ' )
-		{
-			head++;
-		}
+		trap_Rocket_DeleteEvent();
 	}
 
-	trap_Rocket_DeleteEvent();
 }
+

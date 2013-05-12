@@ -2144,7 +2144,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_CM_DISTANCETOMODEL:
 			return FloatAsInt( CM_DistanceToModel( VMA(1), args[2] ) );
-			
+
 		case CG_ROCKET_INIT:
 			Rocket_Init();
 			return 0;
@@ -2166,8 +2166,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_ROCKET_GETEVENT:
-			Rocket_GetEvent( VMA(1), args[2] );
-			return 0;
+			return Rocket_GetEvent();
 
 		case CG_ROCKET_DELELTEEVENT:
 			Rocket_DeleteEvent();

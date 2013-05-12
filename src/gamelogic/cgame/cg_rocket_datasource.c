@@ -104,7 +104,7 @@ static void CG_Rocket_BuildServerList( const char *args )
 			{
 				char addr[ 25 ];
 				trap_LAN_GetServerInfo( CG_StringToNetSource( args ), i, info, MAX_INFO_STRING );
-				
+
 				bots = atoi( Info_ValueForKey( info, "bots" ) );
 				clients = atoi( Info_ValueForKey( info, "clients" ) );
 				maxClients = atoi( Info_ValueForKey( info, "maxClients" ) );
@@ -189,7 +189,7 @@ void CG_Rocket_CleanUpServerList( void )
 	serverCount = 0;
 }
 
-void CG_Rocket_ExecServerList( void )
+void CG_Rocket_ExecServerList( const char *table )
 {
 	trap_Cmd_ExecuteText( EXEC_APPEND, va( "connect %s", servers[ serverIndex ].addr ) );
 }
@@ -626,7 +626,7 @@ static void nullSortFunc( const char *name, const char *sortBy )
 {
 }
 
-static void nullExecFunc( void )
+static void nullExecFunc( const char *table )
 {
 }
 
@@ -637,7 +637,7 @@ typedef struct
 	void ( *sort ) ( const char *name, const char *sortBy );
 	void ( *cleanup ) ( void );
 	void ( *set ) ( int index );
-	void ( *exec ) ( void );
+	void ( *exec ) ( const char *table );
 } dataSourceCmd_t;
 
 static const dataSourceCmd_t dataSourceCmdList[] =
@@ -659,39 +659,23 @@ static int dataSourceCmdCmp( const void *a, const void *b )
 	return Q_stricmp( ( const char * ) a, ( ( dataSourceCmd_t * ) b )->name );
 }
 
-void CG_Rocket_BuildDataSource( const char *data )
+void CG_Rocket_BuildDataSource( const char *dataSrc, const char *table )
 {
 	dataSourceCmd_t *cmd;
-	char *tail, *head, *args;
-
-	head = BG_strdup( data );
 
 	// No data
-	if ( !*head )
+	if ( !dataSrc )
 	{
 		return;
 
 	}
 
-	tail = strchr( head, ' ' );
-	if ( tail )
-	{
-		*tail = '\0';
-		args = head + strlen( head ) + 1;
-	}
-	else
-	{
-		args = NULL;
-	}
-
-	cmd = bsearch( head, dataSourceCmdList, dataSourceCmdListCount, sizeof( dataSourceCmd_t ), dataSourceCmdCmp );
+	cmd = bsearch( dataSrc, dataSourceCmdList, dataSourceCmdListCount, sizeof( dataSourceCmd_t ), dataSourceCmdCmp );
 
 	if ( cmd )
 	{
-		cmd->build( args );
+		cmd->build( table );
 	}
-
-	BG_Free( head );
 }
 
 void CG_Rocket_SortDataSource( const char *dataSource, const char *name, const char *sortBy )
@@ -718,7 +702,7 @@ void CG_Rocket_SetDataSourceIndex( const char *dataSource, int index )
 	}
 }
 
-void CG_Rocket_ExecDataSource( const char *dataSource )
+void CG_Rocket_ExecDataSource( const char *dataSource, const char *table )
 {
 	dataSourceCmd_t *cmd;
 
@@ -726,7 +710,7 @@ void CG_Rocket_ExecDataSource( const char *dataSource )
 
 	if ( cmd && cmd->exec )
 	{
-		cmd->exec();
+		cmd->exec( table );
 	}
 }
 

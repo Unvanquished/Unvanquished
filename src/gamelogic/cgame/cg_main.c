@@ -1084,6 +1084,20 @@ const char *CG_Argv( int arg )
 	return buffer;
 }
 
+/*
+================
+CG_Args
+================
+*/
+const char *CG_Args( void )
+{
+	static char buffer[ MAX_STRING_CHARS ];
+
+	trap_Args( buffer, sizeof( buffer ) );
+
+	return buffer;
+}
+
 //========================================================================
 
 static SENTINEL const char *choose( const char *first, ... )
