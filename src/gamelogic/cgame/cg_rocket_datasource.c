@@ -107,7 +107,7 @@ static void CG_Rocket_BuildServerList( const char *args )
 
 				bots = atoi( Info_ValueForKey( info, "bots" ) );
 				clients = atoi( Info_ValueForKey( info, "clients" ) );
-				maxClients = atoi( Info_ValueForKey( info, "maxClients" ) );
+				maxClients = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
 				Q_strncpyz( addr, Info_ValueForKey( info, "addr" ), sizeof( addr ) );
 				AddToServerList( Info_ValueForKey( info, "hostname" ), Info_ValueForKey( info, "label" ), clients, bots, ping, maxClients, addr );
 			}

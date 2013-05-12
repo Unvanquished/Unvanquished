@@ -81,7 +81,9 @@ static void CG_Rocket_DFServerPing( int handle, const char *data )
 
 static void CG_Rocket_DFServerPlayers( int handle, const char *data )
 {
-	trap_Rocket_DataFormatterFormattedData( handle, va( "%s + (%s)", Info_ValueForKey( data, "1" ), Info_ValueForKey( data, "2" ) ) );
+	char max[ 4 ];
+	Q_strncpyz( max, Info_ValueForKey( data, "3" ), sizeof( max ) );
+	trap_Rocket_DataFormatterFormattedData( handle, va( "%s + (%s) / %s", Info_ValueForKey( data, "1" ), Info_ValueForKey( data, "2" ), max ) );
 }
 
 typedef struct
