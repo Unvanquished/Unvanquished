@@ -234,7 +234,7 @@ static int opCompare( AIOpType_t op1, AIOpType_t op2 )
 	{
 		return 1;
 	}
-	else if ( op1 < op2 )
+	else if ( op1 > op2 )
 	{
 		return -1;
 	}
