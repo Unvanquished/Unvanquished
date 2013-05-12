@@ -123,6 +123,7 @@ static void CG_Rocket_BuildServerList( const char *args )
 			Info_SetValueForKey( data, "name", servers[ i ].name, qfalse );
 			Info_SetValueForKey( data, "players", va( "%d", servers[ i ].clients ), qfalse );
 			Info_SetValueForKey( data, "bots", va( "%d", servers[ i ].bots ), qfalse );
+			Info_SetValueForKey( data, "ping", va( "%d", servers[ i ].ping ), qfalse );
 			Info_SetValueForKey( data, "maxClients", va( "%d", servers[ i ].maxClients ), qfalse );
 			Info_SetValueForKey( data, "addr", servers[ i ].addr, qfalse );
 			Info_SetValueForKey( data, "label", servers[ i ].label, qfalse );
@@ -167,6 +168,7 @@ static void CG_Rocket_SortServerList( const char *name, const char *sortBy )
 		Info_SetValueForKey( data, "name", servers[ i ].name, qfalse );
 		Info_SetValueForKey( data, "players", va( "%d", servers[ i ].clients ), qfalse );
 		Info_SetValueForKey( data, "bots", va( "%d", servers[ i ].bots ), qfalse );
+		Info_SetValueForKey( data, "ping", va( "%d", servers[ i ].ping ), qfalse );
 		Info_SetValueForKey( data, "maxClients", va( "%d", servers[ i ].maxClients ), qfalse );
 		Info_SetValueForKey( data, "addr", servers[ i ].addr, qfalse );
 		Info_SetValueForKey( data, "label", servers[ i ].label, qfalse );
