@@ -91,7 +91,7 @@ static AIValue_t botTeam( gentity_t *self, const AIValue_t *params )
 
 static AIValue_t currentWeapon( gentity_t *self, const AIValue_t *params )
 {
-	return AIBoxInt( self->client->ps.weapon == AIUnBoxInt( params[ 0 ] ) );
+	return AIBoxInt( self->client->ps.weapon );
 }
 
 static AIValue_t haveUpgrade( gentity_t *self, const AIValue_t *params )
