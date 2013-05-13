@@ -1265,6 +1265,9 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			re.SetColorGrading( args[1], args[2] );
 			return 0;
 
+		case CG_CM_DISTANCETOMODEL:
+			return FloatAsInt( CM_DistanceToModel( VMA(1), args[2] ) );
+
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );
 			exit(1); // silence warning, and make sure this behaves as expected, if Com_Error's behavior changes

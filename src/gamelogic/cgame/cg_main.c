@@ -1344,6 +1344,31 @@ static void CG_RegisterSounds( void )
 
 /*
 =================
+CG_RegisterGrading
+=================
+*/
+void CG_RegisterGrading( int slot, const char *str )
+{
+	int   model;
+	float dist;
+	char  texture[MAX_QPATH];
+
+	if( !str || !*str ) {
+		cgs.gameGradingTextures[ slot ]  = 0;
+		cgs.gameGradingModels[ slot ]    = 0;
+		cgs.gameGradingDistances[ slot ] = 0.0f;
+		return;
+	}
+
+	sscanf(str, "%d %f %s", &model, &dist, texture);
+	cgs.gameGradingTextures[ slot ] =
+		trap_R_RegisterShader(texture, RSF_NOMIP | RSF_NOLIGHTSCALE);
+	cgs.gameGradingModels[ slot ] = model;
+	cgs.gameGradingDistances[ slot ] = dist;
+}
+
+/*
+=================
 CG_RegisterGraphics
 =================
 */
@@ -1378,7 +1403,6 @@ static void CG_RegisterGraphics( void )
 
 	// clear any references to old media
 	memset( &cg.refdef, 0, sizeof( cg.refdef ) );
-	cg.gradingWeights[0] = 1.0f;
 	trap_R_ClearScene();
 
 	CG_UpdateLoadingStep( LOAD_GEOMETRY );
@@ -1565,27 +1589,14 @@ static void CG_RegisterGraphics( void )
 
 	// register all the server specified grading textures
 	// starting with the world wide one
-
-	cgs.gameGradingTextures[ 0 ] =
-			trap_R_RegisterShader( CG_ConfigString( CS_GRADING_TEXTURES ), RSF_NOMIP | RSF_NOLIGHTSCALE );
+	for ( i = 0; i < MAX_GRADING_TEXTURES; i++ )
+	{
+		CG_RegisterGrading( i, CG_ConfigString( CS_GRADING_TEXTURES + i ) );
+	}
 
 	if( cgs.gameGradingTextures[ 0 ] )
 	{
 		trap_SetColorGrading( 0, cgs.gameGradingTextures[ 0 ] );
-	}
-
-	for ( i = 1; i < MAX_GRADING_TEXTURES; i++ )
-	{
-		const char *gradingTextureName;
-
-		gradingTextureName = CG_ConfigString( CS_GRADING_TEXTURES + i );
-
-		if ( !gradingTextureName[ 0 ] )
-		{
-			break;
-		}
-
-		cgs.gameGradingTextures[ i ] = trap_R_RegisterShader(gradingTextureName, RSF_NOMIP | RSF_NOLIGHTSCALE);
 	}
 
 	CG_UpdateMediaFraction( 0.9f );

@@ -1256,3 +1256,8 @@ void trap_SetColorGrading( int slot, qhandle_t hShader )
 {
 	syscall( CG_SETCOLORGRADING, slot, hShader );
 }
+
+float trap_CM_DistanceToModel( const vec3_t loc, clipHandle_t model )
+{
+	return RETFLOAT( syscall( CG_CM_DISTANCETOMODEL, loc, model ) );
+}

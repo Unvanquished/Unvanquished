@@ -1010,7 +1010,6 @@ typedef struct
 	// view rendering
 	refdef_t refdef;
 	vec3_t   refdefViewAngles; // will be converted to refdef.viewaxis
-	vec4_t   gradingWeights;
 
 	// zoom key
 	qboolean zoomed;
@@ -1359,6 +1358,8 @@ typedef struct
 	qhandle_t    gameModels[ MAX_MODELS ];
 	qhandle_t    gameShaders[ MAX_GAME_SHADERS ];
 	qhandle_t    gameGradingTextures[ MAX_GRADING_TEXTURES ];
+	qhandle_t    gameGradingModels[ MAX_GRADING_TEXTURES ];
+	float        gameGradingDistances[ MAX_GRADING_TEXTURES ];
 	qhandle_t    gameParticleSystems[ MAX_GAME_PARTICLE_SYSTEMS ];
 	sfxHandle_t  gameSounds[ MAX_SOUNDS ];
 
@@ -1606,6 +1607,7 @@ qboolean   CG_FileExists( const char *filename );
 void       CG_RemoveNotifyLine( void );
 void       CG_AddNotifyText( void );
 void       CG_UpdateBuildableRangeMarkerMask( void );
+void       CG_RegisterGrading( int slot, const char *str );
 
 //
 // cg_view.c
