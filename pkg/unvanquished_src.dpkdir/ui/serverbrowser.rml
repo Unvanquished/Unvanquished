@@ -5,14 +5,14 @@
         <style>
         body
         {
-			width: 50%;
-			height: 60%;
+			width: 100%;
+			height: 100%;
 			margin: auto;
 		}
 
-		div#content
+		div.servers
 		{
-			overflow-y: auto;
+			overflow-y: scroll;
 		}
 
 		div#title_bar div#icon
@@ -33,9 +33,10 @@
 					<span id="status"></span>
 					<div class="servers">
 					<datagrid source="server_browser.internet">
+						<col fields="label" width="10%">Label:</col>
 						<col fields="name" width="50%">Name:</col>
-						<col fields="players,bots,maxClients" formatter="ServerPlayers"  width="25%">Players + Bots:</col>
-						<col fields="ping" formatter="ServerPing" width="25%">Ping:</col>
+						<col fields="players,bots,maxClients" formatter="ServerPlayers"  width="20%">Players + Bots:</col>
+						<col fields="ping" formatter="ServerPing" width="20%">Ping:</col>
 					</datagrid>
 					</div>
 					<button onClick="buildDS server_browser internet">Refresh</button>
