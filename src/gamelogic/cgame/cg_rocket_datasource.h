@@ -33,7 +33,6 @@ Maryland 20850 USA.
 */
 
 #include "cg_local.h"
-#include </home/modi/unv/Unvanquished/src/libs/libsdl/src/video/mmx.h>
 
 #define MAX_SERVERS 2048
 #define MAX_RESOLUTIONS 32
