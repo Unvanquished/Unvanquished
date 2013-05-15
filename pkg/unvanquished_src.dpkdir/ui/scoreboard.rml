@@ -30,20 +30,31 @@
     <body template="window" onload="buildDS teams" id="scoreboard">
 	<div class="container">
 	<datagrid source="teams.aliens">
-		<col fields="num" width="30%">Num:</col>
-		<col fields="location" width="70%">Location:</col>
+		<col fields="num" width="5%">Num:</col>
+		<col fields="num" formatter="PlayerName" width="40%">Name:</col>
+		<col fields="score" width="10%">Score:</col>
+		<col fields="time" width="5%">Time:</col>
+		<col fields="ping" width="10%">Ping:</col>
+		<col fields="credits" width="10%">Credits:</col>
+		<col fields="location" width="20%">Location:</col>
 	</datagrid>
 	</div>
 	<div class="container">
 	<datagrid source="teams.humans">
-		<col fields="name" width="30%">Num:</col>
-		<col fields="description" width="70%">Location:</col>
+		<col fields="num" width="5%">Num:</col>
+		<col fields="num" formatter="PlayerName" width="40%">Name:</col>
+		<col fields="score" width="10%">Score:</col>
+		<col fields="time" width="5%">Time:</col>
+		<col fields="ping" width="10%">Ping:</col>
+		<col fields="credits" width="10%">Credits:</col>
+		<col fields="location" width="20%">Location:</col>
 	</datagrid>
 	</div>
 	<div class="container">
 	<datagrid source="teams.spectators">
-		<col fields="name" width="30%">Num:</col>
-		<col fields="description" width="70%">Location:</col>
+		<col fields="num" width="5%">Num:</col>
+		<col fields="num" formatter="PlayerName" width="45%">Name:</col>
+		<col fields="location" width="50%">Location:</col>
 	</datagrid>
 	</div>
 	<button onClick="buildDS teams">Refresh</button>
