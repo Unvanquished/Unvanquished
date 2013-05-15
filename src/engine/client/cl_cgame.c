@@ -2280,7 +2280,7 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			return 0;
 
 		case CG_ROCKET_DATAFORMATTERFORMATTEDDATA:
-			Rocket_DataFormatterFormattedData( args[1], VMA(2) );
+			Rocket_DataFormatterFormattedData( args[1], VMA(2), args[3] );
 			return 0;
 
 		case CG_ROCKET_GETATTRIBUTE:

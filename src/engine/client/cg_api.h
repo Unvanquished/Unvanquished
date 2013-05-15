@@ -583,7 +583,7 @@ void            trap_Rocket_SetAttribute( const char *name, const char *id, cons
 void            trap_Rocket_GetEventParameters( char *params, int length );
 void            trap_Rocket_RegisterDataFormatter( const char *name );
 void            trap_Rocket_DataFormatterRawData( int handle, char *name, int nameLength, char *data, int dataLength );
-void            trap_Rocket_DataFormatterFormattedData( int handle, const char *data );
+void            trap_Rocket_DataFormatterFormattedData( int handle, const char *data, qboolean parseQuake );
 void            trap_Rocket_RegisterElement( const char *tag );
 void            trap_Rocket_SetElementDimensions( float x, float y );
 void            trap_Rocket_GetElementTag( char *tag, int length );

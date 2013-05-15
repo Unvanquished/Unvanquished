@@ -70,20 +70,40 @@ static void CG_Rocket_DFResolution( int handle, const char *data )
 	int w = atoi( Info_ValueForKey(data, "1" ) );
 	int h = atoi( Info_ValueForKey(data, "2" ) );
 	char *aspectRatio = BG_strdup( DisplayAspectString( w, h ) );
-	trap_Rocket_DataFormatterFormattedData( handle, va( "%dx%d ( %s )", w, h, aspectRatio ) );
+	trap_Rocket_DataFormatterFormattedData( handle, va( "%dx%d ( %s )", w, h, aspectRatio ), qfalse );
 	BG_Free( aspectRatio );
 }
 
 static void CG_Rocket_DFServerPing( int handle, const char *data )
 {
-	trap_Rocket_DataFormatterFormattedData( handle, va( "%s ms", Info_ValueForKey( data, "1" ) ) );
+	trap_Rocket_DataFormatterFormattedData( handle, va( "%s ms", Info_ValueForKey( data, "1" ) ), qfalse );
 }
 
 static void CG_Rocket_DFServerPlayers( int handle, const char *data )
 {
 	char max[ 4 ];
 	Q_strncpyz( max, Info_ValueForKey( data, "3" ), sizeof( max ) );
-	trap_Rocket_DataFormatterFormattedData( handle, va( "%s + (%s) / %s", Info_ValueForKey( data, "1" ), Info_ValueForKey( data, "2" ), max ) );
+	trap_Rocket_DataFormatterFormattedData( handle, va( "%s + (%s) / %s", Info_ValueForKey( data, "1" ), Info_ValueForKey( data, "2" ), max ), qtrue );
+}
+
+static void CG_Rocket_DFPlayerName( int handle, const char *data )
+{
+	trap_Rocket_DataFormatterFormattedData( handle, cgs.clientinfo[ atoi( Info_ValueForKey( data, "1" ) ) ].name, qtrue );
+}
+
+static void CG_Rocket_DFUpgradeName( int handle, const char *data )
+{
+	trap_Rocket_DataFormatterFormattedData( handle, BG_Upgrade( atoi( Info_ValueForKey( data, "1" ) ) )->humanName, qtrue );
+}
+
+static void CG_Rocket_DFWeaponName( int handle, const char *data )
+{
+	trap_Rocket_DataFormatterFormattedData( handle, BG_Weapon( atoi( Info_ValueForKey( data, "1" ) ) )->humanName, qtrue );
+}
+
+static void CG_Rocket_DFClassName( int handle, const char *data )
+{
+	trap_Rocket_DataFormatterFormattedData( handle, BG_Class( atoi( Info_ValueForKey( data, "1" ) ) )->name, qtrue );
 }
 
 typedef struct
@@ -94,9 +114,13 @@ typedef struct
 
 static const dataFormatterCmd_t dataFormatterCmdList[] =
 {
+	{ "ClassName", &CG_Rocket_DFClassName },
+	{ "PlayerName", &CG_Rocket_DFPlayerName },
 	{ "Resolution", &CG_Rocket_DFResolution },
 	{ "ServerPing", &CG_Rocket_DFServerPing },
 	{ "ServerPlayers", &CG_Rocket_DFServerPlayers },
+	{ "UpgradeName", &CG_Rocket_DFUpgradeName },
+	{ "WeaponName", &CG_Rocket_DFWeaponName }
 };
 
 static const size_t dataFormatterCmdListCount = ARRAY_LEN( dataFormatterCmdList );

@@ -52,7 +52,9 @@ void Rocket_DataFormatterRawData( int handle, char *name, int nameLength, char *
 	Q_strncpyz( data, dataFormatterList[ handle ]->data, dataLength );
 }
 
-void Rocket_DataFormatterFormattedData( int handle, const char *data )
+extern Rocket::Core::String Rocket_QuakeToRML( const char *in );
+void Rocket_DataFormatterFormattedData( int handle, const char *data, qboolean parseQuake )
 {
-	dataFormatterList[ handle ]->out = Rocket::Core::String( data );
+	dataFormatterList[ handle ]->out = parseQuake ? Rocket_QuakeToRML( data ) :
+		Rocket::Core::String( data );
 }

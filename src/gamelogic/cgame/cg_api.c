@@ -1457,9 +1457,9 @@ void trap_Rocket_DataFormatterRawData( int handle, char *name, int nameLength, c
 	syscall( CG_ROCKET_DATAFORMATTERRAWDATA, handle, name, nameLength, data, dataLength );
 }
 
-void trap_Rocket_DataFormatterFormattedData( int handle, const char *data )
+void trap_Rocket_DataFormatterFormattedData( int handle, const char *data, qboolean parseQuake )
 {
-	syscall( CG_ROCKET_DATAFORMATTERFORMATTEDDATA, handle, data );
+	syscall( CG_ROCKET_DATAFORMATTERFORMATTEDDATA, handle, data, parseQuake );
 }
 
 void trap_Rocket_RegisterElement( const char *tag )
