@@ -1,0 +1,51 @@
+<rml>
+    <head>
+        <title>Score</title>
+        <link type="text/template" href="assets/window.rml" />
+        <style>
+        body
+        {
+			width: 50%;
+			height: 60%;
+			margin: auto;
+		}
+
+		div#content
+		{
+			overflow-y: auto;
+		}
+
+		div#title_bar div#icon
+		{
+			icon-image-s: 128px 179px;
+			icon-image-t: 152px 191px;
+		}
+
+		div.container
+		{
+			border-style: solid;
+		}
+        </style>
+    </head>
+    <body template="window" onload="buildDS teams" id="scoreboard">
+	<div class="container">
+	<datagrid source="teams.aliens">
+		<col fields="num" width="30%">Num:</col>
+		<col fields="location" width="70%">Location:</col>
+	</datagrid>
+	</div>
+	<div class="container">
+	<datagrid source="teams.humans">
+		<col fields="name" width="30%">Num:</col>
+		<col fields="description" width="70%">Location:</col>
+	</datagrid>
+	</div>
+	<div class="container">
+	<datagrid source="teams.spectators">
+		<col fields="name" width="30%">Num:</col>
+		<col fields="description" width="70%">Location:</col>
+	</datagrid>
+	</div>
+	<button onClick="buildDS teams">Refresh</button>
+    </body>
+</rml>

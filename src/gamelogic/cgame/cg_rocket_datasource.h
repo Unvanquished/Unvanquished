@@ -33,6 +33,7 @@ Maryland 20850 USA.
 */
 
 #include "cg_local.h"
+#include </home/modi/unv/Unvanquished/src/libs/libsdl/src/video/mmx.h>
 
 #define MAX_SERVERS 2048
 #define MAX_RESOLUTIONS 32
@@ -87,6 +88,14 @@ typedef struct modInfo_s
 modInfo_t modList[ MAX_MODS ];
 int modCount;
 int modIndex;
+
+int playerList[ NUM_TEAMS ][ MAX_CLIENTS ];
+int alienPlayerCount = 0;
+int alienPlayerIndex;
+int humanPlayerCount = 0;
+int humanPlayerIndex;
+int spectatorPlayerCount = 0;
+int spectatorPlayerIndex;
 
 char *voipInputs[ MAX_INPUTS ];
 int voipInputsCount = 0;

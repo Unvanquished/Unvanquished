@@ -623,6 +623,176 @@ void CG_Rocket_CleanUpDemoList( void )
 	demoCount = 0;
 }
 
+void CG_Rocket_BuildTeamList( const char *args )
+{
+	char buf[ MAX_INFO_STRING ];
+	clientInfo_t *ci;
+	score_t *score;
+	int i;
+
+// 	// Do not build list if not currently playing
+// 	if ( rocketInfo.rocketState < PLAYING )
+// 	{
+// 		return;
+// 	}
+
+	CG_RequestScores();
+
+	// Clear old values. Always build all three teams.
+	trap_Rocket_DSClearTable( "teams", "spectators" );
+	trap_Rocket_DSClearTable( "teams", "aliens" );
+	trap_Rocket_DSClearTable( "teams", "humans" );
+
+	for ( i = 0; i < MAX_CLIENTS; ++i )
+	{
+		ci = &cgs.clientinfo[ i ];
+		score = &cg.scores[ i ];
+		if ( !ci->infoValid )
+		{
+			continue;
+		}
+
+		Info_SetValueForKey( buf, "num", va( "%d", score->client ), qfalse );
+		Info_SetValueForKey( buf, "score", va( "%d", score->score ), qfalse );
+		Info_SetValueForKey( buf, "ping", va( "%d", score->ping ), qfalse );
+		Info_SetValueForKey( buf, "weapon", va( "%d", score->weapon ), qfalse );
+		Info_SetValueForKey( buf, "upgrade", va( "%d", score->upgrade ), qfalse );
+		Info_SetValueForKey( buf, "time", va( "%d", score->time ), qfalse );
+		Info_SetValueForKey( buf, "credits", va( "%d", ci->credit ), qfalse );
+		Info_SetValueForKey( buf, "location", CG_ConfigString( CS_LOCATIONS + ci->location ), qfalse );
+
+		switch ( score->team )
+		{
+			case TEAM_ALIENS:
+				playerList[ score->team ][ alienPlayerCount++ ] = i;
+				trap_Rocket_DSAddRow( "teams", "aliens", buf );
+				break;
+
+			case TEAM_HUMANS:
+				playerList[ score->team ][ humanPlayerCount++ ] = i;
+				trap_Rocket_DSAddRow( "teams", "humans", buf );
+				break;
+
+			case TEAM_NONE:
+				playerList[ score->team ][ spectatorPlayerCount++ ] = i;
+				trap_Rocket_DSAddRow( "teams", "spectators", buf );
+				break;
+		}
+	}
+
+}
+
+static int PlayerListCmpByScore( const void *one, const void *two )
+{
+	int *a = ( int * ) one;
+	int *b = ( int * ) two;
+
+	if ( cg.scores[ *a ].score > cg.scores[ *b ].score ) return 1;
+	if ( cg.scores[ *b ].score > cg.scores[ *a ].score ) return -1;
+	if ( cg.scores[ *a ].score == cg.scores[ *b ].score )  return 0;
+	return 0; // silence compiler
+}
+
+void CG_Rocket_SortTeamList( const char *name, const char *sortBy )
+{
+	int i;
+	clientInfo_t *ci;
+	score_t *score;
+	char buf[ MAX_INFO_STRING ];
+
+// 	// Do not sort list if not currently playing
+// 	if ( rocketInfo.rocketState < PLAYING )
+// 	{
+// 		return;
+// 	}
+
+
+
+	if ( !Q_stricmp( "score", sortBy ) )
+	{
+		qsort( playerList[ TEAM_NONE ], spectatorPlayerCount, sizeof( int ), &PlayerListCmpByScore );
+		qsort( playerList[ TEAM_ALIENS ], alienPlayerCount, sizeof( int ), &PlayerListCmpByScore );
+		qsort( playerList[ TEAM_HUMANS ], humanPlayerCount, sizeof( int ), &PlayerListCmpByScore );
+	}
+
+	// Clear old values. Always build all three teams.
+	trap_Rocket_DSClearTable( "teams", "spectators" );
+	trap_Rocket_DSClearTable( "teams", "aliens" );
+	trap_Rocket_DSClearTable( "teams", "humans" );
+
+	for ( i = 0; i < spectatorPlayerCount; ++i )
+	{
+		ci = &cgs.clientinfo[ playerList[ TEAM_NONE ][ i ] ];
+		score = &cg.scores[ playerList[ TEAM_NONE ][ i ] ];
+		if ( !ci->infoValid )
+		{
+			continue;
+		}
+
+		Info_SetValueForKey( buf, "num", va( "%d", score->client ), qfalse );
+		Info_SetValueForKey( buf, "score", va( "%d", score->score ), qfalse );
+		Info_SetValueForKey( buf, "ping", va( "%d", score->ping ), qfalse );
+		Info_SetValueForKey( buf, "weapon", va( "%d", score->weapon ), qfalse );
+		Info_SetValueForKey( buf, "upgrade", va( "%d", score->upgrade ), qfalse );
+		Info_SetValueForKey( buf, "time", va( "%d", score->time ), qfalse );
+		Info_SetValueForKey( buf, "credits", va( "%d", ci->credit ), qfalse );
+		Info_SetValueForKey( buf, "location", CG_ConfigString( CS_LOCATIONS + ci->location ), qfalse );
+
+		trap_Rocket_DSAddRow( "teams", "spectators", buf );
+	}
+
+	for ( i = 0; i < humanPlayerCount; ++i )
+	{
+		ci = &cgs.clientinfo[ playerList[ TEAM_HUMANS ][ i ] ];
+		score = &cg.scores[ playerList[ TEAM_NONE ][ i ] ];
+		if ( !ci->infoValid )
+		{
+			continue;
+		}
+
+		Info_SetValueForKey( buf, "num", va( "%d", score->client ), qfalse );
+		Info_SetValueForKey( buf, "score", va( "%d", score->score ), qfalse );
+		Info_SetValueForKey( buf, "ping", va( "%d", score->ping ), qfalse );
+		Info_SetValueForKey( buf, "weapon", va( "%d", score->weapon ), qfalse );
+		Info_SetValueForKey( buf, "upgrade", va( "%d", score->upgrade ), qfalse );
+		Info_SetValueForKey( buf, "time", va( "%d", score->time ), qfalse );
+		Info_SetValueForKey( buf, "credits", va( "%d", ci->credit ), qfalse );
+		Info_SetValueForKey( buf, "location", CG_ConfigString( CS_LOCATIONS + ci->location ), qfalse );
+		trap_Rocket_DSAddRow( "team", "spectators", buf );
+	}
+
+	for ( i = 0; i < spectatorPlayerCount; ++i )
+	{
+		ci = &cgs.clientinfo[ playerList[ TEAM_NONE ][ i ] ];
+		score = &cg.scores[ playerList[ TEAM_NONE ][ i ] ];
+		if ( !ci->infoValid )
+		{
+			continue;
+		}
+
+		Info_SetValueForKey( buf, "num", va( "%d", score->client ), qfalse );
+		Info_SetValueForKey( buf, "score", va( "%d", score->score ), qfalse );
+		Info_SetValueForKey( buf, "ping", va( "%d", score->ping ), qfalse );
+		Info_SetValueForKey( buf, "weapon", va( "%d", score->weapon ), qfalse );
+		Info_SetValueForKey( buf, "upgrade", va( "%d", score->upgrade ), qfalse );
+		Info_SetValueForKey( buf, "time", va( "%d", score->time ), qfalse );
+		Info_SetValueForKey( buf, "credits", va( "%d", ci->credit ), qfalse );
+		Info_SetValueForKey( buf, "location", CG_ConfigString( CS_LOCATIONS + ci->location ), qfalse );
+
+		trap_Rocket_DSAddRow( "teams", "spectators", buf );
+	}
+}
+
+void CG_Rocket_CleanUpTeamList( void )
+{
+	alienPlayerCount = 0;
+	humanPlayerCount = 0;
+	spectatorPlayerCount = 0;
+}
+
+void CG_Rocket_SetTeamListPlayer( int index )
+{
+}
 
 static void nullSortFunc( const char *name, const char *sortBy )
 {
@@ -650,6 +820,7 @@ static const dataSourceCmd_t dataSourceCmdList[] =
 	{ "modList", &CG_Rocket_BuildModList, &nullSortFunc, &CG_Rocket_CleanUpModList, &CG_Rocket_SetModListMod, &nullExecFunc },
 	{ "resolutions", &CG_Rocket_BuildResolutionList, &CG_Rocket_SortResolutionList, &CG_Rocket_CleanUpResolutionList, &CG_Rocket_SetResolutionListResolution, &nullExecFunc },
 	{ "server_browser", &CG_Rocket_BuildServerList, &CG_Rocket_SortServerList, &CG_Rocket_CleanUpServerList, &CG_Rocket_SetServerListServer, &CG_Rocket_ExecServerList },
+	{ "teams", &CG_Rocket_BuildTeamList, &CG_Rocket_SortTeamList, &CG_Rocket_CleanUpTeamList, &CG_Rocket_SetTeamListPlayer, &nullExecFunc },
 	{ "voipInputs", &CG_Rocket_BuildVoIPInputs, &nullSortFunc, &CG_Rocket_CleanUpVoIPInputs, &CG_Rocket_SetVoipInputsInput, &nullExecFunc },
 
 };
