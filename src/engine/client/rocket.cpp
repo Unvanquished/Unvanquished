@@ -616,5 +616,42 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in )
 		out.Append( "</span>" );
 	}
 
+	// Parse emoticons
+	int openBracket = 0;
+	int closeBracket = 0;
+	int currentPosition = 0;
+
+	while ( 1 )
+	{
+		Rocket::Core::String emoticon;
+		const char *path;
+
+		openBracket = out.Find( "[", currentPosition );
+		closeBracket = out.Find( "]", currentPosition );
+
+		if ( openBracket == Rocket::Core::String::npos || closeBracket == Rocket::Core::String::npos )
+		{
+			break;
+		}
+
+		emoticon = out.Substring( openBracket + 1, closeBracket - openBracket - 1 );
+
+		// Spaces are invalid
+		if ( emoticon.Find( " " ) != Rocket::Core::String::npos )
+		{
+			currentPosition = closeBracket + 1;
+			continue;
+		}
+
+		path =  va( "emoticons/%s_1x1.tga", emoticon.CString() );
+		if ( FS_FOpenFileRead( path, NULL, qtrue ) )
+		{
+			out.Erase( openBracket, closeBracket - openBracket + 1 );
+			path = va( "<img height='32px' width='32px' src='/emoticons/%s_1x1.tga' />", emoticon.CString() );
+			out.Insert( openBracket, path );
+			currentPosition = openBracket + strlen( path ) + 1;
+		}
+	}
+
 	return out;
 }
