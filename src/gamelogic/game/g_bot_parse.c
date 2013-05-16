@@ -67,7 +67,8 @@ static AIValue_t haveWeapon( gentity_t *self, const AIValue_t *params )
 
 static AIValue_t alertedToEnemy( gentity_t *self, const AIValue_t *params )
 {
-	qboolean success;
+	qboolean success = qfalse;
+
 	if ( level.time - self->botMind->timeFoundEnemy < g_bot_reactiontime.integer )
 	{
 		success = qfalse;
@@ -87,6 +88,51 @@ static AIValue_t alertedToEnemy( gentity_t *self, const AIValue_t *params )
 static AIValue_t botTeam( gentity_t *self, const AIValue_t *params )
 {
 	return AIBoxInt( self->client->ps.stats[ STAT_TEAM ] );
+}
+
+static AIValue_t goalTeam( gentity_t *self, const AIValue_t *params )
+{
+	return AIBoxInt( BotGetTargetTeam( self->botMind->goal ) );
+}
+
+static AIValue_t goalType( gentity_t *self, const AIValue_t *params )
+{
+	return AIBoxInt( BotGetTargetType( self->botMind->goal ) );
+}
+
+static AIValue_t goalDead( gentity_t *self, const AIValue_t *params )
+{
+	qboolean success = qfalse;
+	botTarget_t *goal = &self->botMind->goal;
+
+	if ( !BotTargetIsEntity( *goal ) )
+	{
+		success = qtrue;
+	}
+	else if ( goal->ent->health <= 0 )
+	{
+		success = qtrue;
+	}
+	else if ( goal->ent->client && goal->ent->client->sess.spectatorState != SPECTATOR_NOT )
+	{
+		success = qtrue;
+	}
+	else if ( goal->ent->s.eType == ET_BUILDABLE && goal->ent->buildableTeam == self->client->ps.stats[ STAT_TEAM ] && !goal->ent->powered )
+	{
+		success = qtrue;
+	}
+
+	return AIBoxInt( success );
+}
+
+static AIValue_t goalBuildingType( gentity_t *self, const AIValue_t *params )
+{
+	if ( BotGetTargetType( self->botMind->goal ) != ET_BUILDABLE )
+	{
+		return AIBoxInt( BA_NONE );
+	}
+
+	return AIBoxInt( self->botMind->goal.ent->s.modelindex );
 }
 
 static AIValue_t currentWeapon( gentity_t *self, const AIValue_t *params )
@@ -119,7 +165,7 @@ static AIValue_t teamateHasWeapon( gentity_t *self, const AIValue_t *params )
 static AIValue_t distanceTo( gentity_t *self, const AIValue_t *params )
 {
 	AIEntity_t e = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
-	float distance = 0;
+	float distance = 10000000;
 	botEntityAndDistance_t *ent = AIEntityToGentity( self, e );
 
 	if ( ent )
@@ -154,6 +200,87 @@ static AIValue_t botSkill( gentity_t *self, const AIValue_t *params )
 	return AIBoxInt( self->botMind->botSkill.level );
 }
 
+static AIValue_t inAttackRange( gentity_t *self, const AIValue_t *params )
+{
+	botTarget_t target;
+	AIEntity_t et = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
+	if ( et == E_GOAL )
+	{
+		target = self->botMind->goal;
+	}
+	else
+	{
+		botEntityAndDistance_t *e = AIEntityToGentity( self ,et );
+		if ( !e )
+		{
+			return AIBoxInt( qfalse );
+		}
+		BotSetTarget( &target, e->ent, NULL );
+	}
+
+	if ( BotTargetInAttackRange( self, target ) )
+	{
+		return AIBoxInt( qtrue );
+	}
+
+	return AIBoxInt( qfalse );
+}
+
+static AIValue_t timeSinceGoalSeen( gentity_t *self, const AIValue_t *params )
+{
+	return AIBoxInt( level.time - self->botMind->goalLastSeen );
+}
+
+static AIValue_t isVisible( gentity_t *self, const AIValue_t *params )
+{
+	botTarget_t target;
+	AIEntity_t et = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
+
+	if ( et == E_GOAL )
+	{
+		target = self->botMind->goal;
+	}
+	else
+	{
+		botEntityAndDistance_t *e = AIEntityToGentity( self ,et );
+		if ( !e )
+		{
+			return AIBoxInt( qfalse );
+		}
+		BotSetTarget( &target, e->ent, NULL );
+	}
+
+	if ( BotTargetIsVisible( self, self->botMind->goal, CONTENTS_SOLID ) )
+	{
+		if ( et == E_GOAL )
+		{
+			self->botMind->goalLastSeen = level.time;
+		}
+		return AIBoxInt( qtrue );
+	}
+
+	return AIBoxInt( qfalse );
+}
+
+static AIValue_t directPathTo( gentity_t *self, const AIValue_t *params )
+{
+	AIEntity_t e = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
+	botEntityAndDistance_t *ed = AIEntityToGentity( self, e );
+
+	if ( e == E_GOAL )
+	{
+		return AIBoxInt( self->botMind->directPathToGoal );
+	}
+	else if ( ed )
+	{
+		botTarget_t target;
+		BotSetTarget( &target, ed->ent, NULL );
+		return AIBoxInt( BotPathIsWalkable( self, target ) );
+	}
+
+	return AIBoxInt( qfalse );
+}
+ 
 // functions accessible to the behavior tree for use in condition nodes
 static const struct AIConditionMap_s
 {
@@ -167,14 +294,22 @@ static const struct AIConditionMap_s
 	{ "baseRushScore",     VALUE_FLOAT, baseRushScore,     0 },
 	{ "buildingIsDamaged", VALUE_INT,   buildingIsDamaged, 0 },
 	{ "class",             VALUE_INT,   botClass,          0 },
+	{ "directPathTo",      VALUE_INT,   directPathTo,      1 },
 	{ "distanceTo",        VALUE_FLOAT, distanceTo,        1 },
+	{ "goalBuildingType",  VALUE_INT,   goalBuildingType,  0 },
+	{ "goalIsDead",        VALUE_INT,   goalDead,          0 },
+	{ "goalTeam",          VALUE_INT,   goalTeam,          0 },
+	{ "goalType",          VALUE_INT,   goalType,          0 },
 	{ "haveUpgrade",       VALUE_INT,   haveUpgrade,       1 },
 	{ "haveWeapon",        VALUE_INT,   haveWeapon,        1 },
 	{ "healScore",         VALUE_FLOAT, healScore,         0 },
+	{ "inAttackRange",     VALUE_INT,   inAttackRange,     1 },
+	{ "isVisible",         VALUE_INT,   isVisible,         1 },
 	{ "percentHealth",     VALUE_FLOAT, botHealth,         0 },
 	{ "skill",             VALUE_INT,   botSkill,          0 },
 	{ "team",              VALUE_INT,   botTeam,           0 },
 	{ "teamateHasWeapon",  VALUE_INT,   teamateHasWeapon,  1 },
+	{ "timeSinceGoalSeen", VALUE_INT,   timeSinceGoalSeen, 0 },
 	{ "weapon",            VALUE_INT,   currentWeapon,     0 }
 };
 
@@ -915,6 +1050,7 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	// add teams
 	D( TEAM_ALIENS );
 	D( TEAM_HUMANS );
+	D( TEAM_NONE );
 
 	// add AIEntitys
 	D( E_NONE );
@@ -952,6 +1088,8 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( PCL_HUMAN );
 	D( PCL_HUMAN_BSUIT );
 	
+	D( ET_BUILDABLE );
+
 	Q_strncpyz( treefilename, va( "bots/%s.bt", name ), sizeof( treefilename ) );
 
 	handle = trap_Parse_LoadSource( treefilename );

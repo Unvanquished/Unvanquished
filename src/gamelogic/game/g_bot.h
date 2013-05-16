@@ -52,6 +52,8 @@ typedef struct
 	int enemyLastSeen;
 	int timeFoundEnemy;
 
+	int goalLastSeen;
+
 	//team the bot is on when added
 	team_t botTeam;
 
