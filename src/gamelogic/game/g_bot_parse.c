@@ -777,17 +777,25 @@ static const struct AIActionMap_s
 	int          maxparams;
 } AIActions[] =
 {
-	{ "buy",          BotActionBuy,          1, 4 },
-	{ "equip",        BotActionBuy,          0, 0 },
-	{ "evolve",       BotActionEvolve,       0, 0 },
-	{ "fight",        BotActionFight,        0, 0 },
-	{ "flee",         BotActionFlee,         0, 0 },
-	{ "heal",         BotActionHeal,         0, 0 },
-	{ "moveTo",       BotActionMoveTo,       1, 2 },
-	{ "repair",       BotActionRepair,       0, 0 },
-	{ "roam",         BotActionRoam,         0, 0 },
-	{ "roamInRadius", BotActionRoamInRadius, 2, 2 },
-	{ "rush",         BotActionRush,         0, 0 }
+	{ "aimAtGoal",       BotActionAimAtGoal,       0, 0 },
+	{ "alternateStrafe", BotActionAlternateStrafe, 0, 0 },
+	{ "buy",             BotActionBuy,             1, 4 },
+	{ "changeGoal",      BotActionChangeGoal,      1, 1 },
+	{ "classDodge",      BotActionClassDodge,      0, 0 },
+	{ "equip",           BotActionBuy,             0, 0 },
+	{ "evolve",          BotActionEvolve,          0, 0 },
+	{ "fight",           BotActionFight,           0, 0 },
+	{ "fireWeapon",      BotActionFireWeapon,      0, 0 },
+	{ "flee",            BotActionFlee,            0, 0 },
+	{ "heal",            BotActionHeal,            0, 0 },
+	{ "moveInDir",       BotActionMoveInDir,       1, 2 },
+	{ "moveTo",          BotActionMoveTo,          1, 2 },
+	{ "moveToGoal",      BotActionMoveToGoal,      0, 0 },
+	{ "repair",          BotActionRepair,          0, 0 },
+	{ "roam",            BotActionRoam,            0, 0 },
+	{ "roamInRadius",    BotActionRoamInRadius,    2, 2 },
+	{ "rush",            BotActionRush,            0, 0 },
+	{ "strafeDodge",     BotActionStrafeDodge,     0, 0 }
 };
 
 /*
@@ -1088,6 +1096,11 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( PCL_HUMAN );
 	D( PCL_HUMAN_BSUIT );
 	
+	D( MOVE_FORWARD );
+	D( MOVE_BACKWARD );
+	D( MOVE_RIGHT );
+	D( MOVE_LEFT );
+
 	D( ET_BUILDABLE );
 
 	Q_strncpyz( treefilename, va( "bots/%s.bt", name ), sizeof( treefilename ) );

@@ -420,6 +420,98 @@ AINodeStatus_t BotEvaluateNode( gentity_t *self, AIGenericNode_t *node )
 /*
 	Behavior tree action nodes
 */
+
+AINodeStatus_t BotActionFireWeapon( gentity_t *self, AIGenericNode_t *node ) 
+{
+	if ( WeaponIsEmpty( ( weapon_t )self->client->ps.weapon, self->client->ps ) && self->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+	{
+		G_ForceWeaponChange( self, WP_BLASTER );
+	}
+
+	if ( self->client->ps.weapon == WP_HBUILD )
+	{
+		G_ForceWeaponChange( self, WP_BLASTER );
+	}
+
+	BotFireWeaponAI( self );
+	return STATUS_SUCCESS;
+}
+
+AINodeStatus_t BotActionAimAtGoal( gentity_t *self, AIGenericNode_t *node )
+{
+	if ( BotGetTargetTeam( self->botMind->goal ) != self->client->ps.stats[ STAT_TEAM ] )
+	{
+		BotAimAtEnemy( self );
+	}
+	else
+	{
+		vec3_t pos;
+		BotGetTargetPos( self->botMind->goal, pos );
+		BotSlowAim( self, pos, 0.5 );
+		BotAimAtLocation( self, pos );
+	}
+	return STATUS_SUCCESS;
+}
+
+AINodeStatus_t BotActionMoveToGoal( gentity_t *self, AIGenericNode_t *node )
+{
+	BotMoveToGoal( self );
+	return STATUS_RUNNING;
+}
+
+AINodeStatus_t BotActionMoveInDir( gentity_t *self, AIGenericNode_t *node )
+{
+	AIActionNode_t *a = ( AIActionNode_t * ) node;
+	int dir = AIUnBoxInt( a->params[ 0 ] );
+	if ( a->nparams == 2 )
+	{
+		dir |= AIUnBoxInt( a->params[ 1 ] );
+	}
+	BotMoveInDir( self, dir );
+	return STATUS_SUCCESS;
+}
+
+AINodeStatus_t BotActionStandStill( gentity_t *self, AIGenericNode_t *node )
+{
+	BotStandStill( self );
+	return STATUS_SUCCESS;
+}
+
+AINodeStatus_t BotActionStrafeDodge( gentity_t *self, AIGenericNode_t *node )
+{
+	BotStrafeDodge( self );
+	return STATUS_SUCCESS;
+}
+
+AINodeStatus_t BotActionAlternateStrafe( gentity_t *self, AIGenericNode_t *node )
+{
+	BotAlternateStrafe( self );
+	return STATUS_SUCCESS;
+}
+
+AINodeStatus_t BotActionClassDodge( gentity_t *self, AIGenericNode_t *node )
+{
+	BotClassMovement( self, BotTargetInAttackRange( self, self->botMind->goal ) );
+	return STATUS_SUCCESS;
+}
+
+AINodeStatus_t BotActionChangeGoal( gentity_t *self, AIGenericNode_t *node )
+{
+	AIActionNode_t *a = ( AIActionNode_t * ) node;
+	AIEntity_t et = ( AIEntity_t ) AIUnBoxInt( a->params[ 0 ] );
+	botEntityAndDistance_t *e = AIEntityToGentity( self, et );
+
+	if ( e )
+	{
+		if ( !BotChangeGoalEntity( self, e->ent ) )
+		{
+			return STATUS_FAILURE;
+		}
+	}
+	self->botMind->goalLastSeen = 0;
+	return STATUS_SUCCESS;
+}
+
 AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 {
 	team_t myTeam = ( team_t ) self->client->ps.stats[ STAT_TEAM ];

@@ -209,6 +209,15 @@ AINodeStatus_t BotPriorityNode( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotParallelNode( gentity_t *self, AIGenericNode_t *node );
 
 // action nodes
+AINodeStatus_t BotActionChangeGoal( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionMoveToGoal( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionFireWeapon( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionAimAtGoal( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionAlternateStrafe( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionStrafeDodge( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionMoveInDir( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionClassDodge( gentity_t *self, AIGenericNode_t *node );
+
 AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node );
