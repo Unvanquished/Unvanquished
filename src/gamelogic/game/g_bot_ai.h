@@ -65,7 +65,8 @@ typedef enum
 {
 	SELECTOR_NODE,
 	ACTION_NODE,
-	CONDITION_NODE
+	CONDITION_NODE,
+	DECORATOR_NODE
 } AINode_t;
 
 typedef struct
@@ -181,6 +182,15 @@ typedef struct
 
 typedef struct
 {
+	AINode_t        type;
+	AINodeRunner    run;
+	AIGenericNode_t *child;
+	AIValue_t       *params;
+	int             nparams;
+} AIDecoratorNode_t;
+
+typedef struct
+{
 	AINode_t     type;
 	AINodeRunner run;
 	AIValue_t    *params;
@@ -207,6 +217,9 @@ AINodeStatus_t BotSelectorNode( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotSequenceNode( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotPriorityNode( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotParallelNode( gentity_t *self, AIGenericNode_t *node );
+
+// decorator nodes
+AINodeStatus_t BotDecoratorReturn( gentity_t *self, AIGenericNode_t *node );
 
 // action nodes
 AINodeStatus_t BotActionChangeGoal( gentity_t *self, AIGenericNode_t *node );

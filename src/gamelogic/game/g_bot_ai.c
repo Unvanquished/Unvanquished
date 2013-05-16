@@ -258,6 +258,17 @@ AINodeStatus_t BotParallelNode( gentity_t *self, AIGenericNode_t *node )
 	}
 	return STATUS_FAILURE;
 }
+
+AINodeStatus_t BotDecoratorReturn( gentity_t *self, AIGenericNode_t *node )
+{
+	AIDecoratorNode_t *dec = ( AIDecoratorNode_t * ) node;
+	
+	AINodeStatus_t status = ( AINodeStatus_t ) AIUnBoxInt( dec->params[ 0 ] );
+
+	BotEvaluateNode( self, dec->child );
+	return status;
+}
+
 qboolean EvalConditionExpression( gentity_t *self, AIExpType_t *exp );
 
 double EvalFunc( gentity_t *self, AIExpType_t *exp )

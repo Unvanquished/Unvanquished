@@ -769,6 +769,98 @@ AIGenericNode_t *ReadConditionNode( pc_token_list **tokenlist )
 	return ( AIGenericNode_t * ) condition;
 }
 
+static const struct AIDecoratorMap_s
+{
+	const char   *name;
+	AINodeRunner run;
+	int          minparams;
+	int          maxparams;
+} AIDecorators[] =
+{
+	{ "return", BotDecoratorReturn, 1, 1 }
+};
+
+AIGenericNode_t *ReadDecoratorNode( pc_token_list **list )
+{
+	pc_token_list *current = *list;
+	struct AIDecoratorMap_s *dec;
+	AIDecoratorNode_t       node;
+	AIDecoratorNode_t       *ret;
+	pc_token_list           *parenBegin;
+
+	if ( !expectToken( "decorator", &current, qtrue ) )
+	{
+		return NULL;
+	}
+
+	if ( !current )
+	{
+		BotError( "Unexpected end of file after line %d\n", (*list)->token.line );
+		*list = current;
+		return NULL;
+	}
+
+	dec = bsearch( current->token.string, AIDecorators, ARRAY_LEN( AIDecorators ), sizeof( *AIDecorators ), cmdcmp );
+
+	if ( !dec )
+	{
+		BotError( "%s on line %d is not a valid decorator\n", current->token.string, current->token.line );
+		*list = current;
+		return NULL;
+	}
+
+	parenBegin = current->next;
+
+	memset( &node, 0, sizeof( node ) );
+
+	BotInitNode( DECORATOR_NODE, dec->run, &node );
+
+	// allow dropping of parenthesis if we don't require any parameters
+	if ( dec->minparams == 0 && parenBegin->token.string[0] != '(' )
+	{
+		ret = allocNode( AIDecoratorNode_t );
+		memcpy( ret, &node, sizeof( node ) );
+		*list = parenBegin;
+		return ( AIGenericNode_t * ) ret;
+	}
+
+	node.params = parseFunctionParameters( &current, &node.nparams, dec->minparams, dec->maxparams );
+
+	if ( !node.params && dec->minparams > 0 )
+	{
+		*list = current;
+		return NULL;
+	}
+
+	if ( !expectToken( "{", &current, qtrue ) )
+	{
+		*list = current;
+		return NULL;
+	}
+
+	node.child = ReadNode( &current );
+
+	if ( !node.child )
+	{
+		BotError( "Failed to parse child node of decorator on line %d\n",  (*list)->token.line );
+		*list = current;
+		return NULL;
+	}
+
+	if ( !expectToken( "}", &current, qtrue ) )
+	{
+		*list = current;
+		return NULL;
+	}
+
+	// create the decorator node
+	ret = allocNode( AIDecoratorNode_t );
+	memcpy( ret, &node, sizeof( *ret ) );
+
+	*list = current;
+	return ( AIGenericNode_t * ) ret;
+}
+
 static const struct AIActionMap_s
 {
 	const char   *name;
@@ -995,6 +1087,10 @@ AIGenericNode_t *ReadNode( pc_token_list **tokenlist )
 	{
 		node = ReadConditionNode( &current );
 	}
+	else if ( !Q_stricmp( current->token.string, "decorator" ) )
+	{
+		node = ReadDecoratorNode( &current );
+	}
 	else
 	{
 		BotError( "Invalid token on line %d found: %s\n", current->token.line, current->token.string );
@@ -1102,6 +1198,11 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( MOVE_LEFT );
 
 	D( ET_BUILDABLE );
+
+	// node return status
+	D( STATUS_RUNNING );
+	D( STATUS_SUCCESS );
+	D( STATUS_FAILURE );
 
 	Q_strncpyz( treefilename, va( "bots/%s.bt", name ), sizeof( treefilename ) );
 
@@ -1332,6 +1433,13 @@ void FreeActionNode( AIActionNode_t *action )
 	BG_Free( action );
 }
 
+void FreeDecoratorNode( AIDecoratorNode_t *decorator )
+{
+	BG_Free( decorator->params );
+	FreeNode( decorator->child );
+	BG_Free( decorator );
+}
+
 void FreeNode( AIGenericNode_t *node )
 {
 	if ( !node )
@@ -1349,6 +1457,9 @@ void FreeNode( AIGenericNode_t *node )
 			break;
 		case ACTION_NODE:
 			FreeActionNode( ( AIActionNode_t * ) node );
+			break;
+		case DECORATOR_NODE:
+			FreeDecoratorNode( ( AIDecoratorNode_t * ) node );
 			break;
 		default:
 			break;
