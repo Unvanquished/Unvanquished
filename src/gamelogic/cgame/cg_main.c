@@ -1406,7 +1406,7 @@ static void CG_RegisterGraphics( void )
 	trap_R_ClearScene();
 
 	CG_UpdateLoadingStep( LOAD_GEOMETRY );
-	trap_R_LoadWorldMap( cgs.mapname );
+	trap_R_LoadWorldMap( va( "maps/%s.bsp", cgs.mapname ) );
 
 	CG_UpdateLoadingStep( LOAD_ASSETS );
 	for ( i = 0; i < 11; i++ )
@@ -2652,7 +2652,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	CG_ParseServerinfo();
 
 	// load the new map
-	trap_CM_LoadMap( cgs.mapname );
+	trap_CM_LoadMap( va( "maps/%s.bsp", cgs.mapname) );
 
 	srand( serverMessageNum * serverCommandSequence ^ clientNum );
 
