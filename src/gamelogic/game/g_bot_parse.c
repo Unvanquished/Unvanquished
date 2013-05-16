@@ -881,25 +881,27 @@ static const struct AIActionMap_s
 	int          maxparams;
 } AIActions[] =
 {
-	{ "aimAtGoal",       BotActionAimAtGoal,       0, 0 },
-	{ "alternateStrafe", BotActionAlternateStrafe, 0, 0 },
-	{ "buy",             BotActionBuy,             1, 4 },
-	{ "changeGoal",      BotActionChangeGoal,      1, 1 },
-	{ "classDodge",      BotActionClassDodge,      0, 0 },
-	{ "equip",           BotActionBuy,             0, 0 },
-	{ "evolve",          BotActionEvolve,          0, 0 },
-	{ "fight",           BotActionFight,           0, 0 },
-	{ "fireWeapon",      BotActionFireWeapon,      0, 0 },
-	{ "flee",            BotActionFlee,            0, 0 },
-	{ "heal",            BotActionHeal,            0, 0 },
-	{ "moveInDir",       BotActionMoveInDir,       1, 2 },
-	{ "moveTo",          BotActionMoveTo,          1, 2 },
-	{ "moveToGoal",      BotActionMoveToGoal,      0, 0 },
-	{ "repair",          BotActionRepair,          0, 0 },
-	{ "roam",            BotActionRoam,            0, 0 },
-	{ "roamInRadius",    BotActionRoamInRadius,    2, 2 },
-	{ "rush",            BotActionRush,            0, 0 },
-	{ "strafeDodge",     BotActionStrafeDodge,     0, 0 }
+	{ "activateUpgrade",   BotActionActivateUpgrade,   1, 1 },
+	{ "aimAtGoal",         BotActionAimAtGoal,         0, 0 },
+	{ "alternateStrafe",   BotActionAlternateStrafe,   0, 0 },
+	{ "buy",               BotActionBuy,               1, 4 },
+	{ "changeGoal",        BotActionChangeGoal,        1, 1 },
+	{ "classDodge",        BotActionClassDodge,        0, 0 },
+	{ "deactivateUpgrade", BotActionDeactivateUpgrade, 1, 1 },
+	{ "equip",             BotActionBuy,               0, 0 },
+	{ "evolve",            BotActionEvolve,            0, 0 },
+	{ "fight",             BotActionFight,             0, 0 },
+	{ "fireWeapon",        BotActionFireWeapon,        0, 0 },
+	{ "flee",              BotActionFlee,              0, 0 },
+	{ "heal",              BotActionHeal,              0, 0 },
+	{ "moveInDir",         BotActionMoveInDir,         1, 2 },
+	{ "moveTo",            BotActionMoveTo,            1, 2 },
+	{ "moveToGoal",        BotActionMoveToGoal,        0, 0 },
+	{ "repair",            BotActionRepair,            0, 0 },
+	{ "roam",              BotActionRoam,              0, 0 },
+	{ "roamInRadius",      BotActionRoamInRadius,      2, 2 },
+	{ "rush",              BotActionRush,              0, 0 },
+	{ "strafeDodge",       BotActionStrafeDodge,       0, 0 }
 };
 
 /*
@@ -1225,7 +1227,6 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( WP_FLAMER );
 	D( WP_PULSE_RIFLE );
 	D( WP_LUCIFER_CANNON );
-	D( WP_GRENADE );
 	D( WP_HBUILD );
 
 	// add teams
