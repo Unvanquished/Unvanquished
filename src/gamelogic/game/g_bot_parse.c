@@ -1080,6 +1080,47 @@ AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist )
 	return ( AIGenericNode_t * ) list;
 }
 
+static AITreeList_t *currentList = NULL;
+
+AIGenericNode_t *ReadBehaviorTreeInclude( pc_token_list **tokenlist )
+{
+	pc_token_list *first = *tokenlist;
+	pc_token_list *current = first;
+
+	AIBehaviorTree_t *behavior;
+
+	if ( !expectToken( "behavior", &current, qtrue ) )
+	{
+		return NULL;
+	}
+
+	if ( !current )
+	{
+		BotError( "Unexpected end of file after line %d\n", first->token.line );
+		*tokenlist = current;
+		return NULL;
+	}
+
+	behavior = ReadBehaviorTree( current->token.string, currentList );
+
+	if ( !behavior )
+	{
+		BotError( "Could not load behavior %s on line %d\n", current->token.string, current->token.line );
+		*tokenlist = current->next;
+		return NULL;
+	}
+
+	if ( !behavior->root )
+	{
+		BotError( "Recursive behavior %s on line %d\n", current->token.string, current->token.line );
+		*tokenlist = current->next;
+		return NULL;
+	}
+
+	*tokenlist = current->next;
+	return ( AIGenericNode_t * ) behavior;
+}
+
 /*
 ======================
 ReadNode
@@ -1121,6 +1162,10 @@ AIGenericNode_t *ReadNode( pc_token_list **tokenlist )
 	{
 		node = ReadDecoratorNode( &current );
 	}
+	else if ( !Q_stricmp( current->token.string, "behavior" ) )
+	{
+		node = ReadBehaviorTreeInclude( &current );
+	}
 	else
 	{
 		BotError( "Invalid token on line %d found: %s\n", current->token.line, current->token.string );
@@ -1147,6 +1192,8 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	AIBehaviorTree_t *tree;
 	pc_token_list *current;
 	AIGenericNode_t *node;
+
+	currentList = list;
 
 	// check if this behavior tree has already been loaded
 	for ( i = 0; i < list->numTrees; i++ )
@@ -1244,31 +1291,31 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	}
 
 	tokenlist = CreateTokenList( handle );
-	
+	trap_Parse_FreeSource( handle );
+
 	tree = ( AIBehaviorTree_t * ) BG_Alloc( sizeof( AIBehaviorTree_t ) );
 
 	Q_strncpyz( tree->name, name, sizeof( tree->name ) );
+
+	tree->run = BotBehaviorNode;
+	tree->type = BEHAVIOR_NODE;
+
+	AddTreeToList( list, tree );
 
 	current = tokenlist;
 
 	node = ReadNode( &current );
 	if ( node )
 	{
-		tree->root = ( AINode_t * ) node;
+		tree->root = ( AIGenericNode_t * ) node;
 	}
 	else
 	{
-		BG_Free( tree );
+		RemoveTreeFromList( list, tree );
 		tree = NULL;
 	}
 
-	if ( tree )
-	{
-		AddTreeToList( list, tree );
-	}
-
 	FreeTokenList( tokenlist );
-	trap_Parse_FreeSource( handle );
 	return tree;
 }
 

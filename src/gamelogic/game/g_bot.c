@@ -406,7 +406,7 @@ void G_BotThink( gentity_t *self )
 		trap_BotUpdatePath( self->s.number, &routeTarget, NULL, &self->botMind->directPathToGoal );
 	}
 	
-	BotEvaluateNode( self, ( AIGenericNode_t * ) self->botMind->behaviorTree->root );
+	self->botMind->behaviorTree->run( self, ( AIGenericNode_t * ) self->botMind->behaviorTree );
 
 	// if we were nudged...
 	VectorAdd( self->client->ps.velocity, nudge, self->client->ps.velocity );

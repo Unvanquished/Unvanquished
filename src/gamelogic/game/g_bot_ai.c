@@ -331,6 +331,12 @@ AINodeStatus_t BotConditionNode( gentity_t *self, AIGenericNode_t *node )
 	return STATUS_FAILURE;
 }
 
+AINodeStatus_t BotBehaviorNode( gentity_t *self, AIGenericNode_t *node )
+{
+	AIBehaviorTree_t *tree = ( AIBehaviorTree_t * ) node;
+	return BotEvaluateNode( self, tree->root );
+}
+
 AINodeStatus_t BotEvaluateNode( gentity_t *self, AIGenericNode_t *node )
 {
 	AINodeStatus_t status = node->run( self, node );

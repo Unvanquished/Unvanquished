@@ -66,14 +66,9 @@ typedef enum
 	SELECTOR_NODE,
 	ACTION_NODE,
 	CONDITION_NODE,
+	BEHAVIOR_NODE,
 	DECORATOR_NODE
 } AINode_t;
-
-typedef struct
-{
-	char name[ MAX_QPATH ];
-	AINode_t *root;
-} AIBehaviorTree_t;
 
 struct AIGenericNode_s;
 
@@ -94,6 +89,14 @@ typedef struct
 	AIGenericNode_t *list[ MAX_NODE_LIST ];
 	int numNodes;
 } AINodeList_t;
+
+typedef struct
+{
+	AINode_t     type;
+	AINodeRunner run;
+	char name[ MAX_QPATH ];
+	AIGenericNode_t *root;
+} AIBehaviorTree_t;
 
 // operations used in condition nodes
 // ordered according to precedence
@@ -217,6 +220,9 @@ AINodeStatus_t BotConcurrentNode( gentity_t *self, AIGenericNode_t *node );
 
 // decorator nodes
 AINodeStatus_t BotDecoratorReturn( gentity_t *self, AIGenericNode_t *node );
+
+// included behavior trees
+AINodeStatus_t BotBehaviorNode( gentity_t *self, AIGenericNode_t *node );
 
 // action nodes
 AINodeStatus_t BotActionChangeGoal( gentity_t *self, AIGenericNode_t *node );
