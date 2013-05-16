@@ -296,6 +296,16 @@ itemDef
       ownerdraw CG_PLAYER_HUMAN_SCANNER
     }
 
+    itemDef
+    {
+      name "minimap"
+      rect 0 0 128 128
+      visible MENU_TRUE
+      decoration
+      ownerdraw CG_MINIMAP
+    }
+
+
  //SELECTED
     itemDef
     {
