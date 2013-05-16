@@ -201,7 +201,6 @@ qboolean isUnaryOp( AIOpType_t op );
 
 AIValue_t AIBoxFloat( float f );
 AIValue_t AIBoxInt( int i );
-AIValue_t AIBoxToken( const pc_token_t *token );
 
 float     AIUnBoxFloat( AIValue_t v );
 int       AIUnBoxInt( AIValue_t v );

@@ -63,18 +63,6 @@ AIValue_t AIBoxInt( int i )
 	return t;
 }
 
-AIValue_t AIBoxToken( const pc_token_t *token )
-{
-	if ( ( float ) token->intvalue != token->floatvalue )
-	{
-		return AIBoxFloat( token->floatvalue );
-	}
-	else
-	{
-		return AIBoxInt( token->intvalue );
-	}
-}
-
 float AIUnBoxFloat( AIValue_t v )
 {
 	switch ( v.valType )

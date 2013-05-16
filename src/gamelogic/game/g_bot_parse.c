@@ -54,6 +54,18 @@ static qboolean expectToken( const char *s, pc_token_list **list, qboolean next 
 	return qtrue;
 }
 
+AIValue_t AIBoxToken( const pc_token_stripped_t *token )
+{
+	if ( ( float ) token->intvalue != token->floatvalue )
+	{
+		return AIBoxFloat( token->floatvalue );
+	}
+	else
+	{
+		return AIBoxInt( token->intvalue );
+	}
+}
+
 // functions that are used to provide values to the behavior tree in condition nodes
 static AIValue_t buildingIsDamaged( gentity_t *self, const AIValue_t *params )
 {
@@ -331,7 +343,7 @@ static const struct AIOpMap_s
 	{ "||", P_LOGIC_OR,      OP_OR               }
 };
 
-static AIOpType_t opTypeFromToken( pc_token_t *token )
+static AIOpType_t opTypeFromToken( pc_token_stripped_t *token )
 {
 	int i;
 	if ( token->type != TT_PUNCTUATION )
@@ -431,7 +443,7 @@ static AIValue_t *newValueLiteral( pc_token_list **list )
 {
 	AIValue_t *ret;
 	pc_token_list *current = *list;
-	pc_token_t *token = &current->token;
+	pc_token_stripped_t *token = &current->token;
 
 	ret = ( AIValue_t * ) BG_Alloc( sizeof( *ret ) );
 
@@ -1285,7 +1297,11 @@ pc_token_list *CreateTokenList( int handle )
 		current = list;
 		current->next = NULL;
 
-		current->token = token;
+		current->token.floatvalue = token.floatvalue;
+		current->token.intvalue = token.intvalue;
+		current->token.subtype = token.subtype;
+		current->token.type = token.type;
+		current->token.string = BG_strdup( token.string );
 		trap_Parse_SourceFileAndLine( handle, filename, &current->token.line );
 	}
 
@@ -1300,6 +1316,7 @@ void FreeTokenList( pc_token_list *list )
 		pc_token_list *node = current;
 		current = current->next;
 
+		BG_Free( node->token.string );
 		BG_Free( node );
 	}
 }
