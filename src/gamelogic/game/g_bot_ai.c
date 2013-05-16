@@ -364,7 +364,7 @@ AINodeStatus_t BotEvaluateNode( gentity_t *self, AIGenericNode_t *node )
 	}
 
 	// store running information for sequence nodes and selector nodes
-	if ( status == STATUS_RUNNING )
+	if ( status == STATUS_RUNNING && !NodeIsRunning( self, node ) )
 	{
 		if ( self->botMind->numRunningNodes == MAX_NODE_DEPTH )
 		{
