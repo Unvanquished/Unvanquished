@@ -2685,6 +2685,8 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 
 	CG_InitMarkPolys();
 
+	CG_InitMinimap();
+
 	// Make sure we have update values (scores)
 	CG_SetConfigValues();
 

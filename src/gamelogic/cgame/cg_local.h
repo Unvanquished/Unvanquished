@@ -56,6 +56,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define MAX_LOADING_LABEL_LENGTH       32
 
+#define MAX_MINIMAP_ZONES              32
+
 typedef enum
 {
   FOOTSTEP_GENERAL,
@@ -892,6 +894,23 @@ typedef struct
 
 typedef struct
 {
+    vec3_t    boundsMin, boundsMax;
+    vec2_t    imageMin, imageMax;
+    qhandle_t image;
+} minimapZone_t;
+
+typedef struct
+{
+    qboolean     active;
+    int          lastZone;
+    int          nZones;
+    minimapZone_t zones[ MAX_MINIMAP_ZONES ];
+} minimap_t;
+
+//======================================================================
+
+typedef struct
+{
 	vec3_t alienBuildablePos[ MAX_GENTITIES ];
 	float  alienBuildableIntensity[ MAX_GENTITIES ];
 	int    numAlienBuildables;
@@ -1069,6 +1088,9 @@ typedef struct
 	float bobfracsin;
 	int   bobcycle;
 	float xyspeed;
+
+	//minimap
+	minimap_t               minimap;
 
 	// development tool
 	refEntity_t             testModelEntity;
@@ -1786,6 +1808,12 @@ void CG_DrawItemSelectText( rectDef_t *rect, float scale, int textStyle );
 void CG_UpdateEntityPositions( void );
 void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color );
 void CG_AlienSense( rectDef_t *rect );
+
+//
+// cg_minimap.c
+//
+void CG_InitMinimap( void );
+void CG_DrawMinimap( const rectDef_t *rect );
 
 //
 // cg_marks.c
