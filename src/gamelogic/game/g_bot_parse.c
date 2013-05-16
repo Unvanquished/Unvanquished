@@ -961,25 +961,63 @@ AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
 	return ( AIGenericNode_t * ) ret;
 }
 
+AIGenericNode_t *ReadSequence( pc_token_list **tokenlist )
+{
+	pc_token_list *current = *tokenlist;
+	AIGenericNode_t *node = NULL;
+	current = current->next;
+
+	node = ReadNodeList( &current );
+
+	*tokenlist = current;
+	if ( !node )
+	{
+		return NULL;
+	}
+	BotInitNode( SELECTOR_NODE, BotSequenceNode, node );
+	return node;
+}
+
+AIGenericNode_t *ReadSelector( pc_token_list **tokenlist )
+{
+	pc_token_list *current = *tokenlist;
+	AIGenericNode_t *node = NULL;
+	current = current->next;
+
+	node = ReadNodeList( &current );
+
+	*tokenlist = current;
+	if ( !node )
+	{
+		return NULL;
+	}
+	BotInitNode( SELECTOR_NODE, BotSelectorNode, node );
+	return node;
+}
+
+AIGenericNode_t *ReadConcurrent( pc_token_list **tokenlist )
+{
+	pc_token_list *current = *tokenlist;
+	AIGenericNode_t *node = NULL;
+	current = current->next;
+
+	node = ReadNodeList( &current );
+
+	*tokenlist = current;
+	if ( !node )
+	{
+		return NULL;
+	}
+	BotInitNode( SELECTOR_NODE, BotConcurrentNode, node );
+	return node;
+}
+
 /*
 ======================
 ReadNodeList
 
 Parses and creates an AINodeList_t from a token list
 The token list pointer is modified to point to the beginning of the next node text block after reading
-
-A node list has one of these forms:
-selector sequence {
-[ one or more child nodes ]
-}
-
-selector priority {
-[ one or more child nodes ]
-}
-
-selector {
-[ one or more child nodes ]
-}
 ======================
 */
 AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist )
@@ -987,45 +1025,12 @@ AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist )
 	AINodeList_t *list;
 	pc_token_list *current = *tokenlist;
 
-	if ( !expectToken( "selector", &current, qtrue ) )
+	if ( !expectToken( "{", &current, qtrue ) )
 	{
 		return NULL;
 	}
 
 	list = allocNode( AINodeList_t );
-
-	if ( !Q_stricmp( current->token.string, "sequence" ) )
-	{
-		BotInitNode( SELECTOR_NODE, BotSequenceNode, list );
-		current = current->next;
-	}
-	else if ( !Q_stricmp( current->token.string, "priority" ) )
-	{
-		BotInitNode( SELECTOR_NODE, BotPriorityNode, list );
-		current = current->next;
-	}
-	else if ( !Q_stricmp( current->token.string, "concurrent" ) )
-	{
-		BotInitNode( SELECTOR_NODE, BotConcurrentNode, list );
-		current = current->next;
-	}
-	else if ( !Q_stricmp( current->token.string, "{" ) )
-	{
-		BotInitNode( SELECTOR_NODE, BotSelectorNode, list );
-	}
-	else
-	{
-		BotError( "Invalid token %s on line %d\n", current->token.string, current->token.line );
-		FreeNodeList( list );
-		*tokenlist = current;
-		return NULL;
-	}
-
-	if ( !expectToken( "{", &current, qtrue ) )
-	{
-		FreeNodeList( list );
-		return NULL;
-	}
 
 	while ( Q_stricmp( current->token.string, "}" ) )
 	{
@@ -1082,7 +1087,15 @@ AIGenericNode_t *ReadNode( pc_token_list **tokenlist )
 
 	if ( !Q_stricmp( current->token.string, "selector" ) )
 	{
-		node = ReadNodeList( &current );
+		node = ReadSelector( &current );
+	}
+	else if ( !Q_stricmp( current->token.string, "sequence" ) )
+	{
+		node = ReadSequence( &current );
+	}
+	else if ( !Q_stricmp( current->token.string, "concurrent" ) )
+	{
+		node = ReadConcurrent( &current );
 	}
 	else if ( !Q_stricmp( current->token.string, "action" ) )
 	{

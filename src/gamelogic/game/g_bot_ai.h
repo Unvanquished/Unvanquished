@@ -93,7 +93,6 @@ typedef struct
 	AINodeRunner run;
 	AIGenericNode_t *list[ MAX_NODE_LIST ];
 	int numNodes;
-	int maxFail;
 } AINodeList_t;
 
 // operations used in condition nodes
@@ -215,7 +214,6 @@ AINodeStatus_t BotEvaluateNode( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotConditionNode( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotSelectorNode( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotSequenceNode( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotPriorityNode( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotConcurrentNode( gentity_t *self, AIGenericNode_t *node );
 
 // decorator nodes

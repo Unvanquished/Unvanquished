@@ -162,18 +162,7 @@ static qboolean NodeIsRunning( gentity_t *self, AIGenericNode_t *node )
 AINodeStatus_t BotSelectorNode( gentity_t *self, AIGenericNode_t *node )
 {
 	AINodeList_t *selector = ( AINodeList_t * ) node;
-	int i;
-
-	i = 0;
-
-	// find a previously running node and start there
-	for ( i = selector->numNodes - 1; i > 0; i-- )
-	{
-		if ( NodeIsRunning( self, selector->list[ i ] ) )
-		{
-			break;
-		}
-	}
+	int i = 0;
 
 	for ( ; i < selector->numNodes; i++ )
 	{
@@ -215,23 +204,6 @@ AINodeStatus_t BotSequenceNode( gentity_t *self, AIGenericNode_t *node )
 		}
 	}
 	return STATUS_SUCCESS;
-}
-
-AINodeStatus_t BotPriorityNode( gentity_t *self, AIGenericNode_t *node )
-{
-	AINodeList_t *priority = ( AINodeList_t * ) node;
-	int i;
-
-	for ( i = 0; i < priority->numNodes; i++ )
-	{
-		AINodeStatus_t status = BotEvaluateNode( self, priority->list[ i ] );
-		if ( status == STATUS_FAILURE )
-		{
-			continue;
-		}
-		return status;
-	}
-	return STATUS_FAILURE;
 }
 
 AINodeStatus_t BotConcurrentNode( gentity_t *self, AIGenericNode_t *node )
