@@ -1047,14 +1047,50 @@ qboolean BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 			secondaryRange = 0;
 			break;
 		case WP_FLAMER:
-			range = FLAMER_SPEED * FLAMER_LIFETIME / 1000.0f - 100.0f;
-			secondaryRange = 0;
-			width = height = FLAMER_SIZE;
-			// Correct muzzle so that the missile does not start in the ceiling
-			VectorMA( muzzle, -7.0f, up, muzzle );
+			{
+				vec3_t dir;
+				vec3_t rdir;
+				vec3_t nvel;
+				vec3_t npos;
+				vec3_t proj;
+				trajectory_t t;
+			
+				// Correct muzzle so that the missile does not start in the ceiling
+				VectorMA( muzzle, -7.0f, up, muzzle );
 
-			// Correct muzzle so that the missile fires from the player's hand
-			VectorMA( muzzle, 4.5f, right, muzzle );
+				// Correct muzzle so that the missile fires from the player's hand
+				VectorMA( muzzle, 4.5f, right, muzzle );
+
+				// flamer projectiles add the player's velocity scaled by FLAMER_LAG to the fire direction with length FLAMER_SPEED
+				VectorSubtract( targetPos, muzzle, dir );
+				VectorNormalize( dir );
+				VectorScale( self->client->ps.velocity, FLAMER_LAG, nvel );
+				VectorMA( nvel, FLAMER_SPEED, dir, t.trDelta );
+				SnapVector( t.trDelta );
+				VectorCopy( muzzle, t.trBase );
+				t.trType = TR_LINEAR;
+				t.trTime = level.time - 50;
+			
+				// find projectile's final position
+				BG_EvaluateTrajectory( &t, level.time + FLAMER_LIFETIME, npos );
+
+				// find distance traveled by projectile along fire line
+				ProjectPointOntoVector( npos, muzzle, targetPos, proj );
+				range = Distance( muzzle, proj );
+
+				// make sure the sign of the range is correct
+				VectorSubtract( npos, muzzle, rdir );
+				VectorNormalize( rdir );
+				if ( DotProduct( rdir, dir ) < 0 )
+				{
+					range = -range;
+				}
+
+				// decrease range to prevent problems from the approximation
+				range -= 100;
+				secondaryRange = 0;
+				width = height = FLAMER_SIZE;
+			}
 			break;
 		case WP_SHOTGUN:
 			range = ( 50 * 8192 ) / SHOTGUN_SPREAD; //50 is the maximum radius we want the spread to be
