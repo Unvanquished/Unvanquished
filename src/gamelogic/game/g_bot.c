@@ -348,6 +348,7 @@ void G_BotThink( gentity_t *self )
 	usercmd_t *botCmdBuffer;
 	vec3_t     nudge;
 	gentity_t *bestDamaged;
+	botRouteTarget_t routeTarget;
 
 	self->botMind->cmdBuffer = self->client->pers.cmd;
 	botCmdBuffer = &self->botMind->cmdBuffer;
@@ -398,6 +399,13 @@ void G_BotThink( gentity_t *self )
 		return;
 	}
 
+	// always update the path corridor
+	if ( self->botMind->goal.inuse )
+	{
+		BotTargetToRouteTarget( self, self->botMind->goal, &routeTarget );
+		trap_BotUpdatePath( self->s.number, &routeTarget, NULL, &self->botMind->directPathToGoal );
+	}
+	
 	BotEvaluateNode( self, ( AIGenericNode_t * ) self->botMind->behaviorTree->root );
 
 	// if we were nudged...
