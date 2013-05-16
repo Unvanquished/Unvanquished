@@ -1004,6 +1004,11 @@ AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist )
 		BotInitNode( SELECTOR_NODE, BotPriorityNode, list );
 		current = current->next;
 	}
+	else if ( !Q_stricmp( current->token.string, "concurrent" ) )
+	{
+		BotInitNode( SELECTOR_NODE, BotConcurrentNode, list );
+		current = current->next;
+	}
 	else if ( !Q_stricmp( current->token.string, "{" ) )
 	{
 		BotInitNode( SELECTOR_NODE, BotSelectorNode, list );

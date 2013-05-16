@@ -216,7 +216,7 @@ AINodeStatus_t BotConditionNode( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotSelectorNode( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotSequenceNode( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotPriorityNode( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotParallelNode( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotConcurrentNode( gentity_t *self, AIGenericNode_t *node );
 
 // decorator nodes
 AINodeStatus_t BotDecoratorReturn( gentity_t *self, AIGenericNode_t *node );

@@ -234,29 +234,21 @@ AINodeStatus_t BotPriorityNode( gentity_t *self, AIGenericNode_t *node )
 	return STATUS_FAILURE;
 }
 
-AINodeStatus_t BotParallelNode( gentity_t *self, AIGenericNode_t *node )
+AINodeStatus_t BotConcurrentNode( gentity_t *self, AIGenericNode_t *node )
 {
-	AINodeList_t *parallel = ( AINodeList_t * ) node;
+	AINodeList_t *con = ( AINodeList_t * ) node;
 	int i = 0;
-	int numFailure = 0;
 
-	for ( ; i < parallel->numNodes; i++ )
+	for ( ; i < con->numNodes; i++ )
 	{
-		AINodeStatus_t status = BotEvaluateNode( self, parallel->list[ i ] );
+		AINodeStatus_t status = BotEvaluateNode( self, con->list[ i ] );
 
 		if ( status == STATUS_FAILURE )
 		{
-			numFailure++;
-
-			if ( numFailure < parallel->maxFail )
-			{
-				continue;
-			}
+			return STATUS_FAILURE;
 		}
-
-		return status;
 	}
-	return STATUS_FAILURE;
+	return STATUS_SUCCESS;
 }
 
 AINodeStatus_t BotDecoratorReturn( gentity_t *self, AIGenericNode_t *node )
