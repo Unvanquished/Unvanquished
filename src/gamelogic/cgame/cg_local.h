@@ -896,6 +896,7 @@ typedef struct
 {
     vec3_t    boundsMin, boundsMax;
     vec2_t    imageMin, imageMax;
+    float     scale;
     qhandle_t image;
 } minimapZone_t;
 
@@ -904,6 +905,7 @@ typedef struct
     qboolean     active;
     int          lastZone;
     int          nZones;
+    float        bgColor[4];
     minimapZone_t zones[ MAX_MINIMAP_ZONES ];
 } minimap_t;
 

@@ -60,6 +60,8 @@ qboolean CG_ParseMinimapZone( minimapZone_t* z, char **text )
     qboolean hasImage = qfalse;
     qboolean hasBounds = qfalse;
 
+    z->scale = 1.0f;
+
     if( !*(token = COM_Parse( text )) || Q_stricmp( token, "{" ) )
     {
         CG_Printf( S_ERROR "expected a { at the beginning of a zones\n" );
@@ -88,12 +90,11 @@ qboolean CG_ParseMinimapZone( minimapZone_t* z, char **text )
             if( !*(token = COM_Parse( text )) )
             {
                 CG_Printf( S_ERROR "error while parsing the image name while parsing 'image'\n" );
-
             }
 
             CG_Printf( "loading minimap image %s\n", token);
 
-            z->image = trap_R_RegisterShader( token, RSF_NOMIP );
+            z->image = trap_R_RegisterShader( token, RSF_DEFAULT );
 
             CG_Printf( "registershader returned %i\n", z->image );
 
@@ -104,6 +105,15 @@ qboolean CG_ParseMinimapZone( minimapZone_t* z, char **text )
             }
 
             hasImage = qtrue;
+        }
+        else if( !Q_stricmp( token, "scale" ))
+        {
+            if( !*(token = COM_Parse( text )) )
+            {
+                CG_Printf( S_ERROR "error while parsing the value  while parsing 'scale'\n" );
+            }
+
+            z->scale = atof( token );
         }
         else if( !Q_stricmp( token, "}" ) )
         {
@@ -149,6 +159,7 @@ qboolean CG_ParseMinimap( minimap_t* m, char* filename )
 
     m->nZones = 0;
     m->lastZone = -1;
+    m->bgColor[3] = 1.0f;
 
     if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
     {
@@ -185,6 +196,14 @@ qboolean CG_ParseMinimap( minimap_t* m, char* filename )
                 return qfalse;
             }
         }
+        else if( !Q_stricmp( token, "backgroundColor") )
+        {
+            if( !ParseFloats( m->bgColor, 3, &text) )
+            {
+                CG_Printf( S_ERROR "error while parsing 'backgroundColor' in %s\n", filename );
+                return qfalse;
+            }
+        }
         else if( !Q_stricmp( token, "}" ) )
         {
             break;
@@ -204,7 +223,7 @@ qboolean CG_ParseMinimap( minimap_t* m, char* filename )
     return qtrue;
 }
 
-//Helper geometric functions for the minimap
+//Helper functions for the minimap
 
 /*
 ================
@@ -219,18 +238,28 @@ qboolean CG_IsInMinimapZone(minimapZone_t* z)
 //The parameters for the current frame's minimap transform
 static float transform[4];
 static float transformVector[2];
+static float transformAngle;
+static float transformScale;
 
 /*
 ================
 CG_SetupMinimapTransform
 ================
 */
-void CG_SetupMinimapTransform( const rectDef_t *rect, const minimapZone_t* zone, float angle, float extScale )
+void CG_SetupMinimapTransform( const rectDef_t *rect, const minimap_t* minimap, const minimapZone_t* zone)
 {
-    float posx, posy, x, y;
-    float scale = extScale * MINIMAP_DEFAULT_DISPLAY_SIZE / (zone->imageMax[0] - zone->imageMin[0]);
-    float s = sin(angle) * scale;
-    float c = cos(angle) * scale;
+    float posx, posy, x, y, s, c, angle, scale;
+
+    //The refdefview angle is the angle from the x axis
+    //the 90 gets it back to the Y axis (we want the view to point up)
+    //and the orientation change gives the -
+    transformAngle = - (cg.refdefViewAngles[1] - 90.0);
+    transformScale = zone->scale;
+
+    angle = DEG2RAD(transformAngle);
+    scale = transformScale * MINIMAP_DEFAULT_DISPLAY_SIZE / (zone->imageMax[0] - zone->imageMin[0]);
+    s = sin(angle) * scale;
+    c = cos(angle) * scale;
 
     //Simply a 2x2 rotoscale matrix
     transform[0] =  c;
@@ -262,6 +291,21 @@ void CG_WorldToMinimap( const vec3_t worldPos, vec2_t minimapPos )
                     transformVector[0];
     minimapPos[1] = transform[2] * worldPos[0] + transform[3] * worldPos[1] +
                     transformVector[1];
+}
+
+/*
+================
+CG_WorldToMinimapAngle
+================
+*/
+float CG_WorldToMinimapAngle( void )
+{
+    return transformAngle;
+}
+
+float CG_WorldToMinimapScale( void )
+{
+    return transformScale;
 }
 
 //Entry points in the minimap code
@@ -302,7 +346,7 @@ void CG_DrawMinimap( const rectDef_t* rect640 )
     minimap_t* m = &cg.minimap;
     minimapZone_t *z = NULL;
     float angle;
-    float scale = 1.0;
+    float scale;
     float transform[4];
     rectDef_t rect = *rect640;
 
@@ -344,33 +388,33 @@ void CG_DrawMinimap( const rectDef_t* rect640 )
     }
 
 
-    //Starting from here the code is just for testing
+    //Setup the transform
     CG_AdjustFrom640( &rect.x, &rect.y, &rect.w, &rect.h );
+    CG_SetupMinimapTransform( &rect, m, z );
 
-    //TODO: explain that angle transform and move it in the helper functions
-    angle = - (cg.refdefViewAngles[1] - 90.0);
-    CG_SetupMinimapTransform( &rect, z, DEG2RAD(angle), 1.0 );
+    angle = CG_WorldToMinimapAngle();
+    scale = CG_WorldToMinimapScale();
 
+    //Testing code
     //CG_SetClipRegion( rect640->x, rect640->y, rect640->w, rect640->h );
-
-    //TODO: use a reworked  `Ishq glScissors patch
-    //TODO: add support for background colors
-    //TODO: add support for scaling dependant on zones
-
     {
-        vec2_t mapOffset;
-        vec3_t origin = {0.0f, 0.0f, 0.0f};
-        CG_WorldToMinimap(origin, mapOffset);
+        CG_FillRect( rect640->x, rect640->y, rect640->w, rect640->h, m->bgColor );
 
-        trap_R_DrawRotatedPic(-512 + mapOffset[0], -512 + mapOffset[1], 1024, 1024, 0.0, 0.0, 1.0, 1.0, z->image, angle);
-    }
-    {
-        float c[4] = {1.0, 0.0, 0.0, 1.0};
-        CG_DrawRect( rect640->x, rect640->y, rect640->w, rect640->h, 1.0, c );
-        CG_DrawRect( rect640->x + rect640->w/2.0 - 2.0, rect640->y + rect640->h/2.0 - 2.0, 4.0, 4.0, 1.0, c );
-        CG_DrawRect( rect640->x + rect640->w/2.0 - 1.0, rect640->y + rect640->h/2.0 - 6.0, 2.0, 4.0, 1.0, c );
-    }
+        //TODO: use a reworked  `Ishq glScissors patch
+        {
+            vec2_t mapOffset;
+            vec3_t origin = {0.0f, 0.0f, 0.0f};
+            CG_WorldToMinimap(origin, mapOffset);
 
+            trap_R_DrawRotatedPic(-512 * scale + mapOffset[0], -512 * scale + mapOffset[1], 1024 * scale, 1024 * scale, 0.0, 0.0, 1.0, 1.0, z->image, angle);
+        }
+        {
+            float c[4] = {1.0, 0.0, 0.0, 1.0};
+            CG_DrawRect( rect640->x, rect640->y, rect640->w, rect640->h, 1.0, c );
+            CG_DrawRect( rect640->x + rect640->w/2.0 - 2.0, rect640->y + rect640->h/2.0 - 2.0, 4.0, 4.0, 1.0, c );
+            CG_DrawRect( rect640->x + rect640->w/2.0 - 1.0, rect640->y + rect640->h/2.0 - 6.0, 2.0, 4.0, 1.0, c );
+        }
+    }
     //CG_ClearClipRegion();
 }
 
