@@ -10,7 +10,7 @@
 			margin: auto;
 		}
 
-		div.servers
+		div.lol
 		{
 			overflow-y: scroll;
 		}
@@ -20,9 +20,22 @@
 			icon-image-s: 128px 179px;
 			icon-image-t: 152px 191px;
 		}
+
+		datagrid datagridbody
+		{
+			min-rows: 10;
+			min-height: 400px;
+		}
+
+		img
+		{
+			width: 18px;
+			height: 18px;
+		}
         </style>
     </head>
     <body template="window" onload="init_servers internet" id="serverbrowser">
+		<div id="lol">
 			<tabset>
 				<tab>LAN</tab>
 				<panel>
@@ -31,6 +44,7 @@
 				<tab onClick="buildDS server_browser internet">Internet</tab>
 				<panel>
 					<span id="status"></span>
+					<span class="emoticon"><img src="/emoticons/dev_1x1.tga"/></span>
 					<div class="servers">
 					<datagrid source="server_browser.internet">
 						<col fields="label" width="10%">Label:</col>
@@ -48,5 +62,6 @@
 					Favorite servers here
 				</panel>
 			</tabset>
+		</div>
 	</body>
 </rml>

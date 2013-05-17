@@ -1384,7 +1384,7 @@ if( BUILD_CLIENT )
     ${CPUINFOLIST} ${SDLLIST} ${QCOMMONLIST} ${SHAREDLIST} ${CRYPTOLIST} ${TINYGETTEXT_LIST}
     ${DATABASELIST} ${MOUNT_DIR}/engine/qcommon/dl_main_curl.c ${SPEEXLIST} ${WIN_RC} ${ROCKET_CLIENTLIST} )
   add_dependencies( client rendererGL )
-  include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} ${ROCKET_DIR}/include )
+  include_directories( ${MOUNT_DIR}/libs/cpuinfo ${NEWTON_INCLUDES} ${ROCKET_DIR}/Include ${ROCKET_DIR}/Contrib/Include )
   target_link_libraries( client ${OS_LIBRARIES} ${NEWTON_LIBRARY} ROCKET_LIB )
   set_property( TARGET client APPEND PROPERTY COMPILE_DEFINITIONS USE_XREAL_RENDERER COMPAT_ET USE_REFENTITY_ANIMATIONSYSTEM HAVE_SDL )
   # Required for linking against the LibRocket static library in MSVC
