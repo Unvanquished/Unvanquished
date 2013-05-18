@@ -1484,6 +1484,15 @@ typedef struct visTest_s
 	float             lastResult;
 } visTest_t;
 
+typedef struct
+{
+	qboolean status;
+	int      x;
+	int      y;
+	int      w;
+	int      h;
+} scissorState_t;
+
 /*
 ** trGlobals_t
 **
@@ -1603,7 +1612,8 @@ typedef struct
 	float    fogTable[ FOG_TABLE_SIZE ];
 
 	// RF, temp var used while parsing shader only
-	int allowCompress;
+	int            allowCompress;
+	scissorState_t scissor;
 } trGlobals_t;
 
 extern backEndState_t backEnd;
@@ -2352,6 +2362,21 @@ typedef struct
 
 typedef struct
 {
+	int       commandId;
+	qboolean  enable;
+} scissorEnableCommand_t;
+
+typedef struct
+{
+	int       commandId;
+	int       x;
+	int       y;
+	int       w;
+	int       h;
+} scissorSetCommand_t;
+
+typedef struct
+{
 	int         commandId;
 	trRefdef_t  refdef;
 	viewParms_t viewParms;
@@ -2399,6 +2424,8 @@ typedef enum
   RC_SET_COLOR,
   RC_STRETCH_PIC,
   RC_2DPOLYS,
+  RC_SCISSORENABLE,
+  RC_SCISSORSET,
   RC_ROTATED_PIC,
   RC_STRETCH_PIC_GRADIENT, // (SA) added
   RC_DRAW_SURFS,
@@ -2474,6 +2501,8 @@ void                                RE_StretchPicGradient( float x, float y, flo
     float s1, float t1, float s2, float t2, qhandle_t hShader, const float *gradientColor,
     int gradientType );
 void                                RE_2DPolyies( polyVert_t *verts, int numverts, qhandle_t hShader );
+void                                RE_ScissorEnable( qboolean enable );
+void                                RE_ScissorSet( int x, int y, int w, int h );
 void                                RE_SetGlobalFog( qboolean restore, int duration, float r, float g, float b, float depthForOpaque );
 void                                RE_BeginFrame( stereoFrame_t stereoFrame );
 void                                RE_EndFrame( int *frontEndMsec, int *backEndMsec );

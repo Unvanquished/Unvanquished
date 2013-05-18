@@ -2704,6 +2704,15 @@ extern "C" {
 	class GLShader_vertexLighting_DBS_entity;
 #endif
 
+	typedef struct
+	{
+		qboolean status;
+		int       x;
+		int       y;
+		int       w;
+		int       h;
+	} scissorState_t;
+
 	/*
 	** trGlobals_t
 	**
@@ -2926,8 +2935,9 @@ extern "C" {
 		float         inverseSawToothTable[ FUNCTABLE_SIZE ];
 		float         fogTable[ FOG_TABLE_SIZE ];
 
-		uint32_t      occlusionQueryObjects[ MAX_OCCLUSION_QUERIES ];
-		int           numUsedOcclusionQueryObjects;
+		uint32_t       occlusionQueryObjects[ MAX_OCCLUSION_QUERIES ];
+		int            numUsedOcclusionQueryObjects;
+		scissorState_t scissor;
 	} trGlobals_t;
 
 	extern const matrix_t quakeToOpenGLMatrix;
@@ -4035,6 +4045,21 @@ extern "C" {
 
 	typedef struct
 	{
+		int       commandId;
+		qboolean  enable;
+	} scissorEnableCommand_t;
+
+	typedef struct
+	{
+		int       commandId;
+		int       x;
+		int       y;
+		int       w;
+		int       h;
+	} scissorSetCommand_t;
+
+	typedef struct
+	{
 		int         commandId;
 		trRefdef_t  refdef;
 		viewParms_t viewParms;
@@ -4098,6 +4123,8 @@ extern "C" {
 	  RC_SET_COLOR,
 	  RC_STRETCH_PIC,
 	  RC_2DPOLYS,
+	  RC_SCISSORENABLE,
+	  RC_SCISSORSET,
 	  RC_ROTATED_PIC,
 	  RC_STRETCH_PIC_GRADIENT, // (SA) added
 	  RC_DRAW_VIEW,
@@ -4163,6 +4190,8 @@ extern "C" {
 	    float s1, float t1, float s2, float t2, qhandle_t hShader, const float *gradientColor,
 	    int gradientType );
 	void                                RE_2DPolyies( polyVert_t *verts, int numverts, qhandle_t hShader );
+	void                                RE_ScissorEnable( qboolean enable );
+	void                                RE_ScissorSet( int x, int y, int w, int h );
 
 	void                                RE_BeginFrame( stereoFrame_t stereoFrame );
 	void                                RE_EndFrame( int *frontEndMsec, int *backEndMsec );
