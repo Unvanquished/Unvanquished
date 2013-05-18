@@ -213,8 +213,16 @@ void CG_Rocket_Frame( void )
 			}
 			break;
 
-		case CONNECTING:
+		case LOADING:
 			CG_Rocket_CleanUpServerList();
+			trap_Rocket_DocumentAction( "", "close" );
+			trap_Rocket_DocumentAction( "main", "close" );
+			trap_Rocket_LoadDocument( "ui/connecting.rml" );
+			trap_Rocket_DocumentAction( "connecting", "show" );
+			break;
+
+		case PLAYING:
+			trap_Rocket_DocumentAction( "connecting", "close" );
 			break;
 	}
 	CG_Rocket_ProcessEvents();

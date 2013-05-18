@@ -354,8 +354,11 @@ typedef enum
   CG_ROCKET_GETELEMENTDIMENSIONS,
 // Rocket wants to dimension some elements
 
-  CG_ROCKET_RENDERELEMENT
+  CG_ROCKET_RENDERELEMENT,
 // Rocket wants an element renderered
+
+  CG_ROCKET_PROGRESSBARVALUE
+// Rocket wants to query the value of a progress bar
 } cgameExport_t;
 
 void            trap_Print( const char *string );

@@ -5,6 +5,11 @@
 			{
 				z-index: -1;
 			}
+			div#background img
+			{
+				height: 100%;
+				width: 100%;
+			}
 			div#text
 			{
 				position: absolute;
@@ -14,17 +19,37 @@
 				font-family: Roboto;
 				text-align: center;
 				vertical-align: middle;
+				margin-top: 50%;
 				font-size: 48;
+				z-index: -1;
 			}
+			div#progressbars
+			{
+
+			}
+			progressbar
+			{
+				width: 90%;
+				height: 32px;
+				progress-left-image: /gfx/sprites/bubble.jpg;
+				progress-center-image: /gfx/colors/black.jpg;
+				progress-right-image: /gfx/sprites/bubble.jpg;
+				mask: 1;
+			}
+
 		</style>
 		<title>Connecting</title>
 	</head>
 	<body id="connecting">
+			<div id="progressbars">
+				<progressbar id="overall" src="overall" />
+			</div>
+
 		<div id="text">
 			<p>Connecting...</p>
 		</div>
 		<div id="background">
-			<img style="height: 100%; width:100%;" src="ui/assets/mainmenu.jpg" />
+			<img src="/ui/assets/mainmenu.jpg" />
 		</div>
 	</body>
 </rml>

@@ -448,6 +448,22 @@ set(BitmapFont_SRC_FILES
     ${ROCKET_DIR}/Source/Core/BitmapFont/FontProvider.cpp
 )
 
+set(ContribProgressBar_HDR_FILES
+)
+
+set(ContribProgressBar_PUB_HDR_FILES
+    ${ROCKET_DIR}/Contrib/Include/Rocket/ProgressBar/Header.h
+    ${ROCKET_DIR}/Contrib/Include/Rocket/ProgressBar/ElementProgressBar.h
+    ${ROCKET_DIR}/Contrib/Include/Rocket/ProgressBar.h
+)
+
+set(ContribProgressBar_SRC_FILES
+    ${ROCKET_DIR}/Contrib/Source/ProgressBar/ElementProgressBar.cpp
+    ${ROCKET_DIR}/Contrib/Source/ProgressBar/ProgressBar.cpp
+)
+
+
+
 
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "Release/${GAMELIB_OUTPUT_DIR}" )
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "Debug/${GAMELIB_OUTPUT_DIR}" )
@@ -459,6 +475,8 @@ find_package( Freetype REQUIRED )
 include_directories( ${ROCKET_DIR}/Include ${ROCKET_DIR}/Contrib/Include ${FREETYPE_INCLUDE_DIRS} )
 add_library( ROCKET_LIB STATIC ${Core_HDR_FILES} ${Core_PUB_HDR_FILES} ${Core_SRC_FILES} ${Controls_HDR_FILES} ${Controls_PUB_HDR_FILES} ${Controls_SRC_FILES}
 	${FreeType_HDR_FILES} ${FreeType_PUB_HDR_FILES} ${FreeType_SRC_FILES}
-	${BitmapFont_HDR_FILES} ${BitmapFont_PUB_HDR_FILES} ${BitmapFont_SRC_FILES} )
+	${BitmapFont_HDR_FILES} ${BitmapFont_PUB_HDR_FILES} ${BitmapFont_SRC_FILES}
+	${ContribProgressBar_HDR_FILES} ${ContribProgressBar_PUB_HDR_FILES} ${ContribProgressBar_SRC_FILES}
+	${Debugger_HDR_FILES} ${Debugger_PUB_HDR_FILES} ${Debugger_SRC_FILES} )
 
 set_property( TARGET ROCKET_LIB PROPERTY COMPILE_DEFINITIONS STATIC_LIB ROCKET_WITH_FREETYPE )

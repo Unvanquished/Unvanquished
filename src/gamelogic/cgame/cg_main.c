@@ -34,6 +34,14 @@ void                CG_RegisterCvars( void );
 void                CG_Shutdown( void );
 static char         *CG_VoIPString( void );
 
+static int FloatAsInt( float f )
+{
+	floatint_t fi;
+
+	fi.f = f;
+	return fi.i;
+}
+
 /*
 ================
 vmMain
@@ -122,6 +130,9 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
 		case CG_ROCKET_RENDERELEMENT:
 			CG_Rocket_RenderElement();
 			return 0;
+
+		case CG_ROCKET_PROGRESSBARVALUE:
+			return FloatAsInt( CG_Rocket_ProgressBarValue() );
 
 		default:
 			CG_Error( "vmMain(): unknown cgame command %i", command );
@@ -1228,6 +1239,7 @@ static void CG_UpdateLoadingStep( cgLoadingStep_t step )
 	switch (step) {
 		case LOAD_START:
 			cg.loading = qtrue;
+			rocketInfo.rocketState = LOADING;
 			cg.mediaFraction = cg.charModelFraction = cg.buildablesFraction = 0.0f;
 			break;
 
@@ -1262,6 +1274,7 @@ static void CG_UpdateLoadingStep( cgLoadingStep_t step )
 			Q_strncpyz(cg.currentLoadingLabel, "Done!", sizeof( cg.currentLoadingLabel ) );
 			trap_UpdateScreen();
 			cg.loading = qfalse;
+			rocketInfo.rocketState = IDLE;
 			break;
 
 		default:

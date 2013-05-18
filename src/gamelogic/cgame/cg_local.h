@@ -1987,4 +1987,9 @@ void CG_Rocket_CleanUpServerList( void );
 void CG_Rocket_RegisterDataSources( void );
 void CG_Rocket_ExecDataSource( const char *dataSource, const char *table );
 void CG_Rocket_SetDataSourceIndex( const char *dataSource, int index );
+
+//
+// cg_rocket_progressbar.c
+//
+float CG_Rocket_ProgressBarValue( void );
 #endif

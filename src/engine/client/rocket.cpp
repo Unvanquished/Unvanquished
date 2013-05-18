@@ -40,10 +40,12 @@ Maryland 20850 USA.
 #include <Rocket/Core/RenderInterface.h>
 #include <Rocket/Core.h>
 #include <Rocket/Controls.h>
+#include <Rocket/ProgressBar.h>
 #include "rocketDataGrid.h"
 #include "rocketDataFormatter.h"
 #include "rocketEventInstancer.h"
 #include "rocketSelectableDataGrid.h"
+#include "rocketProgressBar.h"
 
 extern "C"
 {
@@ -51,7 +53,7 @@ extern "C"
 	#include "client.h"
 }
 
-//#include <Rocket/Debugger.h>
+#include <Rocket/Debugger.h>
 
 class DaemonFileInterface : public Rocket::Core::FileInterface
 {
@@ -374,6 +376,16 @@ void Rocket_Rocket_f( void )
 	Rocket_DocumentAction( Cmd_Argv(1), Cmd_Argv(2) );
 }
 
+void Rocket_RocketDebug_f( void )
+{
+	Rocket::Debugger::SetVisible( !Rocket::Debugger::IsVisible() );
+}
+
+void Rocket_ProgressTest_f( void )
+{
+	Rocket::ProgressBar::ElementProgressBar *prog = (Rocket::ProgressBar::ElementProgressBar*)context->GetDocument( "connecting" )->GetElementById( "overall" );
+	prog->SetValue( atof( Cmd_Argv( 1 ) ) );
+}
 static DaemonFileInterface fileInterface;
 static DaemonSystemInterface systemInterface;
 static DaemonRenderInterface renderInterface;
@@ -395,6 +407,7 @@ void Rocket_Init( void )
 	}
 
 	Rocket::Controls::Initialise();
+	Rocket::ProgressBar::Initialise();
 
 	InitSDLtoRocketKeymap();
 
@@ -426,10 +439,13 @@ void Rocket_Init( void )
 
 	// Add custom client elements
 	Rocket::Core::Factory::RegisterElementInstancer( "datagrid", new Rocket::Core::ElementInstancerGeneric< SelectableDataGrid >() )->RemoveReference();
+	Rocket::Core::Factory::RegisterElementInstancer( "progressbar", new Rocket::Core::ElementInstancerGeneric< RocketProgressBar >() )->RemoveReference();
 
 	Cmd_AddCommand( "rocket", Rocket_Rocket_f );
+	Cmd_AddCommand( "rocketDebug", Rocket_RocketDebug_f );
+	Cmd_AddCommand( "progresstest", Rocket_ProgressTest_f );
 
-	//Rocket::Debugger::Initialise(context);
+	Rocket::Debugger::Initialise(context);
 }
 
 void Rocket_Shutdown( void )

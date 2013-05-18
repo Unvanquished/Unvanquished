@@ -696,6 +696,7 @@ set( CGAMEGPP_BASE
   ${GPP_DIR}/cgame/cg_rocket_draw.c
   ${GPP_DIR}/cgame/cg_rocket_events.c
   ${GPP_DIR}/cgame/cg_rocket_datasource.c
+  ${GPP_DIR}/cgame/cg_rocket_progressbar.c
   ${GPP_DIR}/cgame/cg_rocket_dataformatter.c
   ${GPP_DIR}/cgame/cg_rocket_elementdimensions.c
   ${GPP_DIR}/cgame/cg_utils.c
