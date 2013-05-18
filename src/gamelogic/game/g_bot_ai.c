@@ -510,6 +510,24 @@ AINodeStatus_t BotActionChangeGoal( gentity_t *self, AIGenericNode_t *node )
 	return STATUS_SUCCESS;
 }
 
+AINodeStatus_t BotActionEvolveTo( gentity_t *self, AIGenericNode_t *node )
+{
+	AIActionNode_t *action = ( AIActionNode_t * ) node;
+	class_t c = ( class_t )  AIUnBoxInt( action->params[ 0 ] );
+
+	if ( self->client->ps.stats[ STAT_CLASS ] == c )
+	{
+		return STATUS_SUCCESS;
+	}
+
+	if ( BotEvolveToClass( self, c ) )
+	{
+		return STATUS_SUCCESS;
+	}
+
+	return STATUS_FAILURE;
+}
+
 AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 {
 	team_t myTeam = ( team_t ) self->client->ps.stats[ STAT_TEAM ];

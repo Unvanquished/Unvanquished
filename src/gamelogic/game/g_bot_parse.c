@@ -112,6 +112,29 @@ static AIValue_t goalType( gentity_t *self, const AIValue_t *params )
 	return AIBoxInt( BotGetTargetType( self->botMind->goal ) );
 }
 
+static AIValue_t goalPercentHealth( gentity_t *self, const AIValue_t *params )
+{
+	float maxHealth = INT_MAX;
+	float health = 0;
+
+	if ( BotTargetIsEntity( self->botMind->goal ) )
+	{
+		health = self->botMind->goal.ent->health;
+	}
+
+	if ( BotGetTargetType( self->botMind->goal ) == ET_BUILDABLE )
+	{
+		maxHealth = BG_Buildable( ( buildable_t ) self->botMind->goal.ent->s.modelindex )->health;
+	}
+
+	if ( BotGetTargetType( self->botMind->goal ) == ET_PLAYER )
+	{
+		maxHealth = BG_Class( ( class_t ) self->botMind->goal.ent->client->ps.stats[ STAT_CLASS ] )->health;
+	}
+
+	return AIBoxFloat( health / maxHealth );
+}
+
 static AIValue_t goalDead( gentity_t *self, const AIValue_t *params )
 {
 	qboolean success = qfalse;
@@ -292,7 +315,24 @@ static AIValue_t directPathTo( gentity_t *self, const AIValue_t *params )
 
 	return AIBoxInt( qfalse );
 }
- 
+
+static AIValue_t botCanEvolveTo( gentity_t *self, const AIValue_t *params )
+{
+	class_t c = ( class_t ) AIUnBoxInt( params[ 0 ] );
+
+	return AIBoxInt( BotCanEvolveToClass( self, c ) );
+}
+
+static AIValue_t humanStage( gentity_t *self, const AIValue_t *params )
+{
+	return AIBoxInt( g_humanStage.integer );
+}
+
+static AIValue_t alienStage( gentity_t *self, const AIValue_t *params )
+{
+	return AIBoxInt( g_alienStage.integer );
+}
+
 // functions accessible to the behavior tree for use in condition nodes
 static const struct AIConditionMap_s
 {
@@ -303,18 +343,22 @@ static const struct AIConditionMap_s
 } conditionFuncs[] =
 {
 	{ "alertedToEnemy",    VALUE_INT,   alertedToEnemy,    0 },
+	{ "alienStage",        VALUE_INT,   alienStage,        0 },
 	{ "baseRushScore",     VALUE_FLOAT, baseRushScore,     0 },
 	{ "buildingIsDamaged", VALUE_INT,   buildingIsDamaged, 0 },
+	{ "canEvolveTo",       VALUE_INT,   botCanEvolveTo,    1 },
 	{ "class",             VALUE_INT,   botClass,          0 },
 	{ "directPathTo",      VALUE_INT,   directPathTo,      1 },
 	{ "distanceTo",        VALUE_FLOAT, distanceTo,        1 },
 	{ "goalBuildingType",  VALUE_INT,   goalBuildingType,  0 },
 	{ "goalIsDead",        VALUE_INT,   goalDead,          0 },
+	{ "goalPercentHealth", VALUE_FLOAT, goalPercentHealth, 0 },
 	{ "goalTeam",          VALUE_INT,   goalTeam,          0 },
 	{ "goalType",          VALUE_INT,   goalType,          0 },
 	{ "haveUpgrade",       VALUE_INT,   haveUpgrade,       1 },
 	{ "haveWeapon",        VALUE_INT,   haveWeapon,        1 },
 	{ "healScore",         VALUE_FLOAT, healScore,         0 },
+	{ "humanStage",        VALUE_INT,   humanStage,        0 },
 	{ "inAttackRange",     VALUE_INT,   inAttackRange,     1 },
 	{ "isVisible",         VALUE_INT,   isVisible,         1 },
 	{ "percentHealth",     VALUE_FLOAT, botHealth,         0 },
@@ -890,6 +934,7 @@ static const struct AIActionMap_s
 	{ "deactivateUpgrade", BotActionDeactivateUpgrade, 1, 1 },
 	{ "equip",             BotActionBuy,               0, 0 },
 	{ "evolve",            BotActionEvolve,            0, 0 },
+	{ "evolveTo",          BotActionEvolveTo,          1, 1 },
 	{ "fight",             BotActionFight,             0, 0 },
 	{ "fireWeapon",        BotActionFireWeapon,        0, 0 },
 	{ "flee",              BotActionFlee,              0, 0 },
