@@ -1268,6 +1268,14 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_CM_DISTANCETOMODEL:
 			return FloatAsInt( CM_DistanceToModel( VMA(1), args[2] ) );
 
+		case CG_R_SCISSOR_ENABLE:
+			re.ScissorEnable( args[1] );
+			return 0;
+
+		case CG_R_SCISSOR_SET:
+			re.ScissorSet( args[1], args[2], args[3], args[4] );
+			return 0;
+
 		default:
 			Com_Error( ERR_DROP, "Bad cgame system trap: %ld", ( long int ) args[ 0 ] );
 			exit(1); // silence warning, and make sure this behaves as expected, if Com_Error's behavior changes

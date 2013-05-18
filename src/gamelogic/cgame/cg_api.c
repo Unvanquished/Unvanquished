@@ -1261,3 +1261,13 @@ float trap_CM_DistanceToModel( const vec3_t loc, clipHandle_t model )
 {
 	return RETFLOAT( syscall( CG_CM_DISTANCETOMODEL, loc, model ) );
 }
+
+void trap_R_ScissorEnable( qboolean enable )
+{
+    syscall( CG_R_SCISSOR_ENABLE, enable );
+}
+
+void trap_R_ScissorSet( int x, int y, int w, int h )
+{
+    syscall( CG_R_SCISSOR_SET, x, y, w, h );
+}
