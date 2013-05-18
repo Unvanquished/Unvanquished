@@ -565,6 +565,15 @@ AINodeStatus_t BotActionEvolveTo( gentity_t *self, AIGenericNode_t *node )
 	return STATUS_FAILURE;
 }
 
+AINodeStatus_t BotActionSay( gentity_t *self, AIGenericNode_t *node )
+{
+	AIActionNode_t *action = ( AIActionNode_t * ) node;
+	const char *str = AIUnBoxString( action->params[ 0 ] );
+	saymode_t   say = ( saymode_t ) AIUnBoxInt( action->params[ 1 ] );
+	G_Say( self, say, str );
+	return STATUS_SUCCESS;
+}
+
 AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 {
 	team_t myTeam = ( team_t ) self->client->ps.stats[ STAT_TEAM ];

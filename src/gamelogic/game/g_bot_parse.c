@@ -951,6 +951,7 @@ static const struct AIActionMap_s
 	{ "roam",              BotActionRoam,              0, 0 },
 	{ "roamInRadius",      BotActionRoamInRadius,      2, 2 },
 	{ "rush",              BotActionRush,              0, 0 },
+	{ "say",               BotActionSay,               2, 2 },
 	{ "strafeDodge",       BotActionStrafeDodge,       0, 0 }
 };
 
@@ -1331,6 +1332,11 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( STATUS_RUNNING );
 	D( STATUS_SUCCESS );
 	D( STATUS_FAILURE );
+
+	D( SAY_ALL );
+	D( SAY_TEAM );
+	D( SAY_AREA );
+	D( SAY_AREA_TEAM );
 
 	Q_strncpyz( treefilename, va( "bots/%s.bt", name ), sizeof( treefilename ) );
 
