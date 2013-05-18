@@ -396,11 +396,11 @@ void CG_DrawMinimap( const rectDef_t* rect640 )
     scale = CG_WorldToMinimapScale();
 
     //Testing code
-    //CG_SetClipRegion( rect640->x, rect640->y, rect640->w, rect640->h );
+    CG_SetScissor( rect.x, rect.y, rect.w, rect.h );
+    CG_EnableScissor( qtrue );
     {
         CG_FillRect( rect640->x, rect640->y, rect640->w, rect640->h, m->bgColor );
 
-        //TODO: use a reworked  `Ishq glScissors patch
         {
             vec2_t mapOffset;
             vec3_t origin = {0.0f, 0.0f, 0.0f};
@@ -415,6 +415,6 @@ void CG_DrawMinimap( const rectDef_t* rect640 )
             CG_DrawRect( rect640->x + rect640->w/2.0 - 1.0, rect640->y + rect640->h/2.0 - 6.0, 2.0, 4.0, 1.0, c );
         }
     }
-    //CG_ClearClipRegion();
+    CG_EnableScissor( qfalse );
 }
 
