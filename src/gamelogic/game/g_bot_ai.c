@@ -63,6 +63,15 @@ AIValue_t AIBoxInt( int i )
 	return t;
 }
 
+AIValue_t AIBoxString( char *s )
+{
+	AIValue_t t;
+	t.expType = EX_VALUE;
+	t.valType = VALUE_STRING;
+	t.l.stringValue = BG_strdup( s );
+	return t;
+}
+
 float AIUnBoxFloat( AIValue_t v )
 {
 	switch ( v.valType )
@@ -87,6 +96,22 @@ int AIUnBoxInt( AIValue_t v )
 	return 0;
 }
 
+const char *AIUnBoxString( AIValue_t v )
+{
+	static char empty[] = "";
+
+	switch ( v.valType )
+	{
+		case VALUE_FLOAT:
+			return va( "%f", v.l.floatValue );
+		case VALUE_INT:
+			return va( "%d", v.l.intValue );
+		case VALUE_STRING:
+			return v.l.stringValue;
+	}
+	return empty;
+}
+
 double AIUnBoxDouble( AIValue_t v )
 {
 	switch ( v.valType )
@@ -97,6 +122,16 @@ double AIUnBoxDouble( AIValue_t v )
 			return ( double ) v.l.intValue;
 	}
 	return 0.0;
+}
+
+void AIDestroyValue( AIValue_t v )
+{
+	switch ( v.valType )
+	{
+		case VALUE_STRING:
+			BG_Free( v.l.stringValue );
+			break;
+	}
 }
 
 botEntityAndDistance_t *AIEntityToGentity( gentity_t *self, AIEntity_t e )
@@ -226,8 +261,10 @@ qboolean EvalConditionExpression( gentity_t *self, AIExpType_t *exp );
 double EvalFunc( gentity_t *self, AIExpType_t *exp )
 {
 	AIValueFunc_t *v = ( AIValueFunc_t * ) exp;
-
-	return AIUnBoxDouble( v->func( self, v->params ) );
+	AIValue_t vt = v->func( self, v->params );
+	double vd = AIUnBoxDouble( vt );
+	AIDestroyValue( vt );
+	return vd;
 }
 
 // using double because it has enough precision to exactly represent both a float and an int

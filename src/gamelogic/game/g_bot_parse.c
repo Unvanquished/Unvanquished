@@ -56,6 +56,11 @@ static qboolean expectToken( const char *s, pc_token_list **list, qboolean next 
 
 AIValue_t AIBoxToken( const pc_token_stripped_t *token )
 {
+	if ( token->type == TT_STRING )
+	{
+		return AIBoxString( token->string );
+	}
+
 	if ( ( float ) token->intvalue != token->floatvalue )
 	{
 		return AIBoxFloat( token->floatvalue );
@@ -528,7 +533,7 @@ static AIValue_t *parseFunctionParameters( pc_token_list **list, int *nparams, i
 
 	while ( parse != parenEnd )
 	{
-		if ( parse->token.type == TT_NUMBER )
+		if ( parse->token.type == TT_NUMBER || parse->token.type == TT_STRING )
 		{
 			numParams++;
 		}
@@ -567,7 +572,7 @@ static AIValue_t *parseFunctionParameters( pc_token_list **list, int *nparams, i
 		parse = parenBegin->next;
 		while ( parse != parenEnd )
 		{
-			if ( parse->token.type == TT_NUMBER )
+			if ( parse->token.type == TT_NUMBER || parse->token.type == TT_STRING )
 			{
 				params[ numParams ] = AIBoxToken( &parse->token );
 				numParams++;
@@ -1475,15 +1480,21 @@ void FreeValue( AIValue_t *v )
 	{
 		return;
 	}
-
+	AIDestroyValue( *v );
 	BG_Free( v );
 }
 
 void FreeValueFunc( AIValueFunc_t *v )
 {
+	int i;
 	if ( !v )
 	{
 		return;
+	}
+
+	for ( i = 0; i < v->nparams; i++ )
+	{
+		AIDestroyValue( v->params[ i ] );
 	}
 
 	BG_Free( v->params );
@@ -1557,6 +1568,12 @@ void FreeNodeList( AINodeList_t *node )
 
 void FreeActionNode( AIActionNode_t *action )
 {
+	int i;
+	for ( i = 0; i < action->nparams; i++ )
+	{
+		AIDestroyValue( action->params[ i ] );
+	}
+
 	BG_Free( action->params );
 	BG_Free( action );
 }

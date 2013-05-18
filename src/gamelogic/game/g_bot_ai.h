@@ -126,7 +126,8 @@ typedef enum
 typedef enum
 {
 	VALUE_FLOAT,
-	VALUE_INT
+	VALUE_INT,
+	VALUE_STRING
 } AIValueType_t;
 
 typedef struct
@@ -138,6 +139,7 @@ typedef struct
 	{
 		float floatValue;
 		int   intValue;
+		char  *stringValue;
 	} l;
 } AIValue_t;
 
@@ -204,10 +206,14 @@ qboolean isUnaryOp( AIOpType_t op );
 
 AIValue_t AIBoxFloat( float f );
 AIValue_t AIBoxInt( int i );
+AIValue_t AIBoxString( char *s );
 
-float     AIUnBoxFloat( AIValue_t v );
-int       AIUnBoxInt( AIValue_t v );
-double    AIUnBoxDouble( AIValue_t v );
+float       AIUnBoxFloat( AIValue_t v );
+int         AIUnBoxInt( AIValue_t v );
+double      AIUnBoxDouble( AIValue_t v );
+const char *AIUnBoxString( AIValue_t v );
+
+void AIDestroyValue( AIValue_t v );
 
 botEntityAndDistance_t *AIEntityToGentity( gentity_t *self, AIEntity_t e );
 
