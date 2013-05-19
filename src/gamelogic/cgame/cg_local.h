@@ -906,6 +906,10 @@ typedef struct
     int          lastZone;
     int          nZones;
     float        bgColor[4];
+    struct
+    {
+        qhandle_t playerArrow, teamArrow;
+    } gfx;
     minimapZone_t zones[ MAX_MINIMAP_ZONES ];
 } minimap_t;
 

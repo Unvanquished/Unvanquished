@@ -253,10 +253,10 @@ void CG_SetupMinimapTransform( const rectDef_t *rect, const minimap_t* minimap, 
     //The refdefview angle is the angle from the x axis
     //the 90 gets it back to the Y axis (we want the view to point up)
     //and the orientation change gives the -
-    transformAngle = - (cg.refdefViewAngles[1] - 90.0);
-    transformScale = zone->scale;
+    transformAngle = - cg.refdefViewAngles[1];
+    angle = DEG2RAD(transformAngle + 90.0);
 
-    angle = DEG2RAD(transformAngle);
+    transformScale = zone->scale;
     scale = transformScale * MINIMAP_DEFAULT_DISPLAY_SIZE / (zone->imageMax[0] - zone->imageMin[0]);
     s = sin(angle) * scale;
     c = cos(angle) * scale;
@@ -287,9 +287,10 @@ CG_WorldToMinimap
 */
 void CG_WorldToMinimap( const vec3_t worldPos, vec2_t minimapPos )
 {
-    minimapPos[0] = transform[0] * worldPos[0] + transform[1] * worldPos[1] +
+    //Correct the orientation by inverting worldPos.y
+    minimapPos[0] = transform[0] * worldPos[0] - transform[1] * worldPos[1] +
                     transformVector[0];
-    minimapPos[1] = transform[2] * worldPos[0] + transform[3] * worldPos[1] +
+    minimapPos[1] = transform[2] * worldPos[0] - transform[3] * worldPos[1] +
                     transformVector[1];
 }
 
@@ -298,14 +299,41 @@ void CG_WorldToMinimap( const vec3_t worldPos, vec2_t minimapPos )
 CG_WorldToMinimapAngle
 ================
 */
-float CG_WorldToMinimapAngle( void )
+float CG_WorldToMinimapAngle( float angle )
 {
-    return transformAngle;
+    return angle + transformAngle;
 }
 
-float CG_WorldToMinimapScale( void )
+/*
+================
+CG_WorldToMinimapScale
+================
+*/
+float CG_WorldToMinimapScale( float scale )
 {
-    return transformScale;
+    return scale * transformScale;
+}
+
+
+/*
+================
+CG_DrawMinimapObject
+================
+*/
+void CG_DrawMinimapObject( qhandle_t image, const vec3_t pos3d, float angle, float scale, float texSize )
+{
+    vec2_t offset;
+    float x, y, wh;
+
+    angle = CG_WorldToMinimapAngle( angle );
+    scale = CG_WorldToMinimapScale( scale );
+
+    CG_WorldToMinimap( pos3d, offset );
+    x = - texSize/2 * scale + offset[0];
+    y = - texSize/2 * scale + offset[1];
+    wh = texSize * scale;
+
+    trap_R_DrawRotatedPic( x, y, wh, wh, 0.0, 0.0, 1.0, 1.0, image, angle );
 }
 
 //Entry points in the minimap code
@@ -334,6 +362,9 @@ void CG_InitMinimap( void )
         CG_Printf( S_ERROR "the minimap did not define any zone.\n" );
         return;
     }
+
+    m->gfx.playerArrow = trap_R_RegisterShader( "gfx/2d/player-arrow", RSF_DEFAULT );
+    m->gfx.teamArrow = trap_R_RegisterShader( "gfx/2d/team-arrow", RSF_DEFAULT );
 }
 
 /*
@@ -387,33 +418,22 @@ void CG_DrawMinimap( const rectDef_t* rect640 )
         z = &m->zones[m->lastZone];
     }
 
-
     //Setup the transform
     CG_AdjustFrom640( &rect.x, &rect.y, &rect.w, &rect.h );
     CG_SetupMinimapTransform( &rect, m, z );
 
-    angle = CG_WorldToMinimapAngle();
-    scale = CG_WorldToMinimapScale();
-
     //Testing code
+    CG_FillRect( rect640->x, rect640->y, rect640->w, rect640->h, m->bgColor );
+
     CG_SetScissor( rect.x, rect.y, rect.w, rect.h );
     CG_EnableScissor( qtrue );
     {
-        CG_FillRect( rect640->x, rect640->y, rect640->w, rect640->h, m->bgColor );
+        //Draws the minimap
+        vec3_t origin = {0.0f, 0.0f, 0.0f};
+        CG_DrawMinimapObject( z->image, origin, 90.0, 1.0, 1024.0 );
 
-        {
-            vec2_t mapOffset;
-            vec3_t origin = {0.0f, 0.0f, 0.0f};
-            CG_WorldToMinimap(origin, mapOffset);
-
-            trap_R_DrawRotatedPic(-512 * scale + mapOffset[0], -512 * scale + mapOffset[1], 1024 * scale, 1024 * scale, 0.0, 0.0, 1.0, 1.0, z->image, angle);
-        }
-        {
-            float c[4] = {1.0, 0.0, 0.0, 1.0};
-            CG_DrawRect( rect640->x, rect640->y, rect640->w, rect640->h, 1.0, c );
-            CG_DrawRect( rect640->x + rect640->w/2.0 - 2.0, rect640->y + rect640->h/2.0 - 2.0, 4.0, 4.0, 1.0, c );
-            CG_DrawRect( rect640->x + rect640->w/2.0 - 1.0, rect640->y + rect640->h/2.0 - 6.0, 2.0, 4.0, 1.0, c );
-        }
+        //Draws the player arrow
+        CG_DrawMinimapObject( m->gfx.playerArrow, cg.refdef.vieworg, cg.refdefViewAngles[1], 1.0, 50.0 );
     }
     CG_EnableScissor( qfalse );
 }
