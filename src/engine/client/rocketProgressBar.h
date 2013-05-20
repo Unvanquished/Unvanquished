@@ -97,7 +97,6 @@ public:
 		{
 			Cmd_TokenizeString( str );
 			newValue = _vmf( VM_Call( cgvm, CG_ROCKET_PROGRESSBARVALUE ) );
-			Com_Printf( "%f\n", newValue );
 
 			if ( newValue != value )
 			{
