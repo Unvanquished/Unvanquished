@@ -956,7 +956,8 @@ typedef enum
 
 	CONF_REAS_BUILD_CRUCIAL,
 	CONF_REAS_BUILD_AGGRESSIVE,
-	CONF_REAS_BUILD_SUPPORT
+	CONF_REAS_BUILD_SUPPORT,
+	CONF_REAS_DECON
 } confidence_reason_t;
 
 // qualifications that are necessary for generating confidence or yield a bonus,
