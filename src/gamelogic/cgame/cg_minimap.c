@@ -422,18 +422,38 @@ void CG_DrawMinimap( const rectDef_t* rect640 )
     CG_AdjustFrom640( &rect.x, &rect.y, &rect.w, &rect.h );
     CG_SetupMinimapTransform( &rect, m, z );
 
-    //Testing code
+    //Add the backgound
     CG_FillRect( rect640->x, rect640->y, rect640->w, rect640->h, m->bgColor );
 
     CG_SetScissor( rect.x, rect.y, rect.w, rect.h );
     CG_EnableScissor( qtrue );
     {
+        int i, ownTeam;
+        centity_t* cent;
+
         //Draws the minimap
         vec3_t origin = {0.0f, 0.0f, 0.0f};
         CG_DrawMinimapObject( z->image, origin, 90.0, 1.0, 1024.0 );
 
         //Draws the player arrow
         CG_DrawMinimapObject( m->gfx.playerArrow, cg.refdef.vieworg, cg.refdefViewAngles[1], 1.0, 50.0 );
+
+        //Draw every teammate
+        ownTeam = cg.predictedPlayerState.stats[ STAT_TEAM ];
+        for ( i = 0; i < cg.snap->numEntities; i++ )
+        {
+            cent = &cg_entities[ cg.snap->entities[ i ].number ];
+
+            if ( cent->currentState.eType == ET_PLAYER )
+            {
+                if( (cent->currentState.misc & 0x00FF) != ownTeam )
+                {
+                    continue;
+                }
+
+                CG_DrawMinimapObject( m->gfx.teamArrow, cent->lerpOrigin, cent->lerpAngles[1], 1.0, 50.0 );
+            }
+        }
     }
     CG_EnableScissor( qfalse );
 }
