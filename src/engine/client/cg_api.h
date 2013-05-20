@@ -237,6 +237,8 @@ typedef enum cgameImport_s
   CG_UNREGISTERVISTEST,
   CG_SETCOLORGRADING,
   CG_CM_DISTANCETOMODEL,
+  CG_R_SCISSOR_ENABLE,
+  CG_R_SCISSOR_SET,
   CG_LAN_LOADCACHEDSERVERS,
   CG_LAN_SAVECACHEDSERVERS,
   CG_LAN_ADDSERVER,
@@ -547,6 +549,8 @@ float           trap_CheckVisibility( qhandle_t hTest );
 void            trap_UnregisterVisTest( qhandle_t hTest );
 void            trap_SetColorGrading( int slot, qhandle_t hShader );
 float           trap_CM_DistanceToModel( const vec3_t loc, clipHandle_t model );
+void            trap_R_ScissorEnable( qboolean enable );
+void            trap_R_ScissorSet( int x, int y, int w, int h );
 void            trap_LAN_LoadCachedServers( void );
 void            trap_LAN_SaveCachedServers( void );
 int             trap_LAN_AddServer( int source, const char *name, const char *addr );

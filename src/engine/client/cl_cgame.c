@@ -2145,6 +2145,14 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 		case CG_CM_DISTANCETOMODEL:
 			return FloatAsInt( CM_DistanceToModel( VMA(1), args[2] ) );
 
+		case CG_R_SCISSOR_ENABLE:
+			re.ScissorEnable( args[1] );
+			return 0;
+
+		case CG_R_SCISSOR_SET:
+			re.ScissorSet( args[1], args[2], args[3], args[4] );
+			return 0;
+
 		case CG_ROCKET_INIT:
 			Rocket_Init();
 			return 0;

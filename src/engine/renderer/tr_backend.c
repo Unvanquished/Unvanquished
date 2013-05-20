@@ -1174,6 +1174,46 @@ const void     *RB_StretchPic( const void *data )
 	return ( const void * )( cmd + 1 );
 }
 
+const void     *RB_ScissorEnable( const void *data )
+{
+	const scissorEnableCommand_t *cmd;
+
+	cmd = ( const scissorEnableCommand_t * ) data;
+
+	tr.scissor.status = cmd->enable;
+
+	if ( !cmd->enable )
+	{
+		glScissor( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
+	}
+	else
+	{
+		glScissor( tr.scissor.x, tr.scissor.y, tr.scissor.w, tr.scissor.h );
+	}
+
+	return ( const void * )( cmd + 1 );
+}
+
+
+const void     *RB_ScissorSet( const void *data )
+{
+	const scissorSetCommand_t *cmd;
+
+	cmd = ( const scissorSetCommand_t * ) data;
+
+	tr.scissor.x = cmd->x;
+	tr.scissor.y = cmd->y;
+	tr.scissor.w = cmd->w;
+	tr.scissor.h = cmd->h;
+
+	if ( tr.scissor.status )
+	{
+	    glScissor( cmd->x, cmd->y, cmd->w, cmd->h );
+	}
+
+	return ( const void * )( cmd + 1 );
+}
+
 const void     *RB_Draw2dPolys( const void *data )
 {
 	const poly2dCommand_t *cmd;
@@ -1226,47 +1266,7 @@ const void     *RB_Draw2dPolys( const void *data )
 		tess.numVertexes++;
 	}
 
-	return ( const void * )( cmd + 1 );
-}
-
-const void     *RB_ScissorEnable( const void *data )
-{
-	const scissorEnableCommand_t *cmd;
-
-	cmd = ( const scissorEnableCommand_t * ) data;
-
-	tr.scissor.status = cmd->enable;
-
-	if ( !cmd->enable )
-	{
-		glScissor( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
-	}
-	else
-	{
-		glScissor( tr.scissor.x, tr.scissor.y, tr.scissor.w, tr.scissor.h );
-	}
-
-	return ( const void * )( cmd + 1 );
-}
-
-
-const void     *RB_ScissorSet( const void *data )
-{
-	const scissorSetCommand_t *cmd;
-
-	cmd = ( const scissorSetCommand_t * ) data;
-
-	if ( tr.scissor.x == cmd->x && tr.scissor.y == cmd->y && tr.scissor.w == cmd->w && tr.scissor.h == cmd->h )
-	{
-		return ( const void * )( cmd + 1 );
-	}
-
-	tr.scissor.x = cmd->x;
-	tr.scissor.y = cmd->y;
-	tr.scissor.w = cmd->w;
-	tr.scissor.h = cmd->h;
-
-	glScissor( cmd->x, cmd->y, cmd->w, cmd->h );
+	RB_EndSurface();
 
 	return ( const void * )( cmd + 1 );
 }
@@ -1624,7 +1624,7 @@ const void     *RB_RunVisTests( const void *data )
 
 		depth = ri.Hunk_AllocateTempMemory( w * h * sizeof( float ) );
 
-		glReadPixels( windowX1, windowY1, w, h, 
+		glReadPixels( windowX1, windowY1, w, h,
 			      GL_DEPTH_COMPONENT, GL_FLOAT, depth );
 
 		// count visible pixels

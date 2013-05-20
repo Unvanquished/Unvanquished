@@ -1493,7 +1493,6 @@ typedef struct visTest_s
 	float             lastResult;
 } visTest_t;
 
-
 /*
 ** trGlobals_t
 **

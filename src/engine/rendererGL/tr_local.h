@@ -4207,6 +4207,7 @@ extern "C" {
 	void                                RE_2DPolyiesIndexed( polyVert_t *verts, int numverts, int *indexes, int numindexes, int trans_x, int trans_y, qhandle_t hShader );
 	void                                RE_ScissorEnable( qboolean enable );
 	void                                RE_ScissorSet( int x, int y, int w, int h );
+
 	void                                RE_BeginFrame( stereoFrame_t stereoFrame );
 	void                                RE_EndFrame( int *frontEndMsec, int *backEndMsec );
 

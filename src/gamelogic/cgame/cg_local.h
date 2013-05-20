@@ -1667,6 +1667,8 @@ void     CG_DrawFadePic( float x, float y, float width, float height, vec4_t fco
                          vec4_t tcolor, float amount, qhandle_t hShader );
 void     CG_SetClipRegion( float x, float y, float w, float h );
 void     CG_ClearClipRegion( void );
+void     CG_EnableScissor( qboolean enable );
+void     CG_SetScissor( int x, int y, int w, int h );
 
 int      CG_DrawStrlen( const char *str );
 
