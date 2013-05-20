@@ -47,6 +47,55 @@ static void CG_Rocket_DrawTest( void )
 	trap_Rocket_SetInnerRML( "", "", "<span style='font-size: 5em;'><b>This is a test</b></span>" );
 }
 
+static void CG_Rocket_DrawAmmo( void )
+{
+	int      value;
+	int      valueMarked = -1;
+	qboolean bp = qfalse;
+
+	switch ( BG_PrimaryWeapon( cg.snap->ps.stats ) )
+	{
+		case WP_NONE:
+		case WP_BLASTER:
+			return;
+
+		case WP_ABUILD:
+		case WP_ABUILD2:
+		case WP_HBUILD:
+			value = cg.snap->ps.persistant[ PERS_BP ];
+			valueMarked = cg.snap->ps.persistant[ PERS_MARKEDBP ];
+			bp = qtrue;
+			break;
+
+		default:
+			value = cg.snap->ps.ammo;
+			break;
+	}
+
+	if ( value > 999 )
+	{
+		value = 999;
+	}
+
+	if ( valueMarked > 999 )
+	{
+		valueMarked = 999;
+	}
+
+	if ( !bp )
+	{
+		trap_Rocket_SetInnerRML( "", "", va( "<span class='ammo_value'>%d</span>", value ) );
+	}
+	else if ( valueMarked > 0 )
+	{
+		trap_Rocket_SetInnerRML( "", "", va( "<span class='bp_value'>%d</span>+<span class='markedbp_value'>%d</span>", value, valueMarked ) );
+	}
+	else
+	{
+		trap_Rocket_SetInnerRML( "", "", va( "<span class='bp_value'>%d</span>", value ) );
+	}
+}
+
 typedef struct
 {
 	const char *name;
@@ -55,6 +104,7 @@ typedef struct
 
 static const elementRenderCmd_t elementRenderCmdList[] =
 {
+	{ "ammo", &CG_Rocket_DrawAmmo },
 	{ "pic", &CG_Rocket_DrawPic },
 	{ "test", &CG_Rocket_DrawTest }
 };
