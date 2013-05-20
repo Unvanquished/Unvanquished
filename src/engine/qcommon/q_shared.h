@@ -1402,7 +1402,7 @@ double rint( double x );
 
 #else
 #define         Q_strncpyz(string1,string2,length) Q_strncpyzDebug( string1, string2, length, __FILE__, __LINE__ )
-	void     Q_strncpyzDebug( char *dest, const char *src, size_t destsize, const char *file, int line ) __attribute__((__nonnull__));
+	void     Q_strncpyzDebug( char *dest, const char *src, int destsize, const char *file, int line ) __attribute__((__nonnull__));
 
 #endif
 	void     Q_strcat( char *dest, int destsize, const char *src );

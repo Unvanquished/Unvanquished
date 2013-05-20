@@ -815,6 +815,10 @@ void CG_Confidence( entityState_t *es )
 			reason = _("Building a support structure");
 			break;
 
+		case CONF_REAS_DECON:
+			reason = _("Deconstructing a structure");
+			break;
+
 		default:
 			reason = _("Your actions");
 	}

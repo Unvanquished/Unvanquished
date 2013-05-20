@@ -2792,11 +2792,7 @@ fail_lastSpawn:
 		ent->client->ps.stats[ STAT_MISC ] += attr->buildTime / 4;
 	}
 
-	// return BP
-	G_ModifyBuildPoints( traceEnt->buildableTeam, ( attr->buildPoints * ( traceEnt->health / ( float )attr->health ) ) );
-
-	G_Damage( traceEnt, ent, ent, forward, tr.endpos, traceEnt->health, 0, MOD_DECONSTRUCT );
-	G_FreeEntity( traceEnt );
+	G_Deconstruct( traceEnt, ent );
 }
 
 /*

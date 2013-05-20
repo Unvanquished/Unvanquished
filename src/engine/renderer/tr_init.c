@@ -1599,6 +1599,8 @@ extern "C" {
 		re.DrawRotatedPic = RE_RotatedPic; // NERVE - SMF
 		re.DrawStretchPicGradient = RE_StretchPicGradient;
 		re.Add2dPolys = RE_2DPolyies;
+		re.ScissorEnable = RE_ScissorEnable;
+		re.ScissorSet = RE_ScissorSet;
 		re.DrawStretchRaw = RE_StretchRaw;
 		re.UploadCinematic = RE_UploadCinematic;
 		re.BeginFrame = RE_BeginFrame;

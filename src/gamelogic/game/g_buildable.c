@@ -3156,7 +3156,7 @@ void G_BuildableTouchTriggers( gentity_t *ent )
 G_BuildingConfidenceReward
 
 Calculates the amount of confidence awarded for building a structure.
-TODO: Stores the reward with the buildable so it can be reverted on deconstruction.
+Stores the reward with the buildable so it can be reverted on deconstruction.
 ===============
 */
 #define BCR_NEIGHBOR_RANGE      500.0f
@@ -3201,6 +3201,8 @@ float G_BuildingConfidenceReward( gentity_t *self )
 		}
 	}
 
+	self->confidenceEarned = reward;
+
 	return reward;
 }
 
@@ -3232,31 +3234,28 @@ void G_BuildableThink( gentity_t *ent, int msec )
 			}
 
 			// Award confidence
-			if ( !ent->replacement )
+			switch ( ent->s.modelindex )
 			{
-				switch ( ent->s.modelindex )
-				{
-					case BA_A_OVERMIND:
-					case BA_H_REACTOR:
-						reason = CONF_REAS_BUILD_CRUCIAL;
-						break;
+				case BA_A_OVERMIND:
+				case BA_H_REACTOR:
+					reason = CONF_REAS_BUILD_CRUCIAL;
+					break;
 
-					case BA_A_ACIDTUBE:
-					case BA_A_TRAPPER:
-					case BA_A_HIVE:
-					case BA_H_MGTURRET:
-					case BA_H_TESLAGEN:
-						reason = CONF_REAS_BUILD_AGGRESSIVE;
-						break;
+				case BA_A_ACIDTUBE:
+				case BA_A_TRAPPER:
+				case BA_A_HIVE:
+				case BA_H_MGTURRET:
+				case BA_H_TESLAGEN:
+					reason = CONF_REAS_BUILD_AGGRESSIVE;
+					break;
 
-					default:
-						reason = CONF_REAS_BUILD_SUPPORT;
-				}
-
-				G_AddConfidence( BG_Buildable( ent->s.modelindex )->team, CONFIDENCE_BUILDING,
-				                 reason, CONF_QUAL_NONE, G_BuildingConfidenceReward( ent ),
-				                 &g_entities[ ent->builtBy->slot ] );
+				default:
+					reason = CONF_REAS_BUILD_SUPPORT;
 			}
+
+			G_AddConfidence( BG_Buildable( ent->s.modelindex )->team, CONFIDENCE_BUILDING,
+			                 reason, CONF_QUAL_NONE, G_BuildingConfidenceReward( ent ),
+			                 &g_entities[ ent->builtBy->slot ] );
 		}
 	}
 
@@ -3588,6 +3587,46 @@ void G_ClearDeconMarks( void )
 
 /*
 ===============
+G_Deconstruct
+===============
+*/
+void G_Deconstruct( gentity_t *self, gentity_t *deconner )
+{
+	float confidence;
+	int   refund;
+	const buildableAttributes_t *attr;
+
+	if ( !self || self->s.eType != ET_BUILDABLE )
+	{
+		return;
+	}
+
+	attr = BG_Buildable( self->s.modelindex );
+
+	// return BP
+	refund = attr->buildPoints * ( self->health / ( float )attr->health );
+	G_ModifyBuildPoints( self->buildableTeam, refund );
+
+	// remove confidence
+	if ( self->confidenceEarned )
+	{
+		confidence = self->confidenceEarned;
+	}
+	else
+	{
+		confidence = G_BuildingConfidenceReward( self );
+	}
+
+	G_AddConfidence( self->buildableTeam, CONFIDENCE_BUILDING, CONF_REAS_DECON, CONF_QUAL_NONE,
+	                -confidence, deconner );
+
+	// deconstruct
+	G_Damage( self, NULL, deconner, NULL, NULL, self->health, 0, MOD_REPLACE );
+	G_FreeEntity( self );
+}
+
+/*
+===============
 G_FreeMarkedBuildables
 
 Free up build points for a team by deconstructing marked buildables
@@ -3603,7 +3642,6 @@ int G_FreeMarkedBuildables( gentity_t *deconner, char *readable, int rsize,
 	int       totalListItems = 0;
 	gentity_t *ent;
 	int       removalCounts[ BA_NUM_BUILDABLES ] = { 0 };
-	int       refund;
 	const buildableAttributes_t *attr;
 	int       numRemoved = 0;
 
@@ -3627,16 +3665,13 @@ int G_FreeMarkedBuildables( gentity_t *deconner, char *readable, int rsize,
 		ent = level.markedBuildables[ i ];
 		attr = BG_Buildable( ent->s.modelindex );
 		bNum = attr->number;
-		refund = attr->buildPoints * ( ent->health / (float)attr->health );
 
 		if ( removalCounts[ bNum ] == 0 )
 		{
 			totalListItems++;
 		}
 
-		G_ModifyBuildPoints( ent->buildableTeam, refund );
-
-		G_Damage( ent, NULL, deconner, NULL, NULL, ent->health, 0, MOD_REPLACE );
+		G_Deconstruct( ent, deconner );
 
 		removalCounts[ bNum ]++;
 
@@ -3644,8 +3679,6 @@ int G_FreeMarkedBuildables( gentity_t *deconner, char *readable, int rsize,
 		{
 			Q_strcat( nums, nsize, va( " %ld", ( long )( ent - g_entities ) ) );
 		}
-
-		G_FreeEntity( ent );
 
 		numRemoved++;
 	}
@@ -5271,6 +5304,7 @@ void G_BuildLogRevert( int id )
 
 						// Give back resources
 						G_ModifyBuildPoints( ent->buildableTeam, BG_Buildable( ent->s.modelindex )->buildPoints );
+						G_AddConfidence( ent->buildableTeam, CONFIDENCE_BUILDING, CONF_REAS_DECON, CONF_QUAL_NONE, -ent->confidenceEarned, NULL );
 						G_FreeEntity( ent );
 						break;
 					}
