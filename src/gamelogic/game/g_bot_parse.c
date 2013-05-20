@@ -338,6 +338,11 @@ static AIValue_t alienStage( gentity_t *self, const AIValue_t *params )
 	return AIBoxInt( g_alienStage.integer );
 }
 
+static AIValue_t randomChance( gentity_t *self, const AIValue_t *params )
+{
+	return AIBoxFloat( random() );
+}
+
 // functions accessible to the behavior tree for use in condition nodes
 static const struct AIConditionMap_s
 {
@@ -367,6 +372,7 @@ static const struct AIConditionMap_s
 	{ "inAttackRange",     VALUE_INT,   inAttackRange,     1 },
 	{ "isVisible",         VALUE_INT,   isVisible,         1 },
 	{ "percentHealth",     VALUE_FLOAT, botHealth,         0 },
+	{ "random",            VALUE_FLOAT, randomChance,      0 },
 	{ "skill",             VALUE_INT,   botSkill,          0 },
 	{ "team",              VALUE_INT,   botTeam,           0 },
 	{ "teamateHasWeapon",  VALUE_INT,   teamateHasWeapon,  1 },
