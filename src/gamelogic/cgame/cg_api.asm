@@ -186,3 +186,6 @@ equ trap_AddVisTestToScene                -422
 equ trap_CheckVisibility                  -423
 equ trap_UnregisterVisTest                -424
 equ trap_SetColorGrading                  -425
+equ trap_CM_DistanceToModel               -426
+equ trap_R_ScissorEnable                  -427
+equ trap_R_ScissorSet                     -428

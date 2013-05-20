@@ -1334,6 +1334,64 @@ static void CG_smoothWJTransitions( playerState_t *ps, const vec3_t in, vec3_t o
 
 /*
 ===============
+CG_CalcColorGradingForPoint
+
+Sets cg.refdef.gradingWeights
+===============
+*/
+static void CG_CalcColorGradingForPoint( vec3_t loc )
+{
+	int   i, j, idx;
+	float dist, weight;
+	int   selectedIdx[3] = { 0, 0, 0 };
+	float selectedWeight[3] = { 0.0f, 0.0f, 0.0f };
+	float totalWeight = 0.0f;
+
+	for( i = 0; i < MAX_GRADING_TEXTURES; i++ ) {
+		if( !cgs.gameGradingTextures[i] )
+			continue;
+
+		dist = trap_CM_DistanceToModel( loc, cgs.gameGradingModels[i] );
+		weight = 1.0f - dist / cgs.gameGradingDistances[i];
+		weight = Q_clamp( weight, 0.0f, 1.0f );
+
+		// search 3 greatest weights
+		if( weight <= selectedWeight[2] )
+			continue;
+
+		for( j = 1; j >= 0; j-- ) {
+			if( weight <= selectedWeight[j] ) {
+				break;
+			}
+
+			selectedIdx[j+1] = selectedIdx[j];
+			selectedWeight[j+1] = selectedWeight[j];
+		}
+
+		selectedIdx[j+1] = i;
+		selectedWeight[j+1] = weight;
+	}
+
+	for( i = 0; i < 3; i++ ) {
+		if( selectedWeight[i] > 0.0f )
+			trap_SetColorGrading( i + 1, cgs.gameGradingTextures[selectedIdx[i]] );
+		totalWeight += selectedWeight[i];
+	}
+	if( totalWeight < 1.0f ) {
+		cg.refdef.gradingWeights[0] = 1.0f - totalWeight;
+		cg.refdef.gradingWeights[1] = selectedWeight[0];
+		cg.refdef.gradingWeights[2] = selectedWeight[1];
+		cg.refdef.gradingWeights[3] = selectedWeight[2];
+	} else {
+		cg.refdef.gradingWeights[0] = 0.0f;
+		cg.refdef.gradingWeights[1] = selectedWeight[0] / totalWeight;
+		cg.refdef.gradingWeights[2] = selectedWeight[1] / totalWeight;
+		cg.refdef.gradingWeights[3] = selectedWeight[2] / totalWeight;
+	}
+}
+
+/*
+===============
 CG_CalcViewValues
 
 Sets cg.refdef view values
@@ -1344,12 +1402,13 @@ static int CG_CalcViewValues( void )
 	playerState_t *ps;
 
 	memset( &cg.refdef, 0, sizeof( cg.refdef ) );
-	Vector4Copy( cg.gradingWeights, cg.refdef.gradingWeights );
 
 	// calculate size of 3D view
 	CG_CalcVrect();
 
 	ps = &cg.predictedPlayerState;
+
+	CG_CalcColorGradingForPoint( ps->origin );
 
 	// intermission view
 	if ( ps->pm_type == PM_INTERMISSION || ps->pm_type == PM_FREEZE ||
