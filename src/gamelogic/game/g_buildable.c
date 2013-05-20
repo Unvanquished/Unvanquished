@@ -5247,6 +5247,7 @@ void G_BuildLogRevert( int id )
 
 						// Give back resources
 						G_ModifyBuildPoints( ent->buildableTeam, BG_Buildable( ent->s.modelindex )->buildPoints );
+						G_AddConfidence( ent->buildableTeam, CONFIDENCE_BUILDING, CONF_REAS_DECON, CONF_QUAL_NONE, -ent->confidenceEarned, NULL );
 						G_FreeEntity( ent );
 						break;
 					}
