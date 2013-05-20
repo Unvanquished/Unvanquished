@@ -9,6 +9,7 @@
 			{
 				height: 100%;
 				width: 100%;
+				z-index: -1;
 			}
 			div#text
 			{
@@ -16,40 +17,43 @@
 				width: 100%;
 				height: 100%;
 				color: white;
-				font-family: Roboto;
 				text-align: center;
 				vertical-align: middle;
 				margin-top: 50%;
 				font-size: 48;
-				z-index: -1;
+			}
+			body
+			{
+				font-family: Roboto;
 			}
 			div#progressbars
 			{
-
+				left: 25%;
+				width: 50%;
+				z-index: 3;
 			}
 			progressbar
 			{
-				width: 90%;
+				width: 100%;
 				height: 32px;
-				progress-left-image: /gfx/sprites/bubble.jpg;
-				progress-center-image: /gfx/colors/black.jpg;
-				progress-right-image: /gfx/sprites/bubble.jpg;
-				mask: 1;
+				end-image: /ui/start.png;
+				progress-image: /ui/progress.png;
+				start-image: /ui/end.png;
+				orientation: right;
+				z-index: 3;
 			}
 
 		</style>
 		<title>Connecting</title>
 	</head>
 	<body id="connecting">
-			<div id="progressbars">
-				<progressbar id="overall" src="overall" />
-			</div>
-
 		<div id="text">
 			<p>Connecting...</p>
+			<progressbar id="overall" src="overall" />
 		</div>
 		<div id="background">
 			<img src="/ui/assets/mainmenu.jpg" />
 		</div>
+
 	</body>
 </rml>

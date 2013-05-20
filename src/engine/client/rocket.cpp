@@ -383,7 +383,7 @@ void Rocket_RocketDebug_f( void )
 
 void Rocket_ProgressTest_f( void )
 {
-	Rocket::ProgressBar::ElementProgressBar *prog = (Rocket::ProgressBar::ElementProgressBar*)context->GetDocument( "connecting" )->GetElementById( "overall" );
+	RocketProgressBar *prog = (RocketProgressBar*)context->GetDocument( "connecting" )->GetElementById( "overall" );
 	prog->SetValue( atof( Cmd_Argv( 1 ) ) );
 }
 static DaemonFileInterface fileInterface;
@@ -407,7 +407,6 @@ void Rocket_Init( void )
 	}
 
 	Rocket::Controls::Initialise();
-	Rocket::ProgressBar::Initialise();
 
 	InitSDLtoRocketKeymap();
 
