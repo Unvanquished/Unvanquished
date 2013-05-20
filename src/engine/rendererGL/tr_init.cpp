@@ -2415,7 +2415,6 @@ extern "C" {
 		re.purgeCache = RE_PurgeCache;
 
 		re.LoadDynamicShader = RE_LoadDynamicShader;
-		re.GetTextureId = RE_GetTextureId;
 		re.RenderToTexture = RE_RenderToTexture;
 		re.Finish = RE_Finish;
 #endif

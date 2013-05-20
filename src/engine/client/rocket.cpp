@@ -180,20 +180,9 @@ public:
 		char temp[ MAX_QPATH ];
 		qhandle_t shaderHandle = re.RegisterShader( source.CString(), RSF_NOMIP );
 
-		COM_StripExtension3( source.CString(), temp, sizeof( temp ) );
-
-		// find the size of the texture
-		int textureID = re.GetTextureId( temp );
-
-		// GL1 renderer doesn't strip off .ext, so re-check
-		if ( textureID == -1 )
-		{
-			textureID = re.GetTextureId( source.CString() );
-		}
-
-		re.GetTextureSize( textureID, &textureDimensions.x, &textureDimensions.y );
-
+		// Find the size of the texture
 		textureHandle = ( Rocket::Core::TextureHandle ) shaderHandle;
+		re.GetTextureSize( shaderHandle, &textureDimensions.x, &textureDimensions.y );
 		return true;
 	}
 

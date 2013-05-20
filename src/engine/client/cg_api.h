@@ -205,7 +205,6 @@ typedef enum cgameImport_s
   CG_GETHUNKDATA,
   CG_R_LOADDYNAMICSHADER,
   CG_R_RENDERTOTEXTURE,
-  CG_R_GETTEXTUREID,
   CG_R_FINISH,
   CG_GETDEMONAME,
   CG_R_LIGHTFORPOINT,
@@ -514,7 +513,6 @@ qboolean        trap_R_inPVVS( const vec3_t p1, const vec3_t p2 );
 void            trap_GetHunkData( int *hunkused, int *hunkexpected );
 qboolean        trap_R_LoadDynamicShader( const char *shadername, const char *shadertext );
 void            trap_R_RenderToTexture( int textureid, int x, int y, int w, int h );
-int             trap_R_GetTextureId( const char *name );
 void            trap_R_Finish( void );
 void            trap_GetDemoName( char *buffer, int size );
 void            trap_S_StartSoundVControl( vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfx, int volume );

@@ -1074,13 +1074,6 @@ void trap_R_RenderToTexture( int textureid, int x, int y, int w, int h )
 	syscall( CG_R_RENDERTOTEXTURE, textureid, x, y, w, h );
 }
 
-//159
-//return re.GetTextureId(VMA(1));
-int trap_R_GetTextureId( const char *name )
-{
-	return syscall( CG_R_GETTEXTUREID, name );
-}
-
 //160.
 //re.Finish();
 void trap_R_Finish( void )

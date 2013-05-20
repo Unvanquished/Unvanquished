@@ -3950,39 +3950,34 @@ void R_ShutdownImages( void )
 	FreeVertexHashTable( tr.cubeHashTable );
 }
 
-int RE_GetTextureId( const char *name )
-{
-	int     i;
-	image_t *image;
-
-	ri.Printf( PRINT_DEVELOPER, S_COLOR_YELLOW "RE_GetTextureId [%s].\n", name );
-
-	for ( i = 0; i < tr.images.currentElements; i++ )
-	{
-		image = Com_GrowListElement( &tr.images, i );
-
-		if ( !strcmp( name, image->name ) )
-		{
-//          ri.Printf(PRINT_ALL, "Found textureid %d\n", i);
-			return i;
-		}
-	}
-
-//  ri.Printf(PRINT_ALL, "Image not found.\n");
-	return -1;
-}
-
 void RE_GetTextureSize( int textureID, int *width, int *height )
 {
-	image_t *image;
-	if ( textureID < 0 || textureID >= tr.images.currentElements )
+	image_t *baseImage;
+	shader_t *shader;
+
+	shader = R_GetShaderByHandle( textureID );
+
+	assert( shader );
+	if ( !shader )
 	{
-		ri.Error( ERR_DROP, "RE_GetTextureSize: called with invalid textureID %d\n", textureID );
+		return;
 	}
 
-	image = ( image_t * )Com_GrowListElement( &tr.images, textureID );
-	*width = image->width;
-	*height = image->height;
+	baseImage = shader->stages[ 0 ]->bundle->image[ 0 ];
+	if ( !baseImage )
+	{
+		Com_DPrintf( S_COLOR_YELLOW "RE_GetTextureSize: shader %s is missing base image\n", shader->name );
+		return;
+	}
+
+	if ( width )
+	{
+		*width = baseImage->width;
+	}
+	if ( height )
+	{
+		*height = baseImage->height;
+	}
 }
 
 void RE_SetColorGrading( int slot, qhandle_t hShader )

@@ -2028,10 +2028,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			re.RenderToTexture( args[ 1 ], args[ 2 ], args[ 3 ], args[ 4 ], args[ 5 ] );
 			return 0;
 
-			//bani
-		case CG_R_GETTEXTUREID:
-			return re.GetTextureId( VMA( 1 ) );
-
 			//bani - flush gl rendering buffers
 		case CG_R_FINISH:
 			re.Finish();

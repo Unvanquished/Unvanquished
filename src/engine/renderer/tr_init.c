@@ -1633,7 +1633,6 @@ extern "C" {
 		re.LoadDynamicShader = RE_LoadDynamicShader;
 		// fretn
 		re.RenderToTexture = RE_RenderToTexture;
-		re.GetTextureId = R_GetTextureId;
 		//bani
 		re.Finish = RE_Finish;
 

@@ -4778,39 +4778,35 @@ image_t        *R_FindCachedImage( const char *name, int hash )
 
 //bani
 
-/*
-R_GetTextureId
-*/
-int R_GetTextureId( const char *name )
-{
-	int i;
-
-//  ri.Printf( PRINT_ALL, "R_GetTextureId [%s].\n", name );
-
-	for ( i = 0; i < tr.numImages; i++ )
-	{
-		if ( !strcmp( name, tr.images[ i ]->imgName ) )
-		{
-//          ri.Printf( PRINT_ALL, "Found textureid %d\n", i );
-			return i;
-		}
-	}
-
-//  ri.Printf( PRINT_ALL, "Image not found.\n" );
-	return -1;
-}
 
 void R_GetTextureSize( int textureID, int *width, int *height )
 {
-	image_t *image;
-	if ( textureID < 0 || textureID >= tr.numImages )
+	image_t *baseImage;
+	shader_t *shader;
+
+	shader = R_GetShaderByHandle( textureID );
+
+	assert( shader );
+	if ( !shader )
 	{
-		ri.Error( ERR_DROP, "R_GetTextureSize: called with invalid textureID %d\n", textureID );
+		return;
 	}
 
-	image = tr.images[ textureID ];
-	*width = image->width;
-	*height = image->height;
+	baseImage = shader->stages[ 0 ]->bundle->image[ 0 ];
+	if ( !baseImage )
+	{
+		Com_DPrintf( S_COLOR_YELLOW "R_GetTextureSize: shader %s is missing base image\n", shader->name );
+		return;
+	}
+
+	if ( width )
+	{
+		*width = baseImage->width;
+	}
+	if ( height )
+	{
+		*height = baseImage->height;
+	}
 }
 // ydnar: glGenTextures, sir...
 
