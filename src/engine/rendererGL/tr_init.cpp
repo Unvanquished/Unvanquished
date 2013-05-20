@@ -99,6 +99,7 @@ extern "C" {
 	cvar_t      *r_compressDiffuseMaps;
 	cvar_t      *r_compressSpecularMaps;
 	cvar_t      *r_compressNormalMaps;
+	cvar_t      *r_heatHaze;
 	cvar_t      *r_heatHazeFix;
 	cvar_t      *r_noMarksOnTrisurfs;
 	cvar_t      *r_recompileShaders;
@@ -1422,6 +1423,7 @@ extern "C" {
 		r_compressDiffuseMaps = ri.Cvar_Get( "r_compressDiffuseMaps", "1", CVAR_ARCHIVE | CVAR_LATCH );
 		r_compressSpecularMaps = ri.Cvar_Get( "r_compressSpecularMaps", "1", CVAR_ARCHIVE | CVAR_LATCH );
 		r_compressNormalMaps = ri.Cvar_Get( "r_compressNormalMaps", "0", CVAR_ARCHIVE | CVAR_LATCH );
+		r_heatHaze = ri.Cvar_Get( "r_heatHaze", "0", CVAR_ARCHIVE );
 		r_heatHazeFix = ri.Cvar_Get( "r_heatHazeFix", "0", CVAR_CHEAT | CVAR_SHADER );
 		r_noMarksOnTrisurfs = ri.Cvar_Get( "r_noMarksOnTrisurfs", "1", CVAR_CHEAT );
 		r_recompileShaders = ri.Cvar_Get( "r_recompileShaders", "0", CVAR_ARCHIVE );
@@ -2369,6 +2371,8 @@ extern "C" {
 
 		re.DrawRotatedPic = RE_RotatedPic;
 		re.Add2dPolys = RE_2DPolyies;
+		re.ScissorEnable = RE_ScissorEnable;
+		re.ScissorSet = RE_ScissorSet;
 		re.DrawStretchPicGradient = RE_StretchPicGradient;
 
 		re.Glyph = RE_Glyph;

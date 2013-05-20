@@ -2074,21 +2074,19 @@ qboolean G_admin_readconfig( gentity_t *ent )
 qboolean G_admin_time( gentity_t *ent )
 {
 	qtime_t qt;
-	int gameDuration, timelimitTime, gameMinutes, gameSeconds, remainingMinutes, remainingSeconds;
+	int timelimitTime, gameMinutes, gameSeconds, remainingMinutes, remainingSeconds;
 
 	trap_RealTime( &qt );
 
-	gameDuration = (level.time - level.startTime);
-
-	gameMinutes = gameDuration/1000 / 60;
-	gameSeconds = gameDuration/1000 % 60;
+	gameMinutes = level.matchTime/1000 / 60;
+	gameSeconds = level.matchTime/1000 % 60;
 
 	timelimitTime = level.timelimit * 60000; //timelimit is in minutes
 
-	if(gameDuration < timelimitTime)
+	if(level.matchTime < timelimitTime)
 	{
-		remainingMinutes = (timelimitTime - gameDuration)/1000 / 60;
-		remainingSeconds = (timelimitTime - gameDuration)/1000 % 60 + 1;
+		remainingMinutes = (timelimitTime - level.matchTime)/1000 / 60;
+		remainingSeconds = (timelimitTime - level.matchTime)/1000 % 60 + 1;
 
 		ADMP( va( "%s %02i %02i %02i %02i %02i %i %02i", QQ( N_("^3time: ^7local time is ^d$1$:$2$:$3$^7 - game runs for ^d$4$:$5$^7 hitting Timelimit in ^d$6$:$7$^7\n") ),
 	          qt.tm_hour, qt.tm_min, qt.tm_sec, gameMinutes, gameSeconds, remainingMinutes, remainingSeconds ) );
@@ -3742,7 +3740,7 @@ qboolean G_admin_adminhelp( gentity_t *ent )
 		{
 			if ( G_admin_permission( ent, c->flag ) )
 			{
-				int thiswidth = strlen( g_admin_cmds[ i ].keyword );
+				int thiswidth = strlen( c->command );
 
 				if ( width < thiswidth )
 				{

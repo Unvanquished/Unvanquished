@@ -279,6 +279,60 @@ void QDECL PRINTF_LIKE(1) Com_Printf( const char *fmt, ... )
 	va_end( argptr );
 }
 
+void QDECL Com_LogEvent( log_event_t *event, log_location_info_t *location )
+{
+	switch (event->level)
+	{
+	case LOG_OFF:
+		return;
+	case LOG_WARN:
+		Com_Printf(_("^3Warning: ^7%s\n"), event->message);
+		break;
+	case LOG_ERROR:
+		Com_Printf(_("^1Error: ^7%s\n"), event->message);
+		break;
+	case LOG_DEBUG:
+		Com_Printf(_("Debug: %s\n"), event->message);
+		break;
+	case LOG_TRACE:
+		Com_Printf("Trace: %s\n", event->message);
+		return;
+	default:
+		Com_Printf("%s\n", event->message);
+		break;
+	}
+#ifndef NDEBUG
+	if (location)
+	{
+		Com_Printf("\tin %s at %s:%i\n", location->function, location->file, location->line);
+	}
+#endif
+}
+
+void QDECL PRINTF_LIKE(2) Com_Logf( log_level_t level, const char *fmt, ... )
+{
+	va_list argptr;
+	char    text[ MAXPRINTMSG ];
+	log_event_t event;
+
+	event.level = level;
+	event.message = text;
+
+	va_start( argptr, fmt );
+	Q_vsnprintf( text, sizeof( text ), fmt, argptr );
+	va_end( argptr );
+
+	Com_LogEvent( &event, NULL );
+}
+
+void QDECL Com_Log( log_level_t level, const char* message )
+{
+	log_event_t event;
+	event.level = level;
+	event.message = message;
+	Com_LogEvent( &event, NULL );
+}
+
 /*
 ================
 Com_DPrintf
@@ -2887,7 +2941,7 @@ qboolean Com_WriteProfile( char *profile_path )
 
 	if ( f < 0 )
 	{
-		Com_Printf( "Com_WriteProfile: Can't write %s.\n", profile_path );
+		Com_Printf( _( "%s couldn't write %s\n"), "[Com_WriteProfile]" S_WARNING, profile_path );
 		return qfalse;
 	}
 
@@ -3002,10 +3056,7 @@ void Com_Init( char *commandLine )
 			}
 
 			// bani - write a new one
-			if ( !Com_WriteProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
-			{
-				Com_Printf(_( S_WARNING "couldn't write profiles/%s/profile.pid\n"), cl_profileStr );
-			}
+			Com_WriteProfile( va( "profiles/%s/profile.pid", cl_profileStr ) );
 
 			// exec the config
 			Cbuf_AddText( va( "exec profiles/%s/" CONFIG_NAME "\n", cl_profileStr ) );
@@ -3335,7 +3386,7 @@ void Com_WriteConfig_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Com_Printf(_( "Usage: writeconfig <filename>\n" ));
+		Cmd_PrintUsage(_("<filename>"), NULL);
 		return;
 	}
 
@@ -3359,7 +3410,7 @@ void Com_WriteBindings_f( void )
 
 	if ( Cmd_Argc() != 2 )
 	{
-		Com_Printf(_( "Usage: writebindings <filename>\n" ));
+		Cmd_PrintUsage(_("<filename>"), NULL);
 		return;
 	}
 
@@ -3624,7 +3675,7 @@ void Com_Frame( void )
 		{
 			if ( !watchWarn && Sys_Milliseconds() - watchdogTime > ( com_watchdog->integer - 4 ) * 1000 )
 			{
-				Com_Printf(_( "WARNING: watchdog will trigger in 4 seconds\n" ));
+				Com_Log( LOG_WARN, _( "watchdog will trigger in 4 seconds" ));
 				watchWarn = qtrue;
 			}
 			else if ( Sys_Milliseconds() - watchdogTime > com_watchdog->integer * 1000 )

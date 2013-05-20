@@ -89,11 +89,8 @@ enum
   CS_BOTINFO,
   CS_CLIENTS_READY,
 
-  CS_ALIEN_STAGES,
-  CS_HUMAN_STAGES,
-
-  CS_ALIEN_MINE_RATE,
-  CS_HUMAN_MINE_RATE,
+  CS_ALIEN_STAGE,
+  CS_HUMAN_STAGE,
 
   CS_MODELS,
   CS_SOUNDS = CS_MODELS + MAX_MODELS,
@@ -284,20 +281,22 @@ typedef enum
 typedef enum
 {
   PERS_SCORE, // !!! MUST NOT CHANGE, SERVER AND GAME BOTH REFERENCE !!!
-  PERS_HITS, // total points damage inflicted so damage beeps can sound on change
+  PERS_CONFIDENCE, // the total confidence of a team
   PERS_SPAWNS, // how many spawns your team has
   PERS_SPECSTATE,
   PERS_SPAWN_COUNT, // incremented every respawn
   PERS_ATTACKER, // clientnum of last damage inflicter
-  PERS_KILLED, // count of the number of times you died
-
+  PERS_RGS_EFFICIENCY, // summed efficiency of all friendly RGS
   PERS_STATE,
   PERS_CREDIT, // human credit
   PERS_QUEUEPOS, // position in the spawn queue
   PERS_NEWWEAPON, // weapon to switch to
   PERS_BP,
-  PERS_MARKEDBP
-  // netcode has space for 3 more
+  PERS_MARKEDBP,
+  PERS_MINERATE, // level wide base mine rate. TODO: calculate clientside
+  PERS_THRESHOLD_STAGE2,
+  PERS_THRESHOLD_STAGE3
+  // netcode has space for 0 more. TODO: extend
 } persEnum_t;
 
 #define PS_WALLCLIMBINGFOLLOW 0x00000001
@@ -560,7 +559,9 @@ typedef enum
   EV_MGTURRET_SPINUP, // turret spinup sound should play
 
   EV_RPTUSE_SOUND, // trigger a sound
-  EV_LEV2_ZAP
+  EV_LEV2_ZAP,
+
+  EV_CONFIDENCE // notify client of generated confidence
 } entity_event_t;
 
 typedef enum
@@ -939,6 +940,38 @@ typedef enum
   MOD_NOCREEP
 } meansOfDeath_t;
 
+// reasons for giving confidence, get sent to the client who earned it
+typedef enum
+{
+	CONF_REAS_NONE,
+
+	CONF_REAS_STAGEUP,
+	CONF_REAS_STAGEDOWN,
+
+	CONF_REAS_KILLING,
+
+	CONF_REAS_DESTR_CRUCIAL,
+	CONF_REAS_DESTR_AGGRESSIVE,
+	CONF_REAS_DESTR_SUPPORT,
+
+	CONF_REAS_BUILD_CRUCIAL,
+	CONF_REAS_BUILD_AGGRESSIVE,
+	CONF_REAS_BUILD_SUPPORT,
+	CONF_REAS_DECON
+} confidence_reason_t;
+
+// qualifications that are necessary for generating confidence or yield a bonus,
+// get sent to the client who earned it
+typedef enum
+{
+	CONF_QUAL_NONE,
+
+	CONF_QUAL_IN_ENEMEY_BASE,
+	CONF_QUAL_CLOSE_TO_ENEMY_BASE,
+	CONF_QUAL_OUTSIDE_OWN_BASE,
+	CONF_QUAL_IN_OWN_BASE
+} confidence_qualifier_t;
+
 //---------------------------------------------------------
 
 // player class record
@@ -975,7 +1008,6 @@ typedef struct
 	float    jumpMagnitude;
 	float    knockbackScale;
 
-	int      children[ 3 ];
 	int      cost;
 	int      value;
 
@@ -1183,11 +1215,9 @@ void                        BG_ClassBoundingBox( class_t pClass, vec3_t mins,
     vec3_t maxs, vec3_t cmaxs,
     vec3_t dmins, vec3_t dmaxs );
 qboolean                    BG_ClassHasAbility( class_t pClass, int ability );
-int                         BG_ClassCanEvolveFromTo( class_t fclass,
-    class_t tclass,
-    int credits, int alienStage, int num );
 
-qboolean                  BG_AlienCanEvolve( class_t pClass, int credits, int alienStage );
+int                         BG_ClassCanEvolveFromTo(class_t from, class_t to, int credits, int stage);
+qboolean                    BG_AlienCanEvolve(class_t from, int credits, int alienStage );
 
 const weaponAttributes_t  *BG_WeaponByName( const char *name );
 const weaponAttributes_t  *BG_Weapon( weapon_t weapon );

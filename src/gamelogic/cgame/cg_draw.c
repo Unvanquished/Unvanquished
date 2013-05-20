@@ -386,7 +386,7 @@ static void CG_DrawPlayerCreditsValue( rectDef_t *rect, vec4_t color, qboolean p
 				localColor[ 3 ] = 0.0f;
 			}
 
-			value /= ALIEN_CREDITS_PER_KILL;
+			value /= CREDITS_PER_EVO;
 		}
 
 		trap_R_SetColor( localColor );
@@ -416,7 +416,7 @@ static void CG_DrawPlayerCreditsFraction( rectDef_t *rect, vec4_t color, qhandle
 	}
 
 	fraction = ( ( float )( cg.predictedPlayerState.persistant[ PERS_CREDIT ] %
-	                        ALIEN_CREDITS_PER_KILL ) ) / ALIEN_CREDITS_PER_KILL;
+	             CREDITS_PER_EVO ) ) / CREDITS_PER_EVO;
 
 	aRect = *rect;
 	CG_AdjustFrom640( &aRect.x, &aRect.y, &aRect.w, &aRect.h );
@@ -456,7 +456,7 @@ static void CG_DrawPlayerAlienEvos( rectDef_t *rect, float text_x, float text_y,
 				localColor[ 3 ] = 0.0f;
 			}
 
-			value /= ( float ) ALIEN_CREDITS_PER_KILL;
+			value /= ( float ) CREDITS_PER_EVO;
 		}
 
 		s = va( "%0.1f", floor( value * 10 ) / 10 );
@@ -1654,26 +1654,26 @@ static void CG_DrawLevelMineRate( rectDef_t *rect, float text_x, float text_y,
 {
 	char s[ MAX_TOKEN_CHARS ];
 	float tx, ty, levelRate;
-	weapon_t weapon;
 	int totalRate;
 
-	weapon = BG_GetPlayerWeapon( &cg.snap->ps );
-
-	switch ( weapon )
+	// check if builder
+	switch ( BG_GetPlayerWeapon( &cg.snap->ps ) )
 	{
 		case WP_ABUILD:
 		case WP_ABUILD2:
-			sscanf( CG_ConfigString( CS_ALIEN_MINE_RATE ), "%f %d", &levelRate, &totalRate );
-			break;
 		case WP_HBUILD:
-			sscanf( CG_ConfigString( CS_HUMAN_MINE_RATE ), "%f %d", &levelRate, &totalRate );
 			break;
 
 		default:
 			return;
 	}
 
-	Com_sprintf( s, MAX_TOKEN_CHARS, _("Level Rate: %.1f Total Rate: %.1f (%d%%)"), ( levelRate ), ( ( totalRate / 100.0f ) * levelRate ), totalRate );
+	levelRate = cg.predictedPlayerState.persistant[ PERS_MINERATE ] / 10.0f;
+	totalRate = cg.predictedPlayerState.persistant[ PERS_RGS_EFFICIENCY ];
+
+	Com_sprintf( s, MAX_TOKEN_CHARS, _("Level Rate: %.1f Total Rate: %.1f (%d%%)"),
+	             ( levelRate ), ( ( totalRate / 100.0f ) * levelRate ), totalRate );
+
 	CG_AlignText( rect, s, scale, 0.0f, 0.0f, textalign, textvalign, &tx, &ty );
 	UI_Text_Paint( text_x + tx, text_y + ty, scale, color, s, 0, textStyle );
 }
@@ -2095,63 +2095,47 @@ static void CG_DrawStageReport( rectDef_t *rect, float text_x, float text_y,
                                 vec4_t color, float scale, int textalign, int textvalign, int textStyle )
 {
 	char  s[ MAX_TOKEN_CHARS ];
-	float tx, ty;
-	float levelMineRate;
-	int   mineEfficiency, neededEfficiency;
+	float tx, ty, confidence;
+	int   stage, stage2Threshold, stage3Threshold;
 
 	if ( cg.intermissionStarted )
 	{
 		return;
 	}
 
-	if ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_NONE )
+	switch ( cg.snap->ps.stats[ STAT_TEAM ] )
 	{
-		return;
+		case TEAM_ALIENS:
+			stage = cgs.alienStage;
+			break;
+
+		case TEAM_HUMANS:
+			stage = cgs.humanStage;
+			break;
+
+		default:
+			return;
 	}
 
-	if ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
+	confidence = cg.predictedPlayerState.persistant[ PERS_CONFIDENCE ] / 10.0f;
+
+	stage2Threshold = cg.predictedPlayerState.persistant[ PERS_THRESHOLD_STAGE2 ];
+	stage3Threshold = cg.predictedPlayerState.persistant[ PERS_THRESHOLD_STAGE3 ];
+
+	if ( stage == S1 )
 	{
-		// TODO: Store CS_ALIEN_MINE_RATE in cgs
-		sscanf( CG_ConfigString( CS_ALIEN_MINE_RATE ), "%f %d", &levelMineRate, &mineEfficiency );
-
-		neededEfficiency = cgs.alienNextStageThreshold - mineEfficiency;
-
-		if ( neededEfficiency < 0 )
-		{
-			neededEfficiency = 0;
-		}
-
-		if ( cgs.alienNextStageThreshold < 0 )
-		{
-			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d"), cgs.alienStage + 1 );
-		}
-		else
-		{
-			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, Add %d%% to your leech rate"),
-			             cgs.alienStage + 1, neededEfficiency );
-		}
+		Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %.1f confidence, ↑%d"),
+					 stage + 1, confidence, stage2Threshold );
 	}
-	else if ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+	else if ( stage == S3 )
 	{
-		// TODO: Store CS_HUMAN_MINE_RATE in cgs
-		sscanf( CG_ConfigString( CS_HUMAN_MINE_RATE ), "%f %d", &levelMineRate, &mineEfficiency );
-
-		neededEfficiency = cgs.humanNextStageThreshold - mineEfficiency;
-
-		if ( neededEfficiency < 0 )
-		{
-			neededEfficiency = 0;
-		}
-
-		if ( cgs.humanNextStageThreshold < 0 )
-		{
-			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d"), cgs.humanStage + 1 );
-		}
-		else
-		{
-			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, Add %d%% to your mine rate"),
-			             cgs.humanStage + 1, neededEfficiency );
-		}
+		Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %.1f confidence, ↓%d"),
+					 stage + 1, confidence, stage3Threshold );
+	}
+	else
+	{
+		Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %.1f confidence, ↑%d ↓%d"),
+					 stage + 1, confidence, stage3Threshold, stage2Threshold );
 	}
 
 	CG_AlignText( rect, s, scale, 0.0f, 0.0f, textalign, textvalign, &tx, &ty );
@@ -2572,7 +2556,7 @@ static void CG_DrawTeamOverlay( rectDef_t *rect, float scale, vec4_t color )
 			        "  " + ( ci->health >= 100 ? 6 : ci->health >= 10 ? 3 : 0 ), // these are figure spaces, 3 bytes each
 			        ci->health,
 			        ( ci->team == TEAM_ALIENS )
-			          ? va( "₠%.1f", (float) ci->credit / ALIEN_CREDITS_PER_KILL )
+			          ? va( "₠%.1f", (float) ci->credit / CREDITS_PER_EVO )
 			          : va( "₢%d", ci->credit ),
 			        CG_ConfigString( CS_LOCATIONS + ci->location ) );
 		}

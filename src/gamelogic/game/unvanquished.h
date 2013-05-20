@@ -264,10 +264,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define ALIEN_REGEN_DAMAGE_TIME  2000 //msec since damage that regen starts again
 #define ALIEN_REGEN_NOCREEP_MOD  ( 1.0f / 3.0f ) //regen off creep
 
-#define ALIEN_MAX_FRAGS          9
-#define ALIEN_MAX_CREDITS        ( ALIEN_MAX_FRAGS * ALIEN_CREDITS_PER_KILL )
-#define ALIEN_CREDITS_PER_KILL   400
-#define ALIEN_TK_SUICIDE_PENALTY 350
+#define ALIEN_MAX_CREDITS        2000 // CREDITS_PER_EVO converts this to evos for display
+#define ALIEN_TK_SUICIDE_PENALTY 150
 
 /*
  * HUMAN weapons
@@ -433,9 +431,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define HUMAN_MAX_CREDITS             2000
 #define HUMAN_TK_SUICIDE_PENALTY      150
 
-#define HUMAN_BUILDER_SCOREINC        50 // builders receive this many points every 10 seconds
-#define ALIEN_BUILDER_SCOREINC        AVM(100) // builders receive this many points every 10 seconds
-
 /*
  * Misc
  */
@@ -444,25 +439,35 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define MAX_FALL_DISTANCE                  120.0f //the fall distance at which maximum damage is dealt
 #define AVG_FALL_DISTANCE                  (( MIN_FALL_DISTANCE + MAX_FALL_DISTANCE ) / 2.0f )
 
-#define DEFAULT_FREEKILL_PERIOD            "120" //seconds
-#define FREEKILL_ALIEN                     ALIEN_CREDITS_PER_KILL
-#define FREEKILL_HUMAN                     LEVEL0_VALUE
+// score
+#define SCORE_PER_CREDIT                   0.02f // used to convert credit rewards to score points
+#define SCORE_PER_CONFIDENCE               1.0f  // used to convert confidence rewards to score points
+#define HUMAN_BUILDER_SCOREINC             50    // in credits/10s
+#define ALIEN_BUILDER_SCOREINC             50    // in credits/10s
 
+// funds
+// Values are in credits. 'evo' is just another unit for credits.
+#define CREDITS_PER_EVO                    100   // Used when alien credits are displayed as evos
+#define DEFAULT_FREEKILL_PERIOD            "120" // in s
+#define FREEKILL_ALIEN                     200   // value of a naked human
+#define FREEKILL_HUMAN                     180   // value of a dretch
+
+// resources
 #define RGS_RANGE                          750.0f
-#define DEFAULT_INITIAL_BUILD_POINTS       "50"
-#define DEFAULT_INITIAL_MINE_RATE          "10"
-#define DEFAULT_MINE_RATE_HALF_LIFE        "15"
+#define DEFAULT_INITIAL_BUILD_POINTS       "50"  // in BP
+#define DEFAULT_INITIAL_MINE_RATE          "8"   // in (BP/min)/RGS
+#define DEFAULT_MINE_RATE_HALF_LIFE        "20"  // in min
 
-#define DEFAULT_ALIEN_STAGE1_BELOW         "300"
-#define DEFAULT_ALIEN_STAGE2_ABOVE         "350"
-#define DEFAULT_ALIEN_STAGE2_BELOW         "500"
-#define DEFAULT_ALIEN_STAGE3_ABOVE         "550"
+// confidence & stages
+#define CONFIDENCE_PER_CREDIT              0.01f // used to award confidence based on credit rewards
+#define DEFAULT_CONFIDENCE_HALF_LIFE       "5"   // in min
+#define DEFAULT_MINIMUM_STAGE_TIME         "60"  // in s. how long to keep a new stage at minimum
+#define DEFAULT_STAGE2_BASE_THRESHOLD      "100"
+#define DEFAULT_STAGE3_BASE_THRESHOLD      "250"
+#define DEFAULT_STAGE2_INC_PER_PLAYER      "10"
+#define DEFAULT_STAGE3_INC_PER_PLAYER      "25"
+#define DEFAULT_STAGE_THRESHOLD_HALF_LIFE  "30"
 #define DEFAULT_ALIEN_MAX_STAGE            "2"
-
-#define DEFAULT_HUMAN_STAGE1_BELOW         "300"
-#define DEFAULT_HUMAN_STAGE2_ABOVE         "350"
-#define DEFAULT_HUMAN_STAGE2_BELOW         "500"
-#define DEFAULT_HUMAN_STAGE3_ABOVE         "550"
 #define DEFAULT_HUMAN_MAX_STAGE            "2"
 
 #define MAXIMUM_BUILD_TIME                 20000 // used for pie timer

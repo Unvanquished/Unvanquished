@@ -61,6 +61,7 @@ typedef enum cgameImport_s
 {
   CG_PRINT = FIRST_VM_SYSCALL,
   CG_ERROR,
+  CG_LOG,
   CG_MILLISECONDS,
   CG_CVAR_REGISTER,
   CG_CVAR_UPDATE,
@@ -230,7 +231,10 @@ typedef enum cgameImport_s
   CG_ADDVISTESTTOSCENE,
   CG_CHECKVISIBILITY,
   CG_UNREGISTERVISTEST,
-  CG_SETCOLORGRADING
+  CG_SETCOLORGRADING,
+  CG_CM_DISTANCETOMODEL,
+  CG_R_SCISSOR_ENABLE,
+  CG_R_SCISSOR_SET
 } cgameImport_t;
 
 typedef enum
@@ -474,4 +478,9 @@ void            trap_AddVisTestToScene( qhandle_t hTest, vec3_t pos,
 					float depthAdjust, float area );
 float           trap_CheckVisibility( qhandle_t hTest );
 void            trap_UnregisterVisTest( qhandle_t hTest );
-void            trap_SetColorGrading( qhandle_t hShader );
+void            trap_SetColorGrading( int slot, qhandle_t hShader );
+
+float           trap_CM_DistanceToModel( const vec3_t loc, clipHandle_t model );
+
+void            trap_R_ScissorEnable( qboolean enable );
+void            trap_R_ScissorSet( int x, int y, int w, int h );

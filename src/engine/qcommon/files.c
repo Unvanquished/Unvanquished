@@ -3046,7 +3046,7 @@ void FS_Dir_f( void )
 
 	if ( Cmd_Argc() < 2 || Cmd_Argc() > 3 )
 	{
-		Com_Printf(_( "usage: dir <directory> [extension]\n" ));
+		Cmd_PrintUsage(_("<directory> [<extension>]"), NULL);
 		return;
 	}
 
@@ -3194,8 +3194,8 @@ void FS_NewDir_f( void )
 
 	if ( Cmd_Argc() < 2 )
 	{
-		Com_Printf(_( "usage: fdir <filter>\n"
-		              "example: fdir *q3dm*.bsp\n" ));
+		Cmd_PrintUsage(_("<filter>"), NULL);
+		Com_Printf(_( "example: fdir *q3dm*.bsp\n" ));
 		return;
 	}
 
@@ -3288,7 +3288,7 @@ void FS_Which_f( void )
 
 	if ( !filename[ 0 ] )
 	{
-		Com_Printf(_( "Usage: which <file>\n" ));
+		Cmd_PrintUsage(_("<file>"), NULL);
 		return;
 	}
 
@@ -4766,10 +4766,7 @@ void FS_Restart( int checksumFeed )
 				}
 
 				// bani - write a new one
-				if ( !Com_WriteProfile( va( "profiles/%s/profile.pid", cl_profileStr ) ) )
-				{
-					Com_Printf( S_WARNING "couldn't write profiles/%s/profile.pid\n", cl_profileStr );
-				}
+				Com_WriteProfile( va( "profiles/%s/profile.pid", cl_profileStr ) );
 
 				// exec the config
 				Cbuf_AddText( va( "exec profiles/%s/%s\n", cl_profileStr, CONFIG_NAME ) );

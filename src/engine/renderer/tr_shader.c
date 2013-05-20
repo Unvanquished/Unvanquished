@@ -2018,6 +2018,11 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 		else if ( !Q_stricmp( token, "forceHighQuality" ) )
 		{
 		}
+		// deformMagnitude <expression>
+		else if ( !Q_stricmp( token, "deformMagnitude" ) )
+		{
+		    SkipRestOfLine( text );
+		}
 		//
 		// detail
 		//
@@ -3701,7 +3706,7 @@ static qboolean ParseShader( char **text )
 				implicitStateBits = GLS_DEPTHMASK_TRUE | GLS_ATEST_GE_80;
 				implicitCullType = CT_TWO_SIDED;
 			}
-			else // "implicitMap"
+			else // if ( !Q_stricmp( token, "implicitMap" ) || !Q_stricmp( token, "implicitMapGL1" ) )
 			{
 				implicitStateBits = GLS_DEPTHMASK_TRUE;
 				implicitCullType = CT_FRONT_SIDED;

@@ -88,7 +88,7 @@ void trigger_checkWaitForReactivation( gentity_t *self )
 	if ( self->config.wait.time > 0 )
 	{
 		self->think = sensor_checkWaitForReactivation_think;
-		G_SetNextthink( self );
+		self->nextthink = VariatedLevelTime( self->config.wait );
 	}
 	else
 	{
@@ -187,7 +187,7 @@ void sensor_timer_think( gentity_t *self )
 {
 	G_FireEntity( self, self->activator );
 	// set time before next firing
-	G_SetNextthink( self );
+	self->nextthink = VariatedLevelTime( self->config.wait );
 }
 
 void sensor_timer_act( gentity_t *self, gentity_t *other, gentity_t *activator )

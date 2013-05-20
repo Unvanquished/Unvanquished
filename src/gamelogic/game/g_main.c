@@ -69,6 +69,7 @@ vmCvar_t           g_doWarmup;
 vmCvar_t           g_lockTeamsAtStart;
 vmCvar_t           g_mapRestarted;
 vmCvar_t           g_logFile;
+vmCvar_t           g_logGameplayStatsFrequency;
 vmCvar_t           g_logFileSync;
 vmCvar_t           g_allowVote;
 vmCvar_t           g_voteLimit;
@@ -98,21 +99,19 @@ vmCvar_t           g_initialBuildPoints;
 vmCvar_t           g_initialMineRate;
 vmCvar_t           g_mineRateHalfLife;
 
-vmCvar_t           g_alienOffCreepRegenHalfLife;
-
-vmCvar_t           g_humanStage;
+vmCvar_t           g_confidenceHalfLife;
+vmCvar_t           g_minimumStageTime;
+vmCvar_t           g_stage2BaseThreshold;
+vmCvar_t           g_stage3BaseThreshold;
+vmCvar_t           g_stage2IncreasePerPlayer;
+vmCvar_t           g_stage3IncreasePerPlayer;
+vmCvar_t           g_stageThresholdHalfLife;
 vmCvar_t           g_humanMaxStage;
-vmCvar_t           g_humanStage1Below;
-vmCvar_t           g_humanStage2Above;
-vmCvar_t           g_humanStage2Below;
-vmCvar_t           g_humanStage3Above;
-
-vmCvar_t           g_alienStage;
 vmCvar_t           g_alienMaxStage;
-vmCvar_t           g_alienStage1Below;
-vmCvar_t           g_alienStage2Above;
-vmCvar_t           g_alienStage2Below;
-vmCvar_t           g_alienStage3Above;
+vmCvar_t           g_humanStage;
+vmCvar_t           g_alienStage;
+
+vmCvar_t           g_alienOffCreepRegenHalfLife;
 
 vmCvar_t           g_teamImbalanceWarnings;
 vmCvar_t           g_freeFundPeriod;
@@ -224,6 +223,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_warmup,                      "g_warmup",                      "10",                               CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_doWarmup,                    "g_doWarmup",                    "0",                                CVAR_ARCHIVE,                                    0, qtrue            },
 	{ &g_logFile,                     "g_logFile",                     "games.log",                        CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_logGameplayStatsFrequency,   "g_logGameplayStatsFrequency",   "10",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_logFileSync,                 "g_logFileSync",                 "0",                                CVAR_ARCHIVE,                                    0, qfalse           },
 
 	{ &g_password,                    "g_password",                    "",                                 CVAR_USERINFO,                                   0, qfalse           },
@@ -263,23 +263,23 @@ static cvarTable_t gameCvarTable[] =
 	{ &pmove_msec,                    "pmove_msec",                    "8",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 	{ &pmove_accurate,                "pmove_accurate",                "0",                                CVAR_SYSTEMINFO,                                 0, qfalse           },
 
-	{ &g_initialBuildPoints,          "g_initialBuildPoints",          DEFAULT_INITIAL_BUILD_POINTS,        CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_initialMineRate,             "g_initialMineRate",             DEFAULT_INITIAL_MINE_RATE,           CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_mineRateHalfLife,            "g_mineRateHalfLife",            DEFAULT_MINE_RATE_HALF_LIFE,         CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_alienOffCreepRegenHalfLife,  "g_alienOffCreepRegenHalfLife",  "5",                               CVAR_ARCHIVE,                                    0, qfalse           },
-	{ &g_humanStage,                  "g_humanStage",                  "0",                                0,                                               0, qfalse           },
-	{ &g_humanMaxStage,               "g_humanMaxStage",               DEFAULT_HUMAN_MAX_STAGE,            0,                                               0, qfalse, cv_humanMaxStage},
-	{ &g_humanStage1Below,            "g_humanStage1Below",            DEFAULT_HUMAN_STAGE1_BELOW,         0,                                               0, qfalse           },
-	{ &g_humanStage2Above,            "g_humanStage2Above",            DEFAULT_HUMAN_STAGE2_ABOVE,         0,                                               0, qfalse           },
-	{ &g_humanStage2Below,            "g_humanStage2Below",            DEFAULT_HUMAN_STAGE2_BELOW,         0,                                               0, qfalse           },
-	{ &g_humanStage3Above,            "g_humanStage3Above",            DEFAULT_HUMAN_STAGE3_ABOVE,         0,                                               0, qfalse           },
+	{ &g_initialBuildPoints,          "g_initialBuildPoints",          DEFAULT_INITIAL_BUILD_POINTS,       CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_initialMineRate,             "g_initialMineRate",             DEFAULT_INITIAL_MINE_RATE,          CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_mineRateHalfLife,            "g_mineRateHalfLife",            DEFAULT_MINE_RATE_HALF_LIFE,        CVAR_ARCHIVE,                                    0, qfalse           },
 
-	{ &g_alienStage,                  "g_alienStage",                  "0",                                0,                                               0, qfalse           },
+	{ &g_confidenceHalfLife,          "g_confidenceHalfLife",          DEFAULT_CONFIDENCE_HALF_LIFE,       CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_minimumStageTime,            "g_minimumStageTime",            DEFAULT_MINIMUM_STAGE_TIME,         CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_stage2BaseThreshold,         "g_stage2BaseThreshold",         DEFAULT_STAGE2_BASE_THRESHOLD,      CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_stage3BaseThreshold,         "g_stage3BaseThreshold",         DEFAULT_STAGE3_BASE_THRESHOLD,      CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_stage2IncreasePerPlayer,     "g_stage2IncreasePerPlayer",     DEFAULT_STAGE2_INC_PER_PLAYER,      CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_stage3IncreasePerPlayer,     "g_stage3IncreasePerPlayer",     DEFAULT_STAGE3_INC_PER_PLAYER,      CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_stageThresholdHalfLife,      "g_stageThresholdHalfLife",      DEFAULT_STAGE_THRESHOLD_HALF_LIFE,  CVAR_ARCHIVE,                                    0, qfalse           },
+	{ &g_humanMaxStage,               "g_humanMaxStage",               DEFAULT_HUMAN_MAX_STAGE,            0,                                               0, qfalse, cv_humanMaxStage},
 	{ &g_alienMaxStage,               "g_alienMaxStage",               DEFAULT_ALIEN_MAX_STAGE,            0,                                               0, qfalse, cv_alienMaxStage},
-	{ &g_alienStage1Below,            "g_alienStage1Below",            DEFAULT_ALIEN_STAGE1_BELOW,         0,                                               0, qfalse           },
-	{ &g_alienStage2Above,            "g_alienStage2Above",            DEFAULT_ALIEN_STAGE2_ABOVE,         0,                                               0, qfalse           },
-	{ &g_alienStage2Below,            "g_alienStage2Below",            DEFAULT_ALIEN_STAGE2_BELOW,         0,                                               0, qfalse           },
-	{ &g_alienStage3Above,            "g_alienStage3Above",            DEFAULT_ALIEN_STAGE3_ABOVE,         0,                                               0, qfalse           },
+	{ &g_humanStage,                  "g_humanStage",                  "0",                                0,                                               0, qfalse           },
+	{ &g_alienStage,                  "g_alienStage",                  "0",                                0,                                               0, qfalse           },
+
+	{ &g_alienOffCreepRegenHalfLife,  "g_alienOffCreepRegenHalfLife",  "5",                                CVAR_ARCHIVE,                                    0, qfalse           },
 
 	{ &g_teamImbalanceWarnings,       "g_teamImbalanceWarnings",       "30",                               CVAR_ARCHIVE,                                    0, qfalse           },
 	{ &g_freeFundPeriod,              "g_freeFundPeriod",              DEFAULT_FREEKILL_PERIOD,            CVAR_ARCHIVE,                                    0, qtrue            },
@@ -354,9 +354,16 @@ void               G_InitGame( int levelTime, int randomSeed, int restart );
 void               G_RunFrame( int levelTime );
 void               G_ShutdownGame( int restart );
 void               CheckExitRules( void );
-
 void               G_CountSpawns( void );
-void               G_CalculateMineRate( void );
+static void        G_LogGameplayStats( int state );
+
+// state field of G_LogGameplayStats
+enum
+{
+	LOG_GAMEPLAY_STATS_HEADER,
+	LOG_GAMEPLAY_STATS_BODY,
+	LOG_GAMEPLAY_STATS_FOOTER
+};
 
 /*
 ================
@@ -709,6 +716,33 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 		G_Printf( "Not logging to disk\n" );
 	}
 
+	// gameplay statistics logging
+	if ( g_logGameplayStatsFrequency.integer > 0 )
+	{
+		char    logfile[ 128 ], mapname[ 64 ];
+		qtime_t qt;
+
+		trap_RealTime( &qt );
+		trap_Cvar_VariableStringBuffer( "mapname", mapname, sizeof( mapname ) );
+
+		Com_sprintf( logfile, sizeof( logfile ),
+		             "stats/gameplay/%04i%02i%02i_%02i%02i%02i_%s.log",
+		             1900 + qt.tm_year, qt.tm_mon + 1, qt.tm_mday,
+		             qt.tm_hour, qt.tm_min, qt.tm_sec,
+		             mapname );
+
+		trap_FS_FOpenFile( logfile, &level.logGameplayFile, FS_WRITE );
+
+		if ( !level.logGameplayFile )
+		{
+			G_Printf( "WARNING: Couldn't open gameplay statistics logfile: %s\n", logfile );
+		}
+		else
+		{
+			G_LogGameplayStats( LOG_GAMEPLAY_STATS_HEADER );
+		}
+	}
+
 	// clear this now; it'll be set, if needed, from rotation
 	trap_Cvar_Set( "g_mapStartupMessage", "" );
 
@@ -881,6 +915,14 @@ void G_ShutdownGame( int restart )
 		G_LogPrintf( "------------------------------------------------------------\n" );
 		trap_FS_FCloseFile( level.logFile );
 		level.logFile = 0;
+	}
+
+	// finalize logging of gameplay statistics
+	if ( level.logGameplayFile )
+	{
+		G_LogGameplayStats( LOG_GAMEPLAY_STATS_FOOTER );
+		trap_FS_FCloseFile( level.logGameplayFile );
+		level.logGameplayFile = 0;
 	}
 
 	// write all the client session data so we can get it back
@@ -1285,8 +1327,6 @@ void G_CountSpawns( void )
 	}
 }
 
-#define PLAYER_COUNT_MOD 5.0f
-
 /*
 ============
 G_CalculateMineRate
@@ -1296,68 +1336,182 @@ Recalculate the mine rate and the teams mine efficiencies
 */
 void G_CalculateMineRate( void )
 {
-	int              i;
-	gentity_t        *ent;
-	static int       lastMineRateCalculation = 0;
-	static int       time = 0;
+	int              i, playerNum;
+	gentity_t        *ent, *player;
+	gclient_t        *client;
 
-	time += level.time - level.previousTime;
+	static int       nextCalculation = 0;
 
-	if ( level.time >= lastMineRateCalculation + 1000 )
+	if ( level.time < nextCalculation )
 	{
-		level.humanMineEfficiency = level.alienMineEfficiency = 0;
+		return;
+	}
 
-		for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
+	level.humanMineEfficiency = level.alienMineEfficiency = 0;
+
+	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
+	{
+		if ( ent->s.eType != ET_BUILDABLE )
 		{
-			if ( ent->s.eType != ET_BUILDABLE )
-			{
-				continue;
-			}
-
-			if ( ent->s.modelindex == BA_H_DRILL )
-			{
-				level.humanMineEfficiency += ent->s.weaponAnim;
-			}
-
-			else if ( ent->s.modelindex == BA_A_LEECH )
-			{
-				level.alienMineEfficiency += ent->s.weaponAnim;
-			}
+			continue;
 		}
 
-		// ln(2) ~= 0.6931472
-		level.mineRate = g_initialMineRate.value * exp( ( 0.6931472f / ( 60000.0f * g_mineRateHalfLife.value ) ) * -time );
+		if ( ent->s.modelindex == BA_H_DRILL )
+		{
+			level.humanMineEfficiency += ent->s.weaponAnim;
+		}
 
-		trap_SetConfigstring( CS_ALIEN_MINE_RATE, va( "%f %d", level.mineRate, level.alienMineEfficiency ) );
-		trap_SetConfigstring( CS_HUMAN_MINE_RATE, va( "%f %d", level.mineRate, level.humanMineEfficiency ) );
-
-		lastMineRateCalculation = level.time;
+		else if ( ent->s.modelindex == BA_A_LEECH )
+		{
+			level.alienMineEfficiency += ent->s.weaponAnim;
+		}
 	}
+
+	// ln(2) ~= 0.6931472
+	level.mineRate = g_initialMineRate.value * exp( ( -0.6931472f * level.matchTime ) / ( 60000.0f * g_mineRateHalfLife.value ) );
+
+	// send to clients
+	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
+	{
+		player = &g_entities[ playerNum ];
+		client = player->client;
+
+		if ( !client )
+		{
+			continue;
+		}
+
+		client->ps.persistant[ PERS_MINERATE ] = ( short )( level.mineRate * 10.0f );
+
+		switch ( client->pers.teamSelection )
+		{
+			case TEAM_ALIENS:
+				client->ps.persistant[ PERS_RGS_EFFICIENCY ] = ( short )level.alienMineEfficiency;
+				break;
+
+			case TEAM_HUMANS:
+				client->ps.persistant[ PERS_RGS_EFFICIENCY ] = ( short )level.humanMineEfficiency;
+				break;
+
+			default:
+				client->ps.persistant[ PERS_RGS_EFFICIENCY ] = 0;
+		}
+	}
+
+	nextCalculation = level.time + 1000;
 }
 
 /*
 ============
-G_CalculateStages
+G_DecreaseConfidence
+
+Decreases both teams confidence according to g_confidenceHalfLife.
+g_confidenceHalfLife <= 0 disables decrease.
 ============
 */
-void G_CalculateStages( void )
+#define DECREASE_CONFIDENCE_PERIOD 1000
+
+void G_DecreaseConfidence( void )
+{
+	team_t       team;
+	confidence_t type;
+	float        *confidence;
+	int          playerNum;
+	gentity_t    *player;
+	gclient_t    *client;
+
+	static float decreaseFactor = 1.0f, lastConfidenceHalfLife = 0.0f;
+	static int   nextCalculation = 0;
+
+	if ( level.time < nextCalculation )
+	{
+		return;
+	}
+
+	if ( g_confidenceHalfLife.value <= 0.0f )
+	{
+		return;
+	}
+
+	if ( lastConfidenceHalfLife != g_confidenceHalfLife.value )
+	{
+		// ln(2) ~= 0.6931472
+		decreaseFactor = exp( ( -0.6931472f / ( ( 60000.0f / DECREASE_CONFIDENCE_PERIOD ) * g_confidenceHalfLife.value ) ) );
+
+		lastConfidenceHalfLife = g_confidenceHalfLife.value;
+	}
+
+	// decrease all types of confidence for both teams
+	for ( team = NUM_TEAMS - 1; team > TEAM_NONE; team-- )
+	{
+		switch ( team )
+		{
+			case TEAM_ALIENS:
+				confidence = level.alienConfidence;
+				break;
+
+			case TEAM_HUMANS:
+				confidence = level.humanConfidence;
+				break;
+
+			default:
+				continue;
+		}
+
+		confidence[ CONFIDENCE_SUM ] = 0.0f;
+
+		for ( type = CONFIDENCE_SUM + 1; type < NUM_CONFIDENCE_TYPES; type++ )
+		{
+			confidence[ type ] *= decreaseFactor;
+			confidence[ CONFIDENCE_SUM ] += confidence[ type ];
+		}
+	}
+
+	// send to clients
+	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
+	{
+		player = &g_entities[ playerNum ];
+		client = player->client;
+
+		if ( !client )
+		{
+			continue;
+		}
+
+		switch ( client->pers.teamSelection )
+		{
+			case TEAM_ALIENS:
+				client->ps.persistant[ PERS_CONFIDENCE ] = ( short )
+					( level.alienConfidence[ CONFIDENCE_SUM ] * 10.0f + 0.5f );
+				break;
+
+			case TEAM_HUMANS:
+				client->ps.persistant[ PERS_CONFIDENCE ] = ( short )
+					( level.humanConfidence[ CONFIDENCE_SUM ] * 10.0f + 0.5f );
+				break;
+
+			default:
+				client->ps.persistant[ PERS_CONFIDENCE ] = 0;
+		}
+	}
+
+	nextCalculation = level.time + DECREASE_CONFIDENCE_PERIOD;
+}
+
+/*
+============
+G_CalculateAvgPlayers
+
+Calculates the average number of players on each team.
+Resets completely if all players leave a team.
+============
+*/
+void G_CalculateAvgPlayers( void )
 {
 	team_t     team;
-	int        mineEfficiency,
-	           stage,
-	           stageModCount,
-	           maxStage,
-	           S1Below,
-	           S2Above,
-	           S2Below,
-	           S3Above,
-	           *S2Time,
-	           *S3Time,
-	           CSStages,
-	           newStage,
-	           nextThreshold;
-	const char *stageCVar,
-	           *teamName;
+	int        *samples, currentPlayers;
+	float      *avgPlayers;
+
 	static int nextCalculation = 0;
 
 	if ( level.time < nextCalculation )
@@ -1370,34 +1524,176 @@ void G_CalculateStages( void )
 		switch ( team )
 		{
 			case TEAM_ALIENS:
-				mineEfficiency = level.alienMineEfficiency;
+				samples        = &level.numAlienSamples;
+				currentPlayers =  level.numAlienClients;
+				avgPlayers     = &level.avgNumAlienClients;
+				break;
+
+			case TEAM_HUMANS:
+				samples        = &level.numHumanSamples;
+				currentPlayers =  level.numHumanClients;
+				avgPlayers     = &level.avgNumHumanClients;
+				break;
+
+			default:
+				continue;
+		}
+
+		if ( *samples == 0 )
+		{
+			*avgPlayers = ( float )currentPlayers;
+		}
+		else
+		{
+			*avgPlayers = ( ( *avgPlayers * *samples ) + currentPlayers ) / ( *samples + 1 );
+		}
+
+		if ( currentPlayers == 0 )
+		{
+			*samples = 0;
+		}
+		else
+		{
+			(*samples)++;
+		}
+	}
+
+	nextCalculation = level.time + 1000;
+}
+
+/*
+============
+G_CalculateStageThresholds
+============
+*/
+void G_CalculateStageThresholds( void )
+{
+	gentity_t    *player;
+	gclient_t    *client;
+	int          playerNum, S2BT, S3BT, S2IPP, S3IPP;
+	float        modifier, ANAP, ANHP;
+
+	static int   nextCalculation = 0;
+
+	if ( level.time < nextCalculation )
+	{
+		return;
+	}
+
+	if ( g_stageThresholdHalfLife.value <= 0.0f )
+	{
+		modifier = 1.0f;
+	}
+	else
+	{
+		// ln(2) ~= 0.6931472
+		modifier = exp( ( -0.6931472f * level.matchTime ) / ( g_stageThresholdHalfLife.value * 60000.0f ) );
+	}
+
+	S2BT  = g_stage2BaseThreshold.integer;
+	S3BT  = g_stage3BaseThreshold.integer;
+	S2IPP = g_stage2IncreasePerPlayer.integer;
+	S3IPP = g_stage3IncreasePerPlayer.integer;
+	ANAP  = level.avgNumAlienClients;
+	ANHP  = level.avgNumHumanClients;
+
+	level.alienStage2Threshold = ( int )( modifier * ( S2BT + ( S2IPP * ANAP ) ) + 0.5f );
+	level.humanStage2Threshold = ( int )( modifier * ( S2BT + ( S2IPP * ANHP ) ) + 0.5f );
+	level.alienStage3Threshold = ( int )( modifier * ( S3BT + ( S3IPP * ANAP ) ) + 0.5f );
+	level.humanStage3Threshold = ( int )( modifier * ( S3BT + ( S3IPP * ANHP ) ) + 0.5f );
+
+	// send to clients
+	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
+	{
+		player = &g_entities[ playerNum ];
+		client = player->client;
+
+		if ( !client )
+		{
+			continue;
+		}
+
+		switch ( client->pers.teamSelection )
+		{
+			case TEAM_ALIENS:
+				client->ps.persistant[ PERS_THRESHOLD_STAGE2 ] = ( short )( level.alienStage2Threshold );
+				client->ps.persistant[ PERS_THRESHOLD_STAGE3 ] = ( short )( level.alienStage3Threshold );
+				break;
+
+			case TEAM_HUMANS:
+				client->ps.persistant[ PERS_THRESHOLD_STAGE2 ] = ( short )( level.humanStage2Threshold );
+				client->ps.persistant[ PERS_THRESHOLD_STAGE3 ] = ( short )( level.humanStage3Threshold );
+				break;
+
+			default:
+				client->ps.persistant[ PERS_THRESHOLD_STAGE2 ] = 0;
+				client->ps.persistant[ PERS_THRESHOLD_STAGE3 ] = 0;
+		}
+	}
+
+	nextCalculation = level.time + 1000;
+}
+
+/*
+============
+G_CalculateStages
+============
+*/
+void G_CalculateStages( void )
+{
+	team_t     team;
+	int        confidence,
+	           stage,
+	           stageModCount,
+	           maxStage,
+	           S2Threshold,
+	           S3Threshold,
+	           *S2Time,
+	           *S3Time,
+	           CSStage,
+	           newStage,
+	           nextThreshold,
+	           prevThreshold;
+	float      bonus;
+	const char *stageCVar,
+	           *teamName;
+
+	static int nextCalculation = 0;
+
+	if ( level.time < nextCalculation )
+	{
+		return;
+	}
+
+	for ( team = NUM_TEAMS - 1; team > TEAM_NONE; team-- )
+	{
+		switch ( team )
+		{
+			case TEAM_ALIENS:
+				confidence     = ( int )level.alienConfidence[ CONFIDENCE_SUM ];
 				stage          = g_alienStage.integer;
 				stageModCount  = g_alienStage.modificationCount;
 				maxStage       = g_alienMaxStage.integer;
-				S1Below        = g_alienStage1Below.integer;
-				S2Above        = g_alienStage2Above.integer;
-				S2Below        = g_alienStage2Below.integer;
-				S3Above        = g_alienStage3Above.integer;
+				S2Threshold    = level.alienStage2Threshold;
+				S3Threshold    = level.alienStage3Threshold;
 				S2Time         = &level.alienStage2Time;
 				S3Time         = &level.alienStage3Time;
 				stageCVar      = "g_alienStage";
 				teamName       = "Aliens";
-				CSStages       = CS_ALIEN_STAGES;
+				CSStage        = CS_ALIEN_STAGE;
 				break;
 			case TEAM_HUMANS:
-				mineEfficiency = level.humanMineEfficiency;
+				confidence     = ( int )level.humanConfidence[ CONFIDENCE_SUM ];
 				stage          = g_humanStage.integer;
 				stageModCount  = g_humanStage.modificationCount;
 				maxStage       = g_humanMaxStage.integer;
-				S1Below        = g_humanStage1Below.integer;
-				S2Above        = g_humanStage2Above.integer;
-				S2Below        = g_humanStage2Below.integer;
-				S3Above        = g_humanStage3Above.integer;
+				S2Threshold    = level.humanStage2Threshold;
+				S3Threshold    = level.humanStage3Threshold;
 				S2Time         = &level.humanStage2Time;
 				S3Time         = &level.humanStage3Time;
 				stageCVar      = "g_humanStage";
 				teamName       = "Humans";
-				CSStages       = CS_HUMAN_STAGES;
+				CSStage        = CS_HUMAN_STAGE;
 				break;
 			default:
 				continue;
@@ -1405,7 +1701,7 @@ void G_CalculateStages( void )
 
 		newStage = stage;
 
-		if ( mineEfficiency >= S3Above && maxStage >= S3 )
+		if ( confidence >= S3Threshold && maxStage >= S3 )
 		{
 			if ( stage == S3 )
 			{
@@ -1413,6 +1709,7 @@ void G_CalculateStages( void )
 			}
 
 			newStage = S3;
+			prevThreshold = S3Threshold;
 			nextThreshold = -1;
 
 			if ( *S3Time == level.startTime )
@@ -1425,11 +1722,7 @@ void G_CalculateStages( void )
 				*S3Time = level.time;
 			}
 		}
-		else if ( mineEfficiency >= S2Below && stage >= S3 )
-		{
-			continue;
-		}
-		else if ( mineEfficiency >= S2Above && maxStage >= S2 )
+		else if ( confidence >= S2Threshold && maxStage >= S2 )
 		{
 			if ( stage == S2 )
 			{
@@ -1437,25 +1730,23 @@ void G_CalculateStages( void )
 			}
 
 			newStage = S2;
-			nextThreshold = S3Above;
+			prevThreshold = S2Threshold;
+			nextThreshold = S3Threshold;
 
 			if ( *S2Time == level.startTime )
 			{
 				*S2Time = level.time;
 			}
 		}
-		else if ( mineEfficiency >= S1Below && stage >= S2 )
-		{
-			continue;
-		}
 		else if ( stage != S1 )
 		{
 			newStage = S1;
-			nextThreshold = S2Above;
+			prevThreshold = -1;
+			nextThreshold = S2Threshold;
 		}
 		else if ( nextCalculation == 0 )
 		{
-			trap_SetConfigstring( CSStages, va( "%d %d", S1, S2Above ) );
+			trap_SetConfigstring( CSStage, va( "%d", S1 ) );
 			continue;
 		}
 		else
@@ -1464,14 +1755,36 @@ void G_CalculateStages( void )
 		}
 
 		trap_Cvar_Set( stageCVar, va( "%d", newStage ) );
-		trap_SetConfigstring( CSStages, va( "%d %d", newStage, nextThreshold ) );
+		trap_SetConfigstring( CSStage, va( "%d", newStage ) );
 
+		if ( g_minimumStageTime.integer > 0 && g_confidenceHalfLife.integer > 0 )
+		{
+			// give extra confidence on stageup, so the new stage won't be lost in the next g_minimumStageTime seconds
+			if ( newStage > stage )
+			{
+				// ln(2) ~= 0.6931472
+				bonus = prevThreshold *
+				        ( exp( ( 0.6931472f * g_minimumStageTime.value ) / ( g_confidenceHalfLife.value * 60.0f ) ) - 1.0f );
+				G_AddConfidence( team, CONFIDENCE_GENERAL, CONF_REAS_STAGEUP, CONF_QUAL_NONE, bonus, NULL );
+			}
+			// remove confidence on losing a stage, as if the team did nothing for g_minimumStageTime seconds
+			else
+			{
+				// ln(2) ~= 0.6931472
+				bonus = -nextThreshold * ( 1.0f -
+				        ( exp( ( -0.6931472f * g_minimumStageTime.value ) / ( g_confidenceHalfLife.value * 60.0f ) ) ) );
+				G_AddConfidence( team, CONFIDENCE_GENERAL, CONF_REAS_STAGEDOWN, CONF_QUAL_NONE, bonus, NULL );
+			}
+		}
+
+		// notify stage sensors of stageup
 		while ( stage < newStage )
 		{
 			G_notify_sensor_stage( team, stage, stage + 1 );
 			++stage;
 		}
 
+		// notify stage sensors of stagedown
 		while ( stage > newStage )
 		{
 			G_notify_sensor_stage( team, stage, stage - 1 );
@@ -1484,42 +1797,6 @@ void G_CalculateStages( void )
 	}
 
 	nextCalculation = level.time + 1000;
-}
-
-/*
-============
-CalculateAvgPlayers
-
-Calculates the average number of players playing this game
-============
-*/
-void G_CalculateAvgPlayers( void )
-{
-	//there are no clients or only spectators connected, so
-	//reset the number of samples in order to avoid the situation
-	//where the average tends to 0
-	if ( !level.numAlienClients )
-	{
-		level.numAlienSamples = 0;
-	}
-
-	if ( !level.numHumanClients )
-	{
-		level.numHumanSamples = 0;
-	}
-
-	//calculate average number of clients for stats
-	level.averageNumAlienClients =
-	  ( ( level.averageNumAlienClients * level.numAlienSamples )
-	    + level.numAlienClients ) /
-	  ( float )( level.numAlienSamples + 1 );
-	level.numAlienSamples++;
-
-	level.averageNumHumanClients =
-	  ( ( level.averageNumHumanClients * level.numHumanSamples )
-	    + level.numHumanClients ) /
-	  ( float )( level.numHumanSamples + 1 );
-	level.numHumanSamples++;
 }
 
 /*
@@ -1864,7 +2141,7 @@ void QDECL PRINTF_LIKE(1) G_LogPrintf( const char *fmt, ... )
 	char    string[ 1024 ], decolored[ 1024 ];
 	int     min, tens, sec;
 
-	sec = ( level.time - level.startTime ) / 1000;
+	sec = level.matchTime / 1000;
 
 	min = sec / 60;
 	sec -= min * 60;
@@ -1890,6 +2167,251 @@ void QDECL PRINTF_LIKE(1) G_LogPrintf( const char *fmt, ... )
 
 	G_DecolorString( string, decolored, sizeof( decolored ) );
 	trap_FS_Write( decolored, strlen( decolored ), level.logFile );
+}
+
+/*
+=================
+GetAverageDistanceToBase
+
+Calculates the average distance of each teams' players to their main base.
+=================
+*/
+static void GetAverageDistanceToBase( int *alienDistance, int *humanDistance )
+{
+	int       playerNum, alienCnt, humanCnt;
+	gentity_t *playerEnt;
+	gclient_t *client;
+
+	*alienDistance = *humanDistance = 0;
+	alienCnt = humanCnt = 0;
+
+	for ( playerNum = 0; playerNum < MAX_CLIENTS; playerNum++ )
+	{
+		playerEnt = &g_entities[ playerNum ];
+		client = playerEnt->client;
+
+		if ( !client || playerEnt->health <= 0 )
+		{
+			continue;
+		}
+
+		switch ( client->pers.teamSelection )
+		{
+			case TEAM_ALIENS:
+				*alienDistance += ( int )G_DistanceToBase( playerEnt, qtrue );
+				alienCnt++;
+				break;
+
+			case TEAM_HUMANS:
+				*humanDistance += ( int )G_DistanceToBase( playerEnt, qtrue );
+				humanCnt++;
+				break;
+		}
+	}
+
+	*alienDistance = ( !G_Overmind() || alienCnt == 0 ) ? 0 : ( *alienDistance / alienCnt );
+	*humanDistance = ( !G_Reactor()  || humanCnt == 0 ) ? 0 : ( *humanDistance / humanCnt );
+}
+
+/*
+=================
+GetAverageCredits
+
+Calculates the average amount of spare credits as well as the value of each teams' players.
+=================
+*/
+static void GetAverageCredits( int *alienCredits, int *humanCredits, int *alienValue, int *humanValue )
+{
+	int       playerNum, alienCnt, humanCnt;
+	gentity_t *playerEnt;
+	gclient_t *client;
+
+	*alienCredits = *humanCredits = *alienValue = *humanValue = 0;
+	alienCnt = humanCnt = 0;
+
+	for ( playerNum = 0; playerNum < MAX_CLIENTS; playerNum++ )
+	{
+		playerEnt = &g_entities[ playerNum ];
+		client = playerEnt->client;
+
+		if ( !client )
+		{
+			continue;
+		}
+
+		switch ( client->pers.teamSelection )
+		{
+			case TEAM_ALIENS:
+				*alienCredits += client->pers.credit;
+				*alienValue += BG_GetValueOfPlayer( &client->ps );
+				alienCnt++;
+				break;
+
+			case TEAM_HUMANS:
+				*humanCredits += client->pers.credit;
+				*humanValue += BG_GetValueOfPlayer( &client->ps );
+				humanCnt++;
+				break;
+		}
+	}
+
+	*alienCredits = ( alienCnt == 0 ) ? 0 : ( *alienCredits / alienCnt );
+	*humanCredits = ( humanCnt == 0 ) ? 0 : ( *humanCredits / humanCnt );
+
+	*alienValue = ( alienCnt == 0 ) ? 0 : ( *alienValue / alienCnt );
+	*humanValue = ( humanCnt == 0 ) ? 0 : ( *humanValue / humanCnt );
+}
+
+/*
+=================
+G_LogGameplayStats
+=================
+*/
+// Increment this if you add/change columns or otherwise change the log format
+#define LOG_GAMEPLAY_STATS_VERSION 1
+
+static void G_LogGameplayStats( int state )
+{
+	char       mapname[ 128 ];
+	char       logline[ sizeof( Q3_VERSION ) + sizeof( mapname ) + 1024 ];
+
+	static int nextCalculation = 0;
+
+	if ( state == LOG_GAMEPLAY_STATS_BODY && level.time < nextCalculation )
+	{
+		return;
+	}
+
+	if ( !level.logGameplayFile )
+	{
+		return;
+	}
+
+	if ( state == LOG_GAMEPLAY_STATS_HEADER )
+	{
+		qtime_t t;
+
+		trap_Cvar_VariableStringBuffer( "mapname", mapname, sizeof( mapname ) );
+		trap_RealTime( &t );
+
+		Com_sprintf( logline, sizeof( logline ),
+		             "# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+		             "#\n"
+		             "# Version: %s\n"
+		             "# Map:     %s\n"
+		             "# Date:    %04i-%02i-%02i\n"
+		             "# Time:    %02i:%02i:%02i\n"
+		             "# Format:  %i\n"
+		             "#\n"
+		             "# g_stage2BaseThreshold:     %4i\n"
+		             "# g_stage3BaseThreshold:     %4i\n"
+		             "# g_stage2IncreasePerPlayer: %4i\n"
+		             "# g_stage3IncreasePerPlayer: %4i\n"
+		             "# g_stageThresholdHalfLife:  %4i\n"
+		             "# g_confidenceHalfLife:      %4i\n"
+		             "# g_initialBuildPoints:      %4i\n"
+		             "# g_initialMineRate:         %4i\n"
+		             "# g_mineRateHalfLife:        %4i\n"
+		             "#\n"
+		             "#  1  2  3    4    5    6    7    8    9   10   11   12   13   14   15   16    17    18   19   20   21   22\n"
+		             "#  T #A #H AS2T HS2T AS3T HS3T ACon HCon  LMR  AME  HME  ABP  HBP ABRV HBRV  ADTB  HDTB ACre HCre AVal HVal\n"
+		             "# ---------------------------------------------------------------------------------------------------------\n",
+		             Q3_VERSION,
+		             mapname,
+		             t.tm_year + 1900, t.tm_mon + 1, t.tm_mday,
+		             t.tm_hour, t.tm_min, t.tm_sec,
+		             LOG_GAMEPLAY_STATS_VERSION,
+		             g_stage2BaseThreshold.integer,
+		             g_stage3BaseThreshold.integer,
+		             g_stage2IncreasePerPlayer.integer,
+		             g_stage3IncreasePerPlayer.integer,
+		             g_stageThresholdHalfLife.integer,
+		             g_confidenceHalfLife.integer,
+		             g_initialBuildPoints.integer,
+		             g_initialMineRate.integer,
+		             g_mineRateHalfLife.integer );
+	}
+	else if ( state == LOG_GAMEPLAY_STATS_BODY )
+	{
+		int   time, numA, numH, AS2T, HS2T, AS3T, HS3T, ACon, HCon, AME, HME, ABP, HBP,
+		      ABRV, HBRV, ADTB, HDTB, ACre, HCre, AVal, HVal;
+		float LMR;
+
+		time = level.matchTime / 1000;
+		numA = level.numAlienClients;
+		numH = level.numHumanClients;
+		AS2T = level.alienStage2Threshold;
+		HS2T = level.humanStage2Threshold;
+		AS3T = level.alienStage3Threshold;
+		HS3T = level.humanStage3Threshold;
+		ACon = ( int )level.alienConfidence[ CONFIDENCE_SUM ];
+		HCon = ( int )level.humanConfidence[ CONFIDENCE_SUM ];
+		LMR  = level.mineRate; // float
+		AME  = level.alienMineEfficiency;
+		HME  = level.humanMineEfficiency;
+		ABP  = level.alienBuildPoints;
+		HBP  = level.humanBuildPoints;
+		G_GetBuildableResourceValue( &ABRV, &HBRV );
+		GetAverageDistanceToBase( &ADTB, &HDTB );
+		GetAverageCredits( &ACre, &HCre, &AVal, &HVal );
+
+		Com_sprintf( logline, sizeof( logline ),
+		             "%4i %2i %2i %4i %4i %4i %4i %4i %4i %4.1f %4i %4i %4i %4i %4i %4i %5i %5i %4i %4i %4i %4i\n",
+		             time, numA, numH, AS2T, HS2T, AS3T, HS3T, ACon, HCon, LMR, AME, HME,
+		             ABP, HBP, ABRV, HBRV, ADTB, HDTB, ACre, HCre, AVal, HVal );
+	}
+	else if ( state == LOG_GAMEPLAY_STATS_FOOTER )
+	{
+		const char *winner;
+		int        min, sec;
+
+		switch ( level.lastWin )
+		{
+			case TEAM_ALIENS:
+				winner = "Aliens";
+				break;
+
+			case TEAM_HUMANS:
+				winner = "Humans";
+				break;
+
+			default:
+				winner = "-";
+		}
+
+		min = level.matchTime / 60000;
+		sec = ( level.matchTime / 1000 ) % 60;
+
+		Com_sprintf( logline, sizeof( logline ),
+		             "# ---------------------------------------------------------------------------------------------------------\n"
+		             "#\n"
+		             "# Match duration:  %i:%02i\n"
+		             "# Winning team:    %s\n"
+		             "# Average Players: %.1f\n"
+		             "# Average Aliens:  %.1f\n"
+		             "# Average Humans:  %.1f\n"
+		             "#\n",
+		             min, sec,
+		             winner,
+		             level.avgNumAlienClients + level.avgNumHumanClients,
+		             level.avgNumAlienClients,
+		             level.avgNumHumanClients );
+	}
+	else
+	{
+		return;
+	}
+
+	trap_FS_Write( logline, strlen( logline ), level.logGameplayFile );
+
+	if ( state == LOG_GAMEPLAY_STATS_BODY )
+	{
+		nextCalculation = level.time + MAX( 1, g_logGameplayStatsFrequency.integer ) * 1000;
+	}
+	else
+	{
+		nextCalculation = 0;
+	}
 }
 
 /*
@@ -1937,10 +2459,10 @@ void G_SendGameStat( team_t team )
 	             Q3_VERSION,
 	             g_tag.string,
 	             teamChar,
-	             level.averageNumAlienClients,
-	             level.averageNumHumanClients,
+	             level.avgNumAlienClients,
+	             level.avgNumHumanClients,
 	             map,
-	             level.time - level.startTime,
+	             level.matchTime,
 	             g_alienStage.integer,
 	             level.alienStage2Time - level.startTime,
 	             level.alienStage3Time - level.startTime,
@@ -2214,7 +2736,7 @@ void CheckExitRules( void )
 
 	if ( level.timelimit )
 	{
-		if ( level.time - level.startTime >= level.timelimit * 60000 )
+		if ( level.matchTime >= level.timelimit * 60000 )
 		{
 			level.lastWin = TEAM_NONE;
 			trap_SendServerCommand( -1, "print_tr \"" N_("Timelimit hit\n") "\"" );
@@ -2224,13 +2746,13 @@ void CheckExitRules( void )
 			G_MapLog_Result( 't' );
 			return;
 		}
-		else if ( level.time - level.startTime >= ( level.timelimit - 5 ) * 60000 &&
+		else if ( level.matchTime >= ( level.timelimit - 5 ) * 60000 &&
 		          level.timelimitWarning < TW_IMMINENT )
 		{
 			trap_SendServerCommand( -1, "cp \"5 minutes remaining!\"" );
 			level.timelimitWarning = TW_IMMINENT;
 		}
-		else if ( level.time - level.startTime >= ( level.timelimit - 1 ) * 60000 &&
+		else if ( level.matchTime >= ( level.timelimit - 1 ) * 60000 &&
 		          level.timelimitWarning < TW_PASSED )
 		{
 			trap_SendServerCommand( -1, "cp \"1 minute remaining!\"" );
@@ -2508,6 +3030,39 @@ void G_RunThink( gentity_t *ent )
 
 /*
 =============
+G_RunAct
+
+Runs act code for this frame if it should
+=============
+*/
+void G_RunAct( gentity_t *entity )
+{
+
+	if ( entity->nextAct <= 0 )
+	{
+		return;
+	}
+
+	if ( entity->nextAct > level.time )
+	{
+		return;
+	}
+
+	if ( !entity->act )
+	{
+		/*
+		 * e.g. turrets will make use of act and nextAct as part of their think()
+		 * without having an act() function
+		 * other uses might be valid too, so lets not error for now
+		 */
+		return;
+	}
+
+	G_ExecuteAct( entity, &entity->callIn );
+}
+
+/*
+=============
 G_EvaluateAcceleration
 
 Calculates the acceleration for an entity
@@ -2589,6 +3144,8 @@ void G_RunFrame( int levelTime )
 	level.framenum++;
 	level.previousTime = level.time;
 	level.time = levelTime;
+	level.matchTime = levelTime - level.startTime;
+
 	msec = level.time - level.previousTime;
 
 	// generate public-key messages
@@ -2690,6 +3247,8 @@ void G_RunFrame( int levelTime )
 		}
 
 		G_RunThink( ent );
+		/* think() before you act() */
+		G_RunAct( ent );
 	}
 
 	// perform final fixups on the players
@@ -2708,11 +3267,16 @@ void G_RunFrame( int levelTime )
 
 	G_CountSpawns();
 	G_CalculateMineRate();
+	G_DecreaseConfidence();
+	G_CalculateAvgPlayers();
+	G_CalculateStageThresholds();
 	G_CalculateStages();
 	G_SpawnClients( TEAM_ALIENS );
 	G_SpawnClients( TEAM_HUMANS );
-	G_CalculateAvgPlayers();
 	G_UpdateZaps( msec );
+
+	// log gameplay statistics
+	G_LogGameplayStats( LOG_GAMEPLAY_STATS_BODY );
 
 	// see if it is time to end the level
 	CheckExitRules();

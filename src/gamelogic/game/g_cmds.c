@@ -49,7 +49,7 @@ void G_SanitiseString( const char *in, char *out, int len )
 
 		if ( Q_Unicode_IsAlphaOrIdeoOrDigit( cp ) )
 		{
-			int wm, lc;
+			int wm;
 
 			if ( Q_Unicode_IsUpper( cp ) )
 			{
@@ -142,13 +142,14 @@ int G_ClientNumberFromString( const char *s, char *err, int len )
 	int       i, found = 0, m = -1;
 	char      s2[ MAX_NAME_LENGTH ];
 	char      n2[ MAX_NAME_LENGTH ];
+	char      *p = err;
 	int       l, l2 = len;
 
 	if ( !s[ 0 ] )
 	{
-		if ( err )
+		if ( p )
 		{
-			Q_strncpyz( err, N_("no player name or slot # provided\n"), len );
+			Q_strncpyz( p, N_("no player name or slot # provided\n"), len );
 		}
 
 		return -1;
@@ -163,9 +164,9 @@ int G_ClientNumberFromString( const char *s, char *err, int len )
 
 		if ( i < 0 || i >= level.maxclients )
 		{
-			if ( err )
+			if ( p )
 			{
-				Q_strncpyz( err, N_("no player connected in that slot #\n"), len );
+				Q_strncpyz( p, N_("no player connected in that slot #\n"), len );
 			}
 			return -1;
 		}
@@ -174,9 +175,9 @@ int G_ClientNumberFromString( const char *s, char *err, int len )
 
 		if ( cl->pers.connected == CON_DISCONNECTED )
 		{
-			if ( err )
+			if ( p )
 			{
-				Q_strncpyz( err, N_("no player connected in that slot #\n"), len );
+				Q_strncpyz( p, N_("no player connected in that slot #\n"), len );
 			}
 
 			return -1;
@@ -189,20 +190,20 @@ int G_ClientNumberFromString( const char *s, char *err, int len )
 
 	if ( !s2[ 0 ] )
 	{
-		if ( err )
+		if ( p )
 		{
-			Q_strncpyz( err, N_("no player name provided\n"), len );
+			Q_strncpyz( p, N_("no player name provided\n"), len );
 		}
 
 		return -1;
 	}
 
-	if ( err )
+	if ( p )
 	{
-		Q_strncpyz( err, N_("more than one player name matches. "
+		Q_strncpyz( p, N_("more than one player name matches. "
 		            "be more specific or use the slot #:\n"), l2 );
-		l = strlen( err );
-		err += l;
+		l = strlen( p );
+		p += l;
 		l2 -= l;
 	}
 
@@ -223,10 +224,10 @@ int G_ClientNumberFromString( const char *s, char *err, int len )
 
 		if ( strstr( n2, s2 ) )
 		{
-			if ( err )
+			if ( p )
 			{
-				l = Q_snprintf( err, l2, "%-2d — %s^7\n", i, cl->pers.netname );
-				err += l;
+				l = Q_snprintf( p, l2, "%-2d — %s^7\n", i, cl->pers.netname );
+				p += l;
 				l2 -= l;
 			}
 
@@ -552,8 +553,7 @@ void Cmd_Give_f( gentity_t *ent )
 		else
 		{
 			credits = atof( name + 6 ) *
-			          ( ent->client->pers.teamSelection ==
-			            TEAM_ALIENS ? ALIEN_CREDITS_PER_KILL : 1.0f );
+			          ( ent->client->pers.teamSelection == TEAM_ALIENS ? CREDITS_PER_EVO : 1.0f );
 
 			// clamp credits manually, as G_AddCreditToClient() expects a short int
 			if ( credits > 30000.0f )
@@ -1586,6 +1586,7 @@ static const struct {
 	{ "extend",       qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qno,    &g_extendVotesPercent,      VOTE_REMAIN, &g_extendVotesTime },
 	{ "admitdefeat",  qtrue,  V_TEAM,   T_NONE,    qfalse,  qno,    &g_admitDefeatVotesPercent },
 	{ "draw",         qtrue,  V_PUBLIC, T_NONE,    qtrue,   qyes,   &g_drawVotesPercent,        VOTE_AFTER,  &g_drawVotesAfter,  &g_drawVoteReasonRequired },
+	{ "armageddon",   qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qmaybe, &g_drawVotesPercent },
 	{ "map_restart",  qtrue,  V_PUBLIC, T_NONE,    qfalse,  qno,    &g_mapVotesPercent },
 	{ "map",          qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qmaybe, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
 	{ "layout",       qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qno,    &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
@@ -1722,7 +1723,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 	switch ( voteInfo[voteId].special )
 	{
 	case VOTE_BEFORE:
-		if ( ( level.time - level.startTime ) >= ( voteInfo[voteId].specialCvar->integer * 60000 ) )
+		if ( level.matchTime >= ( voteInfo[voteId].specialCvar->integer * 60000 ) )
 		{
 			trap_SendServerCommand( ent - g_entities,
 			                        va( "print_tr %s %s %d", QQ( N_("'$1$' votes are not allowed once $2$ minutes have passed\n") ), voteInfo[voteId].name, voteInfo[voteId].specialCvar->integer ) );
@@ -1732,7 +1733,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		break;
 
 	case VOTE_AFTER:
-		if ( ( level.time - level.startTime ) < ( voteInfo[voteId].specialCvar->integer * 60000 ) )
+		if ( level.matchTime < ( voteInfo[voteId].specialCvar->integer * 60000 ) )
 		{
 			trap_SendServerCommand( ent - g_entities,
 			                        va( "print_tr %s %s %d", QQ( N_("'$1$' votes are not allowed until $2$ minutes have passed\n") ), voteInfo[voteId].name, voteInfo[voteId].specialCvar->integer ) );
@@ -1742,7 +1743,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 		break;
 
 	case VOTE_REMAIN:
-		if ( !level.timelimit || level.time - level.startTime < ( level.timelimit - voteInfo[voteId].specialCvar->integer / 2 ) * 60000 )
+		if ( !level.timelimit || level.matchTime < ( level.timelimit - voteInfo[voteId].specialCvar->integer / 2 ) * 60000 )
 		{
 			trap_SendServerCommand( ent - g_entities,
 			                        va( "print_tr %s %s %d", QQ( N_("'$1$' votes are only allowed with less than $2$ minutes remaining\n") ),
@@ -1941,6 +1942,22 @@ void Cmd_CallVote_f( gentity_t *ent )
 		level.voteDelay[ team ] = 3000;
 		strcpy( level.voteString[ team ], "evacuation" );
 		strcpy( level.voteDisplayString[ team ], "End match in a draw" );
+		break;
+
+	case VOTE_ARMAGEDDON:
+		if ( atoi( arg ) < 1 || atoi( arg ) > 100 )
+		{
+			trap_SendServerCommand( ent - g_entities,
+			                        va( "print_tr %s %s", QQ( N_("$1$: Argument must be anumber between 1 and 100\n") ),
+			                            cmd ) );
+			return;
+		}
+
+		level.voteDelay[ team ] = 3000;
+		Com_sprintf( level.voteString[ team ], sizeof( level.voteString ),
+		             "armageddon %s", Quote( arg ) );
+		Com_sprintf( level.voteDisplayString[ team ], sizeof( level.voteDisplayString[ team ] ),
+		             "Destroy %s%% of all defensive buildings", arg );
 		break;
 
 	case VOTE_MAP_RESTART:
@@ -2473,9 +2490,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 				return qfalse;
 			}
 
-			cost = BG_ClassCanEvolveFromTo( currentClass, newClass,
-			                                ent->client->pers.credit,
-			                                g_alienStage.integer, 0 );
+			cost = BG_ClassCanEvolveFromTo( currentClass, newClass, ent->client->pers.credit, g_alienStage.integer );
 
 			if ( G_RoomForClassChange( ent, newClass, infestOrigin ) )
 			{
@@ -2729,11 +2744,7 @@ fail_lastSpawn:
 		ent->client->ps.stats[ STAT_MISC ] += attr->buildTime / 4;
 	}
 
-	// return BP
-	G_ModifyBuildPoints( traceEnt->buildableTeam, ( attr->buildPoints * ( traceEnt->health / ( float )attr->health ) ) );
-
-	G_Damage( traceEnt, ent, ent, forward, tr.endpos, traceEnt->health, 0, MOD_DECONSTRUCT );
-	G_FreeEntity( traceEnt );
+	G_Deconstruct( traceEnt, ent );
 }
 
 /*
@@ -3185,7 +3196,6 @@ static qboolean Cmd_Sell_upgrades( gentity_t *ent )
 
 static qboolean Cmd_Sell_internal( gentity_t *ent, const char *s )
 {
-	int       i;
 	weapon_t  weapon;
 	upgrade_t upgrade;
 
@@ -4145,7 +4155,7 @@ void G_MapLog_Result( char result )
 		}
 	}
 
-	t = ( level.time - level.startTime ) / 1000;
+	t = level.matchTime / 1000;
 	Q_strncpyz( maplog, g_mapLog.string, sizeof( maplog ) );
 	trap_Cvar_Set( "g_mapLog",
 	               va( "%c;%d:%02d;%s", result, t / 60, t % 60, maplog ) );

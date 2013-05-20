@@ -1344,6 +1344,31 @@ static void CG_RegisterSounds( void )
 
 /*
 =================
+CG_RegisterGrading
+=================
+*/
+void CG_RegisterGrading( int slot, const char *str )
+{
+	int   model;
+	float dist;
+	char  texture[MAX_QPATH];
+
+	if( !str || !*str ) {
+		cgs.gameGradingTextures[ slot ]  = 0;
+		cgs.gameGradingModels[ slot ]    = 0;
+		cgs.gameGradingDistances[ slot ] = 0.0f;
+		return;
+	}
+
+	sscanf(str, "%d %f %s", &model, &dist, texture);
+	cgs.gameGradingTextures[ slot ] =
+		trap_R_RegisterShader(texture, RSF_NOMIP | RSF_NOLIGHTSCALE);
+	cgs.gameGradingModels[ slot ] = model;
+	cgs.gameGradingDistances[ slot ] = dist;
+}
+
+/*
+=================
 CG_RegisterGraphics
 =================
 */
@@ -1381,7 +1406,7 @@ static void CG_RegisterGraphics( void )
 	trap_R_ClearScene();
 
 	CG_UpdateLoadingStep( LOAD_GEOMETRY );
-	trap_R_LoadWorldMap( cgs.mapname );
+	trap_R_LoadWorldMap( va( "maps/%s.bsp", cgs.mapname ) );
 
 	CG_UpdateLoadingStep( LOAD_ASSETS );
 	for ( i = 0; i < 11; i++ )
@@ -1564,27 +1589,14 @@ static void CG_RegisterGraphics( void )
 
 	// register all the server specified grading textures
 	// starting with the world wide one
-
-	cgs.gameGradingTextures[ 0 ] =
-			trap_R_RegisterShader( CG_ConfigString( CS_GRADING_TEXTURES ), RSF_NOMIP | RSF_NOLIGHTSCALE );
+	for ( i = 0; i < MAX_GRADING_TEXTURES; i++ )
+	{
+		CG_RegisterGrading( i, CG_ConfigString( CS_GRADING_TEXTURES + i ) );
+	}
 
 	if( cgs.gameGradingTextures[ 0 ] )
 	{
-		trap_SetColorGrading( cgs.gameGradingTextures[ 0 ] );
-	}
-
-	for ( i = 1; i < MAX_GRADING_TEXTURES; i++ )
-	{
-		const char *gradingTextureName;
-
-		gradingTextureName = CG_ConfigString( CS_GRADING_TEXTURES + i );
-
-		if ( !gradingTextureName[ 0 ] )
-		{
-			break;
-		}
-
-		cgs.gameGradingTextures[ i ] = trap_R_RegisterShader(gradingTextureName, RSF_NOMIP | RSF_NOLIGHTSCALE);
+		trap_SetColorGrading( 0, cgs.gameGradingTextures[ 0 ] );
 	}
 
 	CG_UpdateMediaFraction( 0.9f );
@@ -2640,7 +2652,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	CG_ParseServerinfo();
 
 	// load the new map
-	trap_CM_LoadMap( cgs.mapname );
+	trap_CM_LoadMap( va( "maps/%s.bsp", cgs.mapname) );
 
 	srand( serverMessageNum * serverCommandSequence ^ clientNum );
 

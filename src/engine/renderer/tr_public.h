@@ -193,7 +193,10 @@ typedef struct
 	void      ( *UnregisterVisTest ) ( qhandle_t hTest );
 
 	// color grading
-	void      ( *SetColorGrading ) ( qhandle_t hShader );
+	void      ( *SetColorGrading ) ( int slot, qhandle_t hShader );
+
+	void ( *ScissorEnable ) ( qboolean enable );
+	void ( *ScissorSet ) ( int x, int y, int w, int h );
 } refexport_t;
 
 //

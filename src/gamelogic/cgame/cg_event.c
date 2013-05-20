@@ -766,6 +766,99 @@ static void CG_Level2Zap( entityState_t *es )
 
 /*
 ==============
+CG_Confidence
+
+Notify player of generated confidence
+==============
+*/
+void CG_Confidence( entityState_t *es )
+{
+	const char *message;
+	const char *reason;
+	const char *qualifier;
+
+	switch ( es->eventParm ) // reason
+	{
+		case CONF_REAS_STAGEUP:
+			reason = _("Staging up");
+			break;
+
+		case CONF_REAS_STAGEDOWN:
+			reason = _("Staging down");
+			break;
+
+		case CONF_REAS_KILLING:
+			reason = _("Killing an enemy");
+			break;
+
+		case CONF_REAS_DESTR_CRUCIAL:
+			reason = _("Destroying a crucial structure");
+			break;
+
+		case CONF_REAS_DESTR_AGGRESSIVE:
+			reason = _("Destroying an aggressive structure");
+			break;
+
+		case CONF_REAS_DESTR_SUPPORT:
+			reason = _("Destroying a support structure");
+			break;
+
+		case CONF_REAS_BUILD_CRUCIAL:
+			reason = _("Building a crucial structure");
+			break;
+
+		case CONF_REAS_BUILD_AGGRESSIVE:
+			reason = _("Building an aggressive structure");
+			break;
+
+		case CONF_REAS_BUILD_SUPPORT:
+			reason = _("Building a support structure");
+			break;
+
+		case CONF_REAS_DECON:
+			reason = _("Deconstructing a structure");
+			break;
+
+		default:
+			reason = _("Your actions");
+	}
+
+	switch ( es->otherEntityNum ) // qualifier
+	{
+		case CONF_QUAL_IN_ENEMEY_BASE:
+			qualifier = _(" inside the enemy base");
+			break;
+
+		case CONF_QUAL_CLOSE_TO_ENEMY_BASE:
+			qualifier = _(" close to the enemy base");
+			break;
+
+		case CONF_QUAL_OUTSIDE_OWN_BASE:
+			qualifier = _(" outside your own base");
+			break;
+
+		case CONF_QUAL_IN_OWN_BASE:
+			qualifier = _(" inside your own base");
+			break;
+
+		default:
+			qualifier = "";
+	}
+
+	if ( es->groundEntityNum ) // amount is negative
+	{
+		message = _("%s%s " S_COLOR_RED "lost" S_COLOR_WHITE " your team %.1f confidence\n");
+	}
+	else
+	{
+		message = _("%s%s " S_COLOR_GREEN "earned" S_COLOR_WHITE " your team %.1f confidence\n");
+	}
+
+	CG_Printf( message, reason, qualifier, es->otherEntityNum2 / 10.0f );
+}
+
+/*
+==============
 CG_EntityEvent
 
 An entity has an event value
@@ -1372,6 +1465,10 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 
 		case EV_LEV2_ZAP:
 			CG_Level2Zap( es );
+			break;
+
+		case EV_CONFIDENCE:
+			CG_Confidence( es );
 			break;
 
 		default:

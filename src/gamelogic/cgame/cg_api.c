@@ -69,6 +69,11 @@ void NORETURN trap_Error( const char *string )
 	exit(1); // silence warning
 }
 
+void trap_Log( log_event_t *event )
+{
+	syscall( CG_LOG, event );
+}
+
 //02.
 //return Sys_Milliseconds();
 int trap_Milliseconds( void )
@@ -1231,8 +1236,7 @@ qhandle_t trap_RegisterVisTest( void )
 	return syscall( CG_REGISTERVISTEST );
 }
 
-void trap_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust,
-			     float area )
+void trap_AddVisTestToScene( qhandle_t hTest, vec3_t pos, float depthAdjust, float area )
 {
 	syscall( CG_ADDVISTESTTOSCENE, hTest, pos, PASSFLOAT( depthAdjust ),
 		 PASSFLOAT( area ) );
@@ -1248,7 +1252,22 @@ void trap_UnregisterVisTest( qhandle_t hTest )
 	syscall( CG_UNREGISTERVISTEST, hTest );
 }
 
-void trap_SetColorGrading( qhandle_t hShader )
+void trap_SetColorGrading( int slot, qhandle_t hShader )
 {
-	syscall( CG_SETCOLORGRADING, hShader );
+	syscall( CG_SETCOLORGRADING, slot, hShader );
+}
+
+float trap_CM_DistanceToModel( const vec3_t loc, clipHandle_t model )
+{
+	return RETFLOAT( syscall( CG_CM_DISTANCETOMODEL, loc, model ) );
+}
+
+void trap_R_ScissorEnable( qboolean enable )
+{
+    syscall( CG_R_SCISSOR_ENABLE, enable );
+}
+
+void trap_R_ScissorSet( int x, int y, int w, int h )
+{
+    syscall( CG_R_SCISSOR_SET, x, y, w, h );
 }

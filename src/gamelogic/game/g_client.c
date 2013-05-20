@@ -1544,10 +1544,11 @@ void ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const v
 
 		spawnPoint = spawn;
 
-		if ( ent != spawn )
+		if ( spawnPoint->s.eType == ET_BUILDABLE )
 		{
-			//start spawn animation on spawnPoint
 			G_SetBuildableAnim( spawnPoint, BANIM_SPAWN1, qtrue );
+
+			spawnPoint->buildableStatsCount++;
 
 			if ( spawnPoint->buildableTeam == TEAM_ALIENS )
 			{

@@ -2290,6 +2290,7 @@ void GLShader_contrast::SetShaderProgramUniforms( shaderProgram_t *shaderProgram
 
 GLShader_cameraEffects::GLShader_cameraEffects( GLShaderManager *manager ) :
 	GLShader( "cameraEffects", ATTR_POSITION | ATTR_TEXCOORD, manager ),
+	u_ColorModulate( this ),
 	u_ColorTextureMatrix( this ),
 	u_ModelViewProjectionMatrix( this ),
 	u_DeformMagnitude( this )

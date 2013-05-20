@@ -130,14 +130,12 @@ and whenever the server updates any serverinfo flagged cvars
 void CG_ParseServerinfo( void )
 {
 	const char *info;
-	char       *mapname;
 
 	info = CG_ConfigString( CS_SERVERINFO );
 	cgs.timelimit = atoi( Info_ValueForKey( info, "timelimit" ) );
 	cgs.maxclients = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
 	cgs.markDeconstruct = atoi( Info_ValueForKey( info, "g_markDeconstruct" ) );
-	mapname = Info_ValueForKey( info, "mapname" );
-	Com_sprintf( cgs.mapname, sizeof( cgs.mapname ), "maps/%s.bsp", mapname );
+	Q_strncpyz( cgs.mapname, Info_ValueForKey( info, "mapname" ), sizeof(cgs.mapname) );
 }
 
 /*
@@ -165,25 +163,25 @@ Called on load to set the initial values from configure strings
 */
 void CG_SetConfigValues( void )
 {
-	const char *alienStages = CG_ConfigString( CS_ALIEN_STAGES );
-	const char *humanStages = CG_ConfigString( CS_HUMAN_STAGES );
+	const char *alienStage = CG_ConfigString( CS_ALIEN_STAGE );
+	const char *humanStage = CG_ConfigString( CS_HUMAN_STAGE );
 
-	if ( alienStages[ 0 ] )
+	if ( alienStage[ 0 ] )
 	{
-		sscanf( alienStages, "%d %d", &cgs.alienStage, &cgs.alienNextStageThreshold );
+		sscanf( alienStage, "%d", &cgs.alienStage );
 	}
 	else
 	{
-		cgs.alienStage = cgs.alienNextStageThreshold = 0;
+		cgs.alienStage = -1;
 	}
 
-	if ( humanStages[ 0 ] )
+	if ( humanStage[ 0 ] )
 	{
-		sscanf( humanStages, "%d %d", &cgs.humanStage, &cgs.humanNextStageThreshold );
+		sscanf( humanStage, "%d", &cgs.humanStage );
 	}
 	else
 	{
-		cgs.humanStage = cgs.humanNextStageThreshold = 0;
+		cgs.humanStage = -1;
 	}
 
 	cgs.levelStartTime = atoi( CG_ConfigString( CS_LEVEL_START_TIME ) );
@@ -327,13 +325,13 @@ static void CG_ConfigStringModified( void )
 	{
 		CG_ParseWarmup();
 	}
-	else if ( num == CS_ALIEN_STAGES )
+	else if ( num == CS_ALIEN_STAGE )
 	{
 		stage_t oldAlienStage = cgs.alienStage;
 
 		if ( str[ 0 ] )
 		{
-			sscanf( str, "%d %d", &cgs.alienStage, &cgs.alienNextStageThreshold );
+			sscanf( str, "%d", &cgs.alienStage );
 
 			if ( cgs.alienStage != oldAlienStage )
 			{
@@ -342,16 +340,16 @@ static void CG_ConfigStringModified( void )
 		}
 		else
 		{
-			cgs.alienStage = cgs.alienNextStageThreshold = 0;
+			cgs.alienStage = -1;
 		}
 	}
-	else if ( num == CS_HUMAN_STAGES )
+	else if ( num == CS_HUMAN_STAGE )
 	{
 		stage_t oldHumanStage = cgs.humanStage;
 
 		if ( str[ 0 ] )
 		{
-			sscanf( str, "%d %d", &cgs.humanStage, &cgs.humanNextStageThreshold );
+			sscanf( str, "%d", &cgs.humanStage );
 
 			if ( cgs.humanStage != oldHumanStage )
 			{
@@ -360,7 +358,7 @@ static void CG_ConfigStringModified( void )
 		}
 		else
 		{
-			cgs.humanStage = cgs.humanNextStageThreshold = 0;
+			cgs.humanStage = 0;
 		}
 	}
 	else if ( num == CS_LEVEL_START_TIME )
@@ -422,8 +420,7 @@ static void CG_ConfigStringModified( void )
 	}
 	else if ( num >= CS_GRADING_TEXTURES && num < CS_GRADING_TEXTURES + MAX_GRADING_TEXTURES )
 	{
-		cgs.gameGradingTextures[ num - CS_GRADING_TEXTURES ] =
-				trap_R_RegisterShader(CG_Argv(1), RSF_NOMIP | RSF_NOLIGHTSCALE);
+		CG_RegisterGrading( num - CS_GRADING_TEXTURES, str );
 	}
 	else if ( num >= CS_PARTICLE_SYSTEMS && num < CS_PARTICLE_SYSTEMS + MAX_GAME_PARTICLE_SYSTEMS )
 	{

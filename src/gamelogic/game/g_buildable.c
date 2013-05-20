@@ -611,6 +611,65 @@ gentity_t *G_Overmind( void )
 
 /*
 ================
+G_DistanceToBase
+
+Calculates the distance of an entity to its own or the enemy base.
+Returns a huge value if the base is not found.
+================
+*/
+float G_DistanceToBase( gentity_t *self, qboolean ownBase )
+{
+	team_t    team;
+	gentity_t *mainBuilding = NULL;
+
+	if ( self->client )
+	{
+		team = self->client->pers.teamSelection;
+	}
+	else if ( self->s.eType == ET_BUILDABLE )
+	{
+		team = BG_Buildable( self->s.modelindex )->team;
+	}
+	else
+	{
+		return 1E+37;
+	}
+
+	if ( ownBase )
+	{
+		if ( team == TEAM_ALIENS )
+		{
+			mainBuilding = G_Overmind();
+		}
+		else if ( team == TEAM_HUMANS )
+		{
+			mainBuilding = G_Reactor();
+		}
+	}
+	else
+	{
+		if ( team == TEAM_ALIENS )
+		{
+			mainBuilding = G_Reactor();
+		}
+		else if ( team == TEAM_HUMANS )
+		{
+			mainBuilding = G_Overmind();
+		}
+	}
+
+	if ( mainBuilding )
+	{
+		return Distance( self->s.origin, mainBuilding->s.origin );
+	}
+	else
+	{
+		return 1E+37;
+	}
+}
+
+/*
+================
 G_FindCreep
 
 attempt to find creep for self, return qtrue if successful
@@ -1468,6 +1527,7 @@ Think function for the Alien Leech.
 void ALeech_Think( gentity_t *self )
 {
 	qboolean active, lastThinkActive;
+	float    resources;
 
 	AGeneric_Think( self );
 
@@ -1484,7 +1544,9 @@ void ALeech_Think( gentity_t *self )
 
 	if ( active )
 	{
-		G_ModifyBuildPoints( TEAM_ALIENS, self->s.weapon / 60000.0f );
+		resources = self->s.weapon / 60000.0f;
+		G_ModifyBuildPoints( TEAM_ALIENS, resources );
+		self->buildableStatsTotalF += resources;
 	}
 }
 
@@ -1659,6 +1721,11 @@ void ABooster_Touch( gentity_t *self, gentity_t *other, trace_t *trace )
 	if ( other->flags & FL_NOTARGET )
 	{
 		return; // notarget cancels even beneficial effects?
+	}
+
+	if ( level.time - client->boostedTime > BOOST_TIME )
+	{
+		self->buildableStatsCount++;
 	}
 
 	client->ps.stats[ STAT_STATE ] |= SS_BOOSTED;
@@ -2327,146 +2394,185 @@ void HMedistat_Think( gentity_t *self )
 {
 	int       entityList[ MAX_GENTITIES ];
 	vec3_t    mins, maxs;
-	int       i, num;
+	int       playerNum, numPlayers;
 	gentity_t *player;
-	qboolean  occupied = qfalse;
+	gclient_t *client;
+	qboolean  occupied;
 
 	HGeneric_Think( self );
 
-	G_IdlePowerState( self );
+	if ( !self->spawned )
+	{
+		return;
+	}
 
-	//clear target's healing flag
+	// set animation
+	if ( self->powered )
+	{
+		if ( !self->active && self->s.torsoAnim != BANIM_IDLE1 )
+		{
+			G_SetBuildableAnim( self, BANIM_CONSTRUCT2, qtrue );
+			G_SetIdleBuildableAnim( self, BANIM_IDLE1 );
+		}
+	}
+	else if ( self->s.torsoAnim != BANIM_IDLE3 )
+	{
+			G_SetIdleBuildableAnim( self, BANIM_IDLE3 );
+	}
+
+	// clear target's healing flag for now
 	if ( self->target && self->target->client )
 	{
 		self->target->client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_ACTIVE;
 	}
 
-	//make sure we have power
+	// clear target on power loss
 	if ( !self->powered )
 	{
-		if ( self->active )
-		{
-			self->active = qfalse;
-			self->target = NULL;
-		}
+		self->active = qfalse;
+		self->target = NULL;
 
 		self->nextthink = level.time + POWER_REFRESH_TIME;
+
 		return;
 	}
 
-	if ( self->spawned )
+	// get entities standing on top
+	VectorAdd( self->s.origin, self->r.maxs, maxs );
+	VectorAdd( self->s.origin, self->r.mins, mins );
+
+	mins[ 2 ] += ( self->r.mins[ 2 ] + self->r.maxs[ 2 ] );
+	maxs[ 2 ] += 32; // continue to heal jumping players but don't heal jetpack campers
+
+	numPlayers = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
+	occupied = qfalse;
+
+	// mark occupied if still healing a player
+	for ( playerNum = 0; playerNum < numPlayers; playerNum++ )
 	{
-		VectorAdd( self->s.origin, self->r.maxs, maxs );
-		VectorAdd( self->s.origin, self->r.mins, mins );
+		player = &g_entities[ entityList[ playerNum ] ];
+		client = player->client;
 
-		mins[ 2 ] += fabs( self->r.mins[ 2 ] ) + self->r.maxs[ 2 ];
-		maxs[ 2 ] += 60; //player height
-
-		//if active use the healing idle
-		if ( self->active )
+		if ( self->target == player && PM_Live( client->ps.pm_type ) &&
+			 ( player->health < client->ps.stats[ STAT_MAX_HEALTH ] ||
+			   client->ps.stats[ STAT_STAMINA ] < STAMINA_MAX ) )
 		{
+			occupied = qtrue;
+		}
+	}
+
+	if ( !occupied )
+	{
+		self->target = NULL;
+	}
+
+	// clear poison, distribute medikits, find a new target if necessary
+	for ( playerNum = 0; playerNum < numPlayers; playerNum++ )
+	{
+		player = &g_entities[ entityList[ playerNum ] ];
+		client = player->client;
+
+		// only react to humans
+		if ( !client || client->ps.stats[ STAT_TEAM ] != TEAM_HUMANS )
+		{
+			continue;
+		}
+
+		// ignore 'notarget' users
+		if ( player->flags & FL_NOTARGET )
+		{
+			continue;
+		}
+
+		// remove poison
+		if ( client->ps.stats[ STAT_STATE ] & SS_POISONED )
+		{
+			client->ps.stats[ STAT_STATE ] &= ~SS_POISONED;
+		}
+
+		// give medikit to players with full health
+		if ( player->health >= client->ps.stats[ STAT_MAX_HEALTH ] )
+		{
+			player->health = client->ps.stats[ STAT_MAX_HEALTH ];
+
+			if ( !BG_InventoryContainsUpgrade( UP_MEDKIT, player->client->ps.stats ) )
+			{
+				BG_AddUpgradeToInventory( UP_MEDKIT, player->client->ps.stats );
+			}
+		}
+
+		// if not already occupied, check if someone needs healing
+		if ( !occupied )
+		{
+			if ( PM_Live( client->ps.pm_type ) &&
+				 ( player->health < client->ps.stats[ STAT_MAX_HEALTH ] ||
+				   client->ps.stats[ STAT_STAMINA ] < STAMINA_MAX ) )
+			{
+				self->target = player;
+				occupied = qtrue;
+			}
+		}
+	}
+
+	// if we have a target, heal it
+	if ( self->target && self->target->client )
+	{
+		player = self->target;
+		client = player->client;
+		client->ps.stats[ STAT_STATE ] |= SS_HEALING_ACTIVE;
+
+		// start healing animation
+		if ( !self->active )
+		{
+			self->active = qtrue;
+
+			G_SetBuildableAnim( self, BANIM_ATTACK1, qfalse );
 			G_SetIdleBuildableAnim( self, BANIM_IDLE2 );
 		}
 
-		//check if a previous occupier is still here
-		num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
-
-		for ( i = 0; i < num; i++ )
+		// restore stamina
+		if ( client->ps.stats[ STAT_STAMINA ] + STAMINA_MEDISTAT_RESTORE >= STAMINA_MAX )
 		{
-			player = &g_entities[ entityList[ i ] ];
-
-			if ( player->flags & FL_NOTARGET )
-			{
-				continue; // notarget cancels even beneficial effects?
-			}
-
-			//remove poison from everyone, not just the healed player
-			if ( player->client && (player->client->ps.stats[ STAT_STATE ] & SS_POISONED) )
-			{
-				player->client->ps.stats[ STAT_STATE ] &= ~SS_POISONED;
-			}
-
-			if ( self->target == player && player->client &&
-			     player->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS &&
-			     player->health < player->client->ps.stats[ STAT_MAX_HEALTH ] &&
-			     PM_Live( player->client->ps.pm_type ) )
-			{
-				occupied = qtrue;
-				player->client->ps.stats[ STAT_STATE ] |= SS_HEALING_ACTIVE;
-			}
+			client->ps.stats[ STAT_STAMINA ] = STAMINA_MAX;
+		}
+		else
+		{
+			client->ps.stats[ STAT_STAMINA ] += STAMINA_MEDISTAT_RESTORE;
 		}
 
-		if ( !occupied )
+		// restore health
+		if ( player->health < client->ps.stats[ STAT_MAX_HEALTH ] )
 		{
-			self->target = NULL;
+			player->health++;
 
-			//look for something to heal
-			for ( i = 0; i < num; i++ )
+			self->buildableStatsTotal++;
+
+			// fully healed
+			if ( player->health == client->ps.stats[ STAT_MAX_HEALTH ] )
 			{
-				player = &g_entities[ entityList[ i ] ];
-
-				if ( player->flags & FL_NOTARGET )
+				// clear rewards array
+				for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
 				{
-					continue; // notarget cancels even beneficial effects?
+					player->credits[ playerNum ] = 0;
 				}
 
-				if ( player->client && player->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+				// give medikit
+				if ( !BG_InventoryContainsUpgrade( UP_MEDKIT, client->ps.stats ) )
 				{
-					if ( ( player->health < player->client->ps.stats[ STAT_MAX_HEALTH ] ||
-					       player->client->ps.stats[ STAT_STAMINA ] < STAMINA_MAX ) &&
-					     PM_Live( player->client->ps.pm_type ) )
-					{
-						self->target = player;
-
-						//start the heal anim
-						if ( !self->active )
-						{
-							G_SetBuildableAnim( self, BANIM_ATTACK1, qfalse );
-							self->active = qtrue;
-							player->client->ps.stats[ STAT_STATE ] |= SS_HEALING_ACTIVE;
-						}
-					}
-					else if ( !BG_InventoryContainsUpgrade( UP_MEDKIT, player->client->ps.stats ) )
-					{
-						BG_AddUpgradeToInventory( UP_MEDKIT, player->client->ps.stats );
-					}
+					BG_AddUpgradeToInventory( UP_MEDKIT, client->ps.stats );
 				}
+
+				self->buildableStatsCount++;
 			}
 		}
+	}
+	// if we lost our target, replay construction animation
+	else if ( self->active )
+	{
+		self->active = qfalse;
 
-		//nothing left to heal so go back to idling
-		if ( !self->target && self->active )
-		{
-			G_SetBuildableAnim( self, BANIM_CONSTRUCT2, qtrue );
-			G_SetIdleBuildableAnim( self, BANIM_IDLE1 );
-
-			self->active = qfalse;
-		}
-		else if ( self->target && self->target->client ) //heal!
-		{
-			if ( self->target->client->ps.stats[ STAT_STAMINA ] <  STAMINA_MAX )
-			{
-				self->target->client->ps.stats[ STAT_STAMINA ] += STAMINA_MEDISTAT_RESTORE;
-			}
-
-			if ( self->target->client->ps.stats[ STAT_STAMINA ] > STAMINA_MAX )
-			{
-				self->target->client->ps.stats[ STAT_STAMINA ] = STAMINA_MAX;
-			}
-
-			self->target->health++;
-
-			//if they're completely healed, give them a medkit
-			if ( self->target->health >= self->target->client->ps.stats[ STAT_MAX_HEALTH ] )
-			{
-				self->target->health = self->target->client->ps.stats[ STAT_MAX_HEALTH ];
-
-				if ( !BG_InventoryContainsUpgrade( UP_MEDKIT, self->target->client->ps.stats ) )
-				{
-					BG_AddUpgradeToInventory( UP_MEDKIT, self->target->client->ps.stats );
-				}
-			}
-		}
+		G_SetBuildableAnim( self, BANIM_CONSTRUCT2, qtrue );
+		G_SetIdleBuildableAnim( self, BANIM_IDLE1 );
 	}
 }
 
@@ -2744,7 +2850,7 @@ void HMGTurret_Think( gentity_t *self )
 	if ( !HMGTurret_CheckTarget( self, self->target, qtrue ) )
 	{
 		self->active = qfalse;
-		self->activeAtTime = -1;
+		self->nextAct = 0;
 		HMGTurret_FindEnemy( self );
 	}
 
@@ -2760,7 +2866,7 @@ void HMGTurret_Think( gentity_t *self )
 	if ( !HMGTurret_TrackEnemy( self ) )
 	{
 		self->active = qfalse;
-		self->activeAtTime = -1;
+		self->nextAct = 0;
 		return;
 	}
 
@@ -2768,13 +2874,12 @@ void HMGTurret_Think( gentity_t *self )
 	if ( !self->active && self->timestamp < level.time )
 	{
 		self->active = qtrue;
-
-		self->activeAtTime = level.time + MGTURRET_SPINUP_TIME;
+		self->nextAct = level.time + MGTURRET_SPINUP_TIME;
 		G_AddEvent( self, EV_MGTURRET_SPINUP, 0 );
 	}
 
 	// Not firing or haven't spun up yet
-	if ( !self->active || self->activeAtTime > level.time )
+	if ( !self->nextAct || self->nextAct > level.time )
 	{
 		return;
 	}
@@ -2876,6 +2981,7 @@ Think function for the Human Drill.
 void HDrill_Think( gentity_t *self )
 {
 	qboolean active, lastThinkActive;
+	float    resources;
 
 	HGeneric_Think( self );
 
@@ -2892,7 +2998,9 @@ void HDrill_Think( gentity_t *self )
 
 	if ( active )
 	{
-		G_ModifyBuildPoints( TEAM_HUMANS, self->s.weapon / 60000.0f );
+		resources = self->s.weapon / 60000.0f;
+		G_ModifyBuildPoints( TEAM_HUMANS, resources );
+		self->buildableStatsTotalF += resources;
 	}
 
 	G_IdlePowerState( self );
@@ -3033,6 +3141,61 @@ void G_BuildableTouchTriggers( gentity_t *ent )
 
 /*
 ===============
+G_BuildingConfidenceReward
+
+Calculates the amount of confidence awarded for building a structure.
+Stores the reward with the buildable so it can be reverted on deconstruction.
+===============
+*/
+#define BCR_NEIGHBOR_RANGE      500.0f
+#define BCR_BASE_MODIFIER       0.8f
+#define BCR_FACTOR_PER_NEIGHBOR 0.9f
+
+float G_BuildingConfidenceReward( gentity_t *self )
+{
+	int             neighborNum, numNeighbors, neighbors[ MAX_GENTITIES ];
+	vec3_t          range, mins, maxs;
+	gentity_t       *neighbor;
+	float           distance, reward;
+
+	if ( !self || self->s.eType != ET_BUILDABLE )
+	{
+		return 0.0f;
+	}
+
+	reward = BG_Buildable( self->s.modelindex )->value * BCR_BASE_MODIFIER;
+
+	range[ 0 ] = range[ 1 ] = range[ 2 ] = BCR_NEIGHBOR_RANGE;
+	VectorAdd( self->s.origin, range, maxs );
+	VectorSubtract( self->s.origin, range, mins );
+	numNeighbors = trap_EntitiesInBox( mins, maxs, neighbors, MAX_GENTITIES );
+
+	for ( neighborNum = 0; neighborNum < numNeighbors; neighborNum++ )
+	{
+		neighbor = &g_entities[ neighbors[ neighborNum ] ];
+
+		if ( neighbor->s.eType == ET_BUILDABLE && neighbor->buildableTeam == self->buildableTeam &&
+			 neighbor != self && neighbor->spawned && neighbor->powered && neighbor->health > 0 &&
+		     neighbor->s.modelindex != BA_H_REPEATER )
+		{
+			distance = Distance( self->s.origin, neighbor->s.origin );
+
+			if ( distance > BCR_NEIGHBOR_RANGE )
+			{
+				continue;
+			}
+
+			reward *= BCR_FACTOR_PER_NEIGHBOR;
+		}
+	}
+
+	self->confidenceEarned = reward;
+
+	return reward;
+}
+
+/*
+===============
 G_BuildableThink
 
 General think function for buildables
@@ -3040,9 +3203,10 @@ General think function for buildables
 */
 void G_BuildableThink( gentity_t *ent, int msec )
 {
-	int maxHealth = BG_Buildable( ent->s.modelindex )->health;
-	int regenRate = BG_Buildable( ent->s.modelindex )->regenRate;
-	int buildTime = BG_Buildable( ent->s.modelindex )->buildTime;
+	int   maxHealth = BG_Buildable( ent->s.modelindex )->health;
+	int   regenRate = BG_Buildable( ent->s.modelindex )->regenRate;
+	int   buildTime = BG_Buildable( ent->s.modelindex )->buildTime;
+	int   reason;
 
 	//toggle spawned flag for buildables
 	if ( !ent->spawned && ent->health > 0 && !level.pausedTime )
@@ -3056,6 +3220,30 @@ void G_BuildableThink( gentity_t *ent, int msec )
 			{
 				G_TeamCommand( TEAM_ALIENS, "cp \"The Overmind has awakened!\"" );
 			}
+
+			// Award confidence
+			switch ( ent->s.modelindex )
+			{
+				case BA_A_OVERMIND:
+				case BA_H_REACTOR:
+					reason = CONF_REAS_BUILD_CRUCIAL;
+					break;
+
+				case BA_A_ACIDTUBE:
+				case BA_A_TRAPPER:
+				case BA_A_HIVE:
+				case BA_H_MGTURRET:
+				case BA_H_TESLAGEN:
+					reason = CONF_REAS_BUILD_AGGRESSIVE;
+					break;
+
+				default:
+					reason = CONF_REAS_BUILD_SUPPORT;
+			}
+
+			G_AddConfidence( BG_Buildable( ent->s.modelindex )->team, CONFIDENCE_BUILDING,
+			                 reason, CONF_QUAL_NONE, G_BuildingConfidenceReward( ent ),
+			                 &g_entities[ ent->builtBy->slot ] );
 		}
 	}
 
@@ -3387,12 +3575,53 @@ void G_ClearDeconMarks( void )
 
 /*
 ===============
+G_Deconstruct
+===============
+*/
+void G_Deconstruct( gentity_t *self, gentity_t *deconner )
+{
+	float confidence;
+	int   refund;
+	const buildableAttributes_t *attr;
+
+	if ( !self || self->s.eType != ET_BUILDABLE )
+	{
+		return;
+	}
+
+	attr = BG_Buildable( self->s.modelindex );
+
+	// return BP
+	refund = attr->buildPoints * ( self->health / ( float )attr->health );
+	G_ModifyBuildPoints( self->buildableTeam, refund );
+
+	// remove confidence
+	if ( self->confidenceEarned )
+	{
+		confidence = self->confidenceEarned;
+	}
+	else
+	{
+		confidence = G_BuildingConfidenceReward( self );
+	}
+
+	G_AddConfidence( self->buildableTeam, CONFIDENCE_BUILDING, CONF_REAS_DECON, CONF_QUAL_NONE,
+	                -confidence, deconner );
+
+	// deconstruct
+	G_Damage( self, NULL, deconner, NULL, NULL, self->health, 0, MOD_REPLACE );
+	G_FreeEntity( self );
+}
+
+/*
+===============
 G_FreeMarkedBuildables
 
 Free up build points for a team by deconstructing marked buildables
+Returns the number of buildables removed.
 ===============
 */
-void G_FreeMarkedBuildables( gentity_t *deconner, char *readable, int rsize,
+int G_FreeMarkedBuildables( gentity_t *deconner, char *readable, int rsize,
                              char *nums, int nsize )
 {
 	int       i;
@@ -3401,8 +3630,8 @@ void G_FreeMarkedBuildables( gentity_t *deconner, char *readable, int rsize,
 	int       totalListItems = 0;
 	gentity_t *ent;
 	int       removalCounts[ BA_NUM_BUILDABLES ] = { 0 };
-	int       refund;
 	const buildableAttributes_t *attr;
+	int       numRemoved = 0;
 
 	if ( readable && rsize )
 	{
@@ -3416,7 +3645,7 @@ void G_FreeMarkedBuildables( gentity_t *deconner, char *readable, int rsize,
 
 	if ( DECON_MARK_CHECK( INSTANT ) && !DECON_OPTION_CHECK( PROTECT ) )
 	{
-		return; // Not enabled, can't deconstruct anything
+		return 0; // Not enabled, can't deconstruct anything
 	}
 
 	for ( i = 0; i < level.numBuildablesForRemoval; i++ )
@@ -3424,16 +3653,13 @@ void G_FreeMarkedBuildables( gentity_t *deconner, char *readable, int rsize,
 		ent = level.markedBuildables[ i ];
 		attr = BG_Buildable( ent->s.modelindex );
 		bNum = attr->number;
-		refund = attr->buildPoints * ( ent->health / (float)attr->health );
 
 		if ( removalCounts[ bNum ] == 0 )
 		{
 			totalListItems++;
 		}
 
-		G_ModifyBuildPoints( ent->buildableTeam, refund );
-
-		G_Damage( ent, NULL, deconner, NULL, NULL, ent->health, 0, MOD_REPLACE );
+		G_Deconstruct( ent, deconner );
 
 		removalCounts[ bNum ]++;
 
@@ -3442,12 +3668,12 @@ void G_FreeMarkedBuildables( gentity_t *deconner, char *readable, int rsize,
 			Q_strcat( nums, nsize, va( " %ld", ( long )( ent - g_entities ) ) );
 		}
 
-		G_FreeEntity( ent );
+		numRemoved++;
 	}
 
 	if ( !readable )
 	{
-		return;
+		return numRemoved;
 	}
 
 	for ( i = 0; i < BA_NUM_BUILDABLES; i++ )
@@ -3477,6 +3703,8 @@ void G_FreeMarkedBuildables( gentity_t *deconner, char *readable, int rsize,
 			listItems++;
 		}
 	}
+
+	return numRemoved;
 }
 
 /*
@@ -4043,12 +4271,13 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 		log = NULL;
 	}
 
+	built = G_NewEntity();
+
 	// Free existing buildables
-	G_FreeMarkedBuildables( builder, readable, sizeof( readable ),
-	                        buildnums, sizeof( buildnums ) );
+	built->replacement = ( G_FreeMarkedBuildables( builder, readable, sizeof( readable ),
+	                                               buildnums, sizeof( buildnums ) ) > 0 );
 
 	// Spawn the buildable
-	built = G_NewEntity();
 	built->s.eType = ET_BUILDABLE;
 	built->r.svFlags = SVF_CLIENTS_IN_RANGE;
 	built->r.clientRadius = MAX( HELMET_RANGE, ALIENSENSE_RANGE );
@@ -4829,6 +5058,60 @@ void G_BaseSelfDestruct( team_t team )
 
 /*
 ============
+G_Armageddon
+
+Destroys a part of all defensive buildings.
+strength in ]0,1] is the destruction quota.
+============
+*/
+void G_Armageddon( float strength )
+{
+	int       entNum;
+	gentity_t *ent;
+
+	if ( strength <= 0.0f )
+	{
+		return;
+	}
+
+	for ( entNum = MAX_CLIENTS; entNum < level.num_entities; entNum++ )
+	{
+		ent = &level.gentities[ entNum ];
+
+		// check for alive buildable
+		if ( ent->s.eType != ET_BUILDABLE || ent->health <= 0 )
+		{
+			continue;
+		}
+
+		// check for defensive building (includes DCC)
+		switch ( ent->s.modelindex )
+		{
+			case BA_A_ACIDTUBE:
+			case BA_A_TRAPPER:
+			case BA_A_HIVE:
+			case BA_A_BARRICADE:
+			case BA_H_MGTURRET:
+			case BA_H_TESLAGEN:
+			case BA_H_DCC:
+				break;
+
+			default:
+				continue;
+		}
+
+		// russian roulette
+		if ( rand() / ( float )RAND_MAX > strength )
+		{
+			continue;
+		}
+
+		G_Damage( ent, NULL, NULL, NULL, NULL, 10000, 0, MOD_SUICIDE );
+	}
+}
+
+/*
+============
 build log
 ============
 */
@@ -4964,6 +5247,7 @@ void G_BuildLogRevert( int id )
 
 						// Give back resources
 						G_ModifyBuildPoints( ent->buildableTeam, BG_Buildable( ent->s.modelindex )->buildPoints );
+						G_AddConfidence( ent->buildableTeam, CONFIDENCE_BUILDING, CONF_REAS_DECON, CONF_QUAL_NONE, -ent->confidenceEarned, NULL );
 						G_FreeEntity( ent );
 						break;
 					}
@@ -5058,5 +5342,50 @@ void G_ModifyBuildPoints( team_t team, float amount )
 	else
 	{
 		*bp = newbp;
+	}
+}
+
+/*
+=================
+G_GetBuildableValueBP
+
+Calculates the value of buildables (in build points) for both teams.
+=================
+*/
+void G_GetBuildableResourceValue( int *alienValue, int *humanValue )
+{
+	int       entityNum, *value;
+	gentity_t *ent;
+	const buildableAttributes_t *attr;
+
+	*alienValue = 0;
+	*humanValue = 0;
+
+	for ( entityNum = MAX_CLIENTS; entityNum < level.num_entities; entityNum++ )
+	{
+		ent = &g_entities[ entityNum ];
+
+		if ( ent->s.eType != ET_BUILDABLE )
+		{
+			continue;
+		}
+
+		switch ( ent->buildableTeam )
+		{
+			case TEAM_ALIENS:
+				value = alienValue;
+				break;
+
+			case TEAM_HUMANS:
+				value = humanValue;
+				break;
+
+			default:
+				continue;
+		}
+
+		attr = BG_Buildable( ent->s.modelindex );
+
+		*value += ( attr->buildPoints * MAX( 0, ent->health ) ) / attr->health;
 	}
 }

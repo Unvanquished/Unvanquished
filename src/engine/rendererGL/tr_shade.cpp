@@ -3537,7 +3537,11 @@ void Tess_StageIteratorGeneric()
 
 			case ST_HEATHAZEMAP:
 				{
-					Render_heatHaze( stage );
+					if ( r_heatHaze->integer )
+					{
+						Render_heatHaze( stage );
+					}
+
 					break;
 				}
 

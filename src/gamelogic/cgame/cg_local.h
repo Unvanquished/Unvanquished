@@ -1347,8 +1347,6 @@ typedef struct
 
 	int      alienStage;
 	int      humanStage;
-	int      alienNextStageThreshold;
-	int      humanNextStageThreshold;
 
 	//
 	// locally derived information from gamestate
@@ -1356,6 +1354,8 @@ typedef struct
 	qhandle_t    gameModels[ MAX_MODELS ];
 	qhandle_t    gameShaders[ MAX_GAME_SHADERS ];
 	qhandle_t    gameGradingTextures[ MAX_GRADING_TEXTURES ];
+	qhandle_t    gameGradingModels[ MAX_GRADING_TEXTURES ];
+	float        gameGradingDistances[ MAX_GRADING_TEXTURES ];
 	qhandle_t    gameParticleSystems[ MAX_GAME_PARTICLE_SYSTEMS ];
 	sfxHandle_t  gameSounds[ MAX_SOUNDS ];
 
@@ -1604,6 +1604,7 @@ qboolean   CG_FileExists( const char *filename );
 void       CG_RemoveNotifyLine( void );
 void       CG_AddNotifyText( void );
 void       CG_UpdateBuildableRangeMarkerMask( void );
+void       CG_RegisterGrading( int slot, const char *str );
 
 //
 // cg_view.c
@@ -1635,6 +1636,8 @@ void     CG_DrawFadePic( float x, float y, float width, float height, vec4_t fco
                          vec4_t tcolor, float amount, qhandle_t hShader );
 void     CG_SetClipRegion( float x, float y, float w, float h );
 void     CG_ClearClipRegion( void );
+void     CG_EnableScissor( qboolean enable );
+void     CG_SetScissor( int x, int y, int w, int h );
 
 int      CG_DrawStrlen( const char *str );
 

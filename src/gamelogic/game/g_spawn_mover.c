@@ -35,6 +35,8 @@ Maryland 20850 USA.
 #include "g_local.h"
 #include "g_spawn.h"
 
+#define DEFAULT_FUNC_TRAIN_SPEED 100
+
 /*
 ===============================================================================
 
@@ -1159,7 +1161,7 @@ void reset_moverspeed( gentity_t *self, float fallbackSpeed )
 	if(!fallbackSpeed)
 		G_Error("No default speed was supplied to reset_moverspeed for entity #%i of type %s.\n", self->s.number, self->classname);
 
-	reset_floatField(&self->speed, self->config.speed, self->eclass->config.speed, fallbackSpeed, qtrue);
+	G_ResetFloatField(&self->speed, qtrue, self->config.speed, self->eclass->config.speed, fallbackSpeed);
 
 	// calculate time to reach second position from speed
 	VectorSubtract( self->activatedPosition, self->restingPosition, move );
@@ -1230,7 +1232,6 @@ so the movement delta can be calculated
 */
 void InitMover( gentity_t *ent )
 {
-	char     *sound;
 	char     *groupName;
 
 	// if the "model2" key is set, use a separate model
@@ -1276,7 +1277,7 @@ void reset_rotatorspeed( gentity_t *self, float fallbackSpeed )
 	VectorSubtract( self->activatedPosition, self->restingPosition, move );
 	angle = VectorLength( move );
 
-	reset_floatField(&self->speed, self->config.speed, self->eclass->config.speed, fallbackSpeed, qfalse);
+	G_ResetFloatField(&self->speed, qtrue, self->config.speed, self->eclass->config.speed, fallbackSpeed);
 
 	VectorScale( move, self->speed, self->s.apos.trDelta );
 	self->s.apos.trDuration = angle * 1000 / self->speed;
@@ -1297,7 +1298,6 @@ so the movement delta can be calculated
 */
 void InitRotator( gentity_t *ent )
 {
-	char     *sound;
 	char     *groupName;
 
 	// if the "model2" key is set, use a separate model
@@ -1618,8 +1618,8 @@ void Think_SpawnNewDoorTrigger( gentity_t *self )
 
 void func_door_reset( gentity_t *self )
 {
-	reset_intField(&self->health, self->config.health, self->eclass->config.health, 0, qtrue);
-	reset_intField(&self->damage, self->config.damage, self->eclass->config.damage, 2, qtrue);
+	G_ResetIntField(&self->health, qtrue, self->config.health, self->eclass->config.health, 0);
+	G_ResetIntField(&self->damage, qtrue, self->config.damage, self->eclass->config.damage, 2);
 
 	self->takedamage = !!self->health;
 
@@ -1638,7 +1638,6 @@ void SP_func_door( gentity_t *self )
 	float  distance;
 	vec3_t size;
 	float  lip;
-	char   *s;
 
 	if( !self->sound1to2 )
 	{
@@ -1720,7 +1719,7 @@ void SP_func_door( gentity_t *self )
 
 void func_door_rotating_reset( gentity_t *self )
 {
-	reset_intField(&self->health, self->config.health, self->eclass->config.health, 0, qtrue);
+	G_ResetIntField(&self->health, qtrue, self->config.health, self->eclass->config.health, 0);
 
 	self->takedamage = !!self->health;
 
@@ -1729,8 +1728,6 @@ void func_door_rotating_reset( gentity_t *self )
 
 void SP_func_door_rotating( gentity_t *self )
 {
-	char *s;
-
 	if( !self->sound1to2 )
 	{
 		self->sound1to2 = G_SoundIndex( "sound/movers/doors/dr1_strt.wav" );
@@ -1846,15 +1843,14 @@ void SP_func_door_rotating( gentity_t *self )
 
 void func_door_model_reset( gentity_t *self )
 {
-	reset_floatField(&self->speed, self->config.speed, self->eclass->config.speed, 200, qtrue);
-	reset_intField(&self->health, self->config.health, self->eclass->config.health, 0, qtrue);
+	G_ResetFloatField(&self->speed, qtrue, self->config.speed, self->eclass->config.speed, 200);
+	G_ResetIntField(&self->health, qtrue, self->config.health, self->eclass->config.health, 0);
 
 	self->takedamage = !!self->health;
 }
 
 void SP_func_door_model( gentity_t *self )
 {
-	char      *s;
 	char      *sound;
 	gentity_t *clipBrush;
 
@@ -2071,7 +2067,6 @@ void SpawnPlatSensor( gentity_t *self )
 void SP_func_plat( gentity_t *self )
 {
 	float lip, height;
-	char  *s;
 
 	if( !self->sound1to2 )
 	{
@@ -2094,7 +2089,7 @@ void SP_func_plat( gentity_t *self )
 
 	G_SpawnFloat( "lip", "8", &lip );
 
-	reset_intField(&self->damage, self->config.damage, self->eclass->config.damage, 2, qtrue);
+	G_ResetIntField(&self->damage, qtrue, self->config.damage, self->eclass->config.damage, 2);
 
 	if(!self->config.wait.time)
 		self->config.wait.time = 1.0f;
@@ -2161,7 +2156,7 @@ void func_button_use( gentity_t *self, gentity_t *caller, gentity_t *activator )
 
 void func_button_reset( gentity_t *self )
 {
-	reset_intField(&self->health, self->config.health, self->eclass->config.health, 0, qtrue);
+	G_ResetIntField(&self->health, qtrue, self->config.health, self->eclass->config.health, 0);
 
 	self->takedamage = !!self->health;
 
@@ -2174,7 +2169,6 @@ void SP_func_button( gentity_t *self )
 	float  distance;
 	vec3_t size;
 	float  lip;
-	char   *s;
 
 	if( !self->sound1to2 )
 	{
@@ -2269,7 +2263,10 @@ void func_train_reached( gentity_t *self )
 	VectorCopy( next->nextPathSegment->s.origin, self->activatedPosition );
 
 	// if the path_corner has a speed, use that otherwise use the train's speed
-	reset_floatField( &self->speed, next->config.speed, self->config.speed, 1, qtrue );
+	G_ResetFloatField( &self->speed, qtrue, next->config.speed, next->eclass->config.speed, 0);
+	if(!self->speed) {
+		G_ResetFloatField(&self->speed, qtrue, self->config.speed, self->eclass->config.speed, DEFAULT_FUNC_TRAIN_SPEED);
+	}
 
 	// calculate duration
 	VectorSubtract( self->activatedPosition, self->restingPosition, move );
@@ -2491,12 +2488,12 @@ void SP_func_train( gentity_t *self )
 	}
 	else
 	{
-		reset_intField(&self->damage, self->config.damage, self->eclass->config.damage, 2, qtrue);
+		G_ResetIntField(&self->damage, qtrue, self->config.damage, self->eclass->config.damage, 2);
 	}
 
 	trap_SetBrushModel( self, self->model );
 	InitMover( self );
-	reset_moverspeed( self, 100 );
+	reset_moverspeed( self, DEFAULT_FUNC_TRAIN_SPEED );
 
 	self->reached = func_train_reached;
 	self->act = func_train_act;
@@ -2518,11 +2515,23 @@ STATIC
 
 void SP_func_static( gentity_t *self )
 {
+	char *gradingTexture;
+	float gradingDistance;
+
 	trap_SetBrushModel( self, self->model );
 	InitMover( self );
 	reset_moverspeed( self, 100 ); //TODO do we need this at all?
 	VectorCopy( self->s.origin, self->s.pos.trBase );
 	VectorCopy( self->s.origin, self->r.currentOrigin );
+
+	// check if this func_static has a colorgrading texture
+	if( self->model[0] == '*' &&
+	    G_SpawnString( "gradingTexture", "", &gradingTexture ) ) {
+		G_SpawnFloat( "gradingDistance", "250", &gradingDistance );
+
+		G_GradingTextureIndex( va( "%s %f %s", self->model + 1,
+					   gradingDistance, gradingTexture ) );
+	}
 }
 
 void SP_func_dynamic( gentity_t *self )
@@ -2549,7 +2558,7 @@ ROTATING
 
 void SP_func_rotating( gentity_t *self )
 {
-	reset_floatField(&self->speed, self->config.speed, self->eclass->config.speed, 400, qfalse);
+	G_ResetFloatField(&self->speed, qfalse, self->config.speed, self->eclass->config.speed, 400);
 
 	// set the axis of rotation
 	self->s.apos.trType = TR_LINEAR;
@@ -2567,7 +2576,7 @@ void SP_func_rotating( gentity_t *self )
 		self->s.apos.trDelta[ 1 ] = self->config.speed;
 	}
 
-	reset_intField(&self->damage, self->config.damage, self->eclass->config.damage, 2, qtrue);
+	G_ResetIntField(&self->damage, qtrue, self->config.damage, self->eclass->config.damage, 2);
 
 	trap_SetBrushModel( self, self->model );
 	InitMover( self );
@@ -2601,7 +2610,7 @@ void SP_func_bobbing( gentity_t *self )
 	G_SpawnFloat( "height", "32", &height );
 	G_SpawnFloat( "phase", "0", &phase );
 
-	reset_intField(&self->damage, self->config.damage, self->eclass->config.damage, 2, qtrue);
+	G_ResetIntField(&self->damage, qtrue, self->config.damage, self->eclass->config.damage, 2);
 
 	trap_SetBrushModel( self, self->model );
 	InitMover( self );
@@ -2644,7 +2653,7 @@ void SP_func_pendulum( gentity_t *self )
 
 	G_SpawnFloat( "phase", "0", &phase );
 
-	reset_intField(&self->damage, self->config.damage, self->eclass->config.damage, 2, qtrue);
+	G_ResetIntField(&self->damage, qtrue, self->config.damage, self->eclass->config.damage, 2);
 
 	trap_SetBrushModel( self, self->model );
 
@@ -2730,7 +2739,7 @@ void func_destructable_die( gentity_t *self, gentity_t *inflictor, gentity_t *at
 
 void func_destructable_reset( gentity_t *self )
 {
-	reset_intField(&self->health, self->config.health, self->eclass->config.health, 100, qtrue);
+	G_ResetIntField(&self->health, qtrue, self->config.health, self->eclass->config.health, 100);
 	self->takedamage = qtrue;
 }
 

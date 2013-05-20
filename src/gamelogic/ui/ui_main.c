@@ -1839,9 +1839,7 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 			break;
 
 		case INFOTYPE_CLASS:
-			value = ( BG_ClassCanEvolveFromTo( class, item->v.pclass, credits,
-			                                   UI_GetCurrentAlienStage(), 0 ) +
-			          ALIEN_CREDITS_PER_KILL - 1 ) / ALIEN_CREDITS_PER_KILL;
+			value = BG_ClassCanEvolveFromTo( class, item->v.pclass, credits, UI_GetCurrentAlienStage() );
 
 			if ( value < 1 )
 			{
@@ -1851,10 +1849,11 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 			}
 			else
 			{
-				s = va( _("%s\n\n%s\n\nFrags: %d"),
+				s = va( "%s\n\n%s\n\n%s %d",
 				        _( BG_ClassModelConfig( item->v.pclass )->humanName ),
 				        _( BG_Class( item->v.pclass )->info ),
-				        value );
+				        _( "Frags:" ),
+				        value / CREDITS_PER_EVO );
 			}
 
 			break;
@@ -1864,15 +1863,17 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 
 			if ( value == 0 )
 			{
-				s = va( _("%s\n\n%s\n\nCredits: Free"),
+				s = va( "%s\n\n%s\n\n%s",
 				        _( BG_Weapon( item->v.weapon )->humanName ),
-				        _( BG_Weapon( item->v.weapon )->info ) );
+				        _( BG_Weapon( item->v.weapon )->info ),
+				        _("Credits: Free"));
 			}
 			else
 			{
-				s = va( _("%s\n\n%s\n\nCredits: %d"),
+				s = va( "%s\n\n%s\n\n%s %d",
 				        _( BG_Weapon( item->v.weapon )->humanName ),
 				        _( BG_Weapon( item->v.weapon )->info ),
+				        _("Credits:"),
 				        value );
 			}
 
@@ -1883,15 +1884,17 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 
 			if ( value == 0 )
 			{
-				s = va( _("%s\n\n%s\n\nCredits: Free"),
+				s = va( "%s\n\n%s\n\n%s",
 				        _( BG_Upgrade( item->v.upgrade )->humanName ),
-				        _( BG_Upgrade( item->v.upgrade )->info ) );
+				        _( BG_Upgrade( item->v.upgrade )->info ),
+				        _("Credits: Free"));
 			}
 			else
 			{
-				s = va( _("%s\n\n%s\n\nCredits: %d"),
+				s = va( "%s\n\n%s\n\n%s %d",
 				        _( BG_Upgrade( item->v.upgrade )->humanName ),
 				        _( BG_Upgrade( item->v.upgrade )->info ),
+				        _("Credits:"),
 				        value );
 			}
 
@@ -2810,7 +2813,7 @@ static void UI_LoadAlienUpgrades( void )
 
 	for ( i = PCL_NONE + 1; i < PCL_NUM_CLASSES; i++ )
 	{
-		if ( BG_ClassCanEvolveFromTo( class, i, credits, stage, 0 ) >= 0 )
+		if ( BG_ClassCanEvolveFromTo( class, i, credits, stage ) >= 0 )
 		{
 			uiInfo.alienUpgradeList[ j ].text = BG_ClassModelConfig( i )->humanName;
 			uiInfo.alienUpgradeList[ j ].cmd =
@@ -3223,6 +3226,7 @@ static void UI_Update( const char *name )
 				trap_Cvar_SetValue( "cg_motionblur", 0.05 );
 				trap_Cvar_SetValue( "r_ext_multisample", 8 );
 				trap_Cvar_SetValue( "r_ext_texture_filter_anisotropic", 8 );
+				trap_Cvar_SetValue( "r_heathaze", 1 );
 				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_LINEAR" );
 				break;
 
@@ -3240,6 +3244,7 @@ static void UI_Update( const char *name )
 				trap_Cvar_SetValue( "cg_motionblur", 0 );
 				trap_Cvar_SetValue( "r_ext_multisample", 4 );
 				trap_Cvar_SetValue( "r_ext_texture_filter_anisotropic", 4 );
+				trap_Cvar_SetValue( "r_heathaze", 0 );
 				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_LINEAR" );
 				break;
 
@@ -3257,6 +3262,7 @@ static void UI_Update( const char *name )
 				trap_Cvar_SetValue( "cg_motionblur", 0 );
 				trap_Cvar_SetValue( "r_ext_multisample", 2 );
 				trap_Cvar_SetValue( "r_ext_texture_filter_anisotropic", 2 );
+				trap_Cvar_SetValue( "r_heathaze", 0 );
 				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_NEAREST" );
 				break;
 
@@ -3274,6 +3280,7 @@ static void UI_Update( const char *name )
 				trap_Cvar_SetValue( "cg_motionblur", 0 );
 				trap_Cvar_SetValue( "r_ext_multisample", 0 );
 				trap_Cvar_SetValue( "r_ext_texture_filter_anisotropic", 0 );
+				trap_Cvar_SetValue( "r_heathaze", 0 );
 				trap_Cvar_Set( "r_texturemode", "GL_LINEAR_MIPMAP_NEAREST" );
 				break;
 		}

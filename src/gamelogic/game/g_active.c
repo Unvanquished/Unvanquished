@@ -670,6 +670,74 @@ qboolean ClientInactivityTimer( gentity_t *ent )
 	return qtrue;
 }
 
+static void G_ReplenishHumanHealth( gentity_t *self )
+{
+	gclient_t *client;
+	int       remainingStartupTime, clientNum;
+
+	if ( !self )
+	{
+		return;
+	}
+
+	client = self->client;
+
+	if ( !client || client->pers.teamSelection != TEAM_HUMANS )
+	{
+		return;
+	}
+
+	// check if medikit is active
+	if ( !( client->ps.stats[ STAT_STATE ] & SS_HEALING_2X ) )
+	{
+		return;
+	}
+
+	// stop if client is fully healed
+	if ( self->health >= client->ps.stats[ STAT_MAX_HEALTH ] )
+	{
+		self->health = client->ps.stats[ STAT_MAX_HEALTH ];
+		client->medKitHealthToRestore = 0;
+		client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_2X;
+
+		// clear rewards array
+		for ( clientNum = 0; clientNum < level.maxclients; clientNum++ )
+		{
+			self->credits[ clientNum ] = 0;
+		}
+
+		return;
+	}
+
+	// stop if client is dead or medikit is depleted
+	if ( client->medKitHealthToRestore <= 0 || client->ps.pm_type == PM_DEAD )
+	{
+		client->medKitHealthToRestore = 0;
+		client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_2X;
+
+		return;
+	}
+
+	remainingStartupTime = MEDKIT_STARTUP_TIME - ( level.time - client->lastMedKitTime );
+
+	// increase heal rate during startup
+	if ( remainingStartupTime > 0 )
+	{
+		if ( level.time < client->medKitIncrementTime )
+		{
+			return;
+		}
+		else
+		{
+			client->medKitIncrementTime = level.time + ( remainingStartupTime / MEDKIT_STARTUP_SPEED );
+		}
+	}
+
+	// heal
+	client->medKitHealthToRestore--;
+	self->health++;
+}
+
 /*
 ==================
 ClientTimerActions
@@ -830,47 +898,8 @@ void ClientTimerActions( gentity_t *ent, int msec )
 				break;
 		}
 
-		if ( ent->client->pers.teamSelection == TEAM_HUMANS &&
-		     ( client->ps.stats[ STAT_STATE ] & SS_HEALING_2X ) )
-		{
-			int remainingStartupTime = MEDKIT_STARTUP_TIME - ( level.time - client->lastMedKitTime );
-
-			if ( remainingStartupTime < 0 )
-			{
-				if ( ent->health < ent->client->ps.stats[ STAT_MAX_HEALTH ] &&
-				     ent->client->medKitHealthToRestore &&
-				     ent->client->ps.pm_type != PM_DEAD )
-				{
-					ent->client->medKitHealthToRestore--;
-					ent->health++;
-				}
-				else
-				{
-					ent->client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_2X;
-				}
-			}
-			else
-			{
-				if ( ent->health < ent->client->ps.stats[ STAT_MAX_HEALTH ] &&
-				     ent->client->medKitHealthToRestore &&
-				     ent->client->ps.pm_type != PM_DEAD )
-				{
-					//partial increase
-					if ( level.time > client->medKitIncrementTime )
-					{
-						ent->client->medKitHealthToRestore--;
-						ent->health++;
-
-						client->medKitIncrementTime = level.time +
-						                              ( remainingStartupTime / MEDKIT_STARTUP_SPEED );
-					}
-				}
-				else
-				{
-					ent->client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_2X;
-				}
-			}
-		}
+		// replenish human health
+		G_ReplenishHumanHealth( ent );
 	}
 
 	while ( client->time1000 >= 1000 )
@@ -949,11 +978,11 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		if ( ent->client->ps.weapon == WP_ABUILD ||
 		     ent->client->ps.weapon == WP_ABUILD2 )
 		{
-			AddScore( ent, ALIEN_BUILDER_SCOREINC );
+			G_AddCreditsToScore( ent, ALIEN_BUILDER_SCOREINC );
 		}
 		else if ( ent->client->ps.weapon == WP_HBUILD )
 		{
-			AddScore( ent, HUMAN_BUILDER_SCOREINC );
+			G_AddCreditsToScore( ent, HUMAN_BUILDER_SCOREINC );
 		}
 
 		// Give score to basis that healed other aliens
@@ -961,11 +990,11 @@ void ClientTimerActions( gentity_t *ent, int msec )
 		{
 			if ( client->ps.weapon == WP_ALEVEL1 )
 			{
-				AddScore( ent, LEVEL1_REGEN_SCOREINC );
+				G_AddCreditsToScore( ent, LEVEL1_REGEN_SCOREINC );
 			}
 			else if ( client->ps.weapon == WP_ALEVEL1_UPG )
 			{
-				AddScore( ent, LEVEL1_UPG_REGEN_SCOREINC );
+				G_AddCreditsToScore( ent, LEVEL1_UPG_REGEN_SCOREINC );
 			}
 
 			ent->client->pers.hasHealed = qfalse;
@@ -1618,8 +1647,21 @@ static void G_ReplenishAlienHealth( gentity_t *self )
 
 		if ( !foundHealthSource )
 		{
-			// Exponentially decrease healing rate when not on creep. ln(2) ~= 0.6931472
-			modifier = exp( ( 0.6931472f / ( 1000.0f * g_alienOffCreepRegenHalfLife.value ) ) * ( self->creepTime - level.time ) );
+			if ( g_alienOffCreepRegenHalfLife.value < 1 )
+			{
+				modifier = ALIEN_REGEN_NOCREEP_MOD;
+			}
+			else
+			{
+				// Exponentially decrease healing rate when not on creep. ln(2) ~= 0.6931472
+				modifier = exp( ( 0.6931472f / ( 1000.0f * g_alienOffCreepRegenHalfLife.value ) ) * ( self->creepTime - level.time ) );
+
+				// Prevent possible overflow/division by zero and keep a minimum heal rate
+				if ( modifier < 0.1f )
+				{
+					modifier = 0.1f;
+				}
+			}
 		}
 		else if ( foundHealthSource & SS_HEALING_3X )
 		{

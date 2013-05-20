@@ -748,3 +748,96 @@ qboolean G_AddressCompare( const addr_t *a, const addr_t *b )
 
 	return qtrue;
 }
+
+/*
+===============
+G_TeamToClientmask
+
+Calculates loMask/hiMask as used by SVF_CLIENTMASK type events to match all clients in a team.
+===============
+*/
+void G_TeamToClientmask( team_t team, int *loMask, int *hiMask )
+{
+	int       clientNum;
+	gclient_t *client;
+
+	*loMask = *hiMask = 0;
+
+	for ( clientNum = 0; clientNum < MAX_CLIENTS; clientNum++ )
+	{
+		client = g_entities[ clientNum ].client;
+
+		if ( client && client->pers.teamSelection == team )
+		{
+			if ( clientNum < 32 )
+			{
+				*loMask |= BIT( clientNum );
+			}
+			else
+			{
+				*hiMask |= BIT( clientNum - 32 );
+			}
+		}
+	}
+}
+
+/*
+===============
+G_AddConfidence
+
+Awards confidence to a team. Will notify the client hwo earned it if given, otherwise the whole team.
+===============
+*/
+void G_AddConfidence( team_t team, confidence_t type, confidence_reason_t reason,
+                      confidence_qualifier_t qualifier, float amount, gentity_t *source )
+{
+	float     *confidence;
+	gentity_t *event = NULL;
+	gclient_t *client;
+
+	switch ( team )
+	{
+		case TEAM_ALIENS:
+			confidence = level.alienConfidence;
+			break;
+		case TEAM_HUMANS:
+			confidence = level.humanConfidence;
+			break;
+		default:
+			return;
+	}
+
+	if ( type <= CONFIDENCE_SUM || type >= NUM_CONFIDENCE_TYPES )
+	{
+		return;
+	}
+
+	confidence[ type ] += amount;
+
+	// notify client or whole team, depending on source
+	if ( source )
+	{
+		client = source->client;
+
+		if ( client && client->pers.teamSelection == team )
+		{
+			event = G_NewTempEntity( client->ps.origin, EV_CONFIDENCE );
+			event->r.svFlags = SVF_SINGLECLIENT;
+			event->r.singleClient = client->ps.clientNum;
+		}
+	}
+	else
+	{
+		event = G_NewTempEntity( vec3_origin, EV_CONFIDENCE );
+		event->r.svFlags = ( SVF_BROADCAST | SVF_CLIENTMASK );
+		G_TeamToClientmask( team, &( event->r.loMask ), &( event->r.hiMask ) );
+	}
+
+	if ( event )
+	{
+		event->s.eventParm = reason;
+		event->s.otherEntityNum = qualifier;
+		event->s.otherEntityNum2 = ( int )( fabs( amount ) * 10.0f + 0.5f );
+		event->s.groundEntityNum = amount < 0 ? qtrue : qfalse;
+	}
+}
