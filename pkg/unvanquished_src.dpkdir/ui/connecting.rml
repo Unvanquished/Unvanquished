@@ -36,10 +36,9 @@
 			{
 				width: 100%;
 				height: 32px;
-				end-image: /ui/start.png;
+				start-image: /ui/start.png;
 				progress-image: /ui/progress.png;
-				start-image: /ui/end.png;
-				orientation: right;
+				end-image: /ui/end.png;
 				z-index: 3;
 			}
 
