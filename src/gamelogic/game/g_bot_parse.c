@@ -1343,6 +1343,10 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( SAY_TEAM );
 	D( SAY_AREA );
 	D( SAY_AREA_TEAM );
+	
+	D( S1 );
+	D( S2 );
+	D( S3 );
 
 	Q_strncpyz( treefilename, va( "bots/%s.bt", name ), sizeof( treefilename ) );
 
