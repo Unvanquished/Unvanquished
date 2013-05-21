@@ -378,21 +378,6 @@ AINodeStatus_t BotEvaluateNode( gentity_t *self, AIGenericNode_t *node )
 {
 	AINodeStatus_t status = node->run( self, node );
 
-	// maintain current node data for action nodes
-	// they use this to determine if they need to pathfind again
-	if ( node->type == ACTION_NODE )
-	{
-		if ( status == STATUS_RUNNING )
-		{
-			self->botMind->currentNode = node;
-		}
-
-		if ( self->botMind->currentNode == node && status != STATUS_RUNNING )
-		{
-			self->botMind->currentNode = NULL;
-		}
-	}
-
 	// reset running information on node success so sequences and selectors reset their state
 	if ( NodeIsRunning( self, node ) && status == STATUS_SUCCESS )
 	{
@@ -543,6 +528,7 @@ AINodeStatus_t BotActionChangeGoal( gentity_t *self, AIGenericNode_t *node )
 			return STATUS_FAILURE;
 		}
 	}
+	self->botMind->currentNode = node;
 	self->botMind->goalLastSeen = 0;
 	return STATUS_SUCCESS;
 }
@@ -586,6 +572,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		}
 		else
 		{
+			self->botMind->currentNode = node;
 			return STATUS_RUNNING;
 		}
 	}
@@ -732,6 +719,7 @@ AINodeStatus_t BotActionFlee( gentity_t *self, AIGenericNode_t *node )
 		{
 			return STATUS_FAILURE;
 		}
+		self->botMind->currentNode = node;
 	}
 
 	if ( !BotTargetIsEntity( self->botMind->goal ) )
@@ -776,6 +764,7 @@ AINodeStatus_t BotActionRoamInRadius( gentity_t *self, AIGenericNode_t *node )
 		{
 			return STATUS_FAILURE;
 		}
+		self->botMind->currentNode = node;
 	}
 
 	if ( self->botMind->directPathToGoal && GoalInRange( self, 70 ) )
@@ -800,6 +789,7 @@ AINodeStatus_t BotActionRoam( gentity_t *self, AIGenericNode_t *node )
 		{
 			return STATUS_FAILURE;
 		}
+		self->botMind->currentNode = node;
 	}
 
 	if ( self->botMind->directPathToGoal && GoalInRange( self, 70 ) )
@@ -848,6 +838,7 @@ AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node )
 		}
 		else
 		{
+			self->botMind->currentNode = node;
 			return STATUS_RUNNING;
 		}
 	}
@@ -886,6 +877,7 @@ AINodeStatus_t BotActionRush( gentity_t *self, AIGenericNode_t *node )
 		}
 		else
 		{
+			self->botMind->currentNode = node;
 			return STATUS_RUNNING;
 		}
 	}
@@ -1031,6 +1023,8 @@ AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node )
 		{
 			return STATUS_FAILURE;
 		}
+
+		self->botMind->currentNode = node;
 	}
 
 	//we are fully healed now
@@ -1083,6 +1077,7 @@ AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node )
 		{
 			return STATUS_FAILURE;
 		}
+		self->botMind->currentNode = node;
 	}
 
 	if ( fullyHealed )
@@ -1132,6 +1127,7 @@ AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 		{
 			return STATUS_FAILURE;
 		}
+		self->botMind->currentNode = node;
 	}
 
 	if ( !BotTargetIsEntity( self->botMind->goal ) )
@@ -1295,6 +1291,7 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 		{
 			return STATUS_FAILURE;
 		}
+		self->botMind->currentNode = node;
 	}
 
 	if ( !BotTargetIsEntity( self->botMind->goal ) )
@@ -1314,7 +1311,6 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 	}
 	else
 	{
-
 		if ( numUpgrades && upgrades[0] != UP_AMMO )
 		{
 			BotSellAll( self );
