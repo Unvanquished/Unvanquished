@@ -1,12 +1,12 @@
-selector priority
+selector
 {
 	condition alertedToEnemy
 	{
-		selector priority
+		selector
 		{
 			condition haveWeapon( WP_HBUILD )
 			{
-				selector priority
+				selector
 				{
 					action equip
 					action flee
@@ -19,14 +19,14 @@ selector priority
 	
 	selector
 	{
-		selector sequence
+		sequence
 		{
 			condition team == TEAM_ALIENS
 			condition healScore <= 0.25
 			action heal
 		}
 		
-		selector sequence
+		sequence
 		{
 			condition team == TEAM_HUMANS
 			condition !haveUpgrade( UP_MEDKIT )
@@ -40,7 +40,7 @@ selector priority
 		action evolve
 	}
 	
-	selector sequence
+	sequence
 	{
 		condition team == TEAM_HUMANS
 		condition !teamateHasWeapon( WP_HBUILD )
