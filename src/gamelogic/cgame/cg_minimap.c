@@ -433,6 +433,9 @@ void CG_DrawMinimap( const rectDef_t* rect640 )
 
         //Draws the minimap
         vec3_t origin = {0.0f, 0.0f, 0.0f};
+        origin[0] = 0.5 * (z->imageMin[0] + z->imageMax[0]);
+        origin[1] = 0.5 * (z->imageMin[1] + z->imageMax[1]);
+
         CG_DrawMinimapObject( z->image, origin, 90.0, 1.0, 1024.0 );
 
         //Draws the player arrow
