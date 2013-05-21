@@ -1086,8 +1086,18 @@ qboolean BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 					range = -range;
 				}
 
-				// decrease range to prevent problems from the approximation
-				range -= 100;
+				// the flamer uses a cosine based power falloff by default
+				// so decrese the range to give us a usable minimum damage
+				// FIXME: depend on the value of the flamer damage falloff cvar
+				if ( BotGetTargetType( target ) == ET_BUILDABLE )
+				{
+					range -= 300;
+				}
+				else
+				{
+					range -= 150;
+				}
+				range = MAX( range, 100 );
 				secondaryRange = 0;
 				width = height = FLAMER_SIZE;
 			}
