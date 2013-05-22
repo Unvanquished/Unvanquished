@@ -2295,6 +2295,10 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Rocket_SetAttribute( VMA(1), VMA(2), VMA(3), VMA(4) );
 			return 0;
 
+		case CG_ROCKET_GETPROPERTY:
+			Rocket_GetProperty( VMA(1), VMA(2), args[ 3 ], args[ 4 ] );
+			return 0;
+
 		case CG_ROCKET_REGISTERELEMENT:
 			Rocket_RegisterElement( VMA(1) );
 			return 0;

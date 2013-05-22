@@ -61,6 +61,13 @@ typedef struct
 	int           serverCommandSequence; // snapshot becomes current
 } snapshot_t;
 
+typedef enum {
+	ROCKET_STRING,
+	ROCKET_FLOAT,
+	ROCKET_INT,
+	ROCKET_COLOR
+} rocketVarType_t;
+
 typedef enum cgameImport_s
 {
   CG_PRINT = FIRST_VM_SYSCALL,
@@ -274,6 +281,7 @@ typedef enum cgameImport_s
   CG_ROCKET_SETINNERRML,
   CG_ROCKET_GETATTRIBUTE,
   CG_ROCKET_SETATTRIBUTE,
+  CG_ROCKET_GETPROPERTY,
   CG_ROCKET_GETEVENTPARAMETERS,
   CG_ROCKET_REGISTERDATAFORMATTER,
   CG_ROCKET_DATAFORMATTERRAWDATA,
@@ -585,6 +593,7 @@ void            trap_Rocket_DSClearTable( const char *name, const char *table );
 void            trap_Rocket_SetInnerRML( const char *name, const char *id, const char *RML );
 void            trap_Rocket_GetAttribute( const char *name, const char *id, const char *attribute, char *out, int length );
 void            trap_Rocket_SetAttribute( const char *name, const char *id, const char *attribute, const char *value );
+void            trap_Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t type );
 void            trap_Rocket_GetEventParameters( char *params, int length );
 void            trap_Rocket_RegisterDataFormatter( const char *name );
 void            trap_Rocket_DataFormatterRawData( int handle, char *name, int nameLength, char *data, int dataLength );

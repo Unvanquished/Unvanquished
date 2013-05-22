@@ -148,3 +148,59 @@ void Rocket_GetElementAbsoluteOffset( float *x, float *y )
 		*y = -1;
 	}
 }
+
+void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t type )
+{
+	if ( activeElement )
+	{
+		switch ( type )
+		{
+			case ROCKET_STRING:
+			{
+				char *string = ( char * ) out;
+				Q_strncpyz( string, activeElement->GetProperty<Rocket::Core::String>( name ).CString(), len );
+				return;
+			}
+
+			case ROCKET_FLOAT:
+			{
+				float *f = ( float * ) out;
+
+				if ( len != sizeof( float ) )
+				{
+					return;
+				}
+
+				*f = activeElement->GetProperty<float>( name );
+				return;
+			}
+
+			case ROCKET_INT:
+			{
+				int *i = ( int * ) out;
+
+				if ( len != sizeof( int ) )
+				{
+					return;
+				}
+
+				*i = activeElement->GetProperty<int>( name );
+				return;
+			}
+
+			case ROCKET_COLOR:
+			{
+				vec_t *outColor = ( vec_t * ) out;
+
+				if ( len != sizeof ( vec4_t ) )
+				{
+					return;
+				}
+
+				Rocket::Core::Colourb color = activeElement->GetProperty<Rocket::Core::Colourb>( name );
+				outColor[ 0 ] = color.red / 255.0f, outColor[ 1 ] = color.green / 255.0f, outColor[ 2 ] = color.blue / 255.0f, outColor[ 3 ] = color.alpha / 255.0f;
+				return;
+			}
+		}
+	}
+}
