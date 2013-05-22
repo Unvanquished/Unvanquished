@@ -202,12 +202,7 @@ static void CG_Rocket_DrawCrosshair( void )
 
 	hShader = wi->crossHair;
 
-	s = CG_Rocket_GetAttribute( "", "", "color" );
-
-	if ( s && *s )
-	{
-		sscanf( s, "%f %f %f %f", &color[ 0 ], &color[ 1 ], &color[ 2 ], &color[ 3 ] );
-	}
+	trap_Rocket_GetProperty( "color", &color, sizeof( color ), ROCKET_COLOR );
 
 	//aiming at a friendly player/buildable, dim the crosshair
 	if ( cg.time == cg.crosshairClientTime || cg.crosshairBuildable >= 0 )
