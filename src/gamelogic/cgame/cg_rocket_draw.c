@@ -52,9 +52,11 @@ static void CG_Rocket_DrawAmmo( void )
 {
 	int      value;
 	int      valueMarked = -1;
+	int      maxAmmo;
+	weapon_t weapon;
 	qboolean bp = qfalse;
 
-	switch ( BG_PrimaryWeapon( cg.snap->ps.stats ) )
+	switch ( weapon = BG_PrimaryWeapon( cg.snap->ps.stats ) )
 	{
 		case WP_NONE:
 		case WP_BLASTER:
@@ -69,7 +71,22 @@ static void CG_Rocket_DrawAmmo( void )
 			break;
 
 		default:
-			value = cg.snap->ps.ammo;
+			if ( !Q_stricmp( "total", CG_Rocket_GetAttribute( "", "", "type" ) ) )
+			{
+				maxAmmo = BG_Weapon( weapon )->maxAmmo;
+
+				if ( BG_Weapon( weapon )->usesEnergy &&
+					BG_InventoryContainsUpgrade( UP_BATTPACK, cg.snap->ps.stats ) )
+				{
+					maxAmmo *= BATTPACK_MODIFIER;
+				}
+
+				value = cg.snap->ps.ammo + ( cg.snap->ps.clips * maxAmmo );
+			}
+			else
+			{
+				value = cg.snap->ps.ammo;
+			}
 			break;
 	}
 
