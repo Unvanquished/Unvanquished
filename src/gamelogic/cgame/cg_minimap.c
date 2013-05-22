@@ -159,7 +159,8 @@ qboolean CG_ParseMinimap( minimap_t* m, char* filename )
 
     m->nZones = 0;
     m->lastZone = -1;
-    m->bgColor[3] = 1.0f;
+    m->scale = 1.0f;
+    m->bgColor[3] = 1.0f; //Initialise the bgColor to black
 
     if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
     {
@@ -198,9 +199,17 @@ qboolean CG_ParseMinimap( minimap_t* m, char* filename )
         }
         else if( !Q_stricmp( token, "backgroundColor") )
         {
-            if( !ParseFloats( m->bgColor, 3, &text) )
+            if( !ParseFloats( m->bgColor, 4, &text) )
             {
                 CG_Printf( S_ERROR "error while parsing 'backgroundColor' in %s\n", filename );
+                return qfalse;
+            }
+        }
+        else if( !Q_stricmp( token, "globalScale") )
+        {
+            if( !ParseFloats( &m->scale, 1, &text) )
+            {
+                CG_Printf( S_ERROR "error while parsing 'globalScale' in %s\n", filename );
                 return qfalse;
             }
         }
@@ -256,7 +265,7 @@ void CG_SetupMinimapTransform( const rectDef_t *rect, const minimap_t* minimap, 
     transformAngle = - cg.refdefViewAngles[1];
     angle = DEG2RAD(transformAngle + 90.0);
 
-    transformScale = zone->scale;
+    transformScale = zone->scale * minimap->scale;
     scale = transformScale * MINIMAP_DEFAULT_DISPLAY_SIZE / (zone->imageMax[0] - zone->imageMin[0]);
     s = sin(angle) * scale;
     c = cos(angle) * scale;
@@ -383,7 +392,7 @@ void CG_DrawMinimap( const rectDef_t* rect640 )
 
     //TODO: add a drawMinimap cvar and also
     //TODO: add a hasMinimap cvar for the hud to hide some elements if the map doesn't provide a minimap
-    if( !m->active )
+    if( !m->active || !cg_drawMinimap.integer)
     {
         return;
     }

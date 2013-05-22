@@ -134,6 +134,7 @@ vmCvar_t        cg_drawChargeBar;
 vmCvar_t        cg_drawCrosshair;
 vmCvar_t        cg_drawCrosshairNames;
 vmCvar_t        cg_drawBuildableHealth;
+vmCvar_t        cg_drawMinimap;
 vmCvar_t        cg_crosshairSize;
 vmCvar_t        cg_crosshairFile;
 vmCvar_t        cg_draw2D;
@@ -297,6 +298,7 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_drawCrosshair,               "cg_drawCrosshair",               "2",            CVAR_ARCHIVE                 },
 	{ &cg_drawCrosshairNames,          "cg_drawCrosshairNames",          "1",            CVAR_ARCHIVE                 },
 	{ &cg_drawBuildableHealth,         "cg_drawBuildableHealth",         "1",            CVAR_ARCHIVE                 },
+	{ &cg_drawMinimap,                 "cg_drawMinimap",                 "1",            CVAR_ARCHIVE                 },
 	{ &cg_crosshairSize,               "cg_crosshairSize",               "1",            CVAR_ARCHIVE                 },
 	{ &cg_crosshairFile,               "cg_crosshairFile",               "",             CVAR_ARCHIVE                 },
 	{ &cg_addMarks,                    "cg_marks",                       "1",            CVAR_ARCHIVE                 },

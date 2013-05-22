@@ -906,6 +906,7 @@ typedef struct
     int          lastZone;
     int          nZones;
     float        bgColor[4];
+    float        scale;
     struct
     {
         qhandle_t playerArrow, teamArrow;
@@ -1477,6 +1478,7 @@ extern  vmCvar_t            cg_drawChargeBar;
 extern  vmCvar_t            cg_drawCrosshair;
 extern  vmCvar_t            cg_drawCrosshairNames;
 extern  vmCvar_t            cg_drawBuildableHealth;
+extern  vmCvar_t            cg_drawMinimap;
 extern  vmCvar_t            cg_crosshairSize;
 extern  vmCvar_t            cg_crosshairFile;
 extern  vmCvar_t            cg_drawTeamOverlay;
