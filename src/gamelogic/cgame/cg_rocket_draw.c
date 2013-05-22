@@ -338,9 +338,11 @@ static void CG_Rocket_DrawSpeedGraph( void )
 	trap_Rocket_GetProperty( "width", &w, sizeof( w ), ROCKET_FLOAT );
 	trap_Rocket_GetProperty( "height", &h, sizeof( h ), ROCKET_FLOAT );
 
+	// Convert from absolute monitor coords to a virtual 640x480 coordinate system
 	x = ( x / cgs.glconfig.vidWidth ) * 640;
 	y = ( y / cgs.glconfig.vidHeight ) * 480;
 
+	// Convert from byte scale to [0,1]
 	Vector4Scale( color, 1 / 255.0f, color );
 	Vector4Scale( backColor, 1 / 255.0f, backColor );
 
@@ -382,6 +384,7 @@ static void CG_Rocket_DrawSpeedGraph( void )
 
 	trap_R_SetColor( NULL );
 
+	// Add text to be configured via CSS
 	if ( cg.predictedPlayerState.clientNum == cg.clientNum )
 	{
 		vec3_t vel;
