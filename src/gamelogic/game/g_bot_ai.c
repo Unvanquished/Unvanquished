@@ -378,6 +378,13 @@ AINodeStatus_t BotEvaluateNode( gentity_t *self, AIGenericNode_t *node )
 {
 	AINodeStatus_t status = node->run( self, node );
 
+	// reset the current node if it finishes
+	// we do this so we can re-pathfind on the next entrance
+	if ( ( status == STATUS_SUCCESS || status == STATUS_FAILURE )  && self->botMind->currentNode == node )
+	{
+		self->botMind->currentNode = NULL;
+	}
+
 	// reset running information on node success so sequences and selectors reset their state
 	if ( NodeIsRunning( self, node ) && status == STATUS_SUCCESS )
 	{
