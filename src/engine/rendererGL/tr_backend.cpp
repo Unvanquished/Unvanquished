@@ -11626,6 +11626,7 @@ const void     *RB_Draw2dPolys( const void *data )
 const void     *RB_Draw2dPolysIndexed( const void *data )
 {
 	const poly2dIndexedCommand_t *cmd;
+	cullType_t            oldCullType;
 	shader_t              *shader;
 	int                   i;
 
@@ -11637,6 +11638,12 @@ const void     *RB_Draw2dPolysIndexed( const void *data )
 	}
 
 	shader = cmd->shader;
+	// HACK: Our shader system likes to cull things that we'd like shown
+	oldCullType = shader->cullType;
+	if ( shader->type == SHADER_2D )
+	{
+		shader->cullType = CT_TWO_SIDED;
+	}
 
 	if ( shader != tess.surfaceShader )
 	{
@@ -11679,6 +11686,7 @@ const void     *RB_Draw2dPolysIndexed( const void *data )
 	}
 
 	Tess_End();
+	shader->cullType = oldCullType;
 
 	return ( const void * )( cmd + 1 );
 }
