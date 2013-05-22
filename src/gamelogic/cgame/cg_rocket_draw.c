@@ -221,6 +221,188 @@ static void CG_Rocket_DrawCrosshair( void )
 	}
 }
 
+#define SPEEDOMETER_NUM_SAMPLES 4096
+#define SPEEDOMETER_NUM_DISPLAYED_SAMPLES 160
+#define SPEEDOMETER_DRAW_TEXT   0x1
+#define SPEEDOMETER_DRAW_GRAPH  0x2
+#define SPEEDOMETER_IGNORE_Z    0x4
+float speedSamples[ SPEEDOMETER_NUM_SAMPLES ];
+int speedSampleTimes[ SPEEDOMETER_NUM_SAMPLES ];
+// array indices
+int   oldestSpeedSample = 0;
+int   maxSpeedSample = 0;
+int   maxSpeedSampleInWindow = 0;
+
+/*
+===================
+CG_AddSpeed
+
+append a speed to the sample history
+===================
+*/
+void CG_AddSpeed( void )
+{
+	float  speed;
+	vec3_t vel;
+	int    windowTime;
+	qboolean newSpeedGteMaxSpeed, newSpeedGteMaxSpeedInWindow;
+
+	VectorCopy( cg.snap->ps.velocity, vel );
+
+	if ( cg_drawSpeed.integer & SPEEDOMETER_IGNORE_Z )
+	{
+		vel[ 2 ] = 0;
+	}
+
+	speed = VectorLength( vel );
+
+	windowTime = cg_maxSpeedTimeWindow.integer;
+	if ( windowTime < 0 )
+	{
+		windowTime = 0;
+	}
+	else if ( windowTime > SPEEDOMETER_NUM_SAMPLES * 1000 )
+	{
+		windowTime = SPEEDOMETER_NUM_SAMPLES * 1000;
+	}
+
+	if ( ( newSpeedGteMaxSpeed = ( speed >= speedSamples[ maxSpeedSample ] ) ) )
+	{
+		maxSpeedSample = oldestSpeedSample;
+	}
+
+	if ( ( newSpeedGteMaxSpeedInWindow = ( speed >= speedSamples[ maxSpeedSampleInWindow ] ) ) )
+	{
+		maxSpeedSampleInWindow = oldestSpeedSample;
+	}
+
+	speedSamples[ oldestSpeedSample ] = speed;
+
+	speedSampleTimes[ oldestSpeedSample ] = cg.time;
+
+	if ( !newSpeedGteMaxSpeed && maxSpeedSample == oldestSpeedSample )
+	{
+		// if old max was overwritten find a new one
+		int i;
+
+		for ( maxSpeedSample = 0, i = 1; i < SPEEDOMETER_NUM_SAMPLES; i++ )
+		{
+			if ( speedSamples[ i ] > speedSamples[ maxSpeedSample ] )
+			{
+				maxSpeedSample = i;
+			}
+		}
+	}
+
+	if ( !newSpeedGteMaxSpeedInWindow && ( maxSpeedSampleInWindow == oldestSpeedSample ||
+	     cg.time - speedSampleTimes[ maxSpeedSampleInWindow ] > windowTime ) )
+	{
+		int i;
+		do
+		{
+			maxSpeedSampleInWindow = ( maxSpeedSampleInWindow + 1 ) % SPEEDOMETER_NUM_SAMPLES;
+		} while( cg.time - speedSampleTimes[ maxSpeedSampleInWindow ] > windowTime );
+		for ( i = maxSpeedSampleInWindow; ; i = ( i + 1 ) % SPEEDOMETER_NUM_SAMPLES )
+		{
+			if ( speedSamples[ i ] > speedSamples[ maxSpeedSampleInWindow ] )
+			{
+				maxSpeedSampleInWindow = i;
+			}
+			if ( i == oldestSpeedSample )
+			{
+				break;
+			}
+		}
+	}
+
+	oldestSpeedSample = ( oldestSpeedSample + 1 ) % SPEEDOMETER_NUM_SAMPLES;
+}
+
+#define SPEEDOMETER_MIN_RANGE 900
+#define SPEED_MED             1000.f
+#define SPEED_FAST            1600.f
+static void CG_Rocket_DrawSpeedGraph( void )
+{
+	int          i;
+	float        val, max, top, x, y, w, h;
+	// colour of graph is interpolated between these values
+	const vec3_t slow = { 0.0, 0.0, 1.0 };
+	const vec3_t medium = { 0.0, 1.0, 0.0 };
+	const vec3_t fast = { 1.0, 0.0, 0.0 };
+	vec4_t       color, backColor;
+
+	// grab info from libRocket
+	trap_Rocket_GetElementAbsoluteOffset( &x, &y );
+	trap_Rocket_GetProperty( "color", &color, sizeof( color ), ROCKET_COLOR );
+	trap_Rocket_GetProperty( "background-color", &backColor, sizeof( backColor ), ROCKET_COLOR );
+	trap_Rocket_GetProperty( "width", &w, sizeof( w ), ROCKET_FLOAT );
+	trap_Rocket_GetProperty( "height", &h, sizeof( h ), ROCKET_FLOAT );
+
+	x = ( x / cgs.glconfig.vidWidth ) * 640;
+	y = ( y / cgs.glconfig.vidHeight ) * 480;
+
+	Vector4Scale( color, 1 / 255.0f, color );
+	Vector4Scale( backColor, 1 / 255.0f, backColor );
+
+	max = speedSamples[ maxSpeedSample ];
+
+	if ( max < SPEEDOMETER_MIN_RANGE )
+	{
+		max = SPEEDOMETER_MIN_RANGE;
+	}
+
+	trap_R_SetColor( backColor );
+	CG_DrawPic( x, y, w, h, cgs.media.whiteShader );
+
+	for ( i = 1; i < SPEEDOMETER_NUM_DISPLAYED_SAMPLES; i++ )
+	{
+		val = speedSamples[ ( oldestSpeedSample + i + SPEEDOMETER_NUM_SAMPLES -
+		SPEEDOMETER_NUM_DISPLAYED_SAMPLES ) % SPEEDOMETER_NUM_SAMPLES ];
+
+		if ( val < SPEED_MED )
+		{
+			VectorLerpTrem( val / SPEED_MED, slow, medium, color );
+		}
+		else if ( val < SPEED_FAST )
+		{
+			VectorLerpTrem( ( val - SPEED_MED ) / ( SPEED_FAST - SPEED_MED ),
+					medium, fast, color );
+		}
+		else
+		{
+			VectorCopy( fast, color );
+		}
+
+		trap_R_SetColor( color );
+		top = y + ( 1 - val / max ) * h;
+		CG_DrawPic( x + ( i / ( float ) SPEEDOMETER_NUM_DISPLAYED_SAMPLES ) * w, top,
+			    w / ( float ) SPEEDOMETER_NUM_DISPLAYED_SAMPLES, val * h / max,
+			    cgs.media.whiteShader );
+	}
+
+	trap_R_SetColor( NULL );
+
+	if ( cg.predictedPlayerState.clientNum == cg.clientNum )
+	{
+		vec3_t vel;
+		VectorCopy( cg.predictedPlayerState.velocity, vel );
+
+		if ( cg_drawSpeed.integer & SPEEDOMETER_IGNORE_Z )
+		{
+			vel[ 2 ] = 0;
+		}
+
+		val = VectorLength( vel );
+	}
+	else
+	{
+		val = speedSamples[ ( oldestSpeedSample - 1 + SPEEDOMETER_NUM_SAMPLES ) % SPEEDOMETER_NUM_SAMPLES ];
+	}
+
+	trap_Rocket_SetInnerRML( "", "", va( "<span class='speed_max'>%d</span><span class='speed_current'>%d</span>", ( int ) speedSamples[ maxSpeedSampleInWindow ], ( int ) val ) );
+}
+
+
 
 typedef struct
 {
@@ -234,6 +416,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "crosshair", &CG_Rocket_DrawCrosshair },
 	{ "fps", &CG_Rocket_DrawFPS },
 	{ "pic", &CG_Rocket_DrawPic },
+	{ "speedometer", &CG_Rocket_DrawSpeedGraph },
 	{ "test", &CG_Rocket_DrawTest }
 };
 

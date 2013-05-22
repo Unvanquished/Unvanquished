@@ -49,6 +49,14 @@ static void CG_Rocket_DimensionTest( void )
 	trap_Rocket_SetElementDimensions( 100, 100 );
 }
 
+static void CG_Rocket_DimensionSpeedGraph( void )
+{
+	float w, h;
+	trap_Rocket_GetProperty( "width", &w, sizeof( w ), ROCKET_FLOAT );
+	trap_Rocket_GetProperty( "height", &h, sizeof( h ), ROCKET_FLOAT );
+	trap_Rocket_SetElementDimensions( w, h );
+}
+
 typedef struct
 {
 	const char *name;
@@ -58,6 +66,7 @@ typedef struct
 static const elementDimensionCmd_t elementDimensionCmdList[] =
 {
 	{ "pic", &CG_Rocket_DimensionPic },
+	{ "speedometer", &CG_Rocket_DimensionSpeedGraph },
 	{ "test", &CG_Rocket_DimensionTest }
 };
 
