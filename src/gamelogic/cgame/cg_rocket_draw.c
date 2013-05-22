@@ -191,14 +191,14 @@ static void CG_Rocket_DrawCrosshair( void )
 	wi = &cg_weapons[ weapon ];
 
 	w = h = wi->crossHairSize * cg_crosshairSize.value;
-	w *= cgDC.aspectScale;
+// 	w *= cgDC.aspectScale;
 
 	trap_Rocket_GetElementAbsoluteOffset( &x, &y );
 
 	//FIXME: this still ignores the width/height of the rect, but at least it's
 	//neater than cg_crosshairX/cg_crosshairY
-	x = ( cgs.glconfig.vidWidth / 2 ) - ( w / 2 );
-	y = ( cgs.glconfig.vidHeight / 2 ) - ( h / 2 );
+	x = ( cgs.glconfig.vidWidth / 2 ) - ( w / 2 ) - x;
+	y = ( cgs.glconfig.vidHeight / 2 ) - ( h / 2 ) - y;
 
 	hShader = wi->crossHair;
 
