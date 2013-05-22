@@ -62,11 +62,11 @@ void Rocket_SetElementDimensions( float x, float y )
 	}
 }
 
-void Rocket_DrawElementPic( float x, float y, float w, float h, float t1, float s1, float t2, float s2, const char *src )
+void Rocket_DrawElementPic( float x, float y, float w, float h, float t1, float s1, float t2, float s2, vec4_t color, qhandle_t shader )
 {
 	if ( activeElement )
 	{
-		static_cast<RocketElement*>(activeElement)->DrawPic( x, y, w, h, t1, s1, t2, s2, src );
+		static_cast<RocketElement*>(activeElement)->DrawPic( x, y, w, h, t1, s1, t2, s2, color, shader );
 	}
 }
 

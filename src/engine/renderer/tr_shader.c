@@ -6145,6 +6145,11 @@ void R_LoadCacheShaders( void )
 	ri.FS_FreeFile( buf );
 }
 
+const char *RE_GetShaderNameFromHandle( qhandle_t shader )
+{
+	return R_GetShaderByHandle( shader )->name;
+}
+
 // done.
 //=============================================================================
 

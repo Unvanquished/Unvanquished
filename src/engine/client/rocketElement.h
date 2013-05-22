@@ -110,12 +110,14 @@ public:
 		Rocket::Core::Element::OnPropertyChange( changed_properties );
 	}
 
-	void DrawPic( float x, float y, float w, float h, float t1, float s1, float t2, float s2, const char *src )
+	void DrawPic( float x, float y, float w, float h, float t1, float s1, float t2, float s2, vec4_t color, qhandle_t shader )
 	{
 		geometryList.push_back( Rocket::Core::Geometry( this ) );
 
 		std::vector< Rocket::Core::Vertex> &vertices = geometryList.back().GetVertices();
 		std::vector< int > &indices = geometryList.back().GetIndices();
+
+		Rocket::Core::String src = va ( "/%s", re.ShaderNameFromHandle( shader ) );
 
 		vertices.resize( 4 );
 		indices.resize( 6 );
@@ -124,7 +126,7 @@ public:
 
 													   Rocket::Core::Vector2f( x, y ),
 													   Rocket::Core::Vector2f( w, h ),
-													   Rocket::Core::Colourb( 255, 255, 255, 255 ),
+													   Rocket::Core::Colourb( color[ 0 ], color[ 1 ], color[ 2 ], color[ 3 ] ),
 													   Rocket::Core::Vector2f( t1, s1 ),
 													   Rocket::Core::Vector2f( t2, s2 ) );
 

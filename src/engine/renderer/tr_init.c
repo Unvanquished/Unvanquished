@@ -1661,6 +1661,8 @@ extern "C" {
 
 		re.SetColorGrading = RE_SetColorGrading;
 
+		re.ShaderNameFromHandle = RE_GetShaderNameFromHandle;
+
 		return &re;
 	}
 

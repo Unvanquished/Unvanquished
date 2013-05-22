@@ -37,9 +37,10 @@ Maryland 20850 USA.
 static void CG_Rocket_DrawPic( void )
 {
 	float x, y;
+	vec4_t color = { 255, 255, 255, 255 };
 	trap_Rocket_GetElementAbsoluteOffset( &x, &y );
 	trap_Rocket_ClearElementGeometry();
-	trap_Rocket_DrawElementPic( 0, 0, atoi( CG_Rocket_GetAttribute( "", "", "width" ) ), atoi( CG_Rocket_GetAttribute( "", "", "height" ) ), 0, 0, 1, 1,  "ui/assets/mainmenu.jpg" );
+	trap_Rocket_DrawElementPic( 0, 0, atoi( CG_Rocket_GetAttribute( "", "", "width" ) ), atoi( CG_Rocket_GetAttribute( "", "", "height" ) ), 0, 0, 1, 1, color, cgs.media.creepShader );
 }
 
 static void CG_Rocket_DrawTest( void )
@@ -147,6 +148,85 @@ static void CG_Rocket_DrawFPS( void )
 	trap_Rocket_SetInnerRML( "", "", s );
 }
 
+static void CG_Rocket_DrawCrosshair( void )
+{
+	float        w, h;
+	qhandle_t    hShader;
+	float        x, y;
+	weaponInfo_t *wi;
+	weapon_t     weapon;
+	vec4_t       color = { 255, 255, 255, 255 };
+	const char *s;
+
+	trap_Rocket_ClearElementGeometry();
+
+	weapon = BG_GetPlayerWeapon( &cg.snap->ps );
+
+	if ( cg_drawCrosshair.integer == CROSSHAIR_ALWAYSOFF )
+	{
+		return;
+	}
+
+	if ( cg_drawCrosshair.integer == CROSSHAIR_RANGEDONLY &&
+		!BG_Weapon( weapon )->longRanged )
+	{
+		return;
+	}
+
+	if ( cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT )
+	{
+		return;
+	}
+
+	if ( cg.renderingThirdPerson )
+	{
+		return;
+	}
+
+	if ( cg.snap->ps.pm_type == PM_INTERMISSION )
+	{
+		return;
+	}
+
+	wi = &cg_weapons[ weapon ];
+
+	w = h = wi->crossHairSize * cg_crosshairSize.value;
+	w *= cgDC.aspectScale;
+
+	trap_Rocket_GetElementAbsoluteOffset( &x, &y );
+
+	//FIXME: this still ignores the width/height of the rect, but at least it's
+	//neater than cg_crosshairX/cg_crosshairY
+	x = ( cgs.glconfig.vidWidth / 2 ) - ( w / 2 );
+	y = ( cgs.glconfig.vidHeight / 2 ) - ( h / 2 );
+
+	hShader = wi->crossHair;
+
+	s = CG_Rocket_GetAttribute( "", "", "color" );
+
+	if ( s && *s )
+	{
+		sscanf( s, "%f %f %f %f", &color[ 0 ], &color[ 1 ], &color[ 2 ], &color[ 3 ] );
+	}
+
+	//aiming at a friendly player/buildable, dim the crosshair
+	if ( cg.time == cg.crosshairClientTime || cg.crosshairBuildable >= 0 )
+	{
+		int i;
+
+		for ( i = 0; i < 3; i++ )
+		{
+			color[ i ] *= .5f;
+		}
+	}
+
+	if ( hShader != 0 )
+	{
+		trap_Rocket_DrawElementPic( x, y, w, h, 0, 0, 1, 1, color, hShader );
+	}
+}
+
+
 typedef struct
 {
 	const char *name;
@@ -156,6 +236,7 @@ typedef struct
 static const elementRenderCmd_t elementRenderCmdList[] =
 {
 	{ "ammo", &CG_Rocket_DrawAmmo },
+	{ "crosshair", &CG_Rocket_DrawCrosshair },
 	{ "fps", &CG_Rocket_DrawFPS },
 	{ "pic", &CG_Rocket_DrawPic },
 	{ "test", &CG_Rocket_DrawTest }

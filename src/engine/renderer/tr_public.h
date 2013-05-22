@@ -186,6 +186,7 @@ typedef struct
 	qhandle_t ( *GenerateTexture ) ( const byte *pic, int width, int height );
 	void ( *ScissorEnable ) ( qboolean enable );
 	void ( *ScissorSet ) ( int x, int y, int w, int h );
+	const char * ( *ShaderNameFromHandle ) ( qhandle_t shader );
 	// XreaL END
 
 	// VisTest API

@@ -87,7 +87,7 @@ void Rocket_RegisterElement( const char *tag );
 void Rocket_SetAttribute( const char *name, const char *id, const char *attribute, const char *value );
 void Rocket_GetAttribute( const char *name, const char *id, const char *attribute, char *out, int length );
 void Rocket_GetElementAbsoluteOffset( float *x, float *y );
-void Rocket_DrawElementPic( float x, float y, float w, float h, float t1, float s1, float t2, float s2, const char *src );
+void Rocket_DrawElementPic( float x, float y, float w, float h, float t1, float s1, float t2, float s2, vec4_t color, qhandle_t shader );
 void Rocket_ClearElementGeometry( void );
 #if defined( __cplusplus )
 }

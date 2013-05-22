@@ -59,7 +59,7 @@
 	</head>
 	<body id="main">
 	<div id="sidebar">
-		<img style="width: 100%;" src="/ui/assets/logo.png" /><br /><br />
+		<img style="width: 100%;" src="/ui/assets/logo" /><br /><br />
 		<button onClick="open demos; show demos">Play</button><br /><br />
 		<button onClick="open options; show options">Options</button><br /><br />
 		<button onClick="open help; show help">Help</button><br /><br />
@@ -74,7 +74,7 @@
 		<img style="position: fixed; width: 15%; left: 75%; top: 650px;" src="/ui/assets/dretch1.png"/>
 	</div>
 	<div id="background">
-		<img style="height: 100%; width: 100%;" src="/ui/assets/mainmenu.jpg" />
+		<img style="height: 100%; width: 100%;" src="/ui/assets/mainmenu" />
 	</div>
 	</body>
 </rml>

@@ -7122,6 +7122,11 @@ static void CreateExternalShaders( void )
 	tr.defaultDynamicLightShader = R_FindShader( "lights/defaultDynamicLight", SHADER_LIGHT, RSF_DEFAULT );
 }
 
+const char *RE_GetShaderNameFromHandle( qhandle_t shader )
+{
+	return R_GetShaderByHandle( shader )->name;
+}
+
 /*
 ==================
 R_InitShaders

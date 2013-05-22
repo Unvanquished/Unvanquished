@@ -180,6 +180,11 @@ public:
 		char temp[ MAX_QPATH ];
 		qhandle_t shaderHandle = re.RegisterShader( source.CString(), RSF_NOMIP );
 
+		if ( shaderHandle == -1 )
+		{
+			return false;
+		}
+
 		// Find the size of the texture
 		textureHandle = ( Rocket::Core::TextureHandle ) shaderHandle;
 		re.GetTextureSize( shaderHandle, &textureDimensions.x, &textureDimensions.y );

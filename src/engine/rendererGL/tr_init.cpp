@@ -2444,8 +2444,6 @@ extern "C" {
 		re.GetTextureSize = RE_GetTextureSize;
 		re.Add2dPolysIndexed = RE_2DPolyiesIndexed;
 		re.GenerateTexture = RE_GenerateTexture;
-		re.ScissorEnable = RE_ScissorEnable;
-		re.ScissorSet = RE_ScissorSet;
 		// XreaL END
 
 		re.RegisterVisTest = RE_RegisterVisTest;
@@ -2454,6 +2452,8 @@ extern "C" {
 		re.UnregisterVisTest = RE_UnregisterVisTest;
 
 		re.SetColorGrading = RE_SetColorGrading;
+
+		re.ShaderNameFromHandle = RE_GetShaderNameFromHandle;
 
 		return &re;
 	}

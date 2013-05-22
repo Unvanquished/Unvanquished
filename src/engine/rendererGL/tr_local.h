@@ -3485,6 +3485,7 @@ extern "C" {
 				 RegisterShaderFlags_t flags );
 	shader_t  *R_GetShaderByHandle( qhandle_t hShader );
 	shader_t  *R_FindShaderByName( const char *name );
+	const char *RE_GetShaderNameFromHandle( qhandle_t shader );
 	void      R_InitShaders( void );
 	void      R_ShaderList_f( void );
 	void      R_ShaderExp_f( void );
