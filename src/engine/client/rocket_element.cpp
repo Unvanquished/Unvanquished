@@ -198,7 +198,7 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 				}
 
 				Rocket::Core::Colourb color = activeElement->GetProperty<Rocket::Core::Colourb>( name );
-				outColor[ 0 ] = color.red / 255.0f, outColor[ 1 ] = color.green / 255.0f, outColor[ 2 ] = color.blue / 255.0f, outColor[ 3 ] = color.alpha / 255.0f;
+				outColor[ 0 ] = color.red, outColor[ 1 ] = color.green, outColor[ 2 ] = color.blue, outColor[ 3 ] = color.alpha;
 				return;
 			}
 		}
