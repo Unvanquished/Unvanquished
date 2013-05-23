@@ -60,9 +60,34 @@ static float CG_Rocket_GetOverallLoadProgress( void )
 	return ( cg.mediaFraction + cg.charModelFraction + cg.buildablesFraction ) / 3.0f;
 }
 
+static float CG_Rocket_GetBuildTimerProgress( void )
+{
+	static int misc = 0;
+	static int max;
+	playerState_t *ps = &cg.snap->ps;
+	weapon_t weapon = BG_GetPlayerWeapon( ps );
+
+	// Not building anything
+	if ( weapon != WP_HBUILD && weapon != WP_ABUILD && weapon != WP_ABUILD2 )
+	{
+		return 0;
+	}
+
+	// Building something new. Note max value.
+	if ( ps->stats[ STAT_MISC ] > 0 && misc <= 0 )
+	{
+		max = ps->stats[ STAT_MISC ];
+	}
+
+	misc = ps->stats[ STAT_MISC ];
+
+	return ( float ) misc / ( float ) max;
+}
+
 static const progressBarCmd_t progressBarCmdList[] =
 {
 	{ "buildables", &CG_Rocket_GetBuildableLoadProgress },
+	{ "buildTimer", &CG_Rocket_GetBuildTimerProgress },
 	{ "characters", &CG_Rocket_GetCharLoadProgress },
 	{ "media", &CG_Rocket_GetMediaLoadProgress },
 	{ "overall", &CG_Rocket_GetOverallLoadProgress },
