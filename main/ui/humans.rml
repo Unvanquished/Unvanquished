@@ -1,0 +1,38 @@
+<rml>
+	<head>
+		<style>
+			body
+			{
+				font-family: Roboto;
+				font-size: 48;
+			}
+			speedometer
+			{
+				width: 100px;
+				height: 100px;
+				background-color: rgba(50,50,50,100);
+				color: rgba(255,0,0,191);
+			}
+			crosshair
+			{
+				color: red;
+			}
+			.speed_max, .speed_current
+			{
+				color: black;
+				font-size: 32;
+				padding: 8px;
+				margin: 2px;
+			}
+
+		</style>
+	</head>
+	<body id="hud">
+		<fps /> fps <br />
+		<ammo type="total" /> rounds of ammo<br />
+		<clips /> clips left <br />
+
+		<crosshair /><br />
+		<speedometer />
+	</body>
+</rml>
