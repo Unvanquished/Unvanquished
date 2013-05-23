@@ -114,6 +114,33 @@ static void CG_Rocket_DrawAmmo( void )
 	}
 }
 
+static void CG_Rocket_DrawClips( void )
+{
+	int           value;
+	playerState_t *ps = &cg.snap->ps;
+
+	switch ( BG_PrimaryWeapon( ps->stats ) )
+	{
+		case WP_NONE:
+		case WP_BLASTER:
+		case WP_ABUILD:
+		case WP_ABUILD2:
+		case WP_HBUILD:
+			return;
+
+		default:
+			value = ps->clips;
+
+			if ( value > -1 )
+			{
+				trap_Rocket_SetInnerRML( "", "", va( "<span class='clips_value'>%d</span>", value ) );
+			}
+
+			break;
+	}
+}
+
+
 #define FPS_FRAMES 20
 #define FPS_STRING "fps"
 static void CG_Rocket_DrawFPS( void )
@@ -433,6 +460,7 @@ typedef struct
 static const elementRenderCmd_t elementRenderCmdList[] =
 {
 	{ "ammo", &CG_Rocket_DrawAmmo },
+	{ "clips", &CG_Rocket_DrawClips },
 	{ "crosshair", &CG_Rocket_DrawCrosshair },
 	{ "fps", &CG_Rocket_DrawFPS },
 	{ "pic", &CG_Rocket_DrawPic },
