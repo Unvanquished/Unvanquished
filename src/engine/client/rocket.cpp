@@ -145,6 +145,50 @@ public:
 	}
 };
 
+class RocketCompiledGeometry
+{
+public:
+	polyVert_t *verts;
+	int         numVerts;
+	int        *indices;
+	int         numIndicies;
+	qhandle_t   shader;
+
+	RocketCompiledGeometry( Rocket::Core::Vertex *verticies, int numVerticies, int *_indices, int _numIndicies, qhandle_t shader ) : numVerts( numVerticies ), numIndicies( _numIndicies )
+	{
+		this->verts = ( polyVert_t * ) Z_Malloc( sizeof( polyVert_t ) * numVerticies );
+
+		this->indices = ( int * ) Z_Malloc( sizeof( int ) * _numIndicies );
+		Com_Memcpy( indices, _indices, _numIndicies * sizeof( int ) );
+
+		for ( int i = 0; i < numVerticies; i++ )
+		{
+			polyVert_t &polyVert = verts[ i ];
+			Rocket::Core::Vertex &vert = verticies[ i ];
+			Vector2Copy( vert.position, polyVert.xyz );
+
+			polyVert.modulate[ 0 ] = vert.colour.red;
+			polyVert.modulate[ 1 ] = vert.colour.green;
+			polyVert.modulate[ 2 ] = vert.colour.blue;
+			polyVert.modulate[ 3 ] = vert.colour.alpha;
+
+			Vector2Copy( vert.tex_coord, polyVert.st );
+		}
+
+		this->shader = shader;
+	}
+
+	~RocketCompiledGeometry() {}
+
+	void free( void )
+	{
+		Z_Free( verts );
+		Z_Free( indices );
+	}
+};
+
+
+
 //TODO: CompileGeometry, RenderCompiledGeometry, ReleaseCompileGeometry ( use vbos and ibos )
 class DaemonRenderInterface : public Rocket::Core::RenderInterface
 {
@@ -173,6 +217,28 @@ public:
 		re.Add2dPolysIndexed( verts, numVerticies, indices, numIndicies, translation.x, translation.y, ( qhandle_t ) texture );
 
 		Z_Free( verts );
+	}
+
+	Rocket::Core::CompiledGeometryHandle CompileGeometry( Rocket::Core::Vertex *vertices, int num_vertices, int *indices, int num_indices, Rocket::Core::TextureHandle texture )
+	{
+		RocketCompiledGeometry *geometry = new RocketCompiledGeometry( vertices, num_vertices, indices, num_indices, ( qhandle_t ) texture );
+
+		return Rocket::Core::CompiledGeometryHandle( geometry );
+
+	}
+
+	void RenderCompiledGeometry( Rocket::Core::CompiledGeometryHandle geometry, const Rocket::Core::Vector2f &translation )
+	{
+		RocketCompiledGeometry *g = ( RocketCompiledGeometry * ) geometry;
+
+		re.Add2dPolysIndexed( g->verts, g->numVerts, g->indices, g->numIndicies, translation.x, translation.y, g->shader );
+	}
+
+	void ReleaseCompiledGeometry( Rocket::Core::CompiledGeometryHandle geometry )
+	{
+		RocketCompiledGeometry *g = ( RocketCompiledGeometry * ) geometry;
+		g->free();
+		delete g;
 	}
 
 	bool LoadTexture( Rocket::Core::TextureHandle& textureHandle, Rocket::Core::Vector2i& textureDimensions, const Rocket::Core::String& source )
