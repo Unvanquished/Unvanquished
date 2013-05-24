@@ -1342,9 +1342,10 @@ Sets cg.refdef.gradingWeights
 static void CG_CalcColorGradingForPoint( vec3_t loc )
 {
 	int   i, j, idx;
-	float dist, weight, totalWeight;
+	float dist, weight;
 	int   selectedIdx[3] = { 0, 0, 0 };
 	float selectedWeight[3] = { 0.0f, 0.0f, 0.0f };
+	float totalWeight = 0.0f;
 
 	for( i = 0; i < MAX_GRADING_TEXTURES; i++ ) {
 		if( !cgs.gameGradingTextures[i] )
