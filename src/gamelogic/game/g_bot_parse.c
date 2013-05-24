@@ -332,6 +332,30 @@ static AIValue_t randomChance( gentity_t *self, const AIValue_t *params )
 	return AIBoxFloat( random() );
 }
 
+static AIValue_t cvarInt( gentity_t *self, const AIValue_t *params )
+{
+	vmCvar_t *c = G_FindCvar( AIUnBoxString( params[ 0 ] ) );
+
+	if ( !c )
+	{
+		return AIBoxInt( 0 );
+	}
+
+	return AIBoxInt( c->integer );
+}
+
+static AIValue_t cvarFloat( gentity_t *self, const AIValue_t *params )
+{
+	vmCvar_t *c = G_FindCvar( AIUnBoxString( params[ 0 ] ) );
+
+	if ( !c )
+	{
+		return AIBoxFloat( 0 );
+	}
+
+	return AIBoxFloat( c->value );
+}
+
 // functions accessible to the behavior tree for use in condition nodes
 static const struct AIConditionMap_s
 {
@@ -347,6 +371,8 @@ static const struct AIConditionMap_s
 	{ "buildingIsDamaged", VALUE_INT,   buildingIsDamaged, 0 },
 	{ "canEvolveTo",       VALUE_INT,   botCanEvolveTo,    1 },
 	{ "class",             VALUE_INT,   botClass,          0 },
+	{ "cvarFloat",         VALUE_FLOAT, cvarFloat,         1 },
+	{ "cvarInt",           VALUE_INT,   cvarInt,           1 },
 	{ "directPathTo",      VALUE_INT,   directPathTo,      1 },
 	{ "distanceTo",        VALUE_FLOAT, distanceTo,        1 },
 	{ "goalBuildingType",  VALUE_INT,   goalBuildingType,  0 },

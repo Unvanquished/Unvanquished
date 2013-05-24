@@ -619,6 +619,13 @@ void G_InitSetEntities( void )
 	}
 }
 
+static int cvarCompare( const void *a, const void *b )
+{
+	cvarTable_t *ac = ( cvarTable_t * ) a;
+	cvarTable_t *bc = ( cvarTable_t * ) b;
+	return Q_stricmp( ac->cvarName, bc->cvarName );
+}
+
 /*
 =================
 G_RegisterCvars
@@ -628,6 +635,9 @@ void G_RegisterCvars( void )
 {
 	int         i;
 	cvarTable_t *cvarTable;
+
+	// sort the table for fast lookup
+	qsort( gameCvarTable, gameCvarTableSize, sizeof( *gameCvarTable ), cvarCompare );
 
 	for ( i = 0, cvarTable = gameCvarTable; i < gameCvarTableSize; i++, cvarTable++ )
 	{
@@ -698,6 +708,20 @@ void G_RestoreCvars( void )
 			trap_Cvar_Set( cv->cvarName, cv->explicit );
 		}
 	}
+}
+
+vmCvar_t *G_FindCvar( const char *name )
+{
+	cvarTable_t *c = NULL;
+
+	c = ( cvarTable_t * ) bsearch( name, gameCvarTable, gameCvarTableSize, sizeof( *gameCvarTable ), cvarCompare );
+
+	if ( !c )
+	{
+		return NULL;
+	}
+
+	return c->vmCvar;
 }
 
 /*

@@ -1136,6 +1136,7 @@ void       G_ExecuteVote( team_t team );
 void       G_CheckVote( team_t team );
 void       LogExit( const char *string );
 int        G_TimeTilSuddenDeath( void );
+vmCvar_t  *G_FindCvar( const char *name );
 
 //
 // g_client.c
