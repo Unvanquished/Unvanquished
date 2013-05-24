@@ -381,9 +381,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define REPEATER_SLAVECOUNT       3   // max number of buildables each repeater can host
 #define BUILDABLE_MAX_BUDDYS      16  // max number of interfering buildables or slaves stored
 
-#define HUMAN_DETONATION_DELAY    4000
-#define ALIEN_EXPLOSION_DELAY     5000
-
 #define MGTURRET_RANGE            400.0
 #define MGTURRET_REPEAT           150.0
 #define MGTURRET_ANGULARSPEED     12
@@ -438,9 +435,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * Misc
  */
 
+// fall distance
 #define MIN_FALL_DISTANCE                  30.0f //the fall distance at which fall damage kicks in
 #define MAX_FALL_DISTANCE                  120.0f //the fall distance at which maximum damage is dealt
 #define AVG_FALL_DISTANCE                  (( MIN_FALL_DISTANCE + MAX_FALL_DISTANCE ) / 2.0f )
+
+// buildable explosion
+#define HUMAN_DETONATION_DELAY             4000
+#define ALIEN_DETONATION_DELAY             5000
+#define DETONATION_DELAY_RAND_RANGE        0.25f
 
 // score
 #define SCORE_PER_CREDIT                   0.02f // used to convert credit rewards to score points

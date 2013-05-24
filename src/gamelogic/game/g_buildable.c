@@ -874,11 +874,15 @@ void AGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 
 	if ( self->spawned && damage < BG_Buildable( self->s.modelindex )->health )
 	{
-		self->nextthink = level.time + ALIEN_EXPLOSION_DELAY;
+		// blast after brief period
+		self->nextthink = level.time + ALIEN_DETONATION_DELAY
+		                  + ( ( rand() - ( RAND_MAX / 2 ) ) / ( float )( RAND_MAX / 2 ) )
+		                  * DETONATION_DELAY_RAND_RANGE * ALIEN_DETONATION_DELAY;
 	}
 	else
 	{
-		self->nextthink = level.time; //blast immediately
+		// blast immediately
+		self->nextthink = level.time;
 	}
 
 	G_LogDestruction( self, attacker, mod );
@@ -2119,7 +2123,7 @@ void G_SetHumanBuildablePowerState()
 ================
 HGeneric_Think
 
-A generic think function for human buildables
+A generic think function for human buildables.
 ================
 */
 void HGeneric_Think( gentity_t *self )
@@ -2145,29 +2149,12 @@ void HGeneric_Think( gentity_t *self )
 
 /*
 ================
-HSpawn_Disappear
+HGeneric_Blast
 
-Called when a human spawn is destroyed before it is spawned
-think function
+Called when a human buildable explodes.
 ================
 */
-void HSpawn_Disappear( gentity_t *self )
-{
-	self->timestamp = level.time;
-	G_RewardAttackers( self );
-
-	G_FreeEntity( self );
-}
-
-/*
-================
-HSpawn_blast
-
-Called when a human spawn explodes
-think function
-================
-*/
-void HSpawn_Blast( gentity_t *self )
+void HGeneric_Blast( gentity_t *self )
 {
 	vec3_t dir;
 
@@ -2192,30 +2179,49 @@ void HSpawn_Blast( gentity_t *self )
 
 /*
 ================
-HSpawn_die
+HGeneric_Disappear
 
-Called when a human spawn dies
+Called when a human buildable is destroyed before it is spawned.
 ================
 */
-void HSpawn_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod )
+void HGeneric_Disappear( gentity_t *self )
+{
+	self->timestamp = level.time;
+	G_RewardAttackers( self );
+
+	G_FreeEntity( self );
+}
+
+/*
+================
+HGeneric_Die
+
+Called when a human buildable dies.
+================
+*/
+void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod )
 {
 	G_SetBuildableAnim( self, BANIM_DESTROY1, qtrue );
 	G_SetIdleBuildableAnim( self, BANIM_DESTROYED );
 
 	self->die = nullDieFunction;
 	self->killedBy = attacker - g_entities;
-	self->powered = qfalse; //free up power
-	self->s.eFlags &= ~EF_FIRING; //prevent any firing effects
+	self->powered = qfalse;
+	self->s.eFlags &= ~EF_FIRING; // prevent any firing effects
 
 	if ( self->spawned )
 	{
-		self->think = HSpawn_Blast;
-		self->nextthink = level.time + HUMAN_DETONATION_DELAY;
+		// blast after brief period
+		self->think = HGeneric_Blast;
+		self->nextthink = level.time + HUMAN_DETONATION_DELAY
+		                  + ( ( rand() - ( RAND_MAX / 2 ) ) / ( float )( RAND_MAX / 2 ) )
+		                  * DETONATION_DELAY_RAND_RANGE * HUMAN_DETONATION_DELAY;
 	}
 	else
 	{
-		self->think = HSpawn_Disappear;
-		self->nextthink = level.time; //blast immediately
+		// disappear immediately
+		self->think = HGeneric_Disappear;
+		self->nextthink = level.time;
 	}
 
 	G_LogDestruction( self, attacker, mod );
@@ -2271,39 +2277,6 @@ void HSpawn_Think( gentity_t *self )
 			}
 		}
 	}
-}
-
-//==================================================================================
-
-/*
-================
-HRepeater_Die
-
-Called when a repeater dies
-================
-*/
-static void HRepeater_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod )
-{
-	G_SetBuildableAnim( self, BANIM_DESTROY1, qtrue );
-	G_SetIdleBuildableAnim( self, BANIM_DESTROYED );
-
-	self->die = nullDieFunction;
-	self->killedBy = attacker - g_entities;
-	self->powered = qfalse; //free up power
-	self->s.eFlags &= ~EF_FIRING; //prevent any firing effects
-
-	if ( self->spawned )
-	{
-		self->think = HSpawn_Blast;
-		self->nextthink = level.time + HUMAN_DETONATION_DELAY;
-	}
-	else
-	{
-		self->think = HSpawn_Disappear;
-		self->nextthink = level.time; //blast immediately
-	}
-
-	G_LogDestruction( self, attacker, mod );
 }
 
 /*
@@ -2513,7 +2486,7 @@ void HMedistat_Die( gentity_t *self, gentity_t *inflictor,
 		self->target->client->ps.stats[ STAT_STATE ] &= ~SS_HEALING_ACTIVE;
 	}
 
-	HSpawn_Die( self, inflictor, attacker, damage, mod );
+	HGeneric_Die( self, inflictor, attacker, damage, mod );
 }
 
 /*
@@ -3148,7 +3121,7 @@ Called when a Human Drill dies
 */
 void HDrill_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod )
 {
-	HSpawn_Die( self, inflictor, attacker, damage, mod );
+	HGeneric_Die( self, inflictor, attacker, damage, mod );
 
 	self->s.weapon = 0;
 	self->s.weaponAnim = 0;
@@ -4690,29 +4663,29 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 			break;
 
 		case BA_H_SPAWN:
-			built->die = HSpawn_Die;
+			built->die = HGeneric_Die;
 			built->think = HSpawn_Think;
 			break;
 
 		case BA_H_MGTURRET:
-			built->die = HSpawn_Die;
+			built->die = HGeneric_Die;
 			built->think = HMGTurret_Think;
 			break;
 
 		case BA_H_TESLAGEN:
-			built->die = HSpawn_Die;
+			built->die = HGeneric_Die;
 			built->think = HTeslaGen_Think;
 			break;
 
 		case BA_H_ARMOURY:
 			built->think = HArmoury_Think;
-			built->die = HSpawn_Die;
+			built->die = HGeneric_Die;
 			built->use = HArmoury_Activate;
 			break;
 
 		case BA_H_DCC:
 			built->think = HDCC_Think;
-			built->die = HSpawn_Die;
+			built->die = HGeneric_Die;
 			break;
 
 		case BA_H_MEDISTAT:
@@ -4727,14 +4700,14 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 
 		case BA_H_REACTOR:
 			built->think = HReactor_Think;
-			built->die = HSpawn_Die;
+			built->die = HGeneric_Die;
 			built->use = HRepeater_Use;
 			built->powered = built->active = qtrue;
 			break;
 
 		case BA_H_REPEATER:
 			built->think = HRepeater_Think;
-			built->die = HRepeater_Die;
+			built->die = HGeneric_Die;
 			built->use = HRepeater_Use;
 			built->customNumber = -1;
 			break;
