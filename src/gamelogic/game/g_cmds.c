@@ -526,12 +526,14 @@ void Cmd_Give_f( gentity_t *ent )
 {
 	char     *name;
 	qboolean give_all = qfalse;
+	float    amount;
 
 	if ( trap_Argc() < 2 )
 	{
 		ADMP( QQ( N_( "usage: give [what]\n" ) ) );
-		ADMP( QQ( N_( "usage: valid choices are: all, health, funds [amount], stamina, "
-		      "poison, gas, ammo\n" ) ) );
+		ADMP( QQ( N_( "usage: valid choices are: all, health, funds [amount], "
+		              "bp [amount], confidence [amount], stamina, "
+		              "poison, gas, ammo\n" ) ) );
 		return;
 	}
 
@@ -544,29 +546,58 @@ void Cmd_Give_f( gentity_t *ent )
 
 	if ( give_all || Q_strnicmp( name, "funds", 5 ) == 0 )
 	{
-		float credits;
-
 		if ( give_all || trap_Argc() < 3 )
 		{
-			credits = 30000.0f;
+			amount = 30000.0f;
 		}
 		else
 		{
-			credits = atof( name + 6 ) *
+			amount = atof( name + 6 ) *
 			          ( ent->client->pers.teamSelection == TEAM_ALIENS ? CREDITS_PER_EVO : 1.0f );
 
 			// clamp credits manually, as G_AddCreditToClient() expects a short int
-			if ( credits > 30000.0f )
+			if ( amount > 30000.0f )
 			{
-				credits = 30000.0f;
+				amount = 30000.0f;
 			}
-			else if ( credits < 30000.0f )
+			else if ( amount < 30000.0f )
 			{
-				credits = -30000.0f;
+				amount = -30000.0f;
 			}
 		}
 
-		G_AddCreditToClient( ent->client, ( short ) credits, qtrue );
+		G_AddCreditToClient( ent->client, ( short ) amount, qtrue );
+	}
+
+	// give bp
+	if ( Q_strnicmp( name, "bp", 2 ) == 0 )
+	{
+		if ( give_all || trap_Argc() < 3 )
+		{
+			amount = 100.0f;
+		}
+		else
+		{
+			amount = atof( name + 3 );
+		}
+
+		G_ModifyBuildPoints( ent->client->pers.teamSelection, amount );
+	}
+
+	// give confidence
+	if ( Q_strnicmp( name, "confidence", 10 ) == 0 )
+	{
+		if ( give_all || trap_Argc() < 3 )
+		{
+			amount = 500.0f;
+		}
+		else
+		{
+			amount = atof( name + 11 );
+		}
+
+		G_AddConfidence( ent->client->pers.teamSelection, CONFIDENCE_GENERAL, CONF_REAS_NONE,
+		                 CONF_QUAL_NONE, amount, ent );
 	}
 
 	if ( ent->client->ps.stats[ STAT_HEALTH ] <= 0 ||
