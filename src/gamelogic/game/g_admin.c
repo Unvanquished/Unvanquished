@@ -3797,7 +3797,7 @@ qboolean G_admin_adminhelp( gentity_t *ent )
 
 				if ( c->desc )
 				{
-					ADMP( va( "%s %s", QQ( N_(" ^3Description: ^7$1t$\n") ), c->desc ) );
+					ADMP( va( "%s %s", QQ( N_(" ^3Description: ^7$1t$\n") ), Quote( c->desc ) ) );
 				}
 
 				ADMP( va( "%s %s", QQ( N_(" ^3Syntax: ^7$1$\n") ), c->command ) );
