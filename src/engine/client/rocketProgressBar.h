@@ -304,6 +304,16 @@ private:
 
 		float progress_size;
 
+		for ( int i = START; i < NUM_GEOMETRIES; ++i )
+		{
+			geometry[ i ].Release();
+		}
+
+		if ( value == 0 )
+		{
+			return;
+		}
+
 		switch ( orientation )
 		{
 			case LEFT:
