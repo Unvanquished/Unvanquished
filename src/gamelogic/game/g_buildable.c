@@ -712,7 +712,8 @@ static void nullDieFunction( gentity_t *self, gentity_t *inflictor, gentity_t *a
 ================
 CompareEntityDistance
 
-Compares distance of two entitys. Input are two indices for g_entities.
+Sorts entities by distance, lowest first.
+Input are two indices for g_entities.
 ================
 */
 static vec3_t compareEntityDistanceOrigin;
@@ -749,6 +750,9 @@ static int    CompareEntityDistance( const void *a, const void *b )
 CompareBuildableInterference
 
 Sorts (human) buildables by interference value, highest first.
+Uses distance as secondary order, lowest first.
+Input are two indices for g_entities.
+compareEntityDistanceOrigin must be set for distance check to work!
 ================
 */
 static int CompareBuildableInterference( const void *a, const void *b )
@@ -768,7 +772,7 @@ static int CompareBuildableInterference( const void *a, const void *b )
 	}
 	else
 	{
-		return 0;
+		return CompareEntityDistance( a, b );
 	}
 }
 
@@ -1804,9 +1808,44 @@ static void IdlePowerState( gentity_t *self )
 
 /*
 ================
+AffectedByInterference
+
+Checks whether self has interference above threshold.
+================
+*/
+static qboolean AffectedByInterference( gentity_t *self )
+{
+	return ( self->interference > HUMAN_MAX_INTERFERENCE );
+}
+
+/*
+================
+CausesInterference
+
+Checks whether self is interfering with another buildable that is above threshold.
+================
+*/
+static qboolean CausesInterference( gentity_t *self )
+{
+	int buddyNum;
+
+	for ( buddyNum = 0; buddyNum < MIN( self->interference, BUILDABLE_MAX_BUDDYS )
+	      && self->buddys[ buddyNum ]; buddyNum++ )
+	{
+		if ( AffectedByInterference( self->buddys[ buddyNum ] ) )
+		{
+			return qtrue;
+		}
+	}
+
+	return qfalse;
+}
+
+/*
+================
 DistributePower
 
-Assigns self as powersource to closest buildables that don't yet have one.
+Assigns self as powersource to buildables in range that need one
 ================
 */
 static void DistributePower( gentity_t *self, float maxDistance, int maxSlaves )
@@ -1824,16 +1863,11 @@ static void DistributePower( gentity_t *self, float maxDistance, int maxSlaves )
 	VectorSubtract( self->s.origin, range, mins );
 	numNeighbors = trap_EntitiesInBox( mins, maxs, neighbors, MAX_GENTITIES );
 
-	/*
-	// sort by distance
-	VectorCopy( self->s.origin, compareEntityDistanceOrigin );
-	qsort( neighbors, numNeighbors, sizeof( int ), CompareEntityDistance );
-	*/
-
 	// sort by interference
+	VectorCopy( self->s.origin, compareEntityDistanceOrigin );
 	qsort( neighbors, numNeighbors, sizeof( int ), CompareBuildableInterference );
 
-	// provide power to the closest buildables
+	// provide power
 	for ( neighborNum = 0; neighborNum < numNeighbors; neighborNum++ )
 	{
 		neighbor = &g_entities[ neighbors[ neighborNum ] ];
@@ -1855,12 +1889,18 @@ static void DistributePower( gentity_t *self, float maxDistance, int maxSlaves )
 				continue;
 			}
 
-			// ignore buildables that don't need a power source
+			// don't host other hosts
 			switch ( neighbor->s.modelindex )
 			{
 				case BA_H_REPEATER:
 				case BA_H_REACTOR:
 					continue;
+			}
+
+			// ignore buildables that don't need a power source
+			if ( !AffectedByInterference( neighbor ) && !CausesInterference( neighbor ) )
+			{
+				continue;
 			}
 
 			// if we have a free slot, power neighbor
