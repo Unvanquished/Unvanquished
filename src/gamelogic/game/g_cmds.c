@@ -2694,12 +2694,11 @@ void Cmd_Destroy_f( gentity_t *ent )
 				if ( !instant && !protect && DECON_MARK_CHECK( INSTANT ) ) goto fail_lastSpawn;
 				goto toggle_deconstruct;
 			}
-			else if ( protect && ( ent->client->pers.teamSelection != TEAM_HUMANS || G_FindPower( traceEnt, qtrue ) ) )
+			else if ( protect )
 			{
 				goto toggle_deconstruct;
 			}
-			else if ( instant || DECON_MARK_CHECK( INSTANT ) ||
-			          ( ent->client->pers.teamSelection == TEAM_HUMANS && !G_FindPower( traceEnt, qtrue ) ) )
+			else if ( instant || DECON_MARK_CHECK( INSTANT ) )
 			{
 				goto do_deconstruct;
 			}
@@ -2729,14 +2728,11 @@ fail_lastSpawn:
 	}
 
 	// deny decon if Build Timer Says No
-	if ( ent->client->pers.teamSelection != TEAM_HUMANS || G_FindPower( traceEnt, qtrue ) )
+	if ( ent->client->ps.stats[ STAT_MISC ] > 0 )
 	{
-		if ( ent->client->ps.stats[ STAT_MISC ] > 0 )
-		{
-			traceEnt->deconstruct = prevDeconstruct; // restore the decon flag (for repeat '/deconstruct marked')
-			G_AddEvent( ent, EV_BUILD_DELAY, ent->client->ps.clientNum );
-			return;
-		}
+		traceEnt->deconstruct = prevDeconstruct; // restore the decon flag (for repeat '/deconstruct marked')
+		G_AddEvent( ent, EV_BUILD_DELAY, ent->client->ps.clientNum );
+		return;
 	}
 
 	if ( !g_cheats.integer ) // add a bit to the build timer

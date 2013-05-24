@@ -371,15 +371,18 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /*
  * HUMAN buildables
- *
- * REACTOR_BASESIZE - the maximum distance a buildable can be from a reactor
- * REPEATER_BASESIZE - the maximum distance a buildable can be from a repeater
- *
  */
 
-#define REACTOR_BASESIZE          1000
-#define REPEATER_BASESIZE         500
-#define HUMAN_DETONATION_DELAY    5000
+#define HUMAN_INTERFERENCE_RANGE  250 // unhosted buildables in this range will interfer
+#define HUMAN_MAX_INTERFERENCE    3   // max number of unhosted buildables that may interfer
+#define REACTOR_BASESIZE          500 // max range where a reactor can host buildables
+#define REPEATER_BASESIZE         180 // max range where a repeater can host buildables
+#define REACTOR_SLAVECOUNT        5   // max number of buildables the RC can host
+#define REPEATER_SLAVECOUNT       3   // max number of buildables each repeater can host
+#define BUILDABLE_MAX_BUDDYS      16  // max number of interfering buildables or slaves stored
+
+#define HUMAN_DETONATION_DELAY    4000
+#define ALIEN_EXPLOSION_DELAY     5000
 
 #define MGTURRET_RANGE            400.0
 #define MGTURRET_REPEAT           150.0

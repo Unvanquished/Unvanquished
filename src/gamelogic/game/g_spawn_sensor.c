@@ -536,15 +536,13 @@ void sensor_support_think( gentity_t *self )
 
 	switch (self->conditions.team) {
 		case TEAM_HUMANS:
-			self->powered = G_FindPower( self, qfalse );
+			self->powered = qfalse;
 			break;
 		case TEAM_ALIENS:
 			self->powered = G_FindCreep( self );
 			break;
 		case TEAM_ALL:
-			self->powered = G_FindPower( self, qfalse );
-			if(!self->powered)
-				self->powered = G_FindCreep( self );
+			self->powered = G_FindCreep( self );
 			break;
 		default:
 			G_Printf(S_ERROR "missing team field for %s\n", etos( self ));
@@ -588,7 +586,7 @@ void sensor_power_think( gentity_t *self )
 		return;
 	}
 
-	self->powered = G_FindPower( self, qfalse ); //TODO spawnflag setting
+	self->powered = qfalse; //TODO: Reuse or remove this sensor
 
 	if(self->powered)
 		G_FireEntity( self, self->powerSource );
