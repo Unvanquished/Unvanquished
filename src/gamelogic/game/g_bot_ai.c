@@ -591,21 +591,18 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 
 	if ( BotGetTargetTeam( self->botMind->goal ) == myTeam || BotGetTargetTeam( self->botMind->goal ) == TEAM_NONE )
 	{
-		self->botMind->bestEnemy.ent = NULL;
-		return STATUS_FAILURE;
+		return STATUS_SUCCESS;
 	}
 
 	// the enemy has died
 	if ( self->botMind->goal.ent->health <= 0 )
 	{
-		self->botMind->bestEnemy.ent = NULL;
 		return STATUS_SUCCESS;
 	}
 
 	if ( self->botMind->goal.ent->client && self->botMind->goal.ent->client->sess.spectatorState != SPECTATOR_NOT )
 	{
-		self->botMind->bestEnemy.ent = NULL;
-		return STATUS_FAILURE;
+		return STATUS_SUCCESS;
 	}
 
 	if ( WeaponIsEmpty( ( weapon_t )self->client->ps.weapon, self->client->ps ) && myTeam == TEAM_HUMANS )
@@ -621,7 +618,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	//aliens have radar so they will always 'see' the enemy if they are in radar range
 	if ( myTeam == TEAM_ALIENS && DistanceToGoalSquared( self ) <= Square( ALIENSENSE_RANGE ) )
 	{
-		self->botMind->enemyLastSeen = level.time;
+		self->botMind->goalLastSeen = level.time;
 	}
 
 	if ( !BotTargetIsVisible( self, self->botMind->goal, CONTENTS_SOLID ) )
@@ -632,14 +629,11 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		//we can see another enemy (not our target)
 		if ( self->botMind->bestEnemy.ent && self->botMind->goal.ent != self->botMind->bestEnemy.ent && BotPathIsWalkable( self, proposedTarget ) )
 		{
-			//change targets
-			BotChangeGoal( self, proposedTarget );
-			return STATUS_RUNNING;
+			return STATUS_SUCCESS;
 		}
-		else if ( level.time - self->botMind->enemyLastSeen > g_bot_chasetime.integer )
+		else if ( level.time - self->botMind->goalLastSeen > g_bot_chasetime.integer )
 		{
-			self->botMind->bestEnemy.ent = NULL;
-			return STATUS_FAILURE;
+			return STATUS_SUCCESS;
 		}
 		else
 		{
@@ -650,7 +644,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	else
 	{
 		qboolean inAttackRange = BotTargetInAttackRange( self, self->botMind->goal );
-		self->botMind->enemyLastSeen = level.time;
+		self->botMind->goalLastSeen = level.time;
 
 		if ( ( inAttackRange && myTeam == TEAM_HUMANS ) || self->botMind->directPathToGoal )
 		{

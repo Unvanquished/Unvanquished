@@ -2099,27 +2099,30 @@ void BotPain( gentity_t *self, gentity_t *attacker, int damage )
 
 void BotSearchForEnemy( gentity_t *self )
 {
-	if ( !self->botMind->bestEnemy.ent || level.time - self->botMind->enemyLastSeen > g_bot_chasetime.integer )
+	botTarget_t target;
+	gentity_t *enemy = BotFindBestEnemy( self );
+
+	if ( enemy )
 	{
-		botTarget_t target;
-		gentity_t *enemy = BotFindBestEnemy( self );
+		BotSetTarget( &target, enemy, NULL );
 
-		if ( enemy )
+		if ( enemy->s.eType != ET_PLAYER || ( enemy->s.eType == ET_PLAYER 
+			&& ( self->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS || BotAimNegligence( self, target ) <= g_bot_fov.value / 2 ) ) )
 		{
-			BotSetTarget( &target, enemy, NULL );
-
-			if ( enemy->s.eType != ET_PLAYER || ( enemy->s.eType == ET_PLAYER 
-				&& ( self->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS || BotAimNegligence( self, target ) <= g_bot_fov.value / 2 ) ) )
+			// don't reset timeFoundEnemy unless we were not previously alerted to an enemy because we don't want to reset our reaction time
+			if ( !self->botMind->bestEnemy.ent )
 			{
-				self->botMind->bestEnemy.ent = enemy;
-				self->botMind->bestEnemy.distance = Distance( self->s.origin, enemy->s.origin );
-				self->botMind->enemyLastSeen = level.time;
 				self->botMind->timeFoundEnemy = level.time;
 			}
+			self->botMind->bestEnemy.ent = enemy;
+			self->botMind->bestEnemy.distance = Distance( self->s.origin, enemy->s.origin );
+			self->botMind->enemyLastSeen = level.time;
 		}
-		else
-		{
-			self->botMind->bestEnemy.ent = NULL;
-		}
+	}
+	
+	if ( level.time - self->botMind->enemyLastSeen > g_bot_chasetime.integer )
+	{
+		// reset after a while if we haven't seen an enemy
+		self->botMind->bestEnemy.ent = NULL;
 	}
 }

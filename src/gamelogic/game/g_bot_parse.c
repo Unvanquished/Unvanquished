@@ -84,22 +84,7 @@ static AIValue_t haveWeapon( gentity_t *self, const AIValue_t *params )
 
 static AIValue_t alertedToEnemy( gentity_t *self, const AIValue_t *params )
 {
-	qboolean success = qfalse;
-
-	if ( level.time - self->botMind->timeFoundEnemy < g_bot_reactiontime.integer )
-	{
-		success = qfalse;
-	}
-	else if ( !self->botMind->bestEnemy.ent )
-	{
-		success = qfalse;
-	}
-	else
-	{
-		success = qtrue;
-	}
-
-	return AIBoxInt( success );
+	return AIBoxInt( self->botMind->bestEnemy.ent && level.time - self->botMind->timeFoundEnemy >= g_bot_reactiontime.integer );
 }
 
 static AIValue_t botTeam( gentity_t *self, const AIValue_t *params )
@@ -142,27 +127,31 @@ static AIValue_t goalPercentHealth( gentity_t *self, const AIValue_t *params )
 
 static AIValue_t goalDead( gentity_t *self, const AIValue_t *params )
 {
-	qboolean success = qfalse;
+	qboolean dead = qfalse;
 	botTarget_t *goal = &self->botMind->goal;
 
 	if ( !BotTargetIsEntity( *goal ) )
 	{
-		success = qtrue;
+		dead = qtrue;
+	}
+	else if ( BotGetTargetTeam( *goal ) == TEAM_NONE )
+	{
+		dead = qtrue;
 	}
 	else if ( goal->ent->health <= 0 )
 	{
-		success = qtrue;
+		dead = qtrue;
 	}
 	else if ( goal->ent->client && goal->ent->client->sess.spectatorState != SPECTATOR_NOT )
 	{
-		success = qtrue;
+		dead = qtrue;
 	}
 	else if ( goal->ent->s.eType == ET_BUILDABLE && goal->ent->buildableTeam == self->client->ps.stats[ STAT_TEAM ] && !goal->ent->powered )
 	{
-		success = qtrue;
+		dead = qtrue;
 	}
 
-	return AIBoxInt( success );
+	return AIBoxInt( dead );
 }
 
 static AIValue_t goalBuildingType( gentity_t *self, const AIValue_t *params )
