@@ -86,8 +86,8 @@ static float CG_Rocket_GetBuildTimerProgress( void )
 
 static const progressBarCmd_t progressBarCmdList[] =
 {
+	{ "btimer", &CG_Rocket_GetBuildTimerProgress },
 	{ "buildables", &CG_Rocket_GetBuildableLoadProgress },
-	{ "buildTimer", &CG_Rocket_GetBuildTimerProgress },
 	{ "characters", &CG_Rocket_GetCharLoadProgress },
 	{ "media", &CG_Rocket_GetMediaLoadProgress },
 	{ "overall", &CG_Rocket_GetOverallLoadProgress },
