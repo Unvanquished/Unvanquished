@@ -20,9 +20,17 @@
 			.speed_max, .speed_current
 			{
 				color: black;
-				font-size: 32;
-				padding: 8px;
-				margin: 2px;
+				font-size: 20;
+				padding: 25px;
+				margin: -65px;
+			}
+			progressbar
+			{
+				width: 20%;
+				height: 32px;
+				start-image: /ui/start.png;
+				progress-image: /ui/progress.png;
+				end-image: /ui/end.png;
 			}
 
 		</style>
@@ -33,6 +41,7 @@
 		<clips /> clips left <br />
 
 		<crosshair /><br />
-		<speedometer />
+		<speedometer /><br />
+		<progressbar id="btimer" src="btimer" />
 	</body>
 </rml>
