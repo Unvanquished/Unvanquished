@@ -385,6 +385,8 @@ static void CG_Rocket_DrawSpeedGraph( void )
 	// Convert from absolute monitor coords to a virtual 640x480 coordinate system
 	x = ( x / cgs.glconfig.vidWidth ) * 640;
 	y = ( y / cgs.glconfig.vidHeight ) * 480;
+	w = ( w / cgs.glconfig.vidWidth ) * 640;
+	h = ( h / cgs.glconfig.vidHeight ) * 480;
 
 	// Convert from byte scale to [0,1]
 	Vector4Scale( color, 1 / 255.0f, color );
