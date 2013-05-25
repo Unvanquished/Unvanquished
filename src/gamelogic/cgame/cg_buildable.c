@@ -662,12 +662,12 @@ qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t 
 			break;
 
 		case BA_H_REACTOR:
-			*range = REACTOR_BASESIZE;
+			*range = REACTOR_POWER_RANGE;
 			shc = SHC_DARK_BLUE;
 			break;
 
 		case BA_H_REPEATER:
-			*range = REPEATER_BASESIZE;
+			*range = REPEATER_POWER_RANGE;
 			shc = SHC_LIGHT_BLUE;
 			break;
 

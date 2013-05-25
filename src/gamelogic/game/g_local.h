@@ -212,6 +212,7 @@ struct gentity_s
 	 */
 	qboolean     spawned;
 	gentity_t    *parent; // the gentity that spawned this one
+
 	/**
 	 * is the buildable getting support by reactor or overmind?
 	 * this is tightly coupled with enabled
@@ -221,6 +222,12 @@ struct gentity_s
 	 */
 	qboolean     powered;
 	gentity_t    *powerSource;
+
+	/**
+	 * Human buildables compete for power.
+	 * Buildables with a high value of interference will power down.
+	 */
+	float        interference;
 
 	/**
 	 * has a marked building been deconstructed for this building?
@@ -967,8 +974,6 @@ typedef enum
 gentity_t        *G_CheckSpawnPoint( int spawnNum, const vec3_t origin,
                                      const vec3_t normal, buildable_t spawn,
                                      vec3_t spawnOrigin );
-itemBuildError_t G_SufficientBPAvailable( buildable_t     buildable, vec3_t          origin );
-buildable_t      G_IsPowered( vec3_t origin );
 qboolean         G_IsDCCBuilt( void );
 int              G_FindDCC( gentity_t *self );
 gentity_t        *G_Reactor( void );
@@ -1000,10 +1005,6 @@ int              G_NextQueueTime( int queuedBP, int totalBP, int queueBaseRate )
 void             G_QueueBuildPoints( gentity_t *self );
 int              G_GetBuildPointsInt( team_t team );
 int              G_GetMarkedBuildPointsInt( team_t team );
-qboolean         G_FindPower( gentity_t *self, qboolean searchUnspawned );
-gentity_t        *G_PowerEntityForPoint( const vec3_t origin );
-gentity_t        *G_PowerEntityForEntity( gentity_t *ent );
-gentity_t        *G_InPowerZone( gentity_t *self );
 buildLog_t       *G_BuildLogNew( gentity_t *actor, buildFate_t fate );
 void             G_BuildLogSet( buildLog_t *log, gentity_t *ent );
 void             G_BuildLogAuto( gentity_t *actor, gentity_t *buildable, buildFate_t fate );
@@ -1011,6 +1012,7 @@ void             G_BuildLogRevert( int id );
 qboolean         G_CanAffordBuildPoints( team_t team, float amount );
 void             G_ModifyBuildPoints( team_t team, float amount );
 void             G_GetBuildableResourceValue(int *alienValue, int *humanValue );
+void             G_SetHumanBuildablePowerState();
 
 //
 // g_utils.c
