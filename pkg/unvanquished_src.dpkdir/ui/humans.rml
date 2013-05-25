@@ -43,6 +43,7 @@
 		<crosshair /><br />
 		<speedometer /><br />
 		<progressbar id="btimer" src="btimer" /><br />
-		<credits /> credits
+		<credits /> credits<br />
+		<progressbar id="stamina" src="stamina" /><br />
 	</body>
 </rml>
