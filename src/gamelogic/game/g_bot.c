@@ -347,7 +347,6 @@ void G_BotThink( gentity_t *self )
 	char buf[MAX_STRING_CHARS];
 	usercmd_t *botCmdBuffer;
 	vec3_t     nudge;
-	gentity_t *bestDamaged;
 	botRouteTarget_t routeTarget;
 
 	self->botMind->cmdBuffer = self->client->pers.cmd;
@@ -371,12 +370,8 @@ void G_BotThink( gentity_t *self )
 	while ( trap_BotGetServerCommand( self->client->ps.clientNum, buf, sizeof( buf ) ) );
 
 	BotSearchForEnemy( self );
-
 	BotFindClosestBuildings( self );
-
-	bestDamaged = BotFindDamagedFriendlyStructure( self );
-	self->botMind->closestDamagedBuilding.ent = bestDamaged;
-	self->botMind->closestDamagedBuilding.distance = ( !bestDamaged ) ? 0 :  Distance( self->s.origin, bestDamaged->s.origin );
+	BotFindDamagedFriendlyStructure( self );
 
 	//use medkit when hp is low
 	if ( self->health < BOT_USEMEDKIT_HP && BG_InventoryContainsUpgrade( UP_MEDKIT, self->client->ps.stats ) )

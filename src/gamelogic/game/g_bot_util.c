@@ -540,49 +540,61 @@ void BotFindClosestBuildings( gentity_t *self )
 	}
 }
 
-gentity_t* BotFindDamagedFriendlyStructure( gentity_t *self )
+void BotFindDamagedFriendlyStructure( gentity_t *self )
 {
 	//closest building
 	gentity_t* closestBuilding = NULL;
 
-	//minimum distance found
-	float minDistance = Square( ALIENSENSE_RANGE );
+	float minDistSqr;
 
 	gentity_t *target;
+	self->botMind->closestDamagedBuilding.ent = NULL;
+	self->botMind->closestDamagedBuilding.distance = INT_MAX;
+
+	minDistSqr = Square( self->botMind->closestDamagedBuilding.distance );
 
 	for ( target = &g_entities[MAX_CLIENTS]; target < &g_entities[level.num_entities - 1]; target++ )
 	{
-		float distance;
+		float distSqr;
+
+		if ( !target->inuse )
+		{
+			continue;
+		}
 
 		if ( target->s.eType != ET_BUILDABLE )
 		{
 			continue;
 		}
-		if ( target->buildableTeam != TEAM_HUMANS )
+
+		if ( target->buildableTeam != self->client->ps.stats[ STAT_TEAM ] )
 		{
 			continue;
 		}
+
 		if ( target->health >= BG_Buildable( ( buildable_t )target->s.modelindex )->health )
 		{
 			continue;
 		}
+
 		if ( target->health <= 0 )
 		{
 			continue;
 		}
+
 		if ( !target->spawned || !target->powered )
 		{
 			continue;
 		}
 
-		distance = DistanceSquared( self->s.origin, target->s.origin );
-		if ( distance <= minDistance )
+		distSqr = DistanceSquared( self->s.origin, target->s.origin );
+		if ( distSqr < minDistSqr )
 		{
-			minDistance = distance;
-			closestBuilding = target;
+			self->botMind->closestDamagedBuilding.ent = target;
+			self->botMind->closestDamagedBuilding.distance = sqrt( distSqr );
+			minDistSqr = distSqr;
 		}
 	}
-	return closestBuilding;
 }
 
 qboolean BotEntityIsVisible( gentity_t *self, gentity_t *target, int mask )
