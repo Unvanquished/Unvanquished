@@ -36,7 +36,7 @@ void     BotSetSkillLevel( gentity_t *self, int skill );
 int        FindBots( int *botEntityNumbers, int maxBots, team_t team );
 gentity_t* BotFindClosestEnemy( gentity_t *self );
 gentity_t* BotFindBestEnemy( gentity_t *self );
-void       BotFindClosestBuildings( gentity_t *self, botEntityAndDistance_t *closest );
+void       BotFindClosestBuildings( gentity_t *self );
 gentity_t* BotFindBuilding( gentity_t *self, int buildingType, int range );
 qboolean   BotTeamateHasWeapon( gentity_t *self, int weapon );
 void       BotSearchForEnemy( gentity_t *self );

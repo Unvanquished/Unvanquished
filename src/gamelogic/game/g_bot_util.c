@@ -488,11 +488,18 @@ gentity_t* BotFindBuilding( gentity_t *self, int buildingType, int range )
 	return closestBuilding;
 }
 
-void BotFindClosestBuildings( gentity_t *self, botEntityAndDistance_t *closest )
+void BotFindClosestBuildings( gentity_t *self )
 {
 	gentity_t *testEnt;
 	botEntityAndDistance_t *ent;
-	memset( closest, 0, sizeof( botEntityAndDistance_t ) * BA_NUM_BUILDABLES );
+	int i;
+
+	// clear out building list
+	for ( i = 0; i < ARRAY_LEN( self->botMind->closestBuildings ); i++ )
+	{
+		self->botMind->closestBuildings[ i ].ent = NULL;
+		self->botMind->closestBuildings[ i ].distance = INT_MAX;
+	}
 
 	for ( testEnt = &g_entities[MAX_CLIENTS]; testEnt < &g_entities[level.num_entities - 1]; testEnt++ )
 	{
@@ -523,8 +530,9 @@ void BotFindClosestBuildings( gentity_t *self, botEntityAndDistance_t *closest )
 
 		newDist = Distance( self->s.origin, testEnt->s.origin );
 
-		ent = &closest[ testEnt->s.modelindex ];
-		if ( newDist < ent->distance || ent->distance == 0 )
+		ent = &self->botMind->closestBuildings[ testEnt->s.modelindex ];
+
+		if ( newDist < ent->distance )
 		{
 			ent->ent = testEnt;
 			ent->distance = newDist;

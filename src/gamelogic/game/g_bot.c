@@ -372,7 +372,7 @@ void G_BotThink( gentity_t *self )
 
 	BotSearchForEnemy( self );
 
-	BotFindClosestBuildings( self, self->botMind->closestBuildings );
+	BotFindClosestBuildings( self );
 
 	bestDamaged = BotFindDamagedFriendlyStructure( self );
 	self->botMind->closestDamagedBuilding.ent = bestDamaged;
