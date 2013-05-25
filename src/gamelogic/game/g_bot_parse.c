@@ -54,6 +54,23 @@ static qboolean expectToken( const char *s, pc_token_list **list, qboolean next 
 	return qtrue;
 }
 
+AIValue_t AIBoxToken( const pc_token_stripped_t *token )
+{
+	if ( token->type == TT_STRING )
+	{
+		return AIBoxString( token->string );
+	}
+
+	if ( ( float ) token->intvalue != token->floatvalue )
+	{
+		return AIBoxFloat( token->floatvalue );
+	}
+	else
+	{
+		return AIBoxInt( token->intvalue );
+	}
+}
+
 // functions that are used to provide values to the behavior tree in condition nodes
 static AIValue_t buildingIsDamaged( gentity_t *self, const AIValue_t *params )
 {
@@ -67,21 +84,7 @@ static AIValue_t haveWeapon( gentity_t *self, const AIValue_t *params )
 
 static AIValue_t alertedToEnemy( gentity_t *self, const AIValue_t *params )
 {
-	qboolean success;
-	if ( level.time - self->botMind->timeFoundEnemy < g_bot_reactiontime.integer )
-	{
-		success = qfalse;
-	}
-	else if ( !self->botMind->bestEnemy.ent )
-	{
-		success = qfalse;
-	}
-	else
-	{
-		success = qtrue;
-	}
-
-	return AIBoxInt( success );
+	return AIBoxInt( self->botMind->bestEnemy.ent && level.time - self->botMind->timeFoundEnemy >= g_bot_reactiontime.integer );
 }
 
 static AIValue_t botTeam( gentity_t *self, const AIValue_t *params )
@@ -89,9 +92,81 @@ static AIValue_t botTeam( gentity_t *self, const AIValue_t *params )
 	return AIBoxInt( self->client->ps.stats[ STAT_TEAM ] );
 }
 
+static AIValue_t goalTeam( gentity_t *self, const AIValue_t *params )
+{
+	return AIBoxInt( BotGetTargetTeam( self->botMind->goal ) );
+}
+
+static AIValue_t goalType( gentity_t *self, const AIValue_t *params )
+{
+	return AIBoxInt( BotGetTargetType( self->botMind->goal ) );
+}
+
+static AIValue_t goalPercentHealth( gentity_t *self, const AIValue_t *params )
+{
+	float maxHealth = INT_MAX;
+	float health = 0;
+
+	if ( BotTargetIsEntity( self->botMind->goal ) )
+	{
+		health = self->botMind->goal.ent->health;
+	}
+
+	if ( BotGetTargetType( self->botMind->goal ) == ET_BUILDABLE )
+	{
+		maxHealth = BG_Buildable( ( buildable_t ) self->botMind->goal.ent->s.modelindex )->health;
+	}
+
+	if ( BotGetTargetType( self->botMind->goal ) == ET_PLAYER )
+	{
+		maxHealth = BG_Class( ( class_t ) self->botMind->goal.ent->client->ps.stats[ STAT_CLASS ] )->health;
+	}
+
+	return AIBoxFloat( health / maxHealth );
+}
+
+static AIValue_t goalDead( gentity_t *self, const AIValue_t *params )
+{
+	qboolean dead = qfalse;
+	botTarget_t *goal = &self->botMind->goal;
+
+	if ( !BotTargetIsEntity( *goal ) )
+	{
+		dead = qtrue;
+	}
+	else if ( BotGetTargetTeam( *goal ) == TEAM_NONE )
+	{
+		dead = qtrue;
+	}
+	else if ( goal->ent->health <= 0 )
+	{
+		dead = qtrue;
+	}
+	else if ( goal->ent->client && goal->ent->client->sess.spectatorState != SPECTATOR_NOT )
+	{
+		dead = qtrue;
+	}
+	else if ( goal->ent->s.eType == ET_BUILDABLE && goal->ent->buildableTeam == self->client->ps.stats[ STAT_TEAM ] && !goal->ent->powered )
+	{
+		dead = qtrue;
+	}
+
+	return AIBoxInt( dead );
+}
+
+static AIValue_t goalBuildingType( gentity_t *self, const AIValue_t *params )
+{
+	if ( BotGetTargetType( self->botMind->goal ) != ET_BUILDABLE )
+	{
+		return AIBoxInt( BA_NONE );
+	}
+
+	return AIBoxInt( self->botMind->goal.ent->s.modelindex );
+}
+
 static AIValue_t currentWeapon( gentity_t *self, const AIValue_t *params )
 {
-	return AIBoxInt( self->client->ps.weapon == AIUnBoxInt( params[ 0 ] ) );
+	return AIBoxInt( self->client->ps.weapon );
 }
 
 static AIValue_t haveUpgrade( gentity_t *self, const AIValue_t *params )
@@ -119,7 +194,7 @@ static AIValue_t teamateHasWeapon( gentity_t *self, const AIValue_t *params )
 static AIValue_t distanceTo( gentity_t *self, const AIValue_t *params )
 {
 	AIEntity_t e = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
-	float distance = 0;
+	float distance = 10000000;
 	botEntityAndDistance_t *ent = AIEntityToGentity( self, e );
 
 	if ( ent )
@@ -154,6 +229,133 @@ static AIValue_t botSkill( gentity_t *self, const AIValue_t *params )
 	return AIBoxInt( self->botMind->botSkill.level );
 }
 
+static AIValue_t inAttackRange( gentity_t *self, const AIValue_t *params )
+{
+	botTarget_t target;
+	AIEntity_t et = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
+	if ( et == E_GOAL )
+	{
+		target = self->botMind->goal;
+	}
+	else
+	{
+		botEntityAndDistance_t *e = AIEntityToGentity( self ,et );
+		if ( !e )
+		{
+			return AIBoxInt( qfalse );
+		}
+		BotSetTarget( &target, e->ent, NULL );
+	}
+
+	if ( BotTargetInAttackRange( self, target ) )
+	{
+		return AIBoxInt( qtrue );
+	}
+
+	return AIBoxInt( qfalse );
+}
+
+static AIValue_t timeSinceGoalSeen( gentity_t *self, const AIValue_t *params )
+{
+	return AIBoxInt( level.time - self->botMind->goalLastSeen );
+}
+
+static AIValue_t isVisible( gentity_t *self, const AIValue_t *params )
+{
+	botTarget_t target;
+	AIEntity_t et = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
+
+	if ( et == E_GOAL )
+	{
+		target = self->botMind->goal;
+	}
+	else
+	{
+		botEntityAndDistance_t *e = AIEntityToGentity( self ,et );
+		if ( !e )
+		{
+			return AIBoxInt( qfalse );
+		}
+		BotSetTarget( &target, e->ent, NULL );
+	}
+
+	if ( BotTargetIsVisible( self, self->botMind->goal, CONTENTS_SOLID ) )
+	{
+		if ( et == E_GOAL )
+		{
+			self->botMind->goalLastSeen = level.time;
+		}
+		return AIBoxInt( qtrue );
+	}
+
+	return AIBoxInt( qfalse );
+}
+
+static AIValue_t directPathTo( gentity_t *self, const AIValue_t *params )
+{
+	AIEntity_t e = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
+	botEntityAndDistance_t *ed = AIEntityToGentity( self, e );
+
+	if ( e == E_GOAL )
+	{
+		return AIBoxInt( self->botMind->directPathToGoal );
+	}
+	else if ( ed )
+	{
+		botTarget_t target;
+		BotSetTarget( &target, ed->ent, NULL );
+		return AIBoxInt( BotPathIsWalkable( self, target ) );
+	}
+
+	return AIBoxInt( qfalse );
+}
+
+static AIValue_t botCanEvolveTo( gentity_t *self, const AIValue_t *params )
+{
+	class_t c = ( class_t ) AIUnBoxInt( params[ 0 ] );
+
+	return AIBoxInt( BotCanEvolveToClass( self, c ) );
+}
+
+static AIValue_t humanStage( gentity_t *self, const AIValue_t *params )
+{
+	return AIBoxInt( g_humanStage.integer );
+}
+
+static AIValue_t alienStage( gentity_t *self, const AIValue_t *params )
+{
+	return AIBoxInt( g_alienStage.integer );
+}
+
+static AIValue_t randomChance( gentity_t *self, const AIValue_t *params )
+{
+	return AIBoxFloat( random() );
+}
+
+static AIValue_t cvarInt( gentity_t *self, const AIValue_t *params )
+{
+	vmCvar_t *c = G_FindCvar( AIUnBoxString( params[ 0 ] ) );
+
+	if ( !c )
+	{
+		return AIBoxInt( 0 );
+	}
+
+	return AIBoxInt( c->integer );
+}
+
+static AIValue_t cvarFloat( gentity_t *self, const AIValue_t *params )
+{
+	vmCvar_t *c = G_FindCvar( AIUnBoxString( params[ 0 ] ) );
+
+	if ( !c )
+	{
+		return AIBoxFloat( 0 );
+	}
+
+	return AIBoxFloat( c->value );
+}
+
 // functions accessible to the behavior tree for use in condition nodes
 static const struct AIConditionMap_s
 {
@@ -164,17 +366,32 @@ static const struct AIConditionMap_s
 } conditionFuncs[] =
 {
 	{ "alertedToEnemy",    VALUE_INT,   alertedToEnemy,    0 },
+	{ "alienStage",        VALUE_INT,   alienStage,        0 },
 	{ "baseRushScore",     VALUE_FLOAT, baseRushScore,     0 },
 	{ "buildingIsDamaged", VALUE_INT,   buildingIsDamaged, 0 },
+	{ "canEvolveTo",       VALUE_INT,   botCanEvolveTo,    1 },
 	{ "class",             VALUE_INT,   botClass,          0 },
+	{ "cvarFloat",         VALUE_FLOAT, cvarFloat,         1 },
+	{ "cvarInt",           VALUE_INT,   cvarInt,           1 },
+	{ "directPathTo",      VALUE_INT,   directPathTo,      1 },
 	{ "distanceTo",        VALUE_FLOAT, distanceTo,        1 },
+	{ "goalBuildingType",  VALUE_INT,   goalBuildingType,  0 },
+	{ "goalIsDead",        VALUE_INT,   goalDead,          0 },
+	{ "goalPercentHealth", VALUE_FLOAT, goalPercentHealth, 0 },
+	{ "goalTeam",          VALUE_INT,   goalTeam,          0 },
+	{ "goalType",          VALUE_INT,   goalType,          0 },
 	{ "haveUpgrade",       VALUE_INT,   haveUpgrade,       1 },
 	{ "haveWeapon",        VALUE_INT,   haveWeapon,        1 },
 	{ "healScore",         VALUE_FLOAT, healScore,         0 },
+	{ "humanStage",        VALUE_INT,   humanStage,        0 },
+	{ "inAttackRange",     VALUE_INT,   inAttackRange,     1 },
+	{ "isVisible",         VALUE_INT,   isVisible,         1 },
 	{ "percentHealth",     VALUE_FLOAT, botHealth,         0 },
+	{ "random",            VALUE_FLOAT, randomChance,      0 },
 	{ "skill",             VALUE_INT,   botSkill,          0 },
 	{ "team",              VALUE_INT,   botTeam,           0 },
 	{ "teamateHasWeapon",  VALUE_INT,   teamateHasWeapon,  1 },
+	{ "timeSinceGoalSeen", VALUE_INT,   timeSinceGoalSeen, 0 },
 	{ "weapon",            VALUE_INT,   currentWeapon,     0 }
 };
 
@@ -196,7 +413,7 @@ static const struct AIOpMap_s
 	{ "||", P_LOGIC_OR,      OP_OR               }
 };
 
-static AIOpType_t opTypeFromToken( pc_token_t *token )
+static AIOpType_t opTypeFromToken( pc_token_stripped_t *token )
 {
 	int i;
 	if ( token->type != TT_PUNCTUATION )
@@ -234,7 +451,7 @@ static int opCompare( AIOpType_t op1, AIOpType_t op2 )
 	{
 		return 1;
 	}
-	else if ( op1 < op2 )
+	else if ( op1 > op2 )
 	{
 		return -1;
 	}
@@ -296,7 +513,7 @@ static AIValue_t *newValueLiteral( pc_token_list **list )
 {
 	AIValue_t *ret;
 	pc_token_list *current = *list;
-	pc_token_t *token = &current->token;
+	pc_token_stripped_t *token = &current->token;
 
 	ret = ( AIValue_t * ) BG_Alloc( sizeof( *ret ) );
 
@@ -337,7 +554,7 @@ static AIValue_t *parseFunctionParameters( pc_token_list **list, int *nparams, i
 
 	while ( parse != parenEnd )
 	{
-		if ( parse->token.type == TT_NUMBER )
+		if ( parse->token.type == TT_NUMBER || parse->token.type == TT_STRING )
 		{
 			numParams++;
 		}
@@ -376,7 +593,7 @@ static AIValue_t *parseFunctionParameters( pc_token_list **list, int *nparams, i
 		parse = parenBegin->next;
 		while ( parse != parenEnd )
 		{
-			if ( parse->token.type == TT_NUMBER )
+			if ( parse->token.type == TT_NUMBER || parse->token.type == TT_STRING )
 			{
 				params[ numParams ] = AIBoxToken( &parse->token );
 				numParams++;
@@ -634,6 +851,98 @@ AIGenericNode_t *ReadConditionNode( pc_token_list **tokenlist )
 	return ( AIGenericNode_t * ) condition;
 }
 
+static const struct AIDecoratorMap_s
+{
+	const char   *name;
+	AINodeRunner run;
+	int          minparams;
+	int          maxparams;
+} AIDecorators[] =
+{
+	{ "return", BotDecoratorReturn, 1, 1 }
+};
+
+AIGenericNode_t *ReadDecoratorNode( pc_token_list **list )
+{
+	pc_token_list *current = *list;
+	struct AIDecoratorMap_s *dec;
+	AIDecoratorNode_t       node;
+	AIDecoratorNode_t       *ret;
+	pc_token_list           *parenBegin;
+
+	if ( !expectToken( "decorator", &current, qtrue ) )
+	{
+		return NULL;
+	}
+
+	if ( !current )
+	{
+		BotError( "Unexpected end of file after line %d\n", (*list)->token.line );
+		*list = current;
+		return NULL;
+	}
+
+	dec = bsearch( current->token.string, AIDecorators, ARRAY_LEN( AIDecorators ), sizeof( *AIDecorators ), cmdcmp );
+
+	if ( !dec )
+	{
+		BotError( "%s on line %d is not a valid decorator\n", current->token.string, current->token.line );
+		*list = current;
+		return NULL;
+	}
+
+	parenBegin = current->next;
+
+	memset( &node, 0, sizeof( node ) );
+
+	BotInitNode( DECORATOR_NODE, dec->run, &node );
+
+	// allow dropping of parenthesis if we don't require any parameters
+	if ( dec->minparams == 0 && parenBegin->token.string[0] != '(' )
+	{
+		ret = allocNode( AIDecoratorNode_t );
+		memcpy( ret, &node, sizeof( node ) );
+		*list = parenBegin;
+		return ( AIGenericNode_t * ) ret;
+	}
+
+	node.params = parseFunctionParameters( &current, &node.nparams, dec->minparams, dec->maxparams );
+
+	if ( !node.params && dec->minparams > 0 )
+	{
+		*list = current;
+		return NULL;
+	}
+
+	if ( !expectToken( "{", &current, qtrue ) )
+	{
+		*list = current;
+		return NULL;
+	}
+
+	node.child = ReadNode( &current );
+
+	if ( !node.child )
+	{
+		BotError( "Failed to parse child node of decorator on line %d\n",  (*list)->token.line );
+		*list = current;
+		return NULL;
+	}
+
+	if ( !expectToken( "}", &current, qtrue ) )
+	{
+		*list = current;
+		return NULL;
+	}
+
+	// create the decorator node
+	ret = allocNode( AIDecoratorNode_t );
+	memcpy( ret, &node, sizeof( *ret ) );
+
+	*list = current;
+	return ( AIGenericNode_t * ) ret;
+}
+
 static const struct AIActionMap_s
 {
 	const char   *name;
@@ -642,17 +951,29 @@ static const struct AIActionMap_s
 	int          maxparams;
 } AIActions[] =
 {
-	{ "buy",          BotActionBuy,          1, 4 },
-	{ "equip",        BotActionBuy,          0, 0 },
-	{ "evolve",       BotActionEvolve,       0, 0 },
-	{ "fight",        BotActionFight,        0, 0 },
-	{ "flee",         BotActionFlee,         0, 0 },
-	{ "heal",         BotActionHeal,         0, 0 },
-	{ "moveTo",       BotActionMoveTo,       1, 2 },
-	{ "repair",       BotActionRepair,       0, 0 },
-	{ "roam",         BotActionRoam,         0, 0 },
-	{ "roamInRadius", BotActionRoamInRadius, 2, 2 },
-	{ "rush",         BotActionRush,         0, 0 }
+	{ "activateUpgrade",   BotActionActivateUpgrade,   1, 1 },
+	{ "aimAtGoal",         BotActionAimAtGoal,         0, 0 },
+	{ "alternateStrafe",   BotActionAlternateStrafe,   0, 0 },
+	{ "buy",               BotActionBuy,               1, 4 },
+	{ "changeGoal",        BotActionChangeGoal,        1, 1 },
+	{ "classDodge",        BotActionClassDodge,        0, 0 },
+	{ "deactivateUpgrade", BotActionDeactivateUpgrade, 1, 1 },
+	{ "equip",             BotActionBuy,               0, 0 },
+	{ "evolve",            BotActionEvolve,            0, 0 },
+	{ "evolveTo",          BotActionEvolveTo,          1, 1 },
+	{ "fight",             BotActionFight,             0, 0 },
+	{ "fireWeapon",        BotActionFireWeapon,        0, 0 },
+	{ "flee",              BotActionFlee,              0, 0 },
+	{ "heal",              BotActionHeal,              0, 0 },
+	{ "moveInDir",         BotActionMoveInDir,         1, 2 },
+	{ "moveTo",            BotActionMoveTo,            1, 2 },
+	{ "moveToGoal",        BotActionMoveToGoal,        0, 0 },
+	{ "repair",            BotActionRepair,            0, 0 },
+	{ "roam",              BotActionRoam,              0, 0 },
+	{ "roamInRadius",      BotActionRoamInRadius,      2, 2 },
+	{ "rush",              BotActionRush,              0, 0 },
+	{ "say",               BotActionSay,               2, 2 },
+	{ "strafeDodge",       BotActionStrafeDodge,       0, 0 }
 };
 
 /*
@@ -726,25 +1047,63 @@ AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
 	return ( AIGenericNode_t * ) ret;
 }
 
+AIGenericNode_t *ReadSequence( pc_token_list **tokenlist )
+{
+	pc_token_list *current = *tokenlist;
+	AIGenericNode_t *node = NULL;
+	current = current->next;
+
+	node = ReadNodeList( &current );
+
+	*tokenlist = current;
+	if ( !node )
+	{
+		return NULL;
+	}
+	BotInitNode( SELECTOR_NODE, BotSequenceNode, node );
+	return node;
+}
+
+AIGenericNode_t *ReadSelector( pc_token_list **tokenlist )
+{
+	pc_token_list *current = *tokenlist;
+	AIGenericNode_t *node = NULL;
+	current = current->next;
+
+	node = ReadNodeList( &current );
+
+	*tokenlist = current;
+	if ( !node )
+	{
+		return NULL;
+	}
+	BotInitNode( SELECTOR_NODE, BotSelectorNode, node );
+	return node;
+}
+
+AIGenericNode_t *ReadConcurrent( pc_token_list **tokenlist )
+{
+	pc_token_list *current = *tokenlist;
+	AIGenericNode_t *node = NULL;
+	current = current->next;
+
+	node = ReadNodeList( &current );
+
+	*tokenlist = current;
+	if ( !node )
+	{
+		return NULL;
+	}
+	BotInitNode( SELECTOR_NODE, BotConcurrentNode, node );
+	return node;
+}
+
 /*
 ======================
 ReadNodeList
 
 Parses and creates an AINodeList_t from a token list
 The token list pointer is modified to point to the beginning of the next node text block after reading
-
-A node list has one of these forms:
-selector sequence {
-[ one or more child nodes ]
-}
-
-selector priority {
-[ one or more child nodes ]
-}
-
-selector {
-[ one or more child nodes ]
-}
 ======================
 */
 AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist )
@@ -752,40 +1111,12 @@ AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist )
 	AINodeList_t *list;
 	pc_token_list *current = *tokenlist;
 
-	if ( !expectToken( "selector", &current, qtrue ) )
+	if ( !expectToken( "{", &current, qtrue ) )
 	{
 		return NULL;
 	}
 
 	list = allocNode( AINodeList_t );
-
-	if ( !Q_stricmp( current->token.string, "sequence" ) )
-	{
-		BotInitNode( SELECTOR_NODE, BotSequenceNode, list );
-		current = current->next;
-	}
-	else if ( !Q_stricmp( current->token.string, "priority" ) )
-	{
-		BotInitNode( SELECTOR_NODE, BotPriorityNode, list );
-		current = current->next;
-	}
-	else if ( !Q_stricmp( current->token.string, "{" ) )
-	{
-		BotInitNode( SELECTOR_NODE, BotSelectorNode, list );
-	}
-	else
-	{
-		BotError( "Invalid token %s on line %d\n", current->token.string, current->token.line );
-		FreeNodeList( list );
-		*tokenlist = current;
-		return NULL;
-	}
-
-	if ( !expectToken( "{", &current, qtrue ) )
-	{
-		FreeNodeList( list );
-		return NULL;
-	}
 
 	while ( Q_stricmp( current->token.string, "}" ) )
 	{
@@ -823,6 +1154,47 @@ AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist )
 	return ( AIGenericNode_t * ) list;
 }
 
+static AITreeList_t *currentList = NULL;
+
+AIGenericNode_t *ReadBehaviorTreeInclude( pc_token_list **tokenlist )
+{
+	pc_token_list *first = *tokenlist;
+	pc_token_list *current = first;
+
+	AIBehaviorTree_t *behavior;
+
+	if ( !expectToken( "behavior", &current, qtrue ) )
+	{
+		return NULL;
+	}
+
+	if ( !current )
+	{
+		BotError( "Unexpected end of file after line %d\n", first->token.line );
+		*tokenlist = current;
+		return NULL;
+	}
+
+	behavior = ReadBehaviorTree( current->token.string, currentList );
+
+	if ( !behavior )
+	{
+		BotError( "Could not load behavior %s on line %d\n", current->token.string, current->token.line );
+		*tokenlist = current->next;
+		return NULL;
+	}
+
+	if ( !behavior->root )
+	{
+		BotError( "Recursive behavior %s on line %d\n", current->token.string, current->token.line );
+		*tokenlist = current->next;
+		return NULL;
+	}
+
+	*tokenlist = current->next;
+	return ( AIGenericNode_t * ) behavior;
+}
+
 /*
 ======================
 ReadNode
@@ -842,7 +1214,15 @@ AIGenericNode_t *ReadNode( pc_token_list **tokenlist )
 
 	if ( !Q_stricmp( current->token.string, "selector" ) )
 	{
-		node = ReadNodeList( &current );
+		node = ReadSelector( &current );
+	}
+	else if ( !Q_stricmp( current->token.string, "sequence" ) )
+	{
+		node = ReadSequence( &current );
+	}
+	else if ( !Q_stricmp( current->token.string, "concurrent" ) )
+	{
+		node = ReadConcurrent( &current );
 	}
 	else if ( !Q_stricmp( current->token.string, "action" ) )
 	{
@@ -851,6 +1231,14 @@ AIGenericNode_t *ReadNode( pc_token_list **tokenlist )
 	else if ( !Q_stricmp( current->token.string, "condition" ) )
 	{
 		node = ReadConditionNode( &current );
+	}
+	else if ( !Q_stricmp( current->token.string, "decorator" ) )
+	{
+		node = ReadDecoratorNode( &current );
+	}
+	else if ( !Q_stricmp( current->token.string, "behavior" ) )
+	{
+		node = ReadBehaviorTreeInclude( &current );
 	}
 	else
 	{
@@ -878,6 +1266,8 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	AIBehaviorTree_t *tree;
 	pc_token_list *current;
 	AIGenericNode_t *node;
+
+	currentList = list;
 
 	// check if this behavior tree has already been loaded
 	for ( i = 0; i < list->numTrees; i++ )
@@ -909,12 +1299,12 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( WP_FLAMER );
 	D( WP_PULSE_RIFLE );
 	D( WP_LUCIFER_CANNON );
-	D( WP_GRENADE );
 	D( WP_HBUILD );
 
 	// add teams
 	D( TEAM_ALIENS );
 	D( TEAM_HUMANS );
+	D( TEAM_NONE );
 
 	// add AIEntitys
 	D( E_NONE );
@@ -952,6 +1342,27 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( PCL_HUMAN );
 	D( PCL_HUMAN_BSUIT );
 	
+	D( MOVE_FORWARD );
+	D( MOVE_BACKWARD );
+	D( MOVE_RIGHT );
+	D( MOVE_LEFT );
+
+	D( ET_BUILDABLE );
+
+	// node return status
+	D( STATUS_RUNNING );
+	D( STATUS_SUCCESS );
+	D( STATUS_FAILURE );
+
+	D( SAY_ALL );
+	D( SAY_TEAM );
+	D( SAY_AREA );
+	D( SAY_AREA_TEAM );
+	
+	D( S1 );
+	D( S2 );
+	D( S3 );
+
 	Q_strncpyz( treefilename, va( "bots/%s.bt", name ), sizeof( treefilename ) );
 
 	handle = trap_Parse_LoadSource( treefilename );
@@ -962,31 +1373,31 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	}
 
 	tokenlist = CreateTokenList( handle );
-	
+	trap_Parse_FreeSource( handle );
+
 	tree = ( AIBehaviorTree_t * ) BG_Alloc( sizeof( AIBehaviorTree_t ) );
 
 	Q_strncpyz( tree->name, name, sizeof( tree->name ) );
+
+	tree->run = BotBehaviorNode;
+	tree->type = BEHAVIOR_NODE;
+
+	AddTreeToList( list, tree );
 
 	current = tokenlist;
 
 	node = ReadNode( &current );
 	if ( node )
 	{
-		tree->root = ( AINode_t * ) node;
+		tree->root = ( AIGenericNode_t * ) node;
 	}
 	else
 	{
-		BG_Free( tree );
+		RemoveTreeFromList( list, tree );
 		tree = NULL;
 	}
 
-	if ( tree )
-	{
-		AddTreeToList( list, tree );
-	}
-
 	FreeTokenList( tokenlist );
-	trap_Parse_FreeSource( handle );
 	return tree;
 }
 
@@ -1015,7 +1426,11 @@ pc_token_list *CreateTokenList( int handle )
 		current = list;
 		current->next = NULL;
 
-		current->token = token;
+		current->token.floatvalue = token.floatvalue;
+		current->token.intvalue = token.intvalue;
+		current->token.subtype = token.subtype;
+		current->token.type = token.type;
+		current->token.string = BG_strdup( token.string );
 		trap_Parse_SourceFileAndLine( handle, filename, &current->token.line );
 	}
 
@@ -1030,6 +1445,7 @@ void FreeTokenList( pc_token_list *list )
 		pc_token_list *node = current;
 		current = current->next;
 
+		BG_Free( node->token.string );
 		BG_Free( node );
 	}
 }
@@ -1095,15 +1511,21 @@ void FreeValue( AIValue_t *v )
 	{
 		return;
 	}
-
+	AIDestroyValue( *v );
 	BG_Free( v );
 }
 
 void FreeValueFunc( AIValueFunc_t *v )
 {
+	int i;
 	if ( !v )
 	{
 		return;
+	}
+
+	for ( i = 0; i < v->nparams; i++ )
+	{
+		AIDestroyValue( v->params[ i ] );
 	}
 
 	BG_Free( v->params );
@@ -1177,8 +1599,21 @@ void FreeNodeList( AINodeList_t *node )
 
 void FreeActionNode( AIActionNode_t *action )
 {
+	int i;
+	for ( i = 0; i < action->nparams; i++ )
+	{
+		AIDestroyValue( action->params[ i ] );
+	}
+
 	BG_Free( action->params );
 	BG_Free( action );
+}
+
+void FreeDecoratorNode( AIDecoratorNode_t *decorator )
+{
+	BG_Free( decorator->params );
+	FreeNode( decorator->child );
+	BG_Free( decorator );
 }
 
 void FreeNode( AIGenericNode_t *node )
@@ -1198,6 +1633,9 @@ void FreeNode( AIGenericNode_t *node )
 			break;
 		case ACTION_NODE:
 			FreeActionNode( ( AIActionNode_t * ) node );
+			break;
+		case DECORATOR_NODE:
+			FreeDecoratorNode( ( AIDecoratorNode_t * ) node );
 			break;
 		default:
 			break;

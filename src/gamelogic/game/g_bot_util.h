@@ -36,7 +36,7 @@ void     BotSetSkillLevel( gentity_t *self, int skill );
 int        FindBots( int *botEntityNumbers, int maxBots, team_t team );
 gentity_t* BotFindClosestEnemy( gentity_t *self );
 gentity_t* BotFindBestEnemy( gentity_t *self );
-void       BotFindClosestBuildings( gentity_t *self, botEntityAndDistance_t *closest );
+void       BotFindClosestBuildings( gentity_t *self );
 gentity_t* BotFindBuilding( gentity_t *self, int buildingType, int range );
 qboolean   BotTeamateHasWeapon( gentity_t *self, int weapon );
 void       BotSearchForEnemy( gentity_t *self );
@@ -84,7 +84,7 @@ void     BotClassMovement( gentity_t *self, qboolean inAttackRange );
 // human bots
 qboolean   WeaponIsEmpty( weapon_t weapon, playerState_t ps );
 float      PercentAmmoRemaining( weapon_t weapon, playerState_t *ps );
-gentity_t* BotFindDamagedFriendlyStructure( gentity_t *self );
+void       BotFindDamagedFriendlyStructure( gentity_t *self );
 qboolean   BotGetBuildingToBuild( gentity_t *self, vec3_t origin, vec3_t normal, buildable_t *building );
 void       BotBuyWeapon( gentity_t *self, weapon_t weapon );
 void       BotBuyUpgrade( gentity_t *self, upgrade_t upgrade );

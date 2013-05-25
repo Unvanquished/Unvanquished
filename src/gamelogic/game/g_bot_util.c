@@ -488,11 +488,18 @@ gentity_t* BotFindBuilding( gentity_t *self, int buildingType, int range )
 	return closestBuilding;
 }
 
-void BotFindClosestBuildings( gentity_t *self, botEntityAndDistance_t *closest )
+void BotFindClosestBuildings( gentity_t *self )
 {
 	gentity_t *testEnt;
 	botEntityAndDistance_t *ent;
-	memset( closest, 0, sizeof( botEntityAndDistance_t ) * BA_NUM_BUILDABLES );
+	int i;
+
+	// clear out building list
+	for ( i = 0; i < ARRAY_LEN( self->botMind->closestBuildings ); i++ )
+	{
+		self->botMind->closestBuildings[ i ].ent = NULL;
+		self->botMind->closestBuildings[ i ].distance = INT_MAX;
+	}
 
 	for ( testEnt = &g_entities[MAX_CLIENTS]; testEnt < &g_entities[level.num_entities - 1]; testEnt++ )
 	{
@@ -523,8 +530,9 @@ void BotFindClosestBuildings( gentity_t *self, botEntityAndDistance_t *closest )
 
 		newDist = Distance( self->s.origin, testEnt->s.origin );
 
-		ent = &closest[ testEnt->s.modelindex ];
-		if ( newDist < ent->distance || ent->distance == 0 )
+		ent = &self->botMind->closestBuildings[ testEnt->s.modelindex ];
+
+		if ( newDist < ent->distance )
 		{
 			ent->ent = testEnt;
 			ent->distance = newDist;
@@ -532,49 +540,61 @@ void BotFindClosestBuildings( gentity_t *self, botEntityAndDistance_t *closest )
 	}
 }
 
-gentity_t* BotFindDamagedFriendlyStructure( gentity_t *self )
+void BotFindDamagedFriendlyStructure( gentity_t *self )
 {
 	//closest building
 	gentity_t* closestBuilding = NULL;
 
-	//minimum distance found
-	float minDistance = Square( ALIENSENSE_RANGE );
+	float minDistSqr;
 
 	gentity_t *target;
+	self->botMind->closestDamagedBuilding.ent = NULL;
+	self->botMind->closestDamagedBuilding.distance = INT_MAX;
+
+	minDistSqr = Square( self->botMind->closestDamagedBuilding.distance );
 
 	for ( target = &g_entities[MAX_CLIENTS]; target < &g_entities[level.num_entities - 1]; target++ )
 	{
-		float distance;
+		float distSqr;
+
+		if ( !target->inuse )
+		{
+			continue;
+		}
 
 		if ( target->s.eType != ET_BUILDABLE )
 		{
 			continue;
 		}
-		if ( target->buildableTeam != TEAM_HUMANS )
+
+		if ( target->buildableTeam != self->client->ps.stats[ STAT_TEAM ] )
 		{
 			continue;
 		}
+
 		if ( target->health >= BG_Buildable( ( buildable_t )target->s.modelindex )->health )
 		{
 			continue;
 		}
+
 		if ( target->health <= 0 )
 		{
 			continue;
 		}
+
 		if ( !target->spawned || !target->powered )
 		{
 			continue;
 		}
 
-		distance = DistanceSquared( self->s.origin, target->s.origin );
-		if ( distance <= minDistance )
+		distSqr = DistanceSquared( self->s.origin, target->s.origin );
+		if ( distSqr < minDistSqr )
 		{
-			minDistance = distance;
-			closestBuilding = target;
+			self->botMind->closestDamagedBuilding.ent = target;
+			self->botMind->closestDamagedBuilding.distance = sqrt( distSqr );
+			minDistSqr = distSqr;
 		}
 	}
-	return closestBuilding;
 }
 
 qboolean BotEntityIsVisible( gentity_t *self, gentity_t *target, int mask )
@@ -1047,14 +1067,63 @@ qboolean BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 			secondaryRange = 0;
 			break;
 		case WP_FLAMER:
-			range = FLAMER_SPEED * FLAMER_LIFETIME / 1000.0f - 100.0f;
-			secondaryRange = 0;
-			width = height = FLAMER_SIZE;
-			// Correct muzzle so that the missile does not start in the ceiling
-			VectorMA( muzzle, -7.0f, up, muzzle );
+			{
+				vec3_t dir;
+				vec3_t rdir;
+				vec3_t nvel;
+				vec3_t npos;
+				vec3_t proj;
+				trajectory_t t;
+			
+				// Correct muzzle so that the missile does not start in the ceiling
+				VectorMA( muzzle, -7.0f, up, muzzle );
 
-			// Correct muzzle so that the missile fires from the player's hand
-			VectorMA( muzzle, 4.5f, right, muzzle );
+				// Correct muzzle so that the missile fires from the player's hand
+				VectorMA( muzzle, 4.5f, right, muzzle );
+
+				// flamer projectiles add the player's velocity scaled by FLAMER_LAG to the fire direction with length FLAMER_SPEED
+				VectorSubtract( targetPos, muzzle, dir );
+				VectorNormalize( dir );
+				VectorScale( self->client->ps.velocity, FLAMER_LAG, nvel );
+				VectorMA( nvel, FLAMER_SPEED, dir, t.trDelta );
+				SnapVector( t.trDelta );
+				VectorCopy( muzzle, t.trBase );
+				t.trType = TR_LINEAR;
+				t.trTime = level.time - 50;
+			
+				// find projectile's final position
+				BG_EvaluateTrajectory( &t, level.time + FLAMER_LIFETIME, npos );
+
+				// find distance traveled by projectile along fire line
+				ProjectPointOntoVector( npos, muzzle, targetPos, proj );
+				range = Distance( muzzle, proj );
+
+				// make sure the sign of the range is correct
+				VectorSubtract( npos, muzzle, rdir );
+				VectorNormalize( rdir );
+				if ( DotProduct( rdir, dir ) < 0 )
+				{
+					range = -range;
+				}
+
+				// the flamer uses a cosine based power falloff by default
+				// so decrese the range to give us a usable minimum damage
+				// FIXME: depend on the value of the flamer damage falloff cvar
+				// FIXME: have to stand further away from acid or will be
+				//        pushed back and will stop attacking (too far away)
+				if ( BotGetTargetType( target ) == ET_BUILDABLE &&
+				     target.ent->s.modelindex != BA_A_ACIDTUBE )
+				{
+					range -= 300;
+				}
+				else
+				{
+					range -= 150;
+				}
+				range = MAX( range, 100 );
+				secondaryRange = 0;
+				width = height = FLAMER_SIZE;
+			}
 			break;
 		case WP_SHOTGUN:
 			range = ( 50 * 8192 ) / SHOTGUN_SPREAD; //50 is the maximum radius we want the spread to be
@@ -2053,27 +2122,30 @@ void BotPain( gentity_t *self, gentity_t *attacker, int damage )
 
 void BotSearchForEnemy( gentity_t *self )
 {
-	if ( !self->botMind->bestEnemy.ent || level.time - self->botMind->enemyLastSeen > g_bot_chasetime.integer )
+	botTarget_t target;
+	gentity_t *enemy = BotFindBestEnemy( self );
+
+	if ( enemy )
 	{
-		botTarget_t target;
-		gentity_t *enemy = BotFindBestEnemy( self );
+		BotSetTarget( &target, enemy, NULL );
 
-		if ( enemy )
+		if ( enemy->s.eType != ET_PLAYER || ( enemy->s.eType == ET_PLAYER 
+			&& ( self->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS || BotAimNegligence( self, target ) <= g_bot_fov.value / 2 ) ) )
 		{
-			BotSetTarget( &target, enemy, NULL );
-
-			if ( enemy->s.eType != ET_PLAYER || ( enemy->s.eType == ET_PLAYER
-				&& ( self->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS || BotAimNegligence( self, target ) <= g_bot_fov.value / 2 ) ) )
+			// don't reset timeFoundEnemy unless we were not previously alerted to an enemy because we don't want to reset our reaction time
+			if ( !self->botMind->bestEnemy.ent )
 			{
-				self->botMind->bestEnemy.ent = enemy;
-				self->botMind->bestEnemy.distance = Distance( self->s.origin, enemy->s.origin );
-				self->botMind->enemyLastSeen = level.time;
 				self->botMind->timeFoundEnemy = level.time;
 			}
+			self->botMind->bestEnemy.ent = enemy;
+			self->botMind->bestEnemy.distance = Distance( self->s.origin, enemy->s.origin );
+			self->botMind->enemyLastSeen = level.time;
 		}
-		else
-		{
-			self->botMind->bestEnemy.ent = NULL;
-		}
+	}
+	
+	if ( level.time - self->botMind->enemyLastSeen > g_bot_chasetime.integer )
+	{
+		// reset after a while if we haven't seen an enemy
+		self->botMind->bestEnemy.ent = NULL;
 	}
 }

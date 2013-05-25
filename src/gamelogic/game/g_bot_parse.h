@@ -40,9 +40,19 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define P_LOGIC_GREATER    37
 #define P_LOGIC_LESS       38
 
+typedef struct
+{
+	int   type;
+	int   subtype;
+	int   intvalue;
+	float floatvalue;
+	char  *string;
+	int   line;
+} pc_token_stripped_t;
+
 typedef struct pc_token_list_s
 {
-	pc_token_t token;
+	pc_token_stripped_t    token;
 	struct pc_token_list_s *prev;
 	struct pc_token_list_s *next;
 } pc_token_list;

@@ -816,7 +816,9 @@ void G_SpawnGEntityFromSpawnVars( void )
 	 */
 	if( level.numSpawnVars <= 1 )
 	{
-		G_Error( S_ERROR "encountered ghost-entity #%i with only one field: %s = %s\n", spawningEntity->s.number, level.spawnVars[ 0 ][ 0 ], level.spawnVars[ 0 ][ 1 ] );
+		G_Printf( S_ERROR "encountered ghost-entity #%i with only one field: %s = %s\n", spawningEntity->s.number, level.spawnVars[ 0 ][ 0 ], level.spawnVars[ 0 ][ 1 ] );
+		G_FreeEntity( spawningEntity );
+		return;
 	}
 
 	// move editor origin to pos
