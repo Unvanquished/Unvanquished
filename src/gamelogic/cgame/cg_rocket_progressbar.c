@@ -90,7 +90,28 @@ static float CG_Rocket_GetStaminaProgress( void )
 	float         stamina = ps->stats[ STAT_STAMINA ];
 
 	return ( stamina + ( float ) STAMINA_MAX ) / ( 2 * ( float ) STAMINA_MAX );
+}
 
+static float CG_Rocket_GetPoisonProgress( void )
+{
+	static int time = -1;
+
+	if( cg.snap->ps.stats[ STAT_STATE ] & SS_BOOSTED )
+	{
+		float      progress;
+
+		if( time == -1 || cg.snap->ps.stats[ STAT_STATE ] & SS_BOOSTEDNEW )
+		{
+			time = cg.time;
+		}
+
+		return ( (float)cg.time - time ) / BOOST_TIME;
+	}
+	else
+	{
+		time = -1;
+		return 0;
+	}
 
 }
 static const progressBarCmd_t progressBarCmdList[] =
@@ -100,6 +121,7 @@ static const progressBarCmd_t progressBarCmdList[] =
 	{ "characters", &CG_Rocket_GetCharLoadProgress },
 	{ "media", &CG_Rocket_GetMediaLoadProgress },
 	{ "overall", &CG_Rocket_GetOverallLoadProgress },
+	{ "poison", &CG_Rocket_GetPoisonProgress },
 	{ "stamina", &CG_Rocket_GetStaminaProgress },
 };
 
