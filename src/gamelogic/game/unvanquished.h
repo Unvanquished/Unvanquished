@@ -374,10 +374,10 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  */
 
 #define BUILDABLE_INTERFERENCE_RANGE  300  // buildables in this range will interfer
-#define BUILDABLE_MAX_INTERFERENCE    1.0f // maximum amount of interference a buildable can take
+#define BUILDABLE_MAX_INTERFERENCE    0.8f // maximum amount of interference a buildable can take
 #define REACTOR_POWER_RANGE           1000 // reactor range
 #define REPEATER_POWER_RANGE          500  // repeater range
-#define REACTOR_POWER                 2.5f // reactor interference reduction
+#define REACTOR_POWER                 3.0f // reactor interference reduction
 #define REPEATER_POWER                2.0f // repeater interference reduction
 #define INTERFERENCE_RELEVANT_RANGE   1000 // max of all above ranges
 
