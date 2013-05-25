@@ -451,6 +451,23 @@ static void CG_Rocket_DrawSpeedGraph( void )
 	trap_Rocket_SetInnerRML( "", "", va( "<span class='speed_max'>%d</span><span class='speed_current'>%d</span>", ( int ) speedSamples[ maxSpeedSampleInWindow ], ( int ) val ) );
 }
 
+static void CG_Rocket_DrawCreditsValue( void )
+{
+	playerState_t *ps = &cg.snap->ps;
+	int value = ps->persistant[ PERS_CREDIT ];;
+
+	trap_Rocket_SetInnerRML( "", "", va( "<span class='credits_value'>%d</span>", value ) );
+}
+
+static void CG_Rocket_DrawAlienEvosValue( void )
+{
+	playerState_t *ps = &cg.snap->ps;
+	float value = ps->persistant[ PERS_CREDIT ];;
+
+	value /= ( float ) ALIEN_CREDITS_PER_KILL;
+
+	trap_Rocket_SetInnerRML( "", "", va( "<span class='evos_value'>%0.1f</span>", floor( value * 10 ) / 10 ) );
+}
 
 
 typedef struct
@@ -463,7 +480,9 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 {
 	{ "ammo", &CG_Rocket_DrawAmmo },
 	{ "clips", &CG_Rocket_DrawClips },
+	{ "credits", &CG_Rocket_DrawCreditsValue },
 	{ "crosshair", &CG_Rocket_DrawCrosshair },
+	{ "evos", &CG_Rocket_DrawAlienEvosValue },
 	{ "fps", &CG_Rocket_DrawFPS },
 	{ "pic", &CG_Rocket_DrawPic },
 	{ "speedometer", &CG_Rocket_DrawSpeedGraph },
