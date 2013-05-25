@@ -43,5 +43,6 @@
 		<crosshair /><br />
 		<speedometer /><br />
 		<progressbar id="btimer" src="btimer" />
+		<credits />
 	</body>
 </rml>
