@@ -1,4 +1,4 @@
-selector priority
+selector
 {	
 	condition alertedToEnemy
 	{
@@ -7,7 +7,7 @@ selector priority
 	
 	condition team == TEAM_HUMANS
 	{
-		selector priority
+		selector
 		{
 			action equip
 			
@@ -22,7 +22,7 @@ selector priority
 
 	condition team == TEAM_ALIENS
 	{
-		selector priority
+		selector
 		{
 			condition percentHealth < 1.0
 			{
