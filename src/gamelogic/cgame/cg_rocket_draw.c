@@ -469,6 +469,15 @@ static void CG_Rocket_DrawAlienEvosValue( void )
 	trap_Rocket_SetInnerRML( "", "", va( "<span class='evos_value'>%0.1f</span>", floor( value * 10 ) / 10 ) );
 }
 
+static void CG_Rocket_DrawStaminaValue( void )
+{
+	playerState_t *ps = &cg.snap->ps;
+	float         stamina = ps->stats[ STAT_STAMINA ];
+	int           percent = 100 * ( stamina + ( float ) STAMINA_MAX ) / ( 2 * ( float ) STAMINA_MAX );
+
+	trap_Rocket_SetInnerRML( "", "", va( "<span class='stamina_value'>%d</span>", percent ) );
+}
+
 
 typedef struct
 {
@@ -486,6 +495,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "fps", &CG_Rocket_DrawFPS },
 	{ "pic", &CG_Rocket_DrawPic },
 	{ "speedometer", &CG_Rocket_DrawSpeedGraph },
+	{ "stamina", &CG_Rocket_DrawStaminaValue },
 	{ "test", &CG_Rocket_DrawTest }
 };
 
