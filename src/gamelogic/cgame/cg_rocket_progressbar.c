@@ -84,6 +84,15 @@ static float CG_Rocket_GetBuildTimerProgress( void )
 	return ( float ) misc / ( float ) max;
 }
 
+static float CG_Rocket_GetStaminaProgress( void )
+{
+	playerState_t *ps = &cg.snap->ps;
+	float         stamina = ps->stats[ STAT_STAMINA ];
+
+	return ( stamina + ( float ) STAMINA_MAX ) / ( 2 * ( float ) STAMINA_MAX );
+
+
+}
 static const progressBarCmd_t progressBarCmdList[] =
 {
 	{ "btimer", &CG_Rocket_GetBuildTimerProgress },
@@ -91,6 +100,7 @@ static const progressBarCmd_t progressBarCmdList[] =
 	{ "characters", &CG_Rocket_GetCharLoadProgress },
 	{ "media", &CG_Rocket_GetMediaLoadProgress },
 	{ "overall", &CG_Rocket_GetOverallLoadProgress },
+	{ "stamina", &CG_Rocket_GetStaminaProgress },
 };
 
 static const size_t progressBarCmdListCount = ARRAY_LEN( progressBarCmdList );
