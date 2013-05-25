@@ -1817,10 +1817,12 @@ AffectedByInterference
 Checks whether self has interference above threshold.
 ================
 */
+/*
 static qboolean AffectedByInterference( gentity_t *self )
 {
-	return ( self->interference > HUMAN_MAX_INTERFERENCE );
+	return ( self->interference > BUILDABLE_MAX_INTERFERENCE );
 }
+*/
 
 /*
 ================
@@ -1829,6 +1831,7 @@ CausesInterference
 Checks whether self is interfering with another buildable that is above threshold.
 ================
 */
+/*
 static qboolean CausesInterference( gentity_t *self )
 {
 	int buddyNum;
@@ -1844,6 +1847,7 @@ static qboolean CausesInterference( gentity_t *self )
 
 	return qfalse;
 }
+*/
 
 /*
 ================
@@ -1854,6 +1858,7 @@ Assigns self as powersource to buildables in range that need one
 */
 static void DistributePower( gentity_t *self, float maxDistance, int maxSlaves )
 {
+	/*
 	int             numSlaves, neighborNum, numNeighbors, neighbors[ MAX_GENTITIES ], buddyNum;
 	vec3_t          range, mins, maxs;
 	gentity_t       *neighbor;
@@ -1930,6 +1935,56 @@ static void DistributePower( gentity_t *self, float maxDistance, int maxSlaves )
 
 	// save slaveCount for prediction (whether a buildable can be built)
 	self->slaveCount = numSlaves;
+	*/
+}
+
+/*
+=================
+PairwiseInterference
+=================
+*/
+static float PairwiseInterference( buildable_t buildableA, buildable_t buildableB, float distance )
+{
+	buildable_t providerBuildable;
+	qboolean    aProvider, bProvider;
+	float       range, power;
+
+	aProvider = ( buildableA == BA_H_REPEATER || buildableA == BA_H_REACTOR );
+	bProvider = ( buildableB == BA_H_REPEATER || buildableB == BA_H_REACTOR );
+
+	if ( aProvider && bProvider )
+	{
+		return 0.0f;
+	}
+
+	if ( !aProvider && !bProvider )
+	{
+		return MAX( 0.0f, 1.0f - ( distance / BUILDABLE_INTERFERENCE_RANGE ) );
+	}
+
+	if ( aProvider )
+	{
+		providerBuildable = buildableA;
+	}
+	else
+	{
+		providerBuildable = buildableB;
+	}
+
+	switch ( providerBuildable )
+	{
+		case BA_H_REPEATER:
+			range = ( float )REPEATER_POWER_RANGE;
+			power = REPEATER_POWER;
+			break;
+
+		case BA_H_REACTOR:
+			range = ( float )REACTOR_POWER_RANGE;
+			power = REACTOR_POWER;
+			break;
+	}
+
+	return -power * MAX( 0.0f, 1.0f - ( distance / range ) );
 }
 
 /*
@@ -1939,72 +1994,36 @@ CalculateBuildableInterference
 Calculates the interference state of a human buildable.
 =================
 */
-static int CalculateBuildableInterference( gentity_t *self )
+static float CalculateInterference( gentity_t *self )
 {
-	int             neighborNum, numNeighbors, neighbors[ MAX_GENTITIES ], buddyNum;
-	vec3_t          range, mins, maxs;
-	gentity_t       *neighbor;
-	float           distance;
+	gentity_t *neighbor;
 
 	if ( self->s.eType != ET_BUILDABLE || self->buildableTeam != TEAM_HUMANS )
 	{
-		return 0;
+		return 0.0f;
 	}
+
+	self->interference = 0.0f;
 
 	if ( self->s.modelindex == BA_H_REPEATER || self->s.modelindex == BA_H_REACTOR )
 	{
-		self->interference = 0;
-		return 0;
+		return 0.0f;
 	}
 
-	self->interference = 0;
-
-	range[ 0 ] = range[ 1 ] = range[ 2 ] = HUMAN_INTERFERENCE_RANGE;
-	VectorAdd( self->s.origin, range, maxs );
-	VectorSubtract( self->s.origin, range, mins );
-	numNeighbors = trap_EntitiesInBox( mins, maxs, neighbors, MAX_GENTITIES );
-
-	for ( neighborNum = 0; neighborNum < numNeighbors; neighborNum++ )
+	neighbor = NULL;
+	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, INTERFERENCE_RELEVANT_RANGE ) )
 	{
-		neighbor = &g_entities[ neighbors[ neighborNum ] ];
-
-		if ( neighbor->s.eType == ET_BUILDABLE && neighbor->buildableTeam == TEAM_HUMANS && neighbor != self
-		     && neighbor->spawned && neighbor->powered && !neighbor->powerSource && neighbor->health > 0 )
+		if ( neighbor->s.eType != ET_BUILDABLE || neighbor->buildableTeam != TEAM_HUMANS
+		     || neighbor == self || !neighbor->spawned || !neighbor->powered || neighbor->health <= 0 )
 		{
-			distance = Distance( self->s.origin, neighbor->s.origin );
-
-			// discard neighbors not in range
-			if ( distance > HUMAN_INTERFERENCE_RANGE )
-			{
-				continue;
-			}
-
-			// discard neighbors that don't interfer
-			switch ( neighbor->s.modelindex )
-			{
-				case BA_H_REPEATER:
-				case BA_H_REACTOR:
-					continue;
-			}
-
-			// store interfering neighbor
-			if ( self->interference < BUILDABLE_MAX_BUDDYS )
-			{
-				self->buddys[ self->interference ] = neighbor;
-			}
-
-			self->interference++;
+			continue;
 		}
+
+		self->interference += PairwiseInterference( self->s.modelindex, neighbor->s.modelindex,
+		                                            Distance( self->s.origin, neighbor->s.origin ) );
 	}
 
-	// clear unused buddy slots
-	for ( buddyNum = self->interference; buddyNum < BUILDABLE_MAX_BUDDYS; buddyNum++ )
-	{
-		self->buddys[ buddyNum ] = NULL;
-	}
-
-	// add one since we count self
-	return ++self->interference;
+	return self->interference;
 }
 
 
@@ -2020,8 +2039,9 @@ TODO: Assemble a list of relevant entities first.
 void G_SetHumanBuildablePowerState()
 {
 	qboolean  done;
-	int       entityNum, interference, highestInterference;
-	gentity_t *ent, *highest;
+	int       entityNum;
+	float     interference, highestInterference;
+	gentity_t *ent, *highestEnt;
 
 	static int nextCalculation = 0;
 
@@ -2038,7 +2058,7 @@ void G_SetHumanBuildablePowerState()
 			ent = &g_entities[ entityNum ];
 
 			// discard irrelevant entities
-			if ( ent->s.eType != ET_BUILDABLE || ent->buildableTeam != TEAM_HUMANS || ent->powerSource )
+			if ( ent->s.eType != ET_BUILDABLE || ent->buildableTeam != TEAM_HUMANS )
 			{
 				continue;
 			}
@@ -2049,9 +2069,9 @@ void G_SetHumanBuildablePowerState()
 				continue;
 			}
 
-			interference = CalculateBuildableInterference( ent );
+			interference = CalculateInterference( ent );
 
-			if ( interference <= HUMAN_MAX_INTERFERENCE )
+			if ( interference <= BUILDABLE_MAX_INTERFERENCE )
 			{
 				ent->powered = qtrue;
 			}
@@ -2068,7 +2088,7 @@ void G_SetHumanBuildablePowerState()
 				ent = &g_entities[ entityNum ];
 
 				// discard irrelevant entities
-				if ( ent->s.eType != ET_BUILDABLE || ent->buildableTeam != TEAM_HUMANS || ent->powerSource )
+				if ( ent->s.eType != ET_BUILDABLE || ent->buildableTeam != TEAM_HUMANS )
 				{
 					continue;
 				}
@@ -2079,18 +2099,18 @@ void G_SetHumanBuildablePowerState()
 					continue;
 				}
 
-				interference = CalculateBuildableInterference( ent );
+				interference = CalculateInterference( ent );
 
 				if ( interference > highestInterference )
 				{
 					highestInterference = interference;
-					highest = ent;
+					highestEnt = ent;
 				}
 			}
 
-			if ( highestInterference > HUMAN_MAX_INTERFERENCE )
+			if ( highestInterference > BUILDABLE_MAX_INTERFERENCE )
 			{
-				highest->powered = qfalse;
+				highestEnt->powered = qfalse;
 				done = qfalse;
 			}
 			else
@@ -2128,6 +2148,7 @@ A generic think function for human buildables.
 */
 void HGeneric_Think( gentity_t *self )
 {
+	/*
 	gentity_t *powerSource;
 
 	if ( self->powerSource )
@@ -2143,6 +2164,7 @@ void HGeneric_Think( gentity_t *self )
 			self->powered = qtrue;
 		}
 	}
+	*/
 
 	self->nextthink = level.time + BG_Buildable( self->s.modelindex )->nextthink;
 }
@@ -2290,7 +2312,7 @@ void HRepeater_Think( gentity_t *self )
 {
 	HGeneric_Think( self );
 
-	DistributePower( self, REPEATER_BASESIZE, REPEATER_SLAVECOUNT );
+	DistributePower( self, REPEATER_POWER_RANGE, REPEATER_POWER );
 
 	IdlePowerState( self );
 }
@@ -2399,7 +2421,7 @@ void HReactor_Think( gentity_t *self )
 		}
 	}
 
-	DistributePower( self, REACTOR_BASESIZE, REACTOR_SLAVECOUNT );
+	DistributePower( self, REACTOR_POWER_RANGE, REACTOR_POWER );
 
 	if ( self->dcc )
 	{
@@ -3871,16 +3893,14 @@ static itemBuildError_t BuildableReplacementChecks( buildable_t oldBuildable, bu
 =================
 G_PredictBuildableInterference
 
-Predicts whether a new buildable would cause interference.
+Predicts whether a buildable can be built without causing interference.
 Takes buildables prepared for deconstruction into account.
 =================
 */
 static qboolean PredictBuildableInterference( buildable_t buildable, vec3_t origin )
 {
-	int             predictedInterference, buddyNum, interferenceReduction, entityNum;
-	gentity_t       *neighbor;
-	float           distance;
-	qboolean        interfering;
+	gentity_t       *neighbor, *buddy;
+	float           distance, pairwiseInterference, ownPrediction, neighborPrediction;
 
 	switch ( buildable )
 	{
@@ -3889,149 +3909,50 @@ static qboolean PredictBuildableInterference( buildable_t buildable, vec3_t orig
 			return qtrue;
 	}
 
-	predictedInterference = 1;
-	interfering = qfalse;
+	ownPrediction = 0.0f;
 
-	// TODO: Find out why this doesn't work
-	/*
-	// get close buildables
-	range[ 0 ] = range[ 1 ] = range[ 2 ] = REACTOR_BASESIZE;
-	VectorAdd( origin, range, maxs );
-	VectorSubtract( origin, range, mins );
-	numNeighbors = trap_EntitiesInBox( mins, maxs, neighbors, MAX_GENTITIES );
-	*/
-
-	// check for a free slot and interference
-	/*
-	for ( neighborNum = 0; neighborNum < numNeighbors; neighborNum++ )
-	*/
-	for ( entityNum = MAX_CLIENTS; entityNum < level.num_entities; entityNum++ )
+	neighbor = NULL;
+	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, INTERFERENCE_RELEVANT_RANGE ) )
 	{
-		/*
-		neighbor = &g_entities[ neighbors[ neighborNum ] ];
-		*/
-		neighbor = &g_entities[ entityNum ];
-
-		if ( neighbor->s.eType == ET_BUILDABLE && neighbor->buildableTeam == TEAM_HUMANS
-		     && !neighbor->powerSource && neighbor->health > 0 )
+		if ( neighbor->s.eType != ET_BUILDABLE || neighbor->buildableTeam != TEAM_HUMANS || neighbor->health <= 0 )
 		{
-			distance = Distance( origin, neighbor->s.origin );
+			continue;
+		}
 
-			// check for free repeater slot, with regards to pending deconstruction
-			if ( neighbor->s.modelindex == BA_H_REPEATER && distance < REPEATER_BASESIZE )
+		distance = Distance( origin, neighbor->s.origin );
+
+		// discard neighbors that are set for deconstruction
+		if ( IsSetForDeconstruction( neighbor ) )
+		{
+			continue;
+		}
+
+		pairwiseInterference = PairwiseInterference( buildable, neighbor->s.modelindex, distance );
+
+		ownPrediction += pairwiseInterference;
+		neighborPrediction = neighbor->interference + pairwiseInterference;
+
+		// check interference level of neighbor, with regards to pending deconstruction
+		if ( neighborPrediction > BUILDABLE_MAX_INTERFERENCE )
+		{
+			buddy = NULL;
+			while ( buddy = G_IterateEntitiesWithinRadius( buddy, neighbor->s.origin, INTERFERENCE_RELEVANT_RANGE ) )
 			{
-				if ( neighbor->slaveCount < REPEATER_SLAVECOUNT )
+				if ( IsSetForDeconstruction( buddy ) )
 				{
-					return qtrue;
-				}
-				else
-				{
-					interferenceReduction = 0;
-
-					for ( buddyNum = 0; buddyNum < BUILDABLE_MAX_BUDDYS; buddyNum++ )
-					{
-						if ( !neighbor->buddys[ buddyNum ] )
-						{
-							break;
-						}
-
-						if ( IsSetForDeconstruction( neighbor->buddys[ buddyNum ] ) )
-						{
-							interferenceReduction++;
-						}
-					}
-
-					if ( neighbor->slaveCount - interferenceReduction < REPEATER_SLAVECOUNT )
-					{
-						return qtrue;
-					}
+					neighborPrediction -= PairwiseInterference( neighbor->s.modelindex, buddy->s.modelindex,
+					                                            Distance( neighbor->s.origin, buddy->s.origin ) );
 				}
 			}
 
-			// check for free reactor slot, with regards to pending deconstruction
-			if ( neighbor->s.modelindex == BA_H_REACTOR && distance < REACTOR_BASESIZE )
+			if ( neighborPrediction > BUILDABLE_MAX_INTERFERENCE )
 			{
-				if ( neighbor->slaveCount < REACTOR_SLAVECOUNT )
-				{
-					return qtrue;
-				}
-				else
-				{
-					interferenceReduction = 0;
-
-					for ( buddyNum = 0; buddyNum < BUILDABLE_MAX_BUDDYS; buddyNum++ )
-					{
-						if ( !neighbor->buddys[ buddyNum ] )
-						{
-							break;
-						}
-
-						if ( IsSetForDeconstruction( neighbor->buddys[ buddyNum ] ) )
-						{
-							interferenceReduction++;
-						}
-					}
-
-					if ( neighbor->slaveCount - interferenceReduction < REACTOR_SLAVECOUNT )
-					{
-						return qtrue;
-					}
-				}
-			}
-
-			// discard neighbors not in interference range
-			if ( distance > HUMAN_INTERFERENCE_RANGE )
-			{
-				continue;
-			}
-
-			// discard neighbors that don't interfer
-			switch ( neighbor->s.modelindex )
-			{
-				case BA_H_REPEATER:
-				case BA_H_REACTOR:
-					continue;
-			}
-
-			// discard neighbors that are set for deconstruction
-			if ( IsSetForDeconstruction( neighbor ) )
-			{
-				continue;
-			}
-
-			// check own interference level
-			if ( ++predictedInterference > HUMAN_MAX_INTERFERENCE )
-			{
-				interfering = qtrue;
-			}
-
-			// check interference level of neighbor, with regards to pending deconstruction
-			if ( neighbor->interference >= HUMAN_MAX_INTERFERENCE )
-			{
-				interferenceReduction = 0;
-
-				for ( buddyNum = 0; buddyNum < BUILDABLE_MAX_BUDDYS; buddyNum++ )
-				{
-					if ( !neighbor->buddys[ buddyNum ] )
-					{
-						break;
-					}
-
-					if ( IsSetForDeconstruction( neighbor->buddys[ buddyNum ] ) )
-					{
-						interferenceReduction++;
-					}
-				}
-
-				if ( neighbor->interference - interferenceReduction >= HUMAN_MAX_INTERFERENCE )
-				{
-					interfering = qtrue;
-				}
+				return qfalse;
 			}
 		}
 	}
 
-	return !interfering;
+	return ( ownPrediction <= BUILDABLE_MAX_INTERFERENCE );
 }
 
 /*
@@ -4143,31 +4064,19 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 
 	if ( attr->team == TEAM_HUMANS )
 	{
-		// TODO: Find out why this doesn't work
-		/*
-		// get close buildables
-		range[ 0 ] = range[ 1 ] = range[ 2 ] = HUMAN_INTERFERENCE_RANGE;
-		VectorAdd( origin, range, maxs );
-		VectorSubtract( origin, range, mins );
-		numNeighbors = trap_EntitiesInBox( mins, maxs, neighbors, MAX_GENTITIES );
-		*/
+		numNeighbors = 0;
+		neighbor = NULL;
 
-		// assemble a list of human buildables
-		tmpIndex = 0;
-
-		for ( neighborNum = MAX_CLIENTS; neighborNum < level.num_entities; neighborNum++ )
+		// assemble a list of closeby human buildable IDs
+		while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, INTERFERENCE_RELEVANT_RANGE ) )
 		{
-			neighbor = &g_entities[ neighborNum ];
-
 			if ( neighbor->s.eType != ET_BUILDABLE || neighbor->buildableTeam != TEAM_HUMANS )
 			{
 				continue;
 			}
 
-			neighbors[ tmpIndex++ ] = neighborNum;
+			neighbors[ numNeighbors++ ] = neighbor - g_entities;
 		}
-
-		numNeighbors = tmpIndex;
 
 		// sort by distance
 		if ( numNeighbors > 0 )
@@ -4205,15 +4114,11 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 				}
 
 				// discard non-interfering buildable types
-				if ( neighbor->s.eType == BA_H_REACTOR || neighbor->s.eType == BA_H_REPEATER )
+				switch ( neighbor->s.modelindex )
 				{
-					continue;
-				}
-
-				// check if buildable is in interfering range
-				if ( Distance( neighbor->s.origin, origin ) > HUMAN_INTERFERENCE_RANGE )
-				{
-					continue;
+					case BA_H_REPEATER:
+					case BA_H_REACTOR:
+						continue;
 				}
 
 				// check if already set for deconstruction
@@ -4223,9 +4128,9 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 				}
 
 				// apply general replacement rules
-				if ( ( reason = BuildableReplacementChecks( ent->s.modelindex, buildable ) ) != IBE_NONE )
+				if ( BuildableReplacementChecks( ent->s.modelindex, buildable ) != IBE_NONE )
 				{
-					return reason;
+					continue;
 				}
 
 				// set for deconstruction

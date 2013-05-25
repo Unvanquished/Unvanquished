@@ -373,13 +373,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * HUMAN buildables
  */
 
-#define HUMAN_INTERFERENCE_RANGE  250 // unhosted buildables in this range will interfer
-#define HUMAN_MAX_INTERFERENCE    3   // max number of unhosted buildables that may interfer
-#define REACTOR_BASESIZE          500 // max range where a reactor can host buildables
-#define REPEATER_BASESIZE         180 // max range where a repeater can host buildables
-#define REACTOR_SLAVECOUNT        5   // max number of buildables the RC can host
-#define REPEATER_SLAVECOUNT       3   // max number of buildables each repeater can host
-#define BUILDABLE_MAX_BUDDYS      16  // max number of interfering buildables or slaves stored
+#define BUILDABLE_INTERFERENCE_RANGE  300  // buildables in this range will interfer
+#define BUILDABLE_MAX_INTERFERENCE    1.0f // maximum amount of interference a buildable can take
+#define REACTOR_POWER_RANGE           1000 // reactor range
+#define REPEATER_POWER_RANGE          500  // repeater range
+#define REACTOR_POWER                 2.5f // reactor interference reduction
+#define REPEATER_POWER                2.0f // repeater interference reduction
+#define INTERFERENCE_RELEVANT_RANGE   1000 // max of all above ranges
 
 #define MGTURRET_RANGE            400.0
 #define MGTURRET_REPEAT           150.0

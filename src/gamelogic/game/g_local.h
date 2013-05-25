@@ -223,12 +223,8 @@ struct gentity_s
 	/**
 	 * Human buildables compete for power.
 	 * Buildables with a high value of interference will power down.
-	 * Some buildables can host other buildables (slaves) so the latter are unaffected by interference.
-	 * The 'buddys' array stores both, it is used for predictions and TODO: client side display
 	 */
-	int          interference;
-	int          slaveCount;
-	gentity_t    *buddys[ BUILDABLE_MAX_BUDDYS ];
+	float        interference;
 
 	/**
 	 * has a marked building been deconstructed for this building?
