@@ -1,3 +1,9 @@
+unvanquished (0.15.0-2) unstable; urgency=low
+
+  * Switch off the GLSL optimiser: rely on mesa or taintware instead.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Sat, 25 May 2013 15:25:24 +0100
+
 unvanquished (0.15.0-1) unstable; urgency=low
 
   * Release of alpha 15.
