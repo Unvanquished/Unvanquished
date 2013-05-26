@@ -901,15 +901,10 @@ void BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget
 		VectorSet( mins, -96, -96, -96 );
 		routeTarget->type = BOT_TARGET_STATIC;
 	}
-
-	for ( i = 0; i < 3; i++ )
-	{
-		mins[ i ] = Q_fabs( mins[ i ] );
-	}
 	
 	for ( i = 0; i < 3; i++ )
 	{
-		routeTarget->polyExtents[ i ] = MAX( mins[ i ], maxs[ i ] );
+		routeTarget->polyExtents[ i ] = MAX( Q_fabs( mins[ i ] ), maxs[ i ] );
 	}
 
 	BotGetTargetPos( target, routeTarget->pos );
@@ -917,6 +912,32 @@ void BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget
 	// move center a bit lower so we don't get polys above the object 
 	// and get polys below the object on a slope
 	routeTarget->pos[ 2 ] -= routeTarget->polyExtents[ 2 ] / 2;
+
+	// account for buildings on walls or cielings
+	if ( BotTargetIsEntity( target ) )
+	{
+		if ( target.ent->s.eType == ET_BUILDABLE )
+		{
+			// building on wall or cieling ( 0.7 == MIN_WALK_NORMAL )
+			if ( target.ent->s.origin2[ 2 ] < 0.7 )
+			{
+				vec3_t targetPos;
+				vec3_t end;
+				vec3_t invNormal = { 0, 0, -1 };
+				trace_t trace;
+
+				routeTarget->polyExtents[ 0 ] += 25;
+				routeTarget->polyExtents[ 1 ] += 25;
+				routeTarget->polyExtents[ 2 ] += 300;
+
+				// try to find a position closer to the ground
+				BotGetTargetPos( target, targetPos );
+				VectorMA( targetPos, 600, invNormal, end );
+				trap_TraceNoEnts( &trace, targetPos, mins, maxs, end, target.ent->s.number, CONTENTS_SOLID );
+				VectorCopy( trace.endpos, routeTarget->pos );
+			}
+		}
+	}
 
 	// increase extents a little to account for obstacles cutting into the navmesh
 	// also accounts for navmesh erosion at mesh boundrys
