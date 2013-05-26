@@ -194,19 +194,9 @@ static AIValue_t teamateHasWeapon( gentity_t *self, const AIValue_t *params )
 static AIValue_t distanceTo( gentity_t *self, const AIValue_t *params )
 {
 	AIEntity_t e = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
-	float distance = 10000000;
-	botEntityAndDistance_t *ent = AIEntityToGentity( self, e );
-
-	if ( ent )
-	{
-		distance = ent->distance;
-	}
-	else if ( e == E_GOAL )
-	{
-		distance = DistanceToGoal( self );
-	}
+	botEntityAndDistance_t ent = AIEntityToGentity( self, e );
 	
-	return AIBoxFloat( distance );
+	return AIBoxFloat( ent.distance );
 }
 
 static AIValue_t baseRushScore( gentity_t *self, const AIValue_t *params )
@@ -233,19 +223,14 @@ static AIValue_t inAttackRange( gentity_t *self, const AIValue_t *params )
 {
 	botTarget_t target;
 	AIEntity_t et = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
-	if ( et == E_GOAL )
+	botEntityAndDistance_t e = AIEntityToGentity( self ,et );
+
+	if ( !e.ent )
 	{
-		target = self->botMind->goal;
+		return AIBoxInt( qfalse );
 	}
-	else
-	{
-		botEntityAndDistance_t *e = AIEntityToGentity( self ,et );
-		if ( !e )
-		{
-			return AIBoxInt( qfalse );
-		}
-		BotSetTarget( &target, e->ent, NULL );
-	}
+
+	BotSetTarget( &target, e.ent, NULL );
 
 	if ( BotTargetInAttackRange( self, target ) )
 	{
@@ -264,22 +249,16 @@ static AIValue_t isVisible( gentity_t *self, const AIValue_t *params )
 {
 	botTarget_t target;
 	AIEntity_t et = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
+	botEntityAndDistance_t e = AIEntityToGentity( self, et );
 
-	if ( et == E_GOAL )
+	if ( !e.ent )
 	{
-		target = self->botMind->goal;
-	}
-	else
-	{
-		botEntityAndDistance_t *e = AIEntityToGentity( self ,et );
-		if ( !e )
-		{
-			return AIBoxInt( qfalse );
-		}
-		BotSetTarget( &target, e->ent, NULL );
+		return AIBoxInt( qfalse );
 	}
 
-	if ( BotTargetIsVisible( self, self->botMind->goal, CONTENTS_SOLID ) )
+	BotSetTarget( &target, e.ent, NULL );
+
+	if ( BotTargetIsVisible( self, target, CONTENTS_SOLID ) )
 	{
 		if ( et == E_GOAL )
 		{
@@ -294,16 +273,16 @@ static AIValue_t isVisible( gentity_t *self, const AIValue_t *params )
 static AIValue_t directPathTo( gentity_t *self, const AIValue_t *params )
 {
 	AIEntity_t e = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
-	botEntityAndDistance_t *ed = AIEntityToGentity( self, e );
+	botEntityAndDistance_t ed = AIEntityToGentity( self, e );
 
 	if ( e == E_GOAL )
 	{
 		return AIBoxInt( self->botMind->directPathToGoal );
 	}
-	else if ( ed )
+	else if ( ed.ent )
 	{
 		botTarget_t target;
-		BotSetTarget( &target, ed->ent, NULL );
+		BotSetTarget( &target, ed.ent, NULL );
 		return AIBoxInt( BotPathIsWalkable( self, target ) );
 	}
 

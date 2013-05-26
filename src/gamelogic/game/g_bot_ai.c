@@ -134,36 +134,40 @@ void AIDestroyValue( AIValue_t v )
 	}
 }
 
-botEntityAndDistance_t *AIEntityToGentity( gentity_t *self, AIEntity_t e )
+botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e )
 {
+	botEntityAndDistance_t nullEntity;
+	nullEntity.ent = NULL;
+	nullEntity.distance = INT_MAX;
+
 	if ( e > BA_NONE && e < BA_NUM_BUILDABLES )
 	{
-		if ( !self->botMind->closestBuildings[ e ].ent )
-		{
-			return NULL;
-		}
-		return &self->botMind->closestBuildings[ e ];
+		return self->botMind->closestBuildings[ e ];
 	}
 	else if ( e == E_ENEMY )
 	{
-		if ( !self->botMind->bestEnemy.ent )
-		{
-			return NULL;
-		}
-		return &self->botMind->bestEnemy;
+		return self->botMind->bestEnemy;
 	}
 	else if ( e == E_DAMAGEDBUILDING )
 	{
-		if ( !self->botMind->closestDamagedBuilding.ent )
-		{
-			return NULL;
-		}
-		return &self->botMind->closestDamagedBuilding;
+		return self->botMind->closestDamagedBuilding;
 	}
-	else
+	else if ( e == E_GOAL )
 	{
-		return NULL;
+		botEntityAndDistance_t ret = nullEntity;
+		ret.ent = self->botMind->goal.ent;
+		ret.distance = DistanceToGoal( self );
+		return ret;
 	}
+	else if ( e == E_SELF )
+	{
+		botEntityAndDistance_t ret;
+		ret.ent = self;
+		ret.distance = 0;
+		return ret;
+	}
+	
+	return nullEntity;
 }
 
 static qboolean NodeIsRunning( gentity_t *self, AIGenericNode_t *node )
@@ -526,15 +530,13 @@ AINodeStatus_t BotActionChangeGoal( gentity_t *self, AIGenericNode_t *node )
 {
 	AIActionNode_t *a = ( AIActionNode_t * ) node;
 	AIEntity_t et = ( AIEntity_t ) AIUnBoxInt( a->params[ 0 ] );
-	botEntityAndDistance_t *e = AIEntityToGentity( self, et );
+	botEntityAndDistance_t e = AIEntityToGentity( self, et );
 
-	if ( e )
+	if ( !BotChangeGoalEntity( self, e.ent ) )
 	{
-		if ( !BotChangeGoalEntity( self, e->ent ) )
-		{
-			return STATUS_FAILURE;
-		}
+		return STATUS_FAILURE;
 	}
+
 	self->botMind->currentNode = node;
 	self->botMind->goalLastSeen = 0;
 	return STATUS_SUCCESS;
@@ -749,14 +751,14 @@ AINodeStatus_t BotActionRoamInRadius( gentity_t *self, AIGenericNode_t *node )
 	if ( node != self->botMind->currentNode )
 	{
 		vec3_t point;
-		botEntityAndDistance_t *ent = AIEntityToGentity( self, e );
+		botEntityAndDistance_t ent = AIEntityToGentity( self, e );
 
-		if ( !ent )
+		if ( !ent.ent )
 		{
 			return STATUS_FAILURE;
 		}
 
-		if ( !trap_BotFindRandomPointInRadius( self->s.number, ent->ent->s.origin, point, radius ) )
+		if ( !trap_BotFindRandomPointInRadius( self->s.number, ent.ent->s.origin, point, radius ) )
 		{
 			return STATUS_FAILURE;
 		}
@@ -807,16 +809,8 @@ AINodeStatus_t BotActionRoam( gentity_t *self, AIGenericNode_t *node )
 botTarget_t BotGetMoveToTarget( gentity_t *self, AIEntity_t e )
 {
 	botTarget_t target;
-	gentity_t *ent = NULL;
-	botEntityAndDistance_t *en;
-	en = AIEntityToGentity( self, e );
-
-	if ( en )
-	{
-		ent = en->ent;
-	}
-
-	BotSetTarget( &target, ent, NULL );
+	botEntityAndDistance_t en = AIEntityToGentity( self, e );
+	BotSetTarget( &target, en.ent, NULL );
 	return target;
 }
 
