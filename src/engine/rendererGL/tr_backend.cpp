@@ -11536,10 +11536,12 @@ const void     *RB_ScissorEnable( const void *data )
 
 	if ( !cmd->enable )
 	{
+		Tess_End();
 		GL_Scissor( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
 	}
 	else
 	{
+		Tess_End();
 		GL_Scissor( tr.scissor.x, tr.scissor.y, tr.scissor.w, tr.scissor.h );
 	}
 
@@ -11559,6 +11561,7 @@ const void     *RB_ScissorSet( const void *data )
 
 	if (tr.scissor.status )
 	{
+	    Tess_End();
 	    GL_Scissor( cmd->x, cmd->y, cmd->w, cmd->h );
 	}
 
