@@ -102,29 +102,6 @@ static AIValue_t goalType( gentity_t *self, const AIValue_t *params )
 	return AIBoxInt( BotGetTargetType( self->botMind->goal ) );
 }
 
-static AIValue_t goalPercentHealth( gentity_t *self, const AIValue_t *params )
-{
-	float maxHealth = INT_MAX;
-	float health = 0;
-
-	if ( BotTargetIsEntity( self->botMind->goal ) )
-	{
-		health = self->botMind->goal.ent->health;
-	}
-
-	if ( BotGetTargetType( self->botMind->goal ) == ET_BUILDABLE )
-	{
-		maxHealth = BG_Buildable( ( buildable_t ) self->botMind->goal.ent->s.modelindex )->health;
-	}
-
-	if ( BotGetTargetType( self->botMind->goal ) == ET_PLAYER )
-	{
-		maxHealth = BG_Class( ( class_t ) self->botMind->goal.ent->client->ps.stats[ STAT_CLASS ] )->health;
-	}
-
-	return AIBoxFloat( health / maxHealth );
-}
-
 static AIValue_t goalDead( gentity_t *self, const AIValue_t *params )
 {
 	qboolean dead = qfalse;
@@ -173,12 +150,6 @@ static AIValue_t haveUpgrade( gentity_t *self, const AIValue_t *params )
 {
 	int upgrade = AIUnBoxInt( params[ 0 ] );
 	return AIBoxInt( !BG_UpgradeIsActive( upgrade, self->client->ps.stats ) && BG_InventoryContainsUpgrade( upgrade, self->client->ps.stats ) );
-}
-static AIValue_t botHealth( gentity_t *self, const AIValue_t *params )
-{
-	float health = self->health;
-	float maxHealth = BG_Class( self->client->ps.stats[ STAT_CLASS ] )->health;
-	return AIBoxFloat( health / maxHealth );
 }
 
 static AIValue_t botAmmo( gentity_t *self, const AIValue_t *params )
@@ -335,6 +306,31 @@ static AIValue_t cvarFloat( gentity_t *self, const AIValue_t *params )
 	return AIBoxFloat( c->value );
 }
 
+static AIValue_t percentHealth( gentity_t *self, const AIValue_t *params )
+{
+	AIEntity_t e = ( AIEntity_t ) AIUnBoxInt( params[ 0 ] );
+	botEntityAndDistance_t et = AIEntityToGentity( self, e );
+	float maxHealth = INT_MAX;
+	float health = 0;
+
+	if ( et.ent )
+	{
+		health = et.ent->health;
+
+		if ( et.ent->s.eType == ET_BUILDABLE )
+		{
+			maxHealth = BG_Buildable( ( buildable_t ) et.ent->s.modelindex )->health;
+		}
+
+		if ( et.ent->s.eType == ET_PLAYER )
+		{
+			maxHealth = BG_Class( ( class_t ) et.ent->client->ps.stats[ STAT_CLASS ] )->health;
+		}
+	}
+
+	return AIBoxFloat( health / maxHealth );
+}
+
 // functions accessible to the behavior tree for use in condition nodes
 static const struct AIConditionMap_s
 {
@@ -356,7 +352,6 @@ static const struct AIConditionMap_s
 	{ "distanceTo",        VALUE_FLOAT, distanceTo,        1 },
 	{ "goalBuildingType",  VALUE_INT,   goalBuildingType,  0 },
 	{ "goalIsDead",        VALUE_INT,   goalDead,          0 },
-	{ "goalPercentHealth", VALUE_FLOAT, goalPercentHealth, 0 },
 	{ "goalTeam",          VALUE_INT,   goalTeam,          0 },
 	{ "goalType",          VALUE_INT,   goalType,          0 },
 	{ "haveUpgrade",       VALUE_INT,   haveUpgrade,       1 },
@@ -365,7 +360,7 @@ static const struct AIConditionMap_s
 	{ "humanStage",        VALUE_INT,   humanStage,        0 },
 	{ "inAttackRange",     VALUE_INT,   inAttackRange,     1 },
 	{ "isVisible",         VALUE_INT,   isVisible,         1 },
-	{ "percentHealth",     VALUE_FLOAT, botHealth,         0 },
+	{ "percentHealth",     VALUE_FLOAT, percentHealth,     1 },
 	{ "random",            VALUE_FLOAT, randomChance,      0 },
 	{ "skill",             VALUE_INT,   botSkill,          0 },
 	{ "team",              VALUE_INT,   botTeam,           0 },
@@ -1305,6 +1300,7 @@ AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list )
 	D( E_GOAL );
 	D( E_ENEMY );
 	D( E_DAMAGEDBUILDING );
+	D( E_SELF );
 
 	// add player classes
 	D( PCL_NONE );

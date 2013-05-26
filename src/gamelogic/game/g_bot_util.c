@@ -2147,5 +2147,6 @@ void BotSearchForEnemy( gentity_t *self )
 	{
 		// reset after a while if we haven't seen an enemy
 		self->botMind->bestEnemy.ent = NULL;
+		self->botMind->bestEnemy.distance = INT_MAX;
 	}
 }
