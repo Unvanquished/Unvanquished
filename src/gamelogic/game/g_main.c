@@ -713,8 +713,9 @@ void G_RestoreCvars( void )
 vmCvar_t *G_FindCvar( const char *name )
 {
 	cvarTable_t *c = NULL;
-
-	c = ( cvarTable_t * ) bsearch( name, gameCvarTable, gameCvarTableSize, sizeof( *gameCvarTable ), cvarCompare );
+	cvarTable_t comp;
+	comp.cvarName = name;
+	c = ( cvarTable_t * ) bsearch( &comp, gameCvarTable, gameCvarTableSize, sizeof( *gameCvarTable ), cvarCompare );
 
 	if ( !c )
 	{
