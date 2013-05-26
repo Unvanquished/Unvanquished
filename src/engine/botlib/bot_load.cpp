@@ -269,7 +269,8 @@ extern "C" qboolean BotSetupNav( const botClass_t *botClass, qhandle_t *navHandl
 			agents[ i ].corridor.reset( 0, clearVec );
 			agents[ i ].clientNum = i;
 			agents[ i ].needReplan = qtrue;
-			agents[ i ].lastRouteTime = 0;
+			agents[ i ].routePlanCounter = 0;
+			agents[ i ].lastRoutePlanTime = 0;
 			agents[ i ].nav = NULL;
 		}
 	}

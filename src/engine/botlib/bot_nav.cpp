@@ -158,6 +158,8 @@ extern "C" qboolean BotUpdateCorridor( int botClientNum, const botRouteTarget_t 
 
 	VectorCopy( rtarget.pos, epos );
 
+	bot->routePlanCounter = 0;
+
 	if ( directPathToGoal )
 	{
 		*directPathToGoal = qfalse;
