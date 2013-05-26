@@ -4188,6 +4188,10 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
 			CG_DrawTutorial( rect, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
 			break;
 
+		case CG_MINIMAP:
+			CG_DrawMinimap( rect );
+			break;
+
 		default:
 			break;
 	}

@@ -134,6 +134,8 @@ vmCvar_t        cg_drawChargeBar;
 vmCvar_t        cg_drawCrosshair;
 vmCvar_t        cg_drawCrosshairNames;
 vmCvar_t        cg_drawBuildableHealth;
+vmCvar_t        cg_drawMinimap;
+vmCvar_t        cg_minimapActive;
 vmCvar_t        cg_crosshairSize;
 vmCvar_t        cg_crosshairFile;
 vmCvar_t        cg_draw2D;
@@ -297,6 +299,8 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_drawCrosshair,               "cg_drawCrosshair",               "2",            CVAR_ARCHIVE                 },
 	{ &cg_drawCrosshairNames,          "cg_drawCrosshairNames",          "1",            CVAR_ARCHIVE                 },
 	{ &cg_drawBuildableHealth,         "cg_drawBuildableHealth",         "1",            CVAR_ARCHIVE                 },
+	{ &cg_drawMinimap,                 "cg_drawMinimap",                 "1",            CVAR_ARCHIVE                 },
+	{ &cg_minimapActive,               "cg_minimapActive",               "0",            0                            },
 	{ &cg_crosshairSize,               "cg_crosshairSize",               "1",            CVAR_ARCHIVE                 },
 	{ &cg_crosshairFile,               "cg_crosshairFile",               "",             CVAR_ARCHIVE                 },
 	{ &cg_addMarks,                    "cg_marks",                       "1",            CVAR_ARCHIVE                 },
@@ -2684,6 +2688,8 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	CG_RegisterClients(); // if low on memory, some clients will be deferred
 
 	CG_InitMarkPolys();
+
+	CG_InitMinimap();
 
 	// Make sure we have update values (scores)
 	CG_SetConfigValues();
