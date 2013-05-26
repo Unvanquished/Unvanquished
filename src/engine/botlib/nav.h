@@ -48,6 +48,13 @@ struct NavMeshTileHeader
 	int dataSize;
 };
 
+static const int NAVMESHCON_VERSION = 1;
+struct OffMeshConnectionHeader
+{
+	int version;
+	int numConnections;
+};
+
 struct OffMeshConnection
 {
 	float start[ 3 ];

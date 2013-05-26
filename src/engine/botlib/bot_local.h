@@ -65,6 +65,7 @@ typedef struct
 	dtNavMeshQuery   *query;
 	dtQueryFilter    filter;
 	MeshProcess      process;
+	char             name[ 64 ];
 } NavData_t;
 
 typedef struct
@@ -140,6 +141,7 @@ static inline void quake2recastTarget( botRouteTarget_t *target )
 }
 
 void Cmd_NavEdit( void );
+void BotSaveOffMeshConnections( NavData_t *nav );
 
 // all functions here use detour's coordinate system
 // callers should use quake2recast and recast2quake where appropriate to convert vectors

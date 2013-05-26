@@ -40,7 +40,7 @@ extern "C" {
 #include "bot_navdraw.h"
 #include "nav.h"
 
-static qboolean navEdit = qfalse;
+static bool navEdit = false;
 
 qboolean GetPointPointedTo( NavData_t *nav, vec3_t p )
 {
@@ -68,12 +68,12 @@ qboolean GetPointPointedTo( NavData_t *nav, vec3_t p )
 }
 
 static OffMeshConnection c;
-static qboolean offBegin = qfalse;
+static bool offBegin = false;
 
 void BotDrawNavEdit( NavData_t *nav, DebugDrawQuake *dd )
 {
 	vec3_t p;
-	if ( GetPointPointedTo( nav, p ) )
+	if ( navEdit && GetPointPointedTo( nav, p ) )
 	{
 		unsigned int col = duRGBA( 255, 255, 255, 220 );
 		dd->begin( DU_DRAW_LINES, 2.0f );
@@ -95,6 +95,7 @@ void Cmd_NavEdit( void )
 	char *arg = NULL;
 	int meshnum = cl.snap.ps.stats[ STAT_CLASS ] - 1;
 	NavData_t *nav;
+	const char usage[] = "usage: navedit <begin/end>\n";
 
 	if ( meshnum < 0 || meshnum >= numNavData )
 	{
@@ -116,34 +117,18 @@ void Cmd_NavEdit( void )
 		return;
 	}
 
-	if ( argc < 2 )
+	if ( argc == 1 )
 	{
-		Com_Printf( "usage: navedit <start/stop>/<begin/end> [type] [oneway/twoway]\n" );
+		offBegin = qfalse;
+		navEdit = !navEdit;
+		Cvar_Set( "r_debugSurface", va( "%d", navEdit ) );
 		return;
 	}
 
 	arg = Cmd_Argv( 1 );
 
-	if ( !Q_stricmp( arg, "start" ) )
+	if ( !Q_stricmp( arg, "begin" ) )
 	{
-		offBegin = qfalse;
-		navEdit = qtrue;
-		Cvar_Set( "r_debugSurface", "1" );
-	}
-	else if ( !Q_stricmp( arg, "stop" ) )
-	{
-		offBegin = qfalse;
-		navEdit = qfalse;
-		Cvar_Set( "r_debugSurface", "0" );
-	}
-	else if ( !Q_stricmp( arg, "begin" ) )
-	{
-		if ( argc < 2 )
-		{
-			Com_Printf( "usage: navedit <start/stop>/<begin/end>\n" );
-			return;
-		}
-
 		if ( GetPointPointedTo( nav, c.start ) )
 		{
 			c.area = DT_TILECACHE_WALKABLE_AREA;
@@ -156,12 +141,6 @@ void Cmd_NavEdit( void )
 	}
 	else if ( !Q_stricmp( arg, "end" ) )
 	{
-		if ( argc < 2 )
-		{
-			Com_Printf( "usage: navedit <start/stop>/<begin/end>\n" );
-			return;
-		}
-
 		if ( !offBegin )
 		{
 			return;
@@ -195,5 +174,9 @@ void Cmd_NavEdit( void )
 
 			offBegin = qfalse;
 		}
+	}
+	else if ( !Q_stricmp( arg, "save" ) )
+	{
+		BotSaveOffMeshConnections( nav );
 	}
 }

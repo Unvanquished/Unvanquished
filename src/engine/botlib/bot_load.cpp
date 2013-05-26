@@ -41,12 +41,135 @@ NavData_t BotNavData[ MAX_NAV_DATA ];
 LinearAllocator alloc( 1024 * 1024 * 16 );
 FastLZCompressor comp;
 
+template<class T> static inline void SwapBlock( T block[], int num )
+{
+	if ( LittleLong( 1 ) != 1 )
+	{
+		for ( int i = 0; i < num; i++ )
+		{
+			dtSwapEndian( &block[ i ] );
+		}
+	}
+}
+
+void BotSaveOffMeshConnections( NavData_t *nav )
+{
+	char mapname[ MAX_QPATH ];
+	char filePath[ MAX_QPATH ];
+	fileHandle_t f = 0;
+
+	Cvar_VariableStringBuffer( "mapname", mapname, sizeof( mapname ) );
+	Com_sprintf( filePath, sizeof( filePath ), "maps/%s-%s.navcon", mapname, nav->name );
+	f = FS_FOpenFileWrite( filePath );
+
+	if ( !f )
+	{
+		return;
+	}
+
+	int conCount = nav->process.con.offMeshConCount;
+	OffMeshConnectionHeader header;
+	header.version = LittleLong( NAVMESHCON_VERSION );
+	header.numConnections = LittleLong( conCount );
+	FS_Write( &header, sizeof( header ), f );
+
+	float *verts = ( float * ) dtAlloc( sizeof( float ) * 6 * conCount, DT_ALLOC_TEMP );
+	memcpy( verts, nav->process.con.verts, sizeof( float ) * 6 * conCount );
+	SwapBlock( verts, conCount * 6 );
+
+	FS_Write( verts, sizeof( float ) * 6 * conCount, f );
+	dtFree( verts );
+
+	float *rad = ( float * ) dtAlloc( sizeof( float ) * conCount, DT_ALLOC_TEMP );
+	memcpy( rad, nav->process.con.rad, sizeof( float ) * conCount );
+	SwapBlock( rad, conCount );
+
+	FS_Write( rad, sizeof( float ) * conCount, f );
+	dtFree( rad );
+
+	unsigned short *flags = ( unsigned short * ) dtAlloc( sizeof( unsigned short ) * conCount, DT_ALLOC_TEMP );
+	memcpy( flags, nav->process.con.flags, sizeof( unsigned short ) * conCount );
+	SwapBlock( flags, conCount );
+
+	FS_Write( flags, sizeof( unsigned short ) * conCount, f );
+	dtFree( flags );
+
+	FS_Write( nav->process.con.areas, sizeof( unsigned char ) * conCount, f );
+	FS_Write( nav->process.con.dirs, sizeof( unsigned char ) * conCount, f );
+
+	unsigned int *userids = ( unsigned int * ) dtAlloc( sizeof( unsigned int ) * conCount, DT_ALLOC_TEMP );
+	memcpy( userids, nav->process.con.userids, sizeof( unsigned int ) * conCount );
+	SwapBlock( userids, conCount );
+	
+	FS_Write( userids, sizeof( unsigned int ) * conCount, f );
+	dtFree( userids );
+
+	FS_FCloseFile( f );
+}
+
+void BotLoadOffMeshConnections( const char *filename, NavData_t *nav )
+{
+	char mapname[ MAX_QPATH ];
+	char filePath[ MAX_QPATH ];
+	fileHandle_t f = 0;
+
+	Cvar_VariableStringBuffer( "mapname", mapname, sizeof( mapname ) );
+	Com_sprintf( filePath, sizeof( filePath ), "maps/%s-%s.navcon", mapname, filename );
+	int len = FS_FOpenFileRead( filePath, &f, qtrue );
+
+	if ( !f )
+	{
+		return;
+	}
+
+	OffMeshConnectionHeader header;
+	FS_Read( &header, sizeof( header ), f );
+
+	header.numConnections = LittleLong( header.numConnections );
+	header.version = LittleLong( header.version );
+	
+	if ( header.version != NAVMESHCON_VERSION )
+	{
+		FS_FCloseFile( f );
+		return;
+	}
+
+	int conCount = header.numConnections;
+
+	if ( conCount > nav->process.con.MAX_CON )
+	{
+		FS_FCloseFile( f );
+		return;
+	}
+
+	nav->process.con.offMeshConCount = conCount;
+
+	FS_Read( nav->process.con.verts, sizeof( float ) * 6 * conCount, f );
+	SwapBlock( nav->process.con.verts, conCount * 6 );
+
+	FS_Read( nav->process.con.rad, sizeof( float ) * conCount, f );
+	SwapBlock( nav->process.con.rad, conCount );
+
+	FS_Read( nav->process.con.flags, sizeof( unsigned short ) * conCount, f );
+	SwapBlock( nav->process.con.flags, conCount );
+
+	FS_Read( nav->process.con.areas, sizeof( unsigned char ) * conCount, f );
+	FS_Read( nav->process.con.dirs, sizeof( unsigned char ) * conCount, f );
+
+	FS_Read( nav->process.con.userids, sizeof( unsigned int ) * conCount, f );
+	SwapBlock( nav->process.con.userids, conCount );
+
+	FS_FCloseFile( f );
+}
+
 qboolean BotLoadNavMesh( const char *filename, NavData_t &nav )
 {
 	char mapname[ MAX_QPATH ];
 	char filePath[ MAX_QPATH ];
 	char gameName[ MAX_STRING_CHARS ];
 	fileHandle_t f = 0;
+
+	BotLoadOffMeshConnections( filename, &nav );
 
 	Cvar_VariableStringBuffer( "mapname", mapname, sizeof( mapname ) );
 	Cvar_VariableStringBuffer( "fs_game", gameName, sizeof( gameName ) );
@@ -296,6 +419,7 @@ extern "C" qboolean BotSetupNav( const botClass_t *botClass, qhandle_t *navHandl
 		return qfalse;
 	}
 
+	Q_strncpyz( nav->name, botClass->name, sizeof( nav->name ) );
 	nav->query = dtAllocNavMeshQuery();
 
 	if ( !nav->query )
