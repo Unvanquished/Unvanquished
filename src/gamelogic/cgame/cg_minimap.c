@@ -22,7 +22,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "cg_local.h"
 
-#define MINIMAP_DEFAULT_DISPLAY_SIZE 1024.0
+#define MINIMAP_MAP_DISPLAY_SIZE 1024.0f
+#define MINIMAP_PLAYER_DISPLAY_SIZE 50.0f
+#define MINIMAP_TEAMMATE_DISPLAY_SIZE 50.0f
+
+//It is multiplied by msecs
+#define MINIMAP_FADE_TIME (2.0f / 1000.0f)
 
 //The minimap parser
 
@@ -262,7 +267,7 @@ void CG_SetupMinimapTransform( const rectDef_t *rect, const minimap_t* minimap, 
     angle = DEG2RAD(transformAngle + 90.0);
 
     transformScale = zone->scale * minimap->scale;
-    scale = transformScale * MINIMAP_DEFAULT_DISPLAY_SIZE / (zone->imageMax[0] - zone->imageMin[0]);
+    scale = transformScale * MINIMAP_MAP_DISPLAY_SIZE / (zone->imageMax[0] - zone->imageMin[0]);
     s = sin(angle) * scale;
     c = cos(angle) * scale;
 
@@ -341,6 +346,11 @@ void CG_DrawMinimapObject( qhandle_t image, const vec3_t pos3d, float angle, flo
     trap_R_DrawRotatedPic( x, y, wh, wh, 0.0, 0.0, 1.0, 1.0, image, angle );
 }
 
+/*
+================
+CG_UpdateMinimapActive
+================
+*/
 void CG_UpdateMinimapActive(minimap_t* m)
 {
     qboolean active = m->defined && cg_drawMinimap.integer;
@@ -350,6 +360,170 @@ void CG_UpdateMinimapActive(minimap_t* m)
     if( cg_minimapActive.integer != active )
     {
         trap_Cvar_Set( "cg_minimapActive", va( "%d", active ) );
+    }
+}
+
+//Other logical minimap functions
+
+/*
+================
+CG_ChooseMinimapZone
+
+Chooses the current zone, tries the last zone first
+More than providing a performance improvement it helps
+the mapper make a nicer looking minimap: once you enter a zone I'll stay in it
+until you reach the bounds
+================
+*/
+minimapZone_t* CG_ChooseMinimapZone( minimap_t* m )
+{
+    if( m->lastZone < 0 || !CG_IsInMinimapZone( &m->zones[m->lastZone] ) )
+    {
+        int i;
+        for( i = 0; i < m->nZones; i++ )
+        {
+            if( CG_IsInMinimapZone( &m->zones[i] ) )
+            {
+                break;
+            }
+        }
+
+        //The mapper should make sure this never happens but we prevent crashes
+        //could also be used to make a default zone
+        if( i >= m->nZones )
+        {
+            i = m->nZones - 1;
+        }
+
+        m->lastZone = i;
+
+        return &m->zones[i];
+    }
+    else
+    {
+        return &m->zones[m->lastZone];
+    }
+}
+
+/*
+================
+CG_MinimapDrawMap
+================
+*/
+void CG_MinimapDrawMap( minimapZone_t* z )
+{
+    vec3_t origin = {0.0f, 0.0f, 0.0f};
+    origin[0] = 0.5 * (z->imageMin[0] + z->imageMax[0]);
+    origin[1] = 0.5 * (z->imageMin[1] + z->imageMax[1]);
+
+    CG_DrawMinimapObject( z->image, origin, 90.0, 1.0, MINIMAP_MAP_DISPLAY_SIZE );
+}
+
+/*
+================
+CG_MinimapDrawPlayer
+================
+*/
+void CG_MinimapDrawPlayer( minimap_t* m )
+{
+    CG_DrawMinimapObject( m->gfx.playerArrow, cg.refdef.vieworg, cg.refdefViewAngles[1], 1.0, MINIMAP_PLAYER_DISPLAY_SIZE );
+}
+
+/*
+================
+CG_MinimapUpdateTeammateFadingAndPos
+
+When the player leaves the PVS we cannot track its movement on the minimap
+anymore so we fade its arrow by keeping in memory its last know pos and angle.
+When he comes back in the PVS we don't want to have to manage two arrows or to
+make the arrow warp. That's why we wait until the fadeout is finished before
+fading it back in.
+================
+*/
+void CG_MinimapUpdateTeammateFadingAndPos( centity_t* mate )
+{
+    playerEntity_t* state = &mate->pe;
+
+    if( state->minimapFadingOut )
+    {
+        if( state->minimapFading != 0.0f )
+        {
+            state->minimapFading = MAX( 0.0f, state->minimapFading - cg.frametime * MINIMAP_FADE_TIME );
+        }
+
+        if( state->minimapFading == 0.0f )
+        {
+            state->minimapFadingOut = qfalse;
+        }
+    }
+    else
+    {
+        //The player is out of the PVS or is dead
+        qboolean shouldStayVisible = mate->valid && ! ( mate->currentState.eFlags & EF_DEAD );
+
+        if( !shouldStayVisible )
+        {
+            state->minimapFadingOut = qtrue;
+        }
+        else
+        {
+            if( state->minimapFading != 1.0f )
+            {
+                state->minimapFading = MIN( 1.0f, state->minimapFading + cg.frametime * MINIMAP_FADE_TIME );
+            }
+
+            //Copy the current state so that we can use it once the player is out of the PVS
+            VectorCopy( mate->lerpOrigin, state->lastMinimapPos );
+            state->lastMinimapAngle = mate->lerpAngles[1];
+        }
+    }
+}
+
+/*
+================
+CG_MinimapDrawTeammates
+================
+*/
+void CG_MinimapDrawTeammates( minimap_t* m )
+{
+    int ownTeam = cg.predictedPlayerState.stats[ STAT_TEAM ];
+    int i;
+
+    for ( i = 0; i < MAX_GENTITIES; i++ )
+    {
+        centity_t* mate = &cg_entities[i];
+        playerEntity_t* state = &mate->pe;
+
+        int clientNum = mate->currentState.clientNum;
+
+        qboolean isTeammate = mate->currentState.eType == ET_PLAYER && clientNum >= 0 && clientNum < MAX_CLIENTS && (mate->currentState.misc & 0x00FF) == ownTeam;
+
+        if ( !isTeammate )
+        {
+            continue;
+        }
+
+        //We have a fading effect for teammates going out of the PVS
+        CG_MinimapUpdateTeammateFadingAndPos( mate );
+
+        //Draw the arrow for this teammate with the right fading
+        if( state->minimapFading != 0.0f )
+        {
+            //Avoid doing 2 trap calls for setColor if we can
+            if( state->minimapFading == 1.0f )
+            {
+                CG_DrawMinimapObject( m->gfx.teamArrow, state->lastMinimapPos, state->lastMinimapAngle, 1.0, 50.0 );
+            }
+            else
+            {
+                vec4_t fadeColor = {1.0f, 1.0f, 1.0f, 1.0f};
+                fadeColor[3] = state->minimapFading;
+
+                trap_R_SetColor( fadeColor );
+                CG_DrawMinimapObject( m->gfx.teamArrow, state->lastMinimapPos, state->lastMinimapAngle, 1.0, MINIMAP_TEAMMATE_DISPLAY_SIZE );
+                trap_R_SetColor( NULL );
+            }
+        }
     }
 }
 
@@ -388,14 +562,10 @@ void CG_InitMinimap( void )
 CG_DrawMinimap
 ================
 */
-//TODO: split that big function and make it look less like test code
 void CG_DrawMinimap( const rectDef_t* rect640 )
 {
     minimap_t* m = &cg.minimap;
     minimapZone_t *z = NULL;
-    float angle;
-    float scale;
-    float transform[4];
     rectDef_t rect = *rect640;
 
     CG_UpdateMinimapActive( m );
@@ -405,35 +575,7 @@ void CG_DrawMinimap( const rectDef_t* rect640 )
         return;
     }
 
-    //Chooses the current zone, tries the last zone first
-    //More than providing a performance improvement it helps
-    //the mapper make a nicer looking minimap: once you enter a zone I'll stay in it
-    //until you reach the bounds
-    if( m->lastZone < 0 || !CG_IsInMinimapZone( &m->zones[m->lastZone] ) )
-    {
-        int i;
-        for( i = 0; i < m->nZones; i++ )
-        {
-            if( CG_IsInMinimapZone( &m->zones[i] ) )
-            {
-                break;
-            }
-        }
-
-        //The mapper should make sure this never happens but we prevent crashes
-        //could also be used to make a default zone
-        if( i >= m->nZones )
-        {
-            i = m->nZones - 1;
-        }
-
-        z = &m->zones[i];
-        m->lastZone = i;
-    }
-    else
-    {
-        z = &m->zones[m->lastZone];
-    }
+    z = CG_ChooseMinimapZone( m );
 
     //Setup the transform
     CG_AdjustFrom640( &rect.x, &rect.y, &rect.w, &rect.h );
@@ -442,90 +584,14 @@ void CG_DrawMinimap( const rectDef_t* rect640 )
     //Add the backgound
     CG_FillRect( rect640->x, rect640->y, rect640->w, rect640->h, m->bgColor );
 
+    //Draw things inside the rectangle we were given
     CG_SetScissor( rect.x, rect.y, rect.w, rect.h );
     CG_EnableScissor( qtrue );
     {
-        int i, ownTeam;
-        centity_t* cent;
 
-        //Draws the minimap
-        vec3_t origin = {0.0f, 0.0f, 0.0f};
-        origin[0] = 0.5 * (z->imageMin[0] + z->imageMax[0]);
-        origin[1] = 0.5 * (z->imageMin[1] + z->imageMax[1]);
-
-        CG_DrawMinimapObject( z->image, origin, 90.0, 1.0, 1024.0 );
-
-        //Draws the player arrow
-        CG_DrawMinimapObject( m->gfx.playerArrow, cg.refdef.vieworg, cg.refdefViewAngles[1], 1.0, 50.0 );
-
-        //Draw every teammate
-        ownTeam = cg.predictedPlayerState.stats[ STAT_TEAM ];
-        for ( i = 0; i < MAX_GENTITIES; i++ )
-        {
-            int clientNum;
-            cent = &cg_entities[i];
-            clientNum = cent->currentState.clientNum;
-
-            if ( cent->currentState.eType == ET_PLAYER && clientNum >= 0 && clientNum < MAX_CLIENTS )
-            {
-                playerEntity_t* player;
-                int msec;
-                const float fadeOutTime = 0.0007f;
-
-                if( (cent->currentState.misc & 0x00FF) != ownTeam )
-                {
-                    continue;
-                }
-
-                player = &cent->pe;
-
-                //When the player leaves the PVS we cannot track its movement on the minimap
-                //anymore so we fade its arrow by keeping in memory its last know pos and angle.
-                //When he comes back in the PVS we don't want to have to manage two arrows or to
-                //make the arrow warp. That's why we wait until the fadeout is finished before
-                //fading it back in.
-                if( player->minimapFadingOut )
-                {
-                    if( player->minimapFading != 0.0f )
-                    {
-                        player->minimapFading = MAX( 0.0f, player->minimapFading - cg.frametime * fadeOutTime );
-                    }
-
-                    if( player->minimapFading == 0.0f )
-                    {
-                        player->minimapFadingOut = qfalse;
-                    }
-                }
-                else
-                {
-                    //The player is out of the PVS or is dead
-                    if( !cent->valid || cent->currentState.eFlags & EF_DEAD )
-                    {
-                        player->minimapFadingOut = qtrue;
-                    }
-                    else
-                    {
-                        if( player->minimapFading != 1.0f )
-                        {
-                            player->minimapFading = MIN( 1.0f, player->minimapFading + cg.frametime * fadeOutTime );
-                        }
-
-                        VectorCopy( cent->lerpOrigin, player->lastMinimapPos );
-                        player->lastMinimapAngle = cent->lerpAngles[1];
-                    }
-                }
-
-                if( player->minimapFading != 0.0f )
-                {
-                    vec4_t fadeColor = {1.0f, 1.0f, 1.0f, 1.0f};
-                    fadeColor[3] = player->minimapFading;
-
-                    trap_R_SetColor( fadeColor );
-                    CG_DrawMinimapObject( m->gfx.teamArrow, player->lastMinimapPos, player->lastMinimapAngle, 1.0, 50.0 );
-                    trap_R_SetColor( NULL );
-                }
-            }
-        }
+        CG_MinimapDrawMap( z );
+        CG_MinimapDrawPlayer( m );
+        CG_MinimapDrawTeammates( m );
     }
     CG_EnableScissor( qfalse );
 }
