@@ -72,6 +72,11 @@ struct OffMeshConnections
 
 	OffMeshConnections() : offMeshConCount( 0 ) { }
 
+	void reset( void )
+	{
+		offMeshConCount = 0;
+	}
+
 	void delConnection( int index )
 	{
 		if ( index < 0 || index >= offMeshConCount )

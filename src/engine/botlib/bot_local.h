@@ -47,6 +47,7 @@ extern "C"
 
 #include "bot_types.h"
 #include "bot_api.h"
+#include "nav.h"
 
 const int MAX_NAV_DATA = 16;
 const int MAX_BOT_PATH = 512;
@@ -60,6 +61,7 @@ typedef struct
 	dtNavMesh        *mesh;
 	dtNavMeshQuery   *query;
 	dtQueryFilter    filter;
+	MeshProcess      process;
 } NavData_t;
 
 typedef struct
