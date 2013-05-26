@@ -10491,11 +10491,15 @@ extern "C" void DebugDrawBegin( debugDrawMode_t mode, float size ) {
 	gl_genericShader->DisableTCGenLightmap();
 	gl_genericShader->BindProgram();
 
+	GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
+	GL_Cull( CT_FRONT_SIDED );
+
+	GL_VertexAttribsState( ATTR_POSITION | ATTR_COLOR | ATTR_TEXCOORD );
+
 	// set uniforms
+	gl_genericShader->SetUniform_AlphaTest( GLS_ATEST_NONE );
 	gl_genericShader->SetUniform_ColorModulate( CGEN_VERTEX, AGEN_VERTEX );
 	gl_genericShader->SetUniform_Color( colorClear );
-
-	gl_genericShader->SetRequiredVertexPointers();
 
 	// bind u_ColorMap
 	GL_SelectTexture( 0 );
@@ -10504,13 +10508,10 @@ extern "C" void DebugDrawBegin( debugDrawMode_t mode, float size ) {
 
 	// render in world space
 	backEnd.orientation = backEnd.viewParms.world;
-	GL_LoadProjectionMatrix( backEnd.viewParms.projectionMatrix );
-	GL_LoadModelViewMatrix( backEnd.viewParms.world.modelViewMatrix );
+	GL_LoadModelViewMatrix( backEnd.orientation.modelViewMatrix );
 	gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
 
 	GL_CheckErrors();
-
-	//Tess_Begin( Tess_StageIteratorDebug, NULL, NULL, qtrue, qfalse, -1, 0 );
 }
 
 extern "C" void DebugDrawDepthMask(qboolean state)
@@ -10521,6 +10522,7 @@ extern "C" void DebugDrawDepthMask(qboolean state)
 extern "C" void DebugDrawVertex(const vec3_t pos, unsigned int color, const vec2_t uv) {
 	vec4_t colors = {color & 0xFF, (color >> 8) & 0xFF, (color >> 16) & 0xFF, (color >> 24) & 0xFF};
 	Vector4Scale(colors, 1.0f/255.0f, colors);
+
 	//we have reached the maximum number of verts we can batch
 	if( tess.numVertexes == maxDebugVerts ) {
 		//draw the geometry we already have
@@ -10563,7 +10565,7 @@ extern "C" void DebugDrawEnd( void ) {
 	}
 	tess.numVertexes = 0;
 	tess.numIndexes = 0;
-	//Tess_End();
+
 	glLineWidth( 1.0f );
 	glPointSize( 1.0f );
 }

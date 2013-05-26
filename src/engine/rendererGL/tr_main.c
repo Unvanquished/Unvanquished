@@ -3434,11 +3434,12 @@ static void R_DebugGraphics( void )
 		GL_SelectTexture( 0 );
 		GL_Bind( tr.whiteImage );
 
+		GL_Cull( CT_FRONT_SIDED );
+		ri.CM_DrawDebugSurface( R_DebugPolygon );
+
 		GL_State( GLS_SRCBLEND_SRC_ALPHA | GLS_DSTBLEND_ONE_MINUS_SRC_ALPHA );
-		GL_Cull( CT_TWO_SIDED );
 
 		ri.Bot_DrawDebugMesh( &bi );
-		ri.CM_DrawDebugSurface( R_DebugPolygon );
 	}
 
 #endif
