@@ -579,6 +579,7 @@ endif()
 
 set( CLIENTLIST
   ${MOUNT_DIR}/engine/botlib/bot_debug.cpp
+  ${MOUNT_DIR}/engine/botlib/bot_nav_edit.cpp
   ${MOUNT_DIR}/engine/client/cin_ogm.c
   ${MOUNT_DIR}/engine/client/cl_avi.c
   ${MOUNT_DIR}/engine/client/cl_cgame.c

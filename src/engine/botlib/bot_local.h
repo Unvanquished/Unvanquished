@@ -32,6 +32,9 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+#ifndef __BOT_LOCAL_H
+#define __BOT_LOCAL_H
+
 extern "C"
 {
 #include "../qcommon/q_shared.h"
@@ -136,6 +139,8 @@ static inline void quake2recastTarget( botRouteTarget_t *target )
 	target->polyExtents[ 2 ] = fabsf( target->polyExtents[ 2 ] );
 }
 
+void Cmd_NavEdit( void );
+
 // all functions here use detour's coordinate system
 // callers should use quake2recast and recast2quake where appropriate to convert vectors
 void         BotCalcSteerDir( Bot_t *bot, vec3_t dir );
@@ -144,3 +149,4 @@ qboolean     PointInPolyExtents( Bot_t *bot, dtPolyRef ref, const vec3_t point, 
 qboolean     PointInPoly( Bot_t *bot, dtPolyRef ref, const vec3_t point );
 qboolean     BotFindNearestPoly( Bot_t *bot, const vec3_t coord, dtPolyRef *nearestPoly, vec3_t nearPoint );
 unsigned int FindRoute( Bot_t *bot, const vec3_t s, const botRouteTarget_t *target );
+#endif

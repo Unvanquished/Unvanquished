@@ -241,6 +241,9 @@ extern "C" void BotShutdownNav( void )
 		nav->process.con.reset();
 	}
 
+#ifndef DEDICATED
+	Cmd_RemoveCommand( "navedit" );
+#endif
 	numNavData = 0;
 }
 
@@ -272,6 +275,10 @@ extern "C" qboolean BotSetupNav( const botClass_t *botClass, qhandle_t *navHandl
 			agents[ i ].lastRoutePlanTime = 0;
 			agents[ i ].nav = NULL;
 		}
+
+#ifndef DEDICATED
+		Cmd_AddCommand( "navedit", Cmd_NavEdit );
+#endif
 	}
 
 	if ( numNavData == MAX_NAV_DATA )
