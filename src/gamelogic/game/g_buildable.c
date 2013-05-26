@@ -5221,6 +5221,7 @@ void G_BuildLogRevert( int id )
 	int        i;
 	vec3_t     dist;
 	gentity_t  *builder;
+	float      confidenceChange[ NUM_TEAMS ] = { 0 };
 
 	level.numBuildablesForRemoval = 0;
 
@@ -5254,7 +5255,7 @@ void G_BuildLogRevert( int id )
 
 						// Give back resources
 						G_ModifyBuildPoints( ent->buildableTeam, BG_Buildable( ent->s.modelindex )->buildPoints );
-						G_AddConfidence( ent->buildableTeam, CONFIDENCE_BUILDING, CONF_REAS_DECON, CONF_QUAL_NONE, -ent->confidenceEarned, NULL );
+						confidenceChange[ log->buildableTeam] -= log->confidenceEarned;
 						G_FreeEntity( ent );
 						break;
 					}
@@ -5264,7 +5265,7 @@ void G_BuildLogRevert( int id )
 
 		case BF_DECONSTRUCT:
 		case BF_REPLACE:
-			G_AddConfidence( log->buildableTeam, CONFIDENCE_BUILDING, G_BuildableConfidenceReason( log->modelindex ), CONF_QUAL_NONE, log->confidenceEarned, NULL );
+			confidenceChange[ log->buildableTeam ] += log->confidenceEarned;
 			// fall through to default
 
 		default:
@@ -5286,6 +5287,11 @@ void G_BuildLogRevert( int id )
 			builder->suicideTime = 30;
 			break;
 		}
+	}
+
+	for ( i = 0; i < NUM_TEAMS; ++i )
+	{
+		G_AddConfidence( i, CONFIDENCE_ADMIN, CONF_REAS_NONE, CONF_QUAL_NONE, confidenceChange[ i ], NULL );
 	}
 }
 
