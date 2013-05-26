@@ -428,12 +428,12 @@ AINodeStatus_t BotEvaluateNode( gentity_t *self, AIGenericNode_t *node )
 
 AINodeStatus_t BotActionFireWeapon( gentity_t *self, AIGenericNode_t *node ) 
 {
-	if ( WeaponIsEmpty( ( weapon_t )self->client->ps.weapon, self->client->ps ) && self->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+	if ( WeaponIsEmpty( BG_GetPlayerWeapon( &self->client->ps ), self->client->ps ) && self->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
 	{
 		G_ForceWeaponChange( self, WP_BLASTER );
 	}
 
-	if ( self->client->ps.weapon == WP_HBUILD )
+	if ( BG_GetPlayerWeapon( &self->client->ps ) == WP_HBUILD )
 	{
 		G_ForceWeaponChange( self, WP_BLASTER );
 	}
@@ -582,6 +582,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		else
 		{
 			self->botMind->currentNode = node;
+			self->botMind->goalLastSeen = self->botMind->enemyLastSeen;
 			return STATUS_RUNNING;
 		}
 	}
@@ -607,12 +608,12 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_SUCCESS;
 	}
 
-	if ( WeaponIsEmpty( ( weapon_t )self->client->ps.weapon, self->client->ps ) && myTeam == TEAM_HUMANS )
+	if ( WeaponIsEmpty( BG_GetPlayerWeapon( &self->client->ps ), self->client->ps ) && myTeam == TEAM_HUMANS )
 	{
 		G_ForceWeaponChange( self, WP_BLASTER );
 	}
 
-	if ( self->client->ps.weapon == WP_HBUILD )
+	if ( BG_GetPlayerWeapon( &self->client->ps ) == WP_HBUILD )
 	{
 		G_ForceWeaponChange( self, WP_BLASTER );
 	}
@@ -1140,7 +1141,7 @@ AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_SUCCESS;
 	}
 
-	if ( self->client->ps.weapon != WP_HBUILD )
+	if ( BG_GetPlayerWeapon( &self->client->ps ) != WP_HBUILD )
 	{
 		G_ForceWeaponChange( self, WP_HBUILD );
 	}

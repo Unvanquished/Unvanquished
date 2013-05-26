@@ -143,7 +143,7 @@ static AIValue_t goalBuildingType( gentity_t *self, const AIValue_t *params )
 
 static AIValue_t currentWeapon( gentity_t *self, const AIValue_t *params )
 {
-	return AIBoxInt( self->client->ps.weapon );
+	return AIBoxInt( BG_GetPlayerWeapon( &self->client->ps ) );
 }
 
 static AIValue_t haveUpgrade( gentity_t *self, const AIValue_t *params )
