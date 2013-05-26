@@ -2771,7 +2771,7 @@ fail_lastSpawn:
 		ent->client->ps.stats[ STAT_MISC ] += attr->buildTime / 4;
 	}
 
-	G_Deconstruct( traceEnt, ent );
+	G_Deconstruct( traceEnt, ent, MOD_DECONSTRUCT );
 }
 
 /*
