@@ -871,8 +871,19 @@ void BotTargetToRouteTarget( gentity_t *self, botTarget_t target, botRouteTarget
 
 	if ( BotTargetIsEntity( target ) )
 	{
-		VectorCopy( target.ent->r.mins, mins );
-		VectorCopy( target.ent->r.maxs, maxs );
+		if ( target.ent->client )
+		{
+			BG_ClassBoundingBox( ( class_t ) target.ent->client->ps.stats[ STAT_CLASS ], mins, maxs, NULL, NULL, NULL );
+		}
+		else if ( target.ent->s.eType == ET_BUILDABLE )
+		{
+			BG_BuildableBoundingBox( ( buildable_t ) target.ent->s.modelindex, mins, maxs );
+		}
+		else
+		{
+			VectorCopy( target.ent->r.mins, mins );
+			VectorCopy( target.ent->r.maxs, maxs );
+		}
 
 		if ( BotTargetIsPlayer( target ) )
 		{
