@@ -92,11 +92,7 @@ qboolean CG_ParseMinimapZone( minimapZone_t* z, char **text )
                 CG_Printf( S_ERROR "error while parsing the image name while parsing 'image'\n" );
             }
 
-            CG_Printf( "loading minimap image %s\n", token);
-
             z->image = trap_R_RegisterShader( token, RSF_DEFAULT );
-
-            CG_Printf( "registershader returned %i\n", z->image );
 
             if( !ParseFloats( z->imageMin, 2, text) || !ParseFloats( z->imageMax, 2, text) )
             {
@@ -345,6 +341,18 @@ void CG_DrawMinimapObject( qhandle_t image, const vec3_t pos3d, float angle, flo
     trap_R_DrawRotatedPic( x, y, wh, wh, 0.0, 0.0, 1.0, 1.0, image, angle );
 }
 
+void CG_UpdateMinimapActive(minimap_t* m)
+{
+    qboolean active = m->defined && cg_drawMinimap.integer;
+
+    m->active = active;
+
+    if( cg_minimapActive.integer != active )
+    {
+        trap_Cvar_Set( "cg_minimapActive", va( "%d", active ) );
+    }
+}
+
 //Entry points in the minimap code
 
 /*
@@ -356,24 +364,23 @@ void CG_InitMinimap( void )
 {
     minimap_t* m = &cg.minimap;
 
-    m->active = qtrue;
+    m->defined = qtrue;
 
     if( !CG_ParseMinimap( m, va( "minimaps/%s.minimap", cgs.mapname ) ) )
     {
-        m->active = qfalse;
+        m->defined = qfalse;
         CG_Printf( S_WARNING "could not parse the minimap, defaulting to no minimap.\n" );
-        return;
     }
-
-    if( m->nZones == 0 )
+    else if( m->nZones == 0 )
     {
-        m->active = qfalse;
+        m->defined = qfalse;
         CG_Printf( S_ERROR "the minimap did not define any zone.\n" );
-        return;
     }
 
     m->gfx.playerArrow = trap_R_RegisterShader( "gfx/2d/player-arrow", RSF_DEFAULT );
     m->gfx.teamArrow = trap_R_RegisterShader( "gfx/2d/team-arrow", RSF_DEFAULT );
+
+    CG_UpdateMinimapActive( m );
 }
 
 /*
@@ -381,6 +388,7 @@ void CG_InitMinimap( void )
 CG_DrawMinimap
 ================
 */
+//TODO: split that big function and make it look less like test code
 void CG_DrawMinimap( const rectDef_t* rect640 )
 {
     minimap_t* m = &cg.minimap;
@@ -390,9 +398,9 @@ void CG_DrawMinimap( const rectDef_t* rect640 )
     float transform[4];
     rectDef_t rect = *rect640;
 
-    //TODO: add a drawMinimap cvar and also
-    //TODO: add a hasMinimap cvar for the hud to hide some elements if the map doesn't provide a minimap
-    if( !m->active || !cg_drawMinimap.integer)
+    CG_UpdateMinimapActive( m );
+
+    if( !m->active )
     {
         return;
     }
@@ -452,21 +460,72 @@ void CG_DrawMinimap( const rectDef_t* rect640 )
 
         //Draw every teammate
         ownTeam = cg.predictedPlayerState.stats[ STAT_TEAM ];
-        for ( i = 0; i < cg.snap->numEntities; i++ )
+        for ( i = 0; i < MAX_GENTITIES; i++ )
         {
-            cent = &cg_entities[ cg.snap->entities[ i ].number ];
+            int clientNum;
+            cent = &cg_entities[i];
+            clientNum = cent->currentState.clientNum;
 
-            if ( cent->currentState.eType == ET_PLAYER )
+            if ( cent->currentState.eType == ET_PLAYER && clientNum >= 0 && clientNum < MAX_CLIENTS )
             {
+                playerEntity_t* player;
+                int msec;
+                const float fadeOutTime = 0.0007f;
+
                 if( (cent->currentState.misc & 0x00FF) != ownTeam )
                 {
                     continue;
                 }
 
-                CG_DrawMinimapObject( m->gfx.teamArrow, cent->lerpOrigin, cent->lerpAngles[1], 1.0, 50.0 );
+                player = &cent->pe;
+
+                //When the player leaves the PVS we cannot track its movement on the minimap
+                //anymore so we fade its arrow by keeping in memory its last know pos and angle.
+                //When he comes back in the PVS we don't want to have to manage two arrows or to
+                //make the arrow warp. That's why we wait until the fadeout is finished before
+                //fading it back in.
+                if( player->minimapFadingOut )
+                {
+                    if( player->minimapFading != 0.0f )
+                    {
+                        player->minimapFading = MAX( 0.0f, player->minimapFading - cg.frametime * fadeOutTime );
+                    }
+
+                    if( player->minimapFading == 0.0f )
+                    {
+                        player->minimapFadingOut = qfalse;
+                    }
+                }
+                else
+                {
+                    //The player is out of the PVS or is dead
+                    if( !cent->valid || cent->currentState.eFlags & EF_DEAD )
+                    {
+                        player->minimapFadingOut = qtrue;
+                    }
+                    else
+                    {
+                        if( player->minimapFading != 1.0f )
+                        {
+                            player->minimapFading = MIN( 1.0f, player->minimapFading + cg.frametime * fadeOutTime );
+                        }
+
+                        VectorCopy( cent->lerpOrigin, player->lastMinimapPos );
+                        player->lastMinimapAngle = cent->lerpAngles[1];
+                    }
+                }
+
+                if( player->minimapFading != 0.0f )
+                {
+                    vec4_t fadeColor = {1.0f, 1.0f, 1.0f, 1.0f};
+                    fadeColor[3] = player->minimapFading;
+
+                    trap_R_SetColor( fadeColor );
+                    CG_DrawMinimapObject( m->gfx.teamArrow, player->lastMinimapPos, player->lastMinimapAngle, 1.0, 50.0 );
+                    trap_R_SetColor( NULL );
+                }
             }
         }
     }
     CG_EnableScissor( qfalse );
 }
-

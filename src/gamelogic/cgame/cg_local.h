@@ -572,6 +572,11 @@ typedef struct
 	vec3_t   lastNormal;
 	vec3_t   lastAxis[ 3 ];
 	smooth_t sList[ MAXSMOOTHS ];
+
+	vec3_t   lastMinimapPos;
+	float    lastMinimapAngle;
+	float    minimapFading;
+	qboolean minimapFadingOut;
 } playerEntity_t;
 
 typedef struct lightFlareStatus_s
@@ -903,6 +908,7 @@ typedef struct
 typedef struct
 {
     qboolean     active;
+    qboolean     defined;
     int          lastZone;
     int          nZones;
     float        bgColor[4];
@@ -1479,6 +1485,7 @@ extern  vmCvar_t            cg_drawCrosshair;
 extern  vmCvar_t            cg_drawCrosshairNames;
 extern  vmCvar_t            cg_drawBuildableHealth;
 extern  vmCvar_t            cg_drawMinimap;
+extern  vmCvar_t            cg_minimapActive;
 extern  vmCvar_t            cg_crosshairSize;
 extern  vmCvar_t            cg_crosshairFile;
 extern  vmCvar_t            cg_drawTeamOverlay;
