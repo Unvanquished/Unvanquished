@@ -26,6 +26,9 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define MINIMAP_PLAYER_DISPLAY_SIZE 50.0f
 #define MINIMAP_TEAMMATE_DISPLAY_SIZE 50.0f
 
+//How big a region we want to show
+#define MINIMAP_DEFAULT_SIZE 300.0f
+
 //It is multiplied by msecs
 #define MINIMAP_FADE_TIME (2.0f / 1000.0f)
 
@@ -36,11 +39,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ParseFloats
 ================
 */
-qboolean ParseFloats( float* res, int number, char **text )
+qboolean ParseFloats( float* res, const int number, char **text )
 {
     char* token;
+    int i = number;
 
-    while( number --> 0 )
+    while( i --> 0 )
     {
         if( !*(token = COM_Parse( text )) )
         {
@@ -152,7 +156,7 @@ qboolean CG_ParseMinimapZone( minimapZone_t* z, char **text )
 CG_ParseMinimap
 ================
 */
-qboolean CG_ParseMinimap( minimap_t* m, char* filename )
+qboolean CG_ParseMinimap( minimap_t* m, const char* filename )
 {
     char text_buffer[ 20000 ];
     char* text;
@@ -240,7 +244,7 @@ qboolean CG_ParseMinimap( minimap_t* m, char* filename )
 CG_IsInMinimapZone
 ================
 */
-qboolean CG_IsInMinimapZone(minimapZone_t* z)
+qboolean CG_IsInMinimapZone(const minimapZone_t* z)
 {
     return PointInBounds(cg.refdef.vieworg, z->boundsMin, z->boundsMax);
 }
@@ -258,7 +262,7 @@ CG_SetupMinimapTransform
 */
 void CG_SetupMinimapTransform( const rectDef_t *rect, const minimap_t* minimap, const minimapZone_t* zone)
 {
-    float posx, posy, x, y, s, c, angle, scale;
+    float posx, posy, x, y, s, c, angle, scale, equivalenceScale;
 
     //The refdefview angle is the angle from the x axis
     //the 90 gets it back to the Y axis (we want the view to point up)
@@ -267,7 +271,11 @@ void CG_SetupMinimapTransform( const rectDef_t *rect, const minimap_t* minimap, 
     angle = DEG2RAD(transformAngle + 90.0);
 
     transformScale = zone->scale * minimap->scale;
+    //Try to show the same region of the map for everyong
+    transformScale *= (rect->w + rect->h) / 2.0f / MINIMAP_DEFAULT_SIZE;
+
     scale = transformScale * MINIMAP_MAP_DISPLAY_SIZE / (zone->imageMax[0] - zone->imageMin[0]);
+
     s = sin(angle) * scale;
     c = cos(angle) * scale;
 
@@ -309,7 +317,7 @@ void CG_WorldToMinimap( const vec3_t worldPos, vec2_t minimapPos )
 CG_WorldToMinimapAngle
 ================
 */
-float CG_WorldToMinimapAngle( float angle )
+float CG_WorldToMinimapAngle( const float angle )
 {
     return angle + transformAngle;
 }
@@ -319,7 +327,7 @@ float CG_WorldToMinimapAngle( float angle )
 CG_WorldToMinimapScale
 ================
 */
-float CG_WorldToMinimapScale( float scale )
+float CG_WorldToMinimapScale( const float scale )
 {
     return scale * transformScale;
 }
@@ -330,20 +338,20 @@ float CG_WorldToMinimapScale( float scale )
 CG_DrawMinimapObject
 ================
 */
-void CG_DrawMinimapObject( qhandle_t image, const vec3_t pos3d, float angle, float scale, float texSize )
+void CG_DrawMinimapObject( const qhandle_t image, const vec3_t pos3d, const float angle, const float scale, const float texSize )
 {
     vec2_t offset;
-    float x, y, wh;
+    float x, y, wh, realScale, realAngle;
 
-    angle = CG_WorldToMinimapAngle( angle );
-    scale = CG_WorldToMinimapScale( scale );
+    realAngle = CG_WorldToMinimapAngle( angle );
+    realScale = CG_WorldToMinimapScale( scale );
 
     CG_WorldToMinimap( pos3d, offset );
-    x = - texSize/2 * scale + offset[0];
-    y = - texSize/2 * scale + offset[1];
-    wh = texSize * scale;
+    x = - texSize/2 * realScale + offset[0];
+    y = - texSize/2 * realScale + offset[1];
+    wh = texSize * realScale;
 
-    trap_R_DrawRotatedPic( x, y, wh, wh, 0.0, 0.0, 1.0, 1.0, image, angle );
+    trap_R_DrawRotatedPic( x, y, wh, wh, 0.0, 0.0, 1.0, 1.0, image, realAngle );
 }
 
 /*
@@ -410,7 +418,7 @@ minimapZone_t* CG_ChooseMinimapZone( minimap_t* m )
 CG_MinimapDrawMap
 ================
 */
-void CG_MinimapDrawMap( minimapZone_t* z )
+void CG_MinimapDrawMap( const minimapZone_t* z )
 {
     vec3_t origin = {0.0f, 0.0f, 0.0f};
     origin[0] = 0.5 * (z->imageMin[0] + z->imageMax[0]);
@@ -424,7 +432,7 @@ void CG_MinimapDrawMap( minimapZone_t* z )
 CG_MinimapDrawPlayer
 ================
 */
-void CG_MinimapDrawPlayer( minimap_t* m )
+void CG_MinimapDrawPlayer( const minimap_t* m )
 {
     CG_DrawMinimapObject( m->gfx.playerArrow, cg.refdef.vieworg, cg.refdefViewAngles[1], 1.0, MINIMAP_PLAYER_DISPLAY_SIZE );
 }
@@ -484,7 +492,7 @@ void CG_MinimapUpdateTeammateFadingAndPos( centity_t* mate )
 CG_MinimapDrawTeammates
 ================
 */
-void CG_MinimapDrawTeammates( minimap_t* m )
+void CG_MinimapDrawTeammates( const minimap_t* m )
 {
     int ownTeam = cg.predictedPlayerState.stats[ STAT_TEAM ];
     int i;
