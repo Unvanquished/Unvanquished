@@ -1107,7 +1107,7 @@ qboolean BotTargetInAttackRange( gentity_t *self, botTarget_t target )
 				}
 
 				// the flamer uses a cosine based power falloff by default
-				// so decrese the range to give us a usable minimum damage
+				// so decrease the range to give us a usable minimum damage
 				// FIXME: depend on the value of the flamer damage falloff cvar
 				// FIXME: have to stand further away from acid or will be
 				//        pushed back and will stop attacking (too far away)
