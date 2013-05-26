@@ -2235,13 +2235,13 @@ static void CL_GenerateRSAKeys( const char *fileName )
 		Com_Error( ERR_FATAL, "Error converting RSA keypair to sexp" );
 	}
 
-	Com_Printf( "^5Regenerating RSA keypair; writing to %s", fileName );
+	Com_Printf( _( "^5Regenerating RSA keypair; writing to %s\n" ), fileName );
 
 	f = FS_FOpenFileWrite( fileName );
 
 	if ( !f )
 	{
-		Com_Error( ERR_FATAL, _( "Daemon could not open %s for writing the RSA keypair" ), RSAKEY_FILE );
+		Com_Error( ERR_FATAL, "Daemon could not open %s for writing the RSA keypair", RSAKEY_FILE );
 	}
 
 	FS_FChmod( f, 0600 ); // owner r/w, no other access
@@ -2273,7 +2273,7 @@ static void CL_LoadRSAKeys( void )
 
 	CL_GetRSAKeysFileName( fileName, sizeof( fileName ) );
 
-	Com_Printf( "^5Loading RSA keys from %s", fileName );
+	Com_Printf( _( "^5Loading RSA keys from %s\n" ), fileName );
 
 	len = FS_FOpenFileRead( fileName, &f, qtrue );
 
