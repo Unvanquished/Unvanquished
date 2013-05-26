@@ -716,6 +716,8 @@ typedef enum
 	CONFIDENCE_BUILDING,    // building structures
 	CONFIDENCE_TEAMPLAY,    // healing, coordinated actions
 
+	CONFIDENCE_ADMIN,       // admin action
+
 	NUM_CONFIDENCE_TYPES
 } confidence_t;
 
