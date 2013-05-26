@@ -3321,6 +3321,26 @@ float G_BuildingConfidenceReward( gentity_t *self )
 	return reward;
 }
 
+static int G_BuildableConfidenceReason( int modelindex )
+{
+	switch ( modelindex )
+	{
+		case BA_A_OVERMIND:
+		case BA_H_REACTOR:
+			return CONF_REAS_BUILD_CRUCIAL;
+
+		case BA_A_ACIDTUBE:
+		case BA_A_TRAPPER:
+		case BA_A_HIVE:
+		case BA_H_MGTURRET:
+		case BA_H_TESLAGEN:
+			return CONF_REAS_BUILD_AGGRESSIVE;
+
+		default:
+			return CONF_REAS_BUILD_SUPPORT;
+	}
+}
+
 /*
 ===============
 G_BuildableThink
@@ -3349,27 +3369,9 @@ void G_BuildableThink( gentity_t *ent, int msec )
 			}
 
 			// Award confidence
-			switch ( ent->s.modelindex )
-			{
-				case BA_A_OVERMIND:
-				case BA_H_REACTOR:
-					reason = CONF_REAS_BUILD_CRUCIAL;
-					break;
-
-				case BA_A_ACIDTUBE:
-				case BA_A_TRAPPER:
-				case BA_A_HIVE:
-				case BA_H_MGTURRET:
-				case BA_H_TESLAGEN:
-					reason = CONF_REAS_BUILD_AGGRESSIVE;
-					break;
-
-				default:
-					reason = CONF_REAS_BUILD_SUPPORT;
-			}
-
 			G_AddConfidence( BG_Buildable( ent->s.modelindex )->team, CONFIDENCE_BUILDING,
-			                 reason, CONF_QUAL_NONE, G_BuildingConfidenceReward( ent ),
+			                 G_BuildableConfidenceReason( ent->s.modelindex ), CONF_QUAL_NONE,
+			                 G_BuildingConfidenceReward( ent ),
 			                 &g_entities[ ent->builtBy->slot ] );
 		}
 	}
@@ -4704,6 +4706,7 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 
 	if ( log )
 	{
+		G_BuildingConfidenceReward( built ); // get this set NOW for the build log
 		G_BuildLogSet( log, built );
 	}
 
@@ -5330,10 +5333,12 @@ buildLog_t *G_BuildLogNew( gentity_t *actor, buildFate_t fate )
 
 void G_BuildLogSet( buildLog_t *log, gentity_t *ent )
 {
+	log->buildableTeam = ent->buildableTeam;
 	log->modelindex = ent->s.modelindex;
 	log->deconstruct = ent->deconstruct;
 	log->deconstructTime = ent->deconstructTime;
 	log->builtBy = ent->builtBy;
+	log->confidenceEarned = ent->confidenceEarned;
 	VectorCopy( ent->s.pos.trBase, log->origin );
 	VectorCopy( ent->s.angles, log->angles );
 	VectorCopy( ent->s.origin2, log->origin2 );
@@ -5398,6 +5403,7 @@ void G_BuildLogRevertThink( gentity_t *ent )
 	}
 
 	built->creationTime = built->s.time = 0;
+	built->confidenceEarned = ent->confidenceEarned;
 	G_KillBox( built );
 
 	G_LogPrintf( "revert: restore %d %s\n",
@@ -5412,6 +5418,7 @@ void G_BuildLogRevert( int id )
 	gentity_t  *ent;
 	int        i;
 	vec3_t     dist;
+	gentity_t  *builder;
 
 	level.numBuildablesForRemoval = 0;
 
@@ -5421,8 +5428,8 @@ void G_BuildLogRevert( int id )
 	{
 		log = &level.buildLog[ --level.buildId % MAX_BUILDLOG ];
 
-		if ( log->fate == BF_CONSTRUCT )
-		{
+		switch ( log->fate ) {
+		case BF_CONSTRUCT:
 			for ( i = MAX_CLIENTS; i < level.num_entities; i++ )
 			{
 				ent = &g_entities[ i ];
@@ -5451,10 +5458,15 @@ void G_BuildLogRevert( int id )
 					}
 				}
 			}
-		}
-		else
-		{
-			gentity_t *builder = G_NewEntity();
+			break;
+
+		case BF_DECONSTRUCT:
+		case BF_REPLACE:
+			G_AddConfidence( log->buildableTeam, CONFIDENCE_BUILDING, G_BuildableConfidenceReason( log->modelindex ), CONF_QUAL_NONE, log->confidenceEarned, NULL );
+			// fall through to default
+
+		default:
+			builder = G_NewEntity();
 
 			VectorCopy( log->origin, builder->s.pos.trBase );
 			VectorCopy( log->angles, builder->s.angles );
@@ -5464,12 +5476,13 @@ void G_BuildLogRevert( int id )
 			builder->deconstruct = log->deconstruct;
 			builder->deconstructTime = log->deconstructTime;
 			builder->builtBy = log->builtBy;
-
+			builder->confidenceEarned = log->confidenceEarned;
 			builder->think = G_BuildLogRevertThink;
 			builder->nextthink = level.time + FRAMETIME;
 
 			// Number of thinks before giving up and killing players in the way
 			builder->suicideTime = 30;
+			break;
 		}
 	}
 }
