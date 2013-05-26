@@ -3578,7 +3578,7 @@ void G_ClearDeconMarks( void )
 G_Deconstruct
 ===============
 */
-void G_Deconstruct( gentity_t *self, gentity_t *deconner )
+void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconType )
 {
 	float confidence;
 	int   refund;
@@ -3609,7 +3609,7 @@ void G_Deconstruct( gentity_t *self, gentity_t *deconner )
 	                -confidence, deconner );
 
 	// deconstruct
-	G_Damage( self, NULL, deconner, NULL, NULL, self->health, 0, MOD_REPLACE );
+	G_Damage( self, NULL, deconner, NULL, NULL, self->health, 0, deconType );
 	G_FreeEntity( self );
 }
 
@@ -3659,7 +3659,7 @@ int G_FreeMarkedBuildables( gentity_t *deconner, char *readable, int rsize,
 			totalListItems++;
 		}
 
-		G_Deconstruct( ent, deconner );
+		G_Deconstruct( ent, deconner, MOD_REPLACE );
 
 		removalCounts[ bNum ]++;
 
