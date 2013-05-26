@@ -651,13 +651,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 
 		if ( ( inAttackRange && myTeam == TEAM_HUMANS ) || self->botMind->directPathToGoal )
 		{
-			botRouteTarget_t routeTarget;
 			BotAimAtEnemy( self );
-
-			BotTargetToRouteTarget( self, self->botMind->goal, &routeTarget );
-
-			//update the path corridor
-			trap_BotUpdatePath( self->s.number, &routeTarget, NULL, &self->botMind->directPathToGoal );
 
 			BotMoveInDir( self, MOVE_FORWARD );
 
