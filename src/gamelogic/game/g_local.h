@@ -664,7 +664,9 @@ typedef struct
 	buildFate_t fate;
 	namelog_t   *actor;
 	namelog_t   *builtBy;
+	team_t      buildableTeam;
 	buildable_t modelindex;
+	float       confidenceEarned;
 	qboolean    deconstruct;
 	int         deconstructTime;
 	vec3_t      origin;
