@@ -373,13 +373,18 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * HUMAN buildables
  */
 
-#define BUILDABLE_INTERFERENCE_RANGE  300  // buildables in this range will interfer
-#define BUILDABLE_MAX_INTERFERENCE    0.8f // maximum amount of interference a buildable can take
-#define REACTOR_POWER_RANGE           1000 // reactor range
-#define REPEATER_POWER_RANGE          500  // repeater range
+// interference
+#define BUILDABLE_INTERFERENCE_RANGE  320  // buildables in this range will interfer
+#define BUILDABLE_MAX_INTERFERENCE    1.0f // maximum interference a buildable can take
 #define REACTOR_POWER                 3.0f // reactor interference reduction
+#define REACTOR_POWER_RANGE           800  // reactor range
 #define REPEATER_POWER                2.0f // repeater interference reduction
-#define INTERFERENCE_RELEVANT_RANGE   1000 // max of all above ranges
+#define REPEATER_POWER_RANGE          400  // repeater range
+#define LEVEL1_INTERFERENCE           1.3f // basilisk interference increase
+#define LEVEL1_INTERFERENCE_RANGE     250  // interference range of the basilisk
+#define LEVEL1UPG_INTERFERENCE        1.6f // advanced basilisk interference increase
+#define LEVEL1UPG_INTERFERENCE_RANGE  300  // interference range of the advanced basilisk
+#define INTERFERENCE_RELEVANT_RANGE   800  // max of all above ranges
 
 #define MGTURRET_RANGE            400.0
 #define MGTURRET_REPEAT           150.0

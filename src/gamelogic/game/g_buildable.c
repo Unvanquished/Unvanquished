@@ -1943,48 +1943,88 @@ static void DistributePower( gentity_t *self, float maxDistance, int maxSlaves )
 PairwiseInterference
 =================
 */
-static float PairwiseInterference( buildable_t buildableA, buildable_t buildableB, float distance )
+static float PairwiseInterference( buildable_t buildable, gentity_t *neighbor,
+                                   float distance, qboolean prediction )
 {
-	buildable_t providerBuildable;
-	qboolean    aProvider, bProvider;
-	float       range, power;
+	float range, power;
 
-	aProvider = ( buildableA == BA_H_REPEATER || buildableA == BA_H_REACTOR );
-	bProvider = ( buildableB == BA_H_REPEATER || buildableB == BA_H_REACTOR );
+	switch ( buildable )
+	{
+		case BA_H_REPEATER:
+		case BA_H_REACTOR:
+			return 0.0f;
+	}
 
-	if ( aProvider && bProvider )
+	if ( !neighbor )
 	{
 		return 0.0f;
 	}
 
-	if ( !aProvider && !bProvider )
+	// interference from human buildables
+	if ( neighbor->s.eType == ET_BUILDABLE && neighbor->buildableTeam == TEAM_HUMANS )
 	{
-		return MAX( 0.0f, 1.0f - ( distance / BUILDABLE_INTERFERENCE_RANGE ) );
-	}
+		// if not predicting, ignore unpowered and constructing buildables
+		if ( !prediction && ( !neighbor->spawned || !neighbor->powered ) )
+		{
+			return 0.0f;
+		}
 
-	if ( aProvider )
+		switch ( neighbor->s.modelindex )
+		{
+			case BA_H_REPEATER:
+				if ( neighbor->health > 0 )
+				{
+					power = -REPEATER_POWER;
+					range = REPEATER_POWER_RANGE;
+					break;
+				}
+				else
+				{
+					return 0.0f;
+				}
+
+			case BA_H_REACTOR:
+				if ( neighbor->health > 0 )
+				{
+					power = -REACTOR_POWER;
+					range = REACTOR_POWER_RANGE;
+					break;
+				}
+				else
+				{
+					return 0.0f;
+				}
+
+			default:
+				power = 1.0f;
+				range = BUILDABLE_INTERFERENCE_RANGE;
+		}
+	}
+	// interference from player classes
+	else if ( neighbor->client && neighbor->health > 0 )
 	{
-		providerBuildable = buildableA;
+		switch ( neighbor->client->ps.stats[ STAT_CLASS ] )
+		{
+			case PCL_ALIEN_LEVEL1:
+				power = LEVEL1_INTERFERENCE;
+				range = LEVEL1_INTERFERENCE_RANGE;
+				break;
+
+			case PCL_ALIEN_LEVEL1_UPG:
+				power = LEVEL1UPG_INTERFERENCE;
+				range = LEVEL1UPG_INTERFERENCE_RANGE;
+				break;
+
+			default:
+				return 0.0f;
+		}
 	}
 	else
 	{
-		providerBuildable = buildableB;
+		return 0.0f;
 	}
 
-	switch ( providerBuildable )
-	{
-		case BA_H_REPEATER:
-			range = ( float )REPEATER_POWER_RANGE;
-			power = REPEATER_POWER;
-			break;
-
-		case BA_H_REACTOR:
-			range = ( float )REACTOR_POWER_RANGE;
-			power = REACTOR_POWER;
-			break;
-	}
-
-	return -power * MAX( 0.0f, 1.0f - ( distance / range ) );
+	return power * MAX( 0.0f, 1.0f - ( distance / range ) );
 }
 
 /*
@@ -2015,15 +2055,14 @@ static float CalculateInterference( gentity_t *self )
 	neighbor = NULL;
 	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, INTERFERENCE_RELEVANT_RANGE ) )
 	{
-		if ( neighbor->s.eType != ET_BUILDABLE || neighbor->buildableTeam != TEAM_HUMANS
-		     || neighbor == self || !neighbor->spawned || !neighbor->powered || neighbor->health <= 0 )
+		if ( self == neighbor )
 		{
 			continue;
 		}
 
 		distance = Distance( self->s.origin, neighbor->s.origin );
 
-		interference += PairwiseInterference( self->s.modelindex, neighbor->s.modelindex, distance );
+		interference += PairwiseInterference( self->s.modelindex, neighbor, distance, qfalse );
 	}
 
 	self->interference = interference;
@@ -2255,7 +2294,7 @@ void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 
 	self->die = nullDieFunction;
 	self->killedBy = attacker - g_entities;
-	self->powered = qfalse;
+	//self->powered = qfalse;
 	self->s.eFlags &= ~EF_FIRING; // prevent any firing effects
 
 	if ( self->spawned )
@@ -3943,12 +3982,11 @@ static qboolean PredictBuildableInterference( buildable_t buildable, vec3_t orig
 	neighbor = NULL;
 	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, INTERFERENCE_RELEVANT_RANGE ) )
 	{
-		if ( neighbor->s.eType != ET_BUILDABLE || neighbor->buildableTeam != TEAM_HUMANS || neighbor->health <= 0 )
+		// only predict interference with friendly buildables
+		if ( neighbor->s.eType != ET_BUILDABLE || neighbor->buildableTeam != TEAM_HUMANS )
 		{
 			continue;
 		}
-
-		distance = Distance( origin, neighbor->s.origin );
 
 		// discard neighbors that are set for deconstruction
 		if ( IsSetForDeconstruction( neighbor ) )
@@ -3956,7 +3994,9 @@ static qboolean PredictBuildableInterference( buildable_t buildable, vec3_t orig
 			continue;
 		}
 
-		pairwiseInterference = PairwiseInterference( buildable, neighbor->s.modelindex, distance );
+		distance = Distance( origin, neighbor->s.origin );
+
+		pairwiseInterference = PairwiseInterference( buildable, neighbor, distance, qtrue );
 
 		ownPrediction += pairwiseInterference;
 		neighborPrediction = neighbor->interference + pairwiseInterference;
@@ -3969,8 +4009,9 @@ static qboolean PredictBuildableInterference( buildable_t buildable, vec3_t orig
 			{
 				if ( IsSetForDeconstruction( buddy ) )
 				{
-					neighborPrediction -= PairwiseInterference( neighbor->s.modelindex, buddy->s.modelindex,
-					                                            Distance( neighbor->s.origin, buddy->s.origin ) );
+					distance = Distance( neighbor->s.origin, buddy->s.origin );
+
+					neighborPrediction -= PairwiseInterference( neighbor->s.modelindex, buddy, distance, qtrue );
 				}
 			}
 
