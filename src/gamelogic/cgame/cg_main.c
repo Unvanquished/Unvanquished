@@ -1473,6 +1473,15 @@ static void CG_RegisterGraphics( void )
 	cgs.media.upgradeClassIconShader = trap_R_RegisterShader("icons/icona_upgrade.tga",
 								 RSF_DEFAULT);
 
+	cgs.media.desaturatedCgrade = trap_R_RegisterShader("gfx/cgrading/desaturated",
+								 RSF_NOMIP | RSF_NOLIGHTSCALE );
+
+	cgs.media.neutralCgrade = trap_R_RegisterShader("gfx/cgrading/neutral",
+								 RSF_NOMIP | RSF_NOLIGHTSCALE );
+
+	cgs.media.redCgrade = trap_R_RegisterShader("gfx/cgrading/red-only",
+								 RSF_NOMIP | RSF_NOLIGHTSCALE );
+
 	cgs.media.balloonShader = trap_R_RegisterShader("gfx/sprites/chatballoon",
 							RSF_DEFAULT);
 

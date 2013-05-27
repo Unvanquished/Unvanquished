@@ -1325,6 +1325,10 @@ typedef struct
 	qhandle_t   healthCross3X;
 	qhandle_t   healthCrossMedkit;
 	qhandle_t   healthCrossPoisoned;
+
+	qhandle_t   neutralCgrade;
+	qhandle_t   redCgrade;
+	qhandle_t   desaturatedCgrade;
 } cgMedia_t;
 
 typedef struct
