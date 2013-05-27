@@ -1955,48 +1955,88 @@ static void DistributePower( gentity_t *self, float maxDistance, int maxSlaves )
 PairwiseInterference
 =================
 */
-static float PairwiseInterference( buildable_t buildableA, buildable_t buildableB, float distance )
+static float PairwiseInterference( buildable_t buildable, gentity_t *neighbor,
+                                   float distance, qboolean prediction )
 {
-	buildable_t providerBuildable;
-	qboolean    aProvider, bProvider;
-	float       range, power;
+	float range, power;
 
-	aProvider = ( buildableA == BA_H_REPEATER || buildableA == BA_H_REACTOR );
-	bProvider = ( buildableB == BA_H_REPEATER || buildableB == BA_H_REACTOR );
+	switch ( buildable )
+	{
+		case BA_H_REPEATER:
+		case BA_H_REACTOR:
+			return 0.0f;
+	}
 
-	if ( aProvider && bProvider )
+	if ( !neighbor )
 	{
 		return 0.0f;
 	}
 
-	if ( !aProvider && !bProvider )
+	// interference from human buildables
+	if ( neighbor->s.eType == ET_BUILDABLE && neighbor->buildableTeam == TEAM_HUMANS )
 	{
-		return MAX( 0.0f, 1.0f - ( distance / BUILDABLE_INTERFERENCE_RANGE ) );
-	}
+		// if not predicting, ignore unpowered and constructing buildables
+		if ( !prediction && ( !neighbor->spawned || !neighbor->powered ) )
+		{
+			return 0.0f;
+		}
 
-	if ( aProvider )
+		switch ( neighbor->s.modelindex )
+		{
+			case BA_H_REPEATER:
+				if ( neighbor->health > 0 )
+				{
+					power = -REPEATER_POWER;
+					range = REPEATER_POWER_RANGE;
+					break;
+				}
+				else
+				{
+					return 0.0f;
+				}
+
+			case BA_H_REACTOR:
+				if ( neighbor->health > 0 )
+				{
+					power = -REACTOR_POWER;
+					range = REACTOR_POWER_RANGE;
+					break;
+				}
+				else
+				{
+					return 0.0f;
+				}
+
+			default:
+				power = 1.0f;
+				range = BUILDABLE_INTERFERENCE_RANGE;
+		}
+	}
+	// interference from player classes
+	else if ( neighbor->client && neighbor->health > 0 )
 	{
-		providerBuildable = buildableA;
+		switch ( neighbor->client->ps.stats[ STAT_CLASS ] )
+		{
+			case PCL_ALIEN_LEVEL1:
+				power = LEVEL1_INTERFERENCE;
+				range = LEVEL1_INTERFERENCE_RANGE;
+				break;
+
+			case PCL_ALIEN_LEVEL1_UPG:
+				power = LEVEL1UPG_INTERFERENCE;
+				range = LEVEL1UPG_INTERFERENCE_RANGE;
+				break;
+
+			default:
+				return 0.0f;
+		}
 	}
 	else
 	{
-		providerBuildable = buildableB;
+		return 0.0f;
 	}
 
-	switch ( providerBuildable )
-	{
-		case BA_H_REPEATER:
-			range = ( float )REPEATER_POWER_RANGE;
-			power = REPEATER_POWER;
-			break;
-
-		case BA_H_REACTOR:
-			range = ( float )REACTOR_POWER_RANGE;
-			power = REACTOR_POWER;
-			break;
-	}
-
-	return -power * MAX( 0.0f, 1.0f - ( distance / range ) );
+	return power * MAX( 0.0f, 1.0f - ( distance / range ) );
 }
 
 /*
@@ -2009,13 +2049,15 @@ Calculates the interference state of a human buildable.
 static float CalculateInterference( gentity_t *self )
 {
 	gentity_t *neighbor;
+	float     distance, interference;
+	int       capacity;
 
 	if ( self->s.eType != ET_BUILDABLE || self->buildableTeam != TEAM_HUMANS )
 	{
 		return 0.0f;
 	}
 
-	self->interference = 0.0f;
+	interference = 0.0f;
 
 	if ( self->s.modelindex == BA_H_REPEATER || self->s.modelindex == BA_H_REACTOR )
 	{
@@ -2025,17 +2067,38 @@ static float CalculateInterference( gentity_t *self )
 	neighbor = NULL;
 	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, INTERFERENCE_RELEVANT_RANGE ) )
 	{
-		if ( neighbor->s.eType != ET_BUILDABLE || neighbor->buildableTeam != TEAM_HUMANS
-		     || neighbor == self || !neighbor->spawned || !neighbor->powered || neighbor->health <= 0 )
+		if ( self == neighbor )
 		{
 			continue;
 		}
 
-		self->interference += PairwiseInterference( self->s.modelindex, neighbor->s.modelindex,
-		                                            Distance( self->s.origin, neighbor->s.origin ) );
+		distance = Distance( self->s.origin, neighbor->s.origin );
+
+		interference += PairwiseInterference( self->s.modelindex, neighbor, distance, qfalse );
 	}
 
-	return self->interference;
+	self->interference = interference;
+
+	capacity = ( int )( 100.0f - ( ( ( BUILDABLE_MAX_INTERFERENCE + interference ) * 100.0f )
+	                               / ( 2 * BUILDABLE_MAX_INTERFERENCE ) ) + 0.5f );
+
+	if ( capacity == 0 && interference <= BUILDABLE_MAX_INTERFERENCE )
+	{
+		capacity = 1;
+	}
+	else if ( capacity < 0 )
+	{
+		capacity = 0;
+	}
+	else if ( capacity > 100 )
+	{
+		capacity = 100;
+	}
+
+	// HACK: store interference load in entityState_t.clientNum
+	self->s.clientNum = capacity;
+
+	return interference;
 }
 
 
@@ -2144,11 +2207,14 @@ void G_SetHumanBuildablePowerState()
 				continue;
 			}
 
+			// HACK: store interference load in entityState_t.clientNum
+			ent->s.clientNum = 0;
+
 			ent->powered = qfalse;
 		}
 	}
 
-	nextCalculation = level.time + 1000;
+	nextCalculation = level.time + 500;
 }
 
 /*
@@ -2240,7 +2306,7 @@ void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 
 	self->die = nullDieFunction;
 	self->killedBy = attacker - g_entities;
-	self->powered = qfalse;
+	//self->powered = qfalse;
 	self->s.eFlags &= ~EF_FIRING; // prevent any firing effects
 
 	if ( self->spawned )
@@ -3333,6 +3399,26 @@ float G_BuildingConfidenceReward( gentity_t *self )
 	return reward;
 }
 
+static int G_BuildableConfidenceReason( int modelindex )
+{
+	switch ( modelindex )
+	{
+		case BA_A_OVERMIND:
+		case BA_H_REACTOR:
+			return CONF_REAS_BUILD_CRUCIAL;
+
+		case BA_A_ACIDTUBE:
+		case BA_A_TRAPPER:
+		case BA_A_HIVE:
+		case BA_H_MGTURRET:
+		case BA_H_TESLAGEN:
+			return CONF_REAS_BUILD_AGGRESSIVE;
+
+		default:
+			return CONF_REAS_BUILD_SUPPORT;
+	}
+}
+
 /*
 ===============
 G_BuildableThink
@@ -3361,27 +3447,9 @@ void G_BuildableThink( gentity_t *ent, int msec )
 			}
 
 			// Award confidence
-			switch ( ent->s.modelindex )
-			{
-				case BA_A_OVERMIND:
-				case BA_H_REACTOR:
-					reason = CONF_REAS_BUILD_CRUCIAL;
-					break;
-
-				case BA_A_ACIDTUBE:
-				case BA_A_TRAPPER:
-				case BA_A_HIVE:
-				case BA_H_MGTURRET:
-				case BA_H_TESLAGEN:
-					reason = CONF_REAS_BUILD_AGGRESSIVE;
-					break;
-
-				default:
-					reason = CONF_REAS_BUILD_SUPPORT;
-			}
-
 			G_AddConfidence( BG_Buildable( ent->s.modelindex )->team, CONFIDENCE_BUILDING,
-			                 reason, CONF_QUAL_NONE, G_BuildingConfidenceReward( ent ),
+			                 G_BuildableConfidenceReason( ent->s.modelindex ), CONF_QUAL_NONE,
+			                 G_BuildingConfidenceReward( ent ),
 			                 &g_entities[ ent->builtBy->slot ] );
 		}
 	}
@@ -3725,7 +3793,7 @@ void G_ClearDeconMarks( void )
 G_Deconstruct
 ===============
 */
-void G_Deconstruct( gentity_t *self, gentity_t *deconner )
+void G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconType )
 {
 	float confidence;
 	int   refund;
@@ -3756,7 +3824,7 @@ void G_Deconstruct( gentity_t *self, gentity_t *deconner )
 	                -confidence, deconner );
 
 	// deconstruct
-	G_Damage( self, NULL, deconner, NULL, NULL, self->health, 0, MOD_REPLACE );
+	G_Damage( self, NULL, deconner, NULL, NULL, self->health, 0, deconType );
 	G_FreeEntity( self );
 }
 
@@ -3805,7 +3873,7 @@ int G_FreeMarkedBuildables( gentity_t *deconner, char *readable, int rsize,
 			totalListItems++;
 		}
 
-		G_Deconstruct( ent, deconner );
+		G_Deconstruct( ent, deconner, MOD_REPLACE );
 
 		removalCounts[ bNum ]++;
 
@@ -3926,12 +3994,11 @@ static qboolean PredictBuildableInterference( buildable_t buildable, vec3_t orig
 	neighbor = NULL;
 	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, INTERFERENCE_RELEVANT_RANGE ) )
 	{
-		if ( neighbor->s.eType != ET_BUILDABLE || neighbor->buildableTeam != TEAM_HUMANS || neighbor->health <= 0 )
+		// only predict interference with friendly buildables
+		if ( neighbor->s.eType != ET_BUILDABLE || neighbor->buildableTeam != TEAM_HUMANS )
 		{
 			continue;
 		}
-
-		distance = Distance( origin, neighbor->s.origin );
 
 		// discard neighbors that are set for deconstruction
 		if ( IsSetForDeconstruction( neighbor ) )
@@ -3939,21 +4006,24 @@ static qboolean PredictBuildableInterference( buildable_t buildable, vec3_t orig
 			continue;
 		}
 
-		pairwiseInterference = PairwiseInterference( buildable, neighbor->s.modelindex, distance );
+		distance = Distance( origin, neighbor->s.origin );
+
+		pairwiseInterference = PairwiseInterference( buildable, neighbor, distance, qtrue );
 
 		ownPrediction += pairwiseInterference;
 		neighborPrediction = neighbor->interference + pairwiseInterference;
 
 		// check interference level of neighbor, with regards to pending deconstruction
-		if ( neighborPrediction > BUILDABLE_MAX_INTERFERENCE )
+		if ( neighborPrediction > BUILDABLE_MAX_INTERFERENCE && distance < BUILDABLE_INTERFERENCE_RANGE )
 		{
 			buddy = NULL;
 			while ( buddy = G_IterateEntitiesWithinRadius( buddy, neighbor->s.origin, INTERFERENCE_RELEVANT_RANGE ) )
 			{
 				if ( IsSetForDeconstruction( buddy ) )
 				{
-					neighborPrediction -= PairwiseInterference( neighbor->s.modelindex, buddy->s.modelindex,
-					                                            Distance( neighbor->s.origin, buddy->s.origin ) );
+					distance = Distance( neighbor->s.origin, buddy->s.origin );
+
+					neighborPrediction -= PairwiseInterference( neighbor->s.modelindex, buddy, distance, qtrue );
 				}
 			}
 
@@ -4761,6 +4831,7 @@ gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 
 	if ( log )
 	{
+		G_BuildingConfidenceReward( built ); // get this set NOW for the build log
 		G_BuildLogSet( log, built );
 	}
 
@@ -5387,10 +5458,12 @@ buildLog_t *G_BuildLogNew( gentity_t *actor, buildFate_t fate )
 
 void G_BuildLogSet( buildLog_t *log, gentity_t *ent )
 {
+	log->buildableTeam = ent->buildableTeam;
 	log->modelindex = ent->s.modelindex;
 	log->deconstruct = ent->deconstruct;
 	log->deconstructTime = ent->deconstructTime;
 	log->builtBy = ent->builtBy;
+	log->confidenceEarned = ent->confidenceEarned;
 	VectorCopy( ent->s.pos.trBase, log->origin );
 	VectorCopy( ent->s.angles, log->angles );
 	VectorCopy( ent->s.origin2, log->origin2 );
@@ -5455,6 +5528,7 @@ void G_BuildLogRevertThink( gentity_t *ent )
 	}
 
 	built->creationTime = built->s.time = 0;
+	built->confidenceEarned = ent->confidenceEarned;
 	G_KillBox( built );
 
 	G_LogPrintf( "revert: restore %d %s\n",
@@ -5469,6 +5543,8 @@ void G_BuildLogRevert( int id )
 	gentity_t  *ent;
 	int        i;
 	vec3_t     dist;
+	gentity_t  *builder;
+	float      confidenceChange[ NUM_TEAMS ] = { 0 };
 
 	level.numBuildablesForRemoval = 0;
 
@@ -5478,8 +5554,8 @@ void G_BuildLogRevert( int id )
 	{
 		log = &level.buildLog[ --level.buildId % MAX_BUILDLOG ];
 
-		if ( log->fate == BF_CONSTRUCT )
-		{
+		switch ( log->fate ) {
+		case BF_CONSTRUCT:
 			for ( i = MAX_CLIENTS; i < level.num_entities; i++ )
 			{
 				ent = &g_entities[ i ];
@@ -5502,16 +5578,21 @@ void G_BuildLogRevert( int id )
 
 						// Give back resources
 						G_ModifyBuildPoints( ent->buildableTeam, BG_Buildable( ent->s.modelindex )->buildPoints );
-						G_AddConfidence( ent->buildableTeam, CONFIDENCE_BUILDING, CONF_REAS_DECON, CONF_QUAL_NONE, -ent->confidenceEarned, NULL );
+						confidenceChange[ log->buildableTeam] -= log->confidenceEarned;
 						G_FreeEntity( ent );
 						break;
 					}
 				}
 			}
-		}
-		else
-		{
-			gentity_t *builder = G_NewEntity();
+			break;
+
+		case BF_DECONSTRUCT:
+		case BF_REPLACE:
+			confidenceChange[ log->buildableTeam ] += log->confidenceEarned;
+			// fall through to default
+
+		default:
+			builder = G_NewEntity();
 
 			VectorCopy( log->origin, builder->s.pos.trBase );
 			VectorCopy( log->angles, builder->s.angles );
@@ -5521,13 +5602,19 @@ void G_BuildLogRevert( int id )
 			builder->deconstruct = log->deconstruct;
 			builder->deconstructTime = log->deconstructTime;
 			builder->builtBy = log->builtBy;
-
+			builder->confidenceEarned = log->confidenceEarned;
 			builder->think = G_BuildLogRevertThink;
 			builder->nextthink = level.time + FRAMETIME;
 
 			// Number of thinks before giving up and killing players in the way
 			builder->suicideTime = 30;
+			break;
 		}
+	}
+
+	for ( i = 0; i < NUM_TEAMS; ++i )
+	{
+		G_AddConfidence( i, CONFIDENCE_ADMIN, CONF_REAS_NONE, CONF_QUAL_NONE, confidenceChange[ i ], NULL );
 	}
 }
 

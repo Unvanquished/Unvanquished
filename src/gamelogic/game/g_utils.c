@@ -814,6 +814,12 @@ void G_AddConfidence( team_t team, confidence_t type, confidence_reason_t reason
 
 	confidence[ type ] += amount;
 
+	// changes caused by admin action (e.g. revert) are never notified to clients
+	if ( type == CONFIDENCE_ADMIN )
+	{
+		return;
+	}
+
 	// notify client or whole team, depending on source
 	if ( source )
 	{

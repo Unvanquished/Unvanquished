@@ -679,7 +679,9 @@ typedef struct
 	buildFate_t fate;
 	namelog_t   *actor;
 	namelog_t   *builtBy;
+	team_t      buildableTeam;
 	buildable_t modelindex;
+	float       confidenceEarned;
 	qboolean    deconstruct;
 	int         deconstructTime;
 	vec3_t      origin;
@@ -723,6 +725,8 @@ typedef enum
 	CONFIDENCE_DESTRUCTION, // destroying enemy buildings
 	CONFIDENCE_BUILDING,    // building structures
 	CONFIDENCE_TEAMPLAY,    // healing, coordinated actions
+
+	CONFIDENCE_ADMIN,       // admin action
 
 	NUM_CONFIDENCE_TYPES
 } confidence_t;
@@ -987,7 +991,7 @@ float            G_BuildingConfidenceReward( gentity_t *self );
 void             G_BuildableThink( gentity_t *ent, int msec );
 qboolean         G_BuildableRange( vec3_t origin, float r, buildable_t buildable );
 void             G_ClearDeconMarks( void );
-void             G_Deconstruct( gentity_t *self, gentity_t *deconner );
+void             G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconType );
 itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance,
                              vec3_t origin, vec3_t normal, int *groundEntNum );
 qboolean         G_BuildIfValid( gentity_t *ent, buildable_t buildable );
