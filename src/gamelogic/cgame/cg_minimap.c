@@ -39,7 +39,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ParseFloats
 ================
 */
-qboolean ParseFloats( float* res, const int number, char **text )
+static qboolean ParseFloats( float* res, const int number, char **text )
 {
     char* token;
     int i = number;
@@ -63,7 +63,7 @@ qboolean ParseFloats( float* res, const int number, char **text )
 CG_ParseMinimapZone
 ================
 */
-qboolean CG_ParseMinimapZone( minimapZone_t* z, char **text )
+static qboolean CG_ParseMinimapZone( minimapZone_t* z, char **text )
 {
     char* token;
     qboolean hasImage = qfalse;
@@ -156,7 +156,7 @@ qboolean CG_ParseMinimapZone( minimapZone_t* z, char **text )
 CG_ParseMinimap
 ================
 */
-qboolean CG_ParseMinimap( minimap_t* m, const char* filename )
+static qboolean CG_ParseMinimap( minimap_t* m, const char* filename )
 {
     char text_buffer[ 20000 ];
     char* text;
@@ -244,7 +244,7 @@ qboolean CG_ParseMinimap( minimap_t* m, const char* filename )
 CG_IsInMinimapZone
 ================
 */
-qboolean CG_IsInMinimapZone(const minimapZone_t* z)
+static qboolean CG_IsInMinimapZone(const minimapZone_t* z)
 {
     return PointInBounds(cg.refdef.vieworg, z->boundsMin, z->boundsMax);
 }
@@ -260,7 +260,7 @@ static float transformScale;
 CG_SetupMinimapTransform
 ================
 */
-void CG_SetupMinimapTransform( const rectDef_t *rect, const minimap_t* minimap, const minimapZone_t* zone)
+static void CG_SetupMinimapTransform( const rectDef_t *rect, const minimap_t* minimap, const minimapZone_t* zone)
 {
     float posx, posy, x, y, s, c, angle, scale, equivalenceScale;
 
@@ -303,7 +303,7 @@ void CG_SetupMinimapTransform( const rectDef_t *rect, const minimap_t* minimap, 
 CG_WorldToMinimap
 ================
 */
-void CG_WorldToMinimap( const vec3_t worldPos, vec2_t minimapPos )
+static void CG_WorldToMinimap( const vec3_t worldPos, vec2_t minimapPos )
 {
     //Correct the orientation by inverting worldPos.y
     minimapPos[0] = transform[0] * worldPos[0] - transform[1] * worldPos[1] +
@@ -317,7 +317,7 @@ void CG_WorldToMinimap( const vec3_t worldPos, vec2_t minimapPos )
 CG_WorldToMinimapAngle
 ================
 */
-float CG_WorldToMinimapAngle( const float angle )
+static float CG_WorldToMinimapAngle( const float angle )
 {
     return angle + transformAngle;
 }
@@ -327,7 +327,7 @@ float CG_WorldToMinimapAngle( const float angle )
 CG_WorldToMinimapScale
 ================
 */
-float CG_WorldToMinimapScale( const float scale )
+static float CG_WorldToMinimapScale( const float scale )
 {
     return scale * transformScale;
 }
@@ -338,7 +338,7 @@ float CG_WorldToMinimapScale( const float scale )
 CG_DrawMinimapObject
 ================
 */
-void CG_DrawMinimapObject( const qhandle_t image, const vec3_t pos3d, const float angle, const float scale, const float texSize )
+static void CG_DrawMinimapObject( const qhandle_t image, const vec3_t pos3d, const float angle, const float scale, const float texSize )
 {
     vec2_t offset;
     float x, y, wh, realScale, realAngle;
@@ -359,7 +359,7 @@ void CG_DrawMinimapObject( const qhandle_t image, const vec3_t pos3d, const floa
 CG_UpdateMinimapActive
 ================
 */
-void CG_UpdateMinimapActive(minimap_t* m)
+static void CG_UpdateMinimapActive(minimap_t* m)
 {
     qboolean active = m->defined && cg_drawMinimap.integer;
 
@@ -383,7 +383,7 @@ the mapper make a nicer looking minimap: once you enter a zone I'll stay in it
 until you reach the bounds
 ================
 */
-minimapZone_t* CG_ChooseMinimapZone( minimap_t* m )
+static minimapZone_t* CG_ChooseMinimapZone( minimap_t* m )
 {
     if( m->lastZone < 0 || !CG_IsInMinimapZone( &m->zones[m->lastZone] ) )
     {
@@ -418,7 +418,7 @@ minimapZone_t* CG_ChooseMinimapZone( minimap_t* m )
 CG_MinimapDrawMap
 ================
 */
-void CG_MinimapDrawMap( const minimapZone_t* z )
+static void CG_MinimapDrawMap( const minimapZone_t* z )
 {
     vec3_t origin = {0.0f, 0.0f, 0.0f};
     origin[0] = 0.5 * (z->imageMin[0] + z->imageMax[0]);
@@ -432,7 +432,7 @@ void CG_MinimapDrawMap( const minimapZone_t* z )
 CG_MinimapDrawPlayer
 ================
 */
-void CG_MinimapDrawPlayer( const minimap_t* m )
+static void CG_MinimapDrawPlayer( const minimap_t* m )
 {
     CG_DrawMinimapObject( m->gfx.playerArrow, cg.refdef.vieworg, cg.refdefViewAngles[1], 1.0, MINIMAP_PLAYER_DISPLAY_SIZE );
 }
@@ -448,7 +448,7 @@ make the arrow warp. That's why we wait until the fadeout is finished before
 fading it back in.
 ================
 */
-void CG_MinimapUpdateTeammateFadingAndPos( centity_t* mate )
+static void CG_MinimapUpdateTeammateFadingAndPos( centity_t* mate )
 {
     playerEntity_t* state = &mate->pe;
 
@@ -492,7 +492,7 @@ void CG_MinimapUpdateTeammateFadingAndPos( centity_t* mate )
 CG_MinimapDrawTeammates
 ================
 */
-void CG_MinimapDrawTeammates( const minimap_t* m )
+static void CG_MinimapDrawTeammates( const minimap_t* m )
 {
     int ownTeam = cg.predictedPlayerState.stats[ STAT_TEAM ];
     int i;
