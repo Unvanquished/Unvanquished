@@ -7089,6 +7089,11 @@ void RB_CameraPostFX( void )
 		return;
 	}
 
+	if ( !r_cameraPostFX->integer )
+	{
+		return;
+	}
+
 	// set 2D virtual screen size
 	GL_PushMatrix();
 	MatrixOrthogonalProjection( ortho, backEnd.viewParms.viewportX,
@@ -7142,16 +7147,19 @@ void RB_CameraPostFX( void )
 
 	// bind u_GrainMap
 	GL_SelectTexture( 1 );
-	if( r_cameraPostFX->integer && tr.grainImage )
+	if ( r_cameraFilmGrain->integer && tr.grainImage )
+	{
 		GL_Bind( tr.grainImage );
+	}
 	else
+	{
 		GL_Bind( tr.blackImage );
+	}
 
 	// bind u_VignetteMap
 	GL_SelectTexture( 2 );
 
-	if ( r_cameraPostFX->integer && r_cameraVignette->integer &&
-	     tr.vignetteImage )
+	if ( r_cameraVignette->integer && tr.vignetteImage )
 	{
 		GL_Bind( tr.vignetteImage );
 	}
