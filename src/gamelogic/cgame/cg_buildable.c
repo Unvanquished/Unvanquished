@@ -1358,11 +1358,11 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 {
 	entityState_t *es = &cent->currentState;
 	vec3_t        origin;
-	float         healthScale, interferenceScale;
-	int           health, interference;
+	float         healthScale, interferenceScale, mineEfficiencyScale;
+	int           health, interference, mineEfficiency;
 	float         x, y;
 	vec4_t        color;
-	qboolean      powered, marked, miner, showInterference;
+	qboolean      powered, marked, showMineEfficiency, showInterference;
 	trace_t       tr;
 	float         d;
 	buildStat_t   *bs;
@@ -1379,25 +1379,11 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 	if ( BG_Buildable( es->modelindex )->team == TEAM_ALIENS )
 	{
 		bs = &cgs.alienBuildStat;
-		showInterference = qfalse;
 	}
 	else
 	{
 		bs = &cgs.humanBuildStat;
-
-
-		switch ( es->modelindex )
-		{
-			case BA_H_REPEATER:
-			case BA_H_REACTOR:
-				showInterference = qfalse;
-				break;
-
-			default:
-				showInterference = qtrue;
-				interference = es->clientNum;
-		}
-	}
+	}            
 
 	if ( !bs->loaded )
 	{
@@ -1540,21 +1526,65 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		}
 	}
 
-	// calculate health bar size
-	health = es->generic1;
-	healthScale = ( float ) health / BG_Buildable( es->modelindex )->health;
+	// get mine efficiency data
+	showMineEfficiency = ( BG_Buildable( es->modelindex )->number == BA_A_LEECH ||
+	                       BG_Buildable( es->modelindex )->number == BA_H_DRILL );
 
-	if ( health > 0 && healthScale < 0.01f )
+	if ( showMineEfficiency )
 	{
-		healthScale = 0.01f;
+		mineEfficiency = es->weaponAnim;
 	}
-	else if ( healthScale < 0.0f )
+
+	// get health data
 	{
-		healthScale = 0.0f;
+		health = es->generic1;
 	}
-	else if ( healthScale > 1.0f )
+
+	// get interference data
+	showInterference = ( BG_Buildable( es->modelindex )->team == TEAM_HUMANS &&
+	                     !( BG_Buildable( es->modelindex )->number == BA_H_REACTOR ||
+	                        BG_Buildable( es->modelindex )->number == BA_H_REPEATER ) );
+
+	if ( showInterference )
 	{
-		healthScale = 1.0f;
+		interference = es->clientNum;
+	}
+
+	// calculate mine efficiency bar size
+	if ( showMineEfficiency )
+	{
+		mineEfficiencyScale = ( float )mineEfficiency / 100.0f;
+
+		if ( mineEfficiency > 0 && mineEfficiencyScale < 0.01f )
+		{
+			mineEfficiencyScale = 0.01f;
+		}
+		else if ( mineEfficiencyScale < 0.0f )
+		{
+			mineEfficiencyScale = 0.0f;
+		}
+		else if ( mineEfficiencyScale > 1.0f )
+		{
+			mineEfficiencyScale = 1.0f;
+		}
+	}
+
+	// calculate health bar size
+	{
+		healthScale = ( float ) health / BG_Buildable( es->modelindex )->health;
+
+		if ( health > 0 && healthScale < 0.01f )
+		{
+			healthScale = 0.01f;
+		}
+		else if ( healthScale < 0.0f )
+		{
+			healthScale = 0.0f;
+		}
+		else if ( healthScale > 1.0f )
+		{
+			healthScale = 1.0f;
+		}
 	}
 
 	// calculate interference bar size
@@ -1593,8 +1623,6 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 
 		powered = es->eFlags & EF_B_POWERED;
 		marked = es->eFlags & EF_B_MARKED;
-		miner = (BG_Buildable( es->modelindex )->number == BA_A_LEECH
-		      || BG_Buildable( es->modelindex )->number == BA_H_DRILL);
 
 		picH *= scale;
 		picW *= scale;
@@ -1617,12 +1645,61 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			frameColor[ 3 ] = color[ 3 ];
 			trap_R_SetColor( frameColor );
 
+			if ( showMineEfficiency )
+			{
+				CG_SetClipRegion( picX, picY - 0.5f * picH, picW, 0.5f * picH );
+				CG_DrawPic( picX, picY - 0.5f * picH, picW, picH, bs->frameShader );
+				CG_ClearClipRegion();
+			}
+
 			CG_DrawPic( picX, picY, picW, picH, bs->frameShader );
 
 			if ( showInterference )
 			{
-				CG_DrawPic( picX, picY + picH, picW, picH, bs->frameShader );
+				CG_SetClipRegion( picX, picY + picH, picW, 0.5f * picH );
+				CG_DrawPic( picX, picY + 0.5f * picH, picW, picH, bs->frameShader );
+				CG_ClearClipRegion();
 			}
+
+			trap_R_SetColor( NULL );
+		}
+
+		// draw mine rate bar
+		if ( showMineEfficiency )
+		{
+			float  hX, hY, hW, hH;
+			vec4_t barColor;
+
+			hX = picX + ( bs->healthPadding * scale );
+			hY = picY - ( 0.5f * picH ) + ( bs->healthPadding * scale );
+			hH = ( 0.5f * picH ) - ( bs->healthPadding * scale );
+			hW = ( picW * mineEfficiencyScale ) - ( bs->healthPadding * 2.0f * scale );
+
+			if ( mineEfficiencyScale == 1.0f )
+			{
+				Vector4Copy( bs->healthLowColor, barColor );
+			}
+			else if ( mineEfficiencyScale >= 0.75f )
+			{
+				Vector4Copy( bs->healthGuardedColor, barColor );
+			}
+			else if ( mineEfficiencyScale >= 0.50f )
+			{
+				Vector4Copy( bs->healthElevatedColor, barColor );
+			}
+			else if ( mineEfficiencyScale >= 0.25f )
+			{
+				Vector4Copy( bs->healthHighColor, barColor );
+			}
+			else
+			{
+				Vector4Copy( bs->healthSevereColor, barColor );
+			}
+
+			barColor[ 3 ] = color[ 3 ];
+			trap_R_SetColor( barColor );
+
+			CG_DrawPic( hX, hY, hW, hH, cgs.media.whiteShader );
 
 			trap_R_SetColor( NULL );
 		}
@@ -1631,7 +1708,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		if ( health > 0 )
 		{
 			float  hX, hY, hW, hH;
-			vec4_t healthColor;
+			vec4_t barColor;
 
 			hX = picX + ( bs->healthPadding * scale );
 			hY = picY + ( bs->healthPadding * scale );
@@ -1640,27 +1717,27 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 
 			if ( healthScale == 1.0f )
 			{
-				Vector4Copy( bs->healthLowColor, healthColor );
+				Vector4Copy( bs->healthLowColor, barColor );
 			}
 			else if ( healthScale >= 0.75f )
 			{
-				Vector4Copy( bs->healthGuardedColor, healthColor );
+				Vector4Copy( bs->healthGuardedColor, barColor );
 			}
 			else if ( healthScale >= 0.50f )
 			{
-				Vector4Copy( bs->healthElevatedColor, healthColor );
+				Vector4Copy( bs->healthElevatedColor, barColor );
 			}
 			else if ( healthScale >= 0.25f )
 			{
-				Vector4Copy( bs->healthHighColor, healthColor );
+				Vector4Copy( bs->healthHighColor, barColor );
 			}
 			else
 			{
-				Vector4Copy( bs->healthSevereColor, healthColor );
+				Vector4Copy( bs->healthSevereColor, barColor );
 			}
 
-			healthColor[ 3 ] = color[ 3 ];
-			trap_R_SetColor( healthColor );
+			barColor[ 3 ] = color[ 3 ];
+			trap_R_SetColor( barColor );
 
 			CG_DrawPic( hX, hY, hW, hH, cgs.media.whiteShader );
 
@@ -1671,36 +1748,36 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		if ( showInterference )
 		{
 			float  hX, hY, hW, hH;
-			vec4_t interferenceColor;
+			vec4_t barColor;
 
 			hX = picX + ( bs->healthPadding * scale );
-			hY = picY + ( bs->healthPadding * scale ) + picH;
-			hH = picH - ( bs->healthPadding * 2.0f * scale );
-			hW = picW * interferenceScale - ( bs->healthPadding * 2.0f * scale );
+			hY = picY + picH;
+			hH = ( 0.5f * picH ) - ( bs->healthPadding * scale );
+			hW = ( picW * interferenceScale ) - ( bs->healthPadding * 2.0f * scale );
 
 			if ( interferenceScale == 1.0f )
 			{
-				Vector4Copy( bs->healthLowColor, interferenceColor );
+				Vector4Copy( bs->healthLowColor, barColor );
 			}
 			else if ( interferenceScale >= 0.75f )
 			{
-				Vector4Copy( bs->healthGuardedColor, interferenceColor );
+				Vector4Copy( bs->healthGuardedColor, barColor );
 			}
 			else if ( interferenceScale >= 0.50f )
 			{
-				Vector4Copy( bs->healthElevatedColor, interferenceColor );
+				Vector4Copy( bs->healthElevatedColor, barColor );
 			}
 			else if ( interferenceScale >= 0.25f )
 			{
-				Vector4Copy( bs->healthHighColor, interferenceColor );
+				Vector4Copy( bs->healthHighColor, barColor );
 			}
 			else
 			{
-				Vector4Copy( bs->healthSevereColor, interferenceColor );
+				Vector4Copy( bs->healthSevereColor, barColor );
 			}
 
-			interferenceColor[ 3 ] = color[ 3 ];
-			trap_R_SetColor( interferenceColor );
+			barColor[ 3 ] = color[ 3 ];
+			trap_R_SetColor( barColor );
 
 			CG_DrawPic( hX, hY, hW, hH, cgs.media.whiteShader );
 
@@ -1760,14 +1837,14 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 				healthPoints = 1;
 			}
 
-			if (miner)
-			{
-				nX = picX + ( picW * 0.33f ) - 2.0f - ( ( subH * 4 ) * 0.5f );
-			}
-			else
-			{
-				nX = picX + ( picW * 0.5f ) - 2.0f - ( ( subH * 4 ) * 0.5f );
-			}
+			//if (showMineEfficiency)
+			//{
+			//	nX = picX + ( picW * 0.33f ) - 2.0f - ( ( subH * 4 ) * 0.5f );
+			//}
+			//else
+			//{
+			nX = picX + ( picW * 0.5f ) - 2.0f - ( ( subH * 4 ) * 0.5f );
+			//}
 
 			if ( healthPoints > 999 )
 			{
@@ -1789,8 +1866,9 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			CG_DrawField( nX, subY, 4, subH, subH, healthPoints );
 		}
 
+		/*
 		// show mine rate for resource generating structures
-		if ( miner )
+		if ( showMineEfficiency )
 		{
 			float rX, rY;
 			int   mineRate;
@@ -1824,43 +1902,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 
 			CG_DrawField( rX, rY, 4, subH, subH, mineRate );
 		}
-
-		// show interference for human structures
-		if ( showInterference )
-		{
-			float rX, rY;
-
-			if ( interference > 100 )
-			{
-				interference = 100;
-			}
-			else if (interference < 0)
-			{
-				interference = 0;
-			}
-
-			rX = picX + ( picW * 0.5f ) - 2.0f - ( ( subH * 4 ) * 0.5f );
-			rY = subY + picH;
-
-			if ( interference > 999 )
-			{
-				rX -= 0.0f;
-			}
-			else if ( interference > 99 )
-			{
-				rX -= subH * 0.5f;
-			}
-			else if ( interference > 9 )
-			{
-				rX -= subH * 1.0f;
-			}
-			else
-			{
-				rX -= subH * 1.5f;
-			}
-
-			CG_DrawField( rX, rY, 4, subH, subH, interference );
-		}
+		*/
 
 		trap_R_SetColor( NULL );
 		CG_ClearClipRegion();
