@@ -174,7 +174,8 @@ void Cmd_NavEdit( void )
 
 void Cmd_AddConnection( void )
 {
-	const char usage[] = "Usage: addcon start/end";
+	const char usage[] = "Usage: addcon start <dir> (radius)\n"
+	                     " addcon end\n";
 	char *arg = NULL;
 	int argc = Cmd_Argc();
 
@@ -192,13 +193,42 @@ void Cmd_AddConnection( void )
 			return;
 		}
 
+		if ( argc < 3 )
+		{
+			Com_Printf( "%s", usage );
+			return;
+		}
+
+		arg = Cmd_Argv( 2 );
+
+		if ( !Q_stricmp( arg, "oneway" ) )
+		{
+			cmd.pc.dir = 0;
+		}
+		else if ( !Q_stricmp( arg, "twoway" ) )
+		{
+			cmd.pc.dir = 1;
+		}
+		else
+		{
+			Com_Printf( "Invalid argument for direction, specify oneway or twoway\n" );
+			return;
+		}
+
 		if ( GetPointPointedTo( cmd.nav, cmd.pc.start ) )
 		{
 			cmd.pc.area = DT_TILECACHE_WALKABLE_AREA;
 			cmd.pc.flag = POLYFLAGS_WALK;
 			cmd.pc.userid = 0;
-			cmd.pc.radius = 50;
-			cmd.pc.dir = 0;
+
+			if ( argc == 4 )
+			{
+				cmd.pc.radius = MAX( atoi( Cmd_Argv( 3 ) ), 10 );
+			}
+			else
+			{
+				cmd.pc.radius = 50;
+			}
 			cmd.offBegin = true;
 		}
 	}
