@@ -93,25 +93,3 @@ void DebugDrawQuake::end()
 {
 	re->DebugDrawEnd();
 }
-
-extern "C" void BotDebugDrawMesh( BotDebugInterface_t *in )
-{
-	int navMeshNum = cl.snap.ps.stats[ STAT_CLASS ] - 1;
-
-	if ( navMeshNum < 0 || navMeshNum > numNavData )
-	{
-		return;
-	}
-
-	NavData_t *nav = &BotNavData[ navMeshNum ];
-
-	if ( !nav->mesh ) 
-	{
-		return;
-	}
-
-	DebugDrawQuake dd;
-	dd.init( in );
-	duDebugDrawNavMeshWithClosedList(&dd, *nav->mesh, *nav->query, DU_DRAWNAVMESH_OFFMESHCONS | DU_DRAWNAVMESH_CLOSEDLIST);
-	BotDrawNavEdit( nav, &dd );
-}

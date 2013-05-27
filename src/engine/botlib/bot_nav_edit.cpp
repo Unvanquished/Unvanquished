@@ -40,8 +40,6 @@ extern "C" {
 #include "bot_navdraw.h"
 #include "nav.h"
 
-static bool navEdit = false;
-
 qboolean GetPointPointedTo( NavData_t *nav, vec3_t p )
 {
 	vec3_t forward;
@@ -67,116 +65,196 @@ qboolean GetPointPointedTo( NavData_t *nav, vec3_t p )
 	return qtrue;
 }
 
-static OffMeshConnection c;
-static bool offBegin = false;
+struct
+{
+	bool enabled;
+	bool offBegin;
+	OffMeshConnection pc;
+	NavData_t *nav;
+} cmd;
 
-void BotDrawNavEdit( NavData_t *nav, DebugDrawQuake *dd )
+void BotDrawNavEdit( DebugDrawQuake *dd )
 {
 	vec3_t p;
-	if ( navEdit && GetPointPointedTo( nav, p ) )
+
+	if ( cmd.enabled && GetPointPointedTo( cmd.nav, p ) )
 	{
 		unsigned int col = duRGBA( 255, 255, 255, 220 );
 		dd->begin( DU_DRAW_LINES, 2.0f );
 		duAppendCircle( dd, p[ 0 ], p[ 1 ], p[ 2 ], 50, col );
 
-		if ( offBegin )
+		if ( cmd.offBegin )
 		{
-			duAppendArc(dd, c.start[0],c.start[1],c.start[2], p[0], p[1], p[2], 0.25f,
-						0.6f, 0.6f, col);
-			duAppendCircle( dd, c.start[ 0 ], c.start[ 1 ], c.start[ 2 ], 50, col );
+			duAppendArc( dd, cmd.pc.start[ 0 ], cmd.pc.start[ 1 ], cmd.pc.start[ 2 ], p[ 0 ], p[ 1 ], p[ 2 ], 0.25f,
+						0.6f, 0.6f, col );
+			duAppendCircle( dd, cmd.pc.start[ 0 ], cmd.pc.start[ 1 ], cmd.pc.start[ 2 ], 50, col );
 		}
 		dd->end();
 	}
+}
+
+extern "C" void BotDebugDrawMesh( BotDebugInterface_t *in )
+{
+	static DebugDrawQuake dd;
+
+	dd.init( in );
+
+	if ( !cmd.enabled )
+	{
+		return;
+	}
+
+	if ( !cmd.nav )
+	{
+		return;
+	}
+
+	if ( !cmd.nav->mesh || !cmd.nav->query )
+	{
+		return;
+	}
+
+	duDebugDrawNavMeshWithClosedList(&dd, *cmd.nav->mesh, *cmd.nav->query, DU_DRAWNAVMESH_OFFMESHCONS | DU_DRAWNAVMESH_CLOSEDLIST);
+	BotDrawNavEdit( &dd );
 }
 
 void Cmd_NavEdit( void )
 {
 	int argc = Cmd_Argc();
 	char *arg = NULL;
-	int meshnum = cl.snap.ps.stats[ STAT_CLASS ] - 1;
-	NavData_t *nav;
-	const char usage[] = "usage: navedit <begin/end>\n";
-
-	if ( meshnum < 0 || meshnum >= numNavData )
-	{
-		Com_Printf( "No navmesh loaded for this class\n" );
-		return;
-	}
-
-	nav = &BotNavData[ meshnum ];
-
-	if ( !nav->mesh )
-	{
-		Com_Printf( "No navmesh loaded for this class\n" );
-		return;
-	}
+	const char usage[] = "Usage: navedit enable/disable/save <navmesh>\n";
 
 	if ( !Cvar_VariableIntegerValue( "sv_cheats" ) )
 	{
-		Com_Printf( "Nav edit only available in local devmap\n" );
-		return;
-	}
-
-	if ( argc == 1 )
-	{
-		offBegin = qfalse;
-		navEdit = !navEdit;
-		Cvar_Set( "r_debugSurface", va( "%d", navEdit ) );
+		Com_Printf( "navedit only available in local devmap\n" );
 		return;
 	}
 
 	arg = Cmd_Argv( 1 );
 
-	if ( !Q_stricmp( arg, "begin" ) )
+	if ( !Q_stricmp( arg, "enable" ) )
 	{
-		if ( GetPointPointedTo( nav, c.start ) )
+		if ( argc < 3 )
 		{
-			c.area = DT_TILECACHE_WALKABLE_AREA;
-			c.flag = POLYFLAGS_WALK;
-			c.userid = 0;
-			c.radius = 50;
-			c.dir = 0;
-			offBegin = qtrue;
+			Com_Printf( "%s", usage );
+			return;
+		}
+
+		arg = Cmd_Argv( 1 );
+		for ( int i = 0; i < numNavData; i++ )
+		{
+			if ( !Q_stricmp( BotNavData[ i ].name, arg ) )
+			{
+				cmd.nav = &BotNavData[ i ];
+				break;
+			}
+		}
+
+		if ( cmd.nav && cmd.nav->mesh && cmd.nav->cache && cmd.nav->query )
+		{
+			cmd.enabled = true;
+			Cvar_Set( "r_debugSurface", "1" );
+		}
+	}
+	else if ( !Q_stricmp( arg, "disable" ) )
+	{
+		cmd.enabled = false;
+		Cvar_Set( "r_debugSurface", "0" );
+	}
+	else if ( !Q_stricmp( arg, "save" ) )
+	{
+		if ( !cmd.enabled )
+		{
+			return;
+		}
+
+		BotSaveOffMeshConnections( cmd.nav );
+	}
+}
+
+void Cmd_AddConnection( void )
+{
+	const char usage[] = "Usage: addcon start/end";
+	char *arg = NULL;
+	int argc = Cmd_Argc();
+
+	if ( argc < 2 )
+	{
+		Com_Printf( "%s", usage );
+	}
+
+	arg = Cmd_Argv( 1 );
+
+	if ( !Q_stricmp( arg, "start" ) )
+	{
+		if ( !cmd.enabled )
+		{
+			return;
+		}
+
+		if ( GetPointPointedTo( cmd.nav, cmd.pc.start ) )
+		{
+			cmd.pc.area = DT_TILECACHE_WALKABLE_AREA;
+			cmd.pc.flag = POLYFLAGS_WALK;
+			cmd.pc.userid = 0;
+			cmd.pc.radius = 50;
+			cmd.pc.dir = 0;
+			cmd.offBegin = true;
 		}
 	}
 	else if ( !Q_stricmp( arg, "end" ) )
 	{
-		if ( !offBegin )
+		if ( !cmd.enabled )
+		{
+			return;
+		}
+
+		if ( !cmd.offBegin )
 		{
 			return;
 		}
 		
-		if ( GetPointPointedTo( nav, c.end ) )
+		if ( GetPointPointedTo( cmd.nav, cmd.pc.end ) )
 		{
-			nav->process.con.addConnection( c );
+			cmd.nav->process.con.addConnection( cmd.pc );
 
 			vec3_t omin, omax;
 			ClearBounds( omin, omax );
-			AddPointToBounds( c.start, omin, omax );
-			AddPointToBounds( c.end, omin, omax );
+			AddPointToBounds( cmd.pc.start, omin, omax );
+			AddPointToBounds( cmd.pc.end, omin, omax );
 
 			omin[ 1 ] -= 10;
 			omax[ 1 ] += 10;
 
 			// rebuild affected tiles
-			for ( int i = 0; i < numNavData; i++ )
-			{
-				NavData_t *nav = &BotNavData[ i ];
-				dtCompressedTileRef refs[ 32 ];
-				int tc = 0;
-				nav->cache->queryTiles( omin, omax, refs, &tc, 32 );
+			dtCompressedTileRef refs[ 32 ];
+			int tc = 0;
+			cmd.nav->cache->queryTiles( omin, omax, refs, &tc, 32 );
 
-				for ( int k = 0; k < tc; k++ )
-				{
-					nav->cache->buildNavMeshTile( refs[ k ], nav->mesh );
-				}
+			for ( int k = 0; k < tc; k++ )
+			{
+				cmd.nav->cache->buildNavMeshTile( refs[ k ], cmd.nav->mesh );
 			}
 
-			offBegin = qfalse;
+			cmd.offBegin = false;
 		}
 	}
-	else if ( !Q_stricmp( arg, "save" ) )
-	{
-		BotSaveOffMeshConnections( nav );
-	}
+}
+
+void NavEditInit( void )
+{
+#ifndef DEDICATED
+	memset( &cmd, 0, sizeof( cmd ) );
+	Cvar_Set( "r_debugSurface", "0" );
+	Cmd_AddCommand( "navedit", Cmd_NavEdit );
+	Cmd_AddCommand( "addcon", Cmd_AddConnection );
+#endif
+}
+
+void NavEditShutdown( void )
+{
+#ifndef DEDICATED
+	Cmd_RemoveCommand( "navedit" );
+	Cmd_RemoveCommand( "addcon" );
+#endif
 }

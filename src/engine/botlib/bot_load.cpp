@@ -362,11 +362,10 @@ extern "C" void BotShutdownNav( void )
 		}
 
 		nav->process.con.reset();
+		memset( nav->name, 0, sizeof( nav->name ) );
 	}
 
-#ifndef DEDICATED
-	Cmd_RemoveCommand( "navedit" );
-#endif
+	NavEditShutdown();
 	numNavData = 0;
 }
 
@@ -399,9 +398,7 @@ extern "C" qboolean BotSetupNav( const botClass_t *botClass, qhandle_t *navHandl
 			agents[ i ].nav = NULL;
 		}
 
-#ifndef DEDICATED
-		Cmd_AddCommand( "navedit", Cmd_NavEdit );
-#endif
+		NavEditInit();
 	}
 
 	if ( numNavData == MAX_NAV_DATA )

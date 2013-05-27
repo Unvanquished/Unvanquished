@@ -140,7 +140,8 @@ static inline void quake2recastTarget( botRouteTarget_t *target )
 	target->polyExtents[ 2 ] = fabsf( target->polyExtents[ 2 ] );
 }
 
-void Cmd_NavEdit( void );
+void NavEditInit( void );
+void NavEditShutdown( void );
 void BotSaveOffMeshConnections( NavData_t *nav );
 
 // all functions here use detour's coordinate system
