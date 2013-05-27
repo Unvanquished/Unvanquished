@@ -3935,7 +3935,7 @@ static qboolean PredictBuildableInterference( buildable_t buildable, vec3_t orig
 		neighborPrediction = neighbor->interference + pairwiseInterference;
 
 		// check interference level of neighbor, with regards to pending deconstruction
-		if ( neighborPrediction > BUILDABLE_MAX_INTERFERENCE )
+		if ( neighborPrediction > BUILDABLE_MAX_INTERFERENCE && distance < BUILDABLE_INTERFERENCE_RANGE )
 		{
 			buddy = NULL;
 			while ( buddy = G_IterateEntitiesWithinRadius( buddy, neighbor->s.origin, INTERFERENCE_RELEVANT_RANGE ) )
