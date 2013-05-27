@@ -3266,6 +3266,7 @@ void G_RunFrame( int levelTime )
 	G_UnlaggedStore();
 
 	G_CountSpawns();
+	G_SetHumanBuildablePowerState();
 	G_CalculateMineRate();
 	G_DecreaseConfidence();
 	G_CalculateAvgPlayers();

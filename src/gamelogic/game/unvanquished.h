@@ -371,15 +371,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /*
  * HUMAN buildables
- *
- * REACTOR_BASESIZE - the maximum distance a buildable can be from a reactor
- * REPEATER_BASESIZE - the maximum distance a buildable can be from a repeater
- *
  */
 
-#define REACTOR_BASESIZE          1000
-#define REPEATER_BASESIZE         500
-#define HUMAN_DETONATION_DELAY    5000
+#define BUILDABLE_INTERFERENCE_RANGE  300  // buildables in this range will interfer
+#define BUILDABLE_MAX_INTERFERENCE    0.8f // maximum amount of interference a buildable can take
+#define REACTOR_POWER_RANGE           1000 // reactor range
+#define REPEATER_POWER_RANGE          500  // repeater range
+#define REACTOR_POWER                 3.0f // reactor interference reduction
+#define REPEATER_POWER                2.0f // repeater interference reduction
+#define INTERFERENCE_RELEVANT_RANGE   1000 // max of all above ranges
 
 #define MGTURRET_RANGE            400.0
 #define MGTURRET_REPEAT           150.0
@@ -435,9 +435,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * Misc
  */
 
+// fall distance
 #define MIN_FALL_DISTANCE                  30.0f //the fall distance at which fall damage kicks in
 #define MAX_FALL_DISTANCE                  120.0f //the fall distance at which maximum damage is dealt
 #define AVG_FALL_DISTANCE                  (( MIN_FALL_DISTANCE + MAX_FALL_DISTANCE ) / 2.0f )
+
+// buildable explosion
+#define HUMAN_DETONATION_DELAY             4000
+#define ALIEN_DETONATION_DELAY             5000
+#define DETONATION_DELAY_RAND_RANGE        0.25f
 
 // score
 #define SCORE_PER_CREDIT                   0.02f // used to convert credit rewards to score points
