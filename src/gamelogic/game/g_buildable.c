@@ -1997,13 +1997,15 @@ Calculates the interference state of a human buildable.
 static float CalculateInterference( gentity_t *self )
 {
 	gentity_t *neighbor;
+	float     distance, interference;
+	int       capacity;
 
 	if ( self->s.eType != ET_BUILDABLE || self->buildableTeam != TEAM_HUMANS )
 	{
 		return 0.0f;
 	}
 
-	self->interference = 0.0f;
+	interference = 0.0f;
 
 	if ( self->s.modelindex == BA_H_REPEATER || self->s.modelindex == BA_H_REACTOR )
 	{
@@ -2019,11 +2021,33 @@ static float CalculateInterference( gentity_t *self )
 			continue;
 		}
 
-		self->interference += PairwiseInterference( self->s.modelindex, neighbor->s.modelindex,
-		                                            Distance( self->s.origin, neighbor->s.origin ) );
+		distance = Distance( self->s.origin, neighbor->s.origin );
+
+		interference += PairwiseInterference( self->s.modelindex, neighbor->s.modelindex, distance );
 	}
 
-	return self->interference;
+	self->interference = interference;
+
+	capacity = ( int )( 100.0f - ( ( ( BUILDABLE_MAX_INTERFERENCE + interference ) * 100.0f )
+	                               / ( 2 * BUILDABLE_MAX_INTERFERENCE ) ) + 0.5f );
+
+	if ( capacity == 0 && interference <= BUILDABLE_MAX_INTERFERENCE )
+	{
+		capacity = 1;
+	}
+	else if ( capacity < 0 )
+	{
+		capacity = 0;
+	}
+	else if ( capacity > 100 )
+	{
+		capacity = 100;
+	}
+
+	// HACK: store interference load in entityState_t.clientNum
+	self->s.clientNum = capacity;
+
+	return interference;
 }
 
 
@@ -2132,11 +2156,14 @@ void G_SetHumanBuildablePowerState()
 				continue;
 			}
 
+			// HACK: store interference load in entityState_t.clientNum
+			ent->s.clientNum = 0;
+
 			ent->powered = qfalse;
 		}
 	}
 
-	nextCalculation = level.time + 1000;
+	nextCalculation = level.time + 500;
 }
 
 /*

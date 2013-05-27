@@ -1358,11 +1358,11 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 {
 	entityState_t *es = &cent->currentState;
 	vec3_t        origin;
-	float         healthScale;
-	int           health;
+	float         healthScale, interferenceScale;
+	int           health, interference;
 	float         x, y;
 	vec4_t        color;
-	qboolean      powered, marked, miner;
+	qboolean      powered, marked, miner, showInterference;
 	trace_t       tr;
 	float         d;
 	buildStat_t   *bs;
@@ -1379,10 +1379,24 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 	if ( BG_Buildable( es->modelindex )->team == TEAM_ALIENS )
 	{
 		bs = &cgs.alienBuildStat;
+		showInterference = qfalse;
 	}
 	else
 	{
 		bs = &cgs.humanBuildStat;
+
+
+		switch ( es->modelindex )
+		{
+			case BA_H_REPEATER:
+			case BA_H_REACTOR:
+				showInterference = qfalse;
+				break;
+
+			default:
+				showInterference = qtrue;
+				interference = es->clientNum;
+		}
 	}
 
 	if ( !bs->loaded )
@@ -1492,6 +1506,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		}
 	}
 
+	// ???
 	if ( !visible && cent->buildableStatus.visible )
 	{
 		cent->buildableStatus.visible = qfalse;
@@ -1525,6 +1540,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		}
 	}
 
+	// calculate health bar size
 	health = es->generic1;
 	healthScale = ( float ) health / BG_Buildable( es->modelindex )->health;
 
@@ -1541,6 +1557,26 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		healthScale = 1.0f;
 	}
 
+	// calculate interference bar size
+	if ( showInterference )
+	{
+		interferenceScale = ( float )interference / 100.0f;
+
+		if ( interference > 0 && interferenceScale < 0.01f )
+		{
+			interferenceScale = 0.01f;
+		}
+		else if ( interferenceScale < 0.0f )
+		{
+			interferenceScale = 0.0f;
+		}
+		else if ( interferenceScale > 1.0f )
+		{
+			interferenceScale = 1.0f;
+		}
+	}
+
+	// draw elements
 	if ( CG_WorldToScreen( origin, &x, &y ) )
 	{
 		float  picH = bs->frameHeight;
@@ -1580,10 +1616,18 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			Vector4Copy( bs->backColor, frameColor );
 			frameColor[ 3 ] = color[ 3 ];
 			trap_R_SetColor( frameColor );
+
 			CG_DrawPic( picX, picY, picW, picH, bs->frameShader );
+
+			if ( showInterference )
+			{
+				CG_DrawPic( picX, picY + picH, picW, picH, bs->frameShader );
+			}
+
 			trap_R_SetColor( NULL );
 		}
 
+		// draw health bar
 		if ( health > 0 )
 		{
 			float  hX, hY, hW, hH;
@@ -1619,6 +1663,47 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			trap_R_SetColor( healthColor );
 
 			CG_DrawPic( hX, hY, hW, hH, cgs.media.whiteShader );
+
+			trap_R_SetColor( NULL );
+		}
+
+		// draw interference bar
+		if ( showInterference )
+		{
+			float  hX, hY, hW, hH;
+			vec4_t interferenceColor;
+
+			hX = picX + ( bs->healthPadding * scale );
+			hY = picY + ( bs->healthPadding * scale ) + picH;
+			hH = picH - ( bs->healthPadding * 2.0f * scale );
+			hW = picW * interferenceScale - ( bs->healthPadding * 2.0f * scale );
+
+			if ( interferenceScale == 1.0f )
+			{
+				Vector4Copy( bs->healthLowColor, interferenceColor );
+			}
+			else if ( interferenceScale >= 0.75f )
+			{
+				Vector4Copy( bs->healthGuardedColor, interferenceColor );
+			}
+			else if ( interferenceScale >= 0.50f )
+			{
+				Vector4Copy( bs->healthElevatedColor, interferenceColor );
+			}
+			else if ( interferenceScale >= 0.25f )
+			{
+				Vector4Copy( bs->healthHighColor, interferenceColor );
+			}
+			else
+			{
+				Vector4Copy( bs->healthSevereColor, interferenceColor );
+			}
+
+			interferenceColor[ 3 ] = color[ 3 ];
+			trap_R_SetColor( interferenceColor );
+
+			CG_DrawPic( hX, hY, hW, hH, cgs.media.whiteShader );
+
 			trap_R_SetColor( NULL );
 		}
 
@@ -1635,12 +1720,15 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			oY -= ( oH * 0.5f );
 
 			trap_R_SetColor( frameColor );
+
 			CG_DrawPic( oX, oY, oW, oH, bs->overlayShader );
+
 			trap_R_SetColor( NULL );
 		}
 
 		trap_R_SetColor( color );
 
+		// show no power icon
 		if ( !powered )
 		{
 			float pX;
@@ -1649,6 +1737,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			CG_DrawPic( pX, subY, subH, subH, bs->noPowerShader );
 		}
 
+		// show marked icon
 		if ( marked )
 		{
 			float mX;
@@ -1657,6 +1746,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			CG_DrawPic( mX, subY, subH, subH, bs->markedShader );
 		}
 
+		// show hp
 		{
 			float nX;
 			int   healthMax;
@@ -1733,6 +1823,43 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			}
 
 			CG_DrawField( rX, rY, 4, subH, subH, mineRate );
+		}
+
+		// show interference for human structures
+		if ( showInterference )
+		{
+			float rX, rY;
+
+			if ( interference > 100 )
+			{
+				interference = 100;
+			}
+			else if (interference < 0)
+			{
+				interference = 0;
+			}
+
+			rX = picX + ( picW * 0.5f ) - 2.0f - ( ( subH * 4 ) * 0.5f );
+			rY = subY + picH;
+
+			if ( interference > 999 )
+			{
+				rX -= 0.0f;
+			}
+			else if ( interference > 99 )
+			{
+				rX -= subH * 0.5f;
+			}
+			else if ( interference > 9 )
+			{
+				rX -= subH * 1.0f;
+			}
+			else
+			{
+				rX -= subH * 1.5f;
+			}
+
+			CG_DrawField( rX, rY, 4, subH, subH, interference );
 		}
 
 		trap_R_SetColor( NULL );
