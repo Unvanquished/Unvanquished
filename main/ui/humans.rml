@@ -32,7 +32,20 @@
 				progress-image: /ui/progress.png;
 				end-image: /ui/end.png;
 			}
-
+			div.item_select img
+			{
+				color: blue;
+			}
+			div.item_select img.selected
+			{
+				width: 256px;
+				height: 256px;
+				color: black;
+			}
+			div.item_select img.inactive, div.item_select img.no_ammo
+			{
+				color: red;
+			}
 		</style>
 	</head>
 	<body id="hud">
@@ -45,5 +58,6 @@
 		<progressbar id="btimer" src="btimer" /><br />
 		<credits /> credits<br />
 		<progressbar id="stamina" src="stamina" /><br />
+		<itemselect />
 	</body>
 </rml>

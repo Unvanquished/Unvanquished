@@ -1848,7 +1848,7 @@ void CG_ShotgunFire( entityState_t *es );
 
 void CG_AddViewWeapon( playerState_t *ps );
 void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent );
-void CG_DrawItemSelect( rectDef_t *rect, vec4_t color );
+void CG_DrawItemSelect( void );
 void CG_DrawItemSelectText( rectDef_t *rect, float scale, int textStyle );
 
 //
@@ -1994,6 +1994,7 @@ typedef enum
 // cg_utils.c
 //
 qboolean CG_ParseColor( byte *c, char **text_p );
+const char *CG_GetShaderNameFromHandle( const qhandle_t shader );
 
 //
 // cg_rocket.c

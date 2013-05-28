@@ -3819,7 +3819,7 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
 			break;
 
 		case CG_PLAYER_SELECT:
-			CG_DrawItemSelect( rect, foreColor );
+// 			CG_DrawItemSelect( rect, foreColor );
 			break;
 
 		case CG_PLAYER_WEAPONICON:

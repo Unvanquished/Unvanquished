@@ -493,6 +493,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "crosshair", &CG_Rocket_DrawCrosshair },
 	{ "evos", &CG_Rocket_DrawAlienEvosValue },
 	{ "fps", &CG_Rocket_DrawFPS },
+	{ "itemselect", &CG_DrawItemSelect },
 	{ "pic", &CG_Rocket_DrawPic },
 	{ "speedometer", &CG_Rocket_DrawSpeedGraph },
 	{ "stamina", &CG_Rocket_DrawStaminaValue },

@@ -2079,13 +2079,9 @@ static qboolean CG_UpgradeSelectable( upgrade_t upgrade )
 CG_DrawItemSelect
 ===================
 */
-void CG_DrawItemSelect( rectDef_t *rect, vec4_t color )
+void CG_DrawItemSelect( void )
 {
 	int           i;
-	float         x = rect->x;
-	float         y = rect->y;
-	float         width = rect->w;
-	float         height = rect->h;
 	float         iconWidth;
 	float         iconHeight;
 	int           items[ 64 ];
@@ -2095,7 +2091,15 @@ void CG_DrawItemSelect( rectDef_t *rect, vec4_t color )
 	qboolean      vertical;
 	centity_t     *cent;
 	playerState_t *ps;
-	vec4_t        localColor;
+	vec4_t        color;
+	static char   RML[ MAX_STRING_CHARS ];
+
+	enum
+	{
+		USABLE,
+		NO_AMMO,
+		NOT_USABLE
+	};
 
 	cent = &cg_entities[ cg.snap->ps.clientNum ];
 	ps = &cg.snap->ps;
@@ -2135,11 +2139,11 @@ void CG_DrawItemSelect( rectDef_t *rect, vec4_t color )
 
 		if ( !ps->ammo && !ps->clips && !BG_Weapon( i )->infiniteAmmo )
 		{
-			colinfo[ numItems ] = 1;
+			colinfo[ numItems ] = NO_AMMO;
 		}
 		else
 		{
-			colinfo[ numItems ] = 0;
+			colinfo[ numItems ] = USABLE;
 		}
 
 		if ( i == cg.weaponSelect )
@@ -2170,7 +2174,7 @@ void CG_DrawItemSelect( rectDef_t *rect, vec4_t color )
 
 		if ( !BG_Upgrade( i )->usable )
 		{
-			colinfo[ numItems ] = 2;
+			colinfo[ numItems ] = NOT_USABLE;
 		}
 
 		if ( i == cg.weaponSelect - 32 )
@@ -2189,84 +2193,45 @@ void CG_DrawItemSelect( rectDef_t *rect, vec4_t color )
 		numItems++;
 	}
 
-	// compute the length of the display window and determine orientation
-	vertical = height > width;
+	// reset buffer
+	RML[ 0 ] = '\0';
 
-	if ( vertical )
+	Q_strncpyz( RML, "<div class='item_select'>", sizeof( RML ) );
+
+	// Build RML string
+	for ( i = 0; i < numItems; ++i )
 	{
-		iconWidth = width * cgDC.aspectScale;
-		iconHeight = width;
-		length = height / ( width * cgDC.aspectScale );
+		const char *rmlClass;
+		const char *src =  CG_GetShaderNameFromHandle( items[ i ] < 32 ? cg_weapons[ items[ i ] ].weaponIcon : cg_upgrades[ items[ i ] - 32 ].upgradeIcon );
+
+		switch( colinfo[ i ] )
+		{
+			case USABLE:
+				rmlClass = "USABLE";
+				break;
+
+			case NO_AMMO:
+				rmlClass = "no_ammo";
+				break;
+
+			case NOT_USABLE:
+			default:
+				rmlClass = "inactive";
+				break;
+		}
+
+		if ( cg.weaponSelect == items[ i ] || cg.weaponSelect - 32 == items[ i ] )
+		{
+			rmlClass = va( "%s selected", rmlClass );
+		}
+
+
+		Q_strcat( RML, sizeof( RML ), va( "<img class='%s' src='/%s' />", rmlClass, src ) );
 	}
-	else
-	{
-		iconWidth = height * cgDC.aspectScale;
-		iconHeight = height;
-		length = width / ( height * cgDC.aspectScale );
-	}
+	Q_strcat( RML, sizeof( RML ), "</div>" );
 
-	localColor[ 3 ] = 0.5f;
+	trap_Rocket_SetInnerRML( "", "", RML );
 
-	// render icon ring
-	for ( i = 0; i < length; i++ )
-	{
-		int item = i - length / 2 + selectedItem;
-
-		if ( item < 0 )
-		{
-			item += length;
-		}
-		else if ( item >= length )
-		{
-			item -= length;
-		}
-
-		if ( item >= 0 && item < numItems )
-		{
-			switch ( colinfo[ item ] )
-			{
-				case 0:
-					VectorCopy( colorCyan, localColor );
-					break;
-
-				case 1:
-					VectorCopy( colorRed, localColor );
-					break;
-
-				case 2:
-					VectorCopy( colorMdGrey, localColor );
-					break;
-
-				default:
-					VectorCopy( color, localColor );
-					break;
-			}
-
-			trap_R_SetColor( localColor );
-
-			if ( items[ item ] < 32 )
-			{
-				CG_DrawPic( x, y, iconWidth, iconHeight,
-				            cg_weapons[ items[ item ] ].weaponIcon );
-			}
-			else
-			{
-				CG_DrawPic( x, y, iconWidth, iconHeight,
-				            cg_upgrades[ items[ item ] - 32 ].upgradeIcon );
-			}
-		}
-
-		if ( vertical )
-		{
-			y += iconHeight;
-		}
-		else
-		{
-			x += iconWidth;
-		}
-	}
-
-	trap_R_SetColor( NULL );
 }
 
 /*
