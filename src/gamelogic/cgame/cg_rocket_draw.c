@@ -516,6 +516,16 @@ static void CG_Rocket_DrawWeaponIcon( void )
 	trap_Rocket_SetInnerRML( "", "", va( "<img class='weapon_icon%s%s' src='/%s' />", rmlClass ? " " : "", rmlClass, CG_GetShaderNameFromHandle( cg_weapons[ weapon ].weaponIcon ) ) );
 }
 
+static void CG_Rocket_DrawPlayerWallclimbing( void )
+{
+	const char *wallwalking = NULL;
+	if ( cg.snap->ps.stats[ STAT_STATE ] & SS_WALLCLIMBING )
+	{
+		wallwalking = "wallwalking";
+	}
+
+	trap_Rocket_SetInnerRML( "", "", va( "<img class='wallclimb_indictator %s%s' src='%s' />", wallwalking ? " " : "", wallwalking, CG_Rocket_GetAttribute( "", "", "src" ) ) );
+}
 
 typedef struct
 {
@@ -536,6 +546,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "speedometer", &CG_Rocket_DrawSpeedGraph },
 	{ "stamina", &CG_Rocket_DrawStaminaValue },
 	{ "test", &CG_Rocket_DrawTest },
+	{ "wallwalk", &CG_Rocket_DrawPlayerWallclimbing },
 	{ "weapon_icon", &CG_Rocket_DrawWeaponIcon },
 };
 
