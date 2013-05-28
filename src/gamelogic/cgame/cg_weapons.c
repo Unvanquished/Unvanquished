@@ -2207,7 +2207,7 @@ void CG_DrawItemSelect( void )
 		switch( colinfo[ i ] )
 		{
 			case USABLE:
-				rmlClass = "USABLE";
+				rmlClass = "usable";
 				break;
 
 			case NO_AMMO:
