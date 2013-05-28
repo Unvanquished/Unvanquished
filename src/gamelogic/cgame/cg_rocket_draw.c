@@ -478,6 +478,44 @@ static void CG_Rocket_DrawStaminaValue( void )
 	trap_Rocket_SetInnerRML( "", "", va( "<span class='stamina_value'>%d</span>", percent ) );
 }
 
+static void CG_Rocket_DrawWeaponIcon( void )
+{
+	centity_t     *cent;
+	playerState_t *ps;
+	weapon_t      weapon;
+	const char    *rmlClass = NULL;
+
+	cent = &cg_entities[ cg.snap->ps.clientNum ];
+	ps = &cg.snap->ps;
+	weapon = BG_GetPlayerWeapon( ps );
+
+
+	// don't display if dead
+	if ( cg.predictedPlayerState.stats[ STAT_HEALTH ] <= 0 )
+	{
+		return;
+	}
+
+	if ( weapon <= WP_NONE || weapon >= WP_NUM_WEAPONS )
+	{
+		CG_Error( "CG_DrawWeaponIcon: weapon out of range: %d", weapon );
+	}
+
+	if ( !cg_weapons[ weapon ].registered )
+	{
+		Com_Printf( S_WARNING "CG_DrawWeaponIcon: weapon %d (%s) "
+		"is not registered\n", weapon, BG_Weapon( weapon )->name );
+		return;
+	}
+
+	if ( ps->clips == 0 && ps->ammo == 0 && !BG_Weapon( weapon )->infiniteAmmo )
+	{
+		rmlClass = "no_ammo";
+	}
+
+	trap_Rocket_SetInnerRML( "", "", va( "<img class='weapon_icon%s%s' src='/%s' />", rmlClass ? " " : "", rmlClass, CG_GetShaderNameFromHandle( cg_weapons[ weapon ].weaponIcon ) ) );
+}
+
 
 typedef struct
 {
@@ -497,7 +535,8 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "pic", &CG_Rocket_DrawPic },
 	{ "speedometer", &CG_Rocket_DrawSpeedGraph },
 	{ "stamina", &CG_Rocket_DrawStaminaValue },
-	{ "test", &CG_Rocket_DrawTest }
+	{ "test", &CG_Rocket_DrawTest },
+	{ "weapon_icon", &CG_Rocket_DrawWeaponIcon },
 };
 
 static const size_t elementRenderCmdListCount = ARRAY_LEN( elementRenderCmdList );

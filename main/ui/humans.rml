@@ -59,5 +59,6 @@
 		<credits /> credits<br />
 		<progressbar id="stamina" src="stamina" /><br />
 		<itemselect />
+		<weapon_icon />
 	</body>
 </rml>
