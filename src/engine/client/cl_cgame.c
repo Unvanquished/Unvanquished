@@ -2149,6 +2149,10 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			re.ScissorSet( args[1], args[2], args[3], args[4] );
 			return 0;
 
+		case CG_R_GETSHADERNAMEFROMHANDLE:
+			Q_strncpyz( VMA( 2 ), re.ShaderNameFromHandle( args[ 1 ] ), args[ 3 ] );
+			return 0;
+
 		case CG_ROCKET_INIT:
 			Rocket_Init();
 			return 0;

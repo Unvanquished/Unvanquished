@@ -1370,6 +1370,10 @@ void trap_Cmd_ExecuteText( int exec_when, const char *text )
 	syscall( CG_CMD_EXECUTETEXT, exec_when, text );
 }
 
+void trap_R_GetShaderNameFromHandle( const qhandle_t shader, char *out, int len )
+{
+	syscall( CG_R_GETSHADERNAMEFROMHANDLE, shader, out, len );
+}
 
 void trap_Rocket_Init( void )
 {
