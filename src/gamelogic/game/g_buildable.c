@@ -2174,7 +2174,14 @@ void G_SetHumanBuildablePowerState()
 					continue;
 				}
 
+
 				interference = CalculateInterference( ent );
+
+				// never shut down the telenode
+				if ( ent->s.modelindex == BA_H_SPAWN )
+				{
+					continue;
+				}
 
 				if ( interference > highestInterference )
 				{
@@ -2210,7 +2217,11 @@ void G_SetHumanBuildablePowerState()
 			// HACK: store interference load in entityState_t.clientNum
 			ent->s.clientNum = 0;
 
-			ent->powered = qfalse;
+			// never shut down the telenode
+			if ( ent->s.modelindex != BA_H_SPAWN )
+			{
+				ent->powered = qfalse;
+			}
 		}
 	}
 
