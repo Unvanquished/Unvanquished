@@ -1665,7 +1665,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		}
 
 		// draw mine rate bar
-		if ( showMineEfficiency )
+		if ( showMineEfficiency && mineEfficiency > 0 )
 		{
 			float  hX, hY, hW, hH;
 			vec4_t barColor;
@@ -1745,7 +1745,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		}
 
 		// draw interference bar
-		if ( showInterference )
+		if ( showInterference && interference > 0 )
 		{
 			float  hX, hY, hW, hH;
 			vec4_t barColor;
