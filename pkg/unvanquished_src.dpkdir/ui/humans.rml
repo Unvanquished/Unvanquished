@@ -46,6 +46,16 @@
 			{
 				color: red;
 			}
+			scanner
+			{
+				position: absolute;
+				top: 700px;
+				left: 700px;
+				width: 200px;
+				height: 100px;
+				background-decorator: image;
+				background-image-src: /ui/assets/human/scanner.tga;
+			}
 		</style>
 	</head>
 	<body id="hud">
@@ -60,5 +70,6 @@
 		<progressbar id="stamina" src="stamina" /><br />
 		<itemselect />
 		<weapon_icon />
+		<scanner />
 	</body>
 </rml>
