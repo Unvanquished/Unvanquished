@@ -599,9 +599,6 @@ void CG_Menu( int menu, int arg )
 
 			//===============================
 
-			// Since cheating commands have no default binds, they will often be done
-			// via console. In light of this, perhaps opening a menu is
-			// counterintuitive
 		case MN_CMD_CHEAT:
 			//longMsg   = "This action is considered cheating. It can only be used "
 			//            "in cheat mode, which is not enabled on this server.";
@@ -696,10 +693,9 @@ void CG_Menu( int menu, int arg )
 			break;
 
 		case MN_B_SURRENDER:
-			longMsg = _("Your team has decided to admit defeat and concede the game:"
-			          "traitors and cowards are not allowed to build.");
-			// too harsh?
-			shortMsg = _("Building is denied to traitorous cowards");
+			longMsg = _("Your team has decided to admit defeat and concede the game: "
+			            "There's no point in building anything anymore.");
+			shortMsg = _("Cannot build after admitting defeat");
 			type = DT_MISC_CP;
 			break;
 
@@ -708,16 +704,16 @@ void CG_Menu( int menu, int arg )
 		case MN_H_NOBP:
 			if ( cgs.markDeconstruct )
 			{
-				longMsg = _("There is no power remaining. Free up power by marking "
-				          "existing buildable objects.");
+				longMsg = _("There are no resources remaining. Free up resources by "
+				            "marking existing buildables for deconstruction.");
 			}
 			else
 			{
-				longMsg = _("There is no power remaining. Free up power by deconstructing "
-				          "existing buildable objects.");
+				longMsg = _("There are no resources remaining. Free up resources by "
+				            "deconstructing existing buildables.");
 			}
 
-			shortMsg = _("There is no power remaining");
+			shortMsg = _("There are no resources remaining");
 			type = DT_BUILD;
 			break;
 
@@ -736,12 +732,13 @@ void CG_Menu( int menu, int arg )
 			break;
 
 		case MN_H_NOPOWERHERE:
-			longMsg = _("There is no power here. If available, a Repeater may be used to "
-			          "transmit power to this location.");
-			shortMsg = _("There is no power here");
+			longMsg = _("There is not enough power in this area. Keep a distance to other "
+			            "buildables or build a repeater to increase the local capacity.");
+			shortMsg = _("There is not enough power here");
 			type = DT_BUILD;
 			break;
 
+		// unused - DCC isn't required to build anything
 		case MN_H_NODCC:
 			longMsg = _("There is no Defense Computer. A Defense Computer is needed to "
 			          "build this.");
@@ -749,6 +746,7 @@ void CG_Menu( int menu, int arg )
 			type = DT_BUILD;
 			break;
 
+		// unused - Multiple repeaters can be built in one location
 		case MN_H_RPTPOWERHERE:
 			longMsg = _("This area already has power. A Repeater is not required here.");
 			shortMsg = _("This area already has power");
