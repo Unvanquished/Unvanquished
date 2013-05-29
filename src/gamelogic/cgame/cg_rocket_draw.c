@@ -553,6 +553,32 @@ static void CG_Rocket_DrawAlienSense( void )
 	CG_AlienSense( &rect );
 }
 
+static void CG_Rocket_DrawHumanScanner( void )
+{
+	float x, y, w, h;
+	rectDef_t rect;
+
+	if ( !BG_InventoryContainsUpgrade( UP_HELMET, cg.snap->ps.stats ) )
+	{
+		return;
+	}
+
+	// grab info from libRocket
+	trap_Rocket_GetElementAbsoluteOffset( &x, &y );
+	trap_Rocket_GetProperty( "width", &w, sizeof( w ), ROCKET_FLOAT );
+	trap_Rocket_GetProperty( "height", &h, sizeof( h ), ROCKET_FLOAT );
+
+	// Convert from absolute monitor coords to a virtual 640x480 coordinate system
+	x = ( x / cgs.glconfig.vidWidth ) * 640;
+	y = ( y / cgs.glconfig.vidHeight ) * 480;
+	w = ( w / cgs.glconfig.vidWidth ) * 640;
+	h = ( h / cgs.glconfig.vidHeight ) * 480;
+
+	rect.x = x, rect.y = y, rect.w = w, rect.h = h;
+
+	CG_Scanner( &rect );
+}
+
 typedef struct
 {
 	const char *name;
@@ -570,6 +596,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "fps", &CG_Rocket_DrawFPS },
 	{ "itemselect", &CG_DrawItemSelect },
 	{ "pic", &CG_Rocket_DrawPic },
+	{ "scanner", &CG_Rocket_DrawHumanScanner },
 	{ "speedometer", &CG_Rocket_DrawSpeedGraph },
 	{ "stamina", &CG_Rocket_DrawStaminaValue },
 	{ "test", &CG_Rocket_DrawTest },

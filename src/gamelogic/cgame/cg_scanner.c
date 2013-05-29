@@ -410,18 +410,19 @@ void CG_AlienSense( rectDef_t *rect )
 CG_Scanner
 =============
 */
-void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
+void CG_Scanner( rectDef_t *rect )
 {
 	int    i;
 	vec3_t origin;
 	vec3_t relOrigin;
 	vec4_t  color_human = { 0.04f, 0.71f, 0.88f, 1.0f };
 	vec4_t  color_alien = { 0.75f, 0.00f, 0.00f, 1.0f };
+	float   alpha = 1.0f;
 
 	VectorCopy( entityPositions.origin, origin );
 
 	//draw human buildables below scanner plane
-	color_human[3] = color[3];
+	color_human[3] = alpha;
 
 	for ( i = 0; i < entityPositions.numHumanBuildables; i++ )
 	{
@@ -430,13 +431,13 @@ void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 
 		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] < 0 ) )
 		{
-			color_human[3] = color[3] * entityPositions.humanBuildableIntensity[ i ];
+			color_human[3] = alpha * entityPositions.humanBuildableIntensity[ i ];
 			CG_DrawBlips( rect, relOrigin, color_human, cgs.media.scannerBlipBldgShader );
 		}
 	}
 
 	//draw alien buildables below scanner plane
-	color_alien[3] = color[3];
+	color_alien[3] = alpha;
 
 	for ( i = 0; i < entityPositions.numAlienBuildables; i++ )
 	{
@@ -445,7 +446,7 @@ void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 
 		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] < 0 ) )
 		{
-			color_alien[3] = color[3] * entityPositions.alienBuildableIntensity[ i ];
+			color_alien[3] = alpha * entityPositions.alienBuildableIntensity[ i ];
 			CG_DrawBlips( rect, relOrigin, color_alien, cgs.media.scannerBlipBldgShader );
 		}
 	}
@@ -458,7 +459,7 @@ void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 
 		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] < 0 ) )
 		{
-			color_human[3] = color[3] * entityPositions.humanClientIntensity[ i ];
+			color_human[3] = alpha * entityPositions.humanClientIntensity[ i ];
 
 			CG_DrawBlips( rect, relOrigin, color_human, cgs.media.scannerBlipShader );
 		}
@@ -472,16 +473,9 @@ void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 
 		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] < 0 ) )
 		{
-			color_alien[3] = color[3] * entityPositions.alienClientIntensity[ i ];
+			color_alien[3] = alpha * entityPositions.alienClientIntensity[ i ];
 			CG_DrawBlips( rect, relOrigin, color_alien, cgs.media.scannerBlipShader );
 		}
-	}
-
-	if ( !cg_disableScannerPlane.integer )
-	{
-		trap_R_SetColor( color );
-		CG_DrawPic( rect->x, rect->y, rect->w, rect->h, shader );
-		trap_R_SetColor( NULL );
 	}
 
 	//draw human buildables above scanner plane
@@ -492,7 +486,7 @@ void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 
 		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] > 0 ) )
 		{
-			color_human[3] = 1.5f * color[3] * entityPositions.humanBuildableIntensity[ i ];
+			color_human[3] = 1.5f * alpha * entityPositions.humanBuildableIntensity[ i ];
 			CG_DrawBlips( rect, relOrigin, color_human, cgs.media.scannerBlipBldgShader );
 		}
 	}
@@ -505,7 +499,7 @@ void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 
 		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] > 0 ) )
 		{
-			color_alien[3] = 1.5f * color[3] * entityPositions.alienBuildableIntensity[ i ];
+			color_alien[3] = 1.5f * alpha * entityPositions.alienBuildableIntensity[ i ];
 			CG_DrawBlips( rect, relOrigin, color_alien, cgs.media.scannerBlipBldgShader );
 		}
 	}
@@ -518,7 +512,7 @@ void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 
 		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] > 0 ) )
 		{
-			color_human[3] = 1.5f * color[3] * entityPositions.humanClientIntensity[ i ];
+			color_human[3] = 1.5f * alpha * entityPositions.humanClientIntensity[ i ];
 			CG_DrawBlips( rect, relOrigin, color_human, cgs.media.scannerBlipShader );
 		}
 	}
@@ -531,7 +525,7 @@ void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color )
 
 		if ( VectorLength( relOrigin ) < HELMET_RANGE && ( relOrigin[ 2 ] > 0 ) )
 		{
-			color_alien[3] = 1.5f * color[3] * entityPositions.alienClientIntensity[ i ];
+			color_alien[3] = 1.5f * alpha * entityPositions.alienClientIntensity[ i ];
 			CG_DrawBlips( rect, relOrigin, color_alien, cgs.media.scannerBlipShader );
 		}
 	}
