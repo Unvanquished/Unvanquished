@@ -2040,17 +2040,20 @@ static float CalculateInterference( gentity_t *self )
 	float     distance, interference;
 	int       capacity;
 
-	if ( self->s.eType != ET_BUILDABLE || self->buildableTeam != TEAM_HUMANS )
+	if ( self->s.eType != ET_BUILDABLE || self->buildableTeam != TEAM_HUMANS
+	     || !self->spawned )
 	{
 		return 0.0f;
+	}
+
+	switch ( self->s.modelindex )
+	{
+		case BA_H_REPEATER:
+		case BA_H_REACTOR:
+			return 0.0f;
 	}
 
 	interference = 0.0f;
-
-	if ( self->s.modelindex == BA_H_REPEATER || self->s.modelindex == BA_H_REACTOR )
-	{
-		return 0.0f;
-	}
 
 	neighbor = NULL;
 	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, INTERFERENCE_RELEVANT_RANGE ) )
@@ -2121,7 +2124,8 @@ void G_SetHumanBuildablePowerState()
 			ent = &g_entities[ entityNum ];
 
 			// discard irrelevant entities
-			if ( ent->s.eType != ET_BUILDABLE || ent->buildableTeam != TEAM_HUMANS )
+			if ( ent->s.eType != ET_BUILDABLE || ent->buildableTeam != TEAM_HUMANS
+			     || !ent->spawned )
 			{
 				continue;
 			}
@@ -2151,7 +2155,8 @@ void G_SetHumanBuildablePowerState()
 				ent = &g_entities[ entityNum ];
 
 				// discard irrelevant entities
-				if ( ent->s.eType != ET_BUILDABLE || ent->buildableTeam != TEAM_HUMANS )
+				if ( ent->s.eType != ET_BUILDABLE || ent->buildableTeam != TEAM_HUMANS
+				     || !ent->spawned )
 				{
 					continue;
 				}
@@ -4583,6 +4588,7 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 	BG_BuildableBoundingBox( buildable, built->r.mins, built->r.maxs );
 
 	built->health = 1;
+	built->interference = 0.0f;
 
 	built->splashDamage = BG_Buildable( buildable )->splashDamage;
 	built->splashRadius = BG_Buildable( buildable )->splashRadius;
