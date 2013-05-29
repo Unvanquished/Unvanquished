@@ -1,0 +1,67 @@
+<rml>
+	<head>
+		<style>
+			body
+			{
+				font-family: Lacuna;
+				font-size: 48;
+			}
+			speedometer
+			{
+				width: 100px;
+				height: 100px;
+				background-color: rgba(50,50,50,100);
+				color: rgba(255,0,0,191);
+			}
+			crosshair
+			{
+				color: red;
+			}
+			.speed_max, .speed_current
+			{
+				color: black;
+				font-size: 20;
+				padding: 25px;
+				margin: -65px;
+			}
+			progressbar
+			{
+				width: 20%;
+				height: 32px;
+				start-image: /ui/start.png;
+				progress-image: /ui/progress.png;
+				end-image: /ui/end.png;
+			}
+			div.item_select img
+			{
+				color: blue;
+			}
+			div.item_select img.selected
+			{
+				width: 256px;
+				height: 256px;
+				color: black;
+			}
+			div.item_select img.inactive, div.item_select img.no_ammo
+			{
+				color: red;
+			}
+			alien_sense
+			{
+				position: absolute;
+				width: 1024;
+				height: 768px;
+				top: 0px;
+				left: 0px;
+			}
+		</style>
+			</head>
+	<body id="hud">
+		<fps /> fps <br />
+		<crosshair /><br />
+		<speedometer /><br />
+		<evos /> evos<br />
+		<weapon_icon />
+		<alien_sense />
+	</body>
+</rml>
