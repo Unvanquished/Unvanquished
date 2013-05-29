@@ -537,6 +537,7 @@ typedef enum
   EV_BUILD_DELAY, // can't build yet
   EV_BUILD_REPAIR, // repairing buildable
   EV_BUILD_REPAIRED, // buildable has full health
+  EV_HUMAN_BUILDABLE_DYING,
   EV_HUMAN_BUILDABLE_EXPLOSION,
   EV_ALIEN_BUILDABLE_EXPLOSION,
   EV_ALIEN_ACIDTUBE,

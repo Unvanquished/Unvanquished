@@ -1235,6 +1235,7 @@ typedef struct
 	sfxHandle_t alienBuildableExplosion;
 	sfxHandle_t alienBuildableDamage;
 	sfxHandle_t alienBuildablePrebuild;
+	sfxHandle_t humanBuildableDying;
 	sfxHandle_t humanBuildableExplosion;
 	sfxHandle_t humanBuildablePrebuild;
 	sfxHandle_t humanBuildableDamage[ 4 ];
@@ -1270,6 +1271,7 @@ typedef struct
 
 	qhandle_t   humanBuildableDamagedPS;
 	qhandle_t   humanBuildableDestroyedPS;
+	qhandle_t   humanBuildableNovaPS;
 	qhandle_t   alienBuildableDamagedPS;
 	qhandle_t   alienBuildableDestroyedPS;
 
@@ -1698,7 +1700,8 @@ void     CG_Buildable( centity_t *cent );
 void     CG_BuildableStatusParse( const char *filename, buildStat_t *bs );
 void     CG_DrawBuildableStatus( void );
 void     CG_InitBuildables( void );
-void     CG_HumanBuildableExplosion( vec3_t origin, vec3_t dir );
+void     CG_HumanBuildableDying( buildable_t buildable, vec3_t origin );
+void     CG_HumanBuildableExplosion( buildable_t buildable, vec3_t origin, vec3_t dir );
 void     CG_AlienBuildableExplosion( vec3_t origin, vec3_t dir );
 qboolean CG_GetBuildableRangeMarkerProperties( buildable_t bType, rangeMarker_t *rmType, float *range, vec3_t rgb );
 

@@ -73,25 +73,58 @@ void CG_AlienBuildableExplosion( vec3_t origin, vec3_t dir )
 
 /*
 =================
+CG_HumanBuildableDieing
+
+Called for human buildables that are about to blow up
+=================
+*/
+void CG_HumanBuildableDying( buildable_t buildable, vec3_t origin )
+{
+	switch ( buildable )
+	{
+		case BA_H_REPEATER:
+		case BA_H_REACTOR:
+			trap_S_StartSound( origin, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.humanBuildableDying );
+		default:
+			return;
+	}
+}
+
+/*
+=================
 CG_HumanBuildableExplosion
 
 Called for human buildables as they are destroyed
 =================
 */
-void CG_HumanBuildableExplosion( vec3_t origin, vec3_t dir )
+void CG_HumanBuildableExplosion( buildable_t buildable, vec3_t origin, vec3_t dir )
 {
-	particleSystem_t *ps;
+	particleSystem_t *explosion = NULL;
+	particleSystem_t *nova = NULL;
 
-	trap_S_StartSound( origin, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.humanBuildableExplosion );
-
-	//particle system
-	ps = CG_SpawnNewParticleSystem( cgs.media.humanBuildableDestroyedPS );
-
-	if ( CG_IsParticleSystemValid( &ps ) )
+	switch ( buildable )
 	{
-		CG_SetAttachmentPoint( &ps->attachment, origin );
-		CG_SetParticleSystemNormal( ps, dir );
-		CG_AttachToPoint( &ps->attachment );
+		case BA_H_REPEATER:
+		case BA_H_REACTOR:
+			// TODO: Add sound and particle system fitting the (stronger) reactor and repeater explosion
+			nova = CG_SpawnNewParticleSystem( cgs.media.humanBuildableNovaPS );
+		default:
+			trap_S_StartSound( origin, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.humanBuildableExplosion );
+			explosion = CG_SpawnNewParticleSystem( cgs.media.humanBuildableDestroyedPS );
+	}
+
+	if ( CG_IsParticleSystemValid( &nova ) )
+	{
+		CG_SetAttachmentPoint( &nova->attachment, origin );
+		CG_SetParticleSystemNormal( nova, dir );
+		CG_AttachToPoint( &nova->attachment );
+	}
+
+	if ( CG_IsParticleSystemValid( &explosion ) )
+	{
+		CG_SetAttachmentPoint( &explosion->attachment, origin );
+		CG_SetParticleSystemNormal( explosion, dir );
+		CG_AttachToPoint( &explosion->attachment );
 	}
 }
 
