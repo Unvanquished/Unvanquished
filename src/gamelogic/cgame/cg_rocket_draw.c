@@ -527,6 +527,32 @@ static void CG_Rocket_DrawPlayerWallclimbing( void )
 	trap_Rocket_SetInnerRML( "", "", va( "<img class='wallclimb_indictator %s%s' src='%s' />", wallwalking ? " " : "", wallwalking, CG_Rocket_GetAttribute( "", "", "src" ) ) );
 }
 
+static void CG_Rocket_DrawAlienSense( void )
+{
+	float x, y, w, h;
+	rectDef_t rect;
+
+	if ( !BG_ClassHasAbility( cg.snap->ps.stats[ STAT_CLASS ], SCA_ALIENSENSE ) )
+	{
+		return;
+	}
+
+	// grab info from libRocket
+	trap_Rocket_GetElementAbsoluteOffset( &x, &y );
+	trap_Rocket_GetProperty( "width", &w, sizeof( w ), ROCKET_FLOAT );
+	trap_Rocket_GetProperty( "height", &h, sizeof( h ), ROCKET_FLOAT );
+
+	// Convert from absolute monitor coords to a virtual 640x480 coordinate system
+	x = ( x / cgs.glconfig.vidWidth ) * 640;
+	y = ( y / cgs.glconfig.vidHeight ) * 480;
+	w = ( w / cgs.glconfig.vidWidth ) * 640;
+	h = ( h / cgs.glconfig.vidHeight ) * 480;
+
+	rect.x = x, rect.y = y, rect.w = w, rect.h = h;
+
+	CG_AlienSense( &rect );
+}
+
 typedef struct
 {
 	const char *name;
@@ -535,6 +561,7 @@ typedef struct
 
 static const elementRenderCmd_t elementRenderCmdList[] =
 {
+	{ "alien_sense", &CG_Rocket_DrawAlienSense },
 	{ "ammo", &CG_Rocket_DrawAmmo },
 	{ "clips", &CG_Rocket_DrawClips },
 	{ "credits", &CG_Rocket_DrawCreditsValue },

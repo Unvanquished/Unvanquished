@@ -390,7 +390,7 @@ void CG_AlienSense( rectDef_t *rect )
 
 	//draw alien clients
 	for ( i = 0; i < entityPositions.numAlienClients; i++ )
-	{ 
+	{
 		VectorClear( relOrigin );
 		VectorSubtract( entityPositions.alienClientPos[ i ], origin, relOrigin );
 
