@@ -71,5 +71,6 @@
 		<itemselect />
 		<weapon_icon />
 		<scanner />
+		<usable_buildable src="/ui/assets/neutral/use.tga" />
 	</body>
 </rml>

@@ -579,6 +579,41 @@ static void CG_Rocket_DrawHumanScanner( void )
 	CG_Scanner( &rect );
 }
 
+static void CG_Rocket_DrawUsableBuildable( void )
+{
+	vec3_t        view, point;
+	trace_t       trace;
+	entityState_t *es;
+
+	AngleVectors( cg.refdefViewAngles, view, NULL, NULL );
+	VectorMA( cg.refdef.vieworg, 64, view, point );
+	CG_Trace( &trace, cg.refdef.vieworg, NULL, NULL,
+		  point, cg.predictedPlayerState.clientNum, MASK_SHOT );
+
+	es = &cg_entities[ trace.entityNum ].currentState;
+
+	if ( es->eType == ET_BUILDABLE && BG_Buildable( es->modelindex )->usable &&
+		cg.predictedPlayerState.stats[ STAT_TEAM ] == BG_Buildable( es->modelindex )->team )
+	{
+		//hack to prevent showing the usable buildable when you aren't carrying an energy weapon
+		if ( ( es->modelindex == BA_H_REACTOR || es->modelindex == BA_H_REPEATER ) &&
+			( !BG_Weapon( cg.snap->ps.weapon )->usesEnergy ||
+			BG_Weapon( cg.snap->ps.weapon )->infiniteAmmo ) )
+		{
+			cg.nearUsableBuildable = BA_NONE;
+			return;
+		}
+		trap_Rocket_SetInnerRML( "", "", va( "<img class='usable_buildable' src='%s' />", CG_Rocket_GetAttribute( "", "", "src" ) ) );
+		cg.nearUsableBuildable = es->modelindex;
+	}
+	else
+	{
+		// Clear the old image if there was one.
+		trap_Rocket_SetInnerRML( "", "", "" );
+		cg.nearUsableBuildable = BA_NONE;
+	}
+}
+
 typedef struct
 {
 	const char *name;
@@ -600,6 +635,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "speedometer", &CG_Rocket_DrawSpeedGraph },
 	{ "stamina", &CG_Rocket_DrawStaminaValue },
 	{ "test", &CG_Rocket_DrawTest },
+	{ "usable_buildable", &CG_Rocket_DrawUsableBuildable },
 	{ "wallwalk", &CG_Rocket_DrawPlayerWallclimbing },
 	{ "weapon_icon", &CG_Rocket_DrawWeaponIcon },
 };
