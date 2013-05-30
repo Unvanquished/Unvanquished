@@ -1811,134 +1811,6 @@ static void IdlePowerState( gentity_t *self )
 }
 
 /*
-================
-AffectedByInterference
-
-Checks whether self has interference above threshold.
-================
-*/
-/*
-static qboolean AffectedByInterference( gentity_t *self )
-{
-	return ( self->interference > BUILDABLE_MAX_INTERFERENCE );
-}
-*/
-
-/*
-================
-CausesInterference
-
-Checks whether self is interfering with another buildable that is above threshold.
-================
-*/
-/*
-static qboolean CausesInterference( gentity_t *self )
-{
-	int buddyNum;
-
-	for ( buddyNum = 0; buddyNum < MIN( self->interference, BUILDABLE_MAX_BUDDYS )
-	      && self->buddys[ buddyNum ]; buddyNum++ )
-	{
-		if ( AffectedByInterference( self->buddys[ buddyNum ] ) )
-		{
-			return qtrue;
-		}
-	}
-
-	return qfalse;
-}
-*/
-
-/*
-================
-DistributePower
-
-Assigns self as powersource to buildables in range that need one
-================
-*/
-static void DistributePower( gentity_t *self, float maxDistance, int maxSlaves )
-{
-	/*
-	int             numSlaves, neighborNum, numNeighbors, neighbors[ MAX_GENTITIES ], buddyNum;
-	vec3_t          range, mins, maxs;
-	gentity_t       *neighbor;
-	float           distance;
-
-	numSlaves = 0;
-
-	// get close buildables
-	range[ 0 ] = range[ 1 ] = range[ 2 ] = maxDistance;
-	VectorAdd( self->s.origin, range, maxs );
-	VectorSubtract( self->s.origin, range, mins );
-	numNeighbors = trap_EntitiesInBox( mins, maxs, neighbors, MAX_GENTITIES );
-
-	// sort by interference
-	VectorCopy( self->s.origin, compareEntityDistanceOrigin );
-	qsort( neighbors, numNeighbors, sizeof( int ), CompareBuildableInterference );
-
-	// provide power
-	for ( neighborNum = 0; neighborNum < numNeighbors; neighborNum++ )
-	{
-		neighbor = &g_entities[ neighbors[ neighborNum ] ];
-
-		if ( neighbor->s.eType == ET_BUILDABLE && neighbor->buildableTeam == TEAM_HUMANS
-		     && neighbor != self && neighbor->spawned && neighbor->health > 0 )
-		{
-			distance = Distance( self->s.origin, neighbor->s.origin );
-
-			// discard neighbors not in range
-			if ( maxDistance - distance < 0 )
-			{
-				continue;
-			}
-
-			// ignore buildables that get powered by another source
-			if ( neighbor->powerSource && neighbor->powerSource != self )
-			{
-				continue;
-			}
-
-			// don't host other hosts
-			switch ( neighbor->s.modelindex )
-			{
-				case BA_H_REPEATER:
-				case BA_H_REACTOR:
-					continue;
-			}
-
-			// ignore buildables that don't need a power source
-			if ( !AffectedByInterference( neighbor ) && !CausesInterference( neighbor ) )
-			{
-				continue;
-			}
-
-			// if we have a free slot, power neighbor
-			if ( numSlaves < maxSlaves )
-			{
-				neighbor->powerSource = self;
-				self->buddys[ numSlaves++ ] = neighbor;
-			}
-
-			// if we are still source of a buildable we don't want to support anymore, reset it
-			else if ( neighbor->powerSource == self )
-			{
-				neighbor->powerSource = NULL;
-			}
-		}
-	}
-
-	// clear unused buddy slots
-	for ( buddyNum = numSlaves; buddyNum < BUILDABLE_MAX_BUDDYS; buddyNum++ )
-	{
-		self->buddys[ buddyNum ] = NULL;
-	}
-
-	// save slaveCount for prediction (whether a buildable can be built)
-	self->slaveCount = numSlaves;
-	*/
-}
-
-/*
 =================
 PairwiseInterference
 =================
@@ -2230,24 +2102,6 @@ A generic think function for human buildables.
 */
 void HGeneric_Think( gentity_t *self )
 {
-	/*
-	gentity_t *powerSource;
-
-	if ( self->powerSource )
-	{
-		powerSource = self->powerSource;
-
-		if ( !powerSource->spawned || !powerSource->powered || powerSource->health <= 0 )
-		{
-			self->powerSource = NULL;
-		}
-		else if ( G_Reactor() )
-		{
-			self->powered = qtrue;
-		}
-	}
-	*/
-
 	self->nextthink = level.time + BG_Buildable( self->s.modelindex )->nextthink;
 }
 
@@ -2403,8 +2257,6 @@ void HRepeater_Think( gentity_t *self )
 {
 	HGeneric_Think( self );
 
-	DistributePower( self, REPEATER_POWER_RANGE, REPEATER_POWER );
-
 	IdlePowerState( self );
 }
 
@@ -2511,8 +2363,6 @@ void HReactor_Think( gentity_t *self )
 			}
 		}
 	}
-
-	DistributePower( self, REACTOR_POWER_RANGE, REACTOR_POWER );
 
 	if ( self->dcc )
 	{
