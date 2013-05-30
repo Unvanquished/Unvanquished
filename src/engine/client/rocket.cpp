@@ -636,6 +636,22 @@ void Rocket_InjectMouseMotion( int x, int y )
 	}
 }
 
+static bool IsInvalidEmoticon( Rocket::Core::String emoticon )
+{
+	const char *invalid[] = { "*", "/", "\\", ".", " ", "<", ">", "!", "@", "#", "$", "%", "^", "&", "(", ")", "-", "_", "+", "=", ",", "?", "[", "]", "{", "}", "|", ":", ";", "'", "\"", "`", "~" };
+	int length = ARRAY_LEN( invalid );
+
+	for ( int i = 0; i < length; ++i )
+	{
+		if ( emoticon.Find( invalid[ i ] ) != Rocket::Core::String::npos )
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
 Rocket::Core::String Rocket_QuakeToRML( const char *in )
 {
 	const char *p;
@@ -712,7 +728,7 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in )
 		emoticon = out.Substring( openBracket + 1, closeBracket - openBracket - 1 );
 
 		// Spaces are invalid
-		if ( emoticon.Find( " " ) != Rocket::Core::String::npos )
+		if ( IsInvalidEmoticon( emoticon ) )
 		{
 			currentPosition = closeBracket + 1;
 			continue;
