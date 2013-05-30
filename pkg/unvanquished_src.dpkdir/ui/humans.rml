@@ -6,7 +6,7 @@
 				font-family: Roboto;
 				font-size: 48;
 			}
-			speedometer
+			speedometer, lagometer
 			{
 				width: 100px;
 				height: 100px;
@@ -66,6 +66,7 @@
 
 		<crosshair /><br />
 		<speedometer /><br />
+		<lagometer /><br />
 		<progressbar id="btimer" src="btimer" /><br />
 		<credits /> credits<br />
 		<progressbar id="stamina" src="stamina" /><br />
