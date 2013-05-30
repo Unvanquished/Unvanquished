@@ -3973,7 +3973,7 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
 			break;
 
 		case CG_MINIMAP:
-			CG_DrawMinimap( rect );
+			CG_DrawMinimap( rect, foreColor );
 			break;
 
 		default:

@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define MINIMAP_TEAMMATE_DISPLAY_SIZE 50.0f
 
 //How big a region we want to show
-#define MINIMAP_DEFAULT_SIZE 300.0f
+#define MINIMAP_DEFAULT_SIZE 600.0f
 
 //It is multiplied by msecs
 #define MINIMAP_FADE_TIME (2.0f / 1000.0f)
@@ -335,10 +335,21 @@ static float CG_WorldToMinimapScale( const float scale )
 
 /*
 ================
+CG_SetMinimapColor
+================
+*/
+static vec4_t currentMinimapColor;
+void CG_SetMinimapColor( const vec4_t color)
+{
+    VectorCopy( color, currentMinimapColor );
+}
+
+/*
+================
 CG_DrawMinimapObject
 ================
 */
-static void CG_DrawMinimapObject( const qhandle_t image, const vec3_t pos3d, const float angle, const float scale, const float texSize )
+static void CG_DrawMinimapObject( const qhandle_t image, const vec3_t pos3d, const float angle, const float scale, const float texSize, const float alpha )
 {
     vec2_t offset;
     float x, y, wh, realScale, realAngle;
@@ -350,6 +361,10 @@ static void CG_DrawMinimapObject( const qhandle_t image, const vec3_t pos3d, con
     x = - texSize/2 * realScale + offset[0];
     y = - texSize/2 * realScale + offset[1];
     wh = texSize * realScale;
+
+    //Handle teamcolor + transparency
+    currentMinimapColor[3] = alpha;
+    trap_R_SetColor( currentMinimapColor );
 
     trap_R_DrawRotatedPic( x, y, wh, wh, 0.0, 0.0, 1.0, 1.0, image, realAngle );
 }
@@ -424,7 +439,7 @@ static void CG_MinimapDrawMap( const minimapZone_t* z )
     origin[0] = 0.5 * (z->imageMin[0] + z->imageMax[0]);
     origin[1] = 0.5 * (z->imageMin[1] + z->imageMax[1]);
 
-    CG_DrawMinimapObject( z->image, origin, 90.0, 1.0, MINIMAP_MAP_DISPLAY_SIZE );
+    CG_DrawMinimapObject( z->image, origin, 90.0, 1.0, MINIMAP_MAP_DISPLAY_SIZE, 1.0 );
 }
 
 /*
@@ -434,7 +449,7 @@ CG_MinimapDrawPlayer
 */
 static void CG_MinimapDrawPlayer( const minimap_t* m )
 {
-    CG_DrawMinimapObject( m->gfx.playerArrow, cg.refdef.vieworg, cg.refdefViewAngles[1], 1.0, MINIMAP_PLAYER_DISPLAY_SIZE );
+    CG_DrawMinimapObject( m->gfx.playerArrow, cg.refdef.vieworg, cg.refdefViewAngles[1], 1.0, MINIMAP_PLAYER_DISPLAY_SIZE, 1.0 );
 }
 
 /*
@@ -517,20 +532,7 @@ static void CG_MinimapDrawTeammates( const minimap_t* m )
         //Draw the arrow for this teammate with the right fading
         if( state->minimapFading != 0.0f )
         {
-            //Avoid doing 2 trap calls for setColor if we can
-            if( state->minimapFading == 1.0f )
-            {
-                CG_DrawMinimapObject( m->gfx.teamArrow, state->lastMinimapPos, state->lastMinimapAngle, 1.0, 50.0 );
-            }
-            else
-            {
-                vec4_t fadeColor = {1.0f, 1.0f, 1.0f, 1.0f};
-                fadeColor[3] = state->minimapFading;
-
-                trap_R_SetColor( fadeColor );
-                CG_DrawMinimapObject( m->gfx.teamArrow, state->lastMinimapPos, state->lastMinimapAngle, 1.0, MINIMAP_TEAMMATE_DISPLAY_SIZE );
-                trap_R_SetColor( NULL );
-            }
+            CG_DrawMinimapObject( m->gfx.teamArrow, state->lastMinimapPos, state->lastMinimapAngle, 1.0, MINIMAP_TEAMMATE_DISPLAY_SIZE, state->minimapFading );
         }
     }
 }
@@ -570,7 +572,7 @@ void CG_InitMinimap( void )
 CG_DrawMinimap
 ================
 */
-void CG_DrawMinimap( const rectDef_t* rect640 )
+void CG_DrawMinimap( const rectDef_t* rect640, const vec4_t teamColor )
 {
     minimap_t* m = &cg.minimap;
     minimapZone_t *z = NULL;
@@ -589,6 +591,8 @@ void CG_DrawMinimap( const rectDef_t* rect640 )
     CG_AdjustFrom640( &rect.x, &rect.y, &rect.w, &rect.h );
     CG_SetupMinimapTransform( &rect, m, z );
 
+    CG_SetMinimapColor( teamColor );
+
     //Add the backgound
     CG_FillRect( rect640->x, rect640->y, rect640->w, rect640->h, m->bgColor );
 
@@ -602,4 +606,7 @@ void CG_DrawMinimap( const rectDef_t* rect640 )
         CG_MinimapDrawTeammates( m );
     }
     CG_EnableScissor( qfalse );
+
+    //Reset the color for other hud elements
+    trap_R_SetColor( NULL );
 }
