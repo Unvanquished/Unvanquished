@@ -236,3 +236,4 @@ equ trap_Rocket_KeyToQuake                -473
 equ trap_Rocket_GetElementAbsoluteOffset  -474
 equ trap_Rocket_DrawElementPic            -475
 equ trap_Rocket_ClearElementGeometry      -476
+equ trap_Rocket_QuakeToRML                -477

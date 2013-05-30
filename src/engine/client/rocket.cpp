@@ -746,3 +746,8 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in )
 
 	return out;
 }
+
+void Rocket_QuakeToRML( const char *in, char *out, int length )
+{
+	Q_strncpyz( out, Rocket_QuakeToRML( in ).CString(), length );
+}

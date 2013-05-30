@@ -1508,3 +1508,8 @@ void trap_Rocket_ClearElementGeometry( void )
 {
 	syscall( CG_ROCKET_CLEARELEMENTGEOMETRY );
 }
+
+void trap_Rocket_QuakeToRML( const char *in, char *out, int length )
+{
+	syscall( CG_ROCKET_QUAKETORML, in, out, length );
+}

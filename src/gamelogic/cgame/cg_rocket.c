@@ -246,3 +246,10 @@ const char *CG_Rocket_GetAttribute( const char *name, const char *id, const char
 	return buffer;
 }
 
+const char *CG_Rocket_QuakeToRML( const char *in )
+{
+	static char buffer[ MAX_STRING_CHARS ];
+	trap_Rocket_QuakeToRML( in, buffer, sizeof( buffer ) );
+	return buffer;
+}
+
