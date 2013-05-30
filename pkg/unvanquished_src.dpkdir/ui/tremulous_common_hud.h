@@ -173,6 +173,18 @@ itemDef
   forecolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 1
 }
 
+//MINIMAP BORDER
+itemDef
+{
+  name "minimap border"
+  rect ( 639 - MINIMAP_SIZE ) -1 (MINIMAP_SIZE + 2) (MINIMAP_SIZE + 2)
+  visible MENU_TRUE
+  decoration
+  bordercolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.35
+  borderSize 1
+  border WINDOW_BORDER_FULL
+}
+
 //CONSOLE
 itemDef
 {
