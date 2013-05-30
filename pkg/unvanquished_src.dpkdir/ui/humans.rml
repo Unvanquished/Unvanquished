@@ -62,6 +62,7 @@
 		<fps /> fps <br />
 		<ammo type="total" /> rounds of ammo<br />
 		<clips /> clips left <br />
+		<location /><br />
 
 		<crosshair /><br />
 		<speedometer /><br />
