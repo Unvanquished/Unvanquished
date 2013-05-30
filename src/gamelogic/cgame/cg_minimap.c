@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define MINIMAP_TEAMMATE_DISPLAY_SIZE 50.0f
 
 //How big a region we want to show
-#define MINIMAP_DEFAULT_SIZE 300.0f
+#define MINIMAP_DEFAULT_SIZE 600.0f
 
 //It is multiplied by msecs
 #define MINIMAP_FADE_TIME (2.0f / 1000.0f)
