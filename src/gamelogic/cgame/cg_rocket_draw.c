@@ -614,6 +614,30 @@ static void CG_Rocket_DrawUsableBuildable( void )
 	}
 }
 
+static void CG_Rocket_DrawLocation( void )
+{
+	const char *location;
+	centity_t  *locent;
+
+	if ( cg.intermissionStarted )
+	{
+		return;
+	}
+
+	locent = CG_GetPlayerLocation();
+
+	if ( locent )
+	{
+		location = CG_ConfigString( CS_LOCATIONS + locent->currentState.generic1 );
+	}
+	else
+	{
+		location = CG_ConfigString( CS_LOCATIONS );
+	}
+
+	trap_Rocket_SetInnerRML( "", "", va( "<span class='location'>%s</span>", location ) );
+}
+
 typedef struct
 {
 	const char *name;
@@ -630,6 +654,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "evos", &CG_Rocket_DrawAlienEvosValue },
 	{ "fps", &CG_Rocket_DrawFPS },
 	{ "itemselect", &CG_DrawItemSelect },
+	{ "location", &CG_Rocket_DrawLocation },
 	{ "pic", &CG_Rocket_DrawPic },
 	{ "scanner", &CG_Rocket_DrawHumanScanner },
 	{ "speedometer", &CG_Rocket_DrawSpeedGraph },
