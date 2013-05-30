@@ -1391,11 +1391,11 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 {
 	entityState_t *es = &cent->currentState;
 	vec3_t        origin;
-	float         healthScale, interferenceScale, mineEfficiencyScale;
-	int           health, interference, mineEfficiency;
+	float         healthScale, relativeSparePowerScale, mineEfficiencyScale;
+	int           health, relativeSparePower, mineEfficiency;
 	float         x, y;
 	vec4_t        color;
-	qboolean      powered, marked, showMineEfficiency, showInterference;
+	qboolean      powered, marked, showMineEfficiency, showRelativeSparePower;
 	trace_t       tr;
 	float         d;
 	buildStat_t   *bs;
@@ -1573,14 +1573,14 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		health = es->generic1;
 	}
 
-	// get interference data
-	showInterference = ( BG_Buildable( es->modelindex )->team == TEAM_HUMANS &&
-	                     !( BG_Buildable( es->modelindex )->number == BA_H_REACTOR ||
-	                        BG_Buildable( es->modelindex )->number == BA_H_REPEATER ) );
+	// get power consumption data
+	showRelativeSparePower = ( BG_Buildable( es->modelindex )->team == TEAM_HUMANS &&
+	                         !( BG_Buildable( es->modelindex )->number == BA_H_REACTOR ||
+	                            BG_Buildable( es->modelindex )->number == BA_H_REPEATER ) );
 
-	if ( showInterference )
+	if ( showRelativeSparePower )
 	{
-		interference = es->clientNum;
+		relativeSparePower = es->clientNum;
 	}
 
 	// calculate mine efficiency bar size
@@ -1620,22 +1620,22 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		}
 	}
 
-	// calculate interference bar size
-	if ( showInterference )
+	// calculate power consumption bar size
+	if ( showRelativeSparePower )
 	{
-		interferenceScale = ( float )interference / 100.0f;
+		relativeSparePowerScale = ( float )relativeSparePower / 100.0f;
 
-		if ( interference > 0 && interferenceScale < 0.01f )
+		if ( relativeSparePower > 0 && relativeSparePowerScale < 0.01f )
 		{
-			interferenceScale = 0.01f;
+			relativeSparePowerScale = 0.01f;
 		}
-		else if ( interferenceScale < 0.0f )
+		else if ( relativeSparePowerScale < 0.0f )
 		{
-			interferenceScale = 0.0f;
+			relativeSparePowerScale = 0.0f;
 		}
-		else if ( interferenceScale > 1.0f )
+		else if ( relativeSparePowerScale > 1.0f )
 		{
-			interferenceScale = 1.0f;
+			relativeSparePowerScale = 1.0f;
 		}
 	}
 
@@ -1687,7 +1687,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 
 			CG_DrawPic( picX, picY, picW, picH, bs->frameShader );
 
-			if ( showInterference )
+			if ( showRelativeSparePower )
 			{
 				CG_SetClipRegion( picX, picY + picH, picW, 0.5f * picH );
 				CG_DrawPic( picX, picY + 0.5f * picH, picW, picH, bs->frameShader );
@@ -1777,8 +1777,8 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			trap_R_SetColor( NULL );
 		}
 
-		// draw interference bar
-		if ( showInterference && interference > 0 )
+		// draw power consumption bar
+		if ( showRelativeSparePower && relativeSparePower > 0 )
 		{
 			float  hX, hY, hW, hH;
 			vec4_t barColor;
@@ -1786,21 +1786,21 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 			hX = picX + ( bs->healthPadding * scale );
 			hY = picY + picH;
 			hH = ( 0.5f * picH ) - ( bs->healthPadding * scale );
-			hW = ( picW * interferenceScale ) - ( bs->healthPadding * 2.0f * scale );
+			hW = ( picW * relativeSparePowerScale ) - ( bs->healthPadding * 2.0f * scale );
 
-			if ( interferenceScale == 1.0f )
+			if ( relativeSparePowerScale == 1.0f )
 			{
 				Vector4Copy( bs->healthLowColor, barColor );
 			}
-			else if ( interferenceScale >= 0.75f )
+			else if ( relativeSparePowerScale >= 0.75f )
 			{
 				Vector4Copy( bs->healthGuardedColor, barColor );
 			}
-			else if ( interferenceScale >= 0.50f )
+			else if ( relativeSparePowerScale >= 0.50f )
 			{
 				Vector4Copy( bs->healthElevatedColor, barColor );
 			}
-			else if ( interferenceScale >= 0.25f )
+			else if ( relativeSparePowerScale >= 0.25f )
 			{
 				Vector4Copy( bs->healthHighColor, barColor );
 			}

@@ -222,9 +222,11 @@ struct gentity_s
 
 	/**
 	 * Human buildables compete for power.
-	 * Buildables with a high value of interference will power down.
+	 * sparePower >= 0: Buildable has enough power
+	 * sparePower >  0: New buildables can be built in range
+	 * sparePower <  0: Buildable lacks power, will shut down
 	 */
-	float        interference;
+	float        sparePower;
 
 	/**
 	 * has a marked building been deconstructed for this building?

@@ -373,18 +373,19 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * HUMAN buildables
  */
 
-// interference
-#define BUILDABLE_INTERFERENCE_RANGE  320  // buildables in this range will interfer
-#define BUILDABLE_MAX_INTERFERENCE    1.0f // maximum interference a buildable can take
-#define REACTOR_POWER                 3.0f // reactor interference reduction
-#define REACTOR_POWER_RANGE           800  // reactor range
-#define REPEATER_POWER                2.0f // repeater interference reduction
-#define REPEATER_POWER_RANGE          400  // repeater range
-#define LEVEL1_INTERFERENCE           1.3f // basilisk interference increase
-#define LEVEL1_INTERFERENCE_RANGE     250  // interference range of the basilisk
-#define LEVEL1UPG_INTERFERENCE        1.6f // advanced basilisk interference increase
-#define LEVEL1UPG_INTERFERENCE_RANGE  300  // interference range of the advanced basilisk
-#define INTERFERENCE_RELEVANT_RANGE   800  // max of all above ranges
+// power
+#define BASE_POWER                    20  // amount of power available everywhere (if RC is up)
+#define BUILDABLE_POWER_CONSUMPTION   10  // TODO: Move to buildable config files
+#define POWER_COMPETITION_RANGE       320 // buildables in this range will compete for power
+#define REACTOR_POWER                 30  // extra power the RC yields in its range
+#define REACTOR_POWER_RANGE           800
+#define REPEATER_POWER                20  // extra power a repeater yields in its range
+#define REPEATER_POWER_RANGE          400
+#define LEVEL1_INTERFERENCE           13  // basilisk "power consumption"
+#define LEVEL1_INTERFERENCE_RANGE     250
+#define LEVEL1UPG_INTERFERENCE        16  // advanced basilisk "power consumption"
+#define LEVEL1UPG_INTERFERENCE_RANGE  300
+#define POWER_RELEVANT_RANGE          800 // max of all above ranges
 
 #define MGTURRET_RANGE            400.0
 #define MGTURRET_REPEAT           150.0

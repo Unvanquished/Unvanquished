@@ -747,26 +747,26 @@ static int    CompareEntityDistance( const void *a, const void *b )
 
 /*
 ================
-CompareBuildableInterference
+CompareBuildableSparePower
 
-Sorts (human) buildables by interference value, highest first.
+Sorts (human) buildables by spare poower, lowest first.
 Uses distance as secondary order, lowest first.
 Input are two indices for g_entities.
 compareEntityDistanceOrigin must be set for distance check to work!
 ================
 */
-static int CompareBuildableInterference( const void *a, const void *b )
+static int CompareBuildableSparePower( const void *a, const void *b )
 {
 	gentity_t *aEnt, *bEnt;
 
 	aEnt = &g_entities[ *( int* )a ];
 	bEnt = &g_entities[ *( int* )b ];
 
-	if ( aEnt->interference > bEnt->interference )
+	if ( aEnt->sparePower < bEnt->sparePower )
 	{
 		return -1;
 	}
-	else if ( bEnt->interference > aEnt->interference )
+	else if ( bEnt->sparePower < aEnt->sparePower )
 	{
 		return 1;
 	}
@@ -1813,6 +1813,8 @@ static void IdlePowerState( gentity_t *self )
 /*
 =================
 PairwiseInterference
+
+Calculates the amount of power a neighbor draws from or gives to a buildable at given distance.
 =================
 */
 static float PairwiseInterference( buildable_t buildable, gentity_t *neighbor,
@@ -1846,7 +1848,7 @@ static float PairwiseInterference( buildable_t buildable, gentity_t *neighbor,
 			case BA_H_REPEATER:
 				if ( neighbor->health > 0 )
 				{
-					power = -REPEATER_POWER;
+					power = REPEATER_POWER;
 					range = REPEATER_POWER_RANGE;
 					break;
 				}
@@ -1858,7 +1860,7 @@ static float PairwiseInterference( buildable_t buildable, gentity_t *neighbor,
 			case BA_H_REACTOR:
 				if ( neighbor->health > 0 )
 				{
-					power = -REACTOR_POWER;
+					power = REACTOR_POWER;
 					range = REACTOR_POWER_RANGE;
 					break;
 				}
@@ -1868,8 +1870,8 @@ static float PairwiseInterference( buildable_t buildable, gentity_t *neighbor,
 				}
 
 			default:
-				power = 1.0f;
-				range = BUILDABLE_INTERFERENCE_RANGE;
+				power = -BUILDABLE_POWER_CONSUMPTION;
+				range = POWER_COMPETITION_RANGE;
 		}
 	}
 	// interference from player classes
@@ -1878,12 +1880,12 @@ static float PairwiseInterference( buildable_t buildable, gentity_t *neighbor,
 		switch ( neighbor->client->ps.stats[ STAT_CLASS ] )
 		{
 			case PCL_ALIEN_LEVEL1:
-				power = LEVEL1_INTERFERENCE;
+				power = -LEVEL1_INTERFERENCE;
 				range = LEVEL1_INTERFERENCE_RANGE;
 				break;
 
 			case PCL_ALIEN_LEVEL1_UPG:
-				power = LEVEL1UPG_INTERFERENCE;
+				power = -LEVEL1UPG_INTERFERENCE;
 				range = LEVEL1UPG_INTERFERENCE_RANGE;
 				break;
 
@@ -1901,34 +1903,34 @@ static float PairwiseInterference( buildable_t buildable, gentity_t *neighbor,
 
 /*
 =================
-CalculateBuildableInterference
+CalculateSparePower
 
-Calculates the interference state of a human buildable.
+Calculates the amount of spare power of a buildable.
 =================
 */
-static float CalculateInterference( gentity_t *self )
+static float CalculateSparePower( gentity_t *self )
 {
 	gentity_t *neighbor;
-	float     distance, interference;
-	int       capacity;
+	float     distance;
+	int       relativeSparePower;
 
 	if ( self->s.eType != ET_BUILDABLE || self->buildableTeam != TEAM_HUMANS
 	     || !self->spawned )
 	{
-		return 0.0f;
+		return BASE_POWER;
 	}
 
 	switch ( self->s.modelindex )
 	{
 		case BA_H_REPEATER:
 		case BA_H_REACTOR:
-			return 0.0f;
+			return BASE_POWER;
 	}
 
-	interference = 0.0f;
+	self->sparePower = BASE_POWER - BUILDABLE_POWER_CONSUMPTION;
 
 	neighbor = NULL;
-	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, INTERFERENCE_RELEVANT_RANGE ) )
+	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, POWER_RELEVANT_RANGE ) )
 	{
 		if ( self == neighbor )
 		{
@@ -1937,31 +1939,29 @@ static float CalculateInterference( gentity_t *self )
 
 		distance = Distance( self->s.origin, neighbor->s.origin );
 
-		interference += PairwiseInterference( self->s.modelindex, neighbor, distance, qfalse );
+		self->sparePower += PairwiseInterference( self->s.modelindex, neighbor, distance, qfalse );
 	}
 
-	self->interference = interference;
+	// used for display
+	relativeSparePower = ( int )( 100.0f * ( self->sparePower / BASE_POWER ) + 0.5f );
 
-	capacity = ( int )( 100.0f - ( ( ( BUILDABLE_MAX_INTERFERENCE + interference ) * 100.0f )
-	                               / ( 2 * BUILDABLE_MAX_INTERFERENCE ) ) + 0.5f );
-
-	if ( capacity == 0 && interference <= BUILDABLE_MAX_INTERFERENCE )
+	if ( relativeSparePower == 0 && self->sparePower > 0.0f )
 	{
-		capacity = 1;
+		relativeSparePower = 1;
 	}
-	else if ( capacity < 0 )
+	else if ( relativeSparePower < 0 )
 	{
-		capacity = 0;
+		relativeSparePower = 0;
 	}
-	else if ( capacity > 100 )
+	else if ( relativeSparePower > 100 )
 	{
-		capacity = 100;
+		relativeSparePower = 100;
 	}
 
-	// HACK: store interference load in entityState_t.clientNum
-	self->s.clientNum = capacity;
+	// HACK: store relative spare power in entityState_t.clientNum
+	self->s.clientNum = relativeSparePower;
 
-	return interference;
+	return self->sparePower;
 }
 
 
@@ -1969,7 +1969,7 @@ static float CalculateInterference( gentity_t *self )
 =================
 G_SetHumanBuildablePowerState
 
-Powers human buildables up and down based on interference and reactor status.
+Powers human buildables up and down based on available power and reactor status.
 
 TODO: Assemble a list of relevant entities first.
 =================
@@ -1978,8 +1978,8 @@ void G_SetHumanBuildablePowerState()
 {
 	qboolean  done;
 	int       entityNum;
-	float     interference, highestInterference;
-	gentity_t *ent, *highestEnt;
+	float     sparePower, lowestSparePower;
+	gentity_t *ent, *lowestSparePowerEnt;
 
 	static int nextCalculation = 0;
 
@@ -1990,7 +1990,7 @@ void G_SetHumanBuildablePowerState()
 
 	if ( G_Reactor() )
 	{
-		// power up buildables that are below maximum interference
+		// power up buildables that have enough power
 		for ( entityNum = MAX_CLIENTS; entityNum < level.num_entities; entityNum++ )
 		{
 			ent = &g_entities[ entityNum ];
@@ -2008,20 +2008,20 @@ void G_SetHumanBuildablePowerState()
 				continue;
 			}
 
-			interference = CalculateInterference( ent );
+			sparePower = CalculateSparePower( ent );
 
-			if ( interference <= BUILDABLE_MAX_INTERFERENCE )
+			if ( sparePower >= 0.0f )
 			{
 				ent->powered = qtrue;
 			}
 		}
 
-		// power down buildables that are above maximum interference, highest interference first
+		// power down buildables that lack power, highest deficit first
 		do
 		{
-			highestInterference = MIN_QINT;
+			lowestSparePower = MAX_QINT;
 
-			// find buildable with highest interference
+			// find buildable with highest power deficit
 			for ( entityNum = MAX_CLIENTS; entityNum < level.num_entities; entityNum++ )
 			{
 				ent = &g_entities[ entityNum ];
@@ -2039,8 +2039,7 @@ void G_SetHumanBuildablePowerState()
 					continue;
 				}
 
-
-				interference = CalculateInterference( ent );
+				sparePower = CalculateSparePower( ent );
 
 				// never shut down the telenode
 				if ( ent->s.modelindex == BA_H_SPAWN )
@@ -2048,16 +2047,16 @@ void G_SetHumanBuildablePowerState()
 					continue;
 				}
 
-				if ( interference > highestInterference )
+				if ( sparePower < lowestSparePower )
 				{
-					highestInterference = interference;
-					highestEnt = ent;
+					lowestSparePower = sparePower;
+					lowestSparePowerEnt = ent;
 				}
 			}
 
-			if ( highestInterference > BUILDABLE_MAX_INTERFERENCE )
+			if ( lowestSparePower < 0.0f )
 			{
-				highestEnt->powered = qfalse;
+				lowestSparePowerEnt->powered = qfalse;
 				done = qfalse;
 			}
 			else
@@ -2079,7 +2078,7 @@ void G_SetHumanBuildablePowerState()
 				continue;
 			}
 
-			// HACK: store interference load in entityState_t.clientNum
+			// HACK: store relative spare power in entityState_t.clientNum
 			ent->s.clientNum = 0;
 
 			// never shut down the telenode
@@ -3834,13 +3833,13 @@ static itemBuildError_t BuildableReplacementChecks( buildable_t oldBuildable, bu
 
 /*
 =================
-G_PredictBuildableInterference
+G_PredictBuildableSparePower
 
 Predicts whether a buildable can be built without causing interference.
 Takes buildables prepared for deconstruction into account.
 =================
 */
-static qboolean PredictBuildableInterference( buildable_t buildable, vec3_t origin )
+static qboolean PredictBuildableSparePower( buildable_t buildable, vec3_t origin )
 {
 	gentity_t       *neighbor, *buddy;
 	float           distance, pairwiseInterference, ownPrediction, neighborPrediction;
@@ -3852,10 +3851,10 @@ static qboolean PredictBuildableInterference( buildable_t buildable, vec3_t orig
 			return qtrue;
 	}
 
-	ownPrediction = 0.0f;
+	ownPrediction = BASE_POWER - BUILDABLE_POWER_CONSUMPTION;
 
 	neighbor = NULL;
-	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, INTERFERENCE_RELEVANT_RANGE ) )
+	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, POWER_RELEVANT_RANGE ) )
 	{
 		// only predict interference with friendly buildables
 		if ( neighbor->s.eType != ET_BUILDABLE || neighbor->buildableTeam != TEAM_HUMANS )
@@ -3874,13 +3873,13 @@ static qboolean PredictBuildableInterference( buildable_t buildable, vec3_t orig
 		pairwiseInterference = PairwiseInterference( buildable, neighbor, distance, qtrue );
 
 		ownPrediction += pairwiseInterference;
-		neighborPrediction = neighbor->interference + pairwiseInterference;
+		neighborPrediction = neighbor->sparePower + pairwiseInterference;
 
-		// check interference level of neighbor, with regards to pending deconstruction
-		if ( neighborPrediction > BUILDABLE_MAX_INTERFERENCE && distance < BUILDABLE_INTERFERENCE_RANGE )
+		// check power of neighbor, with regards to pending deconstruction
+		if ( neighborPrediction < 0.0f && distance < POWER_COMPETITION_RANGE )
 		{
 			buddy = NULL;
-			while ( buddy = G_IterateEntitiesWithinRadius( buddy, neighbor->s.origin, INTERFERENCE_RELEVANT_RANGE ) )
+			while ( buddy = G_IterateEntitiesWithinRadius( buddy, neighbor->s.origin, POWER_RELEVANT_RANGE ) )
 			{
 				if ( IsSetForDeconstruction( buddy ) )
 				{
@@ -3890,14 +3889,14 @@ static qboolean PredictBuildableInterference( buildable_t buildable, vec3_t orig
 				}
 			}
 
-			if ( neighborPrediction > BUILDABLE_MAX_INTERFERENCE )
+			if ( neighborPrediction < 0.0f )
 			{
 				return qfalse;
 			}
 		}
 	}
 
-	return ( ownPrediction <= BUILDABLE_MAX_INTERFERENCE );
+	return ( ownPrediction >= 0.0f );
 }
 
 /*
@@ -3905,19 +3904,19 @@ static qboolean PredictBuildableInterference( buildable_t buildable, vec3_t orig
 G_PrepareBuildableReplacement
 
 Attempts to build a set of buildables that have to be deconstructed for a new buildable.
-Takes both interference and build points into account.
+Takes both power consumption and build points into account.
 Sets level.markedBuildables and level.numBuildablesForRemoval.
 ===============
 */
 // TODO: Add replacement flag checks
 static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3_t origin )
 {
-	int              entNum, listLen, tmpIndex;
+	int              entNum, listLen;
 	gentity_t        *ent, *list[ MAX_GENTITIES ];
 	itemBuildError_t reason;
 	const buildableAttributes_t *attr, *entAttr;
 
-	// interference related
+	// power consumption related
 	int       numNeighbors, neighborNum, neighbors[ MAX_GENTITIES ];
 	gentity_t *neighbor;
 
@@ -4003,9 +4002,9 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 		}
 	}
 
-	// ----------------------
-	// check for interference
-	// ----------------------
+	// ---------------
+	// check for power
+	// ---------------
 
 	if ( attr->team == TEAM_HUMANS )
 	{
@@ -4013,7 +4012,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 		neighbor = NULL;
 
 		// assemble a list of closeby human buildable IDs
-		while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, INTERFERENCE_RELEVANT_RANGE ) )
+		while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, POWER_RELEVANT_RANGE ) )
 		{
 			if ( neighbor->s.eType != ET_BUILDABLE || neighbor->buildableTeam != TEAM_HUMANS )
 			{
@@ -4032,12 +4031,12 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 
 		neighborNum = 0;
 
-		// check for interference
-		while ( !PredictBuildableInterference( buildable, origin ) )
+		// check for power
+		while ( !PredictBuildableSparePower( buildable, origin ) )
 		{
 			if ( neighborNum == numNeighbors )
 			{
-				// can't build due to unsolvable interference
+				// can't build due to unsolvable lack of power
 				return IBE_NOPOWERHERE;
 			}
 
@@ -4046,7 +4045,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 			{
 				neighbor = &g_entities[ neighbors[ neighborNum ] ];
 
-				// only human buildbales can interfere
+				// when predicting, only take human buildables into account
 				if ( neighbor->s.eType != ET_BUILDABLE || neighbor->buildableTeam != TEAM_HUMANS )
 				{
 					continue;
@@ -4081,7 +4080,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 				// set for deconstruction
 				level.markedBuildables[ level.numBuildablesForRemoval++ ] = neighbor;
 
-				// recheck interference
+				// recheck
 				neighborNum++;
 				break;
 			}
@@ -4438,7 +4437,7 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 	BG_BuildableBoundingBox( buildable, built->r.mins, built->r.maxs );
 
 	built->health = 1;
-	built->interference = 0.0f;
+	built->sparePower = 0.0f;
 
 	built->splashDamage = BG_Buildable( buildable )->splashDamage;
 	built->splashRadius = BG_Buildable( buildable )->splashRadius;
