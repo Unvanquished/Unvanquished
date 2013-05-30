@@ -1834,7 +1834,7 @@ void CG_AlienSense( rectDef_t *rect );
 // cg_minimap.c
 //
 void CG_InitMinimap( void );
-void CG_DrawMinimap( const rectDef_t *rect );
+void CG_DrawMinimap( const rectDef_t *rect, const vec4_t color );
 
 //
 // cg_marks.c
