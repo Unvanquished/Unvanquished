@@ -441,11 +441,6 @@ void Rocket_RocketDebug_f( void )
 	Rocket::Debugger::SetVisible( !Rocket::Debugger::IsVisible() );
 }
 
-void Rocket_ProgressTest_f( void )
-{
-	RocketProgressBar *prog = (RocketProgressBar*)context->GetDocument( "connecting" )->GetElementById( "overall" );
-	prog->SetValue( atof( Cmd_Argv( 1 ) ) );
-}
 static DaemonFileInterface fileInterface;
 static DaemonSystemInterface systemInterface;
 static DaemonRenderInterface renderInterface;
@@ -502,7 +497,6 @@ void Rocket_Init( void )
 
 	Cmd_AddCommand( "rocket", Rocket_Rocket_f );
 	Cmd_AddCommand( "rocketDebug", Rocket_RocketDebug_f );
-	Cmd_AddCommand( "progresstest", Rocket_ProgressTest_f );
 
 	Rocket::Debugger::Initialise(context);
 }
