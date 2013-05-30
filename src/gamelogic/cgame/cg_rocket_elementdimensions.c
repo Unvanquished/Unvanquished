@@ -49,23 +49,7 @@ static void CG_Rocket_DimensionTest( void )
 	trap_Rocket_SetElementDimensions( 100, 100 );
 }
 
-static void CG_Rocket_DimensionSpeedGraph( void )
-{
-	float w, h;
-	trap_Rocket_GetProperty( "width", &w, sizeof( w ), ROCKET_FLOAT );
-	trap_Rocket_GetProperty( "height", &h, sizeof( h ), ROCKET_FLOAT );
-	trap_Rocket_SetElementDimensions( w, h );
-}
-
-static void CG_Rocket_DimensionAlienSense( void )
-{
-	float w, h;
-	trap_Rocket_GetProperty( "width", &w, sizeof( w ), ROCKET_FLOAT );
-	trap_Rocket_GetProperty( "height", &h, sizeof( h ), ROCKET_FLOAT );
-	trap_Rocket_SetElementDimensions( w, h );
-}
-
-static void CG_Rocket_DimensionHumanScanner( void )
+static void CG_Rocket_DimensionGeneric( void )
 {
 	float w, h;
 	trap_Rocket_GetProperty( "width", &w, sizeof( w ), ROCKET_FLOAT );
@@ -81,11 +65,11 @@ typedef struct
 
 static const elementDimensionCmd_t elementDimensionCmdList[] =
 {
-	{ "alien_sense", &CG_Rocket_DimensionAlienSense },
-	{ "lagometer", &CG_Rocket_DimensionAlienSense },
+	{ "alien_sense", &CG_Rocket_DimensionGeneric },
+	{ "lagometer", &CG_Rocket_DimensionGeneric },
 	{ "pic", &CG_Rocket_DimensionPic },
-	{ "scanner", &CG_Rocket_DimensionHumanScanner },
-	{ "speedometer", &CG_Rocket_DimensionSpeedGraph },
+	{ "scanner", &CG_Rocket_DimensionGeneric },
+	{ "speedometer", &CG_Rocket_DimensionGeneric },
 	{ "test", &CG_Rocket_DimensionTest }
 };
 
