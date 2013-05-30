@@ -59,7 +59,7 @@
 		</style>
 	</head>
 	<body id="hud">
-		<fps /> fps <br />
+		<fps /> fps <timer /><br />
 		<ammo type="total" /> rounds of ammo<br />
 		<clips /> clips left <br />
 		<location /><br />

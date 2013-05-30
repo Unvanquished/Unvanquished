@@ -638,6 +638,27 @@ static void CG_Rocket_DrawLocation( void )
 	trap_Rocket_SetInnerRML( "", "", va( "<span class='location'>%s</span>", CG_Rocket_QuakeToRML( location ) ) );
 }
 
+static void CG_Rocket_DrawTimer( void )
+{
+	int   mins, seconds, tens;
+	int   msec;
+
+	if ( !cg_drawTimer.integer )
+	{
+		return;
+	}
+
+	msec = cg.time - cgs.levelStartTime;
+
+	seconds = msec / 1000;
+	mins = seconds / 60;
+	seconds -= mins * 60;
+	tens = seconds / 10;
+	seconds -= tens * 10;
+
+	trap_Rocket_SetInnerRML( "", "", va( "<div class='timer'><span class='mins'>%d</span><span class='seperator'>:</span><span class='sec'>%d%d</span></div>", mins, tens, seconds ) );
+}
+
 typedef struct
 {
 	const char *name;
@@ -660,6 +681,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "speedometer", &CG_Rocket_DrawSpeedGraph },
 	{ "stamina", &CG_Rocket_DrawStaminaValue },
 	{ "test", &CG_Rocket_DrawTest },
+	{ "timer", &CG_Rocket_DrawTimer },
 	{ "usable_buildable", &CG_Rocket_DrawUsableBuildable },
 	{ "wallwalk", &CG_Rocket_DrawPlayerWallclimbing },
 	{ "weapon_icon", &CG_Rocket_DrawWeaponIcon },
