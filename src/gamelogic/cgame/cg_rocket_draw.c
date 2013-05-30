@@ -950,6 +950,130 @@ static void CG_Rocket_DrawLagometer( void )
 	CG_Rocket_DrawDisconnect();
 }
 
+/*
+=================
+CG_ScanForCrosshairEntity
+=================
+*/
+static void CG_ScanForCrosshairEntity( void )
+{
+	trace_t trace;
+	vec3_t  start, end;
+	int     content;
+	team_t  team;
+
+	VectorCopy( cg.refdef.vieworg, start );
+	VectorMA( start, 131072, cg.refdef.viewaxis[ 0 ], end );
+
+	CG_Trace( &trace, start, vec3_origin, vec3_origin, end,
+	          cg.snap->ps.clientNum, CONTENTS_SOLID | CONTENTS_BODY );
+
+	// if the player is in fog, don't show it
+	content = trap_CM_PointContents( trace.endpos, 0 );
+
+	if ( content & CONTENTS_FOG )
+	{
+		return;
+	}
+
+	if ( trace.entityNum >= MAX_CLIENTS )
+	{
+		entityState_t *s = &cg_entities[ trace.entityNum ].currentState;
+
+		if ( s->eType == ET_BUILDABLE && BG_Buildable( s->modelindex )->team ==
+		     cg.snap->ps.stats[ STAT_TEAM ] )
+		{
+			cg.crosshairBuildable = trace.entityNum;
+		}
+		else
+		{
+			cg.crosshairBuildable = -1;
+		}
+
+		if ( cg_drawEntityInfo.integer && s->eType )
+		{
+			cg.crosshairClientNum = trace.entityNum;
+			cg.crosshairClientTime = cg.time;
+		}
+
+		return;
+	}
+
+	team = cgs.clientinfo[ trace.entityNum ].team;
+
+	if ( cg.snap->ps.stats[ STAT_TEAM ] != TEAM_NONE )
+	{
+		//only display team names of those on the same team as this player
+		if ( team != cg.snap->ps.stats[ STAT_TEAM ] )
+		{
+			return;
+		}
+	}
+
+	// update the fade timer
+	cg.crosshairClientNum = trace.entityNum;
+	cg.crosshairClientTime = cg.time;
+}
+
+static void CG_Rocket_DrawCrosshairNames( void )
+{
+	float *color;
+	char  *name;
+	float w, x;
+
+	if ( !cg_drawCrosshairNames.integer )
+	{
+		return;
+	}
+
+	if ( cg.renderingThirdPerson )
+	{
+		return;
+	}
+
+	// scan the known entities to see if the crosshair is sighted on one
+	CG_ScanForCrosshairEntity();
+
+	// draw the name of the player being looked at
+	color = CG_FadeColor( cg.crosshairClientTime, CROSSHAIR_CLIENT_TIMEOUT );
+
+	if ( !color )
+	{
+		trap_R_SetColor( NULL );
+		return;
+	}
+
+	if( cg_drawEntityInfo.integer )
+	{
+		name = va( "(" S_COLOR_CYAN "%s" S_COLOR_WHITE "|" S_COLOR_CYAN "#%d" S_COLOR_WHITE ")",
+			   Com_EntityTypeName( cg_entities[cg.crosshairClientNum].currentState.eType ), cg.crosshairClientNum );
+	}
+	else
+	{
+		if ( cg_drawCrosshairNames.integer >= 2 )
+		{
+			name = va( "%2i: %s", cg.crosshairClientNum, cgs.clientinfo[ cg.crosshairClientNum ].name );
+		}
+		else
+		{
+			name = cgs.clientinfo[ cg.crosshairClientNum ].name;
+		}
+	}
+
+	// add health from overlay info to the crosshair client name
+	if ( cg_teamOverlayUserinfo.integer &&
+		cg.snap->ps.stats[ STAT_TEAM ] != TEAM_NONE &&
+		cgs.teamInfoReceived &&
+		cgs.clientinfo[ cg.crosshairClientNum ].health > 0 )
+	{
+		name = va( "%s ^7[^%c%d^7]", name,
+			   CG_GetColorCharForHealth( cg.crosshairClientNum ),
+			   cgs.clientinfo[ cg.crosshairClientNum ].health );
+	}
+
+	trap_Rocket_SetInnerRML( "", "", va( "<scan class='crosshair_name'>%s</span>", name ) );
+}
+
 typedef struct
 {
 	const char *name;
@@ -963,6 +1087,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "clips", &CG_Rocket_DrawClips },
 	{ "credits", &CG_Rocket_DrawCreditsValue },
 	{ "crosshair", &CG_Rocket_DrawCrosshair },
+	{ "crosshair_name", &CG_Rocket_DrawCrosshairNames },
 	{ "evos", &CG_Rocket_DrawAlienEvosValue },
 	{ "fps", &CG_Rocket_DrawFPS },
 	{ "itemselect", &CG_DrawItemSelect },

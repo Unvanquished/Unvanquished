@@ -2832,71 +2832,6 @@ static void CG_DrawCrosshair( rectDef_t *rect, vec4_t color )
 }
 
 /*
-=================
-CG_ScanForCrosshairEntity
-=================
-*/
-static void CG_ScanForCrosshairEntity( void )
-{
-	trace_t trace;
-	vec3_t  start, end;
-	int     content;
-	team_t  team;
-
-	VectorCopy( cg.refdef.vieworg, start );
-	VectorMA( start, 131072, cg.refdef.viewaxis[ 0 ], end );
-
-	CG_Trace( &trace, start, vec3_origin, vec3_origin, end,
-	          cg.snap->ps.clientNum, CONTENTS_SOLID | CONTENTS_BODY );
-
-	// if the player is in fog, don't show it
-	content = trap_CM_PointContents( trace.endpos, 0 );
-
-	if ( content & CONTENTS_FOG )
-	{
-		return;
-	}
-
-	if ( trace.entityNum >= MAX_CLIENTS )
-	{
-		entityState_t *s = &cg_entities[ trace.entityNum ].currentState;
-
-		if ( s->eType == ET_BUILDABLE && BG_Buildable( s->modelindex )->team ==
-		     cg.snap->ps.stats[ STAT_TEAM ] )
-		{
-			cg.crosshairBuildable = trace.entityNum;
-		}
-		else
-		{
-			cg.crosshairBuildable = -1;
-		}
-
-		if ( cg_drawEntityInfo.integer && s->eType )
-		{
-			cg.crosshairClientNum = trace.entityNum;
-			cg.crosshairClientTime = cg.time;
-		}
-
-		return;
-	}
-
-	team = cgs.clientinfo[ trace.entityNum ].team;
-
-	if ( cg.snap->ps.stats[ STAT_TEAM ] != TEAM_NONE )
-	{
-		//only display team names of those on the same team as this player
-		if ( team != cg.snap->ps.stats[ STAT_TEAM ] )
-		{
-			return;
-		}
-	}
-
-	// update the fade timer
-	cg.crosshairClientNum = trace.entityNum;
-	cg.crosshairClientTime = cg.time;
-}
-
-/*
 =====================
 CG_DrawLocation
 =====================
@@ -2963,7 +2898,7 @@ static void CG_DrawCrosshairNames( rectDef_t *rect, float scale, int textStyle )
 	}
 
 	// scan the known entities to see if the crosshair is sighted on one
-	CG_ScanForCrosshairEntity();
+// 	CG_ScanForCrosshairEntity();
 
 	// draw the name of the player being looked at
 	color = CG_FadeColor( cg.crosshairClientTime, CROSSHAIR_CLIENT_TIMEOUT );
