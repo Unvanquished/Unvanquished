@@ -659,6 +659,297 @@ static void CG_Rocket_DrawTimer( void )
 	trap_Rocket_SetInnerRML( "", "", va( "<div class='timer'><span class='mins'>%d</span><span class='seperator'>:</span><span class='sec'>%d%d</span></div>", mins, tens, seconds ) );
 }
 
+#define LAG_SAMPLES 128
+
+typedef struct
+{
+	int frameSamples[ LAG_SAMPLES ];
+	int frameCount;
+	int snapshotFlags[ LAG_SAMPLES ];
+	int snapshotSamples[ LAG_SAMPLES ];
+	int snapshotCount;
+} lagometer_t;
+
+lagometer_t lagometer;
+
+/*
+==============
+CG_AddLagometerFrameInfo
+
+Adds the current interpolate / extrapolate bar for this frame
+==============
+*/
+void CG_AddLagometerFrameInfo( void )
+{
+	int offset;
+
+	offset = cg.time - cg.latestSnapshotTime;
+	lagometer.frameSamples[ lagometer.frameCount & ( LAG_SAMPLES - 1 ) ] = offset;
+	lagometer.frameCount++;
+}
+
+/*
+==============
+CG_AddLagometerSnapshotInfo
+
+Each time a snapshot is received, log its ping time and
+the number of snapshots that were dropped before it.
+
+Pass NULL for a dropped packet.
+==============
+*/
+#define PING_FRAMES 40
+void CG_AddLagometerSnapshotInfo( snapshot_t *snap )
+{
+	static int previousPings[ PING_FRAMES ];
+	static int index;
+	int        i;
+
+	// dropped packet
+	if ( !snap )
+	{
+		lagometer.snapshotSamples[ lagometer.snapshotCount & ( LAG_SAMPLES - 1 ) ] = -1;
+		lagometer.snapshotCount++;
+		return;
+	}
+
+	// add this snapshot's info
+	lagometer.snapshotSamples[ lagometer.snapshotCount & ( LAG_SAMPLES - 1 ) ] = snap->ping;
+	lagometer.snapshotFlags[ lagometer.snapshotCount & ( LAG_SAMPLES - 1 ) ] = snap->snapFlags;
+	lagometer.snapshotCount++;
+
+	cg.ping = 0;
+
+	if ( cg.snap )
+	{
+		previousPings[ index++ ] = cg.snap->ping;
+		index = index % PING_FRAMES;
+
+		for ( i = 0; i < PING_FRAMES; i++ )
+		{
+			cg.ping += previousPings[ i ];
+		}
+
+		cg.ping /= PING_FRAMES;
+	}
+}
+
+/*
+==============
+CG_DrawDisconnect
+
+Should we draw something differnet for long lag vs no packets?
+==============
+*/
+static void CG_Rocket_DrawDisconnect( void )
+{
+	float      x, y;
+	int        cmdNum;
+	usercmd_t  cmd;
+	const char *s;
+	int        w;
+	vec4_t     color = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+	// draw the phone jack if we are completely past our buffers
+	cmdNum = trap_GetCurrentCmdNumber() - CMD_BACKUP + 1;
+	trap_GetUserCmd( cmdNum, &cmd );
+
+	// special check for map_restart
+	if ( cmd.serverTime <= cg.snap->ps.commandTime || cmd.serverTime > cg.time )
+	{
+		return;
+	}
+
+	// also add text in center of screen
+	s = _("Connection Interrupted");
+
+	// blink the icon
+	if ( ( cg.time >> 9 ) & 1 )
+	{
+		return;
+	}
+
+	x = 640 - 48;
+	y = 480 - 48;
+
+	CG_DrawPic( x, y, 48, 48, trap_R_RegisterShader("gfx/2d/net.tga",
+							RSF_DEFAULT));
+}
+
+#define MAX_LAGOMETER_PING  900
+#define MAX_LAGOMETER_RANGE 300
+
+/*
+==============
+CG_Rocket_DrawLagometer
+==============
+*/
+static void CG_Rocket_DrawLagometer( void )
+{
+	int    a, i;
+	float  v;
+	float  ax, ay, aw, ah, mid, range, x, y, w, h;
+	int    color;
+	vec4_t adjustedColor;
+	float  vscale;
+	char   *ping;
+
+	if ( cg.snap->ps.pm_type == PM_INTERMISSION )
+	{
+		return;
+	}
+
+	if ( !cg_lagometer.integer )
+	{
+		return;
+	}
+
+	if ( cg.demoPlayback )
+	{
+		return;
+	}
+
+	// grab info from libRocket
+	trap_Rocket_GetElementAbsoluteOffset( &x, &y );
+	trap_Rocket_GetProperty( "background-color", &adjustedColor, sizeof( adjustedColor ), ROCKET_COLOR );
+	trap_Rocket_GetProperty( "width", &w, sizeof( w ), ROCKET_FLOAT );
+	trap_Rocket_GetProperty( "height", &h, sizeof( h ), ROCKET_FLOAT );
+
+	// Convert from absolute monitor coords to a virtual 640x480 coordinate system
+	x = ( x / cgs.glconfig.vidWidth ) * 640;
+	y = ( y / cgs.glconfig.vidHeight ) * 480;
+	w = ( w / cgs.glconfig.vidWidth ) * 640;
+	h = ( h / cgs.glconfig.vidHeight ) * 480;
+
+	// Color from 0..255 to 0..1
+	Vector4Scale( adjustedColor, 1/255.0f, adjustedColor );
+
+	trap_R_SetColor( adjustedColor );
+	CG_DrawPic( x, y, w, h, cgs.media.whiteShader );
+	trap_R_SetColor( NULL );
+
+	//
+	// draw the graph
+	//
+	ax = x;
+	ay = y;
+	aw = w;
+	ah = h;
+
+	CG_AdjustFrom640( &ax, &ay, &aw, &ah );
+
+	color = -1;
+	range = ah / 3;
+	mid = ay + range;
+
+	vscale = range / MAX_LAGOMETER_RANGE;
+
+	// draw the frame interpoalte / extrapolate graph
+	for ( a = 0; a < aw; a++ )
+	{
+		i = ( lagometer.frameCount - 1 - a ) & ( LAG_SAMPLES - 1 );
+		v = lagometer.frameSamples[ i ];
+		v *= vscale;
+
+		if ( v > 0 )
+		{
+			if ( color != 1 )
+			{
+				color = 1;
+				trap_R_SetColor( g_color_table[ ColorIndex( COLOR_YELLOW ) ] );
+			}
+
+			if ( v > range )
+			{
+				v = range;
+			}
+
+			trap_R_DrawStretchPic( ax + aw - a, mid - v, 1, v, 0, 0, 0, 0, cgs.media.whiteShader );
+		}
+		else if ( v < 0 )
+		{
+			if ( color != 2 )
+			{
+				color = 2;
+				trap_R_SetColor( g_color_table[ ColorIndex( COLOR_BLUE ) ] );
+			}
+
+			v = -v;
+
+			if ( v > range )
+			{
+				v = range;
+			}
+
+			trap_R_DrawStretchPic( ax + aw - a, mid, 1, v, 0, 0, 0, 0, cgs.media.whiteShader );
+		}
+	}
+
+	// draw the snapshot latency / drop graph
+	range = ah / 2;
+	vscale = range / MAX_LAGOMETER_PING;
+
+	for ( a = 0; a < aw; a++ )
+	{
+		i = ( lagometer.snapshotCount - 1 - a ) & ( LAG_SAMPLES - 1 );
+		v = lagometer.snapshotSamples[ i ];
+
+		if ( v > 0 )
+		{
+			if ( lagometer.snapshotFlags[ i ] & SNAPFLAG_RATE_DELAYED )
+			{
+				if ( color != 5 )
+				{
+					color = 5; // YELLOW for rate delay
+					trap_R_SetColor( g_color_table[ ColorIndex( COLOR_YELLOW ) ] );
+				}
+			}
+			else
+			{
+				if ( color != 3 )
+				{
+					color = 3;
+
+					trap_R_SetColor( g_color_table[ ColorIndex( COLOR_GREEN ) ] );
+				}
+			}
+
+			v = v * vscale;
+
+			if ( v > range )
+			{
+				v = range;
+			}
+
+			trap_R_DrawStretchPic( ax + aw - a, ay + ah - v, 1, v, 0, 0, 0, 0, cgs.media.whiteShader );
+		}
+		else if ( v < 0 )
+		{
+			if ( color != 4 )
+			{
+				color = 4; // RED for dropped snapshots
+				trap_R_SetColor( g_color_table[ ColorIndex( COLOR_RED ) ] );
+			}
+
+			trap_R_DrawStretchPic( ax + aw - a, ay + ah - range, 1, range, 0, 0, 0, 0, cgs.media.whiteShader );
+		}
+	}
+
+	trap_R_SetColor( NULL );
+
+	if ( cg_nopredict.integer || cg_synchronousClients.integer )
+	{
+		ping = "snc";
+	}
+	else
+	{
+		ping = va( "%d", cg.ping );
+	}
+
+	trap_Rocket_SetInnerRML( "", "", va( "<span class='ping'>%s</span>", ping ) );
+	CG_Rocket_DrawDisconnect();
+}
+
 typedef struct
 {
 	const char *name;
@@ -675,6 +966,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "evos", &CG_Rocket_DrawAlienEvosValue },
 	{ "fps", &CG_Rocket_DrawFPS },
 	{ "itemselect", &CG_DrawItemSelect },
+	{ "lagometer", &CG_Rocket_DrawLagometer },
 	{ "location", &CG_Rocket_DrawLocation },
 	{ "pic", &CG_Rocket_DrawPic },
 	{ "scanner", &CG_Rocket_DrawHumanScanner },
