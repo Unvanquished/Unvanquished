@@ -645,11 +645,11 @@ static bool IsInvalidEmoticon( Rocket::Core::String emoticon )
 	{
 		if ( emoticon.Find( invalid[ i ] ) != Rocket::Core::String::npos )
 		{
-			return false;
+			return true;
 		}
 	}
 
-	return true;
+	return false;
 }
 
 Rocket::Core::String Rocket_QuakeToRML( const char *in )
