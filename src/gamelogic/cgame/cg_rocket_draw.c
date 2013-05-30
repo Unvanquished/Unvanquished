@@ -34,6 +34,7 @@ Maryland 20850 USA.
 
 #include "cg_local.h"
 
+
 static void CG_Rocket_DrawPic( void )
 {
 	float x, y;
@@ -1145,31 +1146,32 @@ typedef struct
 {
 	const char *name;
 	void ( *exec ) ( void );
+	rocketElementType_t type;
 } elementRenderCmd_t;
 
 static const elementRenderCmd_t elementRenderCmdList[] =
 {
-	{ "alien_sense", &CG_Rocket_DrawAlienSense },
-	{ "ammo", &CG_Rocket_DrawAmmo },
-	{ "clips", &CG_Rocket_DrawClips },
-	{ "credits", &CG_Rocket_DrawCreditsValue },
-	{ "crosshair", &CG_Rocket_DrawCrosshair },
-	{ "crosshair_name", &CG_Rocket_DrawCrosshairNames },
-	{ "evos", &CG_Rocket_DrawAlienEvosValue },
-	{ "fps", &CG_Rocket_DrawFPS },
-	{ "itemselect", &CG_DrawItemSelect },
-	{ "lagometer", &CG_Rocket_DrawLagometer },
-	{ "location", &CG_Rocket_DrawLocation },
-	{ "pic", &CG_Rocket_DrawPic },
-	{ "scanner", &CG_Rocket_DrawHumanScanner },
-	{ "speedometer", &CG_Rocket_DrawSpeedGraph },
-	{ "stage_report", &CG_Rocket_DrawStageReport },
-	{ "stamina", &CG_Rocket_DrawStaminaValue },
-	{ "test", &CG_Rocket_DrawTest },
-	{ "timer", &CG_Rocket_DrawTimer },
-	{ "usable_buildable", &CG_Rocket_DrawUsableBuildable },
-	{ "wallwalk", &CG_Rocket_DrawPlayerWallclimbing },
-	{ "weapon_icon", &CG_Rocket_DrawWeaponIcon },
+	{ "alien_sense", &CG_Rocket_DrawAlienSense, ELEMENT_ALIENS },
+	{ "ammo", &CG_Rocket_DrawAmmo, ELEMENT_BOTH },
+	{ "clips", &CG_Rocket_DrawClips, ELEMENT_HUMANS },
+	{ "credits", &CG_Rocket_DrawCreditsValue, ELEMENT_HUMANS },
+	{ "crosshair", &CG_Rocket_DrawCrosshair, ELEMENT_BOTH },
+	{ "crosshair_name", &CG_Rocket_DrawCrosshairNames, ELEMENT_GAME },
+	{ "evos", &CG_Rocket_DrawAlienEvosValue, ELEMENT_ALIENS },
+	{ "fps", &CG_Rocket_DrawFPS, ELEMENT_GAME },
+	{ "itemselect", &CG_DrawItemSelect, ELEMENT_BOTH },
+	{ "lagometer", &CG_Rocket_DrawLagometer, ELEMENT_GAME },
+	{ "location", &CG_Rocket_DrawLocation, ELEMENT_GAME },
+	{ "pic", &CG_Rocket_DrawPic, ELEMENT_ALL },
+	{ "scanner", &CG_Rocket_DrawHumanScanner, ELEMENT_HUMANS },
+	{ "speedometer", &CG_Rocket_DrawSpeedGraph, ELEMENT_GAME },
+	{ "stage_report", &CG_Rocket_DrawStageReport, ELEMENT_BOTH },
+	{ "stamina", &CG_Rocket_DrawStaminaValue, ELEMENT_HUMANS },
+	{ "test", &CG_Rocket_DrawTest, ELEMENT_ALL },
+	{ "timer", &CG_Rocket_DrawTimer, ELEMENT_GAME },
+	{ "usable_buildable", &CG_Rocket_DrawUsableBuildable, ELEMENT_HUMANS },
+	{ "wallwalk", &CG_Rocket_DrawPlayerWallclimbing, ELEMENT_ALIENS },
+	{ "weapon_icon", &CG_Rocket_DrawWeaponIcon, ELEMENT_BOTH },
 };
 
 static const size_t elementRenderCmdListCount = ARRAY_LEN( elementRenderCmdList );
@@ -1186,7 +1188,7 @@ void CG_Rocket_RenderElement( void )
 
 	cmd = bsearch( tag, elementRenderCmdList, elementRenderCmdListCount, sizeof( elementRenderCmd_t ), elementRenderCmdCmp );
 
-	if ( cmd )
+	if ( cmd && CG_Rocket_IsCommandAllowed( cmd->type ) )
 	{
 		cmd->exec();
 	}

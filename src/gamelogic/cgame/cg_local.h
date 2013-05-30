@@ -1479,6 +1479,16 @@ typedef enum
 	RM_SPHERICAL_CONE_240,
 } rangeMarker_t;
 
+typedef enum
+{
+	ELEMENT_ALL,
+	ELEMENT_GAME,
+	ELEMENT_LOADING,
+	ELEMENT_HUMANS,
+	ELEMENT_ALIENS,
+	ELEMENT_BOTH,
+} rocketElementType_t;
+
 //==============================================================================
 
 extern  cgs_t               cgs;
@@ -2006,6 +2016,7 @@ const char *CG_Rocket_GetTag();
 const char *CG_Rocket_GetAttribute( const char *name, const char *id, const char *attribute );
 int CG_StringToNetSource( const char *src );
 const char *CG_Rocket_QuakeToRML( const char *in );
+qboolean CG_Rocket_IsCommandAllowed( rocketElementType_t type );
 
 //
 // cg_rocket_events.c

@@ -34,12 +34,6 @@ Maryland 20850 USA.
 
 #include "cg_local.h"
 
-typedef struct progressBarCmd_s
-{
-	const char *command;
-	float ( *get ) ( void );
-} progressBarCmd_t;
-
 static float CG_Rocket_GetBuildableLoadProgress( void )
 {
 	return cg.buildablesFraction;
@@ -114,15 +108,23 @@ static float CG_Rocket_GetPoisonProgress( void )
 	}
 
 }
+
+typedef struct progressBarCmd_s
+{
+	const char *command;
+	float ( *get ) ( void );
+	rocketElementType_t type;
+} progressBarCmd_t;
+
 static const progressBarCmd_t progressBarCmdList[] =
 {
-	{ "btimer", &CG_Rocket_GetBuildTimerProgress },
-	{ "buildables", &CG_Rocket_GetBuildableLoadProgress },
-	{ "characters", &CG_Rocket_GetCharLoadProgress },
-	{ "media", &CG_Rocket_GetMediaLoadProgress },
-	{ "overall", &CG_Rocket_GetOverallLoadProgress },
-	{ "poison", &CG_Rocket_GetPoisonProgress },
-	{ "stamina", &CG_Rocket_GetStaminaProgress },
+	{ "btimer", &CG_Rocket_GetBuildTimerProgress, ELEMENT_BOTH },
+	{ "buildables", &CG_Rocket_GetBuildableLoadProgress, ELEMENT_LOADING },
+	{ "characters", &CG_Rocket_GetCharLoadProgress, ELEMENT_LOADING },
+	{ "media", &CG_Rocket_GetMediaLoadProgress, ELEMENT_LOADING },
+	{ "overall", &CG_Rocket_GetOverallLoadProgress, ELEMENT_LOADING },
+	{ "poison", &CG_Rocket_GetPoisonProgress, ELEMENT_ALIENS },
+	{ "stamina", &CG_Rocket_GetStaminaProgress, ELEMENT_HUMANS },
 };
 
 static const size_t progressBarCmdListCount = ARRAY_LEN( progressBarCmdList );
@@ -139,7 +141,7 @@ float CG_Rocket_ProgressBarValue( void )
 	// Get the progressbar command
 	cmd = bsearch( CG_Argv( 0 ), progressBarCmdList, progressBarCmdListCount, sizeof( progressBarCmd_t ), progressBarCmdCmp );
 
-	if ( cmd )
+	if ( cmd && CG_Rocket_IsCommandAllowed( cmd->type ) )
 	{
 		return cmd->get();
 	}

@@ -253,3 +253,39 @@ const char *CG_Rocket_QuakeToRML( const char *in )
 	return buffer;
 }
 
+qboolean CG_Rocket_IsCommandAllowed( rocketElementType_t type )
+{
+	if ( type < ELEMENT_GAME && rocketInfo.rocketState < PLAYING )
+	{
+		return qfalse;
+	}
+
+	switch ( type )
+	{
+		case ELEMENT_ALL:
+			return qtrue;
+
+		case ELEMENT_ALIENS:
+			if ( cg.predictedPlayerState.stats[ STAT_TEAM ] == TEAM_ALIENS )
+			{
+				return qtrue;
+			}
+			return qfalse;
+
+		case ELEMENT_HUMANS:
+			if ( cg.predictedPlayerState.stats[ STAT_TEAM ] == TEAM_HUMANS )
+			{
+				return qtrue;
+			}
+			return qfalse;
+
+		case ELEMENT_BOTH:
+			if ( cg.predictedPlayerState.stats[ STAT_TEAM ] != TEAM_NONE )
+			{
+				return qtrue;
+			}
+			return qfalse;
+	}
+
+	return qfalse;
+}
