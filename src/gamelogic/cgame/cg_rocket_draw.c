@@ -603,7 +603,7 @@ static void CG_Rocket_DrawUsableBuildable( void )
 			cg.nearUsableBuildable = BA_NONE;
 			return;
 		}
-		trap_Rocket_SetInnerRML( "", "", va( "<img class='usable_buildable' src='%s' />", CG_Rocket_GetAttribute( "", "", "src" ) ) );
+		trap_Rocket_SetInnerRML( "", "", va( "<img class='usable_buildable' src='%s' />", CG_Rocket_QuakeToRML( CG_Rocket_GetAttribute( "", "", "src" ) ) ) );
 		cg.nearUsableBuildable = es->modelindex;
 	}
 	else
