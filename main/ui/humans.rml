@@ -4,7 +4,15 @@
 			body
 			{
 				font-family: Roboto;
-				font-size: 48;
+				font-size: 24;
+			}
+			div#left
+			{
+				float: left;
+			}
+			div#right
+			{
+				float: right;
 			}
 			speedometer, lagometer
 			{
@@ -56,9 +64,16 @@
 				background-decorator: image;
 				background-image-src: /ui/assets/human/scanner.tga;
 			}
+			.stage_report
+			{
+				position: absolute;
+				top: 0px;
+				text-align: right;
+			}
 		</style>
 	</head>
 	<body id="hud">
+		<div id='left'>
 		<fps /> fps <timer /><br />
 		<ammo type="total" /> rounds of ammo<br />
 		<clips /> clips left <br />
@@ -74,5 +89,10 @@
 		<weapon_icon />
 		<scanner />
 		<usable_buildable src="/ui/assets/neutral/use.tga" />
+		</div>
+		<div id='right'>
+		<stage_report />
+		<crosshair_name/>
+		</div>
 	</body>
 </rml>

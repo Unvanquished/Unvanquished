@@ -1074,6 +1074,73 @@ static void CG_Rocket_DrawCrosshairNames( void )
 	trap_Rocket_SetInnerRML( "", "", va( "<scan class='crosshair_name'>%s</span>", name ) );
 }
 
+static void CG_Rocket_DrawStageReport( void )
+{
+	char  s[ MAX_TOKEN_CHARS ];
+
+	if ( cg.intermissionStarted )
+	{
+		return;
+	}
+
+	if ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_NONE )
+	{
+		return;
+	}
+
+	if ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
+	{
+		int kills = ceil( ( float )( cgs.alienNextStageThreshold - cgs.alienCredits ) / ALIEN_CREDITS_PER_KILL );
+
+		if ( kills < 0 )
+		{
+			kills = 0;
+		}
+
+		if ( cgs.alienNextStageThreshold < 0 )
+		{
+			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d"), cgs.alienStage + 1 );
+		}
+		else if ( kills == 1 )
+		{
+			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, 1 frag for next stage"),
+				     cgs.alienStage + 1 );
+		}
+		else
+		{
+			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %d frags for next stage"),
+				     cgs.alienStage + 1, kills );
+		}
+	}
+	else if ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+	{
+		int credits = cgs.humanNextStageThreshold - cgs.humanCredits;
+
+		if ( credits < 0 )
+		{
+			credits = 0;
+		}
+
+		if ( cgs.humanNextStageThreshold < 0 )
+		{
+			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d"), cgs.humanStage + 1 );
+		}
+		else if ( credits == 1 )
+		{
+			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, 1 credit for next stage"),
+				     cgs.humanStage + 1 );
+		}
+		else
+		{
+			Com_sprintf( s, MAX_TOKEN_CHARS, _("Stage %d, %d credits for next stage"),
+				     cgs.humanStage + 1, credits );
+		}
+	}
+
+	trap_Rocket_SetInnerRML( "", "", va( "<span class='stage_report'>%s</span>", s ) );
+
+}
+
 typedef struct
 {
 	const char *name;
@@ -1096,6 +1163,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "pic", &CG_Rocket_DrawPic },
 	{ "scanner", &CG_Rocket_DrawHumanScanner },
 	{ "speedometer", &CG_Rocket_DrawSpeedGraph },
+	{ "stage_report", &CG_Rocket_DrawStageReport },
 	{ "stamina", &CG_Rocket_DrawStaminaValue },
 	{ "test", &CG_Rocket_DrawTest },
 	{ "timer", &CG_Rocket_DrawTimer },
