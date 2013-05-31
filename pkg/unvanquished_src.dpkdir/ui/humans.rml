@@ -54,7 +54,7 @@
 			{
 				color: red;
 			}
-			scanner
+			scanner.active
 			{
 				position: absolute;
 				top: 700px;
