@@ -1183,11 +1183,17 @@ typedef enum
 
 typedef struct
 {
+	const char *path;
+	const char *id;
+} rocketHud_t;
+
+typedef struct
+{
 	char rootDir[ MAX_QPATH ];
 	char currentNetSource[ 9 ];
 	int  serversLastRefresh;
 	rocketState_t rocketState;
-	const char *hud[ WP_NUM_WEAPONS ];
+	rocketHud_t hud[ WP_NUM_WEAPONS ];
 } rocketInfo_t;
 
 extern rocketInfo_t rocketInfo;

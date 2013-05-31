@@ -176,6 +176,106 @@ void CG_Rocket_Init( void )
 			Q_strncpyz( rocketInfo.rootDir, token, sizeof( rocketInfo.rootDir ) );
 			continue;
 		}
+
+		if ( !Q_stricmp( token, "human_hud" ) )
+		{
+			const char *s, *ss;
+			token = COM_Parse2( &text_p );
+
+			// Skip non-RML files
+			if ( Q_stricmp( token + strlen( token ) - 4, ".rml" ) )
+			{
+				continue;
+			}
+			token = COM_Parse2( &text_p );
+			s = BG_strdup( token );
+			token = COM_Parse2( &text_p );
+			ss = BG_strdup( token );
+
+			for ( i = WP_BLASTER; i < WP_GRENADE; ++i )
+			{
+				rocketInfo.hud[ i ].path = s;
+				rocketInfo.hud[ i ].id = ss;
+			}
+			rocketInfo.hud[ WP_HBUILD ].path = s;
+			rocketInfo.hud[ WP_HBUILD ].id = ss;
+			continue;
+		}
+
+		if ( !Q_stricmp( token, "spectator_hud" ) )
+		{
+			const char *s, *ss;
+			token = COM_Parse2( &text_p );
+
+			// Skip non-RML files
+			if ( Q_stricmp( token + strlen( token ) - 4, ".rml" ) )
+			{
+				continue;
+			}
+
+			s = BG_strdup( token );
+			token = COM_Parse2( &text_p );
+			ss = BG_strdup( token );
+			for ( i = WP_NONE; i < WP_NUM_WEAPONS; ++i )
+			{
+				rocketInfo.hud[ i ].path = s;
+				rocketInfo.hud[ i ].id = ss;
+			}
+			continue;
+		}
+
+		if ( !Q_stricmp( token, "alien_hud" ) )
+		{
+			const char *s, *ss;
+			token = COM_Parse2( &text_p );
+
+			// Skip non-RML files
+			if ( Q_stricmp( token + strlen( token ) - 4, ".rml" ) )
+			{
+				continue;
+			}
+
+			s = BG_strdup( token );
+			token = COM_Parse2( &text_p );
+			ss = BG_strdup( token );
+			for ( i = WP_ALEVEL0; i < WP_ALEVEL4; ++i )
+			{
+				rocketInfo.hud[ i ].path = s;
+				rocketInfo.hud[ i ].id = ss;
+			}
+			rocketInfo.hud[ WP_ABUILD ].path = s;
+			rocketInfo.hud[ WP_ABUILD2 ].path = s;
+			rocketInfo.hud[ WP_ABUILD ].id = ss;
+			rocketInfo.hud[ WP_ABUILD2 ].id = ss;
+			continue;
+		}
+
+		for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; ++i )
+		{
+			Com_Printf( "%s_hud\n", BG_Weapon(i)->name );
+			if ( !Q_stricmp( token, va( "%s_hud", BG_Weapon( i )->humanName ) ) )
+			{
+				token = COM_Parse( &text_p );
+				rocketInfo.hud[ i ].path = BG_strdup( token );
+				token = COM_Parse( &text_p );
+				rocketInfo.hud[ i ].id = BG_strdup( token );
+				continue;
+			}
+		}
+	}
+
+	if ( !rocketInfo.hud[ WP_NONE ].path || !rocketInfo.hud[ WP_NONE ].id )
+	{
+		Com_Error( ERR_DROP, "Default HUD not set." );
+	}
+
+	// Set default HUD for all weapons without a hud
+	for ( i = 0; i <  WP_NUM_WEAPONS; ++i )
+	{
+		if ( !rocketInfo.hud[ i ].path || !rocketInfo.hud[ i ].id )
+		{
+			rocketInfo.hud[ i ] = rocketInfo.hud[ WP_NONE ];
+		}
 	}
 
 	trap_Rocket_DocumentAction( "main", "open" );
