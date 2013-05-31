@@ -255,6 +255,7 @@ const char *CG_Rocket_QuakeToRML( const char *in )
 
 qboolean CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 {
+	playerState_t *ps = &cg.predictedPlayerState;
 	if ( type < ELEMENT_GAME && rocketInfo.rocketState < PLAYING )
 	{
 		return qfalse;
@@ -265,22 +266,36 @@ qboolean CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 		case ELEMENT_ALL:
 			return qtrue;
 
+		case ELEMENT_LOADING:
+			if ( rocketInfo.rocketState == LOADING )
+			{
+				return qtrue;
+			}
+			return qfalse;
+
+		case ELEMENT_GAME:
+			if ( rocketInfo.rocketState == PLAYING )
+			{
+				return qtrue;
+			}
+			return qfalse;
+
 		case ELEMENT_ALIENS:
-			if ( cg.predictedPlayerState.stats[ STAT_TEAM ] == TEAM_ALIENS )
+			if ( ps->stats[ STAT_TEAM ] == TEAM_ALIENS && ps->stats[ STAT_HEALTH ] > 0 && ps->weapon != WP_NONE )
 			{
 				return qtrue;
 			}
 			return qfalse;
 
 		case ELEMENT_HUMANS:
-			if ( cg.predictedPlayerState.stats[ STAT_TEAM ] == TEAM_HUMANS )
+			if ( ps->stats[ STAT_TEAM ] == TEAM_HUMANS && ps->stats[ STAT_HEALTH ] > 0 && ps->weapon != WP_NONE )
 			{
 				return qtrue;
 			}
 			return qfalse;
 
 		case ELEMENT_BOTH:
-			if ( cg.predictedPlayerState.stats[ STAT_TEAM ] != TEAM_NONE )
+			if ( ps->stats[ STAT_TEAM ] != TEAM_NONE && ps->stats[ STAT_HEALTH ] > 0 && ps->weapon != WP_NONE )
 			{
 				return qtrue;
 			}
