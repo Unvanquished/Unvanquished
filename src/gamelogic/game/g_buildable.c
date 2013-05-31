@@ -1962,6 +1962,7 @@ static void CalculateSparePower( gentity_t *self )
 {
 	gentity_t *neighbor;
 	float     distance;
+	int       relativeSparePower;
 
 	if ( self->s.eType != ET_BUILDABLE || self->buildableTeam != TEAM_HUMANS )
 	{
@@ -2004,8 +2005,30 @@ static void CalculateSparePower( gentity_t *self )
 		}
 	}
 
-	// HACK: store current spare power in entityState_t.clientNum for display
-	self->s.clientNum = ( int )ceilf( self->currentSparePower );
+	// HACK: store relative spare power in entityState_t.clientNum for display
+	if ( self->spawned )
+	{
+		relativeSparePower = ( int )( 100.0f * ( self->currentSparePower / BASE_POWER ) + 0.5f );
+
+		if ( relativeSparePower == 0 && self->currentSparePower > 0.0f )
+		{
+			relativeSparePower = 1;
+		}
+		else if ( relativeSparePower < 0 )
+		{
+			relativeSparePower = 0;
+		}
+		else if ( relativeSparePower > 100 )
+		{
+			relativeSparePower = 100;
+		}
+
+		self->s.clientNum = relativeSparePower;
+	}
+	else
+	{
+		self->s.clientNum = 0;
+	}
 }
 
 
@@ -2116,7 +2139,7 @@ void G_SetHumanBuildablePowerState()
 				continue;
 			}
 
-			// HACK: store current spare power in entityState_t.clientNum
+			// HACK: store relative spare power in entityState_t.clientNum
 			ent->s.clientNum = 0;
 
 			// never shut down the telenode

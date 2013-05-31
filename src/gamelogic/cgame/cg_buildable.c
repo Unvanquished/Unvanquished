@@ -1580,21 +1580,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 
 	if ( showPower )
 	{
-		// es->clientNum contains the spare power, rounded towards positive infinite
-		relativeSparePower = ( int )( 100.0f * ( es->clientNum / ( float )BASE_POWER ) + 0.5f );
-
-		if ( relativeSparePower == 0 && es->clientNum > 0 )
-		{
-			relativeSparePower = 1;
-		}
-		else if ( relativeSparePower < 0 )
-		{
-			relativeSparePower = 0;
-		}
-		else if ( relativeSparePower > 100 )
-		{
-			relativeSparePower = 100;
-		}
+		relativeSparePower = es->clientNum;
 	}
 
 	// calculate mine efficiency bar size
