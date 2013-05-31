@@ -134,36 +134,40 @@ void AIDestroyValue( AIValue_t v )
 	}
 }
 
-botEntityAndDistance_t *AIEntityToGentity( gentity_t *self, AIEntity_t e )
+botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e )
 {
+	botEntityAndDistance_t nullEntity;
+	nullEntity.ent = NULL;
+	nullEntity.distance = INT_MAX;
+
 	if ( e > BA_NONE && e < BA_NUM_BUILDABLES )
 	{
-		if ( !self->botMind->closestBuildings[ e ].ent )
-		{
-			return NULL;
-		}
-		return &self->botMind->closestBuildings[ e ];
+		return self->botMind->closestBuildings[ e ];
 	}
 	else if ( e == E_ENEMY )
 	{
-		if ( !self->botMind->bestEnemy.ent )
-		{
-			return NULL;
-		}
-		return &self->botMind->bestEnemy;
+		return self->botMind->bestEnemy;
 	}
 	else if ( e == E_DAMAGEDBUILDING )
 	{
-		if ( !self->botMind->closestDamagedBuilding.ent )
-		{
-			return NULL;
-		}
-		return &self->botMind->closestDamagedBuilding;
+		return self->botMind->closestDamagedBuilding;
 	}
-	else
+	else if ( e == E_GOAL )
 	{
-		return NULL;
+		botEntityAndDistance_t ret = nullEntity;
+		ret.ent = self->botMind->goal.ent;
+		ret.distance = DistanceToGoal( self );
+		return ret;
 	}
+	else if ( e == E_SELF )
+	{
+		botEntityAndDistance_t ret;
+		ret.ent = self;
+		ret.distance = 0;
+		return ret;
+	}
+	
+	return nullEntity;
 }
 
 static qboolean NodeIsRunning( gentity_t *self, AIGenericNode_t *node )
@@ -424,12 +428,12 @@ AINodeStatus_t BotEvaluateNode( gentity_t *self, AIGenericNode_t *node )
 
 AINodeStatus_t BotActionFireWeapon( gentity_t *self, AIGenericNode_t *node ) 
 {
-	if ( WeaponIsEmpty( ( weapon_t )self->client->ps.weapon, self->client->ps ) && self->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+	if ( WeaponIsEmpty( BG_GetPlayerWeapon( &self->client->ps ), self->client->ps ) && self->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
 	{
 		G_ForceWeaponChange( self, WP_BLASTER );
 	}
 
-	if ( self->client->ps.weapon == WP_HBUILD )
+	if ( BG_GetPlayerWeapon( &self->client->ps ) == WP_HBUILD )
 	{
 		G_ForceWeaponChange( self, WP_BLASTER );
 	}
@@ -526,15 +530,13 @@ AINodeStatus_t BotActionChangeGoal( gentity_t *self, AIGenericNode_t *node )
 {
 	AIActionNode_t *a = ( AIActionNode_t * ) node;
 	AIEntity_t et = ( AIEntity_t ) AIUnBoxInt( a->params[ 0 ] );
-	botEntityAndDistance_t *e = AIEntityToGentity( self, et );
+	botEntityAndDistance_t e = AIEntityToGentity( self, et );
 
-	if ( e )
+	if ( !BotChangeGoalEntity( self, e.ent ) )
 	{
-		if ( !BotChangeGoalEntity( self, e->ent ) )
-		{
-			return STATUS_FAILURE;
-		}
+		return STATUS_FAILURE;
 	}
+
 	self->botMind->currentNode = node;
 	self->botMind->goalLastSeen = 0;
 	return STATUS_SUCCESS;
@@ -580,6 +582,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		else
 		{
 			self->botMind->currentNode = node;
+			self->botMind->goalLastSeen = self->botMind->enemyLastSeen;
 			return STATUS_RUNNING;
 		}
 	}
@@ -605,12 +608,12 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_SUCCESS;
 	}
 
-	if ( WeaponIsEmpty( ( weapon_t )self->client->ps.weapon, self->client->ps ) && myTeam == TEAM_HUMANS )
+	if ( WeaponIsEmpty( BG_GetPlayerWeapon( &self->client->ps ), self->client->ps ) && myTeam == TEAM_HUMANS )
 	{
 		G_ForceWeaponChange( self, WP_BLASTER );
 	}
 
-	if ( self->client->ps.weapon == WP_HBUILD )
+	if ( BG_GetPlayerWeapon( &self->client->ps ) == WP_HBUILD )
 	{
 		G_ForceWeaponChange( self, WP_BLASTER );
 	}
@@ -648,13 +651,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 
 		if ( ( inAttackRange && myTeam == TEAM_HUMANS ) || self->botMind->directPathToGoal )
 		{
-			botRouteTarget_t routeTarget;
 			BotAimAtEnemy( self );
-
-			BotTargetToRouteTarget( self, self->botMind->goal, &routeTarget );
-
-			//update the path corridor
-			trap_BotUpdatePath( self->s.number, &routeTarget, NULL, &self->botMind->directPathToGoal );
 
 			BotMoveInDir( self, MOVE_FORWARD );
 
@@ -744,14 +741,14 @@ AINodeStatus_t BotActionRoamInRadius( gentity_t *self, AIGenericNode_t *node )
 	if ( node != self->botMind->currentNode )
 	{
 		vec3_t point;
-		botEntityAndDistance_t *ent = AIEntityToGentity( self, e );
+		botEntityAndDistance_t ent = AIEntityToGentity( self, e );
 
-		if ( !ent )
+		if ( !ent.ent )
 		{
 			return STATUS_FAILURE;
 		}
 
-		if ( !trap_BotFindRandomPointInRadius( self->s.number, ent->ent->s.origin, point, radius ) )
+		if ( !trap_BotFindRandomPointInRadius( self->s.number, ent.ent->s.origin, point, radius ) )
 		{
 			return STATUS_FAILURE;
 		}
@@ -802,16 +799,8 @@ AINodeStatus_t BotActionRoam( gentity_t *self, AIGenericNode_t *node )
 botTarget_t BotGetMoveToTarget( gentity_t *self, AIEntity_t e )
 {
 	botTarget_t target;
-	gentity_t *ent = NULL;
-	botEntityAndDistance_t *en;
-	en = AIEntityToGentity( self, e );
-
-	if ( en )
-	{
-		ent = en->ent;
-	}
-
-	BotSetTarget( &target, ent, NULL );
+	botEntityAndDistance_t en = AIEntityToGentity( self, e );
+	BotSetTarget( &target, en.ent, NULL );
 	return target;
 }
 
@@ -1141,7 +1130,7 @@ AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_SUCCESS;
 	}
 
-	if ( self->client->ps.weapon != WP_HBUILD )
+	if ( BG_GetPlayerWeapon( &self->client->ps ) != WP_HBUILD )
 	{
 		G_ForceWeaponChange( self, WP_HBUILD );
 	}

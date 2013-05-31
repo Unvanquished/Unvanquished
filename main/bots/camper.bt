@@ -11,7 +11,7 @@ selector
 		{
 			action equip
 			
-			condition percentHealth < 1.0 || !haveUpgrade( UP_MEDKIT )
+			condition percentHealth( E_SELF ) < 1.0 || !haveUpgrade( UP_MEDKIT )
 			{
 				action heal
 			}
@@ -24,7 +24,7 @@ selector
 	{
 		selector
 		{
-			condition percentHealth < 1.0
+			condition percentHealth( E_SELF ) < 1.0
 			{
 				action heal
 			}

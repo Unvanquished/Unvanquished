@@ -159,8 +159,13 @@ unsigned int FindRoute( Bot_t *bot, const vec3_t s, const botRouteTarget_t *rtar
 	qboolean result;
 	int time = svs.time;
 
+	if ( time - bot->lastRoutePlanTime > 200 )
+	{
+		bot->routePlanCounter = 0;
+	}
+
 	//dont pathfind too much
-	if ( time - bot->lastRouteTime < 200 )
+	if ( bot->routePlanCounter == MAX_ROUTE_PLANS )
 	{
 		return ROUTE_FAILED;
 	}
@@ -180,7 +185,8 @@ unsigned int FindRoute( Bot_t *bot, const vec3_t s, const botRouteTarget_t *rtar
 		return ROUTE_FAILED;
 	}
 	
-	bot->lastRouteTime = time;
+	bot->lastRoutePlanTime = time;
+	bot->routePlanCounter++;
 	status = bot->nav->query->findPath( startRef, endRef, start, end, &bot->nav->filter, pathPolys, &pathNumPolys, MAX_BOT_PATH );
 
 	if ( dtStatusFailed( status ) )

@@ -48,7 +48,8 @@ typedef enum
 	E_H_REPEATER,
 	E_GOAL,
 	E_ENEMY,
-	E_DAMAGEDBUILDING
+	E_DAMAGEDBUILDING,
+	E_SELF
 } AIEntity_t;
 
 // all behavior tree nodes must return one of 
@@ -215,7 +216,7 @@ const char *AIUnBoxString( AIValue_t v );
 
 void AIDestroyValue( AIValue_t v );
 
-botEntityAndDistance_t *AIEntityToGentity( gentity_t *self, AIEntity_t e );
+botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e );
 
 // standard behavior tree control-flow nodes
 AINodeStatus_t BotEvaluateNode( gentity_t *self, AIGenericNode_t *node );
