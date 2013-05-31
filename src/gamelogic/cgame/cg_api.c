@@ -1513,3 +1513,8 @@ void trap_Rocket_QuakeToRML( const char *in, char *out, int length )
 {
 	syscall( CG_ROCKET_QUAKETORML, in, out, length );
 }
+
+void trap_Rocket_SetClass( const char *in, qboolean activate )
+{
+	syscall( CG_ROCKET_SETCLASS, in, activate );
+}

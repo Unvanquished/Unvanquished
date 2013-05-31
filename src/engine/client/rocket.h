@@ -91,6 +91,7 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 void Rocket_GetElementAbsoluteOffset( float *x, float *y );
 void Rocket_DrawElementPic( float x, float y, float w, float h, float t1, float s1, float t2, float s2, vec4_t color, qhandle_t shader );
 void Rocket_ClearElementGeometry( void );
+void Rocket_SetClass( const char *in, qboolean activate );
 #if defined( __cplusplus )
 }
 #endif
