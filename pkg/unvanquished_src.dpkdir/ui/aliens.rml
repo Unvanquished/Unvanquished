@@ -56,7 +56,7 @@
 			}
 		</style>
 			</head>
-	<body id="hud">
+	<body id="alien_hud">
 		<fps /> fps <br />
 		<crosshair /><br />
 		<speedometer /><br />

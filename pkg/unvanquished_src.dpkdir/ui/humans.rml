@@ -72,7 +72,7 @@
 			}
 		</style>
 	</head>
-	<body id="hud">
+	<body id="human_hud">
 		<div id='left'>
 		<fps /> fps <timer /><br />
 		<ammo type="total" /> rounds of ammo<br />
