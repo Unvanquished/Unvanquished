@@ -1395,7 +1395,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 	int           health, relativeSparePower, mineEfficiency;
 	float         x, y;
 	vec4_t        color;
-	qboolean      powered, marked, showMineEfficiency, showRelativeSparePower;
+	qboolean      powered, marked, showMineEfficiency, showPower;
 	trace_t       tr;
 	float         d;
 	buildStat_t   *bs;
@@ -1574,13 +1574,27 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 	}
 
 	// get power consumption data
-	showRelativeSparePower = ( BG_Buildable( es->modelindex )->team == TEAM_HUMANS &&
-	                         !( BG_Buildable( es->modelindex )->number == BA_H_REACTOR ||
-	                            BG_Buildable( es->modelindex )->number == BA_H_REPEATER ) );
+	showPower = ( BG_Buildable( es->modelindex )->team == TEAM_HUMANS &&
+	              !( BG_Buildable( es->modelindex )->number == BA_H_REACTOR ||
+	                 BG_Buildable( es->modelindex )->number == BA_H_REPEATER ) );
 
-	if ( showRelativeSparePower )
+	if ( showPower )
 	{
-		relativeSparePower = es->clientNum;
+		// es->clientNum contains the spare power, rounded towards positive infinite
+		relativeSparePower = ( int )( 100.0f * ( es->clientNum / ( float )BASE_POWER ) + 0.5f );
+
+		if ( relativeSparePower == 0 && es->clientNum > 0 )
+		{
+			relativeSparePower = 1;
+		}
+		else if ( relativeSparePower < 0 )
+		{
+			relativeSparePower = 0;
+		}
+		else if ( relativeSparePower > 100 )
+		{
+			relativeSparePower = 100;
+		}
 	}
 
 	// calculate mine efficiency bar size
@@ -1621,7 +1635,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 	}
 
 	// calculate power consumption bar size
-	if ( showRelativeSparePower )
+	if ( showPower )
 	{
 		relativeSparePowerScale = ( float )relativeSparePower / 100.0f;
 
@@ -1687,7 +1701,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 
 			CG_DrawPic( picX, picY, picW, picH, bs->frameShader );
 
-			if ( showRelativeSparePower )
+			if ( showPower )
 			{
 				CG_SetClipRegion( picX, picY + picH, picW, 0.5f * picH );
 				CG_DrawPic( picX, picY + 0.5f * picH, picW, picH, bs->frameShader );
@@ -1778,7 +1792,7 @@ static void CG_BuildableStatusDisplay( centity_t *cent )
 		}
 
 		// draw power consumption bar
-		if ( showRelativeSparePower && relativeSparePower > 0 )
+		if ( showPower && relativeSparePower > 0 )
 		{
 			float  hX, hY, hW, hH;
 			vec4_t barColor;

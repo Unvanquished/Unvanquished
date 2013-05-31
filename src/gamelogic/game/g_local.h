@@ -222,11 +222,15 @@ struct gentity_s
 
 	/**
 	 * Human buildables compete for power.
-	 * sparePower >= 0: Buildable has enough power
-	 * sparePower >  0: New buildables can be built in range
-	 * sparePower <  0: Buildable lacks power, will shut down
+	 * currentSparePower takes temporary influences into account and sets a buildables power state.
+	 * expectedSparePower is a prediction of the static part and is used for limiting new buildables.
+	 *
+	 * currentSparePower  >= 0: Buildable has enough power
+	 * currentSparePower  <  0: Buildable lacks power, will shut down
+	 * expectedSparePower >  0: New buildables can be built in range
 	 */
-	float        sparePower;
+	float        currentSparePower;
+	float        expectedSparePower;
 
 	/**
 	 * has a marked building been deconstructed for this building?
