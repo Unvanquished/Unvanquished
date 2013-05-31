@@ -700,6 +700,18 @@ void CG_PainEvent( centity_t *cent, int health )
 
 /*
 =========================
+CG_OnPlayerWeaponChange
+
+Called on weapon change
+=========================
+*/
+void CG_OnPlayerWeaponChange( weapon_t oldWeapon )
+{
+
+}
+
+/*
+=========================
 CG_Level2Zap
 =========================
 */

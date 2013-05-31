@@ -1187,6 +1187,7 @@ typedef struct
 	char currentNetSource[ 9 ];
 	int  serversLastRefresh;
 	rocketState_t rocketState;
+	const char *hud[ WP_NUM_WEAPONS ];
 } rocketInfo_t;
 
 extern rocketInfo_t rocketInfo;
@@ -1820,6 +1821,7 @@ void CG_PredictPlayerState( void );
 void CG_CheckEvents( centity_t *cent );
 void CG_EntityEvent( centity_t *cent, vec3_t position );
 void CG_PainEvent( centity_t *cent, int health );
+void CG_OnPlayerWeaponChange( weapon_t oldWeapon );
 
 //
 // cg_ents.c

@@ -194,6 +194,12 @@ static void CG_TransitionSnapshot( void )
 		{
 			CG_TransitionPlayerState( ps, ops );
 		}
+
+		// Callbacks for changes in playerState like weapon/class/team
+		if ( ops->weapon != ps->weapon )
+		{
+			CG_OnPlayerWeaponChange( ops->weapon );
+		}
 	}
 }
 
