@@ -198,6 +198,7 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
       BUILDTIME = 1 << 10,
       VALUE = 1 << 11,
       RADAR = 1 << 12,
+      POWERCONSUMPTION = 1 << 13
     };
 
     if( !BG_ReadWholeFile( filename, text_buffer, sizeof(text_buffer) ) )
@@ -234,6 +235,14 @@ void BG_ParseBuildableAttributeFile( const char *filename, buildableAttributes_t
             ba->buildPoints = atoi(token);
 
             defined |= BUILDPOINTS;
+        }
+        else if ( !Q_stricmp( token, "powerConsumption" ) )
+        {
+            PARSE(text, token);
+
+            ba->powerConsumption = atoi(token);
+
+            defined |= POWERCONSUMPTION;
         }
         else if ( !Q_stricmp( token, "stage" ) )
         {

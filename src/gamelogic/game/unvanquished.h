@@ -375,9 +375,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 // power
 #define BASE_POWER                    20  // amount of power available everywhere (if RC is up)
-#define BUILDABLE_POWER_CONSUMPTION   10  // TODO: Move to buildable config files
 #define POWER_COMPETITION_RANGE       320 // buildables in this range will compete for power
-#define REACTOR_POWER                 30  // extra power the RC yields in its range
+#define REACTOR_POWER                 40  // extra power the reactor yields in its range
 #define REACTOR_POWER_RANGE           800
 #define REPEATER_POWER                20  // extra power a repeater yields in its range
 #define REPEATER_POWER_RANGE          400

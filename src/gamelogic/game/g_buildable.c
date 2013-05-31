@@ -1812,12 +1812,12 @@ static void IdlePowerState( gentity_t *self )
 
 /*
 =================
-PairwiseInterference
+IncomingInterference
 
-Calculates the amount of power a neighbor draws from or gives to a buildable at given distance.
+Calculates the amount of power a buildable recieves from or loses to a neighbor at given distance.
 =================
 */
-static float PairwiseInterference( buildable_t buildable, gentity_t *neighbor,
+static float IncomingInterference( buildable_t buildable, gentity_t *neighbor,
                                    float distance, qboolean prediction )
 {
 	float range, power;
@@ -1870,7 +1870,7 @@ static float PairwiseInterference( buildable_t buildable, gentity_t *neighbor,
 				}
 
 			default:
-				power = -BUILDABLE_POWER_CONSUMPTION;
+				power = -BG_Buildable( neighbor->s.modelindex )->powerConsumption;
 				range = POWER_COMPETITION_RANGE;
 		}
 	}
@@ -1903,6 +1903,56 @@ static float PairwiseInterference( buildable_t buildable, gentity_t *neighbor,
 
 /*
 =================
+OutgoingInterference
+
+Calculates the amount of power a buildable gives to or takes from a neighbor at given distance.
+=================
+*/
+static float OutgoingInterference( buildable_t buildable, gentity_t *neighbor, float distance )
+{
+	float range, power;
+
+	if ( !neighbor )
+	{
+		return 0.0f;
+	}
+
+	// can only influence human buildables
+	if ( neighbor->s.eType != ET_BUILDABLE || neighbor->buildableTeam != TEAM_HUMANS )
+	{
+		return 0.0f;
+	}
+
+	// it's not possible to influence repeater or reactor
+	switch ( neighbor->s.modelindex )
+	{
+		case BA_H_REPEATER:
+		case BA_H_REACTOR:
+			return 0.0f;
+	}
+
+	switch ( buildable )
+	{
+		case BA_H_REPEATER:
+			power = REPEATER_POWER;
+			range = REPEATER_POWER_RANGE;
+			break;
+
+		case BA_H_REACTOR:
+			power = REACTOR_POWER;
+			range = REACTOR_POWER_RANGE;
+			break;
+
+		default:
+			power = -BG_Buildable( buildable )->powerConsumption;
+			range = POWER_COMPETITION_RANGE;
+	}
+
+	return power * MAX( 0.0f, 1.0f - ( distance / range ) );
+}
+
+/*
+=================
 CalculateSparePower
 
 Calculates the amount of spare power of a buildable.
@@ -1914,8 +1964,7 @@ static float CalculateSparePower( gentity_t *self )
 	float     distance;
 	int       relativeSparePower;
 
-	if ( self->s.eType != ET_BUILDABLE || self->buildableTeam != TEAM_HUMANS
-	     || !self->spawned )
+	if ( self->s.eType != ET_BUILDABLE || self->buildableTeam != TEAM_HUMANS )
 	{
 		return BASE_POWER;
 	}
@@ -1927,7 +1976,7 @@ static float CalculateSparePower( gentity_t *self )
 			return BASE_POWER;
 	}
 
-	self->sparePower = BASE_POWER - BUILDABLE_POWER_CONSUMPTION;
+	self->sparePower = BASE_POWER - BG_Buildable( self->s.modelindex )->powerConsumption;
 
 	neighbor = NULL;
 	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, POWER_RELEVANT_RANGE ) )
@@ -1939,27 +1988,33 @@ static float CalculateSparePower( gentity_t *self )
 
 		distance = Distance( self->s.origin, neighbor->s.origin );
 
-		self->sparePower += PairwiseInterference( self->s.modelindex, neighbor, distance, qfalse );
+		self->sparePower += IncomingInterference( self->s.modelindex, neighbor, distance, qfalse );
 	}
 
-	// used for display
-	relativeSparePower = ( int )( 100.0f * ( self->sparePower / BASE_POWER ) + 0.5f );
+	// HACK: store relative spare power in entityState_t.clientNum for display
+	if ( self->spawned )
+	{
+		relativeSparePower = ( int )( 100.0f * ( self->sparePower / BASE_POWER ) + 0.5f );
 
-	if ( relativeSparePower == 0 && self->sparePower > 0.0f )
-	{
-		relativeSparePower = 1;
-	}
-	else if ( relativeSparePower < 0 )
-	{
-		relativeSparePower = 0;
-	}
-	else if ( relativeSparePower > 100 )
-	{
-		relativeSparePower = 100;
-	}
+		if ( relativeSparePower == 0 && self->sparePower > 0.0f )
+		{
+			relativeSparePower = 1;
+		}
+		else if ( relativeSparePower < 0 )
+		{
+			relativeSparePower = 0;
+		}
+		else if ( relativeSparePower > 100 )
+		{
+			relativeSparePower = 100;
+		}
 
-	// HACK: store relative spare power in entityState_t.clientNum
-	self->s.clientNum = relativeSparePower;
+		self->s.clientNum = relativeSparePower;
+	}
+	else
+	{
+		self->s.clientNum = 0;
+	}
 
 	return self->sparePower;
 }
@@ -3842,7 +3897,7 @@ Takes buildables prepared for deconstruction into account.
 static qboolean PredictBuildableSparePower( buildable_t buildable, vec3_t origin )
 {
 	gentity_t       *neighbor, *buddy;
-	float           distance, pairwiseInterference, ownPrediction, neighborPrediction;
+	float           distance, ownPrediction, neighborPrediction;
 
 	switch ( buildable )
 	{
@@ -3851,7 +3906,7 @@ static qboolean PredictBuildableSparePower( buildable_t buildable, vec3_t origin
 			return qtrue;
 	}
 
-	ownPrediction = BASE_POWER - BUILDABLE_POWER_CONSUMPTION;
+	ownPrediction = BASE_POWER - BG_Buildable( buildable )->powerConsumption;
 
 	neighbor = NULL;
 	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, POWER_RELEVANT_RANGE ) )
@@ -3870,10 +3925,8 @@ static qboolean PredictBuildableSparePower( buildable_t buildable, vec3_t origin
 
 		distance = Distance( origin, neighbor->s.origin );
 
-		pairwiseInterference = PairwiseInterference( buildable, neighbor, distance, qtrue );
-
-		ownPrediction += pairwiseInterference;
-		neighborPrediction = neighbor->sparePower + pairwiseInterference;
+		ownPrediction += IncomingInterference( buildable, neighbor, distance, qtrue );
+		neighborPrediction = neighbor->sparePower + OutgoingInterference( buildable, neighbor, distance );
 
 		// check power of neighbor, with regards to pending deconstruction
 		if ( neighborPrediction < 0.0f && distance < POWER_COMPETITION_RANGE )
@@ -3884,8 +3937,7 @@ static qboolean PredictBuildableSparePower( buildable_t buildable, vec3_t origin
 				if ( IsSetForDeconstruction( buddy ) )
 				{
 					distance = Distance( neighbor->s.origin, buddy->s.origin );
-
-					neighborPrediction -= PairwiseInterference( neighbor->s.modelindex, buddy, distance, qtrue );
+					neighborPrediction -= IncomingInterference( neighbor->s.modelindex, buddy, distance, qtrue );
 				}
 			}
 
@@ -4437,7 +4489,6 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 	BG_BuildableBoundingBox( buildable, built->r.mins, built->r.maxs );
 
 	built->health = 1;
-	built->sparePower = 0.0f;
 
 	built->splashDamage = BG_Buildable( buildable )->splashDamage;
 	built->splashRadius = BG_Buildable( buildable )->splashRadius;
@@ -4646,6 +4697,15 @@ static gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
 		             readable[ 0 ] ? ", replacing " : "",
 		             readable );
 	}
+
+
+	// Calculate spare power for prediction when placing another buildable
+	// The prediction can still yield false positives since this buildable will start to draw power from others
+	// as soon as it spawns.
+	// TODO: Fix this, so two buildables being built at the same time doesn't lead to a buildable being shut down.
+	// Idea: Store both current and expected spare power. Use the former for the power state and the latter for
+	// predictions.
+	CalculateSparePower( built );
 
 	if ( log )
 	{

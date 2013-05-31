@@ -1059,6 +1059,7 @@ typedef struct
 	float       bounce;
 
 	int         buildPoints;
+	int         powerConsumption;
 	int         stages;
 
 	int         health;
