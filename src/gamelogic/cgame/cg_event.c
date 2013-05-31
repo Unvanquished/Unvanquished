@@ -1241,9 +1241,13 @@ void CG_EntityEvent( centity_t *cent, vec3_t position )
 			CG_MissileHitWall( es->weapon, es->generic1, 0, position, dir, IMPACTSOUND_METAL, es->torsoAnim );
 			break;
 
+		case EV_HUMAN_BUILDABLE_DYING:
+			CG_HumanBuildableDying( es->modelindex, position );
+			break;
+
 		case EV_HUMAN_BUILDABLE_EXPLOSION:
 			ByteToDir( es->eventParm, dir );
-			CG_HumanBuildableExplosion( position, dir );
+			CG_HumanBuildableExplosion( es->modelindex, position, dir );
 			break;
 
 		case EV_ALIEN_BUILDABLE_EXPLOSION:

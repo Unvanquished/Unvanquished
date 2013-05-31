@@ -1319,6 +1319,7 @@ static void CG_RegisterSounds( void )
 	cgs.media.alienBuildableDamage = trap_S_RegisterSound( "sound/buildables/alien/damage.wav", qfalse );
 	cgs.media.alienBuildablePrebuild = trap_S_RegisterSound( "sound/buildables/alien/prebuild.wav", qfalse );
 
+	cgs.media.humanBuildableDying = trap_S_RegisterSound( "sound/buildables/human/dying.wav", qfalse );
 	cgs.media.humanBuildableExplosion = trap_S_RegisterSound( "sound/buildables/human/explosion.wav", qfalse );
 	cgs.media.humanBuildablePrebuild = trap_S_RegisterSound( "sound/buildables/human/prebuild.wav", qfalse );
 
@@ -1496,6 +1497,7 @@ static void CG_RegisterGraphics( void )
 	cgs.media.humanBuildableDamagedPS = CG_RegisterParticleSystem( "humanBuildableDamagedPS" );
 	cgs.media.alienBuildableDamagedPS = CG_RegisterParticleSystem( "alienBuildableDamagedPS" );
 	cgs.media.humanBuildableDestroyedPS = CG_RegisterParticleSystem( "humanBuildableDestroyedPS" );
+	cgs.media.humanBuildableNovaPS = CG_RegisterParticleSystem( "humanBuildableNovaPS" );
 	cgs.media.alienBuildableDestroyedPS = CG_RegisterParticleSystem( "alienBuildableDestroyedPS" );
 
 	cgs.media.humanBuildableBleedPS = CG_RegisterParticleSystem( "humanBuildableBleedPS" );
