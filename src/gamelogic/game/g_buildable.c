@@ -2229,20 +2229,23 @@ void HGeneric_Die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, i
 
 	if ( self->spawned )
 	{
+		// blast after a brief period
+		self->think = HGeneric_Blast;
+		self->nextthink = level.time + HUMAN_DETONATION_DELAY;
+
 		// make a warning sound before ractor and repeater explosion
+		// don't randomize blast delay for them so the sound stays synced
 		switch ( self->s.modelindex )
 		{
 			case BA_H_REPEATER:
 			case BA_H_REACTOR:
 				G_AddEvent( self, EV_HUMAN_BUILDABLE_DYING, 0 );
 				break;
-		}
 
-		// blast after brief period
-		self->think = HGeneric_Blast;
-		self->nextthink = level.time + HUMAN_DETONATION_DELAY
-		                  + ( ( rand() - ( RAND_MAX / 2 ) ) / ( float )( RAND_MAX / 2 ) )
-		                  * DETONATION_DELAY_RAND_RANGE * HUMAN_DETONATION_DELAY;
+			default:
+				self->nextthink += ( ( rand() - ( RAND_MAX / 2 ) ) / ( float )( RAND_MAX / 2 ) )
+				                   * DETONATION_DELAY_RAND_RANGE * HUMAN_DETONATION_DELAY;
+		}
 	}
 	else
 	{
