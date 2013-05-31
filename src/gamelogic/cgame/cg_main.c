@@ -1278,7 +1278,7 @@ static void CG_UpdateLoadingStep( cgLoadingStep_t step )
 			Q_strncpyz(cg.currentLoadingLabel, "Done!", sizeof( cg.currentLoadingLabel ) );
 			trap_UpdateScreen();
 			cg.loading = qfalse;
-			rocketInfo.rocketState = IDLE;
+			rocketInfo.rocketState = PLAYING;
 			break;
 
 		default:
