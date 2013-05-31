@@ -183,6 +183,9 @@ itemDef
   bordercolor COMMON_HUD_R COMMON_HUD_G COMMON_HUD_B 0.35
   borderSize 1
   border WINDOW_BORDER_FULL
+  cvartest cg_minimapActive
+  showCvar {1}
+  hideCvar {0}
 }
 
 //CONSOLE
