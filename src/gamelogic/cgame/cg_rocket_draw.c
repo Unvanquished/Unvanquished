@@ -561,6 +561,7 @@ static void CG_Rocket_DrawHumanScanner( void )
 
 	if ( !BG_InventoryContainsUpgrade( UP_HELMET, cg.snap->ps.stats ) )
 	{
+		trap_Rocket_SetClass( "active", qfalse );
 		return;
 	}
 
@@ -577,6 +578,7 @@ static void CG_Rocket_DrawHumanScanner( void )
 
 	rect.x = x, rect.y = y, rect.w = w, rect.h = h;
 
+	trap_Rocket_SetClass( "active", qtrue );
 	CG_Scanner( &rect );
 }
 
