@@ -61,16 +61,17 @@ typedef struct
 {
 	const char *name;
 	void ( *exec ) ( void );
+	rocketElementType_t type;
 } elementDimensionCmd_t;
 
 static const elementDimensionCmd_t elementDimensionCmdList[] =
 {
-	{ "alien_sense", &CG_Rocket_DimensionGeneric },
-	{ "lagometer", &CG_Rocket_DimensionGeneric },
-	{ "pic", &CG_Rocket_DimensionPic },
-	{ "scanner", &CG_Rocket_DimensionGeneric },
-	{ "speedometer", &CG_Rocket_DimensionGeneric },
-	{ "test", &CG_Rocket_DimensionTest }
+	{ "alien_sense", &CG_Rocket_DimensionGeneric, ELEMENT_ALIENS },
+	{ "lagometer", &CG_Rocket_DimensionGeneric, ELEMENT_GAME },
+	{ "pic", &CG_Rocket_DimensionPic, ELEMENT_ALL },
+	{ "scanner", &CG_Rocket_DimensionGeneric, ELEMENT_HUMANS },
+	{ "speedometer", &CG_Rocket_DimensionGeneric, ELEMENT_GAME },
+	{ "test", &CG_Rocket_DimensionTest, ELEMENT_ALL }
 };
 
 static const size_t elementDimensionCmdListCount = ARRAY_LEN( elementDimensionCmdList );
@@ -87,7 +88,7 @@ void CG_Rocket_SetElementDimensions( void )
 
 	cmd = bsearch( tag, elementDimensionCmdList, elementDimensionCmdListCount, sizeof( elementDimensionCmd_t ), elementDimensionCmdCmp );
 
-	if ( cmd )
+	if ( cmd && CG_Rocket_IsCommandAllowed( cmd->type ) )
 	{
 		cmd->exec();
 	}
