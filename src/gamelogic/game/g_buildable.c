@@ -4118,7 +4118,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 				}
 
 				// check if already set for deconstruction
-				if ( IsSetForDeconstruction( ent ) )
+				if ( IsSetForDeconstruction( neighbor ) )
 				{
 					continue;
 				}
