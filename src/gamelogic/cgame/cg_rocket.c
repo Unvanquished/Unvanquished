@@ -367,11 +367,6 @@ qboolean CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 {
 	playerState_t *ps = &cg.predictedPlayerState;
 
-	if ( type < ELEMENT_GAME && rocketInfo.rocketState < PLAYING )
-	{
-		return qfalse;
-	}
-
 	switch ( type )
 	{
 		case ELEMENT_ALL:

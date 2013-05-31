@@ -1158,7 +1158,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "crosshair", &CG_Rocket_DrawCrosshair, ELEMENT_BOTH },
 	{ "crosshair_name", &CG_Rocket_DrawCrosshairNames, ELEMENT_GAME },
 	{ "evos", &CG_Rocket_DrawAlienEvosValue, ELEMENT_ALIENS },
-	{ "fps", &CG_Rocket_DrawFPS, ELEMENT_GAME },
+	{ "fps", &CG_Rocket_DrawFPS, ELEMENT_ALL },
 	{ "itemselect", &CG_DrawItemSelect, ELEMENT_BOTH },
 	{ "lagometer", &CG_Rocket_DrawLagometer, ELEMENT_GAME },
 	{ "location", &CG_Rocket_DrawLocation, ELEMENT_GAME },
