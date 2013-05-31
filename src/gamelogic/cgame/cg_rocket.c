@@ -66,7 +66,7 @@ void CG_RegisterRocketCvars( void )
 	for ( i = 0, cv = rocketCvarTable; i < rocketCvarTableSize; i++, cv++ )
 	{
 		trap_Cvar_Register( cv->vmCvar, cv->cvarName,
-		                    cv->defaultString, cv->cvarFlags );
+							cv->defaultString, cv->cvarFlags );
 	}
 }
 
@@ -107,7 +107,8 @@ void CG_Rocket_Init( void )
 
 	// Preload all the menu files...
 	len = trap_FS_FOpenFile( rocket_menuFiles.string, &f, FS_READ );
-	if (  len <= 0 )
+
+	if ( len <= 0 )
 	{
 		Com_Error( ERR_DROP, "Unable to load %s. No rocket menus loaded.", rocket_menuFiles.string );
 	}
@@ -187,6 +188,7 @@ void CG_Rocket_Init( void )
 			{
 				continue;
 			}
+
 			token = COM_Parse2( &text_p );
 			s = BG_strdup( token );
 			token = COM_Parse2( &text_p );
@@ -197,6 +199,7 @@ void CG_Rocket_Init( void )
 				rocketInfo.hud[ i ].path = s;
 				rocketInfo.hud[ i ].id = ss;
 			}
+
 			rocketInfo.hud[ WP_HBUILD ].path = s;
 			rocketInfo.hud[ WP_HBUILD ].id = ss;
 			continue;
@@ -216,11 +219,13 @@ void CG_Rocket_Init( void )
 			s = BG_strdup( token );
 			token = COM_Parse2( &text_p );
 			ss = BG_strdup( token );
+
 			for ( i = WP_NONE; i < WP_NUM_WEAPONS; ++i )
 			{
 				rocketInfo.hud[ i ].path = s;
 				rocketInfo.hud[ i ].id = ss;
 			}
+
 			continue;
 		}
 
@@ -238,11 +243,13 @@ void CG_Rocket_Init( void )
 			s = BG_strdup( token );
 			token = COM_Parse2( &text_p );
 			ss = BG_strdup( token );
+
 			for ( i = WP_ALEVEL0; i < WP_ALEVEL4; ++i )
 			{
 				rocketInfo.hud[ i ].path = s;
 				rocketInfo.hud[ i ].id = ss;
 			}
+
 			rocketInfo.hud[ WP_ABUILD ].path = s;
 			rocketInfo.hud[ WP_ABUILD2 ].path = s;
 			rocketInfo.hud[ WP_ABUILD ].id = ss;
@@ -252,7 +259,8 @@ void CG_Rocket_Init( void )
 
 		for ( i = WP_NONE + 1; i < WP_NUM_WEAPONS; ++i )
 		{
-			Com_Printf( "%s_hud\n", BG_Weapon(i)->name );
+			Com_Printf( "%s_hud\n", BG_Weapon( i )->name );
+
 			if ( !Q_stricmp( token, va( "%s_hud", BG_Weapon( i )->humanName ) ) )
 			{
 				token = COM_Parse( &text_p );
@@ -311,6 +319,7 @@ void CG_Rocket_Frame( void )
 				trap_Rocket_SetInnerRML( "serverbrowser", "status", "Updated" );
 				rocketInfo.rocketState = IDLE;
 			}
+
 			break;
 
 		case LOADING:
@@ -325,6 +334,7 @@ void CG_Rocket_Frame( void )
 			trap_Rocket_DocumentAction( "connecting", "close" );
 			break;
 	}
+
 	CG_Rocket_ProcessEvents();
 }
 
@@ -356,6 +366,7 @@ const char *CG_Rocket_QuakeToRML( const char *in )
 qboolean CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 {
 	playerState_t *ps = &cg.predictedPlayerState;
+
 	if ( type < ELEMENT_GAME && rocketInfo.rocketState < PLAYING )
 	{
 		return qfalse;
@@ -371,6 +382,7 @@ qboolean CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 			{
 				return qtrue;
 			}
+
 			return qfalse;
 
 		case ELEMENT_GAME:
@@ -378,6 +390,7 @@ qboolean CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 			{
 				return qtrue;
 			}
+
 			return qfalse;
 
 		case ELEMENT_ALIENS:
@@ -385,6 +398,7 @@ qboolean CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 			{
 				return qtrue;
 			}
+
 			return qfalse;
 
 		case ELEMENT_HUMANS:
@@ -392,6 +406,7 @@ qboolean CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 			{
 				return qtrue;
 			}
+
 			return qfalse;
 
 		case ELEMENT_BOTH:
@@ -399,6 +414,7 @@ qboolean CG_Rocket_IsCommandAllowed( rocketElementType_t type )
 			{
 				return qtrue;
 			}
+
 			return qfalse;
 	}
 
