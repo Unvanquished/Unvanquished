@@ -73,7 +73,8 @@ public:
 
 
 		// Let this be picked up in the event loop if it is meant for us
-		if ( event.GetTargetElement() == this )
+		// HACK: Ignore mouse events
+		if ( event.GetTargetElement() == this && !Q_stristr( event.GetType().CString(), "mouse" ) )
 		{
 			eventQueue.push( new RocketEvent_t( event, event.GetType() ) );
 		}
