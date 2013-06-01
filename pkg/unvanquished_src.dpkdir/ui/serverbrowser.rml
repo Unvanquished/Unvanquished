@@ -3,16 +3,11 @@
         <title>Server Browser</title>
         <link type="text/template" href="assets/window.rml" />
         <style>
-        body
-        {
-			width: 100%;
-			height: 100%;
-			margin: auto;
-		}
-
-		div.lol
+		body
 		{
-			overflow-y: scroll;
+			width: 100%;
+			height: 95%;
+			margin: auto;
 		}
 
 		div#title_bar div#icon
@@ -21,10 +16,14 @@
 			icon-image-t: 152px 191px;
 		}
 
+		div#content
+		{
+			height: 800px;
+			overflow-y: scroll;
+		}
+
 		datagrid datagridbody
 		{
-			min-rows: 10;
-			min-height: 400px;
 		}
 
 		img
