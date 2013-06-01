@@ -1417,48 +1417,90 @@ static void CG_CalcColorGradingForPoint( vec3_t loc )
 	}
 }
 
-static void CG_AddColorGradingEffects( const playerState_t* ps )
+static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* effect, float* fade )
 {
-    int health = ps->stats[ STAT_HEALTH ];
-    int team = ps->stats[ STAT_TEAM ];
-    int class = ps->stats[ STAT_CLASS ];
-    qboolean playing = team == TEAM_HUMANS || team == TEAM_ALIENS;
-    float factor;
+	int health = ps->stats[ STAT_HEALTH ];
+	int team = ps->stats[ STAT_TEAM ];
+	int class = ps->stats[ STAT_CLASS ];
+	qboolean playing = team == TEAM_HUMANS || team == TEAM_ALIENS;
 
-    cg.refdef.gradingWeights[0] = 0.0f;
-
+	//the player has spawned once and is dead or in the intermission
 	if ( health <= 0 || (playing && cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT) )
 	{
-		trap_SetColorGrading( 0, cgs.media.desaturatedCgrade);
-		cg.refdef.gradingWeights[0] = 1.0f;
-		factor = 0.0f;
+		*effect = cgs.media.desaturatedCgrade;
+		*fade = 1.0;
 	}
+	//not actually playing
 	else if (cg.renderingThirdPerson || ! playing )
 	{
-		factor = 1.0f;
+		*fade = 0.0;
 	}
 	else
 	{
-		float ratio, effectRatio;
+		//health effect
+		float ratio;
 		float maxHealth = BG_Class( class )->health;
 		if ( team == TEAM_HUMANS )
 		{
-			trap_SetColorGrading( 0, cgs.media.redCgrade);
+			*effect = cgs.media.redCgrade;
 			ratio = 0.5f;
 		}
 		else if( team == TEAM_ALIENS )
 		{
-			trap_SetColorGrading( 0, cgs.media.desaturatedCgrade);
+			*effect = cgs.media.desaturatedCgrade;
 			ratio = 0.7f;
 		}
-		effectRatio = (1.0f - health / maxHealth) * ratio;
-		factor = 1.0f - effectRatio;
-		cg.refdef.gradingWeights[0] = effectRatio;
+		//Linear blend if the effect as a function of the health ratio
+		//Find out if a quadratic effect would look better
+		*fade = (1.0f - health / maxHealth) * ratio;
+	}
+}
+
+static void CG_AddColorGradingEffects( const playerState_t* ps )
+{
+	static qhandle_t currentEffect = 0;
+	static float currentFade = 0.0f;
+	qhandle_t targetEffect = 0;
+	float targetFade = 0.0f;
+
+	static const float fadeRate = 0.0005;
+
+	float fadeChange = fadeRate * cg.frametime;
+	float factor;
+
+	//Choose which effect we want
+	CG_ChooseCgradingEffectAndFade( ps, &targetEffect, &targetFade );
+
+	//As we have only one cgrade slot for the effect we transition
+	//smoothly from the current (effect, fading) to the target effect.
+	if(currentEffect == targetEffect)
+	{
+		if(currentFade < targetFade)
+		{
+			currentFade = MIN(targetFade, currentFade + fadeChange);
+		}
+		else if(currentFade > targetFade)
+		{
+			currentFade = MAX(targetFade, currentFade - fadeChange);
+		}
+	}
+	else if(currentFade <= 0.0f)
+	{
+		//This is the only place where we change the cgrade map for the effect
+		currentEffect = targetEffect;
+		trap_SetColorGrading( 0, currentEffect);
+	}
+	else
+	{
+		currentFade = MAX(0.0f, currentFade - fadeChange);
 	}
 
-    cg.refdef.gradingWeights[1] *= factor;
-    cg.refdef.gradingWeights[2] *= factor;
-    cg.refdef.gradingWeights[3] *= factor;
+	//Apply the chosen cgrade
+	factor = 1.0f - currentFade;
+	cg.refdef.gradingWeights[0] = currentFade;
+	cg.refdef.gradingWeights[1] *= factor;
+	cg.refdef.gradingWeights[2] *= factor;
+	cg.refdef.gradingWeights[3] *= factor;
 }
 
 /*
