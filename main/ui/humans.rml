@@ -36,9 +36,7 @@
 			{
 				width: 20%;
 				height: 32px;
-				start-image: /ui/start.png;
-				progress-image: /ui/progress.png;
-				end-image: /ui/end.png;
+				progress-image: /white;
 			}
 			div.item_select img
 			{

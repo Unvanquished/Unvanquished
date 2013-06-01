@@ -36,9 +36,7 @@
 			{
 				width: 100%;
 				height: 32px;
-				start-image: /ui/start.png;
-				progress-image: /ui/progress.png;
-				end-image: /ui/end.png;
+				progress-image: /white;
 				z-index: 3;
 			}
 
