@@ -270,9 +270,8 @@ static void CG_SetupMinimapTransform( const rectDef_t *rect, const minimap_t* mi
     transformAngle = - cg.refdefViewAngles[1];
     angle = DEG2RAD(transformAngle + 90.0);
 
-    transformScale = zone->scale * minimap->scale;
     //Try to show the same region of the map for everyong
-    transformScale *= (rect->w + rect->h) / 2.0f / MINIMAP_DEFAULT_SIZE;
+    transformScale = (rect->w + rect->h) / 2.0f / MINIMAP_DEFAULT_SIZE;
 
     scale = transformScale * MINIMAP_MAP_DISPLAY_SIZE / (zone->imageMax[0] - zone->imageMin[0]);
 
@@ -339,7 +338,7 @@ CG_SetMinimapColor
 ================
 */
 static vec4_t currentMinimapColor;
-void CG_SetMinimapColor( const vec4_t color)
+static void CG_SetMinimapColor( const vec4_t color)
 {
     VectorCopy( color, currentMinimapColor );
 }
@@ -433,13 +432,13 @@ static minimapZone_t* CG_ChooseMinimapZone( minimap_t* m )
 CG_MinimapDrawMap
 ================
 */
-static void CG_MinimapDrawMap( const minimapZone_t* z )
+static void CG_MinimapDrawMap( const minimap_t* m, const minimapZone_t* z )
 {
     vec3_t origin = {0.0f, 0.0f, 0.0f};
     origin[0] = 0.5 * (z->imageMin[0] + z->imageMax[0]);
     origin[1] = 0.5 * (z->imageMin[1] + z->imageMax[1]);
 
-    CG_DrawMinimapObject( z->image, origin, 90.0, 1.0, MINIMAP_MAP_DISPLAY_SIZE, 1.0 );
+    CG_DrawMinimapObject( z->image, origin, 90.0, m->scale * z->scale, MINIMAP_MAP_DISPLAY_SIZE, 1.0 );
 }
 
 /*
@@ -601,7 +600,7 @@ void CG_DrawMinimap( const rectDef_t* rect640, const vec4_t teamColor )
     CG_EnableScissor( qtrue );
     {
 
-        CG_MinimapDrawMap( z );
+        CG_MinimapDrawMap( m, z );
         CG_MinimapDrawPlayer( m );
         CG_MinimapDrawTeammates( m );
     }
