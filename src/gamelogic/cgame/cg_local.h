@@ -1713,6 +1713,7 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
                    float borderSize, float scale, vec4_t foreColor,
                    vec4_t backColor, qhandle_t shader, int textStyle );
 float      CG_GetValue( int ownerDraw );
+float      CG_ChargeProgress( void );
 void       CG_RunMenuScript( char **args );
 void       CG_SetPrintString( int type, const char *p );
 const char *CG_GetKillerText( void );

@@ -1423,6 +1423,7 @@ static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* 
 	int team = ps->stats[ STAT_TEAM ];
 	int class = ps->stats[ STAT_CLASS ];
 	qboolean playing = team == TEAM_HUMANS || team == TEAM_ALIENS;
+	float chargeProgress = CG_ChargeProgress();
 
 	//the player has spawned once and is dead or in the intermission
 	if ( health <= 0 || (playing && cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT) )
@@ -1434,6 +1435,11 @@ static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* 
 	else if (cg.renderingThirdPerson || ! playing )
 	{
 		*fade = 0.0;
+	}
+	else if(ps->weapon == WP_ALEVEL4 && chargeProgress > 0.05)
+	{
+	    *effect = cgs.media.redCgrade;
+	    *fade = chargeProgress * 0.5f;
 	}
 	else
 	{
