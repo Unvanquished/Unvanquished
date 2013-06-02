@@ -15,7 +15,7 @@ PAKBASE="$1"
 shift
 
 if test "$PAKBASE" = ''; then
-  echo 'missing reference version' >&2
+  echo 'the current release tag is needed' >&2
   exit 2
 fi
 
@@ -27,7 +27,7 @@ zip -9 "../pak.pre.pk3" $(git diff --name-only "$PAKBASE" . | sed -e 's%main/%%'
 if test -d ../pak; then
   echo '[33m(including contents of directory '\'pak\'')[m'
   cd ../pak
-  zip -9 "../pak.pre.pk3" $(find -type f | sort)
+  zip -9 "../pak.pre.pk3" $(find -type f -a ! -name '*~' | sort)
   cd - >/dev/null
 fi
 echo '[33mBuilding vms.pre.pk3[m'
