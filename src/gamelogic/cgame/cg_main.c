@@ -1487,6 +1487,8 @@ static void CG_RegisterGraphics( void )
 
 	cgs.media.disconnectPS = CG_RegisterParticleSystem( "disconnectPS" );
 
+	cgs.media.scopeShader = trap_R_RegisterShader( "scope", RSF_DEFAULT | RSF_NOMIP );
+
 	CG_UpdateMediaFraction( 0.7f );
 
 	memset( cg_weapons, 0, sizeof( cg_weapons ) );
