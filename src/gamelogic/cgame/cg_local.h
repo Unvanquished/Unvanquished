@@ -1328,6 +1328,7 @@ typedef struct
 
 	qhandle_t   neutralCgrade;
 	qhandle_t   redCgrade;
+	qhandle_t   tealCgrade;
 	qhandle_t   desaturatedCgrade;
 
 	qhandle_t   scopeShader;

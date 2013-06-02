@@ -1462,12 +1462,29 @@ static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* 
 	}
 }
 
+static qboolean CG_InstantCgradingEffectAndFade( const playerState_t* ps, qhandle_t* effect, float* fade )
+{
+	if (cg.zoomed)
+	{
+		*effect = cgs.media.tealCgrade;
+		*fade = 0.4f;
+		return qtrue;
+	}
+
+	return qfalse;
+}
+
 static void CG_AddColorGradingEffects( const playerState_t* ps )
 {
+	//TODO: make a struct for these
 	static qhandle_t currentEffect = 0;
 	static float currentFade = 0.0f;
 	qhandle_t targetEffect = 0;
 	float targetFade = 0.0f;
+	qhandle_t instantEffect = 0;
+	float instantFade = 0.0f;
+	qhandle_t finalEffect = 0;
+	float finalFade = 0.0f;
 
 	static const float fadeRate = 0.0005;
 
@@ -1492,18 +1509,29 @@ static void CG_AddColorGradingEffects( const playerState_t* ps )
 	}
 	else if(currentFade <= 0.0f)
 	{
-		//This is the only place where we change the cgrade map for the effect
 		currentEffect = targetEffect;
-		trap_SetColorGrading( 0, currentEffect);
 	}
 	else
 	{
 		currentFade = MAX(0.0f, currentFade - fadeChange);
 	}
 
+	//Instant cgrading effects have the priority
+	if( CG_InstantCgradingEffectAndFade( ps, &instantEffect, &instantFade ) )
+	{
+		finalEffect = instantEffect;
+		finalFade = instantFade;
+	}
+	else
+	{
+		finalEffect = currentEffect;
+		finalFade = currentFade;
+	}
+
 	//Apply the chosen cgrade
-	factor = 1.0f - currentFade;
-	cg.refdef.gradingWeights[0] = currentFade;
+	trap_SetColorGrading( 0, finalEffect);
+	factor = 1.0f - finalFade;
+	cg.refdef.gradingWeights[0] = finalFade;
 	cg.refdef.gradingWeights[1] *= factor;
 	cg.refdef.gradingWeights[2] *= factor;
 	cg.refdef.gradingWeights[3] *= factor;
