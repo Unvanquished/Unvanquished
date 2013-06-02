@@ -4716,7 +4716,7 @@ static void CG_Draw2D( void )
 
 	if ( cg.zoomed )
 	{
-		vec4_t black = { 0.0f, 0.0f, 0.0f, 0.76f };
+		vec4_t black = { 0.0f, 0.0f, 0.0f, 0.5f };
 		trap_R_DrawStretchPic( ( cgs.glconfig.vidWidth / 2 ) - ( cgs.glconfig.vidHeight / 2 ), 0, cgs.glconfig.vidHeight, cgs.glconfig.vidHeight, 0, 0, 1, 1, cgs.media.scopeShader );
 		trap_R_SetColor( black );
 		trap_R_DrawStretchPic( 0, 0, ( cgs.glconfig.vidWidth / 2 ) - ( cgs.glconfig.vidHeight / 2 ), cgs.glconfig.vidHeight, 0, 0, 1, 1, cgs.media.whiteShader );
