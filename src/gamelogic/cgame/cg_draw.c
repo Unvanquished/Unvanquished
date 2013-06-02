@@ -1240,7 +1240,7 @@ static void CG_DrawPlayerHealthCross( rectDef_t *rect, vec4_t ref_color )
 	trap_R_SetColor( NULL );
 }
 
-static float CG_ChargeProgress( void )
+float CG_ChargeProgress( void )
 {
 	float progress;
 	int   min = 0, max = 0;
