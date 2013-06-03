@@ -141,7 +141,25 @@ extern "C" unsigned int BotFindRouteExt( int botClientNum, const botRouteTarget_
 	return FindRoute( bot, start, &rtarget );
 }
 
-extern "C" qboolean BotUpdateCorridor( int botClientNum, const botRouteTarget_t *target, vec3_t dir, qboolean *directPathToGoal )
+void UpdatePathCorridor( Bot_t *bot, vec3_t spos, const botRouteTarget_t *target )
+{
+	bot->corridor.movePosition( spos, bot->nav->query, &bot->nav->filter );
+
+	if ( target->type == BOT_TARGET_DYNAMIC )
+	{
+		bot->corridor.moveTargetPosition( target->pos, bot->nav->query, &bot->nav->filter );
+	}
+
+	if ( !bot->corridor.isValid( MAX_PATH_LOOKAHEAD, bot->nav->query, &bot->nav->filter ) )
+	{
+		bot->corridor.trimInvalidPath( bot->corridor.getFirstPoly(), spos, bot->nav->query, &bot->nav->filter );
+		bot->needReplan = qtrue;
+	}
+
+	FindWaypoints( bot, bot->cornerVerts, bot->cornerFlags, bot->cornerPolys, &bot->numCorners, MAX_CORNERS );
+}
+
+extern "C" void BotUpdateCorridor( int botClientNum, const botRouteTarget_t *target, botNavCmd_t *cmd )
 {
 	vec3_t spos;
 	vec3_t epos;
@@ -160,46 +178,17 @@ extern "C" qboolean BotUpdateCorridor( int botClientNum, const botRouteTarget_t 
 
 	bot->routePlanCounter = 0;
 
-	if ( directPathToGoal )
-	{
-		*directPathToGoal = qfalse;
-	}
-
 	if ( bot->needReplan )
 	{
 		if ( ! ( FindRoute( bot, spos, &rtarget ) & ( ROUTE_PARTIAL | ROUTE_FAILED ) ) )
 		{
 			bot->needReplan = qfalse;
 		}
-		else if ( !bot->corridor.getPathCount() )
-		{
-			return qfalse;
-		}
 	}
 
-	bot->corridor.movePosition( spos, bot->nav->query, &bot->nav->filter );
+	UpdatePathCorridor( bot, spos, &rtarget );
 
-	if ( rtarget.type == BOT_TARGET_DYNAMIC )
-	{
-		bot->corridor.moveTargetPosition( epos, bot->nav->query, &bot->nav->filter );
-	}
-
-	if ( !bot->corridor.isValid( MAX_PATH_LOOKAHEAD, bot->nav->query, &bot->nav->filter ) )
-	{
-		bot->corridor.trimInvalidPath( bot->corridor.getFirstPoly(), spos, bot->nav->query, &bot->nav->filter );
-		bot->needReplan = qtrue;
-	}
-
-	FindWaypoints( bot, bot->cornerVerts, bot->cornerFlags, bot->cornerPolys, &bot->numCorners, MAX_CORNERS );
-
-	dtPolyRef firstPoly = bot->corridor.getFirstPoly();
 	dtPolyRef lastPoly = bot->corridor.getLastPoly();
-
-	//check for replans caused by inaccurate bot movement or the target going off the path corridor
-	if ( !PointInPoly( bot, firstPoly, spos )  )
-	{
-		bot->needReplan = qtrue;
-	}
 
 	if ( rtarget.type == BOT_TARGET_DYNAMIC )
 	{
@@ -209,20 +198,18 @@ extern "C" qboolean BotUpdateCorridor( int botClientNum, const botRouteTarget_t 
 		}
 	}
 
-	if ( dir )
+	if ( cmd )
 	{
 		vec3_t rdir;
 		BotCalcSteerDir( bot, rdir );
 		recast2quake( rdir );
-		VectorCopy( rdir, dir );
-	}
+		VectorNormalize( rdir );
 
-	if ( directPathToGoal )
-	{
-		*directPathToGoal = ( qboolean )( ( int ) bot->numCorners == 1 );
+		VectorCopy( rdir, cmd->dir );
+		cmd->directPathToGoal = static_cast<qboolean>( bot->numCorners == 1 );
+		VectorCopy( bot->corridor.getPos(), cmd->pos );
+		recast2quake( cmd->pos );
 	}
-
-	return qtrue;
 }
 
 float frand()

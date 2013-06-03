@@ -119,6 +119,7 @@ void         G_BotNavCleanup( void );
 unsigned int FindRouteToTarget( gentity_t *self, botTarget_t target );
 qboolean     BotMoveToGoal( gentity_t *self );
 void         BotSetNavmesh( gentity_t  *ent, class_t newClass );
+void         BotClampPos( gentity_t *self );
 
 // local navigation
 qboolean BotDodge( gentity_t *self );

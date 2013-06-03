@@ -703,39 +703,40 @@ Global Bot Navigation
 =========================
 */
 
+void BotClampPos( gentity_t *self )
+{
+	float height = self->client->ps.origin[ 2 ];
+	vec3_t origin;
+	trace_t trace;
+	vec3_t mins, maxs;
+	VectorSet( origin, self->botMind->nav.pos[ 0 ], self->botMind->nav.pos[ 1 ], height );
+	BG_ClassBoundingBox( self->client->ps.stats[ STAT_CLASS ], mins, maxs, NULL, NULL, NULL );
+	trap_Trace( &trace, self->client->ps.origin, mins, maxs, origin, self->client->ps.clientNum, MASK_PLAYERSOLID );
+	G_SetOrigin( self, trace.endpos );
+	VectorCopy( trace.endpos, self->client->ps.origin );
+}
+
 qboolean BotMoveToGoal( gentity_t *self )
 {
 	vec3_t dir;
-	botRouteTarget_t rtarget;
+	VectorCopy( self->botMind->nav.dir, dir );
 
-	if ( !( self && self->client ) )
+	if ( dir[ 2 ] < 0 )
 	{
-		return qfalse;
+		dir[ 2 ] = 0;
+		VectorNormalize( dir );
 	}
 
-	BotTargetToRouteTarget( self, self->botMind->goal, &rtarget );
+	BotAvoidObstacles( self, dir );
+	BotSeek( self, dir );
 
-	if ( trap_BotUpdatePath( self->s.number, &rtarget, dir, &self->botMind->directPathToGoal ) )
+	//dont sprint or dodge if we dont have enough stamina and are about to slow
+	if ( self->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS && self->client->ps.stats[STAT_STAMINA] < STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE )
 	{
-		if ( dir[ 2 ] < 0 )
-		{
-			dir[ 2 ] = 0;
-			VectorNormalize( dir );
-		}
-
-		BotAvoidObstacles( self, dir );
-		BotSeek( self, dir );
-
-		//dont sprint or dodge if we dont have enough stamina and are about to slow
-		if ( self->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS && self->client->ps.stats[STAT_STAMINA] < STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE )
-		{
-			usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
-			usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_SPRINT );
-			usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_DODGE );
-		}
-		return qtrue;
+		usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
+		usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_SPRINT );
+		usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_DODGE );
 	}
-	return qfalse;
 }
 
 unsigned int FindRouteToTarget( gentity_t *self, botTarget_t target )

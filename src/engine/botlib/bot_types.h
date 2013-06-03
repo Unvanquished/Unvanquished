@@ -48,6 +48,15 @@ typedef struct
 	vec3_t normal;
 } botTrace_t;
 
+// parameters outputted by navigation
+// if they are followed exactly, the bot will not go off the nav mesh
+typedef struct
+{
+	vec3_t   pos;
+	vec3_t   dir;
+	qboolean directPathToGoal;
+} botNavCmd_t;
+
 typedef enum
 {
 	BOT_TARGET_STATIC, // target stays in one place always

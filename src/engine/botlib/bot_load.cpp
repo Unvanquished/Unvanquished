@@ -365,7 +365,9 @@ extern "C" void BotShutdownNav( void )
 		memset( nav->name, 0, sizeof( nav->name ) );
 	}
 
+#ifndef DEDICATED
 	NavEditShutdown();
+#endif
 	numNavData = 0;
 }
 
@@ -397,8 +399,9 @@ extern "C" qboolean BotSetupNav( const botClass_t *botClass, qhandle_t *navHandl
 			agents[ i ].lastRoutePlanTime = 0;
 			agents[ i ].nav = NULL;
 		}
-
+#ifndef DEDICATED
 		NavEditInit();
+#endif
 	}
 
 	if ( numNavData == MAX_NAV_DATA )

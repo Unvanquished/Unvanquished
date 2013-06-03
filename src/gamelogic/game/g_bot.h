@@ -59,8 +59,6 @@ typedef struct
 
 	botTarget_t goal;
 
-	qboolean directPathToGoal;
-
 	botSkill_t botSkill;
 	botEntityAndDistance_t bestEnemy;
 	botEntityAndDistance_t closestDamagedBuilding;
@@ -75,6 +73,7 @@ typedef struct
 	int         futureAimTimeInterval;
 	vec3_t      futureAim;
 	usercmd_t   cmdBuffer;
+	botNavCmd_t nav;
 } botMemory_t;
 
 qboolean G_BotAdd( char *name, team_t team, int skill, const char* behavior );
