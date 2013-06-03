@@ -816,7 +816,9 @@ void G_SpawnGEntityFromSpawnVars( void )
 	 */
 	if( level.numSpawnVars <= 1 )
 	{
-		G_Error( S_ERROR "encountered ghost-entity #%i with only one field: %s = %s\n", spawningEntity->s.number, level.spawnVars[ 0 ][ 0 ], level.spawnVars[ 0 ][ 1 ] );
+		G_Printf( S_ERROR "encountered ghost-entity #%i with only one field: %s = %s\n", spawningEntity->s.number, level.spawnVars[ 0 ][ 0 ], level.spawnVars[ 0 ][ 1 ] );
+		G_FreeEntity( spawningEntity );
+		return;
 	}
 
 	// move editor origin to pos
@@ -1042,8 +1044,8 @@ void SP_worldspawn( void )
 	G_SpawnString( "message", "", &s );
 	trap_SetConfigstring( CS_MESSAGE, s );  // map specific message
 
-	if(G_SpawnString( "colorGrade", "", &s ))
-		trap_SetConfigstring( CS_GRADING_TEXTURES, s );
+	if(G_SpawnString( "gradingTexture", "", &s ))
+		trap_SetConfigstring( CS_GRADING_TEXTURES, va( "%i %f %s", 0, 0.0f, s ) );
 
 	trap_SetConfigstring( CS_MOTD, g_motd.string );  // message of the day
 

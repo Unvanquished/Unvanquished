@@ -2515,11 +2515,23 @@ STATIC
 
 void SP_func_static( gentity_t *self )
 {
+	char *gradingTexture;
+	float gradingDistance;
+
 	trap_SetBrushModel( self, self->model );
 	InitMover( self );
 	reset_moverspeed( self, 100 ); //TODO do we need this at all?
 	VectorCopy( self->s.origin, self->s.pos.trBase );
 	VectorCopy( self->s.origin, self->r.currentOrigin );
+
+	// check if this func_static has a colorgrading texture
+	if( self->model[0] == '*' &&
+	    G_SpawnString( "gradingTexture", "", &gradingTexture ) ) {
+		G_SpawnFloat( "gradingDistance", "250", &gradingDistance );
+
+		G_GradingTextureIndex( va( "%s %f %s", self->model + 1,
+					   gradingDistance, gradingTexture ) );
+	}
 }
 
 void SP_func_dynamic( gentity_t *self )

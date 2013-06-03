@@ -2203,7 +2203,19 @@ void CL_ResetPureClientAtServer( void )
 	CL_AddReliableCommand( "vdr" );
 }
 
-static void CL_GenerateRSAKeys( void )
+static void CL_GetRSAKeysFileName( char *buffer, size_t size )
+{
+	if ( cl_profile && cl_profile->string[ 0 ] )
+	{
+		Q_snprintf( buffer, size, "profiles/%s/%s", cl_profile->string, RSAKEY_FILE );
+	}
+	else
+	{
+		Q_snprintf( buffer, size, "%s", RSAKEY_FILE );
+	}
+}
+
+static void CL_GenerateRSAKeys( const char *fileName )
 {
 	struct nettle_buffer key_buffer;
 	int                  key_buffer_len = 0;
@@ -2223,18 +2235,13 @@ static void CL_GenerateRSAKeys( void )
 		Com_Error( ERR_FATAL, "Error converting RSA keypair to sexp" );
 	}
 
-	if ( cl_profile && cl_profile->string[ 0 ] )
-	{
-		f = FS_FOpenFileWrite( va( "profiles/%s/%s", cl_profile->string, RSAKEY_FILE ) );
-	}
-	else
-	{
-		f = FS_FOpenFileWrite( RSAKEY_FILE );
-	}
+	Com_Printf( _( "^5Regenerating RSA keypair; writing to %s\n" ), fileName );
+
+	f = FS_FOpenFileWrite( fileName );
 
 	if ( !f )
 	{
-		Com_Error( ERR_FATAL, _( "Daemon could not open %s for writing the RSA keypair" ), RSAKEY_FILE );
+		Com_Error( ERR_FATAL, "Daemon could not open %s for writing the RSA keypair", RSAKEY_FILE );
 	}
 
 	FS_FChmod( f, 0600 ); // owner r/w, no other access
@@ -2258,24 +2265,22 @@ static void CL_LoadRSAKeys( void )
 {
 	int                  len;
 	fileHandle_t         f;
+	char                 fileName[ MAX_QPATH ];
 	uint8_t              *buf;
 
 	rsa_public_key_init( &public_key );
 	rsa_private_key_init( &private_key );
 
-	if( cl_profile && cl_profile->string[ 0 ] )
-	{
-		len = FS_FOpenFileRead( va( "profiles/%s/%s", cl_profile->string, RSAKEY_FILE ), &f, qtrue );
-	}
-	else
-	{
-		len = FS_FOpenFileRead( RSAKEY_FILE, &f, qtrue );
-	}
+	CL_GetRSAKeysFileName( fileName, sizeof( fileName ) );
+
+	Com_Printf( _( "^5Loading RSA keys from %s\n" ), fileName );
+
+	len = FS_FOpenFileRead( fileName, &f, qtrue );
 
 	if ( !f || len < 1 )
 	{
-		Com_Printf( "%s", _( "Daemon RSA public-key file not found, regenerating\n" ) );
-		CL_GenerateRSAKeys();
+		Com_Printf( "^2%s", _( "Daemon RSA public-key file not found, regenerating\n" ) );
+		CL_GenerateRSAKeys( fileName );
 		return;
 	}
 
@@ -2285,9 +2290,9 @@ static void CL_LoadRSAKeys( void )
 
 	if ( !rsa_keypair_from_sexp( &public_key, &private_key, 0, len, buf ) )
 	{
-		Com_Printf( "%s", _( "Invalid RSA keypair in file, regenerating\n" ) );
+		Com_Printf( "^1%s", _( "Invalid RSA keypair in file, regenerating\n" ) );
 		Z_Free( buf );
-		CL_GenerateRSAKeys();
+		CL_GenerateRSAKeys( fileName );
 		return;
 	}
 

@@ -1558,9 +1558,9 @@ extern "C" {
 		r_bloomBlur = ri.Cvar_Get( "r_bloomBlur", "5.0", CVAR_CHEAT );
 		r_bloomPasses = ri.Cvar_Get( "r_bloomPasses", "2", CVAR_CHEAT );
 		r_rotoscope = ri.Cvar_Get( "r_rotoscope", "0", CVAR_ARCHIVE );
-		r_cameraPostFX = ri.Cvar_Get( "r_cameraPostFX", "0", CVAR_ARCHIVE );
-		r_cameraVignette = ri.Cvar_Get( "r_cameraVignette", "1", CVAR_ARCHIVE );
-		r_cameraFilmGrain = ri.Cvar_Get( "r_cameraFilmGrain", "1", CVAR_ARCHIVE );
+		r_cameraPostFX = ri.Cvar_Get( "r_cameraPostFX", "1", CVAR_ARCHIVE );
+		r_cameraVignette = ri.Cvar_Get( "r_cameraVignette", "0", CVAR_ARCHIVE );
+		r_cameraFilmGrain = ri.Cvar_Get( "r_cameraFilmGrain", "0", CVAR_ARCHIVE );
 		r_cameraFilmGrainScale = ri.Cvar_Get( "r_cameraFilmGrainScale", "3", CVAR_ARCHIVE );
 
 		// temporary variables that can change at any time
@@ -2371,6 +2371,8 @@ extern "C" {
 
 		re.DrawRotatedPic = RE_RotatedPic;
 		re.Add2dPolys = RE_2DPolyies;
+		re.ScissorEnable = RE_ScissorEnable;
+		re.ScissorSet = RE_ScissorSet;
 		re.DrawStretchPicGradient = RE_StretchPicGradient;
 
 		re.Glyph = RE_Glyph;

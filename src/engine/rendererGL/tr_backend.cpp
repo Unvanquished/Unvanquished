@@ -7089,6 +7089,11 @@ void RB_CameraPostFX( void )
 		return;
 	}
 
+	if ( !r_cameraPostFX->integer )
+	{
+		return;
+	}
+
 	// set 2D virtual screen size
 	GL_PushMatrix();
 	MatrixOrthogonalProjection( ortho, backEnd.viewParms.viewportX,
@@ -7142,16 +7147,19 @@ void RB_CameraPostFX( void )
 
 	// bind u_GrainMap
 	GL_SelectTexture( 1 );
-	if( r_cameraPostFX->integer && tr.grainImage )
+	if ( r_cameraFilmGrain->integer && tr.grainImage )
+	{
 		GL_Bind( tr.grainImage );
+	}
 	else
+	{
 		GL_Bind( tr.blackImage );
+	}
 
 	// bind u_VignetteMap
 	GL_SelectTexture( 2 );
 
-	if ( r_cameraPostFX->integer && r_cameraVignette->integer &&
-	     tr.vignetteImage )
+	if ( r_cameraVignette->integer && tr.vignetteImage )
 	{
 		GL_Bind( tr.vignetteImage );
 	}
@@ -11526,6 +11534,48 @@ const void     *RB_StretchPic( const void *data )
 	return ( const void * )( cmd + 1 );
 }
 
+const void     *RB_ScissorEnable( const void *data )
+{
+	const scissorEnableCommand_t *cmd;
+
+	cmd = ( const scissorEnableCommand_t * ) data;
+
+	tr.scissor.status = cmd->enable;
+
+	if ( !cmd->enable )
+	{
+		Tess_End();
+		GL_Scissor( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
+	}
+	else
+	{
+		Tess_End();
+		GL_Scissor( tr.scissor.x, tr.scissor.y, tr.scissor.w, tr.scissor.h );
+	}
+
+	return ( const void * )( cmd + 1 );
+}
+
+const void     *RB_ScissorSet( const void *data )
+{
+	const scissorSetCommand_t *cmd;
+
+	cmd = ( const scissorSetCommand_t * ) data;
+
+	tr.scissor.x = cmd->x;
+	tr.scissor.y = cmd->y;
+	tr.scissor.w = cmd->w;
+	tr.scissor.h = cmd->h;
+
+	if (tr.scissor.status )
+	{
+	    Tess_End();
+	    GL_Scissor( cmd->x, cmd->y, cmd->w, cmd->h );
+	}
+
+    return ( const void * )( cmd + 1 );
+}
+
 const void     *RB_Draw2dPolys( const void *data )
 {
 	const poly2dCommand_t *cmd;
@@ -11578,6 +11628,8 @@ const void     *RB_Draw2dPolys( const void *data )
 		tess.colors[ tess.numVertexes ][ 3 ] = cmd->verts[ i ].modulate[ 3 ] * ( 1.0 / 255.0f );
 		tess.numVertexes++;
 	}
+
+	Tess_End();
 
 	return ( const void * )( cmd + 1 );
 }
@@ -12246,6 +12298,14 @@ void RB_ExecuteRenderCommands( const void *data )
 
 			case RC_FINISH:
 				data = RB_Finish( data );
+				break;
+
+			case RC_SCISSORENABLE:
+				data = RB_ScissorEnable( data );
+				break;
+
+			case RC_SCISSORSET:
+				data = RB_ScissorSet( data );
 				break;
 
 			case RC_END_OF_LIST:

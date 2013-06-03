@@ -66,6 +66,8 @@ void         CM_TransformedBiSphereTrace( trace_t *results, const vec3_t start,
     clipHandle_t model, int mask,
     const vec3_t origin );
 
+float CM_DistanceToModel( const vec3_t loc, clipHandle_t model );
+
 byte *CM_ClusterPVS( int cluster );
 
 int  CM_PointLeafnum( const vec3_t p );

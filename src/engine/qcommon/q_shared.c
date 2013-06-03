@@ -1996,7 +1996,7 @@ Safe strncpy that ensures a trailing zero
 */
 
 #ifndef NDEBUG
-void Q_strncpyzDebug( char *dest, const char *src, size_t destsize, const char *file, int line )
+void Q_strncpyzDebug( char *dest, const char *src, int destsize, const char *file, int line )
 #else
 void Q_strncpyz( char *dest, const char *src, int destsize )
 #endif
