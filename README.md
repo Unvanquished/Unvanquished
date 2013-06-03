@@ -32,8 +32,8 @@ Visual Studio
 (CMake is required to build.)
 
   1. Execute either `Visual_Studio32.bat` or `Visual_Studio64.bat`
-     Navigate to `Unvanquished/build-32` or `Unvanquished/build-64`
-     Open Daemon.sln
+  2. Navigate to `Unvanquished/build-32` or `Unvanquished/build-64`
+  3. Open `Daemon.sln`
 
 
 Linux
