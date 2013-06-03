@@ -1,3 +1,9 @@
+unvanquished (0.16.0-1) unstable; urgency=low
+
+  * Release of alpha 16.
+
+ -- Darren Salt <devspam@moreofthesa.me.uk>  Mon, 03 Jun 2013 01:38:59 +0100
+
 unvanquished (0.15.0-2) unstable; urgency=low
 
   * Switch off the GLSL optimiser: rely on mesa or taintware instead.
