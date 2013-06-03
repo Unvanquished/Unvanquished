@@ -1240,7 +1240,7 @@ static void CG_DrawPlayerHealthCross( rectDef_t *rect, vec4_t ref_color )
 	trap_R_SetColor( NULL );
 }
 
-static float CG_ChargeProgress( void )
+float CG_ChargeProgress( void )
 {
 	float progress;
 	int   min = 0, max = 0;
@@ -4204,6 +4204,10 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
 			CG_DrawTutorial( rect, text_x, text_y, foreColor, scale, textalign, textvalign, textStyle );
 			break;
 
+		case CG_MINIMAP:
+			CG_DrawMinimap( rect, foreColor );
+			break;
+
 		default:
 			break;
 	}
@@ -4708,7 +4712,7 @@ static void CG_Draw2D( void )
 	}
 
 	if ( cg.snap->ps.persistant[ PERS_SPECSTATE ] == SPECTATOR_NOT &&
-	     cg.snap->ps.stats[ STAT_HEALTH ] > 0 )
+	     cg.snap->ps.stats[ STAT_HEALTH ] > 0 && !cg.zoomed )
 	{
 		menu = Menus_FindByName( BG_ClassModelConfig(
 		                           cg.predictedPlayerState.stats[ STAT_CLASS ] )->hudName );
@@ -4726,8 +4730,20 @@ static void CG_Draw2D( void )
 		}
 	}
 
-	Menu_Update( menu );
-	Menu_Paint( menu, qtrue );
+	if ( cg.zoomed )
+	{
+		vec4_t black = { 0.0f, 0.0f, 0.0f, 0.5f };
+		trap_R_DrawStretchPic( ( cgs.glconfig.vidWidth / 2 ) - ( cgs.glconfig.vidHeight / 2 ), 0, cgs.glconfig.vidHeight, cgs.glconfig.vidHeight, 0, 0, 1, 1, cgs.media.scopeShader );
+		trap_R_SetColor( black );
+		trap_R_DrawStretchPic( 0, 0, ( cgs.glconfig.vidWidth / 2 ) - ( cgs.glconfig.vidHeight / 2 ), cgs.glconfig.vidHeight, 0, 0, 1, 1, cgs.media.whiteShader );
+		trap_R_DrawStretchPic( cgs.glconfig.vidWidth - ( ( cgs.glconfig.vidWidth / 2 ) - ( cgs.glconfig.vidHeight / 2 ) ), 0, ( cgs.glconfig.vidWidth / 2 ) - ( cgs.glconfig.vidHeight / 2 ), cgs.glconfig.vidHeight, 0, 0, 1, 1, cgs.media.whiteShader );
+		trap_R_SetColor( NULL );
+	}
+	else
+	{
+		Menu_Update( menu );
+		Menu_Paint( menu, qtrue );
+	}
 
 	CG_DrawVote( TEAM_NONE );
 	CG_DrawVote( cg.predictedPlayerState.stats[ STAT_TEAM ] );

@@ -668,6 +668,7 @@ set( CGAMEGPP_BASE
   ${GPP_DIR}/cgame/cg_ents.c
   ${GPP_DIR}/cgame/cg_event.c
   ${GPP_DIR}/cgame/cg_marks.c
+  ${GPP_DIR}/cgame/cg_minimap.c
   ${GPP_DIR}/cgame/cg_players.c
   ${GPP_DIR}/cgame/cg_playerstate.c
   ${GPP_DIR}/cgame/cg_predict.c
