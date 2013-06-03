@@ -1062,6 +1062,10 @@ static int CG_CalcFov( void )
 				}
 			}
 		}
+		else if ( cg.zoomed )
+		{
+			cg.zoomed = qfalse;
+		}
 	}
 
 	y = cg.refdef.height / tan( 0.5f * DEG2RAD( fov_y ) );
