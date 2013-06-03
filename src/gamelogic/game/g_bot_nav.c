@@ -119,6 +119,40 @@ float BotGetGoalRadius( gentity_t *self )
 	}
 }
 
+qboolean GoalInRange( gentity_t *self, float r )
+{
+	int       entityList[ MAX_GENTITIES ];
+	vec3_t    range;
+	vec3_t    mins, maxs;
+	int       i, num;
+	gentity_t *ent;
+
+	VectorSet( range, r, r, r );
+	VectorAdd( self->s.origin, range, maxs );
+	VectorSubtract( self->s.origin, range, mins );
+
+	if ( !BotTargetIsEntity( self->botMind->goal ) )
+	{
+		VectorAdd( maxs, self->r.maxs, maxs );
+		VectorAdd( mins, self->r.mins, mins );
+		return BoundsIntersectPoint( mins, maxs, self->botMind->goal.coord );
+	}
+
+	num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
+
+	for ( i = 0; i < num; i++ )
+	{
+		ent = &g_entities[ entityList[ i ] ];
+
+		if ( ent == self->botMind->goal.ent )
+		{
+			return qtrue;
+		}
+	}
+
+	return qfalse;
+}
+
 int DistanceToGoal2DSquared( gentity_t *self )
 {
 	vec3_t vec;

@@ -296,6 +296,7 @@ itemDef
       ownerdraw CG_PLAYER_HUMAN_SCANNER
     }
 
+
  //SELECTED
     itemDef
     {

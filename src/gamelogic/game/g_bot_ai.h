@@ -48,7 +48,8 @@ typedef enum
 	E_H_REPEATER,
 	E_GOAL,
 	E_ENEMY,
-	E_DAMAGEDBUILDING
+	E_DAMAGEDBUILDING,
+	E_SELF
 } AIEntity_t;
 
 // all behavior tree nodes must return one of 
@@ -65,14 +66,10 @@ typedef enum
 {
 	SELECTOR_NODE,
 	ACTION_NODE,
-	CONDITION_NODE
+	CONDITION_NODE,
+	BEHAVIOR_NODE,
+	DECORATOR_NODE
 } AINode_t;
-
-typedef struct
-{
-	char name[ MAX_QPATH ];
-	AINode_t *root;
-} AIBehaviorTree_t;
 
 struct AIGenericNode_s;
 
@@ -92,25 +89,15 @@ typedef struct
 	AINodeRunner run;
 	AIGenericNode_t *list[ MAX_NODE_LIST ];
 	int numNodes;
-	int maxFail;
 } AINodeList_t;
 
 typedef struct
 {
-	AINode_t type;
+	AINode_t     type;
 	AINodeRunner run;
-	weapon_t weapon;
-	upgrade_t upgrades[ 3 ];
-	int numUpgrades;
-} AIBuyNode_t;
-
-typedef struct
-{
-	AINode_t type;
-	AINodeRunner run;
-	AIEntity_t ent;
-	float range;
-} AIMoveToNode_t;
+	char name[ MAX_QPATH ];
+	AIGenericNode_t *root;
+} AIBehaviorTree_t;
 
 // operations used in condition nodes
 // ordered according to precedence
@@ -140,7 +127,8 @@ typedef enum
 typedef enum
 {
 	VALUE_FLOAT,
-	VALUE_INT
+	VALUE_INT,
+	VALUE_STRING
 } AIValueType_t;
 
 typedef struct
@@ -152,6 +140,7 @@ typedef struct
 	{
 		float floatValue;
 		int   intValue;
+		char  *stringValue;
 	} l;
 } AIValue_t;
 
@@ -198,25 +187,64 @@ typedef struct
 
 typedef struct
 {
-	AIBehaviorTree_t **trees;
-	int numTrees;
-	int maxTrees;
-} AITreeList_t;
+	AINode_t        type;
+	AINodeRunner    run;
+	AIGenericNode_t *child;
+	AIValue_t       *params;
+	int             nparams;
+} AIDecoratorNode_t;
 
-void              FreeBehaviorTree( AIBehaviorTree_t *tree );
-AIBehaviorTree_t *ReadBehaviorTree( const char *name, AITreeList_t *list );
-void              FreeTreeList( AITreeList_t *list );
-void              InitTreeList( AITreeList_t *list );
+typedef struct
+{
+	AINode_t     type;
+	AINodeRunner run;
+	AIValue_t    *params;
+	int          nparams;
+} AIActionNode_t;
+
+qboolean isBinaryOp( AIOpType_t op );
+qboolean isUnaryOp( AIOpType_t op );
+
+AIValue_t AIBoxFloat( float f );
+AIValue_t AIBoxInt( int i );
+AIValue_t AIBoxString( char *s );
+
+float       AIUnBoxFloat( AIValue_t v );
+int         AIUnBoxInt( AIValue_t v );
+double      AIUnBoxDouble( AIValue_t v );
+const char *AIUnBoxString( AIValue_t v );
+
+void AIDestroyValue( AIValue_t v );
+
+botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e );
 
 // standard behavior tree control-flow nodes
 AINodeStatus_t BotEvaluateNode( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotConditionNode( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotSelectorNode( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotSequenceNode( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotPriorityNode( gentity_t *self, AIGenericNode_t *node );
-AINodeStatus_t BotParallelNode( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotConcurrentNode( gentity_t *self, AIGenericNode_t *node );
+
+// decorator nodes
+AINodeStatus_t BotDecoratorReturn( gentity_t *self, AIGenericNode_t *node );
+
+// included behavior trees
+AINodeStatus_t BotBehaviorNode( gentity_t *self, AIGenericNode_t *node );
 
 // action nodes
+AINodeStatus_t BotActionChangeGoal( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionMoveToGoal( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionFireWeapon( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionAimAtGoal( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionAlternateStrafe( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionStrafeDodge( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionMoveInDir( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionClassDodge( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionActivateUpgrade( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionDeactivateUpgrade( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionEvolveTo( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionSay( gentity_t *self, AIGenericNode_t *node );
+
 AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node );
@@ -226,6 +254,7 @@ AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionHeal( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionFlee( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionRoam( gentity_t *self, AIGenericNode_t *node );
+AINodeStatus_t BotActionRoamInRadius( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node );
 AINodeStatus_t BotActionRush( gentity_t *self, AIGenericNode_t *node );
 #endif

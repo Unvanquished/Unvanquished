@@ -22,338 +22,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "g_bot_ai.h"
 #include "g_bot_util.h"
 
-/*
-=======================
-Behavior Tree Creation
-=======================
-*/
-
-static void BotInitNode( AINode_t type, AINodeRunner func, void *node )
-{
-	AIGenericNode_t *n = ( AIGenericNode_t * ) node;
-	n->type = type;
-	n->run = func;
-}
-
-#define allocNode( T ) ( T * ) BG_Alloc( sizeof( T ) );
-#define stringify( v ) va( #v " %d", v )
-#define D( T ) trap_Parse_AddGlobalDefine( stringify( T ) )
-
-// FIXME: copied from parse.c
-#define P_LOGIC_AND        5
-#define P_LOGIC_OR         6
-#define P_LOGIC_GEQ        7
-#define P_LOGIC_LEQ        8
-#define P_LOGIC_EQ         9
-#define P_LOGIC_UNEQ       10
-
-#define P_LOGIC_NOT        36
-#define P_LOGIC_GREATER    37
-#define P_LOGIC_LESS       38
-
-typedef struct pc_token_list_s
-{
-	pc_token_t token;
-	struct pc_token_list_s *prev;
-	struct pc_token_list_s *next;
-} pc_token_list;
-
-static pc_token_list *CreateTokenList( int handle )
-{
-	pc_token_t token;
-	char filename[ MAX_QPATH ];
-	pc_token_list *current = NULL;
-	pc_token_list *root = NULL;
-
-	while ( trap_Parse_ReadToken( handle, &token ) )
-	{
-		pc_token_list *list = ( pc_token_list * ) BG_Alloc( sizeof( pc_token_list ) );
-		
-		if ( current )
-		{
-			list->prev = current;
-			current->next = list;
-		}
-		else
-		{
-			list->prev = list;
-			root = list;
-		}
-		
-		current = list;
-		current->next = NULL;
-
-		current->token = token;
-		trap_Parse_SourceFileAndLine( handle, filename, &current->token.line );
-	}
-
-	return root;
-}
-
-static void FreeTokenList( pc_token_list *list )
-{
-	pc_token_list *current = list;
-	while( current )
-	{
-		pc_token_list *node = current;
-		current = current->next;
-
-		BG_Free( node );
-	}
-}
-
-static AIGenericNode_t *ReadNode( pc_token_list **tokenlist );
-static void FreeNode( AIGenericNode_t *node );
-static void FreeNodeList( AINodeList_t *node );
-static void FreeConditionNode( AIConditionNode_t *node );
-
-static void CheckToken( const char *tokenValueName, const char *nodename, const pc_token_t *token, int requiredType )
-{
-	if ( token->type != requiredType )
-	{
-		BotDPrintf( S_COLOR_RED "ERROR: Invalid %s %s after %s on line %d\n", tokenValueName, token->string, nodename, token->line );
-	}
-}
-
-static AIValue_t AIBoxFloat( float f )
-{
-	AIValue_t t;
-	t.expType = EX_VALUE;
-	t.valType = VALUE_FLOAT;
-	t.l.floatValue = f;
-	return t;
-}
-
-static AIValue_t AIBoxInt( int i )
-{
-	AIValue_t t;
-	t.expType = EX_VALUE;
-	t.valType = VALUE_INT;
-	t.l.intValue = i;
-	return t;
-}
-
-static AIValue_t AIBoxToken( const pc_token_t *token )
-{
-	if ( ( float ) token->intvalue != token->floatvalue )
-	{
-		return AIBoxFloat( token->floatvalue );
-	}
-	else
-	{
-		return AIBoxInt( token->intvalue );
-	}
-}
-
-static float AIUnBoxFloat( AIValue_t v )
-{
-	switch ( v.valType )
-	{
-		case VALUE_FLOAT:
-			return v.l.floatValue;
-		case VALUE_INT:
-			return ( float ) v.l.intValue;
-	}
-	return 0.0f;
-}
-
-static int AIUnBoxInt( AIValue_t v )
-{
-	switch ( v.valType )
-	{
-		case VALUE_FLOAT:
-			return ( int ) v.l.floatValue;
-		case VALUE_INT:
-			return v.l.intValue;
-	}
-	return 0;
-}
-
-static double AIUnBoxDouble( AIValue_t v )
-{
-	switch ( v.valType )
-	{
-		case VALUE_FLOAT:
-			return ( double ) v.l.floatValue;
-		case VALUE_INT:
-			return v.l.intValue;
-	}
-	return 0.0;
-}
-
-// functions that are used to provide values to the behavior tree
-static AIValue_t buildingIsDamaged( gentity_t *self, const AIValue_t *params )
-{
-	return AIBoxInt( self->botMind->closestDamagedBuilding.ent != NULL );
-}
-
-static AIValue_t haveWeapon( gentity_t *self, const AIValue_t *params )
-{
-	return AIBoxInt( BG_InventoryContainsWeapon( AIUnBoxInt( params[ 0 ] ), self->client->ps.stats ) );
-}
-
-static AIValue_t alertedToEnemy( gentity_t *self, const AIValue_t *params )
-{
-	qboolean success;
-	if ( level.time - self->botMind->timeFoundEnemy < g_bot_reactiontime.integer )
-	{
-		success = qfalse;
-	}
-	else if ( !self->botMind->bestEnemy.ent )
-	{
-		success = qfalse;
-	}
-	else
-	{
-		success = qtrue;
-	}
-
-	return AIBoxInt( success );
-}
-
-static AIValue_t botTeam( gentity_t *self, const AIValue_t *params )
-{
-	return AIBoxInt( self->client->ps.stats[ STAT_TEAM ] );
-}
-
-static AIValue_t currentWeapon( gentity_t *self, const AIValue_t *params )
-{
-	return AIBoxInt( self->client->ps.weapon == AIUnBoxInt( params[ 0 ] ) );
-}
-
-static AIValue_t haveUpgrade( gentity_t *self, const AIValue_t *params )
-{
-	int upgrade = AIUnBoxInt( params[ 0 ] );
-	return AIBoxInt( !BG_UpgradeIsActive( upgrade, self->client->ps.stats ) && BG_InventoryContainsUpgrade( upgrade, self->client->ps.stats ) );
-}
-static AIValue_t botHealth( gentity_t *self, const AIValue_t *params )
-{
-	float health = self->health;
-	float maxHealth = BG_Class( self->client->ps.stats[ STAT_CLASS ] )->health;
-	return AIBoxFloat( health / maxHealth );
-}
-
-static AIValue_t botAmmo( gentity_t *self, const AIValue_t *params )
-{
-	return AIBoxFloat( PercentAmmoRemaining( BG_PrimaryWeapon( self->client->ps.stats ), &self->client->ps ) );
-}
-
-static AIValue_t teamateHasWeapon( gentity_t *self, const AIValue_t *params )
-{
-	return AIBoxInt( BotTeamateHasWeapon( self, AIUnBoxInt( params[ 0 ] ) ) );
-}
-
-static AIValue_t distanceTo( gentity_t *self, const AIValue_t *params )
-{
-	int e = AIUnBoxInt( params[ 0 ] );
-	float distance = 0;
-	if ( e < BA_NUM_BUILDABLES )
-	{
-		distance = self->botMind->closestBuildings[ e ].distance;
-	}
-	else if ( e == E_GOAL )
-	{
-		distance = DistanceToGoal( self );
-	}
-	else if ( e == E_ENEMY )
-	{
-		distance = self->botMind->bestEnemy.distance;
-	}
-	else if ( e == E_DAMAGEDBUILDING )
-	{
-		distance = self->botMind->closestDamagedBuilding.distance;
-	}
-	return AIBoxFloat( distance );
-}
-
-static AIValue_t baseRushScore( gentity_t *self, const AIValue_t *params )
-{
-	return AIBoxFloat( BotGetBaseRushScore( self ) );
-}
-
-static AIValue_t healScore( gentity_t *self, const AIValue_t *params )
-{
-	return AIBoxFloat( BotGetHealScore( self ) );
-}
-
-static AIValue_t botClass( gentity_t *self, const AIValue_t *params )
-{
-	return AIBoxInt( self->client->ps.stats[ STAT_CLASS ] );
-}
-
-// functions accessible to the behavior tree for use in condition nodes
-static const struct AIConditionMap_s
-{
-	const char    *name;
-	AIValueType_t retType;
-	AIFunc        func;
-	int           nparams;
-} conditionFuncs[] =
-{
-	{ "alertedToEnemy",    VALUE_INT,   alertedToEnemy,    0 },
-	{ "baseRushScore",     VALUE_FLOAT, baseRushScore,     0 },
-	{ "buildingIsDamaged", VALUE_INT,   buildingIsDamaged, 0 },
-	{ "class",             VALUE_INT,   botClass,          0 },
-	{ "distanceTo",        VALUE_FLOAT, distanceTo,        1 },
-	{ "haveUpgrade",       VALUE_INT,   haveUpgrade,       1 },
-	{ "haveWeapon",        VALUE_INT,   haveWeapon,        1 },
-	{ "healScore",         VALUE_FLOAT, healScore,         0 },
-	{ "percentHealth",     VALUE_FLOAT, botHealth,         0 },
-	{ "team",              VALUE_INT,   botTeam,           0 },
-	{ "teamateHasWeapon",  VALUE_INT,   teamateHasWeapon,  1 },
-	{ "weapon",            VALUE_INT,   currentWeapon,     0 }
-};
-
-static const struct AIOpMap_s
-{
-	const char            *str;
-	int                   tokenSubtype;
-	AIOpType_t            opType;
-} conditionOps[] =
-{
-	{ ">=", P_LOGIC_GEQ,     OP_GREATERTHANEQUAL },
-	{ ">",  P_LOGIC_GREATER, OP_GREATERTHAN      },
-	{ "<=", P_LOGIC_LEQ,     OP_LESSTHANEQUAL    },
-	{ "<",  P_LOGIC_LESS,    OP_LESSTHAN         },
-	{ "==", P_LOGIC_EQ,      OP_EQUAL            },
-	{ "!=", P_LOGIC_UNEQ,    OP_NEQUAL           },
-	{ "!",  P_LOGIC_NOT,     OP_NOT              },
-	{ "&&", P_LOGIC_AND,     OP_AND              },
-	{ "||", P_LOGIC_OR,      OP_OR               }
-};
-
-static AIOpType_t opTypeFromToken( pc_token_t *token )
-{
-	int i;
-	if ( token->type != TT_PUNCTUATION )
-	{
-		return OP_NONE;
-	}
-
-	for ( i = 0; i < ARRAY_LEN( conditionOps ); i++ )
-	{
-		if ( token->subtype == conditionOps[ i ].tokenSubtype )
-		{
-			return conditionOps[ i ].opType;
-		}
-	}
-	return OP_NONE;
-}
-
-static const char *opTypeToString( AIOpType_t op )
-{
-	int i;
-	for ( i = 0; i < ARRAY_LEN( conditionOps ); i++ )
-	{
-		if ( conditionOps[ i ].opType == op )
-		{
-			return conditionOps[ i ].str;
-		}
-	}
-	return NULL;
-}
-
-static qboolean isBinaryOp( AIOpType_t op )
+qboolean isBinaryOp( AIOpType_t op )
 {
 	switch ( op )
 	{
@@ -370,875 +39,135 @@ static qboolean isBinaryOp( AIOpType_t op )
 	}
 }
 
-static qboolean isUnaryOp( AIOpType_t op )
+qboolean isUnaryOp( AIOpType_t op )
 {
 	return op == OP_NOT;
 }
 
-// compare operator precedence
-static int opCompare( AIOpType_t op1, AIOpType_t op2 )
+// functions for using values specified in the bt
+AIValue_t AIBoxFloat( float f )
 {
-	if ( op1 < op2 )
+	AIValue_t t;
+	t.expType = EX_VALUE;
+	t.valType = VALUE_FLOAT;
+	t.l.floatValue = f;
+	return t;
+}
+
+AIValue_t AIBoxInt( int i )
+{
+	AIValue_t t;
+	t.expType = EX_VALUE;
+	t.valType = VALUE_INT;
+	t.l.intValue = i;
+	return t;
+}
+
+AIValue_t AIBoxString( char *s )
+{
+	AIValue_t t;
+	t.expType = EX_VALUE;
+	t.valType = VALUE_STRING;
+	t.l.stringValue = BG_strdup( s );
+	return t;
+}
+
+float AIUnBoxFloat( AIValue_t v )
+{
+	switch ( v.valType )
 	{
-		return 1;
+		case VALUE_FLOAT:
+			return v.l.floatValue;
+		case VALUE_INT:
+			return ( float ) v.l.intValue;
 	}
-	else if ( op1 < op2 )
+	return 0.0f;
+}
+
+int AIUnBoxInt( AIValue_t v )
+{
+	switch ( v.valType )
 	{
-		return -1;
+		case VALUE_FLOAT:
+			return ( int ) v.l.floatValue;
+		case VALUE_INT:
+			return v.l.intValue;
 	}
 	return 0;
 }
 
-static pc_token_list *findCloseParen( pc_token_list *start, pc_token_list *end )
+const char *AIUnBoxString( AIValue_t v )
 {
-	pc_token_list *list = start;
-	int depth = 0;
+	static char empty[] = "";
 
-	while ( list != end )
+	switch ( v.valType )
 	{
-		if ( list->token.string[ 0 ] == '(' )
-		{
-			depth++;
-		}
-
-		if ( list->token.string[ 0 ] == ')' )
-		{
-			depth--;
-		}
-
-		if ( depth == 0 )
-		{
-			return list;
-		}
-
-		list = list->next;
+		case VALUE_FLOAT:
+			return va( "%f", v.l.floatValue );
+		case VALUE_INT:
+			return va( "%d", v.l.intValue );
+		case VALUE_STRING:
+			return v.l.stringValue;
 	}
-
-	return NULL;
+	return empty;
 }
 
-qboolean expectToken( const char *s, pc_token_list **list, qboolean next )
+double AIUnBoxDouble( AIValue_t v )
 {
-	const pc_token_list *current = *list;
-
-	if ( !current )
+	switch ( v.valType )
 	{
-		BotDPrintf( S_COLOR_RED "ERROR: Expected token %s but found end of file\n", s );
-		return qfalse;
+		case VALUE_FLOAT:
+			return ( double ) v.l.floatValue;
+		case VALUE_INT:
+			return ( double ) v.l.intValue;
 	}
-	
-	if ( Q_stricmp( current->token.string, s ) != 0 )
-	{
-		BotDPrintf( S_COLOR_RED "ERROR: Expected token %s but found %s on line %d\n", s, current->token.string, current->token.line );
-		return qfalse;
-	}
-	
-	if ( next )
-	{
-		*list = current->next;
-	}
-	return qtrue;
+	return 0.0;
 }
 
-static AIOp_t *newOp( pc_token_list *list )
+void AIDestroyValue( AIValue_t v )
 {
-	pc_token_list *current = list;
-	AIOp_t *ret = NULL;
-
-	AIOpType_t op = opTypeFromToken( &current->token );
-
-	if ( isBinaryOp( op ) )
+	switch ( v.valType )
 	{
-		AIBinaryOp_t *b = ( AIBinaryOp_t * ) BG_Alloc( sizeof( *b ) );
-		b->opType = op;
-		ret = ( AIOp_t * ) b;
+		case VALUE_STRING:
+			BG_Free( v.l.stringValue );
+			break;
 	}
-	else if ( isUnaryOp( op ) )
-	{
-		AIUnaryOp_t *u = ( AIUnaryOp_t * ) BG_Alloc( sizeof( *u ) );
-		u->opType = op;
-		ret = ( AIOp_t * ) u;
-	}
-
-	return ret;
 }
 
-static AIValue_t *newValueLiteral( pc_token_list **list )
+botEntityAndDistance_t AIEntityToGentity( gentity_t *self, AIEntity_t e )
 {
-	AIValue_t *ret;
-	pc_token_list *current = *list;
-	pc_token_t *token = &current->token;
+	botEntityAndDistance_t nullEntity;
+	nullEntity.ent = NULL;
+	nullEntity.distance = INT_MAX;
 
-	ret = ( AIValue_t * ) BG_Alloc( sizeof( *ret ) );
-
-	*ret = AIBoxToken( token );
-
-	*list = current->next;
-	return ret;
-}
-
-static AIValueFunc_t *newValueFunc( pc_token_list **list )
-{
-	AIValueFunc_t *ret = NULL;
-	AIValueFunc_t v;
-	pc_token_list *current = *list;
-	pc_token_list *parenBegin = NULL;
-	pc_token_list *parenEnd = NULL;
-	pc_token_list *parse = NULL;
-	int numParams = 0;
-	struct AIConditionMap_s *f;
-
-	memset( &v, 0, sizeof( v ) );
-
-	f = bsearch( current->token.string, conditionFuncs, ARRAY_LEN( conditionFuncs ), sizeof( *conditionFuncs ), cmdcmp );
-
-	if ( !f )
+	if ( e > BA_NONE && e < BA_NUM_BUILDABLES )
 	{
-		BotDPrintf( S_COLOR_RED "ERROR: Unknown function: %s on line %d\n", current->token.string, current->token.line );
-		*list = current->next;
-		return NULL;
+		return self->botMind->closestBuildings[ e ];
 	}
-
-	v.expType = EX_FUNC;
-	v.retType = f->retType;
-	v.func =    f->func;
-	v.nparams = f->nparams;
-
-	parenBegin = current->next;
-
-	// if the function has no parameters, allow it to be used without parenthesis
-	if ( v.nparams == 0 && parenBegin->token.string[ 0 ] != '(' )
+	else if ( e == E_ENEMY )
 	{
-		ret = ( AIValueFunc_t * ) BG_Alloc( sizeof( *ret ) );
-		memcpy( ret, &v, sizeof( *ret ) );
-
-		*list = current->next;
+		return self->botMind->bestEnemy;
+	}
+	else if ( e == E_DAMAGEDBUILDING )
+	{
+		return self->botMind->closestDamagedBuilding;
+	}
+	else if ( e == E_GOAL )
+	{
+		botEntityAndDistance_t ret = nullEntity;
+		ret.ent = self->botMind->goal.ent;
+		ret.distance = DistanceToGoal( self );
 		return ret;
 	}
-
-	// functions should always be proceeded by a '(' if they have parameters
-	if ( !expectToken( "(", &parenBegin, qfalse ) )
+	else if ( e == E_SELF )
 	{
-		return NULL;
+		botEntityAndDistance_t ret;
+		ret.ent = self;
+		ret.distance = 0;
+		return ret;
 	}
-
-	// find the end parenthesis around the function's args
-	parenEnd = findCloseParen( parenBegin, NULL );
-
-	if ( !parenEnd )
-	{
-		BotDPrintf( S_COLOR_RED "ERROR: could not find matching ')' for '(' on line %d", parenBegin->token.line );
-		*list = parenBegin->next;
-		return NULL;
-	}
-
-	// count the number of parameters
-	parse = parenBegin->next;
-
-	while ( parse != parenEnd )
-	{
-		if ( parse->token.type == TT_NUMBER )
-		{
-			numParams++;
-		}
-		else if ( parse->token.string[ 0 ] != ',' )
-		{
-			BotDPrintf( S_COLOR_RED "ERROR: found invalid token %s in parameter list on line %d\n", parse->token.string, parse->token.line );
-			*list = parenEnd->next; // skip invalid function expression
-			return NULL;
-		}
-		parse = parse->next;
-	}
-
-	// warn if too many or too few parameters
-	if ( numParams < v.nparams )
-	{
-		BotDPrintf( S_COLOR_YELLOW "WARNING: too few parameters for %s on line %d\n", current->token.string, current->token.line );
-	}
-
-	if ( numParams > v.nparams )
-	{
-		BotDPrintf( S_COLOR_YELLOW "WARNING: too many parameters for %s on line %d\n", current->token.string, current->token.line );
-	}
-
-	// create the value op
-	ret = ( AIValueFunc_t * ) BG_Alloc( sizeof( *ret ) );
-
-	// copy the members
-	memcpy( ret, &v, sizeof( *ret ) );
-
-	if ( ret->nparams )
-	{
-		// add the parameters
-		ret->params = ( AIValue_t * ) BG_Alloc( sizeof( *ret->params ) * ret->nparams );
-
-		numParams = 0;
-		parse = parenBegin->next;
-		while ( parse != parenEnd )
-		{
-			if ( parse->token.type == TT_NUMBER )
-			{
-				ret->params[ numParams ] = AIBoxToken( &parse->token );
-				numParams++;
-			}
-			parse = parse->next;
-		}
-	}
-	*list = parenEnd->next;
-	return ret;
-}
-
-static void FreeOp( AIOp_t *op );
-static void FreeValue( AIValue_t *v )
-{
-	if ( !v )
-	{
-		return;
-	}
-
-	BG_Free( v );
-}
-static void FreeValueFunc( AIValueFunc_t *v )
-{
-	if ( !v )
-	{
-		return;
-	}
-
-	BG_Free( v->params );
-	BG_Free( v );
-}
-static void FreeExpression( AIExpType_t *exp )
-{
-	if ( !exp )
-	{
-		return;
-	}
-
-	if ( *exp == EX_FUNC )
-	{
-		AIValueFunc_t *v = ( AIValueFunc_t * ) exp;
-		FreeValueFunc( v );
-	}
-	else if ( *exp == EX_VALUE )
-	{
-		AIValue_t *v = ( AIValue_t * ) exp;
-		
-		FreeValue( v );
-	}
-	else if ( *exp == EX_OP )
-	{
-		AIOp_t *op = ( AIOp_t * ) exp;
-
-		FreeOp( op );
-	}
-}
-static void FreeOp( AIOp_t *op )
-{
-	if ( !op )
-	{
-		return;
-	}
-
-	if ( isBinaryOp( op->opType ) )
-	{
-		AIBinaryOp_t *b = ( AIBinaryOp_t * ) op;
-		FreeExpression( b->exp1 );
-		FreeExpression( b->exp2 );
-	}
-	else if ( isUnaryOp( op->opType ) )
-	{
-		AIUnaryOp_t *u = ( AIUnaryOp_t * ) op;
-		FreeExpression( u->exp );
-	}
-
-	BG_Free( op );
-}
-
-AIExpType_t *makeExpression( AIOp_t *op, AIExpType_t *exp1, AIExpType_t *exp2 )
-{
-	if ( isUnaryOp( op->opType ) )
-	{
-		AIUnaryOp_t *u = ( AIUnaryOp_t * ) op;
-		u->exp = exp1;
-	}
-	else if ( isBinaryOp( op->opType ) )
-	{
-		AIBinaryOp_t *b = ( AIBinaryOp_t * ) op;
-		b->exp1 = exp1;
-		b->exp2 = exp2;
-	}
-
-	return ( AIExpType_t * ) op;
-}
-
-AIExpType_t *Primary( pc_token_list **list );
-AIExpType_t *ReadConditionExpression( pc_token_list **list, AIOpType_t op2 )
-{
-	AIExpType_t *t;
-	AIOpType_t  op;
-
-	if ( !*list )
-	{
-		BotDPrintf( S_COLOR_RED "ERROR: Unexpected end of file\n" );
-		return NULL;
-	}
-
-	t = Primary( list );
-
-	op = opTypeFromToken( &(*list)->token );
-
-	while ( isBinaryOp( op ) && opCompare( op, op2 ) >= 0 )
-	{
-		AIExpType_t *t1;
-		AIOp_t *exp = newOp( *list );
-		*list = (*list)->next;
-		t1 = ReadConditionExpression( list, op );
-		t = makeExpression( exp, t, t1 );
-
-		if ( !*list )
-		{
-			break;
-		}
-
-		op = opTypeFromToken( &(*list)->token );
-	}
-
-	return t;
-}
-
-AIExpType_t *Primary( pc_token_list **list )
-{
-	pc_token_list *current = *list;
-	AIExpType_t *tree = NULL;
-
-	if ( isUnaryOp( opTypeFromToken( &current->token ) ) )
-	{
-		AIExpType_t *t;
-		AIOp_t *op = newOp( current );
-		*list = current->next;
-		t = ReadConditionExpression( list, op->opType );
-		tree = makeExpression( op, t, NULL );
-	}
-	else if ( current->token.string[0] == '(' )
-	{
-		*list = current->next;
-		tree = ReadConditionExpression( list, OP_NONE );
-		expectToken( ")", list, qtrue );
-	}
-	else if ( current->token.type == TT_NUMBER )
-	{
-		tree = ( AIExpType_t * ) newValueLiteral( list );
-	}
-	else if ( current->token.type == TT_NAME )
-	{
-		tree = ( AIExpType_t * ) newValueFunc( list );
-	}
-	else
-	{
-		BotDPrintf( S_COLOR_RED "ERROR: token %s on line %d is not valid\n", current->token.string, current->token.line );
-	}
-	return tree;
-}
-
-
-/*
-======================
-ReadConditionNode
-
-Parses and creates an AIConditionNode_t from a token list
-The token list pointer is modified to point to the beginning of the next node text block
-
-A condition node has the form:
-condition [expression] {
-	child node
-}
-
-or the form:
-condition [expression]
-
-[expression] can be any valid set of boolean operations and values
-======================
-*/
-static AIGenericNode_t *ReadConditionNode( pc_token_list **tokenlist )
-{
-	pc_token_list *current = *tokenlist;
-
-	AIConditionNode_t *condition;
-
-	if ( !expectToken( "condition", &current, qtrue ) )
-	{
-		return NULL;
-	}
-
-	condition = allocNode( AIConditionNode_t );
-	BotInitNode( CONDITION_NODE, BotConditionNode, condition );
-
-	condition->exp = ReadConditionExpression( &current, OP_NONE );
-
-	if ( Q_stricmp( current->token.string, "{" ) )
-	{
-		// this condition node has no child nodes
-		*tokenlist = current;
-		return ( AIGenericNode_t * ) condition;
-	}
-
-	current = current->next;
-
-	condition->child = ReadNode( &current );
-
-	expectToken( "}", &current, qfalse );
-
-	*tokenlist = current->next;
-
-	return ( AIGenericNode_t * ) condition;
-}
-
-/*
-======================
-ReadActionNode
-
-Parses and creates an AIGenericNode_t with the type ACTION_NODE from a token list
-The token list pointer is modified to point to the beginning of the next node text block after reading
-
-An action node has the form:
-action [type]
-
-Where [type] defines which action to execute
-======================
-*/
-static AIGenericNode_t *ReadActionNode( pc_token_list **tokenlist )
-{
-	pc_token_list *current = *tokenlist;
-
-	AIGenericNode_t *node;
-
-	if ( !expectToken( "action", &current, qtrue ) )
-	{
-		return NULL;
-	}
-
-	if ( !Q_stricmp( current->token.string, "heal" ) )
-	{
-		node = allocNode( AIGenericNode_t );
-		BotInitNode( ACTION_NODE, BotActionHeal, node );
-	}
-	else if ( !Q_stricmp( current->token.string, "fight" ) )
-	{
-		node = allocNode( AIGenericNode_t );
-		BotInitNode( ACTION_NODE, BotActionFight, node );
-	}
-	else if ( !Q_stricmp( current->token.string, "roam" ) )
-	{
-		node = allocNode( AIGenericNode_t );
-		BotInitNode( ACTION_NODE, BotActionRoam, node );
-	}
-	else if ( !Q_stricmp( current->token.string, "equip" ) )
-	{
-		AIBuyNode_t *realAction = allocNode( AIBuyNode_t );
-		realAction->numUpgrades = 0;
-		realAction->weapon = WP_NONE;
-
-		BotInitNode( ACTION_NODE, BotActionBuy, realAction );
-		node = ( AIGenericNode_t * ) realAction;
-	}
-	else if ( !Q_stricmp( current->token.string, "buy" ) )
-	{
-		AIBuyNode_t *realAction = allocNode( AIBuyNode_t );
-
-		current = current->next;
-
-		CheckToken( "weapon", "action buy", &current->token, TT_NUMBER );
-
-		realAction->weapon = ( weapon_t ) current->token.intvalue;
-		realAction->numUpgrades = 0;
-
-		BotInitNode( ACTION_NODE, BotActionBuy, realAction );
-		node = ( AIGenericNode_t * ) realAction;
-	}
-	else if ( !Q_stricmp( current->token.string, "flee" ) )
-	{
-		node = allocNode( AIGenericNode_t );
-		BotInitNode( ACTION_NODE, BotActionFlee, node );
-	}
-	else if ( !Q_stricmp( current->token.string, "repair" ) )
-	{
-		node = allocNode( AIGenericNode_t );
-		BotInitNode( ACTION_NODE, BotActionRepair, node );
-	}
-	else if ( !Q_stricmp( current->token.string, "evolve" ) )
-	{
-		node = allocNode( AIGenericNode_t );
-		BotInitNode( ACTION_NODE, BotActionEvolve, node );
-	}
-	else if ( !Q_stricmp( current->token.string, "rush" ) )
-	{
-		node = allocNode( AIGenericNode_t );
-		BotInitNode( ACTION_NODE, BotActionRush, node );
-	}
-	else
-	{
-		BotDPrintf( S_COLOR_RED "ERROR: Invalid token %s on line %d\n", current->token.string, current->token.line );
-	}
-
-	*tokenlist = current->next;
-	return ( AIGenericNode_t * ) node;
-}
-
-/*
-======================
-ReadNodeList
-
-Parses and creates an AINodeList_t from a token list
-The token list pointer is modified to point to the beginning of the next node text block after reading
-
-A node list has one of these forms:
-selector sequence {
-[ one or more child nodes ]
-}
-
-selector priority {
-[ one or more child nodes ]
-}
-
-selector {
-[ one or more child nodes ]
-}
-======================
-*/
-static AIGenericNode_t *ReadNodeList( pc_token_list **tokenlist )
-{
-	AINodeList_t *list;
-	pc_token_list *current = *tokenlist;
-
-	if ( !expectToken( "selector", &current, qtrue ) )
-	{
-		return NULL;
-	}
-
-	list = allocNode( AINodeList_t );
-
-	if ( !Q_stricmp( current->token.string, "sequence" ) )
-	{
-		BotInitNode( SELECTOR_NODE, BotSequenceNode, list );
-		current = current->next;
-	}
-	else if ( !Q_stricmp( current->token.string, "priority" ) )
-	{
-		BotInitNode( SELECTOR_NODE, BotPriorityNode, list );
-		current = current->next;
-	}
-	else if ( !Q_stricmp( current->token.string, "{" ) )
-	{
-		BotInitNode( SELECTOR_NODE, BotSelectorNode, list );
-	}
-	else
-	{
-		BotDPrintf( S_COLOR_RED "ERROR: Invalid token %s on line %d\n", current->token.string, current->token.line );
-	}
-
-	if ( !expectToken( "{", &current, qtrue ) )
-	{
-		FreeNodeList( list );
-		return NULL;
-	}
-
-	while ( Q_stricmp( current->token.string, "}" ) )
-	{
-		AIGenericNode_t *node = ReadNode( &current );
-
-		if ( node && list->numNodes >= MAX_NODE_LIST )
-		{
-			BotDPrintf( "ERROR: Max selector children limit exceeded at line %d\n", (*tokenlist)->token.line );
-			FreeNode( node );
-		}
-		else if ( node )
-		{
-			list->list[ list->numNodes ] = node;
-			list->numNodes++;
-		}
-
-		if ( !current )
-		{
-			*tokenlist = current;
-			return ( AIGenericNode_t * ) list;
-		}
-	}
-
-	*tokenlist = current->next;
-	return ( AIGenericNode_t * ) list;
-}
-
-/*
-======================
-ReadNode
-
-Parses and creates an AIGenericNode_t from a token list
-The token list pointer is modified to point to the next node text block after reading
-
-This function delegates the reading to the sub functions
-ReadNodeList, ReadActionNode, and ReadConditionNode depending on the first token in the list
-======================
-*/
-
-static AIGenericNode_t *ReadNode( pc_token_list **tokenlist )
-{
-	pc_token_list *current = *tokenlist;
-	AIGenericNode_t *node;
-
-	if ( !Q_stricmp( current->token.string, "selector" ) )
-	{
-		node = ReadNodeList( &current );
-	}
-	else if ( !Q_stricmp( current->token.string, "action" ) )
-	{
-		node = ReadActionNode( &current );
-	}
-	else if ( !Q_stricmp( current->token.string, "condition" ) )
-	{
-		node = ReadConditionNode( &current );
-	}
-	else
-	{
-		BotDPrintf( S_COLOR_RED "ERROR: invalid token on line %d found: %s\n", current->token.line, current->token.string );
-		node = NULL;
-	}
-
-	*tokenlist = current;
-	return node;
-}
-
-void InitTreeList( AITreeList_t *list )
-{
-	list->trees = ( AIBehaviorTree_t ** ) BG_Alloc( sizeof( AIBehaviorTree_t * ) * 10 );
-	list->maxTrees = 10;
-	list->numTrees = 0;
-}
-
-void AddTreeToList( AITreeList_t *list, AIBehaviorTree_t *tree )
-{
-	if ( list->maxTrees == list->numTrees )
-	{
-		AIBehaviorTree_t **trees = ( AIBehaviorTree_t ** ) BG_Alloc( sizeof( AIBehaviorTree_t * ) * list->maxTrees );
-		list->maxTrees *= 2;
-		memcpy( trees, list->trees, sizeof( AIBehaviorTree_t * ) * list->numTrees );
-		BG_Free( list->trees );
-		list->trees = trees;
-	}
-
-	list->trees[ list->numTrees ] = tree;
-	list->numTrees++;
-}
-
-void RemoveTreeFromList( AITreeList_t *list, AIBehaviorTree_t *tree )
-{
-	int i;
-
-	for ( i = 0; i < list->numTrees; i++ )
-	{
-		AIBehaviorTree_t *testTree = list->trees[ i ];
-		if ( !Q_stricmp( testTree->name, tree->name ) )
-		{
-			FreeBehaviorTree( testTree );
-			memmove( &list->trees[ i ], &list->trees[ i + 1 ], sizeof( AIBehaviorTree_t * ) * ( list->numTrees - i - 1 ) );
-			list->numTrees--;
-		}
-	}
-}
-
-void FreeTreeList( AITreeList_t *list )
-{
-	int i;
-	for ( i = 0; i < list->numTrees; i++ )
-	{
-		AIBehaviorTree_t *tree = list->trees[ i ];
-		FreeBehaviorTree( tree );
-	}
-
-	BG_Free( list->trees );
-	list->trees = NULL;
-	list->maxTrees = 0;
-	list->numTrees = 0;
-}
-
-/*
-======================
-ReadBehaviorTree
-
-Load a behavior tree of the given name from a file
-======================
-*/
-AIBehaviorTree_t * ReadBehaviorTree( const char *name, AITreeList_t *list )
-{
-	int i;
-	char treefilename[ MAX_QPATH ];
-	int handle;
-	pc_token_list *tokenlist;
-	AIBehaviorTree_t *tree;
-	pc_token_list *current;
-	AIGenericNode_t *node;
-
-	// check if this behavior tree has already been loaded
-	for ( i = 0; i < list->numTrees; i++ )
-	{
-		AIBehaviorTree_t *tree = list->trees[ i ];
-		if ( !Q_stricmp( tree->name, name ) )
-		{
-			return tree;
-		}
-	}
-
-	// add preprocessor defines for use in the behavior tree
-	// add upgrades
-	D( UP_LIGHTARMOUR );
-	D( UP_HELMET );
-	D( UP_MEDKIT );
-	D( UP_BATTPACK );
-	D( UP_JETPACK );
-	D( UP_BATTLESUIT );
-	D( UP_GRENADE );
-
-	// add weapons
-	D( WP_MACHINEGUN );
-	D( WP_PAIN_SAW );
-	D( WP_SHOTGUN );
-	D( WP_LAS_GUN );
-	D( WP_MASS_DRIVER );
-	D( WP_CHAINGUN );
-	D( WP_FLAMER );
-	D( WP_PULSE_RIFLE );
-	D( WP_LUCIFER_CANNON );
-	D( WP_GRENADE );
-	D( WP_HBUILD );
-
-	// add teams
-	D( TEAM_ALIENS );
-	D( TEAM_HUMANS );
-
-	// add AIEntitys
-	D( E_NONE );
-	D( E_A_SPAWN );
-	D( E_A_OVERMIND );
-	D( E_A_BARRICADE );
-	D( E_A_ACIDTUBE );
-	D( E_A_TRAPPER );
-	D( E_A_BOOSTER );
-	D( E_A_HIVE );
-	D( E_H_SPAWN );
-	D( E_H_MGTURRET );
-	D( E_H_TESLAGEN );
-	D( E_H_ARMOURY );
-	D( E_H_DCC );
-	D( E_H_MEDISTAT );
-	D( E_H_REACTOR );
-	D( E_H_REPEATER );
-	D( E_GOAL );
-	D( E_ENEMY );
-	D( E_DAMAGEDBUILDING );
-
-	// add player classes
-	D( PCL_NONE );
-	D( PCL_ALIEN_BUILDER0 );
-	D( PCL_ALIEN_BUILDER0_UPG );
-	D( PCL_ALIEN_LEVEL0 );
-	D( PCL_ALIEN_LEVEL1 );
-	D( PCL_ALIEN_LEVEL1_UPG );
-	D( PCL_ALIEN_LEVEL2 );
-	D( PCL_ALIEN_LEVEL2_UPG );
-	D( PCL_ALIEN_LEVEL3 );
-	D( PCL_ALIEN_LEVEL3_UPG );
-	D( PCL_ALIEN_LEVEL4 );
-	D( PCL_HUMAN );
-	D( PCL_HUMAN_BSUIT );
 	
-	Q_strncpyz( treefilename, va( "bots/%s.bt", name ), sizeof( treefilename ) );
-
-	handle = trap_Parse_LoadSource( treefilename );
-	if ( !handle )
-	{
-		G_Printf( S_COLOR_RED "ERROR: Cannot load behavior tree %s: File not found\n", treefilename );
-		return NULL;
-	}
-
-	tokenlist = CreateTokenList( handle );
-	
-	tree = ( AIBehaviorTree_t * ) BG_Alloc( sizeof( AIBehaviorTree_t ) );
-
-	Q_strncpyz( tree->name, name, sizeof( tree->name ) );
-
-	current = tokenlist;
-
-	node = ReadNode( &current );
-	if ( node )
-	{
-		tree->root = ( AINode_t * ) node;
-	}
-	else
-	{
-		BG_Free( tree );
-		tree = NULL;
-	}
-
-	if ( tree )
-	{
-		AddTreeToList( list, tree );
-	}
-
-	FreeTokenList( tokenlist );
-	trap_Parse_FreeSource( handle );
-	return tree;
-}
-
-static void FreeConditionNode( AIConditionNode_t *node )
-{
-	FreeNode( node->child );
-	FreeExpression( node->exp );
-	BG_Free( node );
-}
-
-static void FreeNodeList( AINodeList_t *node )
-{
-	int i;
-	for ( i = 0; i < node->numNodes; i++ )
-	{
-		FreeNode( node->list[ i ] );
-	}
-	BG_Free( node );
-}
-
-static void FreeNode( AIGenericNode_t *node )
-{
-	if ( !node )
-	{
-		return;
-	}
-
-	if ( node->type == SELECTOR_NODE )
-	{
-		FreeNodeList( ( AINodeList_t * ) node );
-	}
-	else if ( node->type == CONDITION_NODE )
-	{
-		FreeConditionNode( ( AIConditionNode_t * ) node );
-	}
-	else if ( node->type == ACTION_NODE )
-	{
-		BG_Free( node );
-	}
-}
-
-void FreeBehaviorTree( AIBehaviorTree_t *tree )
-{
-	if ( tree )
-	{
-		FreeNode( ( AIGenericNode_t * ) tree->root );
-
-		BG_Free( tree );
-	}
-	else
-	{
-		G_Printf( "WARNING: Attempted to free NULL behavior tree\n" );
-	}
+	return nullEntity;
 }
 
 static qboolean NodeIsRunning( gentity_t *self, AIGenericNode_t *node )
@@ -1260,18 +189,7 @@ static qboolean NodeIsRunning( gentity_t *self, AIGenericNode_t *node )
 AINodeStatus_t BotSelectorNode( gentity_t *self, AIGenericNode_t *node )
 {
 	AINodeList_t *selector = ( AINodeList_t * ) node;
-	int i;
-
-	i = 0;
-
-	// find a previously running node and start there
-	for ( i = selector->numNodes - 1; i > 0; i-- )
-	{
-		if ( NodeIsRunning( self, selector->list[ i ] ) )
-		{
-			break;
-		}
-	}
+	int i = 0;
 
 	for ( ; i < selector->numNodes; i++ )
 	{
@@ -1315,54 +233,42 @@ AINodeStatus_t BotSequenceNode( gentity_t *self, AIGenericNode_t *node )
 	return STATUS_SUCCESS;
 }
 
-AINodeStatus_t BotPriorityNode( gentity_t *self, AIGenericNode_t *node )
+AINodeStatus_t BotConcurrentNode( gentity_t *self, AIGenericNode_t *node )
 {
-	AINodeList_t *priority = ( AINodeList_t * ) node;
-	int i;
-
-	for ( i = 0; i < priority->numNodes; i++ )
-	{
-		AINodeStatus_t status = BotEvaluateNode( self, priority->list[ i ] );
-		if ( status == STATUS_FAILURE )
-		{
-			continue;
-		}
-		return status;
-	}
-	return STATUS_FAILURE;
-}
-
-AINodeStatus_t BotParallelNode( gentity_t *self, AIGenericNode_t *node )
-{
-	AINodeList_t *parallel = ( AINodeList_t * ) node;
+	AINodeList_t *con = ( AINodeList_t * ) node;
 	int i = 0;
-	int numFailure = 0;
 
-	for ( ; i < parallel->numNodes; i++ )
+	for ( ; i < con->numNodes; i++ )
 	{
-		AINodeStatus_t status = BotEvaluateNode( self, parallel->list[ i ] );
+		AINodeStatus_t status = BotEvaluateNode( self, con->list[ i ] );
 
 		if ( status == STATUS_FAILURE )
 		{
-			numFailure++;
-
-			if ( numFailure < parallel->maxFail )
-			{
-				continue;
-			}
+			return STATUS_FAILURE;
 		}
-
-		return status;
 	}
-	return STATUS_FAILURE;
+	return STATUS_SUCCESS;
 }
+
+AINodeStatus_t BotDecoratorReturn( gentity_t *self, AIGenericNode_t *node )
+{
+	AIDecoratorNode_t *dec = ( AIDecoratorNode_t * ) node;
+	
+	AINodeStatus_t status = ( AINodeStatus_t ) AIUnBoxInt( dec->params[ 0 ] );
+
+	BotEvaluateNode( self, dec->child );
+	return status;
+}
+
 qboolean EvalConditionExpression( gentity_t *self, AIExpType_t *exp );
 
 double EvalFunc( gentity_t *self, AIExpType_t *exp )
 {
 	AIValueFunc_t *v = ( AIValueFunc_t * ) exp;
-
-	return AIUnBoxDouble( v->func( self, v->params ) );
+	AIValue_t vt = v->func( self, v->params );
+	double vd = AIUnBoxDouble( vt );
+	AIDestroyValue( vt );
+	return vd;
 }
 
 // using double because it has enough precision to exactly represent both a float and an int
@@ -1466,23 +372,21 @@ AINodeStatus_t BotConditionNode( gentity_t *self, AIGenericNode_t *node )
 	return STATUS_FAILURE;
 }
 
+AINodeStatus_t BotBehaviorNode( gentity_t *self, AIGenericNode_t *node )
+{
+	AIBehaviorTree_t *tree = ( AIBehaviorTree_t * ) node;
+	return BotEvaluateNode( self, tree->root );
+}
+
 AINodeStatus_t BotEvaluateNode( gentity_t *self, AIGenericNode_t *node )
 {
 	AINodeStatus_t status = node->run( self, node );
 
-	// maintain current node data for action nodes
-	// they use this to determine if they need to pathfind again
-	if ( node->type == ACTION_NODE )
+	// reset the current node if it finishes
+	// we do this so we can re-pathfind on the next entrance
+	if ( ( status == STATUS_SUCCESS || status == STATUS_FAILURE )  && self->botMind->currentNode == node )
 	{
-		if ( status == STATUS_RUNNING )
-		{
-			self->botMind->currentNode = node;
-		}
-
-		if ( self->botMind->currentNode == node && status != STATUS_RUNNING )
-		{
-			self->botMind->currentNode = NULL;
-		}
+		self->botMind->currentNode = NULL;
 	}
 
 	// reset running information on node success so sequences and selectors reset their state
@@ -1509,7 +413,10 @@ AINodeStatus_t BotEvaluateNode( gentity_t *self, AIGenericNode_t *node )
 			self->botMind->numRunningNodes = 0;
 		}
 
-		self->botMind->runningNodes[ self->botMind->numRunningNodes++ ] = node;
+		if ( !NodeIsRunning( self, node ) )
+		{
+			self->botMind->runningNodes[ self->botMind->numRunningNodes++ ] = node;
+		}
 	}
 
 	return status;
@@ -1518,6 +425,150 @@ AINodeStatus_t BotEvaluateNode( gentity_t *self, AIGenericNode_t *node )
 /*
 	Behavior tree action nodes
 */
+
+AINodeStatus_t BotActionFireWeapon( gentity_t *self, AIGenericNode_t *node ) 
+{
+	if ( WeaponIsEmpty( BG_GetPlayerWeapon( &self->client->ps ), self->client->ps ) && self->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+	{
+		G_ForceWeaponChange( self, WP_BLASTER );
+	}
+
+	if ( BG_GetPlayerWeapon( &self->client->ps ) == WP_HBUILD )
+	{
+		G_ForceWeaponChange( self, WP_BLASTER );
+	}
+
+	BotFireWeaponAI( self );
+	return STATUS_SUCCESS;
+}
+
+AINodeStatus_t BotActionActivateUpgrade( gentity_t *self, AIGenericNode_t *node )
+{
+	AIActionNode_t *action = ( AIActionNode_t * ) node;
+	upgrade_t u = ( upgrade_t ) AIUnBoxInt( action->params[ 0 ] );
+
+	if ( !BG_UpgradeIsActive( u, self->client->ps.stats ) &&
+		BG_InventoryContainsUpgrade( u, self->client->ps.stats ) )
+	{
+		BG_ActivateUpgrade( u, self->client->ps.stats );
+	}
+	return STATUS_SUCCESS;
+}
+
+AINodeStatus_t BotActionDeactivateUpgrade( gentity_t *self, AIGenericNode_t *node )
+{
+	AIActionNode_t *action = ( AIActionNode_t * ) node;
+	upgrade_t u = ( upgrade_t ) AIUnBoxInt( action->params[ 0 ] );
+
+	if ( BG_UpgradeIsActive( u, self->client->ps.stats ) &&
+		BG_InventoryContainsUpgrade( u, self->client->ps.stats ) )
+	{
+		BG_DeactivateUpgrade( u, self->client->ps.stats );
+	}
+	return STATUS_SUCCESS;
+}
+
+AINodeStatus_t BotActionAimAtGoal( gentity_t *self, AIGenericNode_t *node )
+{
+	if ( BotGetTargetTeam( self->botMind->goal ) != self->client->ps.stats[ STAT_TEAM ] )
+	{
+		BotAimAtEnemy( self );
+	}
+	else
+	{
+		vec3_t pos;
+		BotGetTargetPos( self->botMind->goal, pos );
+		BotSlowAim( self, pos, 0.5 );
+		BotAimAtLocation( self, pos );
+	}
+	return STATUS_SUCCESS;
+}
+
+AINodeStatus_t BotActionMoveToGoal( gentity_t *self, AIGenericNode_t *node )
+{
+	BotMoveToGoal( self );
+	return STATUS_RUNNING;
+}
+
+AINodeStatus_t BotActionMoveInDir( gentity_t *self, AIGenericNode_t *node )
+{
+	AIActionNode_t *a = ( AIActionNode_t * ) node;
+	int dir = AIUnBoxInt( a->params[ 0 ] );
+	if ( a->nparams == 2 )
+	{
+		dir |= AIUnBoxInt( a->params[ 1 ] );
+	}
+	BotMoveInDir( self, dir );
+	return STATUS_SUCCESS;
+}
+
+AINodeStatus_t BotActionStandStill( gentity_t *self, AIGenericNode_t *node )
+{
+	BotStandStill( self );
+	return STATUS_SUCCESS;
+}
+
+AINodeStatus_t BotActionStrafeDodge( gentity_t *self, AIGenericNode_t *node )
+{
+	BotStrafeDodge( self );
+	return STATUS_SUCCESS;
+}
+
+AINodeStatus_t BotActionAlternateStrafe( gentity_t *self, AIGenericNode_t *node )
+{
+	BotAlternateStrafe( self );
+	return STATUS_SUCCESS;
+}
+
+AINodeStatus_t BotActionClassDodge( gentity_t *self, AIGenericNode_t *node )
+{
+	BotClassMovement( self, BotTargetInAttackRange( self, self->botMind->goal ) );
+	return STATUS_SUCCESS;
+}
+
+AINodeStatus_t BotActionChangeGoal( gentity_t *self, AIGenericNode_t *node )
+{
+	AIActionNode_t *a = ( AIActionNode_t * ) node;
+	AIEntity_t et = ( AIEntity_t ) AIUnBoxInt( a->params[ 0 ] );
+	botEntityAndDistance_t e = AIEntityToGentity( self, et );
+
+	if ( !BotChangeGoalEntity( self, e.ent ) )
+	{
+		return STATUS_FAILURE;
+	}
+
+	self->botMind->currentNode = node;
+	self->botMind->goalLastSeen = 0;
+	return STATUS_SUCCESS;
+}
+
+AINodeStatus_t BotActionEvolveTo( gentity_t *self, AIGenericNode_t *node )
+{
+	AIActionNode_t *action = ( AIActionNode_t * ) node;
+	class_t c = ( class_t )  AIUnBoxInt( action->params[ 0 ] );
+
+	if ( self->client->ps.stats[ STAT_CLASS ] == c )
+	{
+		return STATUS_SUCCESS;
+	}
+
+	if ( BotEvolveToClass( self, c ) )
+	{
+		return STATUS_SUCCESS;
+	}
+
+	return STATUS_FAILURE;
+}
+
+AINodeStatus_t BotActionSay( gentity_t *self, AIGenericNode_t *node )
+{
+	AIActionNode_t *action = ( AIActionNode_t * ) node;
+	const char *str = AIUnBoxString( action->params[ 0 ] );
+	saymode_t   say = ( saymode_t ) AIUnBoxInt( action->params[ 1 ] );
+	G_Say( self, say, str );
+	return STATUS_SUCCESS;
+}
+
 AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 {
 	team_t myTeam = ( team_t ) self->client->ps.stats[ STAT_TEAM ];
@@ -1530,6 +581,8 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		}
 		else
 		{
+			self->botMind->currentNode = node;
+			self->botMind->goalLastSeen = self->botMind->enemyLastSeen;
 			return STATUS_RUNNING;
 		}
 	}
@@ -1541,29 +594,26 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 
 	if ( BotGetTargetTeam( self->botMind->goal ) == myTeam || BotGetTargetTeam( self->botMind->goal ) == TEAM_NONE )
 	{
-		self->botMind->bestEnemy.ent = NULL;
-		return STATUS_FAILURE;
+		return STATUS_SUCCESS;
 	}
 
 	// the enemy has died
 	if ( self->botMind->goal.ent->health <= 0 )
 	{
-		self->botMind->bestEnemy.ent = NULL;
 		return STATUS_SUCCESS;
 	}
 
 	if ( self->botMind->goal.ent->client && self->botMind->goal.ent->client->sess.spectatorState != SPECTATOR_NOT )
 	{
-		self->botMind->bestEnemy.ent = NULL;
-		return STATUS_FAILURE;
+		return STATUS_SUCCESS;
 	}
 
-	if ( WeaponIsEmpty( ( weapon_t )self->client->ps.weapon, self->client->ps ) && myTeam == TEAM_HUMANS )
+	if ( WeaponIsEmpty( BG_GetPlayerWeapon( &self->client->ps ), self->client->ps ) && myTeam == TEAM_HUMANS )
 	{
 		G_ForceWeaponChange( self, WP_BLASTER );
 	}
 
-	if ( self->client->ps.weapon == WP_HBUILD )
+	if ( BG_GetPlayerWeapon( &self->client->ps ) == WP_HBUILD )
 	{
 		G_ForceWeaponChange( self, WP_BLASTER );
 	}
@@ -1571,7 +621,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	//aliens have radar so they will always 'see' the enemy if they are in radar range
 	if ( myTeam == TEAM_ALIENS && DistanceToGoalSquared( self ) <= Square( ALIENSENSE_RANGE ) )
 	{
-		self->botMind->enemyLastSeen = level.time;
+		self->botMind->goalLastSeen = level.time;
 	}
 
 	if ( !BotTargetIsVisible( self, self->botMind->goal, CONTENTS_SOLID ) )
@@ -1582,14 +632,11 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		//we can see another enemy (not our target)
 		if ( self->botMind->bestEnemy.ent && self->botMind->goal.ent != self->botMind->bestEnemy.ent && BotPathIsWalkable( self, proposedTarget ) )
 		{
-			//change targets
-			BotChangeGoal( self, proposedTarget );
-			return STATUS_RUNNING;
+			return STATUS_SUCCESS;
 		}
-		else if ( level.time - self->botMind->enemyLastSeen > g_bot_chasetime.integer )
+		else if ( level.time - self->botMind->goalLastSeen > g_bot_chasetime.integer )
 		{
-			self->botMind->bestEnemy.ent = NULL;
-			return STATUS_FAILURE;
+			return STATUS_SUCCESS;
 		}
 		else
 		{
@@ -1600,17 +647,11 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	else
 	{
 		qboolean inAttackRange = BotTargetInAttackRange( self, self->botMind->goal );
-		self->botMind->enemyLastSeen = level.time;
+		self->botMind->goalLastSeen = level.time;
 
 		if ( ( inAttackRange && myTeam == TEAM_HUMANS ) || self->botMind->directPathToGoal )
 		{
-			botRouteTarget_t routeTarget;
 			BotAimAtEnemy( self );
-
-			BotTargetToRouteTarget( self, self->botMind->goal, &routeTarget );
-
-			//update the path corridor
-			trap_BotUpdatePath( self->s.number, &routeTarget, NULL, &self->botMind->directPathToGoal );
 
 			BotMoveInDir( self, MOVE_FORWARD );
 
@@ -1676,6 +717,7 @@ AINodeStatus_t BotActionFlee( gentity_t *self, AIGenericNode_t *node )
 		{
 			return STATUS_FAILURE;
 		}
+		self->botMind->currentNode = node;
 	}
 
 	if ( !BotTargetIsEntity( self->botMind->goal ) )
@@ -1683,7 +725,47 @@ AINodeStatus_t BotActionFlee( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_FAILURE;
 	}
 
-	if ( DistanceToGoalSquared( self ) < Square( 70 ) )
+	if ( GoalInRange( self, 70 ) )
+	{
+		return STATUS_SUCCESS;
+	}
+	else
+	{
+		BotMoveToGoal( self );
+	}
+
+	return STATUS_RUNNING;
+}
+
+AINodeStatus_t BotActionRoamInRadius( gentity_t *self, AIGenericNode_t *node )
+{
+	AIActionNode_t *a = ( AIActionNode_t * ) node;
+	AIEntity_t e = ( AIEntity_t ) AIUnBoxInt( a->params[ 0 ] );
+	float radius = AIUnBoxFloat( a->params[ 1 ] );
+
+	if ( node != self->botMind->currentNode )
+	{
+		vec3_t point;
+		botEntityAndDistance_t ent = AIEntityToGentity( self, e );
+
+		if ( !ent.ent )
+		{
+			return STATUS_FAILURE;
+		}
+
+		if ( !trap_BotFindRandomPointInRadius( self->s.number, ent.ent->s.origin, point, radius ) )
+		{
+			return STATUS_FAILURE;
+		}
+
+		if ( !BotChangeGoalPos( self, point ) )
+		{
+			return STATUS_FAILURE;
+		}
+		self->botMind->currentNode = node;
+	}
+
+	if ( self->botMind->directPathToGoal && GoalInRange( self, 70 ) )
 	{
 		return STATUS_SUCCESS;
 	}
@@ -1705,9 +787,10 @@ AINodeStatus_t BotActionRoam( gentity_t *self, AIGenericNode_t *node )
 		{
 			return STATUS_FAILURE;
 		}
+		self->botMind->currentNode = node;
 	}
 
-	if ( self->botMind->directPathToGoal && DistanceToGoal2DSquared( self ) < Square( 70 ) )
+	if ( self->botMind->directPathToGoal && GoalInRange( self, 70 ) )
 	{
 		return STATUS_SUCCESS;
 	}
@@ -1718,40 +801,34 @@ AINodeStatus_t BotActionRoam( gentity_t *self, AIGenericNode_t *node )
 	return STATUS_RUNNING;
 }
 
-botTarget_t BotGetMoveToTarget( gentity_t *self, AIMoveToNode_t *node )
+botTarget_t BotGetMoveToTarget( gentity_t *self, AIEntity_t e )
 {
 	botTarget_t target;
-	gentity_t *ent = NULL;
-
-	if ( node->ent < BA_NUM_BUILDABLES )
-	{
-		ent = self->botMind->closestBuildings[ node->ent ].ent;
-	}
-	else if ( node->ent == E_ENEMY )
-	{
-		ent = self->botMind->bestEnemy.ent;
-	}
-	else if ( node->ent == E_DAMAGEDBUILDING )
-	{
-		ent = self->botMind->closestDamagedBuilding.ent;
-	}
-
-	BotSetTarget( &target, ent, NULL );
+	botEntityAndDistance_t en = AIEntityToGentity( self, e );
+	BotSetTarget( &target, en.ent, NULL );
 	return target;
 }
 
 AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node )
 {
-	float radius;
-	AIMoveToNode_t *moveTo = ( AIMoveToNode_t * ) node;
+	float radius = 0;
+	AIActionNode_t *moveTo = ( AIActionNode_t * ) node;
+	AIEntity_t ent = ( AIEntity_t ) AIUnBoxInt( moveTo->params[ 0 ] );
+	
+	if ( moveTo->nparams > 1 )
+	{
+		radius = MAX( AIUnBoxFloat( moveTo->params[ 1 ] ), 0 );
+	}
+
 	if ( node != self->botMind->currentNode )
 	{
-		if ( !BotChangeGoal( self, BotGetMoveToTarget( self, moveTo ) ) )
+		if ( !BotChangeGoal( self, BotGetMoveToTarget( self, ent ) ) )
 		{
 			return STATUS_FAILURE;
 		}
 		else
 		{
+			self->botMind->currentNode = node;
 			return STATUS_RUNNING;
 		}
 	}
@@ -1767,13 +844,9 @@ AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node )
 
 	BotMoveToGoal( self );
 
-	if ( moveTo->range == -1 )
+	if ( radius == 0 )
 	{
 		radius = BotGetGoalRadius( self );
-	}
-	else
-	{
-		radius = moveTo->range;
 	}
 
 	if ( DistanceToGoal2DSquared( self ) <= Square( radius ) && self->botMind->directPathToGoal )
@@ -1794,6 +867,7 @@ AINodeStatus_t BotActionRush( gentity_t *self, AIGenericNode_t *node )
 		}
 		else
 		{
+			self->botMind->currentNode = node;
 			return STATUS_RUNNING;
 		}
 	}
@@ -1808,7 +882,7 @@ AINodeStatus_t BotActionRush( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_FAILURE;
 	}
 
-	if ( DistanceToGoalSquared( self ) > Square( 100 ) )
+	if ( !GoalInRange( self, 100 ) )
 	{
 		BotMoveToGoal( self );
 	}
@@ -1927,18 +1001,26 @@ AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_FAILURE;
 	}
 
-	//we are fully healed
-	if ( maxHealth == self->client->ps.stats[STAT_HEALTH] )
-	{
-		return STATUS_SUCCESS;
-	}
-
 	if ( self->botMind->currentNode != node )
 	{
+		// already fully healed
+		if ( maxHealth == self->client->ps.stats[ STAT_HEALTH ] )
+		{
+			return STATUS_FAILURE;
+		}
+
 		if ( !BotChangeGoalEntity( self, healTarget ) )
 		{
 			return STATUS_FAILURE;
 		}
+
+		self->botMind->currentNode = node;
+	}
+
+	//we are fully healed now
+	if ( maxHealth == self->client->ps.stats[STAT_HEALTH] )
+	{
+		return STATUS_SUCCESS;
 	}
 
 	if ( !BotTargetIsEntity( self->botMind->goal ) )
@@ -1952,7 +1034,7 @@ AINodeStatus_t BotActionHealA( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_FAILURE;
 	}
 
-	if ( DistanceToGoalSquared( self ) > Square( 70 ) )
+	if ( !GoalInRange( self, 100 ) )
 	{
 		BotMoveToGoal( self );
 	}
@@ -1966,24 +1048,31 @@ AINodeStatus_t BotActionHealH( gentity_t *self, AIGenericNode_t *node )
 {
 	vec3_t targetPos;
 	vec3_t myPos;
+	qboolean fullyHealed = BG_Class( self->client->ps.stats[ STAT_CLASS ] )->health <= self->client->ps.stats[ STAT_HEALTH ] &&
+	                       BG_InventoryContainsUpgrade( UP_MEDKIT, self->client->ps.stats );
 
 	if ( self->client->ps.stats[STAT_TEAM] != TEAM_HUMANS )
 	{
 		return STATUS_FAILURE;
 	}
 
-	//we are fully healed
-	if ( BG_Class( ( class_t )self->client->ps.stats[STAT_CLASS] )->health <= self->health && BG_InventoryContainsUpgrade( UP_MEDKIT, self->client->ps.stats ) )
-	{
-		return STATUS_SUCCESS;
-	}
-
 	if ( self->botMind->currentNode != node )
 	{
+		if ( fullyHealed )
+		{
+			return STATUS_FAILURE;
+		}
+
 		if ( !BotChangeGoalEntity( self, self->botMind->closestBuildings[ BA_H_MEDISTAT ].ent ) )
 		{
 			return STATUS_FAILURE;
 		}
+		self->botMind->currentNode = node;
+	}
+
+	if ( fullyHealed )
+	{
+		return STATUS_SUCCESS;
 	}
 
 	//safety check
@@ -2028,6 +1117,7 @@ AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 		{
 			return STATUS_FAILURE;
 		}
+		self->botMind->currentNode = node;
 	}
 
 	if ( !BotTargetIsEntity( self->botMind->goal ) )
@@ -2045,7 +1135,7 @@ AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_SUCCESS;
 	}
 
-	if ( self->client->ps.weapon != WP_HBUILD )
+	if ( BG_GetPlayerWeapon( &self->client->ps ) != WP_HBUILD )
 	{
 		G_ForceWeaponChange( self, WP_HBUILD );
 	}
@@ -2070,55 +1160,59 @@ AINodeStatus_t BotActionRepair( gentity_t *self, AIGenericNode_t *node )
 }
 AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 {
-	AIBuyNode_t *buy = ( AIBuyNode_t * ) node;
-
-	weapon_t weapon = buy->weapon;
-	upgrade_t *upgrades = buy->upgrades;
-	int numUpgrades = buy->numUpgrades;
+	AIActionNode_t *buy = ( AIActionNode_t * ) node;
+	weapon_t  weapon;
+	upgrade_t upgrades[4];
+	int numUpgrades;
 	int i;
 
-	if ( weapon == WP_NONE && numUpgrades == 0 )
+	if ( buy->nparams == 0 )
 	{
+		// equip action
 		BotGetDesiredBuy( self, &weapon, upgrades, &numUpgrades );
+	}
+	else
+	{
+		// first parameter should always be a weapon
+		weapon = ( weapon_t ) AIUnBoxInt( buy->params[ 0 ] );
+
+		if ( weapon < WP_NONE || weapon >= WP_NUM_WEAPONS )
+		{
+			BotDPrintf( S_COLOR_YELLOW "WARNING: parameter 1 to action buy out of range\n" );
+			weapon = WP_NONE;
+		}
+
+		numUpgrades = 0;
+
+		// other parameters are always upgrades
+		for ( i = 1; i < buy->nparams; i++ )
+		{
+			upgrades[ numUpgrades ] = ( upgrade_t ) AIUnBoxInt( buy->params[ i ] );
+
+			if ( upgrades[ numUpgrades ] <= UP_NONE || upgrades[ numUpgrades ] >= UP_NUM_UPGRADES )
+			{
+				BotDPrintf( S_COLOR_YELLOW "WARNING: parameter %d to action buy out of range\n", i + 1 );
+				continue;
+			}
+
+			numUpgrades++;
+		}
 	}
 
 	if ( !g_bot_buy.integer )
 	{
 		return STATUS_FAILURE;
 	}
+
 	if ( BotGetEntityTeam( self ) != TEAM_HUMANS )
 	{
 		return STATUS_FAILURE;
-	}
-	if ( numUpgrades && upgrades[0] == UP_AMMO && BG_Weapon( (weapon_t)self->client->ps.stats[ STAT_WEAPON ] )->usesEnergy )
-	{
-		if ( !self->botMind->closestBuildings[ BA_H_ARMOURY ].ent &&
-		     !self->botMind->closestBuildings[ BA_H_REPEATER ].ent &&
-		     !self->botMind->closestBuildings[ BA_H_REACTOR ].ent )
-		{
-			return STATUS_FAILURE; //wanted ammo for energy? no armoury, repeater or reactor, so fail
-		}
-	}
-	else if ( !self->botMind->closestBuildings[BA_H_ARMOURY].ent )
-	{
-		return STATUS_FAILURE;    //no armoury, so fail
 	}
 
 	//check if we already have everything
 	if ( BG_InventoryContainsWeapon( weapon, self->client->ps.stats ) || weapon == WP_NONE )
 	{
 		int numContain = 0;
-
-		//cant buy more than 3 upgrades
-		if ( numUpgrades > 3 )
-		{
-			return STATUS_FAILURE;
-		}
-
-		if ( numUpgrades == 0 )
-		{
-			return STATUS_FAILURE;
-		}
 
 		for ( i = 0; i < numUpgrades; i++ )
 		{
@@ -2127,6 +1221,7 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 				numContain++;
 			}
 		}
+
 		//we have every upgrade we want to buy
 		if ( numContain == numUpgrades )
 		{
@@ -2136,50 +1231,58 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 
 	if ( self->botMind->currentNode != node )
 	{
-		//default to armoury
-		const botEntityAndDistance_t *ent = &self->botMind->closestBuildings[ BA_H_ARMOURY ];
+		botEntityAndDistance_t *ngoal;
 
-		//wanting energy ammo only? look for closer repeater or reactor
-		if ( numUpgrades && upgrades[0] == UP_AMMO && BG_Weapon( (weapon_t)self->client->ps.stats[ STAT_WEAPON ] )->usesEnergy)
+		if ( numUpgrades && upgrades[0] == UP_AMMO && BG_Weapon( (weapon_t)self->client->ps.stats[ STAT_WEAPON ] )->usesEnergy )
 		{
-#define DISTANCE(obj) ( self->botMind->closestBuildings[ obj ].ent ? self->botMind->closestBuildings[ obj ].distance : INT_MAX )
-			//repeater closest? use that
-			if ( DISTANCE( BA_H_REPEATER ) < DISTANCE( BA_H_REACTOR ) )
+			// find the closest suitable goal for refueling ammo of an energy weapon
+			ngoal = &self->botMind->closestBuildings[ BA_H_ARMOURY ];
+
+			if ( self->botMind->closestBuildings[ BA_H_REPEATER ].distance < ngoal->distance )
 			{
-				if ( DISTANCE( BA_H_REPEATER ) < DISTANCE( BA_H_ARMOURY ) )
-				{
-					ent = &self->botMind->closestBuildings[ BA_H_REPEATER ];
-				}
+				ngoal = &self->botMind->closestBuildings[ BA_H_REPEATER ];
 			}
-			//reactor closest? use that
-			else if ( DISTANCE( BA_H_REACTOR ) < DISTANCE( BA_H_ARMOURY ) )
+
+			if ( self->botMind->closestBuildings[ BA_H_REACTOR ].distance < ngoal->distance )
 			{
-				ent = &self->botMind->closestBuildings[ BA_H_REACTOR ];
+				ngoal = &self->botMind->closestBuildings[ BA_H_REACTOR ];
 			}
 		}
-		if ( !BotChangeGoalEntity( self, ent->ent ) )
+		else
+		{
+			// can only buy things from an armoury
+			ngoal = &self->botMind->closestBuildings[ BA_H_ARMOURY ];
+		}
+
+		if ( !ngoal->ent )
+		{
+			return STATUS_FAILURE; // no suitable goal found
+		}
+
+		if ( !BotChangeGoalEntity( self, ngoal->ent ) )
 		{
 			return STATUS_FAILURE;
 		}
+		self->botMind->currentNode = node;
 	}
 
 	if ( !BotTargetIsEntity( self->botMind->goal ) )
 	{
 		return STATUS_FAILURE;
 	}
+
 	if ( self->botMind->goal.ent->health <= 0 )
 	{
 		return STATUS_FAILURE;
 	}
 
-	if ( DistanceToGoalSquared( self ) > 100 * 100 )
+	if ( !self->botMind->goal.ent->powered )
 	{
-		BotMoveToGoal( self );
-		return STATUS_RUNNING;
+		return STATUS_FAILURE;
 	}
-	else
-	{
 
+	if ( GoalInRange( self, 100 ) )
+	{
 		if ( numUpgrades && upgrades[0] != UP_AMMO )
 		{
 			BotSellAll( self );
@@ -2189,7 +1292,10 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 			BotSellWeapons( self );
 		}
 
-		BotBuyWeapon( self, weapon );
+		if ( weapon != WP_NONE )
+		{
+			BotBuyWeapon( self, weapon );
+		}
 
 		for ( i = 0; i < numUpgrades; i++ )
 		{
@@ -2197,8 +1303,14 @@ AINodeStatus_t BotActionBuy( gentity_t *self, AIGenericNode_t *node )
 		}
 
 		// make sure that we're not using the blaster
-		G_ForceWeaponChange( self, weapon );
+		if ( weapon != WP_NONE )
+		{
+			G_ForceWeaponChange( self, weapon );
+		}
 		
 		return STATUS_SUCCESS;
 	}
+
+	BotMoveToGoal( self );
+	return STATUS_RUNNING;
 }

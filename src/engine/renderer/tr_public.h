@@ -195,6 +195,9 @@ typedef struct
 
 	// color grading
 	void      ( *SetColorGrading ) ( int slot, qhandle_t hShader );
+
+	void ( *ScissorEnable ) ( qboolean enable );
+	void ( *ScissorSet ) ( int x, int y, int w, int h );
 } refexport_t;
 
 //

@@ -2617,6 +2617,64 @@ void CM_TransformedBiSphereTrace( trace_t *results, const vec3_t start,
 	*results = trace;
 }
 
+static float CM_DistanceToBrush( const vec3_t loc, cbrush_t *brush )
+{
+	int          i;
+	cplane_t     *plane;
+	float        dist = -999999.0f;
+	float        d1;
+	cbrushside_t *side;
+	float        t;
+
+	if ( !brush->numsides )
+	{
+		return 999999.0f;
+	}
+
+	for ( i = 0; i < brush->numsides; i++ )
+	{
+		side = brush->sides + i;
+		plane = side->plane;
+
+		d1 = DotProduct( loc, plane->normal ) - plane->dist;
+
+		// get maximum plane distance
+		if ( d1 > dist )
+		{
+			dist = d1;
+		}
+	}
+
+	// FIXME: if outside brush, check distance to corners and edges
+
+	return dist;
+}
+
+float CM_DistanceToModel( const vec3_t loc, clipHandle_t model ) {
+	cmodel_t    *cmod;
+	int        k;
+	int        brushnum;
+	cbrush_t   *b;
+	cSurface_t *surface;
+	float      dist = 999999.0f;
+	float      d1;
+
+	cmod = CM_ClipHandleToModel( model );
+
+	// test box position against all brushes in the leaf
+	for ( k = 0; k < cmod->leaf.numLeafBrushes; k++ )
+	{
+		brushnum = cm.leafbrushes[ cmod->leaf.firstLeafBrush + k ];
+		b = &cm.brushes[ brushnum ];
+
+		d1 = CM_DistanceToBrush( loc, b );
+		if( d1 < dist )
+			dist = d1;
+	}
+
+	return dist;
+}
+
 /*
 =======================================================================
 

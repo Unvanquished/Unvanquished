@@ -2018,6 +2018,11 @@ static qboolean ParseStage( shaderStage_t *stage, char **text )
 		else if ( !Q_stricmp( token, "forceHighQuality" ) )
 		{
 		}
+		// deformMagnitude <expression>
+		else if ( !Q_stricmp( token, "deformMagnitude" ) )
+		{
+		    SkipRestOfLine( text );
+		}
 		//
 		// detail
 		//

@@ -52,6 +52,7 @@ const int MAX_NAV_DATA = 16;
 const int MAX_BOT_PATH = 512;
 const int MAX_PATH_LOOKAHEAD = 5;
 const int MAX_CORNERS = 5;
+const int MAX_ROUTE_PLANS = 2;
 
 typedef struct
 {
@@ -67,7 +68,8 @@ typedef struct
 	dtPathCorridor    corridor;
 	int               clientNum;
 	qboolean          needReplan;
-	int               lastRouteTime;
+	int               lastRoutePlanTime;
+	int               routePlanCounter;
 	float             cornerVerts[ MAX_CORNERS * 3 ];
 	unsigned char     cornerFlags[ MAX_CORNERS ];
 	dtPolyRef         cornerPolys[ MAX_CORNERS ];

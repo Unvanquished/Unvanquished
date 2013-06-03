@@ -1062,6 +1062,10 @@ static int CG_CalcFov( void )
 				}
 			}
 		}
+		else if ( cg.zoomed )
+		{
+			cg.zoomed = qfalse;
+		}
 	}
 
 	y = cg.refdef.height / tan( 0.5f * DEG2RAD( fov_y ) );
@@ -1334,6 +1338,211 @@ static void CG_smoothWJTransitions( playerState_t *ps, const vec3_t in, vec3_t o
 
 /*
 ===============
+CG_CalcColorGradingForPoint
+
+Sets cg.refdef.gradingWeights
+===============
+*/
+static void CG_CalcColorGradingForPoint( vec3_t loc )
+{
+	int   i, j, idx;
+	float dist, weight;
+	int   selectedIdx[3] = { 0, 0, 0 };
+	float selectedWeight[3] = { 0.0f, 0.0f, 0.0f };
+	float totalWeight = 0.0f;
+	int freeSlot = -1;
+
+	for( i = 0; i < MAX_GRADING_TEXTURES; i++ )
+	{
+		if( !cgs.gameGradingTextures[i] )
+		{
+			continue;
+		}
+
+		dist = trap_CM_DistanceToModel( loc, cgs.gameGradingModels[i] );
+		weight = 1.0f - dist / cgs.gameGradingDistances[i];
+		weight = Q_clamp( weight, 0.0f, 1.0f );
+
+		// search 3 greatest weights
+		if( weight <= selectedWeight[2] )
+		{
+			continue;
+		}
+
+		for( j = 1; j >= 0; j-- )
+		{
+			if( weight <= selectedWeight[j] )
+			{
+				break;
+			}
+
+			selectedIdx[j+1] = selectedIdx[j];
+			selectedWeight[j+1] = selectedWeight[j];
+		}
+
+		selectedIdx[j+1] = i;
+		selectedWeight[j+1] = weight;
+	}
+
+	for( i = 0; i < 3; i++ )
+	{
+		if( selectedWeight[i] > 0.0f )
+		{
+			trap_SetColorGrading( i + 1, cgs.gameGradingTextures[selectedIdx[i]] );
+		}
+		else
+		{
+			freeSlot = i;
+		}
+		totalWeight += selectedWeight[i];
+	}
+
+	if( totalWeight < 1.0f )
+	{
+		if(freeSlot >= 0)
+		{
+			//If there is a free slot, use it with the neutral cgrade
+			//to make sure that using only the 3 map grade will always be ok
+			trap_SetColorGrading( freeSlot + 1, cgs.media.neutralCgrade);
+			selectedWeight[freeSlot] = 1.0f - totalWeight;
+			totalWeight = 1.0f;
+		}
+		cg.refdef.gradingWeights[0] = 0.0f;
+		cg.refdef.gradingWeights[1] = selectedWeight[0] / totalWeight;
+		cg.refdef.gradingWeights[2] = selectedWeight[1] / totalWeight;
+		cg.refdef.gradingWeights[3] = selectedWeight[2] / totalWeight;
+	}
+	else
+	{
+		cg.refdef.gradingWeights[0] = 0.0f;
+		cg.refdef.gradingWeights[1] = selectedWeight[0] / totalWeight;
+		cg.refdef.gradingWeights[2] = selectedWeight[1] / totalWeight;
+		cg.refdef.gradingWeights[3] = selectedWeight[2] / totalWeight;
+	}
+}
+
+static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* effect, float* fade )
+{
+	int health = ps->stats[ STAT_HEALTH ];
+	int team = ps->stats[ STAT_TEAM ];
+	int class = ps->stats[ STAT_CLASS ];
+	qboolean playing = team == TEAM_HUMANS || team == TEAM_ALIENS;
+	float chargeProgress = CG_ChargeProgress();
+
+	//the player has spawned once and is dead or in the intermission
+	if ( health <= 0 || (playing && cg.snap->ps.persistant[ PERS_SPECSTATE ] != SPECTATOR_NOT) )
+	{
+		*effect = cgs.media.desaturatedCgrade;
+		*fade = 1.0;
+	}
+	//not actually playing
+	else if (cg.renderingThirdPerson || ! playing )
+	{
+		*fade = 0.0;
+	}
+	else if(ps->weapon == WP_ALEVEL4 && chargeProgress > 0.05)
+	{
+	    *effect = cgs.media.redCgrade;
+	    *fade = chargeProgress * 0.5f;
+	}
+	else
+	{
+		//health effect
+		float ratio;
+		float maxHealth = BG_Class( class )->health;
+		if ( team == TEAM_HUMANS )
+		{
+			*effect = cgs.media.redCgrade;
+			ratio = 0.5f;
+		}
+		else if( team == TEAM_ALIENS )
+		{
+			*effect = cgs.media.desaturatedCgrade;
+			ratio = 0.7f;
+		}
+		//Linear blend if the effect as a function of the health ratio
+		//Find out if a quadratic effect would look better
+		*fade = (1.0f - health / maxHealth) * ratio;
+	}
+}
+
+static qboolean CG_InstantCgradingEffectAndFade( const playerState_t* ps, qhandle_t* effect, float* fade )
+{
+	if (cg.zoomed)
+	{
+		*effect = cgs.media.tealCgrade;
+		*fade = 0.4f;
+		return qtrue;
+	}
+
+	return qfalse;
+}
+
+static void CG_AddColorGradingEffects( const playerState_t* ps )
+{
+	//TODO: make a struct for these
+	static qhandle_t currentEffect = 0;
+	static float currentFade = 0.0f;
+	qhandle_t targetEffect = 0;
+	float targetFade = 0.0f;
+	qhandle_t instantEffect = 0;
+	float instantFade = 0.0f;
+	qhandle_t finalEffect = 0;
+	float finalFade = 0.0f;
+
+	static const float fadeRate = 0.0005;
+
+	float fadeChange = fadeRate * cg.frametime;
+	float factor;
+
+	//Choose which effect we want
+	CG_ChooseCgradingEffectAndFade( ps, &targetEffect, &targetFade );
+
+	//As we have only one cgrade slot for the effect we transition
+	//smoothly from the current (effect, fading) to the target effect.
+	if(currentEffect == targetEffect)
+	{
+		if(currentFade < targetFade)
+		{
+			currentFade = MIN(targetFade, currentFade + fadeChange);
+		}
+		else if(currentFade > targetFade)
+		{
+			currentFade = MAX(targetFade, currentFade - fadeChange);
+		}
+	}
+	else if(currentFade <= 0.0f)
+	{
+		currentEffect = targetEffect;
+	}
+	else
+	{
+		currentFade = MAX(0.0f, currentFade - fadeChange);
+	}
+
+	//Instant cgrading effects have the priority
+	if( CG_InstantCgradingEffectAndFade( ps, &instantEffect, &instantFade ) )
+	{
+		finalEffect = instantEffect;
+		finalFade = instantFade;
+	}
+	else
+	{
+		finalEffect = currentEffect;
+		finalFade = currentFade;
+	}
+
+	//Apply the chosen cgrade
+	trap_SetColorGrading( 0, finalEffect);
+	factor = 1.0f - finalFade;
+	cg.refdef.gradingWeights[0] = finalFade;
+	cg.refdef.gradingWeights[1] *= factor;
+	cg.refdef.gradingWeights[2] *= factor;
+	cg.refdef.gradingWeights[3] *= factor;
+}
+
+/*
+===============
 CG_CalcViewValues
 
 Sets cg.refdef view values
@@ -1344,12 +1553,14 @@ static int CG_CalcViewValues( void )
 	playerState_t *ps;
 
 	memset( &cg.refdef, 0, sizeof( cg.refdef ) );
-	Vector4Copy( cg.gradingWeights, cg.refdef.gradingWeights );
 
 	// calculate size of 3D view
 	CG_CalcVrect();
 
 	ps = &cg.predictedPlayerState;
+
+	CG_CalcColorGradingForPoint( ps->origin );
+	CG_AddColorGradingEffects( ps );
 
 	// intermission view
 	if ( ps->pm_type == PM_INTERMISSION || ps->pm_type == PM_FREEZE ||

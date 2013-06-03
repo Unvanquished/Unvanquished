@@ -1155,6 +1155,7 @@ void       G_ExecuteVote( team_t team );
 void       G_CheckVote( team_t team );
 void       LogExit( const char *string );
 int        G_TimeTilSuddenDeath( void );
+vmCvar_t  *G_FindCvar( const char *name );
 
 //
 // g_client.c
@@ -1516,6 +1517,7 @@ unsigned int     trap_BotFindRoute( int botClientNum, const botRouteTarget_t *ta
 qboolean         trap_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, vec3_t dir, qboolean *directPathToGoal );
 qboolean         trap_BotNavTrace( int botClientNum, botTrace_t *botTrace, const vec3_t start, const vec3_t end );
 void             trap_BotFindRandomPoint( int botClientNum, vec3_t point );
+qboolean         trap_BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, vec3_t point, float radius );
 void             trap_BotEnableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
 void             trap_BotDisableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
 void             trap_BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *handle );

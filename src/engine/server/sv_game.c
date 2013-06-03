@@ -763,6 +763,8 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 		case BOT_NAV_RANDOMPOINT:
 			BotFindRandomPoint( args[ 1 ], VMA( 2 ) );
 			return 0;
+		case BOT_NAV_RANDOMPOINTRADIUS:
+			return BotFindRandomPointInRadius( args[ 1 ], VMA( 2 ), VMA( 3 ), VMF( 4 ) );
 		case BOT_ENABLE_AREA:
 			BotEnableArea( VMA( 1 ), VMA( 2 ), VMA( 3 ) );
 			return 0;

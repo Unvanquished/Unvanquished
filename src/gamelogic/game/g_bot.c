@@ -20,7 +20,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 ===========================================================================
 */
 
-#include "g_bot.h"
+#include "g_bot_parse.h"
 #include "g_bot_util.h"
 
 static botMemory_t g_botMind[MAX_CLIENTS];
@@ -347,7 +347,7 @@ void G_BotThink( gentity_t *self )
 	char buf[MAX_STRING_CHARS];
 	usercmd_t *botCmdBuffer;
 	vec3_t     nudge;
-	gentity_t *bestDamaged;
+	botRouteTarget_t routeTarget;
 
 	self->botMind->cmdBuffer = self->client->pers.cmd;
 	botCmdBuffer = &self->botMind->cmdBuffer;
@@ -370,12 +370,8 @@ void G_BotThink( gentity_t *self )
 	while ( trap_BotGetServerCommand( self->client->ps.clientNum, buf, sizeof( buf ) ) );
 
 	BotSearchForEnemy( self );
-
-	BotFindClosestBuildings( self, self->botMind->closestBuildings );
-
-	bestDamaged = BotFindDamagedFriendlyStructure( self );
-	self->botMind->closestDamagedBuilding.ent = bestDamaged;
-	self->botMind->closestDamagedBuilding.distance = ( !bestDamaged ) ? 0 :  Distance( self->s.origin, bestDamaged->s.origin );
+	BotFindClosestBuildings( self );
+	BotFindDamagedFriendlyStructure( self );
 
 	//use medkit when hp is low
 	if ( self->health < BOT_USEMEDKIT_HP && BG_InventoryContainsUpgrade( UP_MEDKIT, self->client->ps.stats ) )
@@ -398,7 +394,14 @@ void G_BotThink( gentity_t *self )
 		return;
 	}
 
-	BotEvaluateNode( self, ( AIGenericNode_t * ) self->botMind->behaviorTree->root );
+	// always update the path corridor
+	if ( self->botMind->goal.inuse )
+	{
+		BotTargetToRouteTarget( self, self->botMind->goal, &routeTarget );
+		trap_BotUpdatePath( self->s.number, &routeTarget, NULL, &self->botMind->directPathToGoal );
+	}
+	
+	self->botMind->behaviorTree->run( self, ( AIGenericNode_t * ) self->botMind->behaviorTree );
 
 	// if we were nudged...
 	VectorAdd( self->client->ps.velocity, nudge, self->client->ps.velocity );
@@ -449,6 +452,12 @@ void G_BotSpectatorThink( gentity_t *self )
 	self->botMind->bestEnemy.ent = NULL;
 	self->botMind->timeFoundEnemy = 0;
 	self->botMind->enemyLastSeen = 0;
+	self->botMind->currentNode = NULL;
+	self->botMind->directPathToGoal = qfalse;
+	self->botMind->futureAimTime = 0;
+	self->botMind->futureAimTimeInterval = 0;
+	self->botMind->numRunningNodes = 0;
+	memset( self->botMind->runningNodes, 0, sizeof( self->botMind->runningNodes ) );
 
 	if ( self->client->sess.restartTeam == TEAM_NONE )
 	{
