@@ -1184,10 +1184,12 @@ const void     *RB_ScissorEnable( const void *data )
 
 	if ( !cmd->enable )
 	{
+		RB_EndSurface();
 		glScissor( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
 	}
 	else
 	{
+		RB_EndSurface();
 		glScissor( tr.scissor.x, tr.scissor.y, tr.scissor.w, tr.scissor.h );
 	}
 
@@ -1208,6 +1210,7 @@ const void     *RB_ScissorSet( const void *data )
 
 	if ( tr.scissor.status )
 	{
+	    RB_EndSurface();
 	    glScissor( cmd->x, cmd->y, cmd->w, cmd->h );
 	}
 

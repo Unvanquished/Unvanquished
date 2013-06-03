@@ -56,6 +56,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #define MAX_LOADING_LABEL_LENGTH       32
 
+#define MAX_MINIMAP_ZONES              32
+
 typedef enum
 {
   FOOTSTEP_GENERAL,
@@ -570,6 +572,11 @@ typedef struct
 	vec3_t   lastNormal;
 	vec3_t   lastAxis[ 3 ];
 	smooth_t sList[ MAXSMOOTHS ];
+
+	vec3_t   lastMinimapPos;
+	float    lastMinimapAngle;
+	float    minimapFading;
+	qboolean minimapFadingOut;
 } playerEntity_t;
 
 typedef struct lightFlareStatus_s
@@ -892,6 +899,31 @@ typedef struct
 
 typedef struct
 {
+    vec3_t    boundsMin, boundsMax;
+    vec2_t    imageMin, imageMax;
+    float     scale;
+    qhandle_t image;
+} minimapZone_t;
+
+typedef struct
+{
+    qboolean     active;
+    qboolean     defined;
+    int          lastZone;
+    int          nZones;
+    float        bgColor[4];
+    float        scale;
+    struct
+    {
+        qhandle_t playerArrow, teamArrow;
+    } gfx;
+    minimapZone_t zones[ MAX_MINIMAP_ZONES ];
+} minimap_t;
+
+//======================================================================
+
+typedef struct
+{
 	vec3_t alienBuildablePos[ MAX_GENTITIES ];
 	float  alienBuildableIntensity[ MAX_GENTITIES ];
 	int    numAlienBuildables;
@@ -1069,6 +1101,9 @@ typedef struct
 	float bobfracsin;
 	int   bobcycle;
 	float xyspeed;
+
+	//minimap
+	minimap_t               minimap;
 
 	// development tool
 	refEntity_t             testModelEntity;
@@ -1290,6 +1325,13 @@ typedef struct
 	qhandle_t   healthCross3X;
 	qhandle_t   healthCrossMedkit;
 	qhandle_t   healthCrossPoisoned;
+
+	qhandle_t   neutralCgrade;
+	qhandle_t   redCgrade;
+	qhandle_t   tealCgrade;
+	qhandle_t   desaturatedCgrade;
+
+	qhandle_t   scopeShader;
 } cgMedia_t;
 
 typedef struct
@@ -1449,6 +1491,8 @@ extern  vmCvar_t            cg_drawChargeBar;
 extern  vmCvar_t            cg_drawCrosshair;
 extern  vmCvar_t            cg_drawCrosshairNames;
 extern  vmCvar_t            cg_drawBuildableHealth;
+extern  vmCvar_t            cg_drawMinimap;
+extern  vmCvar_t            cg_minimapActive;
 extern  vmCvar_t            cg_crosshairSize;
 extern  vmCvar_t            cg_crosshairFile;
 extern  vmCvar_t            cg_drawTeamOverlay;
@@ -1672,6 +1716,7 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
                    float borderSize, float scale, vec4_t foreColor,
                    vec4_t backColor, qhandle_t shader, int textStyle );
 float      CG_GetValue( int ownerDraw );
+float      CG_ChargeProgress( void );
 void       CG_RunMenuScript( char **args );
 void       CG_SetPrintString( int type, const char *p );
 const char *CG_GetKillerText( void );
@@ -1788,6 +1833,12 @@ void CG_DrawItemSelectText( rectDef_t *rect, float scale, int textStyle );
 void CG_UpdateEntityPositions( void );
 void CG_Scanner( rectDef_t *rect, qhandle_t shader, vec4_t color );
 void CG_AlienSense( rectDef_t *rect );
+
+//
+// cg_minimap.c
+//
+void CG_InitMinimap( void );
+void CG_DrawMinimap( const rectDef_t *rect, const vec4_t color );
 
 //
 // cg_marks.c
