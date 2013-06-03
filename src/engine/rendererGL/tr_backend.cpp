@@ -7089,6 +7089,11 @@ void RB_CameraPostFX( void )
 		return;
 	}
 
+	if ( !r_cameraPostFX->integer )
+	{
+		return;
+	}
+
 	// set 2D virtual screen size
 	GL_PushMatrix();
 	MatrixOrthogonalProjection( ortho, backEnd.viewParms.viewportX,
@@ -7142,16 +7147,19 @@ void RB_CameraPostFX( void )
 
 	// bind u_GrainMap
 	GL_SelectTexture( 1 );
-	if( r_cameraPostFX->integer && tr.grainImage )
+	if ( r_cameraFilmGrain->integer && tr.grainImage )
+	{
 		GL_Bind( tr.grainImage );
+	}
 	else
+	{
 		GL_Bind( tr.blackImage );
+	}
 
 	// bind u_VignetteMap
 	GL_SelectTexture( 2 );
 
-	if ( r_cameraPostFX->integer && r_cameraVignette->integer &&
-	     tr.vignetteImage )
+	if ( r_cameraVignette->integer && tr.vignetteImage )
 	{
 		GL_Bind( tr.vignetteImage );
 	}
@@ -11536,10 +11544,12 @@ const void     *RB_ScissorEnable( const void *data )
 
 	if ( !cmd->enable )
 	{
+		Tess_End();
 		GL_Scissor( 0, 0, glConfig.vidWidth, glConfig.vidHeight );
 	}
 	else
 	{
+		Tess_End();
 		GL_Scissor( tr.scissor.x, tr.scissor.y, tr.scissor.w, tr.scissor.h );
 	}
 
@@ -11559,6 +11569,7 @@ const void     *RB_ScissorSet( const void *data )
 
 	if (tr.scissor.status )
 	{
+	    Tess_End();
 	    GL_Scissor( cmd->x, cmd->y, cmd->w, cmd->h );
 	}
 

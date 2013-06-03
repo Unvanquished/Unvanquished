@@ -134,9 +134,9 @@ char *Sys_DefaultHomePath( void )
 
 		Q_strncpyz( homePath, szPath, sizeof( homePath ) );
 		Q_strcat( homePath, sizeof( homePath ), "\\Daemon" );
-		FreeLibrary( shfolder );
 	}
 
+	FreeLibrary( shfolder );
 	return homePath;
 }
 

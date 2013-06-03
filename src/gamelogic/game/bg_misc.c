@@ -45,91 +45,23 @@ typedef struct
 
 static const buildableName_t bg_buildableNameList[] =
 {
-	{
-		BA_A_SPAWN,
-		"eggpod",
-		"team_alien_spawn",
-	},
-	{
-		BA_A_OVERMIND,
-		"overmind",
-		"team_alien_overmind",
-	},
-	{
-		BA_A_BARRICADE,
-		"barricade",
-		"team_alien_barricade",
-	},
-	{
-		BA_A_ACIDTUBE,
-		"acid_tube",
-		"team_alien_acid_tube",
-	},
-	{
-		BA_A_TRAPPER,
-		"trapper",
-		"team_alien_trapper",
-	},
-	{
-		BA_A_BOOSTER,
-		"booster",
-		"team_alien_booster",
-	},
-	{
-		BA_A_HIVE,
-		"hive",
-		"team_alien_hive",
-	},
-	{
-		BA_A_LEECH,
-		"leech",
-		"team_alien_leech",
-	},
-	{
-		BA_H_SPAWN,
-		"telenode",
-		"team_human_spawn",
-	},
-	{
-		BA_H_MGTURRET,
-		"mgturret",
-		"team_human_mgturret",
-	},
-	{
-		BA_H_TESLAGEN,
-		"tesla",
-		"team_human_tesla",
-	},
-	{
-		BA_H_ARMOURY,
-		"arm",
-		"team_human_armoury",
-	},
-	{
-		BA_H_DCC,
-		"dcc",
-		"team_human_dcc",
-	},
-	{
-		BA_H_MEDISTAT,
-		"medistat",
-		"team_human_medistat",
-	},
-	{
-		BA_H_DRILL,
-		"drill",
-		"team_human_drill",
-	},
-	{
-		BA_H_REACTOR,
-		"reactor",
-		"team_human_reactor",
-	},
-	{
-		BA_H_REPEATER,
-		"repeater",
-		"team_human_repeater",
-	}
+	{ BA_A_SPAWN,     "eggpod",    "team_alien_spawn"     },
+	{ BA_A_OVERMIND,  "overmind",  "team_alien_overmind"  },
+	{ BA_A_BARRICADE, "barricade", "team_alien_barricade" },
+	{ BA_A_ACIDTUBE,  "acid_tube", "team_alien_acid_tube" },
+	{ BA_A_TRAPPER,   "trapper",   "team_alien_trapper"   },
+	{ BA_A_BOOSTER,   "booster",   "team_alien_booster"   },
+	{ BA_A_HIVE,      "hive",      "team_alien_hive"      },
+	{ BA_A_LEECH,     "leech",     "team_alien_leech"    },
+	{ BA_H_SPAWN,     "telenode",  "team_human_spawn"     },
+	{ BA_H_MGTURRET,  "mgturret",  "team_human_mgturret"  },
+	{ BA_H_TESLAGEN,  "tesla",     "team_human_tesla"     },
+	{ BA_H_ARMOURY,   "arm",       "team_human_armoury"   },
+	{ BA_H_DCC,       "dcc",       "team_human_dcc"       },
+	{ BA_H_MEDISTAT,  "medistat",  "team_human_medistat"  },
+ 	{ BA_H_DRILL,     "drill",     "team_human_drill"     },
+	{ BA_H_REACTOR,   "reactor",   "team_human_reactor"   },
+	{ BA_H_REPEATER,  "repeater",  "team_human_repeater"  }
 };
 
 static const size_t bg_numBuildables = ARRAY_LEN( bg_buildableNameList );
@@ -616,110 +548,32 @@ typedef struct
 
 static const weaponData_t bg_weaponsData[] =
 {
-	{
-		WP_ALEVEL0, //int       number;
-		"level0", //char      *name;
-	},
-	{
-		WP_ALEVEL1, //int       number;
-		"level1", //char      *name;
-	},
-	{
-		WP_ALEVEL1_UPG, //int       number;
-		"level1upg", //char      *name;
-	},
-	{
-		WP_ALEVEL2, //int       number;
-		"level2", //char      *name;
-	},
-	{
-		WP_ALEVEL2_UPG, //int       number;
-		"level2upg", //char      *name;
-	},
-	{
-		WP_ALEVEL3, //int       number;
-		"level3", //char      *name;
-	},
-	{
-		WP_ALEVEL3_UPG, //int       number;
-		"level3upg", //char      *name;
-	},
-	{
-		WP_ALEVEL4, //int       number;
-		"level4", //char      *name;
-	},
-	{
-		WP_BLASTER, //int       number;
-		"blaster", //char      *name;
-	},
-	{
-		WP_MACHINEGUN, //int       number;
-		"rifle", //char      *name;
-	},
-	{
-		WP_PAIN_SAW, //int       number;
-		"psaw", //char      *name;
-	},
-	{
-		WP_SHOTGUN, //int       number;
-		"shotgun", //char      *name;
-	},
-	{
-		WP_LAS_GUN, //int       number;
-		"lgun", //char      *name;
-	},
-	{
-		WP_MASS_DRIVER, //int       number;
-		"mdriver", //char      *name;
-	},
-	{
-		WP_CHAINGUN, //int       number;
-		"chaingun", //char      *name;
-	},
-	{
-		WP_FLAMER, //int       number;
-		"flamer", //char      *name;
-	},
-	{
-		WP_PULSE_RIFLE, //int       number;
-		"prifle", //char      *name;
-	},
-	{
-		WP_LUCIFER_CANNON, //int       number;
-		"lcannon", //char      *name;
-	},
-	{
-		WP_GRENADE, //int       number;
-		"grenade", //char      *name;
-	},
-	{
-		WP_LOCKBLOB_LAUNCHER, //int       number;
-		"lockblob", //char      *name;
-	},
-	{
-		WP_HIVE, //int       number;
-		"hive", //char      *name;
-	},
-	{
-		WP_TESLAGEN, //int       number;
-		"teslagen", //char      *name;
-	},
-	{
-		WP_MGTURRET, //int       number;
-		"mgturret", //char      *name;
-	},
-	{
-		WP_ABUILD, //int       number;
-		"abuild", //char      *name;
-	},
-	{
-		WP_ABUILD2, //int       number;
-		"abuildupg", //char      *name;
-	},
-	{
-		WP_HBUILD, //int       number;
-		"ckit", //char      *name;
-	}
+	{ WP_ALEVEL0,           "level0"    },
+	{ WP_ALEVEL1,           "level1"    },
+	{ WP_ALEVEL1_UPG,       "level1upg" },
+	{ WP_ALEVEL2,           "level2"    },
+	{ WP_ALEVEL2_UPG,       "level2upg" },
+	{ WP_ALEVEL3,           "level3"    },
+	{ WP_ALEVEL3_UPG,       "level3upg" },
+	{ WP_ALEVEL4,           "level4"    },
+	{ WP_BLASTER,           "blaster"   },
+	{ WP_MACHINEGUN,        "rifle"     },
+	{ WP_PAIN_SAW,          "psaw"      },
+	{ WP_SHOTGUN,           "shotgun"   },
+	{ WP_LAS_GUN,           "lgun"      },
+	{ WP_MASS_DRIVER,       "mdriver"   },
+	{ WP_CHAINGUN,          "chaingun"  },
+	{ WP_FLAMER,            "flamer"    },
+	{ WP_PULSE_RIFLE,       "prifle"    },
+	{ WP_LUCIFER_CANNON,    "lcannon"   },
+	{ WP_GRENADE,           "grenade"   },
+	{ WP_LOCKBLOB_LAUNCHER, "lockblob"  },
+	{ WP_HIVE,              "hive"      },
+	{ WP_TESLAGEN,          "teslagen"  },
+	{ WP_MGTURRET,          "mgturret"  },
+	{ WP_ABUILD,            "abuild"    },
+	{ WP_ABUILD2,           "abuildupg" },
+	{ WP_HBUILD,            "ckit"      }
 };
 
 static const size_t bg_numWeapons = ARRAY_LEN( bg_weaponsData );
@@ -811,38 +665,14 @@ typedef struct
 
 static const upgradeData_t bg_upgradesData[] =
 {
-	{
-		UP_LIGHTARMOUR, //int   number;
-		"larmour", //char  *name;
-	},
-	{
-		UP_HELMET, //int   number;
-		"helmet", //char  *name;
-	},
-	{
-		UP_MEDKIT, //int   number;
-		"medkit", //char  *name;
-	},
-	{
-		UP_BATTPACK, //int   number;
-		"battpack", //char  *name;
-	},
-	{
-		UP_JETPACK, //int   number;
-		"jetpack", //char  *name;
-	},
-	{
-		UP_BATTLESUIT, //int   number;
-		"bsuit", //char  *name;
-	},
-	{
-		UP_GRENADE, //int   number;
-		"gren", //char  *name;
-	},
-	{
-		UP_AMMO, //int   number;
-		"ammo", //char  *name;
-	}
+	{ UP_LIGHTARMOUR, "larmour"  },
+	{ UP_HELMET,      "helmet"   },
+	{ UP_MEDKIT,      "medkit"   },
+	{ UP_BATTPACK,    "battpack" },
+	{ UP_JETPACK,     "jetpack"  },
+	{ UP_BATTLESUIT,  "bsuit"    },
+	{ UP_GRENADE,     "gren"     },
+	{ UP_AMMO,        "ammo"     }
 };
 
 static const size_t bg_numUpgrades = ARRAY_LEN( bg_upgradesData );

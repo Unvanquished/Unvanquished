@@ -134,6 +134,8 @@ vmCvar_t        cg_drawChargeBar;
 vmCvar_t        cg_drawCrosshair;
 vmCvar_t        cg_drawCrosshairNames;
 vmCvar_t        cg_drawBuildableHealth;
+vmCvar_t        cg_drawMinimap;
+vmCvar_t        cg_minimapActive;
 vmCvar_t        cg_crosshairSize;
 vmCvar_t        cg_crosshairFile;
 vmCvar_t        cg_draw2D;
@@ -297,6 +299,8 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_drawCrosshair,               "cg_drawCrosshair",               "2",            CVAR_ARCHIVE                 },
 	{ &cg_drawCrosshairNames,          "cg_drawCrosshairNames",          "1",            CVAR_ARCHIVE                 },
 	{ &cg_drawBuildableHealth,         "cg_drawBuildableHealth",         "1",            CVAR_ARCHIVE                 },
+	{ &cg_drawMinimap,                 "cg_drawMinimap",                 "1",            CVAR_ARCHIVE                 },
+	{ &cg_minimapActive,               "cg_minimapActive",               "0",            0                            },
 	{ &cg_crosshairSize,               "cg_crosshairSize",               "1",            CVAR_ARCHIVE                 },
 	{ &cg_crosshairFile,               "cg_crosshairFile",               "",             CVAR_ARCHIVE                 },
 	{ &cg_addMarks,                    "cg_marks",                       "1",            CVAR_ARCHIVE                 },
@@ -1470,10 +1474,24 @@ static void CG_RegisterGraphics( void )
 	cgs.media.upgradeClassIconShader = trap_R_RegisterShader("icons/icona_upgrade.tga",
 								 RSF_DEFAULT);
 
+	cgs.media.desaturatedCgrade = trap_R_RegisterShader("gfx/cgrading/desaturated",
+								 RSF_NOMIP | RSF_NOLIGHTSCALE );
+
+	cgs.media.neutralCgrade = trap_R_RegisterShader("gfx/cgrading/neutral",
+								 RSF_NOMIP | RSF_NOLIGHTSCALE );
+
+	cgs.media.redCgrade = trap_R_RegisterShader("gfx/cgrading/red-only",
+								 RSF_NOMIP | RSF_NOLIGHTSCALE );
+
+	cgs.media.tealCgrade = trap_R_RegisterShader("gfx/cgrading/teal-only",
+								 RSF_NOMIP | RSF_NOLIGHTSCALE );
+
 	cgs.media.balloonShader = trap_R_RegisterShader("gfx/sprites/chatballoon",
 							RSF_DEFAULT);
 
 	cgs.media.disconnectPS = CG_RegisterParticleSystem( "disconnectPS" );
+
+	cgs.media.scopeShader = trap_R_RegisterShader( "scope", RSF_DEFAULT | RSF_NOMIP );
 
 	CG_UpdateMediaFraction( 0.7f );
 
@@ -2686,6 +2704,8 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	CG_RegisterClients(); // if low on memory, some clients will be deferred
 
 	CG_InitMarkPolys();
+
+	CG_InitMinimap();
 
 	// Make sure we have update values (scores)
 	CG_SetConfigValues();
