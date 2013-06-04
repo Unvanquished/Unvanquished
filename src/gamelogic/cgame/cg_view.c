@@ -1448,7 +1448,7 @@ static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* 
 	else
 	{
 		//health effect
-		float ratio;
+		float ratio = 0.0f;
 		float maxHealth = BG_Class( class )->health;
 		if ( team == TEAM_HUMANS )
 		{
@@ -1468,6 +1468,8 @@ static void CG_ChooseCgradingEffectAndFade( const playerState_t* ps, qhandle_t* 
 
 static qboolean CG_InstantCgradingEffectAndFade( const playerState_t* ps, qhandle_t* effect, float* fade )
 {
+	(void)ps; //-Wunused-variable TODO: add a macro for this
+
 	if (cg.zoomed)
 	{
 		*effect = cgs.media.tealCgrade;
