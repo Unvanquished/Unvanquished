@@ -153,6 +153,27 @@ static void CG_Rocket_SetDS( void )
 	Q_strncpyz( datasrc, CG_Argv( 1 ), sizeof( datasrc ) );
 	CG_Rocket_SetDataSourceIndex( datasrc, atoi( CG_Argv( 2 ) ) );
 }
+
+static void CG_Rocket_SetProperty( void )
+{
+	char id[ 100 ], property[ 100 ], value[ MAX_STRING_CHARS ];
+	Q_strncpyz( id, CG_Argv( 1 ), sizeof( id ) );
+	Q_strncpyz( property, CG_Argv( 2 ), sizeof( property ) );
+	Q_strncpyz( value, CG_Argv( 3 ), sizeof( value ) );
+
+	trap_Rocket_SetPropertyById( id, property, value );
+}
+
+static void CG_Rocket_SetAttribute( void )
+{
+	char id[ 100 ], attribute[ 100 ], value[ MAX_STRING_CHARS ];
+	Q_strncpyz( id, CG_Argv( 1 ), sizeof( id ) );
+	Q_strncpyz( attribute, CG_Argv( 2 ), sizeof( attribute ) );
+	Q_strncpyz( value, CG_Argv( 3 ), sizeof( value ) );
+
+	trap_Rocket_SetAttribute( "", id, attribute, value );
+
+}
 typedef struct
 {
 	const char *command;
@@ -170,7 +191,9 @@ static const eventCmd_t eventCmdList[] =
 	{ "goto", &CG_Rocket_EventGoto },
 	{ "init_servers", &CG_Rocket_InitServers },
 	{ "open", &CG_Rocket_EventOpen },
+	{ "setAttribute", &CG_Rocket_SetAttribute },
 	{ "setDS", &CG_Rocket_SetDS },
+	{ "setProperty", &CG_Rocket_SetProperty },
 	{ "show", &CG_Rocket_EventShow },
 	{ "sortDS", &CG_Rocket_SortDS }
 };

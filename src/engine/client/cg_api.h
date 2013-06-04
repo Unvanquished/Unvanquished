@@ -283,6 +283,7 @@ typedef enum cgameImport_s
   CG_ROCKET_GETATTRIBUTE,
   CG_ROCKET_SETATTRIBUTE,
   CG_ROCKET_GETPROPERTY,
+  CG_ROCKET_SETPROPERYBYID,
   CG_ROCKET_GETEVENTPARAMETERS,
   CG_ROCKET_REGISTERDATAFORMATTER,
   CG_ROCKET_DATAFORMATTERRAWDATA,
@@ -598,6 +599,7 @@ void            trap_Rocket_SetInnerRML( const char *name, const char *id, const
 void            trap_Rocket_GetAttribute( const char *name, const char *id, const char *attribute, char *out, int length );
 void            trap_Rocket_SetAttribute( const char *name, const char *id, const char *attribute, const char *value );
 void            trap_Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t type );
+void            trap_Rocket_SetPropertyById( const char *id, const char *property, const char *value );
 void            trap_Rocket_GetEventParameters( char *params, int length );
 void            trap_Rocket_RegisterDataFormatter( const char *name );
 void            trap_Rocket_DataFormatterRawData( int handle, char *name, int nameLength, char *data, int dataLength );

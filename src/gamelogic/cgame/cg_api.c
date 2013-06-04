@@ -1455,6 +1455,10 @@ void trap_Rocket_GetProperty( const char *name, void *out, int len, rocketVarTyp
 	syscall( CG_ROCKET_GETPROPERTY, name, out, len, type );
 }
 
+void trap_Rocket_SetPropertyById( const char *id, const char *property, const char *value )
+{
+	syscall( CG_ROCKET_SETPROPERYBYID, id, property, value );
+}
 void trap_Rocket_GetEventParameters( char *params, int length )
 {
 	syscall( CG_ROCKET_GETEVENTPARAMETERS, params, length );

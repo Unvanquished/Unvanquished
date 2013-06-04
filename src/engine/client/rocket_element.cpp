@@ -1,4 +1,4 @@
-/*
+	/*
 ===========================================================================
 
 Daemon GPL Source Code
@@ -119,17 +119,22 @@ void Rocket_GetAttribute( const char *name, const char *id, const char *attribut
 
 void Rocket_SetAttribute( const char *name, const char *id, const char *attribute, const char *value )
 {
-	if ( ( !*name || !*id ) && activeElement )
+	if ( ( !*name && !*id ) && activeElement )
 	{
 		activeElement->SetAttribute( attribute, value );
 	}
 	else
 	{
-		Rocket::Core::ElementDocument *document = context->GetDocument( name );
+		Rocket::Core::ElementDocument *document = name[0] ? context->GetDocument( name ) : context->GetFocusElement()->GetOwnerDocument();
 
 		if ( document )
 		{
-			document->GetElementById( id )->SetAttribute( attribute, value );
+			Rocket::Core::Element *element = document->GetElementById( id );
+
+			if ( element )
+			{
+				element->SetAttribute( attribute, value );
+			}
 		}
 	}
 }
