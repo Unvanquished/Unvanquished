@@ -1529,10 +1529,15 @@ static void CG_RegisterGraphics( void )
 	cgs.media.redCgrade = trap_R_RegisterShader("gfx/cgrading/red-only",
 								 RSF_NOMIP | RSF_NOLIGHTSCALE );
 
+	cgs.media.tealCgrade = trap_R_RegisterShader("gfx/cgrading/teal-only",
+								 RSF_NOMIP | RSF_NOLIGHTSCALE );
+
 	cgs.media.balloonShader = trap_R_RegisterShader("gfx/sprites/chatballoon",
 							RSF_DEFAULT);
 
 	cgs.media.disconnectPS = CG_RegisterParticleSystem( "disconnectPS" );
+
+	cgs.media.scopeShader = trap_R_RegisterShader( "scope", RSF_DEFAULT | RSF_NOMIP );
 
 	CG_UpdateMediaFraction( 0.7f );
 
