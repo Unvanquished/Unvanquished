@@ -3,7 +3,12 @@
 		<style>
 			div#background
 			{
+				position: relative;
 				z-index: -1;
+			}
+			div
+			{
+				font-family: Roboto;
 			}
 			div#sidebar, test, pic
 			{
@@ -16,7 +21,7 @@
 				background: red;
 				z-index: 3;
 			}
-			div#sidebar button
+			button
 			{
 				color: teal;
 				display: inline-block;
@@ -35,7 +40,7 @@
 				background-decorator: image;
 				background-image-src: /ui/assets/button.png;
 			}
-			div#sidebar button:hover
+			button:hover
 			{
 				color: white;
 				display: inline-block;
