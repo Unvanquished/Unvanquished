@@ -724,8 +724,8 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in )
 
 		emoticon = out.Substring( openBracket + 1, closeBracket - openBracket - 1 );
 
-		// Spaces are invalid
-		if ( IsInvalidEmoticon( emoticon ) )
+		// Certain characters are invalid
+		if ( emoticon.Empty() || IsInvalidEmoticon( emoticon ) )
 		{
 			currentPosition = closeBracket + 1;
 			continue;
