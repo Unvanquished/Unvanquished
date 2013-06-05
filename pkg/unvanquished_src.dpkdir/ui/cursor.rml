@@ -4,11 +4,11 @@
 		<style>
 			body
 			{
-				width: 25px;
-				height: 25px;
+				width: 15px;
+				height: 35px;
 				<!-- Add a simple image decorator onto the body element. -->
 				cursor-decorator: image;
-				cursor-image-src: /gfx/2d/crosshair-rifle.tga;
+				cursor-image: /ui/assets/3_cursor3 32px 34px 44px 61px;
 			}
 		</style>
 	</head>
