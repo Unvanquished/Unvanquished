@@ -51,11 +51,16 @@
 			overflow-y: scroll;
 			height: 100%;
 		}
-		datagridrow, datagridcolumn, datagridcell
+		datagridcell
 		{
 			border-style: solid;
 			border-width: 1px;
 			border-color: white;
+		}
+		.trem-emoticon
+		{
+			width: 24px;
+			height: 24px;
 		}
         </style>
     </head>
@@ -74,7 +79,7 @@
 				<button onClick="close serverbrowser; open main; show main">Close</button>
 				<div class="servers">
 				<datagrid source="server_browser.internet">
-					<col fields="label" width="10%" formatter="ServerLabel">Label:</col>
+					<col fields="label" width="2%" formatter="ServerLabel"></col>
 					<col fields="name" width="50%">Name:</col>
 					<col fields="players,bots,maxClients" formatter="ServerPlayers"  width="20%">Players + Bots:</col>
 					<col fields="ping" formatter="ServerPing" width="20%">Ping:</col>
