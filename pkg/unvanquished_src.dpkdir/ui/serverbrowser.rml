@@ -51,6 +51,12 @@
 			overflow-y: scroll;
 			height: 100%;
 		}
+		datagridrow, datagridcolumn, datagridcell
+		{
+			border-style: solid;
+			border-width: 1px;
+			border-color: white;
+		}
         </style>
     </head>
     <body onload="close main;init_servers internet" id="serverbrowser">
@@ -68,7 +74,7 @@
 				<button onClick="close serverbrowser; open main; show main">Close</button>
 				<div class="servers">
 				<datagrid source="server_browser.internet">
-					<col fields="label" width="10%">Label:</col>
+					<col fields="label" width="10%" formatter="ServerLabel">Label:</col>
 					<col fields="name" width="50%">Name:</col>
 					<col fields="players,bots,maxClients" formatter="ServerPlayers"  width="20%">Players + Bots:</col>
 					<col fields="ping" formatter="ServerPing" width="20%">Ping:</col>
