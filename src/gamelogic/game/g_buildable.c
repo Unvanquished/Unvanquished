@@ -128,7 +128,7 @@ G_PuntBlocker
 Move spawn blockers
 ===============
 */
-static void G_PuntBlocker( gentity_t *self, gentity_t *blocker )
+static void PuntBlocker( gentity_t *self, gentity_t *blocker )
 {
 	vec3_t nudge;
 	if( self )
@@ -328,7 +328,7 @@ The code here will break if more than one reactor or overmind is allowed, even
 if one of them is dead/unspawned
 ================
 */
-static gentity_t *G_FindBuildable( buildable_t buildable );
+static gentity_t *FindBuildable( buildable_t buildable );
 
 gentity_t *G_Reactor( void )
 {
@@ -337,7 +337,7 @@ gentity_t *G_Reactor( void )
 	// If cache becomes invalid renew it
 	if ( !rc || rc->s.eType != ET_BUILDABLE || rc->s.modelindex != BA_H_REACTOR )
 	{
-		rc = G_FindBuildable( BA_H_REACTOR );
+		rc = FindBuildable( BA_H_REACTOR );
 	}
 
 	// If we found it and it's alive, return it
@@ -356,7 +356,7 @@ gentity_t *G_Overmind( void )
 	// If cache becomes invalid renew it
 	if ( !om || om->s.eType != ET_BUILDABLE || om->s.modelindex != BA_A_OVERMIND )
 	{
-		om = G_FindBuildable( BA_A_OVERMIND );
+		om = FindBuildable( BA_A_OVERMIND );
 	}
 
 	// If we found it and it's alive, return it
@@ -508,7 +508,7 @@ G_IsCreepHere
 simple wrapper to G_FindCreep to check if a location has creep
 ================
 */
-static qboolean G_IsCreepHere( vec3_t origin )
+static qboolean IsCreepHere( vec3_t origin )
 {
 	gentity_t dummy;
 
@@ -528,7 +528,7 @@ G_CreepSlow
 Set any nearby humans' SS_CREEPSLOWED flag
 ================
 */
-static void G_CreepSlow( gentity_t *self )
+static void CreepSlow( gentity_t *self )
 {
 	int         entityList[ MAX_GENTITIES ];
 	vec3_t      range;
@@ -928,7 +928,7 @@ void AGeneric_CreepCheck( gentity_t *self )
 		return;
 	}
 
-	G_CreepSlow( self );
+	CreepSlow( self );
 }
 
 /*
@@ -1007,7 +1007,7 @@ void ASpawn_Think( gentity_t *self )
 				else if( g_antiSpawnBlock.integer &&
 				         ent->client && ent->client->pers.teamSelection == TEAM_ALIENS )
 				{
-					G_PuntBlocker( self, ent );
+					PuntBlocker( self, ent );
 				}
 
 				if ( ent->s.eType == ET_CORPSE )
@@ -1022,7 +1022,7 @@ void ASpawn_Think( gentity_t *self )
 		}
 	}
 
-	G_CreepSlow( self );
+	CreepSlow( self );
 
 	self->nextthink = level.time + BG_Buildable( self->s.modelindex )->nextthink;
 }
@@ -1117,7 +1117,7 @@ void AOvermind_Think( gentity_t *self )
 		self->overmindSpawnsTimer = level.time + OVERMIND_SPAWNS_PERIOD;
 	}
 
-	G_CreepSlow( self );
+	CreepSlow( self );
 
 	self->nextthink = level.time + BG_Buildable( self->s.modelindex )->nextthink;
 }
@@ -1823,6 +1823,45 @@ static void IdlePowerState( gentity_t *self )
 }
 
 /*
+================
+PowerSourceInRange
+
+Check if origin is affected by reactor or repeater power.
+================
+*/
+static qboolean PowerSourceInRange( vec3_t origin )
+{
+	gentity_t *neighbor = NULL;
+
+	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, POWER_RELEVANT_RANGE ) )
+	{
+		if ( neighbor->s.eType != ET_BUILDABLE )
+		{
+			continue;
+		}
+
+		switch ( neighbor->s.modelindex )
+		{
+			case BA_H_REACTOR:
+				if ( Distance( origin, neighbor->s.origin ) < REACTOR_POWER_RANGE )
+				{
+					return qtrue;
+				}
+				break;
+
+			case BA_H_REPEATER:
+				if ( Distance( origin, neighbor->s.origin ) < REPEATER_POWER_RANGE )
+				{
+					return qtrue;
+				}
+				break;
+		}
+	}
+
+	return qfalse;
+}
+
+/*
 =================
 IncomingInterference
 
@@ -2071,7 +2110,8 @@ void G_SetHumanBuildablePowerState()
 	if ( G_Reactor() )
 	{
 		// first pass: predict spare power for all buildables,
-		//             power up buildables that have enough power
+		//             power up buildables that have enough power,
+		//             power down drills that don't have a close power source
 		for ( entityNum = MAX_CLIENTS; entityNum < level.num_entities; entityNum++ )
 		{
 			ent = &g_entities[ entityNum ];
@@ -2087,6 +2127,11 @@ void G_SetHumanBuildablePowerState()
 			if ( ent->currentSparePower >= 0.0f )
 			{
 				ent->powered = qtrue;
+			}
+
+			if ( ent->s.modelindex == BA_H_DRILL && !PowerSourceInRange( ent->s.origin ) )
+			{
+				ent->powered = qfalse;
 			}
 		}
 
@@ -2305,7 +2350,7 @@ void HSpawn_Think( gentity_t *self )
 				else if( g_antiSpawnBlock.integer &&
 				         ent->client && ent->client->pers.teamSelection == TEAM_HUMANS )
 				{
-					G_PuntBlocker( self, ent );
+					PuntBlocker( self, ent );
 				}
 
 				if ( ent->s.eType == ET_CORPSE )
@@ -3176,7 +3221,7 @@ G_QueueValue
 ============
 */
 
-static int G_QueueValue( gentity_t *self )
+static int QueueValue( gentity_t *self )
 {
 	int    i;
 	int    damageTotal = 0;
@@ -3337,7 +3382,7 @@ float G_BuildingConfidenceReward( gentity_t *self )
 	return reward;
 }
 
-static int G_BuildableConfidenceReason( int modelindex )
+static int BuildableConfidenceReason( int modelindex )
 {
 	switch ( modelindex )
 	{
@@ -3386,7 +3431,7 @@ void G_BuildableThink( gentity_t *ent, int msec )
 
 			// Award confidence
 			G_AddConfidence( BG_Buildable( ent->s.modelindex )->team, CONFIDENCE_BUILDING,
-			                 G_BuildableConfidenceReason( ent->s.modelindex ), CONF_QUAL_NONE,
+			                 BuildableConfidenceReason( ent->s.modelindex ), CONF_QUAL_NONE,
 			                 G_BuildingConfidenceReward( ent ),
 			                 &g_entities[ ent->builtBy->slot ] );
 		}
@@ -3520,7 +3565,7 @@ G_FindBuildable
 Finds a buildable of the specified type
 ================
 */
-static gentity_t *G_FindBuildable( buildable_t buildable )
+static gentity_t *FindBuildable( buildable_t buildable )
 {
 	int       i;
 	gentity_t *ent;
@@ -3549,8 +3594,8 @@ G_BuildablesIntersect
 Test if two buildables intersect each other
 ===============
 */
-static qboolean G_BuildablesIntersect( buildable_t a, vec3_t originA,
-                                       buildable_t b, vec3_t originB )
+static qboolean BuildablesIntersect( buildable_t a, vec3_t originA,
+                                     buildable_t b, vec3_t originB )
 {
 	vec3_t minsA, maxsA;
 	vec3_t minsB, maxsB;
@@ -3575,7 +3620,7 @@ qsort comparison function for a buildable removal list
 */
 static buildable_t cmpBuildable;
 static vec3_t      cmpOrigin;
-static int G_CompareBuildablesForRemoval( const void *a, const void *b )
+static int CompareBuildablesForRemoval( const void *a, const void *b )
 {
 	int precedence[] =
 	{
@@ -3608,10 +3653,10 @@ static int G_CompareBuildablesForRemoval( const void *a, const void *b )
 	buildableB = * ( gentity_t ** ) b;
 
 	// Prefer the one that collides with the thing we're building
-	aMatches = G_BuildablesIntersect( cmpBuildable, cmpOrigin,
-	                                  buildableA->s.modelindex, buildableA->s.origin );
-	bMatches = G_BuildablesIntersect( cmpBuildable, cmpOrigin,
-	                                  buildableB->s.modelindex, buildableB->s.origin );
+	aMatches = BuildablesIntersect( cmpBuildable, cmpOrigin,
+	                                buildableA->s.modelindex, buildableA->s.origin );
+	bMatches = BuildablesIntersect( cmpBuildable, cmpOrigin,
+	                                buildableB->s.modelindex, buildableB->s.origin );
 
 	if ( aMatches && !bMatches )
 	{
@@ -3888,13 +3933,6 @@ static itemBuildError_t BuildableReplacementChecks( buildable_t oldBuildable, bu
 		return IBE_NOROOM; // TODO: Introduce fitting IBE
 	}
 
-	// don't replace repeaters with anything but repeaters, reactor or spawn (if there is none)
-	if ( oldBuildable == BA_H_REPEATER && newBuildable != BA_H_REACTOR && newBuildable != BA_H_REPEATER
-	     && !( newBuildable == BA_H_SPAWN && level.numHumanSpawns == 0 ) )
-	{
-		return IBE_NOROOM; // TODO: Introduce fitting IBE
-	}
-
 	// don't replace last spawn with a non-spawn
 	if (    ( oldBuildable == BA_H_SPAWN && newBuildable != BA_H_SPAWN && level.numHumanSpawns == 1 )
 	     || ( oldBuildable == BA_A_SPAWN && newBuildable != BA_A_SPAWN && level.numAlienSpawns == 1 ) )
@@ -4051,7 +4089,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 			continue;
 		}
 
-		if ( G_BuildablesIntersect( buildable, origin, ent->s.modelindex, ent->s.origin ) )
+		if ( BuildablesIntersect( buildable, origin, ent->s.modelindex, ent->s.origin ) )
 		{
 			if ( ent->buildableTeam == attr->team && ent->deconstruct )
 			{
@@ -4218,7 +4256,7 @@ static itemBuildError_t PrepareBuildableReplacement( buildable_t buildable, vec3
 	}
 
 	// sort the list
-	qsort( list, listLen, sizeof( gentity_t* ), G_CompareBuildablesForRemoval );
+	qsort( list, listLen, sizeof( gentity_t* ), CompareBuildablesForRemoval );
 
 	// set buildables for deconstruction until we can pay for the new buildable
 	for ( entNum = 0; entNum < listLen; entNum++ )
@@ -4261,7 +4299,7 @@ G_SetBuildableLinkState
 Links or unlinks all the buildable entities
 ================
 */
-static void G_SetBuildableLinkState( qboolean link )
+static void SetBuildableLinkState( qboolean link )
 {
 	int       i;
 	gentity_t *ent;
@@ -4284,7 +4322,7 @@ static void G_SetBuildableLinkState( qboolean link )
 	}
 }
 
-static void G_SetBuildableMarkedLinkState( qboolean link )
+static void SetBuildableMarkedLinkState( qboolean link )
 {
 	int       i;
 	gentity_t *ent;
@@ -4326,7 +4364,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 	playerState_t    *ps = &ent->client->ps;
 
 	// Stop all buildables from interacting with traces
-	G_SetBuildableLinkState( qfalse );
+	SetBuildableLinkState( qfalse );
 
 	BG_BuildableBoundingBox( buildable, mins, maxs );
 
@@ -4373,7 +4411,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 		// Check for creep
 		if ( BG_Buildable( buildable )->creepTest )
 		{
-			if ( !G_IsCreepHere( entity_origin ) )
+			if ( !IsCreepHere( entity_origin ) )
 			{
 				reason = IBE_NOCREEP;
 			}
@@ -4392,8 +4430,14 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 		{
 			if ( !G_Reactor() )
 			{
-				reason = IBE_NOPOWERHERE; // TODO: Introduce fitting itemBuildError_t
+				reason = IBE_NOREACTOR;
 			}
+		}
+
+		// Drills need a close power source to work
+		if ( buildable == BA_H_DRILL && !PowerSourceInRange( origin ) )
+		{
+			reason = IBE_DRILLPOWERSOURCE;
 		}
 
 		// Check if buildable requires a DCC
@@ -4418,7 +4462,7 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 	// Can we only have one of these?
 	if ( BG_Buildable( buildable )->uniqueTest )
 	{
-		tempent = G_FindBuildable( buildable );
+		tempent = FindBuildable( buildable );
 
 		if ( tempent && !tempent->deconstruct )
 		{
@@ -4440,19 +4484,19 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 	}
 
 	// Relink buildables
-	G_SetBuildableLinkState( qtrue );
+	SetBuildableLinkState( qtrue );
 
 	//check there is enough room to spawn from (presuming this is a spawn)
 	if ( reason == IBE_NONE )
 	{
-		G_SetBuildableMarkedLinkState( qfalse );
+		SetBuildableMarkedLinkState( qfalse );
 
 		if ( G_CheckSpawnPoint( ENTITYNUM_NONE, origin, normal, buildable, NULL ) != NULL )
 		{
 			reason = IBE_NORMAL;
 		}
 
-		G_SetBuildableMarkedLinkState( qtrue );
+		SetBuildableMarkedLinkState( qtrue );
 	}
 
 	//this item does not fit here
@@ -4476,8 +4520,8 @@ G_Build
 Spawns a buildable
 ================
 */
-gentity_t *G_Build( gentity_t *builder, buildable_t buildable,
-                    const vec3_t origin, const vec3_t normal, const vec3_t angles, int groundEntNum )
+static gentity_t *Build( gentity_t *builder, buildable_t buildable,
+                         const vec3_t origin, const vec3_t normal, const vec3_t angles, int groundEntNum )
 {
 	gentity_t  *built;
 	char       readable[ MAX_STRING_CHARS ];
@@ -4794,7 +4838,7 @@ qboolean G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 	switch ( G_CanBuild( ent, buildable, dist, origin, normal, &groundEntNum ) )
 	{
 		case IBE_NONE:
-			G_Build( ent, buildable, origin, normal, ent->s.apos.trBase, groundEntNum );
+			Build( ent, buildable, origin, normal, ent->s.apos.trBase, groundEntNum );
 			G_ModifyBuildPoints( BG_Buildable( buildable )->team, -BG_Buildable( buildable )->buildPoints );
 			return qtrue;
 
@@ -4830,6 +4874,14 @@ qboolean G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOPOWERHERE );
 			return qfalse;
 
+		case IBE_DRILLPOWERSOURCE:
+			G_TriggerMenu( ent->client->ps.clientNum, MN_H_DRILLPOWERSOURCE );
+			return qfalse;
+
+		case IBE_NOREACTOR:
+			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NOREACTOR );
+			return qfalse;
+
 		case IBE_NOROOM:
 			G_TriggerMenu( ent->client->ps.clientNum, MN_B_NOROOM );
 			return qfalse;
@@ -4840,10 +4892,6 @@ qboolean G_BuildIfValid( gentity_t *ent, buildable_t buildable )
 
 		case IBE_NODCC:
 			G_TriggerMenu( ent->client->ps.clientNum, MN_H_NODCC );
-			return qfalse;
-
-		case IBE_RPTPOWERHERE:
-			G_TriggerMenu( ent->client->ps.clientNum, MN_H_RPTPOWERHERE );
 			return qfalse;
 
 		case IBE_LASTSPAWN:
@@ -4865,7 +4913,7 @@ Traces down to find where an item should rest, instead of letting them
 free fall from their spawn points
 ================
 */
-static gentity_t *G_FinishSpawningBuildable( gentity_t *ent, qboolean force )
+static gentity_t *FinishSpawningBuildable( gentity_t *ent, qboolean force )
 {
 	trace_t     tr;
 	vec3_t      normal, dest;
@@ -4885,7 +4933,7 @@ static gentity_t *G_FinishSpawningBuildable( gentity_t *ent, qboolean force )
 		VectorSet( normal, 0.0f, 0.0f, 1.0f );
 	}
 
-	built = G_Build( ent, buildable, ent->s.pos.trBase,
+	built = Build( ent, buildable, ent->s.pos.trBase,
 	                 normal, ent->s.angles, ENTITYNUM_NONE );
 
 	built->takedamage = qtrue;
@@ -4927,9 +4975,9 @@ G_SpawnBuildableThink
 Complete spawning a buildable using its placeholder
 ============
 */
-static void G_SpawnBuildableThink( gentity_t *ent )
+static void SpawnBuildableThink( gentity_t *ent )
 {
-	G_FinishSpawningBuildable( ent, qfalse );
+	FinishSpawningBuildable( ent, qfalse );
 	G_FreeEntity( ent );
 }
 
@@ -4950,7 +4998,7 @@ void G_SpawnBuildable( gentity_t *ent, buildable_t buildable )
 	// some movers spawn on the second frame, so delay item
 	// spawns until the third frame so they can ride trains
 	ent->nextthink = level.time + FRAMETIME * 2;
-	ent->think = G_SpawnBuildableThink;
+	ent->think = SpawnBuildableThink;
 }
 
 /*
@@ -5187,8 +5235,8 @@ void G_LayoutSelect( void )
 G_LayoutBuildItem
 ============
 */
-static void G_LayoutBuildItem( buildable_t buildable, vec3_t origin,
-                               vec3_t angles, vec3_t origin2, vec3_t angles2 )
+static void LayoutBuildItem( buildable_t buildable, vec3_t origin,
+                             vec3_t angles, vec3_t origin2, vec3_t angles2 )
 {
 	gentity_t *builder;
 
@@ -5274,7 +5322,7 @@ void G_LayoutLoad( void )
 			}
 			else
 			{
-				G_LayoutBuildItem( buildable, origin, angles, origin2, angles2 );
+				LayoutBuildItem( buildable, origin, angles, origin2, angles2 );
 			}
 		}
 
@@ -5404,7 +5452,7 @@ void G_BuildLogSet( buildLog_t *log, gentity_t *ent )
 	VectorCopy( ent->s.origin2, log->origin2 );
 	VectorCopy( ent->s.angles2, log->angles2 );
 	log->powerSource = ent->powerSource ? ent->powerSource->s.modelindex : BA_NONE;
-	log->powerValue = G_QueueValue( ent );
+	log->powerValue = QueueValue( ent );
 }
 
 void G_BuildLogAuto( gentity_t *actor, gentity_t *buildable, buildFate_t fate )
@@ -5455,7 +5503,7 @@ void G_BuildLogRevertThink( gentity_t *ent )
 		}
 	}
 
-	built = G_FinishSpawningBuildable( ent, qtrue );
+	built = FinishSpawningBuildable( ent, qtrue );
 
 	if ( ( built->deconstruct = ent->deconstruct ) )
 	{

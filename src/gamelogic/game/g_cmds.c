@@ -3469,29 +3469,32 @@ void Cmd_Build_f( gentity_t *ent )
 		//these are the errors displayed when the builder first selects something to use
 		switch ( G_CanBuild( ent, buildable, dist, origin, normal, &groundEntNum ) )
 		{
-				// can place right away, set the blueprint and the valid togglebit
+			// can place right away, set the blueprint and the valid togglebit
 			case IBE_NONE:
-			case IBE_TNODEWARN:
-			case IBE_RPTNOREAC:
-			case IBE_RPTPOWERHERE:
-			case IBE_SPWNWARN:
 				err = MN_NONE;
 				// we OR-in the selected builable later
 				ent->client->ps.stats[ STAT_BUILDABLE ] = SB_VALID_TOGGLEBIT;
 				break;
 
-				// can't place yet but maybe soon: start with valid togglebit off
+			// can't place yet but maybe soon: start with valid togglebit off
 			case IBE_NORMAL:
 			case IBE_NOCREEP:
 			case IBE_NOROOM:
-			case IBE_NOOVERMIND:
 			case IBE_NOPOWERHERE:
+			case IBE_DRILLPOWERSOURCE:
+			case IBE_PERMISSION:
+			case IBE_NOOVERMIND:
+			case IBE_NOREACTOR:
 				err = MN_NONE;
 				break;
 
-				// more serious errors just pop a menu
+			// more serious errors will abort the buildable placement
 			case IBE_NOALIENBP:
 				err = MN_A_NOBP;
+				break;
+
+			case IBE_NOHUMANBP:
+				err = MN_H_NOBP;
 				break;
 
 			case IBE_ONEOVERMIND:
@@ -3502,16 +3505,8 @@ void Cmd_Build_f( gentity_t *ent )
 				err = MN_H_ONEREACTOR;
 				break;
 
-			case IBE_NOHUMANBP:
-				err = MN_H_NOBP;
-				break;
-
 			case IBE_NODCC:
 				err = MN_H_NODCC;
-				break;
-
-			case IBE_PERMISSION:
-				err = MN_B_CANNOT;
 				break;
 
 			case IBE_LASTSPAWN:
