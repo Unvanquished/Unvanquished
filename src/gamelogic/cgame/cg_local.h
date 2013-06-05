@@ -1187,6 +1187,98 @@ typedef struct
 	const char *id;
 } rocketHud_t;
 
+#define MAX_SERVERS 2048
+#define MAX_RESOLUTIONS 32
+#define MAX_LANGUAGES 64
+#define MAX_INPUTS 16
+#define MAX_OUTPUTS 16
+#define MAX_MODS 64
+#define MAX_DEMOS 256
+#define MAX_MAPS 128
+
+typedef struct server_s
+{
+	char *name;
+	char *label;
+	int clients;
+	int bots;
+	int ping;
+	int maxClients;
+	char *addr;
+} server_t;
+
+
+
+typedef struct resolution_s
+{
+	int width;
+	int height;
+} resolution_t;
+
+
+
+typedef struct language_s
+{
+	char *name;
+	char *lang;
+} language_t;
+
+
+
+typedef struct modInfo_s
+{
+	char *name;
+	char *description;
+} modInfo_t;
+
+typedef struct
+{
+	const char *mapName;
+	const char *mapLoadName;
+	const char *imageName;
+	int        cinematic;
+	qhandle_t  levelShot;
+} mapInfo_t;
+
+typedef struct
+{
+	server_t servers[ MAX_SERVERS ];
+	int serverCount;
+	int serverIndex;
+
+	resolution_t resolutions[ MAX_RESOLUTIONS ];
+	int resolutionCount;
+	int resolutionIndex;
+
+	language_t languages[ MAX_LANGUAGES ];
+	int languageCount;
+	int languageIndex;
+
+	modInfo_t modList[ MAX_MODS ];
+	int modCount;
+	int modIndex;
+
+	char *voipInputs[ MAX_INPUTS ];
+	int voipInputsCount;
+	int voipInputIndex;
+
+	char *alOutputs[ MAX_OUTPUTS ];
+	int alOutputsCount;
+	int alOutputIndex;
+
+	int playerList[ NUM_TEAMS ][ MAX_CLIENTS ];
+	int playerCount[ NUM_TEAMS ];
+	int playerIndex[ NUM_TEAMS ];
+
+	char *demoList[ MAX_DEMOS ];
+	int demoCount;
+	int demoIndex;
+
+	mapInfo_t mapList[ MAX_MAPS ];
+	int mapCount;
+	int mapIndex;
+} rocketDataSource_t;
+
 typedef struct
 {
 	char rootDir[ MAX_QPATH ];
@@ -1194,6 +1286,7 @@ typedef struct
 	int  serversLastRefresh;
 	rocketState_t rocketState;
 	rocketHud_t hud[ WP_NUM_WEAPONS ];
+	rocketDataSource_t data;
 } rocketInfo_t;
 
 extern rocketInfo_t rocketInfo;
