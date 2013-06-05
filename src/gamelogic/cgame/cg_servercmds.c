@@ -724,6 +724,12 @@ void CG_Menu( int menu, int arg )
 			type = DT_BUILD;
 			break;
 
+		case MN_H_NOREACTOR:
+			longMsg = _("Buildables cannot materialize without a reactor.");
+			shortMsg = _("There is no reactor");
+			type = DT_BUILD;
+			break;
+
 		case MN_H_ONEREACTOR:
 			longMsg = _("There can only be one Reactor. Deconstruct the existing one if you "
 			          "wish to move it.");
@@ -738,18 +744,18 @@ void CG_Menu( int menu, int arg )
 			type = DT_BUILD;
 			break;
 
+		case MN_H_DRILLPOWERSOURCE:
+			longMsg = _("Drills require a close power source since they transmit resources"
+			            " via the power gird. Build it near a reactor or repeater.");
+			shortMsg = _("The drill requires a close power source");
+			type = DT_BUILD;
+			break;
+
 		// unused - DCC isn't required to build anything
 		case MN_H_NODCC:
 			longMsg = _("There is no Defense Computer. A Defense Computer is needed to "
 			          "build this.");
 			shortMsg = _("There is no Defense Computer");
-			type = DT_BUILD;
-			break;
-
-		// unused - Multiple repeaters can be built in one location
-		case MN_H_RPTPOWERHERE:
-			longMsg = _("This area already has power. A Repeater is not required here.");
-			shortMsg = _("This area already has power");
 			type = DT_BUILD;
 			break;
 

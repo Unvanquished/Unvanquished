@@ -635,11 +635,12 @@ typedef enum
 
   //human build
   MN_H_NOPOWERHERE,
+  MN_H_DRILLPOWERSOURCE,
+  MN_H_NOREACTOR,
   MN_H_NOBP,
   MN_H_NOTPOWERED,
   MN_H_NODCC,
-  MN_H_ONEREACTOR,
-  MN_H_RPTPOWERHERE,
+  MN_H_ONEREACTOR
 } dynMenu_t;
 
 // animations
