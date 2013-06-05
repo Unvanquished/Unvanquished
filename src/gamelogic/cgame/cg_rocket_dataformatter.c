@@ -106,6 +106,12 @@ static void CG_Rocket_DFClassName( int handle, const char *data )
 	trap_Rocket_DataFormatterFormattedData( handle, BG_Class( atoi( Info_ValueForKey( data, "1" ) ) )->name, qtrue );
 }
 
+static void CG_Rocket_DFServerLabel( int handle, const char *data )
+{
+	const char *str = Info_ValueForKey( data, "1" );
+	trap_Rocket_DataFormatterFormattedData( handle, *data ? ++str : "&nbsp;", qfalse );
+}
+
 typedef struct
 {
 	const char *name;
@@ -117,6 +123,7 @@ static const dataFormatterCmd_t dataFormatterCmdList[] =
 	{ "ClassName", &CG_Rocket_DFClassName },
 	{ "PlayerName", &CG_Rocket_DFPlayerName },
 	{ "Resolution", &CG_Rocket_DFResolution },
+	{ "ServerLabel", &CG_Rocket_DFServerLabel },
 	{ "ServerPing", &CG_Rocket_DFServerPing },
 	{ "ServerPlayers", &CG_Rocket_DFServerPlayers },
 	{ "UpgradeName", &CG_Rocket_DFUpgradeName },
