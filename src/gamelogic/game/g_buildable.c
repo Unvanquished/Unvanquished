@@ -1811,6 +1811,45 @@ static void IdlePowerState( gentity_t *self )
 }
 
 /*
+================
+PowerSourceInRange
+
+Check if origin is affected by reactor or repeater power.
+================
+*/
+static qboolean PowerSourceInRange( vec3_t origin )
+{
+	gentity_t *neighbor = NULL;
+
+	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, POWER_RELEVANT_RANGE ) )
+	{
+		if ( neighbor->s.eType != ET_BUILDABLE )
+		{
+			continue;
+		}
+
+		switch ( neighbor->s.modelindex )
+		{
+			case BA_H_REACTOR:
+				if ( Distance( origin, neighbor->s.origin ) < REACTOR_POWER_RANGE )
+				{
+					return qtrue;
+				}
+				break;
+
+			case BA_H_REPEATER:
+				if ( Distance( origin, neighbor->s.origin ) < REPEATER_POWER_RANGE )
+				{
+					return qtrue;
+				}
+				break;
+		}
+	}
+
+	return qfalse;
+}
+
+/*
 =================
 IncomingInterference
 
@@ -2059,7 +2098,8 @@ void G_SetHumanBuildablePowerState()
 	if ( G_Reactor() )
 	{
 		// first pass: predict spare power for all buildables,
-		//             power up buildables that have enough power
+		//             power up buildables that have enough power,
+		//             power down drills that don't have a close power source
 		for ( entityNum = MAX_CLIENTS; entityNum < level.num_entities; entityNum++ )
 		{
 			ent = &g_entities[ entityNum ];
@@ -2075,6 +2115,11 @@ void G_SetHumanBuildablePowerState()
 			if ( ent->currentSparePower >= 0.0f )
 			{
 				ent->powered = qtrue;
+			}
+
+			if ( ent->s.modelindex == BA_H_DRILL && !PowerSourceInRange( ent->s.origin ) )
+			{
+				ent->powered = qfalse;
 			}
 		}
 
@@ -4287,46 +4332,6 @@ static void G_SetBuildableMarkedLinkState( qboolean link )
 
 /*
 ================
-CanBuildDrill
-
-Helper function for G_CanBuild.
-The drills needs a close power soruce to work, check for it.
-================
-*/
-static itemBuildError_t CanBuildDrill( vec3_t origin )
-{
-	gentity_t *neighbor = NULL;
-
-	while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, origin, POWER_RELEVANT_RANGE ) )
-	{
-		if ( neighbor->s.eType != ET_BUILDABLE )
-		{
-			continue;
-		}
-
-		switch ( neighbor->s.modelindex )
-		{
-			case BA_H_REACTOR:
-				if ( Distance( origin, neighbor->s.origin ) < REACTOR_POWER_RANGE )
-				{
-					return IBE_NONE;
-				}
-				break;
-
-			case BA_H_REPEATER:
-				if ( Distance( origin, neighbor->s.origin ) < REPEATER_POWER_RANGE )
-				{
-					return IBE_NONE;
-				}
-				break;
-		}
-	}
-
-	return IBE_DRILLPOWERSOURCE;
-}
-
-/*
-================
 G_CanBuild
 
 Checks to see if a buildable can be built
@@ -4418,12 +4423,9 @@ itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance
 		}
 
 		// Drills need a close power source to work
-		if ( buildable == BA_H_DRILL )
+		if ( buildable == BA_H_DRILL && !PowerSourceInRange( origin ) )
 		{
-			if ( ( tempReason = CanBuildDrill( origin ) ) != IBE_NONE )
-			{
-				reason = tempReason;
-			}
+			reason = IBE_DRILLPOWERSOURCE;
 		}
 
 		// Check if buildable requires a DCC
