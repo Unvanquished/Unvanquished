@@ -3876,13 +3876,6 @@ static itemBuildError_t BuildableReplacementChecks( buildable_t oldBuildable, bu
 		return IBE_NOROOM; // TODO: Introduce fitting IBE
 	}
 
-	// don't replace repeaters with anything but repeaters, reactor or spawn (if there is none)
-	if ( oldBuildable == BA_H_REPEATER && newBuildable != BA_H_REACTOR && newBuildable != BA_H_REPEATER
-	     && !( newBuildable == BA_H_SPAWN && level.numHumanSpawns == 0 ) )
-	{
-		return IBE_NOROOM; // TODO: Introduce fitting IBE
-	}
-
 	// don't replace last spawn with a non-spawn
 	if (    ( oldBuildable == BA_H_SPAWN && newBuildable != BA_H_SPAWN && level.numHumanSpawns == 1 )
 	     || ( oldBuildable == BA_A_SPAWN && newBuildable != BA_A_SPAWN && level.numAlienSpawns == 1 ) )
