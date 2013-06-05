@@ -45,7 +45,11 @@
 		{
 			height: 75%;
 			width: 95%;
+		}
+		datagridbody
+		{
 			overflow-y: scroll;
+			height: 100%;
 		}
         </style>
     </head>
