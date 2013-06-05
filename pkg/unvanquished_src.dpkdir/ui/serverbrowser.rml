@@ -48,7 +48,7 @@
 		}
 		datagridbody
 		{
-			overflow-y: scroll;
+			overflow-y: auto;
 			height: 100%;
 		}
 		datagridcell
@@ -56,11 +56,18 @@
 			border-style: solid;
 			border-width: 1px;
 			border-color: white;
+			min-height: 39px;
+			min-width: 37px;
+		}
+		datagridrow:selected
+		{
+			background: #FFFFFFA0;
+			border-color: #FFFFFFA0;
 		}
 		.trem-emoticon
 		{
-			width: 24px;
-			height: 24px;
+			width: 35px;
+			height: 35px;
 		}
         </style>
     </head>
@@ -80,7 +87,7 @@
 				<div class="servers">
 				<datagrid source="server_browser.internet">
 					<col fields="label" width="2%" formatter="ServerLabel"></col>
-					<col fields="name" width="50%">Name:</col>
+					<col fields="name" width="58%">Name:</col>
 					<col fields="players,bots,maxClients" formatter="ServerPlayers"  width="20%">Players + Bots:</col>
 					<col fields="ping" formatter="ServerPing" width="20%">Ping:</col>
 				</datagrid>
