@@ -1,12 +1,13 @@
 <rml>
     <head>
+	<link type="text/rcss" href="css/rkt.rcss" />
+	<link type="text/rcss" href="css/unv.rcss" />
         <title>Server Browser</title>
-        <link type="text/template" href="assets/window.rml" />
         <style>
 		body
 		{
 			width: 100%;
-			height: 95%;
+			height: 100%;
 			margin: auto;
 		}
 
@@ -31,36 +32,60 @@
 			width: 18px;
 			height: 18px;
 		}
+		div#backdrop, div#backdrop div
+		{
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			z-index: -1;
+		}
+		div.servers
+		{
+			height: 75%;
+			width: 95%;
+			overflow-y: scroll;
+		}
         </style>
     </head>
-    <body template="window" onload="init_servers internet" id="serverbrowser">
-		<div id="lol">
-			<tabset>
-				<tab>LAN</tab>
-				<panel>
-					LAN servers
-				</panel>
-				<tab onClick="buildDS server_browser internet">Internet</tab>
-				<panel>
-					<span id="status"></span>
-					<span class="emoticon"><img src="/emoticons/dev_1x1.tga"/></span>
-					<div class="servers">
-					<datagrid source="server_browser.internet">
-						<col fields="label" width="10%">Label:</col>
-						<col fields="name" width="50%">Name:</col>
-						<col fields="players,bots,maxClients" formatter="ServerPlayers"  width="20%">Players + Bots:</col>
-						<col fields="ping" formatter="ServerPing" width="20%">Ping:</col>
-					</datagrid>
-					</div>
-					<button onClick="buildDS server_browser internet">Refresh</button>
-					<button onClick="sortDS server_browser internet ping">Sort</button>
-					<button onClick="close serverbrowser">Close</button>
-				</panel>
-				<tab>Favorite</tab>
-				<panel>
-					Favorite servers here
-				</panel>
-			</tabset>
+    <body onload="close main;init_servers internet" id="serverbrowser">
+		<tabset>
+			<tab>LAN</tab>
+			<panel>
+				LAN servers
+			</panel>
+			<tab onClick="buildDS server_browser internet">Internet</tab>
+			<panel>
+				<p><span id="status"></span>
+				<span class="emoticon"><img src="/emoticons/dev_1x1.tga"/></span></p>
+				<button onClick="buildDS server_browser internet">Refresh</button>
+				<button onClick="sortDS server_browser internet ping">Sort</button>
+				<button onClick="close serverbrowser; open main; show main">Close</button>
+				<div class="servers">
+				<datagrid source="server_browser.internet">
+					<col fields="label" width="10%">Label:</col>
+					<col fields="name" width="50%">Name:</col>
+					<col fields="players,bots,maxClients" formatter="ServerPlayers"  width="20%">Players + Bots:</col>
+					<col fields="ping" formatter="ServerPing" width="20%">Ping:</col>
+				</datagrid>
+				</div>
+			</panel>
+			<tab>Favorite</tab>
+			<panel>
+				Favorite servers here
+			</panel>
+		</tabset>
+		<div id="backdrop">
+			<div>
+				<img style="position: fixed; width: 50%; left: 30%; top: 350px;" src="/ui/assets/human.png"/>
+				<img style="position: fixed; width: 15%; left: 50%; top: 600px;" src="/ui/assets/dretch3.png"/>
+				<img style="position: fixed; width: 25%; left: 25%; top: 600px;" src="/ui/assets/dretch2.png"/>
+				<img style="position: fixed; width: 15%; left: 75%; top: 650px;" src="/ui/assets/dretch1.png"/>
+			</div>
+			<div id="background">
+				<img style="height: 100%; width: 100%;" src="/ui/assets/mainmenu" />
+			</div>
 		</div>
 	</body>
 </rml>
