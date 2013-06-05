@@ -91,12 +91,16 @@ scrollbarvertical sliderarrowdec
 {
 	icon-decorator: image;
 	icon-image-src: /ui/assets/scrollbar_arrow_dwn_a;
+	min-width: 10px;
+	min-height: 10px;
 }
 
 scrollbarvertical sliderarrowinc
 {
 	icon-decorator: image;
 	icon-image-src: /ui/assets/scrollbar_arrow_up_a;
+	min-width: 10px;
+	min-height: 10px;
 }
 
 tab,
