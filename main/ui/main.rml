@@ -17,8 +17,6 @@
 				height: 100%;
 				width: 25%;
 				font-family: Roboto;
-				background-decorator: none;
-				background: red;
 				z-index: 3;
 			}
 			button

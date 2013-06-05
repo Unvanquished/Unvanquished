@@ -11651,10 +11651,7 @@ const void     *RB_Draw2dPolysIndexed( const void *data )
 	shader = cmd->shader;
 	// HACK: Our shader system likes to cull things that we'd like shown
 	oldCullType = shader->cullType;
-	if ( shader->type == SHADER_2D )
-	{
-		shader->cullType = CT_TWO_SIDED;
-	}
+	shader->cullType = CT_TWO_SIDED;
 
 	if ( shader != tess.surfaceShader )
 	{
