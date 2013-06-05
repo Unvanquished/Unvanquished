@@ -187,13 +187,14 @@ public:
 	}
 };
 
-
+// HACK: Rocket uses a texturehandle of 0 when we really want the whiteImage shader
+static qhandle_t whiteShader;
 
 //TODO: CompileGeometry, RenderCompiledGeometry, ReleaseCompileGeometry ( use vbos and ibos )
 class DaemonRenderInterface : public Rocket::Core::RenderInterface
 {
 public:
-	DaemonRenderInterface() {};
+	DaemonRenderInterface() { }
 
 	void RenderGeometry( Rocket::Core::Vertex *verticies,  int numVerticies, int *indices, int numIndicies, Rocket::Core::TextureHandle texture, const Rocket::Core::Vector2f& translation )
 	{
@@ -214,14 +215,14 @@ public:
 			Vector2Copy( vert.tex_coord, polyVert.st );
 		}
 
-		re.Add2dPolysIndexed( verts, numVerticies, indices, numIndicies, translation.x, translation.y, ( qhandle_t ) texture );
+		re.Add2dPolysIndexed( verts, numVerticies, indices, numIndicies, translation.x, translation.y, texture ? ( qhandle_t ) texture : whiteShader );
 
 		Z_Free( verts );
 	}
 
 	Rocket::Core::CompiledGeometryHandle CompileGeometry( Rocket::Core::Vertex *vertices, int num_vertices, int *indices, int num_indices, Rocket::Core::TextureHandle texture )
 	{
-		RocketCompiledGeometry *geometry = new RocketCompiledGeometry( vertices, num_vertices, indices, num_indices, ( qhandle_t ) texture );
+		RocketCompiledGeometry *geometry = new RocketCompiledGeometry( vertices, num_vertices, indices, num_indices, texture ? ( qhandle_t ) texture : whiteShader );
 
 		return Rocket::Core::CompiledGeometryHandle( geometry );
 
@@ -499,6 +500,8 @@ void Rocket_Init( void )
 	Cmd_AddCommand( "rocketDebug", Rocket_RocketDebug_f );
 
 	Rocket::Debugger::Initialise(context);
+
+	whiteShader = re.RegisterShader( "white", RSF_DEFAULT );
 }
 
 void Rocket_Shutdown( void )
