@@ -1233,9 +1233,9 @@ typedef struct modInfo_s
 
 typedef struct
 {
-	const char *mapName;
-	const char *mapLoadName;
-	const char *imageName;
+	char *mapName;
+	char *mapLoadName;
+	char *imageName;
 	int        cinematic;
 	qhandle_t  levelShot;
 } mapInfo_t;
