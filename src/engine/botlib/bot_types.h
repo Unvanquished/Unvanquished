@@ -45,16 +45,16 @@ typedef struct
 typedef struct
 {
 	float frac;
-	vec3_t normal;
+	float normal[ 3 ];
 } botTrace_t;
 
 // parameters outputted by navigation
 // if they are followed exactly, the bot will not go off the nav mesh
 typedef struct
 {
-	vec3_t   pos;
-	vec3_t   dir;
-	qboolean directPathToGoal;
+	float    pos[ 3 ];
+	float    dir[ 3 ];
+	int      directPathToGoal;
 } botNavCmd_t;
 
 typedef enum
@@ -69,8 +69,8 @@ typedef enum
 typedef struct
 {
 	botRouteTargetType_t type;
-	vec3_t pos;
-	vec3_t polyExtents;
+	float pos[ 3 ];
+	float polyExtents[ 3 ];
 } botRouteTarget_t;
 
 enum navPolyFlags

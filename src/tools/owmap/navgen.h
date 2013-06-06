@@ -104,19 +104,3 @@ public:
 	const int              getNumVerts() { return nverts; }
 	const rcChunkyTriMesh *getChunkyMesh() { return &mesh; }
 };
-
-static void quake2recast( float vec[ 3 ] )
-{
-	float temp = vec[ 1 ];
-	vec[ 0 ] = -vec[ 0 ];
-	vec[ 1 ] = vec[ 2 ];
-	vec[ 2 ] = -temp;
-}
-
-static void recast2quake( vec3_t vec )
-{
-	vec_t temp = vec[1];
-	vec[0] = -vec[0];
-	vec[1] = -vec[2];
-	vec[2] = temp;
-}

@@ -498,6 +498,7 @@ set( RENDERERGLLIST
 )
 
 set( SERVERLIST
+  ${MOUNT_DIR}/engine/botlib/bot_convert.cpp
   ${MOUNT_DIR}/engine/botlib/bot_local.cpp
   ${MOUNT_DIR}/engine/botlib/bot_nav.cpp
   ${MOUNT_DIR}/engine/botlib/bot_load.cpp

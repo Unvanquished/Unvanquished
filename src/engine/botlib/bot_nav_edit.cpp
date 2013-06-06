@@ -40,28 +40,27 @@ extern "C" {
 #include "bot_navdraw.h"
 #include "nav.h"
 
-qboolean GetPointPointedTo( NavData_t *nav, vec3_t p )
+qboolean GetPointPointedTo( NavData_t *nav, rVec &p )
 {
-	vec3_t forward;
-	vec3_t end;
+	qVec forward;
+	qVec end;
+	rVec extents;
 	trace_t trace;
-	vec3_t extents = { 640, 96, 640 };
 	dtPolyRef nearRef;
+
+	VectorSet( extents, 640, 96, 640 );
 
 	AngleVectors( cl.snap.ps.viewangles, forward, NULL, NULL );
 	VectorMA( cl.snap.ps.origin, 8096, forward, end );
 
 	CM_BoxTrace( &trace, cl.snap.ps.origin, end, NULL, NULL, 0, CONTENTS_SOLID | CONTENTS_PLAYERCLIP, TT_AABB );
 
-	VectorCopy( trace.endpos, p );
-	quake2recast( p );
-
 	if ( dtStatusFailed( nav->query->findNearestPoly( p, extents, &nav->filter, &nearRef, end ) ) )
 	{
 		return qfalse;
 	}
 
-	VectorCopy( end, p );
+	p = qVec( trace.endpos );
 	return qtrue;
 }
 
@@ -75,7 +74,7 @@ struct
 
 void BotDrawNavEdit( DebugDrawQuake *dd )
 {
-	vec3_t p;
+	rVec p;
 
 	if ( cmd.enabled && GetPointPointedTo( cmd.nav, p ) )
 	{
@@ -259,18 +258,17 @@ void Cmd_AddConnection( void )
 		{
 			cmd.nav->process.con.addConnection( cmd.pc );
 
-			vec3_t omin, omax;
-			ClearBounds( omin, omax );
-			AddPointToBounds( cmd.pc.start, omin, omax );
-			AddPointToBounds( cmd.pc.end, omin, omax );
+			rBounds box;
+			box.addPoint( cmd.pc.start );
+			box.addPoint( cmd.pc.end );
 
-			omin[ 1 ] -= 10;
-			omax[ 1 ] += 10;
+			box.mins[ 1 ] -= 10;
+			box.maxs[ 1 ] += 10;
 
 			// rebuild affected tiles
 			dtCompressedTileRef refs[ 32 ];
 			int tc = 0;
-			cmd.nav->cache->queryTiles( omin, omax, refs, &tc, 32 );
+			cmd.nav->cache->queryTiles( box.mins, box.maxs, refs, &tc, 32 );
 
 			for ( int k = 0; k < tc; k++ )
 			{

@@ -49,15 +49,15 @@ make sure the vectors use the same coordinate system
 ====================
 */
 
-void BotCalcSteerDir( Bot_t *bot, vec3_t dir )
+void BotCalcSteerDir( Bot_t *bot, rVec &dir )
 {
 	const int ip0 = 0;
 	const int ip1 = MIN( 1, bot->numCorners - 1 );
 	const float* p0 = &bot->cornerVerts[ ip0 * 3 ];
 	const float* p1 = &bot->cornerVerts[ ip1 * 3 ];
-	vec3_t dir0, dir1;
+	rVec dir0, dir1;
 	float len0, len1;
-	vec3_t spos;
+	rVec spos;
 
 	VectorCopy( bot->corridor.getPos(), spos );
 
@@ -92,9 +92,9 @@ void FindWaypoints( Bot_t *bot, float *corners, unsigned char *cornerFlags, dtPo
 	*numCorners = bot->corridor.findCorners( corners, cornerFlags, cornerPolys, maxCorners, bot->nav->query, &bot->nav->filter );
 }
 
-qboolean PointInPolyExtents( Bot_t *bot, dtPolyRef ref, const vec3_t point, const vec3_t extents )
+qboolean PointInPolyExtents( Bot_t *bot, dtPolyRef ref, rVec point, rVec extents )
 {
-	vec3_t closest;
+	rVec closest;
 
 	if ( dtStatusFailed( bot->nav->query->closestPointOnPolyBoundary( ref, point, closest ) ) )
 	{
@@ -118,21 +118,19 @@ qboolean PointInPolyExtents( Bot_t *bot, dtPolyRef ref, const vec3_t point, cons
 	return qtrue;
 }
 
-qboolean PointInPoly( Bot_t *bot, dtPolyRef ref, const vec3_t point )
+qboolean PointInPoly( Bot_t *bot, dtPolyRef ref, rVec point )
 {
 	sharedEntity_t *ent = SV_GentityNum( bot->clientNum );
 	return PointInPolyExtents( bot, ref, point, ent->r.maxs );
 }
 
-qboolean BotFindNearestPoly( Bot_t *bot, const vec3_t coord, dtPolyRef *nearestPoly, vec3_t nearPoint )
+qboolean BotFindNearestPoly( Bot_t *bot, rVec coord, dtPolyRef *nearestPoly, rVec &nearPoint )
 {
-	vec3_t start, extents;
+	rVec start( coord );
+	rVec extents( 640, 96, 640 );
 	dtStatus status;
 	dtNavMeshQuery* navQuery = bot->nav->query;
 	dtQueryFilter* navFilter = &bot->nav->filter;
-
-	VectorSet( extents, 640, 96, 640 );
-	VectorCopy( coord, start );
 
 	status = navQuery->findNearestPoly( start, extents, navFilter, nearestPoly, nearPoint );
 	if ( dtStatusFailed( status ) || *nearestPoly == 0 )
@@ -148,10 +146,10 @@ qboolean BotFindNearestPoly( Bot_t *bot, const vec3_t coord, dtPolyRef *nearestP
 	return qtrue;
 }
 
-unsigned int FindRoute( Bot_t *bot, const vec3_t s, const botRouteTarget_t *rtarget )
+unsigned int FindRoute( Bot_t *bot, rVec s, botRouteTargetInternal rtarget )
 {
-	vec3_t start;
-	vec3_t end;
+	rVec start;
+	rVec end;
 	dtPolyRef startRef, endRef = 1;
 	dtPolyRef pathPolys[ MAX_BOT_PATH ];
 	dtStatus status;
@@ -177,7 +175,7 @@ unsigned int FindRoute( Bot_t *bot, const vec3_t s, const botRouteTarget_t *rtar
 		return ROUTE_FAILED;
 	}
 
-	status = bot->nav->query->findNearestPoly( rtarget->pos, rtarget->polyExtents, 
+	status = bot->nav->query->findNearestPoly( rtarget.pos, rtarget.polyExtents, 
 	                                           &bot->nav->filter, &endRef, end ); 
 
 	if ( dtStatusFailed( status ) || !endRef )
