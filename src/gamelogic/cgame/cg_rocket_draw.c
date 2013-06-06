@@ -1144,6 +1144,25 @@ static void CG_Rocket_DrawStageReport( void )
 
 }
 
+static void CG_Rocket_DrawLevelshot( void )
+{
+	qhandle_t shader;
+
+	if ( rocketInfo.data.mapIndex < 0 )
+	{
+		return;
+	}
+
+	shader = rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].levelShot;
+
+	if ( shader == -1 )
+	{
+		shader = rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].levelShot = trap_R_RegisterShader( rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].imageName, RSF_NOMIP );
+	}
+
+	trap_Rocket_SetInnerRML( "", "", va( "<img class='levelshot' src='/%s' />", CG_GetShaderNameFromHandle( shader ) ) );
+}
+
 typedef struct
 {
 	const char *name;
@@ -1163,6 +1182,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "fps", &CG_Rocket_DrawFPS, ELEMENT_ALL },
 	{ "itemselect", &CG_DrawItemSelect, ELEMENT_BOTH },
 	{ "lagometer", &CG_Rocket_DrawLagometer, ELEMENT_GAME },
+	{ "levelshot", &CG_Rocket_DrawLevelshot, ELEMENT_ALL },
 	{ "location", &CG_Rocket_DrawLocation, ELEMENT_GAME },
 	{ "pic", &CG_Rocket_DrawPic, ELEMENT_ALL },
 	{ "scanner", &CG_Rocket_DrawHumanScanner, ELEMENT_HUMANS },
