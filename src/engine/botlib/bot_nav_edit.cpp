@@ -133,6 +133,7 @@ void Cmd_NavEdit( void )
 	if ( argc < 2 )
 	{
 		Com_Printf( "%s", usage );
+		return;
 	}
 
 	arg = Cmd_Argv( 1 );
@@ -191,6 +192,7 @@ void Cmd_AddConnection( void )
 	if ( argc < 2 )
 	{
 		Com_Printf( "%s", usage );
+		return;
 	}
 
 	arg = Cmd_Argv( 1 );
