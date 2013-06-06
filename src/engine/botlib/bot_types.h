@@ -53,8 +53,10 @@ typedef struct
 typedef struct
 {
 	float    pos[ 3 ];
+	float    tpos[ 3 ];
 	float    dir[ 3 ];
 	int      directPathToGoal;
+	int      havePath;
 } botNavCmd_t;
 
 typedef enum

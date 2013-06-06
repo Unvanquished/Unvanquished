@@ -259,10 +259,15 @@ extern "C" void BotUpdateCorridor( int botClientNum, const botRouteTarget_t *tar
 		VectorCopy( rdir, cmd->dir );
 		recast2quake( cmd->dir );
 
-		cmd->directPathToGoal = static_cast<qboolean>( bot->numCorners == 1 );
+		cmd->directPathToGoal = bot->numCorners == 1;
 
 		VectorCopy( bot->corridor.getPos(), cmd->pos );
 		recast2quake( cmd->pos );
+
+		VectorCopy( bot->corridor.getTarget(), cmd->tpos );
+		recast2quake( cmd->tpos );
+
+		cmd->havePath = bot->needReplan;
 	}
 	
 	if ( bot->offMesh )
@@ -278,6 +283,11 @@ extern "C" void BotUpdateCorridor( int botClientNum, const botRouteTarget_t *tar
 		VectorCopy( proj, cmd->pos );
 		cmd->directPathToGoal = qfalse;
 		VectorSubtract( end, start, cmd->dir );
+
+		VectorCopy( bot->corridor.getTarget(), cmd->tpos );
+		recast2quake( cmd->tpos );
+
+		cmd->havePath = true;
 
 		if ( withinRadiusOfOffMeshConnection( bot, spos, bot->offMeshEnd, bot->offMeshPoly ) )
 		{
