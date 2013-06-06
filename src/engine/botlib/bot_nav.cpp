@@ -139,14 +139,14 @@ void GetEntPosition( int num, qVec &pos )
 	pos = SV_GentityNum( num )->s.origin;
 }
 
-extern "C" unsigned int BotFindRouteExt( int botClientNum, const botRouteTarget_t *target )
+extern "C" qboolean BotFindRouteExt( int botClientNum, const botRouteTarget_t *target, qboolean allowPartial )
 {
 	rVec start;
 	Bot_t *bot = &agents[ botClientNum ];
 
 	GetEntPosition( botClientNum, start );
-
-	return FindRoute( bot, start, *target );
+	bool result = FindRoute( bot, start, *target, allowPartial );
+	return static_cast<qboolean>( result );
 }
 
 static bool withinRadiusOfOffMeshConnection( const Bot_t *bot, rVec pos, rVec off, dtPolyRef conPoly )
@@ -220,7 +220,7 @@ extern "C" void BotUpdateCorridor( int botClientNum, const botRouteTarget_t *tar
 	{
 		if ( bot->needReplan )
 		{
-			if ( ! ( FindRoute( bot, spos, rtarget ) & ( ROUTE_PARTIAL | ROUTE_FAILED ) ) )
+			if ( FindRoute( bot, spos, rtarget, false ) )
 			{
 				bot->needReplan = qfalse;
 			}

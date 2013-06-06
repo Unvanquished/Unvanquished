@@ -146,7 +146,7 @@ qboolean BotFindNearestPoly( Bot_t *bot, rVec coord, dtPolyRef *nearestPoly, rVe
 	return qtrue;
 }
 
-unsigned int FindRoute( Bot_t *bot, rVec s, botRouteTargetInternal rtarget )
+bool FindRoute( Bot_t *bot, rVec s, botRouteTargetInternal rtarget, bool allowPartial )
 {
 	rVec start;
 	rVec end;
@@ -165,14 +165,14 @@ unsigned int FindRoute( Bot_t *bot, rVec s, botRouteTargetInternal rtarget )
 	//dont pathfind too much
 	if ( bot->routePlanCounter == MAX_ROUTE_PLANS )
 	{
-		return ROUTE_FAILED;
+		return false;
 	}
 
 	result = BotFindNearestPoly( bot, s, &startRef, start );
 
 	if ( !result )
 	{
-		return ROUTE_FAILED;
+		return false;
 	}
 
 	status = bot->nav->query->findNearestPoly( rtarget.pos, rtarget.polyExtents, 
@@ -180,7 +180,7 @@ unsigned int FindRoute( Bot_t *bot, rVec s, botRouteTargetInternal rtarget )
 
 	if ( dtStatusFailed( status ) || !endRef )
 	{
-		return ROUTE_FAILED;
+		return false;
 	}
 	
 	bot->lastRoutePlanTime = time;
@@ -189,18 +189,18 @@ unsigned int FindRoute( Bot_t *bot, rVec s, botRouteTargetInternal rtarget )
 
 	if ( dtStatusFailed( status ) )
 	{
-		return ROUTE_FAILED;
+		return false;
+	}
+
+	if ( dtStatusDetail( status, DT_PARTIAL_RESULT ) && !allowPartial )
+	{
+		return false;
 	}
 
 	bot->corridor.reset( startRef, start );
 	bot->corridor.setCorridor( end, pathPolys, pathNumPolys );
 
-	if ( dtStatusDetail( status, DT_PARTIAL_RESULT ) )
-	{
-		return ROUTE_SUCCEED | ROUTE_PARTIAL;
-	}
-
 	bot->needReplan = qfalse;
 	bot->offMesh = false;
-	return ROUTE_SUCCEED;
+	return true;
 }

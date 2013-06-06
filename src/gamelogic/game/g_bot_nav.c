@@ -739,10 +739,9 @@ qboolean BotMoveToGoal( gentity_t *self )
 	}
 }
 
-unsigned int FindRouteToTarget( gentity_t *self, botTarget_t target )
+qboolean FindRouteToTarget( gentity_t *self, botTarget_t target, qboolean allowPartial )
 {
 	botRouteTarget_t routeTarget;
-
 	BotTargetToRouteTarget( self, target, &routeTarget );
-	return trap_BotFindRoute( self->s.number, &routeTarget );
+	return trap_BotFindRoute( self->s.number, &routeTarget, allowPartial );
 }

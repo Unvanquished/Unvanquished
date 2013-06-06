@@ -593,7 +593,7 @@ void trap_BotSetNavMesh( int botClientNum, qhandle_t navHandle )
 	syscall( BOT_SET_NAVMESH, botClientNum, navHandle );
 }
 
-unsigned int trap_BotFindRoute( int botClientNum, const botRouteTarget_t *target )
+qboolean trap_BotFindRoute( int botClientNum, const botRouteTarget_t *target, qboolean allowPartial )
 {
 	return syscall( BOT_FIND_ROUTE, botClientNum, target );
 }

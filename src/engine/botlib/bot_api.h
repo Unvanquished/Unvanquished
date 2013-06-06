@@ -43,7 +43,7 @@ void         BotShutdownNav( void );
 void         BotDisableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
 void         BotEnableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
 void         BotSetNavMesh( int botClientNum, qhandle_t nav );
-unsigned int BotFindRouteExt( int botClientNum, const botRouteTarget_t *target );
+qboolean     BotFindRouteExt( int botClientNum, const botRouteTarget_t *target, qboolean allowPartial );
 void         BotUpdateCorridor( int botClientNum, const botRouteTarget_t *target, botNavCmd_t *cmd );
 void         BotFindRandomPoint( int botClientNum, vec3_t point );
 qboolean     BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, vec3_t point, float radius );

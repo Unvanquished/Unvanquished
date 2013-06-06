@@ -1475,7 +1475,7 @@ void             trap_GetTimeString( char *buffer, int size, const char *format,
 qboolean         trap_BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle );
 void             trap_BotShutdownNav( void );
 void             trap_BotSetNavMesh( int botClientNum, qhandle_t navHandle );
-unsigned int     trap_BotFindRoute( int botClientNum, const botRouteTarget_t *target );
+qboolean         trap_BotFindRoute( int botClientNum, const botRouteTarget_t *target, qboolean allowPartial );
 qboolean         trap_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, botNavCmd_t *cmd );
 qboolean         trap_BotNavTrace( int botClientNum, botTrace_t *botTrace, const vec3_t start, const vec3_t end );
 void             trap_BotFindRandomPoint( int botClientNum, vec3_t point );

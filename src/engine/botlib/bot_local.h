@@ -100,5 +100,5 @@ void         FindWaypoints( Bot_t *bot, float *corners, unsigned char *cornerFla
 qboolean     PointInPolyExtents( Bot_t *bot, dtPolyRef ref, rVec point, rVec extents );
 qboolean     PointInPoly( Bot_t *bot, dtPolyRef ref, rVec point );
 qboolean     BotFindNearestPoly( Bot_t *bot, rVec coord, dtPolyRef *nearestPoly, rVec &nearPoint );
-unsigned int FindRoute( Bot_t *bot, rVec s, botRouteTargetInternal target );
+bool         FindRoute( Bot_t *bot, rVec s, botRouteTargetInternal target, bool allowPartial );
 #endif

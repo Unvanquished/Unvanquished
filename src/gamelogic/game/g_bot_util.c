@@ -996,7 +996,7 @@ qboolean BotChangeGoal( gentity_t *self, botTarget_t target )
 		return qfalse;
 	}
 
-	if ( FindRouteToTarget( self, target ) & ( ROUTE_PARTIAL | ROUTE_FAILED ) )
+	if ( !FindRouteToTarget( self, target, qfalse ) )
 	{
 		return qfalse;
 	}
