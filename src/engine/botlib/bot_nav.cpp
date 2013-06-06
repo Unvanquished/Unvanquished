@@ -275,14 +275,19 @@ extern "C" void BotUpdateCorridor( int botClientNum, const botRouteTarget_t *tar
 		qVec pos, proj;
 		qVec start = bot->offMeshStart;
 		qVec end = bot->offMeshEnd;
+		qVec dir;
+		qVec pVec;
 
 		GetEntPosition( botClientNum, pos );
+		start[ 2 ] = pos[ 2 ];
+		end[ 2 ] = pos[ 2 ];
 
 		ProjectPointOntoVectorBounded( pos, start, end, proj );
 		
 		VectorCopy( proj, cmd->pos );
 		cmd->directPathToGoal = qfalse;
 		VectorSubtract( end, start, cmd->dir );
+		VectorNormalize( cmd->dir );
 
 		VectorCopy( bot->corridor.getTarget(), cmd->tpos );
 		recast2quake( cmd->tpos );
