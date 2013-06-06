@@ -398,6 +398,7 @@ extern "C" qboolean BotSetupNav( const botClass_t *botClass, qhandle_t *navHandl
 			agents[ i ].routePlanCounter = 0;
 			agents[ i ].lastRoutePlanTime = 0;
 			agents[ i ].nav = NULL;
+			agents[ i ].offMesh = false;
 		}
 #ifndef DEDICATED
 		NavEditInit();

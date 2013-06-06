@@ -80,6 +80,10 @@ typedef struct
 	unsigned char     cornerFlags[ MAX_CORNERS ];
 	dtPolyRef         cornerPolys[ MAX_CORNERS ];
 	int               numCorners;
+	bool              offMesh;
+	vec3_t            offMeshStart;
+	vec3_t            offMeshEnd;
+	dtPolyRef         offMeshPoly;
 } Bot_t;
 
 extern int numNavData;

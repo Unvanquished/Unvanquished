@@ -141,6 +141,34 @@ extern "C" unsigned int BotFindRouteExt( int botClientNum, const botRouteTarget_
 	return FindRoute( bot, start, &rtarget );
 }
 
+static bool withinRadiusOfOffMeshConnection( const Bot_t *bot, const vec3_t pos, const vec3_t off, dtPolyRef conPoly )
+{
+	const dtOffMeshConnection *con = bot->nav->mesh->getOffMeshConnectionByRef( conPoly );
+	if ( !con )
+	{
+		return false;
+	}
+
+	if ( dtVdist2DSqr( pos, off ) < con->rad * con->rad )
+	{
+		return true;
+	}
+
+	return false;
+}
+
+static bool overOffMeshConnectionStart( const Bot_t *bot, const vec3_t pos )
+{
+	int corner = bot->numCorners - 1;
+	const bool offMeshConnection = ( bot->cornerFlags[ corner ] & DT_STRAIGHTPATH_OFFMESH_CONNECTION ) ? true : false;
+
+	if ( offMeshConnection )
+	{
+		return withinRadiusOfOffMeshConnection( bot, pos, &bot->cornerVerts[ corner * 3 ], bot->cornerPolys[ corner ] );
+	}
+	return false;
+}
+
 void UpdatePathCorridor( Bot_t *bot, vec3_t spos, const botRouteTarget_t *target )
 {
 	bot->corridor.movePosition( spos, bot->nav->query, &bot->nav->filter );
@@ -166,6 +194,11 @@ extern "C" void BotUpdateCorridor( int botClientNum, const botRouteTarget_t *tar
 	Bot_t *bot = &agents[ botClientNum ];
 	botRouteTarget_t rtarget;
 
+	if ( !cmd || !target )
+	{
+		return;
+	}
+
 	sharedEntity_t * ent = SV_GentityNum( botClientNum );
 
 	VectorCopy( ent->s.origin, spos );
@@ -178,37 +211,73 @@ extern "C" void BotUpdateCorridor( int botClientNum, const botRouteTarget_t *tar
 
 	bot->routePlanCounter = 0;
 
-	if ( bot->needReplan )
-	{
-		if ( ! ( FindRoute( bot, spos, &rtarget ) & ( ROUTE_PARTIAL | ROUTE_FAILED ) ) )
-		{
-			bot->needReplan = qfalse;
-		}
-	}
-
 	UpdatePathCorridor( bot, spos, &rtarget );
 
-	dtPolyRef lastPoly = bot->corridor.getLastPoly();
-
-	if ( rtarget.type == BOT_TARGET_DYNAMIC )
+	if ( !bot->offMesh )
 	{
-		if ( !PointInPolyExtents( bot, lastPoly, epos, rtarget.polyExtents ) )
+		if ( bot->needReplan )
 		{
-			bot->needReplan = qtrue;
+			if ( ! ( FindRoute( bot, spos, &rtarget ) & ( ROUTE_PARTIAL | ROUTE_FAILED ) ) )
+			{
+				bot->needReplan = qfalse;
+			}
 		}
-	}
 
-	if ( cmd )
-	{
+		if ( overOffMeshConnectionStart( bot, spos ) )
+		{
+			dtPolyRef refs[ 2 ];
+			vec3_t start;
+			vec3_t end;
+			int corner = bot->numCorners - 1;
+			dtPolyRef con = bot->cornerPolys[ corner ];
+
+			if ( bot->corridor.moveOverOffmeshConnection( con, refs, start, end, bot->nav->query ) )
+			{
+				bot->offMesh = true;
+				bot->offMeshPoly = con;
+				VectorCopy( end, bot->offMeshEnd );
+				VectorCopy( start, bot->offMeshStart );
+			}
+		}
+
+		dtPolyRef lastPoly = bot->corridor.getLastPoly();
+
+		if ( rtarget.type == BOT_TARGET_DYNAMIC )
+		{
+			if ( !PointInPolyExtents( bot, lastPoly, epos, rtarget.polyExtents ) )
+			{
+				bot->needReplan = qtrue;
+			}
+		}
+
 		vec3_t rdir;
 		BotCalcSteerDir( bot, rdir );
 		recast2quake( rdir );
 		VectorNormalize( rdir );
-
 		VectorCopy( rdir, cmd->dir );
 		cmd->directPathToGoal = static_cast<qboolean>( bot->numCorners == 1 );
 		VectorCopy( bot->corridor.getPos(), cmd->pos );
 		recast2quake( cmd->pos );
+	}
+	
+	if ( bot->offMesh )
+	{
+		vec3_t start, end, pos, proj;
+		VectorCopy( bot->offMeshStart, start );
+		VectorCopy( bot->offMeshEnd, end );
+		recast2quake( start );
+		recast2quake( end );
+		VectorCopy( ent->s.origin, pos );
+		ProjectPointOntoVectorBounded( spos, start, end, proj );
+		
+		VectorCopy( proj, cmd->pos );
+		cmd->directPathToGoal = qfalse;
+		VectorSubtract( end, start, cmd->dir );
+
+		if ( withinRadiusOfOffMeshConnection( bot, spos, bot->offMeshEnd, bot->offMeshPoly ) )
+		{
+			bot->offMesh = false;
+		}
 	}
 }
 

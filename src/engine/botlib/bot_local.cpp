@@ -203,5 +203,6 @@ unsigned int FindRoute( Bot_t *bot, const vec3_t s, const botRouteTarget_t *rtar
 	}
 
 	bot->needReplan = qfalse;
+	bot->offMesh = false;
 	return ROUTE_SUCCEED;
 }
