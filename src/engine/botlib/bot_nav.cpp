@@ -268,7 +268,7 @@ extern "C" void BotUpdateCorridor( int botClientNum, const botRouteTarget_t *tar
 		recast2quake( start );
 		recast2quake( end );
 		VectorCopy( ent->s.origin, pos );
-		ProjectPointOntoVectorBounded( spos, start, end, proj );
+		ProjectPointOntoVectorBounded( pos, start, end, proj );
 		
 		VectorCopy( proj, cmd->pos );
 		cmd->directPathToGoal = qfalse;
