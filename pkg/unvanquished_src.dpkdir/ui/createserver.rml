@@ -1,0 +1,9 @@
+<rml>
+	<head>
+		<title>Create a Server</title>
+		<link type="text/template" href="assets/window.rml" />
+	</head>
+	<body template="window" id="createserver" onShow="buildDS mapList">
+		<dataselect source="mapList.default" fields="name" />
+	</body>
+</rml>
