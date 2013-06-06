@@ -123,6 +123,7 @@ void         BotClampPos( gentity_t *self );
 
 // local navigation
 qboolean BotDodge( gentity_t *self );
+void     BotWalk( gentity_t *self, qboolean enable );
 qboolean BotSprint( gentity_t *self, qboolean enable );
 qboolean BotJump( gentity_t *self );
 void     BotStrafeDodge( gentity_t *self );
