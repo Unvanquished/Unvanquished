@@ -46,6 +46,7 @@ Maryland 20850 USA.
 #include "rocketEventInstancer.h"
 #include "rocketSelectableDataGrid.h"
 #include "rocketProgressBar.h"
+#include "rocketDataSelect.h"
 
 extern "C"
 {
@@ -495,6 +496,7 @@ void Rocket_Init( void )
 	// Add custom client elements
 	Rocket::Core::Factory::RegisterElementInstancer( "datagrid", new Rocket::Core::ElementInstancerGeneric< SelectableDataGrid >() )->RemoveReference();
 	Rocket::Core::Factory::RegisterElementInstancer( "progressbar", new Rocket::Core::ElementInstancerGeneric< RocketProgressBar >() )->RemoveReference();
+	Rocket::Core::Factory::RegisterElementInstancer( "dataselect", new Rocket::Core::ElementInstancerGeneric< RocketDataSelect >() )->RemoveReference();
 
 	Cmd_AddCommand( "rocket", Rocket_Rocket_f );
 	Cmd_AddCommand( "rocketDebug", Rocket_RocketDebug_f );
