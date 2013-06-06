@@ -739,6 +739,11 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in )
 			out.Insert( openBracket, path );
 			currentPosition = openBracket + strlen( path ) + 1;
 		}
+		else
+		{
+			// NOTE: +2 is for the two brackets.
+			currentPosition = openBracket + emoticon.Length() + 2;
+		}
 	}
 
 	return out;
