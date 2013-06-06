@@ -130,6 +130,11 @@ void Cmd_NavEdit( void )
 		return;
 	}
 
+	if ( argc < 2 )
+	{
+		Com_Printf( "%s", usage );
+	}
+
 	arg = Cmd_Argv( 1 );
 
 	if ( !Q_stricmp( arg, "enable" ) )
@@ -140,7 +145,7 @@ void Cmd_NavEdit( void )
 			return;
 		}
 
-		arg = Cmd_Argv( 1 );
+		arg = Cmd_Argv( 2 );
 		for ( int i = 0; i < numNavData; i++ )
 		{
 			if ( !Q_stricmp( BotNavData[ i ].name, arg ) )
@@ -169,6 +174,10 @@ void Cmd_NavEdit( void )
 		}
 
 		BotSaveOffMeshConnections( cmd.nav );
+	}
+	else 
+	{
+		Com_Printf( "%s", usage );
 	}
 }
 
@@ -268,6 +277,10 @@ void Cmd_AddConnection( void )
 
 			cmd.offBegin = false;
 		}
+	}
+	else
+	{
+		Com_Printf( "%s", usage );
 	}
 }
 
