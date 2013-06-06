@@ -782,6 +782,45 @@ void CG_Rocket_SortTeamList( const char *name, const char *sortBy )
 	}
 }
 
+void CG_Rocket_BuildMapList( const char *args )
+{
+	int i;
+
+	trap_Rocket_DSClearTable( "mapList", "default" );
+	CG_LoadArenas();
+
+	for ( i = 0; i < rocketInfo.data.mapCount; ++i )
+	{
+		char buf[ MAX_INFO_STRING ];
+
+		Info_SetValueForKey( buf, "name", rocketInfo.data.mapList[ i ].mapName, qfalse );
+		Info_SetValueForKey( buf, "levelshot", va( "%d", rocketInfo.data.mapList[ i ].levelShot ), qfalse );
+
+		trap_Rocket_DSAddRow( "mapList", "default", buf );
+	}
+
+}
+
+void CG_Rocket_CleanUpMapList( void )
+{
+	int i;
+
+	for ( i = 0; i < rocketInfo.data.mapCount; ++i )
+	{
+		BG_Free( rocketInfo.data.mapList[ i ].imageName );
+		BG_Free( rocketInfo.data.mapList[ i ].mapLoadName );
+		BG_Free( rocketInfo.data.mapList[ i ].mapName );
+	}
+
+	rocketInfo.data.mapCount = 0;
+}
+
+void CG_Rocket_SetMapListIndex( int index )
+{
+	rocketInfo.data.mapIndex = index;
+}
+
+
 void CG_Rocket_CleanUpTeamList( void )
 {
 	rocketInfo.data.playerCount[ TEAM_ALIENS ] = 0;
@@ -816,6 +855,7 @@ static const dataSourceCmd_t dataSourceCmdList[] =
 	{ "alOutputs", &CG_Rocket_BuildAlOutputs, &nullSortFunc, &CG_Rocket_CleanUpAlOutputs, &CG_Rocket_SetAlOutputsOutput, &nullExecFunc },
 	{ "demoList", &CG_Rocket_BuildDemoList, &nullSortFunc, &CG_Rocket_CleanUpDemoList, &CG_Rocket_SetDemoListDemo, &nullExecFunc },
 	{ "languages", &CG_Rocket_BuildLanguageList, &nullSortFunc, &CG_Rocket_CleanUpLanguageList, &CG_Rocket_SetLanguageListLanguage, &nullExecFunc },
+	{ "mapList", &CG_Rocket_BuildMapList, &nullSortFunc, &CG_Rocket_CleanUpMapList, &CG_Rocket_SetMapListIndex, &nullExecFunc },
 	{ "modList", &CG_Rocket_BuildModList, &nullSortFunc, &CG_Rocket_CleanUpModList, &CG_Rocket_SetModListMod, &nullExecFunc },
 	{ "resolutions", &CG_Rocket_BuildResolutionList, &CG_Rocket_SortResolutionList, &CG_Rocket_CleanUpResolutionList, &CG_Rocket_SetResolutionListResolution, &nullExecFunc },
 	{ "server_browser", &CG_Rocket_BuildServerList, &CG_Rocket_SortServerList, &CG_Rocket_CleanUpServerList, &CG_Rocket_SetServerListServer, &CG_Rocket_ExecServerList },

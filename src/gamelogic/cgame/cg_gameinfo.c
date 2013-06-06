@@ -195,10 +195,10 @@ void CG_LoadArenas( void )
 		// if no type specified, it will be treated as "ffa"
 
 		rocketInfo.data.mapList[ rocketInfo.data.mapCount ].cinematic = -1;
-		rocketInfo.data.mapList[ rocketInfo.data.mapCount ].mapLoadName = String_Alloc( Info_ValueForKey( cg_arenaInfos[ n ], "map" ) );
-		rocketInfo.data.mapList[ rocketInfo.data.mapCount ].mapName = String_Alloc( Info_ValueForKey( cg_arenaInfos[ n ], "longname" ) );
+		rocketInfo.data.mapList[ rocketInfo.data.mapCount ].mapLoadName = BG_strdup( Info_ValueForKey( cg_arenaInfos[ n ], "map" ) );
+		rocketInfo.data.mapList[ rocketInfo.data.mapCount ].mapName = BG_strdup( Info_ValueForKey( cg_arenaInfos[ n ], "longname" ) );
 		rocketInfo.data.mapList[ rocketInfo.data.mapCount ].levelShot = -1;
-		rocketInfo.data.mapList[ rocketInfo.data.mapCount ].imageName = String_Alloc( va( "levelshots/%s", rocketInfo.data.mapList[ rocketInfo.data.mapCount ].mapLoadName ) );
+		rocketInfo.data.mapList[ rocketInfo.data.mapCount ].imageName = BG_strdup( va( "levelshots/%s", rocketInfo.data.mapList[ rocketInfo.data.mapCount ].mapLoadName ) );
 
 		rocketInfo.data.mapCount++;
 
