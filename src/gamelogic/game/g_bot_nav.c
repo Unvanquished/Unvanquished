@@ -135,7 +135,7 @@ qboolean GoalInRange( gentity_t *self, float r )
 	{
 		VectorAdd( maxs, self->r.maxs, maxs );
 		VectorAdd( mins, self->r.mins, mins );
-		return BoundsIntersectPoint( mins, maxs, self->botMind->goal.coord );
+		return BoundsIntersectPoint( mins, maxs, self->botMind->nav.tpos );
 	}
 
 	num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
