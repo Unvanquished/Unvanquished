@@ -106,7 +106,6 @@ void CG_HumanBuildableExplosion( buildable_t buildable, vec3_t origin, vec3_t di
 	{
 		case BA_H_REPEATER:
 		case BA_H_REACTOR:
-			// TODO: Add sound and particle system fitting the (stronger) reactor and repeater explosion
 			nova = CG_SpawnNewParticleSystem( cgs.media.humanBuildableNovaPS );
 		default:
 			trap_S_StartSound( origin, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.humanBuildableExplosion );
@@ -2262,9 +2261,6 @@ void CG_Buildable( centity_t *cent )
 			QuatMultiply0( ent.skeleton.bones[ 6 ].rotation, rotation );
 		}
 
-
-
-
 		CG_TransformSkeleton( &ent.skeleton, Scale );
 		VectorCopy(mins, ent.skeleton.bounds[ 0 ]);
 		VectorCopy(maxs, ent.skeleton.bounds[ 1 ]);
@@ -2414,8 +2410,7 @@ void CG_Buildable( centity_t *cent )
 
 	health = es->generic1;
 
-	if ( health < cent->lastBuildableHealth &&
-	     ( es->eFlags & EF_B_SPAWNED ) )
+	if ( health < cent->lastBuildableHealth && ( es->eFlags & EF_B_SPAWNED ) )
 	{
 		if ( cent->lastBuildableDamageSoundTime + BUILDABLE_SOUND_PERIOD < cg.time )
 		{
@@ -2423,10 +2418,6 @@ void CG_Buildable( centity_t *cent )
 			{
 				int i = rand() % 4;
 				trap_S_StartSound( NULL, es->number, CHAN_BODY, cgs.media.humanBuildableDamage[ i ] );
-			}
-			else if ( team == TEAM_ALIENS )
-			{
-				trap_S_StartSound( NULL, es->number, CHAN_BODY, cgs.media.alienBuildableDamage );
 			}
 
 			cent->lastBuildableDamageSoundTime = cg.time;

@@ -1320,7 +1320,6 @@ static void CG_RegisterSounds( void )
 	cgs.media.alienEvolveSound = trap_S_RegisterSound( "sound/player/alienevolve.wav", qfalse );
 
 	cgs.media.alienBuildableExplosion = trap_S_RegisterSound( "sound/buildables/alien/explosion.wav", qfalse );
-	cgs.media.alienBuildableDamage = trap_S_RegisterSound( "sound/buildables/alien/damage.wav", qfalse );
 	cgs.media.alienBuildablePrebuild = trap_S_RegisterSound( "sound/buildables/alien/prebuild.wav", qfalse );
 
 	cgs.media.humanBuildableDying = trap_S_RegisterSound( "sound/buildables/human/dying.wav", qfalse );

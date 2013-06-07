@@ -1269,7 +1269,6 @@ typedef struct
 	sfxHandle_t alienOvermindSpawns;
 
 	sfxHandle_t alienBuildableExplosion;
-	sfxHandle_t alienBuildableDamage;
 	sfxHandle_t alienBuildablePrebuild;
 	sfxHandle_t humanBuildableDying;
 	sfxHandle_t humanBuildableExplosion;
