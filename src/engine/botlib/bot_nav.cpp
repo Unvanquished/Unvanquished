@@ -303,18 +303,17 @@ extern "C" void BotUpdateCorridor( int botClientNum, const botRouteTarget_t *tar
 
 float frand()
 {
-	return ( float ) rand() / RAND_MAX;
+	return ( float ) rand() / ( float ) RAND_MAX;
 }
 
 extern "C" void BotFindRandomPoint( int botClientNum, vec3_t point )
 {
-	rVec randPoint;
-	dtPolyRef randRef;
-	Bot_t *bot = &agents[ botClientNum ];
-	bot->nav->query->findRandomPoint( &bot->nav->filter, frand, &randRef, randPoint );
-	
-	VectorCopy( randPoint, point );
-	recast2quake( point );
+	qVec origin = SV_GentityNum( botClientNum )->s.origin;
+
+	if ( !BotFindRandomPointInRadius( botClientNum, origin, point, 2000 ) )
+	{
+		VectorCopy( origin, point );
+	}
 }
 
 extern "C" qboolean BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, vec3_t point, float radius )
