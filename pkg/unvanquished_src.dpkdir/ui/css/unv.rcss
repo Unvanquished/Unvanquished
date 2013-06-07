@@ -148,3 +148,25 @@ tabs
 {
 	margin: auto;
 }
+
+datagridexpand
+{
+	display: block;
+
+	margin: 1px 0px 1px 5px;
+	height: 17px;
+	width: 17px;
+
+	icon-decorator: image;
+	icon-image: ../assets/invader.tga 3px 232px 20px 249px;
+}
+
+datagridexpand:hover
+{
+	icon-image-s: 21px 38px;
+}
+
+datagridexpand:active
+{
+	icon-image-s: 39px 56px;
+}

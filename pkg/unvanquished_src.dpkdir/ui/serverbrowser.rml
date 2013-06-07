@@ -86,9 +86,10 @@
 				<button onClick="close serverbrowser; open main; show main">Close</button>
 				<div class="servers">
 				<datagrid source="server_browser.internet">
-					<col fields="label" width="2%" formatter="ServerLabel"></col>
-					<col fields="name" width="58%">Name:</col>
-					<col fields="players,bots,maxClients" formatter="ServerPlayers"  width="20%">Players + Bots:</col>
+					<col fields="#depth,#num_children" width="2%" formatter="ExpandButton"></col>
+					<col fields="#depth,label" width="2%" formatter="ServerLabel"></col>
+					<col fields="name" width="56%">Name:</col>
+					<col fields="#depth,players,bots,maxClients" formatter="ServerPlayers"  width="20%">Players + Bots:</col>
 					<col fields="ping" formatter="ServerPing" width="20%">Ping:</col>
 				</datagrid>
 				</div>
