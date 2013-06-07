@@ -119,11 +119,6 @@ public:
 							lastSelectedRow->RemoveReference();
 						}
 					}
-					// Already selected. Exec it. dblclick doesn't seem to work
-					else
-					{
-						eventQueue.push( new RocketEvent_t( Rocket::Core::String( va ( "execDS %s", dataSource.Substring( 0, dataSource.Find( "." ) ).CString() ) ) ) );
-					}
 
 					// select clicked row
 					lastSelectedRow = row;
@@ -164,8 +159,10 @@ public:
 				this->SetProperty( "selected-row", "-1" );
 			}
 		}
-		else if( evt == "dblclick" )
+
+		if( evt == "dblclick" )
 		{
+			eventQueue.push( new RocketEvent_t( Rocket::Core::String( va ( "execDS %s", dataSource.Substring( 0, dataSource.Find( "." ) ).CString() ) ) ) );
 		}
 	}
 
