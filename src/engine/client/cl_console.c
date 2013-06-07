@@ -604,7 +604,7 @@ void CL_ConsolePrint( char *text )
 	int      y;
 	int      c, i, l;
 	int      color;
-	
+
 	CL_WriteClientChatLog( text );
 
 	// for some demos we don't want to ever show anything on the console

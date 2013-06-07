@@ -76,14 +76,22 @@ static void CG_Rocket_DFResolution( int handle, const char *data )
 
 static void CG_Rocket_DFServerPing( int handle, const char *data )
 {
-	trap_Rocket_DataFormatterFormattedData( handle, va( "%s ms", Info_ValueForKey( data, "1" ) ), qfalse );
+	const char *str = Info_ValueForKey( data, "1" );
+	trap_Rocket_DataFormatterFormattedData( handle, *str && Q_isnumeric( *str ) ? va( "%s ms", Info_ValueForKey( data, "1" ) ) : "", qfalse );
 }
 
 static void CG_Rocket_DFServerPlayers( int handle, const char *data )
 {
-	char max[ 4 ];
-	Q_strncpyz( max, Info_ValueForKey( data, "3" ), sizeof( max ) );
-	trap_Rocket_DataFormatterFormattedData( handle, va( "%s + (%s) / %s", Info_ValueForKey( data, "1" ), Info_ValueForKey( data, "2" ), max ), qtrue );
+	if ( Info_ValueForKey( data, "1" )[0] != '0' )
+	{
+		trap_Rocket_DataFormatterFormattedData( handle, va( "%s", Info_ValueForKey( data, "2" ) ), qfalse );
+	}
+	else
+	{
+		char max[ 4 ];
+		Q_strncpyz( max, Info_ValueForKey( data, "4" ), sizeof( max ) );
+		trap_Rocket_DataFormatterFormattedData( handle, va( "%s + (%s) / %s", Info_ValueForKey( data, "2" ), Info_ValueForKey( data, "3" ), max ), qtrue );
+	}
 }
 
 static void CG_Rocket_DFPlayerName( int handle, const char *data )
@@ -112,6 +120,14 @@ static void CG_Rocket_DFServerLabel( int handle, const char *data )
 	trap_Rocket_DataFormatterFormattedData( handle, *data ? ++str : "&nbsp;", qfalse );
 }
 
+static void CG_Rocket_DFExpandButton( int handle, const char *data )
+{
+	if ( Info_ValueForKey( data, "1")[0] == '0' )
+	{
+		trap_Rocket_DataFormatterFormattedData( handle, atoi( Info_ValueForKey( data, "2" ) ) == 0 ? "<datagridexpand onClick='buildDS server_browser serverInfo' />" : "<datagridexpand />", qfalse );
+	}
+}
+
 typedef struct
 {
 	const char *name;
@@ -121,6 +137,7 @@ typedef struct
 static const dataFormatterCmd_t dataFormatterCmdList[] =
 {
 	{ "ClassName", &CG_Rocket_DFClassName },
+	{ "ExpandButton", &CG_Rocket_DFExpandButton },
 	{ "PlayerName", &CG_Rocket_DFPlayerName },
 	{ "Resolution", &CG_Rocket_DFResolution },
 	{ "ServerLabel", &CG_Rocket_DFServerLabel },

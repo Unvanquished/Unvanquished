@@ -60,6 +60,100 @@ static void CG_Rocket_SetServerListServer( int index )
 {
 	rocketInfo.data.serverIndex = index;
 }
+#define MAX_SERVERSTATUS_LINES 4096
+void CG_Rocket_BuildServerInfo( void )
+{
+	int serverIndex = rocketInfo.data.serverIndex;
+	static char serverInfoText[ MAX_SERVERSTATUS_LINES ];
+	static rocketState_t state;
+	char buf[ MAX_INFO_STRING ];
+	const char *p;
+	server_t *server;
+
+
+	if ( serverIndex >= rocketInfo.data.serverCount || serverIndex < 0 )
+	{
+		return;
+	}
+
+	server = &rocketInfo.data.servers[ serverIndex ];
+
+	if ( rocketInfo.rocketState != BUILDING_SERVER_INFO )
+	{
+		state = rocketInfo.rocketState;
+		rocketInfo.rocketState = BUILDING_SERVER_INFO;
+	}
+
+	if ( trap_LAN_ServerStatus( server->addr, serverInfoText, sizeof( serverInfoText ) ) )
+	{
+		int line = 0;
+		int i = 0, score, ping;
+		static char key[BIG_INFO_VALUE], value[ BIG_INFO_VALUE ];
+		char name[ MAX_STRING_CHARS ];
+
+		trap_Rocket_DSClearTable( "server_browser", "serverInfo" );
+
+		p = serverInfoText;
+
+		while ( *p )
+		{
+			Info_NextPair( &p, key, value );
+			if ( key[ 0 ] )
+			{
+				Info_SetValueForKey( buf, "name", key, qfalse );
+				Info_SetValueForKey( buf, "players", value, qfalse );
+				trap_Rocket_DSAddRow( "server_browser", "serverInfo", buf );
+				*buf = '\0';
+			}
+			else
+			{
+				break;
+			}
+		}
+
+		// header
+		Info_SetValueForKey( buf, "label", "num", qfalse );
+		Info_SetValueForKey( buf, "name", "name", qfalse );
+		Info_SetValueForKey( buf, "players", "score", qfalse );
+		Info_SetValueForKey( buf, "ping", "ping", qfalse );
+		trap_Rocket_DSAddRow( "server_browser", "serverInfo", buf );
+
+		// Parse first set of players
+		sscanf( value, "%d %d %s", &score, &ping, name );
+		Info_SetValueForKey( buf, "label", va( "%d", i++ ), qfalse );
+		Info_SetValueForKeyRocket( buf, "name", name );
+		Info_SetValueForKey( buf, "players", va( "%d", score ), qfalse );
+		Info_SetValueForKey( buf, "ping", va( "%d", ping ), qfalse );
+		trap_Rocket_DSAddRow( "server_browser", "serverInfo", buf );
+
+		while ( *p )
+		{
+			Info_NextPair( &p, key, value );
+			if ( key[ 0 ] )
+			{
+				sscanf( key, "%d %d %s", &score, &ping, name );
+				Info_SetValueForKey( buf, "label", va( "%d", i++ ), qfalse );
+				Info_SetValueForKeyRocket( buf, "name", name );
+				Info_SetValueForKey( buf, "players", va( "%d", score ), qfalse );
+				Info_SetValueForKey( buf, "ping", va( "%d", ping ), qfalse );
+				trap_Rocket_DSAddRow( "server_browser", "serverInfo", buf );
+			}
+
+			if ( value[ 0 ] )
+			{
+				sscanf( value, "%d %d %s", &score, &ping, name );
+				Info_SetValueForKey( buf, "label", va( "%d", i++ ), qfalse );
+				Info_SetValueForKeyRocket( buf, "name", name );
+				Info_SetValueForKey( buf, "players", va( "%d", score ), qfalse );
+				Info_SetValueForKey( buf, "ping", va( "%d", ping ), qfalse );
+				trap_Rocket_DSAddRow( "server_browser", "serverInfo", buf );
+			}
+		}
+
+		rocketInfo.rocketState = state;
+	}
+
+}
 
 static void CG_Rocket_BuildServerList( const char *args )
 {
@@ -126,9 +220,14 @@ static void CG_Rocket_BuildServerList( const char *args )
 			Info_SetValueForKey( data, "maxClients", va( "%d", rocketInfo.data.servers[ i ].maxClients ), qfalse );
 			Info_SetValueForKey( data, "addr", rocketInfo.data.servers[ i ].addr, qfalse );
 			Info_SetValueForKey( data, "label", rocketInfo.data.servers[ i ].label, qfalse );
+			Info_SetValueForKey( data, "#child_data_source", "server_browser.serverInfo", qfalse );
 
 			trap_Rocket_DSAddRow( "server_browser", args, data );
 		}
+	}
+	else if ( !Q_stricmp( args, "serverInfo" ) )
+	{
+		CG_Rocket_BuildServerInfo();
 	}
 
 	rocketInfo.serversLastRefresh = trap_Milliseconds();

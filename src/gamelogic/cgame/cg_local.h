@@ -1175,6 +1175,7 @@ typedef enum
 {
 	IDLE,
 	RETRIEVING_SERVERS,
+	BUILDING_SERVER_INFO,
 	CONNECTING,
 	LOADING,
 	PLAYING,
@@ -2154,7 +2155,7 @@ void CG_Rocket_CleanUpServerList( void );
 void CG_Rocket_RegisterDataSources( void );
 void CG_Rocket_ExecDataSource( const char *dataSource, const char *table );
 void CG_Rocket_SetDataSourceIndex( const char *dataSource, int index );
-
+void CG_Rocket_BuildServerInfo( void );
 //
 // cg_rocket_progressbar.c
 //

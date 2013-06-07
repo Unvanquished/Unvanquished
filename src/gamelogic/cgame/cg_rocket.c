@@ -322,6 +322,10 @@ void CG_Rocket_Frame( void )
 
 			break;
 
+		case BUILDING_SERVER_INFO:
+			CG_Rocket_BuildServerInfo();
+			break;
+
 		case LOADING:
 			CG_Rocket_CleanUpServerList();
 			trap_Rocket_DocumentAction( "", "close" );
