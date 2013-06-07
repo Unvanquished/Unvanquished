@@ -648,6 +648,7 @@ typedef struct centity_s
 	buildableAnimNumber_t oldBuildableAnim; //to detect when new anims are set
 	qboolean              buildableIdleAnim; //to check if new idle anim
 	particleSystem_t      *buildablePS;
+	particleSystem_t      *buildableStatusPS; // used for steady effects like fire
 	buildableStatus_t     buildableStatus;
 	buildableCache_t      buildableCache; // so we don't recalculate things
 	float                 lastBuildableHealth;
@@ -1268,7 +1269,6 @@ typedef struct
 	sfxHandle_t alienOvermindSpawns;
 
 	sfxHandle_t alienBuildableExplosion;
-	sfxHandle_t alienBuildableDamage;
 	sfxHandle_t alienBuildablePrebuild;
 	sfxHandle_t humanBuildableDying;
 	sfxHandle_t humanBuildableExplosion;
@@ -1314,6 +1314,7 @@ typedef struct
 	qhandle_t   humanBleedPS;
 	qhandle_t   alienBuildableBleedPS;
 	qhandle_t   humanBuildableBleedPS;
+	qhandle_t   alienBuildableBurnPS;
 
 	qhandle_t   teslaZapTS;
 

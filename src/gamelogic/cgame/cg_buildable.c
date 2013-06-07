@@ -106,7 +106,6 @@ void CG_HumanBuildableExplosion( buildable_t buildable, vec3_t origin, vec3_t di
 	{
 		case BA_H_REPEATER:
 		case BA_H_REACTOR:
-			// TODO: Add sound and particle system fitting the (stronger) reactor and repeater explosion
 			nova = CG_SpawnNewParticleSystem( cgs.media.humanBuildableNovaPS );
 		default:
 			trap_S_StartSound( origin, ENTITYNUM_WORLD, CHAN_AUTO, cgs.media.humanBuildableExplosion );
@@ -190,6 +189,54 @@ static void CG_Creep( centity_t *cent )
 	{
 		CG_ImpactMark( cgs.media.creepShader, origin, cent->currentState.origin2,
 		               0.0f, 1.0f, 1.0f, 1.0f, 1.0f, qfalse, size, qtrue );
+	}
+}
+
+/*
+==================
+CG_OnFire
+
+Sets buildable particle system to a fire effect if buildable is burning
+==================
+*/
+static void CG_OnFire( centity_t *cent )
+{
+	entityState_t *es = &cent->currentState;
+	team_t        team = BG_Buildable( es->modelindex )->team;
+
+	if ( es->eType != ET_BUILDABLE )
+	{
+		return;
+	}
+
+	if ( !( es->eFlags & EF_B_ONFIRE ) )
+	{
+		if ( CG_IsParticleSystemValid( &cent->buildableStatusPS ) )
+		{
+			CG_DestroyParticleSystem( &cent->buildableStatusPS );
+		}
+
+		return;
+	}
+
+	switch ( team )
+	{
+		case TEAM_ALIENS:
+			if ( !CG_IsParticleSystemValid( &cent->buildableStatusPS ) )
+			{
+				cent->buildableStatusPS = CG_SpawnNewParticleSystem( cgs.media.alienBuildableBurnPS );
+			}
+			break;
+
+		default:
+			// human buildables cannot burn … yet
+			return;
+	}
+
+	if ( CG_IsParticleSystemValid( &cent->buildableStatusPS ) )
+	{
+		CG_SetAttachmentCent( &cent->buildableStatusPS->attachment, cent );
+		CG_AttachToCent( &cent->buildableStatusPS->attachment );
 	}
 }
 
@@ -2088,6 +2135,11 @@ void CG_Buildable( centity_t *cent )
 			CG_DestroyParticleSystem( &cent->buildablePS );
 		}
 
+		if ( CG_IsParticleSystemValid( &cent->buildableStatusPS ) )
+		{
+			CG_DestroyParticleSystem( &cent->buildableStatusPS );
+		}
+
 		return;
 	}
 
@@ -2208,9 +2260,6 @@ void CG_Buildable( centity_t *cent )
 			QuatFromAngles( rotation, es->angles2[ PITCH ], 0, 0 );
 			QuatMultiply0( ent.skeleton.bones[ 6 ].rotation, rotation );
 		}
-
-
-
 
 		CG_TransformSkeleton( &ent.skeleton, Scale );
 		VectorCopy(mins, ent.skeleton.bounds[ 0 ]);
@@ -2361,8 +2410,7 @@ void CG_Buildable( centity_t *cent )
 
 	health = es->generic1;
 
-	if ( health < cent->lastBuildableHealth &&
-	     ( es->eFlags & EF_B_SPAWNED ) )
+	if ( health < cent->lastBuildableHealth && ( es->eFlags & EF_B_SPAWNED ) )
 	{
 		if ( cent->lastBuildableDamageSoundTime + BUILDABLE_SOUND_PERIOD < cg.time )
 		{
@@ -2371,16 +2419,15 @@ void CG_Buildable( centity_t *cent )
 				int i = rand() % 4;
 				trap_S_StartSound( NULL, es->number, CHAN_BODY, cgs.media.humanBuildableDamage[ i ] );
 			}
-			else if ( team == TEAM_ALIENS )
-			{
-				trap_S_StartSound( NULL, es->number, CHAN_BODY, cgs.media.alienBuildableDamage );
-			}
 
 			cent->lastBuildableDamageSoundTime = cg.time;
 		}
 	}
 
 	cent->lastBuildableHealth = health;
+
+	// set particle effect to fire if buildable is burning
+	CG_OnFire( cent );
 
 	//smoke etc for damaged buildables
 	CG_BuildableParticleEffects( cent );

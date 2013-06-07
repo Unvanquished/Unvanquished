@@ -236,14 +236,18 @@ struct gentity_s
 	float        expectedSparePower;
 
 	/**
-	 * has a marked building been deconstructed for this building?
-	 */
-	qboolean     replacement;
-
-	/**
 	 * The amount of confidence this building generated on construction
 	 */
 	float        confidenceEarned;
+
+	/**
+	 * Alien buildables can burn, which is a lot of fun if they are close.
+	 */
+	qboolean     onFire;
+	int          nextBurnDamage;
+	int          nextBurnStopCheck;
+	int          nextBurnSpreadCheck;
+	gentity_t    *fireStarter;
 
 	/*
 	 * targets to aim at
@@ -994,6 +998,7 @@ int              G_RGSPredictEfficiency( vec3_t origin );
 float            G_BuildingConfidenceReward( gentity_t *self );
 void             G_BuildableThink( gentity_t *ent, int msec );
 qboolean         G_BuildableRange( vec3_t origin, float r, buildable_t buildable );
+void             G_IgniteBuildable( gentity_t *self, gentity_t *fireStarter );
 void             G_ClearDeconMarks( void );
 void             G_Deconstruct( gentity_t *self, gentity_t *deconner, meansOfDeath_t deconType );
 itemBuildError_t G_CanBuild( gentity_t *ent, buildable_t buildable, int distance,

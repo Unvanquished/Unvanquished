@@ -201,6 +201,7 @@ static void CG_Obituary( entityState_t *ent )
 		switch ( mod )
 		{
 			case MOD_FLAMER_SPLASH:
+			case MOD_BURN:
 				if ( cg_emoticonsInMessages.integer )
 				{
 					message = "[flamer] %s\n";
@@ -385,6 +386,7 @@ static void CG_Obituary( entityState_t *ent )
 				break;
 
 			case MOD_FLAMER:
+			case MOD_FLAMER_SPLASH:
 				if ( cg_emoticonsInMessages.integer )
 				{
 					message = "%s%s^7 [flamer] %s\n";
@@ -396,7 +398,7 @@ static void CG_Obituary( entityState_t *ent )
 				}
 				break;
 
-			case MOD_FLAMER_SPLASH:
+			case MOD_BURN:
 				if ( cg_emoticonsInMessages.integer )
 				{
 					message = "%s%s^7 [flamer] %s\n";
@@ -404,7 +406,7 @@ static void CG_Obituary( entityState_t *ent )
 				}
 				else
 				{
-					message = G_( "%s ^7was toasted by %s%s^7's flamer\n" );
+					message = G_( "%s ^7was burned by %s%s^7's fire\n" );
 				}
 				break;
 

@@ -1320,7 +1320,6 @@ static void CG_RegisterSounds( void )
 	cgs.media.alienEvolveSound = trap_S_RegisterSound( "sound/player/alienevolve.wav", qfalse );
 
 	cgs.media.alienBuildableExplosion = trap_S_RegisterSound( "sound/buildables/alien/explosion.wav", qfalse );
-	cgs.media.alienBuildableDamage = trap_S_RegisterSound( "sound/buildables/alien/damage.wav", qfalse );
 	cgs.media.alienBuildablePrebuild = trap_S_RegisterSound( "sound/buildables/alien/prebuild.wav", qfalse );
 
 	cgs.media.humanBuildableDying = trap_S_RegisterSound( "sound/buildables/human/dying.wav", qfalse );
@@ -1520,6 +1519,7 @@ static void CG_RegisterGraphics( void )
 
 	cgs.media.humanBuildableBleedPS = CG_RegisterParticleSystem( "humanBuildableBleedPS" );
 	cgs.media.alienBuildableBleedPS = CG_RegisterParticleSystem( "alienBuildableBleedPS" );
+	cgs.media.alienBuildableBurnPS = CG_RegisterParticleSystem( "alienBuildableBurnPS" );
 
 	cgs.media.alienBleedPS = CG_RegisterParticleSystem( "alienBleedPS" );
 	cgs.media.humanBleedPS = CG_RegisterParticleSystem( "humanBleedPS" );
