@@ -2776,6 +2776,31 @@ fail_lastSpawn:
 
 /*
 =================
+Cmd_Ignite_f
+=================
+*/
+void Cmd_Ignite_f( gentity_t *player )
+{
+	vec3_t    viewOrigin, forward, end;
+	trace_t   trace;
+	gentity_t *target;
+
+	BG_GetClientViewOrigin( &player->client->ps, viewOrigin );
+	AngleVectors( player->client->ps.viewangles, forward, NULL, NULL );
+	VectorMA( viewOrigin, 100, forward, end );
+	trap_Trace( &trace, viewOrigin, NULL, NULL, end, player->s.number, MASK_PLAYERSOLID );
+	target = &g_entities[ trace.entityNum ];
+
+	if ( !target || target->s.eType != ET_BUILDABLE || target->buildableTeam != TEAM_ALIENS )
+	{
+		return;
+	}
+
+	G_IgniteBuildable( target, player );
+}
+
+/*
+=================
 Cmd_ActivateItem_f
 
 Activate an item
@@ -4377,6 +4402,7 @@ static void Cmd_Pubkey_Identify_f( gentity_t *ent )
 	CP( "cp \"^2Pubkey authenticated\"\n" );
 }
 
+// commands must be in alphabetical order!
 static const commands_t cmds[] =
 {
 	{ "a",               CMD_MESSAGE | CMD_INTERMISSION,      Cmd_AdminMessage_f     },
@@ -4394,6 +4420,7 @@ static const commands_t cmds[] =
 	{ "followprev",      CMD_SPEC,                            Cmd_FollowCycle_f      },
 	{ "give",            CMD_CHEAT | CMD_TEAM,                Cmd_Give_f             },
 	{ "god",             CMD_CHEAT,                           Cmd_God_f              },
+	{ "ignite",          CMD_CHEAT | CMD_TEAM | CMD_ALIVE,    Cmd_Ignite_f           },
 	{ "ignore",          0,                                   Cmd_Ignore_f           },
 	{ "itemact",         CMD_HUMAN | CMD_ALIVE,               Cmd_ActivateItem_f     },
 	{ "itemdeact",       CMD_HUMAN | CMD_ALIVE,               Cmd_DeActivateItem_f   },

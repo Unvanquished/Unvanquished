@@ -307,6 +307,13 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 			G_Damage( other, ent, attacker, dir, ent->s.origin, ent->damage * power,
 			          DAMAGE_NO_LOCDAMAGE, ent->methodOfDeath );
 		}
+
+		// ignite an alien buildable that is directly hit by flamer
+		if ( ent->s.weapon == WP_FLAMER && other->s.eType == ET_BUILDABLE &&
+		     other->buildableTeam == TEAM_ALIENS )
+		{
+			G_IgniteBuildable( other, ent->parent );
+		}
 	}
 
 	if ( returnAfterDamage )

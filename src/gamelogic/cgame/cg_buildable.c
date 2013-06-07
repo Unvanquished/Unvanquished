@@ -194,6 +194,54 @@ static void CG_Creep( centity_t *cent )
 }
 
 /*
+==================
+CG_OnFire
+
+Sets buildable particle system to a fire effect if buildable is burning
+==================
+*/
+static void CG_OnFire( centity_t *cent )
+{
+	entityState_t *es = &cent->currentState;
+	team_t        team = BG_Buildable( es->modelindex )->team;
+
+	if ( es->eType != ET_BUILDABLE )
+	{
+		return;
+	}
+
+	if ( !( es->eFlags & EF_B_ONFIRE ) )
+	{
+		if ( CG_IsParticleSystemValid( &cent->buildableStatusPS ) )
+		{
+			CG_DestroyParticleSystem( &cent->buildableStatusPS );
+		}
+
+		return;
+	}
+
+	switch ( team )
+	{
+		case TEAM_ALIENS:
+			if ( !CG_IsParticleSystemValid( &cent->buildableStatusPS ) )
+			{
+				cent->buildableStatusPS = CG_SpawnNewParticleSystem( cgs.media.alienBuildableBurnPS );
+			}
+			break;
+
+		default:
+			// human buildables cannot burn … yet
+			return;
+	}
+
+	if ( CG_IsParticleSystemValid( &cent->buildableStatusPS ) )
+	{
+		CG_SetAttachmentCent( &cent->buildableStatusPS->attachment, cent );
+		CG_AttachToCent( &cent->buildableStatusPS->attachment );
+	}
+}
+
+/*
 ======================
 CG_ParseBuildableAnimationFile
 
@@ -2088,6 +2136,11 @@ void CG_Buildable( centity_t *cent )
 			CG_DestroyParticleSystem( &cent->buildablePS );
 		}
 
+		if ( CG_IsParticleSystemValid( &cent->buildableStatusPS ) )
+		{
+			CG_DestroyParticleSystem( &cent->buildableStatusPS );
+		}
+
 		return;
 	}
 
@@ -2381,6 +2434,9 @@ void CG_Buildable( centity_t *cent )
 	}
 
 	cent->lastBuildableHealth = health;
+
+	// set particle effect to fire if buildable is burning
+	CG_OnFire( cent );
 
 	//smoke etc for damaged buildables
 	CG_BuildableParticleEffects( cent );

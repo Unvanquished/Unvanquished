@@ -196,9 +196,6 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 /*
  * ALIEN buildables
- *
- * CREEP_BASESIZE - the maximum distance a buildable can be from an egg/overmind
- *
  */
 
 #define CREEP_BASESIZE          700
@@ -206,6 +203,15 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define CREEP_MODIFIER          0.5f
 #define CREEP_ARMOUR_MODIFIER   0.75f
 #define CREEP_SCALEDOWN_TIME    3000
+
+#define BURN_DAMAGE             10
+#define BURN_DAMAGE_PERIOD      1000
+#define BURN_STOP_PERIOD        2500
+#define BURN_STOP_CHANCE        0.5f
+#define BURN_SPREAD_PERIOD      1000
+#define BURN_SPREAD_CHANCE      0.2f
+#define BURN_SPREAD_RADIUS      100
+#define BURN_PERIODS_RAND       0.2
 
 #define PCLOUD_MODIFIER         0.5f
 #define PCLOUD_ARMOUR_MODIFIER  0.75f

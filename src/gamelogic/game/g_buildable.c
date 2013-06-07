@@ -516,7 +516,7 @@ G_CreepSlow
 Set any nearby humans' SS_CREEPSLOWED flag
 ================
 */
-static void CreepSlow( gentity_t *self )
+static void AGeneric_CreepSlow( gentity_t *self )
 {
 	int         entityList[ MAX_GENTITIES ];
 	vec3_t      range;
@@ -899,24 +899,112 @@ void AGeneric_CreepCheck( gentity_t *self )
 {
 	gentity_t *spawn;
 
-	spawn = self->powerSource;
+	switch( self->s.modelindex )
+	{
+		case BA_A_OVERMIND:
+		case BA_A_SPAWN:
+			return;
+	}
 
 	if ( !G_FindCreep( self ) )
 	{
+		spawn = self->powerSource;
+
 		if ( spawn )
 		{
-			G_Damage( self, NULL, g_entities + spawn->killedBy, NULL, NULL,
-			          self->health, 0, MOD_NOCREEP );
+			G_Damage( self, NULL, g_entities + spawn->killedBy, NULL, NULL, self->health, 0, MOD_NOCREEP );
 		}
 		else
 		{
 			G_Damage( self, NULL, NULL, NULL, NULL, self->health, 0, MOD_NOCREEP );
 		}
+	}
+}
 
+#define BURN_PERIODS_RAND_FACTOR ( 1.0f + ( random() - 0.5f ) * 2.0f * BURN_PERIODS_RAND )
+
+/*
+================
+G_IgniteBuildable
+
+Sets an alien buildable on fire.
+================
+*/
+void G_IgniteBuildable( gentity_t *self, gentity_t *fireStarter )
+{
+	if ( self->s.eType != ET_BUILDABLE || self->buildableTeam != TEAM_ALIENS )
+	{
 		return;
 	}
 
-	CreepSlow( self );
+	if ( !self->onFire )
+	{
+		self->onFire = qtrue;
+		self->fireStarter = fireStarter;
+		self->nextBurnDamage = level.time + BURN_DAMAGE_PERIOD * BURN_PERIODS_RAND_FACTOR;
+		self->nextBurnSpreadCheck = level.time + BURN_SPREAD_PERIOD * BURN_PERIODS_RAND_FACTOR;
+	}
+
+	// re-ignition resets burn stop check
+	self->nextBurnStopCheck = level.time + BURN_STOP_PERIOD * BURN_PERIODS_RAND_FACTOR;
+}
+
+/*
+================
+AGeneric_Burn
+
+Deals damage to burning buildables.
+A burning buildable has a chance to stop burning or ignite close buildables.
+================
+*/
+void AGeneric_Burn( gentity_t *self )
+{
+	gentity_t *neighbor;
+
+	if ( !self->onFire )
+	{
+		return;
+	}
+
+	if ( self->nextBurnDamage < level.time )
+	{
+		G_SelectiveRadiusDamage( self->s.origin, self->fireStarter, BURN_DAMAGE,
+		                         BURN_SPREAD_RADIUS / 2, self, MOD_BURN, TEAM_NONE );
+
+		G_Damage( self, self, self->fireStarter, NULL, NULL, BURN_DAMAGE, 0, MOD_BURN );
+
+		self->nextBurnDamage = level.time + BURN_DAMAGE_PERIOD * BURN_PERIODS_RAND_FACTOR;
+	}
+
+	if ( self->nextBurnStopCheck < level.time )
+	{
+		if ( random() < BURN_STOP_CHANCE )
+		{
+			self->onFire = qfalse;
+			return;
+		}
+
+		self->nextBurnStopCheck = level.time + BURN_STOP_PERIOD * BURN_PERIODS_RAND_FACTOR;
+	}
+
+	if ( self->nextBurnSpreadCheck < level.time )
+	{
+		neighbor = NULL;
+		while ( neighbor = G_IterateEntitiesWithinRadius( neighbor, self->s.origin, BURN_SPREAD_RADIUS ) )
+		{
+			if ( neighbor->s.eType != ET_BUILDABLE || neighbor->buildableTeam != TEAM_ALIENS )
+			{
+				continue;
+			}
+
+			if ( random() < BURN_SPREAD_CHANCE )
+			{
+				G_IgniteBuildable( neighbor, self->fireStarter );
+			}
+		}
+
+		self->nextBurnSpreadCheck = level.time + BURN_SPREAD_PERIOD * BURN_PERIODS_RAND_FACTOR;
+	}
 }
 
 /*
@@ -928,9 +1016,17 @@ A generic think function for Alien buildables
 */
 void AGeneric_Think( gentity_t *self )
 {
-	self->powered = G_Overmind() != NULL;
+	self->powered = ( G_Overmind() != NULL );
 	self->nextthink = level.time + BG_Buildable( self->s.modelindex )->nextthink;
+
+	// check if still on creep
 	AGeneric_CreepCheck( self );
+
+	// slow down close humans
+	AGeneric_CreepSlow( self );
+
+	// check if on fire
+	AGeneric_Burn( self );
 }
 
 /*
@@ -963,6 +1059,8 @@ think function for Alien Spawn
 void ASpawn_Think( gentity_t *self )
 {
 	gentity_t *ent;
+
+	AGeneric_Think( self );
 
 	if ( self->spawned )
 	{
@@ -1009,10 +1107,6 @@ void ASpawn_Think( gentity_t *self )
 			}
 		}
 	}
-
-	CreepSlow( self );
-
-	self->nextthink = level.time + BG_Buildable( self->s.modelindex )->nextthink;
 }
 
 //==================================================================================
@@ -1031,6 +1125,8 @@ Think function for Alien Overmind
 void AOvermind_Think( gentity_t *self )
 {
 	int    i;
+
+	AGeneric_Think( self );
 
 	if ( self->spawned && ( self->health > 0 ) )
 	{
@@ -1104,10 +1200,6 @@ void AOvermind_Think( gentity_t *self )
 	{
 		self->overmindSpawnsTimer = level.time + OVERMIND_SPAWNS_PERIOD;
 	}
-
-	CreepSlow( self );
-
-	self->nextthink = level.time + BG_Buildable( self->s.modelindex )->nextthink;
 }
 
 //==================================================================================
@@ -3472,27 +3564,33 @@ void G_BuildableThink( gentity_t *ent, int msec )
 		ent->clientSpawnTime = 0;
 	}
 
+	// Find DCC for human structures
 	ent->dcc = ( ent->buildableTeam != TEAM_HUMANS ) ? 0 : G_FindDCC( ent );
 
 	// Set health
 	ent->s.generic1 = MAX( ent->health, 0 );
 
 	// Set flags
-	ent->s.eFlags &= ~( EF_B_POWERED | EF_B_SPAWNED | EF_B_MARKED );
-
-	if ( ent->powered )
-	{
-		ent->s.eFlags |= EF_B_POWERED;
-	}
+	ent->s.eFlags &= ~( EF_B_SPAWNED |  EF_B_POWERED | EF_B_MARKED | EF_B_ONFIRE );
 
 	if ( ent->spawned )
 	{
 		ent->s.eFlags |= EF_B_SPAWNED;
 	}
 
+	if ( ent->powered )
+	{
+		ent->s.eFlags |= EF_B_POWERED;
+	}
+
 	if ( ent->deconstruct )
 	{
 		ent->s.eFlags |= EF_B_MARKED;
+	}
+
+	if ( ent->onFire )
+	{
+		ent->s.eFlags |= EF_B_ONFIRE;
 	}
 
 	// Check if this buildable is touching any triggers
@@ -4528,8 +4626,7 @@ static gentity_t *Build( gentity_t *builder, buildable_t buildable,
 	built = G_NewEntity();
 
 	// Free existing buildables
-	built->replacement = ( G_FreeMarkedBuildables( builder, readable, sizeof( readable ),
-	                                               buildnums, sizeof( buildnums ) ) > 0 );
+	G_FreeMarkedBuildables( builder, readable, sizeof( readable ), buildnums, sizeof( buildnums ) );
 
 	// Spawn the buildable
 	built->s.eType = ET_BUILDABLE;

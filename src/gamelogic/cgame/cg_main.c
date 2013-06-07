@@ -1520,6 +1520,7 @@ static void CG_RegisterGraphics( void )
 
 	cgs.media.humanBuildableBleedPS = CG_RegisterParticleSystem( "humanBuildableBleedPS" );
 	cgs.media.alienBuildableBleedPS = CG_RegisterParticleSystem( "alienBuildableBleedPS" );
+	cgs.media.alienBuildableBurnPS = CG_RegisterParticleSystem( "alienBuildableBurnPS" );
 
 	cgs.media.alienBleedPS = CG_RegisterParticleSystem( "alienBleedPS" );
 	cgs.media.humanBleedPS = CG_RegisterParticleSystem( "humanBleedPS" );
