@@ -116,15 +116,26 @@ static void CG_Rocket_DFClassName( int handle, const char *data )
 
 static void CG_Rocket_DFServerLabel( int handle, const char *data )
 {
-	const char *str = Info_ValueForKey( data, "1" );
-	trap_Rocket_DataFormatterFormattedData( handle, *data ? ++str : "&nbsp;", qfalse );
+	if ( Info_ValueForKey( data, "1" )[0]  == '0' )
+	{
+		const char *str = Info_ValueForKey( data, "2" );
+		trap_Rocket_DataFormatterFormattedData( handle, *data ? ++str : "&nbsp;", qfalse );
+	}
+	else
+	{
+		trap_Rocket_DataFormatterFormattedData( handle, Info_ValueForKey( data, "2" ), qfalse );
+	}
 }
 
 static void CG_Rocket_DFExpandButton( int handle, const char *data )
 {
 	if ( Info_ValueForKey( data, "1")[0] == '0' )
 	{
-		trap_Rocket_DataFormatterFormattedData( handle, atoi( Info_ValueForKey( data, "2" ) ) == 0 ? "<datagridexpand onClick='buildDS server_browser serverInfo' />" : "<datagridexpand />", qfalse );
+		trap_Rocket_DataFormatterFormattedData( handle, "<datagridexpand onClick='buildDS server_browser serverInfo' />", qfalse );
+	}
+	else
+	{
+		trap_Rocket_DataFormatterFormattedData( handle, "&nbsp;", qfalse );
 	}
 }
 
