@@ -45,6 +45,7 @@ qboolean GetPointPointedTo( NavData_t *nav, rVec &p )
 	qVec forward;
 	qVec end;
 	rVec extents;
+	rVec pos;
 	trace_t trace;
 	dtPolyRef nearRef;
 
@@ -55,12 +56,12 @@ qboolean GetPointPointedTo( NavData_t *nav, rVec &p )
 
 	CM_BoxTrace( &trace, cl.snap.ps.origin, end, NULL, NULL, 0, CONTENTS_SOLID | CONTENTS_PLAYERCLIP, TT_AABB );
 
-	if ( dtStatusFailed( nav->query->findNearestPoly( p, extents, &nav->filter, &nearRef, end ) ) )
+	pos = qVec( trace.endpos );
+	if ( dtStatusFailed( nav->query->findNearestPoly( pos, extents, &nav->filter, &nearRef, p ) ) )
 	{
 		return qfalse;
 	}
 
-	p = qVec( trace.endpos );
 	return qtrue;
 }
 
