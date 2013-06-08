@@ -320,13 +320,13 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define CHAINGUN_SPREAD          900
 #define CHAINGUN_DMG             HDM(6)
 
-#define FLAMER_DMG               HDM(14)
+#define FLAMER_DMG               HDM(12)
 #define FLAMER_FLIGHTDAMAGE      HDM(1)
 #define FLAMER_SPLASHDAMAGE      HDM(6)
 #define FLAMER_RADIUS            25
 #define FLAMER_SIZE              5      // missile bounding box
 #define FLAMER_LIFETIME          750.0f
-#define FLAMER_SPEED             500.0f
+#define FLAMER_SPEED             400.0f
 #define FLAMER_LAG               0.65f  // part of player velocity that is added to the fireball
 #define FLAMER_IGNITE_RADIUS     50
 #define FLAMER_IGNITE_CHANCE     0.5f
