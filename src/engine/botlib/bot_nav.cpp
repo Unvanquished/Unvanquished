@@ -243,7 +243,13 @@ extern "C" void BotUpdateCorridor( int botClientNum, const botRouteTarget_t *tar
 			}
 		}
 
+		dtPolyRef firstPoly = bot->corridor.getFirstPoly();
 		dtPolyRef lastPoly = bot->corridor.getLastPoly();
+
+		if ( !PointInPoly( bot, firstPoly, spos ) )
+		{
+			bot->needReplan = qtrue;
+		}
 
 		if ( rtarget.type == BOT_TARGET_DYNAMIC )
 		{
