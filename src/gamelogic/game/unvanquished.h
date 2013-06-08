@@ -320,14 +320,17 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define CHAINGUN_SPREAD          900
 #define CHAINGUN_DMG             HDM(6)
 
-#define FLAMER_DMG               HDM(14) // 20->15->14
-#define FLAMER_FLIGHTSPLASHDAMAGE HDM(1)
-#define FLAMER_SPLASHDAMAGE      HDM(6) // 10->7->6
-#define FLAMER_RADIUS            25 //  Radius lowered by 25
-#define FLAMER_SIZE              15 // missile bounding box
-#define FLAMER_LIFETIME          750.0f // Raised by 50.
-#define FLAMER_SPEED             500.0f
-#define FLAMER_LAG               0.65f // the amount of player velocity that is added to the fireball
+#define FLAMER_DMG               HDM(12)
+#define FLAMER_FLIGHTDAMAGE      HDM(1)
+#define FLAMER_SPLASHDAMAGE      HDM(6)
+#define FLAMER_RADIUS            25
+#define FLAMER_SIZE              5      // missile bounding box
+#define FLAMER_LIFETIME          750.0f
+#define FLAMER_SPEED             400.0f
+#define FLAMER_LAG               0.65f  // part of player velocity that is added to the fireball
+#define FLAMER_IGNITE_RADIUS     50
+#define FLAMER_IGNITE_CHANCE     0.5f
+#define FLAMER_IGNITE_SPLCHANCE  0.1f
 
 #define PRIFLE_DMG               HDM(9)
 #define PRIFLE_SPEED             1200
