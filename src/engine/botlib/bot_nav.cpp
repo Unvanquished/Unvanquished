@@ -308,7 +308,7 @@ extern "C" void BotUpdateCorridor( int botClientNum, const botRouteTarget_t *tar
 		
 		VectorCopy( proj, cmd->pos );
 		cmd->directPathToGoal = qfalse;
-		VectorSubtract( end, start, cmd->dir );
+		VectorSubtract( end, pos, cmd->dir );
 		VectorNormalize( cmd->dir );
 
 		VectorCopy( bot->corridor.getTarget(), cmd->tpos );
