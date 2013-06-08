@@ -93,6 +93,27 @@ void BotDrawNavEdit( DebugDrawQuake *dd )
 	}
 }
 
+void DrawPath( Bot_t *bot, DebugDrawQuake &dd )
+{
+	dd.depthMask(false);
+	const unsigned int spathCol = duRGBA(128,128,128,255);
+	dd.begin(DU_DRAW_LINES, 3.0f);
+	dd.vertex( bot->corridor.getPos(), spathCol );
+	for (int i = 0; i < bot->numCorners; ++i)
+		dd.vertex(bot->cornerVerts[i*3], bot->cornerVerts[i*3+1]+5.0f, bot->cornerVerts[i*3+2], spathCol);
+	if ( bot->numCorners < MAX_CORNERS - 1 )
+	{
+		if ( bot->numCorners % 2 != 0 )
+		{
+			dd.vertex( &bot->cornerVerts[ ( bot->numCorners - 1 ) * 3 ], spathCol );
+		}
+
+		dd.vertex( bot->corridor.getTarget(), spathCol );
+	}
+	dd.end();
+	dd.depthMask(true);
+}
+
 extern "C" void BotDebugDrawMesh( BotDebugInterface_t *in )
 {
 	static DebugDrawQuake dd;
@@ -116,6 +137,16 @@ extern "C" void BotDebugDrawMesh( BotDebugInterface_t *in )
 
 	duDebugDrawNavMeshWithClosedList(&dd, *cmd.nav->mesh, *cmd.nav->query, DU_DRAWNAVMESH_OFFMESHCONS | DU_DRAWNAVMESH_CLOSEDLIST);
 	BotDrawNavEdit( &dd );
+
+	for ( int i = 0; i < ARRAY_LEN( agents ); i++ )
+	{
+		Bot_t *bot = &agents[ i ];
+
+		if ( bot->nav == cmd.nav )
+		{
+			DrawPath( bot, dd );
+		}
+	}
 }
 
 void Cmd_NavEdit( void )
