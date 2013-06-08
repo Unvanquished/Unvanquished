@@ -33,7 +33,7 @@ Geometry geo;
 
 float cellHeight = 2.0f;
 float stepSize = STEPSIZE;
-int   tileSize = 128;
+int   tileSize = 64;
 
 struct Character
 {
