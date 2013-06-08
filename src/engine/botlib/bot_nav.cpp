@@ -259,15 +259,31 @@ extern "C" void BotUpdateCorridor( int botClientNum, const botRouteTarget_t *tar
 		VectorCopy( rdir, cmd->dir );
 		recast2quake( cmd->dir );
 
-		cmd->directPathToGoal = bot->numCorners == 1;
+		cmd->directPathToGoal = bot->numCorners <= 1;
 
 		VectorCopy( bot->corridor.getPos(), cmd->pos );
 		recast2quake( cmd->pos );
 
-		VectorCopy( bot->corridor.getTarget(), cmd->tpos );
-		recast2quake( cmd->tpos );
+		// if there are no corners, we have reached the goal
+		// FIXME: this must be done because of a weird bug where the target is not reachable even if 
+		// the path was checked for a partial path beforehand
+		if ( bot->numCorners == 0 )
+		{
+			VectorCopy( cmd->pos, cmd->tpos );
+		}
+		else
+		{
+			VectorCopy( bot->corridor.getTarget(), cmd->tpos );
 
-		cmd->havePath = bot->needReplan;
+			float height;
+			if ( dtStatusSucceed( bot->nav->query->getPolyHeight( bot->corridor.getLastPoly(), cmd->tpos, &height ) ) )
+			{
+				cmd->tpos[ 1 ] = height;
+			}
+			recast2quake( cmd->tpos );
+		}
+
+		cmd->havePath = !bot->needReplan;
 	}
 	
 	if ( bot->offMesh )
@@ -290,6 +306,11 @@ extern "C" void BotUpdateCorridor( int botClientNum, const botRouteTarget_t *tar
 		VectorNormalize( cmd->dir );
 
 		VectorCopy( bot->corridor.getTarget(), cmd->tpos );
+		float height;
+		if ( dtStatusSucceed( bot->nav->query->getPolyHeight( bot->corridor.getLastPoly(), cmd->tpos, &height ) ) )
+		{
+			cmd->tpos[ 1 ] = height;
+		}
 		recast2quake( cmd->tpos );
 
 		cmd->havePath = true;
