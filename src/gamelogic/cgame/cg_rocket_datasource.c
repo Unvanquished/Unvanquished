@@ -193,7 +193,7 @@ static void CG_Rocket_BuildServerList( const char *args )
 
 			ping = trap_LAN_GetServerPing( CG_StringToNetSource( args ), i );
 
-			if ( qtrue || !Q_stricmp( args, "favorites" ) )
+			if ( ping >= 0 || !Q_stricmp( args, "favorites" ) )
 			{
 				char addr[ 25 ];
 				trap_LAN_GetServerInfo( CG_StringToNetSource( args ), i, info, MAX_INFO_STRING );
