@@ -399,7 +399,7 @@ void G_BotThink( gentity_t *self )
 	{
 		BotTargetToRouteTarget( self, self->botMind->goal, &routeTarget );
 		trap_BotUpdatePath( self->s.number, &routeTarget, &self->botMind->nav );
-		BotClampPos( self );
+		//BotClampPos( self );
 	}
 	
 	self->botMind->behaviorTree->run( self, ( AIGenericNode_t * ) self->botMind->behaviorTree );
