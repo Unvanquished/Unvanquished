@@ -41,16 +41,14 @@ Maryland 20850 USA.
 static inline void quake2recast( float vec[ 3 ] )
 {
 	float temp = vec[1];
-	vec[0] = -vec[0];
 	vec[1] = vec[2];
-	vec[2] = -temp;
+	vec[2] = temp;
 }
 
 static inline void recast2quake( float vec[ 3 ] )
 {
 	float temp = vec[1];
-	vec[0] = -vec[0];
-	vec[1] = -vec[2];
+	vec[1] = vec[2];
 	vec[2] = temp;
 }
 

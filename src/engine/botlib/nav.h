@@ -32,7 +32,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define MIN_WALK_NORMAL 0.7f
 
 static const int NAVMESHSET_MAGIC = 'M'<<24 | 'S'<<16 | 'E'<<8 | 'T'; //'MSET';
-static const int NAVMESHSET_VERSION = 2;
+static const int NAVMESHSET_VERSION = 3;
 
 struct NavMeshSetHeader
 {
@@ -49,7 +49,7 @@ struct NavMeshTileHeader
 	int dataSize;
 };
 
-static const int NAVMESHCON_VERSION = 1;
+static const int NAVMESHCON_VERSION = 2;
 struct OffMeshConnectionHeader
 {
 	int version;
