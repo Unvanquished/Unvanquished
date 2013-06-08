@@ -756,7 +756,7 @@ void BotClampPos( gentity_t *self )
 	VectorCopy( trace.endpos, self->client->ps.origin );
 }
 
-qboolean BotMoveToGoal( gentity_t *self )
+void BotMoveToGoal( gentity_t *self )
 {
 	vec3_t dir;
 	VectorCopy( self->botMind->nav.dir, dir );

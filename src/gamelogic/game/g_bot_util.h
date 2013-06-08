@@ -117,7 +117,7 @@ extern qboolean navMeshLoaded;
 void         G_BotNavInit( void );
 void         G_BotNavCleanup( void );
 qboolean     FindRouteToTarget( gentity_t *self, botTarget_t target, qboolean allowPartial );
-qboolean     BotMoveToGoal( gentity_t *self );
+void         BotMoveToGoal( gentity_t *self );
 void         BotSetNavmesh( gentity_t  *ent, class_t newClass );
 void         BotClampPos( gentity_t *self );
 
