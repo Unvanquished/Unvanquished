@@ -324,7 +324,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #define FLAMER_FLIGHTDAMAGE      HDM(1)
 #define FLAMER_SPLASHDAMAGE      HDM(6)
 #define FLAMER_RADIUS            25
-#define FLAMER_SIZE              15     // missile bounding box
+#define FLAMER_SIZE              5      // missile bounding box
 #define FLAMER_LIFETIME          750.0f
 #define FLAMER_SPEED             500.0f
 #define FLAMER_LAG               0.65f  // part of player velocity that is added to the fireball

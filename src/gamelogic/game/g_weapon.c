@@ -605,15 +605,7 @@ FLAME THROWER
 
 void flamerFire( gentity_t *ent )
 {
-	vec3_t origin;
-
-	// Correct muzzle so that the missile does not start in the ceiling
-	VectorMA( muzzle, -7.0f, up, origin );
-
-	// Correct muzzle so that the missile fires from the player's hand
-	VectorMA( origin, 4.5f, right, origin );
-
-	fire_flamer( ent, origin, forward );
+	fire_flamer( ent, muzzle, forward );
 }
 
 /*
