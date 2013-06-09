@@ -755,9 +755,10 @@ intptr_t SV_GameSystemCalls( intptr_t *args )
 			BotSetNavMesh( args[ 1 ], args[ 2 ] );
 			return 0;
 		case BOT_FIND_ROUTE:
-			return BotFindRouteExt( args[ 1 ], VMA( 2 ) );
+			return BotFindRouteExt( args[ 1 ], VMA( 2 ), args[ 3 ] );
 		case BOT_UPDATE_PATH:
-			return BotUpdateCorridor( args[ 1 ], VMA( 2 ), VMA( 3 ), VMA( 4 ) );
+			BotUpdateCorridor( args[ 1 ], VMA( 2 ), VMA( 3 ) );
+			return 0;
 		case BOT_NAV_RAYCAST:
 			return BotNavTrace( args[ 1 ], VMA( 2 ), VMA( 3 ), VMA( 4 ) );
 		case BOT_NAV_RANDOMPOINT:

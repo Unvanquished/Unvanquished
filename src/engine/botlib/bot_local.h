@@ -32,6 +32,9 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+#ifndef __BOT_LOCAL_H
+#define __BOT_LOCAL_H
+
 extern "C"
 {
 #include "../qcommon/q_shared.h"
@@ -47,6 +50,8 @@ extern "C"
 
 #include "bot_types.h"
 #include "bot_api.h"
+#include "nav.h"
+#include "bot_convert.h"
 
 const int MAX_NAV_DATA = 16;
 const int MAX_BOT_PATH = 512;
@@ -60,6 +65,8 @@ typedef struct
 	dtNavMesh        *mesh;
 	dtNavMeshQuery   *query;
 	dtQueryFilter    filter;
+	MeshProcess      process;
+	char             name[ 64 ];
 } NavData_t;
 
 typedef struct
@@ -74,71 +81,24 @@ typedef struct
 	unsigned char     cornerFlags[ MAX_CORNERS ];
 	dtPolyRef         cornerPolys[ MAX_CORNERS ];
 	int               numCorners;
+	bool              offMesh;
+	rVec              offMeshStart;
+	rVec              offMeshEnd;
+	dtPolyRef         offMeshPoly;
 } Bot_t;
 
 extern int numNavData;
 extern NavData_t BotNavData[ MAX_NAV_DATA ];
 extern Bot_t agents[ MAX_CLIENTS ];
 
-//coordinate conversion
-static inline void quake2recast( vec3_t vec )
-{
-	vec_t temp = vec[1];
-	vec[0] = -vec[0];
-	vec[1] = vec[2];
-	vec[2] = -temp;
-}
+void NavEditInit( void );
+void NavEditShutdown( void );
+void BotSaveOffMeshConnections( NavData_t *nav );
 
-static inline void recast2quake( vec3_t vec )
-{
-	vec_t temp = vec[1];
-	vec[0] = -vec[0];
-	vec[1] = -vec[2];
-	vec[2] = temp;
-}
-
-static inline void recast2quakeExtents( vec3_t qmins, vec3_t qmaxs )
-{
-	vec3_t mins, maxs;
-	VectorCopy( qmins, mins );
-	VectorCopy( qmaxs, maxs );
-
-	recast2quake( mins );
-	recast2quake( maxs );
-
-	ClearBounds( qmins, qmaxs );
-	AddPointToBounds( mins, qmins, qmaxs );
-	AddPointToBounds( maxs, qmins, qmaxs );
-}
-
-static inline void quake2recastExtents( vec3_t qmins, vec3_t qmaxs )
-{
-	vec3_t mins, maxs;
-	VectorCopy( qmins, mins );
-	VectorCopy( qmaxs, maxs );
-
-	quake2recast( mins );
-	quake2recast( maxs );
-
-	ClearBounds( qmins, qmaxs );
-	AddPointToBounds( mins, qmins, qmaxs );
-	AddPointToBounds( maxs, qmins, qmaxs );
-}
-
-static inline void quake2recastTarget( botRouteTarget_t *target )
-{
-	quake2recast( target->pos );
-	quake2recast( target->polyExtents );
-	target->polyExtents[ 0 ] = fabsf( target->polyExtents[ 0 ] );
-	target->polyExtents[ 1 ] = fabsf( target->polyExtents[ 1 ] );
-	target->polyExtents[ 2 ] = fabsf( target->polyExtents[ 2 ] );
-}
-
-// all functions here use detour's coordinate system
-// callers should use quake2recast and recast2quake where appropriate to convert vectors
-void         BotCalcSteerDir( Bot_t *bot, vec3_t dir );
+void         BotCalcSteerDir( Bot_t *bot, rVec &dir );
 void         FindWaypoints( Bot_t *bot, float *corners, unsigned char *cornerFlags, dtPolyRef *cornerPolys, int *numCorners, int maxCorners );
-qboolean     PointInPolyExtents( Bot_t *bot, dtPolyRef ref, const vec3_t point, const vec3_t extents );
-qboolean     PointInPoly( Bot_t *bot, dtPolyRef ref, const vec3_t point );
-qboolean     BotFindNearestPoly( Bot_t *bot, const vec3_t coord, dtPolyRef *nearestPoly, vec3_t nearPoint );
-unsigned int FindRoute( Bot_t *bot, const vec3_t s, const botRouteTarget_t *target );
+qboolean     PointInPolyExtents( Bot_t *bot, dtPolyRef ref, rVec point, rVec extents );
+qboolean     PointInPoly( Bot_t *bot, dtPolyRef ref, rVec point );
+qboolean     BotFindNearestPoly( Bot_t *bot, rVec coord, dtPolyRef *nearestPoly, rVec &nearPoint );
+bool         FindRoute( Bot_t *bot, rVec s, botRouteTargetInternal target, bool allowPartial );
+#endif

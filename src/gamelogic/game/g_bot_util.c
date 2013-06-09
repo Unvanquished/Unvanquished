@@ -996,13 +996,13 @@ qboolean BotChangeGoal( gentity_t *self, botTarget_t target )
 		return qfalse;
 	}
 
-	if ( FindRouteToTarget( self, target ) & ( ROUTE_PARTIAL | ROUTE_FAILED ) )
+	if ( !FindRouteToTarget( self, target, qfalse ) )
 	{
 		return qfalse;
 	}
 
 	self->botMind->goal = target;
-	self->botMind->directPathToGoal = qfalse;
+	self->botMind->nav.directPathToGoal = qfalse;
 	return qtrue;
 }
 
@@ -1549,7 +1549,7 @@ void BotClassMovement( gentity_t *self, qboolean inAttackRange )
 			break;
 		case PCL_ALIEN_LEVEL2:
 		case PCL_ALIEN_LEVEL2_UPG:
-			if ( self->botMind->directPathToGoal )
+			if ( self->botMind->nav.directPathToGoal )
 			{
 				if ( self->client->time1000 % 300 == 0 )
 				{

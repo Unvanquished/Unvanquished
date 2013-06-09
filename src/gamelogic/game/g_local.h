@@ -47,8 +47,8 @@ typedef struct gclient_s gclient_t;
 
 typedef struct variatingTime_s variatingTime_t;
 #include "g_entities.h"
-#include "g_bot.h"
 #include "../../engine/botlib/bot_types.h"
+#include "g_bot.h"
 
 // g_local.h -- local definitions for game module
 //==================================================================
@@ -1527,8 +1527,8 @@ void             trap_GetTimeString( char *buffer, int size, const char *format,
 qboolean         trap_BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle );
 void             trap_BotShutdownNav( void );
 void             trap_BotSetNavMesh( int botClientNum, qhandle_t navHandle );
-unsigned int     trap_BotFindRoute( int botClientNum, const botRouteTarget_t *target );
-qboolean         trap_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, vec3_t dir, qboolean *directPathToGoal );
+qboolean         trap_BotFindRoute( int botClientNum, const botRouteTarget_t *target, qboolean allowPartial );
+qboolean         trap_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, botNavCmd_t *cmd );
 qboolean         trap_BotNavTrace( int botClientNum, botTrace_t *botTrace, const vec3_t start, const vec3_t end );
 void             trap_BotFindRandomPoint( int botClientNum, vec3_t point );
 qboolean         trap_BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, vec3_t point, float radius );

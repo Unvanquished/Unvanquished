@@ -25,13 +25,14 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 #include "bot_types.h"
 #include "../../libs/fastlz/fastlz.h"
+#include "bot_convert.h"
 
 // should be the same as in rest of engine
 #define STEPSIZE 18
 #define MIN_WALK_NORMAL 0.7f
 
 static const int NAVMESHSET_MAGIC = 'M'<<24 | 'S'<<16 | 'E'<<8 | 'T'; //'MSET';
-static const int NAVMESHSET_VERSION = 2;
+static const int NAVMESHSET_VERSION = 3;
 
 struct NavMeshSetHeader
 {
@@ -46,6 +47,93 @@ struct NavMeshTileHeader
 {
 	dtCompressedTileRef tileRef;
 	int dataSize;
+};
+
+static const int NAVMESHCON_VERSION = 2;
+struct OffMeshConnectionHeader
+{
+	int version;
+	int numConnections;
+};
+
+struct OffMeshConnection
+{
+	rVec  start;
+	rVec  end;
+	float radius;
+	unsigned short flag;
+	unsigned char area;
+	unsigned char dir;
+	unsigned int userid;
+};
+
+struct OffMeshConnections
+{
+	static const int MAX_CON = 128;
+	float  verts[ MAX_CON * 6 ];
+	float  rad[ MAX_CON ];
+	unsigned short flags[ MAX_CON ];
+	unsigned char areas[ MAX_CON ];
+	unsigned char dirs[ MAX_CON ];
+	unsigned int userids[ MAX_CON ];
+	int      offMeshConCount;
+
+	OffMeshConnections() : offMeshConCount( 0 ) { }
+
+	void reset( void )
+	{
+		offMeshConCount = 0;
+	}
+
+	void delConnection( int index )
+	{
+		if ( index < 0 || index >= offMeshConCount )
+		{
+			return;
+		}
+
+		for ( int i = index * 6; i < offMeshConCount * 6 - 1; i++ )
+		{
+			verts[ i ] = verts[ i + 1 ];
+		}
+
+		for ( int i = index; i < offMeshConCount - 1; i++ )
+		{
+			rad[ i ] = rad[ i + 1 ];
+			flags[ i ] = flags[ i + 1 ];
+			areas[ i ] = areas[ i + 1 ];
+			dirs[ i ] = dirs[ i + 1 ];
+			userids[ i ] = userids[ i + 1 ];
+		}
+		offMeshConCount--;
+	}
+
+	bool addConnection( const OffMeshConnection &c )
+	{
+		if ( offMeshConCount == MAX_CON )
+		{
+			return false;
+		}
+
+		float *start = &verts[ offMeshConCount * 6 ];
+		float *end = start + 3;
+
+		start[ 0 ] = c.start[ 0 ];
+		start[ 1 ] = c.start[ 1 ];
+		start[ 2 ] = c.start[ 2 ];
+		end[ 0 ] = c.end[ 0 ];
+		end[ 1 ] = c.end[ 1 ];
+		end[ 2 ] = c.end[ 2 ];
+
+		rad[ offMeshConCount ] = c.radius;
+		flags[ offMeshConCount ] = c.flag;
+		areas[ offMeshConCount ] = c.area;
+		dirs[ offMeshConCount ] = c.dir;
+		userids[ offMeshConCount ] = c.userid;
+
+		offMeshConCount++;
+		return true;
+	}
 };
 
 struct FastLZCompressor : public dtTileCacheCompressor
@@ -73,6 +161,8 @@ struct FastLZCompressor : public dtTileCacheCompressor
 
 struct MeshProcess : public dtTileCacheMeshProcess
 {
+	OffMeshConnections con;
+
 	virtual void process( struct dtNavMeshCreateParams *params, unsigned char *polyAreas, unsigned short *polyFlags )
 	{
 		// Update poly flags from areas.
@@ -92,6 +182,14 @@ struct MeshProcess : public dtTileCacheMeshProcess
 				polyFlags[ i ] = POLYFLAGS_WALK | POLYFLAGS_DOOR;
 			}
 		}
+
+		params->offMeshConVerts = con.verts;
+		params->offMeshConRad = con.rad;
+		params->offMeshConCount = con.offMeshConCount;
+		params->offMeshConAreas = con.areas;
+		params->offMeshConDir = con.dirs;
+		params->offMeshConFlags = con.flags;
+		params->offMeshConUserID = con.userids;
 	}
 };
 

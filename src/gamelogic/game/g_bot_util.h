@@ -116,12 +116,14 @@ extern qboolean navMeshLoaded;
 
 void         G_BotNavInit( void );
 void         G_BotNavCleanup( void );
-unsigned int FindRouteToTarget( gentity_t *self, botTarget_t target );
-qboolean     BotMoveToGoal( gentity_t *self );
+qboolean     FindRouteToTarget( gentity_t *self, botTarget_t target, qboolean allowPartial );
+void         BotMoveToGoal( gentity_t *self );
 void         BotSetNavmesh( gentity_t  *ent, class_t newClass );
+void         BotClampPos( gentity_t *self );
 
 // local navigation
 qboolean BotDodge( gentity_t *self );
+void     BotWalk( gentity_t *self, qboolean enable );
 qboolean BotSprint( gentity_t *self, qboolean enable );
 qboolean BotJump( gentity_t *self );
 void     BotStrafeDodge( gentity_t *self );

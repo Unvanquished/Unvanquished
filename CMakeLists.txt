@@ -260,7 +260,7 @@ endif()
 set( CPACK_PACKAGE_FILE_NAME "Unvanquished" )
 set( CPACK_PACKAGE_ICON "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cpack/OS_X/Unvanquished.icns" )
 set( CPACK_PACKAGE_DESCRIPTION_SUMMARY "Daemon Unvanquished client" )
-set( CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.txt" )
+set( CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.md" )
 set( CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/GPL.txt" )
 # Mac OS X Bundle specific settings
 set( CPACK_BUNDLE_NAME ${CPACK_PACKAGE_FILE_NAME} )
@@ -498,6 +498,7 @@ set( RENDERERGLLIST
 )
 
 set( SERVERLIST
+  ${MOUNT_DIR}/engine/botlib/bot_convert.cpp
   ${MOUNT_DIR}/engine/botlib/bot_local.cpp
   ${MOUNT_DIR}/engine/botlib/bot_nav.cpp
   ${MOUNT_DIR}/engine/botlib/bot_load.cpp
@@ -579,6 +580,7 @@ endif()
 
 set( CLIENTLIST
   ${MOUNT_DIR}/engine/botlib/bot_debug.cpp
+  ${MOUNT_DIR}/engine/botlib/bot_nav_edit.cpp
   ${MOUNT_DIR}/engine/client/cin_ogm.c
   ${MOUNT_DIR}/engine/client/cl_avi.c
   ${MOUNT_DIR}/engine/client/cl_cgame.c

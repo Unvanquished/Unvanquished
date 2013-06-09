@@ -180,7 +180,7 @@ qboolean G_BotSetDefaults( int clientNum, team_t team, int skill, const char* be
 	memset( botMind->runningNodes, 0, sizeof( botMind->runningNodes ) );
 	botMind->numRunningNodes = 0;
 	botMind->currentNode = NULL;
-	botMind->directPathToGoal = qfalse;
+	memset( &botMind->nav, 0, sizeof( botMind->nav ) );
 
 	botMind->behaviorTree = ReadBehaviorTree( behavior, &treeList );
 
@@ -398,7 +398,8 @@ void G_BotThink( gentity_t *self )
 	if ( self->botMind->goal.inuse )
 	{
 		BotTargetToRouteTarget( self, self->botMind->goal, &routeTarget );
-		trap_BotUpdatePath( self->s.number, &routeTarget, NULL, &self->botMind->directPathToGoal );
+		trap_BotUpdatePath( self->s.number, &routeTarget, &self->botMind->nav );
+		//BotClampPos( self );
 	}
 	
 	self->botMind->behaviorTree->run( self, ( AIGenericNode_t * ) self->botMind->behaviorTree );
@@ -453,7 +454,7 @@ void G_BotSpectatorThink( gentity_t *self )
 	self->botMind->timeFoundEnemy = 0;
 	self->botMind->enemyLastSeen = 0;
 	self->botMind->currentNode = NULL;
-	self->botMind->directPathToGoal = qfalse;
+	memset( &self->botMind->nav, 0, sizeof( self->botMind->nav ) );
 	self->botMind->futureAimTime = 0;
 	self->botMind->futureAimTimeInterval = 0;
 	self->botMind->numRunningNodes = 0;

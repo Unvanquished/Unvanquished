@@ -32,25 +32,24 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "bot_types.h"
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-qboolean     BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle );
-void         BotShutdownNav( void );
+#include "../../libs/detour/DetourDebugDraw.h"
+#include "../../libs/detour/DebugDraw.h"
+#include "bot_debug.h"
+#include "bot_local.h"
 
-void         BotDisableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
-void         BotEnableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
-void         BotSetNavMesh( int botClientNum, qhandle_t nav );
-qboolean     BotFindRouteExt( int botClientNum, const botRouteTarget_t *target, qboolean allowPartial );
-void         BotUpdateCorridor( int botClientNum, const botRouteTarget_t *target, botNavCmd_t *cmd );
-void         BotFindRandomPoint( int botClientNum, vec3_t point );
-qboolean     BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, vec3_t point, float radius );
-qboolean     BotNavTrace( int botClientNum, botTrace_t *trace, const vec3_t start, const vec3_t end );
-void         BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *obstacleHandle );
-void         BotRemoveObstacle( qhandle_t obstacleHandle );
-void         BotUpdateObstacles();
-#ifdef __cplusplus
-}
-#endif
+class DebugDrawQuake : public duDebugDraw
+{
+	BotDebugInterface_t *re;
+public:
+	void init(BotDebugInterface_t *in);
+	void depthMask(bool state);
+	void texture(bool state) {};
+	void begin(duDebugDrawPrimitives prim, float size = 1.0f);
+	void vertex(const float* pos, unsigned int color);
+	void vertex(const float x, const float y, const float z, unsigned int color);
+	void vertex(const float* pos, unsigned int color, const float* uv);
+	void vertex(const float x, const float y, const float z, unsigned int color, const float u, const float v);
+	void end();
+};
+
+void BotDrawNavEdit( NavData_t *nav, DebugDrawQuake *dd );
