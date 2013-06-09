@@ -305,6 +305,21 @@ int CG_StringToNetSource( const char *src )
 	}
 }
 
+const char *CG_NetSourceToString( int netSrc )
+{
+	switch ( netSrc )
+	{
+		case AS_LOCAL:
+			return "local";
+
+		case AS_FAVORITES:
+			return "favorites";
+
+		default:
+			return "internet";
+	}
+}
+
 
 void CG_Rocket_Frame( void )
 {

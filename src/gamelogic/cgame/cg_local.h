@@ -2121,6 +2121,7 @@ void CG_Rocket_Frame( void );
 const char *CG_Rocket_GetTag();
 const char *CG_Rocket_GetAttribute( const char *name, const char *id, const char *attribute );
 int CG_StringToNetSource( const char *src );
+const char *CG_NetSourceToString( int netSrc );
 const char *CG_Rocket_QuakeToRML( const char *in );
 qboolean CG_Rocket_IsCommandAllowed( rocketElementType_t type );
 
