@@ -342,6 +342,11 @@ extern "C" void Trans_Init( void )
 
 const char* Trans_Gettext_Internal( const char *msgid, DictionaryManager& manager )
 {
+	if ( !msgid )
+	{
+		return msgid;
+	}
+
 	num = ( num + 1 ) & 3;
 	Q_strncpyz( gettextbuffer[ num ], manager.get_dictionary().translate( msgid ).c_str(), sizeof( gettextbuffer[ num ] ) );
 	return gettextbuffer[ num ];
@@ -349,6 +354,11 @@ const char* Trans_Gettext_Internal( const char *msgid, DictionaryManager& manage
 
 const char* Trans_Pgettext_Internal( const char *ctxt, const char *msgid, DictionaryManager& manager )
 {
+	if ( !ctxt || !msgid )
+	{
+		return msgid;
+	}
+
 	num = ( num + 1 ) & 3;
 	Q_strncpyz( gettextbuffer[ num ], manager.get_dictionary().translate_ctxt( ctxt, msgid ).c_str(), sizeof( gettextbuffer[ num ] ) );
 	return gettextbuffer[ num ];
@@ -356,6 +366,21 @@ const char* Trans_Pgettext_Internal( const char *ctxt, const char *msgid, Dictio
 
 const char* Trans_GettextPlural_Internal( const char *msgid, const char *msgid_plural, int number, DictionaryManager& manager )
 {
+	if ( !msgid || !msgid_plural )
+	{
+		if ( msgid )
+		{
+			return msgid;
+		}
+
+		if ( msgid_plural )
+		{
+			return msgid_plural;
+		}
+
+		return NULL;
+	}
+
 	num = ( num + 1 ) & 3;
 	Q_strncpyz( gettextbuffer[ num ], manager.get_dictionary().translate_plural( msgid, msgid_plural, number ).c_str(), sizeof( gettextbuffer[ num ] ) );
 	return gettextbuffer[ num ];

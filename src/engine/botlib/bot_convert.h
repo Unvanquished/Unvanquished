@@ -32,25 +32,109 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
-#include "bot_types.h"
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-qboolean     BotSetupNav( const botClass_t *botClass, qhandle_t *navHandle );
-void         BotShutdownNav( void );
+#ifndef __BOT_VEC_H
+#define __BOT_VEC_H
 
-void         BotDisableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
-void         BotEnableArea( const vec3_t origin, const vec3_t mins, const vec3_t maxs );
-void         BotSetNavMesh( int botClientNum, qhandle_t nav );
-qboolean     BotFindRouteExt( int botClientNum, const botRouteTarget_t *target, qboolean allowPartial );
-void         BotUpdateCorridor( int botClientNum, const botRouteTarget_t *target, botNavCmd_t *cmd );
-void         BotFindRandomPoint( int botClientNum, vec3_t point );
-qboolean     BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, vec3_t point, float radius );
-qboolean     BotNavTrace( int botClientNum, botTrace_t *trace, const vec3_t start, const vec3_t end );
-void         BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *obstacleHandle );
-void         BotRemoveObstacle( qhandle_t obstacleHandle );
-void         BotUpdateObstacles();
-#ifdef __cplusplus
+#include "bot_types.h"
+
+//coordinate conversion
+static inline void quake2recast( float vec[ 3 ] )
+{
+	float temp = vec[1];
+	vec[1] = vec[2];
+	vec[2] = temp;
 }
+
+static inline void recast2quake( float vec[ 3 ] )
+{
+	float temp = vec[1];
+	vec[1] = vec[2];
+	vec[2] = temp;
+}
+
+class rVec;
+class qVec
+{
+	float v[ 3 ];
+
+public:
+	qVec( ) { }
+	qVec( float x, float y, float z );
+	qVec( const float vec[ 3 ] );
+	qVec( rVec vec );
+
+	inline float &operator[]( int i )
+	{
+		return v[ i ];
+	}
+
+	inline operator const float*() const
+	{
+		return v;
+	}
+
+	inline operator float*()
+	{
+		return v;
+	}
+};
+
+class rVec
+{
+	float v[ 3 ];
+public:
+	rVec() { }
+	rVec( float x, float y, float z );
+	rVec( const float vec[ 3 ] );
+	rVec( qVec vec );
+
+	inline float &operator[]( int i )
+	{
+		return v[ i ];
+	}
+	
+	inline operator const float*() const
+	{
+		return v;
+	}
+
+	inline operator float*()
+	{
+		return v;
+	}
+};
+
+class rBounds
+{
+public:
+	rVec mins, maxs;
+
+	rBounds()
+	{
+		clear();
+	}
+
+	rBounds( const rBounds &b )
+	{
+		mins = b.mins;
+		maxs = b.maxs;
+	}
+
+	rBounds( qVec min, qVec max );
+	rBounds( const float min[ 3 ], const float max[ 3 ] );
+
+	void addPoint( rVec p );
+	void clear();
+};
+
+struct botRouteTargetInternal
+{
+	botRouteTargetType_t type;
+	rVec pos;
+	rVec polyExtents;
+
+	botRouteTargetInternal() { }
+	botRouteTargetInternal( const botRouteTarget_t &target );
+};
+
 #endif

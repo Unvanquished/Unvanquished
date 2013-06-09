@@ -48,10 +48,11 @@ All vectors used as inputs and outputs to functions here use the engine's coordi
 ====================
 */
 
-void BotSetPolyFlags( const vec3_t origin, const vec3_t mins, const vec3_t maxs, unsigned short flags )
+void BotSetPolyFlags( qVec origin, qVec mins, qVec maxs, unsigned short flags )
 {
-	vec3_t extents;
-	vec3_t realMin, realMax, center;
+	qVec qExtents;
+	qVec realMin, realMax;
+	qVec qCenter;
 
 	if ( !numNavData )
 	{
@@ -61,20 +62,20 @@ void BotSetPolyFlags( const vec3_t origin, const vec3_t mins, const vec3_t maxs,
 	// support abs min/max by recalculating the origin and min/max
 	VectorAdd( mins, origin, realMin );
 	VectorAdd( maxs, origin, realMax );
-	VectorAdd( realMin, realMax, center );
-	VectorScale( center, 0.5, center );
-	VectorSubtract( realMax, center, realMax );
-	VectorSubtract( realMin, center, realMin );
+	VectorAdd( realMin, realMax, qCenter );
+	VectorScale( qCenter, 0.5, qCenter );
+	VectorSubtract( realMax, qCenter, realMax );
+	VectorSubtract( realMin, qCenter, realMin );
 
 	// find extents
 	for ( int j = 0; j < 3; j++ )
 	{
-		extents[ j ] = MAX( fabsf( realMin[ j ] ), fabsf( realMax[ j ] ) );
+		qExtents[ j ] = MAX( fabsf( realMin[ j ] ), fabsf( realMax[ j ] ) );
 	}
 
 	// convert to recast coordinates
-	quake2recast( center );
-	quake2recast( extents );
+	rVec center = qCenter;
+	rVec extents = qExtents;
 
 	// quake2recast conversion makes some components negative
 	extents[ 0 ] = fabsf( extents[ 0 ] );
@@ -128,60 +129,61 @@ extern "C" void BotSetNavMesh( int botClientNum, qhandle_t nav )
 	bot->needReplan = qtrue;
 }
 
-extern "C" unsigned int BotFindRouteExt( int botClientNum, const botRouteTarget_t *target )
+void GetEntPosition( int num, rVec &pos )
 {
-	vec3_t start;
-	botRouteTarget_t rtarget;
-	Bot_t *bot = &agents[ botClientNum ];
-	rtarget = *target;
-
-	VectorCopy( SV_GentityNum( botClientNum )->s.origin, start );
-	quake2recast( start );
-	quake2recastTarget( &rtarget );
-	return FindRoute( bot, start, &rtarget );
+	pos = qVec( SV_GentityNum( num )->s.origin );
 }
 
-extern "C" qboolean BotUpdateCorridor( int botClientNum, const botRouteTarget_t *target, vec3_t dir, qboolean *directPathToGoal )
+void GetEntPosition( int num, qVec &pos )
 {
-	vec3_t spos;
-	vec3_t epos;
+	pos = SV_GentityNum( num )->s.origin;
+}
+
+extern "C" qboolean BotFindRouteExt( int botClientNum, const botRouteTarget_t *target, qboolean allowPartial )
+{
+	rVec start;
 	Bot_t *bot = &agents[ botClientNum ];
-	botRouteTarget_t rtarget;
 
-	sharedEntity_t * ent = SV_GentityNum( botClientNum );
+	GetEntPosition( botClientNum, start );
+	bool result = FindRoute( bot, start, *target, allowPartial );
+	return static_cast<qboolean>( result );
+}
 
-	VectorCopy( ent->s.origin, spos );
-	quake2recast( spos );
-
-	rtarget = *target;
-	quake2recastTarget( &rtarget );
-
-	VectorCopy( rtarget.pos, epos );
-
-	bot->routePlanCounter = 0;
-
-	if ( directPathToGoal )
+static bool withinRadiusOfOffMeshConnection( const Bot_t *bot, rVec pos, rVec off, dtPolyRef conPoly )
+{
+	const dtOffMeshConnection *con = bot->nav->mesh->getOffMeshConnectionByRef( conPoly );
+	if ( !con )
 	{
-		*directPathToGoal = qfalse;
+		return false;
 	}
 
-	if ( bot->needReplan )
+	if ( dtVdist2DSqr( pos, off ) < con->rad * con->rad )
 	{
-		if ( ! ( FindRoute( bot, spos, &rtarget ) & ( ROUTE_PARTIAL | ROUTE_FAILED ) ) )
-		{
-			bot->needReplan = qfalse;
-		}
-		else if ( !bot->corridor.getPathCount() )
-		{
-			return qfalse;
-		}
+		return true;
 	}
 
+	return false;
+}
+
+static bool overOffMeshConnectionStart( const Bot_t *bot, rVec pos )
+{
+	int corner = bot->numCorners - 1;
+	const bool offMeshConnection = ( bot->cornerFlags[ corner ] & DT_STRAIGHTPATH_OFFMESH_CONNECTION ) ? true : false;
+
+	if ( offMeshConnection )
+	{
+		return withinRadiusOfOffMeshConnection( bot, pos, &bot->cornerVerts[ corner * 3 ], bot->cornerPolys[ corner ] );
+	}
+	return false;
+}
+
+void UpdatePathCorridor( Bot_t *bot, rVec spos, botRouteTargetInternal target )
+{
 	bot->corridor.movePosition( spos, bot->nav->query, &bot->nav->filter );
 
-	if ( rtarget.type == BOT_TARGET_DYNAMIC )
+	if ( target.type == BOT_TARGET_DYNAMIC )
 	{
-		bot->corridor.moveTargetPosition( epos, bot->nav->query, &bot->nav->filter );
+		bot->corridor.moveTargetPosition( target.pos, bot->nav->query, &bot->nav->filter );
 	}
 
 	if ( !bot->corridor.isValid( MAX_PATH_LOOKAHEAD, bot->nav->query, &bot->nav->filter ) )
@@ -191,153 +193,245 @@ extern "C" qboolean BotUpdateCorridor( int botClientNum, const botRouteTarget_t 
 	}
 
 	FindWaypoints( bot, bot->cornerVerts, bot->cornerFlags, bot->cornerPolys, &bot->numCorners, MAX_CORNERS );
+}
 
-	dtPolyRef firstPoly = bot->corridor.getFirstPoly();
-	dtPolyRef lastPoly = bot->corridor.getLastPoly();
+extern "C" void BotUpdateCorridor( int botClientNum, const botRouteTarget_t *target, botNavCmd_t *cmd )
+{
+	rVec spos;
+	rVec epos;
+	Bot_t *bot = &agents[ botClientNum ];
+	botRouteTargetInternal rtarget;
 
-	//check for replans caused by inaccurate bot movement or the target going off the path corridor
-	if ( !PointInPoly( bot, firstPoly, spos )  )
+	if ( !cmd || !target )
 	{
-		bot->needReplan = qtrue;
+		return;
 	}
 
-	if ( rtarget.type == BOT_TARGET_DYNAMIC )
+	GetEntPosition( botClientNum, spos );
+
+	rtarget = *target;
+	epos = rtarget.pos;
+
+	bot->routePlanCounter = 0;
+
+	UpdatePathCorridor( bot, spos, rtarget );
+
+	if ( !bot->offMesh )
 	{
-		if ( !PointInPolyExtents( bot, lastPoly, epos, rtarget.polyExtents ) )
+		if ( bot->needReplan )
+		{
+			if ( FindRoute( bot, spos, rtarget, false ) )
+			{
+				bot->needReplan = qfalse;
+			}
+		}
+
+		if ( overOffMeshConnectionStart( bot, spos ) )
+		{
+			dtPolyRef refs[ 2 ];
+			rVec start;
+			rVec end;
+			int corner = bot->numCorners - 1;
+			dtPolyRef con = bot->cornerPolys[ corner ];
+
+			if ( bot->corridor.moveOverOffmeshConnection( con, refs, start, end, bot->nav->query ) )
+			{
+				bot->offMesh = true;
+				bot->offMeshPoly = con;
+				bot->offMeshEnd = end;
+				bot->offMeshStart = start;
+			}
+		}
+
+		dtPolyRef firstPoly = bot->corridor.getFirstPoly();
+		dtPolyRef lastPoly = bot->corridor.getLastPoly();
+
+		if ( !PointInPoly( bot, firstPoly, spos ) )
 		{
 			bot->needReplan = qtrue;
 		}
-	}
 
-	if ( dir )
-	{
-		vec3_t rdir;
+		if ( rtarget.type == BOT_TARGET_DYNAMIC )
+		{
+			if ( !PointInPolyExtents( bot, lastPoly, epos, rtarget.polyExtents ) )
+			{
+				bot->needReplan = qtrue;
+			}
+		}
+
+		rVec rdir;
 		BotCalcSteerDir( bot, rdir );
-		recast2quake( rdir );
-		VectorCopy( rdir, dir );
-	}
 
-	if ( directPathToGoal )
+		VectorCopy( rdir, cmd->dir );
+		recast2quake( cmd->dir );
+
+		cmd->directPathToGoal = bot->numCorners <= 1;
+
+		VectorCopy( bot->corridor.getPos(), cmd->pos );
+		recast2quake( cmd->pos );
+
+		// if there are no corners, we have reached the goal
+		// FIXME: this must be done because of a weird bug where the target is not reachable even if 
+		// the path was checked for a partial path beforehand
+		if ( bot->numCorners == 0 )
+		{
+			VectorCopy( cmd->pos, cmd->tpos );
+		}
+		else
+		{
+			VectorCopy( bot->corridor.getTarget(), cmd->tpos );
+
+			float height;
+			if ( dtStatusSucceed( bot->nav->query->getPolyHeight( bot->corridor.getLastPoly(), cmd->tpos, &height ) ) )
+			{
+				cmd->tpos[ 1 ] = height;
+			}
+			recast2quake( cmd->tpos );
+		}
+
+		cmd->havePath = !bot->needReplan;
+	}
+	
+	if ( bot->offMesh )
 	{
-		*directPathToGoal = ( qboolean )( ( int ) bot->numCorners == 1 );
-	}
+		qVec pos, proj;
+		qVec start = bot->offMeshStart;
+		qVec end = bot->offMeshEnd;
+		qVec dir;
+		qVec pVec;
 
-	return qtrue;
+		GetEntPosition( botClientNum, pos );
+		start[ 2 ] = pos[ 2 ];
+		end[ 2 ] = pos[ 2 ];
+
+		ProjectPointOntoVectorBounded( pos, start, end, proj );
+		
+		VectorCopy( proj, cmd->pos );
+		cmd->directPathToGoal = qfalse;
+		VectorSubtract( end, pos, cmd->dir );
+		VectorNormalize( cmd->dir );
+
+		VectorCopy( bot->corridor.getTarget(), cmd->tpos );
+		float height;
+		if ( dtStatusSucceed( bot->nav->query->getPolyHeight( bot->corridor.getLastPoly(), cmd->tpos, &height ) ) )
+		{
+			cmd->tpos[ 1 ] = height;
+		}
+		recast2quake( cmd->tpos );
+
+		cmd->havePath = true;
+
+		if ( withinRadiusOfOffMeshConnection( bot, spos, bot->offMeshEnd, bot->offMeshPoly ) )
+		{
+			bot->offMesh = false;
+		}
+	}
 }
 
 float frand()
 {
-	return ( float ) rand() / RAND_MAX;
+	return ( float ) rand() / ( float ) RAND_MAX;
 }
 
 extern "C" void BotFindRandomPoint( int botClientNum, vec3_t point )
 {
-	int numTiles = 0;
-	vec3_t randPoint;
-	dtPolyRef randRef;
-	Bot_t *bot = &agents[ botClientNum ];
-	bot->nav->query->findRandomPoint( &bot->nav->filter, frand, &randRef, randPoint );
-	
-	VectorCopy( randPoint, point );
-	recast2quake( point );
+	qVec origin = SV_GentityNum( botClientNum )->s.origin;
+
+	if ( !BotFindRandomPointInRadius( botClientNum, origin, point, 2000 ) )
+	{
+		VectorCopy( origin, point );
+	}
 }
 
 extern "C" qboolean BotFindRandomPointInRadius( int botClientNum, const vec3_t origin, vec3_t point, float radius )
 {
-	vec3_t rorigin;
+	rVec rorigin = qVec( origin );
+	rVec nearPoint;
 	dtPolyRef nearPoly;
-	VectorCopy( origin, rorigin );
-	quake2recast( rorigin );
+
 	VectorSet( point, 0, 0, 0 );
 
 	Bot_t *bot = &agents[ botClientNum ];
 
-	if ( !BotFindNearestPoly( bot, rorigin, &nearPoly, point ) )
+	if ( !BotFindNearestPoly( bot, rorigin, &nearPoly, nearPoint ) )
 	{
 		return qfalse;
 	}
 
 	dtPolyRef randRef;
-	dtStatus status = bot->nav->query->findRandomPointAroundCircle( nearPoly, rorigin, radius, &bot->nav->filter, frand, &randRef, point );
+	dtStatus status = bot->nav->query->findRandomPointAroundCircle( nearPoly, rorigin, radius, &bot->nav->filter, frand, &randRef, nearPoint );
 	
 	if ( dtStatusFailed( status ) )
 	{
 		return qfalse;
 	}
 
+	VectorCopy( nearPoint, point );
 	recast2quake( point );
 	return qtrue;
 }
 
 extern "C" qboolean BotNavTrace( int botClientNum, botTrace_t *trace, const vec3_t start, const vec3_t end )
 {
-	vec3_t nearPoint;
 	dtPolyRef startRef;
 	dtStatus status;
-	vec3_t extents = {75, 96, 75};
-	vec3_t spos, epos;
-	VectorCopy( start, spos );
-	VectorCopy( end, epos );
-	quake2recast( spos );
-	quake2recast( epos );
+	rVec extents( 75, 96, 75 );
+	rVec spos = qVec( start );
+	rVec epos = qVec( end );
+
 	memset( trace, 0, sizeof( *trace ) );
 
 	Bot_t *bot = &agents[ botClientNum ];
 
-	status = bot->nav->query->findNearestPoly( spos, extents, &bot->nav->filter, &startRef, nearPoint );
+	status = bot->nav->query->findNearestPoly( spos, extents, &bot->nav->filter, &startRef, NULL );
 	if ( dtStatusFailed( status ) || startRef == 0 )
 	{
 		//try larger extents
-		extents[1] += 500;
-		status = bot->nav->query->findNearestPoly( spos, extents, &bot->nav->filter, &startRef, nearPoint );
+		extents[ 1 ] += 500;
+		status = bot->nav->query->findNearestPoly( spos, extents, &bot->nav->filter, &startRef, NULL );
 		if ( dtStatusFailed( status ) || startRef == 0 )
 		{
 			return qfalse;
 		}
 	}
+
 	status = bot->nav->query->raycast( startRef, spos, epos, &bot->nav->filter, &trace->frac, trace->normal, NULL, NULL, 0 );
 	if ( dtStatusFailed( status ) )
 	{
 		return qfalse;
 	}
-	else
-	{
-		return qtrue;
-	}
+
+	recast2quake( trace->normal );
+	return qtrue;
 }
 
 extern "C" void BotAddObstacle( const vec3_t mins, const vec3_t maxs, qhandle_t *obstacleHandle )
 {
-	vec3_t bmin, bmax;
-	VectorCopy( mins, bmin );
-	VectorCopy( maxs, bmax );
-
-	quake2recastExtents( bmin, bmax );
+	qVec min = mins;
+	qVec max = maxs;
+	rBounds box( min, max );
 
 	for ( int i = 0; i < numNavData; i++ )
 	{
 		dtObstacleRef ref;
 		NavData_t *nav = &BotNavData[ i ];
 
-		vec3_t realBmin, realBmax;
-
-		VectorCopy( bmin, realBmin );
-		VectorCopy( bmax, realBmax );
-
 		const dtTileCacheParams *params = nav->cache->getParams();
 		float offset = params->walkableRadius;
 
-		// offset bbox by agent radius like the navigation mesh was originally made
-		realBmin[ 0 ] -= offset;
-		realBmin[ 2 ] -= offset;
+		rBounds tempBox = box;
 
-		realBmax[ 0 ] += offset;
-		realBmax[ 2 ] += offset;
+		// offset bbox by agent radius like the navigation mesh was originally made
+		tempBox.mins[ 0 ] -= offset;
+		tempBox.mins[ 2 ] -= offset;
+
+		tempBox.maxs[ 0 ] += offset;
+		tempBox.maxs[ 2 ] += offset;
 		
 		// offset mins down by agent height so obstacles placed on ledges are handled correctly
-		realBmin[ 1 ] -= params->walkableHeight;
+		tempBox.mins[ 1 ] -= params->walkableHeight;
 
-		nav->cache->addObstacle( realBmin, realBmax, &ref );
+		nav->cache->addObstacle( tempBox.mins, tempBox.maxs, &ref );
 		*obstacleHandle = ref;
 	}
 }

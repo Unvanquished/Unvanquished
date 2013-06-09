@@ -135,7 +135,7 @@ qboolean GoalInRange( gentity_t *self, float r )
 	{
 		VectorAdd( maxs, self->r.maxs, maxs );
 		VectorAdd( mins, self->r.mins, mins );
-		return BoundsIntersectPoint( mins, maxs, self->botMind->goal.coord );
+		return BoundsIntersectPoint( mins, maxs, self->botMind->nav.tpos );
 	}
 
 	num = trap_EntitiesInBox( mins, maxs, entityList, MAX_GENTITIES );
@@ -229,17 +229,28 @@ Local Bot Navigation
 ========================
 */
 
+signed char BotGetMaxMoveSpeed( gentity_t *self )
+{
+	if ( usercmdButtonPressed( self->botMind->cmdBuffer.buttons, BUTTON_WALKING ) )
+	{
+		return 63;
+	}
+
+	return 127;
+}
+
 void BotStrafeDodge( gentity_t *self )
 {
 	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
+	signed char speed = BotGetMaxMoveSpeed( self );
 
 	if ( self->client->time1000 >= 500 )
 	{
-		botCmdBuffer->rightmove = 127;
+		botCmdBuffer->rightmove = speed;
 	}
 	else
 	{
-		botCmdBuffer->rightmove = -127;
+		botCmdBuffer->rightmove = -speed;
 	}
 
 	if ( ( self->client->time10000 % 2000 ) < 1000 )
@@ -256,36 +267,39 @@ void BotStrafeDodge( gentity_t *self )
 void BotMoveInDir( gentity_t *self, uint32_t dir )
 {
 	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
+	signed char speed = BotGetMaxMoveSpeed( self );
+
 	if ( dir & MOVE_FORWARD )
 	{
-		botCmdBuffer->forwardmove = 127;
+		botCmdBuffer->forwardmove = speed;
 	}
 	else if ( dir & MOVE_BACKWARD )
 	{
-		botCmdBuffer->forwardmove = -127;
+		botCmdBuffer->forwardmove = -speed;
 	}
 
 	if ( dir & MOVE_RIGHT )
 	{
-		botCmdBuffer->rightmove = 127;
+		botCmdBuffer->rightmove = speed;
 	}
 	else if ( dir & MOVE_LEFT )
 	{
-		botCmdBuffer->rightmove = -127;
+		botCmdBuffer->rightmove = -speed;
 	}
 }
 
 void BotAlternateStrafe( gentity_t *self )
 {
 	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
+	signed char speed = BotGetMaxMoveSpeed( self );
 
 	if ( level.time % 8000 < 4000 )
 	{
-		botCmdBuffer->rightmove = 127;
+		botCmdBuffer->rightmove = speed;
 	}
 	else
 	{
-		botCmdBuffer->rightmove = -127;
+		botCmdBuffer->rightmove = -speed;
 	}
 }
 
@@ -293,6 +307,8 @@ void BotStandStill( gentity_t *self )
 {
 	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
 
+	BotWalk( self, qfalse );
+	BotSprint( self, qfalse );
 	botCmdBuffer->forwardmove = 0;
 	botCmdBuffer->rightmove = 0;
 	botCmdBuffer->upmove = 0;
@@ -311,7 +327,6 @@ qboolean BotJump( gentity_t *self )
 
 qboolean BotSprint( gentity_t *self, qboolean enable )
 {
-
 	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
 
 	if ( !enable )
@@ -323,7 +338,7 @@ qboolean BotSprint( gentity_t *self, qboolean enable )
 	if ( self->client->ps.stats[STAT_TEAM] == TEAM_HUMANS && self->client->ps.stats[STAT_STAMINA] > STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE && self->botMind->botSkill.level >= 5 )
 	{
 		usercmdPressButton( botCmdBuffer->buttons, BUTTON_SPRINT );
-		usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_WALKING );
+		BotWalk( self, qfalse );
 		return qtrue;
 	}
 	else
@@ -333,6 +348,28 @@ qboolean BotSprint( gentity_t *self, qboolean enable )
 	}
 }
 
+void BotWalk( gentity_t *self, qboolean enable )
+{
+	usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
+
+	if ( !enable )
+	{
+		if ( usercmdButtonPressed( botCmdBuffer->buttons, BUTTON_WALKING ) )
+		{
+			usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_WALKING );
+			botCmdBuffer->forwardmove *= 2;
+			botCmdBuffer->rightmove *= 2;
+		}
+		return;
+	}
+
+	if ( !usercmdButtonPressed( botCmdBuffer->buttons, BUTTON_WALKING ) )
+	{
+		usercmdPressButton( botCmdBuffer->buttons, BUTTON_WALKING );
+		botCmdBuffer->forwardmove /= 2;
+		botCmdBuffer->rightmove /= 2;
+	}
+}
 
 qboolean BotDodge( gentity_t *self )
 {
@@ -340,6 +377,7 @@ qboolean BotDodge( gentity_t *self )
 	vec3_t end;
 	float jumpMag;
 	botTrace_t tback, tright, tleft;
+	signed char speed = BotGetMaxMoveSpeed( self );
 
 	//see: bg_pmove.c, these conditions prevent use from using dodge
 	if ( self->client->ps.stats[STAT_TEAM] != TEAM_HUMANS )
@@ -393,15 +431,15 @@ qboolean BotDodge( gentity_t *self )
 
 	if ( tback.frac > tleft.frac && tback.frac > tright.frac )
 	{
-		self->botMind->cmdBuffer.forwardmove = -127;
+		self->botMind->cmdBuffer.forwardmove = -speed;
 	}
 	else if ( tleft.frac > tright.frac && tleft.frac > tback.frac )
 	{
-		self->botMind->cmdBuffer.rightmove = -127;
+		self->botMind->cmdBuffer.rightmove = -speed;
 	}
 	else
 	{
-		self->botMind->cmdBuffer.rightmove = 127;
+		self->botMind->cmdBuffer.rightmove = speed;
 	}
 
 	// dodge
@@ -647,6 +685,8 @@ void BotDirectionToUsercmd( gentity_t *self, vec3_t dir, usercmd_t *cmd )
 
 	float forwardmove;
 	float rightmove;
+	signed char speed = BotGetMaxMoveSpeed( self );
+
 	AngleVectors( self->client->ps.viewangles, forward, right, NULL );
 	forward[2] = 0;
 	VectorNormalize( forward );
@@ -654,13 +694,13 @@ void BotDirectionToUsercmd( gentity_t *self, vec3_t dir, usercmd_t *cmd )
 	VectorNormalize( right );
 
 	// get direction and non-optimal magnitude
-	forwardmove = 127 * DotProduct( forward, dir );
-	rightmove = 127 * DotProduct( right, dir );
+	forwardmove = speed * DotProduct( forward, dir );
+	rightmove = speed * DotProduct( right, dir );
 
 	// find optimal magnitude to make speed as high as possible
 	if ( Q_fabs( forwardmove ) > Q_fabs( rightmove ) )
 	{
-		float highestforward = forwardmove < 0 ? -127 : 127;
+		float highestforward = forwardmove < 0 ? -speed : speed;
 
 		float highestright = highestforward * rightmove / forwardmove;
 
@@ -669,7 +709,7 @@ void BotDirectionToUsercmd( gentity_t *self, vec3_t dir, usercmd_t *cmd )
 	}
 	else
 	{
-		float highestright = rightmove < 0 ? -127 : 127;
+		float highestright = rightmove < 0 ? -speed : speed;
 
 		float highestforward = highestright * forwardmove / rightmove;
 
@@ -703,45 +743,49 @@ Global Bot Navigation
 =========================
 */
 
-qboolean BotMoveToGoal( gentity_t *self )
+void BotClampPos( gentity_t *self )
 {
-	vec3_t dir;
-	botRouteTarget_t rtarget;
-
-	if ( !( self && self->client ) )
-	{
-		return qfalse;
-	}
-
-	BotTargetToRouteTarget( self, self->botMind->goal, &rtarget );
-
-	if ( trap_BotUpdatePath( self->s.number, &rtarget, dir, &self->botMind->directPathToGoal ) )
-	{
-		if ( dir[ 2 ] < 0 )
-		{
-			dir[ 2 ] = 0;
-			VectorNormalize( dir );
-		}
-
-		BotAvoidObstacles( self, dir );
-		BotSeek( self, dir );
-
-		//dont sprint or dodge if we dont have enough stamina and are about to slow
-		if ( self->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS && self->client->ps.stats[STAT_STAMINA] < STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE )
-		{
-			usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
-			usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_SPRINT );
-			usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_DODGE );
-		}
-		return qtrue;
-	}
-	return qfalse;
+	float height = self->client->ps.origin[ 2 ];
+	vec3_t origin;
+	trace_t trace;
+	vec3_t mins, maxs;
+	VectorSet( origin, self->botMind->nav.pos[ 0 ], self->botMind->nav.pos[ 1 ], height );
+	BG_ClassBoundingBox( self->client->ps.stats[ STAT_CLASS ], mins, maxs, NULL, NULL, NULL );
+	trap_Trace( &trace, self->client->ps.origin, mins, maxs, origin, self->client->ps.clientNum, MASK_PLAYERSOLID );
+	G_SetOrigin( self, trace.endpos );
+	VectorCopy( trace.endpos, self->client->ps.origin );
 }
 
-unsigned int FindRouteToTarget( gentity_t *self, botTarget_t target )
+void BotMoveToGoal( gentity_t *self )
+{
+	vec3_t dir;
+	VectorCopy( self->botMind->nav.dir, dir );
+
+	if ( dir[ 2 ] < 0 )
+	{
+		dir[ 2 ] = 0;
+		VectorNormalize( dir );
+	}
+
+	BotAvoidObstacles( self, dir );
+	BotSeek( self, dir );
+
+	//dont sprint or dodge if we dont have enough stamina and are about to slow
+	if ( self->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS && self->client->ps.stats[ STAT_STAMINA ] < STAMINA_SLOW_LEVEL + STAMINA_JUMP_TAKE )
+	{
+		usercmd_t *botCmdBuffer = &self->botMind->cmdBuffer;
+
+		usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_SPRINT );
+		usercmdReleaseButton( botCmdBuffer->buttons, BUTTON_DODGE );
+
+		// walk to regain stamina
+		BotWalk( self, qtrue );
+	}
+}
+
+qboolean FindRouteToTarget( gentity_t *self, botTarget_t target, qboolean allowPartial )
 {
 	botRouteTarget_t routeTarget;
-
 	BotTargetToRouteTarget( self, target, &routeTarget );
-	return trap_BotFindRoute( self->s.number, &routeTarget );
+	return trap_BotFindRoute( self->s.number, &routeTarget, allowPartial );
 }

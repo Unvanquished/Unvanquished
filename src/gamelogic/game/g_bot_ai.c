@@ -649,7 +649,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		qboolean inAttackRange = BotTargetInAttackRange( self, self->botMind->goal );
 		self->botMind->goalLastSeen = level.time;
 
-		if ( ( inAttackRange && myTeam == TEAM_HUMANS ) || self->botMind->directPathToGoal )
+		if ( ( inAttackRange && myTeam == TEAM_HUMANS ) || self->botMind->nav.directPathToGoal )
 		{
 			BotAimAtEnemy( self );
 
@@ -765,7 +765,7 @@ AINodeStatus_t BotActionRoamInRadius( gentity_t *self, AIGenericNode_t *node )
 		self->botMind->currentNode = node;
 	}
 
-	if ( self->botMind->directPathToGoal && GoalInRange( self, 70 ) )
+	if ( self->botMind->nav.directPathToGoal && GoalInRange( self, 70 ) )
 	{
 		return STATUS_SUCCESS;
 	}
@@ -790,7 +790,7 @@ AINodeStatus_t BotActionRoam( gentity_t *self, AIGenericNode_t *node )
 		self->botMind->currentNode = node;
 	}
 
-	if ( self->botMind->directPathToGoal && GoalInRange( self, 70 ) )
+	if ( self->botMind->nav.directPathToGoal && GoalInRange( self, 70 ) )
 	{
 		return STATUS_SUCCESS;
 	}
@@ -849,7 +849,7 @@ AINodeStatus_t BotActionMoveTo( gentity_t *self, AIGenericNode_t *node )
 		radius = BotGetGoalRadius( self );
 	}
 
-	if ( DistanceToGoal2DSquared( self ) <= Square( radius ) && self->botMind->directPathToGoal )
+	if ( DistanceToGoal2DSquared( self ) <= Square( radius ) && self->botMind->nav.directPathToGoal )
 	{
 		return STATUS_SUCCESS;
 	}

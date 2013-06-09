@@ -593,14 +593,14 @@ void trap_BotSetNavMesh( int botClientNum, qhandle_t navHandle )
 	syscall( BOT_SET_NAVMESH, botClientNum, navHandle );
 }
 
-unsigned int trap_BotFindRoute( int botClientNum, const botRouteTarget_t *target )
+qboolean trap_BotFindRoute( int botClientNum, const botRouteTarget_t *target, qboolean allowPartial )
 {
 	return syscall( BOT_FIND_ROUTE, botClientNum, target );
 }
 
-qboolean trap_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, vec3_t dir, qboolean *directPathToGoal )
+qboolean trap_BotUpdatePath( int botClientNum, const botRouteTarget_t *target, botNavCmd_t *cmd )
 {
-	return syscall( BOT_UPDATE_PATH, botClientNum, target, dir, directPathToGoal );
+	return syscall( BOT_UPDATE_PATH, botClientNum, target, cmd );
 }
 
 qboolean trap_BotNavTrace( int botClientNum, botTrace_t *botTrace, const vec3_t start, const vec3_t end )
