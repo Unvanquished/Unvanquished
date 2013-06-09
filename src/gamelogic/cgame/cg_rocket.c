@@ -327,7 +327,7 @@ void CG_Rocket_Frame( void )
 			break;
 
 		case LOADING:
-			CG_Rocket_CleanUpServerList();
+			CG_Rocket_CleanUpServerList( NULL );
 			trap_Rocket_DocumentAction( "", "close" );
 			trap_Rocket_DocumentAction( "main", "close" );
 			trap_Rocket_LoadDocument( "ui/connecting.rml" );

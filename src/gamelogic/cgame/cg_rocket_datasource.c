@@ -274,7 +274,7 @@ static void CG_Rocket_SortServerList( const char *name, const char *sortBy )
 	}
 }
 
-void CG_Rocket_CleanUpServerList( void )
+void CG_Rocket_CleanUpServerList( const char *table )
 {
 	int i;
 
@@ -398,7 +398,7 @@ void CG_Rocket_SortResolutionList( const char *name, const char *sortBy )
 }
 
 
-void CG_Rocket_CleanUpResolutionList( void )
+void CG_Rocket_CleanUpResolutionList( const char *table )
 {
 	rocketInfo.data.resolutionCount = 0;
 }
@@ -484,7 +484,7 @@ void CG_Rocket_BuildLanguageList( const char *args )
 	}
 }
 
-void CG_Rocket_CleanUpLanguageList( void )
+void CG_Rocket_CleanUpLanguageList( const char *args )
 {
 	int i;
 
@@ -536,7 +536,7 @@ void CG_Rocket_BuildVoIPInputs( const char *args )
 	}
 }
 
-void CG_Rocket_CleanUpVoIPInputs( void )
+void CG_Rocket_CleanUpVoIPInputs( const char *table )
 {
 	int i;
 
@@ -588,7 +588,7 @@ void CG_Rocket_BuildAlOutputs( const char *args )
 	}
 }
 
-void CG_Rocket_CleanUpAlOutputs( void )
+void CG_Rocket_CleanUpAlOutputs( const char *args )
 {
 	int i;
 
@@ -644,7 +644,7 @@ void CG_Rocket_BuildModList( const char *args )
 	}
 }
 
-void CG_Rocket_CleanUpModList( void )
+void CG_Rocket_CleanUpModList( const char *args )
 {
 	int i;
 
@@ -713,7 +713,7 @@ void CG_Rocket_BuildDemoList( const char *args )
 	}
 }
 
-void CG_Rocket_CleanUpDemoList( void )
+void CG_Rocket_CleanUpDemoList( const char *args )
 {
 	int i;
 
@@ -904,7 +904,7 @@ void CG_Rocket_BuildMapList( const char *args )
 
 }
 
-void CG_Rocket_CleanUpMapList( void )
+void CG_Rocket_CleanUpMapList( const char *args )
 {
 	int i;
 
@@ -924,7 +924,7 @@ void CG_Rocket_SetMapListIndex( int index )
 }
 
 
-void CG_Rocket_CleanUpTeamList( void )
+void CG_Rocket_CleanUpTeamList( const char *args )
 {
 	rocketInfo.data.playerCount[ TEAM_ALIENS ] = 0;
 	rocketInfo.data.playerIndex[ TEAM_HUMANS ] = 0;
@@ -948,7 +948,7 @@ typedef struct
 	const char *name;
 	void ( *build ) ( const char *args );
 	void ( *sort ) ( const char *name, const char *sortBy );
-	void ( *cleanup ) ( void );
+	void ( *cleanup ) ( const char *table );
 	void ( *set ) ( int index );
 	void ( *exec ) ( const char *table );
 } dataSourceCmd_t;

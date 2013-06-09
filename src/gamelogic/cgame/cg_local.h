@@ -2151,7 +2151,7 @@ void CG_Rocket_SetElementDimensions( void );
 //
 void CG_Rocket_BuildDataSource( const char *dataSrc, const char *table );
 void CG_Rocket_SortDataSource( const char *dataSource, const char *name, const char *sortBy );
-void CG_Rocket_CleanUpServerList( void );
+void CG_Rocket_CleanUpServerList( const char *table );
 void CG_Rocket_RegisterDataSources( void );
 void CG_Rocket_ExecDataSource( const char *dataSource, const char *table );
 void CG_Rocket_SetDataSourceIndex( const char *dataSource, int index );
