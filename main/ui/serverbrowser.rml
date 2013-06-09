@@ -27,7 +27,7 @@
 		{
 		}
 
-		img
+		img.emoticon
 		{
 			width: 18px;
 			height: 18px;
@@ -100,14 +100,14 @@
 			</panel>
 		</tabset>
 		<div id="backdrop">
+			<div id="background">
+				<img style="height: 100%; width: 100%;" src="/ui/assets/mainmenu" />
+			</div>
 			<div>
 				<img style="position: fixed; width: 50%; left: 30%; top: 350px;" src="/ui/assets/human.png"/>
 				<img style="position: fixed; width: 15%; left: 50%; top: 600px;" src="/ui/assets/dretch3.png"/>
 				<img style="position: fixed; width: 25%; left: 25%; top: 600px;" src="/ui/assets/dretch2.png"/>
 				<img style="position: fixed; width: 15%; left: 75%; top: 650px;" src="/ui/assets/dretch1.png"/>
-			</div>
-			<div id="background">
-				<img style="height: 100%; width: 100%;" src="/ui/assets/mainmenu" />
 			</div>
 		</div>
 	</body>
