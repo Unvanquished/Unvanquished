@@ -162,7 +162,7 @@ void BotLoadOffMeshConnections( const char *filename, NavData_t *nav )
 	FS_FCloseFile( f );
 }
 
-qboolean BotLoadNavMesh( const char *filename, NavData_t &nav )
+bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 {
 	char mapname[ MAX_QPATH ];
 	char filePath[ MAX_QPATH ];
@@ -181,24 +181,24 @@ qboolean BotLoadNavMesh( const char *filename, NavData_t &nav )
 	if ( !f )
 	{
 		Com_Printf( S_COLOR_RED "ERROR: Cannot open Navigaton Mesh file\n" );
-		return qfalse;
+		return false;
 	}
 
 	if ( len < 0 )
 	{
 		Com_Printf( S_COLOR_RED "ERROR: Negative Length for Navigation Mesh file\n" );
-		return qfalse;
+		return false;
 	}
 
 	NavMeshSetHeader header;
 	
 	FS_Read( &header, sizeof( header ), f );
 
-	qboolean swapEndian = qfalse;
+	bool swapEndian = false;
 
 	if ( header.magic != NAVMESHSET_MAGIC )
 	{
-		swapEndian = qtrue;
+		swapEndian = true;
 		int i;
 		for ( i = 0; i < sizeof( header ) / sizeof( int ); i ++ )
 		{
@@ -210,7 +210,7 @@ qboolean BotLoadNavMesh( const char *filename, NavData_t &nav )
 	{
 		Com_Printf( S_COLOR_RED "ERROR: File is wrong version found: %d want: %d\n", header.version, NAVMESHSET_VERSION );
 		FS_FCloseFile( f );
-		return qfalse;
+		return false;
 	}
 
 	nav.mesh = dtAllocNavMesh();
@@ -219,7 +219,7 @@ qboolean BotLoadNavMesh( const char *filename, NavData_t &nav )
 	{
 		Com_Printf( S_COLOR_RED "ERROR: Unable to allocate nav mesh\n" );
 		FS_FCloseFile( f );
-		return qfalse;
+		return false;
 	}
 
 	dtStatus status = nav.mesh->init( &header.params );
@@ -230,7 +230,7 @@ qboolean BotLoadNavMesh( const char *filename, NavData_t &nav )
 		dtFreeNavMesh( nav.mesh );
 		nav.mesh = NULL;
 		FS_FCloseFile( f );
-		return qfalse;
+		return false;
 	}
 
 	nav.cache = dtAllocTileCache();
@@ -241,7 +241,7 @@ qboolean BotLoadNavMesh( const char *filename, NavData_t &nav )
 		dtFreeNavMesh( nav.mesh );
 		nav.mesh = NULL;
 		FS_FCloseFile( f );
-		return qfalse;
+		return false;
 	}
 
 	status = nav.cache->init( &header.cacheParams, &alloc, &comp, &nav.process );
@@ -254,7 +254,7 @@ qboolean BotLoadNavMesh( const char *filename, NavData_t &nav )
 		nav.mesh = NULL;
 		nav.cache = NULL;
 		FS_FCloseFile( f );
-		return qfalse;
+		return false;
 	}
 
 	for ( int i = 0; i < header.numTiles; i++ )
@@ -277,7 +277,7 @@ qboolean BotLoadNavMesh( const char *filename, NavData_t &nav )
 			nav.cache = NULL;
 			nav.mesh = NULL;
 			FS_FCloseFile( f );
-			return qfalse;
+			return false;
 		}
 
 		unsigned char *data = ( unsigned char * ) dtAlloc( tileHeader.dataSize, DT_ALLOC_PERM );
@@ -290,7 +290,7 @@ qboolean BotLoadNavMesh( const char *filename, NavData_t &nav )
 			nav.cache = NULL;
 			nav.mesh = NULL;
 			FS_FCloseFile( f );
-			return qfalse;
+			return false;
 		}
 
 		memset( data, 0, tileHeader.dataSize );
@@ -314,7 +314,7 @@ qboolean BotLoadNavMesh( const char *filename, NavData_t &nav )
 			nav.cache = NULL;
 			nav.mesh = NULL;
 			FS_FCloseFile( f );
-			return qfalse;
+			return false;
 		}
 
 		if ( tile )
@@ -324,7 +324,7 @@ qboolean BotLoadNavMesh( const char *filename, NavData_t &nav )
 	}
 
 	FS_FCloseFile( f );
-	return qtrue;
+	return true;
 }
 
 inline void *dtAllocCustom( int size, dtAllocHint hint )
@@ -394,7 +394,7 @@ extern "C" qboolean BotSetupNav( const botClass_t *botClass, qhandle_t *navHandl
 
 			agents[ i ].corridor.reset( 0, clearVec );
 			agents[ i ].clientNum = i;
-			agents[ i ].needReplan = qtrue;
+			agents[ i ].needReplan = true;
 			agents[ i ].routePlanCounter = 0;
 			agents[ i ].lastRoutePlanTime = 0;
 			agents[ i ].nav = NULL;

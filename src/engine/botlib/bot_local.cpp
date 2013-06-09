@@ -92,13 +92,13 @@ void FindWaypoints( Bot_t *bot, float *corners, unsigned char *cornerFlags, dtPo
 	*numCorners = bot->corridor.findCorners( corners, cornerFlags, cornerPolys, maxCorners, bot->nav->query, &bot->nav->filter );
 }
 
-qboolean PointInPolyExtents( Bot_t *bot, dtPolyRef ref, rVec point, rVec extents )
+bool PointInPolyExtents( Bot_t *bot, dtPolyRef ref, rVec point, rVec extents )
 {
 	rVec closest;
 
 	if ( dtStatusFailed( bot->nav->query->closestPointOnPolyBoundary( ref, point, closest ) ) )
 	{
-		return qfalse;
+		return false;
 	}
 
 	// use the bot's bbox as an epsilon because the navmesh is always at least that far from a boundry
@@ -107,24 +107,24 @@ qboolean PointInPolyExtents( Bot_t *bot, dtPolyRef ref, rVec point, rVec extents
 
 	if ( fabsf( point[ 0 ] - closest[ 0 ] ) > maxRad )
 	{
-		return qfalse;
+		return false;
 	}
 
 	if ( fabsf( point[ 2 ] - closest[ 2 ] ) > maxRad )
 	{
-		return qfalse;
+		return false;
 	}
 
-	return qtrue;
+	return true;
 }
 
-qboolean PointInPoly( Bot_t *bot, dtPolyRef ref, rVec point )
+bool PointInPoly( Bot_t *bot, dtPolyRef ref, rVec point )
 {
 	sharedEntity_t *ent = SV_GentityNum( bot->clientNum );
 	return PointInPolyExtents( bot, ref, point, ent->r.maxs );
 }
 
-qboolean BotFindNearestPoly( Bot_t *bot, rVec coord, dtPolyRef *nearestPoly, rVec &nearPoint )
+bool BotFindNearestPoly( Bot_t *bot, rVec coord, dtPolyRef *nearestPoly, rVec &nearPoint )
 {
 	rVec start( coord );
 	rVec extents( 640, 96, 640 );
@@ -140,10 +140,10 @@ qboolean BotFindNearestPoly( Bot_t *bot, rVec coord, dtPolyRef *nearestPoly, rVe
 		status = navQuery->findNearestPoly( start, extents, navFilter, nearestPoly, nearPoint );
 		if ( dtStatusFailed( status ) || *nearestPoly == 0 )
 		{
-			return qfalse; // failed
+			return false; // failed
 		}
 	}
-	return qtrue;
+	return true;
 }
 
 bool FindRoute( Bot_t *bot, rVec s, botRouteTargetInternal rtarget, bool allowPartial )
@@ -154,7 +154,6 @@ bool FindRoute( Bot_t *bot, rVec s, botRouteTargetInternal rtarget, bool allowPa
 	dtPolyRef pathPolys[ MAX_BOT_PATH ];
 	dtStatus status;
 	int pathNumPolys;
-	qboolean result;
 	int time = svs.time;
 
 	if ( time - bot->lastRoutePlanTime > 200 )
@@ -168,9 +167,7 @@ bool FindRoute( Bot_t *bot, rVec s, botRouteTargetInternal rtarget, bool allowPa
 		return false;
 	}
 
-	result = BotFindNearestPoly( bot, s, &startRef, start );
-
-	if ( !result )
+	if ( !BotFindNearestPoly( bot, s, &startRef, start ) )
 	{
 		return false;
 	}
@@ -200,7 +197,7 @@ bool FindRoute( Bot_t *bot, rVec s, botRouteTargetInternal rtarget, bool allowPa
 	bot->corridor.reset( startRef, start );
 	bot->corridor.setCorridor( end, pathPolys, pathNumPolys );
 
-	bot->needReplan = qfalse;
+	bot->needReplan = false;
 	bot->offMesh = false;
 	return true;
 }
