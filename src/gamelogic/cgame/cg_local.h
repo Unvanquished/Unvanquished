@@ -2156,6 +2156,7 @@ void CG_Rocket_CleanUpServerList( const char *table );
 void CG_Rocket_RegisterDataSources( void );
 void CG_Rocket_ExecDataSource( const char *dataSource, const char *table );
 void CG_Rocket_SetDataSourceIndex( const char *dataSource, const char *table, int index );
+void CG_Rocket_FilterDataSource( const char *dataSource, const char *table, const char *filter );
 void CG_Rocket_BuildServerInfo( void );
 //
 // cg_rocket_progressbar.c

@@ -200,7 +200,7 @@ static void CG_Rocket_BuildServerList( const char *args )
 			if ( ping >= 0 || !Q_stricmp( args, "favorites" ) )
 			{
 				char addr[ 25 ];
-				trap_LAN_GetServerInfo( netSrc, i, info, MAX_INFO_STRING );
+				trap_LAN_GetServerInfo( netSrc, i, info, sizeof( info ) );
 
 				bots = atoi( Info_ValueForKey( info, "bots" ) );
 				clients = atoi( Info_ValueForKey( info, "clients" ) );
@@ -296,6 +296,33 @@ void CG_Rocket_CleanUpServerList( const char *table )
 				BG_Free( rocketInfo.data.servers[ i ][ j ].addr );
 				rocketInfo.data.serverCount[ i ] = 0;
 			}
+		}
+	}
+}
+
+static void CG_Rocket_FilterServerList( const char *table, const char *filter )
+{
+	const char *str = ( table && *table ) ? table : CG_NetSourceToString( rocketInfo.currentNetSrc );
+	int netSrc = CG_StringToNetSource( str );
+	int i;
+
+	trap_Rocket_DSClearTable( "server_browser", str );
+
+	for ( i = 0; i < rocketInfo.data.serverCount[ netSrc ]; ++i )
+	{
+		if ( Q_stristr( rocketInfo.data.servers[ netSrc ][ i ].name, filter ) )
+		{
+			char data[ MAX_INFO_STRING ] = { 0 };
+
+			Info_SetValueForKey( data, "name", rocketInfo.data.servers[ netSrc ][ i ].name, qfalse );
+			Info_SetValueForKey( data, "players", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].clients ), qfalse );
+			Info_SetValueForKey( data, "bots", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].bots ), qfalse );
+			Info_SetValueForKey( data, "ping", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].ping ), qfalse );
+			Info_SetValueForKey( data, "maxClients", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].maxClients ), qfalse );
+			Info_SetValueForKey( data, "addr", rocketInfo.data.servers[ netSrc ][ i ].addr, qfalse );
+			Info_SetValueForKey( data, "label", rocketInfo.data.servers[ netSrc ][ i ].label, qfalse );
+
+			trap_Rocket_DSAddRow( "server_browser", str, data );
 		}
 	}
 }
@@ -956,6 +983,10 @@ static void nullExecFunc( const char *table )
 {
 }
 
+static void nullFilterFunc( const char *table, const char *filter )
+{
+}
+
 typedef struct
 {
 	const char *name;
@@ -963,20 +994,21 @@ typedef struct
 	void ( *sort ) ( const char *name, const char *sortBy );
 	void ( *cleanup ) ( const char *table );
 	void ( *set ) ( const char *table, int index );
+	void ( *filter ) ( const char *table, const char *filter );
 	void ( *exec ) ( const char *table );
 } dataSourceCmd_t;
 
 static const dataSourceCmd_t dataSourceCmdList[] =
 {
-	{ "alOutputs", &CG_Rocket_BuildAlOutputs, &nullSortFunc, &CG_Rocket_CleanUpAlOutputs, &CG_Rocket_SetAlOutputsOutput, &nullExecFunc },
-	{ "demoList", &CG_Rocket_BuildDemoList, &nullSortFunc, &CG_Rocket_CleanUpDemoList, &CG_Rocket_SetDemoListDemo, &CG_Rocket_ExecDemoList },
-	{ "languages", &CG_Rocket_BuildLanguageList, &nullSortFunc, &CG_Rocket_CleanUpLanguageList, &CG_Rocket_SetLanguageListLanguage, &nullExecFunc },
-	{ "mapList", &CG_Rocket_BuildMapList, &nullSortFunc, &CG_Rocket_CleanUpMapList, &CG_Rocket_SetMapListIndex, &nullExecFunc },
-	{ "modList", &CG_Rocket_BuildModList, &nullSortFunc, &CG_Rocket_CleanUpModList, &CG_Rocket_SetModListMod, &nullExecFunc },
-	{ "resolutions", &CG_Rocket_BuildResolutionList, &CG_Rocket_SortResolutionList, &CG_Rocket_CleanUpResolutionList, &CG_Rocket_SetResolutionListResolution, &nullExecFunc },
-	{ "server_browser", &CG_Rocket_BuildServerList, &CG_Rocket_SortServerList, &CG_Rocket_CleanUpServerList, &CG_Rocket_SetServerListServer, &CG_Rocket_ExecServerList },
-	{ "teams", &CG_Rocket_BuildTeamList, &CG_Rocket_SortTeamList, &CG_Rocket_CleanUpTeamList, &CG_Rocket_SetTeamListPlayer, &nullExecFunc },
-	{ "voipInputs", &CG_Rocket_BuildVoIPInputs, &nullSortFunc, &CG_Rocket_CleanUpVoIPInputs, &CG_Rocket_SetVoipInputsInput, &nullExecFunc },
+	{ "alOutputs", &CG_Rocket_BuildAlOutputs, &nullSortFunc, &CG_Rocket_CleanUpAlOutputs, &CG_Rocket_SetAlOutputsOutput, &nullFilterFunc, &nullExecFunc },
+	{ "demoList", &CG_Rocket_BuildDemoList, &nullSortFunc, &CG_Rocket_CleanUpDemoList, &CG_Rocket_SetDemoListDemo, &nullFilterFunc, &CG_Rocket_ExecDemoList },
+	{ "languages", &CG_Rocket_BuildLanguageList, &nullSortFunc, &CG_Rocket_CleanUpLanguageList, &CG_Rocket_SetLanguageListLanguage, &nullFilterFunc, &nullExecFunc },
+	{ "mapList", &CG_Rocket_BuildMapList, &nullSortFunc, &CG_Rocket_CleanUpMapList, &CG_Rocket_SetMapListIndex, &nullFilterFunc, &nullExecFunc },
+	{ "modList", &CG_Rocket_BuildModList, &nullSortFunc, &CG_Rocket_CleanUpModList, &CG_Rocket_SetModListMod, &nullFilterFunc, &nullExecFunc },
+	{ "resolutions", &CG_Rocket_BuildResolutionList, &CG_Rocket_SortResolutionList, &CG_Rocket_CleanUpResolutionList, &CG_Rocket_SetResolutionListResolution, &nullFilterFunc, &nullExecFunc },
+	{ "server_browser", &CG_Rocket_BuildServerList, &CG_Rocket_SortServerList, &CG_Rocket_CleanUpServerList, &CG_Rocket_SetServerListServer, &CG_Rocket_FilterServerList, &CG_Rocket_ExecServerList },
+	{ "teams", &CG_Rocket_BuildTeamList, &CG_Rocket_SortTeamList, &CG_Rocket_CleanUpTeamList, &CG_Rocket_SetTeamListPlayer, &nullFilterFunc, &nullExecFunc },
+	{ "voipInputs", &CG_Rocket_BuildVoIPInputs, &nullSortFunc, &CG_Rocket_CleanUpVoIPInputs, &CG_Rocket_SetVoipInputsInput, &nullFilterFunc, &nullExecFunc },
 
 };
 
@@ -1027,6 +1059,18 @@ void CG_Rocket_SetDataSourceIndex( const char *dataSource, const char *table, in
 	if ( cmd && cmd->set )
 	{
 		cmd->set( table, index );
+	}
+}
+
+void CG_Rocket_FilterDataSource( const char *dataSource, const char *table, const char *filter )
+{
+	dataSourceCmd_t *cmd;
+
+	cmd = bsearch( dataSource, dataSourceCmdList, dataSourceCmdListCount, sizeof( dataSourceCmd_t ), dataSourceCmdCmp );
+
+	if ( cmd && cmd->filter )
+	{
+		cmd->filter( table, filter );
 	}
 }
 

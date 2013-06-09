@@ -35,6 +35,7 @@ Maryland 20850 USA.
 // Code for generating custom events for libRocket
 
 #include <queue>
+#include <X11/Xproto.h>
 #include <Rocket/Core.h>
 #include <Rocket/Core/StringUtilities.h>
 
@@ -76,6 +77,7 @@ void Rocket_DeleteEvent( void )
 
 void Rocket_GetEventParameters( char *params, int length )
 {
+	RocketEvent_t *event = eventQueue.front();
 	*params = '\0';
 	if ( !eventQueue.empty() )
 	{
@@ -83,9 +85,9 @@ void Rocket_GetEventParameters( char *params, int length )
 		Rocket::Core::String key;
 		Rocket::Core::String value;
 
-		while ( eventQueue.front()->Parameters.Iterate( index, key, value ) )
+		while ( event->Parameters.Iterate( index, key, value ) )
 		{
-			Info_SetValueForKeyRocket( params, key.CString(), value.CString() );
+// 			Info_SetValueForKeyRocket( params, key.CString(), value.Get<Rocket::Core::String>().CString() );
 		}
 	}
 }

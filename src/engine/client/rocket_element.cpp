@@ -99,12 +99,16 @@ void Rocket_SetInnerRML( const char *name, const char *id, const char *RML )
 	}
 }
 
-
 void Rocket_GetAttribute( const char *name, const char *id, const char *attribute, char *out, int length )
 {
+	extern std::queue< RocketEvent_t* > eventQueue;
 	if ( ( !*name || !*id ) && activeElement )
 	{
 		Q_strncpyz( out, activeElement->GetAttribute< Rocket::Core::String >( attribute, "" ).CString(), length );
+	}
+	else if ( ( !*name || !*id ) && !eventQueue.empty() )
+	{
+		Q_strncpyz( out, eventQueue.front()->targetElement->GetAttribute< Rocket::Core::String >( attribute, "" ).CString(), length );
 	}
 	else
 	{

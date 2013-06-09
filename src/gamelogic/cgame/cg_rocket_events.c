@@ -101,7 +101,7 @@ static void CG_Rocket_EventCvarForm( void )
 	static char key[BIG_INFO_VALUE], value[ BIG_INFO_VALUE ];
 	const char *s;
 
-	trap_Rocket_GetEventParameters( params, 0 );
+	trap_Rocket_GetEventParameters( params, sizeof( params ) );
 
 	if ( !*params )
 	{
@@ -169,6 +169,7 @@ static void CG_Rocket_SetProperty( void )
 static void CG_Rocket_SetAttribute( void )
 {
 	char id[ 100 ], attribute[ 100 ], value[ MAX_STRING_CHARS ];
+
 	Q_strncpyz( id, CG_Argv( 1 ), sizeof( id ) );
 	Q_strncpyz( attribute, CG_Argv( 2 ), sizeof( attribute ) );
 	Q_strncpyz( value, CG_Argv( 3 ), sizeof( value ) );
@@ -176,6 +177,21 @@ static void CG_Rocket_SetAttribute( void )
 	trap_Rocket_SetAttribute( "", id, attribute, value );
 
 }
+
+static void CG_Rocket_FilterDS( void )
+{
+	char src[ 100 ];
+	char tbl[ 100 ];
+	char params[ MAX_STRING_CHARS ];
+
+	trap_Rocket_GetAttribute( "", "", "value", params, sizeof( params ) );
+
+	Q_strncpyz( src, CG_Argv( 1 ), sizeof ( src ) );
+	Q_strncpyz( tbl, CG_Argv( 2 ), sizeof( tbl ) );
+
+	CG_Rocket_FilterDataSource( src, tbl, params );
+}
+
 typedef struct
 {
 	const char *command;
@@ -190,6 +206,7 @@ static const eventCmd_t eventCmdList[] =
 	{ "cvarform", &CG_Rocket_EventCvarForm },
 	{ "exec", &CG_Rocket_EventExec },
 	{ "execDS", &CG_Rocket_ExecDS },
+	{ "filterDS", &CG_Rocket_FilterDS },
 	{ "goto", &CG_Rocket_EventGoto },
 	{ "init_servers", &CG_Rocket_InitServers },
 	{ "open", &CG_Rocket_EventOpen },
