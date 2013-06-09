@@ -173,7 +173,7 @@ static void CG_Rocket_BuildServerList( const char *args )
 	rocketInfo.currentNetSrc = netSrc;
 	rocketInfo.rocketState = RETRIEVING_SERVERS;
 
-	if ( !Q_stricmp( args, "internet" ) )
+	if ( netSrc != AS_FAVORITES )
 	{
 		int numServers;
 
