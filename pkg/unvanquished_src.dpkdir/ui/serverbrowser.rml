@@ -135,7 +135,7 @@
 				<input type='checkbox' name="empty" value="true"/> Empty
 			</p>
 			<p>
-				Server Name: <input type='text' name="filter" />
+				Server Name: <input type='text' name="filter" ontextinput="filterDS server_browser" />
 			</p>
 			</div>
 		</panel>
