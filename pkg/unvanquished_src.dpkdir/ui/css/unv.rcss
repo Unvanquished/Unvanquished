@@ -170,3 +170,20 @@ datagridexpand:active
 {
 	icon-image-s: 39px 56px;
 }
+
+input.checkbox
+{
+	icon-decorator: image;
+	icon-image-src: gfx/2d/crosshair-flamer1.tga;
+}
+
+input.checkbox:checked
+{
+	icon-image-src: gfx/2d/blip;
+}
+
+input.text
+{
+	background-decorator: image;
+	background-image-src: gfx/2d/teamoverlay.tga;
+}

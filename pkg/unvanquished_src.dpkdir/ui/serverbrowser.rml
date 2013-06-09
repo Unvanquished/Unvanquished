@@ -69,27 +69,40 @@
 			width: 35px;
 			height: 35px;
 		}
+		tabset#misc tab
+		{
+			font-size: 14;
+		}
+		div#left
+		{
+			float: left;
+			width: 70%;
+		}
+		div#right
+		{
+			float: right;
+			width: 30%;
+		}
         </style>
     </head>
     <body onload="close main;init_servers internet" id="serverbrowser">
-		<tabset>
+		<div id="left">
+		<tabset id="server">
 			<tab>LAN</tab>
 			<panel>
 				LAN servers
 			</panel>
 			<tab onClick="buildDS server_browser internet">Internet</tab>
 			<panel>
-				<p><span id="status"></span>
-				<span class="emoticon"><img src="/emoticons/dev_1x1.tga"/></span></p>
+				<p><span id="status"></span></p>
 				<button onClick="buildDS server_browser internet">Refresh</button>
 				<button onClick="sortDS server_browser internet ping">Sort</button>
 				<button onClick="close serverbrowser; open main; show main">Close</button>
 				<div class="servers">
 				<datagrid source="server_browser.internet">
-					<col fields="#depth,#num_children" width="2%" formatter="ExpandButton"></col>
-					<col fields="#depth,label" width="2%" formatter="ServerLabel"></col>
+					<col fields="label" width="2%" formatter="ServerLabel"></col>
 					<col fields="name" width="56%">Name:</col>
-					<col fields="#depth,players,bots,maxClients" formatter="ServerPlayers"  width="20%">Players + Bots:</col>
+					<col fields="players,bots,maxClients" formatter="ServerPlayers"  width="20%">Players + Bots:</col>
 					<col fields="ping" formatter="ServerPing" width="20%">Ping:</col>
 				</datagrid>
 				</div>
@@ -99,6 +112,26 @@
 				Favorite servers here
 			</panel>
 		</tabset>
+		</div>
+		<div id="right">
+		<tabset id="misc">
+		<tab>Filter</tab>
+		<panel>
+			<div>
+			<p>
+				<input type='checkbox' name="full" value="true"/> Full
+				<input type='checkbox' name="empty" value="true"/> Empty
+			</p>
+			<p>
+				Server Name: <input type='text' name="filter" />
+			</p>
+			</div>
+		</panel>
+		<tab>Server Details</tab>
+		<panel>Server Details here
+		</panel>
+		</tabset>
+		</div>
 		<div id="backdrop">
 			<div id="background">
 				<img style="height: 100%; width: 100%;" src="/ui/assets/mainmenu" />
