@@ -131,7 +131,7 @@ public:
 
 
 
-					eventQueue.push( new RocketEvent_t( Rocket::Core::String( va ( "setDS %s %d", dataSource.Substring( 0, dataSource.Find( "." ) ).CString(), index ) ) ) );
+					eventQueue.push( new RocketEvent_t( Rocket::Core::String( va ( "setDS %s %s %d", dataSource.Substring( 0, dataSource.Find( "." ) ).CString(), dataSource.Substring( dataSource.Find( "." ) + 1, dataSource.Length() ).CString(), index ) ) ) );
 				}
 
 				Rocket::Core::Dictionary parameters;

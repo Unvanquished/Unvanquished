@@ -34,16 +34,16 @@ Maryland 20850 USA.
 
 #include "cg_local.h"
 
-static void AddToServerList( char *name, char *label, int clients, int bots, int ping, int maxClients, char *addr )
+static void AddToServerList( char *name, char *label, int clients, int bots, int ping, int maxClients, char *addr, int netSrc )
 {
 	server_t *node;
 
-	if ( rocketInfo.data.serverCount == MAX_SERVERS )
+	if ( rocketInfo.data.serverCount[ netSrc ] == MAX_SERVERS )
 	{
 		return;
 	}
 
-	node = &rocketInfo.data.servers[ rocketInfo.data.serverCount ];
+	node = &rocketInfo.data.servers[ netSrc ][ rocketInfo.data.serverCount[ netSrc ] ];
 
 	node->name = BG_strdup( name );
 	node->clients = clients;
@@ -53,30 +53,33 @@ static void AddToServerList( char *name, char *label, int clients, int bots, int
 	node->addr = BG_strdup( addr );
 	node->label = BG_strdup( label );
 
-	rocketInfo.data.serverCount++;
+	rocketInfo.data.serverCount[ netSrc ]++;
 }
 
-static void CG_Rocket_SetServerListServer( int index )
+static void CG_Rocket_SetServerListServer( const char *table, int index )
 {
-	rocketInfo.data.serverIndex = index;
+	int netSrc = CG_StringToNetSource( table );
+	rocketInfo.data.serverIndex[ netSrc ] = index;
+	rocketInfo.currentNetSrc = netSrc;
 }
 #define MAX_SERVERSTATUS_LINES 4096
 void CG_Rocket_BuildServerInfo( void )
 {
-	int serverIndex = rocketInfo.data.serverIndex;
 	static char serverInfoText[ MAX_SERVERSTATUS_LINES ];
 	static rocketState_t state;
 	char buf[ MAX_INFO_STRING ];
 	const char *p;
 	server_t *server;
+	int netSrc = rocketInfo.currentNetSrc;
 
+	int serverIndex = rocketInfo.data.serverIndex[ netSrc ];
 
-	if ( serverIndex >= rocketInfo.data.serverCount || serverIndex < 0 )
+	if ( serverIndex >= rocketInfo.data.serverCount[ netSrc ] || serverIndex < 0 )
 	{
 		return;
 	}
 
-	server = &rocketInfo.data.servers[ serverIndex ];
+	server = &rocketInfo.data.servers[ netSrc ][ serverIndex ];
 
 	if ( rocketInfo.rocketState != BUILDING_SERVER_INFO )
 	{
@@ -158,6 +161,7 @@ void CG_Rocket_BuildServerInfo( void )
 static void CG_Rocket_BuildServerList( const char *args )
 {
 	char data[ MAX_INFO_STRING ] = { 0 };
+	int netSrc = CG_StringToNetSource( args );
 	int i;
 
 	// Only refresh once every second
@@ -166,7 +170,7 @@ static void CG_Rocket_BuildServerList( const char *args )
 		return;
 	}
 
-	Q_strncpyz( rocketInfo.currentNetSource, args, sizeof( rocketInfo.currentNetSource ) );
+	rocketInfo.currentNetSrc = netSrc;
 	rocketInfo.rocketState = RETRIEVING_SERVERS;
 
 	if ( !Q_stricmp( args, "internet" ) )
@@ -175,9 +179,9 @@ static void CG_Rocket_BuildServerList( const char *args )
 
 		trap_Rocket_DSClearTable( "server_browser", args );
 
-		trap_LAN_MarkServerVisible( CG_StringToNetSource( args ), -1, qtrue );
+		trap_LAN_MarkServerVisible( netSrc, -1, qtrue );
 
-		numServers = trap_LAN_GetServerCount( CG_StringToNetSource( args ) );
+		numServers = trap_LAN_GetServerCount( netSrc );
 
 		for ( i = 0; i < numServers; ++i )
 		{
@@ -186,40 +190,40 @@ static void CG_Rocket_BuildServerList( const char *args )
 
 			Com_Memset( &data, 0, sizeof( data ) );
 
-			if ( !trap_LAN_ServerIsVisible( CG_StringToNetSource( args ), i ) )
+			if ( !trap_LAN_ServerIsVisible( netSrc, i ) )
 			{
 				continue;
 			}
 
-			ping = trap_LAN_GetServerPing( CG_StringToNetSource( args ), i );
+			ping = trap_LAN_GetServerPing( netSrc, i );
 
 			if ( ping >= 0 || !Q_stricmp( args, "favorites" ) )
 			{
 				char addr[ 25 ];
-				trap_LAN_GetServerInfo( CG_StringToNetSource( args ), i, info, MAX_INFO_STRING );
+				trap_LAN_GetServerInfo( netSrc, i, info, MAX_INFO_STRING );
 
 				bots = atoi( Info_ValueForKey( info, "bots" ) );
 				clients = atoi( Info_ValueForKey( info, "clients" ) );
 				maxClients = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
 				Q_strncpyz( addr, Info_ValueForKey( info, "addr" ), sizeof( addr ) );
-				AddToServerList( Info_ValueForKey( info, "hostname" ), Info_ValueForKey( info, "label" ), clients, bots, ping, maxClients, addr );
+				AddToServerList( Info_ValueForKey( info, "hostname" ), Info_ValueForKey( info, "label" ), clients, bots, ping, maxClients, addr, netSrc );
 			}
 		}
 
-		for ( i = 0; i < rocketInfo.data.serverCount; ++i )
+		for ( i = 0; i < rocketInfo.data.serverCount[ netSrc ]; ++i )
 		{
-			if ( rocketInfo.data.servers[ i ].ping <= 0 )
+			if ( rocketInfo.data.servers[ netSrc ][ i ].ping <= 0 )
 			{
 				continue;
 			}
 
-			Info_SetValueForKey( data, "name", rocketInfo.data.servers[ i ].name, qfalse );
-			Info_SetValueForKey( data, "players", va( "%d", rocketInfo.data.servers[ i ].clients ), qfalse );
-			Info_SetValueForKey( data, "bots", va( "%d", rocketInfo.data.servers[ i ].bots ), qfalse );
-			Info_SetValueForKey( data, "ping", va( "%d", rocketInfo.data.servers[ i ].ping ), qfalse );
-			Info_SetValueForKey( data, "maxClients", va( "%d", rocketInfo.data.servers[ i ].maxClients ), qfalse );
-			Info_SetValueForKey( data, "addr", rocketInfo.data.servers[ i ].addr, qfalse );
-			Info_SetValueForKey( data, "label", rocketInfo.data.servers[ i ].label, qfalse );
+			Info_SetValueForKey( data, "name", rocketInfo.data.servers[ netSrc ][ i ].name, qfalse );
+			Info_SetValueForKey( data, "players", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].clients ), qfalse );
+			Info_SetValueForKey( data, "bots", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].bots ), qfalse );
+			Info_SetValueForKey( data, "ping", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].ping ), qfalse );
+			Info_SetValueForKey( data, "maxClients", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].maxClients ), qfalse );
+			Info_SetValueForKey( data, "addr", rocketInfo.data.servers[ netSrc ][ i ].addr, qfalse );
+			Info_SetValueForKey( data, "label", rocketInfo.data.servers[ netSrc ][ i ].label, qfalse );
 
 			trap_Rocket_DSAddRow( "server_browser", args, data );
 		}
@@ -246,29 +250,30 @@ static int ServerListCmpByPing( const void *one, const void *two )
 static void CG_Rocket_SortServerList( const char *name, const char *sortBy )
 {
 	char data[ MAX_INFO_STRING ] = { 0 };
+	int netSrc = CG_StringToNetSource( name );
 	int  i;
 
 	if ( !Q_stricmp( sortBy, "ping" ) )
 	{
-		qsort( rocketInfo.data.servers, rocketInfo.data.serverCount, sizeof( server_t ), &ServerListCmpByPing );
+		qsort( rocketInfo.data.servers, rocketInfo.data.serverCount[ netSrc ], sizeof( server_t ), &ServerListCmpByPing );
 	}
 
 	trap_Rocket_DSClearTable( "server_browser", name );
 
-	for ( i = 0; i < rocketInfo.data.serverCount; ++i )
+	for ( i = 0; i < rocketInfo.data.serverCount[ netSrc ]; ++i )
 	{
-		if ( rocketInfo.data.servers[ i ].ping <= 0 )
+		if ( rocketInfo.data.servers[ netSrc ][ i ].ping <= 0 )
 		{
 			continue;
 		}
 
-		Info_SetValueForKey( data, "name", rocketInfo.data.servers[ i ].name, qfalse );
-		Info_SetValueForKey( data, "players", va( "%d", rocketInfo.data.servers[ i ].clients ), qfalse );
-		Info_SetValueForKey( data, "bots", va( "%d", rocketInfo.data.servers[ i ].bots ), qfalse );
-		Info_SetValueForKey( data, "ping", va( "%d", rocketInfo.data.servers[ i ].ping ), qfalse );
-		Info_SetValueForKey( data, "maxClients", va( "%d", rocketInfo.data.servers[ i ].maxClients ), qfalse );
-		Info_SetValueForKey( data, "addr", rocketInfo.data.servers[ i ].addr, qfalse );
-		Info_SetValueForKey( data, "label", rocketInfo.data.servers[ i ].label, qfalse );
+		Info_SetValueForKey( data, "name", rocketInfo.data.servers[ netSrc ][ i ].name, qfalse );
+		Info_SetValueForKey( data, "players", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].clients ), qfalse );
+		Info_SetValueForKey( data, "bots", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].bots ), qfalse );
+		Info_SetValueForKey( data, "ping", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].ping ), qfalse );
+		Info_SetValueForKey( data, "maxClients", va( "%d", rocketInfo.data.servers[ netSrc ][ i ].maxClients ), qfalse );
+		Info_SetValueForKey( data, "addr", rocketInfo.data.servers[ netSrc ][ i ].addr, qfalse );
+		Info_SetValueForKey( data, "label", rocketInfo.data.servers[ netSrc ][ i ].label, qfalse );
 
 		trap_Rocket_DSAddRow( "server_browser", name, data );
 	}
@@ -277,20 +282,28 @@ static void CG_Rocket_SortServerList( const char *name, const char *sortBy )
 void CG_Rocket_CleanUpServerList( const char *table )
 {
 	int i;
+	int j;
+	int netSrc = CG_StringToNetSource( table );
 
-	for ( i = 0; i < rocketInfo.data.serverCount; ++i )
+	for ( i = AS_LOCAL; i <= AS_FAVORITES; ++i )
 	{
-		BG_Free( rocketInfo.data.servers[ i ].name );
-		BG_Free( rocketInfo.data.servers[ i ].label );
-		BG_Free( rocketInfo.data.servers[ i ].addr );
+		if ( !table || !*table || i == netSrc )
+		{
+			for ( j = 0; j < rocketInfo.data.serverCount[ i ]; ++j )
+			{
+				BG_Free( rocketInfo.data.servers[ i ][ j ].name );
+				BG_Free( rocketInfo.data.servers[ i ][ j ].label );
+				BG_Free( rocketInfo.data.servers[ i ][ j ].addr );
+				rocketInfo.data.serverCount[ i ] = 0;
+			}
+		}
 	}
-
-	rocketInfo.data.serverCount = 0;
 }
 
 void CG_Rocket_ExecServerList( const char *table )
 {
-	trap_Cmd_ExecuteText( EXEC_APPEND, va( "connect %s", rocketInfo.data.servers[ rocketInfo.data.serverIndex ].addr ) );
+	int netSrc = CG_StringToNetSource( table );
+	trap_Cmd_ExecuteText( EXEC_APPEND, va( "connect %s", rocketInfo.data.servers[ netSrc ][ rocketInfo.data.serverIndex[ netSrc ] ].addr ) );
 }
 
 static qboolean Parse( char **p, char **out )
@@ -324,7 +337,7 @@ static void AddToResolutionList( int w, int h )
 	rocketInfo.data.resolutionCount++;
 }
 
-void CG_Rocket_SetResolutionListResolution( int index )
+void CG_Rocket_SetResolutionListResolution( const char *table, int index )
 {
 	rocketInfo.data.resolutionIndex = index;
 }
@@ -419,7 +432,7 @@ static void AddToLanguageList( char *name, char *lang )
 	rocketInfo.data.languageCount++;
 }
 
-void CG_Rocket_SetLanguageListLanguage( int index )
+void CG_Rocket_SetLanguageListLanguage( const char *table, int index )
 {
 	rocketInfo.data.languageIndex = index;
 }
@@ -507,7 +520,7 @@ static void AddToVoipInputs( char *name )
 	rocketInfo.data.voipInputs[ rocketInfo.data.voipInputsCount++ ] = name;
 }
 
-void CG_Rocket_SetVoipInputsInput( int index )
+void CG_Rocket_SetVoipInputsInput( const char *args, int index )
 {
 	rocketInfo.data.voipInputIndex = index;
 }
@@ -558,7 +571,7 @@ static void AddToAlOutputs( char *name )
 	rocketInfo.data.alOutputs[ rocketInfo.data.alOutputsCount++ ] = name;
 }
 
-void CG_Rocket_SetAlOutputsOutput( int index )
+void CG_Rocket_SetAlOutputsOutput( const char *table, int index )
 {
 	rocketInfo.data.alOutputIndex = index;
 }
@@ -600,7 +613,7 @@ void CG_Rocket_CleanUpAlOutputs( const char *args )
 	rocketInfo.data.alOutputsCount = 0;
 }
 
-void CG_Rocket_SetModListMod( int index )
+void CG_Rocket_SetModListMod( const char *table, int index )
 {
 	rocketInfo.data.modIndex = index;
 }
@@ -657,7 +670,7 @@ void CG_Rocket_CleanUpModList( const char *args )
 	rocketInfo.data.modCount = 0;
 }
 
-void CG_Rocket_SetDemoListDemo( int index )
+void CG_Rocket_SetDemoListDemo( const char *table, int index )
 {
 	rocketInfo.data.demoIndex = index;
 }
@@ -918,7 +931,7 @@ void CG_Rocket_CleanUpMapList( const char *args )
 	rocketInfo.data.mapCount = 0;
 }
 
-void CG_Rocket_SetMapListIndex( int index )
+void CG_Rocket_SetMapListIndex( const char *table, int index )
 {
 	rocketInfo.data.mapIndex = index;
 }
@@ -931,7 +944,7 @@ void CG_Rocket_CleanUpTeamList( const char *args )
 	rocketInfo.data.playerCount[ TEAM_NONE ] = 0;
 }
 
-void CG_Rocket_SetTeamListPlayer( int index )
+void CG_Rocket_SetTeamListPlayer( const char *table, int index )
 {
 }
 
@@ -949,7 +962,7 @@ typedef struct
 	void ( *build ) ( const char *args );
 	void ( *sort ) ( const char *name, const char *sortBy );
 	void ( *cleanup ) ( const char *table );
-	void ( *set ) ( int index );
+	void ( *set ) ( const char *table, int index );
 	void ( *exec ) ( const char *table );
 } dataSourceCmd_t;
 
@@ -1005,7 +1018,7 @@ void CG_Rocket_SortDataSource( const char *dataSource, const char *name, const c
 	}
 }
 
-void CG_Rocket_SetDataSourceIndex( const char *dataSource, int index )
+void CG_Rocket_SetDataSourceIndex( const char *dataSource, const char *table, int index )
 {
 	dataSourceCmd_t *cmd;
 
@@ -1013,7 +1026,7 @@ void CG_Rocket_SetDataSourceIndex( const char *dataSource, int index )
 
 	if ( cmd && cmd->set )
 	{
-		cmd->set( index );
+		cmd->set( table, index );
 	}
 }
 

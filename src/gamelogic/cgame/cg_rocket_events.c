@@ -149,9 +149,11 @@ static void CG_Rocket_ExecDS( void )
 static void CG_Rocket_SetDS( void )
 {
 	char datasrc[ 100 ];
+	char datatbl[ 100 ];
 
 	Q_strncpyz( datasrc, CG_Argv( 1 ), sizeof( datasrc ) );
-	CG_Rocket_SetDataSourceIndex( datasrc, atoi( CG_Argv( 2 ) ) );
+	Q_strncpyz( datatbl, CG_Argv( 2 ), sizeof( datatbl ) );
+	CG_Rocket_SetDataSourceIndex( datasrc, datatbl, atoi( CG_Argv( 3 ) ) );
 }
 
 static void CG_Rocket_SetProperty( void )

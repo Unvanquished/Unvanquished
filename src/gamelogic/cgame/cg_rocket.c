@@ -311,7 +311,7 @@ void CG_Rocket_Frame( void )
 	switch ( rocketInfo.rocketState )
 	{
 		case RETRIEVING_SERVERS:
-			if ( trap_LAN_UpdateVisiblePings( CG_StringToNetSource( rocketInfo.currentNetSource ) ) )
+			if ( trap_LAN_UpdateVisiblePings( rocketInfo.currentNetSrc ) )
 			{
 			}
 			else

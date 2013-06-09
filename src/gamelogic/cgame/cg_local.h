@@ -1243,9 +1243,9 @@ typedef struct
 
 typedef struct
 {
-	server_t servers[ MAX_SERVERS ];
-	int serverCount;
-	int serverIndex;
+	server_t servers[ AS_FAVORITES + 1 ][ MAX_SERVERS ];
+	int serverCount[ AS_FAVORITES + 1 ];
+	int serverIndex[ AS_FAVORITES + 1 ];
 
 	resolution_t resolutions[ MAX_RESOLUTIONS ];
 	int resolutionCount;
@@ -1283,7 +1283,7 @@ typedef struct
 typedef struct
 {
 	char rootDir[ MAX_QPATH ];
-	char currentNetSource[ 9 ];
+	int currentNetSrc;
 	int  serversLastRefresh;
 	rocketState_t rocketState;
 	rocketHud_t hud[ WP_NUM_WEAPONS ];
@@ -2154,7 +2154,7 @@ void CG_Rocket_SortDataSource( const char *dataSource, const char *name, const c
 void CG_Rocket_CleanUpServerList( const char *table );
 void CG_Rocket_RegisterDataSources( void );
 void CG_Rocket_ExecDataSource( const char *dataSource, const char *table );
-void CG_Rocket_SetDataSourceIndex( const char *dataSource, int index );
+void CG_Rocket_SetDataSourceIndex( const char *dataSource, const char *table, int index );
 void CG_Rocket_BuildServerInfo( void );
 //
 // cg_rocket_progressbar.c
