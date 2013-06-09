@@ -88,9 +88,21 @@
     <body onload="close main;init_servers internet" id="serverbrowser">
 		<div id="left">
 		<tabset id="server">
-			<tab>LAN</tab>
-			<panel>
-				LAN servers
+			<tab onClick="buildDS server_browser local">LAN</tab>
+			<panel onShow="init_servers local">
+				<p><span id="status"></span></p>
+				<button onClick="buildDS server_browser local">Refresh</button>
+				<button onClick="sortDS server_browser local ping">Sort</button>
+				<button onClick="close serverbrowser; open main; show main">Close</button>
+				<div class="servers">
+				<datagrid source="server_browser.local">
+					<col fields="label" width="2%" formatter="ServerLabel"></col>
+					<col fields="name" width="56%">Name:</col>
+					<col fields="players,bots,maxClients" formatter="ServerPlayers"  width="20%">Players + Bots:</col>
+					<col fields="ping" formatter="ServerPing" width="20%">Ping:</col>
+				</datagrid>
+				</div>
+
 			</panel>
 			<tab onClick="buildDS server_browser internet">Internet</tab>
 			<panel>
