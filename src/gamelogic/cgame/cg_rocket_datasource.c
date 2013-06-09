@@ -220,7 +220,6 @@ static void CG_Rocket_BuildServerList( const char *args )
 			Info_SetValueForKey( data, "maxClients", va( "%d", rocketInfo.data.servers[ i ].maxClients ), qfalse );
 			Info_SetValueForKey( data, "addr", rocketInfo.data.servers[ i ].addr, qfalse );
 			Info_SetValueForKey( data, "label", rocketInfo.data.servers[ i ].label, qfalse );
-			Info_SetValueForKey( data, "#child_data_source", "server_browser.serverInfo", qfalse );
 
 			trap_Rocket_DSAddRow( "server_browser", args, data );
 		}
