@@ -467,12 +467,6 @@ void *QDECL Sys_LoadDll( const char *name,
 
 	if ( !libHandle )
 	{
-		Com_DPrintf( "Sys_LoadDll(%s) could not find it\n", fname );
-		return NULL;
-	}
-
-	if ( !libHandle )
-	{
 		Com_Printf( "Sys_LoadDll(%s) failed:\n\"%s\"\n", name, Sys_LibraryError() );
 		return NULL;
 	}
