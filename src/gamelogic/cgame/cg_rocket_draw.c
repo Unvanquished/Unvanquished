@@ -1148,18 +1148,26 @@ static void CG_Rocket_DrawLevelshot( void )
 {
 	qhandle_t shader;
 
-	if ( rocketInfo.data.mapIndex < 0 )
+	if ( rocketInfo.data.mapIndex < 0 && rocketInfo.rocketState != LOADING )
 	{
 		return;
 	}
 
-	shader = rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].levelShot;
-
-	if ( shader == -1 )
+	if ( !rocketInfo.rocketState != LOADING )
 	{
-		shader = rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].levelShot = trap_R_RegisterShader( rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].imageName, RSF_NOMIP );
-	}
 
+		shader = rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].levelShot;
+
+		if ( shader == -1 )
+		{
+			shader = rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].levelShot = trap_R_RegisterShader( rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].imageName, RSF_NOMIP );
+		}
+	}
+	else
+	{
+		shader = trap_R_RegisterShader( va( "levelshots/%s", Info_ValueForKey( CG_ConfigString( CS_SERVERINFO ), "mapname" ) ), RSF_NOMIP );
+	}
+	
 	trap_Rocket_SetInnerRML( "", "", va( "<img class='levelshot' src='/%s' />", CG_GetShaderNameFromHandle( shader ) ) );
 }
 
