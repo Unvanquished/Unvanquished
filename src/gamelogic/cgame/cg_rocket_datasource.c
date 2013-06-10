@@ -310,7 +310,10 @@ static void CG_Rocket_FilterServerList( const char *table, const char *filter )
 
 	for ( i = 0; i < rocketInfo.data.serverCount[ netSrc ]; ++i )
 	{
-		if ( Q_stristr( rocketInfo.data.servers[ netSrc ][ i ].name, filter ) )
+		char name[ MAX_INFO_VALUE ];
+
+		Q_strncpyz( name, rocketInfo.data.servers[ netSrc ][ i ].name, sizeof( name ) );
+		if ( Q_stristr( Q_CleanStr( name ), filter ) )
 		{
 			char data[ MAX_INFO_STRING ] = { 0 };
 
