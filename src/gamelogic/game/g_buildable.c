@@ -356,15 +356,7 @@ gentity_t *G_Overmind( void )
 	return NULL;
 }
 
-/*
-================
-G_DistanceToBase
-
-Calculates the distance of an entity to its own or the enemy base.
-Returns a huge value if the base is not found.
-================
-*/
-float G_DistanceToBase( gentity_t *self, qboolean ownBase )
+static gentity_t* GetMainBuilding( gentity_t *self, qboolean ownBase )
 {
 	team_t    team;
 	gentity_t *mainBuilding = NULL;
@@ -379,7 +371,7 @@ float G_DistanceToBase( gentity_t *self, qboolean ownBase )
 	}
 	else
 	{
-		return 1E+37;
+		return NULL;
 	}
 
 	if ( ownBase )
@@ -405,6 +397,23 @@ float G_DistanceToBase( gentity_t *self, qboolean ownBase )
 		}
 	}
 
+	return mainBuilding;
+}
+
+/*
+================
+G_DistanceToBase
+
+Calculates the distance of an entity to its own or the enemy base.
+Returns a huge value if the base is not found.
+================
+*/
+float G_DistanceToBase( gentity_t *self, qboolean ownBase )
+{
+	gentity_t *mainBuilding;
+
+	mainBuilding = GetMainBuilding( self, ownBase );
+
 	if ( mainBuilding )
 	{
 		return Distance( self->s.origin, mainBuilding->s.origin );
@@ -413,6 +422,31 @@ float G_DistanceToBase( gentity_t *self, qboolean ownBase )
 	{
 		return 1E+37;
 	}
+}
+
+/*
+================
+G_InsideBase
+================
+*/
+#define INSIDE_BASE_MAX_DISTANCE 1000.0f
+
+qboolean G_InsideBase( gentity_t *self, qboolean ownBase )
+{
+	qboolean  inRange, inVis;
+	gentity_t *mainBuilding;
+
+	mainBuilding = GetMainBuilding( self, ownBase );
+
+	if ( !mainBuilding )
+	{
+		return qfalse;
+	}
+
+	inRange = ( Distance( self->s.origin, mainBuilding->s.origin ) < INSIDE_BASE_MAX_DISTANCE );
+	inVis = trap_InPVSIgnorePortals( self->s.origin, mainBuilding->s.origin );
+
+	return ( inRange && inVis );
 }
 
 /*

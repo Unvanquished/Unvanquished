@@ -981,6 +981,7 @@ int              G_FindDCC( gentity_t *self );
 gentity_t        *G_Reactor( void );
 gentity_t        *G_Overmind( void );
 float            G_DistanceToBase( gentity_t *self, qboolean ownBase );
+qboolean         G_InsideBase( gentity_t *self, qboolean ownBase );
 qboolean         G_FindCreep( gentity_t *self );
 int              G_RGSPredictEfficiency( vec3_t origin );
 void             G_BuildableThink( gentity_t *ent, int msec );
