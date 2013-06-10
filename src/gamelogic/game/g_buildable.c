@@ -3416,50 +3416,18 @@ Calculates the amount of confidence awarded for building a structure.
 Stores the reward with the buildable so it can be reverted on deconstruction.
 ===============
 */
-#define BCR_NEIGHBOR_RANGE      500.0f
-#define BCR_BASE_MODIFIER       0.8f
-#define BCR_FACTOR_PER_NEIGHBOR 0.9f
+#define BCR_MODIFIER 0.6f
 
-float G_BuildingConfidenceReward( gentity_t *self )
+static float G_BuildingConfidenceReward( gentity_t *self )
 {
-	int             neighborNum, numNeighbors, neighbors[ MAX_GENTITIES ];
-	vec3_t          range, mins, maxs;
-	gentity_t       *neighbor;
-	float           distance, reward;
-
 	if ( !self || self->s.eType != ET_BUILDABLE )
 	{
 		return 0.0f;
 	}
 
-	reward = BG_Buildable( self->s.modelindex )->value * BCR_BASE_MODIFIER;
+	self->confidenceEarned = BG_Buildable( self->s.modelindex )->value * BCR_MODIFIER;
 
-	range[ 0 ] = range[ 1 ] = range[ 2 ] = BCR_NEIGHBOR_RANGE;
-	VectorAdd( self->s.origin, range, maxs );
-	VectorSubtract( self->s.origin, range, mins );
-	numNeighbors = trap_EntitiesInBox( mins, maxs, neighbors, MAX_GENTITIES );
-
-	for ( neighborNum = 0; neighborNum < numNeighbors; neighborNum++ )
-	{
-		neighbor = &g_entities[ neighbors[ neighborNum ] ];
-
-		if ( neighbor->s.eType == ET_BUILDABLE && neighbor->buildableTeam == self->buildableTeam &&
-			 neighbor != self && neighbor->spawned && neighbor->powered && neighbor->health > 0 )
-		{
-			distance = Distance( self->s.origin, neighbor->s.origin );
-
-			if ( distance > BCR_NEIGHBOR_RANGE )
-			{
-				continue;
-			}
-
-			reward *= BCR_FACTOR_PER_NEIGHBOR;
-		}
-	}
-
-	self->confidenceEarned = reward;
-
-	return reward;
+	return self->confidenceEarned;
 }
 
 static int BuildableConfidenceReason( int modelindex )
