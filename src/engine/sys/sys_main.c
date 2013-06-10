@@ -401,23 +401,12 @@ Sys_TryLibraryLoad
 */
 static void *Sys_TryLibraryLoad( const char *base, const char *gamedir, const char *fname )
 {
-	void *libHandle = NULL;
 	char *fn;
 
 	fn = FS_BuildOSPath( base, gamedir, fname );
 	Com_DPrintf( "Sys_LoadDll(%s)...\n", fn );
 
-	libHandle = Sys_LoadLibrary( fn );
-
-	if ( !libHandle )
-	{
-		Com_DPrintf( "Sys_LoadDll(%s) failed:\n\"%s\"\n", fn, Sys_LibraryError() );
-		return NULL;
-	}
-
-	Com_DPrintf( "Sys_LoadDll(%s): succeeded ...\n", fn );
-
-	return libHandle;
+	return Sys_LoadLibrary( fn );
 }
 
 /*
