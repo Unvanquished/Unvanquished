@@ -83,6 +83,15 @@
 			float: right;
 			width: 30%;
 		}
+		div#serverInfo
+		{
+			height: 100%;
+		}
+		datagrid#info datagridbody,
+		datagrid#players datagridbody
+		{
+			height: 50%;
+		}
         </style>
     </head>
     <body onload="close main;init_servers internet" id="serverbrowser">
@@ -140,7 +149,20 @@
 			</div>
 		</panel>
 		<tab>Server Details</tab>
-		<panel>Server Details here
+		<panel>
+		<div id="serverInfo">
+			<datagrid id="info" source="server_browser.serverInfo">
+				<col fields="cvar" width="50%">Cvar</col>
+				<col fields="value" width="50%">Value</col>
+			</datagrid>
+			<br />
+			<datagrid id="players" source="server_browser.serverPlayers">
+				<col fields="num" width="5%">Num</col>
+				<col fields="score" width="5%">Score</col>
+				<col fields="ping" width="5%">Ping</col>
+				<col fields="name" width="85%">Name</col>
+			</datagrid>
+		</div>
 		</panel>
 		</tabset>
 		</div>

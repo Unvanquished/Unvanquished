@@ -59,8 +59,15 @@ static void AddToServerList( char *name, char *label, int clients, int bots, int
 static void CG_Rocket_SetServerListServer( const char *table, int index )
 {
 	int netSrc = CG_StringToNetSource( table );
+
+	if ( !Q_stricmp( table, "severInfo" ) || !Q_stricmp( table, "serverPlayers" ) )
+	{
+		return;
+	}
+
 	rocketInfo.data.serverIndex[ netSrc ] = index;
 	rocketInfo.currentNetSrc = netSrc;
+	CG_Rocket_BuildServerInfo();
 }
 #define MAX_SERVERSTATUS_LINES 4096
 void CG_Rocket_BuildServerInfo( void )
@@ -95,6 +102,7 @@ void CG_Rocket_BuildServerInfo( void )
 		char name[ MAX_STRING_CHARS ];
 
 		trap_Rocket_DSClearTable( "server_browser", "serverInfo" );
+		trap_Rocket_DSClearTable( "server_browser", "serverPlayers" );
 
 		p = serverInfoText;
 
@@ -103,8 +111,8 @@ void CG_Rocket_BuildServerInfo( void )
 			Info_NextPair( &p, key, value );
 			if ( key[ 0 ] )
 			{
-				Info_SetValueForKey( buf, "name", key, qfalse );
-				Info_SetValueForKey( buf, "players", value, qfalse );
+				Info_SetValueForKey( buf, "cvar", key, qfalse );
+				Info_SetValueForKey( buf, "value", value, qfalse );
 				trap_Rocket_DSAddRow( "server_browser", "serverInfo", buf );
 				*buf = '\0';
 			}
@@ -114,20 +122,13 @@ void CG_Rocket_BuildServerInfo( void )
 			}
 		}
 
-		// header
-		Info_SetValueForKey( buf, "label", "num", qfalse );
-		Info_SetValueForKey( buf, "name", "name", qfalse );
-		Info_SetValueForKey( buf, "players", "score", qfalse );
-		Info_SetValueForKey( buf, "ping", "ping", qfalse );
-		trap_Rocket_DSAddRow( "server_browser", "serverInfo", buf );
-
 		// Parse first set of players
 		sscanf( value, "%d %d %s", &score, &ping, name );
-		Info_SetValueForKey( buf, "label", va( "%d", i++ ), qfalse );
+		Info_SetValueForKey( buf, "num", va( "%d", i++ ), qfalse );
 		Info_SetValueForKeyRocket( buf, "name", name );
-		Info_SetValueForKey( buf, "players", va( "%d", score ), qfalse );
+		Info_SetValueForKey( buf, "score", va( "%d", score ), qfalse );
 		Info_SetValueForKey( buf, "ping", va( "%d", ping ), qfalse );
-		trap_Rocket_DSAddRow( "server_browser", "serverInfo", buf );
+		trap_Rocket_DSAddRow( "server_browser", "serverPlayers", buf );
 
 		while ( *p )
 		{
@@ -135,21 +136,21 @@ void CG_Rocket_BuildServerInfo( void )
 			if ( key[ 0 ] )
 			{
 				sscanf( key, "%d %d %s", &score, &ping, name );
-				Info_SetValueForKey( buf, "label", va( "%d", i++ ), qfalse );
+				Info_SetValueForKey( buf, "num", va( "%d", i++ ), qfalse );
 				Info_SetValueForKeyRocket( buf, "name", name );
-				Info_SetValueForKey( buf, "players", va( "%d", score ), qfalse );
+				Info_SetValueForKey( buf, "score", va( "%d", score ), qfalse );
 				Info_SetValueForKey( buf, "ping", va( "%d", ping ), qfalse );
-				trap_Rocket_DSAddRow( "server_browser", "serverInfo", buf );
+				trap_Rocket_DSAddRow( "server_browser", "serverPlayers", buf );
 			}
 
 			if ( value[ 0 ] )
 			{
 				sscanf( value, "%d %d %s", &score, &ping, name );
-				Info_SetValueForKey( buf, "label", va( "%d", i++ ), qfalse );
+				Info_SetValueForKey( buf, "num", va( "%d", i++ ), qfalse );
 				Info_SetValueForKeyRocket( buf, "name", name );
-				Info_SetValueForKey( buf, "players", va( "%d", score ), qfalse );
+				Info_SetValueForKey( buf, "score", va( "%d", score ), qfalse );
 				Info_SetValueForKey( buf, "ping", va( "%d", ping ), qfalse );
-				trap_Rocket_DSAddRow( "server_browser", "serverInfo", buf );
+				trap_Rocket_DSAddRow( "server_browser", "serverPlayers", buf );
 			}
 		}
 
