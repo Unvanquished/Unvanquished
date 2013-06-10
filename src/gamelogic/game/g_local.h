@@ -991,11 +991,11 @@ int              G_FindDCC( gentity_t *self );
 gentity_t        *G_Reactor( void );
 gentity_t        *G_Overmind( void );
 float            G_DistanceToBase( gentity_t *self, qboolean ownBase );
+qboolean         G_InsideBase( gentity_t *self, qboolean ownBase );
 qboolean         G_FindCreep( gentity_t *self );
 gentity_t        *G_Build( gentity_t *builder, buildable_t buildable,
                            const vec3_t origin, const vec3_t normal, const vec3_t angles, int groundEntityNum );
 int              G_RGSPredictEfficiency( vec3_t origin );
-float            G_BuildingConfidenceReward( gentity_t *self );
 void             G_BuildableThink( gentity_t *ent, int msec );
 qboolean         G_BuildableRange( vec3_t origin, float r, buildable_t buildable );
 void             G_IgniteBuildable( gentity_t *self, gentity_t *fireStarter );
@@ -1064,8 +1064,8 @@ void       G_TriggerMenu( int clientNum, dynMenu_t menu );
 void       G_TriggerMenuArgs( int clientNum, dynMenu_t menu, int arg );
 void       G_CloseMenus( int clientNum );
 
-void G_AddConfidence(team_t team, confidence_t type, confidence_reason_t reason,
-                     confidence_qualifier_t qualifier, float amount, gentity_t *source );
+void       G_AddConfidence( team_t team, confidence_t type, confidence_reason_t reason,
+                            confidence_qualifier_t qualifier, float amount, gentity_t *source );
 
 //
 // g_combat.c
