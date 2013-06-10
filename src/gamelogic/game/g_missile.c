@@ -277,8 +277,10 @@ void G_MissileImpact( gentity_t *ent, trace_t *trace )
 		{
 			other->client->ps.stats[ STAT_STATE ] |= SS_SLOWLOCKED;
 			other->client->lastSlowTime = level.time;
-			AngleVectors( other->client->ps.viewangles, dir, NULL, NULL );
-			other->client->ps.stats[ STAT_VIEWLOCK ] = DirToByte( dir );
+		}
+		else if ( other->s.eType == ET_BUILDABLE && other->buildableTeam == TEAM_ALIENS )
+		{
+			other->onFire = qfalse;
 		}
 	}
 	else if ( !strcmp( ent->classname, "hive" ) )

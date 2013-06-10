@@ -82,6 +82,9 @@
     "unfortunate neighbors.\n"
     "\n"
     "A small fire has a good chance to go out after a while but a group of "
-    "burning structures will keep itself hot enough for greater mayhem."
+    "burning structures will keep itself hot enough for greater mayhem.\n"
+    "\n"
+    "The [advgranger] advanced granger's spit attack can be used to put out "
+    "fires."
   }
 }
