@@ -2112,18 +2112,6 @@ void BotSetSkillLevel( gentity_t *self, int skill )
 	}
 }
 
-void BotPain( gentity_t *self, gentity_t *attacker, int damage )
-{
-	if ( BotGetEntityTeam( attacker ) != TEAM_NONE && BotGetEntityTeam( attacker ) != self->client->ps.stats[ STAT_TEAM ] )
-	{
-		if ( attacker->s.eType == ET_PLAYER )
-		{
-			self->botMind->bestEnemy.ent = attacker;
-			self->botMind->bestEnemy.distance = Distance( self->s.origin, attacker->s.origin );
-		}
-	}
-}
-
 void BotResetEnemyQueue( enemyQueue_t *queue )
 {
 	queue->front = 0;
@@ -2196,6 +2184,17 @@ qboolean BotEnemyIsValid( gentity_t *self, gentity_t *enemy )
 	}
 
 	return qtrue;
+}
+
+void BotPain( gentity_t *self, gentity_t *attacker, int damage )
+{
+	if ( BotGetEntityTeam( attacker ) != TEAM_NONE && BotGetEntityTeam( attacker ) != self->client->ps.stats[ STAT_TEAM ] )
+	{
+		if ( attacker->s.eType == ET_PLAYER )
+		{
+			BotPushEnemy( &self->botMind->enemyQueue, attacker );
+		}
+	}
 }
 
 void BotSearchForEnemy( gentity_t *self )
