@@ -362,18 +362,14 @@ Get the number of build points for a team
 */
 int G_GetBuildPointsInt( team_t team )
 {
-	float *bp;
-
-	if ( TEAM_ALIENS == team || TEAM_HUMANS == team )
+	if ( team > TEAM_NONE && team < NUM_TEAMS )
 	{
-		bp = &level.team[ team ].buildPoints;
+		return ( int )level.team[ team ].buildPoints;
 	}
 	else
 	{
 		return 0;
 	}
-	
-	return (int)*bp;
 }
 
 /*
@@ -3736,33 +3732,25 @@ static itemBuildError_t SufficientBPAvailable( buildable_t buildable, vec3_t ori
 
 	level.numBuildablesForRemoval = 0;
 
-	if ( team == TEAM_ALIENS )
+	switch ( team )
 	{
-		remainingBP = G_GetBuildPointsInt( team );
-		bpError = IBE_NOALIENBP;
-		spawn = BA_A_SPAWN;
-		core = BA_A_OVERMIND;
-	}
-	else if ( team == TEAM_HUMANS )
-	{
-		if ( buildable == BA_H_REACTOR || buildable == BA_H_REPEATER )
-		{
-			remainingBP = level.team[ team ].buildPoints;
-		}
-		else
-		{
-			remainingBP = G_GetBuildPointsInt( team );
-		}
+		case TEAM_ALIENS:
+			bpError = IBE_NOALIENBP;
+			spawn = BA_A_SPAWN;
+			core = BA_A_OVERMIND;
+			break;
 
-		bpError = IBE_NOHUMANBP;
-		spawn = BA_H_SPAWN;
-		core = BA_H_REACTOR;
+		case TEAM_HUMANS:
+			bpError = IBE_NOHUMANBP;
+			spawn = BA_H_SPAWN;
+			core = BA_H_REACTOR;
+			break;
+
+		default:
+			Com_Error( ERR_FATAL, "team is %d", team );
 	}
-	else
-	{
-		Com_Error( ERR_FATAL, "team is %d", team );
-	}
-	assert(team == TEAM_ALIENS || team == TEAM_HUMANS);
+
+	remainingBP = G_GetBuildPointsInt( team );
 	remainingSpawns = level.team[ team ].numSpawns;
 
 	// Simple non-marking case
@@ -5334,7 +5322,7 @@ void G_ModifyBuildPoints( team_t team, float amount )
 {
 	float *bp, newbp;
 
-	if ( TEAM_ALIENS == team || TEAM_HUMANS == team )
+	if ( team > TEAM_NONE && team < NUM_TEAMS )
 	{
 		bp = &level.team[ team ].buildPoints;
 	}
@@ -5362,14 +5350,14 @@ G_GetBuildableValueBP
 Calculates the value of buildables (in build points) for both teams.
 =================
 */
-void G_GetBuildableResourceValue( int teamValue[] )
+void G_GetBuildableResourceValue( int *teamValue )
 {
-	int       entityNum, *value;
+	int       entityNum;
 	gentity_t *ent;
+	team_t    team;
 	const buildableAttributes_t *attr;
-	team_t team;
 
-	for ( team = TEAM_ALIENS ; team < NUM_TEAMS ; ++team)
+	for ( team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )
 	{
 		teamValue[ team ] = 0;
 	}
@@ -5384,11 +5372,8 @@ void G_GetBuildableResourceValue( int teamValue[] )
 		}
 
 		team = ent->buildableTeam ;
-		if ( TEAM_ALIENS == team || TEAM_HUMANS == team )
-		{
-			value = &teamValue[ team ];
-			attr = BG_Buildable( ent->s.modelindex );
-			*value += ( attr->buildPoints * MAX( 0, ent->health ) ) / attr->health;
-		}
+		attr = BG_Buildable( ent->s.modelindex );
+
+		teamValue[ team ] += ( attr->buildPoints * MAX( 0, ent->health ) ) / attr->health;
 	}
 }

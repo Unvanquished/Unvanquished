@@ -674,9 +674,9 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	level.time = levelTime;
 	level.startTime = levelTime;
 	level.team[ TEAM_ALIENS ].stage2Time = level.team[ TEAM_ALIENS ].stage3Time
-	                        = level.team[ TEAM_HUMANS ].stage2Time
-	                          = level.team[ TEAM_HUMANS ].stage3Time
-	                            = level.startTime;
+	                                     = level.team[ TEAM_HUMANS ].stage2Time
+	                                     = level.team[ TEAM_HUMANS ].stage3Time
+	                                     = level.startTime;
 	level.snd_fry = G_SoundIndex( "sound/misc/fry.wav" );  // FIXME standing in lava / slime
 
 	if ( g_logFile.string[ 0 ] )
@@ -830,7 +830,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	trap_Cvar_Set( "g_humanStage", va( "%d", S1 ) );
 
 	// Give both teams some build points to start out with.
-	level.team[ TEAM_HUMANS ].buildPoints = level.team[ TEAM_ALIENS ].buildPoints = g_initialBuildPoints.integer;
+	level.team[ TEAM_HUMANS ].buildPoints = level.team[ TEAM_ALIENS ].buildPoints
+	                                      = g_initialBuildPoints.integer;
 
 	G_Printf( "-----------------------------------\n" );
 
@@ -1360,20 +1361,15 @@ void G_CalculateMineRate( void )
 			continue;
 		}
 
-		//TODO create a function to check if a building is a drill/leech
-		if ( ent->s.modelindex == BA_H_DRILL || ent->s.modelindex == BA_A_LEECH )
+		switch ( ent->s.modelindex )
 		{
-			team_t team;
-			//TODO create a function to know if a gatherer is the human or the alien 's one from it's modelindex
-			if ( ent->s.modelindex == BA_H_DRILL )
-			{
-				team = TEAM_HUMANS;
-			}
-			else if( ent->s.modelindex == BA_A_LEECH )
-			{
-				team = TEAM_ALIENS;
-			}
-			level.team[ team ].mineEfficiency += ent->s.weaponAnim;
+			case BA_H_DRILL:
+				level.team[ TEAM_HUMANS ].mineEfficiency += ent->s.weaponAnim;
+				break;
+
+			case BA_A_LEECH:
+				level.team[ TEAM_ALIENS ].mineEfficiency += ent->s.weaponAnim;
+				break;
 		}
 	}
 
@@ -1384,6 +1380,7 @@ void G_CalculateMineRate( void )
 	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
 	{
 		team_t team;
+
 		player = &g_entities[ playerNum ];
 		client = player->client;
 
@@ -1392,12 +1389,13 @@ void G_CalculateMineRate( void )
 			continue;
 		}
 
+		team = client->pers.teamSelection;
+
 		client->ps.persistant[ PERS_MINERATE ] = ( short )( level.mineRate * 10.0f );
 
-		team = client->pers.teamSelection;
-		if ( TEAM_ALIENS == team || TEAM_HUMANS == team )
+		if ( team > TEAM_NONE && team < NUM_TEAMS )
 		{
-			client->ps.persistant[ PERS_RGS_EFFICIENCY ] = ( short )level.team[ client->pers.teamSelection ].mineEfficiency;
+			client->ps.persistant[ PERS_RGS_EFFICIENCY ] = ( short )level.team[ team ].mineEfficiency;
 		}
 		else
 		{
@@ -1448,19 +1446,16 @@ void G_DecreaseConfidence( void )
 		lastConfidenceHalfLife = g_confidenceHalfLife.value;
 	}
 
-	// decrease all types of confidence for both teams
-	for ( team = NUM_TEAMS - 1; team > TEAM_NONE; team-- )
+	// decrease all types of confidence for all teams
+	for ( team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )
 	{
-		if ( TEAM_ALIENS == team || TEAM_HUMANS == team )
-		{
-			confidence = level.team[ team ].confidence;
-			confidence[ CONFIDENCE_SUM ] = 0.0f;
+		confidence = level.team[ team ].confidence;
+		confidence[ CONFIDENCE_SUM ] = 0.0f;
 
-			for ( type = CONFIDENCE_SUM + 1; type < NUM_CONFIDENCE_TYPES; type++ )
-			{
-				confidence[ type ] *= decreaseFactor;
-				confidence[ CONFIDENCE_SUM ] += confidence[ type ];
-			}
+		for ( type = CONFIDENCE_SUM + 1; type < NUM_CONFIDENCE_TYPES; type++ )
+		{
+			confidence[ type ] *= decreaseFactor;
+			confidence[ CONFIDENCE_SUM ] += confidence[ type ];
 		}
 	}
 
@@ -1476,7 +1471,8 @@ void G_DecreaseConfidence( void )
 		}
 
 		team = client->pers.teamSelection;
-		if ( TEAM_ALIENS == team || TEAM_HUMANS == team )
+
+		if ( team > TEAM_NONE && team < NUM_TEAMS )
 		{
 			client->ps.persistant[ PERS_CONFIDENCE ] = ( short )
 				( level.team[ team ].confidence[ CONFIDENCE_SUM ] * 10.0f + 0.5f );
@@ -1511,33 +1507,29 @@ void G_CalculateAvgPlayers( void )
 		return;
 	}
 
-	for ( team = NUM_TEAMS - 1; team > TEAM_NONE; team-- )
+	for ( team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )
 	{
-		if ( TEAM_ALIENS == team || TEAM_HUMANS == team )
+		samples        = &level.team[ team ].numSamples;
+		currentPlayers =  level.team[ team ].numClients;
+		avgPlayers     = &level.team[ team ].averageNumClients;
+
+		if ( *samples == 0 )
 		{
-			samples        = &level.team[ team ].numSamples;
-			currentPlayers =  level.team[ team ].numClients;
-			avgPlayers     = &level.team[ team ].averageNumClients;
-
-			if ( *samples == 0 )
-			{
-				*avgPlayers = ( float )currentPlayers;
-			}
-			else
-			{
-				*avgPlayers = ( ( *avgPlayers * *samples ) + currentPlayers ) / ( *samples + 1 );
-			}
-
-			if ( currentPlayers == 0 )
-			{
-				*samples = 0;
-			}
-			else
-			{
-				(*samples)++;
-			}
+			*avgPlayers = ( float )currentPlayers;
+		}
+		else
+		{
+			*avgPlayers = ( ( *avgPlayers * *samples ) + currentPlayers ) / ( *samples + 1 );
 		}
 
+		if ( currentPlayers == 0 )
+		{
+			*samples = 0;
+		}
+		else
+		{
+			(*samples)++;
+		}
 	}
 
 	nextCalculation = level.time + 1000;
@@ -1580,7 +1572,7 @@ void G_CalculateStageThresholds( void )
 	S3IPP = g_stage3IncreasePerPlayer.integer;
 
 
-	for ( team = TEAM_ALIENS ; team < NUM_TEAMS ; ++team )
+	for ( team = TEAM_NONE + 1; team < NUM_TEAMS ; team++ )
 	{
 		ANP[ team ] = level.team[ team ].averageNumClients;
 		level.team[ team ].stage2Threshold = ( int )( modifier * ( S2BT + ( S2IPP * ANP[ team ] ) ) + 0.5f );
@@ -1599,6 +1591,7 @@ void G_CalculateStageThresholds( void )
 		}
 
 		team = client->pers.teamSelection;
+
 		if ( TEAM_ALIENS == team || TEAM_HUMANS == team )
 		{
 			client->ps.persistant[ PERS_THRESHOLD_STAGE2 ] = ( short )( level.team[ team ].stage2Threshold );
@@ -1657,6 +1650,7 @@ void G_CalculateStages( void )
 				teamName       = "Aliens";
 				CSStage        = CS_ALIEN_STAGE;
 				break;
+
 			case TEAM_HUMANS:
 				stage          = g_humanStage.integer;
 				stageModCount  = g_humanStage.modificationCount;
@@ -1665,9 +1659,11 @@ void G_CalculateStages( void )
 				teamName       = "Humans";
 				CSStage        = CS_HUMAN_STAGE;
 				break;
+
 			default:
 				continue;
 		}
+
 		confidence     = ( int )level.team[ team ].confidence[ CONFIDENCE_SUM ];
 		S2Threshold    = level.team[ team ].stage2Threshold;
 		S3Threshold    = level.team[ team ].stage3Threshold;
@@ -1792,7 +1788,7 @@ void CalculateRanks( void )
 	level.numConnectedClients = 0;
 	level.numPlayingClients = 0;
 
-	for ( team = TEAM_ALIENS ; team < NUM_TEAMS ; ++team)
+	for ( team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )
 	{
 		level.team[ team ].numVotingClients = 0;
 		level.team[ team ].numClients = 0;
@@ -2200,7 +2196,6 @@ static void GetAverageCredits( int teamCredits[], int teamValue[] )
 
 	for ( playerNum = 0; playerNum < MAX_CLIENTS; playerNum++ )
 	{
-		team_t team = client->pers.teamSelection;
 		playerEnt = &g_entities[ playerNum ];
 		client = playerEnt->client;
 
@@ -2208,6 +2203,8 @@ static void GetAverageCredits( int teamCredits[], int teamValue[] )
 		{
 			continue;
 		}
+
+		team = client->pers.teamSelection;
 
 		teamCredits[ team ] += client->pers.credit;
 		teamValue[ team ] += BG_GetValueOfPlayer( &client->ps );
@@ -2295,31 +2292,33 @@ static void G_LogGameplayStats( int state )
 		}
 		case LOG_GAMEPLAY_STATS_BODY:
 		{
-			int   time;
-			float LMR;
+			int    time;
+			float  LMR;
 			team_t team;
-			int   num[ NUM_TEAMS ];
-			int   S2T[ NUM_TEAMS ];
-			int   S3T[ NUM_TEAMS ];
-			int   Con[ NUM_TEAMS ];
-			int   ME[ NUM_TEAMS ];
-			int   BP[ NUM_TEAMS ];
-			int   BRV[ NUM_TEAMS ];
-			int   DTB[ NUM_TEAMS ];
-			int   Cre[ NUM_TEAMS ];
-			int   Val[ NUM_TEAMS ];
+			int    num[ NUM_TEAMS ];
+			int    S2T[ NUM_TEAMS ];
+			int    S3T[ NUM_TEAMS ];
+			int    Con[ NUM_TEAMS ];
+			int    ME [ NUM_TEAMS ];
+			int    BP [ NUM_TEAMS ];
+			int    BRV[ NUM_TEAMS ];
+			int    DTB[ NUM_TEAMS ];
+			int    Cre[ NUM_TEAMS ];
+			int    Val[ NUM_TEAMS ];
 
 			time = level.matchTime / 1000;
 			LMR  = level.mineRate; // float
-			for( team = TEAM_ALIENS; team < NUM_TEAMS; ++team)
+
+			for( team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )
 			{
 				num[ team ] = level.team[ team ].numClients;
 				S2T[ team ] = level.team[ team ].stage2Threshold;
 				S3T[ team ] = level.team[ team ].stage3Threshold;
-				Con[ team ] = ( int )level.team[ team ].confidence[CONFIDENCE_SUM ];
+				Con[ team ] = ( int )level.team[ team ].confidence[ CONFIDENCE_SUM ];
 				ME [ team ] = level.team[ team ].mineEfficiency;
 				BP [ team ] = level.team[ team ].buildPoints;
 			}
+
 			G_GetBuildableResourceValue( BRV );
 			GetAverageDistanceToBase( DTB );
 			GetAverageCredits( Cre, Val );
@@ -2363,7 +2362,8 @@ static void G_LogGameplayStats( int state )
 				     "#\n",
 				     min, sec,
 				     winner,
-				     level.team[ TEAM_ALIENS ].averageNumClients + level.team[ TEAM_HUMANS ].averageNumClients,
+				     level.team[ TEAM_ALIENS ].averageNumClients +
+				     level.team[ TEAM_HUMANS ].averageNumClients,
 				     level.team[ TEAM_ALIENS ].averageNumClients,
 				     level.team[ TEAM_HUMANS ].averageNumClients);
 			break;

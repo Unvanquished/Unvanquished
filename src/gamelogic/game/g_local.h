@@ -851,7 +851,6 @@ typedef struct
 		float            confidence[ NUM_CONFIDENCE_TYPES ];
 		int              stage2Threshold;
 		int              stage3Threshold;
-
 	} team[ NUM_TEAMS ];
 } level_locals_t;
 
@@ -983,7 +982,7 @@ void             G_BuildLogAuto( gentity_t *actor, gentity_t *buildable, buildFa
 void             G_BuildLogRevert( int id );
 qboolean         G_CanAffordBuildPoints( team_t team, float amount );
 void             G_ModifyBuildPoints( team_t team, float amount );
-void             G_GetBuildableResourceValue(int teamValue[] );
+void             G_GetBuildableResourceValue( int *teamValue );
 
 //
 // g_utils.c

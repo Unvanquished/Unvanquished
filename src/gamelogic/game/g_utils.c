@@ -795,7 +795,7 @@ void G_AddConfidence( team_t team, confidence_t type, confidence_reason_t reason
 	gentity_t *event = NULL;
 	gclient_t *client;
 
-	if ( TEAM_ALIENS == team || TEAM_HUMANS == team )
+	if ( team > TEAM_NONE && team < NUM_TEAMS )
 	{
 		confidence = level.team[ team ].confidence;
 	}
