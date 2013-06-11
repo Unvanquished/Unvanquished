@@ -1186,7 +1186,7 @@ typedef struct
 {
 	const char *path;
 	const char *id;
-} rocketHud_t;
+} rocketMenu_t;
 
 #define MAX_SERVERS 2048
 #define MAX_RESOLUTIONS 32
@@ -1286,7 +1286,8 @@ typedef struct
 	int currentNetSrc;
 	int  serversLastRefresh;
 	rocketState_t rocketState;
-	rocketHud_t hud[ WP_NUM_WEAPONS ];
+	rocketMenu_t menu[ ROCKETMENU_NUM_TYPES ];
+	rocketMenu_t hud[ WP_NUM_WEAPONS ];
 	rocketDataSource_t data;
 } rocketInfo_t;
 

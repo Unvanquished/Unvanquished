@@ -158,24 +158,79 @@ void CG_Rocket_Init( void )
 
 		if ( !Q_stricmp( token, "main" ) )
 		{
+			int i;
+
 			token = COM_Parse2( &text_p );
 
-			// Skip non-RML files
-			if ( Q_stricmp( token + strlen( token ) - 4, ".rml" ) )
+			if ( *token != '{' )
 			{
-				continue;
+				Com_Error( ERR_DROP, "Error parsing %s. Expecting \"{\" but found \"%c\".", rocket_menuFiles.string, *token );
 			}
 
-			trap_Rocket_LoadDocument( token );
+			for ( i = 0; i < ROCKETMENU_NUM_TYPES; ++i )
+			{
+				token = COM_Parse2( &text_p );
+
+				if ( !*token )
+				{
+					Com_Error( ERR_DROP, "Error parsing %s. Unexpected end of file. Expecting path to RML menu.", rocket_menuFiles.string );
+				}
+
+				rocketInfo.menu[ i ].path = BG_strdup( token );
+				trap_Rocket_LoadDocument( token );
+
+				token = COM_Parse2( &text_p );
+
+				if ( !*token )
+				{
+					Com_Error( ERR_DROP, "Error parsing %s. Unexpected end of file. Expecting RML document id.", rocket_menuFiles.string );
+				}
+
+				rocketInfo.menu[ i ].id = BG_strdup( token );
+			}
+
+			token = COM_Parse2( &text_p );
+
+			if ( *token != '}' )
+			{
+				Com_Error( ERR_DROP, "Error parsing %s. Expecting \"}\" but found \"%c\".", rocket_menuFiles.string, *token );
+			}
+
+			while ( *token && *token != '}' )
+			{
+				token = COM_Parse2( &text_p );
+
+				if ( !*token )
+				{
+					Com_Error( ERR_DROP, "Error parsing %s. Unexpected end of file. Expecting RML document.", rocket_menuFiles.string );
+				}
+
+				trap_Rocket_LoadDocument( token );
+			}
+
 			continue;
 		}
 
-		if ( !Q_stricmp( token, "root" ) )
+		if ( !Q_stricmp( token, "misc" ) )
 		{
-			token = COM_Parse( &text_p );
+			int i;
 
-			Q_strncpyz( rocketInfo.rootDir, token, sizeof( rocketInfo.rootDir ) );
-			continue;
+			token = COM_Parse2( &text_p );
+
+			if ( *token != '{' )
+				{
+					Com_Error( ERR_DROP, "Error parsing %s. Expecting \"{\" but found \"%c\".", rocket_menuFiles.string, *token );
+				}
+
+
+				token = COM_Parse2( &text_p );
+
+				if ( *token != '}' )
+				{
+					Com_Error( ERR_DROP, "Error parsing %s. Expecting \"}\" but found \"%c\".", rocket_menuFiles.string, *token );
+				}
+
+				continue;
 		}
 
 		if ( !Q_stricmp( token, "human_hud" ) )
