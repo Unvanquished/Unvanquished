@@ -364,18 +364,15 @@ int G_GetBuildPointsInt( team_t team )
 {
 	float *bp;
 
-	switch ( team )
+	if ( TEAM_ALIENS == team || TEAM_HUMANS == team )
 	{
-		case TEAM_ALIENS:
-			bp = &level.alienBuildPoints;
-			break;
-		case TEAM_HUMANS:
-			bp = &level.humanBuildPoints;
-			break;
-		default:
-			return 0;
+		bp = &level.team[ team ].buildPoints;
 	}
-
+	else
+	{
+		return 0;
+	}
+	
 	return (int)*bp;
 }
 
@@ -1214,7 +1211,7 @@ void AOvermind_Think( gentity_t *self )
 		}
 
 		// just in case an egg finishes building after we tell overmind to stfu
-		if ( level.numAlienSpawns > 0 )
+		if ( level.team[ TEAM_ALIENS ].numSpawns > 0 )
 		{
 			level.overmindMuted = qfalse;
 		}
@@ -1226,7 +1223,7 @@ void AOvermind_Think( gentity_t *self )
 		}
 
 		//low on spawns
-		if ( !level.overmindMuted && level.numAlienSpawns <= 0 &&
+		if ( !level.overmindMuted && level.team[ TEAM_ALIENS ].numSpawns <= 0 &&
 		     level.time > self->overmindSpawnsTimer )
 		{
 			qboolean  haveBuilder = qfalse;
@@ -3482,14 +3479,14 @@ static int CompareBuildablesForRemoval( const void *a, const void *b )
 	// If the only spawn is marked, prefer it last
 	if ( cmpBuildable == BA_A_SPAWN || cmpBuildable == BA_H_SPAWN )
 	{
-		if ( ( buildableA->s.modelindex == BA_A_SPAWN && level.numAlienSpawns == 1 ) ||
-		     ( buildableA->s.modelindex == BA_H_SPAWN && level.numHumanSpawns == 1 ) )
+		if ( ( buildableA->s.modelindex == BA_A_SPAWN && level.team[ TEAM_ALIENS ].numSpawns == 1 ) ||
+		     ( buildableA->s.modelindex == BA_H_SPAWN && level.team[ TEAM_HUMANS ].numSpawns == 1 ) )
 		{
 			return 1;
 		}
 
-		if ( ( buildableB->s.modelindex == BA_A_SPAWN && level.numAlienSpawns == 1 ) ||
-		     ( buildableB->s.modelindex == BA_H_SPAWN && level.numHumanSpawns == 1 ) )
+		if ( ( buildableB->s.modelindex == BA_A_SPAWN && level.team[ TEAM_ALIENS ].numSpawns == 1 ) ||
+		     ( buildableB->s.modelindex == BA_H_SPAWN && level.team[ TEAM_HUMANS ].numSpawns == 1 ) )
 		{
 			return -1;
 		}
@@ -3742,7 +3739,6 @@ static itemBuildError_t SufficientBPAvailable( buildable_t buildable, vec3_t ori
 	if ( team == TEAM_ALIENS )
 	{
 		remainingBP = G_GetBuildPointsInt( team );
-		remainingSpawns = level.numAlienSpawns;
 		bpError = IBE_NOALIENBP;
 		spawn = BA_A_SPAWN;
 		core = BA_A_OVERMIND;
@@ -3751,14 +3747,13 @@ static itemBuildError_t SufficientBPAvailable( buildable_t buildable, vec3_t ori
 	{
 		if ( buildable == BA_H_REACTOR || buildable == BA_H_REPEATER )
 		{
-			remainingBP = level.humanBuildPoints;
+			remainingBP = level.team[ team ].buildPoints;
 		}
 		else
 		{
 			remainingBP = G_GetBuildPointsInt( team );
 		}
 
-		remainingSpawns = level.numHumanSpawns;
 		bpError = IBE_NOHUMANBP;
 		spawn = BA_H_SPAWN;
 		core = BA_H_REACTOR;
@@ -3767,6 +3762,8 @@ static itemBuildError_t SufficientBPAvailable( buildable_t buildable, vec3_t ori
 	{
 		Com_Error( ERR_FATAL, "team is %d", team );
 	}
+	assert(team == TEAM_ALIENS || team == TEAM_HUMANS);
+	remainingSpawns = level.team[ team ].numSpawns;
 
 	// Simple non-marking case
 	if ( DECON_MARK_CHECK( INSTANT ) && !DECON_OPTION_CHECK( PROTECT ) )
@@ -5306,16 +5303,14 @@ qboolean G_CanAffordBuildPoints( team_t team, float amount )
 {
 	float *bp;
 
-	switch ( team )
+	//TODO write a function to check if a team is a playable one
+	if ( TEAM_ALIENS == team || TEAM_HUMANS == team )
 	{
-		case TEAM_ALIENS:
-			bp = &level.alienBuildPoints;
-			break;
-		case TEAM_HUMANS:
-			bp = &level.humanBuildPoints;
-			break;
-		default:
-			return qfalse;
+		bp = &level.team[ team ].buildPoints;
+	}
+	else
+	{
+		return qfalse;
 	}
 
 	if ( fabs( amount ) > *bp )
@@ -5339,16 +5334,13 @@ void G_ModifyBuildPoints( team_t team, float amount )
 {
 	float *bp, newbp;
 
-	switch ( team )
+	if ( TEAM_ALIENS == team || TEAM_HUMANS == team )
 	{
-		case TEAM_ALIENS:
-			bp = &level.alienBuildPoints;
-			break;
-		case TEAM_HUMANS:
-			bp = &level.humanBuildPoints;
-			break;
-		default:
-			return;
+		bp = &level.team[ team ].buildPoints;
+	}
+	else
+	{
+		return;
 	}
 
 	newbp = *bp + amount;
@@ -5370,14 +5362,17 @@ G_GetBuildableValueBP
 Calculates the value of buildables (in build points) for both teams.
 =================
 */
-void G_GetBuildableResourceValue( int *alienValue, int *humanValue )
+void G_GetBuildableResourceValue( int teamValue[] )
 {
 	int       entityNum, *value;
 	gentity_t *ent;
 	const buildableAttributes_t *attr;
+	team_t team;
 
-	*alienValue = 0;
-	*humanValue = 0;
+	for ( team = TEAM_ALIENS ; team < NUM_TEAMS ; ++team)
+	{
+		teamValue[ team ] = 0;
+	}
 
 	for ( entityNum = MAX_CLIENTS; entityNum < level.num_entities; entityNum++ )
 	{
@@ -5388,22 +5383,12 @@ void G_GetBuildableResourceValue( int *alienValue, int *humanValue )
 			continue;
 		}
 
-		switch ( ent->buildableTeam )
+		team = ent->buildableTeam ;
+		if ( TEAM_ALIENS == team || TEAM_HUMANS == team )
 		{
-			case TEAM_ALIENS:
-				value = alienValue;
-				break;
-
-			case TEAM_HUMANS:
-				value = humanValue;
-				break;
-
-			default:
-				continue;
+			value = &teamValue[ team ];
+			attr = BG_Buildable( ent->s.modelindex );
+			*value += ( attr->buildPoints * MAX( 0, ent->health ) ) / attr->health;
 		}
-
-		attr = BG_Buildable( ent->s.modelindex );
-
-		*value += ( attr->buildPoints * MAX( 0, ent->health ) ) / attr->health;
 	}
 }

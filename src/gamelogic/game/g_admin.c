@@ -3925,18 +3925,18 @@ qboolean G_admin_endvote( gentity_t *ent )
 		QQ( N_("^3$1$: ^7$2$^7 decided that everyone voted Yes\n") ),
 			  command, G_quoted_admin_name( ent ) );
 
-	if ( !level.voteTime[ team ] )
+	if ( !level.team[ team ].voteTime )
 	{
 		ADMP( va( "%s %s", QQ( N_("^3$1$: ^7no vote in progress\n") ), command ) );
 		return qfalse;
 	}
 
 	admin_log( BG_TeamName( team ) );
-	level.voteNo[ team ] = cancel ? level.numVotingClients[ team ] : 0;
-	level.voteYes[ team ] = cancel ? 0 : level.numVotingClients[ team ];
+	level.team[ team ].voteNo = cancel ? level.team[ team ].numVotingClients : 0;
+	level.team[ team ].voteYes = cancel ? 0 : level.team[ team ].numVotingClients;
 	G_CheckVote( team );
 
-	if ( !Q_strncmp( level.voteDisplayString[ team ], "Extend", 6 ) &&
+	if ( !Q_strncmp( level.team[ team ].voteDisplayString, "Extend", 6 ) &&
 	     level.extend_vote_count > 0 )
 	{
 		level.extend_vote_count--;
@@ -4428,26 +4428,15 @@ qboolean G_admin_lock( gentity_t *ent )
 	trap_Argv( 1, teamName, sizeof( teamName ) );
 	team = G_TeamFromString( teamName );
 
-	if ( team == TEAM_ALIENS )
+	if ( team == TEAM_ALIENS || team== TEAM_HUMANS )
 	{
-		if ( level.alienTeamLocked == lock )
+		if ( level.team[ team ].locked == lock )
 		{
 			fail = qtrue;
 		}
 		else
 		{
-			level.alienTeamLocked = lock;
-		}
-	}
-	else if ( team == TEAM_HUMANS )
-	{
-		if ( level.humanTeamLocked == lock )
-		{
-			fail = qtrue;
-		}
-		else
-		{
-			level.humanTeamLocked = lock;
+			level.team[ team ].locked = lock;
 		}
 	}
 	else

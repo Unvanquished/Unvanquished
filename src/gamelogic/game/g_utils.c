@@ -795,16 +795,13 @@ void G_AddConfidence( team_t team, confidence_t type, confidence_reason_t reason
 	gentity_t *event = NULL;
 	gclient_t *client;
 
-	switch ( team )
+	if ( TEAM_ALIENS == team || TEAM_HUMANS == team )
 	{
-		case TEAM_ALIENS:
-			confidence = level.alienConfidence;
-			break;
-		case TEAM_HUMANS:
-			confidence = level.humanConfidence;
-			break;
-		default:
-			return;
+		confidence = level.team[ team ].confidence;
+	}
+	else
+	{
+		return;
 	}
 
 	if ( type <= CONFIDENCE_SUM || type >= NUM_CONFIDENCE_TYPES )

@@ -673,9 +673,9 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	memset( &level, 0, sizeof( level ) );
 	level.time = levelTime;
 	level.startTime = levelTime;
-	level.alienStage2Time = level.alienStage3Time
-	                        = level.humanStage2Time
-	                          = level.humanStage3Time
+	level.team[ TEAM_ALIENS ].stage2Time = level.team[ TEAM_ALIENS ].stage3Time
+	                        = level.team[ TEAM_HUMANS ].stage2Time
+	                          = level.team[ TEAM_HUMANS ].stage3Time
 	                            = level.startTime;
 	level.snd_fry = G_SoundIndex( "sound/misc/fry.wav" );  // FIXME standing in lava / slime
 
@@ -814,8 +814,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 
 	G_InitDamageLocations();
 	G_InitMapRotations();
-	G_InitSpawnQueue( &level.alienSpawnQueue );
-	G_InitSpawnQueue( &level.humanSpawnQueue );
+	G_InitSpawnQueue( &level.team[ TEAM_ALIENS ].spawnQueue );
+	G_InitSpawnQueue( &level.team[ TEAM_HUMANS ].spawnQueue );
 
 	if ( g_debugMapRotation.integer )
 	{
@@ -830,7 +830,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 	trap_Cvar_Set( "g_humanStage", va( "%d", S1 ) );
 
 	// Give both teams some build points to start out with.
-	level.humanBuildPoints = level.alienBuildPoints = g_initialBuildPoints.integer;
+	level.team[ TEAM_HUMANS ].buildPoints = level.team[ TEAM_ALIENS ].buildPoints = g_initialBuildPoints.integer;
 
 	G_Printf( "-----------------------------------\n" );
 
@@ -843,8 +843,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 
 	if ( g_lockTeamsAtStart.integer )
 	{
-		level.alienTeamLocked = qtrue;
-		level.humanTeamLocked = qtrue;
+		level.team[ TEAM_ALIENS ].locked = qtrue;
+		level.team[ TEAM_HUMANS ].locked = qtrue;
 		trap_Cvar_Set( "g_lockTeamsAtStart", "0" );
 	}
 
@@ -866,7 +866,7 @@ static void G_ClearVotes( qboolean all )
 	{
 		if ( all || G_CheckStopVote( i ) )
 		{
-			level.voteTime[ i ] = 0;
+			level.team[ i ].voteTime = 0;
 			trap_SetConfigstring( CS_VOTE_TIME + i, "" );
 			trap_SetConfigstring( CS_VOTE_STRING + i, "" );
 		}
@@ -886,7 +886,7 @@ static qboolean G_VotesRunning( void )
 
 	for ( i = 0; i < NUM_TEAMS; i++ )
 	{
-		if ( level.voteTime[ i ] )
+		if ( level.team[ i ].voteTime )
 		{
 			return qtrue;
 		}
@@ -1257,16 +1257,10 @@ void G_SpawnClients( team_t team )
 	spawnQueue_t *sq = NULL;
 	int          numSpawns = 0;
 
-	if ( team == TEAM_ALIENS )
-	{
-		sq = &level.alienSpawnQueue;
-		numSpawns = level.numAlienSpawns;
-	}
-	else if ( team == TEAM_HUMANS )
-	{
-		sq = &level.humanSpawnQueue;
-		numSpawns = level.numHumanSpawns;
-	}
+	assert(team == TEAM_ALIENS || team == TEAM_HUMANS);
+	sq = &level.team[ team ].spawnQueue;
+
+	numSpawns = level.team[ team ].numSpawns;
 
 	if ( G_GetSpawnQueueLength( sq ) > 0 && numSpawns > 0 )
 	{
@@ -1305,24 +1299,33 @@ void G_CountSpawns( void )
 	int       i;
 	gentity_t *ent;
 
-	level.numAlienSpawns = 0;
-	level.numHumanSpawns = 0;
+	//I guess this could be changed into one function call per team
+	level.team[ TEAM_ALIENS ].numSpawns = 0;
+	level.team[ TEAM_HUMANS ].numSpawns = 0;
 
 	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 	{
 		if ( !ent->inuse || ent->s.eType != ET_BUILDABLE || ent->health <= 0 )
 		{
 			continue;
+			// is it really useful? Seriously?
 		}
 
-		if ( ent->s.modelindex == BA_A_SPAWN )
+		//TODO create a function to check if a building is a spawn
+		if( ent->s.modelindex == BA_A_SPAWN || ent->s.modelindex == BA_H_SPAWN )
 		{
-			level.numAlienSpawns++;
-		}
-
-		if ( ent->s.modelindex == BA_H_SPAWN )
-		{
-			level.numHumanSpawns++;
+			team_t team;
+			//TODO create a function to guess the team which own a building depending on it's modelindex
+			switch(ent->s.modelindex)
+			{
+				case BA_A_SPAWN:
+					team = TEAM_ALIENS;
+					break;
+				case BA_H_SPAWN:
+					team = TEAM_HUMANS;
+					break;
+			}
+			level.team[ team ].numSpawns++;
 		}
 	}
 }
@@ -1347,7 +1350,8 @@ void G_CalculateMineRate( void )
 		return;
 	}
 
-	level.humanMineEfficiency = level.alienMineEfficiency = 0;
+	level.team[ TEAM_HUMANS ].mineEfficiency = 0;
+	level.team[ TEAM_ALIENS ].mineEfficiency = 0;
 
 	for ( i = MAX_CLIENTS, ent = g_entities + i; i < level.num_entities; i++, ent++ )
 	{
@@ -1356,14 +1360,20 @@ void G_CalculateMineRate( void )
 			continue;
 		}
 
-		if ( ent->s.modelindex == BA_H_DRILL )
+		//TODO create a function to check if a building is a drill/leech
+		if ( ent->s.modelindex == BA_H_DRILL || ent->s.modelindex == BA_A_LEECH )
 		{
-			level.humanMineEfficiency += ent->s.weaponAnim;
-		}
-
-		else if ( ent->s.modelindex == BA_A_LEECH )
-		{
-			level.alienMineEfficiency += ent->s.weaponAnim;
+			team_t team;
+			//TODO create a function to know if a gatherer is the human or the alien 's one from it's modelindex
+			if ( ent->s.modelindex == BA_H_DRILL )
+			{
+				team = TEAM_HUMANS;
+			}
+			else if( ent->s.modelindex == BA_A_LEECH )
+			{
+				team = TEAM_ALIENS;
+			}
+			level.team[ team ].mineEfficiency += ent->s.weaponAnim;
 		}
 	}
 
@@ -1373,6 +1383,7 @@ void G_CalculateMineRate( void )
 	// send to clients
 	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
 	{
+		team_t team;
 		player = &g_entities[ playerNum ];
 		client = player->client;
 
@@ -1383,18 +1394,14 @@ void G_CalculateMineRate( void )
 
 		client->ps.persistant[ PERS_MINERATE ] = ( short )( level.mineRate * 10.0f );
 
-		switch ( client->pers.teamSelection )
+		team = client->pers.teamSelection;
+		if ( TEAM_ALIENS == team || TEAM_HUMANS == team )
 		{
-			case TEAM_ALIENS:
-				client->ps.persistant[ PERS_RGS_EFFICIENCY ] = ( short )level.alienMineEfficiency;
-				break;
-
-			case TEAM_HUMANS:
-				client->ps.persistant[ PERS_RGS_EFFICIENCY ] = ( short )level.humanMineEfficiency;
-				break;
-
-			default:
-				client->ps.persistant[ PERS_RGS_EFFICIENCY ] = 0;
+			client->ps.persistant[ PERS_RGS_EFFICIENCY ] = ( short )level.team[ client->pers.teamSelection ].mineEfficiency;
+		}
+		else
+		{
+			client->ps.persistant[ PERS_RGS_EFFICIENCY ] = 0;
 		}
 	}
 
@@ -1444,26 +1451,16 @@ void G_DecreaseConfidence( void )
 	// decrease all types of confidence for both teams
 	for ( team = NUM_TEAMS - 1; team > TEAM_NONE; team-- )
 	{
-		switch ( team )
+		if ( TEAM_ALIENS == team || TEAM_HUMANS == team )
 		{
-			case TEAM_ALIENS:
-				confidence = level.alienConfidence;
-				break;
+			confidence = level.team[ team ].confidence;
+			confidence[ CONFIDENCE_SUM ] = 0.0f;
 
-			case TEAM_HUMANS:
-				confidence = level.humanConfidence;
-				break;
-
-			default:
-				continue;
-		}
-
-		confidence[ CONFIDENCE_SUM ] = 0.0f;
-
-		for ( type = CONFIDENCE_SUM + 1; type < NUM_CONFIDENCE_TYPES; type++ )
-		{
-			confidence[ type ] *= decreaseFactor;
-			confidence[ CONFIDENCE_SUM ] += confidence[ type ];
+			for ( type = CONFIDENCE_SUM + 1; type < NUM_CONFIDENCE_TYPES; type++ )
+			{
+				confidence[ type ] *= decreaseFactor;
+				confidence[ CONFIDENCE_SUM ] += confidence[ type ];
+			}
 		}
 	}
 
@@ -1478,20 +1475,15 @@ void G_DecreaseConfidence( void )
 			continue;
 		}
 
-		switch ( client->pers.teamSelection )
+		team = client->pers.teamSelection;
+		if ( TEAM_ALIENS == team || TEAM_HUMANS == team )
 		{
-			case TEAM_ALIENS:
-				client->ps.persistant[ PERS_CONFIDENCE ] = ( short )
-					( level.alienConfidence[ CONFIDENCE_SUM ] * 10.0f + 0.5f );
-				break;
-
-			case TEAM_HUMANS:
-				client->ps.persistant[ PERS_CONFIDENCE ] = ( short )
-					( level.humanConfidence[ CONFIDENCE_SUM ] * 10.0f + 0.5f );
-				break;
-
-			default:
-				client->ps.persistant[ PERS_CONFIDENCE ] = 0;
+			client->ps.persistant[ PERS_CONFIDENCE ] = ( short )
+				( level.team[ team ].confidence[ CONFIDENCE_SUM ] * 10.0f + 0.5f );
+		}
+		else
+		{
+			client->ps.persistant[ PERS_CONFIDENCE ] = 0;
 		}
 	}
 
@@ -1521,41 +1513,31 @@ void G_CalculateAvgPlayers( void )
 
 	for ( team = NUM_TEAMS - 1; team > TEAM_NONE; team-- )
 	{
-		switch ( team )
+		if ( TEAM_ALIENS == team || TEAM_HUMANS == team )
 		{
-			case TEAM_ALIENS:
-				samples        = &level.numAlienSamples;
-				currentPlayers =  level.numAlienClients;
-				avgPlayers     = &level.avgNumAlienClients;
-				break;
+			samples        = &level.team[ team ].numSamples;
+			currentPlayers =  level.team[ team ].numClients;
+			avgPlayers     = &level.team[ team ].averageNumClients;
 
-			case TEAM_HUMANS:
-				samples        = &level.numHumanSamples;
-				currentPlayers =  level.numHumanClients;
-				avgPlayers     = &level.avgNumHumanClients;
-				break;
+			if ( *samples == 0 )
+			{
+				*avgPlayers = ( float )currentPlayers;
+			}
+			else
+			{
+				*avgPlayers = ( ( *avgPlayers * *samples ) + currentPlayers ) / ( *samples + 1 );
+			}
 
-			default:
-				continue;
-		}
-
-		if ( *samples == 0 )
-		{
-			*avgPlayers = ( float )currentPlayers;
-		}
-		else
-		{
-			*avgPlayers = ( ( *avgPlayers * *samples ) + currentPlayers ) / ( *samples + 1 );
+			if ( currentPlayers == 0 )
+			{
+				*samples = 0;
+			}
+			else
+			{
+				(*samples)++;
+			}
 		}
 
-		if ( currentPlayers == 0 )
-		{
-			*samples = 0;
-		}
-		else
-		{
-			(*samples)++;
-		}
 	}
 
 	nextCalculation = level.time + 1000;
@@ -1572,8 +1554,10 @@ void G_CalculateStageThresholds( void )
 	gclient_t    *client;
 	int          playerNum, S2BT, S3BT, S2IPP, S3IPP;
 	float        modifier, ANAP, ANHP;
+	float        ANP[ NUM_TEAMS ];
 
 	static int   nextCalculation = 0;
+	team_t team;
 
 	if ( level.time < nextCalculation )
 	{
@@ -1594,13 +1578,14 @@ void G_CalculateStageThresholds( void )
 	S3BT  = g_stage3BaseThreshold.integer;
 	S2IPP = g_stage2IncreasePerPlayer.integer;
 	S3IPP = g_stage3IncreasePerPlayer.integer;
-	ANAP  = level.avgNumAlienClients;
-	ANHP  = level.avgNumHumanClients;
 
-	level.alienStage2Threshold = ( int )( modifier * ( S2BT + ( S2IPP * ANAP ) ) + 0.5f );
-	level.humanStage2Threshold = ( int )( modifier * ( S2BT + ( S2IPP * ANHP ) ) + 0.5f );
-	level.alienStage3Threshold = ( int )( modifier * ( S3BT + ( S3IPP * ANAP ) ) + 0.5f );
-	level.humanStage3Threshold = ( int )( modifier * ( S3BT + ( S3IPP * ANHP ) ) + 0.5f );
+
+	for ( team = TEAM_ALIENS ; team < NUM_TEAMS ; ++team )
+	{
+		ANP[ team ] = level.team[ team ].averageNumClients;
+		level.team[ team ].stage2Threshold = ( int )( modifier * ( S2BT + ( S2IPP * ANP[ team ] ) ) + 0.5f );
+		level.team[ team ].stage3Threshold = ( int )( modifier * ( S3BT + ( S3IPP * ANP[ team ] ) ) + 0.5f );
+	}
 
 	// send to clients
 	for ( playerNum = 0; playerNum < level.maxclients; playerNum++ )
@@ -1613,21 +1598,16 @@ void G_CalculateStageThresholds( void )
 			continue;
 		}
 
-		switch ( client->pers.teamSelection )
+		team = client->pers.teamSelection;
+		if ( TEAM_ALIENS == team || TEAM_HUMANS == team )
 		{
-			case TEAM_ALIENS:
-				client->ps.persistant[ PERS_THRESHOLD_STAGE2 ] = ( short )( level.alienStage2Threshold );
-				client->ps.persistant[ PERS_THRESHOLD_STAGE3 ] = ( short )( level.alienStage3Threshold );
-				break;
-
-			case TEAM_HUMANS:
-				client->ps.persistant[ PERS_THRESHOLD_STAGE2 ] = ( short )( level.humanStage2Threshold );
-				client->ps.persistant[ PERS_THRESHOLD_STAGE3 ] = ( short )( level.humanStage3Threshold );
-				break;
-
-			default:
-				client->ps.persistant[ PERS_THRESHOLD_STAGE2 ] = 0;
-				client->ps.persistant[ PERS_THRESHOLD_STAGE3 ] = 0;
+			client->ps.persistant[ PERS_THRESHOLD_STAGE2 ] = ( short )( level.team[ team ].stage2Threshold );
+			client->ps.persistant[ PERS_THRESHOLD_STAGE3 ] = ( short )( level.team[ team ].stage3Threshold );
+		}
+		else
+		{
+			client->ps.persistant[ PERS_THRESHOLD_STAGE2 ] = 0;
+			client->ps.persistant[ PERS_THRESHOLD_STAGE3 ] = 0;
 		}
 	}
 
@@ -1670,27 +1650,17 @@ void G_CalculateStages( void )
 		switch ( team )
 		{
 			case TEAM_ALIENS:
-				confidence     = ( int )level.alienConfidence[ CONFIDENCE_SUM ];
 				stage          = g_alienStage.integer;
 				stageModCount  = g_alienStage.modificationCount;
 				maxStage       = g_alienMaxStage.integer;
-				S2Threshold    = level.alienStage2Threshold;
-				S3Threshold    = level.alienStage3Threshold;
-				S2Time         = &level.alienStage2Time;
-				S3Time         = &level.alienStage3Time;
 				stageCVar      = "g_alienStage";
 				teamName       = "Aliens";
 				CSStage        = CS_ALIEN_STAGE;
 				break;
 			case TEAM_HUMANS:
-				confidence     = ( int )level.humanConfidence[ CONFIDENCE_SUM ];
 				stage          = g_humanStage.integer;
 				stageModCount  = g_humanStage.modificationCount;
 				maxStage       = g_humanMaxStage.integer;
-				S2Threshold    = level.humanStage2Threshold;
-				S3Threshold    = level.humanStage3Threshold;
-				S2Time         = &level.humanStage2Time;
-				S3Time         = &level.humanStage3Time;
 				stageCVar      = "g_humanStage";
 				teamName       = "Humans";
 				CSStage        = CS_HUMAN_STAGE;
@@ -1698,6 +1668,11 @@ void G_CalculateStages( void )
 			default:
 				continue;
 		}
+		confidence     = ( int )level.team[ team ].confidence[ CONFIDENCE_SUM ];
+		S2Threshold    = level.team[ team ].stage2Threshold;
+		S3Threshold    = level.team[ team ].stage3Threshold;
+		S2Time         = &level.team[ team ].stage2Time;
+		S3Time         = &level.team[ team ].stage3Time;
 
 		newStage = stage;
 
@@ -1811,15 +1786,18 @@ and team change.
 void CalculateRanks( void )
 {
 	int  i;
+	team_t team;
 	char P[ MAX_CLIENTS + 1 ] = { "" };
 
 	level.numConnectedClients = 0;
 	level.numPlayingClients = 0;
-	memset( level.numVotingClients, 0, sizeof( level.numVotingClients ) );
-	level.numAlienClients = 0;
-	level.numHumanClients = 0;
-	level.numLiveAlienClients = 0;
-	level.numLiveHumanClients = 0;
+
+	for ( team = TEAM_ALIENS ; team < NUM_TEAMS ; ++team)
+	{
+		level.team[ team ].numVotingClients = 0;
+		level.team[ team ].numClients = 0;
+		level.team[ team ].numLiveClients = 0;
+	}
 
 	for ( i = 0; i < level.maxclients; i++ )
 	{
@@ -1831,7 +1809,7 @@ void CalculateRanks( void )
 			level.numConnectedClients++;
 			P[ i ] = ( char ) '0' + level.clients[ i ].pers.teamSelection;
 
-			level.numVotingClients[ TEAM_NONE ]++;
+			level.team[ TEAM_NONE ].numVotingClients++;
 
 			if ( level.clients[ i ].pers.connected != CON_CONNECTED )
 			{
@@ -1840,34 +1818,23 @@ void CalculateRanks( void )
 
 			if ( level.clients[ i ].pers.teamSelection != TEAM_NONE )
 			{
+				team_t team;
 				level.numPlayingClients++;
 
-				if ( level.clients[ i ].pers.teamSelection == TEAM_ALIENS )
+				team=level.clients[ i ].pers.teamSelection;
+				level.team[ team ].numClients++;
+				if ( level.clients[ i ].sess.spectatorState == SPECTATOR_NOT )
 				{
-					level.numAlienClients++;
-
-					if ( level.clients[ i ].sess.spectatorState == SPECTATOR_NOT )
-					{
-						level.numLiveAlienClients++;
-					}
-				}
-				else if ( level.clients[ i ].pers.teamSelection == TEAM_HUMANS )
-				{
-					level.numHumanClients++;
-
-					if ( level.clients[ i ].sess.spectatorState == SPECTATOR_NOT )
-					{
-						level.numLiveHumanClients++;
-					}
+					level.team[ team ].numLiveClients++;
 				}
 			}
 		}
 	}
 
-	level.numNonSpectatorClients = level.numLiveAlienClients +
-	                               level.numLiveHumanClients;
-	level.numVotingClients[ TEAM_ALIENS ] = level.numAlienClients;
-	level.numVotingClients[ TEAM_HUMANS ] = level.numHumanClients;
+	level.numNonSpectatorClients = level.team[ TEAM_ALIENS ].numLiveClients +
+	                               level.team[ TEAM_HUMANS ].numLiveClients;
+	level.team[ TEAM_ALIENS ].numVotingClients = level.team[ TEAM_ALIENS ].numClients;
+	level.team[ TEAM_HUMANS ].numVotingClients = level.team[ TEAM_HUMANS ].numClients;
 	P[ i ] = '\0';
 	trap_Cvar_Set( "P", P );
 
@@ -2176,14 +2143,19 @@ GetAverageDistanceToBase
 Calculates the average distance of each teams' players to their main base.
 =================
 */
-static void GetAverageDistanceToBase( int *alienDistance, int *humanDistance )
+static void GetAverageDistanceToBase( int teamDistance[] )
 {
-	int       playerNum, alienCnt, humanCnt;
+	int       teamCnt[ NUM_TEAMS ];
+	int       playerNum;
 	gentity_t *playerEnt;
 	gclient_t *client;
+	team_t    team;
 
-	*alienDistance = *humanDistance = 0;
-	alienCnt = humanCnt = 0;
+	for ( team = TEAM_ALIENS ; team < NUM_TEAMS ; ++team)
+	{
+		teamCnt[ team ] = 0;
+		teamDistance[ team ] = 0;
+	}
 
 	for ( playerNum = 0; playerNum < MAX_CLIENTS; playerNum++ )
 	{
@@ -2195,22 +2167,13 @@ static void GetAverageDistanceToBase( int *alienDistance, int *humanDistance )
 			continue;
 		}
 
-		switch ( client->pers.teamSelection )
-		{
-			case TEAM_ALIENS:
-				*alienDistance += ( int )G_DistanceToBase( playerEnt, qtrue );
-				alienCnt++;
-				break;
-
-			case TEAM_HUMANS:
-				*humanDistance += ( int )G_DistanceToBase( playerEnt, qtrue );
-				humanCnt++;
-				break;
-		}
+		teamDistance[ client->pers.teamSelection ] += ( int )G_DistanceToBase( playerEnt, qtrue );
+		teamCnt[ client->pers.teamSelection ]++;
 	}
 
-	*alienDistance = ( !G_Overmind() || alienCnt == 0 ) ? 0 : ( *alienDistance / alienCnt );
-	*humanDistance = ( !G_Reactor()  || humanCnt == 0 ) ? 0 : ( *humanDistance / humanCnt );
+	//TODO merge G_Overmind() and G_Reactor() into a unique function (did not read them yet, but I bet is will not be so hard)
+	teamDistance[ TEAM_ALIENS ] = ( !G_Overmind() || teamCnt[ TEAM_ALIENS ] == 0 ) ? 0 : ( teamDistance[ TEAM_ALIENS ] / teamCnt[ TEAM_ALIENS ] );
+	teamDistance[ TEAM_HUMANS ] = ( !G_Reactor()  || teamCnt[ TEAM_HUMANS ] == 0 ) ? 0 : ( teamDistance[ TEAM_HUMANS ] / teamCnt[ TEAM_HUMANS ] );;
 }
 
 /*
@@ -2220,17 +2183,24 @@ GetAverageCredits
 Calculates the average amount of spare credits as well as the value of each teams' players.
 =================
 */
-static void GetAverageCredits( int *alienCredits, int *humanCredits, int *alienValue, int *humanValue )
+static void GetAverageCredits( int teamCredits[], int teamValue[] )
 {
-	int       playerNum, alienCnt, humanCnt;
+	int       teamCnt[ NUM_TEAMS ];
+	int       playerNum;
 	gentity_t *playerEnt;
 	gclient_t *client;
+	team_t    team;
 
-	*alienCredits = *humanCredits = *alienValue = *humanValue = 0;
-	alienCnt = humanCnt = 0;
+	for ( team = TEAM_ALIENS ; team < NUM_TEAMS ; ++team)
+	{
+		teamCnt[ team ] = 0;
+		teamCredits[ team ] = 0;
+		teamValue[ team ] = 0;
+	}
 
 	for ( playerNum = 0; playerNum < MAX_CLIENTS; playerNum++ )
 	{
+		team_t team = client->pers.teamSelection;
 		playerEnt = &g_entities[ playerNum ];
 		client = playerEnt->client;
 
@@ -2239,27 +2209,16 @@ static void GetAverageCredits( int *alienCredits, int *humanCredits, int *alienV
 			continue;
 		}
 
-		switch ( client->pers.teamSelection )
-		{
-			case TEAM_ALIENS:
-				*alienCredits += client->pers.credit;
-				*alienValue += BG_GetValueOfPlayer( &client->ps );
-				alienCnt++;
-				break;
-
-			case TEAM_HUMANS:
-				*humanCredits += client->pers.credit;
-				*humanValue += BG_GetValueOfPlayer( &client->ps );
-				humanCnt++;
-				break;
-		}
+		teamCredits[ team ] += client->pers.credit;
+		teamValue[ team ] += BG_GetValueOfPlayer( &client->ps );
+		teamCnt[ team ]++;
 	}
 
-	*alienCredits = ( alienCnt == 0 ) ? 0 : ( *alienCredits / alienCnt );
-	*humanCredits = ( humanCnt == 0 ) ? 0 : ( *humanCredits / humanCnt );
-
-	*alienValue = ( alienCnt == 0 ) ? 0 : ( *alienValue / alienCnt );
-	*humanValue = ( humanCnt == 0 ) ? 0 : ( *humanValue / humanCnt );
+	for ( team = TEAM_ALIENS ; team < NUM_TEAMS ; ++team)
+	{
+		teamCredits[ team ] = ( teamCnt[ team ] == 0 ) ? 0 : ( teamCredits[ team ] / teamCnt[ team ] );
+		teamValue[ team ] = ( teamCnt[ team ] == 0 ) ? 0 : ( teamValue[ team ] / teamCnt[ team ] );
+	}
 }
 
 /*
@@ -2287,119 +2246,130 @@ static void G_LogGameplayStats( int state )
 		return;
 	}
 
-	if ( state == LOG_GAMEPLAY_STATS_HEADER )
+	switch ( state )
 	{
-		qtime_t t;
-
-		trap_Cvar_VariableStringBuffer( "mapname", mapname, sizeof( mapname ) );
-		trap_RealTime( &t );
-
-		Com_sprintf( logline, sizeof( logline ),
-		             "# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
-		             "#\n"
-		             "# Version: %s\n"
-		             "# Map:     %s\n"
-		             "# Date:    %04i-%02i-%02i\n"
-		             "# Time:    %02i:%02i:%02i\n"
-		             "# Format:  %i\n"
-		             "#\n"
-		             "# g_stage2BaseThreshold:     %4i\n"
-		             "# g_stage3BaseThreshold:     %4i\n"
-		             "# g_stage2IncreasePerPlayer: %4i\n"
-		             "# g_stage3IncreasePerPlayer: %4i\n"
-		             "# g_stageThresholdHalfLife:  %4i\n"
-		             "# g_confidenceHalfLife:      %4i\n"
-		             "# g_initialBuildPoints:      %4i\n"
-		             "# g_initialMineRate:         %4i\n"
-		             "# g_mineRateHalfLife:        %4i\n"
-		             "#\n"
-		             "#  1  2  3    4    5    6    7    8    9   10   11   12   13   14   15   16    17    18   19   20   21   22\n"
-		             "#  T #A #H AS2T HS2T AS3T HS3T ACon HCon  LMR  AME  HME  ABP  HBP ABRV HBRV  ADTB  HDTB ACre HCre AVal HVal\n"
-		             "# ---------------------------------------------------------------------------------------------------------\n",
-		             Q3_VERSION,
-		             mapname,
-		             t.tm_year + 1900, t.tm_mon + 1, t.tm_mday,
-		             t.tm_hour, t.tm_min, t.tm_sec,
-		             LOG_GAMEPLAY_STATS_VERSION,
-		             g_stage2BaseThreshold.integer,
-		             g_stage3BaseThreshold.integer,
-		             g_stage2IncreasePerPlayer.integer,
-		             g_stage3IncreasePerPlayer.integer,
-		             g_stageThresholdHalfLife.integer,
-		             g_confidenceHalfLife.integer,
-		             g_initialBuildPoints.integer,
-		             g_initialMineRate.integer,
-		             g_mineRateHalfLife.integer );
-	}
-	else if ( state == LOG_GAMEPLAY_STATS_BODY )
-	{
-		int   time, numA, numH, AS2T, HS2T, AS3T, HS3T, ACon, HCon, AME, HME, ABP, HBP,
-		      ABRV, HBRV, ADTB, HDTB, ACre, HCre, AVal, HVal;
-		float LMR;
-
-		time = level.matchTime / 1000;
-		numA = level.numAlienClients;
-		numH = level.numHumanClients;
-		AS2T = level.alienStage2Threshold;
-		HS2T = level.humanStage2Threshold;
-		AS3T = level.alienStage3Threshold;
-		HS3T = level.humanStage3Threshold;
-		ACon = ( int )level.alienConfidence[ CONFIDENCE_SUM ];
-		HCon = ( int )level.humanConfidence[ CONFIDENCE_SUM ];
-		LMR  = level.mineRate; // float
-		AME  = level.alienMineEfficiency;
-		HME  = level.humanMineEfficiency;
-		ABP  = level.alienBuildPoints;
-		HBP  = level.humanBuildPoints;
-		G_GetBuildableResourceValue( &ABRV, &HBRV );
-		GetAverageDistanceToBase( &ADTB, &HDTB );
-		GetAverageCredits( &ACre, &HCre, &AVal, &HVal );
-
-		Com_sprintf( logline, sizeof( logline ),
-		             "%4i %2i %2i %4i %4i %4i %4i %4i %4i %4.1f %4i %4i %4i %4i %4i %4i %5i %5i %4i %4i %4i %4i\n",
-		             time, numA, numH, AS2T, HS2T, AS3T, HS3T, ACon, HCon, LMR, AME, HME,
-		             ABP, HBP, ABRV, HBRV, ADTB, HDTB, ACre, HCre, AVal, HVal );
-	}
-	else if ( state == LOG_GAMEPLAY_STATS_FOOTER )
-	{
-		const char *winner;
-		int        min, sec;
-
-		switch ( level.lastWin )
+		case LOG_GAMEPLAY_STATS_HEADER:
 		{
-			case TEAM_ALIENS:
-				winner = "Aliens";
-				break;
+			qtime_t t;
 
-			case TEAM_HUMANS:
-				winner = "Humans";
-				break;
+			trap_Cvar_VariableStringBuffer( "mapname", mapname, sizeof( mapname ) );
+			trap_RealTime( &t );
 
-			default:
-				winner = "-";
+			Com_sprintf( logline, sizeof( logline ),
+				     "# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+				     "#\n"
+				     "# Version: %s\n"
+				     "# Map:     %s\n"
+				     "# Date:    %04i-%02i-%02i\n"
+				     "# Time:    %02i:%02i:%02i\n"
+				     "# Format:  %i\n"
+				     "#\n"
+				     "# g_stage2BaseThreshold:     %4i\n"
+				     "# g_stage3BaseThreshold:     %4i\n"
+				     "# g_stage2IncreasePerPlayer: %4i\n"
+				     "# g_stage3IncreasePerPlayer: %4i\n"
+				     "# g_stageThresholdHalfLife:  %4i\n"
+				     "# g_confidenceHalfLife:      %4i\n"
+				     "# g_initialBuildPoints:      %4i\n"
+				     "# g_initialMineRate:         %4i\n"
+				     "# g_mineRateHalfLife:        %4i\n"
+				     "#\n"
+				     "#  1  2  3    4    5    6    7    8    9   10   11   12   13   14   15   16    17    18   19   20   21   22\n"
+				     "#  T #A #H AS2T HS2T AS3T HS3T ACon HCon  LMR  AME  HME  ABP  HBP ABRV HBRV  ADTB  HDTB ACre HCre AVal HVal\n"
+				     "# ---------------------------------------------------------------------------------------------------------\n",
+				     Q3_VERSION,
+				     mapname,
+				     t.tm_year + 1900, t.tm_mon + 1, t.tm_mday,
+				     t.tm_hour, t.tm_min, t.tm_sec,
+				     LOG_GAMEPLAY_STATS_VERSION,
+				     g_stage2BaseThreshold.integer,
+				     g_stage3BaseThreshold.integer,
+				     g_stage2IncreasePerPlayer.integer,
+				     g_stage3IncreasePerPlayer.integer,
+				     g_stageThresholdHalfLife.integer,
+				     g_confidenceHalfLife.integer,
+				     g_initialBuildPoints.integer,
+				     g_initialMineRate.integer,
+				     g_mineRateHalfLife.integer );
+			break;
 		}
+		case LOG_GAMEPLAY_STATS_BODY:
+		{
+			int   time;
+			float LMR;
+			team_t team;
+			int   num[ NUM_TEAMS ];
+			int   S2T[ NUM_TEAMS ];
+			int   S3T[ NUM_TEAMS ];
+			int   Con[ NUM_TEAMS ];
+			int   ME[ NUM_TEAMS ];
+			int   BP[ NUM_TEAMS ];
+			int   BRV[ NUM_TEAMS ];
+			int   DTB[ NUM_TEAMS ];
+			int   Cre[ NUM_TEAMS ];
+			int   Val[ NUM_TEAMS ];
 
-		min = level.matchTime / 60000;
-		sec = ( level.matchTime / 1000 ) % 60;
+			time = level.matchTime / 1000;
+			LMR  = level.mineRate; // float
+			for( team = TEAM_ALIENS; team < NUM_TEAMS; ++team)
+			{
+				num[ team ] = level.team[ team ].numClients;
+				S2T[ team ] = level.team[ team ].stage2Threshold;
+				S3T[ team ] = level.team[ team ].stage3Threshold;
+				Con[ team ] = ( int )level.team[ team ].confidence[CONFIDENCE_SUM ];
+				ME [ team ] = level.team[ team ].mineEfficiency;
+				BP [ team ] = level.team[ team ].buildPoints;
+			}
+			G_GetBuildableResourceValue( BRV );
+			GetAverageDistanceToBase( DTB );
+			GetAverageCredits( Cre, Val );
 
-		Com_sprintf( logline, sizeof( logline ),
-		             "# ---------------------------------------------------------------------------------------------------------\n"
-		             "#\n"
-		             "# Match duration:  %i:%02i\n"
-		             "# Winning team:    %s\n"
-		             "# Average Players: %.1f\n"
-		             "# Average Aliens:  %.1f\n"
-		             "# Average Humans:  %.1f\n"
-		             "#\n",
-		             min, sec,
-		             winner,
-		             level.avgNumAlienClients + level.avgNumHumanClients,
-		             level.avgNumAlienClients,
-		             level.avgNumHumanClients );
-	}
-	else
-	{
-		return;
+			Com_sprintf( logline, sizeof( logline ),
+				     "%4i %2i %2i %4i %4i %4i %4i %4i %4i %4.1f %4i %4i %4i %4i %4i %4i %5i %5i %4i %4i %4i %4i\n",
+				     time, num[ TEAM_ALIENS ], num[ TEAM_HUMANS ], S2T[ TEAM_ALIENS ], S2T[ TEAM_HUMANS ], S3T[ TEAM_ALIENS ], S3T[ TEAM_HUMANS ], Con[ TEAM_ALIENS ], Con[ TEAM_HUMANS ], LMR, ME[ TEAM_ALIENS ], ME[ TEAM_HUMANS ],
+				     BP[ TEAM_ALIENS ], BP[ TEAM_HUMANS ], BRV[ TEAM_ALIENS ], BRV[ TEAM_HUMANS ], DTB[ TEAM_ALIENS ], DTB[ TEAM_HUMANS ], Cre[ TEAM_ALIENS ], Cre[ TEAM_HUMANS ], Val[ TEAM_ALIENS ], Val[ TEAM_HUMANS ] );
+			break;
+		}
+		case LOG_GAMEPLAY_STATS_FOOTER:
+		{
+			const char *winner;
+			int        min, sec;
+
+			switch ( level.lastWin )
+			{
+				case TEAM_ALIENS:
+					winner = "Aliens";
+					break;
+
+				case TEAM_HUMANS:
+					winner = "Humans";
+					break;
+
+				default:
+					winner = "-";
+			}
+
+			min = level.matchTime / 60000;
+			sec = ( level.matchTime / 1000 ) % 60;
+
+			Com_sprintf( logline, sizeof( logline ),
+				     "# ---------------------------------------------------------------------------------------------------------\n"
+				     "#\n"
+				     "# Match duration:  %i:%02i\n"
+				     "# Winning team:    %s\n"
+				     "# Average Players: %.1f\n"
+				     "# Average Aliens:  %.1f\n"
+				     "# Average Humans:  %.1f\n"
+				     "#\n",
+				     min, sec,
+				     winner,
+				     level.team[ TEAM_ALIENS ].averageNumClients + level.team[ TEAM_HUMANS ].averageNumClients,
+				     level.team[ TEAM_ALIENS ].averageNumClients,
+				     level.team[ TEAM_HUMANS ].averageNumClients);
+			break;
+		}
+		default:
+			return;
 	}
 
 	trap_FS_Write( logline, strlen( logline ), level.logGameplayFile );
@@ -2459,16 +2429,16 @@ void G_SendGameStat( team_t team )
 	             Q3_VERSION,
 	             g_tag.string,
 	             teamChar,
-	             level.avgNumAlienClients,
-	             level.avgNumHumanClients,
+	             level.team[ TEAM_ALIENS ].averageNumClients,
+	             level.team[ TEAM_HUMANS ].averageNumClients,
 	             map,
 	             level.matchTime,
 	             g_alienStage.integer,
-	             level.alienStage2Time - level.startTime,
-	             level.alienStage3Time - level.startTime,
+	             level.team[ TEAM_ALIENS ].stage2Time - level.startTime,
+	             level.team[ TEAM_ALIENS ].stage3Time - level.startTime,
 	             g_humanStage.integer,
-	             level.humanStage2Time - level.startTime,
-	             level.humanStage3Time - level.startTime,
+	             level.team[ TEAM_HUMANS ].stage2Time - level.startTime,
+	             level.team[ TEAM_HUMANS ].stage3Time - level.startTime,
 	             level.numConnectedClients );
 
 	dataLength = strlen( data );
@@ -2763,8 +2733,8 @@ void CheckExitRules( void )
 	if ( level.unconditionalWin == TEAM_HUMANS ||
 	     ( level.unconditionalWin != TEAM_ALIENS &&
 	       ( level.time > level.startTime + 1000 ) &&
-	       ( level.numAlienSpawns == 0 ) &&
-	       ( level.numLiveAlienClients == 0 ) ) )
+	       ( level.team[ TEAM_ALIENS ].numSpawns == 0 ) &&
+	       ( level.team[ TEAM_ALIENS ].numLiveClients == 0 ) ) )
 	{
 		//humans win
 		level.lastWin = TEAM_HUMANS;
@@ -2777,8 +2747,8 @@ void CheckExitRules( void )
 	else if ( level.unconditionalWin == TEAM_ALIENS ||
 	          ( level.unconditionalWin != TEAM_HUMANS &&
 	            ( level.time > level.startTime + 1000 ) &&
-	            ( level.numHumanSpawns == 0 ) &&
-	            ( level.numLiveHumanClients == 0 ) ) )
+	            ( level.team[ TEAM_HUMANS ].numSpawns == 0 ) &&
+	            ( level.team[ TEAM_HUMANS ].numLiveClients == 0 ) ) )
 	{
 		//aliens win
 		level.lastWin = TEAM_ALIENS;
@@ -2797,7 +2767,7 @@ G_Vote
 */
 void G_Vote( gentity_t *ent, team_t team, qboolean voting )
 {
-	if ( !level.voteTime[ team ] )
+	if ( !level.team[ team ].voteTime )
 	{
 		return;
 	}
@@ -2814,33 +2784,34 @@ void G_Vote( gentity_t *ent, team_t team, qboolean voting )
 
 	ent->client->pers.voted |= 1 << team;
 
+	//TODO maybe refactor vote no/yes in one and only one variable and divide the NLOC by 2 ?
 	if ( ent->client->pers.vote & ( 1 << team ) )
 	{
 		if ( voting )
 		{
-			level.voteYes[ team ]++;
+			level.team[ team ].voteYes++;
 		}
 		else
 		{
-			level.voteYes[ team ]--;
+			level.team[ team ].voteYes--;
 		}
 
 		trap_SetConfigstring( CS_VOTE_YES + team,
-		                      va( "%d", level.voteYes[ team ] ) );
+		                      va( "%d", level.team[ team ].voteYes ) );
 	}
 	else
 	{
 		if ( voting )
 		{
-			level.voteNo[ team ]++;
+			level.team[ team ].voteNo++;
 		}
 		else
 		{
-			level.voteNo[ team ]--;
+			level.team[ team ].voteNo--;
 		}
 
 		trap_SetConfigstring( CS_VOTE_NO + team,
-		                      va( "%d", level.voteNo[ team ] ) );
+		                      va( "%d", level.team[ team ].voteNo ) );
 	}
 }
 
@@ -2854,17 +2825,17 @@ FUNCTIONS CALLED EVERY FRAME
 
 void G_ExecuteVote( team_t team )
 {
-	level.voteExecuteTime[ team ] = 0;
+	level.team[ team ].voteExecuteTime = 0;
 
 	trap_SendConsoleCommand( EXEC_APPEND, va( "%s\n",
-	                         level.voteString[ team ] ) );
+	                         level.team[ team ].voteString ) );
 
-	if ( !Q_stricmp( level.voteString[ team ], "map_restart" ) )
+	if ( !Q_stricmp( level.team[ team ].voteString, "map_restart" ) )
 	{
 		G_MapLog_Result( 'r' );
 		level.restarted = qtrue;
 	}
-	else if ( !Q_strnicmp( level.voteString[ team ], "map", 3 ) )
+	else if ( !Q_strnicmp( level.team[ team ].voteString, "map", 3 ) )
 	{
 		G_MapLog_Result( 'm' );
 		level.restarted = qtrue;
@@ -2878,37 +2849,37 @@ G_CheckVote
 */
 void G_CheckVote( team_t team )
 {
-	float    votePassThreshold = ( float ) level.voteThreshold[ team ] / 100.0f;
+	float    votePassThreshold = ( float ) level.team[ team ].voteThreshold / 100.0f;
 	qboolean pass = qfalse;
 	char     *cmd;
 	int      i;
 
-	if ( level.voteExecuteTime[ team ] &&
-	     level.voteExecuteTime[ team ] < level.time )
+	if ( level.team[ team ].voteExecuteTime /* > 0 ?? more readable imho */ &&
+	     level.team[ team ].voteExecuteTime < level.time )
 	{
 		G_ExecuteVote( team );
 	}
 
-	if ( !level.voteTime[ team ] )
+	if ( !level.team[ team ].voteTime )
 	{
 		return;
 	}
 
-	if ( ( level.time - level.voteTime[ team ] >= VOTE_TIME ) ||
-	     ( level.voteYes[ team ] + level.voteNo[ team ] == level.numVotingClients[ team ] ) )
+	if ( ( level.time - level.team[ team ].voteTime >= VOTE_TIME ) ||
+	     ( level.team[ team ].voteYes + level.team[ team ].voteNo == level.team[ team ].numVotingClients ) )
 	{
-		pass = ( level.voteYes[ team ] &&
-		         ( float ) level.voteYes[ team ] / ( ( float ) level.voteYes[ team ] + ( float ) level.voteNo[ team ] ) > votePassThreshold );
+		pass = ( level.team[ team ].voteYes &&
+		         ( float ) level.team[ team ].voteYes / ( ( float ) level.team[ team ].voteYes + ( float ) level.team[ team ].voteNo ) > votePassThreshold );
 	}
 	else
 	{
-		if ( ( float ) level.voteYes[ team ] >
-		     ( float ) level.numVotingClients[ team ] * votePassThreshold )
+		if ( ( float ) level.team[ team ].voteYes >
+		     ( float ) level.team[ team ].numVotingClients * votePassThreshold )
 		{
 			pass = qtrue;
 		}
-		else if ( ( float ) level.voteNo[ team ] <=
-		          ( float ) level.numVotingClients[ team ] * ( 1.0f - votePassThreshold ) )
+		else if ( ( float ) level.team[ team ].voteNo <=
+		          ( float ) level.team[ team ].numVotingClients * ( 1.0f - votePassThreshold ) )
 		{
 			return;
 		}
@@ -2916,23 +2887,23 @@ void G_CheckVote( team_t team )
 
 	if ( pass )
 	{
-		level.voteExecuteTime[ team ] = level.time + level.voteDelay[ team ];
+		level.team[ team ].voteExecuteTime = level.time + level.team[ team ].voteDelay;
 	}
 
 	G_LogPrintf( "EndVote: %s %s %d %d %d\n",
 	             team == TEAM_NONE ? "global" : BG_TeamName( team ),
 	             pass ? "pass" : "fail",
-	             level.voteYes[ team ], level.voteNo[ team ], level.numVotingClients[ team ] );
+	             level.team[ team ].voteYes, level.team[ team ].voteNo, level.team[ team ].numVotingClients );
 
 	if ( pass )
 	{
 		cmd = va( "print_tr %s %d %d", ( team == TEAM_NONE ) ? QQ( N_("Vote passed ($1$ — $2$)\n") ) : QQ( N_("Team vote passed ($1$ — $2$)\n") ),
-		            level.voteYes[ team ], level.voteNo[ team ] );
+		            level.team[ team ].voteYes, level.team[ team ].voteNo );
 	}
 	else
 	{
 		cmd = va( "print_tr %s %d %d %.0f", ( team == TEAM_NONE ) ? QQ( N_("Vote failed ($1$ — $2$; $3$% needed)\n") ) : QQ( N_("Team vote failed ($1$ — $2$; $3$% needed)\n") ),
-		            level.voteYes[ team ], level.voteNo[ team ], votePassThreshold * 100 );
+		            level.team[ team ].voteYes, level.team[ team ].voteNo, votePassThreshold * 100 );
 	}
 
 	if ( team == TEAM_NONE )
@@ -2944,9 +2915,9 @@ void G_CheckVote( team_t team )
 		G_TeamCommand( team, cmd );
 	}
 
-	level.voteTime[ team ] = 0;
-	level.voteYes[ team ] = 0;
-	level.voteNo[ team ] = 0;
+	level.team[ team ].voteTime = 0;
+	level.team[ team ].voteYes = 0;
+	level.team[ team ].voteNo = 0;
 
 	for ( i = 0; i < level.maxclients; i++ )
 	{

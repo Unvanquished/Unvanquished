@@ -417,7 +417,7 @@ void ScoreboardMessage( gentity_t *ent )
 	}
 
 	trap_SendServerCommand( ent - g_entities, va( "scores %i %i%s",
-	                        level.alienKills, level.humanKills, string ) );
+	                        level.team[ TEAM_ALIENS ].kills, level.team[ TEAM_HUMANS ].kills, string ) );
 }
 
 /*
@@ -790,19 +790,16 @@ void Cmd_Team_f( gentity_t *ent )
 	team_t   oldteam = ent->client->pers.teamSelection;
 	char     s[ MAX_TOKEN_CHARS ];
 	qboolean force = G_admin_permission( ent, ADMF_FORCETEAMCHANGE );
-	int      aliens = level.numAlienClients;
-	int      humans = level.numHumanClients;
+	int      players[ NUM_TEAMS ];
 	int      t;
-
 	const g_admin_spec_t *specOnly;
 
-	if ( oldteam == TEAM_ALIENS )
+	players[ TEAM_ALIENS ] = level.team[ TEAM_ALIENS ].numClients;
+	players[ TEAM_HUMANS ] = level.team[ TEAM_HUMANS ].numClients;
+
+	if ( TEAM_ALIENS == oldteam || TEAM_HUMANS == oldteam )
 	{
-		aliens--;
-	}
-	else if ( oldteam == TEAM_HUMANS )
-	{
-		humans--;
+		players[ oldteam ]--;
 	}
 
 	// stop team join spam
@@ -847,16 +844,16 @@ void Cmd_Team_f( gentity_t *ent )
 
 	if ( !Q_stricmp( s, "auto" ) )
 	{
-		if ( level.humanTeamLocked && level.alienTeamLocked )
+		if ( level.team[ TEAM_HUMANS ].locked && level.team[ TEAM_ALIENS ].locked )
 		{
 			team = TEAM_NONE;
 		}
-		else if ( level.humanTeamLocked || humans > aliens )
+		else if ( level.team[ TEAM_HUMANS ].locked || players[ TEAM_HUMANS ] > players[ TEAM_ALIENS ] )
 		{
 			team = TEAM_ALIENS;
 		}
 
-		else if ( level.alienTeamLocked || aliens > humans )
+		else if ( level.team[ TEAM_ALIENS ].locked || players[ TEAM_ALIENS ] > players[ TEAM_HUMANS ] )
 		{
 			team = TEAM_HUMANS;
 		}
@@ -874,17 +871,18 @@ void Cmd_Team_f( gentity_t *ent )
 				break;
 
 			case TEAM_ALIENS:
-				if ( level.alienTeamLocked )
+				//TODO move code in a function common with next case
+				if ( level.team[ TEAM_ALIENS ].locked )
 				{
 					G_TriggerMenu( ent - g_entities, MN_A_TEAMLOCKED );
 					return;
 				}
-				else if ( level.humanTeamLocked )
+				else if ( level.team[ TEAM_HUMANS ].locked )
 				{
 					force = qtrue;
 				}
 
-				if ( !force && g_teamForceBalance.integer && aliens > humans )
+				if ( !force && g_teamForceBalance.integer && players[ TEAM_ALIENS ] > players[ TEAM_HUMANS ])
 				{
 					G_TriggerMenu( ent - g_entities, MN_A_TEAMFULL );
 					return;
@@ -894,17 +892,18 @@ void Cmd_Team_f( gentity_t *ent )
 				break;
 
 			case TEAM_HUMANS:
-				if ( level.humanTeamLocked )
+				//TODO move code in a function common with previous case
+				if ( level.team[ TEAM_HUMANS ].locked )
 				{
 					G_TriggerMenu( ent - g_entities, MN_H_TEAMLOCKED );
 					return;
 				}
-				else if ( level.alienTeamLocked )
+				else if ( level.team[ TEAM_ALIENS ].locked )
 				{
 					force = qtrue;
 				}
 
-				if ( !force && g_teamForceBalance.integer && humans > aliens )
+				if ( !force && g_teamForceBalance.integer && players[ TEAM_HUMANS ] > players[ TEAM_ALIENS ] )
 				{
 					G_TriggerMenu( ent - g_entities, MN_H_TEAMFULL );
 					return;
@@ -1634,7 +1633,7 @@ G_CheckStopVote
 */
 qboolean G_CheckStopVote( team_t team )
 {
-	return level.voteTime[ team ] && voteInfo[ level.voteType[ team ] ].stopOnIntermission;
+	return level.team[ team ].voteTime && voteInfo[ level.team[ team ].voteType ].stopOnIntermission;
 }
 
 /*
@@ -1665,14 +1664,14 @@ void Cmd_CallVote_f( gentity_t *ent )
 		return;
 	}
 
-	if ( level.voteTime[ team ] )
+	if ( level.team[ team ].voteTime )
 	{
 		trap_SendServerCommand( ent - g_entities,
 		                        va( "print_tr %s %s", QQ( N_("$1$: a vote is already in progress\n") ), cmd ) );
 		return;
 	}
 
-	if ( level.voteExecuteTime[ team ] )
+	if ( level.team[ team ].voteExecuteTime )
 	{
 		G_ExecuteVote( team );
 	}
@@ -1734,21 +1733,21 @@ void Cmd_CallVote_f( gentity_t *ent )
 		return;
 	}
 
-	level.voteType[ team ] = voteId;
+	level.team[ team ].voteType = voteId;
 
 	// Vote time, percentage for pass
-	level.voteDelay[ team ] = 0;
-	level.voteThreshold[ team ] = voteInfo[voteId].percentage ? voteInfo[voteId].percentage->integer : 50;
+	level.team[ team ].voteDelay = 0;
+	level.team[ team ].voteThreshold = voteInfo[voteId].percentage ? voteInfo[voteId].percentage->integer : 50;
 
-	if ( level.voteThreshold[ team ] <= 0)
+	if ( level.team[ team ].voteThreshold <= 0)
 	{
 		trap_SendServerCommand( ent - g_entities, va( "print_tr %s %s", QQ( N_("'$1$' votes have been disabled\n") ), voteInfo[voteId].name ) );
 		return;
 	}
 
-	if ( level.voteThreshold[ team ] > 100)
+	if ( level.team[ team ].voteThreshold > 100)
 	{
-		level.voteThreshold[ team ] = 100;
+		level.team[ team ].voteThreshold = 100;
 	}
 
 	switch ( voteInfo[voteId].special )
@@ -1868,18 +1867,18 @@ void Cmd_CallVote_f( gentity_t *ent )
 	switch( voteId )
 	{
 	case VOTE_KICK:
-		Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ),
+		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
 		             "ban %s 1s%s %s ^7called vote kick (%s^7)", level.clients[ clientNum ].pers.ip.str,
 		             Quote( g_adminTempBan.string ), Quote( ent->client->pers.netname ), Quote( reason ) );
-		Com_sprintf( level.voteDisplayString[ team ],
-		             sizeof( level.voteDisplayString[ team ] ), N_("Kick player '%s'"), name );
+		Com_sprintf( level.team[ team ].voteDisplayString,
+		             sizeof( level.team[ team ].voteDisplayString ), N_("Kick player '%s'"), name );
 		break;
 
 	case VOTE_SPECTATE:
-		Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ),
+		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
 		             "speclock %d 1s%s", clientNum, Quote( g_adminTempBan.string ) );
-		Com_sprintf( level.voteDisplayString[ team ],
-		             sizeof( level.voteDisplayString[ team ] ),
+		Com_sprintf( level.team[ team ].voteDisplayString,
+		             sizeof( level.team[ team ].voteDisplayString ),
 		             N_("Move player '%s' to spectators"), name );
 		break;
 
@@ -1891,10 +1890,10 @@ void Cmd_CallVote_f( gentity_t *ent )
 			return;
 		}
 
-		Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ),
+		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
 		             "mute %d", id );
-		Com_sprintf( level.voteDisplayString[ team ],
-		             sizeof( level.voteDisplayString[ team ] ),
+		Com_sprintf( level.team[ team ].voteDisplayString,
+		             sizeof( level.team[ team ].voteDisplayString ),
 		             N_("Mute player '%s'"), name );
 		break;
 
@@ -1906,10 +1905,10 @@ void Cmd_CallVote_f( gentity_t *ent )
 			return;
 		}
 
-		Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ),
+		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
 		             "unmute %d", id );
-		Com_sprintf( level.voteDisplayString[ team ],
-		             sizeof( level.voteDisplayString[ team ] ),
+		Com_sprintf( level.team[ team ].voteDisplayString,
+		             sizeof( level.team[ team ].voteDisplayString ),
 		             N_("Unmute player '%s'"), name );
 		break;
 
@@ -1921,10 +1920,10 @@ void Cmd_CallVote_f( gentity_t *ent )
 			return;
 		}
 
-		Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ),
+		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
 		             "denybuild %d", id );
-		Com_sprintf( level.voteDisplayString[ team ],
-		             sizeof( level.voteDisplayString[ team ] ),
+		Com_sprintf( level.team[ team ].voteDisplayString,
+		             sizeof( level.team[ team ].voteDisplayString ),
 		             "Take away building rights from '%s'", name );
 		break;
 
@@ -1936,10 +1935,10 @@ void Cmd_CallVote_f( gentity_t *ent )
 			return;
 		}
 
-		Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ),
+		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
 		             "allowbuild %d", id );
-		Com_sprintf( level.voteDisplayString[ team ],
-		             sizeof( level.voteDisplayString[ team ] ),
+		Com_sprintf( level.team[ team ].voteDisplayString,
+		             sizeof( level.team[ team ].voteDisplayString ),
 		             "Allow '%s' to build", name );
 		break;
 
@@ -1955,24 +1954,24 @@ void Cmd_CallVote_f( gentity_t *ent )
 
 		level.extend_vote_count++;
 
-		Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ),
+		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
 		             "gametimelimit %i", level.timelimit + g_extendVotesTime.integer );
-		Com_sprintf( level.voteDisplayString[ team ], sizeof( level.voteDisplayString[ team ] ),
+		Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ),
 		             "Extend the timelimit by %d minutes", g_extendVotesTime.integer );
 		break;
 
 	case VOTE_ADMIT_DEFEAT:
-		level.voteDelay[ team ] = 3000;
+		level.team[ team ].voteDelay = 3000;
 
-		Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ),
+		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
 		             "admitdefeat %d", team );
-		strcpy( level.voteDisplayString[ team ], "Admit Defeat" );
+		strcpy( level.team[ team ].voteDisplayString, "Admit Defeat" );
 		break;
 
 	case VOTE_DRAW:
-		level.voteDelay[ team ] = 3000;
-		strcpy( level.voteString[ team ], "evacuation" );
-		strcpy( level.voteDisplayString[ team ], "End match in a draw" );
+		level.team[ team ].voteDelay = 3000;
+		strcpy( level.team[ team ].voteString, "evacuation" );
+		strcpy( level.team[ team ].voteDisplayString, "End match in a draw" );
 		break;
 
 	case VOTE_ARMAGEDDON:
@@ -1984,16 +1983,16 @@ void Cmd_CallVote_f( gentity_t *ent )
 			return;
 		}
 
-		level.voteDelay[ team ] = 3000;
-		Com_sprintf( level.voteString[ team ], sizeof( level.voteString ),
+		level.team[ team ].voteDelay = 3000;
+		Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
 		             "armageddon %s", Quote( arg ) );
-		Com_sprintf( level.voteDisplayString[ team ], sizeof( level.voteDisplayString[ team ] ),
+		Com_sprintf( level.team[ team ].voteDisplayString, sizeof( level.team[ team ].voteDisplayString ),
 		             "Destroy %s%% of all defensive buildings", arg );
 		break;
 
 	case VOTE_MAP_RESTART:
-		strcpy( level.voteString[ team ], vote );
-		strcpy( level.voteDisplayString[ team ], "Restart current map" );
+		strcpy( level.team[ team ].voteString, vote );
+		strcpy( level.team[ team ].voteDisplayString, "Restart current map" );
 		// map_restart comes with a default delay
 		break;
 
@@ -2006,22 +2005,22 @@ void Cmd_CallVote_f( gentity_t *ent )
 			return;
 		}
 
-		level.voteDelay[ team ] = 3000;
+		level.team[ team ].voteDelay = 3000;
 
 		if ( *reason ) // layout?
 		{
-			Com_sprintf( level.voteString[ team ], sizeof( level.voteString ),
+			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
 			             "map %s %s", Quote( arg ), Quote( reason ) );
-			Com_sprintf( level.voteDisplayString[ team ],
-			             sizeof( level.voteDisplayString[ team ] ),
+			Com_sprintf( level.team[ team ].voteDisplayString,
+			             sizeof( level.team[ team ].voteDisplayString ),
 			             "Change to map '%s' layout '%s'", arg, reason );
 		}
 		else
 		{
-			Com_sprintf( level.voteString[ team ], sizeof( level.voteString ),
+			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
 			             "map %s", Quote( arg ) );
-			Com_sprintf( level.voteDisplayString[ team ],
-			             sizeof( level.voteDisplayString[ team ] ),
+			Com_sprintf( level.team[ team ].voteDisplayString,
+			             sizeof( level.team[ team ].voteDisplayString ),
 			             "Change to map '%s'", arg );
 		}
 
@@ -2042,9 +2041,9 @@ void Cmd_CallVote_f( gentity_t *ent )
 				return;
 			}
 
-			Com_sprintf( level.voteString[ team ], sizeof( level.voteString[ team ] ), "restart %s", Quote( arg ) );
-			Com_sprintf( level.voteDisplayString[ team ],
-			             sizeof( level.voteDisplayString[ team ] ), "Change to map layout '%s'", arg );
+			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ), "restart %s", Quote( arg ) );
+			Com_sprintf( level.team[ team ].voteDisplayString,
+			             sizeof( level.team[ team ].voteDisplayString ), "Change to map layout '%s'", arg );
 		}
 		break; 
 
@@ -2067,18 +2066,18 @@ void Cmd_CallVote_f( gentity_t *ent )
 
 		if ( *reason ) // layout?
 		{
-			Com_sprintf( level.voteString[ team ], sizeof( level.voteString ),
+			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
 			             "set g_nextMap %s; set g_nextMapLayouts %s", Quote( arg ), Quote( reason ) );
-			Com_sprintf( level.voteDisplayString[ team ],
-			             sizeof( level.voteDisplayString[ team ] ),
+			Com_sprintf( level.team[ team ].voteDisplayString,
+			             sizeof( level.team[ team ].voteDisplayString ),
 			             "Set the next map to '%s' layout '%s'", arg, reason );
 		}
 		else
 		{
-			Com_sprintf( level.voteString[ team ], sizeof( level.voteString ),
+			Com_sprintf( level.team[ team ].voteString, sizeof( level.team[ team ].voteString ),
 			             "set g_nextMap %s; set g_nextMapLayouts \"\"", Quote( arg ) );
-			Com_sprintf( level.voteDisplayString[ team ],
-			             sizeof( level.voteDisplayString[ team ] ),
+			Com_sprintf( level.team[ team ].voteDisplayString,
+			             sizeof( level.team[ team ].voteDisplayString ),
 			             "Set the next map to '%s'", arg );
 		}
 
@@ -2086,9 +2085,9 @@ void Cmd_CallVote_f( gentity_t *ent )
 		break;
 
 	case VOTE_POLL:
-		level.voteString[ team ][0] = '\0';
-		Com_sprintf( level.voteDisplayString[ team ],
-		             sizeof( level.voteDisplayString[ team ] ),
+		level.team[ team ].voteString[0] = '\0';
+		Com_sprintf( level.team[ team ].voteDisplayString,
+		             sizeof( level.team[ team ].voteDisplayString ),
 		             "(poll) %s", reason );
 		reason[0] = '\0'; // nullify since we've used it here...
 		break;
@@ -2099,18 +2098,18 @@ void Cmd_CallVote_f( gentity_t *ent )
 	// Append the vote reason (if applicable)
 	if ( reason[ 0 ] )
 	{
-		Q_strcat( level.voteDisplayString[ team ],
-		          sizeof( level.voteDisplayString[ team ] ), va( " for '%s'", reason ) );
+		Q_strcat( level.team[ team ].voteDisplayString,
+		          sizeof( level.team[ team ].voteDisplayString ), va( " for '%s'", reason ) );
 	}
 
 	G_LogPrintf( "%s: %d \"%s" S_COLOR_WHITE "\": %s\n",
 	             team == TEAM_NONE ? "CallVote" : "CallTeamVote",
-	             ( int )( ent - g_entities ), ent->client->pers.netname, level.voteString[ team ] );
+	             ( int )( ent - g_entities ), ent->client->pers.netname, level.team[ team ].voteString );
 
 	if ( team == TEAM_NONE )
 	{
 		trap_SendServerCommand( -1, va( "print_tr %s %s %s", QQ( N_("$1$^7 called a vote: $2$\n") ),
-		                                Quote( ent->client->pers.netname ), Quote( level.voteDisplayString[ team ] ) ) );
+		                                Quote( ent->client->pers.netname ), Quote( level.team[ team ].voteDisplayString ) ) );
 	}
 	else
 	{
@@ -2125,13 +2124,13 @@ void Cmd_CallVote_f( gentity_t *ent )
 				       G_admin_permission( &g_entities[ i ], ADMF_SPEC_ALLCHAT ) ) )
 				{
 					trap_SendServerCommand( i, va( "print_tr %s %s %s", QQ( N_("$1$^7 called a team vote: $2t$\n") ),
-					                               Quote( ent->client->pers.netname ), Quote( level.voteDisplayString[ team ] ) ) );
+					                               Quote( ent->client->pers.netname ), Quote( level.team[ team ].voteDisplayString ) ) );
 				}
 				else if ( G_admin_permission( &g_entities[ i ], ADMF_ADMINCHAT ) )
 				{
 					trap_SendServerCommand( i, va( "chat -1 %d " S_COLOR_YELLOW "%s\"" S_COLOR_YELLOW " called a team vote (%ss): \"%s",
 					                               SAY_ADMINS, Quote( ent->client->pers.netname ), BG_TeamName( team ),
-					                               Quote( level.voteDisplayString[ team ] ) ) );
+					                               Quote( level.team[ team ].voteDisplayString ) ) );
 				}
 			}
 		}
@@ -2139,11 +2138,11 @@ void Cmd_CallVote_f( gentity_t *ent )
 
 	G_DecolorString( ent->client->pers.netname, caller, sizeof( caller ) );
 
-	level.voteTime[ team ] = level.time;
+	level.team[ team ].voteTime = level.time;
 	trap_SetConfigstring( CS_VOTE_TIME + team,
-	                      va( "%d", level.voteTime[ team ] ) );
+	                      va( "%d", level.team[ team ].voteTime ) );
 	trap_SetConfigstring( CS_VOTE_STRING + team,
-	                      level.voteDisplayString[ team ] );
+	                      level.team[ team ].voteDisplayString );
 	trap_SetConfigstring( CS_VOTE_CALLER + team,
 	                      caller );
 
@@ -2172,7 +2171,7 @@ void Cmd_Vote_f( gentity_t *ent )
 		team = TEAM_NONE;
 	}
 
-	if ( !level.voteTime[ team ] )
+	if ( !level.team[ team ].voteTime )
 	{
 		trap_SendServerCommand( ent - g_entities,
 		                        va( "print_tr %s %s", QQ( N_("$1$: no vote in progress\n") ), cmd ) );
@@ -2366,12 +2365,14 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 
 	if ( ent->client->sess.spectatorState != SPECTATOR_NOT )
 	{
+		team_t team;
 		if ( ent->client->sess.spectatorState == SPECTATOR_FOLLOW )
 		{
 			G_StopFollowing( ent );
 		}
 
-		if ( ent->client->pers.teamSelection == TEAM_ALIENS )
+		team = ent->client->pers.teamSelection;
+		if ( team == TEAM_ALIENS )
 		{
 			if ( newClass != PCL_ALIEN_BUILDER0 &&
 			     newClass != PCL_ALIEN_BUILDER0_UPG &&
@@ -2403,7 +2404,8 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 			}
 
 			// spawn from an egg
-			if ( G_PushSpawnQueue( &level.alienSpawnQueue, clientNum ) )
+			//TODO merge with human's code
+			if ( G_PushSpawnQueue( &level.team[ team ].spawnQueue, clientNum ) )
 			{
 				ent->client->pers.classSelection = newClass;
 				ent->client->ps.stats[ STAT_CLASS ] = newClass;
@@ -2411,7 +2413,7 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 				return qtrue;
 			}
 		}
-		else if ( ent->client->pers.teamSelection == TEAM_HUMANS )
+		else if ( team == TEAM_HUMANS )
 		{
 			//set the item to spawn with
 			if ( !Q_stricmp( s, BG_Weapon( WP_MACHINEGUN )->name ) &&
@@ -2434,10 +2436,12 @@ static qboolean Cmd_Class_internal( gentity_t *ent, const char *s, qboolean repo
 			}
 
 			// spawn from a telenode
-			if ( G_PushSpawnQueue( &level.humanSpawnQueue, clientNum ) )
+			//TODO merge with alien's code
+			newClass = PCL_HUMAN;
+			if ( G_PushSpawnQueue( &level.team[ team ].spawnQueue, clientNum ) )
 			{
-				ent->client->pers.classSelection = PCL_HUMAN;
-				ent->client->ps.stats[ STAT_CLASS ] = PCL_HUMAN;
+				ent->client->pers.classSelection = newClass;
+				ent->client->ps.stats[ STAT_CLASS ] = newClass;
 
 				return qtrue;
 			}
@@ -2657,6 +2661,8 @@ void Cmd_Destroy_f( gentity_t *ent )
 	     ( ( ent->client->ps.weapon >= WP_ABUILD ) &&
 	       ( ent->client->ps.weapon <= WP_HBUILD ) ) )
 	{
+		team_t team;
+
 		attr = BG_Buildable( traceEnt->s.modelindex );
 
 		// Always let the builder prevent the explosion
@@ -2676,18 +2682,12 @@ void Cmd_Destroy_f( gentity_t *ent )
 		}
 
 		// Prevent destruction of the last spawn
-		if ( ent->client->pers.teamSelection == TEAM_ALIENS &&
-		     traceEnt->s.modelindex == BA_A_SPAWN )
+		team = ent->client->pers.teamSelection;
+		if ( traceEnt->s.modelindex == BA_A_SPAWN ||
+			traceEnt->s.modelindex == BA_H_SPAWN )
 		{
-			if ( level.numAlienSpawns <= 1 )
-			{
-				lastSpawn = qtrue;
-			}
-		}
-		else if ( ent->client->pers.teamSelection == TEAM_HUMANS &&
-		          traceEnt->s.modelindex == BA_H_SPAWN )
-		{
-			if ( level.numHumanSpawns <= 1 )
+			assert( team == TEAM_ALIENS || team == TEAM_HUMANS );
+			if ( level.team[ team ].numSpawns <= 1 )
 			{
 				lastSpawn = qtrue;
 			}
