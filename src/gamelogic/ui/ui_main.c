@@ -1839,7 +1839,7 @@ static void UI_DrawInfoPane( menuItem_t *item, rectDef_t *rect, float text_x, fl
 			break;
 
 		case INFOTYPE_CLASS:
-			value = BG_ClassCanEvolveFromTo( class, item->v.pclass, credits, UI_GetCurrentAlienStage() ) / CREDITS_PER_EVO;
+			value = BG_ClassCanEvolveFromTo( class, item->v.pclass, credits, UI_GetCurrentAlienStage() );
 
 			if ( value < 1 )
 			{
