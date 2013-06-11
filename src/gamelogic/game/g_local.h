@@ -760,17 +760,6 @@ typedef struct
 
 	int      warmupModificationCount; // for detecting if g_warmup is changed
 
-	// voting state
-	voteType_t voteType[ NUM_TEAMS ];
-	int  voteThreshold[ NUM_TEAMS ]; // need at least this percent to pass
-	char voteString[ NUM_TEAMS ][ MAX_STRING_CHARS ];
-	char voteDisplayString[ NUM_TEAMS ][ MAX_STRING_CHARS ];
-	int  voteTime[ NUM_TEAMS ]; // level.time vote was called
-	int  voteExecuteTime[ NUM_TEAMS ]; // time the vote is executed
-	int  voteDelay[ NUM_TEAMS ]; // it doesn't make sense to always delay vote execution
-	int  voteYes[ NUM_TEAMS ];
-	int  voteNo[ NUM_TEAMS ];
-	int  numVotingClients[ NUM_TEAMS ]; // set by CalculateRanks
 	int  extend_vote_count;
 
 	// spawn variables
@@ -795,60 +784,17 @@ typedef struct
 
 	gentity_t        *locationHead; // head of the location list
 
-	int              numAlienSpawns;
-	int              numHumanSpawns;
-
-	int              numAlienClients;
-	int              numHumanClients;
-
-	float            avgNumAlienClients;
-	int              numAlienSamples;
-	float            avgNumHumanClients;
-	int              numHumanSamples;
-
-	int              numLiveAlienClients;
-	int              numLiveHumanClients;
-
-	float            alienBuildPoints;
-	float            humanBuildPoints;
-	int              alienMineEfficiency;
-	int              humanMineEfficiency;
 	float            mineRate;
-
-	float            alienConfidence[ NUM_CONFIDENCE_TYPES ];
-	float            humanConfidence[ NUM_CONFIDENCE_TYPES ];
 
 	gentity_t        *markedBuildables[ MAX_GENTITIES ];
 	int              numBuildablesForRemoval;
-
-	int              alienKills;
-	int              humanKills;
-
-	qboolean         overmindMuted;
-
-	int              humanBaseAttackTimer;
 
 	team_t           lastWin;
 
 	timeWarning_t    timelimitWarning;
 
-	spawnQueue_t     alienSpawnQueue;
-	spawnQueue_t     humanSpawnQueue;
-
-	int              alienStage2Time;
-	int              alienStage3Time;
-	int              humanStage2Time;
-	int              humanStage3Time;
-
-	int              alienStage2Threshold;
-	int              alienStage3Threshold;
-	int              humanStage2Threshold;
-	int              humanStage3Threshold;
-
 	team_t           unconditionalWin;
 
-	qboolean         alienTeamLocked;
-	qboolean         humanTeamLocked;
 	int              pausedTime;
 
 	int              unlaggedIndex;
@@ -870,6 +816,43 @@ typedef struct
 	buildLog_t       buildLog[ MAX_BUILDLOG ];
 	int              buildId;
 	int              numBuildLogs;
+
+	qboolean         overmindMuted;
+
+	int              humanBaseAttackTimer;
+
+	struct
+	{
+		// voting state
+		voteType_t voteType;
+		int  voteThreshold; // need at least this percent to pass
+		char voteString[ MAX_STRING_CHARS ];
+		char voteDisplayString[ MAX_STRING_CHARS ];
+		int  voteTime; // level.time vote was called
+		int  voteExecuteTime; // time the vote is executed
+		int  voteDelay; // it doesn't make sense to always delay vote execution
+		int  voteYes;
+		int  voteNo;
+		int  numVotingClients; // set by CalculateRanks
+
+		// gameplay state
+		int              numSpawns;
+		int              numClients;
+		float            averageNumClients;
+		int              numSamples;
+		int              numLiveClients;
+		float            buildPoints;
+		int              mineEfficiency;
+		int              kills;
+		spawnQueue_t     spawnQueue;
+		int              stage2Time;
+		int              stage3Time;
+		qboolean         locked;
+		float            confidence[ NUM_CONFIDENCE_TYPES ];
+		int              stage2Threshold;
+		int              stage3Threshold;
+
+	} team[ NUM_TEAMS ];
 } level_locals_t;
 
 #define CMD_CHEAT        0x0001
@@ -1001,7 +984,7 @@ void             G_BuildLogAuto( gentity_t *actor, gentity_t *buildable, buildFa
 void             G_BuildLogRevert( int id );
 qboolean         G_CanAffordBuildPoints( team_t team, float amount );
 void             G_ModifyBuildPoints( team_t team, float amount );
-void             G_GetBuildableResourceValue(int *alienValue, int *humanValue );
+void             G_GetBuildableResourceValue(int teamValue[] );
 
 //
 // g_utils.c
@@ -1124,8 +1107,12 @@ void      G_AddCreditToClient( gclient_t *client, short credit, qboolean cap );
 void      G_SetClientViewAngle( gentity_t *ent, const vec3_t angle );
 gentity_t *G_SelectUnvanquishedSpawnPoint( team_t team, vec3_t preference, vec3_t origin, vec3_t angles );
 gentity_t *G_SelectRandomFurthestSpawnPoint( vec3_t avoidPoint, vec3_t origin, vec3_t angles );
+
+gentity_t *G_SelectLockSpawnPoint( vec3_t origin, vec3_t angles , char const* intermission );
+// backward compatibility wrappers
 gentity_t *G_SelectAlienLockSpawnPoint( vec3_t origin, vec3_t angles );
 gentity_t *G_SelectHumanLockSpawnPoint( vec3_t origin, vec3_t angles );
+
 void      respawn( gentity_t *ent );
 void      BeginIntermission( void );
 void      ClientSpawn( gentity_t *ent, gentity_t *spawn, const vec3_t origin, const vec3_t angles );

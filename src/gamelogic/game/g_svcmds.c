@@ -184,16 +184,16 @@ void Svcmd_EntityShow_f( void )
 			if(lastTargetIndex != targetIndex)
 			{
 				G_Printf("Calls %s \"%s:%s\"\n",
-						selection->calltargets[targetIndex].event ? selection->calltargets[targetIndex].event : "onUnknown",
-						selection->calltargets[targetIndex].name,
-						selection->calltargets[targetIndex].action ? selection->calltargets[targetIndex].action : "default");
+						selection->calltargets[ targetIndex ].event ? selection->calltargets[ targetIndex ].event : "onUnknown",
+						selection->calltargets[ targetIndex ].name,
+						selection->calltargets[ targetIndex ].action ? selection->calltargets[ targetIndex ].action : "default");
 				lastTargetIndex = targetIndex;
 			}
 
 			G_Printf(" • %s", etos(possibleTarget));
 			if(possibleTarget->names[1])
 			{
-				G_Printf(" using \"%s\" ∈ ", selection->calltargets[targetIndex].name);
+				G_Printf(" using \"%s\" ∈ ", selection->calltargets[ targetIndex ].name);
 				G_PrintEntityNameList( possibleTarget );
 			}
 			G_Printf("\n");
@@ -422,20 +422,13 @@ static void Svcmd_TeamWin_f( void )
 {
 	// this is largely made redundant by admitdefeat <team>
 	char cmd[ 6 ];
+	team_t team;
 	trap_Argv( 0, cmd, sizeof( cmd ) );
 
-	switch ( G_TeamFromString( cmd ) )
+	team = G_TeamFromString( cmd );
+	if ( TEAM_ALIENS == team || TEAM_HUMANS == team )
 	{
-		case TEAM_ALIENS:
-			G_BaseSelfDestruct( TEAM_HUMANS );
-			break;
-
-		case TEAM_HUMANS:
-			G_BaseSelfDestruct( TEAM_ALIENS );
-			break;
-
-		default:
-			return;
+		G_BaseSelfDestruct( team );
 	}
 }
 
@@ -645,7 +638,8 @@ static void Svcmd_Pr_f( void )
 
 static void Svcmd_PrintQueue_f( void )
 {
-	char team[ MAX_STRING_CHARS ];
+	team_t team;
+	char teamName[ MAX_STRING_CHARS ];
 
 	if ( trap_Argc() != 2 )
 	{
@@ -653,20 +647,16 @@ static void Svcmd_PrintQueue_f( void )
 		return;
 	}
 
-	trap_Argv( 1, team, sizeof( team ) );
+	trap_Argv( 1, teamName, sizeof( teamName ) );
 
-	switch ( G_TeamFromString( team ) )
+	team = G_TeamFromString(teamName);
+	if ( TEAM_ALIENS == team || TEAM_HUMANS == team )
 	{
-		case TEAM_ALIENS:
-			G_PrintSpawnQueue( &level.alienSpawnQueue );
-			break;
-
-		case TEAM_HUMANS:
-			G_PrintSpawnQueue( &level.humanSpawnQueue );
-			break;
-
-		default:
-			G_Printf( "unknown team\n" );
+		G_PrintSpawnQueue( &level.team[ team ].spawnQueue );
+	}
+	else
+	{
+		G_Printf( "unknown team\n" );
 	}
 }
 
