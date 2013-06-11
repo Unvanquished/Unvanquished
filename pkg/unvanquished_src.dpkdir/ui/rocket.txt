@@ -1,6 +1,19 @@
 {
-	root "ui/"
-	main ui/main.rml
+	main
+	{
+		ui/main.rml main             // ROCKETMENU_MAIN
+		ui/connecting.rml connecting // ROCKETMENU_CONNECTING
+		ui/connecting.rml connecting // ROCKETMENU_LOADING
+		ui/connecting.rml connecting // ROCKETMENU_DOWNLOADING
+		ui/help.rml help             // ROCKETMENU_INGAME_MENU
+		ui/help.rml help             // ROCKETMENU_TEAMSELECT
+		ui/help.rml help             // ROCKETMENU_WEAPONSELECT
+		ui/help.rml help             // ROCKETMENU_CLASSSELECT
+		ui/help.rml help             // ROCKETMENU_ALIENBUILD
+		ui/help.rml help             // ROCKETMENU_HUMANBUILD
+		ui/help.rml help             // ROCKETMENU_ARMOURYBUY
+		ui/help.rml help             // ROCKETMENU_ALIENEVOLVE
+	}
 	cursor ui/cursor.rml
 	spectator_hud ui/humans.rml human_hud
 	alien_hud ui/aliens.rml alien_hud
