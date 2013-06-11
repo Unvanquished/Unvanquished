@@ -123,9 +123,15 @@ void Rocket_GetAttribute( const char *name, const char *id, const char *attribut
 
 void Rocket_SetAttribute( const char *name, const char *id, const char *attribute, const char *value )
 {
+	extern std::queue< RocketEvent_t* > eventQueue;
+
 	if ( ( !*name && !*id ) && activeElement )
 	{
 		activeElement->SetAttribute( attribute, value );
+	}
+	else if ( ( !*name && !*id ) && !activeElement && !eventQueue.empty() )
+	{
+		static_cast<Rocket::Core::Element*>( eventQueue.front()->targetElement )->SetAttribute( attribute, value );
 	}
 	else
 	{
