@@ -1282,7 +1282,6 @@ typedef struct
 
 typedef struct
 {
-	char rootDir[ MAX_QPATH ];
 	int currentNetSrc;
 	int  serversLastRefresh;
 	rocketState_t rocketState;

@@ -37,7 +37,7 @@ Maryland 20850 USA.
 
 static void CG_Rocket_EventOpen( void )
 {
-	trap_Rocket_LoadDocument( va( "%s%s.rml", rocketInfo.rootDir, CG_Argv( 1 ) ) );
+	trap_Rocket_LoadDocument( va( "%s.rml", CG_Argv( 1 ) ) );
 }
 
 static void CG_Rocket_EventClose( void )
