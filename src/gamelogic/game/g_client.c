@@ -256,22 +256,19 @@ gentity_t *G_SelectUnvanquishedSpawnPoint( team_t team, vec3_t preference, vec3_
 {
 	gentity_t *spot = NULL;
 
+	/* team must exist, or there will be a sigsegv */
+	assert(team == TEAM_HUMANS || team == TEAM_ALIENS);
+	if( level.team[ team ].numSpawns <= 0 )
+	{
+		return NULL;
+	}
+
 	if ( team == TEAM_ALIENS )
 	{
-		if ( level.numAlienSpawns <= 0 )
-		{
-			return NULL;
-		}
-
 		spot = G_SelectSpawnBuildable( preference, BA_A_SPAWN );
 	}
 	else if ( team == TEAM_HUMANS )
 	{
-		if ( level.numHumanSpawns <= 0 )
-		{
-			return NULL;
-		}
-
 		spot = G_SelectSpawnBuildable( preference, BA_H_SPAWN );
 	}
 
@@ -316,40 +313,39 @@ static gentity_t *G_SelectSpectatorSpawnPoint( vec3_t origin, vec3_t angles )
 ===========
 G_SelectAlienLockSpawnPoint
 
-Try to find a spawn point for alien intermission otherwise
-use spectator intermission spawn.
-============
+Historical wrapper which should be removed. See G_SelectLockSpawnPoint.
+===========
 */
 gentity_t *G_SelectAlienLockSpawnPoint( vec3_t origin, vec3_t angles )
 {
-	gentity_t *spot;
-
-	spot = G_PickRandomEntityOfClass( S_POS_ALIEN_INTERMISSION );
-
-	if ( !spot )
-	{
-		return G_SelectSpectatorSpawnPoint( origin, angles );
-	}
-
-	VectorCopy( spot->s.origin, origin );
-	VectorCopy( spot->s.angles, angles );
-
-	return spot;
+	return G_SelectLockSpawnPoint(origin, angles, S_POS_ALIEN_INTERMISSION );
 }
 
 /*
 ===========
 G_SelectHumanLockSpawnPoint
 
-Try to find a spawn point for human intermission otherwise
-use spectator intermission spawn.
-============
+Historical wrapper which should be removed. See G_SelectLockSpawnPoint.
+===========
 */
 gentity_t *G_SelectHumanLockSpawnPoint( vec3_t origin, vec3_t angles )
 {
+	return G_SelectLockSpawnPoint(origin, angles, S_POS_HUMAN_INTERMISSION );
+}
+
+/*
+===========
+G_SelectLockSpawnPoint
+
+Try to find a spawn point for a team intermission otherwise
+use spectator intermission spawn.
+============
+*/
+gentity_t *G_SelectLockSpawnPoint( vec3_t origin, vec3_t angles , char const* intermission )
+{
 	gentity_t *spot;
 
-	spot = G_PickRandomEntityOfClass( S_POS_HUMAN_INTERMISSION );
+	spot = G_PickRandomEntityOfClass( intermission );
 
 	if ( !spot )
 	{
