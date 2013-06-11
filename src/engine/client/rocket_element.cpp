@@ -219,5 +219,8 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 
 void Rocket_SetClass( const char *in, qboolean activate )
 {
-	activeElement->SetClass( in, static_cast<bool>( activate ) );
+	extern std::queue< RocketEvent_t* > eventQueue;
+	Rocket::Core::Element *element = activeElement ? activeElement : !eventQueue.empty() ? eventQueue.front()->targetElement : NULL;
+
+	element->SetClass( in, static_cast<bool>( activate ) );
 }
