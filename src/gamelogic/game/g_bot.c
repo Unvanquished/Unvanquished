@@ -426,13 +426,10 @@ void G_BotSpectatorThink( gentity_t *self )
 		//check for humans in the spawn que
 		{
 			spawnQueue_t *sq;
-			if ( self->client->pers.teamSelection == TEAM_HUMANS )
+			if ( self->client->pers.teamSelection > TEAM_NONE &&
+			     self->client->pers.teamSelection < NUM_TEAMS )
 			{
-				sq = &level.humanSpawnQueue;
-			}
-			else if ( self->client->pers.teamSelection == TEAM_ALIENS )
-			{
-				sq = &level.alienSpawnQueue;
+				sq = &level.team[ self->client->pers.teamSelection ].spawnQueue;
 			}
 			else
 			{
@@ -479,16 +476,15 @@ void G_BotSpectatorThink( gentity_t *self )
 			{
 				self->client->pers.humanItemSelection = WP_HBUILD;
 			}
-
-			G_PushSpawnQueue( &level.humanSpawnQueue, clientNum );
 		}
 		else if ( teamnum == TEAM_ALIENS )
 		{
 			self->client->pers.classSelection = PCL_ALIEN_LEVEL0;
 			self->client->ps.stats[STAT_CLASS] = PCL_ALIEN_LEVEL0;
 			BotSetNavmesh( self, PCL_ALIEN_LEVEL0 );
-			G_PushSpawnQueue( &level.alienSpawnQueue, clientNum );
 		}
+
+		G_PushSpawnQueue( &level.team[ teamnum ].spawnQueue, clientNum );
 	}
 	else
 	{

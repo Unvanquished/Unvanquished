@@ -499,6 +499,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 	gclient_t *client;
 	int       clientNum;
 	qboolean  attack1, attack3, following, queued;
+	team_t    team;
 
 	client = ent->client;
 
@@ -532,13 +533,10 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 	}
 
 	// Check to see if we are in the spawn queue
-	if ( client->pers.teamSelection == TEAM_ALIENS )
+	team = client->pers.teamSelection;
+	if ( team == TEAM_ALIENS || team == TEAM_HUMANS )
 	{
-		queued = G_SearchSpawnQueue( &level.alienSpawnQueue, ent - g_entities );
-	}
-	else if ( client->pers.teamSelection == TEAM_HUMANS )
-	{
-		queued = G_SearchSpawnQueue( &level.humanSpawnQueue, ent - g_entities );
+		queued = G_SearchSpawnQueue( &level.team[ team ].spawnQueue, ent - g_entities );
 	}
 	else
 	{
@@ -548,19 +546,16 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 	// Wants to get out of spawn queue
 	if ( attack1 && queued )
 	{
+		team_t team;
 		if ( client->sess.spectatorState == SPECTATOR_FOLLOW )
 		{
 			G_StopFollowing( ent );
 		}
 
-		if ( client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
-		{
-			G_RemoveFromSpawnQueue( &level.alienSpawnQueue, client->ps.clientNum );
-		}
-		else if ( client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
-		{
-			G_RemoveFromSpawnQueue( &level.humanSpawnQueue, client->ps.clientNum );
-		}
+		team = client->ps.stats[ STAT_TEAM ];
+		//be sure that only valid team "numbers" can be used.
+		assert(team == TEAM_ALIENS || team == TEAM_HUMANS);
+		G_RemoveFromSpawnQueue( &level.team[ team ].spawnQueue, client->ps.clientNum );
 
 		client->pers.classSelection = PCL_NONE;
 		client->pers.humanItemSelection = WP_NONE;
@@ -640,18 +635,11 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd )
 		// Set the queue position and spawn count for the client side
 		if ( client->ps.pm_flags & PMF_QUEUED )
 		{
-			if ( client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
-			{
-				client->ps.persistant[ PERS_QUEUEPOS ] =
-				  G_GetPosInSpawnQueue( &level.alienSpawnQueue, client->ps.clientNum );
-				client->ps.persistant[ PERS_SPAWNS ] = level.numAlienSpawns;
-			}
-			else if ( client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
-			{
-				client->ps.persistant[ PERS_QUEUEPOS ] =
-				  G_GetPosInSpawnQueue( &level.humanSpawnQueue, client->ps.clientNum );
-				client->ps.persistant[ PERS_SPAWNS ] = level.numHumanSpawns;
-			}
+			team_t team = client->ps.stats[ STAT_TEAM ];
+			/* team must exist, or there will be a sigsegv */
+			assert(team == TEAM_HUMANS || team == TEAM_ALIENS);
+			client->ps.persistant[ PERS_SPAWNS ] = level.team[ team ].numSpawns;
+			client->ps.persistant[ PERS_QUEUEPOS ] = G_GetPosInSpawnQueue( &level.team[ team ].spawnQueue, client->ps.clientNum );
 		}
 	}
 }

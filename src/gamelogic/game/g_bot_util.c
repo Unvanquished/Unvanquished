@@ -1419,14 +1419,10 @@ qboolean PlayersBehindBotInSpawnQueue( gentity_t *self )
 	int botPos = 0, lastPlayerPos = 0;
 	spawnQueue_t *sq;
 
-	if ( self->client->pers.teamSelection == TEAM_HUMANS )
+	if ( self->client->pers.teamSelection > TEAM_NONE &&
+	     self->client->pers.teamSelection < NUM_TEAMS )
 	{
-		sq = &level.humanSpawnQueue;
-	}
-
-	else if ( self->client->pers.teamSelection == TEAM_ALIENS )
-	{
-		sq = &level.alienSpawnQueue;
+		sq = &level.team[ self->client->pers.teamSelection ].spawnQueue;
 	}
 	else
 	{

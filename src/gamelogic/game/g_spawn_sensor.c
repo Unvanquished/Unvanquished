@@ -534,6 +534,7 @@ void sensor_support_think( gentity_t *self )
 		return;
 	}
 
+	//TODO check the difference between G_FindCreep and G_FindPower
 	switch (self->conditions.team) {
 		case TEAM_HUMANS:
 			self->powered = qfalse;
