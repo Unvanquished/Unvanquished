@@ -615,46 +615,24 @@ gentity_t* BotFindBestEnemy( gentity_t *self )
 	for ( target = g_entities; target < &g_entities[level.num_entities - 1]; target++ )
 	{
 		float newScore;
-		//ignore entities that arnt in use
-		if ( !target->inuse )
+
+		if ( !BotEnemyIsValid( self, target ) )
 		{
 			continue;
-		}
-
-		//ignore dead targets
-		if ( target->health <= 0 )
-		{
-			continue;
-		}
-
-		//ignore buildings if we cant attack them
-		if ( target->s.eType == ET_BUILDABLE && ( !g_bot_attackStruct.integer || self->client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL0 ) )
-		{
-			continue;
-		}
-
-		//ignore neutrals
-		if ( BotGetEntityTeam( target ) == TEAM_NONE )
-		{
-			continue;
-		}
-
-		//ignore teamates
-		if ( BotGetEntityTeam( target ) == BotGetEntityTeam( self ) )
-		{
-			continue;
-		}
-
-		//ignore spectators
-		if ( target->client )
-		{
-			if ( target->client->sess.spectatorState != SPECTATOR_NOT )
-			{
-				continue;
-			}
 		}
 
 		if ( DistanceSquared( self->s.origin, target->s.origin ) > Square( ALIENSENSE_RANGE ) )
+		{
+			continue;
+		}
+
+		if ( target->s.eType == ET_PLAYER && self->client->ps.stats[ STAT_TEAM ] == TEAM_HUMANS 
+		    && BotAimAngle( self, target->s.origin ) > g_bot_fov.value / 2 )
+		{
+			continue;
+		}
+
+		if ( target == self->botMind->goal.ent )
 		{
 			continue;
 		}
@@ -1368,21 +1346,17 @@ void BotSlowAim( gentity_t *self, vec3_t target, float slowAmount )
 	VectorMA( viewBase, length, skilledVec, target );
 }
 
-float BotAimNegligence( gentity_t *self, botTarget_t target )
+float BotAimAngle( gentity_t *self, vec3_t pos )
 {
+	vec3_t viewPos;
 	vec3_t forward;
 	vec3_t ideal;
-	vec3_t targetPos;
-	vec3_t viewPos;
-	float angle;
+
 	AngleVectors( self->client->ps.viewangles, forward, NULL, NULL );
 	BG_GetClientViewOrigin( &self->client->ps, viewPos );
-	BotGetIdealAimLocation( self, target, targetPos );
-	VectorSubtract( targetPos, viewPos, ideal );
-	VectorNormalize( ideal );
-	angle = DotProduct( ideal, forward );
-	angle = RAD2DEG( acos( angle ) );
-	return angle;
+	VectorSubtract( pos, viewPos, ideal );
+
+	return AngleBetweenVectors( forward, ideal );
 }
 
 /*
@@ -2146,39 +2120,103 @@ void BotPain( gentity_t *self, gentity_t *attacker, int damage )
 		{
 			self->botMind->bestEnemy.ent = attacker;
 			self->botMind->bestEnemy.distance = Distance( self->s.origin, attacker->s.origin );
-			self->botMind->enemyLastSeen = level.time;
-			self->botMind->timeFoundEnemy = level.time - g_bot_reactiontime.integer; // alert immediately
 		}
 	}
 }
 
-void BotSearchForEnemy( gentity_t *self )
+void BotResetEnemyQueue( enemyQueue_t *queue )
 {
-	botTarget_t target;
-	gentity_t *enemy = BotFindBestEnemy( self );
+	queue->front = 0;
+	queue->back = 0;
+	memset( queue->enemys, 0, sizeof( queue->enemys ) );
+}
 
+void BotPushEnemy( enemyQueue_t *queue, gentity_t *enemy )
+{
 	if ( enemy )
 	{
-		BotSetTarget( &target, enemy, NULL );
-
-		if ( enemy->s.eType != ET_PLAYER || ( enemy->s.eType == ET_PLAYER 
-			&& ( self->client->ps.stats[ STAT_TEAM ] == TEAM_ALIENS || BotAimNegligence( self, target ) <= g_bot_fov.value / 2 ) ) )
+		if ( ( queue->back + 1 ) % MAX_ENEMY_QUEUE != queue->front )
 		{
-			// don't reset timeFoundEnemy unless we were not previously alerted to an enemy because we don't want to reset our reaction time
-			if ( !self->botMind->bestEnemy.ent )
-			{
-				self->botMind->timeFoundEnemy = level.time;
-			}
-			self->botMind->bestEnemy.ent = enemy;
-			self->botMind->bestEnemy.distance = Distance( self->s.origin, enemy->s.origin );
-			self->botMind->enemyLastSeen = level.time;
+			queue->enemys[ queue->back ].ent = enemy;
+			queue->enemys[ queue->back ].timeFound = level.time;
+			queue->back = ( queue->back + 1 ) % MAX_ENEMY_QUEUE;
 		}
 	}
-	
-	if ( level.time - self->botMind->enemyLastSeen > g_bot_chasetime.integer )
+}
+
+gentity_t *BotPopEnemy( enemyQueue_t *queue )
+{
+	// queue empty
+	if ( queue->front == queue->back )
 	{
-		// reset after a while if we haven't seen an enemy
-		self->botMind->bestEnemy.ent = NULL;
+		return NULL;
+	}
+
+	if ( level.time - queue->enemys[ queue->front ].timeFound >= g_bot_reactiontime.integer )
+	{
+		gentity_t *ret = queue->enemys[ queue->front ].ent;
+		queue->front = ( queue->front + 1 ) % MAX_ENEMY_QUEUE;
+		return ret;
+	}
+
+	return NULL;
+}
+
+qboolean BotEnemyIsValid( gentity_t *self, gentity_t *enemy )
+{
+	if ( !enemy->inuse )
+	{
+		return qfalse;
+	}
+
+	if ( enemy->health <= 0 )
+	{
+		return qfalse;
+	}
+
+	//ignore buildings if we cant attack them
+	if ( enemy->s.eType == ET_BUILDABLE && ( !g_bot_attackStruct.integer || self->client->ps.stats[STAT_CLASS] == PCL_ALIEN_LEVEL0 ) )
+	{
+		return qfalse;
+	}
+
+	if ( BotGetEntityTeam( enemy ) == self->client->ps.stats[ STAT_TEAM ] )
+	{
+		return qfalse;
+	}
+
+	if ( BotGetEntityTeam( enemy ) == TEAM_NONE )
+	{
+		return qfalse;
+	}
+
+	if ( enemy->client && enemy->client->sess.spectatorState != SPECTATOR_NOT )
+	{
+		return qfalse;
+	}
+
+	return qtrue;
+}
+
+void BotSearchForEnemy( gentity_t *self )
+{
+	gentity_t *enemy = BotFindBestEnemy( self );
+	enemyQueue_t *queue = &self->botMind->enemyQueue;
+	BotPushEnemy( queue, enemy );
+
+	do
+	{
+		enemy = BotPopEnemy( queue );
+	} while ( enemy && !BotEnemyIsValid( self, enemy ) );
+
+	self->botMind->bestEnemy.ent = enemy;
+
+	if ( self->botMind->bestEnemy.ent ) 
+	{
+		self->botMind->bestEnemy.distance = Distance( self->s.origin, self->botMind->bestEnemy.ent->s.origin );
+	}
+	else
+	{
 		self->botMind->bestEnemy.distance = INT_MAX;
 	}
 }

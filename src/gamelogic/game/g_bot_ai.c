@@ -384,7 +384,7 @@ AINodeStatus_t BotEvaluateNode( gentity_t *self, AIGenericNode_t *node )
 
 	// reset the current node if it finishes
 	// we do this so we can re-pathfind on the next entrance
-	if ( ( status == STATUS_SUCCESS || status == STATUS_FAILURE )  && self->botMind->currentNode == node )
+	if ( ( status == STATUS_SUCCESS || status == STATUS_FAILURE ) && self->botMind->currentNode == node )
 	{
 		self->botMind->currentNode = NULL;
 	}
@@ -538,7 +538,6 @@ AINodeStatus_t BotActionChangeGoal( gentity_t *self, AIGenericNode_t *node )
 	}
 
 	self->botMind->currentNode = node;
-	self->botMind->goalLastSeen = 0;
 	return STATUS_SUCCESS;
 }
 
@@ -579,12 +578,10 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		{
 			return STATUS_FAILURE;
 		}
-		else
-		{
-			self->botMind->currentNode = node;
-			self->botMind->goalLastSeen = self->botMind->enemyLastSeen;
-			return STATUS_RUNNING;
-		}
+
+		self->botMind->currentNode = node;
+		self->botMind->enemyLastSeen = level.time;
+		return STATUS_RUNNING;
 	}
 
 	if ( !BotTargetIsEntity( self->botMind->goal ) )
@@ -592,18 +589,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		return STATUS_FAILURE;
 	}
 
-	if ( BotGetTargetTeam( self->botMind->goal ) == myTeam || BotGetTargetTeam( self->botMind->goal ) == TEAM_NONE )
-	{
-		return STATUS_SUCCESS;
-	}
-
-	// the enemy has died
-	if ( self->botMind->goal.ent->health <= 0 )
-	{
-		return STATUS_SUCCESS;
-	}
-
-	if ( self->botMind->goal.ent->client && self->botMind->goal.ent->client->sess.spectatorState != SPECTATOR_NOT )
+	if ( !BotEnemyIsValid( self, self->botMind->goal.ent ) )
 	{
 		return STATUS_SUCCESS;
 	}
@@ -621,7 +607,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	//aliens have radar so they will always 'see' the enemy if they are in radar range
 	if ( myTeam == TEAM_ALIENS && DistanceToGoalSquared( self ) <= Square( ALIENSENSE_RANGE ) )
 	{
-		self->botMind->goalLastSeen = level.time;
+		self->botMind->enemyLastSeen = level.time;
 	}
 
 	if ( !BotTargetIsVisible( self, self->botMind->goal, CONTENTS_SOLID ) )
@@ -629,12 +615,12 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 		botTarget_t proposedTarget;
 		BotSetTarget( &proposedTarget, self->botMind->bestEnemy.ent, NULL );
 
-		//we can see another enemy (not our target)
+		//we can see another enemy (not our target) so switch to it
 		if ( self->botMind->bestEnemy.ent && self->botMind->goal.ent != self->botMind->bestEnemy.ent && BotPathIsWalkable( self, proposedTarget ) )
 		{
 			return STATUS_SUCCESS;
 		}
-		else if ( level.time - self->botMind->goalLastSeen > g_bot_chasetime.integer )
+		else if ( level.time - self->botMind->enemyLastSeen >= g_bot_chasetime.integer )
 		{
 			return STATUS_SUCCESS;
 		}
@@ -647,7 +633,7 @@ AINodeStatus_t BotActionFight( gentity_t *self, AIGenericNode_t *node )
 	else
 	{
 		qboolean inAttackRange = BotTargetInAttackRange( self, self->botMind->goal );
-		self->botMind->goalLastSeen = level.time;
+		self->botMind->enemyLastSeen = level.time;
 
 		if ( ( inAttackRange && myTeam == TEAM_HUMANS ) || self->botMind->nav.directPathToGoal )
 		{
