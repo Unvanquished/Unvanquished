@@ -99,16 +99,12 @@ void Rocket_SetInnerRML( const char *name, const char *id, const char *RML )
 	}
 }
 
+
 void Rocket_GetAttribute( const char *name, const char *id, const char *attribute, char *out, int length )
 {
-	extern std::queue< RocketEvent_t* > eventQueue;
 	if ( ( !*name || !*id ) && activeElement )
 	{
 		Q_strncpyz( out, activeElement->GetAttribute< Rocket::Core::String >( attribute, "" ).CString(), length );
-	}
-	else if ( ( !*name || !*id ) && !eventQueue.empty() )
-	{
-		Q_strncpyz( out, eventQueue.front()->targetElement->GetAttribute< Rocket::Core::String >( attribute, "" ).CString(), length );
 	}
 	else
 	{
@@ -123,15 +119,9 @@ void Rocket_GetAttribute( const char *name, const char *id, const char *attribut
 
 void Rocket_SetAttribute( const char *name, const char *id, const char *attribute, const char *value )
 {
-	extern std::queue< RocketEvent_t* > eventQueue;
-
 	if ( ( !*name && !*id ) && activeElement )
 	{
 		activeElement->SetAttribute( attribute, value );
-	}
-	else if ( ( !*name && !*id ) && !activeElement && !eventQueue.empty() )
-	{
-		static_cast<Rocket::Core::Element*>( eventQueue.front()->targetElement )->SetAttribute( attribute, value );
 	}
 	else
 	{
@@ -166,17 +156,14 @@ void Rocket_GetElementAbsoluteOffset( float *x, float *y )
 
 void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t type )
 {
-	extern std::queue< RocketEvent_t* > eventQueue;
-	Rocket::Core::Element *element = activeElement ? activeElement : !eventQueue.empty() ? eventQueue.front()->targetElement : NULL;
-
-	if ( element )
+	if ( activeElement )
 	{
 		switch ( type )
 		{
 			case ROCKET_STRING:
 			{
 				char *string = ( char * ) out;
-				Q_strncpyz( string, element->GetProperty<Rocket::Core::String>( name ).CString(), len );
+				Q_strncpyz( string, activeElement->GetProperty<Rocket::Core::String>( name ).CString(), len );
 				return;
 			}
 
@@ -189,7 +176,7 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 					return;
 				}
 
-				*f = element->GetProperty<float>( name );
+				*f = activeElement->GetProperty<float>( name );
 				return;
 			}
 
@@ -202,7 +189,7 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 					return;
 				}
 
-				*i = element->GetProperty<int>( name );
+				*i = activeElement->GetProperty<int>( name );
 				return;
 			}
 
@@ -215,7 +202,7 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 					return;
 				}
 
-				Rocket::Core::Colourb color = element->GetProperty<Rocket::Core::Colourb>( name );
+				Rocket::Core::Colourb color = activeElement->GetProperty<Rocket::Core::Colourb>( name );
 				outColor[ 0 ] = color.red, outColor[ 1 ] = color.green, outColor[ 2 ] = color.blue, outColor[ 3 ] = color.alpha;
 				return;
 			}
@@ -225,8 +212,5 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 
 void Rocket_SetClass( const char *in, qboolean activate )
 {
-	extern std::queue< RocketEvent_t* > eventQueue;
-	Rocket::Core::Element *element = activeElement ? activeElement : !eventQueue.empty() ? eventQueue.front()->targetElement : NULL;
-
-	element->SetClass( in, static_cast<bool>( activate ) );
+	activeElement->SetClass( in, static_cast<bool>( activate ) );
 }

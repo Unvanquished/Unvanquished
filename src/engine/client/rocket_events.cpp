@@ -45,6 +45,7 @@ extern "C"
 }
 
 std::queue< RocketEvent_t* > eventQueue;
+extern Rocket::Core::Element *activeElement;
 
 void Rocket_ProcessEvent( Rocket::Core::Event& event, Rocket::Core::String& value )
 {
@@ -62,6 +63,7 @@ qboolean Rocket_GetEvent( void )
 	if ( eventQueue.front() != NULL )
 	{
 		Cmd_TokenizeString( eventQueue.front()->cmd.CString() );
+		activeElement = eventQueue.front()->targetElement;
 		return qtrue;
 	}
 
@@ -72,6 +74,7 @@ void Rocket_DeleteEvent( void )
 {
 	RocketEvent_t *event = eventQueue.front();
 	eventQueue.pop();
+	activeElement = NULL;
 	delete event;
 }
 
