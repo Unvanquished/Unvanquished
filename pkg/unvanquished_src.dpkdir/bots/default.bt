@@ -1,7 +1,8 @@
 selector
 {
-	condition alertedToEnemy
+	sequence
 	{
+		condition alertedToEnemy
 		selector
 		{
 			condition haveWeapon( WP_HBUILD ) && ( !buildingIsDamaged || teamateHasWeapon( WP_HBUILD ) )
