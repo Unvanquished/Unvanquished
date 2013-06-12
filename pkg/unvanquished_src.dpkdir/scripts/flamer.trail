@@ -1,0 +1,15 @@
+FlamerTrail
+{
+  beam
+  {
+    shader		gfx/weapons/flamertrail
+    segments		8
+    width		30 4
+    alpha 		1.0 0.0
+    segmentTime		100
+    fadeOutTime		0
+    textureType		stretch 1.0 0.0
+
+    jitter 0 250
+  }
+}

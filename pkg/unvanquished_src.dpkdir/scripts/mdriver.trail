@@ -1,0 +1,10 @@
+models/weapons/mdriver/fireTS
+{
+  beam
+  {
+    shader        gfx/mdriver/trail
+    width         3.0 3.0
+    textureType   stretch 0.94 0.03
+  }
+  lifeTime 70
+}
