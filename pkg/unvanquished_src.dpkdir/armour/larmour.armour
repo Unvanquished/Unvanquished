@@ -1,0 +1,95 @@
+
+{
+  name "larmour chest"
+  minHeight 0.5
+  maxHeight 0.8
+  minAngle  310
+  maxAngle  50
+  modifier  0.35
+}
+
+{
+  name "larmour left arm"
+  minHeight 0.5
+  maxHeight 0.8
+  minAngle  50
+  maxAngle  130
+  modifier  0.3
+}
+
+{
+  name "larmour back"
+  minHeight 0.5
+  maxHeight 0.8
+  minAngle  130
+  maxAngle  230
+  modifier  0.4
+}
+
+{
+  name "larmour right arm"
+  minHeight 0.5
+  maxHeight 0.8
+  minAngle  230
+  maxAngle  310
+  modifier  0.3
+}
+
+{
+  name "larmour legs"
+  minHeight 0.0
+  maxHeight 0.5
+  minAngle  0
+  maxAngle  360
+  modifier  0.3
+}
+
+{
+  name "larmour chest crouch"
+  minHeight 0.3
+  maxHeight 0.7
+  minAngle  310
+  maxAngle  50
+  modifier  0.35
+  crouch
+}
+
+{
+  name "larmour left arm crouch"
+  minHeight 0.3
+  maxHeight 0.7
+  minAngle  50
+  maxAngle  130
+  modifier  0.3
+  crouch
+}
+
+{
+  name "larmour back crouch"
+  minHeight 0.3
+  maxHeight 0.7
+  minAngle  130
+  maxAngle  230
+  modifier  0.4
+  crouch
+}
+
+{
+  name "larmour right arm crouch"
+  minHeight 0.3
+  maxHeight 0.7
+  minAngle  230
+  maxAngle  310
+  modifier  0.3
+  crouch
+}
+
+{
+  name "larmour legs crouch"
+  minHeight 0.0
+  maxHeight 0.3
+  minAngle  0
+  maxAngle  360
+  modifier  0.3
+  crouch
+}

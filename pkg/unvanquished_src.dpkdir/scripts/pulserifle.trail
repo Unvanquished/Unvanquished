@@ -1,0 +1,30 @@
+PulseRifleTrail
+{
+  beam
+  {
+    shader		gfx/weapons/pulserifletrail
+    segments		4
+    width		4 4
+    alpha 		1.0 0.0
+    segmentTime		10
+    fadeOutTime		2.5
+    textureType		stretch 1.0 0.1
+
+    jitter 1 10
+  }
+}
+PulseRifleImpactBlobs
+{
+  beam
+  {
+    shader		gfx/weapons/pulserifletrail
+    segments		4
+    width		2 0.4
+    alpha 		1.0 0.0
+    segmentTime	 	6
+    fadeOutTime		3
+    textureType		stretch 1.0 0.1
+
+    jitter 1 10
+  }
+}
