@@ -1,0 +1,62 @@
+MuzzleFlashTurret
+{
+	ejector
+	{
+		particle
+		{
+			shader sync models/buildables/mgturret/t_flash
+			displacement 0 0 7 ~0.5
+
+			velocityType      cent
+			velocityDir       linear
+			velocityMagnitude 0
+			velocity          0 0 0 ~5
+
+			accelerationType      static
+			accelerationDir       linear
+			accelerationMagnitude 0
+			acceleration          0 0 0 0
+
+			radius 10 7.10 2.0
+			alpha  0 0.4 0.0
+			rotation 0 ~360 -
+			bounce 0.0
+
+			lifeTime 120
+		}
+		count 5
+		delay 0
+		period 0 - ~0%
+	}
+	ejector
+	{
+		particle
+		{
+			model models/weapons/shells/rifle-shell.md3
+
+			displacement -5 0 -50 ~0.5
+
+			parentVelocityFraction 0.85
+
+			velocityType      static_transform
+			velocityDir       linear
+			velocityMagnitude 250~75
+			//250~75
+			velocity          0 -1 0.2 ~20
+
+			accelerationType      static
+			accelerationDir       linear
+			accelerationMagnitude 800
+			acceleration          0 0 -1 0
+
+			radius 0 0.8 -
+			bounce 0.7
+
+			lifeTime 5000
+		}
+
+		count 1
+		delay 0
+		period 0 - ~0%
+	}
+}

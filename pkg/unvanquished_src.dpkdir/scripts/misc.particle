@@ -1,0 +1,378 @@
+firstPersonPoisonCloudPS
+{
+  ejector
+  {
+    particle
+    {
+      shader sync gfx/sprites/poisoncloud
+
+      displacement 0 0 0 ~32.0
+
+      parentVelocityFraction  1.0
+      velocityType      static
+      velocityDir       linear
+      velocityMagnitude 16
+      velocity          0 0 1 ~0
+
+      accelerationType      static
+      accelerationDir       linear
+      accelerationMagnitude 300
+      acceleration          0 0 1 0
+
+      radius 0 10.0 40.0
+      alpha  0 0.5 0.0
+      rotation 0 ~360 -
+      bounce 0.5
+
+      lifeTime 1000
+    }
+
+    count 400
+    delay 0
+    period 20 - ~0%
+  }
+}
+
+poisonCloudedPS
+{
+  ejector
+  {
+    particle
+    {
+      shader sync gfx/sprites/poisoncloud
+
+      displacement 0 0 0 ~6.0
+
+      velocityType      static
+      velocityDir       linear
+      velocityMagnitude 60
+      velocity          0 0 0 ~50
+
+      radius 0 4.0 12.0
+      alpha  0 0.25 0.0
+      rotation 0 ~360 -
+
+      lifeTime 800
+    }
+
+    count 100
+    delay 0
+    period 50 200 ~0%
+  }
+}
+
+
+alienEvolvePS
+{
+  ejector
+  {
+    particle
+    {
+      shader sync gfx/sprites/green_acid
+
+      displacement 0 0 0 ~0
+
+      velocityType      static
+      velocityDir       linear
+      velocityMagnitude 150~75%
+      velocity          0 0 1 ~50
+
+      accelerationType      static
+      accelerationDir       linear
+      accelerationMagnitude 800
+      acceleration          0 0 -1 0
+
+      radius 0 5.0 30.0
+      alpha  0 1.0 0.0
+      rotation 0 ~360 -
+      bounce 0.2
+
+      lifeTime 1000
+    }
+
+    count 30
+    delay 0
+    period 5 - ~0%
+  }
+}
+
+alienBleedPS
+{
+  ejector
+  {
+    particle
+    {
+      shader sync gfx/damage/blood.tga
+      displacement          0 0 0 0
+
+      velocityType          normal
+
+      velocityDir           linear
+
+      velocityMagnitude     15
+      velocity              0 0 0 ~35
+
+      accelerationType      static
+      accelerationDir       linear
+      acceleration          0 0 -1 ~5
+      accelerationMagnitude 25
+
+      radius                0 5 8
+      alpha                 250 .85 0
+      rotation              0 ~-15 ~15
+      bounce                0.0
+      color                 0 { 1.0 1.0 0.6 } -
+
+      lifeTime              400~100
+    }
+
+    particle
+    {
+      shader sync gfx/damage/blood.tga
+      displacement          0 0 0 0
+
+      velocityType          normal
+
+      velocityDir           linear
+
+      velocityMagnitude     15
+      velocity              0 0 0 ~35
+
+      accelerationType      static
+      accelerationDir       linear
+      acceleration          0 0 -1 ~5
+      accelerationMagnitude 25
+
+      radius                0 5 8
+      alpha                 250 .85 0
+      rotation              0 ~165 ~195
+      bounce                0.0
+      color                 0 { 1.0 1.0 0.6 } -
+
+      lifeTime              400~100
+    }
+
+    count   2
+    delay   0
+    period  0 - 0
+  }
+
+  thirdPersonOnly
+}
+
+alienBuildableBleedPS
+{
+  ejector
+  {
+    particle
+    {
+      shader sync gfx/damage/blood.tga
+      displacement          0 0 0 0
+
+      velocityType          normal
+
+      velocityDir           linear
+
+      velocityMagnitude     15
+      velocity              0 0 0 ~35
+
+      accelerationType      static
+      accelerationDir       linear
+      acceleration          0 0 -1 ~5
+      accelerationMagnitude 25
+
+      radius                0 5 8
+      alpha                 250 .85 0
+      rotation              0 ~-15 ~15
+      bounce                0.0
+      color                 0 { 1.0 1.0 0.6 } -
+
+      lifeTime              400~100
+    }
+
+    particle
+    {
+      shader sync gfx/damage/blood.tga
+      displacement          0 0 0 0
+
+      velocityType          normal
+
+      velocityDir           linear
+
+      velocityMagnitude     15
+      velocity              0 0 0 ~35
+
+      accelerationType      static
+      accelerationDir       linear
+      acceleration          0 0 -1 ~5
+      accelerationMagnitude 25
+
+      radius                0 5 8
+      alpha                 250 .85 0
+      rotation              0 ~165 ~195
+      bounce                0.0
+      color                 0 { 1.0 1.0 0.6 } -
+
+      lifeTime              400~100
+    }
+
+    count   2
+    delay   0
+    period  0 - 0
+  }
+}
+
+
+humanBleedPS
+{
+  ejector
+  {
+    particle
+    {
+      shader sync gfx/damage/blood.tga
+      displacement          0 0 0 0
+
+      velocityType          normal
+
+      velocityDir           linear
+
+      velocityMagnitude     15
+      velocity              0 0 0 ~35
+
+      accelerationType      static
+      accelerationDir       linear
+      acceleration          0 0 -1 ~5
+      accelerationMagnitude 25
+
+      radius                0 5 8
+      alpha                 250 .75 0
+      rotation              0 ~-15 ~15
+      bounce                0.0
+      color                 0 { 0.8 0.2 0.2 } -
+
+      lifeTime              400~100
+    }
+
+    particle
+    {
+      shader sync gfx/damage/blood.tga
+      displacement          0 0 0 0
+
+      velocityType          normal
+
+      velocityDir           linear
+
+      velocityMagnitude     15
+      velocity              0 0 0 ~35
+
+      accelerationType      static
+      accelerationDir       linear
+      acceleration          0 0 -1 ~5
+      accelerationMagnitude 25
+
+      radius                0 5 8
+      alpha                 250 .75 0
+      rotation              0 ~-15 ~15
+      bounce                0.0
+      color                 0 { 0.8 0.2 0.2 } -
+
+      lifeTime              400~100
+    }
+
+    count   2
+    delay   0
+    period  0 - 0
+  }
+
+  thirdPersonOnly
+}
+
+humanBuildableBleedPS
+{
+  ejector
+  {
+    particle
+    {
+      shader sync flame3 flame4 flame5 flame6 flame7 flame8 flame9 flame10 flame11 flame12 flame13 flame14 flame15 flame16 flame17 flame18 flame19 flame20 flame21 flame22 flame23 flame24 flame25
+      displacement          0 0 0 0
+
+      velocityType          normal
+
+      velocityDir           linear
+
+      velocityMagnitude     15
+      velocity              0 0 0 ~35
+
+      accelerationType      static
+      accelerationDir       linear
+      acceleration          0 0 -1 ~5
+      accelerationMagnitude 25
+
+      radius                0 5 8
+      alpha                 250 .75 0
+      rotation              0 ~-15 ~15
+      bounce                0.0
+      color                 0 { 0.8 0.2 0.2 } -
+
+      lifeTime              200~50
+    }
+
+    particle
+    {
+      shader sync flame3 flame4 flame5 flame6 flame7 flame8 flame9 flame10 flame11 flame12 flame13 flame14 flame15 flame16 flame17 flame18 flame19 flame20 flame21 flame22 flame23 flame24 flame25
+      displacement          0 0 0 0
+
+      velocityType          normal
+
+      velocityDir           linear
+
+      velocityMagnitude     15
+      velocity              0 0 0 ~35
+
+      accelerationType      static
+      accelerationDir       linear
+      acceleration          0 0 -1 ~5
+      accelerationMagnitude 25
+
+      radius                0 5 8
+      alpha                 250 .75 0
+      rotation              0 ~-15 ~15
+      bounce                0.0
+      color                 0 { 0.8 0.2 0.2 } -
+
+      lifeTime              200~50
+    }
+
+    count   2
+    delay   0
+    period  0 - 0
+  }
+
+
+}
+
+disconnectPS
+{
+  ejector
+  {
+    particle
+    {
+      shader sync gfx/sprites/bubble
+      displacement          0 0 0 ~60
+
+      velocityType          static
+      velocityDir           linear
+      velocityMagnitude     15
+      velocity              0 0 1 ~90
+
+      radius                0 24 32
+      alpha                 0 1.0 -
+
+      lifeTime              1000~300
+    }
+
+    count   3
+    delay   0
+    period  0 - 0
+  }
+}
