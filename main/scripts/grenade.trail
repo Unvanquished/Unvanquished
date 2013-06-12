@@ -1,0 +1,15 @@
+grenadepuff
+{
+  beam
+  {
+    shader		gfx/grenade/puff
+    segments		16
+    width		10 128
+    alpha 		1.0 0.0
+    segmentTime		10
+    fadeOutTime		800
+    textureType		stretch 1.0 0.0
+
+    //jitter 1 10
+  }
+}
