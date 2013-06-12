@@ -37,6 +37,20 @@ typedef struct
 	qboolean inuse;
 } botTarget_t;
 
+#define MAX_ENEMY_QUEUE 32
+typedef struct
+{
+	gentity_t *ent;
+	int        timeFound;
+} enemyQueueElement_t;
+
+typedef struct
+{
+	enemyQueueElement_t enemys[ MAX_ENEMY_QUEUE ];
+	int front;
+	int back;
+} enemyQueue_t;
+
 typedef struct
 {
 	int level;
@@ -49,10 +63,8 @@ typedef struct
 
 typedef struct
 {
+	enemyQueue_t enemyQueue;
 	int enemyLastSeen;
-	int timeFoundEnemy;
-
-	int goalLastSeen;
 
 	//team the bot is on when added
 	team_t botTeam;

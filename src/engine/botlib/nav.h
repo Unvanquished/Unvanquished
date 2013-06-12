@@ -49,6 +49,31 @@ struct NavMeshTileHeader
 	int dataSize;
 };
 
+template<class T> static inline void SwapArray( T block[], size_t len )
+{
+	if ( LittleLong( 1 ) != 1 )
+	{
+		for ( size_t i = 0; i < len; i++ )
+		{
+			dtSwapEndian( &block[ i ] );
+		}
+	}
+}
+
+static inline void SwapNavMeshSetHeader( NavMeshSetHeader &header )
+{
+	SwapArray( ( unsigned int * ) &header, sizeof( header ) / sizeof( unsigned int ) );
+}
+
+static inline void SwapNavMeshTileHeader( NavMeshTileHeader &header )
+{
+	if ( LittleLong( 1 ) != 1 )
+	{
+		dtSwapEndian( &header.dataSize );
+		dtSwapEndian( &header.tileRef );
+	}
+}
+
 static const int NAVMESHCON_VERSION = 2;
 struct OffMeshConnectionHeader
 {

@@ -48,7 +48,7 @@ void  BotAimAtEnemy( gentity_t *self );
 void  BotSlowAim( gentity_t *self, vec3_t target, float slow );
 void  BotShakeAim( gentity_t *self, vec3_t rVec );
 void  BotAimAtLocation( gentity_t *self, vec3_t target );
-float BotAimNegligence( gentity_t *self, botTarget_t target );
+float BotAimAngle( gentity_t *self, vec3_t pos );
 
 // targets
 void        BotSetTarget( botTarget_t *target, gentity_t *ent, vec3_t pos );
@@ -77,6 +77,8 @@ qboolean BotChangeGoalEntity( gentity_t *self, gentity_t *goal );
 qboolean BotChangeGoalPos( gentity_t *self, vec3_t goal );
 
 // fighting
+void     BotResetEnemyQueue( enemyQueue_t *queue );
+qboolean BotEnemyIsValid( gentity_t *self, gentity_t *enemy );
 void     BotFireWeapon( weaponMode_t mode, usercmd_t *botCmdBuffer );
 void     BotFireWeaponAI( gentity_t *self );
 void     BotClassMovement( gentity_t *self, qboolean inAttackRange );

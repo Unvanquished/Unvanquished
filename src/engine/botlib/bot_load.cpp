@@ -41,17 +41,6 @@ NavData_t BotNavData[ MAX_NAV_DATA ];
 LinearAllocator alloc( 1024 * 1024 * 16 );
 FastLZCompressor comp;
 
-template<class T> static inline void SwapBlock( T block[], int num )
-{
-	if ( LittleLong( 1 ) != 1 )
-	{
-		for ( int i = 0; i < num; i++ )
-		{
-			dtSwapEndian( &block[ i ] );
-		}
-	}
-}
-
 void BotSaveOffMeshConnections( NavData_t *nav )
 {
 	char mapname[ MAX_QPATH ];
@@ -73,35 +62,35 @@ void BotSaveOffMeshConnections( NavData_t *nav )
 	header.numConnections = LittleLong( conCount );
 	FS_Write( &header, sizeof( header ), f );
 
-	float *verts = ( float * ) dtAlloc( sizeof( float ) * 6 * conCount, DT_ALLOC_TEMP );
-	memcpy( verts, nav->process.con.verts, sizeof( float ) * 6 * conCount );
-	SwapBlock( verts, conCount * 6 );
-
-	FS_Write( verts, sizeof( float ) * 6 * conCount, f );
+	size_t size = sizeof( float ) * 6 * conCount;
+	float *verts = ( float * ) dtAlloc( size, DT_ALLOC_TEMP );
+	memcpy( verts, nav->process.con.verts, size );
+	SwapArray( verts, conCount * 6 );
+	FS_Write( verts, size, f );
 	dtFree( verts );
 
-	float *rad = ( float * ) dtAlloc( sizeof( float ) * conCount, DT_ALLOC_TEMP );
-	memcpy( rad, nav->process.con.rad, sizeof( float ) * conCount );
-	SwapBlock( rad, conCount );
-
-	FS_Write( rad, sizeof( float ) * conCount, f );
+	size = sizeof( float ) * conCount;
+	float *rad = ( float * ) dtAlloc( size, DT_ALLOC_TEMP );
+	memcpy( rad, nav->process.con.rad, size );
+	SwapArray( rad, conCount );
+	FS_Write( rad, size, f );
 	dtFree( rad );
 
-	unsigned short *flags = ( unsigned short * ) dtAlloc( sizeof( unsigned short ) * conCount, DT_ALLOC_TEMP );
-	memcpy( flags, nav->process.con.flags, sizeof( unsigned short ) * conCount );
-	SwapBlock( flags, conCount );
-
-	FS_Write( flags, sizeof( unsigned short ) * conCount, f );
+	size = sizeof( unsigned short ) * conCount;
+	unsigned short *flags = ( unsigned short * ) dtAlloc( size, DT_ALLOC_TEMP );
+	memcpy( flags, nav->process.con.flags, size );
+	SwapArray( flags, conCount );
+	FS_Write( flags, size, f );
 	dtFree( flags );
 
 	FS_Write( nav->process.con.areas, sizeof( unsigned char ) * conCount, f );
 	FS_Write( nav->process.con.dirs, sizeof( unsigned char ) * conCount, f );
 
-	unsigned int *userids = ( unsigned int * ) dtAlloc( sizeof( unsigned int ) * conCount, DT_ALLOC_TEMP );
-	memcpy( userids, nav->process.con.userids, sizeof( unsigned int ) * conCount );
-	SwapBlock( userids, conCount );
-	
-	FS_Write( userids, sizeof( unsigned int ) * conCount, f );
+	size = sizeof( unsigned int ) * conCount;
+	unsigned int *userids = ( unsigned int * ) dtAlloc( size, DT_ALLOC_TEMP );
+	memcpy( userids, nav->process.con.userids, size );
+	SwapArray( userids, conCount );
+	FS_Write( userids, size, f );
 	dtFree( userids );
 
 	FS_FCloseFile( f );
@@ -125,9 +114,9 @@ void BotLoadOffMeshConnections( const char *filename, NavData_t *nav )
 	OffMeshConnectionHeader header;
 	FS_Read( &header, sizeof( header ), f );
 
-	header.numConnections = LittleLong( header.numConnections );
 	header.version = LittleLong( header.version );
-	
+	header.numConnections = LittleLong( header.numConnections );
+
 	if ( header.version != NAVMESHCON_VERSION )
 	{
 		FS_FCloseFile( f );
@@ -145,24 +134,24 @@ void BotLoadOffMeshConnections( const char *filename, NavData_t *nav )
 	nav->process.con.offMeshConCount = conCount;
 
 	FS_Read( nav->process.con.verts, sizeof( float ) * 6 * conCount, f );
-	SwapBlock( nav->process.con.verts, conCount * 6 );
+	SwapArray( nav->process.con.verts, conCount * 6 );
 
 	FS_Read( nav->process.con.rad, sizeof( float ) * conCount, f );
-	SwapBlock( nav->process.con.rad, conCount );
+	SwapArray( nav->process.con.rad, conCount );
 
 	FS_Read( nav->process.con.flags, sizeof( unsigned short ) * conCount, f );
-	SwapBlock( nav->process.con.flags, conCount );
+	SwapArray( nav->process.con.flags, conCount );
 
 	FS_Read( nav->process.con.areas, sizeof( unsigned char ) * conCount, f );
 	FS_Read( nav->process.con.dirs, sizeof( unsigned char ) * conCount, f );
 
 	FS_Read( nav->process.con.userids, sizeof( unsigned int ) * conCount, f );
-	SwapBlock( nav->process.con.userids, conCount );
+	SwapArray( nav->process.con.userids, conCount );
 
 	FS_FCloseFile( f );
 }
 
-qboolean BotLoadNavMesh( const char *filename, NavData_t &nav )
+bool BotLoadNavMesh( const char *filename, NavData_t &nav )
 {
 	char mapname[ MAX_QPATH ];
 	char filePath[ MAX_QPATH ];
@@ -181,36 +170,33 @@ qboolean BotLoadNavMesh( const char *filename, NavData_t &nav )
 	if ( !f )
 	{
 		Com_Printf( S_COLOR_RED "ERROR: Cannot open Navigaton Mesh file\n" );
-		return qfalse;
+		return false;
 	}
 
 	if ( len < 0 )
 	{
 		Com_Printf( S_COLOR_RED "ERROR: Negative Length for Navigation Mesh file\n" );
-		return qfalse;
+		return false;
 	}
 
 	NavMeshSetHeader header;
 	
 	FS_Read( &header, sizeof( header ), f );
 
-	qboolean swapEndian = qfalse;
+	SwapNavMeshSetHeader( header );
 
 	if ( header.magic != NAVMESHSET_MAGIC )
 	{
-		swapEndian = qtrue;
-		int i;
-		for ( i = 0; i < sizeof( header ) / sizeof( int ); i ++ )
-		{
-			dtSwapEndian( ( ( int * ) &header ) + i );
-		}
+		Com_Printf( S_COLOR_RED "ERROR: File is wrong magic\n" );
+		FS_FCloseFile( f );
+		return false;
 	}
 
 	if ( header.version != NAVMESHSET_VERSION )
 	{
 		Com_Printf( S_COLOR_RED "ERROR: File is wrong version found: %d want: %d\n", header.version, NAVMESHSET_VERSION );
 		FS_FCloseFile( f );
-		return qfalse;
+		return false;
 	}
 
 	nav.mesh = dtAllocNavMesh();
@@ -219,7 +205,7 @@ qboolean BotLoadNavMesh( const char *filename, NavData_t &nav )
 	{
 		Com_Printf( S_COLOR_RED "ERROR: Unable to allocate nav mesh\n" );
 		FS_FCloseFile( f );
-		return qfalse;
+		return false;
 	}
 
 	dtStatus status = nav.mesh->init( &header.params );
@@ -230,7 +216,7 @@ qboolean BotLoadNavMesh( const char *filename, NavData_t &nav )
 		dtFreeNavMesh( nav.mesh );
 		nav.mesh = NULL;
 		FS_FCloseFile( f );
-		return qfalse;
+		return false;
 	}
 
 	nav.cache = dtAllocTileCache();
@@ -241,7 +227,7 @@ qboolean BotLoadNavMesh( const char *filename, NavData_t &nav )
 		dtFreeNavMesh( nav.mesh );
 		nav.mesh = NULL;
 		FS_FCloseFile( f );
-		return qfalse;
+		return false;
 	}
 
 	status = nav.cache->init( &header.cacheParams, &alloc, &comp, &nav.process );
@@ -254,7 +240,7 @@ qboolean BotLoadNavMesh( const char *filename, NavData_t &nav )
 		nav.mesh = NULL;
 		nav.cache = NULL;
 		FS_FCloseFile( f );
-		return qfalse;
+		return false;
 	}
 
 	for ( int i = 0; i < header.numTiles; i++ )
@@ -263,11 +249,7 @@ qboolean BotLoadNavMesh( const char *filename, NavData_t &nav )
 
 		FS_Read( &tileHeader, sizeof( tileHeader ), f );
 
-		if ( swapEndian )
-		{
-			dtSwapEndian( &tileHeader.dataSize );
-			dtSwapEndian( &tileHeader.tileRef );
-		}
+		SwapNavMeshTileHeader( tileHeader );
 
 		if ( !tileHeader.tileRef || !tileHeader.dataSize )
 		{
@@ -277,7 +259,7 @@ qboolean BotLoadNavMesh( const char *filename, NavData_t &nav )
 			nav.cache = NULL;
 			nav.mesh = NULL;
 			FS_FCloseFile( f );
-			return qfalse;
+			return false;
 		}
 
 		unsigned char *data = ( unsigned char * ) dtAlloc( tileHeader.dataSize, DT_ALLOC_PERM );
@@ -290,14 +272,14 @@ qboolean BotLoadNavMesh( const char *filename, NavData_t &nav )
 			nav.cache = NULL;
 			nav.mesh = NULL;
 			FS_FCloseFile( f );
-			return qfalse;
+			return false;
 		}
 
 		memset( data, 0, tileHeader.dataSize );
 
 		FS_Read( data, tileHeader.dataSize, f );
 
-		if ( swapEndian )
+		if ( LittleLong( 1 ) != 1 )
 		{
 			dtTileCacheHeaderSwapEndian( data, tileHeader.dataSize );
 		}
@@ -314,7 +296,7 @@ qboolean BotLoadNavMesh( const char *filename, NavData_t &nav )
 			nav.cache = NULL;
 			nav.mesh = NULL;
 			FS_FCloseFile( f );
-			return qfalse;
+			return false;
 		}
 
 		if ( tile )
@@ -324,7 +306,7 @@ qboolean BotLoadNavMesh( const char *filename, NavData_t &nav )
 	}
 
 	FS_FCloseFile( f );
-	return qtrue;
+	return true;
 }
 
 inline void *dtAllocCustom( int size, dtAllocHint hint )
@@ -394,7 +376,7 @@ extern "C" qboolean BotSetupNav( const botClass_t *botClass, qhandle_t *navHandl
 
 			agents[ i ].corridor.reset( 0, clearVec );
 			agents[ i ].clientNum = i;
-			agents[ i ].needReplan = qtrue;
+			agents[ i ].needReplan = true;
 			agents[ i ].routePlanCounter = 0;
 			agents[ i ].lastRoutePlanTime = 0;
 			agents[ i ].nav = NULL;

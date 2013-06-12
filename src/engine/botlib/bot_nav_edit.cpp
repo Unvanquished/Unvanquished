@@ -40,7 +40,7 @@ extern "C" {
 #include "bot_navdraw.h"
 #include "nav.h"
 
-qboolean GetPointPointedTo( NavData_t *nav, rVec &p )
+bool GetPointPointedTo( NavData_t *nav, rVec &p )
 {
 	qVec forward;
 	qVec end;
@@ -59,10 +59,10 @@ qboolean GetPointPointedTo( NavData_t *nav, rVec &p )
 	pos = qVec( trace.endpos );
 	if ( dtStatusFailed( nav->query->findNearestPoly( pos, extents, &nav->filter, &nearRef, p ) ) )
 	{
-		return qfalse;
+		return false;
 	}
 
-	return qtrue;
+	return true;
 }
 
 struct

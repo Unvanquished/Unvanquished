@@ -84,7 +84,7 @@ static AIValue_t haveWeapon( gentity_t *self, const AIValue_t *params )
 
 static AIValue_t alertedToEnemy( gentity_t *self, const AIValue_t *params )
 {
-	return AIBoxInt( self->botMind->bestEnemy.ent && level.time - self->botMind->timeFoundEnemy >= g_bot_reactiontime.integer );
+	return AIBoxInt( self->botMind->bestEnemy.ent != NULL );
 }
 
 static AIValue_t botTeam( gentity_t *self, const AIValue_t *params )
@@ -211,11 +211,6 @@ static AIValue_t inAttackRange( gentity_t *self, const AIValue_t *params )
 	return AIBoxInt( qfalse );
 }
 
-static AIValue_t timeSinceGoalSeen( gentity_t *self, const AIValue_t *params )
-{
-	return AIBoxInt( level.time - self->botMind->goalLastSeen );
-}
-
 static AIValue_t isVisible( gentity_t *self, const AIValue_t *params )
 {
 	botTarget_t target;
@@ -231,9 +226,9 @@ static AIValue_t isVisible( gentity_t *self, const AIValue_t *params )
 
 	if ( BotTargetIsVisible( self, target, CONTENTS_SOLID ) )
 	{
-		if ( et == E_GOAL )
+		if ( BotEnemyIsValid( self, e.ent ) )
 		{
-			self->botMind->goalLastSeen = level.time;
+			self->botMind->enemyLastSeen = level.time;
 		}
 		return AIBoxInt( qtrue );
 	}
@@ -365,7 +360,6 @@ static const struct AIConditionMap_s
 	{ "skill",             VALUE_INT,   botSkill,          0 },
 	{ "team",              VALUE_INT,   botTeam,           0 },
 	{ "teamateHasWeapon",  VALUE_INT,   teamateHasWeapon,  1 },
-	{ "timeSinceGoalSeen", VALUE_INT,   timeSinceGoalSeen, 0 },
 	{ "weapon",            VALUE_INT,   currentWeapon,     0 }
 };
 

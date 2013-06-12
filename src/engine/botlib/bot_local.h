@@ -74,7 +74,7 @@ typedef struct
 	NavData_t         *nav;
 	dtPathCorridor    corridor;
 	int               clientNum;
-	qboolean          needReplan;
+	bool              needReplan;
 	int               lastRoutePlanTime;
 	int               routePlanCounter;
 	float             cornerVerts[ MAX_CORNERS * 3 ];
@@ -97,8 +97,8 @@ void BotSaveOffMeshConnections( NavData_t *nav );
 
 void         BotCalcSteerDir( Bot_t *bot, rVec &dir );
 void         FindWaypoints( Bot_t *bot, float *corners, unsigned char *cornerFlags, dtPolyRef *cornerPolys, int *numCorners, int maxCorners );
-qboolean     PointInPolyExtents( Bot_t *bot, dtPolyRef ref, rVec point, rVec extents );
-qboolean     PointInPoly( Bot_t *bot, dtPolyRef ref, rVec point );
-qboolean     BotFindNearestPoly( Bot_t *bot, rVec coord, dtPolyRef *nearestPoly, rVec &nearPoint );
+bool         PointInPolyExtents( Bot_t *bot, dtPolyRef ref, rVec point, rVec extents );
+bool         PointInPoly( Bot_t *bot, dtPolyRef ref, rVec point );
+bool         BotFindNearestPoly( Bot_t *bot, rVec coord, dtPolyRef *nearestPoly, rVec &nearPoint );
 bool         FindRoute( Bot_t *bot, rVec s, botRouteTargetInternal target, bool allowPartial );
 #endif

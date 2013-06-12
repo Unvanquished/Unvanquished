@@ -173,7 +173,6 @@ qboolean G_BotSetDefaults( int clientNum, team_t team, int skill, const char* be
 	gentity_t *self = &g_entities[ clientNum ];
 	botMind = self->botMind = &g_botMind[clientNum];
 
-	botMind->enemyLastSeen = 0;
 	botMind->botTeam = team;
 	BotSetNavmesh( self, self->client->ps.stats[ STAT_CLASS ] );
 
@@ -181,6 +180,7 @@ qboolean G_BotSetDefaults( int clientNum, team_t team, int skill, const char* be
 	botMind->numRunningNodes = 0;
 	botMind->currentNode = NULL;
 	memset( &botMind->nav, 0, sizeof( botMind->nav ) );
+	BotResetEnemyQueue( &botMind->enemyQueue );
 
 	botMind->behaviorTree = ReadBehaviorTree( behavior, &treeList );
 
@@ -448,8 +448,7 @@ void G_BotSpectatorThink( gentity_t *self )
 	//reset stuff
 	BotSetTarget( &self->botMind->goal, NULL, NULL );
 	self->botMind->bestEnemy.ent = NULL;
-	self->botMind->timeFoundEnemy = 0;
-	self->botMind->enemyLastSeen = 0;
+	BotResetEnemyQueue( &self->botMind->enemyQueue );
 	self->botMind->currentNode = NULL;
 	memset( &self->botMind->nav, 0, sizeof( self->botMind->nav ) );
 	self->botMind->futureAimTime = 0;
