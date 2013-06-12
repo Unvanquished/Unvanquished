@@ -262,7 +262,9 @@ CG_SetupMinimapTransform
 */
 static void CG_SetupMinimapTransform( const rectDef_t *rect, const minimap_t* minimap, const minimapZone_t* zone)
 {
-    float posx, posy, x, y, s, c, angle, scale, equivalenceScale;
+    float posx, posy, x, y, s, c, angle, scale;
+
+    (void)minimap; //Supresses -Wunused-variable, we might need this one later //TODO: have a macro for this
 
     //The refdefview angle is the angle from the x axis
     //the 90 gets it back to the Y axis (we want the view to point up)
