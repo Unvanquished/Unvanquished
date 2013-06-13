@@ -1471,6 +1471,8 @@ void Key_SetCatcher( int catcher )
 	{
 		cls.keyCatchers = catcher;
 	}
+
+	Rocket_SetActiveContext( catcher );
 }
 
 
@@ -2167,6 +2169,14 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_ROCKET_LOADCURSOR:
 			Rocket_LoadCursor( VMA(1) );
+			return 0;
+
+		case CG_ROCKET_LOADHUD:
+			Rocket_LoadHud( VMA(1) );
+			return 0;
+
+		case CG_ROCKET_SHOWHUD:
+			Rocket_ShowHud( VMA(1) );
 			return 0;
 
 		case CG_ROCKET_DOCUMENTACTION:

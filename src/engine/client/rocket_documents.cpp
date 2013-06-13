@@ -43,28 +43,70 @@ extern "C"
 
 void Rocket_LoadDocument( const char *path )
 {
-	Rocket::Core::ElementDocument* document = context->LoadDocument( path );
+	Rocket::Core::ElementDocument* document = menuContext->LoadDocument( path );
+	Rocket::Core::ElementDocument* other;
+
 	if( document )
 	{
 		document->Hide();
 		document->RemoveReference();
+
+		// Close any other documents which may have the same ID
+		other = menuContext->GetDocument( document->GetId() );
+		if ( other && other != document )
+		{
+			other->Close();
+		}
 	}
-	else
-	{
-		Com_Printf( "Document is NULL\n");
-	}
+
 }
 
 void Rocket_LoadCursor( const char *path )
 {
-	Rocket::Core::ElementDocument* document = context->LoadMouseCursor( path );
+	Rocket::Core::ElementDocument* document = menuContext->LoadMouseCursor( path );
 	if( document )
 	{
 		document->RemoveReference();
 	}
-	else
+}
+
+void Rocket_LoadHud( const char *path )
+{
+	Rocket::Core::ElementDocument *document = hudContext->LoadDocument( path );
+	Rocket::Core::ElementDocument* other;
+
+	if ( document )
 	{
-		Com_Printf( "Cursor is NULL\n");
+		document->Hide();
+		document->RemoveReference();
+
+		// Close any other documents which may have the same ID
+		other = menuContext->GetDocument( document->GetId() );
+		if ( other && other != document )
+		{
+			other->Close();
+		}
+	}
+
+}
+
+void Rocket_ShowHud( const char *id )
+{
+	if ( !id || !*id )
+	{
+		return;
+	}
+
+	Rocket::Core::ElementDocument *document = hudContext->GetDocument( id );
+
+	if ( document )
+	{
+		for ( int i = 0; i < hudContext->GetNumDocuments(); ++i )
+		{
+			hudContext->GetDocument( i )->Hide();
+		}
+
+		document->Show();
 	}
 }
 
@@ -72,7 +114,7 @@ void Rocket_DocumentAction( const char *name, const char *action )
 {
 	if ( !Q_stricmp( action, "show" ) || !Q_stricmp( action, "open" ) )
 	{
-		Rocket::Core::ElementDocument* document = context->GetDocument( name );
+		Rocket::Core::ElementDocument* document = menuContext->GetDocument( name );
 		if ( document )
 		{
 			document->Show();
@@ -82,17 +124,16 @@ void Rocket_DocumentAction( const char *name, const char *action )
 	{
 		if ( !*name ) // If name is empty, hide active
 		{
-			if ( context->GetFocusElement() &&
-				context->GetFocusElement()->GetOwnerDocument() &&
-				context->GetFocusElement()->GetOwnerDocument() != context->GetDocument( "main" ) )
+			if ( menuContext->GetFocusElement() &&
+				menuContext->GetFocusElement()->GetOwnerDocument() )
 			{
-				context->GetFocusElement()->GetOwnerDocument()->Close();
+				menuContext->GetFocusElement()->GetOwnerDocument()->Close();
 			}
 
 			return;
 		}
 
-		Rocket::Core::ElementDocument* document = context->GetDocument( name );
+		Rocket::Core::ElementDocument* document = menuContext->GetDocument( name );
 		if ( document )
 		{
 			document->Close();
@@ -100,10 +141,10 @@ void Rocket_DocumentAction( const char *name, const char *action )
 	}
 	else if ( !Q_stricmp( "goto", action ) )
 	{
-		Rocket::Core::ElementDocument* document = context->GetDocument( name );
+		Rocket::Core::ElementDocument* document = menuContext->GetDocument( name );
 		if ( document )
 		{
-			Rocket::Core::ElementDocument *owner = context->GetFocusElement()->GetOwnerDocument();
+			Rocket::Core::ElementDocument *owner = menuContext->GetFocusElement()->GetOwnerDocument();
 			if ( owner )
 			{
 				owner->Close();
@@ -117,21 +158,28 @@ void Rocket_DocumentAction( const char *name, const char *action )
 	}
 	else if ( !Q_stricmp( "blur", action ) || !Q_stricmp( "hide", action ) )
 	{
-		Rocket::Core::ElementDocument* document = context->GetDocument( name );
+		Rocket::Core::ElementDocument* document = menuContext->GetDocument( name );
 		if ( document )
 		{
-			document->Blur();
+			document->Hide();
+		}
+	}
+	else if ( !Q_stricmp ( "blurall", action ) )
+	{
+		for ( int i = 0; i < menuContext->GetNumDocuments(); ++i )
+		{
+			menuContext->GetDocument( i )->Hide();
 		}
 	}
 }
 
 void Rocket_SetPropertyById( const char *id, const char *property, const char *value )
 {
-	Rocket::Core::ElementDocument *document = context->GetFocusElement()->GetOwnerDocument();
+	Rocket::Core::ElementDocument *document = menuContext->GetFocusElement()->GetOwnerDocument();
 
 	if ( document )
 	{
-		Rocket::Core::Element *element = id[0] ? document->GetElementById( id ) : context->GetFocusElement();
+		Rocket::Core::Element *element = id[0] ? document->GetElementById( id ) : menuContext->GetFocusElement();
 
 		if ( element )
 		{

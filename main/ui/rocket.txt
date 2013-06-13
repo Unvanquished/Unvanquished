@@ -15,6 +15,4 @@
 		ui/help.rml help             // ROCKETMENU_ALIENEVOLVE
 	}
 	cursor ui/cursor.rml
-	spectator_hud ui/humans.rml human_hud
-	alien_hud ui/aliens.rml alien_hud
 }

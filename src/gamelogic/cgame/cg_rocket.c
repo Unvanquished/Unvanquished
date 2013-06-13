@@ -36,7 +36,8 @@ Maryland 20850 USA.
 
 rocketInfo_t rocketInfo;
 
-vmCvar_t rocket_menuFiles;
+vmCvar_t rocket_menuFile;
+vmCvar_t rocket_hudFile;
 
 typedef struct
 {
@@ -48,7 +49,8 @@ typedef struct
 
 static const cvarTable_t rocketCvarTable[] =
 {
-	{ &rocket_menuFiles, "rocket_menuFiles", "ui/rocket.txt", CVAR_ARCHIVE }
+	{ &rocket_hudFile, "rocket_hudFile", "ui/rockethud.txt", CVAR_ARCHIVE },
+	{ &rocket_menuFile, "rocket_menuFile", "ui/rocket.txt", CVAR_ARCHIVE }
 };
 
 static const size_t rocketCvarTableSize = ARRAY_LEN( rocketCvarTable );
@@ -106,17 +108,17 @@ void CG_Rocket_Init( void )
 	rocketInfo.rocketState = IDLE;
 
 	// Preload all the menu files...
-	len = trap_FS_FOpenFile( rocket_menuFiles.string, &f, FS_READ );
+	len = trap_FS_FOpenFile( rocket_menuFile.string, &f, FS_READ );
 
 	if ( len <= 0 )
 	{
-		Com_Error( ERR_DROP, "Unable to load %s. No rocket menus loaded.", rocket_menuFiles.string );
+		Com_Error( ERR_DROP, "Unable to load %s. No rocket menus loaded.", rocket_menuFile.string );
 	}
 
 	if ( len >= sizeof( text ) - 1 )
 	{
 		trap_FS_FCloseFile( f );
-		Com_Error( ERR_DROP, "File %s too long.", rocket_menuFiles.string );
+		Com_Error( ERR_DROP, "File %s too long.", rocket_menuFile.string );
 	}
 
 	trap_FS_Read( text, len, f );
@@ -164,7 +166,7 @@ void CG_Rocket_Init( void )
 
 			if ( *token != '{' )
 			{
-				Com_Error( ERR_DROP, "Error parsing %s. Expecting \"{\" but found \"%c\".", rocket_menuFiles.string, *token );
+				Com_Error( ERR_DROP, "Error parsing %s. Expecting \"{\" but found \"%c\".", rocket_menuFile.string, *token );
 			}
 
 			for ( i = 0; i < ROCKETMENU_NUM_TYPES; ++i )
@@ -173,7 +175,7 @@ void CG_Rocket_Init( void )
 
 				if ( !*token )
 				{
-					Com_Error( ERR_DROP, "Error parsing %s. Unexpected end of file. Expecting path to RML menu.", rocket_menuFiles.string );
+					Com_Error( ERR_DROP, "Error parsing %s. Unexpected end of file. Expecting path to RML menu.", rocket_menuFile.string );
 				}
 
 				rocketInfo.menu[ i ].path = BG_strdup( token );
@@ -183,7 +185,7 @@ void CG_Rocket_Init( void )
 
 				if ( !*token )
 				{
-					Com_Error( ERR_DROP, "Error parsing %s. Unexpected end of file. Expecting RML document id.", rocket_menuFiles.string );
+					Com_Error( ERR_DROP, "Error parsing %s. Unexpected end of file. Expecting RML document id.", rocket_menuFile.string );
 				}
 
 				rocketInfo.menu[ i ].id = BG_strdup( token );
@@ -193,7 +195,7 @@ void CG_Rocket_Init( void )
 
 			if ( *token != '}' )
 			{
-				Com_Error( ERR_DROP, "Error parsing %s. Expecting \"}\" but found \"%c\".", rocket_menuFiles.string, *token );
+				Com_Error( ERR_DROP, "Error parsing %s. Expecting \"}\" but found \"%c\".", rocket_menuFile.string, *token );
 			}
 
 			while ( *token && *token != '}' )
@@ -202,7 +204,7 @@ void CG_Rocket_Init( void )
 
 				if ( !*token )
 				{
-					Com_Error( ERR_DROP, "Error parsing %s. Unexpected end of file. Expecting RML document.", rocket_menuFiles.string );
+					Com_Error( ERR_DROP, "Error parsing %s. Unexpected end of file. Expecting RML document.", rocket_menuFile.string );
 				}
 
 				trap_Rocket_LoadDocument( token );
@@ -219,7 +221,7 @@ void CG_Rocket_Init( void )
 
 			if ( *token != '{' )
 				{
-					Com_Error( ERR_DROP, "Error parsing %s. Expecting \"{\" but found \"%c\".", rocket_menuFiles.string, *token );
+					Com_Error( ERR_DROP, "Error parsing %s. Expecting \"{\" but found \"%c\".", rocket_menuFile.string, *token );
 				}
 
 
@@ -227,10 +229,51 @@ void CG_Rocket_Init( void )
 
 				if ( *token != '}' )
 				{
-					Com_Error( ERR_DROP, "Error parsing %s. Expecting \"}\" but found \"%c\".", rocket_menuFiles.string, *token );
+					Com_Error( ERR_DROP, "Error parsing %s. Expecting \"}\" but found \"%c\".", rocket_menuFile.string, *token );
 				}
 
 				continue;
+		}
+	}
+
+	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_MAIN ].id, "open" );
+}
+
+void CG_Rocket_LoadHuds( void )
+{
+	int i, len;
+	char *token, *text_p;
+	char text[ 20000 ];
+	fileHandle_t f;
+
+	// Preload all the menu files...
+	len = trap_FS_FOpenFile( rocket_hudFile.string, &f, FS_READ );
+
+	if ( len <= 0 )
+	{
+		Com_Error( ERR_DROP, "Unable to load %s. No rocket menus loaded.", rocket_menuFile.string );
+	}
+
+	if ( len >= sizeof( text ) - 1 )
+	{
+		trap_FS_FCloseFile( f );
+		Com_Error( ERR_DROP, "File %s too long.", rocket_hudFile.string );
+	}
+
+	trap_FS_Read( text, len, f );
+	text[ len ] = 0;
+	text_p = text;
+	trap_FS_FCloseFile( f );
+
+	// Parse files to load...
+
+	while ( 1 )
+	{
+		token = COM_Parse2( &text_p );
+
+		if ( !*token )
+		{
+			break;
 		}
 
 		if ( !Q_stricmp( token, "human_hud" ) )
@@ -332,16 +375,17 @@ void CG_Rocket_Init( void )
 		Com_Error( ERR_DROP, "Default HUD not set." );
 	}
 
-	// Set default HUD for all weapons without a hud
+	// Set default HUD for all weapons without a hud and load all the HUDs
 	for ( i = 0; i <  WP_NUM_WEAPONS; ++i )
 	{
 		if ( !rocketInfo.hud[ i ].path || !rocketInfo.hud[ i ].id )
 		{
 			rocketInfo.hud[ i ] = rocketInfo.hud[ WP_NONE ];
 		}
+
+		trap_Rocket_LoadHud( rocketInfo.hud[ i ].path );
 	}
 
-	trap_Rocket_DocumentAction( "main", "open" );
 }
 
 int CG_StringToNetSource( const char *src )
@@ -378,35 +422,41 @@ const char *CG_NetSourceToString( int netSrc )
 
 void CG_Rocket_Frame( void )
 {
-	switch ( rocketInfo.rocketState )
+	static rocketState_t old = IDLE;
+
+	if ( old != rocketInfo.rocketState )
 	{
-		case RETRIEVING_SERVERS:
-			if ( trap_LAN_UpdateVisiblePings( rocketInfo.currentNetSrc ) )
-			{
-			}
-			else
-			{
-				trap_Rocket_SetInnerRML( "serverbrowser", "status", "Updated" );
-				rocketInfo.rocketState = IDLE;
-			}
+		switch ( rocketInfo.rocketState )
+		{
+			case RETRIEVING_SERVERS:
+				if ( trap_LAN_UpdateVisiblePings( rocketInfo.currentNetSrc ) )
+				{
+				}
+				else
+				{
+					trap_Rocket_SetInnerRML( "serverbrowser", "status", "Updated" );
+					rocketInfo.rocketState = IDLE;
+				}
 
-			break;
+				break;
 
-		case BUILDING_SERVER_INFO:
-			CG_Rocket_BuildServerInfo();
-			break;
+			case BUILDING_SERVER_INFO:
+				CG_Rocket_BuildServerInfo();
+				break;
 
-		case LOADING:
-			CG_Rocket_CleanUpServerList( NULL );
-			trap_Rocket_DocumentAction( "", "close" );
-			trap_Rocket_DocumentAction( "main", "close" );
-			trap_Rocket_LoadDocument( "ui/connecting.rml" );
-			trap_Rocket_DocumentAction( "connecting", "show" );
-			break;
+			case LOADING:
+				CG_Rocket_CleanUpServerList( NULL );
+				trap_Rocket_DocumentAction( "", "blurall" );
+				trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_LOADING ].id, "show" );
+				break;
 
-		case PLAYING:
-			trap_Rocket_DocumentAction( "connecting", "close" );
-			break;
+			case PLAYING:
+				trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CONNECTING ].id, "blurall" );
+				trap_Key_SetCatcher( 0 );
+				break;
+		}
+
+		old = rocketInfo.rocketState;
 	}
 
 	CG_Rocket_ProcessEvents();

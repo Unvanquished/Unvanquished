@@ -1395,6 +1395,16 @@ void trap_Rocket_LoadCursor( const char *path )
 	syscall( CG_ROCKET_LOADCURSOR, path );
 }
 
+void trap_Rocket_LoadHud( const char *path )
+{
+	syscall( CG_ROCKET_LOADHUD, path );
+}
+
+void trap_Rocket_ShowHud( const char *id )
+{
+	syscall( CG_ROCKET_SHOWHUD, id );
+}
+
 void trap_Rocket_DocumentAction( const char *name, const char *action )
 {
 	syscall( CG_ROCKET_DOCUMENTACTION, name, action );

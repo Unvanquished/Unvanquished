@@ -35,7 +35,8 @@ Maryland 20850 USA.
 #define ROCKET_H
 #if defined( __cplusplus )
 
-extern Rocket::Core::Context *context;
+extern Rocket::Core::Context *menuContext;
+extern Rocket::Core::Context *hudContext;
 
 class RocketEvent_t
 {
@@ -67,6 +68,8 @@ void Rocket_Update( void );
 void Rocket_InjectMouseMotion( int x, int y );
 void Rocket_LoadDocument( const char *path );
 void Rocket_LoadCursor( const char *path );
+void Rocket_LoadHud( const char *path );
+void Rocket_ShowHud( const char *id );
 void Rocket_DocumentAction( const char *name, const char *action );
 qboolean Rocket_GetEvent( void );
 void Rocket_DeleteEvent( void );
@@ -93,6 +96,7 @@ void Rocket_DrawElementPic( float x, float y, float w, float h, float t1, float 
 void Rocket_ClearElementGeometry( void );
 void Rocket_SetClass( const char *in, qboolean activate );
 void Rocket_SetPropertyById( const char *id, const char *property, const char *value );
+void Rocket_SetActiveContext( int catcher );
 #if defined( __cplusplus )
 }
 #endif

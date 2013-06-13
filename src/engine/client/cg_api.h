@@ -287,6 +287,8 @@ typedef enum cgameImport_s
   CG_ROCKET_SHUTDOWN,
   CG_ROCKET_LOADDOCUMENT,
   CG_ROCKET_LOADCURSOR,
+  CG_ROCKET_LOADHUD,
+  CG_ROCKET_SHOWHUD,
   CG_ROCKET_DOCUMENTACTION,
   CG_ROCKET_GETEVENT,
   CG_ROCKET_DELELTEEVENT,
@@ -603,6 +605,8 @@ void            trap_Rocket_Init( void );
 void            trap_Rocket_Shutdown( void );
 void            trap_Rocket_LoadDocument( const char *path );
 void            trap_Rocket_LoadCursor( const char *path );
+void            trap_Rocket_LoadHud( const char *path );
+void            trap_Rocket_ShowHud( const char *id );
 void            trap_Rocket_DocumentAction( const char *name, const char *action );
 qboolean        trap_Rocket_GetEvent( void );
 void            trap_Rocket_DeleteEvent( void );

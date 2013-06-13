@@ -91,7 +91,7 @@ void Rocket_SetInnerRML( const char *name, const char *id, const char *RML )
 	}
 	else
 	{
-		Rocket::Core::ElementDocument *document = context->GetDocument( name );
+		Rocket::Core::ElementDocument *document = menuContext->GetDocument( name );
 		if ( document )
 		{
 			document->GetElementById( id )->SetInnerRML( RML );
@@ -108,7 +108,7 @@ void Rocket_GetAttribute( const char *name, const char *id, const char *attribut
 	}
 	else
 	{
-		Rocket::Core::ElementDocument *document = context->GetDocument( name );
+		Rocket::Core::ElementDocument *document = menuContext->GetDocument( name );
 
 		if ( document )
 		{
@@ -125,7 +125,7 @@ void Rocket_SetAttribute( const char *name, const char *id, const char *attribut
 	}
 	else
 	{
-		Rocket::Core::ElementDocument *document = name[0] ? context->GetDocument( name ) : context->GetFocusElement()->GetOwnerDocument();
+		Rocket::Core::ElementDocument *document = name[0] ? menuContext->GetDocument( name ) : menuContext->GetFocusElement()->GetOwnerDocument();
 
 		if ( document )
 		{

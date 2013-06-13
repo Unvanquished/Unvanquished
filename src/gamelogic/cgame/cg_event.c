@@ -709,9 +709,7 @@ void CG_OnPlayerWeaponChange( weapon_t oldWeapon )
 {
 	playerState_t *ps = &cg.snap->ps;
 	// Change the HUD to match the weapon. Close the old hud first
-	trap_Rocket_DocumentAction( rocketInfo.hud[ oldWeapon ].id, "close" );
-	trap_Rocket_LoadDocument( rocketInfo.hud[ ps->weapon ].path  );
-	trap_Rocket_DocumentAction( rocketInfo.hud[ ps->weapon ].id, "show" );
+	trap_Rocket_ShowHud( rocketInfo.hud[ ps->weapon ].id );
 }
 
 /*

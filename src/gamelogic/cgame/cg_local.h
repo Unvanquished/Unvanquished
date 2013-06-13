@@ -1761,7 +1761,8 @@ extern vmCvar_t             cg_motionblurMinSpeed;
 // Rocket cvars
 //
 
-extern vmCvar_t            rocket_menuFiles;
+extern vmCvar_t            rocket_hudFile;
+extern vmCvar_t            rocket_menuFile;
 //
 // cg_main.c
 //
@@ -2117,6 +2118,7 @@ const char *CG_GetShaderNameFromHandle( const qhandle_t shader );
 //
 
 void CG_Rocket_Init( void );
+void CG_Rocket_LoadHuds( void );
 void CG_Rocket_Frame( void );
 const char *CG_Rocket_GetTag();
 const char *CG_Rocket_GetAttribute( const char *name, const char *id, const char *attribute );

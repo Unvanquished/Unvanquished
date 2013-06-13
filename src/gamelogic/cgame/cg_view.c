@@ -1809,7 +1809,6 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 	// we can draw is the information screen
 	if ( !cg.snap || ( cg.snap->snapFlags & SNAPFLAG_NOT_ACTIVE ) )
 	{
-		CG_DrawLoadingScreen();
 		return;
 	}
 

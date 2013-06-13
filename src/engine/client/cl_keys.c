@@ -1676,7 +1676,7 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 	qboolean bypassMenu = qfalse; // NERVE - SMF
 	qboolean onlybinds = qfalse;
 
-	if ( !key )
+	if ( key < 1 )
 	{
 		return;
 	}
@@ -1813,11 +1813,21 @@ void CL_KeyEvent( int key, qboolean down, unsigned time )
 				S_StopAllSounds();
 			}
 
-			Rocket_DocumentAction( "", "close" );
-
 			return;
 		}
+		else
+		{
+			Rocket_DocumentAction( "", "close" );
+		}
 
+		return;
+	}
+
+	// Don't do anything if libRocket menus have focus
+	// Everything is handled by libRocket. Also we don't want
+	// to run any binds (since they won't be found).
+	if ( cls.keyCatchers & KEYCATCH_UI && !( cls.keyCatchers & KEYCATCH_CONSOLE ) )
+	{
 		return;
 	}
 

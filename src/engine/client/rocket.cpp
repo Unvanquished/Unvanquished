@@ -446,7 +446,9 @@ void Rocket_RocketDebug_f( void )
 static DaemonFileInterface fileInterface;
 static DaemonSystemInterface systemInterface;
 static DaemonRenderInterface renderInterface;
-Rocket::Core::Context *context = NULL;
+
+Rocket::Core::Context *menuContext = NULL;
+Rocket::Core::Context *hudContext = NULL;
 
 void Rocket_Init( void )
 {
@@ -485,8 +487,11 @@ void Rocket_Init( void )
 
 	FS_FreeFileList( fonts );
 
-	// Create the main context
-	context = Rocket::Core::CreateContext( "default", Rocket::Core::Vector2i( cls.glconfig.vidWidth, cls.glconfig.vidHeight ) );
+	// Create the menu context
+	menuContext = menuContext = Rocket::Core::CreateContext( "menuContext", Rocket::Core::Vector2i( cls.glconfig.vidWidth, cls.glconfig.vidHeight ) );
+
+	// Create the HUD context
+	hudContext = Rocket::Core::CreateContext( "hudContext", Rocket::Core::Vector2i( cls.glconfig.vidWidth, cls.glconfig.vidHeight ) );
 
 	// Add the event listner instancer
 	EventInstancer* event_instancer = new EventInstancer();
@@ -501,7 +506,7 @@ void Rocket_Init( void )
 	Cmd_AddCommand( "rocket", Rocket_Rocket_f );
 	Cmd_AddCommand( "rocketDebug", Rocket_RocketDebug_f );
 
-	Rocket::Debugger::Initialise(context);
+// 	Rocket::Debugger::Initialise(menuContext);
 
 	whiteShader = re.RegisterShader( "white", RSF_DEFAULT );
 }
@@ -512,10 +517,16 @@ void Rocket_Shutdown( void )
 	extern std::map<std::string, RocketDataGrid*> dataSourceMap;
 	extern std::queue< RocketEvent_t* > eventQueue;
 
-	if ( context )
+	if ( menuContext )
 	{
-		context->RemoveReference();
-		context = NULL;
+		menuContext->RemoveReference();
+		menuContext = NULL;
+	}
+
+	if ( hudContext )
+	{
+		hudContext->RemoveReference();
+		hudContext = NULL;
 	}
 
 	Rocket::Core::Shutdown();
@@ -547,17 +558,29 @@ void Rocket_Shutdown( void )
 
 void Rocket_Render( void )
 {
-	if ( context )
+	if ( hudContext )
 	{
-		context->Render();
+		hudContext->Render();
 	}
+
+	// Render menus on top of the HUD
+	if ( menuContext )
+	{
+		menuContext->Render();
+	}
+
 }
 
 void Rocket_Update( void )
 {
-	if ( context )
+	if ( menuContext )
 	{
-		context->Update();
+		menuContext->Update();
+	}
+
+	if ( hudContext )
+	{
+		hudContext->Update();
 	}
 }
 
@@ -566,7 +589,7 @@ void Rocket_Update( void )
 {
 	using Rocket::Core::Input::KeyIdentifier;
 
-	if ( !context || cls.keyCatchers & KEYCATCH_CONSOLE )
+	if ( !menuContext || !( cls.keyCatchers & KEYCATCH_UI ) || cls.keyCatchers & KEYCATCH_CONSOLE  )
 	{
 		return;
 	}
@@ -580,34 +603,34 @@ void Rocket_Update( void )
 			c = static_cast<wchar_t>(event.key.keysym.unicode);
 
 			int key = SDLK_keymap[sdlkey]; // The SDLK_keymap array maps SDLK_* to Rocket::Input::KI_*. Defined in sdltorocket.cpp
-			context->ProcessKeyDown( KeyIdentifier( key ), RocketConvertSDLmod( event.key.keysym.mod ) );
+			menuContext->ProcessKeyDown( KeyIdentifier( key ), RocketConvertSDLmod( event.key.keysym.mod ) );
 
 			if( event.key.keysym.unicode != 0 && event.key.keysym.unicode != 8 )
-				context->ProcessTextInput( c );
+				menuContext->ProcessTextInput( c );
 		}
 		break;
 		case SDL_KEYUP:
-			context->ProcessKeyUp( KeyIdentifier( event.key.keysym.scancode ), RocketConvertSDLmod( event.key.keysym.mod ) );
+			menuContext->ProcessKeyUp( KeyIdentifier( event.key.keysym.scancode ), RocketConvertSDLmod( event.key.keysym.mod ) );
 			break;
 		case SDL_MOUSEMOTION:
-			context->ProcessMouseMove( event.motion.x, event.motion.y, RocketConvertSDLmod( SDL_GetModState() ) );
+			menuContext->ProcessMouseMove( event.motion.x, event.motion.y, RocketConvertSDLmod( SDL_GetModState() ) );
 			break;
 		case SDL_MOUSEBUTTONDOWN:
 			switch ( event.button.button )
 			{
 				case 4:
-					context->ProcessMouseWheel( -1, RocketConvertSDLmod( SDL_GetModState()) );
+					menuContext->ProcessMouseWheel( -1, RocketConvertSDLmod( SDL_GetModState()) );
 					break;
 
 				case 5:
-					context->ProcessMouseWheel( 1, RocketConvertSDLmod( SDL_GetModState() ) );
+					menuContext->ProcessMouseWheel( 1, RocketConvertSDLmod( SDL_GetModState() ) );
 					break;
 				default:
-					context->ProcessMouseButtonDown( RocketConvertSDLButton(event.button.button), RocketConvertSDLmod( SDL_GetModState() ) );
+					menuContext->ProcessMouseButtonDown( RocketConvertSDLButton(event.button.button), RocketConvertSDLmod( SDL_GetModState() ) );
 			}
 			break;
 		case SDL_MOUSEBUTTONUP:
-			context->ProcessMouseButtonUp( RocketConvertSDLButton(event.button.button), RocketConvertSDLmod( SDL_GetModState() ) );
+			menuContext->ProcessMouseButtonUp( RocketConvertSDLButton(event.button.button), RocketConvertSDLmod( SDL_GetModState() ) );
 			break;
 	}
 }
@@ -629,9 +652,9 @@ int Rocket_ToQuakeKey( const int rocketKey )
 
 void Rocket_InjectMouseMotion( int x, int y )
 {
-	if ( context && !( cls.keyCatchers & KEYCATCH_CONSOLE ) )
+	if ( !menuContext || !( cls.keyCatchers & KEYCATCH_UI ) || cls.keyCatchers & KEYCATCH_CONSOLE )
 	{
-		context->ProcessMouseMove( x, y, RocketConvertSDLmod( SDL_GetModState() ) );
+		menuContext->ProcessMouseMove( x, y, RocketConvertSDLmod( SDL_GetModState() ) );
 	}
 }
 
@@ -754,4 +777,20 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in )
 void Rocket_QuakeToRML( const char *in, char *out, int length )
 {
 	Q_strncpyz( out, Rocket_QuakeToRML( in ).CString(), length );
+}
+
+void Rocket_SetActiveContext( int catcher )
+{
+	switch ( catcher )
+	{
+		case KEYCATCH_UI:
+			menuContext = menuContext;
+			menuContext->ShowMouseCursor( true );
+			break;
+
+		case KEYCATCH_CGAME:
+			menuContext = hudContext;
+			menuContext->ShowMouseCursor( false );
+			break;
+	}
 }

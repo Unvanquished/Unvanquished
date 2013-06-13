@@ -2590,7 +2590,6 @@ void CG_LoadHudMenu( void )
 	}
 
 // 	CG_LoadMenus( hudSet );
-	trap_Rocket_DocumentAction( "hud", "open" );
 }
 
 void CG_AssetCache( void )
@@ -2678,6 +2677,7 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 
 	CG_AssetCache();
 	CG_LoadHudMenu();
+	CG_Rocket_LoadHuds();
 
 	cg.weaponSelect = WP_NONE;
 

@@ -825,12 +825,6 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 				break;
 		}
 	}
-
-	// the menu draws next
-	if ( cls.keyCatchers & KEYCATCH_UI )
-	{
-		Rocket_Render();
-	}
 }
 
 void SCR_DrawConsoleAndPointer( void )
