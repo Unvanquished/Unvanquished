@@ -1546,6 +1546,7 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 				     && Q_stricmp( filename + l - 8, "bots.txt" )
 				     && Q_stricmp( filename + l - 8, ".botents" )
 				     && Q_stricmp( filename + l - 3, ".po" )
+				     && Q_stricmp( filename + l - 6, "pubkey" )
 				     && !FS_CheckUIImageFile( filename )
 				   )
 				{

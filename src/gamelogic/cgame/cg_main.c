@@ -170,7 +170,6 @@ vmCvar_t        cg_minimapActive;
 vmCvar_t        cg_crosshairSize;
 vmCvar_t        cg_crosshairFile;
 vmCvar_t        cg_draw2D;
-vmCvar_t        cg_animSpeed;
 vmCvar_t        cg_debugAnim;
 vmCvar_t        cg_debugPosition;
 vmCvar_t        cg_debugEvents;
@@ -347,7 +346,6 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_runpitch,                    "cg_runpitch",                    "0.002",        CVAR_ARCHIVE                 },
 	{ &cg_runroll,                     "cg_runroll",                     "0.005",        CVAR_ARCHIVE                 },
 	{ &cg_swingSpeed,                  "cg_swingSpeed",                  "0.3",          CVAR_CHEAT                   },
-	{ &cg_animSpeed,                   "cg_animspeed",                   "1",            CVAR_CHEAT                   },
 	{ &cg_debugAnim,                   "cg_debuganim",                   "0",            CVAR_CHEAT                   },
 	{ &cg_debugPosition,               "cg_debugposition",               "0",            CVAR_CHEAT                   },
 	{ &cg_debugEvents,                 "cg_debugevents",                 "0",            CVAR_CHEAT                   },
