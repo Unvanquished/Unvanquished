@@ -1,0 +1,45 @@
+models/weapons/prifle/missileTS
+{
+  beam
+  {
+    shader        gfx/prifle/red_streak
+
+    segments      2
+    width         6.0 4.0
+    alpha         1.0 0.1
+    segmentTime   120
+
+    textureType   stretch 0.0 1.0
+  }
+}
+
+models/weapons/lev2zap/lightning
+{
+  beam
+  {
+    shader        models/ammo/tesla/tesla_bolt
+
+    segments      5
+    width         16.0 16.0
+    color         { 0.8 0.8 0.8 } -
+
+    textureType   repeat front 100.0
+
+    jitter        4.0 200
+    jitter        1.0 20
+  }
+
+  beam
+  {
+    shader        models/ammo/tesla/tesla_bolt
+
+    segments      8
+    width         5.0 5.0
+    color         { 0.5 0.8 1.0 } -
+
+    textureType   repeat back 50.0
+
+    jitter        2.0 150
+    jitter        1.0 30
+  }
+}

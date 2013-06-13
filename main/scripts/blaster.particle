@@ -1,0 +1,129 @@
+ImpactBlaster
+{
+  ejector
+  {
+    particle
+    {
+      shader sync blasterbullet
+
+      displacement 0 0 0 ~2.0
+      normalDisplacement  0.0
+
+      velocityType      normal
+      velocityDir       linear
+      velocityMagnitude 155
+      velocity          0 0 0 ~90
+
+      accelerationType      static
+      accelerationDir       linear
+      accelerationMagnitude 600
+      acceleration          0 0 -1 ~10
+
+      radius 0 1.5~1.5 0.0~1.5
+      alpha  0 1.0 0.0
+      rotation 0 ~360 ~360
+      bounce 0.8
+
+      lifeTime 600
+    }
+
+    count 10~50%
+    delay 30~10
+    period 150 - ~10%
+  }
+  ejector
+  {
+    particle
+    {
+      shader sync blasterbullet
+
+      displacement 0 0 0 0
+      normalDisplacement  0.0
+
+      velocityType      normal
+      velocityDir       linear
+      velocityMagnitude 0
+      velocity          0 0 0 ~110
+
+      accelerationType      static
+      accelerationDir       linear
+      accelerationMagnitude 0
+      acceleration          0 0 -1 ~10
+
+      radius 0 10.0 0.0
+      alpha  0 1.0 0.0
+      rotation 0 0 -
+      bounce 0.0
+
+      lifeTime 500
+    }
+
+    count 1
+    delay 0
+    period 10 - ~0%
+  }
+}
+MuzzleFlashBlaster
+{
+ ejector
+  {
+    particle
+    {
+      //shader sync gfx/sprites/smoke
+	//shader sync gfx/grenade/smoke
+      shader sync gfx/weapons/blasterMF_2
+
+      displacement 0 0 0 ~0.0
+
+      parentVelocityFraction 1.0
+
+      velocityType      cent
+      velocityDir       linear
+      velocityMagnitude 100
+      velocity          1 0 0 0
+
+      accelerationType      static
+      accelerationDir       linear
+      accelerationMagnitude 0
+      acceleration          0 0 0 0
+
+      radius 0 2.0 5.0
+      alpha  0 0.4 0.0
+      rotation 0 ~360 -
+      bounce 0.0
+
+      lifeTime 50
+    }
+    particle
+    {
+      //shader sync gfx/sprites/smoke
+	//shader sync gfx/grenade/smoke
+      shader sync gfx/weapons/blasterMF_1
+
+      displacement 0 0 0 ~0.0
+
+      parentVelocityFraction 1.0
+
+      velocityType      cent
+      velocityDir       linear
+      velocityMagnitude 40
+      velocity          -1 0 0 0
+
+      accelerationType      static
+      accelerationDir       linear
+      accelerationMagnitude 0
+      acceleration          0 0 0 0
+
+      radius 0 7.0 4.0
+      alpha  0 1.0 0.0
+      rotation 0 0 -
+      bounce 0.0
+
+      lifeTime 30
+    }
+    count 1
+    delay 0
+    period 0 - ~0%
+  }
+
+}

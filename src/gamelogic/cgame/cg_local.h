@@ -1615,7 +1615,6 @@ extern vmCvar_t             cg_emoticonsInMessages;
 
 extern vmCvar_t             cg_chatTeamPrefix;
 
-extern vmCvar_t             cg_animSpeed;
 extern vmCvar_t             cg_animBlend;
 
 extern vmCvar_t             cg_highPolyPlayerModels;
