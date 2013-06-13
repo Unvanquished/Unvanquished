@@ -1593,6 +1593,7 @@ static const struct {
 		T_NONE, T_PLAYER, T_OTHER
 	}               target;
 	qboolean        adminImmune; // from needing a reason and from being the target
+	qboolean        quorum;
 	qtrinary        reasonNeeded;
 	const vmCvar_t *percentage;
 	enum {
@@ -1606,24 +1607,24 @@ static const struct {
 	const vmCvar_t *specialCvar;
 	const vmCvar_t *reasonFlag; // where a reason requirement is configurable (reasonNeeded must be qtrue)
 } voteInfo[] = {
-	// Name           Stop?   Type      Target     Immune   Reason  Vote percentage var        Extra
-	{ "kick",         qfalse, V_ANY,    T_PLAYER,  qtrue,   qyes,   &g_kickVotesPercent },
-	{ "spectate",     qfalse, V_ANY,    T_PLAYER,  qtrue,   qyes,   &g_kickVotesPercent },
-	{ "mute",         qtrue,  V_PUBLIC, T_PLAYER,  qtrue,   qyes,   &g_denyVotesPercent },
-	{ "unmute",       qtrue,  V_PUBLIC, T_PLAYER,  qfalse,  qno,    &g_denyVotesPercent },
-	{ "denybuild",    qtrue,  V_TEAM,   T_PLAYER,  qtrue,   qyes,   &g_denyVotesPercent },
-	{ "allowbuild",   qtrue,  V_TEAM,   T_PLAYER,  qfalse,  qno,    &g_denyVotesPercent },
-	{ "extend",       qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qno,    &g_extendVotesPercent,      VOTE_REMAIN, &g_extendVotesTime },
-	{ "admitdefeat",  qtrue,  V_TEAM,   T_NONE,    qfalse,  qno,    &g_admitDefeatVotesPercent },
-	{ "draw",         qtrue,  V_PUBLIC, T_NONE,    qtrue,   qyes,   &g_drawVotesPercent,        VOTE_AFTER,  &g_drawVotesAfter,  &g_drawVoteReasonRequired },
-	{ "armageddon",   qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qmaybe, &g_drawVotesPercent },
-	{ "map_restart",  qtrue,  V_PUBLIC, T_NONE,    qfalse,  qno,    &g_mapVotesPercent },
-	{ "map",          qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qmaybe, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
-	{ "layout",       qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qno,    &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
-	{ "nextmap",      qfalse, V_PUBLIC, T_OTHER,   qfalse,  qmaybe, &g_nextMapVotesPercent },
-	{ "poll",         qfalse, V_ANY,    T_NONE,    qfalse,  qyes,   &g_pollVotesPercent,        VOTE_NO_AUTO },
-	{ "kickbots",     qtrue,  V_PUBLIC, T_NONE,    qfalse,  qno,    &g_kickVotesPercent,        VOTE_ENABLE, &g_botKickVotesAllowedThisMap },
-	{ "spectatebots", qfalse, V_PUBLIC, T_NONE,    qfalse,  qno,    &g_kickVotesPercent,        VOTE_ENABLE, &g_botKickVotesAllowedThisMap },
+	// Name           Stop?   Type      Target     Immune   Quorum  Reason  Vote percentage var        Extra
+	{ "kick",         qfalse, V_ANY,    T_PLAYER,  qtrue,   qtrue,  qyes,   &g_kickVotesPercent },
+	{ "spectate",     qfalse, V_ANY,    T_PLAYER,  qtrue,   qtrue,  qyes,   &g_kickVotesPercent },
+	{ "mute",         qtrue,  V_PUBLIC, T_PLAYER,  qtrue,   qtrue,  qyes,   &g_denyVotesPercent },
+	{ "unmute",       qtrue,  V_PUBLIC, T_PLAYER,  qfalse,  qtrue,  qno,    &g_denyVotesPercent },
+	{ "denybuild",    qtrue,  V_TEAM,   T_PLAYER,  qtrue,   qtrue,  qyes,   &g_denyVotesPercent },
+	{ "allowbuild",   qtrue,  V_TEAM,   T_PLAYER,  qfalse,  qtrue,  qno,    &g_denyVotesPercent },
+	{ "extend",       qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qfalse, qno,    &g_extendVotesPercent,      VOTE_REMAIN, &g_extendVotesTime },
+	{ "admitdefeat",  qtrue,  V_TEAM,   T_NONE,    qfalse,  qtrue,  qno,    &g_admitDefeatVotesPercent },
+	{ "draw",         qtrue,  V_PUBLIC, T_NONE,    qtrue,   qtrue,  qyes,   &g_drawVotesPercent,        VOTE_AFTER,  &g_drawVotesAfter,  &g_drawVoteReasonRequired },
+	{ "armageddon",   qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qtrue,  qmaybe, &g_drawVotesPercent },
+	{ "map_restart",  qtrue,  V_PUBLIC, T_NONE,    qfalse,  qtrue,  qno,    &g_mapVotesPercent },
+	{ "map",          qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qtrue,  qmaybe, &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
+	{ "layout",       qtrue,  V_PUBLIC, T_OTHER,   qfalse,  qtrue,  qno,    &g_mapVotesPercent,         VOTE_BEFORE, &g_mapVotesBefore },
+	{ "nextmap",      qfalse, V_PUBLIC, T_OTHER,   qfalse,  qfalse, qmaybe, &g_nextMapVotesPercent },
+	{ "poll",         qfalse, V_ANY,    T_NONE,    qfalse,  qfalse, qyes,   &g_pollVotesPercent,        VOTE_NO_AUTO },
+	{ "kickbots",     qtrue,  V_PUBLIC, T_NONE,    qfalse,  qfalse, qno,    &g_kickVotesPercent,        VOTE_ENABLE, &g_botKickVotesAllowedThisMap },
+	{ "spectatebots", qfalse, V_PUBLIC, T_NONE,    qfalse,  qfalse, qno,    &g_kickVotesPercent,        VOTE_ENABLE, &g_botKickVotesAllowedThisMap },
 	{ NULL }
 	// note: map votes use the reason, if given, as the layout name
 };
@@ -1678,6 +1679,8 @@ void Cmd_CallVote_f( gentity_t *ent )
 	{
 		G_ExecuteVote( team );
 	}
+
+	G_ResetVote( team );
 
 	trap_Argv( 1, vote, sizeof( vote ) );
 
@@ -1738,9 +1741,10 @@ void Cmd_CallVote_f( gentity_t *ent )
 
 	level.team[ team ].voteType = voteId;
 
-	// Vote time, percentage for pass
+	// Vote time, percentage for pass, quorum
 	level.team[ team ].voteDelay = 0;
 	level.team[ team ].voteThreshold = voteInfo[voteId].percentage ? voteInfo[voteId].percentage->integer : 50;
+	level.team[ team ].quorum = voteInfo[voteId].quorum;
 
 	if ( level.team[ team ].voteThreshold <= 0)
 	{
@@ -2197,7 +2201,7 @@ void Cmd_CallVote_f( gentity_t *ent )
 	if ( voteInfo[voteId].special != VOTE_NO_AUTO )
 	{
 		ent->client->pers.namelog->voteCount++;
-		ent->client->pers.vote |= 1 << team;
+		ent->client->pers.voteYes |= 1 << team;
 		G_Vote( ent, team, qtrue );
 	}
 }
@@ -2238,13 +2242,15 @@ void Cmd_Vote_f( gentity_t *ent )
 
 	trap_Argv( 1, vote, sizeof( vote ) );
 
-	if ( vote[ 0 ] == 'y' )
+	switch ( vote[ 0 ] )
 	{
-		ent->client->pers.vote |= 1 << team;
-	}
-	else
-	{
-		ent->client->pers.vote &= ~( 1 << team );
+	case 'y': case 'Y':
+		ent->client->pers.voteYes |= 1 << team;
+		break;
+
+	case 'n': case 'N':
+		ent->client->pers.voteNo |= 1 << team;
+		break;
 	}
 
 	G_Vote( ent, team, qtrue );

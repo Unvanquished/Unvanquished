@@ -2933,7 +2933,17 @@ void G_Vote( gentity_t *ent, team_t team, qboolean voting )
 	ent->client->pers.voted |= 1 << team;
 
 	//TODO maybe refactor vote no/yes in one and only one variable and divide the NLOC by 2 ?
-	if ( ent->client->pers.vote & ( 1 << team ) )
+
+	if ( voting )
+	{
+		level.team[ team ].voted++;
+	}
+	else
+	{
+		level.team[ team ].voted--;
+	}
+
+	if ( ent->client->pers.voteYes & ( 1 << team ) )
 	{
 		if ( voting )
 		{
@@ -2947,7 +2957,8 @@ void G_Vote( gentity_t *ent, team_t team, qboolean voting )
 		trap_SetConfigstring( CS_VOTE_YES + team,
 		                      va( "%d", level.team[ team ].voteYes ) );
 	}
-	else
+
+	if ( ent->client->pers.voteNo & ( 1 << team ) )
 	{
 		if ( voting )
 		{
@@ -2963,6 +2974,27 @@ void G_Vote( gentity_t *ent, team_t team, qboolean voting )
 	}
 }
 
+void G_ResetVote( team_t team )
+{
+	int i;
+
+	level.team[ team ].voteTime = 0;
+	level.team[ team ].voteYes = 0;
+	level.team[ team ].voteNo = 0;
+	level.team[ team ].voted = 0;
+
+	for ( i = 0; i < level.maxclients; i++ )
+	{
+		level.clients[ i ].pers.voted &= ~( 1 << team );
+		level.clients[ i ].pers.voteYes &= ~( 1 << team );
+		level.clients[ i ].pers.voteNo &= ~( 1 << team );
+	}
+
+	trap_SetConfigstring( CS_VOTE_TIME + team, "" );
+	trap_SetConfigstring( CS_VOTE_STRING + team, "" );
+	trap_SetConfigstring( CS_VOTE_YES + team, "0" );
+	trap_SetConfigstring( CS_VOTE_NO + team, "0" );
+}
 /*
 ========================================================================
 
@@ -2990,6 +3022,7 @@ void G_ExecuteVote( team_t team )
 	}
 }
 
+
 /*
 ==================
 G_CheckVote
@@ -2999,8 +3032,8 @@ void G_CheckVote( team_t team )
 {
 	float    votePassThreshold = ( float ) level.team[ team ].voteThreshold / 100.0f;
 	qboolean pass = qfalse;
+	qboolean quorum = qtrue;
 	char     *cmd;
-	int      i;
 
 	if ( level.team[ team ].voteExecuteTime /* > 0 ?? more readable imho */ &&
 	     level.team[ team ].voteExecuteTime < level.time )
@@ -3033,17 +3066,28 @@ void G_CheckVote( team_t team )
 		}
 	}
 
-	if ( pass )
+	// If quorum is required, check whether at least half of who could vote did
+	if ( level.team[ team ].quorum && level.team[ team ].voted * 2 < level.team[ team ].numVotingClients )
+	{
+		quorum = qfalse;
+	}
+
+	if ( pass && quorum )
 	{
 		level.team[ team ].voteExecuteTime = level.time + level.team[ team ].voteDelay;
 	}
 
-	G_LogPrintf( "EndVote: %s %s %d %d %d\n",
+	G_LogPrintf( "EndVote: %s %s %d %d %d %d\n",
 	             team == TEAM_NONE ? "global" : BG_TeamName( team ),
 	             pass ? "pass" : "fail",
-	             level.team[ team ].voteYes, level.team[ team ].voteNo, level.team[ team ].numVotingClients );
+	             level.team[ team ].voteYes, level.team[ team ].voteNo, level.team[ team ].numVotingClients, level.team[ team ].voted );
 
-	if ( pass )
+	if ( !quorum )
+	{
+		cmd = va( "print_tr %s %d %d", ( team == TEAM_NONE ) ? QQ( N_("Vote failed ($1$ of $2$; quorum not reached)\n") ) : QQ( N_("Team vote failed ($1$ of $2$; quorum not reached)\n") ),
+		            level.team[ team ].voteYes + level.team[ team ].voteNo, level.team[ team ].numVotingClients );
+	}
+	else if ( pass )
 	{
 		cmd = va( "print_tr %s %d %d", ( team == TEAM_NONE ) ? QQ( N_("Vote passed ($1$ — $2$)\n") ) : QQ( N_("Team vote passed ($1$ — $2$)\n") ),
 		            level.team[ team ].voteYes, level.team[ team ].voteNo );
@@ -3063,19 +3107,7 @@ void G_CheckVote( team_t team )
 		G_TeamCommand( team, cmd );
 	}
 
-	level.team[ team ].voteTime = 0;
-	level.team[ team ].voteYes = 0;
-	level.team[ team ].voteNo = 0;
-
-	for ( i = 0; i < level.maxclients; i++ )
-	{
-		level.clients[ i ].pers.voted &= ~( 1 << team );
-	}
-
-	trap_SetConfigstring( CS_VOTE_TIME + team, "" );
-	trap_SetConfigstring( CS_VOTE_STRING + team, "" );
-	trap_SetConfigstring( CS_VOTE_YES + team, "0" );
-	trap_SetConfigstring( CS_VOTE_NO + team, "0" );
+	G_ResetVote( team );
 }
 
 /*
