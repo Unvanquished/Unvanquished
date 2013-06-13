@@ -518,7 +518,7 @@ typedef struct
 	int credit;
 
 	int voted;
-	int vote;
+	int voteYes, voteNo;
 
 	// flood protection
 	int      floodDemerits;
@@ -850,7 +850,9 @@ typedef struct
 		int  voteDelay; // it doesn't make sense to always delay vote execution
 		int  voteYes;
 		int  voteNo;
+		int  voted;
 		int  numVotingClients; // set by CalculateRanks
+		int  quorum;
 
 		// gameplay state
 		int              numSpawns;
@@ -1159,6 +1161,7 @@ void       SendScoreboardMessageToAllClients( void );
 void QDECL G_Printf( const char *fmt, ... ) PRINTF_LIKE(1);
 void QDECL G_Error( const char *fmt, ... ) PRINTF_LIKE(1) NORETURN;
 void       G_Vote( gentity_t *ent, team_t team, qboolean voting );
+void       G_ResetVote( team_t team );
 void       G_ExecuteVote( team_t team );
 void       G_CheckVote( team_t team );
 void       LogExit( const char *string );
