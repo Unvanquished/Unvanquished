@@ -1,0 +1,2 @@
+spectator_hud ui/humans.rml human_hud
+alien_hud ui/aliens.rml alien_hud
