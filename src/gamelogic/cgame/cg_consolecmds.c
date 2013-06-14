@@ -210,7 +210,6 @@ static void CG_CompleteClass( void )
 static void CG_CompleteBuy_internal( qboolean negatives )
 {
 	int i;
-	const char *negative[ 64 ];
 
 	for( i = 0; i < UP_NUM_UPGRADES; i++ )
 	{

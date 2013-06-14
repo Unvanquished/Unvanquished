@@ -103,7 +103,7 @@ CG_KeyNameForCommand
 */
 static const char *CG_KeyNameForCommand( const char *command )
 {
-	int         i, j;
+	int         i;
 	static char buffer[ 2 ][ MAX_STRING_CHARS ];
 	static int  which = 1;
 	char        keyName[ 2 ][ 32 ];

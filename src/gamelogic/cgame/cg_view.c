@@ -1345,7 +1345,7 @@ Sets cg.refdef.gradingWeights
 */
 static void CG_CalcColorGradingForPoint( vec3_t loc )
 {
-	int   i, j, idx;
+	int   i, j;
 	float dist, weight;
 	int   selectedIdx[3] = { 0, 0, 0 };
 	float selectedWeight[3] = { 0.0f, 0.0f, 0.0f };

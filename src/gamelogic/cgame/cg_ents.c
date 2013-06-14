@@ -703,9 +703,8 @@ static void CG_LightFlare( centity_t *cent )
 	entityState_t *es;
 	vec3_t        forward, delta;
 	float         len;
-	trace_t       tr;
 	float         maxAngle;
-	vec3_t        mins, maxs, start, end;
+	vec3_t        start, end;
 	float         srcRadius, srLocal, ratio = 1.0f;
 	float         newStatus;
 
