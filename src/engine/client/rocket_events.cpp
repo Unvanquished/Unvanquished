@@ -59,7 +59,7 @@ void Rocket_ProcessEvent( Rocket::Core::Event& event, Rocket::Core::String& valu
 
 qboolean Rocket_GetEvent( void )
 {
-	if ( eventQueue.front() != NULL )
+	if ( !eventQueue.empty() )
 	{
 		Cmd_TokenizeString( eventQueue.front()->cmd.CString() );
 		activeElement = eventQueue.front()->targetElement;
