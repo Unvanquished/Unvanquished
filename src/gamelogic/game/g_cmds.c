@@ -4586,10 +4586,19 @@ void G_DecolorString( const char *in, char *out, int len )
 			continue;
 		}
 
-		if ( Q_IsColorString( in ) && decolor )
+		if ( decolor )
 		{
-			in += 2;
-			continue;
+			if ( Q_IsColorString( in ) )
+			{
+				in += 2;
+				continue;
+			}
+
+			if ( in[0] == Q_COLOR_ESCAPE && in[1] == Q_COLOR_ESCAPE )
+			{
+				++in;
+				// at this point, we want the default 'copy' action
+			}
 		}
 
 		*out++ = *in++;
