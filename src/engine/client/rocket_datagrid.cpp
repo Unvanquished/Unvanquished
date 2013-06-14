@@ -37,57 +37,79 @@ Maryland 20850 USA.
 #include "rocket.h"
 #include "rocketDataGrid.h"
 #include <string>
+#include <map>
 
 // Code to interface with libRocket's datagrids for displaying
 // tabulated information nicely
 
-std::map<std::string, RocketDataGrid*> dataSourceMap;
+typedef std::map<std::string, RocketDataGrid*> StringGridMap_t;
+StringGridMap_t dataSourceMap;
 
 void Rocket_RegisterDataSource( const char *name )
 {
 	dataSourceMap[ name ] = new RocketDataGrid( name );
 }
 
+static RocketDataGrid *FindDataSource( const char *name )
+{
+	StringGridMap_t::iterator it = dataSourceMap.find( name );
+
+	if ( it == dataSourceMap.end() )
+	{
+		return NULL;
+	}
+
+	return it->second;
+}
+
 void Rocket_DSAddRow( const char *name, const char *table, const char *data )
 {
-	if ( dataSourceMap.find( name ) == dataSourceMap.end() )
+	RocketDataGrid *ds = FindDataSource( name );
+
+	if ( !ds )
 	{
 		Com_Printf( "^1ERROR: ^7Rocket_DSAddRow: data source %s does not exist.\n", name );
 		return;
 	}
 
-	dataSourceMap[ name ]->AddRow( table, data );
+	ds->AddRow( table, data );
 }
 
 void Rocket_DSChangeRow( const char *name, const char *table, const int row, const char *data )
 {
-	if ( dataSourceMap.find( name ) == dataSourceMap.end() )
+	RocketDataGrid *ds = FindDataSource( name );
+
+	if ( !ds )
 	{
 		Com_Printf( "^1ERROR: ^7Rocket_DSChangeRow: data source %s does not exist.\n", name );
 		return;
 	}
 
-	dataSourceMap[ name ]->ChangeRow( table, row, data );
+	ds->ChangeRow( table, row, data );
 }
 
 void Rocket_DSRemoveRow( const char *name, const char *table, const int row )
 {
-	if ( dataSourceMap.find( name ) == dataSourceMap.end() )
+	RocketDataGrid *ds = FindDataSource( name );
+
+	if ( !ds )
 	{
 		Com_Printf( "^1ERROR: ^7Rocket_DSRemoveRow: data source %s does not exist.\n", name );
 		return;
 	}
 
-	dataSourceMap[ name ]->RemoveRow( table, row );
+	ds->RemoveRow( table, row );
 }
 
 void Rocket_DSClearTable( const char *name, const char *table )
 {
-	if ( dataSourceMap.find( name ) == dataSourceMap.end() )
+	RocketDataGrid *ds = FindDataSource( name );
+
+	if ( !ds )
 	{
 		Com_Printf( "^1ERROR: ^7Rocket_DSClearTable: data source %s does not exist.\n", name );
 		return;
 	}
 
-	dataSourceMap[ name ]->ClearTable( table );
+	ds->ClearTable( table );
 }
