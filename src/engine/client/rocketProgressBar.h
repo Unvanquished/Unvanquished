@@ -445,6 +445,12 @@ private:
 		dirty_geometry = false;
 	}
 
+	bool dirty_geometry; // Rebuild geometry
+	progressBarOrientation_t orientation; // Direction progressbar grows
+	float value; // current value
+	int renderFilter; // Filter components to draw
+	int loadFilter; // Images loaded
+	
 	Rocket::Core::Geometry geometry[ NUM_GEOMETRIES ]; // 1: start image, 2: straight section, 3: straight section decoration, 4: end image
 
 	Rocket::Core::Vector2f texcoords[ NUM_GEOMETRIES ][ 2 ]; // texture coords
@@ -454,14 +460,9 @@ private:
 	Rocket::Core::Texture textures[ NUM_GEOMETRIES ];
 
 
-	int renderFilter; // Filter components to draw
-	int loadFilter; // Images loaded
 
-	bool dirty_geometry; // Rebuild geometry
 
-	float value; // current value
 
-	progressBarOrientation_t orientation; // Direction progressbar grows
 };
 
 #endif

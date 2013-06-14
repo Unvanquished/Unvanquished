@@ -46,23 +46,23 @@ extern "C"
 class RocketDataFormatter : public Rocket::Controls::DataFormatter
 {
 public:
-	RocketDataFormatter( const char *name, int handle ) : name( name ), Rocket::Controls::DataFormatter( name ), handle( handle ) { }
+	Rocket::Core::String name;
+	int handle;
+	char data[ BIG_INFO_STRING ];
+	Rocket::Core::String out;
+
+	RocketDataFormatter( const char *name, int handle ) : Rocket::Controls::DataFormatter( name ), name( name ), handle( handle ) { }
 	~RocketDataFormatter() { }
 
 	void FormatData( Rocket::Core::String &formatted_data, const Rocket::Core::StringList &raw_data )
 	{
 		Com_Memset( &data, 0, sizeof( data ) );
-		for ( int i = 0; i < raw_data.size(); ++i )
+		for ( size_t i = 0; i < raw_data.size(); ++i )
 		{
-			Info_SetValueForKeyRocket( data, va( "%d", i+1 ), raw_data[ i ].CString() );
+			Info_SetValueForKeyRocket( data, va( "%zu", i+1 ), raw_data[ i ].CString() );
 		}
 		VM_Call( cgvm, CG_ROCKET_FORMATDATA, handle );
 		formatted_data = out;
 	}
-
-	int handle;
-	Rocket::Core::String name;
-	char data[ BIG_INFO_STRING ];
-	Rocket::Core::String out;
 };
 #endif

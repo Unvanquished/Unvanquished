@@ -92,7 +92,7 @@ public:
 
 		VM_Call( cgvm, CG_ROCKET_RENDERELEMENT );
 
-		for ( int i = 0; i < geometryList.size(); ++i )
+		for ( size_t i = 0; i < geometryList.size(); ++i )
 		{
 			geometryList[i].Render( GetAbsoluteOffset( Rocket::Core::Box::CONTENT ) );
 		}
@@ -139,7 +139,7 @@ public:
 
 	void ClearGeometry( void )
 	{
-		for ( int i = 0; i < geometryList.size(); ++i )
+		for ( size_t i = 0; i < geometryList.size(); ++i )
 		{
 			geometryList[ i ].Release();
 		}

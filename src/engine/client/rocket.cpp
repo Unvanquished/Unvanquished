@@ -245,7 +245,6 @@ public:
 
 	bool LoadTexture( Rocket::Core::TextureHandle& textureHandle, Rocket::Core::Vector2i& textureDimensions, const Rocket::Core::String& source )
 	{
-		char temp[ MAX_QPATH ];
 		qhandle_t shaderHandle = re.RegisterShader( source.CString(), RSF_NOMIP );
 
 		if ( shaderHandle == -1 )
@@ -296,7 +295,7 @@ void InitSDLtoRocketKeymap()
 {
 	using namespace Rocket::Core::Input;
 
-	for ( int i=0; i<SDL_arraysize(SDLK_keymap); ++i )
+	for ( size_t i=0; i<SDL_arraysize(SDLK_keymap); ++i )
 		SDLK_keymap[i] = KI_UNKNOWN;
 
 	SDLK_keymap[SDLK_UNKNOWN] = KI_UNKNOWN;
@@ -488,7 +487,7 @@ void Rocket_Init( void )
 	FS_FreeFileList( fonts );
 
 	// Create the menu context
-	menuContext = menuContext = Rocket::Core::CreateContext( "menuContext", Rocket::Core::Vector2i( cls.glconfig.vidWidth, cls.glconfig.vidHeight ) );
+	menuContext = Rocket::Core::CreateContext( "menuContext", Rocket::Core::Vector2i( cls.glconfig.vidWidth, cls.glconfig.vidHeight ) );
 
 	// Create the HUD context
 	hudContext = Rocket::Core::CreateContext( "hudContext", Rocket::Core::Vector2i( cls.glconfig.vidWidth, cls.glconfig.vidHeight ) );
@@ -506,7 +505,7 @@ void Rocket_Init( void )
 	Cmd_AddCommand( "rocket", Rocket_Rocket_f );
 	Cmd_AddCommand( "rocketDebug", Rocket_RocketDebug_f );
 
-// 	Rocket::Debugger::Initialise(menuContext);
+	Rocket::Debugger::Initialise(menuContext);
 
 	whiteShader = re.RegisterShader( "white", RSF_DEFAULT );
 }
@@ -533,7 +532,7 @@ void Rocket_Shutdown( void )
 
 	// Prevent memory leaks
 
-	for ( int i = 0; i < dataFormatterList.size(); ++i )
+	for ( size_t i = 0; i < dataFormatterList.size(); ++i )
 	{
 		delete dataFormatterList[i];
 	}
@@ -638,7 +637,7 @@ void Rocket_Update( void )
 extern "C" int IN_SDLKeyToQuakeKey( int sym );
 int Rocket_ToQuakeKey( const int rocketKey )
 {
-	for ( int i = 0; i < SDL_arraysize( SDLK_keymap ); ++i )
+	for ( size_t i = 0; i < SDL_arraysize( SDLK_keymap ); ++i )
 	{
 		if ( SDLK_keymap[ i ] == rocketKey )
 		{
@@ -730,9 +729,9 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in )
 	}
 
 	// Parse emoticons
-	int openBracket = 0;
-	int closeBracket = 0;
-	int currentPosition = 0;
+	size_t openBracket = 0;
+	size_t closeBracket = 0;
+	size_t currentPosition = 0;
 
 	while ( 1 )
 	{
