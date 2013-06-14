@@ -1101,3 +1101,12 @@ void CG_Rocket_RegisterDataSources( void )
 	}
 }
 
+void CG_Rocket_CleanUpDataSources( void )
+{
+	int i;
+
+	for ( i = 0; i < dataSourceCmdListCount; ++i )
+	{
+		dataSourceCmdList[ i ].cleanup( NULL );
+	}
+}

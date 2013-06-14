@@ -2768,7 +2768,7 @@ void CG_Shutdown( void )
 	// some mods may need to do cleanup work here,
 	// like closing files or archiving session data
 	UIS_Shutdown();
-
+	CG_Rocket_CleanUpDataSources();
 	BG_UnloadAllConfigs();
 }
 
