@@ -696,8 +696,8 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 			G_LogPrintf( "------------------------------------------------------------\n" );
 			G_LogPrintf( "InitGame: %s\n", serverinfo );
 
-			t = trap_RealTime( &qt );
-			G_LogPrintf( "RealTime: %04i-%02i-%02i %02i:%02i:%02i\n",
+			t = trap_GMTime( &qt );
+			G_LogPrintf( "RealTime: %04i-%02i-%02i %02i:%02i:%02i Z\n",
 			             1900 + qt.tm_year, qt.tm_mon + 1, qt.tm_mday,
 			             qt.tm_hour, qt.tm_min, qt.tm_sec );
 		}
