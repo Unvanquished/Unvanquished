@@ -2262,9 +2262,7 @@ void CG_DrawItemSelectText( rectDef_t *rect, float scale, int textStyle )
 		{
 			if ( ( name = cg_weapons[ cg.weaponSelect ].humanName ) )
 			{
-				w = UI_Text_Width( name, scale );
-				x = rect->x + rect->w / 2;
-				UI_Text_Paint( x - w / 2, rect->y + rect->h, scale, color, name, 0, textStyle );
+				// TODO: Draw weapon name
 			}
 		}
 	}
@@ -2275,9 +2273,7 @@ void CG_DrawItemSelectText( rectDef_t *rect, float scale, int textStyle )
 		{
 			if ( ( name = cg_upgrades[ cg.weaponSelect - 32 ].humanName ) )
 			{
-				w = UI_Text_Width( name, scale );
-				x = rect->x + rect->w / 2;
-				UI_Text_Paint( x - w / 2, rect->y + rect->h, scale, color, name, 0, textStyle );
+				// TODO: Draw Upgrade name
 			}
 		}
 	}
@@ -2966,4 +2962,59 @@ void CG_Bleed( vec3_t origin, vec3_t normal, int entityNum )
 
 		CG_SetParticleSystemNormal( ps, normal );
 	}
+}
+
+float CG_ChargeProgress( void )
+{
+	float progress;
+	int   min = 0, max = 0;
+
+	if ( cg.snap->ps.weapon == WP_ALEVEL3 )
+	{
+		min = LEVEL3_POUNCE_TIME_MIN;
+		max = LEVEL3_POUNCE_TIME;
+	}
+	else if ( cg.snap->ps.weapon == WP_ALEVEL3_UPG )
+	{
+		min = LEVEL3_POUNCE_TIME_MIN;
+		max = LEVEL3_POUNCE_TIME_UPG;
+	}
+	else if ( cg.snap->ps.weapon == WP_ALEVEL4 )
+	{
+		if ( cg.predictedPlayerState.stats[ STAT_STATE ] & SS_CHARGING )
+		{
+			min = 0;
+			max = LEVEL4_TRAMPLE_DURATION;
+		}
+		else
+		{
+			min = LEVEL4_TRAMPLE_CHARGE_MIN;
+			max = LEVEL4_TRAMPLE_CHARGE_MAX;
+		}
+	}
+	else if ( cg.snap->ps.weapon == WP_LUCIFER_CANNON )
+	{
+		min = LCANNON_CHARGE_TIME_MIN;
+		max = LCANNON_CHARGE_TIME_MAX;
+	}
+
+	if ( max - min <= 0.0f )
+	{
+		return 0.0f;
+	}
+
+	progress = ( ( float ) cg.predictedPlayerState.stats[ STAT_MISC ] - min ) /
+	( max - min );
+
+	if ( progress > 1.0f )
+	{
+		return 1.0f;
+	}
+
+	if ( progress < 0.0f )
+	{
+		return 0.0f;
+	}
+
+	return progress;
 }

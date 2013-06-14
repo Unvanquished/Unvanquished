@@ -81,41 +81,6 @@ qboolean CG_RequestScores( void )
 	}
 }
 
-extern menuDef_t *menuScoreboard;
-
-static void CG_scrollScoresDown_f( void )
-{
-	if ( menuScoreboard && cg.scoreBoardShowing )
-	{
-		Menu_ScrollFeeder( menuScoreboard, FEEDER_ALIENTEAM_LIST, qtrue );
-		Menu_ScrollFeeder( menuScoreboard, FEEDER_HUMANTEAM_LIST, qtrue );
-	}
-}
-
-static void CG_scrollScoresUp_f( void )
-{
-	if ( menuScoreboard && cg.scoreBoardShowing )
-	{
-		Menu_ScrollFeeder( menuScoreboard, FEEDER_ALIENTEAM_LIST, qfalse );
-		Menu_ScrollFeeder( menuScoreboard, FEEDER_HUMANTEAM_LIST, qfalse );
-	}
-}
-
-static void CG_ScoresDown_f( void )
-{
-	if ( !cg.showScores )
-	{
-		Menu_SetFeederSelection( menuScoreboard, FEEDER_ALIENTEAM_LIST, 0, NULL );
-		Menu_SetFeederSelection( menuScoreboard, FEEDER_HUMANTEAM_LIST, 0, NULL );
-		cg.showScores = qtrue;
-	}
-	else
-	{
-		cg.showScores = qfalse;
-		cg.numScores = 0;
-	}
-}
-
 static void CG_ScoresUp_f( void )
 {
 	if ( cg.showScores )
@@ -163,25 +128,6 @@ void CG_ClientList_f( void )
 	}
 
 	Com_Printf(_( "Listed %2d clients\n"), count ); // FIXME PLURAL
-}
-
-static void CG_ReloadHUD_f( void )
-{
-	char       buff[ 1024 ];
-	const char *hudSet;
-	UI_InitMemory();
-	String_Init();
-	Menu_Reset();
-
-	trap_Cvar_VariableStringBuffer( "cg_hudFiles", buff, sizeof( buff ) );
-	hudSet = buff;
-
-	if ( !cg_hudFilesEnable.integer || hudSet[ 0 ] == '\0' )
-	{
-		hudSet = "ui/hud.txt";
-	}
-
-	CG_LoadMenus( hudSet );
 }
 
 static void CG_UIMenu_f( void )
@@ -411,8 +357,6 @@ static const struct
 	void ( *completer )( void );
 } commands[] =
 {
-	{ "+scores",       CG_ScoresDown_f,         0                },
-	{ "-scores",       CG_ScoresUp_f,           0                },
 	{ "build",         0,                       CG_CompleteBuild },
 	{ "buy",           0,                       CG_CompleteBuy   },
 	{ "class",         0,                       CG_CompleteClass },
@@ -435,9 +379,6 @@ static const struct
 	{ "nextskin",      CG_TestModelNextSkin_f,  0                },
 	{ "prevframe",     CG_TestModelPrevFrame_f, 0                },
 	{ "prevskin",      CG_TestModelPrevSkin_f,  0                },
-	{ "reloadhud",     CG_ReloadHUD_f,          0                },
-	{ "scoresDown",    CG_scrollScoresDown_f,   0                },
-	{ "scoresUp",      CG_scrollScoresUp_f,     0                },
 	{ "sell",          0,                       CG_CompleteSell  },
 	{ "sizedown",      CG_SizeDown_f,           0                },
 	{ "sizeup",        CG_SizeUp_f,             0                },

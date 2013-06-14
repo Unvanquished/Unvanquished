@@ -73,3 +73,84 @@ const char *CG_GetShaderNameFromHandle( const qhandle_t shader )
 	trap_R_GetShaderNameFromHandle( shader, out, sizeof( out ) );
 	return out;
 }
+
+//
+// Translation Stuff
+//
+
+const char *Gettext( const char *msgid )
+{
+	static char buffer[ 4 ][ MAX_STRING_CHARS ];
+	static int index = -1;
+	char *buf;
+
+	index = ( index + 1 ) & 3;
+	buf = buffer[ index ];
+	trap_Gettext( buf, msgid, sizeof( buffer[ 0 ] ) );
+	return buf;
+}
+
+const char *Pgettext( const char *ctxt, const char *msgid )
+{
+	static char buffer[ 32000 ];
+	char *buf = buffer;
+	trap_Pgettext( buf, ctxt, msgid, sizeof( buffer ) );
+	return buf;
+}
+
+const char *GettextPlural( const char *msgid, const char *msgid2, int number )
+{
+	static char buffer[ 4 ][ MAX_STRING_CHARS ];
+	static int index = -1;
+	char *buf;
+
+	index = ( index + 1 ) & 3;
+	buf = buffer[ index ];
+	trap_GettextPlural( buf, msgid, msgid2, number, sizeof( buffer[ 0 ] ) );
+	return buf;
+}
+
+//
+// UI Helper Function
+//
+
+int UI_GetChatColour( int which, int team )
+{
+
+	switch ( which )
+	{
+		default:
+			return ColorIndex( COLOR_WHITE );
+
+		case SAY_ALL:
+			return ColorIndex( COLOR_GREEN );
+
+		case SAY_TEAM:
+			switch ( team )
+			{
+				case TEAM_NONE:
+					return ColorIndex( COLOR_YELLOW );
+				default:
+					return ColorIndex( COLOR_CYAN );
+			}
+
+				case SAY_PRIVMSG:
+					return ColorIndex( COLOR_GREEN );
+
+				case SAY_TPRIVMSG:
+					return ColorIndex( COLOR_CYAN );
+
+				case SAY_AREA:
+				case SAY_AREA_TEAM:
+					return ColorIndex( COLOR_BLUE );
+
+				case SAY_ADMINS:
+				case SAY_ADMINS_PUBLIC:
+				case SAY_ALL_ADMIN:
+					return ColorIndex( COLOR_MAGENTA );
+					#ifdef UIGPP
+				case SAY_RAW:
+					return ColorIndex( COLOR_LTGREY );
+					#endif
+	}
+}

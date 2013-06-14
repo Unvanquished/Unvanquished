@@ -702,8 +702,7 @@ set( CGAMEGPP_BASE
   ${GPP_DIR}/cgame/cg_rocket_elementdimensions.c
   ${GPP_DIR}/cgame/cg_utils.c
   ${GPP_DIR}/cgame/cg_gameinfo.c
-  ${GPP_DIR}/ui/ui_shared.c
-  ${GPP_DIR}/ui/ui_utf8.c
+  ${GPP_DIR}/cgame/cg_parseutils.c
   ${SHAREDLIST}
 )
 

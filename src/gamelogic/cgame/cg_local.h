@@ -27,7 +27,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #include "../../engine/renderer/tr_types.h"
 #include "../../engine/client/cg_api.h"
 #include "../game/bg_public.h"
-#include "../ui/ui_shared.h"
+#include "../../engine/client/keycodes.h"
+#include "cg_ui.h"
 
 // The entire cgame module is unloaded and reloaded on each level change,
 // so there is no persistent data between levels on the client side.
@@ -1491,6 +1492,7 @@ typedef struct
 	float       screenXScale; // derived from glconfig
 	float       screenYScale;
 	float       screenXBias;
+	float       aspectScale;
 
 	int         serverCommandSequence; // reliable command stream counter
 	int         processedSnapshotNum; // the number of snapshots cgame has requested
@@ -1598,7 +1600,6 @@ typedef enum
 extern  cgs_t               cgs;
 extern  cg_t                cg;
 extern  centity_t           cg_entities[ MAX_GENTITIES ];
-extern  displayContextDef_t cgDC;
 
 extern  weaponInfo_t        cg_weapons[ 32 ];
 extern  upgradeInfo_t       cg_upgrades[ 32 ];
@@ -1782,7 +1783,6 @@ int        CG_LastAttacker( void );
 void       CG_LoadMenus( const char *menuFile );
 void       CG_KeyEvent( int key, int chr, int flags );
 void       CG_MouseEvent( int x, int y );
-void       CG_SetScoreSelection( menuDef_t *menu );
 qboolean   CG_ClientIsReady( int clientNum );
 void       CG_BuildSpectatorString( void );
 
@@ -1855,7 +1855,6 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
                    float borderSize, float scale, vec4_t foreColor,
                    vec4_t backColor, qhandle_t shader, int textStyle );
 float      CG_GetValue( int ownerDraw );
-float      CG_ChargeProgress( void );
 void       CG_RunMenuScript( char **args );
 void       CG_SetPrintString( int type, const char *p );
 const char *CG_GetKillerText( void );
@@ -1966,6 +1965,7 @@ void CG_AddViewWeapon( playerState_t *ps );
 void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent );
 void CG_DrawItemSelect( void );
 void CG_DrawItemSelectText( rectDef_t *rect, float scale, int textStyle );
+float CG_ChargeProgress( void );
 
 //
 // cg_scanner.c
