@@ -1038,6 +1038,7 @@ void CG_Rocket_BuildDataSource( const char *dataSrc, const char *table )
 
 	if ( cmd )
 	{
+		cmd->cleanup( table );
 		cmd->build( table );
 	}
 }
