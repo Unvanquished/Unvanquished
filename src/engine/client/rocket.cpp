@@ -289,7 +289,7 @@ public:
 	}
 };
 
-int SDLK_keymap[SDLK_WORLD_0];
+int SDLK_keymap[SDLK_LAST];
 
 
 void InitSDLtoRocketKeymap()
