@@ -2881,7 +2881,7 @@ static void RB_SetupLightForShadowing( trRefLight_t *light, int index )
 	{
 		// don't just call LogComment, or we will get
 		// a call to va() every frame!
-		GLimp_LogComment( va( "----- First Shadow Interaction: %i -----\n", light->firstInteraction - backEnd.viewParms.interactions ) );
+		GLimp_LogComment( va( "----- First Shadow Interaction: %i -----\n", (int)( light->firstInteraction - backEnd.viewParms.interactions ) ) );
 	}
 }
 
@@ -2893,7 +2893,7 @@ static void RB_SetupLightForLighting( trRefLight_t *light )
 	{
 		// don't just call LogComment, or we will get
 		// a call to va() every frame!
-		GLimp_LogComment( va( "----- First Light Interaction: %i -----\n", light->firstInteraction - backEnd.viewParms.interactions ) );
+		GLimp_LogComment( va( "----- First Light Interaction: %i -----\n", (int)( light->firstInteraction - backEnd.viewParms.interactions ) ) );
 	}
 
 	if ( r_hdrRendering->integer )
@@ -3246,7 +3246,7 @@ static void RB_RenderInteractionsShadowMapped()
 								{
 									// don't just call LogComment, or we will get
 									// a call to va() every frame!
-									GLimp_LogComment( va( "----- Batching Shadow Interaction: %i -----\n", ia - backEnd.viewParms.interactions ) );
+									GLimp_LogComment( va( "----- Batching Shadow Interaction: %i -----\n", (int)( ia - backEnd.viewParms.interactions ) ) );
 								}
 
 								// fast path, same as previous
@@ -3262,7 +3262,7 @@ static void RB_RenderInteractionsShadowMapped()
 								{
 									// don't just call LogComment, or we will get
 									// a call to va() every frame!
-									GLimp_LogComment( va( "----- Beginning Shadow Interaction: %i -----\n", ia - backEnd.viewParms.interactions ) );
+									GLimp_LogComment( va( "----- Beginning Shadow Interaction: %i -----\n", (int)( ia - backEnd.viewParms.interactions ) ) );
 								}
 
 								// we don't need tangent space calculations here
@@ -3352,7 +3352,7 @@ static void RB_RenderInteractionsShadowMapped()
 			{
 				// don't just call LogComment, or we will get
 				// a call to va() every frame!
-				GLimp_LogComment( va( "----- Last Interaction: %i -----\n", iaLast - backEnd.viewParms.interactions ) );
+				GLimp_LogComment( va( "----- Last Interaction: %i -----\n", (int)( iaLast - backEnd.viewParms.interactions ) ) );
 			}
 
 			Tess_End();
@@ -3404,7 +3404,7 @@ static void RB_RenderInteractionsShadowMapped()
 				{
 					// don't just call LogComment, or we will get
 					// a call to va() every frame!
-					GLimp_LogComment( va( "----- Batching Light Interaction: %i -----\n", ia - backEnd.viewParms.interactions ) );
+					GLimp_LogComment( va( "----- Batching Light Interaction: %i -----\n", (int)( ia - backEnd.viewParms.interactions ) ) );
 				}
 
 				// fast path, same as previous
@@ -3420,7 +3420,7 @@ static void RB_RenderInteractionsShadowMapped()
 				{
 					// don't just call LogComment, or we will get
 					// a call to va() every frame!
-					GLimp_LogComment( va( "----- Beginning Light Interaction: %i -----\n", ia - backEnd.viewParms.interactions ) );
+					GLimp_LogComment( va( "----- Beginning Light Interaction: %i -----\n", (int)( ia - backEnd.viewParms.interactions ) ) );
 				}
 
 				// begin a new batch
@@ -3482,7 +3482,7 @@ static void RB_RenderInteractionsShadowMapped()
 		{
 			// don't just call LogComment, or we will get
 			// a call to va() every frame!
-			GLimp_LogComment( va( "----- Last Interaction: %i -----\n", iaLast - backEnd.viewParms.interactions ) );
+			GLimp_LogComment( va( "----- Last Interaction: %i -----\n", (int)( iaLast - backEnd.viewParms.interactions ) ) );
 		}
 
 		Tess_End();
@@ -4701,7 +4701,7 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 					{
 						// don't just call LogComment, or we will get
 						// a call to va() every frame!
-						GLimp_LogComment( va( "----- Batching Shadow Interaction: %i -----\n", ia - backEnd.viewParms.interactions ) );
+						GLimp_LogComment( va( "----- Batching Shadow Interaction: %i -----\n", (int)( ia - backEnd.viewParms.interactions ) ) );
 					}
 
 					// fast path, same as previous
@@ -4717,7 +4717,7 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 					{
 						// don't just call LogComment, or we will get
 						// a call to va() every frame!
-						GLimp_LogComment( va( "----- Beginning Shadow Interaction: %i -----\n", ia - backEnd.viewParms.interactions ) );
+						GLimp_LogComment( va( "----- Beginning Shadow Interaction: %i -----\n", (int)( ia - backEnd.viewParms.interactions ) ) );
 					}
 
 					// we don't need tangent space calculations here
@@ -4825,7 +4825,7 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 		{
 			// don't just call LogComment, or we will get
 			// a call to va() every frame!
-			GLimp_LogComment( va( "----- First Light Interaction: %i -----\n", ia - backEnd.viewParms.interactions ) );
+			GLimp_LogComment( va( "----- First Light Interaction: %i -----\n", (int)( ia - backEnd.viewParms.interactions ) ) );
 		}
 
 		RB_RenderLightDeferred( light, ortho );
