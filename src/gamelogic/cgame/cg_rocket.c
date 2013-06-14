@@ -251,6 +251,7 @@ void CG_Rocket_Init( void )
 	}
 
 	trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_MAIN ].id, "open" );
+	trap_Key_SetCatcher( KEYCATCH_UI );
 }
 
 void CG_Rocket_LoadHuds( void )

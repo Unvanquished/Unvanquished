@@ -51,7 +51,7 @@ void Rocket_ProcessEvent( Rocket::Core::Event& event, Rocket::Core::String& valu
 	Rocket::Core::StringList list;
 
 	Rocket::Core::StringUtilities::ExpandString( list, value, ';' );
-	for ( size_t i; i < list.size(); ++i )
+	for ( size_t i = 0; i < list.size(); ++i )
 	{
 		eventQueue.push( new RocketEvent_t( event, list[ i ] ) );
 	}
