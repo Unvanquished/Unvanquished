@@ -74,7 +74,7 @@ void CG_RegisterRocketCvars( void )
 
 void CG_Rocket_Init( void )
 {
-	int i, len;
+	int len;
 	char *token, *text_p;
 	char text[ 20000 ];
 	fileHandle_t f;
@@ -215,8 +215,6 @@ void CG_Rocket_Init( void )
 
 		if ( !Q_stricmp( token, "misc" ) )
 		{
-			int i;
-
 			token = COM_Parse2( &text_p );
 
 			if ( *token != '{' )
@@ -224,14 +222,30 @@ void CG_Rocket_Init( void )
 					Com_Error( ERR_DROP, "Error parsing %s. Expecting \"{\" but found \"%c\".", rocket_menuFile.string, *token );
 				}
 
-
-				token = COM_Parse2( &text_p );
-
-				if ( *token != '}' )
+				while ( 1 )
 				{
-					Com_Error( ERR_DROP, "Error parsing %s. Expecting \"}\" but found \"%c\".", rocket_menuFile.string, *token );
-				}
+					token = COM_Parse2( &text_p );
 
+					if ( *token == '}' )
+					{
+						break;
+					}
+
+					if ( !*token )
+					{
+						Com_Error( ERR_DROP, "Error parsing %s. Unexpected end of file. Expecting closing '}'.", rocket_menuFile.string );
+					}
+
+					// Skip non-RML files
+					if ( Q_stricmp( token + strlen( token ) - 4, ".rml" ) )
+					{
+						Com_Printf( "^3WARNING: Non-RML file listed in %s: \"%s\" . Skipping.", rocket_menuFile.string, token );
+						continue;
+					}
+
+					trap_Rocket_LoadDocument( token );
+
+				}
 				continue;
 		}
 	}

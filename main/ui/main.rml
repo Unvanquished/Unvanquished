@@ -63,11 +63,11 @@
 	<body id="main">
 	<div id="sidebar">
 		<img style="width: 100%;" src="/ui/assets/logo" /><br /><br />
-		<button onClick="open demos; show demos">Play</button><br /><br />
-		<button onClick="open options; show options">Options</button><br /><br />
-		<button onClick="open help; show help">Help</button><br /><br />
-		<button onClick="open serverbrowser; show serverbrowser">Server Browser</button><br /><br />
-		<button onClick="open mods; show mods">Mods</button><br /><br />
+		<button onClick="show demos">Play</button><br /><br />
+		<button onClick="show options">Options</button><br /><br />
+		<button onClick="show help">Help</button><br /><br />
+		<button onClick="show serverbrowser">Server Browser</button><br /><br />
+		<button onClick="show mods">Mods</button><br /><br />
 		<button onClick="exec quit">Quit</button><br /><br />
 	</div>
 	<div style="position: absolute;">
