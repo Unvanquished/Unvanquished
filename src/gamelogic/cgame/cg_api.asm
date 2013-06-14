@@ -237,7 +237,5 @@ equ trap_Rocket_SetElementDimensions      -474
 equ trap_Rocket_GetElementTag             -475
 equ trap_Rocket_KeyToQuake                -476
 equ trap_Rocket_GetElementAbsoluteOffset  -477
-equ trap_Rocket_DrawElementPic            -478
-equ trap_Rocket_ClearElementGeometry      -479
-equ trap_Rocket_QuakeToRML                -480
-equ trap_Rocket_SetClass                  -481
+equ trap_Rocket_QuakeToRML                -478
+equ trap_Rocket_SetClass                  -479

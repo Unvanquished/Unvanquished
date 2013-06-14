@@ -311,8 +311,6 @@ typedef enum cgameImport_s
   CG_ROCKET_GETELEMENTTAG,
   CG_ROCKET_KEYTOQUAKE,
   CG_ROCKET_GETELEMENTABSOLUTEOFFSET,
-  CG_ROCKET_DRAWPIC,
-  CG_ROCKET_CLEARELEMENTGEOMETRY,
   CG_ROCKET_QUAKETORML,
   CG_ROCKET_SETCLASS
 } cgameImport_t;
@@ -629,8 +627,6 @@ void            trap_Rocket_SetElementDimensions( float x, float y );
 void            trap_Rocket_GetElementTag( char *tag, int length );
 int             trap_Rocket_KeyToQuake( int key );
 void            trap_Rocket_GetElementAbsoluteOffset( float *x, float *y );
-void            trap_Rocket_DrawElementPic( float x, float y, float w, float h, float t1, float s1, float t2, float s2, vec4_t color, qhandle_t shader );
-void            trap_Rocket_ClearElementGeometry( void );
 void            trap_Rocket_QuakeToRML( const char *in, char *out, int length );
 void            trap_Rocket_SetClass( const char *in, qboolean activate );
 #endif

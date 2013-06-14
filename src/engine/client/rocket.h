@@ -92,8 +92,6 @@ void Rocket_SetAttribute( const char *name, const char *id, const char *attribut
 void Rocket_GetAttribute( const char *name, const char *id, const char *attribute, char *out, int length );
 void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t type );
 void Rocket_GetElementAbsoluteOffset( float *x, float *y );
-void Rocket_DrawElementPic( float x, float y, float w, float h, float t1, float s1, float t2, float s2, vec4_t color, qhandle_t shader );
-void Rocket_ClearElementGeometry( void );
 void Rocket_SetClass( const char *in, qboolean activate );
 void Rocket_SetPropertyById( const char *id, const char *property, const char *value );
 void Rocket_SetActiveContext( int catcher );

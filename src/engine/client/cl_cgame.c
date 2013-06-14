@@ -2332,14 +2332,6 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 			Rocket_GetElementAbsoluteOffset( VMA(1), VMA(2) );
 			return 0;
 
-		case CG_ROCKET_DRAWPIC:
-			Rocket_DrawElementPic( VMF(1), VMF(2), VMF(3), VMF(4), VMF(5), VMF(6), VMF(7), VMF(8), VMA(9), args[ 10 ] );
-			return 0;
-
-		case CG_ROCKET_CLEARELEMENTGEOMETRY:
-			Rocket_ClearElementGeometry();
-			return 0;
-
 		case CG_ROCKET_QUAKETORML:
 			Rocket_QuakeToRML( VMA(1), VMA(2), args[3] );
 			return 0;

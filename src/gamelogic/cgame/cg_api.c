@@ -1513,16 +1513,6 @@ void trap_Rocket_GetElementAbsoluteOffset( float *x, float *y )
 	syscall( CG_ROCKET_GETELEMENTABSOLUTEOFFSET, x, y );
 }
 
-void trap_Rocket_DrawElementPic( float x, float y, float w, float h, float t1, float s1, float t2, float s2, vec4_t color, qhandle_t shader )
-{
-	syscall( CG_ROCKET_DRAWPIC, PASSFLOAT(x), PASSFLOAT(y), PASSFLOAT(w), PASSFLOAT(h), PASSFLOAT(t1), PASSFLOAT(s1), PASSFLOAT(t2), PASSFLOAT(s2), color, shader );
-}
-
-void trap_Rocket_ClearElementGeometry( void )
-{
-	syscall( CG_ROCKET_CLEARELEMENTGEOMETRY );
-}
-
 void trap_Rocket_QuakeToRML( const char *in, char *out, int length )
 {
 	syscall( CG_ROCKET_QUAKETORML, in, out, length );

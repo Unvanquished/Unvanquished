@@ -40,8 +40,6 @@ static void CG_Rocket_DrawPic( void )
 	float x, y;
 	vec4_t color = { 255, 255, 255, 255 };
 	trap_Rocket_GetElementAbsoluteOffset( &x, &y );
-	trap_Rocket_ClearElementGeometry();
-	trap_Rocket_DrawElementPic( 0, 0, atoi( CG_Rocket_GetAttribute( "", "", "width" ) ), atoi( CG_Rocket_GetAttribute( "", "", "height" ) ), 0, 0, 1, 1, color, cgs.media.creepShader );
 }
 
 static void CG_Rocket_DrawTest( void )
@@ -203,8 +201,6 @@ static void CG_Rocket_DrawCrosshair( void )
 	vec4_t       color = { 255, 255, 255, 255 };
 	const char *s;
 
-	trap_Rocket_ClearElementGeometry();
-
 	weapon = BG_GetPlayerWeapon( &cg.snap->ps );
 
 	if ( cg_drawCrosshair.integer == CROSSHAIR_ALWAYSOFF )
@@ -262,7 +258,9 @@ static void CG_Rocket_DrawCrosshair( void )
 
 	if ( hShader != 0 )
 	{
-		trap_Rocket_DrawElementPic( x, y, w, h, 0, 0, 1, 1, color, hShader );
+		trap_R_SetColor( color );
+		trap_R_DrawStretchPic( x, y, w, h, 0, 0, 1, 1, hShader );
+		trap_R_SetColor( NULL );
 	}
 }
 
@@ -1167,7 +1165,7 @@ static void CG_Rocket_DrawLevelshot( void )
 	{
 		shader = trap_R_RegisterShader( va( "levelshots/%s", Info_ValueForKey( CG_ConfigString( CS_SERVERINFO ), "mapname" ) ), RSF_NOMIP );
 	}
-	
+
 	trap_Rocket_SetInnerRML( "", "", va( "<img class='levelshot' src='/%s' />", CG_GetShaderNameFromHandle( shader ) ) );
 }
 

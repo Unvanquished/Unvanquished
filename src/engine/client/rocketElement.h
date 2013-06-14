@@ -92,11 +92,6 @@ public:
 
 		VM_Call( cgvm, CG_ROCKET_RENDERELEMENT );
 
-		for ( size_t i = 0; i < geometryList.size(); ++i )
-		{
-			geometryList[i].Render( GetAbsoluteOffset( Rocket::Core::Box::CONTENT ) );
-		}
-
 		// Render text on top
 		Rocket::Core::Element::OnRender();
 	}
@@ -111,48 +106,9 @@ public:
 		Rocket::Core::Element::OnPropertyChange( changed_properties );
 	}
 
-	void DrawPic( float x, float y, float w, float h, float t1, float s1, float t2, float s2, vec4_t color, qhandle_t shader )
-	{
-		geometryList.push_back( Rocket::Core::Geometry( this ) );
-
-		std::vector< Rocket::Core::Vertex> &vertices = geometryList.back().GetVertices();
-		std::vector< int > &indices = geometryList.back().GetIndices();
-
-		Rocket::Core::String src = va ( "/%s", re.ShaderNameFromHandle( shader ) );
-
-		vertices.resize( 4 );
-		indices.resize( 6 );
-
-		Rocket::Core::GeometryUtilities::GenerateQuad( &vertices[0], &indices[0],
-
-													   Rocket::Core::Vector2f( x, y ),
-													   Rocket::Core::Vector2f( w, h ),
-													   Rocket::Core::Colourb( color[ 0 ], color[ 1 ], color[ 2 ], color[ 3 ] ),
-													   Rocket::Core::Vector2f( t1, s1 ),
-													   Rocket::Core::Vector2f( t2, s2 ) );
-
-		textureList.push_back( Rocket::Core::Texture() );
-		textureList.back().Load( src );
-
-		geometryList.back().SetTexture( &textureList.back() );
-	}
-
-	void ClearGeometry( void )
-	{
-		for ( size_t i = 0; i < geometryList.size(); ++i )
-		{
-			geometryList[ i ].Release();
-		}
-
-		geometryList.clear();
-		textureList.clear();
-	}
-
 	Rocket::Core::Vector2f dimensions;
 private:
 	bool dirty_geometry;
-	std::vector<Rocket::Core::Geometry> geometryList;
-	std::vector<Rocket::Core::Texture> textureList;
 };
 
 class RocketElementInstancer : public Rocket::Core::ElementInstancer
