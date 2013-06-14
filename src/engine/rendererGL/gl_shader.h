@@ -209,14 +209,9 @@ class GLShaderManager
 {
 	std::queue< GLShader* > _shaderBuildQueue;
 	std::vector< GLShader* > _shaders;
-	int       _lastBuildStartTime;
-	int       _lastBuildTime;
-	int       _beginBuildTime;
-	int       _endBuildTime;
 	int       _totalBuildTime;
 public:
-	GLShaderManager() : _beginBuildTime( 0 ), _endBuildTime( 0 ), _totalBuildTime( 0 ),
-	                    _lastBuildTime( 1 ), _lastBuildStartTime( 0 )
+	GLShaderManager() : _totalBuildTime( 0 )
 	{
 	}
 	~GLShaderManager();
@@ -232,7 +227,6 @@ public:
 	void freeAll();
 
 	bool buildPermutation( GLShader *shader, size_t permutation );
-	void buildIncremental( int dt );
 	void buildAll();
 private:
 	bool LoadShaderBinary( GLShader *shader, size_t permutation );
