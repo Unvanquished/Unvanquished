@@ -94,7 +94,7 @@
 		}
         </style>
     </head>
-    <body onload="close main;init_servers internet" id="serverbrowser">
+    <body onload="init_servers internet" id="serverbrowser">
 		<div id="left">
 		<tabset id="server">
 			<tab onClick="buildDS server_browser local">LAN</tab>
@@ -102,7 +102,7 @@
 				<p><span id="status"></span></p>
 				<button onClick="buildDS server_browser local">Refresh</button>
 				<button onClick="sortDS server_browser local ping">Sort</button>
-				<button onClick="close serverbrowser; open main; show main">Close</button>
+				<button onClick="hide serverbrowser; show main">Close</button>
 				<div class="servers">
 				<datagrid source="server_browser.local">
 					<col fields="label" width="2%" formatter="ServerLabel"></col>

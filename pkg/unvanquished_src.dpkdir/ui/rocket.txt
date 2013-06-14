@@ -14,5 +14,12 @@
 		ui/help.rml help             // ROCKETMENU_ARMOURYBUY
 		ui/help.rml help             // ROCKETMENU_ALIENEVOLVE
 	}
+	misc
+	{
+		ui/demos.rml
+		ui/options.rml
+		ui/serverbrowser.rml
+		ui/mods.rml
+	}
 	cursor ui/cursor.rml
 }
