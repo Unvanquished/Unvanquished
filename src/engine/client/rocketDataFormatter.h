@@ -42,7 +42,6 @@ extern "C"
 
 #include <Rocket/Controls/DataFormatter.h>
 
-
 class RocketDataFormatter : public Rocket::Controls::DataFormatter
 {
 public:
@@ -57,9 +56,10 @@ public:
 	void FormatData( Rocket::Core::String &formatted_data, const Rocket::Core::StringList &raw_data )
 	{
 		Com_Memset( &data, 0, sizeof( data ) );
+
 		for ( size_t i = 0; i < raw_data.size(); ++i )
 		{
-			Info_SetValueForKeyRocket( data, va( "%zu", i+1 ), raw_data[ i ].CString() );
+			Info_SetValueForKeyRocket( data, va( "%u", ( uint32_t ) i+1 ), raw_data[ i ].CString() );
 		}
 		VM_Call( cgvm, CG_ROCKET_FORMATDATA, handle );
 		formatted_data = out;
