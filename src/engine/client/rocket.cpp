@@ -788,7 +788,6 @@ void Rocket_SetActiveContext( int catcher )
 			break;
 
 		case KEYCATCH_CGAME:
-			menuContext = hudContext;
 			menuContext->ShowMouseCursor( false );
 			break;
 	}
