@@ -296,7 +296,12 @@ private:
 	void GenerateGeometry( void )
 	{
 		Rocket::Core::Vector2f geometryPosition[ NUM_GEOMETRIES ] = { Rocket::Core::Vector2f( 0, 0 ) };
-		Rocket::Core::Vector2f geometrySize[ NUM_GEOMETRIES ] = size;
+		Rocket::Core::Vector2f geometrySize[ NUM_GEOMETRIES ];
+
+		for ( int i = 0; i < NUM_GEOMETRIES; i++ )
+		{
+			geometrySize[ i ] = size[ i ];
+		}
 
 		Rocket::Core::Vector2f elementSize = GetBox().GetSize( Rocket::Core::Box::CONTENT );
 
