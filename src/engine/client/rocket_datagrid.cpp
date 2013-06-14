@@ -36,6 +36,7 @@ Maryland 20850 USA.
 #include <Rocket/Controls.h>
 #include "rocket.h"
 #include "rocketDataGrid.h"
+#include <string>
 
 // Code to interface with libRocket's datagrids for displaying
 // tabulated information nicely
