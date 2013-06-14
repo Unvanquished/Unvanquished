@@ -114,7 +114,7 @@ public:
 			GenerateGeometry();
 		}
 
-		for ( int i; i < NUM_GEOMETRIES; ++i )
+		for ( int i = 0; i < NUM_GEOMETRIES; ++i )
 		{
 			if ( renderFilter & 1 << i )
 			{
