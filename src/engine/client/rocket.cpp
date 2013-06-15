@@ -705,9 +705,9 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in )
 				out.Append( "</span>" );
 				span = qfalse;
 			}
-
+			p++;
 			char rgb[32];
-			int code = ( *++p - 48 ) & 31;
+			int code = ColorIndex( *p );
 
 			Com_sprintf( rgb, sizeof( rgb ), "<span style='color: #%02X%02X%02X;'>",
 			          (int)( g_color_table[ code ][ 0 ] * 255 ),
