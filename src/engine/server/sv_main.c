@@ -52,6 +52,7 @@ cvar_t         *sv_maxclients;
 
 cvar_t         *sv_privateClients; // number of clients reserved for password
 cvar_t         *sv_hostname;
+cvar_t         *sv_statsURL;
 cvar_t         *sv_master[ MAX_MASTER_SERVERS ]; // master server IP addresses
 cvar_t         *sv_reconnectlimit; // minimum seconds between connect messages
 cvar_t         *sv_padPackets; // add nop bytes to messages
@@ -589,6 +590,11 @@ void SVC_Info( netadr_t from )
 	Info_SetValueForKey( infostring, "bots", va( "%i", botCount ), qfalse );
 	Info_SetValueForKey( infostring, "sv_maxclients", va( "%i", sv_maxclients->integer - sv_privateClients->integer ), qfalse );
 	Info_SetValueForKey( infostring, "pure", va( "%i", sv_pure->integer ), qfalse );
+
+	if ( sv_statsURL->string[0] )
+	{
+		Info_SetValueForKey( infostring, "stats", sv_statsURL->string, qfalse );
+	}
 
 #ifdef USE_VOIP
 

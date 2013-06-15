@@ -133,6 +133,8 @@ extern "C" {
 #define idppc 1
 #endif
 
+#define Q_UNUSED(x) (void)(sizeof((x), 0))
+
 	/**********************************************************************
 	  VM Considerations
 

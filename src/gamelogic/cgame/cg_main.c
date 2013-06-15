@@ -46,6 +46,9 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
                           int arg4, int arg5, int arg6, int arg7,
                           int arg8, int arg9, int arg10, int arg11 )
 {
+	Q_UNUSED(arg3); Q_UNUSED(arg4);  Q_UNUSED(arg5);
+	Q_UNUSED(arg6); Q_UNUSED(arg7);  Q_UNUSED(arg8);
+	Q_UNUSED(arg9); Q_UNUSED(arg10); Q_UNUSED(arg11);
 	switch ( command )
 	{
 		case CG_INIT:
@@ -458,7 +461,7 @@ CG_RegisterCvars
 */
 void CG_RegisterCvars( void )
 {
-	int         i;
+	size_t i;
 	const cvarTable_t *cv;
 
 	for ( i = 0, cv = cvarTable; i < cvarTableSize; i++, cv++ )
@@ -889,7 +892,7 @@ CG_UpdateCvars
 */
 void CG_UpdateCvars( void )
 {
-	int         i;
+	size_t i;
 	const cvarTable_t *cv;
 
 	for ( i = 0, cv = cvarTable; i < cvarTableSize; i++, cv++ )
@@ -1032,6 +1035,8 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int level, const char *error, ... 
 {
 	va_list argptr;
 	char    text[ 1024 ];
+
+	Q_UNUSED(level);
 
 	va_start( argptr, error );
 	Q_vsnprintf( text, sizeof( text ), error, argptr );
@@ -2176,6 +2181,8 @@ void CG_LoadMenus( const char *menuFile )
 
 static qboolean CG_OwnerDrawHandleKey( int ownerDraw, int key )
 {
+	Q_UNUSED(ownerDraw);
+	Q_UNUSED(key);
 	return qfalse;
 }
 
@@ -2391,6 +2398,8 @@ static const char *CG_FeederItemText( int feederID, int index, int column, qhand
 
 static qhandle_t CG_FeederItemImage( int feederID, int index )
 {
+	Q_UNUSED(feederID);
+	Q_UNUSED(index);
 	return 0;
 }
 
@@ -2458,6 +2467,7 @@ static void CG_RunCinematicFrame( int handle )
 // hack to prevent warning
 static qboolean CG_OwnerDrawVisible( int parameter )
 {
+	Q_UNUSED(parameter);
 	return qfalse;
 }
 
@@ -2761,7 +2771,7 @@ static char *CG_VoIPString( void )
 		nlen = Q_snprintf( &voipString[ slen ], sizeof( voipString ) - slen,
 							"%s%d", ( slen > 0 ) ? "," : "", i );
 
-		if ( slen + nlen + 1 >= sizeof( voipString ) )
+		if ( slen + nlen + 1 >= (int) sizeof( voipString ) )
 		{
 			CG_Printf( S_WARNING "voipString overflowed\n" );
 			break;

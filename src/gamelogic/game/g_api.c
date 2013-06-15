@@ -376,10 +376,10 @@ qboolean trap_GetEntityToken( char *buffer, int bufferSize )
 }
 
 //45.
-//return Com_RealTime(VMA(1));
-int trap_RealTime( qtime_t *qtime )
+//return Com_GMTime(VMA(1));
+int trap_GMTime( qtime_t *qtime )
 {
-	return syscall( G_REAL_TIME, qtime );
+	return syscall( G_GM_TIME, qtime );
 }
 
 //46.

@@ -249,6 +249,9 @@ CG_AnnounceAlienStageTransition
 */
 static void CG_AnnounceAlienStageTransition( stage_t from, stage_t to )
 {
+	Q_UNUSED(from);
+	Q_UNUSED(to);
+
 	if ( cg.predictedPlayerState.stats[ STAT_TEAM ] != TEAM_ALIENS )
 	{
 		return;
@@ -273,6 +276,9 @@ CG_AnnounceHumanStageTransition
 */
 static void CG_AnnounceHumanStageTransition( stage_t from, stage_t to )
 {
+	Q_UNUSED(from);
+	Q_UNUSED(to);
+
 	if ( cg.predictedPlayerState.stats[ STAT_TEAM ] != TEAM_HUMANS )
 	{
 		return;

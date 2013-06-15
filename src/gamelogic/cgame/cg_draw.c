@@ -1940,8 +1940,7 @@ const char *CG_GetKillerText( void )
 	return s;
 }
 
-static void CG_DrawKiller( rectDef_t *rect, float scale, vec4_t color,
-                           qhandle_t shader, int textStyle )
+static void CG_DrawKiller( rectDef_t *rect, float scale, vec4_t color, int textStyle )
 {
 	// fragged by ... line
 	if ( cg.killerName[ 0 ] )
@@ -1959,7 +1958,7 @@ static void CG_DrawKiller( rectDef_t *rect, float scale, vec4_t color,
 CG_DrawTeamSpectators
 ==================
 */
-static void CG_DrawTeamSpectators( rectDef_t *rect, float scale, int textvalign, vec4_t color, qhandle_t shader )
+static void CG_DrawTeamSpectators( rectDef_t *rect, float scale, int textvalign, vec4_t color )
 {
 	float y;
 	char  *text = cg.spectatorList;
@@ -2150,8 +2149,7 @@ CG_DrawFPS
 */
 #define FPS_FRAMES 20
 #define FPS_STRING "fps"
-static void CG_DrawFPS( rectDef_t *rect, float text_x, float text_y,
-                        float scale, vec4_t color,
+static void CG_DrawFPS( rectDef_t *rect, float scale, vec4_t color,
                         int textalign, int textvalign, int textStyle,
                         qboolean scalableText )
 {
@@ -2277,8 +2275,7 @@ static void CG_DrawTimerSecs( rectDef_t *rect, vec4_t color )
 CG_DrawTimer
 =================
 */
-static void CG_DrawTimer( rectDef_t *rect, float text_x, float text_y,
-                          float scale, vec4_t color,
+static void CG_DrawTimer( rectDef_t *rect, float scale, vec4_t color,
                           int textalign, int textvalign, int textStyle )
 {
 	char  *s;
@@ -2553,7 +2550,7 @@ static void CG_DrawTeamOverlay( rectDef_t *rect, float scale, vec4_t color )
 
 			s = va( " [^%c%s%d^7] %s ^7%s",
 			        CG_GetColorCharForHealth( displayClients[ i ] ),
-			        "  " + ( ci->health >= 100 ? 6 : ci->health >= 10 ? 3 : 0 ), // these are figure spaces, 3 bytes each
+			        &"  "[ci->health >= 100 ? 6 : ci->health >= 10 ? 3 : 0], // these are figure spaces, 3 bytes each
 			        ci->health,
 			        ( ci->team == TEAM_ALIENS )
 			          ? va( "₠%.1f", (float) ci->credit / CREDITS_PER_EVO )
@@ -2582,8 +2579,7 @@ static void CG_DrawTeamOverlay( rectDef_t *rect, float scale, vec4_t color )
 CG_DrawClock
 =================
 */
-static void CG_DrawClock( rectDef_t *rect, float text_x, float text_y,
-                          float scale, vec4_t color,
+static void CG_DrawClock( rectDef_t *rect, float scale, vec4_t color,
                           int textalign, int textvalign, int textStyle )
 {
 	char    *s;
@@ -3126,8 +3122,7 @@ static void CG_DrawSpeedGraph( rectDef_t *rect, vec4_t foreColor,
 CG_DrawSpeedText
 ===================
 */
-static void CG_DrawSpeedText( rectDef_t *rect, float text_x, float text_y,
-                              float scale, vec4_t foreColor )
+static void CG_DrawSpeedText( rectDef_t *rect, float scale, vec4_t foreColor )
 {
 	char   speedstr[ 16 ];
 	float  val;
@@ -3166,8 +3161,7 @@ static void CG_DrawSpeedText( rectDef_t *rect, float text_x, float text_y,
 CG_DrawSpeed
 ===================
 */
-static void CG_DrawSpeed( rectDef_t *rect, float text_x, float text_y,
-                          float scale, vec4_t foreColor, vec4_t backColor )
+static void CG_DrawSpeed( rectDef_t *rect, float scale, vec4_t foreColor, vec4_t backColor )
 {
 	if ( cg_drawSpeed.integer & SPEEDOMETER_DRAW_GRAPH )
 	{
@@ -3176,7 +3170,7 @@ static void CG_DrawSpeed( rectDef_t *rect, float text_x, float text_y,
 
 	if ( cg_drawSpeed.integer & SPEEDOMETER_DRAW_TEXT )
 	{
-		CG_DrawSpeedText( rect, text_x, text_y, scale, foreColor );
+		CG_DrawSpeedText( rect, scale, foreColor );
 	}
 }
 
@@ -3910,6 +3904,7 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
                    float scale, vec4_t foreColor, vec4_t backColor,
                    qhandle_t shader, int textStyle )
 {
+	Q_UNUSED(ownerDrawFlags);
 	switch ( ownerDraw )
 	{
 		case CG_PLAYER_CREDITS_VALUE:
@@ -4043,7 +4038,7 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
 			break;
 
 		case CG_KILLER:
-			CG_DrawKiller( rect, scale, foreColor, shader, textStyle );
+			CG_DrawKiller( rect, scale, foreColor, textStyle );
 			break;
 
 		case CG_PLAYER_SELECT:
@@ -4059,7 +4054,7 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
 			break;
 
 		case CG_SPECTATORS:
-			CG_DrawTeamSpectators( rect, scale, textvalign, foreColor, shader );
+			CG_DrawTeamSpectators( rect, scale, textvalign, foreColor );
 			break;
 
 		case CG_PLAYER_LOCATION:
@@ -4149,19 +4144,19 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
 			break;
 
 		case CG_FPS:
-			CG_DrawFPS( rect, text_x, text_y, scale, foreColor, textalign, textvalign, textStyle, qtrue );
+			CG_DrawFPS( rect, scale, foreColor, textalign, textvalign, textStyle, qtrue );
 			break;
 
 		case CG_FPS_FIXED:
-			CG_DrawFPS( rect, text_x, text_y, scale, foreColor, textalign, textvalign, textStyle, qfalse );
+			CG_DrawFPS( rect, scale, foreColor, textalign, textvalign, textStyle, qfalse );
 			break;
 
 		case CG_TIMER:
-			CG_DrawTimer( rect, text_x, text_y, scale, foreColor, textalign, textvalign, textStyle );
+			CG_DrawTimer( rect, scale, foreColor, textalign, textvalign, textStyle );
 			break;
 
 		case CG_CLOCK:
-			CG_DrawClock( rect, text_x, text_y, scale, foreColor, textalign, textvalign, textStyle );
+			CG_DrawClock( rect, scale, foreColor, textalign, textvalign, textStyle );
 			break;
 
 		case CG_TIMER_MINS:
@@ -4185,7 +4180,7 @@ void CG_OwnerDraw( rectDef_t *rect, float text_x,
 			break;
 
 		case CG_SPEEDOMETER:
-			CG_DrawSpeed( rect, text_x, text_y, scale, foreColor, backColor );
+			CG_DrawSpeed( rect, scale, foreColor, backColor );
 			break;
 
 		case CG_DEMO_PLAYBACK:
@@ -4317,6 +4312,7 @@ int CG_ClientNumFromName( const char *p )
 
 void CG_RunMenuScript( char **args )
 {
+	Q_UNUSED(args);
 }
 
 //END TA UI
@@ -4428,7 +4424,7 @@ static void CG_DrawCenterString( void )
 	{
 		char linebuffer[ MAX_STRING_CHARS ];
 
-		for ( l = 0; l < sizeof( linebuffer ) - 1; l++ )
+		for ( l = 0; l + 1 < (int) sizeof( linebuffer ); l++ )
 		{
 			if ( !start[ l ] || start[ l ] == '\n' )
 			{

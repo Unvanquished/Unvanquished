@@ -88,11 +88,7 @@ void GLShaderManager::freeAll( void )
 		_shaderBuildQueue.pop();
 	}
 
-	_beginBuildTime = 0;
-	_endBuildTime = 0;
 	_totalBuildTime = 0;
-	_lastBuildTime = 1;
-	_lastBuildStartTime = 0;
 }
 
 void GLShaderManager::UpdateShaderProgramUniformLocations( GLShader *shader, shaderProgram_t *shaderProgram ) const
@@ -619,12 +615,6 @@ bool GLShaderManager::buildPermutation( GLShader *shader, size_t i )
 	int  startTime = ri.Milliseconds();
 	int  endTime;
 
-	// record start of shader building
-	if ( !_beginBuildTime )
-	{
-		_beginBuildTime = ri.Milliseconds();
-	}
-
 	// program already exists
 	if ( shader->_shaderPrograms[ i ].program )
 	{
@@ -663,25 +653,8 @@ bool GLShaderManager::buildPermutation( GLShader *shader, size_t i )
 	return false;
 }
 
-void GLShaderManager::buildIncremental( int dt )
+void GLShaderManager::buildAll( )
 {
-	int ntime = ri.Milliseconds();
-
-	if ( dt )
-	{
-		// try to keep framerate at least at 125fps
-		float frameTimeLeft = MAX( 1000 - 125 * backEnd.pc.msec, 1 );
-
-		int buildInterval = ceilf( 1000 * _lastBuildTime / frameTimeLeft );
-
-		if ( ntime - _lastBuildStartTime < buildInterval )
-		{
-			return;
-		}
-	}
-
-	_lastBuildStartTime = ntime;
-
 	while ( !_shaderBuildQueue.empty() )
 	{
 		GLShader *shader = _shaderBuildQueue.front();
@@ -690,45 +663,17 @@ void GLShaderManager::buildIncremental( int dt )
 
 		for( i = 0; i < numPermutations; i++ )
 		{
-			// stop after building one permutation
-			if ( buildPermutation( shader, i ) )
-			{
-				break;
-			}
+			buildPermutation( shader, i );
 		}
 
-		// successfully built a permutation
-		if ( i != numPermutations )
-		{
-			break;
-		}
-
-		// already built all permutations of this shader, so remove it from the queue and try the next shader
-		// this is done to help stabilize differences between frame times if this function is called once per frame
 		_shaderBuildQueue.pop();
-
-		if ( _shaderBuildQueue.empty() )
-		{
-			_endBuildTime = ri.Milliseconds();
-
-			// record times when completely finished
-			ri.Printf( PRINT_DEVELOPER, "glsl shaders took %d msec over a %d msec interval to build\n", _totalBuildTime, _endBuildTime - _beginBuildTime );
-
-			if( r_recompileShaders->integer )
-			{
-				ri.Cvar_Set( "r_recompileShaders", "0" );
-			}
-		}
 	}
 
-	_lastBuildTime = ri.Milliseconds() - ntime;
-}
+	ri.Printf( PRINT_DEVELOPER, "glsl shaders took %d msec to build\n", _totalBuildTime );
 
-void GLShaderManager::buildAll( )
-{
-	while ( !_shaderBuildQueue.empty() )
+	if( r_recompileShaders->integer )
 	{
-		buildIncremental( 0 );
+		ri.Cvar_Set( "r_recompileShaders", "0" );
 	}
 }
 
