@@ -372,6 +372,11 @@ static void CG_Rocket_DrawSpeedGraph( void )
 	const vec3_t fast = { 1.0, 0.0, 0.0 };
 	vec4_t       color, backColor;
 
+	if ( !cg_drawSpeed.integer )
+	{
+		return;
+	}
+
 	// grab info from libRocket
 	trap_Rocket_GetElementAbsoluteOffset( &x, &y );
 	trap_Rocket_GetProperty( "color", &color, sizeof( color ), ROCKET_COLOR );
