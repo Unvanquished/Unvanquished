@@ -71,14 +71,25 @@ void Rocket_SetInnerRML( const char *name, const char *id, const char *RML )
 {
 	if ( ( !*name || !*id ) && activeElement )
 	{
-		activeElement->SetInnerRML( RML );
+		if ( activeElement->GetInnerRML() != RML )
+		{
+			activeElement->SetInnerRML( RML );
+		}
 	}
 	else
 	{
 		Rocket::Core::ElementDocument *document = menuContext->GetDocument( name );
 		if ( document )
 		{
-			document->GetElementById( id )->SetInnerRML( RML );
+			Rocket::Core::Element *e = document->GetElementById( id );
+
+			if ( e )
+			{
+				if ( e->GetInnerRML() != RML )
+				{
+					e->SetInnerRML( RML );
+				}
+			}
 		}
 	}
 }
