@@ -128,6 +128,8 @@ void CG_PositionEntityOnTag( refEntity_t *entity, const refEntity_t *parent,
 	int           i;
 	orientation_t lerped;
 
+	Q_UNUSED(parentModel);
+
 	// lerp the tag
 	trap_R_LerpTag( &lerped, parent, tagName, 0 );
 
@@ -159,6 +161,7 @@ void CG_PositionRotatedEntityOnTag( refEntity_t *entity, const refEntity_t *pare
 	orientation_t lerped;
 	vec3_t        tempAxis[ 3 ];
 
+	Q_UNUSED(parentModel);
 //AxisClear( entity->axis );
 	// lerp the tag
 	trap_R_LerpTag( &lerped, parent, tagName, 0 );
@@ -703,9 +706,8 @@ static void CG_LightFlare( centity_t *cent )
 	entityState_t *es;
 	vec3_t        forward, delta;
 	float         len;
-	trace_t       tr;
 	float         maxAngle;
-	vec3_t        mins, maxs, start, end;
+	vec3_t        start, end;
 	float         srcRadius, srLocal, ratio = 1.0f;
 	float         newStatus;
 

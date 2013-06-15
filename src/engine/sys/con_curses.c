@@ -386,7 +386,7 @@ Update the clock
 static void CON_UpdateClock( void )
 {
 	qtime_t realtime;
-	Com_RealTime( &realtime );
+	Com_Time( &realtime );
 	werase( clockwin );
 	CON_ColorPrint( clockwin, va( "^0[^3%02d%c%02d^0]^7 ", realtime.tm_hour, ( realtime.tm_sec & 1 ) ? ':' : ' ', realtime.tm_min ), qtrue );
 	wnoutrefresh( clockwin );
@@ -644,9 +644,9 @@ char *CON_Input( void )
 		com_ansiColor->modified = qfalse;
 	}
 
-	if ( Com_RealTime( NULL ) != lasttime )
+	if ( Com_Time( NULL ) != lasttime )
 	{
-		lasttime = Com_RealTime( NULL );
+		lasttime = Com_Time( NULL );
 		CON_UpdateClock();
 		num_chars++;
 	}
