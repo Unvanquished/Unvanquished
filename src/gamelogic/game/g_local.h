@@ -1423,7 +1423,7 @@ int              trap_BotAllocateClient( int clientNum );
 void             trap_BotFreeClient( int clientNum );
 void             trap_GetUsercmd( int clientNum, usercmd_t *cmd );
 qboolean         trap_GetEntityToken( char *buffer, int bufferSize );
-int              trap_RealTime( qtime_t *qtime );
+int              trap_GMTime( qtime_t *qtime );
 void             trap_SnapVector( float *v );
 void             trap_SendGameStat( const char *data );
 void             trap_AddCommand( const char *cmdName );

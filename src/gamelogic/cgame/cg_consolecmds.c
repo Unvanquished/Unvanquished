@@ -210,7 +210,6 @@ static void CG_CompleteClass( void )
 static void CG_CompleteBuy_internal( qboolean negatives )
 {
 	int i;
-	const char *negative[ 64 ];
 
 	for( i = 0; i < UP_NUM_UPGRADES; i++ )
 	{
@@ -326,7 +325,7 @@ static void CG_CompleteVsay( void )
 
 static void CG_CompleteGive( void )
 {
-	int               i = 0;
+	unsigned               i = 0;
 	static const char give[][ 12 ] =
 	{
 		"all", "health", "funds", "stamina", "poison", "gas", "ammo", "confidence", "bp"
@@ -340,7 +339,7 @@ static void CG_CompleteGive( void )
 
 static void CG_CompleteTeamVote( void )
 {
-	int           i = 0;
+	unsigned           i = 0;
 	static const char vote[][ 16 ] =
 	{
 		"kick", "spectate", "denybuild", "allowbuild", "admitdefeat", "poll"
@@ -353,7 +352,7 @@ static void CG_CompleteTeamVote( void )
 }
 static void CG_CompleteVote( void )
 {
-	int           i = 0;
+	unsigned           i = 0;
 	static const char vote[][ 16 ] =
 	{
 		"kick", "spectate", "mute", "unmute", "sudden_death", "extend",
@@ -492,7 +491,7 @@ so it can perform tab completion
 */
 void CG_InitConsoleCommands( void )
 {
-	int i;
+	unsigned i;
 
 	for ( i = 0; i < ARRAY_LEN( commands ); i++ )
 	{
@@ -544,7 +543,9 @@ Cmd_Argc() / Cmd_Argv()
 void CG_CompleteCommand( int argNum )
 {
 	const char *cmd;
-	int        i;
+	unsigned i;
+
+	Q_UNUSED(argNum);
 
 	cmd = CG_Argv( 0 );
 

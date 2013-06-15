@@ -170,13 +170,11 @@ Restart the server on a different map
 */
 static void SV_Map_f( void )
 {
-	char     *cmd;
 	char     *map;
 	const char *layouts;
 	char     mapname[ MAX_QPATH ];
 	qboolean cheat;
 	char     expanded[ MAX_QPATH ];
-	char     layout[ MAX_CVAR_VALUE_STRING ];
 
 	map = Cmd_Argv( 1 );
 

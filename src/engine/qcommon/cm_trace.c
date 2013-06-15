@@ -2624,7 +2624,6 @@ static float CM_DistanceToBrush( const vec3_t loc, cbrush_t *brush )
 	float        dist = -999999.0f;
 	float        d1;
 	cbrushside_t *side;
-	float        t;
 
 	if ( !brush->numsides )
 	{
@@ -2655,7 +2654,6 @@ float CM_DistanceToModel( const vec3_t loc, clipHandle_t model ) {
 	int        k;
 	int        brushnum;
 	cbrush_t   *b;
-	cSurface_t *surface;
 	float      dist = 999999.0f;
 	float      d1;
 
