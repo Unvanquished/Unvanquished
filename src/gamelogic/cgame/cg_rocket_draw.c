@@ -101,15 +101,15 @@ static void CG_Rocket_DrawAmmo( void )
 
 	if ( !bp )
 	{
-		trap_Rocket_SetInnerRML( "", "", va( "<span class='ammo_value'>%d</span>", value ) );
+		trap_Rocket_SetInnerRML( "", "", va( "%d", value ) );
 	}
 	else if ( valueMarked > 0 )
 	{
-		trap_Rocket_SetInnerRML( "", "", va( "<span class='bp_value'>%d</span>+<span class='markedbp_value'>%d</span>", value, valueMarked ) );
+		trap_Rocket_SetInnerRML( "", "", va( "%d+%d", value, valueMarked ) );
 	}
 	else
 	{
-		trap_Rocket_SetInnerRML( "", "", va( "<span class='bp_value'>%d</span>", value ) );
+		trap_Rocket_SetInnerRML( "", "", va( "%d", value ) );
 	}
 }
 
@@ -132,7 +132,7 @@ static void CG_Rocket_DrawClips( void )
 
 			if ( value > -1 )
 			{
-				trap_Rocket_SetInnerRML( "", "", va( "<span class='clips_value'>%d</span>", value ) );
+				trap_Rocket_SetInnerRML( "", "", va( "%d", value ) );
 			}
 
 			break;
@@ -187,7 +187,7 @@ static void CG_Rocket_DrawFPS( void )
 	else
 		fps = 0;
 
-	s = va( "<span class='fps'>%d</span>", fps );
+	s = va( "%d", fps );
 	trap_Rocket_SetInnerRML( "", "", s );
 }
 
@@ -453,7 +453,7 @@ static void CG_Rocket_DrawCreditsValue( void )
 	playerState_t *ps = &cg.snap->ps;
 	int value = ps->persistant[ PERS_CREDIT ];;
 
-	trap_Rocket_SetInnerRML( "", "", va( "<span class='credits_value'>%d</span>", value ) );
+	trap_Rocket_SetInnerRML( "", "", va( "%d", value ) );
 }
 
 static void CG_Rocket_DrawAlienEvosValue( void )
@@ -463,7 +463,7 @@ static void CG_Rocket_DrawAlienEvosValue( void )
 
 	value /= ( float ) ALIEN_CREDITS_PER_KILL;
 
-	trap_Rocket_SetInnerRML( "", "", va( "<span class='evos_value'>%0.1f</span>", floor( value * 10 ) / 10 ) );
+	trap_Rocket_SetInnerRML( "", "", va( "%0.1f", floor( value * 10 ) / 10 ) );
 }
 
 static void CG_Rocket_DrawStaminaValue( void )
@@ -472,7 +472,7 @@ static void CG_Rocket_DrawStaminaValue( void )
 	float         stamina = ps->stats[ STAT_STAMINA ];
 	int           percent = 100 * ( stamina + ( float ) STAMINA_MAX ) / ( 2 * ( float ) STAMINA_MAX );
 
-	trap_Rocket_SetInnerRML( "", "", va( "<span class='stamina_value'>%d</span>", percent ) );
+	trap_Rocket_SetInnerRML( "", "", va( "%d", percent ) );
 }
 
 static void CG_Rocket_DrawWeaponIcon( void )
@@ -634,7 +634,7 @@ static void CG_Rocket_DrawLocation( void )
 		location = CG_ConfigString( CS_LOCATIONS );
 	}
 
-	trap_Rocket_SetInnerRML( "", "", va( "<span class='location'>%s</span>", CG_Rocket_QuakeToRML( location ) ) );
+	trap_Rocket_SetInnerRML( "", "", va( "%s", CG_Rocket_QuakeToRML( location ) ) );
 }
 
 static void CG_Rocket_DrawTimer( void )
@@ -655,7 +655,7 @@ static void CG_Rocket_DrawTimer( void )
 	tens = seconds / 10;
 	seconds -= tens * 10;
 
-	trap_Rocket_SetInnerRML( "", "", va( "<div class='timer'><span class='mins'>%d</span><span class='seperator'>:</span><span class='sec'>%d%d</span></div>", mins, tens, seconds ) );
+	trap_Rocket_SetInnerRML( "", "", va( "%d:%d%d", mins, tens, seconds ) );
 }
 
 #define LAG_SAMPLES 128
@@ -945,7 +945,7 @@ static void CG_Rocket_DrawLagometer( void )
 		ping = va( "%d", cg.ping );
 	}
 
-	trap_Rocket_SetInnerRML( "", "", va( "<span class='ping'>%s</span>", ping ) );
+	trap_Rocket_SetInnerRML( "", "", va( "%s", ping ) );
 	CG_Rocket_DrawDisconnect();
 }
 
@@ -1070,7 +1070,7 @@ static void CG_Rocket_DrawCrosshairNames( void )
 			   cgs.clientinfo[ cg.crosshairClientNum ].health );
 	}
 
-	trap_Rocket_SetInnerRML( "", "", va( "<scan class='crosshair_name'>%s</span>", name ) );
+	trap_Rocket_SetInnerRML( "", "", va( "%s", name ) );
 }
 
 static void CG_Rocket_DrawStageReport( void )
@@ -1136,7 +1136,7 @@ static void CG_Rocket_DrawStageReport( void )
 		}
 	}
 
-	trap_Rocket_SetInnerRML( "", "", va( "<span class='stage_report'>%s</span>", s ) );
+	trap_Rocket_SetInnerRML( "", "", va( "%s", s ) );
 
 }
 
