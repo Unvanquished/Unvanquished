@@ -189,7 +189,7 @@ static qboolean CG_ParseBuildableAnimationFile( const char *filename, buildable_
 		return qfalse;
 	}
 
-	if ( len == 0 || len >= sizeof( text ) - 1 )
+	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
 	{
 		trap_FS_FCloseFile( f );
 		CG_Printf( len == 0 ? "File %s is empty\n" : "File %s is too long\n", filename );
@@ -297,7 +297,7 @@ static qboolean CG_ParseBuildableSoundFile( const char *filename, buildable_t bu
 		return qfalse;
 	}
 
-	if ( len == 0 || len >= sizeof( text ) - 1 )
+	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
 	{
 		trap_FS_FCloseFile( f );
 		CG_Printf( len == 0 ? "File %s is empty\n" : "File %s is too long\n", filename );
