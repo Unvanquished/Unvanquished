@@ -42,8 +42,9 @@
     "the lost stage(s) provided, but existing upgrades will remain "
     "functional.\n"
     "\n"
-    "Building forwards will yield more confidence than building in an existing "
-    "base. There is also a small reward for killing an enemy inside its base."
+    "Building a structure yields 60% of the value your enemy would get for "
+    "destroying it. There is also a reward for killing an enemy outside your "
+    "own base."
   }
   "[dev] Human building ^21^7"
   {
