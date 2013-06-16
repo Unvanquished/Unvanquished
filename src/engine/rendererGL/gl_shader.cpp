@@ -496,7 +496,7 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 	if ( r_rimLighting->integer )
 	{
 		AddGLSLDefine( bufferExtra, "r_RimLighting", 1 );
-		AddGLSLDefine( bufferExtra, "r_rimExponent", r_rimExponent->value );
+		AddGLSLDefine( bufferExtra, "r_RimExponent", r_rimExponent->value );
 	}
 
 	// OK we added a lot of stuff but if we do something bad in the GLSL shaders then we want the proper line
