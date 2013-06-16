@@ -3302,7 +3302,8 @@ extern "C" {
 	void           R_RotateLightForViewParms( const trRefLight_t *ent, const viewParms_t *viewParms, orientationr_t *orien );
 
 	void           R_SetupFrustum2( frustum_t frustum, const matrix_t modelViewProjectionMatrix );
-
+	void           R_CalcFrustumNearCorners( const vec4_t frustum[ FRUSTUM_PLANES ], vec3_t corners[ 4 ] );
+	void           R_CalcFrustumFarCorners( const vec4_t frustum[ FRUSTUM_PLANES ], vec3_t corners[ 4 ] );
 	qboolean       R_CompareVert( srfVert_t *v1, srfVert_t *v2, qboolean checkst );
 	void           R_CalcNormalForTriangle( vec3_t normal, const vec3_t v0, const vec3_t v1, const vec3_t v2 );
 
@@ -3681,6 +3682,7 @@ extern "C" {
 	void     R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light );
 	void     R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent, vec3_t forcedOrigin );
 	int      R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir );
+	void     R_TessLight( const trRefLight_t *light, const vec4_t color );
 
 	void     R_SetupLightOrigin( trRefLight_t *light );
 	void     R_SetupLightLocalBounds( trRefLight_t *light );
