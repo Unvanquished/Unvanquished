@@ -2126,22 +2126,6 @@ success:
 		{
 			hardwareType = GLHW_GENERIC;
 		}
-		else if ( !Q_stricmp( forceGL->string, "voodoo" ))
-		{
-			hardwareType = GLHW_3DFX_2D3D;
-		}
-		else if ( !Q_stricmp( forceGL->string, "riva128" ))
-		{
-			hardwareType = GLHW_RIVA128;
-		}
-		else if ( !Q_stricmp( forceGL->string, "ragepro" ))
-		{
-			hardwareType = GLHW_RAGEPRO;
-		}
-		else if ( !Q_stricmp( forceGL->string, "permedia2" ))
-		{
-			hardwareType = GLHW_PERMEDIA2;
-		}
 		else if ( !Q_stricmp( forceGL->string, "ati" ))
 		{
 			hardwareType = GLHW_ATI;
