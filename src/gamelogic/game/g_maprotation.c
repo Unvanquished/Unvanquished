@@ -650,7 +650,6 @@ static qboolean G_ParseMapRotationFile( const char *fileName )
 // Some constants for map rotation listing
 #define MAP_BAD            "^1"
 #define MAP_CURRENT        "^2"
-#define MAP_NEXT           "^3"
 #define MAP_CONTROL        "^5"
 #define MAP_DEFAULT        "^7"
 #define MAP_CURRENT_MARKER "‣"
@@ -770,7 +769,7 @@ void G_PrintCurrentRotation( gentity_t *ent )
 	mapRotation_t *mapRotation = G_MapRotationActive() ? &mapRotations.rotations[ mapRotationIndex ] : NULL;
 	int           i = 0;
 	char          currentMapName[ MAX_QPATH ];
-	qboolean      currentMap = qfalse;
+	qboolean      currentShown = qfalse;
 	mrNode_t        *node;
 
 	if ( mapRotation == NULL )
@@ -792,11 +791,10 @@ void G_PrintCurrentRotation( gentity_t *ent )
 
 	while ( ( node = mapRotation->nodes[ i++ ] ) )
 	{
-		const char *colour = currentMap ? MAP_NEXT : MAP_DEFAULT;
+		const char *colour = MAP_DEFAULT;
 		int         indentation = 7;
+		qboolean    currentMap = qfalse;
 		qboolean    override = qfalse;
-
-		currentMap = qfalse;
 
 		if ( node->type == NT_MAP && !G_MapExists( node->u.map.name ) )
 		{
@@ -805,7 +803,8 @@ void G_PrintCurrentRotation( gentity_t *ent )
 		else if ( G_NodeIndexAfter( i - 1, mapRotationIndex ) == G_CurrentNodeIndex( mapRotationIndex ) )
 		{
 			currentMap = qtrue;
-			override = node->type == NT_MAP && Q_stricmp( node->u.map.name, currentMapName );
+			currentShown = node->type == NT_MAP;
+			override = currentShown && Q_stricmp( node->u.map.name, currentMapName );
 
 			if ( !override )
 			{
@@ -814,7 +813,7 @@ void G_PrintCurrentRotation( gentity_t *ent )
 		}
 
 		ADMBP( va( "^7%s%3i %s%s\n",
-		           ( currentMap && !override ) ? MAP_CURRENT_MARKER : " ",
+		           ( currentMap && currentShown && !override ) ? MAP_CURRENT_MARKER : " ",
 		           i, colour, G_RotationNode_ToString( node ) ) );
 
 		while ( node->type == NT_CONDITION )
@@ -828,13 +827,25 @@ void G_PrintCurrentRotation( gentity_t *ent )
 		{
 			ADMBP( va( MAP_DEFAULT MAP_CURRENT_MARKER "    " MAP_CURRENT "%s\n", currentMapName ) ); // use current map colour here
 		}
-
-		if ( currentMap && G_MapExists( g_nextMap.string ) )
+		if ( currentMap && currentShown && G_MapExists( g_nextMap.string ) )
 		{
-			ADMBP( va( MAP_NEXT "     %s\n", g_nextMap.string ) );
+			ADMBP( va( MAP_DEFAULT "     %s\n", g_nextMap.string ) );
 			currentMap = qfalse;
 		}
 	}
+
+	// current map will not have been shown if we're at the last entry
+	// (e.g. server just started up) and that entry is not for a map
+	if ( !currentShown )
+	{
+		ADMBP( va( MAP_DEFAULT MAP_CURRENT_MARKER "    " MAP_CURRENT "%s\n", currentMapName ) ); // use current map colour here
+
+		if ( G_MapExists( g_nextMap.string ) )
+		{
+			ADMBP( va( MAP_DEFAULT "     %s\n", g_nextMap.string ) );
+		}
+	}
+
 
 	ADMBP_end();
 }
