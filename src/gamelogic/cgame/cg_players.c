@@ -2742,7 +2742,7 @@ static qboolean CG_PlayerShadow( centity_t *cent, float *shadowPlane, class_t cl
 
 	*shadowPlane = 0;
 
-	if ( cg_shadows.integer == 0 )
+	if ( cg_shadows.integer == SHADOWING_NONE )
 	{
 		return qfalse;
 	}
@@ -2772,7 +2772,24 @@ static qboolean CG_PlayerShadow( centity_t *cent, float *shadowPlane, class_t cl
 		*shadowPlane = trace.endpos[ 2 ] + 1.0f;
 	}
 
-	if ( cg_shadows.integer != 1 ) // no mark for stencil or projection shadows
+	if ( cg_shadows.integer > SHADOWING_BLOB &&
+	     cg_playerShadows.integer ) {
+		// add inverse shadow map
+		{
+			vec3_t ambientLight, directedLight, lightDir;
+			vec3_t lightPos;
+
+			trap_R_LightForPoint( cent->lerpOrigin, ambientLight,
+					      directedLight, lightDir );
+			VectorMA( cent->lerpOrigin, 32.0f, lightDir, lightPos );
+
+			trap_R_AddLightToScene( lightPos, 128.0f, 3.0f,
+						directedLight[0], directedLight[1], directedLight[2],
+						0, REF_INVERSE_DLIGHT );
+		}
+	}
+
+	if ( cg_shadows.integer != SHADOWING_BLOB ) // no mark for stencil or projection shadows
 	{
 		return qtrue;
 	}
@@ -2803,7 +2820,7 @@ static void CG_PlayerSplash( centity_t *cent, class_t class )
 	trace_t trace;
 	int     contents;
 
-	if ( !cg_shadows.integer )
+	if ( cg_shadows.integer == SHADOWING_NONE )
 	{
 		return;
 	}

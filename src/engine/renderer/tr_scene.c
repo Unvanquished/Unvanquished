@@ -502,7 +502,9 @@ void RE_AddLightToScene( const vec3_t org, float radius, float intensity, float 
 	}
 
 	// these cards don't have the correct blend mode
-	if ( glConfig.hardwareType == GLHW_RIVA128 || glConfig.hardwareType == GLHW_PERMEDIA2 )
+	if ( glConfig.hardwareType == GLHW_RIVA128 ||
+	     glConfig.hardwareType == GLHW_PERMEDIA2 ||
+	     (flags & REF_INVERSE_DLIGHT ) )
 	{
 		return;
 	}

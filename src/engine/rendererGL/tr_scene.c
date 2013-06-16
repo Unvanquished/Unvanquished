@@ -533,12 +533,15 @@ void RE_AddDynamicLightToSceneET( const vec3_t org, float radius, float intensit
 	light->l.color[ 2 ] = b;
 
 	light->l.noShadows = r_dynamicLightCastShadows->integer ? qfalse : qtrue;
-	light->l.inverseShadows = qfalse;
+	light->l.inverseShadows = !!( flags & REF_INVERSE_DLIGHT );
 
 	light->isStatic = qfalse;
 	light->additive = qtrue;
 
-	light->l.scale = intensity;
+	if( light->l.inverseShadows )
+		light->l.scale = -intensity;
+	else
+		light->l.scale = intensity;
 #if 0
 
 	if ( light->l.scale <= r_lightScale->value )

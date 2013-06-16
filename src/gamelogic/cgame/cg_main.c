@@ -128,6 +128,8 @@ vmCvar_t        cg_runpitch;
 vmCvar_t        cg_runroll;
 vmCvar_t        cg_swingSpeed;
 vmCvar_t        cg_shadows;
+vmCvar_t        cg_playerShadows;
+vmCvar_t        cg_buildableShadows;
 vmCvar_t        cg_drawTimer;
 vmCvar_t        cg_drawClock;
 vmCvar_t        cg_drawFPS;
@@ -290,6 +292,9 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_drawGun,                     "cg_drawGun",                     "1",            CVAR_ARCHIVE                 },
 	{ &cg_viewsize,                    "cg_viewsize",                    "100",          CVAR_ARCHIVE                 },
 	{ &cg_stereoSeparation,            "cg_stereoSeparation",            "0.4",          CVAR_ARCHIVE                 },
+	{ &cg_shadows,                     "cg_shadows",                     "1",            CVAR_ARCHIVE | CVAR_LATCH    },
+	{ &cg_playerShadows,               "cg_playerShadows",               "1",            CVAR_ARCHIVE                 },
+	{ &cg_buildableShadows,            "cg_buildableShadows",            "0",            CVAR_ARCHIVE                 },
 	{ &cg_shadows,                     "cg_shadows",                     "1",            CVAR_ARCHIVE | CVAR_LATCH    },
 	{ &cg_draw2D,                      "cg_draw2D",                      "1",            CVAR_ARCHIVE                 },
 	{ &cg_drawTimer,                   "cg_drawTimer",                   "1",            CVAR_ARCHIVE                 },

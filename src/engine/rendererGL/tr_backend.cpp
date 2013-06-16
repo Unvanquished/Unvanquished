@@ -3156,7 +3156,7 @@ static void RB_RenderInteractionsShadowMapped()
 		if ( light->l.inverseShadows )
 		{
 			// handle those lights in RB_RenderInteractionsDeferredInverseShadows
-			continue;
+			//continue;
 		}
 
 		// begin shadowing
@@ -3973,7 +3973,7 @@ static void RB_RenderLightDeferred( trRefLight_t *light, const matrix_t ortho )
 
 		if ( light->l.inverseShadows )
 		{
-			GL_State( GLS_SRCBLEND_ZERO | GLS_DSTBLEND_ONE_MINUS_SRC_COLOR );
+			GL_State( GLS_SRCBLEND_ZERO | GLS_DSTBLEND_SRC_COLOR );
 		}
 		else
 #endif
