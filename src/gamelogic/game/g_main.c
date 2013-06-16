@@ -1788,7 +1788,7 @@ void CalculateRanks( void )
 	level.numConnectedClients = 0;
 	level.numPlayingClients = 0;
 
-	for ( team = TEAM_NONE + 1; team < NUM_TEAMS; team++ )
+	for ( team = TEAM_NONE; team < NUM_TEAMS; team++ )
 	{
 		level.team[ team ].numVotingClients = 0;
 		level.team[ team ].numClients = 0;
