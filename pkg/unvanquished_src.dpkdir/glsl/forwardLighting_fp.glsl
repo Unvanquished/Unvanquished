@@ -920,7 +920,8 @@ void	main()
 
 	}
 #endif
-
+	if( u_LightScale < 0.0 )
+		shadow = 1.0 - shadow;
 	if(shadow <= 0.0)
 	{
 		discard;
@@ -1069,7 +1070,7 @@ void	main()
 	color.rgb *= attenuationZ;
 #endif
 
-	color.rgb *= u_LightScale;
+	color.rgb *= abs(u_LightScale);
 	color.rgb *= shadow;
 
 	color.r *= var_TexDiffuse.p;
