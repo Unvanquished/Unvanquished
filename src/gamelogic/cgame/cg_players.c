@@ -130,7 +130,7 @@ static qboolean CG_ParseCharacterFile( const char *filename, clientInfo_t *ci )
 		return qfalse;
 	}
 
-	if ( len >= sizeof( text ) - 1 )
+	if ( len + 1 >= (int) sizeof( text ) )
 	{
 		CG_Printf( "File %s is too long\n", filename );
 		trap_FS_FCloseFile( f );
@@ -448,7 +448,7 @@ static qboolean CG_ParseAnimationFile( const char *filename, clientInfo_t *ci )
 		return qfalse;
 	}
 
-	if ( len == 0 || len >= sizeof( text ) - 1 )
+	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
 	{
 		CG_Printf( len == 0 ? "File %s is empty\n" : "File %s is too long\n", filename );
 		trap_FS_FCloseFile( f );
@@ -1628,37 +1628,6 @@ PLAYER ANIMATION
 =============================================================================
 */
 
-// TODO: choose proper values and use blending speed from character.cfg
-// blending is slow for testing issues
-static void CG_BlendPlayerLerpFrame( lerpFrame_t *lf )
-{
-	if ( cg_animBlend.value <= 0.0f )
-	{
-		lf->blendlerp = 0.0f;
-		return;
-	}
-
-	if ( ( lf->blendlerp > 0.0f ) && ( cg.time > lf->blendtime ) )
-	{
-		//exp blending
-		lf->blendlerp -= lf->blendlerp / cg_animBlend.value;
-
-		if ( lf->blendlerp <= 0.0f )
-		{
-			lf->blendlerp = 0.0f;
-		}
-
-		if ( lf->blendlerp >= 1.0f )
-		{
-			lf->blendlerp = 1.0f;
-		}
-
-		lf->blendtime = cg.time + 10;
-
-		debug_anim_blend = lf->blendlerp;
-	}
-}
-
 static void CG_CombineLegSkeleton( refSkeleton_t *dest, refSkeleton_t *legs, int *legBones, int numBones )
 {
 	int i;
@@ -1782,7 +1751,7 @@ static void CG_RunPlayerLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAni
 	}
 }
 
-static void CG_RunCorpseLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation, float speedScale )
+static void CG_RunCorpseLerpFrame( clientInfo_t *ci, lerpFrame_t *lf, int newAnimation )
 {
 	animation_t *anim;
 	qboolean    animChanged;
@@ -2773,7 +2742,7 @@ static qboolean CG_PlayerShadow( centity_t *cent, float *shadowPlane, class_t cl
 
 	*shadowPlane = 0;
 
-	if ( cg_shadows.integer == 0 )
+	if ( cg_shadows.integer == SHADOWING_NONE )
 	{
 		return qfalse;
 	}
@@ -2803,7 +2772,24 @@ static qboolean CG_PlayerShadow( centity_t *cent, float *shadowPlane, class_t cl
 		*shadowPlane = trace.endpos[ 2 ] + 1.0f;
 	}
 
-	if ( cg_shadows.integer != 1 ) // no mark for stencil or projection shadows
+	if ( cg_shadows.integer > SHADOWING_BLOB &&
+	     cg_playerShadows.integer ) {
+		// add inverse shadow map
+		{
+			vec3_t ambientLight, directedLight, lightDir;
+			vec3_t lightPos;
+
+			trap_R_LightForPoint( cent->lerpOrigin, ambientLight,
+					      directedLight, lightDir );
+			VectorMA( cent->lerpOrigin, 32.0f, lightDir, lightPos );
+
+			trap_R_AddLightToScene( lightPos, 128.0f, 3.0f,
+						directedLight[0], directedLight[1], directedLight[2],
+						0, REF_INVERSE_DLIGHT );
+		}
+	}
+
+	if ( cg_shadows.integer != SHADOWING_BLOB ) // no mark for stencil or projection shadows
 	{
 		return qtrue;
 	}
@@ -2834,7 +2820,7 @@ static void CG_PlayerSplash( centity_t *cent, class_t class )
 	trace_t trace;
 	int     contents;
 
-	if ( !cg_shadows.integer )
+	if ( cg_shadows.integer == SHADOWING_NONE )
 	{
 		return;
 	}
@@ -3711,7 +3697,7 @@ void CG_Corpse( centity_t *cent )
 		if ( ci->gender == GENDER_NEUTER )
 		{
 			memset( &cent->pe.nonseg, 0, sizeof( lerpFrame_t ) );
-			CG_RunCorpseLerpFrame( ci, &cent->pe.nonseg, NSPA_DEATH1, 1 );
+			CG_RunCorpseLerpFrame( ci, &cent->pe.nonseg, NSPA_DEATH1 );
 			legs.oldframe = cent->pe.nonseg.oldFrame;
 			legs.frame = cent->pe.nonseg.frame;
 			legs.backlerp = cent->pe.nonseg.backlerp;
@@ -3719,7 +3705,7 @@ void CG_Corpse( centity_t *cent )
 		else
 		{
 			memset( &cent->pe.legs, 0, sizeof( lerpFrame_t ) );
-			CG_RunCorpseLerpFrame( ci, &cent->pe.legs, BOTH_DEATH1, 1 );
+			CG_RunCorpseLerpFrame( ci, &cent->pe.legs, BOTH_DEATH1 );
 			legs.oldframe = cent->pe.legs.oldFrame;
 			legs.frame = cent->pe.legs.frame;
 			legs.backlerp = cent->pe.legs.backlerp;

@@ -471,7 +471,6 @@ static qboolean Cmd_ExecFile( char *filename )
 
 void Cmd_Exec_f( void )
 {
-	int          len;
 	char         filename[ MAX_QPATH ];
 	qboolean     executeSilent;
 	qboolean     failSilent = qfalse;

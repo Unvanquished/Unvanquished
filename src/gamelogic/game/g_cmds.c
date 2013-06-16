@@ -891,7 +891,7 @@ void Cmd_Team_f( gentity_t *ent )
 	}
 
 	// Cannot join a team for a while after a locking putteam.
-	t = trap_RealTime( NULL );
+	t = trap_GMTime( NULL );
 
 	if ( team != TEAM_NONE && ( specOnly = G_admin_match_spec( ent ) ) )
 	{
@@ -4586,10 +4586,19 @@ void G_DecolorString( const char *in, char *out, int len )
 			continue;
 		}
 
-		if ( Q_IsColorString( in ) && decolor )
+		if ( decolor )
 		{
-			in += 2;
-			continue;
+			if ( Q_IsColorString( in ) )
+			{
+				in += 2;
+				continue;
+			}
+
+			if ( in[0] == Q_COLOR_ESCAPE && in[1] == Q_COLOR_ESCAPE )
+			{
+				++in;
+				// at this point, we want the default 'copy' action
+			}
 		}
 
 		*out++ = *in++;

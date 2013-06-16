@@ -462,7 +462,7 @@ void trap_S_Respatialize( int entityNum, const vec3_t origin, vec3_t axis[ 3 ], 
 sfxHandle_t trap_S_RegisterSound( const char *sample, qboolean compressed )
 {
 	//CG_DrawInformation(qtrue);
-
+	Q_UNUSED(compressed);
 	return syscall( CG_S_REGISTERSOUND, sample, qfalse /* compressed */ );
 }
 

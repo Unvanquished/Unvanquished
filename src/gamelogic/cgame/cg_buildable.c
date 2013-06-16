@@ -189,7 +189,7 @@ static qboolean CG_ParseBuildableAnimationFile( const char *filename, buildable_
 		return qfalse;
 	}
 
-	if ( len == 0 || len >= sizeof( text ) - 1 )
+	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
 	{
 		trap_FS_FCloseFile( f );
 		CG_Printf( len == 0 ? "File %s is empty\n" : "File %s is too long\n", filename );
@@ -297,7 +297,7 @@ static qboolean CG_ParseBuildableSoundFile( const char *filename, buildable_t bu
 		return qfalse;
 	}
 
-	if ( len == 0 || len >= sizeof( text ) - 1 )
+	if ( len == 0 || len + 1 >= (int) sizeof( text ) )
 	{
 		trap_FS_FCloseFile( f );
 		CG_Printf( len == 0 ? "File %s is empty\n" : "File %s is too long\n", filename );
@@ -2055,6 +2055,21 @@ void CG_Buildable( centity_t *cent )
 		}
 
 		trap_R_AddRefEntityToScene( &turretTop );
+	}
+
+	// add inverse shadow map
+	if ( cg_buildableShadows.integer )
+	{
+		vec3_t ambientLight, directedLight, lightDir;
+		vec3_t lightPos;
+
+		trap_R_LightForPoint( ent.lightingOrigin, ambientLight,
+				      directedLight, lightDir );
+		VectorMA( ent.lightingOrigin, 32.0f, lightDir, lightPos );
+
+		trap_R_AddLightToScene( lightPos, 128.0f, 3.0f,
+					directedLight[0], directedLight[1], directedLight[2],
+					0, REF_INVERSE_DLIGHT );
 	}
 
 	//weapon effects for turrets

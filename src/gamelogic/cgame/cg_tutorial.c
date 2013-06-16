@@ -61,7 +61,7 @@ CG_GetBindings
 */
 static void CG_GetBindings( team_t team )
 {
-	int  i, j, numKeys;
+	unsigned  i, j, numKeys;
 	char buffer[ MAX_STRING_CHARS ];
 
 	for ( i = 0; i < numBindings; i++ )
@@ -103,7 +103,7 @@ CG_KeyNameForCommand
 */
 static const char *CG_KeyNameForCommand( const char *command )
 {
-	int         i, j;
+	unsigned    i;
 	static char buffer[ 2 ][ MAX_STRING_CHARS ];
 	static int  which = 1;
 	char        keyName[ 2 ][ 32 ];
@@ -271,6 +271,8 @@ CG_AlienLevel0Text
 */
 static void CG_AlienLevel0Text( char *text, playerState_t *ps )
 {
+	Q_UNUSED(ps);
+
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
 	          _( "Touch humans to damage them\n"
 	             "Look at their heads (or jump) to try to bite their heads\n"
@@ -360,6 +362,8 @@ CG_AlienLevel4Text
 */
 static void CG_AlienLevel4Text( char *text, playerState_t *ps )
 {
+	Q_UNUSED(ps);
+
 	Q_strcat( text, MAX_TUTORIAL_TEXT,
 	          va( _( "Press %s to swipe\n" ),
 	              CG_KeyNameForCommand( "+attack" ) ) );

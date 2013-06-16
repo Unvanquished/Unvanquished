@@ -1060,21 +1060,6 @@ void GfxInfo_f( void )
 		ri.Printf( PRINT_DEVELOPER, "Fog Mode: %s\n", r_nv_fogdist_mode->string );
 	}
 
-	if ( glConfig.hardwareType == GLHW_PERMEDIA2 )
-	{
-		ri.Printf( PRINT_DEVELOPER, "HACK: using vertex lightmap approximation\n" );
-	}
-
-	if ( glConfig.hardwareType == GLHW_RAGEPRO )
-	{
-		ri.Printf( PRINT_DEVELOPER, "HACK: ragePro approximations\n" );
-	}
-
-	if ( glConfig.hardwareType == GLHW_RIVA128 )
-	{
-		ri.Printf( PRINT_DEVELOPER, "HACK: riva128 approximations\n" );
-	}
-
 	if ( glConfig.smpActive )
 	{
 		ri.Printf( PRINT_DEVELOPER, "Using dual processor acceleration\n" );

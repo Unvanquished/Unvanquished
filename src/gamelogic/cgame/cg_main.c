@@ -50,6 +50,9 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, int arg1, int arg2, int arg3,
                           int arg4, int arg5, int arg6, int arg7,
                           int arg8, int arg9, int arg10, int arg11 )
 {
+	Q_UNUSED(arg3); Q_UNUSED(arg4);  Q_UNUSED(arg5);
+	Q_UNUSED(arg6); Q_UNUSED(arg7);  Q_UNUSED(arg8);
+	Q_UNUSED(arg9); Q_UNUSED(arg10); Q_UNUSED(arg11);
 	switch ( command )
 	{
 		case CG_INIT:
@@ -152,6 +155,8 @@ vmCvar_t        cg_runpitch;
 vmCvar_t        cg_runroll;
 vmCvar_t        cg_swingSpeed;
 vmCvar_t        cg_shadows;
+vmCvar_t        cg_playerShadows;
+vmCvar_t        cg_buildableShadows;
 vmCvar_t        cg_drawTimer;
 vmCvar_t        cg_drawClock;
 vmCvar_t        cg_drawFPS;
@@ -314,6 +319,9 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_drawGun,                     "cg_drawGun",                     "1",            CVAR_ARCHIVE                 },
 	{ &cg_viewsize,                    "cg_viewsize",                    "100",          CVAR_ARCHIVE                 },
 	{ &cg_stereoSeparation,            "cg_stereoSeparation",            "0.4",          CVAR_ARCHIVE                 },
+	{ &cg_shadows,                     "cg_shadows",                     "1",            CVAR_ARCHIVE | CVAR_LATCH    },
+	{ &cg_playerShadows,               "cg_playerShadows",               "1",            CVAR_ARCHIVE                 },
+	{ &cg_buildableShadows,            "cg_buildableShadows",            "0",            CVAR_ARCHIVE                 },
 	{ &cg_shadows,                     "cg_shadows",                     "1",            CVAR_ARCHIVE | CVAR_LATCH    },
 	{ &cg_draw2D,                      "cg_draw2D",                      "1",            CVAR_ARCHIVE                 },
 	{ &cg_drawTimer,                   "cg_drawTimer",                   "1",            CVAR_ARCHIVE                 },
@@ -485,7 +493,7 @@ CG_RegisterCvars
 */
 void CG_RegisterCvars( void )
 {
-	int         i;
+	size_t i;
 	const cvarTable_t *cv;
 
 	for ( i = 0, cv = cvarTable; i < cvarTableSize; i++, cv++ )
@@ -916,7 +924,7 @@ CG_UpdateCvars
 */
 void CG_UpdateCvars( void )
 {
-	int         i;
+	size_t i;
 	const cvarTable_t *cv;
 
 	for ( i = 0, cv = cvarTable; i < cvarTableSize; i++, cv++ )
@@ -1059,6 +1067,8 @@ void QDECL PRINTF_LIKE(2) NORETURN Com_Error( int level, const char *error, ... 
 {
 	va_list argptr;
 	char    text[ 1024 ];
+
+	Q_UNUSED(level);
 
 	va_start( argptr, error );
 	Q_vsnprintf( text, sizeof( text ), error, argptr );
@@ -1797,7 +1807,6 @@ void CG_StartMusic( void )
 	trap_S_StartBackgroundTrack( parm1, parm2 );
 }
 
-
 // FIXME: might need to cache this info
 static clientInfo_t *CG_InfoFromScoreIndex( int index, int team, int *scoreIndex )
 {
@@ -1997,7 +2006,7 @@ static char *CG_VoIPString( void )
 		nlen = Q_snprintf( &voipString[ slen ], sizeof( voipString ) - slen,
 							"%s%d", ( slen > 0 ) ? "," : "", i );
 
-		if ( slen + nlen + 1 >= sizeof( voipString ) )
+		if ( slen + nlen + 1 >= (int) sizeof( voipString ) )
 		{
 			CG_Printf( S_WARNING "voipString overflowed\n" );
 			break;

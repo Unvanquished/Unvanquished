@@ -95,6 +95,7 @@ int CG_ClientNumFromName( const char *p )
 
 void CG_RunMenuScript( char **args )
 {
+	Q_UNUSED(args);
 }
 
 //END TA UI
@@ -174,8 +175,6 @@ static void CG_DrawCenterString( void )
 	start = cg.centerPrint;
 
 	y = cg.centerPrintY - cg.centerPrintLines * BIGCHAR_HEIGHT / 2;
-
-// TODO
 }
 
 //==============================================================================

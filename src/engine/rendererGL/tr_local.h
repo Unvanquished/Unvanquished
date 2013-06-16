@@ -3022,7 +3022,7 @@ extern "C" {
 	extern cvar_t *r_heatHazeFix;
 	extern cvar_t *r_noMarksOnTrisurfs;
 	extern cvar_t *r_recompileShaders;
-	extern cvar_t *r_lazyShaders;
+	extern cvar_t *r_lazyShaders; // 0: build all shaders on program start 1: delay shader build until first map load 2: delay shader build until needed
 
 	extern cvar_t *r_norefresh; // bypasses the ref rendering
 	extern cvar_t *r_drawentities; // disable/enable entity rendering

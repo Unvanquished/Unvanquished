@@ -2283,7 +2283,10 @@ extern "C" {
 		   RB_ShowImages();
 		   }
 		 */
-		GLSL_FinishGPUShaders();
+		if ( r_lazyShaders->integer == 1 )
+		{
+			GLSL_FinishGPUShaders();
+		}
 	}
 
 	static void RE_PurgeCache( void )

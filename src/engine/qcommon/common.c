@@ -746,12 +746,9 @@ int Com_FilterPath( char *filter, char *name, int casesensitive )
 	return Com_Filter( new_filter, new_name, casesensitive );
 }
 
-/*
-================
-Com_RealTime
-================
-*/
-int Com_RealTime( qtime_t *qtime )
+
+/* Internals for Com_RealTime & Com_GMTime */
+static int internalTime( qtime_t *qtime, struct tm *( *timefunc )( const time_t * ) )
 {
 	time_t    t;
 	struct tm *tms;
@@ -763,7 +760,7 @@ int Com_RealTime( qtime_t *qtime )
 		return t;
 	}
 
-	tms = localtime( &t );
+	tms = timefunc( &t );
 
 	if ( tms )
 	{
@@ -779,6 +776,26 @@ int Com_RealTime( qtime_t *qtime )
 	}
 
 	return t;
+}
+
+/*
+================
+Com_RealTime
+================
+*/
+int Com_RealTime( qtime_t *qtime )
+{
+	return internalTime( qtime, localtime );
+}
+
+/*
+================
+Com_GMTime
+================
+*/
+int Com_GMTime( qtime_t *qtime )
+{
+	return internalTime( qtime, gmtime );
 }
 
 /*
