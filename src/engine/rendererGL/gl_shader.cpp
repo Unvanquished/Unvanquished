@@ -226,7 +226,7 @@ std::string     GLShaderManager::BuildGPUShaderText( const char *mainShaderName,
 
 	//AddGLSLDefine( bufferExtra, "r_NormalScale", r_normalScale->value );
 
-	AddGLSLDefine( bufferExtra, "M_PI", M_PI );
+	AddGLSLDefine( bufferExtra, "M_PI", static_cast<float>( M_PI ) );
 	AddGLSLDefine( bufferExtra, "MAX_SHADOWMAPS", MAX_SHADOWMAPS );
 	AddGLSLDefine( bufferExtra, "MAX_SHADER_DEFORM_PARMS", MAX_SHADER_DEFORM_PARMS );
 
