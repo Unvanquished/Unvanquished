@@ -2088,7 +2088,7 @@ skipInteraction:
 	return numCasters;
 }
 
-static const interaction_t *IterateLights( const interaction_t *prev )
+static interaction_t *IterateLights( const interaction_t *prev )
 {
 	if ( !prev && backEnd.viewParms.numInteractions > 0 )
 	{
@@ -2103,16 +2103,17 @@ static const interaction_t *IterateLights( const interaction_t *prev )
 	const interaction_t *next = prev;
 	const interaction_t *last = &backEnd.viewParms.interactions[ backEnd.viewParms.numInteractions - 1 ];
 
-	while ( next < last && next->light == prev->light )
+	while ( next <= last && next->light == prev->light )
 	{
 		next++;
 	}
 
-	if ( next == last )
+	if ( next > last )
 	{
 		next = NULL;
 	}
-	return next;
+
+	return ( interaction_t * ) next;
 }
 
 static void RB_SetupLightAttenuationForEntity( trRefLight_t *light, const trRefEntity_t *entity )
@@ -5978,11 +5979,8 @@ void RB_RenderLightOcclusionQueries()
 	{
 		int           i;
 		interaction_t *ia;
-		int           iaCount;
-		int           iaFirst;
-		trRefLight_t  *light, *oldLight, *multiQueryLight;
-		GLint         ocSamples = 0;
-		qboolean      queryObjects;
+		interaction_t *iaFirst;
+		trRefLight_t  *light, *multiQueryLight;
 		link_t        occlusionQueryQueue;
 		link_t        invisibleQueue;
 		growList_t    invisibleList;
@@ -6033,37 +6031,21 @@ void RB_RenderLightOcclusionQueries()
 		QueueInit( &invisibleQueue );
 		Com_InitGrowList( &invisibleList, 1000 );
 
-		// loop trough all light interactions and render the light OBB for each last interaction
-		for ( iaCount = 0, ia = &backEnd.viewParms.interactions[ 0 ]; iaCount < backEnd.viewParms.numInteractions; )
+		iaFirst = NULL;
+
+		// add each light to the potentially invisible list
+		while ( ( iaFirst = IterateLights( iaFirst ) ) )
 		{
-			backEnd.currentLight = light = ia->light;
-			ia->occlusionQuerySamples = 1;
+			backEnd.currentLight = light = iaFirst->light;
 
-			if ( !ia->next )
+			for ( ia = iaFirst; ia; ia = ia->next )
 			{
-				// last interaction of current light
-				if ( !ia->noOcclusionQueries )
-				{
-					Com_AddToGrowList( &invisibleList, light );
-				}
-
-				if ( iaCount < ( backEnd.viewParms.numInteractions - 1 ) )
-				{
-					// jump to next interaction and continue
-					ia++;
-					iaCount++;
-				}
-				else
-				{
-					// increase last time to leave for loop
-					iaCount++;
-				}
+				ia->occlusionQuerySamples = 1;
 			}
-			else
+
+			if ( !iaFirst->noOcclusionQueries )
 			{
-				// just continue
-				ia = ia->next;
-				iaCount++;
+				Com_AddToGrowList( &invisibleList, light );
 			}
 		}
 
@@ -6173,73 +6155,29 @@ void RB_RenderLightOcclusionQueries()
 		// reenable writes to depth and color buffers
 		GL_State( GLS_DEPTHMASK_TRUE );
 
-		// loop trough all light interactions and fetch results for each last interaction
-		// then copy result to all other interactions that belong to the same light
-		iaFirst = 0;
-		queryObjects = qtrue;
-		oldLight = NULL;
-
-		for ( iaCount = 0, ia = &backEnd.viewParms.interactions[ 0 ]; iaCount < backEnd.viewParms.numInteractions; )
+		// copy result to all other interactions that belong to the same light
+		iaFirst = NULL;
+		while( ( iaFirst = IterateLights( iaFirst ) ) )
 		{
 			backEnd.currentLight = light = ia->light;
+			interaction_t *ia = iaFirst;
 
-			if ( light != oldLight )
+			for ( ia = iaFirst; ia; ia = ia->next )
 			{
-				iaFirst = iaCount;
-			}
+				if ( !ia->noOcclusionQueries )
+				{
+					ia->occlusionQuerySamples = light->occlusionQuerySamples > r_chcVisibilityThreshold->integer;
+				}
+				else
+				{
+					ia->occlusionQuerySamples = 1;
+				}
 
-			if ( !queryObjects )
-			{
-				ia->occlusionQuerySamples = ocSamples;
-
-				if ( ocSamples <= 0 )
+				if ( ia->occlusionQuerySamples <= 0 )
 				{
 					backEnd.pc.c_occlusionQueriesInteractionsCulled++;
 				}
 			}
-
-			if ( !ia->next )
-			{
-				if ( queryObjects )
-				{
-					if ( !ia->noOcclusionQueries )
-					{
-						ocSamples = ( signed ) light->occlusionQuerySamples > r_chcVisibilityThreshold->integer;
-					}
-					else
-					{
-						ocSamples = 1;
-					}
-
-					// jump back to first interaction of this light copy query result
-					ia = &backEnd.viewParms.interactions[ iaFirst ];
-					iaCount = iaFirst;
-					queryObjects = qfalse;
-				}
-				else
-				{
-					if ( iaCount < ( backEnd.viewParms.numInteractions - 1 ) )
-					{
-						// jump to next interaction and start querying
-						ia++;
-						iaCount++;
-						queryObjects = qtrue;
-					}
-					else
-					{
-						// increase last time to leave for loop
-						iaCount++;
-					}
-				}
-			}
-			else
-			{
-				// just continue
-				ia = ia->next;
-				iaCount++;
-			}
-
-			oldLight = light;
 		}
 
 		if ( r_speeds->integer == RSPEEDS_OCCLUSION_QUERIES )
@@ -7336,27 +7274,6 @@ static void RB_RenderDebugUtils()
 			tess.multiDrawPrimitives = 0;
 			tess.numIndexes = 0;
 			tess.numVertexes = 0;
-
-			if ( !ia->next )
-			{
-				if ( iaCount < ( backEnd.viewParms.numInteractions - 1 ) )
-				{
-					// jump to next interaction and continue
-					ia++;
-					iaCount++;
-				}
-				else
-				{
-					// increase last time to leave for loop
-					iaCount++;
-				}
-			}
-			else
-			{
-				// just continue
-				ia = ia->next;
-				iaCount++;
-			}
 		}
 
 		// go back to the world modelview matrix
