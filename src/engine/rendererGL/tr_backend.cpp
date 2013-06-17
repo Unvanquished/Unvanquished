@@ -2855,7 +2855,6 @@ static void RB_SetupLightForShadowing( trRefLight_t *light, int index )
 						AddPointToBounds( transf, cropBounds[ 0 ], cropBounds[ 1 ] );
 					}
 
-					// transform from OpenGL's right handed into D3D's left handed coordinate system
 #if 0
 					MatrixScaleTranslateToUnitCube( projectionMatrix, cropBounds[ 0 ], cropBounds[ 1 ] );
 					MatrixMultiply( flipZMatrix, projectionMatrix, light->projectionMatrix );

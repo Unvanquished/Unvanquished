@@ -711,28 +711,11 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 
 	GLimp_LogComment( "--- RE_BeginFrame ---\n" );
 
-#if defined( USE_D3D10 )
-	// TODO
-#else
 	glState.finishCalled = qfalse;
-#endif
 
 	tr.frameCount++;
 	tr.frameSceneNum = 0;
 	tr.viewCount = 0;
-
-#if defined( USE_D3D10 )
-	// draw buffer stuff
-	cmd = R_GetCommandBuffer( sizeof( *cmd ) );
-
-	if ( !cmd )
-	{
-		return;
-	}
-
-	cmd->commandId = RC_DRAW_BUFFER;
-	cmd->buffer = 0;
-#else
 
 	// do overdraw measurement
 	if ( r_measureOverdraw->integer )
@@ -879,8 +862,6 @@ void RE_BeginFrame( stereoFrame_t stereoFrame )
 			cmd->buffer = ( int ) GL_BACK;
 		}
 	}
-
-#endif
 }
 
 /*

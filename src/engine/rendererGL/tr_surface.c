@@ -57,10 +57,6 @@ Tess_CheckOverflow
 */
 void Tess_CheckOverflow( int verts, int indexes )
 {
-#if defined( USE_D3D10 )
-	// TODO
-#else
-
 	if ( ( glState.currentVBO != NULL && glState.currentVBO != tess.vbo ) ||
 	     ( glState.currentIBO != NULL && glState.currentIBO != tess.ibo ) )
 	{
@@ -69,8 +65,6 @@ void Tess_CheckOverflow( int verts, int indexes )
 		R_BindVBO( tess.vbo );
 		R_BindIBO( tess.ibo );
 	}
-
-#endif
 
 	if ( tess.numVertexes + verts < SHADER_MAX_VERTEXES && tess.numIndexes + indexes < SHADER_MAX_INDEXES )
 	{

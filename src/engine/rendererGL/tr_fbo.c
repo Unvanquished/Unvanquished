@@ -30,10 +30,6 @@ R_CheckFBO
 */
 qboolean R_CheckFBO( const FBO_t *fbo )
 {
-#if defined( USE_D3D10 )
-	// TODO
-	return qfalse;
-#else
 	int code;
 	int id;
 
@@ -98,7 +94,6 @@ qboolean R_CheckFBO( const FBO_t *fbo )
 	glBindFramebufferEXT( GL_FRAMEBUFFER_EXT, id );
 
 	return qfalse;
-#endif
 }
 
 /*
@@ -108,10 +103,6 @@ R_CreateFBO
 */
 FBO_t          *R_CreateFBO( const char *name, int width, int height )
 {
-#if defined( USE_D3D10 )
-	// TODO
-	return NULL;
-#else
 	FBO_t *fbo;
 
 	if ( strlen( name ) >= MAX_QPATH )
@@ -143,7 +134,6 @@ FBO_t          *R_CreateFBO( const char *name, int width, int height )
 	glGenFramebuffersEXT( 1, &fbo->frameBuffer );
 
 	return fbo;
-#endif
 }
 
 /*
@@ -155,9 +145,6 @@ Framebuffer must be bound
 */
 void R_CreateFBOColorBuffer( FBO_t *fbo, int format, int index )
 {
-#if defined( USE_D3D10 )
-	// TODO
-#else
 	qboolean absent;
 
 	if ( index < 0 || index >= glConfig2.maxColorAttachments )
@@ -197,7 +184,6 @@ void R_CreateFBOColorBuffer( FBO_t *fbo, int format, int index )
 	}
 
 	GL_CheckErrors();
-#endif
 }
 
 /*
@@ -207,9 +193,6 @@ R_CreateFBODepthBuffer
 */
 void R_CreateFBODepthBuffer( FBO_t *fbo, int format )
 {
-#if defined( USE_D3D10 )
-	// TODO
-#else
 	qboolean absent;
 
 	if ( format != GL_DEPTH_COMPONENT &&
@@ -237,7 +220,6 @@ void R_CreateFBODepthBuffer( FBO_t *fbo, int format )
 	}
 
 	GL_CheckErrors();
-#endif
 }
 
 /*
@@ -247,9 +229,6 @@ R_CreateFBOStencilBuffer
 */
 void R_CreateFBOStencilBuffer( FBO_t *fbo, int format )
 {
-#if defined( USE_D3D10 )
-	// TODO
-#else
 	qboolean absent;
 
 	if ( format != GL_STENCIL_INDEX &&
@@ -280,7 +259,6 @@ void R_CreateFBOStencilBuffer( FBO_t *fbo, int format )
 	}
 
 	GL_CheckErrors();
-#endif
 }
 
 /*
@@ -290,9 +268,6 @@ R_CreateFBOPackedDepthStencilBuffer
 */
 void R_CreateFBOPackedDepthStencilBuffer( FBO_t *fbo, int format )
 {
-#if defined( USE_D3D10 )
-	// TODO
-#else
 	qboolean absent;
 
 	if ( format != GL_DEPTH_STENCIL_EXT && format != GL_DEPTH24_STENCIL8_EXT )
@@ -323,7 +298,6 @@ void R_CreateFBOPackedDepthStencilBuffer( FBO_t *fbo, int format )
 	}
 
 	GL_CheckErrors();
-#endif
 }
 
 /*
@@ -333,10 +307,6 @@ R_AttachFBOTexture1D
 */
 void R_AttachFBOTexture1D( int texId, int index )
 {
-#if defined( USE_D3D10 )
-	// TODO
-#else
-
 	if ( index < 0 || index >= glConfig2.maxColorAttachments )
 	{
 		ri.Printf( PRINT_WARNING, "R_AttachFBOTexture1D: invalid attachment index %i\n", index );
@@ -344,7 +314,6 @@ void R_AttachFBOTexture1D( int texId, int index )
 	}
 
 	glFramebufferTexture1DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + index, GL_TEXTURE_1D, texId, 0 );
-#endif
 }
 
 /*
@@ -354,10 +323,6 @@ R_AttachFBOTexture2D
 */
 void R_AttachFBOTexture2D( int target, int texId, int index )
 {
-#if defined( USE_D3D10 )
-	// TODO
-#else
-
 	if ( target != GL_TEXTURE_2D && ( target < GL_TEXTURE_CUBE_MAP_POSITIVE_X || target > GL_TEXTURE_CUBE_MAP_NEGATIVE_Z ) )
 	{
 		ri.Printf( PRINT_WARNING, "R_AttachFBOTexture2D: invalid target %i\n", target );
@@ -371,7 +336,6 @@ void R_AttachFBOTexture2D( int target, int texId, int index )
 	}
 
 	glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + index, target, texId, 0 );
-#endif
 }
 
 /*
@@ -381,10 +345,6 @@ R_AttachFBOTexture3D
 */
 void R_AttachFBOTexture3D( int texId, int index, int zOffset )
 {
-#if defined( USE_D3D10 )
-	// TODO
-#else
-
 	if ( index < 0 || index >= glConfig2.maxColorAttachments )
 	{
 		ri.Printf( PRINT_WARNING, "R_AttachFBOTexture3D: invalid attachment index %i\n", index );
@@ -392,7 +352,6 @@ void R_AttachFBOTexture3D( int texId, int index, int zOffset )
 	}
 
 	glFramebufferTexture3DEXT( GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT + index, GL_TEXTURE_3D_EXT, texId, 0, zOffset );
-#endif
 }
 
 /*
@@ -402,11 +361,7 @@ R_AttachFBOTextureDepth
 */
 void R_AttachFBOTextureDepth( int texId )
 {
-#if defined( USE_D3D10 )
-	// TODO
-#else
 	glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, texId, 0 );
-#endif
 }
 
 /*
@@ -416,12 +371,8 @@ R_AttachFBOTexturePackedDepthStencil
 */
 void R_AttachFBOTexturePackedDepthStencil( int texId )
 {
-#if defined( USE_D3D10 )
-	// TODO
-#else
 	glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_TEXTURE_2D, texId, 0 );
 	glFramebufferTexture2DEXT( GL_FRAMEBUFFER_EXT, GL_STENCIL_ATTACHMENT_EXT, GL_TEXTURE_2D, texId, 0 );
-#endif
 }
 
 /*
@@ -431,10 +382,6 @@ R_BindFBO
 */
 void R_BindFBO( FBO_t *fbo )
 {
-#if defined( USE_D3D10 )
-	// TODO
-#else
-
 	if ( !fbo )
 	{
 		R_BindNullFBO();
@@ -468,8 +415,6 @@ void R_BindFBO( FBO_t *fbo )
 
 		glState.currentFBO = fbo;
 	}
-
-#endif
 }
 
 /*
@@ -479,10 +424,6 @@ R_BindNullFBO
 */
 void R_BindNullFBO( void )
 {
-#if defined( USE_D3D10 )
-	// TODO
-#else
-
 	if ( r_logFile->integer )
 	{
 		GLimp_LogComment( "--- R_BindNullFBO ---\n" );
@@ -494,8 +435,6 @@ void R_BindNullFBO( void )
 		glBindRenderbufferEXT( GL_RENDERBUFFER_EXT, 0 );
 		glState.currentFBO = NULL;
 	}
-
-#endif
 }
 
 /*
@@ -517,16 +456,10 @@ void R_InitFBOs( void )
 
 	tr.numFBOs = 0;
 
-#if !defined( USE_D3D10 )
 	GL_CheckErrors();
-#endif
 
 	// make sure the render thread is stopped
 	R_SyncRenderThread();
-
-#if defined( USE_D3D10 )
-	// TODO
-#else
 
 	if ( DS_STANDARD_ENABLED() )
 	{
@@ -876,7 +809,6 @@ void R_InitFBOs( void )
 	}
 
 	GL_CheckErrors();
-#endif // defined(USE_D3D10)
 
 	R_BindNullFBO();
 }
@@ -893,24 +825,16 @@ void R_ShutdownFBOs( void )
 
 	ri.Printf( PRINT_DEVELOPER, "------- R_ShutdownFBOs -------\n" );
 
-#if !defined( USE_D3D10 )
-
 	if ( !glConfig2.framebufferObjectAvailable )
 	{
 		return;
 	}
-
-#endif
 
 	R_BindNullFBO();
 
 	for ( i = 0; i < tr.numFBOs; i++ )
 	{
 		fbo = tr.fbos[ i ];
-
-#if defined( USE_D3D10 )
-		// TODO
-#else
 
 		for ( j = 0; j < glConfig2.maxColorAttachments; j++ )
 		{
@@ -934,8 +858,6 @@ void R_ShutdownFBOs( void )
 		{
 			glDeleteFramebuffersEXT( 1, &fbo->frameBuffer );
 		}
-
-#endif
 	}
 }
 
@@ -949,15 +871,11 @@ void R_FBOList_f( void )
 	int   i;
 	FBO_t *fbo;
 
-#if !defined( USE_D3D10 )
-
 	if ( !glConfig2.framebufferObjectAvailable )
 	{
 		ri.Printf( PRINT_ALL, "GL_EXT_framebuffer_object is not available.\n" );
 		return;
 	}
-
-#endif
 
 	ri.Printf( PRINT_ALL, "             size       name\n" );
 	ri.Printf( PRINT_ALL, "----------------------------------------------------------\n" );
