@@ -6168,7 +6168,7 @@ void RB_RenderLightOcclusionQueries()
 		iaFirst = NULL;
 		while( ( iaFirst = IterateLights( iaFirst ) ) )
 		{
-			backEnd.currentLight = light = ia->light;
+			backEnd.currentLight = light = iaFirst->light;
 			interaction_t *ia = iaFirst;
 
 			for ( ia = iaFirst; ia; ia = ia->next )
