@@ -3132,7 +3132,7 @@ static void RB_RenderInteractionsShadowMapped()
 	{
 		backEnd.currentLight = light = iaFirst->light;
 
-		if ( glConfig2.occlusionQueryBits && glConfig.driverType != GLDRV_MESA && r_dynamicLightOcclusionCulling->integer && !ia->occlusionQuerySamples )
+		if ( glConfig2.occlusionQueryBits && glConfig.driverType != GLDRV_MESA && r_dynamicLightOcclusionCulling->integer && !iaFirst->occlusionQuerySamples )
 		{
 			// skip this light because it failed the occlusion query
 			continue;
