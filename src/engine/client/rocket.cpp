@@ -553,6 +553,7 @@ void Rocket_Shutdown( void )
 	}
 
 	Cmd_RemoveCommand( "rocket" );
+	Cmd_RemoveCommand( "rocketDebug" );
 }
 
 void Rocket_Render( void )
