@@ -31,20 +31,42 @@ VERSION=
 # Option flags
 RUN_DOWNLOAD=1
 
-case "$1" in
-  --help|-h|-\?)
-    echo "$0: download Unvanquished game files"
-    echo "Usage: $0 [option] DESTINATION_DIR [CACHE_DIR]]"
-    echo "Default destination directory is $DEFAULT_DEST_DIR"
-    echo "Options:"
-    echo "  -v, --verify     Verify downloaded .pk3s"
-    exit 0
-    ;;
+DONE=
+while test -z "$DONE"; do
+  case "$1" in
+    --help|-h|-\?)
+      echo "$0: download Unvanquished game files"
+      echo "Usage: $0 [option] DESTINATION_DIR [CACHE_DIR]]"
+      echo "Default destination directory is $DEFAULT_DEST_DIR"
+      echo "Options:"
+      echo "  -v, --verify     Verify downloaded .pk3s"
+      echo "  --source MIRROR  Download from MIRROR"
+      exit 0
+      ;;
 
-  --verify|-v)
-    RUN_DOWNLOAD=
-    shift
-esac
+    --verify|-v)
+      RUN_DOWNLOAD=
+      shift
+      ;;
+
+    --source)
+      shift
+      BASE_URL="$1"
+      shift
+      ;;
+
+    *)
+      DONE=1
+      ;;
+  esac
+done
+
+if test -n "$RUN_DOWNLOAD"; then
+  if test "${BASE_URL/#*:\/\/*\//://}" != '://' -o "$BASE_URL" = '://'; then
+    echo "$0: --source $BASE_URL is not valid"
+    exit 2
+  fi
+fi
 
 # Paths passed to script
 DEST_DIR="${1:-$DEFAULT_DEST_DIR}"
@@ -61,6 +83,10 @@ trap cleanup EXIT
 
 echo "[1;32mCache directory:    [33m$CACHE
 [1;32mDownload directory: [33m$DEST_DIR[m"
+
+if test -n "$RUN_DOWNLOAD"; then
+  echo "[1;32mDonwloading from:   [33m$BASE_URL[m"
+fi
 
 # Create directories if needed
 mkdir -p -- "$DEST_DIR" "$CACHE"
