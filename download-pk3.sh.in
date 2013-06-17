@@ -25,15 +25,25 @@ case "$(uname -s)" in
     ;;
 esac
 
+# Version of Unvanquished for which this script is built
 VERSION=
+
+# Option flags
+RUN_DOWNLOAD=1
 
 case "$1" in
   --help|-h|-\?)
     echo "$0: download Unvanquished game files"
-    echo "Usage: $0 [DESTINATION_DIR [CACHE_DIR]]"
+    echo "Usage: $0 [option] DESTINATION_DIR [CACHE_DIR]]"
     echo "Default destination directory is $DEFAULT_DEST_DIR"
+    echo "Options:"
+    echo "  -v, --verify     Verify downloaded .pk3s"
     exit 0
     ;;
+
+  --verify|-v)
+    RUN_DOWNLOAD=
+    shift
 esac
 
 # Paths passed to script
@@ -83,10 +93,24 @@ download ()
   echo '[32mDownloaded.[m'
 }
 
-test -f "$CACHE/md5sums" && mv -f "$CACHE/md5sums" "$CACHE/md5sums.old"
+# Utility function for file verification
+verify_md5sums()
+{
+  (
+    set -e
+    cd "$DEST_DIR"
+    md5sum --quiet -c "$CACHE/md5sums" 2>/dev/null
+  )
+}
 
-# Get the md5sum checksums
-download "$CACHE" "md5sums$VERSION" "md5sums" || download "$CACHE" "md5sums"
+if test -n "$RUN_DOWNLOAD"; then
+  # Get the md5sum checksums
+  test -f "$CACHE/md5sums" && mv -f "$CACHE/md5sums" "$CACHE/md5sums.old"
+  download "$CACHE" "md5sums$VERSION" "md5sums" || download "$CACHE" "md5sums"
+elif test ! -f "$CACHE/md5sums"; then
+  echo '[1;31mNo md5sums file found.[m'
+  exit 1
+fi
 
 # Check that the file is properly formatted
 echo '[33mVerifying md5sums integrity...[m'
@@ -97,24 +121,33 @@ echo '[32mSuccessful.[m'
 echo '[33mListed files:[m'
 cut -d' ' -f2- <"$CACHE/md5sums"
 
-echo "[33mDownloading missing or updated files...[m"
-# Download those files unless the local copies match the checksums
-(set -e; cd "$DEST_DIR"; md5sum --quiet -c "$CACHE/md5sums" 2>/dev/null) |
-  cut -d: -f1 |
-  while read i; do
-    download "$DEST_DIR" "$(basename "$i")"
-  done
-
-if test -f "$CACHE/md5sums.old"; then
-  echo "[33mRemoving previously referenced files...[m"
-  # Remove files listed in the old md5sums file
-  diff <(sed -e 's/^.* [ *]//' "$CACHE/md5sums.old") <(sed -e 's/^.* [ *]//' "$CACHE/md5sums") |
-    sed -e '/^< /! d; s/^< //' |
+if test -n "$RUN_DOWNLOAD"; then
+  echo "[33mDownloading missing or updated files...[m"
+  # Download those files unless the local copies match the checksums
+  verify_md5sums |
+    cut -d: -f1 |
     while read i; do
-      i="$(basename "$i")"
-      echo " $i"
-      rm -f "$DEST_DIR/$i"
+      download "$DEST_DIR" "$(basename "$i")"
     done
+
+  if test -f "$CACHE/md5sums.old"; then
+    echo "[33mRemoving previously referenced files...[m"
+    # Remove files listed in the old md5sums file
+    diff <(sed -e 's/^.* [ *]//' "$CACHE/md5sums.old") <(sed -e 's/^.* [ *]//' "$CACHE/md5sums") |
+      sed -e '/^< /! d; s/^< //' |
+      while read i; do
+        i="$(basename "$i")"
+        echo " $i"
+        rm -f "$DEST_DIR/$i"
+      done
+  fi
+fi
+
+echo "[0;33mVerifying files...[m"
+if verify_md5sums; then
+  echo "[0;32mVerified.[m"
+else
+  echo "[0;31mErrors found during verification. Re-downloading is recommended.[m"
 fi
 
 # All done :-)
