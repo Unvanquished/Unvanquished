@@ -2973,10 +2973,6 @@ extern "C" {
 	extern cvar_t *r_flareSize;
 	extern cvar_t *r_flareFade;
 
-	extern cvar_t *r_railWidth;
-	extern cvar_t *r_railCoreWidth;
-	extern cvar_t *r_railSegmentLength;
-
 	extern cvar_t *r_ignore; // used for debugging anything
 	extern cvar_t *r_verbose; // used for verbose debug spew
 

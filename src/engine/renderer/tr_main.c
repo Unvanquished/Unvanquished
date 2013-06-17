@@ -1797,12 +1797,6 @@ void R_AddEntitySurfaces( void )
 				break; // don't draw anything
 
 			case RT_SPRITE:
-			case RT_SPLASH:
-			case RT_BEAM:
-			case RT_LIGHTNING:
-			case RT_RAIL_CORE:
-			case RT_RAIL_CORE_TAPER:
-			case RT_RAIL_RINGS:
 
 				// self blood sprites, talk balloons, etc should not be drawn in the primary
 				// view.  We can't just do this check for all entities, because md3

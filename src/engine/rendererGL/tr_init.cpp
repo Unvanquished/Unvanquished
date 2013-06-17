@@ -49,10 +49,6 @@ extern "C" {
 	cvar_t      *r_flareSize;
 	cvar_t      *r_flareFade;
 
-	cvar_t      *r_railWidth;
-	cvar_t      *r_railCoreWidth;
-	cvar_t      *r_railSegmentLength;
-
 	cvar_t      *r_verbose;
 	cvar_t      *r_ignore;
 
@@ -1495,10 +1491,6 @@ extern "C" {
 		r_swapInterval = ri.Cvar_Get( "r_swapInterval", "0", CVAR_ARCHIVE );
 		r_gamma = ri.Cvar_Get( "r_gamma", "1.3", CVAR_ARCHIVE );
 		r_facePlaneCull = ri.Cvar_Get( "r_facePlaneCull", "1", CVAR_ARCHIVE );
-
-		r_railWidth = ri.Cvar_Get( "r_railWidth", "96", CVAR_ARCHIVE );
-		r_railCoreWidth = ri.Cvar_Get( "r_railCoreWidth", "16", CVAR_ARCHIVE );
-		r_railSegmentLength = ri.Cvar_Get( "r_railSegmentLength", "32", CVAR_ARCHIVE );
 
 		r_ambientScale = ri.Cvar_Get( "r_ambientScale", "0.6", CVAR_CHEAT );
 		r_lightScale = ri.Cvar_Get( "r_lightScale", "2", CVAR_CHEAT );
