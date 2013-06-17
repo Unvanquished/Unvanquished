@@ -2326,6 +2326,8 @@ static void RB_RenderInteractions()
 		oldShader = NULL;
 	}
 
+	Tess_End();
+
 	// go back to the world modelview matrix
 	GL_LoadModelViewMatrix( backEnd.viewParms.world.modelViewMatrix );
 
@@ -3480,6 +3482,9 @@ static void RB_RenderInteractionsShadowMapped()
 #endif
 	}
 
+	// draw the contents of the last shader batch
+	Tess_End();
+
 	// go back to the world modelview matrix
 	GL_LoadModelViewMatrix( backEnd.viewParms.world.modelViewMatrix );
 
@@ -4378,6 +4383,8 @@ void RB_RenderInteractionsDeferred()
 		RB_RenderLightDeferred( light, ortho );
 	}
 
+	Tess_End();
+
 	// clear shader so we can tell we don't have any unclosed surfaces
 	tess.multiDrawPrimitives = 0;
 	tess.numIndexes = 0;
@@ -4689,6 +4696,8 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 
 		RB_RenderLightDeferred( light, ortho );
 	}
+
+	Tess_End();
 
 	// go back to the world modelview matrix
 	GL_LoadModelViewMatrix( backEnd.viewParms.world.modelViewMatrix );
