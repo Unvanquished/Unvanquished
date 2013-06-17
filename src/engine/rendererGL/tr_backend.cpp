@@ -9866,6 +9866,9 @@ const void *RB_RunVisTests( const void *data )
 		glEndQuery( GL_SAMPLES_PASSED );
 		glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
 
+		tess.numIndexes = 0;
+		tess.numVertexes = 0;
+		tess.multiDrawPrimitives = 0;
 		test->running = qtrue;
        }
 
