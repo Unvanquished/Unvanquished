@@ -9512,8 +9512,6 @@ const void     *RB_Draw2dPolys( const void *data )
 		tess.numVertexes++;
 	}
 
-	Tess_End();
-
 	return ( const void * )( cmd + 1 );
 }
 
