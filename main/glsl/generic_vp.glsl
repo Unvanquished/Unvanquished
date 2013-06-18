@@ -82,7 +82,7 @@ void	main()
 	vec4 texCoord;
 #if defined(USE_TCGEN_ENVIRONMENT)
 	{
-		position = mat3(u_ModelMatrix) * position.xyz;
+		position = (mat3(u_ModelMatrix) * position.xyz).xyzx;
 		vec3 viewer = normalize(u_ViewOrigin - position.xyz);
 
 		float d = dot(normal, viewer);
