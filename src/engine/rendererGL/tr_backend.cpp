@@ -3142,7 +3142,7 @@ static void RB_RenderInteractionsShadowMapped()
 
 	// render each light
 	iaFirst = NULL;
-	
+
 	while ( ( iaFirst = IterateLights( iaFirst ) ) )
 	{
 		backEnd.currentLight = light = iaFirst->light;
@@ -10070,7 +10070,6 @@ const void     *RB_Draw2dPolysIndexed( const void *data )
 		tess.numVertexes++;
 	}
 
-	Tess_End();
 	shader->cullType = oldCullType;
 
 	return ( const void * )( cmd + 1 );
