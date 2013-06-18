@@ -14,7 +14,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -242,7 +242,10 @@ int FontFaceHandle::GenerateString(GeometryList& geometry, const WString& string
 		if (layer == base_layer)
 			layer_colour = colour;
 		else
+		{
 			layer_colour = layer->GetColour();
+			layer_colour.alpha *= colour.alpha / 255.0f;
+		}
 
 		// Resize the geometry list if required.
 		if ((int) geometry.size() < geometry_index + layer->GetNumTextures())

@@ -14,7 +14,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -236,7 +236,10 @@ int FontFaceHandle::GenerateString(GeometryList& geometry, const WString& string
 		if (layer == base_layer)
 			layer_colour = colour;
 		else
+		{
 			layer_colour = layer->GetColour();
+			layer_colour.alpha *= colour.alpha / 255.0f;
+		}
 
 		// Resize the geometry list if required.
 		if ((int) geometry.size() < geometry_index + layer->GetNumTextures())
@@ -279,7 +282,7 @@ int FontFaceHandle::GenerateString(GeometryList& geometry, const WString& string
 					continue;
 				}
 			}
-			
+
 			// Adjust the cursor for the kerning between this character and the previous one.
 			if (prior_character != 0)
 			{
@@ -348,7 +351,7 @@ void FontFaceHandle::GenerateMetrics(BM_Font *bm_face)
 	// Determine the x-height of this font face.
 	word x = (word) 'x';
 	int index = bm_face->BM_Helper_GetCharacterTableIndex( x );// FT_Get_Char_Index(ft_face, x);
-	
+
 	if ( index >= 0)
 		x_height = bm_face->CharactersInfo[ index ].Height;
 	else

@@ -14,7 +14,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -117,6 +117,7 @@ void DecoratorTiled::Tile::GenerateGeometry(Container::vector< Vertex >::Type& v
 
 	int num_tiles[2];
 	Vector2f final_tile_dimensions;
+	Colourb colour = color_multiplier;
 
 	// Generate the oriented texture coordinates for the tiles.
 	Vector2f scaled_texcoords[3];
@@ -245,7 +246,9 @@ void DecoratorTiled::Tile::GenerateGeometry(Container::vector< Vertex >::Type& v
 			tile_position.x = surface_origin.x + (float) tile_dimensions.x * x;
 			tile_size.x = (float) (x < num_tiles[0] - 1 ? tile_dimensions.x : final_tile_dimensions.x);
 
-			GeometryUtilities::GenerateQuad(new_vertices, new_indices, tile_position, tile_size, color_multiplier, tile_texcoords[0], tile_texcoords[1], index_offset);
+			colour.alpha *= element->GetProperty<float>(OPACITY);
+
+			GeometryUtilities::GenerateQuad(new_vertices, new_indices, tile_position, tile_size, colour, tile_texcoords[0], tile_texcoords[1], index_offset);
 			new_vertices += 4;
 			new_indices += 6;
 			index_offset += 4;

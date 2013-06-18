@@ -14,7 +14,7 @@
  *
  * The above copyright notice and this permission notice shall be included in
  * all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -45,7 +45,7 @@ static bool LastToken(const word* token_begin, const word* string_end, bool coll
 
 ROCKET_RTTI_Implement( ElementTextDefault )
 
-ElementTextDefault::ElementTextDefault(const String& tag) : ElementText(tag), colour(255, 255, 255), decoration(this)
+ElementTextDefault::ElementTextDefault(const String& tag) : ElementText(tag), colour(255, 255, 255), real_colour(255, 255, 255), decoration(this)
 {
 	dirty_layout_on_change = true;
 
@@ -83,8 +83,8 @@ void ElementTextDefault::OnRender()
 	FontFaceHandle* font_face_handle = GetFontFaceHandle();
 	if (!font_face_handle)
 		return;
-	
-	
+
+
 	// If our font configuration has potentially changed, update it and force a geometry
 	// generation if necessary.
 	if (font_dirty &&
@@ -98,7 +98,7 @@ void ElementTextDefault::OnRender()
 		GenerateGeometry(font_face_handle);
 
 	Vector2f translation = GetAbsoluteOffset();
-	
+
 	bool render = true;
 	Vector2i clip_origin;
 	Vector2i clip_dimensions;
@@ -109,20 +109,20 @@ void ElementTextDefault::OnRender()
 		float clip_right = float((clip_origin.x + clip_dimensions.x));
 		float clip_bottom = float((clip_origin.y + clip_dimensions.y));
 		float line_height = float(GetFontFaceHandle()->GetLineHeight());
-		
+
 		render = false;
 		for (size_t i = 0; i < lines.size(); ++i)
-		{			
+		{
 			const Line& line = lines[i];
 			float x = translation.x + line.position.x;
 			float y = translation.y + line.position.y;
-			
+
 			bool render_line = !(x > clip_right);
 			render_line = render_line && !(x + line.width < clip_left);
-			
+
 			render_line = render_line && !(y - line_height > clip_bottom);
 			render_line = render_line && !(y < clip_top);
-			
+
 			if (render_line)
 			{
 				render = true;
@@ -130,7 +130,7 @@ void ElementTextDefault::OnRender()
 			}
 		}
 	}
-	
+
 	if (render)
 	{
 		for (size_t i = 0; i < geometry.size(); ++i)
@@ -292,7 +292,22 @@ void ElementTextDefault::OnPropertyChange(const PropertyNameList& changed_proper
 		Colourb new_colour = GetProperty(COLOR)->value.Get< Colourb >();
 		colour_changed = colour != new_colour;
 		if (colour_changed)
-			colour = new_colour;
+		{
+			float alpha = GetProperty<float>(OPACITY);
+			real_colour = colour = new_colour;
+			colour.alpha *= alpha;
+		}
+	}
+
+	if (changed_properties.find(OPACITY) != changed_properties.end())
+	{
+		float opacity = GetProperty<float>(OPACITY);
+		colour_changed = (colour.alpha != (real_colour.alpha * opacity));
+		if (colour_changed)
+		{
+			colour = real_colour;
+			colour.alpha *= opacity;
+		}
 	}
 
 	if (changed_properties.find(FONT_FAMILY) != changed_properties.end() ||
@@ -587,7 +602,7 @@ static bool LastToken(const word* token_begin, const word* string_end, bool coll
 
 		while (character != string_end)
 		{
-			if ( (!StringUtilities::IsWhitespace(*character) /*&& !StringUtilities::IsZeroWidthSpace(*character)*/) 
+			if ( (!StringUtilities::IsWhitespace(*character) /*&& !StringUtilities::IsZeroWidthSpace(*character)*/)
                 || (break_at_endline && *character == '\n')
                 )
 			{
