@@ -116,6 +116,25 @@ static float CG_Rocket_GetPlayerHealthProgress( void )
 	return (float)ps->stats[ STAT_HEALTH ] / (float)BG_Class( ps->stats[ STAT_CLASS ] )->health;
 }
 
+static float CG_Rocket_GetPlayerAmmoProgress( void )
+{
+	int      maxAmmo;
+	weapon_t weapon;
+
+	weapon = BG_PrimaryWeapon( cg.snap->ps.stats );
+	maxAmmo = BG_Weapon( weapon )->maxAmmo;
+
+	if ( maxAmmo <= 0 ) { return 0; }
+
+	if ( BG_Weapon( weapon )->usesEnergy &&
+		BG_InventoryContainsUpgrade( UP_BATTPACK, cg.snap->ps.stats ) )
+	{
+		maxAmmo *= BATTPACK_MODIFIER;
+	}
+
+	return (float)cg.snap->ps.ammo / (float)maxAmmo;
+}
+
 typedef struct progressBarCmd_s
 {
 	const char *command;
@@ -128,6 +147,7 @@ static const progressBarCmd_t progressBarCmdList[] =
 	{ "btimer", &CG_Rocket_GetBuildTimerProgress, ELEMENT_BOTH },
 	{ "buildables", &CG_Rocket_GetBuildableLoadProgress, ELEMENT_LOADING },
 	{ "characters", &CG_Rocket_GetCharLoadProgress, ELEMENT_LOADING },
+	{ "ammo", &CG_Rocket_GetPlayerAmmoProgress, ELEMENT_HUMANS },
 	{ "health", &CG_Rocket_GetPlayerHealthProgress, ELEMENT_BOTH },
 	{ "media", &CG_Rocket_GetMediaLoadProgress, ELEMENT_LOADING },
 	{ "overall", &CG_Rocket_GetOverallLoadProgress, ELEMENT_LOADING },
