@@ -83,6 +83,7 @@
 		<progressbar id="btimer" src="btimer" /><br />
 		<credits /> credits<br />
 		<progressbar id="stamina" src="stamina" /><br />
+		<div><itemselect_text/></div>
 		<itemselect />
 		<weapon_icon />
 		<scanner />
