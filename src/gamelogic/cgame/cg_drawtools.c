@@ -401,6 +401,46 @@ float *CG_FadeColor( int startMsec, int totalMsec )
 }
 
 /*
+=============
+CG_FadeAlpha
+=============
+*/
+float CG_FadeAlpha( int startMsec, int totalMsec )
+{
+	float         fade;
+	int           t;
+
+	if ( startMsec == 0 )
+	{
+		return 0;
+	}
+
+	t = cg.time - startMsec;
+
+	if ( t >= totalMsec )
+	{
+		return 0;
+	}
+
+	// fade out
+	if ( totalMsec - t < FADE_TIME )
+	{
+		fade = ( totalMsec - t ) * 1.0 / FADE_TIME;
+	}
+	// fade in
+	else if ( t < FADE_TIME )
+	{
+		fade = ( t * 1.0f ) / FADE_TIME;
+	}
+	else
+	{
+		fade = 1.0;
+	}
+
+	return fade;
+}
+
+/*
 ================
 CG_WorldToScreen
 ================

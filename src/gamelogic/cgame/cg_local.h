@@ -35,7 +35,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 // If you absolutely need something stored, it can either be kept
 // by the server in the server stored userinfos, or stashed in a cvar.
 
-#define FADE_TIME                      200
+#define FADE_TIME                      300
 #define DAMAGE_DEFLECT_TIME            100
 #define DAMAGE_RETURN_TIME             400
 #define DAMAGE_TIME                    500
@@ -1830,6 +1830,7 @@ void     CG_SetScissor( int x, int y, int w, int h );
 int      CG_DrawStrlen( const char *str );
 
 float    *CG_FadeColor( int startMsec, int totalMsec );
+float    CG_FadeAlpha( int startMsec, int totalMsec );
 void     CG_TileClear( void );
 void     CG_DrawRect( float x, float y, float width, float height, float size, const float *color );
 void     CG_DrawSides( float x, float y, float w, float h, float size );

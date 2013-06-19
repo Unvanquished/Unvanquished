@@ -1160,12 +1160,9 @@ static void CG_Rocket_DrawLevelshot( void )
 }
 
 
-#define CENTER_PRINT_DURATION 2000
-#define CENTER_PRINT_FADEIN_TIME 300.0f
+#define CENTER_PRINT_DURATION 3000
 void CG_Rocket_DrawCenterPrint( void )
 {
-	float opacity;
-
 	if ( !*cg.centerPrint )
 	{
 		return;
@@ -1183,21 +1180,7 @@ void CG_Rocket_DrawCenterPrint( void )
 		trap_Rocket_SetInnerRML( "", "", cg.centerPrint );
 	}
 
-	// Just showed up. Fade in.
-	if ( cg.time - CENTER_PRINT_FADEIN_TIME < cg.centerPrintTime )
-	{
-		opacity = ( cg.time - cg.centerPrintTime ) / CENTER_PRINT_FADEIN_TIME;
-	}
-	else if ( cg.time - cg.centerPrintTime < CENTER_PRINT_DURATION - CENTER_PRINT_FADEIN_TIME )
-	{
-		opacity = 1.0f;
-	}
-	else
-	{
-		opacity = ( ( cg.centerPrintTime + CENTER_PRINT_DURATION ) - cg.time ) / CENTER_PRINT_FADEIN_TIME;
-	}
-
-	trap_Rocket_SetPropertyById( "", "opacity", va( "%f", opacity ) );
+	trap_Rocket_SetPropertyById( "", "opacity", va( "%f", CG_FadeAlpha( cg.centerPrintTime, CENTER_PRINT_DURATION ) ) );
 }
 
 void CG_Rocket_DrawPlayerHealth( void )
