@@ -55,6 +55,7 @@ static const elementDimensionCmd_t elementDimensionCmdList[] =
 	{ "ammo_stack", &CG_Rocket_DimensionGeneric, ELEMENT_HUMANS },
 	{ "clip_stack", &CG_Rocket_DimensionGeneric, ELEMENT_HUMANS },
 	{ "lagometer", &CG_Rocket_DimensionGeneric, ELEMENT_GAME },
+	{ "minimap", &CG_Rocket_DimensionGeneric, ELEMENT_GAME },
 	{ "scanner", &CG_Rocket_DimensionGeneric, ELEMENT_HUMANS },
 	{ "speedometer", &CG_Rocket_DimensionGeneric, ELEMENT_GAME },
 };

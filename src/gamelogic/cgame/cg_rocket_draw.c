@@ -1586,6 +1586,29 @@ static void CG_DrawPlayerClipsStack( void )
 	              val, maxVal );
 }
 
+void CG_Rocket_DrawMinimap( void )
+{
+	vec4_t    foreColor;
+	rectDef_t rect;
+
+	// grab info from libRocket
+	trap_Rocket_GetElementAbsoluteOffset( &rect.x, &rect.y );
+	trap_Rocket_GetProperty( "color", &foreColor, sizeof( foreColor ), ROCKET_COLOR );
+	trap_Rocket_GetProperty( "width", &rect.w, sizeof( rect.w ), ROCKET_FLOAT );
+	trap_Rocket_GetProperty( "height", &rect.h, sizeof( rect.h ), ROCKET_FLOAT );
+
+	// Convert from absolute monitor coords to a virtual 640x480 coordinate system
+	rect.x = ( rect.x / cgs.glconfig.vidWidth ) * 640;
+	rect.y = ( rect.y / cgs.glconfig.vidHeight ) * 480;
+	rect.w = ( rect.w / cgs.glconfig.vidWidth ) * 640;
+	rect.h = ( rect.h / cgs.glconfig.vidHeight ) * 480;
+
+	// Convert from byte scale to [0,1]
+	Vector4Scale( foreColor, 1 / 255.0f, foreColor );
+
+	CG_DrawMinimap( &rect, foreColor );
+}
+
 
 typedef struct
 {
@@ -1614,6 +1637,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "lagometer", &CG_Rocket_DrawLagometer, ELEMENT_GAME },
 	{ "levelshot", &CG_Rocket_DrawLevelshot, ELEMENT_ALL },
 	{ "location", &CG_Rocket_DrawLocation, ELEMENT_GAME },
+	{ "minimap", &CG_Rocket_DrawMinimap, ELEMENT_GAME },
 	{ "scanner", &CG_Rocket_DrawHumanScanner, ELEMENT_HUMANS },
 	{ "speedometer", &CG_Rocket_DrawSpeedGraph, ELEMENT_GAME },
 	{ "stage_report", &CG_Rocket_DrawStageReport, ELEMENT_BOTH },
