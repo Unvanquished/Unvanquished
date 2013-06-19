@@ -34,19 +34,6 @@ Maryland 20850 USA.
 
 #include "cg_local.h"
 
-
-static void CG_Rocket_DrawPic( void )
-{
-	float x, y;
-	vec4_t color = { 255, 255, 255, 255 };
-	trap_Rocket_GetElementAbsoluteOffset( &x, &y );
-}
-
-static void CG_Rocket_DrawTest( void )
-{
-	trap_Rocket_SetInnerRML( "", "", "<span style='font-size: 5em;'><b>This is a test</b></span>" );
-}
-
 static void CG_Rocket_DrawAmmo( void )
 {
 	int      value;
@@ -1234,12 +1221,10 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "lagometer", &CG_Rocket_DrawLagometer, ELEMENT_GAME },
 	{ "levelshot", &CG_Rocket_DrawLevelshot, ELEMENT_ALL },
 	{ "location", &CG_Rocket_DrawLocation, ELEMENT_GAME },
-	{ "pic", &CG_Rocket_DrawPic, ELEMENT_ALL },
 	{ "scanner", &CG_Rocket_DrawHumanScanner, ELEMENT_HUMANS },
 	{ "speedometer", &CG_Rocket_DrawSpeedGraph, ELEMENT_GAME },
 	{ "stage_report", &CG_Rocket_DrawStageReport, ELEMENT_BOTH },
 	{ "stamina", &CG_Rocket_DrawStaminaValue, ELEMENT_HUMANS },
-	{ "test", &CG_Rocket_DrawTest, ELEMENT_ALL },
 	{ "timer", &CG_Rocket_DrawTimer, ELEMENT_GAME },
 	{ "usable_buildable", &CG_Rocket_DrawUsableBuildable, ELEMENT_HUMANS },
 	{ "wallwalk", &CG_Rocket_DrawPlayerWallclimbing, ELEMENT_ALIENS },

@@ -34,21 +34,6 @@ Maryland 20850 USA.
 
 #include "cg_local.h"
 
-static void CG_Rocket_DimensionPic( void )
-{
-	int x, y;
-
-	x = atoi( CG_Rocket_GetAttribute( "", "", "width" ) );
-	y = atoi( CG_Rocket_GetAttribute( "", "", "height" ) );
-
-	trap_Rocket_SetElementDimensions( x, y );
-}
-
-static void CG_Rocket_DimensionTest( void )
-{
-	trap_Rocket_SetElementDimensions( 100, 100 );
-}
-
 static void CG_Rocket_DimensionGeneric( void )
 {
 	float w, h;
@@ -68,10 +53,8 @@ static const elementDimensionCmd_t elementDimensionCmdList[] =
 {
 	{ "alien_sense", &CG_Rocket_DimensionGeneric, ELEMENT_ALIENS },
 	{ "lagometer", &CG_Rocket_DimensionGeneric, ELEMENT_GAME },
-	{ "pic", &CG_Rocket_DimensionPic, ELEMENT_ALL },
 	{ "scanner", &CG_Rocket_DimensionGeneric, ELEMENT_HUMANS },
 	{ "speedometer", &CG_Rocket_DimensionGeneric, ELEMENT_GAME },
-	{ "test", &CG_Rocket_DimensionTest, ELEMENT_ALL }
 };
 
 static const size_t elementDimensionCmdListCount = ARRAY_LEN( elementDimensionCmdList );
