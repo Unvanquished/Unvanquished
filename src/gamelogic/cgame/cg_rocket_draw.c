@@ -1203,7 +1203,7 @@ void CG_Rocket_DrawAlienBarbs( void )
 	{
 		return;
 	}
-	
+
 	Com_sprintf( base, sizeof( base ), "<img class='barbs' src='%s' />", CG_Rocket_GetAttribute( "", "", "src") );
 
 	for ( ; numBarbs > 0; numBarbs-- )
@@ -1213,6 +1213,379 @@ void CG_Rocket_DrawAlienBarbs( void )
 
 	trap_Rocket_SetInnerRML( "", "", rml );
 }
+
+/*
+============
+CG_DrawStack
+
+Helper function: draws a "stack" of <val> boxes in a row or column big
+enough to fit <max> boxes. <fill> sets the proportion of space in the stack
+with box drawn on it - i.e. lower values will result in thinner boxes.
+If the boxes are too thin, or if fill is specified as 0, they will be merged
+into a single progress bar.
+============
+*/
+
+#define LALIGN_TOPLEFT     0
+#define LALIGN_CENTER      1
+#define LALIGN_BOTTOMRIGHT 2
+
+static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
+                          int align, int valign, float val, int max )
+{
+	int      i;
+	float    each, frac;
+	float    nudge;
+	float    fmax = max; // we don't want integer division
+	qboolean vertical; // a stack taller than it is wide is drawn vertically
+	vec4_t   localColor;
+
+	// so that the vertical and horizontal bars can share code, abstract the
+	// longer dimension and the alignment parameter
+	int length, lalign;
+
+
+	if ( val <= 0 || max <= 0 )
+	{
+		return; // nothing to draw
+	}
+
+	trap_R_SetColor( color );
+
+	if ( rect->h >= rect->w )
+	{
+		vertical = qtrue;
+		length = rect->h;
+	}
+	else
+	{
+		vertical = qfalse;
+		length = rect->w;
+	}
+
+	// the filled proportion of the length, divided into max bits
+	each = fill * length / fmax;
+
+	// if the scaled length of each segment is too small, do a single bar
+	if ( each * ( vertical ? cgs.screenYScale : cgs.screenXScale ) < 4.f )
+	{
+		float loff;
+
+		switch ( lalign )
+		{
+			case LALIGN_TOPLEFT:
+				loff = 0;
+				break;
+
+			case LALIGN_CENTER:
+				loff = length * ( 1 - val / fmax ) / 2;
+				break;
+
+			case LALIGN_BOTTOMRIGHT:
+				loff = length * ( 1 - val / fmax );
+		}
+
+		if ( vertical )
+		{
+			CG_DrawPic( rect->x, rect->y + loff, rect->w, rect->h * val / fmax,
+			            cgs.media.whiteShader );
+		}
+		else
+		{
+			CG_DrawPic( rect->x + loff, rect->y, rect->w * val / fmax, rect->h,
+			            cgs.media.whiteShader );
+		}
+
+		trap_R_SetColor( NULL );
+		return;
+	}
+
+	// the code would normally leave a bit of space after every square, but this
+	// leaves a space on the end, too: nudge divides that space among the blocks
+	// so that the beginning and end line up perfectly
+	if ( fmax > 1 )
+	{
+		nudge = ( 1 - fill ) / ( fmax - 1 );
+	}
+	else
+	{
+		nudge = 0;
+	}
+
+	frac = val - ( int ) val;
+
+	for ( i = ( int ) val - 1; i >= 0; i-- )
+	{
+		float start;
+
+		switch ( lalign )
+		{
+			case LALIGN_TOPLEFT:
+				start = ( i * ( 1 + nudge ) + frac ) / fmax;
+				break;
+
+			case LALIGN_CENTER:
+
+				// TODO (fallthrough for now)
+			default:
+			case LALIGN_BOTTOMRIGHT:
+				start = 1 - ( val - i - ( i + fmax - val ) * nudge ) / fmax;
+				break;
+		}
+
+		if ( vertical )
+		{
+			CG_DrawPic( rect->x, rect->y + rect->h * start, rect->w, each,
+			            cgs.media.whiteShader );
+		}
+		else
+		{
+			CG_DrawPic( rect->x + rect->w * start, rect->y, each, rect->h,
+			            cgs.media.whiteShader );
+		}
+	}
+
+	// if there is a partial square, draw it dropping off the end of the stack
+	if ( frac <= 0.f )
+	{
+		trap_R_SetColor( NULL );
+		return; // no partial square, we're done here
+	}
+
+	Vector4Copy( color, localColor );
+	localColor[ 3 ] *= frac;
+	trap_R_SetColor( localColor );
+
+	switch ( lalign )
+	{
+		case LALIGN_TOPLEFT:
+			if ( vertical )
+			{
+				CG_DrawPic( rect->x, rect->y - rect->h * ( 1 - frac ) / fmax,
+				            rect->w, each, cgs.media.whiteShader );
+			}
+			else
+			{
+				CG_DrawPic( rect->x - rect->w * ( 1 - frac ) / fmax, rect->y,
+				            each, rect->h, cgs.media.whiteShader );
+			}
+
+			break;
+
+		case LALIGN_CENTER:
+
+			// fallthrough
+		default:
+		case LALIGN_BOTTOMRIGHT:
+			if ( vertical )
+			{
+				CG_DrawPic( rect->x, rect->y + rect->h *
+				            ( 1 + ( ( 1 - fill ) / fmax ) - frac / fmax ),
+				            rect->w, each, cgs.media.whiteShader );
+			}
+			else
+			{
+				CG_DrawPic( rect->x + rect->w *
+				            ( 1 + ( ( 1 - fill ) / fmax ) - frac / fmax ), rect->y,
+				            each, rect->h, cgs.media.whiteShader );
+			}
+	}
+
+	trap_R_SetColor( NULL );
+}
+
+static void CG_DrawPlayerAmmoStack( void )
+{
+	float         val;
+	int           maxVal, align, valign;
+	static int    lastws, maxwt, lastval, valdiff;
+	playerState_t *ps = &cg.snap->ps;
+	weapon_t      primary = BG_PrimaryWeapon( ps->stats );
+	vec4_t        localColor, foreColor;
+	rectDef_t     rect;
+	static char   buf[ 100 ];
+
+	// grab info from libRocket
+	trap_Rocket_GetElementAbsoluteOffset( &rect.x, &rect.y );
+	trap_Rocket_GetProperty( "color", &foreColor, sizeof( foreColor ), ROCKET_COLOR );
+	trap_Rocket_GetProperty( "width", &rect.w, sizeof( rect.w ), ROCKET_FLOAT );
+	trap_Rocket_GetProperty( "height", &rect.h, sizeof( rect.h ), ROCKET_FLOAT );
+
+	// Convert from absolute monitor coords to a virtual 640x480 coordinate system
+	rect.x = ( rect.x / cgs.glconfig.vidWidth ) * 640;
+	rect.y = ( rect.y / cgs.glconfig.vidHeight ) * 480;
+	rect.w = ( rect.w / cgs.glconfig.vidWidth ) * 640;
+	rect.h = ( rect.h / cgs.glconfig.vidHeight ) * 480;
+
+	// Convert from byte scale to [0,1]
+	Vector4Scale( foreColor, 1 / 255.0f, foreColor );
+
+	maxVal = BG_Weapon( primary )->maxAmmo;
+
+	if ( maxVal <= 0 )
+	{
+		return; // not an ammo-carrying weapon
+	}
+
+	if ( BG_Weapon( primary )->usesEnergy &&
+	     BG_InventoryContainsUpgrade( UP_BATTPACK, ps->stats ) )
+	{
+		maxVal *= BATTPACK_MODIFIER;
+	}
+
+	val = ps->ammo;
+
+	// smoothing effects (only if weaponTime etc. apply to primary weapon)
+	if ( ps->weapon == primary && ps->weaponTime > 0 &&
+	     ( ps->weaponstate == WEAPON_FIRING ||
+	       ps->weaponstate == WEAPON_RELOADING ) )
+	{
+		// track the weaponTime we're coming down from
+		// if weaponstate changed, this value is invalid
+		if ( lastws != ps->weaponstate || ps->weaponTime > maxwt )
+		{
+			maxwt = ps->weaponTime;
+			lastws = ps->weaponstate;
+		}
+
+		// if reloading, move towards max ammo value
+		if ( ps->weaponstate == WEAPON_RELOADING )
+		{
+			val = maxVal;
+		}
+
+		// track size of change in ammo
+		if ( lastval != val )
+		{
+			valdiff = lastval - val; // can be negative
+			lastval = val;
+		}
+
+		if ( maxwt > 0 )
+		{
+			float f = ps->weaponTime / ( float ) maxwt;
+			// move from last ammo value to current
+			val += valdiff * f * f;
+		}
+	}
+	else
+	{
+		// reset counters
+		lastval = val;
+		valdiff = 0;
+		lastws = ps->weaponstate;
+	}
+
+	if ( val == 0 )
+	{
+		return; // nothing to draw
+	}
+
+	if ( val * 3 < maxVal )
+	{
+		// low on ammo
+		// FIXME: don't hardcode this colour
+		vec4_t lowAmmoColor = { 1.f, 0.f, 0.f, 0.f };
+		// don't lerp alpha
+		VectorLerpTrem( ( cg.time & 128 ), foreColor, lowAmmoColor, localColor );
+		localColor[ 3 ] = foreColor[ 3 ];
+	}
+	else
+	{
+		Vector4Copy( foreColor, localColor );
+	}
+
+	trap_Rocket_GetProperty( "text-align", buf, sizeof( buf ), ROCKET_STRING );
+
+	if ( *buf && !Q_stricmp( buf, "right" ) )
+	{
+		align = LALIGN_BOTTOMRIGHT;
+	}
+	else if ( *buf && !Q_stricmp( buf, "center" ) )
+	{
+		align = LALIGN_CENTER;
+	}
+	else
+	{
+		align = LALIGN_TOPLEFT;
+	}
+
+	trap_Rocket_GetProperty( "text-valign", buf, sizeof( buf ), ROCKET_STRING );
+
+	if ( *buf && !Q_stricmp( buf, "right" ) )
+	{
+		align = LALIGN_BOTTOMRIGHT;
+	}
+	else if ( *buf && !Q_stricmp( buf, "center" ) )
+	{
+		align = LALIGN_CENTER;
+	}
+	else
+	{
+		align = LALIGN_TOPLEFT;
+	}
+
+	CG_DrawStack( &rect, localColor, 0.8, align, valign,
+	              val, maxVal );
+}
+
+static void CG_DrawPlayerClipsStack( void )
+{
+	float         val;
+	int           maxVal, align, valign;
+	static int    lastws, maxwt;
+	playerState_t *ps = &cg.snap->ps;
+	rectDef_t      rect;
+	vec4_t         foreColor;
+
+	// grab info from libRocket
+	trap_Rocket_GetElementAbsoluteOffset( &rect.x, &rect.y );
+	trap_Rocket_GetProperty( "color", &foreColor, sizeof( foreColor ), ROCKET_COLOR );
+	trap_Rocket_GetProperty( "width", &rect.w, sizeof( rect.w ), ROCKET_FLOAT );
+	trap_Rocket_GetProperty( "height", &rect.h, sizeof( rect.h ), ROCKET_FLOAT );
+
+	// Convert from absolute monitor coords to a virtual 640x480 coordinate system
+	rect.x = ( rect.x / cgs.glconfig.vidWidth ) * 640;
+	rect.y = ( rect.y / cgs.glconfig.vidHeight ) * 480;
+	rect.w = ( rect.w / cgs.glconfig.vidWidth ) * 640;
+	rect.h = ( rect.h / cgs.glconfig.vidHeight ) * 480;
+
+	// Convert from byte scale to [0,1]
+	Vector4Scale( foreColor, 1 / 255.0f, foreColor );
+
+	maxVal = BG_Weapon( BG_PrimaryWeapon( ps->stats ) )->maxClips;
+
+	if ( !maxVal )
+	{
+		return; // not a clips weapon
+	}
+
+	val = ps->clips;
+
+	// if reloading, do fancy interpolation effects
+	if ( ps->weaponstate == WEAPON_RELOADING )
+	{
+		float frac;
+
+		// if we just started a reload, note the weaponTime we're coming down from
+		if ( lastws != ps->weaponstate || ps->weaponTime > maxwt )
+		{
+			maxwt = ps->weaponTime;
+			lastws = ps->weaponstate;
+		}
+
+		// just in case, don't divide by zero
+		if ( maxwt != 0 )
+		{
+			frac = ps->weaponTime / ( float ) maxwt;
+			val -= 1 - frac * frac; // speed is proportional to distance from target
+		}
+	}
+
+	CG_DrawStack( &rect, foreColor, 0.8, align, valign,
+	              val, maxVal );
+}
+
 
 typedef struct
 {
@@ -1225,9 +1598,11 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 {
 	{ "alien_sense", &CG_Rocket_DrawAlienSense, ELEMENT_ALIENS },
 	{ "ammo", &CG_Rocket_DrawAmmo, ELEMENT_BOTH },
+	{ "ammo_stack", &CG_DrawPlayerAmmoStack, ELEMENT_HUMANS },
 	{ "barbs", &CG_Rocket_DrawAlienBarbs, ELEMENT_ALIENS },
 	{ "center_print", &CG_Rocket_DrawCenterPrint, ELEMENT_GAME },
 	{ "clips", &CG_Rocket_DrawClips, ELEMENT_HUMANS },
+	{ "clip_stack", &CG_DrawPlayerClipsStack, ELEMENT_HUMANS },
 	{ "credits", &CG_Rocket_DrawCreditsValue, ELEMENT_HUMANS },
 	{ "crosshair", &CG_Rocket_DrawCrosshair, ELEMENT_BOTH },
 	{ "crosshair_name", &CG_Rocket_DrawCrosshairNames, ELEMENT_GAME },

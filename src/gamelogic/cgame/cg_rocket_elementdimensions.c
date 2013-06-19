@@ -52,6 +52,8 @@ typedef struct
 static const elementDimensionCmd_t elementDimensionCmdList[] =
 {
 	{ "alien_sense", &CG_Rocket_DimensionGeneric, ELEMENT_ALIENS },
+	{ "ammo_stack", &CG_Rocket_DimensionGeneric, ELEMENT_HUMANS },
+	{ "clip_stack", &CG_Rocket_DimensionGeneric, ELEMENT_HUMANS },
 	{ "lagometer", &CG_Rocket_DimensionGeneric, ELEMENT_GAME },
 	{ "scanner", &CG_Rocket_DimensionGeneric, ELEMENT_HUMANS },
 	{ "speedometer", &CG_Rocket_DimensionGeneric, ELEMENT_GAME },
