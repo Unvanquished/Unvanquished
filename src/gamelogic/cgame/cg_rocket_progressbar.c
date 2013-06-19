@@ -109,6 +109,13 @@ static float CG_Rocket_GetPoisonProgress( void )
 
 }
 
+static float CG_Rocket_GetPlayerHealthProgress( void )
+{
+	playerState_t *ps = &cg.snap->ps;
+
+	return (float)ps->stats[ STAT_HEALTH ] / (float)BG_Class( ps->stats[ STAT_CLASS ] )->health;
+}
+
 typedef struct progressBarCmd_s
 {
 	const char *command;
@@ -121,6 +128,7 @@ static const progressBarCmd_t progressBarCmdList[] =
 	{ "btimer", &CG_Rocket_GetBuildTimerProgress, ELEMENT_BOTH },
 	{ "buildables", &CG_Rocket_GetBuildableLoadProgress, ELEMENT_LOADING },
 	{ "characters", &CG_Rocket_GetCharLoadProgress, ELEMENT_LOADING },
+	{ "health", &CG_Rocket_GetPlayerHealthProgress, ELEMENT_BOTH },
 	{ "media", &CG_Rocket_GetMediaLoadProgress, ELEMENT_LOADING },
 	{ "overall", &CG_Rocket_GetOverallLoadProgress, ELEMENT_LOADING },
 	{ "poison", &CG_Rocket_GetPoisonProgress, ELEMENT_ALIENS },
