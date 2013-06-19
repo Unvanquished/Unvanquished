@@ -142,7 +142,8 @@ for a few moments
 */
 void CG_CenterPrint( const char *str, int y, int charWidth )
 {
-//TODO
+	trap_Rocket_QuakeToRML( str, cg.centerPrint, sizeof( cg.centerPrint ) );
+	cg.centerPrintTime = cg.time;
 }
 
 /*

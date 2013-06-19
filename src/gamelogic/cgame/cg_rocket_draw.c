@@ -1172,6 +1172,46 @@ static void CG_Rocket_DrawLevelshot( void )
 	trap_Rocket_SetInnerRML( "", "", va( "<img class='levelshot' src='/%s' />", CG_GetShaderNameFromHandle( shader ) ) );
 }
 
+
+#define CENTER_PRINT_DURATION 2000
+#define CENTER_PRINT_FADEIN_TIME 300.0f
+void CG_Rocket_DrawCenterPrint( void )
+{
+	float opacity;
+
+	if ( !*cg.centerPrint )
+	{
+		return;
+	}
+
+	if ( cg.centerPrintTime + CENTER_PRINT_DURATION < cg.time )
+	{
+		*cg.centerPrint = '\0';
+		return;
+	}
+
+	if ( cg.time == cg.centerPrintTime )
+	{
+		trap_Rocket_SetInnerRML( "", "", cg.centerPrint );
+	}
+
+	// Just showed up. Fade in.
+	if ( cg.time - CENTER_PRINT_FADEIN_TIME < cg.centerPrintTime )
+	{
+		opacity = ( cg.time - cg.centerPrintTime ) / CENTER_PRINT_FADEIN_TIME;
+	}
+	else if ( cg.time - cg.centerPrintTime < CENTER_PRINT_DURATION - CENTER_PRINT_FADEIN_TIME )
+	{
+		opacity = 1.0f;
+	}
+	else
+	{
+		opacity = ( ( cg.centerPrintTime + CENTER_PRINT_DURATION ) - cg.time ) / CENTER_PRINT_FADEIN_TIME;
+	}
+
+	trap_Rocket_SetPropertyById( "", "opacity", va( "%f", opacity ) );
+}
+
 typedef struct
 {
 	const char *name;
@@ -1183,6 +1223,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 {
 	{ "alien_sense", &CG_Rocket_DrawAlienSense, ELEMENT_ALIENS },
 	{ "ammo", &CG_Rocket_DrawAmmo, ELEMENT_BOTH },
+	{ "center_print", &CG_Rocket_DrawCenterPrint, ELEMENT_GAME },
 	{ "clips", &CG_Rocket_DrawClips, ELEMENT_HUMANS },
 	{ "credits", &CG_Rocket_DrawCreditsValue, ELEMENT_HUMANS },
 	{ "crosshair", &CG_Rocket_DrawCrosshair, ELEMENT_BOTH },
