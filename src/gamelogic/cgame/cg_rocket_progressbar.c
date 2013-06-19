@@ -92,8 +92,6 @@ static float CG_Rocket_GetPoisonProgress( void )
 
 	if( cg.snap->ps.stats[ STAT_STATE ] & SS_BOOSTED )
 	{
-		float      progress;
-
 		if( time == -1 || cg.snap->ps.stats[ STAT_STATE ] & SS_BOOSTEDNEW )
 		{
 			time = cg.time;
