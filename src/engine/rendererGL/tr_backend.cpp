@@ -2088,7 +2088,7 @@ skipInteraction:
 	return numCasters;
 }
 
-static const interaction_t *IterateLights( const interaction_t *prev )
+static interaction_t *IterateLights( const interaction_t *prev )
 {
 	if ( !prev && backEnd.viewParms.numInteractions > 0 )
 	{
@@ -2103,16 +2103,17 @@ static const interaction_t *IterateLights( const interaction_t *prev )
 	const interaction_t *next = prev;
 	const interaction_t *last = &backEnd.viewParms.interactions[ backEnd.viewParms.numInteractions - 1 ];
 
-	while ( next < last && next->light == prev->light )
+	while ( next <= last && next->light == prev->light )
 	{
 		next++;
 	}
 
-	if ( next == last )
+	if ( next > last )
 	{
 		next = NULL;
 	}
-	return next;
+
+	return ( interaction_t * ) next;
 }
 
 static void RB_SetupLightAttenuationForEntity( trRefLight_t *light, const trRefEntity_t *entity )
@@ -2324,6 +2325,8 @@ static void RB_RenderInteractions()
 		oldEntity = NULL;
 		oldShader = NULL;
 	}
+
+	Tess_End();
 
 	// go back to the world modelview matrix
 	GL_LoadModelViewMatrix( backEnd.viewParms.world.modelViewMatrix );
@@ -2612,16 +2615,8 @@ static void RB_SetupLightForShadowing( trRefLight_t *light, int index )
 						splitFrustum[ j ][ 3 ] = backEnd.viewParms.frustums[ 1 + splitFrustumIndex ][ j ].dist;
 					}
 
-					// calculate split frustum corner points
-					PlanesGetIntersectionPoint( splitFrustum[ FRUSTUM_LEFT ], splitFrustum[ FRUSTUM_TOP ], splitFrustum[ FRUSTUM_NEAR ], splitFrustumCorners[ 0 ] );
-					PlanesGetIntersectionPoint( splitFrustum[ FRUSTUM_RIGHT ], splitFrustum[ FRUSTUM_TOP ], splitFrustum[ FRUSTUM_NEAR ], splitFrustumCorners[ 1 ] );
-					PlanesGetIntersectionPoint( splitFrustum[ FRUSTUM_RIGHT ], splitFrustum[ FRUSTUM_BOTTOM ], splitFrustum[ FRUSTUM_NEAR ], splitFrustumCorners[ 2 ] );
-					PlanesGetIntersectionPoint( splitFrustum[ FRUSTUM_LEFT ], splitFrustum[ FRUSTUM_BOTTOM ], splitFrustum[ FRUSTUM_NEAR ], splitFrustumCorners[ 3 ] );
-
-					PlanesGetIntersectionPoint( splitFrustum[ FRUSTUM_LEFT ], splitFrustum[ FRUSTUM_TOP ], splitFrustum[ FRUSTUM_FAR ], splitFrustumCorners[ 4 ] );
-					PlanesGetIntersectionPoint( splitFrustum[ FRUSTUM_RIGHT ], splitFrustum[ FRUSTUM_TOP ], splitFrustum[ FRUSTUM_FAR ], splitFrustumCorners[ 5 ] );
-					PlanesGetIntersectionPoint( splitFrustum[ FRUSTUM_RIGHT ], splitFrustum[ FRUSTUM_BOTTOM ], splitFrustum[ FRUSTUM_FAR ], splitFrustumCorners[ 6 ] );
-					PlanesGetIntersectionPoint( splitFrustum[ FRUSTUM_LEFT ], splitFrustum[ FRUSTUM_BOTTOM ], splitFrustum[ FRUSTUM_FAR ], splitFrustumCorners[ 7 ] );
+					R_CalcFrustumNearCorners( splitFrustum, splitFrustumCorners );
+					R_CalcFrustumFarCorners( splitFrustum, splitFrustumCorners + 4 );
 
 					if ( r_logFile->integer )
 					{
@@ -2860,7 +2855,6 @@ static void RB_SetupLightForShadowing( trRefLight_t *light, int index )
 						AddPointToBounds( transf, cropBounds[ 0 ], cropBounds[ 1 ] );
 					}
 
-					// transform from OpenGL's right handed into D3D's left handed coordinate system
 #if 0
 					MatrixScaleTranslateToUnitCube( projectionMatrix, cropBounds[ 0 ], cropBounds[ 1 ] );
 					MatrixMultiply( flipZMatrix, projectionMatrix, light->projectionMatrix );
@@ -3013,17 +3007,9 @@ static void RB_SetupLightForLighting( trRefLight_t *light )
 								splitFrustum[ j ][ 3 ] = backEnd.viewParms.frustums[ 1 + frustumIndex ][ j ].dist;
 							}
 
-							// calculate split frustum corner points
-							PlanesGetIntersectionPoint( splitFrustum[ FRUSTUM_LEFT ], splitFrustum[ FRUSTUM_TOP ], splitFrustum[ FRUSTUM_NEAR ], nearCorners[ 0 ] );
-							PlanesGetIntersectionPoint( splitFrustum[ FRUSTUM_RIGHT ], splitFrustum[ FRUSTUM_TOP ], splitFrustum[ FRUSTUM_NEAR ], nearCorners[ 1 ] );
-							PlanesGetIntersectionPoint( splitFrustum[ FRUSTUM_RIGHT ], splitFrustum[ FRUSTUM_BOTTOM ], splitFrustum[ FRUSTUM_NEAR ], nearCorners[ 2 ] );
-							PlanesGetIntersectionPoint( splitFrustum[ FRUSTUM_LEFT ], splitFrustum[ FRUSTUM_BOTTOM ], splitFrustum[ FRUSTUM_NEAR ], nearCorners[ 3 ] );
-
-							PlanesGetIntersectionPoint( splitFrustum[ FRUSTUM_LEFT ], splitFrustum[ FRUSTUM_TOP ], splitFrustum[ FRUSTUM_FAR ], farCorners[ 0 ] );
-							PlanesGetIntersectionPoint( splitFrustum[ FRUSTUM_RIGHT ], splitFrustum[ FRUSTUM_TOP ], splitFrustum[ FRUSTUM_FAR ], farCorners[ 1 ] );
-							PlanesGetIntersectionPoint( splitFrustum[ FRUSTUM_RIGHT ], splitFrustum[ FRUSTUM_BOTTOM ], splitFrustum[ FRUSTUM_FAR ], farCorners[ 2 ] );
-							PlanesGetIntersectionPoint( splitFrustum[ FRUSTUM_LEFT ], splitFrustum[ FRUSTUM_BOTTOM ], splitFrustum[ FRUSTUM_FAR ], farCorners[ 3 ] );
-
+							R_CalcFrustumNearCorners( splitFrustum, nearCorners );
+							R_CalcFrustumFarCorners( splitFrustum, farCorners );
+							
 							// draw outer surfaces
 							for ( j = 0; j < 4; j++ )
 							{
@@ -3147,7 +3133,7 @@ static void RB_RenderInteractionsShadowMapped()
 	{
 		backEnd.currentLight = light = iaFirst->light;
 
-		if ( glConfig2.occlusionQueryBits && glConfig.driverType != GLDRV_MESA && r_dynamicLightOcclusionCulling->integer && !ia->occlusionQuerySamples )
+		if ( glConfig2.occlusionQueryBits && glConfig.driverType != GLDRV_MESA && r_dynamicLightOcclusionCulling->integer && !iaFirst->occlusionQuerySamples )
 		{
 			// skip this light because it failed the occlusion query
 			continue;
@@ -3495,6 +3481,9 @@ static void RB_RenderInteractionsShadowMapped()
 #endif
 	}
 
+	// draw the contents of the last shader batch
+	Tess_End();
+
 	// go back to the world modelview matrix
 	GL_LoadModelViewMatrix( backEnd.viewParms.world.modelViewMatrix );
 
@@ -3807,133 +3796,14 @@ static void RB_RenderLightDeferred( trRefLight_t *light, const matrix_t ortho )
 			tess.numIndexes = 0;
 			tess.numVertexes = 0;
 
-			switch ( light->l.rlType )
-			{
-				case RL_OMNI:
-				case RL_DIRECTIONAL:
-					{
-#if 1
-						// render in light space
-						R_RotateLightForViewParms( light, &backEnd.viewParms, &backEnd.orientation );
+			R_RotateLightForViewParms( light, &backEnd.viewParms, &backEnd.orientation );
 
-						GL_LoadProjectionMatrix( backEnd.viewParms.projectionMatrix );
-						GL_LoadModelViewMatrix( backEnd.orientation.modelViewMatrix );
+			GL_LoadProjectionMatrix( backEnd.viewParms.projectionMatrix );
+			GL_LoadModelViewMatrix( backEnd.orientation.modelViewMatrix );
 
-						Tess_AddCube( vec3_origin, light->localBounds[ 0 ], light->localBounds[ 1 ], colorWhite );
+			R_TessLight( light, NULL );
 
-						Tess_UpdateVBOs( ATTR_POSITION | ATTR_COLOR );
-#else
-						matrix_t transform, scale, rot;
-						axis_t   axis;
-
-						MatrixSetupScale( scale, light->l.radius[ 0 ], light->l.radius[ 1 ], light->l.radius[ 2 ] );
-						MatrixMultiply( scale, light->transformMatrix, transform );
-
-						GL_LoadModelViewMatrix( transform );
-						GL_LoadProjectionMatrix( backEnd.viewParms.projectionMatrix );
-
-						R_BindVBO( tr.unitCubeVBO );
-						R_BindIBO( tr.unitCubeIBO );
-
-						GL_VertexAttribsState( ATTR_POSITION );
-
-						tess.multiDrawPrimitives = 0;
-						tess.numVertexes = tr.unitCubeVBO->vertexesNum;
-						tess.numIndexes = tr.unitCubeIBO->indexesNum;
-#endif
-						break;
-					}
-
-				case RL_PROJ:
-					{
-						vec3_t farCorners[ 4 ];
-						vec4_t *frustum = light->localFrustum;
-
-						// render in light space
-						R_RotateLightForViewParms( light, &backEnd.viewParms, &backEnd.orientation );
-
-						GL_LoadProjectionMatrix( backEnd.viewParms.projectionMatrix );
-						GL_LoadModelViewMatrix( backEnd.orientation.modelViewMatrix );
-
-						PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_FAR ], farCorners[ 0 ] );
-						PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_FAR ], farCorners[ 1 ] );
-						PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_FAR ], farCorners[ 2 ] );
-						PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_FAR ], farCorners[ 3 ] );
-
-						if ( !VectorCompare( light->l.projStart, vec3_origin ) )
-						{
-							vec3_t nearCorners[ 4 ];
-
-							// calculate the vertices defining the top area
-							PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_NEAR ], nearCorners[ 0 ] );
-							PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_NEAR ], nearCorners[ 1 ] );
-							PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_NEAR ], nearCorners[ 2 ] );
-							PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_NEAR ], nearCorners[ 3 ] );
-
-							// draw outer surfaces
-							for ( j = 0; j < 4; j++ )
-							{
-								Vector4Set( quadVerts[ 0 ], nearCorners[ j ][ 0 ], nearCorners[ j ][ 1 ], nearCorners[ j ][ 2 ], 1 );
-								Vector4Set( quadVerts[ 1 ], farCorners[ j ][ 0 ], farCorners[ j ][ 1 ], farCorners[ j ][ 2 ], 1 );
-								Vector4Set( quadVerts[ 2 ], farCorners[( j + 1 ) % 4 ][ 0 ], farCorners[( j + 1 ) % 4 ][ 1 ], farCorners[( j + 1 ) % 4 ][ 2 ], 1 );
-								Vector4Set( quadVerts[ 3 ], nearCorners[( j + 1 ) % 4 ][ 0 ], nearCorners[( j + 1 ) % 4 ][ 1 ], nearCorners[( j + 1 ) % 4 ][ 2 ], 1 );
-								Tess_AddQuadStamp2( quadVerts, colorCyan );
-							}
-
-							// draw far cap
-							Vector4Set( quadVerts[ 0 ], farCorners[ 3 ][ 0 ], farCorners[ 3 ][ 1 ], farCorners[ 3 ][ 2 ], 1 );
-							Vector4Set( quadVerts[ 1 ], farCorners[ 2 ][ 0 ], farCorners[ 2 ][ 1 ], farCorners[ 2 ][ 2 ], 1 );
-							Vector4Set( quadVerts[ 2 ], farCorners[ 1 ][ 0 ], farCorners[ 1 ][ 1 ], farCorners[ 1 ][ 2 ], 1 );
-							Vector4Set( quadVerts[ 3 ], farCorners[ 0 ][ 0 ], farCorners[ 0 ][ 1 ], farCorners[ 0 ][ 2 ], 1 );
-							Tess_AddQuadStamp2( quadVerts, colorRed );
-
-							// draw near cap
-							Vector4Set( quadVerts[ 0 ], nearCorners[ 0 ][ 0 ], nearCorners[ 0 ][ 1 ], nearCorners[ 0 ][ 2 ], 1 );
-							Vector4Set( quadVerts[ 1 ], nearCorners[ 1 ][ 0 ], nearCorners[ 1 ][ 1 ], nearCorners[ 1 ][ 2 ], 1 );
-							Vector4Set( quadVerts[ 2 ], nearCorners[ 2 ][ 0 ], nearCorners[ 2 ][ 1 ], nearCorners[ 2 ][ 2 ], 1 );
-							Vector4Set( quadVerts[ 3 ], nearCorners[ 3 ][ 0 ], nearCorners[ 3 ][ 1 ], nearCorners[ 3 ][ 2 ], 1 );
-							Tess_AddQuadStamp2( quadVerts, colorGreen );
-						}
-						else
-						{
-							vec3_t top;
-
-							// no light_start, just use the top vertex (doesn't need to be mirrored)
-							PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_TOP ], top );
-
-							// draw pyramid
-							for ( j = 0; j < 4; j++ )
-							{
-								VectorCopy( top, tess.xyz[ tess.numVertexes ] );
-								Vector4Copy( colorCyan, tess.colors[ tess.numVertexes ] );
-								tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
-								tess.numVertexes++;
-
-								VectorCopy( farCorners[( j + 1 ) % 4 ], tess.xyz[ tess.numVertexes ] );
-								Vector4Copy( colorCyan, tess.colors[ tess.numVertexes ] );
-								tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
-								tess.numVertexes++;
-
-								VectorCopy( farCorners[ j ], tess.xyz[ tess.numVertexes ] );
-								Vector4Copy( colorCyan, tess.colors[ tess.numVertexes ] );
-								tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
-								tess.numVertexes++;
-							}
-
-							Vector4Set( quadVerts[ 0 ], farCorners[ 0 ][ 0 ], farCorners[ 0 ][ 1 ], farCorners[ 0 ][ 2 ], 1 );
-							Vector4Set( quadVerts[ 1 ], farCorners[ 1 ][ 0 ], farCorners[ 1 ][ 1 ], farCorners[ 1 ][ 2 ], 1 );
-							Vector4Set( quadVerts[ 2 ], farCorners[ 2 ][ 0 ], farCorners[ 2 ][ 1 ], farCorners[ 2 ][ 2 ], 1 );
-							Vector4Set( quadVerts[ 3 ], farCorners[ 3 ][ 0 ], farCorners[ 3 ][ 1 ], farCorners[ 3 ][ 2 ], 1 );
-							Tess_AddQuadStamp2( quadVerts, colorRed );
-						}
-
-						Tess_UpdateVBOs( ATTR_POSITION | ATTR_COLOR );
-						break;
-					}
-
-				default:
-					break;
-			}
+			Tess_UpdateVBOs( ATTR_POSITION | ATTR_COLOR );
 		}
 	}
 
@@ -4353,15 +4223,8 @@ static void RB_RenderLightDeferred( trRefLight_t *light, const matrix_t ortho )
 #endif
 
 				// calculate split frustum corner points
-				PlanesGetIntersectionPoint( splitFrustum[ FRUSTUM_LEFT ], splitFrustum[ FRUSTUM_TOP ], splitFrustum[ FRUSTUM_NEAR ], nearCorners[ 0 ] );
-				PlanesGetIntersectionPoint( splitFrustum[ FRUSTUM_RIGHT ], splitFrustum[ FRUSTUM_TOP ], splitFrustum[ FRUSTUM_NEAR ], nearCorners[ 1 ] );
-				PlanesGetIntersectionPoint( splitFrustum[ FRUSTUM_RIGHT ], splitFrustum[ FRUSTUM_BOTTOM ], splitFrustum[ FRUSTUM_NEAR ], nearCorners[ 2 ] );
-				PlanesGetIntersectionPoint( splitFrustum[ FRUSTUM_LEFT ], splitFrustum[ FRUSTUM_BOTTOM ], splitFrustum[ FRUSTUM_NEAR ], nearCorners[ 3 ] );
-
-				PlanesGetIntersectionPoint( splitFrustum[ FRUSTUM_LEFT ], splitFrustum[ FRUSTUM_TOP ], splitFrustum[ FRUSTUM_FAR ], farCorners[ 0 ] );
-				PlanesGetIntersectionPoint( splitFrustum[ FRUSTUM_RIGHT ], splitFrustum[ FRUSTUM_TOP ], splitFrustum[ FRUSTUM_FAR ], farCorners[ 1 ] );
-				PlanesGetIntersectionPoint( splitFrustum[ FRUSTUM_RIGHT ], splitFrustum[ FRUSTUM_BOTTOM ], splitFrustum[ FRUSTUM_FAR ], farCorners[ 2 ] );
-				PlanesGetIntersectionPoint( splitFrustum[ FRUSTUM_LEFT ], splitFrustum[ FRUSTUM_BOTTOM ], splitFrustum[ FRUSTUM_FAR ], farCorners[ 3 ] );
+				R_CalcFrustumNearCorners( splitFrustum, nearCorners );
+				R_CalcFrustumFarCorners( splitFrustum, farCorners );
 
 				// draw outer surfaces
 #if 1
@@ -4518,6 +4381,8 @@ void RB_RenderInteractionsDeferred()
 
 		RB_RenderLightDeferred( light, ortho );
 	}
+
+	Tess_End();
 
 	// clear shader so we can tell we don't have any unclosed surfaces
 	tess.multiDrawPrimitives = 0;
@@ -4830,6 +4695,8 @@ static void RB_RenderInteractionsDeferredShadowMapped()
 
 		RB_RenderLightDeferred( light, ortho );
 	}
+
+	Tess_End();
 
 	// go back to the world modelview matrix
 	GL_LoadModelViewMatrix( backEnd.viewParms.world.modelViewMatrix );
@@ -5819,9 +5686,6 @@ void RB_RenderDeferredHDRResultToFrameBuffer()
 
 static void RenderLightOcclusionVolume( trRefLight_t *light )
 {
-	int    j;
-	vec4_t quadVerts[ 4 ];
-
 	GL_CheckErrors();
 
 #if 1
@@ -5855,106 +5719,10 @@ static void RenderLightOcclusionVolume( trRefLight_t *light )
 		tess.numIndexes = 0;
 		tess.numVertexes = 0;
 
-		switch ( light->l.rlType )
-		{
-			case RL_OMNI:
-				{
-					Tess_AddCube( vec3_origin, light->localBounds[ 0 ], light->localBounds[ 1 ], colorWhite );
+		R_TessLight( light, NULL );
 
-					Tess_UpdateVBOs( ATTR_POSITION | ATTR_COLOR );
-					Tess_DrawElements();
-					break;
-				}
-
-			case RL_PROJ:
-				{
-					vec3_t farCorners[ 4 ];
-					vec4_t *frustum = light->localFrustum;
-
-					PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_FAR ], farCorners[ 0 ] );
-					PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_FAR ], farCorners[ 1 ] );
-					PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_FAR ], farCorners[ 2 ] );
-					PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_FAR ], farCorners[ 3 ] );
-
-					tess.multiDrawPrimitives = 0;
-					tess.numVertexes = 0;
-					tess.numIndexes = 0;
-
-					if ( !VectorCompare( light->l.projStart, vec3_origin ) )
-					{
-						vec3_t nearCorners[ 4 ];
-
-						// calculate the vertices defining the top area
-						PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_NEAR ], nearCorners[ 0 ] );
-						PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_NEAR ], nearCorners[ 1 ] );
-						PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_NEAR ], nearCorners[ 2 ] );
-						PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_NEAR ], nearCorners[ 3 ] );
-
-						// draw outer surfaces
-						for ( j = 0; j < 4; j++ )
-						{
-							Vector4Set( quadVerts[ 0 ], nearCorners[ j ][ 0 ], nearCorners[ j ][ 1 ], nearCorners[ j ][ 2 ], 1 );
-							Vector4Set( quadVerts[ 1 ], farCorners[ j ][ 0 ], farCorners[ j ][ 1 ], farCorners[ j ][ 2 ], 1 );
-							Vector4Set( quadVerts[ 2 ], farCorners[( j + 1 ) % 4 ][ 0 ], farCorners[( j + 1 ) % 4 ][ 1 ], farCorners[( j + 1 ) % 4 ][ 2 ], 1 );
-							Vector4Set( quadVerts[ 3 ], nearCorners[( j + 1 ) % 4 ][ 0 ], nearCorners[( j + 1 ) % 4 ][ 1 ], nearCorners[( j + 1 ) % 4 ][ 2 ], 1 );
-							Tess_AddQuadStamp2( quadVerts, colorCyan );
-						}
-
-						// draw far cap
-						Vector4Set( quadVerts[ 0 ], farCorners[ 3 ][ 0 ], farCorners[ 3 ][ 1 ], farCorners[ 3 ][ 2 ], 1 );
-						Vector4Set( quadVerts[ 1 ], farCorners[ 2 ][ 0 ], farCorners[ 2 ][ 1 ], farCorners[ 2 ][ 2 ], 1 );
-						Vector4Set( quadVerts[ 2 ], farCorners[ 1 ][ 0 ], farCorners[ 1 ][ 1 ], farCorners[ 1 ][ 2 ], 1 );
-						Vector4Set( quadVerts[ 3 ], farCorners[ 0 ][ 0 ], farCorners[ 0 ][ 1 ], farCorners[ 0 ][ 2 ], 1 );
-						Tess_AddQuadStamp2( quadVerts, colorRed );
-
-						// draw near cap
-						Vector4Set( quadVerts[ 0 ], nearCorners[ 0 ][ 0 ], nearCorners[ 0 ][ 1 ], nearCorners[ 0 ][ 2 ], 1 );
-						Vector4Set( quadVerts[ 1 ], nearCorners[ 1 ][ 0 ], nearCorners[ 1 ][ 1 ], nearCorners[ 1 ][ 2 ], 1 );
-						Vector4Set( quadVerts[ 2 ], nearCorners[ 2 ][ 0 ], nearCorners[ 2 ][ 1 ], nearCorners[ 2 ][ 2 ], 1 );
-						Vector4Set( quadVerts[ 3 ], nearCorners[ 3 ][ 0 ], nearCorners[ 3 ][ 1 ], nearCorners[ 3 ][ 2 ], 1 );
-						Tess_AddQuadStamp2( quadVerts, colorGreen );
-					}
-					else
-					{
-						vec3_t top;
-
-						// no light_start, just use the top vertex (doesn't need to be mirrored)
-						PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_TOP ], top );
-
-						// draw pyramid
-						for ( j = 0; j < 4; j++ )
-						{
-							VectorCopy( farCorners[ j ], tess.xyz[ tess.numVertexes ] );
-							Vector4Copy( colorCyan, tess.colors[ tess.numVertexes ] );
-							tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
-							tess.numVertexes++;
-
-							VectorCopy( farCorners[( j + 1 ) % 4 ], tess.xyz[ tess.numVertexes ] );
-							Vector4Copy( colorCyan, tess.colors[ tess.numVertexes ] );
-							tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
-							tess.numVertexes++;
-
-							VectorCopy( top, tess.xyz[ tess.numVertexes ] );
-							Vector4Copy( colorCyan, tess.colors[ tess.numVertexes ] );
-							tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
-							tess.numVertexes++;
-						}
-
-						Vector4Set( quadVerts[ 0 ], farCorners[ 3 ][ 0 ], farCorners[ 3 ][ 1 ], farCorners[ 3 ][ 2 ], 1 );
-						Vector4Set( quadVerts[ 1 ], farCorners[ 2 ][ 0 ], farCorners[ 2 ][ 1 ], farCorners[ 2 ][ 2 ], 1 );
-						Vector4Set( quadVerts[ 2 ], farCorners[ 1 ][ 0 ], farCorners[ 1 ][ 1 ], farCorners[ 1 ][ 2 ], 1 );
-						Vector4Set( quadVerts[ 3 ], farCorners[ 0 ][ 0 ], farCorners[ 0 ][ 1 ], farCorners[ 0 ][ 2 ], 1 );
-						Tess_AddQuadStamp2( quadVerts, colorRed );
-					}
-
-					Tess_UpdateVBOs( ATTR_POSITION | ATTR_COLOR );
-					Tess_DrawElements();
-					break;
-				}
-
-			default:
-				break;
-		}
+		Tess_UpdateVBOs( ATTR_POSITION | ATTR_COLOR );
+		Tess_DrawElements();
 	}
 
 	tess.multiDrawPrimitives = 0;
@@ -6219,11 +5987,8 @@ void RB_RenderLightOcclusionQueries()
 	{
 		int           i;
 		interaction_t *ia;
-		int           iaCount;
-		int           iaFirst;
-		trRefLight_t  *light, *oldLight, *multiQueryLight;
-		GLint         ocSamples = 0;
-		qboolean      queryObjects;
+		interaction_t *iaFirst;
+		trRefLight_t  *light, *multiQueryLight;
 		link_t        occlusionQueryQueue;
 		link_t        invisibleQueue;
 		growList_t    invisibleList;
@@ -6274,37 +6039,21 @@ void RB_RenderLightOcclusionQueries()
 		QueueInit( &invisibleQueue );
 		Com_InitGrowList( &invisibleList, 1000 );
 
-		// loop trough all light interactions and render the light OBB for each last interaction
-		for ( iaCount = 0, ia = &backEnd.viewParms.interactions[ 0 ]; iaCount < backEnd.viewParms.numInteractions; )
+		iaFirst = NULL;
+
+		// add each light to the potentially invisible list
+		while ( ( iaFirst = IterateLights( iaFirst ) ) )
 		{
-			backEnd.currentLight = light = ia->light;
-			ia->occlusionQuerySamples = 1;
+			backEnd.currentLight = light = iaFirst->light;
 
-			if ( !ia->next )
+			for ( ia = iaFirst; ia; ia = ia->next )
 			{
-				// last interaction of current light
-				if ( !ia->noOcclusionQueries )
-				{
-					Com_AddToGrowList( &invisibleList, light );
-				}
-
-				if ( iaCount < ( backEnd.viewParms.numInteractions - 1 ) )
-				{
-					// jump to next interaction and continue
-					ia++;
-					iaCount++;
-				}
-				else
-				{
-					// increase last time to leave for loop
-					iaCount++;
-				}
+				ia->occlusionQuerySamples = 1;
 			}
-			else
+
+			if ( !iaFirst->noOcclusionQueries )
 			{
-				// just continue
-				ia = ia->next;
-				iaCount++;
+				Com_AddToGrowList( &invisibleList, light );
 			}
 		}
 
@@ -6414,73 +6163,29 @@ void RB_RenderLightOcclusionQueries()
 		// reenable writes to depth and color buffers
 		GL_State( GLS_DEPTHMASK_TRUE );
 
-		// loop trough all light interactions and fetch results for each last interaction
-		// then copy result to all other interactions that belong to the same light
-		iaFirst = 0;
-		queryObjects = qtrue;
-		oldLight = NULL;
-
-		for ( iaCount = 0, ia = &backEnd.viewParms.interactions[ 0 ]; iaCount < backEnd.viewParms.numInteractions; )
+		// copy result to all other interactions that belong to the same light
+		iaFirst = NULL;
+		while( ( iaFirst = IterateLights( iaFirst ) ) )
 		{
-			backEnd.currentLight = light = ia->light;
+			backEnd.currentLight = light = iaFirst->light;
+			interaction_t *ia = iaFirst;
 
-			if ( light != oldLight )
+			for ( ia = iaFirst; ia; ia = ia->next )
 			{
-				iaFirst = iaCount;
-			}
+				if ( !ia->noOcclusionQueries )
+				{
+					ia->occlusionQuerySamples = light->occlusionQuerySamples > r_chcVisibilityThreshold->integer;
+				}
+				else
+				{
+					ia->occlusionQuerySamples = 1;
+				}
 
-			if ( !queryObjects )
-			{
-				ia->occlusionQuerySamples = ocSamples;
-
-				if ( ocSamples <= 0 )
+				if ( ia->occlusionQuerySamples <= 0 )
 				{
 					backEnd.pc.c_occlusionQueriesInteractionsCulled++;
 				}
 			}
-
-			if ( !ia->next )
-			{
-				if ( queryObjects )
-				{
-					if ( !ia->noOcclusionQueries )
-					{
-						ocSamples = ( signed ) light->occlusionQuerySamples > r_chcVisibilityThreshold->integer;
-					}
-					else
-					{
-						ocSamples = 1;
-					}
-
-					// jump back to first interaction of this light copy query result
-					ia = &backEnd.viewParms.interactions[ iaFirst ];
-					iaCount = iaFirst;
-					queryObjects = qfalse;
-				}
-				else
-				{
-					if ( iaCount < ( backEnd.viewParms.numInteractions - 1 ) )
-					{
-						// jump to next interaction and start querying
-						ia++;
-						iaCount++;
-						queryObjects = qtrue;
-					}
-					else
-					{
-						// increase last time to leave for loop
-						iaCount++;
-					}
-				}
-			}
-			else
-			{
-				// just continue
-				ia = ia->next;
-				iaCount++;
-			}
-
-			oldLight = light;
 		}
 
 		if ( r_speeds->integer == RSPEEDS_OCCLUSION_QUERIES )
@@ -7204,12 +6909,10 @@ static void RB_RenderDebugUtils()
 
 	if ( r_showLightTransforms->integer || r_showShadowLod->integer )
 	{
-		interaction_t *ia;
-		int           iaCount, j;
+		const interaction_t *ia;
 		trRefLight_t  *light;
 		vec3_t        forward, left, up;
 		vec4_t        lightColor; //unused
-		vec4_t        quadVerts[ 4 ];
 
 		static const vec3_t minSize = { -2, -2, -2 };
 		static const vec3_t maxSize = { 2,  2,  2 };
@@ -7234,345 +6937,176 @@ static void RB_RenderDebugUtils()
 		GL_Bind( tr.whiteImage );
 		gl_genericShader->SetUniform_ColorTextureMatrix( matrixIdentity );
 
-		for ( iaCount = 0, ia = &backEnd.viewParms.interactions[ 0 ]; iaCount < backEnd.viewParms.numInteractions; )
+		ia = NULL;
+		while ( ( ia = IterateLights( ia ) ) )
 		{
 			light = ia->light;
 
-			if ( !ia->next )
+			if ( r_showShadowLod->integer )
 			{
-				if ( r_showShadowLod->integer )
+				if ( light->shadowLOD == 0 )
 				{
-					if ( light->shadowLOD == 0 )
-					{
-						Vector4Copy( colorRed, lightColor );
-					}
-					else if ( light->shadowLOD == 1 )
-					{
-						Vector4Copy( colorGreen, lightColor );
-					}
-					else if ( light->shadowLOD == 2 )
-					{
-						Vector4Copy( colorBlue, lightColor );
-					}
-					else if ( light->shadowLOD == 3 )
-					{
-						Vector4Copy( colorYellow, lightColor );
-					}
-					else if ( light->shadowLOD == 4 )
-					{
-						Vector4Copy( colorMagenta, lightColor );
-					}
-					else if ( light->shadowLOD == 5 )
-					{
-						Vector4Copy( colorCyan, lightColor );
-					}
-					else
-					{
-						Vector4Copy( colorMdGrey, lightColor );
-					}
+					Vector4Copy( colorRed, lightColor );
 				}
-				else if ( r_dynamicLightOcclusionCulling->integer )
+				else if ( light->shadowLOD == 1 )
 				{
-					if ( !ia->occlusionQuerySamples )
-					{
-						Vector4Copy( colorRed, lightColor );
-					}
-					else
-					{
-						Vector4Copy( colorGreen, lightColor );
-					}
+					Vector4Copy( colorGreen, lightColor );
 				}
-				else
+				else if ( light->shadowLOD == 2 )
 				{
-					//Vector4Copy(g_color_table[iaCount % 8], lightColor);
 					Vector4Copy( colorBlue, lightColor );
 				}
-
-				lightColor[ 3 ] = 0.2;
-
-				gl_genericShader->SetUniform_Color( lightColor );
-
-				MatrixToVectorsFLU( matrixIdentity, forward, left, up );
-				VectorMA( vec3_origin, 16, forward, forward );
-				VectorMA( vec3_origin, 16, left, left );
-				VectorMA( vec3_origin, 16, up, up );
-
-				/*
-				// draw axis
-				glBegin(GL_LINES);
-
-				// draw orientation
-				glVertexAttrib4fv(ATTR_INDEX_COLOR, colorRed);
-				glVertex3fv(vec3_origin);
-				glVertex3fv(forward);
-
-				glVertexAttrib4fv(ATTR_INDEX_COLOR, colorGreen);
-				glVertex3fv(vec3_origin);
-				glVertex3fv(left);
-
-				glVertexAttrib4fv(ATTR_INDEX_COLOR, colorBlue);
-				glVertex3fv(vec3_origin);
-				glVertex3fv(up);
-
-				// draw special vectors
-				glVertexAttrib4fv(ATTR_INDEX_COLOR, colorYellow);
-				glVertex3fv(vec3_origin);
-				VectorSubtract(light->origin, backEnd.orientation.origin, tmp);
-				light->transformed[0] = DotProduct(tmp, backEnd.orientation.axis[0]);
-				light->transformed[1] = DotProduct(tmp, backEnd.orientation.axis[1]);
-				light->transformed[2] = DotProduct(tmp, backEnd.orientation.axis[2]);
-				glVertex3fv(light->transformed);
-
-				glEnd();
-				*/
-
-#if 1
-
-				if ( light->isStatic && light->frustumVBO && light->frustumIBO )
+				else if ( light->shadowLOD == 3 )
 				{
-					// go back to the world modelview matrix
-					backEnd.orientation = backEnd.viewParms.world;
-					GL_LoadModelViewMatrix( backEnd.viewParms.world.modelViewMatrix );
-					gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-
-					R_BindVBO( light->frustumVBO );
-					R_BindIBO( light->frustumIBO );
-
-					GL_VertexAttribsState( ATTR_POSITION );
-
-					tess.numVertexes = light->frustumVerts;
-					tess.numIndexes = light->frustumIndexes;
-
-					Tess_DrawElements();
-
-					tess.multiDrawPrimitives = 0;
-					tess.numIndexes = 0;
-					tess.numVertexes = 0;
+					Vector4Copy( colorYellow, lightColor );
 				}
-				else
-#endif
+				else if ( light->shadowLOD == 4 )
 				{
-					tess.multiDrawPrimitives = 0;
-					tess.numIndexes = 0;
-					tess.numVertexes = 0;
-
-					switch ( light->l.rlType )
-					{
-						case RL_OMNI:
-						case RL_DIRECTIONAL:
-							{
-#if 1
-								// set up the transformation matrix
-								R_RotateLightForViewParms( light, &backEnd.viewParms, &backEnd.orientation );
-
-								GL_LoadModelViewMatrix( backEnd.orientation.modelViewMatrix );
-								gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-
-								Tess_AddCube( vec3_origin, light->localBounds[ 0 ], light->localBounds[ 1 ], lightColor );
-
-								if ( !VectorCompare( light->l.center, vec3_origin ) )
-								{
-									Tess_AddCube( light->l.center, minSize, maxSize, colorYellow );
-								}
-
-								Tess_UpdateVBOs( ATTR_POSITION | ATTR_COLOR );
-								Tess_DrawElements();
-#else
-								matrix_t transform, scale, rot;
-
-								MatrixSetupScale( scale, light->l.radius[ 0 ], light->l.radius[ 1 ], light->l.radius[ 2 ] );
-								MatrixMultiply( light->transformMatrix, scale, transform );
-
-								GL_LoadModelViewMatrix( transform );
-								//GL_LoadProjectionMatrix(backEnd.viewParms.projectionMatrix);
-
-								gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-
-								R_BindVBO( tr.unitCubeVBO );
-								R_BindIBO( tr.unitCubeIBO );
-
-								GL_VertexAttribsState( ATTR_POSITION );
-
-								tess.multiDrawPrimitives = 0;
-								tess.numVertexes = tr.unitCubeVBO->vertexesNum;
-								tess.numIndexes = tr.unitCubeIBO->indexesNum;
-
-								Tess_DrawElements();
-#endif
-								break;
-							}
-
-						case RL_PROJ:
-							{
-								vec3_t farCorners[ 4 ];
-								//vec4_t      frustum[6];
-								vec4_t *frustum = light->localFrustum;
-
-								// set up the transformation matrix
-								R_RotateLightForViewParms( light, &backEnd.viewParms, &backEnd.orientation );
-								GL_LoadModelViewMatrix( backEnd.orientation.modelViewMatrix );
-								gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-
-#if 0
-
-								// transform frustum from world space to local space
-								for ( j = 0; j < 6; j++ )
-								{
-									MatrixTransformPlane( light->transformMatrix, light->localFrustum[ j ], frustum[ j ] );
-									//Vector4Copy(light->localFrustum[j], frustum[j]);
-									//MatrixTransformPlane2(light->viewMatrix, frustum[j]);
-								}
-
-								// go back to the world modelview matrix
-								backEnd.orientation = backEnd.viewParms.world;
-								GL_LoadModelViewMatrix( backEnd.viewParms.world.modelViewMatrix );
-								GLSL_SetUniform_ModelViewProjectionMatrix( &tr.genericShader, glState.modelViewProjectionMatrix[ glState.stackIndex ] );
-#endif
-
-								PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_FAR ], farCorners[ 0 ] );
-								PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_FAR ], farCorners[ 1 ] );
-								PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_FAR ], farCorners[ 2 ] );
-								PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_FAR ], farCorners[ 3 ] );
-
-								// the planes of the frustum are measured at world 0,0,0 so we have to position the intersection points relative to the light origin
-#if 0
-								ri.Printf( PRINT_ALL, "pyramid farCorners\n" );
-
-								for ( j = 0; j < 4; j++ )
-								{
-									ri.Printf( PRINT_ALL, "(%5.3f, %5.3f, %5.3f)\n", farCorners[ j ][ 0 ], farCorners[ j ][ 1 ], farCorners[ j ][ 2 ] );
-								}
-
-#endif
-
-								tess.numVertexes = 0;
-								tess.numIndexes = 0;
-								tess.multiDrawPrimitives = 0;
-
-								if ( !VectorCompare( light->l.projStart, vec3_origin ) )
-								{
-									vec3_t nearCorners[ 4 ];
-
-									// calculate the vertices defining the top area
-									PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_NEAR ], nearCorners[ 0 ] );
-									PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_NEAR ], nearCorners[ 1 ] );
-									PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_NEAR ], nearCorners[ 2 ] );
-									PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_NEAR ], nearCorners[ 3 ] );
-
-#if 0
-									ri.Printf( PRINT_ALL, "pyramid nearCorners\n" );
-
-									for ( j = 0; j < 4; j++ )
-									{
-										ri.Printf( PRINT_ALL, "(%5.3f, %5.3f, %5.3f)\n", nearCorners[ j ][ 0 ], nearCorners[ j ][ 1 ], nearCorners[ j ][ 2 ] );
-									}
-
-#endif
-
-									// draw outer surfaces
-									for ( j = 0; j < 4; j++ )
-									{
-										Vector4Set( quadVerts[ 3 ], nearCorners[ j ][ 0 ], nearCorners[ j ][ 1 ], nearCorners[ j ][ 2 ], 1 );
-										Vector4Set( quadVerts[ 2 ], farCorners[ j ][ 0 ], farCorners[ j ][ 1 ], farCorners[ j ][ 2 ], 1 );
-										Vector4Set( quadVerts[ 1 ], farCorners[( j + 1 ) % 4 ][ 0 ], farCorners[( j + 1 ) % 4 ][ 1 ], farCorners[( j + 1 ) % 4 ][ 2 ], 1 );
-										Vector4Set( quadVerts[ 0 ], nearCorners[( j + 1 ) % 4 ][ 0 ], nearCorners[( j + 1 ) % 4 ][ 1 ], nearCorners[( j + 1 ) % 4 ][ 2 ], 1 );
-										Tess_AddQuadStamp2( quadVerts, lightColor );
-									}
-
-									// draw far cap
-									Vector4Set( quadVerts[ 0 ], farCorners[ 0 ][ 0 ], farCorners[ 0 ][ 1 ], farCorners[ 0 ][ 2 ], 1 );
-									Vector4Set( quadVerts[ 1 ], farCorners[ 1 ][ 0 ], farCorners[ 1 ][ 1 ], farCorners[ 1 ][ 2 ], 1 );
-									Vector4Set( quadVerts[ 2 ], farCorners[ 2 ][ 0 ], farCorners[ 2 ][ 1 ], farCorners[ 2 ][ 2 ], 1 );
-									Vector4Set( quadVerts[ 3 ], farCorners[ 3 ][ 0 ], farCorners[ 3 ][ 1 ], farCorners[ 3 ][ 2 ], 1 );
-									Tess_AddQuadStamp2( quadVerts, lightColor );
-
-									// draw near cap
-									Vector4Set( quadVerts[ 3 ], nearCorners[ 0 ][ 0 ], nearCorners[ 0 ][ 1 ], nearCorners[ 0 ][ 2 ], 1 );
-									Vector4Set( quadVerts[ 2 ], nearCorners[ 1 ][ 0 ], nearCorners[ 1 ][ 1 ], nearCorners[ 1 ][ 2 ], 1 );
-									Vector4Set( quadVerts[ 1 ], nearCorners[ 2 ][ 0 ], nearCorners[ 2 ][ 1 ], nearCorners[ 2 ][ 2 ], 1 );
-									Vector4Set( quadVerts[ 0 ], nearCorners[ 3 ][ 0 ], nearCorners[ 3 ][ 1 ], nearCorners[ 3 ][ 2 ], 1 );
-									Tess_AddQuadStamp2( quadVerts, lightColor );
-								}
-								else
-								{
-									vec3_t top;
-
-									// no light_start, just use the top vertex (doesn't need to be mirrored)
-									PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_TOP ], top );
-
-									// draw pyramid
-									for ( j = 0; j < 4; j++ )
-									{
-										VectorCopy( top, tess.xyz[ tess.numVertexes ] );
-										Vector4Copy( lightColor, tess.colors[ tess.numVertexes ] );
-										tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
-										tess.numVertexes++;
-
-										VectorCopy( farCorners[( j + 1 ) % 4 ], tess.xyz[ tess.numVertexes ] );
-										Vector4Copy( lightColor, tess.colors[ tess.numVertexes ] );
-										tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
-										tess.numVertexes++;
-
-										VectorCopy( farCorners[ j ], tess.xyz[ tess.numVertexes ] );
-										Vector4Copy( lightColor, tess.colors[ tess.numVertexes ] );
-										tess.indexes[ tess.numIndexes++ ] = tess.numVertexes;
-										tess.numVertexes++;
-									}
-
-									// draw far cap
-									Vector4Set( quadVerts[ 0 ], farCorners[ 0 ][ 0 ], farCorners[ 0 ][ 1 ], farCorners[ 0 ][ 2 ], 1 );
-									Vector4Set( quadVerts[ 1 ], farCorners[ 1 ][ 0 ], farCorners[ 1 ][ 1 ], farCorners[ 1 ][ 2 ], 1 );
-									Vector4Set( quadVerts[ 2 ], farCorners[ 2 ][ 0 ], farCorners[ 2 ][ 1 ], farCorners[ 2 ][ 2 ], 1 );
-									Vector4Set( quadVerts[ 3 ], farCorners[ 3 ][ 0 ], farCorners[ 3 ][ 1 ], farCorners[ 3 ][ 2 ], 1 );
-									Tess_AddQuadStamp2( quadVerts, lightColor );
-								}
-
-								// draw light_target
-								Tess_AddCube( light->l.projTarget, minSize, maxSize, colorRed );
-								Tess_AddCube( light->l.projRight, minSize, maxSize, colorGreen );
-								Tess_AddCube( light->l.projUp, minSize, maxSize, colorBlue );
-
-								if ( !VectorCompare( light->l.projStart, vec3_origin ) )
-								{
-									Tess_AddCube( light->l.projStart, minSize, maxSize, colorYellow );
-								}
-
-								if ( !VectorCompare( light->l.projEnd, vec3_origin ) )
-								{
-									Tess_AddCube( light->l.projEnd, minSize, maxSize, colorMagenta );
-								}
-
-								Tess_UpdateVBOs( ATTR_POSITION | ATTR_COLOR );
-								Tess_DrawElements();
-								break;
-							}
-
-						default:
-							break;
-					}
-
-					tess.multiDrawPrimitives = 0;
-					tess.numIndexes = 0;
-					tess.numVertexes = 0;
+					Vector4Copy( colorMagenta, lightColor );
 				}
-
-				if ( iaCount < ( backEnd.viewParms.numInteractions - 1 ) )
+				else if ( light->shadowLOD == 5 )
 				{
-					// jump to next interaction and continue
-					ia++;
-					iaCount++;
+					Vector4Copy( colorCyan, lightColor );
 				}
 				else
 				{
-					// increase last time to leave for loop
-					iaCount++;
+					Vector4Copy( colorMdGrey, lightColor );
+				}
+			}
+			else if ( r_dynamicLightOcclusionCulling->integer )
+			{
+				if ( !ia->occlusionQuerySamples )
+				{
+					Vector4Copy( colorRed, lightColor );
+				}
+				else
+				{
+					Vector4Copy( colorGreen, lightColor );
 				}
 			}
 			else
 			{
-				// just continue
-				ia = ia->next;
-				iaCount++;
+				//Vector4Copy(g_color_table[iaCount % 8], lightColor);
+				Vector4Copy( colorBlue, lightColor );
+			}
+
+			lightColor[ 3 ] = 0.2;
+
+			gl_genericShader->SetUniform_Color( lightColor );
+
+			MatrixToVectorsFLU( matrixIdentity, forward, left, up );
+			VectorMA( vec3_origin, 16, forward, forward );
+			VectorMA( vec3_origin, 16, left, left );
+			VectorMA( vec3_origin, 16, up, up );
+
+			/*
+			// draw axis
+			glBegin(GL_LINES);
+
+			// draw orientation
+			glVertexAttrib4fv(ATTR_INDEX_COLOR, colorRed);
+			glVertex3fv(vec3_origin);
+			glVertex3fv(forward);
+
+			glVertexAttrib4fv(ATTR_INDEX_COLOR, colorGreen);
+			glVertex3fv(vec3_origin);
+			glVertex3fv(left);
+
+			glVertexAttrib4fv(ATTR_INDEX_COLOR, colorBlue);
+			glVertex3fv(vec3_origin);
+			glVertex3fv(up);
+
+			// draw special vectors
+			glVertexAttrib4fv(ATTR_INDEX_COLOR, colorYellow);
+			glVertex3fv(vec3_origin);
+			VectorSubtract(light->origin, backEnd.orientation.origin, tmp);
+			light->transformed[0] = DotProduct(tmp, backEnd.orientation.axis[0]);
+			light->transformed[1] = DotProduct(tmp, backEnd.orientation.axis[1]);
+			light->transformed[2] = DotProduct(tmp, backEnd.orientation.axis[2]);
+			glVertex3fv(light->transformed);
+
+			glEnd();
+			*/
+
+#if 1
+
+			if ( light->isStatic && light->frustumVBO && light->frustumIBO )
+			{
+				// go back to the world modelview matrix
+				backEnd.orientation = backEnd.viewParms.world;
+				GL_LoadModelViewMatrix( backEnd.viewParms.world.modelViewMatrix );
+				gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+
+				R_BindVBO( light->frustumVBO );
+				R_BindIBO( light->frustumIBO );
+
+				GL_VertexAttribsState( ATTR_POSITION );
+
+				tess.numVertexes = light->frustumVerts;
+				tess.numIndexes = light->frustumIndexes;
+
+				Tess_DrawElements();
+
+				tess.multiDrawPrimitives = 0;
+				tess.numIndexes = 0;
+				tess.numVertexes = 0;
+			}
+			else
+#endif
+			{
+				tess.multiDrawPrimitives = 0;
+				tess.numIndexes = 0;
+				tess.numVertexes = 0;
+
+				// set up the transformation matrix
+				R_RotateLightForViewParms( light, &backEnd.viewParms, &backEnd.orientation );
+
+				GL_LoadModelViewMatrix( backEnd.orientation.modelViewMatrix );
+				gl_genericShader->SetUniform_ModelViewProjectionMatrix( glState.modelViewProjectionMatrix[ glState.stackIndex ] );
+
+				R_TessLight( light, lightColor );
+
+				switch ( light->l.rlType )
+				{
+					case RL_OMNI:
+					case RL_DIRECTIONAL:
+						{
+							if ( !VectorCompare( light->l.center, vec3_origin ) )
+							{
+								Tess_AddCube( light->l.center, minSize, maxSize, colorYellow );
+							}
+							break;
+						}
+
+					case RL_PROJ:
+						{
+							// draw light_target
+							Tess_AddCube( light->l.projTarget, minSize, maxSize, colorRed );
+							Tess_AddCube( light->l.projRight, minSize, maxSize, colorGreen );
+							Tess_AddCube( light->l.projUp, minSize, maxSize, colorBlue );
+
+							if ( !VectorCompare( light->l.projStart, vec3_origin ) )
+							{
+								Tess_AddCube( light->l.projStart, minSize, maxSize, colorYellow );
+							}
+
+							if ( !VectorCompare( light->l.projEnd, vec3_origin ) )
+							{
+								Tess_AddCube( light->l.projEnd, minSize, maxSize, colorMagenta );
+							}
+							break;
+						}
+
+					default:
+						break;
+				}
+
+				Tess_UpdateVBOs( ATTR_POSITION | ATTR_COLOR );
+				Tess_DrawElements();
+
+				tess.multiDrawPrimitives = 0;
+				tess.numIndexes = 0;
+				tess.numVertexes = 0;
 			}
 		}
 
@@ -7748,27 +7282,6 @@ static void RB_RenderDebugUtils()
 			tess.multiDrawPrimitives = 0;
 			tess.numIndexes = 0;
 			tess.numVertexes = 0;
-
-			if ( !ia->next )
-			{
-				if ( iaCount < ( backEnd.viewParms.numInteractions - 1 ) )
-				{
-					// jump to next interaction and continue
-					ia++;
-					iaCount++;
-				}
-				else
-				{
-					// increase last time to leave for loop
-					iaCount++;
-				}
-			}
-			else
-			{
-				// just continue
-				ia = ia->next;
-				iaCount++;
-			}
 		}
 
 		// go back to the world modelview matrix
@@ -8542,15 +8055,8 @@ static void RB_RenderDebugUtils()
 					}
 
 					// calculate split frustum corner points
-					PlanesGetIntersectionPoint( splitFrustum[ FRUSTUM_LEFT ], splitFrustum[ FRUSTUM_TOP ], splitFrustum[ FRUSTUM_NEAR ], nearCorners[ 0 ] );
-					PlanesGetIntersectionPoint( splitFrustum[ FRUSTUM_RIGHT ], splitFrustum[ FRUSTUM_TOP ], splitFrustum[ FRUSTUM_NEAR ], nearCorners[ 1 ] );
-					PlanesGetIntersectionPoint( splitFrustum[ FRUSTUM_RIGHT ], splitFrustum[ FRUSTUM_BOTTOM ], splitFrustum[ FRUSTUM_NEAR ], nearCorners[ 2 ] );
-					PlanesGetIntersectionPoint( splitFrustum[ FRUSTUM_LEFT ], splitFrustum[ FRUSTUM_BOTTOM ], splitFrustum[ FRUSTUM_NEAR ], nearCorners[ 3 ] );
-
-					PlanesGetIntersectionPoint( splitFrustum[ FRUSTUM_LEFT ], splitFrustum[ FRUSTUM_TOP ], splitFrustum[ FRUSTUM_FAR ], farCorners[ 0 ] );
-					PlanesGetIntersectionPoint( splitFrustum[ FRUSTUM_RIGHT ], splitFrustum[ FRUSTUM_TOP ], splitFrustum[ FRUSTUM_FAR ], farCorners[ 1 ] );
-					PlanesGetIntersectionPoint( splitFrustum[ FRUSTUM_RIGHT ], splitFrustum[ FRUSTUM_BOTTOM ], splitFrustum[ FRUSTUM_FAR ], farCorners[ 2 ] );
-					PlanesGetIntersectionPoint( splitFrustum[ FRUSTUM_LEFT ], splitFrustum[ FRUSTUM_BOTTOM ], splitFrustum[ FRUSTUM_FAR ], farCorners[ 3 ] );
+					R_CalcFrustumNearCorners( splitFrustum, nearCorners );
+					R_CalcFrustumFarCorners( splitFrustum, farCorners );
 
 					// draw outer surfaces
 					for ( j = 0; j < 4; j++ )
@@ -10006,8 +9512,6 @@ const void     *RB_Draw2dPolys( const void *data )
 		tess.numVertexes++;
 	}
 
-	Tess_End();
-
 	return ( const void * )( cmd + 1 );
 }
 
@@ -10423,6 +9927,9 @@ const void *RB_RunVisTests( const void *data )
 		glEndQuery( GL_SAMPLES_PASSED );
 		glColorMask( GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE );
 
+		tess.numIndexes = 0;
+		tess.numVertexes = 0;
+		tess.multiDrawPrimitives = 0;
 		test->running = qtrue;
        }
 

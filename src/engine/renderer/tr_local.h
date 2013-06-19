@@ -39,9 +39,7 @@ Maryland 20850 USA.
 #include "../qcommon/qfiles.h"
 #include "../qcommon/qcommon.h"
 #include "tr_public.h"
-#if !defined USE_D3D10
 #include <GL/glew.h>
-#endif
 
 // everything that is needed by the backend needs
 // to be double buffered to allow it to run in
@@ -95,9 +93,9 @@ typedef struct image_s
 	char           imgName[ MAX_QPATH ]; // game path, including extension
 	int            width, height; // source image
 	int            uploadWidth, uploadHeight; // after power of two and picmip but not including clamp to MAX_TEXTURE_SIZE
-#if !defined USE_D3D10
+
 	GLuint         texnum; // gl texture binding
-#endif
+
 	int            frameUsed; // for texture usage in frame statistics
 
 	int            internalFormat;
@@ -1629,10 +1627,6 @@ extern float          displayAspect; // FIXME
 //
 extern cvar_t *r_flareSize;
 extern cvar_t *r_flareFade;
-
-extern cvar_t *r_railWidth;
-extern cvar_t *r_railCoreWidth;
-extern cvar_t *r_railSegmentLength;
 
 extern cvar_t *r_ignore; // used for debugging anything
 extern cvar_t *r_verbose; // used for verbose debug spew

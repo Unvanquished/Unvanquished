@@ -44,16 +44,6 @@ const matrix_t openGLToQuakeMatrix =
 	0,  0,  0, 1
 };
 
-// convert from our right handed coordinate system (looking down X)
-// to D3D's left handed coordinate system (looking down Z)
-const matrix_t quakeToD3DMatrix =
-{
-	0,  0, 1, 0,
-	-1, 0, 0, 0,
-	0,  1, 0, 0,
-	0,  0, 0, 1
-};
-
 const matrix_t flipZMatrix =
 {
 	1, 0, 0,  0,
@@ -1172,11 +1162,7 @@ void R_RotateForViewer( void )
 	MatrixAffineInverse( transformMatrix, tr.orientation.viewMatrix2 );
 //  MatrixAffineInverse(transformMatrix, tr.orientation.viewMatrix);
 
-#if 0
-	// convert from our right handed coordinate system (looking down X)
-	// to D3D's left handed coordinate system (looking down Z)
-	MatrixMultiply( quakeToD3DMatrix, tr.orientation.viewMatrix2, viewMatrix );
-#elif 1
+#if 1
 	// convert from our right handed coordinate system (looking down X)
 	// to OpenGL's right handed coordinate system (looking down -Z)
 	MatrixMultiply( quakeToOpenGLMatrix, tr.orientation.viewMatrix2, viewMatrix );
@@ -1761,6 +1747,22 @@ void R_SetupFrustum2( frustum_t frustum, const matrix_t mvp )
 }
 
 // *INDENT-ON*
+
+void R_CalcFrustumNearCorners( const vec4_t frustum[ FRUSTUM_PLANES ], vec3_t corners[ 4 ] )
+{
+	PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_NEAR ], corners[ 0 ] );
+	PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_NEAR ], corners[ 1 ] );
+	PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_NEAR ], corners[ 2 ] );
+	PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_NEAR ], corners[ 3 ] );
+}
+
+void R_CalcFrustumFarCorners( const vec4_t frustum[ FRUSTUM_PLANES ], vec3_t corners[ 4 ] )
+{
+	PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_FAR ], corners[ 0 ] );
+	PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_TOP ], frustum[ FRUSTUM_FAR ], corners[ 1 ] );
+	PlanesGetIntersectionPoint( frustum[ FRUSTUM_RIGHT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_FAR ], corners[ 2 ] );
+	PlanesGetIntersectionPoint( frustum[ FRUSTUM_LEFT ], frustum[ FRUSTUM_BOTTOM ], frustum[ FRUSTUM_FAR ], corners[ 3 ] );
+}
 
 static void CopyPlane( const cplane_t *in, cplane_t *out )
 {
@@ -2607,12 +2609,7 @@ void R_AddEntitySurfaces( void )
 				break; // don't draw anything
 
 			case RT_SPRITE:
-			case RT_SPLASH:
 			case RT_BEAM:
-			case RT_LIGHTNING:
-			case RT_RAIL_CORE:
-			case RT_RAIL_CORE_TAPER:
-			case RT_RAIL_RINGS:
 
 				// self blood sprites, talk balloons, etc should not be drawn in the primary
 				// view.  We can't just do this check for all entities, because md3
@@ -2728,12 +2725,7 @@ void R_AddEntityInteractions( trRefLight_t *light )
 				break; // don't draw anything
 
 			case RT_SPRITE:
-			case RT_SPLASH:
 			case RT_BEAM:
-			case RT_LIGHTNING:
-			case RT_RAIL_CORE:
-			case RT_RAIL_CORE_TAPER:
-			case RT_RAIL_RINGS:
 				break;
 
 			case RT_MODEL:
@@ -3418,10 +3410,6 @@ Visualization aid for movement clipping debugging
 */
 static void R_DebugGraphics( void )
 {
-#if defined( USE_D3D10 )
-	// TODO
-#else
-
 	if ( r_debugSurface->integer )
 	{
 		// the render thread can't make callbacks to the main thread
@@ -3433,8 +3421,6 @@ static void R_DebugGraphics( void )
 		GL_Cull( CT_FRONT_SIDED );
 		ri.CM_DrawDebugSurface( R_DebugPolygon );
 	}
-
-#endif
 }
 
 /*

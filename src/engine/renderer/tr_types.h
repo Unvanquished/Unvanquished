@@ -112,14 +112,8 @@ typedef struct poly_s
 typedef enum
 {
   RT_MODEL,
-  RT_POLY,
   RT_SPRITE,
-  RT_SPLASH, // ripple effect
   RT_BEAM,
-  RT_RAIL_CORE,
-  RT_RAIL_CORE_TAPER, // a modified core that creates a properly texture mapped core that's wider at one end
-  RT_RAIL_RINGS,
-  RT_LIGHTNING,
   RT_PORTALSURFACE, // doesn't draw anything, just info for portals
 
   RT_MAX_REF_ENTITY_TYPE

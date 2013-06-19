@@ -3149,11 +3149,7 @@ static void ParseSkyParms( char **text )
 		shader.sky.cloudHeight = 512;
 	}
 
-#if defined( USE_D3D10 )
-	// TODO
-#else
 	R_InitSkyTexCoords( shader.sky.cloudHeight );
-#endif
 
 	// innerbox
 	token = COM_ParseExt2( text, qfalse );
