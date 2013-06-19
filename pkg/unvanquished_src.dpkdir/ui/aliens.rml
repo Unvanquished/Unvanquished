@@ -54,6 +54,17 @@
 				top: 0px;
 				left: 0px;
 			}
+			div#barbs
+			{
+				position: absolute;
+				height: 100px;
+				width: 20px;
+			}
+			img.barbs
+			{
+				width: 33px;
+				height: 33px;
+			}
 		</style>
 			</head>
 	<body id="alien_hud">
@@ -63,5 +74,8 @@
 		<evos /> evos<br />
 		<weapon_icon />
 		<alien_sense />
+		<div id="barbs">
+			<barbs src="/ui/assets/alien/tremublob" />
+		</div>
 	</body>
 </rml>
