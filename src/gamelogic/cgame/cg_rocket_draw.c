@@ -1174,6 +1174,7 @@ void CG_Rocket_DrawCenterPrint( void )
 	if ( cg.centerPrintTime + CENTER_PRINT_DURATION < cg.time )
 	{
 		*cg.centerPrint = '\0';
+		trap_Rocket_SetInnerRML( "", "", "&nbsp;" );
 		return;
 	}
 
