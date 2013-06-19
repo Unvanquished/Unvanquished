@@ -153,12 +153,22 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 {
 	if ( activeElement )
 	{
+		const Rocket::Core::Property *property = activeElement->GetProperty( name );
+
+		if ( !property )
+		{
+			return;
+		}
+
 		switch ( type )
 		{
 			case ROCKET_STRING:
 			{
 				char *string = ( char * ) out;
-				Q_strncpyz( string, activeElement->GetProperty<Rocket::Core::String>( name ).CString(), len );
+				if ( property )
+				{
+					Q_strncpyz( string, property->Get<Rocket::Core::String>().CString(), len );
+				}
 				return;
 			}
 
@@ -171,7 +181,7 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 					return;
 				}
 
-				*f = activeElement->GetProperty<float>( name );
+				*f = property->Get<float>();
 				return;
 			}
 
@@ -184,7 +194,7 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 					return;
 				}
 
-				*i = activeElement->GetProperty<int>( name );
+				*i = property->Get<int>();
 				return;
 			}
 
@@ -197,7 +207,7 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 					return;
 				}
 
-				Rocket::Core::Colourb color = activeElement->GetProperty<Rocket::Core::Colourb>( name );
+				Rocket::Core::Colourb color = property->Get<Rocket::Core::Colourb>();
 				outColor[ 0 ] = color.red, outColor[ 1 ] = color.green, outColor[ 2 ] = color.blue, outColor[ 3 ] = color.alpha;
 				return;
 			}
