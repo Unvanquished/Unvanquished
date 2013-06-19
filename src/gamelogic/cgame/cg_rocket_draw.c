@@ -1199,6 +1199,16 @@ void CG_Rocket_DrawCenterPrint( void )
 	trap_Rocket_SetPropertyById( "", "opacity", va( "%f", opacity ) );
 }
 
+void CG_Rocket_DrawPlayerHealth( void )
+{
+	static int lastHealth = 0;
+
+	if ( lastHealth != cg.snap->ps.stats[ STAT_HEALTH ] )
+	{
+		trap_Rocket_SetInnerRML( "", "", va( "%d", cg.snap->ps.stats[ STAT_HEALTH ] ) );
+	}
+}
+
 typedef struct
 {
 	const char *name;
@@ -1217,6 +1227,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "crosshair_name", &CG_Rocket_DrawCrosshairNames, ELEMENT_GAME },
 	{ "evos", &CG_Rocket_DrawAlienEvosValue, ELEMENT_ALIENS },
 	{ "fps", &CG_Rocket_DrawFPS, ELEMENT_ALL },
+	{ "health", &CG_Rocket_DrawPlayerHealth, ELEMENT_BOTH },
 	{ "itemselect", &CG_DrawItemSelect, ELEMENT_BOTH },
 	{ "lagometer", &CG_Rocket_DrawLagometer, ELEMENT_GAME },
 	{ "levelshot", &CG_Rocket_DrawLevelshot, ELEMENT_ALL },
