@@ -68,6 +68,12 @@
 				top: 0px;
 				text-align: right;
 			}
+			ammo_stack, clip_stack
+			{
+				width: 200px;
+				height: 100px;
+				color: white;
+			}
 		</style>
 	</head>
 	<body id="human_hud">
@@ -91,7 +97,9 @@
 		</div>
 		<div id='right'>
 		<stage_report />
-		<crosshair_name/>
+		<crosshair_name/><br />
 		</div>
+		<ammo_stack /><br />
+		<clip_stack /><br />
 	</body>
 </rml>
