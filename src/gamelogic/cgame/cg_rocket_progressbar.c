@@ -157,10 +157,10 @@ typedef struct progressBarCmd_s
 
 static const progressBarCmd_t progressBarCmdList[] =
 {
+	{ "ammo", &CG_Rocket_GetPlayerAmmoProgress, ELEMENT_HUMANS },
 	{ "btimer", &CG_Rocket_GetBuildTimerProgress, ELEMENT_BOTH },
 	{ "buildables", &CG_Rocket_GetBuildableLoadProgress, ELEMENT_LOADING },
 	{ "characters", &CG_Rocket_GetCharLoadProgress, ELEMENT_LOADING },
-	{ "ammo", &CG_Rocket_GetPlayerAmmoProgress, ELEMENT_HUMANS },
 	{ "health", &CG_Rocket_GetPlayerHealthProgress, ELEMENT_BOTH },
 	{ "media", &CG_Rocket_GetMediaLoadProgress, ELEMENT_LOADING },
 	{ "overall", &CG_Rocket_GetOverallLoadProgress, ELEMENT_LOADING },
