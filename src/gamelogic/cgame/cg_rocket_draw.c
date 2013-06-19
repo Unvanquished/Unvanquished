@@ -1193,6 +1193,27 @@ void CG_Rocket_DrawPlayerHealth( void )
 	}
 }
 
+void CG_Rocket_DrawAlienBarbs( void )
+{
+	int numBarbs = cg.snap->ps.ammo;
+	char base[ MAX_STRING_CHARS ];
+	char rml[ MAX_STRING_CHARS ] = { 0 };
+
+	if ( !numBarbs )
+	{
+		return;
+	}
+	
+	Com_sprintf( base, sizeof( base ), "<img class='barbs' src='%s' />", CG_Rocket_GetAttribute( "", "", "src") );
+
+	for ( ; numBarbs > 0; numBarbs-- )
+	{
+		Q_strcat( rml, sizeof( rml ), base );
+	}
+
+	trap_Rocket_SetInnerRML( "", "", rml );
+}
+
 typedef struct
 {
 	const char *name;
@@ -1204,6 +1225,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 {
 	{ "alien_sense", &CG_Rocket_DrawAlienSense, ELEMENT_ALIENS },
 	{ "ammo", &CG_Rocket_DrawAmmo, ELEMENT_BOTH },
+	{ "barbs", &CG_Rocket_DrawAlienBarbs, ELEMENT_ALIENS },
 	{ "center_print", &CG_Rocket_DrawCenterPrint, ELEMENT_GAME },
 	{ "clips", &CG_Rocket_DrawClips, ELEMENT_HUMANS },
 	{ "credits", &CG_Rocket_DrawCreditsValue, ELEMENT_HUMANS },
