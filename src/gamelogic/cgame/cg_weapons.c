@@ -2239,20 +2239,20 @@ void CG_DrawItemSelect( void )
 CG_DrawItemSelectText
 ===================
 */
-void CG_DrawItemSelectText( rectDef_t *rect, float scale, int textStyle )
+void CG_DrawItemSelectText( void )
 {
-	int        x, w;
 	const char *name;
-	float      *color;
+	float      alpha;
 
-	color = CG_FadeColor( cg.weaponSelectTime, WEAPON_SELECT_TIME );
+	alpha = CG_FadeAlpha( cg.weaponSelectTime, WEAPON_SELECT_TIME );
 
-	if ( !color )
+	if ( !alpha )
 	{
+		trap_Rocket_SetInnerRML( "", "", "&nbsp;" );
 		return;
 	}
 
-	trap_R_SetColor( color );
+
 
 	// draw the selected name
 	if ( cg.weaponSelect < 32 )
@@ -2262,7 +2262,7 @@ void CG_DrawItemSelectText( rectDef_t *rect, float scale, int textStyle )
 		{
 			if ( ( name = cg_weapons[ cg.weaponSelect ].humanName ) )
 			{
-				// TODO: Draw weapon name
+				trap_Rocket_SetInnerRML( "", "", name );
 			}
 		}
 	}
@@ -2273,12 +2273,12 @@ void CG_DrawItemSelectText( rectDef_t *rect, float scale, int textStyle )
 		{
 			if ( ( name = cg_upgrades[ cg.weaponSelect - 32 ].humanName ) )
 			{
-				// TODO: Draw Upgrade name
+				trap_Rocket_SetInnerRML( "", "", name );
 			}
 		}
 	}
 
-	trap_R_SetColor( NULL );
+	trap_Rocket_SetPropertyById( "", "opacity", va( "%f", alpha ) );
 }
 
 /*
