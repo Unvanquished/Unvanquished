@@ -172,18 +172,3 @@ void Rocket_DocumentAction( const char *name, const char *action )
 		}
 	}
 }
-
-void Rocket_SetPropertyById( const char *id, const char *property, const char *value )
-{
-	Rocket::Core::ElementDocument *document = menuContext->GetFocusElement()->GetOwnerDocument();
-
-	if ( document )
-	{
-		Rocket::Core::Element *element = id[0] ? document->GetElementById( id ) : menuContext->GetFocusElement();
-
-		if ( element )
-		{
-			element->SetProperty( property, value );
-		}
-	}
-}

@@ -209,3 +209,26 @@ void Rocket_SetClass( const char *in, qboolean activate )
 {
 	activeElement->SetClass( in, static_cast<bool>( activate ) );
 }
+
+
+void Rocket_SetPropertyById( const char *id, const char *property, const char *value )
+{
+	if ( *id )
+	{
+		Rocket::Core::ElementDocument *document = menuContext->GetFocusElement()->GetOwnerDocument();
+
+		if ( document )
+		{
+			Rocket::Core::Element *element = document->GetElementById( id );
+
+			if ( element )
+			{
+				element->SetProperty( property, value );
+			}
+		}
+	}
+	else if ( activeElement )
+	{
+		activeElement->SetProperty( property, value );
+	}
+}
