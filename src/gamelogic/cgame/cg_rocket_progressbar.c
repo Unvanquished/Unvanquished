@@ -133,6 +133,21 @@ static float CG_Rocket_GetPlayerAmmoProgress( void )
 	return (float)cg.snap->ps.ammo / (float)maxAmmo;
 }
 
+static float CG_Rocket_GetReloadProgress( void )
+{
+	float maxDelay;
+	playerState_t *ps = &cg.snap->ps;
+	centity_t *cent = &cg_entities[ ps->clientNum ];
+
+	if ( ps->weaponstate != WEAPON_RELOADING )
+	{
+		return 0;
+	}
+
+	maxDelay = ( float ) BG_Weapon( cent->currentState.weapon )->reloadTime;
+	return ( maxDelay - ( float ) ps->weaponTime ) / maxDelay;
+}
+
 typedef struct progressBarCmd_s
 {
 	const char *command;
@@ -150,6 +165,7 @@ static const progressBarCmd_t progressBarCmdList[] =
 	{ "media", &CG_Rocket_GetMediaLoadProgress, ELEMENT_LOADING },
 	{ "overall", &CG_Rocket_GetOverallLoadProgress, ELEMENT_LOADING },
 	{ "poison", &CG_Rocket_GetPoisonProgress, ELEMENT_ALIENS },
+	{ "reload", &CG_Rocket_GetReloadProgress, ELEMENT_HUMANS },
 	{ "stamina", &CG_Rocket_GetStaminaProgress, ELEMENT_HUMANS },
 };
 
