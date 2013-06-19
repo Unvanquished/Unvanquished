@@ -400,6 +400,7 @@ typedef enum
   TC_EXT_COMP_S3TC
 } textureCompression_t;
 
+// Keep the list in sdl_glimp.c:reportDriverType in sync with this
 typedef enum
 {
   GLDRV_UNKNOWN = -1,
@@ -417,6 +418,7 @@ typedef enum
 // XreaL END
 } glDriverType_t;
 
+// Keep the list in sdl_glimp.c:reportHardwareType in sync with this
 typedef enum
 {
   GLHW_UNKNOWN = -1,
