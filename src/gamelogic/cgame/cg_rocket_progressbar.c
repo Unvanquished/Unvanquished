@@ -161,6 +161,7 @@ static const progressBarCmd_t progressBarCmdList[] =
 	{ "btimer", &CG_Rocket_GetBuildTimerProgress, ELEMENT_BOTH },
 	{ "buildables", &CG_Rocket_GetBuildableLoadProgress, ELEMENT_LOADING },
 	{ "characters", &CG_Rocket_GetCharLoadProgress, ELEMENT_LOADING },
+	{ "charge", &CG_ChargeProgress, ELEMENT_BOTH },
 	{ "health", &CG_Rocket_GetPlayerHealthProgress, ELEMENT_BOTH },
 	{ "media", &CG_Rocket_GetMediaLoadProgress, ELEMENT_LOADING },
 	{ "overall", &CG_Rocket_GetOverallLoadProgress, ELEMENT_LOADING },
