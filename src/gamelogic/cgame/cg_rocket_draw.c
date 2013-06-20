@@ -1609,6 +1609,29 @@ void CG_Rocket_DrawMinimap( void )
 	CG_DrawMinimap( &rect, foreColor );
 }
 
+#define FOLLOWING_STRING "following "
+#define CHASING_STRING   "chasing "
+void CG_Rocket_DrawFollow( void )
+{
+	if ( cg.snap && cg.snap->ps.pm_flags & PMF_FOLLOW )
+	{
+		char buffer[ MAX_STRING_CHARS ];
+
+		if ( !cg.chaseFollow )
+		{
+			Q_strncpyz( buffer, FOLLOWING_STRING, sizeof( buffer ) );
+		}
+		else
+		{
+			Q_strncpyz( buffer, CHASING_STRING, sizeof( buffer ) );
+		}
+
+		Q_strcat( buffer, sizeof( buffer ), cgs.clientinfo[ cg.snap->ps.clientNum ].name );
+
+		trap_Rocket_SetInnerRML( "", "", CG_Rocket_QuakeToRML( buffer ) );
+	}
+}
+
 
 typedef struct
 {
@@ -1631,6 +1654,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "crosshair_name", &CG_Rocket_DrawCrosshairNames, ELEMENT_GAME },
 	{ "evos", &CG_Rocket_DrawAlienEvosValue, ELEMENT_ALIENS },
 	{ "fps", &CG_Rocket_DrawFPS, ELEMENT_ALL },
+	{ "follow", &CG_Rocket_DrawFollow, ELEMENT_GAME },
 	{ "health", &CG_Rocket_DrawPlayerHealth, ELEMENT_BOTH },
 	{ "itemselect", &CG_DrawItemSelect, ELEMENT_HUMANS },
 	{ "itemselect_text", &CG_DrawItemSelectText, ELEMENT_HUMANS },
