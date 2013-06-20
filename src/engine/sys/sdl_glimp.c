@@ -1984,19 +1984,8 @@ success:
 	     Q_stristr( glConfig.vendor_string, "nouveau" ) ||
 	     Q_stristr( glConfig.vendor_string, "mesa" ) )
 	{
-		// suckage if GLSL 1.2 or older
-		float shadingLang = atof( glGetString( GL_SHADING_LANGUAGE_VERSION_ARB ) );
-
-		if ( shadingLang < 1.29 ) /* should be 1.3, but allowing for fp inaccuracy */
-		{
-			glConfig.driverType = GLDRV_MESA;
-		}
-		else if ( Q_stristr( glConfig.renderer_string, "AMD" ) ||
-		          Q_stristr( glConfig.renderer_string, "ATI" ) )
-		{
-			glConfig2.vboVertexSkinningAvailable = 0;
-			ri.Printf( PRINT_WARNING, "WARNING: forcing software vertex skinning on Mesa on ATI/AMD\n" );
-		}
+		// suckage
+		glConfig.driverType = GLDRV_MESA;
 	}
 
 	if ( Q_stristr( glConfig.renderer_string, "geforce" ) )
