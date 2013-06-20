@@ -729,6 +729,12 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in )
 		out.Append( "</span>" );
 	}
 
+	// ^^ -> ^
+	while ( out.Find( "^^" ) != Rocket::Core::String::npos )
+	{
+		out = out.Replace( "^^", "^" );
+	}
+
 	// Parse emoticons
 	size_t openBracket = 0;
 	size_t closeBracket = 0;
