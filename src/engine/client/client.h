@@ -43,7 +43,6 @@ Maryland 20850 USA.
 #include "keys.h"
 #include "snd_public.h"
 
-#include "../client/ui_api.h"
 #include "../client/cg_api.h"
 
 #include "rocket.h"

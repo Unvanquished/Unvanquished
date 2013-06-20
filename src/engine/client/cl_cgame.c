@@ -602,7 +602,7 @@ void CL_ShutdownCGame( void )
  * GetClientState
  * ====================
  */
-static void GetClientState( uiClientState_t *state )
+static void GetClientState( cgClientState_t *state )
 {
 	state->connectPacketCount = clc.connectPacketCount;
 	state->connState = cls.state;
@@ -1881,6 +1881,10 @@ intptr_t CL_CgameSystemCalls( intptr_t *args )
 
 		case CG_GETGAMESTATE:
 			CL_GetGameState( VMA( 1 ) );
+			return 0;
+
+		case CG_GETCLIENTSTATE:
+			GetClientState( VMA( 1 ) );
 			return 0;
 
 		case CG_GETCURRENTSNAPSHOTNUMBER:

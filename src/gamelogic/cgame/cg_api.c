@@ -726,6 +726,11 @@ void trap_GetGameState( gameState_t *gamestate )
 	syscall( CG_GETGAMESTATE, gamestate );
 }
 
+void trap_GetClientState( cgClientState_t *cstate )
+{
+	syscall( CG_GETCLIENTSTATE, cstate );
+}
+
 //93.
 //CL_GetCurrentSnapshotNumber(VMA(1), VMA(2));
 void trap_GetCurrentSnapshotNumber( int *snapshotNumber, int *serverTime )

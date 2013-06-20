@@ -84,6 +84,27 @@ typedef enum {
 	ROCKETMENU_NUM_TYPES
 } rocketMenuType_t;
 
+typedef struct
+{
+	connstate_t connState;
+	int         connectPacketCount;
+	int         clientNum;
+	char        servername[ MAX_STRING_CHARS ];
+	char        updateInfoString[ MAX_STRING_CHARS ];
+	char        messageString[ MAX_STRING_CHARS ];
+} cgClientState_t;
+
+typedef enum
+{
+	SORT_HOST,
+	SORT_MAP,
+	SORT_CLIENTS,
+	SORT_PING,
+	SORT_GAME,
+	SORT_FILTERS,
+	SORT_FAVOURITES
+} serverSortField_t;
+
 typedef enum cgameImport_s
 {
   CG_PRINT = FIRST_VM_SYSCALL,
@@ -183,6 +204,7 @@ typedef enum cgameImport_s
   CG_R_LERPTAG,
   CG_GETGLCONFIG,
   CG_GETGAMESTATE,
+  CG_GETCLIENTSTATE,
   CG_GETCURRENTSNAPSHOTNUMBER,
   CG_GETSNAPSHOT,
   CG_GETSERVERCOMMAND,
@@ -494,6 +516,7 @@ void            trap_R_ModelBounds( clipHandle_t model, vec3_t mins, vec3_t maxs
 int             trap_R_LerpTag( orientation_t *tag, const refEntity_t *refent, const char *tagName, int startIndex );
 void            trap_GetGlconfig( glconfig_t *glconfig );
 void            trap_GetGameState( gameState_t *gamestate );
+void            trap_GetClientState( cgClientState_t *cstate );
 void            trap_GetCurrentSnapshotNumber( int *snapshotNumber, int *serverTime );
 qboolean        trap_GetSnapshot( int snapshotNumber, snapshot_t *snapshot );
 qboolean        trap_GetServerCommand( int serverCommandNumber );
