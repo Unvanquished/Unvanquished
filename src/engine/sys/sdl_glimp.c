@@ -1820,7 +1820,7 @@ static void GLimp_InitExtensions( void )
 static void reportDriverType( qboolean force )
 {
 	static const char *const drivers[] = {
-		"integrated", "stand-alone", "Voodoo", "OpenGL 3+", "Mesa"
+		"integrated", "stand-alone", "OpenGL 3+", "Mesa"
 	};
 	if (glConfig.driverType > GLDRV_UNKNOWN && (int) glConfig.driverType < ARRAY_LEN( drivers ) )
 	{
@@ -2116,10 +2116,6 @@ success:
 		else if ( !Q_stricmp( forceGL->string, "standalone" ))
 		{
 			driverType = GLDRV_STANDALONE;
-		}
-		else if ( !Q_stricmp( forceGL->string, "voodoo" ))
-		{
-			driverType = GLDRV_VOODOO;
 		}
 		else if ( !Q_stricmp( forceGL->string, "opengl3" ))
 		{

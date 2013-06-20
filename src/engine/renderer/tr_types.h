@@ -410,7 +410,6 @@ typedef enum
   // should always be the lowest value in this
   // enum set
   GLDRV_STANDALONE, // driver is a non-3Dfx standalone driver
-  GLDRV_VOODOO, // driver is a 3Dfx standalone driver
 
 // XreaL BEGIN
   GLDRV_OPENGL3, // new driver system
@@ -469,8 +468,7 @@ typedef struct
 	int   displayFrequency;
 
 	// synonymous with "does rendering consume the entire screen?", therefore
-	// a Voodoo or Voodoo2 will have this set to TRUE, as will a Win32 ICD that
-	// used CDS.
+	// a Win32 ICD that used CDS will have this set to TRUE
 	qboolean isFullscreen;
 	qboolean stereoEnabled;
 	qboolean smpActive; // dual processor
