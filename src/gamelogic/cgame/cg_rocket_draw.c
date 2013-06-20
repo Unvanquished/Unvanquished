@@ -1693,6 +1693,11 @@ void CG_Rocket_DrawConnectText( void )
 	trap_Rocket_SetInnerRML( "", "", rml, qtrue );
 }
 
+void CG_Rocket_DrawConsoleText( void )
+{
+	trap_Rocket_SetInnerRML( "", "", cg.consoleText, qtrue );
+}
+
 
 typedef struct
 {
@@ -1711,6 +1716,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "clips", &CG_Rocket_DrawClips, ELEMENT_HUMANS },
 	{ "clip_stack", &CG_DrawPlayerClipsStack, ELEMENT_HUMANS },
 	{ "connecting", &CG_Rocket_DrawConnectText, ELEMENT_ALL },
+	{ "console_text", &CG_Rocket_DrawConsoleText, ELEMENT_ALL },
 	{ "credits", &CG_Rocket_DrawCreditsValue, ELEMENT_HUMANS },
 	{ "crosshair", &CG_Rocket_DrawCrosshair, ELEMENT_BOTH },
 	{ "crosshair_name", &CG_Rocket_DrawCrosshairNames, ELEMENT_GAME },

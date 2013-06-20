@@ -74,6 +74,14 @@
 				height: 100px;
 				color: white;
 			}
+			console_text
+			{
+				position: absolute;
+				width: 75%;
+				left: 25%;
+				top: 0%;
+				font-size: 12;
+			}
 		</style>
 	</head>
 	<body id="human_hud">
@@ -101,5 +109,8 @@
 		</div>
 		<ammo_stack /><br />
 		<clip_stack /><br />
+		<div id="console_text">
+			<console_text />
+		</div>
 	</body>
 </rml>
