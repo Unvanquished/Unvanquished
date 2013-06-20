@@ -1247,7 +1247,6 @@ static void CG_UpdateLoadingStep( cgLoadingStep_t step )
 	switch (step) {
 		case LOAD_START:
 			cg.loading = qtrue;
-			rocketInfo.rocketState = LOADING;
 			cg.mediaFraction = cg.charModelFraction = cg.buildablesFraction = 0.0f;
 			break;
 
@@ -1282,7 +1281,6 @@ static void CG_UpdateLoadingStep( cgLoadingStep_t step )
 			Q_strncpyz(cg.currentLoadingLabel, "Done!", sizeof( cg.currentLoadingLabel ) );
 			trap_UpdateScreen();
 			cg.loading = qfalse;
-			rocketInfo.rocketState = PLAYING;
 			break;
 
 		default:

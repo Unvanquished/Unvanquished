@@ -438,6 +438,39 @@ const char *CG_NetSourceToString( int netSrc )
 void CG_Rocket_Frame( void )
 {
 	static rocketState_t old = IDLE;
+	static connstate_t oldConnState = CA_UNINITIALIZED;
+
+	trap_GetClientState( &rocketInfo.cstate );
+
+	if  ( oldConnState != rocketInfo.cstate.connState )
+	{
+
+		switch ( rocketInfo.cstate.connState )
+		{
+			case CA_DISCONNECTED:
+
+				if ( rocketInfo.rocketState > BUILDING_SERVER_INFO )
+				{
+					rocketInfo.rocketState = IDLE;
+				}
+				break;
+
+			case CA_CONNECTING:
+			case CA_CHALLENGING:
+			case CA_CONNECTED:
+				rocketInfo.rocketState = CONNECTING;
+				break;
+
+			case CA_LOADING:
+			case CA_PRIMED:
+				rocketInfo.rocketState = LOADING;
+				break;
+
+			case CA_ACTIVE:
+			default:
+				rocketInfo.rocketState = PLAYING;
+		}
+	}
 
 	if ( old != rocketInfo.rocketState )
 	{
