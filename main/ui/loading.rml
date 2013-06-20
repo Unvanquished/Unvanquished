@@ -39,11 +39,15 @@
 				progress-image: /white;
 				z-index: 3;
 			}
+
 		</style>
-		<title>Connecting</title>
+		<title>Loading</title>
 	</head>
-	<body id="connecting">
-		<connecting />
+	<body id="loading">
+		<div id="text">
+			<p>Connecting...</p>
+			<progressbar id="overall" src="overall" />
+		</div>
 		<div id="background">
 			<img src="/ui/assets/mainmenu.jpg" />
 		</div>

@@ -1632,6 +1632,67 @@ void CG_Rocket_DrawFollow( void )
 	}
 }
 
+void CG_Rocket_DrawConnectText( void )
+{
+	char       rml[ MAX_STRING_CHARS ];
+	const char *s;
+
+	if ( !Q_stricmp( rocketInfo.cstate.servername, "localhost" ) )
+	{
+		Q_strncpyz( rml, "Starting up…", sizeof( rml ) );
+	}
+	else
+	{
+		Q_strncpyz( rml, va( "Connecting to %s", rocketInfo.cstate.servername ), sizeof( rml ) );
+	}
+
+	if ( rocketInfo.cstate.connState < CA_CONNECTED && *rocketInfo.cstate.messageString )
+	{
+		Q_strcat( rml, sizeof( rml ), "<br />" );
+		Q_strcat( rml, sizeof( rml ), rocketInfo.cstate.messageString );
+	}
+
+	switch ( rocketInfo.cstate.connState )
+	{
+		case CA_CONNECTING:
+			s = va( _("Awaiting connection…%i"), rocketInfo.cstate.connectPacketCount );
+			break;
+
+		case CA_CHALLENGING:
+			s = va( _("Awaiting challenge…%i"), rocketInfo.cstate.connectPacketCount );
+			break;
+
+		case CA_CONNECTED:
+		{
+			char downloadName[ MAX_INFO_VALUE ];
+
+			trap_Cvar_VariableStringBuffer( "cl_downloadName", downloadName, sizeof( downloadName ) );
+
+			if ( *downloadName )
+			{
+				//TODO: Download menu
+				return;
+			}
+		}
+
+		s = _("Awaiting gamestate…");
+		break;
+
+		case CA_LOADING:
+			return;
+
+		case CA_PRIMED:
+			return;
+
+		default:
+			return;
+	}
+
+	Q_strcat( rml, sizeof( rml ), s );
+
+	trap_Rocket_SetInnerRML( "", "", CG_Rocket_QuakeToRML( rml ) );
+}
+
 
 typedef struct
 {
@@ -1649,6 +1710,7 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "center_print", &CG_Rocket_DrawCenterPrint, ELEMENT_GAME },
 	{ "clips", &CG_Rocket_DrawClips, ELEMENT_HUMANS },
 	{ "clip_stack", &CG_DrawPlayerClipsStack, ELEMENT_HUMANS },
+	{ "connecting", &CG_Rocket_DrawConnectText, ELEMENT_ALL },
 	{ "credits", &CG_Rocket_DrawCreditsValue, ELEMENT_HUMANS },
 	{ "crosshair", &CG_Rocket_DrawCrosshair, ELEMENT_BOTH },
 	{ "crosshair_name", &CG_Rocket_DrawCrosshairNames, ELEMENT_GAME },

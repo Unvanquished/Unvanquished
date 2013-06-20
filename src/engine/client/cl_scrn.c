@@ -801,12 +801,10 @@ void SCR_DrawScreenField( stereoFrame_t stereoFrame )
 			case CA_CONNECTED:
 				// connecting clients will only show the connection dialog
 				// refresh to update the time
-				Rocket_DocumentAction( "connecting", "show" );
 				break;
 
 			case CA_LOADING:
 			case CA_PRIMED:
-				Rocket_DocumentAction( "connecting", "show" );
 				// draw the game information screen and loading progress
 				CL_CGameRendering( stereoFrame );
 

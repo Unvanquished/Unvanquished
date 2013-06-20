@@ -3,7 +3,7 @@
 	{
 		ui/main.rml main             // ROCKETMENU_MAIN
 		ui/connecting.rml connecting // ROCKETMENU_CONNECTING
-		ui/connecting.rml connecting // ROCKETMENU_LOADING
+		ui/loading.rml loading       // ROCKETMENU_LOADING
 		ui/connecting.rml connecting // ROCKETMENU_DOWNLOADING
 		ui/help.rml help             // ROCKETMENU_INGAME_MENU
 		ui/help.rml help             // ROCKETMENU_TEAMSELECT

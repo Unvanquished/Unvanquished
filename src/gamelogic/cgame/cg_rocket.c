@@ -470,42 +470,44 @@ void CG_Rocket_Frame( void )
 			default:
 				rocketInfo.rocketState = PLAYING;
 		}
+
+		oldConnState = rocketInfo.cstate.connState;
 	}
 
-	if ( old != rocketInfo.rocketState )
+	switch ( rocketInfo.rocketState )
 	{
-		switch ( rocketInfo.rocketState )
-		{
-			case RETRIEVING_SERVERS:
-				if ( trap_LAN_UpdateVisiblePings( rocketInfo.currentNetSrc ) )
-				{
-				}
-				else
-				{
-					trap_Rocket_SetInnerRML( "serverbrowser", "status", "Updated" );
-					rocketInfo.rocketState = IDLE;
-				}
+		case RETRIEVING_SERVERS:
+			if ( trap_LAN_UpdateVisiblePings( rocketInfo.currentNetSrc ) )
+			{
+			}
+			else
+			{
+				trap_Rocket_SetInnerRML( "serverbrowser", "status", "Updated" );
+				rocketInfo.rocketState = IDLE;
+			}
 
-				break;
+			break;
 
-			case BUILDING_SERVER_INFO:
-				CG_Rocket_BuildServerInfo();
-				break;
+		case BUILDING_SERVER_INFO:
+			CG_Rocket_BuildServerInfo();
+			break;
 
-			case LOADING:
-				CG_Rocket_CleanUpServerList( NULL );
-				trap_Rocket_DocumentAction( "", "blurall" );
-				trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_LOADING ].id, "show" );
-				break;
+		case CONNECTING:
+			trap_Rocket_DocumentAction( "", "blurall" );
+			trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CONNECTING ].id, "show" );
 
-			case PLAYING:
-				trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CONNECTING ].id, "blurall" );
-				trap_Key_SetCatcher( 0 );
-				break;
-		}
+		case LOADING:
+			CG_Rocket_CleanUpServerList( NULL );
+			trap_Rocket_DocumentAction( "", "blurall" );
+			trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_LOADING ].id, "show" );
+			break;
 
-		old = rocketInfo.rocketState;
+		case PLAYING:
+			trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CONNECTING ].id, "blurall" );
+			trap_Key_SetCatcher( 0 );
+			break;
 	}
+
 
 	CG_Rocket_ProcessEvents();
 }
