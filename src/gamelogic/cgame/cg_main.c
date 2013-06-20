@@ -487,6 +487,10 @@ these should refer only to playerstates that belong to the client, not the follo
 static void CG_SetPVars( void )
 {
 	playerState_t *ps;
+	char          buffer[ MAX_CVAR_VALUE_STRING ];
+	int           i, stage = 0;
+	qboolean      first;
+
 	if ( !cg.snap )
 	{
 		return;
@@ -499,14 +503,15 @@ static void CG_SetPVars( void )
 
 	trap_Cvar_Set( "p_teamname", BG_TeamName( ps->stats[ STAT_TEAM ] ) );
 
+	// while we're here, set stage
 	switch ( ps->stats[ STAT_TEAM ] )
 	{
 		case TEAM_ALIENS:
-			trap_Cvar_Set( "p_stage", va( "%d", cgs.alienStage ) );
+			stage = cgs.alienStage;
 			break;
 
 		case TEAM_HUMANS:
-			trap_Cvar_Set( "p_stage", va( "%d", cgs.humanStage ) );
+			stage = cgs.humanStage;
 			break;
 
 		default:
@@ -529,6 +534,7 @@ static void CG_SetPVars( void )
 			return;
 	}
 
+	trap_Cvar_Set( "p_stage", va( "%d", stage ) );
 	trap_Cvar_Set( "p_class", va( "%d", ps->stats[ STAT_CLASS ] ) );
 
 	switch ( ps->stats[ STAT_CLASS ] )
@@ -675,6 +681,27 @@ static void CG_SetPVars( void )
 	trap_Cvar_Set( "p_maxhp", va( "%d", ps->stats[ STAT_MAX_HEALTH ] ) );
 	trap_Cvar_Set( "p_ammo", va( "%d", ps->ammo ) );
 	trap_Cvar_Set( "p_clips", va( "%d", ps->clips ) );
+
+	// set p_availableBuildings to a space-separated list of buildings
+	// limited to those available given team, stage and class
+	first = qtrue;
+	*buffer = 0;
+
+	for ( i = BA_NONE; i < BA_NUM_BUILDABLES; ++i )
+	{
+		const buildableAttributes_t *buildable = BG_Buildable( i );
+
+		if ( buildable->team == ps->stats[ STAT_TEAM ] &&
+		     BG_BuildableAllowedInStage( i, stage ) &&
+		     (buildable->buildWeapon & ( 1 << ps->stats[ STAT_WEAPON ] ) ) )
+
+		{
+			Q_strcat( buffer, sizeof( buffer ), first ? buildable->name : va( " %s", buildable->name ) );
+			first = qfalse;
+		}
+	}
+
+	trap_Cvar_Set( "p_availableBuildings", buffer );
 }
 
 /*
