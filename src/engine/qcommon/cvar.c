@@ -826,40 +826,68 @@ optionally through a list of given values
 void Cvar_Toggle_f( void )
 {
 	int        i, c;
+	int        listfirst = 2;
+	int        step = 1;
 	const char *varname, *curval;
 
 	c = Cmd_Argc();
 
+	// at least two parameters regardless
 	if ( c < 2 )
 	{
-		Cmd_PrintUsage(_("<variable> [<value> …]"), NULL);
-		return;
+		goto print_usage;
 	}
 
 	varname = Cmd_Argv( 1 );
 
-	if ( c == 2 )
+	// step direction
+	if ( !strcmp( varname, "+" ) )
+	{
+		// step = 1;
+		listfirst = 3;
+		varname = Cmd_Argv( 2 );
+	}
+	else if ( !strcmp( varname, "-" ) )
+	{
+		step = -1;
+		listfirst = 3;
+		varname = Cmd_Argv( 2 );
+	}
+
+	// we now know how many parameters are needed
+	if ( c < listfirst )
+	{
+		goto print_usage;
+	}
+
+	// simple case: just toggle between 0 and 1
+	if ( c == listfirst )
 	{
 		Cvar_Set2( varname, va( "%d", !Cvar_VariableValue( varname ) ), qfalse );
 		return;
 	}
 
-	curval = Cvar_VariableString( Cmd_Argv( 1 ) );
+	// need to look through the supplied list
+	curval = Cvar_VariableString( varname );
+	c -= listfirst; // convenience
 
-	// don't bother checking the last value for a match, since the desired
-	//  behaviour is the same as if the last value didn't match:
-	//  set the variable to the first value
-	for ( i = 2; i < c - 1; ++i )
+	for ( i = 0; i < c; ++i )
 	{
-		if ( !strcmp( curval, Cmd_Argv( i ) ) )
+		if ( !strcmp( curval, Cmd_Argv( listfirst + i ) ) )
 		{
-			Cvar_Set2( varname, Cmd_Argv( i + 1 ), qfalse );
+			Cvar_Set2( varname, Cmd_Argv( listfirst + ( i + c + step ) % c ), qfalse );
 			return;
 		}
 	}
 
 	// fallback
-	Cvar_Set2( varname, Cmd_Argv( 2 ), qfalse );
+	Cvar_Set2( varname, Cmd_Argv( listfirst ), qfalse );
+
+	// done
+	return;
+
+print_usage:
+	Cmd_PrintUsage(_("[+|-] <variable> [<value>…]"), NULL);
 }
 
 /*
@@ -1487,6 +1515,28 @@ void Cvar_CompleteCvarName( char *args, int argNum )
 }
 
 /*
+==================
+Cvar_CompleteToggle
+==================
+*/
+static void Cvar_CompleteToggle( char *args, int argNum )
+{
+	if ( argNum == 3 )
+	{
+		// Skip "<cmd> "
+		char *p = Com_SkipTokens( args, 1, " " );
+
+		if ( *p == '+' || *p == '-' )
+		{
+			args = p;
+			--argNum;
+		}
+	}
+
+	Cvar_CompleteCvarName( args, argNum );
+}
+
+/*
 ============
 Cvar_Init
 
@@ -1498,7 +1548,7 @@ void Cvar_Init( void )
 	cvar_cheats = Cvar_Get( "sv_cheats", "1", CVAR_ROM | CVAR_SYSTEMINFO );
 
 	Cmd_AddCommand( "toggle", Cvar_Toggle_f );
-	Cmd_SetCommandCompletionFunc( "toggle", Cvar_CompleteCvarName );
+	Cmd_SetCommandCompletionFunc( "toggle", Cvar_CompleteToggle );
 	Cmd_AddCommand( "cycle", Cvar_Cycle_f );  // ydnar
 	Cmd_SetCommandCompletionFunc( "cycle", Cvar_CompleteCvarName );
 	Cmd_AddCommand( "set", Cvar_Set_f );
