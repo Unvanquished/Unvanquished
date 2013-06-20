@@ -1452,7 +1452,7 @@ void trap_Rocket_DSClearTable( const char *name, const char *table )
 
 void trap_Rocket_SetInnerRML( const char *name, const char *id, const char *RML, qboolean parseQuake )
 {
-	syscall( CG_ROCKET_SETINNERRML, name, id, RML );
+	syscall( CG_ROCKET_SETINNERRML, name, id, RML, parseQuake );
 }
 
 void trap_Rocket_GetAttribute( const char *name, const char *id, const char *attribute, char *out, int length )
