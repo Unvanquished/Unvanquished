@@ -88,15 +88,15 @@ static void CG_Rocket_DrawAmmo( void )
 
 	if ( !bp )
 	{
-		trap_Rocket_SetInnerRML( "", "", va( "%d", value ) );
+		trap_Rocket_SetInnerRML( "", "", va( "%d", value ), qfalse );
 	}
 	else if ( valueMarked > 0 )
 	{
-		trap_Rocket_SetInnerRML( "", "", va( "%d+%d", value, valueMarked ) );
+		trap_Rocket_SetInnerRML( "", "", va( "%d+%d", value, valueMarked ), qfalse );
 	}
 	else
 	{
-		trap_Rocket_SetInnerRML( "", "", va( "%d", value ) );
+		trap_Rocket_SetInnerRML( "", "", va( "%d", value ), qfalse );
 	}
 }
 
@@ -119,7 +119,7 @@ static void CG_Rocket_DrawClips( void )
 
 			if ( value > -1 )
 			{
-				trap_Rocket_SetInnerRML( "", "", va( "%d", value ) );
+				trap_Rocket_SetInnerRML( "", "", va( "%d", value ), qfalse );
 			}
 
 			break;
@@ -175,7 +175,7 @@ static void CG_Rocket_DrawFPS( void )
 		fps = 0;
 
 	s = va( "%d", fps );
-	trap_Rocket_SetInnerRML( "", "", s );
+	trap_Rocket_SetInnerRML( "", "", s, qfalse );
 }
 
 static void CG_Rocket_DrawCrosshair( void )
@@ -437,7 +437,7 @@ static void CG_Rocket_DrawSpeedGraph( void )
 		val = speedSamples[ ( oldestSpeedSample - 1 + SPEEDOMETER_NUM_SAMPLES ) % SPEEDOMETER_NUM_SAMPLES ];
 	}
 
-	trap_Rocket_SetInnerRML( "", "", va( "<span class='speed_max'>%d</span><span class='speed_current'>%d</span>", ( int ) speedSamples[ maxSpeedSampleInWindow ], ( int ) val ) );
+	trap_Rocket_SetInnerRML( "", "", va( "<span class='speed_max'>%d</span><span class='speed_current'>%d</span>", ( int ) speedSamples[ maxSpeedSampleInWindow ], ( int ) val ), qfalse );
 }
 
 static void CG_Rocket_DrawCreditsValue( void )
@@ -445,7 +445,7 @@ static void CG_Rocket_DrawCreditsValue( void )
 	playerState_t *ps = &cg.snap->ps;
 	int value = ps->persistant[ PERS_CREDIT ];;
 
-	trap_Rocket_SetInnerRML( "", "", va( "%d", value ) );
+	trap_Rocket_SetInnerRML( "", "", va( "%d", value ), qfalse );
 }
 
 static void CG_Rocket_DrawAlienEvosValue( void )
@@ -455,7 +455,7 @@ static void CG_Rocket_DrawAlienEvosValue( void )
 
 	value /= ( float ) ALIEN_CREDITS_PER_KILL;
 
-	trap_Rocket_SetInnerRML( "", "", va( "%0.1f", floor( value * 10 ) / 10 ) );
+	trap_Rocket_SetInnerRML( "", "", va( "%0.1f", floor( value * 10 ) / 10 ), qfalse );
 }
 
 static void CG_Rocket_DrawStaminaValue( void )
@@ -464,7 +464,7 @@ static void CG_Rocket_DrawStaminaValue( void )
 	float         stamina = ps->stats[ STAT_STAMINA ];
 	int           percent = 100 * ( stamina + ( float ) STAMINA_MAX ) / ( 2 * ( float ) STAMINA_MAX );
 
-	trap_Rocket_SetInnerRML( "", "", va( "%d", percent ) );
+	trap_Rocket_SetInnerRML( "", "", va( "%d", percent ), qfalse );
 }
 
 static void CG_Rocket_DrawWeaponIcon( void )
@@ -502,7 +502,7 @@ static void CG_Rocket_DrawWeaponIcon( void )
 		rmlClass = "no_ammo";
 	}
 
-	trap_Rocket_SetInnerRML( "", "", va( "<img class='weapon_icon%s%s' src='/%s' />", rmlClass ? " " : "", rmlClass, CG_GetShaderNameFromHandle( cg_weapons[ weapon ].weaponIcon ) ) );
+	trap_Rocket_SetInnerRML( "", "", va( "<img class='weapon_icon%s%s' src='/%s' />", rmlClass ? " " : "", rmlClass, CG_GetShaderNameFromHandle( cg_weapons[ weapon ].weaponIcon ) ), qfalse );
 }
 
 static void CG_Rocket_DrawPlayerWallclimbing( void )
@@ -513,7 +513,7 @@ static void CG_Rocket_DrawPlayerWallclimbing( void )
 		wallwalking = "wallwalking";
 	}
 
-	trap_Rocket_SetInnerRML( "", "", va( "<img class='wallclimb_indictator %s%s' src='%s' />", wallwalking ? " " : "", wallwalking, CG_Rocket_GetAttribute( "", "", "src" ) ) );
+	trap_Rocket_SetInnerRML( "", "", va( "<img class='wallclimb_indictator %s%s' src='%s' />", wallwalking ? " " : "", wallwalking, CG_Rocket_GetAttribute( "", "", "src" ) ), qfalse );
 }
 
 static void CG_Rocket_DrawAlienSense( void )
@@ -594,13 +594,13 @@ static void CG_Rocket_DrawUsableBuildable( void )
 			cg.nearUsableBuildable = BA_NONE;
 			return;
 		}
-		trap_Rocket_SetInnerRML( "", "", va( "<img class='usable_buildable' src='%s' />", CG_Rocket_GetAttribute( "", "", "src" ) ) );
+		trap_Rocket_SetInnerRML( "", "", va( "<img class='usable_buildable' src='%s' />", CG_Rocket_GetAttribute( "", "", "src" ) ), qfalse );
 		cg.nearUsableBuildable = es->modelindex;
 	}
 	else
 	{
 		// Clear the old image if there was one.
-		trap_Rocket_SetInnerRML( "", "", "" );
+		trap_Rocket_SetInnerRML( "", "", "", qfalse );
 		cg.nearUsableBuildable = BA_NONE;
 	}
 }
@@ -626,7 +626,7 @@ static void CG_Rocket_DrawLocation( void )
 		location = CG_ConfigString( CS_LOCATIONS );
 	}
 
-	trap_Rocket_SetInnerRML( "", "", va( "%s", CG_Rocket_QuakeToRML( location ) ) );
+	trap_Rocket_SetInnerRML( "", "", va( "%s", location ), qtrue );
 }
 
 static void CG_Rocket_DrawTimer( void )
@@ -647,7 +647,7 @@ static void CG_Rocket_DrawTimer( void )
 	tens = seconds / 10;
 	seconds -= tens * 10;
 
-	trap_Rocket_SetInnerRML( "", "", va( "%d:%d%d", mins, tens, seconds ) );
+	trap_Rocket_SetInnerRML( "", "", va( "%d:%d%d", mins, tens, seconds ), qfalse );
 }
 
 #define LAG_SAMPLES 128
@@ -937,7 +937,7 @@ static void CG_Rocket_DrawLagometer( void )
 		ping = va( "%d", cg.ping );
 	}
 
-	trap_Rocket_SetInnerRML( "", "", va( "%s", ping ) );
+	trap_Rocket_SetInnerRML( "", "", va( "%s", ping ), qfalse );
 	CG_Rocket_DrawDisconnect();
 }
 
@@ -1062,7 +1062,7 @@ static void CG_Rocket_DrawCrosshairNames( void )
 			   cgs.clientinfo[ cg.crosshairClientNum ].health );
 	}
 
-	trap_Rocket_SetInnerRML( "", "", va( "%s", name ) );
+	trap_Rocket_SetInnerRML( "", "", va( "%s", name ), qtrue );
 }
 
 static void CG_Rocket_DrawStageReport( void )
@@ -1128,7 +1128,7 @@ static void CG_Rocket_DrawStageReport( void )
 		}
 	}
 
-	trap_Rocket_SetInnerRML( "", "", va( "%s", s ) );
+	trap_Rocket_SetInnerRML( "", "", va( "%s", s ), qfalse );
 
 }
 
@@ -1156,7 +1156,7 @@ static void CG_Rocket_DrawLevelshot( void )
 		shader = trap_R_RegisterShader( va( "levelshots/%s", Info_ValueForKey( CG_ConfigString( CS_SERVERINFO ), "mapname" ) ), RSF_NOMIP );
 	}
 
-	trap_Rocket_SetInnerRML( "", "", va( "<img class='levelshot' src='/%s' />", CG_GetShaderNameFromHandle( shader ) ) );
+	trap_Rocket_SetInnerRML( "", "", va( "<img class='levelshot' src='/%s' />", CG_GetShaderNameFromHandle( shader ) ), qfalse );
 }
 
 
@@ -1171,13 +1171,13 @@ void CG_Rocket_DrawCenterPrint( void )
 	if ( cg.centerPrintTime + CENTER_PRINT_DURATION < cg.time )
 	{
 		*cg.centerPrint = '\0';
-		trap_Rocket_SetInnerRML( "", "", "&nbsp;" );
+		trap_Rocket_SetInnerRML( "", "", "&nbsp;", qfalse );
 		return;
 	}
 
 	if ( cg.time == cg.centerPrintTime )
 	{
-		trap_Rocket_SetInnerRML( "", "", cg.centerPrint );
+		trap_Rocket_SetInnerRML( "", "", cg.centerPrint, qtrue );
 	}
 
 	trap_Rocket_SetPropertyById( "", "opacity", va( "%f", CG_FadeAlpha( cg.centerPrintTime, CENTER_PRINT_DURATION ) ) );
@@ -1189,7 +1189,7 @@ void CG_Rocket_DrawPlayerHealth( void )
 
 	if ( lastHealth != cg.snap->ps.stats[ STAT_HEALTH ] )
 	{
-		trap_Rocket_SetInnerRML( "", "", va( "%d", cg.snap->ps.stats[ STAT_HEALTH ] ) );
+		trap_Rocket_SetInnerRML( "", "", va( "%d", cg.snap->ps.stats[ STAT_HEALTH ] ), qfalse );
 	}
 }
 
@@ -1211,7 +1211,7 @@ void CG_Rocket_DrawAlienBarbs( void )
 		Q_strcat( rml, sizeof( rml ), base );
 	}
 
-	trap_Rocket_SetInnerRML( "", "", rml );
+	trap_Rocket_SetInnerRML( "", "", rml, qfalse );
 }
 
 /*
@@ -1628,7 +1628,7 @@ void CG_Rocket_DrawFollow( void )
 
 		Q_strcat( buffer, sizeof( buffer ), cgs.clientinfo[ cg.snap->ps.clientNum ].name );
 
-		trap_Rocket_SetInnerRML( "", "", CG_Rocket_QuakeToRML( buffer ) );
+		trap_Rocket_SetInnerRML( "", "", buffer, qtrue );
 	}
 }
 
@@ -1690,7 +1690,7 @@ void CG_Rocket_DrawConnectText( void )
 
 	Q_strcat( rml, sizeof( rml ), s );
 
-	trap_Rocket_SetInnerRML( "", "", CG_Rocket_QuakeToRML( rml ) );
+	trap_Rocket_SetInnerRML( "", "", rml, qtrue );
 }
 
 

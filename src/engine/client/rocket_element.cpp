@@ -44,6 +44,8 @@ extern "C"
 
 extern Rocket::Core::Element *activeElement;
 
+Rocket::Core::String Rocket_QuakeToRML( const char *in );
+
 // File contains support code for custom rocket elements
 
 void Rocket_GetElementTag( char *tag, int length )
@@ -67,13 +69,15 @@ void Rocket_RegisterElement( const char *tag )
 	Rocket::Core::Factory::RegisterElementInstancer( tag, new Rocket::Core::ElementInstancerGeneric< RocketElement >() )->RemoveReference();
 }
 
-void Rocket_SetInnerRML( const char *name, const char *id, const char *RML )
+void Rocket_SetInnerRML( const char *name, const char *id, const char *RML, qboolean parseQuake )
 {
+	Rocket::Core::String newRML = parseQuake ? Rocket_QuakeToRML( RML ) : RML;
+
 	if ( ( !*name || !*id ) && activeElement )
 	{
-		if ( activeElement->GetInnerRML() != RML )
+		if ( activeElement->GetInnerRML() != newRML )
 		{
-			activeElement->SetInnerRML( RML );
+			activeElement->SetInnerRML( newRML );
 		}
 	}
 	else
@@ -85,9 +89,9 @@ void Rocket_SetInnerRML( const char *name, const char *id, const char *RML )
 
 			if ( e )
 			{
-				if ( e->GetInnerRML() != RML )
+				if ( e->GetInnerRML() != newRML )
 				{
-					e->SetInnerRML( RML );
+					e->SetInnerRML( newRML );
 				}
 			}
 		}

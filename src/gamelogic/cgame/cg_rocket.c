@@ -482,7 +482,7 @@ void CG_Rocket_Frame( void )
 			}
 			else
 			{
-				trap_Rocket_SetInnerRML( "serverbrowser", "status", "Updated" );
+				trap_Rocket_SetInnerRML( "serverbrowser", "status", "Updated", qfalse );
 				rocketInfo.rocketState = IDLE;
 			}
 
