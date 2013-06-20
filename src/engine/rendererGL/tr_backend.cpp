@@ -3009,7 +3009,7 @@ static void RB_SetupLightForLighting( trRefLight_t *light )
 
 							R_CalcFrustumNearCorners( splitFrustum, nearCorners );
 							R_CalcFrustumFarCorners( splitFrustum, farCorners );
-							
+
 							// draw outer surfaces
 							for ( j = 0; j < 4; j++ )
 							{
@@ -9573,6 +9573,8 @@ const void     *RB_Draw2dPolysIndexed( const void *data )
 		tess.colors[ tess.numVertexes ][ 3 ] = cmd->verts[ i ].modulate[ 3 ] * ( 1.0 / 255.0f );
 		tess.numVertexes++;
 	}
+
+	Tess_End();
 
 	shader->cullType = oldCullType;
 
