@@ -699,6 +699,14 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in )
 		{
 			out.Append( "&amp;" );
 		}
+		else if ( *p == '\n' )
+		{
+			out.Append( span ? "</span><br />" : "<br />" );
+			if ( span )
+			{
+				span = qfalse;
+			}
+		}
 		else if ( Q_IsColorString( p ) )
 		{
 			if ( span )
@@ -733,12 +741,6 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in )
 	while ( out.Find( "^^" ) != Rocket::Core::String::npos )
 	{
 		out = out.Replace( "^^", "^" );
-	}
-
-	// \n -> <br />
-	while ( out.Find( "\n" ) != Rocket::Core::String::npos )
-	{
-		out = out.Replace( "\n", "<br />" );
 	}
 
 	// Parse emoticons
