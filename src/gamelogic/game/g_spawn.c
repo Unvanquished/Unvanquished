@@ -1051,7 +1051,7 @@ void SP_worldspawn( void )
 
 	G_SpawnStringIntoCVar( "gravity", "g_gravity" );
 
-	G_SpawnStringIntoCVar( "humanMaxStage", "g_humanRepeaterBuildPoints" );
+	G_SpawnStringIntoCVar( "humanMaxStage", "g_humanMaxStage" );
 	G_SpawnStringIntoCVar( "alienMaxStage", "g_alienMaxStage" );
 
 	G_SpawnStringIntoCVar( "humanBuildPoints", "g_humanBuildPoints" );
