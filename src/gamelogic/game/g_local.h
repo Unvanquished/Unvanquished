@@ -1289,6 +1289,7 @@ extern  vmCvar_t g_unlagged;
 extern  vmCvar_t g_disabledEquipment;
 extern  vmCvar_t g_disabledClasses;
 extern  vmCvar_t g_disabledBuildables;
+extern  vmCvar_t g_disabledVoteCalls;
 
 extern  vmCvar_t g_markDeconstruct;
 

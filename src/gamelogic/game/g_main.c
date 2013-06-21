@@ -126,6 +126,7 @@ vmCvar_t           g_unlagged;
 vmCvar_t           g_disabledEquipment;
 vmCvar_t           g_disabledClasses;
 vmCvar_t           g_disabledBuildables;
+vmCvar_t           g_disabledVoteCalls;
 
 vmCvar_t           g_markDeconstruct;
 
@@ -293,6 +294,7 @@ static cvarTable_t gameCvarTable[] =
 	{ &g_disabledEquipment,           "g_disabledEquipment",           "",                                 CVAR_ROM | CVAR_SYSTEMINFO,                      0, qfalse           },
 	{ &g_disabledClasses,             "g_disabledClasses",             "",                                 CVAR_ROM | CVAR_SYSTEMINFO,                      0, qfalse           },
 	{ &g_disabledBuildables,          "g_disabledBuildables",          "",                                 CVAR_ROM | CVAR_SYSTEMINFO,                      0, qfalse           },
+	{ &g_disabledVoteCalls,           "g_disabledVoteCalls",           "",                                 0,                                               0, qfalse           },
 
 	{ &g_sayAreaRange,                "g_sayAreaRange",                "1000",                             CVAR_ARCHIVE,                                    0, qtrue            },
 
@@ -707,8 +709,9 @@ void G_InitGame( int levelTime, int randomSeed, int restart )
 		G_Printf( "Not logging to disk\n" );
 	}
 
-	// clear this now; it'll be set, if needed, from rotation
+	// clear these now; they'll be set, if needed, from rotation
 	trap_Cvar_Set( "g_mapStartupMessage", "" );
+	trap_Cvar_Set( "g_disabledVoteCalls", "" );
 
 	{
 		char map[ MAX_CVAR_VALUE_STRING ] = { "" };
