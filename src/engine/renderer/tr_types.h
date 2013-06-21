@@ -34,6 +34,8 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+// This file is part of the VM ABI. Changes here may cause incompatibilities.
+
 #ifndef __TR_TYPES_H
 #define __TR_TYPES_H
 
@@ -112,8 +114,14 @@ typedef struct poly_s
 typedef enum
 {
   RT_MODEL,
+  RT_UNUSED_1,
   RT_SPRITE,
+  RT_UNUSED_3,
   RT_BEAM,
+  RT_UNUSED_5,
+  RT_UNUSED_6,
+  RT_UNUSED_7,
+  RT_UNUSED_8,
   RT_PORTALSURFACE, // doesn't draw anything, just info for portals
 
   RT_MAX_REF_ENTITY_TYPE
