@@ -920,7 +920,8 @@ void	main()
 
 	}
 #endif
-
+	if( u_LightScale < 0.0 )
+		shadow = 1.0 - shadow;
 	if(shadow <= 0.0)
 	{
 		discard;
@@ -1068,12 +1069,15 @@ void	main()
 	color.rgb *= attenuationXY;
 	color.rgb *= attenuationZ;
 #endif
-
-	color.rgb *= u_LightScale;
+	color.rgb *= abs(u_LightScale);
 	color.rgb *= shadow;
 
 	color.r *= var_TexDiffuse.p;
 	color.gb *= var_TexNormal.pq;
+
+	if( u_LightScale < 0.0 ) {
+		color.rgb = vec3( dot(color.rgb, vec3( 0.3333 ) ) );
+	}
 
 	gl_FragColor = color;
 
