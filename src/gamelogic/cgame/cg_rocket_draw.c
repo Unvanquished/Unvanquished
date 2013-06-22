@@ -1695,7 +1695,12 @@ void CG_Rocket_DrawConnectText( void )
 
 void CG_Rocket_DrawConsoleText( void )
 {
-	trap_Rocket_SetInnerRML( "", "", cg.consoleText, qtrue );
+	static int old = 0;
+	if ( old != cg.numConsoleLines )
+	{
+		trap_Rocket_SetInnerRML( "", "", cg.consoleText, qtrue );
+		old = cg.numConsoleLines;
+	}
 }
 
 
