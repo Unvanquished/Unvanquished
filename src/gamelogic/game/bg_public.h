@@ -887,6 +887,7 @@ typedef enum
 } saymode_t;
 
 // means of death
+// keep modNames[] in g_combat.c in sync with this list!
 typedef enum
 {
   MOD_UNKNOWN,

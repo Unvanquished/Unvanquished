@@ -260,8 +260,6 @@ void Con_Dump_f( void )
 		Q_snprintf( name, sizeof( name ), "condump/%s", Cmd_Argv( 1 ) );
 	}
 
-	Com_Printf(_( "Dumped console text to %s.\n"), name );
-
 	f = FS_FOpenFileWrite( name );
 
 	if ( !f )
@@ -269,6 +267,8 @@ void Con_Dump_f( void )
 		Com_Log(LOG_ERROR, _( "couldn't open." ));
 		return;
 	}
+
+	Com_Printf(_( "Dumped console text to %s.\n"), name );
 
 	// skip empty lines
 	for ( l = consoleState.currentLine - consoleState.maxScrollbackLengthInLines + 1; l <= consoleState.currentLine; l++ )

@@ -33,21 +33,7 @@ extern "C" {
 #include "../qcommon/qcommon.h"
 #include "../renderer/tr_public.h"
 
-#if 0
-#if !defined( USE_D3D10 )
-#define USE_D3D10
-#endif
-#endif
-
-#if defined( USE_D3D10 )
-#include <d3d10.h>
-#include <d3dx10.h>
-#include <SDL.h>
-#include <SDL_syswm.h>
-#include <SDL_thread.h>
-#else
 #include <GL/glew.h>
-#endif
 
 #define BUFFER_OFFSET(i) ((char *)NULL + ( i ))
 
@@ -364,6 +350,9 @@ extern "C" {
 		uint32_t                  occlusionQuerySamples;
 		link_t                    multiQuery; // CHC++: list of all nodes that are used by the same occlusion query
 
+		int                       restrictInteractionFirst;
+		int                       restrictInteractionLast;
+
 		frustum_t                 frustum;
 		vec4_t                    localFrustum[ 6 ];
 		struct VBO_s              *frustumVBO;
@@ -494,12 +483,10 @@ extern "C" {
 		// can contain stuff like this now:
 		// addnormals ( textures/base_floor/stetile4_local.tga ,
 		// heightmap ( textures/base_floor/stetile4_bmp.tga , 4 ) )
-#if defined( USE_D3D10 )
-		// TODO
-#else
+
 		GLenum         type;
 		GLuint         texnum; // gl texture binding
-#endif
+
 		uint16_t       width, height; // source image
 		uint16_t       uploadWidth, uploadHeight; // after power of two and picmip but not including clamp to MAX_TEXTURE_SIZE
 
@@ -1339,8 +1326,6 @@ extern "C" {
 
 // Tr3B - shaderProgram_t represents a pair of one
 // GLSL vertex and one GLSL fragment shader
-#if !defined( USE_D3D10 )
-
 	typedef struct shaderProgram_s
 	{
 		GLuint    program;
@@ -1348,8 +1333,6 @@ extern "C" {
 		GLint    *uniformLocations;
 		byte     *uniformFirewall;
 	} shaderProgram_t;
-
-#endif // #if !defined(USE_D3D10)
 
 // trRefdef_t holds everything that comes in refdef_t,
 // as well as the locally generated scene information
@@ -1982,11 +1965,9 @@ extern "C" {
 		int              volumeVerts;
 		int              volumeIndexes;
 
-#if 1 //!defined(USE_D3D10)
 		uint32_t occlusionQueryObjects[ MAX_VIEWS ];
 		int      occlusionQuerySamples[ MAX_VIEWS ]; // visible fragment count
 		int      occlusionQueryNumbers[ MAX_VIEWS ]; // for debugging
-#endif
 
 		// node specific
 		cplane_t         *plane;
@@ -2549,24 +2530,7 @@ extern "C" {
 
 #define MAX_GLSTACK     5
 
-// the renderer front end should never modify glState_t or dxGlobals_t
-#if defined( USE_D3D10 )
-	typedef struct
-	{
-		D3D10_DRIVER_TYPE     driverType; // = D3D10_DRIVER_TYPE_NULL;
-		ID3D10Device           *d3dDevice;
-		IDXGISwapChain         *swapChain;
-		ID3D10RenderTargetView *renderTargetView;
-
-		ID3D10Effect           *genericEffect;
-		ID3D10EffectTechnique *genericTechnique;
-
-		ID3D10InputLayout      *vertexLayout;
-		ID3D10Buffer           *vertexBuffer;
-	}
-
-	dxGlobals_t;
-#else
+// the renderer front end should never modify glState_t
 	typedef struct
 	{
 		int    blendSrc, blendDst;
@@ -2608,7 +2572,6 @@ extern "C" {
 		VBO_t           *currentVBO;
 		IBO_t           *currentIBO;
 	} glstate_t;
-#endif // !defined(USE_D3D10)
 
 	typedef struct
 	{
@@ -2942,7 +2905,6 @@ extern "C" {
 
 	extern const matrix_t quakeToOpenGLMatrix;
 	extern const matrix_t openGLToQuakeMatrix;
-	extern const matrix_t quakeToD3DMatrix;
 	extern const matrix_t flipZMatrix;
 	extern const GLenum   geometricRenderTargets[];
 	extern int            shadowMapResolutions[ 5 ];
@@ -2953,11 +2915,7 @@ extern "C" {
 	extern glconfig_t     glConfig; // outside of TR since it shouldn't be cleared during ref re-init
 	extern glconfig2_t    glConfig2;
 
-#if defined( USE_D3D10 )
-	extern dxGlobals_t    dx;
-#else
 	extern glstate_t      glState; // outside of TR since it shouldn't be cleared during ref re-init
-#endif
 
 	extern float          displayAspect; // FIXME
 
@@ -2972,10 +2930,6 @@ extern "C" {
 	extern cvar_t *r_flares; // light flares
 	extern cvar_t *r_flareSize;
 	extern cvar_t *r_flareFade;
-
-	extern cvar_t *r_railWidth;
-	extern cvar_t *r_railCoreWidth;
-	extern cvar_t *r_railSegmentLength;
 
 	extern cvar_t *r_ignore; // used for debugging anything
 	extern cvar_t *r_verbose; // used for verbose debug spew
@@ -3276,7 +3230,7 @@ extern "C" {
 	void           R_RenderView( viewParms_t *parms );
 
 	void           R_AddMDVSurfaces( trRefEntity_t *e );
-	void           R_AddMDVInteractions( trRefEntity_t *e, trRefLight_t *light );
+	void           R_AddMDVInteractions( trRefEntity_t *e, trRefLight_t *light, interactionType_t iaType );
 
 	void           R_AddPolygonSurfaces( void );
 	void           R_AddPolygonBufferSurfaces( void );
@@ -3302,7 +3256,8 @@ extern "C" {
 	void           R_RotateLightForViewParms( const trRefLight_t *ent, const viewParms_t *viewParms, orientationr_t *orien );
 
 	void           R_SetupFrustum2( frustum_t frustum, const matrix_t modelViewProjectionMatrix );
-
+	void           R_CalcFrustumNearCorners( const vec4_t frustum[ FRUSTUM_PLANES ], vec3_t corners[ 4 ] );
+	void           R_CalcFrustumFarCorners( const vec4_t frustum[ FRUSTUM_PLANES ], vec3_t corners[ 4 ] );
 	qboolean       R_CompareVert( srfVert_t *v1, srfVert_t *v2, qboolean checkst );
 	void           R_CalcNormalForTriangle( vec3_t normal, const vec3_t v0, const vec3_t v1, const vec3_t v2 );
 
@@ -3349,7 +3304,6 @@ extern "C" {
 
 	====================================================================
 	*/
-#if !defined( USE_D3D10 )
 	void GL_Bind( image_t *image );
 	void GL_BindNearestCubeMap( const vec3_t xyz );
 	void GL_Unbind( void );
@@ -3388,8 +3342,6 @@ extern "C" {
 	void GL_VertexAttribsState( uint32_t stateBits );
 	void GL_VertexAttribPointers( uint32_t attribBits );
 	void GL_Cull( int cullType );
-
-#endif // !defined(USE_D3D10)
 
 	/*
 	====================================================================
@@ -3588,12 +3540,9 @@ extern "C" {
 
 	extern shaderCommands_t tess;
 
-#if !defined( USE_D3D10 )
 	void                    GLSL_InitGPUShaders( void );
 	void                    GLSL_ShutdownGPUShaders( void );
 	void                    GLSL_FinishGPUShaders( void );
-
-#endif
 
 // *INDENT-OFF*
 	void Tess_Begin( void ( *stageIteratorFunc )( void ),
@@ -3682,9 +3631,10 @@ extern "C" {
 	============================================================
 	*/
 
-	void     R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light );
+	void     R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light, interactionType_t iaType );
 	void     R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent, vec3_t forcedOrigin );
 	int      R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir );
+	void     R_TessLight( const trRefLight_t *light, const vec4_t color );
 
 	void     R_SetupLightOrigin( trRefLight_t *light );
 	void     R_SetupLightLocalBounds( trRefLight_t *light );
@@ -3901,7 +3851,7 @@ extern "C" {
 	void            R_AnimationList_f( void );
 
 	void            R_AddMD5Surfaces( trRefEntity_t *ent );
-	void            R_AddMD5Interactions( trRefEntity_t *ent, trRefLight_t *light );
+	void            R_AddMD5Interactions( trRefEntity_t *ent, trRefLight_t *light, interactionType_t iaType );
 
 #if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 	int             RE_CheckSkeleton( refSkeleton_t *skel, qhandle_t hModel, qhandle_t hAnim );
@@ -3937,7 +3887,7 @@ extern "C" {
 	*/
 
 	void R_MDM_AddAnimSurfaces( trRefEntity_t *ent );
-	void R_AddMDMInteractions( trRefEntity_t *e, trRefLight_t *light );
+	void R_AddMDMInteractions( trRefEntity_t *e, trRefLight_t *light, interactionType_t iaType );
 
 	int  R_MDM_GetBoneTag( orientation_t *outTag, mdmModel_t *mdm, int startTagIndex, const refEntity_t *refent,
 	                       const char *tagName );

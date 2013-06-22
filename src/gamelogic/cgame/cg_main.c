@@ -128,6 +128,8 @@ vmCvar_t        cg_runpitch;
 vmCvar_t        cg_runroll;
 vmCvar_t        cg_swingSpeed;
 vmCvar_t        cg_shadows;
+vmCvar_t        cg_playerShadows;
+vmCvar_t        cg_buildableShadows;
 vmCvar_t        cg_drawTimer;
 vmCvar_t        cg_drawClock;
 vmCvar_t        cg_drawFPS;
@@ -290,6 +292,9 @@ static const cvarTable_t cvarTable[] =
 	{ &cg_drawGun,                     "cg_drawGun",                     "1",            CVAR_ARCHIVE                 },
 	{ &cg_viewsize,                    "cg_viewsize",                    "100",          CVAR_ARCHIVE                 },
 	{ &cg_stereoSeparation,            "cg_stereoSeparation",            "0.4",          CVAR_ARCHIVE                 },
+	{ &cg_shadows,                     "cg_shadows",                     "1",            CVAR_ARCHIVE | CVAR_LATCH    },
+	{ &cg_playerShadows,               "cg_playerShadows",               "1",            CVAR_ARCHIVE                 },
+	{ &cg_buildableShadows,            "cg_buildableShadows",            "0",            CVAR_ARCHIVE                 },
 	{ &cg_shadows,                     "cg_shadows",                     "1",            CVAR_ARCHIVE | CVAR_LATCH    },
 	{ &cg_draw2D,                      "cg_draw2D",                      "1",            CVAR_ARCHIVE                 },
 	{ &cg_drawTimer,                   "cg_drawTimer",                   "1",            CVAR_ARCHIVE                 },
@@ -482,6 +487,10 @@ these should refer only to playerstates that belong to the client, not the follo
 static void CG_SetPVars( void )
 {
 	playerState_t *ps;
+	char          buffer[ MAX_CVAR_VALUE_STRING ];
+	int           i, stage = 0;
+	qboolean      first;
+
 	if ( !cg.snap )
 	{
 		return;
@@ -494,14 +503,15 @@ static void CG_SetPVars( void )
 
 	trap_Cvar_Set( "p_teamname", BG_TeamName( ps->stats[ STAT_TEAM ] ) );
 
+	// while we're here, set stage
 	switch ( ps->stats[ STAT_TEAM ] )
 	{
 		case TEAM_ALIENS:
-			trap_Cvar_Set( "p_stage", va( "%d", cgs.alienStage ) );
+			stage = cgs.alienStage;
 			break;
 
 		case TEAM_HUMANS:
-			trap_Cvar_Set( "p_stage", va( "%d", cgs.humanStage ) );
+			stage = cgs.humanStage;
 			break;
 
 		default:
@@ -524,6 +534,7 @@ static void CG_SetPVars( void )
 			return;
 	}
 
+	trap_Cvar_Set( "p_stage", va( "%d", stage ) );
 	trap_Cvar_Set( "p_class", va( "%d", ps->stats[ STAT_CLASS ] ) );
 
 	switch ( ps->stats[ STAT_CLASS ] )
@@ -670,6 +681,27 @@ static void CG_SetPVars( void )
 	trap_Cvar_Set( "p_maxhp", va( "%d", ps->stats[ STAT_MAX_HEALTH ] ) );
 	trap_Cvar_Set( "p_ammo", va( "%d", ps->ammo ) );
 	trap_Cvar_Set( "p_clips", va( "%d", ps->clips ) );
+
+	// set p_availableBuildings to a space-separated list of buildings
+	// limited to those available given team, stage and class
+	first = qtrue;
+	*buffer = 0;
+
+	for ( i = BA_NONE; i < BA_NUM_BUILDABLES; ++i )
+	{
+		const buildableAttributes_t *buildable = BG_Buildable( i );
+
+		if ( buildable->team == ps->stats[ STAT_TEAM ] &&
+		     BG_BuildableAllowedInStage( i, stage ) &&
+		     (buildable->buildWeapon & ( 1 << ps->stats[ STAT_WEAPON ] ) ) )
+
+		{
+			Q_strcat( buffer, sizeof( buffer ), first ? buildable->name : va( " %s", buildable->name ) );
+			first = qfalse;
+		}
+	}
+
+	trap_Cvar_Set( "p_availableBuildings", buffer );
 }
 
 /*

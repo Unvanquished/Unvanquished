@@ -34,6 +34,8 @@ Maryland 20850 USA.
 ===========================================================================
 */
 
+// This file is part of the VM ABI. Changes here may cause incompatibilities.
+
 #ifndef __TR_TYPES_H
 #define __TR_TYPES_H
 
@@ -112,14 +114,14 @@ typedef struct poly_s
 typedef enum
 {
   RT_MODEL,
-  RT_POLY,
+  RT_UNUSED_1,
   RT_SPRITE,
-  RT_SPLASH, // ripple effect
+  RT_UNUSED_3,
   RT_BEAM,
-  RT_RAIL_CORE,
-  RT_RAIL_CORE_TAPER, // a modified core that creates a properly texture mapped core that's wider at one end
-  RT_RAIL_RINGS,
-  RT_LIGHTNING,
+  RT_UNUSED_5,
+  RT_UNUSED_6,
+  RT_UNUSED_7,
+  RT_UNUSED_8,
   RT_PORTALSURFACE, // doesn't draw anything, just info for portals
 
   RT_MAX_REF_ENTITY_TYPE
@@ -406,6 +408,7 @@ typedef enum
   TC_EXT_COMP_S3TC
 } textureCompression_t;
 
+// Keep the list in sdl_glimp.c:reportDriverType in sync with this
 typedef enum
 {
   GLDRV_UNKNOWN = -1,
@@ -415,7 +418,6 @@ typedef enum
   // should always be the lowest value in this
   // enum set
   GLDRV_STANDALONE, // driver is a non-3Dfx standalone driver
-  GLDRV_VOODOO, // driver is a 3Dfx standalone driver
 
 // XreaL BEGIN
   GLDRV_OPENGL3, // new driver system
@@ -423,16 +425,11 @@ typedef enum
 // XreaL END
 } glDriverType_t;
 
+// Keep the list in sdl_glimp.c:reportHardwareType in sync with this
 typedef enum
 {
   GLHW_UNKNOWN = -1,
   GLHW_GENERIC, // where everthing works the way it should
-  GLHW_3DFX_2D3D, // Voodoo Banshee or Voodoo3, relevant since if this is
-  // the hardware type then there can NOT exist a secondary
-  // display adapter
-  GLHW_RIVA128, // where you can't interpolate alpha
-  GLHW_RAGEPRO, // where you can't modulate alpha on alpha textures
-  GLHW_PERMEDIA2, // where you don't have src*dst
 
 // XreaL BEGIN
   GLHW_ATI, // where you don't have proper GLSL support
@@ -479,8 +476,7 @@ typedef struct
 	int   displayFrequency;
 
 	// synonymous with "does rendering consume the entire screen?", therefore
-	// a Voodoo or Voodoo2 will have this set to TRUE, as will a Win32 ICD that
-	// used CDS.
+	// a Win32 ICD that used CDS will have this set to TRUE
 	qboolean isFullscreen;
 	qboolean stereoEnabled;
 	qboolean smpActive; // dual processor
