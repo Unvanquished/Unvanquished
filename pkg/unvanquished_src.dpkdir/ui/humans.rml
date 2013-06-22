@@ -80,7 +80,7 @@
 				width: 75%;
 				left: 25%;
 				top: 0%;
-				font-size: 12;
+				font-size: 24;
 			}
 		</style>
 	</head>
