@@ -47,10 +47,6 @@ static void GfxInfo_f( void );
 cvar_t      *r_flareSize;
 cvar_t      *r_flareFade;
 
-cvar_t      *r_railWidth;
-cvar_t      *r_railCoreWidth;
-cvar_t      *r_railSegmentLength;
-
 cvar_t      *r_ignoreFastPath;
 
 cvar_t      *r_verbose;
@@ -1060,21 +1056,6 @@ void GfxInfo_f( void )
 		ri.Printf( PRINT_DEVELOPER, "Fog Mode: %s\n", r_nv_fogdist_mode->string );
 	}
 
-	if ( glConfig.hardwareType == GLHW_PERMEDIA2 )
-	{
-		ri.Printf( PRINT_DEVELOPER, "HACK: using vertex lightmap approximation\n" );
-	}
-
-	if ( glConfig.hardwareType == GLHW_RAGEPRO )
-	{
-		ri.Printf( PRINT_DEVELOPER, "HACK: ragePro approximations\n" );
-	}
-
-	if ( glConfig.hardwareType == GLHW_RIVA128 )
-	{
-		ri.Printf( PRINT_DEVELOPER, "HACK: riva128 approximations\n" );
-	}
-
 	if ( glConfig.smpActive )
 	{
 		ri.Printf( PRINT_DEVELOPER, "Using dual processor acceleration\n" );
@@ -1200,10 +1181,6 @@ void R_Register( void )
 	r_swapInterval = ri.Cvar_Get( "r_swapInterval", "0", CVAR_ARCHIVE );
 	r_gamma = ri.Cvar_Get( "r_gamma", "1.3", CVAR_ARCHIVE );
 	r_facePlaneCull = ri.Cvar_Get( "r_facePlaneCull", "1", CVAR_ARCHIVE );
-
-	r_railWidth = ri.Cvar_Get( "r_railWidth", "16", CVAR_ARCHIVE );
-	r_railCoreWidth = ri.Cvar_Get( "r_railCoreWidth", "1", CVAR_ARCHIVE );
-	r_railSegmentLength = ri.Cvar_Get( "r_railSegmentLength", "32", CVAR_ARCHIVE );
 
 	r_primitives = ri.Cvar_Get( "r_primitives", "0", CVAR_ARCHIVE );
 

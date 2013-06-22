@@ -202,22 +202,22 @@ char *Q_UTF8_Encode( unsigned long codepoint )
   }
   else if( 0x0080 <= codepoint && codepoint <= 0x07FF )
   {
-    buf[0] = 0xC0 | ((codepoint & 0x0700) >> 6) | ((codepoint & 0x00C0) >> 6);
+    buf[0] = 0xC0 | ((codepoint & 0x07C0) >> 6);
     buf[1] = 0x80 | (codepoint & 0x003F);
     buf[2] = 0;
   }
   else if( 0x0800 <= codepoint && codepoint <= 0xFFFF )
   {
     buf[0] = 0xE0 | ((codepoint & 0xF000) >> 12);
-    buf[1] = 0x80 | ((codepoint & 0x0F00) >> 6) | ((codepoint & 0x00C0) >> 6);
+    buf[1] = 0x80 | ((codepoint & 0x0FC0) >> 6);
     buf[2] = 0x80 | (codepoint & 0x003F);
     buf[3] = 0;
   }
   else if( 0x010000 <= codepoint && codepoint <= 0x10FFFF )
   {
-    buf[0] = 0xF0 | ((codepoint & 0x1C0000 >> 18));
-    buf[1] = 0x80 | ((codepoint & 0x030000 >> 16)) | ((codepoint & 0x00F000) >> 12);
-    buf[2] = 0x80 | ((codepoint & 0x000F00) >> 6) | ((codepoint & 0x0000C0) >> 6);
+    buf[0] = 0xF0 | ((codepoint & 0x1C0000) >> 18);
+    buf[1] = 0x80 | ((codepoint & 0x03F000) >> 12);
+    buf[2] = 0x80 | ((codepoint & 0x000FC0) >> 6);
     buf[3] = 0x80 | (codepoint & 0x00003F);
     buf[4] = 0;
   }

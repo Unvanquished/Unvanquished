@@ -23,12 +23,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 vec4 InterpolatePosition(vec4 from, vec4 to, float frac)
 {
-	return from + ((to - from) * frac);
+	return mix(from, to, frac);
 }
 
 vec3 InterpolateNormal(vec3 from, vec3 to, float frac)
 {
-	return normalize(from + ((to - from) * frac));
+	return normalize(mix(from, to, frac));
 }
 
 void VertexAnimation_P_N(	vec4 fromPosition, vec4 toPosition,

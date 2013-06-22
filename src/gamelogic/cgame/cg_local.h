@@ -1479,6 +1479,8 @@ extern  vmCvar_t            cg_runpitch;
 extern  vmCvar_t            cg_runroll;
 extern  vmCvar_t            cg_swingSpeed;
 extern  vmCvar_t            cg_shadows;
+extern  vmCvar_t            cg_playerShadows;
+extern  vmCvar_t            cg_buildableShadows;
 extern  vmCvar_t            cg_drawTimer;
 extern  vmCvar_t            cg_drawClock;
 extern  vmCvar_t            cg_drawFPS;

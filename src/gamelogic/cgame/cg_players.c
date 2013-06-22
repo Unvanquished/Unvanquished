@@ -2742,7 +2742,7 @@ static qboolean CG_PlayerShadow( centity_t *cent, float *shadowPlane, class_t cl
 
 	*shadowPlane = 0;
 
-	if ( cg_shadows.integer == 0 )
+	if ( cg_shadows.integer == SHADOWING_NONE )
 	{
 		return qfalse;
 	}
@@ -2772,7 +2772,24 @@ static qboolean CG_PlayerShadow( centity_t *cent, float *shadowPlane, class_t cl
 		*shadowPlane = trace.endpos[ 2 ] + 1.0f;
 	}
 
-	if ( cg_shadows.integer != 1 ) // no mark for stencil or projection shadows
+	if ( cg_shadows.integer > SHADOWING_BLOB &&
+	     cg_playerShadows.integer ) {
+		// add inverse shadow map
+		{
+			vec3_t ambientLight, directedLight, lightDir;
+			vec3_t lightPos;
+
+			trap_R_LightForPoint( cent->lerpOrigin, ambientLight,
+					      directedLight, lightDir );
+			VectorMA( cent->lerpOrigin, 32.0f, lightDir, lightPos );
+
+			trap_R_AddLightToScene( lightPos, 128.0f, 3.0f,
+						directedLight[0], directedLight[1], directedLight[2],
+						0, REF_RESTRICT_DLIGHT | REF_INVERSE_DLIGHT );
+		}
+	}
+
+	if ( cg_shadows.integer != SHADOWING_BLOB ) // no mark for stencil or projection shadows
 	{
 		return qtrue;
 	}
@@ -2789,6 +2806,21 @@ static qboolean CG_PlayerShadow( centity_t *cent, float *shadowPlane, class_t cl
 	return qtrue;
 }
 
+static void CG_PlayerShadowEnd( void )
+{
+	if ( cg_shadows.integer == SHADOWING_NONE )
+	{
+		return;
+	}
+
+	if ( cg_shadows.integer > SHADOWING_BLOB &&
+	     cg_playerShadows.integer ) {
+	  trap_R_AddLightToScene( vec3_origin, 0.0f, 0.0f,
+				  0.0f, 0.0f, 0.0f,
+				  0, 0 );
+	}
+}
+
 /*
 ===============
 CG_PlayerSplash
@@ -2803,7 +2835,7 @@ static void CG_PlayerSplash( centity_t *cent, class_t class )
 	trace_t trace;
 	int     contents;
 
-	if ( !cg_shadows.integer )
+	if ( cg_shadows.integer == SHADOWING_NONE )
 	{
 		return;
 	}
@@ -3358,6 +3390,7 @@ void CG_Player( centity_t *cent )
 		}
 
 		VectorCopy( surfNormal, cent->pe.lastNormal );
+		CG_PlayerShadowEnd( );
 		return;
 	}
 
@@ -3494,6 +3527,7 @@ void CG_Player( centity_t *cent )
 	// if the model failed, allow the default nullmodel to be displayed
 	if ( !legs.hModel )
 	{
+		CG_PlayerShadowEnd( );
 		return;
 	}
 
@@ -3515,6 +3549,7 @@ void CG_Player( centity_t *cent )
 
 		if ( !torso.hModel )
 		{
+			CG_PlayerShadowEnd( );
 			return;
 		}
 
@@ -3543,6 +3578,7 @@ void CG_Player( centity_t *cent )
 
 		if ( !head.hModel )
 		{
+			CG_PlayerShadowEnd( );
 			return;
 		}
 
@@ -3605,6 +3641,7 @@ void CG_Player( centity_t *cent )
 			CG_DestroyParticleSystem( &cent->jetPackPS );
 		}
 	}
+	CG_PlayerShadowEnd( );
 
 	VectorCopy( surfNormal, cent->pe.lastNormal );
 }
@@ -3775,6 +3812,7 @@ void CG_Corpse( centity_t *cent )
 	// if the model failed, allow the default nullmodel to be displayed. Also, if MD5, no need to add other parts
 	if ( !legs.hModel || ci->md5 )
 	{
+		CG_PlayerShadowEnd( );
 		return;
 	}
 
@@ -3787,6 +3825,7 @@ void CG_Corpse( centity_t *cent )
 
 		if ( !torso.hModel )
 		{
+			CG_PlayerShadowEnd( );
 			return;
 		}
 
@@ -3808,6 +3847,7 @@ void CG_Corpse( centity_t *cent )
 
 		if ( !head.hModel )
 		{
+			CG_PlayerShadowEnd( );
 			return;
 		}
 
