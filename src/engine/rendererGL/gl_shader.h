@@ -300,6 +300,9 @@ protected:
 	inline void SetValue( float value )
 	{
 		shaderProgram_t *p = _shader->GetProgram();
+
+		assert( p == glState.currentProgram );
+
 #if defined( LOG_GLSL_UNIFORMS )
 		if ( r_logFile->integer )
 		{
@@ -338,6 +341,8 @@ protected:
 	{
 		shaderProgram_t *p = _shader->GetProgram();
 
+		assert( p == glState.currentProgram );
+
 #if defined( LOG_GLSL_UNIFORMS )
 		if ( r_logFile->integer )
 		{
@@ -360,6 +365,9 @@ protected:
 	inline void SetValue( const vec3_t v )
 	{
 		shaderProgram_t *p = _shader->GetProgram();
+
+		assert( p == glState.currentProgram );
+
 #if defined( LOG_GLSL_UNIFORMS )
 		if ( r_logFile->integer )
 		{
@@ -397,6 +405,9 @@ protected:
 	inline void SetValue( const vec4_t v )
 	{
 		shaderProgram_t *p = _shader->GetProgram();
+
+		assert( p == glState.currentProgram );
+
 #if defined( LOG_GLSL_UNIFORMS )
 		if ( r_logFile->integer )
 		{
@@ -434,6 +445,9 @@ protected:
 	inline void SetValue( int numV, vec4_t *v )
 	{
 		shaderProgram_t *p = _shader->GetProgram();
+
+		assert( p == glState.currentProgram );
+
 #if defined( LOG_GLSL_UNIFORMS )
 		if ( r_logFile->integer )
 		{
@@ -456,6 +470,9 @@ protected:
 	inline void SetValue( GLboolean transpose, const matrix_t m )
 	{
 		shaderProgram_t *p = _shader->GetProgram();
+
+		assert( p == glState.currentProgram );
+
 #if defined( LOG_GLSL_UNIFORMS )
 		if ( r_logFile->integer )
 		{
@@ -495,6 +512,8 @@ protected:
 	inline void SetValue( int numMatrices, GLboolean transpose, const matrix_t *m )
 	{
 		shaderProgram_t *p = _shader->GetProgram();
+
+		assert( p == glState.currentProgram );
 
 #if defined( LOG_GLSL_UNIFORMS )
 		if ( r_logFile->integer )

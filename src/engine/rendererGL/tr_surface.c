@@ -57,10 +57,6 @@ Tess_CheckOverflow
 */
 void Tess_CheckOverflow( int verts, int indexes )
 {
-#if defined( USE_D3D10 )
-	// TODO
-#else
-
 	if ( ( glState.currentVBO != NULL && glState.currentVBO != tess.vbo ) ||
 	     ( glState.currentIBO != NULL && glState.currentIBO != tess.ibo ) )
 	{
@@ -69,8 +65,6 @@ void Tess_CheckOverflow( int verts, int indexes )
 		R_BindVBO( tess.vbo );
 		R_BindIBO( tess.ibo );
 	}
-
-#endif
 
 	if ( tess.numVertexes + verts < SHADER_MAX_VERTEXES && tess.numIndexes + indexes < SHADER_MAX_INDEXES )
 	{
@@ -671,38 +665,6 @@ void Tess_InstantQuad( vec4_t quadVerts[ 4 ] )
 	tess.numIndexes = 0;
 
 	GL_CheckErrors();
-}
-
-/*
-==============
-Tess_SurfaceSplash
-==============
-*/
-static void Tess_SurfaceSplash( void )
-{
-	vec3_t left, up;
-	float  radius;
-	vec4_t color;
-
-	GLimp_LogComment( "--- Tess_SurfaceSplash ---\n" );
-
-	// calculate the xyz locations for the four corners
-	radius = backEnd.currentEntity->e.radius;
-
-	VectorSet( left, -radius, 0, 0 );
-	VectorSet( up, 0, radius, 0 );
-
-	if ( backEnd.viewParms.isMirror )
-	{
-		VectorSubtract( vec3_origin, left, left );
-	}
-
-	color[ 0 ] = backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 );
-	color[ 1 ] = backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 );
-	color[ 2 ] = backEnd.currentEntity->e.shaderRGBA[ 2 ] * ( 1.0 / 255.0 );
-	color[ 3 ] = backEnd.currentEntity->e.shaderRGBA[ 3 ] * ( 1.0 / 255.0 );
-
-	Tess_AddQuadStamp( backEnd.currentEntity->e.origin, left, up, color );
 }
 
 /*
@@ -1554,254 +1516,6 @@ static void Tess_SurfaceBeam( void )
 
 //================================================================================
 
-static void Tess_DoRailCore( const vec3_t start, const vec3_t end, const vec3_t up, float len, float spanWidth )
-{
-	float spanWidth2;
-	int   vbase;
-	float t = len / 256.0f;
-
-	vbase = tess.numVertexes;
-
-	spanWidth2 = -spanWidth;
-
-	// FIXME: use quad stamp?
-	VectorMA( start, spanWidth, up, tess.xyz[ tess.numVertexes ] );
-	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
-	tess.texCoords[ tess.numVertexes ][ 0 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 1 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
-	tess.colors[ tess.numVertexes ][ 0 ] = backEnd.currentEntity->e.shaderRGBA[ 0 ] * 0.25 * ( 1.0 / 255.0 );
-	tess.colors[ tess.numVertexes ][ 1 ] = backEnd.currentEntity->e.shaderRGBA[ 1 ] * 0.25 * ( 1.0 / 255.0 );
-	tess.colors[ tess.numVertexes ][ 2 ] = backEnd.currentEntity->e.shaderRGBA[ 2 ] * 0.25 * ( 1.0 / 255.0 );
-	tess.numVertexes++;
-
-	VectorMA( start, spanWidth2, up, tess.xyz[ tess.numVertexes ] );
-	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
-	tess.texCoords[ tess.numVertexes ][ 0 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 1 ] = 1;
-	tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
-	tess.colors[ tess.numVertexes ][ 0 ] = backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 );
-	tess.colors[ tess.numVertexes ][ 1 ] = backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 );
-	tess.colors[ tess.numVertexes ][ 2 ] = backEnd.currentEntity->e.shaderRGBA[ 2 ] * ( 1.0 / 255.0 );
-	tess.numVertexes++;
-
-	VectorMA( end, spanWidth, up, tess.xyz[ tess.numVertexes ] );
-	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
-	tess.texCoords[ tess.numVertexes ][ 0 ] = t;
-	tess.texCoords[ tess.numVertexes ][ 1 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
-	tess.colors[ tess.numVertexes ][ 0 ] = backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 );
-	tess.colors[ tess.numVertexes ][ 1 ] = backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 );
-	tess.colors[ tess.numVertexes ][ 2 ] = backEnd.currentEntity->e.shaderRGBA[ 2 ] * ( 1.0 / 255.0 );
-	tess.numVertexes++;
-
-	VectorMA( end, spanWidth2, up, tess.xyz[ tess.numVertexes ] );
-	tess.xyz[ tess.numVertexes ][ 3 ] = 1;
-	tess.texCoords[ tess.numVertexes ][ 0 ] = t;
-	tess.texCoords[ tess.numVertexes ][ 1 ] = 1;
-	tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
-	tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
-	tess.colors[ tess.numVertexes ][ 0 ] = backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 );
-	tess.colors[ tess.numVertexes ][ 1 ] = backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 );
-	tess.colors[ tess.numVertexes ][ 2 ] = backEnd.currentEntity->e.shaderRGBA[ 2 ] * ( 1.0 / 255.0 );
-	tess.numVertexes++;
-
-	tess.indexes[ tess.numIndexes++ ] = vbase;
-	tess.indexes[ tess.numIndexes++ ] = vbase + 1;
-	tess.indexes[ tess.numIndexes++ ] = vbase + 2;
-
-	tess.indexes[ tess.numIndexes++ ] = vbase + 2;
-	tess.indexes[ tess.numIndexes++ ] = vbase + 1;
-	tess.indexes[ tess.numIndexes++ ] = vbase + 3;
-}
-
-static void Tess_DoRailDiscs( int numSegs, const vec3_t start, const vec3_t dir, const vec3_t right, const vec3_t up )
-{
-	int    i;
-	vec3_t pos[ 4 ];
-	vec3_t v;
-	int    spanWidth = r_railWidth->integer;
-	float  c, s;
-	float  scale;
-
-	if ( numSegs > 1 )
-	{
-		numSegs--;
-	}
-
-	if ( !numSegs )
-	{
-		return;
-	}
-
-	scale = 0.25;
-
-	for ( i = 0; i < 4; i++ )
-	{
-		c = cos( DEG2RAD( 45 + i * 90 ) );
-		s = sin( DEG2RAD( 45 + i * 90 ) );
-		v[ 0 ] = ( right[ 0 ] * c + up[ 0 ] * s ) * scale * spanWidth;
-		v[ 1 ] = ( right[ 1 ] * c + up[ 1 ] * s ) * scale * spanWidth;
-		v[ 2 ] = ( right[ 2 ] * c + up[ 2 ] * s ) * scale * spanWidth;
-		VectorAdd( start, v, pos[ i ] );
-
-		if ( numSegs > 1 )
-		{
-			// offset by 1 segment if we're doing a long distance shot
-			VectorAdd( pos[ i ], dir, pos[ i ] );
-		}
-	}
-
-	for ( i = 0; i < numSegs; i++ )
-	{
-		int j;
-
-		Tess_CheckOverflow( 4, 6 );
-
-		for ( j = 0; j < 4; j++ )
-		{
-			VectorCopy( pos[ j ], tess.xyz[ tess.numVertexes ] );
-			tess.xyz[ tess.numVertexes ][ 3 ] = 1;
-			tess.texCoords[ tess.numVertexes ][ 0 ] = ( j < 2 );
-			tess.texCoords[ tess.numVertexes ][ 1 ] = ( j && j != 3 );
-			tess.texCoords[ tess.numVertexes ][ 2 ] = 0;
-			tess.texCoords[ tess.numVertexes ][ 3 ] = 1;
-			tess.colors[ tess.numVertexes ][ 0 ] = backEnd.currentEntity->e.shaderRGBA[ 0 ] * ( 1.0 / 255.0 );
-			tess.colors[ tess.numVertexes ][ 1 ] = backEnd.currentEntity->e.shaderRGBA[ 1 ] * ( 1.0 / 255.0 );
-			tess.colors[ tess.numVertexes ][ 2 ] = backEnd.currentEntity->e.shaderRGBA[ 2 ] * ( 1.0 / 255.0 );
-			tess.numVertexes++;
-
-			VectorAdd( pos[ j ], dir, pos[ j ] );
-		}
-
-		tess.indexes[ tess.numIndexes++ ] = tess.numVertexes - 4 + 0;
-		tess.indexes[ tess.numIndexes++ ] = tess.numVertexes - 4 + 1;
-		tess.indexes[ tess.numIndexes++ ] = tess.numVertexes - 4 + 3;
-		tess.indexes[ tess.numIndexes++ ] = tess.numVertexes - 4 + 3;
-		tess.indexes[ tess.numIndexes++ ] = tess.numVertexes - 4 + 1;
-		tess.indexes[ tess.numIndexes++ ] = tess.numVertexes - 4 + 2;
-	}
-}
-
-/*
-==============
-Tess_SurfaceRailRings
-==============
-*/
-static void Tess_SurfaceRailRings( void )
-{
-	refEntity_t *e;
-	int         numSegs;
-	int         len;
-	vec3_t      vec;
-	vec3_t      right, up;
-	vec3_t      start, end;
-
-	GLimp_LogComment( "--- Tess_SurfaceRailRings ---\n" );
-
-	e = &backEnd.currentEntity->e;
-
-	VectorCopy( e->oldorigin, start );
-	VectorCopy( e->origin, end );
-
-	// compute variables
-	VectorSubtract( end, start, vec );
-	len = VectorNormalize( vec );
-	MakeNormalVectors( vec, right, up );
-	numSegs = ( len ) / r_railSegmentLength->value;
-
-	if ( numSegs <= 0 )
-	{
-		numSegs = 1;
-	}
-
-	VectorScale( vec, r_railSegmentLength->value, vec );
-
-	Tess_DoRailDiscs( numSegs, start, vec, right, up );
-}
-
-/*
-==============
-Tess_SurfaceRailCore
-==============
-*/
-static void Tess_SurfaceRailCore( void )
-{
-	refEntity_t *e;
-	int         len;
-	vec3_t      right;
-	vec3_t      vec;
-	vec3_t      start, end;
-	vec3_t      v1, v2;
-
-	GLimp_LogComment( "--- Tess_SurfaceRailCore ---\n" );
-
-	e = &backEnd.currentEntity->e;
-
-	VectorCopy( e->oldorigin, start );
-	VectorCopy( e->origin, end );
-
-	VectorSubtract( end, start, vec );
-	len = VectorNormalize( vec );
-
-	// compute side vector
-	VectorSubtract( start, backEnd.viewParms.orientation.origin, v1 );
-	VectorNormalize( v1 );
-	VectorSubtract( end, backEnd.viewParms.orientation.origin, v2 );
-	VectorNormalize( v2 );
-	CrossProduct( v1, v2, right );
-	VectorNormalize( right );
-
-	Tess_DoRailCore( start, end, right, len, r_railCoreWidth->integer );
-}
-
-/*
-==============
-Tess_SurfaceLightningBolt
-==============
-*/
-static void Tess_SurfaceLightningBolt( void )
-{
-	refEntity_t *e;
-	int         len;
-	vec3_t      right;
-	vec3_t      vec;
-	vec3_t      start, end;
-	vec3_t      v1, v2;
-	int         i;
-
-	GLimp_LogComment( "--- Tess_SurfaceLightningBolt ---\n" );
-
-	e = &backEnd.currentEntity->e;
-
-	VectorCopy( e->oldorigin, end );
-	VectorCopy( e->origin, start );
-
-	// compute variables
-	VectorSubtract( end, start, vec );
-	len = VectorNormalize( vec );
-
-	// compute side vector
-	VectorSubtract( start, backEnd.viewParms.orientation.origin, v1 );
-	VectorNormalize( v1 );
-	VectorSubtract( end, backEnd.viewParms.orientation.origin, v2 );
-	VectorNormalize( v2 );
-	CrossProduct( v1, v2, right );
-	VectorNormalize( right );
-
-	for ( i = 0; i < 4; i++ )
-	{
-		vec3_t temp;
-
-		Tess_DoRailCore( start, end, right, len, 8 );
-		RotatePointAroundVector( temp, vec, right, 45 );
-		VectorCopy( temp, right );
-	}
-}
-
 /*
 =============
 Tess_SurfaceMDV
@@ -2234,28 +1948,12 @@ static void Tess_SurfaceEntity( surfaceType_t *surfType )
 
 	switch ( backEnd.currentEntity->e.reType )
 	{
-		case RT_SPLASH:
-			Tess_SurfaceSplash();
-			break;
-
 		case RT_SPRITE:
 			Tess_SurfaceSprite();
 			break;
 
 		case RT_BEAM:
 			Tess_SurfaceBeam();
-			break;
-
-		case RT_RAIL_CORE:
-			Tess_SurfaceRailCore();
-			break;
-
-		case RT_RAIL_RINGS:
-			Tess_SurfaceRailRings();
-			break;
-
-		case RT_LIGHTNING:
-			Tess_SurfaceLightningBolt();
 			break;
 
 		default:

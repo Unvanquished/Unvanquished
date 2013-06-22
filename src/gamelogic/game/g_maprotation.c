@@ -44,6 +44,7 @@ typedef enum
   CO_EQ,
   CO_GT
 } conditionOperator_t;
+#define CONDITION_OPERATOR(op) ( ( op ) + '<' )
 
 typedef struct condition_s
 {
@@ -646,18 +647,60 @@ static qboolean G_ParseMapRotationFile( const char *fileName )
 	return qtrue;
 }
 
+// Some constants for map rotation listing
+#define MAP_BAD            "^1"
+#define MAP_CURRENT        "^2"
+#define MAP_CONTROL        "^5"
+#define MAP_DEFAULT        "^7"
+#define MAP_CURRENT_MARKER "‣"
+
 /*
 ===============
-G_PrintSpaces
+G_RotationNode_ToString
 ===============
 */
-static void G_PrintSpaces( int spaces )
+static const char *G_RotationNode_ToString( const mrNode_t *node )
 {
-	int i;
-
-	for ( i = 0; i < spaces; i++ )
+	switch ( node->type )
 	{
-		G_Printf( " " );
+		case NT_MAP:
+			return node->u.map.name;
+
+		case NT_CONDITION:
+			switch ( node->u.condition.lhs )
+			{
+				case CV_RANDOM:
+					return MAP_CONTROL "condition: random";
+					break;
+
+				case CV_NUMCLIENTS:
+					return va( MAP_CONTROL "condition: numClients %c %i",
+					           CONDITION_OPERATOR( node->u.condition.operator ),
+					           node->u.condition.numClients );
+
+				case CV_LASTWIN:
+					return va( MAP_CONTROL "condition: lastWin %s",
+					           BG_TeamName( node->u.condition.lastWin ) );
+
+				default:
+					return MAP_CONTROL "condition: ???";
+			}
+			break;
+
+		case NT_GOTO:
+			return va( MAP_CONTROL "goto: %s", node->u.label.name );
+
+		case NT_RESUME:
+			return va( MAP_CONTROL "resume: %s", node->u.label.name );
+
+		case NT_LABEL:
+			return va( MAP_CONTROL "label: %s", node->u.label.name );
+
+		case NT_RETURN:
+			return MAP_CONTROL "return";
+
+		default:
+			return MAP_BAD "???";
 	}
 }
 
@@ -686,12 +729,11 @@ void G_PrintRotations( void )
 		for ( j = 0; j < mr->numNodes; j++ )
 		{
 			mrNode_t *node = mr->nodes[ j ];
-			int    indentation = 0;
+			int    indentation = 2;
 
 			while ( node->type == NT_CONDITION )
 			{
-				G_PrintSpaces( indentation );
-				G_Printf( "  condition\n" );
+				G_Printf( "%*s%s\n", indentation, "", G_RotationNode_ToString( node ) );
 				node = node->u.condition.target;
 
 				size += sizeof( mrNode_t );
@@ -699,42 +741,16 @@ void G_PrintRotations( void )
 				indentation += 2;
 			}
 
-			G_PrintSpaces( indentation );
+			G_Printf( "%*s%s\n", indentation, "", G_RotationNode_ToString( node ) );
 
-			switch ( node->type )
+			if ( node->type == NT_MAP && strlen( node->u.map.postCommand ) > 0 )
 			{
-				case NT_MAP:
-					G_Printf( "  %s\n", node->u.map.name );
-
-					if ( strlen( node->u.map.postCommand ) > 0 )
-					{
-						G_Printf( "    command: %s", node->u.map.postCommand );
-					}
-
-					break;
-
-				case NT_RETURN:
-					G_Printf( "  return\n" );
-					break;
-
-				case NT_LABEL:
-					G_Printf( "  label: %s\n", node->u.label.name );
-					break;
-
-				case NT_GOTO:
-					G_Printf( "  goto: %s\n", node->u.label.name );
-					break;
-
-				case NT_RESUME:
-					G_Printf( "  resume: %s\n", node->u.label.name );
-					break;
-
-				default:
-					break;
+				G_Printf( MAP_CONTROL "    command: %s", node->u.map.postCommand ); // assume that there's an LF there... if not, well...
 			}
+
 		}
 
-		G_Printf( "}\n" );
+		G_Printf( MAP_DEFAULT "}\n" );
 	}
 
 	G_Printf( "Total memory used: %d bytes\n", size );
@@ -753,6 +769,7 @@ void G_PrintCurrentRotation( gentity_t *ent )
 	mapRotation_t *mapRotation = G_MapRotationActive() ? &mapRotations.rotations[ mapRotationIndex ] : NULL;
 	int           i = 0;
 	char          currentMapName[ MAX_QPATH ];
+	qboolean      currentShown = qfalse;
 	mrNode_t        *node;
 
 	if ( mapRotation == NULL )
@@ -774,60 +791,61 @@ void G_PrintCurrentRotation( gentity_t *ent )
 
 	while ( ( node = mapRotation->nodes[ i++ ] ) )
 	{
-		int  colour = 7;
-		char *prefix;
-		char *suffix = "";
-
-		switch ( node->type )
-		{
-			case NT_RETURN:
-				prefix = "return";
-				break;
-
-			case NT_LABEL:
-				prefix = "label: ";
-				break;
-
-			case NT_GOTO:
-				prefix = "goto: ";
-				break;
-
-			case NT_RESUME:
-				prefix = "resume: ";
-				break;
-
-			default:
-				prefix = "";
-				break;
-		}
+		const char *colour = MAP_DEFAULT;
+		int         indentation = 7;
+		qboolean    currentMap = qfalse;
+		qboolean    override = qfalse;
 
 		if ( node->type == NT_MAP && !G_MapExists( node->u.map.name ) )
 		{
-			colour = 1;
+			colour = MAP_BAD;
 		}
 		else if ( G_NodeIndexAfter( i - 1, mapRotationIndex ) == G_CurrentNodeIndex( mapRotationIndex ) )
 		{
-			colour = 3;
+			currentMap = qtrue;
+			currentShown = node->type == NT_MAP;
+			override = currentShown && Q_stricmp( node->u.map.name, currentMapName );
 
-			if ( node->type == NT_MAP && Q_stricmp( node->u.map.name, currentMapName ) )
+			if ( !override )
 			{
-				suffix = va( " (%s)", currentMapName );
+				colour = MAP_CURRENT;
 			}
 		}
 
-		ADMBP(
-		  va( " ^%i%3i %s%s%s\n",
-		      colour,
-		      i,
-		      prefix,
-		      node->type == NT_MAP ? node->u.map.name : node->u.label.name,
-		      suffix ) );
+		ADMBP( va( "^7%s%3i %s%s\n",
+		           ( currentMap && currentShown && !override ) ? MAP_CURRENT_MARKER : " ",
+		           i, colour, G_RotationNode_ToString( node ) ) );
+
+		while ( node->type == NT_CONDITION )
+		{
+			node = node->u.condition.target;
+			ADMBP( va( "%*s%s%s\n", indentation, "", colour, G_RotationNode_ToString( node ) ) );
+			indentation += 2;
+		}
+
+		if ( override )
+		{
+			ADMBP( va( MAP_DEFAULT MAP_CURRENT_MARKER "    " MAP_CURRENT "%s\n", currentMapName ) ); // use current map colour here
+		}
+		if ( currentMap && currentShown && G_MapExists( g_nextMap.string ) )
+		{
+			ADMBP( va( MAP_DEFAULT "     %s\n", g_nextMap.string ) );
+			currentMap = qfalse;
+		}
 	}
 
-	if ( G_MapExists( g_nextMap.string ) )
+	// current map will not have been shown if we're at the last entry
+	// (e.g. server just started up) and that entry is not for a map
+	if ( !currentShown )
 	{
-		ADMBP( va( "^7The next map has been set to %s\n", g_nextMap.string ) );
+		ADMBP( va( MAP_DEFAULT MAP_CURRENT_MARKER "    " MAP_CURRENT "%s\n", currentMapName ) ); // use current map colour here
+
+		if ( G_MapExists( g_nextMap.string ) )
+		{
+			ADMBP( va( MAP_DEFAULT "     %s\n", g_nextMap.string ) );
+		}
 	}
+
 
 	ADMBP_end();
 }
