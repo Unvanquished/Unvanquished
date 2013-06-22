@@ -349,7 +349,7 @@ const char* Trans_Gettext_Internal( const char *msgid, DictionaryManager& manage
 	}
 
 	num = ( num + 1 ) & 3;
-	gettextbuffer[ num ] = manager.get_dictionary().translate( msgid ).c_str();
+	gettextbuffer[ num ] = manager.get_dictionary().translate( msgid );
 	return gettextbuffer[ num ].c_str();
 }
 
@@ -361,7 +361,7 @@ const char* Trans_Pgettext_Internal( const char *ctxt, const char *msgid, Dictio
 	}
 
 	num = ( num + 1 ) & 3;
-	gettextbuffer[ num ] = manager.get_dictionary().translate_ctxt( ctxt, msgid ).c_str();
+	gettextbuffer[ num ] = manager.get_dictionary().translate_ctxt( ctxt, msgid );
 	return gettextbuffer[ num ].c_str();
 }
 
@@ -383,7 +383,7 @@ const char* Trans_GettextPlural_Internal( const char *msgid, const char *msgid_p
 	}
 
 	num = ( num + 1 ) & 3;
-	gettextbuffer[ num ] = manager.get_dictionary().translate_plural( msgid, msgid_plural, number ).c_str();
+	gettextbuffer[ num ] = manager.get_dictionary().translate_plural( msgid, msgid_plural, number );
 	return gettextbuffer[ num ].c_str();
 }
 
