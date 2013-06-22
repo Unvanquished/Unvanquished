@@ -80,14 +80,7 @@ public:
 	{
 		int ret = FS_Seek( ( fileHandle_t ) file, offset, origin );
 
-		if ( ret < 0 )
-		{
-			return false;
-		}
-		else
-		{
-			return true;
-		}
+		return ( ret >= 0 );
 	}
 
 	size_t Tell( Rocket::Core::FileHandle file )
@@ -253,12 +246,8 @@ public:
 
 		textureHandle = re.GenerateTexture( (const byte* )source, sourceDimensions.x, sourceDimensions.y );
 		Com_DPrintf( "RE_GenerateTexture [ %lu ( %d x %d )]\n", textureHandle, sourceDimensions.x, sourceDimensions.y );
-		if ( textureHandle > 0 )
-		{
-			return true;
-		}
 
-		return false;
+		return ( textureHandle > 0 );
 	}
 
 	void ReleaseTexture( Rocket::Core::TextureHandle textureHandle )
