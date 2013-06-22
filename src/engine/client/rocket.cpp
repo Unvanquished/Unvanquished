@@ -187,9 +187,7 @@ public:
 		this->shader = shader;
 	}
 
-	~RocketCompiledGeometry() {}
-
-	void free( void )
+	~RocketCompiledGeometry()
 	{
 		Z_Free( verts );
 		Z_Free( indices );
@@ -232,7 +230,6 @@ public:
 	void ReleaseCompiledGeometry( Rocket::Core::CompiledGeometryHandle geometry )
 	{
 		RocketCompiledGeometry *g = ( RocketCompiledGeometry * ) geometry;
-		g->free();
 		delete g;
 	}
 
