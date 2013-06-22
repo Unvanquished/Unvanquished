@@ -653,10 +653,9 @@ void Rocket_InjectMouseMotion( int x, int y )
 
 static bool IsInvalidEmoticon( Rocket::Core::String emoticon )
 {
-	const char *invalid[] = { "*", "/", "\\", ".", " ", "<", ">", "!", "@", "#", "$", "%", "^", "&", "(", ")", "-", "_", "+", "=", ",", "?", "[", "]", "{", "}", "|", ":", ";", "'", "\"", "`", "~" };
-	int length = ARRAY_LEN( invalid );
+	const char invalid[][2] = { "*", "/", "\\", ".", " ", "<", ">", "!", "@", "#", "$", "%", "^", "&", "(", ")", "-", "_", "+", "=", ",", "?", "[", "]", "{", "}", "|", ":", ";", "'", "\"", "`", "~" };
 
-	for ( int i = 0; i < length; ++i )
+	for ( int i = 0; i < ARRAY_LEN( invalid ); ++i )
 	{
 		if ( emoticon.Find( invalid[ i ] ) != Rocket::Core::String::npos )
 		{
@@ -695,21 +694,17 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in )
 		else if ( *p == '\n' )
 		{
 			out.Append( span ? "</span><br />" : "<br />" );
-			if ( span )
-			{
-				span = qfalse;
-			}
+			span = qfalse;
 		}
 		else if ( Q_IsColorString( p ) )
 		{
 			if ( span )
 			{
 				out.Append( "</span>" );
-				span = qfalse;
 			}
-			p++;
+
 			char rgb[32];
-			int code = ColorIndex( *p );
+			int code = ColorIndex( *++p );
 
 			Com_sprintf( rgb, sizeof( rgb ), "<span style='color: #%02X%02X%02X;'>",
 			          (int)( g_color_table[ code ][ 0 ] * 255 ),
@@ -747,9 +742,13 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in )
 		const char *path;
 
 		openBracket = out.Find( "[", currentPosition );
-		closeBracket = out.Find( "]", currentPosition );
+		if ( openBracket == Rocket::Core::String::npos )
+		{
+			break;
+		}
 
-		if ( openBracket == Rocket::Core::String::npos || closeBracket == Rocket::Core::String::npos )
+		closeBracket = out.Find( "]", openBracket );
+		if ( closeBracket == Rocket::Core::String::npos )
 		{
 			break;
 		}
@@ -774,7 +773,7 @@ Rocket::Core::String Rocket_QuakeToRML( const char *in )
 		else
 		{
 			// NOTE: +2 is for the two brackets.
-			currentPosition = openBracket + emoticon.Length() + 2;
+			currentPosition = closeBracket + 1;
 		}
 	}
 
