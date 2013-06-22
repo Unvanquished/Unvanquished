@@ -146,6 +146,28 @@ public:
 	}
 };
 
+static polyVert_t *createVertexArray( Rocket::Core::Vertex *vertices, int count )
+{
+	polyVert_t *verts = static_cast<polyVert_t *>( Z_Malloc( sizeof( polyVert_t ) * count ) );
+
+	for ( int i = 0; i < count; i++ )
+	{
+		polyVert_t &polyVert = verts[ i ];
+		Rocket::Core::Vertex &vert = vertices[ i ];
+
+		Vector2Copy( vert.position, polyVert.xyz );
+
+		polyVert.modulate[ 0 ] = vert.colour.red;
+		polyVert.modulate[ 1 ] = vert.colour.green;
+		polyVert.modulate[ 2 ] = vert.colour.blue;
+		polyVert.modulate[ 3 ] = vert.colour.alpha;
+
+		Vector2Copy( vert.tex_coord, polyVert.st );
+	}
+
+	return verts;
+}
+
 class RocketCompiledGeometry
 {
 public:
@@ -157,24 +179,10 @@ public:
 
 	RocketCompiledGeometry( Rocket::Core::Vertex *verticies, int numVerticies, int *_indices, int _numIndicies, qhandle_t shader ) : numVerts( numVerticies ), numIndicies( _numIndicies )
 	{
-		this->verts = ( polyVert_t * ) Z_Malloc( sizeof( polyVert_t ) * numVerticies );
+		this->verts = createVertexArray( verticies, numVerticies );
 
 		this->indices = ( int * ) Z_Malloc( sizeof( int ) * _numIndicies );
 		Com_Memcpy( indices, _indices, _numIndicies * sizeof( int ) );
-
-		for ( int i = 0; i < numVerticies; i++ )
-		{
-			polyVert_t &polyVert = verts[ i ];
-			Rocket::Core::Vertex &vert = verticies[ i ];
-			Vector2Copy( vert.position, polyVert.xyz );
-
-			polyVert.modulate[ 0 ] = vert.colour.red;
-			polyVert.modulate[ 1 ] = vert.colour.green;
-			polyVert.modulate[ 2 ] = vert.colour.blue;
-			polyVert.modulate[ 3 ] = vert.colour.alpha;
-
-			Vector2Copy( vert.tex_coord, polyVert.st );
-		}
 
 		this->shader = shader;
 	}
@@ -199,22 +207,7 @@ public:
 
 	void RenderGeometry( Rocket::Core::Vertex *verticies,  int numVerticies, int *indices, int numIndicies, Rocket::Core::TextureHandle texture, const Rocket::Core::Vector2f& translation )
 	{
-		polyVert_t *verts;
-		verts = ( polyVert_t * ) Z_Malloc( sizeof( polyVert_t ) * numVerticies );
-
-		for ( int i = 0; i < numVerticies; i++ )
-		{
-			polyVert_t &polyVert = verts[ i ];
-			Rocket::Core::Vertex &vert = verticies[ i ];
-			Vector2Copy( vert.position, polyVert.xyz );
-
-			polyVert.modulate[ 0 ] = vert.colour.red;
-			polyVert.modulate[ 1 ] = vert.colour.green;
-			polyVert.modulate[ 2 ] = vert.colour.blue;
-			polyVert.modulate[ 3 ] = vert.colour.alpha;
-
-			Vector2Copy( vert.tex_coord, polyVert.st );
-		}
+		polyVert_t *verts = createVertexArray( verticies, numVerticies );
 
 		re.Add2dPolysIndexed( verts, numVerticies, indices, numIndicies, translation.x, translation.y, texture ? ( qhandle_t ) texture : whiteShader );
 
