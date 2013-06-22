@@ -43,13 +43,8 @@ uniform vec4		u_Color;
 uniform mat4		u_ModelMatrix;
 uniform mat4		u_ModelViewProjectionMatrix;
 
-varying vec3		var_Position;
 varying vec2		var_Tex;
 varying vec4		var_Color;
-
-
-
-
 
 void	main()
 {
@@ -83,18 +78,16 @@ void	main()
 	// transform vertex position into homogenous clip-space
 	gl_Position = u_ModelViewProjectionMatrix * position;
 
-	// transform position into world space
-	var_Position = mat3(u_ModelMatrix) * position.xyz;
-
 	// transform texcoords
 	vec4 texCoord;
 #if defined(USE_TCGEN_ENVIRONMENT)
 	{
+		position = (mat3(u_ModelMatrix) * position.xyz).xyzx;
 		vec3 viewer = normalize(u_ViewOrigin - position.xyz);
 
-		float d = dot(attr_Normal, viewer);
+		float d = dot(normal, viewer);
 
-		vec3 reflected = attr_Normal * 2.0 * d - viewer;
+		vec3 reflected = normal * 2.0 * d - viewer;
 
 		texCoord.s = 0.5 + reflected.y * 0.5;
 		texCoord.t = 0.5 - reflected.z * 0.5;
