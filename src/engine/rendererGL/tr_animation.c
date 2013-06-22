@@ -1091,7 +1091,7 @@ void R_AddMD5Surfaces( trRefEntity_t *ent )
 R_AddMD5Interactions
 =================
 */
-void R_AddMD5Interactions( trRefEntity_t *ent, trRefLight_t *light )
+void R_AddMD5Interactions( trRefEntity_t *ent, trRefLight_t *light, interactionType_t iaType )
 {
 	int               i;
 	md5Model_t        *model;
@@ -1099,7 +1099,6 @@ void R_AddMD5Interactions( trRefEntity_t *ent, trRefLight_t *light )
 	shader_t          *shader = 0;
 	qboolean          personalModel;
 	byte              cubeSideBits = CUBESIDE_CLIPALL;
-	interactionType_t iaType = IA_DEFAULT;
 
 	// cull the entire model if merged bounding box of both frames
 	// is outside the view frustum and we don't care about proper shadowing

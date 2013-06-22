@@ -493,6 +493,14 @@ void RE_AddDynamicLightToSceneET( const vec3_t org, float radius, float intensit
 		return;
 	}
 
+	// set last lights restrictInteractionEnd if needed
+	if ( r_numLights > r_firstSceneLight ) {
+		light = &backEndData[ tr.smpFrame ]->lights[ r_numLights - 1 ];
+		if( light->restrictInteractionFirst >= 0 ) {
+			light->restrictInteractionLast = r_numEntities - r_firstSceneEntity - 1;
+		}
+	}
+
 	if ( r_numLights >= MAX_REF_LIGHTS )
 	{
 		return;
@@ -534,6 +542,14 @@ void RE_AddDynamicLightToSceneET( const vec3_t org, float radius, float intensit
 
 	light->l.noShadows = r_dynamicLightCastShadows->integer ? qfalse : qtrue;
 	light->l.inverseShadows = !!( flags & REF_INVERSE_DLIGHT );
+
+	if( flags & REF_RESTRICT_DLIGHT ) {
+		light->restrictInteractionFirst = r_numEntities - r_firstSceneEntity;
+		light->restrictInteractionLast = 0;
+	} else {
+		light->restrictInteractionFirst = -1;
+		light->restrictInteractionLast = -1;
+	}
 
 	light->isStatic = qfalse;
 	light->additive = qtrue;
