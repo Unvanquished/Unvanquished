@@ -26,6 +26,8 @@ if( WIN32 OR MSVC OR CMAKE_SYSTEM_PROCESSOR MATCHES "i.86" OR CMAKE_SYSTEM_PROCE
   set( X86 1 )
 endif()
 
+set( MOUNT_DIR ${CMAKE_SOURCE_DIR}/src )
+
 # Check if this is first run and if so set some default flags
 if( NOT DEFINED SUBSEQUENT_RUN )
   set( SUBSEQUENT_RUN 1 CACHE INTERNAL "True if not first run" )
@@ -40,11 +42,33 @@ if( NOT DEFINED SUBSEQUENT_RUN )
       else()
         set( CMAKE_USE_SSE2 "" )
       endif()
+
+      macro( try_compiler_option COMPILER_ID COMPILER_VERSION PROP FLAG_TRUE FLAG_FALSE )
+        if( COMPILER_ID STREQUAL "" OR ( CMAKE_C_COMPILER_ID STREQUAL "${COMPILER_ID}" AND NOT ( CMAKE_C_COMPILER_VERSION VERSION_LESS "${COMPILER_VERSION}" ) ) )
+          set( SAVED_FLAGS "${CMAKE_C_FLAGS}" )
+          set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${FLAG_TRUE}" )
+          try_compile( ${PROP}_TEST ${MOUNT_DIR}/tests ${MOUNT_DIR}/tests/test.c
+                       CMAKE_FLAGS "-DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}" )
+          set( CMAKE_C_FLAGS "${SAVED_FLAGS}" )
+          if( ${PROP}_TEST )
+            message( STATUS "Using flag ${FLAG_TRUE}" )
+            set( ${PROP} ${FLAG_TRUE} )
+          else()
+            set( ${PROP} ${FLAG_FALSE} )
+          endif()
+        else()
+          set( ${PROP} ${FLAG_FALSE} )
+        endif()
+      endmacro()
+
+      try_compiler_option( GNU   0.0 DEBUG_SYMBOLS_LEVEL -g3 -g  ) # gcc: macro expansion etc. in gdb
+      try_compiler_option( GNU   4.8 DEBUG_OPTIMISE      -Og ""  ) # gcc 4.8: optimisation level for debug builds
+
       set( CMAKE_C_FLAGS "${CMAKE_USE_SSE2} -pipe" CACHE STRING "Flags used by the compiler during all build types" FORCE )
-      set( CMAKE_C_FLAGS_DEBUG "-g" CACHE STRING "Flags used by the compiler during debug builds." FORCE )
+      set( CMAKE_C_FLAGS_DEBUG "${DEBUG_OPTIMISE} ${DEBUG_SYMBOLS_LEVEL}" CACHE STRING "Flags used by the compiler during debug builds." FORCE )
       set( CMAKE_C_FLAGS_MINSIZEREL "-DNDEBUG -Os" CACHE STRING "Flags used by the compiler during release minsize builds." FORCE )
       set( CMAKE_C_FLAGS_RELEASE "-DNDEBUG -O3 -ffast-math -fomit-frame-pointer -fno-strict-aliasing" CACHE STRING "Flags used by the compiler during release builds" FORCE )
-      set( CMAKE_C_FLAGS_RELWITHDEBINFO "-DNDEBUG -O3 -ffast-math -fomit-frame-pointer -fno-strict-aliasing -g" CACHE STRING "Flags used by the compiler during Release with Debug Info builds." FORCE )
+      set( CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELEASE} -g" CACHE STRING "Flags used by the compiler during Release with Debug Info builds." FORCE )
     else(NOT MINIMAL_FLAGS)
       set( CMAKE_C_FLAGS_DEBUG "" )
       set( CMAKE_C_FLAGS_RELEASE "-DNDEBUG" )
@@ -137,9 +161,8 @@ if( GAME_LIB_LLVM )
   message( STATUS "Using LLVM" )
 endif()
 
-set( MOUNT_DIR ${CMAKE_SOURCE_DIR}/src )
-set( GPP_DIR ${CMAKE_SOURCE_DIR}/src/gamelogic )
-set( LIB_DIR ${CMAKE_SOURCE_DIR}/src/libs ) # LIB_DIR is also defined in Visual_Studio32/64.cmake
+set( GPP_DIR ${MOUNT_DIR}/gamelogic )
+set( LIB_DIR ${MOUNT_DIR}/libs ) # LIB_DIR is also defined in Visual_Studio32/64.cmake
 set( SDL_DIR ${LIB_DIR}/libsdl )
 set( JPEG_DIR ${LIB_DIR}/jpeg )
 set( GLEW_DIR ${LIB_DIR}/glew )
