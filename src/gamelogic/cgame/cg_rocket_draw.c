@@ -138,7 +138,6 @@ static void CG_Rocket_DrawFPS( void )
 	int        fps;
 	static int previous;
 	int        t, frameTime;
-	float      maxX;
 
 	if ( !cg_drawFPS.integer )
 	{
@@ -186,7 +185,6 @@ static void CG_Rocket_DrawCrosshair( void )
 	weaponInfo_t *wi;
 	weapon_t     weapon;
 	vec4_t       color = { 255, 255, 255, 255 };
-	const char *s;
 
 	weapon = BG_GetPlayerWeapon( &cg.snap->ps );
 
@@ -738,7 +736,6 @@ static void CG_Rocket_DrawDisconnect( void )
 	int        cmdNum;
 	usercmd_t  cmd;
 	const char *s;
-	int        w;
 	vec4_t     color = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	// draw the phone jack if we are completely past our buffers
@@ -1010,7 +1007,6 @@ static void CG_Rocket_DrawCrosshairNames( void )
 {
 	float *color;
 	char  *name;
-	float w, x;
 
 	if ( !cg_drawCrosshairNames.integer )
 	{
@@ -1231,7 +1227,7 @@ into a single progress bar.
 #define LALIGN_BOTTOMRIGHT 2
 
 static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
-                          int align, int valign, float val, int max )
+                          int align, float val, int max )
 {
 	int      i;
 	float    each, frac;
@@ -1242,7 +1238,7 @@ static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
 
 	// so that the vertical and horizontal bars can share code, abstract the
 	// longer dimension and the alignment parameter
-	int length, lalign;
+	int length;
 
 
 	if ( val <= 0 || max <= 0 )
@@ -1271,7 +1267,7 @@ static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
 	{
 		float loff;
 
-		switch ( lalign )
+		switch ( align )
 		{
 			case LALIGN_TOPLEFT:
 				loff = 0;
@@ -1318,7 +1314,7 @@ static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
 	{
 		float start;
 
-		switch ( lalign )
+		switch ( align )
 		{
 			case LALIGN_TOPLEFT:
 				start = ( i * ( 1 + nudge ) + frac ) / fmax;
@@ -1356,7 +1352,7 @@ static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
 	localColor[ 3 ] *= frac;
 	trap_R_SetColor( localColor );
 
-	switch ( lalign )
+	switch ( align )
 	{
 		case LALIGN_TOPLEFT:
 			if ( vertical )
@@ -1397,7 +1393,7 @@ static void CG_DrawStack( rectDef_t *rect, vec4_t color, float fill,
 static void CG_DrawPlayerAmmoStack( void )
 {
 	float         val;
-	int           maxVal, align, valign;
+	int           maxVal, align;
 	static int    lastws, maxwt, lastval, valdiff;
 	playerState_t *ps = &cg.snap->ps;
 	weapon_t      primary = BG_PrimaryWeapon( ps->stats );
@@ -1510,29 +1506,14 @@ static void CG_DrawPlayerAmmoStack( void )
 		align = LALIGN_TOPLEFT;
 	}
 
-	trap_Rocket_GetProperty( "text-valign", buf, sizeof( buf ), ROCKET_STRING );
-
-	if ( *buf && !Q_stricmp( buf, "right" ) )
-	{
-		align = LALIGN_BOTTOMRIGHT;
-	}
-	else if ( *buf && !Q_stricmp( buf, "center" ) )
-	{
-		align = LALIGN_CENTER;
-	}
-	else
-	{
-		align = LALIGN_TOPLEFT;
-	}
-
-	CG_DrawStack( &rect, localColor, 0.8, align, valign,
+	CG_DrawStack( &rect, localColor, 0.8, align,
 	              val, maxVal );
 }
 
 static void CG_DrawPlayerClipsStack( void )
 {
 	float         val;
-	int           maxVal, align, valign;
+	int           maxVal;
 	static int    lastws, maxwt;
 	playerState_t *ps = &cg.snap->ps;
 	rectDef_t      rect;
@@ -1582,8 +1563,7 @@ static void CG_DrawPlayerClipsStack( void )
 		}
 	}
 
-	CG_DrawStack( &rect, foreColor, 0.8, align, valign,
-	              val, maxVal );
+	CG_DrawStack( &rect, foreColor, 0.8, LALIGN_TOPLEFT, val, maxVal );
 }
 
 void CG_Rocket_DrawMinimap( void )
