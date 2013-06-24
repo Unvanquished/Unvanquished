@@ -34,6 +34,31 @@ Maryland 20850 USA.
 
 #include "cg_local.h"
 
+static void CG_GetRocketElementColor( vec4_t color )
+{
+	trap_Rocket_GetProperty( "color", &color, sizeof( vec4_t ), ROCKET_COLOR );
+	Vector4Scale( color, 1 / 255.0f, color );
+}
+
+static void CG_GetRocketElementBGColor( vec4_t bgColor )
+{
+	trap_Rocket_GetProperty( "background-color", &bgColor, sizeof( vec4_t ), ROCKET_COLOR );
+	Vector4Scale( bgColor, 1 / 255.0f, bgColor );
+}
+
+static void CG_GetRocketElementRect( rectDef_t *rect )
+{
+	trap_Rocket_GetElementAbsoluteOffset( &rect->x, &rect->y );
+	trap_Rocket_GetProperty( "width", &rect->w, sizeof( rect->w ), ROCKET_FLOAT );
+	trap_Rocket_GetProperty( "height", &rect->h, sizeof( rect->h ), ROCKET_FLOAT );
+
+	// Convert from absolute monitor coords to a virtual 640x480 coordinate system
+	rect->x = ( rect->x / cgs.glconfig.vidWidth ) * 640;
+	rect->y = ( rect->y / cgs.glconfig.vidHeight ) * 480;
+	rect->w = ( rect->w / cgs.glconfig.vidWidth ) * 640;
+	rect->h = ( rect->h / cgs.glconfig.vidHeight ) * 480;
+}
+
 static void CG_Rocket_DrawAmmo( void )
 {
 	int      value;
@@ -226,7 +251,7 @@ static void CG_Rocket_DrawCrosshair( void )
 
 	hShader = wi->crossHair;
 
-	trap_Rocket_GetProperty( "color", &color, sizeof( color ), ROCKET_COLOR );
+	CG_GetRocketElementColor( color );
 
 	//aiming at a friendly player/buildable, dim the crosshair
 	if ( cg.time == cg.crosshairClientTime || cg.crosshairBuildable >= 0 )
@@ -350,12 +375,13 @@ void CG_AddSpeed( void )
 static void CG_Rocket_DrawSpeedGraph( void )
 {
 	int          i;
-	float        val, max, top, x, y, w, h;
+	float        val, max, top;
 	// colour of graph is interpolated between these values
 	const vec3_t slow = { 0.0, 0.0, 1.0 };
 	const vec3_t medium = { 0.0, 1.0, 0.0 };
 	const vec3_t fast = { 1.0, 0.0, 0.0 };
 	vec4_t       color, backColor;
+	rectDef_t    rect;
 
 	if ( !cg_drawSpeed.integer )
 	{
@@ -363,21 +389,9 @@ static void CG_Rocket_DrawSpeedGraph( void )
 	}
 
 	// grab info from libRocket
-	trap_Rocket_GetElementAbsoluteOffset( &x, &y );
-	trap_Rocket_GetProperty( "color", &color, sizeof( color ), ROCKET_COLOR );
-	trap_Rocket_GetProperty( "background-color", &backColor, sizeof( backColor ), ROCKET_COLOR );
-	trap_Rocket_GetProperty( "width", &w, sizeof( w ), ROCKET_FLOAT );
-	trap_Rocket_GetProperty( "height", &h, sizeof( h ), ROCKET_FLOAT );
-
-	// Convert from absolute monitor coords to a virtual 640x480 coordinate system
-	x = ( x / cgs.glconfig.vidWidth ) * 640;
-	y = ( y / cgs.glconfig.vidHeight ) * 480;
-	w = ( w / cgs.glconfig.vidWidth ) * 640;
-	h = ( h / cgs.glconfig.vidHeight ) * 480;
-
-	// Convert from byte scale to [0,1]
-	Vector4Scale( color, 1 / 255.0f, color );
-	Vector4Scale( backColor, 1 / 255.0f, backColor );
+	CG_GetRocketElementColor( color );
+	CG_GetRocketElementBGColor( backColor );
+	CG_GetRocketElementRect( &rect );
 
 	max = speedSamples[ maxSpeedSample ];
 
@@ -387,7 +401,7 @@ static void CG_Rocket_DrawSpeedGraph( void )
 	}
 
 	trap_R_SetColor( backColor );
-	CG_DrawPic( x, y, w, h, cgs.media.whiteShader );
+	CG_DrawPic( rect.x, rect.y, rect.w, rect.h, cgs.media.whiteShader );
 
 	for ( i = 1; i < SPEEDOMETER_NUM_DISPLAYED_SAMPLES; i++ )
 	{
@@ -409,9 +423,9 @@ static void CG_Rocket_DrawSpeedGraph( void )
 		}
 
 		trap_R_SetColor( color );
-		top = y + ( 1 - val / max ) * h;
-		CG_DrawPic( x + ( i / ( float ) SPEEDOMETER_NUM_DISPLAYED_SAMPLES ) * w, top,
-			    w / ( float ) SPEEDOMETER_NUM_DISPLAYED_SAMPLES, val * h / max,
+		top = rect.y + ( 1 - val / max ) * rect.h;
+		CG_DrawPic( rect.x + ( i / ( float ) SPEEDOMETER_NUM_DISPLAYED_SAMPLES ) * rect.w, top,
+			    rect.w / ( float ) SPEEDOMETER_NUM_DISPLAYED_SAMPLES, val * rect.h / max,
 			    cgs.media.whiteShader );
 	}
 
@@ -516,7 +530,6 @@ static void CG_Rocket_DrawPlayerWallclimbing( void )
 
 static void CG_Rocket_DrawAlienSense( void )
 {
-	float x, y, w, h;
 	rectDef_t rect;
 
 	if ( !BG_ClassHasAbility( cg.snap->ps.stats[ STAT_CLASS ], SCA_ALIENSENSE ) )
@@ -525,24 +538,12 @@ static void CG_Rocket_DrawAlienSense( void )
 	}
 
 	// grab info from libRocket
-	trap_Rocket_GetElementAbsoluteOffset( &x, &y );
-	trap_Rocket_GetProperty( "width", &w, sizeof( w ), ROCKET_FLOAT );
-	trap_Rocket_GetProperty( "height", &h, sizeof( h ), ROCKET_FLOAT );
-
-	// Convert from absolute monitor coords to a virtual 640x480 coordinate system
-	x = ( x / cgs.glconfig.vidWidth ) * 640;
-	y = ( y / cgs.glconfig.vidHeight ) * 480;
-	w = ( w / cgs.glconfig.vidWidth ) * 640;
-	h = ( h / cgs.glconfig.vidHeight ) * 480;
-
-	rect.x = x, rect.y = y, rect.w = w, rect.h = h;
-
+	CG_GetRocketElementRect( &rect );
 	CG_AlienSense( &rect );
 }
 
 static void CG_Rocket_DrawHumanScanner( void )
 {
-	float x, y, w, h;
 	rectDef_t rect;
 
 	if ( !BG_InventoryContainsUpgrade( UP_HELMET, cg.snap->ps.stats ) )
@@ -552,17 +553,7 @@ static void CG_Rocket_DrawHumanScanner( void )
 	}
 
 	// grab info from libRocket
-	trap_Rocket_GetElementAbsoluteOffset( &x, &y );
-	trap_Rocket_GetProperty( "width", &w, sizeof( w ), ROCKET_FLOAT );
-	trap_Rocket_GetProperty( "height", &h, sizeof( h ), ROCKET_FLOAT );
-
-	// Convert from absolute monitor coords to a virtual 640x480 coordinate system
-	x = ( x / cgs.glconfig.vidWidth ) * 640;
-	y = ( y / cgs.glconfig.vidHeight ) * 480;
-	w = ( w / cgs.glconfig.vidWidth ) * 640;
-	h = ( h / cgs.glconfig.vidHeight ) * 480;
-
-	rect.x = x, rect.y = y, rect.w = w, rect.h = h;
+	CG_GetRocketElementRect( &rect );
 
 	trap_Rocket_SetClass( "active", qtrue );
 	CG_Scanner( &rect );
@@ -776,11 +767,12 @@ static void CG_Rocket_DrawLagometer( void )
 {
 	int    a, i;
 	float  v;
-	float  ax, ay, aw, ah, mid, range, x, y, w, h;
+	float  ax, ay, aw, ah, mid, range;
 	int    color;
 	vec4_t adjustedColor;
 	float  vscale;
 	char   *ping;
+	rectDef_t rect;
 
 	if ( cg.snap->ps.pm_type == PM_INTERMISSION )
 	{
@@ -798,31 +790,20 @@ static void CG_Rocket_DrawLagometer( void )
 	}
 
 	// grab info from libRocket
-	trap_Rocket_GetElementAbsoluteOffset( &x, &y );
-	trap_Rocket_GetProperty( "background-color", &adjustedColor, sizeof( adjustedColor ), ROCKET_COLOR );
-	trap_Rocket_GetProperty( "width", &w, sizeof( w ), ROCKET_FLOAT );
-	trap_Rocket_GetProperty( "height", &h, sizeof( h ), ROCKET_FLOAT );
-
-	// Convert from absolute monitor coords to a virtual 640x480 coordinate system
-	x = ( x / cgs.glconfig.vidWidth ) * 640;
-	y = ( y / cgs.glconfig.vidHeight ) * 480;
-	w = ( w / cgs.glconfig.vidWidth ) * 640;
-	h = ( h / cgs.glconfig.vidHeight ) * 480;
-
-	// Color from 0..255 to 0..1
-	Vector4Scale( adjustedColor, 1/255.0f, adjustedColor );
+	CG_GetRocketElementRect( &rect );
+	CG_GetRocketElementBGColor( adjustedColor );
 
 	trap_R_SetColor( adjustedColor );
-	CG_DrawPic( x, y, w, h, cgs.media.whiteShader );
+	CG_DrawPic( rect.x, rect.y, rect.w, rect.h, cgs.media.whiteShader );
 	trap_R_SetColor( NULL );
 
 	//
 	// draw the graph
 	//
-	ax = x;
-	ay = y;
-	aw = w;
-	ah = h;
+	ax = rect.x;
+	ay = rect.y;
+	aw = rect.w;
+	ah = rect.h;
 
 	CG_AdjustFrom640( &ax, &ay, &aw, &ah );
 
@@ -1139,7 +1120,6 @@ static void CG_Rocket_DrawLevelshot( void )
 
 	if ( !rocketInfo.rocketState != LOADING )
 	{
-
 		shader = rocketInfo.data.mapList[ rocketInfo.data.mapIndex ].levelShot;
 
 		if ( shader == -1 )
@@ -1402,19 +1382,8 @@ static void CG_DrawPlayerAmmoStack( void )
 	static char   buf[ 100 ];
 
 	// grab info from libRocket
-	trap_Rocket_GetElementAbsoluteOffset( &rect.x, &rect.y );
-	trap_Rocket_GetProperty( "color", &foreColor, sizeof( foreColor ), ROCKET_COLOR );
-	trap_Rocket_GetProperty( "width", &rect.w, sizeof( rect.w ), ROCKET_FLOAT );
-	trap_Rocket_GetProperty( "height", &rect.h, sizeof( rect.h ), ROCKET_FLOAT );
-
-	// Convert from absolute monitor coords to a virtual 640x480 coordinate system
-	rect.x = ( rect.x / cgs.glconfig.vidWidth ) * 640;
-	rect.y = ( rect.y / cgs.glconfig.vidHeight ) * 480;
-	rect.w = ( rect.w / cgs.glconfig.vidWidth ) * 640;
-	rect.h = ( rect.h / cgs.glconfig.vidHeight ) * 480;
-
-	// Convert from byte scale to [0,1]
-	Vector4Scale( foreColor, 1 / 255.0f, foreColor );
+	CG_GetRocketElementColor( foreColor );
+	CG_GetRocketElementRect( &rect );
 
 	maxVal = BG_Weapon( primary )->maxAmmo;
 
@@ -1506,8 +1475,7 @@ static void CG_DrawPlayerAmmoStack( void )
 		align = LALIGN_TOPLEFT;
 	}
 
-	CG_DrawStack( &rect, localColor, 0.8, align,
-	              val, maxVal );
+	CG_DrawStack( &rect, localColor, 0.8, align, val, maxVal );
 }
 
 static void CG_DrawPlayerClipsStack( void )
@@ -1520,19 +1488,8 @@ static void CG_DrawPlayerClipsStack( void )
 	vec4_t         foreColor;
 
 	// grab info from libRocket
-	trap_Rocket_GetElementAbsoluteOffset( &rect.x, &rect.y );
-	trap_Rocket_GetProperty( "color", &foreColor, sizeof( foreColor ), ROCKET_COLOR );
-	trap_Rocket_GetProperty( "width", &rect.w, sizeof( rect.w ), ROCKET_FLOAT );
-	trap_Rocket_GetProperty( "height", &rect.h, sizeof( rect.h ), ROCKET_FLOAT );
-
-	// Convert from absolute monitor coords to a virtual 640x480 coordinate system
-	rect.x = ( rect.x / cgs.glconfig.vidWidth ) * 640;
-	rect.y = ( rect.y / cgs.glconfig.vidHeight ) * 480;
-	rect.w = ( rect.w / cgs.glconfig.vidWidth ) * 640;
-	rect.h = ( rect.h / cgs.glconfig.vidHeight ) * 480;
-
-	// Convert from byte scale to [0,1]
-	Vector4Scale( foreColor, 1 / 255.0f, foreColor );
+	CG_GetRocketElementColor( foreColor );
+	CG_GetRocketElementRect( &rect );
 
 	maxVal = BG_Weapon( BG_PrimaryWeapon( ps->stats ) )->maxClips;
 
@@ -1572,19 +1529,8 @@ void CG_Rocket_DrawMinimap( void )
 	rectDef_t rect;
 
 	// grab info from libRocket
-	trap_Rocket_GetElementAbsoluteOffset( &rect.x, &rect.y );
-	trap_Rocket_GetProperty( "color", &foreColor, sizeof( foreColor ), ROCKET_COLOR );
-	trap_Rocket_GetProperty( "width", &rect.w, sizeof( rect.w ), ROCKET_FLOAT );
-	trap_Rocket_GetProperty( "height", &rect.h, sizeof( rect.h ), ROCKET_FLOAT );
-
-	// Convert from absolute monitor coords to a virtual 640x480 coordinate system
-	rect.x = ( rect.x / cgs.glconfig.vidWidth ) * 640;
-	rect.y = ( rect.y / cgs.glconfig.vidHeight ) * 480;
-	rect.w = ( rect.w / cgs.glconfig.vidWidth ) * 640;
-	rect.h = ( rect.h / cgs.glconfig.vidHeight ) * 480;
-
-	// Convert from byte scale to [0,1]
-	Vector4Scale( foreColor, 1 / 255.0f, foreColor );
+	CG_GetRocketElementColor( foreColor );
+	CG_GetRocketElementRect( &rect );
 
 	CG_DrawMinimap( &rect, foreColor );
 }
