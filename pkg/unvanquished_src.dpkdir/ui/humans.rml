@@ -83,7 +83,6 @@
 				top: 0%;
 				font-size: 24;
 				overflow-y: hidden;
-				font-charset: U+0000-FFFF;
 			}
 		</style>
 	</head>
