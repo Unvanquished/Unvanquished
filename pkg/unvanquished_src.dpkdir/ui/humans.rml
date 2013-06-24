@@ -77,10 +77,13 @@
 			console_text
 			{
 				position: absolute;
+				height: 175px;
 				width: 75%;
 				left: 25%;
 				top: 0%;
 				font-size: 24;
+				overflow-y: hidden;
+				font-charset: U+0000-FFFF;
 			}
 		</style>
 	</head>
