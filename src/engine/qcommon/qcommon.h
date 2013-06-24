@@ -139,7 +139,7 @@ NET
 
 #define MAX_PACKET_USERCMDS 32 // max number of usercmd_t in a packet
 
-#define PORT_ANY            -1
+#define PORT_ANY            0
 
 #define MAX_MASTER_SERVERS  5
 
