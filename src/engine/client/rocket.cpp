@@ -419,6 +419,14 @@ void Rocket_Rocket_f( void )
 
 void Rocket_RocketDebug_f( void )
 {
+	static bool init = false;
+
+	if ( !init )
+	{
+		Rocket::Debugger::Initialise(menuContext);
+		init = true;
+	}
+
 	Rocket::Debugger::SetVisible( !Rocket::Debugger::IsVisible() );
 }
 
@@ -485,8 +493,6 @@ void Rocket_Init( void )
 
 	Cmd_AddCommand( "rocket", Rocket_Rocket_f );
 	Cmd_AddCommand( "rocketDebug", Rocket_RocketDebug_f );
-
-	Rocket::Debugger::Initialise(menuContext);
 
 	whiteShader = re.RegisterShader( "white", RSF_DEFAULT );
 }
