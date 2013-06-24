@@ -350,6 +350,9 @@ extern "C" {
 		uint32_t                  occlusionQuerySamples;
 		link_t                    multiQuery; // CHC++: list of all nodes that are used by the same occlusion query
 
+		int                       restrictInteractionFirst;
+		int                       restrictInteractionLast;
+
 		frustum_t                 frustum;
 		vec4_t                    localFrustum[ 6 ];
 		struct VBO_s              *frustumVBO;
@@ -3227,7 +3230,7 @@ extern "C" {
 	void           R_RenderView( viewParms_t *parms );
 
 	void           R_AddMDVSurfaces( trRefEntity_t *e );
-	void           R_AddMDVInteractions( trRefEntity_t *e, trRefLight_t *light );
+	void           R_AddMDVInteractions( trRefEntity_t *e, trRefLight_t *light, interactionType_t iaType );
 
 	void           R_AddPolygonSurfaces( void );
 	void           R_AddPolygonBufferSurfaces( void );
@@ -3626,7 +3629,7 @@ extern "C" {
 	============================================================
 	*/
 
-	void     R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light );
+	void     R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light, interactionType_t iaType );
 	void     R_SetupEntityLighting( const trRefdef_t *refdef, trRefEntity_t *ent, vec3_t forcedOrigin );
 	int      R_LightForPoint( vec3_t point, vec3_t ambientLight, vec3_t directedLight, vec3_t lightDir );
 	void     R_TessLight( const trRefLight_t *light, const vec4_t color );
@@ -3846,7 +3849,7 @@ extern "C" {
 	void            R_AnimationList_f( void );
 
 	void            R_AddMD5Surfaces( trRefEntity_t *ent );
-	void            R_AddMD5Interactions( trRefEntity_t *ent, trRefLight_t *light );
+	void            R_AddMD5Interactions( trRefEntity_t *ent, trRefLight_t *light, interactionType_t iaType );
 
 #if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 	int             RE_CheckSkeleton( refSkeleton_t *skel, qhandle_t hModel, qhandle_t hAnim );
@@ -3882,7 +3885,7 @@ extern "C" {
 	*/
 
 	void R_MDM_AddAnimSurfaces( trRefEntity_t *ent );
-	void R_AddMDMInteractions( trRefEntity_t *e, trRefLight_t *light );
+	void R_AddMDMInteractions( trRefEntity_t *e, trRefLight_t *light, interactionType_t iaType );
 
 	int  R_MDM_GetBoneTag( orientation_t *outTag, mdmModel_t *mdm, int startTagIndex, const refEntity_t *refent,
 	                       const char *tagName );

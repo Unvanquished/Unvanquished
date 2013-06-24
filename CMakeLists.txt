@@ -26,6 +26,9 @@ if( WIN32 OR MSVC OR CMAKE_SYSTEM_PROCESSOR MATCHES "i.86" OR CMAKE_SYSTEM_PROCE
   set( X86 1 )
 endif()
 
+set( MOUNT_DIR ${CMAKE_SOURCE_DIR}/src )
+set( OBJ_DIR ${CMAKE_BINARY_DIR}/CMakeFiles )
+
 # Check if this is first run and if so set some default flags
 if( NOT DEFINED SUBSEQUENT_RUN )
   set( SUBSEQUENT_RUN 1 CACHE INTERNAL "True if not first run" )
@@ -40,11 +43,33 @@ if( NOT DEFINED SUBSEQUENT_RUN )
       else()
         set( CMAKE_USE_SSE2 "" )
       endif()
+
+      macro( try_compiler_option COMPILER_ID COMPILER_VERSION PROP FLAG_TRUE FLAG_FALSE )
+        if( COMPILER_ID STREQUAL "" OR ( CMAKE_C_COMPILER_ID STREQUAL "${COMPILER_ID}" AND NOT ( CMAKE_C_COMPILER_VERSION VERSION_LESS "${COMPILER_VERSION}" ) ) )
+          set( SAVED_FLAGS "${CMAKE_C_FLAGS}" )
+          set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${FLAG_TRUE}" )
+          try_compile( ${PROP}_TEST ${MOUNT_DIR}/tests ${MOUNT_DIR}/tests/test.c
+                       CMAKE_FLAGS "-DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}" )
+          set( CMAKE_C_FLAGS "${SAVED_FLAGS}" )
+          if( ${PROP}_TEST )
+            message( STATUS "Using flag ${FLAG_TRUE}" )
+            set( ${PROP} ${FLAG_TRUE} )
+          else()
+            set( ${PROP} ${FLAG_FALSE} )
+          endif()
+        else()
+          set( ${PROP} ${FLAG_FALSE} )
+        endif()
+      endmacro()
+
+      try_compiler_option( GNU   0.0 DEBUG_SYMBOLS_LEVEL -g3 -g  ) # gcc: macro expansion etc. in gdb
+      try_compiler_option( GNU   4.8 DEBUG_OPTIMISE      -Og ""  ) # gcc 4.8: optimisation level for debug builds
+
       set( CMAKE_C_FLAGS "${CMAKE_USE_SSE2} -pipe" CACHE STRING "Flags used by the compiler during all build types" FORCE )
-      set( CMAKE_C_FLAGS_DEBUG "-g" CACHE STRING "Flags used by the compiler during debug builds." FORCE )
+      set( CMAKE_C_FLAGS_DEBUG "${DEBUG_OPTIMISE} ${DEBUG_SYMBOLS_LEVEL}" CACHE STRING "Flags used by the compiler during debug builds." FORCE )
       set( CMAKE_C_FLAGS_MINSIZEREL "-DNDEBUG -Os" CACHE STRING "Flags used by the compiler during release minsize builds." FORCE )
       set( CMAKE_C_FLAGS_RELEASE "-DNDEBUG -O3 -ffast-math -fomit-frame-pointer -fno-strict-aliasing" CACHE STRING "Flags used by the compiler during release builds" FORCE )
-      set( CMAKE_C_FLAGS_RELWITHDEBINFO "-DNDEBUG -O3 -ffast-math -fomit-frame-pointer -fno-strict-aliasing -g" CACHE STRING "Flags used by the compiler during Release with Debug Info builds." FORCE )
+      set( CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELEASE} -g" CACHE STRING "Flags used by the compiler during Release with Debug Info builds." FORCE )
     else(NOT MINIMAL_FLAGS)
       set( CMAKE_C_FLAGS_DEBUG "" )
       set( CMAKE_C_FLAGS_RELEASE "-DNDEBUG" )
@@ -130,16 +155,15 @@ if( GAME_LIB_LLVM )
 
   include( ${CMAKE_SOURCE_DIR}/cmake/CMakeLLVMInformation.cmake )
   include( ${CMAKE_SOURCE_DIR}/cmake/CMakeLLVMXXInformation.cmake )
-  file( WRITE ${Daemon_BINARY_DIR}/CMakeFiles/CMakeLLVMCompiler.cmake )
-  file( WRITE ${Daemon_BINARY_DIR}/CMakeFiles/CMakeLLVMXXCompiler.cmake )
+  file( WRITE ${OBJ_DIR}/CMakeLLVMCompiler.cmake )
+  file( WRITE ${OBJ_DIR}/CMakeLLVMXXCompiler.cmake )
   enable_language( LLVM )
   enable_language( LLVMXX )
   message( STATUS "Using LLVM" )
 endif()
 
-set( MOUNT_DIR ${CMAKE_SOURCE_DIR}/src )
-set( GPP_DIR ${CMAKE_SOURCE_DIR}/src/gamelogic )
-set( LIB_DIR ${CMAKE_SOURCE_DIR}/src/libs ) # LIB_DIR is also defined in Visual_Studio32/64.cmake
+set( GPP_DIR ${MOUNT_DIR}/gamelogic )
+set( LIB_DIR ${MOUNT_DIR}/libs ) # LIB_DIR is also defined in Visual_Studio32/64.cmake
 set( SDL_DIR ${LIB_DIR}/libsdl )
 set( JPEG_DIR ${LIB_DIR}/jpeg )
 set( GLEW_DIR ${LIB_DIR}/glew )
@@ -221,38 +245,38 @@ if( USE_GIT_DESCRIBE )
   set( GIT_DESCRIBE ${GIT_DESCRIBE_REPORT} CACHE INTERNAL "commit id reported by Git" FORCE )
 endif()
 
-if( EXISTS "${CMAKE_BINARY_DIR}/CMakeFiles/revision.h" )
-  file( READ "${CMAKE_BINARY_DIR}/CMakeFiles/revision.h" ACTUAL_REVISION_H_CONTENTS )
+if( EXISTS "${OBJ_DIR}/revision.h" )
+  file( READ "${OBJ_DIR}/revision.h" ACTUAL_REVISION_H_CONTENTS )
   if( NOT "${ACTUAL_REVISION_H_CONTENTS}" STREQUAL "${DESIRED_REVISION_H_CONTENTS}" )
-    file( WRITE "${CMAKE_BINARY_DIR}/CMakeFiles/revision.h" "${DESIRED_REVISION_H_CONTENTS}" )
+    file( WRITE "${OBJ_DIR}/revision.h" "${DESIRED_REVISION_H_CONTENTS}" )
   endif()
 else()
-  file( WRITE "${CMAKE_BINARY_DIR}/CMakeFiles/revision.h" "${DESIRED_REVISION_H_CONTENTS}" )
+  file( WRITE "${OBJ_DIR}/revision.h" "${DESIRED_REVISION_H_CONTENTS}" )
 endif()
 
-include_directories( "${CMAKE_BINARY_DIR}/CMakeFiles" )
+include_directories( "${OBJ_DIR}" )
 
 # Import CMakeLists.txt for internal libraries
 if( USE_INTERNAL_SDL )
-  add_subdirectory( ${SDL_DIR} )
+  add_subdirectory( ${SDL_DIR} ${OBJ_DIR}/libsdl )
   set( SDL_LIBRARY INTERNAL_SDL INTERNAL_SDLMain CACHE STRING "SDL library" FORCE )
   set( SDL_INCLUDE_DIR ${SDL_DIR}/include CACHE STRING "SDL include directory" FORCE )
 endif()
 
 if( USE_INTERNAL_JPEG )
-  add_subdirectory( ${JPEG_DIR} )
+  add_subdirectory( ${JPEG_DIR} ${OBJ_DIR}/libjpeg )
   set( JPEG_LIBRARY INTERNAL_JPEG CACHE STRING "JPEG library" FORCE )
   set( JPEG_INCLUDE_DIR ${JPEG_DIR} CACHE STRING "JPEG include directory" FORCE )
 endif()
 
 if( USE_INTERNAL_GLEW )
-  add_subdirectory( ${GLEW_DIR} )
+  add_subdirectory( ${GLEW_DIR} ${OBJ_DIR}/libglew )
   set( GLEW_LIBRARY INTERNAL_GLEW CACHE STRING "Glew library" FORCE )
   set( GLEW_INCLUDE_DIR ${GLEW_DIR}/include CACHE STRING "Glew include directory" FORCE )
 endif()
 
 if( USE_INTERNAL_WEBP )
-  add_subdirectory( ${WEBP_DIR} )
+  add_subdirectory( ${WEBP_DIR} ${OBJ_DIR}/libwebp )
   set( WEBP_LIBRARY INTERNAL_WEBP CACHE STRING "WebP library" FORCE )
   set( WEBP_INCLUDE_DIR ${WEBP_DIR} CACHE STRING "WebP include directory" FORCE )
 endif()
@@ -983,7 +1007,7 @@ set( Q3RCC_LIST
   ${MOUNT_DIR}/tools/lcc/src/trace.c
   ${MOUNT_DIR}/tools/lcc/src/tree.c
   ${MOUNT_DIR}/tools/lcc/src/types.c
-  ${CMAKE_BINARY_DIR}/CMakeFiles/dagcheck.c
+  ${OBJ_DIR}/dagcheck.c
 )
 
 set( Q3CPP_LIST
@@ -1168,7 +1192,7 @@ function( GAMELIB )
   endif()
 
   if( GAME_QVM AND GAMELIB_QVM_FILES )
-    set( QVM_DIR ${CMAKE_BINARY_DIR}/CMakeFiles/${GAMELIB_LIB_NAME}-qvm.dir )
+    set( QVM_DIR ${OBJ_DIR}/${GAMELIB_LIB_NAME}-qvm.dir )
     set( QVM_CPP_OPTIONS
       -I"${MOUNT_DIR}/gamelogic/game"
       -I"${MOUNT_DIR}/engine/qcommon"
@@ -1356,7 +1380,7 @@ endif()
 ########################
 
 if( USE_GLSL_OPTIMIZER )
-  add_subdirectory( ${LIB_DIR}/glsl-optimizer )
+  add_subdirectory( ${LIB_DIR}/glsl-optimizer ${OBJ_DIR}/glsl )
 endif()
 
 ###############

@@ -1142,12 +1142,12 @@ static void CG_Say( const char *name, int clientNum, saymode_t mode, const char 
 		case SAY_TEAM:
 		case SAY_AREA:
 		case SAY_TPRIVMSG:
-			if ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_ALIENS )
+			if ( cgs.clientinfo[ clientNum ].team == TEAM_ALIENS )
 			{
 				trap_S_StartLocalSound( cgs.media.alienTalkSound, CHAN_LOCAL_SOUND );
 				break;
 			}
-			else if ( cg.snap->ps.stats[ STAT_TEAM ] == TEAM_HUMANS )
+			else if ( cgs.clientinfo[ clientNum ].team == TEAM_HUMANS )
 			{
 				trap_S_StartLocalSound( cgs.media.humanTalkSound, CHAN_LOCAL_SOUND );
 				break;

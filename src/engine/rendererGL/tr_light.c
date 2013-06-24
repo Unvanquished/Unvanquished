@@ -30,14 +30,13 @@ R_AddBrushModelInteractions
 Determine which dynamic lights may effect this bmodel
 =============
 */
-void R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light )
+void R_AddBrushModelInteractions( trRefEntity_t *ent, trRefLight_t *light, interactionType_t iaType )
 {
 	int               i;
 	bspSurface_t      *surf;
 	bspModel_t        *bspModel = NULL;
 	model_t           *pModel = NULL;
 	byte              cubeSideBits;
-	interactionType_t iaType = IA_DEFAULT;
 
 	// cull the entire model if it is outside the view frustum
 	// and we don't care about proper shadowing

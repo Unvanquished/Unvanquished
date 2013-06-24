@@ -2785,7 +2785,7 @@ static qboolean CG_PlayerShadow( centity_t *cent, float *shadowPlane, class_t cl
 
 			trap_R_AddLightToScene( lightPos, 128.0f, 3.0f,
 						directedLight[0], directedLight[1], directedLight[2],
-						0, REF_INVERSE_DLIGHT );
+						0, REF_RESTRICT_DLIGHT | REF_INVERSE_DLIGHT );
 		}
 	}
 
@@ -2804,6 +2804,21 @@ static qboolean CG_PlayerShadow( centity_t *cent, float *shadowPlane, class_t cl
 	               24.0f * BG_ClassModelConfig( class )->shadowScale, qtrue );
 
 	return qtrue;
+}
+
+static void CG_PlayerShadowEnd( void )
+{
+	if ( cg_shadows.integer == SHADOWING_NONE )
+	{
+		return;
+	}
+
+	if ( cg_shadows.integer > SHADOWING_BLOB &&
+	     cg_playerShadows.integer ) {
+	  trap_R_AddLightToScene( vec3_origin, 0.0f, 0.0f,
+				  0.0f, 0.0f, 0.0f,
+				  0, 0 );
+	}
 }
 
 /*
@@ -3375,6 +3390,7 @@ void CG_Player( centity_t *cent )
 		}
 
 		VectorCopy( surfNormal, cent->pe.lastNormal );
+		CG_PlayerShadowEnd( );
 		return;
 	}
 
@@ -3511,6 +3527,7 @@ void CG_Player( centity_t *cent )
 	// if the model failed, allow the default nullmodel to be displayed
 	if ( !legs.hModel )
 	{
+		CG_PlayerShadowEnd( );
 		return;
 	}
 
@@ -3532,6 +3549,7 @@ void CG_Player( centity_t *cent )
 
 		if ( !torso.hModel )
 		{
+			CG_PlayerShadowEnd( );
 			return;
 		}
 
@@ -3560,6 +3578,7 @@ void CG_Player( centity_t *cent )
 
 		if ( !head.hModel )
 		{
+			CG_PlayerShadowEnd( );
 			return;
 		}
 
@@ -3622,6 +3641,7 @@ void CG_Player( centity_t *cent )
 			CG_DestroyParticleSystem( &cent->jetPackPS );
 		}
 	}
+	CG_PlayerShadowEnd( );
 
 	VectorCopy( surfNormal, cent->pe.lastNormal );
 }
@@ -3792,6 +3812,7 @@ void CG_Corpse( centity_t *cent )
 	// if the model failed, allow the default nullmodel to be displayed. Also, if MD5, no need to add other parts
 	if ( !legs.hModel || ci->md5 )
 	{
+		CG_PlayerShadowEnd( );
 		return;
 	}
 
@@ -3804,6 +3825,7 @@ void CG_Corpse( centity_t *cent )
 
 		if ( !torso.hModel )
 		{
+			CG_PlayerShadowEnd( );
 			return;
 		}
 
@@ -3825,6 +3847,7 @@ void CG_Corpse( centity_t *cent )
 
 		if ( !head.hModel )
 		{
+			CG_PlayerShadowEnd( );
 			return;
 		}
 

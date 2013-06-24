@@ -264,11 +264,18 @@ static void R_AddInteractionSurface( bspSurface_t *surf, trRefLight_t *light )
 	interactionType_t iaType = IA_DEFAULT;
 	byte              cubeSideBits = CUBESIDE_CLIPALL;
 
+	if ( light->restrictInteractionFirst >= 0 )
+	{
+		iaType = IA_LIGHTONLY;
+	}
+
 	// Tr3B - this surface is maybe not in this view but it may still cast a shadow
 	// into this view
 	if ( surf->viewCount != tr.viewCountNoReset )
 	{
-		if ( r_shadows->integer <= SHADOWING_BLOB || light->l.noShadows )
+		if ( r_shadows->integer <= SHADOWING_BLOB ||
+		     light->l.noShadows ||
+		     iaType == IA_LIGHTONLY )
 		{
 			return;
 		}

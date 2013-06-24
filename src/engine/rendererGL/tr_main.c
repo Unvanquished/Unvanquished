@@ -2696,8 +2696,9 @@ R_AddEntityInteractions
 */
 void R_AddEntityInteractions( trRefLight_t *light )
 {
-	int           i;
-	trRefEntity_t *ent;
+	int               i;
+	trRefEntity_t     *ent;
+	interactionType_t iaType;
 
 	if ( !r_drawentities->integer )
 	{
@@ -2706,6 +2707,14 @@ void R_AddEntityInteractions( trRefLight_t *light )
 
 	for ( i = 0; i < tr.refdef.numEntities; i++ )
 	{
+		if ( light->restrictInteractionFirst < 0 ||
+		     ( i >= light->restrictInteractionFirst &&
+		       i <= light->restrictInteractionLast ) ) {
+			iaType = IA_DEFAULT;
+		} else {
+			iaType = IA_LIGHTONLY;
+		}
+
 		ent = tr.currentEntity = &tr.refdef.entities[ i ];
 
 		//
@@ -2740,7 +2749,7 @@ void R_AddEntityInteractions( trRefLight_t *light )
 					switch ( tr.currentModel->type )
 					{
 						case MOD_MESH:
-							R_AddMDVInteractions( ent, light );
+							R_AddMDVInteractions( ent, light, iaType );
 							break;
 
 #if defined( COMPAT_ET )
@@ -2750,19 +2759,19 @@ void R_AddEntityInteractions( trRefLight_t *light )
 							break;
 
 						case MOD_MDM:
-							R_AddMDMInteractions( ent, light );
+							R_AddMDMInteractions( ent, light, iaType );
 							break;
 #endif
 
 #if defined( USE_REFENTITY_ANIMATIONSYSTEM )
 
 						case MOD_MD5:
-							R_AddMD5Interactions( ent, light );
+							R_AddMD5Interactions( ent, light, iaType );
 							break;
 #endif
 
 						case MOD_BSP:
-							R_AddBrushModelInteractions( ent, light );
+							R_AddBrushModelInteractions( ent, light, iaType );
 							break;
 
 						case MOD_BAD: // null model axis

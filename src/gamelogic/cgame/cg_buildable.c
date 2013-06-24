@@ -1916,6 +1916,21 @@ void CG_Buildable( centity_t *cent )
 		ent.nonNormalizedAxes = qfalse;
 	}
 
+	// add inverse shadow map
+	if ( cg_buildableShadows.integer )
+	{
+		vec3_t ambientLight, directedLight, lightDir;
+		vec3_t lightPos;
+
+		trap_R_LightForPoint( ent.lightingOrigin, ambientLight,
+				      directedLight, lightDir );
+		VectorMA( ent.lightingOrigin, 64.0f, lightDir, lightPos );
+
+		trap_R_AddLightToScene( lightPos, 128.0f, 3.0f,
+					directedLight[0], directedLight[1], directedLight[2],
+					0, REF_RESTRICT_DLIGHT | REF_INVERSE_DLIGHT );
+	}
+
 	if ( CG_PlayerIsBuilder( es->modelindex ) && CG_BuildableRemovalPending( es->number ) )
 	{
 		ent.customShader = cgs.media.redBuildShader;
@@ -2057,21 +2072,6 @@ void CG_Buildable( centity_t *cent )
 		trap_R_AddRefEntityToScene( &turretTop );
 	}
 
-	// add inverse shadow map
-	if ( cg_buildableShadows.integer )
-	{
-		vec3_t ambientLight, directedLight, lightDir;
-		vec3_t lightPos;
-
-		trap_R_LightForPoint( ent.lightingOrigin, ambientLight,
-				      directedLight, lightDir );
-		VectorMA( ent.lightingOrigin, 32.0f, lightDir, lightPos );
-
-		trap_R_AddLightToScene( lightPos, 128.0f, 3.0f,
-					directedLight[0], directedLight[1], directedLight[2],
-					0, REF_INVERSE_DLIGHT );
-	}
-
 	//weapon effects for turrets
 	if ( es->eFlags & EF_FIRING )
 	{
@@ -2162,5 +2162,12 @@ void CG_Buildable( centity_t *cent )
 
 			CG_DrawBuildableRangeMarker( buildable->number, cent->lerpOrigin, cent->currentState.origin2, opacity );
 		}
+	}
+
+	if ( cg_buildableShadows.integer )
+	{
+		trap_R_AddLightToScene( vec3_origin, 0.0f, 0.0f,
+					0.0f, 0.0f, 0.0f,
+					0, 0 );
 	}
 }
