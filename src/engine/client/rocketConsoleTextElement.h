@@ -57,7 +57,8 @@ struct ConsoleLine
 class RocketConsoleTextElement : public Rocket::Core::Element
 {
 public:
-	RocketConsoleTextElement( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), numLines( 0 ), maxLines( 0 ), lastTime( -1 )
+	RocketConsoleTextElement( const Rocket::Core::String &tag ) : Rocket::Core::Element( tag ), numLines( 0 ), maxLines( 0 ), lastTime( -1 ),
+	dirty_height( true )
 	{
 	}
 
@@ -70,6 +71,12 @@ public:
 		while ( !lines.empty() && lines.back().time + latency < time )
 		{
 			lines.pop_back();
+		}
+
+		while ( GetNumChildren() && atoi( GetFirstChild()->GetId().CString() ) + latency < time )
+		{
+			RemoveChild( GetFirstChild() );
+			numLines--;
 		}
 
 		if ( !lines.empty() && lines.front().time > lastTime )
@@ -89,20 +96,29 @@ public:
 			{
 				Rocket::Core::Element *child = Rocket::Core::Factory::InstanceElement( this, "#text", "span", Rocket::Core::XMLAttributes() );
 				q2rml( lines[ line ].text.CString(), child );
+				child->SetId( va( "%d", lines[ line ].time ) );
 				AppendChild( child );
 			}
+		}
+
+		// Calculate max lines when we have a child element with a fontface
+		if ( dirty_height && GetNumChildren() )
+		{
+			const Rocket::Core::FontFaceHandle *font = GetFirstChild()->GetFontFaceHandle();
+			maxLines = floor( GetProperty( "height" )->value.Get<float>() / ( font->GetBaseline() + font->GetLineHeight() ) );
+
+			if ( maxLines <= 0 )
+			{
+				maxLines = 4; // conservatively low number
+			}
+
+			dirty_height = false;
 		}
 
 		while ( maxLines < numLines )
 		{
 			RemoveChild( GetFirstChild() );
 			numLines--;
-		}
-
-		int scrollHeight = GetScrollHeight();
-		if ( scrollHeight > 0 )
-		{
-			SetScrollTop( scrollHeight );
 		}
 
 		Rocket::Core::Element::OnUpdate();
@@ -220,6 +236,7 @@ private:
 	int numLines;
 	int maxLines;
 	int lastTime;
+	bool dirty_height;
 };
 #endif
 
