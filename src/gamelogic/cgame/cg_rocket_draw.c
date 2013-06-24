@@ -36,14 +36,12 @@ Maryland 20850 USA.
 
 static void CG_GetRocketElementColor( vec4_t color )
 {
-	trap_Rocket_GetProperty( "color", &color, sizeof( vec4_t ), ROCKET_COLOR );
-	Vector4Scale( color, 1 / 255.0f, color );
+	trap_Rocket_GetProperty( "color", color, sizeof( vec4_t ), ROCKET_COLOR );
 }
 
 static void CG_GetRocketElementBGColor( vec4_t bgColor )
 {
-	trap_Rocket_GetProperty( "background-color", &bgColor, sizeof( vec4_t ), ROCKET_COLOR );
-	Vector4Scale( bgColor, 1 / 255.0f, bgColor );
+	trap_Rocket_GetProperty( "background-color", bgColor, sizeof( vec4_t ), ROCKET_COLOR );
 }
 
 static void CG_GetRocketElementRect( rectDef_t *rect )

@@ -244,7 +244,7 @@ void Rocket_GetProperty( const char *name, void *out, int len, rocketVarType_t t
 					return;
 				}
 
-				Rocket::Core::Colourb color = property->Get<Rocket::Core::Colourb>();
+				Rocket::Core::Colourf color = property->Get<Rocket::Core::Colourf>();
 				outColor[ 0 ] = color.red, outColor[ 1 ] = color.green, outColor[ 2 ] = color.blue, outColor[ 3 ] = color.alpha;
 				return;
 			}
