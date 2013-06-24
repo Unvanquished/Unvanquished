@@ -95,6 +95,7 @@ void Rocket_GetElementAbsoluteOffset( float *x, float *y );
 void Rocket_SetClass( const char *in, qboolean activate );
 void Rocket_SetPropertyById( const char *id, const char *property, const char *value );
 void Rocket_SetActiveContext( int catcher );
+void Rocket_AddConsoleText( void );
 #if defined( __cplusplus )
 }
 #endif

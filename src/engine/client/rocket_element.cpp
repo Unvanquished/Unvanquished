@@ -37,6 +37,7 @@ Maryland 20850 USA.
 #include <Rocket/Core/Factory.h>
 #include <Rocket/Core/ElementInstancer.h>
 #include <Rocket/Core/ElementInstancerGeneric.h>
+#include "rocketConsoleTextElement.h"
 extern "C"
 {
 #include "client.h"
@@ -245,4 +246,12 @@ void Rocket_SetPropertyById( const char *id, const char *property, const char *v
 	{
 		activeElement->SetProperty( property, value );
 	}
+}
+Rocket::Core::Container::deque<ConsoleLine>::Type RocketConsoleTextElement::lines = Rocket::Core::Container::deque<ConsoleLine>::Type();
+void Rocket_AddConsoleText( void )
+{
+	static char buffer[ MAX_STRING_CHARS ];
+
+	Cmd_LiteralArgsBuffer( buffer, sizeof( buffer ) );
+	RocketConsoleTextElement::lines.push_front( ConsoleLine( buffer ) );
 }

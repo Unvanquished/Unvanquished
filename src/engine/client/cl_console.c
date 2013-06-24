@@ -629,7 +629,7 @@ void CL_ConsolePrint( char *text )
 		// feed the text to cgame
 		Cmd_SaveCmdContext();
 		Cmd_TokenizeString( text );
-		CL_GameConsoleText();
+		Rocket_AddConsoleText();
 		Cmd_RestoreCmdContext();
 	}
 

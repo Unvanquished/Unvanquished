@@ -1721,7 +1721,6 @@ static const elementRenderCmd_t elementRenderCmdList[] =
 	{ "clips", &CG_Rocket_DrawClips, ELEMENT_HUMANS },
 	{ "clip_stack", &CG_DrawPlayerClipsStack, ELEMENT_HUMANS },
 	{ "connecting", &CG_Rocket_DrawConnectText, ELEMENT_ALL },
-	{ "console_text", &CG_Rocket_DrawConsoleText, ELEMENT_ALL },
 	{ "credits", &CG_Rocket_DrawCreditsValue, ELEMENT_HUMANS },
 	{ "crosshair", &CG_Rocket_DrawCrosshair, ELEMENT_BOTH },
 	{ "crosshair_name", &CG_Rocket_DrawCrosshairNames, ELEMENT_GAME },
