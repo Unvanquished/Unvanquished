@@ -70,16 +70,51 @@ void Rocket_RegisterElement( const char *tag )
 	Rocket::Core::Factory::RegisterElementInstancer( tag, new Rocket::Core::ElementInstancerGeneric< RocketElement >() )->RemoveReference();
 }
 
+// reduces an rml string to a common format so two rml strings can be compared
+static Rocket::Core::String ReduceRML( const Rocket::Core::String &rml )
+{
+	Rocket::Core::String ret;
+	Rocket::Core::String::size_type length = rml.Length();
+	ret.Reserve( length );
+
+	for ( int i = 0; i < length; i++ )
+	{
+		if ( rml[ i ] == ' ' || rml[ i ] == '\n' )
+		{
+			continue;
+		}
+
+		if ( rml[ i ] == '"' )
+		{
+			ret += '\'';
+		}
+		else
+		{
+			ret += rml[ i ];
+		}
+	}
+
+	return ret;
+}
+
+static inline void Rocket_SetInnerRMLGuarded( Rocket::Core::Element *e, const Rocket::Core::String &newRML )
+{
+	Rocket::Core::String newReducedRML = ReduceRML( newRML );
+	Rocket::Core::String oldReducedRML = ReduceRML( e->GetInnerRML() );
+
+	if ( newReducedRML != oldReducedRML )
+	{
+		e->SetInnerRML( newRML );
+	}
+}
+
 void Rocket_SetInnerRML( const char *name, const char *id, const char *RML, qboolean parseQuake )
 {
 	Rocket::Core::String newRML = parseQuake ? Rocket_QuakeToRML( RML ) : RML;
 
 	if ( ( !*name || !*id ) && activeElement )
 	{
-		if ( activeElement->GetInnerRML() != newRML )
-		{
-			activeElement->SetInnerRML( newRML );
-		}
+		Rocket_SetInnerRMLGuarded( activeElement, newRML );
 	}
 	else
 	{
@@ -90,10 +125,7 @@ void Rocket_SetInnerRML( const char *name, const char *id, const char *RML, qboo
 
 			if ( e )
 			{
-				if ( e->GetInnerRML() != newRML )
-				{
-					e->SetInnerRML( newRML );
-				}
+				Rocket_SetInnerRMLGuarded( e, newRML );
 			}
 		}
 	}
