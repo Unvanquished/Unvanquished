@@ -105,14 +105,17 @@ public:
 		if ( dirty_height && GetNumChildren() )
 		{
 			const Rocket::Core::FontFaceHandle *font = GetFirstChild()->GetFontFaceHandle();
-			maxLines = floor( GetProperty( "height" )->value.Get<float>() / ( font->GetBaseline() + font->GetLineHeight() ) );
-
-			if ( maxLines <= 0 )
+			if ( font )
 			{
-				maxLines = 4; // conservatively low number
-			}
+				maxLines = floor( GetProperty( "height" )->value.Get<float>() / ( font->GetBaseline() + font->GetLineHeight() ) );
 
-			dirty_height = false;
+				if ( maxLines <= 0 )
+				{
+					maxLines = 4; // conservatively low number
+				}
+
+				dirty_height = false;
+			}
 		}
 
 		while ( maxLines < numLines )
