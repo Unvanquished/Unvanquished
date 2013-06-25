@@ -1270,9 +1270,6 @@ separate file or a ZIP file.
 */
 extern qboolean com_fullyInitialized;
 
-// see FS_FOpenFileRead_Filtered
-static int      fs_filter_flag = 0;
-
 static qboolean FS_CheckUIImageFile( const char *filename )
 {
 	int l = strlen( filename );
@@ -1291,7 +1288,7 @@ static qboolean FS_CheckUIImageFile( const char *filename )
 }
 
 
-static int FS_FOpenFileRead_Internal( const char *filename, fileHandle_t *file, qboolean uniqueFILE, qboolean allowImpure )
+static int FS_FOpenFileRead_Internal( const char *filename, fileHandle_t *file, qboolean uniqueFILE, qboolean allowImpure, qboolean fs_filter_flag )
 {
 	searchpath_t *search;
 	char         *netpath;
@@ -1600,23 +1597,17 @@ static int FS_FOpenFileRead_Internal( const char *filename, fileHandle_t *file, 
 
 int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueFILE )
 {
-        return FS_FOpenFileRead_Internal( filename, file, uniqueFILE, qfalse );
+        return FS_FOpenFileRead_Internal( filename, file, uniqueFILE, qfalse, qfalse );
 }
 
 int FS_FOpenFileRead_Impure( const char *filename, fileHandle_t *file, qboolean uniqueFILE )
 {
-        return FS_FOpenFileRead_Internal( filename, file, uniqueFILE, qtrue );
+        return FS_FOpenFileRead_Internal( filename, file, uniqueFILE, qtrue, qfalse );
 }
 
 int FS_FOpenFileRead_Filtered( const char *qpath, fileHandle_t *file, qboolean uniqueFILE, int filter_flag )
 {
-	int ret;
-
-	fs_filter_flag = filter_flag;
-	ret = FS_FOpenFileRead_Internal( qpath, file, uniqueFILE, qfalse );
-	fs_filter_flag = 0;
-
-	return ret;
+	return FS_FOpenFileRead_Internal( qpath, file, uniqueFILE, qfalse, filter_flag );
 }
 
 /*
