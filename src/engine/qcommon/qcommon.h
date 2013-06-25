@@ -561,6 +561,7 @@ fileHandle_t FS_SV_FOpenFileWrite( const char *filename );
 int          FS_SV_FOpenFileRead( const char *filename, fileHandle_t *fp );
 void         FS_SV_Rename( const char *from, const char *to );
 int          FS_FOpenFileRead( const char *qpath, fileHandle_t *file, qboolean uniqueFILE );
+int          FS_FOpenFileRead_Impure( const char *filename, fileHandle_t *file, qboolean uniqueFILE );
 
 /*
 if uniqueFILE is true, then a new FILE will be fopened even if the file

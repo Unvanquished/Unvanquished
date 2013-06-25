@@ -1291,7 +1291,7 @@ static qboolean FS_CheckUIImageFile( const char *filename )
 }
 
 
-int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueFILE )
+static int FS_FOpenFileRead_Internal( const char *filename, fileHandle_t *file, qboolean uniqueFILE, qboolean allowImpure )
 {
 	searchpath_t *search;
 	char         *netpath;
@@ -1532,7 +1532,7 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 			// the only files we will allow to come from the directory are .cfg, .menu, etc. files
 			l = strlen( filename );
 
-			if ( fs_numServerPaks )
+			if ( fs_numServerPaks && !allowImpure )
 			{
 				if ( Q_stricmp( filename + l - 4, ".cfg" )  // for config files
 				     && Q_stricmp( filename + l - 4, ".ttf" )
@@ -1598,12 +1598,22 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 	return -1;
 }
 
+int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueFILE )
+{
+        return FS_FOpenFileRead_Internal( filename, file, uniqueFILE, qfalse );
+}
+
+int FS_FOpenFileRead_Impure( const char *filename, fileHandle_t *file, qboolean uniqueFILE )
+{
+        return FS_FOpenFileRead_Internal( filename, file, uniqueFILE, qtrue );
+}
+
 int FS_FOpenFileRead_Filtered( const char *qpath, fileHandle_t *file, qboolean uniqueFILE, int filter_flag )
 {
 	int ret;
 
 	fs_filter_flag = filter_flag;
-	ret = FS_FOpenFileRead( qpath, file, uniqueFILE );
+	ret = FS_FOpenFileRead_Internal( qpath, file, uniqueFILE, qfalse );
 	fs_filter_flag = 0;
 
 	return ret;
