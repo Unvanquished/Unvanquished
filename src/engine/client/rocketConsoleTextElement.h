@@ -182,7 +182,12 @@ public:
 				parent->AppendChild( Rocket::Core::Factory::InstanceElement( parent, "*", "br", Rocket::Core::XMLAttributes() ) );
 				out.Clear();
 			}
-
+			// Convert ^^ to ^
+			else if ( *p == '^' && *( p + 1 ) == '^' )
+			{
+				p++;
+				out.Append( "^" );
+			}
 			else if ( Q_IsColorString( p ) )
 			{
 				Rocket::Core::XMLAttributes xml;
