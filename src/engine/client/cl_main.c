@@ -1414,8 +1414,6 @@ void CL_PlayDemo_f( void )
 		CL_WriteWaveOpen();
 	}
 
-	Q_strncpyz( cls.servername, arg, sizeof( cls.servername ) );
-
 	// read demo messages until connected
 	while ( cls.state >= CA_CONNECTED && cls.state < CA_PRIMED )
 	{
@@ -1652,6 +1650,7 @@ void CL_MapLoading( void )
 		Cvar_Set( "sv_nextmap", "" );
 		CL_Disconnect( qtrue );
 		Q_strncpyz( cls.servername, "localhost", sizeof( cls.servername ) );
+		*cls.reconnectCmd = 0; // can't reconnect to this!
 		cls.state = CA_CHALLENGING; // so the connect screen is drawn
 		cls.keyCatchers = 0;
 		SCR_UpdateScreen();
@@ -1971,13 +1970,18 @@ CL_Reconnect_f
 */
 void CL_Reconnect_f( void )
 {
-	if ( !strlen( cls.servername ) || !strcmp( cls.servername, "localhost" ) )
+	if ( !*cls.servername )
+	{
+		Com_Printf("%s", _( "Can't reconnect to nothing.\n" ));
+	}
+	else if ( !*cls.reconnectCmd )
 	{
 		Com_Printf("%s", _( "Can't reconnect to localhost.\n" ));
-		return;
 	}
-
-	Cbuf_AddText( va( "connect %s\n", cls.servername ) );
+	else
+	{
+		Cbuf_AddText( cls.reconnectCmd );
+	}
 }
 
 /*
@@ -2066,6 +2070,7 @@ void CL_Connect_f( void )
 	Con_Close();
 
 	Q_strncpyz( cls.servername, server, sizeof( cls.servername ) );
+	Q_strncpyz( cls.reconnectCmd, Cmd_Cmd(), sizeof( cls.reconnectCmd ) );
 
 	if ( !NET_StringToAdr( cls.servername, &clc.serverAddress, family ) )
 	{
