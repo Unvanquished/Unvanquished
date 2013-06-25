@@ -72,12 +72,18 @@ void CG_RegisterRocketCvars( void )
 	}
 }
 
+static rocketState_t oldRocketState;
+static connstate_t oldConnState;
+
 void CG_Rocket_Init( void )
 {
 	int len;
 	char *token, *text_p;
 	char text[ 20000 ];
 	fileHandle_t f;
+
+	oldConnState = CA_UNINITIALIZED;
+	oldRocketState = IDLE;
 
 	// Version check...
 	trap_SyscallABIVersion( SYSCALL_ABI_VERSION_MAJOR, SYSCALL_ABI_VERSION_MINOR );
@@ -437,14 +443,10 @@ const char *CG_NetSourceToString( int netSrc )
 
 void CG_Rocket_Frame( void )
 {
-	static rocketState_t old = IDLE;
-	static connstate_t oldConnState = CA_UNINITIALIZED;
-
 	trap_GetClientState( &rocketInfo.cstate );
 
 	if  ( oldConnState != rocketInfo.cstate.connState )
 	{
-
 		switch ( rocketInfo.cstate.connState )
 		{
 			case CA_DISCONNECTED:
@@ -474,40 +476,44 @@ void CG_Rocket_Frame( void )
 		oldConnState = rocketInfo.cstate.connState;
 	}
 
-	switch ( rocketInfo.rocketState )
+	if ( oldRocketState != rocketInfo.rocketState )
 	{
-		case RETRIEVING_SERVERS:
-			if ( trap_LAN_UpdateVisiblePings( rocketInfo.currentNetSrc ) )
-			{
-			}
-			else
-			{
-				trap_Rocket_SetInnerRML( "serverbrowser", "status", "Updated", qfalse );
-				rocketInfo.rocketState = IDLE;
-			}
+		switch ( rocketInfo.rocketState )
+		{
+			case RETRIEVING_SERVERS:
+				if ( trap_LAN_UpdateVisiblePings( rocketInfo.currentNetSrc ) )
+				{
+				}
+				else
+				{
+					trap_Rocket_SetInnerRML( "serverbrowser", "status", "Updated", qfalse );
+					rocketInfo.rocketState = IDLE;
+				}
 
-			break;
+				break;
 
-		case BUILDING_SERVER_INFO:
-			CG_Rocket_BuildServerInfo();
-			break;
+			case BUILDING_SERVER_INFO:
+				CG_Rocket_BuildServerInfo();
+				break;
 
-		case CONNECTING:
-			trap_Rocket_DocumentAction( "", "blurall" );
-			trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CONNECTING ].id, "show" );
+			case CONNECTING:
+				trap_Rocket_DocumentAction( "", "blurall" );
+				trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CONNECTING ].id, "show" );
 
-		case LOADING:
-			CG_Rocket_CleanUpServerList( NULL );
-			trap_Rocket_DocumentAction( "", "blurall" );
-			trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_LOADING ].id, "show" );
-			break;
+			case LOADING:
+				CG_Rocket_CleanUpServerList( NULL );
+				trap_Rocket_DocumentAction( "", "blurall" );
+				trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_LOADING ].id, "show" );
+				break;
 
-		case PLAYING:
-			trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CONNECTING ].id, "blurall" );
-			trap_Key_SetCatcher( 0 );
-			break;
+			case PLAYING:
+				trap_Rocket_DocumentAction( rocketInfo.menu[ ROCKETMENU_CONNECTING ].id, "blurall" );
+				trap_Key_SetCatcher( 0 );
+				break;
+		}
+
+		oldRocketState = rocketInfo.rocketState;
 	}
-
 
 	CG_Rocket_ProcessEvents();
 }
