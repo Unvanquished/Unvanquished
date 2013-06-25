@@ -1405,7 +1405,7 @@ extern "C" {
 		r_customaspect = ri.Cvar_Get( "r_customaspect", "1", CVAR_ARCHIVE | CVAR_LATCH );
 		r_simpleMipMaps = ri.Cvar_Get( "r_simpleMipMaps", "0", CVAR_ARCHIVE | CVAR_LATCH );
 		r_subdivisions = ri.Cvar_Get( "r_subdivisions", "4", CVAR_ARCHIVE | CVAR_LATCH );
-		r_deferredShading = ri.Cvar_Get( "r_deferredShading", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_SHADER );
+		r_deferredShading = ri.Cvar_Get( "r_deferredShading", "0", CVAR_ARCHIVE | CVAR_LATCH | CVAR_SHADER | CVAR_CHEAT );
 		r_parallaxMapping = ri.Cvar_Get( "r_parallaxMapping", "0", CVAR_ARCHIVE );
 		r_dynamicLightCastShadows = ri.Cvar_Get( "r_dynamicLightCastShadows", "1", CVAR_ARCHIVE );
 		r_precomputedLighting = ri.Cvar_Get( "r_precomputedLighting", "1", CVAR_ARCHIVE | CVAR_SHADER );
