@@ -168,7 +168,7 @@ void	main()
 #if defined(TWOSIDED)
 	if(gl_FrontFacing)
 	{
-		N = -N
+		N = -N;
 	}
 #endif
 
