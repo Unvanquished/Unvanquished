@@ -2776,16 +2776,7 @@ static qboolean CG_PlayerShadow( centity_t *cent, float *shadowPlane, class_t cl
 	     cg_playerShadows.integer ) {
 		// add inverse shadow map
 		{
-			vec3_t ambientLight, directedLight, lightDir;
-			vec3_t lightPos;
-
-			trap_R_LightForPoint( cent->lerpOrigin, ambientLight,
-					      directedLight, lightDir );
-			VectorMA( cent->lerpOrigin, 32.0f, lightDir, lightPos );
-
-			trap_R_AddLightToScene( lightPos, 128.0f, 3.0f,
-						directedLight[0], directedLight[1], directedLight[2],
-						0, REF_RESTRICT_DLIGHT | REF_INVERSE_DLIGHT );
+		  CG_StartShadowCaster( cent->lerpOrigin, mins, maxs );
 		}
 	}
 
@@ -2815,9 +2806,7 @@ static void CG_PlayerShadowEnd( void )
 
 	if ( cg_shadows.integer > SHADOWING_BLOB &&
 	     cg_playerShadows.integer ) {
-	  trap_R_AddLightToScene( vec3_origin, 0.0f, 0.0f,
-				  0.0f, 0.0f, 0.0f,
-				  0, 0 );
+		CG_EndShadowCaster( );
 	}
 }
 
