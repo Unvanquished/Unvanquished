@@ -50,7 +50,7 @@ void	main()
 #if defined(USE_NORMAL_MAPPING)
 
 	// construct object-space-to-tangent-space 3x3 matrix
-	mat3 objectToTangentMatrix = objectToTangentMatrix = mat3(	var_Tangent.x, var_Binormal.x, var_Normal.x,
+	mat3 objectToTangentMatrix = mat3(	var_Tangent.x, var_Binormal.x, var_Normal.x,
 							var_Tangent.y, var_Binormal.y, var_Normal.y,
 							var_Tangent.z, var_Binormal.z, var_Normal.z	);
 
