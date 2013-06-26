@@ -428,6 +428,23 @@ void Rocket_RocketDebug_f( void )
 	}
 
 	Rocket::Debugger::SetVisible( !Rocket::Debugger::IsVisible() );
+
+	if ( Rocket::Debugger::IsVisible() )
+	{
+		if ( !Q_stricmp( Cmd_Argv( 1 ), "hud" ) )
+		{
+			Rocket::Debugger::SetContext( hudContext );
+		}
+		else
+		{
+			Rocket::Debugger::SetContext( menuContext );
+		}
+		Key_SetCatcher( Key_GetCatcher() | KEYCATCH_UI );
+	}
+	else
+	{
+		Key_SetCatcher( Key_GetCatcher() & ~KEYCATCH_UI );
+	}
 }
 
 static DaemonFileInterface fileInterface;
