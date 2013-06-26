@@ -48,13 +48,13 @@ void	main()
 	#endif
 
 	// invert tangent space for twosided surfaces
-	mat3 tangentToWorldMatrix;
+	mat3 tangentToWorldMatrix = mat3(var_Tangent.xyz, var_Binormal.xyz, var_Normal.xyz);
 #if defined(TWOSIDED)
 	if(gl_FrontFacing)
-		tangentToWorldMatrix = mat3(-var_Tangent.xyz, -var_Binormal.xyz, -var_Normal.xyz);
-	else
+	{
+		tangentToWorldMatrix = -tangentToWorldMatrix;
+	}
 #endif
-		tangentToWorldMatrix = mat3(var_Tangent.xyz, var_Binormal.xyz, var_Normal.xyz);
 
 	// transform normal into world space
 	N = normalize(tangentToWorldMatrix * N);

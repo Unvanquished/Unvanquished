@@ -50,22 +50,16 @@ void	main()
 #if defined(USE_NORMAL_MAPPING)
 
 	// construct object-space-to-tangent-space 3x3 matrix
-	mat3 objectToTangentMatrix;
+	mat3 objectToTangentMatrix = objectToTangentMatrix = mat3(	var_Tangent.x, var_Binormal.x, var_Normal.x,
+							var_Tangent.y, var_Binormal.y, var_Normal.y,
+							var_Tangent.z, var_Binormal.z, var_Normal.z	);
 
 #if defined(TWOSIDED)
 	if(gl_FrontFacing)
 	{
-		objectToTangentMatrix = mat3( -var_Tangent.x, -var_Binormal.x, -var_Normal.x,
-							-var_Tangent.y, -var_Binormal.y, -var_Normal.y,
-							-var_Tangent.z, -var_Binormal.z, -var_Normal.z	);
+		objectToTangentMatrix = -objectToTangentMatrix;
 	}
-	else
 #endif
-	{
-		objectToTangentMatrix = mat3(	var_Tangent.x, var_Binormal.x, var_Normal.x,
-							var_Tangent.y, var_Binormal.y, var_Normal.y,
-							var_Tangent.z, var_Binormal.z, var_Normal.z	);
-	}
 
 	// compute view direction in tangent space
 	vec3 V = normalize(objectToTangentMatrix * (u_ViewOrigin - var_Position));
@@ -150,18 +144,14 @@ void	main()
 
 #elif defined(COMPAT_Q3A)
 
-	vec3 N;
+	vec3 N = normalize(var_Normal);
 
 #if defined(TWOSIDED)
 	if(gl_FrontFacing)
 	{
-		N = -normalize(var_Normal);
+		N = -N;
 	}
-	else
 #endif
-	{
-		N = normalize(var_Normal);
-	}
 
 	// compute the diffuse term
 	vec4 diffuse = texture2D(u_DiffuseMap, var_TexDiffuseNormal.st);
