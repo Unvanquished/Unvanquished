@@ -589,7 +589,6 @@ int FS_Delete( char *filename );  // only works inside the 'save' directory (for
 
 int FS_Write( const void *buffer, int len, fileHandle_t f );
 
-int FS_Read2( void *buffer, int len, fileHandle_t f );
 int FS_Read( void *buffer, int len, fileHandle_t f );
 
 // properly handles partial reads and reads from other dlls

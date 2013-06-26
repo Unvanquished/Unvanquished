@@ -1813,21 +1813,6 @@ FS_Read
 Properly handles partial reads
 =================
 */
-int FS_Read2( void *buffer, int len, fileHandle_t f )
-{
-	if ( !fs_searchpaths )
-	{
-		Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
-	}
-
-	if ( !f )
-	{
-		return 0;
-	}
-
-	return FS_Read( buffer, len, f );
-}
-
 int FS_Read( void *buffer, int len, fileHandle_t f )
 {
 	int  block, remaining;

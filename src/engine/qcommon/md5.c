@@ -319,7 +319,7 @@ char *Com_MD5File( const char *fn, int length )
 
 	for ( ;; )
 	{
-		r = FS_Read2( buffer, sizeof( buffer ), f );
+		r = FS_Read( buffer, sizeof( buffer ), f );
 
 		if ( r < 1 )
 		{
