@@ -1270,9 +1270,6 @@ separate file or a ZIP file.
 */
 extern qboolean com_fullyInitialized;
 
-// see FS_FOpenFileRead_Filtered
-static int      fs_filter_flag = 0;
-
 static qboolean FS_CheckUIImageFile( const char *filename )
 {
 	int l = strlen( filename );
@@ -1291,7 +1288,7 @@ static qboolean FS_CheckUIImageFile( const char *filename )
 }
 
 
-int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueFILE )
+static int FS_FOpenFileRead_Internal( const char *filename, fileHandle_t *file, qboolean uniqueFILE, qboolean allowImpure, qboolean fs_filter_flag )
 {
 	searchpath_t *search;
 	char         *netpath;
@@ -1533,7 +1530,7 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 			// the only files we will allow to come from the directory are .cfg, .menu, etc. files
 			l = strlen( filename );
 
-			if ( fs_numServerPaks )
+			if ( fs_numServerPaks && !allowImpure )
 			{
 				if ( Q_stricmp( filename + l - 4, ".cfg" )  // for config files
 				     && Q_stricmp( filename + l - 4, ".ttf" )
@@ -1599,15 +1596,19 @@ int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueF
 	return -1;
 }
 
+int FS_FOpenFileRead( const char *filename, fileHandle_t *file, qboolean uniqueFILE )
+{
+        return FS_FOpenFileRead_Internal( filename, file, uniqueFILE, qfalse, qfalse );
+}
+
+int FS_FOpenFileRead_Impure( const char *filename, fileHandle_t *file, qboolean uniqueFILE )
+{
+        return FS_FOpenFileRead_Internal( filename, file, uniqueFILE, qtrue, qfalse );
+}
+
 int FS_FOpenFileRead_Filtered( const char *qpath, fileHandle_t *file, qboolean uniqueFILE, int filter_flag )
 {
-	int ret;
-
-	fs_filter_flag = filter_flag;
-	ret = FS_FOpenFileRead( qpath, file, uniqueFILE );
-	fs_filter_flag = 0;
-
-	return ret;
+	return FS_FOpenFileRead_Internal( qpath, file, uniqueFILE, qfalse, filter_flag );
 }
 
 /*
@@ -1813,21 +1814,6 @@ FS_Read
 Properly handles partial reads
 =================
 */
-int FS_Read2( void *buffer, int len, fileHandle_t f )
-{
-	if ( !fs_searchpaths )
-	{
-		Com_Error( ERR_FATAL, "Filesystem call made without initialization" );
-	}
-
-	if ( !f )
-	{
-		return 0;
-	}
-
-	return FS_Read( buffer, len, f );
-}
-
 int FS_Read( void *buffer, int len, fileHandle_t f )
 {
 	int  block, remaining;

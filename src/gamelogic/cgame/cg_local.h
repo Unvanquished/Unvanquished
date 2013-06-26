@@ -1671,6 +1671,8 @@ void     CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean 
 void     CG_OffsetFirstPersonView( void );
 void     CG_OffsetThirdPersonView( void );
 void     CG_OffsetShoulderView( void );
+void     CG_StartShadowCaster( vec3_t origin, vec3_t mins, vec3_t maxs );
+void     CG_EndShadowCaster( void );
 
 //
 // cg_drawtools.c
